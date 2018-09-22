@@ -13,25 +13,16 @@
 import logging
 import nw
 
-from PyQt5.QtWidgets import QWidget
-from PyQt5.QtGui     import QIcon
+from nw.gui.winmain import GuiMain
 
 logger = logging.getLogger(__name__)
 
-class NovelWriter(QWidget):
+class NovelWriter():
 
     def __init__(self):
         super().__init__()
 
-        self.initGUI()
+        self.winMain = GuiMain()
 
-    def initGUI(self):
-
-        # self.setGeometry(300, 300, 300, 220)
-        self.resize(600,500)
-        self.setWindowTitle("novelWriter")
-        self.setWindowIcon(QIcon("novelWriter.svg"))
-
-        self.show()
-
+        return
 # END Class NovelWriter

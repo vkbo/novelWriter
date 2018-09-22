@@ -17,3 +17,8 @@ Here is an overview of the core features I want to implement as a starting point
 Future features that will be added:
 
 * Export options for HTML, open document format and PDF (probably via LaTeX or Pandoc).
+
+## Dependencies
+
+* python3-pyqt5
+* python3-appdirs

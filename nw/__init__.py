@@ -19,7 +19,9 @@ gi.require_version("Gtk","3.0")
 from os              import path, remove, rename
 from PyQt5.QtWidgets import QApplication
 from nw.main         import NovelWriter
+from nw.config       import Config
 
+__package__    = "novelWriter"
 __author__     = "Veronica Berglyd Olsen"
 __copyright__  = "Copyright 2016-2018, Veronica Berglyd Olsen"
 __credits__    = ["Veronica Berglyd Olsen"]
@@ -70,7 +72,7 @@ logger = logging.getLogger(__name__)
 #
 
 # Load the main config as a global object
-# CONFIG = Config()
+CONFIG = Config()
 
 def main(sysArgs):
     """
