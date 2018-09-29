@@ -36,7 +36,6 @@ class GuiMain(QMainWindow):
         self.setWindowIcon(QIcon(path.join(self.mainConf.appPath,"..","novelWriter.svg")))
 
         self.statBar = self.statusBar()
-        self.statBar.showMessage("Hello Kitty!")
 
         self.docTabs = GuiDocTabs()
 
@@ -59,11 +58,12 @@ class GuiMain(QMainWindow):
 
         self._buildMenu()
 
-        self.docTabs.createTab()
+        # self.docTabs.createTab()
 
         self.show()
 
         logger.debug("GUI initialisation complete")
+        self.statBar.showMessage("Ready")
 
         return
 
@@ -79,6 +79,17 @@ class GuiMain(QMainWindow):
         return True
 
     #
+    #  Project Actions
+    #
+
+    def newProject(self):
+
+        logger.info("Creating new project")
+        self.docTabs.createTab(tabType=nw.DOCTYPE_PROJECT)
+
+        return
+
+    #
     #  Internal Functions
     #
 
@@ -87,6 +98,38 @@ class GuiMain(QMainWindow):
 
         # File
         fileMenu = menuBar.addMenu("&File")
+
+        # File > New Project
+        menuNewProject = QAction(QIcon.fromTheme("folder-new"), "New Project", menuBar)
+        menuNewProject.setStatusTip("Create New Project")
+        menuNewProject.triggered.connect(self.newProject)
+        fileMenu.addAction(menuNewProject)
+
+        # File > Open Project
+        menuOpenProject = QAction(QIcon.fromTheme("folder-open"), "Open Project", menuBar)
+        menuOpenProject.setStatusTip("Open Project")
+        fileMenu.addAction(menuOpenProject)
+
+        # File > Save Project
+        menuSaveProject = QAction(QIcon.fromTheme("document-save"), "Save Project", menuBar)
+        menuSaveProject.setStatusTip("Save Project")
+        fileMenu.addAction(menuSaveProject)
+
+        # File > Recent Project
+        menuRecentProject = QAction(QIcon.fromTheme("document-open-recent"), "Open Recent Project", menuBar)
+        menuRecentProject.setStatusTip("Open Recent Project")
+        fileMenu.addAction(menuRecentProject)
+
+        # ---------------------
+        fileMenu.addSeparator()
+
+        # File > Project Settings
+        menuProjectSettings = QAction(QIcon.fromTheme("document-properties"), "Project Settings", menuBar)
+        menuProjectSettings.setStatusTip("Project Settings")
+        fileMenu.addAction(menuProjectSettings)
+
+        # ---------------------
+        fileMenu.addSeparator()
 
         # File > New
         menuNew = QAction(QIcon.fromTheme("document-new"), "&New", menuBar)
