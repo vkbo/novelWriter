@@ -25,4 +25,5 @@ class NovelWriter():
         self.winMain = GuiMain()
 
         return
+
 # END Class NovelWriter

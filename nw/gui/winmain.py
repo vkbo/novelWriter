@@ -25,6 +25,7 @@ class GuiMain(QMainWindow):
     def __init__(self):
         QWidget.__init__(self)
 
+        logger.debug("Initialising GUI ...")
         self.mainConf = nw.CONFIG
 
         self.resize(900,600)
@@ -59,6 +60,7 @@ class GuiMain(QMainWindow):
         self._buildMenu()
 
         self.show()
+        logger.debug("GUI initialisation complete")
 
         return
 
