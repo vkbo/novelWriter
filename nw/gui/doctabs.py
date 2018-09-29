@@ -28,7 +28,6 @@ class GuiDocTabs(QTabWidget):
 
         logger.debug("Initialising DocTabs ...")
         self.mainConf = nw.CONFIG
-        self.docList  = []
         self.tabList  = []
 
         self.resize(900,500)
@@ -42,13 +41,8 @@ class GuiDocTabs(QTabWidget):
             tabName = "New Document"
         else:
             tabName = docFile
-        thisTab = QWidget()
-        tabBox  = QVBoxLayout()
-        thisDoc = GuiDocEditor()
-        tabBox.addWidget(thisDoc)
-        thisTab.setLayout(tabBox)
+        thisTab = GuiDocEditor()
         self.tabList.append(thisTab)
-        self.docList.append(thisDoc)
         self.addTab(self.tabList[-1],tabName)
         return True
 
