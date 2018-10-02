@@ -159,6 +159,15 @@ class GuiMain(QMainWindow):
         menuExit.triggered.connect(self._menuExit)
         fileMenu.addAction(menuExit)
 
+        # Help
+        helpMenu = menuBar.addMenu("&Help")
+
+        # Help > About
+        menuAbout = QAction(QIcon.fromTheme("help-about"), "About", menuBar)
+        menuAbout.setStatusTip("About")
+        menuAbout.triggered.connect(self._showAbout)
+        helpMenu.addAction(menuAbout)
+
         return
 
     def _buildTreeToolBar(self):
@@ -187,6 +196,10 @@ class GuiMain(QMainWindow):
     def _menuExit(self):
         logger.info("Exiting %s" % nw.__package__)
         qApp.quit()
+        return True
+
+    def _showAbout(self):
+        self.docTabs.createTab(None,nw.DOCTYPE_ABOUT)
         return True
 
 # END Class GuiMain

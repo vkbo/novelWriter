@@ -58,30 +58,44 @@ class GuiDocTabs(QTabWidget):
     #  Internal Functions
     #
 
-    def _createTabAbout(self):
-        thisTab = GuiAboutView()
-        self.tabList.append(thisTab)
-        self.addTab(self.tabList[-1],"About")
-        return True
-
     def _createTabDoc(self, docName=None):
         if docName is None:
             tabName = "New Document"
         else:
             tabName = docName
         thisTab = GuiDocEditor()
-        self.tabList.append(thisTab)
-        self.addTab(self.tabList[-1],tabName)
+        self.addTab(thisTab,tabName)
+        self.setCurrentWidget(thisTab)
         return True
 
     def _createTabProject(self, projectName=None):
+        """Display or create the project settings page.
+        """
+        for i in range(self.count()):
+            thisTab = self.widget(i)
+            if isinstance(thisTab, GuiProjectEditor):
+                self.setCurrentWidget(thisTab)
+                return True
         if projectName is None:
             tabName = "New Project"
         else:
             tabName = projectName
         thisTab = GuiProjectEditor()
-        self.tabList.append(thisTab)
-        self.addTab(self.tabList[-1],tabName)
+        self.addTab(thisTab,tabName)
+        self.setCurrentWidget(thisTab)
+        return True
+
+    def _createTabAbout(self):
+        """Display or create the About tab.
+        """
+        for i in range(self.count()):
+            thisTab = self.widget(i)
+            if isinstance(thisTab, GuiAboutView):
+                self.setCurrentWidget(thisTab)
+                return True
+        thisTab = GuiAboutView()
+        self.addTab(thisTab,"About")
+        self.setCurrentWidget(thisTab)
         return True
 
     #
@@ -90,6 +104,8 @@ class GuiDocTabs(QTabWidget):
 
     def _doCloseTab(self, tabIdx):
         logger.verbose("User requested tab %d to be closed." % tabIdx)
+        self.removeTab(tabIdx)
+        logger.verbose("Tab %d closed." % tabIdx)
         return
 
 # END Class GuiDocTabs
