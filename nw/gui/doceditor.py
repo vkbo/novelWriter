@@ -13,7 +13,6 @@
 import logging
 import nw
 
-from os              import path
 from PyQt5.QtWidgets import QWidget, QTextEdit, QVBoxLayout, QFrame, QSplitter, QToolBar, QAction
 from PyQt5.QtCore    import Qt, QSize
 from PyQt5.QtGui     import QIcon

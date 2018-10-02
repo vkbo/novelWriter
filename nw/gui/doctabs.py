@@ -13,12 +13,12 @@
 import logging
 import nw
 
-from os                   import path
 from PyQt5.QtCore         import Qt
 from PyQt5.QtWidgets      import QTabWidget, QWidget, QVBoxLayout
 
 from nw.gui.doceditor     import GuiDocEditor
 from nw.gui.projecteditor import GuiProjectEditor
+from nw.gui.aboutview     import GuiAboutView
 
 logger = logging.getLogger(__name__)
 
@@ -32,13 +32,21 @@ class GuiDocTabs(QTabWidget):
         self.tabList  = []
 
         self.resize(900,500)
+        self.setTabsClosable(True)
+
+        self.tabBar().tabCloseRequested.connect(self._doCloseTab)
+
+        self.createTab(None,nw.DOCTYPE_ABOUT)
 
         logger.debug("DocTabs initialisation complete")
 
         return
 
     def createTab(self, theName=None, tabType=None):
-        if tabType == nw.DOCTYPE_DOC:
+        if tabType == nw.DOCTYPE_ABOUT:
+            self._createTabAbout()
+            return True
+        elif tabType == nw.DOCTYPE_DOC:
             self._createTabDoc(theName)
             return True
         elif tabType == nw.DOCTYPE_PROJECT:
@@ -49,6 +57,12 @@ class GuiDocTabs(QTabWidget):
     #
     #  Internal Functions
     #
+
+    def _createTabAbout(self):
+        thisTab = GuiAboutView()
+        self.tabList.append(thisTab)
+        self.addTab(self.tabList[-1],"About")
+        return True
 
     def _createTabDoc(self, docName=None):
         if docName is None:
@@ -69,5 +83,13 @@ class GuiDocTabs(QTabWidget):
         self.tabList.append(thisTab)
         self.addTab(self.tabList[-1],tabName)
         return True
+
+    #
+    #  Signals
+    #
+
+    def _doCloseTab(self, tabIdx):
+        logger.verbose("User requested tab %d to be closed." % tabIdx)
+        return
 
 # END Class GuiDocTabs

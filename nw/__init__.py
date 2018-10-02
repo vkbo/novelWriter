@@ -31,6 +31,7 @@ __date__       = "2018"
 __maintainer__ = "Veronica Berglyd Olsen"
 __email__      = "code@vkbo.net"
 __status__     = "Development"
+__website__    = "https://github.com/vkbo/novelWriter"
 
 #
 #  Logging
@@ -75,8 +76,9 @@ logger = logging.getLogger(__name__)
 CONFIG = Config()
 
 # Constants
-DOCTYPE_DOC     = 0
-DOCTYPE_PROJECT = 1
+DOCTYPE_ABOUT   = 0
+DOCTYPE_DOC     = 1
+DOCTYPE_PROJECT = 2
 
 def main(sysArgs):
     """
