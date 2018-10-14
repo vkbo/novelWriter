@@ -42,10 +42,10 @@ class GuiProjectEditor(QWidget):
         self.saveBox.addWidget(self.savePath)
         self.saveBox.addWidget(self.saveButton)
 
-        self.mainForm.addRow("Working Name", self.editName)
-        self.mainForm.addRow("Book Title",   self.editTitle)
-        self.mainForm.addRow("Book Authors", self.editAuthors)
-        self.mainForm.addRow("Save Path",    self.saveBox)
+        self.mainForm.addRow("Working Title", self.editName)
+        self.mainForm.addRow("Book Title",    self.editTitle)
+        self.mainForm.addRow("Book Authors",  self.editAuthors)
+        self.mainForm.addRow("Save Path",     self.saveBox)
 
         self.mainGroup.setLayout(self.mainForm)
         self.outerBox.addWidget(self.mainGroup)
