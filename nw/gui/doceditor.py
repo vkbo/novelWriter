@@ -47,8 +47,17 @@ class GuiDocEditor(QWidget):
         self.outerBox.addWidget(self.splitEdit)
 
         self.guiEditor.setPlainText("Hello Kitty!")
+        self.guiEditor.setFixedWidth(600)
 
         logger.debug("DocEditor initialisation complete")
+
+        return
+
+    def getText(self):
+
+        theText = self.guiEditor.toHtml()
+        print(theText)
+        print(self.guiEditor.toPlainText())
 
         return
 

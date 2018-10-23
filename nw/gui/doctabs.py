@@ -46,11 +46,11 @@ class GuiDocTabs(QTabWidget):
         if tabType == nw.DOCTYPE_ABOUT:
             self._createTabAbout()
             return True
-        elif tabType == nw.DOCTYPE_DOC:
-            self._createTabDoc(theName)
-            return True
         elif tabType == nw.DOCTYPE_PROJECT:
             self._createTabProject(theName)
+            return True
+        elif tabType == nw.DOCTYPE_DOC:
+            self._createTabDoc(theName)
             return True
         return False
 

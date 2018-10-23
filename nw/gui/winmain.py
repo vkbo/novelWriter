@@ -13,13 +13,14 @@
 import logging
 import nw
 
-from os              import path
-from PyQt5.QtWidgets import qApp, QWidget, QMainWindow, QHBoxLayout, QVBoxLayout, QFrame, QSplitter, QAction, QToolBar
-from PyQt5.QtCore    import Qt, QSize
-from PyQt5.QtGui     import QIcon, QStandardItemModel
+from os                 import path
+from PyQt5.QtWidgets    import qApp, QWidget, QMainWindow, QHBoxLayout, QVBoxLayout, QFrame, QSplitter, QAction, QToolBar, QFileDialog
+from PyQt5.QtCore       import Qt, QSize
+from PyQt5.QtGui        import QIcon, QStandardItemModel
 
-from nw.gui.doctree  import GuiDocTree
-from nw.gui.doctabs  import GuiDocTabs
+from nw.gui.doctree     import GuiDocTree
+from nw.gui.doceditor   import GuiDocEditor
+from nw.project.project import NWProject
 
 logger = logging.getLogger(__name__)
 
@@ -29,7 +30,8 @@ class GuiMain(QMainWindow):
         QWidget.__init__(self)
 
         logger.debug("Initialising GUI ...")
-        self.mainConf = nw.CONFIG
+        self.mainConf   = nw.CONFIG
+        self.theProject = NWProject()
 
         self.resize(1100,650)
         self.setTitle()
@@ -37,13 +39,13 @@ class GuiMain(QMainWindow):
 
         self.statBar = self.statusBar()
 
-        self.docTabs = GuiDocTabs()
+        self.docEditor = GuiDocEditor()
 
         self.treePane = QFrame()
         self.treePane.setFrameShape(QFrame.StyledPanel)
         self.splitMain = QSplitter(Qt.Horizontal)
         self.splitMain.addWidget(self.treePane)
-        self.splitMain.addWidget(self.docTabs)
+        self.splitMain.addWidget(self.docEditor)
 
         self.treeBox = QVBoxLayout()
         self.treeView = GuiDocTree()
@@ -89,6 +91,29 @@ class GuiMain(QMainWindow):
 
         return
 
+    def saveProject(self):
+        if self.theProject.projPath is None:
+            dlgOpt  = QFileDialog.Options()
+            dlgOpt |= QFileDialog.DontUseNativeDialog
+            projPath, _ = QFileDialog.getSaveFileName(
+                self,"Save novelWriter Project","","novelWriter Project File (nwProject.nwx);;All Files (*)", options=dlgOpt)
+            if projPath:
+                self.theProject.setProjectPath(projPath)
+            else:
+                return False
+        self.theProject.saveProject()
+        return True
+
+    #
+    #  Document Actions
+    #
+
+    def saveDocument(self):
+
+        self.docEditor.getText()
+
+        return
+
     #
     #  Internal Functions
     #
@@ -113,6 +138,7 @@ class GuiMain(QMainWindow):
         # File > Save Project
         menuSaveProject = QAction(QIcon.fromTheme("document-save"), "Save Project", menuBar)
         menuSaveProject.setStatusTip("Save Project")
+        menuSaveProject.triggered.connect(self.saveProject)
         fileMenu.addAction(menuSaveProject)
 
         # File > Recent Project
@@ -147,6 +173,7 @@ class GuiMain(QMainWindow):
         menuSave = QAction(QIcon.fromTheme("document-save"), "&Save", menuBar)
         menuSave.setShortcut("Ctrl+S")
         menuSave.setStatusTip("Save document")
+        menuSave.triggered.connect(self.saveDocument)
         fileMenu.addAction(menuSave)
 
         # ---------------------
@@ -189,17 +216,30 @@ class GuiMain(QMainWindow):
 
         return
 
+    def _closeMain(self):
+        logger.info("Exiting %s" % nw.__package__)
+        self.mainConf.saveConfig()
+        return
+
     #
     #  Menu Action
     #
 
     def _menuExit(self):
-        logger.info("Exiting %s" % nw.__package__)
+        self._closeMain()
         qApp.quit()
         return True
 
     def _showAbout(self):
         self.docTabs.createTab(None,nw.DOCTYPE_ABOUT)
         return True
+
+    #
+    #  Events
+    #
+
+    def closeEvent(self, guiEvent):
+        self._closeMain()
+        guiEvent.accept()
 
 # END Class GuiMain

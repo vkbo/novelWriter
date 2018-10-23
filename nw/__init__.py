@@ -12,9 +12,6 @@
 
 import logging
 import getopt
-import gi
-
-gi.require_version("Gtk","3.0")
 
 from os              import path, remove, rename
 from PyQt5.QtWidgets import QApplication
@@ -31,7 +28,7 @@ __date__       = "2018"
 __maintainer__ = "Veronica Berglyd Olsen"
 __email__      = "code@vkbo.net"
 __status__     = "Development"
-__website__    = "https://github.com/vkbo/novelWriter"
+__url__        = "https://github.com/vkbo/novelWriter"
 
 #
 #  Logging

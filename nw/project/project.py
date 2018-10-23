@@ -13,8 +13,9 @@
 import logging
 import nw
 
-from os   import path, mkdir
-from lxml import etree
+from os       import path, mkdir
+from lxml     import etree
+from datetime import datetime
 
 logger = logging.getLogger(__name__)
 
@@ -22,13 +23,14 @@ class NWProject():
 
     def __init__(self):
 
+        self.mainConf   = nw.CONFIG
+
         self.projFolder = None
         self.projTree   = []
 
         # Project Settings
-        self.projPath    = ""
-        self.projData    = ""
-        self.projName    = ""
+        self.projPath    = None
+        self.projFile    = "nwProject.nwx"
         self.bookTitle   = ""
         self.bookAuthors = []
 
@@ -40,22 +42,19 @@ class NWProject():
 
     def saveProject(self):
 
-        projDir  = path.dirname(self.projPath)
-        projFile = path.basename(self.projPath)
-        logger.vverbose("Project folder is %s" % projDir)
-        logger.vverbose("Project file is %s" % projFile)
+        if self.projPath is None:
+            logger.error("Project path not set, cannot save.")
+            return False
 
-        if bookFile[-4:] == ".nwx":
-            self.projData = path.join(projDir,projFile[:-4]+".nwd")
-            if not path.isdir(self.projData):
-                logger.info("Created folder %s" % self.projData)
-                mkdir(self.projData)
+        if not path.isdir(self.projPath):
+            logger.info("Created folder %s" % self.projPath)
+            mkdir(self.projPath)
 
         # Root element and book details
         nwXML = etree.Element("novelWriterXML",attrib={
             "fileVersion" : "1.0",
             "appVersion"  : str(nw.__version__),
-            "timeStamp"   : getTimeStamp("-"),
+            "timeStamp"   : datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
         })
         xBook = etree.SubElement(nwXML,"book")
         xBookTitle = etree.SubElement(xBook,"title")
@@ -66,7 +65,7 @@ class NWProject():
             xBookAuthor.text = bookAuthor
 
         # Write the xml tree to file
-        with open(self.bookPath,"wb") as outFile:
+        with open(path.join(self.projPath,self.projFile),"wb") as outFile:
             outFile.write(etree.tostring(
                 nwXML,
                 pretty_print    = True,
@@ -74,11 +73,17 @@ class NWProject():
                 xml_declaration = True
             ))
 
+        self.mainConf.setRecent(self.projPath)
+
         return True
 
     #
     #  Set Functions
     #
+
+    def setProjectPath(self, projPath):
+        self.projPath = projPath
+        return True
 
     def setProjectName(self, projName):
         self.projName = projName.strip()

@@ -14,8 +14,9 @@ import logging
 import configparser
 import nw
 
-from os      import path, mkdir, getcwd
-from appdirs import user_config_dir
+from os       import path, mkdir, getcwd
+from appdirs  import user_config_dir
+from datetime import datetime
 
 logger = logging.getLogger(__name__)
 
@@ -29,7 +30,6 @@ class Config:
         # Set Application Variables
         self.appName    = nw.__package__
         self.appHandle  = nw.__package__.lower()
-        self.appURL     = "https://github.com/vkbo/novelWriter"
 
         # Set Paths
         self.confPath   = user_config_dir(self.appHandle)
@@ -38,6 +38,7 @@ class Config:
         self.appPath    = path.dirname(__file__)
         self.guiPath    = path.join(self.appPath,"gui")
         self.themePath  = path.join(self.appPath,"themes")
+        self.recentList = [""]*10
 
         # If config folder does not exist, make it.
         # This assumes that the os config folder itself exists.
@@ -81,11 +82,18 @@ class Config:
                     confParser.get(cnfSec,"geometry"), 2, self.winGeometry
                 )
 
+        ## Path
+        cnfSec = "Path"
+        if confParser.has_section(cnfSec):
+            for i in range(10):
+                if confParser.has_option(cnfSec,"recent%d" % i):
+                    self.recentList[i] = confParser.get(cnfSec,"recent%d" % i)
+
         return
 
     def saveConfig(self):
 
-        logger.debug("Config: Saving")
+        logger.debug("Saving config file")
         confParser = configparser.ConfigParser()
 
         # Set options
@@ -93,7 +101,14 @@ class Config:
         ## Main
         cnfSec = "Main"
         confParser.add_section(cnfSec)
-        confParser.set(cnfSec,"geometry", self.packList(self.winGeometry))
+        confParser.set(cnfSec,"timestamp", datetime.now().strftime("%Y-%m-%d %H:%M:%S"))
+        confParser.set(cnfSec,"geometry",  self.packList(self.winGeometry))
+
+        ## Path
+        cnfSec = "Path"
+        confParser.add_section(cnfSec)
+        for i in range(10):
+            confParser.set(cnfSec,"recent%d" % i, str(self.recentList[i]))
 
         # Write config file
         confParser.write(open(path.join(self.confPath,self.confFile),"w"))
@@ -117,6 +132,14 @@ class Config:
     ##
     #  Setters
     ##
+
+    def setRecent(self, recentPath):
+        if recentPath == "": return
+        if recentPath in self.recentList[0:10]:
+            self.recentList.remove(recentPath)
+        self.recentList.insert(0,recentPath)
+        return
+
 
     def setConfPath(self, newPath):
         if newPath is None: return
