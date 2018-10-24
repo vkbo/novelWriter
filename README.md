@@ -22,3 +22,4 @@ Future features that will be added:
 
 * python3-pyqt5
 * python3-appdirs
+* python3-lxml

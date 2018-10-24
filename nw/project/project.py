@@ -24,8 +24,6 @@ class NWProject():
     def __init__(self):
 
         self.mainConf   = nw.CONFIG
-
-        self.projFolder = None
         self.projTree   = []
 
         # Project Settings
@@ -37,6 +35,44 @@ class NWProject():
         return
 
     def buildProjectTree(self):
+
+        return True
+
+    def openProject(self, fileName):
+
+        if not path.isfile(fileName):
+            logger.error("File not found: %s" % fileName)
+            return False
+
+        self.projPath = path.dirname(fileName)
+
+        nwXML = etree.parse(fileName)
+        xRoot = nwXML.getroot()
+
+        nwxRoot     = xRoot.tag
+        appVersion  = xRoot.attrib["appVersion"]
+        fileVersion = xRoot.attrib["fileVersion"]
+
+        logger.verbose("XML root is %s" % nwxRoot)
+        logger.verbose("File version is %s" % fileVersion)
+
+        if not nwxRoot == "novelWriterXML" or not fileVersion == "1.0":
+            logger.error("Project file does not appear to be a novelWriterXML file version 1.0")
+            return False
+
+        # for xChild in xRoot:
+        #     if xChild.tag == "book":
+        #         logger.debug("BookOpen: Found book data")
+        #         for xItem in xChild:
+        #             if xItem.text is None: continue
+        #             if xItem.tag == "title":
+        #                 logger.verbose("BookOpen: Title is '%s'" % xItem.text)
+        #                 self.bookTitle = xItem.text
+        #             elif xItem.tag == "author":
+        #                 logger.verbose("BookOpen: Author: '%s'" % xItem.text)
+        #                 self.bookAuthors.append(xItem.text)
+
+        self.mainConf.setRecent(self.projPath)
 
         return True
 

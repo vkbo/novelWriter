@@ -37,8 +37,6 @@ class GuiMain(QMainWindow):
         self.setTitle()
         self.setWindowIcon(QIcon(path.join(self.mainConf.appPath,"..","novelWriter.svg")))
 
-        self.statBar = self.statusBar()
-
         self.docEditor = GuiDocEditor()
 
         self.treePane = QFrame()
@@ -65,7 +63,9 @@ class GuiMain(QMainWindow):
         self.show()
 
         logger.debug("GUI initialisation complete")
-        self.statBar.showMessage("Ready")
+
+        statBar = self.statusBar()
+        statBar.showMessage("Ready")
 
         return
 
@@ -90,6 +90,17 @@ class GuiMain(QMainWindow):
         self.docTabs.createTab(tabType=nw.DOCTYPE_PROJECT)
 
         return
+
+    def openProject(self):
+        dlgOpt  = QFileDialog.Options()
+        dlgOpt |= QFileDialog.DontUseNativeDialog
+        projPath, _ = QFileDialog.getOpenFileName(
+                self,"Open novelWriter Project","","novelWriter Project File (nwProject.nwx);;All Files (*)", options=dlgOpt)
+        if projPath:
+            self.theProject.openProject(projPath)
+        else:
+            return False
+        return True
 
     def saveProject(self):
         if self.theProject.projPath is None:
@@ -133,6 +144,7 @@ class GuiMain(QMainWindow):
         # File > Open Project
         menuOpenProject = QAction(QIcon.fromTheme("folder-open"), "Open Project", menuBar)
         menuOpenProject.setStatusTip("Open Project")
+        menuOpenProject.triggered.connect(self.openProject)
         fileMenu.addAction(menuOpenProject)
 
         # File > Save Project
