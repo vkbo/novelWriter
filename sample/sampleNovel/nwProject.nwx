@@ -1,6 +1,9 @@
 <?xml version='1.0' encoding='utf-8'?>
-<novelWriterXML appVersion="0.1.0" fileVersion="1.0" timeStamp="2018-10-23T21:36:09">
-  <book>
-    <title></title>
-  </book>
+<novelWriterXML appVersion="0.1.0" fileVersion="1.0" timeStamp="2018-10-25 22:17:01">
+  <project>
+    <name>Sample Project</name>
+    <title>Sample Project</title>
+    <author>Jane Smith</author>
+    <author>Jane Doh</author>
+  </project>
 </novelWriterXML>

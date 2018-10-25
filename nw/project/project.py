@@ -29,6 +29,7 @@ class NWProject():
         # Project Settings
         self.projPath    = None
         self.projFile    = "nwProject.nwx"
+        self.projName    = ""
         self.bookTitle   = ""
         self.bookAuthors = []
 
@@ -60,17 +61,17 @@ class NWProject():
             logger.error("Project file does not appear to be a novelWriterXML file version 1.0")
             return False
 
-        # for xChild in xRoot:
-        #     if xChild.tag == "book":
-        #         logger.debug("BookOpen: Found book data")
-        #         for xItem in xChild:
-        #             if xItem.text is None: continue
-        #             if xItem.tag == "title":
-        #                 logger.verbose("BookOpen: Title is '%s'" % xItem.text)
-        #                 self.bookTitle = xItem.text
-        #             elif xItem.tag == "author":
-        #                 logger.verbose("BookOpen: Author: '%s'" % xItem.text)
-        #                 self.bookAuthors.append(xItem.text)
+        for xChild in xRoot:
+            if xChild.tag == "project":
+                logger.debug("Found book data")
+                for xItem in xChild:
+                    if xItem.text is None: continue
+                    if xItem.tag == "title":
+                        logger.verbose("Title is '%s'" % xItem.text)
+                        self.bookTitle = xItem.text
+                    elif xItem.tag == "author":
+                        logger.verbose("Author: '%s'" % xItem.text)
+                        self.bookAuthors.append(xItem.text)
 
         self.mainConf.setRecent(self.projPath)
 
@@ -92,12 +93,14 @@ class NWProject():
             "appVersion"  : str(nw.__version__),
             "timeStamp"   : datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
         })
-        xBook = etree.SubElement(nwXML,"book")
-        xBookTitle = etree.SubElement(xBook,"title")
+        xProject        = etree.SubElement(nwXML,"project")
+        xProjName       = etree.SubElement(xProject,"name")
+        xProjName.text  = self.projName
+        xBookTitle      = etree.SubElement(xProject,"title")
         xBookTitle.text = self.bookTitle
         for bookAuthor in self.bookAuthors:
             if bookAuthor == "": continue
-            xBookAuthor = etree.SubElement(xBook,"author")
+            xBookAuthor      = etree.SubElement(xProject,"author")
             xBookAuthor.text = bookAuthor
 
         # Write the xml tree to file
@@ -131,8 +134,11 @@ class NWProject():
 
     def setBookAuthors(self, bookAuthors):
         self.bookAuthors = []
-        for bookAuthor in bookAuthors.split(","):
-            self.bookAuthors.append(bookAuthor.strip())
+        for bookAuthor in bookAuthors.split("\n"):
+            bookAuthor = bookAuthor.strip()
+            if bookAuthor == "":
+                continue
+            self.bookAuthors.append(bookAuthor)
         return True
 
 # END Class NWProject

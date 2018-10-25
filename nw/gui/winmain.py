@@ -13,14 +13,15 @@
 import logging
 import nw
 
-from os                 import path
-from PyQt5.QtWidgets    import qApp, QWidget, QMainWindow, QHBoxLayout, QVBoxLayout, QFrame, QSplitter, QAction, QToolBar, QFileDialog
-from PyQt5.QtCore       import Qt, QSize
-from PyQt5.QtGui        import QIcon, QStandardItemModel
+from os                   import path
+from PyQt5.QtWidgets      import qApp, QWidget, QMainWindow, QHBoxLayout, QVBoxLayout, QFrame, QSplitter, QAction, QToolBar, QFileDialog
+from PyQt5.QtCore         import Qt, QSize
+from PyQt5.QtGui          import QIcon, QStandardItemModel
 
-from nw.gui.doctree     import GuiDocTree
-from nw.gui.doceditor   import GuiDocEditor
-from nw.project.project import NWProject
+from nw.gui.doctree       import GuiDocTree
+from nw.gui.doceditor     import GuiDocEditor
+from nw.gui.projecteditor import GuiProjectEditor
+from nw.project.project   import NWProject
 
 logger = logging.getLogger(__name__)
 
@@ -115,6 +116,11 @@ class GuiMain(QMainWindow):
         self.theProject.saveProject()
         return True
 
+    def editProject(self):
+        dlgProj = GuiProjectEditor(self, self.theProject)
+        dlgProj.exec_()
+        return True
+
     #
     #  Document Actions
     #
@@ -164,6 +170,7 @@ class GuiMain(QMainWindow):
         # File > Project Settings
         menuProjectSettings = QAction(QIcon.fromTheme("document-properties"), "Project Settings", menuBar)
         menuProjectSettings.setStatusTip("Project Settings")
+        menuProjectSettings.triggered.connect(self.editProject)
         fileMenu.addAction(menuProjectSettings)
 
         # ---------------------
