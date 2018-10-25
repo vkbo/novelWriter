@@ -35,7 +35,7 @@ class GuiMain(QMainWindow):
         self.theProject = NWProject()
 
         self.resize(1100,650)
-        self.setTitle()
+        self._setWindowTitle()
         self.setWindowIcon(QIcon(path.join(self.mainConf.appPath,"..","novelWriter.svg")))
 
         self.docEditor = GuiDocEditor()
@@ -71,25 +71,12 @@ class GuiMain(QMainWindow):
         return
 
     #
-    #  Set and Get Methods
-    #
-
-    def setTitle(self, projName=None):
-        winTitle = "%s [%s]" % (nw.__package__, nw.__version__)
-        if projName is not None:
-            winTitle += " - %s" % projName
-        self.setWindowTitle(winTitle)
-        return True
-
-    #
     #  Project Actions
     #
 
     def newProject(self):
-
         logger.info("Creating new project")
         self.docTabs.createTab(tabType=nw.DOCTYPE_PROJECT)
-
         return
 
     def openProject(self):
@@ -99,6 +86,7 @@ class GuiMain(QMainWindow):
                 self,"Open novelWriter Project","","novelWriter Project File (nwProject.nwx);;All Files (*)", options=dlgOpt)
         if projPath:
             self.theProject.openProject(projPath)
+            self._setWindowTitle(self.theProject.projName)
         else:
             return False
         return True
@@ -121,14 +109,18 @@ class GuiMain(QMainWindow):
         dlgProj.exec_()
         return True
 
+    def openRecentProject(self, recentItem):
+        logger.vverbose("User requested opening recent project #%d" % recentItem)
+        self.theProject.openProject(self.mainConf.recentList[recentItem])
+        self._setWindowTitle(self.theProject.projName)
+        return True
+
     #
     #  Document Actions
     #
 
     def saveDocument(self):
-
         self.docEditor.getText()
-
         return
 
     #
@@ -136,7 +128,7 @@ class GuiMain(QMainWindow):
     #
 
     def _buildMenu(self):
-        menuBar  = self.menuBar()
+        menuBar = self.menuBar()
 
         # File
         fileMenu = menuBar.addMenu("&File")
@@ -160,9 +152,14 @@ class GuiMain(QMainWindow):
         fileMenu.addAction(menuSaveProject)
 
         # File > Recent Project
-        menuRecentProject = QAction(QIcon.fromTheme("document-open-recent"), "Open Recent Project", menuBar)
-        menuRecentProject.setStatusTip("Open Recent Project")
-        fileMenu.addAction(menuRecentProject)
+        recentMenu = fileMenu.addMenu(QIcon.fromTheme("document-open-recent"),"Recent Projects")
+        itemCount = 0
+        for recentProject in self.mainConf.recentList:
+            if recentProject == "": continue
+            menuRecentProject = QAction(QIcon.fromTheme("folder-open"), "%d: %s" % (itemCount,recentProject), fileMenu)
+            menuRecentProject.triggered.connect(self.openRecentProject, itemCount)
+            recentMenu.addAction(menuRecentProject)
+            itemCount += 1
 
         # ---------------------
         fileMenu.addSeparator()
@@ -239,6 +236,13 @@ class GuiMain(QMainWindow):
         logger.info("Exiting %s" % nw.__package__)
         self.mainConf.saveConfig()
         return
+
+    def _setWindowTitle(self, projName=None):
+        winTitle = "%s [%s]" % (nw.__package__, nw.__version__)
+        if projName is not None:
+            winTitle += " - %s" % projName
+        self.setWindowTitle(winTitle)
+        return True
 
     #
     #  Menu Action

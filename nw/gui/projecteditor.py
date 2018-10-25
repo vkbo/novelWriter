@@ -33,6 +33,8 @@ class GuiProjectEditor(QDialog):
         self.outerBox   = QHBoxLayout()
         self.innerBox   = QVBoxLayout()
 
+        self.setWindowTitle("Project Settings")
+
         self.gradPath = path.abspath(path.join(self.mainConf.appPath,"graphics","block.svg"))
         self.svgGradient = QSvgWidget(self.gradPath)
         self.svgGradient.setFixedWidth(80)

@@ -42,8 +42,10 @@ class NWProject():
     def openProject(self, fileName):
 
         if not path.isfile(fileName):
-            logger.error("File not found: %s" % fileName)
-            return False
+            fileName = path.join(fileName, "nwProject.nwx")
+            if not path.isfile(fileName):
+                logger.error("File not found: %s" % fileName)
+                return False
 
         self.projPath = path.dirname(fileName)
 
@@ -66,7 +68,10 @@ class NWProject():
                 logger.debug("Found book data")
                 for xItem in xChild:
                     if xItem.text is None: continue
-                    if xItem.tag == "title":
+                    if xItem.tag == "name":
+                        logger.verbose("Working Title: '%s'" % xItem.text)
+                        self.projName = xItem.text
+                    elif xItem.tag == "title":
                         logger.verbose("Title is '%s'" % xItem.text)
                         self.bookTitle = xItem.text
                     elif xItem.tag == "author":
