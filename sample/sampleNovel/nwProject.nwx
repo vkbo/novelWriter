@@ -1,9 +1,34 @@
 <?xml version='1.0' encoding='utf-8'?>
-<novelWriterXML appVersion="0.1.0" fileVersion="1.0" timeStamp="2018-10-25 22:17:01">
+<novelWriterXML appVersion="0.1.0" fileVersion="1.0" timeStamp="2018-10-27 23:46:46">
   <project>
     <name>Sample Project</name>
     <title>Sample Project</title>
     <author>Jane Smith</author>
     <author>Jay Doh</author>
   </project>
+  <content count="5">
+    <item handle="7031beac91f75" order="None" parent="None">
+      <name>Novel</name>
+      <type>ROOT</type>
+      <class>NOVEL</class>
+    </item>
+    <item handle="f6622b4617424" order="None" parent="None">
+      <name>Characters</name>
+      <type>ROOT</type>
+      <class>CHARACTER</class>
+    </item>
+    <item handle="73eee34351f85" order="None" parent="None">
+      <name>World</name>
+      <type>ROOT</type>
+      <class>WORLD</class>
+    </item>
+    <item handle="e7ded148d6e4a" order="None" parent="7031beac91f75">
+      <name>New Chapter</name>
+      <type>FOLDER</type>
+    </item>
+    <item handle="96b68994dfa3d" order="None" parent="e7ded148d6e4a">
+      <name>New Scene</name>
+      <type>FILE</type>
+    </item>
+  </content>
 </novelWriterXML>

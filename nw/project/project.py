@@ -13,9 +13,12 @@
 import logging
 import nw
 
-from os       import path, mkdir
-from lxml     import etree
-from datetime import datetime
+from os          import path, mkdir
+from lxml        import etree
+from hashlib     import sha256
+from datetime    import datetime, time
+
+from nw.project.item import NWItem
 
 logger = logging.getLogger(__name__)
 
@@ -23,10 +26,13 @@ class NWProject():
 
     def __init__(self):
 
-        self.mainConf   = nw.CONFIG
-        self.projTree   = []
+        # Internal
+        self.mainConf    = nw.CONFIG
+        self.seedCount   = 0
 
         # Project Settings
+        self.projTree    = {}
+        self.treeOrder   = []
         self.projPath    = None
         self.projFile    = "nwProject.nwx"
         self.projName    = ""
@@ -36,8 +42,46 @@ class NWProject():
         return
 
     def buildProjectTree(self):
-
         return True
+
+    def newRoot(self, rootName, rootType):
+        newItem = NWItem()
+        newItem.setName(rootName)
+        newItem.setType(NWItem.TYPE_ROOT)
+        newItem.setClass(rootType)
+        self._appendItem(None,None,newItem)
+        return newItem.itemHandle
+
+    def newFolder(self, folderName, pHandle):
+        newItem = NWItem()
+        newItem.setName(folderName)
+        newItem.setType(NWItem.TYPE_FOLDER)
+        newItem.setClass(NWItem.CLASS_NONE)
+        self._appendItem(None,pHandle,newItem)
+        return newItem.itemHandle
+
+    def newFile(self, fileName, pHandle):
+        newItem = NWItem()
+        newItem.setName(fileName)
+        newItem.setType(NWItem.TYPE_FILE)
+        newItem.setClass(NWItem.CLASS_NONE)
+        self._appendItem(None,pHandle,newItem)
+        return newItem.itemHandle
+
+    def newProject(self):
+        self.projTree    = {}
+        self.treeOrder   - []
+        self.projPath    = None
+        self.projFile    = "nwProject.nwx"
+        self.projName    = ""
+        self.bookTitle   = ""
+        self.bookAuthors = []
+        hNovel = self.newRoot("Novel", NWItem.CLASS_NOVEL)
+        hChars = self.newRoot("Characters",NWItem.CLASS_CHARACTER)
+        hWorld = self.newRoot("World", NWItem.CLASS_WORLD)
+        hChapt = self.newFolder("New Chapter", hNovel)
+        hScene = self.newFile("New Scene", hChapt)
+        return
 
     def openProject(self, fileName):
 
@@ -108,6 +152,24 @@ class NWProject():
             xBookAuthor      = etree.SubElement(xProject,"author")
             xBookAuthor.text = bookAuthor
 
+        # Save Tree Content
+        xContent = etree.SubElement(nwXML,"content",attrib={"count":str(len(self.projTree))})
+        itemIdx  = 0
+        for tHandle in self.projTree.keys():
+            nwItem = self.projTree[tHandle]
+            xItem  = etree.SubElement(xContent,"item",attrib={
+                "handle" : str(tHandle),
+                "parent" : str(nwItem.parHandle),
+                "order"  : str(nwItem.itemOrder),
+            })
+            xItemName      = etree.SubElement(xItem,"name")
+            xItemName.text = str(nwItem.itemName)
+            xItemType      = etree.SubElement(xItem,"type")
+            xItemType.text = str(nwItem.getType())
+            if nwItem.getClass() is not "NONE":
+                xItemClass      = etree.SubElement(xItem,"class")
+                xItemClass.text = str(nwItem.getClass())
+
         # Write the xml tree to file
         with open(path.join(self.projPath,self.projFile),"wb") as outFile:
             outFile.write(etree.tostring(
@@ -146,15 +208,49 @@ class NWProject():
             self.bookAuthors.append(bookAuthor)
         return True
 
+    def setTreeOrder(self, newOrder):
+        if len(self.treeOrder) != len(newOrder):
+            logger.warning("Size of new and old tree order does not match")
+        self.treeOrder - newOrder
+        return True
+
     #
     #  Internal Functions
     #
 
-    def _makeHandle(self,seed=""):
+    def _appendItem(self, tHandle, pHandle, nwItem):
+        tHandle = self._checkString(tHandle,self._makeHandle(),False)
+        pHandle = self._checkString(pHandle,None,True)
+        logger.verbose("Adding entry %s with parent %s" % (str(tHandle),str(pHandle)))
+        nwItem.setHandle(tHandle)
+        nwItem.setParent(pHandle)
+        self.projTree[tHandle] = nwItem
+        self.treeOrder.append(tHandle)
+        return
+
+    def _makeHandle(self, seed=""):
+        seed += str(self.seedCount)
+        self.seedCount += 1
         itemHandle = sha256((str(time())+seed).encode()).hexdigest()[0:13]
-        # if itemHandle in self.treeLookup.keys():
-        #     logger.warning("BookTree: Duplicate handle encountered! Retrying ...")
-        #     itemHandle = self.makeHandle(seed+"!")
+        if itemHandle in self.projTree.keys():
+            logger.warning("Duplicate handle encountered! Retrying ...")
+            itemHandle = self._makeHandle(seed+"!")
         return itemHandle
+
+    def _checkString(self,checkValue,defaultValue,allowNone=False):
+        if allowNone:
+            if checkValue == None:   return None
+            if checkValue == "None": return None
+        if isinstance(checkValue,str): return str(checkValue)
+        return defaultValue
+
+    def _checkInt(self,checkValue,defaultValue,allowNone=False):
+        if allowNone:
+            if checkValue == None:   return None
+            if checkValue == "None": return None
+        try:
+            return int(checkValue)
+        except:
+            return defaultValue
 
 # END Class NWProject

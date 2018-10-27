@@ -52,7 +52,8 @@ class Config:
         self.confChanged = False
 
         ## General
-        self.winGeometry = [1100, 650]
+        self.winGeometry  = [1100, 650]
+        self.treeColWidth = [120, 30, 50]
 
         # Check if config file exists
         if path.isfile(path.join(self.confPath,self.confFile)):
@@ -83,6 +84,10 @@ class Config:
                 self.winGeometry = self.unpackList(
                     confParser.get(cnfSec,"geometry"), 2, self.winGeometry
                 )
+            if confParser.has_option(cnfSec,"treecols"):
+                self.treeColWidth = self.unpackList(
+                    confParser.get(cnfSec,"treecols"), 3, self.treeColWidth
+                )
 
         ## Path
         cnfSec = "Path"
@@ -105,6 +110,7 @@ class Config:
         confParser.add_section(cnfSec)
         confParser.set(cnfSec,"timestamp", datetime.now().strftime("%Y-%m-%d %H:%M:%S"))
         confParser.set(cnfSec,"geometry",  self.packList(self.winGeometry))
+        confParser.set(cnfSec,"treecols",  self.packList(self.treeColWidth))
 
         ## Path
         cnfSec = "Path"
@@ -142,7 +148,6 @@ class Config:
         self.recentList.insert(0,recentPath)
         return
 
-
     def setConfPath(self, newPath):
         if newPath is None: return
         if not path.isfile(newPath):
@@ -159,6 +164,10 @@ class Config:
         if abs(self.winGeometry[self.WIN_HEIGHT] - newHeight) >= 10:
             self.winGeometry[self.WIN_HEIGHT] = newHeight
             self.confChanged = True
+        return
+
+    def setTreeColWidths(self, colWidths):
+        self.treeColWidth = colWidths
         return
 
 # End Class Config

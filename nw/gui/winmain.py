@@ -46,8 +46,8 @@ class GuiMain(QMainWindow):
         self.splitMain.addWidget(self.treePane)
         self.splitMain.addWidget(self.docEditor)
 
-        self.treeBox = QVBoxLayout()
-        self.treeView = GuiDocTree()
+        self.treeBox  = QVBoxLayout()
+        self.treeView = GuiDocTree(self.theProject)
         self.treeBox.addWidget(self.treeView)
         self.treePane.setLayout(self.treeBox)
 
@@ -58,8 +58,7 @@ class GuiMain(QMainWindow):
         self.setCentralWidget(self.splitMain)
 
         self._buildMenu()
-
-        # self.docTabs.createTab()
+        self.treeView.buildTree()
 
         self.show()
 
@@ -76,7 +75,8 @@ class GuiMain(QMainWindow):
 
     def newProject(self):
         logger.info("Creating new project")
-        self.docTabs.createTab(tabType=nw.DOCTYPE_PROJECT)
+        self.theProject.newProject()
+        self.treeView.buildTree()
         return
 
     def openProject(self):
@@ -101,6 +101,7 @@ class GuiMain(QMainWindow):
                 self.theProject.setProjectPath(projPath)
             else:
                 return False
+        self.treeView.saveTreeOrder()
         self.theProject.saveProject()
         return True
 
@@ -130,6 +131,7 @@ class GuiMain(QMainWindow):
     def _closeMain(self):
         logger.info("Exiting %s" % nw.__package__)
         self.mainConf.setWinSize(self.width(), self.height())
+        self.mainConf.setTreeColWidths(self.treeView.getColumnSizes())
         self.mainConf.saveConfig()
         return
 
