@@ -34,7 +34,7 @@ class GuiMain(QMainWindow):
         self.mainConf   = nw.CONFIG
         self.theProject = NWProject()
 
-        self.resize(1100,650)
+        self.resize(*self.mainConf.winGeometry)
         self._setWindowTitle()
         self.setWindowIcon(QIcon(path.join(self.mainConf.appPath,"..","novelWriter.svg")))
 
@@ -127,6 +127,44 @@ class GuiMain(QMainWindow):
     #  Internal Functions
     #
 
+    def _closeMain(self):
+        logger.info("Exiting %s" % nw.__package__)
+        self.mainConf.setWinSize(self.width(), self.height())
+        self.mainConf.saveConfig()
+        return
+
+    def _setWindowTitle(self, projName=None):
+        winTitle = "%s [%s]" % (nw.__package__, nw.__version__)
+        if projName is not None:
+            winTitle += " - %s" % projName
+        self.setWindowTitle(winTitle)
+        return True
+
+    #
+    #  Menu Action
+    #
+
+    def _menuExit(self):
+        self._closeMain()
+        qApp.quit()
+        return True
+
+    def _showAbout(self):
+        self.docTabs.createTab(None,nw.DOCTYPE_ABOUT)
+        return True
+
+    #
+    #  Events
+    #
+
+    def closeEvent(self, guiEvent):
+        self._closeMain()
+        guiEvent.accept()
+
+    #
+    #  GUI Builders
+    #
+
     def _buildMenu(self):
         menuBar = self.menuBar()
 
@@ -161,7 +199,7 @@ class GuiMain(QMainWindow):
             recentMenu.addAction(menuRecentProject)
             itemCount += 1
 
-        # ---------------------
+        # File > Separator
         fileMenu.addSeparator()
 
         # File > Project Settings
@@ -170,7 +208,7 @@ class GuiMain(QMainWindow):
         menuProjectSettings.triggered.connect(self.editProject)
         fileMenu.addAction(menuProjectSettings)
 
-        # ---------------------
+        # File > Separator
         fileMenu.addSeparator()
 
         # File > New
@@ -192,27 +230,133 @@ class GuiMain(QMainWindow):
         menuSave.triggered.connect(self.saveDocument)
         fileMenu.addAction(menuSave)
 
-        # ---------------------
+        # File > Separator
         fileMenu.addSeparator()
 
         # File > Exit
-        menuExit = QAction(QIcon.fromTheme("application-exit"), "&Exit", menuBar)
+        menuExit = QAction(QIcon.fromTheme("application-exit"), "Exit", menuBar)
         menuExit.setShortcut("Ctrl+Q")
         menuExit.setStatusTip("Exit %s" % nw.__package__)
         menuExit.triggered.connect(self._menuExit)
         fileMenu.addAction(menuExit)
 
+        ############################################################################################
+
+        # Edit
+        editMenu = menuBar.addMenu("&Edit")
+
+        # Edit > Undo
+        menuUndo = QAction(QIcon.fromTheme("edit-undo"), "Undo", menuBar)
+        menuUndo.setShortcut("Ctrl+Z")
+        menuUndo.setStatusTip("Undo Last Change")
+        editMenu.addAction(menuUndo)
+
+        # Edit > Redo
+        menuRedo = QAction(QIcon.fromTheme("edit-redo"), "Redo", menuBar)
+        menuRedo.setShortcut("Ctrl+Y")
+        menuRedo.setStatusTip("Redo Last Change")
+        editMenu.addAction(menuRedo)
+
+        # Edit > Separator
+        editMenu.addSeparator()
+
+        # Edit > Cut
+        menuCut = QAction(QIcon.fromTheme("edit-cut"), "Cut", menuBar)
+        menuCut.setShortcut("Ctrl+X")
+        menuCut.setStatusTip("Cut Selected Text")
+        editMenu.addAction(menuCut)
+
+        # Edit > Copy
+        menuCopy = QAction(QIcon.fromTheme("edit-copy"), "Copy", menuBar)
+        menuCopy.setShortcut("Ctrl+C")
+        menuCopy.setStatusTip("Copy Selected Text")
+        editMenu.addAction(menuCopy)
+
+        # Edit > Paste
+        menuPaste = QAction(QIcon.fromTheme("edit-paste"), "Paste", menuBar)
+        menuPaste.setShortcut("Ctrl+V")
+        menuPaste.setStatusTip("Paste Text from Clipboard")
+        editMenu.addAction(menuPaste)
+
+        # Edit > Paste Plain Text
+        menuPastePlain = QAction(QIcon.fromTheme("edit-paste"), "Paste Plain Text", menuBar)
+        menuPastePlain.setShortcut("Ctrl+Shift+V")
+        menuPastePlain.setStatusTip("Paste Plain Text from Clipboard")
+        editMenu.addAction(menuPastePlain)
+
+        # Edit > Separator
+        editMenu.addSeparator()
+
+        # Edit > Settings
+        menuSettings = QAction(QIcon.fromTheme("applications-system"), "Program Setting", menuBar)
+        menuSettings.setStatusTip("Change %s Settings" % nw.__package__)
+        editMenu.addAction(menuSettings)
+
+        ############################################################################################
+
+        # Format
+        formatMenu = menuBar.addMenu("&Format")
+
+        # Format > Font Style
+        menuFont = QAction(QIcon.fromTheme("preferences-desktop-font"), "Font Family", menuBar)
+        menuFont.setStatusTip("Set Font for Selected text")
+        formatMenu.addAction(menuFont)
+
+        # Format > Separator
+        formatMenu.addSeparator()
+
+        # Format > Bold
+        menuBold = QAction(QIcon.fromTheme("format-text-bold"), "Bold Text", menuBar)
+        menuBold.setShortcut("Ctrl+B")
+        menuBold.setStatusTip("Toggle Bold for Selected Text")
+        formatMenu.addAction(menuBold)
+
+        # Format > Italic
+        menuItalic = QAction(QIcon.fromTheme("format-text-italic"), "Italic Text", menuBar)
+        menuItalic.setShortcut("Ctrl+I")
+        menuItalic.setStatusTip("Toggle Italic for Selected Text")
+        formatMenu.addAction(menuItalic)
+
+        # Format > Underline
+        menuUnderline = QAction(QIcon.fromTheme("format-text-underline"), "Underline Text", menuBar)
+        menuUnderline.setShortcut("Ctrl+U")
+        menuUnderline.setStatusTip("Toggle Underline for Selected Text")
+        formatMenu.addAction(menuUnderline)
+
+        # Format > Strikethrough
+        menuStrikethrough = QAction(QIcon.fromTheme("format-text-strikethrough"), "Strikethrough Text", menuBar)
+        menuStrikethrough.setShortcut("Ctrl+D")
+        menuStrikethrough.setStatusTip("Toggle Strikethrough for Selected Text")
+        formatMenu.addAction(menuStrikethrough)
+
+        # Format > Separator
+        formatMenu.addSeparator()
+
+        # Format > Clear
+        menuClear = QAction(QIcon.fromTheme("edit-clear"), "Clear Formatting", menuBar)
+        menuClear.setStatusTip("Clear Formatting for Selected Text")
+        formatMenu.addAction(menuClear)
+
+        ############################################################################################
+
         # Help
         helpMenu = menuBar.addMenu("&Help")
 
         # Help > About
-        menuAbout = QAction(QIcon.fromTheme("help-about"), "About", menuBar)
-        menuAbout.setStatusTip("About")
+        menuAbout = QAction(QIcon.fromTheme("help-about"), "About %s" % nw.__package__, menuBar)
+        menuAbout.setStatusTip("About %s" % nw.__package__)
         menuAbout.triggered.connect(self._showAbout)
         helpMenu.addAction(menuAbout)
 
+        # Help > About Qt5
+        menuAboutQt5 = QAction(QIcon.fromTheme("help-about"), "About Qt5", menuBar)
+        menuAboutQt5.setStatusTip("About Qt5")
+        helpMenu.addAction(menuAboutQt5)
+
         if not self.mainConf.debugGUI:
             return
+
+        ############################################################################################
 
         # Debug GUI
         debugMenu = menuBar.addMenu("&Debug")
@@ -237,39 +381,5 @@ class GuiMain(QMainWindow):
         toolBar.addAction(tbDocNew)
 
         return
-
-    def _closeMain(self):
-        logger.info("Exiting %s" % nw.__package__)
-        self.mainConf.setWinSize(self.frameGeometry().width(), self.frameGeometry().height())
-        self.mainConf.saveConfig()
-        return
-
-    def _setWindowTitle(self, projName=None):
-        winTitle = "%s [%s]" % (nw.__package__, nw.__version__)
-        if projName is not None:
-            winTitle += " - %s" % projName
-        self.setWindowTitle(winTitle)
-        return True
-
-    #
-    #  Menu Action
-    #
-
-    def _menuExit(self):
-        self._closeMain()
-        qApp.quit()
-        return True
-
-    def _showAbout(self):
-        self.docTabs.createTab(None,nw.DOCTYPE_ABOUT)
-        return True
-
-    #
-    #  Events
-    #
-
-    def closeEvent(self, guiEvent):
-        self._closeMain()
-        guiEvent.accept()
 
 # END Class GuiMain

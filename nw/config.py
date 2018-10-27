@@ -52,7 +52,7 @@ class Config:
         self.confChanged = False
 
         ## General
-        self.winGeometry = [1600, 980]
+        self.winGeometry = [1100, 650]
 
         # Check if config file exists
         if path.isfile(path.join(self.confPath,self.confFile)):
