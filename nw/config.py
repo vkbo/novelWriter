@@ -30,6 +30,8 @@ class Config:
         # Set Application Variables
         self.appName    = nw.__package__
         self.appHandle  = nw.__package__.lower()
+        self.showGUI    = True
+        self.debugGUI   = False
 
         # Set Paths
         self.confPath   = user_config_dir(self.appHandle)

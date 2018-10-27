@@ -83,12 +83,13 @@ def main(sysArgs):
     """
 
     # Valid Input Options
-    shortOpt = "hd:qtl:v"
+    shortOpt = "hd:Dqtl:v"
     longOpt  = [
         "help",
         "debug=",
         "verbose",
         "vverbose",
+        "debuggui",
         "quiet",
         "time",
         "logfile=",
@@ -107,6 +108,7 @@ def main(sysArgs):
         " -d, --debug     Debug level. Valid options are DEBUG, INFO, WARN or ERROR.\n"
         "     --verbose   Increase verbosity of debug.\n"
         "     --vverbose  Increase verbosity of debug even more.\n"
+        " -D, --debuggui  Shows additional debug GUI elements.\n"
         " -q, --quiet     Disable output to command line. Does not affect log file.\n"
         " -t, --time      Shows time stamp in logging output. Adds milliseconds for verbose.\n"
         " -l, --logfile   Specify log file.\n"
@@ -128,6 +130,7 @@ def main(sysArgs):
     showTime   = False
     confPath   = None
     showGUI    = True
+    debugGUI   = False
 
     # Parse Options
     try:
@@ -173,6 +176,12 @@ def main(sysArgs):
             confPath = inArg
         elif inOpt in ("--headless"):
             showGUI = False
+        elif inOpt in ("-D","--debuggui"):
+            debugGUI = True
+
+    # Set GUI options
+    CONFIG.showGUI  = showGUI
+    CONFIG.debugGUI = debugGUI
 
     # Set Logging
     if showTime: debugStr = timeStr+debugStr

@@ -211,6 +211,12 @@ class GuiMain(QMainWindow):
         menuAbout.triggered.connect(self._showAbout)
         helpMenu.addAction(menuAbout)
 
+        if not self.mainConf.debugGUI:
+            return
+
+        # Debug GUI
+        debugMenu = menuBar.addMenu("&Debug")
+
         return
 
     def _buildTreeToolBar(self):
@@ -234,6 +240,7 @@ class GuiMain(QMainWindow):
 
     def _closeMain(self):
         logger.info("Exiting %s" % nw.__package__)
+        self.mainConf.setWinSize(self.frameGeometry().width(), self.frameGeometry().height())
         self.mainConf.saveConfig()
         return
 

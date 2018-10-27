@@ -146,4 +146,15 @@ class NWProject():
             self.bookAuthors.append(bookAuthor)
         return True
 
+    #
+    #  Internal Functions
+    #
+
+    def _makeHandle(self,seed=""):
+        itemHandle = sha256((str(time())+seed).encode()).hexdigest()[0:13]
+        # if itemHandle in self.treeLookup.keys():
+        #     logger.warning("BookTree: Duplicate handle encountered! Retrying ...")
+        #     itemHandle = self.makeHandle(seed+"!")
+        return itemHandle
+
 # END Class NWProject
