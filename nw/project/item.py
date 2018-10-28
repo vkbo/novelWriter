@@ -38,6 +38,7 @@ class NWItem():
         self.itemOrder  = None
         self.itemType   = None
         self.itemClass  = None
+        self.isExpanded = False
 
         return
 
@@ -85,6 +86,10 @@ class NWItem():
         else:
             logger.error("Unrecognised root item '%s'" % theClass)
             self.itemClass = None
+        return
+
+    def setExpanded(self, expState):
+        self.isExpanded = expState
         return
 
     def getType(self):

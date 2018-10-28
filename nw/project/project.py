@@ -70,7 +70,7 @@ class NWProject():
 
     def newProject(self):
         self.projTree    = {}
-        self.treeOrder   - []
+        self.treeOrder   = []
         self.projPath    = None
         self.projFile    = "nwProject.nwx"
         self.projName    = ""
@@ -155,7 +155,7 @@ class NWProject():
         # Save Tree Content
         xContent = etree.SubElement(nwXML,"content",attrib={"count":str(len(self.projTree))})
         itemIdx  = 0
-        for tHandle in self.projTree.keys():
+        for tHandle in self.treeOrder:
             nwItem = self.projTree[tHandle]
             xItem  = etree.SubElement(xContent,"item",attrib={
                 "handle" : str(tHandle),
@@ -169,6 +169,8 @@ class NWProject():
             if nwItem.getClass() is not "NONE":
                 xItemClass      = etree.SubElement(xItem,"class")
                 xItemClass.text = str(nwItem.getClass())
+            if nwItem.isExpanded:
+                xItemExpanded  = etree.SubElement(xItem,"expanded")
 
         # Write the xml tree to file
         with open(path.join(self.projPath,self.projFile),"wb") as outFile:
@@ -211,7 +213,7 @@ class NWProject():
     def setTreeOrder(self, newOrder):
         if len(self.treeOrder) != len(newOrder):
             logger.warning("Size of new and old tree order does not match")
-        self.treeOrder - newOrder
+        self.treeOrder = newOrder
         return True
 
     #

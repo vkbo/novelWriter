@@ -30,6 +30,7 @@ class GuiDocTree(QTreeWidget):
         self.theProject = theProject
         self.theMap     = {}
 
+        self.setStyleSheet("QTreeWidget {font-size: 13px;}")
         self.setColumnCount(4)
         self.setHeaderLabels(["Name","","","Handle"])
         if not self.debugGUI:
@@ -47,17 +48,17 @@ class GuiDocTree(QTreeWidget):
         return
 
     def saveTreeOrder(self):
-
         theList = []
         for i in range(self.topLevelItemCount()):
             theList = self._scanChildren(theList, self.topLevelItem(i))
-
-        print(theList)
-
+        self.theProject.setTreeOrder(theList)
         return True
 
     def _scanChildren(self, theList, theItem):
-        theList.append(theItem.text(3))
+        tHandle = theItem.text(3)
+        nwItem  = self.theProject.projTree[tHandle]
+        nwItem.setExpanded(theItem.isExpanded())
+        theList.append(tHandle)
         for i in range(theItem.childCount()):
             self._scanChildren(theList, theItem.child(i))
         return theList

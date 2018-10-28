@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='utf-8'?>
-<novelWriterXML appVersion="0.1.0" fileVersion="1.0" timeStamp="2018-10-27 23:46:46">
+<novelWriterXML appVersion="0.1.0" fileVersion="1.0" timeStamp="2018-10-28 22:31:56">
   <project>
     <name>Sample Project</name>
     <title>Sample Project</title>
@@ -11,6 +11,16 @@
       <name>Novel</name>
       <type>ROOT</type>
       <class>NOVEL</class>
+      <expanded/>
+    </item>
+    <item handle="e7ded148d6e4a" order="None" parent="7031beac91f75">
+      <name>New Chapter</name>
+      <type>FOLDER</type>
+      <expanded/>
+    </item>
+    <item handle="96b68994dfa3d" order="None" parent="e7ded148d6e4a">
+      <name>New Scene</name>
+      <type>FILE</type>
     </item>
     <item handle="f6622b4617424" order="None" parent="None">
       <name>Characters</name>
@@ -21,14 +31,6 @@
       <name>World</name>
       <type>ROOT</type>
       <class>WORLD</class>
-    </item>
-    <item handle="e7ded148d6e4a" order="None" parent="7031beac91f75">
-      <name>New Chapter</name>
-      <type>FOLDER</type>
-    </item>
-    <item handle="96b68994dfa3d" order="None" parent="e7ded148d6e4a">
-      <name>New Scene</name>
-      <type>FILE</type>
     </item>
   </content>
 </novelWriterXML>
