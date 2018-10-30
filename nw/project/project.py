@@ -16,7 +16,8 @@ import nw
 from os          import path, mkdir
 from lxml        import etree
 from hashlib     import sha256
-from datetime    import datetime, time
+from datetime    import datetime
+from time        import time
 
 from nw.project.item import NWItem
 
@@ -28,7 +29,6 @@ class NWProject():
 
         # Internal
         self.mainConf    = nw.CONFIG
-        self.seedCount   = 0
 
         # Project Settings
         self.projTree    = {}
@@ -92,6 +92,7 @@ class NWProject():
                 return False
 
         self.projPath = path.dirname(fileName)
+        logger.debug("Opening project: %s" % self.projPath)
 
         nwXML = etree.parse(fileName)
         xRoot = nwXML.getroot()
@@ -109,7 +110,7 @@ class NWProject():
 
         for xChild in xRoot:
             if xChild.tag == "project":
-                logger.debug("Found book data")
+                logger.debug("Found project meta")
                 for xItem in xChild:
                     if xItem.text is None: continue
                     if xItem.tag == "name":
@@ -121,7 +122,24 @@ class NWProject():
                     elif xItem.tag == "author":
                         logger.verbose("Author: '%s'" % xItem.text)
                         self.bookAuthors.append(xItem.text)
-
+            elif xChild.tag == "content":
+                logger.debug("Found project content")
+                for xItem in xChild:
+                    itemAttrib = xItem.attrib
+                    if "handle" in xItem.attrib:
+                        tHandle = itemAttrib["handle"]
+                    else:
+                        logger.error("Skipping rntry missing handle")
+                        continue
+                    if "parent" in xItem.attrib:
+                        pHandle = itemAttrib["parent"]
+                    else:
+                        pHandle = None
+                    nwItem = NWItem()
+                    for xValue in xItem:
+                        nwItem.setFromTag(xValue.tag,xValue.text)
+                    self._appendItem(tHandle,pHandle,nwItem)
+ 
         self.mainConf.setRecent(self.projPath)
 
         return True
@@ -136,7 +154,10 @@ class NWProject():
             logger.info("Created folder %s" % self.projPath)
             mkdir(self.projPath)
 
-        # Root element and book details
+        logger.debug("Saving project: %s" % self.projPath)
+
+        # Root element and project details
+        logger.debug("Writing project meta")
         nwXML = etree.Element("novelWriterXML",attrib={
             "fileVersion" : "1.0",
             "appVersion"  : str(nw.__version__),
@@ -153,6 +174,7 @@ class NWProject():
             xBookAuthor.text = bookAuthor
 
         # Save Tree Content
+        logger.debug("Writing project content")
         xContent = etree.SubElement(nwXML,"content",attrib={"count":str(len(self.projTree))})
         itemIdx  = 0
         for tHandle in self.treeOrder:
@@ -167,10 +189,11 @@ class NWProject():
             xItemType      = etree.SubElement(xItem,"type")
             xItemType.text = str(nwItem.getType())
             if nwItem.getClass() is not "NONE":
-                xItemClass      = etree.SubElement(xItem,"class")
-                xItemClass.text = str(nwItem.getClass())
+                xItemValue      = etree.SubElement(xItem,"class")
+                xItemValue.text = str(nwItem.getClass())
             if nwItem.isExpanded:
-                xItemExpanded  = etree.SubElement(xItem,"expanded")
+                xItemValue      = etree.SubElement(xItem,"expanded")
+                xItemValue.text = str(nwItem.isExpanded)
 
         # Write the xml tree to file
         with open(path.join(self.projPath,self.projFile),"wb") as outFile:
@@ -230,13 +253,13 @@ class NWProject():
         self.treeOrder.append(tHandle)
         return
 
-    def _makeHandle(self, seed=""):
-        seed += str(self.seedCount)
-        self.seedCount += 1
-        itemHandle = sha256((str(time())+seed).encode()).hexdigest()[0:13]
+    def _makeHandle(self, addSeed=""):
+        newSeed = str(time()) + addSeed
+        logger.vverbose("Generating handle with seed '%s'" % newSeed)
+        itemHandle = sha256(newSeed.encode()).hexdigest()[0:13]
         if itemHandle in self.projTree.keys():
             logger.warning("Duplicate handle encountered! Retrying ...")
-            itemHandle = self._makeHandle(seed+"!")
+            itemHandle = self._makeHandle(addSeed+"!")
         return itemHandle
 
     def _checkString(self,checkValue,defaultValue,allowNone=False):

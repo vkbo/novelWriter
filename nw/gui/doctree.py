@@ -50,21 +50,22 @@ class GuiDocTree(QTreeWidget):
     def saveTreeOrder(self):
         theList = []
         for i in range(self.topLevelItemCount()):
-            theList = self._scanChildren(theList, self.topLevelItem(i))
+            theList = self._scanChildren(theList, self.topLevelItem(i), i)
         self.theProject.setTreeOrder(theList)
         return True
 
-    def _scanChildren(self, theList, theItem):
+    def _scanChildren(self, theList, theItem, theIndex):
         tHandle = theItem.text(3)
         nwItem  = self.theProject.projTree[tHandle]
         nwItem.setExpanded(theItem.isExpanded())
+        nwItem.setOrder(theIndex)
         theList.append(tHandle)
         for i in range(theItem.childCount()):
-            self._scanChildren(theList, theItem.child(i))
+            self._scanChildren(theList, theItem.child(i), i)
         return theList
 
     def buildTree(self):
-
+        self.clear()
         for tHandle in self.theProject.projTree:
             nwItem  = self.theProject.projTree[tHandle]
             tName   = nwItem.itemName
@@ -79,7 +80,7 @@ class GuiDocTree(QTreeWidget):
                 self.addTopLevelItem(newItem)
             else:
                 self.theMap[pHandle].addChild(newItem)
-
+            newItem.setExpanded(nwItem.isExpanded)
         return True
 
     def getColumnSizes(self):

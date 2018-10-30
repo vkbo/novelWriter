@@ -86,6 +86,7 @@ class GuiMain(QMainWindow):
                 self,"Open novelWriter Project","","novelWriter Project File (nwProject.nwx);;All Files (*)", options=dlgOpt)
         if projPath:
             self.theProject.openProject(projPath)
+            self.treeView.buildTree()
             self._setWindowTitle(self.theProject.projName)
         else:
             return False
@@ -113,6 +114,7 @@ class GuiMain(QMainWindow):
     def openRecentProject(self, recentItem):
         logger.vverbose("User requested opening recent project #%d" % recentItem)
         self.theProject.openProject(self.mainConf.recentList[recentItem])
+        self.treeView.buildTree()
         self._setWindowTitle(self.theProject.projName)
         return True
 

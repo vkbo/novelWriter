@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='utf-8'?>
-<novelWriterXML appVersion="0.1.0" fileVersion="1.0" timeStamp="2018-10-28 22:31:56">
+<novelWriterXML appVersion="0.1.0" fileVersion="1.0" timeStamp="2018-10-30 21:03:03">
   <project>
     <name>Sample Project</name>
     <title>Sample Project</title>
@@ -7,27 +7,27 @@
     <author>Jay Doh</author>
   </project>
   <content count="5">
-    <item handle="7031beac91f75" order="None" parent="None">
+    <item handle="7031beac91f75" order="0" parent="None">
       <name>Novel</name>
       <type>ROOT</type>
       <class>NOVEL</class>
-      <expanded/>
+      <expanded>True</expanded>
     </item>
-    <item handle="e7ded148d6e4a" order="None" parent="7031beac91f75">
+    <item handle="e7ded148d6e4a" order="0" parent="7031beac91f75">
       <name>New Chapter</name>
       <type>FOLDER</type>
-      <expanded/>
+      <expanded>True</expanded>
     </item>
-    <item handle="96b68994dfa3d" order="None" parent="e7ded148d6e4a">
+    <item handle="96b68994dfa3d" order="0" parent="e7ded148d6e4a">
       <name>New Scene</name>
       <type>FILE</type>
     </item>
-    <item handle="f6622b4617424" order="None" parent="None">
+    <item handle="f6622b4617424" order="1" parent="None">
       <name>Characters</name>
       <type>ROOT</type>
       <class>CHARACTER</class>
     </item>
-    <item handle="73eee34351f85" order="None" parent="None">
+    <item handle="73eee34351f85" order="2" parent="None">
       <name>World</name>
       <type>ROOT</type>
       <class>WORLD</class>

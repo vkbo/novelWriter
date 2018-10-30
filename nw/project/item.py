@@ -42,6 +42,15 @@ class NWItem():
 
         return
 
+    def setFromTag(self, tagName, tagValue):
+        logger.verbose("Setting tag '%s' to value '%s'" % (tagName, str(tagValue)))
+        if   tagName == "name":     self.setName(tagValue)
+        elif tagName == "order":    self.setOrder(tagValue)
+        elif tagName == "type":     self.setType(tagValue)
+        elif tagName == "class":    self.setClass(tagValue)
+        elif tagName == "expanded": self.setExpanded(tagValue)
+        return
+
     def setName(self, theName):
         self.itemName = theName.strip()
         return
@@ -89,7 +98,10 @@ class NWItem():
         return
 
     def setExpanded(self, expState):
-        self.isExpanded = expState
+        if isinstance(expState, str):
+            self.isExpanded = expState == str(True)
+        else:
+            self.isExpanded = expState
         return
 
     def getType(self):
