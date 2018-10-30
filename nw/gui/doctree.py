@@ -14,8 +14,11 @@ import logging
 import nw
 
 from os              import path
-from PyQt5.QtCore    import Qt
+from PyQt5.QtGui     import QIcon
+from PyQt5.QtCore    import Qt, QSize
 from PyQt5.QtWidgets import QTreeWidget, QTreeWidgetItem, QTreeWidgetItemIterator, QAbstractItemView
+
+from nw.project.item import NWItem
 
 logger = logging.getLogger(__name__)
 
@@ -31,6 +34,9 @@ class GuiDocTree(QTreeWidget):
         self.theMap     = {}
 
         self.setStyleSheet("QTreeWidget {font-size: 13px;}")
+        self.setIconSize(QSize(13,13))
+        self.setExpandsOnDoubleClick(True)
+        self.setIndentation(13)
         self.setColumnCount(4)
         self.setHeaderLabels(["Name","","","Handle"])
         if not self.debugGUI:
@@ -81,6 +87,12 @@ class GuiDocTree(QTreeWidget):
             else:
                 self.theMap[pHandle].addChild(newItem)
             newItem.setExpanded(nwItem.isExpanded)
+            if nwItem.itemType == NWItem.TYPE_ROOT:
+                newItem.setIcon(0, QIcon.fromTheme("drive-harddisk"))
+            elif nwItem.itemType == NWItem.TYPE_FOLDER:
+                newItem.setIcon(0, QIcon.fromTheme("folder"))
+            elif nwItem.itemType == NWItem.TYPE_FILE:
+                newItem.setIcon(0, QIcon.fromTheme("x-office-document"))
         return True
 
     def getColumnSizes(self):
