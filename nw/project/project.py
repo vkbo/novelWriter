@@ -240,6 +240,16 @@ class NWProject():
         return True
 
     #
+    #  Get Functions
+    #
+
+    def getItem(self, tHandle):
+        if tHandle in self.projTree:
+            return self.projTree[tHandle]
+        logger.error("No tree item with handle %s" % str(tHandle))
+        return None
+
+    #
     #  Internal Functions
     #
 
@@ -255,7 +265,7 @@ class NWProject():
 
     def _makeHandle(self, addSeed=""):
         newSeed = str(time()) + addSeed
-        logger.vverbose("Generating handle with seed '%s'" % newSeed)
+        logger.verbose("Generating handle with seed '%s'" % newSeed)
         itemHandle = sha256(newSeed.encode()).hexdigest()[0:13]
         if itemHandle in self.projTree.keys():
             logger.warning("Duplicate handle encountered! Retrying ...")

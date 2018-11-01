@@ -41,25 +41,15 @@ __url__        = "https://github.com/vkbo/novelWriter"
 #  ----------- SPAM Threshold : Output above should be minimal -----------------
 #    DEBUG     Use for descriptions of main program flow
 #    VERBOSE   Use for outputting values and program flow details
-#    VVERBOSE  Use for describing what the user does, like clicks and entries
 #
 
-# Adding verbose and vverbose logging levels
-
-VERBOSE  = 9
-VVERBOSE = 8
-logging.addLevelName(VERBOSE, "DEBUGV")
-logging.addLevelName(VVERBOSE,"DEBUGVV")
-
+# Adding verbose logging levels
+VERBOSE = 5
+logging.addLevelName(VERBOSE, "VERBOSE")
 def logVerbose(self, message, *args, **kws):
     if self.isEnabledFor(VERBOSE):
         self._log(VERBOSE, message, args, **kws)
-def logVVerbose(self, message, *args, **kws):
-    if self.isEnabledFor(VVERBOSE):
-        self._log(VVERBOSE, message, args, **kws)
-
-logging.Logger.verbose  = logVerbose
-logging.Logger.vverbose = logVVerbose
+logging.Logger.verbose = logVerbose
 
 # Initiating logging
 logger = logging.getLogger(__name__)
@@ -88,7 +78,6 @@ def main(sysArgs):
         "help",
         "debug=",
         "verbose",
-        "vverbose",
         "debuggui",
         "quiet",
         "time",
@@ -107,7 +96,6 @@ def main(sysArgs):
         " -v, --version   Print program version and exit.\n"
         " -d, --debug     Debug level. Valid options are DEBUG, INFO, WARN or ERROR.\n"
         "     --verbose   Increase verbosity of debug.\n"
-        "     --vverbose  Increase verbosity of debug even more.\n"
         " -D, --debuggui  Shows additional debug GUI elements.\n"
         " -q, --quiet     Disable output to command line. Does not affect log file.\n"
         " -t, --time      Shows time stamp in logging output. Adds milliseconds for verbose.\n"
@@ -166,9 +154,6 @@ def main(sysArgs):
             toStd = False
         elif inOpt in ("--verbose"):
             debugLevel = VERBOSE
-            timeStr    = "[{asctime:}.{msecs:03.0f}] "
-        elif inOpt in ("--vverbose"):
-            debugLevel = VVERBOSE
             timeStr    = "[{asctime:}.{msecs:03.0f}] "
         elif inOpt in ("-t","--time"):
             showTime = True

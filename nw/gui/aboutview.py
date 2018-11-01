@@ -32,7 +32,7 @@ class GuiAboutView(QWidget):
         self.outerBox = QVBoxLayout()
 
         logoPath = path.abspath(path.join(self.mainConf.appPath,"..","novelWriter.svg"))
-        logger.vverbose("Loading image: %s" % logoPath)
+        logger.verbose("Loading image: %s" % logoPath)
         nwLogo = QSvgWidget(logoPath)
         nwLogo.setFixedSize(QSize(300,300))
 

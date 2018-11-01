@@ -22,6 +22,7 @@ from nw.gui.doctree       import GuiDocTree
 from nw.gui.doceditor     import GuiDocEditor
 from nw.gui.projecteditor import GuiProjectEditor
 from nw.project.project   import NWProject
+from nw.project.item      import NWItem
 
 logger = logging.getLogger(__name__)
 
@@ -58,6 +59,7 @@ class GuiMain(QMainWindow):
         self.setCentralWidget(self.splitMain)
 
         self._buildMenu()
+        self.treeView.itemDoubleClicked.connect(self._treeDoubleClick)
         self.treeView.buildTree()
 
         self.show()
@@ -112,7 +114,7 @@ class GuiMain(QMainWindow):
         return True
 
     def openRecentProject(self, recentItem):
-        logger.vverbose("User requested opening recent project #%d" % recentItem)
+        logger.verbose("User requested opening recent project #%d" % recentItem)
         self.theProject.openProject(self.mainConf.recentList[recentItem])
         self.treeView.buildTree()
         self._setWindowTitle(self.theProject.projName)
@@ -129,6 +131,16 @@ class GuiMain(QMainWindow):
     #
     #  Internal Functions
     #
+
+    def _treeDoubleClick(self, tItem, colNo):
+        tHandle = tItem.text(3)
+        logger.verbose("User double clicked tree item with handle %s" % tHandle)
+        nwItem = self.theProject.getItem(tHandle)
+        if nwItem.itemType == NWItem.TYPE_FILE:
+            logger.verbose("Requested item %s is a file" % tHandle)
+        else:
+            logger.verbose("Requested item %s is a folder" % tHandle)
+        return
 
     def _closeMain(self):
         logger.info("Exiting %s" % nw.__package__)

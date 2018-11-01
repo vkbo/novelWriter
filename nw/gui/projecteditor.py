@@ -80,7 +80,7 @@ class GuiProjectEditor(QDialog):
         return
 
     def _doSave(self):
-        logger.vverbose("ProjectEditor save button clicked")
+        logger.verbose("ProjectEditor save button clicked")
         projName    = self.editName.text()
         bookTitle   = self.editTitle.text()
         bookAuthors = self.editAuthors.toPlainText()
@@ -90,7 +90,7 @@ class GuiProjectEditor(QDialog):
         return
 
     def _doClose(self):
-        logger.vverbose("ProjectEditor close button clicked")
+        logger.verbose("ProjectEditor close button clicked")
         self.close()
         return
 
