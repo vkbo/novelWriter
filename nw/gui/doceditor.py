@@ -15,7 +15,7 @@ import nw
 
 from PyQt5.QtWidgets import QWidget, QTextEdit, QVBoxLayout, QFrame, QSplitter, QToolBar, QAction
 from PyQt5.QtCore    import Qt, QSize
-from PyQt5.QtGui     import QIcon
+from PyQt5.QtGui     import QIcon, QFont
 
 logger = logging.getLogger(__name__)
 
@@ -44,8 +44,27 @@ class GuiDocEditor(QWidget):
         self.outerBox.addWidget(self.editToolBar)
         self.outerBox.addWidget(self.splitEdit)
 
-        self.guiEditor.setPlainText("Hello Kitty!")
         self.guiEditor.setFixedWidth(600)
+        # self.guiEditor.setCurrentFont(self.docFont)
+        # self.guiEditor.setContentsMargins(20,20,20,20)
+        self.guiEditor.setStyleSheet(
+            "QTextEdit {background-color: #f0f0f0;};"
+        )
+        theDoc = self.guiEditor.document()
+        theDoc.setDefaultFont(QFont("Source Sans Pro",13))
+        theDoc.setDocumentMargin(12)
+        theDoc.setDefaultStyleSheet("""
+            body {
+            }
+            p {
+                text-indent: 0px;
+                margin: 4px 0px;
+                text-align: justify;
+            }
+            p+p {
+                text-indent: 40px;
+            }
+        """)
 
         logger.debug("DocEditor initialisation complete")
 
