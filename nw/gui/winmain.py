@@ -14,7 +14,7 @@ import logging
 import nw
 
 from os                   import path
-from PyQt5.QtWidgets      import qApp, QWidget, QMainWindow, QHBoxLayout, QVBoxLayout, QFrame, QSplitter, QAction, QToolBar, QFileDialog
+from PyQt5.QtWidgets      import qApp, QWidget, QMainWindow, QHBoxLayout, QVBoxLayout, QFrame, QSplitter, QAction, QToolBar, QFileDialog, QStackedWidget
 from PyQt5.QtCore         import Qt, QSize
 from PyQt5.QtGui          import QIcon, QStandardItemModel
 
@@ -23,6 +23,7 @@ from nw.gui.doceditor     import GuiDocEditor
 from nw.gui.projecteditor import GuiProjectEditor
 from nw.project.project   import NWProject
 from nw.project.item      import NWItem
+from nw.project.document  import NWDoc
 
 logger = logging.getLogger(__name__)
 
@@ -32,8 +33,9 @@ class GuiMain(QMainWindow):
         QWidget.__init__(self)
 
         logger.debug("Initialising GUI ...")
-        self.mainConf   = nw.CONFIG
-        self.theProject = NWProject()
+        self.mainConf    = nw.CONFIG
+        self.theProject  = NWProject()
+        self.theDocument = NWDoc(self.theProject)
 
         self.resize(*self.mainConf.winGeometry)
         self._setWindowTitle()
@@ -45,7 +47,12 @@ class GuiMain(QMainWindow):
         self.treePane.setFrameShape(QFrame.StyledPanel)
         self.splitMain = QSplitter(Qt.Horizontal)
         self.splitMain.addWidget(self.treePane)
-        self.splitMain.addWidget(self.docEditor)
+
+        self.stackPane = QStackedWidget()
+        self.stackNone = self.stackPane.addWidget(QWidget())
+        self.stackDoc  = self.stackPane.addWidget(self.docEditor)
+        self.splitMain.addWidget(self.stackPane)
+        self.stackPane.setCurrentIndex(self.stackNone)
 
         self.treeBox  = QVBoxLayout()
         self.treeView = GuiDocTree(self.theProject)
@@ -124,8 +131,14 @@ class GuiMain(QMainWindow):
     #  Document Actions
     #
 
+    def openDocument(self, tHandle):
+        self.stackPane.setCurrentIndex(self.stackDoc)
+        self.docEditor.setText(self.theDocument.openDocument(tHandle))
+        return
+
     def saveDocument(self):
-        self.docEditor.getText()
+        docHtml = self.docEditor.getText()
+        self.theDocument.saveDocument(docHtml)
         return
 
     #
@@ -138,6 +151,7 @@ class GuiMain(QMainWindow):
         nwItem = self.theProject.getItem(tHandle)
         if nwItem.itemType == NWItem.TYPE_FILE:
             logger.verbose("Requested item %s is a file" % tHandle)
+            self.openDocument(tHandle)
         else:
             logger.verbose("Requested item %s is a folder" % tHandle)
         return
@@ -232,12 +246,6 @@ class GuiMain(QMainWindow):
         menuNew.setShortcut("Ctrl+N")
         menuNew.setStatusTip("Create new document")
         fileMenu.addAction(menuNew)
-
-        # File > Open
-        menuOpen = QAction(QIcon.fromTheme("document-open"), "&Open", menuBar)
-        menuOpen.setShortcut("Ctrl+O")
-        menuOpen.setStatusTip("Open document")
-        fileMenu.addAction(menuOpen)
 
         # File > Save
         menuSave = QAction(QIcon.fromTheme("document-save"), "&Save", menuBar)

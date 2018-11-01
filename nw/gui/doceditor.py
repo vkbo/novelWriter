@@ -26,15 +26,13 @@ class GuiDocEditor(QWidget):
 
         logger.debug("Initialising DocEditor ...")
         self.mainConf  = nw.CONFIG
+
         self.outerBox  = QVBoxLayout()
         self.guiEditor = QTextEdit()
 
-        # self.outerBox.addWidget(self.guiEditor)
         self.setLayout(self.outerBox)
 
-        # self.editPane = QFrame()
-        # self.editPane.setFrameShape(QFrame.StyledPanel)
-        self.metaPane = QFrame()
+        self.metaPane  = QFrame()
         self.metaPane.setFrameShape(QFrame.StyledPanel)
         self.splitEdit = QSplitter(Qt.Horizontal)
         self.splitEdit.addWidget(self.guiEditor)
@@ -53,13 +51,13 @@ class GuiDocEditor(QWidget):
 
         return
 
+    def setText(self, docHtml):
+        self.guiEditor.setHtml(docHtml)
+        return True
+
     def getText(self):
-
         theText = self.guiEditor.toHtml()
-        print(theText)
-        print(self.guiEditor.toPlainText())
-
-        return
+        return theText
 
     def _buildTabToolBar(self):
         toolBar = self.editToolBar
