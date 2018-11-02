@@ -6,7 +6,7 @@
  Class holding a project item
 
  File History:
- Created: 2018-10-27 [0.1.0]
+ Created: 2018-10-27 [0.0.1]
 
 """
 

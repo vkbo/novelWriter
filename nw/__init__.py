@@ -6,7 +6,7 @@
  Application initialisation
 
  File History:
- Created: 2018-09-22 [0.1.0]
+ Created: 2018-09-22 [0.0.1]
 
 """
 
@@ -23,7 +23,7 @@ __author__     = "Veronica Berglyd Olsen"
 __copyright__  = "Copyright 2016-2018, Veronica Berglyd Olsen"
 __credits__    = ["Veronica Berglyd Olsen"]
 __license__    = "GPLv3"
-__version__    = "0.1.0"
+__version__    = "0.0.1"
 __date__       = "2018"
 __maintainer__ = "Veronica Berglyd Olsen"
 __email__      = "code@vkbo.net"

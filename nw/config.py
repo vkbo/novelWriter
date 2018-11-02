@@ -6,7 +6,7 @@
  This class reads and store the main preferences of the application
 
  File History:
- Created: 2018-0+-22 [0.1.0]
+ Created: 2018-0+-22 [0.0.1]
 
 """
 

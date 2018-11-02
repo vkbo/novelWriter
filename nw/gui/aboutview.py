@@ -6,7 +6,7 @@
  Class holding the tab viewing the about information
 
  File History:
- Created: 2018-10-02 [0.1.0]
+ Created: 2018-10-02 [0.0.1]
 
 """
 

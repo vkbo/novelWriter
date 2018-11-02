@@ -6,7 +6,7 @@
  Class holding the document editor
 
  File History:
- Created: 2018-09-29 [0.1.0]
+ Created: 2018-09-29 [0.0.1]
 
 """
 
