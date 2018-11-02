@@ -53,6 +53,48 @@ class GuiDocTree(QTreeWidget):
 
         return
 
+    def newTreeItem(self, itemType):
+
+        rHandle = self._getSelectedHandle()
+        logger.verbose("Adding item relative to handle %s" % rHandle)
+
+        # Figure out where to put the new item
+        if rHandle is None:
+            nwType  = NWItem.TYPE_ROOT
+            pHandle = None
+        else:
+            rItem = self.theProject.projTree[rHandle]
+            if rItem.itemType == NWItem.TYPE_FILE:
+                pHandle = rItem.parHandle
+            else:
+                pHandle = rHandle
+
+        # Create the new item
+        if itemType == NWItem.TYPE_FILE:
+            tHandle = self.theProject.newFile("New File", NWItem.CLASS_NONE, pHandle)
+        elif itemType == NWItem.TYPE_FOLDER:
+            if pHandle is None:
+                logger.error("Failed to add new item.")
+                return
+            pItem = self.theProject.projTree[rHandle]
+            if pItem.itemClass == NWItem.CLASS_NOVEL:
+                tHandle = self.theProject.newFolder("New Chapter", NWItem.CLASS_CHAPTER, pHandle)
+            elif pItem.itemClass == NWItem.CLASS_CHAPTER:
+                tHandle = self.theProject.newFolder("New Chapter", NWItem.CLASS_CHAPTER, pItem.parHandle)
+            else:
+                tHandle = self.theProject.newFolder("New Folder", NWItem.CLASS_NONE, pHandle)
+        elif itemType == NWItem.TYPE_ROOT:
+            tHandle = self.theProject.newRoot("Root Folder", NWItem.CLASS_NONE)
+        else:
+            logger.error("Failed to add new item.")
+            return
+
+        # Add the new item to the tree
+        nwItem = self.theProject.projTree[tHandle]
+        self._addTreeItem(nwItem)
+
+        return
+
     def saveTreeOrder(self):
         theList = []
         for i in range(self.topLevelItemCount()):
@@ -70,30 +112,48 @@ class GuiDocTree(QTreeWidget):
             self._scanChildren(theList, theItem.child(i), i)
         return theList
 
+    def _scanParents(self, theItem, theCount=0):
+        if theItem.parent() is not None:
+            theItem, theCount = self._scanParents(theItem.parent(), theCount)
+        return theItem, theCount+1
+
+    def _addTreeItem(self, nwItem):
+        tName   = nwItem.itemName
+        tHandle = nwItem.itemHandle
+        pHandle = nwItem.parHandle
+        tStatus = 0
+        wCount  = 0
+        newItem = QTreeWidgetItem([
+            tName, str(tStatus), str(wCount), tHandle
+        ])
+        self.theMap[tHandle] = newItem
+        if pHandle is None:
+            self.addTopLevelItem(newItem)
+        else:
+            self.theMap[pHandle].addChild(newItem)
+        newItem.setExpanded(nwItem.isExpanded)
+        if nwItem.itemType == NWItem.TYPE_ROOT:
+            newItem.setIcon(0, QIcon.fromTheme("drive-harddisk"))
+        elif nwItem.itemType == NWItem.TYPE_FOLDER:
+            newItem.setIcon(0, QIcon.fromTheme("folder"))
+        elif nwItem.itemType == NWItem.TYPE_FILE:
+            newItem.setIcon(0, QIcon.fromTheme("x-office-document"))
+        return True
+
     def buildTree(self):
         self.clear()
         for tHandle in self.theProject.projTree:
-            nwItem  = self.theProject.projTree[tHandle]
-            tName   = nwItem.itemName
-            tStatus = 0
-            wCount  = 0
-            pHandle = nwItem.parHandle
-            newItem = QTreeWidgetItem([
-                tName, str(tStatus), str(wCount), tHandle
-            ])
-            self.theMap[tHandle] = newItem
-            if pHandle is None:
-                self.addTopLevelItem(newItem)
-            else:
-                self.theMap[pHandle].addChild(newItem)
-            newItem.setExpanded(nwItem.isExpanded)
-            if nwItem.itemType == NWItem.TYPE_ROOT:
-                newItem.setIcon(0, QIcon.fromTheme("drive-harddisk"))
-            elif nwItem.itemType == NWItem.TYPE_FOLDER:
-                newItem.setIcon(0, QIcon.fromTheme("folder"))
-            elif nwItem.itemType == NWItem.TYPE_FILE:
-                newItem.setIcon(0, QIcon.fromTheme("x-office-document"))
+            nwItem = self.theProject.projTree[tHandle]
+            self._addTreeItem(nwItem)
         return True
+
+    def _getSelectedHandle(self):
+        selItem = self.selectedItems()
+        if len(selItem) == 0:
+            return None
+        if isinstance(selItem[0], QTreeWidgetItem):
+            return selItem[0].text(3)
+        return None
 
     def getColumnSizes(self):
         retVals = [

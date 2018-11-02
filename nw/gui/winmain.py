@@ -392,16 +392,25 @@ class GuiMain(QMainWindow):
         toolBar.setToolButtonStyle(Qt.ToolButtonIconOnly)
         toolBar.setIconSize(QSize(16,16))
 
+        # Root > New
+        tbRootNew = QAction(QIcon.fromTheme("folder-new"), "New Root Folder (Ctrl+Alt+N)", toolBar)
+        tbRootNew.setShortcut("Ctrl+Alt+N")
+        tbRootNew.setStatusTip("Create New Root Folder")
+        tbRootNew.triggered.connect(lambda: self.treeView.newTreeItem(NWItem.TYPE_ROOT))
+        toolBar.addAction(tbRootNew)
+
         # Folder > New
         tbFolderNew = QAction(QIcon.fromTheme("folder-new"), "New Folder (Ctrl+Shift+N)", toolBar)
         tbFolderNew.setShortcut("Ctrl+Shift+N")
-        tbFolderNew.setStatusTip("Create new folder")
+        tbFolderNew.setStatusTip("Create New Chapter or Folder")
+        tbFolderNew.triggered.connect(lambda: self.treeView.newTreeItem(NWItem.TYPE_FOLDER))
         toolBar.addAction(tbFolderNew)
 
         # Document > New
         tbDocNew = QAction(QIcon.fromTheme("document-new"), "New Document (Ctrl+N)", toolBar)
         tbDocNew.setShortcut("Ctrl+N")
-        tbDocNew.setStatusTip("Create new document")
+        tbDocNew.setStatusTip("Create New Document")
+        tbDocNew.triggered.connect(lambda: self.treeView.newTreeItem(NWItem.TYPE_FILE))
         toolBar.addAction(tbDocNew)
 
         return

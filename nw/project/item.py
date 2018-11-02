@@ -27,8 +27,9 @@ class NWItem():
 
     CLASS_NONE      = 0
     CLASS_NOVEL     = 1
-    CLASS_CHARACTER = 2
-    CLASS_WORLD     = 3
+    CLASS_CHAPTER   = 2
+    CLASS_CHARACTER = 3
+    CLASS_WORLD     = 4
 
     def __init__(self):
 
@@ -88,6 +89,8 @@ class NWItem():
             self.itemClass = self.CLASS_NONE
         elif theClass == "NOVEL":
             self.itemClass = self.CLASS_NOVEL
+        elif theClass == "CHAPTER":
+            self.itemClass = self.CLASS_CHAPTER
         elif theClass == "CHARACTER":
             self.itemClass = self.CLASS_CHARACTER
         elif theClass == "WORLD":
@@ -113,6 +116,7 @@ class NWItem():
     def getClass(self):
         if self.itemClass == self.CLASS_NONE:      return "NONE"
         if self.itemClass == self.CLASS_NOVEL:     return "NOVEL"
+        if self.itemClass == self.CLASS_CHAPTER:   return "CHAPTER"
         if self.itemClass == self.CLASS_CHARACTER: return "CHARACTER"
         if self.itemClass == self.CLASS_WORLD:     return "WORLD"
         return "NONE"

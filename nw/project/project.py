@@ -44,27 +44,27 @@ class NWProject():
     def buildProjectTree(self):
         return True
 
-    def newRoot(self, rootName, rootType):
+    def newRoot(self, rootName, rootClass):
         newItem = NWItem()
         newItem.setName(rootName)
         newItem.setType(NWItem.TYPE_ROOT)
-        newItem.setClass(rootType)
+        newItem.setClass(rootClass)
         self._appendItem(None,None,newItem)
         return newItem.itemHandle
 
-    def newFolder(self, folderName, pHandle):
+    def newFolder(self, folderName, folderClass, pHandle):
         newItem = NWItem()
         newItem.setName(folderName)
         newItem.setType(NWItem.TYPE_FOLDER)
-        newItem.setClass(NWItem.CLASS_NONE)
+        newItem.setClass(folderClass)
         self._appendItem(None,pHandle,newItem)
         return newItem.itemHandle
 
-    def newFile(self, fileName, pHandle):
+    def newFile(self, fileName, fileClass, pHandle):
         newItem = NWItem()
         newItem.setName(fileName)
         newItem.setType(NWItem.TYPE_FILE)
-        newItem.setClass(NWItem.CLASS_NONE)
+        newItem.setClass(fileClass)
         self._appendItem(None,pHandle,newItem)
         return newItem.itemHandle
 
@@ -79,8 +79,8 @@ class NWProject():
         hNovel = self.newRoot("Novel", NWItem.CLASS_NOVEL)
         hChars = self.newRoot("Characters",NWItem.CLASS_CHARACTER)
         hWorld = self.newRoot("World", NWItem.CLASS_WORLD)
-        hChapt = self.newFolder("New Chapter", hNovel)
-        hScene = self.newFile("New Scene", hChapt)
+        hChapt = self.newFolder("New Chapter", NWItem.CLASS_CHAPTER ,hNovel)
+        hScene = self.newFile("New Scene", NWItem.CLASS_NONE, hChapt)
         return
 
     def openProject(self, fileName):
