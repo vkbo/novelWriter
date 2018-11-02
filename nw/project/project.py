@@ -13,12 +13,13 @@
 import logging
 import nw
 
-from os          import path, mkdir
-from lxml        import etree
-from hashlib     import sha256
-from datetime    import datetime
-from time        import time
+from os              import path, mkdir
+from lxml            import etree
+from hashlib         import sha256
+from datetime        import datetime
+from time            import time
 
+from nw.enum         import nwItemType, nwItemClass
 from nw.project.item import NWItem
 
 logger = logging.getLogger(__name__)
@@ -47,7 +48,7 @@ class NWProject():
     def newRoot(self, rootName, rootClass):
         newItem = NWItem()
         newItem.setName(rootName)
-        newItem.setType(NWItem.TYPE_ROOT)
+        newItem.setType(nwItemType.ROOT)
         newItem.setClass(rootClass)
         self._appendItem(None,None,newItem)
         return newItem.itemHandle
@@ -55,7 +56,7 @@ class NWProject():
     def newFolder(self, folderName, folderClass, pHandle):
         newItem = NWItem()
         newItem.setName(folderName)
-        newItem.setType(NWItem.TYPE_FOLDER)
+        newItem.setType(nwItemType.FOLDER)
         newItem.setClass(folderClass)
         self._appendItem(None,pHandle,newItem)
         return newItem.itemHandle
@@ -63,7 +64,7 @@ class NWProject():
     def newFile(self, fileName, fileClass, pHandle):
         newItem = NWItem()
         newItem.setName(fileName)
-        newItem.setType(NWItem.TYPE_FILE)
+        newItem.setType(nwItemType.FILE)
         newItem.setClass(fileClass)
         self._appendItem(None,pHandle,newItem)
         return newItem.itemHandle
@@ -76,11 +77,11 @@ class NWProject():
         self.projName    = ""
         self.bookTitle   = ""
         self.bookAuthors = []
-        hNovel = self.newRoot("Novel", NWItem.CLASS_NOVEL)
-        hChars = self.newRoot("Characters",NWItem.CLASS_CHARACTER)
-        hWorld = self.newRoot("World", NWItem.CLASS_WORLD)
-        hChapt = self.newFolder("New Chapter", NWItem.CLASS_CHAPTER ,hNovel)
-        hScene = self.newFile("New Scene", NWItem.CLASS_NONE, hChapt)
+        hNovel = self.newRoot("Novel", nwItemClass.NOVEL)
+        hChars = self.newRoot("Characters",nwItemClass.CHARACTER)
+        hWorld = self.newRoot("World", nwItemClass.WORLD)
+        hChapt = self.newFolder("New Chapter", nwItemClass.CHAPTER ,hNovel)
+        hScene = self.newFile("New Scene", nwItemClass.NONE, hChapt)
         return
 
     def openProject(self, fileName):
@@ -129,7 +130,7 @@ class NWProject():
                     if "handle" in xItem.attrib:
                         tHandle = itemAttrib["handle"]
                     else:
-                        logger.error("Skipping rntry missing handle")
+                        logger.error("Skipping entry missing handle")
                         continue
                     if "parent" in xItem.attrib:
                         pHandle = itemAttrib["parent"]
@@ -184,16 +185,14 @@ class NWProject():
                 "parent" : str(nwItem.parHandle),
                 "order"  : str(nwItem.itemOrder),
             })
-            xItemName      = etree.SubElement(xItem,"name")
-            xItemName.text = str(nwItem.itemName)
-            xItemType      = etree.SubElement(xItem,"type")
-            xItemType.text = str(nwItem.getType())
-            if nwItem.getClass() is not "NONE":
-                xItemValue      = etree.SubElement(xItem,"class")
-                xItemValue.text = str(nwItem.getClass())
-            if nwItem.isExpanded:
-                xItemValue      = etree.SubElement(xItem,"expanded")
-                xItemValue.text = str(nwItem.isExpanded)
+            xItemValue      = etree.SubElement(xItem,"name")
+            xItemValue.text = str(nwItem.itemName)
+            xItemValue      = etree.SubElement(xItem,"type")
+            xItemValue.text = str(nwItem.itemType.name)
+            xItemValue      = etree.SubElement(xItem,"class")
+            xItemValue.text = str(nwItem.itemClass.name)
+            xItemValue      = etree.SubElement(xItem,"expanded")
+            xItemValue.text = str(nwItem.isExpanded)
 
         # Write the xml tree to file
         with open(path.join(self.projPath,self.projFile),"wb") as outFile:

@@ -18,7 +18,7 @@ from PyQt5.QtGui     import QIcon
 from PyQt5.QtCore    import Qt, QSize
 from PyQt5.QtWidgets import QTreeWidget, QTreeWidgetItem, QTreeWidgetItemIterator, QAbstractItemView
 
-from nw.project.item import NWItem
+from nw.enum         import nwItemType, nwItemClass
 
 logger = logging.getLogger(__name__)
 
@@ -60,31 +60,31 @@ class GuiDocTree(QTreeWidget):
 
         # Figure out where to put the new item
         if rHandle is None:
-            nwType  = NWItem.TYPE_ROOT
+            nwType  = nwItemType.ROOT
             pHandle = None
         else:
             rItem = self.theProject.projTree[rHandle]
-            if rItem.itemType == NWItem.TYPE_FILE:
+            if rItem.itemType == nwItemType.FILE:
                 pHandle = rItem.parHandle
             else:
                 pHandle = rHandle
 
         # Create the new item
-        if itemType == NWItem.TYPE_FILE:
-            tHandle = self.theProject.newFile("New File", NWItem.CLASS_NONE, pHandle)
-        elif itemType == NWItem.TYPE_FOLDER:
+        if itemType == nwItemType.FILE:
+            tHandle = self.theProject.newFile("New File", nwItemClass.NONE, pHandle)
+        elif itemType == nwItemType.FOLDER:
             if pHandle is None:
                 logger.error("Failed to add new item.")
                 return
             pItem = self.theProject.projTree[rHandle]
-            if pItem.itemClass == NWItem.CLASS_NOVEL:
-                tHandle = self.theProject.newFolder("New Chapter", NWItem.CLASS_CHAPTER, pHandle)
-            elif pItem.itemClass == NWItem.CLASS_CHAPTER:
-                tHandle = self.theProject.newFolder("New Chapter", NWItem.CLASS_CHAPTER, pItem.parHandle)
+            if pItem.itemClass == nwItemClass.NOVEL:
+                tHandle = self.theProject.newFolder("New Chapter", nwItemClass.CHAPTER, pHandle)
+            elif pItem.itemClass == nwItemClass.CHAPTER:
+                tHandle = self.theProject.newFolder("New Chapter", nwItemClass.CHAPTER, pItem.parHandle)
             else:
-                tHandle = self.theProject.newFolder("New Folder", NWItem.CLASS_NONE, pHandle)
-        elif itemType == NWItem.TYPE_ROOT:
-            tHandle = self.theProject.newRoot("Root Folder", NWItem.CLASS_NONE)
+                tHandle = self.theProject.newFolder("New Folder", nwItemClass.NONE, pHandle)
+        elif itemType == nwItemType.ROOT:
+            tHandle = self.theProject.newRoot("Root Folder", nwItemClass.NONE)
         else:
             logger.error("Failed to add new item.")
             return
@@ -132,11 +132,11 @@ class GuiDocTree(QTreeWidget):
         else:
             self.theMap[pHandle].addChild(newItem)
         newItem.setExpanded(nwItem.isExpanded)
-        if nwItem.itemType == NWItem.TYPE_ROOT:
+        if nwItem.itemType == nwItemType.ROOT:
             newItem.setIcon(0, QIcon.fromTheme("drive-harddisk"))
-        elif nwItem.itemType == NWItem.TYPE_FOLDER:
+        elif nwItem.itemType == nwItemType.FOLDER:
             newItem.setIcon(0, QIcon.fromTheme("folder"))
-        elif nwItem.itemType == NWItem.TYPE_FILE:
+        elif nwItem.itemType == nwItemType.FILE:
             newItem.setIcon(0, QIcon.fromTheme("x-office-document"))
         return True
 

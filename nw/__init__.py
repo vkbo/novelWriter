@@ -17,6 +17,7 @@ from os              import path, remove, rename
 from PyQt5.QtWidgets import QApplication
 from nw.main         import NovelWriter
 from nw.config       import Config
+from nw.enum         import *
 
 __package__    = "novelWriter"
 __author__     = "Veronica Berglyd Olsen"
@@ -61,11 +62,6 @@ logger = logging.getLogger(__name__)
 
 # Load the main config as a global object
 CONFIG = Config()
-
-# Constants
-DOCTYPE_ABOUT   = 0
-DOCTYPE_DOC     = 1
-DOCTYPE_PROJECT = 2
 
 def main(sysArgs):
     """

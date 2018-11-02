@@ -18,11 +18,11 @@ from PyQt5.QtWidgets      import qApp, QWidget, QMainWindow, QHBoxLayout, QVBoxL
 from PyQt5.QtCore         import Qt, QSize
 from PyQt5.QtGui          import QIcon, QStandardItemModel
 
+from nw.enum              import nwItemType
 from nw.gui.doctree       import GuiDocTree
 from nw.gui.doceditor     import GuiDocEditor
 from nw.gui.projecteditor import GuiProjectEditor
 from nw.project.project   import NWProject
-from nw.project.item      import NWItem
 from nw.project.document  import NWDoc
 
 logger = logging.getLogger(__name__)
@@ -149,7 +149,7 @@ class GuiMain(QMainWindow):
         tHandle = tItem.text(3)
         logger.verbose("User double clicked tree item with handle %s" % tHandle)
         nwItem = self.theProject.getItem(tHandle)
-        if nwItem.itemType == NWItem.TYPE_FILE:
+        if nwItem.itemType == nwItemType.FILE:
             logger.verbose("Requested item %s is a file" % tHandle)
             self.openDocument(tHandle)
         else:
@@ -396,21 +396,21 @@ class GuiMain(QMainWindow):
         tbRootNew = QAction(QIcon.fromTheme("folder-new"), "New Root Folder (Ctrl+Alt+N)", toolBar)
         tbRootNew.setShortcut("Ctrl+Alt+N")
         tbRootNew.setStatusTip("Create New Root Folder")
-        tbRootNew.triggered.connect(lambda: self.treeView.newTreeItem(NWItem.TYPE_ROOT))
+        tbRootNew.triggered.connect(lambda: self.treeView.newTreeItem(nwItemType.ROOT))
         toolBar.addAction(tbRootNew)
 
         # Folder > New
         tbFolderNew = QAction(QIcon.fromTheme("folder-new"), "New Folder (Ctrl+Shift+N)", toolBar)
         tbFolderNew.setShortcut("Ctrl+Shift+N")
         tbFolderNew.setStatusTip("Create New Chapter or Folder")
-        tbFolderNew.triggered.connect(lambda: self.treeView.newTreeItem(NWItem.TYPE_FOLDER))
+        tbFolderNew.triggered.connect(lambda: self.treeView.newTreeItem(nwItemType.FOLDER))
         toolBar.addAction(tbFolderNew)
 
         # Document > New
         tbDocNew = QAction(QIcon.fromTheme("document-new"), "New Document (Ctrl+N)", toolBar)
         tbDocNew.setShortcut("Ctrl+N")
         tbDocNew.setStatusTip("Create New Document")
-        tbDocNew.triggered.connect(lambda: self.treeView.newTreeItem(NWItem.TYPE_FILE))
+        tbDocNew.triggered.connect(lambda: self.treeView.newTreeItem(nwItemType.FILE))
         toolBar.addAction(tbDocNew)
 
         return
