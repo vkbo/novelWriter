@@ -13,8 +13,8 @@
 import logging
 import nw
 
-from PyQt5.QtWidgets import QWidget, QTextEdit, QVBoxLayout, QFrame, QSplitter, QToolBar, QAction
-from PyQt5.QtCore    import Qt, QSize
+from PyQt5.QtWidgets import QWidget, QTextEdit, QHBoxLayout, QVBoxLayout, QFrame, QSplitter, QToolBar, QAction, QScrollArea
+from PyQt5.QtCore    import Qt, QSize, QSizeF
 from PyQt5.QtGui     import QIcon, QFont
 
 logger = logging.getLogger(__name__)
@@ -29,22 +29,32 @@ class GuiDocEditor(QWidget):
 
         self.outerBox  = QVBoxLayout()
         self.guiEditor = QTextEdit()
+        self.guiEditor.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
 
         self.setLayout(self.outerBox)
 
-        self.metaPane  = QFrame()
+        self.metaPane = QFrame()
+        self.docPane = QScrollArea()
         self.metaPane.setFrameShape(QFrame.StyledPanel)
+        self.docPane.setFrameShape(QFrame.StyledPanel)
+        # self.docPane.setVerticalScrollBarPolicy(Qt.ScrollBarAsNeeded)
         self.splitEdit = QSplitter(Qt.Horizontal)
-        self.splitEdit.addWidget(self.guiEditor)
+        self.splitEdit.addWidget(self.docPane)
         self.splitEdit.addWidget(self.metaPane)
 
+        self.docBox = QHBoxLayout()
+        self.docPane.setLayout(self.docBox)
+        self.docBox.addStretch(0)
+        self.docBox.addWidget(self.guiEditor)
+        self.docBox.addStretch(0)
         self.editToolBar = QToolBar()
         self._buildTabToolBar()
 
         self.outerBox.addWidget(self.editToolBar)
         self.outerBox.addWidget(self.splitEdit)
 
-        self.guiEditor.setFixedWidth(600)
+        # self.guiEditor.setFixedWidth(600)
+        self.guiEditor.setMinimumWidth(600)
         # self.guiEditor.setCurrentFont(self.docFont)
         # self.guiEditor.setContentsMargins(20,20,20,20)
         self.guiEditor.setStyleSheet(
@@ -52,9 +62,12 @@ class GuiDocEditor(QWidget):
         )
         theDoc = self.guiEditor.document()
         theDoc.setDefaultFont(QFont("Source Sans Pro",13))
-        theDoc.setDocumentMargin(12)
+        theDoc.setDocumentMargin(20)
+        theDoc.setTextWidth(600)
+        # theDoc.setPageSize(QSizeF(600,600))
         theDoc.setDefaultStyleSheet("""
             body {
+                background-color: #ffffff;
             }
             p {
                 text-indent: 0px;
