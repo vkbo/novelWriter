@@ -69,10 +69,10 @@ def main(sysArgs):
     """
 
     # Valid Input Options
-    shortOpt = "hd:Dqtl:v"
+    shortOpt = "hdDqtl:v"
     longOpt  = [
         "help",
-        "debug=",
+        "debug",
         "verbose",
         "debuggui",
         "quiet",
@@ -90,11 +90,11 @@ def main(sysArgs):
         "Usage:\n"
         " -h, --help      Print this message.\n"
         " -v, --version   Print program version and exit.\n"
-        " -d, --debug     Debug level. Valid options are DEBUG, INFO, WARN or ERROR.\n"
-        "     --verbose   Increase verbosity of debug.\n"
-        " -D, --debuggui  Shows additional debug GUI elements.\n"
+        " -d, --debug     Print debug output.\n"
+        "     --verbose   Increase verbosity of debug output.\n"
+        " -D, --debuggui  Shows additional debug GUI elements. Includes -d.\n"
         " -q, --quiet     Disable output to command line. Does not affect log file.\n"
-        " -t, --time      Shows time stamp in logging output. Adds milliseconds for verbose.\n"
+        " -t, --time      Shows time stamp in logging output. Adds milliseconds when --verbose.\n"
         " -l, --logfile   Specify log file.\n"
         "     --config    Alternative config file.\n"
         "     --headless  Do not display GUI. Useful for testing scripts.\n"
@@ -131,18 +131,8 @@ def main(sysArgs):
             print("makeNovel %s Version %s" % (__status__,__version__))
             exit()
         elif inOpt in ("-d", "--debug"):
-            if   inArg == "ERROR":
-                debugLevel = logging.ERROR
-            elif inArg == "WARN":
-                debugLevel = logging.WARNING
-            elif inArg == "INFO":
-                debugLevel = logging.INFO
-            elif inArg == "DEBUG":
-                debugLevel = logging.DEBUG
-                debugStr   = "{name:>22}:{lineno:<4d}  {levelname:8}  {message:}"
-            else:
-                print("Invalid debug level")
-                exit(2)
+            debugLevel = logging.DEBUG
+            debugStr   = "{name:>22}:{lineno:<4d}  {levelname:8}  {message:}"
         elif inOpt in ("-l","--logfile"):
             logFile = inArg
             toFile  = True
@@ -158,7 +148,9 @@ def main(sysArgs):
         elif inOpt in ("--headless"):
             showGUI = False
         elif inOpt in ("-D","--debuggui"):
-            debugGUI = True
+            debugLevel = logging.DEBUG
+            debugStr   = "{name:>22}:{lineno:<4d}  {levelname:8}  {message:}"
+            debugGUI   = True
 
     # Set GUI options
     CONFIG.showGUI  = showGUI
