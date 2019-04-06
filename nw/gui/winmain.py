@@ -92,7 +92,8 @@ class GuiMain(QMainWindow):
         dlgOpt  = QFileDialog.Options()
         dlgOpt |= QFileDialog.DontUseNativeDialog
         projPath, _ = QFileDialog.getOpenFileName(
-                self,"Open novelWriter Project","","novelWriter Project File (nwProject.nwx);;All Files (*)", options=dlgOpt)
+            self,"Open novelWriter Project","","novelWriter Project File (nwProject.nwx);;All Files (*)", options=dlgOpt
+        )
         if projPath:
             self.theProject.openProject(projPath)
             self.treeView.buildTree()
@@ -106,7 +107,8 @@ class GuiMain(QMainWindow):
             dlgOpt  = QFileDialog.Options()
             dlgOpt |= QFileDialog.DontUseNativeDialog
             projPath, _ = QFileDialog.getSaveFileName(
-                self,"Save novelWriter Project","","novelWriter Project File (nwProject.nwx);;All Files (*)", options=dlgOpt)
+                self,"Save novelWriter Project","","novelWriter Project File (nwProject.nwx);;All Files (*)", options=dlgOpt
+            )
             if projPath:
                 self.theProject.setProjectPath(projPath)
             else:
@@ -160,6 +162,7 @@ class GuiMain(QMainWindow):
         logger.info("Exiting %s" % nw.__package__)
         self.mainConf.setWinSize(self.width(), self.height())
         self.mainConf.setTreeColWidths(self.treeView.getColumnSizes())
+        print(self.treePane.width())
         self.mainConf.saveConfig()
         return
 

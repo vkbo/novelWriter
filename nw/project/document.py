@@ -20,6 +20,8 @@ logger = logging.getLogger(__name__)
 
 class NWDoc():
 
+    FILE_MN = "main.md"
+
     def __init__(self, theProject):
 
         self.mainConf   = nw.CONFIG
@@ -30,7 +32,7 @@ class NWDoc():
 
     def openDocument(self, tHandle):
         self.docHandle = tHandle
-        docDir, docFile = self._assemblePath("main.htm")
+        docDir, docFile = self._assemblePath(self.FILE_MN)
         logger.debug("Opening document %s" % path.join(docDir,docFile))
         dataDir = path.join(self.theProject.projPath, docDir)
         docPath = path.join(dataDir, docFile)
@@ -44,21 +46,22 @@ class NWDoc():
 
     def saveDocument(self, docHtml):
         if self.docHandle is None: return False
-        docDir, docFile = self._assemblePath("main.htm")
+        docDir, docFile = self._assemblePath(self.FILE_MN)
         logger.debug("Saving document %s" % path.join(docDir,docFile))
         dataDir = path.join(self.theProject.projPath, docDir)
         docPath = path.join(dataDir, docFile)
         if not path.isdir(dataDir):
             mkdir(dataDir)
             logger.debug("Created folder %s" % dataDir)
-        with open(docPath,mode="wb") as outFile:
-            docData = html.fromstring(docHtml)
-            outFile.write(html.tostring(
-                docData,
-                pretty_print = True,
-                encoding     = "utf-8",
-                method       = "html",
-            ))
+        with open(docPath,mode="w") as outFile:
+            outFile.write(docHtml)
+            # docData = html.fromstring(docHtml)
+            # outFile.write(html.tostring(
+            #     docData,
+            #     pretty_print = True,
+            #     encoding     = "utf-8",
+            #     method       = "html",
+            # ))
         return True
 
     def _assemblePath(self, docExt):

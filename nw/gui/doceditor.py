@@ -58,7 +58,7 @@ class GuiDocEditor(QWidget):
         # self.guiEditor.setCurrentFont(self.docFont)
         # self.guiEditor.setContentsMargins(20,20,20,20)
         self.guiEditor.setStyleSheet(
-            "QTextEdit {background-color: #f0f0f0;};"
+            "QTextEdit {background-color: #ffffff;};"
         )
         theDoc = self.guiEditor.document()
         theDoc.setDefaultFont(QFont("Source Sans Pro",13))
@@ -84,11 +84,11 @@ class GuiDocEditor(QWidget):
         return
 
     def setText(self, docHtml):
-        self.guiEditor.setHtml(docHtml)
+        self.guiEditor.setPlainText(docHtml)
         return True
 
     def getText(self):
-        theText = self.guiEditor.toHtml()
+        theText = self.guiEditor.toPlainText()
         return theText
 
     def _buildTabToolBar(self):
