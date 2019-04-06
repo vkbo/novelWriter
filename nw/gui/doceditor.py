@@ -13,9 +13,11 @@
 import logging
 import nw
 
-from PyQt5.QtWidgets import QWidget, QTextEdit, QHBoxLayout, QVBoxLayout, QFrame, QSplitter, QToolBar, QAction, QScrollArea
-from PyQt5.QtCore    import Qt, QSize, QSizeF
-from PyQt5.QtGui     import QIcon, QFont
+from PyQt5.QtWidgets     import QWidget, QTextEdit, QHBoxLayout, QVBoxLayout, QFrame, QSplitter, QToolBar, QAction, QScrollArea
+from PyQt5.QtCore        import Qt, QSize, QSizeF
+from PyQt5.QtGui         import QIcon, QFont, QTextCursor, QTextFormat, QTextBlockFormat
+
+from nw.gui.dochighlight import GuiDocHighlighter
 
 logger = logging.getLogger(__name__)
 
@@ -30,6 +32,8 @@ class GuiDocEditor(QWidget):
         self.outerBox  = QVBoxLayout()
         self.guiEditor = QTextEdit()
         self.guiEditor.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
+
+        self.hLight = GuiDocHighlighter(self.guiEditor.document())
 
         self.setLayout(self.outerBox)
 
@@ -55,29 +59,32 @@ class GuiDocEditor(QWidget):
 
         # self.guiEditor.setFixedWidth(600)
         self.guiEditor.setMinimumWidth(600)
+        self.guiEditor.setAcceptRichText(False)
         # self.guiEditor.setCurrentFont(self.docFont)
         # self.guiEditor.setContentsMargins(20,20,20,20)
-        self.guiEditor.setStyleSheet(
-            "QTextEdit {background-color: #ffffff;};"
-        )
+        self.guiEditor.setStyleSheet("""
+            QTextEdit {
+                background-color: #ffffff;
+            }
+        """)
         theDoc = self.guiEditor.document()
         theDoc.setDefaultFont(QFont("Source Sans Pro",13))
         theDoc.setDocumentMargin(20)
         theDoc.setTextWidth(600)
         # theDoc.setPageSize(QSizeF(600,600))
-        theDoc.setDefaultStyleSheet("""
-            body {
-                background-color: #ffffff;
-            }
-            p {
-                text-indent: 0px;
-                margin: 4px 0px;
-                text-align: justify;
-            }
-            p+p {
-                text-indent: 40px;
-            }
-        """)
+        # theDoc.setDefaultStyleSheet("""
+        #     body {
+        #         background-color: #ffffff;
+        #     }
+        #     p {
+        #         text-indent: 0px;
+        #         margin: 4px 0px;
+        #         text-align: justify;
+        #     }
+        #     p+p {
+        #         text-indent: 40px;
+        #     }
+        # """)
 
         logger.debug("DocEditor initialisation complete")
 
