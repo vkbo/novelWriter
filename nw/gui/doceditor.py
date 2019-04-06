@@ -64,7 +64,8 @@ class GuiDocEditor(QWidget):
         # self.guiEditor.setContentsMargins(20,20,20,20)
         self.guiEditor.setStyleSheet("""
             QTextEdit {
-                background-color: #ffffff;
+                background-color: #141414;
+                color: #c7cfd0;
             }
         """)
         theDoc = self.guiEditor.document()
