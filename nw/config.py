@@ -52,8 +52,13 @@ class Config:
         self.confChanged = False
 
         ## General
+        self.guiTheme     = "default"
         self.winGeometry  = [1100, 650]
         self.treeColWidth = [120, 30, 50]
+        self.mainPanePos  = [300, 800]
+
+        ## Text Editor
+        self.textWidth    = 600
 
         # Check if config file exists
         if path.isfile(path.join(self.confPath,self.confFile)):
@@ -88,6 +93,10 @@ class Config:
                 self.treeColWidth = self.unpackList(
                     confParser.get(cnfSec,"treecols"), 3, self.treeColWidth
                 )
+            if confParser.has_option(cnfSec,"mainpane"):
+                self.mainPanePos = self.unpackList(
+                    confParser.get(cnfSec,"mainpane"), 2, self.mainPanePos
+                )
 
         ## Path
         cnfSec = "Path"
@@ -111,6 +120,7 @@ class Config:
         confParser.set(cnfSec,"timestamp", datetime.now().strftime("%Y-%m-%d %H:%M:%S"))
         confParser.set(cnfSec,"geometry",  self.packList(self.winGeometry))
         confParser.set(cnfSec,"treecols",  self.packList(self.treeColWidth))
+        confParser.set(cnfSec,"mainpane",  self.packList(self.mainPanePos))
 
         ## Path
         cnfSec = "Path"
@@ -168,6 +178,10 @@ class Config:
 
     def setTreeColWidths(self, colWidths):
         self.treeColWidth = colWidths
+        return
+
+    def setMainPanePos(self, panePos):
+        self.mainPanePos = panePos
         return
 
 # End Class Config

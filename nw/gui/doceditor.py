@@ -31,47 +31,44 @@ class GuiDocEditor(QWidget):
 
         self.outerBox  = QVBoxLayout()
         self.guiEditor = QTextEdit()
-        self.guiEditor.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
+        # self.guiEditor.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
+        self.guiEditor.setLineWrapMode(QTextEdit.FixedPixelWidth)
+        self.guiEditor.setLineWrapColumnOrWidth(self.mainConf.textWidth)
 
         self.hLight = GuiDocHighlighter(self.guiEditor.document())
 
         self.setLayout(self.outerBox)
 
-        self.metaPane = QFrame()
-        self.docPane = QScrollArea()
-        self.metaPane.setFrameShape(QFrame.StyledPanel)
-        self.docPane.setFrameShape(QFrame.StyledPanel)
-        # self.docPane.setVerticalScrollBarPolicy(Qt.ScrollBarAsNeeded)
-        self.splitEdit = QSplitter(Qt.Horizontal)
-        self.splitEdit.addWidget(self.docPane)
-        self.splitEdit.addWidget(self.metaPane)
-
-        self.docBox = QHBoxLayout()
-        self.docPane.setLayout(self.docBox)
-        self.docBox.addStretch(0)
-        self.docBox.addWidget(self.guiEditor)
-        self.docBox.addStretch(0)
         self.editToolBar = QToolBar()
         self._buildTabToolBar()
 
         self.outerBox.addWidget(self.editToolBar)
-        self.outerBox.addWidget(self.splitEdit)
+        self.outerBox.addWidget(self.guiEditor)
 
-        # self.guiEditor.setFixedWidth(600)
-        self.guiEditor.setMinimumWidth(600)
+        self.guiEditor.setMinimumWidth(400)
         self.guiEditor.setAcceptRichText(False)
-        # self.guiEditor.setCurrentFont(self.docFont)
-        # self.guiEditor.setContentsMargins(20,20,20,20)
-        self.guiEditor.setStyleSheet("""
-            QTextEdit {
-                background-color: #141414;
-                color: #c7cfd0;
-            }
-        """)
+        # self.guiEditor.setStyleSheet("""
+        #     QTextEdit {
+        #         background-color: #141414;
+        #         color: #c7cfd0;
+        #     }
+        # """)
         theDoc = self.guiEditor.document()
-        theDoc.setDefaultFont(QFont("Source Sans Pro",13))
-        theDoc.setDocumentMargin(20)
-        theDoc.setTextWidth(600)
+        # theDoc.setDefaultFont(QFont("Source Sans Pro",13))
+        theDoc.setDocumentMargin(40)
+        # theDoc.setTextWidth(200)
+        # theDoc.setDefaultStyleSheet("""
+        #     html {
+        #         background-color: #ffffff;
+        #         padding: 50px;
+        #         border: 1px solid #ffffff;
+        #     }
+        #     body {
+        #         background-color: #ffffff;
+        #         padding: 50px;
+        #         border: 1px solid #ffffff;
+        #     }
+        # """)
         # theDoc.setPageSize(QSizeF(600,600))
         # theDoc.setDefaultStyleSheet("""
         #     body {
@@ -91,13 +88,21 @@ class GuiDocEditor(QWidget):
 
         return
 
-    def setText(self, docHtml):
-        self.guiEditor.setPlainText(docHtml)
+    def setText(self, theText):
+        self.guiEditor.setPlainText(theText)
         return True
 
     def getText(self):
         theText = self.guiEditor.toPlainText()
         return theText
+
+    def changeWidth(self):
+        tW = self.guiEditor.width()
+        sW = self.guiEditor.verticalScrollBar().width()
+        tM = int((tW - sW - self.mainConf.textWidth)/2)
+        self.guiEditor.setViewportMargins(tM,0,0,0)
+        # print(tW, sW, tM)
+        return
 
     def _buildTabToolBar(self):
         toolBar = self.editToolBar

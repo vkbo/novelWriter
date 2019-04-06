@@ -15,7 +15,7 @@ import nw
 
 from os                   import path
 from PyQt5.QtWidgets      import qApp, QWidget, QMainWindow, QHBoxLayout, QVBoxLayout, QFrame, QSplitter, QAction, QToolBar, QFileDialog, QStackedWidget
-from PyQt5.QtCore         import Qt, QSize
+from PyQt5.QtCore         import Qt, QSize, QObject
 from PyQt5.QtGui          import QIcon, QStandardItemModel
 
 from nw.enum              import nwItemType
@@ -68,6 +68,16 @@ class GuiMain(QMainWindow):
         self._buildMenu()
         self.treeView.itemDoubleClicked.connect(self._treeDoubleClick)
         self.treeView.buildTree()
+
+        self.splitMain.setSizes(self.mainConf.mainPanePos)
+        self.splitMain.splitterMoved.connect(self._splitMainMove)
+
+        # Load Theme StyleSheet
+        cssFile = path.join(self.mainConf.themePath,self.mainConf.guiTheme+".css")
+        if path.isfile(cssFile):
+            with open(cssFile,mode="r") as inFile:
+                theCss = inFile.read()
+            self.setStyleSheet(theCss)
 
         self.show()
 
@@ -136,6 +146,7 @@ class GuiMain(QMainWindow):
     def openDocument(self, tHandle):
         self.stackPane.setCurrentIndex(self.stackDoc)
         self.docEditor.setText(self.theDocument.openDocument(tHandle))
+        self.docEditor.changeWidth()
         return
 
     def saveDocument(self):
@@ -162,7 +173,7 @@ class GuiMain(QMainWindow):
         logger.info("Exiting %s" % nw.__package__)
         self.mainConf.setWinSize(self.width(), self.height())
         self.mainConf.setTreeColWidths(self.treeView.getColumnSizes())
-        print(self.treePane.width())
+        self.mainConf.setMainPanePos(self.splitMain.sizes())
         self.mainConf.saveConfig()
         return
 
@@ -190,9 +201,10 @@ class GuiMain(QMainWindow):
     #  Events
     #
 
-    def closeEvent(self, guiEvent):
-        self._closeMain()
-        guiEvent.accept()
+    def _splitMainMove(self, pWidth, pHeight):
+        if self.stackPane.currentIndex() == self.stackDoc:
+            self.docEditor.changeWidth()
+        return
 
     #
     #  GUI Builders
