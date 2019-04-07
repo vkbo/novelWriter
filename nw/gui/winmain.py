@@ -197,11 +197,30 @@ class GuiMain(QMainWindow):
         self.docTabs.createTab(None,nw.DOCTYPE_ABOUT)
         return True
 
-    #
+    ##
     #  Events
-    #
+    ##
+
+    def resizeEvent(self, theEvent):
+        """Extend QMainWindow.resizeEvent to signal dependent GUI elements that its pane may have changed size.
+        """
+        QMainWindow.resizeEvent(self,theEvent)
+        if self.stackPane.currentIndex() == self.stackDoc:
+            self.docEditor.changeWidth()
+        return
+
+    def closeEvent(self, theEvent):
+        self._closeMain()
+        QMainWindow.closeEvent(self,theEvent)
+        return
+
+    ##
+    #  Signal Handlers
+    ##
 
     def _splitMainMove(self, pWidth, pHeight):
+        """Alert dependent GUI elements that the main pane splitter has been moved.
+        """
         if self.stackPane.currentIndex() == self.stackDoc:
             self.docEditor.changeWidth()
         return

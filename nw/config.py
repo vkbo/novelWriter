@@ -49,7 +49,7 @@ class Config:
             mkdir(self.confPath)
 
         # Set default values
-        self.confChanged = False
+        self.confChanged  = False
 
         ## General
         self.guiTheme     = "default"
@@ -58,7 +58,9 @@ class Config:
         self.mainPanePos  = [300, 800]
 
         ## Text Editor
+        self.textFixedW   = True
         self.textWidth    = 600
+        self.textMargin   = [40, 40]
 
         # Check if config file exists
         if path.isfile(path.join(self.confPath,self.confFile)):
@@ -82,8 +84,8 @@ class Config:
 
         # Get options
 
-        ## Main
-        cnfSec = "Main"
+        ## Sizes
+        cnfSec = "Sizes"
         if confParser.has_section(cnfSec):
             if confParser.has_option(cnfSec,"geometry"):
                 self.winGeometry = self.unpackList(
@@ -96,6 +98,18 @@ class Config:
             if confParser.has_option(cnfSec,"mainpane"):
                 self.mainPanePos = self.unpackList(
                     confParser.get(cnfSec,"mainpane"), 2, self.mainPanePos
+                )
+
+        ## Editor
+        cnfSec = "Editor"
+        if confParser.has_section(cnfSec):
+            if confParser.has_option(cnfSec,"fixedwidth"):
+               self.textFixedW = confParser.getboolean(cnfSec,"fixedwidth")
+            if confParser.has_option(cnfSec,"width"):
+                self.textWidth  = confParser.getint(cnfSec,"width")
+            if confParser.has_option(cnfSec,"margins"):
+                self.textMargin = self.unpackList(
+                    confParser.get(cnfSec,"margins"), 2, self.textMargin
                 )
 
         ## Path
@@ -118,9 +132,20 @@ class Config:
         cnfSec = "Main"
         confParser.add_section(cnfSec)
         confParser.set(cnfSec,"timestamp", datetime.now().strftime("%Y-%m-%d %H:%M:%S"))
+
+        ## Sizes
+        cnfSec = "Sizes"
+        confParser.add_section(cnfSec)
         confParser.set(cnfSec,"geometry",  self.packList(self.winGeometry))
         confParser.set(cnfSec,"treecols",  self.packList(self.treeColWidth))
         confParser.set(cnfSec,"mainpane",  self.packList(self.mainPanePos))
+
+        ## Editor
+        cnfSec = "Editor"
+        confParser.add_section(cnfSec)
+        confParser.set(cnfSec,"fixedwidth", str(self.textFixedW))
+        confParser.set(cnfSec,"width",      str(self.textWidth))
+        confParser.set(cnfSec,"margins",    self.packList(self.textMargin))
 
         ## Path
         cnfSec = "Path"

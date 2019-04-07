@@ -31,9 +31,13 @@ class GuiDocEditor(QWidget):
 
         self.outerBox  = QVBoxLayout()
         self.guiEditor = QTextEdit()
-        # self.guiEditor.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
-        self.guiEditor.setLineWrapMode(QTextEdit.FixedPixelWidth)
-        self.guiEditor.setLineWrapColumnOrWidth(self.mainConf.textWidth)
+        if self.mainConf.textFixedW:
+            self.guiEditor.setLineWrapMode(QTextEdit.FixedPixelWidth)
+            self.guiEditor.setLineWrapColumnOrWidth(self.mainConf.textWidth)
+        else:
+            mTB = self.mainConf.textMargin[0]
+            mLR = self.mainConf.textMargin[1]
+            self.guiEditor.setViewportMargins(mLR,mTB,mLR,mTB)
 
         self.hLight = GuiDocHighlighter(self.guiEditor.document())
 
@@ -47,42 +51,9 @@ class GuiDocEditor(QWidget):
 
         self.guiEditor.setMinimumWidth(400)
         self.guiEditor.setAcceptRichText(False)
-        # self.guiEditor.setStyleSheet("""
-        #     QTextEdit {
-        #         background-color: #141414;
-        #         color: #c7cfd0;
-        #     }
-        # """)
         theDoc = self.guiEditor.document()
         # theDoc.setDefaultFont(QFont("Source Sans Pro",13))
-        theDoc.setDocumentMargin(40)
-        # theDoc.setTextWidth(200)
-        # theDoc.setDefaultStyleSheet("""
-        #     html {
-        #         background-color: #ffffff;
-        #         padding: 50px;
-        #         border: 1px solid #ffffff;
-        #     }
-        #     body {
-        #         background-color: #ffffff;
-        #         padding: 50px;
-        #         border: 1px solid #ffffff;
-        #     }
-        # """)
-        # theDoc.setPageSize(QSizeF(600,600))
-        # theDoc.setDefaultStyleSheet("""
-        #     body {
-        #         background-color: #ffffff;
-        #     }
-        #     p {
-        #         text-indent: 0px;
-        #         margin: 4px 0px;
-        #         text-align: justify;
-        #     }
-        #     p+p {
-        #         text-indent: 40px;
-        #     }
-        # """)
+        theDoc.setDocumentMargin(0)
 
         logger.debug("DocEditor initialisation complete")
 
@@ -97,11 +68,16 @@ class GuiDocEditor(QWidget):
         return theText
 
     def changeWidth(self):
-        tW = self.guiEditor.width()
-        sW = self.guiEditor.verticalScrollBar().width()
-        tM = int((tW - sW - self.mainConf.textWidth)/2)
-        self.guiEditor.setViewportMargins(tM,0,0,0)
-        # print(tW, sW, tM)
+        """Automatically adjust the margins so the text is centred, but only if Config.textFixedW is
+        set to True.
+        """
+        if self.mainConf.textFixedW:
+            tW  = self.guiEditor.width()
+            sW  = self.guiEditor.verticalScrollBar().width()
+            tM  = int((tW - sW - self.mainConf.textWidth)/2)
+            mTB = self.mainConf.textMargin[0]
+            # print(tW, sW, tM, mTB)
+            self.guiEditor.setViewportMargins(tM,mTB,0,mTB)
         return
 
     def _buildTabToolBar(self):
