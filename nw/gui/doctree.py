@@ -16,7 +16,7 @@ import nw
 from os              import path
 from PyQt5.QtGui     import QIcon
 from PyQt5.QtCore    import Qt, QSize
-from PyQt5.QtWidgets import QTreeWidget, QTreeWidgetItem, QTreeWidgetItemIterator, QAbstractItemView
+from PyQt5.QtWidgets import QTreeWidget, QTreeWidgetItem, QTreeWidgetItemIterator, QAbstractItemView, QMenu, QAction
 
 from nw.enum         import nwItemType, nwItemClass
 
@@ -41,6 +41,10 @@ class GuiDocTree(QTreeWidget):
         self.setHeaderLabels(["Name","","","Handle"])
         if not self.debugGUI:
             self.hideColumn(3)
+
+        # Context Menu
+        self.setContextMenuPolicy(Qt.CustomContextMenu)
+        self.customContextMenuRequested.connect(self._openContextMenu)
 
         # Allow Move by Drag & Drop
         self.setDragEnabled(True)
@@ -102,6 +106,37 @@ class GuiDocTree(QTreeWidget):
         self.theProject.setTreeOrder(theList)
         return True
 
+    def getColumnSizes(self):
+        retVals = [
+            self.columnWidth(0),
+            self.columnWidth(1),
+            self.columnWidth(2),
+        ]
+        return retVals
+
+    ##
+    #  Context Menu
+    ##
+
+    def _openContextMenu(self, thePos):
+
+        sIDs = self.selectedIndexes()
+        print(sIDs)
+
+        ctxMenu = QMenu(self)
+
+        menuNewObject = QAction(QIcon.fromTheme("folder-new"), "New Object", ctxMenu)
+        # menuNewObject.triggered.connect(self.newProject)
+        ctxMenu.addAction(menuNewObject)
+
+        ctxMenu.exec_(self.viewport().mapToGlobal(thePos))
+
+        return
+
+    ##
+    #  Internal Functions
+    ##
+
     def _scanChildren(self, theList, theItem, theIndex):
         tHandle = theItem.text(3)
         nwItem  = self.theProject.projTree[tHandle]
@@ -154,13 +189,5 @@ class GuiDocTree(QTreeWidget):
         if isinstance(selItem[0], QTreeWidgetItem):
             return selItem[0].text(3)
         return None
-
-    def getColumnSizes(self):
-        retVals = [
-            self.columnWidth(0),
-            self.columnWidth(1),
-            self.columnWidth(2),
-        ]
-        return retVals
 
 # END Class GuiDocTree

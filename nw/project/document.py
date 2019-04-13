@@ -40,12 +40,13 @@ class NWDoc():
             with open(docPath,mode="r") as inFile:
                 return inFile.read()
         else:
-            logger.debug("Document does not exist.")
+            logger.debug("The requested document does not exist.")
             return ""
         return None
 
     def saveDocument(self, docHtml):
-        if self.docHandle is None: return False
+        if self.docHandle is None:
+            return False
         docDir, docFile = self._assemblePath(self.FILE_MN)
         logger.debug("Saving document %s" % path.join(docDir,docFile))
         dataDir = path.join(self.theProject.projPath, docDir)
@@ -55,17 +56,15 @@ class NWDoc():
             logger.debug("Created folder %s" % dataDir)
         with open(docPath,mode="w") as outFile:
             outFile.write(docHtml)
-            # docData = html.fromstring(docHtml)
-            # outFile.write(html.tostring(
-            #     docData,
-            #     pretty_print = True,
-            #     encoding     = "utf-8",
-            #     method       = "html",
-            # ))
         return True
 
+    ##
+    #  Internal Functions
+    ##
+
     def _assemblePath(self, docExt):
-        if self.docHandle is None: return None
+        if self.docHandle is None:
+            return None
         docDir  = "data_"+self.docHandle[0]
         docFile = self.docHandle[1:13]+"_"+docExt
         return docDir, docFile

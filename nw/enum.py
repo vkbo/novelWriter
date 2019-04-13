@@ -26,7 +26,8 @@ class nwItemClass(Enum):
     NONE      = 0
     NOVEL     = 1
     CHAPTER   = 2
-    CHARACTER = 3
-    WORLD     = 4
+    SCENE     = 3
+    CHARACTER = 4
+    WORLD     = 5
 
 # END Enum nwItemClass
