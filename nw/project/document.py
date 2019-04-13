@@ -20,7 +20,7 @@ logger = logging.getLogger(__name__)
 
 class NWDoc():
 
-    FILE_MN = "main.md"
+    FILE_MN = "main.nwd"
 
     def __init__(self, theProject):
 
