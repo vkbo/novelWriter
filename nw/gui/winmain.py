@@ -20,6 +20,7 @@ from PyQt5.QtGui          import QIcon, QStandardItemModel
 
 from nw.enum              import nwItemType
 from nw.gui.doctree       import GuiDocTree
+from nw.gui.doctreectx    import GuiDocTreeCtx
 from nw.gui.doceditor     import GuiDocEditor
 from nw.gui.projecteditor import GuiProjectEditor
 from nw.project.project   import NWProject
@@ -66,6 +67,8 @@ class GuiMain(QMainWindow):
         self.setCentralWidget(self.splitMain)
 
         self._buildMenu()
+        self.treeView.setContextMenuPolicy(Qt.CustomContextMenu)
+        self.treeView.customContextMenuRequested.connect(self._openDocTreeContextMenu)
         self.treeView.itemDoubleClicked.connect(self._treeDoubleClick)
         self.treeView.buildTree()
 
@@ -184,9 +187,9 @@ class GuiMain(QMainWindow):
         self.setWindowTitle(winTitle)
         return True
 
-    #
+    ##
     #  Menu Action
-    #
+    ##
 
     def _menuExit(self):
         self._closeMain()
@@ -196,6 +199,22 @@ class GuiMain(QMainWindow):
     def _showAbout(self):
         self.docTabs.createTab(None,nw.DOCTYPE_ABOUT)
         return True
+
+    ##
+    #  DocTree Context Menu
+    ##
+
+    def _openDocTreeContextMenu(self, thePosition):
+
+        ctxMenu = GuiDocTreeCtx(self.treeView, self.theProject, thePosition)
+
+        selAction = ctxMenu.selAction
+        selClass  = ctxMenu.selClass
+        selType   = ctxMenu.selType
+
+        print(selAction, selClass, selType)
+
+        return
 
     ##
     #  Events

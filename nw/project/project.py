@@ -19,7 +19,7 @@ from hashlib         import sha256
 from datetime        import datetime
 from time            import time
 
-from nw.enum         import nwItemType, nwItemClass
+from nw.enum         import nwItemType, nwItemClass, nwItemAction
 from nw.project.item import NWItem
 
 logger = logging.getLogger(__name__)
@@ -34,6 +34,7 @@ class NWProject():
         # Project Settings
         self.projTree    = {}
         self.treeOrder   = []
+        self.treeRoots   = []
         self.projPath    = None
         self.projFile    = "nwProject.nwx"
         self.projName    = ""
@@ -191,8 +192,12 @@ class NWProject():
             xItemValue.text = str(nwItem.itemType.name)
             xItemValue      = etree.SubElement(xItem,"class")
             xItemValue.text = str(nwItem.itemClass.name)
+            xItemValue      = etree.SubElement(xItem,"depth")
+            xItemValue.text = str(nwItem.itemDepth)
             xItemValue      = etree.SubElement(xItem,"expanded")
             xItemValue.text = str(nwItem.isExpanded)
+            xItemValue      = etree.SubElement(xItem,"children")
+            xItemValue.text = str(nwItem.hasChildren)
 
         # Write the xml tree to file
         with open(path.join(self.projPath,self.projFile),"wb") as outFile:
@@ -248,18 +253,122 @@ class NWProject():
         logger.error("No tree item with handle %s" % str(tHandle))
         return None
 
+    def getActionList(self, tHandle):
+        """Returns a dictionary of possible actions to perform on a give handle.
+        """
+        validActions = {}
+
+        # If we're at root, or didn't select an utem, all we can add is root stuff
+        if tHandle is None:
+            validActions[nwItemAction.ADD_ROOT] = {
+                "Type"  : nwItemType.ROOT,
+                "Class" : [x for x in nwItemClass if self._checkRootUnique(x)]
+            }
+            return validActions
+
+        # Otherwise, the options depend on the item we had selected
+        tItem  = self.getItem(tHandle)
+        tType  = tItem.itemType
+        tClass = tItem.itemClass
+        tDepth = tItem.itemDepth
+
+        # Trash items can only be moved or permanently deleted
+        if tType == nwItemType.TRASHFOLDER or tType == nwItemType.TRASHFILE:
+            validActions[nwItemAction.MOVE_TO]     = {}
+            validActions[nwItemAction.DELETE]      = {}
+            validActions[nwItemAction.EMPTY_TRASH] = {}
+            return validActions
+
+        # Adding folders or files
+        # - Novels can only have folders under root
+        # - Files can only be 1 or 2 levels deep
+        # - Non-novel roots have only have a restriction on max depth
+        if tClass == nwItemClass.NOVEL:
+            if tType == nwItemType.ROOT:
+                validActions[nwItemAction.ADD_FOLDER] = {
+                    "Type"  : nwItemType.FOLDER,
+                    "Class" : nwItemClass.NOVEL
+                }
+            if tDepth < 2:
+                validActions[nwItemAction.ADD_FILE] = {
+                    "Type"  : nwItemType.FILE,
+                    "Class" : nwItemClass.NOVEL
+                }
+            if tType == nwItemType.FOLDER:
+                validActions[nwItemAction.MERGE] = {}
+            if tType == nwItemType.FILE:
+                validActions[nwItemAction.SPLIT] = {}
+        else:
+            if tDepth < NWItem.MAXDEPTH-1 and (
+                tType == nwItemType.ROOT or tType == nwItemType.FOLDER
+            ):
+                validActions[nwItemAction.ADD_FOLDER] = {
+                    "Type"  : nwItemType.FOLDER,
+                    "Class" : tClass
+                }
+            if tDepth < NWItem.MAXDEPTH:
+                validActions[nwItemAction.ADD_FILE] = {
+                    "Type"  : nwItemType.FILE,
+                    "Class" : tClass
+                }
+
+        # Other actions available to novel or plot items
+        validActions[nwItemAction.MOVE_UP]   = {}
+        validActions[nwItemAction.MOVE_DOWN] = {}
+        if tType == nwItemType.ROOT:
+            validActions[nwItemAction.DELETE_ROOT] = {}
+        else:
+            validActions[nwItemAction.MOVE_TO]     = {}
+            validActions[nwItemAction.MOVE_TRASH]  = {}
+
+        return validActions
+
     #
     #  Internal Functions
     #
+
+    def _checkRootUnique(self, theClass):
+        """Checks if there already is a root entry of class 'theClass' in the
+        root of the project tree.
+        """
+        for aRoot in self.treeRoots:
+            if theClass == self.projTree[aRoot].itemClass:
+                return False
+        return True
+
+    def _countItemDepth(self, tHandle):
+        theDepth = 0
+        nwItem   = self.getItem(tHandle)
+        while nwItem.parHandle is not None:
+            theDepth += 1
+            nwItem    = self.getItem(nwItem.parHandle)
+            if theDepth > NWItem.MAXDEPTH:
+                return None
+        return theDepth
 
     def _appendItem(self, tHandle, pHandle, nwItem):
         tHandle = self._checkString(tHandle,self._makeHandle(),False)
         pHandle = self._checkString(pHandle,None,True)
         logger.verbose("Adding entry %s with parent %s" % (str(tHandle),str(pHandle)))
+
         nwItem.setHandle(tHandle)
         nwItem.setParent(pHandle)
+
         self.projTree[tHandle] = nwItem
         self.treeOrder.append(tHandle)
+        if pHandle is not None:
+            self.projTree[pHandle].setHasChildren(True)
+
+        if nwItem.itemType == nwItemType.ROOT:
+            logger.verbose("Entry %s is a root item" % str(tHandle))
+            self.treeRoots.append(tHandle)
+
+        itemDepth = self._countItemDepth(tHandle)
+        if itemDepth is None:
+            logger.error("The depth of entry %s could not be determined" % tHandle)
+        else:
+            nwItem.setDepth(itemDepth)
+
         return
 
     def _makeHandle(self, addSeed=""):

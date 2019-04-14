@@ -23,15 +23,19 @@ logger = logging.getLogger(__name__)
 
 class NWItem():
 
+    MAXDEPTH = 8
+
     def __init__(self):
 
-        self.itemName   = ""
-        self.itemHandle = None
-        self.parHandle  = None
-        self.itemOrder  = None
-        self.itemType   = nwItemType.NONE
-        self.itemClass  = nwItemClass.NONE
-        self.isExpanded = False
+        self.itemName    = ""
+        self.itemHandle  = None
+        self.parHandle   = None
+        self.itemOrder   = None
+        self.itemType    = nwItemType.NONE
+        self.itemClass   = nwItemClass.NONE
+        self.itemDepth   = None
+        self.isExpanded  = False
+        self.hasChildren = False
 
         return
 
@@ -84,11 +88,22 @@ class NWItem():
         self.itemClass = nwItemClass.NONE
         return
 
+    def setDepth(self, theDepth):
+        if theDepth >= 0 and theDepth <= self.MAXDEPTH:
+            self.itemDepth = theDepth
+        else:
+            logger.error("Invalid item depth %d" % theDepth)
+        return
+
     def setExpanded(self, expState):
         if isinstance(expState, str):
             self.isExpanded = expState == str(True)
         else:
             self.isExpanded = expState
+        return
+
+    def setHasChildren(self, hasChildren):
+        self.hasChildren = hasChildren
         return
 
 # END Class NWItem

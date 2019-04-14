@@ -42,10 +42,6 @@ class GuiDocTree(QTreeWidget):
         if not self.debugGUI:
             self.hideColumn(3)
 
-        # Context Menu
-        self.setContextMenuPolicy(Qt.CustomContextMenu)
-        self.customContextMenuRequested.connect(self._openContextMenu)
-
         # Allow Move by Drag & Drop
         self.setDragEnabled(True)
         self.setDragDropMode(QAbstractItemView.InternalMove)
@@ -78,7 +74,7 @@ class GuiDocTree(QTreeWidget):
             tHandle = self.theProject.newFile("New File", nwItemClass.NONE, pHandle)
         elif itemType == nwItemType.FOLDER:
             if pHandle is None:
-                logger.error("Failed to add new item.")
+                logger.error("Failed to add new item")
                 return
             pItem = self.theProject.projTree[rHandle]
             if pItem.itemClass == nwItemClass.NOVEL:
@@ -90,7 +86,7 @@ class GuiDocTree(QTreeWidget):
         elif itemType == nwItemType.ROOT:
             tHandle = self.theProject.newRoot("Root Folder", nwItemClass.NONE)
         else:
-            logger.error("Failed to add new item.")
+            logger.error("Failed to add new item")
             return
 
         # Add the new item to the tree
@@ -113,25 +109,6 @@ class GuiDocTree(QTreeWidget):
             self.columnWidth(2),
         ]
         return retVals
-
-    ##
-    #  Context Menu
-    ##
-
-    def _openContextMenu(self, thePos):
-
-        sIDs = self.selectedIndexes()
-        print(sIDs)
-
-        ctxMenu = QMenu(self)
-
-        menuNewObject = QAction(QIcon.fromTheme("folder-new"), "New Object", ctxMenu)
-        # menuNewObject.triggered.connect(self.newProject)
-        ctxMenu.addAction(menuNewObject)
-
-        ctxMenu.exec_(self.viewport().mapToGlobal(thePos))
-
-        return
 
     ##
     #  Internal Functions
@@ -189,5 +166,19 @@ class GuiDocTree(QTreeWidget):
         if isinstance(selItem[0], QTreeWidgetItem):
             return selItem[0].text(3)
         return None
+
+    ##
+    #  Event Overloading
+    ##
+
+    def mousePressEvent(self, theEvent):
+        """Overload mousePressEvent to clear selection if clicking the mouse in a blank
+        area of the tree view.
+        """
+        QTreeWidget.mousePressEvent(self, theEvent)
+        selItem = self.indexAt(theEvent.pos())
+        if not selItem.isValid():
+            self.clearSelection()
+        return
 
 # END Class GuiDocTree

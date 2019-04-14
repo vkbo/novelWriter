@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='utf-8'?>
-<novelWriterXML appVersion="0.0.1" fileVersion="1.0" timeStamp="2019-04-13 21:07:45">
+<novelWriterXML appVersion="0.0.1" fileVersion="1.0" timeStamp="2019-04-14 16:42:14">
   <project>
     <name>Sample Project</name>
     <title>Sample Project</title>
@@ -11,37 +11,49 @@
       <name>Novel</name>
       <type>ROOT</type>
       <class>NOVEL</class>
+      <depth>0</depth>
       <expanded>True</expanded>
+      <children>True</children>
     </item>
     <item handle="e7ded148d6e4a" order="0" parent="7031beac91f75">
       <name>New Chapter</name>
       <type>FOLDER</type>
-      <class>CHAPTER</class>
+      <class>NOVEL</class>
+      <depth>1</depth>
       <expanded>True</expanded>
+      <children>True</children>
     </item>
     <item handle="96b68994dfa3d" order="0" parent="e7ded148d6e4a">
       <name>New Scene</name>
       <type>FILE</type>
-      <class>SCENE</class>
+      <class>NOVEL</class>
+      <depth>2</depth>
       <expanded>False</expanded>
+      <children>False</children>
     </item>
     <item handle="636b6aa9b697b" order="1" parent="e7ded148d6e4a">
       <name>New File</name>
       <type>FILE</type>
-      <class>SCENE</class>
+      <class>NOVEL</class>
+      <depth>2</depth>
       <expanded>False</expanded>
+      <children>False</children>
     </item>
     <item handle="f6622b4617424" order="1" parent="None">
       <name>Characters</name>
       <type>ROOT</type>
       <class>CHARACTER</class>
+      <depth>0</depth>
       <expanded>False</expanded>
+      <children>False</children>
     </item>
     <item handle="73eee34351f85" order="2" parent="None">
       <name>World</name>
       <type>ROOT</type>
       <class>WORLD</class>
+      <depth>0</depth>
       <expanded>False</expanded>
+      <children>False</children>
     </item>
   </content>
 </novelWriterXML>
