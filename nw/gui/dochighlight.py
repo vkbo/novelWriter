@@ -1,4 +1,4 @@
-# -*- coding: utf-8 -*
+# -*- coding: utf-8 -*-
 """novelWriter GUI Document Highlighter
 
  novelWriter – GUI Document Highlighter

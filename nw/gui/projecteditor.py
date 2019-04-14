@@ -1,4 +1,4 @@
-# -*- coding: utf-8 -*
+# -*- coding: utf-8 -*-
 """novelWriter GUI Project Editor
 
  novelWriter – GUI Project Editor

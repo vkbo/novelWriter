@@ -1,4 +1,4 @@
-# -*- coding: utf-8 -*
+# -*- coding: utf-8 -*-
 """novelWriter Project Document
 
  novelWriter – Project Document
