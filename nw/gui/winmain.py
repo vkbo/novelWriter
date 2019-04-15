@@ -206,13 +206,14 @@ class GuiMain(QMainWindow):
 
     def _openDocTreeContextMenu(self, thePosition):
 
-        ctxMenu = GuiDocTreeCtx(self.treeView, self.theProject, thePosition)
-
+        ctxMenu   = GuiDocTreeCtx(self.treeView, self.theProject, thePosition)
+        selHandle = ctxMenu.selHandle
         selAction = ctxMenu.selAction
         selClass  = ctxMenu.selClass
         selType   = ctxMenu.selType
+        selTarget = ctxMenu.selTarget
 
-        print(selAction, selClass, selType)
+        print(selHandle, selAction, selClass, selType, selTarget)
 
         return
 

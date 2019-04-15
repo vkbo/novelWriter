@@ -76,6 +76,7 @@ class GuiDocTreeCtx(QMenu):
             self._buildMenuDeleteRoot(vActs)
         if nwItemAction.EMPTY_TRASH in vActs.keys():
             self._buildMenuEmptyTrash(vActs)
+        return
 
     ##
     #  Build Sub Menus
@@ -87,6 +88,7 @@ class GuiDocTreeCtx(QMenu):
             nwItemAction.DELETE, None, None
         ))
         self.addAction(mnuItem)
+        return
 
     def _buildMenuDeleteRoot(self, vActs):
         mnuItem = QAction("Remove Root", self)
@@ -94,6 +96,7 @@ class GuiDocTreeCtx(QMenu):
             nwItemAction.DELETE_ROOT, None, None
         ))
         self.addAction(mnuItem)
+        return
 
     def _buildMenuEmptyTrash(self, vActs):
         mnuItem = QAction("Empty Trash", self)
@@ -101,6 +104,7 @@ class GuiDocTreeCtx(QMenu):
             nwItemAction.EMPTY_TRASH, None, None
         ))
         self.addAction(mnuItem)
+        return
 
     def _buildMenuSplit(self, vActs):
         mnuItem = QAction("Split File", self)
@@ -108,6 +112,7 @@ class GuiDocTreeCtx(QMenu):
             nwItemAction.SPLIT, None, None
         ))
         self.addAction(mnuItem)
+        return
 
     def _buildMenuMerge(self, vActs):
         mnuItem = QAction("Merge Folder", self)
@@ -115,6 +120,7 @@ class GuiDocTreeCtx(QMenu):
             nwItemAction.MERGE, None, None
         ))
         self.addAction(mnuItem)
+        return
 
     def _buildMenuMoveUp(self, vActs):
         mnuItem = QAction("Move Up", self)
@@ -122,6 +128,7 @@ class GuiDocTreeCtx(QMenu):
             nwItemAction.MOVE_UP, None, None
         ))
         self.addAction(mnuItem)
+        return
 
     def _buildMenuMoveDown(self, vActs):
         mnuItem = QAction("Move Down", self)
@@ -129,6 +136,7 @@ class GuiDocTreeCtx(QMenu):
             nwItemAction.MOVE_DOWN, None, None
         ))
         self.addAction(mnuItem)
+        return
 
     def _buildMenuMoveTrash(self, vActs):
         mnuItem = QAction("Move to Trash", self)
@@ -136,6 +144,7 @@ class GuiDocTreeCtx(QMenu):
             nwItemAction.MOVE_TRASH, None, None
         ))
         self.addAction(mnuItem)
+        return
 
     def _buildMenuMoveTo(self, vActs):
         mnuItem = QAction("Move to", self)
@@ -144,6 +153,7 @@ class GuiDocTreeCtx(QMenu):
             None
         ))
         self.addAction(mnuItem)
+        return
 
     def _buildMenuAddFile(self, vActs):
         mnuItem = QAction("Add File", self)
@@ -153,6 +163,7 @@ class GuiDocTreeCtx(QMenu):
             nwItemType.FILE
         ))
         self.addAction(mnuItem)
+        return
 
     def _buildMenuAddFolder(self, vActs):
         mnuItem = QAction("Add Folder", self)
@@ -162,6 +173,7 @@ class GuiDocTreeCtx(QMenu):
             nwItemType.FOLDER
         ))
         self.addAction(mnuItem)
+        return
 
     def _buildMenuAddRoot(self, vActs):
 

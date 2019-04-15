@@ -181,4 +181,32 @@ class GuiDocTree(QTreeWidget):
             self.clearSelection()
         return
 
+    def dropEvent(self, theEvent):
+        """Overload the drop of dragged item event to check whether the drop is allowed
+        or not. Disallowed drops are cancelled.
+        """
+        sHandle = self._getSelectedHandle()
+        if sHandle is None:
+            return
+
+        dIndex  = self.indexAt(theEvent.pos())
+        if not dIndex.isValid():
+            return
+
+        dItem   = self.itemFromIndex(dIndex)
+        dHandle = dItem.text(3)
+        snItem  = self.theProject.getItem(sHandle)
+        dnItem  = self.theProject.getItem(dHandle)
+        isSame  = snItem.itemClass == dnItem.itemClass and dnItem.itemType
+        isFile  = dnItem.itemType == nwItemType.FILE
+        isRoot  = snItem.itemType == nwItemType.ROOT
+        isOnTop = self.dropIndicatorPosition() == QAbstractItemView.OnItem
+        if isSame and not (isFile and isOnTop) and not isRoot:
+            logger.verbose("Drag'n'drop on item %s allowed" % sHandle)
+            QTreeWidget.dropEvent(self, theEvent)
+        else:
+            logger.verbose("Drag'n'drop on item %s not allowed" % sHandle)
+
+        return
+
 # END Class GuiDocTree
