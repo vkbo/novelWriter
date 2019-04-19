@@ -78,11 +78,11 @@ class NWProject():
         self.projName    = ""
         self.bookTitle   = ""
         self.bookAuthors = []
-        hNovel = self.newRoot("Novel", nwItemClass.NOVEL)
-        hChars = self.newRoot("Characters",nwItemClass.CHARACTER)
-        hWorld = self.newRoot("World", nwItemClass.WORLD)
-        hChapt = self.newFolder("New Chapter", nwItemClass.CHAPTER ,hNovel)
-        hScene = self.newFile("New Scene", nwItemClass.NONE, hChapt)
+        hNovel = self.newRoot("Novel",         nwItemClass.NOVEL)
+        hChars = self.newRoot("Characters",    nwItemClass.CHARACTER)
+        hWorld = self.newRoot("World",         nwItemClass.WORLD)
+        hChapt = self.newFolder("New Chapter", nwItemClass.NOVEL, hNovel)
+        hScene = self.newFile("New Scene",     nwItemClass.NOVEL, hChapt)
         return
 
     def openProject(self, fileName):
@@ -178,26 +178,8 @@ class NWProject():
         # Save Tree Content
         logger.debug("Writing project content")
         xContent = etree.SubElement(nwXML,"content",attrib={"count":str(len(self.projTree))})
-        itemIdx  = 0
         for tHandle in self.treeOrder:
-            nwItem = self.projTree[tHandle]
-            xItem  = etree.SubElement(xContent,"item",attrib={
-                "handle" : str(tHandle),
-                "parent" : str(nwItem.parHandle),
-                "order"  : str(nwItem.itemOrder),
-            })
-            xItemValue      = etree.SubElement(xItem,"name")
-            xItemValue.text = str(nwItem.itemName)
-            xItemValue      = etree.SubElement(xItem,"type")
-            xItemValue.text = str(nwItem.itemType.name)
-            xItemValue      = etree.SubElement(xItem,"class")
-            xItemValue.text = str(nwItem.itemClass.name)
-            xItemValue      = etree.SubElement(xItem,"depth")
-            xItemValue.text = str(nwItem.itemDepth)
-            xItemValue      = etree.SubElement(xItem,"expanded")
-            xItemValue.text = str(nwItem.isExpanded)
-            xItemValue      = etree.SubElement(xItem,"children")
-            xItemValue.text = str(nwItem.hasChildren)
+            self.projTree[tHandle].packXML(xContent)
 
         # Write the xml tree to file
         with open(path.join(self.projPath,self.projFile),"wb") as outFile:
@@ -299,14 +281,14 @@ class NWProject():
             if tType == nwItemType.FILE:
                 validActions[nwItemAction.SPLIT] = {}
         else:
-            if tDepth < NWItem.MAXDEPTH-1 and (
+            if tDepth < NWItem.MAX_DEPTH-1 and (
                 tType == nwItemType.ROOT or tType == nwItemType.FOLDER
             ):
                 validActions[nwItemAction.ADD_FOLDER] = {
                     "Type"  : nwItemType.FOLDER,
                     "Class" : tClass
                 }
-            if tDepth < NWItem.MAXDEPTH:
+            if tDepth < NWItem.MAX_DEPTH:
                 validActions[nwItemAction.ADD_FILE] = {
                     "Type"  : nwItemType.FILE,
                     "Class" : tClass
@@ -342,7 +324,7 @@ class NWProject():
         while nwItem.parHandle is not None:
             theDepth += 1
             nwItem    = self.getItem(nwItem.parHandle)
-            if theDepth > NWItem.MAXDEPTH:
+            if theDepth > NWItem.MAX_DEPTH:
                 return None
         return theDepth
 
@@ -357,7 +339,7 @@ class NWProject():
         self.projTree[tHandle] = nwItem
         self.treeOrder.append(tHandle)
         if pHandle is not None:
-            self.projTree[pHandle].setHasChildren(True)
+            self.projTree[pHandle].setChildren(True)
 
         if nwItem.itemType == nwItemType.ROOT:
             logger.verbose("Entry %s is a root item" % str(tHandle))

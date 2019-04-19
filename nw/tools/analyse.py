@@ -18,34 +18,35 @@ logger = logging.getLogger(__name__)
 
 class TextAnalysis():
 
-    def __init__(self, langCode):
+    def __init__(self, theText, langCode):
+        self.theText  = theText
         self.langCode = langCode
         return
 
-    def getStats(self, theText):
-        tStart = time()
-        wordCount = self._countWords(theText)
-        tEnd   = time()-tStart
-        print("Words:       %7d in %7.3f µs" % (wordCount,tEnd*1e6))
-        tStart = time()
-        sentCount = self._countSentences(theText)
-        tEnd   = time()-tStart
-        print("Sentences:   %7d in %7.3f µs" % (sentCount,tEnd*1e6))
-        tStart = time()
-        paraCount = self._countParagraphs(theText)
-        tEnd   = time()-tStart
-        print("Paragraphs:  %7d in %7.3f µs" % (paraCount,tEnd*1e6))
+    def getStats(self):
+        # tStart = time()
+        wordCount = self._countWords()
+        # tEnd   = time()-tStart
+        # print("Words:       %7d in %7.3f µs" % (wordCount,tEnd*1e6))
+        # tStart = time()
+        sentCount = self._countSentences()
+        # tEnd   = time()-tStart
+        # print("Sentences:   %7d in %7.3f µs" % (sentCount,tEnd*1e6))
+        # tStart = time()
+        paraCount = self._countParagraphs()
+        # tEnd   = time()-tStart
+        # print("Paragraphs:  %7d in %7.3f µs" % (paraCount,tEnd*1e6))
         return wordCount, sentCount, paraCount
 
-    def getReadabilityScore(self, theText):
+    def getReadabilityScore(self):
         """
         Calculate Flesch--Kincaid Readability Score.
         """
         tStart = time()
-        wordCount = self._countWords(theText)
-        sentCount = self._countSentences(theText)
+        wordCount = self._countWords(self.theText)
+        sentCount = self._countSentences(self.theText)
         if self.langCode[:3] == "en_":
-            ratSyllWord = self._countSyllablesEN(theText)
+            ratSyllWord = self._countSyllablesEN(self.theText)
         else:
             ratSyllWord = -1.0
         rScore = 206.835 - 1.015*(wordCount/sentCount) - 84.6*(ratSyllWord)
@@ -77,20 +78,20 @@ class TextAnalysis():
     #  Internal Functions
     #
 
-    def _countWords(self, theText):
+    def _countWords(self):
         """
         Counts the number of words in a text by simply splitting on all white spaces.
         """
-        return len(theText.strip().split())
+        return len(self.theText.strip().split())
 
-    def _countSentences(self, theText):
+    def _countSentences(self):
         """
         Counts the number of non-repeated sentence endings seen in the text.
         Note: This will count filenames and urls as multiple sentences.
         """
         nSent  = 0
         sawEnd = False
-        for ch in theText.strip():
+        for ch in self.theText.strip():
             if ch in ".!?":
                 if not sawEnd:
                     sawEnd = True
@@ -99,13 +100,13 @@ class TextAnalysis():
                 sawEnd = False
         return nSent
 
-    def _countParagraphs(self, theText, pThreshold=2):
+    def _countParagraphs(self, pThreshold=2):
         """
         Counts the number of paragraphs by counting repeated line breaks.
         """
         nPara  = 1
         sawEnd = 0
-        for ch in theText.strip():
+        for ch in self.theText.strip():
             if ch == "\r": # Ignore Windows line end chars
                 continue
             if ch == "\n": # Count endlines
@@ -116,7 +117,7 @@ class TextAnalysis():
                     sawEnd = 0
         return nPara
 
-    def _countSyllablesEN(self, theText):
+    def _countSyllablesEN(self):
         """
         Attempt to count the syllables in a piece of English language text.
         This function tends to slightly over-estimate the number of syllables as it doesn't handle
@@ -124,7 +125,7 @@ class TextAnalysis():
         """
 
         cleanText = ""
-        for ch in theText:
+        for ch in self.theText:
             if ch in "abcdefghijklmnopqrstuvwxyz'’":
                 cleanText += ch
             else:

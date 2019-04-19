@@ -23,7 +23,7 @@ logger = logging.getLogger(__name__)
 
 class NWItem():
 
-    MAXDEPTH = 8
+    MAX_DEPTH = 8
 
     def __init__(self):
 
@@ -34,19 +34,67 @@ class NWItem():
         self.itemType    = nwItemType.NONE
         self.itemClass   = nwItemClass.NONE
         self.itemDepth   = None
-        self.isExpanded  = False
         self.hasChildren = False
+        self.isExpanded  = False
+
+        self.wordCount   = None
+        self.sentCount   = None
+        self.paraCount   = None
 
         return
+
+    ##
+    #  XML Pack
+    ##
+
+    def packXML(self, xParent):
+        xPack = etree.SubElement(xParent,"item",attrib={
+            "handle" : str(self.itemHandle),
+            "parent" : str(self.parHandle),
+            "order"  : str(self.itemOrder),
+        })
+        xSub = self._subPack(xPack,"name",      text=str(self.itemName))
+        xSub = self._subPack(xPack,"type",      text=str(self.itemType.name))
+        xSub = self._subPack(xPack,"class",     text=str(self.itemClass.name))
+        xSub = self._subPack(xPack,"depth",     text=str(self.itemDepth))
+        xSub = self._subPack(xPack,"children",  text=str(self.hasChildren))
+        xSub = self._subPack(xPack,"expanded",  text=str(self.isExpanded))
+        xSub = self._subPack(xPack,"wordCount", text=str(self.wordCount), none=False)
+        xSub = self._subPack(xPack,"sentCount", text=str(self.sentCount), none=False)
+        xSub = self._subPack(xPack,"paraCount", text=str(self.paraCount), none=False)
+        return xPack
+
+    def _subPack(self, xParent, name, attrib=None, text=None, none=True):
+        if not none and (text == None or text == "None"):
+            return None
+        xSub = etree.SubElement(xParent,name,attrib=attrib)
+        if text is not None:
+            xSub.text = text
+        return xSub
+
+    ##
+    #  Settings Wrapper
+    ##
 
     def setFromTag(self, tagName, tagValue):
         logger.verbose("Setting tag '%s' to value '%s'" % (tagName, str(tagValue)))
-        if   tagName == "name":     self.setName(tagValue)
-        elif tagName == "order":    self.setOrder(tagValue)
-        elif tagName == "type":     self.setType(tagValue)
-        elif tagName == "class":    self.setClass(tagValue)
-        elif tagName == "expanded": self.setExpanded(tagValue)
+        if   tagName == "name":      self.setName(tagValue)
+        elif tagName == "order":     self.setOrder(tagValue)
+        elif tagName == "type":      self.setType(tagValue)
+        elif tagName == "class":     self.setClass(tagValue)
+        elif tagName == "depth":     self.setDepth(tagValue)
+        elif tagName == "children":  self.setChildren(tagValue)
+        elif tagName == "expanded":  self.setExpanded(tagValue)
+        elif tagName == "wordCount": self.setWordCount(tagValue)
+        elif tagName == "sentCount": self.setSentCount(tagValue)
+        elif tagName == "paraCount": self.setParaCount(tagValue)
+        else:
+            logger.error("Unknown tag '%s'" % tagName)
         return
+
+    ##
+    #  Set Item Values
+    ##
 
     def setName(self, theName):
         self.itemName = theName.strip()
@@ -89,10 +137,15 @@ class NWItem():
         return
 
     def setDepth(self, theDepth):
-        if theDepth >= 0 and theDepth <= self.MAXDEPTH:
+        theDepth = self._checkInt(theDepth,-1)
+        if theDepth >= 0 and theDepth <= self.MAX_DEPTH:
             self.itemDepth = theDepth
         else:
             logger.error("Invalid item depth %d" % theDepth)
+        return
+
+    def setChildren(self, hasChildren):
+        self.hasChildren = hasChildren
         return
 
     def setExpanded(self, expState):
@@ -102,8 +155,36 @@ class NWItem():
             self.isExpanded = expState
         return
 
-    def setHasChildren(self, hasChildren):
-        self.hasChildren = hasChildren
+    ##
+    #  Set Stats
+    ##
+
+    def setWordCount(self, theCount):
+        theCount = self._checkInt(theCount,None,True)
+        self.wordCount = theCount
         return
+
+    def setSentCount(self, theCount):
+        theCount = self._checkInt(theCount,None,True)
+        self.sentCount = theCount
+        return
+
+    def setParaCount(self, theCount):
+        theCount = self._checkInt(theCount,None,True)
+        self.paraCount = theCount
+        return
+
+    ##
+    #  Internal Functions
+    ##
+
+    def _checkInt(self,checkValue,defaultValue,allowNone=False):
+        if allowNone:
+            if checkValue == None:   return None
+            if checkValue == "None": return None
+        try:
+            return int(checkValue)
+        except:
+            return defaultValue
 
 # END Class NWItem
