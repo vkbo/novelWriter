@@ -24,37 +24,36 @@ class TextAnalysis():
         return
 
     def getStats(self):
-        # tStart = time()
+        tStart = time()
         wordCount = self._countWords()
-        # tEnd   = time()-tStart
-        # print("Words:       %7d in %7.3f µs" % (wordCount,tEnd*1e6))
-        # tStart = time()
+        tEnd   = time()-tStart
+        logger.verbose("Words:       %7d in %8.3f ms" % (wordCount,tEnd*1e3))
+        tStart = time()
         sentCount = self._countSentences()
-        # tEnd   = time()-tStart
-        # print("Sentences:   %7d in %7.3f µs" % (sentCount,tEnd*1e6))
-        # tStart = time()
+        tEnd   = time()-tStart
+        logger.verbose("Sentences:   %7d in %8.3f ms" % (sentCount,tEnd*1e3))
+        tStart = time()
         paraCount = self._countParagraphs()
-        # tEnd   = time()-tStart
-        # print("Paragraphs:  %7d in %7.3f µs" % (paraCount,tEnd*1e6))
+        tEnd   = time()-tStart
+        logger.verbose("Paragraphs:  %7d in %8.3f ms" % (paraCount,tEnd*1e3))
         return wordCount, sentCount, paraCount
 
     def getReadabilityScore(self):
-        """
-        Calculate Flesch--Kincaid Readability Score.
+        """Calculate Flesch--Kincaid Readability Score.
         """
         tStart = time()
-        wordCount = self._countWords(self.theText)
-        sentCount = self._countSentences(self.theText)
+        wordCount = self._countWords()
+        sentCount = self._countSentences()
         if self.langCode[:3] == "en_":
-            ratSyllWord = self._countSyllablesEN(self.theText)
+            ratSyllWord = self._countSyllablesEN()
         else:
             ratSyllWord = -1.0
         rScore = 206.835 - 1.015*(wordCount/sentCount) - 84.6*(ratSyllWord)
         gLevel = -15.59  + 0.390*(wordCount/sentCount) + 11.8*(ratSyllWord)
         tEnd   = time()-tStart
-        print("Readability: %7.3f in %7.3f ms" % (rScore,tEnd*1e3))
-        print("Grade Level: %7.3f in %7.3f ms" % (gLevel,tEnd*1e3))
-        print("Assessment:  %s" % self.getReadabilityText(rScore))
+        logger.verbose("Readability: %7.3f in %8.3f ms" % (rScore,tEnd*1e3))
+        logger.verbose("Grade Level: %7.3f in %8.3f ms" % (gLevel,tEnd*1e3))
+        logger.verbose("Assessment:  %s" % self.getReadabilityText(rScore))
 
         return rScore, gLevel
 
@@ -79,14 +78,12 @@ class TextAnalysis():
     #
 
     def _countWords(self):
-        """
-        Counts the number of words in a text by simply splitting on all white spaces.
+        """Counts the number of words in a text by simply splitting on all white spaces.
         """
         return len(self.theText.strip().split())
 
     def _countSentences(self):
-        """
-        Counts the number of non-repeated sentence endings seen in the text.
+        """Counts the number of non-repeated sentence endings seen in the text.
         Note: This will count filenames and urls as multiple sentences.
         """
         nSent  = 0
@@ -101,8 +98,7 @@ class TextAnalysis():
         return nSent
 
     def _countParagraphs(self, pThreshold=2):
-        """
-        Counts the number of paragraphs by counting repeated line breaks.
+        """Counts the number of paragraphs by counting repeated line breaks.
         """
         nPara  = 1
         sawEnd = 0
@@ -118,8 +114,7 @@ class TextAnalysis():
         return nPara
 
     def _countSyllablesEN(self):
-        """
-        Attempt to count the syllables in a piece of English language text.
+        """Attempt to count the syllables in a piece of English language text.
         This function tends to slightly over-estimate the number of syllables as it doesn't handle
         the complexity of silent vowels in endings very well. It will count them all.
         """
@@ -132,7 +127,7 @@ class TextAnalysis():
                 cleanText += " "
 
         asVow    = "aeiouy'’"
-        dExep    = ("ei","ie","ua","ia","eo")
+        dExept   = ("ei","ie","ua","ia","eo")
         theWords = cleanText.lower().split()
         allSylls = 0
         for inWord in theWords:
@@ -155,7 +150,7 @@ class TextAnalysis():
                     nSyll -= 1
                 if isVow and wasY:
                     nSyll -= 1
-                if inWord[c:c+2] in dExep:
+                if inWord[c:c+2] in dExept:
                     nSyll += 1
                 wasVow = isVow
                 wasY   = inWord[c] == "y"
