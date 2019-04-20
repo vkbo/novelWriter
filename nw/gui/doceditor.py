@@ -32,7 +32,14 @@ class GuiDocEditor(QWidget):
         self.mainConf  = nw.CONFIG
         self.theParent = theParent
         self.charCount = 0
+        self.wordCount = 0
         self.lineCount = 0
+
+        # Internal Temps
+        self.blockWords = {}
+        self.currEditBlock = -1
+        self.currEditStart =  0
+        self.currEditFinal =  0
 
         self.outerBox  = QVBoxLayout()
         self.guiEditor = QTextEdit()
@@ -66,8 +73,25 @@ class GuiDocEditor(QWidget):
         return
 
     def setText(self, theText):
+
         self.guiEditor.setPlainText(theText)
+
         self.charCount = self.theDoc.characterCount()
+        self.wordCount = 0
+
+        self.currEditBlock = -1
+        self.currEditWords =  0
+
+        tStart = time()
+        self.blockWords = {}
+        for n in range(self.theDoc.blockCount()):
+            self._countWords(self.theDoc.findBlockByNumber(n))
+        self.wordCount = sum(self.blockWords.values())
+        logger.verbose("Doc word count took %.3f µs" % ((time()-tStart)*1e6))
+
+        self.theParent.statusBar.setCharCount(self.charCount)
+        self.theParent.statusBar.setWordCount(self.wordCount)
+
         return True
 
     def getText(self):
@@ -87,17 +111,29 @@ class GuiDocEditor(QWidget):
         return
 
     def _docChange(self, thePos, charsRemoved, charsAdded):
+
         tStart = time()
-        # logger.debug("Contents changed: %d %d %d" % (thePos, charsRemoved, charsAdded))
+
         self.charCount = self.theDoc.characterCount()
         self.lineCount = self.theDoc.lineCount()
         self.theParent.statusBar.setCharCount(self.charCount)
+
+        currBlock = self.theDoc.findBlock(thePos)
+        self._countWords(currBlock)
+        self.wordCount = sum(self.blockWords.values())
+        self.theParent.statusBar.setWordCount(self.wordCount)
+
         if self.mainConf.doReplace:
-            self._docAutoReplace(self.theDoc.findBlock(thePos))
+            self._docAutoReplace(currBlock)
+
         logger.verbose("Doc change signal took %.3f µs" % ((time()-tStart)*1e6))
+
         return
 
     def _docAutoReplace(self, theBlock):
+
+        if not theBlock.isValid():
+            return
 
         theText   = theBlock.text()
         theCursor = self.guiEditor.textCursor()
@@ -123,23 +159,52 @@ class GuiDocEditor(QWidget):
                 self.guiEditor.textCursor().deletePreviousChar()
                 self.guiEditor.textCursor().insertText(qOpen)
 
-        if self.mainConf.doReplaceDash and theTwo == "--":
+        elif self.mainConf.doReplaceDash and theTwo == "--":
             self.guiEditor.textCursor().deletePreviousChar()
             self.guiEditor.textCursor().deletePreviousChar()
             self.guiEditor.textCursor().insertText("–")
 
-        if self.mainConf.doReplaceDash and theTwo == "–-":
+        elif self.mainConf.doReplaceDash and theTwo == "–-":
             self.guiEditor.textCursor().deletePreviousChar()
             self.guiEditor.textCursor().deletePreviousChar()
             self.guiEditor.textCursor().insertText("—")
 
-        if self.mainConf.doReplaceDots and theThree == "...":
+        elif self.mainConf.doReplaceDots and theThree == "...":
             self.guiEditor.textCursor().deletePreviousChar()
             self.guiEditor.textCursor().deletePreviousChar()
             self.guiEditor.textCursor().deletePreviousChar()
             self.guiEditor.textCursor().insertText("…")
 
         return
+
+    def _countWords(self, theBlock):
+        """Count the number of words in a given block, but only if it's a text block. I.e. we skip
+        blocks starting with @ and %, and we also skip the ### in titles. Dashes are replaced with
+        spaces before the count to ensure, for instance, 'word1—word2' is counted as two words.
+        """
+
+        if not theBlock.isValid():
+            return
+
+        theText = theBlock.text()
+        theLen  = len(theText)
+        self.blockWords[theBlock.blockNumber()] = 0
+
+        if theLen == 0:
+            return 0
+        if theText[0] == "@" or theText[0] == "%":
+            return 0
+        if theText[0] == "#":
+            nWords = -1
+        else:
+            nWords = 0
+
+        theBuff = theText.replace("–"," ").replace("—"," ")
+        nWords += len(theBuff.split())
+
+        self.blockWords[theBlock.blockNumber()] = nWords
+
+        return nWords
 
     def _buildTabToolBar(self):
         toolBar = self.editToolBar
