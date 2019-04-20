@@ -13,6 +13,8 @@
 import logging
 import nw
 
+from time import time
+
 from PyQt5.QtWidgets     import QWidget, QTextEdit, QHBoxLayout, QVBoxLayout, QFrame, QSplitter, QToolBar, QAction, QScrollArea
 from PyQt5.QtCore        import Qt, QSize, QSizeF
 from PyQt5.QtGui         import QIcon, QFont, QTextCursor, QTextFormat, QTextBlockFormat
@@ -23,11 +25,14 @@ logger = logging.getLogger(__name__)
 
 class GuiDocEditor(QWidget):
 
-    def __init__(self):
+    def __init__(self, theParent):
         QWidget.__init__(self)
 
         logger.debug("Initialising DocEditor ...")
         self.mainConf  = nw.CONFIG
+        self.theParent = theParent
+        self.charCount = 0
+        self.lineCount = 0
 
         self.outerBox  = QVBoxLayout()
         self.guiEditor = QTextEdit()
@@ -51,9 +56,10 @@ class GuiDocEditor(QWidget):
 
         self.guiEditor.setMinimumWidth(400)
         self.guiEditor.setAcceptRichText(False)
-        theDoc = self.guiEditor.document()
-        # theDoc.setDefaultFont(QFont("Source Sans Pro",13))
-        theDoc.setDocumentMargin(0)
+
+        self.theDoc = self.guiEditor.document()
+        self.theDoc.setDocumentMargin(0)
+        self.theDoc.contentsChange.connect(self._docChange)
 
         logger.debug("DocEditor initialisation complete")
 
@@ -61,6 +67,7 @@ class GuiDocEditor(QWidget):
 
     def setText(self, theText):
         self.guiEditor.setPlainText(theText)
+        self.charCount = self.theDoc.characterCount()
         return True
 
     def getText(self):
@@ -76,8 +83,62 @@ class GuiDocEditor(QWidget):
             sW  = self.guiEditor.verticalScrollBar().width()
             tM  = int((tW - sW - self.mainConf.textWidth)/2)
             mTB = self.mainConf.textMargin[0]
-            # print(tW, sW, tM, mTB)
             self.guiEditor.setViewportMargins(tM,mTB,0,mTB)
+        return
+
+    def _docChange(self, thePos, charsRemoved, charsAdded):
+        tStart = time()
+        # logger.debug("Contents changed: %d %d %d" % (thePos, charsRemoved, charsAdded))
+        self.charCount = self.theDoc.characterCount()
+        self.lineCount = self.theDoc.lineCount()
+        self.theParent.statusBar.setCharCount(self.charCount)
+        if self.mainConf.doReplace:
+            self._docAutoReplace(self.theDoc.findBlock(thePos))
+        logger.verbose("Doc change signal took %.3f µs" % ((time()-tStart)*1e6))
+        return
+
+    def _docAutoReplace(self, theBlock):
+
+        theText   = theBlock.text()
+        theCursor = self.guiEditor.textCursor()
+        thePos    = theCursor.positionInBlock()
+        theLen    = len(theText)
+
+        if theLen < 1 or thePos-1 > theLen:
+            return
+
+        theOne   = theText[thePos-1:thePos]
+        theTwo   = theText[thePos-2:thePos]
+        theThree = theText[thePos-3:thePos]
+
+        if self.mainConf.doReplaceQuote and theOne == "\"":
+            qOpen  = self.mainConf.replaceQuotes[0]
+            qClose = self.mainConf.replaceQuotes[1]
+            nOpen  = theText.count(qOpen)
+            nClose = theText.count(qClose)
+            if nOpen > nClose:
+                self.guiEditor.textCursor().deletePreviousChar()
+                self.guiEditor.textCursor().insertText(qClose)
+            else:
+                self.guiEditor.textCursor().deletePreviousChar()
+                self.guiEditor.textCursor().insertText(qOpen)
+
+        if self.mainConf.doReplaceDash and theTwo == "--":
+            self.guiEditor.textCursor().deletePreviousChar()
+            self.guiEditor.textCursor().deletePreviousChar()
+            self.guiEditor.textCursor().insertText("–")
+
+        if self.mainConf.doReplaceDash and theTwo == "–-":
+            self.guiEditor.textCursor().deletePreviousChar()
+            self.guiEditor.textCursor().deletePreviousChar()
+            self.guiEditor.textCursor().insertText("—")
+
+        if self.mainConf.doReplaceDots and theThree == "...":
+            self.guiEditor.textCursor().deletePreviousChar()
+            self.guiEditor.textCursor().deletePreviousChar()
+            self.guiEditor.textCursor().deletePreviousChar()
+            self.guiEditor.textCursor().insertText("…")
+
         return
 
     def _buildTabToolBar(self):

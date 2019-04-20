@@ -58,9 +58,14 @@ class Config:
         self.mainPanePos  = [300, 800]
 
         ## Text Editor
-        self.textFixedW   = True
-        self.textWidth    = 600
-        self.textMargin   = [40, 40]
+        self.textFixedW     = True
+        self.textWidth      = 600
+        self.textMargin     = [40, 40]
+        self.doReplace      = True
+        self.doReplaceQuote = True
+        self.doReplaceDash  = True
+        self.doReplaceDots  = True
+        self.replaceQuotes  = ["“","”"]
 
         # Check if config file exists
         if path.isfile(path.join(self.confPath,self.confFile)):
@@ -104,12 +109,24 @@ class Config:
         cnfSec = "Editor"
         if confParser.has_section(cnfSec):
             if confParser.has_option(cnfSec,"fixedwidth"):
-               self.textFixedW = confParser.getboolean(cnfSec,"fixedwidth")
+               self.textFixedW      = confParser.getboolean(cnfSec,"fixedwidth")
             if confParser.has_option(cnfSec,"width"):
-                self.textWidth  = confParser.getint(cnfSec,"width")
+                self.textWidth      = confParser.getint(cnfSec,"width")
             if confParser.has_option(cnfSec,"margins"):
-                self.textMargin = self.unpackList(
+                self.textMargin     = self.unpackList(
                     confParser.get(cnfSec,"margins"), 2, self.textMargin
+                )
+            if confParser.has_option(cnfSec,"autoreplace"):
+                self.doReplace      = confParser.getboolean(cnfSec,"autoreplace")
+            if confParser.has_option(cnfSec,"repquotes"):
+                self.doReplaceQuote = confParser.getboolean(cnfSec,"repquotes")
+            if confParser.has_option(cnfSec,"repdash"):
+                self.doReplaceDash  = confParser.getboolean(cnfSec,"repdash")
+            if confParser.has_option(cnfSec,"repdots"):
+                self.doReplaceDots  = confParser.getboolean(cnfSec,"repdots")
+            if confParser.has_option(cnfSec,"usequotes"):
+                self.replaceQuotes  = self.unpackList(
+                    confParser.get(cnfSec,"usequotes"), 2, self.replaceQuotes
                 )
 
         ## Path
@@ -146,6 +163,11 @@ class Config:
         confParser.set(cnfSec,"fixedwidth", str(self.textFixedW))
         confParser.set(cnfSec,"width",      str(self.textWidth))
         confParser.set(cnfSec,"margins",    self.packList(self.textMargin))
+        confParser.set(cnfSec,"autoreplace",str(self.doReplace))
+        confParser.set(cnfSec,"repquotes",  str(self.doReplaceQuote))
+        confParser.set(cnfSec,"repdash",    str(self.doReplaceDash))
+        confParser.set(cnfSec,"repdots",    str(self.doReplaceDots))
+        confParser.set(cnfSec,"usequotes",  self.packList(self.replaceQuotes))
 
         ## Path
         cnfSec = "Path"

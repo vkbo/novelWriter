@@ -23,12 +23,18 @@ class NWDoc():
 
     FILE_MN = "main.nwd"
 
-    def __init__(self, theProject):
+    def __init__(self, theProject, theParent):
 
         self.mainConf   = nw.CONFIG
         self.theProject = theProject
-        self.docHandle  = None
+        self.theParent  = theParent
         self.theItem    = None
+        self.docHandle  = None
+
+        # Document Info
+        self.charCount  = None
+        self.lineCount  = None
+        self.wordCount  = None
 
         return
 
@@ -36,6 +42,7 @@ class NWDoc():
 
         self.docHandle = tHandle
         self.theItem   = self.theProject.getItem(tHandle)
+        self.theParent.statusBar.setDocHandleCount(tHandle)
 
         docDir, docFile = self._assemblePath(self.FILE_MN)
         logger.debug("Opening document %s" % path.join(docDir,docFile))
@@ -78,12 +85,25 @@ class NWDoc():
 
         docAna = TextAnalysis(docText,"en_GB")
         wC, sC, pC = docAna.getStats()
+        # rScr, gLev = docAna.getReadabilityScore()
 
         self.theItem.setWordCount(wC)
         self.theItem.setSentCount(sC)
         self.theItem.setParaCount(pC)
 
         return True
+
+    ##
+    #  Setters
+    ##
+
+    def setCharCount(self, theCount):
+        self.charCount = theCount
+        return
+
+    def setLineCount(self, theCount):
+        self.lineCount = theCount
+        return
 
     ##
     #  Internal Functions
