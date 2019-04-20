@@ -23,6 +23,7 @@ from nw.gui.doctree       import GuiDocTree
 from nw.gui.doctreectx    import GuiDocTreeCtx
 from nw.gui.doceditor     import GuiDocEditor
 from nw.gui.projecteditor import GuiProjectEditor
+from nw.gui.statusbar     import GuiMainStatus
 from nw.project.project   import NWProject
 from nw.project.document  import NWDoc
 
@@ -36,13 +37,13 @@ class GuiMain(QMainWindow):
         logger.debug("Initialising GUI ...")
         self.mainConf    = nw.CONFIG
         self.theProject  = NWProject()
-        self.theDocument = NWDoc(self.theProject)
+        self.theDocument = NWDoc(self.theProject, self)
 
         self.resize(*self.mainConf.winGeometry)
         self._setWindowTitle()
         self.setWindowIcon(QIcon(path.join(self.mainConf.appPath,"..","novelWriter.svg")))
 
-        self.docEditor = GuiDocEditor()
+        self.docEditor = GuiDocEditor(self)
 
         self.treePane = QFrame()
         self.treePane.setFrameShape(QFrame.StyledPanel)
@@ -75,6 +76,10 @@ class GuiMain(QMainWindow):
         self.splitMain.setSizes(self.mainConf.mainPanePos)
         self.splitMain.splitterMoved.connect(self._splitMainMove)
 
+        self.statusBar = GuiMainStatus()
+        self.setStatusBar(self.statusBar)
+        self.statusBar.showMessage("Ready")
+
         # Load Theme StyleSheet
         cssFile = path.join(self.mainConf.themePath,self.mainConf.guiTheme+".css")
         if path.isfile(cssFile):
@@ -85,9 +90,6 @@ class GuiMain(QMainWindow):
         self.show()
 
         logger.debug("GUI initialisation complete")
-
-        statBar = self.statusBar()
-        statBar.showMessage("Ready")
 
         return
 
