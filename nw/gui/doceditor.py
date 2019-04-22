@@ -231,6 +231,22 @@ class GuiDocEditor(QWidget):
         return
 
     ##
+    #  Key Shortcut Handlers
+    ##
+
+    def _doBold(self):
+        theCursor = self.guiEditor.textCursor()
+        if theCursor.hasSelection():
+            selBeg = theCursor.selectionStart()
+            selEnd = theCursor.selectionEnd()
+            selText = theCursor.selectedText()
+            theText = "**%s**" % theCursor.selectedText()
+            theCursor.removeSelectedText()
+            theCursor.setPosition(selBeg)
+            self.guiEditor.textCursor().insertText(theText)
+        return
+
+    ##
     #  GUI Builder
     ##
 
@@ -241,8 +257,9 @@ class GuiDocEditor(QWidget):
 
         # Text > Bold
         tbTextBold = QAction(QIcon.fromTheme("format-text-bold"), "Bold (Ctrl+B)", toolBar)
-        tbTextBold.setShortcut("Ctrl+B")
         tbTextBold.setStatusTip("Toggle Selected Text Bold")
+        tbTextBold.setShortcut("Ctrl+B")
+        tbTextBold.triggered.connect(self._doBold)
         toolBar.addAction(tbTextBold)
 
         # Text > Italics

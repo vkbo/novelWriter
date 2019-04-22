@@ -377,48 +377,48 @@ class GuiMain(QMainWindow):
 
         ############################################################################################
 
-        # Format
-        formatMenu = menuBar.addMenu("&Format")
+        # # Format
+        # formatMenu = menuBar.addMenu("&Format")
 
-        # Format > Font Style
-        menuFont = QAction(QIcon.fromTheme("preferences-desktop-font"), "Font Family", menuBar)
-        menuFont.setStatusTip("Set Font for Selected text")
-        formatMenu.addAction(menuFont)
+        # # Format > Font Style
+        # menuFont = QAction(QIcon.fromTheme("preferences-desktop-font"), "Font Family", menuBar)
+        # menuFont.setStatusTip("Set Font for Selected text")
+        # formatMenu.addAction(menuFont)
 
-        # Format > Separator
-        formatMenu.addSeparator()
+        # # Format > Separator
+        # formatMenu.addSeparator()
 
-        # Format > Bold
-        menuBold = QAction(QIcon.fromTheme("format-text-bold"), "Bold Text", menuBar)
-        menuBold.setShortcut("Ctrl+B")
-        menuBold.setStatusTip("Toggle Bold for Selected Text")
-        formatMenu.addAction(menuBold)
+        # # Format > Bold
+        # menuBold = QAction(QIcon.fromTheme("format-text-bold"), "Bold Text", menuBar)
+        # menuBold.setShortcut("Ctrl+B")
+        # menuBold.setStatusTip("Toggle Bold for Selected Text")
+        # formatMenu.addAction(menuBold)
 
-        # Format > Italic
-        menuItalic = QAction(QIcon.fromTheme("format-text-italic"), "Italic Text", menuBar)
-        menuItalic.setShortcut("Ctrl+I")
-        menuItalic.setStatusTip("Toggle Italic for Selected Text")
-        formatMenu.addAction(menuItalic)
+        # # Format > Italic
+        # menuItalic = QAction(QIcon.fromTheme("format-text-italic"), "Italic Text", menuBar)
+        # menuItalic.setShortcut("Ctrl+I")
+        # menuItalic.setStatusTip("Toggle Italic for Selected Text")
+        # formatMenu.addAction(menuItalic)
 
-        # Format > Underline
-        menuUnderline = QAction(QIcon.fromTheme("format-text-underline"), "Underline Text", menuBar)
-        menuUnderline.setShortcut("Ctrl+U")
-        menuUnderline.setStatusTip("Toggle Underline for Selected Text")
-        formatMenu.addAction(menuUnderline)
+        # # Format > Underline
+        # menuUnderline = QAction(QIcon.fromTheme("format-text-underline"), "Underline Text", menuBar)
+        # menuUnderline.setShortcut("Ctrl+U")
+        # menuUnderline.setStatusTip("Toggle Underline for Selected Text")
+        # formatMenu.addAction(menuUnderline)
 
-        # Format > Strikethrough
-        menuStrikethrough = QAction(QIcon.fromTheme("format-text-strikethrough"), "Strikethrough Text", menuBar)
-        menuStrikethrough.setShortcut("Ctrl+D")
-        menuStrikethrough.setStatusTip("Toggle Strikethrough for Selected Text")
-        formatMenu.addAction(menuStrikethrough)
+        # # Format > Strikethrough
+        # menuStrikethrough = QAction(QIcon.fromTheme("format-text-strikethrough"), "Strikethrough Text", menuBar)
+        # menuStrikethrough.setShortcut("Ctrl+D")
+        # menuStrikethrough.setStatusTip("Toggle Strikethrough for Selected Text")
+        # formatMenu.addAction(menuStrikethrough)
 
-        # Format > Separator
-        formatMenu.addSeparator()
+        # # Format > Separator
+        # formatMenu.addSeparator()
 
-        # Format > Clear
-        menuClear = QAction(QIcon.fromTheme("edit-clear"), "Clear Formatting", menuBar)
-        menuClear.setStatusTip("Clear Formatting for Selected Text")
-        formatMenu.addAction(menuClear)
+        # # Format > Clear
+        # menuClear = QAction(QIcon.fromTheme("edit-clear"), "Clear Formatting", menuBar)
+        # menuClear.setStatusTip("Clear Formatting for Selected Text")
+        # formatMenu.addAction(menuClear)
 
         ############################################################################################
 
