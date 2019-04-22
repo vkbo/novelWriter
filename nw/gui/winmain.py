@@ -14,9 +14,9 @@ import logging
 import nw
 
 from os                   import path
-from PyQt5.QtWidgets      import qApp, QWidget, QMainWindow, QHBoxLayout, QVBoxLayout, QFrame, QSplitter, QAction, QToolBar, QFileDialog, QStackedWidget
-from PyQt5.QtCore         import Qt, QSize, QObject
-from PyQt5.QtGui          import QIcon, QStandardItemModel
+from PyQt5.QtWidgets      import qApp, QWidget, QMainWindow, QVBoxLayout, QFrame, QSplitter, QAction, QToolBar, QFileDialog, QStackedWidget
+from PyQt5.QtCore         import Qt, QSize
+from PyQt5.QtGui          import QIcon
 
 from nw.enum              import nwItemType
 from nw.gui.doctree       import GuiDocTree

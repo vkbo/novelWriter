@@ -13,7 +13,6 @@
 import logging
 import nw
 
-from PyQt5.QtGui     import QIcon
 from PyQt5.QtWidgets import QMenu, QAction
 
 from nw.enum         import nwItemType, nwItemClass, nwItemAction

@@ -15,9 +15,9 @@ import nw
 
 from time import time
 
-from PyQt5.QtWidgets     import QWidget, QTextEdit, QHBoxLayout, QVBoxLayout, QFrame, QSplitter, QToolBar, QAction, QScrollArea
-from PyQt5.QtCore        import Qt, QSize, QSizeF, QTimer, QThread, pyqtSignal
-from PyQt5.QtGui         import QIcon, QFont, QTextCursor, QTextFormat, QTextBlockFormat
+from PyQt5.QtWidgets     import QWidget, QTextEdit, QVBoxLayout, QToolBar, QAction
+from PyQt5.QtCore        import Qt, QSize, QTimer
+from PyQt5.QtGui         import QIcon
 
 from nw.gui.dochighlight import GuiDocHighlighter
 from nw.gui.wordcounter  import WordCounter

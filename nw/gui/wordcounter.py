@@ -15,11 +15,7 @@ import nw
 
 from time import time
 
-from PyQt5.QtWidgets     import QWidget, QTextEdit, QHBoxLayout, QVBoxLayout, QFrame, QSplitter, QToolBar, QAction, QScrollArea
-from PyQt5.QtCore        import Qt, QSize, QSizeF, QTimer, QThread, pyqtSignal
-from PyQt5.QtGui         import QIcon, QFont, QTextCursor, QTextFormat, QTextBlockFormat
-
-from nw.gui.dochighlight import GuiDocHighlighter
+from PyQt5.QtCore import QThread
 
 logger = logging.getLogger(__name__)
 

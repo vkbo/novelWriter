@@ -15,9 +15,8 @@ import nw
 
 from os              import path
 
-from PyQt5.QtWidgets import QDialog, QHBoxLayout, QVBoxLayout, QGroupBox, QFormLayout, QLabel, QLineEdit, QPlainTextEdit, QPushButton
+from PyQt5.QtWidgets import QDialog, QHBoxLayout, QVBoxLayout, QGroupBox, QFormLayout, QLineEdit, QPlainTextEdit, QPushButton
 from PyQt5.QtSvg     import QSvgWidget
-from PyQt5.QtGui     import QIcon
 
 logger = logging.getLogger(__name__)
 

@@ -15,8 +15,8 @@ import nw
 
 from os              import path
 from PyQt5.QtGui     import QIcon
-from PyQt5.QtCore    import Qt, QSize
-from PyQt5.QtWidgets import QTreeWidget, QTreeWidgetItem, QTreeWidgetItemIterator, QAbstractItemView, QMenu, QAction
+from PyQt5.QtCore    import QSize
+from PyQt5.QtWidgets import QTreeWidget, QTreeWidgetItem, QAbstractItemView
 
 from nw.enum         import nwItemType, nwItemClass
 
