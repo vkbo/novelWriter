@@ -16,10 +16,11 @@ import nw
 from time import time
 
 from PyQt5.QtWidgets     import QWidget, QTextEdit, QHBoxLayout, QVBoxLayout, QFrame, QSplitter, QToolBar, QAction, QScrollArea
-from PyQt5.QtCore        import Qt, QSize, QSizeF
+from PyQt5.QtCore        import Qt, QSize, QSizeF, QTimer, QThread, pyqtSignal
 from PyQt5.QtGui         import QIcon, QFont, QTextCursor, QTextFormat, QTextBlockFormat
 
 from nw.gui.dochighlight import GuiDocHighlighter
+from nw.gui.wordcounter  import WordCounter
 
 logger = logging.getLogger(__name__)
 
@@ -34,12 +35,7 @@ class GuiDocEditor(QWidget):
         self.charCount = 0
         self.wordCount = 0
         self.lineCount = 0
-
-        # Internal Temps
-        self.blockWords = {}
-        self.currEditBlock = -1
-        self.currEditStart =  0
-        self.currEditFinal =  0
+        self.lastEdit  = 0
 
         self.outerBox  = QVBoxLayout()
         self.guiEditor = QTextEdit()
@@ -68,30 +64,28 @@ class GuiDocEditor(QWidget):
         self.theDoc.setDocumentMargin(0)
         self.theDoc.contentsChange.connect(self._docChange)
 
+        # Set Up Word Count Thread and Timer
+        self.wcInterval = self.mainConf.wordCountTimer
+        self.wcTimer = QTimer()
+        self.wcTimer.setInterval(int(self.wcInterval*1000))
+        self.wcTimer.timeout.connect(self._runCounter)
+
+        self.wCounter = WordCounter(self)
+        self.wCounter.finished.connect(self._updateCounts)
+
         logger.debug("DocEditor initialisation complete")
 
         return
 
+    ##
+    #  Class Methods
+    ##
+
     def setText(self, theText):
-
         self.guiEditor.setPlainText(theText)
-
-        self.charCount = self.theDoc.characterCount()
-        self.wordCount = 0
-
-        self.currEditBlock = -1
-        self.currEditWords =  0
-
-        tStart = time()
-        self.blockWords = {}
-        for n in range(self.theDoc.blockCount()):
-            self._countWords(self.theDoc.findBlockByNumber(n))
-        self.wordCount = sum(self.blockWords.values())
-        logger.verbose("Doc word count took %.3f µs" % ((time()-tStart)*1e6))
-
-        self.theParent.statusBar.setCharCount(self.charCount)
-        self.theParent.statusBar.setWordCount(self.wordCount)
-
+        self.lastEdit = time()
+        self._runCounter()
+        self.wcTimer.start()
         return True
 
     def getText(self):
@@ -110,27 +104,22 @@ class GuiDocEditor(QWidget):
             self.guiEditor.setViewportMargins(tM,mTB,0,mTB)
         return
 
+    ##
+    #  Document Events and Maintenance
+    ##
+
     def _docChange(self, thePos, charsRemoved, charsAdded):
-
-        tStart = time()
-
-        self.charCount = self.theDoc.characterCount()
-        self.lineCount = self.theDoc.lineCount()
-        self.theParent.statusBar.setCharCount(self.charCount)
-
-        currBlock = self.theDoc.findBlock(thePos)
-        self._countWords(currBlock)
-        self.wordCount = sum(self.blockWords.values())
-        self.theParent.statusBar.setWordCount(self.wordCount)
-
+        self.lastEdit = time()
+        if not self.wcTimer.isActive():
+            self.wcTimer.start()
         if self.mainConf.doReplace:
-            self._docAutoReplace(currBlock)
-
-        logger.verbose("Doc change signal took %.3f µs" % ((time()-tStart)*1e6))
-
+            self._docAutoReplace(self.theDoc.findBlock(thePos))
+        logger.verbose("Doc change signal took %.3f µs" % ((time()-self.lastEdit)*1e6))
         return
 
     def _docAutoReplace(self, theBlock):
+        """Autoreplace text elements based on main configuration.
+        """
 
         if not theBlock.isValid():
             return
@@ -177,34 +166,33 @@ class GuiDocEditor(QWidget):
 
         return
 
-    def _countWords(self, theBlock):
-        """Count the number of words in a given block, but only if it's a text block. I.e. we skip
-        blocks starting with @ and %, and we also skip the ### in titles. Dashes are replaced with
-        spaces before the count to ensure, for instance, 'word1—word2' is counted as two words.
+    def _runCounter(self):
+        """Decide whether to run the word counter, or stop the timer due to inactivity.
         """
-
-        if not theBlock.isValid():
-            return
-
-        theText = theBlock.text()
-        theLen  = len(theText)
-        self.blockWords[theBlock.blockNumber()] = 0
-
-        if theLen == 0:
-            return 0
-        if theText[0] == "@" or theText[0] == "%":
-            return 0
-        if theText[0] == "#":
-            nWords = -1
+        sinceActive = time()-self.lastEdit
+        if sinceActive > 5*self.wcInterval:
+            logger.verbose("Stopping word count timer due to no activity over the last %.3f seconds" % sinceActive)
+            self.wcTimer.stop()
+        elif self.wCounter.isRunning():
+            logger.verbose("Word counter thread is busy")
         else:
-            nWords = 0
+            logger.verbose("Starting word counter")
+            self.wCounter.start()
+        return
 
-        theBuff = theText.replace("–"," ").replace("—"," ")
-        nWords += len(theBuff.split())
+    def _updateCounts(self):
+        """Slot for the word counter's finished signal
+        """
+        logger.verbose("Updating word counts")
+        self.charCount = self.wCounter.charCount
+        self.wordCount = self.wCounter.wordCount
+        self.theParent.statusBar.setCharCount(self.charCount)
+        self.theParent.statusBar.setWordCount(self.wordCount)
+        return
 
-        self.blockWords[theBlock.blockNumber()] = nWords
-
-        return nWords
+    ##
+    #  GUI Builder
+    ##
 
     def _buildTabToolBar(self):
         toolBar = self.editToolBar

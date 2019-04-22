@@ -66,6 +66,7 @@ class Config:
         self.doReplaceDash  = True
         self.doReplaceDots  = True
         self.replaceQuotes  = ["“","”"]
+        self.wordCountTimer = 5.0
 
         # Check if config file exists
         if path.isfile(path.join(self.confPath,self.confFile)):
