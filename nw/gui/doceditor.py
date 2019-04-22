@@ -15,19 +15,18 @@ import nw
 
 from time import time
 
-from PyQt5.QtWidgets     import QWidget, QTextEdit, QVBoxLayout, QToolBar, QAction
-from PyQt5.QtCore        import Qt, QSize, QTimer
-from PyQt5.QtGui         import QIcon
+from PyQt5.QtWidgets     import QTextEdit
+from PyQt5.QtCore        import QTimer
 
 from nw.gui.dochighlight import GuiDocHighlighter
 from nw.gui.wordcounter  import WordCounter
 
 logger = logging.getLogger(__name__)
 
-class GuiDocEditor(QWidget):
+class GuiDocEditor(QTextEdit):
 
     def __init__(self, theParent):
-        QWidget.__init__(self)
+        QTextEdit.__init__(self)
 
         logger.debug("Initialising DocEditor ...")
         
@@ -51,33 +50,21 @@ class GuiDocEditor(QWidget):
         # Editor State
         self.hasSelection = False
 
-        self.outerBox  = QVBoxLayout()
-        self.guiEditor = QTextEdit()
         if self.mainConf.textFixedW:
-            self.guiEditor.setLineWrapMode(QTextEdit.FixedPixelWidth)
-            self.guiEditor.setLineWrapColumnOrWidth(self.mainConf.textWidth)
+            self.setLineWrapMode(QTextEdit.FixedPixelWidth)
+            self.setLineWrapColumnOrWidth(self.mainConf.textWidth)
         else:
             mTB = self.mainConf.textMargin[0]
             mLR = self.mainConf.textMargin[1]
-            self.guiEditor.setViewportMargins(mLR,mTB,mLR,mTB)
+            self.setViewportMargins(mLR,mTB,mLR,mTB)
 
-        self.hLight = GuiDocHighlighter(self.guiEditor.document())
-
-        self.setLayout(self.outerBox)
-
-        self.editToolBar = QToolBar()
-        self._buildTabToolBar()
-
-        self.outerBox.addWidget(self.editToolBar)
-        self.outerBox.addWidget(self.guiEditor)
-
-        self.guiEditor.setMinimumWidth(400)
-        self.guiEditor.setAcceptRichText(False)
-        self.guiEditor.keyPressEvent = self.keyPressEvent
-
-        self.theDoc = self.guiEditor.document()
+        self.theDoc = self.document()
         self.theDoc.setDocumentMargin(0)
         self.theDoc.contentsChange.connect(self._docChange)
+        self.hLight = GuiDocHighlighter(self.theDoc)
+
+        self.setMinimumWidth(400)
+        self.setAcceptRichText(False)
 
         # Set Up Word Count Thread and Timer
         self.wcInterval = self.mainConf.wordCountTimer
@@ -97,14 +84,14 @@ class GuiDocEditor(QWidget):
     ##
 
     def setText(self, theText):
-        self.guiEditor.setPlainText(theText)
+        self.setPlainText(theText)
         self.lastEdit = time()
         self._runCounter()
         self.wcTimer.start()
         return True
 
     def getText(self):
-        theText = self.guiEditor.toPlainText()
+        theText = self.toPlainText()
         return theText
 
     def changeWidth(self):
@@ -112,11 +99,11 @@ class GuiDocEditor(QWidget):
         set to True.
         """
         if self.mainConf.textFixedW:
-            tW  = self.guiEditor.width()
-            sW  = self.guiEditor.verticalScrollBar().width()
+            tW  = self.width()
+            sW  = self.verticalScrollBar().width()
             tM  = int((tW - sW - self.mainConf.textWidth)/2)
             mTB = self.mainConf.textMargin[0]
-            self.guiEditor.setViewportMargins(tM,mTB,0,mTB)
+            self.setViewportMargins(tM,mTB,0,mTB)
         return
 
     ##
@@ -130,8 +117,8 @@ class GuiDocEditor(QWidget):
         want to trigger autoreplace on selections. Autoreplace on selections messes with undo/redo
         history.
         """
-        self.hasSelection = self.guiEditor.textCursor().hasSelection()
-        QTextEdit.keyPressEvent(self.guiEditor, keyEvent)
+        self.hasSelection = self.textCursor().hasSelection()
+        QTextEdit.keyPressEvent(self, keyEvent)
         return
 
     def _docChange(self, thePos, charsRemoved, charsAdded):
@@ -151,7 +138,7 @@ class GuiDocEditor(QWidget):
             return
 
         theText   = theBlock.text()
-        theCursor = self.guiEditor.textCursor()
+        theCursor = self.textCursor()
         thePos    = theCursor.positionInBlock()
         theLen    = len(theText)
 
@@ -163,42 +150,42 @@ class GuiDocEditor(QWidget):
         theThree = theText[thePos-3:thePos]
 
         if self.mainConf.doReplaceDQuote and theTwo == " \"":
-            self.guiEditor.textCursor().deletePreviousChar()
-            self.guiEditor.textCursor().insertText(self.typSQOpen)
+            theCursor.deletePreviousChar()
+            theCursor.insertText(self.typSQOpen)
 
         elif self.mainConf.doReplaceDQuote and theOne == "\"":
-            self.guiEditor.textCursor().deletePreviousChar()
+            theCursor.deletePreviousChar()
             if thePos == 1:
-                self.guiEditor.textCursor().insertText(self.typDQOpen)
+                theCursor.insertText(self.typDQOpen)
             else:
-                self.guiEditor.textCursor().insertText(self.typDQClose)
+                theCursor.insertText(self.typDQClose)
 
         elif self.mainConf.doReplaceSQuote and theTwo == " '":
-            self.guiEditor.textCursor().deletePreviousChar()
-            self.guiEditor.textCursor().insertText(self.typSQOpen)
+            theCursor.deletePreviousChar()
+            theCursor.insertText(self.typSQOpen)
 
         elif self.mainConf.doReplaceSQuote and theOne == "'":
-            self.guiEditor.textCursor().deletePreviousChar()
+            theCursor.deletePreviousChar()
             if thePos == 1:
-                self.guiEditor.textCursor().insertText(self.typSQOpen)
+                theCursor.insertText(self.typSQOpen)
             else:
-                self.guiEditor.textCursor().insertText(self.typSQClose)
+                theCursor.insertText(self.typSQClose)
 
         elif self.mainConf.doReplaceDash and theTwo == "--":
-            self.guiEditor.textCursor().deletePreviousChar()
-            self.guiEditor.textCursor().deletePreviousChar()
-            self.guiEditor.textCursor().insertText("–")
+            theCursor.deletePreviousChar()
+            theCursor.deletePreviousChar()
+            theCursor.insertText("–")
 
         elif self.mainConf.doReplaceDash and theTwo == "–-":
-            self.guiEditor.textCursor().deletePreviousChar()
-            self.guiEditor.textCursor().deletePreviousChar()
-            self.guiEditor.textCursor().insertText("—")
+            theCursor.deletePreviousChar()
+            theCursor.deletePreviousChar()
+            theCursor.insertText("—")
 
         elif self.mainConf.doReplaceDots and theThree == "...":
-            self.guiEditor.textCursor().deletePreviousChar()
-            self.guiEditor.textCursor().deletePreviousChar()
-            self.guiEditor.textCursor().deletePreviousChar()
-            self.guiEditor.textCursor().insertText("…")
+            theCursor.deletePreviousChar()
+            theCursor.deletePreviousChar()
+            theCursor.deletePreviousChar()
+            theCursor.insertText("…")
 
         return
 
@@ -227,94 +214,6 @@ class GuiDocEditor(QWidget):
         self.paraCount = self.wCounter.paraCount
         self.theParent.statusBar.setCounts(self.charCount,self.wordCount,self.paraCount)
         self.theParent.treeView.propagateCount(tHandle, self.wordCount)
-
-        return
-
-    ##
-    #  Key Shortcut Handlers
-    ##
-
-    def _doBold(self):
-        theCursor = self.guiEditor.textCursor()
-        if theCursor.hasSelection():
-            selBeg = theCursor.selectionStart()
-            selEnd = theCursor.selectionEnd()
-            selText = theCursor.selectedText()
-            theText = "**%s**" % theCursor.selectedText()
-            theCursor.removeSelectedText()
-            theCursor.setPosition(selBeg)
-            self.guiEditor.textCursor().insertText(theText)
-        return
-
-    ##
-    #  GUI Builder
-    ##
-
-    def _buildTabToolBar(self):
-        toolBar = self.editToolBar
-        toolBar.setToolButtonStyle(Qt.ToolButtonIconOnly)
-        toolBar.setIconSize(QSize(16,16))
-
-        # Text > Bold
-        tbTextBold = QAction(QIcon.fromTheme("format-text-bold"), "Bold (Ctrl+B)", toolBar)
-        tbTextBold.setStatusTip("Toggle Selected Text Bold")
-        tbTextBold.setShortcut("Ctrl+B")
-        tbTextBold.triggered.connect(self._doBold)
-        toolBar.addAction(tbTextBold)
-
-        # Text > Italics
-        tbTextItalic = QAction(QIcon.fromTheme("format-text-italic"), "Italic (Ctrl+I)", toolBar)
-        tbTextItalic.setShortcut("Ctrl+I")
-        tbTextItalic.setStatusTip("Toggle Selected Text Italic")
-        toolBar.addAction(tbTextItalic)
-
-        # Text > Underline
-        tbTextUnderline = QAction(QIcon.fromTheme("format-text-underline"), "Underline (Ctrl+U)", toolBar)
-        tbTextUnderline.setShortcut("Ctrl+U")
-        tbTextUnderline.setStatusTip("Toggle Selected Text Underline")
-        toolBar.addAction(tbTextUnderline)
-
-        # Text > Strikethrough
-        tbTextStrikethrough = QAction(QIcon.fromTheme("format-text-strikethrough"), "Strikethrough (Ctrl+D)", toolBar)
-        tbTextStrikethrough.setShortcut("Ctrl+D")
-        tbTextStrikethrough.setStatusTip("Toggle Selected Text Strikethrough")
-        toolBar.addAction(tbTextStrikethrough)
-
-        # --------------------
-        toolBar.addSeparator()
-
-        # Edit > Cut
-        tbEditCut = QAction(QIcon.fromTheme("edit-cut"), "Cut (Ctrl+X)", toolBar)
-        tbEditCut.setShortcut("Ctrl+X")
-        tbEditCut.setStatusTip("Cut Selected Text")
-        toolBar.addAction(tbEditCut)
-
-        # Edit > Copy
-        tbEditCopy = QAction(QIcon.fromTheme("edit-copy"), "Copy (Ctrl+C)", toolBar)
-        tbEditCopy.setShortcut("Ctrl+C")
-        tbEditCopy.setStatusTip("Copy Selected Text")
-        toolBar.addAction(tbEditCopy)
-
-        # Edit > Paste
-        tbEditPaste = QAction(QIcon.fromTheme("edit-paste"), "Paste (Ctrl+V)", toolBar)
-        tbEditPaste.setShortcut("Ctrl+V")
-        tbEditPaste.setStatusTip("Paste Text")
-        toolBar.addAction(tbEditPaste)
-
-        # --------------------
-        toolBar.addSeparator()
-
-        # Edit > Undo
-        tbEditUndo = QAction(QIcon.fromTheme("edit-undo"), "Undo (Ctrl+Z)", toolBar)
-        tbEditUndo.setShortcut("Ctrl+Z")
-        tbEditUndo.setStatusTip("Undo Last Change")
-        toolBar.addAction(tbEditUndo)
-
-        # Edit > Redo
-        tbEditRedo = QAction(QIcon.fromTheme("edit-redo"), "Redo (Ctrl+Y)", toolBar)
-        tbEditRedo.setShortcut("Ctrl+Y")
-        tbEditRedo.setStatusTip("Revert Last Undo")
-        toolBar.addAction(tbEditRedo)
 
         return
 
