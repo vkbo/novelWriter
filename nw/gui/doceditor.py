@@ -30,12 +30,26 @@ class GuiDocEditor(QWidget):
         QWidget.__init__(self)
 
         logger.debug("Initialising DocEditor ...")
+        
+        # Class Variables
         self.mainConf  = nw.CONFIG
         self.theParent = theParent
+
+        # Document Variables
         self.charCount = 0
         self.wordCount = 0
         self.paraCount = 0
         self.lastEdit  = 0
+
+        # Typography
+        self.typDQOpen  = self.mainConf.fmtDoubleQuotes[0]
+        self.typDQClose = self.mainConf.fmtDoubleQuotes[1]
+        self.typSQOpen  = self.mainConf.fmtSingleQuotes[0]
+        self.typSQClose = self.mainConf.fmtSingleQuotes[1]
+        self.typApos    = self.mainConf.fmtApostrophe
+
+        # Editor State
+        self.hasSelection = False
 
         self.outerBox  = QVBoxLayout()
         self.guiEditor = QTextEdit()
@@ -59,6 +73,7 @@ class GuiDocEditor(QWidget):
 
         self.guiEditor.setMinimumWidth(400)
         self.guiEditor.setAcceptRichText(False)
+        self.guiEditor.keyPressEvent = self.keyPressEvent
 
         self.theDoc = self.guiEditor.document()
         self.theDoc.setDocumentMargin(0)
@@ -108,11 +123,22 @@ class GuiDocEditor(QWidget):
     #  Document Events and Maintenance
     ##
 
+    def keyPressEvent(self, keyEvent):
+        """Intercept key press events.
+        We need to intercept key presses briefly to record the state of selection. This is in order
+        to know whether we had a selection prior to triggering the _docChange slot, as we do not
+        want to trigger autoreplace on selections. Autoreplace on selections messes with undo/redo
+        history.
+        """
+        self.hasSelection = self.guiEditor.textCursor().hasSelection()
+        QTextEdit.keyPressEvent(self.guiEditor, keyEvent)
+        return
+
     def _docChange(self, thePos, charsRemoved, charsAdded):
         self.lastEdit = time()
         if not self.wcTimer.isActive():
             self.wcTimer.start()
-        if self.mainConf.doReplace:
+        if self.mainConf.doReplace and not self.hasSelection:
             self._docAutoReplace(self.theDoc.findBlock(thePos))
         logger.verbose("Doc change signal took %.3f µs" % ((time()-self.lastEdit)*1e6))
         return
@@ -136,17 +162,27 @@ class GuiDocEditor(QWidget):
         theTwo   = theText[thePos-2:thePos]
         theThree = theText[thePos-3:thePos]
 
-        if self.mainConf.doReplaceQuote and theOne == "\"":
-            qOpen  = self.mainConf.replaceQuotes[0]
-            qClose = self.mainConf.replaceQuotes[1]
-            nOpen  = theText.count(qOpen)
-            nClose = theText.count(qClose)
-            if nOpen > nClose:
-                self.guiEditor.textCursor().deletePreviousChar()
-                self.guiEditor.textCursor().insertText(qClose)
+        if self.mainConf.doReplaceDQuote and theTwo == " \"":
+            self.guiEditor.textCursor().deletePreviousChar()
+            self.guiEditor.textCursor().insertText(self.typSQOpen)
+
+        elif self.mainConf.doReplaceDQuote and theOne == "\"":
+            self.guiEditor.textCursor().deletePreviousChar()
+            if thePos == 1:
+                self.guiEditor.textCursor().insertText(self.typDQOpen)
             else:
-                self.guiEditor.textCursor().deletePreviousChar()
-                self.guiEditor.textCursor().insertText(qOpen)
+                self.guiEditor.textCursor().insertText(self.typDQClose)
+
+        elif self.mainConf.doReplaceSQuote and theTwo == " '":
+            self.guiEditor.textCursor().deletePreviousChar()
+            self.guiEditor.textCursor().insertText(self.typSQOpen)
+
+        elif self.mainConf.doReplaceSQuote and theOne == "'":
+            self.guiEditor.textCursor().deletePreviousChar()
+            if thePos == 1:
+                self.guiEditor.textCursor().insertText(self.typSQOpen)
+            else:
+                self.guiEditor.textCursor().insertText(self.typSQClose)
 
         elif self.mainConf.doReplaceDash and theTwo == "--":
             self.guiEditor.textCursor().deletePreviousChar()
