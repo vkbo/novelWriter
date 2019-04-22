@@ -50,21 +50,25 @@ class GuiDocHighlighter(QSyntaxHighlighter):
         }
 
         self.hRules = [
-            (r"^#{1}[^#].*[^\n]",     0, self.hStyles["header1"]),
-            (r"^#{2}[^#].*[^\n]",     0, self.hStyles["header2"]),
-            (r"^#{3}[^#].*[^\n]",     0, self.hStyles["header3"]),
-            (r"^#{4}[^#].*[^\n]",     0, self.hStyles["header4"]),
-            (r"\*{2}(.+?)\*{2}",      0, self.hStyles["bold"]),
-            (r"\/{2}(.+?)\/{2}",      0, self.hStyles["italic"]),
-            (r"~{2}(.+?)~{2}",        0, self.hStyles["strike"]),
-            (r"_{2}(.+?)_{2}",        0, self.hStyles["underline"]),
-            (r'"(.+?)"',              0, self.hStyles["dialogue"]),
-            (r"«(.+?)»",              0, self.hStyles["dialogue"]),
-            (r"“(.+?)”",              0, self.hStyles["dialogue"]),
+            (r"^#{1}[^#].*[^\n]", 0, self.hStyles["header1"]),
+            (r"^#{2}[^#].*[^\n]", 0, self.hStyles["header2"]),
+            (r"^#{3}[^#].*[^\n]", 0, self.hStyles["header3"]),
+            (r"^#{4}[^#].*[^\n]", 0, self.hStyles["header4"]),
+            (r"(?<![\w|\\])([\*]{2})(?!\s)(?m:(.+?))(?<![\s|\\])(\1)(?!\w)",  2, self.hStyles["bold"]),
+            (r"(?<![\w|_|\\])([_])(?!\s|\1)(?m:(.+?))(?<![\s|\\])(\1)(?!\w)", 2, self.hStyles["italic"]),
             (r"^(@.+?)\s*:\s*(.+?)$", 1, self.hStyles["keyword"]),
             (r"^(@.+?)\s*:\s*(.+?)$", 2, self.hStyles["value"]),
             (r"^%.*$",                0, self.hStyles["hidden"]),
         ]
+        self.hRules.append(
+            ("{:s}(.+?){:s}".format('"','"'),0,self.hStyles["dialogue"])
+        )
+        self.hRules.append(
+            ("{:s}(.+?){:s}".format(*self.mainConf.fmtDoubleQuotes),0,self.hStyles["dialogue"])
+        )
+        self.hRules.append(
+            ("{:s}(.+?){:s}".format(*self.mainConf.fmtSingleQuotes),0,self.hStyles["dialogue"])
+        )
 
         # Build a QRegExp for each pattern
         self.rules = [(QRegularExpression(a),b,c) for (a,b,c) in self.hRules]
