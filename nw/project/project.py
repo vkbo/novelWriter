@@ -43,8 +43,9 @@ class NWProject():
 
         return
 
-    def buildProjectTree(self):
-        return True
+    ##
+    #  Add Entries
+    ##
 
     def newRoot(self, rootName, rootClass):
         newItem = NWItem()
@@ -84,6 +85,10 @@ class NWProject():
         hChapt = self.newFolder("New Chapter", nwItemClass.NOVEL, hNovel)
         hScene = self.newFile("New Scene",     nwItemClass.NOVEL, hChapt)
         return
+
+    ##
+    #  File I/O
+    ##
 
     def openProject(self, fileName):
 
@@ -194,9 +199,9 @@ class NWProject():
 
         return True
 
-    #
+    ##
     #  Set Functions
-    #
+    ##
 
     def setProjectPath(self, projPath):
         self.projPath = projPath
@@ -225,9 +230,9 @@ class NWProject():
         self.treeOrder = newOrder
         return True
 
-    #
+    ##
     #  Get Functions
-    #
+    ##
 
     def getItem(self, tHandle):
         if tHandle in self.projTree:
@@ -305,9 +310,9 @@ class NWProject():
 
         return validActions
 
-    #
+    ##
     #  Internal Functions
-    #
+    ##
 
     def _checkRootUnique(self, theClass):
         """Checks if there already is a root entry of class 'theClass' in the

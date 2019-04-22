@@ -7,12 +7,10 @@ QTextEdit {
     color: #c7cfd0;
 }
 
-QStatusBar::item {
-    background-color: rgba(0,0,0,0.1);
-    border: 1px solid #666666;
+QTreeView, QHeaderView {
+    font-size: 13px;
 }
-
-QStatusBar::item QLabel {
-    background-color: rgba(0,0,0,0.0);
-    padding: 1px 4px;
-}
+/* QStatusBar::item QLabel {
+    color: #990000;
+    font-style: normal;
+} */

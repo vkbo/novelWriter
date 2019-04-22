@@ -31,11 +31,6 @@ class NWDoc():
         self.theItem    = None
         self.docHandle  = None
 
-        # Document Info
-        self.charCount  = None
-        self.lineCount  = None
-        self.wordCount  = None
-
         return
 
     def openDocument(self, tHandle):
@@ -83,27 +78,7 @@ class NWDoc():
 
         if path.isfile(docTemp): unlink(docTemp)
 
-        docAna = TextAnalysis(docText,"en_GB")
-        wC, sC, pC = docAna.getStats()
-        # rScr, gLev = docAna.getReadabilityScore()
-
-        self.theItem.setWordCount(wC)
-        self.theItem.setSentCount(sC)
-        self.theItem.setParaCount(pC)
-
         return True
-
-    ##
-    #  Setters
-    ##
-
-    def setCharCount(self, theCount):
-        self.charCount = theCount
-        return
-
-    def setLineCount(self, theCount):
-        self.lineCount = theCount
-        return
 
     ##
     #  Internal Functions

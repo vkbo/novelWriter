@@ -1,12 +1,12 @@
 <?xml version='1.0' encoding='utf-8'?>
-<novelWriterXML appVersion="0.0.1" fileVersion="1.0" timeStamp="2019-04-19 23:41:53">
+<novelWriterXML appVersion="0.0.1" fileVersion="1.0" timeStamp="2019-04-22 16:39:21">
   <project>
     <name>Sample Project</name>
     <title>Sample Project</title>
     <author>Jane Smith</author>
     <author>Jay Doh</author>
   </project>
-  <content count="8">
+  <content count="9">
     <item handle="7031beac91f75" order="0" parent="None">
       <name>Novel</name>
       <type>ROOT</type>
@@ -30,9 +30,9 @@
       <depth>2</depth>
       <children>False</children>
       <expanded>False</expanded>
-      <wordCount>381</wordCount>
-      <sentCount>51</sentCount>
-      <paraCount>9</paraCount>
+      <charCount>2573</charCount>
+      <wordCount>377</wordCount>
+      <paraCount>5</paraCount>
     </item>
     <item handle="636b6aa9b697b" order="1" parent="e7ded148d6e4a">
       <name>New File</name>
@@ -41,6 +41,9 @@
       <depth>2</depth>
       <children>False</children>
       <expanded>False</expanded>
+      <charCount>125</charCount>
+      <wordCount>24</wordCount>
+      <paraCount>2</paraCount>
     </item>
     <item handle="f6622b4617424" order="1" parent="None">
       <name>Characters</name>
@@ -57,6 +60,9 @@
       <depth>1</depth>
       <children>False</children>
       <expanded>False</expanded>
+      <charCount>0</charCount>
+      <wordCount>0</wordCount>
+      <paraCount>0</paraCount>
     </item>
     <item handle="bb2c23b3c42cc" order="1" parent="f6622b4617424">
       <name>Jane Smith</name>
@@ -65,6 +71,9 @@
       <depth>1</depth>
       <children>False</children>
       <expanded>False</expanded>
+      <charCount>0</charCount>
+      <wordCount>0</wordCount>
+      <paraCount>0</paraCount>
     </item>
     <item handle="73eee34351f85" order="2" parent="None">
       <name>World</name>

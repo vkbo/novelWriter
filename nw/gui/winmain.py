@@ -156,6 +156,9 @@ class GuiMain(QMainWindow):
 
     def saveDocument(self):
         docHtml = self.docEditor.getText()
+        self.theDocument.theItem.setCharCount(self.docEditor.charCount)
+        self.theDocument.theItem.setWordCount(self.docEditor.wordCount)
+        self.theDocument.theItem.setParaCount(self.docEditor.paraCount)
         self.theDocument.saveDocument(docHtml)
         return
 

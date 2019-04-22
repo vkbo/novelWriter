@@ -37,9 +37,9 @@ class NWItem():
         self.hasChildren = False
         self.isExpanded  = False
 
-        self.wordCount   = None
-        self.sentCount   = None
-        self.paraCount   = None
+        self.charCount   = 0
+        self.wordCount   = 0
+        self.paraCount   = 0
 
         return
 
@@ -59,9 +59,10 @@ class NWItem():
         xSub = self._subPack(xPack,"depth",     text=str(self.itemDepth))
         xSub = self._subPack(xPack,"children",  text=str(self.hasChildren))
         xSub = self._subPack(xPack,"expanded",  text=str(self.isExpanded))
-        xSub = self._subPack(xPack,"wordCount", text=str(self.wordCount), none=False)
-        xSub = self._subPack(xPack,"sentCount", text=str(self.sentCount), none=False)
-        xSub = self._subPack(xPack,"paraCount", text=str(self.paraCount), none=False)
+        if self.itemType == nwItemType.FILE:
+            xSub = self._subPack(xPack,"charCount", text=str(self.charCount), none=False)
+            xSub = self._subPack(xPack,"wordCount", text=str(self.wordCount), none=False)
+            xSub = self._subPack(xPack,"paraCount", text=str(self.paraCount), none=False)
         return xPack
 
     def _subPack(self, xParent, name, attrib=None, text=None, none=True):
@@ -85,8 +86,8 @@ class NWItem():
         elif tagName == "depth":     self.setDepth(tagValue)
         elif tagName == "children":  self.setChildren(tagValue)
         elif tagName == "expanded":  self.setExpanded(tagValue)
+        elif tagName == "charCount": self.setCharCount(tagValue)
         elif tagName == "wordCount": self.setWordCount(tagValue)
-        elif tagName == "sentCount": self.setSentCount(tagValue)
         elif tagName == "paraCount": self.setParaCount(tagValue)
         else:
             logger.error("Unknown tag '%s'" % tagName)
@@ -159,18 +160,18 @@ class NWItem():
     #  Set Stats
     ##
 
+    def setCharCount(self, theCount):
+        theCount = self._checkInt(theCount,0)
+        self.charCount = theCount
+        return
+
     def setWordCount(self, theCount):
-        theCount = self._checkInt(theCount,None,True)
+        theCount = self._checkInt(theCount,0)
         self.wordCount = theCount
         return
 
-    def setSentCount(self, theCount):
-        theCount = self._checkInt(theCount,None,True)
-        self.sentCount = theCount
-        return
-
     def setParaCount(self, theCount):
-        theCount = self._checkInt(theCount,None,True)
+        theCount = self._checkInt(theCount,0)
         self.paraCount = theCount
         return
 

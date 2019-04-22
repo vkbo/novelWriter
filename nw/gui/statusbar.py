@@ -14,7 +14,7 @@ import logging
 import nw
 
 from os              import path
-from PyQt5.QtWidgets import QStatusBar, QLabel
+from PyQt5.QtWidgets import QStatusBar, QLabel, QFrame
 
 logger = logging.getLogger(__name__)
 
@@ -27,35 +27,24 @@ class GuiMainStatus(QStatusBar):
 
         self.mainConf = nw.CONFIG
 
-        self.boxWordCount = QLabel()
-        self.boxCharCount = QLabel()
-        self.boxDocHandle = QLabel()
+        self.boxCounts = QLabel()
+        self.boxCounts.setFrameStyle(QFrame.Panel | QFrame.Sunken);
+        self.addPermanentWidget(self.boxCounts)
 
-        self.addPermanentWidget(self.boxWordCount)
-        self.addPermanentWidget(self.boxCharCount)
+        self.boxDocHandle = QLabel()
+        self.boxDocHandle.setFrameStyle(QFrame.Panel | QFrame.Sunken);
         if self.mainConf.debugGUI:
             self.addPermanentWidget(self.boxDocHandle)
 
         logger.debug("GuiMainStatus initialisation complete")
 
-        self.setWordCount(None)
-        self.setCharCount(None)
+        self.setCounts(0,0,0)
         self.setDocHandleCount(None)
 
         return
 
-    def setWordCount(self, theCount):
-        if theCount is None:
-            self.boxWordCount.setText("<b>Words:</b> --")
-        else:
-            self.boxWordCount.setText("<b>Words:</b> {:n}".format(theCount))
-        return
-
-    def setCharCount(self, theCount):
-        if theCount is None:
-            self.boxCharCount.setText("<b>Chars:</b> --")
-        else:
-            self.boxCharCount.setText("<b>Chars:</b> {:n}".format(theCount))
+    def setCounts(self, cC, wC, pC):
+        self.boxCounts.setText("<b>C:</b> {:n}&nbsp;&nbsp;<b>W:</b> {:n}&nbsp;&nbsp;<b>P:</b> {:n}".format(cC,wC,pC))
         return
 
     def setDocHandleCount(self, theHandle):

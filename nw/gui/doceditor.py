@@ -34,7 +34,7 @@ class GuiDocEditor(QWidget):
         self.theParent = theParent
         self.charCount = 0
         self.wordCount = 0
-        self.lineCount = 0
+        self.paraCount = 0
         self.lastEdit  = 0
 
         self.outerBox  = QVBoxLayout()
@@ -183,11 +183,15 @@ class GuiDocEditor(QWidget):
     def _updateCounts(self):
         """Slot for the word counter's finished signal
         """
-        logger.verbose("Updating word counts")
+        logger.verbose("Updating word count")
+
+        tHandle = self.theParent.theDocument.docHandle
         self.charCount = self.wCounter.charCount
         self.wordCount = self.wCounter.wordCount
-        self.theParent.statusBar.setCharCount(self.charCount)
-        self.theParent.statusBar.setWordCount(self.wordCount)
+        self.paraCount = self.wCounter.paraCount
+        self.theParent.statusBar.setCounts(self.charCount,self.wordCount,self.paraCount)
+        self.theParent.treeView.propagateCount(tHandle, self.wordCount)
+
         return
 
     ##

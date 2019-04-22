@@ -15,10 +15,11 @@ import nw
 
 from os              import path
 from PyQt5.QtGui     import QIcon
-from PyQt5.QtCore    import QSize
+from PyQt5.QtCore    import Qt, QSize
 from PyQt5.QtWidgets import QTreeWidget, QTreeWidgetItem, QAbstractItemView
 
 from nw.enum         import nwItemType, nwItemClass
+from nw.project.item import NWItem
 
 logger = logging.getLogger(__name__)
 
@@ -33,12 +34,11 @@ class GuiDocTree(QTreeWidget):
         self.theProject = theProject
         self.theMap     = {}
 
-        self.setStyleSheet("QTreeWidget {font-size: 13px;}")
         self.setIconSize(QSize(13,13))
         self.setExpandsOnDoubleClick(True)
         self.setIndentation(13)
         self.setColumnCount(4)
-        self.setHeaderLabels(["Name","","","Handle"])
+        self.setHeaderLabels(["Name","S","#","Handle"])
         if not self.debugGUI:
             self.hideColumn(3)
 
@@ -134,15 +134,16 @@ class GuiDocTree(QTreeWidget):
         tHandle = nwItem.itemHandle
         pHandle = nwItem.parHandle
         tStatus = 0
-        wCount  = 0
         newItem = QTreeWidgetItem([
-            tName, str(tStatus), str(wCount), tHandle
+            tName, str(tStatus), "0", tHandle
         ])
         self.theMap[tHandle] = newItem
         if pHandle is None:
             self.addTopLevelItem(newItem)
         else:
             self.theMap[pHandle].addChild(newItem)
+            self.propagateCount(tHandle, nwItem.wordCount)
+        newItem.setTextAlignment(2,Qt.AlignRight)
         newItem.setExpanded(nwItem.isExpanded)
         if nwItem.itemType == nwItemType.ROOT:
             newItem.setIcon(0, QIcon.fromTheme("drive-harddisk"))
@@ -151,6 +152,19 @@ class GuiDocTree(QTreeWidget):
         elif nwItem.itemType == nwItemType.FILE:
             newItem.setIcon(0, QIcon.fromTheme("x-office-document"))
         return True
+
+    def propagateCount(self, tHandle, theCount, nDepth=0):
+        tItem = self.theMap[tHandle]
+        tItem.setText(2,str(theCount))
+        pItem = tItem.parent()
+        if pItem is not None:
+            pCount = 0
+            for i in range(pItem.childCount()):
+                pCount += int(pItem.child(i).text(2))
+                pHandle = pItem.text(3)
+            if not nDepth > NWItem.MAX_DEPTH:
+                self.propagateCount(pHandle, pCount, nDepth+1)
+        return
 
     def buildTree(self):
         self.clear()
