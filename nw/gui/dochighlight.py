@@ -35,7 +35,7 @@ class GuiDocHighlighter(QSyntaxHighlighter):
         self.colDialD = (184,200,  0,255)
         self.colDialS = (136,200,  0,255)
         self.colComm  = (150,150,150,255)
-        self.colKey   = (200,  0,  0,255)
+        self.colKey   = (200, 46,  0,255)
         self.colVal   = (184,200,  0,255)
 
         self.hStyles = {

@@ -113,16 +113,18 @@ class GuiDocEditor(QTextEdit):
 
     def docAction(self, theAction):
         logger.verbose("Requesting action: %s" % theAction.name)
-        if   theAction == nwDocAction.UNDO:    self.undo()
-        elif theAction == nwDocAction.REDO:    self.redo()
-        elif theAction == nwDocAction.CUT:     self.cut()
-        elif theAction == nwDocAction.COPY:    self.copy()
-        elif theAction == nwDocAction.PASTE:   self.paste()
-        elif theAction == nwDocAction.BOLD:    self._wrapSelection("**","**")
-        elif theAction == nwDocAction.ITALIC:  self._wrapSelection("_","_")
-        elif theAction == nwDocAction.U_LINE:  self._wrapSelection("__","__")
-        elif theAction == nwDocAction.S_QUOTE: self._wrapSelection(self.typSQOpen,self.typSQClose)
-        elif theAction == nwDocAction.D_QUOTE: self._wrapSelection(self.typDQOpen,self.typDQClose)
+        if   theAction == nwDocAction.UNDO:     self.undo()
+        elif theAction == nwDocAction.REDO:     self.redo()
+        elif theAction == nwDocAction.CUT:      self.cut()
+        elif theAction == nwDocAction.COPY:     self.copy()
+        elif theAction == nwDocAction.PASTE:    self.paste()
+        elif theAction == nwDocAction.BOLD:     self._wrapSelection("**","**")
+        elif theAction == nwDocAction.ITALIC:   self._wrapSelection("_","_")
+        elif theAction == nwDocAction.U_LINE:   self._wrapSelection("__","__")
+        elif theAction == nwDocAction.S_QUOTE:  self._wrapSelection(self.typSQOpen,self.typSQClose)
+        elif theAction == nwDocAction.D_QUOTE:  self._wrapSelection(self.typDQOpen,self.typDQClose)
+        elif theAction == nwDocAction.SEL_ALL:  self._makeSelection(QTextCursor.Document)
+        elif theAction == nwDocAction.SEL_PARA: self._makeSelection(QTextCursor.BlockUnderCursor)
         else:
             logger.error("Unknown or unsupported document action %s" % str(theAction))
         return
@@ -254,6 +256,13 @@ class GuiDocEditor(QTextEdit):
             theCursor.endEditBlock()
         else:
             logger.warning("No selection made, nothing to do")
+        return
+
+    def _makeSelection(self, selMode):
+        theCursor = self.textCursor()
+        theCursor.clearSelection()
+        theCursor.select(selMode)
+        self.setTextCursor(theCursor)
         return
 
 # END Class GuiDocEditor

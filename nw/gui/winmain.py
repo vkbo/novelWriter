@@ -369,6 +369,23 @@ class GuiMain(QMainWindow):
         # Edit > Separator
         editMenu.addSeparator()
 
+        # Edit > Select All
+        menuItem = QAction(QIcon.fromTheme("edit-select-all"), "Select All", menuBar)
+        menuItem.setStatusTip("Select All Text in Document")
+        menuItem.setShortcut("Ctrl+A")
+        menuItem.triggered.connect(lambda: self.docEditor.docAction(nwDocAction.SEL_ALL))
+        editMenu.addAction(menuItem)
+
+        # Edit > Select Paragraph
+        menuItem = QAction(QIcon.fromTheme("edit-select-all"), "Select Paragraph", menuBar)
+        menuItem.setStatusTip("Select All Text in Paragraph")
+        menuItem.setShortcut("Ctrl+Shift+A")
+        menuItem.triggered.connect(lambda: self.docEditor.docAction(nwDocAction.SEL_PARA))
+        editMenu.addAction(menuItem)
+
+        # Edit > Separator
+        editMenu.addSeparator()
+
         # Edit > Settings
         menuItem = QAction(QIcon.fromTheme("applications-system"), "Program Setting", menuBar)
         menuItem.setStatusTip("Change %s Settings" % nw.__package__)

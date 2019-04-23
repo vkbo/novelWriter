@@ -57,16 +57,18 @@ class nwItemAction(Enum):
 
 class nwDocAction(Enum):
 
-    NONE    = 0
-    UNDO    = 1
-    REDO    = 2
-    CUT     = 3
-    COPY    = 4
-    PASTE   = 5
-    BOLD    = 6
-    ITALIC  = 7
-    U_LINE  = 8
-    S_QUOTE = 9
-    D_QUOTE = 10
+    NONE     = 0
+    UNDO     = 1
+    REDO     = 2
+    CUT      = 3
+    COPY     = 4
+    PASTE    = 5
+    BOLD     = 6
+    ITALIC   = 7
+    U_LINE   = 8
+    S_QUOTE  = 9
+    D_QUOTE  = 10
+    SEL_ALL  = 11
+    SEL_PARA = 12
 
 # END Enum nwDocAction
