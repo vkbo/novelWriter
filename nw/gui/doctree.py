@@ -53,44 +53,25 @@ class GuiDocTree(QTreeWidget):
 
         return
 
-    def newTreeItem(self, itemType):
+    def newTreeItem(self, pHandle, itemType, itemClass):
 
-        rHandle = self._getSelectedHandle()
-        logger.verbose("Adding item relative to handle %s" % rHandle)
-
-        # Figure out where to put the new item
-        if rHandle is None:
-            nwType  = nwItemType.ROOT
-            pHandle = None
-        else:
-            rItem = self.theProject.projTree[rHandle]
-            if rItem.itemType == nwItemType.FILE:
-                pHandle = rItem.parHandle
-            else:
-                pHandle = rHandle
+        logger.verbose("Adding new item of type %s and class %s to handle %s" % (
+            itemType.name,itemClass.name,str(pHandle))
+        )
 
         # Create the new item
-        if itemType == nwItemType.FILE:
-            tHandle = self.theProject.newFile("New File", nwItemClass.NONE, pHandle)
+        if   itemType == nwItemType.FILE:
+            tHandle = self.theProject.newFile("New File", itemClass, pHandle)
         elif itemType == nwItemType.FOLDER:
-            if pHandle is None:
-                logger.error("Failed to add new item")
-                return
-            pItem = self.theProject.projTree[rHandle]
-            if pItem.itemClass == nwItemClass.NOVEL:
-                tHandle = self.theProject.newFolder("New Chapter", nwItemClass.CHAPTER, pHandle)
-            elif pItem.itemClass == nwItemClass.CHAPTER:
-                tHandle = self.theProject.newFolder("New Chapter", nwItemClass.CHAPTER, pItem.parHandle)
-            else:
-                tHandle = self.theProject.newFolder("New Folder", nwItemClass.NONE, pHandle)
+            tHandle = self.theProject.newFolder("New Folder", itemClass, pHandle)
         elif itemType == nwItemType.ROOT:
-            tHandle = self.theProject.newRoot("Root Folder", nwItemClass.NONE)
+            tHandle = self.theProject.newRoot(NWItem.CLASS_NAME[itemClass], itemClass)
         else:
             logger.error("Failed to add new item")
             return
 
         # Add the new item to the tree
-        nwItem = self.theProject.projTree[tHandle]
+        nwItem = self.theProject.getItem(tHandle)
         self._addTreeItem(nwItem)
 
         return

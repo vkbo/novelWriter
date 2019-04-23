@@ -14,7 +14,7 @@ from enum import Enum
 
 class nwItemType(Enum):
 
-    NONE        = 0
+    NO_TYPE     = 0
     ROOT        = 1
     FOLDER      = 2
     FILE        = 3
@@ -25,21 +25,19 @@ class nwItemType(Enum):
 
 class nwItemClass(Enum):
 
-    NONE      = 0
+    NO_CLASS  = 0
     NOVEL     = 1
-    CHAPTER   = 2
-    SCENE     = 3
-    PLOT      = 4
-    CHARACTER = 6
-    WORLD     = 6
-    TIMELINE  = 7
-    OBJECT    = 8
+    PLOT      = 2
+    CHARACTER = 3
+    WORLD     = 4
+    TIMELINE  = 5
+    OBJECT    = 6
 
 # END Enum nwItemClass
 
 class nwItemAction(Enum):
 
-    NONE        = 0
+    NO_ACTION   = 0
     ADD_ROOT    = 1
     ADD_FOLDER  = 2
     ADD_FILE    = 3
@@ -57,18 +55,18 @@ class nwItemAction(Enum):
 
 class nwDocAction(Enum):
 
-    NONE     = 0
-    UNDO     = 1
-    REDO     = 2
-    CUT      = 3
-    COPY     = 4
-    PASTE    = 5
-    BOLD     = 6
-    ITALIC   = 7
-    U_LINE   = 8
-    S_QUOTE  = 9
-    D_QUOTE  = 10
-    SEL_ALL  = 11
-    SEL_PARA = 12
+    NO_ACTION = 0
+    UNDO      = 1
+    REDO      = 2
+    CUT       = 3
+    COPY      = 4
+    PASTE     = 5
+    BOLD      = 6
+    ITALIC    = 7
+    U_LINE    = 8
+    S_QUOTE   = 9
+    D_QUOTE   = 10
+    SEL_ALL   = 11
+    SEL_PARA  = 12
 
 # END Enum nwDocAction

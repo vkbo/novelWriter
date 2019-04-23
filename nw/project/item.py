@@ -23,7 +23,16 @@ logger = logging.getLogger(__name__)
 
 class NWItem():
 
-    MAX_DEPTH = 8
+    MAX_DEPTH  = 8
+    CLASS_NAME = {
+        nwItemClass.NO_CLASS  : "Folder",
+        nwItemClass.NOVEL     : "Novel",
+        nwItemClass.PLOT      : "Plot",
+        nwItemClass.CHARACTER : "Characters",
+        nwItemClass.WORLD     : "Locations",
+        nwItemClass.TIMELINE  : "Timeline",
+        nwItemClass.OBJECT    : "Objects",
+    }
 
     def __init__(self):
 
@@ -31,8 +40,8 @@ class NWItem():
         self.itemHandle  = None
         self.parHandle   = None
         self.itemOrder   = None
-        self.itemType    = nwItemType.NONE
-        self.itemClass   = nwItemClass.NONE
+        self.itemType    = nwItemType.NO_TYPE
+        self.itemClass   = nwItemClass.NO_CLASS
         self.itemDepth   = None
         self.hasChildren = False
         self.isExpanded  = False
@@ -116,25 +125,27 @@ class NWItem():
     def setType(self, theType):
         if isinstance(theType, nwItemType):
             self.itemType = theType
+            return
         else:
             for itemType in nwItemType:
                 if theType == itemType.name:
                     self.itemType = itemType
                     return
         logger.error("Unrecognised item type '%s'" % theType)
-        self.itemType = nwItemType.NONE
+        self.itemType = nwItemType.NO_TYPE
         return
 
     def setClass(self, theClass):
         if isinstance(theClass, nwItemClass):
             self.itemClass = theClass
+            return
         else:
             for itemClass in nwItemClass:
                 if theClass == itemClass.name:
                     self.itemClass = itemClass
                     return
         logger.error("Unrecognised item class '%s'" % theClass)
-        self.itemClass = nwItemClass.NONE
+        self.itemClass = nwItemClass.NO_CLASS
         return
 
     def setDepth(self, theDepth):

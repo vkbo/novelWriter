@@ -245,7 +245,7 @@ class NWProject():
         """
         validActions = {}
 
-        # If we're at root, or didn't select an utem, all we can add is root stuff
+        # If we're at root, or didn't select an item, all we can add is root stuff
         if tHandle is None:
             validActions[nwItemAction.ADD_ROOT] = {
                 "Type"  : nwItemType.ROOT,
@@ -318,6 +318,8 @@ class NWProject():
         """Checks if there already is a root entry of class 'theClass' in the
         root of the project tree.
         """
+        if theClass == nwItemClass.NO_CLASS:
+            return True
         for aRoot in self.treeRoots:
             if theClass == self.projTree[aRoot].itemClass:
                 return False

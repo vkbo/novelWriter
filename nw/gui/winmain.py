@@ -25,7 +25,7 @@ from nw.gui.projecteditor import GuiProjectEditor
 from nw.gui.statusbar     import GuiMainStatus
 from nw.project.project   import NWProject
 from nw.project.document  import NWDoc
-from nw.enum              import nwItemType, nwDocAction
+from nw.enum              import nwItemType, nwDocAction, nwItemAction
 
 logger = logging.getLogger(__name__)
 
@@ -86,9 +86,9 @@ class GuiMain(QMainWindow):
 
         return
 
-    #
+    ##
     #  Project Actions
-    #
+    ##
 
     def newProject(self):
         logger.info("Creating new project")
@@ -137,9 +137,9 @@ class GuiMain(QMainWindow):
         self._setWindowTitle(self.theProject.projName)
         return True
 
-    #
+    ##
     #  Document Actions
-    #
+    ##
 
     def openDocument(self, tHandle):
         self.stackPane.setCurrentIndex(self.stackDoc)
@@ -155,9 +155,9 @@ class GuiMain(QMainWindow):
         self.theDocument.saveDocument(docHtml)
         return
 
-    #
+    ##
     #  Internal Functions
-    #
+    ##
 
     def _treeDoubleClick(self, tItem, colNo):
         tHandle = tItem.text(3)
@@ -213,6 +213,31 @@ class GuiMain(QMainWindow):
 
         print(selHandle, selAction, selClass, selType, selTarget)
 
+        if   selAction == nwItemAction.ADD_ROOT:
+            self.treeView.newTreeItem(selHandle, selType, selClass)
+        elif selAction == nwItemAction.ADD_FOLDER:
+            self.treeView.newTreeItem(selHandle, selType, selClass)
+        elif selAction == nwItemAction.ADD_FILE:
+            self.treeView.newTreeItem(selHandle, selType, selClass)
+        elif selAction == nwItemAction.MOVE_UP:
+            pass
+        elif selAction == nwItemAction.MOVE_DOWN:
+            pass
+        elif selAction == nwItemAction.MOVE_TO:
+            pass
+        elif selAction == nwItemAction.MOVE_TRASH:
+            pass
+        elif selAction == nwItemAction.SPLIT:
+            pass
+        elif selAction == nwItemAction.MERGE:
+            pass
+        elif selAction == nwItemAction.DELETE:
+            pass
+        elif selAction == nwItemAction.DELETE_ROOT:
+            pass
+        elif selAction == nwItemAction.EMPTY_TRASH:
+            pass
+
         return
 
     ##
@@ -243,9 +268,9 @@ class GuiMain(QMainWindow):
             self.docEditor.changeWidth()
         return
 
-    #
+    ##
     #  GUI Builders
-    #
+    ##
 
     def _buildMenu(self):
         menuBar = self.menuBar()
@@ -277,7 +302,7 @@ class GuiMain(QMainWindow):
         for recentProject in self.mainConf.recentList:
             if recentProject == "": continue
             menuItem = QAction(QIcon.fromTheme("folder-open"), "%d: %s" % (itemCount,recentProject), fileMenu)
-            menuItem.triggered.connect(self.openRecentProject, itemCount)
+            menuItem.triggered.connect(lambda: self.openRecentProject(itemCount))
             recentMenu.addAction(menuItem)
             itemCount += 1
 

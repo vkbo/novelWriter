@@ -13,8 +13,11 @@
 import logging
 import nw
 
+from copy            import copy
+
 from PyQt5.QtWidgets import QMenu, QAction
 
+from nw.project.item import NWItem
 from nw.enum         import nwItemType, nwItemClass, nwItemAction
 
 logger = logging.getLogger(__name__)
@@ -175,56 +178,18 @@ class GuiDocTreeCtx(QMenu):
         return
 
     def _buildMenuAddRoot(self, vActs):
+        for itemClass in vActs[nwItemAction.ADD_ROOT]["Class"]:
+            self._buildSubMenuAddRoot(itemClass)
+        return
 
-        vClass  = vActs[nwItemAction.ADD_ROOT]["Class"]
-        mnuItem = QMenu("Add Root Item", self)
-
-        if nwItemClass.NOVEL in vClass:
-            mnuSub = QAction("Novel", self)
-            mnuSub.triggered.connect(lambda: self._ctxSignal(
-                nwItemAction.ADD_ROOT,
-                nwItemClass.NOVEL,
-                nwItemType.ROOT
-            ))
-            mnuItem.addAction(mnuSub)
-
-        if nwItemClass.CHARACTER in vClass:
-            mnuSub = QAction("Characters", self)
-            mnuSub.triggered.connect(lambda: self._ctxSignal(
-                nwItemAction.ADD_ROOT,
-                nwItemClass.CHARACTER,
-                nwItemType.ROOT
-            ))
-            mnuItem.addAction(mnuSub)
-
-        if nwItemClass.WORLD in vClass:
-            mnuSub = QAction("Locations", self)
-            mnuSub.triggered.connect(lambda: self._ctxSignal(
-                nwItemAction.ADD_ROOT,
-                nwItemClass.WORLD,
-                nwItemType.ROOT
-            ))
-            mnuItem.addAction(mnuSub)
-
-        if nwItemClass.TIMELINE in vClass:
-            mnuSub = QAction("Timeline", self)
-            mnuSub.triggered.connect(lambda: self._ctxSignal(
-                nwItemAction.ADD_ROOT,
-                nwItemClass.TIMELINE,
-                nwItemType.ROOT
-            ))
-            mnuItem.addAction(mnuSub)
-
-        if nwItemClass.OBJECT in vClass:
-            mnuSub = QAction("Objects", self)
-            mnuSub.triggered.connect(lambda: self._ctxSignal(
-                nwItemAction.ADD_ROOT,
-                nwItemClass.OBJECT,
-                nwItemType.ROOT
-            ))
-            mnuItem.addAction(mnuSub)
-
-        self.addMenu(mnuItem)
+    def _buildSubMenuAddRoot(self, itemClass):
+        mnuSub = QAction("Add "+NWItem.CLASS_NAME[itemClass], self)
+        mnuSub.triggered.connect(lambda: self._ctxSignal(
+            nwItemAction.ADD_ROOT, 
+            itemClass,
+            nwItemType.ROOT
+        ))
+        self.addAction(mnuSub)
         return
 
     ##
