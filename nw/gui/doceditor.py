@@ -16,8 +16,8 @@ import nw
 from time                import time
 
 from PyQt5.QtWidgets     import QTextEdit
-from PyQt5.QtCore        import QTimer
-from PyQt5.QtGui         import QTextCursor
+from PyQt5.QtCore        import Qt, QTimer
+from PyQt5.QtGui         import QTextCursor, QTextOption
 
 from nw.gui.dochighlight import GuiDocHighlighter
 from nw.gui.wordcounter  import WordCounter
@@ -61,12 +61,15 @@ class GuiDocEditor(QTextEdit):
             self.setViewportMargins(mLR,mTB,mLR,mTB)
 
         self.theDoc = self.document()
+        self.hLight = GuiDocHighlighter(self.theDoc)
         self.theDoc.setDocumentMargin(0)
         self.theDoc.contentsChange.connect(self._docChange)
-        self.hLight = GuiDocHighlighter(self.theDoc)
+        if self.mainConf.doJustify:
+            self.theDoc.setDefaultTextOption(QTextOption(Qt.AlignJustify))
 
         self.setMinimumWidth(400)
         self.setAcceptRichText(False)
+        self.setFontPointSize(self.mainConf.textSize)
 
         # Set Up Word Count Thread and Timer
         self.wcInterval = self.mainConf.wordCountTimer

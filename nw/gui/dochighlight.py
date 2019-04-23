@@ -37,10 +37,10 @@ class GuiDocHighlighter(QSyntaxHighlighter):
         self.colVal   = (184,200,  0,255)
 
         self.hStyles = {
-            "header1"   : self._makeFormat(self.colHead,"bold",20),
-            "header2"   : self._makeFormat(self.colHead,"bold",18),
-            "header3"   : self._makeFormat(self.colHead,"bold",16),
-            "header4"   : self._makeFormat(self.colHead,"bold",14),
+            "header1"   : self._makeFormat(self.colHead,"bold",1.8),
+            "header2"   : self._makeFormat(self.colHead,"bold",1.6),
+            "header3"   : self._makeFormat(self.colHead,"bold",1.4),
+            "header4"   : self._makeFormat(self.colHead,"bold",1.2),
             "bold"      : self._makeFormat(self.colEmph,"bold"),
             "italic"    : self._makeFormat(self.colEmph,"italic"),
             "strike"    : self._makeFormat(self.colEmph,"strike"),
@@ -103,8 +103,8 @@ class GuiDocHighlighter(QSyntaxHighlighter):
             if "underline" in fmtStyle:
                 theFormat.setFontUnderline(True)
 
-        if isinstance(fmtSize,int):
-            theFormat.setFontPointSize(fmtSize)
+        if fmtSize is not None:
+            theFormat.setFontPointSize(round(fmtSize*self.mainConf.textSize))
 
         return theFormat
 

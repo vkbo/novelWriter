@@ -61,6 +61,8 @@ class Config:
         self.textFixedW      = True
         self.textWidth       = 600
         self.textMargin      = [40, 40]
+        self.textSize        = 13
+        self.doJustify       = True
         self.autoSelect      = True
         self.doReplace       = True
         self.doReplaceSQuote = True
@@ -122,6 +124,10 @@ class Config:
                 self.textMargin     = self.unpackList(
                     confParser.get(cnfSec,"margins"), 2, self.textMargin
                 )
+            if confParser.has_option(cnfSec,"textsize"):
+                self.textSize       = confParser.getint(cnfSec,"textsize")
+            if confParser.has_option(cnfSec,"justify"):
+                self.doJustify      = confParser.getboolean(cnfSec,"justify")
             if confParser.has_option(cnfSec,"autoselect"):
                 self.autoSelect     = confParser.getboolean(cnfSec,"autoselect")
             if confParser.has_option(cnfSec,"autoreplace"):
@@ -169,6 +175,8 @@ class Config:
         confParser.set(cnfSec,"fixedwidth", str(self.textFixedW))
         confParser.set(cnfSec,"width",      str(self.textWidth))
         confParser.set(cnfSec,"margins",    self.packList(self.textMargin))
+        confParser.set(cnfSec,"textsize",   str(self.textSize))
+        confParser.set(cnfSec,"justify",    str(self.doJustify))
         confParser.set(cnfSec,"autoselect", str(self.autoSelect))
         confParser.set(cnfSec,"autoreplace",str(self.doReplace))
         confParser.set(cnfSec,"repsquotes", str(self.doReplaceSQuote))
