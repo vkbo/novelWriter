@@ -78,7 +78,7 @@
     <item handle="73eee34351f85" order="2" parent="None">
       <name>World</name>
       <type>ROOT</type>
-      <class>NONE</class>
+      <class>WORLD</class>
       <depth>0</depth>
       <children>False</children>
       <expanded>False</expanded>

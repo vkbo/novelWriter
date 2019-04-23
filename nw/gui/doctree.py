@@ -76,6 +76,17 @@ class GuiDocTree(QTreeWidget):
 
         return
 
+    def moveTreeItem(self, tHandle, nStep):
+        tItem  = self.theMap[tHandle]
+        pItem  = tItem.parent()
+        tIndex = pItem.indexOfChild(tItem)
+        nChild = pItem.childCount()
+        nIndex = tIndex + nStep
+        if nIndex < 0 or nIndex >= nChild: return
+        cItem  = pItem.takeChild(tIndex)
+        pItem.insertChild(nIndex, cItem)
+        return
+
     def saveTreeOrder(self):
         theList = []
         for i in range(self.topLevelItemCount()):

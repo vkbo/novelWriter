@@ -220,9 +220,9 @@ class GuiMain(QMainWindow):
         elif selAction == nwItemAction.ADD_FILE:
             self.treeView.newTreeItem(selHandle, selType, selClass)
         elif selAction == nwItemAction.MOVE_UP:
-            pass
+            self.treeView.moveTreeItem(selHandle, -1)
         elif selAction == nwItemAction.MOVE_DOWN:
-            pass
+            self.treeView.moveTreeItem(selHandle, 1)
         elif selAction == nwItemAction.MOVE_TO:
             pass
         elif selAction == nwItemAction.MOVE_TRASH:
@@ -302,7 +302,7 @@ class GuiMain(QMainWindow):
         for recentProject in self.mainConf.recentList:
             if recentProject == "": continue
             menuItem = QAction(QIcon.fromTheme("folder-open"), "%d: %s" % (itemCount,recentProject), fileMenu)
-            menuItem.triggered.connect(lambda: self.openRecentProject(itemCount))
+            menuItem.triggered.connect(lambda: self.openRecentProject(0))
             recentMenu.addAction(menuItem)
             itemCount += 1
 
