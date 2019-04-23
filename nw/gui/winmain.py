@@ -43,39 +43,32 @@ class GuiMain(QMainWindow):
         self._setWindowTitle()
         self.setWindowIcon(QIcon(path.join(self.mainConf.appPath,"..","novelWriter.svg")))
 
+        # Main GUI Elements
         self.docEditor = GuiDocEditor(self)
+        self.treeView  = GuiDocTree(self.theProject)
 
-        self.treePane = QFrame()
-        self.treePane.setFrameShape(QFrame.StyledPanel)
-        self.splitMain = QSplitter(Qt.Horizontal)
-        self.splitMain.addWidget(self.treePane)
-
+        # Assemble Main Window
         self.stackPane = QStackedWidget()
         self.stackNone = self.stackPane.addWidget(QWidget())
         self.stackDoc  = self.stackPane.addWidget(self.docEditor)
-        self.splitMain.addWidget(self.stackPane)
         self.stackPane.setCurrentIndex(self.stackNone)
 
-        self.treeBox  = QVBoxLayout()
-        self.treeView = GuiDocTree(self.theProject)
-        self.treeBox.addWidget(self.treeView)
-        self.treePane.setLayout(self.treeBox)
-
-        self.treeToolBar = QToolBar()
-        self._buildTreeToolBar()
-        self.treeBox.addWidget(self.treeToolBar)
+        self.splitMain = QSplitter(Qt.Horizontal)
+        self.splitMain.addWidget(self.treeView)
+        self.splitMain.addWidget(self.stackPane)
+        self.splitMain.setSizes(self.mainConf.mainPanePos)
+        self.splitMain.splitterMoved.connect(self._splitMainMove)
 
         self.setCentralWidget(self.splitMain)
 
+        # Build Menus
         self._buildMenu()
         self.treeView.setContextMenuPolicy(Qt.CustomContextMenu)
         self.treeView.customContextMenuRequested.connect(self._openDocTreeContextMenu)
         self.treeView.itemDoubleClicked.connect(self._treeDoubleClick)
         self.treeView.buildTree()
 
-        self.splitMain.setSizes(self.mainConf.mainPanePos)
-        self.splitMain.splitterMoved.connect(self._splitMainMove)
-
+        # Build Status Bar
         self.statusBar = GuiMainStatus()
         self.setStatusBar(self.statusBar)
         self.statusBar.showMessage("Ready")
@@ -457,34 +450,6 @@ class GuiMain(QMainWindow):
 
         # Debug GUI
         debugMenu = menuBar.addMenu("&Debug")
-
-        return
-
-    def _buildTreeToolBar(self):
-        toolBar = self.treeToolBar
-        toolBar.setToolButtonStyle(Qt.ToolButtonIconOnly)
-        toolBar.setIconSize(QSize(16,16))
-
-        # Root > New
-        tbRootNew = QAction(QIcon.fromTheme("folder-new"), "New Root Folder (Ctrl+Alt+N)", toolBar)
-        tbRootNew.setShortcut("Ctrl+Alt+N")
-        tbRootNew.setStatusTip("Create New Root Folder")
-        tbRootNew.triggered.connect(lambda: self.treeView.newTreeItem(nwItemType.ROOT))
-        toolBar.addAction(tbRootNew)
-
-        # Folder > New
-        tbFolderNew = QAction(QIcon.fromTheme("folder-new"), "New Folder (Ctrl+Shift+N)", toolBar)
-        tbFolderNew.setShortcut("Ctrl+Shift+N")
-        tbFolderNew.setStatusTip("Create New Chapter or Folder")
-        tbFolderNew.triggered.connect(lambda: self.treeView.newTreeItem(nwItemType.FOLDER))
-        toolBar.addAction(tbFolderNew)
-
-        # Document > New
-        tbDocNew = QAction(QIcon.fromTheme("document-new"), "New Document (Ctrl+N)", toolBar)
-        tbDocNew.setShortcut("Ctrl+N")
-        tbDocNew.setStatusTip("Create New Document")
-        tbDocNew.triggered.connect(lambda: self.treeView.newTreeItem(nwItemType.FILE))
-        toolBar.addAction(tbDocNew)
 
         return
 
