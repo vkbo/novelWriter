@@ -27,12 +27,14 @@ class GuiDocHighlighter(QSyntaxHighlighter):
         self.mainConf = nw.CONFIG
         self.theDoc   = theDoc
 
-        self.colHead = (  0,155,200,255)
-        self.colEmph = (200,120,  0,255)
-        self.colDial = (184,200,  0,255)
-        self.colComm = (120,120,120,255)
-        self.colKey  = (200,  0,  0,255)
-        self.colVal  = (184,200,  0,255)
+        self.colHead  = (  0,155,200,255)
+        self.colEmph  = (200,120,  0,255)
+        self.colDialN = (48, 200,  0,255)
+        self.colDialD = (184,200,  0,255)
+        self.colDialS = (136,200,  0,255)
+        self.colComm  = (120,120,120,255)
+        self.colKey   = (200,  0,  0,255)
+        self.colVal   = (184,200,  0,255)
 
         self.hStyles = {
             "header1"   : self._makeFormat(self.colHead,"bold",20),
@@ -43,7 +45,9 @@ class GuiDocHighlighter(QSyntaxHighlighter):
             "italic"    : self._makeFormat(self.colEmph,"italic"),
             "strike"    : self._makeFormat(self.colEmph,"strike"),
             "underline" : self._makeFormat(self.colEmph,"underline"),
-            "dialogue"  : self._makeFormat(self.colDial),
+            "dialogue1" : self._makeFormat(self.colDialN),
+            "dialogue2" : self._makeFormat(self.colDialD),
+            "dialogue3" : self._makeFormat(self.colDialS),
             "hidden"    : self._makeFormat(self.colComm),
             "keyword"   : self._makeFormat(self.colKey),
             "value"     : self._makeFormat(self.colVal),
@@ -56,18 +60,19 @@ class GuiDocHighlighter(QSyntaxHighlighter):
             (r"^#{4}[^#].*[^\n]", 0, self.hStyles["header4"]),
             (r"(?<![\w|\\])([\*]{2})(?!\s)(?m:(.+?))(?<![\s|\\])(\1)(?!\w)",  2, self.hStyles["bold"]),
             (r"(?<![\w|_|\\])([_])(?!\s|\1)(?m:(.+?))(?<![\s|\\])(\1)(?!\w)", 2, self.hStyles["italic"]),
+            (r"(?<![\w|\\])([_]{2})(?!\s)(?m:(.+?))(?<![\s|\\])(\1)(?!\w)",   2, self.hStyles["underline"]),
             (r"^(@.+?)\s*:\s*(.+?)$", 1, self.hStyles["keyword"]),
             (r"^(@.+?)\s*:\s*(.+?)$", 2, self.hStyles["value"]),
             (r"^%.*$",                0, self.hStyles["hidden"]),
         ]
         self.hRules.append(
-            ("{:s}(.+?){:s}".format('"','"'),0,self.hStyles["dialogue"])
+            ("{:s}(.+?){:s}".format('"','"'),0,self.hStyles["dialogue1"])
         )
         self.hRules.append(
-            ("{:s}(.+?){:s}".format(*self.mainConf.fmtDoubleQuotes),0,self.hStyles["dialogue"])
+            ("{:s}(.+?){:s}".format(*self.mainConf.fmtDoubleQuotes),0,self.hStyles["dialogue2"])
         )
         self.hRules.append(
-            ("{:s}(.+?){:s}".format(*self.mainConf.fmtSingleQuotes),0,self.hStyles["dialogue"])
+            ("{:s}(.+?){:s}".format(*self.mainConf.fmtSingleQuotes),0,self.hStyles["dialogue3"])
         )
 
         # Build a QRegExp for each pattern

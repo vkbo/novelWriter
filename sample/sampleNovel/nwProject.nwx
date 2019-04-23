@@ -1,12 +1,12 @@
 <?xml version='1.0' encoding='utf-8'?>
-<novelWriterXML appVersion="0.0.1" fileVersion="1.0" timeStamp="2019-04-22 16:39:21">
+<novelWriterXML appVersion="0.0.1" fileVersion="1.0" timeStamp="2019-04-23 16:16:49">
   <project>
     <name>Sample Project</name>
     <title>Sample Project</title>
     <author>Jane Smith</author>
     <author>Jay Doh</author>
   </project>
-  <content count="9">
+  <content count="8">
     <item handle="7031beac91f75" order="0" parent="None">
       <name>Novel</name>
       <type>ROOT</type>
@@ -30,7 +30,7 @@
       <depth>2</depth>
       <children>False</children>
       <expanded>False</expanded>
-      <charCount>2573</charCount>
+      <charCount>2575</charCount>
       <wordCount>377</wordCount>
       <paraCount>5</paraCount>
     </item>

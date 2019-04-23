@@ -54,3 +54,19 @@ class nwItemAction(Enum):
     EMPTY_TRASH = 12
 
 # END Enum nwItemAction
+
+class nwDocAction(Enum):
+
+    NONE    = 0
+    UNDO    = 1
+    REDO    = 2
+    CUT     = 3
+    COPY    = 4
+    PASTE   = 5
+    BOLD    = 6
+    ITALIC  = 7
+    U_LINE  = 8
+    S_QUOTE = 9
+    D_QUOTE = 10
+
+# END Enum nwDocAction

@@ -13,13 +13,15 @@
 import logging
 import nw
 
-from time import time
+from time                import time
 
 from PyQt5.QtWidgets     import QTextEdit
 from PyQt5.QtCore        import QTimer
+from PyQt5.QtGui         import QTextCursor
 
 from nw.gui.dochighlight import GuiDocHighlighter
 from nw.gui.wordcounter  import WordCounter
+from nw.enum             import nwDocAction
 
 logger = logging.getLogger(__name__)
 
@@ -104,6 +106,22 @@ class GuiDocEditor(QTextEdit):
             tM  = int((tW - sW - self.mainConf.textWidth)/2)
             mTB = self.mainConf.textMargin[0]
             self.setViewportMargins(tM,mTB,0,mTB)
+        return
+
+    def docAction(self, theAction):
+        logger.verbose("Requesting action: %s" % theAction.name)
+        if   theAction == nwDocAction.UNDO:    self.undo()
+        elif theAction == nwDocAction.REDO:    self.redo()
+        elif theAction == nwDocAction.CUT:     self.cut()
+        elif theAction == nwDocAction.COPY:    self.copy()
+        elif theAction == nwDocAction.PASTE:   self.paste()
+        elif theAction == nwDocAction.BOLD:    self._wrapSelection("**","**")
+        elif theAction == nwDocAction.ITALIC:  self._wrapSelection("_","_")
+        elif theAction == nwDocAction.U_LINE:  self._wrapSelection("__","__")
+        elif theAction == nwDocAction.S_QUOTE: self._wrapSelection(self.typSQOpen,self.typSQClose)
+        elif theAction == nwDocAction.D_QUOTE: self._wrapSelection(self.typDQOpen,self.typDQClose)
+        else:
+            logger.error("Unknown or unsupported document action %s" % str(theAction))
         return
 
     ##
@@ -215,6 +233,28 @@ class GuiDocEditor(QTextEdit):
         self.theParent.statusBar.setCounts(self.charCount,self.wordCount,self.paraCount)
         self.theParent.treeView.propagateCount(tHandle, self.wordCount)
 
+        return
+
+    def _wrapSelection(self, tBefore, tAfter):
+        """Wraps the selected text in whatever is in tBefore and tAfter. If there is no selection, the autoSelect setting decides
+        the action. AutoSelect will select the word under the cursor before wrapping it. If this feature is disabled, nothing is
+        done.
+        """
+        theCursor = self.textCursor()
+        if self.mainConf.autoSelect and not theCursor.hasSelection():
+            theCursor.select(QTextCursor.WordUnderCursor)
+        if theCursor.hasSelection():
+            posS = theCursor.selectionStart()
+            posE = theCursor.selectionEnd()
+            theCursor.clearSelection()
+            theCursor.beginEditBlock()
+            theCursor.setPosition(posE)
+            theCursor.insertText(tAfter)
+            theCursor.setPosition(posS)
+            theCursor.insertText(tBefore)
+            theCursor.endEditBlock()
+        else:
+            logger.warning("No selection made, nothing to do")
         return
 
 # END Class GuiDocEditor
