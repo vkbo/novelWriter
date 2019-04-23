@@ -168,42 +168,52 @@ class GuiDocEditor(QTextEdit):
         theThree = theText[thePos-3:thePos]
 
         if self.mainConf.doReplaceDQuote and theTwo == " \"":
-            theCursor.deletePreviousChar()
-            theCursor.insertText(self.typSQOpen)
+            theCursor.beginEditBlock()
+            theCursor.movePosition(QTextCursor.Left, QTextCursor.KeepAnchor, 1)
+            theCursor.insertText(self.typDQOpen)
+            theCursor.endEditBlock()
 
         elif self.mainConf.doReplaceDQuote and theOne == "\"":
-            theCursor.deletePreviousChar()
+            theCursor.beginEditBlock()
+            theCursor.movePosition(QTextCursor.Left, QTextCursor.KeepAnchor, 1)
             if thePos == 1:
                 theCursor.insertText(self.typDQOpen)
             else:
                 theCursor.insertText(self.typDQClose)
+            theCursor.endEditBlock()
 
         elif self.mainConf.doReplaceSQuote and theTwo == " '":
-            theCursor.deletePreviousChar()
+            theCursor.beginEditBlock()
+            theCursor.movePosition(QTextCursor.Left, QTextCursor.KeepAnchor, 1)
             theCursor.insertText(self.typSQOpen)
+            theCursor.endEditBlock()
 
         elif self.mainConf.doReplaceSQuote and theOne == "'":
-            theCursor.deletePreviousChar()
+            theCursor.beginEditBlock()
+            theCursor.movePosition(QTextCursor.Left, QTextCursor.KeepAnchor, 1)
             if thePos == 1:
                 theCursor.insertText(self.typSQOpen)
             else:
                 theCursor.insertText(self.typSQClose)
+            theCursor.endEditBlock()
 
         elif self.mainConf.doReplaceDash and theTwo == "--":
-            theCursor.deletePreviousChar()
-            theCursor.deletePreviousChar()
+            theCursor.beginEditBlock()
+            theCursor.movePosition(QTextCursor.Left, QTextCursor.KeepAnchor, 2)
             theCursor.insertText("–")
+            theCursor.endEditBlock()
 
         elif self.mainConf.doReplaceDash and theTwo == "–-":
-            theCursor.deletePreviousChar()
-            theCursor.deletePreviousChar()
+            theCursor.beginEditBlock()
+            theCursor.movePosition(QTextCursor.Left, QTextCursor.KeepAnchor, 2)
             theCursor.insertText("—")
+            theCursor.endEditBlock()
 
         elif self.mainConf.doReplaceDots and theThree == "...":
-            theCursor.deletePreviousChar()
-            theCursor.deletePreviousChar()
-            theCursor.deletePreviousChar()
+            theCursor.beginEditBlock()
+            theCursor.movePosition(QTextCursor.Left, QTextCursor.KeepAnchor, 3)
             theCursor.insertText("…")
+            theCursor.endEditBlock()
 
         return
 
