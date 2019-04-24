@@ -16,7 +16,7 @@ import nw
 from os              import path
 from PyQt5.QtGui     import QIcon
 from PyQt5.QtCore    import Qt, QSize
-from PyQt5.QtWidgets import QTreeWidget, QTreeWidgetItem, QAbstractItemView
+from PyQt5.QtWidgets import QTreeWidget, QTreeWidgetItem, QAbstractItemView, QInputDialog, QLineEdit
 
 from nw.enum         import nwItemType, nwItemClass
 from nw.project.item import NWItem
@@ -85,6 +85,18 @@ class GuiDocTree(QTreeWidget):
         if nIndex < 0 or nIndex >= nChild: return
         cItem  = pItem.takeChild(tIndex)
         pItem.insertChild(nIndex, cItem)
+        return
+
+    def renameTreeItem(self, tHandle):
+        tItem   = self.theMap[tHandle]
+        oldName = tItem.text(0)
+        newName, isOk = QInputDialog.getText(self, "Rename Item", "New Name", QLineEdit.Normal,oldName)
+        if isOk:
+            newName = newName.strip()
+            if newName == "":
+                newName = oldName
+            tItem.setText(0,newName)
+            self.theProject.setItemName(tHandle, newName)
         return
 
     def saveTreeOrder(self):

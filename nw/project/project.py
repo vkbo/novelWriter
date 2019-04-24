@@ -230,6 +230,10 @@ class NWProject():
         self.treeOrder = newOrder
         return True
 
+    def setItemName(self, tHandle, theName):
+        self.projTree[tHandle].setName(theName)
+        return
+
     ##
     #  Get Functions
     ##
@@ -300,6 +304,7 @@ class NWProject():
                 }
 
         # Other actions available to novel or plot items
+        validActions[nwItemAction.RENAME]    = {}
         validActions[nwItemAction.MOVE_UP]   = {}
         validActions[nwItemAction.MOVE_DOWN] = {}
         if tType == nwItemType.ROOT:

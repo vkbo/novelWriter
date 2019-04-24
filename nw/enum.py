@@ -50,6 +50,7 @@ class nwItemAction(Enum):
     DELETE      = 10
     DELETE_ROOT = 11
     EMPTY_TRASH = 12
+    RENAME      = 13
 
 # END Enum nwItemAction
 

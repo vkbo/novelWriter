@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='utf-8'?>
-<novelWriterXML appVersion="0.0.1" fileVersion="1.0" timeStamp="2019-04-23 16:16:49">
+<novelWriterXML appVersion="0.0.1" fileVersion="1.0" timeStamp="2019-04-24 18:07:47">
   <project>
     <name>Sample Project</name>
     <title>Sample Project</title>
@@ -35,7 +35,7 @@
       <paraCount>5</paraCount>
     </item>
     <item handle="636b6aa9b697b" order="1" parent="e7ded148d6e4a">
-      <name>New File</name>
+      <name>Test File</name>
       <type>FILE</type>
       <class>NOVEL</class>
       <depth>2</depth>

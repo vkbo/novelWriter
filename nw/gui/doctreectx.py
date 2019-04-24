@@ -42,7 +42,6 @@ class GuiDocTreeCtx(QMenu):
             self.selHandle = None
         else:
             self.selHandle = selItems[0].text(3)
-            print(self.selHandle)
 
         self._buildMenu()
 
@@ -54,6 +53,8 @@ class GuiDocTreeCtx(QMenu):
 
     def _buildMenu(self):
         vActs = self.theProject.getActionList(self.selHandle)
+        if nwItemAction.RENAME in vActs.keys():
+            self._buildMenuRename(vActs)
         if nwItemAction.ADD_ROOT in vActs.keys():
             self._buildMenuAddRoot(vActs)
         if nwItemAction.ADD_FOLDER in vActs.keys():
@@ -83,6 +84,14 @@ class GuiDocTreeCtx(QMenu):
     ##
     #  Build Sub Menus
     ##
+
+    def _buildMenuRename(self, vActs):
+        mnuItem = QAction("Rename", self)
+        mnuItem.triggered.connect(lambda: self._ctxSignal(
+            nwItemAction.RENAME, None, None
+        ))
+        self.addAction(mnuItem)
+        return
 
     def _buildMenuDelete(self, vActs):
         mnuItem = QAction("Delete Permanently", self)

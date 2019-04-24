@@ -211,7 +211,7 @@ class GuiMain(QMainWindow):
         selType   = ctxMenu.selType
         selTarget = ctxMenu.selTarget
 
-        print(selHandle, selAction, selClass, selType, selTarget)
+        # print(selHandle, selAction, selClass, selType, selTarget)
 
         if   selAction == nwItemAction.ADD_ROOT:
             self.treeView.newTreeItem(selHandle, selType, selClass)
@@ -237,6 +237,8 @@ class GuiMain(QMainWindow):
             pass
         elif selAction == nwItemAction.EMPTY_TRASH:
             pass
+        elif selAction == nwItemAction.RENAME:
+            self.treeView.renameTreeItem(selHandle)
 
         return
 
