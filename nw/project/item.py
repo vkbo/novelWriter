@@ -17,7 +17,7 @@ from os       import path, mkdir
 from lxml     import etree
 from datetime import datetime
 
-from nw.enum  import nwItemType, nwItemClass
+from nw.enum  import nwItemType, nwItemClass, nwItemLayout
 
 logger = logging.getLogger(__name__)
 
@@ -33,6 +33,23 @@ class NWItem():
         nwItemClass.TIMELINE  : "Timeline",
         nwItemClass.OBJECT    : "Objects",
     }
+    CLASS_FLAG = {
+        nwItemClass.NO_CLASS  : "X",
+        nwItemClass.NOVEL     : "N",
+        nwItemClass.PLOT      : "P",
+        nwItemClass.CHARACTER : "C",
+        nwItemClass.WORLD     : "L",
+        nwItemClass.TIMELINE  : "T",
+        nwItemClass.OBJECT    : "O",
+    }
+    LAYOUT_FLAG = {
+        nwItemLayout.NO_LAYOUT   : "Xo",
+        nwItemLayout.TITLE_PAGE  : "Tt",
+        nwItemLayout.SIMPLE_PAGE : "Pg",
+        nwItemLayout.PARTITION   : "Pt",
+        nwItemLayout.CHAPTER     : "Ch",
+        nwItemLayout.SCENE       : "Sc",
+    }
 
     def __init__(self):
 
@@ -42,6 +59,7 @@ class NWItem():
         self.itemOrder   = None
         self.itemType    = nwItemType.NO_TYPE
         self.itemClass   = nwItemClass.NO_CLASS
+        self.itemLayout  = nwItemLayout.NO_LAYOUT
         self.itemDepth   = None
         self.hasChildren = False
         self.isExpanded  = False
@@ -68,6 +86,8 @@ class NWItem():
         xSub = self._subPack(xPack,"depth",     text=str(self.itemDepth))
         xSub = self._subPack(xPack,"children",  text=str(self.hasChildren))
         xSub = self._subPack(xPack,"expanded",  text=str(self.isExpanded))
+        if self.itemClass == nwItemClass.NOVEL and self.itemLayout is not nwItemLayout.NO_LAYOUT:
+            xSub = self._subPack(xPack,"layout",    text=str(self.itemLayout.name))
         if self.itemType == nwItemType.FILE:
             xSub = self._subPack(xPack,"charCount", text=str(self.charCount), none=False)
             xSub = self._subPack(xPack,"wordCount", text=str(self.wordCount), none=False)
@@ -92,6 +112,7 @@ class NWItem():
         elif tagName == "order":     self.setOrder(tagValue)
         elif tagName == "type":      self.setType(tagValue)
         elif tagName == "class":     self.setClass(tagValue)
+        elif tagName == "layout":    self.setLayout(tagValue)
         elif tagName == "depth":     self.setDepth(tagValue)
         elif tagName == "children":  self.setChildren(tagValue)
         elif tagName == "expanded":  self.setExpanded(tagValue)
@@ -146,6 +167,19 @@ class NWItem():
                     return
         logger.error("Unrecognised item class '%s'" % theClass)
         self.itemClass = nwItemClass.NO_CLASS
+        return
+
+    def setLayout(self, theLayout):
+        if isinstance(theLayout, nwItemLayout):
+            self.itemLayout = theLayout
+            return
+        else:
+            for itemLayout in nwItemLayout:
+                if theLayout == itemLayout.name:
+                    self.itemLayout = itemLayout
+                    return
+        logger.error("Unrecognised item layout '%s'" % theLayout)
+        self.itemLayout = nwItemLayout.NO_LAYOUT
         return
 
     def setDepth(self, theDepth):

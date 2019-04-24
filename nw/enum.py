@@ -35,6 +35,17 @@ class nwItemClass(Enum):
 
 # END Enum nwItemClass
 
+class nwItemLayout(Enum):
+
+    NO_LAYOUT   = 0
+    TITLE_PAGE  = 1
+    SIMPLE_PAGE = 2
+    PARTITION   = 3
+    CHAPTER     = 4
+    SCENE       = 5
+
+# END Enum nwItemLayout
+
 class nwItemAction(Enum):
 
     NO_ACTION   = 0
