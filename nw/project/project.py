@@ -19,6 +19,8 @@ from hashlib         import sha256
 from datetime        import datetime
 from time            import time
 
+from PyQt5.QtGui     import QIcon, QPixmap, QColor
+
 from nw.enum         import nwItemType, nwItemClass, nwItemAction
 from nw.project.item import NWItem
 
@@ -40,6 +42,16 @@ class NWProject():
         self.projName    = ""
         self.bookTitle   = ""
         self.bookAuthors = []
+
+        self.statusCols  = [
+            ("New",     100,100,100),
+            ("Note",    200, 50,  0),
+            ("Draft",   200,150,  0),
+            ("Finished", 50,200,  0),
+        ]
+        self.statusIcons  = []
+        self.statusLabels = []
+        self._makeStatusIcons()
 
         return
 
@@ -79,6 +91,7 @@ class NWProject():
         self.projName    = ""
         self.bookTitle   = ""
         self.bookAuthors = []
+        self._makeStatusIcons()
         hNovel = self.newRoot("Novel",         nwItemClass.NOVEL)
         hChars = self.newRoot("Characters",    nwItemClass.CHARACTER)
         hWorld = self.newRoot("World",         nwItemClass.WORLD)
@@ -147,6 +160,7 @@ class NWProject():
                         nwItem.setFromTag(xValue.tag,xValue.text)
                     self._appendItem(tHandle,pHandle,nwItem)
  
+        self._makeStatusIcons()
         self.mainConf.setRecent(self.projPath)
 
         return True
@@ -363,6 +377,16 @@ class NWProject():
         else:
             nwItem.setDepth(itemDepth)
 
+        return
+
+    def _makeStatusIcons(self):
+        self.statusIcons  = []
+        self.statusLabels = []
+        for sLabel, sR, sG, sB in self.statusCols:
+            theIcon = QPixmap(32,32)
+            theIcon.fill(QColor(sR,sG,sB))
+            self.statusIcons.append(QIcon(theIcon))
+            self.statusLabels.append(sLabel)
         return
 
     def _makeHandle(self, addSeed=""):

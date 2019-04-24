@@ -192,7 +192,7 @@ class GuiDocTreeCtx(QMenu):
         return
 
     def _buildSubMenuAddRoot(self, itemClass):
-        mnuSub = QAction("Add "+NWItem.CLASS_NAME[itemClass], self)
+        mnuSub = QAction("Add %s Root" % NWItem.CLASS_NAME[itemClass], self)
         mnuSub.triggered.connect(lambda: self._ctxSignal(
             nwItemAction.ADD_ROOT, 
             itemClass,

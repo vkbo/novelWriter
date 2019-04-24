@@ -21,6 +21,7 @@ from PyQt5.QtGui          import QIcon
 from nw.gui.doctree       import GuiDocTree
 from nw.gui.doctreectx    import GuiDocTreeCtx
 from nw.gui.doceditor     import GuiDocEditor
+from nw.gui.docdetails    import GuiDocDetails
 from nw.gui.projecteditor import GuiProjectEditor
 from nw.gui.statusbar     import GuiMainStatus
 from nw.project.project   import NWProject
@@ -44,8 +45,9 @@ class GuiMain(QMainWindow):
         self.setWindowIcon(QIcon(path.join(self.mainConf.appPath,"..","novelWriter.svg")))
 
         # Main GUI Elements
-        self.docEditor = GuiDocEditor(self)
-        self.treeView  = GuiDocTree(self.theProject)
+        self.docEditor  = GuiDocEditor(self)
+        self.docDetails = GuiDocDetails(self.theProject)
+        self.treeView   = GuiDocTree(self.theProject)
 
         # Assemble Main Window
         self.stackPane = QStackedWidget()
@@ -53,8 +55,14 @@ class GuiMain(QMainWindow):
         self.stackDoc  = self.stackPane.addWidget(self.docEditor)
         self.stackPane.setCurrentIndex(self.stackNone)
 
+        self.treePane = QFrame()
+        self.treeBox  = QVBoxLayout()
+        self.treeBox.addWidget(self.treeView)
+        self.treeBox.addWidget(self.docDetails)
+        self.treePane.setLayout(self.treeBox)
+
         self.splitMain = QSplitter(Qt.Horizontal)
-        self.splitMain.addWidget(self.treeView)
+        self.splitMain.addWidget(self.treePane)
         self.splitMain.addWidget(self.stackPane)
         self.splitMain.setSizes(self.mainConf.mainPanePos)
         self.splitMain.splitterMoved.connect(self._splitMainMove)
@@ -65,6 +73,7 @@ class GuiMain(QMainWindow):
         self._buildMenu()
         self.treeView.setContextMenuPolicy(Qt.CustomContextMenu)
         self.treeView.customContextMenuRequested.connect(self._openDocTreeContextMenu)
+        self.treeView.itemSelectionChanged.connect(self._treeSingleClick)
         self.treeView.itemDoubleClicked.connect(self._treeDoubleClick)
         self.treeView.buildTree()
 
@@ -158,6 +167,12 @@ class GuiMain(QMainWindow):
     ##
     #  Internal Functions
     ##
+
+    def _treeSingleClick(self):
+        sHandle = self.treeView.getSelectedHandle()
+        if sHandle is not None:
+            self.docDetails.buildViewBox(sHandle)
+        return
 
     def _treeDoubleClick(self, tItem, colNo):
         tHandle = tItem.text(3)

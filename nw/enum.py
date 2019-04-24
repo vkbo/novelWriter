@@ -43,6 +43,7 @@ class nwItemLayout(Enum):
     PARTITION   = 3
     CHAPTER     = 4
     SCENE       = 5
+    NOTE        = 6
 
 # END Enum nwItemLayout
 

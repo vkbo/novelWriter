@@ -14,8 +14,8 @@ import logging
 import nw
 
 from os              import path
-from PyQt5.QtGui     import QIcon
 from PyQt5.QtCore    import Qt, QSize
+from PyQt5.QtGui     import QIcon, QFont, QColor
 from PyQt5.QtWidgets import QTreeWidget, QTreeWidgetItem, QAbstractItemView, QInputDialog, QLineEdit
 
 from nw.enum         import nwItemType, nwItemClass
@@ -43,9 +43,12 @@ class GuiDocTree(QTreeWidget):
         self.setExpandsOnDoubleClick(True)
         self.setIndentation(13)
         self.setColumnCount(4)
-        self.setHeaderLabels(["Name","S","#","Handle"])
+        self.setHeaderLabels(["Name","Count","Flags","Handle"])
         if not self.debugGUI:
             self.hideColumn(self.C_HANDLE)
+
+        treeHead = self.headerItem()
+        treeHead.setTextAlignment(self.C_COUNT,Qt.AlignRight)
 
         # Allow Move by Drag & Drop
         self.setDragEnabled(True)
@@ -53,6 +56,9 @@ class GuiDocTree(QTreeWidget):
 
         for colN in range(len(self.mainConf.treeColWidth)):
             self.setColumnWidth(colN,self.mainConf.treeColWidth[colN])
+
+        self.fontFlags = QFont("Monospace",10)
+        self.fontCount = QFont("Monospace",10)
 
         logger.debug("DocTree initialisation complete")
 
@@ -139,34 +145,53 @@ class GuiDocTree(QTreeWidget):
         return theItem, theCount+1
 
     def _addTreeItem(self, nwItem):
+
         tName   = nwItem.itemName
         tHandle = nwItem.itemHandle
         pHandle = nwItem.parHandle
-        tStatus = 0
+        tStatus = NWItem.CLASS_FLAG[nwItem.itemClass]
+        if nwItem.itemType == nwItemType.FILE:
+            tStatus += "."+NWItem.LAYOUT_FLAG[nwItem.itemLayout]
+        nStatus = nwItem.itemStatus
+        if nStatus < 0 or nStatus >= len(self.theProject.statusIcons):
+            nStatus = 0
+
         newItem = QTreeWidgetItem([""]*4)
-        newItem.setText(self.C_NAME,   tName)
-        newItem.setText(self.C_FLAGS,  str(tStatus))
-        newItem.setText(self.C_COUNT,  "0")
+
+        newItem.setText(self.C_NAME,tName)
+
+        newItem.setText(self.C_COUNT,"0")
+        # newItem.setFont(self.C_COUNT,self.fontCount)
+        newItem.setForeground(self.C_COUNT,QColor(0,105,135))
+        newItem.setTextAlignment(self.C_COUNT,Qt.AlignRight)
+
+        newItem.setText(self.C_FLAGS,tStatus)
+        newItem.setIcon(self.C_FLAGS,self.theProject.statusIcons[nStatus])
+        newItem.setFont(self.C_FLAGS,self.fontFlags)
+
         newItem.setText(self.C_HANDLE, tHandle)
+
         self.theMap[tHandle] = newItem
         if pHandle is None:
             self.addTopLevelItem(newItem)
         else:
             self.theMap[pHandle].addChild(newItem)
             self.propagateCount(tHandle, nwItem.wordCount)
-        newItem.setTextAlignment(self.C_COUNT,Qt.AlignRight)
+
         newItem.setExpanded(nwItem.isExpanded)
+
         if nwItem.itemType == nwItemType.ROOT:
             newItem.setIcon(self.C_NAME, QIcon.fromTheme("drive-harddisk"))
         elif nwItem.itemType == nwItemType.FOLDER:
             newItem.setIcon(self.C_NAME, QIcon.fromTheme("folder"))
         elif nwItem.itemType == nwItemType.FILE:
             newItem.setIcon(self.C_NAME, QIcon.fromTheme("x-office-document"))
+
         return True
 
     def propagateCount(self, tHandle, theCount, nDepth=0):
         tItem = self.theMap[tHandle]
-        tItem.setText(self.C_COUNT,str(theCount))
+        tItem.setText(self.C_COUNT,"{:n}".format(theCount))
         pItem = tItem.parent()
         if pItem is not None:
             pCount = 0
@@ -184,7 +209,7 @@ class GuiDocTree(QTreeWidget):
             self._addTreeItem(nwItem)
         return True
 
-    def _getSelectedHandle(self):
+    def getSelectedHandle(self):
         selItem = self.selectedItems()
         if len(selItem) == 0:
             return None
@@ -210,7 +235,7 @@ class GuiDocTree(QTreeWidget):
         """Overload the drop of dragged item event to check whether the drop is allowed
         or not. Disallowed drops are cancelled.
         """
-        sHandle = self._getSelectedHandle()
+        sHandle = self.getSelectedHandle()
         if sHandle is None:
             return
 

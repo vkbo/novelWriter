@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='utf-8'?>
-<novelWriterXML appVersion="0.0.1" fileVersion="1.0" timeStamp="2019-04-24 18:07:47">
+<novelWriterXML appVersion="0.0.1" fileVersion="1.0" timeStamp="2019-04-24 22:34:36">
   <project>
     <name>Sample Project</name>
     <title>Sample Project</title>
@@ -11,6 +11,7 @@
       <name>Novel</name>
       <type>ROOT</type>
       <class>NOVEL</class>
+      <status>0</status>
       <depth>0</depth>
       <children>True</children>
       <expanded>True</expanded>
@@ -19,6 +20,7 @@
       <name>New Chapter</name>
       <type>FOLDER</type>
       <class>NOVEL</class>
+      <status>1</status>
       <depth>1</depth>
       <children>True</children>
       <expanded>True</expanded>
@@ -27,9 +29,11 @@
       <name>New Scene</name>
       <type>FILE</type>
       <class>NOVEL</class>
+      <status>2</status>
       <depth>2</depth>
       <children>False</children>
       <expanded>False</expanded>
+      <layout>SCENE</layout>
       <charCount>2575</charCount>
       <wordCount>377</wordCount>
       <paraCount>5</paraCount>
@@ -38,9 +42,11 @@
       <name>Test File</name>
       <type>FILE</type>
       <class>NOVEL</class>
+      <status>1</status>
       <depth>2</depth>
       <children>False</children>
       <expanded>False</expanded>
+      <layout>SCENE</layout>
       <charCount>125</charCount>
       <wordCount>24</wordCount>
       <paraCount>2</paraCount>
@@ -49,6 +55,7 @@
       <name>Characters</name>
       <type>ROOT</type>
       <class>CHARACTER</class>
+      <status>0</status>
       <depth>0</depth>
       <children>True</children>
       <expanded>True</expanded>
@@ -57,9 +64,11 @@
       <name>Jon Smith</name>
       <type>FILE</type>
       <class>CHARACTER</class>
+      <status>0</status>
       <depth>1</depth>
       <children>False</children>
       <expanded>False</expanded>
+      <layout>NOTE</layout>
       <charCount>0</charCount>
       <wordCount>0</wordCount>
       <paraCount>0</paraCount>
@@ -68,9 +77,11 @@
       <name>Jane Smith</name>
       <type>FILE</type>
       <class>CHARACTER</class>
+      <status>0</status>
       <depth>1</depth>
       <children>False</children>
       <expanded>False</expanded>
+      <layout>NOTE</layout>
       <charCount>0</charCount>
       <wordCount>0</wordCount>
       <paraCount>0</paraCount>
@@ -79,6 +90,7 @@
       <name>World</name>
       <type>ROOT</type>
       <class>WORLD</class>
+      <status>0</status>
       <depth>0</depth>
       <children>False</children>
       <expanded>False</expanded>

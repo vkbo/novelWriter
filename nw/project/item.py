@@ -25,7 +25,7 @@ class NWItem():
 
     MAX_DEPTH  = 8
     CLASS_NAME = {
-        nwItemClass.NO_CLASS  : "Folder",
+        nwItemClass.NO_CLASS  : "Custom",
         nwItemClass.NOVEL     : "Novel",
         nwItemClass.PLOT      : "Plot",
         nwItemClass.CHARACTER : "Characters",
@@ -42,6 +42,15 @@ class NWItem():
         nwItemClass.TIMELINE  : "T",
         nwItemClass.OBJECT    : "O",
     }
+    LAYOUT_NAME = {
+        nwItemLayout.NO_LAYOUT   : "None",
+        nwItemLayout.TITLE_PAGE  : "Title Page",
+        nwItemLayout.SIMPLE_PAGE : "Simple Page",
+        nwItemLayout.PARTITION   : "Partition",
+        nwItemLayout.CHAPTER     : "Chapter",
+        nwItemLayout.SCENE       : "Scene",
+        nwItemLayout.NOTE        : "Note",
+    }
     LAYOUT_FLAG = {
         nwItemLayout.NO_LAYOUT   : "Xo",
         nwItemLayout.TITLE_PAGE  : "Tt",
@@ -49,6 +58,7 @@ class NWItem():
         nwItemLayout.PARTITION   : "Pt",
         nwItemLayout.CHAPTER     : "Ch",
         nwItemLayout.SCENE       : "Sc",
+        nwItemLayout.NOTE        : "Nt",
     }
 
     def __init__(self):
@@ -60,6 +70,7 @@ class NWItem():
         self.itemType    = nwItemType.NO_TYPE
         self.itemClass   = nwItemClass.NO_CLASS
         self.itemLayout  = nwItemLayout.NO_LAYOUT
+        self.itemStatus  = 0
         self.itemDepth   = None
         self.hasChildren = False
         self.isExpanded  = False
@@ -83,12 +94,12 @@ class NWItem():
         xSub = self._subPack(xPack,"name",      text=str(self.itemName))
         xSub = self._subPack(xPack,"type",      text=str(self.itemType.name))
         xSub = self._subPack(xPack,"class",     text=str(self.itemClass.name))
+        xSub = self._subPack(xPack,"status",    text=str(self.itemStatus))
         xSub = self._subPack(xPack,"depth",     text=str(self.itemDepth))
         xSub = self._subPack(xPack,"children",  text=str(self.hasChildren))
         xSub = self._subPack(xPack,"expanded",  text=str(self.isExpanded))
-        if self.itemClass == nwItemClass.NOVEL and self.itemLayout is not nwItemLayout.NO_LAYOUT:
-            xSub = self._subPack(xPack,"layout",    text=str(self.itemLayout.name))
         if self.itemType == nwItemType.FILE:
+            xSub = self._subPack(xPack,"layout",    text=str(self.itemLayout.name))
             xSub = self._subPack(xPack,"charCount", text=str(self.charCount), none=False)
             xSub = self._subPack(xPack,"wordCount", text=str(self.wordCount), none=False)
             xSub = self._subPack(xPack,"paraCount", text=str(self.paraCount), none=False)
@@ -113,6 +124,7 @@ class NWItem():
         elif tagName == "type":      self.setType(tagValue)
         elif tagName == "class":     self.setClass(tagValue)
         elif tagName == "layout":    self.setLayout(tagValue)
+        elif tagName == "status":    self.setStatus(tagValue)
         elif tagName == "depth":     self.setDepth(tagValue)
         elif tagName == "children":  self.setChildren(tagValue)
         elif tagName == "expanded":  self.setExpanded(tagValue)
@@ -180,6 +192,11 @@ class NWItem():
                     return
         logger.error("Unrecognised item layout '%s'" % theLayout)
         self.itemLayout = nwItemLayout.NO_LAYOUT
+        return
+
+    def setStatus(self, theStatus):
+        theStatus = self._checkInt(theStatus,0)
+        self.itemStatus = theStatus
         return
 
     def setDepth(self, theDepth):
