@@ -25,6 +25,11 @@ logger = logging.getLogger(__name__)
 
 class GuiDocTree(QTreeWidget):
 
+    C_NAME   = 0
+    C_COUNT  = 1
+    C_FLAGS  = 2
+    C_HANDLE = 3
+
     def __init__(self, theProject):
         QTreeWidget.__init__(self)
 
@@ -40,7 +45,7 @@ class GuiDocTree(QTreeWidget):
         self.setColumnCount(4)
         self.setHeaderLabels(["Name","S","#","Handle"])
         if not self.debugGUI:
-            self.hideColumn(3)
+            self.hideColumn(self.C_HANDLE)
 
         # Allow Move by Drag & Drop
         self.setDragEnabled(True)
@@ -89,13 +94,13 @@ class GuiDocTree(QTreeWidget):
 
     def renameTreeItem(self, tHandle):
         tItem   = self.theMap[tHandle]
-        oldName = tItem.text(0)
+        oldName = tItem.text(self.C_NAME)
         newName, isOk = QInputDialog.getText(self, "Rename Item", "New Name", QLineEdit.Normal,oldName)
         if isOk:
             newName = newName.strip()
             if newName == "":
                 newName = oldName
-            tItem.setText(0,newName)
+            tItem.setText(self.C_NAME,newName)
             self.theProject.setItemName(tHandle, newName)
         return
 
@@ -119,7 +124,7 @@ class GuiDocTree(QTreeWidget):
     ##
 
     def _scanChildren(self, theList, theItem, theIndex):
-        tHandle = theItem.text(3)
+        tHandle = theItem.text(self.C_HANDLE)
         nwItem  = self.theProject.projTree[tHandle]
         nwItem.setExpanded(theItem.isExpanded())
         nwItem.setOrder(theIndex)
@@ -138,34 +143,36 @@ class GuiDocTree(QTreeWidget):
         tHandle = nwItem.itemHandle
         pHandle = nwItem.parHandle
         tStatus = 0
-        newItem = QTreeWidgetItem([
-            tName, str(tStatus), "0", tHandle
-        ])
+        newItem = QTreeWidgetItem([""]*4)
+        newItem.setText(self.C_NAME,   tName)
+        newItem.setText(self.C_FLAGS,  str(tStatus))
+        newItem.setText(self.C_COUNT,  "0")
+        newItem.setText(self.C_HANDLE, tHandle)
         self.theMap[tHandle] = newItem
         if pHandle is None:
             self.addTopLevelItem(newItem)
         else:
             self.theMap[pHandle].addChild(newItem)
             self.propagateCount(tHandle, nwItem.wordCount)
-        newItem.setTextAlignment(2,Qt.AlignRight)
+        newItem.setTextAlignment(self.C_COUNT,Qt.AlignRight)
         newItem.setExpanded(nwItem.isExpanded)
         if nwItem.itemType == nwItemType.ROOT:
-            newItem.setIcon(0, QIcon.fromTheme("drive-harddisk"))
+            newItem.setIcon(self.C_NAME, QIcon.fromTheme("drive-harddisk"))
         elif nwItem.itemType == nwItemType.FOLDER:
-            newItem.setIcon(0, QIcon.fromTheme("folder"))
+            newItem.setIcon(self.C_NAME, QIcon.fromTheme("folder"))
         elif nwItem.itemType == nwItemType.FILE:
-            newItem.setIcon(0, QIcon.fromTheme("x-office-document"))
+            newItem.setIcon(self.C_NAME, QIcon.fromTheme("x-office-document"))
         return True
 
     def propagateCount(self, tHandle, theCount, nDepth=0):
         tItem = self.theMap[tHandle]
-        tItem.setText(2,str(theCount))
+        tItem.setText(self.C_COUNT,str(theCount))
         pItem = tItem.parent()
         if pItem is not None:
             pCount = 0
             for i in range(pItem.childCount()):
-                pCount += int(pItem.child(i).text(2))
-                pHandle = pItem.text(3)
+                pCount += int(pItem.child(i).text(self.C_COUNT))
+                pHandle = pItem.text(self.C_HANDLE)
             if not nDepth > NWItem.MAX_DEPTH:
                 self.propagateCount(pHandle, pCount, nDepth+1)
         return
@@ -182,7 +189,7 @@ class GuiDocTree(QTreeWidget):
         if len(selItem) == 0:
             return None
         if isinstance(selItem[0], QTreeWidgetItem):
-            return selItem[0].text(3)
+            return selItem[0].text(self.C_HANDLE)
         return None
 
     ##
@@ -212,7 +219,7 @@ class GuiDocTree(QTreeWidget):
             return
 
         dItem   = self.itemFromIndex(dIndex)
-        dHandle = dItem.text(3)
+        dHandle = dItem.text(self.C_HANDLE)
         snItem  = self.theProject.getItem(sHandle)
         dnItem  = self.theProject.getItem(dHandle)
         isSame  = snItem.itemClass == dnItem.itemClass and dnItem.itemType
