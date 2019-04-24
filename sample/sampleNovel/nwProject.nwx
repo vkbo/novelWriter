@@ -1,12 +1,12 @@
 <?xml version='1.0' encoding='utf-8'?>
-<novelWriterXML appVersion="0.0.1" fileVersion="1.0" timeStamp="2019-04-24 22:34:36">
+<novelWriterXML appVersion="0.0.1" fileVersion="1.0" timeStamp="2019-04-24 23:22:52">
   <project>
     <name>Sample Project</name>
     <title>Sample Project</title>
     <author>Jane Smith</author>
     <author>Jay Doh</author>
   </project>
-  <content count="8">
+  <content count="9">
     <item handle="7031beac91f75" order="0" parent="None">
       <name>Novel</name>
       <type>ROOT</type>
@@ -17,7 +17,7 @@
       <expanded>True</expanded>
     </item>
     <item handle="e7ded148d6e4a" order="0" parent="7031beac91f75">
-      <name>New Chapter</name>
+      <name>Some Chapter</name>
       <type>FOLDER</type>
       <class>NOVEL</class>
       <status>1</status>
@@ -39,7 +39,7 @@
       <paraCount>5</paraCount>
     </item>
     <item handle="636b6aa9b697b" order="1" parent="e7ded148d6e4a">
-      <name>Test File</name>
+      <name>File With Stuff</name>
       <type>FILE</type>
       <class>NOVEL</class>
       <status>1</status>
@@ -47,9 +47,9 @@
       <children>False</children>
       <expanded>False</expanded>
       <layout>SCENE</layout>
-      <charCount>125</charCount>
-      <wordCount>24</wordCount>
-      <paraCount>2</paraCount>
+      <charCount>376</charCount>
+      <wordCount>66</wordCount>
+      <paraCount>4</paraCount>
     </item>
     <item handle="f6622b4617424" order="1" parent="None">
       <name>Characters</name>
@@ -61,7 +61,7 @@
       <expanded>True</expanded>
     </item>
     <item handle="14298de4d9524" order="0" parent="f6622b4617424">
-      <name>Jon Smith</name>
+      <name>John Smith</name>
       <type>FILE</type>
       <class>CHARACTER</class>
       <status>0</status>
@@ -69,9 +69,9 @@
       <children>False</children>
       <expanded>False</expanded>
       <layout>NOTE</layout>
-      <charCount>0</charCount>
-      <wordCount>0</wordCount>
-      <paraCount>0</paraCount>
+      <charCount>42</charCount>
+      <wordCount>8</wordCount>
+      <paraCount>1</paraCount>
     </item>
     <item handle="bb2c23b3c42cc" order="1" parent="f6622b4617424">
       <name>Jane Smith</name>
@@ -82,18 +82,31 @@
       <children>False</children>
       <expanded>False</expanded>
       <layout>NOTE</layout>
-      <charCount>0</charCount>
-      <wordCount>0</wordCount>
-      <paraCount>0</paraCount>
+      <charCount>51</charCount>
+      <wordCount>9</wordCount>
+      <paraCount>1</paraCount>
     </item>
     <item handle="73eee34351f85" order="2" parent="None">
-      <name>World</name>
+      <name>Locations</name>
       <type>ROOT</type>
       <class>WORLD</class>
       <status>0</status>
       <depth>0</depth>
+      <children>True</children>
+      <expanded>True</expanded>
+    </item>
+    <item handle="b3e74dbc1f584" order="0" parent="73eee34351f85">
+      <name>Earth</name>
+      <type>FILE</type>
+      <class>WORLD</class>
+      <status>0</status>
+      <depth>1</depth>
       <children>False</children>
       <expanded>False</expanded>
+      <layout>NOTE</layout>
+      <charCount>66</charCount>
+      <wordCount>13</wordCount>
+      <paraCount>1</paraCount>
     </item>
   </content>
 </novelWriterXML>

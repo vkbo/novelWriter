@@ -21,7 +21,7 @@ from time            import time
 
 from PyQt5.QtGui     import QIcon, QPixmap, QColor
 
-from nw.enum         import nwItemType, nwItemClass, nwItemAction
+from nw.enum         import nwItemType, nwItemClass, nwItemLayout, nwItemAction
 from nw.project.item import NWItem
 
 logger = logging.getLogger(__name__)
@@ -79,6 +79,10 @@ class NWProject():
         newItem = NWItem()
         newItem.setName(fileName)
         newItem.setType(nwItemType.FILE)
+        if fileClass == nwItemClass.NOVEL:
+            newItem.setLayout(nwItemLayout.SCENE)
+        else:
+            newItem.setLayout(nwItemLayout.NOTE)
         newItem.setClass(fileClass)
         self._appendItem(None,pHandle,newItem)
         return newItem.itemHandle

@@ -53,7 +53,7 @@ class GuiDocDetails(QFrame):
         for nRow in range(4):
             lblOne = QLabel(colOne[nRow])
             lblOne.setFont(self.fntOne)
-            self.mainBox.addWidget(lblOne,nRow+1,0)
+            self.mainBox.addWidget(lblOne,nRow,0)
     
         self.mainBox.setColumnStretch(0,0)
         self.mainBox.setColumnStretch(1,1)
@@ -79,7 +79,7 @@ class GuiDocDetails(QFrame):
         for nRow in range(4):
             lblTwo = QLabel(colTwo[nRow])
             lblTwo.setFont(self.fntTwo)
-            self.mainBox.addWidget(lblTwo,nRow+1,1)
+            self.mainBox.addWidget(lblTwo,nRow,1)
 
         return
 
