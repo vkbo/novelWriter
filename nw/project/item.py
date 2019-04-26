@@ -25,13 +25,14 @@ class NWItem():
 
     MAX_DEPTH  = 8
     CLASS_NAME = {
-        nwItemClass.NO_CLASS  : "Custom",
+        nwItemClass.NO_CLASS  : "None",
         nwItemClass.NOVEL     : "Novel",
         nwItemClass.PLOT      : "Plot",
         nwItemClass.CHARACTER : "Characters",
         nwItemClass.WORLD     : "Locations",
         nwItemClass.TIMELINE  : "Timeline",
         nwItemClass.OBJECT    : "Objects",
+        nwItemClass.CUSTOM    : "Custom",
     }
     CLASS_FLAG = {
         nwItemClass.NO_CLASS  : "X",

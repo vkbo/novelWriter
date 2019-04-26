@@ -15,7 +15,7 @@ import nw
 
 from os                   import path
 from PyQt5.QtWidgets      import qApp, QWidget, QMainWindow, QVBoxLayout, QFrame, QSplitter, QAction, QToolBar, QFileDialog, QStackedWidget
-from PyQt5.QtCore         import Qt, QSize
+from PyQt5.QtCore         import Qt, QSize, pyqtSlot
 from PyQt5.QtGui          import QIcon
 
 from nw.gui.doctree       import GuiDocTree
@@ -26,7 +26,8 @@ from nw.gui.projecteditor import GuiProjectEditor
 from nw.gui.statusbar     import GuiMainStatus
 from nw.project.project   import NWProject
 from nw.project.document  import NWDoc
-from nw.enum              import nwItemType, nwDocAction, nwItemAction
+from nw.project.item      import NWItem
+from nw.enum              import nwItemType, nwItemClass, nwDocAction, nwItemAction
 
 logger = logging.getLogger(__name__)
 
@@ -139,7 +140,7 @@ class GuiMain(QMainWindow):
         dlgProj.exec_()
         return True
 
-    def openRecentProject(self, recentItem):
+    def openRecentProject(self, menuItem, recentItem):
         logger.verbose("User requested opening recent project #%d" % recentItem)
         self.theProject.openProject(self.mainConf.recentList[recentItem])
         self.treeView.buildTree()
@@ -292,71 +293,110 @@ class GuiMain(QMainWindow):
     def _buildMenu(self):
         menuBar = self.menuBar()
 
-        # File
-        fileMenu = menuBar.addMenu("&File")
+        # Project
+        projMenu = menuBar.addMenu("&Project")
 
-        # File > New Project
+        # Project > New Project
         menuItem = QAction(QIcon.fromTheme("folder-new"), "New Project", menuBar)
         menuItem.setStatusTip("Create New Project")
         menuItem.triggered.connect(self.newProject)
-        fileMenu.addAction(menuItem)
+        projMenu.addAction(menuItem)
 
-        # File > Open Project
+        # Project > Open Project
         menuItem = QAction(QIcon.fromTheme("folder-open"), "Open Project", menuBar)
         menuItem.setStatusTip("Open Project")
+        menuItem.setShortcut("Ctrl+Shift+O")
         menuItem.triggered.connect(self.openProject)
-        fileMenu.addAction(menuItem)
+        projMenu.addAction(menuItem)
 
-        # File > Save Project
+        # Project > Save Project
         menuItem = QAction(QIcon.fromTheme("document-save"), "Save Project", menuBar)
         menuItem.setStatusTip("Save Project")
+        menuItem.setShortcut("Ctrl+Shift+S")
         menuItem.triggered.connect(self.saveProject)
-        fileMenu.addAction(menuItem)
+        projMenu.addAction(menuItem)
 
-        # File > Recent Project
-        recentMenu = fileMenu.addMenu(QIcon.fromTheme("document-open-recent"),"Recent Projects")
-        itemCount = 0
-        for recentProject in self.mainConf.recentList:
+        # Project > Recent Projects
+        recentMenu = projMenu.addMenu(QIcon.fromTheme("document-open-recent"),"Recent Projects")
+        for n in range(len(self.mainConf.recentList)):
+            recentProject = self.mainConf.recentList[n]
             if recentProject == "": continue
-            menuItem = QAction(QIcon.fromTheme("folder-open"), "%d: %s" % (itemCount,recentProject), fileMenu)
-            menuItem.triggered.connect(lambda: self.openRecentProject(0))
+            menuItem = QAction(QIcon.fromTheme("folder-open"), "%d: %s" % (n,recentProject), projMenu)
+            menuItem.triggered.connect(lambda menuItem, n=n : self.openRecentProject(menuItem, n))
             recentMenu.addAction(menuItem)
-            itemCount += 1
 
-        # File > Separator
-        fileMenu.addSeparator()
+        # Project > Separator
+        projMenu.addSeparator()
 
-        # File > Project Settings
+        # Project > Project Settings
         menuItem = QAction(QIcon.fromTheme("document-properties"), "Project Settings", menuBar)
         menuItem.setStatusTip("Project Settings")
         menuItem.triggered.connect(self.editProject)
-        fileMenu.addAction(menuItem)
+        projMenu.addAction(menuItem)
 
-        # File > Separator
-        fileMenu.addSeparator()
+        # Project > Separator
+        projMenu.addSeparator()
 
-        # File > New
-        menuItem = QAction(QIcon.fromTheme("document-new"), "&New", menuBar)
-        menuItem.setStatusTip("Create new document")
-        menuItem.setShortcut("Ctrl+N")
-        fileMenu.addAction(menuItem)
-
-        # File > Save
-        menuItem = QAction(QIcon.fromTheme("document-save"), "&Save", menuBar)
-        menuItem.setStatusTip("Save document")
-        menuItem.setShortcut("Ctrl+S")
-        menuItem.triggered.connect(self.saveDocument)
-        fileMenu.addAction(menuItem)
-
-        # File > Separator
-        fileMenu.addSeparator()
-
-        # File > Exit
+        # Project > Exit
         menuItem = QAction(QIcon.fromTheme("application-exit"), "Exit", menuBar)
         menuItem.setStatusTip("Exit %s" % nw.__package__)
         menuItem.setShortcut("Ctrl+Q")
         menuItem.triggered.connect(self._menuExit)
-        fileMenu.addAction(menuItem)
+        projMenu.addAction(menuItem)
+
+        ############################################################################################
+
+        # Item
+        itemMenu = menuBar.addMenu("&Item")
+
+        # Item > New
+        menuItem = QAction(QIcon.fromTheme("document-new"), "&New Document", menuBar)
+        menuItem.setStatusTip("Create New Document")
+        menuItem.setShortcut("Ctrl+N")
+        itemMenu.addAction(menuItem)
+
+        # Item > Open
+        menuItem = QAction(QIcon.fromTheme("document-open"), "&Open Document", menuBar)
+        menuItem.setStatusTip("Open Selected Document")
+        menuItem.setShortcut("Ctrl+O")
+        itemMenu.addAction(menuItem)
+
+        # Item > Save
+        menuItem = QAction(QIcon.fromTheme("document-save"), "&Save Document", menuBar)
+        menuItem.setStatusTip("Save Current Document")
+        menuItem.setShortcut("Ctrl+S")
+        menuItem.triggered.connect(self.saveDocument)
+        itemMenu.addAction(menuItem)
+
+        # Item > Separator
+        itemMenu.addSeparator()
+
+        # Item > New Folder
+        menuItem = QAction(QIcon.fromTheme("folder-new"), "New Folder", menuBar)
+        menuItem.setStatusTip("New Folder")
+        menuItem.setShortcut("Ctrl+Shift+N")
+        itemMenu.addAction(menuItem)
+
+        # Item > New Root
+        rootMenu = itemMenu.addMenu(QIcon.fromTheme("folder-new"), "Create Root Group")
+        self.rootItems = {}
+        self.rootItems[nwItemClass.NOVEL]      = QAction(QIcon.fromTheme("folder-new"), "Novel Root",     rootMenu)
+        self.rootItems[nwItemClass.PLOT]       = QAction(QIcon.fromTheme("folder-new"), "Plot Root",      rootMenu)
+        self.rootItems[nwItemClass.CHARACTER]  = QAction(QIcon.fromTheme("folder-new"), "Character Root", rootMenu)
+        self.rootItems[nwItemClass.WORLD]      = QAction(QIcon.fromTheme("folder-new"), "Location Root",  rootMenu)
+        self.rootItems[nwItemClass.TIMELINE]   = QAction(QIcon.fromTheme("folder-new"), "Timeline Root",  rootMenu)
+        self.rootItems[nwItemClass.OBJECT]     = QAction(QIcon.fromTheme("folder-new"), "Object Root",    rootMenu)
+        self.rootItems[nwItemClass.CUSTOM]     = QAction(QIcon.fromTheme("folder-new"), "Custom Root",    rootMenu)
+        rootMenu.addActions(self.rootItems.values())
+
+        # Item > Separator
+        itemMenu.addSeparator()
+
+        # Item > Delete Item
+        menuItem = QAction(QIcon.fromTheme("folder-delete"), "Delete Item", menuBar)
+        menuItem.setStatusTip("Delete Selected Item")
+        menuItem.setShortcut("Del")
+        itemMenu.addAction(menuItem)
 
         ############################################################################################
 
