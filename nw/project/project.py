@@ -266,6 +266,12 @@ class NWProject():
         logger.error("No tree item with handle %s" % str(tHandle))
         return None
 
+    def findRootItem(self, theClass):
+        for aRoot in self.treeRoots:
+            if theClass == self.projTree[aRoot].itemClass:
+                return self.projTree[aRoot].itemHandle
+        return None
+
     def getActionList(self, tHandle):
         """Returns a dictionary of possible actions to perform on a give handle.
         """
@@ -345,7 +351,7 @@ class NWProject():
         """Checks if there already is a root entry of class 'theClass' in the
         root of the project tree.
         """
-        if theClass == nwItemClass.NO_CLASS:
+        if theClass == nwItemClass.CUSTOM:
             return True
         for aRoot in self.treeRoots:
             if theClass == self.projTree[aRoot].itemClass:

@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='utf-8'?>
-<novelWriterXML appVersion="0.0.1" fileVersion="1.0" timeStamp="2019-04-24 23:22:52">
+<novelWriterXML appVersion="0.0.1" fileVersion="1.0" timeStamp="2019-04-27 16:47:59">
   <project>
     <name>Sample Project</name>
     <title>Sample Project</title>
@@ -60,20 +60,7 @@
       <children>True</children>
       <expanded>True</expanded>
     </item>
-    <item handle="14298de4d9524" order="0" parent="f6622b4617424">
-      <name>John Smith</name>
-      <type>FILE</type>
-      <class>CHARACTER</class>
-      <status>0</status>
-      <depth>1</depth>
-      <children>False</children>
-      <expanded>False</expanded>
-      <layout>NOTE</layout>
-      <charCount>42</charCount>
-      <wordCount>8</wordCount>
-      <paraCount>1</paraCount>
-    </item>
-    <item handle="bb2c23b3c42cc" order="1" parent="f6622b4617424">
+    <item handle="bb2c23b3c42cc" order="0" parent="f6622b4617424">
       <name>Jane Smith</name>
       <type>FILE</type>
       <class>CHARACTER</class>
@@ -84,6 +71,19 @@
       <layout>NOTE</layout>
       <charCount>51</charCount>
       <wordCount>9</wordCount>
+      <paraCount>1</paraCount>
+    </item>
+    <item handle="14298de4d9524" order="1" parent="f6622b4617424">
+      <name>John Smith</name>
+      <type>FILE</type>
+      <class>CHARACTER</class>
+      <status>0</status>
+      <depth>1</depth>
+      <children>False</children>
+      <expanded>False</expanded>
+      <layout>NOTE</layout>
+      <charCount>42</charCount>
+      <wordCount>8</wordCount>
       <paraCount>1</paraCount>
     </item>
     <item handle="73eee34351f85" order="2" parent="None">

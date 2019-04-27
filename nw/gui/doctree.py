@@ -16,7 +16,7 @@ import nw
 from os              import path
 from PyQt5.QtCore    import Qt, QSize
 from PyQt5.QtGui     import QIcon, QFont, QColor
-from PyQt5.QtWidgets import QTreeWidget, QTreeWidgetItem, QAbstractItemView, QInputDialog, QLineEdit
+from PyQt5.QtWidgets import QTreeWidget, QTreeWidgetItem, QAbstractItemView, QInputDialog, QLineEdit, QApplication
 
 from nw.enum         import nwItemType, nwItemClass
 from nw.project.item import NWItem
@@ -30,12 +30,13 @@ class GuiDocTree(QTreeWidget):
     C_FLAGS  = 2
     C_HANDLE = 3
 
-    def __init__(self, theProject):
-        QTreeWidget.__init__(self)
+    def __init__(self, theParent, theProject):
+        QTreeWidget.__init__(self, theParent)
 
         logger.debug("Initialising DocTree ...")
         self.mainConf   = nw.CONFIG
         self.debugGUI   = self.mainConf.debugGUI
+        self.theParent  = theParent
         self.theProject = theProject
         self.theMap     = {}
 
@@ -64,38 +65,75 @@ class GuiDocTree(QTreeWidget):
 
         return
 
-    def newTreeItem(self, pHandle, itemType, itemClass):
+    def newTreeItem(self, itemType, itemClass):
+
+        pHandle = self.getSelectedHandle()
+        if itemClass is None and pHandle is not None:
+            itemClass = self.theProject.getItem(pHandle).itemClass
 
         logger.verbose("Adding new item of type %s and class %s to handle %s" % (
             itemType.name,itemClass.name,str(pHandle))
         )
 
-        # Create the new item
-        if   itemType == nwItemType.FILE:
-            tHandle = self.theProject.newFile("New File", itemClass, pHandle)
-        elif itemType == nwItemType.FOLDER:
-            tHandle = self.theProject.newFolder("New Folder", itemClass, pHandle)
-        elif itemType == nwItemType.ROOT:
+        if itemType == nwItemType.ROOT:
             tHandle = self.theProject.newRoot(NWItem.CLASS_NAME[itemClass], itemClass)
+
         else:
-            logger.error("Failed to add new item")
-            return
+            # If no parent has been selected, make the new file under the root NOVEL item.
+            if pHandle is None:
+                pHandle = self.theProject.findRootItem(nwItemClass.NOVEL)
+
+            # If still nothing, give up
+            if pHandle is None:
+                logger.error("Did not find anywhere to add the item!")
+                return False
+
+            # Now check if the selected item is a file, in which case the new file will be a sibling
+            pItem = self.theProject.getItem(pHandle)
+            if pItem.itemType == nwItemType.FILE:
+                pHandle = pItem.parHandle
+
+            # If we again has no home, give up
+            if pHandle is None:
+                logger.error("Did not find anywhere to add the item!")
+                return False
+
+            # If we're still here, add the file
+            if itemType == nwItemType.FILE:
+                tHandle = self.theProject.newFile("New File", itemClass, pHandle)
+            elif itemType == nwItemType.FOLDER:
+                tHandle = self.theProject.newFolder("New Folder", itemClass, pHandle)
+            else:
+                logger.error("Failed to add new item")
+                return False
 
         # Add the new item to the tree
         nwItem = self.theProject.getItem(tHandle)
-        self._addTreeItem(nwItem)
+        trItem = self._addTreeItem(nwItem)
+        if pHandle is not None:
+            self.theMap[pHandle].setExpanded(True)
+        self.clearSelection()
+        trItem.setSelected(True)
+        self.theParent.editItem()
 
         return
 
-    def moveTreeItem(self, tHandle, nStep):
-        tItem  = self.theMap[tHandle]
-        pItem  = tItem.parent()
-        tIndex = pItem.indexOfChild(tItem)
-        nChild = pItem.childCount()
-        nIndex = tIndex + nStep
-        if nIndex < 0 or nIndex >= nChild: return
-        cItem  = pItem.takeChild(tIndex)
-        pItem.insertChild(nIndex, cItem)
+    def moveTreeItem(self, nStep):
+        """Move an item up or down in the tree, but only if the treeView has focus. This also
+        applies when the menu is used.
+        """
+        if QApplication.focusWidget() == self:
+            tHandle = self.getSelectedHandle()
+            tItem   = self.theMap[tHandle]
+            pItem   = tItem.parent()
+            tIndex  = pItem.indexOfChild(tItem)
+            nChild  = pItem.childCount()
+            nIndex  = tIndex + nStep
+            if nIndex < 0 or nIndex >= nChild: return
+            cItem   = pItem.takeChild(tIndex)
+            pItem.insertChild(nIndex, cItem)
+            self.clearSelection()
+            cItem.setSelected(True)
         return
 
     def renameTreeItem(self, tHandle):
@@ -187,7 +225,7 @@ class GuiDocTree(QTreeWidget):
         elif nwItem.itemType == nwItemType.FILE:
             newItem.setIcon(self.C_NAME, QIcon.fromTheme("x-office-document"))
 
-        return True
+        return newItem
 
     def propagateCount(self, tHandle, theCount, nDepth=0):
         tItem = self.theMap[tHandle]

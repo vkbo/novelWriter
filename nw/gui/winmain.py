@@ -14,12 +14,11 @@ import logging
 import nw
 
 from os                   import path
-from PyQt5.QtWidgets      import qApp, QWidget, QMainWindow, QVBoxLayout, QFrame, QSplitter, QAction, QToolBar, QFileDialog, QStackedWidget
-from PyQt5.QtCore         import Qt, QSize, pyqtSlot
+from PyQt5.QtWidgets      import QWidget, QMainWindow, QVBoxLayout, QFrame, QSplitter, QFileDialog, QStackedWidget, QShortcut
 from PyQt5.QtGui          import QIcon
+from PyQt5.QtCore         import Qt
 
 from nw.gui.doctree       import GuiDocTree
-from nw.gui.doctreectx    import GuiDocTreeCtx
 from nw.gui.doceditor     import GuiDocEditor
 from nw.gui.docdetails    import GuiDocDetails
 from nw.gui.mainmenu      import GuiMainMenu
@@ -29,7 +28,7 @@ from nw.gui.statusbar     import GuiMainStatus
 from nw.project.project   import NWProject
 from nw.project.document  import NWDoc
 from nw.project.item      import NWItem
-from nw.enum              import nwItemType, nwItemClass, nwDocAction, nwItemAction
+from nw.enum              import nwItemType, nwItemAction
 
 logger = logging.getLogger(__name__)
 
@@ -50,7 +49,7 @@ class GuiMain(QMainWindow):
         # Main GUI Elements
         self.docEditor  = GuiDocEditor(self)
         self.docDetails = GuiDocDetails(self.theProject)
-        self.treeView   = GuiDocTree(self.theProject)
+        self.treeView   = GuiDocTree(self, self.theProject)
         self.mainMenu   = GuiMainMenu(self, self.theProject)
         self.statusBar  = GuiMainStatus()
 
@@ -75,11 +74,10 @@ class GuiMain(QMainWindow):
         self.setCentralWidget(self.splitMain)
 
         # Build GUI Elements
-        self.treeView.setContextMenuPolicy(Qt.CustomContextMenu)
-        self.treeView.customContextMenuRequested.connect(self._openDocTreeContextMenu)
         self.treeView.itemSelectionChanged.connect(self._treeSingleClick)
         self.treeView.itemDoubleClicked.connect(self._treeDoubleClick)
         self.treeView.buildTree()
+        QShortcut(Qt.Key_Return, self.treeView, context=Qt.WidgetShortcut, activated=self._treeKeyPressReturn)
 
         # Set Main Window Elements
         self.setMenuBar(self.mainMenu)
@@ -138,24 +136,40 @@ class GuiMain(QMainWindow):
         return
 
     def saveDocument(self):
-        docHtml = self.docEditor.getText()
-        self.theDocument.theItem.setCharCount(self.docEditor.charCount)
-        self.theDocument.theItem.setWordCount(self.docEditor.wordCount)
-        self.theDocument.theItem.setParaCount(self.docEditor.paraCount)
-        self.theDocument.saveDocument(docHtml)
+        if self.theDocument.theItem is not None:
+            docHtml = self.docEditor.getText()
+            self.theDocument.theItem.setCharCount(self.docEditor.charCount)
+            self.theDocument.theItem.setWordCount(self.docEditor.wordCount)
+            self.theDocument.theItem.setParaCount(self.docEditor.paraCount)
+            self.theDocument.saveDocument(docHtml)
         return
 
     ##
     #  Tree Item Actions
     ##
 
-    def editItem(self):
+    def openSelectedItem(self):
         tHandle = self.treeView.getSelectedHandle()
-        logger.verbose("Requesting change to item %s" % tHandle)
         if tHandle is None:
             logger.warning("No item selected")
             return
-        
+
+        logger.verbose("Opening item %s" % tHandle)
+        nwItem = self.theProject.getItem(tHandle)
+        if nwItem.itemType == nwItemType.FILE:
+            logger.verbose("Requested item %s is a file" % tHandle)
+            self.openDocument(tHandle)
+        else:
+            logger.verbose("Requested item %s is not a file" % tHandle)
+        return
+
+    def editItem(self):
+        tHandle = self.treeView.getSelectedHandle()
+        if tHandle is None:
+            logger.warning("No item selected")
+            return
+
+        logger.verbose("Requesting change to item %s" % tHandle)
         dlgProj = GuiItemEditor(self, self.theProject, tHandle)
         dlgProj.exec_()
         
@@ -202,6 +216,14 @@ class GuiMain(QMainWindow):
         self.mainConf.saveConfig()
         return
 
+    def setFocus(self, paneNo):
+        if paneNo == 1:
+            self.treeView.setFocus()
+        elif paneNo == 2:
+            if self.stackPane.currentIndex() == self.stackDoc:
+                self.docEditor.setFocus()
+        return
+
     ##
     #  Internal Functions
     ##
@@ -212,50 +234,6 @@ class GuiMain(QMainWindow):
             winTitle += " - %s" % projName
         self.setWindowTitle(winTitle)
         return True
-
-    ##
-    #  DocTree Context Menu
-    ##
-
-    def _openDocTreeContextMenu(self, thePosition):
-
-        ctxMenu   = GuiDocTreeCtx(self.treeView, self.theProject, thePosition)
-        selHandle = ctxMenu.selHandle
-        selAction = ctxMenu.selAction
-        selClass  = ctxMenu.selClass
-        selType   = ctxMenu.selType
-        selTarget = ctxMenu.selTarget
-
-        # print(selHandle, selAction, selClass, selType, selTarget)
-
-        if   selAction == nwItemAction.ADD_ROOT:
-            self.treeView.newTreeItem(selHandle, selType, selClass)
-        elif selAction == nwItemAction.ADD_FOLDER:
-            self.treeView.newTreeItem(selHandle, selType, selClass)
-        elif selAction == nwItemAction.ADD_FILE:
-            self.treeView.newTreeItem(selHandle, selType, selClass)
-        elif selAction == nwItemAction.MOVE_UP:
-            self.treeView.moveTreeItem(selHandle, -1)
-        elif selAction == nwItemAction.MOVE_DOWN:
-            self.treeView.moveTreeItem(selHandle, 1)
-        elif selAction == nwItemAction.MOVE_TO:
-            pass
-        elif selAction == nwItemAction.MOVE_TRASH:
-            pass
-        elif selAction == nwItemAction.SPLIT:
-            pass
-        elif selAction == nwItemAction.MERGE:
-            pass
-        elif selAction == nwItemAction.DELETE:
-            pass
-        elif selAction == nwItemAction.DELETE_ROOT:
-            pass
-        elif selAction == nwItemAction.EMPTY_TRASH:
-            pass
-        elif selAction == nwItemAction.RENAME:
-            self.treeView.renameTreeItem(selHandle)
-
-        return
 
     ##
     #  Events
@@ -287,6 +265,17 @@ class GuiMain(QMainWindow):
     def _treeDoubleClick(self, tItem, colNo):
         tHandle = tItem.text(3)
         logger.verbose("User double clicked tree item with handle %s" % tHandle)
+        nwItem = self.theProject.getItem(tHandle)
+        if nwItem.itemType == nwItemType.FILE:
+            logger.verbose("Requested item %s is a file" % tHandle)
+            self.openDocument(tHandle)
+        else:
+            logger.verbose("Requested item %s is a folder" % tHandle)
+        return
+
+    def _treeKeyPressReturn(self):
+        tHandle = self.treeView.getSelectedHandle()
+        logger.verbose("User pressed return on tree item with handle %s" % tHandle)
         nwItem = self.theProject.getItem(tHandle)
         if nwItem.itemType == nwItemType.FILE:
             logger.verbose("Requested item %s is a file" % tHandle)

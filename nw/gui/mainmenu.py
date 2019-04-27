@@ -16,7 +16,7 @@ import nw
 from PyQt5.QtWidgets import qApp, QMenuBar, QAction
 from PyQt5.QtGui     import QIcon
 
-from nw.enum         import nwItemClass, nwDocAction
+from nw.enum         import nwItemType, nwItemClass, nwDocAction
 
 logger = logging.getLogger(__name__)
 
@@ -31,15 +31,17 @@ class GuiMainMenu(QMenuBar):
         self.theProject = theProject
 
         self._buildProjectMenu()
-        self._buildStructureMenu()
         self._buildDocumentMenu()
         self._buildEditMenu()
+        self._buildViewMenu()
         self._buildFormatMenu()
         self._buildToolsMenu()
         self._buildHelpMenu()
 
         # Function Pointers
-        self._docAction = self.theParent.docEditor.docAction
+        self._docAction    = self.theParent.docEditor.docAction
+        self._moveTreeItem = self.theParent.treeView.moveTreeItem
+        self._newTreeItem  = self.theParent.treeView.newTreeItem
 
         logger.debug("Main Menu initialisation complete")
 
@@ -101,13 +103,44 @@ class GuiMainMenu(QMenuBar):
             menuItem.triggered.connect(lambda menuItem, n=n : self.openRecentProject(menuItem, n))
             recentMenu.addAction(menuItem)
 
-        # Project > Separator
-        self.projMenu.addSeparator()
-
         # Project > Project Settings
         menuItem = QAction(QIcon.fromTheme("document-properties"), "Project Settings", self)
         menuItem.setStatusTip("Project Settings")
         menuItem.triggered.connect(self.theParent.editProjectDialog)
+        self.projMenu.addAction(menuItem)
+
+        # Project > Separator
+        self.projMenu.addSeparator()
+
+        # Project > New Root
+        rootMenu = self.projMenu.addMenu(QIcon.fromTheme("folder-new"), "Create Root Folder")
+        self.rootItems = {}
+        self.rootItems[nwItemClass.NOVEL]      = QAction(QIcon.fromTheme("folder-new"), "Novel Root",     rootMenu)
+        self.rootItems[nwItemClass.PLOT]       = QAction(QIcon.fromTheme("folder-new"), "Plot Root",      rootMenu)
+        self.rootItems[nwItemClass.CHARACTER]  = QAction(QIcon.fromTheme("folder-new"), "Character Root", rootMenu)
+        self.rootItems[nwItemClass.WORLD]      = QAction(QIcon.fromTheme("folder-new"), "Location Root",  rootMenu)
+        self.rootItems[nwItemClass.TIMELINE]   = QAction(QIcon.fromTheme("folder-new"), "Timeline Root",  rootMenu)
+        self.rootItems[nwItemClass.OBJECT]     = QAction(QIcon.fromTheme("folder-new"), "Object Root",    rootMenu)
+        self.rootItems[nwItemClass.CUSTOM]     = QAction(QIcon.fromTheme("folder-new"), "Custom Root",    rootMenu)
+        rootMenu.addActions(self.rootItems.values())
+
+        # Project > New Folder
+        menuItem = QAction(QIcon.fromTheme("folder-new"), "Create Folder", self)
+        menuItem.setStatusTip("Create Folder")
+        menuItem.setShortcut("Ctrl+Shift+N")
+        menuItem.triggered.connect(lambda : self._newTreeItem(nwItemType.FOLDER, None))
+        self.projMenu.addAction(menuItem)
+
+        # Project > Rename Folder
+        menuItem = QAction(QIcon.fromTheme("folder-new"), "Rename Folder", self)
+        menuItem.setStatusTip("Rename Selected Folder")
+        menuItem.setShortcut("Ctrl+Shift+E")
+        self.projMenu.addAction(menuItem)
+
+        # Project > Delete Folder
+        menuItem = QAction(QIcon.fromTheme("edit-delete"), "Delete Folder", self)
+        menuItem.setStatusTip("Delete Selected Folder")
+        menuItem.setShortcut("Ctrl+Shift+Del")
         self.projMenu.addAction(menuItem)
 
         # Project > Separator
@@ -122,58 +155,6 @@ class GuiMainMenu(QMenuBar):
 
         return
 
-    def _buildStructureMenu(self):
-
-        # Structure
-        self.structMenu = self.addMenu("&Structure")
-
-        # Structure > New Folder
-        menuItem = QAction(QIcon.fromTheme("folder-new"), "Create Folder", self)
-        menuItem.setStatusTip("Create Folder")
-        menuItem.setShortcut("Ctrl+Shift+N")
-        self.structMenu.addAction(menuItem)
-
-        # Structure > New Root
-        rootMenu = self.structMenu.addMenu(QIcon.fromTheme("folder-new"), "Create Root Group")
-        self.rootItems = {}
-        self.rootItems[nwItemClass.NOVEL]      = QAction(QIcon.fromTheme("folder-new"), "Novel Root",     rootMenu)
-        self.rootItems[nwItemClass.PLOT]       = QAction(QIcon.fromTheme("folder-new"), "Plot Root",      rootMenu)
-        self.rootItems[nwItemClass.CHARACTER]  = QAction(QIcon.fromTheme("folder-new"), "Character Root", rootMenu)
-        self.rootItems[nwItemClass.WORLD]      = QAction(QIcon.fromTheme("folder-new"), "Location Root",  rootMenu)
-        self.rootItems[nwItemClass.TIMELINE]   = QAction(QIcon.fromTheme("folder-new"), "Timeline Root",  rootMenu)
-        self.rootItems[nwItemClass.OBJECT]     = QAction(QIcon.fromTheme("folder-new"), "Object Root",    rootMenu)
-        self.rootItems[nwItemClass.CUSTOM]     = QAction(QIcon.fromTheme("folder-new"), "Custom Root",    rootMenu)
-        rootMenu.addActions(self.rootItems.values())
-
-        # Structure > Rename Folder
-        menuItem = QAction(QIcon.fromTheme("folder-new"), "Rename Folder", self)
-        menuItem.setStatusTip("Rename Selected Folder")
-        menuItem.setShortcut("Ctrl+Shift+E")
-        self.structMenu.addAction(menuItem)
-
-        # Structure > Delete Folder
-        menuItem = QAction(QIcon.fromTheme("edit-delete"), "Delete Folder", self)
-        menuItem.setStatusTip("Delete Selected Folder")
-        menuItem.setShortcut("Ctrl+Shift+Del")
-        self.structMenu.addAction(menuItem)
-
-        # Structure > Separator
-        self.structMenu.addSeparator()
-
-        # Structure > Move Up
-        menuItem = QAction(QIcon.fromTheme("go-up"), "Move Item Up", self)
-        menuItem.setStatusTip("Move Item Up")
-        menuItem.setShortcut("Ctrl+Up")
-        self.structMenu.addAction(menuItem)
-
-        # Structure > Move Down
-        menuItem = QAction(QIcon.fromTheme("go-down"), "Move Item Down", self)
-        menuItem.setStatusTip("Move Item Down")
-        menuItem.setShortcut("Ctrl+Down")
-        self.structMenu.addAction(menuItem)
-
-        return
-
     def _buildDocumentMenu(self):
 
         # Document
@@ -183,12 +164,14 @@ class GuiMainMenu(QMenuBar):
         menuItem = QAction(QIcon.fromTheme("document-new"), "&New Document", self)
         menuItem.setStatusTip("Create New Document")
         menuItem.setShortcut("Ctrl+N")
+        menuItem.triggered.connect(lambda : self._newTreeItem(nwItemType.FILE, None))
         self.docuMenu.addAction(menuItem)
 
         # Document > Open
         menuItem = QAction(QIcon.fromTheme("document-open"), "&Open Document", self)
         menuItem.setStatusTip("Open Selected Document")
         menuItem.setShortcut("Ctrl+O")
+        menuItem.triggered.connect(self.theParent.openSelectedItem)
         self.docuMenu.addAction(menuItem)
 
         # Document > Save
@@ -226,6 +209,34 @@ class GuiMainMenu(QMenuBar):
         menuItem = QAction(QIcon.fromTheme("list-remove"), "Merge Document", self)
         menuItem.setStatusTip("Merge Selected Documents")
         self.docuMenu.addAction(menuItem)
+
+        return
+
+    def _buildViewMenu(self):
+
+        # View
+        self.viewMenu = self.addMenu("&View")
+
+        # View > TreeView
+        menuItem = QAction(QIcon.fromTheme("go-home"), "TreeView", self)
+        menuItem.setStatusTip("Move to TreeView Panel")
+        menuItem.setShortcut("Ctrl+1")
+        menuItem.triggered.connect(lambda : self.theParent.setFocus(1))
+        self.viewMenu.addAction(menuItem)
+
+        # View > Document Pane 1
+        menuItem = QAction(QIcon.fromTheme("go-first"), "Left Document Pane", self)
+        menuItem.setStatusTip("Move to Left Document Pane")
+        menuItem.setShortcut("Ctrl+2")
+        menuItem.triggered.connect(lambda : self.theParent.setFocus(2))
+        self.viewMenu.addAction(menuItem)
+
+        # View > Document Pane 2
+        menuItem = QAction(QIcon.fromTheme("go-last"), "Right Document Pane", self)
+        menuItem.setStatusTip("Move to Right Document Pane")
+        menuItem.setShortcut("Ctrl+3")
+        menuItem.triggered.connect(lambda : self.theParent.setFocus(3))
+        self.viewMenu.addAction(menuItem)
 
         return
 
@@ -340,6 +351,23 @@ class GuiMainMenu(QMenuBar):
 
         # Tools
         self.toolsMenu = self.addMenu("&Tools")
+
+        # Tools > Move Up
+        self.toolsMoveUp = QAction(QIcon.fromTheme("go-up"), "Move Tree Item Up", self)
+        self.toolsMoveUp.setStatusTip("Move Item Up")
+        self.toolsMoveUp.setShortcut("Ctrl+Shift+Up")
+        self.toolsMoveUp.triggered.connect(lambda : self._moveTreeItem(-1))
+        self.toolsMenu.addAction(self.toolsMoveUp)
+
+        # Tools > Move Down
+        self.toolsMoveDown = QAction(QIcon.fromTheme("go-down"), "Move Tree Item Down", self)
+        self.toolsMoveDown.setStatusTip("Move Item Down")
+        self.toolsMoveDown.setShortcut("Ctrl+Shift+Down")
+        self.toolsMoveDown.triggered.connect(lambda : self._moveTreeItem(1))
+        self.toolsMenu.addAction(self.toolsMoveDown)
+
+        # Tools > Separator
+        self.toolsMenu.addSeparator()
 
         # Tools > Settings
         menuItem = QAction(QIcon.fromTheme("preferences-system"), "Preferences", self)
