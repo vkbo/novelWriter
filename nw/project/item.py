@@ -44,22 +44,26 @@ class NWItem():
         nwItemClass.OBJECT    : "O",
     }
     LAYOUT_NAME = {
-        nwItemLayout.NO_LAYOUT   : "None",
-        nwItemLayout.TITLE_PAGE  : "Title Page",
-        nwItemLayout.SIMPLE_PAGE : "Simple Page",
-        nwItemLayout.PARTITION   : "Partition",
-        nwItemLayout.CHAPTER     : "Chapter",
-        nwItemLayout.SCENE       : "Scene",
-        nwItemLayout.NOTE        : "Note",
+        nwItemLayout.NO_LAYOUT  : "None",
+        nwItemLayout.TITLE      : "Title Page",
+        nwItemLayout.BOOK       : "Book",
+        nwItemLayout.PAGE       : "Plain Page",
+        nwItemLayout.PARTITION  : "Partition",
+        nwItemLayout.UNNUMBERED : "Un-Numbered",
+        nwItemLayout.CHAPTER    : "Chapter",
+        nwItemLayout.SCENE      : "Scene",
+        nwItemLayout.NOTE       : "Note",
     }
     LAYOUT_FLAG = {
-        nwItemLayout.NO_LAYOUT   : "Xo",
-        nwItemLayout.TITLE_PAGE  : "Tt",
-        nwItemLayout.SIMPLE_PAGE : "Pg",
-        nwItemLayout.PARTITION   : "Pt",
-        nwItemLayout.CHAPTER     : "Ch",
-        nwItemLayout.SCENE       : "Sc",
-        nwItemLayout.NOTE        : "Nt",
+        nwItemLayout.NO_LAYOUT  : "Xo",
+        nwItemLayout.TITLE      : "Tt",
+        nwItemLayout.BOOK       : "Bk",
+        nwItemLayout.PAGE       : "Pg",
+        nwItemLayout.PARTITION  : "Pt",
+        nwItemLayout.UNNUMBERED : "Un",
+        nwItemLayout.CHAPTER    : "Ch",
+        nwItemLayout.SCENE      : "Sc",
+        nwItemLayout.NOTE       : "Nt",
     }
 
     def __init__(self):

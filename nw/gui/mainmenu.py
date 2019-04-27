@@ -31,9 +31,11 @@ class GuiMainMenu(QMenuBar):
         self.theProject = theProject
 
         self._buildProjectMenu()
-        self._buildItemMenu()
+        self._buildStructureMenu()
+        self._buildDocumentMenu()
         self._buildEditMenu()
         self._buildFormatMenu()
+        self._buildToolsMenu()
         self._buildHelpMenu()
 
         # Function Pointers
@@ -120,41 +122,19 @@ class GuiMainMenu(QMenuBar):
 
         return
 
-    def _buildItemMenu(self):
+    def _buildStructureMenu(self):
 
-        # Item
-        self.itemMenu = self.addMenu("&Item")
+        # Structure
+        self.structMenu = self.addMenu("&Structure")
 
-        # Item > New
-        menuItem = QAction(QIcon.fromTheme("document-new"), "&New Document", self)
-        menuItem.setStatusTip("Create New Document")
-        menuItem.setShortcut("Ctrl+N")
-        self.itemMenu.addAction(menuItem)
-
-        # Item > Open
-        menuItem = QAction(QIcon.fromTheme("document-open"), "&Open Document", self)
-        menuItem.setStatusTip("Open Selected Document")
-        menuItem.setShortcut("Ctrl+O")
-        self.itemMenu.addAction(menuItem)
-
-        # Item > Save
-        menuItem = QAction(QIcon.fromTheme("document-save"), "&Save Document", self)
-        menuItem.setStatusTip("Save Current Document")
-        menuItem.setShortcut("Ctrl+S")
-        menuItem.triggered.connect(self.theParent.saveDocument)
-        self.itemMenu.addAction(menuItem)
-
-        # Item > Separator
-        self.itemMenu.addSeparator()
-
-        # Item > New Folder
-        menuItem = QAction(QIcon.fromTheme("folder-new"), "New Folder", self)
-        menuItem.setStatusTip("New Folder")
+        # Structure > New Folder
+        menuItem = QAction(QIcon.fromTheme("folder-new"), "Create Folder", self)
+        menuItem.setStatusTip("Create Folder")
         menuItem.setShortcut("Ctrl+Shift+N")
-        self.itemMenu.addAction(menuItem)
+        self.structMenu.addAction(menuItem)
 
-        # Item > New Root
-        rootMenu = self.itemMenu.addMenu(QIcon.fromTheme("folder-new"), "Create Root Group")
+        # Structure > New Root
+        rootMenu = self.structMenu.addMenu(QIcon.fromTheme("folder-new"), "Create Root Group")
         self.rootItems = {}
         self.rootItems[nwItemClass.NOVEL]      = QAction(QIcon.fromTheme("folder-new"), "Novel Root",     rootMenu)
         self.rootItems[nwItemClass.PLOT]       = QAction(QIcon.fromTheme("folder-new"), "Plot Root",      rootMenu)
@@ -165,14 +145,86 @@ class GuiMainMenu(QMenuBar):
         self.rootItems[nwItemClass.CUSTOM]     = QAction(QIcon.fromTheme("folder-new"), "Custom Root",    rootMenu)
         rootMenu.addActions(self.rootItems.values())
 
-        # Item > Separator
-        self.itemMenu.addSeparator()
+        # Structure > Rename Folder
+        menuItem = QAction(QIcon.fromTheme("folder-new"), "Rename Folder", self)
+        menuItem.setStatusTip("Rename Selected Folder")
+        menuItem.setShortcut("Ctrl+Shift+E")
+        self.structMenu.addAction(menuItem)
 
-        # Item > Delete Item
-        menuItem = QAction(QIcon.fromTheme("folder-delete"), "Delete Item", self)
-        menuItem.setStatusTip("Delete Selected Item")
-        menuItem.setShortcut("Del")
-        self.itemMenu.addAction(menuItem)
+        # Structure > Delete Folder
+        menuItem = QAction(QIcon.fromTheme("edit-delete"), "Delete Folder", self)
+        menuItem.setStatusTip("Delete Selected Folder")
+        menuItem.setShortcut("Ctrl+Shift+Del")
+        self.structMenu.addAction(menuItem)
+
+        # Structure > Separator
+        self.structMenu.addSeparator()
+
+        # Structure > Move Up
+        menuItem = QAction(QIcon.fromTheme("go-up"), "Move Item Up", self)
+        menuItem.setStatusTip("Move Item Up")
+        menuItem.setShortcut("Ctrl+Up")
+        self.structMenu.addAction(menuItem)
+
+        # Structure > Move Down
+        menuItem = QAction(QIcon.fromTheme("go-down"), "Move Item Down", self)
+        menuItem.setStatusTip("Move Item Down")
+        menuItem.setShortcut("Ctrl+Down")
+        self.structMenu.addAction(menuItem)
+
+        return
+
+    def _buildDocumentMenu(self):
+
+        # Document
+        self.docuMenu = self.addMenu("&Document")
+
+        # Document > New
+        menuItem = QAction(QIcon.fromTheme("document-new"), "&New Document", self)
+        menuItem.setStatusTip("Create New Document")
+        menuItem.setShortcut("Ctrl+N")
+        self.docuMenu.addAction(menuItem)
+
+        # Document > Open
+        menuItem = QAction(QIcon.fromTheme("document-open"), "&Open Document", self)
+        menuItem.setStatusTip("Open Selected Document")
+        menuItem.setShortcut("Ctrl+O")
+        self.docuMenu.addAction(menuItem)
+
+        # Document > Save
+        menuItem = QAction(QIcon.fromTheme("document-save"), "&Save Document", self)
+        menuItem.setStatusTip("Save Current Document")
+        menuItem.setShortcut("Ctrl+S")
+        menuItem.triggered.connect(self.theParent.saveDocument)
+        self.docuMenu.addAction(menuItem)
+
+        # Document > Separator
+        self.docuMenu.addSeparator()
+
+        # Document > Edit
+        menuItem = QAction(QIcon.fromTheme("document-properties"), "&Edit Document", self)
+        menuItem.setStatusTip("Change Document Settings")
+        menuItem.setShortcut("Ctrl+E")
+        self.docuMenu.addAction(menuItem)
+
+        # Document > Delete
+        menuItem = QAction(QIcon.fromTheme("edit-delete"), "&Delete Document", self)
+        menuItem.setStatusTip("Delete Selected Document")
+        menuItem.setShortcut("Ctrl+Del")
+        self.docuMenu.addAction(menuItem)
+
+        # Document > Separator
+        self.docuMenu.addSeparator()
+
+        # Document > Split
+        menuItem = QAction(QIcon.fromTheme("list-add"), "Split Document", self)
+        menuItem.setStatusTip("Split Selected Document")
+        self.docuMenu.addAction(menuItem)
+
+        # Document > Merge
+        menuItem = QAction(QIcon.fromTheme("list-remove"), "Merge Document", self)
+        menuItem.setStatusTip("Merge Selected Documents")
+        self.docuMenu.addAction(menuItem)
 
         return
 
@@ -236,14 +288,6 @@ class GuiMainMenu(QMenuBar):
         menuItem.triggered.connect(lambda: self._docAction(nwDocAction.SEL_PARA))
         self.editMenu.addAction(menuItem)
 
-        # Edit > Separator
-        self.editMenu.addSeparator()
-
-        # Edit > Settings
-        menuItem = QAction(QIcon.fromTheme("applications-system"), "Program Setting", self)
-        menuItem.setStatusTip("Change %s Settings" % nw.__package__)
-        self.editMenu.addAction(menuItem)
-
         return
 
     def _buildFormatMenu(self):
@@ -288,6 +332,18 @@ class GuiMainMenu(QMenuBar):
         menuItem.setShortcut("Ctrl+Shift+D")
         menuItem.triggered.connect(lambda: self._docAction(nwDocAction.S_QUOTE))
         self.fmtMenu.addAction(menuItem)
+
+        return
+
+    def _buildToolsMenu(self):
+
+        # Tools
+        self.toolsMenu = self.addMenu("&Tools")
+
+        # Tools > Settings
+        menuItem = QAction(QIcon.fromTheme("preferences-system"), "Preferences", self)
+        menuItem.setStatusTip("Preferences")
+        self.toolsMenu.addAction(menuItem)
 
         return
 
