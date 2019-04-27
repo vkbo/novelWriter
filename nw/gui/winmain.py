@@ -24,6 +24,7 @@ from nw.gui.doceditor     import GuiDocEditor
 from nw.gui.docdetails    import GuiDocDetails
 from nw.gui.mainmenu      import GuiMainMenu
 from nw.gui.projecteditor import GuiProjectEditor
+from nw.gui.itemeditor    import GuiItemEditor
 from nw.gui.statusbar     import GuiMainStatus
 from nw.project.project   import NWProject
 from nw.project.document  import NWDoc
@@ -142,6 +143,22 @@ class GuiMain(QMainWindow):
         self.theDocument.theItem.setWordCount(self.docEditor.wordCount)
         self.theDocument.theItem.setParaCount(self.docEditor.paraCount)
         self.theDocument.saveDocument(docHtml)
+        return
+
+    ##
+    #  Tree Item Actions
+    ##
+
+    def editItem(self):
+        tHandle = self.treeView.getSelectedHandle()
+        logger.verbose("Requesting change to item %s" % tHandle)
+        if tHandle is None:
+            logger.warning("No item selected")
+            return
+        
+        dlgProj = GuiItemEditor(self, self.theProject, tHandle)
+        dlgProj.exec_()
+        
         return
 
     ##

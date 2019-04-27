@@ -205,6 +205,7 @@ class GuiMainMenu(QMenuBar):
         menuItem = QAction(QIcon.fromTheme("document-properties"), "&Edit Document", self)
         menuItem.setStatusTip("Change Document Settings")
         menuItem.setShortcut("Ctrl+E")
+        menuItem.triggered.connect(self.theParent.editItem)
         self.docuMenu.addAction(menuItem)
 
         # Document > Delete
