@@ -163,7 +163,7 @@ class NWProject():
                     for xValue in xItem:
                         nwItem.setFromTag(xValue.tag,xValue.text)
                     self._appendItem(tHandle,pHandle,nwItem)
- 
+
         self._makeStatusIcons()
         self.mainConf.setRecent(self.projPath)
 
@@ -176,8 +176,12 @@ class NWProject():
             return False
 
         if not path.isdir(self.projPath):
-            logger.info("Created folder %s" % self.projPath)
-            mkdir(self.projPath)
+            try:
+                mkdir(self.projPath)
+                logger.info("Created folder %s" % self.projPath)
+            except:
+                logger.error("Could not create folder %s" % self.projPath)
+                return False
 
         logger.debug("Saving project: %s" % self.projPath)
 

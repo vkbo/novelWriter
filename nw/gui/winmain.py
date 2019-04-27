@@ -22,6 +22,7 @@ from nw.gui.doctree       import GuiDocTree
 from nw.gui.doctreectx    import GuiDocTreeCtx
 from nw.gui.doceditor     import GuiDocEditor
 from nw.gui.docdetails    import GuiDocDetails
+from nw.gui.mainmenu      import GuiMainMenu
 from nw.gui.projecteditor import GuiProjectEditor
 from nw.gui.statusbar     import GuiMainStatus
 from nw.project.project   import NWProject
@@ -49,6 +50,8 @@ class GuiMain(QMainWindow):
         self.docEditor  = GuiDocEditor(self)
         self.docDetails = GuiDocDetails(self.theProject)
         self.treeView   = GuiDocTree(self.theProject)
+        self.mainMenu   = GuiMainMenu(self, self.theProject)
+        self.statusBar  = GuiMainStatus()
 
         # Assemble Main Window
         self.stackPane = QStackedWidget()
@@ -70,16 +73,15 @@ class GuiMain(QMainWindow):
 
         self.setCentralWidget(self.splitMain)
 
-        # Build Menus
-        self._buildMenu()
+        # Build GUI Elements
         self.treeView.setContextMenuPolicy(Qt.CustomContextMenu)
         self.treeView.customContextMenuRequested.connect(self._openDocTreeContextMenu)
         self.treeView.itemSelectionChanged.connect(self._treeSingleClick)
         self.treeView.itemDoubleClicked.connect(self._treeDoubleClick)
         self.treeView.buildTree()
 
-        # Build Status Bar
-        self.statusBar = GuiMainStatus()
+        # Set Main Window Elements
+        self.setMenuBar(self.mainMenu)
         self.setStatusBar(self.statusBar)
         self.statusBar.showMessage("Ready")
 
@@ -106,45 +108,22 @@ class GuiMain(QMainWindow):
         self.treeView.buildTree()
         return
 
-    def openProject(self):
-        dlgOpt  = QFileDialog.Options()
-        dlgOpt |= QFileDialog.DontUseNativeDialog
-        projPath, _ = QFileDialog.getOpenFileName(
-            self,"Open novelWriter Project","","novelWriter Project File (nwProject.nwx);;All Files (*)", options=dlgOpt
-        )
-        if projPath:
-            self.theProject.openProject(projPath)
-            self.treeView.buildTree()
-            self._setWindowTitle(self.theProject.projName)
-        else:
+    def openProject(self, projFile=None):
+        if projFile is None:
+            projFile = self.openProjectDialog()
+        if projFile is None:
             return False
+        self.theProject.openProject(projFile)
+        self.treeView.buildTree()
+        self._setWindowTitle(self.theProject.projName)
         return True
 
     def saveProject(self):
         if self.theProject.projPath is None:
-            dlgOpt  = QFileDialog.Options()
-            dlgOpt |= QFileDialog.DontUseNativeDialog
-            projPath, _ = QFileDialog.getSaveFileName(
-                self,"Save novelWriter Project","","novelWriter Project File (nwProject.nwx);;All Files (*)", options=dlgOpt
-            )
-            if projPath:
-                self.theProject.setProjectPath(projPath)
-            else:
-                return False
+            projPath = self.saveProjectDialog()
+            self.theProject.setProjectPath(projPath)
         self.treeView.saveTreeOrder()
         self.theProject.saveProject()
-        return True
-
-    def editProject(self):
-        dlgProj = GuiProjectEditor(self, self.theProject)
-        dlgProj.exec_()
-        return True
-
-    def openRecentProject(self, menuItem, recentItem):
-        logger.verbose("User requested opening recent project #%d" % recentItem)
-        self.theProject.openProject(self.mainConf.recentList[recentItem])
-        self.treeView.buildTree()
-        self._setWindowTitle(self.theProject.projName)
         return True
 
     ##
@@ -166,27 +145,39 @@ class GuiMain(QMainWindow):
         return
 
     ##
-    #  Internal Functions
+    #  Main Dialogs
     ##
 
-    def _treeSingleClick(self):
-        sHandle = self.treeView.getSelectedHandle()
-        if sHandle is not None:
-            self.docDetails.buildViewBox(sHandle)
-        return
+    def openProjectDialog(self):
+        dlgOpt  = QFileDialog.Options()
+        dlgOpt |= QFileDialog.DontUseNativeDialog
+        projFile, _ = QFileDialog.getOpenFileName(
+            self,"Open novelWriter Project","","novelWriter Project File (nwProject.nwx);;All Files (*)", options=dlgOpt
+        )
+        if projFile:
+            return projFile
+        return None
 
-    def _treeDoubleClick(self, tItem, colNo):
-        tHandle = tItem.text(3)
-        logger.verbose("User double clicked tree item with handle %s" % tHandle)
-        nwItem = self.theProject.getItem(tHandle)
-        if nwItem.itemType == nwItemType.FILE:
-            logger.verbose("Requested item %s is a file" % tHandle)
-            self.openDocument(tHandle)
-        else:
-            logger.verbose("Requested item %s is a folder" % tHandle)
-        return
+    def saveProjectDialog(self):
+        dlgOpt  = QFileDialog.Options()
+        dlgOpt |= QFileDialog.DontUseNativeDialog
+        projPath, _ = QFileDialog.getSaveFileName(
+            self,"Save novelWriter Project","","novelWriter Project File (nwProject.nwx);;All Files (*)", options=dlgOpt
+        )
+        if projPath:
+            return projPath
+        return None
 
-    def _closeMain(self):
+    def editProjectDialog(self):
+        dlgProj = GuiProjectEditor(self, self.theProject)
+        dlgProj.exec_()
+        return True
+
+    ##
+    #  Main Window Actions
+    ##
+
+    def closeMain(self):
         logger.info("Exiting %s" % nw.__package__)
         self.mainConf.setWinSize(self.width(), self.height())
         self.mainConf.setTreeColWidths(self.treeView.getColumnSizes())
@@ -194,24 +185,15 @@ class GuiMain(QMainWindow):
         self.mainConf.saveConfig()
         return
 
+    ##
+    #  Internal Functions
+    ##
+
     def _setWindowTitle(self, projName=None):
         winTitle = "%s [%s]" % (nw.__package__, nw.__version__)
         if projName is not None:
             winTitle += " - %s" % projName
         self.setWindowTitle(winTitle)
-        return True
-
-    ##
-    #  Menu Action
-    ##
-
-    def _menuExit(self):
-        self._closeMain()
-        qApp.quit()
-        return True
-
-    def _showAbout(self):
-        self.docTabs.createTab(None,nw.DOCTYPE_ABOUT)
         return True
 
     ##
@@ -271,13 +253,30 @@ class GuiMain(QMainWindow):
         return
 
     def closeEvent(self, theEvent):
-        self._closeMain()
+        self.closeMain()
         QMainWindow.closeEvent(self,theEvent)
         return
 
     ##
     #  Signal Handlers
     ##
+
+    def _treeSingleClick(self):
+        sHandle = self.treeView.getSelectedHandle()
+        if sHandle is not None:
+            self.docDetails.buildViewBox(sHandle)
+        return
+
+    def _treeDoubleClick(self, tItem, colNo):
+        tHandle = tItem.text(3)
+        logger.verbose("User double clicked tree item with handle %s" % tHandle)
+        nwItem = self.theProject.getItem(tHandle)
+        if nwItem.itemType == nwItemType.FILE:
+            logger.verbose("Requested item %s is a file" % tHandle)
+            self.openDocument(tHandle)
+        else:
+            logger.verbose("Requested item %s is a folder" % tHandle)
+        return
 
     def _splitMainMove(self, pWidth, pHeight):
         """Alert dependent GUI elements that the main pane splitter has been moved.
