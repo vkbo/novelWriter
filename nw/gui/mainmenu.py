@@ -131,16 +131,20 @@ class GuiMainMenu(QMenuBar):
         menuItem.triggered.connect(lambda : self._newTreeItem(nwItemType.FOLDER, None))
         self.projMenu.addAction(menuItem)
 
-        # Project > Rename Folder
-        menuItem = QAction(QIcon.fromTheme("folder-new"), "Rename Folder", self)
-        menuItem.setStatusTip("Rename Selected Folder")
-        menuItem.setShortcut("Ctrl+Shift+E")
+        # Project > Separator
+        self.projMenu.addSeparator()
+
+        # Project > Edit
+        menuItem = QAction(QIcon.fromTheme("document-properties"), "&Edit Item", self)
+        menuItem.setStatusTip("Change Item Settings")
+        menuItem.setShortcut("Ctrl+E")
+        menuItem.triggered.connect(self.theParent.editItem)
         self.projMenu.addAction(menuItem)
 
-        # Project > Delete Folder
-        menuItem = QAction(QIcon.fromTheme("edit-delete"), "Delete Folder", self)
-        menuItem.setStatusTip("Delete Selected Folder")
-        menuItem.setShortcut("Ctrl+Shift+Del")
+        # Project > Delete
+        menuItem = QAction(QIcon.fromTheme("edit-delete"), "&Delete Item", self)
+        menuItem.setStatusTip("Delete Selected Item")
+        menuItem.setShortcut("Ctrl+Del")
         self.projMenu.addAction(menuItem)
 
         # Project > Separator
@@ -179,22 +183,6 @@ class GuiMainMenu(QMenuBar):
         menuItem.setStatusTip("Save Current Document")
         menuItem.setShortcut("Ctrl+S")
         menuItem.triggered.connect(self.theParent.saveDocument)
-        self.docuMenu.addAction(menuItem)
-
-        # Document > Separator
-        self.docuMenu.addSeparator()
-
-        # Document > Edit
-        menuItem = QAction(QIcon.fromTheme("document-properties"), "&Edit Document", self)
-        menuItem.setStatusTip("Change Document Settings")
-        menuItem.setShortcut("Ctrl+E")
-        menuItem.triggered.connect(self.theParent.editItem)
-        self.docuMenu.addAction(menuItem)
-
-        # Document > Delete
-        menuItem = QAction(QIcon.fromTheme("edit-delete"), "&Delete Document", self)
-        menuItem.setStatusTip("Delete Selected Document")
-        menuItem.setShortcut("Ctrl+Del")
         self.docuMenu.addAction(menuItem)
 
         # Document > Separator
