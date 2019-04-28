@@ -21,7 +21,7 @@ from time            import time
 
 from PyQt5.QtGui     import QIcon, QPixmap, QColor
 
-from nw.enum         import nwItemType, nwItemClass, nwItemLayout, nwItemAction
+from nw.enum         import nwItemType, nwItemClass, nwItemLayout
 from nw.project.item import NWItem
 
 logger = logging.getLogger(__name__)

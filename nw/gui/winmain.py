@@ -28,7 +28,7 @@ from nw.gui.statusbar     import GuiMainStatus
 from nw.project.project   import NWProject
 from nw.project.document  import NWDoc
 from nw.project.item      import NWItem
-from nw.enum              import nwItemType, nwItemAction
+from nw.enum              import nwItemType
 
 logger = logging.getLogger(__name__)
 

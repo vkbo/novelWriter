@@ -50,25 +50,6 @@ class nwItemLayout(Enum):
 
 # END Enum nwItemLayout
 
-class nwItemAction(Enum):
-
-    NO_ACTION   = 0
-    ADD_ROOT    = 1
-    ADD_FOLDER  = 2
-    ADD_FILE    = 3
-    MOVE_UP     = 4
-    MOVE_DOWN   = 5
-    MOVE_TO     = 6
-    MOVE_TRASH  = 7
-    SPLIT       = 8
-    MERGE       = 9
-    DELETE      = 10
-    DELETE_ROOT = 11
-    EMPTY_TRASH = 12
-    RENAME      = 13
-
-# END Enum nwItemAction
-
 class nwDocAction(Enum):
 
     NO_ACTION = 0
