@@ -17,8 +17,8 @@ from copy            import copy
 
 from PyQt5.QtWidgets import QMenu, QAction
 
-from nw.project.item import NWItem
 from nw.enum         import nwItemType, nwItemClass, nwItemAction
+from nw.constants    import nwLabels
 
 logger = logging.getLogger(__name__)
 
@@ -192,7 +192,7 @@ class GuiDocTreeCtx(QMenu):
         return
 
     def _buildSubMenuAddRoot(self, itemClass):
-        mnuSub = QAction("Add %s Root" % NWItem.CLASS_NAME[itemClass], self)
+        mnuSub = QAction("Add %s Root" % nwLabels.CLASS_NAME[itemClass], self)
         mnuSub.triggered.connect(lambda: self._ctxSignal(
             nwItemAction.ADD_ROOT, 
             itemClass,

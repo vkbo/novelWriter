@@ -18,7 +18,7 @@ from PyQt5.QtGui     import QFont
 from PyQt5.QtWidgets import QFrame, QGridLayout, QLabel
 
 from nw.enum         import nwItemType, nwItemClass, nwItemLayout
-from nw.project.item import NWItem
+from nw.constants    import nwLabels
 
 logger = logging.getLogger(__name__)
 
@@ -72,8 +72,8 @@ class GuiDocDetails(QFrame):
         colTwo = [
             nwItem.itemName,
             self.theProject.statusLabels[itemStatus],
-            NWItem.CLASS_NAME[nwItem.itemClass],
-            NWItem.LAYOUT_NAME[nwItem.itemLayout],
+            nwLabels.CLASS_NAME[nwItem.itemClass],
+            nwLabels.LAYOUT_NAME[nwItem.itemLayout],
         ]
 
         for nRow in range(4):

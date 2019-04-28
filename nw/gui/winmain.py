@@ -171,8 +171,9 @@ class GuiMain(QMainWindow):
 
         logger.verbose("Requesting change to item %s" % tHandle)
         dlgProj = GuiItemEditor(self, self.theProject, tHandle)
-        dlgProj.exec_()
-        
+        if dlgProj.exec_():
+            self.treeView.setTreeItemValues(tHandle)
+
         return
 
     ##

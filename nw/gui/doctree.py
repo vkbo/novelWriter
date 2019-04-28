@@ -18,8 +18,9 @@ from PyQt5.QtCore    import Qt, QSize
 from PyQt5.QtGui     import QIcon, QFont, QColor
 from PyQt5.QtWidgets import QTreeWidget, QTreeWidgetItem, QAbstractItemView, QInputDialog, QLineEdit, QApplication
 
-from nw.enum         import nwItemType, nwItemClass
 from nw.project.item import NWItem
+from nw.enum         import nwItemType, nwItemClass
+from nw.constants    import nwLabels
 
 logger = logging.getLogger(__name__)
 
@@ -76,7 +77,7 @@ class GuiDocTree(QTreeWidget):
         )
 
         if itemType == nwItemType.ROOT:
-            tHandle = self.theProject.newRoot(NWItem.CLASS_NAME[itemClass], itemClass)
+            tHandle = self.theProject.newRoot(nwLabels.CLASS_NAME[itemClass], itemClass)
 
         else:
             # If no parent has been selected, make the new file under the root NOVEL item.
@@ -184,30 +185,18 @@ class GuiDocTree(QTreeWidget):
 
     def _addTreeItem(self, nwItem):
 
-        tName   = nwItem.itemName
         tHandle = nwItem.itemHandle
         pHandle = nwItem.parHandle
-        tStatus = NWItem.CLASS_FLAG[nwItem.itemClass]
-        if nwItem.itemType == nwItemType.FILE:
-            tStatus += "."+NWItem.LAYOUT_FLAG[nwItem.itemLayout]
-        nStatus = nwItem.itemStatus
-        if nStatus < 0 or nStatus >= len(self.theProject.statusIcons):
-            nStatus = 0
-
         newItem = QTreeWidgetItem([""]*4)
 
-        newItem.setText(self.C_NAME,tName)
+        newItem.setText(self.C_NAME,   "")
+        newItem.setText(self.C_COUNT,  "0")
+        newItem.setText(self.C_FLAGS,  "")
+        newItem.setText(self.C_HANDLE, tHandle)
 
-        newItem.setText(self.C_COUNT,"0")
-        # newItem.setFont(self.C_COUNT,self.fontCount)
         newItem.setForeground(self.C_COUNT,QColor(0,105,135))
         newItem.setTextAlignment(self.C_COUNT,Qt.AlignRight)
-
-        newItem.setText(self.C_FLAGS,tStatus)
-        newItem.setIcon(self.C_FLAGS,self.theProject.statusIcons[nStatus])
         newItem.setFont(self.C_FLAGS,self.fontFlags)
-
-        newItem.setText(self.C_HANDLE, tHandle)
 
         self.theMap[tHandle] = newItem
         if pHandle is None:
@@ -216,6 +205,7 @@ class GuiDocTree(QTreeWidget):
             self.theMap[pHandle].addChild(newItem)
             self.propagateCount(tHandle, nwItem.wordCount)
 
+        self.setTreeItemValues(tHandle)
         newItem.setExpanded(nwItem.isExpanded)
 
         if nwItem.itemType == nwItemType.ROOT:
@@ -227,6 +217,27 @@ class GuiDocTree(QTreeWidget):
             newItem.setIcon(self.C_NAME, QIcon.fromTheme("x-office-document"))
 
         return newItem
+
+    def setTreeItemValues(self, tHandle):
+
+        trItem  = self.theMap[tHandle]
+        nwItem  = self.theProject.getItem(tHandle)
+        tName   = nwItem.itemName
+        tHandle = nwItem.itemHandle
+        pHandle = nwItem.parHandle
+
+        tStatus = nwLabels.CLASS_FLAG[nwItem.itemClass]
+        if nwItem.itemType == nwItemType.FILE:
+            tStatus += "."+nwLabels.LAYOUT_FLAG[nwItem.itemLayout]
+        nStatus = nwItem.itemStatus
+        if nStatus < 0 or nStatus >= len(self.theProject.statusIcons):
+            nStatus = 0
+
+        trItem.setText(self.C_NAME,tName)
+        trItem.setText(self.C_FLAGS,tStatus)
+        trItem.setIcon(self.C_FLAGS,self.theProject.statusIcons[nStatus])
+
+        return
 
     def propagateCount(self, tHandle, theCount, nDepth=0):
         tItem = self.theMap[tHandle]
