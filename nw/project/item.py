@@ -23,7 +23,7 @@ logger = logging.getLogger(__name__)
 
 class NWItem():
 
-    MAX_DEPTH  = 8
+    MAX_DEPTH = 8
 
     def __init__(self):
 
