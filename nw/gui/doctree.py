@@ -72,7 +72,7 @@ class GuiDocTree(QTreeWidget):
             itemClass = self.theProject.getItem(pHandle).itemClass
 
         logger.verbose("Adding new item of type %s and class %s to handle %s" % (
-            itemType.name,itemClass.name,str(pHandle))
+            itemType.name, itemClass.name, str(pHandle))
         )
 
         if itemType == nwItemType.ROOT:
@@ -220,6 +220,7 @@ class GuiDocTree(QTreeWidget):
 
         if nwItem.itemType == nwItemType.ROOT:
             newItem.setIcon(self.C_NAME, QIcon.fromTheme("drive-harddisk"))
+            self.theParent.mainMenu.setAvailableRoot()
         elif nwItem.itemType == nwItemType.FOLDER:
             newItem.setIcon(self.C_NAME, QIcon.fromTheme("folder"))
         elif nwItem.itemType == nwItemType.FILE:

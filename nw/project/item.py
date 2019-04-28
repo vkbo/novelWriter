@@ -35,13 +35,14 @@ class NWItem():
         nwItemClass.CUSTOM    : "Custom",
     }
     CLASS_FLAG = {
-        nwItemClass.NO_CLASS  : "X",
+        nwItemClass.NO_CLASS  : "0",
         nwItemClass.NOVEL     : "N",
         nwItemClass.PLOT      : "P",
         nwItemClass.CHARACTER : "C",
         nwItemClass.WORLD     : "L",
         nwItemClass.TIMELINE  : "T",
         nwItemClass.OBJECT    : "O",
+        nwItemClass.CUSTOM    : "X",
     }
     LAYOUT_NAME = {
         nwItemLayout.NO_LAYOUT  : "None",

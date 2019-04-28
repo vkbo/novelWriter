@@ -281,7 +281,7 @@ class NWProject():
         if tHandle is None:
             validActions[nwItemAction.ADD_ROOT] = {
                 "Type"  : nwItemType.ROOT,
-                "Class" : [x for x in nwItemClass if self._checkRootUnique(x)]
+                "Class" : [x for x in nwItemClass if self.checkRootUnique(x)]
             }
             return validActions
 
@@ -343,11 +343,7 @@ class NWProject():
 
         return validActions
 
-    ##
-    #  Internal Functions
-    ##
-
-    def _checkRootUnique(self, theClass):
+    def checkRootUnique(self, theClass):
         """Checks if there already is a root entry of class 'theClass' in the
         root of the project tree.
         """
@@ -357,6 +353,10 @@ class NWProject():
             if theClass == self.projTree[aRoot].itemClass:
                 return False
         return True
+
+    ##
+    #  Internal Functions
+    ##
 
     def _countItemDepth(self, tHandle):
         theDepth = 0

@@ -52,6 +52,14 @@ class GuiMainMenu(QMenuBar):
         self.theParent.openProject(self.mainConf.recentList[recentItem])
         return True
 
+    def setAvailableRoot(self):
+        for itemClass in nwItemClass:
+            if itemClass != nwItemClass.NO_CLASS:
+                self.rootItems[itemClass].setEnabled(
+                    self.theProject.checkRootUnique(itemClass)
+                )
+        return
+
     ##
     #  Menu Action
     ##
@@ -122,6 +130,12 @@ class GuiMainMenu(QMenuBar):
         self.rootItems[nwItemClass.TIMELINE]   = QAction(QIcon.fromTheme("folder-new"), "Timeline Root",  rootMenu)
         self.rootItems[nwItemClass.OBJECT]     = QAction(QIcon.fromTheme("folder-new"), "Object Root",    rootMenu)
         self.rootItems[nwItemClass.CUSTOM]     = QAction(QIcon.fromTheme("folder-new"), "Custom Root",    rootMenu)
+        nCount = 0
+        for itemClass in self.rootItems.keys():
+            nCount += 1 # This forces the lambdas to be unique
+            self.rootItems[itemClass].triggered.connect(
+                lambda nCount, itemClass=itemClass : self._newTreeItem(nwItemType.ROOT, itemClass)
+            )
         rootMenu.addActions(self.rootItems.values())
 
         # Project > New Folder
