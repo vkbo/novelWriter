@@ -13,7 +13,7 @@
 import logging
 import nw
 
-from os              import path, mkdir
+from os              import path, mkdir, listdir
 from lxml            import etree
 from hashlib         import sha256
 from datetime        import datetime
@@ -167,6 +167,8 @@ class NWProject():
         self._makeStatusIcons()
         self.mainConf.setRecent(self.projPath)
 
+        self._scanProjectFolder()
+
         return True
 
     def saveProject(self):
@@ -286,6 +288,56 @@ class NWProject():
     ##
     #  Internal Functions
     ##
+
+    def _scanProjectFolder(self):
+
+        if self.projPath is None:
+            return
+
+        # First, scan the project data folders
+        itemList = []
+        for subItem in listdir(self.projPath):
+            if subItem[:5] != "data_":
+                continue
+            dataDir = path.join(self.projPath,subItem)
+            for subFile in listdir(dataDir):
+                if subFile[-4:] == ".nwd":
+                    newItem = path.join(subItem,subFile)
+                    itemList.append(newItem)
+
+        # Then check the valid files
+        orphanFiles = []
+        for fileItem in itemList:
+            if len(fileItem) != 28:
+                # Just to be safe, shouldn't happen
+                logger.warning("Skipping file %s" % fileItem)
+                continue
+            fHandle = fileItem[5]+fileItem[7:19]
+            if fHandle in self.treeOrder:
+                logger.verbose("Checking file %s, handle %s: OK" % (fileItem,fHandle))
+            else:
+                logger.verbose("Checking file %s, handle %s: Orphaned" % (fileItem,fHandle))
+                orphanFiles.append(fHandle)
+
+        # Report status
+        if len(orphanFiles) > 0:
+            logger.warning("Found %d orphaned file(s) in project folder!" % len(orphanFiles))
+        else:
+            logger.verbose("File check OK")
+            return
+
+        # Handle orphans
+        nOrph = 0
+        for oHandle in orphanFiles:
+            nOrph += 1
+            orItem = NWItem()
+            orItem.setName("Orphaned File %d" % nOrph)
+            orItem.setType(nwItemType.FILE)
+            orItem.setClass(nwItemClass.NO_CLASS)
+            orItem.setLayout(nwItemLayout.NO_LAYOUT)
+            self._appendItem(oHandle,None,orItem)
+
+        return
 
     def _countItemDepth(self, tHandle):
         theDepth = 0

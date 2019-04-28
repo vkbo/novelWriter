@@ -40,6 +40,7 @@ class GuiDocTree(QTreeWidget):
         self.theParent  = theParent
         self.theProject = theProject
         self.theMap     = {}
+        self.orphRoot   = None
 
         self.setIconSize(QSize(13,13))
         self.setExpandsOnDoubleClick(True)
@@ -152,6 +153,8 @@ class GuiDocTree(QTreeWidget):
     def saveTreeOrder(self):
         theList = []
         for i in range(self.topLevelItemCount()):
+            if self.topLevelItem(i) == self.orphRoot:
+                continue
             theList = self._scanChildren(theList, self.topLevelItem(i), i)
         self.theProject.setTreeOrder(theList)
         return True
@@ -200,7 +203,12 @@ class GuiDocTree(QTreeWidget):
 
         self.theMap[tHandle] = newItem
         if pHandle is None:
-            self.addTopLevelItem(newItem)
+            if nwItem.itemType == nwItemType.ROOT:
+                self.addTopLevelItem(newItem)
+                self.theParent.mainMenu.setAvailableRoot()
+            else:
+                self._addOrphanedRoot()
+                self.orphRoot.addChild(newItem)
         else:
             self.theMap[pHandle].addChild(newItem)
             self.propagateCount(tHandle, nwItem.wordCount)
@@ -210,13 +218,24 @@ class GuiDocTree(QTreeWidget):
 
         if nwItem.itemType == nwItemType.ROOT:
             newItem.setIcon(self.C_NAME, QIcon.fromTheme("drive-harddisk"))
-            self.theParent.mainMenu.setAvailableRoot()
         elif nwItem.itemType == nwItemType.FOLDER:
             newItem.setIcon(self.C_NAME, QIcon.fromTheme("folder"))
         elif nwItem.itemType == nwItemType.FILE:
             newItem.setIcon(self.C_NAME, QIcon.fromTheme("x-office-document"))
 
         return newItem
+
+    def _addOrphanedRoot(self):
+        if self.orphRoot is None:
+            newItem = QTreeWidgetItem([""]*4)
+            newItem.setText(self.C_NAME,   "Orphaned Files")
+            newItem.setText(self.C_COUNT,  "")
+            newItem.setText(self.C_FLAGS,  "")
+            newItem.setText(self.C_HANDLE, "")
+            self.addTopLevelItem(newItem)
+            self.orphRoot = newItem
+            newItem.setExpanded(True)
+        return
 
     def setTreeItemValues(self, tHandle):
 
@@ -248,7 +267,7 @@ class GuiDocTree(QTreeWidget):
             for i in range(pItem.childCount()):
                 pCount += int(pItem.child(i).text(self.C_COUNT))
                 pHandle = pItem.text(self.C_HANDLE)
-            if not nDepth > NWItem.MAX_DEPTH:
+            if not nDepth > NWItem.MAX_DEPTH and pHandle != "":
                 self.propagateCount(pHandle, pCount, nDepth+1)
         return
 
@@ -298,14 +317,15 @@ class GuiDocTree(QTreeWidget):
         snItem  = self.theProject.getItem(sHandle)
         dnItem  = self.theProject.getItem(dHandle)
         isSame  = snItem.itemClass == dnItem.itemClass and dnItem.itemType
+        isNone  = snItem.itemClass == nwItemClass.NO_CLASS
         isFile  = dnItem.itemType == nwItemType.FILE
         isRoot  = snItem.itemType == nwItemType.ROOT
         isOnTop = self.dropIndicatorPosition() == QAbstractItemView.OnItem
-        if isSame and not (isFile and isOnTop) and not isRoot:
-            logger.verbose("Drag'n'drop on item %s allowed" % sHandle)
+        if (isSame or isNone) and not (isFile and isOnTop) and not isRoot:
+            logger.verbose("Drag'n'drop of item %s accepted" % sHandle)
             QTreeWidget.dropEvent(self, theEvent)
         else:
-            logger.verbose("Drag'n'drop on item %s not allowed" % sHandle)
+            logger.verbose("Drag'n'drop of item %s not accepted" % sHandle)
 
         return
 

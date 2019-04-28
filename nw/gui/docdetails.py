@@ -64,17 +64,20 @@ class GuiDocDetails(QFrame):
 
     def buildViewBox(self, tHandle):
 
-        nwItem     = self.theProject.getItem(tHandle)
-        itemStatus = nwItem.itemStatus
-        if itemStatus < 0 or itemStatus >= len(self.theProject.statusLabels):
-            itemStatus = 0
+        nwItem = self.theProject.getItem(tHandle)
 
-        colTwo = [
-            nwItem.itemName,
-            self.theProject.statusLabels[itemStatus],
-            nwLabels.CLASS_NAME[nwItem.itemClass],
-            nwLabels.LAYOUT_NAME[nwItem.itemLayout],
-        ]
+        if nwItem is None:
+            colTwo = [""]*4
+        else:
+            itemStatus = nwItem.itemStatus
+            if itemStatus < 0 or itemStatus >= len(self.theProject.statusLabels):
+                itemStatus = 0
+            colTwo = [
+                nwItem.itemName,
+                self.theProject.statusLabels[itemStatus],
+                nwLabels.CLASS_NAME[nwItem.itemClass],
+                nwLabels.LAYOUT_NAME[nwItem.itemLayout],
+            ]
 
         for nRow in range(4):
             lblTwo = QLabel(colTwo[nRow])
