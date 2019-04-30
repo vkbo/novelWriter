@@ -236,6 +236,12 @@ class GuiDocTree(QTreeWidget):
             self.orphRoot = newItem
             newItem.setExpanded(True)
         return
+    
+    def _cleanOrphanedRoot(self):
+        if self.orphRoot.childCount() == 0:
+            self.takeTopLevelItem(self.indexOfTopLevelItem(self.orphRoot))
+            self.orphRoot = None
+        return
 
     def setTreeItemValues(self, tHandle):
 
@@ -260,7 +266,7 @@ class GuiDocTree(QTreeWidget):
 
     def propagateCount(self, tHandle, theCount, nDepth=0):
         tItem = self.theMap[tHandle]
-        tItem.setText(self.C_COUNT,"{:n}".format(theCount))
+        tItem.setText(self.C_COUNT,str(theCount))
         pItem = tItem.parent()
         if pItem is not None:
             pCount = 0
@@ -316,7 +322,7 @@ class GuiDocTree(QTreeWidget):
         dHandle = dItem.text(self.C_HANDLE)
         snItem  = self.theProject.getItem(sHandle)
         dnItem  = self.theProject.getItem(dHandle)
-        isSame  = snItem.itemClass == dnItem.itemClass and dnItem.itemType
+        isSame  = snItem.itemClass == dnItem.itemClass
         isNone  = snItem.itemClass == nwItemClass.NO_CLASS
         isFile  = dnItem.itemType == nwItemType.FILE
         isRoot  = snItem.itemType == nwItemType.ROOT
@@ -324,6 +330,10 @@ class GuiDocTree(QTreeWidget):
         if (isSame or isNone) and not (isFile and isOnTop) and not isRoot:
             logger.verbose("Drag'n'drop of item %s accepted" % sHandle)
             QTreeWidget.dropEvent(self, theEvent)
+            if isNone:
+                snItem.setClass(dnItem.itemClass)
+                self.setTreeItemValues(sHandle)
+                self._cleanOrphanedRoot()
         else:
             logger.verbose("Drag'n'drop of item %s not accepted" % sHandle)
 
