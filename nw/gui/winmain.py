@@ -206,6 +206,7 @@ class GuiMain(QMainWindow):
     def editProjectDialog(self):
         dlgProj = GuiProjectEditor(self, self.theProject)
         dlgProj.exec_()
+        self._setWindowTitle(self.theProject.projName)
         return True
 
     ##
