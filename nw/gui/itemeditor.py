@@ -95,6 +95,7 @@ class GuiItemEditor(QDialog):
         self.closeButton = QPushButton("Close")
         self.closeButton.clicked.connect(self._doClose)
         self.saveButton = QPushButton("Save")
+        self.saveButton.setDefault(True)
         self.saveButton.clicked.connect(self._doSave)
         self.buttonBox.addStretch(1)
         self.buttonBox.addWidget(self.closeButton)
@@ -105,6 +106,8 @@ class GuiItemEditor(QDialog):
         self.innerBox.addLayout(self.buttonBox)
 
         self.show()
+
+        self.editName.selectAll()
 
         logger.debug("ItemEditor initialisation complete")
 
