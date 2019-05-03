@@ -39,9 +39,14 @@ class GuiDocTree(QTreeWidget):
         self.debugGUI   = self.mainConf.debugGUI
         self.theParent  = theParent
         self.theProject = theProject
-        self.theMap     = {}
+
+        # Tree Settings
+        self.theMap     = None
         self.orphRoot   = None
 
+        self.clearTree()
+
+        # Build GUI
         self.setIconSize(QSize(13,13))
         self.setExpandsOnDoubleClick(True)
         self.setIndentation(13)
@@ -64,6 +69,15 @@ class GuiDocTree(QTreeWidget):
         self.fontCount = QFont("Monospace",10)
 
         logger.debug("DocTree initialisation complete")
+
+        return
+
+    def clearTree(self):
+
+        self.clear()
+
+        self.theMap   = {}
+        self.orphRoot = None
 
         return
 

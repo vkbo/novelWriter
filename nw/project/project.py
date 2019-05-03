@@ -31,27 +31,22 @@ class NWProject():
     def __init__(self):
 
         # Internal
-        self.mainConf    = nw.CONFIG
+        self.mainConf     = nw.CONFIG
 
         # Project Settings
-        self.projTree    = {}
-        self.treeOrder   = []
-        self.treeRoots   = []
-        self.projPath    = None
-        self.projFile    = "nwProject.nwx"
-        self.projName    = ""
-        self.bookTitle   = ""
-        self.bookAuthors = []
+        self.projTree     = None
+        self.treeOrder    = None
+        self.treeRoots    = None
+        self.projPath     = None
+        self.projFile     = None
+        self.projName     = None
+        self.bookTitle    = None
+        self.bookAuthors  = None
+        self.statusCols   = None
+        self.statusIcons  = None
+        self.statusLabels = None
 
-        self.statusCols  = [
-            ("New",     100,100,100),
-            ("Note",    200, 50,  0),
-            ("Draft",   200,150,  0),
-            ("Finished", 50,200,  0),
-        ]
-        self.statusIcons  = []
-        self.statusLabels = []
-        self._makeStatusIcons()
+        self.clearProject()
 
         return
 
@@ -88,19 +83,39 @@ class NWProject():
         return newItem.itemHandle
 
     def newProject(self):
-        self.projTree    = {}
-        self.treeOrder   = []
-        self.projPath    = None
-        self.projFile    = "nwProject.nwx"
-        self.projName    = ""
-        self.bookTitle   = ""
-        self.bookAuthors = []
-        self._makeStatusIcons()
+
+        self.clearProject()
+
         hNovel = self.newRoot("Novel",         nwItemClass.NOVEL)
         hChars = self.newRoot("Characters",    nwItemClass.CHARACTER)
         hWorld = self.newRoot("World",         nwItemClass.WORLD)
         hChapt = self.newFolder("New Chapter", nwItemClass.NOVEL, hNovel)
         hScene = self.newFile("New Scene",     nwItemClass.NOVEL, hChapt)
+
+        return
+
+    def clearProject(self):
+
+        # Project Settings
+        self.projTree    = {}
+        self.treeOrder   = []
+        self.treeRoots   = []
+        self.projPath    = None
+        self.projFile    = "nwProject.nwx"
+        self.projName    = ""
+        self.bookTitle   = ""
+        self.bookAuthors = []
+
+        self.statusCols  = [
+            ("New",     100,100,100),
+            ("Note",    200, 50,  0),
+            ("Draft",   200,150,  0),
+            ("Finished", 50,200,  0),
+        ]
+        self.statusIcons  = []
+        self.statusLabels = []
+        self._makeStatusIcons()
+
         return
 
     ##
@@ -115,6 +130,7 @@ class NWProject():
                 logger.error("File not found: %s" % fileName)
                 return False
 
+        self.clearProject()
         self.projPath = path.dirname(fileName)
         logger.debug("Opening project: %s" % self.projPath)
 
@@ -211,13 +227,19 @@ class NWProject():
             self.projTree[tHandle].packXML(xContent)
 
         # Write the xml tree to file
-        with open(path.join(self.projPath,self.projFile),"wb") as outFile:
-            outFile.write(etree.tostring(
-                nwXML,
-                pretty_print    = True,
-                encoding        = "utf-8",
-                xml_declaration = True
-            ))
+        saveFile = path.join(self.projPath,self.projFile)
+        try:
+            with open(saveFile,"wb") as outFile:
+                outFile.write(etree.tostring(
+                    nwXML,
+                    pretty_print    = True,
+                    encoding        = "utf-8",
+                    xml_declaration = True
+                ))
+        except Exception as e:
+            logger.error("Failed to save project to %s" % saveFile)
+            logger.error(str(e))
+            return False
 
         self.mainConf.setRecent(self.projPath)
 

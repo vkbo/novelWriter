@@ -103,6 +103,7 @@ class GuiMain(QMainWindow):
 
     def newProject(self):
         logger.info("Creating new project")
+        self.treeView.clearTree()
         self.theProject.newProject()
         self.treeView.buildTree()
         return
@@ -112,6 +113,7 @@ class GuiMain(QMainWindow):
             projFile = self.openProjectDialog()
         if projFile is None:
             return False
+        self.treeView.clearTree()
         self.theProject.openProject(projFile)
         self.treeView.buildTree()
         self._setWindowTitle(self.theProject.projName)
@@ -184,7 +186,7 @@ class GuiMain(QMainWindow):
         dlgOpt  = QFileDialog.Options()
         dlgOpt |= QFileDialog.DontUseNativeDialog
         projFile, _ = QFileDialog.getOpenFileName(
-            self,"Open novelWriter Project","","novelWriter Project File (nwProject.nwx);;All Files (*)", options=dlgOpt
+            self,"Open novelWriter Project","","novelWriter Project File (nwProject.nwx);;All Files (*)",options=dlgOpt
         )
         if projFile:
             return projFile
@@ -192,9 +194,10 @@ class GuiMain(QMainWindow):
 
     def saveProjectDialog(self):
         dlgOpt  = QFileDialog.Options()
+        dlgOpt |= QFileDialog.ShowDirsOnly
         dlgOpt |= QFileDialog.DontUseNativeDialog
-        projPath, _ = QFileDialog.getSaveFileName(
-            self,"Save novelWriter Project","","novelWriter Project File (nwProject.nwx);;All Files (*)", options=dlgOpt
+        projPath = QFileDialog.getExistingDirectory(
+            self,"Save novelWriter Project","",options=dlgOpt
         )
         if projPath:
             return projPath
