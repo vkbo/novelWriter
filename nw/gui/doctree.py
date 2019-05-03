@@ -142,12 +142,20 @@ class GuiDocTree(QTreeWidget):
             tHandle = self.getSelectedHandle()
             tItem   = self.theMap[tHandle]
             pItem   = tItem.parent()
-            tIndex  = pItem.indexOfChild(tItem)
-            nChild  = pItem.childCount()
-            nIndex  = tIndex + nStep
-            if nIndex < 0 or nIndex >= nChild: return
-            cItem   = pItem.takeChild(tIndex)
-            pItem.insertChild(nIndex, cItem)
+            if pItem is None:
+                tIndex = self.indexOfTopLevelItem(tItem)
+                nChild = self.topLevelItemCount()
+                nIndex = tIndex + nStep
+                if nIndex < 0 or nIndex >= nChild: return
+                cItem  = self.takeTopLevelItem(tIndex)
+                self.insertTopLevelItem(nIndex, cItem)
+            else:
+                tIndex = pItem.indexOfChild(tItem)
+                nChild = pItem.childCount()
+                nIndex = tIndex + nStep
+                if nIndex < 0 or nIndex >= nChild: return
+                cItem   = pItem.takeChild(tIndex)
+                pItem.insertChild(nIndex, cItem)
             self.clearSelection()
             cItem.setSelected(True)
         return
@@ -352,15 +360,21 @@ class GuiDocTree(QTreeWidget):
         dnItem  = self.theProject.getItem(dHandle)
         isSame  = snItem.itemClass == dnItem.itemClass
         isNone  = snItem.itemClass == nwItemClass.NO_CLASS
-        isFile  = dnItem.itemType == nwItemType.FILE
+        onFile  = dnItem.itemType == nwItemType.FILE
         isRoot  = snItem.itemType == nwItemType.ROOT
+        onRoot  = dnItem.itemType == nwItemType.ROOT
         isOnTop = self.dropIndicatorPosition() == QAbstractItemView.OnItem
-        if (isSame or isNone) and not (isFile and isOnTop) and not isRoot:
+        isAbove = self.dropIndicatorPosition() == QAbstractItemView.AboveItem
+        isBelow = self.dropIndicatorPosition() == QAbstractItemView.BelowItem
+        if (isSame or isNone) and not (onFile and isOnTop) and not isRoot:
             logger.verbose("Drag'n'drop of item %s accepted" % sHandle)
             QTreeWidget.dropEvent(self, theEvent)
             if isNone:
                 self._moveOrphanedItem(sHandle, dHandle)
                 self._cleanOrphanedRoot()
+        elif isRoot and (isAbove or isBelow) and onRoot:
+            logger.verbose("Drag'n'drop of item %s accepted" % sHandle)
+            QTreeWidget.dropEvent(self, theEvent)
         else:
             logger.verbose("Drag'n'drop of item %s not accepted" % sHandle)
 
