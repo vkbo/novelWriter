@@ -243,6 +243,20 @@ class GuiDocTree(QTreeWidget):
             self.orphRoot = None
         return
 
+    def _moveOrphanedItem(self, tHandle, dHandle):
+        trItemS = self.theMap[tHandle]
+        nwItemS = self.theProject.getItem(tHandle)
+        nwItemD = self.theProject.getItem(dHandle)
+        trItemP = trItemS.parent()
+        nwItemS.setClass(nwItemD.itemClass)
+        if trItemP is None:
+            logger.error("Failed to find new parent item of %s" % tHandle)
+            return
+        pHandle = trItemP.text(self.C_HANDLE)
+        nwItemS.setParent(pHandle)
+        self.setTreeItemValues(tHandle)
+        return
+
     def setTreeItemValues(self, tHandle):
 
         trItem  = self.theMap[tHandle]
@@ -331,8 +345,7 @@ class GuiDocTree(QTreeWidget):
             logger.verbose("Drag'n'drop of item %s accepted" % sHandle)
             QTreeWidget.dropEvent(self, theEvent)
             if isNone:
-                snItem.setClass(dnItem.itemClass)
-                self.setTreeItemValues(sHandle)
+                self._moveOrphanedItem(sHandle, dHandle)
                 self._cleanOrphanedRoot()
         else:
             logger.verbose("Drag'n'drop of item %s not accepted" % sHandle)
