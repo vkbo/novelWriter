@@ -116,6 +116,7 @@ class GuiMain(QMainWindow):
         self.treeView.clearTree()
         self.theProject.openProject(projFile)
         self.treeView.buildTree()
+        self.mainMenu.updateRecentProjects()
         self._setWindowTitle(self.theProject.projName)
         return True
 
@@ -125,6 +126,7 @@ class GuiMain(QMainWindow):
             self.theProject.setProjectPath(projPath)
         self.treeView.saveTreeOrder()
         self.theProject.saveProject()
+        self.mainMenu.updateRecentProjects()
         return True
 
     ##

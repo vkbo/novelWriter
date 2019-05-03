@@ -60,6 +60,16 @@ class GuiMainMenu(QMenuBar):
                 )
         return
 
+    def updateRecentProjects(self):
+        self.recentMenu.clear()
+        for n in range(len(self.mainConf.recentList)):
+            recentProject = self.mainConf.recentList[n]
+            if recentProject == "": continue
+            menuItem = QAction(QIcon.fromTheme("folder-open"), "%d: %s" % (n,recentProject), self.projMenu)
+            menuItem.triggered.connect(lambda menuItem, n=n : self.openRecentProject(menuItem, n))
+            self.recentMenu.addAction(menuItem)
+        return
+
     ##
     #  Menu Action
     ##
@@ -103,13 +113,8 @@ class GuiMainMenu(QMenuBar):
         self.projMenu.addAction(menuItem)
 
         # Project > Recent Projects
-        recentMenu = self.projMenu.addMenu(QIcon.fromTheme("document-open-recent"),"Recent Projects")
-        for n in range(len(self.mainConf.recentList)):
-            recentProject = self.mainConf.recentList[n]
-            if recentProject == "": continue
-            menuItem = QAction(QIcon.fromTheme("folder-open"), "%d: %s" % (n,recentProject), self.projMenu)
-            menuItem.triggered.connect(lambda menuItem, n=n : self.openRecentProject(menuItem, n))
-            recentMenu.addAction(menuItem)
+        self.recentMenu = self.projMenu.addMenu(QIcon.fromTheme("document-open-recent"),"Recent Projects")
+        self.updateRecentProjects()
 
         # Project > Project Settings
         menuItem = QAction(QIcon.fromTheme("document-properties"), "Project Settings", self)
