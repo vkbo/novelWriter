@@ -1,19 +1,17 @@
 <?xml version='1.0' encoding='utf-8'?>
-<novelWriterXML appVersion="0.0.1" fileVersion="1.0" timeStamp="2019-05-04 11:53:50">
+<novelWriterXML appVersion="0.0.1" fileVersion="1.0" timeStamp="2019-05-04 17:22:40">
   <project>
     <name>Sample Project</name>
     <title>Sample Project</title>
     <author>Jane Smith</author>
     <author>Jay Doh</author>
   </project>
-  <content count="12">
+  <content count="14">
     <item handle="7031beac91f75" order="0" parent="None">
       <name>Novel</name>
       <type>ROOT</type>
       <class>NOVEL</class>
       <status>0</status>
-      <depth>0</depth>
-      <children>True</children>
       <expanded>True</expanded>
     </item>
     <item handle="53b69b83cdafc" order="0" parent="7031beac91f75">
@@ -21,8 +19,6 @@
       <type>FILE</type>
       <class>NOVEL</class>
       <status>2</status>
-      <depth>1</depth>
-      <children>False</children>
       <expanded>False</expanded>
       <layout>TITLE</layout>
       <charCount>23</charCount>
@@ -34,8 +30,6 @@
       <type>FOLDER</type>
       <class>NOVEL</class>
       <status>1</status>
-      <depth>1</depth>
-      <children>True</children>
       <expanded>True</expanded>
     </item>
     <item handle="96b68994dfa3d" order="0" parent="e7ded148d6e4a">
@@ -43,8 +37,6 @@
       <type>FILE</type>
       <class>NOVEL</class>
       <status>2</status>
-      <depth>2</depth>
-      <children>False</children>
       <expanded>False</expanded>
       <layout>SCENE</layout>
       <charCount>2571</charCount>
@@ -56,8 +48,6 @@
       <type>FILE</type>
       <class>NOVEL</class>
       <status>1</status>
-      <depth>2</depth>
-      <children>False</children>
       <expanded>False</expanded>
       <layout>SCENE</layout>
       <charCount>376</charCount>
@@ -69,8 +59,6 @@
       <type>FILE</type>
       <class>NOVEL</class>
       <status>0</status>
-      <depth>2</depth>
-      <children>False</children>
       <expanded>False</expanded>
       <layout>SCENE</layout>
       <charCount>0</charCount>
@@ -82,8 +70,6 @@
       <type>ROOT</type>
       <class>CHARACTER</class>
       <status>0</status>
-      <depth>0</depth>
-      <children>True</children>
       <expanded>True</expanded>
     </item>
     <item handle="f7e2d9f330615" order="0" parent="f6622b4617424">
@@ -91,8 +77,6 @@
       <type>FOLDER</type>
       <class>CHARACTER</class>
       <status>0</status>
-      <depth>1</depth>
-      <children>True</children>
       <expanded>True</expanded>
     </item>
     <item handle="14298de4d9524" order="0" parent="f7e2d9f330615">
@@ -100,8 +84,6 @@
       <type>FILE</type>
       <class>CHARACTER</class>
       <status>0</status>
-      <depth>2</depth>
-      <children>False</children>
       <expanded>False</expanded>
       <layout>NOTE</layout>
       <charCount>42</charCount>
@@ -113,8 +95,6 @@
       <type>FILE</type>
       <class>CHARACTER</class>
       <status>0</status>
-      <depth>2</depth>
-      <children>False</children>
       <expanded>False</expanded>
       <layout>NOTE</layout>
       <charCount>51</charCount>
@@ -126,8 +106,6 @@
       <type>ROOT</type>
       <class>WORLD</class>
       <status>0</status>
-      <depth>0</depth>
-      <children>True</children>
       <expanded>True</expanded>
     </item>
     <item handle="b3e74dbc1f584" order="0" parent="73eee34351f85">
@@ -135,13 +113,29 @@
       <type>FILE</type>
       <class>WORLD</class>
       <status>0</status>
-      <depth>1</depth>
-      <children>False</children>
       <expanded>False</expanded>
       <layout>NOTE</layout>
       <charCount>66</charCount>
       <wordCount>13</wordCount>
       <paraCount>1</paraCount>
+    </item>
+    <item handle="f75dac270c2a7" order="3" parent="None">
+      <name>Trash</name>
+      <type>TRASH</type>
+      <class>TRASH</class>
+      <status>0</status>
+      <expanded>True</expanded>
+    </item>
+    <item handle="4cd0bd12b087d" order="0" parent="f75dac270c2a7">
+      <name>New File</name>
+      <type>FILE</type>
+      <class>NOVEL</class>
+      <status>0</status>
+      <expanded>False</expanded>
+      <layout>SCENE</layout>
+      <charCount>3</charCount>
+      <wordCount>1</wordCount>
+      <paraCount>0</paraCount>
     </item>
   </content>
 </novelWriterXML>

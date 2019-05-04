@@ -81,12 +81,9 @@ class GuiDocTree(QTreeWidget):
     ##
 
     def clearTree(self):
-
         self.clear()
-
         self.theMap   = {}
         self.orphRoot = None
-
         return
 
     def newTreeItem(self, itemType, itemClass):
@@ -185,12 +182,21 @@ class GuiDocTree(QTreeWidget):
         ]
         return retVals
 
-    def deleteItem(self):
-        tHandle = self.getSelectedHandle()
+    def deleteItem(self, tHandle=None):
+        """Delete items from the tree. Note that this does not delete the item from the item tree in
+        the project object. However, since this is only meta data, there isn't really a need to do
+        that to save memory. As items not in the tree are not saved to the project file, a loaded
+        project will be clean anyway.
+        """
+
+        if tHandle is None:
+            tHandle = self.getSelectedHandle()
+
         trItemS = self._getTreeItem(tHandle)
         nwItemS = self.theProject.getItem(tHandle)
+
         if nwItemS.itemType == nwItemType.FILE:
-            logger.debug("User requested item %s moved to trash" % tHandle)
+            logger.debug("User requested file %s moved to trash" % tHandle)
             trItemP = trItemS.parent()
             trItemT = self._addTrashRoot()
             if trItemP is None or trItemT is None:
@@ -200,6 +206,33 @@ class GuiDocTree(QTreeWidget):
             trItemC = trItemP.takeChild(tIndex)
             trItemT.addChild(trItemC)
             nwItemS.setParent(self.theProject.trashRoot)
+            self.clearSelection()
+            trItemP.setSelected(True)
+
+        elif nwItemS.itemType == nwItemType.FOLDER:
+            logger.debug("User requested folder %s deleted" % tHandle)
+            trItemP = trItemS.parent()
+            if trItemP is None:
+                logger.error("Could not delete folder")
+                return
+            tIndex = trItemP.indexOfChild(trItemS)
+            if trItemS.childCount() == 0:
+                trItemP.takeChild(tIndex)
+                self.clearSelection()
+                trItemP.setSelected(True)
+            else:
+                self.theParent.makeAlert(["Cannot delete folder.","It is not empty."],2)
+                return
+
+        elif nwItemS.itemType == nwItemType.ROOT:
+            logger.debug("User requested root folder %s deleted" % tHandle)
+            tIndex = self.indexOfTopLevelItem(trItemS)
+            if trItemS.childCount() == 0:
+                self.takeTopLevelItem(tIndex)
+                self.theParent.mainMenu.setAvailableRoot()
+            else:
+                self.theParent.makeAlert(["Cannot delete root folder.","It is not empty."],2)
+                return
 
         return
 
@@ -233,7 +266,7 @@ class GuiDocTree(QTreeWidget):
             for i in range(pItem.childCount()):
                 pCount += int(pItem.child(i).text(self.C_COUNT))
                 pHandle = pItem.text(self.C_HANDLE)
-            if not nDepth > NWItem.MAX_DEPTH and pHandle != "":
+            if not nDepth > 200 and pHandle != "":
                 self.propagateCount(pHandle, pCount, nDepth+1)
         return
 
@@ -270,11 +303,6 @@ class GuiDocTree(QTreeWidget):
         for i in range(theItem.childCount()):
             self._scanChildren(theList, theItem.child(i), i)
         return theList
-
-    def _scanParents(self, theItem, theCount=0):
-        if theItem.parent() is not None:
-            theItem, theCount = self._scanParents(theItem.parent(), theCount)
-        return theItem, theCount+1
 
     def _addTreeItem(self, nwItem):
 
@@ -341,7 +369,7 @@ class GuiDocTree(QTreeWidget):
             self.orphRoot = newItem
             newItem.setExpanded(True)
         return
-    
+
     def _cleanOrphanedRoot(self):
         if self.orphRoot.childCount() == 0:
             self.takeTopLevelItem(self.indexOfTopLevelItem(self.orphRoot))
@@ -371,7 +399,6 @@ class GuiDocTree(QTreeWidget):
             return
         pHandle = trItemP.text(self.C_HANDLE)
         nwItemS.setParent(pHandle)
-        nwItemS.setDepth(self.theProject.countItemDepth(tHandle))
         self.setTreeItemValues(tHandle)
         return
 

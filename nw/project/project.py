@@ -102,6 +102,7 @@ class NWProject():
 
         hNovel = self.newRoot("Novel",         nwItemClass.NOVEL)
         hChars = self.newRoot("Characters",    nwItemClass.CHARACTER)
+        hWorld = self.newRoot("Plot",          nwItemClass.PLOT)
         hWorld = self.newRoot("World",         nwItemClass.WORLD)
         hChapt = self.newFolder("New Chapter", nwItemClass.NOVEL, hNovel)
         hScene = self.newFile("New Scene",     nwItemClass.NOVEL, hChapt)
@@ -234,7 +235,7 @@ class NWProject():
 
         # Save Tree Content
         logger.debug("Writing project content")
-        xContent = etree.SubElement(nwXML,"content",attrib={"count":str(len(self.projTree))})
+        xContent = etree.SubElement(nwXML,"content",attrib={"count":str(len(self.treeOrder))})
         for tHandle in self.treeOrder:
             self.projTree[tHandle].packXML(xContent)
 
@@ -373,16 +374,6 @@ class NWProject():
 
         return
 
-    def countItemDepth(self, tHandle):
-        theDepth = 0
-        nwItem   = self.getItem(tHandle)
-        while nwItem.parHandle is not None:
-            theDepth += 1
-            nwItem    = self.getItem(nwItem.parHandle)
-            if theDepth > NWItem.MAX_DEPTH:
-                return None
-        return theDepth
-
     def _appendItem(self, tHandle, pHandle, nwItem):
         tHandle = self._checkString(tHandle,self._makeHandle(),False)
         pHandle = self._checkString(pHandle,None,True)
@@ -404,12 +395,6 @@ class NWProject():
                 self.trashRoot = tHandle
             else:
                 logger.error("Only one trash folder allowed")
-
-        itemDepth = self.countItemDepth(tHandle)
-        if itemDepth is None:
-            logger.error("The depth of entry %s could not be determined" % tHandle)
-        else:
-            nwItem.setDepth(itemDepth)
 
         return
 

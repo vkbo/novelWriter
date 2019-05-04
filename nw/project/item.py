@@ -35,7 +35,6 @@ class NWItem():
         self.itemClass   = nwItemClass.NO_CLASS
         self.itemLayout  = nwItemLayout.NO_LAYOUT
         self.itemStatus  = 0
-        self.itemDepth   = None
         self.isExpanded  = False
 
         self.charCount   = 0
@@ -54,12 +53,11 @@ class NWItem():
             "parent" : str(self.parHandle),
             "order"  : str(self.itemOrder),
         })
-        xSub = self._subPack(xPack,"name",      text=str(self.itemName))
-        xSub = self._subPack(xPack,"type",      text=str(self.itemType.name))
-        xSub = self._subPack(xPack,"class",     text=str(self.itemClass.name))
-        xSub = self._subPack(xPack,"status",    text=str(self.itemStatus))
-        xSub = self._subPack(xPack,"depth",     text=str(self.itemDepth))
-        xSub = self._subPack(xPack,"expanded",  text=str(self.isExpanded))
+        xSub = self._subPack(xPack,"name",     text=str(self.itemName))
+        xSub = self._subPack(xPack,"type",     text=str(self.itemType.name))
+        xSub = self._subPack(xPack,"class",    text=str(self.itemClass.name))
+        xSub = self._subPack(xPack,"status",   text=str(self.itemStatus))
+        xSub = self._subPack(xPack,"expanded", text=str(self.isExpanded))
         if self.itemType == nwItemType.FILE:
             xSub = self._subPack(xPack,"layout",    text=str(self.itemLayout.name))
             xSub = self._subPack(xPack,"charCount", text=str(self.charCount), none=False)
@@ -87,7 +85,7 @@ class NWItem():
         elif tagName == "class":     self.setClass(tagValue)
         elif tagName == "layout":    self.setLayout(tagValue)
         elif tagName == "status":    self.setStatus(tagValue)
-        elif tagName == "depth":     self.setDepth(tagValue)
+        elif tagName == "children":  self.setChildren(tagValue)
         elif tagName == "expanded":  self.setExpanded(tagValue)
         elif tagName == "charCount": self.setCharCount(tagValue)
         elif tagName == "wordCount": self.setWordCount(tagValue)
@@ -158,14 +156,6 @@ class NWItem():
     def setStatus(self, theStatus):
         theStatus = self._checkInt(theStatus,0)
         self.itemStatus = theStatus
-        return
-
-    def setDepth(self, theDepth):
-        theDepth = self._checkInt(theDepth,-1)
-        if theDepth >= 0 and theDepth <= self.MAX_DEPTH:
-            self.itemDepth = theDepth
-        else:
-            logger.error("Invalid item depth %d" % theDepth)
         return
 
     def setExpanded(self, expState):

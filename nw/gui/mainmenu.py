@@ -187,7 +187,7 @@ class GuiMainMenu(QMenuBar):
         menuItem = QAction(QIcon.fromTheme("edit-delete"), "&Delete Item", self)
         menuItem.setStatusTip("Delete Selected Item")
         menuItem.setShortcut("Ctrl+Del")
-        menuItem.triggered.connect(self.theParent.treeView.deleteItem)
+        menuItem.triggered.connect(lambda : self.theParent.treeView.deleteItem(None))
         self.projMenu.addAction(menuItem)
 
         # Project > Separator
