@@ -14,7 +14,7 @@ import logging
 import nw
 
 from os                   import path
-from PyQt5.QtWidgets      import QWidget, QMainWindow, QVBoxLayout, QFrame, QSplitter, QFileDialog, QStackedWidget, QShortcut
+from PyQt5.QtWidgets      import QWidget, QMainWindow, QVBoxLayout, QFrame, QSplitter, QFileDialog, QStackedWidget, QShortcut, QMessageBox
 from PyQt5.QtGui          import QIcon
 from PyQt5.QtCore         import Qt
 
@@ -94,6 +94,34 @@ class GuiMain(QMainWindow):
         self.show()
 
         logger.debug("GUI initialisation complete")
+
+        return
+
+    def makeAlert(self, theMessage, theLevel):
+        """Alert both the user and the logger at the same time. Message can be either a string or an
+        array of strings. Severity level is 0 = info, 1 = warning, and 2 = error.
+        """
+
+        if isinstance(theMessage, list):
+            popMsg = "<br>".join(theMessage)
+            logMsg = theMessage
+        else:
+            popMsg = theMessage
+            logMsg = [theMessage]
+
+        msgBox = QMessageBox()
+        if theLevel == 0:
+            for msgLine in logMsg:
+                logger.info(msgLine)
+            msgBox.information(self, "Information", popMsg)
+        elif theLevel == 1:
+            for msgLine in logMsg:
+                logger.warning(msgLine)
+            msgBox.warning(self, "Warning", popMsg)
+        elif theLevel == 2:
+            for msgLine in logMsg:
+                logger.error(msgLine)
+            msgBox.critical(self, "Error", popMsg)
 
         return
 

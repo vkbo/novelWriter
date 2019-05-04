@@ -128,7 +128,7 @@ class NWProject():
         if not path.isfile(fileName):
             fileName = path.join(fileName, "nwProject.nwx")
             if not path.isfile(fileName):
-                logger.error("File not found: %s" % fileName)
+                self.theParent.makeAlert("File not found: %s" % fileName,2)
                 return False
 
         self.clearProject()
@@ -146,7 +146,7 @@ class NWProject():
         logger.verbose("File version is %s" % fileVersion)
 
         if not nwxRoot == "novelWriterXML" or not fileVersion == "1.0":
-            logger.error("Project file does not appear to be a novelWriterXML file version 1.0")
+            self.theParent.makeAlert("Project file does not appear to be a novelWriterXML file version 1.0",2)
             return False
 
         for xChild in xRoot:
@@ -192,15 +192,15 @@ class NWProject():
     def saveProject(self):
 
         if self.projPath is None:
-            logger.error("Project path not set, cannot save.")
+            self.theParent.makeAlert("Project path not set, cannot save.",2)
             return False
 
         if not path.isdir(self.projPath):
             try:
                 mkdir(self.projPath)
                 logger.info("Created folder %s" % self.projPath)
-            except:
-                logger.error("Could not create folder %s" % self.projPath)
+            except Exception as e:
+                self.theParent.makeAlert(["Could not create folder.",str(e)],2)
                 return False
 
         logger.debug("Saving project: %s" % self.projPath)
@@ -239,8 +239,7 @@ class NWProject():
                     xml_declaration = True
                 ))
         except Exception as e:
-            logger.error("Failed to save project to %s" % saveFile)
-            logger.error(str(e))
+            self.theParent.makeAlert(["Failed to save project.",str(e)],2)
             return False
 
         self.mainConf.setRecent(self.projPath)

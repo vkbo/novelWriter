@@ -45,8 +45,12 @@ class NWDoc():
         docPath = path.join(dataDir, docFile)
 
         if path.isfile(docPath):
-            with open(docPath,mode="r") as inFile:
-                theDoc = inFile.read()
+            try:
+                with open(docPath,mode="r") as inFile:
+                    theDoc = inFile.read()
+            except Exception as e:
+                self.theParent.makeAlert(["Failed to open document file.",str(e)],2)
+                return ""
         else:
             logger.debug("The requested document does not exist.")
             return ""
@@ -75,8 +79,12 @@ class NWDoc():
         if path.isfile(docBack): rename(docBack,docTemp)
         if path.isfile(docPath): rename(docPath,docBack)
 
-        with open(docPath,mode="w") as outFile:
-            outFile.write(docText)
+        try:
+            with open(docPath,mode="w") as outFile:
+                outFile.write(docText)
+        except Exception as e:
+            self.theParent.makeAlert(["Could not save document.",str(e)],2)
+            return False
 
         if path.isfile(docTemp): unlink(docTemp)
 
