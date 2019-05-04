@@ -68,6 +68,7 @@ class GuiItemEditor(QDialog):
                 self.validLayouts.append(nwItemLayout.UNNUMBERED)
                 self.validLayouts.append(nwItemLayout.CHAPTER)
                 self.validLayouts.append(nwItemLayout.SCENE)
+                self.validLayouts.append(nwItemLayout.NOTE)
             else:
                 self.validLayouts.append(nwItemLayout.NOTE)
         else:
