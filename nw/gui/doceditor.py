@@ -12,6 +12,7 @@
 
 import logging
 import nw
+import enchant
 
 from time                import time
 
@@ -49,6 +50,11 @@ class GuiDocEditor(QTextEdit):
         self.typSQClose = self.mainConf.fmtSingleQuotes[1]
         self.typApos    = self.mainConf.fmtApostrophe
 
+        # Core Elements
+        self.theDoc  = self.document()
+        self.theDict = enchant.Dict("en_GB")
+        self.hLight  = GuiDocHighlighter(self.theDoc, self.theDict)
+
         # Editor State
         self.hasSelection = False
 
@@ -60,8 +66,6 @@ class GuiDocEditor(QTextEdit):
             mLR = self.mainConf.textMargin[1]
             self.setViewportMargins(mLR,mTB,mLR,mTB)
 
-        self.theDoc = self.document()
-        self.hLight = GuiDocHighlighter(self.theDoc)
         self.theDoc.setDocumentMargin(0)
         self.theDoc.contentsChange.connect(self._docChange)
         if self.mainConf.doJustify:

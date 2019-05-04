@@ -13,19 +13,20 @@
 import logging
 import nw
 
-from PyQt5.QtCore import QRegularExpression
+from PyQt5.QtCore import QRegularExpression, Qt
 from PyQt5.QtGui  import QColor, QTextCharFormat, QFont, QSyntaxHighlighter
 
 logger = logging.getLogger(__name__)
 
 class GuiDocHighlighter(QSyntaxHighlighter):
 
-    def __init__(self, theDoc):
+    def __init__(self, theDoc, theDict):
         QSyntaxHighlighter.__init__(self, theDoc)
 
         logger.debug("Initialising DocHighlighter ...")
         self.mainConf = nw.CONFIG
         self.theDoc   = theDoc
+        self.theDict  = theDict
         self.hRules   = []
 
         self.colHead  = (  0,155,200,255)
@@ -37,6 +38,8 @@ class GuiDocHighlighter(QSyntaxHighlighter):
         self.colComm  = (150,150,150,255)
         self.colKey   = (200, 46,  0,255)
         self.colVal   = (184,200,  0,255)
+
+        self.colSpell = QColor(200,46,0)
 
         self.hStyles = {
             "header1"   : self._makeFormat(self.colHead, "bold",1.8),
@@ -141,7 +144,8 @@ class GuiDocHighlighter(QSyntaxHighlighter):
         ))
 
         # Build a QRegExp for each pattern
-        self.rules = [(QRegularExpression(a),b) for (a,b) in self.hRules]
+        self.rules   = [(QRegularExpression(a),b) for (a,b) in self.hRules]
+        self.spellRx = QRegularExpression(r"[\w\'{:s}]+".format(self.mainConf.fmtSingleQuotes[1]))
 
         logger.debug("DocHighlighter initialisation complete")
 
@@ -174,6 +178,7 @@ class GuiDocHighlighter(QSyntaxHighlighter):
         return theFormat
 
     def highlightBlock(self, theText):
+
         for rX, xFmt in self.rules:
             rxItt = rX.globalMatch(theText, 0)
             while rxItt.hasNext():
@@ -181,10 +186,24 @@ class GuiDocHighlighter(QSyntaxHighlighter):
                 for xM in xFmt.keys():
                     xPos = rxMatch.capturedStart(xM)
                     xLen = rxMatch.capturedLength(xM)
-                    # logger.verbose("Captured[%d]: '%s'" % (nth,rxMatch.captured(nth)))
-                    # print(rxMatch.capturedTexts())
                     self.setFormat(xPos, xLen, xFmt[xM])
 
         self.setCurrentBlockState(0)
+
+        if self.theDict is None:
+            return
+
+        rxSpell = self.spellRx.globalMatch(theText, 0)
+        while rxSpell.hasNext():
+            rxMatch = rxSpell.next()
+            if not self.theDict.check(rxMatch.captured(0)):
+                xPos = rxMatch.capturedStart(0)
+                xLen = rxMatch.capturedLength(0)
+                spFmt = self.format(xPos)
+                spFmt.setUnderlineColor(self.colSpell)
+                spFmt.setUnderlineStyle(QTextCharFormat.SpellCheckUnderline)
+                self.setFormat(xPos, xLen, spFmt)
+
+        return
 
 # END Class DocHighlighter

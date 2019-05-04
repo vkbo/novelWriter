@@ -368,6 +368,7 @@ class GuiDocTree(QTreeWidget):
             self.addTopLevelItem(newItem)
             self.orphRoot = newItem
             newItem.setExpanded(True)
+            newItem.setIcon(self.C_NAME, QIcon.fromTheme("dialog-warning"))
         return
 
     def _cleanOrphanedRoot(self):
