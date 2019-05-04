@@ -29,8 +29,8 @@ class GuiDocDetails(QFrame):
     C_FLAGS  = 2
     C_HANDLE = 3
 
-    def __init__(self, theProject):
-        QFrame.__init__(self)
+    def __init__(self, theParent, theProject):
+        QFrame.__init__(self, theParent)
 
         logger.debug("Initialising DocDetails ...")
         self.mainConf   = nw.CONFIG

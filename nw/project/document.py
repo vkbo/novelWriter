@@ -46,12 +46,14 @@ class NWDoc():
 
         if path.isfile(docPath):
             with open(docPath,mode="r") as inFile:
-                return inFile.read()
+                theDoc = inFile.read()
         else:
             logger.debug("The requested document does not exist.")
             return ""
 
-        return None
+        self.theParent.statusBar.setStatus("Opened Document: %s" % self.theItem.itemName)
+
+        return theDoc
 
     def saveDocument(self, docText):
 
@@ -77,6 +79,8 @@ class NWDoc():
             outFile.write(docText)
 
         if path.isfile(docTemp): unlink(docTemp)
+
+        self.theParent.statusBar.setStatus("Saved Document: %s" % self.theItem.itemName)
 
         return True
 

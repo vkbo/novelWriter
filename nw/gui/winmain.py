@@ -39,7 +39,7 @@ class GuiMain(QMainWindow):
 
         logger.debug("Initialising GUI ...")
         self.mainConf    = nw.CONFIG
-        self.theProject  = NWProject()
+        self.theProject  = NWProject(self)
         self.theDocument = NWDoc(self.theProject, self)
 
         self.resize(*self.mainConf.winGeometry)
@@ -48,10 +48,10 @@ class GuiMain(QMainWindow):
 
         # Main GUI Elements
         self.docEditor  = GuiDocEditor(self)
-        self.docDetails = GuiDocDetails(self.theProject)
+        self.docDetails = GuiDocDetails(self, self.theProject)
         self.treeView   = GuiDocTree(self, self.theProject)
         self.mainMenu   = GuiMainMenu(self, self.theProject)
-        self.statusBar  = GuiMainStatus()
+        self.statusBar  = GuiMainStatus(self)
 
         # Assemble Main Window
         self.stackPane = QStackedWidget()

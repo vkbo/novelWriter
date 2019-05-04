@@ -28,10 +28,11 @@ logger = logging.getLogger(__name__)
 
 class NWProject():
 
-    def __init__(self):
+    def __init__(self, theParent):
 
         # Internal
         self.mainConf     = nw.CONFIG
+        self.theParent    = theParent
 
         # Project Settings
         self.projTree     = None
@@ -182,6 +183,7 @@ class NWProject():
 
         self._makeStatusIcons()
         self.mainConf.setRecent(self.projPath)
+        self.theParent.statusBar.setStatus("Opened Project: %s" % self.projName)
 
         self._scanProjectFolder()
 
@@ -242,6 +244,7 @@ class NWProject():
             return False
 
         self.mainConf.setRecent(self.projPath)
+        self.theParent.statusBar.setStatus("Saved Project: %s" % self.projName)
 
         return True
 

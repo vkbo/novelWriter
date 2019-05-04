@@ -62,6 +62,10 @@ class GuiDocTree(QTreeWidget):
         self.setDragEnabled(True)
         self.setDragDropMode(QAbstractItemView.InternalMove)
 
+        # Set Multiple Selection by CTRL
+        self.setSelectionMode(QAbstractItemView.ExtendedSelection)
+        self.setSelectionBehavior(QAbstractItemView.SelectRows)
+
         for colN in range(len(self.mainConf.treeColWidth)):
             self.setColumnWidth(colN,self.mainConf.treeColWidth[colN])
 

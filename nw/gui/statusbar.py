@@ -15,13 +15,14 @@ import nw
 
 from os              import path
 from PyQt5.QtWidgets import QStatusBar, QLabel, QFrame
+from PyQt5.QtGui     import QIcon
 
 logger = logging.getLogger(__name__)
 
 class GuiMainStatus(QStatusBar):
 
-    def __init__(self):
-        QStatusBar.__init__(self)
+    def __init__(self, theParent):
+        QStatusBar.__init__(self, theParent)
 
         logger.debug("Initialising GuiMainStatus ...")
 
@@ -41,6 +42,12 @@ class GuiMainStatus(QStatusBar):
         self.setCounts(0,0,0)
         self.setDocHandleCount(None)
 
+        self.setSizeGripEnabled(True)
+
+        return
+
+    def setStatus(self, theMessage, timeOut=10.0):
+        self.showMessage(theMessage, int(timeOut*1000))
         return
 
     def setCounts(self, cC, wC, pC):
