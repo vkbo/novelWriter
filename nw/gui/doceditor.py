@@ -52,7 +52,7 @@ class GuiDocEditor(QTextEdit):
 
         # Core Elements
         self.theDoc  = self.document()
-        self.theDict = enchant.Dict("en_GB")
+        self.theDict = enchant.Dict(self.mainConf.spellLanguage)
         self.hLight  = GuiDocHighlighter(self.theDoc, self.theDict)
 
         # Editor State

@@ -70,10 +70,12 @@ class Config:
         self.doReplaceDash   = True
         self.doReplaceDots   = True
         self.wordCountTimer  = 5.0
-
+        
         self.fmtDoubleQuotes = ["“","”"]
         self.fmtSingleQuotes = ["‘","’"]
         self.fmtApostrophe   = "’"
+
+        self.spellLanguage   = "en_GB"
 
         # Check if config file exists
         if path.isfile(path.join(self.confPath,self.confFile)):
@@ -140,6 +142,8 @@ class Config:
                 self.doReplaceDash  = confParser.getboolean(cnfSec,"repdash")
             if confParser.has_option(cnfSec,"repdots"):
                 self.doReplaceDots  = confParser.getboolean(cnfSec,"repdots")
+            if confParser.has_option(cnfSec,"spellcheck"):
+                self.spellLanguage  = confParser.get(cnfSec,"spellcheck")
 
         ## Path
         cnfSec = "Path"
@@ -183,6 +187,7 @@ class Config:
         confParser.set(cnfSec,"repdquotes", str(self.doReplaceDQuote))
         confParser.set(cnfSec,"repdash",    str(self.doReplaceDash))
         confParser.set(cnfSec,"repdots",    str(self.doReplaceDots))
+        confParser.set(cnfSec,"spellcheck", str(self.spellLanguage))
 
         ## Path
         cnfSec = "Path"
