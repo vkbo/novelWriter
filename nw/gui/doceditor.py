@@ -204,7 +204,7 @@ class GuiDocEditor(QTextEdit):
             self.wcTimer.start()
         if self.mainConf.doReplace and not self.hasSelection:
             self._docAutoReplace(self.theDoc.findBlock(thePos))
-        logger.verbose("Doc change signal took %.3f µs" % ((time()-self.lastEdit)*1e6))
+        # logger.verbose("Doc change signal took %.3f µs" % ((time()-self.lastEdit)*1e6))
         return
 
     def _docAutoReplace(self, theBlock):
@@ -267,7 +267,7 @@ class GuiDocEditor(QTextEdit):
         """
         sinceActive = time()-self.lastEdit
         if sinceActive > 5*self.wcInterval:
-            logger.verbose("Stopping word count timer due to no activity over the last %.3f seconds" % sinceActive)
+            logger.debug("Stopping word count timer due to no activity over the last %.3f seconds" % sinceActive)
             self.wcTimer.stop()
         elif self.wCounter.isRunning():
             logger.verbose("Word counter thread is busy")

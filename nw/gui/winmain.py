@@ -16,7 +16,7 @@ import nw
 from os                   import path
 from PyQt5.QtWidgets      import QWidget, QMainWindow, QVBoxLayout, QFrame, QSplitter, QFileDialog, QStackedWidget, QShortcut, QMessageBox
 from PyQt5.QtGui          import QIcon
-from PyQt5.QtCore         import Qt
+from PyQt5.QtCore         import Qt, QTimer
 
 from nw.gui.doctree       import GuiDocTree
 from nw.gui.doceditor     import GuiDocEditor
@@ -91,6 +91,16 @@ class GuiMain(QMainWindow):
                 theCss = inFile.read()
             self.setStyleSheet(theCss)
 
+        self.asProjTimer = QTimer()
+        self.asProjTimer.setInterval(int(self.mainConf.autoSaveProj*1000))
+        self.asProjTimer.timeout.connect(self._autoSaveProject)
+        self.asProjTimer.start()
+
+        self.asDocTimer = QTimer()
+        self.asDocTimer.setInterval(int(self.mainConf.autoSaveDoc*1000))
+        self.asDocTimer.timeout.connect(self._autoSaveDocument)
+        self.asDocTimer.start()
+
         self.show()
 
         logger.debug("GUI initialisation complete")
@@ -162,6 +172,8 @@ class GuiMain(QMainWindow):
     ##
 
     def openDocument(self, tHandle):
+        if self._takeDocumentAction():
+            self.saveDocument()
         self.stackPane.setCurrentIndex(self.stackDoc)
         self.docEditor.setText(self.theDocument.openDocument(tHandle))
         self.docEditor.changeWidth()
@@ -174,6 +186,7 @@ class GuiMain(QMainWindow):
             self.theDocument.theItem.setWordCount(self.docEditor.wordCount)
             self.theDocument.theItem.setParaCount(self.docEditor.paraCount)
             self.theDocument.saveDocument(docHtml)
+            self.docEditor.theDoc.setModified(False)
         return
 
     ##
@@ -245,6 +258,10 @@ class GuiMain(QMainWindow):
 
     def closeMain(self):
         logger.info("Exiting %s" % nw.__package__)
+        if self._takeDocumentAction():
+            self.saveDocument()
+        if self._takeProjectAction():
+            self.saveProject()
         self.mainConf.setWinSize(self.width(), self.height())
         self.mainConf.setTreeColWidths(self.treeView.getColumnSizes())
         self.mainConf.setMainPanePos(self.splitMain.sizes())
@@ -268,6 +285,34 @@ class GuiMain(QMainWindow):
         if projName is not None:
             winTitle += " - %s" % projName
         self.setWindowTitle(winTitle)
+        return True
+
+    def _autoSaveProject(self):
+        if self._takeProjectAction():
+            logger.debug("Autosaving project")
+            self.saveProject()
+        return
+
+    def _autoSaveDocument(self):
+        if self._takeDocumentAction():
+            logger.debug("Autosaving document")
+            self.saveDocument()
+        return
+
+    def _takeProjectAction(self):
+        if self.theProject.projPath is None:
+            return False
+        if not self.theProject.projChanged:
+            return False
+        return True
+
+    def _takeDocumentAction(self):
+        if self.stackPane.currentIndex() != self.stackDoc:
+            return False
+        if self.theDocument.theItem is None:
+            return False
+        if not self.docEditor.theDoc.isModified():
+            return False
         return True
 
     ##

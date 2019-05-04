@@ -57,6 +57,10 @@ class Config:
         self.treeColWidth = [120, 30, 50]
         self.mainPanePos  = [300, 800]
 
+        ## Project
+        self.autoSaveProj = 60
+        self.autoSaveDoc  = 30
+
         ## Text Editor
         self.textFixedW      = True
         self.textWidth       = 600
@@ -115,6 +119,14 @@ class Config:
                     confParser.get(cnfSec,"mainpane"), 2, self.mainPanePos
                 )
 
+        ## Project
+        cnfSec = "Project"
+        if confParser.has_section(cnfSec):
+            if confParser.has_option(cnfSec,"autosaveproject"):
+                self.autoSaveProj   = confParser.getint(cnfSec,"autosaveproject")
+            if confParser.has_option(cnfSec,"autosavedoc"):
+                self.autoSaveDoc    = confParser.getint(cnfSec,"autosavedoc")
+
         ## Editor
         cnfSec = "Editor"
         if confParser.has_section(cnfSec):
@@ -169,9 +181,15 @@ class Config:
         ## Sizes
         cnfSec = "Sizes"
         confParser.add_section(cnfSec)
-        confParser.set(cnfSec,"geometry",  self.packList(self.winGeometry))
-        confParser.set(cnfSec,"treecols",  self.packList(self.treeColWidth))
-        confParser.set(cnfSec,"mainpane",  self.packList(self.mainPanePos))
+        confParser.set(cnfSec,"geometry", self.packList(self.winGeometry))
+        confParser.set(cnfSec,"treecols", self.packList(self.treeColWidth))
+        confParser.set(cnfSec,"mainpane", self.packList(self.mainPanePos))
+
+        ## Project
+        cnfSec = "Project"
+        confParser.add_section(cnfSec)
+        confParser.set(cnfSec,"autosaveproject", str(self.autoSaveProj))
+        confParser.set(cnfSec,"autosavedoc",     str(self.autoSaveDoc))
 
         ## Editor
         cnfSec = "Editor"

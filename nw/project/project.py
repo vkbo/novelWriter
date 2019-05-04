@@ -33,6 +33,7 @@ class NWProject():
         # Internal
         self.mainConf     = nw.CONFIG
         self.theParent    = theParent
+        self.projChanged  = False
 
         # Project Settings
         self.projTree     = None
@@ -110,6 +111,8 @@ class NWProject():
         return
 
     def clearProject(self):
+
+        self.projChanged = False
 
         # Project Settings
         self.projTree    = {}
@@ -197,6 +200,7 @@ class NWProject():
         self.theParent.statusBar.setStatus("Opened Project: %s" % self.projName)
 
         self._scanProjectFolder()
+        self.projChanged = False
 
         return True
 
@@ -255,6 +259,7 @@ class NWProject():
 
         self.mainConf.setRecent(self.projPath)
         self.theParent.statusBar.setStatus("Saved Project: %s" % self.projName)
+        self.projChanged = False
 
         return True
 
@@ -264,14 +269,17 @@ class NWProject():
 
     def setProjectPath(self, projPath):
         self.projPath = projPath
+        self.projChanged = True
         return True
 
     def setProjectName(self, projName):
         self.projName = projName.strip()
+        self.projChanged = True
         return True
 
     def setBookTitle(self, bookTitle):
         self.bookTitle = bookTitle.strip()
+        self.projChanged = True
         return True
 
     def setBookAuthors(self, bookAuthors):
@@ -281,17 +289,15 @@ class NWProject():
             if bookAuthor == "":
                 continue
             self.bookAuthors.append(bookAuthor)
+        self.projChanged = True
         return True
 
     def setTreeOrder(self, newOrder):
         if len(self.treeOrder) != len(newOrder):
             logger.warning("Size of new and old tree order does not match")
         self.treeOrder = newOrder
+        self.projChanged = True
         return True
-
-    def setItemName(self, tHandle, theName):
-        self.projTree[tHandle].setName(theName)
-        return
 
     ##
     #  Get Functions
@@ -349,16 +355,16 @@ class NWProject():
                 continue
             fHandle = fileItem[5]+fileItem[7:19]
             if fHandle in self.treeOrder:
-                logger.verbose("Checking file %s, handle %s: OK" % (fileItem,fHandle))
+                logger.debug("Checking file %s, handle %s: OK" % (fileItem,fHandle))
             else:
-                logger.verbose("Checking file %s, handle %s: Orphaned" % (fileItem,fHandle))
+                logger.debug("Checking file %s, handle %s: Orphaned" % (fileItem,fHandle))
                 orphanFiles.append(fHandle)
 
         # Report status
         if len(orphanFiles) > 0:
             self.theParent.makeAlert("Found %d orphaned file(s) in project folder!" % len(orphanFiles),1)
         else:
-            logger.verbose("File check OK")
+            logger.debug("File check OK")
             return
 
         # Handle orphans
@@ -395,6 +401,8 @@ class NWProject():
                 self.trashRoot = tHandle
             else:
                 logger.error("Only one trash folder allowed")
+
+        self.projChanged = True
 
         return
 
