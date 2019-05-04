@@ -13,7 +13,7 @@
 import logging
 import nw
 
-from PyQt5.QtCore import QRegularExpression, Qt
+from PyQt5.QtCore import QRegularExpression
 from PyQt5.QtGui  import QColor, QTextCharFormat, QFont, QSyntaxHighlighter
 
 logger = logging.getLogger(__name__)
@@ -29,17 +29,17 @@ class GuiDocHighlighter(QSyntaxHighlighter):
         self.theDict  = theDict
         self.hRules   = []
 
-        self.colHead  = (  0,155,200,255)
-        self.colHeadH = (  0,105,135,255)
-        self.colEmph  = (200,120,  0,255)
-        self.colDialN = (200, 46,  0,255)
-        self.colDialD = (184,200,  0,255)
-        self.colDialS = (136,200,  0,255)
-        self.colComm  = (150,150,150,255)
-        self.colKey   = (200, 46,  0,255)
-        self.colVal   = (184,200,  0,255)
+        self.colHead  = QColor(  0,155,200)
+        self.colHeadH = QColor(  0,105,135)
+        self.colEmph  = QColor(200,120,  0)
+        self.colDialN = QColor(200, 46,  0)
+        self.colDialD = QColor(184,200,  0)
+        self.colDialS = QColor(136,200,  0)
+        self.colComm  = QColor(150,150,150)
+        self.colKey   = QColor(200, 46,  0)
+        self.colVal   = QColor(184,200,  0)
 
-        self.colSpell = QColor(200,46,0)
+        self.colSpell = QColor(200, 46,  0)
 
         self.hStyles = {
             "header1"   : self._makeFormat(self.colHead, "bold",1.8),
@@ -155,12 +155,7 @@ class GuiDocHighlighter(QSyntaxHighlighter):
         theFormat = QTextCharFormat()
 
         if fmtCol is not None:
-            theCol = QColor()
-            if isinstance(fmtCol,str):
-                theCol.setNamedColor(fmtCol)
-            else:
-                theCol.setRgb(*fmtCol)
-            theFormat.setForeground(theCol)
+            theFormat.setForeground(fmtCol)
 
         if fmtStyle is not None:
             if "bold" in fmtStyle:
