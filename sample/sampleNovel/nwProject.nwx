@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='utf-8'?>
-<novelWriterXML appVersion="0.0.1" fileVersion="1.0" timeStamp="2019-05-03 22:26:20">
+<novelWriterXML appVersion="0.0.1" fileVersion="1.0" timeStamp="2019-05-04 11:53:50">
   <project>
     <name>Sample Project</name>
     <title>Sample Project</title>
@@ -47,7 +47,7 @@
       <children>False</children>
       <expanded>False</expanded>
       <layout>SCENE</layout>
-      <charCount>2575</charCount>
+      <charCount>2571</charCount>
       <wordCount>377</wordCount>
       <paraCount>5</paraCount>
     </item>
@@ -69,7 +69,7 @@
       <type>FILE</type>
       <class>NOVEL</class>
       <status>0</status>
-      <depth>1</depth>
+      <depth>2</depth>
       <children>False</children>
       <expanded>False</expanded>
       <layout>SCENE</layout>
@@ -92,7 +92,7 @@
       <class>CHARACTER</class>
       <status>0</status>
       <depth>1</depth>
-      <children>False</children>
+      <children>True</children>
       <expanded>True</expanded>
     </item>
     <item handle="14298de4d9524" order="0" parent="f7e2d9f330615">
@@ -100,7 +100,7 @@
       <type>FILE</type>
       <class>CHARACTER</class>
       <status>0</status>
-      <depth>1</depth>
+      <depth>2</depth>
       <children>False</children>
       <expanded>False</expanded>
       <layout>NOTE</layout>
@@ -113,7 +113,7 @@
       <type>FILE</type>
       <class>CHARACTER</class>
       <status>0</status>
-      <depth>1</depth>
+      <depth>2</depth>
       <children>False</children>
       <expanded>False</expanded>
       <layout>NOTE</layout>

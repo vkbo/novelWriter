@@ -345,7 +345,7 @@ class NWProject():
 
         # Report status
         if len(orphanFiles) > 0:
-            logger.warning("Found %d orphaned file(s) in project folder!" % len(orphanFiles))
+            self.theParent.makeAlert("Found %d orphaned file(s) in project folder!" % len(orphanFiles),1)
         else:
             logger.verbose("File check OK")
             return
@@ -363,7 +363,7 @@ class NWProject():
 
         return
 
-    def _countItemDepth(self, tHandle):
+    def countItemDepth(self, tHandle):
         theDepth = 0
         nwItem   = self.getItem(tHandle)
         while nwItem.parHandle is not None:
@@ -390,7 +390,7 @@ class NWProject():
             logger.verbose("Entry %s is a root item" % str(tHandle))
             self.treeRoots.append(tHandle)
 
-        itemDepth = self._countItemDepth(tHandle)
+        itemDepth = self.countItemDepth(tHandle)
         if itemDepth is None:
             logger.error("The depth of entry %s could not be determined" % tHandle)
         else:

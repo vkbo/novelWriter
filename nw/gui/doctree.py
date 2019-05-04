@@ -292,6 +292,7 @@ class GuiDocTree(QTreeWidget):
             return
         pHandle = trItemP.text(self.C_HANDLE)
         nwItemS.setParent(pHandle)
+        nwItemS.setDepth(self.theProject.countItemDepth(tHandle))
         self.setTreeItemValues(tHandle)
         return
 
