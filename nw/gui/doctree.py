@@ -163,7 +163,7 @@ class GuiDocTree(QTreeWidget):
                 pItem.insertChild(nIndex, cItem)
             self.clearSelection()
             cItem.setSelected(True)
-            self.theProject.projChanged = True
+            self.theProject.setProjectChanged(True)
         return
 
     def saveTreeOrder(self):
@@ -209,7 +209,7 @@ class GuiDocTree(QTreeWidget):
             nwItemS.setParent(self.theProject.trashRoot)
             self.clearSelection()
             trItemP.setSelected(True)
-            self.theProject.projChanged = True
+            self.theProject.setProjectChanged(True)
 
         elif nwItemS.itemType == nwItemType.FOLDER:
             logger.debug("User requested folder %s deleted" % tHandle)
@@ -222,7 +222,7 @@ class GuiDocTree(QTreeWidget):
                 trItemP.takeChild(tIndex)
                 self.clearSelection()
                 trItemP.setSelected(True)
-                self.theProject.projChanged = True
+                self.theProject.setProjectChanged(True)
             else:
                 self.theParent.makeAlert(["Cannot delete folder.","It is not empty."],2)
                 return
@@ -233,7 +233,7 @@ class GuiDocTree(QTreeWidget):
             if trItemS.childCount() == 0:
                 self.takeTopLevelItem(tIndex)
                 self.theParent.mainMenu.setAvailableRoot()
-                self.theProject.projChanged = True
+                self.theProject.setProjectChanged(True)
             else:
                 self.theParent.makeAlert(["Cannot delete root folder.","It is not empty."],2)
                 return
@@ -391,7 +391,7 @@ class GuiDocTree(QTreeWidget):
         pHandle = trItemP.text(self.C_HANDLE)
         nwItemS.setParent(pHandle)
         self.setTreeItemValues(tHandle)
-        self.theProject.projChanged = True
+        self.theProject.setProjectChanged(True)
         return
 
     def _moveOrphanedItem(self, tHandle, dHandle):
@@ -406,7 +406,7 @@ class GuiDocTree(QTreeWidget):
         pHandle = trItemP.text(self.C_HANDLE)
         nwItemS.setParent(pHandle)
         self.setTreeItemValues(tHandle)
-        self.theProject.projChanged = True
+        self.theProject.setProjectChanged(True)
         return
 
     ##

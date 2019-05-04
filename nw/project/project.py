@@ -33,7 +33,7 @@ class NWProject():
         # Internal
         self.mainConf     = nw.CONFIG
         self.theParent    = theParent
-        self.projChanged  = False
+        self.projChanged  = None
 
         # Project Settings
         self.projTree     = None
@@ -112,7 +112,7 @@ class NWProject():
 
     def clearProject(self):
 
-        self.projChanged = False
+        self.projChanged = None
 
         # Project Settings
         self.projTree    = {}
@@ -200,7 +200,7 @@ class NWProject():
         self.theParent.statusBar.setStatus("Opened Project: %s" % self.projName)
 
         self._scanProjectFolder()
-        self.projChanged = False
+        self.setProjectChanged(False)
 
         return True
 
@@ -259,7 +259,7 @@ class NWProject():
 
         self.mainConf.setRecent(self.projPath)
         self.theParent.statusBar.setStatus("Saved Project: %s" % self.projName)
-        self.projChanged = False
+        self.setProjectChanged(False)
 
         return True
 
@@ -269,17 +269,17 @@ class NWProject():
 
     def setProjectPath(self, projPath):
         self.projPath = projPath
-        self.projChanged = True
+        self.setProjectChanged(True)
         return True
 
     def setProjectName(self, projName):
         self.projName = projName.strip()
-        self.projChanged = True
+        self.setProjectChanged(True)
         return True
 
     def setBookTitle(self, bookTitle):
         self.bookTitle = bookTitle.strip()
-        self.projChanged = True
+        self.setProjectChanged(True)
         return True
 
     def setBookAuthors(self, bookAuthors):
@@ -289,15 +289,20 @@ class NWProject():
             if bookAuthor == "":
                 continue
             self.bookAuthors.append(bookAuthor)
-        self.projChanged = True
+        self.setProjectChanged(True)
         return True
 
     def setTreeOrder(self, newOrder):
         if len(self.treeOrder) != len(newOrder):
             logger.warning("Size of new and old tree order does not match")
         self.treeOrder = newOrder
-        self.projChanged = True
+        self.setProjectChanged(True)
         return True
+
+    def setProjectChanged(self, bValue):
+        self.projChanged = bValue
+        self.theParent.statusBar.setProjectStatus(self.projChanged)
+        return
 
     ##
     #  Get Functions
@@ -402,7 +407,7 @@ class NWProject():
             else:
                 logger.error("Only one trash folder allowed")
 
-        self.projChanged = True
+        self.setProjectChanged(True)
 
         return
 

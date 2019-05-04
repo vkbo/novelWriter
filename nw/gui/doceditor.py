@@ -34,8 +34,9 @@ class GuiDocEditor(QTextEdit):
         logger.debug("Initialising DocEditor ...")
         
         # Class Variables
-        self.mainConf  = nw.CONFIG
-        self.theParent = theParent
+        self.mainConf   = nw.CONFIG
+        self.theParent  = theParent
+        self.docChanged = False
 
         # Document Variables
         self.charCount = 0
@@ -92,11 +93,17 @@ class GuiDocEditor(QTextEdit):
     #  Class Methods
     ##
 
+    def setDocumentChanged(self, bValue):
+        self.docChanged = bValue
+        self.theParent.statusBar.setDocumentStatus(self.docChanged)
+        return
+
     def setText(self, theText):
         self.setPlainText(theText)
         self.lastEdit = time()
         self._runCounter()
         self.wcTimer.start()
+        self.setDocumentChanged(False)
         return True
 
     def getText(self):
@@ -200,6 +207,7 @@ class GuiDocEditor(QTextEdit):
 
     def _docChange(self, thePos, charsRemoved, charsAdded):
         self.lastEdit = time()
+        self.setDocumentChanged(True)
         if not self.wcTimer.isActive():
             self.wcTimer.start()
         if self.mainConf.doReplace and not self.hasSelection:

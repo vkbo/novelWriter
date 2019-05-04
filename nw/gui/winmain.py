@@ -186,7 +186,7 @@ class GuiMain(QMainWindow):
             self.theDocument.theItem.setWordCount(self.docEditor.wordCount)
             self.theDocument.theItem.setParaCount(self.docEditor.paraCount)
             self.theDocument.saveDocument(docHtml)
-            self.docEditor.theDoc.setModified(False)
+            self.docEditor.setDocumentChanged(False)
         return
 
     ##
@@ -311,7 +311,7 @@ class GuiMain(QMainWindow):
             return False
         if self.theDocument.theItem is None:
             return False
-        if not self.docEditor.theDoc.isModified():
+        if not self.docEditor.docChanged:
             return False
         return True
 
