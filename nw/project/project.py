@@ -38,6 +38,7 @@ class NWProject():
         self.projTree     = None
         self.treeOrder    = None
         self.treeRoots    = None
+        self.trashRoot    = None
         self.projPath     = None
         self.projFile     = None
         self.projName     = None
@@ -52,7 +53,7 @@ class NWProject():
         return
 
     ##
-    #  Add Entries
+    #  Item Methods
     ##
 
     def newRoot(self, rootName, rootClass):
@@ -83,6 +84,18 @@ class NWProject():
         self._appendItem(None,pHandle,newItem)
         return newItem.itemHandle
 
+    def addTrash(self):
+        newItem = NWItem()
+        newItem.setName("Trash")
+        newItem.setType(nwItemType.TRASH)
+        newItem.setClass(nwItemClass.TRASH)
+        self._appendItem(None,None,newItem)
+        return newItem.itemHandle
+
+    ##
+    #  Project Methods
+    ##
+
     def newProject(self):
 
         self.clearProject()
@@ -101,6 +114,7 @@ class NWProject():
         self.projTree    = {}
         self.treeOrder   = []
         self.treeRoots   = []
+        self.trashRoot   = None
         self.projPath    = None
         self.projFile    = "nwProject.nwx"
         self.projName    = ""
@@ -118,10 +132,6 @@ class NWProject():
         self._makeStatusIcons()
 
         return
-
-    ##
-    #  File I/O
-    ##
 
     def openProject(self, fileName):
 
@@ -389,6 +399,13 @@ class NWProject():
         if nwItem.itemType == nwItemType.ROOT:
             logger.verbose("Entry %s is a root item" % str(tHandle))
             self.treeRoots.append(tHandle)
+
+        if nwItem.itemType == nwItemType.TRASH:
+            if self.trashRoot is None:
+                logger.verbose("Entry %s is the trash folder" % str(tHandle))
+                self.trashRoot = tHandle
+            else:
+                logger.error("Only one trash folder allowed")
 
         itemDepth = self.countItemDepth(tHandle)
         if itemDepth is None:

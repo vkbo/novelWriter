@@ -18,7 +18,7 @@ class nwItemType(Enum):
     ROOT        = 1
     FOLDER      = 2
     FILE        = 3
-    TRASHFOLDER = 4
+    TRASH       = 4
     TRASHFILE   = 5
 
 # END Enum nwItemType
@@ -33,6 +33,7 @@ class nwItemClass(Enum):
     TIMELINE  = 5
     OBJECT    = 6
     CUSTOM    = 7
+    TRASH     = 8
 
 # END Enum nwItemClass
 

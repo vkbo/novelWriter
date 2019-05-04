@@ -54,10 +54,11 @@ class GuiMainMenu(QMenuBar):
 
     def setAvailableRoot(self):
         for itemClass in nwItemClass:
-            if itemClass != nwItemClass.NO_CLASS:
-                self.rootItems[itemClass].setEnabled(
-                    self.theProject.checkRootUnique(itemClass)
-                )
+            if itemClass == nwItemClass.NO_CLASS: continue
+            if itemClass == nwItemClass.TRASH:    continue
+            self.rootItems[itemClass].setEnabled(
+                self.theProject.checkRootUnique(itemClass)
+            )
         return
 
     def updateRecentProjects(self):
@@ -186,6 +187,7 @@ class GuiMainMenu(QMenuBar):
         menuItem = QAction(QIcon.fromTheme("edit-delete"), "&Delete Item", self)
         menuItem.setStatusTip("Delete Selected Item")
         menuItem.setShortcut("Ctrl+Del")
+        menuItem.triggered.connect(self.theParent.treeView.deleteItem)
         self.projMenu.addAction(menuItem)
 
         # Project > Separator

@@ -76,6 +76,10 @@ class GuiDocTree(QTreeWidget):
 
         return
 
+    ##
+    #  Class Methods
+    ##
+
     def clearTree(self):
 
         self.clear()
@@ -164,18 +168,6 @@ class GuiDocTree(QTreeWidget):
             cItem.setSelected(True)
         return
 
-    def renameTreeItem(self, tHandle):
-        tItem   = self.theMap[tHandle]
-        oldName = tItem.text(self.C_NAME)
-        newName, isOk = QInputDialog.getText(self, "Rename Item", "New Name", QLineEdit.Normal,oldName)
-        if isOk:
-            newName = newName.strip()
-            if newName == "":
-                newName = oldName
-            tItem.setText(self.C_NAME,newName)
-            self.theProject.setItemName(tHandle, newName)
-        return
-
     def saveTreeOrder(self):
         theList = []
         for i in range(self.topLevelItemCount()):
@@ -193,107 +185,12 @@ class GuiDocTree(QTreeWidget):
         ]
         return retVals
 
-    ##
-    #  Internal Functions
-    ##
-
-    def _scanChildren(self, theList, theItem, theIndex):
-        tHandle = theItem.text(self.C_HANDLE)
-        nwItem  = self.theProject.projTree[tHandle]
-        nwItem.setExpanded(theItem.isExpanded())
-        nwItem.setOrder(theIndex)
-        theList.append(tHandle)
-        for i in range(theItem.childCount()):
-            self._scanChildren(theList, theItem.child(i), i)
-        return theList
-
-    def _scanParents(self, theItem, theCount=0):
-        if theItem.parent() is not None:
-            theItem, theCount = self._scanParents(theItem.parent(), theCount)
-        return theItem, theCount+1
-
-    def _addTreeItem(self, nwItem):
-
-        tHandle = nwItem.itemHandle
-        pHandle = nwItem.parHandle
-        newItem = QTreeWidgetItem([""]*4)
-
-        newItem.setText(self.C_NAME,   "")
-        newItem.setText(self.C_COUNT,  "0")
-        newItem.setText(self.C_FLAGS,  "")
-        newItem.setText(self.C_HANDLE, tHandle)
-
-        newItem.setForeground(self.C_COUNT,QColor(0,105,135))
-        newItem.setTextAlignment(self.C_COUNT,Qt.AlignRight)
-        newItem.setFont(self.C_FLAGS,self.fontFlags)
-
-        self.theMap[tHandle] = newItem
-        if pHandle is None:
-            if nwItem.itemType == nwItemType.ROOT:
-                self.addTopLevelItem(newItem)
-                self.theParent.mainMenu.setAvailableRoot()
-            else:
-                self._addOrphanedRoot()
-                self.orphRoot.addChild(newItem)
-        else:
-            self.theMap[pHandle].addChild(newItem)
-            self.propagateCount(tHandle, nwItem.wordCount)
-
-        self.setTreeItemValues(tHandle)
-        newItem.setExpanded(nwItem.isExpanded)
-
-        if nwItem.itemType == nwItemType.ROOT:
-            newItem.setIcon(self.C_NAME, QIcon.fromTheme("drive-harddisk"))
-        elif nwItem.itemType == nwItemType.FOLDER:
-            newItem.setIcon(self.C_NAME, QIcon.fromTheme("folder"))
-        elif nwItem.itemType == nwItemType.FILE:
-            newItem.setIcon(self.C_NAME, QIcon.fromTheme("x-office-document"))
-
-        return newItem
-
-    def _addOrphanedRoot(self):
-        if self.orphRoot is None:
-            newItem = QTreeWidgetItem([""]*4)
-            newItem.setText(self.C_NAME,   "Orphaned Files")
-            newItem.setText(self.C_COUNT,  "")
-            newItem.setText(self.C_FLAGS,  "")
-            newItem.setText(self.C_HANDLE, "")
-            self.addTopLevelItem(newItem)
-            self.orphRoot = newItem
-            newItem.setExpanded(True)
-        return
-    
-    def _cleanOrphanedRoot(self):
-        if self.orphRoot.childCount() == 0:
-            self.takeTopLevelItem(self.indexOfTopLevelItem(self.orphRoot))
-            self.orphRoot = None
-        return
-
-    def _updateItemParent(self, tHandle):
-        trItemS = self.theMap[tHandle]
-        nwItemS = self.theProject.getItem(tHandle)
-        trItemP = trItemS.parent()
-        if trItemP is None:
-            logger.error("Failed to find new parent item of %s" % tHandle)
-            return
-        pHandle = trItemP.text(self.C_HANDLE)
-        nwItemS.setParent(pHandle)
-        self.setTreeItemValues(tHandle)
-        return
-
-    def _moveOrphanedItem(self, tHandle, dHandle):
-        trItemS = self.theMap[tHandle]
-        nwItemS = self.theProject.getItem(tHandle)
-        nwItemD = self.theProject.getItem(dHandle)
-        trItemP = trItemS.parent()
-        nwItemS.setClass(nwItemD.itemClass)
-        if trItemP is None:
-            logger.error("Failed to find new parent item of %s" % tHandle)
-            return
-        pHandle = trItemP.text(self.C_HANDLE)
-        nwItemS.setParent(pHandle)
-        nwItemS.setDepth(self.theProject.countItemDepth(tHandle))
-        self.setTreeItemValues(tHandle)
+    def deleteItem(self):
+        tHandle = self.getSelectedHandle()
+        nwItem  = self.theProject.getItem(tHandle)
+        if nwItem.itemType == nwItemType.FILE:
+            logger.debug("User requested item %s moved to trash" % tHandle)
+            self._addTrashRoot()
         return
 
     def setTreeItemValues(self, tHandle):
@@ -344,6 +241,119 @@ class GuiDocTree(QTreeWidget):
         if isinstance(selItem[0], QTreeWidgetItem):
             return selItem[0].text(self.C_HANDLE)
         return None
+
+    ##
+    #  Internal Functions
+    ##
+
+    def _scanChildren(self, theList, theItem, theIndex):
+        tHandle = theItem.text(self.C_HANDLE)
+        nwItem  = self.theProject.projTree[tHandle]
+        nwItem.setExpanded(theItem.isExpanded())
+        nwItem.setOrder(theIndex)
+        theList.append(tHandle)
+        for i in range(theItem.childCount()):
+            self._scanChildren(theList, theItem.child(i), i)
+        return theList
+
+    def _scanParents(self, theItem, theCount=0):
+        if theItem.parent() is not None:
+            theItem, theCount = self._scanParents(theItem.parent(), theCount)
+        return theItem, theCount+1
+
+    def _addTreeItem(self, nwItem):
+
+        tHandle = nwItem.itemHandle
+        pHandle = nwItem.parHandle
+        newItem = QTreeWidgetItem([""]*4)
+
+        newItem.setText(self.C_NAME,   "")
+        newItem.setText(self.C_COUNT,  "0")
+        newItem.setText(self.C_FLAGS,  "")
+        newItem.setText(self.C_HANDLE, tHandle)
+
+        newItem.setForeground(self.C_COUNT,QColor(0,105,135))
+        newItem.setTextAlignment(self.C_COUNT,Qt.AlignRight)
+        newItem.setFont(self.C_FLAGS,self.fontFlags)
+
+        self.theMap[tHandle] = newItem
+        if pHandle is None:
+            if nwItem.itemType == nwItemType.ROOT:
+                self.addTopLevelItem(newItem)
+                self.theParent.mainMenu.setAvailableRoot()
+            elif nwItem.itemType == nwItemType.TRASH:
+                self.addTopLevelItem(newItem)
+            else:
+                self._addOrphanedRoot()
+                self.orphRoot.addChild(newItem)
+        else:
+            self.theMap[pHandle].addChild(newItem)
+            self.propagateCount(tHandle, nwItem.wordCount)
+
+        self.setTreeItemValues(tHandle)
+        newItem.setExpanded(nwItem.isExpanded)
+
+        if nwItem.itemType == nwItemType.ROOT:
+            newItem.setIcon(self.C_NAME, QIcon.fromTheme("drive-harddisk"))
+        elif nwItem.itemType == nwItemType.FOLDER:
+            newItem.setIcon(self.C_NAME, QIcon.fromTheme("folder"))
+        elif nwItem.itemType == nwItemType.FILE:
+            newItem.setIcon(self.C_NAME, QIcon.fromTheme("x-office-document"))
+        elif nwItem.itemType == nwItemType.TRASH:
+            newItem.setIcon(self.C_NAME, QIcon.fromTheme("user-trash"))
+
+        return newItem
+
+    def _addTrashRoot(self):
+        if self.theProject.trashRoot is None:
+            self.theProject.addTrash()
+            self._addTreeItem(self.theProject.getItem(self.theProject.trashRoot))
+        return
+
+    def _addOrphanedRoot(self):
+        if self.orphRoot is None:
+            newItem = QTreeWidgetItem([""]*4)
+            newItem.setText(self.C_NAME,   "Orphaned Files")
+            newItem.setText(self.C_COUNT,  "")
+            newItem.setText(self.C_FLAGS,  "")
+            newItem.setText(self.C_HANDLE, "")
+            self.addTopLevelItem(newItem)
+            self.orphRoot = newItem
+            newItem.setExpanded(True)
+        return
+    
+    def _cleanOrphanedRoot(self):
+        if self.orphRoot.childCount() == 0:
+            self.takeTopLevelItem(self.indexOfTopLevelItem(self.orphRoot))
+            self.orphRoot = None
+        return
+
+    def _updateItemParent(self, tHandle):
+        trItemS = self.theMap[tHandle]
+        nwItemS = self.theProject.getItem(tHandle)
+        trItemP = trItemS.parent()
+        if trItemP is None:
+            logger.error("Failed to find new parent item of %s" % tHandle)
+            return
+        pHandle = trItemP.text(self.C_HANDLE)
+        nwItemS.setParent(pHandle)
+        self.setTreeItemValues(tHandle)
+        return
+
+    def _moveOrphanedItem(self, tHandle, dHandle):
+        trItemS = self.theMap[tHandle]
+        nwItemS = self.theProject.getItem(tHandle)
+        nwItemD = self.theProject.getItem(dHandle)
+        trItemP = trItemS.parent()
+        nwItemS.setClass(nwItemD.itemClass)
+        if trItemP is None:
+            logger.error("Failed to find new parent item of %s" % tHandle)
+            return
+        pHandle = trItemP.text(self.C_HANDLE)
+        nwItemS.setParent(pHandle)
+        nwItemS.setDepth(self.theProject.countItemDepth(tHandle))
+        self.setTreeItemValues(tHandle)
+        return
 
     ##
     #  Event Overloading

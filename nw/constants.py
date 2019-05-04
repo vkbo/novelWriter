@@ -23,6 +23,7 @@ class nwLabels():
         nwItemClass.TIMELINE  : "Timeline",
         nwItemClass.OBJECT    : "Objects",
         nwItemClass.CUSTOM    : "Custom",
+        nwItemClass.TRASH     : "Trash",
     }
     CLASS_FLAG = {
         nwItemClass.NO_CLASS  : "0",
@@ -33,6 +34,7 @@ class nwLabels():
         nwItemClass.TIMELINE  : "T",
         nwItemClass.OBJECT    : "O",
         nwItemClass.CUSTOM    : "X",
+        nwItemClass.TRASH     : "R",
     }
     LAYOUT_NAME = {
         nwItemLayout.NO_LAYOUT  : "None",
