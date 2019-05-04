@@ -14,12 +14,11 @@ from enum import Enum
 
 class nwItemType(Enum):
 
-    NO_TYPE     = 0
-    ROOT        = 1
-    FOLDER      = 2
-    FILE        = 3
-    TRASH       = 4
-    TRASHFILE   = 5
+    NO_TYPE = 0
+    ROOT    = 1
+    FOLDER  = 2
+    FILE    = 3
+    TRASH   = 4
 
 # END Enum nwItemType
 

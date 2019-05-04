@@ -36,7 +36,6 @@ class NWItem():
         self.itemLayout  = nwItemLayout.NO_LAYOUT
         self.itemStatus  = 0
         self.itemDepth   = None
-        self.hasChildren = False
         self.isExpanded  = False
 
         self.charCount   = 0
@@ -60,7 +59,6 @@ class NWItem():
         xSub = self._subPack(xPack,"class",     text=str(self.itemClass.name))
         xSub = self._subPack(xPack,"status",    text=str(self.itemStatus))
         xSub = self._subPack(xPack,"depth",     text=str(self.itemDepth))
-        xSub = self._subPack(xPack,"children",  text=str(self.hasChildren))
         xSub = self._subPack(xPack,"expanded",  text=str(self.isExpanded))
         if self.itemType == nwItemType.FILE:
             xSub = self._subPack(xPack,"layout",    text=str(self.itemLayout.name))
@@ -90,7 +88,6 @@ class NWItem():
         elif tagName == "layout":    self.setLayout(tagValue)
         elif tagName == "status":    self.setStatus(tagValue)
         elif tagName == "depth":     self.setDepth(tagValue)
-        elif tagName == "children":  self.setChildren(tagValue)
         elif tagName == "expanded":  self.setExpanded(tagValue)
         elif tagName == "charCount": self.setCharCount(tagValue)
         elif tagName == "wordCount": self.setWordCount(tagValue)
@@ -169,10 +166,6 @@ class NWItem():
             self.itemDepth = theDepth
         else:
             logger.error("Invalid item depth %d" % theDepth)
-        return
-
-    def setChildren(self, hasChildren):
-        self.hasChildren = hasChildren
         return
 
     def setExpanded(self, expState):

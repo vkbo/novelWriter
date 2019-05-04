@@ -134,7 +134,7 @@ class GuiDocTree(QTreeWidget):
         # Add the new item to the tree
         nwItem = self.theProject.getItem(tHandle)
         trItem = self._addTreeItem(nwItem)
-        if pHandle is not None:
+        if pHandle is not None and pHandle in self.theMap.keys():
             self.theMap[pHandle].setExpanded(True)
         self.clearSelection()
         trItem.setSelected(True)
@@ -148,7 +148,7 @@ class GuiDocTree(QTreeWidget):
         """
         if QApplication.focusWidget() == self:
             tHandle = self.getSelectedHandle()
-            tItem   = self.theMap[tHandle]
+            tItem   = self._getTreeItem(tHandle)
             pItem   = tItem.parent()
             if pItem is None:
                 tIndex = self.indexOfTopLevelItem(tItem)
@@ -187,15 +187,25 @@ class GuiDocTree(QTreeWidget):
 
     def deleteItem(self):
         tHandle = self.getSelectedHandle()
-        nwItem  = self.theProject.getItem(tHandle)
-        if nwItem.itemType == nwItemType.FILE:
+        trItemS = self._getTreeItem(tHandle)
+        nwItemS = self.theProject.getItem(tHandle)
+        if nwItemS.itemType == nwItemType.FILE:
             logger.debug("User requested item %s moved to trash" % tHandle)
-            self._addTrashRoot()
+            trItemP = trItemS.parent()
+            trItemT = self._addTrashRoot()
+            if trItemP is None or trItemT is None:
+                logger.error("Could not move item to trash")
+                return
+            tIndex  = trItemP.indexOfChild(trItemS)
+            trItemC = trItemP.takeChild(tIndex)
+            trItemT.addChild(trItemC)
+            nwItemS.setParent(self.theProject.trashRoot)
+
         return
 
     def setTreeItemValues(self, tHandle):
 
-        trItem  = self.theMap[tHandle]
+        trItem  = self._getTreeItem(tHandle)
         nwItem  = self.theProject.getItem(tHandle)
         tName   = nwItem.itemName
         tHandle = nwItem.itemHandle
@@ -215,7 +225,7 @@ class GuiDocTree(QTreeWidget):
         return
 
     def propagateCount(self, tHandle, theCount, nDepth=0):
-        tItem = self.theMap[tHandle]
+        tItem = self._getTreeItem(tHandle)
         tItem.setText(self.C_COUNT,str(theCount))
         pItem = tItem.parent()
         if pItem is not None:
@@ -245,6 +255,11 @@ class GuiDocTree(QTreeWidget):
     ##
     #  Internal Functions
     ##
+
+    def _getTreeItem(self, tHandle):
+        if tHandle in self.theMap.keys():
+            return self.theMap[tHandle]
+        return None
 
     def _scanChildren(self, theList, theItem, theIndex):
         tHandle = theItem.text(self.C_HANDLE)
@@ -307,8 +322,13 @@ class GuiDocTree(QTreeWidget):
     def _addTrashRoot(self):
         if self.theProject.trashRoot is None:
             self.theProject.addTrash()
-            self._addTreeItem(self.theProject.getItem(self.theProject.trashRoot))
-        return
+            trItem = self._addTreeItem(
+                self.theProject.getItem(self.theProject.trashRoot)
+            )
+            trItem.setExpanded(True)
+        else:
+            trItem = self._getTreeItem(self.theProject.trashRoot)
+        return trItem
 
     def _addOrphanedRoot(self):
         if self.orphRoot is None:
@@ -329,7 +349,7 @@ class GuiDocTree(QTreeWidget):
         return
 
     def _updateItemParent(self, tHandle):
-        trItemS = self.theMap[tHandle]
+        trItemS = self._getTreeItem(tHandle)
         nwItemS = self.theProject.getItem(tHandle)
         trItemP = trItemS.parent()
         if trItemP is None:
@@ -341,7 +361,7 @@ class GuiDocTree(QTreeWidget):
         return
 
     def _moveOrphanedItem(self, tHandle, dHandle):
-        trItemS = self.theMap[tHandle]
+        trItemS = self._getTreeItem(tHandle)
         nwItemS = self.theProject.getItem(tHandle)
         nwItemD = self.theProject.getItem(dHandle)
         trItemP = trItemS.parent()

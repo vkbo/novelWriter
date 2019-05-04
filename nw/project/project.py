@@ -393,8 +393,6 @@ class NWProject():
 
         self.projTree[tHandle] = nwItem
         self.treeOrder.append(tHandle)
-        if pHandle is not None:
-            self.projTree[pHandle].setChildren(True)
 
         if nwItem.itemType == nwItemType.ROOT:
             logger.verbose("Entry %s is a root item" % str(tHandle))
