@@ -13,7 +13,7 @@
 import logging
 import nw
 
-from PyQt5.QtWidgets import qApp, QMenuBar, QAction
+from PyQt5.QtWidgets import qApp, QMenuBar, QAction, QMessageBox
 from PyQt5.QtGui     import QIcon
 
 from nw.enum         import nwItemType, nwItemClass, nwDocAction
@@ -80,7 +80,29 @@ class GuiMainMenu(QMenuBar):
         return True
 
     def _showAbout(self):
-        self.docTabs.createTab(None,nw.DOCTYPE_ABOUT)
+        msgBox = QMessageBox()
+        msgBox.about(self.theParent, "About %s" % nw.__package__, (
+            "<h3>About {name:s}</h3>"
+            "<p>Version: {version:s}<br>Release Date: {date:s}</p>"
+            "<p>{name:s} is a text editor designed for writing novels. "
+            "It is written in Python 3 with a Qt5 GUI. The Python and Qt layers are connected with PyQt5</p>"
+            "<p>{name:s} is is licensed under GPL v3.0</p>"
+            "<p>Copyright 2018&ndash;{year:s} {author:s}</p>"
+            "<h4>Credits</h4>"
+            "<p>{credits:s}</p>"
+        ).format(
+            name    = nw.__package__,
+            version = nw.__version__,
+            date    = nw.__date__,
+            year    = nw.__date__[:4],
+            author  = nw.__author__,
+            credits = "<br>".join(nw.__credits__),
+        ))
+        return True
+
+    def _showAboutQt(self):
+        msgBox = QMessageBox()
+        msgBox.aboutQt(self.theParent,"About Qt")
         return True
 
     ##
@@ -397,6 +419,7 @@ class GuiMainMenu(QMenuBar):
         # Help > About Qt5
         menuItem = QAction(QIcon.fromTheme("help-about"), "About Qt5", self)
         menuItem.setStatusTip("About Qt5")
+        menuItem.triggered.connect(self._showAboutQt)
         self.helpMenu.addAction(menuItem)
 
         return
