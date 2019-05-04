@@ -85,7 +85,6 @@ class NWItem():
         elif tagName == "class":     self.setClass(tagValue)
         elif tagName == "layout":    self.setLayout(tagValue)
         elif tagName == "status":    self.setStatus(tagValue)
-        elif tagName == "children":  self.setChildren(tagValue)
         elif tagName == "expanded":  self.setExpanded(tagValue)
         elif tagName == "charCount": self.setCharCount(tagValue)
         elif tagName == "wordCount": self.setWordCount(tagValue)
