@@ -289,6 +289,14 @@ class GuiDocTree(QTreeWidget):
             return selItem[0].text(self.C_HANDLE)
         return None
 
+    def getSelectedHandles(self):
+        selItems   = self.selectedItems()
+        selHandles = []
+        for n in range(len(selItems)):
+            if isinstance(selItems[n], QTreeWidgetItem):
+                selHandles.append(selItems[n].text(self.C_HANDLE))
+        return selHandles
+
     ##
     #  Internal Functions
     ##

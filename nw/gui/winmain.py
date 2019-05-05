@@ -28,6 +28,7 @@ from nw.gui.statusbar     import GuiMainStatus
 from nw.project.project   import NWProject
 from nw.project.document  import NWDoc
 from nw.project.item      import NWItem
+from nw.convert.tokenizer import Tokenizer
 from nw.enum              import nwItemType
 
 logger = logging.getLogger(__name__)
@@ -187,6 +188,22 @@ class GuiMain(QMainWindow):
             self.theDocument.theItem.setParaCount(self.docEditor.paraCount)
             self.theDocument.saveDocument(docHtml)
             self.docEditor.setDocumentChanged(False)
+        return
+
+    def _previewDocument(self):
+
+        theHandles = self.treeView.getSelectedHandles()
+        if len(theHandles) == 0:
+            return
+
+        theDocs = []
+        self.treeView.saveTreeOrder()
+        for tHandle in self.theProject.treeOrder:
+            if tHandle not in theHandles:
+                continue
+            aDoc = Tokenizer(self.theProject, self)
+            aDoc.tokenizeText(tHandle)
+
         return
 
     ##

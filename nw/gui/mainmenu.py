@@ -231,6 +231,16 @@ class GuiMainMenu(QMenuBar):
         # Document > Separator
         self.docuMenu.addSeparator()
 
+        # Document > Preview
+        menuItem = QAction(QIcon.fromTheme("text-html"), "Preview Document", self)
+        menuItem.setStatusTip("Preview Document")
+        menuItem.setShortcut("Ctrl+R")
+        menuItem.triggered.connect(self.theParent._previewDocument)
+        self.docuMenu.addAction(menuItem)
+
+        # Document > Separator
+        self.docuMenu.addSeparator()
+
         # Document > Split
         menuItem = QAction(QIcon.fromTheme("list-add"), "Split Document", self)
         menuItem.setStatusTip("Split Selected Document")
