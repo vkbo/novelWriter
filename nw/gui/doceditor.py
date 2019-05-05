@@ -32,7 +32,7 @@ class GuiDocEditor(QTextEdit):
         QTextEdit.__init__(self)
 
         logger.debug("Initialising DocEditor ...")
-        
+
         # Class Variables
         self.mainConf   = nw.CONFIG
         self.theParent  = theParent
@@ -275,7 +275,7 @@ class GuiDocEditor(QTextEdit):
         """
         sinceActive = time()-self.lastEdit
         if sinceActive > 5*self.wcInterval:
-            logger.debug("Stopping word count timer due to no activity over the last %.3f seconds" % sinceActive)
+            logger.debug("Stopping word count timer: no activity last %.1f seconds" % sinceActive)
             self.wcTimer.stop()
         elif self.wCounter.isRunning():
             logger.verbose("Word counter thread is busy")

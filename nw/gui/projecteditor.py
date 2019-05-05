@@ -86,6 +86,7 @@ class GuiProjectEditor(QDialog):
         self.theProject.setProjectName(projName)
         self.theProject.setBookTitle(bookTitle)
         self.theProject.setBookAuthors(bookAuthors)
+        self.theProject.setProjectChanged(True)
         self.close()
         return
 

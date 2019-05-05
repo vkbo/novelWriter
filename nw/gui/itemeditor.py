@@ -122,6 +122,7 @@ class GuiItemEditor(QDialog):
         self.theItem.setName(itemName)
         self.theItem.setStatus(itemStatus)
         self.theItem.setLayout(itemLayout)
+        self.theProject.setProjectChanged(True)
         self.accept()
         self.close()
         return
