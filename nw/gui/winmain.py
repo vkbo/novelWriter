@@ -29,6 +29,7 @@ from nw.project.project   import NWProject
 from nw.project.document  import NWDoc
 from nw.project.item      import NWItem
 from nw.convert.tokenizer import Tokenizer
+from nw.convert.tohtml    import ToHtml
 from nw.enum              import nwItemType
 
 logger = logging.getLogger(__name__)
@@ -201,9 +202,10 @@ class GuiMain(QMainWindow):
         for tHandle in self.theProject.treeOrder:
             if tHandle not in theHandles:
                 continue
-            aDoc = Tokenizer(self.theProject, self)
+            aDoc = ToHtml(self.theProject, self)
             aDoc.setText(tHandle)
             aDoc.tokenizeText()
+            aDoc.doConvert()
 
         return
 

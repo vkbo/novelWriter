@@ -13,8 +13,8 @@
 import logging
 import nw
 
+from operator            import itemgetter
 from PyQt5.QtCore        import QRegularExpression
-
 from nw.project.document import NWDoc
 
 logger = logging.getLogger(__name__)
@@ -38,6 +38,7 @@ class Tokenizer():
         self.theHandle  = None
         self.theItem    = None
         self.theTokens  = None
+        self.theResult  = None
 
         return
 
@@ -107,9 +108,13 @@ class Tokenizer():
                                 xPos = rxMatch.capturedStart(n)
                                 xLen = rxMatch.capturedLength(n)
                                 fmtPos.append([xPos,xLen,theKeys[n]])
-                # Save the line as is, but append the array of formatting locations
+
+                # Save the line as is, but append the array of formatting locations sorted by position
+                fmtPos = sorted(fmtPos,key=itemgetter(0))
                 self.theTokens.append(("text",aLine,fmtPos))
 
+        # Always add an empty line at the end
+        self.theTokens.append(("empty","",None))
         # print(self.theTokens)
 
         return
