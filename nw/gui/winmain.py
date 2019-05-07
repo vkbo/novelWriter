@@ -202,7 +202,8 @@ class GuiMain(QMainWindow):
             if tHandle not in theHandles:
                 continue
             aDoc = Tokenizer(self.theProject, self)
-            aDoc.tokenizeText(tHandle)
+            aDoc.setText(tHandle)
+            aDoc.tokenizeText()
 
         return
 

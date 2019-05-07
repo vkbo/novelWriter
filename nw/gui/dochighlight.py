@@ -64,25 +64,25 @@ class GuiDocHighlighter(QSyntaxHighlighter):
 
         # Headers
         self.hRules.append((
-            r"^(#{1})[^#](.*)[^\n]", {
+            r"^(#{1}) (.*)[^\n]", {
                 0 : self.hStyles["header1"],
                 1 : self.hStyles["header1h"],
             }
         ))
         self.hRules.append((
-            r"^(#{2})[^#](.*)[^\n]", {
+            r"^(#{2}) (.*)[^\n]", {
                 0 : self.hStyles["header2"],
                 1 : self.hStyles["header2h"],
             }
         ))
         self.hRules.append((
-            r"^(#{3})[^#](.*)[^\n]", {
+            r"^(#{3}) (.*)[^\n]", {
                 0 : self.hStyles["header3"],
                 1 : self.hStyles["header3h"],
             }
         ))
         self.hRules.append((
-            r"^(#{4})[^#](.*)[^\n]", {
+            r"^(#{4}) (.*)[^\n]", {
                 0 : self.hStyles["header4"],
                 1 : self.hStyles["header4h"],
             }
