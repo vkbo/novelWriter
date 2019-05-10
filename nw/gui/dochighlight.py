@@ -20,13 +20,13 @@ logger = logging.getLogger(__name__)
 
 class GuiDocHighlighter(QSyntaxHighlighter):
 
-    def __init__(self, theDoc, theDict):
+    def __init__(self, theDoc):
         QSyntaxHighlighter.__init__(self, theDoc)
 
         logger.debug("Initialising DocHighlighter ...")
         self.mainConf = nw.CONFIG
         self.theDoc   = theDoc
-        self.theDict  = theDict
+        self.theDict  = None
         self.hRules   = []
 
         self.colHead  = QColor(  0,155,200)
@@ -149,6 +149,10 @@ class GuiDocHighlighter(QSyntaxHighlighter):
 
         logger.debug("DocHighlighter initialisation complete")
 
+        return
+
+    def setDict(self, theDict):
+        self.theDict = theDict
         return
 
     def _makeFormat(self, fmtCol=None, fmtStyle=None, fmtSize=None):

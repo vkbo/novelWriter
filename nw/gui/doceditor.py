@@ -37,6 +37,7 @@ class GuiDocEditor(QTextEdit):
         self.mainConf   = nw.CONFIG
         self.theParent  = theParent
         self.docChanged = False
+        self.pwlFile    = None
 
         # Document Variables
         self.charCount = 0
@@ -54,7 +55,8 @@ class GuiDocEditor(QTextEdit):
         # Core Elements
         self.theDoc  = self.document()
         self.theDict = enchant.Dict(self.mainConf.spellLanguage)
-        self.hLight  = GuiDocHighlighter(self.theDoc, self.theDict)
+        self.hLight  = GuiDocHighlighter(self.theDoc)
+        self.hLight.setDict(self.theDict)
 
         # Context Menu
         self.setContextMenuPolicy(Qt.CustomContextMenu)
@@ -112,6 +114,13 @@ class GuiDocEditor(QTextEdit):
         self.wcTimer.start()
         self.setDocumentChanged(False)
         return True
+
+    def setPwl(self, pwlFile):
+        if pwlFile is not None:
+            self.pwlFile = pwlFile
+            self.theDict = enchant.DictWithPWL(self.mainConf.spellLanguage,pwlFile)
+            self.hLight.setDict(self.theDict)
+        return
 
     def getText(self):
         theText = self.toPlainText()
@@ -174,23 +183,27 @@ class GuiDocEditor(QTextEdit):
 
         theCursor = self.cursorForPosition(thePos)
         theCursor.select(QTextCursor.WordUnderCursor)
-        theText = theCursor.selectedText()
-        if theText == "":
+        theWord = theCursor.selectedText()
+        if theWord == "":
             return
 
         mnuSuggest = QMenu()
         spIcon = QIcon.fromTheme("tools-check-spelling")
-        if self.theDict.check(theText):
+        if self.theDict.check(theWord):
             mnuHead = QAction(spIcon,"No Suggestion", mnuSuggest)
             mnuSuggest.addAction(mnuHead)
         else:
             mnuHead = QAction(spIcon,"Spelling Suggestion", mnuSuggest)
             mnuSuggest.addAction(mnuHead)
             mnuSuggest.addSeparator()
-            for aWord in self.theDict.suggest(theText):
+            for aWord in self.theDict.suggest(theWord):
                 mnuWord = QAction(aWord, mnuSuggest)
                 mnuWord.triggered.connect(lambda thePos, aWord=aWord : self._correctWord(theCursor, aWord))
                 mnuSuggest.addAction(mnuWord)
+            mnuSuggest.addSeparator()
+            mnuAdd = QAction("Add Word to Dictionary", mnuSuggest)
+            mnuAdd.triggered.connect(lambda thePos : self._addWord(theCursor))
+            mnuSuggest.addAction(mnuAdd)
 
         mnuSuggest.exec_(self.viewport().mapToGlobal(thePos))
 
@@ -204,6 +217,14 @@ class GuiDocEditor(QTextEdit):
         theCursor.endEditBlock()
         theCursor.setPosition(xPos)
         self.setTextCursor(theCursor)
+        return
+
+    def _addWord(self, theCursor):
+        theWord = theCursor.selectedText()
+        logger.info("Added '%s' to project dictionary" % theWord)
+        self.theDict.add_to_pwl(theWord)
+        self.hLight.setDict(self.theDict)
+        self.hLight.rehighlightBlock(theCursor.block())
         return
 
     def _docChange(self, thePos, charsRemoved, charsAdded):
