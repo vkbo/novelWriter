@@ -20,6 +20,7 @@ from PyQt5.QtCore         import Qt, QTimer
 
 from nw.gui.doctree       import GuiDocTree
 from nw.gui.doceditor     import GuiDocEditor
+from nw.gui.docviewer     import GuiDocViewer
 from nw.gui.docdetails    import GuiDocDetails
 from nw.gui.mainmenu      import GuiMainMenu
 from nw.gui.projecteditor import GuiProjectEditor
@@ -50,6 +51,7 @@ class GuiMain(QMainWindow):
 
         # Main GUI Elements
         self.docEditor  = GuiDocEditor(self)
+        self.docViewer  = GuiDocViewer(self)
         self.docDetails = GuiDocDetails(self, self.theProject)
         self.treeView   = GuiDocTree(self, self.theProject)
         self.mainMenu   = GuiMainMenu(self, self.theProject)
@@ -59,6 +61,7 @@ class GuiMain(QMainWindow):
         self.stackPane = QStackedWidget()
         self.stackNone = self.stackPane.addWidget(QWidget())
         self.stackDoc  = self.stackPane.addWidget(self.docEditor)
+        self.stackView = self.stackPane.addWidget(self.docViewer)
         self.stackPane.setCurrentIndex(self.stackNone)
 
         self.treePane = QFrame()
@@ -193,19 +196,18 @@ class GuiMain(QMainWindow):
 
     def _previewDocument(self):
 
-        theHandles = self.treeView.getSelectedHandles()
-        if len(theHandles) == 0:
+        tHandle = self.treeView.getSelectedHandle()
+        if tHandle is None:
+            logger.warning("No document selected")
             return
 
-        theDocs = []
-        self.treeView.saveTreeOrder()
-        for tHandle in self.theProject.treeOrder:
-            if tHandle not in theHandles:
-                continue
-            aDoc = ToHtml(self.theProject, self)
-            aDoc.setText(tHandle)
-            aDoc.tokenizeText()
-            aDoc.doConvert()
+        logger.debug("Generating preview for item %s" % tHandle)
+        self.stackPane.setCurrentIndex(self.stackView)
+        aDoc = ToHtml(self.theProject, self)
+        aDoc.setText(tHandle)
+        aDoc.tokenizeText()
+        aDoc.doConvert()
+        self.docViewer.setHtml(aDoc.theResult)
 
         return
 

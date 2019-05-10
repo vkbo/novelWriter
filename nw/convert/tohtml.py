@@ -57,7 +57,7 @@ class ToHtml(Tokenizer):
                     tTemp = tTemp[:xPos]+htmlTags[xFmt]+tTemp[xPos+xLen:]
                 thisPar.append(tTemp)
 
-        print(self.theResult)
+        # print(self.theResult)
 
         return
 
