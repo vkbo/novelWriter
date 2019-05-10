@@ -203,13 +203,15 @@ class GuiMain(QMainWindow):
             logger.warning("No document selected")
             return
 
-        logger.debug("Generating preview for item %s" % tHandle)
-        self.stackPane.setCurrentIndex(self.stackView)
-        aDoc = ToHtml(self.theProject, self)
-        aDoc.setText(tHandle)
-        aDoc.tokenizeText()
-        aDoc.doConvert()
-        self.docViewer.setHtml(aDoc.theResult)
+        tItem = self.theProject.getItem(tHandle)
+        if tItem.itemType == nwItemType.FILE:
+            logger.debug("Generating preview for item %s" % tHandle)
+            self.stackPane.setCurrentIndex(self.stackView)
+            aDoc = ToHtml(self.theProject, self)
+            aDoc.setText(tHandle)
+            aDoc.tokenizeText()
+            aDoc.doConvert()
+            self.docViewer.setHtml(aDoc.theResult)
 
         return
 
