@@ -238,18 +238,18 @@ class GuiMainMenu(QMenuBar):
         menuItem.triggered.connect(self.theParent._previewDocument)
         self.docuMenu.addAction(menuItem)
 
-        # Document > Separator
-        self.docuMenu.addSeparator()
+        # # Document > Separator
+        # self.docuMenu.addSeparator()
 
-        # Document > Split
-        menuItem = QAction(QIcon.fromTheme("list-add"), "Split Document", self)
-        menuItem.setStatusTip("Split Selected Document")
-        self.docuMenu.addAction(menuItem)
+        # # Document > Split
+        # menuItem = QAction(QIcon.fromTheme("list-add"), "Split Document", self)
+        # menuItem.setStatusTip("Split Selected Document")
+        # self.docuMenu.addAction(menuItem)
 
-        # Document > Merge
-        menuItem = QAction(QIcon.fromTheme("list-remove"), "Merge Document", self)
-        menuItem.setStatusTip("Merge Selected Documents")
-        self.docuMenu.addAction(menuItem)
+        # # Document > Merge
+        # menuItem = QAction(QIcon.fromTheme("list-remove"), "Merge Document", self)
+        # menuItem.setStatusTip("Merge Selected Documents")
+        # self.docuMenu.addAction(menuItem)
 
         return
 
@@ -272,12 +272,12 @@ class GuiMainMenu(QMenuBar):
         menuItem.triggered.connect(lambda : self.theParent.setFocus(2))
         self.viewMenu.addAction(menuItem)
 
-        # View > Document Pane 2
-        menuItem = QAction(QIcon.fromTheme("go-last"), "Right Document Pane", self)
-        menuItem.setStatusTip("Move to Right Document Pane")
-        menuItem.setShortcut("Ctrl+3")
-        menuItem.triggered.connect(lambda : self.theParent.setFocus(3))
-        self.viewMenu.addAction(menuItem)
+        # # View > Document Pane 2
+        # menuItem = QAction(QIcon.fromTheme("go-last"), "Right Document Pane", self)
+        # menuItem.setStatusTip("Move to Right Document Pane")
+        # menuItem.setShortcut("Ctrl+3")
+        # menuItem.triggered.connect(lambda : self.theParent.setFocus(3))
+        # self.viewMenu.addAction(menuItem)
 
         return
 
@@ -407,13 +407,13 @@ class GuiMainMenu(QMenuBar):
         self.toolsMoveDown.triggered.connect(lambda : self._moveTreeItem(1))
         self.toolsMenu.addAction(self.toolsMoveDown)
 
-        # Tools > Separator
-        self.toolsMenu.addSeparator()
+        # # Tools > Separator
+        # self.toolsMenu.addSeparator()
 
-        # Tools > Settings
-        menuItem = QAction(QIcon.fromTheme("preferences-system"), "Preferences", self)
-        menuItem.setStatusTip("Preferences")
-        self.toolsMenu.addAction(menuItem)
+        # # Tools > Settings
+        # menuItem = QAction(QIcon.fromTheme("preferences-system"), "Preferences", self)
+        # menuItem.setStatusTip("Preferences")
+        # self.toolsMenu.addAction(menuItem)
 
         return
 
