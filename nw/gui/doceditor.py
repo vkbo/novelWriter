@@ -186,17 +186,17 @@ class GuiDocEditor(QTextEdit):
         theWord = theCursor.selectedText()
         if theWord == "":
             return
+        if self.theDict.check(theWord):
+            return
 
         mnuSuggest = QMenu()
         spIcon = QIcon.fromTheme("tools-check-spelling")
-        if self.theDict.check(theWord):
-            mnuHead = QAction(spIcon,"No Suggestion", mnuSuggest)
-            mnuSuggest.addAction(mnuHead)
-        else:
-            mnuHead = QAction(spIcon,"Spelling Suggestion", mnuSuggest)
-            mnuSuggest.addAction(mnuHead)
-            mnuSuggest.addSeparator()
-            for aWord in self.theDict.suggest(theWord):
+        mnuHead = QAction(spIcon,"Spelling Suggestion", mnuSuggest)
+        mnuSuggest.addAction(mnuHead)
+        mnuSuggest.addSeparator()
+        theSuggest = self.theDict.suggest(theWord)
+        if len(theSuggest) > 0:
+            for aWord in theSuggest:
                 mnuWord = QAction(aWord, mnuSuggest)
                 mnuWord.triggered.connect(lambda thePos, aWord=aWord : self._correctWord(theCursor, aWord))
                 mnuSuggest.addAction(mnuWord)
@@ -204,6 +204,9 @@ class GuiDocEditor(QTextEdit):
             mnuAdd = QAction("Add Word to Dictionary", mnuSuggest)
             mnuAdd.triggered.connect(lambda thePos : self._addWord(theCursor))
             mnuSuggest.addAction(mnuAdd)
+        else:
+            mnuHead = QAction("No Suggestions", mnuSuggest)
+            mnuSuggest.addAction(mnuHead)
 
         mnuSuggest.exec_(self.viewport().mapToGlobal(thePos))
 
@@ -220,7 +223,7 @@ class GuiDocEditor(QTextEdit):
         return
 
     def _addWord(self, theCursor):
-        theWord = theCursor.selectedText()
+        theWord = theCursor.selectedText().strip()
         logger.info("Added '%s' to project dictionary" % theWord)
         self.theDict.add_to_pwl(theWord)
         self.hLight.setDict(self.theDict)
