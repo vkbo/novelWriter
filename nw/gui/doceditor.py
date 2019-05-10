@@ -155,25 +155,13 @@ class GuiDocEditor(QTextEdit):
         QTextEdit.keyPressEvent(self, keyEvent)
         return
 
-    def mousePressEvent(self, theEvent):
-        """Capture right click events and rewrite them to left button event. This moves the cursor
-        to the location of the pointer. Needed to select the word under the right click.
-        Adapted from: https://nachtimwald.com/2009/08/22/qplaintextedit-with-in-line-spell-check
-        """
-        if theEvent.button() == Qt.RightButton:
-            theEvent = QMouseEvent(
-                QEvent.MouseButtonPress, theEvent.pos(), Qt.LeftButton, Qt.LeftButton, Qt.NoModifier
-            )
-        QTextEdit.mousePressEvent(self, theEvent)
-        return
-
     def contextMenuEvent(self, theEvent):
         """Intercept the context menu and insert spelling suggestions, if any.
         Uses the custom QAction class SpellAction from the same example code.
         Adapted from: https://nachtimwald.com/2009/08/22/qplaintextedit-with-in-line-spell-check
         """
-        mnuSpell = self.createStandardContextMenu()
-        theCursor = self.textCursor()
+        mnuSpell  = self.createStandardContextMenu(theEvent.pos())
+        theCursor = self.cursorForPosition(theEvent.pos())
         theCursor.select(QTextCursor.WordUnderCursor)
         self.setTextCursor(theCursor)
 
