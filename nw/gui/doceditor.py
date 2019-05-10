@@ -16,9 +16,9 @@ import enchant
 
 from time                import time
 
-from PyQt5.QtWidgets     import QTextEdit, QAction, QMenu
+from PyQt5.QtWidgets     import QTextEdit, QAction, QMenu, QShortcut
+from PyQt5.QtGui         import QTextCursor, QTextOption, QIcon, QKeySequence
 from PyQt5.QtCore        import Qt, QTimer
-from PyQt5.QtGui         import QTextCursor, QTextOption, QIcon
 
 from nw.gui.dochighlight import GuiDocHighlighter
 from nw.gui.wordcounter  import WordCounter
@@ -79,6 +79,9 @@ class GuiDocEditor(QTextEdit):
         self.setMinimumWidth(400)
         self.setAcceptRichText(False)
         self.setFontPointSize(self.mainConf.textSize)
+
+        # Custom Shortcuts
+        QShortcut(QKeySequence("Ctrl+."), self, context=Qt.WidgetShortcut, activated=self._openSpellContext)
 
         # Set Up Word Count Thread and Timer
         self.wcInterval = self.mainConf.wordCountTimer
@@ -162,6 +165,10 @@ class GuiDocEditor(QTextEdit):
     ##
     #  Internal Functions
     ##
+
+    def _openSpellContext(self):
+        self._openContextMenu(self.cursorRect().center())
+        return
 
     def _openContextMenu(self, thePos):
 
