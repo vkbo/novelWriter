@@ -145,7 +145,7 @@ class GuiDocHighlighter(QSyntaxHighlighter):
 
         # Build a QRegExp for each pattern and for the spell checker
         self.rules   = [(QRegularExpression(a),b) for (a,b) in self.hRules]
-        self.spellRx = QRegularExpression(r"[\w\'{:s}]+".format(self.mainConf.fmtApostrophe))
+        self.spellRx = QRegularExpression(r"[\w\'{:s}&&[^_]]+".format(self.mainConf.fmtApostrophe))
 
         logger.debug("DocHighlighter initialisation complete")
 
