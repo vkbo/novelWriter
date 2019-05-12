@@ -150,9 +150,9 @@ class NWProject():
         ]
         self.importCols  = [
             ("None",    100,100,100),
-            ("Minor",   200, 45, 60),
-            ("Major",   160, 67,130),
-            ("Main",    120, 90,200),
+            ("Minor",   200, 50,  0),
+            ("Major",   200,150,  0),
+            ("Main",     50,200,  0),
         ]
 
         return
