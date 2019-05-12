@@ -257,7 +257,7 @@ class GuiDocEditor(QTextEdit):
             self.wcTimer.start()
         if self.mainConf.doReplace and not self.hasSelection:
             self._docAutoReplace(self.theDoc.findBlock(thePos))
-        logger.verbose("Doc change signal took %.3f µs" % ((time()-self.lastEdit)*1e6))
+        # logger.verbose("Doc change signal took %.3f µs" % ((time()-self.lastEdit)*1e6))
         return
 
     def _docAutoReplace(self, theBlock):
