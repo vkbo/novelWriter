@@ -106,7 +106,8 @@ class GuiMain(QMainWindow):
         self.asDocTimer.timeout.connect(self._autoSaveDocument)
         self.asDocTimer.start()
 
-        self.show()
+        if self.mainConf.showGUI:
+            self.show()
 
         logger.debug("GUI initialisation complete")
 

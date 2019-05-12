@@ -88,6 +88,7 @@ class Config:
         if confPath is None:
             self.confPath = user_config_dir(self.appHandle)
         else:
+            logger.info("Setting config from alternative path: %s" % confPath)
             self.confPath = confPath
 
         self.confFile  = self.appHandle+".conf"
@@ -110,13 +111,13 @@ class Config:
             # If it does not exist, save a copy of the defaults
             self.saveConfig()
 
-        return
+        return True
 
     def loadConfig(self):
 
         logger.debug("Loading config file")
         confParser = configparser.ConfigParser()
-        confParser.readfp(open(path.join(self.confPath,self.confFile)))
+        confParser.read_file(open(path.join(self.confPath,self.confFile)))
 
         # Get options
 
@@ -231,10 +232,14 @@ class Config:
             confParser.set(cnfSec,"recent%d" % i, str(self.recentList[i]))
 
         # Write config file
-        confParser.write(open(path.join(self.confPath,self.confFile),"w"))
-        self.confChanged = False
+        try:
+            confParser.write(open(path.join(self.confPath,self.confFile),"w"))
+            self.confChanged = False
+        except Exception as e:
+            logger.error("Could not save config file")
+            return False
 
-        return
+        return True
 
     def unpackList(self, inStr, listLen, listDefault, castTo=int):
         inData  = inStr.split(",")

@@ -62,7 +62,6 @@ logger = logging.getLogger(__name__)
 
 # Load the main config as a global object
 CONFIG = Config()
-CONFIG.initConfig()
 
 def main(sysArgs):
     """Parses command line, sets up logging, and launches main GUI.
@@ -149,10 +148,10 @@ def main(sysArgs):
             showGUI = False
         elif inOpt in ("-D","--debuggui"):
             debugLevel = logging.DEBUG
-            debugStr   = "{name:>22}:{lineno:<4d}  {levelname:8}  {message:}"
+            debugStr   = "{name:>20}:{lineno:<4d}  {levelname:8}  {message:}"
             debugGUI   = True
 
-    # Set GUI options
+    # Set Config Options
     CONFIG.showGUI  = showGUI
     CONFIG.debugGUI = debugGUI
 
@@ -178,6 +177,8 @@ def main(sysArgs):
         logger.addHandler(cHandle)
 
     logger.setLevel(debugLevel)
+
+    CONFIG.initConfig(confPath)
 
     nwApp = QApplication([])
     nwGUI = NovelWriter()
