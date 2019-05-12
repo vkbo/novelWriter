@@ -20,6 +20,7 @@ from datetime        import datetime
 from time            import time
 
 from nw.enum         import nwItemType, nwItemClass, nwItemLayout
+from nw.common       import checkString, checkBool
 from nw.project.item import NWItem
 
 logger = logging.getLogger(__name__)
@@ -197,7 +198,7 @@ class NWProject():
                 for xItem in xChild:
                     if xItem.text is None: continue
                     if xItem.tag == "spellCheck":
-                        self.spellCheck = self._checkBool(xItem.text,False)
+                        self.spellCheck = checkBool(xItem.text,False)
             elif xChild.tag == "content":
                 logger.debug("Found project content")
                 for xItem in xChild:
@@ -427,8 +428,8 @@ class NWProject():
         return
 
     def _appendItem(self, tHandle, pHandle, nwItem):
-        tHandle = self._checkString(tHandle,self._makeHandle(),False)
-        pHandle = self._checkString(pHandle,None,True)
+        tHandle = checkString(tHandle,self._makeHandle(),False)
+        pHandle = checkString(pHandle,None,True)
         logger.verbose("Adding entry %s with parent %s" % (str(tHandle),str(pHandle)))
 
         nwItem.setHandle(tHandle)
@@ -465,41 +466,5 @@ class NWProject():
             logger.warning("Duplicate handle encountered! Retrying ...")
             itemHandle = self._makeHandle(addSeed+"!")
         return itemHandle
-
-    def _checkString(self,checkValue,defaultValue,allowNone=False):
-        if allowNone:
-            if checkValue == None:   return None
-            if checkValue == "None": return None
-        if isinstance(checkValue,str): return str(checkValue)
-        return defaultValue
-
-    def _checkInt(self,checkValue,defaultValue,allowNone=False):
-        if allowNone:
-            if checkValue == None:   return None
-            if checkValue == "None": return None
-        try:
-            return int(checkValue)
-        except:
-            return defaultValue
-
-    def _checkBool(self,checkValue,defaultValue,allowNone=False):
-        if allowNone:
-            if checkValue == None:   return None
-            if checkValue == "None": return None
-        if isinstance(checkValue, str):
-            if checkValue == "True":
-                return True
-            elif checkValue == "False":
-                return False
-            else:
-                return defaultValue
-        elif isinstance(checkValue, int):
-            if checkValue == 1:
-                return True
-            elif checkValue == 0:
-                return False
-            else:
-                return defaultValue
-        return defaultValue
 
 # END Class NWProject
