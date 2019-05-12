@@ -108,16 +108,15 @@ class GuiMainMenu(QMenuBar):
             "<p>{name:s} is a text editor designed for writing novels. "
             "It is written in Python 3 with a Qt5 GUI. The Python and Qt layers are connected with PyQt5</p>"
             "<p>{name:s} is is licensed under GPL v3.0</p>"
-            "<p>Copyright 2018&ndash;{year:s} {author:s}</p>"
+            "<p>{copyright:s}</p>"
             "<h4>Credits</h4>"
             "<p>{credits:s}</p>"
         ).format(
-            name    = nw.__package__,
-            version = nw.__version__,
-            date    = nw.__date__,
-            year    = nw.__date__[:4],
-            author  = nw.__author__,
-            credits = "<br>".join(nw.__credits__),
+            name      = nw.__package__,
+            version   = nw.__version__,
+            date      = nw.__date__,
+            copyright = nw.__copyright__,
+            credits   = "<br>".join(nw.__credits__),
         ))
         return True
 

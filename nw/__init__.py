@@ -17,18 +17,17 @@ from os              import path, remove, rename
 from PyQt5.QtWidgets import QApplication
 from nw.main         import NovelWriter
 from nw.config       import Config
-from nw.enum         import *
 
 __package__    = "novelWriter"
 __author__     = "Veronica Berglyd Olsen"
-__copyright__  = "Copyright 2016-2018, Veronica Berglyd Olsen"
+__copyright__  = "Copyright 2018–2019, Veronica Berglyd Olsen"
 __credits__    = ["Veronica Berglyd Olsen"]
 __license__    = "GPLv3"
-__version__    = "0.1.0"
-__date__       = "2019.05.10"
+__version__    = "0.1.1"
+__date__       = "2019.05.12"
 __maintainer__ = "Veronica Berglyd Olsen"
 __email__      = "code@vkbo.net"
-__status__     = "Development"
+__status__     = "Pre-Release"
 __url__        = "https://github.com/vkbo/novelWriter"
 
 #
