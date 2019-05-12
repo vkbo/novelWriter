@@ -4,6 +4,9 @@
     <name></name>
     <title></title>
   </project>
+  <settings>
+    <spellCheck>False</spellCheck>
+  </settings>
   <content count="6">
     <item handle="73475cb40a568" order="None" parent="None">
       <name>Novel</name>

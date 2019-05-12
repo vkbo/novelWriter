@@ -36,7 +36,7 @@ class NWProject():
         # Debug
         self.handleSeed   = None
 
-        # Project Settings
+        # Class Settings
         self.projTree     = None
         self.treeOrder    = None
         self.treeRoots    = None
@@ -45,11 +45,17 @@ class NWProject():
         self.projMeta     = None
         self.projCache    = None
         self.projFile     = None
+        self.statusCols   = None
+
+        # Project Meta
         self.projName     = None
         self.bookTitle    = None
         self.bookAuthors  = None
-        self.statusCols   = None
 
+        # Project Settings
+        self.spellCheck   = False
+
+        # Set Defaults
         self.clearProject()
 
         return
@@ -130,6 +136,7 @@ class NWProject():
         self.projName    = ""
         self.bookTitle   = ""
         self.bookAuthors = []
+        self.spellCheck  = False
         self.statusCols  = [
             ("New",     100,100,100),
             ("Note",    200, 50,  0),
@@ -185,6 +192,12 @@ class NWProject():
                     elif xItem.tag == "author":
                         logger.verbose("Author: '%s'" % xItem.text)
                         self.bookAuthors.append(xItem.text)
+            elif xChild.tag == "settings":
+                logger.debug("Found project settings")
+                for xItem in xChild:
+                    if xItem.text is None: continue
+                    if xItem.tag == "spellCheck":
+                        self.spellCheck = self._checkBool(xItem.text,False)
             elif xChild.tag == "content":
                 logger.debug("Found project content")
                 for xItem in xChild:
@@ -233,15 +246,16 @@ class NWProject():
             "appVersion"  : str(nw.__version__),
             "timeStamp"   : datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
         })
-        xProject        = etree.SubElement(nwXML,"project")
-        xProjName       = etree.SubElement(xProject,"name")
-        xProjName.text  = self.projName
-        xBookTitle      = etree.SubElement(xProject,"title")
-        xBookTitle.text = self.bookTitle
-        for bookAuthor in self.bookAuthors:
-            if bookAuthor == "": continue
-            xBookAuthor      = etree.SubElement(xProject,"author")
-            xBookAuthor.text = bookAuthor
+
+        # Save Project Meta
+        xProject = etree.SubElement(nwXML,"project")
+        self._saveProjectValue(xProject,"name",  self.projName,  True)
+        self._saveProjectValue(xProject,"title", self.bookTitle, True)
+        self._saveProjectValue(xProject,"author",self.bookAuthors)
+
+        # Save Project Settings
+        xSettings = etree.SubElement(nwXML,"settings")
+        self._saveProjectValue(xSettings,"spellCheck",self.spellCheck)
 
         # Save Tree Content
         logger.debug("Writing project content")
@@ -351,6 +365,17 @@ class NWProject():
                 return False
         return True
 
+    def _saveProjectValue(self, xParent, theName, theValue, allowNone=True):
+        if not isinstance(theValue, list):
+            theValue = [theValue]
+        for aValue in theValue:
+            if not isinstance(aValue, str):
+                aValue = str(aValue)
+            if aValue == "" and not allowNone: continue
+            xItem = etree.SubElement(xParent,theName)
+            xItem.text = aValue
+        return
+
     def _scanProjectFolder(self):
 
         if self.projPath is None:
@@ -456,5 +481,25 @@ class NWProject():
             return int(checkValue)
         except:
             return defaultValue
+
+    def _checkBool(self,checkValue,defaultValue,allowNone=False):
+        if allowNone:
+            if checkValue == None:   return None
+            if checkValue == "None": return None
+        if isinstance(checkValue, str):
+            if checkValue == "True":
+                return True
+            elif checkValue == "False":
+                return False
+            else:
+                return defaultValue
+        elif isinstance(checkValue, int):
+            if checkValue == 1:
+                return True
+            elif checkValue == 0:
+                return False
+            else:
+                return defaultValue
+        return defaultValue
 
 # END Class NWProject

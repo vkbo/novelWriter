@@ -156,6 +156,10 @@ class GuiDocEditor(QTextEdit):
             logger.error("Unknown or unsupported document action %s" % str(theAction))
         return
 
+    def rehighlightDocument(self):
+        self.hLight.rehighlight()
+        return
+
     ##
     #  Document Events and Maintenance
     ##
