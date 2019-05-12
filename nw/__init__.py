@@ -62,10 +62,10 @@ logger = logging.getLogger(__name__)
 
 # Load the main config as a global object
 CONFIG = Config()
+CONFIG.initConfig()
 
 def main(sysArgs):
-    """
-    Parses command line, sets up logging, and launches main GUI.
+    """Parses command line, sets up logging, and launches main GUI.
     """
 
     # Valid Input Options
