@@ -74,6 +74,9 @@ class GuiDocTree(QTreeWidget):
 
         logger.debug("DocTree initialisation complete")
 
+        # Internal Mapping
+        self.makeAlert = self.theParent.makeAlert
+
         return
 
     ##
@@ -89,8 +92,15 @@ class GuiDocTree(QTreeWidget):
     def newTreeItem(self, itemType, itemClass):
 
         pHandle = self.getSelectedHandle()
-        if itemClass is None and pHandle is not None:
+        if pHandle is None:
+            self.makeAlert("No valid parent item selected", 2)
+            return False
+
+        if itemClass is None:
             itemClass = self.theProject.getItem(pHandle).itemClass
+        if itemClass is None:
+            self.makeAlert("Failed to find an appropriate item class for item %s" % pHandle, 2)
+            return False
 
         logger.verbose("Adding new item of type %s and class %s to handle %s" % (
             itemType.name, itemClass.name, str(pHandle))
