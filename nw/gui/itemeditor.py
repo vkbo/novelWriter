@@ -25,13 +25,14 @@ logger = logging.getLogger(__name__)
 
 class GuiItemEditor(QDialog):
 
-    def __init__(self, guiParent, theProject, tHandle):
-        QDialog.__init__(self, guiParent)
+    def __init__(self, theParent, theProject, tHandle):
+        QDialog.__init__(self, theParent)
 
         logger.debug("Initialising ItemEditor ...")
 
         self.mainConf   = nw.CONFIG
         self.theProject = theProject
+        self.theParent  = theParent
         self.theItem    = self.theProject.getItem(tHandle)
 
         self.outerBox   = QHBoxLayout()
@@ -53,9 +54,9 @@ class GuiItemEditor(QDialog):
         self.editStatus = QComboBox()
         self.editLayout = QComboBox()
 
-        for n in range(len(self.theProject.statusLabels)):
+        for n in range(len(self.theParent.statusLabels)):
             self.editStatus.addItem(
-                self.theProject.statusIcons[n], self.theProject.statusLabels[n], n
+                self.theParent.statusIcons[n], self.theParent.statusLabels[n], n
             )
 
         self.validLayouts = []
