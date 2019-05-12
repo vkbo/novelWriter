@@ -1,5 +1,12 @@
 # novelWriter ChangeLog
 
+## Not Released
+
+**Bugfixes**
+
+* Fixed a critical GUI bug when trying to create new folders and files in the tree.
+* Caught a bug when creating a new file, but novelWriter couldn't figure out what class the parent item had and returned a None. Could not recreate the bug, but added a check for it.
+
 ## Version 0.1.1 [2019-05-12]
 
 **User Interface**
