@@ -15,7 +15,7 @@ import nw
 
 from os                   import path
 from PyQt5.QtWidgets      import QWidget, QMainWindow, QVBoxLayout, QFrame, QSplitter, QFileDialog, QStackedWidget, QShortcut, QMessageBox
-from PyQt5.QtGui          import QIcon
+from PyQt5.QtGui          import QIcon, QPixmap, QColor
 from PyQt5.QtCore         import Qt, QTimer
 
 from nw.gui.doctree       import GuiDocTree
@@ -57,6 +57,10 @@ class GuiMain(QMainWindow):
         self.mainMenu   = GuiMainMenu(self, self.theProject)
         self.statusBar  = GuiMainStatus(self)
 
+        # Minor Gui Elements
+        self.statusIcons  = []
+        self.statusLabels = []
+
         # Assemble Main Window
         self.stackPane = QStackedWidget()
         self.stackNone = self.stackPane.addWidget(QWidget())
@@ -82,7 +86,7 @@ class GuiMain(QMainWindow):
         self.treeView.itemSelectionChanged.connect(self._treeSingleClick)
         self.treeView.itemDoubleClicked.connect(self._treeDoubleClick)
         self.treeView.buildTree()
-        QShortcut(Qt.Key_Return, self.treeView, context=Qt.WidgetShortcut, activated=self._treeKeyPressReturn)
+        self._makeStatusIcons()
 
         # Set Main Window Elements
         self.setMenuBar(self.mainMenu)
@@ -106,7 +110,15 @@ class GuiMain(QMainWindow):
         self.asDocTimer.timeout.connect(self._autoSaveDocument)
         self.asDocTimer.start()
 
-        self.show()
+        # Keyboard Shortcuts
+        QShortcut(Qt.Key_Return, self.treeView, context=Qt.WidgetShortcut, activated=self._treeKeyPressReturn)
+
+        # Forward Functions
+        self.setStatus        = self.statusBar.setStatus
+        self.setProjectStatus = self.statusBar.setProjectStatus
+
+        if self.mainConf.showGUI:
+            self.show()
 
         logger.debug("GUI initialisation complete")
 
@@ -162,6 +174,7 @@ class GuiMain(QMainWindow):
         self.treeView.buildTree()
         self.mainMenu.updateRecentProjects()
         self._setWindowTitle(self.theProject.projName)
+        self._makeStatusIcons()
         self.docEditor.setPwl(path.join(self.theProject.projMeta,"wordlist.txt"))
         return True
 
@@ -340,6 +353,16 @@ class GuiMain(QMainWindow):
         if not self.docEditor.docChanged:
             return False
         return True
+
+    def _makeStatusIcons(self):
+        self.statusIcons  = []
+        self.statusLabels = []
+        for sLabel, sR, sG, sB in self.theProject.statusCols:
+            theIcon = QPixmap(32,32)
+            theIcon.fill(QColor(sR,sG,sB))
+            self.statusIcons.append(QIcon(theIcon))
+            self.statusLabels.append(sLabel)
+        return
 
     ##
     #  Events

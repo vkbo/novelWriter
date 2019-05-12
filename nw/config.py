@@ -6,7 +6,7 @@
  This class reads and store the main preferences of the application
 
  File History:
- Created: 2018-0+-22 [0.0.1]
+ Created: 2018-09-22 [0.0.1]
 
 """
 
@@ -28,25 +28,18 @@ class Config:
     def __init__(self):
 
         # Set Application Variables
-        self.appName    = nw.__package__
-        self.appHandle  = nw.__package__.lower()
-        self.showGUI    = True
-        self.debugGUI   = False
+        self.appName   = nw.__package__
+        self.appHandle = nw.__package__.lower()
+        self.showGUI   = True
+        self.debugGUI  = False
 
         # Set Paths
-        self.confPath   = user_config_dir(self.appHandle)
-        self.confFile   = self.appHandle+".conf"
-        self.homePath   = path.expanduser("~")
-        self.appPath    = path.dirname(__file__)
-        self.guiPath    = path.join(self.appPath,"gui")
-        self.themePath  = path.join(self.appPath,"themes")
-        self.recentList = [""]*10
-
-        # If config folder does not exist, make it.
-        # This assumes that the os config folder itself exists.
-        # TODO: This does not work on Windows
-        if not path.isdir(self.confPath):
-            mkdir(self.confPath)
+        self.confPath  = None
+        self.confFile  = None
+        self.homePath  = None
+        self.appPath   = None
+        self.guiPath   = None
+        self.themePath = None
 
         # Set default values
         self.confChanged  = False
@@ -81,13 +74,8 @@ class Config:
 
         self.spellLanguage   = "en_GB"
 
-        # Check if config file exists
-        if path.isfile(path.join(self.confPath,self.confFile)):
-            self.loadConfig()
-
-        # Save a copy of the default config if no file exists
-        if not path.isfile(path.join(self.confPath,self.confFile)):
-            self.saveConfig()
+        # Path
+        self.recentList = [""]*10
 
         return
 
@@ -95,11 +83,41 @@ class Config:
     #  Actions
     ##
 
+    def initConfig(self, confPath=None):
+
+        if confPath is None:
+            self.confPath = user_config_dir(self.appHandle)
+        else:
+            logger.info("Setting config from alternative path: %s" % confPath)
+            self.confPath = confPath
+
+        self.confFile  = self.appHandle+".conf"
+        self.homePath  = path.expanduser("~")
+        self.appPath   = path.dirname(__file__)
+        self.guiPath   = path.join(self.appPath,"gui")
+        self.themePath = path.join(self.appPath,"themes")
+
+        # If config folder does not exist, make it.
+        # This assumes that the os config folder itself exists.
+        # TODO: This does not work on Windows
+        if not path.isdir(self.confPath):
+            mkdir(self.confPath)
+
+        # Check if config file exists
+        if path.isfile(path.join(self.confPath,self.confFile)):
+            # If it exists, load it
+            self.loadConfig()
+        else:
+            # If it does not exist, save a copy of the defaults
+            self.saveConfig()
+
+        return True
+
     def loadConfig(self):
 
         logger.debug("Loading config file")
         confParser = configparser.ConfigParser()
-        confParser.readfp(open(path.join(self.confPath,self.confFile)))
+        confParser.read_file(open(path.join(self.confPath,self.confFile)))
 
         # Get options
 
@@ -214,10 +232,14 @@ class Config:
             confParser.set(cnfSec,"recent%d" % i, str(self.recentList[i]))
 
         # Write config file
-        confParser.write(open(path.join(self.confPath,self.confFile),"w"))
-        self.confChanged = False
+        try:
+            confParser.write(open(path.join(self.confPath,self.confFile),"w"))
+            self.confChanged = False
+        except Exception as e:
+            logger.error("Could not save config file")
+            return False
 
-        return
+        return True
 
     def unpackList(self, inStr, listLen, listDefault, castTo=int):
         inData  = inStr.split(",")

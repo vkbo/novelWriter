@@ -1,2 +1,12 @@
+# Python Temp
 __pycache__
-*.bak
+
+# Sample Project
+sample/**/cache
+sample/**/wordlist.txt
+sample/**/*.bak
+
+# PyTest
+tests/temp
+.pytest_cache
+pytestdebug.log
