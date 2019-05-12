@@ -313,6 +313,11 @@ class NWProject():
         self.setProjectChanged(True)
         return True
 
+    def setSpellCheck(self, theMode):
+        self.spellCheck = theMode
+        self.setProjectChanged(True)
+        return True
+
     def setTreeOrder(self, newOrder):
         if len(self.treeOrder) != len(newOrder):
             logger.warning("Size of new and old tree order does not match")

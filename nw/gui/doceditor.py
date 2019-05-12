@@ -38,6 +38,7 @@ class GuiDocEditor(QTextEdit):
         self.theParent  = theParent
         self.docChanged = False
         self.pwlFile    = None
+        self.spellCheck = False
 
         # Document Variables
         self.charCount = 0
@@ -105,7 +106,7 @@ class GuiDocEditor(QTextEdit):
     def setDocumentChanged(self, bValue):
         self.docChanged = bValue
         self.theParent.statusBar.setDocumentStatus(self.docChanged)
-        return
+        return self.docChanged
 
     def setText(self, theText):
         self.setPlainText(theText)
@@ -120,7 +121,18 @@ class GuiDocEditor(QTextEdit):
             self.pwlFile = pwlFile
             self.theDict = enchant.DictWithPWL(self.mainConf.spellLanguage,pwlFile)
             self.hLight.setDict(self.theDict)
-        return
+        return True
+
+    def setSpellCheck(self, theMode):
+        self.spellCheck = theMode
+        self.hLight.setSpellCheck(theMode)
+        self.rehighlightDocument()
+        return True
+
+    def updateSpellCheck(self):
+        if self.spellCheck:
+            self.rehighlightDocument()
+        return True
 
     def getText(self):
         theText = self.toPlainText()
@@ -154,7 +166,8 @@ class GuiDocEditor(QTextEdit):
         elif theAction == nwDocAction.SEL_PARA: self._makeSelection(QTextCursor.BlockUnderCursor)
         else:
             logger.error("Unknown or unsupported document action %s" % str(theAction))
-        return
+            return False
+        return True
 
     def rehighlightDocument(self):
         self.hLight.rehighlight()
@@ -184,6 +197,9 @@ class GuiDocEditor(QTextEdit):
         return
 
     def _openContextMenu(self, thePos):
+
+        if not self.spellCheck:
+            return
 
         theCursor = self.cursorForPosition(thePos)
         theCursor.select(QTextCursor.WordUnderCursor)
@@ -241,7 +257,7 @@ class GuiDocEditor(QTextEdit):
             self.wcTimer.start()
         if self.mainConf.doReplace and not self.hasSelection:
             self._docAutoReplace(self.theDoc.findBlock(thePos))
-        # logger.verbose("Doc change signal took %.3f µs" % ((time()-self.lastEdit)*1e6))
+        logger.verbose("Doc change signal took %.3f µs" % ((time()-self.lastEdit)*1e6))
         return
 
     def _docAutoReplace(self, theBlock):
