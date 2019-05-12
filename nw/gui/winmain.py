@@ -159,8 +159,9 @@ class GuiMain(QMainWindow):
     def newProject(self):
         logger.info("Creating new project")
         self.treeView.clearTree()
-        self.theProject.newProject()
-        self.treeView.buildTree()
+        if self.saveProject():
+            self.theProject.newProject()
+            self.treeView.buildTree()
         return
 
     def openProject(self, projFile=None):
@@ -174,6 +175,7 @@ class GuiMain(QMainWindow):
         self.mainMenu.updateRecentProjects()
         self._setWindowTitle(self.theProject.projName)
         self._makeStatusIcons()
+        self.docEditor.setPwl(path.join(self.theProject.projMeta,"wordlist.txt"))
         return True
 
     def saveProject(self):

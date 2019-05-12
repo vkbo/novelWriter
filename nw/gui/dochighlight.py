@@ -20,13 +20,13 @@ logger = logging.getLogger(__name__)
 
 class GuiDocHighlighter(QSyntaxHighlighter):
 
-    def __init__(self, theDoc, theDict):
+    def __init__(self, theDoc):
         QSyntaxHighlighter.__init__(self, theDoc)
 
         logger.debug("Initialising DocHighlighter ...")
         self.mainConf = nw.CONFIG
         self.theDoc   = theDoc
-        self.theDict  = theDict
+        self.theDict  = None
         self.hRules   = []
 
         self.colHead  = QColor(  0,155,200)
@@ -145,10 +145,14 @@ class GuiDocHighlighter(QSyntaxHighlighter):
 
         # Build a QRegExp for each pattern and for the spell checker
         self.rules   = [(QRegularExpression(a),b) for (a,b) in self.hRules]
-        self.spellRx = QRegularExpression(r"[\w\'{:s}]+".format(self.mainConf.fmtApostrophe))
+        self.spellRx = QRegularExpression(r"\b[^\s]+\b")
 
         logger.debug("DocHighlighter initialisation complete")
 
+        return
+
+    def setDict(self, theDict):
+        self.theDict = theDict
         return
 
     def _makeFormat(self, fmtCol=None, fmtStyle=None, fmtSize=None):
@@ -188,7 +192,7 @@ class GuiDocHighlighter(QSyntaxHighlighter):
         if self.theDict is None:
             return
 
-        rxSpell = self.spellRx.globalMatch(theText, 0)
+        rxSpell = self.spellRx.globalMatch(theText.replace("_"," "), 0)
         while rxSpell.hasNext():
             rxMatch = rxSpell.next()
             if not self.theDict.check(rxMatch.captured(0)):

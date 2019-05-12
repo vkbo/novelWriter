@@ -39,6 +39,8 @@ class NWProject():
         self.treeRoots    = None
         self.trashRoot    = None
         self.projPath     = None
+        self.projMeta     = None
+        self.projCache    = None
         self.projFile     = None
         self.projName     = None
         self.bookTitle    = None
@@ -116,6 +118,8 @@ class NWProject():
         self.treeRoots   = []
         self.trashRoot   = None
         self.projPath    = None
+        self.projMeta    = None
+        self.projCache   = None
         self.projFile    = "nwProject.nwx"
         self.projName    = ""
         self.bookTitle   = ""
@@ -140,6 +144,12 @@ class NWProject():
         self.clearProject()
         self.projPath = path.dirname(fileName)
         logger.debug("Opening project: %s" % self.projPath)
+
+        self.projMeta  = path.join(self.projPath,"meta")
+        self.projCache = path.join(self.projPath,"cache")
+
+        if not self._checkFolder(self.projMeta):  return
+        if not self._checkFolder(self.projCache): return
 
         nwXML = etree.parse(fileName)
         xRoot = nwXML.getroot()
@@ -201,13 +211,12 @@ class NWProject():
             self.theParent.makeAlert("Project path not set, cannot save.",2)
             return False
 
-        if not path.isdir(self.projPath):
-            try:
-                mkdir(self.projPath)
-                logger.info("Created folder %s" % self.projPath)
-            except Exception as e:
-                self.theParent.makeAlert(["Could not create folder.",str(e)],2)
-                return False
+        self.projMeta  = path.join(self.projPath,"meta")
+        self.projCache = path.join(self.projPath,"cache")
+
+        if not self._checkFolder(self.projPath):  return
+        if not self._checkFolder(self.projMeta):  return
+        if not self._checkFolder(self.projCache): return
 
         logger.debug("Saving project: %s" % self.projPath)
 
@@ -325,6 +334,16 @@ class NWProject():
     ##
     #  Internal Functions
     ##
+
+    def _checkFolder(self, thePath):
+        if not path.isdir(thePath):
+            try:
+                mkdir(thePath)
+                logger.info("Created folder %s" % thePath)
+            except Exception as e:
+                self.theParent.makeAlert(["Could not create folder.",str(e)],2)
+                return False
+        return True
 
     def _scanProjectFolder(self):
 
