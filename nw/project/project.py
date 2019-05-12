@@ -46,7 +46,6 @@ class NWProject():
         self.projMeta     = None
         self.projCache    = None
         self.projFile     = None
-        self.statusCols   = None
 
         # Project Meta
         self.projName     = None
@@ -55,6 +54,8 @@ class NWProject():
 
         # Project Settings
         self.spellCheck   = False
+        self.statusCols   = None
+        self.importCols   = None
 
         # Set Defaults
         self.clearProject()
@@ -146,6 +147,12 @@ class NWProject():
             ("Note",    200, 50,  0),
             ("Draft",   200,150,  0),
             ("Finished", 50,200,  0),
+        ]
+        self.importCols  = [
+            ("None",    100,100,100),
+            ("Minor",   200, 45, 60),
+            ("Major",   160, 67,130),
+            ("Main",    120, 90,200),
         ]
 
         return

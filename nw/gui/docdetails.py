@@ -71,11 +71,19 @@ class GuiDocDetails(QFrame):
             colTwo = [""]*4
         else:
             itemStatus = nwItem.itemStatus
-            if itemStatus < 0 or itemStatus >= len(self.theParent.statusLabels):
-                itemStatus = 0
+            if nwItem.itemClass == nwItemClass.NOVEL:
+                if itemStatus < 0 or itemStatus >= len(self.theParent.statusLabels):
+                    statusLabel = self.theParent.statusLabels[0]
+                else:
+                    statusLabel = self.theParent.statusLabels[itemStatus]
+            else:
+                if itemStatus < 0 or itemStatus >= len(self.theParent.importLabels):
+                    statusLabel = self.theParent.importLabels[0]
+                else:
+                    statusLabel = self.theParent.importLabels[itemStatus]
             colTwo = [
                 nwItem.itemName,
-                self.theParent.statusLabels[itemStatus],
+                statusLabel,
                 nwLabels.CLASS_NAME[nwItem.itemClass],
                 nwLabels.LAYOUT_NAME[nwItem.itemLayout],
             ]
