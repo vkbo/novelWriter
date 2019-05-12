@@ -24,22 +24,23 @@ class GuiDocHighlighter(QSyntaxHighlighter):
         QSyntaxHighlighter.__init__(self, theDoc)
 
         logger.debug("Initialising DocHighlighter ...")
-        self.mainConf = nw.CONFIG
-        self.theDoc   = theDoc
-        self.theDict  = None
-        self.hRules   = []
+        self.mainConf   = nw.CONFIG
+        self.theDoc     = theDoc
+        self.theDict    = None
+        self.spellCheck = False
+        self.hRules     = []
 
-        self.colHead  = QColor(  0,155,200)
-        self.colHeadH = QColor(  0,105,135)
-        self.colEmph  = QColor(200,120,  0)
-        self.colDialN = QColor(200, 46,  0)
-        self.colDialD = QColor(184,200,  0)
-        self.colDialS = QColor(136,200,  0)
-        self.colComm  = QColor(150,150,150)
-        self.colKey   = QColor(200, 46,  0)
-        self.colVal   = QColor(184,200,  0)
+        self.colHead    = QColor(  0,155,200)
+        self.colHeadH   = QColor(  0,105,135)
+        self.colEmph    = QColor(200,120,  0)
+        self.colDialN   = QColor(200, 46,  0)
+        self.colDialD   = QColor(184,200,  0)
+        self.colDialS   = QColor(136,200,  0)
+        self.colComm    = QColor(150,150,150)
+        self.colKey     = QColor(200, 46,  0)
+        self.colVal     = QColor(184,200,  0)
 
-        self.colSpell = QColor(200, 46,  0)
+        self.colSpell   = QColor(200, 46,  0)
 
         self.hStyles = {
             "header1"   : self._makeFormat(self.colHead, "bold",1.8),
@@ -153,7 +154,11 @@ class GuiDocHighlighter(QSyntaxHighlighter):
 
     def setDict(self, theDict):
         self.theDict = theDict
-        return
+        return True
+
+    def setSpellCheck(self, theMode):
+        self.spellCheck = theMode
+        return True
 
     def _makeFormat(self, fmtCol=None, fmtStyle=None, fmtSize=None):
         theFormat = QTextCharFormat()
@@ -189,7 +194,7 @@ class GuiDocHighlighter(QSyntaxHighlighter):
 
         self.setCurrentBlockState(0)
 
-        if self.theDict is None:
+        if self.theDict is None or not self.spellCheck:
             return
 
         rxSpell = self.spellRx.globalMatch(theText.replace("_"," "), 0)

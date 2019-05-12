@@ -13,11 +13,12 @@
 import logging
 import nw
 
-from os       import path, mkdir
-from lxml     import etree
-from datetime import datetime
+from os        import path, mkdir
+from lxml      import etree
+from datetime  import datetime
 
-from nw.enum  import nwItemType, nwItemClass, nwItemLayout
+from nw.enum   import nwItemType, nwItemClass, nwItemLayout
+from nw.common import checkInt
 
 logger = logging.getLogger(__name__)
 
@@ -153,7 +154,7 @@ class NWItem():
         return
 
     def setStatus(self, theStatus):
-        theStatus = self._checkInt(theStatus,0)
+        theStatus = checkInt(theStatus,0)
         self.itemStatus = theStatus
         return
 
@@ -169,31 +170,18 @@ class NWItem():
     ##
 
     def setCharCount(self, theCount):
-        theCount = self._checkInt(theCount,0)
+        theCount = checkInt(theCount,0)
         self.charCount = theCount
         return
 
     def setWordCount(self, theCount):
-        theCount = self._checkInt(theCount,0)
+        theCount = checkInt(theCount,0)
         self.wordCount = theCount
         return
 
     def setParaCount(self, theCount):
-        theCount = self._checkInt(theCount,0)
+        theCount = checkInt(theCount,0)
         self.paraCount = theCount
         return
-
-    ##
-    #  Internal Functions
-    ##
-
-    def _checkInt(self,checkValue,defaultValue,allowNone=False):
-        if allowNone:
-            if checkValue == None:   return None
-            if checkValue == "None": return None
-        try:
-            return int(checkValue)
-        except:
-            return defaultValue
 
 # END Class NWItem

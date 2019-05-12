@@ -172,10 +172,11 @@ class GuiMain(QMainWindow):
         self.treeView.clearTree()
         self.theProject.openProject(projFile)
         self.treeView.buildTree()
-        self.mainMenu.updateRecentProjects()
         self._setWindowTitle(self.theProject.projName)
         self._makeStatusIcons()
         self.docEditor.setPwl(path.join(self.theProject.projMeta,"wordlist.txt"))
+        self.docEditor.setSpellCheck(self.theProject.spellCheck)
+        self.mainMenu.updateMenu()
         return True
 
     def saveProject(self):
