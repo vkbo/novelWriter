@@ -1,6 +1,16 @@
 # novelWriter ChangeLog
 
-## Version 0.1 [2019-XX-XX]
+## Not Released
+
+**User Interface**
+
+* Rewritten the spell check context menu. The previous implementation was adapted from a Qt4 example, but could be improved a great deal. It now also doesn't have the default context menu, and allows for adding words to personal word list. Spell checking can also be enabled and disabled from the menu, and re-run on a the current document. PRs #1 and #3 (V.K. Berglyd Olsen)
+
+**Test Suite**
+
+* Added a unit test framework based on `pytest`. This currently checks basic opening and saving of the main config file and the main project file. PR #2 (V.K. Berglyd Olsen)
+
+## Version 0.1 [2019-05-10]
 
 This is the initial release of a working version of novelWriter, but with very limited capabilities. So far, the following has been implemented:
 
