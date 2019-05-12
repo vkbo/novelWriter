@@ -1,6 +1,6 @@
 # novelWriter ChangeLog
 
-## Not Released
+## Version 0.1.2 [2019-05-12]
 
 **Bugfixes**
 
