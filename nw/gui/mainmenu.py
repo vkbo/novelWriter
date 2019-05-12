@@ -61,6 +61,15 @@ class GuiMainMenu(QMenuBar):
             )
         return
 
+    ##
+    #  Update Menu on Settings Changed
+    ##
+
+    def updateMenu(self):
+        self.updateRecentProjects()
+        self.updateSpellCheck()
+        return
+
     def updateRecentProjects(self):
         self.recentMenu.clear()
         for n in range(len(self.mainConf.recentList)):
@@ -71,6 +80,11 @@ class GuiMainMenu(QMenuBar):
             self.recentMenu.addAction(menuItem)
         return
 
+    def updateSpellCheck(self):
+        self.toolsSpellCheck.setChecked(self.theProject.spellCheck)
+        logger.verbose("Spell check is set to %s" % str(self.theProject.spellCheck))
+        return
+
     ##
     #  Menu Action
     ##
@@ -79,6 +93,12 @@ class GuiMainMenu(QMenuBar):
         self.theParent.closeMain()
         qApp.quit()
         return True
+
+    def _toggleSpellCheck(self):
+        self.theProject.setSpellCheck(self.toolsSpellCheck.isChecked())
+        self.theParent.docEditor.setSpellCheck(self.toolsSpellCheck.isChecked())
+        logger.verbose("Spell check is set to %s" % str(self.theProject.spellCheck))
+        return
 
     def _showAbout(self):
         msgBox = QMessageBox()
@@ -407,8 +427,24 @@ class GuiMainMenu(QMenuBar):
         self.toolsMoveDown.triggered.connect(lambda : self._moveTreeItem(1))
         self.toolsMenu.addAction(self.toolsMoveDown)
 
-        # # Tools > Separator
-        # self.toolsMenu.addSeparator()
+        # Tools > Separator
+        self.toolsMenu.addSeparator()
+
+        # Tools > Toggle Spell Check
+        self.toolsSpellCheck = QAction("Check Spelling", self)
+        self.toolsSpellCheck.setStatusTip("Toggle Check Spelling")
+        self.toolsSpellCheck.setCheckable(True)
+        self.toolsSpellCheck.setChecked(self.theProject.spellCheck)
+        self.toolsSpellCheck.toggled.connect(self._toggleSpellCheck)
+        self.toolsSpellCheck.setShortcut("Ctrl+F7")
+        self.toolsMenu.addAction(self.toolsSpellCheck)
+
+        # Tools > Update Spell Check
+        menuItem = QAction(QIcon.fromTheme("tools-check-spelling"), "Re-Run Spell Check", self)
+        menuItem.setStatusTip("Rus the Spell Checker on Current Document")
+        menuItem.setShortcut("F7")
+        menuItem.triggered.connect(self.theParent.docEditor.updateSpellCheck)
+        self.toolsMenu.addAction(menuItem)
 
         # # Tools > Settings
         # menuItem = QAction(QIcon.fromTheme("preferences-system"), "Preferences", self)
