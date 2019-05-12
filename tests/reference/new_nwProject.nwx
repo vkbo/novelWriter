@@ -1,0 +1,55 @@
+<?xml version='1.0' encoding='utf-8'?>
+<novelWriterXML appVersion="0.1.0" fileVersion="1.0" timeStamp="2019-05-12 14:21:08">
+  <project>
+    <name></name>
+    <title></title>
+  </project>
+  <content count="6">
+    <item handle="73475cb40a568" order="None" parent="None">
+      <name>Novel</name>
+      <type>ROOT</type>
+      <class>NOVEL</class>
+      <status>0</status>
+      <expanded>False</expanded>
+    </item>
+    <item handle="44cb730c42048" order="None" parent="None">
+      <name>Characters</name>
+      <type>ROOT</type>
+      <class>CHARACTER</class>
+      <status>0</status>
+      <expanded>False</expanded>
+    </item>
+    <item handle="71ee45a3c0db9" order="None" parent="None">
+      <name>Plot</name>
+      <type>ROOT</type>
+      <class>PLOT</class>
+      <status>0</status>
+      <expanded>False</expanded>
+    </item>
+    <item handle="811786ad1ae74" order="None" parent="None">
+      <name>World</name>
+      <type>ROOT</type>
+      <class>WORLD</class>
+      <status>0</status>
+      <expanded>False</expanded>
+    </item>
+    <item handle="25fc0e7096fc6" order="None" parent="73475cb40a568">
+      <name>New Chapter</name>
+      <type>FOLDER</type>
+      <class>NOVEL</class>
+      <status>0</status>
+      <expanded>False</expanded>
+    </item>
+    <item handle="31489056e0916" order="None" parent="25fc0e7096fc6">
+      <name>New Scene</name>
+      <type>FILE</type>
+      <class>NOVEL</class>
+      <status>0</status>
+      <expanded>False</expanded>
+      <layout>SCENE</layout>
+      <charCount>0</charCount>
+      <wordCount>0</wordCount>
+      <paraCount>0</paraCount>
+    </item>
+  </content>
+</novelWriterXML>

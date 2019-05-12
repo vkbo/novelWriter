@@ -2,6 +2,13 @@
 """novelWriter Test Tools
 """
 
+from os import path, mkdir
+
+def ensureDir(theDir):
+    if not path.isdir(theDir):
+        mkdir(theDir)
+    return
+
 def cmpFiles(fileOne, fileTwo, ignoreLines=[]):
     foOne = open(fileOne,mode="r")
     foTwo = open(fileTwo,mode="r")

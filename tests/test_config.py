@@ -1,18 +1,10 @@
 # -*- coding: utf-8 -*-
 """novelWriter Config Class Tester
-
- novelWriter – Config Class Tester
-===================================
-
 """
 
 import nw
-import filecmp
-
-from nwtools import cmpFiles
-
+from nwtools import *
 from os import path, unlink
-
 from nw.config import Config
 
 theConf  = Config()
@@ -21,6 +13,8 @@ testTemp = path.join(testDir,"temp")
 testRef  = path.join(testDir,"reference")
 tmpConf  = path.join(testTemp,"novelwriter.conf")
 refConf  = path.join(testRef, "novelwriter.conf")
+
+ensureDir(testTemp)
 
 # Clean out old stuff
 if path.isfile(tmpConf):

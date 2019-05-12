@@ -33,6 +33,9 @@ class NWProject():
         self.mainConf     = self.theParent.mainConf
         self.projChanged  = None
 
+        # Debug
+        self.handleSeed   = None
+
         # Project Settings
         self.projTree     = None
         self.treeOrder    = None
@@ -56,6 +59,9 @@ class NWProject():
     ##
 
     def newRoot(self, rootName, rootClass):
+        if not self.checkRootUnique(rootClass):
+            self.theParent.makeAlert("Duplicate root item detected!",2)
+            return None
         newItem = NWItem()
         newItem.setName(rootName)
         newItem.setType(nwItemType.ROOT)
@@ -422,7 +428,12 @@ class NWProject():
         return
 
     def _makeHandle(self, addSeed=""):
-        newSeed = str(time()) + addSeed
+        if self.handleSeed is None:
+            newSeed = str(time()) + addSeed
+        else:
+            # This is used for debugging
+            newSeed = str(self.handleSeed)
+            self.handleSeed += 1
         logger.verbose("Generating handle with seed '%s'" % newSeed)
         itemHandle = sha256(newSeed.encode()).hexdigest()[0:13]
         if itemHandle in self.projTree.keys():
