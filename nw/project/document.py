@@ -16,6 +16,7 @@ import nw
 from os import path, mkdir, rename, unlink
 
 from nw.tools.analyse import TextAnalysis
+from nw.enum          import nwAlert
 
 logger = logging.getLogger(__name__)
 
@@ -30,6 +31,9 @@ class NWDoc():
         self.theParent  = theParent
         self.theItem    = None
         self.docHandle  = None
+
+        # Internal Mapping
+        self.makeAlert = self.theParent.makeAlert
 
         return
 
@@ -49,7 +53,7 @@ class NWDoc():
                 with open(docPath,mode="r") as inFile:
                     theDoc = inFile.read()
             except Exception as e:
-                self.theParent.makeAlert(["Failed to open document file.",str(e)],2)
+                self.makeAlert(["Failed to open document file.",str(e)], nwAlert.ERROR)
                 return ""
         else:
             logger.debug("The requested document does not exist.")
@@ -83,7 +87,7 @@ class NWDoc():
             with open(docPath,mode="w") as outFile:
                 outFile.write(docText)
         except Exception as e:
-            self.theParent.makeAlert(["Could not save document.",str(e)],2)
+            self.makeAlert(["Could not save document.",str(e)], nwAlert.ERROR)
             return False
 
         if path.isfile(docTemp): unlink(docTemp)

@@ -19,7 +19,7 @@ from hashlib         import sha256
 from datetime        import datetime
 from time            import time
 
-from nw.enum         import nwItemType, nwItemClass, nwItemLayout
+from nw.enum         import nwItemType, nwItemClass, nwItemLayout, nwAlert
 from nw.common       import checkString, checkBool
 from nw.project.item import NWItem
 
@@ -59,6 +59,9 @@ class NWProject():
         # Set Defaults
         self.clearProject()
 
+        # Internal Mapping
+        self.makeAlert = self.theParent.makeAlert
+
         return
 
     ##
@@ -67,7 +70,7 @@ class NWProject():
 
     def newRoot(self, rootName, rootClass):
         if not self.checkRootUnique(rootClass):
-            self.theParent.makeAlert("Duplicate root item detected!",2)
+            self.makeAlert("Duplicate root item detected!", nwAlert.ERROR)
             return None
         newItem = NWItem()
         newItem.setName(rootName)
@@ -152,7 +155,7 @@ class NWProject():
         if not path.isfile(fileName):
             fileName = path.join(fileName, "nwProject.nwx")
             if not path.isfile(fileName):
-                self.theParent.makeAlert("File not found: %s" % fileName,2)
+                self.makeAlert("File not found: %s" % fileName, nwAlert.ERROR)
                 return False
 
         self.clearProject()
@@ -176,7 +179,7 @@ class NWProject():
         logger.verbose("File version is %s" % fileVersion)
 
         if not nwxRoot == "novelWriterXML" or not fileVersion == "1.0":
-            self.theParent.makeAlert("Project file does not appear to be a novelWriterXML file version 1.0",2)
+            self.makeAlert("Project file does not appear to be a novelWriterXML file version 1.0", nwAlert.ERROR)
             return False
 
         for xChild in xRoot:
@@ -228,7 +231,7 @@ class NWProject():
     def saveProject(self):
 
         if self.projPath is None:
-            self.theParent.makeAlert("Project path not set, cannot save.",2)
+            self.makeAlert("Project path not set, cannot save.", nwAlert.ERROR)
             return False
 
         self.projMeta  = path.join(self.projPath,"meta")
@@ -275,7 +278,7 @@ class NWProject():
                     xml_declaration = True
                 ))
         except Exception as e:
-            self.theParent.makeAlert(["Failed to save project.",str(e)],2)
+            self.makeAlert(["Failed to save project.",str(e)], nwAlert.ERROR)
             return False
 
         self.mainConf.setRecent(self.projPath)
@@ -367,7 +370,7 @@ class NWProject():
                 mkdir(thePath)
                 logger.info("Created folder %s" % thePath)
             except Exception as e:
-                self.theParent.makeAlert(["Could not create folder.",str(e)],2)
+                self.makeAlert(["Could not create folder.",str(e)], nwAlert.ERROR)
                 return False
         return True
 
@@ -414,7 +417,7 @@ class NWProject():
 
         # Report status
         if len(orphanFiles) > 0:
-            self.theParent.makeAlert("Found %d orphaned file(s) in project folder!" % len(orphanFiles),1)
+            self.makeAlert("Found %d orphaned file(s) in project folder!" % len(orphanFiles), nwAlert.WARN)
         else:
             logger.debug("File check OK")
             return

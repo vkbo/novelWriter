@@ -22,7 +22,7 @@ from PyQt5.QtCore        import Qt, QTimer
 
 from nw.gui.dochighlight import GuiDocHighlighter
 from nw.gui.wordcounter  import WordCounter
-from nw.enum             import nwDocAction
+from nw.enum             import nwDocAction, nwAlert
 
 logger = logging.getLogger(__name__)
 

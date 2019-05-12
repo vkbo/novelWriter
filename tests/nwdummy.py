@@ -2,6 +2,8 @@
 """novelWriter Test Dummy GUI Classes
 """
 
+from nw.enum import nwAlert
+
 class DummyMain():
 
     def __init__(self):
@@ -9,10 +11,12 @@ class DummyMain():
         return
 
     def makeAlert(self, theMessage, theLevel):
-        if theLevel == 1:
+        if theLevel == nwAlert.WARN:
             lvlMsg = "WARNING: "
-        elif theLevel == 2:
+        elif theLevel == nwAlert.ERROR:
             lvlMsg = "ERROR: "
+        elif theLevel == nwAlert.BUG:
+            lvlMsg = "BUG: "
         else:
             lvlMsg = ""
         if isinstance(theMessage, list):

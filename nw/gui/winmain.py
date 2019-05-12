@@ -31,7 +31,7 @@ from nw.project.document  import NWDoc
 from nw.project.item      import NWItem
 from nw.convert.tokenizer import Tokenizer
 from nw.convert.tohtml    import ToHtml
-from nw.enum              import nwItemType
+from nw.enum              import nwItemType, nwAlert
 
 logger = logging.getLogger(__name__)
 
@@ -124,7 +124,7 @@ class GuiMain(QMainWindow):
 
         return
 
-    def makeAlert(self, theMessage, theLevel):
+    def makeAlert(self, theMessage, theLevel=nwAlert.INFO):
         """Alert both the user and the logger at the same time. Message can be either a string or an
         array of strings. Severity level is 0 = info, 1 = warning, and 2 = error.
         """
@@ -137,18 +137,23 @@ class GuiMain(QMainWindow):
             logMsg = [theMessage]
 
         msgBox = QMessageBox()
-        if theLevel == 0:
+        if theLevel == nwAlert.INFO:
             for msgLine in logMsg:
                 logger.info(msgLine)
             msgBox.information(self, "Information", popMsg)
-        elif theLevel == 1:
+        elif theLevel == nwAlert.WARN:
             for msgLine in logMsg:
                 logger.warning(msgLine)
             msgBox.warning(self, "Warning", popMsg)
-        elif theLevel == 2:
+        elif theLevel == nwAlert.ERROR:
             for msgLine in logMsg:
                 logger.error(msgLine)
             msgBox.critical(self, "Error", popMsg)
+        elif theLevel == nwAlert.BUG:
+            for msgLine in logMsg:
+                logger.error(msgLine)
+            popMsg += "<br>This is a bug!"
+            msgBox.critical(self, "Internal Error", popMsg)
 
         return
 

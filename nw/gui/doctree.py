@@ -21,6 +21,7 @@ from PyQt5.QtWidgets import QTreeWidget, QTreeWidgetItem, QAbstractItemView, QIn
 from nw.project.item import NWItem
 from nw.enum         import nwItemType, nwItemClass
 from nw.constants    import nwLabels
+from nw.enum         import nwAlert
 
 logger = logging.getLogger(__name__)
 
@@ -93,13 +94,13 @@ class GuiDocTree(QTreeWidget):
 
         pHandle = self.getSelectedHandle()
         if pHandle is None:
-            self.makeAlert("No valid parent item selected", 2)
+            self.makeAlert("No valid parent item selected", nwAlert.ERROR)
             return False
 
         if itemClass is None:
             itemClass = self.theProject.getItem(pHandle).itemClass
         if itemClass is None:
-            self.makeAlert("Failed to find an appropriate item class for item %s" % pHandle, 2)
+            self.makeAlert("Failed to find an appropriate item class for item %s" % pHandle, nwAlert.BUG)
             return False
 
         logger.verbose("Adding new item of type %s and class %s to handle %s" % (
@@ -234,7 +235,7 @@ class GuiDocTree(QTreeWidget):
                 trItemP.setSelected(True)
                 self.theProject.setProjectChanged(True)
             else:
-                self.theParent.makeAlert(["Cannot delete folder.","It is not empty."],2)
+                self.makeAlert(["Cannot delete folder.","It is not empty."], nwAlert.ERROR)
                 return
 
         elif nwItemS.itemType == nwItemType.ROOT:
@@ -245,7 +246,7 @@ class GuiDocTree(QTreeWidget):
                 self.theParent.mainMenu.setAvailableRoot()
                 self.theProject.setProjectChanged(True)
             else:
-                self.theParent.makeAlert(["Cannot delete root folder.","It is not empty."],2)
+                self.makeAlert(["Cannot delete root folder.","It is not empty."], nwAlert.ERROR)
                 return
 
         return
