@@ -35,6 +35,7 @@ class GuiDocDetails(QFrame):
         logger.debug("Initialising DocDetails ...")
         self.mainConf   = nw.CONFIG
         self.debugGUI   = self.mainConf.debugGUI
+        self.theParent  = theParent
         self.theProject = theProject
 
         self.mainBox = QGridLayout(self)
@@ -70,11 +71,11 @@ class GuiDocDetails(QFrame):
             colTwo = [""]*4
         else:
             itemStatus = nwItem.itemStatus
-            if itemStatus < 0 or itemStatus >= len(self.theProject.statusLabels):
+            if itemStatus < 0 or itemStatus >= len(self.theParent.statusLabels):
                 itemStatus = 0
             colTwo = [
                 nwItem.itemName,
-                self.theProject.statusLabels[itemStatus],
+                self.theParent.statusLabels[itemStatus],
                 nwLabels.CLASS_NAME[nwItem.itemClass],
                 nwLabels.LAYOUT_NAME[nwItem.itemLayout],
             ]

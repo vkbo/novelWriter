@@ -19,8 +19,6 @@ from hashlib         import sha256
 from datetime        import datetime
 from time            import time
 
-from PyQt5.QtGui     import QIcon, QPixmap, QColor
-
 from nw.enum         import nwItemType, nwItemClass, nwItemLayout
 from nw.project.item import NWItem
 
@@ -31,8 +29,8 @@ class NWProject():
     def __init__(self, theParent):
 
         # Internal
-        self.mainConf     = nw.CONFIG
         self.theParent    = theParent
+        self.mainConf     = self.theParent.mainConf
         self.projChanged  = None
 
         # Project Settings
@@ -46,8 +44,6 @@ class NWProject():
         self.bookTitle    = None
         self.bookAuthors  = None
         self.statusCols   = None
-        self.statusIcons  = None
-        self.statusLabels = None
 
         self.clearProject()
 
@@ -108,7 +104,7 @@ class NWProject():
         hChapt = self.newFolder("New Chapter", nwItemClass.NOVEL, hNovel)
         hScene = self.newFile("New Scene",     nwItemClass.NOVEL, hChapt)
 
-        return
+        return True
 
     def clearProject(self):
 
@@ -124,16 +120,12 @@ class NWProject():
         self.projName    = ""
         self.bookTitle   = ""
         self.bookAuthors = []
-
         self.statusCols  = [
             ("New",     100,100,100),
             ("Note",    200, 50,  0),
             ("Draft",   200,150,  0),
             ("Finished", 50,200,  0),
         ]
-        self.statusIcons  = []
-        self.statusLabels = []
-        self._makeStatusIcons()
 
         return
 
@@ -195,9 +187,8 @@ class NWProject():
                         nwItem.setFromTag(xValue.tag,xValue.text)
                     self._appendItem(tHandle,pHandle,nwItem)
 
-        self._makeStatusIcons()
         self.mainConf.setRecent(self.projPath)
-        self.theParent.statusBar.setStatus("Opened Project: %s" % self.projName)
+        self.theParent.setStatus("Opened Project: %s" % self.projName)
 
         self._scanProjectFolder()
         self.setProjectChanged(False)
@@ -258,7 +249,7 @@ class NWProject():
             return False
 
         self.mainConf.setRecent(self.projPath)
-        self.theParent.statusBar.setStatus("Saved Project: %s" % self.projName)
+        self.theParent.setStatus("Saved Project: %s" % self.projName)
         self.setProjectChanged(False)
 
         return True
@@ -301,7 +292,7 @@ class NWProject():
 
     def setProjectChanged(self, bValue):
         self.projChanged = bValue
-        self.theParent.statusBar.setProjectStatus(self.projChanged)
+        self.theParent.setProjectStatus(self.projChanged)
         return
 
     ##
@@ -409,16 +400,6 @@ class NWProject():
 
         self.setProjectChanged(True)
 
-        return
-
-    def _makeStatusIcons(self):
-        self.statusIcons  = []
-        self.statusLabels = []
-        for sLabel, sR, sG, sB in self.statusCols:
-            theIcon = QPixmap(32,32)
-            theIcon.fill(QColor(sR,sG,sB))
-            self.statusIcons.append(QIcon(theIcon))
-            self.statusLabels.append(sLabel)
         return
 
     def _makeHandle(self, addSeed=""):
