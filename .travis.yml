@@ -12,7 +12,7 @@ python:
   # - "3.8-dev"
 install:
   - pip install -r requirements.txt
-  - pip install --user codecov
+  - pip install codecov
 script:
   - python -m pytest -v
 after_success:
