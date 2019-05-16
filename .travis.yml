@@ -1,16 +1,16 @@
 dist: xenial   # required for Python >= 3.7
 language: python
+sudo: required
+addons:
+  apt:
+    packages:
+      - libenchant
 python:
   - "3.5"
-  - "3.5-dev"  # 3.5 development branch
   - "3.6"
-  - "3.6-dev"  # 3.6 development branch
   - "3.7"
-  - "3.7-dev"  # 3.7 development branch
-  - "3.8-dev"  # 3.8 development branch
-# command to install dependencies
+  - "3.8-dev"
 install:
   - pip install -r dependencies.txt
-# command to run tests
 script:
   - pytest
