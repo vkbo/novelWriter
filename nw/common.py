@@ -19,7 +19,8 @@ def checkString(checkValue, defaultValue, allowNone=False):
     if allowNone:
         if checkValue == None:   return None
         if checkValue == "None": return None
-    if isinstance(checkValue,str): return str(checkValue)
+    if isinstance(checkValue,str):
+        return str(checkValue)
     return defaultValue
 
 def checkInt(checkValue, defaultValue, allowNone=False):
@@ -50,3 +51,33 @@ def checkBool(checkValue, defaultValue, allowNone=False):
         else:
             return defaultValue
     return defaultValue
+
+def colRange(rgbStart, rgbEnd, nStep):
+
+    if len(rgbStart) != 3 and len(rgbEnd) != 3 and nStep < 1:
+        logger.error("Cannot create colour range from given parameters")
+        return None
+    
+    if nStep == 1:
+        return rgbStart
+    elif nStep == 2:
+        return [rgbStart, rgbEnd]
+
+    dC = [0,0,0]
+    for c in range(3):
+        cA = rgbStart[c]
+        cB = rgbEnd[c]
+        dC[c] = (cB-cA)/(nStep-1)
+    print(dC)
+    retCol = [rgbStart]
+    for n in range(nStep):
+        if n > 0 and n < nStep:
+            retCol.append([
+                int(retCol[n-1][0] + dC[0]),
+                int(retCol[n-1][1] + dC[1]),
+                int(retCol[n-1][2] + dC[2]),
+            ])
+    retCol[-1] = rgbEnd
+    print(retCol)
+
+    return retCol

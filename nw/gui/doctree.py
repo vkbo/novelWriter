@@ -19,9 +19,8 @@ from PyQt5.QtGui     import QIcon, QFont, QColor
 from PyQt5.QtWidgets import QTreeWidget, QTreeWidgetItem, QAbstractItemView, QInputDialog, QLineEdit, QApplication
 
 from nw.project.item import NWItem
-from nw.enum         import nwItemType, nwItemClass
+from nw.enum         import nwItemType, nwItemClass, nwAlert
 from nw.constants    import nwLabels
-from nw.enum         import nwAlert
 
 logger = logging.getLogger(__name__)
 
@@ -256,6 +255,7 @@ class GuiDocTree(QTreeWidget):
         trItem  = self._getTreeItem(tHandle)
         nwItem  = self.theProject.getItem(tHandle)
         tName   = nwItem.itemName
+        tClass  = nwItem.itemClass
         tHandle = nwItem.itemHandle
         pHandle = nwItem.parHandle
 
@@ -263,12 +263,20 @@ class GuiDocTree(QTreeWidget):
         if nwItem.itemType == nwItemType.FILE:
             tStatus += "."+nwLabels.LAYOUT_FLAG[nwItem.itemLayout]
         nStatus = nwItem.itemStatus
-        if nStatus < 0 or nStatus >= len(self.theParent.statusIcons):
-            nStatus = 0
+        if tClass == nwItemClass.NOVEL:
+            if nStatus < 0 or nStatus >= len(self.theParent.statusIcons):
+                flagIcon = self.theParent.statusIcons[0]
+            else:
+                flagIcon = self.theParent.statusIcons[nStatus]
+        else:
+            if nStatus < 0 or nStatus >= len(self.theParent.importIcons):
+                flagIcon = self.theParent.importIcons[0]
+            else:
+                flagIcon = self.theParent.importIcons[nStatus]
 
         trItem.setText(self.C_NAME,tName)
         trItem.setText(self.C_FLAGS,tStatus)
-        trItem.setIcon(self.C_FLAGS,self.theParent.statusIcons[nStatus])
+        trItem.setIcon(self.C_FLAGS,flagIcon)
 
         return
 
