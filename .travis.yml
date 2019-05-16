@@ -16,6 +16,6 @@ install:
   # - pip install pytest-qt
   - pip install codecov
 script:
-  - python -m pytest --cov=nw -m "project|core" -v
+  - python -m pytest --cov=nw -m "project|core|gui" -v
 after_success:
   - codecov
