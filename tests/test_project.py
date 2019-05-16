@@ -2,8 +2,7 @@
 """novelWriter Project Class Tester
 """
 
-import nw
-import types
+import nw, pytest, types
 from os import path, unlink
 
 from nwtools import *
@@ -31,20 +30,24 @@ theProject.handleSeed = 42
 
 projFile = path.join(testProj,"nwProject.nwx")
 
+@pytest.mark.project
 def testProjectNew():
     assert theProject.newProject()
     assert theProject.setProjectPath(testProj)
     assert theProject.saveProject()
     assert cmpFiles(projFile, path.join(testRef,"new_nwProject.nwx"), [2])
 
+@pytest.mark.project
 def testProjectOpen():
     assert theProject.openProject(projFile)
 
+@pytest.mark.project
 def testProjectSave():
     assert theProject.saveProject()
     assert cmpFiles(projFile, path.join(testRef,"new_nwProject.nwx"), [2])
     assert not theProject.projChanged
 
+@pytest.mark.project
 def testProjectNewRoot():
     assert theProject.openProject(projFile)
     assert isinstance(theProject.newRoot("Novel",     nwItemClass.NOVEL),     type(None))

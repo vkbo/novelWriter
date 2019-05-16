@@ -170,7 +170,7 @@ class GuiMain(QMainWindow):
         if self.saveProject():
             self.theProject.newProject()
             self.treeView.buildTree()
-        return
+        return True
 
     def openProject(self, projFile=None):
         if projFile is None:

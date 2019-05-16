@@ -1,0 +1,58 @@
+<?xml version='1.0' encoding='utf-8'?>
+<novelWriterXML appVersion="0.1.2" fileVersion="1.0" timeStamp="2019-05-16 22:37:13">
+  <project>
+    <name></name>
+    <title></title>
+  </project>
+  <settings>
+    <spellCheck>False</spellCheck>
+  </settings>
+  <content count="6">
+    <item handle="73475cb40a568" order="0" parent="None">
+      <name>Novel</name>
+      <type>ROOT</type>
+      <class>NOVEL</class>
+      <status>0</status>
+      <expanded>False</expanded>
+    </item>
+    <item handle="25fc0e7096fc6" order="0" parent="73475cb40a568">
+      <name>New Chapter</name>
+      <type>FOLDER</type>
+      <class>NOVEL</class>
+      <status>0</status>
+      <expanded>False</expanded>
+    </item>
+    <item handle="31489056e0916" order="0" parent="25fc0e7096fc6">
+      <name>New Scene</name>
+      <type>FILE</type>
+      <class>NOVEL</class>
+      <status>0</status>
+      <expanded>False</expanded>
+      <layout>SCENE</layout>
+      <charCount>0</charCount>
+      <wordCount>0</wordCount>
+      <paraCount>0</paraCount>
+    </item>
+    <item handle="44cb730c42048" order="1" parent="None">
+      <name>Characters</name>
+      <type>ROOT</type>
+      <class>CHARACTER</class>
+      <status>0</status>
+      <expanded>False</expanded>
+    </item>
+    <item handle="71ee45a3c0db9" order="2" parent="None">
+      <name>Plot</name>
+      <type>ROOT</type>
+      <class>PLOT</class>
+      <status>0</status>
+      <expanded>False</expanded>
+    </item>
+    <item handle="811786ad1ae74" order="3" parent="None">
+      <name>World</name>
+      <type>ROOT</type>
+      <class>WORLD</class>
+      <status>0</status>
+      <expanded>False</expanded>
+    </item>
+  </content>
+</novelWriterXML>
