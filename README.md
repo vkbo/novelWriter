@@ -1,5 +1,8 @@
 # novelWriter
 
+[![Build Status](https://travis-ci.com/vkbo/novelWriter.svg?branch=master)](https://travis-ci.com/vkbo/novelWriter)
+[![codecov](https://codecov.io/gh/vkbo/novelWriter/branch/master/graph/badge.svg)](https://codecov.io/gh/vkbo/novelWriter)
+
 This is a reboot of my novelWriter application using Qt5 after abandoning the Gtk3 version now renamed novelWriterGtk and archived.
 The first usable version is under initial development.
 
