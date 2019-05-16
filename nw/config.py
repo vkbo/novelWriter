@@ -117,7 +117,11 @@ class Config:
 
         logger.debug("Loading config file")
         confParser = configparser.ConfigParser()
-        confParser.read_file(open(path.join(self.confPath,self.confFile)))
+        try:
+            confParser.read_file(open(path.join(self.confPath,self.confFile)))
+        except Exception as e:
+            logger.error("Could not load config file")
+            return False
 
         # Get options
 
@@ -182,7 +186,7 @@ class Config:
                 if confParser.has_option(cnfSec,"recent%d" % i):
                     self.recentList[i] = confParser.get(cnfSec,"recent%d" % i)
 
-        return
+        return True
 
     def saveConfig(self):
 
@@ -266,13 +270,14 @@ class Config:
         return
 
     def setConfPath(self, newPath):
-        if newPath is None: return
+        if newPath is None:
+            return True
         if not path.isfile(newPath):
             logger.error("Config: File not found. Using default config path instead.")
-            return
+            return False
         self.confPath = path.dirname(newPath)
         self.confFile = path.basename(newPath)
-        return
+        return True
 
     def setWinSize(self, newWidth, newHeight):
         if abs(self.winGeometry[self.WIN_WIDTH] - newWidth) >= 10:
@@ -281,14 +286,16 @@ class Config:
         if abs(self.winGeometry[self.WIN_HEIGHT] - newHeight) >= 10:
             self.winGeometry[self.WIN_HEIGHT] = newHeight
             self.confChanged = True
-        return
+        return True
 
     def setTreeColWidths(self, colWidths):
         self.treeColWidth = colWidths
-        return
+        self.confChanged = True
+        return True
 
     def setMainPanePos(self, panePos):
         self.mainPanePos = panePos
-        return
+        self.confChanged = True
+        return True
 
 # End Class Config
