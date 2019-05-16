@@ -1,0 +1,4 @@
+pyqt5
+appdirs
+lxml
+enchant

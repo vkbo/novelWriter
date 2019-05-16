@@ -10,3 +10,6 @@ sample/**/*.bak
 tests/temp
 .pytest_cache
 pytestdebug.log
+
+# Coverage
+.coverage
