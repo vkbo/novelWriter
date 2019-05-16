@@ -1,3 +1,7 @@
+# Setup
+MANIFEST
+dist/
+
 # Python Temp
 __pycache__
 
