@@ -14,6 +14,6 @@ install:
   - pip install -r requirements.txt
   - pip install codecov
 script:
-  - python -m pytest -v
+  - python -m pytest --cov=nw -v
 after_success:
   - codecov
