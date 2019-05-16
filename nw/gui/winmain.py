@@ -207,7 +207,7 @@ class GuiMain(QMainWindow):
         self.stackPane.setCurrentIndex(self.stackDoc)
         self.docEditor.setText(self.theDocument.openDocument(tHandle))
         self.docEditor.changeWidth()
-        return
+        return True
 
     def saveDocument(self):
         if self.theDocument.theItem is not None:
@@ -217,7 +217,7 @@ class GuiMain(QMainWindow):
             self.theDocument.theItem.setParaCount(self.docEditor.paraCount)
             self.theDocument.saveDocument(docHtml)
             self.docEditor.setDocumentChanged(False)
-        return
+        return True
 
     def _previewDocument(self):
 
@@ -246,7 +246,7 @@ class GuiMain(QMainWindow):
         tHandle = self.treeView.getSelectedHandle()
         if tHandle is None:
             logger.warning("No item selected")
-            return
+            return False
 
         logger.verbose("Opening item %s" % tHandle)
         nwItem = self.theProject.getItem(tHandle)
@@ -255,7 +255,8 @@ class GuiMain(QMainWindow):
             self.openDocument(tHandle)
         else:
             logger.verbose("Requested item %s is not a file" % tHandle)
-        return
+
+        return True
 
     def editItem(self):
         tHandle = self.treeView.getSelectedHandle()

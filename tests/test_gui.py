@@ -7,9 +7,10 @@ from nwtools import *
 from os import path, unlink
 from PyQt5.QtCore import Qt
 
-keyDelay = 10
-testDir  = path.dirname(__file__)
-testRef  = path.join(testDir,"reference")
+keyDelay  = 10
+stepDelay = 100
+testDir   = path.dirname(__file__)
+testRef   = path.join(testDir,"reference")
 
 @pytest.mark.gui
 def testMainWindows(qtbot, tmpdir):
@@ -19,22 +20,35 @@ def testMainWindows(qtbot, tmpdir):
     qtbot.addWidget(nwGUI)
     nwGUI.show()
     qtbot.waitForWindowShown(nwGUI)
-    qtbot.wait(500)
+    qtbot.wait(stepDelay)
+
+    # Create new, save, open project
     nwGUI.theProject.handleSeed = 42
     assert nwGUI.theProject.setProjectPath(projDir)
     assert nwGUI.newProject()
     assert nwGUI.theProject.setProjectPath(projDir)
     assert nwGUI.saveProject()
-    qtbot.wait(500)
+    qtbot.wait(stepDelay)
     assert nwGUI.openProject(projDir)
-    qtbot.keyClick(nwGUI.treeView, Qt.Key_1, modifier=Qt.ControlModifier, delay=keyDelay)
-    qtbot.keyClick(nwGUI.treeView, Qt.Key_Down, delay=keyDelay)
-    qtbot.keyClick(nwGUI.treeView, Qt.Key_Right, delay=keyDelay)
-    qtbot.keyClick(nwGUI.treeView, Qt.Key_Down, delay=keyDelay)
-    qtbot.keyClick(nwGUI.treeView, Qt.Key_Right, delay=keyDelay)
-    qtbot.keyClick(nwGUI.treeView, Qt.Key_Down, delay=keyDelay)
-    qtbot.keyClick(nwGUI.treeView, Qt.Key_Return, delay=keyDelay)
-    qtbot.keyClick(nwGUI.treeView, Qt.Key_2, modifier=Qt.ControlModifier, delay=keyDelay)
+    qtbot.wait(stepDelay)
+
+    # Check that tree items have been created
+    assert nwGUI.treeView._getTreeItem("73475cb40a568") is not None
+    assert nwGUI.treeView._getTreeItem("25fc0e7096fc6") is not None
+    assert nwGUI.treeView._getTreeItem("31489056e0916") is not None
+    assert nwGUI.treeView._getTreeItem("44cb730c42048") is not None
+    assert nwGUI.treeView._getTreeItem("71ee45a3c0db9") is not None
+    assert nwGUI.treeView._getTreeItem("811786ad1ae74") is not None
+
+    # Select the 'New Scene' file
+    nwGUI.treeView.setFocus()
+    nwGUI.treeView._getTreeItem("73475cb40a568").setExpanded(True)
+    nwGUI.treeView._getTreeItem("25fc0e7096fc6").setExpanded(True)
+    nwGUI.treeView._getTreeItem("31489056e0916").setSelected(True)
+    assert nwGUI.openSelectedItem()
+
+    # Type something into the document
+    nwGUI.docEditor.setFocus()
     for c in "# Hello World!":
         qtbot.keyClick(nwGUI.docEditor, c, delay=keyDelay)
     qtbot.keyClick(nwGUI.docEditor, Qt.Key_Return, delay=keyDelay)
@@ -51,10 +65,14 @@ def testMainWindows(qtbot, tmpdir):
         qtbot.keyClick(nwGUI.docEditor, c, delay=keyDelay)
     for c in "Ellipsis? Not a problem either ... ":
         qtbot.keyClick(nwGUI.docEditor, c, delay=keyDelay)
-    qtbot.wait(500)
-    qtbot.keyClick(nwGUI, "s", modifier=Qt.ControlModifier, delay=keyDelay)
-    qtbot.wait(500)
+    qtbot.wait(stepDelay)
 
+    # Save the document
+    assert nwGUI.docEditor.docChanged
+    assert nwGUI.saveDocument()
+    qtbot.wait(stepDelay)
+
+    # Check the files
     projFile = projDir.join("nwProject.nwx")
     assert cmpFiles(projFile, path.join(testRef,"gui_nwProject.nwx"), [2])
     sceneFile = projDir.join("data_3","1489056e0916_main.nwd")
