@@ -60,6 +60,8 @@ class GuiMain(QMainWindow):
         # Minor Gui Elements
         self.statusIcons  = []
         self.statusLabels = []
+        self.importIcons  = []
+        self.importLabels = []
 
         # Assemble Main Window
         self.stackPane = QStackedWidget()
@@ -87,6 +89,7 @@ class GuiMain(QMainWindow):
         self.treeView.itemDoubleClicked.connect(self._treeDoubleClick)
         self.treeView.buildTree()
         self._makeStatusIcons()
+        self._makeImportIcons()
 
         # Set Main Window Elements
         self.setMenuBar(self.mainMenu)
@@ -179,6 +182,7 @@ class GuiMain(QMainWindow):
         self.treeView.buildTree()
         self._setWindowTitle(self.theProject.projName)
         self._makeStatusIcons()
+        self._makeImportIcons()
         self.docEditor.setPwl(path.join(self.theProject.projMeta,"wordlist.txt"))
         self.docEditor.setSpellCheck(self.theProject.spellCheck)
         self.mainMenu.updateMenu()
@@ -368,6 +372,16 @@ class GuiMain(QMainWindow):
             theIcon.fill(QColor(sR,sG,sB))
             self.statusIcons.append(QIcon(theIcon))
             self.statusLabels.append(sLabel)
+        return
+
+    def _makeImportIcons(self):
+        self.importIcons  = []
+        self.importLabels = []
+        for sLabel, sR, sG, sB in self.theProject.importCols:
+            theIcon = QPixmap(32,32)
+            theIcon.fill(QColor(sR,sG,sB))
+            self.importIcons.append(QIcon(theIcon))
+            self.importLabels.append(sLabel)
         return
 
     ##

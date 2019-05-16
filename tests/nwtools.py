@@ -3,6 +3,7 @@
 """
 
 from os import path, mkdir
+from itertools import chain
 
 def ensureDir(theDir):
     if not path.isdir(theDir):
@@ -28,7 +29,7 @@ def cmpFiles(fileOne, fileTwo, ignoreLines=[]):
         if n+1 in ignoreLines:
             print("Ignoring line %d" % (n+1))
             continue
-        
+
         if lnOne != lnTwo:
             print("Diff on line %d:" % (n+1))
             print(" << '%s'" % lnOne)
@@ -39,3 +40,13 @@ def cmpFiles(fileOne, fileTwo, ignoreLines=[]):
     foTwo.close()
 
     return not diffFound
+
+def cmpList(listOne, listTwo):
+    flatOne = list(chain.from_iterable([listOne]))
+    flatTwo = list(chain.from_iterable([listTwo]))
+    if len(flatOne) != len(flatTwo):
+        return False
+    for i in range(len(flatOne)):
+        if flatOne[i] != flatTwo[i]:
+            return False
+    return True
