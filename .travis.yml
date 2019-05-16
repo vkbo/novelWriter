@@ -4,7 +4,7 @@ sudo: required
 addons:
   apt:
     packages:
-      - libenchant
+      - libenchant-dev
 python:
   - "3.5"
   - "3.6"
