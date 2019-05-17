@@ -12,6 +12,12 @@ except:
     exit(1)
 
 try:
+    import PyQt5.QtSvg
+except:
+    print("ERROR: Failed to load dependency python3-pyqt5.qtsvg")
+    exit(1)
+
+try:
     import lxml
 except:
     print("ERROR: Failed to load dependency python3-lxml")
