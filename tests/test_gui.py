@@ -4,9 +4,13 @@
 
 import nw, pytest
 from nwtools import *
+
 from os import path, unlink
 from PyQt5.QtCore import Qt
+
 from nw.gui.projecteditor import GuiProjectEditor
+from nw.gui.itemeditor    import GuiItemEditor
+from nw.enum              import *
 
 keyDelay  = 10
 stepDelay = 50
@@ -160,3 +164,54 @@ def testProjectEditor(qtbot, tmpdir):
     # Check the files
     projFile = path.join(projDir,"nwProject.nwx")
     assert cmpFiles(projFile, path.join(testRef,"projedit_nwProject.nwx"), [2])
+
+    # qtbot.stopForInteraction()
+
+@pytest.mark.gui
+def testItemEditor(qtbot, tmpdir):
+    confDir = str(tmpdir.mkdir("conf"))
+    projDir = str(tmpdir.mkdir("project"))
+    nwGUI = nw.main(["--testmode","--config=%s" % confDir])
+    qtbot.addWidget(nwGUI)
+    nwGUI.show()
+    qtbot.waitForWindowShown(nwGUI)
+    qtbot.wait(stepDelay)
+
+    # Create new, save, open project
+    nwGUI.theProject.handleSeed = 42
+    assert nwGUI.theProject.setProjectPath(projDir)
+    assert nwGUI.newProject()
+    assert nwGUI.theProject.setProjectPath(projDir)
+
+    itemEdit = GuiItemEditor(nwGUI, nwGUI.theProject, "31489056e0916")
+    qtbot.addWidget(itemEdit)
+
+    assert itemEdit.editName.text()          == "New Scene"
+    assert itemEdit.editStatus.currentData() == 0
+    assert itemEdit.editLayout.currentData() == nwItemLayout.SCENE
+
+    for c in "Just a Page":
+        qtbot.keyClick(itemEdit.editName, c, delay=keyDelay)
+    itemEdit.editStatus.setCurrentIndex(1)
+    layoutIdx = itemEdit.editLayout.findData(nwItemLayout.PAGE)
+    itemEdit.editLayout.setCurrentIndex(layoutIdx)
+
+    qtbot.mouseClick(itemEdit.saveButton, Qt.LeftButton)
+
+    itemEdit = GuiItemEditor(nwGUI, nwGUI.theProject, "31489056e0916")
+    qtbot.addWidget(itemEdit)
+    assert itemEdit.editName.text()          == "Just a Page"
+    assert itemEdit.editStatus.currentData() == 1
+    assert itemEdit.editLayout.currentData() == nwItemLayout.PAGE
+
+    qtbot.mouseClick(itemEdit.closeButton, Qt.LeftButton)
+
+    qtbot.wait(stepDelay)
+    assert nwGUI.saveProject()
+    qtbot.wait(stepDelay)
+
+    # Check the files
+    projFile = path.join(projDir,"nwProject.nwx")
+    assert cmpFiles(projFile, path.join(testRef,"itemedit_nwProject.nwx"), [2])
+
+    # qtbot.stopForInteraction()
