@@ -23,3 +23,6 @@ script:
 # - python -m pytest --cov=nw -m "project|core" -v
 after_success:
   - codecov
+after_failure:
+  - echo "Peak Memory: $(cat /sys/fs/cgroup/memory/memory.max_usage_in_bytes) bytes"
+
