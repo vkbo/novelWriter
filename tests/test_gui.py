@@ -8,7 +8,7 @@ from os import path, unlink
 from PyQt5.QtCore import Qt
 
 keyDelay  = 10
-stepDelay = 100
+stepDelay = 50
 testDir   = path.dirname(__file__)
 testRef   = path.join(testDir,"reference")
 
@@ -53,11 +53,36 @@ def testMainWindows(qtbot, tmpdir):
         qtbot.keyClick(nwGUI.docEditor, c, delay=keyDelay)
     qtbot.keyClick(nwGUI.docEditor, Qt.Key_Return, delay=keyDelay)
     qtbot.keyClick(nwGUI.docEditor, Qt.Key_Return, delay=keyDelay)
+
+    for c in "## With a Subtitle":
+        qtbot.keyClick(nwGUI.docEditor, c, delay=keyDelay)
+    qtbot.keyClick(nwGUI.docEditor, Qt.Key_Return, delay=keyDelay)
+    qtbot.keyClick(nwGUI.docEditor, Qt.Key_Return, delay=keyDelay)
+
+    for c in "### An Even Subier Title":
+        qtbot.keyClick(nwGUI.docEditor, c, delay=keyDelay)
+    qtbot.keyClick(nwGUI.docEditor, Qt.Key_Return, delay=keyDelay)
+    qtbot.keyClick(nwGUI.docEditor, Qt.Key_Return, delay=keyDelay)
+
+    for c in "#### Basically Not a Title at All":
+        qtbot.keyClick(nwGUI.docEditor, c, delay=keyDelay)
+    qtbot.keyClick(nwGUI.docEditor, Qt.Key_Return, delay=keyDelay)
+    qtbot.keyClick(nwGUI.docEditor, Qt.Key_Return, delay=keyDelay)
+
+    for c in "% How about a comment?":
+        qtbot.keyClick(nwGUI.docEditor, c, delay=keyDelay)
+    qtbot.keyClick(nwGUI.docEditor, Qt.Key_Return, delay=keyDelay)
+    for c in "@keyword: value":
+        qtbot.keyClick(nwGUI.docEditor, c, delay=keyDelay)
+    qtbot.keyClick(nwGUI.docEditor, Qt.Key_Return, delay=keyDelay)
+    qtbot.keyClick(nwGUI.docEditor, Qt.Key_Return, delay=keyDelay)
+
     for c in "This is a paragraph of dummy text.":
         qtbot.keyClick(nwGUI.docEditor, c, delay=keyDelay)
     qtbot.keyClick(nwGUI.docEditor, Qt.Key_Return, delay=keyDelay)
     qtbot.keyClick(nwGUI.docEditor, Qt.Key_Return, delay=keyDelay)
-    for c in "This is another paragraph of much longer dummy text. It is in fact very very dum dummy text! ":
+
+    for c in "This is another paragraph of much longer dummy text. It is in fact very very dumb dummy text! ":
         qtbot.keyClick(nwGUI.docEditor, c, delay=keyDelay)
     for c in "We can also try replacing \"quotes\", even single's quotes are replaced. ":
         qtbot.keyClick(nwGUI.docEditor, c, delay=keyDelay)
@@ -65,7 +90,12 @@ def testMainWindows(qtbot, tmpdir):
         qtbot.keyClick(nwGUI.docEditor, c, delay=keyDelay)
     for c in "Ellipsis? Not a problem either ... ":
         qtbot.keyClick(nwGUI.docEditor, c, delay=keyDelay)
+    qtbot.keyClick(nwGUI.docEditor, Qt.Key_Return, delay=keyDelay)
+    qtbot.keyClick(nwGUI.docEditor, Qt.Key_Return, delay=keyDelay)
+
     qtbot.wait(stepDelay)
+    nwGUI.docEditor._runCounter()
+    qtbot.wait(1000)
 
     # Save the document
     assert nwGUI.docEditor.docChanged
