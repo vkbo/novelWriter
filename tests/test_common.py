@@ -2,10 +2,11 @@
 """novelWriter Common Class Tester
 """
 
-import nw
+import nw, pytest
 from nw.common import *
 from nwtools import cmpList
 
+@pytest.mark.core
 def testCheckString():
     assert checkString(None,  "NotNone",True)  is None
     assert checkString("None","NotNone",True)  is None
@@ -15,6 +16,7 @@ def testCheckString():
     assert checkString(1.0,   "NotNone",False) == "NotNone"
     assert checkString(True,  "NotNone",False) == "NotNone"
 
+@pytest.mark.core
 def testCheckInt():
     assert checkInt(None,  3,True)  is None
     assert checkInt("None",3,True)  is None
@@ -23,6 +25,7 @@ def testCheckInt():
     assert checkInt(1.0,   3,False) == 1
     assert checkInt(True,  3,False) == 1
 
+@pytest.mark.core
 def testCheckBool():
     assert checkBool(None,   3,    True)  is None
     assert checkBool("None", 3,    True)  is None
@@ -36,6 +39,7 @@ def testCheckBool():
     assert checkBool(1.0,    None, False) is None
     assert checkBool(2.0,    None, False) is None
 
+@pytest.mark.core
 def testColRange():
     assert colRange([0,0], [0,0], 0) is None
     assert cmpList(colRange([200,50,0], [50,200,0], 1), [200,50,0])

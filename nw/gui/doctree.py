@@ -282,20 +282,21 @@ class GuiDocTree(QTreeWidget):
 
     def propagateCount(self, tHandle, theCount, nDepth=0):
         tItem = self._getTreeItem(tHandle)
-        tItem.setText(self.C_COUNT,str(theCount))
-        pItem = tItem.parent()
-        if pItem is not None:
-            pCount = 0
-            for i in range(pItem.childCount()):
-                pCount += int(pItem.child(i).text(self.C_COUNT))
-                pHandle = pItem.text(self.C_HANDLE)
-            if not nDepth > 200 and pHandle != "":
-                self.propagateCount(pHandle, pCount, nDepth+1)
+        if tItem is not None:
+            tItem.setText(self.C_COUNT,str(theCount))
+            pItem = tItem.parent()
+            if pItem is not None:
+                pCount = 0
+                for i in range(pItem.childCount()):
+                    pCount += int(pItem.child(i).text(self.C_COUNT))
+                    pHandle = pItem.text(self.C_HANDLE)
+                if not nDepth > 200 and pHandle != "":
+                    self.propagateCount(pHandle, pCount, nDepth+1)
         return
 
     def buildTree(self):
         self.clear()
-        for tHandle in self.theProject.projTree:
+        for tHandle in self.theProject.treeOrder:
             nwItem = self.theProject.projTree[tHandle]
             self._addTreeItem(nwItem)
         return True

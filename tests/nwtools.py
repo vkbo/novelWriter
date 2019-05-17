@@ -11,8 +11,18 @@ def ensureDir(theDir):
     return
 
 def cmpFiles(fileOne, fileTwo, ignoreLines=[]):
-    foOne = open(fileOne,mode="r")
-    foTwo = open(fileTwo,mode="r")
+
+    try:
+        foOne = open(fileOne,mode="r")
+    except Exception as e:
+        print(str(e))
+        return False
+
+    try:
+        foTwo = open(fileTwo,mode="r")
+    except Exception as e:
+        print(str(e))
+        return False
 
     txtOne = foOne.readlines()
     txtTwo = foTwo.readlines()

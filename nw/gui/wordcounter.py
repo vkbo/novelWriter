@@ -78,6 +78,6 @@ class WordCounter(QThread):
                 self.paraCount += 1
             prevEmpty = countPara == False
 
-        pass
+        return
 
-## END Class _WordCounter
+## END Class WordCounter

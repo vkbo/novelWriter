@@ -15,7 +15,7 @@ import getopt
 
 from os              import path, remove, rename
 from PyQt5.QtWidgets import QApplication
-from nw.main         import NovelWriter
+from nw.gui.winmain  import GuiMain
 from nw.config       import Config
 
 __package__    = "novelWriter"
@@ -78,7 +78,7 @@ def main(sysArgs):
         "logfile=",
         "version",
         "config=",
-        "headless",
+        "testmode",
     ]
 
     helpMsg = (
@@ -111,7 +111,7 @@ def main(sysArgs):
     toStd      = True
     showTime   = False
     confPath   = None
-    showGUI    = True
+    testMode   = False
     debugGUI   = False
 
     # Parse Options
@@ -143,15 +143,15 @@ def main(sysArgs):
             showTime = True
         elif inOpt in ("--config"):
             confPath = inArg
-        elif inOpt in ("--headless"):
-            showGUI = False
+        elif inOpt in ("--testmode"):
+            testMode = True
         elif inOpt in ("-D","--debuggui"):
             debugLevel = logging.DEBUG
             debugStr   = "{name:>20}:{lineno:<4d}  {levelname:8}  {message:}"
             debugGUI   = True
 
     # Set Config Options
-    CONFIG.showGUI  = showGUI
+    CONFIG.showGUI  = not testMode
     CONFIG.debugGUI = debugGUI
 
     # Set Logging
@@ -179,8 +179,12 @@ def main(sysArgs):
 
     CONFIG.initConfig(confPath)
 
-    nwApp = QApplication([])
-    nwGUI = NovelWriter()
-    exit(nwApp.exec_())
+    if testMode:
+        nwGUI = GuiMain()
+        return nwGUI
+    else:
+        nwApp = QApplication([])
+        nwGUI = GuiMain()
+        exit(nwApp.exec_())
 
     return
