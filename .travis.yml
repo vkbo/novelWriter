@@ -1,6 +1,6 @@
 dist: xenial
-# services:
-#   - xvfb
+services:
+  - xvfb
 language: python
 sudo: required
 addons:
@@ -11,12 +11,12 @@ python:
   - "3.7"
 install:
   - pip install -r requirements.txt
-# - pip install pytest-faulthandler
+  - pip install pytest-faulthandler
   - pip install pytest-cov
-# - pip install pytest-qt
+  - pip install pytest-qt
   - pip install codecov
 script:
-# - xvfb-run -a python -m pytest --cov=nw -m "project|core|gui" -v -s
-  - python -m pytest --cov=nw -m "project|core" -v
+  - xvfb-run -a python -m pytest --cov=nw -m "project|core|gui" -v -s
+# - python -m pytest --cov=nw -m "project|core" -v
 after_success:
   - codecov

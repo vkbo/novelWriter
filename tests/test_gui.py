@@ -14,8 +14,8 @@ testRef   = path.join(testDir,"reference")
 
 @pytest.mark.gui
 def testMainWindows(qtbot, tmpdir):
-    confDir = tmpdir.mkdir("conf")
-    projDir = tmpdir.mkdir("project")
+    confDir = str(tmpdir.mkdir("conf"))
+    projDir = str(tmpdir.mkdir("project"))
     nwGUI = nw.main(["--testmode","--config=%s" % confDir])
     qtbot.addWidget(nwGUI)
     nwGUI.show()
@@ -103,9 +103,9 @@ def testMainWindows(qtbot, tmpdir):
     qtbot.wait(stepDelay)
 
     # Check the files
-    projFile = projDir.join("nwProject.nwx")
+    projFile = str(projDir.join("nwProject.nwx"))
     assert cmpFiles(projFile, path.join(testRef,"gui_nwProject.nwx"), [2])
-    sceneFile = projDir.join("data_3","1489056e0916_main.nwd")
+    sceneFile = str(projDir.join("data_3","1489056e0916_main.nwd"))
     assert cmpFiles(sceneFile, path.join(testRef,"gui_1489056e0916_main.nwd"))
 
     # qtbot.stopForInteraction()
