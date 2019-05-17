@@ -6,6 +6,7 @@ import nw, pytest
 from nwtools import *
 from os import path, unlink
 from PyQt5.QtCore import Qt
+from nw.gui.projecteditor import GuiProjectEditor
 
 keyDelay  = 10
 stepDelay = 50
@@ -109,3 +110,53 @@ def testMainWindows(qtbot, tmpdir):
     assert cmpFiles(sceneFile, path.join(testRef,"gui_1489056e0916_main.nwd"))
 
     # qtbot.stopForInteraction()
+
+@pytest.mark.gui
+def testProjectEditor(qtbot, tmpdir):
+    confDir = str(tmpdir.mkdir("conf"))
+    projDir = str(tmpdir.mkdir("project"))
+    nwGUI = nw.main(["--testmode","--config=%s" % confDir])
+    qtbot.addWidget(nwGUI)
+    nwGUI.show()
+    qtbot.waitForWindowShown(nwGUI)
+    qtbot.wait(stepDelay)
+
+    # Create new, save, open project
+    nwGUI.theProject.handleSeed = 42
+    assert nwGUI.theProject.setProjectPath(projDir)
+    assert nwGUI.newProject()
+    assert nwGUI.theProject.setProjectPath(projDir)
+
+    projEdit = GuiProjectEditor(nwGUI, nwGUI.theProject)
+    qtbot.addWidget(projEdit)
+
+    for c in "Project Name":
+        qtbot.keyClick(projEdit.editName, c, delay=keyDelay)
+    for c in "Project Title":
+        qtbot.keyClick(projEdit.editTitle, c, delay=keyDelay)
+    for c in "Jane Doe":
+        qtbot.keyClick(projEdit.editAuthors, c, delay=keyDelay)
+    qtbot.keyClick(projEdit.editAuthors, Qt.Key_Return, delay=keyDelay)
+    for c in "John Doh":
+        qtbot.keyClick(projEdit.editAuthors, c, delay=keyDelay)
+
+    qtbot.mouseClick(projEdit.saveButton, Qt.LeftButton)
+
+    projEdit = GuiProjectEditor(nwGUI, nwGUI.theProject)
+    qtbot.addWidget(projEdit)
+    assert projEdit.editName.text()    == "Project Name"
+    assert projEdit.editTitle.text()   == "Project Title"
+    theAuth = projEdit.editAuthors.toPlainText().strip().splitlines()
+    assert len(theAuth) == 2
+    assert theAuth[0] == "Jane Doe"
+    assert theAuth[1] == "John Doh"
+
+    qtbot.mouseClick(projEdit.closeButton, Qt.LeftButton)
+
+    qtbot.wait(stepDelay)
+    assert nwGUI.saveProject()
+    qtbot.wait(stepDelay)
+
+    # Check the files
+    projFile = path.join(projDir,"nwProject.nwx")
+    assert cmpFiles(projFile, path.join(testRef,"projedit_nwProject.nwx"), [2])
