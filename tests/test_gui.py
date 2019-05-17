@@ -103,9 +103,9 @@ def testMainWindows(qtbot, tmpdir):
     qtbot.wait(stepDelay)
 
     # Check the files
-    projFile = str(projDir.join("nwProject.nwx"))
+    projFile = path.join(projDir,"nwProject.nwx")
     assert cmpFiles(projFile, path.join(testRef,"gui_nwProject.nwx"), [2])
-    sceneFile = str(projDir.join("data_3","1489056e0916_main.nwd"))
+    sceneFile = path.join(projDir,"data_3","1489056e0916_main.nwd")
     assert cmpFiles(sceneFile, path.join(testRef,"gui_1489056e0916_main.nwd"))
 
     # qtbot.stopForInteraction()
