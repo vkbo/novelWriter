@@ -66,8 +66,8 @@ class GuiMain(QMainWindow):
         # Assemble Main Window
         self.stackPane = QStackedWidget()
         self.stackNone = self.stackPane.addWidget(QWidget())
-        self.stackDoc  = self.stackPane.addWidget(self.docEditor)
-        self.stackView = self.stackPane.addWidget(self.docViewer)
+        self.stackDoc  = self.stackPane.addWidget(QWidget())
+        self.stackView = self.stackPane.addWidget(QWidget())
         self.stackPane.setCurrentIndex(self.stackNone)
 
         self.treePane = QFrame()
@@ -78,7 +78,8 @@ class GuiMain(QMainWindow):
 
         self.splitMain = QSplitter(Qt.Horizontal)
         self.splitMain.addWidget(self.treePane)
-        self.splitMain.addWidget(self.stackPane)
+        self.splitMain.addWidget(self.docEditor)
+        self.splitMain.addWidget(self.docViewer)
         self.splitMain.setSizes(self.mainConf.mainPanePos)
         self.splitMain.splitterMoved.connect(self._splitMainMove)
 

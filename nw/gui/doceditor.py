@@ -79,7 +79,7 @@ class GuiDocEditor(QTextEdit):
         if self.mainConf.doJustify:
             self.theDoc.setDefaultTextOption(QTextOption(Qt.AlignJustify))
 
-        self.setMinimumWidth(400)
+        self.setMinimumWidth(300)
         self.setAcceptRichText(False)
         self.setFontPointSize(self.mainConf.textSize)
 
@@ -165,11 +165,18 @@ class GuiDocEditor(QTextEdit):
         set to True.
         """
         if self.mainConf.textFixedW:
+            vBar = self.verticalScrollBar()
+            if vBar.isVisible():
+                sW = vBar.width()
+            else:
+                sW = 0
             tW  = self.width()
-            sW  = self.verticalScrollBar().width()
             tM  = int((tW - sW - self.mainConf.textWidth)/2)
             mTB = self.mainConf.textMargin[0]
-            self.setViewportMargins(tM,mTB,0,mTB)
+            if tM > 0:
+                self.setViewportMargins(tM,mTB,0,mTB)
+            else:
+                self.setViewportMargins(0,mTB,0,mTB)
         return
 
     def docAction(self, theAction):
