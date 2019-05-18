@@ -381,6 +381,8 @@ class NWProject():
             tHandle = iterItems[n]
             tItem   = self.getItem(tHandle)
             n += 1
+            if n > 10000:
+                return # Just in case
             if tItem.parHandle is None:
                 # Item is a root, or already been identified as an orphaned item
                 sentItems.append(tHandle)
