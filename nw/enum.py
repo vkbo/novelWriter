@@ -38,15 +38,15 @@ class nwItemClass(Enum):
 
 class nwItemLayout(Enum):
 
-    NO_LAYOUT   = 0
-    TITLE       = 1
-    BOOK        = 2
-    PAGE        = 3
-    PARTITION   = 4
-    UNNUMBERED  = 5
-    CHAPTER     = 6
-    SCENE       = 7
-    NOTE        = 8
+    NO_LAYOUT  = 0
+    TITLE      = 1
+    BOOK       = 2
+    PAGE       = 3
+    PARTITION  = 4
+    UNNUMBERED = 5
+    CHAPTER    = 6
+    SCENE      = 7
+    NOTE       = 8
 
 # END Enum nwItemLayout
 
