@@ -245,6 +245,10 @@ class GuiMain(QMainWindow):
             return False
 
         tItem = self.theProject.getItem(tHandle)
+        if tItem is None:
+            logger.warning("Item not found")
+            return False
+
         if tItem.itemType == nwItemType.FILE:
             logger.debug("Generating preview for item %s" % tHandle)
             aDoc = ToHtml(self.theProject, self)
