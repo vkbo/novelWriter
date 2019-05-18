@@ -20,27 +20,27 @@ logger = logging.getLogger(__name__)
 
 class GuiDocHighlighter(QSyntaxHighlighter):
 
-    def __init__(self, theDoc):
+    def __init__(self, theDoc, theTheme):
         QSyntaxHighlighter.__init__(self, theDoc)
 
         logger.debug("Initialising DocHighlighter ...")
         self.mainConf   = nw.CONFIG
         self.theDoc     = theDoc
+        self.theTheme   = theTheme
         self.theDict    = None
         self.spellCheck = False
         self.hRules     = []
 
-        self.colHead    = QColor(  0,155,200)
-        self.colHeadH   = QColor(  0,105,135)
-        self.colEmph    = QColor(200,120,  0)
-        self.colDialN   = QColor(200, 46,  0)
-        self.colDialD   = QColor(184,200,  0)
-        self.colDialS   = QColor(136,200,  0)
-        self.colComm    = QColor(150,150,150)
-        self.colKey     = QColor(200, 46,  0)
-        self.colVal     = QColor(184,200,  0)
-
-        self.colSpell   = QColor(200, 46,  0)
+        self.colHead    = QColor(*self.theTheme.colHead)
+        self.colHeadH   = QColor(*self.theTheme.colHeadH)
+        self.colEmph    = QColor(*self.theTheme.colEmph)
+        self.colDialN   = QColor(*self.theTheme.colDialN)
+        self.colDialD   = QColor(*self.theTheme.colDialD)
+        self.colDialS   = QColor(*self.theTheme.colDialS)
+        self.colComm    = QColor(*self.theTheme.colComm)
+        self.colKey     = QColor(*self.theTheme.colKey)
+        self.colVal     = QColor(*self.theTheme.colVal)
+        self.colSpell   = QColor(*self.theTheme.colSpell)
 
         self.hStyles = {
             "header1"   : self._makeFormat(self.colHead, "bold",1.8),

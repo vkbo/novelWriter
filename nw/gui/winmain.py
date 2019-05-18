@@ -18,6 +18,7 @@ from PyQt5.QtWidgets      import QWidget, QMainWindow, QVBoxLayout, QFrame, QSpl
 from PyQt5.QtGui          import QIcon, QPixmap, QColor
 from PyQt5.QtCore         import Qt, QTimer
 
+from nw.theme             import Theme
 from nw.gui.doctree       import GuiDocTree
 from nw.gui.doceditor     import GuiDocEditor
 from nw.gui.docviewer     import GuiDocViewer
@@ -42,12 +43,14 @@ class GuiMain(QMainWindow):
 
         logger.debug("Initialising GUI ...")
         self.mainConf    = nw.CONFIG
+        self.theTheme    = Theme()
         self.theProject  = NWProject(self)
         self.theDocument = NWDoc(self.theProject, self)
 
         self.resize(*self.mainConf.winGeometry)
         self._setWindowTitle()
         self.setWindowIcon(QIcon(path.join(self.mainConf.appPath,"..","novelWriter.svg")))
+        self.theTheme.loadTheme()
 
         # Main GUI Elements
         self.docEditor  = GuiDocEditor(self)
@@ -70,27 +73,29 @@ class GuiMain(QMainWindow):
         self.treeBox.addWidget(self.docDetails)
         self.treePane.setLayout(self.treeBox)
 
+        self.splitView = QSplitter(Qt.Horizontal)
+        self.splitView.addWidget(self.docEditor)
+        self.splitView.addWidget(self.docViewer)
+
         self.splitMain = QSplitter(Qt.Horizontal)
         self.splitMain.addWidget(self.treePane)
-        self.splitMain.addWidget(self.docEditor)
-        self.splitMain.addWidget(self.docViewer)
+        self.splitMain.addWidget(self.splitView)
         self.splitMain.setSizes(self.mainConf.mainPanePos)
         self.splitMain.splitterMoved.connect(self._splitMainMove)
 
         self.setCentralWidget(self.splitMain)
 
         self.idxTree   = self.splitMain.indexOf(self.treePane)
-        self.idxEditor = self.splitMain.indexOf(self.docEditor)
-        self.idxViewer = self.splitMain.indexOf(self.docViewer)
+        self.idxMain   = self.splitMain.indexOf(self.splitView)
+        self.idxEditor = self.splitView.indexOf(self.docEditor)
+        self.idxViewer = self.splitView.indexOf(self.docViewer)
 
         self.splitMain.setCollapsible(self.idxTree,   False)
-        self.splitMain.setCollapsible(self.idxEditor, False)
-        self.splitMain.setCollapsible(self.idxViewer, True)
+        self.splitMain.setCollapsible(self.idxMain,   False)
+        self.splitView.setCollapsible(self.idxEditor, False)
+        self.splitView.setCollapsible(self.idxViewer, True)
 
         self.docViewer.setVisible(False)
-        pPos = self.mainConf.mainPanePos
-        tPos = [pPos[0], pPos[1]+pPos[2]]
-        self.splitMain.setSizes(tPos)
 
         # Build GUI Elements
         self.treeView.itemSelectionChanged.connect(self._treeSingleClick)
@@ -105,11 +110,7 @@ class GuiMain(QMainWindow):
         self.statusBar.showMessage("Ready")
 
         # Load Theme StyleSheet
-        cssFile = path.join(self.mainConf.themePath,self.mainConf.guiTheme+".css")
-        if path.isfile(cssFile):
-            with open(cssFile,mode="r") as inFile:
-                theCss = inFile.read()
-            self.setStyleSheet(theCss)
+        self.setStyleSheet(self.theTheme.cssData)
 
         self.asProjTimer = QTimer()
         self.asProjTimer.setInterval(int(self.mainConf.autoSaveProj*1000))
@@ -260,11 +261,10 @@ class GuiMain(QMainWindow):
 
             bPos = self.splitMain.sizes()
             self.docViewer.setVisible(True)
-            if bPos[2] == 0:
-                bWidth  = bPos[1]+bPos[2]
-                bPos[1] = int(bWidth/2)
-                bPos[2] = bWidth-bPos[1]
-            self.splitMain.setSizes(bPos)
+            vPos    = [0,0]
+            vPos[0] = int(bPos[1]/2)
+            vPos[1] = bPos[1]-vPos[0]
+            self.splitView.setSizes(vPos)
             self.docEditor.changeWidth()
 
         return True
@@ -346,6 +346,7 @@ class GuiMain(QMainWindow):
         self.mainConf.setWinSize(self.width(), self.height())
         self.mainConf.setTreeColWidths(self.treeView.getColumnSizes())
         self.mainConf.setMainPanePos(self.splitMain.sizes())
+        self.mainConf.setDocPanePos(self.splitView.sizes())
         self.mainConf.saveConfig()
         return
 
