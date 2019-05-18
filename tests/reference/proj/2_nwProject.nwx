@@ -53,6 +53,7 @@
       <charCount>0</charCount>
       <wordCount>0</wordCount>
       <paraCount>0</paraCount>
+      <cursorPos>0</cursorPos>
     </item>
     <item handle="39fa9ec190eee" order="None" parent="None">
       <name>Timeline</name>

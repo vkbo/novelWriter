@@ -3,7 +3,7 @@
 """
 
 import nw, pytest, types
-from os import path, unlink
+from os import path
 
 from nwtools import *
 from nwdummy import DummyMain
@@ -13,42 +13,40 @@ from nw.project.project import NWProject
 from nw.project.item    import NWItem
 from nw.enum            import nwItemClass
 
-theConf  = Config()
-theMain  = DummyMain()
+theConf = Config()
+theMain = DummyMain()
 theMain.mainConf = theConf
-testDir  = path.dirname(__file__)
-testTemp = path.join(testDir,"temp")
-testRef  = path.join(testDir,"reference")
-testProj = path.join(testTemp,"proj")
 
-ensureDir(testTemp)
-ensureDir(testProj)
-
-theConf.initConfig(testRef)
 theProject = NWProject(theMain)
 theProject.handleSeed = 42
 
-projFile = path.join(testProj,"nwProject.nwx")
-
 @pytest.mark.project
-def testProjectNew():
+def testProjectNew(nwTempProj,nwRef):
+    projFile = path.join(nwTempProj,"nwProject.nwx")
+    refFile  = path.join(nwRef,"proj","1_nwProject.nwx")
+    assert theConf.initConfig(nwRef)
     assert theProject.newProject()
-    assert theProject.setProjectPath(testProj)
+    assert theProject.setProjectPath(nwTempProj)
     assert theProject.saveProject()
-    assert cmpFiles(projFile, path.join(testRef,"new_nwProject.nwx"), [2])
+    assert cmpFiles(projFile, refFile, [2])
 
 @pytest.mark.project
-def testProjectOpen():
+def testProjectOpen(nwTempProj):
+    projFile = path.join(nwTempProj,"nwProject.nwx")
     assert theProject.openProject(projFile)
 
 @pytest.mark.project
-def testProjectSave():
+def testProjectSave(nwTempProj,nwRef):
+    projFile = path.join(nwTempProj,"nwProject.nwx")
+    refFile  = path.join(nwRef,"proj","1_nwProject.nwx")
     assert theProject.saveProject()
-    assert cmpFiles(projFile, path.join(testRef,"new_nwProject.nwx"), [2])
+    assert cmpFiles(projFile, refFile, [2])
     assert not theProject.projChanged
 
 @pytest.mark.project
-def testProjectNewRoot():
+def testProjectNewRoot(nwTempProj,nwRef):
+    projFile = path.join(nwTempProj,"nwProject.nwx")
+    refFile  = path.join(nwRef,"proj","2_nwProject.nwx")
     assert theProject.openProject(projFile)
     assert isinstance(theProject.newRoot("Novel",     nwItemClass.NOVEL),     type(None))
     assert isinstance(theProject.newRoot("Plot",      nwItemClass.PLOT),      type(None))
@@ -60,5 +58,5 @@ def testProjectNewRoot():
     assert isinstance(theProject.newRoot("Custom2",   nwItemClass.CUSTOM),    str)
     assert theProject.projChanged
     assert theProject.saveProject()
-    assert cmpFiles(projFile, path.join(testRef,"roots_nwProject.nwx"), [2])
+    assert cmpFiles(projFile, refFile, [2])
     assert not theProject.projChanged

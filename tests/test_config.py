@@ -4,40 +4,34 @@
 
 import nw, pytest
 from nwtools import *
-from os import path, unlink
+from os import path
 from nw.config import Config
 
-theConf  = Config()
-testDir  = path.dirname(__file__)
-testTemp = path.join(testDir,"temp")
-testRef  = path.join(testDir,"reference")
-tmpConf  = path.join(testTemp,"novelwriter.conf")
-refConf  = path.join(testRef, "novelwriter.conf")
-
-ensureDir(testTemp)
-
-# Clean out old stuff
-if path.isfile(tmpConf):
-    unlink(tmpConf)
+theConf = Config()
 
 @pytest.mark.core
-def testConfigInit():
-    assert theConf.initConfig(testTemp)
+def testConfigInit(nwTemp,nwRef):
+    tmpConf = path.join(nwTemp,"novelwriter.conf")
+    refConf = path.join(nwRef, "novelwriter.conf")
+    assert theConf.initConfig(nwTemp)
     assert cmpFiles(tmpConf, refConf, [2])
     assert not theConf.confChanged
 
 @pytest.mark.core
-def testConfigSave():
+def testConfigSave(nwTemp,nwRef):
+    tmpConf = path.join(nwTemp,"novelwriter.conf")
+    refConf = path.join(nwRef, "novelwriter.conf")
+    assert theConf.confPath == nwTemp
     assert theConf.saveConfig()
     assert cmpFiles(tmpConf, refConf, [2])
     assert not theConf.confChanged
 
 @pytest.mark.core
-def testConfigSetConfPath():
+def testConfigSetConfPath(nwTemp):
     assert theConf.setConfPath(None)
     assert not theConf.setConfPath(path.join("somewhere","over","the","rainbow"))
-    assert theConf.setConfPath(path.join(testTemp,"novelwriter.conf"))
-    assert theConf.confPath == testTemp
+    assert theConf.setConfPath(path.join(nwTemp,"novelwriter.conf"))
+    assert theConf.confPath == nwTemp
     assert theConf.confFile == "novelwriter.conf"
     assert not theConf.confChanged
 
@@ -47,7 +41,9 @@ def testConfigLoad():
     assert not theConf.confChanged
 
 @pytest.mark.core
-def testConfigSetWinSize():
+def testConfigSetWinSize(nwTemp,nwRef):
+    tmpConf = path.join(nwTemp,"novelwriter.conf")
+    refConf = path.join(nwRef, "novelwriter.conf")
     assert theConf.setWinSize(1105, 655)
     assert not theConf.confChanged
     assert theConf.setWinSize(70,70)
@@ -58,7 +54,9 @@ def testConfigSetWinSize():
     assert not theConf.confChanged
 
 @pytest.mark.core
-def testConfigSetTreeColWidths():
+def testConfigSetTreeColWidths(nwTemp,nwRef):
+    tmpConf = path.join(nwTemp,"novelwriter.conf")
+    refConf = path.join(nwRef, "novelwriter.conf")
     assert theConf.setTreeColWidths([0, 0, 0])
     assert theConf.confChanged
     assert theConf.setTreeColWidths([120, 30, 50])
@@ -67,7 +65,9 @@ def testConfigSetTreeColWidths():
     assert not theConf.confChanged
 
 @pytest.mark.core
-def testConfigSetMainPanePos():
+def testConfigSetMainPanePos(nwTemp,nwRef):
+    tmpConf = path.join(nwTemp,"novelwriter.conf")
+    refConf = path.join(nwRef, "novelwriter.conf")
     assert theConf.setMainPanePos([0, 0])
     assert theConf.confChanged
     assert theConf.setMainPanePos([300, 800])

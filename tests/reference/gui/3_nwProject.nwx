@@ -1,10 +1,8 @@
 <?xml version='1.0' encoding='utf-8'?>
-<novelWriterXML appVersion="0.1.2" fileVersion="1.0" timeStamp="2019-05-17 20:43:19">
+<novelWriterXML appVersion="0.1.2" fileVersion="1.0" timeStamp="2019-05-18 15:00:34">
   <project>
-    <name>Project Name</name>
-    <title>Project Title</title>
-    <author>Jane Doe</author>
-    <author>John Doh</author>
+    <name></name>
+    <title></title>
   </project>
   <settings>
     <spellCheck>False</spellCheck>
@@ -25,15 +23,16 @@
       <expanded>False</expanded>
     </item>
     <item handle="31489056e0916" order="0" parent="25fc0e7096fc6">
-      <name>New Scene</name>
+      <name>Just a Page</name>
       <type>FILE</type>
       <class>NOVEL</class>
-      <status>0</status>
+      <status>1</status>
       <expanded>False</expanded>
-      <layout>SCENE</layout>
+      <layout>PAGE</layout>
       <charCount>0</charCount>
       <wordCount>0</wordCount>
       <paraCount>0</paraCount>
+      <cursorPos>0</cursorPos>
     </item>
     <item handle="44cb730c42048" order="1" parent="None">
       <name>Characters</name>
