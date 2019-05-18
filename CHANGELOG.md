@@ -1,5 +1,15 @@
 # novelWriter ChangeLog
 
+## Version 0.1.3 [2019-05-18]
+
+**User Interface**
+
+* Cursor position is now saved when a document is saved, and restored when the document is opened. PR #12.
+
+**Test Suite**
+
+* Major upgrades to the test suite, now also testing GUI elements. Coverage at 73%. PRs #9 and #11.
+
 ## Version 0.1.2 [2019-05-12]
 
 **Bugfixes**
