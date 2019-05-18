@@ -126,6 +126,12 @@ class Config:
 
         # Get options
 
+        ## Main
+        cnfSec = "Main"
+        if confParser.has_section(cnfSec):
+            if confParser.has_option(cnfSec,"theme"):
+                self.guiTheme = confParser.get(cnfSec,"theme")
+
         ## Sizes
         cnfSec = "Sizes"
         if confParser.has_section(cnfSec):
@@ -204,6 +210,7 @@ class Config:
         cnfSec = "Main"
         confParser.add_section(cnfSec)
         confParser.set(cnfSec,"timestamp", datetime.now().strftime("%Y-%m-%d %H:%M:%S"))
+        confParser.set(cnfSec,"theme",     str(self.guiTheme))
 
         ## Sizes
         cnfSec = "Sizes"
