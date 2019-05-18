@@ -200,6 +200,10 @@ class GuiMain(QMainWindow):
         self.docEditor.setPwl(path.join(self.theProject.projMeta,"wordlist.txt"))
         self.docEditor.setSpellCheck(self.theProject.spellCheck)
         self.mainMenu.updateMenu()
+        if self.theProject.lastEdited is not None:
+            self.openDocument(self.theProject.lastEdited)
+        if self.theProject.lastViewed is not None:
+            self.viewDocument(self.theProject.lastViewed)
         return True
 
     def saveProject(self):
@@ -224,6 +228,7 @@ class GuiMain(QMainWindow):
         self.docEditor.setCursorPosition(self.theDocument.theItem.cursorPos)
         self.docEditor.changeWidth()
         self.docEditor.setFocus()
+        self.theProject.setLastEdited(tHandle)
         return True
 
     def saveDocument(self):
@@ -238,9 +243,10 @@ class GuiMain(QMainWindow):
             self.docEditor.setDocumentChanged(False)
         return True
 
-    def _previewDocument(self):
+    def viewDocument(self, tHandle=None):
 
-        tHandle = self.treeView.getSelectedHandle()
+        if tHandle is None:
+            tHandle = self.treeView.getSelectedHandle()
         if tHandle is None:
             logger.warning("No document selected")
             return
@@ -254,6 +260,8 @@ class GuiMain(QMainWindow):
             aDoc.tokenizeText()
             aDoc.doConvert()
             self.docViewer.setHtml(aDoc.theResult)
+            self.theProject.setLastViewed(tHandle)
+
             bPos = self.splitMain.sizes()
             self.docViewer.setVisible(True)
             if bPos[2] == 0:
@@ -261,7 +269,7 @@ class GuiMain(QMainWindow):
                 bPos[1] = int(bWidth/2)
                 bPos[2] = bWidth-bPos[1]
             self.splitMain.setSizes(bPos)
-        self.docEditor.changeWidth()
+            self.docEditor.changeWidth()
 
         return
 

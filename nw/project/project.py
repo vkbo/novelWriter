@@ -56,6 +56,8 @@ class NWProject():
         self.spellCheck   = False
         self.statusCols   = None
         self.importCols   = None
+        self.lastEdited   = None
+        self.lastViewed   = None
 
         # Set Defaults
         self.clearProject()
@@ -209,6 +211,10 @@ class NWProject():
                     if xItem.text is None: continue
                     if xItem.tag == "spellCheck":
                         self.spellCheck = checkBool(xItem.text,False)
+                    if xItem.tag == "lastEdited":
+                        self.lastEdited = checkString(xItem.text,None,True)
+                    if xItem.tag == "lastViewed":
+                        self.lastViewed = checkString(xItem.text,None,True)
             elif xChild.tag == "content":
                 logger.debug("Found project content")
                 for xItem in xChild:
@@ -267,6 +273,8 @@ class NWProject():
         # Save Project Settings
         xSettings = etree.SubElement(nwXML,"settings")
         self._saveProjectValue(xSettings,"spellCheck",self.spellCheck)
+        self._saveProjectValue(xSettings,"lastEdited",self.lastEdited)
+        self._saveProjectValue(xSettings,"lastViewed",self.lastViewed)
 
         # Save Tree Content
         logger.debug("Writing project content")
@@ -335,10 +343,20 @@ class NWProject():
         self.setProjectChanged(True)
         return True
 
+    def setLastEdited(self, tHandle):
+        self.lastEdited = tHandle
+        self.setProjectChanged(True)
+        return True
+
+    def setLastViewed(self, tHandle):
+        self.lastViewed = tHandle
+        self.setProjectChanged(True)
+        return True
+
     def setProjectChanged(self, bValue):
         self.projChanged = bValue
         self.theParent.setProjectStatus(self.projChanged)
-        return
+        return self.projChanged
 
     ##
     #  Get Functions

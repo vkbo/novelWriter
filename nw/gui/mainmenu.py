@@ -251,10 +251,10 @@ class GuiMainMenu(QMenuBar):
         self.docuMenu.addSeparator()
 
         # Document > Preview
-        menuItem = QAction(QIcon.fromTheme("text-html"), "Preview Document", self)
-        menuItem.setStatusTip("Preview Document")
+        menuItem = QAction(QIcon.fromTheme("text-html"), "View Document", self)
+        menuItem.setStatusTip("View Document in HTML")
         menuItem.setShortcut("Ctrl+R")
-        menuItem.triggered.connect(self.theParent._previewDocument)
+        menuItem.triggered.connect(self.theParent.viewDocument)
         self.docuMenu.addAction(menuItem)
 
         # # Document > Separator
