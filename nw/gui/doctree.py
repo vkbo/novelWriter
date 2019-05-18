@@ -296,8 +296,7 @@ class GuiDocTree(QTreeWidget):
 
     def buildTree(self):
         self.clear()
-        for tHandle in self.theProject.treeOrder:
-            nwItem = self.theProject.projTree[tHandle]
+        for nwItem in self.theProject.getProjectItems():
             self._addTreeItem(nwItem)
         return True
 

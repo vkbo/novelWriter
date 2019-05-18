@@ -368,6 +368,42 @@ class NWProject():
         logger.error("No tree item with handle %s" % str(tHandle))
         return None
 
+    def getProjectItems(self):
+        """This function is called from the tree view when building the tree. Each item in the
+        project is returned in the order saved in the project file, but first it checks that it has
+        a parent item already sent to the tree.
+        """
+        sentItems = []
+        iterItems = self.treeOrder.copy()
+        n    = 0
+        nMax = len(iterItems)
+        while n < nMax:
+            tHandle = iterItems[n]
+            tItem   = self.getItem(tHandle)
+            n += 1
+            if tItem.parHandle is None:
+                # Item is a root, or already been identified as an orphaned item
+                sentItems.append(tHandle)
+                yield tItem
+            elif tItem.parHandle in sentItems:
+                # Item's parent has been sent, so all is fine
+                sentItems.append(tHandle)
+                yield tItem
+            elif tItem.parHandle in iterItems:
+                # Item's parent exists, but hasn't been sent yet, so add it again to the end
+                logger.warning("Item %s found before its parent" % tHandle)
+                iterItems.append(tHandle)
+                nMax = len(iterItems)
+            else:
+                # Item is orphaned
+                logger.error("Item %s has no parent in current tree" % tHandle)
+                tItem.setParent(None)
+                yield tItem
+
+    ##
+    #  Class Methods
+    ##
+
     def findRootItem(self, theClass):
         for aRoot in self.treeRoots:
             if theClass == self.projTree[aRoot].itemClass:
