@@ -17,7 +17,7 @@ stepDelay = 50
 
 @pytest.mark.gui
 def testMainWindows(qtbot, nwTempGUI, nwRef):
-    nwGUI = nw.main(["--testmode","--config=%s" % nwRef])
+    nwGUI = nw.main(["--testmode","--config=%s" % nwTempGUI])
     qtbot.addWidget(nwGUI)
     nwGUI.show()
     qtbot.waitForWindowShown(nwGUI)
@@ -113,7 +113,7 @@ def testMainWindows(qtbot, nwTempGUI, nwRef):
 
 @pytest.mark.gui
 def testProjectEditor(qtbot, nwTempGUI, nwRef):
-    nwGUI = nw.main(["--testmode","--config=%s" % nwRef])
+    nwGUI = nw.main(["--testmode","--config=%s" % nwTempGUI])
     qtbot.addWidget(nwGUI)
     nwGUI.show()
     qtbot.waitForWindowShown(nwGUI)
@@ -163,7 +163,7 @@ def testProjectEditor(qtbot, nwTempGUI, nwRef):
 
 @pytest.mark.gui
 def testItemEditor(qtbot, nwTempGUI, nwRef):
-    nwGUI = nw.main(["--testmode","--config=%s" % nwRef])
+    nwGUI = nw.main(["--testmode","--config=%s" % nwTempGUI])
     qtbot.addWidget(nwGUI)
     nwGUI.show()
     qtbot.waitForWindowShown(nwGUI)
