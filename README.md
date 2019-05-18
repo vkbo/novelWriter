@@ -3,39 +3,83 @@
 [![Build Status](https://travis-ci.com/vkbo/novelWriter.svg?branch=master)](https://travis-ci.com/vkbo/novelWriter)
 [![codecov](https://codecov.io/gh/vkbo/novelWriter/branch/master/graph/badge.svg)](https://codecov.io/gh/vkbo/novelWriter)
 
-This is a reboot of my novelWriter application using Qt5 after abandoning the Gtk3 version now renamed novelWriterGtk and archived.
-The first usable version is under initial development.
+This is a reboot of my novelWriter application using Qt5.
+The old project, using Gtk3, has been renamed novelWriterGtk and archived.
 
-The application is written with Python3 and PyQt5, and developed on Linux. I will try to make sure it works on Windows as well.
+novelWriter is under initial development, but is currently usable.
+I use it for my own projects, but it is probably still smart to save the work frequently and take backups.
+
+The application is written with Python3 and PyQt5, and developed on Linux.
+I will try to make sure it works on Windows as well.
 
 **Note:** This application is designed specifically for my own needs as I work on my projects.
 I will only add features as I need them. I am trying to make the application as general as possible within that limitation.
 
+The application can be started from the source folder with the command:
+```
+./novelWriter.py
+```
+
+It also takes a few parameters for debugging and such, which can be listed with the switch `--help`.
+
+There are no launcher icons yet. Consult your operating system documentation for how to make those.
+
 ## Features
 
-The file format for the written text is a format similar to markdown, but with a few extensions.
+The file format for the written text is a format similar to markdown, but with a few extensions and a few omissions.
 Project meta data is stored as XML.
 
-Here is an overview of the core features I want to implement as a starting point:
+The core features of novelWriter are:
 
-* A simple plain text editor with a minimal set uf text decoration features based on markdown.
-* In addition to markdown type headings and text emphasis, I'm adding:
-  * `%` as the first character on the line to indicate a comment. That is, text that is neither counted towards the word count, nor exported when the document is converted.
-  * `@` as the first character on a line to indicate name/value metadata in files. This can be used to set POV characters, locations, etc. in scene and chapter files.
-* Each document can have subdocuments. The novel is intended to be broken down into Novel > Chapter > Scene, but it should be possible to split novel into chapter files, a chapter into scenes files automatically based on markdown headers of level 1 to 3.
-* The files are organised in a tree view, and there is no automatic sorting of the tree. That is, the order is the order the user decides.
-* Basic visualisation tools for the novel meta data if POV, locations, etc. have been set in the files.
-* The file format of projects should be such that version control software can be used. That is, no binary files.
+* A plain text editor with a minimal set of markdown formatting features, plus a few additional features like tags and comments. Note: tags and comments are not counted towards word counts.
+* Files are organised in tree view, with no automatic ordering. The order of the files are as you set them, and are saved in the same order.
+* Files live in a set of root folders, and cannot be moved between them. These are currently `Novel`, `Character`, `Plot`, `World`, `Timeline`, `Object` and a `Custom`. They can only be used once, except for the `Custom` one.
+* Within the root folders, files can be organised in folders. The folders will have no impact on the layout of the compiled novel, when I get around to adding the export feature. They are simply there for your convenience. the order of the text files in the final novel is dictated purely from the order of entries in the tree.
+* Each file can have a file layout, which currently doesn't do anything, other than indicate the purpose of the file. It will, however, be used to control the format and structure of the parts of the novel when the export features are added. Each chapter must have a chapter type file. The text of the chapter can be put in the same file, or in following scene files. The choice is yours. The entire book can also be written in a single file of type `Book`.
+* Documents can be either opened in the editor (left pane) or in view mode (right pane). That means two documents can be opened at once, making it easier to work on one while following the other.
 
-Future features that will be added:
+## Keyboard Shortcuts
 
-* Export options for HTML, open document format and PDF (probably via LaTeX or Pandoc).
-* Basic git integration to allow for reverting the project to a previous state while retaining the possibility to move forward again. That is, allow for automatic branching and commits.
-* An automated backup to zip file on exit or request.
+All features are available as keyboard shortcuts. These are as following:
+
+* `Ctrl+1`: Switch to tree view.
+* `Ctrl+2`: Switch to document editor.
+* `Ctrl+3`: Switch to document viewer.
+* `Return`: If in tree view, open a document for editing.
+* `Ctrl+R`: If in tree view, open a document for viewing.
+* `Ctrl+E`: If in tree view, edit a document or folder settings.
+* `Ctrl+Del`: If in tree view, move a document to trash, or delete a folder.
+* `Ctrl+S`: Save the current document in the editor.
+* `Ctrl+Shift+S`: Save the current project.
+* `Ctrl+A`: Select all text in document.
+* `Ctrl+Shift+A`: Select all text in current paragraph.
+* `Ctrl+B`: Format selected text, or word under cursor, as bold.
+* `Ctrl+I`: Format selected text, or word under cursor, as italic.
+* `Ctrl+U`: Format selected text, or word under cursor, as underline.
+* `Ctrl+D`: Wrap selected text, or word under cursor, in double quotes.
+* `Ctrl+Shift+D`: Wrap selected text, or word under cursor, in single quotes.
+* `Ctrl+F7`: Toggle spell checking.
+* `F7`: Re-run spell checker.
+* `Ctrl+.`: Correct word under cursor.
+
+Standard cut, copy, paste, undo and redo shortcuts are also present, so are a few more.
+Most shortcuts are labelled with the corresponding dropdown menu entry.
 
 ## Dependencies
+
+For the apt package manager, the following Python3 packages are needed.
 
 * python3-pyqt5
 * python3-appdirs
 * python3-lxml
 * python3-enchant
+
+Alternatively, the packages can be installed with `pip` by running
+```
+pip install -r requirements.txt
+```
+in the application folder.
+
+## Screenshot
+
+![Screenshot 1](screenshot.png)

@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='utf-8'?>
-<novelWriterXML appVersion="0.1.3" fileVersion="1.0" timeStamp="2019-05-18 18:12:49">
+<novelWriterXML appVersion="0.1.3" fileVersion="1.0" timeStamp="2019-05-18 21:40:50">
   <project>
     <name>Sample Project</name>
     <title>Sample Project</title>
@@ -7,9 +7,9 @@
     <author>Jay Doh</author>
   </project>
   <settings>
-    <spellCheck>False</spellCheck>
-    <lastEdited>96b68994dfa3d</lastEdited>
-    <lastViewed>96b68994dfa3d</lastViewed>
+    <spellCheck>True</spellCheck>
+    <lastEdited>636b6aa9b697b</lastEdited>
+    <lastViewed>636b6aa9b697b</lastViewed>
   </settings>
   <content count="15">
     <item handle="7031beac91f75" order="0" parent="None">
@@ -57,10 +57,10 @@
       <status>1</status>
       <expanded>False</expanded>
       <layout>SCENE</layout>
-      <charCount>405</charCount>
-      <wordCount>71</wordCount>
+      <charCount>578</charCount>
+      <wordCount>104</wordCount>
       <paraCount>5</paraCount>
-      <cursorPos>421</cursorPos>
+      <cursorPos>658</cursorPos>
     </item>
     <item handle="bc0cbd2a407f3" order="2" parent="e7ded148d6e4a">
       <name>New File</name>
