@@ -206,15 +206,19 @@ class GuiMain(QMainWindow):
             self.saveDocument()
         self.stackPane.setCurrentIndex(self.stackDoc)
         self.docEditor.setText(self.theDocument.openDocument(tHandle))
+        self.docEditor.setCursorPosition(self.theDocument.theItem.cursorPos)
         self.docEditor.changeWidth()
+        self.docEditor.setFocus()
         return True
 
     def saveDocument(self):
         if self.theDocument.theItem is not None:
             docHtml = self.docEditor.getText()
+            cursPos = self.docEditor.getCursorPosition()
             self.theDocument.theItem.setCharCount(self.docEditor.charCount)
             self.theDocument.theItem.setWordCount(self.docEditor.wordCount)
             self.theDocument.theItem.setParaCount(self.docEditor.paraCount)
+            self.theDocument.theItem.setCursorPos(cursPos)
             self.theDocument.saveDocument(docHtml)
             self.docEditor.setDocumentChanged(False)
         return True

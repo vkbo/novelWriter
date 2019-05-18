@@ -120,6 +120,16 @@ class GuiDocEditor(QTextEdit):
         theText = self.toPlainText()
         return theText
 
+    def setCursorPosition(self, thePosition):
+        theCursor = self.textCursor()
+        theCursor.setPosition(thePosition)
+        self.setTextCursor(theCursor)
+        return True
+
+    def getCursorPosition(self):
+        theCursor = self.textCursor()
+        return theCursor.position()
+
     ##
     #  Spell Checking
     ##
