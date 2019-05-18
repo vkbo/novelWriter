@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='utf-8'?>
-<novelWriterXML appVersion="0.1.0" fileVersion="1.0" timeStamp="2019-05-12 16:22:26">
+<novelWriterXML appVersion="0.1.2" fileVersion="1.0" timeStamp="2019-05-18 13:47:34">
   <project>
     <name>Sample Project</name>
     <title>Sample Project</title>
@@ -27,6 +27,7 @@
       <charCount>23</charCount>
       <wordCount>5</wordCount>
       <paraCount>1</paraCount>
+      <cursorPos>0</cursorPos>
     </item>
     <item handle="e7ded148d6e4a" order="1" parent="7031beac91f75">
       <name>Some Chapter</name>
@@ -45,6 +46,7 @@
       <charCount>2571</charCount>
       <wordCount>377</wordCount>
       <paraCount>5</paraCount>
+      <cursorPos>0</cursorPos>
     </item>
     <item handle="636b6aa9b697b" order="1" parent="e7ded148d6e4a">
       <name>File With Stuff</name>
@@ -53,9 +55,10 @@
       <status>1</status>
       <expanded>False</expanded>
       <layout>SCENE</layout>
-      <charCount>417</charCount>
+      <charCount>405</charCount>
       <wordCount>71</wordCount>
       <paraCount>5</paraCount>
+      <cursorPos>421</cursorPos>
     </item>
     <item handle="bc0cbd2a407f3" order="2" parent="e7ded148d6e4a">
       <name>New File</name>
@@ -67,6 +70,7 @@
       <charCount>69</charCount>
       <wordCount>17</wordCount>
       <paraCount>1</paraCount>
+      <cursorPos>0</cursorPos>
     </item>
     <item handle="f6622b4617424" order="1" parent="None">
       <name>Characters</name>
@@ -92,6 +96,7 @@
       <charCount>42</charCount>
       <wordCount>8</wordCount>
       <paraCount>1</paraCount>
+      <cursorPos>0</cursorPos>
     </item>
     <item handle="bb2c23b3c42cc" order="1" parent="f7e2d9f330615">
       <name>Jane Smith</name>
@@ -103,6 +108,7 @@
       <charCount>51</charCount>
       <wordCount>9</wordCount>
       <paraCount>1</paraCount>
+      <cursorPos>0</cursorPos>
     </item>
     <item handle="73eee34351f85" order="2" parent="None">
       <name>Locations</name>
@@ -121,6 +127,7 @@
       <charCount>66</charCount>
       <wordCount>13</wordCount>
       <paraCount>1</paraCount>
+      <cursorPos>0</cursorPos>
     </item>
     <item handle="f75dac270c2a7" order="3" parent="None">
       <name>Trash</name>
@@ -139,6 +146,7 @@
       <charCount>0</charCount>
       <wordCount>0</wordCount>
       <paraCount>0</paraCount>
+      <cursorPos>0</cursorPos>
     </item>
     <item handle="879437bde105e" order="1" parent="f75dac270c2a7">
       <name>New File</name>
@@ -150,6 +158,7 @@
       <charCount>0</charCount>
       <wordCount>0</wordCount>
       <paraCount>0</paraCount>
+      <cursorPos>0</cursorPos>
     </item>
   </content>
 </novelWriterXML>

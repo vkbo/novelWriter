@@ -14,14 +14,10 @@ from nw.enum              import *
 
 keyDelay  = 10
 stepDelay = 50
-testDir   = path.dirname(__file__)
-testRef   = path.join(testDir,"reference")
 
 @pytest.mark.gui
-def testMainWindows(qtbot, tmpdir):
-    confDir = str(tmpdir.mkdir("conf"))
-    projDir = str(tmpdir.mkdir("project"))
-    nwGUI = nw.main(["--testmode","--config=%s" % confDir])
+def testMainWindows(qtbot, nwTempGUI, nwRef):
+    nwGUI = nw.main(["--testmode","--config=%s" % nwTempGUI])
     qtbot.addWidget(nwGUI)
     nwGUI.show()
     qtbot.waitForWindowShown(nwGUI)
@@ -29,12 +25,12 @@ def testMainWindows(qtbot, tmpdir):
 
     # Create new, save, open project
     nwGUI.theProject.handleSeed = 42
-    assert nwGUI.theProject.setProjectPath(projDir)
+    assert nwGUI.theProject.setProjectPath(nwTempGUI)
     assert nwGUI.newProject()
-    assert nwGUI.theProject.setProjectPath(projDir)
+    assert nwGUI.theProject.setProjectPath(nwTempGUI)
     assert nwGUI.saveProject()
     qtbot.wait(stepDelay)
-    assert nwGUI.openProject(projDir)
+    assert nwGUI.openProject(nwTempGUI)
     qtbot.wait(stepDelay)
 
     # Check that tree items have been created
@@ -108,18 +104,16 @@ def testMainWindows(qtbot, tmpdir):
     qtbot.wait(stepDelay)
 
     # Check the files
-    projFile = path.join(projDir,"nwProject.nwx")
-    assert cmpFiles(projFile, path.join(testRef,"gui_nwProject.nwx"), [2])
-    sceneFile = path.join(projDir,"data_3","1489056e0916_main.nwd")
-    assert cmpFiles(sceneFile, path.join(testRef,"gui_1489056e0916_main.nwd"))
+    projFile = path.join(nwTempGUI,"nwProject.nwx")
+    assert cmpFiles(projFile, path.join(nwRef,"gui","1_nwProject.nwx"), [2])
+    sceneFile = path.join(nwTempGUI,"data_3","1489056e0916_main.nwd")
+    assert cmpFiles(sceneFile, path.join(nwRef,"gui","1_1489056e0916_main.nwd"))
 
     # qtbot.stopForInteraction()
 
 @pytest.mark.gui
-def testProjectEditor(qtbot, tmpdir):
-    confDir = str(tmpdir.mkdir("conf"))
-    projDir = str(tmpdir.mkdir("project"))
-    nwGUI = nw.main(["--testmode","--config=%s" % confDir])
+def testProjectEditor(qtbot, nwTempGUI, nwRef):
+    nwGUI = nw.main(["--testmode","--config=%s" % nwTempGUI])
     qtbot.addWidget(nwGUI)
     nwGUI.show()
     qtbot.waitForWindowShown(nwGUI)
@@ -127,9 +121,9 @@ def testProjectEditor(qtbot, tmpdir):
 
     # Create new, save, open project
     nwGUI.theProject.handleSeed = 42
-    assert nwGUI.theProject.setProjectPath(projDir)
+    assert nwGUI.theProject.setProjectPath(nwTempGUI)
     assert nwGUI.newProject()
-    assert nwGUI.theProject.setProjectPath(projDir)
+    assert nwGUI.theProject.setProjectPath(nwTempGUI)
 
     projEdit = GuiProjectEditor(nwGUI, nwGUI.theProject)
     qtbot.addWidget(projEdit)
@@ -162,16 +156,14 @@ def testProjectEditor(qtbot, tmpdir):
     qtbot.wait(stepDelay)
 
     # Check the files
-    projFile = path.join(projDir,"nwProject.nwx")
-    assert cmpFiles(projFile, path.join(testRef,"projedit_nwProject.nwx"), [2])
+    projFile = path.join(nwTempGUI,"nwProject.nwx")
+    assert cmpFiles(projFile, path.join(nwRef,"gui","2_nwProject.nwx"), [2])
 
     # qtbot.stopForInteraction()
 
 @pytest.mark.gui
-def testItemEditor(qtbot, tmpdir):
-    confDir = str(tmpdir.mkdir("conf"))
-    projDir = str(tmpdir.mkdir("project"))
-    nwGUI = nw.main(["--testmode","--config=%s" % confDir])
+def testItemEditor(qtbot, nwTempGUI, nwRef):
+    nwGUI = nw.main(["--testmode","--config=%s" % nwTempGUI])
     qtbot.addWidget(nwGUI)
     nwGUI.show()
     qtbot.waitForWindowShown(nwGUI)
@@ -179,9 +171,9 @@ def testItemEditor(qtbot, tmpdir):
 
     # Create new, save, open project
     nwGUI.theProject.handleSeed = 42
-    assert nwGUI.theProject.setProjectPath(projDir)
+    assert nwGUI.theProject.setProjectPath(nwTempGUI)
     assert nwGUI.newProject()
-    assert nwGUI.theProject.setProjectPath(projDir)
+    assert nwGUI.theProject.setProjectPath(nwTempGUI)
 
     itemEdit = GuiItemEditor(nwGUI, nwGUI.theProject, "31489056e0916")
     qtbot.addWidget(itemEdit)
@@ -211,7 +203,7 @@ def testItemEditor(qtbot, tmpdir):
     qtbot.wait(stepDelay)
 
     # Check the files
-    projFile = path.join(projDir,"nwProject.nwx")
-    assert cmpFiles(projFile, path.join(testRef,"itemedit_nwProject.nwx"), [2])
+    projFile = path.join(nwTempGUI,"nwProject.nwx")
+    assert cmpFiles(projFile, path.join(nwRef,"gui","3_nwProject.nwx"), [2])
 
     # qtbot.stopForInteraction()

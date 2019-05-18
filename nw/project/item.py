@@ -38,9 +38,11 @@ class NWItem():
         self.itemStatus  = 0
         self.isExpanded  = False
 
+        # Document Meta Data
         self.charCount   = 0
         self.wordCount   = 0
         self.paraCount   = 0
+        self.cursorPos   = 0
 
         return
 
@@ -64,6 +66,7 @@ class NWItem():
             xSub = self._subPack(xPack,"charCount", text=str(self.charCount), none=False)
             xSub = self._subPack(xPack,"wordCount", text=str(self.wordCount), none=False)
             xSub = self._subPack(xPack,"paraCount", text=str(self.paraCount), none=False)
+            xSub = self._subPack(xPack,"cursorPos", text=str(self.cursorPos), none=False)
         return xPack
 
     def _subPack(self, xParent, name, attrib=None, text=None, none=True):
@@ -90,6 +93,7 @@ class NWItem():
         elif tagName == "charCount": self.setCharCount(tagValue)
         elif tagName == "wordCount": self.setWordCount(tagValue)
         elif tagName == "paraCount": self.setParaCount(tagValue)
+        elif tagName == "cursorPos": self.setCursorPos(tagValue)
         else:
             logger.error("Unknown tag '%s'" % tagName)
         return
@@ -166,7 +170,7 @@ class NWItem():
         return
 
     ##
-    #  Set Stats
+    #  Set Document Meta Data
     ##
 
     def setCharCount(self, theCount):
@@ -182,6 +186,11 @@ class NWItem():
     def setParaCount(self, theCount):
         theCount = checkInt(theCount,0)
         self.paraCount = theCount
+        return
+
+    def setCursorPos(self, thePosition):
+        thePosition = checkInt(thePosition,0)
+        self.cursorPos = thePosition
         return
 
 # END Class NWItem

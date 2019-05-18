@@ -100,7 +100,7 @@ class GuiDocEditor(QTextEdit):
         return
 
     ##
-    #  Class Methods
+    #  Setters and Getters
     ##
 
     def setDocumentChanged(self, bValue):
@@ -115,6 +115,24 @@ class GuiDocEditor(QTextEdit):
         self.wcTimer.start()
         self.setDocumentChanged(False)
         return True
+
+    def getText(self):
+        theText = self.toPlainText()
+        return theText
+
+    def setCursorPosition(self, thePosition):
+        theCursor = self.textCursor()
+        theCursor.setPosition(thePosition)
+        self.setTextCursor(theCursor)
+        return True
+
+    def getCursorPosition(self):
+        theCursor = self.textCursor()
+        return theCursor.position()
+
+    ##
+    #  Spell Checking
+    ##
 
     def setPwl(self, pwlFile):
         if pwlFile is not None:
@@ -134,9 +152,13 @@ class GuiDocEditor(QTextEdit):
             self.rehighlightDocument()
         return True
 
-    def getText(self):
-        theText = self.toPlainText()
-        return theText
+    def rehighlightDocument(self):
+        self.hLight.rehighlight()
+        return
+
+    ##
+    #  General Class Methods
+    ##
 
     def changeWidth(self):
         """Automatically adjust the margins so the text is centred, but only if Config.textFixedW is
@@ -168,10 +190,6 @@ class GuiDocEditor(QTextEdit):
             logger.error("Unknown or unsupported document action %s" % str(theAction))
             return False
         return True
-
-    def rehighlightDocument(self):
-        self.hLight.rehighlight()
-        return
 
     ##
     #  Document Events and Maintenance
