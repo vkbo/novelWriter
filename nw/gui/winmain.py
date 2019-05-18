@@ -18,6 +18,7 @@ from PyQt5.QtWidgets      import QWidget, QMainWindow, QVBoxLayout, QFrame, QSpl
 from PyQt5.QtGui          import QIcon, QPixmap, QColor
 from PyQt5.QtCore         import Qt, QTimer
 
+from nw.theme             import Theme
 from nw.gui.doctree       import GuiDocTree
 from nw.gui.doceditor     import GuiDocEditor
 from nw.gui.docviewer     import GuiDocViewer
@@ -42,12 +43,14 @@ class GuiMain(QMainWindow):
 
         logger.debug("Initialising GUI ...")
         self.mainConf    = nw.CONFIG
+        self.theTheme    = Theme()
         self.theProject  = NWProject(self)
         self.theDocument = NWDoc(self.theProject, self)
 
         self.resize(*self.mainConf.winGeometry)
         self._setWindowTitle()
         self.setWindowIcon(QIcon(path.join(self.mainConf.appPath,"..","novelWriter.svg")))
+        self.theTheme.loadTheme()
 
         # Main GUI Elements
         self.docEditor  = GuiDocEditor(self)
@@ -107,11 +110,7 @@ class GuiMain(QMainWindow):
         self.statusBar.showMessage("Ready")
 
         # Load Theme StyleSheet
-        cssFile = path.join(self.mainConf.themePath,self.mainConf.guiTheme+".css")
-        if path.isfile(cssFile):
-            with open(cssFile,mode="r") as inFile:
-                theCss = inFile.read()
-            self.setStyleSheet(theCss)
+        self.setStyleSheet(self.theTheme.cssData)
 
         self.asProjTimer = QTimer()
         self.asProjTimer.setInterval(int(self.mainConf.autoSaveProj*1000))

@@ -27,14 +27,16 @@ class GuiDocViewer(QTextBrowser):
         # Class Variables
         self.mainConf  = nw.CONFIG
         self.theParent = theParent
+        self.theTheme  = theParent.theTheme
 
         self.theDoc = self.document()
-        self.theDoc.setDefaultStyleSheet("""
-            h1, h2, h3, h4 {
-                color: rgb(0,155,200);
-            }
-        """)
-
+        self.theDoc.setDefaultStyleSheet((
+            "h1, h2, h3, h4 {{"
+            "  color: rgb({0},{1},{2});"
+            "}}"
+        ).format(
+            *self.theTheme.colHead
+        ))
         self.theDoc.setDocumentMargin(self.mainConf.textMargin[0])
         self.setMinimumWidth(300)
 
