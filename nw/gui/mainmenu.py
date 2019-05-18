@@ -98,7 +98,7 @@ class GuiMainMenu(QMenuBar):
         self.theProject.setSpellCheck(self.toolsSpellCheck.isChecked())
         self.theParent.docEditor.setSpellCheck(self.toolsSpellCheck.isChecked())
         logger.verbose("Spell check is set to %s" % str(self.theProject.spellCheck))
-        return
+        return True
 
     def _showAbout(self):
         msgBox = QMessageBox()
@@ -251,10 +251,10 @@ class GuiMainMenu(QMenuBar):
         self.docuMenu.addSeparator()
 
         # Document > Preview
-        menuItem = QAction(QIcon.fromTheme("text-html"), "Preview Document", self)
-        menuItem.setStatusTip("Preview Document")
+        menuItem = QAction(QIcon.fromTheme("text-html"), "View Document", self)
+        menuItem.setStatusTip("View Document in HTML")
         menuItem.setShortcut("Ctrl+R")
-        menuItem.triggered.connect(self.theParent._previewDocument)
+        menuItem.triggered.connect(self.theParent.viewDocument)
         self.docuMenu.addAction(menuItem)
 
         # # Document > Separator
@@ -292,11 +292,11 @@ class GuiMainMenu(QMenuBar):
         self.viewMenu.addAction(menuItem)
 
         # # View > Document Pane 2
-        # menuItem = QAction(QIcon.fromTheme("go-last"), "Right Document Pane", self)
-        # menuItem.setStatusTip("Move to Right Document Pane")
-        # menuItem.setShortcut("Ctrl+3")
-        # menuItem.triggered.connect(lambda : self.theParent.setFocus(3))
-        # self.viewMenu.addAction(menuItem)
+        menuItem = QAction(QIcon.fromTheme("go-last"), "Right Document Pane", self)
+        menuItem.setStatusTip("Move to Right Document Pane")
+        menuItem.setShortcut("Ctrl+3")
+        menuItem.triggered.connect(lambda : self.theParent.setFocus(3))
+        self.viewMenu.addAction(menuItem)
 
         return
 

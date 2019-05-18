@@ -64,12 +64,6 @@ class GuiMain(QMainWindow):
         self.importLabels = []
 
         # Assemble Main Window
-        self.stackPane = QStackedWidget()
-        self.stackNone = self.stackPane.addWidget(QWidget())
-        self.stackDoc  = self.stackPane.addWidget(self.docEditor)
-        self.stackView = self.stackPane.addWidget(self.docViewer)
-        self.stackPane.setCurrentIndex(self.stackNone)
-
         self.treePane = QFrame()
         self.treeBox  = QVBoxLayout()
         self.treeBox.addWidget(self.treeView)
@@ -78,11 +72,25 @@ class GuiMain(QMainWindow):
 
         self.splitMain = QSplitter(Qt.Horizontal)
         self.splitMain.addWidget(self.treePane)
-        self.splitMain.addWidget(self.stackPane)
+        self.splitMain.addWidget(self.docEditor)
+        self.splitMain.addWidget(self.docViewer)
         self.splitMain.setSizes(self.mainConf.mainPanePos)
         self.splitMain.splitterMoved.connect(self._splitMainMove)
 
         self.setCentralWidget(self.splitMain)
+
+        self.idxTree   = self.splitMain.indexOf(self.treePane)
+        self.idxEditor = self.splitMain.indexOf(self.docEditor)
+        self.idxViewer = self.splitMain.indexOf(self.docViewer)
+
+        self.splitMain.setCollapsible(self.idxTree,   False)
+        self.splitMain.setCollapsible(self.idxEditor, False)
+        self.splitMain.setCollapsible(self.idxViewer, True)
+
+        self.docViewer.setVisible(False)
+        pPos = self.mainConf.mainPanePos
+        tPos = [pPos[0], pPos[1]+pPos[2]]
+        self.splitMain.setSizes(tPos)
 
         # Build GUI Elements
         self.treeView.itemSelectionChanged.connect(self._treeSingleClick)
@@ -186,6 +194,10 @@ class GuiMain(QMainWindow):
         self.docEditor.setPwl(path.join(self.theProject.projMeta,"wordlist.txt"))
         self.docEditor.setSpellCheck(self.theProject.spellCheck)
         self.mainMenu.updateMenu()
+        if self.theProject.lastEdited is not None:
+            self.openDocument(self.theProject.lastEdited)
+        if self.theProject.lastViewed is not None:
+            self.viewDocument(self.theProject.lastViewed)
         return True
 
     def saveProject(self):
@@ -204,11 +216,12 @@ class GuiMain(QMainWindow):
     def openDocument(self, tHandle):
         if self._takeDocumentAction():
             self.saveDocument()
-        self.stackPane.setCurrentIndex(self.stackDoc)
         self.docEditor.setText(self.theDocument.openDocument(tHandle))
+        self.docEditor.setReadOnly(False)
         self.docEditor.setCursorPosition(self.theDocument.theItem.cursorPos)
         self.docEditor.changeWidth()
         self.docEditor.setFocus()
+        self.theProject.setLastEdited(tHandle)
         return True
 
     def saveDocument(self):
@@ -223,24 +236,34 @@ class GuiMain(QMainWindow):
             self.docEditor.setDocumentChanged(False)
         return True
 
-    def _previewDocument(self):
+    def viewDocument(self, tHandle=None):
 
-        tHandle = self.treeView.getSelectedHandle()
+        if tHandle is None:
+            tHandle = self.treeView.getSelectedHandle()
         if tHandle is None:
             logger.warning("No document selected")
-            return
+            return False
 
         tItem = self.theProject.getItem(tHandle)
         if tItem.itemType == nwItemType.FILE:
             logger.debug("Generating preview for item %s" % tHandle)
-            self.stackPane.setCurrentIndex(self.stackView)
             aDoc = ToHtml(self.theProject, self)
             aDoc.setText(tHandle)
             aDoc.tokenizeText()
             aDoc.doConvert()
             self.docViewer.setHtml(aDoc.theResult)
+            self.theProject.setLastViewed(tHandle)
 
-        return
+            bPos = self.splitMain.sizes()
+            self.docViewer.setVisible(True)
+            if bPos[2] == 0:
+                bWidth  = bPos[1]+bPos[2]
+                bPos[1] = int(bWidth/2)
+                bPos[2] = bWidth-bPos[1]
+            self.splitMain.setSizes(bPos)
+            self.docEditor.changeWidth()
+
+        return True
 
     ##
     #  Tree Item Actions
@@ -326,8 +349,9 @@ class GuiMain(QMainWindow):
         if paneNo == 1:
             self.treeView.setFocus()
         elif paneNo == 2:
-            if self.stackPane.currentIndex() == self.stackDoc:
-                self.docEditor.setFocus()
+            self.docEditor.setFocus()
+        elif paneNo == 3:
+            self.docViewer.setFocus()
         return
 
     ##
@@ -361,8 +385,6 @@ class GuiMain(QMainWindow):
         return True
 
     def _takeDocumentAction(self):
-        if self.stackPane.currentIndex() != self.stackDoc:
-            return False
         if self.theDocument.theItem is None:
             return False
         if not self.docEditor.docChanged:
@@ -397,8 +419,7 @@ class GuiMain(QMainWindow):
         """Extend QMainWindow.resizeEvent to signal dependent GUI elements that its pane may have changed size.
         """
         QMainWindow.resizeEvent(self,theEvent)
-        if self.stackPane.currentIndex() == self.stackDoc:
-            self.docEditor.changeWidth()
+        self.docEditor.changeWidth()
         return
 
     def closeEvent(self, theEvent):
@@ -441,8 +462,7 @@ class GuiMain(QMainWindow):
     def _splitMainMove(self, pWidth, pHeight):
         """Alert dependent GUI elements that the main pane splitter has been moved.
         """
-        if self.stackPane.currentIndex() == self.stackDoc:
-            self.docEditor.changeWidth()
+        self.docEditor.changeWidth()
         return
 
 # END Class GuiMain

@@ -28,6 +28,11 @@ class GuiDocViewer(QTextBrowser):
         self.mainConf  = nw.CONFIG
         self.theParent = theParent
 
+        self.theDoc = self.document()
+
+        self.theDoc.setDocumentMargin(self.mainConf.textMargin[0])
+        self.setMinimumWidth(300)
+
         logger.debug("DocViewer initialisation complete")
 
         return

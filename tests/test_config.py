@@ -70,7 +70,7 @@ def testConfigSetMainPanePos(nwTemp,nwRef):
     refConf = path.join(nwRef, "novelwriter.conf")
     assert theConf.setMainPanePos([0, 0])
     assert theConf.confChanged
-    assert theConf.setMainPanePos([300, 800])
+    assert theConf.setMainPanePos([300, 400, 400])
     assert theConf.saveConfig()
     assert cmpFiles(tmpConf, refConf, [2])
     assert not theConf.confChanged

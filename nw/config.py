@@ -48,7 +48,7 @@ class Config:
         self.guiTheme     = "default"
         self.winGeometry  = [1100, 650]
         self.treeColWidth = [120, 30, 50]
-        self.mainPanePos  = [300, 800]
+        self.mainPanePos  = [300, 400, 400]
 
         ## Project
         self.autoSaveProj = 60
@@ -138,7 +138,7 @@ class Config:
                 )
             if confParser.has_option(cnfSec,"mainpane"):
                 self.mainPanePos = self.unpackList(
-                    confParser.get(cnfSec,"mainpane"), 2, self.mainPanePos
+                    confParser.get(cnfSec,"mainpane"), 3, self.mainPanePos
                 )
 
         ## Project
