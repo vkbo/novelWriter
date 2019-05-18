@@ -85,6 +85,19 @@ class GuiMain(QMainWindow):
 
         self.setCentralWidget(self.splitMain)
 
+        self.idxTree   = self.splitMain.indexOf(self.treePane)
+        self.idxEditor = self.splitMain.indexOf(self.docEditor)
+        self.idxViewer = self.splitMain.indexOf(self.docViewer)
+
+        self.splitMain.setCollapsible(self.idxTree,   False)
+        self.splitMain.setCollapsible(self.idxEditor, False)
+        self.splitMain.setCollapsible(self.idxViewer, True)
+
+        self.docViewer.setVisible(False)
+        pPos = self.mainConf.mainPanePos
+        tPos = [pPos[0], pPos[1]+pPos[2]]
+        self.splitMain.setSizes(tPos)
+
         # Build GUI Elements
         self.treeView.itemSelectionChanged.connect(self._treeSingleClick)
         self.treeView.itemDoubleClicked.connect(self._treeDoubleClick)
@@ -207,6 +220,7 @@ class GuiMain(QMainWindow):
             self.saveDocument()
         self.stackPane.setCurrentIndex(self.stackDoc)
         self.docEditor.setText(self.theDocument.openDocument(tHandle))
+        self.docEditor.setReadOnly(False)
         self.docEditor.setCursorPosition(self.theDocument.theItem.cursorPos)
         self.docEditor.changeWidth()
         self.docEditor.setFocus()
@@ -240,6 +254,14 @@ class GuiMain(QMainWindow):
             aDoc.tokenizeText()
             aDoc.doConvert()
             self.docViewer.setHtml(aDoc.theResult)
+            bPos = self.splitMain.sizes()
+            self.docViewer.setVisible(True)
+            if bPos[2] == 0:
+                bWidth  = bPos[1]+bPos[2]
+                bPos[1] = int(bWidth/2)
+                bPos[2] = bWidth-bPos[1]
+            self.splitMain.setSizes(bPos)
+        self.docEditor.changeWidth()
 
         return
 
@@ -327,8 +349,9 @@ class GuiMain(QMainWindow):
         if paneNo == 1:
             self.treeView.setFocus()
         elif paneNo == 2:
-            if self.stackPane.currentIndex() == self.stackDoc:
-                self.docEditor.setFocus()
+            self.docEditor.setFocus()
+        elif paneNo == 3:
+            self.docViewer.setFocus()
         return
 
     ##

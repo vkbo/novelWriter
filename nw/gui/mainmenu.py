@@ -292,11 +292,11 @@ class GuiMainMenu(QMenuBar):
         self.viewMenu.addAction(menuItem)
 
         # # View > Document Pane 2
-        # menuItem = QAction(QIcon.fromTheme("go-last"), "Right Document Pane", self)
-        # menuItem.setStatusTip("Move to Right Document Pane")
-        # menuItem.setShortcut("Ctrl+3")
-        # menuItem.triggered.connect(lambda : self.theParent.setFocus(3))
-        # self.viewMenu.addAction(menuItem)
+        menuItem = QAction(QIcon.fromTheme("go-last"), "Right Document Pane", self)
+        menuItem.setStatusTip("Move to Right Document Pane")
+        menuItem.setShortcut("Ctrl+3")
+        menuItem.triggered.connect(lambda : self.theParent.setFocus(3))
+        self.viewMenu.addAction(menuItem)
 
         return
 
