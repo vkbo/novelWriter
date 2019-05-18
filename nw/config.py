@@ -48,7 +48,8 @@ class Config:
         self.guiTheme     = "default"
         self.winGeometry  = [1100, 650]
         self.treeColWidth = [120, 30, 50]
-        self.mainPanePos  = [300, 400, 400]
+        self.mainPanePos  = [300, 800]
+        self.docPanePos   = [400, 400]
 
         ## Project
         self.autoSaveProj = 60
@@ -138,7 +139,11 @@ class Config:
                 )
             if confParser.has_option(cnfSec,"mainpane"):
                 self.mainPanePos = self.unpackList(
-                    confParser.get(cnfSec,"mainpane"), 3, self.mainPanePos
+                    confParser.get(cnfSec,"mainpane"), 2, self.mainPanePos
+                )
+            if confParser.has_option(cnfSec,"docpane"):
+                self.docPanePos = self.unpackList(
+                    confParser.get(cnfSec,"docpane"), 2, self.docPanePos
                 )
 
         ## Project
@@ -206,6 +211,7 @@ class Config:
         confParser.set(cnfSec,"geometry", self.packList(self.winGeometry))
         confParser.set(cnfSec,"treecols", self.packList(self.treeColWidth))
         confParser.set(cnfSec,"mainpane", self.packList(self.mainPanePos))
+        confParser.set(cnfSec,"docpane",  self.packList(self.docPanePos))
 
         ## Project
         cnfSec = "Project"
@@ -295,6 +301,11 @@ class Config:
 
     def setMainPanePos(self, panePos):
         self.mainPanePos = panePos
+        self.confChanged = True
+        return True
+
+    def setDocPanePos(self, panePos):
+        self.docPanePos  = panePos
         self.confChanged = True
         return True
 
