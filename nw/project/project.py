@@ -383,7 +383,10 @@ class NWProject():
             n += 1
             if n > 10000:
                 return # Just in case
-            if tItem.parHandle is None:
+            if tItem is None:
+                # Technically a bug since treeOrder is built from the same data as projTree
+                continue
+            elif tItem.parHandle is None:
                 # Item is a root, or already been identified as an orphaned item
                 sentItems.append(tHandle)
                 yield tItem
