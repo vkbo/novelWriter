@@ -98,7 +98,7 @@ class GuiMainMenu(QMenuBar):
         self.theProject.setSpellCheck(self.toolsSpellCheck.isChecked())
         self.theParent.docEditor.setSpellCheck(self.toolsSpellCheck.isChecked())
         logger.verbose("Spell check is set to %s" % str(self.theProject.spellCheck))
-        return
+        return True
 
     def _showAbout(self):
         msgBox = QMessageBox()

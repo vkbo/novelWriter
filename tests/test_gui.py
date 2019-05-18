@@ -47,6 +47,8 @@ def testMainWindows(qtbot, nwTempGUI, nwRef):
     nwGUI.treeView._getTreeItem("25fc0e7096fc6").setExpanded(True)
     nwGUI.treeView._getTreeItem("31489056e0916").setSelected(True)
     assert nwGUI.openSelectedItem()
+    nwGUI.mainMenu.toolsSpellCheck.setChecked(True)
+    assert nwGUI.mainMenu._toggleSpellCheck()
 
     # Type something into the document
     nwGUI.docEditor.setFocus()
