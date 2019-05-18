@@ -176,6 +176,7 @@ class GuiDocEditor(QTextEdit):
             mTB = self.mainConf.textMargin[0]
             if tM >= 10:
                 self.setViewportMargins(tM,mTB,0,mTB)
+                self.setLineWrapColumnOrWidth(self.mainConf.textWidth)
             else:
                 self.setViewportMargins(10,mTB,0,mTB)
                 self.setLineWrapColumnOrWidth(tW - sW - 20)

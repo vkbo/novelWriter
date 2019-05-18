@@ -64,12 +64,6 @@ class GuiMain(QMainWindow):
         self.importLabels = []
 
         # Assemble Main Window
-        self.stackPane = QStackedWidget()
-        self.stackNone = self.stackPane.addWidget(QWidget())
-        self.stackDoc  = self.stackPane.addWidget(QWidget())
-        self.stackView = self.stackPane.addWidget(QWidget())
-        self.stackPane.setCurrentIndex(self.stackNone)
-
         self.treePane = QFrame()
         self.treeBox  = QVBoxLayout()
         self.treeBox.addWidget(self.treeView)
@@ -222,7 +216,6 @@ class GuiMain(QMainWindow):
     def openDocument(self, tHandle):
         if self._takeDocumentAction():
             self.saveDocument()
-        self.stackPane.setCurrentIndex(self.stackDoc)
         self.docEditor.setText(self.theDocument.openDocument(tHandle))
         self.docEditor.setReadOnly(False)
         self.docEditor.setCursorPosition(self.theDocument.theItem.cursorPos)
@@ -254,7 +247,6 @@ class GuiMain(QMainWindow):
         tItem = self.theProject.getItem(tHandle)
         if tItem.itemType == nwItemType.FILE:
             logger.debug("Generating preview for item %s" % tHandle)
-            self.stackPane.setCurrentIndex(self.stackView)
             aDoc = ToHtml(self.theProject, self)
             aDoc.setText(tHandle)
             aDoc.tokenizeText()
@@ -393,8 +385,6 @@ class GuiMain(QMainWindow):
         return True
 
     def _takeDocumentAction(self):
-        if self.stackPane.currentIndex() != self.stackDoc:
-            return False
         if self.theDocument.theItem is None:
             return False
         if not self.docEditor.docChanged:
@@ -429,8 +419,7 @@ class GuiMain(QMainWindow):
         """Extend QMainWindow.resizeEvent to signal dependent GUI elements that its pane may have changed size.
         """
         QMainWindow.resizeEvent(self,theEvent)
-        if self.stackPane.currentIndex() == self.stackDoc:
-            self.docEditor.changeWidth()
+        self.docEditor.changeWidth()
         return
 
     def closeEvent(self, theEvent):
@@ -473,8 +462,7 @@ class GuiMain(QMainWindow):
     def _splitMainMove(self, pWidth, pHeight):
         """Alert dependent GUI elements that the main pane splitter has been moved.
         """
-        if self.stackPane.currentIndex() == self.stackDoc:
-            self.docEditor.changeWidth()
+        self.docEditor.changeWidth()
         return
 
 # END Class GuiMain
