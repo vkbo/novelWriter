@@ -242,7 +242,7 @@ class GuiMain(QMainWindow):
             tHandle = self.treeView.getSelectedHandle()
         if tHandle is None:
             logger.warning("No document selected")
-            return
+            return False
 
         tItem = self.theProject.getItem(tHandle)
         if tItem.itemType == nwItemType.FILE:
@@ -263,7 +263,7 @@ class GuiMain(QMainWindow):
             self.splitMain.setSizes(bPos)
             self.docEditor.changeWidth()
 
-        return
+        return True
 
     ##
     #  Tree Item Actions

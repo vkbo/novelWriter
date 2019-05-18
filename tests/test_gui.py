@@ -105,6 +105,10 @@ def testMainWindows(qtbot, nwTempGUI, nwRef):
     assert nwGUI.saveDocument()
     qtbot.wait(stepDelay)
 
+    # Open and view the edited document
+    assert nwGUI.openDocument("31489056e0916")
+    assert nwGUI.viewDocument("31489056e0916")
+
     # Check the files
     projFile = path.join(nwTempGUI,"nwProject.nwx")
     assert cmpFiles(projFile, path.join(nwRef,"gui","1_nwProject.nwx"), [2])
