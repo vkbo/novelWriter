@@ -17,7 +17,7 @@ from os              import path
 
 from PyQt5.QtWidgets import (
     QDialog, QHBoxLayout, QVBoxLayout, QGroupBox, QFormLayout, QLineEdit, QPlainTextEdit,
-    QPushButton, QWidget, QTabWidget
+    QPushButton, QWidget, QTabWidget, QDialogButtonBox
 )
 from PyQt5.QtSvg     import QSvgWidget
 
@@ -31,6 +31,7 @@ class GuiProjectEditor(QDialog):
         logger.debug("Initialising ProjectEditor ...")
 
         self.mainConf   = nw.CONFIG
+        self.theParent  = theParent
         self.theProject = theProject
         self.outerBox   = QHBoxLayout()
         self.innerBox   = QVBoxLayout()
@@ -41,26 +42,21 @@ class GuiProjectEditor(QDialog):
         self.svgGradient = QSvgWidget(self.gradPath)
         self.svgGradient.setFixedWidth(80)
 
-        # self.tabWidget = QTabWidget()
+        self.tabMain   = GuiProjectEditMain(self.theParent, self.theProject)
+
+        self.tabWidget = QTabWidget()
+        self.tabWidget.addTab(self.tabMain,"Settings")
 
         self.setLayout(self.outerBox)
         self.outerBox.addWidget(self.svgGradient)
         self.outerBox.addLayout(self.innerBox)
 
-        self.tabSettings = GuiProjectEditMain(self.theProject)
+        self.buttonBox = QDialogButtonBox(QDialogButtonBox.Ok | QDialogButtonBox.Cancel)
+        self.buttonBox.accepted.connect(self._doSave)
+        self.buttonBox.rejected.connect(self._doClose)
 
-        self.buttonBox = QHBoxLayout()
-        self.closeButton = QPushButton("Close")
-        self.closeButton.clicked.connect(self._doClose)
-        self.saveButton = QPushButton("Save")
-        self.saveButton.clicked.connect(self._doSave)
-        self.buttonBox.addStretch(1)
-        self.buttonBox.addWidget(self.closeButton)
-        self.buttonBox.addWidget(self.saveButton)
-
-        # self.mainGroup.setLayout(self.mainForm)
-        self.innerBox.addWidget(self.tabSettings)
-        self.innerBox.addLayout(self.buttonBox)
+        self.innerBox.addWidget(self.tabWidget)
+        self.innerBox.addWidget(self.buttonBox)
 
         self.show()
 
@@ -70,9 +66,9 @@ class GuiProjectEditor(QDialog):
 
     def _doSave(self):
         logger.verbose("ProjectEditor save button clicked")
-        projName    = self.editName.text()
-        bookTitle   = self.editTitle.text()
-        bookAuthors = self.editAuthors.toPlainText()
+        projName    = self.tabMain.editName.text()
+        bookTitle   = self.tabMain.editTitle.text()
+        bookAuthors = self.tabMain.editAuthors.toPlainText()
         self.theProject.setProjectName(projName)
         self.theProject.setBookTitle(bookTitle)
         self.theProject.setBookAuthors(bookAuthors)
@@ -87,17 +83,14 @@ class GuiProjectEditor(QDialog):
 
 # END Class GuiProjectEditor
 
-class GuiProjectEditMain(QGroupBox):
+class GuiProjectEditMain(QWidget):
 
-    def __init__(self, theProject):
-        QGroupBox.__init__(self)
+    def __init__(self, theParent, theProject):
+        QWidget.__init__(self, theParent)
 
-        self.theProject = theProject
-
-        # self.mainGroup = QGroupBox("Project Settings")
-        self.setTitle("Project Settings")
-        self.mainForm  = QFormLayout()
-
+        self.theParent   = theParent
+        self.theProject  = theProject
+        self.mainForm    = QFormLayout()
         self.editName    = QLineEdit()
         self.editTitle   = QLineEdit()
         self.editAuthors = QPlainTextEdit()
