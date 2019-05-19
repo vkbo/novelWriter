@@ -92,11 +92,8 @@ class GuiDocTree(QTreeWidget):
     def newTreeItem(self, itemType, itemClass):
 
         pHandle = self.getSelectedHandle()
-        if pHandle is None:
-            self.makeAlert("No valid parent item selected", nwAlert.ERROR)
-            return False
 
-        if itemClass is None:
+        if itemClass is None and pHandle is not None:
             itemClass = self.theProject.getItem(pHandle).itemClass
         if itemClass is None:
             self.makeAlert("Failed to find an appropriate item class for item %s" % pHandle, nwAlert.BUG)
