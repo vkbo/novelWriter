@@ -259,19 +259,12 @@ class GuiDocTree(QTreeWidget):
         tStatus = nwLabels.CLASS_FLAG[nwItem.itemClass]
         if nwItem.itemType == nwItemType.FILE:
             tStatus += "."+nwLabels.LAYOUT_FLAG[nwItem.itemLayout]
-        nStatus = nwItem.itemStatus
         if tClass == nwItemClass.NOVEL:
-            if nStatus < 0 or nStatus >= len(self.theParent.statusIcons):
-                flagIcon = self.theParent.statusIcons[0]
-            else:
-                flagIcon = self.theParent.statusIcons[nStatus]
+            flagIcon = self.theParent.statusIcons[nwItem.itemStatus]
         else:
-            if nStatus < 0 or nStatus >= len(self.theParent.importIcons):
-                flagIcon = self.theParent.importIcons[0]
-            else:
-                flagIcon = self.theParent.importIcons[nStatus]
+            flagIcon = self.theParent.importIcons[nwItem.itemStatus]
 
-        trItem.setText(self.C_NAME,tName)
+        trItem.setText(self.C_NAME, tName)
         trItem.setText(self.C_FLAGS,tStatus)
         trItem.setIcon(self.C_FLAGS,flagIcon)
 

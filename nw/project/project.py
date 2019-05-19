@@ -13,15 +13,16 @@
 import logging
 import nw
 
-from os              import path, mkdir, listdir
-from lxml            import etree
-from hashlib         import sha256
-from datetime        import datetime
-from time            import time
+from os       import path, mkdir, listdir
+from lxml     import etree
+from hashlib  import sha256
+from datetime import datetime
+from time     import time
 
-from nw.enum         import nwItemType, nwItemClass, nwItemLayout, nwAlert
-from nw.common       import checkString, checkBool
-from nw.project.item import NWItem
+from nw.enum           import nwItemType, nwItemClass, nwItemLayout, nwAlert
+from nw.common         import checkString, checkBool
+from nw.project.item   import NWItem
+from nw.project.status import NWStatus
 
 logger = logging.getLogger(__name__)
 
@@ -54,8 +55,8 @@ class NWProject():
 
         # Project Settings
         self.spellCheck   = False
-        self.statusCols   = None
-        self.importCols   = None
+        self.statusItems  = NWStatus()
+        self.importItems  = NWStatus()
         self.lastEdited   = None
         self.lastViewed   = None
 
@@ -75,7 +76,7 @@ class NWProject():
         if not self.checkRootUnique(rootClass):
             self.makeAlert("Duplicate root item detected!", nwAlert.ERROR)
             return None
-        newItem = NWItem()
+        newItem = NWItem(self)
         newItem.setName(rootName)
         newItem.setType(nwItemType.ROOT)
         newItem.setClass(rootClass)
@@ -83,7 +84,7 @@ class NWProject():
         return newItem.itemHandle
 
     def newFolder(self, folderName, folderClass, pHandle):
-        newItem = NWItem()
+        newItem = NWItem(self)
         newItem.setName(folderName)
         newItem.setType(nwItemType.FOLDER)
         newItem.setClass(folderClass)
@@ -91,7 +92,7 @@ class NWProject():
         return newItem.itemHandle
 
     def newFile(self, fileName, fileClass, pHandle):
-        newItem = NWItem()
+        newItem = NWItem(self)
         newItem.setName(fileName)
         newItem.setType(nwItemType.FILE)
         if fileClass == nwItemClass.NOVEL:
@@ -103,7 +104,7 @@ class NWProject():
         return newItem.itemHandle
 
     def addTrash(self):
-        newItem = NWItem()
+        newItem = NWItem(self)
         newItem.setName("Trash")
         newItem.setType(nwItemType.TRASH)
         newItem.setClass(nwItemClass.TRASH)
@@ -144,18 +145,16 @@ class NWProject():
         self.bookTitle   = ""
         self.bookAuthors = []
         self.spellCheck  = False
-        self.statusCols  = [
-            ("New",     100,100,100),
-            ("Note",    200, 50,  0),
-            ("Draft",   200,150,  0),
-            ("Finished", 50,200,  0),
-        ]
-        self.importCols  = [
-            ("None",    100,100,100),
-            ("Minor",   200, 50,  0),
-            ("Major",   200,150,  0),
-            ("Main",     50,200,  0),
-        ]
+        self.statusItems = NWStatus()
+        self.statusItems.addEntry("New",     (100,100,100))
+        self.statusItems.addEntry("Note",    (200, 50,  0))
+        self.statusItems.addEntry("Draft",   (200,150,  0))
+        self.statusItems.addEntry("Finished",( 50,200,  0))
+        self.importItems = NWStatus()
+        self.importItems.addEntry("None",    (100,100,100))
+        self.importItems.addEntry("Minor",   (200, 50,  0))
+        self.importItems.addEntry("Major",   (200,150,  0))
+        self.importItems.addEntry("Main",    ( 50,200,  0))
 
         return
 
@@ -228,7 +227,7 @@ class NWProject():
                         pHandle = itemAttrib["parent"]
                     else:
                         pHandle = None
-                    nwItem = NWItem()
+                    nwItem = NWItem(self)
                     for xValue in xItem:
                         nwItem.setFromTag(xValue.tag,xValue.text)
                     self._appendItem(tHandle,pHandle,nwItem)
@@ -353,11 +352,13 @@ class NWProject():
         self.setProjectChanged(True)
         return True
 
-    def setStatusColours(self, newCols):
+    def setStatusColours(self, newCols, colChanged):
+        print(newCols,colChanged)
         self.setProjectChanged(True)
         return
 
-    def setImportColours(self, newCols):
+    def setImportColours(self, newCols, colChanged):
+        print(newCols,colChanged)
         self.setProjectChanged(True)
         return
 
@@ -500,7 +501,7 @@ class NWProject():
         nOrph = 0
         for oHandle in orphanFiles:
             nOrph += 1
-            orItem = NWItem()
+            orItem = NWItem(self)
             orItem.setName("Orphaned File %d" % nOrph)
             orItem.setType(nwItemType.FILE)
             orItem.setClass(nwItemClass.NO_CLASS)

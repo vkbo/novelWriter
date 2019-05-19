@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='utf-8'?>
-<novelWriterXML appVersion="0.1.3" fileVersion="1.0" timeStamp="2019-05-19 14:27:22">
+<novelWriterXML appVersion="0.1.3" fileVersion="1.0" timeStamp="2019-05-19 19:03:13">
   <project>
     <name>Sample Project</name>
     <title>Sample Project</title>
@@ -16,14 +16,14 @@
       <name>Novel</name>
       <type>ROOT</type>
       <class>NOVEL</class>
-      <status>0</status>
+      <status>New</status>
       <expanded>True</expanded>
     </item>
     <item handle="53b69b83cdafc" order="0" parent="7031beac91f75">
       <name>Title Page</name>
       <type>FILE</type>
       <class>NOVEL</class>
-      <status>2</status>
+      <status>Draft</status>
       <expanded>False</expanded>
       <layout>TITLE</layout>
       <charCount>23</charCount>
@@ -35,14 +35,14 @@
       <name>Some Chapter</name>
       <type>FOLDER</type>
       <class>NOVEL</class>
-      <status>1</status>
+      <status>Note</status>
       <expanded>True</expanded>
     </item>
     <item handle="96b68994dfa3d" order="0" parent="e7ded148d6e4a">
       <name>New Scene</name>
       <type>FILE</type>
       <class>NOVEL</class>
-      <status>2</status>
+      <status>Draft</status>
       <expanded>False</expanded>
       <layout>SCENE</layout>
       <charCount>2571</charCount>
@@ -54,7 +54,7 @@
       <name>File With Stuff</name>
       <type>FILE</type>
       <class>NOVEL</class>
-      <status>1</status>
+      <status>Note</status>
       <expanded>False</expanded>
       <layout>SCENE</layout>
       <charCount>578</charCount>
@@ -66,7 +66,7 @@
       <name>New File</name>
       <type>FILE</type>
       <class>NOVEL</class>
-      <status>0</status>
+      <status>Note</status>
       <expanded>False</expanded>
       <layout>SCENE</layout>
       <charCount>69</charCount>
@@ -78,21 +78,21 @@
       <name>Characters</name>
       <type>ROOT</type>
       <class>CHARACTER</class>
-      <status>0</status>
+      <status>None</status>
       <expanded>True</expanded>
     </item>
     <item handle="f7e2d9f330615" order="0" parent="f6622b4617424">
       <name>Main Characters</name>
       <type>FOLDER</type>
       <class>CHARACTER</class>
-      <status>0</status>
+      <status>None</status>
       <expanded>True</expanded>
     </item>
     <item handle="14298de4d9524" order="0" parent="f7e2d9f330615">
       <name>John Smith</name>
       <type>FILE</type>
       <class>CHARACTER</class>
-      <status>0</status>
+      <status>Minor</status>
       <expanded>False</expanded>
       <layout>NOTE</layout>
       <charCount>42</charCount>
@@ -104,7 +104,7 @@
       <name>Jane Smith</name>
       <type>FILE</type>
       <class>CHARACTER</class>
-      <status>0</status>
+      <status>Major</status>
       <expanded>False</expanded>
       <layout>NOTE</layout>
       <charCount>51</charCount>
@@ -116,14 +116,14 @@
       <name>Locations</name>
       <type>ROOT</type>
       <class>WORLD</class>
-      <status>0</status>
+      <status>None</status>
       <expanded>True</expanded>
     </item>
     <item handle="b3e74dbc1f584" order="0" parent="15c4492bd5107">
       <name>Earth</name>
       <type>FILE</type>
       <class>WORLD</class>
-      <status>0</status>
+      <status>None</status>
       <expanded>False</expanded>
       <layout>NOTE</layout>
       <charCount>0</charCount>
@@ -135,14 +135,14 @@
       <name>Trash</name>
       <type>TRASH</type>
       <class>TRASH</class>
-      <status>0</status>
+      <status>None</status>
       <expanded>True</expanded>
     </item>
     <item handle="4cd0bd12b087d" order="0" parent="98acd8c76c93a">
       <name>Orphaned File 2</name>
       <type>FILE</type>
       <class>NO_CLASS</class>
-      <status>0</status>
+      <status>None</status>
       <expanded>False</expanded>
       <layout>NO_LAYOUT</layout>
       <charCount>14</charCount>

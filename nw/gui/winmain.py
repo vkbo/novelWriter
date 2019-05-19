@@ -61,10 +61,8 @@ class GuiMain(QMainWindow):
         self.statusBar  = GuiMainStatus(self)
 
         # Minor Gui Elements
-        self.statusIcons  = []
-        self.statusLabels = []
-        self.importIcons  = []
-        self.importLabels = []
+        self.statusIcons = []
+        self.importIcons = []
 
         # Assemble Main Window
         self.treePane = QFrame()
@@ -397,23 +395,19 @@ class GuiMain(QMainWindow):
         return True
 
     def _makeStatusIcons(self):
-        self.statusIcons  = []
-        self.statusLabels = []
-        for sLabel, sR, sG, sB in self.theProject.statusCols:
+        self.statusIcons = {}
+        for sLabel, sCol in self.theProject.statusItems:
             theIcon = QPixmap(32,32)
-            theIcon.fill(QColor(sR,sG,sB))
-            self.statusIcons.append(QIcon(theIcon))
-            self.statusLabels.append(sLabel)
+            theIcon.fill(QColor(*sCol))
+            self.statusIcons[sLabel] = QIcon(theIcon)
         return
 
     def _makeImportIcons(self):
-        self.importIcons  = []
-        self.importLabels = []
-        for sLabel, sR, sG, sB in self.theProject.importCols:
+        self.importIcons = {}
+        for sLabel, sCol in self.theProject.importItems:
             theIcon = QPixmap(32,32)
-            theIcon.fill(QColor(sR,sG,sB))
-            self.importIcons.append(QIcon(theIcon))
-            self.importLabels.append(sLabel)
+            theIcon.fill(QColor(*sCol))
+            self.importIcons[sLabel] = QIcon(theIcon)
         return
 
     ##

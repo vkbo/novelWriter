@@ -13,15 +13,17 @@
 import logging
 import nw
 
-from os              import path
+from os import path
 
-from PyQt5.QtGui     import QIcon, QPixmap, QColor
+from PyQt5.QtGui     import QIcon, QPixmap, QColor, QBrush
 from PyQt5.QtSvg     import QSvgWidget
 from PyQt5.QtWidgets import (
     QDialog, QHBoxLayout, QVBoxLayout, QFormLayout, QLineEdit, QPlainTextEdit, QLabel,
     QWidget, QTabWidget, QDialogButtonBox, QListWidget, QListWidgetItem, QPushButton,
     QColorDialog
 )
+
+from nw.enum import nwChanged
 
 logger = logging.getLogger(__name__)
 
@@ -45,8 +47,8 @@ class GuiProjectEditor(QDialog):
         self.svgGradient.setFixedWidth(80)
 
         self.tabMain   = GuiProjectEditMain(self.theParent, self.theProject)
-        self.tabStatus = GuiProjectEditStatus(self.theParent, self.theProject.statusCols)
-        self.tabImport = GuiProjectEditStatus(self.theParent, self.theProject.importCols)
+        self.tabStatus = GuiProjectEditStatus(self.theParent, self.theProject.statusItems)
+        self.tabImport = GuiProjectEditStatus(self.theParent, self.theProject.importItems)
 
         self.tabWidget = QTabWidget()
         self.tabWidget.addTab(self.tabMain,  "Settings")
@@ -80,10 +82,10 @@ class GuiProjectEditor(QDialog):
         self.theProject.setBookTitle(bookTitle)
         self.theProject.setBookAuthors(bookAuthors)
 
-        statusCol = self.tabStatus.getNewList()
-        importCol = self.tabImport.getNewList()
-        self.theProject.setStatusColours(statusCol)
-        self.theProject.setImportColours(importCol)
+        statusCol, statusChange = self.tabStatus.getNewList()
+        importCol, importChange = self.tabImport.getNewList()
+        self.theProject.setStatusColours(statusCol, statusChange)
+        self.theProject.setImportColours(importCol, importChange)
 
         self.close()
 
@@ -127,11 +129,12 @@ class GuiProjectEditMain(QWidget):
 
 class GuiProjectEditStatus(QWidget):
 
-    def __init__(self, theParent, colList):
+    def __init__(self, theParent, theStatus):
         QWidget.__init__(self, theParent)
 
         self.theParent  = theParent
-        self.colList    = colList.copy()
+        self.theStatus  = theStatus
+        self.colNames   = []
         self.colChanged = False
 
         self.mainBox    = QHBoxLayout()
@@ -140,8 +143,9 @@ class GuiProjectEditStatus(QWidget):
         self.listBox    = QListWidget()
         self.listBox.itemSelectionChanged.connect(self._selectedItem)
 
-        for iName, iR, iG, iB in self.colList:
-            self._addItem(iName, iR, iG, iB)
+        for iName, iCol in self.theStatus:
+            self._addItem(iName, iCol)
+            self.colNames.append(iName)
 
         self.editName   = QLineEdit()
         self.newButton  = QPushButton("New")
@@ -153,6 +157,7 @@ class GuiProjectEditStatus(QWidget):
         self.colButton.setIconSize(self.colPixmap.rect().size())
 
         self.newButton.clicked.connect(self._newItem)
+        self.delButton.clicked.connect(self._delItem)
         self.saveButton.clicked.connect(self._saveItem)
         self.colButton.clicked.connect(self._selectColour)
 
@@ -181,8 +186,8 @@ class GuiProjectEditStatus(QWidget):
                 nImg  = nItem.icon().pixmap(16,16).toImage()
                 nCol  = QColor(nImg.pixel(7,7))
                 newList.append((nName,nCol.red(),nCol.green(),nCol.blue()))
-            return newList
-        return self.colList
+            return newList, self.colNames
+        return None, None
 
     ##
     #  User Actions
@@ -201,7 +206,25 @@ class GuiProjectEditStatus(QWidget):
         return
 
     def _newItem(self):
-        self._addItem("New Item", 0, 0, 0)
+        newItem = self._addItem("New Item", (0, 0, 0))
+        newItem.setBackground(QBrush(QColor(0,255,0,80)))
+        self.colNames.append(None)
+        self.colChanged = True
+        return
+
+    def _delItem(self):
+        selItem = self._getSelectedItem()
+        colDel  = QBrush(QColor(255,0,0,80))
+        colNone = QBrush(QColor(0,0,0,0))
+        if selItem is not None:
+            sText = selItem.text()
+            iRow  = self.listBox.row(selItem)
+            if sText == "** Delete **":
+                selItem.setBackground(colNone)
+                selItem.setText(self.colNames[iRow])
+            else:
+                selItem.setBackground(colDel)
+                selItem.setText("** Delete **")
         return
 
     def _saveItem(self):
@@ -213,15 +236,15 @@ class GuiProjectEditStatus(QWidget):
             self.colChanged = True
         return
 
-    def _addItem(self, iName, iR, iG, iB):
+    def _addItem(self, iName, iCol):
         logger.verbose("New item button clicked")
         newIcon = QPixmap(16,16)
-        newIcon.fill(QColor(iR,iG,iB))
+        newIcon.fill(QColor(*iCol))
         newItem = QListWidgetItem()
         newItem.setText(iName)
         newItem.setIcon(QIcon(newIcon))
         self.listBox.addItem(newItem)
-        return
+        return newItem
 
     def _selectedItem(self):
         logger.verbose("Item selected")
