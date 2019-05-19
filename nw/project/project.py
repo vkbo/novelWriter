@@ -353,6 +353,14 @@ class NWProject():
         self.setProjectChanged(True)
         return True
 
+    def setStatusColours(self, newCols):
+        self.setProjectChanged(True)
+        return
+
+    def setImportColours(self, newCols):
+        self.setProjectChanged(True)
+        return
+
     def setProjectChanged(self, bValue):
         self.projChanged = bValue
         self.theParent.setProjectStatus(self.projChanged)
