@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='utf-8'?>
-<novelWriterXML appVersion="0.1.3" fileVersion="1.0" timeStamp="2019-05-18 20:51:40">
+<novelWriterXML appVersion="0.1.3" fileVersion="1.0" timeStamp="2019-05-19 14:27:22">
   <project>
     <name>Sample Project</name>
     <title>Sample Project</title>
@@ -8,10 +8,10 @@
   </project>
   <settings>
     <spellCheck>True</spellCheck>
-    <lastEdited>636b6aa9b697b</lastEdited>
+    <lastEdited>4cd0bd12b087d</lastEdited>
     <lastViewed>636b6aa9b697b</lastViewed>
   </settings>
-  <content count="15">
+  <content count="14">
     <item handle="7031beac91f75" order="0" parent="None">
       <name>Novel</name>
       <type>ROOT</type>
@@ -112,55 +112,43 @@
       <paraCount>1</paraCount>
       <cursorPos>0</cursorPos>
     </item>
-    <item handle="73eee34351f85" order="2" parent="None">
+    <item handle="15c4492bd5107" order="2" parent="None">
       <name>Locations</name>
       <type>ROOT</type>
       <class>WORLD</class>
       <status>0</status>
       <expanded>True</expanded>
     </item>
-    <item handle="b3e74dbc1f584" order="0" parent="73eee34351f85">
+    <item handle="b3e74dbc1f584" order="0" parent="15c4492bd5107">
       <name>Earth</name>
       <type>FILE</type>
       <class>WORLD</class>
       <status>0</status>
       <expanded>False</expanded>
       <layout>NOTE</layout>
-      <charCount>66</charCount>
-      <wordCount>13</wordCount>
-      <paraCount>1</paraCount>
+      <charCount>0</charCount>
+      <wordCount>0</wordCount>
+      <paraCount>0</paraCount>
       <cursorPos>0</cursorPos>
     </item>
-    <item handle="f75dac270c2a7" order="3" parent="None">
+    <item handle="98acd8c76c93a" order="3" parent="None">
       <name>Trash</name>
       <type>TRASH</type>
       <class>TRASH</class>
       <status>0</status>
       <expanded>True</expanded>
     </item>
-    <item handle="4cd0bd12b087d" order="0" parent="f75dac270c2a7">
-      <name>Orphaned File 1</name>
+    <item handle="4cd0bd12b087d" order="0" parent="98acd8c76c93a">
+      <name>Orphaned File 2</name>
       <type>FILE</type>
       <class>NO_CLASS</class>
       <status>0</status>
       <expanded>False</expanded>
       <layout>NO_LAYOUT</layout>
-      <charCount>0</charCount>
-      <wordCount>0</wordCount>
+      <charCount>14</charCount>
+      <wordCount>3</wordCount>
       <paraCount>0</paraCount>
-      <cursorPos>0</cursorPos>
-    </item>
-    <item handle="879437bde105e" order="1" parent="f75dac270c2a7">
-      <name>New File</name>
-      <type>FILE</type>
-      <class>CHARACTER</class>
-      <status>0</status>
-      <expanded>False</expanded>
-      <layout>NOTE</layout>
-      <charCount>0</charCount>
-      <wordCount>0</wordCount>
-      <paraCount>0</paraCount>
-      <cursorPos>0</cursorPos>
+      <cursorPos>1</cursorPos>
     </item>
   </content>
 </novelWriterXML>
