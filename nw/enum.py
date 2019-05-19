@@ -76,12 +76,3 @@ class nwAlert(Enum):
     BUG   = 3
 
 # END Enum nwAlert
-
-class nwChanged(Enum):
-
-    NONE   = 0
-    DELETE = 1
-    NEW    = 2
-    IGNORE = 3
-
-# END Enum nwAlert

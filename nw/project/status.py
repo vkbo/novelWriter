@@ -23,8 +23,9 @@ class NWStatus():
     def __init__(self):
         self.theLabels  = []
         self.theColours = []
+        self.theCounts  = []
         self.theMap     = {}
-        self.theCount   = 0
+        self.theLength  = 0
         self.theIndex   = 0
         return
 
@@ -33,8 +34,9 @@ class NWStatus():
         if self.lookupEntry(theLabel) is None:
             self.theLabels.append(theLabel)
             self.theColours.append(theColours)
-            self.theMap[theLabel] = self.theCount
-            self.theCount += 1
+            self.theCounts.append(0)
+            self.theMap[theLabel] = self.theLength
+            self.theLength += 1
         return True
 
     def lookupEntry(self, theLabel):
@@ -44,34 +46,62 @@ class NWStatus():
         return None
 
     def checkEntry(self, theStatus):
-        theStatus = theStatus.strip()
         if isinstance(theStatus, str):
+            theStatus = theStatus.strip()
             if self.lookupEntry(theStatus) is not None:
                 return theStatus
-        theStatus = checkInt(theStatus, None, False)
-        if theStatus is None:
-            return None
-        if theStatus >= 0 and theStatus < self.theCount:
+        theStatus = checkInt(theStatus, 0, False)
+        if theStatus >= 0 and theStatus < self.theLength:
             return self.theLabels[theStatus]
+
+    def setNewEntries(self, newList):
+
+        replaceMap = {}
+
+        if newList is not None:
+
+            self.theLabels  = []
+            self.theColours = []
+            self.theCounts  = []
+            self.theMap     = {}
+            self.theLength  = 0
+            self.theIndex   = 0
+
+            for nName, nR, nG, nB, oName in newList:
+                self.addEntry(nName, (nR, nG, nB))
+                if nName != oName and oName is not None:
+                    replaceMap[oName] = nName
+
+        return replaceMap
+
+    def resetCounts(self):
+        self.theCounts = [0]*self.theLength
+        return
+
+    def countEntry(self, theLabel):
+        theIndex = self.lookupEntry(theLabel)
+        if theIndex is not None:
+            self.theCounts[theIndex] += 1
+        return
 
     ##
     #  Iterator Bits
     ##
 
     def __getitem__(self, n):
-        if n >= 0 and n < self.theCount:
-            return self.theLabels[n], self.theColours[n]
-        return None, None
+        if n >= 0 and n < self.theLength:
+            return self.theLabels[n], self.theColours[n], self.theCounts[n]
+        return None, None, None
 
     def __iter__(self):
         self.theIndex = 0
         return self
 
     def __next__(self):
-        if self.theIndex < self.theCount:
-            theLabel, theColour = self.__getitem__(self.theIndex)
+        if self.theIndex < self.theLength:
+            theLabel, theColour, theCount = self.__getitem__(self.theIndex)
             self.theIndex += 1
-            return theLabel, theColour
+            return theLabel, theColour, theCount
         else:
             raise StopIteration
 

@@ -396,7 +396,7 @@ class GuiMain(QMainWindow):
 
     def _makeStatusIcons(self):
         self.statusIcons = {}
-        for sLabel, sCol in self.theProject.statusItems:
+        for sLabel, sCol, _ in self.theProject.statusItems:
             theIcon = QPixmap(32,32)
             theIcon.fill(QColor(*sCol))
             self.statusIcons[sLabel] = QIcon(theIcon)
@@ -404,7 +404,7 @@ class GuiMain(QMainWindow):
 
     def _makeImportIcons(self):
         self.importIcons = {}
-        for sLabel, sCol in self.theProject.importItems:
+        for sLabel, sCol, _ in self.theProject.importItems:
             theIcon = QPixmap(32,32)
             theIcon.fill(QColor(*sCol))
             self.importIcons[sLabel] = QIcon(theIcon)

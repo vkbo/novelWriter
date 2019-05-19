@@ -352,13 +352,25 @@ class NWProject():
         self.setProjectChanged(True)
         return True
 
-    def setStatusColours(self, newCols, colChanged):
-        print(newCols,colChanged)
+    def setStatusColours(self, newCols):
+        replaceMap = self.statusItems.setNewEntries(newCols)
+        if self.projTree is not None:
+            for nwItem in self.projTree.values():
+                if nwItem.itemClass == nwItemClass.NOVEL:
+                    if nwItem.itemStatus in replaceMap.keys():
+                        nwItem.setStatus(replaceMap[nwItem.itemStatus])
         self.setProjectChanged(True)
+        print(self.statusItems.theLabels)
+        print(self.statusItems.theColours)
         return
 
-    def setImportColours(self, newCols, colChanged):
-        print(newCols,colChanged)
+    def setImportColours(self, newCols,):
+        replaceMap = self.importItems.setNewEntries(newCols)
+        if self.projTree is not None:
+            for nwItem in self.projTree.values():
+                if nwItem.itemClass != nwItemClass.NOVEL:
+                    if nwItem.itemStatus in replaceMap.keys():
+                        nwItem.setStatus(replaceMap[nwItem.itemStatus])
         self.setProjectChanged(True)
         return
 
@@ -434,6 +446,16 @@ class NWProject():
             if theClass == self.projTree[aRoot].itemClass:
                 return False
         return True
+
+    def countStatus(self):
+        self.statusItems.resetCounts()
+        self.importItems.resetCounts()
+        for nwItem in self.projTree.values():
+            if nwItem.itemClass == nwItemClass.NOVEL:
+                self.statusItems.countEntry(nwItem.itemStatus)
+            else:
+                self.importItems.countEntry(nwItem.itemStatus)
+        return
 
     ##
     #  Internal Functions
