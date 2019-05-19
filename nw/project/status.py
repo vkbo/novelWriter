@@ -13,6 +13,8 @@
 import logging
 import nw
 
+from lxml      import etree
+
 from nw.enum   import nwItemClass
 from nw.common import checkInt
 
@@ -83,6 +85,50 @@ class NWStatus():
         if theIndex is not None:
             self.theCounts[theIndex] += 1
         return
+
+    def packEntries(self, xParent):
+        for n in range(self.theLength):
+            xSub = etree.SubElement(xParent,"entry",attrib={
+                "red"   : str(self.theColours[n][0]),
+                "green" : str(self.theColours[n][1]),
+                "blue"  : str(self.theColours[n][2]),
+            })
+            xSub.text = self.theLabels[n]
+        return True
+
+    def unpackEntries(self, xParent):
+
+        theLabels  = []
+        theColours = []
+
+        for xChild in xParent:
+            theLabels.append(xChild.text)
+            if "red" in xChild.attrib:
+                cR = checkInt(xChild.attrib["red"],0,False)
+            else:
+                cR = 0
+            if "green" in xChild.attrib:
+                cG = checkInt(xChild.attrib["green"],0,False)
+            else:
+                cG = 0
+            if "blue" in xChild.attrib:
+                cB = checkInt(xChild.attrib["blue"],0,False)
+            else:
+                cB = 0
+            theColours.append((cR,cG,cB))
+
+        if len(theLabels) > 0:
+            self.theLabels  = []
+            self.theColours = []
+            self.theCounts  = []
+            self.theMap     = {}
+            self.theLength  = 0
+            self.theIndex   = 0
+
+            for n in range(len(theLabels)):
+                self.addEntry(theLabels[n], theColours[n])
+
+        return True
 
     ##
     #  Iterator Bits

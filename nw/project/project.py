@@ -55,8 +55,8 @@ class NWProject():
 
         # Project Settings
         self.spellCheck   = False
-        self.statusItems  = NWStatus()
-        self.importItems  = NWStatus()
+        self.statusItems  = None
+        self.importItems  = None
         self.lastEdited   = None
         self.lastViewed   = None
 
@@ -214,6 +214,10 @@ class NWProject():
                         self.lastEdited = checkString(xItem.text,None,True)
                     if xItem.tag == "lastViewed":
                         self.lastViewed = checkString(xItem.text,None,True)
+                    if xItem.tag == "status":
+                        self.statusItems.unpackEntries(xItem)
+                    if xItem.tag == "importance":
+                        self.importItems.unpackEntries(xItem)
             elif xChild.tag == "content":
                 logger.debug("Found project content")
                 for xItem in xChild:
@@ -274,6 +278,11 @@ class NWProject():
         self._saveProjectValue(xSettings,"spellCheck",self.spellCheck)
         self._saveProjectValue(xSettings,"lastEdited",self.lastEdited)
         self._saveProjectValue(xSettings,"lastViewed",self.lastViewed)
+
+        xStatus = etree.SubElement(xSettings,"status")
+        self.statusItems.packEntries(xStatus)
+        xStatus = etree.SubElement(xSettings,"importance")
+        self.importItems.packEntries(xStatus)
 
         # Save Tree Content
         logger.debug("Writing project content")
@@ -360,8 +369,6 @@ class NWProject():
                     if nwItem.itemStatus in replaceMap.keys():
                         nwItem.setStatus(replaceMap[nwItem.itemStatus])
         self.setProjectChanged(True)
-        print(self.statusItems.theLabels)
-        print(self.statusItems.theColours)
         return
 
     def setImportColours(self, newCols,):
