@@ -184,12 +184,9 @@ class GuiMain(QMainWindow):
             projFile = self.openProjectDialog()
         if projFile is None:
             return False
-        self.treeView.clearTree()
         self.theProject.openProject(projFile)
-        self.treeView.buildTree()
         self._setWindowTitle(self.theProject.projName)
-        self._makeStatusIcons()
-        self._makeImportIcons()
+        self.rebuildTree()
         self.docEditor.setPwl(path.join(self.theProject.projMeta,"wordlist.txt"))
         self.docEditor.setSpellCheck(self.theProject.spellCheck)
         self.mainMenu.updateMenu()
@@ -298,6 +295,13 @@ class GuiMain(QMainWindow):
         if dlgProj.exec_():
             self.treeView.setTreeItemValues(tHandle)
 
+        return
+
+    def rebuildTree(self):
+        self._makeStatusIcons()
+        self._makeImportIcons()
+        self.treeView.clearTree()
+        self.treeView.buildTree()
         return
 
     ##

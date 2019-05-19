@@ -229,7 +229,7 @@ class GuiDocTree(QTreeWidget):
                 trItemP.takeChild(tIndex)
                 self.clearSelection()
                 trItemP.setSelected(True)
-                self.theProject.setProjectChanged(True)
+                self.theProject.deleteItem(tHandle)
             else:
                 self.makeAlert(["Cannot delete folder.","It is not empty."], nwAlert.ERROR)
                 return
@@ -261,12 +261,10 @@ class GuiDocTree(QTreeWidget):
             tStatus += "."+nwLabels.LAYOUT_FLAG[nwItem.itemLayout]
         iStatus = nwItem.itemStatus
         if tClass == nwItemClass.NOVEL:
-            if iStatus is None:
-                iStatus = self.theProject.statusItems.checkEntry(iStatus)
+            iStatus  = self.theProject.statusItems.checkEntry(iStatus) # Make sure it's a valid index
             flagIcon = self.theParent.statusIcons[iStatus]
         else:
-            if iStatus is None:
-                iStatus = self.theProject.importItems.checkEntry(iStatus)
+            iStatus  = self.theProject.importItems.checkEntry(iStatus) # Make sure it's a valid index
             flagIcon = self.theParent.importIcons[iStatus]
 
         trItem.setText(self.C_NAME, tName)

@@ -82,10 +82,14 @@ class GuiProjectEditor(QDialog):
         self.theProject.setBookTitle(bookTitle)
         self.theProject.setBookAuthors(bookAuthors)
 
-        statusCol = self.tabStatus.getNewList()
-        importCol = self.tabImport.getNewList()
-        self.theProject.setStatusColours(statusCol)
-        self.theProject.setImportColours(importCol)
+        if self.tabStatus.colChanged:
+            statusCol = self.tabStatus.getNewList()
+            self.theProject.setStatusColours(statusCol)
+        if self.tabImport.colChanged:
+            importCol = self.tabImport.getNewList()
+            self.theProject.setImportColours(importCol)
+        if self.tabStatus.colChanged or self.tabImport.colChanged:
+            self.theParent.rebuildTree()
 
         self.close()
 

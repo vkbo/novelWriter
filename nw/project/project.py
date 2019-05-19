@@ -430,6 +430,13 @@ class NWProject():
     #  Class Methods
     ##
 
+    def deleteItem(self, tHandle):
+        """This only removed the item from the order list, but not from the project tree.
+        """
+        self.treeOrder.remove(tHandle)
+        self.setProjectChanged(True)
+        return True
+
     def findRootItem(self, theClass):
         for aRoot in self.treeRoots:
             if theClass == self.projTree[aRoot].itemClass:
