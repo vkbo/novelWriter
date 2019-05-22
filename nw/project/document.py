@@ -15,8 +15,7 @@ import nw
 
 from os import path, mkdir, rename, unlink
 
-from nw.tools.analyse import TextAnalysis
-from nw.enum          import nwAlert
+from nw.enum import nwAlert
 
 logger = logging.getLogger(__name__)
 

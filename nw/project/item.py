@@ -26,7 +26,9 @@ class NWItem():
 
     MAX_DEPTH = 8
 
-    def __init__(self):
+    def __init__(self, theProject):
+
+        self.theProject  = theProject
 
         self.itemName    = ""
         self.itemHandle  = None
@@ -35,7 +37,7 @@ class NWItem():
         self.itemType    = nwItemType.NO_TYPE
         self.itemClass   = nwItemClass.NO_CLASS
         self.itemLayout  = nwItemLayout.NO_LAYOUT
-        self.itemStatus  = 0
+        self.itemStatus  = None
         self.isExpanded  = False
 
         # Document Meta Data
@@ -158,8 +160,10 @@ class NWItem():
         return
 
     def setStatus(self, theStatus):
-        theStatus = checkInt(theStatus,0)
-        self.itemStatus = theStatus
+        if self.itemClass == nwItemClass.NOVEL:
+            self.itemStatus = self.theProject.statusItems.checkEntry(theStatus)
+        else:
+            self.itemStatus = self.theProject.importItems.checkEntry(theStatus)
         return
 
     def setExpanded(self, expState):

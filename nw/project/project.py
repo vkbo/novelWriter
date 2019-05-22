@@ -13,15 +13,16 @@
 import logging
 import nw
 
-from os              import path, mkdir, listdir
-from lxml            import etree
-from hashlib         import sha256
-from datetime        import datetime
-from time            import time
+from os       import path, mkdir, listdir
+from lxml     import etree
+from hashlib  import sha256
+from datetime import datetime
+from time     import time
 
-from nw.enum         import nwItemType, nwItemClass, nwItemLayout, nwAlert
-from nw.common       import checkString, checkBool
-from nw.project.item import NWItem
+from nw.enum           import nwItemType, nwItemClass, nwItemLayout, nwAlert
+from nw.common         import checkString, checkBool
+from nw.project.item   import NWItem
+from nw.project.status import NWStatus
 
 logger = logging.getLogger(__name__)
 
@@ -54,8 +55,8 @@ class NWProject():
 
         # Project Settings
         self.spellCheck   = False
-        self.statusCols   = None
-        self.importCols   = None
+        self.statusItems  = None
+        self.importItems  = None
         self.lastEdited   = None
         self.lastViewed   = None
 
@@ -75,23 +76,25 @@ class NWProject():
         if not self.checkRootUnique(rootClass):
             self.makeAlert("Duplicate root item detected!", nwAlert.ERROR)
             return None
-        newItem = NWItem()
+        newItem = NWItem(self)
         newItem.setName(rootName)
         newItem.setType(nwItemType.ROOT)
         newItem.setClass(rootClass)
+        newItem.setStatus(0)
         self._appendItem(None,None,newItem)
         return newItem.itemHandle
 
     def newFolder(self, folderName, folderClass, pHandle):
-        newItem = NWItem()
+        newItem = NWItem(self)
         newItem.setName(folderName)
         newItem.setType(nwItemType.FOLDER)
         newItem.setClass(folderClass)
+        newItem.setStatus(0)
         self._appendItem(None,pHandle,newItem)
         return newItem.itemHandle
 
     def newFile(self, fileName, fileClass, pHandle):
-        newItem = NWItem()
+        newItem = NWItem(self)
         newItem.setName(fileName)
         newItem.setType(nwItemType.FILE)
         if fileClass == nwItemClass.NOVEL:
@@ -99,11 +102,12 @@ class NWProject():
         else:
             newItem.setLayout(nwItemLayout.NOTE)
         newItem.setClass(fileClass)
+        newItem.setStatus(0)
         self._appendItem(None,pHandle,newItem)
         return newItem.itemHandle
 
     def addTrash(self):
-        newItem = NWItem()
+        newItem = NWItem(self)
         newItem.setName("Trash")
         newItem.setType(nwItemType.TRASH)
         newItem.setClass(nwItemClass.TRASH)
@@ -144,18 +148,16 @@ class NWProject():
         self.bookTitle   = ""
         self.bookAuthors = []
         self.spellCheck  = False
-        self.statusCols  = [
-            ("New",     100,100,100),
-            ("Note",    200, 50,  0),
-            ("Draft",   200,150,  0),
-            ("Finished", 50,200,  0),
-        ]
-        self.importCols  = [
-            ("None",    100,100,100),
-            ("Minor",   200, 50,  0),
-            ("Major",   200,150,  0),
-            ("Main",     50,200,  0),
-        ]
+        self.statusItems = NWStatus()
+        self.statusItems.addEntry("New",     (100,100,100))
+        self.statusItems.addEntry("Note",    (200, 50,  0))
+        self.statusItems.addEntry("Draft",   (200,150,  0))
+        self.statusItems.addEntry("Finished",( 50,200,  0))
+        self.importItems = NWStatus()
+        self.importItems.addEntry("New",     (100,100,100))
+        self.importItems.addEntry("Minor",   (200, 50,  0))
+        self.importItems.addEntry("Major",   (200,150,  0))
+        self.importItems.addEntry("Main",    ( 50,200,  0))
 
         return
 
@@ -215,6 +217,10 @@ class NWProject():
                         self.lastEdited = checkString(xItem.text,None,True)
                     if xItem.tag == "lastViewed":
                         self.lastViewed = checkString(xItem.text,None,True)
+                    if xItem.tag == "status":
+                        self.statusItems.unpackEntries(xItem)
+                    if xItem.tag == "importance":
+                        self.importItems.unpackEntries(xItem)
             elif xChild.tag == "content":
                 logger.debug("Found project content")
                 for xItem in xChild:
@@ -228,7 +234,7 @@ class NWProject():
                         pHandle = itemAttrib["parent"]
                     else:
                         pHandle = None
-                    nwItem = NWItem()
+                    nwItem = NWItem(self)
                     for xValue in xItem:
                         nwItem.setFromTag(xValue.tag,xValue.text)
                     self._appendItem(tHandle,pHandle,nwItem)
@@ -275,6 +281,11 @@ class NWProject():
         self._saveProjectValue(xSettings,"spellCheck",self.spellCheck)
         self._saveProjectValue(xSettings,"lastEdited",self.lastEdited)
         self._saveProjectValue(xSettings,"lastViewed",self.lastViewed)
+
+        xStatus = etree.SubElement(xSettings,"status")
+        self.statusItems.packEntries(xStatus)
+        xStatus = etree.SubElement(xSettings,"importance")
+        self.importItems.packEntries(xStatus)
 
         # Save Tree Content
         logger.debug("Writing project content")
@@ -353,6 +364,26 @@ class NWProject():
         self.setProjectChanged(True)
         return True
 
+    def setStatusColours(self, newCols):
+        replaceMap = self.statusItems.setNewEntries(newCols)
+        if self.projTree is not None:
+            for nwItem in self.projTree.values():
+                if nwItem.itemClass == nwItemClass.NOVEL:
+                    if nwItem.itemStatus in replaceMap.keys():
+                        nwItem.setStatus(replaceMap[nwItem.itemStatus])
+        self.setProjectChanged(True)
+        return
+
+    def setImportColours(self, newCols,):
+        replaceMap = self.importItems.setNewEntries(newCols)
+        if self.projTree is not None:
+            for nwItem in self.projTree.values():
+                if nwItem.itemClass != nwItemClass.NOVEL:
+                    if nwItem.itemStatus in replaceMap.keys():
+                        nwItem.setStatus(replaceMap[nwItem.itemStatus])
+        self.setProjectChanged(True)
+        return
+
     def setProjectChanged(self, bValue):
         self.projChanged = bValue
         self.theParent.setProjectStatus(self.projChanged)
@@ -409,6 +440,13 @@ class NWProject():
     #  Class Methods
     ##
 
+    def deleteItem(self, tHandle):
+        """This only removes the item from the order list, but not from the project tree.
+        """
+        self.treeOrder.remove(tHandle)
+        self.setProjectChanged(True)
+        return True
+
     def findRootItem(self, theClass):
         for aRoot in self.treeRoots:
             if theClass == self.projTree[aRoot].itemClass:
@@ -425,6 +463,16 @@ class NWProject():
             if theClass == self.projTree[aRoot].itemClass:
                 return False
         return True
+
+    def countStatus(self):
+        self.statusItems.resetCounts()
+        self.importItems.resetCounts()
+        for nwItem in self.projTree.values():
+            if nwItem.itemClass == nwItemClass.NOVEL:
+                self.statusItems.countEntry(nwItem.itemStatus)
+            else:
+                self.importItems.countEntry(nwItem.itemStatus)
+        return
 
     ##
     #  Internal Functions
@@ -492,7 +540,7 @@ class NWProject():
         nOrph = 0
         for oHandle in orphanFiles:
             nOrph += 1
-            orItem = NWItem()
+            orItem = NWItem(self)
             orItem.setName("Orphaned File %d" % nOrph)
             orItem.setType(nwItemType.FILE)
             orItem.setClass(nwItemClass.NO_CLASS)

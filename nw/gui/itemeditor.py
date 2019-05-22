@@ -55,14 +55,14 @@ class GuiItemEditor(QDialog):
         self.editLayout = QComboBox()
 
         if self.theItem.itemClass == nwItemClass.NOVEL:
-            for n in range(len(self.theParent.statusLabels)):
+            for sLabel, _, _ in self.theProject.statusItems:
                 self.editStatus.addItem(
-                    self.theParent.statusIcons[n], self.theParent.statusLabels[n], n
+                    self.theParent.statusIcons[sLabel], sLabel, sLabel
                 )
         else:
-            for n in range(len(self.theParent.statusLabels)):
+            for sLabel, _, _ in self.theProject.importItems:
                 self.editStatus.addItem(
-                    self.theParent.importIcons[n], self.theParent.importLabels[n], n
+                    self.theParent.importIcons[sLabel], sLabel, sLabel
                 )
 
         self.validLayouts = []
