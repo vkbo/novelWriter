@@ -15,12 +15,13 @@ import nw
 
 from os import path
 
+from PyQt5.QtCore    import Qt
 from PyQt5.QtGui     import QIcon, QPixmap, QColor, QBrush
 from PyQt5.QtSvg     import QSvgWidget
 from PyQt5.QtWidgets import (
     QDialog, QHBoxLayout, QVBoxLayout, QFormLayout, QLineEdit, QPlainTextEdit, QLabel,
     QWidget, QTabWidget, QDialogButtonBox, QListWidget, QListWidgetItem, QPushButton,
-    QColorDialog
+    QColorDialog, QAbstractItemView
 )
 from nw.enum import nwAlert
 
@@ -138,20 +139,21 @@ class GuiProjectEditStatus(QWidget):
 
         self.theParent  = theParent
         self.theStatus  = theStatus
-        self.colNames   = []
+        self.colData    = []
         self.colCounts  = []
         self.colChanged = False
+        self.selColour  = None
 
         self.mainBox    = QHBoxLayout()
         self.mainForm   = QVBoxLayout()
 
         self.listBox    = QListWidget()
+        self.listBox.setDragDropMode(QAbstractItemView.InternalMove)
         self.listBox.itemSelectionChanged.connect(self._selectedItem)
+        self.listBox.model().rowsMoved.connect(self._rowsMoved)
 
         for iName, iCol, nUse in self.theStatus:
-            self._addItem("%s [%d]" % (iName, nUse), iCol)
-            self.colNames.append(iName)
-            self.colCounts.append(nUse)
+            self._addItem(iName, iCol, iName, nUse)
 
         self.editName   = QLineEdit()
         self.newButton  = QPushButton("New")
@@ -188,10 +190,8 @@ class GuiProjectEditStatus(QWidget):
             newList = []
             for n in range(self.listBox.count()):
                 nItem = self.listBox.item(n)
-                nName = self._cleanLabel(nItem.text())
-                nImg  = nItem.icon().pixmap(16,16).toImage()
-                nCol  = QColor(nImg.pixel(7,7))
-                newList.append((nName,nCol.red(),nCol.green(),nCol.blue(),self.colNames[n]))
+                nIdx  = nItem.data(Qt.UserRole)
+                newList.append(self.colData[nIdx])
             return newList
         return None
 
@@ -201,60 +201,77 @@ class GuiProjectEditStatus(QWidget):
 
     def _selectColour(self):
         logger.verbose("Item colour button clicked")
-        selImg = self.colButton.icon().pixmap(16,16).toImage()
-        selCol = QColor(selImg.pixel(7,7))
-        newCol = QColorDialog.getColor(selCol, self, "Select Colour", QColorDialog.DontUseNativeDialog)
-        if newCol:
-            colPixmap = QPixmap(16,16)
-            colPixmap.fill(newCol)
-            self.colButton.setIcon(QIcon(colPixmap))
-            self.colButton.setIconSize(colPixmap.rect().size())
+        if self.selColour is not None:
+            newCol = QColorDialog.getColor(self.selColour, self, "Select Colour", QColorDialog.DontUseNativeDialog)
+            if newCol:
+                self.selColour = newCol
+                colPixmap = QPixmap(16,16)
+                colPixmap.fill(newCol)
+                self.colButton.setIcon(QIcon(colPixmap))
+                self.colButton.setIconSize(colPixmap.rect().size())
         return
 
     def _newItem(self):
-        newItem = self._addItem("New Item [0]", (0, 0, 0))
+        logger.verbose("New item button clicked")
+        newItem = self._addItem("New Item", (0, 0, 0), None, 0)
         newItem.setBackground(QBrush(QColor(0,255,0,80)))
-        self.colNames.append(None)
-        self.colCounts.append(0)
         self.colChanged = True
         return
 
     def _delItem(self):
+        logger.verbose("Delete item button clicked")
         selItem = self._getSelectedItem()
-        iRow    = self.listBox.row(selItem)
-        if self.colCounts[iRow] == 0:
-            self.listBox.takeItem(iRow)
-            self.colChanged = True
-        else:
-            self.theParent.makeAlert("Cannot delete status item that is in use.",nwAlert.ERROR)
+        if selItem is not None:
+            iRow   = self.listBox.row(selItem)
+            selIdx = selItem.data(Qt.UserRole)
+            if self.colCounts[selIdx] == 0:
+                self.listBox.takeItem(iRow)
+                self.colChanged = True
+            else:
+                self.theParent.makeAlert("Cannot delete status item that is in use.",nwAlert.ERROR)
         return
 
     def _saveItem(self):
-        logger.verbose("Item save button clicked")
+        logger.verbose("Save item button clicked")
         selItem = self._getSelectedItem()
         iRow    = self.listBox.row(selItem)
         if selItem is not None:
-            selItem.setText("%s [%d]" % (self.editName.text().strip(), self.colCounts[iRow]))
+            selIdx = selItem.data(Qt.UserRole)
+            self.colData[selIdx] = (
+                self.editName.text().strip(),
+                self.selColour.red(),
+                self.selColour.green(),
+                self.selColour.blue(),
+                self.colData[selIdx][4]
+            )
+            selItem.setText("%s [%d]" % (self.colData[selIdx][0], self.colCounts[selIdx]))
             selItem.setIcon(self.colButton.icon())
             self.colChanged = True
         return
 
-    def _addItem(self, iName, iCol):
-        logger.verbose("New item button clicked")
+    def _addItem(self, iName, iCol, oName, nUse):
         newIcon = QPixmap(16,16)
         newIcon.fill(QColor(*iCol))
         newItem = QListWidgetItem()
-        newItem.setText(iName)
+        newItem.setText("%s [%d]" % (iName, nUse))
         newItem.setIcon(QIcon(newIcon))
+        newItem.setData(Qt.UserRole, len(self.colData))
         self.listBox.addItem(newItem)
+        self.colData.append((iName,*iCol,oName))
+        self.colCounts.append(nUse)
         return newItem
 
     def _selectedItem(self):
         logger.verbose("Item selected")
         selItem = self._getSelectedItem()
         if selItem is not None:
-            self.editName.setText(self._cleanLabel(selItem.text()))
-            self.colButton.setIcon(selItem.icon())
+            selIdx  = selItem.data(Qt.UserRole)
+            selVal  = self.colData[selIdx]
+            self.selColour = QColor(selVal[1],selVal[2],selVal[3])
+            newIcon = QPixmap(16,16)
+            newIcon.fill(self.selColour)
+            self.editName.setText(selVal[0])
+            self.colButton.setIcon(QIcon(newIcon))
         return
 
     ##
@@ -269,11 +286,9 @@ class GuiProjectEditStatus(QWidget):
             return selItem[0]
         return None
 
-    def _cleanLabel(self, theText):
-        iPos = theText.rfind("[")
-        if iPos > 0:
-            return theText[:iPos-1]
-        else:
-            return theText
+    def _rowsMoved(self):
+        logger.verbose("A drag move event occurred")
+        self.colChanged = True
+        return
 
 # END Class GuiProjectEditStatus
