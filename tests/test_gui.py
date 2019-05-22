@@ -148,8 +148,21 @@ def testProjectEditor(qtbot, nwTempGUI, nwRef):
     for c in "John Doh":
         qtbot.keyClick(projEdit.tabMain.editAuthors, c, delay=keyDelay)
 
+    #Test Status Tab
+    projEdit.tabWidget.setCurrentWidget(projEdit.tabStatus)
+    projEdit.tabStatus.listBox.item(2).setSelected(True)
+    qtbot.mouseClick(projEdit.tabStatus.delButton, Qt.LeftButton)
+    qtbot.mouseClick(projEdit.tabStatus.newButton, Qt.LeftButton)
+    projEdit.tabStatus.listBox.item(3).setSelected(True)
+    for n in range(8):
+        qtbot.keyClick(projEdit.tabStatus.editName, Qt.Key_Backspace, delay=keyDelay)
+    for c in "Final":
+        qtbot.keyClick(projEdit.tabStatus.editName, c, delay=keyDelay)
+    qtbot.mouseClick(projEdit.tabStatus.saveButton, Qt.LeftButton)
+
     projEdit._doSave()
 
+    # Open again, and check project settings
     projEdit = GuiProjectEditor(nwGUI, nwGUI.theProject)
     qtbot.addWidget(projEdit)
     assert projEdit.tabMain.editName.text()    == "Project Name"

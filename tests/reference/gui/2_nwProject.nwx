@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='utf-8'?>
-<novelWriterXML appVersion="0.1.3" fileVersion="1.0" timeStamp="2019-05-22 21:19:46">
+<novelWriterXML appVersion="0.1.3" fileVersion="1.0" timeStamp="2019-05-22 21:35:39">
   <project>
     <name>Project Name</name>
     <title>Project Title</title>
@@ -13,8 +13,8 @@
     <status>
       <entry blue="100" green="100" red="100">New</entry>
       <entry blue="0" green="50" red="200">Note</entry>
-      <entry blue="0" green="150" red="200">Draft</entry>
       <entry blue="0" green="200" red="50">Finished</entry>
+      <entry blue="0" green="0" red="0">Final</entry>
     </status>
     <importance>
       <entry blue="100" green="100" red="100">New</entry>
