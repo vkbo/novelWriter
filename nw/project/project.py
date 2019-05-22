@@ -80,6 +80,7 @@ class NWProject():
         newItem.setName(rootName)
         newItem.setType(nwItemType.ROOT)
         newItem.setClass(rootClass)
+        newItem.setStatus(0)
         self._appendItem(None,None,newItem)
         return newItem.itemHandle
 
@@ -88,6 +89,7 @@ class NWProject():
         newItem.setName(folderName)
         newItem.setType(nwItemType.FOLDER)
         newItem.setClass(folderClass)
+        newItem.setStatus(0)
         self._appendItem(None,pHandle,newItem)
         return newItem.itemHandle
 
@@ -100,6 +102,7 @@ class NWProject():
         else:
             newItem.setLayout(nwItemLayout.NOTE)
         newItem.setClass(fileClass)
+        newItem.setStatus(0)
         self._appendItem(None,pHandle,newItem)
         return newItem.itemHandle
 
@@ -151,7 +154,7 @@ class NWProject():
         self.statusItems.addEntry("Draft",   (200,150,  0))
         self.statusItems.addEntry("Finished",( 50,200,  0))
         self.importItems = NWStatus()
-        self.importItems.addEntry("None",    (100,100,100))
+        self.importItems.addEntry("New",     (100,100,100))
         self.importItems.addEntry("Minor",   (200, 50,  0))
         self.importItems.addEntry("Major",   (200,150,  0))
         self.importItems.addEntry("Main",    ( 50,200,  0))
@@ -438,7 +441,7 @@ class NWProject():
     ##
 
     def deleteItem(self, tHandle):
-        """This only removed the item from the order list, but not from the project tree.
+        """This only removes the item from the order list, but not from the project tree.
         """
         self.treeOrder.remove(tHandle)
         self.setProjectChanged(True)

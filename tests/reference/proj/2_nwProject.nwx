@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='utf-8'?>
-<novelWriterXML appVersion="0.1.0" fileVersion="1.0" timeStamp="2019-05-12 14:40:19">
+<novelWriterXML appVersion="0.1.3" fileVersion="1.0" timeStamp="2019-05-22 20:52:32">
   <project>
     <name></name>
     <title></title>
@@ -8,48 +8,60 @@
     <spellCheck>False</spellCheck>
     <lastEdited>None</lastEdited>
     <lastViewed>None</lastViewed>
+    <status>
+      <entry blue="100" green="100" red="100">New</entry>
+      <entry blue="0" green="50" red="200">Note</entry>
+      <entry blue="0" green="150" red="200">Draft</entry>
+      <entry blue="0" green="200" red="50">Finished</entry>
+    </status>
+    <importance>
+      <entry blue="100" green="100" red="100">New</entry>
+      <entry blue="0" green="50" red="200">Minor</entry>
+      <entry blue="0" green="150" red="200">Major</entry>
+      <entry blue="0" green="200" red="50">Main</entry>
+    </importance>
   </settings>
   <content count="10">
     <item handle="73475cb40a568" order="None" parent="None">
       <name>Novel</name>
       <type>ROOT</type>
       <class>NOVEL</class>
-      <status>0</status>
+      <status>New</status>
       <expanded>False</expanded>
     </item>
     <item handle="44cb730c42048" order="None" parent="None">
       <name>Characters</name>
       <type>ROOT</type>
       <class>CHARACTER</class>
-      <status>0</status>
+      <status>New</status>
       <expanded>False</expanded>
     </item>
     <item handle="71ee45a3c0db9" order="None" parent="None">
       <name>Plot</name>
       <type>ROOT</type>
       <class>PLOT</class>
-      <status>0</status>
+      <status>New</status>
       <expanded>False</expanded>
     </item>
     <item handle="811786ad1ae74" order="None" parent="None">
       <name>World</name>
       <type>ROOT</type>
       <class>WORLD</class>
-      <status>0</status>
+      <status>New</status>
       <expanded>False</expanded>
     </item>
     <item handle="25fc0e7096fc6" order="None" parent="73475cb40a568">
       <name>New Chapter</name>
       <type>FOLDER</type>
       <class>NOVEL</class>
-      <status>0</status>
+      <status>New</status>
       <expanded>False</expanded>
     </item>
     <item handle="31489056e0916" order="None" parent="25fc0e7096fc6">
       <name>New Scene</name>
       <type>FILE</type>
       <class>NOVEL</class>
-      <status>0</status>
+      <status>New</status>
       <expanded>False</expanded>
       <layout>SCENE</layout>
       <charCount>0</charCount>
@@ -61,28 +73,28 @@
       <name>Timeline</name>
       <type>ROOT</type>
       <class>TIMELINE</class>
-      <status>0</status>
+      <status>New</status>
       <expanded>False</expanded>
     </item>
     <item handle="d029fa3a95e17" order="None" parent="None">
       <name>Object</name>
       <type>ROOT</type>
       <class>OBJECT</class>
-      <status>0</status>
+      <status>New</status>
       <expanded>False</expanded>
     </item>
     <item handle="81b8a03f97e87" order="None" parent="None">
       <name>Custom1</name>
       <type>ROOT</type>
       <class>CUSTOM</class>
-      <status>0</status>
+      <status>New</status>
       <expanded>False</expanded>
     </item>
     <item handle="da4ea2a5506f2" order="None" parent="None">
       <name>Custom2</name>
       <type>ROOT</type>
       <class>CUSTOM</class>
-      <status>0</status>
+      <status>New</status>
       <expanded>False</expanded>
     </item>
   </content>

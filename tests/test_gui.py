@@ -99,15 +99,19 @@ def testMainWindows(qtbot, nwTempGUI, nwRef):
     qtbot.wait(stepDelay)
     nwGUI.docEditor.wCounter.run()
     qtbot.wait(stepDelay)
+    nwGUI.docEditor._updateCounts()
 
     # Save the document
     assert nwGUI.docEditor.docChanged
     assert nwGUI.saveDocument()
+    assert not nwGUI.docEditor.docChanged
     qtbot.wait(stepDelay)
 
     # Open and view the edited document
     assert nwGUI.openDocument("31489056e0916")
     assert nwGUI.viewDocument("31489056e0916")
+    qtbot.wait(stepDelay)
+    assert nwGUI.saveProject()
 
     # Check the files
     projFile = path.join(nwTempGUI,"nwProject.nwx")
@@ -135,27 +139,27 @@ def testProjectEditor(qtbot, nwTempGUI, nwRef):
     qtbot.addWidget(projEdit)
 
     for c in "Project Name":
-        qtbot.keyClick(projEdit.editName, c, delay=keyDelay)
+        qtbot.keyClick(projEdit.tabMain.editName, c, delay=keyDelay)
     for c in "Project Title":
-        qtbot.keyClick(projEdit.editTitle, c, delay=keyDelay)
+        qtbot.keyClick(projEdit.tabMain.editTitle, c, delay=keyDelay)
     for c in "Jane Doe":
-        qtbot.keyClick(projEdit.editAuthors, c, delay=keyDelay)
-    qtbot.keyClick(projEdit.editAuthors, Qt.Key_Return, delay=keyDelay)
+        qtbot.keyClick(projEdit.tabMain.editAuthors, c, delay=keyDelay)
+    qtbot.keyClick(projEdit.tabMain.editAuthors, Qt.Key_Return, delay=keyDelay)
     for c in "John Doh":
-        qtbot.keyClick(projEdit.editAuthors, c, delay=keyDelay)
+        qtbot.keyClick(projEdit.tabMain.editAuthors, c, delay=keyDelay)
 
-    qtbot.mouseClick(projEdit.saveButton, Qt.LeftButton)
+    projEdit._doSave()
 
     projEdit = GuiProjectEditor(nwGUI, nwGUI.theProject)
     qtbot.addWidget(projEdit)
-    assert projEdit.editName.text()    == "Project Name"
-    assert projEdit.editTitle.text()   == "Project Title"
-    theAuth = projEdit.editAuthors.toPlainText().strip().splitlines()
+    assert projEdit.tabMain.editName.text()    == "Project Name"
+    assert projEdit.tabMain.editTitle.text()   == "Project Title"
+    theAuth = projEdit.tabMain.editAuthors.toPlainText().strip().splitlines()
     assert len(theAuth) == 2
     assert theAuth[0] == "Jane Doe"
     assert theAuth[1] == "John Doh"
 
-    qtbot.mouseClick(projEdit.closeButton, Qt.LeftButton)
+    projEdit._doClose()
 
     qtbot.wait(stepDelay)
     assert nwGUI.saveProject()
@@ -185,7 +189,7 @@ def testItemEditor(qtbot, nwTempGUI, nwRef):
     qtbot.addWidget(itemEdit)
 
     assert itemEdit.editName.text()          == "New Scene"
-    assert itemEdit.editStatus.currentData() == 0
+    assert itemEdit.editStatus.currentData() == "New"
     assert itemEdit.editLayout.currentData() == nwItemLayout.SCENE
 
     for c in "Just a Page":
@@ -199,7 +203,7 @@ def testItemEditor(qtbot, nwTempGUI, nwRef):
     itemEdit = GuiItemEditor(nwGUI, nwGUI.theProject, "31489056e0916")
     qtbot.addWidget(itemEdit)
     assert itemEdit.editName.text()          == "Just a Page"
-    assert itemEdit.editStatus.currentData() == 1
+    assert itemEdit.editStatus.currentData() == "Note"
     assert itemEdit.editLayout.currentData() == nwItemLayout.PAGE
 
     qtbot.mouseClick(itemEdit.closeButton, Qt.LeftButton)
