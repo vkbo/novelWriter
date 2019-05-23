@@ -137,7 +137,7 @@ class GuiMainMenu(QMenuBar):
         # Project > New Project
         menuItem = QAction(QIcon.fromTheme("folder-new"), "New Project", self)
         menuItem.setStatusTip("Create New Project")
-        menuItem.triggered.connect(self.theParent.newProject)
+        menuItem.triggered.connect(lambda : self.theParent.newProject(None))
         self.projMenu.addAction(menuItem)
 
         # Project > Open Project
@@ -152,6 +152,12 @@ class GuiMainMenu(QMenuBar):
         menuItem.setStatusTip("Save Project")
         menuItem.setShortcut("Ctrl+Shift+S")
         menuItem.triggered.connect(self.theParent.saveProject)
+        self.projMenu.addAction(menuItem)
+
+        # Project > Close Project
+        menuItem = QAction("Close Project", self)
+        menuItem.setStatusTip("Close Project")
+        menuItem.triggered.connect(lambda : self.theParent.closeProject(False))
         self.projMenu.addAction(menuItem)
 
         # Project > Recent Projects

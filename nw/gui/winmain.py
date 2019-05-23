@@ -46,6 +46,7 @@ class GuiMain(QMainWindow):
         self.theTheme    = Theme()
         self.theProject  = NWProject(self)
         self.theDocument = NWDoc(self.theProject, self)
+        self.hasProject  = False
 
         self.resize(*self.mainConf.winGeometry)
         self._setWindowTitle()
@@ -95,12 +96,10 @@ class GuiMain(QMainWindow):
 
         self.docViewer.setVisible(False)
 
-        # Build GUI Elements
+        # Build The Tree View
         self.treeView.itemSelectionChanged.connect(self._treeSingleClick)
         self.treeView.itemDoubleClicked.connect(self._treeDoubleClick)
-        self.treeView.buildTree()
-        self._makeStatusIcons()
-        self._makeImportIcons()
+        self.rebuildTree()
 
         # Set Main Window Elements
         self.setMenuBar(self.mainMenu)
@@ -110,11 +109,13 @@ class GuiMain(QMainWindow):
         # Load Theme StyleSheet
         self.setStyleSheet(self.theTheme.cssData)
 
+        # Set Up Autosaving Project Timer
         self.asProjTimer = QTimer()
         self.asProjTimer.setInterval(int(self.mainConf.autoSaveProj*1000))
         self.asProjTimer.timeout.connect(self._autoSaveProject)
         self.asProjTimer.start()
 
+        # Set Up Autosaving Document Timer
         self.asDocTimer = QTimer()
         self.asDocTimer.setInterval(int(self.mainConf.autoSaveDoc*1000))
         self.asDocTimer.timeout.connect(self._autoSaveDocument)
@@ -167,50 +168,127 @@ class GuiMain(QMainWindow):
 
         return
 
+    def clearGUI(self):
+        self.treeView.clearTree()
+        self.docEditor.clearEditor()
+        self.docViewer.clearViewer()
+        self.docViewer.setVisible(False)
+        return True
+
     ##
     #  Project Actions
     ##
 
-    def newProject(self):
+    def newProject(self, projPath=None, forceNew=False):
+
+        if self.hasProject:
+            msgBox = QMessageBox()
+            msgRes = msgBox.warning(
+                self, "New Project",
+                "Please close the current project<br>before making a new one."
+            )
+            return False
+
+        if projPath is None:
+            projPath = self.newProjectDialog()
+        if projPath is None:
+            return False
+
+        if path.isfile(path.join(projPath,self.theProject.projFile)) and not forceNew:
+            msgBox = QMessageBox()
+            msgRes = msgBox.critical(
+                self, "New Project",
+                "A project already exists in that location.<br>Please choose another folder."
+            )
+            return False
+
         logger.info("Creating new project")
-        self.treeView.clearTree()
-        if self.saveProject():
-            self.theProject.newProject()
-            self.treeView.buildTree()
+        self.theProject.newProject()
+        self.theProject.setProjectPath(projPath)
+        self.rebuildTree()
+        self.saveProject()
+        self.hasProject = True
+
         return True
 
+    def closeProject(self, isYes=False):
+
+        if not self.hasProject:
+            return True
+
+        if not isYes:
+            msgBox = QMessageBox()
+            msgRes = msgBox.question(
+                self, "Close Project",
+                "Close current project?<br>Unsaved changes will be saved."
+            )
+            if msgRes != QMessageBox.Yes:
+                return False
+
+        self.closeDocument()
+        if self.theProject.projChanged:
+            saveOK = self.saveProject()
+        else:
+            saveOK = True
+
+        if saveOK:
+            self.theProject.clearProject()
+            self.clearGUI()
+            self.hasProject = False
+
+        return saveOK
+
     def openProject(self, projFile=None):
+
         if projFile is None:
             projFile = self.openProjectDialog()
         if projFile is None:
             return False
+
+        if not self.closeProject():
+            return False
+
         self.theProject.openProject(projFile)
         self._setWindowTitle(self.theProject.projName)
         self.rebuildTree()
         self.docEditor.setPwl(path.join(self.theProject.projMeta,"wordlist.txt"))
         self.docEditor.setSpellCheck(self.theProject.spellCheck)
         self.mainMenu.updateMenu()
+
         if self.theProject.lastEdited is not None:
             self.openDocument(self.theProject.lastEdited)
         if self.theProject.lastViewed is not None:
             self.viewDocument(self.theProject.lastViewed)
+
+        self.hasProject = True
+
         return True
 
     def saveProject(self):
+
         if self.theProject.projPath is None:
             projPath = self.saveProjectDialog()
             self.theProject.setProjectPath(projPath)
+        if self.theProject.projPath is None:
+            return False
+
         self.treeView.saveTreeOrder()
         self.theProject.saveProject()
         self.mainMenu.updateRecentProjects()
+
         return True
 
     ##
     #  Document Actions
     ##
 
+    def closeDocument(self):
+        self.saveDocument()
+        self.theDocument.clearDocument()
+        return True
+
     def openDocument(self, tHandle):
-        if self._takeDocumentAction():
+        if self.docEditor.docChanged:
             self.saveDocument()
         self.docEditor.setText(self.theDocument.openDocument(tHandle))
         self.docEditor.setReadOnly(False)
@@ -324,6 +402,17 @@ class GuiMain(QMainWindow):
         dlgOpt |= QFileDialog.DontUseNativeDialog
         projPath = QFileDialog.getExistingDirectory(
             self,"Save novelWriter Project","",options=dlgOpt
+        )
+        if projPath:
+            return projPath
+        return None
+
+    def newProjectDialog(self):
+        dlgOpt  = QFileDialog.Options()
+        dlgOpt |= QFileDialog.ShowDirsOnly
+        dlgOpt |= QFileDialog.DontUseNativeDialog
+        projPath = QFileDialog.getExistingDirectory(
+            self,"Select Location for New novelWriter Project","",options=dlgOpt
         )
         if projPath:
             return projPath

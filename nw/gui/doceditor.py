@@ -65,24 +65,14 @@ class GuiDocEditor(QTextEdit):
 
         # Editor State
         self.hasSelection = False
+        self.setMinimumWidth(300)
+        self.setAcceptRichText(False)
 
-        if self.mainConf.textFixedW:
-            self.setLineWrapMode(QTextEdit.FixedPixelWidth)
-            self.setLineWrapColumnOrWidth(self.mainConf.textWidth)
-        else:
-            mTB = self.mainConf.textMargin[0]
-            mLR = self.mainConf.textMargin[1]
-            self.setViewportMargins(mLR,mTB,mLR,mTB)
+        self.clearEditor()
+        self.initEditor()
 
         self.theDoc.setDocumentMargin(0)
         self.theDoc.contentsChange.connect(self._docChange)
-        if self.mainConf.doJustify:
-            self.theDoc.setDefaultTextOption(QTextOption(Qt.AlignJustify))
-
-        self.setReadOnly(True)
-        self.setMinimumWidth(300)
-        self.setAcceptRichText(False)
-        self.setFontPointSize(self.mainConf.textSize)
 
         # Custom Shortcuts
         QShortcut(QKeySequence("Ctrl+."), self, context=Qt.WidgetShortcut, activated=self._openSpellContext)
@@ -99,6 +89,24 @@ class GuiDocEditor(QTextEdit):
         logger.debug("DocEditor initialisation complete")
 
         return
+
+    def clearEditor(self):
+        self.setReadOnly(True)
+        self.clear()
+        return True
+
+    def initEditor(self):
+        self.setFontPointSize(self.mainConf.textSize)
+        if self.mainConf.textFixedW:
+            self.setLineWrapMode(QTextEdit.FixedPixelWidth)
+            self.setLineWrapColumnOrWidth(self.mainConf.textWidth)
+        else:
+            mTB = self.mainConf.textMargin[0]
+            mLR = self.mainConf.textMargin[1]
+            self.setViewportMargins(mLR,mTB,mLR,mTB)
+        if self.mainConf.doJustify:
+            self.theDoc.setDefaultTextOption(QTextOption(Qt.AlignJustify))
+        return True
 
     ##
     #  Setters and Getters
