@@ -44,4 +44,8 @@ class GuiDocViewer(QTextBrowser):
 
         return
 
+    def clearViewer(self):
+        self.clear()
+        return True
+
 # END Class GuiDocViewer

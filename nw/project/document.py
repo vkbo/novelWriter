@@ -36,6 +36,11 @@ class NWDoc():
 
         return
 
+    def clearDocument(self):
+        self.theItem   = None
+        self.docHandle = None
+        return
+
     def openDocument(self, tHandle):
 
         self.docHandle = tHandle

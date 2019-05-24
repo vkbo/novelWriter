@@ -23,15 +23,49 @@ def testMainWindows(qtbot, nwTempGUI, nwRef):
     qtbot.waitForWindowShown(nwGUI)
     qtbot.wait(stepDelay)
 
-    # Create new, save, open project
+    # Create new, save, close project
     nwGUI.theProject.handleSeed = 42
-    assert nwGUI.theProject.setProjectPath(nwTempGUI)
-    assert nwGUI.newProject()
-    assert nwGUI.theProject.setProjectPath(nwTempGUI)
+    assert nwGUI.newProject(nwTempGUI, True)
     assert nwGUI.saveProject()
+    assert nwGUI.closeProject(True)
+
+    assert len(nwGUI.theProject.projTree) == 0
+    assert len(nwGUI.theProject.treeOrder) == 0
+    assert len(nwGUI.theProject.treeRoots) == 0
+    assert nwGUI.theProject.trashRoot is None
+    assert nwGUI.theProject.projPath is None
+    assert nwGUI.theProject.projMeta is None
+    assert nwGUI.theProject.projCache is None
+    assert nwGUI.theProject.projFile == "nwProject.nwx"
+    assert nwGUI.theProject.projName == ""
+    assert nwGUI.theProject.bookTitle == ""
+    assert len(nwGUI.theProject.bookAuthors) == 0
+    assert nwGUI.theProject.spellCheck == False
+
+    # Check the files
+    projFile = path.join(nwTempGUI,"nwProject.nwx")
+    assert cmpFiles(projFile, path.join(nwRef,"gui","0_nwProject.nwx"), [2])
     qtbot.wait(stepDelay)
+
+    # qtbot.stopForInteraction()
+
+    # Re-open project
     assert nwGUI.openProject(nwTempGUI)
     qtbot.wait(stepDelay)
+
+    # Check that we loaded the data
+    assert len(nwGUI.theProject.projTree) == 6
+    assert len(nwGUI.theProject.treeOrder) == 6
+    assert len(nwGUI.theProject.treeRoots) == 4
+    assert nwGUI.theProject.trashRoot is None
+    assert nwGUI.theProject.projPath == nwTempGUI
+    assert nwGUI.theProject.projMeta == path.join(nwTempGUI,"meta")
+    assert nwGUI.theProject.projCache == path.join(nwTempGUI,"cache")
+    assert nwGUI.theProject.projFile == "nwProject.nwx"
+    assert nwGUI.theProject.projName == ""
+    assert nwGUI.theProject.bookTitle == ""
+    assert len(nwGUI.theProject.bookAuthors) == 0
+    assert nwGUI.theProject.spellCheck == False
 
     # Check that tree items have been created
     assert nwGUI.treeView._getTreeItem("73475cb40a568") is not None
@@ -131,9 +165,7 @@ def testProjectEditor(qtbot, nwTempGUI, nwRef):
 
     # Create new, save, open project
     nwGUI.theProject.handleSeed = 42
-    assert nwGUI.theProject.setProjectPath(nwTempGUI)
-    assert nwGUI.newProject()
-    assert nwGUI.theProject.setProjectPath(nwTempGUI)
+    assert nwGUI.newProject(nwTempGUI, True)
 
     projEdit = GuiProjectEditor(nwGUI, nwGUI.theProject)
     qtbot.addWidget(projEdit)
@@ -194,9 +226,7 @@ def testItemEditor(qtbot, nwTempGUI, nwRef):
 
     # Create new, save, open project
     nwGUI.theProject.handleSeed = 42
-    assert nwGUI.theProject.setProjectPath(nwTempGUI)
-    assert nwGUI.newProject()
-    assert nwGUI.theProject.setProjectPath(nwTempGUI)
+    assert nwGUI.newProject(nwTempGUI, True)
 
     itemEdit = GuiItemEditor(nwGUI, nwGUI.theProject, "31489056e0916")
     qtbot.addWidget(itemEdit)

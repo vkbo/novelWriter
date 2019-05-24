@@ -120,8 +120,6 @@ class NWProject():
 
     def newProject(self):
 
-        self.clearProject()
-
         hNovel = self.newRoot("Novel",         nwItemClass.NOVEL)
         hChars = self.newRoot("Characters",    nwItemClass.CHARACTER)
         hWorld = self.newRoot("Plot",          nwItemClass.PLOT)
@@ -318,7 +316,10 @@ class NWProject():
     ##
 
     def setProjectPath(self, projPath):
-        self.projPath = projPath
+        if projPath is None or projPath == "":
+            self.projPath = None
+        else:
+            self.projPath = projPath
         self.setProjectChanged(True)
         return True
 
