@@ -13,8 +13,8 @@
 import logging
 import nw
 
-from PyQt5.QtWidgets import QMenuBar, QAction, QMessageBox
 from PyQt5.QtGui     import QIcon
+from PyQt5.QtWidgets import QMenuBar, QAction, QMessageBox
 
 from nw.enum         import nwItemType, nwItemClass, nwDocAction
 

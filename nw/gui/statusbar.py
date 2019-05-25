@@ -13,7 +13,6 @@
 import logging
 import nw
 
-from os              import path
 from PyQt5.QtWidgets import QStatusBar, QLabel, QFrame
 
 logger = logging.getLogger(__name__)

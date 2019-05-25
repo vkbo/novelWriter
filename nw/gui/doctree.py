@@ -13,10 +13,9 @@
 import logging
 import nw
 
-from os              import path
 from PyQt5.QtCore    import Qt, QSize
 from PyQt5.QtGui     import QIcon, QFont, QColor
-from PyQt5.QtWidgets import QTreeWidget, QTreeWidgetItem, QAbstractItemView, QInputDialog, QLineEdit, QApplication
+from PyQt5.QtWidgets import QTreeWidget, QTreeWidgetItem, QAbstractItemView, QApplication
 
 from nw.project.item import NWItem
 from nw.enum         import nwItemType, nwItemClass, nwAlert

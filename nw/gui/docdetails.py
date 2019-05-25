@@ -13,11 +13,9 @@
 import logging
 import nw
 
-from os              import path
 from PyQt5.QtGui     import QFont
 from PyQt5.QtWidgets import QFrame, QGridLayout, QLabel
 
-from nw.enum         import nwItemType, nwItemClass, nwItemLayout
 from nw.constants    import nwLabels
 
 logger = logging.getLogger(__name__)
