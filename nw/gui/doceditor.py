@@ -380,6 +380,7 @@ class GuiDocEditor(QTextEdit):
         self.paraCount = self.wCounter.paraCount
         self.theParent.statusBar.setCounts(self.charCount,self.wordCount,self.paraCount)
         self.theParent.treeView.propagateCount(tHandle, self.wordCount)
+        self.theParent.treeView.projectWordCount()
 
         return
 

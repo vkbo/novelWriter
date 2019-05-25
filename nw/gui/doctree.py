@@ -50,7 +50,7 @@ class GuiDocTree(QTreeWidget):
         self.setExpandsOnDoubleClick(True)
         self.setIndentation(13)
         self.setColumnCount(4)
-        self.setHeaderLabels(["Name","Count","Flags","Handle"])
+        self.setHeaderLabels(["Name","Words","Flags","Handle"])
         if not self.debugGUI:
             self.hideColumn(self.C_HANDLE)
 
@@ -284,6 +284,16 @@ class GuiDocTree(QTreeWidget):
                     pHandle = pItem.text(self.C_HANDLE)
                 if not nDepth > 200 and pHandle != "":
                     self.propagateCount(pHandle, pCount, nDepth+1)
+        return
+
+    def projectWordCount(self):
+        nWords = 0
+        for n in range(self.topLevelItemCount()):
+            tItem = self.topLevelItem(n)
+            if tItem == self.orphRoot:
+                continue
+            nWords += int(tItem.text(self.C_COUNT))
+        self.theParent.statusBar.setStats(nWords,0)
         return
 
     def buildTree(self):
