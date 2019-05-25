@@ -104,8 +104,12 @@ class GuiDocEditor(QTextEdit):
             mTB = self.mainConf.textMargin[0]
             mLR = self.mainConf.textMargin[1]
             self.setViewportMargins(mLR,mTB,mLR,mTB)
+        theOpt = QTextOption()
+        if self.mainConf.tabWidth >= 0:
+            theOpt.setTabStopDistance(self.mainConf.tabWidth)
         if self.mainConf.doJustify:
-            self.theDoc.setDefaultTextOption(QTextOption(Qt.AlignJustify))
+            theOpt.setAlignment(Qt.AlignJustify)
+        self.theDoc.setDefaultTextOption(theOpt)
         return True
 
     ##
