@@ -13,7 +13,7 @@
 import logging
 import nw
 
-from PyQt5.QtWidgets import qApp, QMenuBar, QAction, QMessageBox
+from PyQt5.QtWidgets import QMenuBar, QAction, QMessageBox
 from PyQt5.QtGui     import QIcon
 
 from nw.enum         import nwItemType, nwItemClass, nwDocAction
@@ -91,8 +91,7 @@ class GuiMainMenu(QMenuBar):
 
     def _menuExit(self):
         self.theParent.closeMain()
-        qApp.quit()
-        return True
+        return
 
     def _toggleSpellCheck(self):
         self.theProject.setSpellCheck(self.toolsSpellCheck.isChecked())

@@ -155,6 +155,7 @@ def testMainWindows(qtbot, nwTempGUI, nwRef):
     sceneFile = path.join(nwTempGUI,"data_3","1489056e0916_main.nwd")
     assert cmpFiles(sceneFile, path.join(nwRef,"gui","1_1489056e0916_main.nwd"))
 
+    nwGUI.closeMain(True)
     # qtbot.stopForInteraction()
 
 @pytest.mark.gui
@@ -216,6 +217,7 @@ def testProjectEditor(qtbot, nwTempGUI, nwRef):
     projFile = path.join(nwTempGUI,"nwProject.nwx")
     assert cmpFiles(projFile, path.join(nwRef,"gui","2_nwProject.nwx"), [2])
 
+    nwGUI.closeMain(True)
     # qtbot.stopForInteraction()
 
 @pytest.mark.gui
@@ -261,4 +263,5 @@ def testItemEditor(qtbot, nwTempGUI, nwRef):
     projFile = path.join(nwTempGUI,"nwProject.nwx")
     assert cmpFiles(projFile, path.join(nwRef,"gui","3_nwProject.nwx"), [2])
 
+    nwGUI.closeMain(True)
     # qtbot.stopForInteraction()
