@@ -132,7 +132,7 @@ class Config:
 
         ## Main
         cnfSec = "Main"
-        self.guiTheme        = self._parseLine(cnfParse, cnfSec, "theme", self.CNF_STR)
+        self.guiTheme        = self._parseLine(cnfParse, cnfSec, "theme", self.CNF_STR, self.guiTheme)
 
         ## Sizes
         cnfSec = "Sizes"
@@ -143,29 +143,29 @@ class Config:
 
         ## Project
         cnfSec = "Project"
-        self.autoSaveProj    = self._parseLine(cnfParse, cnfSec, "autosaveproject", self.CNF_INT)
-        self.autoSaveDoc     = self._parseLine(cnfParse, cnfSec, "autosavedoc",     self.CNF_INT)
+        self.autoSaveProj    = self._parseLine(cnfParse, cnfSec, "autosaveproject", self.CNF_INT, self.autoSaveProj)
+        self.autoSaveDoc     = self._parseLine(cnfParse, cnfSec, "autosavedoc",     self.CNF_INT, self.autoSaveDoc)
 
         ## Editor
         cnfSec = "Editor"
-        self.textFixedW      = self._parseLine(cnfParse, cnfSec, "fixedwidth",  self.CNF_BOOL)
-        self.textWidth       = self._parseLine(cnfParse, cnfSec, "width",       self.CNF_INT)
+        self.textFixedW      = self._parseLine(cnfParse, cnfSec, "fixedwidth",  self.CNF_BOOL, self.textFixedW)
+        self.textWidth       = self._parseLine(cnfParse, cnfSec, "width",       self.CNF_INT,  self.textWidth)
         self.textMargin      = self._parseLine(cnfParse, cnfSec, "margins",     self.CNF_LIST, self.textMargin)
-        self.textSize        = self._parseLine(cnfParse, cnfSec, "textsize",    self.CNF_INT)
-        self.tabWidth        = self._parseLine(cnfParse, cnfSec, "tabwidth",    self.CNF_INT)
-        self.doJustify       = self._parseLine(cnfParse, cnfSec, "justify",     self.CNF_BOOL)
-        self.autoSelect      = self._parseLine(cnfParse, cnfSec, "autoselect",  self.CNF_BOOL)
-        self.doReplace       = self._parseLine(cnfParse, cnfSec, "autoreplace", self.CNF_BOOL)
-        self.doReplaceSQuote = self._parseLine(cnfParse, cnfSec, "repsquotes",  self.CNF_BOOL)
-        self.doReplaceDQuote = self._parseLine(cnfParse, cnfSec, "repdquotes",  self.CNF_BOOL)
-        self.doReplaceDash   = self._parseLine(cnfParse, cnfSec, "repdash",     self.CNF_BOOL)
-        self.doReplaceDots   = self._parseLine(cnfParse, cnfSec, "repdots",     self.CNF_BOOL)
-        self.spellLanguage   = self._parseLine(cnfParse, cnfSec, "spellcheck",  self.CNF_STR)
+        self.textSize        = self._parseLine(cnfParse, cnfSec, "textsize",    self.CNF_INT,  self.textSize)
+        self.tabWidth        = self._parseLine(cnfParse, cnfSec, "tabwidth",    self.CNF_INT,  self.tabWidth)
+        self.doJustify       = self._parseLine(cnfParse, cnfSec, "justify",     self.CNF_BOOL, self.doJustify)
+        self.autoSelect      = self._parseLine(cnfParse, cnfSec, "autoselect",  self.CNF_BOOL, self.autoSelect)
+        self.doReplace       = self._parseLine(cnfParse, cnfSec, "autoreplace", self.CNF_BOOL, self.doReplace)
+        self.doReplaceSQuote = self._parseLine(cnfParse, cnfSec, "repsquotes",  self.CNF_BOOL, self.doReplaceSQuote)
+        self.doReplaceDQuote = self._parseLine(cnfParse, cnfSec, "repdquotes",  self.CNF_BOOL, self.doReplaceDQuote)
+        self.doReplaceDash   = self._parseLine(cnfParse, cnfSec, "repdash",     self.CNF_BOOL, self.doReplaceDash)
+        self.doReplaceDots   = self._parseLine(cnfParse, cnfSec, "repdots",     self.CNF_BOOL, self.doReplaceDots)
+        self.spellLanguage   = self._parseLine(cnfParse, cnfSec, "spellcheck",  self.CNF_STR,  self.spellLanguage)
 
         ## Path
         cnfSec = "Path"
         for i in range(10):
-            self.recentList[i] = self._parseLine(cnfParse, cnfSec, "recent%d" % i,self.CNF_STR)
+            self.recentList[i] = self._parseLine(cnfParse, cnfSec, "recent%d" % i,self.CNF_STR, self.recentList[i])
 
         return True
 
@@ -291,7 +291,7 @@ class Config:
     def _packList(self, inData):
         return ", ".join(str(inVal) for inVal in inData)
 
-    def _parseLine(self, cnfParse, cnfSec, cnfName, cnfType, cnfDefault=[]):
+    def _parseLine(self, cnfParse, cnfSec, cnfName, cnfType, cnfDefault):
         if cnfParse.has_section(cnfSec):
             if cnfParse.has_option(cnfSec, cnfName):
                 if cnfType == self.CNF_STR:
@@ -304,6 +304,6 @@ class Config:
                     return self._unpackList(
                         cnfParse.get(cnfSec, cnfName), len(cnfDefault), cnfDefault
                     )
-        return None
+        return cnfDefault
 
 # End Class Config
