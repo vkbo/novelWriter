@@ -263,6 +263,13 @@ class GuiMainMenu(QMenuBar):
         menuItem.triggered.connect(lambda : self.theParent.viewDocument(None))
         self.docuMenu.addAction(menuItem)
 
+        # Document > Close Preview
+        menuItem = QAction(QIcon.fromTheme("text-html"), "Close Document View", self)
+        menuItem.setStatusTip("Close Document View Pane")
+        menuItem.setShortcut("Ctrl+Shift+R")
+        menuItem.triggered.connect(self.theParent.closeDocViewer)
+        self.docuMenu.addAction(menuItem)
+
         # # Document > Separator
         # self.docuMenu.addSeparator()
 

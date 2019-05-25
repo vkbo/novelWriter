@@ -172,8 +172,7 @@ class GuiMain(QMainWindow):
     def clearGUI(self):
         self.treeView.clearTree()
         self.docEditor.clearEditor()
-        self.docViewer.clearViewer()
-        self.docViewer.setVisible(False)
+        self.closeDocViewer()
         return True
 
     ##
@@ -449,6 +448,16 @@ class GuiMain(QMainWindow):
             self.docEditor.setFocus()
         elif paneNo == 3:
             self.docViewer.setFocus()
+        return
+
+    def closeDocViewer(self):
+        self.docViewer.clearViewer()
+        self.theProject.setLastViewed(None)
+        bPos = self.splitMain.sizes()
+        self.docViewer.setVisible(False)
+        vPos = [bPos[1],0]
+        self.splitView.setSizes(vPos)
+        self.docEditor.changeWidth()
         return
 
     ##
