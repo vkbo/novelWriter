@@ -27,7 +27,7 @@ def testMainWindows(qtbot, nwTempGUI, nwRef):
     nwGUI.theProject.handleSeed = 42
     assert nwGUI.newProject(nwTempGUI, True)
     assert nwGUI.saveProject()
-    assert nwGUI.closeProject(True)
+    assert nwGUI.closeProject()
 
     assert len(nwGUI.theProject.projTree) == 0
     assert len(nwGUI.theProject.treeOrder) == 0

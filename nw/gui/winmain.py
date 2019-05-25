@@ -214,12 +214,12 @@ class GuiMain(QMainWindow):
 
         return True
 
-    def closeProject(self, isYes=False):
+    def closeProject(self):
 
         if not self.hasProject:
             return True
 
-        if not isYes:
+        if self.mainConf.showGUI:
             msgBox = QMessageBox()
             msgRes = msgBox.question(
                 self, "Close Project",

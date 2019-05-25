@@ -157,7 +157,7 @@ class GuiMainMenu(QMenuBar):
         menuItem = QAction(QIcon.fromTheme("document-revert"), "Close Project", self)
         menuItem.setStatusTip("Close Project")
         menuItem.setShortcut("Ctrl+Shift+W")
-        menuItem.triggered.connect(lambda : self.theParent.closeProject(False))
+        menuItem.triggered.connect(self.theParent.closeProject)
         self.projMenu.addAction(menuItem)
 
         # Project > Recent Projects
