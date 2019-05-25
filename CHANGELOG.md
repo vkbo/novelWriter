@@ -1,5 +1,31 @@
 # novelWriter ChangeLog
 
+## Version 0.1.4 [2019-05-25]
+
+**Bug Fixes**
+
+* Fixed a bug where an item had to be selected in the tree view for a root item to be created. #16.
+
+**User Interface**
+
+* The main area can now be split into two, with the document editor on the left and a document viewer on the right. PR #13.
+* The list of novel document status and plot element importance levels can now be edited through the Project Settings fialog. The values are per project, and saved in the main project XML file. PR #17.
+* Cleaned up opening and closing projects, as well as how new projects are created. A new project can also not be saved in a folder already containing a novelWriter project. That was previously possible. resulting in the old XML file being overwritten. PR #18.
+* Some minor GUI improvements were added, PR #19:
+  * Pressing `F2` also opens the edit item dialog, like `Ctrl+E` does.
+  * When the document editor and viewer split slider is moved, the editor resizes properly.
+  * The document viewer can be closed, expanding the editor to the full window size again.
+  * A project can be closed with `Ctrl+Shift+W`, and the menu entry has an icon.
+  * Exit button/menu now asks if you want to close.
+
+**Themes**
+
+* The colours for syntax highlighting can now be edited in a config file in the themes folder. The main GUI css file also lives in the same folder. The default theme lives in the default subfolder, and more folders can be added. Switching themes involve changing the theme setting in the main config file to the name of the themes subfolder. PR #15.
+
+**Code Improvements**
+
+* Loading the project with the items in the wrong order is possible. That is, the child item is stored before its parent. A saved file should not ever be like that, but an edited file might. Even if the file shouldn't be edited manually. PR #16.
+
 ## Version 0.1.3 [2019-05-18]
 
 **User Interface**
