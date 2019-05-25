@@ -204,7 +204,7 @@ class GuiMainMenu(QMenuBar):
         # Project > Edit
         menuItem = QAction(QIcon.fromTheme("document-properties"), "&Edit Item", self)
         menuItem.setStatusTip("Change Item Settings")
-        menuItem.setShortcut("Ctrl+E")
+        menuItem.setShortcuts(["Ctrl+E", "F2"])
         menuItem.triggered.connect(self.theParent.editItem)
         self.projMenu.addAction(menuItem)
 
