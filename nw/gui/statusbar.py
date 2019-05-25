@@ -63,17 +63,21 @@ class GuiMainStatus(QStatusBar):
         if self.mainConf.debugGUI:
             self.addPermanentWidget(self.boxDocHandle)
 
+        self.setSizeGripEnabled(True)
+
         logger.debug("GuiMainStatus initialisation complete")
 
+        self.clearStatus()
+
+        return
+
+    def clearStatus(self):
         self.setStats(0,0)
         self.setCounts(0,0,0)
         self.setDocHandleCount(None)
         self.setProjectStatus(None)
         self.setDocumentStatus(None)
-
-        self.setSizeGripEnabled(True)
-
-        return
+        return True
 
     def setStatus(self, theMessage, timeOut=10.0):
         self.showMessage(theMessage, int(timeOut*1000))

@@ -176,6 +176,7 @@ class GuiMain(QMainWindow):
         self.treeView.clearTree()
         self.docEditor.clearEditor()
         self.closeDocViewer()
+        self.statusBar.clearStatus()
         return True
 
     ##
