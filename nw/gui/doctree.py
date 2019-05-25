@@ -293,7 +293,9 @@ class GuiDocTree(QTreeWidget):
             if tItem == self.orphRoot:
                 continue
             nWords += int(tItem.text(self.C_COUNT))
-        self.theParent.statusBar.setStats(nWords,0)
+        self.theProject.setProjectWordCount(nWords)
+        sWords = self.theProject.getSessionWordCount()
+        self.theParent.statusBar.setStats(nWords,sWords)
         return
 
     def buildTree(self):

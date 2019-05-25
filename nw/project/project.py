@@ -20,7 +20,7 @@ from datetime import datetime
 from time     import time
 
 from nw.enum           import nwItemType, nwItemClass, nwItemLayout, nwAlert
-from nw.common         import checkString, checkBool
+from nw.common         import checkString, checkBool, checkInt
 from nw.project.item   import NWItem
 from nw.project.status import NWStatus
 
@@ -59,6 +59,8 @@ class NWProject():
         self.importItems  = None
         self.lastEdited   = None
         self.lastViewed   = None
+        self.lastWCount   = 0
+        self.currWCount   = 0
 
         # Set Defaults
         self.clearProject()
@@ -156,6 +158,10 @@ class NWProject():
         self.importItems.addEntry("Minor",   (200, 50,  0))
         self.importItems.addEntry("Major",   (200,150,  0))
         self.importItems.addEntry("Main",    ( 50,200,  0))
+        self.lastEdited = None
+        self.lastViewed = None
+        self.lastWCount = 0
+        self.currWCount = 0
 
         return
 
@@ -215,6 +221,8 @@ class NWProject():
                         self.lastEdited = checkString(xItem.text,None,True)
                     if xItem.tag == "lastViewed":
                         self.lastViewed = checkString(xItem.text,None,True)
+                    if xItem.tag == "lastWordCount":
+                        self.lastWCount = checkInt(xItem.text,0,False)
                     if xItem.tag == "status":
                         self.statusItems.unpackEntries(xItem)
                     if xItem.tag == "importance":
@@ -276,9 +284,10 @@ class NWProject():
 
         # Save Project Settings
         xSettings = etree.SubElement(nwXML,"settings")
-        self._saveProjectValue(xSettings,"spellCheck",self.spellCheck)
-        self._saveProjectValue(xSettings,"lastEdited",self.lastEdited)
-        self._saveProjectValue(xSettings,"lastViewed",self.lastViewed)
+        self._saveProjectValue(xSettings,"spellCheck",   self.spellCheck)
+        self._saveProjectValue(xSettings,"lastEdited",   self.lastEdited)
+        self._saveProjectValue(xSettings,"lastViewed",   self.lastViewed)
+        self._saveProjectValue(xSettings,"lastWordCount",self.currWCount)
 
         xStatus = etree.SubElement(xSettings,"status")
         self.statusItems.packEntries(xStatus)
@@ -364,6 +373,14 @@ class NWProject():
         self.lastViewed = tHandle
         self.setProjectChanged(True)
         return True
+
+    def setProjectWordCount(self, theCount):
+        self.currWCount = theCount
+        self.setProjectChanged(True)
+        return True
+
+    def getSessionWordCount(self):
+        return self.currWCount - self.lastWCount
 
     def setStatusColours(self, newCols):
         replaceMap = self.statusItems.setNewEntries(newCols)
