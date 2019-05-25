@@ -194,13 +194,14 @@ class GuiDocHighlighter(QSyntaxHighlighter):
 
         self.setCurrentBlockState(0)
 
-        if self.theDict is None or not self.spellCheck:
+        if self.theDict is None or not self.spellCheck or theText.startswith("@"):
             return
 
         rxSpell = self.spellRx.globalMatch(theText.replace("_"," "), 0)
         while rxSpell.hasNext():
             rxMatch = rxSpell.next()
             if not self.theDict.check(rxMatch.captured(0)):
+                if rxMatch.captured(0) == rxMatch.captured(0).upper(): continue
                 xPos = rxMatch.capturedStart(0)
                 xLen = rxMatch.capturedLength(0)
                 spFmt = self.format(xPos)
