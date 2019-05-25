@@ -13,6 +13,7 @@
 import logging
 import nw
 
+from PyQt5.QtGui     import QIcon, QColor, QPixmap
 from PyQt5.QtWidgets import QStatusBar, QLabel, QFrame
 
 logger = logging.getLogger(__name__)
@@ -26,28 +27,45 @@ class GuiMainStatus(QStatusBar):
 
         self.mainConf = nw.CONFIG
 
+        self.iconGrey   = QPixmap(16,16)
+        self.iconGrey.fill(QColor(120,120,120))
+        self.iconYellow = QPixmap(16,16)
+        self.iconYellow.fill(QColor(120,120, 40))
+        self.iconGreen  = QPixmap(16,16)
+        self.iconGreen.fill(QColor( 40,120,  0))
+
+
+        self.boxStats = QLabel()
+        self.boxStats.setToolTip("Project Word Count | Session Word Count")
+
         self.boxCounts = QLabel()
-        self.boxCounts.setToolTip("Character, Word, Paragraph Count")
-        self.boxCounts.setFrameStyle(QFrame.Panel | QFrame.Sunken);
-        self.addPermanentWidget(self.boxCounts)
+        self.boxCounts.setToolTip("Document Character | Word | Paragraph Count")
 
-        self.projChanged = QLabel("P")
+        self.projChanged = QLabel("")
+        self.projChanged.setFixedHeight(16)
+        self.projChanged.setFixedWidth(16)
         self.projChanged.setToolTip("Project Changes Saved")
-        self.projChanged.setFrameStyle(QFrame.Panel | QFrame.Sunken);
-        self.addPermanentWidget(self.projChanged)
 
-        self.docChanged = QLabel("D")
+        self.docChanged = QLabel("")
+        self.docChanged.setFixedHeight(16)
+        self.docChanged.setFixedWidth(16)
         self.docChanged.setToolTip("Document Changes Saved")
-        self.docChanged.setFrameStyle(QFrame.Panel | QFrame.Sunken);
-        self.addPermanentWidget(self.docChanged)
 
         self.boxDocHandle = QLabel()
         self.boxDocHandle.setFrameStyle(QFrame.Panel | QFrame.Sunken);
+
+        # Add Them
+        self.addPermanentWidget(self.docChanged)
+        self.addPermanentWidget(self.boxCounts)
+        self.addPermanentWidget(QLabel("  "))
+        self.addPermanentWidget(self.projChanged)
+        self.addPermanentWidget(self.boxStats)
         if self.mainConf.debugGUI:
             self.addPermanentWidget(self.boxDocHandle)
 
         logger.debug("GuiMainStatus initialisation complete")
 
+        self.setStats(0,0)
         self.setCounts(0,0,0)
         self.setDocHandleCount(None)
         self.setProjectStatus(None)
@@ -63,28 +81,32 @@ class GuiMainStatus(QStatusBar):
 
     def setProjectStatus(self, isChanged):
         if isChanged is None:
-            self.projChanged.setStyleSheet("QLabel {background-color: rgba(120,120,120,1.0);}")
+            self.projChanged.setPixmap(self.iconGrey)
         elif isChanged == True:
-            self.projChanged.setStyleSheet("QLabel {background-color: rgba(120,120,40,1.0);}")
+            self.projChanged.setPixmap(self.iconYellow)
         elif isChanged == False:
-            self.projChanged.setStyleSheet("QLabel {background-color: rgba(40,120,0,1.0);}")
+            self.projChanged.setPixmap(self.iconGreen)
         else:
-            self.projChanged.setStyleSheet("QLabel {background-color: rgba(120,120,120,1.0);}")
+            self.projChanged.setPixmap(self.iconGrey)
         return
 
     def setDocumentStatus(self, isChanged):
         if isChanged is None:
-            self.docChanged.setStyleSheet("QLabel {background-color: rgba(120,120,120,1.0);}")
+            self.docChanged.setPixmap(self.iconGrey)
         elif isChanged == True:
-            self.docChanged.setStyleSheet("QLabel {background-color: rgba(120,120,40,1.0);}")
+            self.docChanged.setPixmap(self.iconYellow)
         elif isChanged == False:
-            self.docChanged.setStyleSheet("QLabel {background-color: rgba(40,120,0,1.0);}")
+            self.docChanged.setPixmap(self.iconGreen)
         else:
-            self.docChanged.setStyleSheet("QLabel {background-color: rgba(120,120,120,1.0);}")
+            self.docChanged.setPixmap(self.iconGrey)
+        return
+
+    def setStats(self, pWC, sWC):
+        self.boxStats.setText("<b>Project:</b> {:n} : {:n}".format(pWC,sWC))
         return
 
     def setCounts(self, cC, wC, pC):
-        self.boxCounts.setText("<b>C:</b> {:n}&nbsp;&nbsp;<b>W:</b> {:n}&nbsp;&nbsp;<b>P:</b> {:n}".format(cC,wC,pC))
+        self.boxCounts.setText("<b>Document:</b> {:n} : {:n} : {:n}".format(cC,wC,pC))
         return
 
     def setDocHandleCount(self, theHandle):
