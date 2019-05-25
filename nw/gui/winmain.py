@@ -14,9 +14,12 @@ import logging
 import nw
 
 from os                   import path
-from PyQt5.QtWidgets      import QWidget, QMainWindow, QVBoxLayout, QFrame, QSplitter, QFileDialog, QStackedWidget, QShortcut, QMessageBox
-from PyQt5.QtGui          import QIcon, QPixmap, QColor
 from PyQt5.QtCore         import Qt, QTimer
+from PyQt5.QtGui          import QIcon, QPixmap, QColor
+from PyQt5.QtWidgets      import (
+    qApp, QWidget, QMainWindow, QVBoxLayout, QFrame, QSplitter, QFileDialog,
+    QShortcut, QMessageBox
+)
 
 from nw.theme             import Theme
 from nw.gui.doctree       import GuiDocTree
@@ -75,6 +78,7 @@ class GuiMain(QMainWindow):
         self.splitView = QSplitter(Qt.Horizontal)
         self.splitView.addWidget(self.docEditor)
         self.splitView.addWidget(self.docViewer)
+        self.splitView.splitterMoved.connect(self._splitViewMove)
 
         self.splitMain = QSplitter(Qt.Horizontal)
         self.splitMain.addWidget(self.treePane)
@@ -171,8 +175,7 @@ class GuiMain(QMainWindow):
     def clearGUI(self):
         self.treeView.clearTree()
         self.docEditor.clearEditor()
-        self.docViewer.clearViewer()
-        self.docViewer.setVisible(False)
+        self.closeDocViewer()
         return True
 
     ##
@@ -428,7 +431,17 @@ class GuiMain(QMainWindow):
     #  Main Window Actions
     ##
 
-    def closeMain(self):
+    def closeMain(self, isYes=False):
+
+        if not isYes:
+            msgBox = QMessageBox()
+            msgRes = msgBox.question(
+                self, "Exit",
+                "Do you want to exit %s?" % nw.__package__
+            )
+            if msgRes != QMessageBox.Yes:
+                return False
+
         logger.info("Exiting %s" % nw.__package__)
         if self._takeDocumentAction():
             self.saveDocument()
@@ -439,7 +452,10 @@ class GuiMain(QMainWindow):
         self.mainConf.setMainPanePos(self.splitMain.sizes())
         self.mainConf.setDocPanePos(self.splitView.sizes())
         self.mainConf.saveConfig()
-        return
+
+        qApp.quit()
+
+        return True
 
     def setFocus(self, paneNo):
         if paneNo == 1:
@@ -449,6 +465,16 @@ class GuiMain(QMainWindow):
         elif paneNo == 3:
             self.docViewer.setFocus()
         return
+
+    def closeDocViewer(self):
+        self.docViewer.clearViewer()
+        self.theProject.setLastViewed(None)
+        bPos = self.splitMain.sizes()
+        self.docViewer.setVisible(False)
+        vPos = [bPos[1],0]
+        self.splitView.setSizes(vPos)
+        self.docEditor.changeWidth()
+        return not self.docViewer.isVisible()
 
     ##
     #  Internal Functions
@@ -516,7 +542,6 @@ class GuiMain(QMainWindow):
 
     def closeEvent(self, theEvent):
         self.closeMain()
-        QMainWindow.closeEvent(self,theEvent)
         return
 
     ##
@@ -552,6 +577,12 @@ class GuiMain(QMainWindow):
         return
 
     def _splitMainMove(self, pWidth, pHeight):
+        """Alert dependent GUI elements that the main pane splitter has been moved.
+        """
+        self.docEditor.changeWidth()
+        return
+
+    def _splitViewMove(self, pWidth, pHeight):
         """Alert dependent GUI elements that the main pane splitter has been moved.
         """
         self.docEditor.changeWidth()

@@ -13,8 +13,8 @@
 import logging
 import nw
 
-from PyQt5.QtWidgets import qApp, QMenuBar, QAction, QMessageBox
 from PyQt5.QtGui     import QIcon
+from PyQt5.QtWidgets import QMenuBar, QAction, QMessageBox
 
 from nw.enum         import nwItemType, nwItemClass, nwDocAction
 
@@ -91,8 +91,7 @@ class GuiMainMenu(QMenuBar):
 
     def _menuExit(self):
         self.theParent.closeMain()
-        qApp.quit()
-        return True
+        return
 
     def _toggleSpellCheck(self):
         self.theProject.setSpellCheck(self.toolsSpellCheck.isChecked())
@@ -155,8 +154,9 @@ class GuiMainMenu(QMenuBar):
         self.projMenu.addAction(menuItem)
 
         # Project > Close Project
-        menuItem = QAction("Close Project", self)
+        menuItem = QAction(QIcon.fromTheme("document-revert"), "Close Project", self)
         menuItem.setStatusTip("Close Project")
+        menuItem.setShortcut("Ctrl+Shift+W")
         menuItem.triggered.connect(lambda : self.theParent.closeProject(False))
         self.projMenu.addAction(menuItem)
 
@@ -204,7 +204,7 @@ class GuiMainMenu(QMenuBar):
         # Project > Edit
         menuItem = QAction(QIcon.fromTheme("document-properties"), "&Edit Item", self)
         menuItem.setStatusTip("Change Item Settings")
-        menuItem.setShortcut("Ctrl+E")
+        menuItem.setShortcuts(["Ctrl+E", "F2"])
         menuItem.triggered.connect(self.theParent.editItem)
         self.projMenu.addAction(menuItem)
 
@@ -261,6 +261,13 @@ class GuiMainMenu(QMenuBar):
         menuItem.setStatusTip("View Document in HTML")
         menuItem.setShortcut("Ctrl+R")
         menuItem.triggered.connect(lambda : self.theParent.viewDocument(None))
+        self.docuMenu.addAction(menuItem)
+
+        # Document > Close Preview
+        menuItem = QAction(QIcon.fromTheme("text-html"), "Close Document View", self)
+        menuItem.setStatusTip("Close Document View Pane")
+        menuItem.setShortcut("Ctrl+Shift+R")
+        menuItem.triggered.connect(self.theParent.closeDocViewer)
         self.docuMenu.addAction(menuItem)
 
         # # Document > Separator

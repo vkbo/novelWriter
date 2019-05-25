@@ -16,9 +16,9 @@ import enchant
 
 from time                import time
 
+from PyQt5.QtCore        import Qt, QTimer
 from PyQt5.QtWidgets     import QTextEdit, QAction, QMenu, QShortcut
 from PyQt5.QtGui         import QTextCursor, QTextOption, QIcon, QKeySequence
-from PyQt5.QtCore        import Qt, QTimer
 
 from nw.gui.dochighlight import GuiDocHighlighter
 from nw.gui.wordcounter  import WordCounter
