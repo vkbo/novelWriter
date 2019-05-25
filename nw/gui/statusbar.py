@@ -106,11 +106,11 @@ class GuiMainStatus(QStatusBar):
         return
 
     def setStats(self, pWC, sWC):
-        self.boxStats.setText("<b>Project:</b> {:n} : {:n}".format(pWC,sWC))
+        self.boxStats.setText("<b>Project:</b> {:d} : {:d}".format(pWC,sWC))
         return
 
     def setCounts(self, cC, wC, pC):
-        self.boxCounts.setText("<b>Document:</b> {:n} : {:n} : {:n}".format(cC,wC,pC))
+        self.boxCounts.setText("<b>Document:</b> {:d} : {:d} : {:d}".format(cC,wC,pC))
         return
 
     def setDocHandleCount(self, theHandle):
