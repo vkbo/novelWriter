@@ -458,7 +458,7 @@ class GuiMain(QMainWindow):
         vPos = [bPos[1],0]
         self.splitView.setSizes(vPos)
         self.docEditor.changeWidth()
-        return
+        return not self.docViewer.isVisible()
 
     ##
     #  Internal Functions

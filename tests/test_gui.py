@@ -76,7 +76,7 @@ def testMainWindows(qtbot, nwTempGUI, nwRef):
     assert nwGUI.treeView._getTreeItem("811786ad1ae74") is not None
 
     # Select the 'New Scene' file
-    nwGUI.treeView.setFocus()
+    nwGUI.setFocus(1)
     nwGUI.treeView._getTreeItem("73475cb40a568").setExpanded(True)
     nwGUI.treeView._getTreeItem("25fc0e7096fc6").setExpanded(True)
     nwGUI.treeView._getTreeItem("31489056e0916").setSelected(True)
@@ -85,7 +85,7 @@ def testMainWindows(qtbot, nwTempGUI, nwRef):
     assert nwGUI.mainMenu._toggleSpellCheck()
 
     # Type something into the document
-    nwGUI.docEditor.setFocus()
+    nwGUI.setFocus(2)
     for c in "# Hello World!":
         qtbot.keyClick(nwGUI.docEditor, c, delay=keyDelay)
     qtbot.keyClick(nwGUI.docEditor, Qt.Key_Return, delay=keyDelay)
@@ -142,10 +142,12 @@ def testMainWindows(qtbot, nwTempGUI, nwRef):
     qtbot.wait(stepDelay)
 
     # Open and view the edited document
+    nwGUI.setFocus(3)
     assert nwGUI.openDocument("31489056e0916")
     assert nwGUI.viewDocument("31489056e0916")
     qtbot.wait(stepDelay)
     assert nwGUI.saveProject()
+    assert nwGUI.closeDocViewer()
 
     # Check the files
     projFile = path.join(nwTempGUI,"nwProject.nwx")
