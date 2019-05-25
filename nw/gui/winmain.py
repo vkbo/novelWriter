@@ -431,9 +431,9 @@ class GuiMain(QMainWindow):
     #  Main Window Actions
     ##
 
-    def closeMain(self, isYes=False):
+    def closeMain(self):
 
-        if not isYes:
+        if self.mainConf.showGUI:
             msgBox = QMessageBox()
             msgRes = msgBox.question(
                 self, "Exit",
