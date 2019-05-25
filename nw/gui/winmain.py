@@ -75,6 +75,7 @@ class GuiMain(QMainWindow):
         self.splitView = QSplitter(Qt.Horizontal)
         self.splitView.addWidget(self.docEditor)
         self.splitView.addWidget(self.docViewer)
+        self.splitView.splitterMoved.connect(self._splitViewMove)
 
         self.splitMain = QSplitter(Qt.Horizontal)
         self.splitMain.addWidget(self.treePane)
@@ -552,6 +553,12 @@ class GuiMain(QMainWindow):
         return
 
     def _splitMainMove(self, pWidth, pHeight):
+        """Alert dependent GUI elements that the main pane splitter has been moved.
+        """
+        self.docEditor.changeWidth()
+        return
+
+    def _splitViewMove(self, pWidth, pHeight):
         """Alert dependent GUI elements that the main pane splitter has been moved.
         """
         self.docEditor.changeWidth()
