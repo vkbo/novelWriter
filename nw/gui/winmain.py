@@ -140,39 +140,6 @@ class GuiMain(QMainWindow):
 
         return
 
-    def makeAlert(self, theMessage, theLevel=nwAlert.INFO):
-        """Alert both the user and the logger at the same time. Message can be either a string or an
-        array of strings. Severity level is 0 = info, 1 = warning, and 2 = error.
-        """
-
-        if isinstance(theMessage, list):
-            popMsg = "<br>".join(theMessage)
-            logMsg = theMessage
-        else:
-            popMsg = theMessage
-            logMsg = [theMessage]
-
-        msgBox = QMessageBox()
-        if theLevel == nwAlert.INFO:
-            for msgLine in logMsg:
-                logger.info(msgLine)
-            msgBox.information(self, "Information", popMsg)
-        elif theLevel == nwAlert.WARN:
-            for msgLine in logMsg:
-                logger.warning(msgLine)
-            msgBox.warning(self, "Warning", popMsg)
-        elif theLevel == nwAlert.ERROR:
-            for msgLine in logMsg:
-                logger.error(msgLine)
-            msgBox.critical(self, "Error", popMsg)
-        elif theLevel == nwAlert.BUG:
-            for msgLine in logMsg:
-                logger.error(msgLine)
-            popMsg += "<br>This is a bug!"
-            msgBox.critical(self, "Internal Error", popMsg)
-
-        return
-
     def clearGUI(self):
         self.treeView.clearTree()
         self.docEditor.clearEditor()
@@ -443,6 +410,39 @@ class GuiMain(QMainWindow):
         dlgProj.exec_()
         self._setWindowTitle(self.theProject.projName)
         return True
+
+    def makeAlert(self, theMessage, theLevel=nwAlert.INFO):
+        """Alert both the user and the logger at the same time. Message can be either a string or an
+        array of strings. Severity level is 0 = info, 1 = warning, and 2 = error.
+        """
+
+        if isinstance(theMessage, list):
+            popMsg = "<br>".join(theMessage)
+            logMsg = theMessage
+        else:
+            popMsg = theMessage
+            logMsg = [theMessage]
+
+        msgBox = QMessageBox()
+        if theLevel == nwAlert.INFO:
+            for msgLine in logMsg:
+                logger.info(msgLine)
+            msgBox.information(self, "Information", popMsg)
+        elif theLevel == nwAlert.WARN:
+            for msgLine in logMsg:
+                logger.warning(msgLine)
+            msgBox.warning(self, "Warning", popMsg)
+        elif theLevel == nwAlert.ERROR:
+            for msgLine in logMsg:
+                logger.error(msgLine)
+            msgBox.critical(self, "Error", popMsg)
+        elif theLevel == nwAlert.BUG:
+            for msgLine in logMsg:
+                logger.error(msgLine)
+            popMsg += "<br>This is a bug!"
+            msgBox.critical(self, "Internal Error", popMsg)
+
+        return
 
     ##
     #  Main Window Actions
