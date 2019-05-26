@@ -180,6 +180,7 @@ class GuiMain(QMainWindow):
         self.rebuildTree()
         self.saveProject()
         self.hasProject = True
+        self.statusBar.setRefTime(self.theProject.projOpened)
 
         return True
 
@@ -209,7 +210,7 @@ class GuiMain(QMainWindow):
             self.theProject.closeProject()
             self.clearGUI()
             self.hasProject = False
-
+    
         return saveOK
 
     def openProject(self, projFile=None):
@@ -234,6 +235,7 @@ class GuiMain(QMainWindow):
         self.rebuildTree()
         self.docEditor.setPwl(path.join(self.theProject.projMeta, nwFiles.PROJ_DICT))
         self.docEditor.setSpellCheck(self.theProject.spellCheck)
+        self.statusBar.setRefTime(self.theProject.projOpened)
         self.mainMenu.updateMenu()
 
         # Restore previously open documents, if any

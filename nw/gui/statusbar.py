@@ -13,6 +13,8 @@
 import logging
 import nw
 
+from time            import time
+from PyQt5.QtCore    import Qt, QTimer
 from PyQt5.QtGui     import QIcon, QColor, QPixmap
 from PyQt5.QtWidgets import QStatusBar, QLabel, QFrame
 
@@ -26,6 +28,7 @@ class GuiMainStatus(QStatusBar):
         logger.debug("Initialising GuiMainStatus ...")
 
         self.mainConf = nw.CONFIG
+        self.refTime  = None
 
         self.iconGrey   = QPixmap(16,16)
         self.iconGrey.fill(QColor(120,120,120))
@@ -34,9 +37,13 @@ class GuiMainStatus(QStatusBar):
         self.iconGreen  = QPixmap(16,16)
         self.iconGreen.fill(QColor( 40,120,  0))
 
-
         self.boxStats = QLabel()
         self.boxStats.setToolTip("Project Word Count | Session Word Count")
+
+        self.boxTime = QLabel("")
+        self.boxTime.setToolTip("Session Time")
+        self.boxTime.setAlignment(Qt.AlignRight)
+        self.boxTime.setMinimumWidth(80)
 
         self.boxCounts = QLabel()
         self.boxCounts.setToolTip("Document Character | Word | Paragraph Count")
@@ -60,10 +67,16 @@ class GuiMainStatus(QStatusBar):
         self.addPermanentWidget(QLabel("  "))
         self.addPermanentWidget(self.projChanged)
         self.addPermanentWidget(self.boxStats)
+        self.addPermanentWidget(self.boxTime)
         if self.mainConf.debugGUI:
             self.addPermanentWidget(self.boxDocHandle)
 
         self.setSizeGripEnabled(True)
+
+        self.sessionTimer = QTimer()
+        self.sessionTimer.setInterval(1000)
+        self.sessionTimer.timeout.connect(self._updateTime)
+        self.sessionTimer.start()
 
         logger.debug("GuiMainStatus initialisation complete")
 
@@ -72,12 +85,18 @@ class GuiMainStatus(QStatusBar):
         return
 
     def clearStatus(self):
+        self.setRefTime(None)
         self.setStats(0,0)
         self.setCounts(0,0,0)
         self.setDocHandleCount(None)
         self.setProjectStatus(None)
         self.setDocumentStatus(None)
+        self._updateTime()
         return True
+
+    def setRefTime(self, theTime):
+        self.refTime = theTime
+        return
 
     def setStatus(self, theMessage, timeOut=10.0):
         self.showMessage(theMessage, int(timeOut*1000))
@@ -118,6 +137,26 @@ class GuiMainStatus(QStatusBar):
             self.boxDocHandle.setText("0000000000000")
         else:
             self.boxDocHandle.setText("%13s" % theHandle)
+        return
+
+    ##
+    #  Internal Functions
+    ##
+
+    def _updateTime(self):
+        sTime = time()
+        if self.refTime is None:
+            theTime = "00:00:00"
+        else:
+            # This is much faster than using datetime format
+            tS = int(time() - self.refTime)
+            tM = int(tS/60)
+            tH = int(tM/60)
+            tM = tM - tH*60
+            tS = tS - tM*60 - tH*3600
+            theTime = "%02d:%02d:%02d" % (tH,tM,tS)
+        self.boxTime.setText(theTime)
+        print((time()-sTime)*1e6)
         return
 
 # END Class GuiMainStatus
