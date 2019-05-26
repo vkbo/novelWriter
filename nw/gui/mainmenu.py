@@ -257,7 +257,7 @@ class GuiMainMenu(QMenuBar):
         menuItem = QAction(QIcon.fromTheme("document-revert"), "Close Document", self)
         menuItem.setStatusTip("Close Current Document")
         menuItem.setShortcut("Ctrl+W")
-        menuItem.triggered.connect(self.theParent.closeDocument)
+        menuItem.triggered.connect(self.theParent.closeDocEditor)
         self.docuMenu.addAction(menuItem)
 
         # Document > Separator

@@ -258,8 +258,11 @@ class GuiMain(QMainWindow):
         if not self.closeProject():
             return False
 
-        # Do the stuff
-        self.theProject.openProject(projFile)
+        # Try to open the project
+        if not self.theProject.openProject(projFile):
+            return False
+
+        # Update GUI
         self._setWindowTitle(self.theProject.projName)
         self.rebuildTree()
         self.docEditor.setPwl(path.join(self.theProject.projMeta, nwFiles.PROJ_DICT))
@@ -301,7 +304,6 @@ class GuiMain(QMainWindow):
             self.saveDocument()
         self.theDocument.clearDocument()
         self.docEditor.clearEditor()
-        self.theProject.setLastEdited(None)
         return True
 
     def openDocument(self, tHandle):
@@ -476,6 +478,11 @@ class GuiMain(QMainWindow):
             self.docEditor.setFocus()
         elif paneNo == 3:
             self.docViewer.setFocus()
+        return
+
+    def closeDocEditor(self):
+        self.closeDocument()
+        self.theProject.setLastEdited(None)
         return
 
     def closeDocViewer(self):
