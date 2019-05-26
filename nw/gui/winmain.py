@@ -36,6 +36,7 @@ from nw.project.item      import NWItem
 from nw.convert.tokenizer import Tokenizer
 from nw.convert.tohtml    import ToHtml
 from nw.enum              import nwItemType, nwAlert
+from nw.constants         import nwFiles
 
 logger = logging.getLogger(__name__)
 
@@ -53,7 +54,7 @@ class GuiMain(QMainWindow):
 
         self.resize(*self.mainConf.winGeometry)
         self._setWindowTitle()
-        self.setWindowIcon(QIcon(path.join(self.mainConf.appPath,"..","novelWriter.svg")))
+        self.setWindowIcon(QIcon(path.join(self.mainConf.appRoot, nwFiles.APP_ICON)))
         self.theTheme.loadTheme()
 
         # Main GUI Elements
@@ -255,7 +256,7 @@ class GuiMain(QMainWindow):
         self.theProject.openProject(projFile)
         self._setWindowTitle(self.theProject.projName)
         self.rebuildTree()
-        self.docEditor.setPwl(path.join(self.theProject.projMeta,"wordlist.txt"))
+        self.docEditor.setPwl(path.join(self.theProject.projMeta, nwFiles.PROJ_DICT))
         self.docEditor.setSpellCheck(self.theProject.spellCheck)
         self.mainMenu.updateMenu()
 
@@ -394,7 +395,9 @@ class GuiMain(QMainWindow):
         dlgOpt  = QFileDialog.Options()
         dlgOpt |= QFileDialog.DontUseNativeDialog
         projFile, _ = QFileDialog.getOpenFileName(
-            self,"Open novelWriter Project","","novelWriter Project File (nwProject.nwx);;All Files (*)",options=dlgOpt
+            self, "Open novelWriter Project", "",
+            "novelWriter Project File (%s);;All Files (*)" % nwFiles.PROJ_FILE,
+            options=dlgOpt
         )
         if projFile:
             return projFile

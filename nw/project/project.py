@@ -19,10 +19,11 @@ from hashlib  import sha256
 from datetime import datetime
 from time     import time
 
-from nw.enum           import nwItemType, nwItemClass, nwItemLayout, nwAlert
-from nw.common         import checkString, checkBool, checkInt
 from nw.project.item   import NWItem
 from nw.project.status import NWStatus
+from nw.enum           import nwItemType, nwItemClass, nwItemLayout, nwAlert
+from nw.common         import checkString, checkBool, checkInt
+from nw.constants      import nwFiles
 
 logger = logging.getLogger(__name__)
 
@@ -143,7 +144,7 @@ class NWProject():
         self.projPath    = None
         self.projMeta    = None
         self.projCache   = None
-        self.projFile    = "nwProject.nwx"
+        self.projFile    = nwFiles.PROJ_FILE
         self.projName    = ""
         self.bookTitle   = ""
         self.bookAuthors = []
@@ -168,7 +169,7 @@ class NWProject():
     def openProject(self, fileName):
 
         if not path.isfile(fileName):
-            fileName = path.join(fileName, "nwProject.nwx")
+            fileName = path.join(fileName, nwFiles.PROJ_FILE)
             if not path.isfile(fileName):
                 self.makeAlert("File not found: %s" % fileName, nwAlert.ERROR)
                 return False

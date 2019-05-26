@@ -12,6 +12,14 @@
 
 from nw.enum import nwItemClass, nwItemLayout
 
+class nwFiles():
+
+    APP_ICON  = "novelWriter.svg"
+    PROJ_FILE = "nwProject.nwx"
+    PROJ_DICT = "wordlist.txt"
+
+# END Class nwFiles
+
 class nwLabels():
 
     CLASS_NAME = {
@@ -59,5 +67,4 @@ class nwLabels():
         nwItemLayout.NOTE       : "Nt",
     }
 
-
-# END nwLabels
+# END Class nwLabels

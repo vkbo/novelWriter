@@ -43,6 +43,7 @@ class Config:
         self.confFile  = None
         self.homePath  = None
         self.appPath   = None
+        self.appRoot   = None
         self.guiPath   = None
         self.themePath = None
 
@@ -101,6 +102,7 @@ class Config:
         self.confFile  = self.appHandle+".conf"
         self.homePath  = path.expanduser("~")
         self.appPath   = path.dirname(__file__)
+        self.appRoot   = path.join(self.appPath,path.pardir)
         self.guiPath   = path.join(self.appPath,"gui")
         self.themePath = path.join(self.appPath,"themes")
 
