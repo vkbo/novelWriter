@@ -17,6 +17,7 @@ class nwFiles():
     APP_ICON  = "novelWriter.svg"
     PROJ_FILE = "nwProject.nwx"
     PROJ_DICT = "wordlist.txt"
+    SESS_INFO = "sessionInfo.log"
 
 # END Class nwFiles
 

@@ -237,7 +237,7 @@ class GuiMain(QMainWindow):
             saveOK = True
 
         if saveOK:
-            self.theProject.clearProject()
+            self.theProject.closeProject()
             self.clearGUI()
             self.hasProject = False
 
@@ -451,6 +451,7 @@ class GuiMain(QMainWindow):
             self.saveDocument()
         if self._takeProjectAction():
             self.saveProject()
+        self.theProject.closeProject()
         self.mainConf.setWinSize(self.width(), self.height())
         self.mainConf.setTreeColWidths(self.treeView.getColumnSizes())
         self.mainConf.setMainPanePos(self.splitMain.sizes())

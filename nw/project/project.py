@@ -35,6 +35,7 @@ class NWProject():
         self.theParent    = theParent
         self.mainConf     = self.theParent.mainConf
         self.projChanged  = None
+        self.projOpened   = None
 
         # Debug
         self.handleSeed   = None
@@ -135,6 +136,7 @@ class NWProject():
     def clearProject(self):
 
         self.projChanged = None
+        self.projOpened  = None
 
         # Project Settings
         self.projTree    = {}
@@ -251,6 +253,7 @@ class NWProject():
 
         self._scanProjectFolder()
         self.setProjectChanged(False)
+        self.projOpened = time()
 
         return True
 
@@ -319,6 +322,11 @@ class NWProject():
         self.theParent.setStatus("Saved Project: %s" % self.projName)
         self.setProjectChanged(False)
 
+        return True
+
+    def closeProject(self):
+        self._appendSessionStats()
+        self.clearProject()
         return True
 
     ##
@@ -593,6 +601,24 @@ class NWProject():
         self.setProjectChanged(True)
 
         return
+
+    def _appendSessionStats(self):
+
+        if self.projMeta is None:
+            return False
+
+        with open(path.join(self.projMeta, nwFiles.SESS_INFO), mode="a+") as outFile:
+            print((
+                "Start: {opened:s}  "
+                "End: {closed:s}  "
+                "Words: {words:8d}"
+            ).format(
+                opened = datetime.fromtimestamp(self.projOpened).strftime("%Y-%m-%d %H:%M:%S"),
+                closed = datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+                words  = self.getSessionWordCount(),
+            ), file=outFile)
+
+        return True
 
     def _makeHandle(self, addSeed=""):
         if self.handleSeed is None:
