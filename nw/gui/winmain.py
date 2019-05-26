@@ -36,6 +36,7 @@ from nw.project.item      import NWItem
 from nw.convert.tokenizer import Tokenizer
 from nw.convert.tohtml    import ToHtml
 from nw.enum              import nwItemType, nwAlert
+from nw.constants         import nwFiles
 
 logger = logging.getLogger(__name__)
 
@@ -53,7 +54,7 @@ class GuiMain(QMainWindow):
 
         self.resize(*self.mainConf.winGeometry)
         self._setWindowTitle()
-        self.setWindowIcon(QIcon(path.join(self.mainConf.appPath,"..","novelWriter.svg")))
+        self.setWindowIcon(QIcon(path.join(self.mainConf.appRoot, nwFiles.APP_ICON)))
         self.theTheme.loadTheme()
 
         # Main GUI Elements
@@ -139,43 +140,11 @@ class GuiMain(QMainWindow):
 
         return
 
-    def makeAlert(self, theMessage, theLevel=nwAlert.INFO):
-        """Alert both the user and the logger at the same time. Message can be either a string or an
-        array of strings. Severity level is 0 = info, 1 = warning, and 2 = error.
-        """
-
-        if isinstance(theMessage, list):
-            popMsg = "<br>".join(theMessage)
-            logMsg = theMessage
-        else:
-            popMsg = theMessage
-            logMsg = [theMessage]
-
-        msgBox = QMessageBox()
-        if theLevel == nwAlert.INFO:
-            for msgLine in logMsg:
-                logger.info(msgLine)
-            msgBox.information(self, "Information", popMsg)
-        elif theLevel == nwAlert.WARN:
-            for msgLine in logMsg:
-                logger.warning(msgLine)
-            msgBox.warning(self, "Warning", popMsg)
-        elif theLevel == nwAlert.ERROR:
-            for msgLine in logMsg:
-                logger.error(msgLine)
-            msgBox.critical(self, "Error", popMsg)
-        elif theLevel == nwAlert.BUG:
-            for msgLine in logMsg:
-                logger.error(msgLine)
-            popMsg += "<br>This is a bug!"
-            msgBox.critical(self, "Internal Error", popMsg)
-
-        return
-
     def clearGUI(self):
         self.treeView.clearTree()
         self.docEditor.clearEditor()
         self.closeDocViewer()
+        self.statusBar.clearStatus()
         return True
 
     ##
@@ -211,19 +180,22 @@ class GuiMain(QMainWindow):
         self.rebuildTree()
         self.saveProject()
         self.hasProject = True
+        self.statusBar.setRefTime(self.theProject.projOpened)
 
         return True
 
     def closeProject(self, isYes=False):
-
+        """Closes the project if one is open.
+        isYes is passed on from the close application event so the user doesn't get prompted twice.
+        """
         if not self.hasProject:
+            # There is no project loaded, everything OK
             return True
 
-        if not isYes:
+        if self.mainConf.showGUI and not isYes:
             msgBox = QMessageBox()
             msgRes = msgBox.question(
-                self, "Close Project",
-                "Close current project?<br>Unsaved changes will be saved."
+                self, "Close Project", "Save changes and close current project?"
             )
             if msgRes != QMessageBox.Yes:
                 return False
@@ -235,29 +207,38 @@ class GuiMain(QMainWindow):
             saveOK = True
 
         if saveOK:
-            self.theProject.clearProject()
+            self.theProject.closeProject()
             self.clearGUI()
             self.hasProject = False
-
+    
         return saveOK
 
     def openProject(self, projFile=None):
-
+        """Open a project.
+        projFile is passed from the open recent projects menu, so can be set. If not, we pop the dialog.
+        """
         if projFile is None:
             projFile = self.openProjectDialog()
         if projFile is None:
             return False
 
+        # Make sure any open project is cleared out first before we load another one
         if not self.closeProject():
             return False
 
-        self.theProject.openProject(projFile)
+        # Try to open the project
+        if not self.theProject.openProject(projFile):
+            return False
+
+        # Update GUI
         self._setWindowTitle(self.theProject.projName)
         self.rebuildTree()
-        self.docEditor.setPwl(path.join(self.theProject.projMeta,"wordlist.txt"))
+        self.docEditor.setPwl(path.join(self.theProject.projMeta, nwFiles.PROJ_DICT))
         self.docEditor.setSpellCheck(self.theProject.spellCheck)
+        self.statusBar.setRefTime(self.theProject.projOpened)
         self.mainMenu.updateMenu()
 
+        # Restore previously open documents, if any
         if self.theProject.lastEdited is not None:
             self.openDocument(self.theProject.lastEdited)
         if self.theProject.lastViewed is not None:
@@ -268,7 +249,9 @@ class GuiMain(QMainWindow):
         return True
 
     def saveProject(self):
-
+        """Save the current project.
+        """
+        # If the project is new, it may not have a path, so we need one
         if self.theProject.projPath is None:
             projPath = self.saveProjectDialog()
             self.theProject.setProjectPath(projPath)
@@ -286,13 +269,14 @@ class GuiMain(QMainWindow):
     ##
 
     def closeDocument(self):
-        self.saveDocument()
+        if self.docEditor.docChanged:
+            self.saveDocument()
         self.theDocument.clearDocument()
+        self.docEditor.clearEditor()
         return True
 
     def openDocument(self, tHandle):
-        if self.docEditor.docChanged:
-            self.saveDocument()
+        self.closeDocument()
         self.docEditor.setText(self.theDocument.openDocument(tHandle))
         self.docEditor.setReadOnly(False)
         self.docEditor.setCursorPosition(self.theDocument.theItem.cursorPos)
@@ -303,13 +287,13 @@ class GuiMain(QMainWindow):
 
     def saveDocument(self):
         if self.theDocument.theItem is not None:
-            docHtml = self.docEditor.getText()
+            docText = self.docEditor.getText()
             cursPos = self.docEditor.getCursorPosition()
             self.theDocument.theItem.setCharCount(self.docEditor.charCount)
             self.theDocument.theItem.setWordCount(self.docEditor.wordCount)
             self.theDocument.theItem.setParaCount(self.docEditor.paraCount)
             self.theDocument.theItem.setCursorPos(cursPos)
-            self.theDocument.saveDocument(docHtml)
+            self.theDocument.saveDocument(docText)
             self.docEditor.setDocumentChanged(False)
         return True
 
@@ -393,7 +377,9 @@ class GuiMain(QMainWindow):
         dlgOpt  = QFileDialog.Options()
         dlgOpt |= QFileDialog.DontUseNativeDialog
         projFile, _ = QFileDialog.getOpenFileName(
-            self,"Open novelWriter Project","","novelWriter Project File (nwProject.nwx);;All Files (*)",options=dlgOpt
+            self, "Open novelWriter Project", "",
+            "novelWriter Project File (%s);;All Files (*)" % nwFiles.PROJ_FILE,
+            options=dlgOpt
         )
         if projFile:
             return projFile
@@ -427,26 +413,56 @@ class GuiMain(QMainWindow):
         self._setWindowTitle(self.theProject.projName)
         return True
 
+    def makeAlert(self, theMessage, theLevel=nwAlert.INFO):
+        """Alert both the user and the logger at the same time. Message can be either a string or an
+        array of strings. Severity level is 0 = info, 1 = warning, and 2 = error.
+        """
+
+        if isinstance(theMessage, list):
+            popMsg = "<br>".join(theMessage)
+            logMsg = theMessage
+        else:
+            popMsg = theMessage
+            logMsg = [theMessage]
+
+        msgBox = QMessageBox()
+        if theLevel == nwAlert.INFO:
+            for msgLine in logMsg:
+                logger.info(msgLine)
+            msgBox.information(self, "Information", popMsg)
+        elif theLevel == nwAlert.WARN:
+            for msgLine in logMsg:
+                logger.warning(msgLine)
+            msgBox.warning(self, "Warning", popMsg)
+        elif theLevel == nwAlert.ERROR:
+            for msgLine in logMsg:
+                logger.error(msgLine)
+            msgBox.critical(self, "Error", popMsg)
+        elif theLevel == nwAlert.BUG:
+            for msgLine in logMsg:
+                logger.error(msgLine)
+            popMsg += "<br>This is a bug!"
+            msgBox.critical(self, "Internal Error", popMsg)
+
+        return
+
     ##
     #  Main Window Actions
     ##
 
-    def closeMain(self, isYes=False):
+    def closeMain(self):
 
-        if not isYes:
+        if self.mainConf.showGUI:
             msgBox = QMessageBox()
             msgRes = msgBox.question(
-                self, "Exit",
-                "Do you want to exit %s?" % nw.__package__
+                self, "Exit", "Do you want to save changes and exit?"
             )
             if msgRes != QMessageBox.Yes:
                 return False
 
         logger.info("Exiting %s" % nw.__package__)
-        if self._takeDocumentAction():
-            self.saveDocument()
-        if self._takeProjectAction():
-            self.saveProject()
+        self.closeProject(True)
+
         self.mainConf.setWinSize(self.width(), self.height())
         self.mainConf.setTreeColWidths(self.treeView.getColumnSizes())
         self.mainConf.setMainPanePos(self.splitMain.sizes())
@@ -464,6 +480,11 @@ class GuiMain(QMainWindow):
             self.docEditor.setFocus()
         elif paneNo == 3:
             self.docViewer.setFocus()
+        return
+
+    def closeDocEditor(self):
+        self.closeDocument()
+        self.theProject.setLastEdited(None)
         return
 
     def closeDocViewer(self):
@@ -488,30 +509,16 @@ class GuiMain(QMainWindow):
         return True
 
     def _autoSaveProject(self):
-        if self._takeProjectAction():
+        if self.hasProject and self.theProject.projChanged and self.theProject.projPath is not None:
             logger.debug("Autosaving project")
             self.saveProject()
         return
 
     def _autoSaveDocument(self):
-        if self._takeDocumentAction():
+        if self.hasProject and self.docEditor.docChanged and self.theDocument.theItem is not None:
             logger.debug("Autosaving document")
             self.saveDocument()
         return
-
-    def _takeProjectAction(self):
-        if self.theProject.projPath is None:
-            return False
-        if not self.theProject.projChanged:
-            return False
-        return True
-
-    def _takeDocumentAction(self):
-        if self.theDocument.theItem is None:
-            return False
-        if not self.docEditor.docChanged:
-            return False
-        return True
 
     def _makeStatusIcons(self):
         self.statusIcons = {}
@@ -541,7 +548,10 @@ class GuiMain(QMainWindow):
         return
 
     def closeEvent(self, theEvent):
-        self.closeMain()
+        if self.closeMain():
+            theEvent.accept()
+        else:
+            theEvent.ignore()
         return
 
     ##

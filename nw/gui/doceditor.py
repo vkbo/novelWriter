@@ -104,8 +104,12 @@ class GuiDocEditor(QTextEdit):
             mTB = self.mainConf.textMargin[0]
             mLR = self.mainConf.textMargin[1]
             self.setViewportMargins(mLR,mTB,mLR,mTB)
+        theOpt = QTextOption()
+        if self.mainConf.tabWidth is not None:
+            theOpt.setTabStopDistance(self.mainConf.tabWidth)
         if self.mainConf.doJustify:
-            self.theDoc.setDefaultTextOption(QTextOption(Qt.AlignJustify))
+            theOpt.setAlignment(Qt.AlignJustify)
+        self.theDoc.setDefaultTextOption(theOpt)
         return True
 
     ##
@@ -376,6 +380,7 @@ class GuiDocEditor(QTextEdit):
         self.paraCount = self.wCounter.paraCount
         self.theParent.statusBar.setCounts(self.charCount,self.wordCount,self.paraCount)
         self.theParent.treeView.propagateCount(tHandle, self.wordCount)
+        self.theParent.treeView.projectWordCount()
 
         return
 

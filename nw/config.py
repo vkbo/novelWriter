@@ -25,6 +25,11 @@ class Config:
     WIN_WIDTH  = 0
     WIN_HEIGHT = 1
 
+    CNF_STR  = 0
+    CNF_INT  = 1
+    CNF_BOOL = 2
+    CNF_LIST = 3
+
     def __init__(self):
 
         # Set Application Variables
@@ -38,6 +43,7 @@ class Config:
         self.confFile  = None
         self.homePath  = None
         self.appPath   = None
+        self.appRoot   = None
         self.guiPath   = None
         self.themePath = None
 
@@ -60,6 +66,7 @@ class Config:
         self.textWidth       = 600
         self.textMargin      = [40, 40]
         self.textSize        = 13
+        self.tabWidth        = 40
         self.doJustify       = True
         self.autoSelect      = True
         self.doReplace       = True
@@ -68,7 +75,7 @@ class Config:
         self.doReplaceDash   = True
         self.doReplaceDots   = True
         self.wordCountTimer  = 5.0
-        
+
         self.fmtDoubleQuotes = ["“","”"]
         self.fmtSingleQuotes = ["‘","’"]
         self.fmtApostrophe   = "’"
@@ -95,6 +102,7 @@ class Config:
         self.confFile  = self.appHandle+".conf"
         self.homePath  = path.expanduser("~")
         self.appPath   = path.dirname(__file__)
+        self.appRoot   = path.join(self.appPath,path.pardir)
         self.guiPath   = path.join(self.appPath,"gui")
         self.themePath = path.join(self.appPath,"themes")
 
@@ -117,159 +125,111 @@ class Config:
     def loadConfig(self):
 
         logger.debug("Loading config file")
-        confParser = configparser.ConfigParser()
+        cnfParse = configparser.ConfigParser()
         try:
-            confParser.read_file(open(path.join(self.confPath,self.confFile)))
+            cnfParse.read_file(open(path.join(self.confPath,self.confFile)))
         except Exception as e:
             logger.error("Could not load config file")
             return False
 
-        # Get options
-
         ## Main
         cnfSec = "Main"
-        if confParser.has_section(cnfSec):
-            if confParser.has_option(cnfSec,"theme"):
-                self.guiTheme = confParser.get(cnfSec,"theme")
+        self.guiTheme        = self._parseLine(cnfParse, cnfSec, "theme", self.CNF_STR, self.guiTheme)
 
         ## Sizes
         cnfSec = "Sizes"
-        if confParser.has_section(cnfSec):
-            if confParser.has_option(cnfSec,"geometry"):
-                self.winGeometry = self.unpackList(
-                    confParser.get(cnfSec,"geometry"), 2, self.winGeometry
-                )
-            if confParser.has_option(cnfSec,"treecols"):
-                self.treeColWidth = self.unpackList(
-                    confParser.get(cnfSec,"treecols"), 3, self.treeColWidth
-                )
-            if confParser.has_option(cnfSec,"mainpane"):
-                self.mainPanePos = self.unpackList(
-                    confParser.get(cnfSec,"mainpane"), 2, self.mainPanePos
-                )
-            if confParser.has_option(cnfSec,"docpane"):
-                self.docPanePos = self.unpackList(
-                    confParser.get(cnfSec,"docpane"), 2, self.docPanePos
-                )
+        self.winGeometry     = self._parseLine(cnfParse, cnfSec, "geometry", self.CNF_LIST, self.winGeometry)
+        self.treeColWidth    = self._parseLine(cnfParse, cnfSec, "treecols", self.CNF_LIST, self.treeColWidth)
+        self.mainPanePos     = self._parseLine(cnfParse, cnfSec, "mainpane", self.CNF_LIST, self.mainPanePos)
+        self.docPanePos      = self._parseLine(cnfParse, cnfSec, "docpane",  self.CNF_LIST, self.docPanePos)
 
         ## Project
         cnfSec = "Project"
-        if confParser.has_section(cnfSec):
-            if confParser.has_option(cnfSec,"autosaveproject"):
-                self.autoSaveProj   = confParser.getint(cnfSec,"autosaveproject")
-            if confParser.has_option(cnfSec,"autosavedoc"):
-                self.autoSaveDoc    = confParser.getint(cnfSec,"autosavedoc")
+        self.autoSaveProj    = self._parseLine(cnfParse, cnfSec, "autosaveproject", self.CNF_INT, self.autoSaveProj)
+        self.autoSaveDoc     = self._parseLine(cnfParse, cnfSec, "autosavedoc",     self.CNF_INT, self.autoSaveDoc)
 
         ## Editor
         cnfSec = "Editor"
-        if confParser.has_section(cnfSec):
-            if confParser.has_option(cnfSec,"fixedwidth"):
-               self.textFixedW      = confParser.getboolean(cnfSec,"fixedwidth")
-            if confParser.has_option(cnfSec,"width"):
-                self.textWidth      = confParser.getint(cnfSec,"width")
-            if confParser.has_option(cnfSec,"margins"):
-                self.textMargin     = self.unpackList(
-                    confParser.get(cnfSec,"margins"), 2, self.textMargin
-                )
-            if confParser.has_option(cnfSec,"textsize"):
-                self.textSize       = confParser.getint(cnfSec,"textsize")
-            if confParser.has_option(cnfSec,"justify"):
-                self.doJustify      = confParser.getboolean(cnfSec,"justify")
-            if confParser.has_option(cnfSec,"autoselect"):
-                self.autoSelect     = confParser.getboolean(cnfSec,"autoselect")
-            if confParser.has_option(cnfSec,"autoreplace"):
-                self.doReplace      = confParser.getboolean(cnfSec,"autoreplace")
-            if confParser.has_option(cnfSec,"repsquotes"):
-                self.doReplaceSQuote  = confParser.getboolean(cnfSec,"repsquotes")
-            if confParser.has_option(cnfSec,"repdquotes"):
-                self.doReplaceDQuote = confParser.getboolean(cnfSec,"repdquotes")
-            if confParser.has_option(cnfSec,"repdash"):
-                self.doReplaceDash  = confParser.getboolean(cnfSec,"repdash")
-            if confParser.has_option(cnfSec,"repdots"):
-                self.doReplaceDots  = confParser.getboolean(cnfSec,"repdots")
-            if confParser.has_option(cnfSec,"spellcheck"):
-                self.spellLanguage  = confParser.get(cnfSec,"spellcheck")
+        self.textFixedW      = self._parseLine(cnfParse, cnfSec, "fixedwidth",  self.CNF_BOOL, self.textFixedW)
+        self.textWidth       = self._parseLine(cnfParse, cnfSec, "width",       self.CNF_INT,  self.textWidth)
+        self.textMargin      = self._parseLine(cnfParse, cnfSec, "margins",     self.CNF_LIST, self.textMargin)
+        self.textSize        = self._parseLine(cnfParse, cnfSec, "textsize",    self.CNF_INT,  self.textSize)
+        self.tabWidth        = self._parseLine(cnfParse, cnfSec, "tabwidth",    self.CNF_INT,  self.tabWidth)
+        self.doJustify       = self._parseLine(cnfParse, cnfSec, "justify",     self.CNF_BOOL, self.doJustify)
+        self.autoSelect      = self._parseLine(cnfParse, cnfSec, "autoselect",  self.CNF_BOOL, self.autoSelect)
+        self.doReplace       = self._parseLine(cnfParse, cnfSec, "autoreplace", self.CNF_BOOL, self.doReplace)
+        self.doReplaceSQuote = self._parseLine(cnfParse, cnfSec, "repsquotes",  self.CNF_BOOL, self.doReplaceSQuote)
+        self.doReplaceDQuote = self._parseLine(cnfParse, cnfSec, "repdquotes",  self.CNF_BOOL, self.doReplaceDQuote)
+        self.doReplaceDash   = self._parseLine(cnfParse, cnfSec, "repdash",     self.CNF_BOOL, self.doReplaceDash)
+        self.doReplaceDots   = self._parseLine(cnfParse, cnfSec, "repdots",     self.CNF_BOOL, self.doReplaceDots)
+        self.spellLanguage   = self._parseLine(cnfParse, cnfSec, "spellcheck",  self.CNF_STR,  self.spellLanguage)
 
         ## Path
         cnfSec = "Path"
-        if confParser.has_section(cnfSec):
-            for i in range(10):
-                if confParser.has_option(cnfSec,"recent%d" % i):
-                    self.recentList[i] = confParser.get(cnfSec,"recent%d" % i)
+        for i in range(10):
+            self.recentList[i] = self._parseLine(cnfParse, cnfSec, "recent%d" % i,self.CNF_STR, self.recentList[i])
 
         return True
 
     def saveConfig(self):
 
         logger.debug("Saving config file")
-        confParser = configparser.ConfigParser()
+        cnfParse = configparser.ConfigParser()
 
         # Set options
 
         ## Main
         cnfSec = "Main"
-        confParser.add_section(cnfSec)
-        confParser.set(cnfSec,"timestamp", datetime.now().strftime("%Y-%m-%d %H:%M:%S"))
-        confParser.set(cnfSec,"theme",     str(self.guiTheme))
+        cnfParse.add_section(cnfSec)
+        cnfParse.set(cnfSec,"timestamp", datetime.now().strftime("%Y-%m-%d %H:%M:%S"))
+        cnfParse.set(cnfSec,"theme",     str(self.guiTheme))
 
         ## Sizes
         cnfSec = "Sizes"
-        confParser.add_section(cnfSec)
-        confParser.set(cnfSec,"geometry", self.packList(self.winGeometry))
-        confParser.set(cnfSec,"treecols", self.packList(self.treeColWidth))
-        confParser.set(cnfSec,"mainpane", self.packList(self.mainPanePos))
-        confParser.set(cnfSec,"docpane",  self.packList(self.docPanePos))
+        cnfParse.add_section(cnfSec)
+        cnfParse.set(cnfSec,"geometry", self._packList(self.winGeometry))
+        cnfParse.set(cnfSec,"treecols", self._packList(self.treeColWidth))
+        cnfParse.set(cnfSec,"mainpane", self._packList(self.mainPanePos))
+        cnfParse.set(cnfSec,"docpane",  self._packList(self.docPanePos))
 
         ## Project
         cnfSec = "Project"
-        confParser.add_section(cnfSec)
-        confParser.set(cnfSec,"autosaveproject", str(self.autoSaveProj))
-        confParser.set(cnfSec,"autosavedoc",     str(self.autoSaveDoc))
+        cnfParse.add_section(cnfSec)
+        cnfParse.set(cnfSec,"autosaveproject", str(self.autoSaveProj))
+        cnfParse.set(cnfSec,"autosavedoc",     str(self.autoSaveDoc))
 
         ## Editor
         cnfSec = "Editor"
-        confParser.add_section(cnfSec)
-        confParser.set(cnfSec,"fixedwidth", str(self.textFixedW))
-        confParser.set(cnfSec,"width",      str(self.textWidth))
-        confParser.set(cnfSec,"margins",    self.packList(self.textMargin))
-        confParser.set(cnfSec,"textsize",   str(self.textSize))
-        confParser.set(cnfSec,"justify",    str(self.doJustify))
-        confParser.set(cnfSec,"autoselect", str(self.autoSelect))
-        confParser.set(cnfSec,"autoreplace",str(self.doReplace))
-        confParser.set(cnfSec,"repsquotes", str(self.doReplaceSQuote))
-        confParser.set(cnfSec,"repdquotes", str(self.doReplaceDQuote))
-        confParser.set(cnfSec,"repdash",    str(self.doReplaceDash))
-        confParser.set(cnfSec,"repdots",    str(self.doReplaceDots))
-        confParser.set(cnfSec,"spellcheck", str(self.spellLanguage))
+        cnfParse.add_section(cnfSec)
+        cnfParse.set(cnfSec,"fixedwidth", str(self.textFixedW))
+        cnfParse.set(cnfSec,"width",      str(self.textWidth))
+        cnfParse.set(cnfSec,"margins",    self._packList(self.textMargin))
+        cnfParse.set(cnfSec,"textsize",   str(self.textSize))
+        cnfParse.set(cnfSec,"tabwidth",   str(self.tabWidth))
+        cnfParse.set(cnfSec,"justify",    str(self.doJustify))
+        cnfParse.set(cnfSec,"autoselect", str(self.autoSelect))
+        cnfParse.set(cnfSec,"autoreplace",str(self.doReplace))
+        cnfParse.set(cnfSec,"repsquotes", str(self.doReplaceSQuote))
+        cnfParse.set(cnfSec,"repdquotes", str(self.doReplaceDQuote))
+        cnfParse.set(cnfSec,"repdash",    str(self.doReplaceDash))
+        cnfParse.set(cnfSec,"repdots",    str(self.doReplaceDots))
+        cnfParse.set(cnfSec,"spellcheck", str(self.spellLanguage))
 
         ## Path
         cnfSec = "Path"
-        confParser.add_section(cnfSec)
+        cnfParse.add_section(cnfSec)
         for i in range(10):
-            confParser.set(cnfSec,"recent%d" % i, str(self.recentList[i]))
+            cnfParse.set(cnfSec,"recent%d" % i, str(self.recentList[i]))
 
         # Write config file
         try:
-            confParser.write(open(path.join(self.confPath,self.confFile),"w"))
+            cnfParse.write(open(path.join(self.confPath,self.confFile),"w"))
             self.confChanged = False
         except Exception as e:
             logger.error("Could not save config file")
             return False
 
         return True
-
-    def unpackList(self, inStr, listLen, listDefault, castTo=int):
-        inData  = inStr.split(",")
-        outData = []
-        for i in range(listLen):
-            try:
-                outData.append(castTo(inData[i]))
-            except:
-                outData.append(listDefault[i])
-        return outData
-
-    def packList(self, inData):
-        return ", ".join(str(inVal) for inVal in inData)
 
     ##
     #  Setters
@@ -315,5 +275,37 @@ class Config:
         self.docPanePos  = panePos
         self.confChanged = True
         return True
+
+    ##
+    #  Internal Functions
+    ##
+
+    def _unpackList(self, inStr, listLen, listDefault, castTo=int):
+        inData  = inStr.split(",")
+        outData = []
+        for i in range(listLen):
+            try:
+                outData.append(castTo(inData[i]))
+            except:
+                outData.append(listDefault[i])
+        return outData
+
+    def _packList(self, inData):
+        return ", ".join(str(inVal) for inVal in inData)
+
+    def _parseLine(self, cnfParse, cnfSec, cnfName, cnfType, cnfDefault):
+        if cnfParse.has_section(cnfSec):
+            if cnfParse.has_option(cnfSec, cnfName):
+                if cnfType == self.CNF_STR:
+                    return cnfParse.get(cnfSec, cnfName)
+                elif cnfType == self.CNF_INT:
+                    return cnfParse.getint(cnfSec, cnfName)
+                elif cnfType == self.CNF_BOOL:
+                    return cnfParse.getboolean(cnfSec, cnfName)
+                elif cnfType == self.CNF_LIST:
+                    return self._unpackList(
+                        cnfParse.get(cnfSec, cnfName), len(cnfDefault), cnfDefault
+                    )
+        return cnfDefault
 
 # End Class Config

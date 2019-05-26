@@ -19,10 +19,11 @@ from hashlib  import sha256
 from datetime import datetime
 from time     import time
 
-from nw.enum           import nwItemType, nwItemClass, nwItemLayout, nwAlert
-from nw.common         import checkString, checkBool
 from nw.project.item   import NWItem
 from nw.project.status import NWStatus
+from nw.enum           import nwItemType, nwItemClass, nwItemLayout, nwAlert
+from nw.common         import checkString, checkBool, checkInt
+from nw.constants      import nwFiles
 
 logger = logging.getLogger(__name__)
 
@@ -34,6 +35,7 @@ class NWProject():
         self.theParent    = theParent
         self.mainConf     = self.theParent.mainConf
         self.projChanged  = None
+        self.projOpened   = None
 
         # Debug
         self.handleSeed   = None
@@ -59,6 +61,8 @@ class NWProject():
         self.importItems  = None
         self.lastEdited   = None
         self.lastViewed   = None
+        self.lastWCount   = 0
+        self.currWCount   = 0
 
         # Set Defaults
         self.clearProject()
@@ -119,19 +123,20 @@ class NWProject():
     ##
 
     def newProject(self):
-
         hNovel = self.newRoot("Novel",         nwItemClass.NOVEL)
         hChars = self.newRoot("Characters",    nwItemClass.CHARACTER)
         hWorld = self.newRoot("Plot",          nwItemClass.PLOT)
         hWorld = self.newRoot("World",         nwItemClass.WORLD)
         hChapt = self.newFolder("New Chapter", nwItemClass.NOVEL, hNovel)
         hScene = self.newFile("New Scene",     nwItemClass.NOVEL, hChapt)
-
+        self.projOpened = time()
+        self.setProjectChanged(True)
         return True
 
     def clearProject(self):
 
         self.projChanged = None
+        self.projOpened  = None
 
         # Project Settings
         self.projTree    = {}
@@ -141,7 +146,7 @@ class NWProject():
         self.projPath    = None
         self.projMeta    = None
         self.projCache   = None
-        self.projFile    = "nwProject.nwx"
+        self.projFile    = nwFiles.PROJ_FILE
         self.projName    = ""
         self.bookTitle   = ""
         self.bookAuthors = []
@@ -156,13 +161,17 @@ class NWProject():
         self.importItems.addEntry("Minor",   (200, 50,  0))
         self.importItems.addEntry("Major",   (200,150,  0))
         self.importItems.addEntry("Main",    ( 50,200,  0))
+        self.lastEdited = None
+        self.lastViewed = None
+        self.lastWCount = 0
+        self.currWCount = 0
 
         return
 
     def openProject(self, fileName):
 
         if not path.isfile(fileName):
-            fileName = path.join(fileName, "nwProject.nwx")
+            fileName = path.join(fileName, nwFiles.PROJ_FILE)
             if not path.isfile(fileName):
                 self.makeAlert("File not found: %s" % fileName, nwAlert.ERROR)
                 return False
@@ -215,6 +224,8 @@ class NWProject():
                         self.lastEdited = checkString(xItem.text,None,True)
                     if xItem.tag == "lastViewed":
                         self.lastViewed = checkString(xItem.text,None,True)
+                    if xItem.tag == "lastWordCount":
+                        self.lastWCount = checkInt(xItem.text,0,False)
                     if xItem.tag == "status":
                         self.statusItems.unpackEntries(xItem)
                     if xItem.tag == "importance":
@@ -242,6 +253,7 @@ class NWProject():
 
         self._scanProjectFolder()
         self.setProjectChanged(False)
+        self.projOpened = time()
 
         return True
 
@@ -276,9 +288,10 @@ class NWProject():
 
         # Save Project Settings
         xSettings = etree.SubElement(nwXML,"settings")
-        self._saveProjectValue(xSettings,"spellCheck",self.spellCheck)
-        self._saveProjectValue(xSettings,"lastEdited",self.lastEdited)
-        self._saveProjectValue(xSettings,"lastViewed",self.lastViewed)
+        self._saveProjectValue(xSettings,"spellCheck",   self.spellCheck)
+        self._saveProjectValue(xSettings,"lastEdited",   self.lastEdited)
+        self._saveProjectValue(xSettings,"lastViewed",   self.lastViewed)
+        self._saveProjectValue(xSettings,"lastWordCount",self.currWCount)
 
         xStatus = etree.SubElement(xSettings,"status")
         self.statusItems.packEntries(xStatus)
@@ -309,6 +322,11 @@ class NWProject():
         self.theParent.setStatus("Saved Project: %s" % self.projName)
         self.setProjectChanged(False)
 
+        return True
+
+    def closeProject(self):
+        self._appendSessionStats()
+        self.clearProject()
         return True
 
     ##
@@ -364,6 +382,14 @@ class NWProject():
         self.lastViewed = tHandle
         self.setProjectChanged(True)
         return True
+
+    def setProjectWordCount(self, theCount):
+        self.currWCount = theCount
+        self.setProjectChanged(True)
+        return True
+
+    def getSessionWordCount(self):
+        return self.currWCount - self.lastWCount
 
     def setStatusColours(self, newCols):
         replaceMap = self.statusItems.setNewEntries(newCols)
@@ -575,6 +601,24 @@ class NWProject():
         self.setProjectChanged(True)
 
         return
+
+    def _appendSessionStats(self):
+
+        if self.projMeta is None:
+            return False
+
+        with open(path.join(self.projMeta, nwFiles.SESS_INFO), mode="a+") as outFile:
+            print((
+                "Start: {opened:s}  "
+                "End: {closed:s}  "
+                "Words: {words:8d}"
+            ).format(
+                opened = datetime.fromtimestamp(self.projOpened).strftime("%Y-%m-%d %H:%M:%S"),
+                closed = datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+                words  = self.getSessionWordCount(),
+            ), file=outFile)
+
+        return True
 
     def _makeHandle(self, addSeed=""):
         if self.handleSeed is None:
