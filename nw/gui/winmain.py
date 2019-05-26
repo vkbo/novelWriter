@@ -216,16 +216,18 @@ class GuiMain(QMainWindow):
 
         return True
 
-    def closeProject(self):
-
+    def closeProject(self, isYes=False):
+        """Closes the project if one is open.
+        isYes is passed on from the close application event so the user doesn't get prompted twice.
+        """
         if not self.hasProject:
+            # There is no project loaded, everything OK
             return True
 
-        if self.mainConf.showGUI:
+        if self.mainConf.showGUI and not isYes:
             msgBox = QMessageBox()
             msgRes = msgBox.question(
-                self, "Close Project",
-                "Close current project?<br>Unsaved changes will be saved."
+                self, "Close Project", "Save changes and close current project?"
             )
             if msgRes != QMessageBox.Yes:
                 return False
@@ -244,15 +246,19 @@ class GuiMain(QMainWindow):
         return saveOK
 
     def openProject(self, projFile=None):
-
+        """Open a project.
+        projFile is passed from the open recent projects menu, so can be set. If not, we pop the dialog.
+        """
         if projFile is None:
             projFile = self.openProjectDialog()
         if projFile is None:
             return False
 
+        # Make sure any open project is cleared out first before we load another one
         if not self.closeProject():
             return False
 
+        # Do the stuff
         self.theProject.openProject(projFile)
         self._setWindowTitle(self.theProject.projName)
         self.rebuildTree()
@@ -260,6 +266,7 @@ class GuiMain(QMainWindow):
         self.docEditor.setSpellCheck(self.theProject.spellCheck)
         self.mainMenu.updateMenu()
 
+        # Restore previously open documents, if any
         if self.theProject.lastEdited is not None:
             self.openDocument(self.theProject.lastEdited)
         if self.theProject.lastViewed is not None:
@@ -270,7 +277,9 @@ class GuiMain(QMainWindow):
         return True
 
     def saveProject(self):
-
+        """Save the current project.
+        """
+        # If the project is new, it may not have a path, so we need one
         if self.theProject.projPath is None:
             projPath = self.saveProjectDialog()
             self.theProject.setProjectPath(projPath)
@@ -288,13 +297,15 @@ class GuiMain(QMainWindow):
     ##
 
     def closeDocument(self):
-        self.saveDocument()
+        if self.docEditor.docChanged:
+            self.saveDocument()
         self.theDocument.clearDocument()
+        self.docEditor.clearEditor()
+        self.theProject.setLastEdited(None)
         return True
 
     def openDocument(self, tHandle):
-        if self.docEditor.docChanged:
-            self.saveDocument()
+        self.closeDocument()
         self.docEditor.setText(self.theDocument.openDocument(tHandle))
         self.docEditor.setReadOnly(False)
         self.docEditor.setCursorPosition(self.theDocument.theItem.cursorPos)
@@ -305,13 +316,13 @@ class GuiMain(QMainWindow):
 
     def saveDocument(self):
         if self.theDocument.theItem is not None:
-            docHtml = self.docEditor.getText()
+            docText = self.docEditor.getText()
             cursPos = self.docEditor.getCursorPosition()
             self.theDocument.theItem.setCharCount(self.docEditor.charCount)
             self.theDocument.theItem.setWordCount(self.docEditor.wordCount)
             self.theDocument.theItem.setParaCount(self.docEditor.paraCount)
             self.theDocument.theItem.setCursorPos(cursPos)
-            self.theDocument.saveDocument(docHtml)
+            self.theDocument.saveDocument(docText)
             self.docEditor.setDocumentChanged(False)
         return True
 
@@ -440,18 +451,14 @@ class GuiMain(QMainWindow):
         if self.mainConf.showGUI:
             msgBox = QMessageBox()
             msgRes = msgBox.question(
-                self, "Exit",
-                "Do you want to exit %s?" % nw.__package__
+                self, "Exit", "Do you want to save changes and exit?"
             )
             if msgRes != QMessageBox.Yes:
                 return False
 
         logger.info("Exiting %s" % nw.__package__)
-        if self._takeDocumentAction():
-            self.saveDocument()
-        if self._takeProjectAction():
-            self.saveProject()
-        self.theProject.closeProject()
+        self.closeProject(True)
+
         self.mainConf.setWinSize(self.width(), self.height())
         self.mainConf.setTreeColWidths(self.treeView.getColumnSizes())
         self.mainConf.setMainPanePos(self.splitMain.sizes())
@@ -493,30 +500,16 @@ class GuiMain(QMainWindow):
         return True
 
     def _autoSaveProject(self):
-        if self._takeProjectAction():
+        if self.hasProject and self.theProject.projChanged and self.theProject.projPath is not None:
             logger.debug("Autosaving project")
             self.saveProject()
         return
 
     def _autoSaveDocument(self):
-        if self._takeDocumentAction():
+        if self.hasProject and self.docEditor.docChanged and self.theDocument.theItem is not None:
             logger.debug("Autosaving document")
             self.saveDocument()
         return
-
-    def _takeProjectAction(self):
-        if self.theProject.projPath is None:
-            return False
-        if not self.theProject.projChanged:
-            return False
-        return True
-
-    def _takeDocumentAction(self):
-        if self.theDocument.theItem is None:
-            return False
-        if not self.docEditor.docChanged:
-            return False
-        return True
 
     def _makeStatusIcons(self):
         self.statusIcons = {}

@@ -157,7 +157,7 @@ class GuiMainMenu(QMenuBar):
         menuItem = QAction(QIcon.fromTheme("document-revert"), "Close Project", self)
         menuItem.setStatusTip("Close Project")
         menuItem.setShortcut("Ctrl+Shift+W")
-        menuItem.triggered.connect(self.theParent.closeProject)
+        menuItem.triggered.connect(lambda : self.theParent.closeProject(False))
         self.projMenu.addAction(menuItem)
 
         # Project > Recent Projects
@@ -251,6 +251,13 @@ class GuiMainMenu(QMenuBar):
         menuItem.setStatusTip("Save Current Document")
         menuItem.setShortcut("Ctrl+S")
         menuItem.triggered.connect(self.theParent.saveDocument)
+        self.docuMenu.addAction(menuItem)
+
+        # Document > Close
+        menuItem = QAction(QIcon.fromTheme("document-revert"), "Close Document", self)
+        menuItem.setStatusTip("Close Current Document")
+        menuItem.setShortcut("Ctrl+W")
+        menuItem.triggered.connect(self.theParent.closeDocument)
         self.docuMenu.addAction(menuItem)
 
         # Document > Separator

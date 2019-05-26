@@ -123,14 +123,14 @@ class NWProject():
     ##
 
     def newProject(self):
-
         hNovel = self.newRoot("Novel",         nwItemClass.NOVEL)
         hChars = self.newRoot("Characters",    nwItemClass.CHARACTER)
         hWorld = self.newRoot("Plot",          nwItemClass.PLOT)
         hWorld = self.newRoot("World",         nwItemClass.WORLD)
         hChapt = self.newFolder("New Chapter", nwItemClass.NOVEL, hNovel)
         hScene = self.newFile("New Scene",     nwItemClass.NOVEL, hChapt)
-
+        self.projOpened = time()
+        self.setProjectChanged(True)
         return True
 
     def clearProject(self):
