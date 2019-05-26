@@ -144,7 +144,6 @@ class GuiMainStatus(QStatusBar):
     ##
 
     def _updateTime(self):
-        sTime = time()
         if self.refTime is None:
             theTime = "00:00:00"
         else:
@@ -156,7 +155,6 @@ class GuiMainStatus(QStatusBar):
             tS = tS - tM*60 - tH*3600
             theTime = "%02d:%02d:%02d" % (tH,tM,tS)
         self.boxTime.setText(theTime)
-        print((time()-sTime)*1e6)
         return
 
 # END Class GuiMainStatus

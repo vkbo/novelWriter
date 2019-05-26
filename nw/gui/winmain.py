@@ -548,7 +548,10 @@ class GuiMain(QMainWindow):
         return
 
     def closeEvent(self, theEvent):
-        self.closeMain()
+        if self.closeMain():
+            theEvent.accept()
+        else:
+            theEvent.ignore()
         return
 
     ##
