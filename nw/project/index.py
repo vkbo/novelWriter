@@ -14,12 +14,16 @@ import logging
 import nw
 
 from nw.project.document import NWDoc
+from nw.enum             import nwItemType
 
 logger = logging.getLogger(__name__)
 
 class NWIndex():
 
-    VALID_KEYS = ["todo","tag","pov","char","plot","time","location"]
+    VALID_KEYS = [
+        "todo","tag","pov","char","plot","time","location",
+        "object","custom","scene","chapter","part"
+    ]
 
     def __init__(self, theProject, theParent):
 
@@ -30,6 +34,7 @@ class NWIndex():
 
         # Indices
         self.itemIndex  = {}
+        self.tagIndex   = {}
         self.keyIndex   = {}
         for aKey in self.VALID_KEYS:
             self.keyIndex[aKey] = []
@@ -40,6 +45,13 @@ class NWIndex():
 
         theDocument = NWDoc(self.theProject, self.theParent)
         theText = theDocument.openDocument(tHandle, False)
+        theItem = self.theProject.getItem(tHandle)
+
+        if theItem is None:
+            return False
+
+        if theItem.itemType != nwItemType.FILE:
+            return False
 
         self.itemIndex[tHandle] = {}
         for aKey in self.VALID_KEYS:
@@ -51,7 +63,7 @@ class NWIndex():
             nLine += 1
             nChar  = len(aLine)
             if nChar > 0 and aLine[0] == "@":
-                self.indexThis(tHandle, aLine, nLine)
+                self.indexThis(tHandle, aLine, nLine, theItem)
 
         for aKey in self.VALID_KEYS:
             if len(self.itemIndex[tHandle][aKey]) > 0:
@@ -62,11 +74,12 @@ class NWIndex():
                     self.keyIndex[aKey].remove(tHandle)
 
         print(self.itemIndex)
+        print(self.tagIndex)
         print(self.keyIndex)
 
-        return
+        return True
 
-    def indexThis(self, tHandle, aLine, nLine):
+    def indexThis(self, tHandle, aLine, nLine, theItem):
 
         nChar = len(aLine)
         nPos  = aLine.find(":")
@@ -84,6 +97,7 @@ class NWIndex():
             if tVal.find(",") >- 0:
                 return False
             self.itemIndex[tHandle]["tag"].append((nLine, tVal))
+            self.tagIndex[tVal] = (nLine, tHandle, theItem.itemClass)
         else:
             kVal = tVal.split(",")
             cVal = []            
