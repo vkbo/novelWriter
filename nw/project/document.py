@@ -41,11 +41,10 @@ class NWDoc():
         self.docHandle = None
         return
 
-    def openDocument(self, tHandle):
+    def openDocument(self, tHandle, showStatus=True):
 
         self.docHandle = tHandle
         self.theItem   = self.theProject.getItem(tHandle)
-        self.theParent.statusBar.setDocHandleCount(tHandle)
 
         docDir, docFile = self._assemblePath(self.FILE_MN)
         logger.debug("Opening document %s" % path.join(docDir,docFile))
@@ -63,7 +62,9 @@ class NWDoc():
             logger.debug("The requested document does not exist.")
             return ""
 
-        self.theParent.statusBar.setStatus("Opened Document: %s" % self.theItem.itemName)
+        if showStatus:
+            self.theParent.statusBar.setStatus("Opened Document: %s" % self.theItem.itemName)
+            self.theParent.statusBar.setDocHandle(tHandle)
 
         return theDoc
 

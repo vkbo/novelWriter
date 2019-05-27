@@ -283,6 +283,7 @@ class GuiMain(QMainWindow):
         self.docEditor.changeWidth()
         self.docEditor.setFocus()
         self.theProject.setLastEdited(tHandle)
+        self.theProject.theIndex.scanFile(tHandle)
         return True
 
     def saveDocument(self):

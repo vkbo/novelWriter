@@ -88,7 +88,7 @@ class GuiMainStatus(QStatusBar):
         self.setRefTime(None)
         self.setStats(0,0)
         self.setCounts(0,0,0)
-        self.setDocHandleCount(None)
+        self.setDocHandle(None)
         self.setProjectStatus(None)
         self.setDocumentStatus(None)
         self._updateTime()
@@ -132,7 +132,7 @@ class GuiMainStatus(QStatusBar):
         self.boxCounts.setText("<b>Document:</b> {:d} : {:d} : {:d}".format(cC,wC,pC))
         return
 
-    def setDocHandleCount(self, theHandle):
+    def setDocHandle(self, theHandle):
         if theHandle is None:
             self.boxDocHandle.setText("0000000000000")
         else:

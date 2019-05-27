@@ -13,8 +13,6 @@
 import logging
 import nw
 
-from time import time
-
 from PyQt5.QtCore import QThread
 
 logger = logging.getLogger(__name__)
