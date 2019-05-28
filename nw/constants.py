@@ -18,7 +18,7 @@ class nwFiles():
     PROJ_FILE  = "nwProject.nwx"
     PROJ_DICT  = "wordlist.txt"
     SESS_INFO  = "sessionInfo.log"
-    INDEX_FILE = "tagsindex.json"
+    INDEX_FILE = "tagsIndex.json"
 
 # END Class nwFiles
 

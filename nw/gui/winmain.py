@@ -210,6 +210,7 @@ class GuiMain(QMainWindow):
 
         if saveOK:
             self.theProject.closeProject()
+            self.tagIndex.clearIndex()
             self.clearGUI()
             self.hasProject = False
     
@@ -231,6 +232,9 @@ class GuiMain(QMainWindow):
         # Try to open the project
         if not self.theProject.openProject(projFile):
             return False
+
+        # Load the tag index
+        self.tagIndex.loadIndex()
 
         # Update GUI
         self._setWindowTitle(self.theProject.projName)
@@ -286,19 +290,20 @@ class GuiMain(QMainWindow):
         self.docEditor.changeWidth()
         self.docEditor.setFocus()
         self.theProject.setLastEdited(tHandle)
-        self.tagIndex.scanFile(tHandle)
         return True
 
     def saveDocument(self):
         if self.theDocument.theItem is not None:
             docText = self.docEditor.getText()
             cursPos = self.docEditor.getCursorPosition()
-            self.theDocument.theItem.setCharCount(self.docEditor.charCount)
-            self.theDocument.theItem.setWordCount(self.docEditor.wordCount)
-            self.theDocument.theItem.setParaCount(self.docEditor.paraCount)
-            self.theDocument.theItem.setCursorPos(cursPos)
+            theItem = self.theDocument.theItem
+            theItem.setCharCount(self.docEditor.charCount)
+            theItem.setWordCount(self.docEditor.wordCount)
+            theItem.setParaCount(self.docEditor.paraCount)
+            theItem.setCursorPos(cursPos)
             self.theDocument.saveDocument(docText)
             self.docEditor.setDocumentChanged(False)
+            self.tagIndex.scanText(theItem.itemHandle, docText)
         return True
 
     def viewDocument(self, tHandle=None):

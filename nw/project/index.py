@@ -25,7 +25,7 @@ logger = logging.getLogger(__name__)
 class NWIndex():
 
     VALID_KEYS = [
-        "todo","tag","pov","char","plot","time","location",
+        "todo","tag","pov","chars","plot","time","location",
         "object","custom","scene","chapter","part"
     ]
 
@@ -38,27 +38,42 @@ class NWIndex():
 
         # Indices
         self.itemIndex  = {}
-        self.tagIndex   = {}
-        self.keyIndex   = {}
-        for aKey in self.VALID_KEYS:
-            self.keyIndex[aKey] = []
 
         return
+
+    def clearIndex(self):
+        self.itemIndex  = {}
+        return
+
+    def loadIndex(self):
+
+        indexFile = path.join(self.theProject.projMeta,nwFiles.INDEX_FILE)
+        if path.isfile(indexFile):
+            logger.debug("Loading index file")
+            try:
+                with open(indexFile,mode="r") as inFile:
+                    theJson = inFile.read()
+                self.itemIndex = json.loads(theJson)
+            except Exception as e:
+                logger.error("Failed to load index file")
+                logger.error(str(e))
+                return False
+
+            return True
+
+        return False
 
     def saveIndex(self):
 
         indexFile = path.join(self.theProject.projMeta,nwFiles.INDEX_FILE)
+        logger.debug("Saving index file")
         if self.mainConf.debugInfo:
             nIndent = 2
         else:
             nIndent = None
         try:
             with open(indexFile,mode="w+") as outFile:
-                outFile.write(json.dumps({
-                    "itemIndex" : self.itemIndex,
-                    "tagIndex"  : self.tagIndex,
-                    "keyIndex"  : self.keyIndex
-                }, indent=nIndent))
+                outFile.write(json.dumps(self.itemIndex, indent=nIndent))
         except Exception as e:
             logger.error("Failed to save index file")
             logger.error(str(e))
@@ -68,15 +83,28 @@ class NWIndex():
 
     def scanFile(self, tHandle):
 
-        theDocument = NWDoc(self.theProject, self.theParent)
-        theText = theDocument.openDocument(tHandle, False)
         theItem = self.theProject.getItem(tHandle)
-
         if theItem is None:
             return False
-
         if theItem.itemType != nwItemType.FILE:
             return False
+
+        theDocument = NWDoc(self.theProject, self.theParent)
+        theText = theDocument.openDocument(tHandle, False)
+
+        self.scanText(tHandle, theText)
+
+        return
+
+    def scanText(self, tHandle, theText):
+
+        theItem = self.theProject.getItem(tHandle)
+        if theItem is None:
+            return False
+        if theItem.itemType != nwItemType.FILE:
+            return False
+
+        logger.debug("Indexing item with handle %s" % tHandle)
 
         self.itemIndex[tHandle] = {}
 
@@ -88,16 +116,6 @@ class NWIndex():
             if nChar > 0 and aLine[0] == "@":
                 self.indexThis(tHandle, aLine, nLine, theItem)
 
-        # Generate reverse index
-        for aKey in self.VALID_KEYS:
-            if aKey in self.itemIndex[tHandle]:
-                if len(self.itemIndex[tHandle][aKey]) > 0:
-                    if tHandle not in self.keyIndex[aKey]:
-                        self.keyIndex[aKey].append(tHandle)
-                else:
-                    if tHandle in self.keyIndex[aKey]:
-                        self.keyIndex[aKey].remove(tHandle)
-
         return True
 
     def indexThis(self, tHandle, aLine, nLine, theItem):
@@ -108,22 +126,21 @@ class NWIndex():
             return False
 
         aKey = aLine[1:nPos].strip().lower()
-        tVal = aLine[nPos+1:].strip()
+        tVal = aLine[nPos+1:].strip().lower()
         if aKey not in self.VALID_KEYS:
+            logger.verbose("Not a valid key '%s'" % aKey)
             return False
 
+        logger.verbose("Found valid key '%s'" % aKey)
         if aKey == "todo":
             self._addItem(tHandle, aKey, nLine, tVal)
         elif aKey == "tag":
             if tVal.find(",") >- 0:
                 return False
             self._addItem(tHandle, aKey, nLine, tVal)
-            self.tagIndex[tVal] = [nLine, tHandle, theItem.itemClass.name]
         else:
             kVal = tVal.split(",")
-            cVal = []            
-            for aVal in kVal:
-                cVal.append(aVal.strip().lower())
+            cVal = [aVal.strip() for aVal in kVal]
             if len(cVal) > 0:
                 self._addItem(tHandle, aKey, nLine, cVal)
             else:
