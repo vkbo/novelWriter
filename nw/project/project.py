@@ -21,7 +21,6 @@ from time     import time
 
 from nw.project.item   import NWItem
 from nw.project.status import NWStatus
-from nw.project.index  import NWIndex
 from nw.enum           import nwItemType, nwItemClass, nwItemLayout, nwAlert
 from nw.common         import checkString, checkBool, checkInt
 from nw.constants      import nwFiles
@@ -64,9 +63,6 @@ class NWProject():
         self.lastViewed   = None
         self.lastWCount   = 0
         self.currWCount   = 0
-
-        # Index
-        self.theIndex     = None
 
         # Set Defaults
         self.clearProject()
@@ -169,7 +165,6 @@ class NWProject():
         self.lastViewed = None
         self.lastWCount = 0
         self.currWCount = 0
-        self.theIndex   = NWIndex(self, self.theParent)
 
         return
 

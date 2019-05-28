@@ -9,6 +9,7 @@ __pycache__
 sample/**/cache
 sample/**/wordlist.txt
 sample/**/*.bak
+sample/**/*.json
 
 # PyTest
 tests/temp

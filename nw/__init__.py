@@ -151,8 +151,9 @@ def main(sysArgs):
             debugGUI   = True
 
     # Set Config Options
-    CONFIG.showGUI  = not testMode
-    CONFIG.debugGUI = debugGUI
+    CONFIG.showGUI   = not testMode
+    CONFIG.debugGUI  = debugGUI
+    CONFIG.debugInfo = debugLevel < logging.INFO
 
     # Set Logging
     if showTime: debugStr = timeStr+debugStr

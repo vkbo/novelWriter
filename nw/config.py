@@ -37,6 +37,7 @@ class Config:
         self.appHandle = nw.__package__.lower()
         self.showGUI   = True
         self.debugGUI  = False
+        self.debugInfo = False
 
         # Set Paths
         self.confPath  = None

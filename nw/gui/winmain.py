@@ -33,6 +33,7 @@ from nw.gui.statusbar     import GuiMainStatus
 from nw.project.project   import NWProject
 from nw.project.document  import NWDoc
 from nw.project.item      import NWItem
+from nw.project.index     import NWIndex
 from nw.convert.tokenizer import Tokenizer
 from nw.convert.tohtml    import ToHtml
 from nw.enum              import nwItemType, nwAlert
@@ -50,6 +51,7 @@ class GuiMain(QMainWindow):
         self.theTheme    = Theme()
         self.theProject  = NWProject(self)
         self.theDocument = NWDoc(self.theProject, self)
+        self.tagIndex    = NWIndex(self.theProject, self)
         self.hasProject  = False
 
         self.resize(*self.mainConf.winGeometry)
@@ -260,6 +262,7 @@ class GuiMain(QMainWindow):
 
         self.treeView.saveTreeOrder()
         self.theProject.saveProject()
+        self.tagIndex.saveIndex()
         self.mainMenu.updateRecentProjects()
 
         return True
@@ -283,7 +286,7 @@ class GuiMain(QMainWindow):
         self.docEditor.changeWidth()
         self.docEditor.setFocus()
         self.theProject.setLastEdited(tHandle)
-        self.theProject.theIndex.scanFile(tHandle)
+        self.tagIndex.scanFile(tHandle)
         return True
 
     def saveDocument(self):
