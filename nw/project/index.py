@@ -240,7 +240,7 @@ class NWIndex():
         if sKey == "@":
             return False, theBits, thePos
 
-        theBits.append(sKey.lower())
+        theBits.append(sKey)
         thePos.append(cPos)
         cPos += len(sKey) + 1
 
@@ -253,7 +253,7 @@ class NWIndex():
             sVal = cVal.strip()
             rLen = len(cVal.lstrip())
             tLen = len(cVal)
-            theBits.append(sVal.lower())
+            theBits.append(sVal)
             thePos.append(cPos+tLen-rLen)
             cPos += tLen + 1
 
@@ -261,16 +261,21 @@ class NWIndex():
 
     def checkThese(self, theBits, tItem):
 
-        theBits = [aBit.lower() for aBit in theBits]
-        nBits   = len(theBits)
-        isGood  = [False]*nBits
+        nBits  = len(theBits)
+        isGood = [False]*nBits
         if nBits == 0:
             return []
 
         # If we have a tag, the first value is always OK, rest is ignored
         if theBits[0] == self.TAG_KEY and nBits > 1:
             isGood[0] = True
-            isGood[1] = True
+            if theBits[1] in self.tagIndex.keys():
+                if self.tagIndex[theBits[1]][1] == tItem.itemHandle:
+                    isGood[1] = True
+                else:
+                    isGood[1] = False
+            else:
+                isGood[1] = True
             return isGood
 
         # If we're still here, we better check the references
