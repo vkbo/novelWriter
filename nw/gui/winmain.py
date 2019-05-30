@@ -385,6 +385,7 @@ class GuiMain(QMainWindow):
         logger.debug("Rebuilding indices ...")
 
         self.treeView.saveTreeOrder()
+        self.tagIndex.clearIndex()
         nItems = len(self.theProject.treeOrder)
 
         dlgProg = QProgressDialog("Scanning files ...", "Cancel", 0, nItems, self)
