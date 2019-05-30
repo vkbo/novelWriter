@@ -266,7 +266,7 @@ class NWIndex():
         if nBits == 0:
             return []
 
-        # If we have a tag, the first value is always OK, rest is ignored
+        # If we have a tag, only the first value is accepted, the rest is ignored
         if theBits[0] == self.TAG_KEY and nBits > 1:
             isGood[0] = True
             if theBits[1] in self.tagIndex.keys():
@@ -278,7 +278,7 @@ class NWIndex():
                 isGood[1] = True
             return isGood
 
-        # If we're still here, we better check the references
+        # If we're still here, we better check that the references exist
         if tItem.itemClass == nwItemClass.NOVEL:
             isGood[0] = theBits[0] in self.NOVEL_KEYS
         else:

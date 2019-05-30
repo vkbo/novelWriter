@@ -44,6 +44,7 @@ class GuiDocHighlighter(QSyntaxHighlighter):
         self.colKey     = QColor(*self.theTheme.colKey)
         self.colVal     = QColor(*self.theTheme.colVal)
         self.colSpell   = QColor(*self.theTheme.colSpell)
+        self.colTagErr  = QColor(*self.theTheme.colTagErr)
 
         self.hStyles = {
             "header1"   : self._makeFormat(self.colHead, "bold",1.8),
@@ -197,7 +198,7 @@ class GuiDocHighlighter(QSyntaxHighlighter):
                             self.setFormat(xPos, xLen, self.hStyles["value"])
                     else:
                         kwFmt = self.format(xPos)
-                        kwFmt.setUnderlineColor(self.colSpell)
+                        kwFmt.setUnderlineColor(self.colTagErr)
                         kwFmt.setUnderlineStyle(QTextCharFormat.SpellCheckUnderline)
                         self.setFormat(xPos, xLen, kwFmt)
 
