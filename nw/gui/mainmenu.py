@@ -135,27 +135,27 @@ class GuiMainMenu(QMenuBar):
 
         # Project > New Project
         menuItem = QAction(QIcon.fromTheme("folder-new"), "New Project", self)
-        menuItem.setStatusTip("Create New Project")
+        menuItem.setStatusTip("Create new project")
         menuItem.triggered.connect(lambda : self.theParent.newProject(None))
         self.projMenu.addAction(menuItem)
 
         # Project > Open Project
         menuItem = QAction(QIcon.fromTheme("folder-open"), "Open Project", self)
-        menuItem.setStatusTip("Open Project")
+        menuItem.setStatusTip("Open project")
         menuItem.setShortcut("Ctrl+Shift+O")
         menuItem.triggered.connect(lambda : self.theParent.openProject(None))
         self.projMenu.addAction(menuItem)
 
         # Project > Save Project
         menuItem = QAction(QIcon.fromTheme("document-save"), "Save Project", self)
-        menuItem.setStatusTip("Save Project")
+        menuItem.setStatusTip("Save project")
         menuItem.setShortcut("Ctrl+Shift+S")
         menuItem.triggered.connect(self.theParent.saveProject)
         self.projMenu.addAction(menuItem)
 
         # Project > Close Project
         menuItem = QAction(QIcon.fromTheme("document-revert"), "Close Project", self)
-        menuItem.setStatusTip("Close Project")
+        menuItem.setStatusTip("Close project")
         menuItem.setShortcut("Ctrl+Shift+W")
         menuItem.triggered.connect(lambda : self.theParent.closeProject(False))
         self.projMenu.addAction(menuItem)
@@ -166,7 +166,7 @@ class GuiMainMenu(QMenuBar):
 
         # Project > Project Settings
         menuItem = QAction(QIcon.fromTheme("document-properties"), "Project Settings", self)
-        menuItem.setStatusTip("Project Settings")
+        menuItem.setStatusTip("Project settings")
         menuItem.triggered.connect(self.theParent.editProjectDialog)
         self.projMenu.addAction(menuItem)
 
@@ -193,7 +193,7 @@ class GuiMainMenu(QMenuBar):
 
         # Project > New Folder
         menuItem = QAction(QIcon.fromTheme("folder-new"), "Create Folder", self)
-        menuItem.setStatusTip("Create Folder")
+        menuItem.setStatusTip("Create folder")
         menuItem.setShortcut("Ctrl+Shift+N")
         menuItem.triggered.connect(lambda : self._newTreeItem(nwItemType.FOLDER, None))
         self.projMenu.addAction(menuItem)
@@ -203,14 +203,14 @@ class GuiMainMenu(QMenuBar):
 
         # Project > Edit
         menuItem = QAction(QIcon.fromTheme("document-properties"), "&Edit Item", self)
-        menuItem.setStatusTip("Change Item Settings")
+        menuItem.setStatusTip("Change item settings")
         menuItem.setShortcuts(["Ctrl+E", "F2"])
         menuItem.triggered.connect(self.theParent.editItem)
         self.projMenu.addAction(menuItem)
 
         # Project > Delete
         menuItem = QAction(QIcon.fromTheme("edit-delete"), "&Delete Item", self)
-        menuItem.setStatusTip("Delete Selected Item")
+        menuItem.setStatusTip("Delete selected item")
         menuItem.setShortcut("Ctrl+Del")
         menuItem.triggered.connect(lambda : self.theParent.treeView.deleteItem(None))
         self.projMenu.addAction(menuItem)
@@ -234,28 +234,28 @@ class GuiMainMenu(QMenuBar):
 
         # Document > New
         menuItem = QAction(QIcon.fromTheme("document-new"), "&New Document", self)
-        menuItem.setStatusTip("Create New Document")
+        menuItem.setStatusTip("Create new document")
         menuItem.setShortcut("Ctrl+N")
         menuItem.triggered.connect(lambda : self._newTreeItem(nwItemType.FILE, None))
         self.docuMenu.addAction(menuItem)
 
         # Document > Open
         menuItem = QAction(QIcon.fromTheme("document-open"), "&Open Document", self)
-        menuItem.setStatusTip("Open Selected Document")
+        menuItem.setStatusTip("Open selected document")
         menuItem.setShortcut("Ctrl+O")
         menuItem.triggered.connect(self.theParent.openSelectedItem)
         self.docuMenu.addAction(menuItem)
 
         # Document > Save
         menuItem = QAction(QIcon.fromTheme("document-save"), "&Save Document", self)
-        menuItem.setStatusTip("Save Current Document")
+        menuItem.setStatusTip("Save current document")
         menuItem.setShortcut("Ctrl+S")
         menuItem.triggered.connect(self.theParent.saveDocument)
         self.docuMenu.addAction(menuItem)
 
         # Document > Close
         menuItem = QAction(QIcon.fromTheme("document-revert"), "Close Document", self)
-        menuItem.setStatusTip("Close Current Document")
+        menuItem.setStatusTip("Close current document")
         menuItem.setShortcut("Ctrl+W")
         menuItem.triggered.connect(self.theParent.closeDocEditor)
         self.docuMenu.addAction(menuItem)
@@ -265,14 +265,14 @@ class GuiMainMenu(QMenuBar):
 
         # Document > Preview
         menuItem = QAction(QIcon.fromTheme("text-html"), "View Document", self)
-        menuItem.setStatusTip("View Document in HTML")
+        menuItem.setStatusTip("View document as HTML")
         menuItem.setShortcut("Ctrl+R")
         menuItem.triggered.connect(lambda : self.theParent.viewDocument(None))
         self.docuMenu.addAction(menuItem)
 
         # Document > Close Preview
         menuItem = QAction(QIcon.fromTheme("text-html"), "Close Document View", self)
-        menuItem.setStatusTip("Close Document View Pane")
+        menuItem.setStatusTip("Close document view pane")
         menuItem.setShortcut("Ctrl+Shift+R")
         menuItem.triggered.connect(self.theParent.closeDocViewer)
         self.docuMenu.addAction(menuItem)
@@ -299,21 +299,21 @@ class GuiMainMenu(QMenuBar):
 
         # View > TreeView
         menuItem = QAction(QIcon.fromTheme("go-home"), "TreeView", self)
-        menuItem.setStatusTip("Move to TreeView Panel")
+        menuItem.setStatusTip("Move focus to project tree")
         menuItem.setShortcut("Ctrl+1")
         menuItem.triggered.connect(lambda : self.theParent.setFocus(1))
         self.viewMenu.addAction(menuItem)
 
         # View > Document Pane 1
         menuItem = QAction(QIcon.fromTheme("go-first"), "Left Document Pane", self)
-        menuItem.setStatusTip("Move to Left Document Pane")
+        menuItem.setStatusTip("Move focus to left document pane")
         menuItem.setShortcut("Ctrl+2")
         menuItem.triggered.connect(lambda : self.theParent.setFocus(2))
         self.viewMenu.addAction(menuItem)
 
         # # View > Document Pane 2
         menuItem = QAction(QIcon.fromTheme("go-last"), "Right Document Pane", self)
-        menuItem.setStatusTip("Move to Right Document Pane")
+        menuItem.setStatusTip("Move focus to right document pane")
         menuItem.setShortcut("Ctrl+3")
         menuItem.triggered.connect(lambda : self.theParent.setFocus(3))
         self.viewMenu.addAction(menuItem)
@@ -327,14 +327,14 @@ class GuiMainMenu(QMenuBar):
 
         # Edit > Undo
         menuItem = QAction(QIcon.fromTheme("edit-undo"), "Undo", self)
-        menuItem.setStatusTip("Undo Last Change")
+        menuItem.setStatusTip("Undo last change")
         menuItem.setShortcut("Ctrl+Z")
         menuItem.triggered.connect(lambda: self._docAction(nwDocAction.UNDO))
         self.editMenu.addAction(menuItem)
 
         # Edit > Redo
         menuItem = QAction(QIcon.fromTheme("edit-redo"), "Redo", self)
-        menuItem.setStatusTip("Redo Last Change")
+        menuItem.setStatusTip("Redo last change")
         menuItem.setShortcut("Ctrl+Y")
         menuItem.triggered.connect(lambda: self._docAction(nwDocAction.REDO))
         self.editMenu.addAction(menuItem)
@@ -344,21 +344,21 @@ class GuiMainMenu(QMenuBar):
 
         # Edit > Cut
         menuItem = QAction(QIcon.fromTheme("edit-cut"), "Cut", self)
-        menuItem.setStatusTip("Cut Selected Text")
+        menuItem.setStatusTip("Cut selected text")
         menuItem.setShortcut("Ctrl+X")
         menuItem.triggered.connect(lambda: self._docAction(nwDocAction.CUT))
         self.editMenu.addAction(menuItem)
 
         # Edit > Copy
         menuItem = QAction(QIcon.fromTheme("edit-copy"), "Copy", self)
-        menuItem.setStatusTip("Copy Selected Text")
+        menuItem.setStatusTip("Copy selected text")
         menuItem.setShortcut("Ctrl+C")
         menuItem.triggered.connect(lambda: self._docAction(nwDocAction.COPY))
         self.editMenu.addAction(menuItem)
 
         # Edit > Paste
         menuItem = QAction(QIcon.fromTheme("edit-paste"), "Paste", self)
-        menuItem.setStatusTip("Paste Text from Clipboard")
+        menuItem.setStatusTip("Paste text from clipboard")
         menuItem.setShortcut("Ctrl+V")
         menuItem.triggered.connect(lambda: self._docAction(nwDocAction.PASTE))
         self.editMenu.addAction(menuItem)
@@ -368,14 +368,14 @@ class GuiMainMenu(QMenuBar):
 
         # Edit > Select All
         menuItem = QAction(QIcon.fromTheme("edit-select-all"), "Select All", self)
-        menuItem.setStatusTip("Select All Text in Document")
+        menuItem.setStatusTip("Select all text in document")
         menuItem.setShortcut("Ctrl+A")
         menuItem.triggered.connect(lambda: self._docAction(nwDocAction.SEL_ALL))
         self.editMenu.addAction(menuItem)
 
         # Edit > Select Paragraph
         menuItem = QAction(QIcon.fromTheme("edit-select-all"), "Select Paragraph", self)
-        menuItem.setStatusTip("Select All Text in Paragraph")
+        menuItem.setStatusTip("Select all text in paragraph")
         menuItem.setShortcut("Ctrl+Shift+A")
         menuItem.triggered.connect(lambda: self._docAction(nwDocAction.SEL_PARA))
         self.editMenu.addAction(menuItem)
@@ -389,21 +389,21 @@ class GuiMainMenu(QMenuBar):
 
         # Format > Bold Text
         menuItem = QAction(QIcon.fromTheme("format-text-bold"), "Bold Text", self)
-        menuItem.setStatusTip("Make Selected Text Bold")
+        menuItem.setStatusTip("Make selected text bold")
         menuItem.setShortcut("Ctrl+B")
         menuItem.triggered.connect(lambda: self._docAction(nwDocAction.BOLD))
         self.fmtMenu.addAction(menuItem)
 
         # Format > Italic Text
         menuItem = QAction(QIcon.fromTheme("format-text-italic"), "Italic Text", self)
-        menuItem.setStatusTip("Make Selected Text Italic")
+        menuItem.setStatusTip("Make selected text italic")
         menuItem.setShortcut("Ctrl+I")
         menuItem.triggered.connect(lambda: self._docAction(nwDocAction.ITALIC))
         self.fmtMenu.addAction(menuItem)
 
         # Format > Underline Text
         menuItem = QAction(QIcon.fromTheme("format-text-underline"), "Underline Text", self)
-        menuItem.setStatusTip("Underline Selected Text")
+        menuItem.setStatusTip("Underline selected text")
         menuItem.setShortcut("Ctrl+U")
         menuItem.triggered.connect(lambda: self._docAction(nwDocAction.U_LINE))
         self.fmtMenu.addAction(menuItem)
@@ -413,14 +413,14 @@ class GuiMainMenu(QMenuBar):
 
         # Format > Double Quotes
         menuItem = QAction(QIcon.fromTheme("insert-text"), "Wrap Double Quotes", self)
-        menuItem.setStatusTip("Wrap Selected Text in Double Quotes")
+        menuItem.setStatusTip("Wrap selected text in double quotes")
         menuItem.setShortcut("Ctrl+D")
         menuItem.triggered.connect(lambda: self._docAction(nwDocAction.D_QUOTE))
         self.fmtMenu.addAction(menuItem)
 
         # Format > Single Quotes
         menuItem = QAction(QIcon.fromTheme("insert-text"), "Wrap Single Quotes", self)
-        menuItem.setStatusTip("Wrap Selected Text in Single Quotes")
+        menuItem.setStatusTip("Wrap selected text in single quotes")
         menuItem.setShortcut("Ctrl+Shift+D")
         menuItem.triggered.connect(lambda: self._docAction(nwDocAction.S_QUOTE))
         self.fmtMenu.addAction(menuItem)
@@ -434,14 +434,14 @@ class GuiMainMenu(QMenuBar):
 
         # Tools > Move Up
         self.toolsMoveUp = QAction(QIcon.fromTheme("go-up"), "Move Tree Item Up", self)
-        self.toolsMoveUp.setStatusTip("Move Item Up")
+        self.toolsMoveUp.setStatusTip("Move item up")
         self.toolsMoveUp.setShortcut("Ctrl+Shift+Up")
         self.toolsMoveUp.triggered.connect(lambda : self._moveTreeItem(-1))
         self.toolsMenu.addAction(self.toolsMoveUp)
 
         # Tools > Move Down
         self.toolsMoveDown = QAction(QIcon.fromTheme("go-down"), "Move Tree Item Down", self)
-        self.toolsMoveDown.setStatusTip("Move Item Down")
+        self.toolsMoveDown.setStatusTip("Move item down")
         self.toolsMoveDown.setShortcut("Ctrl+Shift+Down")
         self.toolsMoveDown.triggered.connect(lambda : self._moveTreeItem(1))
         self.toolsMenu.addAction(self.toolsMoveDown)
@@ -451,7 +451,7 @@ class GuiMainMenu(QMenuBar):
 
         # Tools > Toggle Spell Check
         self.toolsSpellCheck = QAction("Check Spelling", self)
-        self.toolsSpellCheck.setStatusTip("Toggle Check Spelling")
+        self.toolsSpellCheck.setStatusTip("Toggle check spelling")
         self.toolsSpellCheck.setCheckable(True)
         self.toolsSpellCheck.setChecked(self.theProject.spellCheck)
         self.toolsSpellCheck.toggled.connect(self._toggleSpellCheck)
@@ -460,9 +460,19 @@ class GuiMainMenu(QMenuBar):
 
         # Tools > Update Spell Check
         menuItem = QAction(QIcon.fromTheme("tools-check-spelling"), "Re-Run Spell Check", self)
-        menuItem.setStatusTip("Rus the Spell Checker on Current Document")
+        menuItem.setStatusTip("Run the spell checker on current document")
         menuItem.setShortcut("F7")
         menuItem.triggered.connect(self.theParent.docEditor.updateSpellCheck)
+        self.toolsMenu.addAction(menuItem)
+
+        # Tools > Separator
+        self.toolsMenu.addSeparator()
+
+        # Tools > Rebuild Indices
+        menuItem = QAction(QIcon.fromTheme("edit-redo"), "Rebuild Indices", self)
+        menuItem.setStatusTip("Rebuild the tag indices and word counts")
+        menuItem.setShortcut("F9")
+        menuItem.triggered.connect(self.theParent.rebuildIndex)
         self.toolsMenu.addAction(menuItem)
 
         # # Tools > Settings

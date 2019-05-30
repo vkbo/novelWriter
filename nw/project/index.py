@@ -8,6 +8,18 @@
  File History:
  Created: 2019-05-27 [0.1.4]
 
+Structure:
+
+    We need to scan all files to get the novel layout. This is done by heading depth. Each heading
+is recorded in a sorted list. Each such heading again can have a set of meta tags.
+    In the other class root folders, each file can have a tag which the meta tags in the novel files
+point to. These tags should be stored in a dictionary where the tag is the key pointing to a single
+file handle. That way we can do lookups on both keys and values.
+    The timeline view then consists of novel header elements in the horizontal header, possibly just
+truncated to a Ch or Sc abbreviation, possibly with a number. This can be extracted from the item
+layout. The vertical header column is then whatever notes we want to compare against, and the links
+from the novel files are dots on the row.
+
 """
 
 import logging
@@ -24,10 +36,11 @@ logger = logging.getLogger(__name__)
 
 class NWIndex():
 
-    VALID_KEYS = [
-        "todo","tag","pov","chars","plot","time","location",
-        "object","custom","scene","chapter","part"
-    ]
+    TAG_KEY    = "tag"
+    NOTE_KEYS  = ["pov","char","plot","time","location","object","custom"]
+    NOVEL_KEYS = ["scene","chapter","part"]
+
+    VALID_KEYS = [TAG_KEY] + NOTE_KEYS + NOVEL_KEYS
 
     def __init__(self, theProject, theParent):
 
@@ -47,7 +60,7 @@ class NWIndex():
 
     def loadIndex(self):
 
-        indexFile = path.join(self.theProject.projMeta,nwFiles.INDEX_FILE)
+        indexFile = path.join(self.theProject.projMeta, nwFiles.INDEX_FILE)
         if path.isfile(indexFile):
             logger.debug("Loading index file")
             try:
@@ -65,7 +78,7 @@ class NWIndex():
 
     def saveIndex(self):
 
-        indexFile = path.join(self.theProject.projMeta,nwFiles.INDEX_FILE)
+        indexFile = path.join(self.theProject.projMeta, nwFiles.INDEX_FILE)
         logger.debug("Saving index file")
         if self.mainConf.debugInfo:
             nIndent = 2
@@ -80,21 +93,6 @@ class NWIndex():
             return False
 
         return True
-
-    def scanFile(self, tHandle):
-
-        theItem = self.theProject.getItem(tHandle)
-        if theItem is None:
-            return False
-        if theItem.itemType != nwItemType.FILE:
-            return False
-
-        theDocument = NWDoc(self.theProject, self.theParent)
-        theText = theDocument.openDocument(tHandle, False)
-
-        self.scanText(tHandle, theText)
-
-        return
 
     def scanText(self, tHandle, theText):
 
@@ -132,9 +130,7 @@ class NWIndex():
             return False
 
         logger.verbose("Found valid key '%s'" % aKey)
-        if aKey == "todo":
-            self._addItem(tHandle, aKey, nLine, tVal)
-        elif aKey == "tag":
+        if aKey == self.TAG_KEY:
             if tVal.find(",") >- 0:
                 return False
             self._addItem(tHandle, aKey, nLine, tVal)

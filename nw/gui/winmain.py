@@ -11,6 +11,7 @@
 """
 
 import logging
+import time
 import nw
 
 from os                   import path
@@ -18,7 +19,7 @@ from PyQt5.QtCore         import Qt, QTimer
 from PyQt5.QtGui          import QIcon, QPixmap, QColor
 from PyQt5.QtWidgets      import (
     qApp, QWidget, QMainWindow, QVBoxLayout, QFrame, QSplitter, QFileDialog,
-    QShortcut, QMessageBox
+    QShortcut, QMessageBox, QProgressDialog
 )
 
 from nw.theme             import Theme
@@ -38,6 +39,7 @@ from nw.convert.tokenizer import Tokenizer
 from nw.convert.tohtml    import ToHtml
 from nw.enum              import nwItemType, nwAlert
 from nw.constants         import nwFiles
+from nw.tools.wordcount   import countWords
 
 logger = logging.getLogger(__name__)
 
@@ -376,6 +378,55 @@ class GuiMain(QMainWindow):
         self._makeImportIcons()
         self.treeView.clearTree()
         self.treeView.buildTree()
+        return
+
+    def rebuildIndex(self):
+
+        logger.debug("Rebuilding indices ...")
+
+        self.treeView.saveTreeOrder()
+        nItems = len(self.theProject.treeOrder)
+
+        dlgProg = QProgressDialog("Scanning files ...", "Cancel", 0, nItems, self)
+        dlgProg.setWindowModality(Qt.WindowModal)
+        dlgProg.setMinimumDuration(0)
+        dlgProg.setFixedWidth(480)
+        dlgProg.setLabelText("Starting file scan ...")
+        dlgProg.setValue(0)
+        dlgProg.show()
+        time.sleep(0.5)
+
+        nDone = 0
+        for tHandle in self.theProject.treeOrder:
+
+            tItem = self.theProject.getItem(tHandle)
+
+            dlgProg.setValue(nDone)
+            dlgProg.setLabelText("Scanning: %s" % tItem.itemName)
+            logger.verbose("Scanning: %s" % tItem.itemName)
+
+            if tItem is not None and tItem.itemType == nwItemType.FILE:
+                theDoc  = NWDoc(self.theProject, self)
+                theText = theDoc.openDocument(tHandle, False)
+
+                # Run Word Count
+                cC, wC, pC = countWords(theText)
+                tItem.setCharCount(cC)
+                tItem.setWordCount(wC)
+                tItem.setParaCount(pC)
+                self.treeView.propagateCount(tHandle, wC)
+                self.treeView.projectWordCount()
+
+                # Build tag index
+                self.tagIndex.scanText(tHandle, theText)
+
+            time.sleep(0.05)
+            nDone += 1
+            if dlgProg.wasCanceled():
+                break
+
+        dlgProg.setValue(nItems)
+
         return
 
     ##
