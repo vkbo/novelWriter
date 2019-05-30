@@ -36,24 +36,25 @@ logger = logging.getLogger(__name__)
 
 class NWIndex():
 
-    TAG_KEY     = "@tag"
-    POV_KEY     = "@pov"
-    CHAR_KEY    = "@char"
-    PLOT_KEY    = "@plot"
-    TIME_KEY    = "@time"
-    WORLD_KEY   = "@location"
-    OBJECT_KEY  = "@object"
-    CUSTOM_KEY  = "@custom"
+    TAG_KEY    = "@tag"
+    POV_KEY    = "@pov"
+    CHAR_KEY   = "@char"
+    PLOT_KEY   = "@plot"
+    TIME_KEY   = "@time"
+    WORLD_KEY  = "@location"
+    OBJECT_KEY = "@object"
+    CUSTOM_KEY = "@custom"
 
-    NOTE_KEYS   = [PLOT_KEY, POV_KEY, CHAR_KEY, WORLD_KEY, TIME_KEY, OBJECT_KEY, CUSTOM_KEY]
-    VALID_CLASS = {
-        nwItemClass.NOVEL     : [],
-        nwItemClass.PLOT      : [PLOT_KEY],
-        nwItemClass.CHARACTER : [POV_KEY, CHAR_KEY],
-        nwItemClass.WORLD     : [WORLD_KEY],
-        nwItemClass.TIMELINE  : [TIME_KEY],
-        nwItemClass.OBJECT    : [OBJECT_KEY],
-        nwItemClass.CUSTOM    : [CUSTOM_KEY],
+    NOTE_KEYS  = [TAG_KEY]
+    NOVEL_KEYS = [PLOT_KEY, POV_KEY, CHAR_KEY, WORLD_KEY, TIME_KEY, OBJECT_KEY, CUSTOM_KEY]
+    TAG_CLASS  = {
+        POV_KEY    : nwItemClass.CHARACTER,
+        CHAR_KEY   : nwItemClass.CHARACTER,
+        PLOT_KEY   : nwItemClass.PLOT,
+        TIME_KEY   : nwItemClass.TIMELINE,
+        WORLD_KEY  : nwItemClass.WORLD,
+        OBJECT_KEY : nwItemClass.OBJECT,
+        CUSTOM_KEY : nwItemClass.CUSTOM,
     }
 
     def __init__(self, theProject, theParent):
@@ -137,7 +138,8 @@ class NWIndex():
         theItem = self.theProject.getItem(tHandle)
         if theItem is None: return False
         if theItem.itemType != nwItemType.FILE: return False
-        itemClass = theItem.itemClass
+        itemClass  = theItem.itemClass
+        itemLayout = theItem.itemLayout
 
         logger.debug("Indexing item with handle %s" % tHandle)
 
@@ -162,7 +164,7 @@ class NWIndex():
             if nChar == 0: continue
             if aLine[0] == "#":
                 if isNovel:
-                    self.indexTitle(tHandle, aLine, nLine)
+                    self.indexTitle(tHandle, aLine, nLine, itemLayout)
             elif aLine[0] == "@":
                 if isNovel:
                     self.indexNoteRef(tHandle, aLine, nLine)
@@ -171,7 +173,7 @@ class NWIndex():
 
         return True
 
-    def indexTitle(self, tHandle, aLine, nLine):
+    def indexTitle(self, tHandle, aLine, nLine, itemLayout):
 
         if aLine.startswith("# "):
             hDepth = 1
@@ -189,7 +191,7 @@ class NWIndex():
             return False
 
         if hText != "":
-            self.novelIndex[tHandle].append([nLine, hDepth, hText])
+            self.novelIndex[tHandle].append([nLine, hDepth, hText, itemLayout.name])
 
         return True
 
@@ -200,7 +202,7 @@ class NWIndex():
             return False
 
         theKey = theBits[0]
-        if theKey in self.NOTE_KEYS:
+        if theKey in self.NOVEL_KEYS:
             for aVal in theBits[1:]:
                 self.noteIndex[tHandle].append([nLine, theKey, aVal])
 
@@ -253,5 +255,33 @@ class NWIndex():
             cPos += tLen + 1
 
         return True, theBits, thePos
+
+    def checkThese(self, theBits, tItem):
+
+        theBits = [aBit.lower() for aBit in theBits]
+        nBits   = len(theBits)
+        isGood  = [False]*nBits
+        if nBits == 0:
+            return []
+
+        # If we have a tag, the first value is always OK, rest is ignored
+        if theBits[0] == self.TAG_KEY and nBits > 1:
+            isGood[0] = True
+            isGood[1] = True
+            return isGood
+
+        # If we're still here, we better check the references
+        if tItem.itemClass == nwItemClass.NOVEL:
+            isGood[0] = theBits[0] in self.NOVEL_KEYS
+        else:
+            isGood[0] = theBits[0] in self.NOTE_KEYS
+        if not isGood[0] or nBits == 1:
+            return isGood
+
+        for n in range(1,nBits):
+            if theBits[n] in self.tagIndex:
+                isGood[n] = self.TAG_CLASS[theBits[0]].name == self.tagIndex[theBits[n]][2]
+
+        return isGood
 
 # END Class NWIndex

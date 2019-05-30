@@ -53,7 +53,7 @@ class GuiMain(QMainWindow):
         self.theTheme    = Theme()
         self.theProject  = NWProject(self)
         self.theDocument = NWDoc(self.theProject, self)
-        self.tagIndex    = NWIndex(self.theProject, self)
+        self.theIndex    = NWIndex(self.theProject, self)
         self.hasProject  = False
 
         self.resize(*self.mainConf.winGeometry)
@@ -212,7 +212,7 @@ class GuiMain(QMainWindow):
 
         if saveOK:
             self.theProject.closeProject()
-            self.tagIndex.clearIndex()
+            self.theIndex.clearIndex()
             self.clearGUI()
             self.hasProject = False
     
@@ -236,7 +236,7 @@ class GuiMain(QMainWindow):
             return False
 
         # Load the tag index
-        self.tagIndex.loadIndex()
+        self.theIndex.loadIndex()
 
         # Update GUI
         self._setWindowTitle(self.theProject.projName)
@@ -268,7 +268,7 @@ class GuiMain(QMainWindow):
 
         self.treeView.saveTreeOrder()
         self.theProject.saveProject()
-        self.tagIndex.saveIndex()
+        self.theIndex.saveIndex()
         self.mainMenu.updateRecentProjects()
 
         return True
@@ -286,9 +286,7 @@ class GuiMain(QMainWindow):
 
     def openDocument(self, tHandle):
         self.closeDocument()
-        self.docEditor.setText(self.theDocument.openDocument(tHandle))
-        self.docEditor.setReadOnly(False)
-        self.docEditor.setCursorPosition(self.theDocument.theItem.cursorPos)
+        self.docEditor.loadText(tHandle)
         self.docEditor.changeWidth()
         self.docEditor.setFocus()
         self.theProject.setLastEdited(tHandle)
@@ -305,7 +303,7 @@ class GuiMain(QMainWindow):
             theItem.setCursorPos(cursPos)
             self.theDocument.saveDocument(docText)
             self.docEditor.setDocumentChanged(False)
-            self.tagIndex.scanText(theItem.itemHandle, docText)
+            self.theIndex.scanText(theItem.itemHandle, docText)
         return True
 
     def viewDocument(self, tHandle=None):
@@ -385,7 +383,7 @@ class GuiMain(QMainWindow):
         logger.debug("Rebuilding indices ...")
 
         self.treeView.saveTreeOrder()
-        self.tagIndex.clearIndex()
+        self.theIndex.clearIndex()
         nItems = len(self.theProject.treeOrder)
 
         dlgProg = QProgressDialog("Scanning files ...", "Cancel", 0, nItems, self)
@@ -419,7 +417,7 @@ class GuiMain(QMainWindow):
                 self.treeView.projectWordCount()
 
                 # Build tag index
-                self.tagIndex.scanText(tHandle, theText)
+                self.theIndex.scanText(tHandle, theText)
 
             time.sleep(0.05)
             nDone += 1

@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='utf-8'?>
-<novelWriterXML appVersion="0.1.4" fileVersion="1.0" timeStamp="2019-05-30 18:43:31">
+<novelWriterXML appVersion="0.1.4" fileVersion="1.0" timeStamp="2019-05-30 19:56:16">
   <project>
     <name>Sample Project</name>
     <title>Sample Project</title>
@@ -76,7 +76,7 @@
       <charCount>656</charCount>
       <wordCount>121</wordCount>
       <paraCount>5</paraCount>
-      <cursorPos>729</cursorPos>
+      <cursorPos>105</cursorPos>
     </item>
     <item handle="bc0cbd2a407f3" order="2" parent="e7ded148d6e4a">
       <name>New File</name>
@@ -145,7 +145,7 @@
       <charCount>76</charCount>
       <wordCount>15</wordCount>
       <paraCount>1</paraCount>
-      <cursorPos>0</cursorPos>
+      <cursorPos>20</cursorPos>
     </item>
     <item handle="98acd8c76c93a" order="3" parent="None">
       <name>Trash</name>
