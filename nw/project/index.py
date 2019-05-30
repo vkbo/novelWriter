@@ -152,9 +152,12 @@ class NWIndex():
             isNovel = False
 
         # Also clear references to file in tag index
+        clearTags = []
         for aTag in self.tagIndex:
             if self.tagIndex[aTag][1] == tHandle:
-                self.tagIndex.pop(aTag)
+                clearTags.append(aTag)
+        for aTag in clearTags:
+            self.tagIndex.pop(aTag)
 
         nLine = 0
         for aLine in theText.splitlines():
