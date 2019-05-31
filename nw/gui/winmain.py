@@ -31,6 +31,7 @@ from nw.gui.mainmenu      import GuiMainMenu
 from nw.gui.projecteditor import GuiProjectEditor
 from nw.gui.itemeditor    import GuiItemEditor
 from nw.gui.statusbar     import GuiMainStatus
+from nw.gui.timelineview  import GuiTimeLineView
 from nw.project.project   import NWProject
 from nw.project.document  import NWDoc
 from nw.project.item      import NWItem
@@ -470,6 +471,11 @@ class GuiMain(QMainWindow):
         dlgProj = GuiProjectEditor(self, self.theProject)
         dlgProj.exec_()
         self._setWindowTitle(self.theProject.projName)
+        return True
+
+    def showTimeLineDialog(self):
+        dlgTLine = GuiTimeLineView(self, self.theProject, self.theIndex)
+        dlgTLine.exec_()
         return True
 
     def makeAlert(self, theMessage, theLevel=nwAlert.INFO):

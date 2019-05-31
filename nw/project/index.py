@@ -69,6 +69,9 @@ class NWIndex():
         self.noteIndex  = {}
         self.novelIndex = {}
 
+        # Lists
+        self.novelList  = []
+
         return
 
     def clearIndex(self):
@@ -222,6 +225,10 @@ class NWIndex():
 
         return True
 
+    ##
+    #  Check @ Lines
+    ##
+
     def scanThis(self, aLine):
 
         theBits = []
@@ -291,5 +298,36 @@ class NWIndex():
                 isGood[n] = self.TAG_CLASS[theBits[0]].name == self.tagIndex[theBits[n]][2]
 
         return isGood
+
+    ##
+    #  Extract Data
+    ##
+
+    def buildNovelList(self):
+
+        self.novelList = []
+        for tHandle in self.theProject.treeOrder:
+            if tHandle not in self.novelIndex:
+                continue
+            for tEntry in self.novelIndex[tHandle]:
+                self.novelList.append(tEntry)
+
+        return True
+
+    def buildTagNovelMap(self, theTag):
+
+        tagList = []
+        if theTag not in self.tagIndex:
+            return tagList
+
+        try:
+            tagClass = nwItemClass[self.tagIndex[theTag][2]]
+        except:
+            logger.error("Could not map '%s' to nwItemClass" % self.tagIndex[theTag][2])
+            return tagList
+
+        tagList = [0]*len(self.novelList)
+
+        return tagList
 
 # END Class NWIndex

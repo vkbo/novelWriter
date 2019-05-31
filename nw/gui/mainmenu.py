@@ -311,11 +311,21 @@ class GuiMainMenu(QMenuBar):
         menuItem.triggered.connect(lambda : self.theParent.setFocus(2))
         self.viewMenu.addAction(menuItem)
 
-        # # View > Document Pane 2
+        # View > Document Pane 2
         menuItem = QAction(QIcon.fromTheme("go-last"), "Right Document Pane", self)
         menuItem.setStatusTip("Move focus to right document pane")
         menuItem.setShortcut("Ctrl+3")
         menuItem.triggered.connect(lambda : self.theParent.setFocus(3))
+        self.viewMenu.addAction(menuItem)
+
+        # View > Separator
+        self.viewMenu.addSeparator()
+
+        # View > Project Timeline
+        menuItem = QAction(QIcon.fromTheme("x-office-spreadsheet"), "Show Project Timeline", self)
+        menuItem.setStatusTip("Open the project timeline window")
+        menuItem.setShortcut("Ctrl+T")
+        menuItem.triggered.connect(self.theParent.showTimeLineDialog)
         self.viewMenu.addAction(menuItem)
 
         return
