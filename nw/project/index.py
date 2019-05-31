@@ -48,13 +48,13 @@ class NWIndex():
     NOTE_KEYS  = [TAG_KEY]
     NOVEL_KEYS = [PLOT_KEY, POV_KEY, CHAR_KEY, WORLD_KEY, TIME_KEY, OBJECT_KEY, CUSTOM_KEY]
     TAG_CLASS  = {
-        POV_KEY    : nwItemClass.CHARACTER,
-        CHAR_KEY   : nwItemClass.CHARACTER,
-        PLOT_KEY   : nwItemClass.PLOT,
-        TIME_KEY   : nwItemClass.TIMELINE,
-        WORLD_KEY  : nwItemClass.WORLD,
-        OBJECT_KEY : nwItemClass.OBJECT,
-        CUSTOM_KEY : nwItemClass.CUSTOM,
+        CHAR_KEY   : [nwItemClass.CHARACTER, 1],
+        POV_KEY    : [nwItemClass.CHARACTER, 2],
+        PLOT_KEY   : [nwItemClass.PLOT,      1],
+        TIME_KEY   : [nwItemClass.TIMELINE,  1],
+        WORLD_KEY  : [nwItemClass.WORLD,     1],
+        OBJECT_KEY : [nwItemClass.OBJECT,    1],
+        CUSTOM_KEY : [nwItemClass.CUSTOM,    1],
     }
 
     def __init__(self, theProject, theParent):
@@ -66,7 +66,7 @@ class NWIndex():
 
         # Indices
         self.tagIndex   = {}
-        self.noteIndex  = {}
+        self.refIndex   = {}
         self.novelIndex = {}
 
         # Lists
@@ -76,7 +76,7 @@ class NWIndex():
 
     def clearIndex(self):
         self.tagIndex   = {}
-        self.noteIndex  = {}
+        self.refIndex   = {}
         self.novelIndex = {}
         return
 
@@ -101,8 +101,8 @@ class NWIndex():
 
             if "tagIndex" in theData.keys():
                 self.tagIndex = theData["tagIndex"]
-            if "noteIndex" in theData.keys():
-                self.noteIndex = theData["noteIndex"]
+            if "refIndex" in theData.keys():
+                self.refIndex = theData["refIndex"]
             if "novelIndex" in theData.keys():
                 self.novelIndex = theData["novelIndex"]
 
@@ -122,7 +122,7 @@ class NWIndex():
             with open(indexFile,mode="w+") as outFile:
                 outFile.write(json.dumps({
                     "tagIndex"   : self.tagIndex,
-                    "noteIndex"  : self.noteIndex,
+                    "refIndex"   : self.refIndex,
                     "novelIndex" : self.novelIndex,
                 }, indent=nIndent))
         except Exception as e:
@@ -149,7 +149,7 @@ class NWIndex():
         # Check file type, and reset its old index
         if itemClass == nwItemClass.NOVEL:
             self.novelIndex[tHandle] = []
-            self.noteIndex[tHandle]  = []
+            self.refIndex[tHandle]   = []
             isNovel = True
         else:
             isNovel = False
@@ -162,7 +162,8 @@ class NWIndex():
         for aTag in clearTags:
             self.tagIndex.pop(aTag)
 
-        nLine = 0
+        nLine  = 0
+        nTitle = 0
         for aLine in theText.splitlines():
             aLine  = aLine.strip()
             nLine += 1
@@ -170,10 +171,12 @@ class NWIndex():
             if nChar == 0: continue
             if aLine[0] == "#":
                 if isNovel:
-                    self.indexTitle(tHandle, aLine, nLine, itemLayout)
+                    isTitle = self.indexTitle(tHandle, aLine, nLine, itemLayout)
+                    if isTitle:
+                        nTitle = nLine
             elif aLine[0] == "@":
                 if isNovel:
-                    self.indexNoteRef(tHandle, aLine, nLine)
+                    self.indexNoteRef(tHandle, aLine, nLine, nTitle)
                 else:
                     self.indexTag(tHandle, aLine, nLine, itemClass)
 
@@ -201,7 +204,7 @@ class NWIndex():
 
         return True
 
-    def indexNoteRef(self, tHandle, aLine, nLine):
+    def indexNoteRef(self, tHandle, aLine, nLine, nTitle):
 
         isValid, theBits, thePos = self.scanThis(aLine)
         if not isValid or len(theBits) == 0:
@@ -210,7 +213,7 @@ class NWIndex():
         theKey = theBits[0]
         if theKey in self.NOVEL_KEYS:
             for aVal in theBits[1:]:
-                self.noteIndex[tHandle].append([nLine, theKey, aVal])
+                self.refIndex[tHandle].append([nLine, theKey, aVal, nTitle])
 
         return True
 
@@ -295,7 +298,7 @@ class NWIndex():
 
         for n in range(1,nBits):
             if theBits[n] in self.tagIndex:
-                isGood[n] = self.TAG_CLASS[theBits[0]].name == self.tagIndex[theBits[n]][2]
+                isGood[n] = self.TAG_CLASS[theBits[0]][0].name == self.tagIndex[theBits[n]][2]
 
         return isGood
 
@@ -305,29 +308,40 @@ class NWIndex():
 
     def buildNovelList(self):
 
-        self.novelList = []
+        self.novelList  = []
+        self.novelOrder = []
         for tHandle in self.theProject.treeOrder:
             if tHandle not in self.novelIndex:
                 continue
             for tEntry in self.novelIndex[tHandle]:
                 self.novelList.append(tEntry)
+                self.novelOrder.append("%s:%d" % (tHandle,tEntry[0]))
 
         return True
 
-    def buildTagNovelMap(self, theTag):
+    def buildTagNovelMap(self, theTags):
 
-        tagList = []
-        if theTag not in self.tagIndex:
-            return tagList
+        tagMap   = {}
+        tagClass = {}
 
-        try:
-            tagClass = nwItemClass[self.tagIndex[theTag][2]]
-        except:
-            logger.error("Could not map '%s' to nwItemClass" % self.tagIndex[theTag][2])
-            return tagList
+        for theTag in theTags:
+            tagMap[theTag] = [0]*len(self.novelOrder)
+            try:
+                tagClass[theTag] = nwItemClass[self.tagIndex[theTag][2]]
+            except:
+                logger.error("Could not map '%s' to nwItemClass" % self.tagIndex[theTag][2])
+                tagClass[theTag] = None
 
-        tagList = [0]*len(self.novelList)
+        for tHandle in self.refIndex:
+            for nLine, tKey, tTag, nTitle in self.refIndex[tHandle]:
+                if tTag in tagMap.keys() and tKey in self.TAG_CLASS:
+                    try:
+                        nPos = self.novelOrder.index("%s:%d" % (tHandle, nTitle))
+                        if self.TAG_CLASS[tKey][0] == tagClass[tTag]:
+                            tagMap[tTag][nPos] = self.TAG_CLASS[tKey][1]
+                    except:
+                        logger.error("Could not find '%s:%d' in novelOrder" % (tHandle, nTitle))
 
-        return tagList
+        return tagMap
 
 # END Class NWIndex

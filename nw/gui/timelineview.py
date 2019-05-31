@@ -84,11 +84,6 @@ class GuiTimeLineView(QDialog):
             self.theMatrix["tags"].append(tTag)
             self.numCols += 1
 
-        # theTable = [[0]*(self.numCols-1)]*(self.numRows-1)
-
-        # for i in range(self.numCols):
-        #     for j in range(self.numRows):
-
         return
 
     def _buildNovelList(self):
@@ -105,18 +100,15 @@ class GuiTimeLineView(QDialog):
             newItem = QTableWidgetItem("  "*iDepth + iTitle)
             self.mainTable.setItem(n+1, 0, newItem)
 
-        theTag  = self.theMatrix["tags"][0]
-        theMap  = self.theIndex.buildTagNovelMap(theTag)
-        newItem = QTableWidgetItem(theTag)
-        self.mainTable.setItem(0, 1, newItem)
-        for n in range(self.numRows-1):
-            newItem = QTableWidgetItem(str(theMap[n]))
-            self.mainTable.setItem(n+1, 1, newItem)
-
-        # for n in range(self.numCols-1):
-        #     iTag = self.theMatrix["tags"][n]
-        #     newItem = QTableWidgetItem(iTag)
-        #     self.mainTable.setItem(0, n+1, newItem)
+        theMap  = self.theIndex.buildTagNovelMap(self.theMatrix["tags"])
+        nCol    = 1
+        for theTag, theCols in theMap.items():
+            newItem = QTableWidgetItem(theTag)
+            self.mainTable.setItem(0, nCol, newItem)
+            for n in range(self.numRows-1):
+                newItem = QTableWidgetItem(str(theCols[n]))
+                self.mainTable.setItem(n+1, nCol, newItem)
+            nCol += 1
 
         return
 
