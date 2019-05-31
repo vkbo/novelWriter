@@ -13,7 +13,9 @@
 import logging
 import nw
 
-from PyQt5.QtWidgets import QDialog, QVBoxLayout, QTableWidget, QTableWidgetItem, QDialogButtonBox
+from PyQt5.QtCore    import Qt
+from PyQt5.QtGui     import QIcon, QColor, QBrush, QPixmap
+from PyQt5.QtWidgets import QDialog, QVBoxLayout, QTableWidget, QTableWidgetItem, QDialogButtonBox, QLabel
 
 logger = logging.getLogger(__name__)
 
@@ -36,7 +38,8 @@ class GuiTimeLineView(QDialog):
 
         self.setWindowTitle("Timeline View")
 
-        self.mainTable = QTableWidget(1,1)
+        self.mainTable = QTableWidget()
+        self.mainTable.setGridStyle(Qt.NoPen)
 
         self.setLayout(self.outerBox)
 
@@ -46,7 +49,6 @@ class GuiTimeLineView(QDialog):
         self.outerBox.addWidget(self.mainTable)
         self.outerBox.addWidget(self.buttonBox)
 
-        self._buildMatrix()
         self._buildNovelList()
 
         self.setMinimumSize(600,400)
@@ -57,57 +59,43 @@ class GuiTimeLineView(QDialog):
 
         return
 
-    def _buildMatrix(self):
-
-        self.theMatrix = {
-            "title"  : [], # Size numRows - 1
-            "depth"  : [], # Size numRows - 1
-            "handle" : [], # Size numRows - 1
-            "line"   : [], # Size numRows - 1
-            "tags"   : [], # Size numCols - 1
-            "table"  : [], # Size numRows - 1 x numCols - 1
-        }
-
-        self.numRows = 1
-        self.numCols = 1
-        for tHandle in self.theProject.treeOrder:
-            if tHandle not in self.theIndex.novelIndex:
-                continue
-            for nLine, nDepth, tTitle, tLayout in self.theIndex.novelIndex[tHandle]:
-                self.theMatrix["title"].append(tTitle)
-                self.theMatrix["depth"].append(nDepth)
-                self.theMatrix["handle"].append(tHandle)
-                self.theMatrix["line"].append(nLine)
-                self.numRows += 1
-
-        for tTag in self.theIndex.tagIndex:
-            self.theMatrix["tags"].append(tTag)
-            self.numCols += 1
-
-        return
-
     def _buildNovelList(self):
 
         self.theIndex.buildNovelList()
-        self.numRows = len(self.theIndex.novelList) + 1
+        self.numRows = len(self.theIndex.novelList)
+        self.numCols = len(self.theIndex.tagIndex.keys())
 
         self.mainTable.setRowCount(self.numRows)
         self.mainTable.setColumnCount(self.numCols)
 
-        for n in range(self.numRows-1):
+        for n in range(len(self.theIndex.novelList)):
             iDepth = self.theIndex.novelList[n][1]
             iTitle = self.theIndex.novelList[n][2]
             newItem = QTableWidgetItem("  "*iDepth + iTitle)
-            self.mainTable.setItem(n+1, 0, newItem)
+            self.mainTable.setVerticalHeaderItem(n, newItem)
+            self.mainTable.setRowHeight(n, 16)
 
-        theMap  = self.theIndex.buildTagNovelMap(self.theMatrix["tags"])
-        nCol    = 1
+        theMap = self.theIndex.buildTagNovelMap(self.theIndex.tagIndex.keys())
+        nCol   = 0
         for theTag, theCols in theMap.items():
             newItem = QTableWidgetItem(theTag)
-            self.mainTable.setItem(0, nCol, newItem)
-            for n in range(self.numRows-1):
-                newItem = QTableWidgetItem(str(theCols[n]))
-                self.mainTable.setItem(n+1, nCol, newItem)
+            self.mainTable.setHorizontalHeaderItem(nCol, newItem)
+            self.mainTable.setColumnWidth(nCol,50)
+            for n in range(len(theCols)):
+                if theCols[n] == 1:
+                    pxNew  = QPixmap(10,10)
+                    pxNew.fill(QColor(0,120,0))
+                    lblNew = QLabel()
+                    lblNew.setPixmap(pxNew)
+                    lblNew.setAlignment(Qt.AlignCenter)
+                    self.mainTable.setCellWidget(n, nCol, lblNew)
+                elif theCols[n] == 2:
+                    pxNew  = QPixmap(10,10)
+                    pxNew.fill(QColor(120,0,0))
+                    lblNew = QLabel()
+                    lblNew.setPixmap(pxNew)
+                    lblNew.setAlignment(Qt.AlignCenter)
+                    self.mainTable.setCellWidget(n, nCol, lblNew)
             nCol += 1
 
         return
