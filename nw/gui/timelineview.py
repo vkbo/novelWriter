@@ -14,7 +14,7 @@ import logging
 import nw
 
 from PyQt5.QtCore    import Qt
-from PyQt5.QtGui     import QIcon, QColor, QBrush, QPixmap
+from PyQt5.QtGui     import QIcon, QColor, QPixmap
 from PyQt5.QtWidgets import (
     QDialog, QVBoxLayout, QHBoxLayout, QTableWidget, QTableWidgetItem,
     QDialogButtonBox, QLabel, QPushButton, QHeaderView
@@ -108,13 +108,15 @@ class GuiTimeLineView(QDialog):
                     lblNew = QLabel()
                     lblNew.setPixmap(pxNew)
                     lblNew.setAlignment(Qt.AlignCenter)
+                    lblNew.setAttribute(Qt.WA_TranslucentBackground)
                     self.mainTable.setCellWidget(n, nCol, lblNew)
                 elif theCols[n] == 2:
                     pxNew  = QPixmap(10,10)
-                    pxNew.fill(QColor(120,0,0))
+                    pxNew.fill(QColor(0,0,120))
                     lblNew = QLabel()
                     lblNew.setPixmap(pxNew)
                     lblNew.setAlignment(Qt.AlignCenter)
+                    lblNew.setAttribute(Qt.WA_TranslucentBackground)
                     self.mainTable.setCellWidget(n, nCol, lblNew)
             nCol += 1
 
