@@ -2,7 +2,7 @@
 """novelWriter Main GUI Class Tester
 """
 
-import nw, pytest
+import nw, pytest, sys
 from nwtools import *
 
 from os import path, unlink
@@ -245,8 +245,9 @@ def testMainWindows(qtbot, nwTempGUI, nwRef):
     assert cmpFiles(refFile, path.join(nwRef,"gui","1_1489056e0916_main.nwd"))
     refFile = path.join(nwTempGUI,"data_7","688b6ef52555_main.nwd")
     assert cmpFiles(refFile, path.join(nwRef,"gui","1_688b6ef52555_main.nwd"))
-    refFile = path.join(nwTempGUI,"meta","tagsIndex.json")
-    assert cmpFiles(refFile, path.join(nwRef,"gui","1_tagsIndex.json"))
+    if sys.version_info[0] >= 3 and sys.version_info[1] >= 6:
+        refFile = path.join(nwTempGUI,"meta","tagsIndex.json")
+        assert cmpFiles(refFile, path.join(nwRef,"gui","1_tagsIndex.json"))
 
     nwGUI.closeMain()
     # qtbot.stopForInteraction()
