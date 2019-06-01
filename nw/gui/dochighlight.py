@@ -20,14 +20,17 @@ logger = logging.getLogger(__name__)
 
 class GuiDocHighlighter(QSyntaxHighlighter):
 
-    def __init__(self, theDoc, theTheme):
+    def __init__(self, theDoc, theParent):
         QSyntaxHighlighter.__init__(self, theDoc)
 
         logger.debug("Initialising DocHighlighter ...")
         self.mainConf   = nw.CONFIG
         self.theDoc     = theDoc
-        self.theTheme   = theTheme
+        self.theParent  = theParent
+        self.theTheme   = theParent.theTheme
+        self.theIndex   = theParent.theIndex
         self.theDict    = None
+        self.theHandle  = None
         self.spellCheck = False
         self.hRules     = []
 
@@ -41,6 +44,7 @@ class GuiDocHighlighter(QSyntaxHighlighter):
         self.colKey     = QColor(*self.theTheme.colKey)
         self.colVal     = QColor(*self.theTheme.colVal)
         self.colSpell   = QColor(*self.theTheme.colSpell)
+        self.colTagErr  = QColor(*self.theTheme.colTagErr)
 
         self.hStyles = {
             "header1"   : self._makeFormat(self.colHead, "bold",1.8),
@@ -90,12 +94,12 @@ class GuiDocHighlighter(QSyntaxHighlighter):
         ))
 
         # Keyword/Value
-        self.hRules.append((
-            r"^(@.+?)\s*:\s*(.+?)$", {
-                1 : self.hStyles["keyword"],
-                2 : self.hStyles["value"],
-            }
-        ))
+        # self.hRules.append((
+        #     r"^(@.+?)\s*:\s*(.+?)$", {
+        #         1 : self.hStyles["keyword"],
+        #         2 : self.hStyles["value"],
+        #     }
+        # ))
 
         # Comments
         self.hRules.append((
@@ -152,6 +156,10 @@ class GuiDocHighlighter(QSyntaxHighlighter):
 
         return
 
+    ##
+    #  Setters
+    ##
+
     def setDict(self, theDict):
         self.theDict = theDict
         return True
@@ -159,6 +167,75 @@ class GuiDocHighlighter(QSyntaxHighlighter):
     def setSpellCheck(self, theMode):
         self.spellCheck = theMode
         return True
+
+    def setHandle(self, theHandle):
+        self.theHandle = theHandle
+        return True
+
+    ##
+    #  Highlight Block
+    ##
+
+    def highlightBlock(self, theText):
+
+        if self.theHandle is None:
+            self.setCurrentBlockState(0)
+            return
+
+        if theText.startswith("@"):
+            # Highlighting of keywords and commands
+            tItem = self.theParent.theProject.getItem(self.theHandle)
+            isValid, theBits, thePos = self.theIndex.scanThis(theText)
+            isGood = self.theIndex.checkThese(theBits, tItem)
+            if isValid:
+                for n in range(len(theBits)):
+                    xPos = thePos[n]
+                    xLen = len(theBits[n])
+                    if isGood[n]:
+                        if n == 0:
+                            self.setFormat(xPos, xLen, self.hStyles["keyword"])
+                        else:
+                            self.setFormat(xPos, xLen, self.hStyles["value"])
+                    else:
+                        kwFmt = self.format(xPos)
+                        kwFmt.setUnderlineColor(self.colTagErr)
+                        kwFmt.setUnderlineStyle(QTextCharFormat.SpellCheckUnderline)
+                        self.setFormat(xPos, xLen, kwFmt)
+
+        else:
+            # Other text just uses regex
+            for rX, xFmt in self.rules:
+                rxItt = rX.globalMatch(theText, 0)
+                while rxItt.hasNext():
+                    rxMatch = rxItt.next()
+                    for xM in xFmt.keys():
+                        xPos = rxMatch.capturedStart(xM)
+                        xLen = rxMatch.capturedLength(xM)
+                        self.setFormat(xPos, xLen, xFmt[xM])
+
+        self.setCurrentBlockState(0)
+
+        if self.theDict is None or not self.spellCheck or theText.startswith("@"):
+            return
+
+        rxSpell = self.spellRx.globalMatch(theText.replace("_"," "), 0)
+        while rxSpell.hasNext():
+            rxMatch = rxSpell.next()
+            if not self.theDict.check(rxMatch.captured(0)):
+                if rxMatch.captured(0) == rxMatch.captured(0).upper():
+                    continue
+                xPos = rxMatch.capturedStart(0)
+                xLen = rxMatch.capturedLength(0)
+                spFmt = self.format(xPos)
+                spFmt.setUnderlineColor(self.colSpell)
+                spFmt.setUnderlineStyle(QTextCharFormat.SpellCheckUnderline)
+                self.setFormat(xPos, xLen, spFmt)
+
+        return
+
+    ##
+    #  Internal Functions
+    ##
 
     def _makeFormat(self, fmtCol=None, fmtStyle=None, fmtSize=None):
         theFormat = QTextCharFormat()
@@ -180,35 +257,5 @@ class GuiDocHighlighter(QSyntaxHighlighter):
             theFormat.setFontPointSize(round(fmtSize*self.mainConf.textSize))
 
         return theFormat
-
-    def highlightBlock(self, theText):
-
-        for rX, xFmt in self.rules:
-            rxItt = rX.globalMatch(theText, 0)
-            while rxItt.hasNext():
-                rxMatch = rxItt.next()
-                for xM in xFmt.keys():
-                    xPos = rxMatch.capturedStart(xM)
-                    xLen = rxMatch.capturedLength(xM)
-                    self.setFormat(xPos, xLen, xFmt[xM])
-
-        self.setCurrentBlockState(0)
-
-        if self.theDict is None or not self.spellCheck or theText.startswith("@"):
-            return
-
-        rxSpell = self.spellRx.globalMatch(theText.replace("_"," "), 0)
-        while rxSpell.hasNext():
-            rxMatch = rxSpell.next()
-            if not self.theDict.check(rxMatch.captured(0)):
-                if rxMatch.captured(0) == rxMatch.captured(0).upper(): continue
-                xPos = rxMatch.capturedStart(0)
-                xLen = rxMatch.capturedLength(0)
-                spFmt = self.format(xPos)
-                spFmt.setUnderlineColor(self.colSpell)
-                spFmt.setUnderlineStyle(QTextCharFormat.SpellCheckUnderline)
-                self.setFormat(xPos, xLen, spFmt)
-
-        return
 
 # END Class DocHighlighter

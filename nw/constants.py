@@ -14,10 +14,11 @@ from nw.enum import nwItemClass, nwItemLayout
 
 class nwFiles():
 
-    APP_ICON  = "novelWriter.svg"
-    PROJ_FILE = "nwProject.nwx"
-    PROJ_DICT = "wordlist.txt"
-    SESS_INFO = "sessionInfo.log"
+    APP_ICON   = "novelWriter.svg"
+    PROJ_FILE  = "nwProject.nwx"
+    PROJ_DICT  = "wordlist.txt"
+    SESS_INFO  = "sessionInfo.log"
+    INDEX_FILE = "tagsIndex.json"
 
 # END Class nwFiles
 

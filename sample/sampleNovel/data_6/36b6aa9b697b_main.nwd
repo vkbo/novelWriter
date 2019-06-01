@@ -3,8 +3,9 @@
 ## This is the Subtitle
 
 % Begin Meta
-@POV: Sam
-@Chars: Sam, Adam, Scott
+@pov: Jane
+@char: John
+@location: Earth
 % End Meta
 
 Some text here would look good as well, and maybe some "dialogue"?
@@ -16,9 +17,4 @@ So, this is some __text__ that we’ve been adding to this document. It is utter
 This paragraph is also meaningless. At least a bit. It’s also very short. But we could make it less meaningless if we wanted to … but we won’t, will we.
 
 This one is a bit longer. “It also has some dialogue in it” she said, before she moved on to check if the spellchecker worked. It did. “Cool,” she concluded.
-
-
-@ToDo: Stuff that will be done at some point
-
-
 

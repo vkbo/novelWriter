@@ -11,6 +11,7 @@
 """
 
 import logging
+import time
 import nw
 
 from os                   import path
@@ -18,7 +19,7 @@ from PyQt5.QtCore         import Qt, QTimer
 from PyQt5.QtGui          import QIcon, QPixmap, QColor
 from PyQt5.QtWidgets      import (
     qApp, QWidget, QMainWindow, QVBoxLayout, QFrame, QSplitter, QFileDialog,
-    QShortcut, QMessageBox
+    QShortcut, QMessageBox, QProgressDialog
 )
 
 from nw.theme             import Theme
@@ -30,13 +31,16 @@ from nw.gui.mainmenu      import GuiMainMenu
 from nw.gui.projecteditor import GuiProjectEditor
 from nw.gui.itemeditor    import GuiItemEditor
 from nw.gui.statusbar     import GuiMainStatus
+from nw.gui.timelineview  import GuiTimeLineView
 from nw.project.project   import NWProject
 from nw.project.document  import NWDoc
 from nw.project.item      import NWItem
+from nw.project.index     import NWIndex
 from nw.convert.tokenizer import Tokenizer
 from nw.convert.tohtml    import ToHtml
 from nw.enum              import nwItemType, nwAlert
 from nw.constants         import nwFiles
+from nw.tools.wordcount   import countWords
 
 logger = logging.getLogger(__name__)
 
@@ -50,6 +54,7 @@ class GuiMain(QMainWindow):
         self.theTheme    = Theme()
         self.theProject  = NWProject(self)
         self.theDocument = NWDoc(self.theProject, self)
+        self.theIndex    = NWIndex(self.theProject, self)
         self.hasProject  = False
 
         self.resize(*self.mainConf.winGeometry)
@@ -208,6 +213,7 @@ class GuiMain(QMainWindow):
 
         if saveOK:
             self.theProject.closeProject()
+            self.theIndex.clearIndex()
             self.clearGUI()
             self.hasProject = False
     
@@ -229,6 +235,9 @@ class GuiMain(QMainWindow):
         # Try to open the project
         if not self.theProject.openProject(projFile):
             return False
+
+        # Load the tag index
+        self.theIndex.loadIndex()
 
         # Update GUI
         self._setWindowTitle(self.theProject.projName)
@@ -260,6 +269,7 @@ class GuiMain(QMainWindow):
 
         self.treeView.saveTreeOrder()
         self.theProject.saveProject()
+        self.theIndex.saveIndex()
         self.mainMenu.updateRecentProjects()
 
         return True
@@ -277,9 +287,7 @@ class GuiMain(QMainWindow):
 
     def openDocument(self, tHandle):
         self.closeDocument()
-        self.docEditor.setText(self.theDocument.openDocument(tHandle))
-        self.docEditor.setReadOnly(False)
-        self.docEditor.setCursorPosition(self.theDocument.theItem.cursorPos)
+        self.docEditor.loadText(tHandle)
         self.docEditor.changeWidth()
         self.docEditor.setFocus()
         self.theProject.setLastEdited(tHandle)
@@ -289,12 +297,14 @@ class GuiMain(QMainWindow):
         if self.theDocument.theItem is not None:
             docText = self.docEditor.getText()
             cursPos = self.docEditor.getCursorPosition()
-            self.theDocument.theItem.setCharCount(self.docEditor.charCount)
-            self.theDocument.theItem.setWordCount(self.docEditor.wordCount)
-            self.theDocument.theItem.setParaCount(self.docEditor.paraCount)
-            self.theDocument.theItem.setCursorPos(cursPos)
+            theItem = self.theDocument.theItem
+            theItem.setCharCount(self.docEditor.charCount)
+            theItem.setWordCount(self.docEditor.wordCount)
+            theItem.setParaCount(self.docEditor.paraCount)
+            theItem.setCursorPos(cursPos)
             self.theDocument.saveDocument(docText)
             self.docEditor.setDocumentChanged(False)
+            self.theIndex.scanText(theItem.itemHandle, docText)
         return True
 
     def viewDocument(self, tHandle=None):
@@ -356,9 +366,10 @@ class GuiMain(QMainWindow):
             return
 
         logger.verbose("Requesting change to item %s" % tHandle)
-        dlgProj = GuiItemEditor(self, self.theProject, tHandle)
-        if dlgProj.exec_():
-            self.treeView.setTreeItemValues(tHandle)
+        if self.mainConf.showGUI:
+            dlgProj = GuiItemEditor(self, self.theProject, tHandle)
+            if dlgProj.exec_():
+                self.treeView.setTreeItemValues(tHandle)
 
         return
 
@@ -367,6 +378,55 @@ class GuiMain(QMainWindow):
         self._makeImportIcons()
         self.treeView.clearTree()
         self.treeView.buildTree()
+        return
+
+    def rebuildIndex(self):
+
+        logger.debug("Rebuilding indices ...")
+
+        self.treeView.saveTreeOrder()
+        self.theIndex.clearIndex()
+        nItems = len(self.theProject.treeOrder)
+
+        dlgProg = QProgressDialog("Scanning files ...", "Cancel", 0, nItems, self)
+        dlgProg.setWindowModality(Qt.WindowModal)
+        dlgProg.setMinimumDuration(0)
+        dlgProg.setFixedWidth(480)
+        dlgProg.setLabelText("Starting file scan ...")
+        dlgProg.setValue(0)
+        dlgProg.show()
+        time.sleep(0.5)
+
+        nDone = 0
+        for tHandle in self.theProject.treeOrder:
+
+            tItem = self.theProject.getItem(tHandle)
+
+            dlgProg.setValue(nDone)
+            dlgProg.setLabelText("Scanning: %s" % tItem.itemName)
+            logger.verbose("Scanning: %s" % tItem.itemName)
+
+            if tItem is not None and tItem.itemType == nwItemType.FILE:
+                theDoc  = NWDoc(self.theProject, self)
+                theText = theDoc.openDocument(tHandle, False)
+
+                # Run Word Count
+                cC, wC, pC = countWords(theText)
+                tItem.setCharCount(cC)
+                tItem.setWordCount(wC)
+                tItem.setParaCount(pC)
+                self.treeView.propagateCount(tHandle, wC)
+                self.treeView.projectWordCount()
+
+                # Build tag index
+                self.theIndex.scanText(tHandle, theText)
+
+            nDone += 1
+            if dlgProg.wasCanceled():
+                break
+
+        dlgProg.setValue(nItems)
+
         return
 
     ##
@@ -411,6 +471,11 @@ class GuiMain(QMainWindow):
         dlgProj = GuiProjectEditor(self, self.theProject)
         dlgProj.exec_()
         self._setWindowTitle(self.theProject.projName)
+        return True
+
+    def showTimeLineDialog(self):
+        dlgTLine = GuiTimeLineView(self, self.theProject, self.theIndex)
+        dlgTLine.exec_()
         return True
 
     def makeAlert(self, theMessage, theLevel=nwAlert.INFO):

@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='utf-8'?>
-<novelWriterXML appVersion="0.1.4" fileVersion="1.0" timeStamp="2019-05-26 15:52:53">
+<novelWriterXML appVersion="0.1.4" fileVersion="1.0" timeStamp="2019-05-31 20:26:54">
   <project>
     <name>Sample Project</name>
     <title>Sample Project</title>
@@ -8,9 +8,9 @@
   </project>
   <settings>
     <spellCheck>True</spellCheck>
-    <lastEdited>636b6aa9b697b</lastEdited>
+    <lastEdited>bc0cbd2a407f3</lastEdited>
     <lastViewed>None</lastViewed>
-    <lastWordCount>540</lastWordCount>
+    <lastWordCount>565</lastWordCount>
     <status>
       <entry blue="100" green="100" red="100">New</entry>
       <entry blue="0" green="50" red="200">Notes</entry>
@@ -27,7 +27,7 @@
       <entry blue="175" green="0" red="117">Main</entry>
     </importance>
   </settings>
-  <content count="14">
+  <content count="15">
     <item handle="7031beac91f75" order="0" parent="None">
       <name>Novel</name>
       <type>ROOT</type>
@@ -76,7 +76,7 @@
       <charCount>656</charCount>
       <wordCount>121</wordCount>
       <paraCount>5</paraCount>
-      <cursorPos>573</cursorPos>
+      <cursorPos>77</cursorPos>
     </item>
     <item handle="bc0cbd2a407f3" order="2" parent="e7ded148d6e4a">
       <name>New File</name>
@@ -85,10 +85,10 @@
       <status>Notes</status>
       <expanded>False</expanded>
       <layout>SCENE</layout>
-      <charCount>69</charCount>
-      <wordCount>17</wordCount>
+      <charCount>82</charCount>
+      <wordCount>19</wordCount>
       <paraCount>1</paraCount>
-      <cursorPos>0</cursorPos>
+      <cursorPos>69</cursorPos>
     </item>
     <item handle="f6622b4617424" order="1" parent="None">
       <name>Characters</name>
@@ -111,10 +111,10 @@
       <status>Minor</status>
       <expanded>False</expanded>
       <layout>NOTE</layout>
-      <charCount>42</charCount>
-      <wordCount>8</wordCount>
+      <charCount>49</charCount>
+      <wordCount>9</wordCount>
       <paraCount>1</paraCount>
-      <cursorPos>0</cursorPos>
+      <cursorPos>24</cursorPos>
     </item>
     <item handle="bb2c23b3c42cc" order="1" parent="f7e2d9f330615">
       <name>Jane Smith</name>
@@ -123,10 +123,10 @@
       <status>Major</status>
       <expanded>False</expanded>
       <layout>NOTE</layout>
-      <charCount>51</charCount>
+      <charCount>55</charCount>
       <wordCount>9</wordCount>
       <paraCount>1</paraCount>
-      <cursorPos>0</cursorPos>
+      <cursorPos>25</cursorPos>
     </item>
     <item handle="15c4492bd5107" order="2" parent="None">
       <name>Locations</name>
@@ -142,10 +142,22 @@
       <status>None</status>
       <expanded>False</expanded>
       <layout>NOTE</layout>
-      <charCount>0</charCount>
-      <wordCount>0</wordCount>
-      <paraCount>0</paraCount>
-      <cursorPos>0</cursorPos>
+      <charCount>76</charCount>
+      <wordCount>15</wordCount>
+      <paraCount>1</paraCount>
+      <cursorPos>20</cursorPos>
+    </item>
+    <item handle="f1471bef9f2ae" order="1" parent="15c4492bd5107">
+      <name>Space</name>
+      <type>FILE</type>
+      <class>WORLD</class>
+      <status>None</status>
+      <expanded>False</expanded>
+      <layout>NOTE</layout>
+      <charCount>38</charCount>
+      <wordCount>7</wordCount>
+      <paraCount>1</paraCount>
+      <cursorPos>57</cursorPos>
     </item>
     <item handle="98acd8c76c93a" order="3" parent="None">
       <name>Trash</name>

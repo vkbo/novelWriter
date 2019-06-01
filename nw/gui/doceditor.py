@@ -34,11 +34,12 @@ class GuiDocEditor(QTextEdit):
         logger.debug("Initialising DocEditor ...")
 
         # Class Variables
-        self.mainConf   = nw.CONFIG
-        self.theParent  = theParent
-        self.docChanged = False
-        self.pwlFile    = None
-        self.spellCheck = False
+        self.mainConf    = nw.CONFIG
+        self.theParent   = theParent
+        self.docChanged  = False
+        self.pwlFile     = None
+        self.spellCheck  = False
+        self.theDocument = theParent.theDocument
 
         # Document Variables
         self.charCount = 0
@@ -54,9 +55,9 @@ class GuiDocEditor(QTextEdit):
         self.typApos    = self.mainConf.fmtApostrophe
 
         # Core Elements
-        self.theDoc  = self.document()
+        self.theQDoc = self.document()
         self.theDict = enchant.Dict(self.mainConf.spellLanguage)
-        self.hLight  = GuiDocHighlighter(self.theDoc, self.theParent.theTheme)
+        self.hLight  = GuiDocHighlighter(self.theQDoc, self.theParent)
         self.hLight.setDict(self.theDict)
 
         # Context Menu
@@ -71,8 +72,8 @@ class GuiDocEditor(QTextEdit):
         self.clearEditor()
         self.initEditor()
 
-        self.theDoc.setDocumentMargin(0)
-        self.theDoc.contentsChange.connect(self._docChange)
+        self.theQDoc.setDocumentMargin(0)
+        self.theQDoc.contentsChange.connect(self._docChange)
 
         # Custom Shortcuts
         QShortcut(QKeySequence("Ctrl+."), self, context=Qt.WidgetShortcut, activated=self._openSpellContext)
@@ -109,7 +110,18 @@ class GuiDocEditor(QTextEdit):
             theOpt.setTabStopDistance(self.mainConf.tabWidth)
         if self.mainConf.doJustify:
             theOpt.setAlignment(Qt.AlignJustify)
-        self.theDoc.setDefaultTextOption(theOpt)
+        self.theQDoc.setDefaultTextOption(theOpt)
+        return True
+
+    def loadText(self, tHandle):
+        self.hLight.setHandle(tHandle)
+        self.setPlainText(self.theDocument.openDocument(tHandle))
+        self.setCursorPosition(self.theDocument.theItem.cursorPos)
+        self.lastEdit = time()
+        self._runCounter()
+        self.wcTimer.start()
+        self.setDocumentChanged(False)
+        self.setReadOnly(False)
         return True
 
     ##
@@ -120,14 +132,6 @@ class GuiDocEditor(QTextEdit):
         self.docChanged = bValue
         self.theParent.statusBar.setDocumentStatus(self.docChanged)
         return self.docChanged
-
-    def setText(self, theText):
-        self.setPlainText(theText)
-        self.lastEdit = time()
-        self._runCounter()
-        self.wcTimer.start()
-        self.setDocumentChanged(False)
-        return True
 
     def getText(self):
         theText = self.toPlainText()
@@ -296,7 +300,7 @@ class GuiDocEditor(QTextEdit):
         if not self.wcTimer.isActive():
             self.wcTimer.start()
         if self.mainConf.doReplace and not self.hasSelection:
-            self._docAutoReplace(self.theDoc.findBlock(thePos))
+            self._docAutoReplace(self.theQDoc.findBlock(thePos))
         # logger.verbose("Doc change signal took %.3f µs" % ((time()-self.lastEdit)*1e6))
         return
 
