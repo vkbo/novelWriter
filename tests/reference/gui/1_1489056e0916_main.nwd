@@ -1,13 +1,20 @@
-# Hello World!
+# Novel
 
-## With a Subtitle
+## Chapter
 
-### An Even Subier Title
+@pov: Jane
+@plot: MainPlot
 
-#### Basically Not a Title at All
+### Scene
 
 % How about a comment?
-@keyword: value
+@pov: Jane
+@plot: MainPlot
+@location: Home
+
+#### Some Section
+
+@char: Jane
 
 This is a paragraph of dummy text.
 

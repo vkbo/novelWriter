@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='utf-8'?>
-<novelWriterXML appVersion="0.1.4" fileVersion="1.0" timeStamp="2019-05-25 23:29:32">
+<novelWriterXML appVersion="0.1.4" fileVersion="1.0" timeStamp="2019-06-01 20:57:28">
   <project>
     <name></name>
     <title></title>
@@ -8,7 +8,7 @@
     <spellCheck>True</spellCheck>
     <lastEdited>31489056e0916</lastEdited>
     <lastViewed>31489056e0916</lastViewed>
-    <lastWordCount>69</lastWordCount>
+    <lastWordCount>86</lastWordCount>
     <status>
       <entry blue="100" green="100" red="100">New</entry>
       <entry blue="0" green="50" red="200">Note</entry>
@@ -22,7 +22,7 @@
       <entry blue="0" green="200" red="50">Main</entry>
     </importance>
   </settings>
-  <content count="6">
+  <content count="9">
     <item handle="73475cb40a568" order="0" parent="None">
       <name>Novel</name>
       <type>ROOT</type>
@@ -44,31 +44,67 @@
       <status>New</status>
       <expanded>False</expanded>
       <layout>SCENE</layout>
-      <charCount>377</charCount>
-      <wordCount>69</wordCount>
+      <charCount>331</charCount>
+      <wordCount>59</wordCount>
       <paraCount>2</paraCount>
-      <cursorPos>443</cursorPos>
+      <cursorPos>465</cursorPos>
     </item>
     <item handle="44cb730c42048" order="1" parent="None">
       <name>Characters</name>
       <type>ROOT</type>
       <class>CHARACTER</class>
       <status>New</status>
+      <expanded>True</expanded>
+    </item>
+    <item handle="2fca346db6561" order="0" parent="44cb730c42048">
+      <name>New File</name>
+      <type>FILE</type>
+      <class>CHARACTER</class>
+      <status>New</status>
       <expanded>False</expanded>
+      <layout>NOTE</layout>
+      <charCount>34</charCount>
+      <wordCount>8</wordCount>
+      <paraCount>1</paraCount>
+      <cursorPos>51</cursorPos>
     </item>
     <item handle="71ee45a3c0db9" order="2" parent="None">
       <name>Plot</name>
       <type>ROOT</type>
       <class>PLOT</class>
       <status>New</status>
+      <expanded>True</expanded>
+    </item>
+    <item handle="02d20bbd7e394" order="0" parent="71ee45a3c0db9">
+      <name>New File</name>
+      <type>FILE</type>
+      <class>PLOT</class>
+      <status>New</status>
       <expanded>False</expanded>
+      <layout>NOTE</layout>
+      <charCount>48</charCount>
+      <wordCount>10</wordCount>
+      <paraCount>1</paraCount>
+      <cursorPos>69</cursorPos>
     </item>
     <item handle="811786ad1ae74" order="3" parent="None">
       <name>World</name>
       <type>ROOT</type>
       <class>WORLD</class>
       <status>New</status>
+      <expanded>True</expanded>
+    </item>
+    <item handle="7688b6ef52555" order="0" parent="811786ad1ae74">
+      <name>New File</name>
+      <type>FILE</type>
+      <class>WORLD</class>
+      <status>New</status>
       <expanded>False</expanded>
+      <layout>NOTE</layout>
+      <charCount>51</charCount>
+      <wordCount>9</wordCount>
+      <paraCount>1</paraCount>
+      <cursorPos>68</cursorPos>
     </item>
   </content>
 </novelWriterXML>

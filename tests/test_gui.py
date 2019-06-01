@@ -9,6 +9,7 @@ from os import path, unlink
 from PyQt5.QtCore import Qt
 
 from nw.gui.projecteditor import GuiProjectEditor
+from nw.gui.timelineview  import GuiTimeLineView
 from nw.gui.itemeditor    import GuiItemEditor
 from nw.enum              import *
 
@@ -47,8 +48,6 @@ def testMainWindows(qtbot, nwTempGUI, nwRef):
     assert cmpFiles(projFile, path.join(nwRef,"gui","0_nwProject.nwx"), [2])
     qtbot.wait(stepDelay)
 
-    # qtbot.stopForInteraction()
-
     # Re-open project
     assert nwGUI.openProject(nwTempGUI)
     qtbot.wait(stepDelay)
@@ -75,33 +74,101 @@ def testMainWindows(qtbot, nwTempGUI, nwRef):
     assert nwGUI.treeView._getTreeItem("71ee45a3c0db9") is not None
     assert nwGUI.treeView._getTreeItem("811786ad1ae74") is not None
 
+    nwGUI.mainMenu.toolsSpellCheck.setChecked(True)
+    assert nwGUI.mainMenu._toggleSpellCheck()
+
+    # Add a Character File
+    nwGUI.setFocus(1)
+    nwGUI.treeView.clearSelection()
+    nwGUI.treeView._getTreeItem("44cb730c42048").setSelected(True)
+    nwGUI.treeView.newTreeItem(nwItemType.FILE, None)
+    assert nwGUI.openSelectedItem()
+
+    # Type something into the document
+    nwGUI.setFocus(2)
+    for c in "# Jane Doe":
+        qtbot.keyClick(nwGUI.docEditor, c, delay=keyDelay)
+    qtbot.keyClick(nwGUI.docEditor, Qt.Key_Return, delay=keyDelay)
+    qtbot.keyClick(nwGUI.docEditor, Qt.Key_Return, delay=keyDelay)
+    for c in "@tag: Jane":
+        qtbot.keyClick(nwGUI.docEditor, c, delay=keyDelay)
+    qtbot.keyClick(nwGUI.docEditor, Qt.Key_Return, delay=keyDelay)
+    qtbot.keyClick(nwGUI.docEditor, Qt.Key_Return, delay=keyDelay)
+    for c in "This is a file about Jane.":
+        qtbot.keyClick(nwGUI.docEditor, c, delay=keyDelay)
+    qtbot.keyClick(nwGUI.docEditor, Qt.Key_Return, delay=keyDelay)
+
+    # Add a Plot File
+    nwGUI.setFocus(1)
+    nwGUI.treeView.clearSelection()
+    nwGUI.treeView._getTreeItem("71ee45a3c0db9").setSelected(True)
+    nwGUI.treeView.newTreeItem(nwItemType.FILE, None)
+    assert nwGUI.openSelectedItem()
+
+    # Type something into the document
+    nwGUI.setFocus(2)
+    for c in "# Main Plot":
+        qtbot.keyClick(nwGUI.docEditor, c, delay=keyDelay)
+    qtbot.keyClick(nwGUI.docEditor, Qt.Key_Return, delay=keyDelay)
+    qtbot.keyClick(nwGUI.docEditor, Qt.Key_Return, delay=keyDelay)
+    for c in "@tag: MainPlot":
+        qtbot.keyClick(nwGUI.docEditor, c, delay=keyDelay)
+    qtbot.keyClick(nwGUI.docEditor, Qt.Key_Return, delay=keyDelay)
+    qtbot.keyClick(nwGUI.docEditor, Qt.Key_Return, delay=keyDelay)
+    for c in "This is a file detailing the main plot.":
+        qtbot.keyClick(nwGUI.docEditor, c, delay=keyDelay)
+    qtbot.keyClick(nwGUI.docEditor, Qt.Key_Return, delay=keyDelay)
+
+    # Add a World File
+    nwGUI.setFocus(1)
+    nwGUI.treeView.clearSelection()
+    nwGUI.treeView._getTreeItem("811786ad1ae74").setSelected(True)
+    nwGUI.treeView.newTreeItem(nwItemType.FILE, None)
+    assert nwGUI.openSelectedItem()
+
+    # Type something into the document
+    nwGUI.setFocus(2)
+    for c in "# Main Location":
+        qtbot.keyClick(nwGUI.docEditor, c, delay=keyDelay)
+    qtbot.keyClick(nwGUI.docEditor, Qt.Key_Return, delay=keyDelay)
+    qtbot.keyClick(nwGUI.docEditor, Qt.Key_Return, delay=keyDelay)
+    for c in "@tag: Home":
+        qtbot.keyClick(nwGUI.docEditor, c, delay=keyDelay)
+    qtbot.keyClick(nwGUI.docEditor, Qt.Key_Return, delay=keyDelay)
+    qtbot.keyClick(nwGUI.docEditor, Qt.Key_Return, delay=keyDelay)
+    for c in "This is a file describing Jane's home.":
+        qtbot.keyClick(nwGUI.docEditor, c, delay=keyDelay)
+    qtbot.keyClick(nwGUI.docEditor, Qt.Key_Return, delay=keyDelay)
+
     # Select the 'New Scene' file
     nwGUI.setFocus(1)
+    nwGUI.treeView.clearSelection()
     nwGUI.treeView._getTreeItem("73475cb40a568").setExpanded(True)
     nwGUI.treeView._getTreeItem("25fc0e7096fc6").setExpanded(True)
     nwGUI.treeView._getTreeItem("31489056e0916").setSelected(True)
     assert nwGUI.openSelectedItem()
-    nwGUI.mainMenu.toolsSpellCheck.setChecked(True)
-    assert nwGUI.mainMenu._toggleSpellCheck()
 
     # Type something into the document
     nwGUI.setFocus(2)
-    for c in "# Hello World!":
+    for c in "# Novel":
         qtbot.keyClick(nwGUI.docEditor, c, delay=keyDelay)
     qtbot.keyClick(nwGUI.docEditor, Qt.Key_Return, delay=keyDelay)
     qtbot.keyClick(nwGUI.docEditor, Qt.Key_Return, delay=keyDelay)
 
-    for c in "## With a Subtitle":
+    for c in "## Chapter":
         qtbot.keyClick(nwGUI.docEditor, c, delay=keyDelay)
     qtbot.keyClick(nwGUI.docEditor, Qt.Key_Return, delay=keyDelay)
     qtbot.keyClick(nwGUI.docEditor, Qt.Key_Return, delay=keyDelay)
 
-    for c in "### An Even Subier Title":
+    for c in "@pov: Jane":
+        qtbot.keyClick(nwGUI.docEditor, c, delay=keyDelay)
+    qtbot.keyClick(nwGUI.docEditor, Qt.Key_Return, delay=keyDelay)
+    for c in "@plot: MainPlot":
         qtbot.keyClick(nwGUI.docEditor, c, delay=keyDelay)
     qtbot.keyClick(nwGUI.docEditor, Qt.Key_Return, delay=keyDelay)
     qtbot.keyClick(nwGUI.docEditor, Qt.Key_Return, delay=keyDelay)
 
-    for c in "#### Basically Not a Title at All":
+    for c in "### Scene":
         qtbot.keyClick(nwGUI.docEditor, c, delay=keyDelay)
     qtbot.keyClick(nwGUI.docEditor, Qt.Key_Return, delay=keyDelay)
     qtbot.keyClick(nwGUI.docEditor, Qt.Key_Return, delay=keyDelay)
@@ -109,7 +176,23 @@ def testMainWindows(qtbot, nwTempGUI, nwRef):
     for c in "% How about a comment?":
         qtbot.keyClick(nwGUI.docEditor, c, delay=keyDelay)
     qtbot.keyClick(nwGUI.docEditor, Qt.Key_Return, delay=keyDelay)
-    for c in "@keyword: value":
+    for c in "@pov: Jane":
+        qtbot.keyClick(nwGUI.docEditor, c, delay=keyDelay)
+    qtbot.keyClick(nwGUI.docEditor, Qt.Key_Return, delay=keyDelay)
+    for c in "@plot: MainPlot":
+        qtbot.keyClick(nwGUI.docEditor, c, delay=keyDelay)
+    qtbot.keyClick(nwGUI.docEditor, Qt.Key_Return, delay=keyDelay)
+    for c in "@location: Home":
+        qtbot.keyClick(nwGUI.docEditor, c, delay=keyDelay)
+    qtbot.keyClick(nwGUI.docEditor, Qt.Key_Return, delay=keyDelay)
+    qtbot.keyClick(nwGUI.docEditor, Qt.Key_Return, delay=keyDelay)
+
+    for c in "#### Some Section":
+        qtbot.keyClick(nwGUI.docEditor, c, delay=keyDelay)
+    qtbot.keyClick(nwGUI.docEditor, Qt.Key_Return, delay=keyDelay)
+    qtbot.keyClick(nwGUI.docEditor, Qt.Key_Return, delay=keyDelay)
+
+    for c in "@char: Jane":
         qtbot.keyClick(nwGUI.docEditor, c, delay=keyDelay)
     qtbot.keyClick(nwGUI.docEditor, Qt.Key_Return, delay=keyDelay)
     qtbot.keyClick(nwGUI.docEditor, Qt.Key_Return, delay=keyDelay)
@@ -133,12 +216,13 @@ def testMainWindows(qtbot, nwTempGUI, nwRef):
     qtbot.wait(stepDelay)
     nwGUI.docEditor.wCounter.run()
     qtbot.wait(stepDelay)
-    nwGUI.docEditor._updateCounts()
 
     # Save the document
     assert nwGUI.docEditor.docChanged
     assert nwGUI.saveDocument()
     assert not nwGUI.docEditor.docChanged
+    qtbot.wait(stepDelay)
+    nwGUI.rebuildIndex()
     qtbot.wait(stepDelay)
 
     # Open and view the edited document
@@ -148,15 +232,44 @@ def testMainWindows(qtbot, nwTempGUI, nwRef):
     qtbot.wait(stepDelay)
     assert nwGUI.saveProject()
     assert nwGUI.closeDocViewer()
+    qtbot.wait(stepDelay)
 
     # Check the files
     projFile = path.join(nwTempGUI,"nwProject.nwx")
     assert cmpFiles(projFile, path.join(nwRef,"gui","1_nwProject.nwx"), [2])
+    sceneFile = path.join(nwTempGUI,"data_0","2d20bbd7e394_main.nwd")
+    assert cmpFiles(sceneFile, path.join(nwRef,"gui","1_2d20bbd7e394_main.nwd"))
+    sceneFile = path.join(nwTempGUI,"data_2","fca346db6561_main.nwd")
+    assert cmpFiles(sceneFile, path.join(nwRef,"gui","1_fca346db6561_main.nwd"))
     sceneFile = path.join(nwTempGUI,"data_3","1489056e0916_main.nwd")
     assert cmpFiles(sceneFile, path.join(nwRef,"gui","1_1489056e0916_main.nwd"))
+    sceneFile = path.join(nwTempGUI,"data_7","688b6ef52555_main.nwd")
+    assert cmpFiles(sceneFile, path.join(nwRef,"gui","1_688b6ef52555_main.nwd"))
 
     nwGUI.closeMain()
     # qtbot.stopForInteraction()
+
+@pytest.mark.gui
+def testTimeLineView(qtbot, nwTempGUI, nwRef):
+    nwGUI = nw.main(["--testmode","--config=%s" % nwTempGUI])
+    qtbot.addWidget(nwGUI)
+    nwGUI.show()
+    qtbot.waitForWindowShown(nwGUI)
+    qtbot.wait(stepDelay)
+
+    # Create new, save, open project
+    nwGUI.theProject.handleSeed = 42
+    assert nwGUI.openProject(nwTempGUI)
+    qtbot.wait(stepDelay)
+
+    timeLine = GuiTimeLineView(nwGUI, nwGUI.theProject, nwGUI.theIndex)
+    qtbot.addWidget(timeLine)
+
+    assert timeLine.numRows == 4
+    assert timeLine.numCols == 3
+
+    # qtbot.stopForInteraction()
+    nwGUI.closeMain()
 
 @pytest.mark.gui
 def testProjectEditor(qtbot, nwTempGUI, nwRef):
