@@ -15,7 +15,10 @@ import nw
 
 from PyQt5.QtCore    import Qt
 from PyQt5.QtGui     import QIcon, QColor, QBrush, QPixmap
-from PyQt5.QtWidgets import QDialog, QVBoxLayout, QTableWidget, QTableWidgetItem, QDialogButtonBox, QLabel
+from PyQt5.QtWidgets import (
+    QDialog, QVBoxLayout, QHBoxLayout, QTableWidget, QTableWidgetItem,
+    QDialogButtonBox, QLabel, QPushButton
+)
 
 logger = logging.getLogger(__name__)
 
@@ -35,23 +38,33 @@ class GuiTimeLineView(QDialog):
         self.numCols    = 0
 
         self.outerBox   = QVBoxLayout()
+        self.bottomBox  = QHBoxLayout()
 
         self.setWindowTitle("Timeline View")
+        self.setMinimumSize(*self.mainConf.dlgTimeLine)
 
         self.mainTable = QTableWidget()
         self.mainTable.setGridStyle(Qt.NoPen)
 
-        self.setLayout(self.outerBox)
-
         self.buttonBox = QDialogButtonBox(QDialogButtonBox.Close)
         self.buttonBox.rejected.connect(self._doClose)
 
+        self.btnRebuild = QPushButton("Rebuild Index")
+        self.btnRebuild.clicked.connect(self.theParent.rebuildIndex)
+
+        self.btnRefresh = QPushButton("Refresh Table")
+        self.btnRefresh.clicked.connect(self._buildNovelList)
+
+        self.setLayout(self.outerBox)
         self.outerBox.addWidget(self.mainTable)
-        self.outerBox.addWidget(self.buttonBox)
+        self.outerBox.addLayout(self.bottomBox)
+        self.bottomBox.addWidget(self.btnRebuild)
+        self.bottomBox.addWidget(self.btnRefresh)
+        self.bottomBox.addStretch()
+        self.bottomBox.addWidget(self.buttonBox)
 
         self._buildNovelList()
-
-        self.setMinimumSize(600,400)
+        self.buttonBox.setFocus()
 
         self.show()
 
@@ -65,6 +78,7 @@ class GuiTimeLineView(QDialog):
         self.numRows = len(self.theIndex.novelList)
         self.numCols = len(self.theIndex.tagIndex.keys())
 
+        self.mainTable.clear()
         self.mainTable.setRowCount(self.numRows)
         self.mainTable.setColumnCount(self.numCols)
 
@@ -101,6 +115,7 @@ class GuiTimeLineView(QDialog):
         return
 
     def _doClose(self):
+        self.mainConf.setTLineSize(self.width(), self.height())
         self.close()
         return
 
