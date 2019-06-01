@@ -421,7 +421,6 @@ class GuiMain(QMainWindow):
                 # Build tag index
                 self.theIndex.scanText(tHandle, theText)
 
-            time.sleep(0.05)
             nDone += 1
             if dlgProg.wasCanceled():
                 break
