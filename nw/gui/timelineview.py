@@ -17,7 +17,7 @@ from PyQt5.QtCore    import Qt
 from PyQt5.QtGui     import QIcon, QColor, QBrush, QPixmap
 from PyQt5.QtWidgets import (
     QDialog, QVBoxLayout, QHBoxLayout, QTableWidget, QTableWidgetItem,
-    QDialogButtonBox, QLabel, QPushButton
+    QDialogButtonBox, QLabel, QPushButton, QHeaderView
 )
 
 logger = logging.getLogger(__name__)
@@ -45,6 +45,14 @@ class GuiTimeLineView(QDialog):
 
         self.mainTable = QTableWidget()
         self.mainTable.setGridStyle(Qt.NoPen)
+
+        self.hHeader = self.mainTable.horizontalHeader()
+        self.hHeader.setSectionResizeMode(QHeaderView.ResizeToContents)
+        self.mainTable.setHorizontalHeader(self.hHeader)
+
+        self.vHeader = self.mainTable.verticalHeader()
+        self.vHeader.setSectionResizeMode(QHeaderView.ResizeToContents)
+        self.mainTable.setVerticalHeader(self.vHeader)
 
         self.buttonBox = QDialogButtonBox(QDialogButtonBox.Close)
         self.buttonBox.rejected.connect(self._doClose)
@@ -85,16 +93,14 @@ class GuiTimeLineView(QDialog):
         for n in range(len(self.theIndex.novelList)):
             iDepth = self.theIndex.novelList[n][1]
             iTitle = self.theIndex.novelList[n][2]
-            newItem = QTableWidgetItem("  "*iDepth + iTitle)
+            newItem = QTableWidgetItem("%s%s  " % ("  "*iDepth,iTitle))
             self.mainTable.setVerticalHeaderItem(n, newItem)
-            self.mainTable.setRowHeight(n, 16)
 
         theMap = self.theIndex.buildTagNovelMap(self.theIndex.tagIndex.keys())
         nCol   = 0
         for theTag, theCols in theMap.items():
-            newItem = QTableWidgetItem(theTag)
+            newItem = QTableWidgetItem(" %s " % theTag)
             self.mainTable.setHorizontalHeaderItem(nCol, newItem)
-            self.mainTable.setColumnWidth(nCol,50)
             for n in range(len(theCols)):
                 if theCols[n] == 1:
                     pxNew  = QPixmap(10,10)
