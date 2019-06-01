@@ -256,7 +256,7 @@ class Config:
         return True
 
     def setWinSize(self, newWidth, newHeight):
-        if abs(self.winGeometry[0] - newHeight) > 5:
+        if abs(self.winGeometry[0] - newWidth) > 5:
             self.winGeometry[0] = newWidth
             self.confChanged = True
         if abs(self.winGeometry[1] - newHeight) > 5:
@@ -265,7 +265,7 @@ class Config:
         return True
 
     def setTLineSize(self, newWidth, newHeight):
-        if abs(self.dlgTimeLine[0] - newHeight) > 5:
+        if abs(self.dlgTimeLine[0] - newWidth) > 5:
             self.dlgTimeLine[0] = newWidth
             self.confChanged = True
         if abs(self.dlgTimeLine[1] - newHeight) > 5:
