@@ -126,7 +126,7 @@ def main(sysArgs):
             print(helpMsg)
             exit()
         elif inOpt in ("-v", "--version"):
-            print("makeNovel %s Version %s" % (__status__,__version__))
+            print("%s %s Version %s" % (__package__,__status__,__version__))
             exit()
         elif inOpt in ("-d", "--debug"):
             debugLevel = logging.DEBUG
@@ -184,7 +184,7 @@ def main(sysArgs):
         nwGUI = GuiMain()
         return nwGUI
     else:
-        nwApp = QApplication([])
+        nwApp = QApplication([__package__])
         nwGUI = GuiMain()
         exit(nwApp.exec_())
 
