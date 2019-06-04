@@ -45,6 +45,7 @@ class GuiDocHighlighter(QSyntaxHighlighter):
         self.colVal     = QColor(*self.theTheme.colVal)
         self.colSpell   = QColor(*self.theTheme.colSpell)
         self.colTagErr  = QColor(*self.theTheme.colTagErr)
+        self.colRepTag  = QColor(*self.theTheme.colRepTag)
 
         self.hStyles = {
             "header1"   : self._makeFormat(self.colHead, "bold",1.8),
@@ -62,6 +63,7 @@ class GuiDocHighlighter(QSyntaxHighlighter):
             "dialogue1" : self._makeFormat(self.colDialN),
             "dialogue2" : self._makeFormat(self.colDialD),
             "dialogue3" : self._makeFormat(self.colDialS),
+            "replace"   : self._makeFormat(self.colRepTag),
             "hidden"    : self._makeFormat(self.colComm),
             "keyword"   : self._makeFormat(self.colKey),
             "value"     : self._makeFormat(self.colVal),
@@ -145,6 +147,12 @@ class GuiDocHighlighter(QSyntaxHighlighter):
         self.hRules.append((
             "{:s}(.+?){:s}".format(*self.mainConf.fmtSingleQuotes), {
                 0 : self.hStyles["dialogue3"],
+            }
+        ))
+
+        self.hRules.append((
+            "<(.+?)>", {
+                0 : self.hStyles["replace"],
             }
         ))
 
