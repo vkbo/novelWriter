@@ -16,12 +16,12 @@ import nw
 from os import path
 
 from PyQt5.QtCore    import Qt
-from PyQt5.QtGui     import QIcon, QPixmap, QColor, QBrush
+from PyQt5.QtGui     import QIcon, QPixmap, QColor, QBrush, QStandardItemModel
 from PyQt5.QtSvg     import QSvgWidget
 from PyQt5.QtWidgets import (
     QDialog, QHBoxLayout, QVBoxLayout, QFormLayout, QLineEdit, QPlainTextEdit, QLabel,
     QWidget, QTabWidget, QDialogButtonBox, QListWidget, QListWidgetItem, QPushButton,
-    QColorDialog, QAbstractItemView
+    QColorDialog, QAbstractItemView, QTableView, QHeaderView, QAbstractItemView
 )
 from nw.enum import nwAlert
 
@@ -47,14 +47,16 @@ class GuiProjectEditor(QDialog):
         self.svgGradient.setFixedWidth(80)
 
         self.theProject.countStatus()
-        self.tabMain   = GuiProjectEditMain(self.theParent, self.theProject)
-        self.tabStatus = GuiProjectEditStatus(self.theParent, self.theProject.statusItems)
-        self.tabImport = GuiProjectEditStatus(self.theParent, self.theProject.importItems)
+        self.tabMain    = GuiProjectEditMain(self.theParent, self.theProject)
+        self.tabStatus  = GuiProjectEditStatus(self.theParent, self.theProject.statusItems)
+        self.tabImport  = GuiProjectEditStatus(self.theParent, self.theProject.importItems)
+        self.tabReplace = GuiProjectEditReplace(self.theParent, self.theProject.importItems)
 
         self.tabWidget = QTabWidget()
-        self.tabWidget.addTab(self.tabMain,  "Settings")
-        self.tabWidget.addTab(self.tabStatus,"Status")
-        self.tabWidget.addTab(self.tabImport,"Importance")
+        self.tabWidget.addTab(self.tabMain,   "Settings")
+        self.tabWidget.addTab(self.tabStatus, "Status")
+        self.tabWidget.addTab(self.tabImport, "Importance")
+        self.tabWidget.addTab(self.tabReplace,"Auto-Replace")
 
         self.setLayout(self.outerBox)
         self.outerBox.addWidget(self.svgGradient)
@@ -72,6 +74,12 @@ class GuiProjectEditor(QDialog):
         logger.debug("ProjectEditor initialisation complete")
 
         return
+
+    # def keyPressEvent(self, theEvent):
+    #     if theEvent.key() == Qt.Key_Enter or theEvent.key() == Qt.Key_Return:
+    #         return
+    #     QDialog.keyPressEvent(self, theEvent)
+    #     return
 
     def _doSave(self):
         logger.verbose("ProjectEditor save button clicked")
@@ -292,3 +300,28 @@ class GuiProjectEditStatus(QWidget):
         return
 
 # END Class GuiProjectEditStatus
+
+class GuiProjectEditReplace(QWidget):
+
+    def __init__(self, theParent, theProject):
+        QWidget.__init__(self, theParent)
+
+        self.theParent  = theParent
+        self.theProject = theProject
+
+        self.outerBox   = QVBoxLayout()
+        self.mainTable  = QTableView()
+        self.mainModel  = QStandardItemModel()
+        self.mainTable.setModel(self.mainModel)
+        self.mainTable.horizontalHeader().setSectionResizeMode(QHeaderView.Stretch)
+        self.mainTable.setEditTriggers(QAbstractItemView.DoubleClicked)
+
+        self.mainModel.setHorizontalHeaderLabels(["Keyword","Value"])
+        self.mainModel.setRowCount(3)
+
+        self.outerBox.addWidget(self.mainTable)
+        self.setLayout(self.outerBox)
+
+        return
+
+# END Class GuiProjectEditReplace
