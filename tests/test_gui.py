@@ -48,6 +48,8 @@ def testMainWindows(qtbot, nwTempGUI, nwRef):
     assert cmpFiles(projFile, path.join(nwRef,"gui","0_nwProject.nwx"), [2])
     qtbot.wait(stepDelay)
 
+    # qtbot.stopForInteraction()
+
     # Re-open project
     assert nwGUI.openProject(nwTempGUI)
     qtbot.wait(stepDelay)
@@ -316,8 +318,8 @@ def testProjectEditor(qtbot, nwTempGUI, nwRef):
     # Open again, and check project settings
     projEdit = GuiProjectEditor(nwGUI, nwGUI.theProject)
     qtbot.addWidget(projEdit)
-    assert projEdit.tabMain.editName.text()    == "Project Name"
-    assert projEdit.tabMain.editTitle.text()   == "Project Title"
+    assert projEdit.tabMain.editName.text()  == "Project Name"
+    assert projEdit.tabMain.editTitle.text() == "Project Title"
     theAuth = projEdit.tabMain.editAuthors.toPlainText().strip().splitlines()
     assert len(theAuth) == 2
     assert theAuth[0] == "Jane Doe"
