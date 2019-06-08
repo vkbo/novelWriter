@@ -21,7 +21,10 @@ from nw.config       import Config
 __package__    = "novelWriter"
 __author__     = "Veronica Berglyd Olsen"
 __copyright__  = "Copyright 2018–2019, Veronica Berglyd Olsen"
-__credits__    = ["Veronica Berglyd Olsen"]
+__credits__    = [
+    "Veronica Berglyd Olsen (developer)",
+    "Marian Lückhof (contributor, tester)"
+]
 __license__    = "GPLv3"
 __version__    = "0.1.5"
 __date__       = "2019.06.08"
