@@ -301,7 +301,7 @@ def testProjectEditor(qtbot, nwTempGUI, nwRef):
     for c in "John Doh":
         qtbot.keyClick(projEdit.tabMain.editAuthors, c, delay=keyDelay)
 
-    #Test Status Tab
+    # Test Status Tab
     projEdit.tabWidget.setCurrentWidget(projEdit.tabStatus)
     projEdit.tabStatus.listBox.item(2).setSelected(True)
     qtbot.mouseClick(projEdit.tabStatus.delButton, Qt.LeftButton)
@@ -312,6 +312,23 @@ def testProjectEditor(qtbot, nwTempGUI, nwRef):
     for c in "Final":
         qtbot.keyClick(projEdit.tabStatus.editName, c, delay=keyDelay)
     qtbot.mouseClick(projEdit.tabStatus.saveButton, Qt.LeftButton)
+
+    # Auto-Replace Tab
+    projEdit.tabWidget.setCurrentWidget(projEdit.tabReplace)
+    for c in "Th is ":
+        qtbot.keyClick(projEdit.tabReplace.editKey, c, delay=keyDelay)
+    for c in "With This Stuff ":
+        qtbot.keyClick(projEdit.tabReplace.editValue, c, delay=keyDelay)
+    qtbot.mouseClick(projEdit.tabReplace.addButton, Qt.LeftButton)
+
+    for c in "Delete":
+        qtbot.keyClick(projEdit.tabReplace.editKey, c, delay=keyDelay)
+    for c in "This Stuff":
+        qtbot.keyClick(projEdit.tabReplace.editValue, c, delay=keyDelay)
+    qtbot.mouseClick(projEdit.tabReplace.addButton, Qt.LeftButton)
+
+    projEdit.tabReplace.listBox.topLevelItem(1).setSelected(True)
+    qtbot.mouseClick(projEdit.tabReplace.delButton, Qt.LeftButton)
 
     projEdit._doSave()
 
