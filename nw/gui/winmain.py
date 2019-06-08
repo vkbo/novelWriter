@@ -260,6 +260,9 @@ class GuiMain(QMainWindow):
     def saveProject(self):
         """Save the current project.
         """
+        if not self.hasProject:
+            return False
+
         # If the project is new, it may not have a path, so we need one
         if self.theProject.projPath is None:
             projPath = self.saveProjectDialog()
@@ -279,22 +282,24 @@ class GuiMain(QMainWindow):
     ##
 
     def closeDocument(self):
-        if self.docEditor.docChanged:
-            self.saveDocument()
-        self.theDocument.clearDocument()
-        self.docEditor.clearEditor()
+        if self.hasProject:
+            if self.docEditor.docChanged:
+                self.saveDocument()
+            self.theDocument.clearDocument()
+            self.docEditor.clearEditor()
         return True
 
     def openDocument(self, tHandle):
-        self.closeDocument()
-        self.docEditor.loadText(tHandle)
-        self.docEditor.changeWidth()
-        self.docEditor.setFocus()
-        self.theProject.setLastEdited(tHandle)
+        if self.hasProject:
+            self.closeDocument()
+            self.docEditor.loadText(tHandle)
+            self.docEditor.changeWidth()
+            self.docEditor.setFocus()
+            self.theProject.setLastEdited(tHandle)
         return True
 
     def saveDocument(self):
-        if self.theDocument.theItem is not None:
+        if self.theDocument.theItem is not None and self.hasProject:
             docText = self.docEditor.getText()
             cursPos = self.docEditor.getCursorPosition()
             theItem = self.theDocument.theItem
@@ -382,6 +387,9 @@ class GuiMain(QMainWindow):
 
     def rebuildIndex(self):
 
+        if not self.hasProject:
+            return False
+
         logger.debug("Rebuilding indices ...")
 
         self.treeView.saveTreeOrder()
@@ -427,7 +435,7 @@ class GuiMain(QMainWindow):
 
         dlgProg.setValue(nItems)
 
-        return
+        return True
 
     ##
     #  Main Dialogs
@@ -468,14 +476,16 @@ class GuiMain(QMainWindow):
         return None
 
     def editProjectDialog(self):
-        dlgProj = GuiProjectEditor(self, self.theProject)
-        dlgProj.exec_()
-        self._setWindowTitle(self.theProject.projName)
+        if self.hasProject:
+            dlgProj = GuiProjectEditor(self, self.theProject)
+            dlgProj.exec_()
+            self._setWindowTitle(self.theProject.projName)
         return True
 
     def showTimeLineDialog(self):
-        dlgTLine = GuiTimeLineView(self, self.theProject, self.theIndex)
-        dlgTLine.exec_()
+        if self.hasProject:
+            dlgTLine = GuiTimeLineView(self, self.theProject, self.theIndex)
+            dlgTLine.exec_()
         return True
 
     def makeAlert(self, theMessage, theLevel=nwAlert.INFO):
