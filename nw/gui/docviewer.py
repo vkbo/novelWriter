@@ -13,7 +13,9 @@
 import logging
 import nw
 
+from PyQt5.QtCore    import Qt
 from PyQt5.QtWidgets import QTextBrowser
+from PyQt5.QtGui     import QTextOption
 
 logger = logging.getLogger(__name__)
 
@@ -29,16 +31,21 @@ class GuiDocViewer(QTextBrowser):
         self.theParent = theParent
         self.theTheme  = theParent.theTheme
 
-        self.theDoc = self.document()
-        self.theDoc.setDefaultStyleSheet((
+        self.theQDoc = self.document()
+        self.theQDoc.setDefaultStyleSheet((
             "h1, h2, h3, h4 {{"
             "  color: rgb({0},{1},{2});"
             "}}"
         ).format(
             *self.theTheme.colHead
         ))
-        self.theDoc.setDocumentMargin(self.mainConf.textMargin[0])
+        self.theQDoc.setDocumentMargin(self.mainConf.textMargin[0])
         self.setMinimumWidth(300)
+
+        theOpt = QTextOption()
+        if self.mainConf.doJustify:
+            theOpt.setAlignment(Qt.AlignJustify)
+        self.theQDoc.setDefaultTextOption(theOpt)
 
         logger.debug("DocViewer initialisation complete")
 
