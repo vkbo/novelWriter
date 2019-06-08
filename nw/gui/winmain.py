@@ -246,14 +246,13 @@ class GuiMain(QMainWindow):
         self.docEditor.setSpellCheck(self.theProject.spellCheck)
         self.statusBar.setRefTime(self.theProject.projOpened)
         self.mainMenu.updateMenu()
+        self.hasProject = True
 
         # Restore previously open documents, if any
         if self.theProject.lastEdited is not None:
             self.openDocument(self.theProject.lastEdited)
         if self.theProject.lastViewed is not None:
             self.viewDocument(self.theProject.lastViewed)
-
-        self.hasProject = True
 
         return True
 
@@ -329,6 +328,7 @@ class GuiMain(QMainWindow):
             logger.debug("Generating preview for item %s" % tHandle)
             aDoc = ToHtml(self.theProject, self)
             aDoc.setText(tHandle)
+            aDoc.doAutoReplace()
             aDoc.tokenizeText()
             aDoc.doConvert()
             self.docViewer.setHtml(aDoc.theResult)
