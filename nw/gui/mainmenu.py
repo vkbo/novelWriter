@@ -108,10 +108,11 @@ class GuiMainMenu(QMenuBar):
         msgBox.about(self.theParent, "About %s" % nw.__package__, (
             "<h3>About {name:s}</h3>"
             "<p>Version: {version:s}<br>Release Date: {date:s}</p>"
-            "<p>{name:s} is a text editor designed for writing novels. "
+            "<p>{name:s} is a markdown-like text editor designed for organising and writing novels. "
             "It is written in Python 3 with a Qt5 GUI. The Python and Qt layers are connected with PyQt5</p>"
             "<p>{name:s} is is licensed under GPL v3.0</p>"
             "<p>{copyright:s}</p>"
+            "<p>Website: <a href='{website:s}'>{website:s}</a></p>"
             "<h4>Credits</h4>"
             "<p>{credits:s}</p>"
         ).format(
@@ -119,6 +120,7 @@ class GuiMainMenu(QMenuBar):
             version   = nw.__version__,
             date      = nw.__date__,
             copyright = nw.__copyright__,
+            website   = nw.__url__,
             credits   = "".join(["&nbsp;&nbsp;&bull;&nbsp;&nbsp;%s<br/>" % x for x in nw.__credits__]),
         ))
         return True
