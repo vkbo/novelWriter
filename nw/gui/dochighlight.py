@@ -151,7 +151,7 @@ class GuiDocHighlighter(QSyntaxHighlighter):
         ))
 
         self.hRules.append((
-            "<(.+?)>", {
+            "<(\S+?)>", {
                 0 : self.hStyles["replace"],
             }
         ))
@@ -187,7 +187,6 @@ class GuiDocHighlighter(QSyntaxHighlighter):
     def highlightBlock(self, theText):
 
         if self.theHandle is None:
-            self.setCurrentBlockState(0)
             return
 
         if theText.startswith("@"):
@@ -221,8 +220,6 @@ class GuiDocHighlighter(QSyntaxHighlighter):
                         xLen = rxMatch.capturedLength(xM)
                         self.setFormat(xPos, xLen, xFmt[xM])
 
-        self.setCurrentBlockState(0)
-
         if self.theDict is None or not self.spellCheck or theText.startswith("@"):
             return
 
@@ -234,10 +231,11 @@ class GuiDocHighlighter(QSyntaxHighlighter):
                     continue
                 xPos = rxMatch.capturedStart(0)
                 xLen = rxMatch.capturedLength(0)
-                spFmt = self.format(xPos)
-                spFmt.setUnderlineColor(self.colSpell)
-                spFmt.setUnderlineStyle(QTextCharFormat.SpellCheckUnderline)
-                self.setFormat(xPos, xLen, spFmt)
+                for x in range(xLen):
+                    spFmt = self.format(xPos+x)
+                    spFmt.setUnderlineColor(self.colSpell)
+                    spFmt.setUnderlineStyle(QTextCharFormat.SpellCheckUnderline)
+                    self.setFormat(xPos+x, 1, spFmt)
 
         return
 
