@@ -119,7 +119,7 @@ class GuiMainMenu(QMenuBar):
             version   = nw.__version__,
             date      = nw.__date__,
             copyright = nw.__copyright__,
-            credits   = "<br>".join(nw.__credits__),
+            credits   = "".join(["&nbsp;&nbsp;&bull;&nbsp;&nbsp;%s<br/>" % x for x in nw.__credits__]),
         ))
         return True
 
