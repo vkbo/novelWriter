@@ -1,5 +1,29 @@
 # novelWriter ChangeLog
 
+## Version 0.1.5 [2019-06-08]
+
+**Bug Fixes**
+
+* Closing the application with the window X button, and selecting No on the dialog, still closed the application. Properly handled the close event now so that the closing is cancelled. #21
+* Many of the menu option would cause novelWriter to exit or otherwise make mistakes when clicked if no project was open. They all check for this now. #23
+
+**Timeline**
+
+* Added an index to the project that holds the position of all headers in the novel part of the project and all tags set in the notes part. It also holds all the links from novel files to notes. The relationship can be viewed in a new TimeLineView GUI. It's in the tools menu, and can also be opened with `Ctrl+T`. #22
+* The spell checker now used this index to highlight keywords/value sets. If the keyword or value is not valid, it will not be highlighted and will instead have a wiggly line under it. This also checks that references point to valid tags. For this to work, the index has to be up to date. The index of a file is saved when the file is saved, but the entire index can be rebuilt by pressing `F9`. #22
+
+**Status Bar**
+
+* Redesign of the status bar adding project and session stats as well as a session timer. #21
+* Project word count is written to the project file, which is needed for the session word count. #21
+* Closing a project now clears the status bar. #21
+
+**Editor**
+
+* Spell checker now ignores lines staring with `@` and words in all uppercase. #21
+* A document can be closed, which also clears it from last edited document in the project file. I.e. it is not re-opened on next start. #21
+* Tab width is now by default 40 pixels, and can be set in the config. #21
+
 ## Version 0.1.4 [2019-05-25]
 
 **Bug Fixes**
