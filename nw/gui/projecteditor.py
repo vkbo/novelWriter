@@ -50,7 +50,7 @@ class GuiProjectEditor(QDialog):
         self.tabMain    = GuiProjectEditMain(self.theParent, self.theProject)
         self.tabStatus  = GuiProjectEditStatus(self.theParent, self.theProject.statusItems)
         self.tabImport  = GuiProjectEditStatus(self.theParent, self.theProject.importItems)
-        self.tabReplace = GuiProjectEditReplace(self.theParent, self.theProject.importItems)
+        self.tabReplace = GuiProjectEditReplace(self.theParent, self.theProject)
 
         self.tabWidget = QTabWidget()
         self.tabWidget.addTab(self.tabMain,   "Settings")
@@ -75,12 +75,6 @@ class GuiProjectEditor(QDialog):
 
         return
 
-    # def keyPressEvent(self, theEvent):
-    #     if theEvent.key() == Qt.Key_Enter or theEvent.key() == Qt.Key_Return:
-    #         return
-    #     QDialog.keyPressEvent(self, theEvent)
-    #     return
-
     def _doSave(self):
         logger.verbose("ProjectEditor save button clicked")
 
@@ -99,6 +93,9 @@ class GuiProjectEditor(QDialog):
             self.theProject.setImportColours(importCol)
         if self.tabStatus.colChanged or self.tabImport.colChanged:
             self.theParent.rebuildTree()
+        if self.tabReplace.arChanged:
+            newList = self.tabReplace.getNewList()
+            self.theProject.setAutoReplace(newList)
 
         self.close()
 
@@ -313,8 +310,12 @@ class GuiProjectEditReplace(QWidget):
         self.outerBox   = QVBoxLayout()
         self.bottomBox  = QHBoxLayout()
         self.listBox    = QTreeWidget()
-        self.listBox.setHeaderLabels(["Keyword","Value"])
+        self.listBox.setHeaderLabels(["Keyword","Replace With"])
         self.listBox.setIndentation(0)
+
+        for aKey, aVal in self.theProject.autoReplace.items():
+            newItem = QTreeWidgetItem(["<%s>" % aKey, aVal])
+            self.listBox.addTopLevelItem(newItem)
 
         self.editKey    = QLineEdit()
         self.editValue  = QLineEdit()
@@ -361,5 +362,15 @@ class GuiProjectEditReplace(QWidget):
         self.listBox.takeTopLevelItem(self.listBox.indexOfTopLevelItem(selItem[0]))
         self.arChanged = True
         return True
+
+    def getNewList(self):
+        newList = {}
+        for n in range(self.listBox.topLevelItemCount()):
+            tItem = self.listBox.topLevelItem(n)
+            aKey = tItem.text(0)
+            aVal = tItem.text(1)
+            if len(aKey) > 2:
+                newList[aKey[1:-1]] = aVal
+        return newList
 
 # END Class GuiProjectEditReplace
