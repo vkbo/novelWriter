@@ -38,6 +38,7 @@ class Theme:
         self.colVal    = [0,0,0]
         self.colSpell  = [0,0,0]
         self.colTagErr = [0,0,0]
+        self.colRepTag = [0,0,0]
 
         # Changeable Settings
         self.guiTheme  = None
@@ -96,6 +97,7 @@ class Theme:
             self.colVal    = self._loadColour(confParser,cnfSec,"value")
             self.colSpell  = self._loadColour(confParser,cnfSec,"spellcheckline")
             self.colTagErr = self._loadColour(confParser,cnfSec,"tagerror")
+            self.colRepTag = self._loadColour(confParser,cnfSec,"replacetag")
 
         return True
 

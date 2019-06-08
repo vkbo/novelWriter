@@ -16,12 +16,12 @@ import nw
 from os import path
 
 from PyQt5.QtCore    import Qt
-from PyQt5.QtGui     import QIcon, QPixmap, QColor, QBrush
+from PyQt5.QtGui     import QIcon, QPixmap, QColor, QBrush, QStandardItemModel
 from PyQt5.QtSvg     import QSvgWidget
 from PyQt5.QtWidgets import (
     QDialog, QHBoxLayout, QVBoxLayout, QFormLayout, QLineEdit, QPlainTextEdit, QLabel,
     QWidget, QTabWidget, QDialogButtonBox, QListWidget, QListWidgetItem, QPushButton,
-    QColorDialog, QAbstractItemView
+    QColorDialog, QAbstractItemView, QTreeWidget, QTreeWidgetItem
 )
 from nw.enum import nwAlert
 
@@ -47,14 +47,16 @@ class GuiProjectEditor(QDialog):
         self.svgGradient.setFixedWidth(80)
 
         self.theProject.countStatus()
-        self.tabMain   = GuiProjectEditMain(self.theParent, self.theProject)
-        self.tabStatus = GuiProjectEditStatus(self.theParent, self.theProject.statusItems)
-        self.tabImport = GuiProjectEditStatus(self.theParent, self.theProject.importItems)
+        self.tabMain    = GuiProjectEditMain(self.theParent, self.theProject)
+        self.tabStatus  = GuiProjectEditStatus(self.theParent, self.theProject.statusItems)
+        self.tabImport  = GuiProjectEditStatus(self.theParent, self.theProject.importItems)
+        self.tabReplace = GuiProjectEditReplace(self.theParent, self.theProject)
 
         self.tabWidget = QTabWidget()
-        self.tabWidget.addTab(self.tabMain,  "Settings")
-        self.tabWidget.addTab(self.tabStatus,"Status")
-        self.tabWidget.addTab(self.tabImport,"Importance")
+        self.tabWidget.addTab(self.tabMain,   "Settings")
+        self.tabWidget.addTab(self.tabStatus, "Status")
+        self.tabWidget.addTab(self.tabImport, "Importance")
+        self.tabWidget.addTab(self.tabReplace,"Auto-Replace")
 
         self.setLayout(self.outerBox)
         self.outerBox.addWidget(self.svgGradient)
@@ -91,6 +93,9 @@ class GuiProjectEditor(QDialog):
             self.theProject.setImportColours(importCol)
         if self.tabStatus.colChanged or self.tabImport.colChanged:
             self.theParent.rebuildTree()
+        if self.tabReplace.arChanged:
+            newList = self.tabReplace.getNewList()
+            self.theProject.setAutoReplace(newList)
 
         self.close()
 
@@ -292,3 +297,80 @@ class GuiProjectEditStatus(QWidget):
         return
 
 # END Class GuiProjectEditStatus
+
+class GuiProjectEditReplace(QWidget):
+
+    def __init__(self, theParent, theProject):
+        QWidget.__init__(self, theParent)
+
+        self.theParent  = theParent
+        self.theProject = theProject
+        self.arChanged  = False
+
+        self.outerBox   = QVBoxLayout()
+        self.bottomBox  = QHBoxLayout()
+        self.listBox    = QTreeWidget()
+        self.listBox.setHeaderLabels(["Keyword","Replace With"])
+        self.listBox.setIndentation(0)
+
+        for aKey, aVal in self.theProject.autoReplace.items():
+            newItem = QTreeWidgetItem(["<%s>" % aKey, aVal])
+            self.listBox.addTopLevelItem(newItem)
+
+        self.editKey    = QLineEdit()
+        self.editValue  = QLineEdit()
+        self.addButton  = QPushButton(QIcon.fromTheme("list-add"),"")
+        self.delButton  = QPushButton(QIcon.fromTheme("list-remove"),"")
+
+        self.addButton.clicked.connect(self._addEntry)
+        self.delButton.clicked.connect(self._delEntry)
+
+        self.bottomBox.addWidget(self.editKey, 2)
+        self.bottomBox.addWidget(self.editValue, 3)
+        self.bottomBox.addWidget(self.addButton)
+        self.bottomBox.addWidget(self.delButton)
+
+        self.outerBox.addWidget(self.listBox)
+        self.outerBox.addLayout(self.bottomBox)
+        self.setLayout(self.outerBox)
+
+        return
+
+    def _addEntry(self):
+
+        newKey = self.editKey.text()
+        newVal = self.editValue.text()
+
+        saveKey = ""
+        for c in newKey:
+            if not c .isspace():
+                saveKey += c
+
+        if len(saveKey) > 0 and len(newVal) > 0:
+            newItem = QTreeWidgetItem(["<%s>" % saveKey, newVal])
+            self.listBox.addTopLevelItem(newItem)
+            self.editKey.clear()
+            self.editValue.clear()
+            self.arChanged = True
+
+        return True
+
+    def _delEntry(self):
+        selItem = self.listBox.selectedItems()
+        if len(selItem) == 0:
+            return False
+        self.listBox.takeTopLevelItem(self.listBox.indexOfTopLevelItem(selItem[0]))
+        self.arChanged = True
+        return True
+
+    def getNewList(self):
+        newList = {}
+        for n in range(self.listBox.topLevelItemCount()):
+            tItem = self.listBox.topLevelItem(n)
+            aKey = tItem.text(0)
+            aVal = tItem.text(1)
+            if len(aKey) > 2:
+                newList[aKey[1:-1]] = aVal
+        return newList
+
+# END Class GuiProjectEditReplace
