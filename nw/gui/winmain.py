@@ -22,7 +22,6 @@ from PyQt5.QtWidgets      import (
     QShortcut, QMessageBox, QProgressDialog
 )
 
-from nw.theme             import Theme
 from nw.gui.doctree       import GuiDocTree
 from nw.gui.doceditor     import GuiDocEditor
 from nw.gui.docviewer     import GuiDocViewer
@@ -38,9 +37,10 @@ from nw.project.item      import NWItem
 from nw.project.index     import NWIndex
 from nw.convert.tokenizer import Tokenizer
 from nw.convert.tohtml    import ToHtml
+from nw.tools.wordcount   import countWords
+from nw.theme             import Theme
 from nw.enum              import nwItemType, nwAlert
 from nw.constants         import nwFiles
-from nw.tools.wordcount   import countWords
 
 logger = logging.getLogger(__name__)
 
@@ -246,14 +246,13 @@ class GuiMain(QMainWindow):
         self.docEditor.setSpellCheck(self.theProject.spellCheck)
         self.statusBar.setRefTime(self.theProject.projOpened)
         self.mainMenu.updateMenu()
+        self.hasProject = True
 
         # Restore previously open documents, if any
         if self.theProject.lastEdited is not None:
             self.openDocument(self.theProject.lastEdited)
         if self.theProject.lastViewed is not None:
             self.viewDocument(self.theProject.lastViewed)
-
-        self.hasProject = True
 
         return True
 
@@ -329,6 +328,7 @@ class GuiMain(QMainWindow):
             logger.debug("Generating preview for item %s" % tHandle)
             aDoc = ToHtml(self.theProject, self)
             aDoc.setText(tHandle)
+            aDoc.doAutoReplace()
             aDoc.tokenizeText()
             aDoc.doConvert()
             self.docViewer.setHtml(aDoc.theResult)

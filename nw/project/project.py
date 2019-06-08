@@ -32,37 +32,40 @@ class NWProject():
     def __init__(self, theParent):
 
         # Internal
-        self.theParent    = theParent
-        self.mainConf     = self.theParent.mainConf
-        self.projChanged  = None
-        self.projOpened   = None
+        self.theParent   = theParent
+        self.mainConf    = self.theParent.mainConf
+        self.projChanged = None
+        self.projOpened  = None
 
         # Debug
-        self.handleSeed   = None
+        self.handleSeed  = None
 
         # Class Settings
-        self.projTree     = None
-        self.treeOrder    = None
-        self.treeRoots    = None
-        self.trashRoot    = None
-        self.projPath     = None
-        self.projMeta     = None
-        self.projCache    = None
-        self.projFile     = None
+        self.projTree    = None
+        self.treeOrder   = None
+        self.treeRoots   = None
+        self.trashRoot   = None
+        self.projPath    = None
+        self.projMeta    = None
+        self.projCache   = None
+        self.projFile    = None
 
         # Project Meta
-        self.projName     = None
-        self.bookTitle    = None
-        self.bookAuthors  = None
+        self.projName    = None
+        self.bookTitle   = None
+        self.bookAuthors = None
+
+        # Various
+        self.autoReplace = None
 
         # Project Settings
-        self.spellCheck   = False
-        self.statusItems  = None
-        self.importItems  = None
-        self.lastEdited   = None
-        self.lastViewed   = None
-        self.lastWCount   = 0
-        self.currWCount   = 0
+        self.spellCheck  = False
+        self.statusItems = None
+        self.importItems = None
+        self.lastEdited  = None
+        self.lastViewed  = None
+        self.lastWCount  = 0
+        self.currWCount  = 0
 
         # Set Defaults
         self.clearProject()
@@ -150,6 +153,7 @@ class NWProject():
         self.projName    = ""
         self.bookTitle   = ""
         self.bookAuthors = []
+        self.autoReplace = {}
         self.spellCheck  = False
         self.statusItems = NWStatus()
         self.statusItems.addEntry("New",     (100,100,100))
@@ -220,16 +224,19 @@ class NWProject():
                     if xItem.text is None: continue
                     if xItem.tag == "spellCheck":
                         self.spellCheck = checkBool(xItem.text,False)
-                    if xItem.tag == "lastEdited":
+                    elif xItem.tag == "lastEdited":
                         self.lastEdited = checkString(xItem.text,None,True)
-                    if xItem.tag == "lastViewed":
+                    elif xItem.tag == "lastViewed":
                         self.lastViewed = checkString(xItem.text,None,True)
-                    if xItem.tag == "lastWordCount":
+                    elif xItem.tag == "lastWordCount":
                         self.lastWCount = checkInt(xItem.text,0,False)
-                    if xItem.tag == "status":
+                    elif xItem.tag == "status":
                         self.statusItems.unpackEntries(xItem)
-                    if xItem.tag == "importance":
+                    elif xItem.tag == "importance":
                         self.importItems.unpackEntries(xItem)
+                    elif xItem.tag == "autoReplace":
+                        for xEntry in xItem:
+                            self.autoReplace[xEntry.tag] = checkString(xEntry.text,None,False)
             elif xChild.tag == "content":
                 logger.debug("Found project content")
                 for xItem in xChild:
@@ -292,6 +299,10 @@ class NWProject():
         self._saveProjectValue(xSettings,"lastEdited",   self.lastEdited)
         self._saveProjectValue(xSettings,"lastViewed",   self.lastViewed)
         self._saveProjectValue(xSettings,"lastWordCount",self.currWCount)
+        xAutoRep = etree.SubElement(xSettings,"autoReplace")
+        for aKey, aValue in self.autoReplace.items():
+            if len(aKey) > 0:
+                self._saveProjectValue(xAutoRep,aKey,aValue)
 
         xStatus = etree.SubElement(xSettings,"status")
         self.statusItems.packEntries(xStatus)
@@ -401,7 +412,7 @@ class NWProject():
         self.setProjectChanged(True)
         return
 
-    def setImportColours(self, newCols,):
+    def setImportColours(self, newCols):
         replaceMap = self.importItems.setNewEntries(newCols)
         if self.projTree is not None:
             for nwItem in self.projTree.values():
@@ -409,6 +420,10 @@ class NWProject():
                     if nwItem.itemStatus in replaceMap.keys():
                         nwItem.setStatus(replaceMap[nwItem.itemStatus])
         self.setProjectChanged(True)
+        return
+
+    def setAutoReplace(self, autoReplace):
+        self.autoReplace = autoReplace
         return
 
     def setProjectChanged(self, bValue):

@@ -11,6 +11,7 @@
 """
 
 import logging
+import re
 import nw
 
 from operator            import itemgetter
@@ -55,6 +56,15 @@ class Tokenizer():
             theDocument  = NWDoc(self.theProject, self.theParent)
             self.theText = theDocument.openDocument(theHandle)
 
+        return
+
+    def doAutoReplace(self):
+        if len(self.theProject.autoReplace) > 0:
+            theDict = {}
+            for aKey, aVal in self.theProject.autoReplace.items():
+                theDict["<%s>" % aKey] = aVal
+            xRep = re.compile("|".join([re.escape(k) for k in theDict.keys()]), flags=re.DOTALL)
+            self.theText = xRep.sub(lambda x: theDict[x.group(0)], self.theText)
         return
 
     def tokenizeText(self):

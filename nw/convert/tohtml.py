@@ -11,6 +11,7 @@
 """
 
 import logging
+import re
 import nw
 
 from nw.convert.tokenizer import Tokenizer
@@ -24,6 +25,19 @@ class ToHtml(Tokenizer):
 
         return
 
+    def doAutoReplace(self):
+        Tokenizer.doAutoReplace(self)
+
+        theDict = {
+            "<" : "&lt;",
+            ">" : "&gt;",
+            "&" : "&amp;",
+        }
+        xRep = re.compile("|".join([re.escape(k) for k in theDict.keys()]), flags=re.DOTALL)
+        self.theText = xRep.sub(lambda x: theDict[x.group(0)], self.theText)
+
+        return
+
     def doConvert(self):
 
         htmlTags = {
@@ -31,8 +45,8 @@ class ToHtml(Tokenizer):
             self.FMT_B_E : "</strong>",
             self.FMT_I_B : "<em>",
             self.FMT_I_E : "</em>",
-            self.FMT_U_B : "<mark>",
-            self.FMT_U_E : "</mark>",
+            self.FMT_U_B : "<u>",
+            self.FMT_U_E : "</u>",
         }
 
         self.theResult = ""

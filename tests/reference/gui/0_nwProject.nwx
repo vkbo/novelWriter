@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='utf-8'?>
-<novelWriterXML appVersion="0.1.4" fileVersion="1.0" timeStamp="2019-05-25 23:29:02">
+<novelWriterXML appVersion="0.1.4" fileVersion="1.0" timeStamp="2019-06-08 20:45:49">
   <project>
     <name></name>
     <title></title>
@@ -9,6 +9,7 @@
     <lastEdited>None</lastEdited>
     <lastViewed>None</lastViewed>
     <lastWordCount>0</lastWordCount>
+    <autoReplace/>
     <status>
       <entry blue="100" green="100" red="100">New</entry>
       <entry blue="0" green="50" red="200">Note</entry>
