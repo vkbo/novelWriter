@@ -81,8 +81,9 @@ class GuiMainMenu(QMenuBar):
         return
 
     def updateSpellCheck(self):
-        self.toolsSpellCheck.setChecked(self.theProject.spellCheck)
-        logger.verbose("Spell check is set to %s" % str(self.theProject.spellCheck))
+        if self.theParent.hasProject:
+            self.toolsSpellCheck.setChecked(self.theProject.spellCheck)
+            logger.verbose("Spell check is set to %s" % str(self.theProject.spellCheck))
         return
 
     ##
@@ -94,9 +95,12 @@ class GuiMainMenu(QMenuBar):
         return
 
     def _toggleSpellCheck(self):
-        self.theProject.setSpellCheck(self.toolsSpellCheck.isChecked())
-        self.theParent.docEditor.setSpellCheck(self.toolsSpellCheck.isChecked())
-        logger.verbose("Spell check is set to %s" % str(self.theProject.spellCheck))
+        if self.theParent.hasProject:
+            self.theProject.setSpellCheck(self.toolsSpellCheck.isChecked())
+            self.theParent.docEditor.setSpellCheck(self.toolsSpellCheck.isChecked())
+            logger.verbose("Spell check is set to %s" % str(self.theProject.spellCheck))
+        else:
+            self.toolsSpellCheck.setChecked(False)
         return True
 
     def _showAbout(self):
@@ -167,6 +171,7 @@ class GuiMainMenu(QMenuBar):
         # Project > Project Settings
         menuItem = QAction(QIcon.fromTheme("document-properties"), "Project Settings", self)
         menuItem.setStatusTip("Project settings")
+        menuItem.setShortcut("Ctrl+Shift+,")
         menuItem.triggered.connect(self.theParent.editProjectDialog)
         self.projMenu.addAction(menuItem)
 

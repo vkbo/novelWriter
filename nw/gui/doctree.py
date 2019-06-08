@@ -92,6 +92,9 @@ class GuiDocTree(QTreeWidget):
 
         pHandle = self.getSelectedHandle()
 
+        if not self.theParent.hasProject:
+            return False
+
         if itemClass is None and pHandle is not None:
             itemClass = self.theProject.getItem(pHandle).itemClass
         if itemClass is None:
@@ -149,7 +152,7 @@ class GuiDocTree(QTreeWidget):
         """Move an item up or down in the tree, but only if the treeView has focus. This also
         applies when the menu is used.
         """
-        if QApplication.focusWidget() == self:
+        if QApplication.focusWidget() == self and self.theParent.hasProject:
             tHandle = self.getSelectedHandle()
             tItem   = self._getTreeItem(tHandle)
             pItem   = tItem.parent()
@@ -157,20 +160,24 @@ class GuiDocTree(QTreeWidget):
                 tIndex = self.indexOfTopLevelItem(tItem)
                 nChild = self.topLevelItemCount()
                 nIndex = tIndex + nStep
-                if nIndex < 0 or nIndex >= nChild: return
+                if nIndex < 0 or nIndex >= nChild:
+                    return False
                 cItem  = self.takeTopLevelItem(tIndex)
                 self.insertTopLevelItem(nIndex, cItem)
             else:
                 tIndex = pItem.indexOfChild(tItem)
                 nChild = pItem.childCount()
                 nIndex = tIndex + nStep
-                if nIndex < 0 or nIndex >= nChild: return
+                if nIndex < 0 or nIndex >= nChild:
+                    return False
                 cItem   = pItem.takeChild(tIndex)
                 pItem.insertChild(nIndex, cItem)
             self.clearSelection()
             cItem.setSelected(True)
             self.theProject.setProjectChanged(True)
-        return
+        else:
+            return False
+        return True
 
     def saveTreeOrder(self):
         theList = []
@@ -199,6 +206,9 @@ class GuiDocTree(QTreeWidget):
         if tHandle is None:
             tHandle = self.getSelectedHandle()
 
+        if tHandle is None:
+            return False
+
         trItemS = self._getTreeItem(tHandle)
         nwItemS = self.theProject.getItem(tHandle)
 
@@ -208,7 +218,7 @@ class GuiDocTree(QTreeWidget):
             trItemT = self._addTrashRoot()
             if trItemP is None or trItemT is None:
                 logger.error("Could not move item to trash")
-                return
+                return False
             tIndex  = trItemP.indexOfChild(trItemS)
             trItemC = trItemP.takeChild(tIndex)
             trItemT.addChild(trItemC)
@@ -222,7 +232,7 @@ class GuiDocTree(QTreeWidget):
             trItemP = trItemS.parent()
             if trItemP is None:
                 logger.error("Could not delete folder")
-                return
+                return False
             tIndex = trItemP.indexOfChild(trItemS)
             if trItemS.childCount() == 0:
                 trItemP.takeChild(tIndex)
@@ -231,7 +241,7 @@ class GuiDocTree(QTreeWidget):
                 self.theProject.deleteItem(tHandle)
             else:
                 self.makeAlert(["Cannot delete folder.","It is not empty."], nwAlert.ERROR)
-                return
+                return False
 
         elif nwItemS.itemType == nwItemType.ROOT:
             logger.debug("User requested root folder %s deleted" % tHandle)
@@ -242,9 +252,9 @@ class GuiDocTree(QTreeWidget):
                 self.theProject.setProjectChanged(True)
             else:
                 self.makeAlert(["Cannot delete root folder.","It is not empty."], nwAlert.ERROR)
-                return
+                return False
 
-        return
+        return True
 
     def setTreeItemValues(self, tHandle):
 
