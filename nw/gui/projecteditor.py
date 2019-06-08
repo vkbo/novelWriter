@@ -314,7 +314,9 @@ class GuiProjectEditReplace(QWidget):
         self.mainModel  = QStandardItemModel()
         self.mainTable.setModel(self.mainModel)
         self.mainTable.horizontalHeader().setSectionResizeMode(QHeaderView.Stretch)
-        self.mainTable.setEditTriggers(QAbstractItemView.DoubleClicked)
+        self.mainTable.setEditTriggers(
+            QAbstractItemView.DoubleClicked | QAbstractItemView.SelectedClicked | QAbstractItemView.AnyKeyPressed
+        )
 
         self.mainModel.setHorizontalHeaderLabels(["Keyword","Value"])
         self.mainModel.setRowCount(3)
