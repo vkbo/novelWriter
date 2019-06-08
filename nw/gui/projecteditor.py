@@ -21,7 +21,7 @@ from PyQt5.QtSvg     import QSvgWidget
 from PyQt5.QtWidgets import (
     QDialog, QHBoxLayout, QVBoxLayout, QFormLayout, QLineEdit, QPlainTextEdit, QLabel,
     QWidget, QTabWidget, QDialogButtonBox, QListWidget, QListWidgetItem, QPushButton,
-    QColorDialog, QAbstractItemView, QTableView, QHeaderView, QAbstractItemView
+    QColorDialog, QAbstractItemView, QTreeWidget, QTreeWidgetItem
 )
 from nw.enum import nwAlert
 
@@ -308,22 +308,58 @@ class GuiProjectEditReplace(QWidget):
 
         self.theParent  = theParent
         self.theProject = theProject
+        self.arChanged  = False
 
         self.outerBox   = QVBoxLayout()
-        self.mainTable  = QTableView()
-        self.mainModel  = QStandardItemModel()
-        self.mainTable.setModel(self.mainModel)
-        self.mainTable.horizontalHeader().setSectionResizeMode(QHeaderView.Stretch)
-        self.mainTable.setEditTriggers(
-            QAbstractItemView.DoubleClicked | QAbstractItemView.SelectedClicked | QAbstractItemView.AnyKeyPressed
-        )
+        self.bottomBox  = QHBoxLayout()
+        self.listBox    = QTreeWidget()
+        self.listBox.setHeaderLabels(["Keyword","Value"])
+        self.listBox.setIndentation(0)
 
-        self.mainModel.setHorizontalHeaderLabels(["Keyword","Value"])
-        self.mainModel.setRowCount(3)
+        self.editKey    = QLineEdit()
+        self.editValue  = QLineEdit()
+        self.addButton  = QPushButton(QIcon.fromTheme("list-add"),"")
+        self.delButton  = QPushButton(QIcon.fromTheme("list-remove"),"")
 
-        self.outerBox.addWidget(self.mainTable)
+        self.addButton.clicked.connect(self._addEntry)
+        self.delButton.clicked.connect(self._delEntry)
+
+        self.bottomBox.addWidget(self.editKey, 2)
+        self.bottomBox.addWidget(self.editValue, 3)
+        self.bottomBox.addWidget(self.addButton)
+        self.bottomBox.addWidget(self.delButton)
+
+        self.outerBox.addWidget(self.listBox)
+        self.outerBox.addLayout(self.bottomBox)
         self.setLayout(self.outerBox)
 
         return
+
+    def _addEntry(self):
+
+        newKey = self.editKey.text()
+        newVal = self.editValue.text()
+
+        saveKey = ""
+        for c in newKey:
+            if not c .isspace():
+                saveKey += c
+
+        if len(saveKey) > 0 and len(newVal) > 0:
+            newItem = QTreeWidgetItem(["<%s>" % saveKey, newVal])
+            self.listBox.addTopLevelItem(newItem)
+            self.editKey.clear()
+            self.editValue.clear()
+            self.arChanged = True
+
+        return True
+
+    def _delEntry(self):
+        selItem = self.listBox.selectedItems()
+        if len(selItem) == 0:
+            return False
+        self.listBox.takeTopLevelItem(self.listBox.indexOfTopLevelItem(selItem[0]))
+        self.arChanged = True
+        return True
 
 # END Class GuiProjectEditReplace
