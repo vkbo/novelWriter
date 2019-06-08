@@ -200,6 +200,9 @@ class GuiDocEditor(QTextEdit):
 
     def docAction(self, theAction):
         logger.verbose("Requesting action: %s" % theAction.name)
+        if not self.theParent.hasProject:
+            logger.error("No project open")
+            return False
         if   theAction == nwDocAction.UNDO:     self.undo()
         elif theAction == nwDocAction.REDO:     self.redo()
         elif theAction == nwDocAction.CUT:      self.cut()
