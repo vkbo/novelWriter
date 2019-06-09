@@ -4,5 +4,276 @@
 </head>
 <body>
     <h1>novelWriter Help</h1>
+
+    <a name="Content"></a>
+    <h3>Content:</h3>
+    <ul>
+        <li><a href="#Proj">1. Novel Projects</a></li>
+        <ul>
+            <li><a href="#Proj_Structure">1.1 Project Structure</a></li>
+            <li><a href="#Proj_Settings">1.2 Project Settings</a></li>
+            <li><a href="#Proj_Documents">1.3 Writing Files</a></li>
+        </ul>
+        <li><a href="#Novel">2. Novel Structure</a></li>
+        <ul>
+            <li><a href="#Novel_Headings">2.1 Importance of Headings</a></li>
+            <li><a href="#Novel_Files">2.2 Novel File Layout</a></li>
+        </ul>
+        <li><a href="#GUI">3. User Interface</a></li>
+        <ul>
+            <li><a href="#GUI_Shortcuts">3.1 Keyboard Shortcuts</a></li>
+        </ul>
+        <li><a href="#Code">4. Technical Information</a></li>
+        <ul>
+            <li><a href="#Code_Project">4.1 How Data is Stored</a></li>
+        </ul>
+    </ul>
+
+    <a name="Proj"></a>
+    <h2>1. Novel Projects</h2>
+    <p><a href="#Content">Back to top</a></p>
+
+    <p>A novelWriter project requires a dedicated folder for storing its files. See the
+        <a href="#Code">Technical Information</a> section for further details.</p>
+    <p>A new project can be created from the Project menu by selecting <mark>Project > New
+        Project</mark>. A list of recently opened projects is also maintained and can be selected
+        from the menu.</p>
+    <p>The project specific settings are available in <mark>Project > Project Settings</mark>. See
+        further details below.</p>
+
+    <a name="Proj_Structure"></a>
+    <h3>1.1 Project Structure</h3>
+    <p><a href="#Content">Back to top</a></p>
+
+    <p>Projects are structured into a set of root folders in the left side tree view panel.</p>
+    <p>The core novel files go into a root folder of type <mark>NOVEL</mark>. Other supporting files
+        go into root folders of types <mark>PLOT</mark>, <mark>CHARACTER</mark>, <mark>WORLD</mark>,
+        <mark>TIMELINE</mark>, <mark>OBJECT</mark> or <mark>CUSTOM</mark>. These other root folder
+        types are intended for your notes on the various elements of your story. Using these are of
+        course entirely optional.</p>
+    <p>Deleted files will be moved into a special <mark>TRASH</mark> root folder. Currently, these
+        files cannot be permanently deleted from the project.</p>
+
+    <h4>Orphaned Documents</h4>
+    <p>In the event the editor crashes or otherwise exits without saving the project state, files
+        that have been added to the project tree and are saved to disk will appear in a special
+        "Orphaned Items" root folder next time the application is started. These orphaned files will
+        not have any meta data associated with them, so the title and other information has to be
+        set again, and the files moved back to the correct location in the project.</p>
+
+    <h4>Using Project Folders</h4>
+    <p>Folders, aside from root folders, have no structural significance to the project. They are
+        there purely as a way for the user to organise the files in meaningful sections and to be
+        able to close them in the tree view. When processing the files in the novel, the folders are
+        ignored.</p>
+
+    <a name="Proj_Settings"></a>
+    <h3>1.2 Project Settings</h3>
+    <p><a href="#Content">Back to top</a></p>
+
+    <p>The project settings can be accessed from the <mark>Project > Project Settings</mark> menu
+        entry. This will open a dialog box.</p>
+
+    <h4>Settings Tab</h4>
+    <p>The Settings tab holds the project title and author settings. <em>Working Title</em> can be
+        set to a different title than the <em>Book Title</em>. The difference between them is simply
+        that the Working Title is used for the GUI (main window title) and when the export features
+        are added can optionally be printed to the cover sheet. The Book Title, on the other hand,
+        will only be printed to the title page on export.</p>
+    <p>The <em>Book Authors</em> text box takes one author per line. The line breaks matter in that
+        this is converted to a list for later correct formatting.</p>
+
+    <h4>Status Tab</h4>
+    <p>Each file of type <mark>NOVEL</mark> can be given a status level, signified by a coloured
+        icon. These are purely there for the user's convenience, and you are not required to use
+        them for any other feature to work. The intention is to use this list to set what stage of
+        writing you are on, although you can in principle make them whatever you want.</p>
+    <p>Note that status levels currently in use by a file cannot be deleted.</p>
+
+    <h4>Importance Tab</h4>
+    <p>Each file of types <mark>PLOT</mark>, <mark>CHARACTER</mark>, <mark>WORLD</mark>, 
+        <mark>TIMELINE</mark>, <mark>OBJECT</mark> or <mark>CUSTOM</mark> can be given an importance
+        level, signified by a coloured icon like for status level. These are also purely there for
+        the user's convenience, and you are not required to use them for any other feature to work.
+        The intention is to use this list to set how important the character, plot element, or
+        otherwise, is for the story. Again, these can in principle be used for whatever you want.
+    <p>Note that importance levels currently in use by a file cannot be deleted.</p>
+
+    <h4>Auto-Replace Tab</h4>
+    <p>A set of automatically replaced keywords can be added in this tab. The keywords in the left
+        column wile be replaced by the text in the right column when documents are opened in the
+        viewer. This will also be applied to exports when the feature is added.</p>
+    <p>Note that a keyword cannot contain any spaces. The angle brackets are dded by default, and
+        when used in the text are a part of the keyword to be replaced. This is to ensure that parts
+        of the text isn't unintentionally replaced by the content of the list.</p>
+
+    <a name="Proj_Documents"></a>
+    <h2>1.3 Writing Files</h2>
+    <p><a href="#Content">Back to top</a></p>
+
+    <p>New document files can be created from the Document menu, or by pressing <mark>Ctrl+N</mark>
+        while in the tree view pane. This will create a new, empty file, and open the item settings
+        dialog where the filename and various other settings can be set. This dialog can also be
+        opened again later from either the menu, <mark>Project > Edit item</mark>, or by pressing
+        <mark>Ctrl+E</mark> or <mark>F2</mark> with the item selected.</p>
+    <p>The different classes of documents have some restrictions.</p>
+
+    <a name="Novel"></a>
+    <h2>2. Novel Structure</h2>
+    <p><a href="#Content">Back to top</a></p>
+
+    <a name="Novel_Headings"></a>
+    <h3>2.1 Importance of Headings</h3>
+    <p><a href="#Content">Back to top</a></p>
+
+    <a name="Novel_Files"></a>
+    <h3>2.2 Novel File Layout</h3>
+    <p><a href="#Content">Back to top</a></p>
+
+    <p>Files that exist under the <mark>NOVEL</mark> type root folder can have a number of layouts
+        set. See overview below. These layouts are currently not used for any internal feature, but
+        when the export feature is added they will be important in determining how the different
+        sections of the novel is formatted.</p>
+    <table>
+        <tr>
+            <td><mark>Title Page</mark></td>
+            <td>The title page layout. The title should be formatted as a heading of level 1, that
+                is one hash: <mark># Book Title</mark></td>
+        </tr>
+        <tr>
+            <td><mark>Book</mark></td>
+            <td>In principle, the entire novel can be contained in a single file. In that case, use
+                the Book layout on this file. The internal structure is then controlled by the
+                heading levels.</td>
+        </tr>
+        <tr>
+            <td><mark>Plain Page</mark></td>
+            <td>A plain page is just that, It is not included into content and the heading levels
+                are ignored.</td>
+        </tr>
+        <tr>
+            <td><mark>Partition</mark></td>
+            <td>A partition can be used to split a the novel into parts. Use a level one heading for
+                this.</td>
+        </tr>
+    </table>
+
+    <a name="GUI"></a>
+    <h2>3. User Interface</h2>
+    <p><a href="#Content">Back to top</a></p>
+
+    <a name="GUI_Shortcuts"></a>
+    <h3>3.1 Keyboard Shortcuts</h3>
+    <p><a href="#Content">Back to top</a></p>
+
+    <p>All features are available as keyboard shortcuts. These are as following:</p>
+    <table>
+        <tr>
+            <td><mark>Ctrl+1</mark></td>
+            <td>Switch focus to tree view pane.</td>
+        </tr>
+        <tr>
+            <td><mark>Ctrl+2</mark></td>
+            <td>Switch focus to document editor pane.</td>
+        </tr>
+        <tr>
+            <td><mark>Ctrl+3</mark></td>
+            <td>Switch focus to document viewer pane.</td>
+        </tr>
+        <tr>
+            <td><mark>Return</mark></td>
+            <td>If in tree view, open a document for editing.</td>
+        </tr>
+        <tr>
+            <td><mark>Ctrl+R</mark></td>
+            <td>If in tree view, open a document for viewing. If in editor pane, open current document for viewing.</td>
+        </tr>
+        <tr>
+            <td><mark>Ctrl+E</mark></td>
+            <td>If in tree view, edit a document or folder settings.</td>
+        </tr>
+        <tr>
+            <td><mark>Ctrl+Del</mark></td>
+            <td>If in tree view, move a document to trash, or delete a folder.</td>
+        </tr>
+        <tr>
+            <td><mark>Ctrl+S</mark></td>
+            <td>Save the current document in the editor.</td>
+        </tr>
+        <tr>
+            <td><mark>Ctrl+Shift+S</mark></td>
+            <td>Save the current project.</td>
+        </tr>
+        <tr>
+            <td><mark>Ctrl+A</mark></td>
+            <td>Select all text in document.</td>
+        </tr>
+        <tr>
+            <td><mark>Ctrl+Shift+A</mark></td>
+            <td>Select all text in current paragraph.</td>
+        </tr>
+        <tr>
+            <td><mark>Ctrl+B</mark></td>
+            <td>Format selected text, or word under cursor, as bold.</td>
+        </tr>
+        <tr>
+            <td><mark>Ctrl+I</mark></td>
+            <td>Format selected text, or word under cursor, as italic.</td>
+        </tr>
+        <tr>
+            <td><mark>Ctrl+U</mark></td>
+            <td>Format selected text, or word under cursor, as underline.</td>
+        </tr>
+        <tr>
+            <td><mark>Ctrl+D</mark></td>
+            <td>Wrap selected text, or word under cursor, in double quotes.</td>
+        </tr>
+        <tr>
+            <td><mark>Ctrl+Shift+D</mark></td>
+            <td>Wrap selected text, or word under cursor, in single quotes.</td>
+        </tr>
+        <tr>
+            <td><mark>Ctrl+F7</mark></td>
+            <td>Toggle spell checking.</td>
+        </tr>
+        <tr>
+            <td><mark>F7</mark></td>
+            <td>Re-run spell checker.</td>
+        </tr>
+        <tr>
+            <td><mark>Ctrl+.</mark></td>
+            <td>Correct word under cursor.</td>
+        </tr>
+    </table>
+
+    <a name="Code"></a>
+    <h2>4. Technical Information</h2>
+    <p><a href="#Content">Back to top</a></p>
+
+    <p>This section contains details of how novelWriter stores and handles the project data.</p>
+
+    <a name="Code_Project"></a>
+    <h3>4.1 How Data is Stored</h3>
+    <p><a href="#Content">Back to top</a></p>
+
+    <h4>Main Project File</h4>
+    <p>The project itself requires a dedicated folder for storing its files. The main project file
+        is stored as an XML file with the name <mark>nwProject.nwx</mark>. This file contains all
+        the meta data unique for the project. That includes project settings.</p>
+    <p>If this file is lost or corrupted, the structure of the project is lost. It is important to
+        keep this file backed up.</p>
+    <p>The project XML file is suitable for diff tools and version control, although a timesetamp is
+        set in the meta section on line 2 each time the file is saved.</p>
+
+    <h4>Project Documents</h4>
+    <p>The project documents are saved in folders staring with <mark>data_</mark>. Each document has
+        a file handle taken from the first 13 characters of a SHA256 hash of the system time. the
+        documents are saved with a folder and filename derived from this hash.</p>
+    <p>The reason for this is to avoid issues with file naming conventions and restrictions. The
+        file name set in the tree view is only saved in the project XML file.</p>
+    <p>Each document file contains a plain text version of the text from the editor. The file can in
+        principle be edited in any text editor, and is suitable for diffing and version control if
+        so desired.</p>
+
 </body>
 </html>
