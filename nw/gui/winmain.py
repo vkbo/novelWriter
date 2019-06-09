@@ -556,7 +556,7 @@ class GuiMain(QMainWindow):
     ##
 
     def _setWindowTitle(self, projName=None):
-        winTitle = "%s [%s]" % (nw.__package__, nw.__version__)
+        winTitle = "%s" % nw.__package__
         if projName is not None:
             winTitle += " - %s" % projName
         self.setWindowTitle(winTitle)
