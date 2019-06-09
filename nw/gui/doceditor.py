@@ -20,6 +20,7 @@ from PyQt5.QtCore        import Qt, QTimer
 from PyQt5.QtWidgets     import QTextEdit, QAction, QMenu, QShortcut
 from PyQt5.QtGui         import QTextCursor, QTextOption, QIcon, QKeySequence
 
+from nw.project.document import NWDoc
 from nw.gui.dochighlight import GuiDocHighlighter
 from nw.gui.wordcounter  import WordCounter
 from nw.enum             import nwDocAction, nwAlert
@@ -28,7 +29,7 @@ logger = logging.getLogger(__name__)
 
 class GuiDocEditor(QTextEdit):
 
-    def __init__(self, theParent):
+    def __init__(self, theParent, theProject):
         QTextEdit.__init__(self)
 
         logger.debug("Initialising DocEditor ...")
@@ -36,10 +37,12 @@ class GuiDocEditor(QTextEdit):
         # Class Variables
         self.mainConf    = nw.CONFIG
         self.theParent   = theParent
+        self.theProject  = theProject
         self.docChanged  = False
         self.pwlFile     = None
         self.spellCheck  = False
-        self.theDocument = theParent.theDocument
+        self.theDocument = NWDoc(self.theProject, self.theParent)
+        self.theHandle   = None
 
         # Document Variables
         self.charCount = 0
@@ -69,9 +72,6 @@ class GuiDocEditor(QTextEdit):
         self.setMinimumWidth(300)
         self.setAcceptRichText(False)
 
-        self.clearEditor()
-        self.initEditor()
-
         self.theQDoc.setDocumentMargin(0)
         self.theQDoc.contentsChange.connect(self._docChange)
 
@@ -87,13 +87,29 @@ class GuiDocEditor(QTextEdit):
         self.wCounter = WordCounter(self)
         self.wCounter.finished.connect(self._updateCounts)
 
+        self.clearEditor()
+        self.initEditor()
+
         logger.debug("DocEditor initialisation complete")
 
         return
 
     def clearEditor(self):
+
+        self.theDocument.clearDocument()
         self.setReadOnly(True)
         self.clear()
+        self.wcTimer.stop()
+
+        self.theHandle    = None
+        self.charCount    = 0
+        self.wordCount    = 0
+        self.paraCount    = 0
+        self.lastEdit     = 0
+        self.hasSelection = False
+
+        self.setDocumentChanged(False)
+
         return True
 
     def initEditor(self):
@@ -114,6 +130,7 @@ class GuiDocEditor(QTextEdit):
         return True
 
     def loadText(self, tHandle):
+
         self.hLight.setHandle(tHandle)
         self.setPlainText(self.theDocument.openDocument(tHandle))
         self.setCursorPosition(self.theDocument.theItem.cursorPos)
@@ -122,6 +139,27 @@ class GuiDocEditor(QTextEdit):
         self.wcTimer.start()
         self.setDocumentChanged(False)
         self.setReadOnly(False)
+        self.theHandle = tHandle
+
+        return True
+
+    def saveText(self):
+
+        if self.theDocument.theItem is None:
+            return False
+
+        docText = self.getText()
+        cursPos = self.getCursorPosition()
+        theItem = self.theDocument.theItem
+        theItem.setCharCount(self.charCount)
+        theItem.setWordCount(self.wordCount)
+        theItem.setParaCount(self.paraCount)
+        theItem.setCursorPos(cursPos)
+        self.theDocument.saveDocument(docText)
+        self.setDocumentChanged(False)
+
+        self.theParent.theIndex.scanText(theItem.itemHandle, docText)
+
         return True
 
     ##
@@ -381,7 +419,7 @@ class GuiDocEditor(QTextEdit):
         """
         logger.verbose("Updating word count")
 
-        tHandle = self.theParent.theDocument.docHandle
+        tHandle = self.theDocument.docHandle
         self.charCount = self.wCounter.charCount
         self.wordCount = self.wCounter.wordCount
         self.paraCount = self.wCounter.paraCount
@@ -392,9 +430,9 @@ class GuiDocEditor(QTextEdit):
         return
 
     def _wrapSelection(self, tBefore, tAfter):
-        """Wraps the selected text in whatever is in tBefore and tAfter. If there is no selection, the autoSelect setting decides
-        the action. AutoSelect will select the word under the cursor before wrapping it. If this feature is disabled, nothing is
-        done.
+        """Wraps the selected text in whatever is in tBefore and tAfter. If there is no selection,
+        the autoSelect setting decides the action. AutoSelect will select the word under the cursor
+        before wrapping it. If this feature is disabled, nothing is done.
         """
         theCursor = self.textCursor()
         if self.mainConf.autoSelect and not theCursor.hasSelection():

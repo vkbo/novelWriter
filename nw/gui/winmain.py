@@ -32,7 +32,6 @@ from nw.gui.itemeditor    import GuiItemEditor
 from nw.gui.statusbar     import GuiMainStatus
 from nw.gui.timelineview  import GuiTimeLineView
 from nw.project.project   import NWProject
-from nw.project.document  import NWDoc
 from nw.project.item      import NWItem
 from nw.project.index     import NWIndex
 from nw.tools.wordcount   import countWords
@@ -51,7 +50,6 @@ class GuiMain(QMainWindow):
         self.mainConf    = nw.CONFIG
         self.theTheme    = Theme()
         self.theProject  = NWProject(self)
-        self.theDocument = NWDoc(self.theProject, self)
         self.theIndex    = NWIndex(self.theProject, self)
         self.hasProject  = False
 
@@ -61,12 +59,12 @@ class GuiMain(QMainWindow):
         self.theTheme.loadTheme()
 
         # Main GUI Elements
-        self.docEditor  = GuiDocEditor(self)
+        self.statusBar  = GuiMainStatus(self)
+        self.docEditor  = GuiDocEditor(self, self.theProject)
         self.docViewer  = GuiDocViewer(self, self.theProject)
         self.docDetails = GuiDocDetails(self, self.theProject)
         self.treeView   = GuiDocTree(self, self.theProject)
         self.mainMenu   = GuiMainMenu(self, self.theProject)
-        self.statusBar  = GuiMainStatus(self)
 
         # Minor Gui Elements
         self.statusIcons = []
@@ -282,7 +280,6 @@ class GuiMain(QMainWindow):
         if self.hasProject:
             if self.docEditor.docChanged:
                 self.saveDocument()
-            self.theDocument.clearDocument()
             self.docEditor.clearEditor()
         return True
 
@@ -296,17 +293,8 @@ class GuiMain(QMainWindow):
         return True
 
     def saveDocument(self):
-        if self.theDocument.theItem is not None and self.hasProject:
-            docText = self.docEditor.getText()
-            cursPos = self.docEditor.getCursorPosition()
-            theItem = self.theDocument.theItem
-            theItem.setCharCount(self.docEditor.charCount)
-            theItem.setWordCount(self.docEditor.wordCount)
-            theItem.setParaCount(self.docEditor.paraCount)
-            theItem.setCursorPos(cursPos)
-            self.theDocument.saveDocument(docText)
-            self.docEditor.setDocumentChanged(False)
-            self.theIndex.scanText(theItem.itemHandle, docText)
+        if self.hasProject:
+            self.docEditor.saveText()
         return True
 
     def viewDocument(self, tHandle=None):
@@ -318,7 +306,7 @@ class GuiMain(QMainWindow):
             tHandle = self.theProject.lastViewed
         if tHandle is None:
             logger.debug("No document selected, trying editor document")
-            tHandle = self.theDocument.docHandle
+            tHandle = self.docEditor.theHandle
         if tHandle is None:
             logger.debug("No document selected, giving up")
             return False
@@ -580,7 +568,7 @@ class GuiMain(QMainWindow):
         return
 
     def _autoSaveDocument(self):
-        if self.hasProject and self.docEditor.docChanged and self.theDocument.theItem is not None:
+        if self.hasProject and self.docEditor.docChanged:
             logger.debug("Autosaving document")
             self.saveDocument()
         return
