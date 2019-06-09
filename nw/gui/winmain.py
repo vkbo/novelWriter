@@ -35,8 +35,6 @@ from nw.project.project   import NWProject
 from nw.project.document  import NWDoc
 from nw.project.item      import NWItem
 from nw.project.index     import NWIndex
-from nw.convert.tokenizer import Tokenizer
-from nw.convert.tohtml    import ToHtml
 from nw.tools.wordcount   import countWords
 from nw.theme             import Theme
 from nw.enum              import nwItemType, nwAlert
@@ -64,7 +62,7 @@ class GuiMain(QMainWindow):
 
         # Main GUI Elements
         self.docEditor  = GuiDocEditor(self)
-        self.docViewer  = GuiDocViewer(self)
+        self.docViewer  = GuiDocViewer(self, self.theProject)
         self.docDetails = GuiDocDetails(self, self.theProject)
         self.treeView   = GuiDocTree(self, self.theProject)
         self.mainMenu   = GuiMainMenu(self, self.theProject)
@@ -319,21 +317,7 @@ class GuiMain(QMainWindow):
             logger.warning("No document selected")
             return False
 
-        tItem = self.theProject.getItem(tHandle)
-        if tItem is None:
-            logger.warning("Item not found")
-            return False
-
-        if tItem.itemType == nwItemType.FILE:
-            logger.debug("Generating preview for item %s" % tHandle)
-            aDoc = ToHtml(self.theProject, self)
-            aDoc.setText(tHandle)
-            aDoc.doAutoReplace()
-            aDoc.tokenizeText()
-            aDoc.doConvert()
-            self.docViewer.setHtml(aDoc.theResult)
-            self.theProject.setLastViewed(tHandle)
-
+        if self.docViewer.loadText(tHandle):
             bPos = self.splitMain.sizes()
             self.docViewer.setVisible(True)
             vPos    = [0,0]
