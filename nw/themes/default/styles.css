@@ -10,7 +10,6 @@ QTextEdit {
 QTextBrowser {
     background-color: #141414;
     color: #c7cfd0;
-    /* padding: 40px; */
 }
 
 QTreeView, QHeaderView {

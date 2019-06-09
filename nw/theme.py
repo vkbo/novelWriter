@@ -86,6 +86,8 @@ class Theme:
         ## Syntax
         cnfSec = "Syntax"
         if confParser.has_section(cnfSec):
+            self.colText   = self._loadColour(confParser,cnfSec,"text")
+            self.colLink   = self._loadColour(confParser,cnfSec,"link")
             self.colHead   = self._loadColour(confParser,cnfSec,"headertext")
             self.colHeadH  = self._loadColour(confParser,cnfSec,"headertag")
             self.colEmph   = self._loadColour(confParser,cnfSec,"emphasis")

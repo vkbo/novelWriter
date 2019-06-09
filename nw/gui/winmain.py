@@ -35,8 +35,6 @@ from nw.project.project   import NWProject
 from nw.project.document  import NWDoc
 from nw.project.item      import NWItem
 from nw.project.index     import NWIndex
-from nw.convert.tokenizer import Tokenizer
-from nw.convert.tohtml    import ToHtml
 from nw.tools.wordcount   import countWords
 from nw.theme             import Theme
 from nw.enum              import nwItemType, nwAlert
@@ -53,7 +51,6 @@ class GuiMain(QMainWindow):
         self.mainConf    = nw.CONFIG
         self.theTheme    = Theme()
         self.theProject  = NWProject(self)
-        self.theDocument = NWDoc(self.theProject, self)
         self.theIndex    = NWIndex(self.theProject, self)
         self.hasProject  = False
 
@@ -63,12 +60,12 @@ class GuiMain(QMainWindow):
         self.theTheme.loadTheme()
 
         # Main GUI Elements
-        self.docEditor  = GuiDocEditor(self)
-        self.docViewer  = GuiDocViewer(self)
+        self.statusBar  = GuiMainStatus(self)
+        self.docEditor  = GuiDocEditor(self, self.theProject)
+        self.docViewer  = GuiDocViewer(self, self.theProject)
         self.docDetails = GuiDocDetails(self, self.theProject)
         self.treeView   = GuiDocTree(self, self.theProject)
         self.mainMenu   = GuiMainMenu(self, self.theProject)
-        self.statusBar  = GuiMainStatus(self)
 
         # Minor Gui Elements
         self.statusIcons = []
@@ -284,7 +281,6 @@ class GuiMain(QMainWindow):
         if self.hasProject:
             if self.docEditor.docChanged:
                 self.saveDocument()
-            self.theDocument.clearDocument()
             self.docEditor.clearEditor()
         return True
 
@@ -298,17 +294,8 @@ class GuiMain(QMainWindow):
         return True
 
     def saveDocument(self):
-        if self.theDocument.theItem is not None and self.hasProject:
-            docText = self.docEditor.getText()
-            cursPos = self.docEditor.getCursorPosition()
-            theItem = self.theDocument.theItem
-            theItem.setCharCount(self.docEditor.charCount)
-            theItem.setWordCount(self.docEditor.wordCount)
-            theItem.setParaCount(self.docEditor.paraCount)
-            theItem.setCursorPos(cursPos)
-            self.theDocument.saveDocument(docText)
-            self.docEditor.setDocumentChanged(False)
-            self.theIndex.scanText(theItem.itemHandle, docText)
+        if self.hasProject:
+            self.docEditor.saveText()
         return True
 
     def viewDocument(self, tHandle=None):
@@ -316,30 +303,16 @@ class GuiMain(QMainWindow):
         if tHandle is None:
             tHandle = self.treeView.getSelectedHandle()
         if tHandle is None:
-            logger.warning("No document selected, trying last viewed")
+            logger.debug("No document selected, trying last viewed")
             tHandle = self.theProject.lastViewed
         if tHandle is None:
-            logger.warning("No document selected, trying editor document")
-            tHandle = self.theDocument.docHandle
+            logger.debug("No document selected, trying editor document")
+            tHandle = self.docEditor.theHandle
         if tHandle is None:
-            logger.warning("No document selected, giving up")
+            logger.debug("No document selected, giving up")
             return False
 
-        tItem = self.theProject.getItem(tHandle)
-        if tItem is None:
-            logger.warning("Item not found")
-            return False
-
-        if tItem.itemType == nwItemType.FILE:
-            logger.debug("Generating preview for item %s" % tHandle)
-            aDoc = ToHtml(self.theProject, self)
-            aDoc.setText(tHandle)
-            aDoc.doAutoReplace()
-            aDoc.tokenizeText()
-            aDoc.doConvert()
-            self.docViewer.setHtml(aDoc.theResult)
-            self.theProject.setLastViewed(tHandle)
-
+        if self.docViewer.loadText(tHandle):
             bPos = self.splitMain.sizes()
             self.docViewer.setVisible(True)
             vPos    = [0,0]
@@ -596,7 +569,7 @@ class GuiMain(QMainWindow):
         return
 
     def _autoSaveDocument(self):
-        if self.hasProject and self.docEditor.docChanged and self.theDocument.theItem is not None:
+        if self.hasProject and self.docEditor.docChanged:
             logger.debug("Autosaving document")
             self.saveDocument()
         return
