@@ -124,12 +124,15 @@ class GuiDocViewer(QTextBrowser):
             return False
 
         logger.debug("Generating preview for item %s" % tHandle)
+        sPos = self.verticalScrollBar().value()
         aDoc = ToHtml(self.theProject, self.theParent)
         aDoc.setText(tHandle)
         aDoc.doAutoReplace()
         aDoc.tokenizeText()
         aDoc.doConvert()
         self.setHtml(aDoc.theResult)
+        if self.theHandle == tHandle:
+            self.verticalScrollBar().setValue(sPos)
         self.theHandle = tHandle
         self.theProject.setLastViewed(tHandle)
 
