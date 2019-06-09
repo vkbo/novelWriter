@@ -516,6 +516,16 @@ class GuiMainMenu(QMenuBar):
         menuItem.triggered.connect(self._showAboutQt)
         self.helpMenu.addAction(menuItem)
 
+        # Help > Separator
+        self.helpMenu.addSeparator()
+
+        # Document > Preview
+        menuItem = QAction(QIcon.fromTheme("text-html"), "Documentation", self)
+        menuItem.setStatusTip("View documentation")
+        menuItem.setShortcut("F1")
+        menuItem.triggered.connect(lambda : self.theParent.viewDocument("Help"))
+        self.helpMenu.addAction(menuItem)
+
         return
 
 # END Class GuiMainMenu

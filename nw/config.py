@@ -104,6 +104,7 @@ class Config:
         self.homePath  = path.expanduser("~")
         self.appPath   = path.dirname(__file__)
         self.appRoot   = path.join(self.appPath,path.pardir)
+        self.helpPath  = path.join(self.appRoot,"help","en_GB")
         self.guiPath   = path.join(self.appPath,"gui")
         self.themePath = path.join(self.appPath,"themes")
 

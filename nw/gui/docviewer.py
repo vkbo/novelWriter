@@ -13,7 +13,7 @@
 import logging
 import nw
 
-from PyQt5.QtCore    import Qt
+from PyQt5.QtCore    import Qt, QUrl
 from PyQt5.QtWidgets import QTextBrowser
 from PyQt5.QtGui     import QTextOption
 
@@ -59,6 +59,7 @@ class GuiDocViewer(QTextBrowser):
 
     def clearViewer(self):
         self.clear()
+        self.setSearchPaths([""])
         return True
 
     def initEditor(self):
@@ -73,6 +74,10 @@ class GuiDocViewer(QTextBrowser):
         return True
 
     def loadText(self, tHandle):
+
+        if tHandle == "Help":
+            self.loadHelp()
+            return True
 
         tItem = self.theProject.getItem(tHandle)
         if tItem is None:
@@ -91,6 +96,14 @@ class GuiDocViewer(QTextBrowser):
         self.setHtml(aDoc.theResult)
         self.theHandle = tHandle
         self.theProject.setLastViewed(tHandle)
+
+        return True
+
+    def loadHelp(self):
+
+        self.clearViewer()
+        self.setSearchPaths([self.mainConf.helpPath])
+        self.setSource(QUrl("index.html"))
 
         return True
 
