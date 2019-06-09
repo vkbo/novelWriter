@@ -8,29 +8,40 @@
     <a name="Content"></a>
     <h3>Content:</h3>
     <ul>
-        <li><a href="#Proj">1. Novel Projects</a></li>
+        <li><a href="#Intro">1. Introduction</a></li>
+        <li><a href="#Proj">2. Novel Projects</a></li>
         <ul>
-            <li><a href="#Proj_Structure">1.1 Project Structure</a></li>
-            <li><a href="#Proj_Settings">1.2 Project Settings</a></li>
-            <li><a href="#Proj_Documents">1.3 Writing Files</a></li>
+            <li><a href="#Proj_Structure">2.1 Project Structure</a></li>
+            <li><a href="#Proj_Settings">2.2 Project Settings</a></li>
+            <li><a href="#Proj_Documents">2.3 Writing Files</a></li>
         </ul>
-        <li><a href="#Novel">2. Novel Structure</a></li>
+        <li><a href="#Novel">3. Novel Structure</a></li>
         <ul>
-            <li><a href="#Novel_Headings">2.1 Importance of Headings</a></li>
-            <li><a href="#Novel_Files">2.2 Novel File Layout</a></li>
+            <li><a href="#Novel_Headings">3.1 Importance of Headings</a></li>
+            <li><a href="#Novel_Refs">3.2 Tag References</a></li>
+            <li><a href="#Novel_Files">3.3 Novel File Layout</a></li>
         </ul>
-        <li><a href="#GUI">3. User Interface</a></li>
+        <li><a href="#Notes">4. Supporting Files (Notes)</a></li>
         <ul>
-            <li><a href="#GUI_Shortcuts">3.1 Keyboard Shortcuts</a></li>
+            <li><a href="#Notes_Tags">4.1 File Tags</a></li>
         </ul>
-        <li><a href="#Code">4. Technical Information</a></li>
+        <li><a href="#GUI">5. User Interface</a></li>
         <ul>
-            <li><a href="#Code_Project">4.1 How Data is Stored</a></li>
+            <li><a href="#GUI_Markdown">5.1 Markdown Format</a></li>
+            <li><a href="#GUI_Shortcuts">5.2 Keyboard Shortcuts</a></li>
+        </ul>
+        <li><a href="#Code">6. Technical Information</a></li>
+        <ul>
+            <li><a href="#Code_Project">6.1 How Data is Stored</a></li>
         </ul>
     </ul>
 
+    <a name="Intro"></a>
+    <h2>1. Introduction</h2>
+    <p><a href="#Content">Back to top</a></p>
+
     <a name="Proj"></a>
-    <h2>1. Novel Projects</h2>
+    <h2>2. Novel Projects</h2>
     <p><a href="#Content">Back to top</a></p>
 
     <p>A novelWriter project requires a dedicated folder for storing its files. See the
@@ -42,15 +53,54 @@
         further details below.</p>
 
     <a name="Proj_Structure"></a>
-    <h3>1.1 Project Structure</h3>
+    <h3>2.1 Project Structure</h3>
     <p><a href="#Content">Back to top</a></p>
 
     <p>Projects are structured into a set of root folders in the left side tree view panel.</p>
-    <p>The core novel files go into a root folder of type <mark>NOVEL</mark>. Other supporting files
-        go into root folders of types <mark>PLOT</mark>, <mark>CHARACTER</mark>, <mark>WORLD</mark>,
-        <mark>TIMELINE</mark>, <mark>OBJECT</mark> or <mark>CUSTOM</mark>. These other root folder
-        types are intended for your notes on the various elements of your story. Using these are of
-        course entirely optional.</p>
+    <p>The core novel files go into a root folder of type <mark>Novel</mark>. Other supporting files
+        go into root folders of types <mark>Plot</mark>, <mark>Characters</mark>,
+        <mark>Locations</mark>, <mark>Timeline</mark>, <mark>Objects</mark> or <mark>Custom</mark>.
+        These other root folder types are intended for your notes on the various elements of your
+        story. Using these are of course entirely optional.</p>
+    <table>
+        <tr>
+            <td><mark>Novel</mark></td>
+            <td>The root folder of all text that goes into the final novel. This class of files have
+                other rules and features than other files in the project. See the
+                <a href="#Novel">Novel Structure</a> section for more details.</td>
+        </tr>
+        <tr>
+            <td><mark>Plot</mark></td>
+            <td>This is the root folder where main plots can be outlined. It is optional, but adding
+                at least dummy files can be useful in order to generate the timeline view.</td>
+        </tr>
+        <tr>
+            <td><mark>Characters</mark></td>
+            <td>Character files go in this root folder. These are especially important if one wants
+                to use the timeline view to see which character appears where and which part of the
+                story is told from a specific character's point-of-view.</td>
+        </tr>
+        <tr>
+            <td><mark>Locations</mark></td>
+            <td>Location is for various scene locations that one wants to track in the timeline
+                view if that applies to the story.</td>
+        </tr>
+        <tr>
+            <td><mark>Timeline</mark></td>
+            <td>If the story jumps in time within the same plot, this class of files can be used to
+                track this.</td>
+        </tr>
+        <tr>
+            <td><mark>Objects</mark></td>
+            <td>Important objects in the story can be tracked here, and connected to the timeline as
+                well.</td>
+        </tr>
+        <tr>
+            <td><mark>Custom</mark></td>
+            <td>the custom root folder can be used for tracking anything else not covered by the
+                above options.</td>
+        </tr>
+    </table>
     <p>Deleted files will be moved into a special <mark>TRASH</mark> root folder. Currently, these
         files cannot be permanently deleted from the project.</p>
 
@@ -68,7 +118,7 @@
         ignored.</p>
 
     <a name="Proj_Settings"></a>
-    <h3>1.2 Project Settings</h3>
+    <h3>2.2 Project Settings</h3>
     <p><a href="#Content">Back to top</a></p>
 
     <p>The project settings can be accessed from the <mark>Project > Project Settings</mark> menu
@@ -91,7 +141,7 @@
     <p>Note that status levels currently in use by a file cannot be deleted.</p>
 
     <h4>Importance Tab</h4>
-    <p>Each file of types <mark>PLOT</mark>, <mark>CHARACTER</mark>, <mark>WORLD</mark>, 
+    <p>Each file of types <mark>PLOT</mark>, <mark>CHARACTER</mark>, <mark>WORLD</mark>,
         <mark>TIMELINE</mark>, <mark>OBJECT</mark> or <mark>CUSTOM</mark> can be given an importance
         level, signified by a coloured icon like for status level. These are also purely there for
         the user's convenience, and you are not required to use them for any other feature to work.
@@ -108,7 +158,7 @@
         of the text isn't unintentionally replaced by the content of the list.</p>
 
     <a name="Proj_Documents"></a>
-    <h2>1.3 Writing Files</h2>
+    <h2>2.3 Writing Files</h2>
     <p><a href="#Content">Back to top</a></p>
 
     <p>New document files can be created from the Document menu, or by pressing <mark>Ctrl+N</mark>
@@ -119,15 +169,102 @@
     <p>The different classes of documents have some restrictions.</p>
 
     <a name="Novel"></a>
-    <h2>2. Novel Structure</h2>
+    <h2>3. Novel Structure</h2>
     <p><a href="#Content">Back to top</a></p>
+
+    <p>This section concerns files under the <mark>Novel</mark> type root folder. There are some
+        restrictions and features that only applies to these type of files.</p>
 
     <a name="Novel_Headings"></a>
-    <h3>2.1 Importance of Headings</h3>
+    <h3>3.1 Importance of Headings</h3>
     <p><a href="#Content">Back to top</a></p>
 
+    <p>Subfolders under root folders have no impact on the structure of the novel itself. The
+        structure is instead dictated by the heading level. Four levels of headings are supported,
+        signified by the number of hashes preceding the title. See the
+        <a href="#GUI_Markdown">Markdown</a> section.</p>
+    <p>The header levels are not only important when generating the exported novel file, but is also
+        used by the indexer and timeline view. Each heading starts a new region where new References
+        to tags can be set, and will show up as a new row in the timeline view.</p>
+    <p>The different header levels are interpreted as specific section types of the novel.</p>
+    <table>
+        <tr>
+            <td><mark># Header1</mark></td>
+            <td>Header level 1 signifies that the text refers to either the novel title or the
+                name of a top level partition.</td>
+        </tr>
+        <tr>
+            <td><mark>## Header2</mark></td>
+            <td>Header level 2 signifies a chapter level partition.</td>
+        </tr>
+        <tr>
+            <td><mark>### Header3</mark></td>
+            <td>Header level 3 signifies a scene level partition.</td>
+        </tr>
+        <tr>
+            <td><mark>#### Header4</mark></td>
+            <td>Header level 4 signifies a sub-scene level partition.</td>
+        </tr>
+    </table>
+
+    <a name="Novel_Refs"></a>
+    <h3>3.2 Tag References</h3>
+    <p><a href="#Content">Back to top</a></p>
+
+    <p>Each section started by a heading can contain references to tags set in the supporting files
+        of the project. See the <a href="#Notes_Tags">File Tags</a> section.</p>
+    <p>The references are gathered by the indexer and used to generate the timeline view of how the
+        different parts of the novel are connected.</p>
+    <p>References are set as keyword and a list of corresponding tags. The valid keywords are listed
+        below. The format of such a line is <mark>@keyword: value1, [value2] ... [valueN]</mark>.
+        Note that not all keywords allow multiple values.</p>
+    <table>
+        <tr>
+            <td><mark>@pov</mark></td>
+            <td>The point-of-view character for the current section. The target must be a note tag
+                in the character root folder. Only one value is accepted. further values are
+                ignored.</td>
+        </tr>
+        <tr>
+            <td><mark>@char</mark></td>
+            <td>Other characters in the current section. The target must be a note tag in the
+                character root folder. Multiple values are allowed. This should not include the
+                point-of-view character.</td>
+        </tr>
+        <tr>
+            <td><mark>@plot</mark></td>
+            <td>The plot timelines touched by the current section. The target must be a note tag in
+                the plot root folder. Multiple values are allowed.</td>
+        </tr>
+        <tr>
+            <td><mark>@time</mark></td>
+            <td>The timelines touched by the current section. The target must be a note tag in the
+                timeline root folder. Multiple values are allowed.</td>
+        </tr>
+        <tr>
+            <td><mark>@location</mark></td>
+            <td>The location the current section takes place in. The target must be a note tag in
+                the locations root folder. Multiple values are allowed.</td>
+        </tr>
+        <tr>
+            <td><mark>@object</mark></td>
+            <td>Objects present in the current section. The target must be a note tag in the object
+                root folder. Multiple values are allowed.</td>
+        </tr>
+        <tr>
+            <td><mark>@custom</mark></td>
+            <td>Custom references in the current section. The target must be a note tag in the
+                custom root folder. Multiple values are allowed.</td>
+        </tr>
+    </table>
+    <p>the syntax highlighter will alert the user that only the correct keywords are used, and that
+        the tags referenced exist. If the index of defined tags is out of date, press
+        <mark>F9</mark> to regenerate it, or select <mark>Tools > Rebuild Indices</mark> from the
+        menu. In general, the index for a file is regenerated when a file is saved, so this
+        shouldn't normally be necessary.</p>
+
     <a name="Novel_Files"></a>
-    <h3>2.2 Novel File Layout</h3>
+    <h3>3.3 Novel File Layout</h3>
     <p><a href="#Content">Back to top</a></p>
 
     <p>Files that exist under the <mark>NOVEL</mark> type root folder can have a number of layouts
@@ -137,8 +274,7 @@
     <table>
         <tr>
             <td><mark>Title Page</mark></td>
-            <td>The title page layout. The title should be formatted as a heading of level 1, that
-                is one hash: <mark># Book Title</mark></td>
+            <td>The title page layout. The title should be formatted as a heading level one.</td>
         </tr>
         <tr>
             <td><mark>Book</mark></td>
@@ -156,18 +292,213 @@
             <td>A partition can be used to split a the novel into parts. Use a level one heading for
                 this.</td>
         </tr>
+        <tr>
+            <td><mark>Chapter</mark></td>
+            <td>Signifies the start of a new chapter. If the text itself is contained in scene
+                files, these files should only contain the title and tag references for characters,
+                plot, etc. The heading for chapters should be level two.</td>
+        </tr>
+        <tr>
+            <td><mark>Un-Numbered</mark></td>
+            <td>Same as Chapter, but when exporting the files and automatic chapter numbering is
+                enabled, this file will not receive a number.</td>
+        </tr>
+        <tr>
+            <td><mark>Scene</mark></td>
+            <td>A scene file. This file should have a header of level three. Further sections can
+                have headers of level four. These will not impact the overall structure, but will
+                allow for setting new characters and plot references in parts of a scene if such
+                granularity is needed.</td>
+        </tr>
+        <tr>
+            <td><mark>Note</mark></td>
+            <td>A generic file that is ignored when the novel is exported. These layout is allowed
+                within the Novel root folder, and is the only layout allowed for a file outside the
+                Novel root folder.</td>
+        </tr>
     </table>
 
-    <a name="GUI"></a>
-    <h2>3. User Interface</h2>
+    <a name="Notes"></a>
+    <h2>4. Supporting Files (Notes)</h2>
     <p><a href="#Content">Back to top</a></p>
 
+    <p>Supporting files, or notes, are any files stored in root folders that are not the Novel root
+        folder. These files are intended for summaries and outlines of the various plot elements,
+        characters, locations, and so on, of the novel. These are no required, but making at least
+        minimal files for each such element makes it possible to use the timeline view feature to
+        see how each element intersects with each section of the novel itself.</p>
+
+    <a name="Notes_Tags"></a>
+    <h2>4.1 File Tags</h2>
+    <p><a href="#Content">Back to top</a></p>
+
+    <p>Each note file can have a tag associated with it, The format of a tag is
+        <mark>@tag: tagname</mark>, where tagname is a unique identifier. tags can then be
+        referenced in the novel files and will then show up as dots in the timeline view.</p>
+    <p>The syntax highlighter will alert the user that the keyword is correctly used and that the
+        tag is allowed. Duplicate tags should be detected as long as the index is up to date.</p>
+    <p>The tag is the only part of these files that the application used. The rest of the file is
+        there for the writer to use in whatever way they wish.</p>
+
+    <a name="GUI"></a>
+    <h2>5. User Interface</h2>
+    <p><a href="#Content">Back to top</a></p>
+
+    <p>The user interface is kept as simple as possible to avoid distractions. The main window
+        contains a tree vew pane with the entire structure of the project, and a small details panel
+        below it to display additional information.</p>
+    <p>Editing a document can be done by either double-clicking on it, or hitting the return key
+        when the item is selected. This will open the source editor which uses a simplified markdown
+        format described in the section below.</p>
+    <p>The document can also be viewed as html with all the comments and commands stripped out. To
+        view a document, simply press <mark>Ctrl+R</mark> or select a file and go to <mark>Document
+        > View Document</mark> in the menu. The document viewed does not need to be the same
+        document currently being edited.</p>
+
+    <a name="GUI_Markdown"></a>
+    <h3>5.1 Markdown Format</h3>
+    <p><a href="#Content">Back to top</a></p>
+
+    <p>the document editor uses a simplified markdown format. That is, it supports basic formatting
+        like bold, italics and underline, as well as four levels of headings. The formats are listed
+        below.</p>
+    <p>In addition to these standard markdown features, the editor also allows for comments, that is
+        text that is ignored by the word counter and not exported or seen in the document viewer.
+        The editor also has a minimal set of commands used for setting tags and references between
+        files.</p>
+    <table>
+        <tr>
+            <td><mark># Title</mark></td>
+            <td>Heading level one. The space after the # is mandatory.</td>
+        </tr>
+        <tr>
+            <td><mark>## Title</mark></td>
+            <td>Heading level two. The space after the # is mandatory.</td>
+        </tr>
+        <tr>
+            <td><mark>### Title</mark></td>
+            <td>Heading level three. The space after the # is mandatory.</td>
+        </tr>
+        <tr>
+            <td><mark>#### Title</mark></td>
+            <td>Heading level four. The space after the # is mandatory.</td>
+        </tr>
+        <tr>
+            <td><mark>**text**</mark></td>
+            <td>The text is renderred as bold text.</td>
+        </tr>
+        <tr>
+            <td><mark>_text_</mark></td>
+            <td>The text is renderred as italics text.</td>
+        </tr>
+        <tr>
+            <td><mark>__text__</mark></td>
+            <td>The text is renderred as underlined text.</td>
+        </tr>
+        <tr>
+            <td><mark>% text...</mark></td>
+            <td>A comment. The text is not exported, seen in viewer, or counted towards word counts.</td>
+        </tr>
+        <tr>
+            <td><mark>@command: value</mark></td>
+            <td>A command followed by a value, or a comma separated list of values.</td>
+        </tr>
+    </table>
+
     <a name="GUI_Shortcuts"></a>
-    <h3>3.1 Keyboard Shortcuts</h3>
+    <h3>5.2 Keyboard Shortcuts</h3>
     <p><a href="#Content">Back to top</a></p>
 
     <p>All features are available as keyboard shortcuts. These are as following:</p>
     <table>
+        <tr>
+            <td><mark>Ctrl+Shift+O</mark></td>
+            <td>Open a project.</td>
+        </tr>
+        <tr>
+            <td><mark>Ctrl+Shift+S</mark></td>
+            <td>Save the current project.</td>
+        </tr>
+        <tr>
+            <td><mark>Ctrl+Shift+W</mark></td>
+            <td>Close the current project.</td>
+        </tr>
+        <tr>
+            <td><mark>Ctrl+Shift+,</mark></td>
+            <td>Change project settings.</td>
+        </tr>
+        <tr>
+            <td><mark>Ctrl+Shift+N</mark></td>
+            <td>Create new folder.</td>
+        </tr>
+        <tr>
+            <td><mark>Ctrl+E, F2</mark></td>
+            <td>If in tree view, edit a document or folder settings.</td>
+        </tr>
+        <tr>
+            <td><mark>Ctrl+Del</mark></td>
+            <td>If in tree view, move a document to trash, or delete a folder.</td>
+        </tr>
+        <tr>
+            <td><mark>Ctrl+Q</mark></td>
+            <td>Exit novelWriter.</td>
+        </tr>
+        <tr>
+            <td><mark>Ctrl+N</mark></td>
+            <td>Create new document.</td>
+        </tr>
+        <tr>
+            <td><mark>Ctrl+O</mark></td>
+            <td>Open selected document.</td>
+        </tr>
+        <tr>
+            <td><mark>Return</mark></td>
+            <td>If in tree view, open a document for editing.</td>
+        </tr>
+        <tr>
+            <td><mark>Ctrl+S</mark></td>
+            <td>Save the current document in the editor.</td>
+        </tr>
+        <tr>
+            <td><mark>Ctrl+W</mark></td>
+            <td>Close the current document in the editor.</td>
+        </tr>
+        <tr>
+            <td><mark>Ctrl+R</mark></td>
+            <td>If in tree view, open a document for viewing. If in editor pane, open current document for viewing.</td>
+        </tr>
+        <tr>
+            <td><mark>Ctrl+Shift+R</mark></td>
+            <td>Close the document view pane.</td>
+        </tr>
+        <tr>
+            <td><mark>Ctrl+Z</mark></td>
+            <td>Undo latest changes.</td>
+        </tr>
+        <tr>
+            <td><mark>Ctrl+Y</mark></td>
+            <td>Redo latest undo.</td>
+        </tr>
+        <tr>
+            <td><mark>Ctrl+C</mark></td>
+            <td>Copy selected text to clipboard.</td>
+        </tr>
+        <tr>
+            <td><mark>Ctrl+X</mark></td>
+            <td>Cut selected text to clipboard.</td>
+        </tr>
+        <tr>
+            <td><mark>Ctrl+V</mark></td>
+            <td>Paste text from clipboard to cursor position.</td>
+        </tr>
+        <tr>
+            <td><mark>Ctrl+A</mark></td>
+            <td>Select all text in document.</td>
+        </tr>
+        <tr>
+            <td><mark>Ctrl+Shift+A</mark></td>
+            <td>Select all text in current paragraph.</td>
+        </tr>
         <tr>
             <td><mark>Ctrl+1</mark></td>
             <td>Switch focus to tree view pane.</td>
@@ -181,36 +512,8 @@
             <td>Switch focus to document viewer pane.</td>
         </tr>
         <tr>
-            <td><mark>Return</mark></td>
-            <td>If in tree view, open a document for editing.</td>
-        </tr>
-        <tr>
-            <td><mark>Ctrl+R</mark></td>
-            <td>If in tree view, open a document for viewing. If in editor pane, open current document for viewing.</td>
-        </tr>
-        <tr>
-            <td><mark>Ctrl+E</mark></td>
-            <td>If in tree view, edit a document or folder settings.</td>
-        </tr>
-        <tr>
-            <td><mark>Ctrl+Del</mark></td>
-            <td>If in tree view, move a document to trash, or delete a folder.</td>
-        </tr>
-        <tr>
-            <td><mark>Ctrl+S</mark></td>
-            <td>Save the current document in the editor.</td>
-        </tr>
-        <tr>
-            <td><mark>Ctrl+Shift+S</mark></td>
-            <td>Save the current project.</td>
-        </tr>
-        <tr>
-            <td><mark>Ctrl+A</mark></td>
-            <td>Select all text in document.</td>
-        </tr>
-        <tr>
-            <td><mark>Ctrl+Shift+A</mark></td>
-            <td>Select all text in current paragraph.</td>
+            <td><mark>Ctrl+T</mark></td>
+            <td>Show project timeline.</td>
         </tr>
         <tr>
             <td><mark>Ctrl+B</mark></td>
@@ -233,6 +536,14 @@
             <td>Wrap selected text, or word under cursor, in single quotes.</td>
         </tr>
         <tr>
+            <td><mark>Ctrl+Shift+Up</mark></td>
+            <td>Move item one step up in the tree view.</td>
+        </tr>
+        <tr>
+            <td><mark>Ctrl+Shift+Down</mark></td>
+            <td>Move item one step down in the tree view.</td>
+        </tr>
+        <tr>
             <td><mark>Ctrl+F7</mark></td>
             <td>Toggle spell checking.</td>
         </tr>
@@ -244,16 +555,24 @@
             <td><mark>Ctrl+.</mark></td>
             <td>Correct word under cursor.</td>
         </tr>
+        <tr>
+            <td><mark>F9</mark></td>
+            <td>Re-build project indices.</td>
+        </tr>
+        <tr>
+            <td><mark>F1</mark></td>
+            <td>Open documentation.</td>
+        </tr>
     </table>
 
     <a name="Code"></a>
-    <h2>4. Technical Information</h2>
+    <h2>6. Technical Information</h2>
     <p><a href="#Content">Back to top</a></p>
 
     <p>This section contains details of how novelWriter stores and handles the project data.</p>
 
     <a name="Code_Project"></a>
-    <h3>4.1 How Data is Stored</h3>
+    <h3>6.1 How Data is Stored</h3>
     <p><a href="#Content">Back to top</a></p>
 
     <h4>Main Project File</h4>
