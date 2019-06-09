@@ -32,6 +32,7 @@ from nw.gui.itemeditor    import GuiItemEditor
 from nw.gui.statusbar     import GuiMainStatus
 from nw.gui.timelineview  import GuiTimeLineView
 from nw.project.project   import NWProject
+from nw.project.document  import NWDoc
 from nw.project.item      import NWItem
 from nw.project.index     import NWIndex
 from nw.tools.wordcount   import countWords
