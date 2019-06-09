@@ -39,11 +39,47 @@ class GuiDocViewer(QTextBrowser):
 
         self.theQDoc = self.document()
         self.theQDoc.setDefaultStyleSheet((
+            "body {{"
+            "  font-size: {textSize}pt;"
+            "  color: rgb({tColR},{tColG},{tColB});"
+            "}}\n"
             "h1, h2, h3, h4 {{"
-            "  color: rgb({0},{1},{2});"
-            "}}"
+            "  color: rgb({hColR},{hColG},{hColB});"
+            "}}\n"
+            "a {{"
+            "  color: rgb({aColR},{aColG},{aColB});"
+            "}}\n"
+            "pre {{"
+            "  color: rgb({cColR},{cColG},{cColB});"
+            "  font-size: {preSize}pt;"
+            "}}\n"
+            "mark {{"
+            "  color: rgb({eColR},{eColG},{eColB});"
+            "}}\n"
+            "table {{"
+            "  margin: 10px 0px;"
+            "}}\n"
+            "td {{"
+            "  padding: 0px 4px;"
+            "}}\n"
         ).format(
-            *self.theTheme.colHead
+            textSize = self.mainConf.textSize,
+            preSize  = self.mainConf.textSize*0.9,
+            tColR    = self.theTheme.colText[0],
+            tColG    = self.theTheme.colText[1],
+            tColB    = self.theTheme.colText[2],
+            hColR    = self.theTheme.colHead[0],
+            hColG    = self.theTheme.colHead[1],
+            hColB    = self.theTheme.colHead[2],
+            cColR    = self.theTheme.colComm[0],
+            cColG    = self.theTheme.colComm[1],
+            cColB    = self.theTheme.colComm[2],
+            eColR    = self.theTheme.colEmph[0],
+            eColG    = self.theTheme.colEmph[1],
+            eColB    = self.theTheme.colEmph[2],
+            aColR    = self.theTheme.colLink[0],
+            aColG    = self.theTheme.colLink[1],
+            aColB    = self.theTheme.colLink[2],
         ))
         self.setMinimumWidth(300)
         self.initEditor()
