@@ -48,6 +48,11 @@ class GuiDocViewer(QTextBrowser):
         self.setMinimumWidth(300)
         self.initEditor()
 
+        theOpt = QTextOption()
+        if self.mainConf.doJustify:
+            theOpt.setAlignment(Qt.AlignJustify)
+        self.theQDoc.setDefaultTextOption(theOpt)
+
         logger.debug("DocViewer initialisation complete")
 
         return

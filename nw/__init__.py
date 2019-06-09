@@ -21,14 +21,17 @@ from nw.config       import Config
 __package__    = "novelWriter"
 __author__     = "Veronica Berglyd Olsen"
 __copyright__  = "Copyright 2018–2019, Veronica Berglyd Olsen"
-__credits__    = ["Veronica Berglyd Olsen"]
 __license__    = "GPLv3"
 __version__    = "0.1.5"
 __date__       = "2019.06.08"
 __maintainer__ = "Veronica Berglyd Olsen"
 __email__      = "code@vkbo.net"
-__status__     = "Pre-Release"
+__status__     = "Development"
 __url__        = "https://github.com/vkbo/novelWriter"
+__credits__    = [
+    "Veronica Berglyd Olsen (developer)",
+    "Marian Lückhof (contributor, tester)"
+]
 
 #
 #  Logging
@@ -82,7 +85,7 @@ def main(sysArgs):
     ]
 
     helpMsg = (
-        "novelWriter {version} ({status})\n"
+        "{appname} {version} ({status})\n"
         "{copyright}\n"
         "\n"
         "Usage:\n"
@@ -97,6 +100,7 @@ def main(sysArgs):
         "     --config    Alternative config file.\n"
         "     --headless  Do not display GUI. Useful for testing scripts.\n"
     ).format(
+        appname   = __package__,
         version   = __version__,
         status    = __status__,
         copyright = __copyright__

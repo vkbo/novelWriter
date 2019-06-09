@@ -314,7 +314,13 @@ class GuiMain(QMainWindow):
         if tHandle is None:
             tHandle = self.treeView.getSelectedHandle()
         if tHandle is None:
-            logger.warning("No document selected")
+            logger.debug("No document selected, trying last viewed")
+            tHandle = self.theProject.lastViewed
+        if tHandle is None:
+            logger.debug("No document selected, trying editor document")
+            tHandle = self.theDocument.docHandle
+        if tHandle is None:
+            logger.debug("No document selected, giving up")
             return False
 
         if self.docViewer.loadText(tHandle):
