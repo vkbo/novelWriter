@@ -312,7 +312,7 @@ class GuiMain(QMainWindow):
             logger.debug("No document selected, giving up")
             return False
 
-        if self.docViewer.loadText(tHandle):
+        if self.docViewer.loadText(tHandle) and not self.docViewer.isVisible():
             bPos = self.splitMain.sizes()
             self.docViewer.setVisible(True)
             vPos    = [0,0]
