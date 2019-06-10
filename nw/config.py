@@ -14,9 +14,11 @@ import logging
 import configparser
 import nw
 
-from os       import path, mkdir, getcwd
-from appdirs  import user_config_dir
-from datetime import datetime
+from os           import path, mkdir, getcwd
+from appdirs      import user_config_dir
+from datetime     import datetime
+
+from nw.constants import nwQuotes
 
 logger = logging.getLogger(__name__)
 
@@ -77,6 +79,8 @@ class Config:
         self.doReplaceDQuote = True
         self.doReplaceDash   = True
         self.doReplaceDots   = True
+        self.styleSQuote     = 1
+        self.styleDQuote     = 1
         self.wordCountTimer  = 5.0
 
         self.fmtDoubleQuotes = ["“","”"]
@@ -169,12 +173,21 @@ class Config:
         self.doReplaceDQuote = self._parseLine(cnfParse, cnfSec, "repdquotes",  self.CNF_BOOL, self.doReplaceDQuote)
         self.doReplaceDash   = self._parseLine(cnfParse, cnfSec, "repdash",     self.CNF_BOOL, self.doReplaceDash)
         self.doReplaceDots   = self._parseLine(cnfParse, cnfSec, "repdots",     self.CNF_BOOL, self.doReplaceDots)
+        self.styleSQuote     = self._parseLine(cnfParse, cnfSec, "stylesquote", self.CNF_INT,  self.styleSQuote)
+        self.styleDQuote     = self._parseLine(cnfParse, cnfSec, "styledquote", self.CNF_INT,  self.styleDQuote)
         self.spellLanguage   = self._parseLine(cnfParse, cnfSec, "spellcheck",  self.CNF_STR,  self.spellLanguage)
 
         ## Path
         cnfSec = "Path"
         for i in range(10):
             self.recentList[i] = self._parseLine(cnfParse, cnfSec, "recent%d" % i,self.CNF_STR, self.recentList[i])
+
+        if self.styleSQuote >= 0 and self.styleSQuote < len(nwQuotes.SINGLE):
+            self.fmtSingleQuotes[0] = nwQuotes.SINGLE[self.styleSQuote][0]
+            self.fmtSingleQuotes[1] = nwQuotes.SINGLE[self.styleSQuote][1]
+        if self.styleDQuote >= 0 and self.styleDQuote < len(nwQuotes.DOUBLE):
+            self.fmtDoubleQuotes[0] = nwQuotes.DOUBLE[self.styleDQuote][0]
+            self.fmtDoubleQuotes[1] = nwQuotes.DOUBLE[self.styleDQuote][1]
 
         return True
 
@@ -222,6 +235,8 @@ class Config:
         cnfParse.set(cnfSec,"repdquotes", str(self.doReplaceDQuote))
         cnfParse.set(cnfSec,"repdash",    str(self.doReplaceDash))
         cnfParse.set(cnfSec,"repdots",    str(self.doReplaceDots))
+        cnfParse.set(cnfSec,"stylesquote",str(self.styleSQuote))
+        cnfParse.set(cnfSec,"styledquote",str(self.styleDQuote))
         cnfParse.set(cnfSec,"spellcheck", str(self.spellLanguage))
 
         ## Path

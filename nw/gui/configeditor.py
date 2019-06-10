@@ -23,7 +23,8 @@ from PyQt5.QtWidgets import (
     QWidget, QTabWidget, QDialogButtonBox, QSpinBox, QGroupBox, QComboBox, QMessageBox,
     QCheckBox, QGridLayout, QFontComboBox
 )
-from nw.enum import nwAlert
+from nw.enum      import nwAlert
+from nw.constants import nwQuotes
 
 logger = logging.getLogger(__name__)
 
@@ -141,6 +142,7 @@ class GuiConfigEditGeneral(QWidget):
 
         self.outerBox.addWidget(self.guiLook)
         self.outerBox.addWidget(self.autoSave)
+        self.outerBox.addStretch(1)
         self.setLayout(self.outerBox)
 
         return
@@ -171,7 +173,7 @@ class GuiConfigEditEditor(QWidget):
 
         self.mainConf  = nw.CONFIG
         self.theParent = theParent
-        self.outerBox  = QVBoxLayout()
+        self.outerBox  = QGridLayout()
 
         # Text Style
         self.textStyle     = QGroupBox("Text Style", self)
@@ -179,7 +181,7 @@ class GuiConfigEditEditor(QWidget):
         self.textStyle.setLayout(self.textStyleForm)
 
         self.textStyleFont = QFontComboBox()
-        self.textStyleFont.setMaximumWidth(250)
+        self.textStyleFont.setMaximumWidth(300)
         self.textStyleFont.setCurrentFont(QFont(self.mainConf.textFont))
 
         self.textStyleSize = QSpinBox(self)
@@ -188,11 +190,11 @@ class GuiConfigEditEditor(QWidget):
         self.textStyleSize.setSingleStep(1)
         self.textStyleSize.setValue(self.mainConf.textSize)
 
-        self.textStyleForm.addWidget(QLabel("Font"),      0, 0)
-        self.textStyleForm.addWidget(self.textStyleFont,  0, 1, 1, 2)
-        self.textStyleForm.addWidget(QLabel("Font Size"), 1, 0)
-        self.textStyleForm.addWidget(self.textStyleSize,  1, 1)
-        self.textStyleForm.setColumnStretch(3, 1)
+        self.textStyleForm.addWidget(QLabel("Font Family"), 0, 0)
+        self.textStyleForm.addWidget(self.textStyleFont,    0, 1)
+        self.textStyleForm.addWidget(QLabel("Size"),        0, 2)
+        self.textStyleForm.addWidget(self.textStyleSize,    0, 3)
+        self.textStyleForm.setColumnStretch(4, 1)
 
         # Text Flow
         self.textFlow     = QGroupBox("Text Flow", self)
@@ -235,10 +237,100 @@ class GuiConfigEditEditor(QWidget):
         self.textFlowForm.addWidget(self.testFlowAutoSelect,    2, 1)
         self.textFlowForm.setColumnStretch(4, 1)
 
+        # Text Margins
+        self.textMargin     = QGroupBox("Margins", self)
+        self.textMarginForm = QGridLayout(self)
+        self.textMargin.setLayout(self.textMarginForm)
+
+        self.textMarginHor = QSpinBox(self)
+        self.textMarginHor.setMinimum(0)
+        self.textMarginHor.setMaximum(2000)
+        self.textMarginHor.setSingleStep(1)
+        self.textMarginHor.setValue(self.mainConf.textMargin[0])
+
+        self.textMarginVer = QSpinBox(self)
+        self.textMarginVer.setMinimum(0)
+        self.textMarginVer.setMaximum(2000)
+        self.textMarginVer.setSingleStep(1)
+        self.textMarginVer.setValue(self.mainConf.textMargin[1])
+
+        self.textMarginTab = QSpinBox(self)
+        self.textMarginTab.setMinimum(0)
+        self.textMarginTab.setMaximum(200)
+        self.textMarginTab.setSingleStep(1)
+        self.textMarginTab.setValue(self.mainConf.tabWidth)
+
+        self.textMarginForm.addWidget(QLabel("Horizontal"), 0, 0)
+        self.textMarginForm.addWidget(self.textMarginHor,   0, 1)
+        self.textMarginForm.addWidget(QLabel("pixles"),     0, 2)
+        self.textMarginForm.addWidget(QLabel("Vertical"),   1, 0)
+        self.textMarginForm.addWidget(self.textMarginVer,   1, 1)
+        self.textMarginForm.addWidget(QLabel("pixles"),     1, 2)
+        self.textMarginForm.addWidget(QLabel("Tab Width"),  2, 0)
+        self.textMarginForm.addWidget(self.textMarginTab,   2, 1)
+        self.textMarginForm.addWidget(QLabel("pixles"),     2, 2)
+        self.textMarginForm.setColumnStretch(4, 1)
+
+        # Auto-Replace
+        self.autoReplace     = QGroupBox("Auto-Replace", self)
+        self.autoReplaceForm = QGridLayout(self)
+        self.autoReplace.setLayout(self.autoReplaceForm)
+
+        self.autoReplaceMain = QCheckBox(self)
+        self.autoReplaceMain.setToolTip("Auto-replace text as you type.")
+        if self.mainConf.doReplace:
+            self.autoReplaceMain.setCheckState(Qt.Checked)
+        else:
+            self.autoReplaceMain.setCheckState(Qt.Unchecked)
+
+        self.autoReplaceSQ = QCheckBox(self)
+        self.autoReplaceSQ.setToolTip("Auto-replace single quotes.")
+        if self.mainConf.doReplaceSQuote:
+            self.autoReplaceSQ.setCheckState(Qt.Checked)
+        else:
+            self.autoReplaceSQ.setCheckState(Qt.Unchecked)
+
+        self.autoReplaceSStyle = QComboBox()
+        for n, qTup in enumerate(nwQuotes.SINGLE):
+            qA, qB, qStr = qTup
+            self.autoReplaceSStyle.addItem("%s: %stext%s" % (qStr, qA, qB), n)
+        singleIdx = self.autoReplaceSStyle.findData(self.mainConf.styleSQuote)
+        if singleIdx != -1:
+            self.autoReplaceSStyle.setCurrentIndex(singleIdx)
+
+        self.autoReplaceDQ = QCheckBox(self)
+        self.autoReplaceDQ.setToolTip("Auto-replace double quotes.")
+        if self.mainConf.doReplaceDQuote:
+            self.autoReplaceDQ.setCheckState(Qt.Checked)
+        else:
+            self.autoReplaceDQ.setCheckState(Qt.Unchecked)
+
+        self.autoReplaceDStyle = QComboBox()
+        for n, qTup in enumerate(nwQuotes.DOUBLE):
+            qA, qB, qStr = qTup
+            self.autoReplaceDStyle.addItem("%s: %stext%s" % (qStr, qA, qB), n)
+        doubleIdx = self.autoReplaceDStyle.findData(self.mainConf.styleSQuote)
+        if doubleIdx != -1:
+            self.autoReplaceDStyle.setCurrentIndex(doubleIdx)
+
+        self.autoReplaceForm.addWidget(QLabel("Enable Feature"), 0, 0)
+        self.autoReplaceForm.addWidget(self.autoReplaceMain,     0, 1)
+        self.autoReplaceForm.addWidget(QLabel("Single Quotes"),  1, 0)
+        self.autoReplaceForm.addWidget(self.autoReplaceSQ,       1, 1)
+        self.autoReplaceForm.addWidget(QLabel("Style"),          1, 2)
+        self.autoReplaceForm.addWidget(self.autoReplaceSStyle,   1, 3)
+        self.autoReplaceForm.addWidget(QLabel("Double Quotes"),  2, 0)
+        self.autoReplaceForm.addWidget(self.autoReplaceDQ,       2, 1)
+        self.autoReplaceForm.addWidget(QLabel("Style"),          2, 2)
+        self.autoReplaceForm.addWidget(self.autoReplaceDStyle,   2, 3)
+        self.autoReplaceForm.setColumnStretch(4, 1)
+
         # Assemble
-        self.outerBox.addWidget(self.textStyle)
-        self.outerBox.addWidget(self.textFlow)
-        self.outerBox.addStretch(0)
+        self.outerBox.addWidget(self.textStyle,   0, 0, 1, 2)
+        self.outerBox.addWidget(self.textFlow,    1, 0)
+        self.outerBox.addWidget(self.textMargin,  1, 1)
+        self.outerBox.addWidget(self.autoReplace, 2, 0, 1, 2)
+        self.outerBox.setColumnStretch(2, 1)
         self.setLayout(self.outerBox)
 
         return
@@ -260,6 +352,15 @@ class GuiConfigEditEditor(QWidget):
         self.mainConf.textFixedW  = textFixedW
         self.mainConf.doJustify   = doJustify
         self.mainConf.autoSelect  = autoSelect
+
+        textMarginH = self.textMarginHor.value()
+        textMarginV = self.textMarginVer.value()
+        tabWidth    = self.textMarginTab.value()
+
+        self.mainConf.textMargin[0] = textMarginH
+        self.mainConf.textMargin[1] = textMarginV
+        self.mainConf.tabWidth      = tabWidth
+
         self.mainConf.confChanged = True
 
         return False

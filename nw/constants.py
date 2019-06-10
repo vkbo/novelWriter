@@ -70,3 +70,18 @@ class nwLabels():
     }
 
 # END Class nwLabels
+
+class nwQuotes():
+
+    SINGLE = [
+        ("'",  "'",  "Straight"),
+        ("‘",  "’",  "English"),
+    ]
+    DOUBLE = [
+        ("\"", "\"", "Straight"),
+        ("“",  "”",  "English"),
+        ("«",  "»",  "Frensh"),
+        ("»",  "«",  "Danish"),
+    ]
+
+# END Class nwQuotes
