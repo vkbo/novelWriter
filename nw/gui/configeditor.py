@@ -361,6 +361,18 @@ class GuiConfigEditEditor(QWidget):
         self.mainConf.textMargin[1] = textMarginV
         self.mainConf.tabWidth      = tabWidth
 
+        doReplace       = self.autoReplaceMain.isChecked()
+        doReplaceSQuote = self.autoReplaceSQ.isChecked()
+        doReplaceDQuote = self.autoReplaceDQ.isChecked()
+        styleSQuote     = self.autoReplaceSStyle.currentData()
+        styleDQuote     = self.autoReplaceDStyle.currentData()
+
+        self.mainConf.doReplace       = doReplace
+        self.mainConf.doReplaceSQuote = doReplaceSQuote
+        self.mainConf.doReplaceDQuote = doReplaceDQuote
+        self.mainConf.setSingleQuotes(styleSQuote)
+        self.mainConf.setDoubleQuotes(styleDQuote)
+
         self.mainConf.confChanged = True
 
         return False

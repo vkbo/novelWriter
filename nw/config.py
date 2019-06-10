@@ -182,12 +182,8 @@ class Config:
         for i in range(10):
             self.recentList[i] = self._parseLine(cnfParse, cnfSec, "recent%d" % i,self.CNF_STR, self.recentList[i])
 
-        if self.styleSQuote >= 0 and self.styleSQuote < len(nwQuotes.SINGLE):
-            self.fmtSingleQuotes[0] = nwQuotes.SINGLE[self.styleSQuote][0]
-            self.fmtSingleQuotes[1] = nwQuotes.SINGLE[self.styleSQuote][1]
-        if self.styleDQuote >= 0 and self.styleDQuote < len(nwQuotes.DOUBLE):
-            self.fmtDoubleQuotes[0] = nwQuotes.DOUBLE[self.styleDQuote][0]
-            self.fmtDoubleQuotes[1] = nwQuotes.DOUBLE[self.styleDQuote][1]
+        self.setSingleQuotes(self.styleSQuote)
+        self.setDoubleQuotes(self.styleDQuote)
 
         return True
 
@@ -308,6 +304,22 @@ class Config:
         self.docPanePos  = panePos
         self.confChanged = True
         return True
+
+    def setSingleQuotes(self, quoteStyle):
+        if quoteStyle >= 0 and quoteStyle < len(nwQuotes.SINGLE):
+            self.fmtSingleQuotes[0] = nwQuotes.SINGLE[quoteStyle][0]
+            self.fmtSingleQuotes[1] = nwQuotes.SINGLE[quoteStyle][1]
+            self.styleSQuote = quoteStyle
+            return True
+        return False
+
+    def setDoubleQuotes(self, quoteStyle):
+        if quoteStyle >= 0 and quoteStyle < len(nwQuotes.DOUBLE):
+            self.fmtDoubleQuotes[0] = nwQuotes.DOUBLE[quoteStyle][0]
+            self.fmtDoubleQuotes[1] = nwQuotes.DOUBLE[quoteStyle][1]
+            self.styleDQuote = quoteStyle
+            return True
+        return False
 
     ##
     #  Internal Functions

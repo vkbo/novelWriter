@@ -76,12 +76,20 @@ class nwQuotes():
     SINGLE = [
         ("'",  "'",  "Straight"),
         ("‘",  "’",  "English"),
+        ("‹",  "›",  "French"),
+        ("›",  "‹",  "Danish"),
+        ("’",  "’",  "Swedish"),
+        ("‚",  "‘",  "German"),
+        ("’",  "‚",  "Dutch"),
     ]
     DOUBLE = [
         ("\"", "\"", "Straight"),
         ("“",  "”",  "English"),
-        ("«",  "»",  "Frensh"),
+        ("«",  "»",  "French"),
         ("»",  "«",  "Danish"),
+        ("”",  "”",  "Swedish"),
+        ("„",  "“",  "German"),
+        ("„",  "”",  "Dutch"),
     ]
 
 # END Class nwQuotes
