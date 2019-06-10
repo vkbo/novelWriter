@@ -32,7 +32,9 @@ class GuiDocHighlighter(QSyntaxHighlighter):
         self.theDict    = None
         self.theHandle  = None
         self.spellCheck = False
+        self.spellRx    = None
         self.hRules     = []
+        self.hStyles    = {}
 
         self.colHead    = QColor(*self.theTheme.colHead)
         self.colHeadH   = QColor(*self.theTheme.colHeadH)
@@ -46,6 +48,14 @@ class GuiDocHighlighter(QSyntaxHighlighter):
         self.colSpell   = QColor(*self.theTheme.colSpell)
         self.colTagErr  = QColor(*self.theTheme.colTagErr)
         self.colRepTag  = QColor(*self.theTheme.colRepTag)
+
+        self.initHighlighter()
+
+        logger.debug("DocHighlighter initialisation complete")
+
+        return
+
+    def initHighlighter(self):
 
         self.hStyles = {
             "header1"   : self._makeFormat(self.colHead, "bold",1.8),
@@ -160,9 +170,7 @@ class GuiDocHighlighter(QSyntaxHighlighter):
         self.rules   = [(QRegularExpression(a),b) for (a,b) in self.hRules]
         self.spellRx = QRegularExpression(r"\b[^\s]+\b")
 
-        logger.debug("DocHighlighter initialisation complete")
-
-        return
+        return True
 
     ##
     #  Setters

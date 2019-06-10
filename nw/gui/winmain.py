@@ -465,6 +465,7 @@ class GuiMain(QMainWindow):
         if dlgConf.exec_() == QDialog.Accepted:
             logger.debug("Applying new preferences")
             self.initMain()
+            self.docEditor.initEditor()
         return True
 
     def editProjectDialog(self):

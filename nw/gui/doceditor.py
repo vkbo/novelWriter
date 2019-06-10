@@ -18,7 +18,7 @@ from time                import time
 
 from PyQt5.QtCore        import Qt, QTimer
 from PyQt5.QtWidgets     import QTextEdit, QAction, QMenu, QShortcut
-from PyQt5.QtGui         import QTextCursor, QTextOption, QIcon, QKeySequence
+from PyQt5.QtGui         import QTextCursor, QTextOption, QIcon, QKeySequence, QFont
 
 from nw.project.document import NWDoc
 from nw.gui.dochighlight import GuiDocHighlighter
@@ -113,7 +113,18 @@ class GuiDocEditor(QTextEdit):
         return True
 
     def initEditor(self):
+
+        tHandle = self.theHandle
+
+        # Set Font
+        if self.mainConf.textFont is not None:
+            self.setFontFamily(self.mainConf.textFont)
+        else:
+            # If none is defined, set the default back to config
+            theFont = self.theQDoc.defaultFont().family()
+            self.mainConf.textFont = theFont
         self.setFontPointSize(self.mainConf.textSize)
+
         if self.mainConf.textFixedW:
             self.setLineWrapMode(QTextEdit.FixedPixelWidth)
             self.setLineWrapColumnOrWidth(self.mainConf.textWidth)
@@ -121,12 +132,19 @@ class GuiDocEditor(QTextEdit):
             mTB = self.mainConf.textMargin[0]
             mLR = self.mainConf.textMargin[1]
             self.setViewportMargins(mLR,mTB,mLR,mTB)
+
         theOpt = QTextOption()
         if self.mainConf.tabWidth is not None:
             theOpt.setTabStopDistance(self.mainConf.tabWidth)
         if self.mainConf.doJustify:
             theOpt.setAlignment(Qt.AlignJustify)
         self.theQDoc.setDefaultTextOption(theOpt)
+
+        if tHandle is not None:
+            self.hLight.initHighlighter()
+            self.clearEditor()
+            self.loadText(tHandle)
+
         return True
 
     def loadText(self, tHandle):

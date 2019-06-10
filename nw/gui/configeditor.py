@@ -16,11 +16,12 @@ import nw
 from os import path
 
 from PyQt5.QtCore    import Qt
-from PyQt5.QtGui     import QIcon, QPixmap, QColor, QBrush, QStandardItemModel
+from PyQt5.QtGui     import QIcon, QPixmap, QColor, QBrush, QStandardItemModel, QFont
 from PyQt5.QtSvg     import QSvgWidget
 from PyQt5.QtWidgets import (
     QDialog, QHBoxLayout, QVBoxLayout, QFormLayout, QLineEdit, QPlainTextEdit, QLabel,
-    QWidget, QTabWidget, QDialogButtonBox, QSpinBox, QGroupBox, QComboBox, QMessageBox
+    QWidget, QTabWidget, QDialogButtonBox, QSpinBox, QGroupBox, QComboBox, QMessageBox,
+    QCheckBox, QGridLayout, QFontComboBox
 )
 from nw.enum import nwAlert
 
@@ -46,10 +47,12 @@ class GuiConfigEditor(QDialog):
         self.svgGradient.setFixedWidth(80)
 
         self.theProject.countStatus()
-        self.tabMain = GuiConfigEditGeneral(self.theParent, self.theProject)
+        self.tabMain   = GuiConfigEditGeneral(self.theParent)
+        self.tabEditor = GuiConfigEditEditor(self.theParent)
 
         self.tabWidget = QTabWidget()
         self.tabWidget.addTab(self.tabMain, "General")
+        self.tabWidget.addTab(self.tabEditor, "Editor")
 
         self.setLayout(self.outerBox)
         self.outerBox.addWidget(self.svgGradient)
@@ -74,6 +77,7 @@ class GuiConfigEditor(QDialog):
 
         needsRestart  = False
         needsRestart |= self.tabMain.saveValues()
+        needsRestart |= self.tabEditor.saveValues()
 
         if needsRestart:
             msgBox = QMessageBox()
@@ -95,12 +99,11 @@ class GuiConfigEditor(QDialog):
 
 class GuiConfigEditGeneral(QWidget):
 
-    def __init__(self, theParent, theProject):
+    def __init__(self, theParent):
         QWidget.__init__(self, theParent)
 
         self.mainConf   = nw.CONFIG
         self.theParent  = theParent
-        self.theProject = theProject
         self.outerBox   = QVBoxLayout()
 
         # User Interface
@@ -160,3 +163,105 @@ class GuiConfigEditGeneral(QWidget):
         return needsRestart
 
 # END Class GuiConfigEditGeneral
+
+class GuiConfigEditEditor(QWidget):
+
+    def __init__(self, theParent):
+        QWidget.__init__(self, theParent)
+
+        self.mainConf  = nw.CONFIG
+        self.theParent = theParent
+        self.outerBox  = QVBoxLayout()
+
+        # Text Style
+        self.textStyle     = QGroupBox("Text Style", self)
+        self.textStyleForm = QGridLayout(self)
+        self.textStyle.setLayout(self.textStyleForm)
+
+        self.textStyleFont = QFontComboBox()
+        self.textStyleFont.setMaximumWidth(250)
+        self.textStyleFont.setCurrentFont(QFont(self.mainConf.textFont))
+
+        self.textStyleSize = QSpinBox(self)
+        self.textStyleSize.setMinimum(5)
+        self.textStyleSize.setMaximum(120)
+        self.textStyleSize.setSingleStep(1)
+        self.textStyleSize.setValue(self.mainConf.textSize)
+
+        self.textStyleForm.addWidget(QLabel("Font"),      0, 0)
+        self.textStyleForm.addWidget(self.textStyleFont,  0, 1, 1, 2)
+        self.textStyleForm.addWidget(QLabel("Font Size"), 1, 0)
+        self.textStyleForm.addWidget(self.textStyleSize,  1, 1)
+        self.textStyleForm.setColumnStretch(3, 1)
+
+        # Text Flow
+        self.textFlow     = QGroupBox("Text Flow", self)
+        self.textFlowForm = QGridLayout(self)
+        self.textFlow.setLayout(self.textFlowForm)
+
+        self.textFlowFixed = QCheckBox(self)
+        self.textFlowFixed.setToolTip("Make text in editor fixed width and scale margins instead.")
+        if self.mainConf.textFixedW:
+            self.textFlowFixed.setCheckState(Qt.Checked)
+        else:
+            self.textFlowFixed.setCheckState(Qt.Unchecked)
+        self.textFlowWidth = QSpinBox(self)
+        self.textFlowWidth.setMinimum(300)
+        self.textFlowWidth.setMaximum(10000)
+        self.textFlowWidth.setSingleStep(10)
+        self.textFlowWidth.setValue(self.mainConf.textWidth)
+
+        self.textFlowJustify = QCheckBox(self)
+        self.textFlowJustify.setToolTip("Justify text in main document editor.")
+        if self.mainConf.doJustify:
+            self.textFlowJustify.setCheckState(Qt.Checked)
+        else:
+            self.textFlowJustify.setCheckState(Qt.Unchecked)
+
+        self.testFlowAutoSelect = QCheckBox(self)
+        self.testFlowAutoSelect.setToolTip("Auto-select word under cursor when applying formatting.")
+        if self.mainConf.autoSelect:
+            self.testFlowAutoSelect.setCheckState(Qt.Checked)
+        else:
+            self.testFlowAutoSelect.setCheckState(Qt.Unchecked)
+
+        self.textFlowForm.addWidget(QLabel("Fixed Width"),      0, 0)
+        self.textFlowForm.addWidget(self.textFlowFixed,         0, 1)
+        self.textFlowForm.addWidget(self.textFlowWidth,         0, 2)
+        self.textFlowForm.addWidget(QLabel("pixles"),           0, 3)
+        self.textFlowForm.addWidget(QLabel("Justify Text"),     1, 0)
+        self.textFlowForm.addWidget(self.textFlowJustify,       1, 1)
+        self.textFlowForm.addWidget(QLabel("Auto-Select Text"), 2, 0)
+        self.textFlowForm.addWidget(self.testFlowAutoSelect,    2, 1)
+        self.textFlowForm.setColumnStretch(4, 1)
+
+        # Assemble
+        self.outerBox.addWidget(self.textStyle)
+        self.outerBox.addWidget(self.textFlow)
+        self.outerBox.addStretch(0)
+        self.setLayout(self.outerBox)
+
+        return
+
+    def saveValues(self):
+
+        textFont = self.textStyleFont.currentFont().family()
+        textSize = self.textStyleSize.value()
+
+        self.mainConf.textFont = textFont
+        self.mainConf.textSize = textSize
+
+        textWidth  = self.textFlowWidth.value()
+        textFixedW = self.textFlowFixed.isChecked()
+        doJustify  = self.textFlowJustify.isChecked()
+        autoSelect = self.testFlowAutoSelect.isChecked()
+
+        self.mainConf.textWidth   = textWidth
+        self.mainConf.textFixedW  = textFixedW
+        self.mainConf.doJustify   = doJustify
+        self.mainConf.autoSelect  = autoSelect
+        self.mainConf.confChanged = True
+
+        return False
+
+# END Class GuiConfigEditEditor
