@@ -27,6 +27,7 @@ from nw.gui.doceditor     import GuiDocEditor
 from nw.gui.docviewer     import GuiDocViewer
 from nw.gui.docdetails    import GuiDocDetails
 from nw.gui.mainmenu      import GuiMainMenu
+from nw.gui.configeditor  import GuiConfigEditor
 from nw.gui.projecteditor import GuiProjectEditor
 from nw.gui.itemeditor    import GuiItemEditor
 from nw.gui.statusbar     import GuiMainStatus
@@ -453,6 +454,11 @@ class GuiMain(QMainWindow):
         if projPath:
             return projPath
         return None
+
+    def editConfigDialog(self):
+        dlgProj = GuiConfigEditor(self, self.theProject)
+        dlgProj.exec_()
+        return True
 
     def editProjectDialog(self):
         if self.hasProject:

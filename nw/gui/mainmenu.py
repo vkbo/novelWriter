@@ -492,10 +492,12 @@ class GuiMainMenu(QMenuBar):
         menuItem.triggered.connect(self.theParent.rebuildIndex)
         self.toolsMenu.addAction(menuItem)
 
-        # # Tools > Settings
-        # menuItem = QAction(QIcon.fromTheme("preferences-system"), "Preferences", self)
-        # menuItem.setStatusTip("Preferences")
-        # self.toolsMenu.addAction(menuItem)
+        # Tools > Settings
+        menuItem = QAction(QIcon.fromTheme("preferences-system"), "Preferences", self)
+        menuItem.setStatusTip("Preferences")
+        menuItem.setShortcut("Ctrl+,")
+        menuItem.triggered.connect(self.theParent.editConfigDialog)
+        self.toolsMenu.addAction(menuItem)
 
         return
 
