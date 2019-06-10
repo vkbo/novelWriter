@@ -311,6 +311,7 @@ class GuiProjectEditReplace(QWidget):
         self.bottomBox  = QHBoxLayout()
         self.listBox    = QTreeWidget()
         self.listBox.setHeaderLabels(["Keyword","Replace With"])
+        self.listBox.itemSelectionChanged.connect(self._selectedItem)
         self.listBox.setIndentation(0)
 
         for aKey, aVal in self.theProject.autoReplace.items():
@@ -319,14 +320,17 @@ class GuiProjectEditReplace(QWidget):
 
         self.editKey    = QLineEdit()
         self.editValue  = QLineEdit()
+        self.saveButton = QPushButton(QIcon.fromTheme("document-save"),"")
         self.addButton  = QPushButton(QIcon.fromTheme("list-add"),"")
         self.delButton  = QPushButton(QIcon.fromTheme("list-remove"),"")
 
+        self.saveButton.clicked.connect(self._saveEntry)
         self.addButton.clicked.connect(self._addEntry)
         self.delButton.clicked.connect(self._delEntry)
 
         self.bottomBox.addWidget(self.editKey, 2)
         self.bottomBox.addWidget(self.editValue, 3)
+        self.bottomBox.addWidget(self.saveButton)
         self.bottomBox.addWidget(self.addButton)
         self.bottomBox.addWidget(self.delButton)
 
@@ -336,41 +340,75 @@ class GuiProjectEditReplace(QWidget):
 
         return
 
-    def _addEntry(self):
-
-        newKey = self.editKey.text()
-        newVal = self.editValue.text()
-
-        saveKey = ""
-        for c in newKey:
-            if not c .isspace():
-                saveKey += c
-
-        if len(saveKey) > 0 and len(newVal) > 0:
-            newItem = QTreeWidgetItem(["<%s>" % saveKey, newVal])
-            self.listBox.addTopLevelItem(newItem)
-            self.editKey.clear()
-            self.editValue.clear()
-            self.arChanged = True
-
-        return True
-
-    def _delEntry(self):
-        selItem = self.listBox.selectedItems()
-        if len(selItem) == 0:
-            return False
-        self.listBox.takeTopLevelItem(self.listBox.indexOfTopLevelItem(selItem[0]))
-        self.arChanged = True
-        return True
-
     def getNewList(self):
         newList = {}
         for n in range(self.listBox.topLevelItemCount()):
             tItem = self.listBox.topLevelItem(n)
-            aKey = tItem.text(0)
-            aVal = tItem.text(1)
-            if len(aKey) > 2:
-                newList[aKey[1:-1]] = aVal
+            aKey  = self._stripNotAllowed(tItem.text(0))
+            aVal  = tItem.text(1)
+            if len(aKey) > 0:
+                newList[aKey] = aVal
         return newList
+
+    ##
+    #  Internal Functions
+    ##
+
+    def _selectedItem(self):
+        selItem = self._getSelectedItem()
+        if selItem is None:
+            return False
+        editKey = self._stripNotAllowed(selItem.text(0))
+        editVal = selItem.text(1)
+        self.editKey.setText(editKey)
+        self.editValue.setText(editVal)
+        return True
+
+    def _saveEntry(self):
+
+        selItem = self._getSelectedItem()
+        if selItem is None:
+            return False
+
+        newKey  = self.editKey.text()
+        newVal  = self.editValue.text()
+        saveKey = self._stripNotAllowed(newKey)
+
+        if len(saveKey) > 0 and len(newVal) > 0:
+            selItem.setText(0,"<%s>" % saveKey)
+            selItem.setText(1,newVal)
+            self.editKey.clear()
+            self.editValue.clear()
+            self.arChanged = True
+
+        return
+
+    def _addEntry(self):
+        saveKey = "<keyword%d>" % (self.listBox.topLevelItemCount() + 1)
+        newVal  = ""
+        newItem = QTreeWidgetItem([saveKey, newVal])
+        self.listBox.addTopLevelItem(newItem)
+        return True
+
+    def _delEntry(self):
+        selItem = self._getSelectedItem()
+        if selItem is None:
+            return False
+        self.listBox.takeTopLevelItem(self.listBox.indexOfTopLevelItem(selItem))
+        self.arChanged = True
+        return True
+
+    def _getSelectedItem(self):
+        selItem = self.listBox.selectedItems()
+        if len(selItem) == 0:
+            return None
+        return selItem[0]
+
+    def _stripNotAllowed(self, theKey):
+        retKey = ""
+        for c in theKey:
+            if c.isalnum():
+                retKey += c
+        return retKey
 
 # END Class GuiProjectEditReplace
