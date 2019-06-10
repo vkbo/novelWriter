@@ -277,6 +277,8 @@ class GuiProjectEditStatus(QWidget):
             newIcon.fill(self.selColour)
             self.editName.setText(selVal[0])
             self.colButton.setIcon(QIcon(newIcon))
+            self.editName.selectAll()
+            self.editName.setFocus()
         return
 
     ##
@@ -362,6 +364,8 @@ class GuiProjectEditReplace(QWidget):
         editVal = selItem.text(1)
         self.editKey.setText(editKey)
         self.editValue.setText(editVal)
+        self.editKey.selectAll()
+        self.editKey.setFocus()
         return True
 
     def _saveEntry(self):
