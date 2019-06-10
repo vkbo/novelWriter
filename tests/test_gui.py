@@ -315,18 +315,25 @@ def testProjectEditor(qtbot, nwTempGUI, nwRef):
 
     # Auto-Replace Tab
     projEdit.tabWidget.setCurrentWidget(projEdit.tabReplace)
+
+    qtbot.mouseClick(projEdit.tabReplace.addButton, Qt.LeftButton)
+    projEdit.tabReplace.listBox.topLevelItem(0).setSelected(True)
     for c in "Th is ":
         qtbot.keyClick(projEdit.tabReplace.editKey, c, delay=keyDelay)
     for c in "With This Stuff ":
         qtbot.keyClick(projEdit.tabReplace.editValue, c, delay=keyDelay)
-    qtbot.mouseClick(projEdit.tabReplace.addButton, Qt.LeftButton)
+    qtbot.mouseClick(projEdit.tabReplace.saveButton, Qt.LeftButton)
 
+    projEdit.tabReplace.listBox.clearSelection()
+    qtbot.mouseClick(projEdit.tabReplace.addButton, Qt.LeftButton)
+    projEdit.tabReplace.listBox.topLevelItem(1).setSelected(True)
     for c in "Delete":
         qtbot.keyClick(projEdit.tabReplace.editKey, c, delay=keyDelay)
     for c in "This Stuff":
         qtbot.keyClick(projEdit.tabReplace.editValue, c, delay=keyDelay)
-    qtbot.mouseClick(projEdit.tabReplace.addButton, Qt.LeftButton)
+    qtbot.mouseClick(projEdit.tabReplace.saveButton, Qt.LeftButton)
 
+    projEdit.tabReplace.listBox.clearSelection()
     projEdit.tabReplace.listBox.topLevelItem(1).setSelected(True)
     qtbot.mouseClick(projEdit.tabReplace.delButton, Qt.LeftButton)
 
