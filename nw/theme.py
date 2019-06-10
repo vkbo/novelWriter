@@ -14,19 +14,30 @@ import logging
 import configparser
 import nw
 
-from os import path
+from os import path, listdir
+
+from nw.enum import nwAlert
 
 logger = logging.getLogger(__name__)
 
 class Theme:
 
-    def __init__(self):
+    def __init__(self, theParent):
 
         self.mainConf  = nw.CONFIG
+        self.theParent = theParent
         self.cssName   = "styles.css"
         self.confName  = "theme.conf"
+        self.themeList = []
 
         # Loaded Theme Settings
+
+        ## Main
+        self.themeName = "No Name"
+
+        ## Syntax
+        self.colText   = [0,0,0]
+        self.colLink   = [0,0,0]
         self.colHead   = [0,0,0]
         self.colHeadH  = [0,0,0]
         self.colEmph   = [0,0,0]
@@ -83,6 +94,11 @@ class Theme:
             logger.error("Could not load theme config file")
             return False
 
+        ## Main
+        cnfSec = "Main"
+        if confParser.has_section(cnfSec):
+            self.themeName = confParser.get(cnfSec,"name")
+
         ## Syntax
         cnfSec = "Syntax"
         if confParser.has_section(cnfSec):
@@ -102,6 +118,29 @@ class Theme:
             self.colRepTag = self._loadColour(confParser,cnfSec,"replacetag")
 
         return True
+
+    def listThemes(self):
+
+        if len(self.themeList) > 0:
+            return self.themeList
+
+        confParser = configparser.ConfigParser()
+        for themeDir in listdir(self.mainConf.themeRoot):
+            themeConf = path.join(self.mainConf.themeRoot, themeDir, self.confName)
+            logger.verbose("Checking theme config for '%s'" % themeDir)
+            try:
+                confParser.read_file(open(themeConf))
+            except Exception as e:
+                self.theParent.makeAlert(["Could not load theme config file",str(e)],nwAlert.ERROR)
+                return []
+            themeName = ""
+            if confParser.has_section("Main"):
+                themeName = confParser.get("Main","name")
+                logger.verbose("Theme name is '%s'" % themeName)
+            if themeName != "":
+                self.themeList.append((themeDir, themeName))
+
+        return self.themeList
 
     ##
     #  Internal Functions

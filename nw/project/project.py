@@ -373,8 +373,9 @@ class NWProject():
         return True
 
     def setSpellCheck(self, theMode):
-        self.spellCheck = theMode
-        self.setProjectChanged(True)
+        if self.spellCheck != theMode:
+            self.spellCheck = theMode
+            self.setProjectChanged(True)
         return True
 
     def setTreeOrder(self, newOrder):
@@ -385,18 +386,21 @@ class NWProject():
         return True
 
     def setLastEdited(self, tHandle):
-        self.lastEdited = tHandle
-        self.setProjectChanged(True)
+        if self.lastEdited != tHandle:
+            self.lastEdited = tHandle
+            self.setProjectChanged(True)
         return True
 
     def setLastViewed(self, tHandle):
-        self.lastViewed = tHandle
-        self.setProjectChanged(True)
+        if self.lastViewed != tHandle:
+            self.lastViewed = tHandle
+            self.setProjectChanged(True)
         return True
 
     def setProjectWordCount(self, theCount):
-        self.currWCount = theCount
-        self.setProjectChanged(True)
+        if self.currWCount != theCount:
+            self.currWCount = theCount
+            self.setProjectChanged(True)
         return True
 
     def getSessionWordCount(self):

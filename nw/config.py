@@ -43,13 +43,14 @@ class Config:
         self.appPath   = None
         self.appRoot   = None
         self.guiPath   = None
+        self.themeRoot = None
         self.themePath = None
 
         # Set default values
         self.confChanged  = False
 
         ## General
-        self.guiTheme     = "default"
+        self.guiTheme     = "default_dark"
         self.winGeometry  = [1100, 650]
         self.treeColWidth = [120, 30, 50]
         self.mainPanePos  = [300, 800]
@@ -106,7 +107,8 @@ class Config:
         self.appRoot   = path.join(self.appPath,path.pardir)
         self.helpPath  = path.join(self.appRoot,"help","en_GB")
         self.guiPath   = path.join(self.appPath,"gui")
-        self.themePath = path.join(self.appPath,"themes")
+        self.themeRoot = path.join(self.appPath,"themes")
+        self.themePath = path.join(self.themeRoot)
 
         # If config folder does not exist, make it.
         # This assumes that the os config folder itself exists.

@@ -20,8 +20,7 @@ from PyQt5.QtGui     import QIcon, QPixmap, QColor, QBrush, QStandardItemModel
 from PyQt5.QtSvg     import QSvgWidget
 from PyQt5.QtWidgets import (
     QDialog, QHBoxLayout, QVBoxLayout, QFormLayout, QLineEdit, QPlainTextEdit, QLabel,
-    QWidget, QTabWidget, QDialogButtonBox, QListWidget, QListWidgetItem, QPushButton,
-    QColorDialog, QAbstractItemView, QTreeWidget, QTreeWidgetItem
+    QWidget, QTabWidget, QDialogButtonBox, QSpinBox, QGroupBox, QComboBox, QMessageBox
 )
 from nw.enum import nwAlert
 
@@ -40,7 +39,7 @@ class GuiConfigEditor(QDialog):
         self.outerBox   = QHBoxLayout()
         self.innerBox   = QVBoxLayout()
 
-        self.setWindowTitle("%s Configuration" % nw.__package__)
+        self.setWindowTitle("Preferences")
 
         self.gradPath = path.abspath(path.join(self.mainConf.appPath,"graphics","block.svg"))
         self.svgGradient = QSvgWidget(self.gradPath)
@@ -70,8 +69,21 @@ class GuiConfigEditor(QDialog):
         return
 
     def _doSave(self):
+
         logger.verbose("ConfigEditor save button clicked")
-        self.close()
+
+        needsRestart  = False
+        needsRestart |= self.tabMain.saveValues()
+
+        if needsRestart:
+            msgBox = QMessageBox()
+            msgBox.information(
+                self, "Preferences",
+                "Some changes will not be applied until<br>%s has been restarted." % nw.__package__
+            )
+
+        self.accept()
+
         return
 
     def _doClose(self):
@@ -86,12 +98,65 @@ class GuiConfigEditGeneral(QWidget):
     def __init__(self, theParent, theProject):
         QWidget.__init__(self, theParent)
 
-        self.theParent   = theParent
-        self.theProject  = theProject
-        self.mainForm    = QFormLayout()
+        self.mainConf   = nw.CONFIG
+        self.theParent  = theParent
+        self.theProject = theProject
+        self.outerBox   = QVBoxLayout()
 
-        self.setLayout(self.mainForm)
+        # User Interface
+        self.guiLook     = QGroupBox("User Interface", self)
+        self.guiLookForm = QFormLayout(self)
+        self.guiLook.setLayout(self.guiLookForm)
+
+        self.theThemes = self.theParent.theTheme.listThemes()
+        self.guiLookTheme = QComboBox()
+        for themeDir, themeName in self.theThemes:
+            self.guiLookTheme.addItem(themeName, themeDir)
+        themeIdx = self.guiLookTheme.findData(self.mainConf.guiTheme)
+        if themeIdx != -1:
+            self.guiLookTheme.setCurrentIndex(themeIdx)
+        self.guiLookForm.addRow("Theme", self.guiLookTheme)
+
+        # AutoSave
+        self.autoSave     = QGroupBox("Auto-Save", self)
+        self.autoSaveForm = QFormLayout(self)
+        self.autoSave.setLayout(self.autoSaveForm)
+
+        self.autoSaveDoc = QSpinBox(self)
+        self.autoSaveDoc.setMinimum(5)
+        self.autoSaveDoc.setMaximum(600)
+        self.autoSaveDoc.setSingleStep(1)
+        self.autoSaveDoc.setValue(self.mainConf.autoSaveDoc)
+        self.autoSaveForm.addRow("Save Document (seconds)", self.autoSaveDoc)
+
+        self.autoSaveProj = QSpinBox(self)
+        self.autoSaveProj.setMinimum(5)
+        self.autoSaveProj.setMaximum(600)
+        self.autoSaveProj.setSingleStep(1)
+        self.autoSaveProj.setValue(self.mainConf.autoSaveProj)
+        self.autoSaveForm.addRow("Save Project (seconds)", self.autoSaveProj)
+
+        self.outerBox.addWidget(self.guiLook)
+        self.outerBox.addWidget(self.autoSave)
+        self.setLayout(self.outerBox)
 
         return
+
+    def saveValues(self):
+
+        autoSaveDoc  = self.autoSaveDoc.value()
+        autoSaveProj = self.autoSaveProj.value()
+        guiTheme     = self.guiLookTheme.currentData()
+
+        # Check if restart is needed
+        needsRestart = False
+        needsRestart |= self.mainConf.guiTheme != guiTheme
+
+        self.mainConf.autoSaveDoc  = autoSaveDoc
+        self.mainConf.autoSaveProj = autoSaveProj
+        self.mainConf.guiTheme     = guiTheme
+        self.mainConf.confChanged  = True
+
+        return needsRestart
 
 # END Class GuiConfigEditGeneral
