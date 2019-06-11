@@ -14,6 +14,12 @@ import logging
 import enchant
 import nw
 
+try:
+    import pycountry
+    hasPyCountry = True
+except:
+    hasPyCountry = False
+
 from nw.tools.spellcheck import NWSpellCheck
 
 logger = logging.getLogger(__name__)
@@ -30,7 +36,7 @@ class NWSpellEnchant(NWSpellCheck):
             self.theDict = enchant.Dict(theLang)
         else:
             self.theDict = enchant.DictWithPWL(theLang, projectDict)
-        logger.debug("Enchant spell checking for %s loaded" % theLang)
+        logger.debug("Enchant spell checking for language %s loaded" % theLang)
         return
 
     def checkWord(self, theWord):
@@ -46,7 +52,20 @@ class NWSpellEnchant(NWSpellCheck):
     def listDictionaries(self):
         retList = []
         for spTag, spProvider in enchant.list_dicts():
-            retList.append((spTag, "%s [%s]" % (spTag, spProvider.name)))
+            if hasPyCountry:
+                spList  = []
+                try:
+                    langObj = pycountry.languages.get(alpha_2 = spTag[:2])
+                    spList.append(langObj.name)
+                except:
+                    spList.append(spTag[:2])
+                if len(spTag) > 3:
+                    spList.append("(%s)" % spTag[3:])
+                spList.append("[%s]" % spProvider.name)
+                spName = " ".join(spList)
+            else:
+                spName = "%s [%s]" % (spTag, spProvider.name)
+            retList.append((spTag, spName))
         return retList
 
 # END Class NWSpellEnchant

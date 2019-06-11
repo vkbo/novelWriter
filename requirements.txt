@@ -2,3 +2,4 @@ pyqt5
 appdirs
 lxml
 pyenchant
+pycountry
