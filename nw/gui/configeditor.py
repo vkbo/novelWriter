@@ -23,7 +23,8 @@ from PyQt5.QtWidgets import (
     QWidget, QTabWidget, QDialogButtonBox, QSpinBox, QGroupBox, QComboBox, QMessageBox,
     QCheckBox, QGridLayout, QFontComboBox
 )
-from nw.enum import nwAlert
+from nw.enum      import nwAlert
+from nw.constants import nwQuotes
 
 logger = logging.getLogger(__name__)
 
@@ -460,17 +461,9 @@ class GuiConfigEditEditor(QWidget):
     ##
 
     def _checkQuoteSymbol(self, toCheck):
-        validOnes = [
-            "\"","'",
-            "“","”","„",
-            "‘","’","‚",
-            "«","»","‹","›",
-            "『","』","「","」",
-            "《","》","〈","〉"
-        ]
         if len(toCheck) != 1:
             return False
-        if toCheck in validOnes:
+        if toCheck in nwQuotes.SYMBOLS:
             return True
         return False
 
