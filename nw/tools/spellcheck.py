@@ -11,7 +11,6 @@
 """
 
 import logging
-import enchant
 import nw
 
 logger = logging.getLogger(__name__)
