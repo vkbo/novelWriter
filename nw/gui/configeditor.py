@@ -112,25 +112,28 @@ class GuiConfigEditGeneral(QWidget):
 
         self.mainConf   = nw.CONFIG
         self.theParent  = theParent
-        self.outerBox   = QVBoxLayout()
+        self.outerBox   = QGridLayout()
 
         # User Interface
         self.guiLook     = QGroupBox("User Interface", self)
-        self.guiLookForm = QFormLayout(self)
+        self.guiLookForm = QGridLayout(self)
         self.guiLook.setLayout(self.guiLookForm)
 
-        self.theThemes = self.theParent.theTheme.listThemes()
         self.guiLookTheme = QComboBox()
+        self.guiLookTheme.setMinimumWidth(200)
+        self.theThemes = self.theParent.theTheme.listThemes()
         for themeDir, themeName in self.theThemes:
             self.guiLookTheme.addItem(themeName, themeDir)
         themeIdx = self.guiLookTheme.findData(self.mainConf.guiTheme)
         if themeIdx != -1:
             self.guiLookTheme.setCurrentIndex(themeIdx)
-        self.guiLookForm.addRow("Theme", self.guiLookTheme)
+
+        self.guiLookForm.addWidget(QLabel("Theme"),   0, 0)
+        self.guiLookForm.addWidget(self.guiLookTheme, 0, 1)
 
         # AutoSave
         self.autoSave     = QGroupBox("Auto-Save", self)
-        self.autoSaveForm = QFormLayout(self)
+        self.autoSaveForm = QGridLayout(self)
         self.autoSave.setLayout(self.autoSaveForm)
 
         self.autoSaveDoc = QSpinBox(self)
@@ -138,18 +141,24 @@ class GuiConfigEditGeneral(QWidget):
         self.autoSaveDoc.setMaximum(600)
         self.autoSaveDoc.setSingleStep(1)
         self.autoSaveDoc.setValue(self.mainConf.autoSaveDoc)
-        self.autoSaveForm.addRow("Save Document (seconds)", self.autoSaveDoc)
 
         self.autoSaveProj = QSpinBox(self)
         self.autoSaveProj.setMinimum(5)
         self.autoSaveProj.setMaximum(600)
         self.autoSaveProj.setSingleStep(1)
         self.autoSaveProj.setValue(self.mainConf.autoSaveProj)
-        self.autoSaveForm.addRow("Save Project (seconds)", self.autoSaveProj)
 
-        self.outerBox.addWidget(self.guiLook)
-        self.outerBox.addWidget(self.autoSave)
-        self.outerBox.addStretch(1)
+        self.autoSaveForm.addWidget(QLabel("Document"), 0, 0)
+        self.autoSaveForm.addWidget(self.autoSaveDoc,   0, 1)
+        self.autoSaveForm.addWidget(QLabel("seconds"),  0, 2)
+        self.autoSaveForm.addWidget(QLabel("Project"),  1, 0)
+        self.autoSaveForm.addWidget(self.autoSaveProj,  1, 1)
+        self.autoSaveForm.addWidget(QLabel("seconds"),  1, 2)
+
+        self.outerBox.addWidget(self.guiLook,  0, 0)
+        self.outerBox.addWidget(self.autoSave, 1, 0)
+        self.outerBox.setColumnStretch(2, 1)
+        self.outerBox.setRowStretch(2, 1)
         self.setLayout(self.outerBox)
 
         return
