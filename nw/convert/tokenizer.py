@@ -60,11 +60,11 @@ class Tokenizer():
 
     def doAutoReplace(self):
         if len(self.theProject.autoReplace) > 0:
-            theDict = {}
+            repDict = {}
             for aKey, aVal in self.theProject.autoReplace.items():
-                theDict["<%s>" % aKey] = aVal
-            xRep = re.compile("|".join([re.escape(k) for k in theDict.keys()]), flags=re.DOTALL)
-            self.theText = xRep.sub(lambda x: theDict[x.group(0)], self.theText)
+                repDict["<%s>" % aKey] = aVal
+            xRep = re.compile("|".join([re.escape(k) for k in repDict.keys()]), flags=re.DOTALL)
+            self.theText = xRep.sub(lambda x: repDict[x.group(0)], self.theText)
         return
 
     def tokenizeText(self):

@@ -28,13 +28,13 @@ class ToHtml(Tokenizer):
     def doAutoReplace(self):
         Tokenizer.doAutoReplace(self)
 
-        theDict = {
+        repDict = {
             "<" : "&lt;",
             ">" : "&gt;",
             "&" : "&amp;",
         }
-        xRep = re.compile("|".join([re.escape(k) for k in theDict.keys()]), flags=re.DOTALL)
-        self.theText = xRep.sub(lambda x: theDict[x.group(0)], self.theText)
+        xRep = re.compile("|".join([re.escape(k) for k in repDict.keys()]), flags=re.DOTALL)
+        self.theText = xRep.sub(lambda x: repDict[x.group(0)], self.theText)
 
         return
 

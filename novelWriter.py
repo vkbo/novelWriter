@@ -29,12 +29,17 @@ except:
     print("ERROR: Failed to load dependency python3-appdirs")
     exit(1)
 
+spellPack = None
 try:
     import enchant
+    spellPack = "enchant"
 except:
-    print("ERROR: Failed to load dependency python3-enchant")
-    exit(1)
+    print("WARNING: No spell check library found.")
+    print("Please install python3-enchant if you want to use spell checking")
 
 if __name__ == "__main__":
     import nw
-    nw.main(sys.argv[1:])
+    inArgs = sys.argv[1:]
+    if spellPack is not None:
+        inArgs.append("--spell=%s" % spellPack)
+    nw.main(inArgs)

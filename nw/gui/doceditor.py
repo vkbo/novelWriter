@@ -12,7 +12,6 @@
 
 import logging
 import nw
-import enchant
 
 from time                import time
 
@@ -23,6 +22,7 @@ from PyQt5.QtGui         import QTextCursor, QTextOption, QIcon, QKeySequence, Q
 from nw.project.document import NWDoc
 from nw.gui.dochighlight import GuiDocHighlighter
 from nw.gui.wordcounter  import WordCounter
+from nw.tools.spellcheck import NWSpellCheck
 from nw.enum             import nwDocAction, nwAlert
 
 logger = logging.getLogger(__name__)
@@ -58,7 +58,13 @@ class GuiDocEditor(QTextEdit):
 
         # Core Elements
         self.theQDoc = self.document()
-        self.theDict = enchant.Dict(self.mainConf.spellLanguage)
+        if self.mainConf.spellTool == "enchant":
+            from nw.tools.spellenchant import NWSpellEnchant
+            self.theDict = NWSpellEnchant()
+        else:
+            self.theDict = NWSpellCheck()
+
+        self.theDict.setLanguage(self.mainConf.spellLanguage)
         self.hLight  = GuiDocHighlighter(self.theQDoc, self.theParent)
         self.hLight.setDict(self.theDict)
 
@@ -215,8 +221,7 @@ class GuiDocEditor(QTextEdit):
     def setPwl(self, pwlFile):
         if pwlFile is not None:
             self.pwlFile = pwlFile
-            self.theDict = enchant.DictWithPWL(self.mainConf.spellLanguage,pwlFile)
-            self.hLight.setDict(self.theDict)
+            self.theDict.setLanguage(self.mainConf.spellLanguage, pwlFile)
         return True
 
     def setSpellCheck(self, theMode):
@@ -314,7 +319,7 @@ class GuiDocEditor(QTextEdit):
         theWord = theCursor.selectedText()
         if theWord == "":
             return
-        if self.theDict.check(theWord):
+        if self.theDict.checkWord(theWord):
             return
 
         mnuSuggest = QMenu()
@@ -322,7 +327,7 @@ class GuiDocEditor(QTextEdit):
         mnuHead = QAction(spIcon,"Spelling Suggestion", mnuSuggest)
         mnuSuggest.addAction(mnuHead)
         mnuSuggest.addSeparator()
-        theSuggest = self.theDict.suggest(theWord)
+        theSuggest = self.theDict.suggestWords(theWord)
         if len(theSuggest) > 0:
             for aWord in theSuggest:
                 mnuWord = QAction(aWord, mnuSuggest)
@@ -353,7 +358,7 @@ class GuiDocEditor(QTextEdit):
     def _addWord(self, theCursor):
         theWord = theCursor.selectedText().strip()
         logger.info("Added '%s' to project dictionary" % theWord)
-        self.theDict.add_to_pwl(theWord)
+        self.theDict.addWord(theWord)
         self.hLight.setDict(self.theDict)
         self.hLight.rehighlightBlock(theCursor.block())
         return

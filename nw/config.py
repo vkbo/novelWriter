@@ -35,6 +35,7 @@ class Config:
         self.showGUI   = True
         self.debugGUI  = False
         self.debugInfo = False
+        self.spellTool = None
 
         # Set Paths
         self.confPath  = None
@@ -123,6 +124,11 @@ class Config:
         else:
             # If it does not exist, save a copy of the defaults
             self.saveConfig()
+
+        if self.spellTool is None:
+            logger.warning("No spell check tool available")
+        else:
+            logger.debug("Using spell check tool '%s'" % self.spellTool)
 
         return True
 

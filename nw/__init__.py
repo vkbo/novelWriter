@@ -82,6 +82,7 @@ def main(sysArgs):
         "version",
         "config=",
         "testmode",
+        "spell=",
     ]
 
     helpMsg = (
@@ -117,6 +118,7 @@ def main(sysArgs):
     confPath   = None
     testMode   = False
     debugGUI   = False
+    spellTool  = None
 
     # Parse Options
     try:
@@ -149,6 +151,8 @@ def main(sysArgs):
             confPath = inArg
         elif inOpt in ("--testmode"):
             testMode = True
+        elif inOpt in ("--spell"):
+            spellTool = inArg
         elif inOpt in ("-D","--debuggui"):
             debugLevel = logging.DEBUG
             debugStr   = "{name:>20}:{lineno:<4d}  {levelname:8}  {message:}"
@@ -158,6 +162,7 @@ def main(sysArgs):
     CONFIG.showGUI   = not testMode
     CONFIG.debugGUI  = debugGUI
     CONFIG.debugInfo = debugLevel < logging.INFO
+    CONFIG.spellTool = spellTool
 
     # Set Logging
     if showTime: debugStr = timeStr+debugStr

@@ -11,7 +11,6 @@
 """
 
 import logging
-import enchant
 import nw
 
 from os import path
@@ -139,8 +138,8 @@ class GuiConfigEditGeneral(QWidget):
         self.spellLang.setLayout(self.spellLangForm)
 
         self.spellLangList = QComboBox(self)
-        for spTag, spProvider in enchant.list_dicts():
-            self.spellLangList.addItem("%s [%s]" % (spTag, spProvider.name), spTag)
+        for spTag, spName in self.theParent.docEditor.theDict.listDictionaries():
+            self.spellLangList.addItem(spName, spTag)
         spellIdx = self.spellLangList.findData(self.mainConf.spellLanguage)
         if spellIdx != -1:
             self.spellLangList.setCurrentIndex(spellIdx)
