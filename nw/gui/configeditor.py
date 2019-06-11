@@ -11,6 +11,7 @@
 """
 
 import logging
+import enchant
 import nw
 
 from os import path
@@ -52,7 +53,7 @@ class GuiConfigEditor(QDialog):
         self.tabEditor = GuiConfigEditEditor(self.theParent)
 
         self.tabWidget = QTabWidget()
-        self.tabWidget.addTab(self.tabMain, "General")
+        self.tabWidget.addTab(self.tabMain,   "General")
         self.tabWidget.addTab(self.tabEditor, "Editor")
 
         self.setLayout(self.outerBox)
@@ -132,6 +133,22 @@ class GuiConfigEditGeneral(QWidget):
         self.guiLookForm.addWidget(QLabel("Theme"),   0, 0)
         self.guiLookForm.addWidget(self.guiLookTheme, 0, 1)
 
+        # Spell Checking
+        self.spellLang     = QGroupBox("Spell Checker", self)
+        self.spellLangForm = QGridLayout(self)
+        self.spellLang.setLayout(self.spellLangForm)
+
+        self.spellLangList = QComboBox(self)
+        for spTag, spProvider in enchant.list_dicts():
+            self.spellLangList.addItem("%s [%s]" % (spTag, spProvider.name), spTag)
+        spellIdx = self.spellLangList.findData(self.mainConf.spellLanguage)
+        if spellIdx != -1:
+            self.spellLangList.setCurrentIndex(spellIdx)
+
+        self.spellLangForm.addWidget(QLabel("Language"), 0, 0)
+        self.spellLangForm.addWidget(self.spellLangList, 0, 1)
+        self.spellLangForm.setColumnStretch(1, 1)
+
         # AutoSave
         self.autoSave     = QGroupBox("Auto-Save", self)
         self.autoSaveForm = QGridLayout(self)
@@ -156,10 +173,12 @@ class GuiConfigEditGeneral(QWidget):
         self.autoSaveForm.addWidget(self.autoSaveProj,  1, 1)
         self.autoSaveForm.addWidget(QLabel("seconds"),  1, 2)
 
-        self.outerBox.addWidget(self.guiLook,  0, 0)
-        self.outerBox.addWidget(self.autoSave, 1, 0)
+        # Assemble
+        self.outerBox.addWidget(self.guiLook,   0, 0)
+        self.outerBox.addWidget(self.spellLang, 1, 0)
+        self.outerBox.addWidget(self.autoSave,  2, 0)
         self.outerBox.setColumnStretch(2, 1)
-        self.outerBox.setRowStretch(2, 1)
+        self.outerBox.setRowStretch(3, 1)
         self.setLayout(self.outerBox)
 
         return
@@ -169,17 +188,20 @@ class GuiConfigEditGeneral(QWidget):
         validEntries = True
         needsRestart = False
 
-        autoSaveDoc  = self.autoSaveDoc.value()
-        autoSaveProj = self.autoSaveProj.value()
-        guiTheme     = self.guiLookTheme.currentData()
+        guiTheme      = self.guiLookTheme.currentData()
+        spellLanguage = self.spellLangList.currentData()
+        autoSaveDoc   = self.autoSaveDoc.value()
+        autoSaveProj  = self.autoSaveProj.value()
 
         # Check if restart is needed
         needsRestart |= self.mainConf.guiTheme != guiTheme
 
-        self.mainConf.autoSaveDoc  = autoSaveDoc
-        self.mainConf.autoSaveProj = autoSaveProj
-        self.mainConf.guiTheme     = guiTheme
-        self.mainConf.confChanged  = True
+        self.mainConf.guiTheme      = guiTheme
+        self.mainConf.spellLanguage = spellLanguage
+        self.mainConf.autoSaveDoc   = autoSaveDoc
+        self.mainConf.autoSaveProj  = autoSaveProj
+
+        self.mainConf.confChanged   = True
 
         return validEntries, needsRestart
 
