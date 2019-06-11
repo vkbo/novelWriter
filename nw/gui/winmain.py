@@ -19,7 +19,7 @@ from PyQt5.QtCore         import Qt, QTimer
 from PyQt5.QtGui          import QIcon, QPixmap, QColor
 from PyQt5.QtWidgets      import (
     qApp, QWidget, QMainWindow, QVBoxLayout, QFrame, QSplitter, QFileDialog,
-    QShortcut, QMessageBox, QProgressDialog
+    QShortcut, QMessageBox, QProgressDialog, QDialog
 )
 
 from nw.gui.doctree       import GuiDocTree
@@ -27,6 +27,7 @@ from nw.gui.doceditor     import GuiDocEditor
 from nw.gui.docviewer     import GuiDocViewer
 from nw.gui.docdetails    import GuiDocDetails
 from nw.gui.mainmenu      import GuiMainMenu
+from nw.gui.configeditor  import GuiConfigEditor
 from nw.gui.projecteditor import GuiProjectEditor
 from nw.gui.itemeditor    import GuiItemEditor
 from nw.gui.statusbar     import GuiMainStatus
@@ -49,7 +50,7 @@ class GuiMain(QMainWindow):
 
         logger.debug("Initialising GUI ...")
         self.mainConf    = nw.CONFIG
-        self.theTheme    = Theme()
+        self.theTheme    = Theme(self)
         self.theProject  = NWProject(self)
         self.theIndex    = NWIndex(self.theProject, self)
         self.hasProject  = False
@@ -118,15 +119,11 @@ class GuiMain(QMainWindow):
 
         # Set Up Autosaving Project Timer
         self.asProjTimer = QTimer()
-        self.asProjTimer.setInterval(int(self.mainConf.autoSaveProj*1000))
         self.asProjTimer.timeout.connect(self._autoSaveProject)
-        self.asProjTimer.start()
 
         # Set Up Autosaving Document Timer
         self.asDocTimer = QTimer()
-        self.asDocTimer.setInterval(int(self.mainConf.autoSaveDoc*1000))
         self.asDocTimer.timeout.connect(self._autoSaveDocument)
-        self.asDocTimer.start()
 
         # Keyboard Shortcuts
         QShortcut(Qt.Key_Return, self.treeView, context=Qt.WidgetShortcut, activated=self._treeKeyPressReturn)
@@ -138,6 +135,10 @@ class GuiMain(QMainWindow):
         if self.mainConf.showGUI:
             self.show()
 
+        self.initMain()
+        self.asProjTimer.start()
+        self.asDocTimer.start()
+
         logger.debug("GUI initialisation complete")
 
         return
@@ -147,6 +148,11 @@ class GuiMain(QMainWindow):
         self.docEditor.clearEditor()
         self.closeDocViewer()
         self.statusBar.clearStatus()
+        return True
+
+    def initMain(self):
+        self.asProjTimer.setInterval(int(self.mainConf.autoSaveProj*1000))
+        self.asDocTimer.setInterval(int(self.mainConf.autoSaveDoc*1000))
         return True
 
     ##
@@ -453,6 +459,14 @@ class GuiMain(QMainWindow):
         if projPath:
             return projPath
         return None
+
+    def editConfigDialog(self):
+        dlgConf = GuiConfigEditor(self, self.theProject)
+        if dlgConf.exec_() == QDialog.Accepted:
+            logger.debug("Applying new preferences")
+            self.initMain()
+            self.docEditor.initEditor()
+        return True
 
     def editProjectDialog(self):
         if self.hasProject:

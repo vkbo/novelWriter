@@ -43,13 +43,14 @@ class Config:
         self.appPath   = None
         self.appRoot   = None
         self.guiPath   = None
+        self.themeRoot = None
         self.themePath = None
 
         # Set default values
         self.confChanged  = False
 
         ## General
-        self.guiTheme     = "default"
+        self.guiTheme     = "default_dark"
         self.winGeometry  = [1100, 650]
         self.treeColWidth = [120, 30, 50]
         self.mainPanePos  = [300, 800]
@@ -63,10 +64,11 @@ class Config:
         self.autoSaveDoc  = 30
 
         ## Text Editor
+        self.textFont        = None
+        self.textSize        = 12
         self.textFixedW      = True
         self.textWidth       = 600
         self.textMargin      = [40, 40]
-        self.textSize        = 13
         self.tabWidth        = 40
         self.doJustify       = True
         self.autoSelect      = True
@@ -77,9 +79,8 @@ class Config:
         self.doReplaceDots   = True
         self.wordCountTimer  = 5.0
 
-        self.fmtDoubleQuotes = ["“","”"]
         self.fmtSingleQuotes = ["‘","’"]
-        self.fmtApostrophe   = "’"
+        self.fmtDoubleQuotes = ["“","”"]
 
         self.spellLanguage   = "en_GB"
 
@@ -106,7 +107,8 @@ class Config:
         self.appRoot   = path.join(self.appPath,path.pardir)
         self.helpPath  = path.join(self.appRoot,"help","en_GB")
         self.guiPath   = path.join(self.appPath,"gui")
-        self.themePath = path.join(self.appPath,"themes")
+        self.themeRoot = path.join(self.appPath,"themes")
+        self.themePath = path.join(self.themeRoot)
 
         # If config folder does not exist, make it.
         # This assumes that the os config folder itself exists.
@@ -153,19 +155,22 @@ class Config:
 
         ## Editor
         cnfSec = "Editor"
-        self.textFixedW      = self._parseLine(cnfParse, cnfSec, "fixedwidth",  self.CNF_BOOL, self.textFixedW)
-        self.textWidth       = self._parseLine(cnfParse, cnfSec, "width",       self.CNF_INT,  self.textWidth)
-        self.textMargin      = self._parseLine(cnfParse, cnfSec, "margins",     self.CNF_LIST, self.textMargin)
-        self.textSize        = self._parseLine(cnfParse, cnfSec, "textsize",    self.CNF_INT,  self.textSize)
-        self.tabWidth        = self._parseLine(cnfParse, cnfSec, "tabwidth",    self.CNF_INT,  self.tabWidth)
-        self.doJustify       = self._parseLine(cnfParse, cnfSec, "justify",     self.CNF_BOOL, self.doJustify)
-        self.autoSelect      = self._parseLine(cnfParse, cnfSec, "autoselect",  self.CNF_BOOL, self.autoSelect)
-        self.doReplace       = self._parseLine(cnfParse, cnfSec, "autoreplace", self.CNF_BOOL, self.doReplace)
-        self.doReplaceSQuote = self._parseLine(cnfParse, cnfSec, "repsquotes",  self.CNF_BOOL, self.doReplaceSQuote)
-        self.doReplaceDQuote = self._parseLine(cnfParse, cnfSec, "repdquotes",  self.CNF_BOOL, self.doReplaceDQuote)
-        self.doReplaceDash   = self._parseLine(cnfParse, cnfSec, "repdash",     self.CNF_BOOL, self.doReplaceDash)
-        self.doReplaceDots   = self._parseLine(cnfParse, cnfSec, "repdots",     self.CNF_BOOL, self.doReplaceDots)
-        self.spellLanguage   = self._parseLine(cnfParse, cnfSec, "spellcheck",  self.CNF_STR,  self.spellLanguage)
+        self.textFont        = self._parseLine(cnfParse, cnfSec, "textfont",       self.CNF_STR,  self.textFont)
+        self.textSize        = self._parseLine(cnfParse, cnfSec, "textsize",       self.CNF_INT,  self.textSize)
+        self.textFixedW      = self._parseLine(cnfParse, cnfSec, "fixedwidth",     self.CNF_BOOL, self.textFixedW)
+        self.textWidth       = self._parseLine(cnfParse, cnfSec, "width",          self.CNF_INT,  self.textWidth)
+        self.textMargin      = self._parseLine(cnfParse, cnfSec, "margins",        self.CNF_LIST, self.textMargin)
+        self.tabWidth        = self._parseLine(cnfParse, cnfSec, "tabwidth",       self.CNF_INT,  self.tabWidth)
+        self.doJustify       = self._parseLine(cnfParse, cnfSec, "justify",        self.CNF_BOOL, self.doJustify)
+        self.autoSelect      = self._parseLine(cnfParse, cnfSec, "autoselect",     self.CNF_BOOL, self.autoSelect)
+        self.doReplace       = self._parseLine(cnfParse, cnfSec, "autoreplace",    self.CNF_BOOL, self.doReplace)
+        self.doReplaceSQuote = self._parseLine(cnfParse, cnfSec, "repsquotes",     self.CNF_BOOL, self.doReplaceSQuote)
+        self.doReplaceDQuote = self._parseLine(cnfParse, cnfSec, "repdquotes",     self.CNF_BOOL, self.doReplaceDQuote)
+        self.doReplaceDash   = self._parseLine(cnfParse, cnfSec, "repdash",        self.CNF_BOOL, self.doReplaceDash)
+        self.doReplaceDots   = self._parseLine(cnfParse, cnfSec, "repdots",        self.CNF_BOOL, self.doReplaceDots)
+        self.fmtSingleQuotes = self._parseLine(cnfParse, cnfSec, "fmtsinglequote", self.CNF_LIST, self.fmtSingleQuotes)
+        self.fmtDoubleQuotes = self._parseLine(cnfParse, cnfSec, "fmtdoublequote", self.CNF_LIST, self.fmtDoubleQuotes)
+        self.spellLanguage   = self._parseLine(cnfParse, cnfSec, "spellcheck",     self.CNF_STR,  self.spellLanguage)
 
         ## Path
         cnfSec = "Path"
@@ -205,19 +210,22 @@ class Config:
         ## Editor
         cnfSec = "Editor"
         cnfParse.add_section(cnfSec)
-        cnfParse.set(cnfSec,"fixedwidth", str(self.textFixedW))
-        cnfParse.set(cnfSec,"width",      str(self.textWidth))
-        cnfParse.set(cnfSec,"margins",    self._packList(self.textMargin))
-        cnfParse.set(cnfSec,"textsize",   str(self.textSize))
-        cnfParse.set(cnfSec,"tabwidth",   str(self.tabWidth))
-        cnfParse.set(cnfSec,"justify",    str(self.doJustify))
-        cnfParse.set(cnfSec,"autoselect", str(self.autoSelect))
-        cnfParse.set(cnfSec,"autoreplace",str(self.doReplace))
-        cnfParse.set(cnfSec,"repsquotes", str(self.doReplaceSQuote))
-        cnfParse.set(cnfSec,"repdquotes", str(self.doReplaceDQuote))
-        cnfParse.set(cnfSec,"repdash",    str(self.doReplaceDash))
-        cnfParse.set(cnfSec,"repdots",    str(self.doReplaceDots))
-        cnfParse.set(cnfSec,"spellcheck", str(self.spellLanguage))
+        cnfParse.set(cnfSec,"textfont",      str(self.textFont))
+        cnfParse.set(cnfSec,"textsize",      str(self.textSize))
+        cnfParse.set(cnfSec,"fixedwidth",    str(self.textFixedW))
+        cnfParse.set(cnfSec,"width",         str(self.textWidth))
+        cnfParse.set(cnfSec,"margins",       self._packList(self.textMargin))
+        cnfParse.set(cnfSec,"tabwidth",      str(self.tabWidth))
+        cnfParse.set(cnfSec,"justify",       str(self.doJustify))
+        cnfParse.set(cnfSec,"autoselect",    str(self.autoSelect))
+        cnfParse.set(cnfSec,"autoreplace",   str(self.doReplace))
+        cnfParse.set(cnfSec,"repsquotes",    str(self.doReplaceSQuote))
+        cnfParse.set(cnfSec,"repdquotes",    str(self.doReplaceDQuote))
+        cnfParse.set(cnfSec,"repdash",       str(self.doReplaceDash))
+        cnfParse.set(cnfSec,"repdots",       str(self.doReplaceDots))
+        cnfParse.set(cnfSec,"fmtsinglequote",self._packList(self.fmtSingleQuotes))
+        cnfParse.set(cnfSec,"fmtdoublequote",self._packList(self.fmtDoubleQuotes))
+        cnfParse.set(cnfSec,"spellcheck",    str(self.spellLanguage))
 
         ## Path
         cnfSec = "Path"

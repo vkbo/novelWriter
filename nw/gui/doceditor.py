@@ -18,7 +18,7 @@ from time                import time
 
 from PyQt5.QtCore        import Qt, QTimer
 from PyQt5.QtWidgets     import QTextEdit, QAction, QMenu, QShortcut
-from PyQt5.QtGui         import QTextCursor, QTextOption, QIcon, QKeySequence
+from PyQt5.QtGui         import QTextCursor, QTextOption, QIcon, QKeySequence, QFont
 
 from nw.project.document import NWDoc
 from nw.gui.dochighlight import GuiDocHighlighter
@@ -55,7 +55,6 @@ class GuiDocEditor(QTextEdit):
         self.typDQClose = self.mainConf.fmtDoubleQuotes[1]
         self.typSQOpen  = self.mainConf.fmtSingleQuotes[0]
         self.typSQClose = self.mainConf.fmtSingleQuotes[1]
-        self.typApos    = self.mainConf.fmtApostrophe
 
         # Core Elements
         self.theQDoc = self.document()
@@ -113,7 +112,21 @@ class GuiDocEditor(QTextEdit):
         return True
 
     def initEditor(self):
+        """Initialise or re-initialise the editor with the user's settings.
+        This function is both called when the editor is created, and when the user changes the
+        main editor preferences.
+        """
+
+        # Set Font
+        if self.mainConf.textFont is not None:
+            self.setFontFamily(self.mainConf.textFont)
+        else:
+            # If none is defined, set the default back to config
+            theFont = self.theQDoc.defaultFont().family()
+            self.mainConf.textFont = theFont
         self.setFontPointSize(self.mainConf.textSize)
+
+        # Set text fixed width, or alternatively, just margins
         if self.mainConf.textFixedW:
             self.setLineWrapMode(QTextEdit.FixedPixelWidth)
             self.setLineWrapColumnOrWidth(self.mainConf.textWidth)
@@ -121,12 +134,22 @@ class GuiDocEditor(QTextEdit):
             mTB = self.mainConf.textMargin[0]
             mLR = self.mainConf.textMargin[1]
             self.setViewportMargins(mLR,mTB,mLR,mTB)
+
+        # Also set the document text options for the document text flow
         theOpt = QTextOption()
         if self.mainConf.tabWidth is not None:
             theOpt.setTabStopDistance(self.mainConf.tabWidth)
         if self.mainConf.doJustify:
             theOpt.setAlignment(Qt.AlignJustify)
         self.theQDoc.setDefaultTextOption(theOpt)
+
+        # If we have a document open, we should reload it in case the font changed
+        if self.theHandle is not None:
+            tHandle = self.theHandle
+            self.hLight.initHighlighter()
+            self.clearEditor()
+            self.loadText(tHandle)
+
         return True
 
     def loadText(self, tHandle):
