@@ -55,7 +55,6 @@ class GuiDocEditor(QTextEdit):
         self.typDQClose = self.mainConf.fmtDoubleQuotes[1]
         self.typSQOpen  = self.mainConf.fmtSingleQuotes[0]
         self.typSQClose = self.mainConf.fmtSingleQuotes[1]
-        self.typApos    = self.mainConf.fmtApostrophe
 
         # Core Elements
         self.theQDoc = self.document()
@@ -113,8 +112,10 @@ class GuiDocEditor(QTextEdit):
         return True
 
     def initEditor(self):
-
-        tHandle = self.theHandle
+        """Initialise or re-initialise the editor with the user's settings.
+        This function is both called when the editor is created, and when the user changes the
+        main editor preferences.
+        """
 
         # Set Font
         if self.mainConf.textFont is not None:
@@ -125,6 +126,7 @@ class GuiDocEditor(QTextEdit):
             self.mainConf.textFont = theFont
         self.setFontPointSize(self.mainConf.textSize)
 
+        # Set text fixed width, or alternatively, just margins
         if self.mainConf.textFixedW:
             self.setLineWrapMode(QTextEdit.FixedPixelWidth)
             self.setLineWrapColumnOrWidth(self.mainConf.textWidth)
@@ -133,6 +135,7 @@ class GuiDocEditor(QTextEdit):
             mLR = self.mainConf.textMargin[1]
             self.setViewportMargins(mLR,mTB,mLR,mTB)
 
+        # Also set the document text options for the document text flow
         theOpt = QTextOption()
         if self.mainConf.tabWidth is not None:
             theOpt.setTabStopDistance(self.mainConf.tabWidth)
@@ -140,7 +143,9 @@ class GuiDocEditor(QTextEdit):
             theOpt.setAlignment(Qt.AlignJustify)
         self.theQDoc.setDefaultTextOption(theOpt)
 
-        if tHandle is not None:
+        # If we have a document open, we should reload it in case the font changed
+        if self.theHandle is not None:
+            tHandle = self.theHandle
             self.hLight.initHighlighter()
             self.clearEditor()
             self.loadText(tHandle)

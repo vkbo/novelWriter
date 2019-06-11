@@ -23,8 +23,7 @@ from PyQt5.QtWidgets import (
     QWidget, QTabWidget, QDialogButtonBox, QSpinBox, QGroupBox, QComboBox, QMessageBox,
     QCheckBox, QGridLayout, QFontComboBox
 )
-from nw.enum      import nwAlert
-from nw.constants import nwQuotes
+from nw.enum import nwAlert
 
 logger = logging.getLogger(__name__)
 
@@ -76,9 +75,16 @@ class GuiConfigEditor(QDialog):
 
         logger.verbose("ConfigEditor save button clicked")
 
+        validEntries  = True
         needsRestart  = False
-        needsRestart |= self.tabMain.saveValues()
-        needsRestart |= self.tabEditor.saveValues()
+
+        retA, retB    = self.tabMain.saveValues()
+        validEntries &= retA
+        needsRestart |= retB
+
+        retA, retB    = self.tabEditor.saveValues()
+        validEntries &= retA
+        needsRestart |= retB
 
         if needsRestart:
             msgBox = QMessageBox()
@@ -87,7 +93,8 @@ class GuiConfigEditor(QDialog):
                 "Some changes will not be applied until<br>%s has been restarted." % nw.__package__
             )
 
-        self.accept()
+        if validEntries:
+            self.accept()
 
         return
 
@@ -149,12 +156,14 @@ class GuiConfigEditGeneral(QWidget):
 
     def saveValues(self):
 
+        validEntries = True
+        needsRestart = False
+
         autoSaveDoc  = self.autoSaveDoc.value()
         autoSaveProj = self.autoSaveProj.value()
         guiTheme     = self.guiLookTheme.currentData()
 
         # Check if restart is needed
-        needsRestart = False
         needsRestart |= self.mainConf.guiTheme != guiTheme
 
         self.mainConf.autoSaveDoc  = autoSaveDoc
@@ -162,7 +171,7 @@ class GuiConfigEditGeneral(QWidget):
         self.mainConf.guiTheme     = guiTheme
         self.mainConf.confChanged  = True
 
-        return needsRestart
+        return validEntries, needsRestart
 
 # END Class GuiConfigEditGeneral
 
@@ -181,7 +190,7 @@ class GuiConfigEditEditor(QWidget):
         self.textStyle.setLayout(self.textStyleForm)
 
         self.textStyleFont = QFontComboBox()
-        self.textStyleFont.setMaximumWidth(300)
+        self.textStyleFont.setMaximumWidth(250)
         self.textStyleFont.setCurrentFont(QFont(self.mainConf.textFont))
 
         self.textStyleSize = QSpinBox(self)
@@ -230,7 +239,7 @@ class GuiConfigEditEditor(QWidget):
         self.textFlowForm.addWidget(QLabel("Fixed Width"),      0, 0)
         self.textFlowForm.addWidget(self.textFlowFixed,         0, 1)
         self.textFlowForm.addWidget(self.textFlowWidth,         0, 2)
-        self.textFlowForm.addWidget(QLabel("pixles"),           0, 3)
+        self.textFlowForm.addWidget(QLabel("px"),               0, 3)
         self.textFlowForm.addWidget(QLabel("Justify Text"),     1, 0)
         self.textFlowForm.addWidget(self.textFlowJustify,       1, 1)
         self.textFlowForm.addWidget(QLabel("Auto-Select Text"), 2, 0)
@@ -262,13 +271,13 @@ class GuiConfigEditEditor(QWidget):
 
         self.textMarginForm.addWidget(QLabel("Horizontal"), 0, 0)
         self.textMarginForm.addWidget(self.textMarginHor,   0, 1)
-        self.textMarginForm.addWidget(QLabel("pixles"),     0, 2)
+        self.textMarginForm.addWidget(QLabel("px"),         0, 2)
         self.textMarginForm.addWidget(QLabel("Vertical"),   1, 0)
         self.textMarginForm.addWidget(self.textMarginVer,   1, 1)
-        self.textMarginForm.addWidget(QLabel("pixles"),     1, 2)
+        self.textMarginForm.addWidget(QLabel("px"),         1, 2)
         self.textMarginForm.addWidget(QLabel("Tab Width"),  2, 0)
         self.textMarginForm.addWidget(self.textMarginTab,   2, 1)
-        self.textMarginForm.addWidget(QLabel("pixles"),     2, 2)
+        self.textMarginForm.addWidget(QLabel("px"),         2, 2)
         self.textMarginForm.setColumnStretch(4, 1)
 
         # Auto-Replace
@@ -290,13 +299,17 @@ class GuiConfigEditEditor(QWidget):
         else:
             self.autoReplaceSQ.setCheckState(Qt.Unchecked)
 
-        self.autoReplaceSStyle = QComboBox()
-        for n, qTup in enumerate(nwQuotes.SINGLE):
-            qA, qB, qStr = qTup
-            self.autoReplaceSStyle.addItem("%s: %stext%s" % (qStr, qA, qB), n)
-        singleIdx = self.autoReplaceSStyle.findData(self.mainConf.styleSQuote)
-        if singleIdx != -1:
-            self.autoReplaceSStyle.setCurrentIndex(singleIdx)
+        self.autoReplaceSStyleO = QLineEdit()
+        self.autoReplaceSStyleO.setMaxLength(1)
+        self.autoReplaceSStyleO.setFixedWidth(30)
+        self.autoReplaceSStyleO.setAlignment(Qt.AlignCenter)
+        self.autoReplaceSStyleO.setText(self.mainConf.fmtSingleQuotes[0])
+
+        self.autoReplaceSStyleC = QLineEdit()
+        self.autoReplaceSStyleC.setMaxLength(1)
+        self.autoReplaceSStyleC.setFixedWidth(30)
+        self.autoReplaceSStyleC.setAlignment(Qt.AlignCenter)
+        self.autoReplaceSStyleC.setText(self.mainConf.fmtSingleQuotes[1])
 
         self.autoReplaceDQ = QCheckBox(self)
         self.autoReplaceDQ.setToolTip("Auto-replace double quotes.")
@@ -305,25 +318,51 @@ class GuiConfigEditEditor(QWidget):
         else:
             self.autoReplaceDQ.setCheckState(Qt.Unchecked)
 
-        self.autoReplaceDStyle = QComboBox()
-        for n, qTup in enumerate(nwQuotes.DOUBLE):
-            qA, qB, qStr = qTup
-            self.autoReplaceDStyle.addItem("%s: %stext%s" % (qStr, qA, qB), n)
-        doubleIdx = self.autoReplaceDStyle.findData(self.mainConf.styleSQuote)
-        if doubleIdx != -1:
-            self.autoReplaceDStyle.setCurrentIndex(doubleIdx)
+        self.autoReplaceDStyleO = QLineEdit()
+        self.autoReplaceDStyleO.setMaxLength(1)
+        self.autoReplaceDStyleO.setFixedWidth(30)
+        self.autoReplaceDStyleO.setAlignment(Qt.AlignCenter)
+        self.autoReplaceDStyleO.setText(self.mainConf.fmtDoubleQuotes[0])
 
-        self.autoReplaceForm.addWidget(QLabel("Enable Feature"), 0, 0)
-        self.autoReplaceForm.addWidget(self.autoReplaceMain,     0, 1)
-        self.autoReplaceForm.addWidget(QLabel("Single Quotes"),  1, 0)
-        self.autoReplaceForm.addWidget(self.autoReplaceSQ,       1, 1)
-        self.autoReplaceForm.addWidget(QLabel("Style"),          1, 2)
-        self.autoReplaceForm.addWidget(self.autoReplaceSStyle,   1, 3)
-        self.autoReplaceForm.addWidget(QLabel("Double Quotes"),  2, 0)
-        self.autoReplaceForm.addWidget(self.autoReplaceDQ,       2, 1)
-        self.autoReplaceForm.addWidget(QLabel("Style"),          2, 2)
-        self.autoReplaceForm.addWidget(self.autoReplaceDStyle,   2, 3)
-        self.autoReplaceForm.setColumnStretch(4, 1)
+        self.autoReplaceDStyleC = QLineEdit()
+        self.autoReplaceDStyleC.setMaxLength(1)
+        self.autoReplaceDStyleC.setFixedWidth(30)
+        self.autoReplaceDStyleC.setAlignment(Qt.AlignCenter)
+        self.autoReplaceDStyleC.setText(self.mainConf.fmtDoubleQuotes[1])
+
+        self.autoReplaceDash = QCheckBox(self)
+        self.autoReplaceDash.setToolTip("Auto-replace double and triple hyphens with short and long dash.")
+        if self.mainConf.doReplaceDash:
+            self.autoReplaceDash.setCheckState(Qt.Checked)
+        else:
+            self.autoReplaceDash.setCheckState(Qt.Unchecked)
+
+        self.autoReplaceDots = QCheckBox(self)
+        self.autoReplaceDots.setToolTip("Auto-replace three dots with ellipsis.")
+        if self.mainConf.doReplaceDots:
+            self.autoReplaceDots.setCheckState(Qt.Checked)
+        else:
+            self.autoReplaceDots.setCheckState(Qt.Unchecked)
+
+        self.autoReplaceForm.addWidget(QLabel("Enable Feature"),     0, 0)
+        self.autoReplaceForm.addWidget(self.autoReplaceMain,         0, 1)
+        self.autoReplaceForm.addWidget(QLabel("Single Quotes"),      1, 0)
+        self.autoReplaceForm.addWidget(self.autoReplaceSQ,           1, 1)
+        self.autoReplaceForm.addWidget(QLabel("Open"),               1, 2)
+        self.autoReplaceForm.addWidget(self.autoReplaceSStyleO,      1, 3)
+        self.autoReplaceForm.addWidget(QLabel("Close"),              1, 4)
+        self.autoReplaceForm.addWidget(self.autoReplaceSStyleC,      1, 5)
+        self.autoReplaceForm.addWidget(QLabel("Double Quotes"),      2, 0)
+        self.autoReplaceForm.addWidget(self.autoReplaceDQ,           2, 1)
+        self.autoReplaceForm.addWidget(QLabel("Open"),               2, 2)
+        self.autoReplaceForm.addWidget(self.autoReplaceDStyleO,      2, 3)
+        self.autoReplaceForm.addWidget(QLabel("Close"),              2, 4)
+        self.autoReplaceForm.addWidget(self.autoReplaceDStyleC,      2, 5)
+        self.autoReplaceForm.addWidget(QLabel("Hyphens with Dash"),  3, 0)
+        self.autoReplaceForm.addWidget(self.autoReplaceDash,         3, 1)
+        self.autoReplaceForm.addWidget(QLabel("Dots with Ellipsis"), 4, 0)
+        self.autoReplaceForm.addWidget(self.autoReplaceDots,         4, 1)
+        self.autoReplaceForm.setColumnStretch(6, 1)
 
         # Assemble
         self.outerBox.addWidget(self.textStyle,   0, 0, 1, 2)
@@ -337,6 +376,8 @@ class GuiConfigEditEditor(QWidget):
 
     def saveValues(self):
 
+        validEntries = True
+
         textFont = self.textStyleFont.currentFont().family()
         textSize = self.textStyleSize.value()
 
@@ -348,10 +389,10 @@ class GuiConfigEditEditor(QWidget):
         doJustify  = self.textFlowJustify.isChecked()
         autoSelect = self.testFlowAutoSelect.isChecked()
 
-        self.mainConf.textWidth   = textWidth
-        self.mainConf.textFixedW  = textFixedW
-        self.mainConf.doJustify   = doJustify
-        self.mainConf.autoSelect  = autoSelect
+        self.mainConf.textWidth  = textWidth
+        self.mainConf.textFixedW = textFixedW
+        self.mainConf.doJustify  = doJustify
+        self.mainConf.autoSelect = autoSelect
 
         textMarginH = self.textMarginHor.value()
         textMarginV = self.textMarginVer.value()
@@ -361,20 +402,67 @@ class GuiConfigEditEditor(QWidget):
         self.mainConf.textMargin[1] = textMarginV
         self.mainConf.tabWidth      = tabWidth
 
-        doReplace       = self.autoReplaceMain.isChecked()
-        doReplaceSQuote = self.autoReplaceSQ.isChecked()
-        doReplaceDQuote = self.autoReplaceDQ.isChecked()
-        styleSQuote     = self.autoReplaceSStyle.currentData()
-        styleDQuote     = self.autoReplaceDStyle.currentData()
+        doReplace        = self.autoReplaceMain.isChecked()
+        doReplaceSQuote  = self.autoReplaceSQ.isChecked()
+        doReplaceDQuote  = self.autoReplaceDQ.isChecked()
+        doReplaceDash    = self.autoReplaceDash.isChecked()
+        doReplaceDots    = self.autoReplaceDash.isChecked()
+        fmtSingleQuotesO = self.autoReplaceSStyleO.text()
+        fmtSingleQuotesC = self.autoReplaceSStyleC.text()
+        fmtDoubleQuotesO = self.autoReplaceDStyleO.text()
+        fmtDoubleQuotesC = self.autoReplaceDStyleC.text()
 
         self.mainConf.doReplace       = doReplace
         self.mainConf.doReplaceSQuote = doReplaceSQuote
         self.mainConf.doReplaceDQuote = doReplaceDQuote
-        self.mainConf.setSingleQuotes(styleSQuote)
-        self.mainConf.setDoubleQuotes(styleDQuote)
+        self.mainConf.doReplaceDash   = doReplaceDash
+        self.mainConf.doReplaceDots   = doReplaceDots
+
+        if self._checkQuoteSymbol(fmtSingleQuotesO):
+            self.mainConf.fmtSingleQuotes[0] = fmtSingleQuotesO
+        else:
+            self.theParent.makeAlert("Invalid quote symbol: %s" % fmtSingleQuotesO, nwAlert.ERROR)
+            validEntries = False
+
+        if self._checkQuoteSymbol(fmtSingleQuotesC):
+            self.mainConf.fmtSingleQuotes[1] = fmtSingleQuotesC
+        else:
+            self.theParent.makeAlert("Invalid quote symbol: %s" % fmtSingleQuotesC, nwAlert.ERROR)
+            validEntries = False
+
+        if self._checkQuoteSymbol(fmtDoubleQuotesO):
+            self.mainConf.fmtDoubleQuotes[0] = fmtDoubleQuotesO
+        else:
+            self.theParent.makeAlert("Invalid quote symbol: %s" % fmtDoubleQuotesO, nwAlert.ERROR)
+            validEntries = False
+
+        if self._checkQuoteSymbol(fmtDoubleQuotesC):
+            self.mainConf.fmtDoubleQuotes[1] = fmtDoubleQuotesC
+        else:
+            self.theParent.makeAlert("Invalid quote symbol: %s" % fmtDoubleQuotesC, nwAlert.ERROR)
+            validEntries = False
 
         self.mainConf.confChanged = True
 
+        return validEntries, False
+
+    ##
+    #  Internal Functions
+    ##
+
+    def _checkQuoteSymbol(self, toCheck):
+        validOnes = [
+            "\"","'",
+            "“","”","„",
+            "‘","’","‚",
+            "«","»","‹","›",
+            "『","』","「","」",
+            "《","》","〈","〉"
+        ]
+        if len(toCheck) != 1:
+            return False
+        if toCheck in validOnes:
+            return True
         return False
 
 # END Class GuiConfigEditEditor

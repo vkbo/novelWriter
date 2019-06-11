@@ -14,11 +14,9 @@ import logging
 import configparser
 import nw
 
-from os           import path, mkdir, getcwd
-from appdirs      import user_config_dir
-from datetime     import datetime
-
-from nw.constants import nwQuotes
+from os       import path, mkdir, getcwd
+from appdirs  import user_config_dir
+from datetime import datetime
 
 logger = logging.getLogger(__name__)
 
@@ -79,13 +77,10 @@ class Config:
         self.doReplaceDQuote = True
         self.doReplaceDash   = True
         self.doReplaceDots   = True
-        self.styleSQuote     = 1
-        self.styleDQuote     = 1
         self.wordCountTimer  = 5.0
 
-        self.fmtDoubleQuotes = ["“","”"]
         self.fmtSingleQuotes = ["‘","’"]
-        self.fmtApostrophe   = "’"
+        self.fmtDoubleQuotes = ["“","”"]
 
         self.spellLanguage   = "en_GB"
 
@@ -160,30 +155,27 @@ class Config:
 
         ## Editor
         cnfSec = "Editor"
-        self.textFont        = self._parseLine(cnfParse, cnfSec, "textfont",    self.CNF_STR,  self.textFont)
-        self.textSize        = self._parseLine(cnfParse, cnfSec, "textsize",    self.CNF_INT,  self.textSize)
-        self.textFixedW      = self._parseLine(cnfParse, cnfSec, "fixedwidth",  self.CNF_BOOL, self.textFixedW)
-        self.textWidth       = self._parseLine(cnfParse, cnfSec, "width",       self.CNF_INT,  self.textWidth)
-        self.textMargin      = self._parseLine(cnfParse, cnfSec, "margins",     self.CNF_LIST, self.textMargin)
-        self.tabWidth        = self._parseLine(cnfParse, cnfSec, "tabwidth",    self.CNF_INT,  self.tabWidth)
-        self.doJustify       = self._parseLine(cnfParse, cnfSec, "justify",     self.CNF_BOOL, self.doJustify)
-        self.autoSelect      = self._parseLine(cnfParse, cnfSec, "autoselect",  self.CNF_BOOL, self.autoSelect)
-        self.doReplace       = self._parseLine(cnfParse, cnfSec, "autoreplace", self.CNF_BOOL, self.doReplace)
-        self.doReplaceSQuote = self._parseLine(cnfParse, cnfSec, "repsquotes",  self.CNF_BOOL, self.doReplaceSQuote)
-        self.doReplaceDQuote = self._parseLine(cnfParse, cnfSec, "repdquotes",  self.CNF_BOOL, self.doReplaceDQuote)
-        self.doReplaceDash   = self._parseLine(cnfParse, cnfSec, "repdash",     self.CNF_BOOL, self.doReplaceDash)
-        self.doReplaceDots   = self._parseLine(cnfParse, cnfSec, "repdots",     self.CNF_BOOL, self.doReplaceDots)
-        self.styleSQuote     = self._parseLine(cnfParse, cnfSec, "stylesquote", self.CNF_INT,  self.styleSQuote)
-        self.styleDQuote     = self._parseLine(cnfParse, cnfSec, "styledquote", self.CNF_INT,  self.styleDQuote)
-        self.spellLanguage   = self._parseLine(cnfParse, cnfSec, "spellcheck",  self.CNF_STR,  self.spellLanguage)
+        self.textFont        = self._parseLine(cnfParse, cnfSec, "textfont",       self.CNF_STR,  self.textFont)
+        self.textSize        = self._parseLine(cnfParse, cnfSec, "textsize",       self.CNF_INT,  self.textSize)
+        self.textFixedW      = self._parseLine(cnfParse, cnfSec, "fixedwidth",     self.CNF_BOOL, self.textFixedW)
+        self.textWidth       = self._parseLine(cnfParse, cnfSec, "width",          self.CNF_INT,  self.textWidth)
+        self.textMargin      = self._parseLine(cnfParse, cnfSec, "margins",        self.CNF_LIST, self.textMargin)
+        self.tabWidth        = self._parseLine(cnfParse, cnfSec, "tabwidth",       self.CNF_INT,  self.tabWidth)
+        self.doJustify       = self._parseLine(cnfParse, cnfSec, "justify",        self.CNF_BOOL, self.doJustify)
+        self.autoSelect      = self._parseLine(cnfParse, cnfSec, "autoselect",     self.CNF_BOOL, self.autoSelect)
+        self.doReplace       = self._parseLine(cnfParse, cnfSec, "autoreplace",    self.CNF_BOOL, self.doReplace)
+        self.doReplaceSQuote = self._parseLine(cnfParse, cnfSec, "repsquotes",     self.CNF_BOOL, self.doReplaceSQuote)
+        self.doReplaceDQuote = self._parseLine(cnfParse, cnfSec, "repdquotes",     self.CNF_BOOL, self.doReplaceDQuote)
+        self.doReplaceDash   = self._parseLine(cnfParse, cnfSec, "repdash",        self.CNF_BOOL, self.doReplaceDash)
+        self.doReplaceDots   = self._parseLine(cnfParse, cnfSec, "repdots",        self.CNF_BOOL, self.doReplaceDots)
+        self.fmtSingleQuotes = self._parseLine(cnfParse, cnfSec, "fmtsinglequote", self.CNF_LIST, self.fmtSingleQuotes)
+        self.fmtDoubleQuotes = self._parseLine(cnfParse, cnfSec, "fmtdoublequote", self.CNF_LIST, self.fmtDoubleQuotes)
+        self.spellLanguage   = self._parseLine(cnfParse, cnfSec, "spellcheck",     self.CNF_STR,  self.spellLanguage)
 
         ## Path
         cnfSec = "Path"
         for i in range(10):
             self.recentList[i] = self._parseLine(cnfParse, cnfSec, "recent%d" % i,self.CNF_STR, self.recentList[i])
-
-        self.setSingleQuotes(self.styleSQuote)
-        self.setDoubleQuotes(self.styleDQuote)
 
         return True
 
@@ -218,22 +210,22 @@ class Config:
         ## Editor
         cnfSec = "Editor"
         cnfParse.add_section(cnfSec)
-        cnfParse.set(cnfSec,"textfont",   str(self.textFont))
-        cnfParse.set(cnfSec,"textsize",   str(self.textSize))
-        cnfParse.set(cnfSec,"fixedwidth", str(self.textFixedW))
-        cnfParse.set(cnfSec,"width",      str(self.textWidth))
-        cnfParse.set(cnfSec,"margins",    self._packList(self.textMargin))
-        cnfParse.set(cnfSec,"tabwidth",   str(self.tabWidth))
-        cnfParse.set(cnfSec,"justify",    str(self.doJustify))
-        cnfParse.set(cnfSec,"autoselect", str(self.autoSelect))
-        cnfParse.set(cnfSec,"autoreplace",str(self.doReplace))
-        cnfParse.set(cnfSec,"repsquotes", str(self.doReplaceSQuote))
-        cnfParse.set(cnfSec,"repdquotes", str(self.doReplaceDQuote))
-        cnfParse.set(cnfSec,"repdash",    str(self.doReplaceDash))
-        cnfParse.set(cnfSec,"repdots",    str(self.doReplaceDots))
-        cnfParse.set(cnfSec,"stylesquote",str(self.styleSQuote))
-        cnfParse.set(cnfSec,"styledquote",str(self.styleDQuote))
-        cnfParse.set(cnfSec,"spellcheck", str(self.spellLanguage))
+        cnfParse.set(cnfSec,"textfont",      str(self.textFont))
+        cnfParse.set(cnfSec,"textsize",      str(self.textSize))
+        cnfParse.set(cnfSec,"fixedwidth",    str(self.textFixedW))
+        cnfParse.set(cnfSec,"width",         str(self.textWidth))
+        cnfParse.set(cnfSec,"margins",       self._packList(self.textMargin))
+        cnfParse.set(cnfSec,"tabwidth",      str(self.tabWidth))
+        cnfParse.set(cnfSec,"justify",       str(self.doJustify))
+        cnfParse.set(cnfSec,"autoselect",    str(self.autoSelect))
+        cnfParse.set(cnfSec,"autoreplace",   str(self.doReplace))
+        cnfParse.set(cnfSec,"repsquotes",    str(self.doReplaceSQuote))
+        cnfParse.set(cnfSec,"repdquotes",    str(self.doReplaceDQuote))
+        cnfParse.set(cnfSec,"repdash",       str(self.doReplaceDash))
+        cnfParse.set(cnfSec,"repdots",       str(self.doReplaceDots))
+        cnfParse.set(cnfSec,"fmtsinglequote",self._packList(self.fmtSingleQuotes))
+        cnfParse.set(cnfSec,"fmtdoublequote",self._packList(self.fmtDoubleQuotes))
+        cnfParse.set(cnfSec,"spellcheck",    str(self.spellLanguage))
 
         ## Path
         cnfSec = "Path"
@@ -304,22 +296,6 @@ class Config:
         self.docPanePos  = panePos
         self.confChanged = True
         return True
-
-    def setSingleQuotes(self, quoteStyle):
-        if quoteStyle >= 0 and quoteStyle < len(nwQuotes.SINGLE):
-            self.fmtSingleQuotes[0] = nwQuotes.SINGLE[quoteStyle][0]
-            self.fmtSingleQuotes[1] = nwQuotes.SINGLE[quoteStyle][1]
-            self.styleSQuote = quoteStyle
-            return True
-        return False
-
-    def setDoubleQuotes(self, quoteStyle):
-        if quoteStyle >= 0 and quoteStyle < len(nwQuotes.DOUBLE):
-            self.fmtDoubleQuotes[0] = nwQuotes.DOUBLE[quoteStyle][0]
-            self.fmtDoubleQuotes[1] = nwQuotes.DOUBLE[quoteStyle][1]
-            self.styleDQuote = quoteStyle
-            return True
-        return False
 
     ##
     #  Internal Functions
