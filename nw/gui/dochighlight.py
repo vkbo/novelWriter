@@ -234,7 +234,7 @@ class GuiDocHighlighter(QSyntaxHighlighter):
         rxSpell = self.spellRx.globalMatch(theText.replace("_"," "), 0)
         while rxSpell.hasNext():
             rxMatch = rxSpell.next()
-            if not self.theDict.check(rxMatch.captured(0)):
+            if not self.theDict.checkWord(rxMatch.captured(0)):
                 if rxMatch.captured(0) == rxMatch.captured(0).upper():
                     continue
                 xPos = rxMatch.capturedStart(0)

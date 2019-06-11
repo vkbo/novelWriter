@@ -520,7 +520,7 @@ class GuiMain(QMainWindow):
 
     def closeMain(self):
 
-        if self.mainConf.showGUI:
+        if self.mainConf.showGUI and self.hasProject:
             msgBox = QMessageBox()
             msgRes = msgBox.question(
                 self, "Exit", "Do you want to save changes and exit?"

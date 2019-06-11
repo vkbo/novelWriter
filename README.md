@@ -80,12 +80,16 @@ Most shortcuts are labelled with the corresponding dropdown menu entry.
 
 ## Dependencies
 
-For the apt package manager, the following Python3 packages are needed.
+For the apt package manager, the following Python3 packages are needed:
 
-* python3-pyqt5
-* python3-appdirs
-* python3-lxml
-* python3-enchant
+* `python3-pyqt5` for the GUI
+* `python3-appdirs` for locating the system's config folder
+* `python3-lxml` for writing project files
+
+These are optional, but recommended:
+
+* `python3-enchant` for spell checking
+* `python3-pycountry` for translating language codes to language names
 
 Alternatively, the packages can be installed with `pip` by running
 ```
