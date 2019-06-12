@@ -23,6 +23,7 @@ from nw.project.document import NWDoc
 from nw.gui.dochighlight import GuiDocHighlighter
 from nw.gui.wordcounter  import WordCounter
 from nw.tools.spellcheck import NWSpellCheck
+from nw.constants        import nwFiles
 from nw.enum             import nwDocAction, nwAlert
 
 logger = logging.getLogger(__name__)
@@ -39,7 +40,6 @@ class GuiDocEditor(QTextEdit):
         self.theParent   = theParent
         self.theProject  = theProject
         self.docChanged  = False
-        self.pwlFile     = None
         self.spellCheck  = False
         self.theDocument = NWDoc(self.theProject, self.theParent)
         self.theHandle   = None
@@ -64,8 +64,7 @@ class GuiDocEditor(QTextEdit):
         else:
             self.theDict = NWSpellCheck()
 
-        self.theDict.setLanguage(self.mainConf.spellLanguage)
-        self.hLight  = GuiDocHighlighter(self.theQDoc, self.theParent)
+        self.hLight = GuiDocHighlighter(self.theQDoc, self.theParent)
         self.hLight.setDict(self.theDict)
 
         # Context Menu
@@ -122,6 +121,9 @@ class GuiDocEditor(QTextEdit):
         This function is both called when the editor is created, and when the user changes the
         main editor preferences.
         """
+
+        # Reload dictionaries
+        self.setDictionaries()
 
         # Set Font
         if self.mainConf.textFont is not None:
@@ -218,10 +220,8 @@ class GuiDocEditor(QTextEdit):
     #  Spell Checking
     ##
 
-    def setPwl(self, pwlFile):
-        if pwlFile is not None:
-            self.pwlFile = pwlFile
-            self.theDict.setLanguage(self.mainConf.spellLanguage, pwlFile)
+    def setDictionaries(self):
+        self.theDict.setLanguage(self.mainConf.spellLanguage, self.theProject.projDict)
         return True
 
     def setSpellCheck(self, theMode):

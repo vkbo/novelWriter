@@ -245,7 +245,7 @@ class GuiMain(QMainWindow):
         # Update GUI
         self._setWindowTitle(self.theProject.projName)
         self.rebuildTree()
-        self.docEditor.setPwl(path.join(self.theProject.projMeta, nwFiles.PROJ_DICT))
+        self.docEditor.setDictionaries()
         self.docEditor.setSpellCheck(self.theProject.spellCheck)
         self.statusBar.setRefTime(self.theProject.projOpened)
         self.mainMenu.updateMenu()

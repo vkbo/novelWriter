@@ -48,6 +48,7 @@ class NWProject():
         self.projPath    = None
         self.projMeta    = None
         self.projCache   = None
+        self.projDict    = None
         self.projFile    = None
 
         # Project Meta
@@ -149,6 +150,7 @@ class NWProject():
         self.projPath    = None
         self.projMeta    = None
         self.projCache   = None
+        self.projDict    = None
         self.projFile    = nwFiles.PROJ_FILE
         self.projName    = ""
         self.bookTitle   = ""
@@ -186,6 +188,7 @@ class NWProject():
 
         self.projMeta  = path.join(self.projPath,"meta")
         self.projCache = path.join(self.projPath,"cache")
+        self.projDict  = path.join(self.projMeta, nwFiles.PROJ_DICT)
 
         if not self._checkFolder(self.projMeta):  return
         if not self._checkFolder(self.projCache): return
