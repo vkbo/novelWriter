@@ -15,7 +15,7 @@ import nw
 
 from PyQt5.QtCore    import Qt, QUrl
 from PyQt5.QtWidgets import QTextBrowser
-from PyQt5.QtGui     import QTextOption
+from PyQt5.QtGui     import QTextOption, QFont
 
 from nw.convert.tokenizer import Tokenizer
 from nw.convert.tohtml    import ToHtml
@@ -82,7 +82,7 @@ class GuiDocViewer(QTextBrowser):
             aColB    = self.theTheme.colLink[2],
         ))
         self.setMinimumWidth(300)
-        self.initEditor()
+        self.initViewer()
 
         theOpt = QTextOption()
         if self.mainConf.doJustify:
@@ -98,14 +98,30 @@ class GuiDocViewer(QTextBrowser):
         self.setSearchPaths([""])
         return True
 
-    def initEditor(self):
-        """Set editor settings from mani config.
+    def initViewer(self):
+        """Set editor settings from main config.
         """
+
+        # Set Font
+        theFont = QFont()
+        if self.mainConf.textFont is None:
+            # If none is defined, set the default back to config
+            self.mainConf.textFont = self.theQDoc.defaultFont().family()
+        theFont.setFamily(self.mainConf.textFont)
+        theFont.setPointSize(self.mainConf.textSize)
+        self.setFont(theFont)
+
         self.theQDoc.setDocumentMargin(self.mainConf.textMargin[0])
         theOpt = QTextOption()
         if self.mainConf.doJustify:
             theOpt.setAlignment(Qt.AlignJustify)
         self.theQDoc.setDefaultTextOption(theOpt)
+
+        # If we have a document open, we should reload it in case the font changed
+        if self.theHandle is not None:
+            tHandle = self.theHandle
+            self.clearViewer()
+            self.loadText(tHandle)
 
         return True
 

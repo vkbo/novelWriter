@@ -466,6 +466,7 @@ class GuiMain(QMainWindow):
             logger.debug("Applying new preferences")
             self.initMain()
             self.docEditor.initEditor()
+            self.docViewer.initViewer()
         return True
 
     def editProjectDialog(self):

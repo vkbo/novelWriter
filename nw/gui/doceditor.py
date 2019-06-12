@@ -126,13 +126,13 @@ class GuiDocEditor(QTextEdit):
         self.setDictionaries()
 
         # Set Font
-        if self.mainConf.textFont is not None:
-            self.setFontFamily(self.mainConf.textFont)
-        else:
+        theFont = QFont()
+        if self.mainConf.textFont is None:
             # If none is defined, set the default back to config
-            theFont = self.theQDoc.defaultFont().family()
-            self.mainConf.textFont = theFont
-        self.setFontPointSize(self.mainConf.textSize)
+            self.mainConf.textFont = self.theQDoc.defaultFont().family()
+        theFont.setFamily(self.mainConf.textFont)
+        theFont.setPointSize(self.mainConf.textSize)
+        self.setFont(theFont)
 
         # Set text fixed width, or alternatively, just margins
         if self.mainConf.textFixedW:
