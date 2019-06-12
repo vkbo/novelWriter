@@ -239,6 +239,9 @@ class GuiMain(QMainWindow):
         if not self.theProject.openProject(projFile):
             return False
 
+        # project is loaded
+        self.hasProject = True
+
         # Load the tag index
         self.theIndex.loadIndex()
 
@@ -249,7 +252,6 @@ class GuiMain(QMainWindow):
         self.docEditor.setSpellCheck(self.theProject.spellCheck)
         self.statusBar.setRefTime(self.theProject.projOpened)
         self.mainMenu.updateMenu()
-        self.hasProject = True
 
         # Restore previously open documents, if any
         if self.theProject.lastEdited is not None:
