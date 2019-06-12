@@ -8,6 +8,7 @@ __pycache__
 # Sample Project
 sample/**/cache
 sample/**/wordlist.txt
+sample/**/sessionInfo.log
 sample/**/*.bak
 sample/**/*.json
 

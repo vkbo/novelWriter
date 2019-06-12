@@ -239,17 +239,19 @@ class GuiMain(QMainWindow):
         if not self.theProject.openProject(projFile):
             return False
 
+        # project is loaded
+        self.hasProject = True
+
         # Load the tag index
         self.theIndex.loadIndex()
 
         # Update GUI
         self._setWindowTitle(self.theProject.projName)
         self.rebuildTree()
-        self.docEditor.setPwl(path.join(self.theProject.projMeta, nwFiles.PROJ_DICT))
+        self.docEditor.setDictionaries()
         self.docEditor.setSpellCheck(self.theProject.spellCheck)
         self.statusBar.setRefTime(self.theProject.projOpened)
         self.mainMenu.updateMenu()
-        self.hasProject = True
 
         # Restore previously open documents, if any
         if self.theProject.lastEdited is not None:
@@ -309,11 +311,11 @@ class GuiMain(QMainWindow):
         if tHandle is None:
             tHandle = self.treeView.getSelectedHandle()
         if tHandle is None:
-            logger.debug("No document selected, trying last viewed")
-            tHandle = self.theProject.lastViewed
-        if tHandle is None:
             logger.debug("No document selected, trying editor document")
             tHandle = self.docEditor.theHandle
+        if tHandle is None:
+            logger.debug("No document selected, trying last viewed")
+            tHandle = self.theProject.lastViewed
         if tHandle is None:
             logger.debug("No document selected, giving up")
             return False
@@ -466,6 +468,7 @@ class GuiMain(QMainWindow):
             logger.debug("Applying new preferences")
             self.initMain()
             self.docEditor.initEditor()
+            self.docViewer.initViewer()
         return True
 
     def editProjectDialog(self):
