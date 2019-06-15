@@ -69,7 +69,7 @@ class Config:
         self.textSize        = 12
         self.textFixedW      = True
         self.textWidth       = 600
-        self.textMargin      = [40, 40]
+        self.textMargin      = 40
         self.tabWidth        = 40
         self.doJustify       = True
         self.autoSelect      = True
@@ -165,7 +165,7 @@ class Config:
         self.textSize        = self._parseLine(cnfParse, cnfSec, "textsize",       self.CNF_INT,  self.textSize)
         self.textFixedW      = self._parseLine(cnfParse, cnfSec, "fixedwidth",     self.CNF_BOOL, self.textFixedW)
         self.textWidth       = self._parseLine(cnfParse, cnfSec, "width",          self.CNF_INT,  self.textWidth)
-        self.textMargin      = self._parseLine(cnfParse, cnfSec, "margins",        self.CNF_LIST, self.textMargin)
+        self.textMargin      = self._parseLine(cnfParse, cnfSec, "margin",         self.CNF_INT,  self.textMargin)
         self.tabWidth        = self._parseLine(cnfParse, cnfSec, "tabwidth",       self.CNF_INT,  self.tabWidth)
         self.doJustify       = self._parseLine(cnfParse, cnfSec, "justify",        self.CNF_BOOL, self.doJustify)
         self.autoSelect      = self._parseLine(cnfParse, cnfSec, "autoselect",     self.CNF_BOOL, self.autoSelect)
@@ -220,7 +220,7 @@ class Config:
         cnfParse.set(cnfSec,"textsize",      str(self.textSize))
         cnfParse.set(cnfSec,"fixedwidth",    str(self.textFixedW))
         cnfParse.set(cnfSec,"width",         str(self.textWidth))
-        cnfParse.set(cnfSec,"margins",       self._packList(self.textMargin))
+        cnfParse.set(cnfSec,"margin",        str(self.textMargin))
         cnfParse.set(cnfSec,"tabwidth",      str(self.tabWidth))
         cnfParse.set(cnfSec,"justify",       str(self.doJustify))
         cnfParse.set(cnfSec,"autoselect",    str(self.autoSelect))

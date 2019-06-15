@@ -296,8 +296,8 @@ class GuiMain(QMainWindow):
         if self.hasProject:
             self.closeDocument()
             self.docEditor.loadText(tHandle)
-            self.docEditor.changeWidth()
             self.docEditor.setFocus()
+            self.docEditor.changeWidth()
             self.theProject.setLastEdited(tHandle)
         return True
 

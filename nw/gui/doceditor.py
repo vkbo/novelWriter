@@ -15,7 +15,7 @@ import nw
 
 from time                import time
 
-from PyQt5.QtCore        import Qt, QTimer
+from PyQt5.QtCore        import Qt, QTimer, QSizeF
 from PyQt5.QtWidgets     import QTextEdit, QAction, QMenu, QShortcut
 from PyQt5.QtGui         import QTextCursor, QTextOption, QIcon, QKeySequence, QFont
 
@@ -36,13 +36,13 @@ class GuiDocEditor(QTextEdit):
         logger.debug("Initialising DocEditor ...")
 
         # Class Variables
-        self.mainConf    = nw.CONFIG
-        self.theParent   = theParent
-        self.theProject  = theProject
-        self.docChanged  = False
-        self.spellCheck  = False
-        self.theDocument = NWDoc(self.theProject, self.theParent)
-        self.theHandle   = None
+        self.mainConf   = nw.CONFIG
+        self.theParent  = theParent
+        self.theProject = theProject
+        self.docChanged = False
+        self.spellCheck = False
+        self.nwDocument = NWDoc(self.theProject, self.theParent)
+        self.theHandle  = None
 
         # Document Variables
         self.charCount = 0
@@ -57,14 +57,15 @@ class GuiDocEditor(QTextEdit):
         self.typSQClose = self.mainConf.fmtSingleQuotes[1]
 
         # Core Elements
-        self.theQDoc = self.document()
+        self.qDocument = self.document()
+        self.qDocument.contentsChange.connect(self._docChange)
         if self.mainConf.spellTool == "enchant":
             from nw.tools.spellenchant import NWSpellEnchant
             self.theDict = NWSpellEnchant()
         else:
             self.theDict = NWSpellCheck()
 
-        self.hLight = GuiDocHighlighter(self.theQDoc, self.theParent)
+        self.hLight = GuiDocHighlighter(self.qDocument, self.theParent)
         self.hLight.setDict(self.theDict)
 
         # Context Menu
@@ -75,9 +76,6 @@ class GuiDocEditor(QTextEdit):
         self.hasSelection = False
         self.setMinimumWidth(300)
         self.setAcceptRichText(False)
-
-        self.theQDoc.setDocumentMargin(0)
-        self.theQDoc.contentsChange.connect(self._docChange)
 
         # Custom Shortcuts
         QShortcut(QKeySequence("Ctrl+."), self, context=Qt.WidgetShortcut, activated=self._openSpellContext)
@@ -100,7 +98,7 @@ class GuiDocEditor(QTextEdit):
 
     def clearEditor(self):
 
-        self.theDocument.clearDocument()
+        self.nwDocument.clearDocument()
         self.setReadOnly(True)
         self.clear()
         self.wcTimer.stop()
@@ -129,19 +127,14 @@ class GuiDocEditor(QTextEdit):
         theFont = QFont()
         if self.mainConf.textFont is None:
             # If none is defined, set the default back to config
-            self.mainConf.textFont = self.theQDoc.defaultFont().family()
+            self.mainConf.textFont = self.qDocument.defaultFont().family()
         theFont.setFamily(self.mainConf.textFont)
         theFont.setPointSize(self.mainConf.textSize)
         self.setFont(theFont)
 
         # Set text fixed width, or alternatively, just margins
-        if self.mainConf.textFixedW:
-            self.setLineWrapMode(QTextEdit.FixedPixelWidth)
-            self.setLineWrapColumnOrWidth(self.mainConf.textWidth)
-        else:
-            mTB = self.mainConf.textMargin[0]
-            mLR = self.mainConf.textMargin[1]
-            self.setViewportMargins(mLR,mTB,mLR,mTB)
+        self.qDocument.setDocumentMargin(self.mainConf.textMargin)
+        self.changeWidth()
 
         # Also set the document text options for the document text flow
         theOpt = QTextOption()
@@ -149,7 +142,7 @@ class GuiDocEditor(QTextEdit):
             theOpt.setTabStopDistance(self.mainConf.tabWidth)
         if self.mainConf.doJustify:
             theOpt.setAlignment(Qt.AlignJustify)
-        self.theQDoc.setDefaultTextOption(theOpt)
+        self.qDocument.setDefaultTextOption(theOpt)
 
         # If we have a document open, we should reload it in case the font changed
         if self.theHandle is not None:
@@ -163,8 +156,8 @@ class GuiDocEditor(QTextEdit):
     def loadText(self, tHandle):
 
         self.hLight.setHandle(tHandle)
-        self.setPlainText(self.theDocument.openDocument(tHandle))
-        self.setCursorPosition(self.theDocument.theItem.cursorPos)
+        self.setPlainText(self.nwDocument.openDocument(tHandle))
+        self.setCursorPosition(self.nwDocument.theItem.cursorPos)
         self.lastEdit = time()
         self._runCounter()
         self.wcTimer.start()
@@ -176,17 +169,17 @@ class GuiDocEditor(QTextEdit):
 
     def saveText(self):
 
-        if self.theDocument.theItem is None:
+        if self.nwDocument.theItem is None:
             return False
 
         docText = self.getText()
         cursPos = self.getCursorPosition()
-        theItem = self.theDocument.theItem
+        theItem = self.nwDocument.theItem
         theItem.setCharCount(self.charCount)
         theItem.setWordCount(self.wordCount)
         theItem.setParaCount(self.paraCount)
         theItem.setCursorPos(cursPos)
-        self.theDocument.saveDocument(docText)
+        self.nwDocument.saveDocument(docText)
         self.setDocumentChanged(False)
 
         self.theParent.theIndex.scanText(theItem.itemHandle, docText)
@@ -253,15 +246,16 @@ class GuiDocEditor(QTextEdit):
                 sW = vBar.width()
             else:
                 sW = 0
-            tW  = self.width()
-            tM  = int((tW - sW - self.mainConf.textWidth)/2)
-            mTB = self.mainConf.textMargin[0]
-            if tM >= 10:
-                self.setViewportMargins(tM,mTB,0,mTB)
-                self.setLineWrapColumnOrWidth(self.mainConf.textWidth)
-            else:
-                self.setViewportMargins(10,mTB,0,mTB)
-                self.setLineWrapColumnOrWidth(tW - sW - 20)
+            tW = self.mainConf.textWidth
+            wW = self.width()
+            tM = int((wW - sW - tW)/2)
+            if tM < 0:
+                tM = 0
+            # print(wW, tW, dW, sW, tM)
+            self.setViewportMargins(tM,0,tM,0)
+            self.qDocument.setTextWidth(tW)
+        else:
+            self.setViewportMargins(0,0,0,0)
         return
 
     def docAction(self, theAction):
@@ -369,7 +363,7 @@ class GuiDocEditor(QTextEdit):
         if not self.wcTimer.isActive():
             self.wcTimer.start()
         if self.mainConf.doReplace and not self.hasSelection:
-            self._docAutoReplace(self.theQDoc.findBlock(thePos))
+            self._docAutoReplace(self.qDocument.findBlock(thePos))
         # logger.verbose("Doc change signal took %.3f µs" % ((time()-self.lastEdit)*1e6))
         return
 
@@ -447,7 +441,7 @@ class GuiDocEditor(QTextEdit):
         """
         logger.verbose("Updating word count")
 
-        tHandle = self.theDocument.docHandle
+        tHandle = self.nwDocument.docHandle
         self.charCount = self.wCounter.charCount
         self.wordCount = self.wCounter.wordCount
         self.paraCount = self.wCounter.paraCount

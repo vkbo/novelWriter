@@ -111,7 +111,7 @@ class GuiDocViewer(QTextBrowser):
         theFont.setPointSize(self.mainConf.textSize)
         self.setFont(theFont)
 
-        self.theQDoc.setDocumentMargin(self.mainConf.textMargin[0])
+        self.theQDoc.setDocumentMargin(self.mainConf.textMargin)
         theOpt = QTextOption()
         if self.mainConf.doJustify:
             theOpt.setAlignment(Qt.AlignJustify)
