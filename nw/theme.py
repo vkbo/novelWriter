@@ -16,6 +16,9 @@ import nw
 
 from os import path, listdir
 
+from PyQt5.QtWidgets import qApp
+from PyQt5.QtGui     import QPalette, QColor
+
 from nw.enum import nwAlert
 
 logger = logging.getLogger(__name__)
@@ -24,48 +27,60 @@ class Theme:
 
     def __init__(self, theParent):
 
-        self.mainConf   = nw.CONFIG
-        self.theParent  = theParent
-        self.guiPath    = "gui"
-        self.syntaxPath = "syntax"
-        self.cssName    = "styles.css"
-        self.confName   = "theme.conf"
-        self.themeList  = []
-        self.syntaxList = []
+        self.mainConf     = nw.CONFIG
+        self.theParent    = theParent
+        self.guiPalette   = QPalette()
+        self.guiPath      = "gui"
+        self.syntaxPath   = "syntax"
+        self.cssName      = "style.qss"
+        self.confName     = "theme.conf"
+        self.themeList    = []
+        self.syntaxList   = []
 
         # Loaded Theme Settings
 
-        ## Main
-        self.themeName   = "No Name"
-
-        ## Syntax
-        self.colText     = [  0,  0,  0]
-        self.colLink     = [  0,  0,  0]
-        self.colHead     = [  0,  0,  0]
-        self.colHeadH    = [  0,  0,  0]
-        self.colEmph     = [  0,  0,  0]
-        self.colDialN    = [  0,  0,  0]
-        self.colDialD    = [  0,  0,  0]
-        self.colDialS    = [  0,  0,  0]
-        self.colComm     = [  0,  0,  0]
-        self.colKey      = [  0,  0,  0]
-        self.colVal      = [  0,  0,  0]
-        self.colSpell    = [  0,  0,  0]
-        self.colTagErr   = [  0,  0,  0]
-        self.colRepTag   = [  0,  0,  0]
+        ## Theme
+        self.themeName    = ""
+        self.themeAuthor  = ""
+        self.themeCredit  = ""
+        self.themeUrl     = ""
 
         ## GUI
-        self.treeWCount  = [  0,  0,  0]
-        self.statNone    = [120,120,120]
-        self.statUnsaved = [120,120, 40]
-        self.statSaved   = [ 40,120,  0]
+        self.treeWCount   = [  0,  0,  0]
+        self.statNone     = [120,120,120]
+        self.statUnsaved  = [120,120, 40]
+        self.statSaved    = [ 40,120,  0]
+
+        # Loaded Syntax Settings
+
+        ## Main
+        self.syntaxName   = ""
+        self.syntaxAuthor = ""
+        self.syntaxCredit = ""
+        self.syntaxUrl    = ""
+
+        ## Colours
+        self.colBack      = [255,255,255]
+        self.colText      = [  0,  0,  0]
+        self.colLink      = [  0,  0,  0]
+        self.colHead      = [  0,  0,  0]
+        self.colHeadH     = [  0,  0,  0]
+        self.colEmph      = [  0,  0,  0]
+        self.colDialN     = [  0,  0,  0]
+        self.colDialD     = [  0,  0,  0]
+        self.colDialS     = [  0,  0,  0]
+        self.colComm      = [  0,  0,  0]
+        self.colKey       = [  0,  0,  0]
+        self.colVal       = [  0,  0,  0]
+        self.colSpell     = [  0,  0,  0]
+        self.colTagErr    = [  0,  0,  0]
+        self.colRepTag    = [  0,  0,  0]
 
         # Changeable Settings
-        self.guiTheme    = None
-        self.guiSyntax   = None
-        self.themeRoot   = None
-        self.cssFile     = None
-        self.cssData     = ""
+        self.guiTheme     = None
+        self.guiSyntax    = None
+        self.themeRoot    = None
+        self.cssFile      = None
 
         self.updateTheme()
 
@@ -85,8 +100,6 @@ class Theme:
         self.confFile   = path.join(self.themePath,self.confName)
         self.cssFile    = path.join(self.themePath,self.cssName)
 
-        print(self.guiSyntax)
-
         self.loadTheme()
         self.loadSyntax()
 
@@ -97,13 +110,56 @@ class Theme:
         logger.debug("Loading theme files")
 
         # CSS File
+        cssData = ""
         try:
             if path.isfile(self.cssFile):
                 with open(self.cssFile,mode="r") as inFile:
-                    self.cssData = inFile.read()
+                    cssData = inFile.read()
         except Exception as e:
             logger.error("Could not load theme css file")
             return False
+
+        # Config File
+        confParser = configparser.ConfigParser()
+        try:
+            confParser.read_file(open(self.confFile))
+        except Exception as e:
+            logger.error("Could not load theme settings from: %s" % self.confFile)
+            return False
+
+        ## Main
+        cnfSec = "Main"
+        if confParser.has_section(cnfSec):
+            self.themeName   = self._parseLine(confParser,cnfSec,"name",  "")
+            self.themeAuthor = self._parseLine(confParser,cnfSec,"author","")
+            self.themeCredit = self._parseLine(confParser,cnfSec,"credit","")
+            self.themeUrl    = self._parseLine(confParser,cnfSec,"url",   "")
+
+        ## Palette
+        cnfSec = "Palette"
+        if confParser.has_section(cnfSec):
+            self._setPalette(confParser,cnfSec,"window",       QPalette.Window)
+            self._setPalette(confParser,cnfSec,"windowtext",   QPalette.WindowText)
+            self._setPalette(confParser,cnfSec,"base",         QPalette.Base)
+            self._setPalette(confParser,cnfSec,"alternatebase",QPalette.AlternateBase)
+            self._setPalette(confParser,cnfSec,"text",         QPalette.Text)
+            self._setPalette(confParser,cnfSec,"tooltipbase",  QPalette.ToolTipBase)
+            self._setPalette(confParser,cnfSec,"tooltiptext",  QPalette.ToolTipText)
+            self._setPalette(confParser,cnfSec,"button",       QPalette.Button)
+            self._setPalette(confParser,cnfSec,"buttontext",   QPalette.ButtonText)
+            self._setPalette(confParser,cnfSec,"brighttext",   QPalette.BrightText)
+
+        ## GUI
+        cnfSec = "GUI"
+        if confParser.has_section(cnfSec):
+            self.treeWCount  = self._loadColour(confParser,cnfSec,"treewordcount")
+            self.statNone    = self._loadColour(confParser,cnfSec,"statusnone")
+            self.statUnsaved = self._loadColour(confParser,cnfSec,"statusunsaved")
+            self.statSaved   = self._loadColour(confParser,cnfSec,"statussaved")
+
+        # Apply Styles
+        qApp.setStyleSheet(cssData)
+        qApp.setPalette(self.guiPalette)
 
         return True
 
@@ -119,11 +175,15 @@ class Theme:
         ## Main
         cnfSec = "Main"
         if confParser.has_section(cnfSec):
-            self.themeName = confParser.get(cnfSec,"name")
+            self.syntaxName   = self._parseLine(confParser,cnfSec,"name","")
+            self.syntaxAuthor = self._parseLine(confParser,cnfSec,"author","")
+            self.syntaxCredit = self._parseLine(confParser,cnfSec,"credit","")
+            self.syntaxUrl    = self._parseLine(confParser,cnfSec,"url",   "")
 
         ## Syntax
         cnfSec = "Syntax"
         if confParser.has_section(cnfSec):
+            self.colBack   = self._loadColour(confParser,cnfSec,"background")
             self.colText   = self._loadColour(confParser,cnfSec,"text")
             self.colLink   = self._loadColour(confParser,cnfSec,"link")
             self.colHead   = self._loadColour(confParser,cnfSec,"headertext")
@@ -138,14 +198,6 @@ class Theme:
             self.colSpell  = self._loadColour(confParser,cnfSec,"spellcheckline")
             self.colTagErr = self._loadColour(confParser,cnfSec,"tagerror")
             self.colRepTag = self._loadColour(confParser,cnfSec,"replacetag")
-
-        ## GUI
-        cnfSec = "GUI"
-        if confParser.has_section(cnfSec):
-            self.treeWCount  = self._loadColour(confParser,cnfSec,"treewordcount")
-            self.statNone    = self._loadColour(confParser,cnfSec,"statusnone")
-            self.statUnsaved = self._loadColour(confParser,cnfSec,"statusunsaved")
-            self.statSaved   = self._loadColour(confParser,cnfSec,"statussaved")
 
         logger.info("Loaded syntax colour theme '%s'" % self.guiSyntax)
 
@@ -219,5 +271,26 @@ class Theme:
             logger.warning("Could not find theme colours for '%s' in config file" % cnfName)
             outData = [0,0,0]
         return outData
+
+    def _setPalette(self, confParser, cnfSec, cnfName, paletteVal):
+        if confParser.has_option(cnfSec,cnfName):
+            inData  = confParser.get(cnfSec,cnfName).split(",")
+            readCol = []
+            try:
+                readCol.append(int(inData[0]))
+                readCol.append(int(inData[1]))
+                readCol.append(int(inData[2]))
+            except:
+                logger.error("Could not load theme colours for '%s' from config file" % cnfName)
+                return
+        if len(readCol) == 3:
+            self.guiPalette.setColor(paletteVal, QColor(*readCol))
+        return
+
+    def _parseLine(self, confParser, cnfSec, cnfName, cnfDefault):
+        if confParser.has_section(cnfSec):
+            if confParser.has_option(cnfSec, cnfName):
+                return confParser.get(cnfSec, cnfName)
+        return cnfDefault
 
 # End Class Theme

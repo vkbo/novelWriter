@@ -360,7 +360,7 @@ class GuiDocTree(QTreeWidget):
         newItem.setText(self.C_FLAGS,  "")
         newItem.setText(self.C_HANDLE, tHandle)
 
-        newItem.setForeground(self.C_COUNT,QColor(*self.theParent.theTheme.treeWCount))
+        # newItem.setForeground(self.C_COUNT,QColor(*self.theParent.theTheme.treeWCount))
         newItem.setTextAlignment(self.C_COUNT,Qt.AlignRight)
         newItem.setFont(self.C_FLAGS,self.fontFlags)
 

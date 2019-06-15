@@ -17,7 +17,7 @@ from time                import time
 
 from PyQt5.QtCore        import Qt, QTimer, QSizeF
 from PyQt5.QtWidgets     import QTextEdit, QAction, QMenu, QShortcut
-from PyQt5.QtGui         import QTextCursor, QTextOption, QIcon, QKeySequence, QFont
+from PyQt5.QtGui         import QTextCursor, QTextOption, QIcon, QKeySequence, QFont, QColor, QPalette
 
 from nw.project.document import NWDoc
 from nw.gui.dochighlight import GuiDocHighlighter
@@ -37,8 +37,9 @@ class GuiDocEditor(QTextEdit):
 
         # Class Variables
         self.mainConf   = nw.CONFIG
-        self.theParent  = theParent
         self.theProject = theProject
+        self.theParent  = theParent
+        self.theTheme   = theParent.theTheme
         self.docChanged = False
         self.spellCheck = False
         self.nwDocument = NWDoc(self.theProject, self.theParent)
@@ -131,6 +132,11 @@ class GuiDocEditor(QTextEdit):
         theFont.setFamily(self.mainConf.textFont)
         theFont.setPointSize(self.mainConf.textSize)
         self.setFont(theFont)
+
+        docPalette = self.palette()
+        docPalette.setColor(QPalette.Base, QColor(*self.theTheme.colBack))
+        docPalette.setColor(QPalette.Text, QColor(*self.theTheme.colText))
+        self.setPalette(docPalette)
 
         # Set text fixed width, or alternatively, just margins
         self.qDocument.setDocumentMargin(self.mainConf.textMargin)
@@ -249,11 +255,11 @@ class GuiDocEditor(QTextEdit):
             tM = int((wW - sW - tW)/2)
             if tM < 0:
                 tM = 0
-            # print(wW, tW, dW, sW, tM)
-            self.setViewportMargins(tM,0,tM,0)
-            self.qDocument.setTextWidth(tW)
-        else:
-            self.setViewportMargins(0,0,0,0)
+            docFormat = self.qDocument.rootFrame().frameFormat()
+            docFormat.setLeftMargin(tM)
+            docFormat.setRightMargin(tM)
+            self.qDocument.rootFrame().setFrameFormat(docFormat)
+
         return
 
     def docAction(self, theAction):

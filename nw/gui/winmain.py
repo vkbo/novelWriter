@@ -58,7 +58,6 @@ class GuiMain(QMainWindow):
         self.resize(*self.mainConf.winGeometry)
         self._setWindowTitle()
         self.setWindowIcon(QIcon(path.join(self.mainConf.appRoot, nwFiles.APP_ICON)))
-        self.theTheme.updateTheme()
 
         # Main GUI Elements
         self.statusBar  = GuiMainStatus(self)
@@ -113,9 +112,6 @@ class GuiMain(QMainWindow):
         self.setMenuBar(self.mainMenu)
         self.setStatusBar(self.statusBar)
         self.statusBar.showMessage("Ready")
-
-        # Load Theme StyleSheet
-        self.setStyleSheet(self.theTheme.cssData)
 
         # Set Up Autosaving Project Timer
         self.asProjTimer = QTimer()
