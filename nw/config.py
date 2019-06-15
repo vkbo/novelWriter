@@ -14,9 +14,11 @@ import logging
 import configparser
 import nw
 
-from os       import path, mkdir, getcwd
-from appdirs  import user_config_dir
-from datetime import datetime
+from os           import path, mkdir, getcwd
+from appdirs      import user_config_dir
+from datetime     import datetime
+
+from nw.constants import nwFiles
 
 logger = logging.getLogger(__name__)
 
@@ -43,6 +45,7 @@ class Config:
         self.homePath  = None
         self.appPath   = None
         self.appRoot   = None
+        self.appIcon   = None
         self.guiPath   = None
         self.themeRoot = None
         self.themePath = None
@@ -111,6 +114,7 @@ class Config:
         self.guiPath   = path.join(self.appPath,"gui")
         self.themeRoot = path.join(self.appPath,"themes")
         self.themePath = path.join(self.themeRoot)
+        self.appIcon   = path.join(self.appRoot, nwFiles.APP_ICON)
 
         # If config folder does not exist, make it.
         # This assumes that the os config folder itself exists.

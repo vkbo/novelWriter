@@ -58,7 +58,7 @@ class GuiMain(QMainWindow):
 
         self.resize(*self.mainConf.winGeometry)
         self._setWindowTitle()
-        self.setWindowIcon(QIcon(path.join(self.mainConf.appRoot, nwFiles.APP_ICON)))
+        self.setWindowIcon(QIcon(path.join(self.mainConf.appIcon)))
 
         # Main GUI Elements
         self.statusBar  = GuiMainStatus(self)
