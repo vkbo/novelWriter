@@ -27,15 +27,17 @@ class GuiMainStatus(QStatusBar):
 
         logger.debug("Initialising GuiMainStatus ...")
 
-        self.mainConf = nw.CONFIG
-        self.refTime  = None
+        self.mainConf   = nw.CONFIG
+        self.theParent  = theParent
+        self.refTime    = None
 
         self.iconGrey   = QPixmap(16,16)
-        self.iconGrey.fill(QColor(120,120,120))
         self.iconYellow = QPixmap(16,16)
-        self.iconYellow.fill(QColor(120,120, 40))
         self.iconGreen  = QPixmap(16,16)
-        self.iconGreen.fill(QColor( 40,120,  0))
+
+        self.iconGrey.fill(QColor(*self.theParent.theTheme.statNone))
+        self.iconYellow.fill(QColor(*self.theParent.theTheme.statUnsaved))
+        self.iconGreen.fill(QColor(*self.theParent.theTheme.statSaved))
 
         self.boxStats = QLabel()
         self.boxStats.setToolTip("Project Word Count | Session Word Count")

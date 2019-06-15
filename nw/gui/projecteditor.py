@@ -15,7 +15,7 @@ import nw
 
 from os import path
 
-from PyQt5.QtCore    import Qt
+from PyQt5.QtCore    import Qt, QSize
 from PyQt5.QtGui     import QIcon, QPixmap, QColor, QBrush, QStandardItemModel
 from PyQt5.QtSvg     import QSvgWidget
 from PyQt5.QtWidgets import (
@@ -37,14 +37,15 @@ class GuiProjectEditor(QDialog):
         self.mainConf   = nw.CONFIG
         self.theParent  = theParent
         self.theProject = theProject
+
         self.outerBox   = QHBoxLayout()
         self.innerBox   = QVBoxLayout()
-
         self.setWindowTitle("Project Settings")
+        self.setLayout(self.outerBox)
 
-        self.gradPath = path.abspath(path.join(self.mainConf.appPath,"graphics","block.svg"))
+        self.gradPath = path.abspath(path.join(self.mainConf.appPath,"graphics","gear.svg"))
         self.svgGradient = QSvgWidget(self.gradPath)
-        self.svgGradient.setFixedWidth(80)
+        self.svgGradient.setFixedSize(QSize(64,64))
 
         self.theProject.countStatus()
         self.tabMain    = GuiProjectEditMain(self.theParent, self.theProject)
@@ -58,8 +59,7 @@ class GuiProjectEditor(QDialog):
         self.tabWidget.addTab(self.tabImport, "Importance")
         self.tabWidget.addTab(self.tabReplace,"Auto-Replace")
 
-        self.setLayout(self.outerBox)
-        self.outerBox.addWidget(self.svgGradient)
+        self.outerBox.addWidget(self.svgGradient, 0, Qt.AlignTop)
         self.outerBox.addLayout(self.innerBox)
 
         self.buttonBox = QDialogButtonBox(QDialogButtonBox.Ok | QDialogButtonBox.Cancel)

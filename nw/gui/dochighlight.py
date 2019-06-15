@@ -36,18 +36,18 @@ class GuiDocHighlighter(QSyntaxHighlighter):
         self.hRules     = []
         self.hStyles    = {}
 
-        self.colHead    = QColor(*self.theTheme.colHead)
-        self.colHeadH   = QColor(*self.theTheme.colHeadH)
-        self.colEmph    = QColor(*self.theTheme.colEmph)
-        self.colDialN   = QColor(*self.theTheme.colDialN)
-        self.colDialD   = QColor(*self.theTheme.colDialD)
-        self.colDialS   = QColor(*self.theTheme.colDialS)
-        self.colComm    = QColor(*self.theTheme.colComm)
-        self.colKey     = QColor(*self.theTheme.colKey)
-        self.colVal     = QColor(*self.theTheme.colVal)
-        self.colSpell   = QColor(*self.theTheme.colSpell)
-        self.colTagErr  = QColor(*self.theTheme.colTagErr)
-        self.colRepTag  = QColor(*self.theTheme.colRepTag)
+        self.colHead    = QColor(0,0,0)
+        self.colHeadH   = QColor(0,0,0)
+        self.colEmph    = QColor(0,0,0)
+        self.colDialN   = QColor(0,0,0)
+        self.colDialD   = QColor(0,0,0)
+        self.colDialS   = QColor(0,0,0)
+        self.colComm    = QColor(0,0,0)
+        self.colKey     = QColor(0,0,0)
+        self.colVal     = QColor(0,0,0)
+        self.colSpell   = QColor(0,0,0)
+        self.colTagErr  = QColor(0,0,0)
+        self.colRepTag  = QColor(0,0,0)
 
         self.initHighlighter()
 
@@ -56,6 +56,21 @@ class GuiDocHighlighter(QSyntaxHighlighter):
         return
 
     def initHighlighter(self):
+
+        logger.debug("Setting up highlighting rules")
+
+        self.colHead   = QColor(*self.theTheme.colHead)
+        self.colHeadH  = QColor(*self.theTheme.colHeadH)
+        self.colEmph   = QColor(*self.theTheme.colEmph)
+        self.colDialN  = QColor(*self.theTheme.colDialN)
+        self.colDialD  = QColor(*self.theTheme.colDialD)
+        self.colDialS  = QColor(*self.theTheme.colDialS)
+        self.colComm   = QColor(*self.theTheme.colComm)
+        self.colKey    = QColor(*self.theTheme.colKey)
+        self.colVal    = QColor(*self.theTheme.colVal)
+        self.colSpell  = QColor(*self.theTheme.colSpell)
+        self.colTagErr = QColor(*self.theTheme.colTagErr)
+        self.colRepTag = QColor(*self.theTheme.colRepTag)
 
         self.hStyles = {
             "header1"   : self._makeFormat(self.colHead, "bold",1.8),
@@ -80,6 +95,7 @@ class GuiDocHighlighter(QSyntaxHighlighter):
         }
 
         # Headers
+        self.hRules = []
         self.hRules.append((
             r"^(#{1}) (.*)[^\n]", {
                 0 : self.hStyles["header1"],

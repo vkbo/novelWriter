@@ -15,7 +15,7 @@ import nw
 
 from os import path
 
-from PyQt5.QtCore    import Qt
+from PyQt5.QtCore    import Qt, QSize
 from PyQt5.QtGui     import QIcon, QPixmap, QColor, QBrush, QStandardItemModel, QFont
 from PyQt5.QtSvg     import QSvgWidget
 from PyQt5.QtWidgets import (
@@ -43,9 +43,9 @@ class GuiConfigEditor(QDialog):
 
         self.setWindowTitle("Preferences")
 
-        self.gradPath = path.abspath(path.join(self.mainConf.appPath,"graphics","block.svg"))
-        self.svgGradient = QSvgWidget(self.gradPath)
-        self.svgGradient.setFixedWidth(80)
+        self.gradPath = path.abspath(path.join(self.mainConf.appPath,"graphics","gear.svg"))
+        self.svgGradient = QSvgWidget(path.join(self.gradPath))
+        self.svgGradient.setFixedSize(QSize(64,64))
 
         self.theProject.countStatus()
         self.tabMain   = GuiConfigEditGeneral(self.theParent)
@@ -56,7 +56,7 @@ class GuiConfigEditor(QDialog):
         self.tabWidget.addTab(self.tabEditor, "Editor")
 
         self.setLayout(self.outerBox)
-        self.outerBox.addWidget(self.svgGradient)
+        self.outerBox.addWidget(self.svgGradient, 0, Qt.AlignTop)
         self.outerBox.addLayout(self.innerBox)
 
         self.buttonBox = QDialogButtonBox(QDialogButtonBox.Ok | QDialogButtonBox.Cancel)
@@ -129,8 +129,19 @@ class GuiConfigEditGeneral(QWidget):
         if themeIdx != -1:
             self.guiLookTheme.setCurrentIndex(themeIdx)
 
-        self.guiLookForm.addWidget(QLabel("Theme"),   0, 0)
-        self.guiLookForm.addWidget(self.guiLookTheme, 0, 1)
+        self.guiLookSyntax = QComboBox()
+        self.guiLookSyntax.setMinimumWidth(200)
+        self.theSyntaxes = self.theParent.theTheme.listSyntax()
+        for syntaxFile, syntaxName in self.theSyntaxes:
+            self.guiLookSyntax.addItem(syntaxName, syntaxFile)
+        syntaxIdx = self.guiLookSyntax.findData(self.mainConf.guiSyntax)
+        if syntaxIdx != -1:
+            self.guiLookSyntax.setCurrentIndex(syntaxIdx)
+
+        self.guiLookForm.addWidget(QLabel("Theme"),    0, 0)
+        self.guiLookForm.addWidget(self.guiLookTheme,  0, 1)
+        self.guiLookForm.addWidget(QLabel("Syntax"),   1, 0)
+        self.guiLookForm.addWidget(self.guiLookSyntax, 1, 1)
 
         # Spell Checking
         self.spellLang     = QGroupBox("Spell Checker", self)
@@ -188,6 +199,7 @@ class GuiConfigEditGeneral(QWidget):
         needsRestart = False
 
         guiTheme      = self.guiLookTheme.currentData()
+        guiSyntax     = self.guiLookSyntax.currentData()
         spellLanguage = self.spellLangList.currentData()
         autoSaveDoc   = self.autoSaveDoc.value()
         autoSaveProj  = self.autoSaveProj.value()
@@ -196,6 +208,7 @@ class GuiConfigEditGeneral(QWidget):
         needsRestart |= self.mainConf.guiTheme != guiTheme
 
         self.mainConf.guiTheme      = guiTheme
+        self.mainConf.guiSyntax     = guiSyntax
         self.mainConf.spellLanguage = spellLanguage
         self.mainConf.autoSaveDoc   = autoSaveDoc
         self.mainConf.autoSaveProj  = autoSaveProj

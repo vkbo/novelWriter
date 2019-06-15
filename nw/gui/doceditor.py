@@ -17,7 +17,7 @@ from time                import time
 
 from PyQt5.QtCore        import Qt, QTimer, QSizeF
 from PyQt5.QtWidgets     import QTextEdit, QAction, QMenu, QShortcut
-from PyQt5.QtGui         import QTextCursor, QTextOption, QIcon, QKeySequence, QFont
+from PyQt5.QtGui         import QTextCursor, QTextOption, QIcon, QKeySequence, QFont, QColor, QPalette
 
 from nw.project.document import NWDoc
 from nw.gui.dochighlight import GuiDocHighlighter
@@ -37,8 +37,9 @@ class GuiDocEditor(QTextEdit):
 
         # Class Variables
         self.mainConf   = nw.CONFIG
-        self.theParent  = theParent
         self.theProject = theProject
+        self.theParent  = theParent
+        self.theTheme   = theParent.theTheme
         self.docChanged = False
         self.spellCheck = False
         self.nwDocument = NWDoc(self.theProject, self.theParent)
@@ -58,6 +59,7 @@ class GuiDocEditor(QTextEdit):
 
         # Core Elements
         self.qDocument = self.document()
+        self.qDocument.setDocumentMargin(self.mainConf.textMargin)
         self.qDocument.contentsChange.connect(self._docChange)
         if self.mainConf.spellTool == "enchant":
             from nw.tools.spellenchant import NWSpellEnchant
@@ -89,7 +91,6 @@ class GuiDocEditor(QTextEdit):
         self.wCounter = WordCounter(self)
         self.wCounter.finished.connect(self._updateCounts)
 
-        self.clearEditor()
         self.initEditor()
 
         logger.debug("DocEditor initialisation complete")
@@ -132,9 +133,13 @@ class GuiDocEditor(QTextEdit):
         theFont.setPointSize(self.mainConf.textSize)
         self.setFont(theFont)
 
-        # Set text fixed width, or alternatively, just margins
+        docPalette = self.palette()
+        docPalette.setColor(QPalette.Base, QColor(*self.theTheme.colBack))
+        docPalette.setColor(QPalette.Text, QColor(*self.theTheme.colText))
+        self.setPalette(docPalette)
+
+        # Set default text margins
         self.qDocument.setDocumentMargin(self.mainConf.textMargin)
-        self.changeWidth()
 
         # Also set the document text options for the document text flow
         theOpt = QTextOption()
@@ -144,12 +149,14 @@ class GuiDocEditor(QTextEdit):
             theOpt.setAlignment(Qt.AlignJustify)
         self.qDocument.setDefaultTextOption(theOpt)
 
+        self.hLight.initHighlighter()
+
         # If we have a document open, we should reload it in case the font changed
         if self.theHandle is not None:
             tHandle = self.theHandle
-            self.hLight.initHighlighter()
             self.clearEditor()
             self.loadText(tHandle)
+            self.changeWidth()
 
         return True
 
@@ -220,17 +227,13 @@ class GuiDocEditor(QTextEdit):
     def setSpellCheck(self, theMode):
         self.spellCheck = theMode
         self.hLight.setSpellCheck(theMode)
-        self.rehighlightDocument()
+        self.hLight.rehighlight()
         return True
 
     def updateSpellCheck(self):
         if self.spellCheck:
-            self.rehighlightDocument()
+            self.hLight.rehighlight()
         return True
-
-    def rehighlightDocument(self):
-        self.hLight.rehighlight()
-        return
 
     ##
     #  General Class Methods
@@ -251,11 +254,11 @@ class GuiDocEditor(QTextEdit):
             tM = int((wW - sW - tW)/2)
             if tM < 0:
                 tM = 0
-            # print(wW, tW, dW, sW, tM)
-            self.setViewportMargins(tM,0,tM,0)
-            self.qDocument.setTextWidth(tW)
-        else:
-            self.setViewportMargins(0,0,0,0)
+            docFormat = self.qDocument.rootFrame().frameFormat()
+            docFormat.setLeftMargin(tM)
+            docFormat.setRightMargin(tM)
+            self.qDocument.rootFrame().setFrameFormat(docFormat)
+
         return
 
     def docAction(self, theAction):
@@ -359,7 +362,8 @@ class GuiDocEditor(QTextEdit):
 
     def _docChange(self, thePos, charsRemoved, charsAdded):
         self.lastEdit = time()
-        self.setDocumentChanged(True)
+        if not self.docChanged:
+            self.setDocumentChanged(True)
         if not self.wcTimer.isActive():
             self.wcTimer.start()
         if self.mainConf.doReplace and not self.hasSelection:
