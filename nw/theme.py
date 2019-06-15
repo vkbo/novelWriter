@@ -224,6 +224,8 @@ class Theme:
             if themeName != "":
                 self.themeList.append((themeDir, themeName))
 
+        self.themeList = sorted(self.themeList, key=lambda x: x[1])
+
         return self.themeList
 
     def listSyntax(self):
@@ -249,6 +251,8 @@ class Theme:
             if len(syntaxFile) > 5 and syntaxName != "":
                 self.syntaxList.append((syntaxFile[:-5], syntaxName))
                 logger.verbose("Syntax name is '%s'" % syntaxName)
+
+        self.syntaxList = sorted(self.syntaxList, key=lambda x: x[1])
 
         return self.syntaxList
 
