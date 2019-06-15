@@ -104,8 +104,8 @@ class GuiMainMenu(QMenuBar):
         return True
 
     def _showAbout(self):
-        msgBox = QMessageBox()
-        msgBox.about(self.theParent, "About %s" % nw.__package__, (
+        listPrefix = "&nbsp;&nbsp;&bull;&nbsp;&nbsp;"
+        aboutMsg   = (
             "<h3>About {name:s}</h3>"
             "<p>Version: {version:s}<br>Release Date: {date:s}</p>"
             "<p>{name:s} is a markdown-like text editor designed for organising and writing novels. "
@@ -121,8 +121,23 @@ class GuiMainMenu(QMenuBar):
             date      = nw.__date__,
             copyright = nw.__copyright__,
             website   = nw.__url__,
-            credits   = "".join(["&nbsp;&nbsp;&bull;&nbsp;&nbsp;%s<br/>" % x for x in nw.__credits__]),
-        ))
+            credits   = "<br/>".join(["%s%s" % (listPrefix, x) for x in nw.__credits__]),
+        )
+        theTheme = self.theParent.theTheme
+        if theTheme.themeCredit != "" or theTheme.syntaxCredit != "":
+            aboutMsg += "<h4>GUI Theme and Syntax Highlighting</h4>"
+            aboutMsg += "<p>"
+            if theTheme.themeCredit != "":
+                aboutMsg += "%s%s by %s<br/>" % (
+                    listPrefix, theTheme.themeName, theTheme.themeCredit
+                )
+            if theTheme.syntaxCredit != "":
+                aboutMsg += "%s%s by %s<br/>" % (
+                    listPrefix, theTheme.syntaxName, theTheme.syntaxCredit
+                )
+            aboutMsg += "</p>"
+        msgBox = QMessageBox()
+        msgBox.about(self.theParent, "About %s" % nw.__package__, aboutMsg)
         return True
 
     def _showAboutQt(self):

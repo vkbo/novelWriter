@@ -14,9 +14,11 @@ import logging
 import configparser
 import nw
 
-from os       import path, mkdir, getcwd
-from appdirs  import user_config_dir
-from datetime import datetime
+from os           import path, mkdir, getcwd
+from appdirs      import user_config_dir
+from datetime     import datetime
+
+from nw.constants import nwFiles
 
 logger = logging.getLogger(__name__)
 
@@ -43,6 +45,7 @@ class Config:
         self.homePath  = None
         self.appPath   = None
         self.appRoot   = None
+        self.appIcon   = None
         self.guiPath   = None
         self.themeRoot = None
         self.themePath = None
@@ -51,7 +54,8 @@ class Config:
         self.confChanged  = False
 
         ## General
-        self.guiTheme     = "default_dark"
+        self.guiTheme     = "default"
+        self.guiSyntax    = "default_light"
         self.winGeometry  = [1100, 650]
         self.treeColWidth = [120, 30, 50]
         self.mainPanePos  = [300, 800]
@@ -110,6 +114,7 @@ class Config:
         self.guiPath   = path.join(self.appPath,"gui")
         self.themeRoot = path.join(self.appPath,"themes")
         self.themePath = path.join(self.themeRoot)
+        self.appIcon   = path.join(self.appRoot, nwFiles.APP_ICON)
 
         # If config folder does not exist, make it.
         # This assumes that the os config folder itself exists.
@@ -144,7 +149,8 @@ class Config:
 
         ## Main
         cnfSec = "Main"
-        self.guiTheme        = self._parseLine(cnfParse, cnfSec, "theme", self.CNF_STR, self.guiTheme)
+        self.guiTheme        = self._parseLine(cnfParse, cnfSec, "theme",  self.CNF_STR, self.guiTheme)
+        self.guiSyntax       = self._parseLine(cnfParse, cnfSec, "syntax", self.CNF_STR, self.guiSyntax)
 
         ## Sizes
         cnfSec = "Sizes"
@@ -197,6 +203,7 @@ class Config:
         cnfParse.add_section(cnfSec)
         cnfParse.set(cnfSec,"timestamp", datetime.now().strftime("%Y-%m-%d %H:%M:%S"))
         cnfParse.set(cnfSec,"theme",     str(self.guiTheme))
+        cnfParse.set(cnfSec,"syntax",    str(self.guiSyntax))
 
         ## Sizes
         cnfSec = "Sizes"
