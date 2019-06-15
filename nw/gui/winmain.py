@@ -58,7 +58,7 @@ class GuiMain(QMainWindow):
         self.resize(*self.mainConf.winGeometry)
         self._setWindowTitle()
         self.setWindowIcon(QIcon(path.join(self.mainConf.appRoot, nwFiles.APP_ICON)))
-        self.theTheme.loadTheme()
+        self.theTheme.updateTheme()
 
         # Main GUI Elements
         self.statusBar  = GuiMainStatus(self)
@@ -467,6 +467,7 @@ class GuiMain(QMainWindow):
         if dlgConf.exec_() == QDialog.Accepted:
             logger.debug("Applying new preferences")
             self.initMain()
+            self.theTheme.updateTheme()
             self.docEditor.initEditor()
             self.docViewer.initViewer()
         return True

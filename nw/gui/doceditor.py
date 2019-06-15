@@ -134,7 +134,6 @@ class GuiDocEditor(QTextEdit):
 
         # Set text fixed width, or alternatively, just margins
         self.qDocument.setDocumentMargin(self.mainConf.textMargin)
-        self.changeWidth()
 
         # Also set the document text options for the document text flow
         theOpt = QTextOption()
@@ -147,9 +146,12 @@ class GuiDocEditor(QTextEdit):
         # If we have a document open, we should reload it in case the font changed
         if self.theHandle is not None:
             tHandle = self.theHandle
-            self.hLight.initHighlighter()
             self.clearEditor()
             self.loadText(tHandle)
+
+        self.hLight.initHighlighter()
+        self.hLight.rehighlight()
+        self.changeWidth()
 
         return True
 
@@ -220,17 +222,13 @@ class GuiDocEditor(QTextEdit):
     def setSpellCheck(self, theMode):
         self.spellCheck = theMode
         self.hLight.setSpellCheck(theMode)
-        self.rehighlightDocument()
+        self.hLight.rehighlight()
         return True
 
     def updateSpellCheck(self):
         if self.spellCheck:
-            self.rehighlightDocument()
+            self.hLight.rehighlight()
         return True
-
-    def rehighlightDocument(self):
-        self.hLight.rehighlight()
-        return
 
     ##
     #  General Class Methods

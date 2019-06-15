@@ -129,8 +129,19 @@ class GuiConfigEditGeneral(QWidget):
         if themeIdx != -1:
             self.guiLookTheme.setCurrentIndex(themeIdx)
 
-        self.guiLookForm.addWidget(QLabel("Theme"),   0, 0)
-        self.guiLookForm.addWidget(self.guiLookTheme, 0, 1)
+        self.guiLookSyntax = QComboBox()
+        self.guiLookSyntax.setMinimumWidth(200)
+        self.theSyntaxes = self.theParent.theTheme.listSyntax()
+        for syntaxFile, syntaxName in self.theSyntaxes:
+            self.guiLookSyntax.addItem(syntaxName, syntaxFile)
+        syntaxIdx = self.guiLookSyntax.findData(self.mainConf.guiSyntax)
+        if syntaxIdx != -1:
+            self.guiLookSyntax.setCurrentIndex(syntaxIdx)
+
+        self.guiLookForm.addWidget(QLabel("Theme"),    0, 0)
+        self.guiLookForm.addWidget(self.guiLookTheme,  0, 1)
+        self.guiLookForm.addWidget(QLabel("Syntax"),   1, 0)
+        self.guiLookForm.addWidget(self.guiLookSyntax, 1, 1)
 
         # Spell Checking
         self.spellLang     = QGroupBox("Spell Checker", self)
@@ -188,6 +199,7 @@ class GuiConfigEditGeneral(QWidget):
         needsRestart = False
 
         guiTheme      = self.guiLookTheme.currentData()
+        guiSyntax     = self.guiLookSyntax.currentData()
         spellLanguage = self.spellLangList.currentData()
         autoSaveDoc   = self.autoSaveDoc.value()
         autoSaveProj  = self.autoSaveProj.value()
@@ -196,6 +208,7 @@ class GuiConfigEditGeneral(QWidget):
         needsRestart |= self.mainConf.guiTheme != guiTheme
 
         self.mainConf.guiTheme      = guiTheme
+        self.mainConf.guiSyntax     = guiSyntax
         self.mainConf.spellLanguage = spellLanguage
         self.mainConf.autoSaveDoc   = autoSaveDoc
         self.mainConf.autoSaveProj  = autoSaveProj

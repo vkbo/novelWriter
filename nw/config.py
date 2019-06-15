@@ -51,7 +51,8 @@ class Config:
         self.confChanged  = False
 
         ## General
-        self.guiTheme     = "default_dark"
+        self.guiTheme     = "default"
+        self.guiSyntax    = "default_light"
         self.winGeometry  = [1100, 650]
         self.treeColWidth = [120, 30, 50]
         self.mainPanePos  = [300, 800]
@@ -144,7 +145,8 @@ class Config:
 
         ## Main
         cnfSec = "Main"
-        self.guiTheme        = self._parseLine(cnfParse, cnfSec, "theme", self.CNF_STR, self.guiTheme)
+        self.guiTheme        = self._parseLine(cnfParse, cnfSec, "theme",  self.CNF_STR, self.guiTheme)
+        self.guiSyntax       = self._parseLine(cnfParse, cnfSec, "syntax", self.CNF_STR, self.guiSyntax)
 
         ## Sizes
         cnfSec = "Sizes"
@@ -197,6 +199,7 @@ class Config:
         cnfParse.add_section(cnfSec)
         cnfParse.set(cnfSec,"timestamp", datetime.now().strftime("%Y-%m-%d %H:%M:%S"))
         cnfParse.set(cnfSec,"theme",     str(self.guiTheme))
+        cnfParse.set(cnfSec,"syntax",    str(self.guiSyntax))
 
         ## Sizes
         cnfSec = "Sizes"

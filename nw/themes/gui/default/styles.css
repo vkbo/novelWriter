@@ -1,0 +1,17 @@
+/**
+ * Default Theme: Light
+ */
+
+QTextEdit {
+    background-color: #ffffff;
+    color: #141414;
+}
+
+QTextBrowser {
+    background-color: #ffffff;
+    color: #141414;
+}
+
+QTreeView, QHeaderView {
+    font-size: 13px;
+}
