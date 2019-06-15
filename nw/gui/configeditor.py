@@ -260,21 +260,12 @@ class GuiConfigEditEditor(QWidget):
         else:
             self.textFlowJustify.setCheckState(Qt.Unchecked)
 
-        self.testFlowAutoSelect = QCheckBox(self)
-        self.testFlowAutoSelect.setToolTip("Auto-select word under cursor when applying formatting.")
-        if self.mainConf.autoSelect:
-            self.testFlowAutoSelect.setCheckState(Qt.Checked)
-        else:
-            self.testFlowAutoSelect.setCheckState(Qt.Unchecked)
-
         self.textFlowForm.addWidget(QLabel("Fixed Width"),      0, 0)
         self.textFlowForm.addWidget(self.textFlowFixed,         0, 1)
         self.textFlowForm.addWidget(self.textFlowWidth,         0, 2)
         self.textFlowForm.addWidget(QLabel("px"),               0, 3)
         self.textFlowForm.addWidget(QLabel("Justify Text"),     1, 0)
         self.textFlowForm.addWidget(self.textFlowJustify,       1, 1)
-        self.textFlowForm.addWidget(QLabel("Auto-Select Text"), 2, 0)
-        self.textFlowForm.addWidget(self.testFlowAutoSelect,    2, 1)
         self.textFlowForm.setColumnStretch(4, 1)
 
         # Text Margins
@@ -282,17 +273,11 @@ class GuiConfigEditEditor(QWidget):
         self.textMarginForm = QGridLayout(self)
         self.textMargin.setLayout(self.textMarginForm)
 
-        self.textMarginHor = QSpinBox(self)
-        self.textMarginHor.setMinimum(0)
-        self.textMarginHor.setMaximum(2000)
-        self.textMarginHor.setSingleStep(1)
-        self.textMarginHor.setValue(self.mainConf.textMargin[0])
-
-        self.textMarginVer = QSpinBox(self)
-        self.textMarginVer.setMinimum(0)
-        self.textMarginVer.setMaximum(2000)
-        self.textMarginVer.setSingleStep(1)
-        self.textMarginVer.setValue(self.mainConf.textMargin[1])
+        self.textMarginDoc = QSpinBox(self)
+        self.textMarginDoc.setMinimum(0)
+        self.textMarginDoc.setMaximum(2000)
+        self.textMarginDoc.setSingleStep(1)
+        self.textMarginDoc.setValue(self.mainConf.textMargin)
 
         self.textMarginTab = QSpinBox(self)
         self.textMarginTab.setMinimum(0)
@@ -300,21 +285,25 @@ class GuiConfigEditEditor(QWidget):
         self.textMarginTab.setSingleStep(1)
         self.textMarginTab.setValue(self.mainConf.tabWidth)
 
-        self.textMarginForm.addWidget(QLabel("Horizontal"), 0, 0)
-        self.textMarginForm.addWidget(self.textMarginHor,   0, 1)
+        self.textMarginForm.addWidget(QLabel("Document"),   0, 0)
+        self.textMarginForm.addWidget(self.textMarginDoc,   0, 1)
         self.textMarginForm.addWidget(QLabel("px"),         0, 2)
-        self.textMarginForm.addWidget(QLabel("Vertical"),   1, 0)
-        self.textMarginForm.addWidget(self.textMarginVer,   1, 1)
-        self.textMarginForm.addWidget(QLabel("px"),         1, 2)
         self.textMarginForm.addWidget(QLabel("Tab Width"),  2, 0)
         self.textMarginForm.addWidget(self.textMarginTab,   2, 1)
         self.textMarginForm.addWidget(QLabel("px"),         2, 2)
         self.textMarginForm.setColumnStretch(4, 1)
 
-        # Auto-Replace
-        self.autoReplace     = QGroupBox("Auto-Replace", self)
+        # Automatic Features
+        self.autoReplace     = QGroupBox("Automatic Features", self)
         self.autoReplaceForm = QGridLayout(self)
         self.autoReplace.setLayout(self.autoReplaceForm)
+
+        self.autoSelect = QCheckBox(self)
+        self.autoSelect.setToolTip("Auto-select word under cursor when applying formatting.")
+        if self.mainConf.autoSelect:
+            self.autoSelect.setCheckState(Qt.Checked)
+        else:
+            self.autoSelect.setCheckState(Qt.Unchecked)
 
         self.autoReplaceMain = QCheckBox(self)
         self.autoReplaceMain.setToolTip("Auto-replace text as you type.")
@@ -330,36 +319,12 @@ class GuiConfigEditEditor(QWidget):
         else:
             self.autoReplaceSQ.setCheckState(Qt.Unchecked)
 
-        self.autoReplaceSStyleO = QLineEdit()
-        self.autoReplaceSStyleO.setMaxLength(1)
-        self.autoReplaceSStyleO.setFixedWidth(30)
-        self.autoReplaceSStyleO.setAlignment(Qt.AlignCenter)
-        self.autoReplaceSStyleO.setText(self.mainConf.fmtSingleQuotes[0])
-
-        self.autoReplaceSStyleC = QLineEdit()
-        self.autoReplaceSStyleC.setMaxLength(1)
-        self.autoReplaceSStyleC.setFixedWidth(30)
-        self.autoReplaceSStyleC.setAlignment(Qt.AlignCenter)
-        self.autoReplaceSStyleC.setText(self.mainConf.fmtSingleQuotes[1])
-
         self.autoReplaceDQ = QCheckBox(self)
         self.autoReplaceDQ.setToolTip("Auto-replace double quotes.")
         if self.mainConf.doReplaceDQuote:
             self.autoReplaceDQ.setCheckState(Qt.Checked)
         else:
             self.autoReplaceDQ.setCheckState(Qt.Unchecked)
-
-        self.autoReplaceDStyleO = QLineEdit()
-        self.autoReplaceDStyleO.setMaxLength(1)
-        self.autoReplaceDStyleO.setFixedWidth(30)
-        self.autoReplaceDStyleO.setAlignment(Qt.AlignCenter)
-        self.autoReplaceDStyleO.setText(self.mainConf.fmtDoubleQuotes[0])
-
-        self.autoReplaceDStyleC = QLineEdit()
-        self.autoReplaceDStyleC.setMaxLength(1)
-        self.autoReplaceDStyleC.setFixedWidth(30)
-        self.autoReplaceDStyleC.setAlignment(Qt.AlignCenter)
-        self.autoReplaceDStyleC.setText(self.mainConf.fmtDoubleQuotes[1])
 
         self.autoReplaceDash = QCheckBox(self)
         self.autoReplaceDash.setToolTip("Auto-replace double and triple hyphens with short and long dash.")
@@ -375,31 +340,68 @@ class GuiConfigEditEditor(QWidget):
         else:
             self.autoReplaceDots.setCheckState(Qt.Unchecked)
 
-        self.autoReplaceForm.addWidget(QLabel("Enable Feature"),     0, 0)
-        self.autoReplaceForm.addWidget(self.autoReplaceMain,         0, 1)
-        self.autoReplaceForm.addWidget(QLabel("Single Quotes"),      1, 0)
-        self.autoReplaceForm.addWidget(self.autoReplaceSQ,           1, 1)
-        self.autoReplaceForm.addWidget(QLabel("Open"),               1, 2)
-        self.autoReplaceForm.addWidget(self.autoReplaceSStyleO,      1, 3)
-        self.autoReplaceForm.addWidget(QLabel("Close"),              1, 4)
-        self.autoReplaceForm.addWidget(self.autoReplaceSStyleC,      1, 5)
-        self.autoReplaceForm.addWidget(QLabel("Double Quotes"),      2, 0)
-        self.autoReplaceForm.addWidget(self.autoReplaceDQ,           2, 1)
-        self.autoReplaceForm.addWidget(QLabel("Open"),               2, 2)
-        self.autoReplaceForm.addWidget(self.autoReplaceDStyleO,      2, 3)
-        self.autoReplaceForm.addWidget(QLabel("Close"),              2, 4)
-        self.autoReplaceForm.addWidget(self.autoReplaceDStyleC,      2, 5)
-        self.autoReplaceForm.addWidget(QLabel("Hyphens with Dash"),  3, 0)
-        self.autoReplaceForm.addWidget(self.autoReplaceDash,         3, 1)
-        self.autoReplaceForm.addWidget(QLabel("Dots with Ellipsis"), 4, 0)
-        self.autoReplaceForm.addWidget(self.autoReplaceDots,         4, 1)
-        self.autoReplaceForm.setColumnStretch(6, 1)
+        self.autoReplaceForm.addWidget(QLabel("Auto-Select Text"),          0, 0)
+        self.autoReplaceForm.addWidget(self.autoSelect,                     0, 1)
+        self.autoReplaceForm.addWidget(QLabel("Auto-Replace:"),             1, 0)
+        self.autoReplaceForm.addWidget(self.autoReplaceMain,                1, 1)
+        self.autoReplaceForm.addWidget(QLabel("\u2192 Single Quotes"),      2, 0)
+        self.autoReplaceForm.addWidget(self.autoReplaceSQ,                  2, 1)
+        self.autoReplaceForm.addWidget(QLabel("\u2192 Double Quotes"),      3, 0)
+        self.autoReplaceForm.addWidget(self.autoReplaceDQ,                  3, 1)
+        self.autoReplaceForm.addWidget(QLabel("\u2192 Hyphens with Dash"),  4, 0)
+        self.autoReplaceForm.addWidget(self.autoReplaceDash,                4, 1)
+        self.autoReplaceForm.addWidget(QLabel("\u2192 Dots with Ellipsis"), 5, 0)
+        self.autoReplaceForm.addWidget(self.autoReplaceDots,                5, 1)
+        self.autoReplaceForm.setColumnStretch(2, 1)
+
+        # Quote Style
+        self.quoteStyle     = QGroupBox("Quotation Style", self)
+        self.quoteStyleForm = QGridLayout(self)
+        self.quoteStyle.setLayout(self.quoteStyleForm)
+
+        self.quoteSingleStyleO = QLineEdit()
+        self.quoteSingleStyleO.setMaxLength(1)
+        self.quoteSingleStyleO.setFixedWidth(30)
+        self.quoteSingleStyleO.setAlignment(Qt.AlignCenter)
+        self.quoteSingleStyleO.setText(self.mainConf.fmtSingleQuotes[0])
+
+        self.quoteSingleStyleC = QLineEdit()
+        self.quoteSingleStyleC.setMaxLength(1)
+        self.quoteSingleStyleC.setFixedWidth(30)
+        self.quoteSingleStyleC.setAlignment(Qt.AlignCenter)
+        self.quoteSingleStyleC.setText(self.mainConf.fmtSingleQuotes[1])
+
+        self.quoteDoubleStyleO = QLineEdit()
+        self.quoteDoubleStyleO.setMaxLength(1)
+        self.quoteDoubleStyleO.setFixedWidth(30)
+        self.quoteDoubleStyleO.setAlignment(Qt.AlignCenter)
+        self.quoteDoubleStyleO.setText(self.mainConf.fmtDoubleQuotes[0])
+
+        self.quoteDoubleStyleC = QLineEdit()
+        self.quoteDoubleStyleC.setMaxLength(1)
+        self.quoteDoubleStyleC.setFixedWidth(30)
+        self.quoteDoubleStyleC.setAlignment(Qt.AlignCenter)
+        self.quoteDoubleStyleC.setText(self.mainConf.fmtDoubleQuotes[1])
+
+        self.quoteStyleForm.addWidget(QLabel("Single Quotes"), 0, 0, 1, 3)
+        self.quoteStyleForm.addWidget(QLabel("Open"),          1, 0)
+        self.quoteStyleForm.addWidget(self.quoteSingleStyleO,  1, 1)
+        self.quoteStyleForm.addWidget(QLabel("Close"),         1, 2)
+        self.quoteStyleForm.addWidget(self.quoteSingleStyleC,  1, 3)
+        self.quoteStyleForm.addWidget(QLabel("Double Quotes"), 2, 0, 1, 3)
+        self.quoteStyleForm.addWidget(QLabel("Open"),          3, 0)
+        self.quoteStyleForm.addWidget(self.quoteDoubleStyleO,  3, 1)
+        self.quoteStyleForm.addWidget(QLabel("Close"),         3, 2)
+        self.quoteStyleForm.addWidget(self.quoteDoubleStyleC,  3, 3)
+        self.quoteStyleForm.setColumnStretch(4, 1)
+        self.quoteStyleForm.setRowStretch(4, 1)
 
         # Assemble
         self.outerBox.addWidget(self.textStyle,   0, 0, 1, 2)
         self.outerBox.addWidget(self.textFlow,    1, 0)
         self.outerBox.addWidget(self.textMargin,  1, 1)
-        self.outerBox.addWidget(self.autoReplace, 2, 0, 1, 2)
+        self.outerBox.addWidget(self.autoReplace, 2, 0)
+        self.outerBox.addWidget(self.quoteStyle,  2, 1)
         self.outerBox.setColumnStretch(2, 1)
         self.setLayout(self.outerBox)
 
@@ -418,36 +420,35 @@ class GuiConfigEditEditor(QWidget):
         textWidth  = self.textFlowWidth.value()
         textFixedW = self.textFlowFixed.isChecked()
         doJustify  = self.textFlowJustify.isChecked()
-        autoSelect = self.testFlowAutoSelect.isChecked()
 
         self.mainConf.textWidth  = textWidth
         self.mainConf.textFixedW = textFixedW
         self.mainConf.doJustify  = doJustify
-        self.mainConf.autoSelect = autoSelect
 
-        textMarginH = self.textMarginHor.value()
-        textMarginV = self.textMarginVer.value()
-        tabWidth    = self.textMarginTab.value()
+        textMargin = self.textMarginDoc.value()
+        tabWidth   = self.textMarginTab.value()
 
-        self.mainConf.textMargin[0] = textMarginH
-        self.mainConf.textMargin[1] = textMarginV
-        self.mainConf.tabWidth      = tabWidth
+        self.mainConf.textMargin = textMargin
+        self.mainConf.tabWidth   = tabWidth
 
+        autoSelect       = self.autoSelect.isChecked()
         doReplace        = self.autoReplaceMain.isChecked()
         doReplaceSQuote  = self.autoReplaceSQ.isChecked()
         doReplaceDQuote  = self.autoReplaceDQ.isChecked()
         doReplaceDash    = self.autoReplaceDash.isChecked()
         doReplaceDots    = self.autoReplaceDash.isChecked()
-        fmtSingleQuotesO = self.autoReplaceSStyleO.text()
-        fmtSingleQuotesC = self.autoReplaceSStyleC.text()
-        fmtDoubleQuotesO = self.autoReplaceDStyleO.text()
-        fmtDoubleQuotesC = self.autoReplaceDStyleC.text()
 
+        self.mainConf.autoSelect      = autoSelect
         self.mainConf.doReplace       = doReplace
         self.mainConf.doReplaceSQuote = doReplaceSQuote
         self.mainConf.doReplaceDQuote = doReplaceDQuote
         self.mainConf.doReplaceDash   = doReplaceDash
         self.mainConf.doReplaceDots   = doReplaceDots
+
+        fmtSingleQuotesO = self.quoteSingleStyleO.text()
+        fmtSingleQuotesC = self.quoteSingleStyleC.text()
+        fmtDoubleQuotesO = self.quoteDoubleStyleO.text()
+        fmtDoubleQuotesC = self.quoteDoubleStyleC.text()
 
         if self._checkQuoteSymbol(fmtSingleQuotesO):
             self.mainConf.fmtSingleQuotes[0] = fmtSingleQuotesO
