@@ -48,6 +48,7 @@ class GuiMain(QMainWindow):
     def __init__(self):
         QWidget.__init__(self)
 
+        logger.info("Starting %s" % nw.__package__)
         logger.debug("Initialising GUI ...")
         self.mainConf    = nw.CONFIG
         self.theTheme    = Theme(self)
@@ -134,6 +135,7 @@ class GuiMain(QMainWindow):
         self.initMain()
         self.asProjTimer.start()
         self.asDocTimer.start()
+        self.statusBar.clearStatus()
 
         logger.debug("GUI initialisation complete")
 

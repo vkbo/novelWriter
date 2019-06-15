@@ -59,6 +59,7 @@ class GuiDocEditor(QTextEdit):
 
         # Core Elements
         self.qDocument = self.document()
+        self.qDocument.setDocumentMargin(self.mainConf.textMargin)
         self.qDocument.contentsChange.connect(self._docChange)
         if self.mainConf.spellTool == "enchant":
             from nw.tools.spellenchant import NWSpellEnchant
@@ -90,7 +91,6 @@ class GuiDocEditor(QTextEdit):
         self.wCounter = WordCounter(self)
         self.wCounter.finished.connect(self._updateCounts)
 
-        self.clearEditor()
         self.initEditor()
 
         logger.debug("DocEditor initialisation complete")
@@ -138,7 +138,7 @@ class GuiDocEditor(QTextEdit):
         docPalette.setColor(QPalette.Text, QColor(*self.theTheme.colText))
         self.setPalette(docPalette)
 
-        # Set text fixed width, or alternatively, just margins
+        # Set default text margins
         self.qDocument.setDocumentMargin(self.mainConf.textMargin)
 
         # Also set the document text options for the document text flow
@@ -149,15 +149,14 @@ class GuiDocEditor(QTextEdit):
             theOpt.setAlignment(Qt.AlignJustify)
         self.qDocument.setDefaultTextOption(theOpt)
 
+        self.hLight.initHighlighter()
+
         # If we have a document open, we should reload it in case the font changed
         if self.theHandle is not None:
             tHandle = self.theHandle
             self.clearEditor()
             self.loadText(tHandle)
-
-        self.hLight.initHighlighter()
-        self.hLight.rehighlight()
-        self.changeWidth()
+            self.changeWidth()
 
         return True
 
@@ -363,7 +362,8 @@ class GuiDocEditor(QTextEdit):
 
     def _docChange(self, thePos, charsRemoved, charsAdded):
         self.lastEdit = time()
-        self.setDocumentChanged(True)
+        if not self.docChanged:
+            self.setDocumentChanged(True)
         if not self.wcTimer.isActive():
             self.wcTimer.start()
         if self.mainConf.doReplace and not self.hasSelection:

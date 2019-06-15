@@ -161,6 +161,8 @@ class Theme:
         qApp.setStyleSheet(cssData)
         qApp.setPalette(self.guiPalette)
 
+        logger.info("Loaded theme '%s'" % self.guiTheme)
+
         return True
 
     def loadSyntax(self):
@@ -199,7 +201,7 @@ class Theme:
             self.colTagErr = self._loadColour(confParser,cnfSec,"tagerror")
             self.colRepTag = self._loadColour(confParser,cnfSec,"replacetag")
 
-        logger.info("Loaded syntax colour theme '%s'" % self.guiSyntax)
+        logger.info("Loaded syntax theme '%s'" % self.guiSyntax)
 
         return True
 
