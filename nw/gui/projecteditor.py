@@ -161,6 +161,7 @@ class GuiProjectEditStatus(QWidget):
             self._addItem(iName, iCol, iName, nUse)
 
         self.editName   = QLineEdit()
+        self.editName.setEnabled(False)
         self.newButton  = QPushButton("New")
         self.delButton  = QPushButton("Delete")
         self.saveButton = QPushButton("Save")
@@ -251,6 +252,7 @@ class GuiProjectEditStatus(QWidget):
             )
             selItem.setText("%s [%d]" % (self.colData[selIdx][0], self.colCounts[selIdx]))
             selItem.setIcon(self.colButton.icon())
+            self.editName.setEnabled(False)
             self.colChanged = True
         return
 
@@ -277,6 +279,7 @@ class GuiProjectEditStatus(QWidget):
             newIcon.fill(self.selColour)
             self.editName.setText(selVal[0])
             self.colButton.setIcon(QIcon(newIcon))
+            self.editName.setEnabled(True)
             self.editName.selectAll()
             self.editName.setFocus()
         return
@@ -326,6 +329,9 @@ class GuiProjectEditReplace(QWidget):
         self.addButton  = QPushButton(QIcon.fromTheme("list-add"),"")
         self.delButton  = QPushButton(QIcon.fromTheme("list-remove"),"")
 
+        self.editKey.setEnabled(False)
+        self.editValue.setEnabled(False)
+
         self.saveButton.clicked.connect(self._saveEntry)
         self.addButton.clicked.connect(self._addEntry)
         self.delButton.clicked.connect(self._delEntry)
@@ -364,6 +370,8 @@ class GuiProjectEditReplace(QWidget):
         editVal = selItem.text(1)
         self.editKey.setText(editKey)
         self.editValue.setText(editVal)
+        self.editKey.setEnabled(True)
+        self.editValue.setEnabled(True)
         self.editKey.selectAll()
         self.editKey.setFocus()
         return True
@@ -383,6 +391,9 @@ class GuiProjectEditReplace(QWidget):
             selItem.setText(1,newVal)
             self.editKey.clear()
             self.editValue.clear()
+            self.editKey.setEnabled(False)
+            self.editValue.setEnabled(False)
+            self.listBox.clearSelection()
             self.arChanged = True
 
         return
