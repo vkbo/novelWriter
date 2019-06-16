@@ -138,16 +138,20 @@ class Theme:
         ## Palette
         cnfSec = "Palette"
         if confParser.has_section(cnfSec):
-            self._setPalette(confParser,cnfSec,"window",       QPalette.Window)
-            self._setPalette(confParser,cnfSec,"windowtext",   QPalette.WindowText)
-            self._setPalette(confParser,cnfSec,"base",         QPalette.Base)
-            self._setPalette(confParser,cnfSec,"alternatebase",QPalette.AlternateBase)
-            self._setPalette(confParser,cnfSec,"text",         QPalette.Text)
-            self._setPalette(confParser,cnfSec,"tooltipbase",  QPalette.ToolTipBase)
-            self._setPalette(confParser,cnfSec,"tooltiptext",  QPalette.ToolTipText)
-            self._setPalette(confParser,cnfSec,"button",       QPalette.Button)
-            self._setPalette(confParser,cnfSec,"buttontext",   QPalette.ButtonText)
-            self._setPalette(confParser,cnfSec,"brighttext",   QPalette.BrightText)
+            self._setPalette(confParser,cnfSec,"window",         QPalette.Window)
+            self._setPalette(confParser,cnfSec,"windowtext",     QPalette.WindowText)
+            self._setPalette(confParser,cnfSec,"base",           QPalette.Base)
+            self._setPalette(confParser,cnfSec,"alternatebase",  QPalette.AlternateBase)
+            self._setPalette(confParser,cnfSec,"text",           QPalette.Text)
+            self._setPalette(confParser,cnfSec,"tooltipbase",    QPalette.ToolTipBase)
+            self._setPalette(confParser,cnfSec,"tooltiptext",    QPalette.ToolTipText)
+            self._setPalette(confParser,cnfSec,"button",         QPalette.Button)
+            self._setPalette(confParser,cnfSec,"buttontext",     QPalette.ButtonText)
+            self._setPalette(confParser,cnfSec,"brighttext",     QPalette.BrightText)
+            self._setPalette(confParser,cnfSec,"highlight",      QPalette.Highlight)
+            self._setPalette(confParser,cnfSec,"highlightedtext",QPalette.HighlightedText)
+            self._setPalette(confParser,cnfSec,"link",           QPalette.Link)
+            self._setPalette(confParser,cnfSec,"linkvisited",    QPalette.LinkVisited)
 
         ## GUI
         cnfSec = "GUI"
@@ -279,9 +283,9 @@ class Theme:
         return outData
 
     def _setPalette(self, confParser, cnfSec, cnfName, paletteVal):
+        readCol = []
         if confParser.has_option(cnfSec,cnfName):
             inData  = confParser.get(cnfSec,cnfName).split(",")
-            readCol = []
             try:
                 readCol.append(int(inData[0]))
                 readCol.append(int(inData[1]))
