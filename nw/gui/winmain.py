@@ -36,6 +36,7 @@ from nw.project.project   import NWProject
 from nw.project.document  import NWDoc
 from nw.project.item      import NWItem
 from nw.project.index     import NWIndex
+from nw.project.backup    import NWBackup
 from nw.tools.wordcount   import countWords
 from nw.theme             import Theme
 from nw.enum              import nwItemType, nwAlert
@@ -209,6 +210,8 @@ class GuiMain(QMainWindow):
         self.closeDocument()
         if self.theProject.projChanged:
             saveOK = self.saveProject()
+            theBackup = NWBackup(self.theProject)
+            theBackup.zipIt()
         else:
             saveOK = True
 
@@ -217,7 +220,7 @@ class GuiMain(QMainWindow):
             self.theIndex.clearIndex()
             self.clearGUI()
             self.hasProject = False
-    
+
         return saveOK
 
     def openProject(self, projFile=None):

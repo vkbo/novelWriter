@@ -89,6 +89,12 @@ class Config:
 
         self.spellLanguage   = "en_GB"
 
+        # Backup
+        self.backupPath      = None
+        self.backupOnClose   = True
+        self.minBackupTime   = 0
+        self.askBeforeBackup = True
+
         # Path
         self.recentList = [""]*10
 
@@ -184,6 +190,10 @@ class Config:
         self.fmtDoubleQuotes = self._parseLine(cnfParse, cnfSec, "fmtdoublequote", self.CNF_LIST, self.fmtDoubleQuotes)
         self.spellLanguage   = self._parseLine(cnfParse, cnfSec, "spellcheck",     self.CNF_STR,  self.spellLanguage)
 
+        ## Backup
+        cnfSec = "Backup"
+        self.backupPath      = self._parseLine(cnfParse, cnfSec, "backuppath",     self.CNF_STR,  self.backupPath)
+
         ## Path
         cnfSec = "Path"
         for i in range(10):
@@ -239,6 +249,11 @@ class Config:
         cnfParse.set(cnfSec,"fmtsinglequote",self._packList(self.fmtSingleQuotes))
         cnfParse.set(cnfSec,"fmtdoublequote",self._packList(self.fmtDoubleQuotes))
         cnfParse.set(cnfSec,"spellcheck",    str(self.spellLanguage))
+
+        ## Backup
+        cnfSec = "Backup"
+        cnfParse.add_section(cnfSec)
+        cnfParse.set(cnfSec,"backuppath",    str(self.backupPath))
 
         ## Path
         cnfSec = "Path"
