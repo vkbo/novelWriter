@@ -113,7 +113,7 @@ class GuiMain(QMainWindow):
         # Set Main Window Elements
         self.setMenuBar(self.mainMenu)
         self.setStatusBar(self.statusBar)
-        self.statusBar.showMessage("Ready")
+        self.statusBar.setStatus("Ready")
 
         # Set Up Autosaving Project Timer
         self.asProjTimer = QTimer()
@@ -210,7 +210,7 @@ class GuiMain(QMainWindow):
         self.closeDocument()
         if self.theProject.projChanged:
             saveOK = self.saveProject()
-            theBackup = NWBackup(self.theProject)
+            theBackup = NWBackup(self, self.theProject)
             theBackup.zipIt()
         else:
             saveOK = True

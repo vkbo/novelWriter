@@ -42,6 +42,7 @@ class NWBackup():
             return False
 
         logger.info("Backing up project")
+        self.theParent.statusBar.setStatus("Backing up project ...")
 
         archName = ""
         for c in self.theProject.projName:
@@ -52,14 +53,12 @@ class NWBackup():
         baseName = path.join(self.mainConf.backupPath, archName)
 
         try:
-            make_archive(
-                baseName, "zip", 
-                root_dir = self.theProject.projPath,
-                base_dir = "."
-            )
+            make_archive(baseName, "zip", self.theProject.projPath, ".")
         except Exception as e:
             self.theParent.makeAlert(["Could not write backup archive.",str(e)],nwAlert.ERROR)
             return False
+
+        self.theParent.statusBar.setStatus("Project backup complete")
 
         return True
 
