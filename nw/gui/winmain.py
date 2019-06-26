@@ -207,15 +207,28 @@ class GuiMain(QMainWindow):
             if msgRes != QMessageBox.Yes:
                 return False
 
-        self.closeDocument()
+        if self.docEditor.docChanged:
+            self.saveDocument()
+
         if self.theProject.projChanged:
-            saveOK = self.saveProject()
-            theBackup = NWBackup(self, self.theProject)
-            theBackup.zipIt()
+            saveOK   = self.saveProject()
+            doBackup = False
+            if self.theProject.doBackup and self.mainConf.backupOnClose:
+                doBackup = True
+                if self.mainConf.showGUI and self.mainConf.askBeforeBackup:
+                    msgBox = QMessageBox()
+                    msgRes = msgBox.question(
+                        self, "Backup Project", "Backup current project?"
+                    )
+                    if msgRes != QMessageBox.Yes:
+                        doBackup = False
+            if doBackup:
+                self.backupProject()
         else:
             saveOK = True
 
         if saveOK:
+            self.closeDocument()
             self.theProject.closeProject()
             self.theIndex.clearIndex()
             self.clearGUI()
@@ -280,6 +293,11 @@ class GuiMain(QMainWindow):
         self.theIndex.saveIndex()
         self.mainMenu.updateRecentProjects()
 
+        return True
+
+    def backupProject(self):
+        theBackup = NWBackup(self, self.theProject)
+        theBackup.zipIt()
         return True
 
     ##

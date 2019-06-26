@@ -202,20 +202,20 @@ class GuiConfigEditGeneral(QWidget):
         else:
             self.projBackupClose.setCheckState(Qt.Unchecked)
 
-        self.projBackupTime = QSpinBox(self)
-        self.projBackupTime.setMinimum(0)
-        self.projBackupTime.setMaximum(1440)
-        self.projBackupTime.setSingleStep(10)
-        self.projBackupTime.setValue(self.mainConf.minBackupTime)
+        self.projBackupAsk = QCheckBox(self)
+        self.projBackupAsk.setToolTip("Ask before backup.")
+        if self.mainConf.askBeforeBackup:
+            self.projBackupAsk.setCheckState(Qt.Checked)
+        else:
+            self.projBackupAsk.setCheckState(Qt.Unchecked)
 
-        self.projBackupForm.addWidget(QLabel("Backup Folder"),0, 0)
-        self.projBackupForm.addWidget(self.projBackupPath,    0, 1, 1, 4)
-        self.projBackupForm.addWidget(self.projBackupGetPath, 0, 5)
-        self.projBackupForm.addWidget(QLabel("Run on Close"), 1, 0)
-        self.projBackupForm.addWidget(self.projBackupClose,   1, 1)
-        self.projBackupForm.addWidget(QLabel("At Most Every"),1, 2)
-        self.projBackupForm.addWidget(self.projBackupTime,    1, 3)
-        self.projBackupForm.addWidget(QLabel("minutes"),      1, 4, 1, 2)
+        self.projBackupForm.addWidget(QLabel("Backup Folder"),     0, 0)
+        self.projBackupForm.addWidget(self.projBackupPath,         0, 1, 1, 3)
+        self.projBackupForm.addWidget(self.projBackupGetPath,      0, 4)
+        self.projBackupForm.addWidget(QLabel("Run on Close"),      1, 0)
+        self.projBackupForm.addWidget(self.projBackupClose,        1, 1)
+        self.projBackupForm.addWidget(QLabel("Ask Before Backuo"), 1, 2)
+        self.projBackupForm.addWidget(self.projBackupAsk,          1, 3)
 
         # Assemble
         self.outerBox.addWidget(self.guiLook,    0, 0)
@@ -233,26 +233,26 @@ class GuiConfigEditGeneral(QWidget):
         validEntries = True
         needsRestart = False
 
-        guiTheme      = self.guiLookTheme.currentData()
-        guiSyntax     = self.guiLookSyntax.currentData()
-        spellLanguage = self.spellLangList.currentData()
-        autoSaveDoc   = self.autoSaveDoc.value()
-        autoSaveProj  = self.autoSaveProj.value()
-        backupPath    = self.projBackupPath.text()
-        backupOnClose = self.projBackupClose.isChecked()
-        minBackupTime = self.projBackupTime.value()
+        guiTheme        = self.guiLookTheme.currentData()
+        guiSyntax       = self.guiLookSyntax.currentData()
+        spellLanguage   = self.spellLangList.currentData()
+        autoSaveDoc     = self.autoSaveDoc.value()
+        autoSaveProj    = self.autoSaveProj.value()
+        backupPath      = self.projBackupPath.text()
+        backupOnClose   = self.projBackupClose.isChecked()
+        askBeforeBackup = self.projBackupAsk.isChecked()
 
         # Check if restart is needed
         needsRestart |= self.mainConf.guiTheme != guiTheme
 
-        self.mainConf.guiTheme      = guiTheme
-        self.mainConf.guiSyntax     = guiSyntax
-        self.mainConf.spellLanguage = spellLanguage
-        self.mainConf.autoSaveDoc   = autoSaveDoc
-        self.mainConf.autoSaveProj  = autoSaveProj
-        self.mainConf.backupPath    = backupPath
-        self.mainConf.backupOnClose = backupOnClose
-        self.mainConf.minBackupTime = minBackupTime
+        self.mainConf.guiTheme        = guiTheme
+        self.mainConf.guiSyntax       = guiSyntax
+        self.mainConf.spellLanguage   = spellLanguage
+        self.mainConf.autoSaveDoc     = autoSaveDoc
+        self.mainConf.autoSaveProj    = autoSaveProj
+        self.mainConf.backupPath      = backupPath
+        self.mainConf.backupOnClose   = backupOnClose
+        self.mainConf.askBeforeBackup = askBeforeBackup
 
         self.mainConf.confChanged   = True
 

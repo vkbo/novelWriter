@@ -92,8 +92,7 @@ class Config:
         # Backup
         self.backupPath      = ""
         self.backupOnClose   = False
-        self.askBeforeBackup = False
-        self.minBackupTime   = 0
+        self.askBeforeBackup = True
 
         # Path
         self.recentList = [""]*10
@@ -195,7 +194,6 @@ class Config:
         self.backupPath      = self._parseLine(cnfParse, cnfSec, "backuppath",      self.CNF_STR,  self.backupPath)
         self.backupOnClose   = self._parseLine(cnfParse, cnfSec, "backuponclose",   self.CNF_BOOL, self.backupOnClose)
         self.askBeforeBackup = self._parseLine(cnfParse, cnfSec, "askbeforebackup", self.CNF_BOOL, self.askBeforeBackup)
-        self.minBackupTime   = self._parseLine(cnfParse, cnfSec, "minbackuptime",   self.CNF_INT,  self.minBackupTime)
 
         ## Path
         cnfSec = "Path"
@@ -259,7 +257,6 @@ class Config:
         cnfParse.set(cnfSec,"backuppath",     str(self.backupPath))
         cnfParse.set(cnfSec,"backuponclose",  str(self.backupOnClose))
         cnfParse.set(cnfSec,"askbeforebackup",str(self.askBeforeBackup))
-        cnfParse.set(cnfSec,"minbackuptime",  str(self.minBackupTime))
 
         ## Path
         cnfSec = "Path"

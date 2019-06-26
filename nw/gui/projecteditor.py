@@ -21,7 +21,7 @@ from PyQt5.QtSvg     import QSvgWidget
 from PyQt5.QtWidgets import (
     QDialog, QHBoxLayout, QVBoxLayout, QFormLayout, QLineEdit, QPlainTextEdit, QLabel,
     QWidget, QTabWidget, QDialogButtonBox, QListWidget, QListWidgetItem, QPushButton,
-    QColorDialog, QAbstractItemView, QTreeWidget, QTreeWidgetItem
+    QColorDialog, QAbstractItemView, QTreeWidget, QTreeWidgetItem, QCheckBox
 )
 from nw.enum import nwAlert
 
@@ -81,9 +81,11 @@ class GuiProjectEditor(QDialog):
         projName    = self.tabMain.editName.text()
         bookTitle   = self.tabMain.editTitle.text()
         bookAuthors = self.tabMain.editAuthors.toPlainText()
+        doBackup    = self.tabMain.doBackup.isChecked()
         self.theProject.setProjectName(projName)
         self.theProject.setBookTitle(bookTitle)
         self.theProject.setBookAuthors(bookAuthors)
+        self.theProject.setProjBackup(doBackup)
 
         if self.tabStatus.colChanged:
             statusCol = self.tabStatus.getNewList()
@@ -116,13 +118,19 @@ class GuiProjectEditMain(QWidget):
         self.theParent   = theParent
         self.theProject  = theProject
         self.mainForm    = QFormLayout()
+        self.backupBox   = QHBoxLayout()
         self.editName    = QLineEdit()
         self.editTitle   = QLineEdit()
         self.editAuthors = QPlainTextEdit()
+        self.doBackup    = QCheckBox(self)
 
-        self.mainForm.addRow("Working Title", self.editName)
-        self.mainForm.addRow("Book Title",    self.editTitle)
-        self.mainForm.addRow("Book Authors",  self.editAuthors)
+        self.mainForm.addRow("Working Title",  self.editName)
+        self.mainForm.addRow("Book Title",     self.editTitle)
+        self.mainForm.addRow("Book Authors",   self.editAuthors)
+        self.mainForm.addRow(self.backupBox)
+        self.backupBox.addStretch(1)
+        self.backupBox.addWidget(QLabel("Backup on Close"))
+        self.backupBox.addWidget(self.doBackup)
 
         self.editName.setText(self.theProject.projName)
         self.editTitle.setText(self.theProject.bookTitle)
@@ -130,8 +138,13 @@ class GuiProjectEditMain(QWidget):
         for bookAuthor in self.theProject.bookAuthors:
             bookAuthors += bookAuthor+"\n"
         self.editAuthors.setPlainText(bookAuthors)
+        if self.theProject.doBackup:
+            self.doBackup.setCheckState(Qt.Checked)
+        else:
+            self.doBackup.setCheckState(Qt.Unchecked)
 
         self.setLayout(self.mainForm)
+        self.editAuthors.setMaximumHeight(120)
 
         return
 
