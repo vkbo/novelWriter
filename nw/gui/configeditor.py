@@ -21,7 +21,7 @@ from PyQt5.QtSvg     import QSvgWidget
 from PyQt5.QtWidgets import (
     QDialog, QHBoxLayout, QVBoxLayout, QFormLayout, QLineEdit, QPlainTextEdit, QLabel,
     QWidget, QTabWidget, QDialogButtonBox, QSpinBox, QGroupBox, QComboBox, QMessageBox,
-    QCheckBox, QGridLayout, QFontComboBox
+    QCheckBox, QGridLayout, QFontComboBox, QPushButton, QFileDialog
 )
 from nw.enum      import nwAlert
 from nw.constants import nwQuotes
@@ -183,12 +183,47 @@ class GuiConfigEditGeneral(QWidget):
         self.autoSaveForm.addWidget(self.autoSaveProj,  1, 1)
         self.autoSaveForm.addWidget(QLabel("seconds"),  1, 2)
 
+        # Backup
+        self.projBackup     = QGroupBox("Backup", self)
+        self.projBackupForm = QGridLayout(self)
+        self.projBackup.setLayout(self.projBackupForm)
+
+        self.projBackupPath = QLineEdit()
+        if path.isdir(self.mainConf.backupPath):
+            self.projBackupPath.setText(self.mainConf.backupPath)
+
+        self.projBackupGetPath = QPushButton(QIcon.fromTheme("folder"),"")
+        self.projBackupGetPath.clicked.connect(self._backupFolder)
+
+        self.projBackupClose = QCheckBox(self)
+        self.projBackupClose.setToolTip("Backup automatically on project close.")
+        if self.mainConf.backupOnClose:
+            self.projBackupClose.setCheckState(Qt.Checked)
+        else:
+            self.projBackupClose.setCheckState(Qt.Unchecked)
+
+        self.projBackupTime = QSpinBox(self)
+        self.projBackupTime.setMinimum(0)
+        self.projBackupTime.setMaximum(1440)
+        self.projBackupTime.setSingleStep(10)
+        self.projBackupTime.setValue(self.mainConf.minBackupTime)
+
+        self.projBackupForm.addWidget(QLabel("Backup Folder"),0, 0)
+        self.projBackupForm.addWidget(self.projBackupPath,    0, 1, 1, 4)
+        self.projBackupForm.addWidget(self.projBackupGetPath, 0, 5)
+        self.projBackupForm.addWidget(QLabel("Run on Close"), 1, 0)
+        self.projBackupForm.addWidget(self.projBackupClose,   1, 1)
+        self.projBackupForm.addWidget(QLabel("At Most Every"),1, 2)
+        self.projBackupForm.addWidget(self.projBackupTime,    1, 3)
+        self.projBackupForm.addWidget(QLabel("minutes"),      1, 4, 1, 2)
+
         # Assemble
-        self.outerBox.addWidget(self.guiLook,   0, 0)
-        self.outerBox.addWidget(self.spellLang, 1, 0)
-        self.outerBox.addWidget(self.autoSave,  2, 0)
+        self.outerBox.addWidget(self.guiLook,    0, 0)
+        self.outerBox.addWidget(self.spellLang,  1, 0)
+        self.outerBox.addWidget(self.autoSave,   2, 0)
+        self.outerBox.addWidget(self.projBackup, 3, 0)
         self.outerBox.setColumnStretch(2, 1)
-        self.outerBox.setRowStretch(3, 1)
+        self.outerBox.setRowStretch(4, 1)
         self.setLayout(self.outerBox)
 
         return
@@ -203,6 +238,9 @@ class GuiConfigEditGeneral(QWidget):
         spellLanguage = self.spellLangList.currentData()
         autoSaveDoc   = self.autoSaveDoc.value()
         autoSaveProj  = self.autoSaveProj.value()
+        backupPath    = self.projBackupPath.text()
+        backupOnClose = self.projBackupClose.isChecked()
+        minBackupTime = self.projBackupTime.value()
 
         # Check if restart is needed
         needsRestart |= self.mainConf.guiTheme != guiTheme
@@ -212,10 +250,34 @@ class GuiConfigEditGeneral(QWidget):
         self.mainConf.spellLanguage = spellLanguage
         self.mainConf.autoSaveDoc   = autoSaveDoc
         self.mainConf.autoSaveProj  = autoSaveProj
+        self.mainConf.backupPath    = backupPath
+        self.mainConf.backupOnClose = backupOnClose
+        self.mainConf.minBackupTime = minBackupTime
 
         self.mainConf.confChanged   = True
 
         return validEntries, needsRestart
+
+    ##
+    #  Internal Functions
+    ##
+
+    def _backupFolder(self):
+
+        currDir = self.projBackupPath.text()
+        if not path.isdir(currDir):
+            currDir = ""
+
+        dlgOpt  = QFileDialog.Options()
+        dlgOpt |= QFileDialog.ShowDirsOnly
+        dlgOpt |= QFileDialog.DontUseNativeDialog
+        newDir = QFileDialog.getExistingDirectory(
+            self,"Backup Directory",currDir,options=dlgOpt
+        )
+        if newDir:
+            self.projBackupPath.setText(newDir)
+            return True
+        return False
 
 # END Class GuiConfigEditGeneral
 

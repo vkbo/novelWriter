@@ -90,8 +90,7 @@ class Config:
         self.spellLanguage   = "en_GB"
 
         # Backup
-        self.backupPath      = None
-        self.autoBackup      = False
+        self.backupPath      = ""
         self.backupOnClose   = False
         self.askBeforeBackup = False
         self.minBackupTime   = 0
@@ -194,7 +193,6 @@ class Config:
         ## Backup
         cnfSec = "Backup"
         self.backupPath      = self._parseLine(cnfParse, cnfSec, "backuppath",      self.CNF_STR,  self.backupPath)
-        self.autoBackup      = self._parseLine(cnfParse, cnfSec, "autobackup",      self.CNF_BOOL, self.autoBackup)
         self.backupOnClose   = self._parseLine(cnfParse, cnfSec, "backuponclose",   self.CNF_BOOL, self.backupOnClose)
         self.askBeforeBackup = self._parseLine(cnfParse, cnfSec, "askbeforebackup", self.CNF_BOOL, self.askBeforeBackup)
         self.minBackupTime   = self._parseLine(cnfParse, cnfSec, "minbackuptime",   self.CNF_INT,  self.minBackupTime)
@@ -259,7 +257,6 @@ class Config:
         cnfSec = "Backup"
         cnfParse.add_section(cnfSec)
         cnfParse.set(cnfSec,"backuppath",     str(self.backupPath))
-        cnfParse.set(cnfSec,"autobackup",     str(self.autoBackup))
         cnfParse.set(cnfSec,"backuponclose",  str(self.backupOnClose))
         cnfParse.set(cnfSec,"askbeforebackup",str(self.askBeforeBackup))
         cnfParse.set(cnfSec,"minbackuptime",  str(self.minBackupTime))
