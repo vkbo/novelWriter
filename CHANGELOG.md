@@ -1,5 +1,28 @@
 # novelWriter ChangeLog
 
+## Version 0.2.0 [2019-06-27]
+
+**Documentation**
+
+* Added documentation in English. The help file opens in the document view pane when the user presses `F1` or selects it from the Help menu. #27
+
+**Themes**
+
+* Complete rewrite of how syntax highlighting and GUI themes are handled. These are now set separately, and the dark theme uses QPalette to handle the dark colours, which makes the dark theme a lot more portable between operating systems. #34 and #35
+* Added the five Tomorrow colour themes to list of syntax highlighter themes. #34 and #35
+
+**User Interface**
+
+* Added a preferences dialog for the program settings. No longer necessary to edit the config file. #30
+* The document viewer remembers scroll bar position when pressing `Ctrl+R` on a document already being viewed. #28
+* Removed version number from windows title. #28
+* The auto-replace items in Project Settings are now editable. #29
+* Changed how document margins are handled. This implementation works better and drops the difference between horizontal and vertical margins in favour of using the QDocument margin setting. #33
+
+**Code Improvements**
+
+* Spell checking is now handled by a standard class that can be subclassed to support different spell check tools. This was done because pyenchant is no longer maintained and having a standard wrapper makes it easier to support other tools. #31
+
 ## Version 0.1.5 [2019-06-08]
 
 **Bug Fixes**
