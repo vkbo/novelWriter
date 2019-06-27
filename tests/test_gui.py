@@ -287,6 +287,7 @@ def testProjectEditor(qtbot, nwTempGUI, nwRef):
     # Create new, save, open project
     nwGUI.theProject.handleSeed = 42
     assert nwGUI.newProject(nwTempGUI, True)
+    nwGUI.mainConf.backupPath = nwTempGUI
 
     projEdit = GuiProjectEditor(nwGUI, nwGUI.theProject)
     qtbot.addWidget(projEdit)
