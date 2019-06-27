@@ -3,6 +3,7 @@
   <project>
     <name></name>
     <title></title>
+    <backup>True</backup>
   </project>
   <settings>
     <spellCheck>False</spellCheck>

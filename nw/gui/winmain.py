@@ -36,6 +36,7 @@ from nw.project.project   import NWProject
 from nw.project.document  import NWDoc
 from nw.project.item      import NWItem
 from nw.project.index     import NWIndex
+from nw.project.backup    import NWBackup
 from nw.tools.wordcount   import countWords
 from nw.theme             import Theme
 from nw.enum              import nwItemType, nwAlert
@@ -112,7 +113,7 @@ class GuiMain(QMainWindow):
         # Set Main Window Elements
         self.setMenuBar(self.mainMenu)
         self.setStatusBar(self.statusBar)
-        self.statusBar.showMessage("Ready")
+        self.statusBar.setStatus("Ready")
 
         # Set Up Autosaving Project Timer
         self.asProjTimer = QTimer()
@@ -206,18 +207,33 @@ class GuiMain(QMainWindow):
             if msgRes != QMessageBox.Yes:
                 return False
 
-        self.closeDocument()
+        if self.docEditor.docChanged:
+            self.saveDocument()
+
         if self.theProject.projChanged:
-            saveOK = self.saveProject()
+            saveOK   = self.saveProject()
+            doBackup = False
+            if self.theProject.doBackup and self.mainConf.backupOnClose:
+                doBackup = True
+                if self.mainConf.showGUI and self.mainConf.askBeforeBackup:
+                    msgBox = QMessageBox()
+                    msgRes = msgBox.question(
+                        self, "Backup Project", "Backup current project?"
+                    )
+                    if msgRes != QMessageBox.Yes:
+                        doBackup = False
+            if doBackup:
+                self.backupProject()
         else:
             saveOK = True
 
         if saveOK:
+            self.closeDocument()
             self.theProject.closeProject()
             self.theIndex.clearIndex()
             self.clearGUI()
             self.hasProject = False
-    
+
         return saveOK
 
     def openProject(self, projFile=None):
@@ -277,6 +293,11 @@ class GuiMain(QMainWindow):
         self.theIndex.saveIndex()
         self.mainMenu.updateRecentProjects()
 
+        return True
+
+    def backupProject(self):
+        theBackup = NWBackup(self, self.theProject)
+        theBackup.zipIt()
         return True
 
     ##

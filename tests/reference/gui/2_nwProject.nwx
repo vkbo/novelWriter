@@ -5,6 +5,7 @@
     <title>Project Title</title>
     <author>Jane Doe</author>
     <author>John Doh</author>
+    <backup>True</backup>
   </project>
   <settings>
     <spellCheck>False</spellCheck>

@@ -89,6 +89,11 @@ class Config:
 
         self.spellLanguage   = "en_GB"
 
+        # Backup
+        self.backupPath      = ""
+        self.backupOnClose   = False
+        self.askBeforeBackup = True
+
         # Path
         self.recentList = [""]*10
 
@@ -167,22 +172,28 @@ class Config:
 
         ## Editor
         cnfSec = "Editor"
-        self.textFont        = self._parseLine(cnfParse, cnfSec, "textfont",       self.CNF_STR,  self.textFont)
-        self.textSize        = self._parseLine(cnfParse, cnfSec, "textsize",       self.CNF_INT,  self.textSize)
-        self.textFixedW      = self._parseLine(cnfParse, cnfSec, "fixedwidth",     self.CNF_BOOL, self.textFixedW)
-        self.textWidth       = self._parseLine(cnfParse, cnfSec, "width",          self.CNF_INT,  self.textWidth)
-        self.textMargin      = self._parseLine(cnfParse, cnfSec, "margin",         self.CNF_INT,  self.textMargin)
-        self.tabWidth        = self._parseLine(cnfParse, cnfSec, "tabwidth",       self.CNF_INT,  self.tabWidth)
-        self.doJustify       = self._parseLine(cnfParse, cnfSec, "justify",        self.CNF_BOOL, self.doJustify)
-        self.autoSelect      = self._parseLine(cnfParse, cnfSec, "autoselect",     self.CNF_BOOL, self.autoSelect)
-        self.doReplace       = self._parseLine(cnfParse, cnfSec, "autoreplace",    self.CNF_BOOL, self.doReplace)
-        self.doReplaceSQuote = self._parseLine(cnfParse, cnfSec, "repsquotes",     self.CNF_BOOL, self.doReplaceSQuote)
-        self.doReplaceDQuote = self._parseLine(cnfParse, cnfSec, "repdquotes",     self.CNF_BOOL, self.doReplaceDQuote)
-        self.doReplaceDash   = self._parseLine(cnfParse, cnfSec, "repdash",        self.CNF_BOOL, self.doReplaceDash)
-        self.doReplaceDots   = self._parseLine(cnfParse, cnfSec, "repdots",        self.CNF_BOOL, self.doReplaceDots)
-        self.fmtSingleQuotes = self._parseLine(cnfParse, cnfSec, "fmtsinglequote", self.CNF_LIST, self.fmtSingleQuotes)
-        self.fmtDoubleQuotes = self._parseLine(cnfParse, cnfSec, "fmtdoublequote", self.CNF_LIST, self.fmtDoubleQuotes)
-        self.spellLanguage   = self._parseLine(cnfParse, cnfSec, "spellcheck",     self.CNF_STR,  self.spellLanguage)
+        self.textFont        = self._parseLine(cnfParse, cnfSec, "textfont",        self.CNF_STR,  self.textFont)
+        self.textSize        = self._parseLine(cnfParse, cnfSec, "textsize",        self.CNF_INT,  self.textSize)
+        self.textFixedW      = self._parseLine(cnfParse, cnfSec, "fixedwidth",      self.CNF_BOOL, self.textFixedW)
+        self.textWidth       = self._parseLine(cnfParse, cnfSec, "width",           self.CNF_INT,  self.textWidth)
+        self.textMargin      = self._parseLine(cnfParse, cnfSec, "margin",          self.CNF_INT,  self.textMargin)
+        self.tabWidth        = self._parseLine(cnfParse, cnfSec, "tabwidth",        self.CNF_INT,  self.tabWidth)
+        self.doJustify       = self._parseLine(cnfParse, cnfSec, "justify",         self.CNF_BOOL, self.doJustify)
+        self.autoSelect      = self._parseLine(cnfParse, cnfSec, "autoselect",      self.CNF_BOOL, self.autoSelect)
+        self.doReplace       = self._parseLine(cnfParse, cnfSec, "autoreplace",     self.CNF_BOOL, self.doReplace)
+        self.doReplaceSQuote = self._parseLine(cnfParse, cnfSec, "repsquotes",      self.CNF_BOOL, self.doReplaceSQuote)
+        self.doReplaceDQuote = self._parseLine(cnfParse, cnfSec, "repdquotes",      self.CNF_BOOL, self.doReplaceDQuote)
+        self.doReplaceDash   = self._parseLine(cnfParse, cnfSec, "repdash",         self.CNF_BOOL, self.doReplaceDash)
+        self.doReplaceDots   = self._parseLine(cnfParse, cnfSec, "repdots",         self.CNF_BOOL, self.doReplaceDots)
+        self.fmtSingleQuotes = self._parseLine(cnfParse, cnfSec, "fmtsinglequote",  self.CNF_LIST, self.fmtSingleQuotes)
+        self.fmtDoubleQuotes = self._parseLine(cnfParse, cnfSec, "fmtdoublequote",  self.CNF_LIST, self.fmtDoubleQuotes)
+        self.spellLanguage   = self._parseLine(cnfParse, cnfSec, "spellcheck",      self.CNF_STR,  self.spellLanguage)
+
+        ## Backup
+        cnfSec = "Backup"
+        self.backupPath      = self._parseLine(cnfParse, cnfSec, "backuppath",      self.CNF_STR,  self.backupPath)
+        self.backupOnClose   = self._parseLine(cnfParse, cnfSec, "backuponclose",   self.CNF_BOOL, self.backupOnClose)
+        self.askBeforeBackup = self._parseLine(cnfParse, cnfSec, "askbeforebackup", self.CNF_BOOL, self.askBeforeBackup)
 
         ## Path
         cnfSec = "Path"
@@ -239,6 +250,13 @@ class Config:
         cnfParse.set(cnfSec,"fmtsinglequote",self._packList(self.fmtSingleQuotes))
         cnfParse.set(cnfSec,"fmtdoublequote",self._packList(self.fmtDoubleQuotes))
         cnfParse.set(cnfSec,"spellcheck",    str(self.spellLanguage))
+
+        ## Backup
+        cnfSec = "Backup"
+        cnfParse.add_section(cnfSec)
+        cnfParse.set(cnfSec,"backuppath",     str(self.backupPath))
+        cnfParse.set(cnfSec,"backuponclose",  str(self.backupOnClose))
+        cnfParse.set(cnfSec,"askbeforebackup",str(self.askBeforeBackup))
 
         ## Path
         cnfSec = "Path"
