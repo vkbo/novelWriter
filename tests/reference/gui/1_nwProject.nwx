@@ -1,8 +1,9 @@
 <?xml version='1.0' encoding='utf-8'?>
-<novelWriterXML appVersion="0.1.4" fileVersion="1.0" timeStamp="2019-06-08 20:46:34">
+<novelWriterXML appVersion="0.1.5" fileVersion="1.0" timeStamp="2019-06-27 20:31:37">
   <project>
     <name></name>
     <title></title>
+    <backup>True</backup>
   </project>
   <settings>
     <spellCheck>True</spellCheck>

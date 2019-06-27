@@ -67,6 +67,7 @@ class NWProject():
         self.lastViewed  = None
         self.lastWCount  = 0
         self.currWCount  = 0
+        self.doBackup    = True
 
         # Set Defaults
         self.clearProject()
@@ -221,6 +222,8 @@ class NWProject():
                     elif xItem.tag == "author":
                         logger.verbose("Author: '%s'" % xItem.text)
                         self.bookAuthors.append(xItem.text)
+                    elif xItem.tag == "backup":
+                        self.doBackup = checkBool(xItem.text,False)
             elif xChild.tag == "settings":
                 logger.debug("Found project settings")
                 for xItem in xChild:
@@ -295,6 +298,7 @@ class NWProject():
         self._saveProjectValue(xProject,"name",  self.projName,  True)
         self._saveProjectValue(xProject,"title", self.bookTitle, True)
         self._saveProjectValue(xProject,"author",self.bookAuthors)
+        self._saveProjectValue(xProject,"backup",self.doBackup)
 
         # Save Project Settings
         xSettings = etree.SubElement(nwXML,"settings")
@@ -373,6 +377,24 @@ class NWProject():
                 continue
             self.bookAuthors.append(bookAuthor)
         self.setProjectChanged(True)
+        return True
+
+    def setProjBackup(self, doBackup):
+        self.doBackup = False
+        if doBackup:
+            if not path.isdir(self.mainConf.backupPath):
+                self.theParent.makeAlert(
+                    "You must set a valid backup path in preferences<br>to use the automatic project backup feature.",
+                    nwAlert.ERROR
+                )
+                return False
+            if self.projName == "":
+                self.theParent.makeAlert(
+                    "You must set a valid project name in project settings<br>to use the automatic project backup feature.",
+                    nwAlert.ERROR
+                )
+                return False
+            self.doBackup = True
         return True
 
     def setSpellCheck(self, theMode):

@@ -507,6 +507,12 @@ class GuiMainMenu(QMenuBar):
         menuItem.triggered.connect(self.theParent.rebuildIndex)
         self.toolsMenu.addAction(menuItem)
 
+        # Tools > Backup
+        menuItem = QAction(QIcon.fromTheme("drive-harddisk"), "Backup Project", self)
+        menuItem.setStatusTip("Backup Project")
+        menuItem.triggered.connect(self.theParent.backupProject)
+        self.toolsMenu.addAction(menuItem)
+
         # Tools > Settings
         menuItem = QAction(QIcon.fromTheme("preferences-system"), "Preferences", self)
         menuItem.setStatusTip("Preferences")
