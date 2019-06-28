@@ -48,6 +48,8 @@ class NWBackup():
         for c in self.theProject.projName:
             if c.isalnum():
                 archName += c
+            else:
+                archName += "_"
 
         archName = archName+"_"+datetime.now().strftime("%Y%m%d-%H%M%S")
         baseName = path.join(self.mainConf.backupPath, archName)
