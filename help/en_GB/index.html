@@ -14,6 +14,7 @@
             <li><a href="#Proj_Structure">2.1 Project Structure</a></li>
             <li><a href="#Proj_Settings">2.2 Project Settings</a></li>
             <li><a href="#Proj_Documents">2.3 Writing Files</a></li>
+            <li><a href="#Proj_Backup">2.4 Backup</a></li>
         </ul>
         <li><a href="#Novel">3. Novel Structure</a></li>
         <ul>
@@ -39,6 +40,22 @@
     <a name="Intro"></a>
     <h2>1. Introduction</h2>
     <p><a href="#Content">Back to top</a></p>
+
+   <p>novelWriter is a simple multi-document plain text editor using a modified markdown syntax to
+       apply simple formatting. Additional features are available through special meta data
+       commands. These make it possible to generate an overview of the entire novel project and how
+       the various files are interconnected.</p>
+
+    <p>The user interface is intended to be as minimalistic as practically possible, and most
+        features are accessible through the menu and through keyboard shortcuts. The colour scheme
+        of the user interface can be modified with various themes, and new themes are fairly
+        straight forward to add. They are separated into gui and syntax themes, and can be found in
+        the themes folder in the source code.</p>
+
+    <p>The tree view has various sections for the various types of supporting files that the User
+        may want to add to the project. The novel itself lives under its own root folder, and export
+        features are in the process of being added. These will include HTML, open document and PDF
+        via LaTeX.</p>
 
     <a name="Proj"></a>
     <h2>2. Novel Projects</h2>
@@ -166,7 +183,24 @@
         dialog where the filename and various other settings can be set. This dialog can also be
         opened again later from either the menu, <mark>Project > Edit item</mark>, or by pressing
         <mark>Ctrl+E</mark> or <mark>F2</mark> with the item selected.</p>
-    <p>The different classes of documents have some restrictions.</p>
+        <p>The different classes of documents have some restrictions.</p>
+
+    <a name="Proj_Backup"></a>
+    <h2>2.4 Backup</h2>
+    <p><a href="#Content">Back to top</a></p>
+
+    <p>An automatic backup system is built into novelWriter. In order to use it, a backup path to
+        where the backups are to be stored needs to be provided in <mark>Tools > Preferences</mark>.
+        Backups can be run automatically when a project is closed, which also implies it is run when
+        the application is closed. Backups are date stamped zip files of the entire project
+        folder.</p>
+
+    <p>The backup feature, when configured, can also be run manually from the <mark>Tools</mark>
+        menu.</p>
+
+    <p>For the backup to be able to run, the <mark>Working Title</mark> must be set in <mark>Project
+        Settings</mark>. This value is used to generate the file name. It is also possible to
+        dissable automated backup for a given project in its project settings.</p>
 
     <a name="Novel"></a>
     <h2>3. Novel Structure</h2>
@@ -184,7 +218,7 @@
         signified by the number of hashes preceding the title. See the
         <a href="#GUI_Markdown">Markdown</a> section.</p>
     <p>The header levels are not only important when generating the exported novel file, but is also
-        used by the indexer and timeline view. Each heading starts a new region where new References
+        used by the indexer and timeline view. Each heading starts a new region where new references
         to tags can be set, and will show up as a new row in the timeline view.</p>
     <p>The different header levels are interpreted as specific section types of the novel.</p>
     <table>
