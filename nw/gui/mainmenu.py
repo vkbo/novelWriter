@@ -110,7 +110,7 @@ class GuiMainMenu(QMenuBar):
             "<p>Version: {version:s}<br>Release Date: {date:s}</p>"
             "<p>{name:s} is a markdown-like text editor designed for organising and writing novels. "
             "It is written in Python 3 with a Qt5 GUI. The Python and Qt layers are connected with PyQt5</p>"
-            "<p>{name:s} is is licensed under GPL v3.0</p>"
+            "<p>{name:s} is licensed under GPL v3.0</p>"
             "<p>{copyright:s}</p>"
             "<p>Website: <a href='{website:s}'>{website:s}</a></p>"
             "<h4>Credits</h4>"
