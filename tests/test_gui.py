@@ -327,7 +327,7 @@ def testProjectEditor(qtbot, nwTempGUI, nwRef):
 
     projEdit.tabReplace.listBox.clearSelection()
     qtbot.mouseClick(projEdit.tabReplace.addButton, Qt.LeftButton)
-    projEdit.tabReplace.listBox.topLevelItem(1).setSelected(True)
+    projEdit.tabReplace.listBox.topLevelItem(0).setSelected(True)
     for c in "Delete":
         qtbot.keyClick(projEdit.tabReplace.editKey, c, delay=keyDelay)
     for c in "This Stuff":
@@ -335,7 +335,7 @@ def testProjectEditor(qtbot, nwTempGUI, nwRef):
     qtbot.mouseClick(projEdit.tabReplace.saveButton, Qt.LeftButton)
 
     projEdit.tabReplace.listBox.clearSelection()
-    projEdit.tabReplace.listBox.topLevelItem(1).setSelected(True)
+    projEdit.tabReplace.listBox.topLevelItem(0).setSelected(True)
     qtbot.mouseClick(projEdit.tabReplace.delButton, Qt.LeftButton)
 
     projEdit._doSave()
