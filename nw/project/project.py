@@ -288,8 +288,8 @@ class NWProject():
         # Root element and project details
         logger.debug("Writing project meta")
         nwXML = etree.Element("novelWriterXML",attrib={
-            "fileVersion" : "1.0",
             "appVersion"  : str(nw.__version__),
+            "fileVersion" : "1.0",
             "timeStamp"   : datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
         })
 

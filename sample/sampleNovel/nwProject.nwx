@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='utf-8'?>
-<novelWriterXML appVersion="0.2.0" fileVersion="1.0" timeStamp="2019-06-28 12:43:41">
+<novelWriterXML appVersion="0.2.0" fileVersion="1.0" timeStamp="2019-08-11 19:41:35">
   <project>
     <name>Sample Project</name>
     <title>Sample Project</title>
@@ -14,6 +14,7 @@
     <lastWordCount>581</lastWordCount>
     <autoReplace>
       <A>B</A>
+      <B>E</B>
       <C>D</C>
     </autoReplace>
     <status>
