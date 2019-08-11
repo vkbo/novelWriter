@@ -89,9 +89,9 @@ class NWStatus():
     def packEntries(self, xParent):
         for n in range(self.theLength):
             xSub = etree.SubElement(xParent,"entry",attrib={
-                "red"   : str(self.theColours[n][0]),
-                "green" : str(self.theColours[n][1]),
                 "blue"  : str(self.theColours[n][2]),
+                "green" : str(self.theColours[n][1]),
+                "red"   : str(self.theColours[n][0]),
             })
             xSub.text = self.theLabels[n]
         return True

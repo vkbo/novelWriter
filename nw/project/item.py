@@ -55,8 +55,8 @@ class NWItem():
     def packXML(self, xParent):
         xPack = etree.SubElement(xParent,"item",attrib={
             "handle" : str(self.itemHandle),
-            "parent" : str(self.parHandle),
             "order"  : str(self.itemOrder),
+            "parent" : str(self.parHandle),
         })
         xSub = self._subPack(xPack,"name",     text=str(self.itemName))
         xSub = self._subPack(xPack,"type",     text=str(self.itemType.name))
