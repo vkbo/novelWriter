@@ -336,6 +336,9 @@ class GuiProjectEditReplace(QWidget):
             newItem = QTreeWidgetItem(["<%s>" % aKey, aVal])
             self.listBox.addTopLevelItem(newItem)
 
+        self.listBox.sortByColumn(0, Qt.AscendingOrder)
+        self.listBox.setSortingEnabled(True)
+
         self.editKey    = QLineEdit()
         self.editValue  = QLineEdit()
         self.saveButton = QPushButton(QIcon.fromTheme("document-save"),"")
