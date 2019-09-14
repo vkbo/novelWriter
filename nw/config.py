@@ -219,6 +219,9 @@ class Config:
         for i in range(10):
             self.recentList[i] = self._parseLine(cnfParse, cnfSec, "recent%d" % i,self.CNF_STR, self.recentList[i])
 
+        # Check Certain Values for None
+        self.spellLanguage = self._checkNone(self.spellLanguage)
+
         return True
 
     def saveConfig(self):
@@ -378,5 +381,13 @@ class Config:
                         cnfParse.get(cnfSec, cnfName), len(cnfDefault), cnfDefault
                     )
         return cnfDefault
+
+    def _checkNone(self, checkVal):
+        if checkVal is None:
+            return None
+        if isinstance(checkVal, str):
+            if checkVal.lower == "none":
+                return None
+        return checkVal
 
 # End Class Config
