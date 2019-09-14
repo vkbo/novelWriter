@@ -144,7 +144,8 @@ class GuiDocEditor(QTextEdit):
         # Also set the document text options for the document text flow
         theOpt = QTextOption()
         if self.mainConf.tabWidth is not None:
-            theOpt.setTabStopDistance(self.mainConf.tabWidth)
+            if self.mainConf.verQtValue >= 51000:
+                theOpt.setTabStopDistance(self.mainConf.tabWidth)
         if self.mainConf.doJustify:
             theOpt.setAlignment(Qt.AlignJustify)
         self.qDocument.setDefaultTextOption(theOpt)

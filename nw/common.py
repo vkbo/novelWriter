@@ -57,7 +57,7 @@ def colRange(rgbStart, rgbEnd, nStep):
     if len(rgbStart) != 3 and len(rgbEnd) != 3 and nStep < 1:
         logger.error("Cannot create colour range from given parameters")
         return None
-    
+
     if nStep == 1:
         return rgbStart
     elif nStep == 2:
@@ -81,3 +81,27 @@ def colRange(rgbStart, rgbEnd, nStep):
     print(retCol)
 
     return retCol
+
+def splitVersionNumber(vString):
+    """ Splits a version string on the form aa.bb.cc into major, minor and patch, and computes an
+    integer value aabbcc.
+    """
+
+    vMajor = 0
+    vMinor = 0
+    vPatch = 0
+    vInt   = 0
+
+    vBits  = vString.split(".")
+    nBits  = len(vBits)
+
+    if nBits > 0:
+        vMajor = checkInt(vBits[0],0)
+    if nBits > 1:
+        vMinor = checkInt(vBits[1],0)
+    if nBits > 2:
+        vPatch = checkInt(vBits[2],0)
+
+    vInt = vMajor*10000 + vMinor*100 + vPatch
+
+    return [vMajor, vMinor, vPatch, vInt]
