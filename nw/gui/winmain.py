@@ -57,6 +57,9 @@ class GuiMain(QMainWindow):
         self.theIndex    = NWIndex(self.theProject, self)
         self.hasProject  = False
 
+        logger.info("Qt5 Version:   %s (%d)" % (self.mainConf.verQtString,   self.mainConf.verQtValue))
+        logger.info("PyQt5 Version: %s (%d)" % (self.mainConf.verPyQtString, self.mainConf.verPyQtValue))
+
         self.resize(*self.mainConf.winGeometry)
         self._setWindowTitle()
         self.setWindowIcon(QIcon(path.join(self.mainConf.appIcon)))

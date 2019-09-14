@@ -19,6 +19,10 @@ from appdirs      import user_config_dir
 from datetime     import datetime
 
 from nw.constants import nwFiles
+from nw.common    import splitVersionNumber
+
+from PyQt5.Qt     import PYQT_VERSION_STR
+from PyQt5.QtCore import QT_VERSION_STR
 
 logger = logging.getLogger(__name__)
 
@@ -96,6 +100,21 @@ class Config:
 
         # Path
         self.recentList = [""]*10
+
+        # Check Qt5 Versions
+        verQt = splitVersionNumber(QT_VERSION_STR)
+        self.verQtString = QT_VERSION_STR
+        self.verQtMajor  = verQt[0]
+        self.verQtMinor  = verQt[1]
+        self.verQtPatch  = verQt[2]
+        self.verQtValue  = verQt[3]
+
+        verQt = splitVersionNumber(PYQT_VERSION_STR)
+        self.verPyQtString = PYQT_VERSION_STR
+        self.verPyQtMajor  = verQt[0]
+        self.verPyQtMinor  = verQt[1]
+        self.verPyQtPatch  = verQt[2]
+        self.verPyQtValue  = verQt[3]
 
         return
 
