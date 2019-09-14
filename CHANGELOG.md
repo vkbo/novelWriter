@@ -1,5 +1,24 @@
 # novelWriter ChangeLog
 
+## Version 0.2.1 [2019-09-14]
+
+**Bug Fixes**
+
+* The _Tomorrow_ theme had the wrong set of colours. PR #39
+
+**Documentation**
+
+* Added the backup feature to the documentation. PR #40
+
+**User Interface**
+
+* The auto-replace list in project settings is now sorted alphabetically. PR #43
+* Added version checking of the Qt5 and PyQt5 dependencies. Non-essential functionality that depends on very recent versions of Qt5 are now switched off if version is too low. Currently only affects the custom tab stop length, which requires version 5.10. this resolves issue #44. PR #45
+
+**Code Improvements**
+
+* Minor changes to the About novelWriter dialog and to how backup filenames are generated. PR #41
+
 ## Version 0.2.0 [2019-06-27]
 
 **Documentation**
