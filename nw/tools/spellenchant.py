@@ -32,11 +32,15 @@ class NWSpellEnchant(NWSpellCheck):
         return
 
     def setLanguage(self, theLang, projectDict=None):
-        if projectDict is None:
-            self.theDict = enchant.Dict(theLang)
-        else:
-            self.theDict = enchant.DictWithPWL(theLang, projectDict)
-        logger.debug("Enchant spell checking for language %s loaded" % theLang)
+        try:
+            if projectDict is None:
+                self.theDict = enchant.Dict(theLang)
+            else:
+                self.theDict = enchant.DictWithPWL(theLang, projectDict)
+            logger.debug("Enchant spell checking for language %s loaded" % theLang)
+        except:
+            logger.error("Failed to load enchant spell checking for language %s" % theLang)
+            self.theDict = None
         return
 
     def checkWord(self, theWord):
