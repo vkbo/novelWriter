@@ -279,6 +279,8 @@ class GuiDocEditor(QTextEdit):
         elif theAction == nwDocAction.D_QUOTE:  self._wrapSelection(self.typDQOpen,self.typDQClose)
         elif theAction == nwDocAction.SEL_ALL:  self._makeSelection(QTextCursor.Document)
         elif theAction == nwDocAction.SEL_PARA: self._makeSelection(QTextCursor.BlockUnderCursor)
+        elif theAction == nwDocAction.FIND:     self._beginSearch()
+        elif theAction == nwDocAction.GO_NEXT:  self._findNext()
         else:
             logger.error("Unknown or unsupported document action %s" % str(theAction))
             return False
@@ -484,5 +486,32 @@ class GuiDocEditor(QTextEdit):
         theCursor.select(selMode)
         self.setTextCursor(theCursor)
         return
+
+    def _beginSearch(self):
+
+        print("Boo!")
+
+        theCursor = self.textCursor()
+        if self.mainConf.autoSelect and not theCursor.hasSelection():
+            theCursor.select(QTextCursor.WordUnderCursor)
+        if theCursor.hasSelection():
+            selText = theCursor.selectedText()
+        else:
+            selText = ""
+
+        self.theParent.searchBar.setSearchText(selText)
+
+        if selText != "":
+            self._findNext()
+
+        return
+
+    def _findNext(self):
+
+        searchFor = self.theParent.searchBar.getSearchText()
+        self.find(searchFor)
+
+        return
+
 
 # END Class GuiDocEditor

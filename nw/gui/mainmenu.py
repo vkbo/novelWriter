@@ -398,6 +398,23 @@ class GuiMainMenu(QMenuBar):
         # Edit > Separator
         self.editMenu.addSeparator()
 
+        # Edit > Find
+        menuItem = QAction(QIcon.fromTheme("edit-find"), "Find", self)
+        menuItem.setStatusTip("Find text in document")
+        menuItem.setShortcut("Ctrl+F")
+        menuItem.triggered.connect(lambda: self._docAction(nwDocAction.FIND))
+        self.editMenu.addAction(menuItem)
+
+        # Edit > Find Next
+        menuItem = QAction(QIcon.fromTheme("go-right"), "Go Next", self)
+        menuItem.setStatusTip("Find next occurrence text in document")
+        menuItem.setShortcut("F3")
+        menuItem.triggered.connect(lambda: self._docAction(nwDocAction.GO_NEXT))
+        self.editMenu.addAction(menuItem)
+
+        # Edit > Separator
+        self.editMenu.addSeparator()
+
         # Edit > Select All
         menuItem = QAction(QIcon.fromTheme("edit-select-all"), "Select All", self)
         menuItem.setStatusTip("Select all text in document")

@@ -60,7 +60,7 @@ class GuiDocDetails(QFrame):
             lblOne.setFont(self.fntOne)
             self.mainBox.addWidget(lblOne,nRow,0)
             self.mainBox.addWidget(self.colTwo[nRow],nRow,1)
-    
+
         self.mainBox.setColumnStretch(0,0)
         self.mainBox.setColumnStretch(1,1)
 
