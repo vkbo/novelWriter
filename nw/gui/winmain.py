@@ -26,6 +26,7 @@ from nw.gui.doctree       import GuiDocTree
 from nw.gui.doceditor     import GuiDocEditor
 from nw.gui.docviewer     import GuiDocViewer
 from nw.gui.docdetails    import GuiDocDetails
+from nw.gui.searchbar     import GuiSearchBar
 from nw.gui.mainmenu      import GuiMainMenu
 from nw.gui.configeditor  import GuiConfigEditor
 from nw.gui.projecteditor import GuiProjectEditor
@@ -69,6 +70,7 @@ class GuiMain(QMainWindow):
         self.docEditor  = GuiDocEditor(self, self.theProject)
         self.docViewer  = GuiDocViewer(self, self.theProject)
         self.docDetails = GuiDocDetails(self, self.theProject)
+        self.searchBar  = GuiSearchBar(self)
         self.treeView   = GuiDocTree(self, self.theProject)
         self.mainMenu   = GuiMainMenu(self, self.theProject)
 
@@ -83,8 +85,14 @@ class GuiMain(QMainWindow):
         self.treeBox.addWidget(self.docDetails)
         self.treePane.setLayout(self.treeBox)
 
+        self.docPane = QFrame()
+        self.docView = QVBoxLayout()
+        self.docView.addWidget(self.searchBar)
+        self.docView.addWidget(self.docEditor)
+        self.docPane.setLayout(self.docView)
+
         self.splitView = QSplitter(Qt.Horizontal)
-        self.splitView.addWidget(self.docEditor)
+        self.splitView.addWidget(self.docPane)
         self.splitView.addWidget(self.docViewer)
         self.splitView.splitterMoved.connect(self._splitViewMove)
 
@@ -98,7 +106,7 @@ class GuiMain(QMainWindow):
 
         self.idxTree   = self.splitMain.indexOf(self.treePane)
         self.idxMain   = self.splitMain.indexOf(self.splitView)
-        self.idxEditor = self.splitView.indexOf(self.docEditor)
+        self.idxEditor = self.splitView.indexOf(self.docPane)
         self.idxViewer = self.splitView.indexOf(self.docViewer)
 
         self.splitMain.setCollapsible(self.idxTree,   False)
@@ -107,6 +115,7 @@ class GuiMain(QMainWindow):
         self.splitView.setCollapsible(self.idxViewer, True)
 
         self.docViewer.setVisible(False)
+        self.searchBar.setVisible(False)
 
         # Build The Tree View
         self.treeView.itemSelectionChanged.connect(self._treeSingleClick)

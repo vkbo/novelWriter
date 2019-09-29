@@ -65,6 +65,9 @@ class nwDocAction(Enum):
     D_QUOTE   = 10
     SEL_ALL   = 11
     SEL_PARA  = 12
+    FIND      = 13
+    GO_NEXT   = 14
+    GO_PREV   = 15
 
 # END Enum nwDocAction
 

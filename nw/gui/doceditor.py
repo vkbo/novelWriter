@@ -17,7 +17,7 @@ from time                import time
 
 from PyQt5.QtCore        import Qt, QTimer, QSizeF
 from PyQt5.QtWidgets     import QTextEdit, QAction, QMenu, QShortcut
-from PyQt5.QtGui         import QTextCursor, QTextOption, QIcon, QKeySequence, QFont, QColor, QPalette
+from PyQt5.QtGui         import QTextCursor, QTextOption, QIcon, QKeySequence, QFont, QColor, QPalette, QTextDocument
 
 from nw.project.document import NWDoc
 from nw.gui.dochighlight import GuiDocHighlighter
@@ -279,6 +279,9 @@ class GuiDocEditor(QTextEdit):
         elif theAction == nwDocAction.D_QUOTE:  self._wrapSelection(self.typDQOpen,self.typDQClose)
         elif theAction == nwDocAction.SEL_ALL:  self._makeSelection(QTextCursor.Document)
         elif theAction == nwDocAction.SEL_PARA: self._makeSelection(QTextCursor.BlockUnderCursor)
+        elif theAction == nwDocAction.FIND:     self._beginSearch()
+        elif theAction == nwDocAction.GO_NEXT:  self._findNext()
+        elif theAction == nwDocAction.GO_PREV:  self._findPrev()
         else:
             logger.error("Unknown or unsupported document action %s" % str(theAction))
             return False
@@ -483,6 +486,39 @@ class GuiDocEditor(QTextEdit):
         theCursor.clearSelection()
         theCursor.select(selMode)
         self.setTextCursor(theCursor)
+        return
+
+    def _beginSearch(self):
+
+        theCursor = self.textCursor()
+        if theCursor.hasSelection():
+            selText = theCursor.selectedText()
+        else:
+            selText = ""
+
+        self.theParent.searchBar.setSearchText(selText)
+
+        if selText != "":
+            self._findNext()
+
+        return
+
+    def _findNext(self):
+        searchFor = self.theParent.searchBar.getSearchText()
+        wasFound = self.find(searchFor)
+        if not wasFound:
+            theCursor = self.textCursor()
+            theCursor.movePosition(QTextCursor.Start)
+            self.setTextCursor(theCursor)
+        return
+
+    def _findPrev(self):
+        searchFor = self.theParent.searchBar.getSearchText()
+        wasFound = self.find(searchFor, QTextDocument.FindBackward)
+        if not wasFound:
+            theCursor = self.textCursor()
+            theCursor.movePosition(QTextCursor.End)
+            self.setTextCursor(theCursor)
         return
 
 # END Class GuiDocEditor
