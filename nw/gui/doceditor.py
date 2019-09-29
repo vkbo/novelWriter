@@ -17,7 +17,7 @@ from time                import time
 
 from PyQt5.QtCore        import Qt, QTimer, QSizeF
 from PyQt5.QtWidgets     import QTextEdit, QAction, QMenu, QShortcut
-from PyQt5.QtGui         import QTextCursor, QTextOption, QIcon, QKeySequence, QFont, QColor, QPalette
+from PyQt5.QtGui         import QTextCursor, QTextOption, QIcon, QKeySequence, QFont, QColor, QPalette, QTextDocument
 
 from nw.project.document import NWDoc
 from nw.gui.dochighlight import GuiDocHighlighter
@@ -281,6 +281,7 @@ class GuiDocEditor(QTextEdit):
         elif theAction == nwDocAction.SEL_PARA: self._makeSelection(QTextCursor.BlockUnderCursor)
         elif theAction == nwDocAction.FIND:     self._beginSearch()
         elif theAction == nwDocAction.GO_NEXT:  self._findNext()
+        elif theAction == nwDocAction.GO_PREV:  self._findPrev()
         else:
             logger.error("Unknown or unsupported document action %s" % str(theAction))
             return False
@@ -489,11 +490,7 @@ class GuiDocEditor(QTextEdit):
 
     def _beginSearch(self):
 
-        print("Boo!")
-
         theCursor = self.textCursor()
-        if self.mainConf.autoSelect and not theCursor.hasSelection():
-            theCursor.select(QTextCursor.WordUnderCursor)
         if theCursor.hasSelection():
             selText = theCursor.selectedText()
         else:
@@ -507,11 +504,21 @@ class GuiDocEditor(QTextEdit):
         return
 
     def _findNext(self):
-
         searchFor = self.theParent.searchBar.getSearchText()
-        self.find(searchFor)
-
+        wasFound = self.find(searchFor)
+        if not wasFound:
+            theCursor = self.textCursor()
+            theCursor.movePosition(QTextCursor.Start)
+            self.setTextCursor(theCursor)
         return
 
+    def _findPrev(self):
+        searchFor = self.theParent.searchBar.getSearchText()
+        wasFound = self.find(searchFor, QTextDocument.FindBackward)
+        if not wasFound:
+            theCursor = self.textCursor()
+            theCursor.movePosition(QTextCursor.End)
+            self.setTextCursor(theCursor)
+        return
 
 # END Class GuiDocEditor

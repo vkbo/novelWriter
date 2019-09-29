@@ -406,10 +406,17 @@ class GuiMainMenu(QMenuBar):
         self.editMenu.addAction(menuItem)
 
         # Edit > Find Next
-        menuItem = QAction(QIcon.fromTheme("go-right"), "Go Next", self)
+        menuItem = QAction(QIcon.fromTheme("go-next"), "Go Next", self)
         menuItem.setStatusTip("Find next occurrence text in document")
         menuItem.setShortcut("F3")
         menuItem.triggered.connect(lambda: self._docAction(nwDocAction.GO_NEXT))
+        self.editMenu.addAction(menuItem)
+
+        # Edit > Find Prev
+        menuItem = QAction(QIcon.fromTheme("go-previous"), "Go Previous", self)
+        menuItem.setStatusTip("Find previous occurrence text in document")
+        menuItem.setShortcut("Shift+F3")
+        menuItem.triggered.connect(lambda: self._docAction(nwDocAction.GO_PREV))
         self.editMenu.addAction(menuItem)
 
         # Edit > Separator

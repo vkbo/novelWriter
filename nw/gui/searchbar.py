@@ -16,6 +16,8 @@ import nw
 from PyQt5.QtGui     import QIcon
 from PyQt5.QtWidgets import QFrame, QGridLayout, QLabel, QLineEdit, QPushButton
 
+from nw.enum         import nwDocAction
+
 logger = logging.getLogger(__name__)
 
 class GuiSearchBar(QFrame):
@@ -34,17 +36,23 @@ class GuiSearchBar(QFrame):
         self.setLayout(self.mainBox)
 
         self.searchBox    = QLineEdit()
+        self.closeButton  = QPushButton(QIcon.fromTheme("edit-delete"),"")
         self.searchButton = QPushButton(QIcon.fromTheme("edit-find"),"")
 
-        self.mainBox.addWidget(QLabel(""),0,0)
-        self.mainBox.addWidget(QLabel("Search"),0,1)
-        self.mainBox.addWidget(self.searchBox,0,2)
+        self.closeButton.clicked.connect(self._doClose)
+        self.searchButton.clicked.connect(self._doSearch)
+
+        self.mainBox.addWidget(QLabel(""),       0,0)
+        self.mainBox.addWidget(QLabel("Search"), 0,1)
+        self.mainBox.addWidget(self.searchBox,   0,2)
         self.mainBox.addWidget(self.searchButton,0,3)
+        self.mainBox.addWidget(self.closeButton, 0,4)
 
         self.mainBox.setColumnStretch(0,1)
         self.mainBox.setColumnStretch(1,0)
         self.mainBox.setColumnStretch(2,0)
         self.mainBox.setColumnStretch(3,0)
+        self.mainBox.setColumnStretch(4,0)
         self.mainBox.setContentsMargins(0,0,0,0)
 
         logger.debug("GuiSearchBar initialisation complete")
@@ -65,5 +73,17 @@ class GuiSearchBar(QFrame):
 
     def getSearchText(self):
         return self.searchBox.text()
+
+    ##
+    #  Internal Functions
+    ##
+
+    def _doClose(self):
+        self.setVisible(False)
+        return
+
+    def _doSearch(self):
+        self.theParent.docEditor.docAction(nwDocAction.GO_NEXT)
+        return
 
 # END Class GuiSearchBar

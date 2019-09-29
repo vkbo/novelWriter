@@ -67,6 +67,7 @@ class nwDocAction(Enum):
     SEL_PARA  = 12
     FIND      = 13
     GO_NEXT   = 14
+    GO_PREV   = 15
 
 # END Enum nwDocAction
 
