@@ -1,5 +1,15 @@
 # novelWriter ChangeLog
 
+## Version 0.2.2 [2019-09-29]
+
+**Bug Fixes**
+
+* Fixed a bug where loading a config file with the dictionary language set to "none", or presumably an missing dictionary, would trigger a fatal error. PR #47
+
+**User Interface**
+
+* Added a basic search function for the currently open document. This is a simple interface to the find command that exists in the Qt document editor. It will be extended further in the future. PR #49
+
 ## Version 0.2.1 [2019-09-14]
 
 **Bug Fixes**
