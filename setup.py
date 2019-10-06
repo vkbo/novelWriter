@@ -2,6 +2,6 @@
 from distutils.core import setup
 setup(
     name="novelwriter",
-    version="0.2.2",
+    version="0.2.3",
     py_modules=["nw"],
 )
