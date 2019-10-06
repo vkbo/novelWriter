@@ -143,6 +143,14 @@ class Theme:
             logger.error("Could not load theme css file")
             return False
 
+        # Icon Files
+        iconsDir = path.join(self.themePath,self.iconPath)
+        if path.isdir(iconsDir):
+            for iconName in self.ICON_MAP:
+                iconFile = path.join(iconsDir,iconName+".png")
+                if path.isfile(iconFile):
+                    self.themeIcons[iconName] = QIcon(iconFile)
+
         # Config File
         confParser = configparser.ConfigParser()
         try:
