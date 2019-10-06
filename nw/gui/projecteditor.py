@@ -322,6 +322,7 @@ class GuiProjectEditReplace(QWidget):
         QWidget.__init__(self, theParent)
 
         self.theParent  = theParent
+        self.theTheme   = theParent.theTheme
         self.theProject = theProject
         self.arChanged  = False
 
@@ -341,9 +342,9 @@ class GuiProjectEditReplace(QWidget):
 
         self.editKey    = QLineEdit()
         self.editValue  = QLineEdit()
-        self.saveButton = QPushButton(QIcon.fromTheme("document-save"),"")
-        self.addButton  = QPushButton(QIcon.fromTheme("list-add"),"")
-        self.delButton  = QPushButton(QIcon.fromTheme("list-remove"),"")
+        self.saveButton = QPushButton(self.theTheme.getIcon("save"),"")
+        self.addButton  = QPushButton(self.theTheme.getIcon("add"),"")
+        self.delButton  = QPushButton(self.theTheme.getIcon("remove"),"")
 
         self.editKey.setEnabled(False)
         self.editValue.setEnabled(False)

@@ -326,8 +326,7 @@ class GuiDocEditor(QTextEdit):
             return
 
         mnuSuggest = QMenu()
-        spIcon = QIcon.fromTheme("tools-check-spelling")
-        mnuHead = QAction(spIcon,"Spelling Suggestion", mnuSuggest)
+        mnuHead = QAction("Spelling Suggestion(s)", mnuSuggest)
         mnuSuggest.addAction(mnuHead)
         mnuSuggest.addSeparator()
         theSuggest = self.theDict.suggestWords(theWord)

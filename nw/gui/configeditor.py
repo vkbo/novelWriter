@@ -113,6 +113,7 @@ class GuiConfigEditGeneral(QWidget):
 
         self.mainConf   = nw.CONFIG
         self.theParent  = theParent
+        self.theTheme   = theParent.theTheme
         self.outerBox   = QGridLayout()
 
         # User Interface
@@ -122,7 +123,7 @@ class GuiConfigEditGeneral(QWidget):
 
         self.guiLookTheme = QComboBox()
         self.guiLookTheme.setMinimumWidth(200)
-        self.theThemes = self.theParent.theTheme.listThemes()
+        self.theThemes = self.theTheme.listThemes()
         for themeDir, themeName in self.theThemes:
             self.guiLookTheme.addItem(themeName, themeDir)
         themeIdx = self.guiLookTheme.findData(self.mainConf.guiTheme)
@@ -131,7 +132,7 @@ class GuiConfigEditGeneral(QWidget):
 
         self.guiLookSyntax = QComboBox()
         self.guiLookSyntax.setMinimumWidth(200)
-        self.theSyntaxes = self.theParent.theTheme.listSyntax()
+        self.theSyntaxes = self.theTheme.listSyntax()
         for syntaxFile, syntaxName in self.theSyntaxes:
             self.guiLookSyntax.addItem(syntaxName, syntaxFile)
         syntaxIdx = self.guiLookSyntax.findData(self.mainConf.guiSyntax)
@@ -192,7 +193,7 @@ class GuiConfigEditGeneral(QWidget):
         if path.isdir(self.mainConf.backupPath):
             self.projBackupPath.setText(self.mainConf.backupPath)
 
-        self.projBackupGetPath = QPushButton(QIcon.fromTheme("folder"),"")
+        self.projBackupGetPath = QPushButton(self.theTheme.getIcon("folder"),"")
         self.projBackupGetPath.clicked.connect(self._backupFolder)
 
         self.projBackupClose = QCheckBox(self)

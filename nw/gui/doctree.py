@@ -37,6 +37,7 @@ class GuiDocTree(QTreeWidget):
         self.mainConf   = nw.CONFIG
         self.debugGUI   = self.mainConf.debugGUI
         self.theParent  = theParent
+        self.theTheme   = theParent.theTheme
         self.theProject = theProject
 
         # Tree Settings
@@ -382,13 +383,13 @@ class GuiDocTree(QTreeWidget):
         newItem.setExpanded(nwItem.isExpanded)
 
         if nwItem.itemType == nwItemType.ROOT:
-            newItem.setIcon(self.C_NAME, QIcon.fromTheme("drive-harddisk"))
+            newItem.setIcon(self.C_NAME, self.theTheme.getIcon("root"))
         elif nwItem.itemType == nwItemType.FOLDER:
-            newItem.setIcon(self.C_NAME, QIcon.fromTheme("folder"))
+            newItem.setIcon(self.C_NAME, self.theTheme.getIcon("folder"))
         elif nwItem.itemType == nwItemType.FILE:
-            newItem.setIcon(self.C_NAME, QIcon.fromTheme("x-office-document"))
+            newItem.setIcon(self.C_NAME, self.theTheme.getIcon("document"))
         elif nwItem.itemType == nwItemType.TRASH:
-            newItem.setIcon(self.C_NAME, QIcon.fromTheme("user-trash"))
+            newItem.setIcon(self.C_NAME, self.theTheme.getIcon("trash"))
 
         return newItem
 
@@ -413,7 +414,7 @@ class GuiDocTree(QTreeWidget):
             self.addTopLevelItem(newItem)
             self.orphRoot = newItem
             newItem.setExpanded(True)
-            newItem.setIcon(self.C_NAME, QIcon.fromTheme("dialog-warning"))
+            newItem.setIcon(self.C_NAME, self.theTheme.getIcon("orphan"))
         return
 
     def _cleanOrphanedRoot(self):

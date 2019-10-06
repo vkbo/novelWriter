@@ -30,6 +30,7 @@ class GuiSearchBar(QFrame):
 
         self.mainConf   = nw.CONFIG
         self.theParent  = theParent
+        self.theTheme   = theParent.theTheme
         self.repVisible = False
 
         self.setContentsMargins(0,0,0,0)
@@ -41,9 +42,9 @@ class GuiSearchBar(QFrame):
         self.replaceBox    = QLineEdit()
         self.searchLabel   = QLabel("Search")
         self.replaceLabel  = QLabel("Replace")
-        self.closeButton   = QPushButton(QIcon.fromTheme("edit-delete"),"")
-        self.searchButton  = QPushButton(QIcon.fromTheme("edit-find"),"")
-        self.replaceButton = QPushButton(QIcon.fromTheme("edit-find-replace"),"")
+        self.closeButton   = QPushButton(self.theTheme.getIcon("close"),"")
+        self.searchButton  = QPushButton(self.theTheme.getIcon("search"),"")
+        self.replaceButton = QPushButton(self.theTheme.getIcon("replace"),"")
 
         self.closeButton.clicked.connect(self._doClose)
         self.searchButton.clicked.connect(self._doSearch)
