@@ -1,5 +1,12 @@
 # novelWriter ChangeLog
 
+## Version 0.2.3 [2019-10-06]
+
+**User Interface**
+
+* The search feature now also allows for replacing text, so the basic search/replace tools in now complete. PRs #51 and #52
+* All icons have been removed from the menu, and the dark theme has received a new set of basic icons. They are not very fancy, so will perhaps be replaced by a proper icon set later. PR #53
+
 ## Version 0.2.2 [2019-09-29]
 
 **Bug Fixes**
