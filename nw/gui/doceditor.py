@@ -504,6 +504,7 @@ class GuiDocEditor(QTextEdit):
     def _beginReplace(self):
         """Opens the replace line of the search bar and sets the replace text.
         """
+        self._beginSearch()
         self.theParent.searchBar.setReplaceText("")
         return
 
@@ -536,8 +537,9 @@ class GuiDocEditor(QTextEdit):
         with the replace text. Wraps back to the top if not found.
         """
         theCursor = self.textCursor()
+        searchFor = self.theParent.searchBar.getSearchText()
         replWith  = self.theParent.searchBar.getReplaceText()
-        if theCursor.hasSelection():
+        if theCursor.hasSelection() and theCursor.selectedText() == searchFor:
             xPos = theCursor.selectionStart()
             theCursor.beginEditBlock()
             theCursor.removeSelectedText()
@@ -545,7 +547,11 @@ class GuiDocEditor(QTextEdit):
             theCursor.endEditBlock()
             theCursor.setPosition(xPos)
             self.setTextCursor(theCursor)
-        self._findNext()
+            logger.verbose("Replaced occurrence of '%s' with '%s' on line %d" % (
+                searchFor, replWith, theCursor.blockNumber()
+            ))
+        if searchFor != "":
+            self._findNext()
         return
 
 # END Class GuiDocEditor
