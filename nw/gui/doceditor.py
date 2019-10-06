@@ -547,6 +547,9 @@ class GuiDocEditor(QTextEdit):
             theCursor.endEditBlock()
             theCursor.setPosition(xPos)
             self.setTextCursor(theCursor)
+            logger.verbose("Replaced occurrence of '%s' with '%s' on line %d" % (
+                searchFor, replWith, theCursor.blockNumber()
+            ))
         if searchFor != "":
             self._findNext()
         return
