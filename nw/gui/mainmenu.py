@@ -405,6 +405,13 @@ class GuiMainMenu(QMenuBar):
         menuItem.triggered.connect(lambda: self._docAction(nwDocAction.FIND))
         self.editMenu.addAction(menuItem)
 
+        # Edit > Replace
+        menuItem = QAction(QIcon.fromTheme("edit-find-replace"), "Replace", self)
+        menuItem.setStatusTip("Replace text in document")
+        menuItem.setShortcut("Ctrl+H")
+        menuItem.triggered.connect(lambda: self._docAction(nwDocAction.REPLACE))
+        self.editMenu.addAction(menuItem)
+
         # Edit > Find Next
         menuItem = QAction(QIcon.fromTheme("go-next"), "Go Next", self)
         menuItem.setStatusTip("Find next occurrence text in document")
@@ -417,6 +424,13 @@ class GuiMainMenu(QMenuBar):
         menuItem.setStatusTip("Find previous occurrence text in document")
         menuItem.setShortcut("Shift+F3")
         menuItem.triggered.connect(lambda: self._docAction(nwDocAction.GO_PREV))
+        self.editMenu.addAction(menuItem)
+
+        # Edit > Replace Next
+        menuItem = QAction(QIcon.fromTheme("go-next"), "Replace Next", self)
+        menuItem.setStatusTip("Find and replace next occurrence text in document")
+        menuItem.setShortcut("Ctrl+Shift+1")
+        menuItem.triggered.connect(lambda: self._docAction(nwDocAction.REPL_NEXT))
         self.editMenu.addAction(menuItem)
 
         # Edit > Separator

@@ -267,21 +267,23 @@ class GuiDocEditor(QTextEdit):
         if not self.theParent.hasProject:
             logger.error("No project open")
             return False
-        if   theAction == nwDocAction.UNDO:     self.undo()
-        elif theAction == nwDocAction.REDO:     self.redo()
-        elif theAction == nwDocAction.CUT:      self.cut()
-        elif theAction == nwDocAction.COPY:     self.copy()
-        elif theAction == nwDocAction.PASTE:    self.paste()
-        elif theAction == nwDocAction.BOLD:     self._wrapSelection("**","**")
-        elif theAction == nwDocAction.ITALIC:   self._wrapSelection("_","_")
-        elif theAction == nwDocAction.U_LINE:   self._wrapSelection("__","__")
-        elif theAction == nwDocAction.S_QUOTE:  self._wrapSelection(self.typSQOpen,self.typSQClose)
-        elif theAction == nwDocAction.D_QUOTE:  self._wrapSelection(self.typDQOpen,self.typDQClose)
-        elif theAction == nwDocAction.SEL_ALL:  self._makeSelection(QTextCursor.Document)
-        elif theAction == nwDocAction.SEL_PARA: self._makeSelection(QTextCursor.BlockUnderCursor)
-        elif theAction == nwDocAction.FIND:     self._beginSearch()
-        elif theAction == nwDocAction.GO_NEXT:  self._findNext()
-        elif theAction == nwDocAction.GO_PREV:  self._findPrev()
+        if   theAction == nwDocAction.UNDO:      self.undo()
+        elif theAction == nwDocAction.REDO:      self.redo()
+        elif theAction == nwDocAction.CUT:       self.cut()
+        elif theAction == nwDocAction.COPY:      self.copy()
+        elif theAction == nwDocAction.PASTE:     self.paste()
+        elif theAction == nwDocAction.BOLD:      self._wrapSelection("**","**")
+        elif theAction == nwDocAction.ITALIC:    self._wrapSelection("_","_")
+        elif theAction == nwDocAction.U_LINE:    self._wrapSelection("__","__")
+        elif theAction == nwDocAction.S_QUOTE:   self._wrapSelection(self.typSQOpen,self.typSQClose)
+        elif theAction == nwDocAction.D_QUOTE:   self._wrapSelection(self.typDQOpen,self.typDQClose)
+        elif theAction == nwDocAction.SEL_ALL:   self._makeSelection(QTextCursor.Document)
+        elif theAction == nwDocAction.SEL_PARA:  self._makeSelection(QTextCursor.BlockUnderCursor)
+        elif theAction == nwDocAction.FIND:      self._beginSearch()
+        elif theAction == nwDocAction.REPLACE:   self._beginReplace()
+        elif theAction == nwDocAction.GO_NEXT:   self._findNext()
+        elif theAction == nwDocAction.GO_PREV:   self._findPrev()
+        elif theAction == nwDocAction.REPL_NEXT: self._replaceNext()
         else:
             logger.error("Unknown or unsupported document action %s" % str(theAction))
             return False
@@ -489,21 +491,26 @@ class GuiDocEditor(QTextEdit):
         return
 
     def _beginSearch(self):
-
+        """Sets the selected text as the search text for the search bar.
+        """
         theCursor = self.textCursor()
         if theCursor.hasSelection():
             selText = theCursor.selectedText()
         else:
             selText = ""
-
         self.theParent.searchBar.setSearchText(selText)
+        return
 
-        if selText != "":
-            self._findNext()
-
+    def _beginReplace(self):
+        """Opens the replace line of the search bar and sets the replace text.
+        """
+        self.theParent.searchBar.setReplaceText("")
         return
 
     def _findNext(self):
+        """Searches for the next occurrence of the search bar text in the document.
+        Wraps back to the top if not found.
+        """
         searchFor = self.theParent.searchBar.getSearchText()
         wasFound = self.find(searchFor)
         if not wasFound:
@@ -513,12 +520,32 @@ class GuiDocEditor(QTextEdit):
         return
 
     def _findPrev(self):
+        """Searches for the previous occurrence of the search bar text in the document.
+        Wraps back to the end if not found.
+        """
         searchFor = self.theParent.searchBar.getSearchText()
-        wasFound = self.find(searchFor, QTextDocument.FindBackward)
+        wasFound  = self.find(searchFor, QTextDocument.FindBackward)
         if not wasFound:
             theCursor = self.textCursor()
             theCursor.movePosition(QTextCursor.End)
             self.setTextCursor(theCursor)
+        return
+
+    def _replaceNext(self):
+        """Searches for the next occurrence of the search bar text in the document and replaces it
+        with the replace text. Wraps back to the top if not found.
+        """
+        theCursor = self.textCursor()
+        replWith  = self.theParent.searchBar.getReplaceText()
+        if theCursor.hasSelection():
+            xPos = theCursor.selectionStart()
+            theCursor.beginEditBlock()
+            theCursor.removeSelectedText()
+            theCursor.insertText(replWith)
+            theCursor.endEditBlock()
+            theCursor.setPosition(xPos)
+            self.setTextCursor(theCursor)
+        self._findNext()
         return
 
 # END Class GuiDocEditor
