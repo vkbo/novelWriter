@@ -137,6 +137,7 @@ class GuiMain(QMainWindow):
 
         # Keyboard Shortcuts
         QShortcut(Qt.Key_Return, self.treeView, context=Qt.WidgetShortcut, activated=self._treeKeyPressReturn)
+        QShortcut(Qt.Key_Escape, self, activated=self._keyPressEscape)
 
         # Forward Functions
         self.setStatus        = self.statusBar.setStatus
@@ -687,6 +688,14 @@ class GuiMain(QMainWindow):
             self.openDocument(tHandle)
         else:
             logger.verbose("Requested item %s is a folder" % tHandle)
+        return
+
+    def _keyPressEscape(self):
+        """When the escape key is pressed somewhere in the main window, do the following, in order
+        """
+        if self.searchBar.isVisible():
+            self.searchBar.setVisible(False)
+            return
         return
 
     def _splitMainMove(self, pWidth, pHeight):
