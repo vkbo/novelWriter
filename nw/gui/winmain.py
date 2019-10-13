@@ -30,6 +30,7 @@ from nw.gui.searchbar     import GuiSearchBar
 from nw.gui.mainmenu      import GuiMainMenu
 from nw.gui.configeditor  import GuiConfigEditor
 from nw.gui.projecteditor import GuiProjectEditor
+from nw.gui.export        import GuiExport
 from nw.gui.itemeditor    import GuiItemEditor
 from nw.gui.statusbar     import GuiMainStatus
 from nw.gui.timelineview  import GuiTimeLineView
@@ -509,6 +510,12 @@ class GuiMain(QMainWindow):
             dlgProj = GuiProjectEditor(self, self.theProject)
             dlgProj.exec_()
             self._setWindowTitle(self.theProject.projName)
+        return True
+
+    def exportProjectDialog(self):
+        if self.hasProject:
+            dlgExport = GuiExport(self, self.theProject)
+            dlgExport.exec_()
         return True
 
     def showTimeLineDialog(self):

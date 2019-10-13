@@ -68,7 +68,7 @@ class GuiConfigEditor(QDialog):
 
         self.show()
 
-        logger.debug("ProjectEditor ConfigEditor complete")
+        logger.debug("ConfigEditor initialisation complete")
 
         return
 
