@@ -111,10 +111,10 @@ class GuiConfigEditGeneral(QWidget):
     def __init__(self, theParent):
         QWidget.__init__(self, theParent)
 
-        self.mainConf   = nw.CONFIG
-        self.theParent  = theParent
-        self.theTheme   = theParent.theTheme
-        self.outerBox   = QGridLayout()
+        self.mainConf  = nw.CONFIG
+        self.theParent = theParent
+        self.theTheme  = theParent.theTheme
+        self.outerBox  = QGridLayout()
 
         # User Interface
         self.guiLook     = QGroupBox("User Interface", self)
