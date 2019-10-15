@@ -72,6 +72,10 @@ class GuiConfigEditor(QDialog):
 
         return
 
+    ##
+    #  Buttons
+    ##
+
     def _doSave(self):
 
         logger.verbose("ConfigEditor save button clicked")

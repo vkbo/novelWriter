@@ -19,7 +19,7 @@ from PyQt5.QtCore    import Qt, QSize
 from PyQt5.QtSvg     import QSvgWidget
 from PyQt5.QtWidgets import (
     QDialog, QHBoxLayout, QVBoxLayout, QWidget, QTabWidget, QDialogButtonBox, QGridLayout,
-    QGroupBox, QCheckBox, QLabel, QComboBox, QLineEdit
+    QGroupBox, QCheckBox, QLabel, QComboBox, QLineEdit, QPushButton
 )
 
 from nw.tools.translate import numberToWord
@@ -55,39 +55,49 @@ class GuiExport(QDialog):
         self.outerBox.addWidget(self.svgGradient, 0, Qt.AlignTop)
         self.outerBox.addLayout(self.innerBox)
 
-        self.buttonBox = QDialogButtonBox(QDialogButtonBox.Ok | QDialogButtonBox.Cancel)
-        # self.buttonBox.accepted.connect(self._doSave)
-        # self.buttonBox.rejected.connect(self._doClose)
+        self.buttonBox = QDialogButtonBox(QDialogButtonBox.Save | QDialogButtonBox.Cancel)
+        self.buttonBox.accepted.connect(self._doSave)
+        self.buttonBox.rejected.connect(self._doClose)
 
         self.innerBox.addWidget(self.tabWidget)
         self.innerBox.addWidget(self.buttonBox)
 
         self.show()
 
-        for n in range(1000):
-            numberToWord(n,"EN")
-
         logger.debug("GuiExport initialisation complete")
 
+        return
+
+    ##
+    #  Buttons
+    ##
+
+    def _doSave(self):
+        logger.verbose("GuiExport save button clicked")
+        self.close()
+        return
+
+    def _doClose(self):
+        logger.verbose("GuiExport close button clicked")
+        self.close()
         return
 
 # END Class GuiExport
 
 class GuiExportMain(QWidget):
 
-    CHFMT_NUM      = 1
-    CHFMT_NUMWORD  = 2
-    CHFMT_TITLE    = 3
-    CHFMT_LABEL    = 4
-    CHFMT_NUMTITLE = 5
-    CHFMT_NUMLABEL = 6
-    CHFMT_CUSTOM   = 7
+    FMT_MD    = 1
+    FMT_HTML  = 2
+    FMT_EBOOK = 3
+    FMT_FODT  = 4
+    FMT_PDF   = 5
 
     def __init__(self, theParent, theProject):
         QWidget.__init__(self, theParent)
 
         self.theParent  = theParent
         self.theProject = theProject
+        self.theTheme   = theParent.theTheme
         self.outerBox   = QGridLayout()
 
         # Select Files
@@ -110,30 +120,70 @@ class GuiExportMain(QWidget):
         self.guiChaptersForm = QGridLayout(self)
         self.guiChapters.setLayout(self.guiChaptersForm)
 
-        self.chapterFormat = QComboBox(self)
-        self.chapterFormat.addItem("Chapter 1",   self.CHFMT_NUM)
-        self.chapterFormat.addItem("Chapter One", self.CHFMT_NUMWORD)
-        self.chapterFormat.addItem("[Title]",     self.CHFMT_TITLE)
-        self.chapterFormat.addItem("[Label]",     self.CHFMT_LABEL)
-        self.chapterFormat.addItem("1. [Title]",  self.CHFMT_NUMTITLE)
-        self.chapterFormat.addItem("1. [Label]",  self.CHFMT_NUMLABEL)
-        self.chapterFormat.addItem("Custom",      self.CHFMT_CUSTOM)
+        self.chapterFormat = QLineEdit()
+        self.chapterFormat.setText("Chapter %numword%")
+        self.chapterFormat.setToolTip("Available formats: %num%, %numword%, %title%, %label%")
+        self.chapterFormat.setMinimumWidth(250)
 
-        self.chapterCustom = QLineEdit()
-        self.chapterCustom.setText("%num%. %title%")
-        self.chapterCustom.setToolTip("Available options: %num%, %numword%, %title%, %label%")
-        self.chapterCustom.setMinimumWidth(200)
+        self.guiChaptersForm.addWidget(QLabel("Format"),   0, 0)
+        self.guiChaptersForm.addWidget(self.chapterFormat, 0, 1)
 
-        self.guiChaptersForm.addWidget(QLabel("Name format"),   0, 0)
-        self.guiChaptersForm.addWidget(self.chapterFormat,      0, 1)
-        self.guiChaptersForm.addWidget(QLabel("Custom format"), 1, 0)
-        self.guiChaptersForm.addWidget(self.chapterCustom,      1, 1)
+        # Output Format
+        self.guiOutput     = QGroupBox("Output", self)
+        self.guiOutputForm = QGridLayout(self)
+        self.guiOutput.setLayout(self.guiOutputForm)
+
+        self.outputFormat = QComboBox(self)
+        self.outputFormat.addItem("Markdown",       self.FMT_MD)
+        self.outputFormat.addItem("HTML (Plain)",   self.FMT_HTML)
+        self.outputFormat.addItem("HTML (eBook)",   self.FMT_EBOOK)
+        self.outputFormat.addItem("Open Document",  self.FMT_FODT)
+        self.outputFormat.addItem("PDF (PDFLaTeX)", self.FMT_PDF)
+
+        self.outputComments = QCheckBox("include comments", self)
+
+        self.guiOutputForm.addWidget(QLabel("Export format"), 0, 0)
+        self.guiOutputForm.addWidget(self.outputFormat,       0, 1)
+        self.guiOutputForm.addWidget(self.outputComments,     0, 2)
+        self.guiOutputForm.setColumnStretch(2, 1)
+
+        # Scene Settings
+        self.guiScenes     = QGroupBox("Scenes", self)
+        self.guiScenesForm = QGridLayout(self)
+        self.guiScenes.setLayout(self.guiScenesForm)
+
+        self.sceneFormat = QLineEdit()
+        self.sceneFormat.setText("* * *")
+        self.sceneFormat.setToolTip("Available formats: %title%")
+        self.sceneFormat.setMinimumWidth(100)
+
+        self.guiScenesForm.addWidget(QLabel("Format"), 0, 0)
+        self.guiScenesForm.addWidget(self.sceneFormat, 0, 1)
+
+        # Output Path
+        self.exportTo     = QGroupBox("Backup", self)
+        self.exportToForm = QGridLayout(self)
+        self.exportTo.setLayout(self.exportToForm)
+
+        self.exportPath = QLineEdit()
+
+        self.exportGetPath = QPushButton(self.theTheme.getIcon("folder"),"")
+        # self.exportGetPath.clicked.connect(self._backupFolder)
+
+        self.exportToForm.addWidget(QLabel("Save to"),  0, 0)
+        self.exportToForm.addWidget(self.exportPath,    0, 1)
+        self.exportToForm.addWidget(self.exportGetPath, 0, 2)
 
         # Assemble
         self.outerBox.addWidget(self.guiFiles,    0, 0)
-        self.outerBox.addWidget(self.guiChapters, 1, 0)
+        self.outerBox.addWidget(self.guiOutput,   0, 1, 1, 2)
+        self.outerBox.addWidget(self.guiChapters, 1, 0, 1, 2)
+        self.outerBox.addWidget(self.guiScenes,   1, 2)
+        self.outerBox.addWidget(self.exportTo,    2, 0, 1, 3)
+        self.outerBox.setColumnStretch(0, 1)
+        self.outerBox.setColumnStretch(1, 1)
         self.outerBox.setColumnStretch(2, 1)
-        self.outerBox.setRowStretch(4, 1)
+        # self.outerBox.setRowStretch(4, 1)
         self.setLayout(self.outerBox)
 
         return
