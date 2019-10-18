@@ -54,6 +54,13 @@ class TextFile():
         self.doMeta = doMeta
         return
 
+    def setWordWrap(self, wordWrap):
+        if wordWrap >= 0:
+            self.wordWrap = wordWrap
+        else:
+            self.wordWrap = 0
+        return
+
     ##
     #  Core Methods
     ##
@@ -112,6 +119,9 @@ class TextFile():
     ##
 
     def _doOpenFile(self, filePath):
+        """This function does the actual opening of the file, and can be overloaded by a subclass
+        that uses a different file format that requires a different approach.
+        """
         try:
             self.outFile = open(filePath,mode="w+")
         except Exception as e:
@@ -120,6 +130,9 @@ class TextFile():
         return True
 
     def _doCloseFile(self):
+        """This function closes a file, and is meant to be overloaded by the subclass for other
+        file formats.
+        """
         self.outFile.close()
         return True
 

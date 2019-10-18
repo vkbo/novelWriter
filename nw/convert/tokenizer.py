@@ -23,12 +23,21 @@ logger = logging.getLogger(__name__)
 
 class Tokenizer():
 
-    FMT_B_B = 1 # Begin Bold
-    FMT_B_E = 2 # End Bold
-    FMT_I_B = 3 # Begin Italics
-    FMT_I_E = 4 # End Italics
-    FMT_U_B = 5 # Begin Underline
-    FMT_U_E = 6 # End Underline
+    FMT_B_B   = "" # Begin bold
+    FMT_B_E   = "" # End bold
+    FMT_I_B   = "" # Begin italics
+    FMT_I_E   = "" # End italics
+    FMT_U_B   = "" # Begin underline
+    FMT_U_E   = "" # End underline
+
+    T_EMPTY   = 1  # Empty line (new paragraph)
+    T_COMMENT = 2  # Comment line
+    T_COMMAND = 3  # Command line
+    T_HEAD1   = 4  # Header 1 (title)
+    T_HEAD2   = 5  # Header 2 (chapter)
+    T_HEAD3   = 6  # Header 3 (scene)
+    T_HEAD4   = 7  # Header 4
+    T_TEXT    = 8  # Text line
 
     def __init__(self, theProject, theParent):
 
@@ -48,6 +57,10 @@ class Tokenizer():
 
         return
 
+    ##
+    #  Setters
+    ##
+
     def setComments(self, doComments):
         self.doComments = doComments
         return
@@ -62,6 +75,10 @@ class Tokenizer():
         else:
             self.wordWrap = 0
         return
+
+    ##
+    #  Class Methods
+    ##
 
     def setText(self, theHandle, theText=None):
 
@@ -113,19 +130,19 @@ class Tokenizer():
 
             # Tag lines starting with specific characters
             if len(aLine) == 0:
-                self.theTokens.append(("empty","",None))
+                self.theTokens.append((self.T_EMPTY,"",None))
             elif aLine[0] == "%":
-                self.theTokens.append(("comment",aLine[1:].strip(),None))
+                self.theTokens.append((self.T_COMMENT,aLine[1:].strip(),None))
             elif aLine[0] == "@":
-                self.theTokens.append(("command",aLine[1:].strip(),None))
+                self.theTokens.append((self.T_COMMENT,aLine[1:].strip(),None))
             elif aLine[:2] == "# ":
-                self.theTokens.append(("header1",aLine[2:].strip(),None))
+                self.theTokens.append((self.T_HEAD1,aLine[2:].strip(),None))
             elif aLine[:3] == "## ":
-                self.theTokens.append(("header2",aLine[3:].strip(),None))
+                self.theTokens.append((self.T_HEAD2,aLine[3:].strip(),None))
             elif aLine[:4] == "### ":
-                self.theTokens.append(("header3",aLine[4:].strip(),None))
+                self.theTokens.append((self.T_HEAD3,aLine[4:].strip(),None))
             elif aLine[:5] == "#### ":
-                self.theTokens.append(("header4",aLine[5:].strip(),None))
+                self.theTokens.append((self.T_HEAD4,aLine[5:].strip(),None))
             else:
                 # Otherwise we use RegEx to find formatting tags within a line of text
                 fmtPos = []
@@ -141,11 +158,10 @@ class Tokenizer():
 
                 # Save the line as is, but append the array of formatting locations sorted by position
                 fmtPos = sorted(fmtPos,key=itemgetter(0))
-                self.theTokens.append(("text",aLine,fmtPos))
+                self.theTokens.append((self.T_TEXT,aLine,fmtPos))
 
         # Always add an empty line at the end
-        self.theTokens.append(("empty","",None))
-        # print(self.theTokens)
+        self.theTokens.append((self.T_EMPTY,"",None))
 
         return
 
@@ -153,55 +169,72 @@ class Tokenizer():
         """Converts the tokenized text into plain text.
         """
 
+        if self.wordWrap > 0:
+            tWrap = textwrap.TextWrapper(
+                width                = self.wordWrap,
+                initial_indent       = "",
+                subsequent_indent    = "",
+                expand_tabs          = True,
+                replace_whitespace   = True,
+                fix_sentence_endings = False,
+                break_long_words     = True,
+                drop_whitespace      = True,
+                break_on_hyphens     = True,
+                tabsize              = 8,
+                max_lines            = None
+            )
+
         self.theResult = ""
         thisPar = []
         for tType, tText, tFormat in self.theTokens:
 
             # First check if we have a comment or plain text, as they need some
-            # extra replacing before we proceed
-            if tType == "comment":
+            # extra replacing before we proceed to wrapping and final formatting.
+            if tType == self.T_COMMAND:
                 tText = "[%s]" % tText
 
-            elif tType == "text":
+            elif tType == self.T_TEXT:
                 tTemp = tText
                 for xPos, xLen, xFmt in reversed(tFormat):
                     tTemp = tTemp[:xPos]+tTemp[xPos+xLen:]
                 tText = tTemp
 
-            # The text can now be word wrapped, if we have requested this
-            if self.wordWrap > 0:
-                tText = textwrap.fill(tText, width=self.wordWrap)
+            tLen = len(tText)
 
-            # Then the text can receive final formatting before we append it
-            # to the results. We store text bits in a buffer and merge them only
-            # when we find an empty line, indicating a new paragraph
-            if tType == "empty":
+            # The text can now be word wrapped, if we have requested this and it's needed.
+            if self.wordWrap > 0 and tLen > self.wordWrap:
+                tText = tWrap.fill(tText)
+
+            # Then the text can receive final formatting before we append it to the results.
+            # We also store text lines in a buffer and merge them only when we find an empty line,
+            # indicating a new paragraph.
+            if tType == self.T_EMPTY:
                 if len(thisPar) > 0:
                     self.theResult += "%s\n\n" % " ".join(thisPar)
                 thisPar = []
 
-            elif tType == "header1":
-                uLine = "="*min(len(tText),self.wordWrap)
+            elif tType == self.T_HEAD1:
+                uLine = "="*min(tLen,self.wordWrap)
                 self.theResult += "%s\n%s\n\n" % (tText,uLine)
 
-            elif tType == "header2":
-                uLine = "~"*min(len(tText),self.wordWrap)
+            elif tType == self.T_HEAD2:
+                uLine = "~"*min(tLen,self.wordWrap)
                 self.theResult += "%s\n%s\n\n" % (tText,uLine)
 
-            elif tType == "header3":
-                uLine = "-"*min(len(tText),self.wordWrap)
+            elif tType == self.T_HEAD3:
+                uLine = "-"*min(tLen,self.wordWrap)
                 self.theResult += "%s\n%s\n\n" % (tText,uLine)
 
-            elif tType == "header4":
+            elif tType == self.T_HEAD4:
                 self.theResult += "%s\n\n" % tText
 
-            elif tType == "text":
+            elif tType == self.T_TEXT:
                 thisPar.append(tText)
 
-            elif tType == "comment" and self.doComments:
+            elif tType == self.T_COMMENT and self.doComments:
                 self.theResult += "%s\n\n" % tText
 
-            elif tType == "command" and self.doCommands:
+            elif tType == self.T_COMMAND and self.doCommands:
                 self.theResult += "%s\n\n" % tText
 
         return
