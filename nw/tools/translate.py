@@ -19,7 +19,7 @@ logger = logging.getLogger(__name__)
 
 def numberToWord(numVal, theLanguage):
     numWord = ""
-    if theLanguage == "EN":
+    if theLanguage == "en":
         numWord = _numberToWordEN(numVal)
     else:
         numWord = _numberToWordEN(numVal)

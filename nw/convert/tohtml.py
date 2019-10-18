@@ -51,7 +51,7 @@ class ToHtml(Tokenizer):
 
         self.theResult = ""
         thisPar = []
-        for tType, tText, tFormat in self.theTokens:
+        for tType, tText, tFormat, tAlign in self.theTokens:
 
             if tType == self.T_EMPTY:
                 if len(thisPar) > 0:

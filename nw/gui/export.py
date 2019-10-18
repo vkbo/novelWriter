@@ -98,9 +98,20 @@ class GuiExport(QDialog):
 
         logger.verbose("GuiExport export button clicked")
 
+        wNovel    = self.tabMain.expNovel.isChecked()
+        wNotes    = self.tabMain.expNotes.isChecked()
         eFormat   = self.tabMain.outputFormat.currentData()
         wComments = self.tabMain.outputComments.isChecked()
         saveTo    = self.tabMain.exportPath.text()
+
+        nItems = len(self.theProject.treeOrder)
+        self.exportProgress.setMinimum(0)
+        self.exportProgress.setMaximum(nItems)
+        self.exportProgress.setValue(0)
+
+        if not wNovel and not wNotes:
+            self.exportStatus.setText("Nothing to export ...")
+            return False
 
         outFile = None
         if eFormat == GuiExportMain.FMT_TXT:
@@ -111,11 +122,8 @@ class GuiExport(QDialog):
 
         outFile.openFile(saveTo,"testfile")
         outFile.setComments(wComments)
-
-        nItems = len(self.theProject.treeOrder)
-        self.exportProgress.setMinimum(0)
-        self.exportProgress.setMaximum(nItems)
-        self.exportProgress.setValue(0)
+        outFile.setExportNovel(wNovel)
+        outFile.setExportNotes(wNotes)
 
         nDone = 0
         for tHandle in self.theProject.treeOrder:
@@ -233,7 +241,7 @@ class GuiExportMain(QWidget):
         self.guiFilesForm.addWidget(self.expNovel,         0, 1)
         self.guiFilesForm.addWidget(QLabel("Note files"),  1, 0)
         self.guiFilesForm.addWidget(self.expNotes,         1, 1)
-        self.guiFilesForm.addWidget(QLabel("Contents"),    2, 0)
+        self.guiFilesForm.addWidget(QLabel("ToC"),         2, 0)
         self.guiFilesForm.addWidget(self.expTOC,           2, 1)
 
         # Chapter Settings

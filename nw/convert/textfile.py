@@ -17,7 +17,7 @@ from os              import path
 from PyQt5.QtWidgets import QMessageBox
 
 from nw.convert.tokenizer import Tokenizer
-from nw.enum              import nwAlert
+from nw.enum              import nwAlert, nwItemLayout
 
 logger = logging.getLogger(__name__)
 
@@ -33,12 +33,16 @@ class TextFile():
         self.outFile    = None
         self.fileName   = ""
         self.theText    = ""
-        self.doComments = False
-        self.doMeta     = False
-        self.wordWrap   = 80
+        self.expNovel   = True
+        self.expNotes   = False
         self.winEnding  = False
 
-        self.makeAlert = self.theParent.makeAlert
+        self.theConv    = Tokenizer(self.theProject, self.theParent)
+        self.makeAlert  = self.theParent.makeAlert
+
+        self.setComments(False)
+        self.setMeta(False)
+        self.setWordWrap(80)
 
         return
 
@@ -46,19 +50,27 @@ class TextFile():
     #  Setters
     ##
 
+    def setExportNovel(self, doNovel):
+        self.expNovel = doNovel
+        return
+
+    def setExportNotes(self, doNotes):
+        self.expNotes = doNotes
+        return
+
     def setComments(self, doComments):
-        self.doComments = doComments
+        self.theConv.setComments(doComments)
         return
 
     def setMeta(self, doMeta):
-        self.doMeta = doMeta
+        self.theConv.setCommands(doMeta)
         return
 
     def setWordWrap(self, wordWrap):
         if wordWrap >= 0:
-            self.wordWrap = wordWrap
+            self.theConv.setWordWrap(wordWrap)
         else:
-            self.wordWrap = 0
+            self.theConv.setWordWrap(0)
         return
 
     ##
@@ -92,25 +104,29 @@ class TextFile():
 
         logger.verbose("Parsing content of item '%s'" % tHandle)
 
-        aDoc = Tokenizer(self.theProject, self.theParent)
-        aDoc.setText(tHandle)
-        aDoc.doAutoReplace()
-        aDoc.tokenizeText()
+        theItem = self.theProject.getItem(tHandle)
+        isNone  = theItem.itemLayout == nwItemLayout.NO_LAYOUT
+        isNote  = theItem.itemLayout == nwItemLayout.NOTE
+        isNovel = not isNone and not isNote
 
-        aDoc.setComments(self.doComments)
-        aDoc.setCommands(self.doMeta)
-        aDoc.setWordWrap(self.wordWrap)
+        if isNone:
+            return False
+        if isNote and not self.expNotes:
+            return False
+        if isNovel and not self.expNovel:
+            return False
 
-        aDoc.doConvert()
-
-        theText = ""
-        if aDoc.theResult is not None:
-            theText = aDoc.theResult
+        self.theConv.setText(tHandle)
+        self.theConv.doAutoReplace()
+        self.theConv.tokenizeText()
+        self.theConv.doHeaders()
+        self.theConv.doConvert()
 
         if self.winEnding:
-            theText = theText.replace("\n","\r\n")
+            self.theConv.windowsEndings()
 
-        self.outFile.write(theText)
+        if self.theConv.theResult is not None:
+            self.outFile.write(self.theConv.theResult)
 
         return True
 
