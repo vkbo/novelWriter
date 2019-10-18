@@ -19,6 +19,7 @@ class nwFiles():
     PROJ_DICT  = "wordlist.txt"
     SESS_INFO  = "sessionInfo.log"
     INDEX_FILE = "tagsIndex.json"
+    EXPORT_OPT = "exportOptions.json"
 
 # END Class nwFiles
 

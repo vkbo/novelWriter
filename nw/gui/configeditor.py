@@ -282,6 +282,7 @@ class GuiConfigEditGeneral(QWidget):
         if newDir:
             self.projBackupPath.setText(newDir)
             return True
+
         return False
 
 # END Class GuiConfigEditGeneral
