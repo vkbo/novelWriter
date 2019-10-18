@@ -11,6 +11,7 @@
 """
 
 import logging
+import time
 import json
 import nw
 
@@ -19,13 +20,16 @@ from os import path
 from PyQt5.QtCore    import Qt, QSize
 from PyQt5.QtSvg     import QSvgWidget
 from PyQt5.QtWidgets import (
-    QDialog, QHBoxLayout, QVBoxLayout, QWidget, QTabWidget, QDialogButtonBox, QGridLayout,
-    QGroupBox, QCheckBox, QLabel, QComboBox, QLineEdit, QPushButton, QFileDialog
+    QDialog, QHBoxLayout, QVBoxLayout, QWidget, QTabWidget, QGridLayout, QGroupBox, QCheckBox,
+    QLabel, QComboBox, QLineEdit, QPushButton, QFileDialog, QProgressBar
 )
 
-from nw.tools.translate import numberToWord
-from nw.common          import checkString, checkBool, checkInt
-from nw.constants       import nwFiles
+from nw.project.document import NWDoc
+from nw.tools.translate  import numberToWord
+from nw.convert.textfile import TextFile
+from nw.common           import checkString, checkBool, checkInt
+from nw.constants        import nwFiles
+from nw.enum             import nwItemType
 
 logger = logging.getLogger(__name__)
 
@@ -59,13 +63,27 @@ class GuiExport(QDialog):
         self.outerBox.addWidget(self.svgGradient, 0, Qt.AlignTop)
         self.outerBox.addLayout(self.innerBox)
 
-        self.buttonBox = QDialogButtonBox(QDialogButtonBox.Save | QDialogButtonBox.Cancel)
-        self.buttonBox.accepted.connect(self._doSave)
-        self.buttonBox.rejected.connect(self._doClose)
+        self.doExportForm = QGridLayout()
+        self.doExportForm.setContentsMargins(10,5,0,10)
+
+        self.exportButton = QPushButton("Export")
+        self.exportButton.clicked.connect(self._doExport)
+
+        self.closeButton = QPushButton("Close")
+        self.closeButton.clicked.connect(self._doClose)
+
+        self.exportStatus   = QLabel("Ready ...")
+        self.exportProgress = QProgressBar(self)
+
+        self.doExportForm.addWidget(self.exportStatus,   0, 0, 1, 3)
+        self.doExportForm.addWidget(self.exportProgress, 1, 0)
+        self.doExportForm.addWidget(self.exportButton,   1, 1)
+        self.doExportForm.addWidget(self.closeButton,    1, 2)
 
         self.innerBox.addWidget(self.tabWidget)
-        self.innerBox.addWidget(self.buttonBox)
+        self.innerBox.addLayout(self.doExportForm)
 
+        self.rejected.connect(self._doClose)
         self.show()
 
         logger.debug("GuiExport initialisation complete")
@@ -76,9 +94,56 @@ class GuiExport(QDialog):
     #  Buttons
     ##
 
-    def _doSave(self):
+    def _doExport(self):
 
-        logger.verbose("GuiExport save button clicked")
+        logger.verbose("GuiExport export button clicked")
+
+        eFormat   = self.tabMain.outputFormat.currentData()
+        wComments = self.tabMain.outputComments.isChecked()
+        saveTo    = self.tabMain.exportPath.text()
+
+        outFile = None
+        if eFormat == GuiExportMain.FMT_TXT:
+            outFile = TextFile(self.theProject, self.theParent)
+
+        if outFile is None:
+            return False
+
+        outFile.openFile(saveTo,"testfile")
+        outFile.setComments(wComments)
+
+        nItems = len(self.theProject.treeOrder)
+        self.exportProgress.setMinimum(0)
+        self.exportProgress.setMaximum(nItems)
+        self.exportProgress.setValue(0)
+
+        nDone = 0
+        for tHandle in self.theProject.treeOrder:
+
+            time.sleep(0.1)
+
+            self.exportProgress.setValue(nDone)
+            tItem = self.theProject.getItem(tHandle)
+
+            self.exportStatus.setText("Exporting: %s" % tItem.itemName)
+            logger.verbose("Exporting: %s" % tItem.itemName)
+
+            if tItem is not None and tItem.itemType == nwItemType.FILE:
+                outFile.addText(tHandle)
+
+            nDone += 1
+
+        outFile.closeFile()
+
+        self.exportProgress.setValue(nDone)
+        self.exportStatus.setText("Export to %s complete" % outFile.fileName)
+        logger.verbose("Export to %s complete" % outFile.fileName)
+
+        return
+
+    def _doClose(self):
+
+        logger.verbose("GuiExport close button clicked")
 
         wNovel    = self.tabMain.expNovel.isChecked()
         wNotes    = self.tabMain.expNotes.isChecked()
@@ -103,21 +168,21 @@ class GuiExport(QDialog):
 
         return
 
-    def _doClose(self):
-        logger.verbose("GuiExport close button clicked")
-        self.close()
-        return
-
 # END Class GuiExport
 
 class GuiExportMain(QWidget):
 
-    FMT_MD    = 1
-    FMT_HTML  = 2
-    FMT_EBOOK = 3
-    FMT_ODT   = 4
-    FMT_TEX   = 5
+    FMT_TXT   = 1
+    FMT_MD    = 2
+    FMT_HTML  = 3
+    FMT_EBOOK = 4
+    FMT_ODT   = 5
+    FMT_TEX   = 6
     FMT_HELP  = {
+        FMT_TXT : (
+            "Exports a plain text file. "
+            "All formatting is stripped and comments are in square brackets."
+        ),
         FMT_MD : (
             "Exports a standard markdown file. "
             "Comments are converted to preformatted text blocks."
@@ -198,11 +263,12 @@ class GuiExportMain(QWidget):
         self.outputHelp.setAlignment(Qt.AlignTop)
 
         self.outputFormat = QComboBox(self)
-        self.outputFormat.addItem("Markdown",      self.FMT_MD)
-        self.outputFormat.addItem("HTML5 (Plain)", self.FMT_HTML)
-        self.outputFormat.addItem("HTML5 (eBook)", self.FMT_EBOOK)
-        self.outputFormat.addItem("Open Document", self.FMT_ODT)
-        self.outputFormat.addItem("LaTeX (PDF)",   self.FMT_TEX)
+        self.outputFormat.addItem("Plain Text",    self.FMT_TXT)
+        # self.outputFormat.addItem("Markdown",      self.FMT_MD)
+        # self.outputFormat.addItem("HTML5 (Plain)", self.FMT_HTML)
+        # self.outputFormat.addItem("HTML5 (eBook)", self.FMT_EBOOK)
+        # self.outputFormat.addItem("Open Document", self.FMT_ODT)
+        # self.outputFormat.addItem("LaTeX (PDF)",   self.FMT_TEX)
         self.outputFormat.currentIndexChanged.connect(self._updateFormatHelp)
 
         optIdx = self.outputFormat.findData(self.optState.eFormat())
@@ -300,7 +366,7 @@ class ExportLastState():
             "wNovel"    : True,
             "wNotes"    : False,
             "wTOC"      : True,
-            "eFormat"   : 1,
+            "eFormat"   : 2,
             "wComments" : False,
             "chFormat"  : "Chapter %numword%",
             "scFormat"  : "* * *",

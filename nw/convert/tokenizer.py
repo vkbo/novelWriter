@@ -10,6 +10,7 @@
 
 """
 
+import textwrap
 import logging
 import re
 import nw
@@ -41,6 +42,25 @@ class Tokenizer():
         self.theTokens  = None
         self.theResult  = None
 
+        self.wordWrap   = 80
+        self.doComments = False
+        self.doCommands = False
+
+        return
+
+    def setComments(self, doComments):
+        self.doComments = doComments
+        return
+
+    def setCommands(self, doCommands):
+        self.doCommands = doCommands
+        return
+
+    def setWordWrap(self, wordWrap):
+        if wordWrap >= 0:
+            self.wordWrap = wordWrap
+        else:
+            self.wordWrap = 0
         return
 
     def setText(self, theHandle, theText=None):
@@ -126,6 +146,63 @@ class Tokenizer():
         # Always add an empty line at the end
         self.theTokens.append(("empty","",None))
         # print(self.theTokens)
+
+        return
+
+    def doConvert(self):
+        """Converts the tokenized text into plain text.
+        """
+
+        self.theResult = ""
+        thisPar = []
+        for tType, tText, tFormat in self.theTokens:
+
+            # First check if we have a comment or plain text, as they need some
+            # extra replacing before we proceed
+            if tType == "comment":
+                tText = "[%s]" % tText
+
+            elif tType == "text":
+                tTemp = tText
+                for xPos, xLen, xFmt in reversed(tFormat):
+                    tTemp = tTemp[:xPos]+tTemp[xPos+xLen:]
+                tText = tTemp
+
+            # The text can now be word wrapped, if we have requested this
+            if self.wordWrap > 0:
+                tText = textwrap.fill(tText, width=self.wordWrap)
+
+            # Then the text can receive final formatting before we append it
+            # to the results. We store text bits in a buffer and merge them only
+            # when we find an empty line, indicating a new paragraph
+            if tType == "empty":
+                if len(thisPar) > 0:
+                    self.theResult += "%s\n\n" % " ".join(thisPar)
+                thisPar = []
+
+            elif tType == "header1":
+                uLine = "="*min(len(tText),self.wordWrap)
+                self.theResult += "%s\n%s\n\n" % (tText,uLine)
+
+            elif tType == "header2":
+                uLine = "~"*min(len(tText),self.wordWrap)
+                self.theResult += "%s\n%s\n\n" % (tText,uLine)
+
+            elif tType == "header3":
+                uLine = "-"*min(len(tText),self.wordWrap)
+                self.theResult += "%s\n%s\n\n" % (tText,uLine)
+
+            elif tType == "header4":
+                self.theResult += "%s\n\n" % tText
+
+            elif tType == "text":
+                thisPar.append(tText)
+
+            elif tType == "comment" and self.doComments:
+                self.theResult += "%s\n\n" % tText
+
+            elif tType == "command" and self.doCommands:
+                self.theResult += "%s\n\n" % tText
 
         return
 
