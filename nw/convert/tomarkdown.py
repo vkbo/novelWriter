@@ -27,7 +27,7 @@ class ToMarkdown(Tokenizer):
 
     def doConvert(self):
 
-        htmlTags = {
+        mdTags = {
             self.FMT_B_B : "**",
             self.FMT_B_E : "**",
             self.FMT_I_B : "_",
@@ -63,7 +63,7 @@ class ToMarkdown(Tokenizer):
             elif tType == self.T_TEXT:
                 tTemp = tText
                 for xPos, xLen, xFmt in reversed(tFormat):
-                    tTemp = tTemp[:xPos]+tTemp[xPos+xLen:]
+                    tTemp = tTemp[:xPos]+mdTags[xFmt]+tTemp[xPos+xLen:]
                 tText = tTemp
 
             tLen = len(tText)

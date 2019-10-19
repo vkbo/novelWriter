@@ -26,12 +26,12 @@ logger = logging.getLogger(__name__)
 
 class Tokenizer():
 
-    FMT_B_B   = "" # Begin bold
-    FMT_B_E   = "" # End bold
-    FMT_I_B   = "" # Begin italics
-    FMT_I_E   = "" # End italics
-    FMT_U_B   = "" # Begin underline
-    FMT_U_E   = "" # End underline
+    FMT_B_B   = 1  # Begin bold
+    FMT_B_E   = 2  # End bold
+    FMT_I_B   = 3  # Begin italics
+    FMT_I_E   = 4  # End italics
+    FMT_U_B   = 5  # Begin underline
+    FMT_U_E   = 6  # End underline
 
     T_EMPTY   = 1  # Empty line (new paragraph)
     T_COMMENT = 2  # Comment line

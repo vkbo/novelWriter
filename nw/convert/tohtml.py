@@ -73,7 +73,6 @@ class ToHtml(Tokenizer):
                 self.theResult += "<h2%s>%s</h2>\n" % (hStyle,tText)
 
             elif tType == self.T_HEAD3:
-                print(tText)
                 self.theResult += "<h3%s>%s</h3>\n" % (hStyle,tText)
 
             elif tType == self.T_HEAD4:
