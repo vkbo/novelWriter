@@ -51,21 +51,21 @@ class ToHtml(Tokenizer):
 
         self.theResult = ""
         thisPar = []
-        for tType, tText, tFormat in self.theTokens:
+        for tType, tText, tFormat, tAlign in self.theTokens:
 
-            if tType == "empty":
+            if tType == self.T_EMPTY:
                 if len(thisPar) > 0:
                     self.theResult += "<p>%s</p>\n" % " ".join(thisPar)
                 thisPar = []
-            elif tType == "header1":
+            elif tType == self.T_HEAD1:
                 self.theResult += "<h1>%s</h1>\n" % tText
-            elif tType == "header2":
+            elif tType == self.T_HEAD2:
                 self.theResult += "<h2>%s</h2>\n" % tText
-            elif tType == "header3":
+            elif tType == self.T_HEAD3:
                 self.theResult += "<h3>%s</h3>\n" % tText
-            elif tType == "header4":
+            elif tType == self.T_HEAD4:
                 self.theResult += "<h4>%s</h4>\n" % tText
-            elif tType == "text":
+            elif tType == self.T_TEXT:
                 tTemp = tText
                 for xPos, xLen, xFmt in reversed(tFormat):
                     tTemp = tTemp[:xPos]+htmlTags[xFmt]+tTemp[xPos+xLen:]

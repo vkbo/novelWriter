@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='utf-8'?>
-<novelWriterXML appVersion="0.2.0" fileVersion="1.0" timeStamp="2019-08-11 19:41:35">
+<novelWriterXML appVersion="0.2.3" fileVersion="1.0" timeStamp="2019-10-19 13:37:25">
   <project>
     <name>Sample Project</name>
     <title>Sample Project</title>
@@ -11,7 +11,7 @@
     <spellCheck>True</spellCheck>
     <lastEdited>636b6aa9b697b</lastEdited>
     <lastViewed>636b6aa9b697b</lastViewed>
-    <lastWordCount>581</lastWordCount>
+    <lastWordCount>758</lastWordCount>
     <autoReplace>
       <A>B</A>
       <B>E</B>
@@ -33,7 +33,7 @@
       <entry blue="175" green="0" red="117">Main</entry>
     </importance>
   </settings>
-  <content count="15">
+  <content count="18">
     <item handle="7031beac91f75" order="0" parent="None">
       <name>Novel</name>
       <type>ROOT</type>
@@ -51,7 +51,7 @@
       <charCount>23</charCount>
       <wordCount>5</wordCount>
       <paraCount>1</paraCount>
-      <cursorPos>0</cursorPos>
+      <cursorPos>16</cursorPos>
     </item>
     <item handle="e7ded148d6e4a" order="1" parent="7031beac91f75">
       <name>Some Chapter</name>
@@ -60,41 +60,77 @@
       <status>Notes</status>
       <expanded>True</expanded>
     </item>
-    <item handle="96b68994dfa3d" order="0" parent="e7ded148d6e4a">
-      <name>New Scene</name>
+    <item handle="6a2d6d5f4f401" order="0" parent="e7ded148d6e4a">
+      <name>Chapter One</name>
+      <type>FILE</type>
+      <class>NOVEL</class>
+      <status>New</status>
+      <expanded>False</expanded>
+      <layout>CHAPTER</layout>
+      <charCount>12</charCount>
+      <wordCount>3</wordCount>
+      <paraCount>0</paraCount>
+      <cursorPos>75</cursorPos>
+    </item>
+    <item handle="636b6aa9b697b" order="1" parent="e7ded148d6e4a">
+      <name>Making a Scene</name>
+      <type>FILE</type>
+      <class>NOVEL</class>
+      <status>Notes</status>
+      <expanded>False</expanded>
+      <layout>SCENE</layout>
+      <charCount>713</charCount>
+      <wordCount>132</wordCount>
+      <paraCount>6</paraCount>
+      <cursorPos>85</cursorPos>
+    </item>
+    <item handle="bc0cbd2a407f3" order="2" parent="e7ded148d6e4a">
+      <name>Another Scene</name>
+      <type>FILE</type>
+      <class>NOVEL</class>
+      <status>Notes</status>
+      <expanded>False</expanded>
+      <layout>SCENE</layout>
+      <charCount>412</charCount>
+      <wordCount>82</wordCount>
+      <paraCount>2</paraCount>
+      <cursorPos>448</cursorPos>
+    </item>
+    <item handle="96b68994dfa3d" order="3" parent="e7ded148d6e4a">
+      <name>A Note on Ipsums</name>
       <type>FILE</type>
       <class>NOVEL</class>
       <status>Started</status>
       <expanded>False</expanded>
-      <layout>SCENE</layout>
+      <layout>NOTE</layout>
       <charCount>2571</charCount>
       <wordCount>377</wordCount>
       <paraCount>5</paraCount>
       <cursorPos>0</cursorPos>
     </item>
-    <item handle="636b6aa9b697b" order="1" parent="e7ded148d6e4a">
-      <name>File With Stuff</name>
+    <item handle="88706ddc78b1b" order="4" parent="e7ded148d6e4a">
+      <name>Chapter Two</name>
       <type>FILE</type>
       <class>NOVEL</class>
-      <status>Notes</status>
+      <status>New</status>
       <expanded>False</expanded>
-      <layout>SCENE</layout>
-      <charCount>736</charCount>
-      <wordCount>137</wordCount>
-      <paraCount>6</paraCount>
-      <cursorPos>82</cursorPos>
+      <layout>CHAPTER</layout>
+      <charCount>20</charCount>
+      <wordCount>4</wordCount>
+      <paraCount>0</paraCount>
+      <cursorPos>76</cursorPos>
     </item>
-    <item handle="bc0cbd2a407f3" order="2" parent="e7ded148d6e4a">
-      <name>New File</name>
+    <item handle="ae7339df26ded" order="5" parent="e7ded148d6e4a">
+      <name>We Found John!</name>
       <type>FILE</type>
       <class>NOVEL</class>
-      <status>Notes</status>
+      <status>New</status>
       <expanded>False</expanded>
       <layout>SCENE</layout>
-      <charCount>82</charCount>
-      <wordCount>19</wordCount>
-      <paraCount>1</paraCount>
-      <cursorPos>69</cursorPos>
+      <charCount>567</charCount>
+      <wordCount>112</wordCount>
+      <paraCount>6</paraCount>
+      <cursorPos>634</cursorPos>
     </item>
     <item handle="f6622b4617424" order="1" parent="None">
       <name>Characters</name>

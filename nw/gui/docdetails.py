@@ -54,7 +54,7 @@ class GuiDocDetails(QFrame):
             QLabel("")
         ]
 
-        colOne = ["Name","Status","Class","Layout"]
+        colOne = ["Label","Status","Class","Layout"]
         for nRow in range(4):
             lblOne = QLabel(colOne[nRow])
             lblOne.setFont(self.fntOne)

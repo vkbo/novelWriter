@@ -68,9 +68,13 @@ class GuiConfigEditor(QDialog):
 
         self.show()
 
-        logger.debug("ProjectEditor ConfigEditor complete")
+        logger.debug("ConfigEditor initialisation complete")
 
         return
+
+    ##
+    #  Buttons
+    ##
 
     def _doSave(self):
 
@@ -111,10 +115,10 @@ class GuiConfigEditGeneral(QWidget):
     def __init__(self, theParent):
         QWidget.__init__(self, theParent)
 
-        self.mainConf   = nw.CONFIG
-        self.theParent  = theParent
-        self.theTheme   = theParent.theTheme
-        self.outerBox   = QGridLayout()
+        self.mainConf  = nw.CONFIG
+        self.theParent = theParent
+        self.theTheme  = theParent.theTheme
+        self.outerBox  = QGridLayout()
 
         # User Interface
         self.guiLook     = QGroupBox("User Interface", self)
@@ -278,6 +282,7 @@ class GuiConfigEditGeneral(QWidget):
         if newDir:
             self.projBackupPath.setText(newDir)
             return True
+
         return False
 
 # END Class GuiConfigEditGeneral

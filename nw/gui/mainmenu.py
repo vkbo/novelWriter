@@ -192,6 +192,13 @@ class GuiMainMenu(QMenuBar):
         menuItem.triggered.connect(self.theParent.editProjectDialog)
         self.projMenu.addAction(menuItem)
 
+        # Project > Export Project
+        menuItem = QAction("Export Project", self)
+        menuItem.setStatusTip("Export project")
+        menuItem.setShortcut("F5")
+        menuItem.triggered.connect(self.theParent.exportProjectDialog)
+        self.projMenu.addAction(menuItem)
+
         # Project > Separator
         self.projMenu.addSeparator()
 
