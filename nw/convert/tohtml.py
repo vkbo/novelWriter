@@ -22,7 +22,6 @@ class ToHtml(Tokenizer):
 
     def __init__(self, theProject, theParent):
         Tokenizer.__init__(self, theProject, theParent)
-
         return
 
     def doAutoReplace(self):
@@ -53,23 +52,47 @@ class ToHtml(Tokenizer):
         thisPar = []
         for tType, tText, tFormat, tAlign in self.theTokens:
 
+            aStyle = []
+            if tAlign == self.A_CENTRE:
+                aStyle.append("text-align: center;")
+
+            if len(aStyle) > 0:
+                hStyle = " style='%s'" % (" ".join(aStyle))
+            else:
+                hStyle = ""
+
             if tType == self.T_EMPTY:
                 if len(thisPar) > 0:
-                    self.theResult += "<p>%s</p>\n" % " ".join(thisPar)
+                    self.theResult += "<p%s>%s</p>\n" % (hStyle," ".join(thisPar))
                 thisPar = []
+
             elif tType == self.T_HEAD1:
-                self.theResult += "<h1>%s</h1>\n" % tText
+                self.theResult += "<h1%s>%s</h1>\n" % (hStyle,tText)
+
             elif tType == self.T_HEAD2:
-                self.theResult += "<h2>%s</h2>\n" % tText
+                self.theResult += "<h2%s>%s</h2>\n" % (hStyle,tText)
+
             elif tType == self.T_HEAD3:
-                self.theResult += "<h3>%s</h3>\n" % tText
+                print(tText)
+                self.theResult += "<h3%s>%s</h3>\n" % (hStyle,tText)
+
             elif tType == self.T_HEAD4:
-                self.theResult += "<h4>%s</h4>\n" % tText
+                self.theResult += "<h4%s>%s</h4>\n" % (hStyle,tText)
+
+            elif tType == self.T_SEP:
+                self.theResult += "<div%s>%s</div>\n" % (hStyle,tText)
+
             elif tType == self.T_TEXT:
                 tTemp = tText
                 for xPos, xLen, xFmt in reversed(tFormat):
                     tTemp = tTemp[:xPos]+htmlTags[xFmt]+tTemp[xPos+xLen:]
                 thisPar.append(tTemp)
+
+            elif tType == self.T_COMMENT and self.doComments:
+                self.theResult += "<pre>%s</pre>\n" % tText
+
+            elif tType == self.T_COMMAND and self.doCommands:
+                self.theResult += "<pre>%s</pre>\n" % tText
 
         # print(self.theResult)
 

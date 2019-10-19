@@ -247,7 +247,7 @@ class Tokenizer():
                         if self.firstScene:
                             self.theTokens[n] = (self.T_EMPTY,"",None,self.A_LEFT)
                         else:
-                            self.theTokens[n] = (self.T_SEP,tTemp,None,self.A_LEFT)
+                            self.theTokens[n] = (self.T_SEP,tTemp,None,self.A_CENTRE)
                     else:
                         self.theTokens[n] = (tType,tTemp,None,self.A_LEFT)
                     self.firstScene = False
@@ -257,7 +257,7 @@ class Tokenizer():
                     if tTemp == "":
                         self.theTokens[n] = (self.T_EMPTY,"",None,self.A_LEFT)
                     elif tTemp == self.fmtSection:
-                        self.theTokens[n] = (self.T_SEP,tTemp,None,self.A_LEFT)
+                        self.theTokens[n] = (self.T_SEP,tTemp,None,self.A_CENTRE)
                     else:
                         self.theTokens[n] = (tType,tTemp,None,self.A_LEFT)
 

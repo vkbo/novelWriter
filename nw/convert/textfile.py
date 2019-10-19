@@ -28,7 +28,6 @@ class TextFile():
         self.mainConf   = nw.CONFIG
         self.theProject = theProject
         self.theParent  = theParent
-        self.fileExt    = "txt"
 
         self.outFile    = None
         self.fileName   = ""
@@ -169,7 +168,7 @@ class TextFile():
         return True
 
     def _doCloseFile(self):
-        """This function closes a file, and is meant to be overloaded by the subclass for other
+        """This function closes the file, and is meant to be overloaded by the subclass for other
         file formats.
         """
         if self.outFile is not None:
