@@ -21,7 +21,7 @@ from PyQt5.QtCore    import Qt, QSize
 from PyQt5.QtSvg     import QSvgWidget
 from PyQt5.QtWidgets import (
     QDialog, QHBoxLayout, QVBoxLayout, QWidget, QTabWidget, QGridLayout, QGroupBox, QCheckBox,
-    QLabel, QComboBox, QLineEdit, QPushButton, QFileDialog, QProgressBar
+    QLabel, QComboBox, QLineEdit, QPushButton, QFileDialog, QProgressBar, QSpinBox
 )
 
 from nw.project.document import NWDoc
@@ -101,7 +101,8 @@ class GuiExport(QDialog):
         wNovel    = self.tabMain.expNovel.isChecked()
         wNotes    = self.tabMain.expNotes.isChecked()
         eFormat   = self.tabMain.outputFormat.currentData()
-        wComments = self.tabMain.outputComments.isChecked()
+        fixWidth  = self.tabMain.fixedWidth.value()
+        wComments = self.tabMain.expComments.isChecked()
         chFormat  = self.tabMain.chapterFormat.text()
         unFormat  = self.tabMain.unnumFormat.text()
         scFormat  = self.tabMain.sceneFormat.text()
@@ -128,6 +129,7 @@ class GuiExport(QDialog):
             outFile.setComments(wComments)
             outFile.setExportNovel(wNovel)
             outFile.setExportNotes(wNotes)
+            outFile.setWordWrap(fixWidth)
             outFile.setChapterFormat(chFormat)
             outFile.setUnNumberedFormat(unFormat)
             outFile.setSceneFormat(scFormat)
@@ -166,9 +168,9 @@ class GuiExport(QDialog):
 
         wNovel    = self.tabMain.expNovel.isChecked()
         wNotes    = self.tabMain.expNotes.isChecked()
-        wTOC      = self.tabMain.expTOC.isChecked()
         eFormat   = self.tabMain.outputFormat.currentData()
-        wComments = self.tabMain.outputComments.isChecked()
+        fixWidth  = self.tabMain.fixedWidth.value()
+        wComments = self.tabMain.expComments.isChecked()
         chFormat  = self.tabMain.chapterFormat.text()
         unFormat  = self.tabMain.unnumFormat.text()
         scFormat  = self.tabMain.sceneFormat.text()
@@ -177,8 +179,8 @@ class GuiExport(QDialog):
 
         self.optState.setSetting("wNovel",   wNovel)
         self.optState.setSetting("wNotes",   wNotes)
-        self.optState.setSetting("wTOC",     wTOC)
         self.optState.setSetting("eFormat",  eFormat)
+        self.optState.setSetting("fixWidth", fixWidth)
         self.optState.setSetting("wComments",wComments)
         self.optState.setSetting("chFormat", chFormat)
         self.optState.setSetting("unFormat", unFormat)
@@ -247,26 +249,28 @@ class GuiExportMain(QWidget):
         self.currFormat = self.FMT_TXT
 
         # Select Files
-        self.guiFiles     = QGroupBox("Export Files", self)
+        self.guiFiles     = QGroupBox("Selection", self)
         self.guiFilesForm = QGridLayout(self)
         self.guiFiles.setLayout(self.guiFilesForm)
 
         self.expNovel = QCheckBox(self)
-        self.expNotes = QCheckBox(self)
-        self.expTOC   = QCheckBox(self)
-        self.expNovel.setToolTip("Include all novel files in the exported document")
-        self.expNotes.setToolTip("Include all note files in the exported document")
-        self.expTOC.setToolTip("Generate a Table of Contents (ToC)")
         self.expNovel.setChecked(self.optState.getSetting("wNovel"))
+        self.expNovel.setToolTip("Include all novel files in the exported document")
+
+        self.expNotes = QCheckBox(self)
         self.expNotes.setChecked(self.optState.getSetting("wNotes"))
-        self.expTOC.setChecked(self.optState.getSetting("wTOC"))
+        self.expNotes.setToolTip("Include all note files in the exported document")
+
+        self.expComments = QCheckBox(self)
+        self.expComments.setChecked(self.optState.getSetting("wComments"))
+        self.expComments.setToolTip("Export comments from all files")
 
         self.guiFilesForm.addWidget(QLabel("Novel files"), 0, 0)
         self.guiFilesForm.addWidget(self.expNovel,         0, 1)
         self.guiFilesForm.addWidget(QLabel("Note files"),  1, 0)
         self.guiFilesForm.addWidget(self.expNotes,         1, 1)
-        self.guiFilesForm.addWidget(QLabel("ToC"),         2, 0)
-        self.guiFilesForm.addWidget(self.expTOC,           2, 1)
+        self.guiFilesForm.addWidget(QLabel("Comments"),    2, 0)
+        self.guiFilesForm.addWidget(self.expComments,      2, 1)
 
         # Chapter Settings
         self.guiChapters     = QGroupBox("Chapter Headings", self)
@@ -323,12 +327,9 @@ class GuiExportMain(QWidget):
         self.exportToForm.addWidget(self.exportGetPath, 0, 2)
 
         # Output Format
-        self.guiOutput     = QGroupBox("Output", self)
+        self.guiOutput     = QGroupBox("Export", self)
         self.guiOutputForm = QGridLayout(self)
         self.guiOutput.setLayout(self.guiOutputForm)
-
-        self.outputComments = QCheckBox("include comments", self)
-        self.outputComments.setChecked(self.optState.getSetting("wComments"))
 
         self.outputHelp = QLabel("")
         self.outputHelp.setWordWrap(True)
@@ -336,12 +337,12 @@ class GuiExportMain(QWidget):
         self.outputHelp.setAlignment(Qt.AlignTop)
 
         self.outputFormat = QComboBox(self)
-        self.outputFormat.addItem("Plain Text",    self.FMT_TXT)
-        # self.outputFormat.addItem("Markdown",      self.FMT_MD)
-        # self.outputFormat.addItem("HTML5 (Plain)", self.FMT_HTML)
-        # self.outputFormat.addItem("HTML5 (eBook)", self.FMT_EBOOK)
-        # self.outputFormat.addItem("Open Document", self.FMT_ODT)
-        # self.outputFormat.addItem("LaTeX (PDF)",   self.FMT_TEX)
+        self.outputFormat.addItem("Plain Text (.txt)",      self.FMT_TXT)
+        # self.outputFormat.addItem("Markdown (.md)",         self.FMT_MD)
+        # self.outputFormat.addItem("HTML5 (.htm)",           self.FMT_HTML)
+        # self.outputFormat.addItem("HTML5 for eBook (.htm)", self.FMT_EBOOK)
+        # self.outputFormat.addItem("Open Document (.odt)",   self.FMT_ODT)
+        # self.outputFormat.addItem("LaTeX for PDF (.tex)",   self.FMT_TEX)
         self.outputFormat.currentIndexChanged.connect(self._updateFormat)
 
         optIdx = self.outputFormat.findData(self.optState.getSetting("eFormat"))
@@ -349,18 +350,34 @@ class GuiExportMain(QWidget):
             self.outputFormat.setCurrentIndex(optIdx)
             self._updateFormat(optIdx)
 
-        self.guiOutputForm.addWidget(QLabel("Export format"), 0, 0)
-        self.guiOutputForm.addWidget(self.outputFormat,       0, 1)
-        self.guiOutputForm.addWidget(self.outputComments,     0, 2)
-        self.guiOutputForm.addWidget(self.outputHelp,         1, 0, 1, 3)
+        self.guiOutputForm.addWidget(QLabel("Format"),  0, 0)
+        self.guiOutputForm.addWidget(self.outputFormat, 0, 1)
+        self.guiOutputForm.addWidget(self.outputHelp,   1, 0, 1, 3)
         self.guiOutputForm.setColumnStretch(2, 1)
 
+        # Additional Settings
+        self.addSettings     = QGroupBox("Additional Settings", self)
+        self.addSettingsForm = QGridLayout(self)
+        self.addSettings.setLayout(self.addSettingsForm)
+
+        self.fixedWidth = QSpinBox(self)
+        self.fixedWidth.setMinimum(0)
+        self.fixedWidth.setMaximum(999)
+        self.fixedWidth.setSingleStep(1)
+        self.fixedWidth.setValue(self.optState.getSetting("fixWidth"))
+        self.fixedWidth.setToolTip("0 disables the feature. Applies to .txt, .md and .tex files.")
+
+        self.addSettingsForm.addWidget(QLabel("Fixed width"), 0, 0)
+        self.addSettingsForm.addWidget(self.fixedWidth,       0, 1)
+        self.addSettingsForm.setColumnStretch(2, 1)
+
         # Assemble
-        self.outerBox.addWidget(self.guiFiles,    0, 0)
-        self.outerBox.addWidget(self.guiOutput,   0, 1, 1, 2)
+        self.outerBox.addWidget(self.guiOutput,   0, 0, 1, 2)
+        self.outerBox.addWidget(self.guiFiles,    0, 2)
         self.outerBox.addWidget(self.guiChapters, 1, 0, 1, 2)
         self.outerBox.addWidget(self.guiScenes,   1, 2)
-        self.outerBox.addWidget(self.exportTo,    2, 0, 1, 3)
+        self.outerBox.addWidget(self.addSettings, 2, 0, 1, 3)
+        self.outerBox.addWidget(self.exportTo,    3, 0, 1, 3)
         self.outerBox.setColumnStretch(0, 1)
         self.outerBox.setColumnStretch(1, 1)
         self.outerBox.setColumnStretch(2, 1)
@@ -427,8 +444,8 @@ class ExportLastState():
         self.theState   = {
             "wNovel"    : True,
             "wNotes"    : False,
-            "wTOC"      : True,
             "eFormat"   : 2,
+            "fixWidth"  : 80,
             "wComments" : False,
             "chFormat"  : "Chapter %numword%",
             "unFormat"  : "%title%",
@@ -437,8 +454,8 @@ class ExportLastState():
             "saveTo"    : "",
         }
         self.stringOpt = ("chFormat","unFormat","scFormat","seFormat","saveTo")
-        self.boolOpt   = ("wNovel","wNotes","wTOC","wComments")
-        self.intOpt    = ("eFormat")
+        self.boolOpt   = ("wNovel","wNotes","wComments")
+        self.intOpt    = ("eFormat","fixWidth")
         self.loadSettings()
         return
 
