@@ -1,5 +1,11 @@
 # novelWriter ChangeLog
 
+## Version 0.3 [2019-10-19]
+
+**User Interface**
+
+* Added project export feature with a new GUI dialog and a number of export setting. The export feature currently only exports to a plain text file. PR #55
+
 ## Version 0.2.3 [2019-10-06]
 
 **User Interface**
@@ -36,7 +42,7 @@
 
 * Minor changes to the About novelWriter dialog and to how backup filenames are generated. PR #41
 
-## Version 0.2.0 [2019-06-27]
+## Version 0.2 [2019-06-27]
 
 **Documentation**
 
