@@ -120,10 +120,13 @@ class GuiExport(QDialog):
         if outFile is None:
             return False
 
-        outFile.openFile(saveTo,"testfile")
-        outFile.setComments(wComments)
-        outFile.setExportNovel(wNovel)
-        outFile.setExportNotes(wNotes)
+        if outFile.openFile(saveTo,"testfile"):
+            outFile.setComments(wComments)
+            outFile.setExportNovel(wNovel)
+            outFile.setExportNotes(wNotes)
+        else:
+            self.exportStatus.setText("Failed to open file for writing ...")
+            return False
 
         nDone = 0
         for tHandle in self.theProject.treeOrder:
@@ -233,9 +236,9 @@ class GuiExportMain(QWidget):
         self.expNovel.setToolTip("Include all novel files in the exported document")
         self.expNotes.setToolTip("Include all note files in the exported document")
         self.expTOC.setToolTip("Generate a Table of Contents (ToC)")
-        self.expNovel.setChecked(self.optState.wNovel())
-        self.expNotes.setChecked(self.optState.wNotes())
-        self.expTOC.setChecked(self.optState.wTOC())
+        self.expNovel.setChecked(self.optState.getSetting("wNovel"))
+        self.expNotes.setChecked(self.optState.getSetting("wNotes"))
+        self.expTOC.setChecked(self.optState.getSetting("wTOC"))
 
         self.guiFilesForm.addWidget(QLabel("Novel files"), 0, 0)
         self.guiFilesForm.addWidget(self.expNovel,         0, 1)
@@ -245,16 +248,16 @@ class GuiExportMain(QWidget):
         self.guiFilesForm.addWidget(self.expTOC,           2, 1)
 
         # Chapter Settings
-        self.guiChapters     = QGroupBox("Chapters", self)
+        self.guiChapters     = QGroupBox("Chapter Heading", self)
         self.guiChaptersForm = QGridLayout(self)
         self.guiChapters.setLayout(self.guiChaptersForm)
 
         self.chapterFormat = QLineEdit()
-        self.chapterFormat.setText(self.optState.chFormat())
+        self.chapterFormat.setText(self.optState.getSetting("chFormat"))
         self.chapterFormat.setToolTip("Available formats: %num%, %numword%, %title%, %label%")
         self.chapterFormat.setMinimumWidth(250)
 
-        self.guiChaptersForm.addWidget(QLabel("Format"),   0, 0)
+        self.guiChaptersForm.addWidget(QLabel("Numbered"), 0, 0)
         self.guiChaptersForm.addWidget(self.chapterFormat, 0, 1)
 
         # Output Format
@@ -263,7 +266,7 @@ class GuiExportMain(QWidget):
         self.guiOutput.setLayout(self.guiOutputForm)
 
         self.outputComments = QCheckBox("include comments", self)
-        self.outputComments.setChecked(self.optState.wComments())
+        self.outputComments.setChecked(self.optState.getSetting("wComments"))
 
         self.outputHelp = QLabel("")
         self.outputHelp.setWordWrap(True)
@@ -279,7 +282,7 @@ class GuiExportMain(QWidget):
         # self.outputFormat.addItem("LaTeX (PDF)",   self.FMT_TEX)
         self.outputFormat.currentIndexChanged.connect(self._updateFormatHelp)
 
-        optIdx = self.outputFormat.findData(self.optState.eFormat())
+        optIdx = self.outputFormat.findData(self.optState.getSetting("eFormat"))
         if optIdx != -1:
             self.outputFormat.setCurrentIndex(optIdx)
             self._updateFormatHelp(optIdx)
@@ -296,7 +299,7 @@ class GuiExportMain(QWidget):
         self.guiScenes.setLayout(self.guiScenesForm)
 
         self.sceneFormat = QLineEdit()
-        self.sceneFormat.setText(self.optState.scFormat())
+        self.sceneFormat.setText(self.optState.getSetting("scFormat"))
         self.sceneFormat.setToolTip("Available formats: %title%")
         self.sceneFormat.setMinimumWidth(100)
 
@@ -308,7 +311,7 @@ class GuiExportMain(QWidget):
         self.exportToForm = QGridLayout(self)
         self.exportTo.setLayout(self.exportToForm)
 
-        self.exportPath = QLineEdit(self.optState.saveTo())
+        self.exportPath = QLineEdit(self.optState.getSetting("saveTo"))
 
         self.exportGetPath = QPushButton(self.theTheme.getIcon("folder"),"")
         self.exportGetPath.clicked.connect(self._exportFolder)
@@ -368,7 +371,6 @@ class GuiExportMain(QWidget):
 class ExportLastState():
 
     def __init__(self, theProject):
-
         self.theProject = theProject
         self.theState   = {
             "wNovel"    : True,
@@ -377,15 +379,18 @@ class ExportLastState():
             "eFormat"   : 2,
             "wComments" : False,
             "chFormat"  : "Chapter %numword%",
+            "unFormat"  : "%title%",
             "scFormat"  : "* * *",
+            "seFormat"  : "",
             "saveTo"    : "",
         }
+        self.stringOpt = ("chFormat","unFormat","scFormat","seFormat","saveTo")
+        self.boolOpt   = ("wNovel","wNotes","wTOC","wComments")
+        self.intOpt    = ("eFormat")
         self.loadSettings()
-
         return
 
     def loadSettings(self):
-
         stateFile = path.join(self.theProject.projMeta, nwFiles.EXPORT_OPT)
         if path.isfile(stateFile):
             logger.debug("Loading export options file")
@@ -397,11 +402,9 @@ class ExportLastState():
                 logger.error("Failed to load export options file")
                 logger.error(str(e))
                 return False
-
         return True
 
     def saveSettings(self):
-
         stateFile = path.join(self.theProject.projMeta, nwFiles.EXPORT_OPT)
         logger.debug("Saving export options file")
         try:
@@ -411,7 +414,6 @@ class ExportLastState():
             logger.error("Failed to save export options file")
             logger.error(str(e))
             return False
-
         return True
 
     def setSetting(self, setName, setValue):
@@ -421,28 +423,13 @@ class ExportLastState():
             return False
         return True
 
-    def wNovel(self):
-        return checkBool(self.theState["wNovel"],False,False)
-
-    def wNotes(self):
-        return checkBool(self.theState["wNotes"],False,False)
-
-    def wTOC(self):
-        return checkBool(self.theState["wTOC"],False,False)
-
-    def eFormat(self):
-        return checkInt(self.theState["eFormat"],1,False)
-
-    def wComments(self):
-        return checkBool(self.theState["wComments"],False,False)
-
-    def chFormat(self):
-        return checkString(self.theState["chFormat"],"Chapter %numword%",False)
-
-    def scFormat(self):
-        return checkString(self.theState["scFormat"],"* * *",False)
-
-    def saveTo(self):
-        return checkString(self.theState["saveTo"],"",False)
+    def getSetting(self, setName):
+        if setName in self.stringOpt:
+            return checkString(self.theState[setName],self.theState[setName],False)
+        elif setName in self.boolOpt:
+            return checkBool(self.theState[setName],self.theState[setName],False)
+        elif setName in self.intOpt:
+            return checkInt(self.theState[setName],self.theState[setName],False)
+        return None
 
 # END Class ExportLastState

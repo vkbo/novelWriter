@@ -94,6 +94,9 @@ class TextFile():
 
         self._doOpenFile(filePath)
 
+        if self.outFile is None:
+            return False
+
         return True
 
     def closeFile(self):
@@ -125,7 +128,7 @@ class TextFile():
         if self.winEnding:
             self.theConv.windowsEndings()
 
-        if self.theConv.theResult is not None:
+        if self.theConv.theResult is not None and self.outFile is not None:
             self.outFile.write(self.theConv.theResult)
 
         return True
@@ -140,6 +143,10 @@ class TextFile():
         """
         try:
             self.outFile = open(filePath,mode="w+")
+            if self.winEnding:
+                self.outFile.write("\r\n\r\n")
+            else:
+                self.outFile.write("\n\n")
         except Exception as e:
             self.makeAlert(["Failed to open file.",str(e)], nwAlert.ERROR)
             return False
@@ -149,7 +156,8 @@ class TextFile():
         """This function closes a file, and is meant to be overloaded by the subclass for other
         file formats.
         """
-        self.outFile.close()
+        if self.outFile is not None:
+            self.outFile.close()
         return True
 
 # END Class OutFile

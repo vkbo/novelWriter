@@ -221,7 +221,9 @@ class Tokenizer():
 
                 elif tType == self.T_HEAD3:
                     tTemp = self._doFormatScene(tText)
-                    if tTemp == self.fmtScene:
+                    if tTemp == "":
+                        self.theTokens[n] = (self.T_EMPTY,"",None,self.A_LEFT)
+                    elif tTemp == self.fmtScene:
                         if self.firstScene:
                             self.theTokens[n] = (self.T_EMPTY,"",None,self.A_LEFT)
                         else:
@@ -231,10 +233,10 @@ class Tokenizer():
                     self.firstScene = False
 
                 elif tType == self.T_HEAD4:
-                    if self.noSection:
+                    tTemp = self._doFormatSection(tText)
+                    if tTemp == "":
                         self.theTokens[n] = (self.T_EMPTY,"",None,self.A_LEFT)
                     else:
-                        tTemp = self._doFormatSection(tText)
                         self.theTokens[n] = (self.T_SEP,tTemp,None,self.A_LEFT)
 
         # For title page and partitions, we need to centre all text
