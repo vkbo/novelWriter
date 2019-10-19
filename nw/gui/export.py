@@ -24,12 +24,14 @@ from PyQt5.QtWidgets import (
     QLabel, QComboBox, QLineEdit, QPushButton, QFileDialog, QProgressBar, QSpinBox
 )
 
-from nw.project.document import NWDoc
-from nw.tools.translate  import numberToWord
-from nw.convert.textfile import TextFile
-from nw.common           import checkString, checkBool, checkInt
-from nw.constants        import nwFiles
-from nw.enum             import nwItemType
+from nw.project.document     import NWDoc
+from nw.tools.translate      import numberToWord
+from nw.convert.textfile     import TextFile
+from nw.convert.htmlfile     import HtmlFile
+from nw.convert.markdownfile import MarkdownFile
+from nw.common               import checkString, checkBool, checkInt
+from nw.constants            import nwFiles
+from nw.enum                 import nwItemType
 
 logger = logging.getLogger(__name__)
 
@@ -121,6 +123,10 @@ class GuiExport(QDialog):
         outFile = None
         if eFormat == GuiExportMain.FMT_TXT:
             outFile = TextFile(self.theProject, self.theParent)
+        elif eFormat == GuiExportMain.FMT_MD:
+            outFile = MarkdownFile(self.theProject, self.theParent)
+        elif eFormat == GuiExportMain.FMT_HTML:
+            outFile = HtmlFile(self.theProject, self.theParent)
 
         if outFile is None:
             return False
@@ -138,10 +144,10 @@ class GuiExport(QDialog):
             self.exportStatus.setText("Failed to open file for writing ...")
             return False
 
+        time.sleep(0.5)
+
         nDone = 0
         for tHandle in self.theProject.treeOrder:
-
-            time.sleep(0.1)
 
             self.exportProgress.setValue(nDone)
             tItem = self.theProject.getItem(tHandle)
@@ -338,8 +344,8 @@ class GuiExportMain(QWidget):
 
         self.outputFormat = QComboBox(self)
         self.outputFormat.addItem("Plain Text (.txt)",      self.FMT_TXT)
-        # self.outputFormat.addItem("Markdown (.md)",         self.FMT_MD)
-        # self.outputFormat.addItem("HTML5 (.htm)",           self.FMT_HTML)
+        self.outputFormat.addItem("Markdown (.md)",         self.FMT_MD)
+        self.outputFormat.addItem("HTML5 (.htm)",           self.FMT_HTML)
         # self.outputFormat.addItem("HTML5 for eBook (.htm)", self.FMT_EBOOK)
         # self.outputFormat.addItem("Open Document (.odt)",   self.FMT_ODT)
         # self.outputFormat.addItem("LaTeX for PDF (.tex)",   self.FMT_TEX)
