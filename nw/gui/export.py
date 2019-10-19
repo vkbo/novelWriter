@@ -102,6 +102,10 @@ class GuiExport(QDialog):
         wNotes    = self.tabMain.expNotes.isChecked()
         eFormat   = self.tabMain.outputFormat.currentData()
         wComments = self.tabMain.outputComments.isChecked()
+        chFormat  = self.tabMain.chapterFormat.text()
+        unFormat  = self.tabMain.unnumFormat.text()
+        scFormat  = self.tabMain.sceneFormat.text()
+        seFormat  = self.tabMain.sectionFormat.text()
         saveTo    = self.tabMain.exportPath.text()
 
         nItems = len(self.theProject.treeOrder)
@@ -120,10 +124,14 @@ class GuiExport(QDialog):
         if outFile is None:
             return False
 
-        if outFile.openFile(saveTo,"testfile"):
+        if outFile.openFile(saveTo):
             outFile.setComments(wComments)
             outFile.setExportNovel(wNovel)
             outFile.setExportNotes(wNotes)
+            outFile.setChapterFormat(chFormat)
+            outFile.setUnNumberedFormat(unFormat)
+            outFile.setSceneFormat(scFormat)
+            outFile.setSectionFormat(seFormat)
         else:
             self.exportStatus.setText("Failed to open file for writing ...")
             return False
@@ -193,6 +201,14 @@ class GuiExportMain(QWidget):
     FMT_EBOOK = 4
     FMT_ODT   = 5
     FMT_TEX   = 6
+    FMT_EXT   = {
+        FMT_TXT   : ".txt",
+        FMT_MD    : ".md",
+        FMT_HTML  : ".htm",
+        FMT_EBOOK : ".htm",
+        FMT_ODT   : ".odt",
+        FMT_TEX   : ".tex",
+    }
     FMT_HELP  = {
         FMT_TXT : (
             "Exports a plain text file. "
@@ -228,6 +244,7 @@ class GuiExportMain(QWidget):
         self.theTheme   = theParent.theTheme
         self.outerBox   = QGridLayout()
         self.optState   = optState
+        self.currFormat = self.FMT_TXT
 
         # Select Files
         self.guiFiles     = QGroupBox("Export Files", self)
@@ -271,39 +288,6 @@ class GuiExportMain(QWidget):
         self.guiChaptersForm.addWidget(QLabel("Unnumbered"), 1, 0)
         self.guiChaptersForm.addWidget(self.unnumFormat,     1, 1)
 
-        # Output Format
-        self.guiOutput     = QGroupBox("Output", self)
-        self.guiOutputForm = QGridLayout(self)
-        self.guiOutput.setLayout(self.guiOutputForm)
-
-        self.outputComments = QCheckBox("include comments", self)
-        self.outputComments.setChecked(self.optState.getSetting("wComments"))
-
-        self.outputHelp = QLabel("")
-        self.outputHelp.setWordWrap(True)
-        self.outputHelp.setMinimumHeight(55)
-        self.outputHelp.setAlignment(Qt.AlignTop)
-
-        self.outputFormat = QComboBox(self)
-        self.outputFormat.addItem("Plain Text",    self.FMT_TXT)
-        # self.outputFormat.addItem("Markdown",      self.FMT_MD)
-        # self.outputFormat.addItem("HTML5 (Plain)", self.FMT_HTML)
-        # self.outputFormat.addItem("HTML5 (eBook)", self.FMT_EBOOK)
-        # self.outputFormat.addItem("Open Document", self.FMT_ODT)
-        # self.outputFormat.addItem("LaTeX (PDF)",   self.FMT_TEX)
-        self.outputFormat.currentIndexChanged.connect(self._updateFormatHelp)
-
-        optIdx = self.outputFormat.findData(self.optState.getSetting("eFormat"))
-        if optIdx != -1:
-            self.outputFormat.setCurrentIndex(optIdx)
-            self._updateFormatHelp(optIdx)
-
-        self.guiOutputForm.addWidget(QLabel("Export format"), 0, 0)
-        self.guiOutputForm.addWidget(self.outputFormat,       0, 1)
-        self.guiOutputForm.addWidget(self.outputComments,     0, 2)
-        self.guiOutputForm.addWidget(self.outputHelp,         1, 0, 1, 3)
-        self.guiOutputForm.setColumnStretch(2, 1)
-
         # Scene and Section Settings
         self.guiScenes     = QGroupBox("Other Headings", self)
         self.guiScenesForm = QGridLayout(self)
@@ -338,6 +322,39 @@ class GuiExportMain(QWidget):
         self.exportToForm.addWidget(self.exportPath,    0, 1)
         self.exportToForm.addWidget(self.exportGetPath, 0, 2)
 
+        # Output Format
+        self.guiOutput     = QGroupBox("Output", self)
+        self.guiOutputForm = QGridLayout(self)
+        self.guiOutput.setLayout(self.guiOutputForm)
+
+        self.outputComments = QCheckBox("include comments", self)
+        self.outputComments.setChecked(self.optState.getSetting("wComments"))
+
+        self.outputHelp = QLabel("")
+        self.outputHelp.setWordWrap(True)
+        self.outputHelp.setMinimumHeight(55)
+        self.outputHelp.setAlignment(Qt.AlignTop)
+
+        self.outputFormat = QComboBox(self)
+        self.outputFormat.addItem("Plain Text",    self.FMT_TXT)
+        # self.outputFormat.addItem("Markdown",      self.FMT_MD)
+        # self.outputFormat.addItem("HTML5 (Plain)", self.FMT_HTML)
+        # self.outputFormat.addItem("HTML5 (eBook)", self.FMT_EBOOK)
+        # self.outputFormat.addItem("Open Document", self.FMT_ODT)
+        # self.outputFormat.addItem("LaTeX (PDF)",   self.FMT_TEX)
+        self.outputFormat.currentIndexChanged.connect(self._updateFormat)
+
+        optIdx = self.outputFormat.findData(self.optState.getSetting("eFormat"))
+        if optIdx != -1:
+            self.outputFormat.setCurrentIndex(optIdx)
+            self._updateFormat(optIdx)
+
+        self.guiOutputForm.addWidget(QLabel("Export format"), 0, 0)
+        self.guiOutputForm.addWidget(self.outputFormat,       0, 1)
+        self.guiOutputForm.addWidget(self.outputComments,     0, 2)
+        self.guiOutputForm.addWidget(self.outputHelp,         1, 0, 1, 3)
+        self.guiOutputForm.setColumnStretch(2, 1)
+
         # Assemble
         self.outerBox.addWidget(self.guiFiles,    0, 0)
         self.outerBox.addWidget(self.guiOutput,   0, 1, 1, 2)
@@ -355,15 +372,15 @@ class GuiExportMain(QWidget):
     #  Internal Functions
     ##
 
-    def _updateFormatHelp(self, currIdx):
-        """Update help text under output format selection.
+    def _updateFormat(self, currIdx):
+        """Update help text under output format selection and file extension in file box
         """
         if currIdx == -1:
             self.outputHelp.setText("")
         else:
-            fmtIdx = self.outputFormat.itemData(currIdx)
-            self.outputHelp.setText("<i>%s</i>" % self.FMT_HELP[fmtIdx])
-
+            self.currFormat = self.outputFormat.itemData(currIdx)
+            self.outputHelp.setText("<i>%s</i>" % self.FMT_HELP[self.currFormat])
+            self._checkFileExtension()
         return
 
     def _exportFolder(self):
@@ -372,17 +389,34 @@ class GuiExportMain(QWidget):
         if not path.isdir(currDir):
             currDir = ""
 
+        extFilter = [
+            "Text files (*.txt)",
+            "Markdown files (*.md)",
+            "HTML files (*.htm *.html)",
+            "Open document files (*.odt)",
+            "LaTeX files (*.tex)",
+        ]
+
         dlgOpt  = QFileDialog.Options()
         dlgOpt |= QFileDialog.ShowDirsOnly
         dlgOpt |= QFileDialog.DontUseNativeDialog
-        newDir = QFileDialog.getExistingDirectory(
-            self,"Export Directory",currDir,options=dlgOpt
+        saveTo  = QFileDialog.getSaveFileName(
+            self,"Export File",self.exportPath.text(),options=dlgOpt,filter=";;".join(extFilter)
         )
-        if newDir:
-            self.exportPath.setText(newDir)
+        if saveTo:
+            self.exportPath.setText(saveTo[0])
+            self._checkFileExtension()
             return True
 
         return False
+
+    def _checkFileExtension(self):
+        saveTo   = self.exportPath.text()
+        fileBits = path.splitext(saveTo)
+        if self.currFormat > 0:
+            saveTo = fileBits[0]+self.FMT_EXT[self.currFormat]
+        self.exportPath.setText(saveTo)
+        return
 
 # END Class GuiExportMain
 

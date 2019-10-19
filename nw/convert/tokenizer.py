@@ -65,8 +65,8 @@ class Tokenizer():
         self.doCommands = False
 
         self.fmtTitle   = "%title%"
-        self.fmtUnNum   = "%title%"
         self.fmtChapter = "Chapter %numword%: %title%"
+        self.fmtUnNum   = "%title%"
         self.fmtScene   = "* * *"
         self.fmtSection = "%title%"
 
@@ -94,6 +94,26 @@ class Tokenizer():
             self.wordWrap = wordWrap
         else:
             self.wordWrap = 0
+        return
+
+    def setTitleFormat(self, fmtTitle):
+        self.fmtTitle = fmtTitle
+        return
+
+    def setChapterFormat(self, fmtChapter):
+        self.fmtChapter = fmtChapter
+        return
+
+    def setUnNumberedFormat(self, fmtUnNum):
+        self.fmtUnNum = fmtUnNum
+        return
+
+    def setSceneFormat(self, fmtScene):
+        self.fmtScene = fmtScene
+        return
+
+    def setSectionFormat(self, fmtSection):
+        self.fmtSection = fmtSection
         return
 
     ##
@@ -236,8 +256,10 @@ class Tokenizer():
                     tTemp = self._doFormatSection(tText)
                     if tTemp == "":
                         self.theTokens[n] = (self.T_EMPTY,"",None,self.A_LEFT)
-                    else:
+                    elif tTemp == self.fmtSection:
                         self.theTokens[n] = (self.T_SEP,tTemp,None,self.A_LEFT)
+                    else:
+                        self.theTokens[n] = (tType,tTemp,None,self.A_LEFT)
 
         # For title page and partitions, we need to centre all text
         if isTitle or isPart:

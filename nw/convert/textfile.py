@@ -73,21 +73,37 @@ class TextFile():
             self.theConv.setWordWrap(0)
         return
 
+    def setTitleFormat(self, fmtTitle):
+        self.theConv.setTitleFormat(fmtTitle)
+        return
+
+    def setChapterFormat(self, fmtChapter):
+        self.theConv.setChapterFormat(fmtChapter)
+        return
+
+    def setUnNumberedFormat(self, fmtUnNum):
+        self.theConv.setUnNumberedFormat(fmtUnNum)
+        return
+
+    def setSceneFormat(self, fmtScene):
+        self.theConv.setSceneFormat(fmtScene)
+        return
+
+    def setSectionFormat(self, fmtSection):
+        self.theConv.setSectionFormat(fmtSection)
+        return
+
     ##
     #  Core Methods
     ##
 
-    def openFile(self, saveTo, baseName):
+    def openFile(self, filePath):
 
-        fileName = "%s.%s" % (baseName.strip(),self.fileExt)
-        filePath = path.join(saveTo,fileName)
-
-        self.fileName = fileName
-
-        if path.isfile(filePath)and self.mainConf.showGUI:
+        self.fileName = path.basename(filePath)
+        if path.isfile(filePath) and self.mainConf.showGUI:
             msgBox = QMessageBox()
             msgRes = msgBox.question(
-                self.theParent, "Overwrite", ("File '%s' already exists.<br>Do you want to overwrite it?" % fileName)
+                self.theParent, "Overwrite", ("File '%s' already exists.<br>Do you want to overwrite it?" % self.fileName)
             )
             if msgRes != QMessageBox.Yes:
                 return False
