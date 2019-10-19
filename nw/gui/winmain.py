@@ -88,6 +88,7 @@ class GuiMain(QMainWindow):
 
         self.docPane = QFrame()
         self.docView = QVBoxLayout()
+        self.docView.setContentsMargins(0,0,0,0)
         self.docView.addWidget(self.searchBar)
         self.docView.addWidget(self.docEditor)
         self.docPane.setLayout(self.docView)
