@@ -50,7 +50,7 @@ class GuiExport(QDialog):
         self.setWindowTitle("Export Project")
         self.setLayout(self.outerBox)
 
-        self.gradPath = path.abspath(path.join(self.mainConf.appPath,"graphics","gear.svg"))
+        self.gradPath = path.abspath(path.join(self.mainConf.appPath,"graphics","export.svg"))
         self.svgGradient = QSvgWidget(self.gradPath)
         self.svgGradient.setFixedSize(QSize(64,64))
 
@@ -162,7 +162,9 @@ class GuiExport(QDialog):
         eFormat   = self.tabMain.outputFormat.currentData()
         wComments = self.tabMain.outputComments.isChecked()
         chFormat  = self.tabMain.chapterFormat.text()
+        unFormat  = self.tabMain.unnumFormat.text()
         scFormat  = self.tabMain.sceneFormat.text()
+        seFormat  = self.tabMain.sectionFormat.text()
         saveTo    = self.tabMain.exportPath.text()
 
         self.optState.setSetting("wNovel",   wNovel)
@@ -171,7 +173,9 @@ class GuiExport(QDialog):
         self.optState.setSetting("eFormat",  eFormat)
         self.optState.setSetting("wComments",wComments)
         self.optState.setSetting("chFormat", chFormat)
+        self.optState.setSetting("unFormat", unFormat)
         self.optState.setSetting("scFormat", scFormat)
+        self.optState.setSetting("seFormat", seFormat)
         self.optState.setSetting("saveTo",   saveTo)
 
         self.optState.saveSettings()
@@ -248,17 +252,24 @@ class GuiExportMain(QWidget):
         self.guiFilesForm.addWidget(self.expTOC,           2, 1)
 
         # Chapter Settings
-        self.guiChapters     = QGroupBox("Chapter Heading", self)
+        self.guiChapters     = QGroupBox("Chapter Headings", self)
         self.guiChaptersForm = QGridLayout(self)
         self.guiChapters.setLayout(self.guiChaptersForm)
 
         self.chapterFormat = QLineEdit()
         self.chapterFormat.setText(self.optState.getSetting("chFormat"))
-        self.chapterFormat.setToolTip("Available formats: %num%, %numword%, %title%, %label%")
+        self.chapterFormat.setToolTip("Available formats: %num%, %numword%, %title%")
         self.chapterFormat.setMinimumWidth(250)
 
-        self.guiChaptersForm.addWidget(QLabel("Numbered"), 0, 0)
-        self.guiChaptersForm.addWidget(self.chapterFormat, 0, 1)
+        self.unnumFormat = QLineEdit()
+        self.unnumFormat.setText(self.optState.getSetting("unFormat"))
+        self.unnumFormat.setToolTip("Available formats: %title%")
+        self.unnumFormat.setMinimumWidth(250)
+
+        self.guiChaptersForm.addWidget(QLabel("Numbered"),   0, 0)
+        self.guiChaptersForm.addWidget(self.chapterFormat,   0, 1)
+        self.guiChaptersForm.addWidget(QLabel("Unnumbered"), 1, 0)
+        self.guiChaptersForm.addWidget(self.unnumFormat,     1, 1)
 
         # Output Format
         self.guiOutput     = QGroupBox("Output", self)
@@ -293,8 +304,8 @@ class GuiExportMain(QWidget):
         self.guiOutputForm.addWidget(self.outputHelp,         1, 0, 1, 3)
         self.guiOutputForm.setColumnStretch(2, 1)
 
-        # Scene Settings
-        self.guiScenes     = QGroupBox("Scenes", self)
+        # Scene and Section Settings
+        self.guiScenes     = QGroupBox("Other Headings", self)
         self.guiScenesForm = QGridLayout(self)
         self.guiScenes.setLayout(self.guiScenesForm)
 
@@ -303,11 +314,18 @@ class GuiExportMain(QWidget):
         self.sceneFormat.setToolTip("Available formats: %title%")
         self.sceneFormat.setMinimumWidth(100)
 
-        self.guiScenesForm.addWidget(QLabel("Format"), 0, 0)
-        self.guiScenesForm.addWidget(self.sceneFormat, 0, 1)
+        self.sectionFormat = QLineEdit()
+        self.sectionFormat.setText(self.optState.getSetting("seFormat"))
+        self.sectionFormat.setToolTip("Available formats: %title%")
+        self.sectionFormat.setMinimumWidth(100)
+
+        self.guiScenesForm.addWidget(QLabel("Scenes"),   0, 0)
+        self.guiScenesForm.addWidget(self.sceneFormat,   0, 1)
+        self.guiScenesForm.addWidget(QLabel("Sections"), 1, 0)
+        self.guiScenesForm.addWidget(self.sectionFormat, 1, 1)
 
         # Output Path
-        self.exportTo     = QGroupBox("Backup", self)
+        self.exportTo     = QGroupBox("Export Folder", self)
         self.exportToForm = QGridLayout(self)
         self.exportTo.setLayout(self.exportToForm)
 
@@ -392,16 +410,19 @@ class ExportLastState():
 
     def loadSettings(self):
         stateFile = path.join(self.theProject.projMeta, nwFiles.EXPORT_OPT)
+        theState  = {}
         if path.isfile(stateFile):
             logger.debug("Loading export options file")
             try:
                 with open(stateFile,mode="r") as inFile:
                     theJson = inFile.read()
-                self.theState = json.loads(theJson)
+                theState = json.loads(theJson)
             except Exception as e:
                 logger.error("Failed to load export options file")
                 logger.error(str(e))
                 return False
+        for anOpt in theState:
+            self.theState[anOpt] = theState[anOpt]
         return True
 
     def saveSettings(self):
