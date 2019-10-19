@@ -15,6 +15,7 @@ import nw
 
 from nw.convert.textfile   import TextFile
 from nw.convert.tomarkdown import ToMarkdown
+from nw.enum               import nwAlert
 
 logger = logging.getLogger(__name__)
 

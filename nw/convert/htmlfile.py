@@ -15,6 +15,7 @@ import nw
 
 from nw.convert.textfile import TextFile
 from nw.convert.tohtml   import ToHtml
+from nw.enum             import nwAlert
 
 logger = logging.getLogger(__name__)
 
