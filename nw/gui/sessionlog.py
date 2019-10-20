@@ -66,7 +66,7 @@ class GuiSessionLogView(QDialog):
         self.listBox.setSortingEnabled(True)
 
         # Session Info
-        self.infoBox     = QGroupBox("Session Time", self)
+        self.infoBox     = QGroupBox("Sum Total Time", self)
         self.infoBoxForm = QGridLayout(self)
         self.infoBox.setLayout(self.infoBoxForm)
 
@@ -78,7 +78,7 @@ class GuiSessionLogView(QDialog):
         self.labelFilter.setFont(self.monoFont)
         self.labelFilter.setAlignment(Qt.AlignVCenter | Qt.AlignRight)
 
-        self.infoBoxForm.addWidget(QLabel("Total:"),    0, 0)
+        self.infoBoxForm.addWidget(QLabel("All:"),      0, 0)
         self.infoBoxForm.addWidget(self.labelTotal,     0, 1)
         self.infoBoxForm.addWidget(QLabel("Filtered:"), 1, 0)
         self.infoBoxForm.addWidget(self.labelFilter,    1, 1)
