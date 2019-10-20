@@ -259,7 +259,7 @@ class GuiConfigEditGeneral(QWidget):
         self.mainConf.backupOnClose   = backupOnClose
         self.mainConf.askBeforeBackup = askBeforeBackup
 
-        self.mainConf.confChanged   = True
+        self.mainConf.confChanged = True
 
         return validEntries, needsRestart
 
