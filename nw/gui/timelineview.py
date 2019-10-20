@@ -127,4 +127,4 @@ class GuiTimeLineView(QDialog):
         self.close()
         return
 
-# END Class GuiItemEditor
+# END Class GuiTimeLineView

@@ -199,6 +199,12 @@ class GuiMainMenu(QMenuBar):
         menuItem.triggered.connect(self.theParent.exportProjectDialog)
         self.projMenu.addAction(menuItem)
 
+        # Project > Session Log
+        menuItem = QAction("Session Log", self)
+        menuItem.setStatusTip("Show the session log")
+        menuItem.triggered.connect(self.theParent.showTimeLineDialog)
+        self.projMenu.addAction(menuItem)
+
         # Project > Separator
         self.projMenu.addSeparator()
 
