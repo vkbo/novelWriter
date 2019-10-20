@@ -18,7 +18,8 @@ from datetime        import datetime
 from PyQt5.QtCore    import Qt
 from PyQt5.QtGui     import QIcon, QColor, QPixmap, QFont
 from PyQt5.QtWidgets import (
-    QDialog, QVBoxLayout, QHBoxLayout, QTreeWidget, QTreeWidgetItem, QDialogButtonBox, QHeaderView
+    QDialog, QVBoxLayout, QHBoxLayout, QTreeWidget, QTreeWidgetItem, QDialogButtonBox, QHeaderView,
+    QGridLayout, QLabel, QGroupBox, QCheckBox
 )
 
 from nw.enum      import nwAlert
@@ -37,7 +38,10 @@ class GuiSessionLogView(QDialog):
         self.theProject = theProject
         self.theParent  = theParent
 
-        self.outerBox   = QVBoxLayout()
+        self.timeNoZero = 0.0
+        self.timeTotal  = 0.0
+
+        self.outerBox   = QGridLayout()
         self.bottomBox  = QHBoxLayout()
 
         self.setWindowTitle("Session Log")
@@ -56,16 +60,54 @@ class GuiSessionLogView(QDialog):
         hHeader.setTextAlignment(1,Qt.AlignRight)
         hHeader.setTextAlignment(2,Qt.AlignRight)
 
-        self.listFont = QFont("Monospace",10)
+        self.monoFont = QFont("Monospace",10)
 
         self.listBox.sortByColumn(0, Qt.DescendingOrder)
         self.listBox.setSortingEnabled(True)
 
+        # Session Info
+        self.infoBox     = QGroupBox("Total Time", self)
+        self.infoBoxForm = QGridLayout(self)
+        self.infoBox.setLayout(self.infoBoxForm)
+
+        self.labelTotal  = QLabel(self._formatTime(0))
+        self.labelTotal.setFont(self.monoFont)
+        self.labelTotal.setAlignment(Qt.AlignRight)
+
+        self.labelNoZero = QLabel(self._formatTime(0))
+        self.labelNoZero.setFont(self.monoFont)
+        self.labelNoZero.setAlignment(Qt.AlignRight)
+
+        self.infoBoxForm.addWidget(QLabel("All sessions:"), 0, 0)
+        self.infoBoxForm.addWidget(self.labelTotal,         0, 1)
+        self.infoBoxForm.addWidget(QLabel("Words not 0:"),  1, 0)
+        self.infoBoxForm.addWidget(self.labelNoZero,        1, 1)
+
+        # Filter Options
+        self.filterBox     = QGroupBox("Filters", self)
+        self.filterBoxForm = QGridLayout(self)
+        self.filterBox.setLayout(self.filterBoxForm)
+
+        self.hideZeros = QCheckBox("Hide zero values", self)
+        self.hideZeros.setChecked(True)
+        self.hideZeros.stateChanged.connect(self._doHideZeros)
+
+        self.hideNegative = QCheckBox("Hide negative values", self)
+        self.hideNegative.setChecked(False)
+        self.hideNegative.stateChanged.connect(self._doHideNegative)
+
+        self.filterBoxForm.addWidget(self.hideZeros,    0, 0)
+        self.filterBoxForm.addWidget(self.hideNegative, 1, 0)
+
+        # Buttons
         self.buttonBox = QDialogButtonBox(QDialogButtonBox.Close)
         self.buttonBox.rejected.connect(self._doClose)
 
-        self.outerBox.addWidget(self.listBox)
-        self.outerBox.addWidget(self.buttonBox)
+        # Assemble
+        self.outerBox.addWidget(self.listBox,   0, 0, 1, 2)
+        self.outerBox.addWidget(self.infoBox,   1, 0)
+        self.outerBox.addWidget(self.filterBox, 1, 1)
+        self.outerBox.addWidget(self.buttonBox, 2, 0, 1, 2)
 
         self.setLayout(self.outerBox)
 
@@ -84,6 +126,14 @@ class GuiSessionLogView(QDialog):
             logger.warning("No session log file found for this project.")
             return False
 
+        self.listBox.clear()
+
+        self.timeNoZero = 0.0
+        self.timeTotal  = 0.0
+
+        hideZeros    = self.hideZeros.isChecked()
+        hideNegative = self.hideNegative.isChecked()
+
         logger.debug("Loading session log file")
         try:
             with open(logFile,mode="r") as inFile:
@@ -94,21 +144,56 @@ class GuiSessionLogView(QDialog):
                     dStart  = datetime.strptime("%s %s" % (inData[1],inData[2]),nwConst.tStampFmt)
                     dEnd    = datetime.strptime("%s %s" % (inData[4],inData[5]),nwConst.tStampFmt)
                     nWords  = int(inData[7])
-                    newItem = QTreeWidgetItem([str(dStart),str(dEnd-dStart),str(nWords),""])
+                    tDiff   = dEnd - dStart
+                    sDiff   = tDiff.total_seconds()
+
+                    self.timeTotal  += sDiff
+                    if abs(nWords) > 0:
+                        self.timeNoZero += sDiff
+
+                    if hideZeros and nWords == 0:
+                        continue
+
+                    if hideNegative and nWords < 0:
+                        continue
+
+                    newItem = QTreeWidgetItem([str(dStart),self._formatTime(sDiff),str(nWords),""])
+
                     newItem.setTextAlignment(1,Qt.AlignRight)
                     newItem.setTextAlignment(2,Qt.AlignRight)
-                    newItem.setFont(0,self.listFont)
-                    newItem.setFont(1,self.listFont)
-                    newItem.setFont(2,self.listFont)
+
+                    newItem.setFont(0,self.monoFont)
+                    newItem.setFont(1,self.monoFont)
+                    newItem.setFont(2,self.monoFont)
+
                     self.listBox.addTopLevelItem(newItem)
+
         except Exception as e:
             self.theParent.makeAlert(["Failed to read session log file.",str(e)], nwAlert.ERROR)
             return False
+
+        self.labelNoZero.setText(self._formatTime(self.timeNoZero))
+        self.labelTotal.setText(self._formatTime(self.timeTotal))
 
         return True
 
     def _doClose(self):
         self.close()
         return
+
+    def _doHideZeros(self, newState):
+        self._loadSessionLog()
+        return
+
+    def _doHideNegative(self, newState):
+        self._loadSessionLog()
+        return
+
+    def _formatTime(self, tS):
+        tM = int(tS/60)
+        tH = int(tM/60)
+        tM = tM - tH*60
+        tS = tS - tM*60 - tH*3600
+        return "%02d:%02d:%02d" % (tH,tM,tS)
 
 # END Class GuiSessionLogView
