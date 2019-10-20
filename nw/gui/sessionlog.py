@@ -38,7 +38,7 @@ class GuiSessionLogView(QDialog):
         self.theProject = theProject
         self.theParent  = theParent
 
-        self.timeNoZero = 0.0
+        self.timeFilter = 0.0
         self.timeTotal  = 0.0
 
         self.outerBox   = QGridLayout()
@@ -66,33 +66,33 @@ class GuiSessionLogView(QDialog):
         self.listBox.setSortingEnabled(True)
 
         # Session Info
-        self.infoBox     = QGroupBox("Total Time", self)
+        self.infoBox     = QGroupBox("Session Time", self)
         self.infoBoxForm = QGridLayout(self)
         self.infoBox.setLayout(self.infoBoxForm)
 
         self.labelTotal  = QLabel(self._formatTime(0))
         self.labelTotal.setFont(self.monoFont)
-        self.labelTotal.setAlignment(Qt.AlignRight)
+        self.labelTotal.setAlignment(Qt.AlignVCenter | Qt.AlignRight)
 
-        self.labelNoZero = QLabel(self._formatTime(0))
-        self.labelNoZero.setFont(self.monoFont)
-        self.labelNoZero.setAlignment(Qt.AlignRight)
+        self.labelFilter = QLabel(self._formatTime(0))
+        self.labelFilter.setFont(self.monoFont)
+        self.labelFilter.setAlignment(Qt.AlignVCenter | Qt.AlignRight)
 
-        self.infoBoxForm.addWidget(QLabel("All sessions:"), 0, 0)
-        self.infoBoxForm.addWidget(self.labelTotal,         0, 1)
-        self.infoBoxForm.addWidget(QLabel("Words not 0:"),  1, 0)
-        self.infoBoxForm.addWidget(self.labelNoZero,        1, 1)
+        self.infoBoxForm.addWidget(QLabel("Total:"),    0, 0)
+        self.infoBoxForm.addWidget(self.labelTotal,     0, 1)
+        self.infoBoxForm.addWidget(QLabel("Filtered:"), 1, 0)
+        self.infoBoxForm.addWidget(self.labelFilter,    1, 1)
 
         # Filter Options
         self.filterBox     = QGroupBox("Filters", self)
         self.filterBoxForm = QGridLayout(self)
         self.filterBox.setLayout(self.filterBoxForm)
 
-        self.hideZeros = QCheckBox("Hide zero values", self)
+        self.hideZeros = QCheckBox("Hide zero word count", self)
         self.hideZeros.setChecked(True)
         self.hideZeros.stateChanged.connect(self._doHideZeros)
 
-        self.hideNegative = QCheckBox("Hide negative values", self)
+        self.hideNegative = QCheckBox("Hide negative word count", self)
         self.hideNegative.setChecked(False)
         self.hideNegative.stateChanged.connect(self._doHideNegative)
 
@@ -128,7 +128,7 @@ class GuiSessionLogView(QDialog):
 
         self.listBox.clear()
 
-        self.timeNoZero = 0.0
+        self.timeFilter = 0.0
         self.timeTotal  = 0.0
 
         hideZeros    = self.hideZeros.isChecked()
@@ -149,7 +149,7 @@ class GuiSessionLogView(QDialog):
 
                     self.timeTotal  += sDiff
                     if abs(nWords) > 0:
-                        self.timeNoZero += sDiff
+                        self.timeFilter += sDiff
 
                     if hideZeros and nWords == 0:
                         continue
@@ -172,7 +172,7 @@ class GuiSessionLogView(QDialog):
             self.theParent.makeAlert(["Failed to read session log file.",str(e)], nwAlert.ERROR)
             return False
 
-        self.labelNoZero.setText(self._formatTime(self.timeNoZero))
+        self.labelFilter.setText(self._formatTime(self.timeFilter))
         self.labelTotal.setText(self._formatTime(self.timeTotal))
 
         return True
