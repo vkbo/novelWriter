@@ -34,6 +34,7 @@ from nw.gui.export        import GuiExport
 from nw.gui.itemeditor    import GuiItemEditor
 from nw.gui.statusbar     import GuiMainStatus
 from nw.gui.timelineview  import GuiTimeLineView
+from nw.gui.sessionlog    import GuiSessionLogView
 from nw.project.project   import NWProject
 from nw.project.document  import NWDoc
 from nw.project.item      import NWItem
@@ -522,8 +523,11 @@ class GuiMain(QMainWindow):
 
     def showTimeLineDialog(self):
         if self.hasProject:
-            dlgTLine = GuiTimeLineView(self, self.theProject, self.theIndex)
+            dlgTLine = GuiSessionLogView(self, self.theProject)
             dlgTLine.exec_()
+        return True
+
+    def showSessionLogDialog(self):
         return True
 
     def makeAlert(self, theMessage, theLevel=nwAlert.INFO):

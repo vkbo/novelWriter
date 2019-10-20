@@ -12,6 +12,12 @@
 
 from nw.enum import nwItemClass, nwItemLayout
 
+class nwConst():
+
+    tStampFmt = "%Y-%m-%d %H:%M:%S"
+
+# END Class nwConst
+
 class nwFiles():
 
     APP_ICON   = "novelWriter.svg"
