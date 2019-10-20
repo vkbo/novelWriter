@@ -11,6 +11,7 @@
 **User Interface**
 
 * Added a GUI to display the session log. The log has been around for a while, and records when a project is opened, when it's closed and how many words were added or removed during the session. This information is no available in a small dialog under `Project > Session Log` in the main menu. PR #59
+* The export project feature now also exports the project to Markdown and HTML5 format. PR #57
 
 ## Version 0.3 [2019-10-19]
 
