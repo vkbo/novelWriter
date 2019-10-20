@@ -523,7 +523,7 @@ class GuiMain(QMainWindow):
 
     def showTimeLineDialog(self):
         if self.hasProject:
-            dlgTLine = GuiTimeLineView(self, self.theProject)
+            dlgTLine = GuiTimeLineView(self, self.theProject, self.theIndex)
             dlgTLine.exec_()
         return True
 
