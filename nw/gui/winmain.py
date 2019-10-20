@@ -225,7 +225,7 @@ class GuiMain(QMainWindow):
         if self.docEditor.docChanged:
             self.saveDocument()
 
-        if self.theProject.projChanged:
+        if self.theProject.projAltered:
             saveOK   = self.saveProject()
             doBackup = False
             if self.theProject.doBackup and self.mainConf.backupOnClose:
@@ -502,6 +502,7 @@ class GuiMain(QMainWindow):
             logger.debug("Applying new preferences")
             self.initMain()
             self.theTheme.updateTheme()
+            self.saveDocument()
             self.docEditor.initEditor()
             self.docViewer.initViewer()
         return True
