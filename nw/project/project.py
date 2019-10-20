@@ -23,7 +23,7 @@ from nw.project.item   import NWItem
 from nw.project.status import NWStatus
 from nw.enum           import nwItemType, nwItemClass, nwItemLayout, nwAlert
 from nw.common         import checkString, checkBool, checkInt
-from nw.constants      import nwFiles
+from nw.constants      import nwFiles, nwConst
 
 logger = logging.getLogger(__name__)
 
@@ -663,8 +663,8 @@ class NWProject():
                 "End: {closed:s}  "
                 "Words: {words:8d}"
             ).format(
-                opened = datetime.fromtimestamp(self.projOpened).strftime("%Y-%m-%d %H:%M:%S"),
-                closed = datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+                opened = datetime.fromtimestamp(self.projOpened).strftime(nwConst.tStampFmt),
+                closed = datetime.now().strftime(nwConst.tStampFmt),
                 words  = self.getSessionWordCount(),
             ), file=outFile)
 
