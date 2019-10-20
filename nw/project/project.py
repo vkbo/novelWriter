@@ -34,22 +34,23 @@ class NWProject():
         # Internal
         self.theParent   = theParent
         self.mainConf    = self.theParent.mainConf
-        self.projChanged = None
-        self.projOpened  = None
+        self.projOpened  = None # The time stamp of when the project file was opened
+        self.projChanged = None # The project has unsaved changes
+        self.projAltered = None # The project has been altered this session (used to trigger backup)
 
         # Debug
         self.handleSeed  = None
 
         # Class Settings
-        self.projTree    = None
-        self.treeOrder   = None
-        self.treeRoots   = None
-        self.trashRoot   = None
-        self.projPath    = None
-        self.projMeta    = None
-        self.projCache   = None
-        self.projDict    = None
-        self.projFile    = None
+        self.projTree    = None # Holds all the items of the project
+        self.treeOrder   = None # The order of the tree items on the tree view
+        self.treeRoots   = None # The root items of the tree
+        self.trashRoot   = None # The handle of the trash root folder
+        self.projPath    = None # The full path to where the currently open project is saved
+        self.projMeta    = None # The full path to the project's meta data folder
+        self.projCache   = None # The full path to the project's cache folder
+        self.projDict    = None # The spell check dictionary
+        self.projFile    = None # The file name of the project main xml file
 
         # Project Meta
         self.projName    = None
@@ -140,8 +141,9 @@ class NWProject():
 
     def clearProject(self):
 
-        self.projChanged = None
         self.projOpened  = None
+        self.projChanged = None
+        self.projAltered = False
 
         # Project Settings
         self.projTree    = {}
@@ -267,6 +269,7 @@ class NWProject():
         self._scanProjectFolder()
         self.setProjectChanged(False)
         self.projOpened = time()
+        self.projAltered = False
 
         return True
 
@@ -458,6 +461,9 @@ class NWProject():
     def setProjectChanged(self, bValue):
         self.projChanged = bValue
         self.theParent.setProjectStatus(self.projChanged)
+        if bValue:
+            # If we've changed the project at all, this should be True
+            self.projAltered = True
         return self.projChanged
 
     ##

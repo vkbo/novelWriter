@@ -185,6 +185,7 @@ class GuiDocHighlighter(QSyntaxHighlighter):
         # Build a QRegExp for each pattern and for the spell checker
         self.rules   = [(QRegularExpression(a),b) for (a,b) in self.hRules]
         self.spellRx = QRegularExpression(r"\b[^\s]+\b")
+        self.spellRx.setPatternOptions(QRegularExpression.UseUnicodePropertiesOption)
 
         return True
 
