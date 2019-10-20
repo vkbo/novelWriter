@@ -1,5 +1,18 @@
 # novelWriter ChangeLog
 
+## Version 0.3.1 [2019-10-20]
+
+**Bug Fixes**
+
+* The backup request dialog should pop up on any change to the project during the last session, not just on unsaved changes. PR #58
+* The regex that searches for words for the spell check highlighter was not including unicode characters, so it would underline parts of words using unicode characters even if the word was spelled correctly. PR #58
+* When having unsaved changes in an open document, while changing editor configuration options, the document would be reloaded from disk when the changes were applied. This means the unsaved changes were lost. The document is now saved before the editor is re-initialised. PR #58
+
+**User Interface**
+
+* Added a GUI to display the session log. The log has been around for a while, and records when a project is opened, when it's closed and how many words were added or removed during the session. This information is no available in a small dialog under `Project > Session Log` in the main menu. PR #59
+* The export project feature now also exports the project to Markdown and HTML5 format. PR #57
+
 ## Version 0.3 [2019-10-19]
 
 **User Interface**
