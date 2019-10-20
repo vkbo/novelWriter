@@ -523,11 +523,14 @@ class GuiMain(QMainWindow):
 
     def showTimeLineDialog(self):
         if self.hasProject:
-            dlgTLine = GuiSessionLogView(self, self.theProject)
+            dlgTLine = GuiTimeLineView(self, self.theProject)
             dlgTLine.exec_()
         return True
 
     def showSessionLogDialog(self):
+        if self.hasProject:
+            dlgTLine = GuiSessionLogView(self, self.theProject)
+            dlgTLine.exec_()
         return True
 
     def makeAlert(self, theMessage, theLevel=nwAlert.INFO):

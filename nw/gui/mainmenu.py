@@ -202,7 +202,7 @@ class GuiMainMenu(QMenuBar):
         # Project > Session Log
         menuItem = QAction("Session Log", self)
         menuItem.setStatusTip("Show the session log")
-        menuItem.triggered.connect(self.theParent.showTimeLineDialog)
+        menuItem.triggered.connect(self.theParent.showSessionLogDialog)
         self.projMenu.addAction(menuItem)
 
         # Project > Separator
