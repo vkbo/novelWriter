@@ -319,18 +319,24 @@ class NWIndex():
 
         return True
 
-    def buildTagNovelMap(self, theTags):
+    def buildTagNovelMap(self, theTags, theFilters=None):
 
         tagMap   = {}
         tagClass = {}
+        exClass  = []
+
+        if theFilters is not None:
+            if "exClass" in theFilters.keys():
+                exClass = theFilters["exClass"]
 
         for theTag in theTags:
-            tagMap[theTag] = [0]*len(self.novelOrder)
             try:
                 tagClass[theTag] = nwItemClass[self.tagIndex[theTag][2]]
             except:
                 logger.error("Could not map '%s' to nwItemClass" % self.tagIndex[theTag][2])
                 tagClass[theTag] = None
+            if tagClass[theTag] not in exClass:
+                tagMap[theTag] = [0]*len(self.novelOrder)
 
         for tHandle in self.refIndex:
             for nLine, tKey, tTag, nTitle in self.refIndex[tHandle]:
@@ -341,6 +347,13 @@ class NWIndex():
                             tagMap[tTag][nPos] = self.TAG_CLASS[tKey][1]
                     except:
                         logger.error("Could not find '%s:%d' in novelOrder" % (tHandle, nTitle))
+
+        if theFilters["hUnused"]:
+            tagMapFiltered = {}
+            for theTag in tagMap.keys():
+                if sum(tagMap[theTag]) > 0:
+                    tagMapFiltered[theTag] = tagMap[theTag]
+            return tagMapFiltered
 
         return tagMap
 
