@@ -54,11 +54,11 @@ class GuiMain(QMainWindow):
 
         logger.info("Starting %s" % nw.__package__)
         logger.debug("Initialising GUI ...")
-        self.mainConf    = nw.CONFIG
-        self.theTheme    = Theme(self)
-        self.theProject  = NWProject(self)
-        self.theIndex    = NWIndex(self.theProject, self)
-        self.hasProject  = False
+        self.mainConf   = nw.CONFIG
+        self.theTheme   = Theme(self)
+        self.theProject = NWProject(self)
+        self.theIndex   = NWIndex(self.theProject, self)
+        self.hasProject = False
 
         logger.info("Qt5 Version:   %s (%d)" % (self.mainConf.verQtString,   self.mainConf.verQtValue))
         logger.info("PyQt5 Version: %s (%d)" % (self.mainConf.verPyQtString, self.mainConf.verPyQtValue))

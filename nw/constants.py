@@ -26,6 +26,7 @@ class nwFiles():
     SESS_INFO  = "sessionInfo.log"
     INDEX_FILE = "tagsIndex.json"
     EXPORT_OPT = "exportOptions.json"
+    TLINE_OPT  = "timelineOptions.json"
 
 # END Class nwFiles
 

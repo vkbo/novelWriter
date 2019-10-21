@@ -65,9 +65,6 @@ class Config:
         self.mainPanePos  = [300, 800]
         self.docPanePos   = [400, 400]
 
-        ## Dialogs
-        self.dlgTimeLine  = [600, 400]
-
         ## Project
         self.autoSaveProj = 60
         self.autoSaveDoc  = 30
@@ -182,7 +179,6 @@ class Config:
         self.treeColWidth    = self._parseLine(cnfParse, cnfSec, "treecols", self.CNF_LIST, self.treeColWidth)
         self.mainPanePos     = self._parseLine(cnfParse, cnfSec, "mainpane", self.CNF_LIST, self.mainPanePos)
         self.docPanePos      = self._parseLine(cnfParse, cnfSec, "docpane",  self.CNF_LIST, self.docPanePos)
-        self.dlgTimeLine     = self._parseLine(cnfParse, cnfSec, "timeline", self.CNF_LIST, self.dlgTimeLine)
 
         ## Project
         cnfSec = "Project"
@@ -245,7 +241,6 @@ class Config:
         cnfParse.set(cnfSec,"treecols", self._packList(self.treeColWidth))
         cnfParse.set(cnfSec,"mainpane", self._packList(self.mainPanePos))
         cnfParse.set(cnfSec,"docpane",  self._packList(self.docPanePos))
-        cnfParse.set(cnfSec,"timeline", self._packList(self.dlgTimeLine))
 
         ## Project
         cnfSec = "Project"
@@ -323,15 +318,6 @@ class Config:
             self.confChanged = True
         if abs(self.winGeometry[1] - newHeight) > 5:
             self.winGeometry[1] = newHeight
-            self.confChanged = True
-        return True
-
-    def setTLineSize(self, newWidth, newHeight):
-        if abs(self.dlgTimeLine[0] - newWidth) > 5:
-            self.dlgTimeLine[0] = newWidth
-            self.confChanged = True
-        if abs(self.dlgTimeLine[1] - newHeight) > 5:
-            self.dlgTimeLine[1] = newHeight
             self.confChanged = True
         return True
 

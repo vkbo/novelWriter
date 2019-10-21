@@ -13,12 +13,16 @@
 import logging
 import nw
 
+from os              import path
 from PyQt5.QtCore    import Qt
 from PyQt5.QtGui     import QIcon, QColor, QPixmap
 from PyQt5.QtWidgets import (
     QDialog, QVBoxLayout, QHBoxLayout, QTableWidget, QTableWidgetItem,
     QDialogButtonBox, QLabel, QPushButton, QHeaderView
 )
+
+from nw.tools.optlaststate import OptLastState
+from nw.constants          import nwFiles
 
 logger = logging.getLogger(__name__)
 
@@ -33,6 +37,9 @@ class GuiTimeLineView(QDialog):
         self.theProject = theProject
         self.theParent  = theParent
         self.theIndex   = theIndex
+        self.optState   = TimeLineLastState(self.theProject,nwFiles.TLINE_OPT)
+        self.optState.loadSettings()
+
         self.theMatrix  = {}
         self.numRows    = 0
         self.numCols    = 0
@@ -41,7 +48,12 @@ class GuiTimeLineView(QDialog):
         self.bottomBox  = QHBoxLayout()
 
         self.setWindowTitle("Timeline View")
-        self.setMinimumSize(*self.mainConf.dlgTimeLine)
+        self.setMinimumWidth(700)
+        self.setMinimumHeight(400)
+        self.resize(
+            self.optState.getSetting("winWidth"),
+            self.optState.getSetting("winHeight")
+        )
 
         self.mainTable = QTableWidget()
         self.mainTable.setGridStyle(Qt.NoPen)
@@ -123,8 +135,33 @@ class GuiTimeLineView(QDialog):
         return
 
     def _doClose(self):
-        self.mainConf.setTLineSize(self.width(), self.height())
+
+        logger.verbose("GuiTimeLineView close button clicked")
+
+        winWidth  = self.width()
+        winHeight = self.height()
+
+        self.optState.setSetting("winWidth", winWidth)
+        self.optState.setSetting("winHeight",winHeight)
+
+        self.optState.saveSettings()
         self.close()
+
         return
 
 # END Class GuiTimeLineView
+
+class TimeLineLastState(OptLastState):
+
+    def __init__(self, theProject, theFile):
+        OptLastState.__init__(self, theProject, theFile)
+        self.theState  = {
+            "winWidth"  : 700,
+            "winHeight" : 400,
+        }
+        self.stringOpt = ()
+        self.boolOpt   = ()
+        self.intOpt    = ("winWidth","winHeight")
+        return
+
+# END Class TimeLineLastState
