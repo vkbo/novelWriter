@@ -12,7 +12,6 @@
 
 import logging
 import time
-import json
 import nw
 
 from os import path
@@ -26,10 +25,10 @@ from PyQt5.QtWidgets import (
 
 from nw.project.document     import NWDoc
 from nw.tools.translate      import numberToWord
+from nw.tools.optlaststate   import OptLastState
 from nw.convert.textfile     import TextFile
 from nw.convert.htmlfile     import HtmlFile
 from nw.convert.markdownfile import MarkdownFile
-from nw.common               import checkString, checkBool, checkInt
 from nw.constants            import nwFiles
 from nw.enum                 import nwItemType
 
@@ -45,7 +44,8 @@ class GuiExport(QDialog):
         self.mainConf   = nw.CONFIG
         self.theParent  = theParent
         self.theProject = theProject
-        self.optState   = ExportLastState(self.theProject)
+        self.optState   = ExportLastState(self.theProject,nwFiles.EXPORT_OPT)
+        self.optState.loadSettings()
 
         self.outerBox   = QHBoxLayout()
         self.innerBox   = QVBoxLayout()
@@ -443,10 +443,10 @@ class GuiExportMain(QWidget):
 
 # END Class GuiExportMain
 
-class ExportLastState():
+class ExportLastState(OptLastState):
 
-    def __init__(self, theProject):
-        self.theProject = theProject
+    def __init__(self, theProject, theFile):
+        OptLastState.__init__(self, theProject, theFile)
         self.theState   = {
             "wNovel"    : True,
             "wNotes"    : False,
@@ -462,52 +462,6 @@ class ExportLastState():
         self.stringOpt = ("chFormat","unFormat","scFormat","seFormat","saveTo")
         self.boolOpt   = ("wNovel","wNotes","wComments")
         self.intOpt    = ("eFormat","fixWidth")
-        self.loadSettings()
         return
-
-    def loadSettings(self):
-        stateFile = path.join(self.theProject.projMeta, nwFiles.EXPORT_OPT)
-        theState  = {}
-        if path.isfile(stateFile):
-            logger.debug("Loading export options file")
-            try:
-                with open(stateFile,mode="r") as inFile:
-                    theJson = inFile.read()
-                theState = json.loads(theJson)
-            except Exception as e:
-                logger.error("Failed to load export options file")
-                logger.error(str(e))
-                return False
-        for anOpt in theState:
-            self.theState[anOpt] = theState[anOpt]
-        return True
-
-    def saveSettings(self):
-        stateFile = path.join(self.theProject.projMeta, nwFiles.EXPORT_OPT)
-        logger.debug("Saving export options file")
-        try:
-            with open(stateFile,mode="w+") as outFile:
-                outFile.write(json.dumps(self.theState, indent=2))
-        except Exception as e:
-            logger.error("Failed to save export options file")
-            logger.error(str(e))
-            return False
-        return True
-
-    def setSetting(self, setName, setValue):
-        if setName in self.theState:
-            self.theState[setName] = setValue
-        else:
-            return False
-        return True
-
-    def getSetting(self, setName):
-        if setName in self.stringOpt:
-            return checkString(self.theState[setName],self.theState[setName],False)
-        elif setName in self.boolOpt:
-            return checkBool(self.theState[setName],self.theState[setName],False)
-        elif setName in self.intOpt:
-            return checkInt(self.theState[setName],self.theState[setName],False)
-        return None
 
 # END Class ExportLastState
