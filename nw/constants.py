@@ -27,6 +27,7 @@ class nwFiles():
     INDEX_FILE = "tagsIndex.json"
     EXPORT_OPT = "exportOptions.json"
     TLINE_OPT  = "timelineOptions.json"
+    SLOG_OPT   = "sessionLogOptions.json"
 
 # END Class nwFiles
 

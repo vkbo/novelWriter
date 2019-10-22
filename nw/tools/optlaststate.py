@@ -76,4 +76,16 @@ class OptLastState():
             return checkInt(self.theState[setName],self.theState[setName],False)
         return None
 
+    def validIntRange(self, theValue, intA, intB, intDefault):
+        if isinstance(theValue, int):
+            if theValue >= intA and theValue <= intB:
+                return theValue
+        return intDefault
+
+    def validIntTuple(self, theValue, theTuple, intDefault):
+        if isinstance(theValue, int):
+            if theValue in theTuple:
+                return theValue
+        return intDefault
+
 # END Class OptLastState
