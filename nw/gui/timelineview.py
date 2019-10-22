@@ -53,10 +53,10 @@ class GuiTimeLineView(QDialog):
         self.setWindowTitle("Timeline View")
         self.setMinimumWidth(700)
         self.setMinimumHeight(400)
-        self.resize(
-            self.optState.getSetting("winWidth"),
-            self.optState.getSetting("winHeight")
-        )
+
+        winWidth  = self.optState.validIntRange(self.optState.getSetting("winWidth"),  700, 10000, 700)
+        winHeight = self.optState.validIntRange(self.optState.getSetting("winHeight"), 400, 10000, 400)
+        self.resize(winWidth,winHeight)
 
         # TimeLine Table
         self.mainTable = QTableWidget()
@@ -77,16 +77,27 @@ class GuiTimeLineView(QDialog):
 
         self.filterPlot = QCheckBox("Plot tags", self)
         self.filterPlot.setChecked(self.optState.getSetting("fPlot"))
+        self.filterPlot.stateChanged.connect(self._filterChange)
+
         self.filterChar = QCheckBox("Character tags", self)
         self.filterChar.setChecked(self.optState.getSetting("fChar"))
+        self.filterChar.stateChanged.connect(self._filterChange)
+
         self.filterWorld = QCheckBox("Location tags", self)
         self.filterWorld.setChecked(self.optState.getSetting("fWorld"))
+        self.filterWorld.stateChanged.connect(self._filterChange)
+
         self.filterTime = QCheckBox("Timeline tags", self)
         self.filterTime.setChecked(self.optState.getSetting("fTime"))
+        self.filterTime.stateChanged.connect(self._filterChange)
+
         self.filterObject = QCheckBox("Object tags", self)
         self.filterObject.setChecked(self.optState.getSetting("fObject"))
+        self.filterObject.stateChanged.connect(self._filterChange)
+
         self.filterCustom = QCheckBox("Custom tags", self)
         self.filterCustom.setChecked(self.optState.getSetting("fCustom"))
+        self.filterCustom.stateChanged.connect(self._filterChange)
 
         self.optFilterGrid.addWidget(self.filterPlot,   0, 1)
         self.optFilterGrid.addWidget(self.filterChar,   1, 1)
@@ -101,6 +112,7 @@ class GuiTimeLineView(QDialog):
 
         self.hideUnused = QCheckBox("Hide unused", self)
         self.hideUnused.setChecked(self.optState.getSetting("hUnused"))
+        self.hideUnused.stateChanged.connect(self._filterChange)
 
         self.optHideGrid.addWidget(self.hideUnused, 0, 1)
 
@@ -225,6 +237,10 @@ class GuiTimeLineView(QDialog):
         self.optState.saveSettings()
         self.close()
 
+        return
+
+    def _filterChange(self, checkState):
+        self._buildNovelList()
         return
 
 # END Class GuiTimeLineView
