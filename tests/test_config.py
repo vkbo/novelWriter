@@ -14,6 +14,8 @@ def testConfigInit(nwTemp,nwRef):
     tmpConf = path.join(nwTemp,"novelwriter.conf")
     refConf = path.join(nwRef, "novelwriter.conf")
     assert theConf.initConfig(nwTemp)
+    assert theConf.setLastPath("")
+    assert theConf.saveConfig()
     assert cmpFiles(tmpConf, refConf, [2])
     assert not theConf.confChanged
 

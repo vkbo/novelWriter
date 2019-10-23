@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='utf-8'?>
-<novelWriterXML appVersion="0.3.1" fileVersion="1.0" timeStamp="2019-10-21 20:54:53">
+<novelWriterXML appVersion="0.3.1" fileVersion="1.0" timeStamp="2019-10-23 21:21:02">
   <project>
     <name>Sample Project</name>
     <title>Sample Project</title>
@@ -9,9 +9,9 @@
   </project>
   <settings>
     <spellCheck>True</spellCheck>
-    <lastEdited>636b6aa9b697b</lastEdited>
+    <lastEdited>ba8a28a246524</lastEdited>
     <lastViewed>636b6aa9b697b</lastViewed>
-    <lastWordCount>758</lastWordCount>
+    <lastWordCount>859</lastWordCount>
     <autoReplace>
       <A>B</A>
       <B>E</B>
@@ -33,7 +33,7 @@
       <entry blue="175" green="0" red="117">Main</entry>
     </importance>
   </settings>
-  <content count="18">
+  <content count="19">
     <item handle="7031beac91f75" order="0" parent="None">
       <name>Novel</name>
       <type>ROOT</type>
@@ -96,7 +96,19 @@
       <paraCount>2</paraCount>
       <cursorPos>448</cursorPos>
     </item>
-    <item handle="96b68994dfa3d" order="3" parent="e7ded148d6e4a">
+    <item handle="ba8a28a246524" order="3" parent="e7ded148d6e4a">
+      <name>Interlude</name>
+      <type>FILE</type>
+      <class>NOVEL</class>
+      <status>Finished</status>
+      <expanded>False</expanded>
+      <layout>UNNUMBERED</layout>
+      <charCount>614</charCount>
+      <wordCount>101</wordCount>
+      <paraCount>3</paraCount>
+      <cursorPos>633</cursorPos>
+    </item>
+    <item handle="96b68994dfa3d" order="4" parent="e7ded148d6e4a">
       <name>A Note on Ipsums</name>
       <type>FILE</type>
       <class>NOVEL</class>
@@ -108,7 +120,7 @@
       <paraCount>5</paraCount>
       <cursorPos>0</cursorPos>
     </item>
-    <item handle="88706ddc78b1b" order="4" parent="e7ded148d6e4a">
+    <item handle="88706ddc78b1b" order="5" parent="e7ded148d6e4a">
       <name>Chapter Two</name>
       <type>FILE</type>
       <class>NOVEL</class>
@@ -120,7 +132,7 @@
       <paraCount>0</paraCount>
       <cursorPos>76</cursorPos>
     </item>
-    <item handle="ae7339df26ded" order="5" parent="e7ded148d6e4a">
+    <item handle="ae7339df26ded" order="6" parent="e7ded148d6e4a">
       <name>We Found John!</name>
       <type>FILE</type>
       <class>NOVEL</class>

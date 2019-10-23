@@ -61,7 +61,7 @@ class nwLabels():
         nwItemLayout.BOOK       : "Book",
         nwItemLayout.PAGE       : "Plain Page",
         nwItemLayout.PARTITION  : "Partition",
-        nwItemLayout.UNNUMBERED : "Un-Numbered",
+        nwItemLayout.UNNUMBERED : "Unnumbered",
         nwItemLayout.CHAPTER    : "Chapter",
         nwItemLayout.SCENE      : "Scene",
         nwItemLayout.NOTE       : "Note",

@@ -366,6 +366,54 @@ class GuiMain(QMainWindow):
 
         return True
 
+    def importDocument(self):
+
+        lastPath = self.mainConf.lastPath
+
+        extFilter = [
+            "Text files (*.txt)",
+            "Markdown files (*.md)",
+            "All files (*.*)",
+        ]
+        dlgOpt  = QFileDialog.Options()
+        dlgOpt |= QFileDialog.DontUseNativeDialog
+        inPath  = QFileDialog.getOpenFileName(
+            self,"Import File",lastPath,options=dlgOpt,filter=";;".join(extFilter)
+        )
+        if inPath:
+            loadFile = inPath[0]
+            self.mainConf.setLastPath(loadFile)
+        else:
+            return False
+
+        theText = None
+        try:
+            with open(loadFile,mode="rt") as inFile:
+                theText = inFile.read()
+        except Exception as e:
+            self.makeAlert(["Could not read file. The file cannot be a binary file.",str(e)], nwAlert.ERROR)
+            return False
+
+        if self.docEditor.theHandle is None:
+            self.makeAlert(["Please open a document to import the text file into."], nwAlert.ERROR)
+            return False
+
+        if not self.docEditor.isEmpty():
+            if self.mainConf.showGUI:
+                msgBox = QMessageBox()
+                msgRes = msgBox.question(
+                    self, "Import Document",
+                    "Importing the file will overwrite the current content of the document. Do you want to proceed?"
+                )
+                if msgRes != QMessageBox.Yes:
+                    return False
+            else:
+                return False
+
+        self.docEditor.setText(theText)
+
+        return True
+
     ##
     #  Tree Item Actions
     ##

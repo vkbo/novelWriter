@@ -289,6 +289,9 @@ class GuiDocEditor(QTextEdit):
             return False
         return True
 
+    def isEmpty(self):
+        return self.qDocument.isEmpty()
+
     ##
     #  Document Events and Maintenance
     ##
