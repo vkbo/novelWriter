@@ -426,9 +426,10 @@ class GuiDocTree(QTreeWidget):
         return
 
     def _cleanOrphanedRoot(self):
-        if self.orphRoot.childCount() == 0:
-            self.takeTopLevelItem(self.indexOfTopLevelItem(self.orphRoot))
-            self.orphRoot = None
+        if self.orphRoot is not None:
+            if self.orphRoot.childCount() == 0:
+                self.takeTopLevelItem(self.indexOfTopLevelItem(self.orphRoot))
+                self.orphRoot = None
         return
 
     def _updateItemParent(self, tHandle):
