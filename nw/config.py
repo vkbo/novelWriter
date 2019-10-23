@@ -317,7 +317,10 @@ class Config:
         return True
 
     def setLastPath(self, lastPath):
-        self.lastPath = path.dirname(lastPath)
+        if lastPath is None or lastPath == "":
+            self.lastPath = ""
+        else:
+            self.lastPath = path.dirname(lastPath)
         return True
 
     def setWinSize(self, newWidth, newHeight):
