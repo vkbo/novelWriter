@@ -388,7 +388,7 @@ class GuiMain(QMainWindow):
 
         theText = None
         try:
-            with open(loadFile,mode="r") as inFile:
+            with open(loadFile,mode="rt") as inFile:
                 theText = inFile.read()
         except Exception as e:
             self.makeAlert(["Could not read file. The file cannot be a binary file.",str(e)], nwAlert.ERROR)
