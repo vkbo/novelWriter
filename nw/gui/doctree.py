@@ -98,8 +98,16 @@ class GuiDocTree(QTreeWidget):
 
         if itemClass is None and pHandle is not None:
             itemClass = self.theProject.getItem(pHandle).itemClass
+
         if itemClass is None:
-            self.makeAlert("Failed to find an appropriate item class for item %s" % pHandle, nwAlert.BUG)
+            if itemType is not None:
+                if itemType == nwItemType.FILE:
+                    self.makeAlert("Please select a location in the tree to add a document.", nwAlert.ERROR)
+                    return False
+                elif itemType == nwItemType.FOLDER:
+                    self.makeAlert("Please select a location in the tree to add a folder.", nwAlert.ERROR)
+                    return False
+            self.makeAlert("Failed to add new item.", nwAlert.BUG)
             return False
 
         logger.verbose("Adding new item of type %s and class %s to handle %s" % (
