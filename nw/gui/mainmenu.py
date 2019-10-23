@@ -312,8 +312,15 @@ class GuiMainMenu(QMenuBar):
         menuItem.triggered.connect(self.theParent.closeDocViewer)
         self.docuMenu.addAction(menuItem)
 
-        # # Document > Separator
-        # self.docuMenu.addSeparator()
+        # Document > Separator
+        self.docuMenu.addSeparator()
+
+        # Document > Close Preview
+        menuItem = QAction("Import from File", self)
+        menuItem.setStatusTip("Import document from a text or markdown file")
+        menuItem.setShortcut("Ctrl+Shift+I")
+        menuItem.triggered.connect(self.theParent.importDocument)
+        self.docuMenu.addAction(menuItem)
 
         # # Document > Split
         # menuItem = QAction("Split Document", self)

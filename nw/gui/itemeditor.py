@@ -87,7 +87,7 @@ class GuiItemEditor(QDialog):
             if itemLayout in self.validLayouts:
                 self.editLayout.addItem(nwLabels.LAYOUT_NAME[itemLayout],itemLayout)
 
-        self.mainForm.addRow("Name",   self.editName)
+        self.mainForm.addRow("Label",  self.editName)
         self.mainForm.addRow("Status", self.editStatus)
         self.mainForm.addRow("Layout", self.editLayout)
 

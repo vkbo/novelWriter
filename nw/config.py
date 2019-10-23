@@ -47,6 +47,7 @@ class Config:
         self.confPath  = None
         self.confFile  = None
         self.homePath  = None
+        self.lastPath  = None
         self.appPath   = None
         self.appRoot   = None
         self.appIcon   = None
@@ -129,6 +130,7 @@ class Config:
 
         self.confFile  = self.appHandle+".conf"
         self.homePath  = path.expanduser("~")
+        self.lastPath  = self.homePath
         self.appPath   = path.dirname(__file__)
         self.appRoot   = path.join(self.appPath,path.pardir)
         self.helpPath  = path.join(self.appRoot,"help","en_GB")
@@ -212,6 +214,7 @@ class Config:
 
         ## Path
         cnfSec = "Path"
+        self.lastPath = self._parseLine(cnfParse, cnfSec, "lastpath", self.CNF_STR, self.lastPath)
         for i in range(10):
             self.recentList[i] = self._parseLine(cnfParse, cnfSec, "recent%d" % i,self.CNF_STR, self.recentList[i])
 
@@ -278,6 +281,7 @@ class Config:
         ## Path
         cnfSec = "Path"
         cnfParse.add_section(cnfSec)
+        cnfParse.set(cnfSec,"lastpath", str(self.lastPath))
         for i in range(10):
             cnfParse.set(cnfSec,"recent%d" % i, str(self.recentList[i]))
 
@@ -310,6 +314,10 @@ class Config:
             return False
         self.confPath = path.dirname(newPath)
         self.confFile = path.basename(newPath)
+        return True
+
+    def setLastPath(self, lastPath):
+        self.lastPath = path.dirname(lastPath)
         return True
 
     def setWinSize(self, newWidth, newHeight):
