@@ -13,7 +13,8 @@
 import logging
 import nw
 
-from PyQt5.QtGui     import QIcon
+from PyQt5.QtCore    import QUrl
+from PyQt5.QtGui     import QIcon, QDesktopServices
 from PyQt5.QtWidgets import QMenuBar, QAction, QMessageBox
 
 from nw.enum         import nwItemType, nwItemClass, nwDocAction
@@ -143,6 +144,10 @@ class GuiMainMenu(QMenuBar):
     def _showAboutQt(self):
         msgBox = QMessageBox()
         msgBox.aboutQt(self.theParent,"About Qt")
+        return True
+
+    def _openHelp(self):
+        QDesktopServices.openUrl(QUrl(nw.__docurl__))
         return True
 
     ##
@@ -604,7 +609,7 @@ class GuiMainMenu(QMenuBar):
         menuItem = QAction("Documentation", self)
         menuItem.setStatusTip("View documentation")
         menuItem.setShortcut("F1")
-        menuItem.triggered.connect(lambda : self.theParent.viewDocument("Help"))
+        menuItem.triggered.connect(self._openHelp)
         self.helpMenu.addAction(menuItem)
 
         return

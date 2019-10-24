@@ -13,7 +13,7 @@
 import logging
 import nw
 
-from PyQt5.QtCore    import Qt, QUrl
+from PyQt5.QtCore    import Qt
 from PyQt5.QtWidgets import QTextBrowser
 from PyQt5.QtGui     import QTextOption, QFont, QPalette, QColor
 
@@ -91,10 +91,6 @@ class GuiDocViewer(QTextBrowser):
 
     def loadText(self, tHandle):
 
-        if tHandle == "Help":
-            self.loadHelp()
-            return True
-
         tItem = self.theProject.getItem(tHandle)
         if tItem is None:
             logger.warning("Item not found")
@@ -115,14 +111,6 @@ class GuiDocViewer(QTextBrowser):
             self.verticalScrollBar().setValue(sPos)
         self.theHandle = tHandle
         self.theProject.setLastViewed(tHandle)
-
-        return True
-
-    def loadHelp(self):
-
-        self.clearViewer()
-        self.setSearchPaths([self.mainConf.helpPath])
-        self.setSource(QUrl("index.html"))
 
         return True
 

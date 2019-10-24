@@ -60,8 +60,10 @@ class GuiMain(QMainWindow):
         self.theIndex   = NWIndex(self.theProject, self)
         self.hasProject = False
 
-        logger.info("Qt5 Version:   %s (%d)" % (self.mainConf.verQtString,   self.mainConf.verQtValue))
-        logger.info("PyQt5 Version: %s (%d)" % (self.mainConf.verPyQtString, self.mainConf.verPyQtValue))
+        logger.info("OS:             %s"        % (self.mainConf.osType))
+        logger.info("Qt5 Version:    %s (%d)"   % (self.mainConf.verQtString,   self.mainConf.verQtValue))
+        logger.info("PyQt5 Version:  %s (%d)"   % (self.mainConf.verPyQtString, self.mainConf.verPyQtValue))
+        logger.info("Python Version: %s (0x%x)" % (self.mainConf.verPyString,   self.mainConf.verPyHexVal))
 
         self.resize(*self.mainConf.winGeometry)
         self._setWindowTitle()
