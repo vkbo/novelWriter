@@ -422,15 +422,15 @@ class GuiDocEditor(QTextEdit):
 
         elif self.mainConf.doReplaceDash and theTwo == "--":
             theCursor.movePosition(QTextCursor.Left, QTextCursor.KeepAnchor, 2)
-            theCursor.insertText("–")
+            theCursor.insertText("\u2013")
 
-        elif self.mainConf.doReplaceDash and theTwo == "–-":
+        elif self.mainConf.doReplaceDash and theTwo == "\u2013-":
             theCursor.movePosition(QTextCursor.Left, QTextCursor.KeepAnchor, 2)
-            theCursor.insertText("—")
+            theCursor.insertText("\u2014")
 
         elif self.mainConf.doReplaceDots and theThree == "...":
             theCursor.movePosition(QTextCursor.Left, QTextCursor.KeepAnchor, 3)
-            theCursor.insertText("…")
+            theCursor.insertText("\u2026")
 
         return
 

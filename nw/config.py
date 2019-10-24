@@ -87,8 +87,8 @@ class Config:
         self.doReplaceDots   = True
         self.wordCountTimer  = 5.0
 
-        self.fmtSingleQuotes = ["‘","’"]
-        self.fmtDoubleQuotes = ["“","”"]
+        self.fmtSingleQuotes = ["\u2018","\u2019"]
+        self.fmtDoubleQuotes = ["\u201c","\u201d"]
 
         self.spellLanguage   = "en_GB"
 
