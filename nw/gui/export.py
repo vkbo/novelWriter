@@ -371,7 +371,7 @@ class GuiExportMain(QWidget):
         self.fixedWidth.setMaximum(999)
         self.fixedWidth.setSingleStep(1)
         self.fixedWidth.setValue(self.optState.getSetting("fixWidth"))
-        self.fixedWidth.setToolTip("0 disables the feature. Applies to .txt, .md and .tex files.")
+        self.fixedWidth.setToolTip("Applies to .txt, .md and .tex files. 0 disables the feature.")
 
         self.addSettingsForm.addWidget(QLabel("Fixed width"), 0, 0)
         self.addSettingsForm.addWidget(self.fixedWidth,       0, 1)
@@ -416,8 +416,9 @@ class GuiExportMain(QWidget):
             "Text files (*.txt)",
             "Markdown files (*.md)",
             "HTML files (*.htm *.html)",
-            "Open document files (*.odt)",
-            "LaTeX files (*.tex)",
+            # "Open document files (*.odt)",
+            # "LaTeX files (*.tex)",
+            "All files (*.*)",
         ]
 
         dlgOpt  = QFileDialog.Options()
