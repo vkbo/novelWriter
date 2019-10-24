@@ -29,6 +29,7 @@ from nw.tools.optlaststate   import OptLastState
 from nw.convert.textfile     import TextFile
 from nw.convert.htmlfile     import HtmlFile
 from nw.convert.markdownfile import MarkdownFile
+from nw.convert.latexfile    import LaTeXFile
 from nw.constants            import nwFiles
 from nw.enum                 import nwItemType
 
@@ -127,6 +128,8 @@ class GuiExport(QDialog):
             outFile = MarkdownFile(self.theProject, self.theParent)
         elif eFormat == GuiExportMain.FMT_HTML:
             outFile = HtmlFile(self.theProject, self.theParent)
+        elif eFormat == GuiExportMain.FMT_TEX:
+            outFile = LaTeXFile(self.theProject, self.theParent)
 
         if outFile is None:
             return False
@@ -348,7 +351,7 @@ class GuiExportMain(QWidget):
         self.outputFormat.addItem("HTML5 (.htm)",           self.FMT_HTML)
         # self.outputFormat.addItem("HTML5 for eBook (.htm)", self.FMT_EBOOK)
         # self.outputFormat.addItem("Open Document (.odt)",   self.FMT_ODT)
-        # self.outputFormat.addItem("LaTeX for PDF (.tex)",   self.FMT_TEX)
+        self.outputFormat.addItem("LaTeX for PDF (.tex)",   self.FMT_TEX)
         self.outputFormat.currentIndexChanged.connect(self._updateFormat)
 
         optIdx = self.outputFormat.findData(self.optState.getSetting("eFormat"))
@@ -417,7 +420,7 @@ class GuiExportMain(QWidget):
             "Markdown files (*.md)",
             "HTML files (*.htm *.html)",
             # "Open document files (*.odt)",
-            # "LaTeX files (*.tex)",
+            "LaTeX files (*.tex)",
             "All files (*.*)",
         ]
 
