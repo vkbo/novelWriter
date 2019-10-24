@@ -26,27 +26,28 @@ logger = logging.getLogger(__name__)
 
 class Tokenizer():
 
-    FMT_B_B   = 1  # Begin bold
-    FMT_B_E   = 2  # End bold
-    FMT_I_B   = 3  # Begin italics
-    FMT_I_E   = 4  # End italics
-    FMT_U_B   = 5  # Begin underline
-    FMT_U_E   = 6  # End underline
+    FMT_B_B   =  1 # Begin bold
+    FMT_B_E   =  2 # End bold
+    FMT_I_B   =  3 # Begin italics
+    FMT_I_E   =  4 # End italics
+    FMT_U_B   =  5 # Begin underline
+    FMT_U_E   =  6 # End underline
 
-    T_EMPTY   = 1  # Empty line (new paragraph)
-    T_COMMENT = 2  # Comment line
-    T_COMMAND = 3  # Command line
-    T_HEAD1   = 4  # Header 1 (title)
-    T_HEAD2   = 5  # Header 2 (chapter)
-    T_HEAD3   = 6  # Header 3 (scene)
-    T_HEAD4   = 7  # Header 4
-    T_TEXT    = 8  # Text line
-    T_SEP     = 9  # Scene separator
+    T_EMPTY   =  1 # Empty line (new paragraph)
+    T_COMMENT =  2 # Comment line
+    T_COMMAND =  3 # Command line
+    T_HEAD1   =  4 # Header 1 (title)
+    T_HEAD2   =  5 # Header 2 (chapter)
+    T_HEAD3   =  6 # Header 3 (scene)
+    T_HEAD4   =  7 # Header 4
+    T_TEXT    =  8 # Text line
+    T_SEP     =  9 # Scene separator
+    T_PBREAK  = 10 # Page break
 
-    A_LEFT    = 1  # Left aligned
-    A_RIGHT   = 2  # Right aligned
-    A_CENTRE  = 3  # Centred
-    A_JUSTIFY = 4  # Justified
+    A_LEFT    =  1 # Left aligned
+    A_RIGHT   =  2 # Right aligned
+    A_CENTRE  =  3 # Centred
+    A_JUSTIFY =  4 # Justified
 
     def __init__(self, theProject, theParent):
 
@@ -262,6 +263,7 @@ class Tokenizer():
                         self.theTokens[n] = (tType,tTemp,None,self.A_LEFT)
 
         # For title page and partitions, we need to centre all text
+        # and for some formats, we need a page break
         if isTitle or isPart:
             for n in range(len(self.theTokens)):
                 tToken  = self.theTokens[n]
@@ -269,6 +271,8 @@ class Tokenizer():
                 tText   = tToken[1]
                 tFormat = tToken[2]
                 self.theTokens[n] = (tType,tText,tFormat,self.A_CENTRE)
+
+            self.theTokens[n] = (self.T_PBREAK,"",None,self.A_LEFT)
 
         return
 
