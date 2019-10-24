@@ -12,6 +12,7 @@
 
 import logging
 import configparser
+import sys
 import nw
 
 from os           import path, mkdir, getcwd
@@ -113,6 +114,30 @@ class Config:
         self.verPyQtMinor  = verQt[1]
         self.verPyQtPatch  = verQt[2]
         self.verPyQtValue  = verQt[3]
+
+        # Check Python Version
+        self.verPyString = sys.version.split()[0]
+        self.verPyMajor  = sys.version_info[0]
+        self.verPyMinor  = sys.version_info[1]
+        self.verPyPatch  = sys.version_info[2]
+        self.verPyHexVal = sys.hexversion
+
+        # Check OS Type
+        self.osType    = sys.platform
+        self.osLinux   = False
+        self.osWindows = False
+        self.osDarwin  = False
+        self.osUnknown = False
+        if self.osType.startswith("linux"):
+            self.osLinux   = True
+        elif self.osType.startswith("darwin"):
+            self.osDarwin  = True
+        elif self.osType.startswith("win32"):
+            self.osWindows = True
+        elif self.osType.startswith("cygwin"):
+            self.osWindows = True
+        else:
+            self.osUnknown = True
 
         return
 

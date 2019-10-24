@@ -28,6 +28,7 @@ __maintainer__ = "Veronica Berglyd Olsen"
 __email__      = "code@vkbo.net"
 __status__     = "Development"
 __url__        = "https://github.com/vkbo/novelWriter"
+__docurl__     = "https://novelwriter.readthedocs.io"
 __credits__    = [
     "Veronica Berglyd Olsen (developer)",
     "Marian Lückhof (contributor, tester)"

@@ -3,6 +3,10 @@
 
 import sys
 
+if sys.hexversion < 0x030500F0:
+    print("ERROR: At least Python 3.5 is required")
+    exit(1)
+
 try:
     import PyQt5.QtWidgets
     import PyQt5.QtGui
