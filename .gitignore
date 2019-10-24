@@ -1,6 +1,10 @@
 # Setup
 MANIFEST
 dist/
+deploy/
+
+# Documentation
+docs/build/
 
 # Python Temp
 __pycache__
