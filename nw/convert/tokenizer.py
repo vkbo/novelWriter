@@ -276,10 +276,6 @@ class Tokenizer():
 
         return
 
-    def windowsEndings(self):
-        self.theResult = self.theResult.replace("\n","\r\n")
-        return
-
     ##
     #  Internal Functions
     ##

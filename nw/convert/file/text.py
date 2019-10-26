@@ -34,7 +34,6 @@ class TextFile():
         self.theText    = ""
         self.expNovel   = True
         self.expNotes   = False
-        self.winEnding  = self.mainConf.osWindows
 
         self.theConv    = ToText(self.theProject, self.theParent)
         self.makeAlert  = self.theParent.makeAlert
@@ -42,11 +41,6 @@ class TextFile():
         self.setComments(False)
         self.setMeta(False)
         self.setWordWrap(80)
-
-        if self.winEnding:
-            self.endLine = "\r\n"
-        else:
-            self.endLine = "\n"
 
         return
 
@@ -145,9 +139,6 @@ class TextFile():
         self.theConv.doHeaders()
         self.theConv.doConvert()
 
-        if self.winEnding:
-            self.theConv.windowsEndings()
-
         if self.theConv.theResult is not None and self.outFile is not None:
             self.outFile.write(self.theConv.theResult)
 
@@ -162,9 +153,8 @@ class TextFile():
         that uses a different file format that requires a different approach.
         """
         try:
-            self.outFile = open(filePath,mode="w+")
-            self.outFile.write(self.endLine)
-            self.outFile.write(self.endLine)
+            self.outFile = open(filePath,mode="wt+")
+            self.outFile.write("\n\n")
         except Exception as e:
             self.makeAlert(["Failed to open file.",str(e)], nwAlert.ERROR)
             return False

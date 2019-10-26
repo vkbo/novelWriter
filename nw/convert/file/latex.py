@@ -35,10 +35,10 @@ class LaTeXFile(TextFile):
     def _doOpenFile(self, filePath):
 
         try:
-            self.outFile = open(filePath,mode="w+")
-            self.outFile.write(r"\documentclass[12pt]{report}"+self.endLine)
-            self.outFile.write(r"\usepackage[utf8]{inputenc}"+self.endLine)
-            self.outFile.write(r"\begin{document}"+self.endLine)
+            self.outFile = open(filePath,mode="wt+")
+            self.outFile.write(r"\documentclass[12pt]{report}\n")
+            self.outFile.write(r"\usepackage[utf8]{inputenc}\n")
+            self.outFile.write(r"\begin{document}\n")
         except Exception as e:
             self.makeAlert(["Failed to open file.",str(e)], nwAlert.ERROR)
             return False
@@ -48,7 +48,7 @@ class LaTeXFile(TextFile):
     def _doCloseFile(self):
 
         if self.outFile is not None:
-            self.outFile.write(r"\end{document}"+self.endLine)
+            self.outFile.write(r"\end{document}\n")
             self.outFile.close()
 
         return True

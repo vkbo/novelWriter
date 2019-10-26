@@ -51,13 +51,9 @@ class ConcatFile(TextFile):
 
         theResult = self.theConv.theText
 
-        if self.winEnding:
-            self.theConv.windowsEndings()
-
         if theResult is not None and self.outFile is not None:
             self.outFile.write(theResult.rstrip())
-            self.outFile.write(self.endLine)
-            self.outFile.write(self.endLine)
+            self.outFile.write("\n\n")
 
         return True
 
@@ -67,7 +63,7 @@ class ConcatFile(TextFile):
 
     def _doOpenFile(self, filePath):
         try:
-            self.outFile = open(filePath,mode="w+")
+            self.outFile = open(filePath,mode="wt+")
         except Exception as e:
             self.makeAlert(["Failed to open file.",str(e)], nwAlert.ERROR)
             return False
