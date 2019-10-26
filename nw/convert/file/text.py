@@ -34,7 +34,7 @@ class TextFile():
         self.theText    = ""
         self.expNovel   = True
         self.expNotes   = False
-        self.winEnding  = False
+        self.winEnding  = self.mainConf.osWindows
 
         self.theConv    = ToText(self.theProject, self.theParent)
         self.makeAlert  = self.theParent.makeAlert
@@ -42,6 +42,11 @@ class TextFile():
         self.setComments(False)
         self.setMeta(False)
         self.setWordWrap(80)
+
+        if self.winEnding:
+            self.endLine = "\r\n"
+        else:
+            self.endLine = "\n"
 
         return
 
@@ -158,10 +163,8 @@ class TextFile():
         """
         try:
             self.outFile = open(filePath,mode="w+")
-            if self.winEnding:
-                self.outFile.write("\r\n\r\n")
-            else:
-                self.outFile.write("\n\n")
+            self.outFile.write(self.endLine)
+            self.outFile.write(self.endLine)
         except Exception as e:
             self.makeAlert(["Failed to open file.",str(e)], nwAlert.ERROR)
             return False

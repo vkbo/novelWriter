@@ -30,6 +30,7 @@ from nw.convert.file.text     import TextFile
 from nw.convert.file.html     import HtmlFile
 from nw.convert.file.markdown import MarkdownFile
 from nw.convert.file.latex    import LaTeXFile
+from nw.convert.file.concat   import ConcatFile
 from nw.constants             import nwFiles
 from nw.enum                  import nwItemType
 
@@ -130,6 +131,8 @@ class GuiExport(QDialog):
             outFile = HtmlFile(self.theProject, self.theParent)
         elif eFormat == GuiExportMain.FMT_TEX:
             outFile = LaTeXFile(self.theProject, self.theParent)
+        elif eFormat == GuiExportMain.FMT_NWD:
+            outFile = ConcatFile(self.theProject, self.theParent)
 
         if outFile is None:
             return False
@@ -206,12 +209,13 @@ class GuiExport(QDialog):
 
 class GuiExportMain(QWidget):
 
-    FMT_TXT   = 1
-    FMT_MD    = 2
-    FMT_HTML  = 3
-    FMT_EBOOK = 4
-    FMT_ODT   = 5
-    FMT_TEX   = 6
+    FMT_TXT   = 1 # Plain  text file
+    FMT_MD    = 2 # Markdown file
+    FMT_HTML  = 3 # HTML file
+    FMT_EBOOK = 4 # E-book friendly HTML
+    FMT_ODT   = 5 # Open document
+    FMT_TEX   = 6 # LaTeX file
+    FMT_NWD   = 7 # novelWriter markdown
     FMT_EXT   = {
         FMT_TXT   : ".txt",
         FMT_MD    : ".md",
@@ -219,6 +223,7 @@ class GuiExportMain(QWidget):
         FMT_EBOOK : ".htm",
         FMT_ODT   : ".odt",
         FMT_TEX   : ".tex",
+        FMT_NWD   : ".nwd",
     }
     FMT_HELP  = {
         FMT_TXT : (
@@ -244,6 +249,10 @@ class GuiExportMain(QWidget):
         FMT_TEX : (
             "Exports a LaTeX file that can be compiled to PDF using for instance PDFLaTeX. "
             "Comments are exported as LaTeX comments."
+        ),
+        FMT_NWD : (
+            "Exports a document using the novelWriter markdown format. "
+            "The files selected by the filters are appended as-is."
         ),
     }
 
@@ -346,12 +355,13 @@ class GuiExportMain(QWidget):
         self.outputHelp.setAlignment(Qt.AlignTop)
 
         self.outputFormat = QComboBox(self)
-        self.outputFormat.addItem("Plain Text (.txt)",      self.FMT_TXT)
-        self.outputFormat.addItem("Markdown (.md)",         self.FMT_MD)
-        self.outputFormat.addItem("HTML5 (.htm)",           self.FMT_HTML)
-        # self.outputFormat.addItem("HTML5 for eBook (.htm)", self.FMT_EBOOK)
-        # self.outputFormat.addItem("Open Document (.odt)",   self.FMT_ODT)
-        self.outputFormat.addItem("LaTeX for PDF (.tex)",   self.FMT_TEX)
+        self.outputFormat.addItem("Plain Text (.txt)",           self.FMT_TXT)
+        self.outputFormat.addItem("Markdown (.md)",              self.FMT_MD)
+        self.outputFormat.addItem("HTML5 (.htm)",                self.FMT_HTML)
+        # self.outputFormat.addItem("HTML5 for eBook (.htm)",    self.FMT_EBOOK)
+        # self.outputFormat.addItem("Open Document (.odt)",      self.FMT_ODT)
+        self.outputFormat.addItem("LaTeX for PDF (.tex)",        self.FMT_TEX)
+        self.outputFormat.addItem("novelWriter Markdown (.nwd)", self.FMT_NWD)
         self.outputFormat.currentIndexChanged.connect(self._updateFormat)
 
         optIdx = self.outputFormat.findData(self.optState.getSetting("eFormat"))
@@ -421,6 +431,7 @@ class GuiExportMain(QWidget):
             "HTML files (*.htm *.html)",
             # "Open document files (*.odt)",
             "LaTeX files (*.tex)",
+            "novelWriter document files (*.nwd)",
             "All files (*.*)",
         ]
 

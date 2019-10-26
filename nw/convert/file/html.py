@@ -35,14 +35,14 @@ class HtmlFile(TextFile):
     def _doOpenFile(self, filePath):
         try:
             self.outFile = open(filePath,mode="w+")
-            self.outFile.write("<!DOCTYPE html>\n")
-            self.outFile.write("<html>\n")
-            self.outFile.write("<head>\n")
-            self.outFile.write("<style>\n")
-            self.outFile.write("  pre {background-color: #ffff99;}\n")
-            self.outFile.write("</style>\n")
-            self.outFile.write("</head>\n")
-            self.outFile.write("<body>\n")
+            self.outFile.write("<!DOCTYPE html>"+self.endLine)
+            self.outFile.write("<html>"+self.endLine)
+            self.outFile.write("<head>"+self.endLine)
+            self.outFile.write("<style>"+self.endLine)
+            self.outFile.write("  pre {background-color: #ffff99;}"+self.endLine)
+            self.outFile.write("</style>"+self.endLine)
+            self.outFile.write("</head>"+self.endLine)
+            self.outFile.write("<body>"+self.endLine)
         except Exception as e:
             self.makeAlert(["Failed to open file.",str(e)], nwAlert.ERROR)
             return False
@@ -50,8 +50,8 @@ class HtmlFile(TextFile):
 
     def _doCloseFile(self):
         if self.outFile is not None:
-            self.outFile.write("</body>\n")
-            self.outFile.write("</html>\n")
+            self.outFile.write("</body>"+self.endLine)
+            self.outFile.write("</html>"+self.endLine)
             self.outFile.close()
         return True
 
