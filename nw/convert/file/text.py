@@ -16,8 +16,8 @@ import nw
 from os              import path
 from PyQt5.QtWidgets import QMessageBox
 
-from nw.convert.tokenizer import Tokenizer
-from nw.enum              import nwAlert, nwItemLayout
+from nw.convert.text.totext import ToText
+from nw.enum                import nwAlert, nwItemLayout
 
 logger = logging.getLogger(__name__)
 
@@ -36,7 +36,7 @@ class TextFile():
         self.expNotes   = False
         self.winEnding  = False
 
-        self.theConv    = Tokenizer(self.theProject, self.theParent)
+        self.theConv    = ToText(self.theProject, self.theParent)
         self.makeAlert  = self.theParent.makeAlert
 
         self.setComments(False)

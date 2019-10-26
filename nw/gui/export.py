@@ -23,15 +23,15 @@ from PyQt5.QtWidgets import (
     QLabel, QComboBox, QLineEdit, QPushButton, QFileDialog, QProgressBar, QSpinBox
 )
 
-from nw.project.document     import NWDoc
-from nw.tools.translate      import numberToWord
-from nw.tools.optlaststate   import OptLastState
-from nw.convert.textfile     import TextFile
-from nw.convert.htmlfile     import HtmlFile
-from nw.convert.markdownfile import MarkdownFile
-from nw.convert.latexfile    import LaTeXFile
-from nw.constants            import nwFiles
-from nw.enum                 import nwItemType
+from nw.project.document      import NWDoc
+from nw.tools.translate       import numberToWord
+from nw.tools.optlaststate    import OptLastState
+from nw.convert.file.text     import TextFile
+from nw.convert.file.html     import HtmlFile
+from nw.convert.file.markdown import MarkdownFile
+from nw.convert.file.latex    import LaTeXFile
+from nw.constants             import nwFiles
+from nw.enum                  import nwItemType
 
 logger = logging.getLogger(__name__)
 
