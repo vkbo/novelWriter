@@ -13,9 +13,9 @@
 import logging
 import nw
 
-from nw.convert.textfile import TextFile
-from nw.convert.tohtml   import ToHtml
-from nw.enum             import nwAlert
+from nw.convert.file.text   import TextFile
+from nw.convert.text.tohtml import ToHtml
+from nw.enum                import nwAlert
 
 logger = logging.getLogger(__name__)
 
@@ -34,15 +34,25 @@ class HtmlFile(TextFile):
 
     def _doOpenFile(self, filePath):
         try:
-            self.outFile = open(filePath,mode="w+")
+            self.outFile = open(filePath,mode="wt+")
             self.outFile.write("<!DOCTYPE html>\n")
             self.outFile.write("<html>\n")
             self.outFile.write("<head>\n")
             self.outFile.write("<style>\n")
-            self.outFile.write("  pre {background-color: #ffff99;}\n")
+            self.outFile.write("  #page {\n")
+            self.outFile.write("    margin: 40px auto;\n")
+            self.outFile.write("    max-width: 769px;\n")
+            self.outFile.write("  }\n")
+            self.outFile.write("  .comment {\n")
+            self.outFile.write("    background-color: #fbfabd;\n")
+            self.outFile.write("    border: 1px solid #b4b000;\n")
+            self.outFile.write("    margin: 10px 20px;\n")
+            self.outFile.write("    padding: 6px;\n")
+            self.outFile.write("  }\n")
             self.outFile.write("</style>\n")
             self.outFile.write("</head>\n")
             self.outFile.write("<body>\n")
+            self.outFile.write("<article id='page'>\n")
         except Exception as e:
             self.makeAlert(["Failed to open file.",str(e)], nwAlert.ERROR)
             return False
@@ -50,6 +60,7 @@ class HtmlFile(TextFile):
 
     def _doCloseFile(self):
         if self.outFile is not None:
+            self.outFile.write("</article>\n")
             self.outFile.write("</body>\n")
             self.outFile.write("</html>\n")
             self.outFile.close()

@@ -1,0 +1,91 @@
+##################
+Exporting Projects
+##################
+
+The novelWriter project can be exported in various formats using the export tool available from :menuselection:`Project --> Export Project` or by pressing :kbd:`F5`.
+
+**************
+File Selection
+**************
+
+Which files are selected for export can be controlled from the "Selection" section.
+The check box for "Novel files" will select any file that isn't classified as a note.
+This is useful when exporting a document containing the novel itself.
+
+It is also possible to select the "Note files" for export, with or without the "Novel files".
+Comments can also optionally be included in the export for those formats that supports this.
+
+**************
+Export Formats
+**************
+
+Currently, five formats are supported for exporting.
+
+novelWriter Markdown
+====================
+
+This is simply a concatenation of the files selected by the filters.
+The files in the project are stacked together in the order they appear in the tree view, with comments, tags, etc. included.
+This is a useful format for exporting the project for later import back into novelWriter.
+
+Plain Text
+==========
+
+The plain text export format writes a simple ``.txt`` file without any formatting at all.
+Word-wrapping to a fixed column width is supported.
+It does, however, respect the centering of text if the :guilabel:`Fixed width` setting is larger than ``0``.
+
+Markdown
+========
+
+The markdown export formats writes a file using the valid markdown formats used by novelWriter, and converts comments to preformatted blocks by indenting it with four spaces.
+Word-wrapping to a fixed column width is supported.
+
+HTML5 Document
+==============
+
+The html5 export format writes a single ``.htm`` file with a minimal style settings block.
+The style setting block sets a maximum page width of ``768px``.
+Comments are exported as indented text boxes with a light yellow background.
+
+LaTeX Document
+==============
+
+The latex export formats generats a simple ``.tex`` file using a ``report`` document format.
+All chapters and sections are exported as unnumbered, and the internal header numbering formatting of novelWriter is used instead.
+Word-wrapping to a fixed column width in the LaTeX source is supported.
+
+*****************
+Header Formatting
+*****************
+
+The chapter, scene and section headers for novel files can receive some special treatment using the formats under :guilabel:`Chapter Headings` and :guilabel:`Other Headings`.
+The chapters can either be of numbered or unnumbered type, the latter being suitable for prologues, epilogues, interludes, etc.
+The headers can be generated using free text in combination with replace tags.
+The tooltip will explain which tags are available for each heading type.
+
+.. note::
+   Header formatting only applies to novel files.
+   Headings in note files will will be left as-is, but heading levels 1 through 4 are converted to the correct heading level in the respective output formats.
+
+Numbered Chapters
+=================
+
+Numbered chapters can be automatically assigned a number from 1 and upwards.
+The number is inserted in place of the ``%num%`` tag.
+Alternatively, the number can be translated to a word by using the ``%numword%`` tag.
+The word numbers feature is currently only supported in English, and works for the range from "One" to "Nine Hundred and Ninety-Nine".
+
+Unnumbered Chapters
+===================
+
+Unnumbered chapters only support the ``%title%`` tag for auto-replacement.
+
+Scenes and Sections
+===================
+
+Both scenes and sections support the ``%title%`` tag.
+In addition, scenes behave differently than the other headings when the format does not contain any auto-replace tags.
+If the text in the box is any static text, the heading formatter will treat it as a scene separator, and insert that text as centred text between scenes, and ignoring the first scene of a chapter if the chapter heading is not followed by any text.
+
+Leaving these fields blank will disable any output of scene and section headers or separators to the exported file.

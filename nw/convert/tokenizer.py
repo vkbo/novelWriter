@@ -26,27 +26,28 @@ logger = logging.getLogger(__name__)
 
 class Tokenizer():
 
-    FMT_B_B   = 1  # Begin bold
-    FMT_B_E   = 2  # End bold
-    FMT_I_B   = 3  # Begin italics
-    FMT_I_E   = 4  # End italics
-    FMT_U_B   = 5  # Begin underline
-    FMT_U_E   = 6  # End underline
+    FMT_B_B   =  1 # Begin bold
+    FMT_B_E   =  2 # End bold
+    FMT_I_B   =  3 # Begin italics
+    FMT_I_E   =  4 # End italics
+    FMT_U_B   =  5 # Begin underline
+    FMT_U_E   =  6 # End underline
 
-    T_EMPTY   = 1  # Empty line (new paragraph)
-    T_COMMENT = 2  # Comment line
-    T_COMMAND = 3  # Command line
-    T_HEAD1   = 4  # Header 1 (title)
-    T_HEAD2   = 5  # Header 2 (chapter)
-    T_HEAD3   = 6  # Header 3 (scene)
-    T_HEAD4   = 7  # Header 4
-    T_TEXT    = 8  # Text line
-    T_SEP     = 9  # Scene separator
+    T_EMPTY   =  1 # Empty line (new paragraph)
+    T_COMMENT =  2 # Comment line
+    T_COMMAND =  3 # Command line
+    T_HEAD1   =  4 # Header 1 (title)
+    T_HEAD2   =  5 # Header 2 (chapter)
+    T_HEAD3   =  6 # Header 3 (scene)
+    T_HEAD4   =  7 # Header 4
+    T_TEXT    =  8 # Text line
+    T_SEP     =  9 # Scene separator
+    T_PBREAK  = 10 # Page break
 
-    A_LEFT    = 1  # Left aligned
-    A_RIGHT   = 2  # Right aligned
-    A_CENTRE  = 3  # Centred
-    A_JUSTIFY = 4  # Justified
+    A_LEFT    =  1 # Left aligned
+    A_RIGHT   =  2 # Right aligned
+    A_CENTRE  =  3 # Centred
+    A_JUSTIFY =  4 # Justified
 
     def __init__(self, theProject, theParent):
 
@@ -262,6 +263,7 @@ class Tokenizer():
                         self.theTokens[n] = (tType,tTemp,None,self.A_LEFT)
 
         # For title page and partitions, we need to centre all text
+        # and for some formats, we need a page break
         if isTitle or isPart:
             for n in range(len(self.theTokens)):
                 tToken  = self.theTokens[n]
@@ -270,101 +272,8 @@ class Tokenizer():
                 tFormat = tToken[2]
                 self.theTokens[n] = (tType,tText,tFormat,self.A_CENTRE)
 
-        return
+            self.theTokens[n] = (self.T_PBREAK,"",None,self.A_LEFT)
 
-    def doConvert(self):
-        """Converts the tokenized text into plain text.
-        """
-
-        if self.wordWrap > 0:
-            tWrap = textwrap.TextWrapper(
-                width                = self.wordWrap,
-                initial_indent       = "",
-                subsequent_indent    = "",
-                expand_tabs          = True,
-                replace_whitespace   = True,
-                fix_sentence_endings = False,
-                break_long_words     = True,
-                drop_whitespace      = True,
-                break_on_hyphens     = True,
-                tabsize              = 8,
-                max_lines            = None
-            )
-
-        self.theResult = ""
-        thisPar = []
-        for tType, tText, tFormat, tAlign in self.theTokens:
-
-            # First check if we have a comment or plain text, as they need some
-            # extra replacing before we proceed to wrapping and final formatting.
-            if tType == self.T_COMMENT:
-                tText = "[%s]" % tText
-
-            elif tType == self.T_TEXT:
-                tTemp = tText
-                for xPos, xLen, xFmt in reversed(tFormat):
-                    tTemp = tTemp[:xPos]+tTemp[xPos+xLen:]
-                tText = tTemp
-
-            tLen = len(tText)
-
-            # The text can now be word wrapped, if we have requested this and it's needed.
-            if tAlign == self.A_CENTRE:
-                if self.wordWrap > 0:
-                    if tLen > self.wordWrap:
-                        aText = tWrap.wrap(tText)
-                        for n in range(len(aText)):
-                            aText[n] = self._centreText(aText[n],self.wordWrap)
-                        tText = "\n".join(aText)
-                    else:
-                        tText = self._centreText(tText,self.wordWrap)
-            else:
-                if self.wordWrap > 0 and tLen > self.wordWrap:
-                    tText = tWrap.fill(tText)
-
-            # Then the text can receive final formatting before we append it to the results.
-            # We also store text lines in a buffer and merge them only when we find an empty line,
-            # indicating a new paragraph.
-            if tType == self.T_EMPTY:
-                if len(thisPar) > 0:
-                    self.theResult += "%s\n\n" % " ".join(thisPar)
-                thisPar = []
-
-            elif tType == self.T_HEAD1:
-                uLine = "="*min(tLen,self.wordWrap)
-                if tAlign == self.A_CENTRE:
-                    uLine = self._centreText(uLine,self.wordWrap)
-                self.theResult += "%s\n%s\n\n" % (tText,uLine)
-
-            elif tType == self.T_HEAD2:
-                uLine = "~"*min(tLen,self.wordWrap)
-                self.theResult += "%s\n%s\n\n" % (tText,uLine)
-
-            elif tType == self.T_HEAD3:
-                uLine = "-"*min(tLen,self.wordWrap)
-                self.theResult += "%s\n%s\n\n" % (tText,uLine)
-
-            elif tType == self.T_HEAD4:
-                self.theResult += "%s\n\n" % tText
-
-            elif tType == self.T_SEP:
-                if self.wordWrap > 0 and tLen < self.wordWrap:
-                    tText = self._centreText(tText,self.wordWrap)
-                self.theResult += "%s\n\n" % tText
-
-            elif tType == self.T_TEXT:
-                thisPar.append(tText)
-
-            elif tType == self.T_COMMENT and self.doComments:
-                self.theResult += "%s\n\n" % tText
-
-            elif tType == self.T_COMMAND and self.doCommands:
-                self.theResult += "%s\n\n" % tText
-
-        return
-
-    def windowsEndings(self):
-        self.theResult = self.theResult.replace("\n","\r\n")
         return
 
     ##

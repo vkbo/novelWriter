@@ -16,8 +16,8 @@ import nw
 from os              import path
 from PyQt5.QtWidgets import QMessageBox
 
-from nw.convert.tokenizer import Tokenizer
-from nw.enum              import nwAlert, nwItemLayout
+from nw.convert.text.totext import ToText
+from nw.enum                import nwAlert, nwItemLayout
 
 logger = logging.getLogger(__name__)
 
@@ -34,9 +34,8 @@ class TextFile():
         self.theText    = ""
         self.expNovel   = True
         self.expNotes   = False
-        self.winEnding  = False
 
-        self.theConv    = Tokenizer(self.theProject, self.theParent)
+        self.theConv    = ToText(self.theProject, self.theParent)
         self.makeAlert  = self.theParent.makeAlert
 
         self.setComments(False)
@@ -140,9 +139,6 @@ class TextFile():
         self.theConv.doHeaders()
         self.theConv.doConvert()
 
-        if self.winEnding:
-            self.theConv.windowsEndings()
-
         if self.theConv.theResult is not None and self.outFile is not None:
             self.outFile.write(self.theConv.theResult)
 
@@ -157,11 +153,8 @@ class TextFile():
         that uses a different file format that requires a different approach.
         """
         try:
-            self.outFile = open(filePath,mode="w+")
-            if self.winEnding:
-                self.outFile.write("\r\n\r\n")
-            else:
-                self.outFile.write("\n\n")
+            self.outFile = open(filePath,mode="wt+")
+            self.outFile.write("\n\n")
         except Exception as e:
             self.makeAlert(["Failed to open file.",str(e)], nwAlert.ERROR)
             return False

@@ -48,7 +48,7 @@ templates_path = ["_templates"]
 # You can specify multiple suffix as a list of string:
 #
 # source_suffix = [".rst", ".md"]
-source_suffix = ".rst"
+source_suffix = ".txt"
 
 # The master toctree document.
 master_doc = "index"
@@ -150,7 +150,7 @@ man_pages = [
 #  dir menu entry, description, category)
 texinfo_documents = [
     (master_doc, "novelWriter", "novelWriter Documentation",
-     author, "novelWriter", "One line description of project.",
+     author, "novelWriter", "Markdown-like editor for novels.",
      "Miscellaneous"),
 ]
 

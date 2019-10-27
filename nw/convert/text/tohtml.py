@@ -28,9 +28,13 @@ class ToHtml(Tokenizer):
         Tokenizer.doAutoReplace(self)
 
         repDict = {
-            "<" : "&lt;",
-            ">" : "&gt;",
-            "&" : "&amp;",
+            "<"      : "&lt;",
+            ">"      : "&gt;",
+            "&"      : "&amp;",
+            "\u2013" : "&endash;",
+            "\u2014" : "$emdash;",
+            "\u2500" : "$emdash;",
+            "\u2026" : "&hellip;",
         }
         xRep = re.compile("|".join([re.escape(k) for k in repDict.keys()]), flags=re.DOTALL)
         self.theText = xRep.sub(lambda x: repDict[x.group(0)], self.theText)
@@ -88,7 +92,7 @@ class ToHtml(Tokenizer):
                 thisPar.append(tTemp)
 
             elif tType == self.T_COMMENT and self.doComments:
-                self.theResult += "<pre>%s</pre>\n" % tText
+                self.theResult += "<div class='comment'>%s</div>\n" % tText
 
             elif tType == self.T_COMMAND and self.doCommands:
                 self.theResult += "<pre>%s</pre>\n" % tText
