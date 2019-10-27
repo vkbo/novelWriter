@@ -1,5 +1,19 @@
 # novelWriter ChangeLog
 
+## Version 0.3.2 [2019-10-27]
+
+**Documentation**
+
+* The documentation has been rewritten and added to the Read the Docs website. Pressing `F1` or `Help > Documentation` in the menu, opens the novelWriter documentation page. PRs #68 and #69.
+
+**User Interface**
+
+* Filters have been added to the Timeline View windows so unused tags can be hidden, and it's possible to select only certain classes of tags to display. PRs #61 and #62
+* The dialog boxes for Timeline View and Session Log now remember the filter choices from previous instance for the same project. PR #62
+* When having a document open in the editor, text can be imported into it from a plain text file. No formatting conversion of the imported text is performed. That is up to the user. However, this allows for importing novelWriter documents from other projects or from a previous export, partially addressing request in issue #63. PR #65
+* The Export feature now includes exporting to LaTeX, which allows building PDFs with pdflatex or other tools. PR #73
+* Export of a novelWriter flavour markdown file is also supported. This file can be imported back in as-is, and almost completes an export-edit-import cycle. A split document into multiple files feature will be added soon. PR #73
+
 ## Version 0.3.1 [2019-10-20]
 
 **Bug Fixes**
