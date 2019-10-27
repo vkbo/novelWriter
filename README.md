@@ -11,7 +11,7 @@ It is under initial development, and not all planned features are included, but 
 The application is written in Python3 using Qt5 via PyQt5.
 It is developed on Linux, but it should in principle work fine on other operating systems as well as long as dependencies are met.
 
-The documentation is available here: [https://novelwriter.readthedocs.io/](novelwriter.readthedocs.io).
+The documentation is available here: [novelwriter.readthedocs.io](https://novelwriter.readthedocs.io/).
 
 The application can be started from the source folder with the command:
 ```
