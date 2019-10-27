@@ -92,7 +92,7 @@ class ToHtml(Tokenizer):
                 thisPar.append(tTemp)
 
             elif tType == self.T_COMMENT and self.doComments:
-                self.theResult += "<pre>%s</pre>\n" % tText
+                self.theResult += "<div class='comment'>%s</div>\n" % tText
 
             elif tType == self.T_COMMAND and self.doCommands:
                 self.theResult += "<pre>%s</pre>\n" % tText

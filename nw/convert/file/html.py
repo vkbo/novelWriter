@@ -39,10 +39,20 @@ class HtmlFile(TextFile):
             self.outFile.write("<html>\n")
             self.outFile.write("<head>\n")
             self.outFile.write("<style>\n")
-            self.outFile.write("  pre {background-color: #ffff99;}\n")
+            self.outFile.write("  #page {\n")
+            self.outFile.write("    margin: 40px auto;\n")
+            self.outFile.write("    max-width: 769px;\n")
+            self.outFile.write("  }\n")
+            self.outFile.write("  .comment {\n")
+            self.outFile.write("    background-color: #fbfabd;\n")
+            self.outFile.write("    border: 1px solid #b4b000;\n")
+            self.outFile.write("    margin: 10px 20px;\n")
+            self.outFile.write("    padding: 6px;\n")
+            self.outFile.write("  }\n")
             self.outFile.write("</style>\n")
             self.outFile.write("</head>\n")
             self.outFile.write("<body>\n")
+            self.outFile.write("<article id='page'>\n")
         except Exception as e:
             self.makeAlert(["Failed to open file.",str(e)], nwAlert.ERROR)
             return False
@@ -50,6 +60,7 @@ class HtmlFile(TextFile):
 
     def _doCloseFile(self):
         if self.outFile is not None:
+            self.outFile.write("</article>\n")
             self.outFile.write("</body>\n")
             self.outFile.write("</html>\n")
             self.outFile.close()
