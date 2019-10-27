@@ -4,8 +4,7 @@ Welcome to novelWriter Documentation
 
 This is the documentation for novelWriter |version|.
 
-Contents
-^^^^^^^^
+**Contents**
 
 .. toctree::
    :maxdepth: 2
@@ -18,8 +17,7 @@ Contents
    export
    technical
 
-Indices and Tables
-^^^^^^^^^^^^^^^^^^
+**Indices and Tables**
 
 * :ref:`genindex`
 * :ref:`modindex`
