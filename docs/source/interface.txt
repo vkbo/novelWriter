@@ -1,6 +1,6 @@
-
+##############
 User Interface
-==============
+##############
 
 The user interface is kept as simple as possible to avoid distractions.
 The main window contains a tree vew pane with the entire structure of the project, and a small details panel below it to display additional information.
@@ -11,8 +11,9 @@ This will open the source editor which uses a simplified markdown format describ
 The document can also be viewed as html with all the comments and commands stripped out. To view a document, simply press Ctrl+R or select a file and go to :menuselection:`Document --> View Document` in the menu.
 The document viewed does not need to be the same document currently being edited.
 
+***************
 Markdown Format
-^^^^^^^^^^^^^^^
+***************
 
 the document editor uses a simplified markdown format.
 That is, it supports basic formatting like bold, italics and underline, as well as four levels of headings.
@@ -31,8 +32,9 @@ The editor also has a minimal set of commands used for setting tags and referenc
 * ``% text...``: A comment. The text is not exported, seen in viewer, or counted towards word counts.
 * ``@keyword: value``: A keyword argument followed by a value, or a comma separated list of values.
 
+******************
 Keyboard Shortcuts
-^^^^^^^^^^^^^^^^^^
+******************
 
 All features are available as keyboard shortcuts.
 These are as following:
