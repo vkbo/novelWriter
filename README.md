@@ -6,12 +6,12 @@
 
 novelWriter is a markdown-like text editor designed fro writing novels and larger projects of many smaller plain text documents.
 
-It is under initial development, but is currently usable.
-The application is written with Python3 and PyQt5, and developed on Linux.
-It should work fine on other operating systems as well.
+It is under initial development, and not all planned features are included, but it is perfectly usable in the current state.
 
-**Note:** This application is designed specifically for my own needs as I work on my projects.
-I will only add features as I need them. I am trying to make the application as general as possible within that limitation.
+The application is written in Python3 using Qt5 via PyQt5.
+It is developed on Linux, but it should in principle work fine on other operating systems as well as long as dependencies are met.
+
+The documentation is available here: [https://novelwriter.readthedocs.io/](novelwriter.readthedocs.io).
 
 The application can be started from the source folder with the command:
 ```
@@ -20,46 +20,13 @@ The application can be started from the source folder with the command:
 
 It also takes a few parameters for debugging and such, which can be listed with the switch `--help`.
 
-There are no launcher icons yet. Consult your operating system documentation for how to make those.
-I will add those later.
-
-## Features
-
-The file format for the written text is a format similar to markdown, but with a few extensions and a few omissions.
-Project meta data is stored as XML.
-The editor has syntax highlighting for the features it supports, and includes a set of different syntax highlighting themes.
-The GUI also has an optional dark theme in addition to the default system theme.
-
-Themes can easily be added to the `nw/themes` folder. Have a look in the existing folders for examples.
-
-Open documents and the project file itself is saved regularly on a timer if they have been altered.
-The status of this is indicated by two indicators in the right corner of the status bar. Unsaved changes are in yellow, and saved is indicated by green. The indicators are marked with `P` for project and `D` for document.
-Latest character count, word count, and paragraph count is shown next to these indicators in the status bar.
-The counts are updated regularly, but not as-you-type.
-
-The tree view also shows the word count per file, and total counts for the folders.
-Next to the count is a status flag. When an item is selected, the panel below the tree view will show more details.
-A novel file can use the status to set how far along from new to draft to finished it is, and the status flag for other files can be used to indicate the importance of for instance plot elements, characters, locations, etc.
-These flags are meant to be customisable, bit the interface hasn't been added yet.
-
-Next to the colour icon is a flag that indicates the class of the file or folder, that is `N` for Novel, `C` for character, and so on. The last flag indicates file type. This is spelled out in the details pane at the bottom, and can be edited by pressing `Ctrl+E` or from the menu.
-
-The main documentation is available in the application in the Help menu or by pressing `F1`.
-
-The core features of novelWriter are:
-
-* A plain text editor with a minimal set of markdown formatting features, plus a few additional features like tags and comments. Tags and comments are not counted towards word counts.
-* Most features have keyboard shortcuts to speed up using the editor.
-* Files are organised in a tree view with no automatic ordering. The order of the files are as you set them, and are saved in the same order.
-* Files live in a set of root folders, and cannot be moved between them. These are currently `Novel`, `Character`, `Plot`, `World`, `Timeline`, `Object` and `Custom`. There can only be one of each, except for the `Custom` one.
-* Within the root folders files can be organised in subfolders. The folders will have no impact on the layout of the compiled novel when I get around to adding the export feature. They are simply there for your convenience. The order of the text files in the final novel is dictated purely from the order of entries in the tree.
-* Each file can have a file layout, which currently doesn't do anything other than indicate the purpose of the file. It will, however, be used to control the format and structure of the parts of the novel when the export features are added. Each chapter must have a chapter type file. The text of the chapter can be put in the same file, or in following scene files. The choice is yours. The entire book can also be written in a single file of type `Book`.
-* Documents can be either opened in the editor (left pane) or in view mode (right pane). That means two documents can be opened at once, making it easier to work on one while following the other.
-* When tags and references are set in the documents, a timeline window will show the relationship between the novel sections and the supporting files like character files, locations, plot elements, etc.
+There are no launcher icons yet.
+Consult your operating system documentation for how to make those.
+I will add those later, and would appreciate any assistance from people working on Windows and MacOS as I don't use either of those operating systems.
 
 ## Dependencies
 
-For the apt package manager, the following Python3 packages are needed:
+For the apt package manager on Debian systems, the following Python3 packages are needed:
 
 * `python3-pyqt5` for the GUI
 * `python3-pyqt5.qtsvg` may need to be installed separately
@@ -76,6 +43,60 @@ Alternatively, the packages can be installed with `pip` by running
 pip install -r requirements.txt
 ```
 in the application folder.
+
+## Key Features
+
+The text documents of novelWriter uses a format similar to markdown, but with a few extensions and a few omissions.
+Project meta data is stored as XML.
+
+### Colour Themes
+
+The editor has syntax highlighting for the features it supports, and includes a set of different syntax highlighting themes.
+The GUI also has an optional dark theme in addition to the default system theme.
+
+Note that the dark theme may not render all elements of the GUI as dark colours if you are running an early version of Qt5.
+This is not due to a bug in novelWriter, but due to the fact that the the styling options in the Qt API in some versions were incomplete.
+
+New themes can easily be added to the `nw/themes` folder.
+Have a look in the existing folders for examples of how to define the colours.
+
+### Auto-Saving and Document Stats
+
+Open documents and the project file itself is saved regularly on a timer if they have been altered.
+The status of this is indicated by two indicators in the right corner of the status bar.
+Unsaved changes are in yellow, and saved is indicated by green.
+Latest character count, word count, and paragraph count is shown next to these indicators in the status bar.
+The counts are updated regularly, but not as-you-type.
+
+### Easy Organising of Project Files
+
+The structure of the project is shown on the left hand side of the main GUI.
+Project files are organised into root folders, indicating what class of file they are.
+The most important root folder is the Novel folder, which contains all of the files that makes up the finished novel.
+Each root folder can have subfolders.
+Folders have no impact on the project structure, they are purely tools for organising the files in whatever way the user needs.
+
+The editor supports four levels of headings, which determines what level the following text belongs to.
+Headings of level one signify a book or partition title.
+Headings of level two signify the start of a new chapter.
+Headings of level three signify the start of a new scene.
+Headings of level four can be used internally in each scene to separate sections.
+
+Each novel file can be assigned a layout format, which shows up as a flag next to the item in the tree view.
+These are mostly to help the user see what they contain, but some of them have impact on the format of the exported document.
+See the documentation for further details.
+
+#### Project Notes
+
+Supporting note files can be added for the story plot, characters, locations, story timeline, etc.
+These have their separate root folders.
+These are optional files.
+
+### Visualisation of Story Elements
+
+The different notes can be assigned tags, which the novel files can refer back to using special meta keywords.
+Currently, this information can be used to display a Timeline View of the story, showing where each scene connects to the plot, and which characters, etc. occur in them.
+Further features using this meta data will be added in the future.
 
 ## Screenshot
 
