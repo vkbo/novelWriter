@@ -22,15 +22,19 @@ The formats are listed below.
 In addition to these standard markdown features, the editor also allows for comments, that is text that is ignored by the word counter and not exported or seen in the document viewer.
 The editor also has a minimal set of commands used for setting tags and references between files.
 
-* ``# Title``: Heading level one. The space after the # is mandatory.
-* ``## Title``: Heading level two. The space after the # is mandatory.
-* ``### Title``: Heading level three. The space after the # is mandatory.
-* ``#### Title``: Heading level four. The space after the # is mandatory.
-* ``**text**``: The text is renderred as bold text.
-* ``_text_``:The text is renderred as italics text.
-* ``__text__``: The text is renderred as underlined text.
-* ``% text...``: A comment. The text is not exported, seen in viewer, or counted towards word counts.
-* ``@keyword: value``: A keyword argument followed by a value, or a comma separated list of values.
+.. csv-table:: Formatting Syntax
+   :header: "Format", "Description"
+   :widths: 15, 70
+
+   "``# Title``",         "Heading level one. The space after the # is mandatory."
+   "``## Title``",        "Heading level two. The space after the # is mandatory."
+   "``### Title``",       "Heading level three. The space after the # is mandatory."
+   "``#### Title``",      "Heading level four. The space after the # is mandatory."
+   "``**text**``",        "The text is renderred as bold text."
+   "``_text_``",          "The text is renderred as italics text."
+   "``__text__``",        "The text is renderred as underlined text."
+   "``% text...``",       "A comment. The text is not exported, seen in viewer, or counted towards word counts."
+   "``@keyword: value``", "A keyword argument followed by a value, or a comma separated list of values."
 
 ******************
 Keyboard Shortcuts
@@ -39,41 +43,53 @@ Keyboard Shortcuts
 All features are available as keyboard shortcuts.
 These are as following:
 
-* ``Ctrl+Shift+O``: Open a project.
-* ``Ctrl+Shift+S``: Save the current project.
-* ``Ctrl+Shift+W``: Close the current project.
-* ``Ctrl+Shift+,``: Change project settings.
-* ``Ctrl+Shift+N``: Create new folder.
-* ``Ctrl+E, F2``: If in tree view, edit a document or folder settings.
-* ``Ctrl+Del``: If in tree view, move a document to trash, or delete a folder.
-* ``Ctrl+Q``: Exit novelWriter.
-* ``Ctrl+N``: Create new document.
-* ``Ctrl+O``: Open selected document.
-* ``Return``: If in tree view, open a document for editing.
-* ``Ctrl+S``: Save the current document in the editor.
-* ``Ctrl+W``: Close the current document in the editor.
-* ``Ctrl+R``: If in tree view, open a document for viewing. If in editor pane, open current document for viewing.
-* ``Ctrl+Shift+R``: Close the document view pane.
-* ``Ctrl+Z``: Undo latest changes.
-* ``Ctrl+Y``: Redo latest undo.
-* ``Ctrl+C``: Copy selected text to clipboard.
-* ``Ctrl+X``: Cut selected text to clipboard.
-* ``Ctrl+V``: Paste text from clipboard to cursor position.
-* ``Ctrl+A``: Select all text in document.
-* ``Ctrl+Shift+A``: Select all text in current paragraph.
-* ``Ctrl+1``: Switch focus to tree view pane.
-* ``Ctrl+2``: Switch focus to document editor pane.
-* ``Ctrl+3``: Switch focus to document viewer pane.
-* ``Ctrl+T``: Show project timeline.
-* ``Ctrl+B``: Format selected text, or word under cursor, as bold.
-* ``Ctrl+I``: Format selected text, or word under cursor, as italic.
-* ``Ctrl+U``: Format selected text, or word under cursor, as underline.
-* ``Ctrl+D``: Wrap selected text, or word under cursor, in double quotes.
-* ``Ctrl+Shift+D``: Wrap selected text, or word under cursor, in single quotes.
-* ``Ctrl+Shift+Up``: Move item one step up in the tree view.
-* ``Ctrl+Shift+Down``: Move item one step down in the tree view.
-* ``Ctrl+F7``: Toggle spell checking.
-* ``F7``: Re-run spell checker.
-* ``Ctrl+.``: Correct word under cursor.
-* ``F9``: Re-build project indices.
-* ``F1``: Open documentation.
+.. csv-table:: Keyboard Shortcuts
+   :header: "Shortcut", "Description"
+   :widths: 15, 70
+
+   ":kbd:`Ctrl-.`",          "Correct word under cursor."
+   ":kbd:`Ctrl-1`",          "Switch focus to tree view pane."
+   ":kbd:`Ctrl-2`",          "Switch focus to document editor pane."
+   ":kbd:`Ctrl-3`",          "Switch focus to document viewer pane."
+   ":kbd:`Ctrl-A`",          "Select all text in document."
+   ":kbd:`Ctrl-B`",          "Format selected text, or word under cursor, as bold."
+   ":kbd:`Ctrl-C`",          "Copy selected text to clipboard."
+   ":kbd:`Ctrl-D`",          "Wrap selected text, or word under cursor, in double quotes."
+   ":kbd:`Ctrl-E`",          "If in tree view, edit a document or folder settings."
+   ":kbd:`Ctrl-F`",          "Open the search bar and search for selected word, if any is selected."
+   ":kbd:`Ctrl-H`",          "Open the search and replace bar and search for selected word, if any is selected."
+   ":kbd:`Ctrl-I`",          "Format selected text, or word under cursor, as italic."
+   ":kbd:`Ctrl-N`",          "Create new document."
+   ":kbd:`Ctrl-O`",          "Open selected document."
+   ":kbd:`Ctrl-Q`",          "Exit novelWriter."
+   ":kbd:`Ctrl-R`",          "If in tree view, open a document for viewing. If in editor pane, open current document for viewing."
+   ":kbd:`Ctrl-S`",          "Save the current document in the editor."
+   ":kbd:`Ctrl-T`",          "Show project timeline."
+   ":kbd:`Ctrl-U`",          "Format selected text, or word under cursor, as underline."
+   ":kbd:`Ctrl-V`",          "Paste text from clipboard to cursor position."
+   ":kbd:`Ctrl-W`",          "Close the current document in the editor."
+   ":kbd:`Ctrl-X`",          "Cut selected text to clipboard."
+   ":kbd:`Ctrl-Y`",          "Redo latest undo."
+   ":kbd:`Ctrl-Z`",          "Undo latest changes."
+   ":kbd:`Ctrl-F7`",         "Toggle spell checking."
+   ":kbd:`Ctrl-Del`",        "If in tree view, move a document to trash, or delete a folder."
+   ":kbd:`Ctrl-Shift-,`",    "Change project settings."
+   ":kbd:`Ctrl-Shift-1`",    "Replace occurrence of word in current document, and search for next occurrence."
+   ":kbd:`Ctrl-Shift-A`",    "Select all text in current paragraph."
+   ":kbd:`Ctrl-Shift-D`",    "Wrap selected text, or word under cursor, in single quotes."
+   ":kbd:`Ctrl-Shift-I`",    "Import text to the current document from a text file."
+   ":kbd:`Ctrl-Shift-N`",    "Create new folder."
+   ":kbd:`Ctrl-Shift-O`",    "Open a project."
+   ":kbd:`Ctrl-Shift-R`",    "Close the document view pane."
+   ":kbd:`Ctrl-Shift-S`",    "Save the current project."
+   ":kbd:`Ctrl-Shift-W`",    "Close the current project."
+   ":kbd:`Ctrl-Shift-Up`",   "Move item one step up in the tree view."
+   ":kbd:`Ctrl-Shift-Down`", "Move item one step down in the tree view."
+   ":kbd:`F1`",              "Open documentation."
+   ":kbd:`F2`",              "Alternative to :kbd:`Ctrl-E`."
+   ":kbd:`F3`",              "Find next occurrence of word in current document."
+   ":kbd:`F5`",              "Export project dialog."
+   ":kbd:`F7`",              "Re-run spell checker."
+   ":kbd:`F9`",              "Re-build project indices."
+   ":kbd:`Shift-F3`",        "Find previous occurrence of word in current document."
+   ":kbd:`Return`",          "If in tree view, open a document for editing."

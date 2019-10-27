@@ -1,6 +1,6 @@
-
+############
 Introduction
-============
+############
 
 novelWriter is a simple multi-document plain text editor using a modified
 markdown syntax to apply simple formatting. Additional features are available
