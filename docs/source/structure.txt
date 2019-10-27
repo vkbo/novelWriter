@@ -1,13 +1,12 @@
-#################
+*****************
 Project Structure
-#################
+*****************
 
 This section concerns files under the Novel type root folder.
 There are some restrictions and features that only applies to these type of files.
 
-**********************
 Importance of Headings
-**********************
+======================
 
 Subfolders under root folders have no impact on the structure of the novel itself.
 The structure is instead dictated by the heading level.
@@ -24,9 +23,8 @@ The different header levels are interpreted as specific section types of the nov
 * ``### Header3``: Header level 3 signifies a scene level partition.
 * ``#### Header4``: Header level 4 signifies a sub-scene level partition.
 
-**************
 Tag References
-**************
+==============
 
 Each section, indicated by a heading, can contain references to tags set in the supporting files of the project.
 See the File Tags section.
@@ -64,9 +62,8 @@ the syntax highlighter will alert the user that only the correct keywords are us
 If the index of defined tags is out of date, press F9 to regenerate it, or select :menuselection:`Tools --> Rebuild Indices` from the menu.
 In general, the index for a file is regenerated when a file is saved, so this shouldn't normally be necessary.
 
-*****************
 Novel File Layout
-*****************
+=================
 
 Files that exist under the NOVEL type root folder can have a number of layouts set.
 See overview below.
