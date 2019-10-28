@@ -37,6 +37,7 @@ These are optional, but recommended:
 
 * `python3-enchant` for spell checking
 * `python3-pycountry` for translating language codes to language names
+* `python3-latexcodec` for escaping unicode characters in LaTeX export
 
 Alternatively, the packages can be installed with `pip` by running
 ```
