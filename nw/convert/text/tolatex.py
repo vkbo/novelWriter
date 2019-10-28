@@ -107,7 +107,7 @@ class ToLaTeX(Tokenizer):
     def _escapeUnicode(self, theText):
         try:
             import latexcodec
-            return codecs.encode(theText, "ulatex")
+            return codecs.encode(theText, "ulatex+utf8")
         except:
             self.texCodecFail = True
             return theText
