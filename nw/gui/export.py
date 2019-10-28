@@ -20,7 +20,7 @@ from PyQt5.QtCore    import Qt, QSize
 from PyQt5.QtSvg     import QSvgWidget
 from PyQt5.QtWidgets import (
     QDialog, QHBoxLayout, QVBoxLayout, QWidget, QTabWidget, QGridLayout, QGroupBox, QCheckBox,
-    QLabel, QComboBox, QLineEdit, QPushButton, QFileDialog, QProgressBar, QSpinBox
+    QLabel, QComboBox, QLineEdit, QPushButton, QFileDialog, QProgressBar, QSpinBox, QMessageBox
 )
 
 from nw.project.document      import NWDoc
@@ -60,9 +60,11 @@ class GuiExport(QDialog):
 
         self.theProject.countStatus()
         self.tabMain   = GuiExportMain(self.theParent, self.theProject, self.optState)
+        self.tabPandoc = GuiExportPandoc(self.theParent, self.theProject, self.optState)
 
         self.tabWidget = QTabWidget()
-        self.tabWidget.addTab(self.tabMain, "Settings")
+        self.tabWidget.addTab(self.tabMain,   "Settings")
+        self.tabWidget.addTab(self.tabPandoc, "Pandoc")
 
         self.outerBox.addWidget(self.svgGradient, 0, Qt.AlignTop)
         self.outerBox.addLayout(self.innerBox)
@@ -107,13 +109,21 @@ class GuiExport(QDialog):
         eFormat   = self.tabMain.outputFormat.currentData()
         fixWidth  = self.tabMain.fixedWidth.value()
         wComments = self.tabMain.expComments.isChecked()
+        wKeywords = self.tabMain.expKeywords.isChecked()
         chFormat  = self.tabMain.chapterFormat.text()
         unFormat  = self.tabMain.unnumFormat.text()
         scFormat  = self.tabMain.sceneFormat.text()
         seFormat  = self.tabMain.sectionFormat.text()
         saveTo    = self.tabMain.exportPath.text()
+        hScene    = self.tabMain.hideScene.isChecked()
+        hSection  = self.tabMain.hideSection.isChecked()
+
+        pFormat   = self.tabPandoc.outputFormat.currentData()
+        tFormat   = GuiExportPandoc.FMT_VIA[pFormat]
 
         nItems = len(self.theProject.treeOrder)
+        if eFormat == GuiExportMain.FMT_PDOC:
+            nItems += int(0.2*nItems)
         self.exportProgress.setMinimum(0)
         self.exportProgress.setMaximum(nItems)
         self.exportProgress.setValue(0)
@@ -133,19 +143,25 @@ class GuiExport(QDialog):
             outFile = LaTeXFile(self.theProject, self.theParent)
         elif eFormat == GuiExportMain.FMT_NWD:
             outFile = ConcatFile(self.theProject, self.theParent)
+        elif eFormat == GuiExportMain.FMT_PDOC:
+            if tFormat == "html":
+                outFile = HtmlFile(self.theProject, self.theParent)
+            elif tFormat == "markdown":
+                outFile = MarkdownFile(self.theProject, self.theParent)
 
         if outFile is None:
             return False
 
         if outFile.openFile(saveTo):
             outFile.setComments(wComments)
+            outFile.setKeywords(wKeywords)
             outFile.setExportNovel(wNovel)
             outFile.setExportNotes(wNotes)
             outFile.setWordWrap(fixWidth)
             outFile.setChapterFormat(chFormat)
             outFile.setUnNumberedFormat(unFormat)
-            outFile.setSceneFormat(scFormat)
-            outFile.setSectionFormat(seFormat)
+            outFile.setSceneFormat(scFormat, hScene)
+            outFile.setSectionFormat(seFormat, hSection)
         else:
             self.exportStatus.setText("Failed to open file for writing ...")
             return False
@@ -180,33 +196,111 @@ class GuiExport(QDialog):
                     "Make sure the python package 'latexcodec' is installed and working."
                 ), nwAlert.WARN)
 
-        return
+        if eFormat != GuiExportMain.FMT_PDOC:
+            return True
+
+        # If we've reached this point, we're also running Pandoc
+
+        if self._callPandoc(tFormat, pFormat):
+            self.exportProgress.setValue(nItems)
+            self.exportStatus.setText("Pandoc conversion complete")
+            logger.verbose("Pandoc conversion complete")
+        else:
+            self.exportProgress.setValue(nItems)
+            self.exportStatus.setText("Pandoc conversion failed")
+            logger.verbose("Pandoc conversion failed")
+            return False
+
+        return True
+
+    def _callPandoc(self, inFmt, outFmt):
+
+        pFmt = {
+            GuiExportPandoc.FMT_ODT   : "odt",
+            GuiExportPandoc.FMT_DOCX  : "docx",
+            GuiExportPandoc.FMT_EPUB2 : "epub2",
+            GuiExportPandoc.FMT_EPUB3 : "epub3",
+            GuiExportPandoc.FMT_ZIM   : "zimwiki",
+        }
+
+        try:
+            import pypandoc
+        except:
+            self.theParent.makeAlert((
+                "Could not load the 'pypandoc' package. "
+                "Make sure it is installed, and try again."
+            ), nwAlert.ERROR)
+            return False
+
+        inFile   = self.tabMain.exportPath.text()
+        outFile  = path.splitext(inFile)[0]+GuiExportPandoc.FMT_EXT[outFmt]
+        fileName = path.basename(outFile)
+
+        if path.isfile(outFile) and self.mainConf.showGUI:
+            msgBox = QMessageBox()
+            msgRes = msgBox.question(
+                self.theParent, "Overwrite",
+                ("File '%s' already exists.<br>Do you want to overwrite it?" % fileName)
+            )
+            if msgRes != QMessageBox.Yes:
+                return False
+
+        try:
+            pypandoc.convert_file(
+                source_file = inFile,
+                format      = inFmt,
+                outputfile  = outFile,
+                to          = pFmt[outFmt],
+                extra_args  = (),
+                encoding    = "utf-8",
+                filters     = None
+            )
+        except Exception as e:
+            self.theParent.makeAlert(
+                ["Failed to convert file using pypandoc + Pandoc.",
+                str(e)], nwAlert.ERROR
+            )
+            return False
+
+        return True
 
     def _doClose(self):
 
         logger.verbose("GuiExport close button clicked")
 
+        # General Settings
         wNovel    = self.tabMain.expNovel.isChecked()
         wNotes    = self.tabMain.expNotes.isChecked()
         eFormat   = self.tabMain.outputFormat.currentData()
         fixWidth  = self.tabMain.fixedWidth.value()
         wComments = self.tabMain.expComments.isChecked()
+        wKeywords = self.tabMain.expKeywords.isChecked()
         chFormat  = self.tabMain.chapterFormat.text()
         unFormat  = self.tabMain.unnumFormat.text()
         scFormat  = self.tabMain.sceneFormat.text()
         seFormat  = self.tabMain.sectionFormat.text()
         saveTo    = self.tabMain.exportPath.text()
+        hScene    = self.tabMain.hideScene.isChecked()
+        hSection  = self.tabMain.hideSection.isChecked()
 
         self.optState.setSetting("wNovel",   wNovel)
         self.optState.setSetting("wNotes",   wNotes)
         self.optState.setSetting("eFormat",  eFormat)
         self.optState.setSetting("fixWidth", fixWidth)
         self.optState.setSetting("wComments",wComments)
+        self.optState.setSetting("wKeywords",wKeywords)
         self.optState.setSetting("chFormat", chFormat)
         self.optState.setSetting("unFormat", unFormat)
         self.optState.setSetting("scFormat", scFormat)
         self.optState.setSetting("seFormat", seFormat)
         self.optState.setSetting("saveTo",   saveTo)
+        self.optState.setSetting("hScene",   hScene)
+        self.optState.setSetting("hSection", hSection)
+
+        # Pandoc Settings
+        pFormat   = self.tabPandoc.outputFormat.currentData()
+
+        self.optState.setSetting("pFormat",  pFormat)
 
         self.optState.saveSettings()
         self.close()
@@ -217,50 +311,43 @@ class GuiExport(QDialog):
 
 class GuiExportMain(QWidget):
 
-    FMT_NWD   = 1 # novelWriter markdown
-    FMT_TXT   = 2 # Plain text file
-    FMT_MD    = 3 # Markdown file
-    FMT_HTML  = 4 # HTML file
-    FMT_EBOOK = 5 # E-book friendly HTML
-    FMT_ODT   = 6 # Open document
-    FMT_TEX   = 7 # LaTeX file
-    FMT_EXT   = {
-        FMT_NWD   : ".nwd",
-        FMT_TXT   : ".txt",
-        FMT_MD    : ".md",
-        FMT_HTML  : ".htm",
-        FMT_EBOOK : ".htm",
-        FMT_ODT   : ".odt",
-        FMT_TEX   : ".tex",
+    FMT_NWD  = 1 # novelWriter markdown
+    FMT_TXT  = 2 # Plain text file
+    FMT_MD   = 3 # Markdown file
+    FMT_HTML = 4 # HTML file
+    FMT_TEX  = 5 # LaTeX file
+    FMT_PDOC = 6 # Pass to pandoc
+    FMT_EXT  = {
+        FMT_NWD  : ".nwd",
+        FMT_TXT  : ".txt",
+        FMT_MD   : ".md",
+        FMT_HTML : ".htm",
+        FMT_TEX  : ".tex",
+        FMT_PDOC : ".tmp",
     }
     FMT_HELP  = {
         FMT_NWD : (
-            "Exports a document using the novelWriter markdown format. "
-            "The files selected by the filters are appended as-is, including comments and other settings."
+            "Exports a document using the novelWriter markdown format. The files selected by the "
+            "filters are appended as-is, including comments and other settings."
         ),
         FMT_TXT : (
-            "Exports a plain text file. "
-            "All formatting is stripped and comments are in square brackets."
+            "Exports a plain text file. All formatting is stripped and comments are in square "
+            "brackets."
         ),
         FMT_MD : (
-            "Exports a standard markdown file. "
-            "Comments are converted to preformatted text blocks."
+            "Exports a standard markdown file. Comments are converted to preformatted text blocks."
         ),
         FMT_HTML : (
-            "Exports a plain html5 file. "
-            "Comments are wrapped in blocks with a yellow background colour."
-        ),
-        FMT_EBOOK : (
-            "Exports an html5 file that can be converted to eBook with Calibre. "
-            "Comments are not exported in this format."
-        ),
-        FMT_ODT : (
-            "Exports an open document file that can be read by office applications. "
-            "Comments are exported as grey text."
+            "Exports a plain html5 file. Comments are wrapped in blocks with a yellow background "
+            "colour."
         ),
         FMT_TEX : (
             "Exports a LaTeX file that can be compiled to PDF using for instance PDFLaTeX. "
             "Comments are exported as LaTeX comments."
+        ),
+        FMT_PDOC : (
+            "Exports first to markdown or html5. The file is then passed on to Pandoc for a second "
+            "stage. Use the Pandoc tab for settings up the conversion."
         ),
     }
 
@@ -279,24 +366,27 @@ class GuiExportMain(QWidget):
         self.guiFilesForm = QGridLayout(self)
         self.guiFiles.setLayout(self.guiFilesForm)
 
-        self.expNovel = QCheckBox(self)
+        self.expNovel = QCheckBox("Novel files",self)
         self.expNovel.setChecked(self.optState.getSetting("wNovel"))
         self.expNovel.setToolTip("Include all novel files in the exported document")
 
-        self.expNotes = QCheckBox(self)
+        self.expNotes = QCheckBox("Note files",self)
         self.expNotes.setChecked(self.optState.getSetting("wNotes"))
         self.expNotes.setToolTip("Include all note files in the exported document")
 
-        self.expComments = QCheckBox(self)
+        self.expComments = QCheckBox("Comments",self)
         self.expComments.setChecked(self.optState.getSetting("wComments"))
         self.expComments.setToolTip("Export comments from all files")
 
-        self.guiFilesForm.addWidget(QLabel("Novel files"), 0, 0)
-        self.guiFilesForm.addWidget(self.expNovel,         0, 1)
-        self.guiFilesForm.addWidget(QLabel("Note files"),  1, 0)
-        self.guiFilesForm.addWidget(self.expNotes,         1, 1)
-        self.guiFilesForm.addWidget(QLabel("Comments"),    2, 0)
-        self.guiFilesForm.addWidget(self.expComments,      2, 1)
+        self.expKeywords = QCheckBox("Keywords",self)
+        self.expKeywords.setChecked(self.optState.getSetting("wKeywords"))
+        self.expKeywords.setToolTip("Export @keywords from all files")
+
+        self.guiFilesForm.addWidget(self.expNovel,    0, 1)
+        self.guiFilesForm.addWidget(self.expComments, 0, 2)
+        self.guiFilesForm.addWidget(self.expNotes,    1, 1)
+        self.guiFilesForm.addWidget(self.expKeywords, 1, 2)
+        self.guiFilesForm.setRowStretch(2, 1)
 
         # Chapter Settings
         self.guiChapters     = QGroupBox("Chapter Headings", self)
@@ -333,10 +423,20 @@ class GuiExportMain(QWidget):
         self.sectionFormat.setToolTip("Available formats: %title%")
         self.sectionFormat.setMinimumWidth(100)
 
+        self.hideScene = QCheckBox("Skip",self)
+        self.hideScene.setChecked(self.optState.getSetting("hScene"))
+        self.hideScene.setToolTip("Skip scene titles in export")
+
+        self.hideSection = QCheckBox("Skip",self)
+        self.hideSection.setChecked(self.optState.getSetting("hSection"))
+        self.hideSection.setToolTip("Skip section titles in export")
+
         self.guiScenesForm.addWidget(QLabel("Scenes"),   0, 0)
         self.guiScenesForm.addWidget(self.sceneFormat,   0, 1)
+        self.guiScenesForm.addWidget(self.hideScene,     0, 2)
         self.guiScenesForm.addWidget(QLabel("Sections"), 1, 0)
         self.guiScenesForm.addWidget(self.sectionFormat, 1, 1)
+        self.guiScenesForm.addWidget(self.hideSection,   1, 2)
 
         # Output Path
         self.exportTo     = QGroupBox("Export Folder", self)
@@ -367,13 +467,15 @@ class GuiExportMain(QWidget):
         self.outputFormat.addItem("Plain Text (.txt)",           self.FMT_TXT)
         self.outputFormat.addItem("Markdown (.md)",              self.FMT_MD)
         self.outputFormat.addItem("HTML5 (.htm)",                self.FMT_HTML)
-        # self.outputFormat.addItem("HTML5 for eBook (.htm)",    self.FMT_EBOOK)
-        # self.outputFormat.addItem("Open Document (.odt)",      self.FMT_ODT)
         self.outputFormat.addItem("LaTeX for PDF (.tex)",        self.FMT_TEX)
+        self.outputFormat.addItem("Pandoc via Markdown or HTML", self.FMT_PDOC)
         self.outputFormat.currentIndexChanged.connect(self._updateFormat)
 
         optIdx = self.outputFormat.findData(self.optState.getSetting("eFormat"))
-        if optIdx != -1:
+        if optIdx == -1:
+            self.outputFormat.setCurrentIndex(1)
+            self._updateFormat(1)
+        else:
             self.outputFormat.setCurrentIndex(optIdx)
             self._updateFormat(optIdx)
 
@@ -383,7 +485,7 @@ class GuiExportMain(QWidget):
         self.guiOutputForm.setColumnStretch(2, 1)
 
         # Additional Settings
-        self.addSettings     = QGroupBox("Additional Settings", self)
+        self.addSettings     = QGroupBox("Additional Settings (Format Dependent)", self)
         self.addSettingsForm = QGridLayout(self)
         self.addSettings.setLayout(self.addSettingsForm)
 
@@ -438,13 +540,11 @@ class GuiExportMain(QWidget):
             "Text files (*.txt)",
             "Markdown files (*.md)",
             "HTML files (*.htm *.html)",
-            # "Open document files (*.odt)",
             "LaTeX files (*.tex)",
             "All files (*.*)",
         ]
 
         dlgOpt  = QFileDialog.Options()
-        dlgOpt |= QFileDialog.ShowDirsOnly
         dlgOpt |= QFileDialog.DontUseNativeDialog
         saveTo  = QFileDialog.getSaveFileName(
             self,"Export File",self.exportPath.text(),options=dlgOpt,filter=";;".join(extFilter)
@@ -459,12 +559,108 @@ class GuiExportMain(QWidget):
     def _checkFileExtension(self):
         saveTo   = self.exportPath.text()
         fileBits = path.splitext(saveTo)
-        if self.currFormat > 0:
+        if self.currFormat > 0 and fileBits[0].strip() != "":
             saveTo = fileBits[0]+self.FMT_EXT[self.currFormat]
         self.exportPath.setText(saveTo)
         return
 
 # END Class GuiExportMain
+
+class GuiExportPandoc(QWidget):
+
+    FMT_ODT   = 1
+    FMT_DOCX  = 2
+    FMT_EPUB2 = 4
+    FMT_EPUB3 = 5
+    FMT_ZIM   = 6
+    FMT_EXT   = {
+        FMT_ODT   : ".odt",
+        FMT_DOCX  : ".docx",
+        FMT_EPUB2 : ".epub",
+        FMT_EPUB3 : ".epub",
+        FMT_ZIM   : ".txt",
+    }
+    FMT_VIA = {
+        FMT_ODT   : "html",
+        FMT_DOCX  : "html",
+        FMT_EPUB2 : "markdown",
+        FMT_EPUB3 : "markdown",
+        FMT_ZIM   : "markdown",
+    }
+
+    def __init__(self, theParent, theProject, optState):
+        QWidget.__init__(self, theParent)
+
+        self.theParent  = theParent
+        self.theProject = theProject
+        self.outerBox   = QGridLayout()
+        self.optState   = optState
+
+        try:
+            import pypandoc
+            self.hasPyPan = True
+        except:
+            self.hasPyPan = False
+
+        # Information
+        self.guiInfo    = QGroupBox("Information", self)
+        self.guiInfoBox = QVBoxLayout(self)
+        self.guiInfo.setLayout(self.guiInfoBox)
+
+        self.infoHelp = QLabel("")
+        self.infoHelp.setWordWrap(True)
+        self.infoHelp.setMinimumHeight(55)
+        self.infoHelp.setAlignment(Qt.AlignTop)
+
+        self.guiInfoBox.addWidget(self.infoHelp)
+
+        if self.hasPyPan:
+            self.infoHelp.setText((
+                "Additional export to other document formats than in the Settings tab is provided "
+                "by Pandoc. the project is first exported to Markdown or HTML, depending on final "
+                "format, and then processed by Pandoc into the desired format."
+            ))
+        else:
+            self.infoHelp.setText((
+                "The Python package 'pypandoc' is not installed or isn't working. This package is "
+                "required for interfacing with Pandoc. Please install it before proceeding."
+            ))
+
+        # Output Format
+        self.guiOutput     = QGroupBox("Pandoc Format", self)
+        self.guiOutputForm = QGridLayout(self)
+        self.guiOutput.setLayout(self.guiOutputForm)
+
+        self.outputFormat = QComboBox(self)
+        self.outputFormat.addItem("Open Office Document (.odt)", self.FMT_ODT)
+        self.outputFormat.addItem("Word Document (.docx)",       self.FMT_DOCX)
+        self.outputFormat.addItem("ePUB eBook v2 (.epub2)",      self.FMT_EPUB2)
+        self.outputFormat.addItem("ePUB eBook v3 (.epub3)",      self.FMT_EPUB3)
+        self.outputFormat.addItem("Zim Wiki (.txt)",             self.FMT_ZIM)
+        # self.outputFormat.currentIndexChanged.connect(self._updateFormat)
+
+        optIdx = self.outputFormat.findData(self.optState.getSetting("pFormat"))
+        if optIdx == -1:
+            self.outputFormat.setCurrentIndex(1)
+        else:
+            self.outputFormat.setCurrentIndex(optIdx)
+
+        self.guiOutputForm.addWidget(QLabel("Format"),  0, 0)
+        self.guiOutputForm.addWidget(self.outputFormat, 0, 1)
+        self.guiOutputForm.setColumnStretch(2, 1)
+
+        # Assemble
+        self.outerBox.addWidget(self.guiInfo,   0, 0)
+        self.outerBox.addWidget(self.guiOutput, 1, 0)
+        self.outerBox.setRowStretch(2, 1)
+        # self.outerBox.setColumnStretch(0, 1)
+        # self.outerBox.setColumnStretch(1, 1)
+        # self.outerBox.setColumnStretch(2, 1)
+        self.setLayout(self.outerBox)
+
+        return
+
+# END Class GuiExportPandoc
 
 class ExportLastState(OptLastState):
 
@@ -474,17 +670,21 @@ class ExportLastState(OptLastState):
             "wNovel"    : True,
             "wNotes"    : False,
             "eFormat"   : 1,
+            "pFormat"   : 1,
             "fixWidth"  : 80,
             "wComments" : False,
+            "wKeywords" : False,
             "chFormat"  : "Chapter %numword%",
             "unFormat"  : "%title%",
             "scFormat"  : "* * *",
             "seFormat"  : "",
             "saveTo"    : "",
+            "hScene"    : False,
+            "hSection"  : False,
         }
         self.stringOpt = ("chFormat","unFormat","scFormat","seFormat","saveTo")
-        self.boolOpt   = ("wNovel","wNotes","wComments")
-        self.intOpt    = ("eFormat","fixWidth")
+        self.boolOpt   = ("wNovel","wNotes","wComments","wKeywords","hScene","hSection")
+        self.intOpt    = ("eFormat","pFormat","fixWidth")
         return
 
 # END Class ExportLastState

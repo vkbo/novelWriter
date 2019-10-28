@@ -39,7 +39,7 @@ class TextFile():
         self.makeAlert  = self.theParent.makeAlert
 
         self.setComments(False)
-        self.setMeta(False)
+        self.setKeywords(False)
         self.setWordWrap(80)
 
         return
@@ -60,8 +60,8 @@ class TextFile():
         self.theConv.setComments(doComments)
         return
 
-    def setMeta(self, doMeta):
-        self.theConv.setCommands(doMeta)
+    def setKeywords(self, doKeywords):
+        self.theConv.setKeywords(doKeywords)
         return
 
     def setWordWrap(self, wordWrap):
@@ -83,12 +83,12 @@ class TextFile():
         self.theConv.setUnNumberedFormat(fmtUnNum)
         return
 
-    def setSceneFormat(self, fmtScene):
-        self.theConv.setSceneFormat(fmtScene)
+    def setSceneFormat(self, fmtScene, hideScene):
+        self.theConv.setSceneFormat(fmtScene, hideScene)
         return
 
-    def setSectionFormat(self, fmtSection):
-        self.theConv.setSectionFormat(fmtSection)
+    def setSectionFormat(self, fmtSection, hideSection):
+        self.theConv.setSectionFormat(fmtSection, hideSection)
         return
 
     ##
