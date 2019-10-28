@@ -217,21 +217,19 @@ class GuiExport(QDialog):
 
 class GuiExportMain(QWidget):
 
-    FMT_NWD   = 1 # novelWriter markdown
-    FMT_TXT   = 2 # Plain text file
-    FMT_MD    = 3 # Markdown file
-    FMT_HTML  = 4 # HTML file
-    FMT_EBOOK = 5 # E-book friendly HTML
-    FMT_ODT   = 6 # Open document
-    FMT_TEX   = 7 # LaTeX file
-    FMT_EXT   = {
-        FMT_NWD   : ".nwd",
-        FMT_TXT   : ".txt",
-        FMT_MD    : ".md",
-        FMT_HTML  : ".htm",
-        FMT_EBOOK : ".htm",
-        FMT_ODT   : ".odt",
-        FMT_TEX   : ".tex",
+    FMT_NWD  = 1 # novelWriter markdown
+    FMT_TXT  = 2 # Plain text file
+    FMT_MD   = 3 # Markdown file
+    FMT_HTML = 4 # HTML file
+    FMT_TEX  = 5 # LaTeX file
+    FMT_PDOC = 6 # Pass to pandoc
+    FMT_EXT  = {
+        FMT_NWD  : ".nwd",
+        FMT_TXT  : ".txt",
+        FMT_MD   : ".md",
+        FMT_HTML : ".htm",
+        FMT_TEX  : ".tex",
+        FMT_PDOC : ".htm",
     }
     FMT_HELP  = {
         FMT_NWD : (
@@ -250,17 +248,13 @@ class GuiExportMain(QWidget):
             "Exports a plain html5 file. "
             "Comments are wrapped in blocks with a yellow background colour."
         ),
-        FMT_EBOOK : (
-            "Exports an html5 file that can be converted to eBook with Calibre. "
-            "Comments are not exported in this format."
-        ),
-        FMT_ODT : (
-            "Exports an open document file that can be read by office applications. "
-            "Comments are exported as grey text."
-        ),
         FMT_TEX : (
             "Exports a LaTeX file that can be compiled to PDF using for instance PDFLaTeX. "
             "Comments are exported as LaTeX comments."
+        ),
+        FMT_PDOC : (
+            "Exports first to html5. The file is then passed on to Pandoc for a second stage. "
+            "Use the Pandoc tab for settings up the conversion."
         ),
     }
 
@@ -367,13 +361,15 @@ class GuiExportMain(QWidget):
         self.outputFormat.addItem("Plain Text (.txt)",           self.FMT_TXT)
         self.outputFormat.addItem("Markdown (.md)",              self.FMT_MD)
         self.outputFormat.addItem("HTML5 (.htm)",                self.FMT_HTML)
-        # self.outputFormat.addItem("HTML5 for eBook (.htm)",    self.FMT_EBOOK)
-        # self.outputFormat.addItem("Open Document (.odt)",      self.FMT_ODT)
         self.outputFormat.addItem("LaTeX for PDF (.tex)",        self.FMT_TEX)
+        self.outputFormat.addItem("Pandoc via HTML5 (.htm)",     self.FMT_PDOC)
         self.outputFormat.currentIndexChanged.connect(self._updateFormat)
 
         optIdx = self.outputFormat.findData(self.optState.getSetting("eFormat"))
-        if optIdx != -1:
+        if optIdx == -1:
+            self.outputFormat.setCurrentIndex(1)
+            self._updateFormat(1)
+        else:
             self.outputFormat.setCurrentIndex(optIdx)
             self._updateFormat(optIdx)
 
@@ -438,13 +434,11 @@ class GuiExportMain(QWidget):
             "Text files (*.txt)",
             "Markdown files (*.md)",
             "HTML files (*.htm *.html)",
-            # "Open document files (*.odt)",
             "LaTeX files (*.tex)",
             "All files (*.*)",
         ]
 
         dlgOpt  = QFileDialog.Options()
-        dlgOpt |= QFileDialog.ShowDirsOnly
         dlgOpt |= QFileDialog.DontUseNativeDialog
         saveTo  = QFileDialog.getSaveFileName(
             self,"Export File",self.exportPath.text(),options=dlgOpt,filter=";;".join(extFilter)
@@ -459,7 +453,7 @@ class GuiExportMain(QWidget):
     def _checkFileExtension(self):
         saveTo   = self.exportPath.text()
         fileBits = path.splitext(saveTo)
-        if self.currFormat > 0:
+        if self.currFormat > 0 and fileBits[0].strip() != "":
             saveTo = fileBits[0]+self.FMT_EXT[self.currFormat]
         self.exportPath.setText(saveTo)
         return
