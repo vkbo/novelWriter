@@ -23,9 +23,7 @@ class LaTeXFile(TextFile):
 
     def __init__(self, theProject, theParent):
         TextFile.__init__(self, theProject, theParent)
-
         self.theConv = ToLaTeX(self.theProject, self.theParent)
-
         return
 
     ##
@@ -36,9 +34,9 @@ class LaTeXFile(TextFile):
 
         try:
             self.outFile = open(filePath,mode="wt+")
-            self.outFile.write(r"\documentclass[12pt]{report}\n")
-            self.outFile.write(r"\usepackage[utf8]{inputenc}\n")
-            self.outFile.write(r"\begin{document}\n")
+            self.outFile.write("\\documentclass[12pt]{report}\n")
+            self.outFile.write("\\usepackage[utf8]{inputenc}\n")
+            self.outFile.write("\\begin{document}\n")
         except Exception as e:
             self.makeAlert(["Failed to open file.",str(e)], nwAlert.ERROR)
             return False
@@ -48,7 +46,7 @@ class LaTeXFile(TextFile):
     def _doCloseFile(self):
 
         if self.outFile is not None:
-            self.outFile.write(r"\end{document}\n")
+            self.outFile.write("\\end{document}\n")
             self.outFile.close()
 
         return True
