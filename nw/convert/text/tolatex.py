@@ -12,6 +12,7 @@
 
 import textwrap
 import logging
+import codecs
 import re
 import nw
 
@@ -23,20 +24,7 @@ class ToLaTeX(Tokenizer):
 
     def __init__(self, theProject, theParent):
         Tokenizer.__init__(self, theProject, theParent)
-        return
-
-    def doAutoReplace(self):
-        Tokenizer.doAutoReplace(self)
-
-        repDict = {
-            "\u2013" : "--",
-            "\u2014" : "---",
-            "\u2500" : "---",
-            "\u2026" : "...",
-        }
-        xRep = re.compile("|".join([re.escape(k) for k in repDict.keys()]), flags=re.DOTALL)
-        self.theText = xRep.sub(lambda x: repDict[x.group(0)], self.theText)
-
+        self.texCodecFail = False
         return
 
     def doConvert(self):
@@ -122,17 +110,17 @@ class ToLaTeX(Tokenizer):
 
             elif tType == self.T_HEAD1:
                 self.theResult += begText
-                self.theResult += "{\\Huge %s}\n" % tText
+                self.theResult += "{\\Huge %s}\n" % self._escapeUnicode(tText)
                 self.theResult += endText
 
             elif tType == self.T_HEAD2:
-                self.theResult += "\\chapter*{%s}\n\n" % tText
+                self.theResult += "\\chapter*{%s}\n\n" % self._escapeUnicode(tText)
 
             elif tType == self.T_HEAD3:
-                self.theResult += "\\section*{%s}\n\n" % tText
+                self.theResult += "\\section*{%s}\n\n" % self._escapeUnicode(tText)
 
             elif tType == self.T_HEAD4:
-                self.theResult += "\\subsection*{%s}\n\n" % tText
+                self.theResult += "\\subsection*{%s}\n\n" % self._escapeUnicode(tText)
 
             elif tType == self.T_SEP:
                 self.theResult += begText
@@ -140,7 +128,7 @@ class ToLaTeX(Tokenizer):
                 self.theResult += endText
 
             elif tType == self.T_TEXT:
-                thisPar.append(tText)
+                thisPar.append(self._escapeUnicode(tText))
 
             elif tType == self.T_PBREAK:
                 self.theResult += "\\newpage\n\n"
@@ -152,5 +140,13 @@ class ToLaTeX(Tokenizer):
                 self.theResult += "%% @%s\n\n" % tText
 
         return
+
+    def _escapeUnicode(self, theText):
+        try:
+            import latexcodec
+            return codecs.encode(theText, "ulatex")
+        except:
+            self.texCodecFail = True
+            return theText
 
 # END Class ToLaTeX
