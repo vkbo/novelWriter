@@ -3,3 +3,4 @@ appdirs
 lxml
 pyenchant
 pycountry
+latexcodec
