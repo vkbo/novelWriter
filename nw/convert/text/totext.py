@@ -81,7 +81,7 @@ class ToText(Tokenizer):
             if tType == self.T_EMPTY:
                 if len(thisPar) > 0:
                     tTemp = " ".join(thisPar)
-                    self.theResult += "%s\n\n" % tTemp.rstrip())
+                    self.theResult += "%s\n\n" % tTemp.rstrip()
                 thisPar = []
 
             elif tType == self.T_HEAD1:
