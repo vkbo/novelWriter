@@ -95,7 +95,10 @@ class ToLaTeX(Tokenizer):
                 self.theResult += "\\bigskip\n\n"
 
             elif tType == self.T_TEXT:
-                thisPar.append(self._escapeUnicode(tText))
+                if tText.endswith("  "):
+                    thisPar.append(self._escapeUnicode(tText.rstrip())+"\\newline")
+                else:
+                    thisPar.append(self._escapeUnicode(tText.rstrip()))
 
             elif tType == self.T_PBREAK:
                 self.theResult += "\\newpage\n\n"

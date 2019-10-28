@@ -81,6 +81,8 @@ class GuiDocEditor(QTextEdit):
 
         # Custom Shortcuts
         QShortcut(QKeySequence("Ctrl+."), self, context=Qt.WidgetShortcut, activated=self._openSpellContext)
+        QShortcut(Qt.Key_Return | Qt.ControlModifier, self, context=Qt.WidgetShortcut, activated=self._insertHardBreak)
+        QShortcut(Qt.Key_Enter  | Qt.ControlModifier, self, context=Qt.WidgetShortcut, activated=self._insertHardBreak)
 
         # Set Up Word Count Thread and Timer
         self.wcInterval = self.mainConf.wordCountTimer
@@ -323,6 +325,13 @@ class GuiDocEditor(QTextEdit):
     #  Internal Functions
     ##
 
+    def _insertHardBreak(self):
+        theCursor = self.textCursor()
+        theCursor.beginEditBlock()
+        theCursor.insertText("  \n")
+        theCursor.endEditBlock()
+        return
+
     def _openSpellContext(self):
         self._openContextMenu(self.cursorRect().center())
         return
@@ -388,7 +397,6 @@ class GuiDocEditor(QTextEdit):
             self.wcTimer.start()
         if self.mainConf.doReplace and not self.hasSelection:
             self._docAutoReplace(self.qDocument.findBlock(thePos))
-        # logger.verbose("Doc change signal took %.3f µs" % ((time()-self.lastEdit)*1e6))
         return
 
     def _docAutoReplace(self, theBlock):

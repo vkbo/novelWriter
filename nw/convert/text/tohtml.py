@@ -67,7 +67,8 @@ class ToHtml(Tokenizer):
 
             if tType == self.T_EMPTY:
                 if len(thisPar) > 0:
-                    self.theResult += "<p%s>%s</p>\n" % (hStyle," ".join(thisPar))
+                    tTemp = "".join(thisPar)
+                    self.theResult += "<p%s>%s</p>\n" % (hStyle,tTemp.rstrip())
                 thisPar = []
 
             elif tType == self.T_HEAD1:
@@ -92,7 +93,10 @@ class ToHtml(Tokenizer):
                 tTemp = tText
                 for xPos, xLen, xFmt in reversed(tFormat):
                     tTemp = tTemp[:xPos]+htmlTags[xFmt]+tTemp[xPos+xLen:]
-                thisPar.append(tTemp)
+                if tText.endswith("  "):
+                    thisPar.append(tTemp.rstrip()+"<br/>")
+                else:
+                    thisPar.append(tTemp.rstrip()+" ")
 
             elif tType == self.T_COMMENT and self.doComments:
                 self.theResult += "<div class='comment'>%s</div>\n" % tText
