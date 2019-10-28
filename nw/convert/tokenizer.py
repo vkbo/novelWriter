@@ -42,7 +42,7 @@ class Tokenizer():
     T_HEAD4   =  7 # Header 4
     T_TEXT    =  8 # Text line
     T_SEP     =  9 # Scene separator
-    T_SKIP    = 10 # Scene separator
+    T_SKIP    = 10 # Paragraph break
     T_PBREAK  = 11 # Page break
 
     A_LEFT    =  1 # Left aligned
