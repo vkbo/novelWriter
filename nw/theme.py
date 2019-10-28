@@ -279,7 +279,7 @@ class Theme:
                 continue
             logger.verbose("Checking theme syntax for '%s'" % syntaxFile)
             try:
-                confParser.read_file(open(syntaxPath,moe="r",encoding="utf8"))
+                confParser.read_file(open(syntaxPath,more="r",encoding="utf8"))
             except Exception as e:
                 self.theParent.makeAlert(["Could not load syntax file",str(e)],nwAlert.ERROR)
                 return []
