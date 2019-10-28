@@ -193,7 +193,7 @@ class Config:
         logger.debug("Loading config file")
         cnfParse = configparser.ConfigParser()
         try:
-            cnfParse.read_file(open(path.join(self.confPath,self.confFile)))
+            cnfParse.read_file(open(path.join(self.confPath,self.confFile),mode="r",encoding="utf8"))
         except Exception as e:
             logger.error("Could not load config file")
             return False
@@ -315,7 +315,7 @@ class Config:
 
         # Write config file
         try:
-            cnfParse.write(open(path.join(self.confPath,self.confFile),"w"))
+            cnfParse.write(open(path.join(self.confPath,self.confFile),mode="w",encoding="utf8"))
             self.confChanged = False
         except Exception as e:
             logger.error("Could not save config file")

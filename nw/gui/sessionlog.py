@@ -147,7 +147,7 @@ class GuiSessionLogView(QDialog):
 
         logger.debug("Loading session log file")
         try:
-            with open(logFile,mode="r") as inFile:
+            with open(logFile,mode="r",encoding="utf8") as inFile:
                 for inLine in inFile:
                     inData = inLine.split()
                     if len(inData) != 8:

@@ -53,7 +53,7 @@ class NWDoc():
 
         if path.isfile(docPath):
             try:
-                with open(docPath,mode="r") as inFile:
+                with open(docPath,mode="r",encoding="utf8") as inFile:
                     theDoc = inFile.read()
             except Exception as e:
                 self.makeAlert(["Failed to open document file.",str(e)], nwAlert.ERROR)
@@ -89,7 +89,7 @@ class NWDoc():
         if path.isfile(docPath): rename(docPath,docBack)
 
         try:
-            with open(docPath,mode="w") as outFile:
+            with open(docPath,mode="w",encoding="utf8") as outFile:
                 outFile.write(docText)
         except Exception as e:
             self.makeAlert(["Could not save document.",str(e)], nwAlert.ERROR)

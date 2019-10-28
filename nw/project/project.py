@@ -328,7 +328,7 @@ class NWProject():
         # Write the xml tree to file
         saveFile = path.join(self.projPath,self.projFile)
         try:
-            with open(saveFile,"wb") as outFile:
+            with open(saveFile,mode="wb") as outFile:
                 outFile.write(etree.tostring(
                     nwXML,
                     pretty_print    = True,
@@ -657,7 +657,7 @@ class NWProject():
         if self.projMeta is None:
             return False
 
-        with open(path.join(self.projMeta, nwFiles.SESS_INFO), mode="a+") as outFile:
+        with open(path.join(self.projMeta, nwFiles.SESS_INFO),mode="a+",encoding="utf8") as outFile:
             print((
                 "Start: {opened:s}  "
                 "End: {closed:s}  "

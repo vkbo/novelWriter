@@ -34,7 +34,7 @@ class MarkdownFile(TextFile):
 
     def _doOpenFile(self, filePath):
         try:
-            self.outFile = open(filePath,mode="wt+")
+            self.outFile = open(filePath,mode="wt+",encoding="utf8")
         except Exception as e:
             self.makeAlert(["Failed to open file.",str(e)], nwAlert.ERROR)
             return False

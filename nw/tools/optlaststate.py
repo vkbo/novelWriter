@@ -37,7 +37,7 @@ class OptLastState():
         if path.isfile(stateFile):
             logger.debug("Loading options file")
             try:
-                with open(stateFile,mode="r") as inFile:
+                with open(stateFile,mode="r",encoding="utf8") as inFile:
                     theJson = inFile.read()
                 theState = json.loads(theJson)
             except Exception as e:
@@ -52,7 +52,7 @@ class OptLastState():
         stateFile = path.join(self.theProject.projMeta,self.theFile)
         logger.debug("Saving options file")
         try:
-            with open(stateFile,mode="w+") as outFile:
+            with open(stateFile,mode="w+",encoding="utf8") as outFile:
                 outFile.write(json.dumps(self.theState, indent=2))
         except Exception as e:
             logger.error("Failed to save options file")
