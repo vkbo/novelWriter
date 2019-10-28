@@ -80,7 +80,8 @@ class ToText(Tokenizer):
             # indicating a new paragraph.
             if tType == self.T_EMPTY:
                 if len(thisPar) > 0:
-                    self.theResult += "%s\n\n" % " ".join(thisPar)
+                    tTemp = " ".join(thisPar)
+                    self.theResult += "%s\n\n" % tTemp.rstrip())
                 thisPar = []
 
             elif tType == self.T_HEAD1:

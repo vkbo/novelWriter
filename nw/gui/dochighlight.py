@@ -13,8 +13,8 @@
 import logging
 import nw
 
-from PyQt5.QtCore import QRegularExpression
-from PyQt5.QtGui  import QColor, QTextCharFormat, QFont, QSyntaxHighlighter
+from PyQt5.QtCore import Qt, QRegularExpression
+from PyQt5.QtGui  import QColor, QTextCharFormat, QFont, QSyntaxHighlighter, QBrush
 
 logger = logging.getLogger(__name__)
 
@@ -71,6 +71,7 @@ class GuiDocHighlighter(QSyntaxHighlighter):
         self.colSpell  = QColor(*self.theTheme.colSpell)
         self.colTagErr = QColor(*self.theTheme.colTagErr)
         self.colRepTag = QColor(*self.theTheme.colRepTag)
+        self.colTrail  = QColor(*self.theTheme.colEmph,64)
 
         self.hStyles = {
             "header1"   : self._makeFormat(self.colHead, "bold",1.8),
@@ -85,6 +86,7 @@ class GuiDocHighlighter(QSyntaxHighlighter):
             "italic"    : self._makeFormat(self.colEmph, "italic"),
             "strike"    : self._makeFormat(self.colEmph, "strike"),
             "underline" : self._makeFormat(self.colEmph, "underline"),
+            "trailing"  : self._makeFormat(self.colTrail,"background"),
             "dialogue1" : self._makeFormat(self.colDialN),
             "dialogue2" : self._makeFormat(self.colDialD),
             "dialogue3" : self._makeFormat(self.colDialS),
@@ -133,6 +135,13 @@ class GuiDocHighlighter(QSyntaxHighlighter):
         self.hRules.append((
             r"^%.*$", {
                 0 : self.hStyles["hidden"],
+            }
+        ))
+
+        # Trailing Spaces, 2+
+        self.hRules.append((
+            r"[ ]{2,}$", {
+                0 : self.hStyles["trailing"],
             }
         ))
 
@@ -283,6 +292,8 @@ class GuiDocHighlighter(QSyntaxHighlighter):
                 theFormat.setFontStrikeOut(True)
             if "underline" in fmtStyle:
                 theFormat.setFontUnderline(True)
+            if "background" in fmtStyle:
+                theFormat.setBackground(QBrush(fmtCol,Qt.SolidPattern))
 
         if fmtSize is not None:
             theFormat.setFontPointSize(round(fmtSize*self.mainConf.textSize))

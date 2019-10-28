@@ -171,10 +171,9 @@ class Tokenizer():
 
         self.theTokens = []
         for aLine in self.theText.splitlines():
-            aLine = aLine.strip()
 
             # Tag lines starting with specific characters
-            if len(aLine) == 0:
+            if len(aLine.strip()) == 0:
                 self.theTokens.append((self.T_EMPTY,"",None,self.A_LEFT))
             elif aLine[0] == "%":
                 self.theTokens.append((self.T_COMMENT,aLine[1:].strip(),None,self.A_LEFT))
