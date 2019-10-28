@@ -15,7 +15,7 @@ import configparser
 import sys
 import nw
 
-from os           import path, mkdir, getcwd
+from os           import path, mkdir, makedirs, getcwd
 from appdirs      import user_config_dir
 from datetime     import datetime
 
@@ -166,9 +166,12 @@ class Config:
 
         # If config folder does not exist, make it.
         # This assumes that the os config folder itself exists.
-        # TODO: This does not work on Windows
-        if not path.isdir(self.confPath):
-            mkdir(self.confPath)
+        if self.osWindows:
+            if not path.isdir(self.confPath):
+                makedirs(self.confPath)
+        else:
+            if not path.isdir(self.confPath):
+                mkdir(self.confPath)
 
         # Check if config file exists
         if path.isfile(path.join(self.confPath,self.confFile)):
