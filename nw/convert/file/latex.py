@@ -36,6 +36,7 @@ class LaTeXFile(TextFile):
             self.outFile = open(filePath,mode="wt+")
             self.outFile.write("\\documentclass[12pt]{report}\n")
             self.outFile.write("\\usepackage[utf8]{inputenc}\n")
+            self.outFile.write("\n")
             self.outFile.write("\\begin{document}\n")
         except Exception as e:
             self.makeAlert(["Failed to open file.",str(e)], nwAlert.ERROR)
