@@ -24,6 +24,7 @@ class LaTeXFile(TextFile):
     def __init__(self, theProject, theParent):
         TextFile.__init__(self, theProject, theParent)
         self.theConv = ToLaTeX(self.theProject, self.theParent)
+        self.texCodecFail = False
         return
 
     ##
@@ -49,6 +50,8 @@ class LaTeXFile(TextFile):
         if self.outFile is not None:
             self.outFile.write("\\end{document}\n")
             self.outFile.close()
+
+        self.texCodecFail = self.theConv.texCodecFail
 
         return True
 

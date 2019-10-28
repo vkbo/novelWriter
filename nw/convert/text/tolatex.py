@@ -10,7 +10,6 @@
 
 """
 
-import textwrap
 import logging
 import codecs
 import re
@@ -38,34 +37,6 @@ class ToLaTeX(Tokenizer):
             self.FMT_U_E : r"}",
         }
 
-        if self.wordWrap > 0:
-            tWrap = textwrap.TextWrapper(
-                width                = self.wordWrap,
-                initial_indent       = "",
-                subsequent_indent    = "",
-                expand_tabs          = True,
-                replace_whitespace   = True,
-                fix_sentence_endings = False,
-                break_long_words     = True,
-                drop_whitespace      = True,
-                break_on_hyphens     = True,
-                tabsize              = 8,
-                max_lines            = None
-            )
-            tComm = textwrap.TextWrapper(
-                width                = self.wordWrap-2,
-                initial_indent       = "",
-                subsequent_indent    = "",
-                expand_tabs          = True,
-                replace_whitespace   = True,
-                fix_sentence_endings = False,
-                break_long_words     = True,
-                drop_whitespace      = True,
-                break_on_hyphens     = True,
-                tabsize              = 8,
-                max_lines            = None
-            )
-
         self.theResult = ""
         thisPar = []
         for tType, tText, tFormat, tAlign in self.theTokens:
@@ -88,14 +59,6 @@ class ToLaTeX(Tokenizer):
                 tText = tTemp
 
             tLen = len(tText)
-
-            # The text can now be word wrapped, if we have requested this and it's needed.
-            if self.wordWrap > 0 and tLen > self.wordWrap:
-                if tType == self.T_COMMENT:
-                    aText = tComm.wrap(tText)
-                    tText = "\n% ".join(aText)
-                else:
-                    tText = tWrap.fill(tText)
 
             # Then the text can receive final formatting before we append it to the results.
             # We also store text lines in a buffer and merge them only when we find an empty line
@@ -124,7 +87,7 @@ class ToLaTeX(Tokenizer):
 
             elif tType == self.T_SEP:
                 self.theResult += begText
-                self.theResult += "%s\n" % tText
+                self.theResult += "%s\n" % self._escapeUnicode(tText)
                 self.theResult += endText
 
             elif tType == self.T_TEXT:

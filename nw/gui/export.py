@@ -32,7 +32,7 @@ from nw.convert.file.markdown import MarkdownFile
 from nw.convert.file.latex    import LaTeXFile
 from nw.convert.file.concat   import ConcatFile
 from nw.constants             import nwFiles
-from nw.enum                  import nwItemType
+from nw.enum                  import nwItemType, nwAlert
 
 logger = logging.getLogger(__name__)
 
@@ -167,10 +167,18 @@ class GuiExport(QDialog):
             nDone += 1
 
         outFile.closeFile()
-
         self.exportProgress.setValue(nDone)
         self.exportStatus.setText("Export to %s complete" % outFile.fileName)
         logger.verbose("Export to %s complete" % outFile.fileName)
+
+        if eFormat == GuiExportMain.FMT_TEX:
+            # Check that encoding was successful
+            if outFile.texCodecFail:
+                self.theParent.makeAlert((
+                    "Failed to escape unicode characters while writing LaTeX file. "
+                    "The genrated .tex file may not build properly. "
+                    "Make sure the python package 'latexcodec' is installed and working."
+                ), nwAlert.WARN)
 
         return
 
