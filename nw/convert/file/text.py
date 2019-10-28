@@ -153,7 +153,7 @@ class TextFile():
         that uses a different file format that requires a different approach.
         """
         try:
-            self.outFile = open(filePath,mode="wt+")
+            self.outFile = open(filePath,mode="wt+",encoding="utf8")
             self.outFile.write("\n\n")
         except Exception as e:
             self.makeAlert(["Failed to open file.",str(e)], nwAlert.ERROR)

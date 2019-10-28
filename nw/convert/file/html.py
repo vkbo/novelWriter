@@ -34,7 +34,7 @@ class HtmlFile(TextFile):
 
     def _doOpenFile(self, filePath):
         try:
-            self.outFile = open(filePath,mode="wt+")
+            self.outFile = open(filePath,mode="wt+",encoding="utf8")
             self.outFile.write("<!DOCTYPE html>\n")
             self.outFile.write("<html>\n")
             self.outFile.write("<head>\n")

@@ -34,7 +34,7 @@ class LaTeXFile(TextFile):
     def _doOpenFile(self, filePath):
 
         try:
-            self.outFile = open(filePath,mode="wt+")
+            self.outFile = open(filePath,mode="wt+",encoding="utf8")
             self.outFile.write("\\documentclass[12pt]{report}\n")
             self.outFile.write("\\usepackage[utf8]{inputenc}\n")
             self.outFile.write("\n")

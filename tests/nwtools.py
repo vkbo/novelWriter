@@ -13,13 +13,13 @@ def ensureDir(theDir):
 def cmpFiles(fileOne, fileTwo, ignoreLines=[]):
 
     try:
-        foOne = open(fileOne,mode="r")
+        foOne = open(fileOne,mode="r",encoding="utf8")
     except Exception as e:
         print(str(e))
         return False
 
     try:
-        foTwo = open(fileTwo,mode="r")
+        foTwo = open(fileTwo,mode="r",encoding="utf8")
     except Exception as e:
         print(str(e))
         return False

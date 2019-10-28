@@ -15,7 +15,7 @@ import configparser
 import sys
 import nw
 
-from os           import path, mkdir, getcwd
+from os           import path, mkdir, makedirs, getcwd
 from appdirs      import user_config_dir
 from datetime     import datetime
 
@@ -166,9 +166,12 @@ class Config:
 
         # If config folder does not exist, make it.
         # This assumes that the os config folder itself exists.
-        # TODO: This does not work on Windows
-        if not path.isdir(self.confPath):
-            mkdir(self.confPath)
+        if self.osWindows:
+            if not path.isdir(self.confPath):
+                makedirs(self.confPath)
+        else:
+            if not path.isdir(self.confPath):
+                mkdir(self.confPath)
 
         # Check if config file exists
         if path.isfile(path.join(self.confPath,self.confFile)):
@@ -190,7 +193,7 @@ class Config:
         logger.debug("Loading config file")
         cnfParse = configparser.ConfigParser()
         try:
-            cnfParse.read_file(open(path.join(self.confPath,self.confFile)))
+            cnfParse.read_file(open(path.join(self.confPath,self.confFile),mode="r",encoding="utf8"))
         except Exception as e:
             logger.error("Could not load config file")
             return False
@@ -312,7 +315,7 @@ class Config:
 
         # Write config file
         try:
-            cnfParse.write(open(path.join(self.confPath,self.confFile),"w"))
+            cnfParse.write(open(path.join(self.confPath,self.confFile),mode="w",encoding="utf8"))
             self.confChanged = False
         except Exception as e:
             logger.error("Could not save config file")

@@ -91,7 +91,7 @@ class NWIndex():
         if path.isfile(indexFile):
             logger.debug("Loading index file")
             try:
-                with open(indexFile,mode="r") as inFile:
+                with open(indexFile,mode="r",encoding="utf8") as inFile:
                     theJson = inFile.read()
                 theData = json.loads(theJson)
             except Exception as e:
@@ -119,7 +119,7 @@ class NWIndex():
         else:
             nIndent = None
         try:
-            with open(indexFile,mode="w+") as outFile:
+            with open(indexFile,mode="w+",encoding="utf8") as outFile:
                 outFile.write(json.dumps({
                     "tagIndex"   : self.tagIndex,
                     "refIndex"   : self.refIndex,

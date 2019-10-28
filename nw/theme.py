@@ -137,7 +137,7 @@ class Theme:
         cssData = ""
         try:
             if path.isfile(self.cssFile):
-                with open(self.cssFile,mode="r") as inFile:
+                with open(self.cssFile,mode="r",encoding="utf8") as inFile:
                     cssData = inFile.read()
         except Exception as e:
             logger.error("Could not load theme css file")
@@ -154,7 +154,7 @@ class Theme:
         # Config File
         confParser = configparser.ConfigParser()
         try:
-            confParser.read_file(open(self.confFile))
+            confParser.read_file(open(self.confFile,mode="r",encoding="utf8"))
         except Exception as e:
             logger.error("Could not load theme settings from: %s" % self.confFile)
             return False
@@ -205,7 +205,7 @@ class Theme:
 
         confParser = configparser.ConfigParser()
         try:
-            confParser.read_file(open(self.syntaxFile))
+            confParser.read_file(open(self.syntaxFile,mode="r",encoding="utf8"))
         except Exception as e:
             logger.error("Could not load syntax colours from: %s" % self.syntaxFile)
             return False
@@ -251,7 +251,7 @@ class Theme:
             themeConf = path.join(self.mainConf.themeRoot, self.guiPath, themeDir, self.confName)
             logger.verbose("Checking theme config for '%s'" % themeDir)
             try:
-                confParser.read_file(open(themeConf))
+                confParser.read_file(open(themeConf,mode="r",encoding="utf8"))
             except Exception as e:
                 self.theParent.makeAlert(["Could not load theme config file",str(e)],nwAlert.ERROR)
                 continue
@@ -279,7 +279,7 @@ class Theme:
                 continue
             logger.verbose("Checking theme syntax for '%s'" % syntaxFile)
             try:
-                confParser.read_file(open(syntaxPath))
+                confParser.read_file(open(syntaxPath,moe="r",encoding="utf8"))
             except Exception as e:
                 self.theParent.makeAlert(["Could not load syntax file",str(e)],nwAlert.ERROR)
                 return []

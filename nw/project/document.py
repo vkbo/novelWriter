@@ -53,12 +53,17 @@ class NWDoc():
 
         if path.isfile(docPath):
             try:
-                with open(docPath,mode="r") as inFile:
+                with open(docPath,mode="r",encoding="utf8") as inFile:
                     theDoc = inFile.read()
             except Exception as e:
                 self.makeAlert(["Failed to open document file.",str(e)], nwAlert.ERROR)
-                return ""
+                # Note: Document must be cleared in case of an io error, or else the auto-save or
+                # save will try to overwrite it with an empty file. Return None to alert the caller.
+                self.clearDocument()
+                return None
         else:
+            # The document file does not exist, so we assume it's a new document and initialise an
+            # empty text string.
             logger.debug("The requested document does not exist.")
             return ""
 
@@ -89,7 +94,7 @@ class NWDoc():
         if path.isfile(docPath): rename(docPath,docBack)
 
         try:
-            with open(docPath,mode="w") as outFile:
+            with open(docPath,mode="w",encoding="utf8") as outFile:
                 outFile.write(docText)
         except Exception as e:
             self.makeAlert(["Could not save document.",str(e)], nwAlert.ERROR)
