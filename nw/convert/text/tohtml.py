@@ -83,7 +83,10 @@ class ToHtml(Tokenizer):
                 self.theResult += "<h4%s>%s</h4>\n" % (hStyle,tText)
 
             elif tType == self.T_SEP:
-                self.theResult += "<div%s>%s</div>\n" % (hStyle,tText)
+                self.theResult += "<p%s>%s</p>\n" % (hStyle,tText)
+
+            elif tType == self.T_SKIP:
+                self.theResult += "<p>&nbsp;</p>\n"
 
             elif tType == self.T_TEXT:
                 tTemp = tText
@@ -94,8 +97,8 @@ class ToHtml(Tokenizer):
             elif tType == self.T_COMMENT and self.doComments:
                 self.theResult += "<div class='comment'>%s</div>\n" % tText
 
-            elif tType == self.T_COMMAND and self.doCommands:
-                self.theResult += "<pre>%s</pre>\n" % tText
+            elif tType == self.T_KEYWORD and self.doKeywords:
+                self.theResult += "<pre>@%s</pre>\n" % tText
 
         # print(self.theResult)
 

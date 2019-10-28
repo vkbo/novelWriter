@@ -105,13 +105,16 @@ class ToText(Tokenizer):
                     tText = self._centreText(tText,self.wordWrap)
                 self.theResult += "%s\n\n" % tText
 
+            elif tType == self.T_SEP:
+                self.theResult += "\n\n\n\n"
+
             elif tType == self.T_TEXT:
                 thisPar.append(tText)
 
             elif tType == self.T_COMMENT and self.doComments:
                 self.theResult += "%s\n\n" % tText
 
-            elif tType == self.T_COMMAND and self.doCommands:
+            elif tType == self.T_KEYWORD and self.doKeywords:
                 self.theResult += "%s\n\n" % tText
 
         return

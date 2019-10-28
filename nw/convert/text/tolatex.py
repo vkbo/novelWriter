@@ -90,6 +90,10 @@ class ToLaTeX(Tokenizer):
                 self.theResult += "%s\n" % self._escapeUnicode(tText)
                 self.theResult += endText
 
+            elif tType == self.T_SKIP:
+                self.theResult += "\\bigskip\n"
+                self.theResult += "\\bigskip\n\n"
+
             elif tType == self.T_TEXT:
                 thisPar.append(self._escapeUnicode(tText))
 
@@ -99,7 +103,7 @@ class ToLaTeX(Tokenizer):
             elif tType == self.T_COMMENT and self.doComments:
                 self.theResult += "%s\n\n" % tText
 
-            elif tType == self.T_COMMAND and self.doCommands:
+            elif tType == self.T_KEYWORD and self.doKeywords:
                 self.theResult += "%% @%s\n\n" % tText
 
         return

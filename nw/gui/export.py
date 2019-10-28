@@ -109,11 +109,14 @@ class GuiExport(QDialog):
         eFormat   = self.tabMain.outputFormat.currentData()
         fixWidth  = self.tabMain.fixedWidth.value()
         wComments = self.tabMain.expComments.isChecked()
+        wKeywords = self.tabMain.expKeywords.isChecked()
         chFormat  = self.tabMain.chapterFormat.text()
         unFormat  = self.tabMain.unnumFormat.text()
         scFormat  = self.tabMain.sceneFormat.text()
         seFormat  = self.tabMain.sectionFormat.text()
         saveTo    = self.tabMain.exportPath.text()
+        hScene    = self.tabMain.hideScene.isChecked()
+        hSection  = self.tabMain.hideSection.isChecked()
 
         pFormat   = self.tabPandoc.outputFormat.currentData()
         tFormat   = GuiExportPandoc.FMT_VIA[pFormat]
@@ -151,13 +154,14 @@ class GuiExport(QDialog):
 
         if outFile.openFile(saveTo):
             outFile.setComments(wComments)
+            outFile.setKeywords(wKeywords)
             outFile.setExportNovel(wNovel)
             outFile.setExportNotes(wNotes)
             outFile.setWordWrap(fixWidth)
             outFile.setChapterFormat(chFormat)
             outFile.setUnNumberedFormat(unFormat)
-            outFile.setSceneFormat(scFormat)
-            outFile.setSectionFormat(seFormat)
+            outFile.setSceneFormat(scFormat, hScene)
+            outFile.setSectionFormat(seFormat, hSection)
         else:
             self.exportStatus.setText("Failed to open file for writing ...")
             return False
@@ -270,22 +274,28 @@ class GuiExport(QDialog):
         eFormat   = self.tabMain.outputFormat.currentData()
         fixWidth  = self.tabMain.fixedWidth.value()
         wComments = self.tabMain.expComments.isChecked()
+        wKeywords = self.tabMain.expKeywords.isChecked()
         chFormat  = self.tabMain.chapterFormat.text()
         unFormat  = self.tabMain.unnumFormat.text()
         scFormat  = self.tabMain.sceneFormat.text()
         seFormat  = self.tabMain.sectionFormat.text()
         saveTo    = self.tabMain.exportPath.text()
+        hScene    = self.tabMain.hideScene.isChecked()
+        hSection  = self.tabMain.hideSection.isChecked()
 
         self.optState.setSetting("wNovel",   wNovel)
         self.optState.setSetting("wNotes",   wNotes)
         self.optState.setSetting("eFormat",  eFormat)
         self.optState.setSetting("fixWidth", fixWidth)
         self.optState.setSetting("wComments",wComments)
+        self.optState.setSetting("wKeywords",wKeywords)
         self.optState.setSetting("chFormat", chFormat)
         self.optState.setSetting("unFormat", unFormat)
         self.optState.setSetting("scFormat", scFormat)
         self.optState.setSetting("seFormat", seFormat)
         self.optState.setSetting("saveTo",   saveTo)
+        self.optState.setSetting("hScene",   hScene)
+        self.optState.setSetting("hSection", hSection)
 
         # Pandoc Settings
         pFormat   = self.tabPandoc.outputFormat.currentData()
@@ -356,24 +366,27 @@ class GuiExportMain(QWidget):
         self.guiFilesForm = QGridLayout(self)
         self.guiFiles.setLayout(self.guiFilesForm)
 
-        self.expNovel = QCheckBox(self)
+        self.expNovel = QCheckBox("Novel files",self)
         self.expNovel.setChecked(self.optState.getSetting("wNovel"))
         self.expNovel.setToolTip("Include all novel files in the exported document")
 
-        self.expNotes = QCheckBox(self)
+        self.expNotes = QCheckBox("Note files",self)
         self.expNotes.setChecked(self.optState.getSetting("wNotes"))
         self.expNotes.setToolTip("Include all note files in the exported document")
 
-        self.expComments = QCheckBox(self)
+        self.expComments = QCheckBox("Comments",self)
         self.expComments.setChecked(self.optState.getSetting("wComments"))
         self.expComments.setToolTip("Export comments from all files")
 
-        self.guiFilesForm.addWidget(QLabel("Novel files"), 0, 0)
-        self.guiFilesForm.addWidget(self.expNovel,         0, 1)
-        self.guiFilesForm.addWidget(QLabel("Note files"),  1, 0)
-        self.guiFilesForm.addWidget(self.expNotes,         1, 1)
-        self.guiFilesForm.addWidget(QLabel("Comments"),    2, 0)
-        self.guiFilesForm.addWidget(self.expComments,      2, 1)
+        self.expKeywords = QCheckBox("Keywords",self)
+        self.expKeywords.setChecked(self.optState.getSetting("wKeywords"))
+        self.expKeywords.setToolTip("Export @keywords from all files")
+
+        self.guiFilesForm.addWidget(self.expNovel,    0, 1)
+        self.guiFilesForm.addWidget(self.expComments, 0, 2)
+        self.guiFilesForm.addWidget(self.expNotes,    1, 1)
+        self.guiFilesForm.addWidget(self.expKeywords, 1, 2)
+        self.guiFilesForm.setRowStretch(2, 1)
 
         # Chapter Settings
         self.guiChapters     = QGroupBox("Chapter Headings", self)
@@ -410,10 +423,20 @@ class GuiExportMain(QWidget):
         self.sectionFormat.setToolTip("Available formats: %title%")
         self.sectionFormat.setMinimumWidth(100)
 
+        self.hideScene = QCheckBox("Skip",self)
+        self.hideScene.setChecked(self.optState.getSetting("hScene"))
+        self.hideScene.setToolTip("Skip scene titles in export")
+
+        self.hideSection = QCheckBox("Skip",self)
+        self.hideSection.setChecked(self.optState.getSetting("hSection"))
+        self.hideSection.setToolTip("Skip section titles in export")
+
         self.guiScenesForm.addWidget(QLabel("Scenes"),   0, 0)
         self.guiScenesForm.addWidget(self.sceneFormat,   0, 1)
+        self.guiScenesForm.addWidget(self.hideScene,     0, 2)
         self.guiScenesForm.addWidget(QLabel("Sections"), 1, 0)
         self.guiScenesForm.addWidget(self.sectionFormat, 1, 1)
+        self.guiScenesForm.addWidget(self.hideSection,   1, 2)
 
         # Output Path
         self.exportTo     = QGroupBox("Export Folder", self)
@@ -650,14 +673,17 @@ class ExportLastState(OptLastState):
             "pFormat"   : 1,
             "fixWidth"  : 80,
             "wComments" : False,
+            "wKeywords" : False,
             "chFormat"  : "Chapter %numword%",
             "unFormat"  : "%title%",
             "scFormat"  : "* * *",
             "seFormat"  : "",
             "saveTo"    : "",
+            "hScene"    : False,
+            "hSection"  : False,
         }
         self.stringOpt = ("chFormat","unFormat","scFormat","seFormat","saveTo")
-        self.boolOpt   = ("wNovel","wNotes","wComments")
+        self.boolOpt   = ("wNovel","wNotes","wComments","wKeywords","hScene","hSection")
         self.intOpt    = ("eFormat","pFormat","fixWidth")
         return
 

@@ -35,14 +35,15 @@ class Tokenizer():
 
     T_EMPTY   =  1 # Empty line (new paragraph)
     T_COMMENT =  2 # Comment line
-    T_COMMAND =  3 # Command line
+    T_KEYWORD =  3 # Command line
     T_HEAD1   =  4 # Header 1 (title)
     T_HEAD2   =  5 # Header 2 (chapter)
     T_HEAD3   =  6 # Header 3 (scene)
     T_HEAD4   =  7 # Header 4
     T_TEXT    =  8 # Text line
     T_SEP     =  9 # Scene separator
-    T_PBREAK  = 10 # Page break
+    T_SKIP    = 10 # Scene separator
+    T_PBREAK  = 11 # Page break
 
     A_LEFT    =  1 # Left aligned
     A_RIGHT   =  2 # Right aligned
@@ -51,30 +52,31 @@ class Tokenizer():
 
     def __init__(self, theProject, theParent):
 
-        self.mainConf   = nw.CONFIG
-        self.theProject = theProject
-        self.theParent  = theParent
+        self.mainConf    = nw.CONFIG
+        self.theProject  = theProject
+        self.theParent   = theParent
 
-        self.theText    = None
-        self.theHandle  = None
-        self.theItem    = None
-        self.theTokens  = None
-        self.theResult  = None
+        self.theText     = None
+        self.theHandle   = None
+        self.theItem     = None
+        self.theTokens   = None
+        self.theResult   = None
 
-        self.wordWrap   = 80
-        self.doComments = False
-        self.doCommands = False
+        self.wordWrap    = 80
+        self.doComments  = False
+        self.doKeywords  = False
 
-        self.fmtTitle   = "%title%"
-        self.fmtChapter = "Chapter %numword%: %title%"
-        self.fmtUnNum   = "%title%"
-        self.fmtScene   = "* * *"
-        self.fmtSection = "%title%"
+        self.fmtTitle    = "%title%"
+        self.fmtChapter  = "Chapter %numword%: %title%"
+        self.fmtUnNum    = "%title%"
+        self.fmtScene    = "* * *"
+        self.fmtSection  = "%title%"
 
-        self.noSection  = True
+        self.hideScene   = False
+        self.hideSection = False
 
-        self.numChapter = 0
-        self.firstScene = False
+        self.numChapter  = 0
+        self.firstScene  = False
 
         return
 
@@ -86,8 +88,8 @@ class Tokenizer():
         self.doComments = doComments
         return
 
-    def setCommands(self, doCommands):
-        self.doCommands = doCommands
+    def setKeywords(self, doKeywords):
+        self.doKeywords = doKeywords
         return
 
     def setWordWrap(self, wordWrap):
@@ -109,12 +111,14 @@ class Tokenizer():
         self.fmtUnNum = fmtUnNum
         return
 
-    def setSceneFormat(self, fmtScene):
-        self.fmtScene = fmtScene
+    def setSceneFormat(self, fmtScene, hideScene):
+        self.fmtScene  = fmtScene
+        self.hideScene = hideScene
         return
 
-    def setSectionFormat(self, fmtSection):
-        self.fmtSection = fmtSection
+    def setSectionFormat(self, fmtSection, hideSection):
+        self.fmtSection  = fmtSection
+        self.hideSection = hideSection
         return
 
     ##
@@ -175,7 +179,7 @@ class Tokenizer():
             elif aLine[0] == "%":
                 self.theTokens.append((self.T_COMMENT,aLine[1:].strip(),None,self.A_LEFT))
             elif aLine[0] == "@":
-                self.theTokens.append((self.T_COMMAND,aLine[1:].strip(),None,self.A_LEFT))
+                self.theTokens.append((self.T_KEYWORD,aLine[1:].strip(),None,self.A_LEFT))
             elif aLine[:2] == "# ":
                 self.theTokens.append((self.T_HEAD1,aLine[2:].strip(),None,self.A_LEFT))
             elif aLine[:3] == "## ":
@@ -242,8 +246,13 @@ class Tokenizer():
 
                 elif tType == self.T_HEAD3:
                     tTemp = self._doFormatScene(tText)
-                    if tTemp == "":
+                    if tTemp == "" and self.hideScene:
                         self.theTokens[n] = (self.T_EMPTY,"",None,self.A_LEFT)
+                    elif tTemp == "" and not self.hideScene:
+                        if self.firstScene:
+                            self.theTokens[n] = (self.T_EMPTY,"",None,self.A_LEFT)
+                        else:
+                            self.theTokens[n] = (self.T_SKIP,"",None,self.A_LEFT)
                     elif tTemp == self.fmtScene:
                         if self.firstScene:
                             self.theTokens[n] = (self.T_EMPTY,"",None,self.A_LEFT)
@@ -255,8 +264,10 @@ class Tokenizer():
 
                 elif tType == self.T_HEAD4:
                     tTemp = self._doFormatSection(tText)
-                    if tTemp == "":
+                    if tTemp == "" and self.hideSection:
                         self.theTokens[n] = (self.T_EMPTY,"",None,self.A_LEFT)
+                    elif tTemp == "" and not self.hideSection:
+                        self.theTokens[n] = (self.T_SKIP,"",None,self.A_LEFT)
                     elif tTemp == self.fmtSection:
                         self.theTokens[n] = (self.T_SEP,tTemp,None,self.A_CENTRE)
                     else:
