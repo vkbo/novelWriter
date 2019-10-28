@@ -110,12 +110,13 @@ class ToLaTeX(Tokenizer):
                     tText = tWrap.fill(tText)
 
             # Then the text can receive final formatting before we append it to the results.
-            # We also store text lines in a buffer and merge them only when we find an empty line,
+            # We also store text lines in a buffer and merge them only when we find an empty line
             # indicating a new paragraph.
             if tType == self.T_EMPTY:
                 if len(thisPar) > 0:
                     self.theResult += begText
-                    self.theResult += "%s\n" % tWrap.fill(" ".join(thisPar))
+                    for tTemp in thisPar:
+                        self.theResult += "%s\n" % tTemp
                     self.theResult += endText
                 thisPar = []
 
