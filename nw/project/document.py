@@ -57,8 +57,13 @@ class NWDoc():
                     theDoc = inFile.read()
             except Exception as e:
                 self.makeAlert(["Failed to open document file.",str(e)], nwAlert.ERROR)
-                return ""
+                # Note: Document must be cleared in case of an io error, or else the auto-save or
+                # save will try to overwrite it with an empty file. Return None to alert the caller.
+                self.clearDocument()
+                return None
         else:
+            # The document file does not exist, so we assume it's a new document and initialise an
+            # empty text string.
             logger.debug("The requested document does not exist.")
             return ""
 

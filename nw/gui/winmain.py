@@ -332,10 +332,12 @@ class GuiMain(QMainWindow):
     def openDocument(self, tHandle):
         if self.hasProject:
             self.closeDocument()
-            self.docEditor.loadText(tHandle)
-            self.docEditor.setFocus()
-            self.docEditor.changeWidth()
-            self.theProject.setLastEdited(tHandle)
+            if self.docEditor.loadText(tHandle):
+                self.docEditor.setFocus()
+                self.docEditor.changeWidth()
+                self.theProject.setLastEdited(tHandle)
+            else:
+                return False
         return True
 
     def saveDocument(self):

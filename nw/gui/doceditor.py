@@ -162,9 +162,21 @@ class GuiDocEditor(QTextEdit):
         return True
 
     def loadText(self, tHandle):
+        """Load text from a document into the editor. If we have an io error, we must handle this
+        and clear the editor so that we don't risk overwriting the file if it exists. This can for
+        instance happen of the file contains binary elements or an encoding that novelWriter does
+        not support. If load is successful, ot the document is new (empty string) we set up the
+        editor for editing the file.
+        """
+
+        theDoc = self.nwDocument.openDocument(tHandle)
+        if theDoc is None:
+            # There was an io error
+            self.clearEditor()
+            return False
 
         self.hLight.setHandle(tHandle)
-        self.setPlainText(self.nwDocument.openDocument(tHandle))
+        self.setPlainText(theDoc)
         self.setCursorPosition(self.nwDocument.theItem.cursorPos)
         self.lastEdit = time()
         self._runCounter()
