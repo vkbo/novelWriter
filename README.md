@@ -41,9 +41,28 @@ These are optional, but recommended:
 
 Alternatively, the packages can be installed with `pip` by running
 ```
-pip install -r requirements.txt
+python3 -m pip install -r requirements.txt
 ```
 in the application folder.
+
+You can also do them one at a time, skipping the ones you don't need:
+```
+python3 -m pip install pyqt5
+python3 -m pip install appdirs
+python3 -m pip install lxml
+python3 -m pip install pyenchant
+python3 -m pip install pycountry
+python3 -m pip install latexcodec
+```
+This may be necessary on Windows, as `pyenchant` may cause problems.
+I'm looking for a good alternative for spell checking.
+
+Note: On Windows, make sure Python3 is in your PATH if you want to launch novelWriter from command line.
+You can also right click the `novelWriter.py` file, create a shortcut.
+Then right click again, select "Properties" and change the target to your python executable and `novelWriter.py`.
+```
+C:\...\AppData\Local\Programs\Python\Python38\python.exe novelWriter.py
+```
 
 ## Key Features
 
