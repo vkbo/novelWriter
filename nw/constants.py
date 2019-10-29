@@ -80,6 +80,42 @@ class nwLabels():
 
 # END Class nwLabels
 
+class nwDependencies():
+    """Python package dependencies and their reference links.
+    """
+    PACKS = {
+        "pyqt5"      : {
+            "site" : "",
+            "docs" : "",
+        },
+        "appdirs"    : {
+            "site" : "",
+            "docs" : "",
+        },
+        "lxml"       : {
+            "site" : "",
+            "docs" : "",
+        },
+        "pyenchant"  : {
+            "site" : "",
+            "docs" : "",
+        },
+        "pycountry"  : {
+            "site" : "",
+            "docs" : "",
+        },
+        "latexcodec" : {
+            "site" : "https://pypi.org/project/latexcodec/",
+            "docs" : "https://latexcodec.readthedocs.io/en/latest/",
+        },
+        "pypandoc" : {
+            "site" : "https://pypi.org/project/pypandoc/",
+            "docs" : "https://pypi.org/project/pypandoc/",
+        },
+    }
+
+# END Class nwDependencies
+
 class nwQuotes():
     """Allowed quotation marks.
     Source: https://en.wikipedia.org/wiki/Quotation_mark
