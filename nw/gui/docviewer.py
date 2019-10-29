@@ -106,6 +106,7 @@ class GuiDocViewer(QTextBrowser):
         aDoc.doAutoReplace()
         aDoc.tokenizeText()
         aDoc.doConvert()
+        aDoc.doPostProcessing()
         self.setHtml(aDoc.theResult)
         if self.theHandle == tHandle:
             self.verticalScrollBar().setValue(sPos)

@@ -138,6 +138,7 @@ class TextFile():
         self.theConv.tokenizeText()
         self.theConv.doHeaders()
         self.theConv.doConvert()
+        self.theConv.doPostProcessing()
 
         if self.theConv.theResult is not None and self.outFile is not None:
             self.outFile.write(self.theConv.theResult)

@@ -100,7 +100,8 @@ class NWDoc():
             self.makeAlert(["Could not save document.",str(e)], nwAlert.ERROR)
             return False
 
-        if path.isfile(docTemp): unlink(docTemp)
+        if path.isfile(docTemp):
+            unlink(docTemp)
 
         self.theParent.statusBar.setStatus("Saved Document: %s" % self.theItem.itemName)
 

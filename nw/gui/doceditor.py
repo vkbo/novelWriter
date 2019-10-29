@@ -23,7 +23,7 @@ from nw.project.document import NWDoc
 from nw.gui.dochighlight import GuiDocHighlighter
 from nw.gui.wordcounter  import WordCounter
 from nw.tools.spellcheck import NWSpellCheck
-from nw.constants        import nwFiles
+from nw.constants        import nwFiles, nwUnicode
 from nw.enum             import nwDocAction, nwAlert
 
 logger = logging.getLogger(__name__)
@@ -218,7 +218,14 @@ class GuiDocEditor(QTextEdit):
         return self.docChanged
 
     def getText(self):
-        theText = self.toPlainText()
+        """Get the text content of the current document. This method uses QTextEdit->toPlainText for
+        Qt versions lower than 5.9, and the QDocument->toRawText for higher version. The latter
+        preserves non-breaking spaces, which the former does not.
+        """
+        if self.mainConf.verQtValue >= 50900:
+            theText = self.qDocument.toRawText().replace(nwUnicode.U_PARA,"\n")
+        else:
+            theText = self.toPlainText()
         return theText
 
     def setCursorPosition(self, thePosition):
@@ -316,9 +323,26 @@ class GuiDocEditor(QTextEdit):
         to know whether we had a selection prior to triggering the _docChange slot, as we do not
         want to trigger autoreplace on selections. Autoreplace on selections messes with undo/redo
         history.
+        We also need to intercept the Shift key modifier for certain key combinations that modifies
+        standard keys like enter and space. However, we don't want to spend a lot of time in this
+        function as it is triggered on every keypress when typing.
         """
+
         self.hasSelection = self.textCursor().hasSelection()
-        QTextEdit.keyPressEvent(self, keyEvent)
+
+        if keyEvent.modifiers() == Qt.ShiftModifier:
+            theKey = keyEvent.key()
+            if theKey == Qt.Key_Return:
+                self._insertHardBreak()
+            elif theKey == Qt.Key_Enter:
+                self._insertHardBreak()
+            elif theKey == Qt.Key_Space:
+                self._insertNonBreakingSpace()
+            else:
+                QTextEdit.keyPressEvent(self, keyEvent)
+        else:
+            QTextEdit.keyPressEvent(self, keyEvent)
+
         return
 
     ##
@@ -329,6 +353,13 @@ class GuiDocEditor(QTextEdit):
         theCursor = self.textCursor()
         theCursor.beginEditBlock()
         theCursor.insertText("  \n")
+        theCursor.endEditBlock()
+        return
+
+    def _insertNonBreakingSpace(self):
+        theCursor = self.textCursor()
+        theCursor.beginEditBlock()
+        theCursor.insertText(nwUnicode.U_NBSP)
         theCursor.endEditBlock()
         return
 
@@ -442,15 +473,15 @@ class GuiDocEditor(QTextEdit):
 
         elif self.mainConf.doReplaceDash and theTwo == "--":
             theCursor.movePosition(QTextCursor.Left, QTextCursor.KeepAnchor, 2)
-            theCursor.insertText("\u2013")
+            theCursor.insertText(nwUnicode.U_ENDASH)
 
-        elif self.mainConf.doReplaceDash and theTwo == "\u2013-":
+        elif self.mainConf.doReplaceDash and theTwo == nwUnicode.U_ENDASH+"-":
             theCursor.movePosition(QTextCursor.Left, QTextCursor.KeepAnchor, 2)
-            theCursor.insertText("\u2014")
+            theCursor.insertText(nwUnicode.U_EMDASH)
 
         elif self.mainConf.doReplaceDots and theThree == "...":
             theCursor.movePosition(QTextCursor.Left, QTextCursor.KeepAnchor, 3)
-            theCursor.insertText("\u2026")
+            theCursor.insertText(nwUnicode.U_HELLIP)
 
         return
 

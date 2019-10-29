@@ -142,26 +142,74 @@ class nwQuotes():
         "\u300e", # Left white corner bracket
         "\u300f", # Right white corner bracket
     ]
-    HTML = {
-        "\u0022" : "&quot;",
-        "\u0027" : "&#39;",
-        "\u00ab" : "&laquo;",
-        "\u00bb" : "&raquo;",
-        "\u2018" : "&lsquo;",
-        "\u2019" : "&rsquo;",
-        "\u201a" : "&sbquo;",
-        "\u201b" : "&#8219;",
-        "\u201c" : "&ldquo;",
-        "\u201d" : "&rdquo;",
-        "\u201e" : "&bdquo;",
-        "\u201f" : "&#8223;",
-        "\u2039" : "&lsaquo;",
-        "\u203a" : "&rsaquo;",
-        "\u2e42" : "&#11842;",
-        "\u300c" : "&#12300;",
-        "\u300d" : "&#12301;",
-        "\u300e" : "&#12302;",
-        "\u300f" : "&#12303;",
-    }
 
 # END Class nwQuotes
+
+class nwUnicode:
+    """Suppoted unicode character constants and translation maps.
+    """
+
+    # Unicode Constants
+
+    ## Quotation Marks
+    U_QUOT   = "\u0022" # Quotation mark
+    U_APOS   = "\u0027" # Apostrophe
+    U_LAQUO  = "\u00ab" # Left-pointing double angle quotation mark
+    U_RAQUO  = "\u00bb" # Right-pointing double angle quotation mark
+    U_LSQUO  = "\u2018" # Left single quotation mark
+    U_RSQUO  = "\u2019" # Right single quotation mark
+    U_SBQUO  = "\u201a" # Single low-9 quotation mark
+    U_SUQUO  = "\u201b" # Single high-reversed-9 quotation mark
+    U_LDQUO  = "\u201c" # Left double quotation mark
+    U_RDQUO  = "\u201d" # Right double quotation mark
+    U_BDQUO  = "\u201e" # Double low-9 quotation mark
+    U_UDQUO  = "\u201f" # Double high-reversed-9 quotation mark
+    U_LSAQUO = "\u2039" # Single left-pointing angle quotation mark
+    U_RSAQUO = "\u203a" # Single right-pointing angle quotation mark
+    U_BDRQUO = "\u2e42" # Double low-reversed-9 quotation mark
+    U_LCQUO  = "\u300c" # Left corner bracket
+    U_RCQUO  = "\u300d" # Right corner bracket
+    U_LWCQUO = "\u300e" # Left white corner bracket
+    U_RECQUO = "\u300f" # Right white corner bracket
+
+    ## Punctuation
+    U_ENDASH = "\u2013" # Short dash
+    U_EMDASH = "\u2014" # Long dash
+    U_HELLIP = "\u2026" # Ellipsis
+
+    ## Other
+    U_NBSP   = "\u00a0" # Non-breaking space
+    U_PARA   = "\u2029" # Paragraph separator
+
+    # HTML Equivalents
+
+    ## Quotes
+    H_QUOT   = "&quot;"
+    H_APOS   = "&#39;"
+    H_LAQUO  = "&laquo;"
+    H_RAQUO  = "&raquo;"
+    H_LSQUO  = "&lsquo;"
+    H_RSQUO  = "&rsquo;"
+    H_SBQUO  = "&sbquo;"
+    H_SUQUO  = "&#8219;"
+    H_LDQUO  = "&ldquo;"
+    H_RDQUO  = "&rdquo;"
+    H_BDQUO  = "&bdquo;"
+    H_UDQUO  = "&#8223;"
+    H_LSAQUO = "&lsaquo;"
+    H_RSAQUO = "&rsaquo;"
+    H_BDRQUO = "&#11842;"
+    H_LCQUO  = "&#12300;"
+    H_RCQUO  = "&#12301;"
+    H_LWCQUO = "&#12302;"
+    H_LWCQUO = "&#12302;"
+
+    ## Punctuation
+    H_ENDASH = "&ndash;"
+    H_EMDASH = "&mdash;"
+    H_HELLIP = "&hellip;"
+
+    ## Other
+    H_NBSP   = "&nbsp;"
+
+# END Class nwUnicode

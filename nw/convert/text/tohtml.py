@@ -15,6 +15,7 @@ import re
 import nw
 
 from nw.convert.tokenizer import Tokenizer
+from nw.constants         import nwUnicode
 
 logger = logging.getLogger(__name__)
 
@@ -28,13 +29,13 @@ class ToHtml(Tokenizer):
         Tokenizer.doAutoReplace(self)
 
         repDict = {
-            "<"      : "&lt;",
-            ">"      : "&gt;",
-            "&"      : "&amp;",
-            "\u2013" : "&endash;",
-            "\u2014" : "$emdash;",
-            "\u2500" : "$emdash;",
-            "\u2026" : "&hellip;",
+            "<" : "&lt;",
+            ">" : "&gt;",
+            "&" : "&amp;",
+            nwUnicode.U_ENDASH : nwUnicode.H_ENDASH,
+            nwUnicode.U_EMDASH : nwUnicode.H_EMDASH,
+            nwUnicode.U_HELLIP : nwUnicode.H_HELLIP,
+            nwUnicode.U_NBSP   : nwUnicode.H_NBSP,
         }
         xRep = re.compile("|".join([re.escape(k) for k in repDict.keys()]), flags=re.DOTALL)
         self.theText = xRep.sub(lambda x: repDict[x.group(0)], self.theText)

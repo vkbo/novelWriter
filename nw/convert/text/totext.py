@@ -16,6 +16,7 @@ import re
 import nw
 
 from nw.convert.tokenizer import Tokenizer
+from nw.constants         import nwUnicode
 
 logger = logging.getLogger(__name__)
 
@@ -23,6 +24,17 @@ class ToText(Tokenizer):
 
     def __init__(self, theProject, theParent):
         Tokenizer.__init__(self, theProject, theParent)
+        return
+
+    def doAutoReplace(self):
+        Tokenizer.doAutoReplace(self)
+
+        repDict = {
+            nwUnicode.U_NBSP : " ",
+        }
+        xRep = re.compile("|".join([re.escape(k) for k in repDict.keys()]), flags=re.DOTALL)
+        self.theText = xRep.sub(lambda x: repDict[x.group(0)], self.theText)
+
         return
 
     def doConvert(self):
