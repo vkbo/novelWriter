@@ -147,6 +147,7 @@ class GuiConfigEditGeneral(QWidget):
         self.guiLookForm.addWidget(self.guiLookTheme,  0, 1)
         self.guiLookForm.addWidget(QLabel("Syntax"),   1, 0)
         self.guiLookForm.addWidget(self.guiLookSyntax, 1, 1)
+        self.guiLookForm.setColumnStretch(2, 1)
 
         # Spell Checking
         self.spellLang     = QGroupBox("Spell Checker", self)
@@ -162,10 +163,10 @@ class GuiConfigEditGeneral(QWidget):
 
         self.spellLangForm.addWidget(QLabel("Language"), 0, 0)
         self.spellLangForm.addWidget(self.spellLangList, 0, 1)
-        self.spellLangForm.setColumnStretch(1, 1)
+        self.spellLangForm.setColumnStretch(2, 1)
 
         # AutoSave
-        self.autoSave     = QGroupBox("Auto-Save", self)
+        self.autoSave     = QGroupBox("Automatic Save", self)
         self.autoSaveForm = QGridLayout(self)
         self.autoSave.setLayout(self.autoSaveForm)
 
@@ -187,9 +188,10 @@ class GuiConfigEditGeneral(QWidget):
         self.autoSaveForm.addWidget(QLabel("Project"),  1, 0)
         self.autoSaveForm.addWidget(self.autoSaveProj,  1, 1)
         self.autoSaveForm.addWidget(QLabel("seconds"),  1, 2)
+        self.autoSaveForm.setColumnStretch(3, 1)
 
         # Backup
-        self.projBackup     = QGroupBox("Backup", self)
+        self.projBackup     = QGroupBox("Backup Folder", self)
         self.projBackupForm = QGridLayout(self)
         self.projBackup.setLayout(self.projBackupForm)
 
@@ -200,27 +202,25 @@ class GuiConfigEditGeneral(QWidget):
         self.projBackupGetPath = QPushButton(self.theTheme.getIcon("folder"),"")
         self.projBackupGetPath.clicked.connect(self._backupFolder)
 
-        self.projBackupClose = QCheckBox(self)
+        self.projBackupClose = QCheckBox("Run on close",self)
         self.projBackupClose.setToolTip("Backup automatically on project close.")
         if self.mainConf.backupOnClose:
             self.projBackupClose.setCheckState(Qt.Checked)
         else:
             self.projBackupClose.setCheckState(Qt.Unchecked)
 
-        self.projBackupAsk = QCheckBox(self)
+        self.projBackupAsk = QCheckBox("Ask before backup",self)
         self.projBackupAsk.setToolTip("Ask before backup.")
         if self.mainConf.askBeforeBackup:
             self.projBackupAsk.setCheckState(Qt.Checked)
         else:
             self.projBackupAsk.setCheckState(Qt.Unchecked)
 
-        self.projBackupForm.addWidget(QLabel("Backup Folder"),     0, 0)
-        self.projBackupForm.addWidget(self.projBackupPath,         0, 1, 1, 3)
-        self.projBackupForm.addWidget(self.projBackupGetPath,      0, 4)
-        self.projBackupForm.addWidget(QLabel("Run on Close"),      1, 0)
-        self.projBackupForm.addWidget(self.projBackupClose,        1, 1)
-        self.projBackupForm.addWidget(QLabel("Ask Before Backuo"), 1, 2)
-        self.projBackupForm.addWidget(self.projBackupAsk,          1, 3)
+        self.projBackupForm.addWidget(self.projBackupPath,    0, 0, 1, 2)
+        self.projBackupForm.addWidget(self.projBackupGetPath, 0, 2)
+        self.projBackupForm.addWidget(self.projBackupClose,   1, 0)
+        self.projBackupForm.addWidget(self.projBackupAsk,     1, 1, 1, 2)
+        self.projBackupForm.setColumnStretch(1, 1)
 
         # Assemble
         self.outerBox.addWidget(self.guiLook,    0, 0)
@@ -311,7 +311,7 @@ class GuiConfigEditEditor(QWidget):
         self.textStyleSize.setSingleStep(1)
         self.textStyleSize.setValue(self.mainConf.textSize)
 
-        self.textStyleForm.addWidget(QLabel("Font Family"), 0, 0)
+        self.textStyleForm.addWidget(QLabel("Font family"), 0, 0)
         self.textStyleForm.addWidget(self.textStyleFont,    0, 1)
         self.textStyleForm.addWidget(QLabel("Size"),        0, 2)
         self.textStyleForm.addWidget(self.textStyleSize,    0, 3)
@@ -322,7 +322,7 @@ class GuiConfigEditEditor(QWidget):
         self.textFlowForm = QGridLayout(self)
         self.textFlow.setLayout(self.textFlowForm)
 
-        self.textFlowFixed = QCheckBox(self)
+        self.textFlowFixed = QCheckBox("Fixed width",self)
         self.textFlowFixed.setToolTip("Make text in editor fixed width and scale margins instead.")
         if self.mainConf.textFixedW:
             self.textFlowFixed.setCheckState(Qt.Checked)
@@ -334,19 +334,17 @@ class GuiConfigEditEditor(QWidget):
         self.textFlowWidth.setSingleStep(10)
         self.textFlowWidth.setValue(self.mainConf.textWidth)
 
-        self.textFlowJustify = QCheckBox(self)
+        self.textFlowJustify = QCheckBox("Justify text",self)
         self.textFlowJustify.setToolTip("Justify text in main document editor.")
         if self.mainConf.doJustify:
             self.textFlowJustify.setCheckState(Qt.Checked)
         else:
             self.textFlowJustify.setCheckState(Qt.Unchecked)
 
-        self.textFlowForm.addWidget(QLabel("Fixed Width"),      0, 0)
-        self.textFlowForm.addWidget(self.textFlowFixed,         0, 1)
-        self.textFlowForm.addWidget(self.textFlowWidth,         0, 2)
-        self.textFlowForm.addWidget(QLabel("px"),               0, 3)
-        self.textFlowForm.addWidget(QLabel("Justify Text"),     1, 0)
-        self.textFlowForm.addWidget(self.textFlowJustify,       1, 1)
+        self.textFlowForm.addWidget(self.textFlowFixed,   0, 0)
+        self.textFlowForm.addWidget(self.textFlowWidth,   0, 1)
+        self.textFlowForm.addWidget(QLabel("px"),         0, 2)
+        self.textFlowForm.addWidget(self.textFlowJustify, 1, 0)
         self.textFlowForm.setColumnStretch(4, 1)
 
         # Text Margins
@@ -365,11 +363,12 @@ class GuiConfigEditEditor(QWidget):
         self.textMarginTab.setMaximum(200)
         self.textMarginTab.setSingleStep(1)
         self.textMarginTab.setValue(self.mainConf.tabWidth)
+        self.textMarginTab.setToolTip("Requires Qt 5.9 or later.")
 
         self.textMarginForm.addWidget(QLabel("Document"),   0, 0)
         self.textMarginForm.addWidget(self.textMarginDoc,   0, 1)
         self.textMarginForm.addWidget(QLabel("px"),         0, 2)
-        self.textMarginForm.addWidget(QLabel("Tab Width"),  2, 0)
+        self.textMarginForm.addWidget(QLabel("Tab width"),  2, 0)
         self.textMarginForm.addWidget(self.textMarginTab,   2, 1)
         self.textMarginForm.addWidget(QLabel("px"),         2, 2)
         self.textMarginForm.setColumnStretch(4, 1)
@@ -421,19 +420,20 @@ class GuiConfigEditEditor(QWidget):
         else:
             self.autoReplaceDots.setCheckState(Qt.Unchecked)
 
-        self.autoReplaceForm.addWidget(QLabel("Auto-Select Text"),          0, 0)
+        self.autoReplaceForm.addWidget(QLabel("Auto-select text"),          0, 0)
         self.autoReplaceForm.addWidget(self.autoSelect,                     0, 1)
-        self.autoReplaceForm.addWidget(QLabel("Auto-Replace:"),             1, 0)
+        self.autoReplaceForm.addWidget(QLabel("Auto-replace:"),             1, 0)
         self.autoReplaceForm.addWidget(self.autoReplaceMain,                1, 1)
-        self.autoReplaceForm.addWidget(QLabel("\u2192 Single Quotes"),      2, 0)
+        self.autoReplaceForm.addWidget(QLabel("\u2192 Single quotes"),      2, 0)
         self.autoReplaceForm.addWidget(self.autoReplaceSQ,                  2, 1)
-        self.autoReplaceForm.addWidget(QLabel("\u2192 Double Quotes"),      3, 0)
+        self.autoReplaceForm.addWidget(QLabel("\u2192 Double quotes"),      3, 0)
         self.autoReplaceForm.addWidget(self.autoReplaceDQ,                  3, 1)
-        self.autoReplaceForm.addWidget(QLabel("\u2192 Hyphens with Dash"),  4, 0)
+        self.autoReplaceForm.addWidget(QLabel("\u2192 Hyphens with dash"),  4, 0)
         self.autoReplaceForm.addWidget(self.autoReplaceDash,                4, 1)
-        self.autoReplaceForm.addWidget(QLabel("\u2192 Dots with Ellipsis"), 5, 0)
+        self.autoReplaceForm.addWidget(QLabel("\u2192 Dots with ellipsis"), 5, 0)
         self.autoReplaceForm.addWidget(self.autoReplaceDots,                5, 1)
         self.autoReplaceForm.setColumnStretch(2, 1)
+        self.autoReplaceForm.setRowStretch(6, 1)
 
         # Quote Style
         self.quoteStyle     = QGroupBox("Quotation Style", self)
@@ -477,12 +477,33 @@ class GuiConfigEditEditor(QWidget):
         self.quoteStyleForm.setColumnStretch(4, 1)
         self.quoteStyleForm.setRowStretch(4, 1)
 
+        # Writing Guides
+        self.showGuides     = QGroupBox("Writing Guides", self)
+        self.showGuidesForm = QGridLayout(self)
+        self.showGuides.setLayout(self.showGuidesForm)
+
+        self.showTabsNSpaces = QCheckBox("Show tabs and spaces",self)
+        if self.mainConf.showTabsNSpaces:
+            self.showTabsNSpaces.setCheckState(Qt.Checked)
+        else:
+            self.showTabsNSpaces.setCheckState(Qt.Unchecked)
+
+        self.showLineEndings = QCheckBox("Show line endings",self)
+        if self.mainConf.showTabsNSpaces:
+            self.showLineEndings.setCheckState(Qt.Checked)
+        else:
+            self.showLineEndings.setCheckState(Qt.Unchecked)
+
+        self.showGuidesForm.addWidget(self.showTabsNSpaces, 0, 0)
+        self.showGuidesForm.addWidget(self.showLineEndings, 1, 0)
+
         # Assemble
         self.outerBox.addWidget(self.textStyle,   0, 0, 1, 2)
         self.outerBox.addWidget(self.textFlow,    1, 0)
         self.outerBox.addWidget(self.textMargin,  1, 1)
-        self.outerBox.addWidget(self.autoReplace, 2, 0)
-        self.outerBox.addWidget(self.quoteStyle,  2, 1)
+        self.outerBox.addWidget(self.quoteStyle,  2, 0)
+        self.outerBox.addWidget(self.autoReplace, 2, 1, 2, 1)
+        self.outerBox.addWidget(self.showGuides,  3, 0)
         self.outerBox.setColumnStretch(2, 1)
         self.setLayout(self.outerBox)
 
@@ -554,6 +575,12 @@ class GuiConfigEditEditor(QWidget):
         else:
             self.theParent.makeAlert("Invalid quote symbol: %s" % fmtDoubleQuotesC, nwAlert.ERROR)
             validEntries = False
+
+        showTabsNSpaces = self.showTabsNSpaces.isChecked()
+        showLineEndings = self.showLineEndings.isChecked()
+
+        self.mainConf.showTabsNSpaces = showTabsNSpaces
+        self.mainConf.showLineEndings = showLineEndings
 
         self.mainConf.confChanged = True
 

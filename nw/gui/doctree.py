@@ -51,7 +51,7 @@ class GuiDocTree(QTreeWidget):
         self.setExpandsOnDoubleClick(True)
         self.setIndentation(13)
         self.setColumnCount(4)
-        self.setHeaderLabels(["Name","Words","Flags","Handle"])
+        self.setHeaderLabels(["Label","Words","Flags","Handle"])
         if not self.debugGUI:
             self.hideColumn(self.C_HANDLE)
 
