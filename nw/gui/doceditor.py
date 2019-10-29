@@ -81,8 +81,8 @@ class GuiDocEditor(QTextEdit):
 
         # Custom Shortcuts
         QShortcut(QKeySequence("Ctrl+."), self, context=Qt.WidgetShortcut, activated=self._openSpellContext)
-        QShortcut(Qt.Key_Return | Qt.ControlModifier, self, context=Qt.WidgetShortcut, activated=self._insertHardBreak)
-        QShortcut(Qt.Key_Enter  | Qt.ControlModifier, self, context=Qt.WidgetShortcut, activated=self._insertHardBreak)
+        # QShortcut(Qt.Key_Return | Qt.ControlModifier, self, context=Qt.WidgetShortcut, activated=self._insertHardBreak)
+        # QShortcut(Qt.Key_Enter  | Qt.ControlModifier, self, context=Qt.WidgetShortcut, activated=self._insertHardBreak)
 
         # Set Up Word Count Thread and Timer
         self.wcInterval = self.mainConf.wordCountTimer
