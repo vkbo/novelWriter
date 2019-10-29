@@ -81,8 +81,8 @@ class GuiDocEditor(QTextEdit):
 
         # Custom Shortcuts
         QShortcut(QKeySequence("Ctrl+."), self, context=Qt.WidgetShortcut, activated=self._openSpellContext)
-        QShortcut(Qt.Key_Return | Qt.ControlModifier, self, context=Qt.WidgetShortcut, activated=self._insertHardBreak)
-        QShortcut(Qt.Key_Enter  | Qt.ControlModifier, self, context=Qt.WidgetShortcut, activated=self._insertHardBreak)
+        # QShortcut(Qt.Key_Return | Qt.ControlModifier, self, context=Qt.WidgetShortcut, activated=self._insertHardBreak)
+        # QShortcut(Qt.Key_Enter  | Qt.ControlModifier, self, context=Qt.WidgetShortcut, activated=self._insertHardBreak)
 
         # Set Up Word Count Thread and Timer
         self.wcInterval = self.mainConf.wordCountTimer
@@ -126,7 +126,7 @@ class GuiDocEditor(QTextEdit):
         # Reload dictionaries
         self.setDictionaries()
 
-        # Set Font
+        # Set font
         theFont = QFont()
         if self.mainConf.textFont is None:
             # If none is defined, set the default back to config
@@ -145,13 +145,20 @@ class GuiDocEditor(QTextEdit):
 
         # Also set the document text options for the document text flow
         theOpt = QTextOption()
+
         if self.mainConf.tabWidth is not None:
             if self.mainConf.verQtValue >= 51000:
                 theOpt.setTabStopDistance(self.mainConf.tabWidth)
         if self.mainConf.doJustify:
             theOpt.setAlignment(Qt.AlignJustify)
+        if self.mainConf.showTabsNSpaces:
+            theOpt.setFlags(theOpt.flags() | QTextOption.ShowTabsAndSpaces)
+        if self.mainConf.showLineEndings:
+            theOpt.setFlags(theOpt.flags() | QTextOption.ShowLineAndParagraphSeparators)
+
         self.qDocument.setDefaultTextOption(theOpt)
 
+        # Initialise the syntax highlighter
         self.hLight.initHighlighter()
 
         # If we have a document open, we should reload it in case the font changed

@@ -86,6 +86,8 @@ class Config:
         self.doReplaceDash   = True
         self.doReplaceDots   = True
         self.wordCountTimer  = 5.0
+        self.showTabsNSpaces = False
+        self.showLineEndings = False
 
         self.fmtSingleQuotes = [nwUnicode.U_LSQUO,nwUnicode.U_RSQUO]
         self.fmtDoubleQuotes = [nwUnicode.U_LDQUO,nwUnicode.U_RDQUO]
@@ -233,6 +235,8 @@ class Config:
         self.fmtSingleQuotes = self._parseLine(cnfParse, cnfSec, "fmtsinglequote",  self.CNF_LIST, self.fmtSingleQuotes)
         self.fmtDoubleQuotes = self._parseLine(cnfParse, cnfSec, "fmtdoublequote",  self.CNF_LIST, self.fmtDoubleQuotes)
         self.spellLanguage   = self._parseLine(cnfParse, cnfSec, "spellcheck",      self.CNF_STR,  self.spellLanguage)
+        self.showTabsNSpaces = self._parseLine(cnfParse, cnfSec, "showtabsnspaces", self.CNF_BOOL, self.showTabsNSpaces)
+        self.showLineEndings = self._parseLine(cnfParse, cnfSec, "showlineendings", self.CNF_BOOL, self.showLineEndings)
 
         ## Backup
         cnfSec = "Backup"
@@ -282,22 +286,24 @@ class Config:
         ## Editor
         cnfSec = "Editor"
         cnfParse.add_section(cnfSec)
-        cnfParse.set(cnfSec,"textfont",      str(self.textFont))
-        cnfParse.set(cnfSec,"textsize",      str(self.textSize))
-        cnfParse.set(cnfSec,"fixedwidth",    str(self.textFixedW))
-        cnfParse.set(cnfSec,"width",         str(self.textWidth))
-        cnfParse.set(cnfSec,"margin",        str(self.textMargin))
-        cnfParse.set(cnfSec,"tabwidth",      str(self.tabWidth))
-        cnfParse.set(cnfSec,"justify",       str(self.doJustify))
-        cnfParse.set(cnfSec,"autoselect",    str(self.autoSelect))
-        cnfParse.set(cnfSec,"autoreplace",   str(self.doReplace))
-        cnfParse.set(cnfSec,"repsquotes",    str(self.doReplaceSQuote))
-        cnfParse.set(cnfSec,"repdquotes",    str(self.doReplaceDQuote))
-        cnfParse.set(cnfSec,"repdash",       str(self.doReplaceDash))
-        cnfParse.set(cnfSec,"repdots",       str(self.doReplaceDots))
-        cnfParse.set(cnfSec,"fmtsinglequote",self._packList(self.fmtSingleQuotes))
-        cnfParse.set(cnfSec,"fmtdoublequote",self._packList(self.fmtDoubleQuotes))
-        cnfParse.set(cnfSec,"spellcheck",    str(self.spellLanguage))
+        cnfParse.set(cnfSec,"textfont",        str(self.textFont))
+        cnfParse.set(cnfSec,"textsize",        str(self.textSize))
+        cnfParse.set(cnfSec,"fixedwidth",      str(self.textFixedW))
+        cnfParse.set(cnfSec,"width",           str(self.textWidth))
+        cnfParse.set(cnfSec,"margin",          str(self.textMargin))
+        cnfParse.set(cnfSec,"tabwidth",        str(self.tabWidth))
+        cnfParse.set(cnfSec,"justify",         str(self.doJustify))
+        cnfParse.set(cnfSec,"autoselect",      str(self.autoSelect))
+        cnfParse.set(cnfSec,"autoreplace",     str(self.doReplace))
+        cnfParse.set(cnfSec,"repsquotes",      str(self.doReplaceSQuote))
+        cnfParse.set(cnfSec,"repdquotes",      str(self.doReplaceDQuote))
+        cnfParse.set(cnfSec,"repdash",         str(self.doReplaceDash))
+        cnfParse.set(cnfSec,"repdots",         str(self.doReplaceDots))
+        cnfParse.set(cnfSec,"fmtsinglequote",  self._packList(self.fmtSingleQuotes))
+        cnfParse.set(cnfSec,"fmtdoublequote",  self._packList(self.fmtDoubleQuotes))
+        cnfParse.set(cnfSec,"spellcheck",      str(self.spellLanguage))
+        cnfParse.set(cnfSec,"showtabsnspaces", str(self.showTabsNSpaces))
+        cnfParse.set(cnfSec,"showlineendings", str(self.showLineEndings))
 
         ## Backup
         cnfSec = "Backup"
