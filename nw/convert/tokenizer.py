@@ -149,6 +149,9 @@ class Tokenizer():
             self.theText = xRep.sub(lambda x: repDict[x.group(0)], self.theText)
         return
 
+    def doPostProcessing(self):
+        return
+
     def tokenizeText(self):
         """Scan the text for either lines starting with specific characters that indicate headers,
         comments, commands etc, or just contains plain text. in the case of plain text, apply the

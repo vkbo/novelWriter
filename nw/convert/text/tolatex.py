@@ -16,6 +16,7 @@ import re
 import nw
 
 from nw.convert.tokenizer import Tokenizer
+from nw.constants         import nwUnicode
 
 logger = logging.getLogger(__name__)
 
@@ -24,6 +25,20 @@ class ToLaTeX(Tokenizer):
     def __init__(self, theProject, theParent):
         Tokenizer.__init__(self, theProject, theParent)
         self.texCodecFail = False
+        return
+
+    def doPostProcessing(self):
+        """The latexcodec misses dashes and non-breaking spaces, so we do those here.
+        """
+
+        repDict = {
+            nwUnicode.U_ENDASH : "--",
+            nwUnicode.U_EMDASH : "---",
+            nwUnicode.U_NBSP   : "~",
+        }
+        xRep = re.compile("|".join([re.escape(k) for k in repDict.keys()]), flags=re.DOTALL)
+        self.theResult = xRep.sub(lambda x: repDict[x.group(0)], self.theResult)
+
         return
 
     def doConvert(self):

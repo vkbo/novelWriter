@@ -218,7 +218,14 @@ class GuiDocEditor(QTextEdit):
         return self.docChanged
 
     def getText(self):
-        theText = self.toPlainText()
+        """Get the text content of the current document. This method uses QTextEdit->toPlainText for
+        Qt versions lower than 5.9, and the QDocument->toRawText for higher version. The latter
+        preserves non-breaking spaces, which the former does not.
+        """
+        if self.mainConf.verQtValue >= 50900:
+            theText = self.qDocument.toRawText().replace(nwUnicode.U_PARA,"\n")
+        else:
+            theText = self.toPlainText()
         return theText
 
     def setCursorPosition(self, thePosition):
@@ -466,11 +473,11 @@ class GuiDocEditor(QTextEdit):
 
         elif self.mainConf.doReplaceDash and theTwo == "--":
             theCursor.movePosition(QTextCursor.Left, QTextCursor.KeepAnchor, 2)
-            theCursor.insertText(nwUnicode.U_NDASH)
+            theCursor.insertText(nwUnicode.U_ENDASH)
 
-        elif self.mainConf.doReplaceDash and theTwo == nwUnicode.U_NDASH+"-":
+        elif self.mainConf.doReplaceDash and theTwo == nwUnicode.U_ENDASH+"-":
             theCursor.movePosition(QTextCursor.Left, QTextCursor.KeepAnchor, 2)
-            theCursor.insertText(nwUnicode.U_MDASH)
+            theCursor.insertText(nwUnicode.U_EMDASH)
 
         elif self.mainConf.doReplaceDots and theThree == "...":
             theCursor.movePosition(QTextCursor.Left, QTextCursor.KeepAnchor, 3)

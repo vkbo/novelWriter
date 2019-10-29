@@ -149,7 +149,9 @@ class nwUnicode:
     """Suppoted unicode character constants and translation maps.
     """
 
-    # Quotation Marks
+    # Unicode Constants
+
+    ## Quotation Marks
     U_QUOT   = "\u0022" # Quotation mark
     U_APOS   = "\u0027" # Apostrophe
     U_LAQUO  = "\u00ab" # Left-pointing double angle quotation mark
@@ -170,38 +172,44 @@ class nwUnicode:
     U_LWCQUO = "\u300e" # Left white corner bracket
     U_RECQUO = "\u300f" # Right white corner bracket
 
-    # Punctuation
-    U_NDASH  = "\u2013" # Short dash
-    U_MDASH  = "\u2014" # Long dash
+    ## Punctuation
+    U_ENDASH = "\u2013" # Short dash
+    U_EMDASH = "\u2014" # Long dash
     U_HELLIP = "\u2026" # Ellipsis
 
-    # Other
+    ## Other
     U_NBSP   = "\u00a0" # Non-breaking space
+    U_PARA   = "\u2029" # Paragraph separator
 
-    HTML = {
-        U_QUOT   : "&quot;",
-        U_APOS   : "&#39;",
-        U_LAQUO  : "&laquo;",
-        U_RAQUO  : "&raquo;",
-        U_LSQUO  : "&lsquo;",
-        U_RSQUO  : "&rsquo;",
-        U_SBQUO  : "&sbquo;",
-        U_SUQUO  : "&#8219;",
-        U_LDQUO  : "&ldquo;",
-        U_RDQUO  : "&rdquo;",
-        U_BDQUO  : "&bdquo;",
-        U_UDQUO  : "&#8223;",
-        U_LSAQUO : "&lsaquo;",
-        U_RSAQUO : "&rsaquo;",
-        U_BDRQUO : "&#11842;",
-        U_LCQUO  : "&#12300;",
-        U_RCQUO  : "&#12301;",
-        U_LWCQUO : "&#12302;",
-        U_LWCQUO : "&#12302;",
-        U_NDASH  : "&ndash;",
-        U_MDASH  : "&mdash;",
-        U_HELLIP : "&hellip;",
-        U_NBSP   : "&nbsp;",
-    }
+    # HTML Equivalents
+
+    ## Quotes
+    H_QUOT   = "&quot;"
+    H_APOS   = "&#39;"
+    H_LAQUO  = "&laquo;"
+    H_RAQUO  = "&raquo;"
+    H_LSQUO  = "&lsquo;"
+    H_RSQUO  = "&rsquo;"
+    H_SBQUO  = "&sbquo;"
+    H_SUQUO  = "&#8219;"
+    H_LDQUO  = "&ldquo;"
+    H_RDQUO  = "&rdquo;"
+    H_BDQUO  = "&bdquo;"
+    H_UDQUO  = "&#8223;"
+    H_LSAQUO = "&lsaquo;"
+    H_RSAQUO = "&rsaquo;"
+    H_BDRQUO = "&#11842;"
+    H_LCQUO  = "&#12300;"
+    H_RCQUO  = "&#12301;"
+    H_LWCQUO = "&#12302;"
+    H_LWCQUO = "&#12302;"
+
+    ## Punctuation
+    H_ENDASH = "&ndash;"
+    H_EMDASH = "&mdash;"
+    H_HELLIP = "&hellip;"
+
+    ## Other
+    H_NBSP   = "&nbsp;"
 
 # END Class nwUnicode
