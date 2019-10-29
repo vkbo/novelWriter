@@ -147,6 +147,7 @@ class GuiConfigEditGeneral(QWidget):
         self.guiLookForm.addWidget(self.guiLookTheme,  0, 1)
         self.guiLookForm.addWidget(QLabel("Syntax"),   1, 0)
         self.guiLookForm.addWidget(self.guiLookSyntax, 1, 1)
+        self.guiLookForm.setColumnStretch(2, 1)
 
         # Spell Checking
         self.spellLang     = QGroupBox("Spell Checker", self)
@@ -162,10 +163,10 @@ class GuiConfigEditGeneral(QWidget):
 
         self.spellLangForm.addWidget(QLabel("Language"), 0, 0)
         self.spellLangForm.addWidget(self.spellLangList, 0, 1)
-        self.spellLangForm.setColumnStretch(1, 1)
+        self.spellLangForm.setColumnStretch(2, 1)
 
         # AutoSave
-        self.autoSave     = QGroupBox("Auto-Save", self)
+        self.autoSave     = QGroupBox("Automatic Save", self)
         self.autoSaveForm = QGridLayout(self)
         self.autoSave.setLayout(self.autoSaveForm)
 
@@ -187,9 +188,10 @@ class GuiConfigEditGeneral(QWidget):
         self.autoSaveForm.addWidget(QLabel("Project"),  1, 0)
         self.autoSaveForm.addWidget(self.autoSaveProj,  1, 1)
         self.autoSaveForm.addWidget(QLabel("seconds"),  1, 2)
+        self.autoSaveForm.setColumnStretch(3, 1)
 
         # Backup
-        self.projBackup     = QGroupBox("Backup", self)
+        self.projBackup     = QGroupBox("Backup Folder", self)
         self.projBackupForm = QGridLayout(self)
         self.projBackup.setLayout(self.projBackupForm)
 
@@ -214,11 +216,11 @@ class GuiConfigEditGeneral(QWidget):
         else:
             self.projBackupAsk.setCheckState(Qt.Unchecked)
 
-        self.projBackupForm.addWidget(QLabel("Backup folder"), 0, 0)
-        self.projBackupForm.addWidget(self.projBackupPath,     0, 1)
-        self.projBackupForm.addWidget(self.projBackupGetPath,  0, 2)
-        self.projBackupForm.addWidget(self.projBackupClose,    1, 0)
-        self.projBackupForm.addWidget(self.projBackupAsk,      1, 1, 1, 2)
+        self.projBackupForm.addWidget(self.projBackupPath,    0, 0, 1, 2)
+        self.projBackupForm.addWidget(self.projBackupGetPath, 0, 2)
+        self.projBackupForm.addWidget(self.projBackupClose,   1, 0)
+        self.projBackupForm.addWidget(self.projBackupAsk,     1, 1, 1, 2)
+        self.projBackupForm.setColumnStretch(1, 1)
 
         # Assemble
         self.outerBox.addWidget(self.guiLook,    0, 0)
