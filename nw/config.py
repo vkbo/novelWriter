@@ -19,7 +19,7 @@ from os           import path, mkdir, makedirs, getcwd
 from appdirs      import user_config_dir
 from datetime     import datetime
 
-from nw.constants import nwFiles
+from nw.constants import nwFiles, nwUnicode
 from nw.common    import splitVersionNumber
 
 from PyQt5.Qt     import PYQT_VERSION_STR
@@ -87,8 +87,8 @@ class Config:
         self.doReplaceDots   = True
         self.wordCountTimer  = 5.0
 
-        self.fmtSingleQuotes = ["\u2018","\u2019"]
-        self.fmtDoubleQuotes = ["\u201c","\u201d"]
+        self.fmtSingleQuotes = [nwUnicode.U_LSQUO,nwUnicode.U_RSQUO]
+        self.fmtDoubleQuotes = [nwUnicode.U_LDQUO,nwUnicode.U_RDQUO]
 
         self.spellLanguage   = "en_GB"
 

@@ -16,6 +16,8 @@ import nw
 from PyQt5.QtCore import Qt, QRegularExpression
 from PyQt5.QtGui  import QColor, QTextCharFormat, QFont, QSyntaxHighlighter, QBrush
 
+from nw.constants import nwUnicode
+
 logger = logging.getLogger(__name__)
 
 class GuiDocHighlighter(QSyntaxHighlighter):
@@ -87,6 +89,7 @@ class GuiDocHighlighter(QSyntaxHighlighter):
             "strike"    : self._makeFormat(self.colEmph, "strike"),
             "underline" : self._makeFormat(self.colEmph, "underline"),
             "trailing"  : self._makeFormat(self.colTrail,"background"),
+            "nobreak"   : self._makeFormat(self.colTrail,"background"),
             "dialogue1" : self._makeFormat(self.colDialN),
             "dialogue2" : self._makeFormat(self.colDialD),
             "dialogue3" : self._makeFormat(self.colDialS),
@@ -142,6 +145,13 @@ class GuiDocHighlighter(QSyntaxHighlighter):
         self.hRules.append((
             r"[ ]{2,}$", {
                 0 : self.hStyles["trailing"],
+            }
+        ))
+
+        # Non-breaking Space
+        self.hRules.append((
+            "[\u00a0]+", {
+                0 : self.hStyles["nobreak"],
             }
         ))
 
