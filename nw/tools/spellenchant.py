@@ -32,6 +32,9 @@ class NWSpellEnchant(NWSpellCheck):
         return
 
     def setLanguage(self, theLang, projectDict=None):
+        """Load a dictionary for the language specified in the config. If that fails, we load a
+        dummy dictionary so that lookups don't crash.
+        """
         try:
             if projectDict is None:
                 self.theDict = enchant.Dict(theLang)
@@ -40,7 +43,8 @@ class NWSpellEnchant(NWSpellCheck):
             logger.debug("Enchant spell checking for language %s loaded" % theLang)
         except:
             logger.error("Failed to load enchant spell checking for language %s" % theLang)
-            self.theDict = None
+            self.theDict = NWSpellEnchantDummy()
+
         return
 
     def checkWord(self, theWord):
@@ -73,3 +77,19 @@ class NWSpellEnchant(NWSpellCheck):
         return retList
 
 # END Class NWSpellEnchant
+
+class NWSpellEnchantDummy:
+
+    def __init__(self):
+        return
+    
+    def check(self, theWord):
+        return True
+
+    def suggest(self, theWord):
+        return []
+
+    def add_to_pwl(self, theWord):
+        return
+
+# END Class NWSpellEnchantDummy

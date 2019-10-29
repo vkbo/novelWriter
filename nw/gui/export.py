@@ -55,7 +55,7 @@ class GuiExport(QDialog):
         self.setWindowTitle("Export Project")
         self.setLayout(self.outerBox)
 
-        self.gradPath = path.abspath(path.join(self.mainConf.appPath,"graphics","export.svg"))
+        self.gradPath = path.abspath(path.join(self.mainConf.graphPath,"export.svg"))
         self.svgGradient = QSvgWidget(self.gradPath)
         self.svgGradient.setFixedSize(QSize(64,64))
 

@@ -10,8 +10,9 @@
 
 """
 
-import logging
+import sys
 import getopt
+import logging
 
 from os              import path, remove, rename
 from PyQt5.QtWidgets import QApplication
@@ -126,15 +127,15 @@ def main(sysArgs):
         inOpts, inArgs = getopt.getopt(sysArgs,shortOpt,longOpt)
     except getopt.GetoptError:
         print(helpMsg)
-        exit(2)
+        sys.exit(2)
 
     for inOpt, inArg in inOpts:
-        if   inOpt in ("-h","--help"):
+        if inOpt in ("-h","--help"):
             print(helpMsg)
-            exit()
+            sys.exit()
         elif inOpt in ("-v", "--version"):
             print("%s %s Version %s" % (__package__,__status__,__version__))
-            exit()
+            sys.exit()
         elif inOpt in ("-d", "--debug"):
             debugLevel = logging.DEBUG
             debugStr   = "{name:>22}:{lineno:<4d}  {levelname:8}  {message:}"
@@ -196,6 +197,6 @@ def main(sysArgs):
     else:
         nwApp = QApplication([__package__])
         nwGUI = GuiMain()
-        exit(nwApp.exec_())
+        sys.exit(nwApp.exec_())
 
     return

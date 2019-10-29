@@ -1,7 +1,9 @@
-# Setup
+# Setup/Install
 MANIFEST
 dist/
+build/
 deploy/
+*.spec
 
 # Documentation
 docs/build/
