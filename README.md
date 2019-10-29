@@ -6,12 +6,24 @@
 
 novelWriter is a markdown-like text editor designed fro writing novels and larger projects of many smaller plain text documents.
 
-It is under initial development, and not all planned features are included, but it is perfectly usable in the current state.
+The documentation is available here: [novelwriter.readthedocs.io](https://novelwriter.readthedocs.io/).
+
+### Note
+
+The application is under initial development, and not all planned features are included.
+The core functionality is, however, in place and has been used for a while by the author and collaborators.
+
+New features are being added regularly, until the core toolset is complete.
+When all planned initial features are in place, a release 1.0 will be made.
+Until then, novelWriter is in a pre-release alpha state, and should be considered experimental.
+If you do use it for real projects, please run backups frequently to avoid data losses.
+There is a built in backup feature that can pack the entire project into a zip file on close.
+Please check the documentation for further details.
+
+## Implementation
 
 The application is written in Python3 using Qt5 via PyQt5.
 It is developed on Linux, but it should in principle work fine on other operating systems as well as long as dependencies are met.
-
-The documentation is available here: [novelwriter.readthedocs.io](https://novelwriter.readthedocs.io/).
 
 The application can be started from the source folder with the command:
 ```
@@ -22,7 +34,7 @@ It also takes a few parameters for debugging and such, which can be listed with 
 
 There are no launcher icons yet.
 Consult your operating system documentation for how to make those.
-I will add those later, and would appreciate any assistance from people working on Windows and MacOS as I don't use either of those operating systems.
+These will be added at some point, and I would appreciate any assistance from people working on Windows and MacOS as I don't use either of those operating systems.
 
 ## Dependencies
 
@@ -38,6 +50,7 @@ These are optional, but recommended:
 * `python3-enchant` for spell checking
 * `python3-pycountry` for translating language codes to language names
 * `python3-latexcodec` for escaping unicode characters in LaTeX export
+* `python3-pandoc` for additional exports to Word, Open Office, eBooks, etc.
 
 Alternatively, the packages can be installed with `pip` by running
 ```
@@ -53,13 +66,15 @@ python3 -m pip install lxml
 python3 -m pip install pyenchant
 python3 -m pip install pycountry
 python3 -m pip install latexcodec
+python3 -m pip install pypandoc
 ```
-This may be necessary on Windows, as `pyenchant` may cause problems.
+On Windows,`pyenchant` may cause problems.
 I'm looking for a good alternative for spell checking.
 
 Note: On Windows, make sure Python3 is in your PATH if you want to launch novelWriter from command line.
-You can also right click the `novelWriter.py` file, create a shortcut.
-Then right click again, select "Properties" and change the target to your python executable and `novelWriter.py`.
+You can also right click the `novelWriter.py` file, create a shortcut, then right click again, select "Properties" and change the target to your python executable and `novelWriter.py`.
+
+It should look something like this:
 ```
 C:\...\AppData\Local\Programs\Python\Python38\python.exe novelWriter.py
 ```

@@ -31,6 +31,7 @@ from nw.convert.file.html     import HtmlFile
 from nw.convert.file.markdown import MarkdownFile
 from nw.convert.file.latex    import LaTeXFile
 from nw.convert.file.concat   import ConcatFile
+from nw.common                import packageRefURL
 from nw.constants             import nwFiles
 from nw.enum                  import nwItemType, nwAlert
 
@@ -191,9 +192,11 @@ class GuiExport(QDialog):
             # Check that encoding was successful
             if outFile.texCodecFail:
                 self.theParent.makeAlert((
-                    "Failed to escape unicode characters while writing LaTeX file. "
-                    "The genrated .tex file may not build properly. "
-                    "Make sure the python package 'latexcodec' is installed and working."
+                    "Failed to escape unicode characters while writing LaTeX file. The generated "
+                    ".tex file may not build properly. Make sure the python package '{package:s}' "
+                    "is installed and working."
+                ).format(
+                    package = packageRefURL("latexcodec")
                 ), nwAlert.WARN)
 
         if eFormat != GuiExportMain.FMT_PDOC:
@@ -227,8 +230,10 @@ class GuiExport(QDialog):
             import pypandoc
         except:
             self.theParent.makeAlert((
-                "Could not load the 'pypandoc' package. "
+                "Could not load the '{package:s}' package. "
                 "Make sure it is installed, and try again."
+            ).format(
+                package = packageRefURL("pypandoc")
             ), nwAlert.ERROR)
             return False
 

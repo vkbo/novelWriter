@@ -74,11 +74,11 @@ class Config:
         ## Text Editor
         self.textFont        = None
         self.textSize        = 12
-        self.textFixedW      = True
+        self.textFixedW      = False
         self.textWidth       = 600
         self.textMargin      = 40
         self.tabWidth        = 40
-        self.doJustify       = True
+        self.doJustify       = False
         self.autoSelect      = True
         self.doReplace       = True
         self.doReplaceSQuote = True

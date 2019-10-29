@@ -76,7 +76,7 @@ class GuiMainMenu(QMenuBar):
         for n in range(len(self.mainConf.recentList)):
             recentProject = self.mainConf.recentList[n]
             if recentProject == "": continue
-            menuItem = QAction("%d: %s" % (n,recentProject), self.projMenu)
+            menuItem = QAction("%s" % recentProject, self.projMenu)
             menuItem.triggered.connect(lambda menuItem, n=n : self.openRecentProject(menuItem, n))
             self.recentMenu.addAction(menuItem)
         return
@@ -216,13 +216,13 @@ class GuiMainMenu(QMenuBar):
         # Project > New Root
         rootMenu = self.projMenu.addMenu("Create Root Folder")
         self.rootItems = {}
-        self.rootItems[nwItemClass.NOVEL]      = QAction("Novel Root",     rootMenu)
-        self.rootItems[nwItemClass.PLOT]       = QAction("Plot Root",      rootMenu)
-        self.rootItems[nwItemClass.CHARACTER]  = QAction("Character Root", rootMenu)
-        self.rootItems[nwItemClass.WORLD]      = QAction("Location Root",  rootMenu)
-        self.rootItems[nwItemClass.TIMELINE]   = QAction("Timeline Root",  rootMenu)
-        self.rootItems[nwItemClass.OBJECT]     = QAction("Object Root",    rootMenu)
-        self.rootItems[nwItemClass.CUSTOM]     = QAction("Custom Root",    rootMenu)
+        self.rootItems[nwItemClass.NOVEL]     = QAction("Novel Root",     rootMenu)
+        self.rootItems[nwItemClass.PLOT]      = QAction("Plot Root",      rootMenu)
+        self.rootItems[nwItemClass.CHARACTER] = QAction("Character Root", rootMenu)
+        self.rootItems[nwItemClass.WORLD]     = QAction("Location Root",  rootMenu)
+        self.rootItems[nwItemClass.TIMELINE]  = QAction("Timeline Root",  rootMenu)
+        self.rootItems[nwItemClass.OBJECT]    = QAction("Object Root",    rootMenu)
+        self.rootItems[nwItemClass.CUSTOM]    = QAction("Custom Root",    rootMenu)
         nCount = 0
         for itemClass in self.rootItems.keys():
             nCount += 1 # This forces the lambdas to be unique
