@@ -10,8 +10,9 @@
 
 """
 
-import logging
+import sys
 import getopt
+import logging
 
 from os              import path, remove, rename
 from PyQt5.QtWidgets import QApplication
@@ -196,6 +197,6 @@ def main(sysArgs):
     else:
         nwApp = QApplication([__package__])
         nwGUI = GuiMain()
-        exit(nwApp.exec_())
+        sys.exit(nwApp.exec_())
 
     return

@@ -156,13 +156,13 @@ class Config:
         self.confFile  = self.appHandle+".conf"
         self.homePath  = path.expanduser("~")
         self.lastPath  = self.homePath
-        self.appPath   = path.dirname(__file__)
+        self.appPath   = getattr(sys, "_MEIPASS", path.abspath(path.dirname(__file__)))
         self.appRoot   = path.join(self.appPath,path.pardir)
         self.helpPath  = path.join(self.appRoot,"help","en_GB")
         self.guiPath   = path.join(self.appPath,"gui")
         self.themeRoot = path.join(self.appPath,"themes")
-        self.themePath = path.join(self.themeRoot)
-        self.appIcon   = path.join(self.appRoot, nwFiles.APP_ICON)
+        self.graphPath = path.join(self.appPath,"graphics")
+        self.appIcon   = path.join(self.graphPath, nwFiles.APP_ICON)
 
         # If config folder does not exist, make it.
         # This assumes that the os config folder itself exists.

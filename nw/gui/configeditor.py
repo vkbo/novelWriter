@@ -43,7 +43,7 @@ class GuiConfigEditor(QDialog):
 
         self.setWindowTitle("Preferences")
 
-        self.gradPath = path.abspath(path.join(self.mainConf.appPath,"graphics","gear.svg"))
+        self.gradPath = path.abspath(path.join(self.mainConf.graphPath,"gear.svg"))
         self.svgGradient = QSvgWidget(path.join(self.gradPath))
         self.svgGradient.setFixedSize(QSize(64,64))
 
