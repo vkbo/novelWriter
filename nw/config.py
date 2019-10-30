@@ -340,6 +340,10 @@ class Config:
         self.recentList.insert(0,recentPath)
         return
 
+    def clearRecent(self):
+        self.recentList = [""]*10
+        return
+
     def setConfPath(self, newPath):
         if newPath is None:
             return True
