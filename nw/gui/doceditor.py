@@ -16,7 +16,7 @@ import nw
 from time                import time
 
 from PyQt5.QtCore        import Qt, QTimer, QSizeF
-from PyQt5.QtWidgets     import QTextEdit, QAction, QMenu, QShortcut
+from PyQt5.QtWidgets     import qApp, QTextEdit, QAction, QMenu, QShortcut
 from PyQt5.QtGui         import QTextCursor, QTextOption, QIcon, QKeySequence, QFont, QColor, QPalette, QTextDocument
 
 from nw.project.document import NWDoc
@@ -81,8 +81,8 @@ class GuiDocEditor(QTextEdit):
 
         # Custom Shortcuts
         QShortcut(QKeySequence("Ctrl+."), self, context=Qt.WidgetShortcut, activated=self._openSpellContext)
-        # QShortcut(Qt.Key_Return | Qt.ControlModifier, self, context=Qt.WidgetShortcut, activated=self._insertHardBreak)
-        # QShortcut(Qt.Key_Enter  | Qt.ControlModifier, self, context=Qt.WidgetShortcut, activated=self._insertHardBreak)
+        QShortcut(Qt.Key_Return | Qt.ControlModifier, self, context=Qt.WidgetShortcut, activated=self._followTag)
+        QShortcut(Qt.Key_Enter  | Qt.ControlModifier, self, context=Qt.WidgetShortcut, activated=self._followTag)
 
         # Set Up Word Count Thread and Timer
         self.wcInterval = self.mainConf.wordCountTimer
@@ -352,9 +352,48 @@ class GuiDocEditor(QTextEdit):
 
         return
 
+    def mouseReleaseEvent(self, mEvent):
+        """If the mouse button is released and the control key is pressed, check if we're clicking
+        on a tag, and trigger the follow tag function.
+        """
+        if qApp.keyboardModifiers() == Qt.ControlModifier:
+            theCursor = self.cursorForPosition(mEvent.pos())
+            self._followTag(theCursor)
+        QTextEdit.mouseReleaseEvent(self, mEvent)
+        return
+
     ##
     #  Internal Functions
     ##
+
+    def _followTag(self, theCursor=None):
+        """Activated by Ctrl+Enter. Checks that we're in a block starting with '@'. We then find the
+        word under the cursor and check that it is after the ':'. If all this is fine, we have a tag
+        and can tell the document viewer to try and find and load the file where the tag is defined.
+        """
+
+        if theCursor is None:
+            theCursor = self.textCursor()
+
+        theBlock = theCursor.block()
+        theText  = theBlock.text()
+
+        if len(theText) == 0:
+            return False
+
+        if theText.startswith("@"):
+
+            theCursor.select(QTextCursor.WordUnderCursor)
+            theWord = theCursor.selectedText()
+            cPos = theText.find(":")
+            wPos = theCursor.selectionStart() - theBlock.position()
+            if wPos <= cPos:
+                return False
+
+            logger.verbose("Attempting to follow tag '%s'" % theWord)
+            self.theParent.docViewer.loadFromTag(theWord)
+
+        return True
 
     def _insertHardBreak(self):
         theCursor = self.textCursor()

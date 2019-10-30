@@ -115,6 +115,24 @@ class GuiDocViewer(QTextBrowser):
 
         return True
 
+    def loadFromTag(self, theTag):
+
+        logger.debug("Loading document from tag '%s'" % theTag)
+
+        if theTag in self.theParent.theIndex.tagIndex.keys():
+            theTarget = self.theParent.theIndex.tagIndex[theTag]
+        else:
+            logger.debug("The tag was not found in the index")
+            return False
+
+        if len(theTarget) != 3:
+            # Just to make sure the index is not messed up
+            return False
+
+        self.loadText(theTarget[1])
+
+        return True
+
     ##
     #  Internal Functions
     ##
