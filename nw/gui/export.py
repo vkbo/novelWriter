@@ -122,6 +122,15 @@ class GuiExport(QDialog):
         pFormat   = self.tabPandoc.outputFormat.currentData()
         tFormat   = GuiExportPandoc.FMT_VIA[pFormat]
 
+        if saveTo.startswith("~"):
+            saveTo = path.expanduser(saveTo)
+
+        exportDir = path.dirname(saveTo)
+        if not path.isdir(exportDir):
+            self.theParent.makeAlert("The export folder does not exist.",nwAlert.ERROR)
+            self.exportStatus.setText("Export failed ...")
+            return False
+
         nItems = len(self.theProject.treeOrder)
         if eFormat == GuiExportMain.FMT_PDOC:
             nItems += int(0.2*nItems)
@@ -287,6 +296,9 @@ class GuiExport(QDialog):
         saveTo    = self.tabMain.exportPath.text()
         hScene    = self.tabMain.hideScene.isChecked()
         hSection  = self.tabMain.hideSection.isChecked()
+
+        if saveTo.startswith("~"):
+            saveTo = path.expanduser(saveTo)
 
         self.optState.setSetting("wNovel",   wNovel)
         self.optState.setSetting("wNotes",   wNotes)
@@ -563,6 +575,8 @@ class GuiExportMain(QWidget):
 
     def _checkFileExtension(self):
         saveTo   = self.exportPath.text()
+        if saveTo.startswith("~"):
+            saveTo = path.expanduser(saveTo)
         fileBits = path.splitext(saveTo)
         if self.currFormat > 0 and fileBits[0].strip() != "":
             saveTo = fileBits[0]+self.FMT_EXT[self.currFormat]

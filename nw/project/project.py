@@ -358,6 +358,8 @@ class NWProject():
         if projPath is None or projPath == "":
             self.projPath = None
         else:
+            if projPath.startswith("~"):
+                projPath = path.expanduser(projPath)
             self.projPath = projPath
         self.setProjectChanged(True)
         return True
