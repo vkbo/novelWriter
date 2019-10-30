@@ -72,6 +72,7 @@ class GuiMainMenu(QMenuBar):
         return
 
     def updateRecentProjects(self):
+
         self.recentMenu.clear()
         for n in range(len(self.mainConf.recentList)):
             recentProject = self.mainConf.recentList[n]
@@ -79,6 +80,13 @@ class GuiMainMenu(QMenuBar):
             menuItem = QAction("%s" % recentProject, self.projMenu)
             menuItem.triggered.connect(lambda menuItem, n=n : self.openRecentProject(menuItem, n))
             self.recentMenu.addAction(menuItem)
+
+        self.recentMenu.addSeparator()
+        menuItem = QAction("Clear Recent Projects", self)
+        menuItem.setStatusTip("Clear the list of recent projects")
+        menuItem.triggered.connect(self._clearRecentProjects)
+        self.recentMenu.addAction(menuItem)
+
         return
 
     def updateSpellCheck(self):
@@ -148,6 +156,11 @@ class GuiMainMenu(QMenuBar):
 
     def _openHelp(self):
         QDesktopServices.openUrl(QUrl(nw.__docurl__))
+        return True
+
+    def _clearRecentProjects(self):
+        self.mainConf.clearRecent()
+        self.updateRecentProjects()
         return True
 
     ##
