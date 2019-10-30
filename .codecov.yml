@@ -20,6 +20,3 @@ parsers:
       macro: no
 
 comment: false
-  # layout: "reach,diff,flags,tree"
-  # behavior: default
-  # require_changes: no
