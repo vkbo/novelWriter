@@ -85,6 +85,7 @@ def main(sysArgs):
         "config=",
         "testmode",
         "spell=",
+        "style=",
     ]
 
     helpMsg = (
@@ -99,8 +100,9 @@ def main(sysArgs):
         " -D, --debuggui  Shows additional debug GUI elements. Includes -d.\n"
         " -q, --quiet     Disable output to command line. Does not affect log file.\n"
         " -t, --time      Shows time stamp in logging output. Adds milliseconds when --verbose.\n"
-        " -l, --logfile   Specify log file.\n"
-        "     --config    Alternative config file.\n"
+        " -l, --logfile=  Specify log file.\n"
+        "     --style=    Set Qt5 style flag. Defaults to Fusion.\n"
+        "     --config=   Alternative config file.\n"
         "     --headless  Do not display GUI. Useful for testing scripts.\n"
     ).format(
         appname   = __package__,
@@ -121,6 +123,7 @@ def main(sysArgs):
     testMode   = False
     debugGUI   = False
     spellTool  = None
+    qtStyle    = "Fusion"
 
     # Parse Options
     try:
@@ -149,6 +152,8 @@ def main(sysArgs):
             timeStr    = "[{asctime:}.{msecs:03.0f}] "
         elif inOpt in ("-t","--time"):
             showTime = True
+        elif inOpt in ("--style"):
+            qtStyle = inArg
         elif inOpt in ("--config"):
             confPath = inArg
         elif inOpt in ("--testmode"):
@@ -195,7 +200,7 @@ def main(sysArgs):
         nwGUI = GuiMain()
         return nwGUI
     else:
-        nwApp = QApplication([__package__])
+        nwApp = QApplication([__package__,("-style=%s" % qtStyle)])
         nwGUI = GuiMain()
         sys.exit(nwApp.exec_())
 
