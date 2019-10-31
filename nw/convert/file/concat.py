@@ -35,16 +35,7 @@ class ConcatFile(TextFile):
 
         logger.verbose("Parsing content of item '%s'" % tHandle)
 
-        theItem = self.theProject.getItem(tHandle)
-        isNone  = theItem.itemLayout == nwItemLayout.NO_LAYOUT
-        isNote  = theItem.itemLayout == nwItemLayout.NOTE
-        isNovel = not isNone and not isNote
-
-        if isNone:
-            return False
-        if isNote and not self.expNotes:
-            return False
-        if isNovel and not self.expNovel:
+        if not self.checkInclude(tHandle):
             return False
 
         self.theConv.setText(tHandle)
