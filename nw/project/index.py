@@ -341,6 +341,13 @@ class NWIndex():
 
         return theRefs
 
+    def getTagSource(self, theTag):
+        if theTag in self.tagIndex:
+            theRef = self.tagIndex[theTag]
+            if len(theRef) == 3:
+                return theRef[1], theRef[0]
+        return None, 0
+
     def buildTagNovelMap(self, theTags, theFilters=None):
 
         tagMap   = {}

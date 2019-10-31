@@ -19,7 +19,7 @@ from PyQt5.QtGui     import QTextOption, QFont, QPalette, QColor
 
 from nw.convert.tokenizer   import Tokenizer
 from nw.convert.text.tohtml import ToHtml
-from nw.enum                import nwItemType
+from nw.enum                import nwAlert, nwItemType
 
 logger = logging.getLogger(__name__)
 
@@ -45,6 +45,8 @@ class GuiDocViewer(QTextBrowser):
         if self.mainConf.doJustify:
             theOpt.setAlignment(Qt.AlignJustify)
         self.qDocument.setDefaultTextOption(theOpt)
+
+        self.anchorClicked.connect(self._linkClicked)
 
         logger.debug("DocViewer initialisation complete")
 
@@ -102,6 +104,7 @@ class GuiDocViewer(QTextBrowser):
         logger.debug("Generating preview for item %s" % tHandle)
         sPos = self.verticalScrollBar().value()
         aDoc = ToHtml(self.theProject, self.theParent)
+        aDoc.setPreview(True)
         aDoc.setText(tHandle)
         aDoc.doAutoReplace()
         aDoc.tokenizeText()
@@ -139,22 +142,59 @@ class GuiDocViewer(QTextBrowser):
     #  Internal Functions
     ##
 
+    def _linkClicked(self, theURL):
+
+        theLink = theURL.url()
+        tHandle = None
+        onLine  = 0
+        theTag  = ""
+        if len(theLink) > 0:
+            theBits = theLink.split("=")
+            if len(theBits) == 2:
+                theTag = theBits[1]
+                tHandle, onLine = self.theParent.theIndex.getTagSource(theBits[1])
+
+        if tHandle is None:
+            self.theParent.makeAlert((
+                "Could not find the reference for tag '%s'. It either doesn't exist, or the index "
+                "is out of date. The index can be updated from the Tools menu.") % theTag,
+                nwAlert.ERROR
+            )
+            return
+        else:
+            self.loadText(tHandle)
+
+        return
+
     def _makeStyleSheet(self):
 
-        self.qDocument.setDefaultStyleSheet((
+        styleSheet = (
             "body {{"
-            "  font-size: {textSize}pt;"
+            "  font-size: {textSize:.1f}pt;"
             "  color: rgb({tColR},{tColG},{tColB});"
             "}}\n"
-            "h1, h2, h3, h4 {{"
+            "h1 {{"
             "  color: rgb({hColR},{hColG},{hColB});"
+            "  font-size: {h1Size:.1f}pt;"
+            "}}\n"
+            "h2 {{"
+            "  color: rgb({hColR},{hColG},{hColB});"
+            "  font-size: {h2Size:.1f}pt;"
+            "}}\n"
+            "h3 {{"
+            "  color: rgb({hColR},{hColG},{hColB});"
+            "  font-size: {h3Size:.1f}pt;"
+            "}}\n"
+            "h4 {{"
+            "  color: rgb({hColR},{hColG},{hColB});"
+            "  font-size: {h4Size:.1f}pt;"
             "}}\n"
             "a {{"
             "  color: rgb({aColR},{aColG},{aColB});"
             "}}\n"
             "pre {{"
             "  color: rgb({cColR},{cColG},{cColB});"
-            "  font-size: {preSize}pt;"
+            "  font-size: {preSize:.1f}pt;"
             "}}\n"
             "mark {{"
             "  color: rgb({eColR},{eColG},{eColB});"
@@ -165,9 +205,17 @@ class GuiDocViewer(QTextBrowser):
             "td {{"
             "  padding: 0px 4px;"
             "}}\n"
+            ".tags {{"
+            "  color: rgb({kColR},{kColG},{kColB});"
+            "  font-wright: bold;"
+            "}}\n"
         ).format(
             textSize = self.mainConf.textSize,
             preSize  = self.mainConf.textSize*0.9,
+            h1Size   = self.mainConf.textSize*1.8,
+            h2Size   = self.mainConf.textSize*1.6,
+            h3Size   = self.mainConf.textSize*1.4,
+            h4Size   = self.mainConf.textSize*1.2,
             tColR    = self.theTheme.colText[0],
             tColG    = self.theTheme.colText[1],
             tColB    = self.theTheme.colText[2],
@@ -183,7 +231,11 @@ class GuiDocViewer(QTextBrowser):
             aColR    = self.theTheme.colLink[0],
             aColG    = self.theTheme.colLink[1],
             aColB    = self.theTheme.colLink[2],
-        ))
+            kColR    = self.theTheme.colKey[0],
+            kColG    = self.theTheme.colKey[1],
+            kColB    = self.theTheme.colKey[2],
+        )
+        self.qDocument.setDefaultStyleSheet(styleSheet)
 
         return True
 

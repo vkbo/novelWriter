@@ -23,6 +23,18 @@ class ToHtml(Tokenizer):
 
     def __init__(self, theProject, theParent):
         Tokenizer.__init__(self, theProject, theParent)
+        self.forPreview = False
+        return
+
+    def setPreview(self, forPreview):
+        """If we're using this class to generate markdown preview, we need to make a few changes to
+        formatting, which is selected by this flag.
+        """
+
+        self.forPreview = forPreview
+        if forPreview:
+            self.doKeywords = True
+
         return
 
     def doAutoReplace(self):
@@ -103,10 +115,45 @@ class ToHtml(Tokenizer):
                 self.theResult += "<div class='comment'>%s</div>\n" % tText
 
             elif tType == self.T_KEYWORD and self.doKeywords:
-                self.theResult += "<pre>@%s</pre>\n" % tText
-
-        # print(self.theResult)
+                self.theResult += self._formatTags(tText)
 
         return
+
+    ##
+    #  Internal Functions
+    ##
+
+    def _formatTags(self, tText):
+
+        if not self.forPreview:
+            return "<pre>@%s</pre>\n" % tText
+
+        theLabel = {
+            "@tag"      : "Tag",
+            "@pov"      : "Point of View",
+            "@char"     : "Character(s)",
+            "@plot"     : "Plot",
+            "@time"     : "Time",
+            "@location" : "Location(s)",
+            "@object"   : "Object(s)",
+            "@custom"   : "Custom",
+        }
+
+        tText = "@"+tText
+        isValid, theBits, thePos = self.theParent.theIndex.scanThis(tText)
+        if not isValid or not theBits:
+            return ""
+
+        retText = ""
+        refTags = []
+        if theBits[0] in theLabel:
+            retText += "<span class='tags'>%s:</span>&nbsp;" % theLabel[theBits[0]]
+            for tTag in theBits[1:]:
+                refTags.append("<a href='#%s=%s'>%s</a>" % (
+                    theBits[0][1:], tTag, tTag
+                ))
+            retText += ", ".join(refTags)
+
+        return "<div>%s</div>" % retText
 
 # END Class ToHtml
