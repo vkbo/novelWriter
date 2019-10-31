@@ -13,18 +13,20 @@
 import logging
 import nw
 
-from time                import time
+from time import time
 
-from PyQt5.QtCore        import Qt, QTimer, QSizeF
-from PyQt5.QtWidgets     import qApp, QTextEdit, QAction, QMenu, QShortcut
-from PyQt5.QtGui         import QTextCursor, QTextOption, QIcon, QKeySequence, QFont, QColor, QPalette, QTextDocument
+from PyQt5.QtCore    import Qt, QTimer, QSizeF
+from PyQt5.QtWidgets import qApp, QTextEdit, QAction, QMenu, QShortcut
+from PyQt5.QtGui     import (
+    QTextCursor, QTextOption, QIcon, QKeySequence, QFont, QColor, QPalette, QTextDocument
+)
 
-from nw.project.document import NWDoc
-from nw.gui.dochighlight import GuiDocHighlighter
-from nw.gui.wordcounter  import WordCounter
-from nw.tools.spellcheck import NWSpellCheck
-from nw.constants        import nwFiles, nwUnicode
-from nw.enum             import nwDocAction, nwAlert
+from nw.project.document       import NWDoc
+from nw.gui.tools.dochighlight import GuiDocHighlighter
+from nw.gui.tools.wordcounter  import WordCounter
+from nw.tools.spellcheck       import NWSpellCheck
+from nw.constants              import nwFiles, nwUnicode
+from nw.enum                   import nwDocAction, nwAlert
 
 logger = logging.getLogger(__name__)
 
@@ -114,6 +116,7 @@ class GuiDocEditor(QTextEdit):
         self.hasSelection = False
 
         self.setDocumentChanged(False)
+        self.theParent.noticeBar.hideNote()
 
         return True
 
@@ -161,12 +164,16 @@ class GuiDocEditor(QTextEdit):
         # Initialise the syntax highlighter
         self.hLight.initHighlighter()
 
-        # If we have a document open, we should reload it in case the font changed
+        # If we have a document open, we should reload it in case the font changed, otherwise
+        # we just clear the editor entirely, which makes it read only.
         if self.theHandle is not None:
+            # We must save the current handle as clearEditor() sets it to None
             tHandle = self.theHandle
             self.clearEditor()
             self.loadText(tHandle)
             self.changeWidth()
+        else:
+            self.clearEditor()
 
         return True
 
@@ -191,8 +198,12 @@ class GuiDocEditor(QTextEdit):
         self._runCounter()
         self.wcTimer.start()
         self.setDocumentChanged(False)
-        self.setReadOnly(False)
         self.theHandle = tHandle
+
+        if self.nwDocument.docEditable:
+            self.setReadOnly(False)
+        else:
+            self.theParent.noticeBar.showNote("This document is read only.")
 
         return True
 
@@ -236,9 +247,10 @@ class GuiDocEditor(QTextEdit):
         return theText
 
     def setCursorPosition(self, thePosition):
-        theCursor = self.textCursor()
-        theCursor.setPosition(thePosition)
-        self.setTextCursor(theCursor)
+        if thePosition > 0:
+            theCursor = self.textCursor()
+            theCursor.setPosition(thePosition)
+            self.setTextCursor(theCursor)
         return True
 
     def getCursorPosition(self):

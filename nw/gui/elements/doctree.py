@@ -41,8 +41,8 @@ class GuiDocTree(QTreeWidget):
         self.theProject = theProject
 
         # Tree Settings
-        self.theMap     = None
-        self.orphRoot   = None
+        self.theMap   = None
+        self.orphRoot = None
 
         self.clearTree()
 
@@ -97,15 +97,23 @@ class GuiDocTree(QTreeWidget):
             return False
 
         if itemClass is None and pHandle is not None:
-            itemClass = self.theProject.getItem(pHandle).itemClass
+            pItem = self.theProject.getItem(pHandle)
+            if pItem is not None:
+                itemClass = pItem.itemClass
 
         if itemClass is None:
             if itemType is not None:
                 if itemType == nwItemType.FILE:
-                    self.makeAlert("Please select a location in the tree to add a document.", nwAlert.ERROR)
+                    self.makeAlert(
+                        "Please select a valid location in the tree to add a document.",
+                        nwAlert.ERROR
+                    )
                     return False
                 elif itemType == nwItemType.FOLDER:
-                    self.makeAlert("Please select a location in the tree to add a folder.", nwAlert.ERROR)
+                    self.makeAlert(
+                        "Please select a valid location in the tree to add a folder.",
+                        nwAlert.ERROR
+                    )
                     return False
             self.makeAlert("Failed to add new item.", nwAlert.BUG)
             return False
@@ -134,10 +142,14 @@ class GuiDocTree(QTreeWidget):
 
             # If we again has no home, give up
             if pHandle is None:
-                logger.error("Did not find anywhere to add the item!")
+                self.makeAlert("Did not find anywhere to add the file or folder!", nwAlert.ERROR)
                 return False
 
-            # If we're still here, add the file
+            if pHandle == self.theProject.trashRoot:
+                self.makeAlert("Cannot add new files or folders to the trash folder.", nwAlert.ERROR)
+                return False
+
+            # If we're still here, add the file or folder
             if itemType == nwItemType.FILE:
                 tHandle = self.theProject.newFile("New File", itemClass, pHandle)
             elif itemType == nwItemType.FOLDER:
