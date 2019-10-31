@@ -25,11 +25,12 @@ class NWDoc():
 
     def __init__(self, theProject, theParent):
 
-        self.mainConf   = nw.CONFIG
-        self.theProject = theProject
-        self.theParent  = theParent
-        self.theItem    = None
-        self.docHandle  = None
+        self.mainConf    = nw.CONFIG
+        self.theProject  = theProject
+        self.theParent   = theParent
+        self.theItem     = None
+        self.docHandle   = None
+        self.docEditable = False
 
         # Internal Mapping
         self.makeAlert = self.theParent.makeAlert
@@ -37,14 +38,24 @@ class NWDoc():
         return
 
     def clearDocument(self):
-        self.theItem   = None
-        self.docHandle = None
+        self.theItem     = None
+        self.docHandle   = None
+        self.docEditable = False
         return
 
     def openDocument(self, tHandle, showStatus=True):
 
         self.docHandle = tHandle
         self.theItem   = self.theProject.getItem(tHandle)
+
+        if self.theItem is None:
+            self.clearDocument()
+            return None
+
+        # By default, the document is editable. Except for files in the trash folder.
+        self.docEditable = True
+        if self.theItem.parHandle == self.theProject.trashRoot:
+            self.docEditable = False
 
         docDir, docFile = self._assemblePath(self.FILE_MN)
         logger.debug("Opening document %s" % path.join(docDir,docFile))

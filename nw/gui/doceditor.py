@@ -164,6 +164,7 @@ class GuiDocEditor(QTextEdit):
         # If we have a document open, we should reload it in case the font changed, otherwise
         # we just clear the editor entirely, which makes it read only.
         if self.theHandle is not None:
+            # We must save the current handle as clearEditor() sets it to None
             tHandle = self.theHandle
             self.clearEditor()
             self.loadText(tHandle)
@@ -194,8 +195,10 @@ class GuiDocEditor(QTextEdit):
         self._runCounter()
         self.wcTimer.start()
         self.setDocumentChanged(False)
-        self.setReadOnly(False)
         self.theHandle = tHandle
+
+        if self.nwDocument.docEditable:
+            self.setReadOnly(False)
 
         return True
 

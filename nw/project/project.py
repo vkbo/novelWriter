@@ -478,6 +478,19 @@ class NWProject():
         logger.error("No tree item with handle %s" % str(tHandle))
         return None
 
+    def getRootItem(self, tHandle):
+        """Iterate upwards in the tree until we find the item with parent None, the root item.
+        We do this with a for loop with a maximum depth of 200 to make infinite loops impossible.
+        """
+        tItem = self.getItem(tHandle)
+        if tItem is not None:
+            for i in range(200):
+                tHandle = tItem.parHandle
+                tItem   = self.getItem(tHandle)
+                if tItem is None:
+                    return tHandle
+        return None
+
     def getProjectItems(self):
         """This function is called from the tree view when building the tree. Each item in the
         project is returned in the order saved in the project file, but first it checks that it has
