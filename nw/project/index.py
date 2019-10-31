@@ -8,18 +8,6 @@
  File History:
  Created: 2019-05-27 [0.1.4]
 
-Structure:
-
-    We need to scan all files to get the novel layout. This is done by heading depth. Each heading
-is recorded in a sorted list. Each such heading again can have a set of meta tags.
-    In the other class root folders, each file can have a tag which the meta tags in the novel files
-point to. These tags should be stored in a dictionary where the tag is the key pointing to a single
-file handle. That way we can do lookups on both keys and values.
-    The timeline view then consists of novel header elements in the horizontal header, possibly just
-truncated to a Ch or Sc abbreviation, possibly with a number. This can be extracted from the item
-layout. The vertical header column is then whatever notes we want to compare against, and the links
-from the novel files are dots on the row.
-
 """
 
 import logging
@@ -85,6 +73,8 @@ class NWIndex():
     ##
 
     def loadIndex(self):
+        """Load index from last session from the project meta folder.
+        """
 
         theData   = {}
         indexFile = path.join(self.theProject.projMeta, nwFiles.INDEX_FILE)
@@ -111,6 +101,8 @@ class NWIndex():
         return False
 
     def saveIndex(self):
+        """Save the current index as a json file in the project meta folder.
+        """
 
         indexFile = path.join(self.theProject.projMeta, nwFiles.INDEX_FILE)
         logger.debug("Saving index file")
@@ -137,6 +129,10 @@ class NWIndex():
     ##
 
     def scanText(self, tHandle, theText):
+        """Scan a piece of text associated with a handle. This will update the indices accordingly.
+        This function takes the handle and text as separate inputs as we want to primarily scan the
+        files before we save them, unless we're rebuilding the index.
+        """
 
         theItem = self.theProject.getItem(tHandle)
         if theItem is None: return False
@@ -183,6 +179,8 @@ class NWIndex():
         return True
 
     def indexTitle(self, tHandle, aLine, nLine, itemLayout):
+        """Save information about the title and its location in the file.
+        """
 
         if aLine.startswith("# "):
             hDepth = 1
@@ -205,6 +203,8 @@ class NWIndex():
         return True
 
     def indexNoteRef(self, tHandle, aLine, nLine, nTitle):
+        """Validate and save the information about a reference to a tag in another file.
+        """
 
         isValid, theBits, thePos = self.scanThis(aLine)
         if not isValid or len(theBits) == 0:
@@ -218,6 +218,8 @@ class NWIndex():
         return True
 
     def indexTag(self, tHandle, aLine, nLine, itemClass):
+        """Validate and save the information from a tag.
+        """
 
         isValid, theBits, thePos = self.scanThis(aLine)
         if not isValid or len(theBits) != 2:
@@ -233,6 +235,9 @@ class NWIndex():
     ##
 
     def scanThis(self, aLine):
+        """Scan a line starting with @ to check that it's valid and to split up its elements into
+        an array and an array of positions. The latter is needed for the syntax highlighter.
+        """
 
         theBits = []
         thePos  = []
@@ -270,6 +275,9 @@ class NWIndex():
         return True, theBits, thePos
 
     def checkThese(self, theBits, tItem):
+        """Check the tags against the index to see if they are valid tags. This is needed for syntax
+        highlighting.
+        """
 
         nBits  = len(theBits)
         isGood = [False]*nBits
@@ -307,6 +315,8 @@ class NWIndex():
     ##
 
     def buildNovelList(self):
+        """Build a list of the content of the novel.
+        """
 
         self.novelList  = []
         self.novelOrder = []
@@ -320,6 +330,8 @@ class NWIndex():
         return True
 
     def buildReferenceList(self, theHandle):
+        """Build a list of files referring back to our file, specified by theHandle.
+        """
 
         theRefs = {}
 
@@ -342,6 +354,8 @@ class NWIndex():
         return theRefs
 
     def getTagSource(self, theTag):
+        """Return the source location of a given tag.
+        """
         if theTag in self.tagIndex:
             theRef = self.tagIndex[theTag]
             if len(theRef) == 3:
@@ -349,6 +363,9 @@ class NWIndex():
         return None, 0
 
     def buildTagNovelMap(self, theTags, theFilters=None):
+        """Build a two-dimensional map of all titles of the novel and which tags they link to from
+        the various meta tags. This map is used to display the timeline view.
+        """
 
         tagMap   = {}
         tagClass = {}
