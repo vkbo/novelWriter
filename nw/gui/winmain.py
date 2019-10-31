@@ -14,36 +14,37 @@ import logging
 import time
 import nw
 
-from os                   import path
-from PyQt5.QtCore         import Qt, QTimer
-from PyQt5.QtGui          import QIcon, QPixmap, QColor
-from PyQt5.QtWidgets      import (
+from os import path
+
+from PyQt5.QtCore    import Qt, QTimer
+from PyQt5.QtGui     import QIcon, QPixmap, QColor
+from PyQt5.QtWidgets import (
     qApp, QWidget, QMainWindow, QVBoxLayout, QFrame, QSplitter, QFileDialog,
     QShortcut, QMessageBox, QProgressDialog, QDialog
 )
 
-from nw.gui.doctree       import GuiDocTree
-from nw.gui.doceditor     import GuiDocEditor
-from nw.gui.docviewer     import GuiDocViewer
-from nw.gui.docdetails    import GuiDocDetails
-from nw.gui.searchbar     import GuiSearchBar
-from nw.gui.mainmenu      import GuiMainMenu
-from nw.gui.configeditor  import GuiConfigEditor
-from nw.gui.projecteditor import GuiProjectEditor
-from nw.gui.export        import GuiExport
-from nw.gui.itemeditor    import GuiItemEditor
-from nw.gui.statusbar     import GuiMainStatus
-from nw.gui.timelineview  import GuiTimeLineView
-from nw.gui.sessionlog    import GuiSessionLogView
-from nw.project.project   import NWProject
-from nw.project.document  import NWDoc
-from nw.project.item      import NWItem
-from nw.project.index     import NWIndex
-from nw.project.backup    import NWBackup
-from nw.tools.wordcount   import countWords
-from nw.theme             import Theme
-from nw.enum              import nwItemType, nwAlert
-from nw.constants         import nwFiles
+from nw.gui.mainmenu              import GuiMainMenu
+from nw.gui.statusbar             import GuiMainStatus
+from nw.gui.elements.doctree      import GuiDocTree
+from nw.gui.elements.doceditor    import GuiDocEditor
+from nw.gui.elements.docviewer    import GuiDocViewer
+from nw.gui.elements.docdetails   import GuiDocDetails
+from nw.gui.elements.searchbar    import GuiSearchBar
+from nw.gui.dialogs.configeditor  import GuiConfigEditor
+from nw.gui.dialogs.projecteditor import GuiProjectEditor
+from nw.gui.dialogs.export        import GuiExport
+from nw.gui.dialogs.itemeditor    import GuiItemEditor
+from nw.gui.dialogs.timelineview  import GuiTimeLineView
+from nw.gui.dialogs.sessionlog    import GuiSessionLogView
+from nw.project.project           import NWProject
+from nw.project.document          import NWDoc
+from nw.project.item              import NWItem
+from nw.project.index             import NWIndex
+from nw.project.backup            import NWBackup
+from nw.tools.wordcount           import countWords
+from nw.theme                     import Theme
+from nw.enum                      import nwItemType, nwAlert
+from nw.constants                 import nwFiles
 
 logger = logging.getLogger(__name__)
 

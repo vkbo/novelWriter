@@ -13,18 +13,20 @@
 import logging
 import nw
 
-from time                import time
+from time import time
 
-from PyQt5.QtCore        import Qt, QTimer, QSizeF
-from PyQt5.QtWidgets     import qApp, QTextEdit, QAction, QMenu, QShortcut
-from PyQt5.QtGui         import QTextCursor, QTextOption, QIcon, QKeySequence, QFont, QColor, QPalette, QTextDocument
+from PyQt5.QtCore    import Qt, QTimer, QSizeF
+from PyQt5.QtWidgets import qApp, QTextEdit, QAction, QMenu, QShortcut
+from PyQt5.QtGui     import (
+    QTextCursor, QTextOption, QIcon, QKeySequence, QFont, QColor, QPalette, QTextDocument
+)
 
-from nw.project.document import NWDoc
-from nw.gui.dochighlight import GuiDocHighlighter
-from nw.gui.wordcounter  import WordCounter
-from nw.tools.spellcheck import NWSpellCheck
-from nw.constants        import nwFiles, nwUnicode
-from nw.enum             import nwDocAction, nwAlert
+from nw.project.document       import NWDoc
+from nw.gui.tools.dochighlight import GuiDocHighlighter
+from nw.gui.tools.wordcounter  import WordCounter
+from nw.tools.spellcheck       import NWSpellCheck
+from nw.constants              import nwFiles, nwUnicode
+from nw.enum                   import nwDocAction, nwAlert
 
 logger = logging.getLogger(__name__)
 
