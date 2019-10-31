@@ -144,7 +144,7 @@ def main(sysArgs=None):
             sys.exit()
         elif inOpt in ("-d", "--debug"):
             debugLevel = logging.DEBUG
-            debugStr   = "{name:>22}:{lineno:<4d}  {levelname:8}  {message:}"
+            debugStr   = "{name:>30}:{lineno:<4d}  {levelname:8}  {message:}"
         elif inOpt in ("-l","--logfile"):
             logFile = inArg
             toFile  = True
