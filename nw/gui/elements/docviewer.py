@@ -113,6 +113,8 @@ class GuiDocViewer(QTextBrowser):
         self.theHandle = tHandle
         self.theProject.setLastViewed(tHandle)
 
+        self.theParent.docMeta.refreshReferences(tHandle)
+
         return True
 
     def loadFromTag(self, theTag):
