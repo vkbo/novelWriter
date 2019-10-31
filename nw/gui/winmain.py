@@ -30,6 +30,7 @@ from nw.gui.elements.doceditor    import GuiDocEditor
 from nw.gui.elements.docviewer    import GuiDocViewer
 from nw.gui.elements.docdetails   import GuiDocDetails
 from nw.gui.elements.searchbar    import GuiSearchBar
+from nw.gui.elements.noticebar    import GuiNoticeBar
 from nw.gui.dialogs.configeditor  import GuiConfigEditor
 from nw.gui.dialogs.projecteditor import GuiProjectEditor
 from nw.gui.dialogs.export        import GuiExport
@@ -72,6 +73,7 @@ class GuiMain(QMainWindow):
 
         # Main GUI Elements
         self.statusBar  = GuiMainStatus(self)
+        self.noticeBar  = GuiNoticeBar(self)
         self.docEditor  = GuiDocEditor(self, self.theProject)
         self.docViewer  = GuiDocViewer(self, self.theProject)
         self.docDetails = GuiDocDetails(self, self.theProject)
@@ -86,6 +88,7 @@ class GuiMain(QMainWindow):
         # Assemble Main Window
         self.treePane = QFrame()
         self.treeBox  = QVBoxLayout()
+        self.treeBox.setContentsMargins(0,0,0,0)
         self.treeBox.addWidget(self.treeView)
         self.treeBox.addWidget(self.docDetails)
         self.treePane.setLayout(self.treeBox)
@@ -94,6 +97,7 @@ class GuiMain(QMainWindow):
         self.docView = QVBoxLayout()
         self.docView.setContentsMargins(0,0,0,0)
         self.docView.addWidget(self.searchBar)
+        self.docView.addWidget(self.noticeBar)
         self.docView.addWidget(self.docEditor)
         self.docPane.setLayout(self.docView)
 
@@ -103,6 +107,7 @@ class GuiMain(QMainWindow):
         self.splitView.splitterMoved.connect(self._splitViewMove)
 
         self.splitMain = QSplitter(Qt.Horizontal)
+        self.splitMain.setContentsMargins(4,4,4,4)
         self.splitMain.addWidget(self.treePane)
         self.splitMain.addWidget(self.splitView)
         self.splitMain.setSizes(self.mainConf.mainPanePos)

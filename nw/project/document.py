@@ -86,7 +86,7 @@ class NWDoc():
 
     def saveDocument(self, docText):
 
-        if self.docHandle is None:
+        if self.docHandle is None or not self.docEditable:
             return False
 
         docDir, docFile = self._assemblePath(self.FILE_MN)

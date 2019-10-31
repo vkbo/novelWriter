@@ -116,6 +116,7 @@ class GuiDocEditor(QTextEdit):
         self.hasSelection = False
 
         self.setDocumentChanged(False)
+        self.theParent.noticeBar.hideNote()
 
         return True
 
@@ -201,6 +202,8 @@ class GuiDocEditor(QTextEdit):
 
         if self.nwDocument.docEditable:
             self.setReadOnly(False)
+        else:
+            self.theParent.noticeBar.showNote("This document is read only.")
 
         return True
 
@@ -244,9 +247,10 @@ class GuiDocEditor(QTextEdit):
         return theText
 
     def setCursorPosition(self, thePosition):
-        theCursor = self.textCursor()
-        theCursor.setPosition(thePosition)
-        self.setTextCursor(theCursor)
+        if thePosition > 0:
+            theCursor = self.textCursor()
+            theCursor.setPosition(thePosition)
+            self.setTextCursor(theCursor)
         return True
 
     def getCursorPosition(self):

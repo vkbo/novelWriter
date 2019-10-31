@@ -26,7 +26,7 @@ class GuiSearchBar(QFrame):
     def __init__(self, theParent):
         QFrame.__init__(self, theParent)
 
-        logger.debug("Initialising GuiSearchBar ...")
+        logger.debug("Initialising SearchBar ...")
 
         self.mainConf   = nw.CONFIG
         self.theParent  = theParent
@@ -73,7 +73,7 @@ class GuiSearchBar(QFrame):
 
         self._replaceVisible(False)
 
-        logger.debug("GuiSearchBar initialisation complete")
+        logger.debug("SearchBar initialisation complete")
 
         return
 
