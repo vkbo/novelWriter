@@ -213,7 +213,7 @@ class GuiExport(QDialog):
 
         # If we've reached this point, we're also running Pandoc
 
-        if self._callPandoc(tFormat, pFormat):
+        if self._callPandoc(saveTo, tFormat, pFormat):
             self.exportProgress.setValue(nItems)
             self.exportStatus.setText("Pandoc conversion complete")
             logger.verbose("Pandoc conversion complete")
@@ -225,7 +225,7 @@ class GuiExport(QDialog):
 
         return True
 
-    def _callPandoc(self, inFmt, outFmt):
+    def _callPandoc(self, inFile, inFmt, outFmt):
 
         pFmt = {
             GuiExportPandoc.FMT_ODT   : "odt",
@@ -246,7 +246,6 @@ class GuiExport(QDialog):
             ), nwAlert.ERROR)
             return False
 
-        inFile   = self.tabMain.exportPath.text()
         outFile  = path.splitext(inFile)[0]+GuiExportPandoc.FMT_EXT[outFmt]
         fileName = path.basename(outFile)
 
