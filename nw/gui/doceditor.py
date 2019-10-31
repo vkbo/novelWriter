@@ -161,12 +161,15 @@ class GuiDocEditor(QTextEdit):
         # Initialise the syntax highlighter
         self.hLight.initHighlighter()
 
-        # If we have a document open, we should reload it in case the font changed
+        # If we have a document open, we should reload it in case the font changed, otherwise
+        # we just clear the editor entirely, which makes it read only.
         if self.theHandle is not None:
             tHandle = self.theHandle
             self.clearEditor()
             self.loadText(tHandle)
             self.changeWidth()
+        else:
+            self.clearEditor()
 
         return True
 
