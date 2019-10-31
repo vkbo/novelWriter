@@ -13,8 +13,9 @@
 import logging
 import nw
 
+from PyQt5.QtCore    import Qt
 from PyQt5.QtGui     import QFont
-from PyQt5.QtWidgets import QWidget, QHBoxLayout, QLabel, QGroupBox, QComboBox
+from PyQt5.QtWidgets import QWidget, QHBoxLayout, QLabel, QGroupBox
 
 from nw.constants    import nwLabels
 
@@ -39,6 +40,9 @@ class GuiDocViewDetails(QWidget):
         self.refTags.setLayout(self.refTagsForm)
 
         self.refList = QLabel("None")
+        self.refList.setWordWrap(True)
+        self.refList.setAlignment(Qt.AlignTop)
+        self.refList.setScaledContents(True)
         self.refList.linkActivated.connect(self._linkClicked)
 
         self.refTagsForm.addWidget(self.refList)
@@ -66,6 +70,7 @@ class GuiDocViewDetails(QWidget):
                 theList.append("<a href='#tag=%s'>%s</a>" % (tHandle,tItem.itemName))
 
         self.refList.setText(", ".join(theList))
+        self.refList.setMaximumHeight(300)
 
         return
 
