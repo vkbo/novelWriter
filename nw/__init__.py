@@ -67,9 +67,12 @@ logger = logging.getLogger(__name__)
 # Load the main config as a global object
 CONFIG = Config()
 
-def main(sysArgs):
+def main(sysArgs=None):
     """Parses command line, sets up logging, and launches main GUI.
     """
+
+    if sysArgs is None:
+        sysArgs = sys.argv[1:]
 
     # Valid Input Options
     shortOpt = "hdDqtl:v"
