@@ -31,6 +31,7 @@ from nw.gui.elements.docviewer    import GuiDocViewer
 from nw.gui.elements.docdetails   import GuiDocDetails
 from nw.gui.elements.searchbar    import GuiSearchBar
 from nw.gui.elements.noticebar    import GuiNoticeBar
+from nw.gui.elements.viewdetails  import GuiDocViewDetails
 from nw.gui.dialogs.configeditor  import GuiConfigEditor
 from nw.gui.dialogs.projecteditor import GuiProjectEditor
 from nw.gui.dialogs.export        import GuiExport
@@ -72,14 +73,15 @@ class GuiMain(QMainWindow):
         self.setWindowIcon(QIcon(path.join(self.mainConf.appIcon)))
 
         # Main GUI Elements
-        self.statusBar  = GuiMainStatus(self)
-        self.noticeBar  = GuiNoticeBar(self)
-        self.docEditor  = GuiDocEditor(self, self.theProject)
-        self.docViewer  = GuiDocViewer(self, self.theProject)
-        self.docDetails = GuiDocDetails(self, self.theProject)
-        self.searchBar  = GuiSearchBar(self)
-        self.treeView   = GuiDocTree(self, self.theProject)
-        self.mainMenu   = GuiMainMenu(self, self.theProject)
+        self.statusBar = GuiMainStatus(self)
+        self.noticeBar = GuiNoticeBar(self)
+        self.docEditor = GuiDocEditor(self, self.theProject)
+        self.docViewer = GuiDocViewer(self, self.theProject)
+        self.docMeta   = GuiDocViewDetails(self, self.theProject)
+        self.searchBar = GuiSearchBar(self)
+        self.treeMeta  = GuiDocDetails(self, self.theProject)
+        self.treeView  = GuiDocTree(self, self.theProject)
+        self.mainMenu  = GuiMainMenu(self, self.theProject)
 
         # Minor Gui Elements
         self.statusIcons = []
@@ -90,20 +92,27 @@ class GuiMain(QMainWindow):
         self.treeBox  = QVBoxLayout()
         self.treeBox.setContentsMargins(0,0,0,0)
         self.treeBox.addWidget(self.treeView)
-        self.treeBox.addWidget(self.docDetails)
+        self.treeBox.addWidget(self.treeMeta)
         self.treePane.setLayout(self.treeBox)
 
-        self.docPane = QFrame()
+        self.editPane = QFrame()
+        self.docEdit = QVBoxLayout()
+        self.docEdit.setContentsMargins(0,0,0,0)
+        self.docEdit.addWidget(self.searchBar)
+        self.docEdit.addWidget(self.noticeBar)
+        self.docEdit.addWidget(self.docEditor)
+        self.editPane.setLayout(self.docEdit)
+
+        self.viewPane = QFrame()
         self.docView = QVBoxLayout()
         self.docView.setContentsMargins(0,0,0,0)
-        self.docView.addWidget(self.searchBar)
-        self.docView.addWidget(self.noticeBar)
-        self.docView.addWidget(self.docEditor)
-        self.docPane.setLayout(self.docView)
+        self.docView.addWidget(self.docViewer)
+        self.docView.addWidget(self.docMeta)
+        self.viewPane.setLayout(self.docView)
 
         self.splitView = QSplitter(Qt.Horizontal)
-        self.splitView.addWidget(self.docPane)
-        self.splitView.addWidget(self.docViewer)
+        self.splitView.addWidget(self.editPane)
+        self.splitView.addWidget(self.viewPane)
         self.splitView.splitterMoved.connect(self._splitViewMove)
 
         self.splitMain = QSplitter(Qt.Horizontal)
@@ -117,15 +126,15 @@ class GuiMain(QMainWindow):
 
         self.idxTree   = self.splitMain.indexOf(self.treePane)
         self.idxMain   = self.splitMain.indexOf(self.splitView)
-        self.idxEditor = self.splitView.indexOf(self.docPane)
-        self.idxViewer = self.splitView.indexOf(self.docViewer)
+        self.idxEditor = self.splitView.indexOf(self.editPane)
+        self.idxViewer = self.splitView.indexOf(self.viewPane)
 
         self.splitMain.setCollapsible(self.idxTree,   False)
         self.splitMain.setCollapsible(self.idxMain,   False)
         self.splitView.setCollapsible(self.idxEditor, False)
         self.splitView.setCollapsible(self.idxViewer, True)
 
-        self.docViewer.setVisible(False)
+        self.viewPane.setVisible(False)
         self.searchBar.setVisible(False)
 
         # Build The Tree View
@@ -365,9 +374,9 @@ class GuiMain(QMainWindow):
             logger.debug("No document selected, giving up")
             return False
 
-        if self.docViewer.loadText(tHandle) and not self.docViewer.isVisible():
+        if self.docViewer.loadText(tHandle) and not self.viewPane.isVisible():
             bPos = self.splitMain.sizes()
-            self.docViewer.setVisible(True)
+            self.viewPane.setVisible(True)
             vPos    = [0,0]
             vPos[0] = int(bPos[1]/2)
             vPos[1] = bPos[1]-vPos[0]
@@ -669,11 +678,11 @@ class GuiMain(QMainWindow):
         self.docViewer.clearViewer()
         self.theProject.setLastViewed(None)
         bPos = self.splitMain.sizes()
-        self.docViewer.setVisible(False)
+        self.viewPane.setVisible(False)
         vPos = [bPos[1],0]
         self.splitView.setSizes(vPos)
         self.docEditor.changeWidth()
-        return not self.docViewer.isVisible()
+        return not self.viewPane.isVisible()
 
     ##
     #  Internal Functions
@@ -739,7 +748,7 @@ class GuiMain(QMainWindow):
     def _treeSingleClick(self):
         sHandle = self.treeView.getSelectedHandle()
         if sHandle is not None:
-            self.docDetails.buildViewBox(sHandle)
+            self.treeMeta.buildViewBox(sHandle)
         return
 
     def _treeDoubleClick(self, tItem, colNo):

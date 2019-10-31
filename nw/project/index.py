@@ -319,6 +319,35 @@ class NWIndex():
 
         return True
 
+    def buildReferenceList(self, theHandle):
+
+        theRefs = {}
+
+        tItem = self.theProject.getItem(theHandle)
+        if theHandle is None:
+            return theRefs
+
+        theTag = None
+        for tTag in self.tagIndex:
+            if theHandle == self.tagIndex[tTag][1]:
+                theTag = tTag
+                break
+
+        if theTag is not None:
+            for tHandle in self.refIndex:
+                for nLine, tKey, tTag, nTitle in self.refIndex[tHandle]:
+                    if tTag == theTag:
+                        theRefs[tHandle] = nLine
+
+        return theRefs
+
+    def getTagSource(self, theTag):
+        if theTag in self.tagIndex:
+            theRef = self.tagIndex[theTag]
+            if len(theRef) == 3:
+                return theRef[1], theRef[0]
+        return None, 0
+
     def buildTagNovelMap(self, theTags, theFilters=None):
 
         tagMap   = {}
