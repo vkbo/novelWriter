@@ -17,7 +17,7 @@ from os              import path
 from PyQt5.QtWidgets import QMessageBox
 
 from nw.convert.text.totext import ToText
-from nw.enum                import nwAlert, nwItemLayout
+from nw.enum                import nwAlert, nwItemType, nwItemLayout, nwItemClass
 
 logger = logging.getLogger(__name__)
 
@@ -120,17 +120,8 @@ class TextFile():
     def addText(self, tHandle):
 
         logger.verbose("Parsing content of item '%s'" % tHandle)
-
-        theItem = self.theProject.getItem(tHandle)
-        isNone  = theItem.itemLayout == nwItemLayout.NO_LAYOUT
-        isNote  = theItem.itemLayout == nwItemLayout.NOTE
-        isNovel = not isNone and not isNote
-
-        if isNone:
-            return False
-        if isNote and not self.expNotes:
-            return False
-        if isNovel and not self.expNovel:
+        
+        if not self.checkInclude(tHandle):
             return False
 
         self.theConv.setText(tHandle)
@@ -142,6 +133,33 @@ class TextFile():
 
         if self.theConv.theResult is not None and self.outFile is not None:
             self.outFile.write(self.theConv.theResult)
+
+        return True
+
+    def checkInclude(self, tHandle):
+        """This function checks whether a file should be included in the export or not. For standard
+        note and novel files, this is controlled by the options selected by the user. For other
+        files classified as non-exportable, a few checks must be made, and the following are not:
+        * Items that are not actual files.
+        * Items that have been orphaned which are tagged as NO_LAYOUT and NO_CLASS.
+        * Items that appear in the TRASH folder
+        """
+
+        theItem = self.theProject.getItem(tHandle)
+        isNone  = theItem.itemType != nwItemType.FILE
+        isNone |= theItem.itemLayout == nwItemLayout.NO_LAYOUT
+        isNone |= theItem.itemClass == nwItemClass.NO_CLASS
+        isNone |= theItem.itemClass == nwItemClass.TRASH
+        isNone |= theItem.parHandle == self.theProject.trashRoot
+        isNote  = theItem.itemLayout == nwItemLayout.NOTE
+        isNovel = not isNone and not isNote
+
+        if isNone:
+            return False
+        if isNote and not self.expNotes:
+            return False
+        if isNovel and not self.expNovel:
+            return False
 
         return True
 

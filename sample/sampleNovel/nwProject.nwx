@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='utf-8'?>
-<novelWriterXML appVersion="0.3.2" fileVersion="1.0" timeStamp="2019-10-29 19:06:30">
+<novelWriterXML appVersion="0.3.2" fileVersion="1.0" timeStamp="2019-10-31 11:33:41">
   <project>
     <name>Sample Project</name>
     <title>Sample Project</title>
@@ -9,9 +9,9 @@
   </project>
   <settings>
     <spellCheck>True</spellCheck>
-    <lastEdited>636b6aa9b697b</lastEdited>
+    <lastEdited>b8136a5a774a0</lastEdited>
     <lastViewed>ba8a28a246524</lastViewed>
-    <lastWordCount>873</lastWordCount>
+    <lastWordCount>879</lastWordCount>
     <autoReplace>
       <A>B</A>
       <B>E</B>
@@ -33,7 +33,7 @@
       <entry blue="175" green="0" red="117">Main</entry>
     </importance>
   </settings>
-  <content count="19">
+  <content count="20">
     <item handle="7031beac91f75" order="0" parent="None">
       <name>Novel</name>
       <type>ROOT</type>
@@ -231,6 +231,18 @@
       <wordCount>3</wordCount>
       <paraCount>0</paraCount>
       <cursorPos>1</cursorPos>
+    </item>
+    <item handle="b8136a5a774a0" order="1" parent="98acd8c76c93a">
+      <name>Delete Me!</name>
+      <type>FILE</type>
+      <class>NOVEL</class>
+      <status>New</status>
+      <expanded>False</expanded>
+      <layout>SCENE</layout>
+      <charCount>30</charCount>
+      <wordCount>6</wordCount>
+      <paraCount>1</paraCount>
+      <cursorPos>36</cursorPos>
     </item>
   </content>
 </novelWriterXML>
