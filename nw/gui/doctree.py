@@ -134,10 +134,18 @@ class GuiDocTree(QTreeWidget):
 
             # If we again has no home, give up
             if pHandle is None:
-                logger.error("Did not find anywhere to add the item!")
+                self.makeAlert("Did not find anywhere to add the file or folder!", nwAlert.ERROR)
                 return False
 
-            # If we're still here, add the file
+            if pHandle == self.theProject.trashRoot:
+                self.makeAlert("Cannot add new files or folders to the trash folder.", nwAlert.ERROR)
+                return False
+
+            if pHandle == self.orphRoot:
+                self.makeAlert("Cannot add new files or folders to the orphaned folder.", nwAlert.ERROR)
+                return False
+
+            # If we're still here, add the file or folder
             if itemType == nwItemType.FILE:
                 tHandle = self.theProject.newFile("New File", itemClass, pHandle)
             elif itemType == nwItemType.FOLDER:
