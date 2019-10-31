@@ -4,6 +4,7 @@ dist/
 build/
 deploy/
 *.spec
+*.egg-info
 
 # Documentation
 docs/build/

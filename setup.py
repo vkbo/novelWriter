@@ -1,7 +1,45 @@
 #!/usr/bin/env python3
-from distutils.core import setup
-setup(
-    name="novelwriter",
-    version="0.3.2",
-    py_modules=["nw"],
+import setuptools
+
+with open("README.md", "r") as inFile:
+    long_description = inFile.read()
+
+setuptools.setup(
+    name = "novelWriter",
+    version = "0.3.2",
+    author = "Veronica Berglyd Olsen",
+    author_email = "code@vkbo.net",
+    description = "A markdown-like document editor for writing novels",
+    long_description = long_description,
+    long_description_content_type = "text/markdown",
+    license = "GNU General Public License v3",
+    url = "https://github.com/vkbo/novelWriter",
+    scripts = ["novelWriter"],
+    packages = setuptools.find_packages(exclude=["docs","tests","sample"]),
+    include_package_data = True,
+    package_data = {"": ["*.conf"]},
+    project_urls = {
+        "Bug Tracker": "https://github.com/vkbo/novelWriter/issues",
+        "Documentation": "https://novelwriter.readthedocs.io/",
+        "Source Code": "https://github.com/vkbo/novelWriter",
+    },
+    classifiers = [
+        "Programming Language :: Python :: 3",
+        "License :: OSI Approved :: GNU General Public License v3 (GPLv3)",
+        "Development Status :: 3 - Alpha",
+        "Operating System :: OS Independent",
+        "Intended Audience :: End Users/Desktop",
+        "Natural Language :: English",
+        "Topic :: Text Editors",
+    ],
+    python_requires = ">=3.5",
+    install_requires = [
+        "pyqt5",
+        "appdirs",
+        "lxml",
+        "pyenchant",
+        "pycountry",
+        "latexcodec",
+        "pypandoc",
+    ],
 )
