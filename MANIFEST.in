@@ -1,0 +1,3 @@
+include LICENSE.md
+recursive-include nw/graphics *
+recursive-include nw/themes *
