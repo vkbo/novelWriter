@@ -15,7 +15,7 @@ import nw
 
 from PyQt5.QtCore    import Qt
 from PyQt5.QtGui     import QFont
-from PyQt5.QtWidgets import QWidget, QHBoxLayout, QLabel, QGroupBox
+from PyQt5.QtWidgets import QWidget, QHBoxLayout, QLabel, QGroupBox, QScrollArea, QFrame
 
 from nw.constants    import nwLabels
 
@@ -45,7 +45,14 @@ class GuiDocViewDetails(QWidget):
         self.refList.setScaledContents(True)
         self.refList.linkActivated.connect(self._linkClicked)
 
-        self.refTagsForm.addWidget(self.refList)
+        self.scrollBox = QScrollArea()
+        self.scrollBox.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
+        self.scrollBox.setFrameStyle(QFrame.NoFrame)
+        self.scrollBox.setWidgetResizable(True)
+        self.scrollBox.setMaximumHeight(300)
+        self.scrollBox.setWidget(self.refList)
+
+        self.refTagsForm.addWidget(self.scrollBox)
         self.outerBox.addWidget(self.refTags)
         self.setLayout(self.outerBox)
         self.setContentsMargins(0,0,0,0)
@@ -70,7 +77,7 @@ class GuiDocViewDetails(QWidget):
                 theList.append("<a href='#tag=%s'>%s</a>" % (tHandle,tItem.itemName))
 
         self.refList.setText(", ".join(theList))
-        self.refList.setMaximumHeight(300)
+        self.refList.adjustSize()
 
         return
 
