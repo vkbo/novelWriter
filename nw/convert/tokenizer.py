@@ -285,7 +285,7 @@ class Tokenizer():
                 tFormat = tToken[2]
                 self.theTokens[n] = (tType,tText,tFormat,self.A_CENTRE)
 
-            self.theTokens[n] = (self.T_PBREAK,"",None,self.A_LEFT)
+            self.theTokens.append((self.T_PBREAK,"",None,self.A_LEFT))
 
         return
 
