@@ -30,6 +30,7 @@ class ToText(Tokenizer):
         Tokenizer.doAutoReplace(self)
 
         repDict = {
+            "\t" : "    ",
             nwUnicode.U_NBSP : " ",
         }
         xRep = re.compile("|".join([re.escape(k) for k in repDict.keys()]), flags=re.DOTALL)
@@ -92,7 +93,7 @@ class ToText(Tokenizer):
             # indicating a new paragraph.
             if tType == self.T_EMPTY:
                 if len(thisPar) > 0:
-                    tTemp = " ".join(thisPar)
+                    tTemp = "\n".join(thisPar)
                     self.theResult += "%s\n\n" % tTemp.rstrip()
                 thisPar = []
 

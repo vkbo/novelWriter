@@ -41,9 +41,10 @@ class ToHtml(Tokenizer):
         Tokenizer.doAutoReplace(self)
 
         repDict = {
-            "<" : "&lt;",
-            ">" : "&gt;",
-            "&" : "&amp;",
+            "<"  : "&lt;",
+            ">"  : "&gt;",
+            "&"  : "&amp;",
+            "\t" : "&emsp;",
             nwUnicode.U_ENDASH : nwUnicode.H_ENDASH,
             nwUnicode.U_EMDASH : nwUnicode.H_EMDASH,
             nwUnicode.U_HELLIP : nwUnicode.H_HELLIP,

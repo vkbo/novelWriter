@@ -62,14 +62,14 @@ class Tokenizer():
         self.theTokens   = None
         self.theResult   = None
 
-        self.wordWrap    = 80
+        self.wordWrap    = 0
         self.doComments  = False
         self.doKeywords  = False
 
         self.fmtTitle    = "%title%"
-        self.fmtChapter  = "Chapter %numword%: %title%"
+        self.fmtChapter  = "%title%"
         self.fmtUnNum    = "%title%"
-        self.fmtScene    = "* * *"
+        self.fmtScene    = "%title%"
         self.fmtSection  = "%title%"
 
         self.hideScene   = False
@@ -224,7 +224,7 @@ class Tokenizer():
         isScene = self.theItem.itemLayout == nwItemLayout.SCENE
         isNote  = self.theItem.itemLayout == nwItemLayout.NOTE
 
-        # No special header formatting for notes and no layout files
+        # No special header formatting for notes and no-layout files
         if isNone: return
         if isNote: return
 
