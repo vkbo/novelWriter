@@ -13,9 +13,12 @@
 import logging
 import nw
 
-from PyQt5.QtCore    import Qt
+from PyQt5.QtCore    import Qt, QSize
 from PyQt5.QtGui     import QFont
-from PyQt5.QtWidgets import QWidget, QHBoxLayout, QLabel, QGroupBox, QScrollArea, QFrame
+from PyQt5.QtWidgets import (
+    QWidget, QHBoxLayout, QVBoxLayout, QLabel, QGroupBox, QScrollArea, QFrame, QToolButton,
+    QSizePolicy, QCheckBox, QGridLayout
+)
 
 from nw.constants    import nwLabels
 
@@ -31,13 +34,27 @@ class GuiDocViewDetails(QWidget):
         self.debugGUI   = self.mainConf.debugGUI
         self.theParent  = theParent
         self.theProject = theProject
+        self.currHandle = None
 
-        self.outerBox   = QHBoxLayout(self)
-        self.outerBox.setContentsMargins(4,4,4,4)
+        self.outerBox = QGridLayout(self)
+        self.outerBox.setContentsMargins(0,0,0,0)
+        self.outerBox.setHorizontalSpacing(0)
+        self.outerBox.setVerticalSpacing(4)
 
-        self.refTags     = QGroupBox("Referenced From", self)
-        self.refTagsForm = QHBoxLayout(self.refTags)
-        self.refTags.setLayout(self.refTagsForm)
+        self.refLabel = QLabel("Referenced By", self)
+
+        self.showHide = QToolButton()
+        self.showHide.setStyleSheet("QToolButton { border: none; }")
+        self.showHide.setToolButtonStyle(Qt.ToolButtonIconOnly)
+        self.showHide.setArrowType(Qt.DownArrow)
+        self.showHide.setCheckable(True)
+        self.showHide.setChecked(True)
+        self.showHide.setIconSize(QSize(16,16))
+        self.showHide.toggled.connect(self._doShowHide)
+
+        self.isSticky = QCheckBox("Sticky")
+        self.isSticky.setChecked(False)
+        self.isSticky.toggled.connect(self._doSticky)
 
         self.refList = QLabel("None")
         self.refList.setWordWrap(True)
@@ -50,10 +67,15 @@ class GuiDocViewDetails(QWidget):
         self.scrollBox.setFrameStyle(QFrame.NoFrame)
         self.scrollBox.setWidgetResizable(True)
         self.scrollBox.setMaximumHeight(300)
+        self.scrollBox.setMinimumHeight(60)
         self.scrollBox.setWidget(self.refList)
 
-        self.refTagsForm.addWidget(self.scrollBox)
-        self.outerBox.addWidget(self.refTags)
+        self.outerBox.addWidget(self.showHide,  0, 0)
+        self.outerBox.addWidget(self.refLabel,  0, 1)
+        self.outerBox.addWidget(self.isSticky,  0, 2)
+        self.outerBox.addWidget(self.scrollBox, 1, 1, 1, 2)
+        self.outerBox.setColumnStretch(1, 1)
+
         self.setLayout(self.outerBox)
         self.setContentsMargins(0,0,0,0)
 
@@ -62,6 +84,11 @@ class GuiDocViewDetails(QWidget):
         return
 
     def refreshReferences(self, tHandle):
+
+        self.currHandle = tHandle
+
+        if self.isSticky.isChecked():
+            return
 
         theRefs = self.theParent.theIndex.buildReferenceList(tHandle)
         if theRefs:
@@ -89,6 +116,19 @@ class GuiDocViewDetails(QWidget):
         if len(theLink) == 18:
             tHandle = theLink[-13:]
             self.theParent.viewDocument(tHandle)
+        return
+
+    def _doShowHide(self, chState):
+        self.scrollBox.setVisible(chState)
+        if chState:
+            self.showHide.setArrowType(Qt.DownArrow)
+        else:
+            self.showHide.setArrowType(Qt.RightArrow)
+        return
+
+    def _doSticky(self, chState):
+        if not chState and self.currHandle is not None:
+            self.refreshReferences(self.currHandle)
         return
 
 # END Class GuiDocViewDetails
