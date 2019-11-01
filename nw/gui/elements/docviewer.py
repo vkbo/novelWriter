@@ -39,6 +39,7 @@ class GuiDocViewer(QTextBrowser):
 
         self.qDocument = self.document()
         self.setMinimumWidth(300)
+        self.setOpenExternalLinks(False)
         self.initViewer()
 
         theOpt = QTextOption()
@@ -116,6 +117,18 @@ class GuiDocViewer(QTextBrowser):
         self.theHandle = tHandle
         self.theProject.setLastViewed(tHandle)
 
+        print("")
+        print("*"*140)
+        print("")
+        print(aDoc.theResult)
+        print("")
+        print("*"*140)
+        print("")
+        print(self.toHtml())
+        print("")
+        print("*"*140)
+        print("")
+
         self.theParent.docMeta.refreshReferences(tHandle)
 
         return True
@@ -173,21 +186,8 @@ class GuiDocViewer(QTextBrowser):
             "  font-size: {textSize:.1f}pt;"
             "  color: rgb({tColR},{tColG},{tColB});"
             "}}\n"
-            "h1 {{"
+            "h1, h2, h3, h4 {{"
             "  color: rgb({hColR},{hColG},{hColB});"
-            "  font-size: {h1Size:.1f}pt;"
-            "}}\n"
-            "h2 {{"
-            "  color: rgb({hColR},{hColG},{hColB});"
-            "  font-size: {h2Size:.1f}pt;"
-            "}}\n"
-            "h3 {{"
-            "  color: rgb({hColR},{hColG},{hColB});"
-            "  font-size: {h3Size:.1f}pt;"
-            "}}\n"
-            "h4 {{"
-            "  color: rgb({hColR},{hColG},{hColB});"
-            "  font-size: {h4Size:.1f}pt;"
             "}}\n"
             "a {{"
             "  color: rgb({aColR},{aColG},{aColB});"
@@ -212,10 +212,6 @@ class GuiDocViewer(QTextBrowser):
         ).format(
             textSize = self.mainConf.textSize,
             preSize  = self.mainConf.textSize*0.9,
-            h1Size   = self.mainConf.textSize*1.8,
-            h2Size   = self.mainConf.textSize*1.6,
-            h3Size   = self.mainConf.textSize*1.4,
-            h4Size   = self.mainConf.textSize*1.2,
             tColR    = self.theTheme.colText[0],
             tColG    = self.theTheme.colText[1],
             tColB    = self.theTheme.colText[2],
@@ -236,6 +232,8 @@ class GuiDocViewer(QTextBrowser):
             kColB    = self.theTheme.colKey[2],
         )
         self.qDocument.setDefaultStyleSheet(styleSheet)
+
+        print(styleSheet)
 
         return True
 
