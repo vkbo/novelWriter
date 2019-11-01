@@ -108,6 +108,7 @@ class GuiMain(QMainWindow):
         self.docView.setContentsMargins(0,0,0,0)
         self.docView.addWidget(self.docViewer)
         self.docView.addWidget(self.docMeta)
+        self.docView.setStretch(0, 1)
         self.viewPane.setLayout(self.docView)
 
         self.splitView = QSplitter(Qt.Horizontal)
