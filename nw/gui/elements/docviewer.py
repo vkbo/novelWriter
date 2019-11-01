@@ -117,18 +117,6 @@ class GuiDocViewer(QTextBrowser):
         self.theHandle = tHandle
         self.theProject.setLastViewed(tHandle)
 
-        print("")
-        print("*"*140)
-        print("")
-        print(aDoc.theResult)
-        print("")
-        print("*"*140)
-        print("")
-        print(self.toHtml())
-        print("")
-        print("*"*140)
-        print("")
-
         self.theParent.docMeta.refreshReferences(tHandle)
 
         return True
@@ -183,8 +171,8 @@ class GuiDocViewer(QTextBrowser):
 
         styleSheet = (
             "body {{"
-            "  font-size: {textSize:.1f}pt;"
             "  color: rgb({tColR},{tColG},{tColB});"
+            "  font-size: {textSize:.1f}pt;"
             "}}\n"
             "h1, h2, h3, h4 {{"
             "  color: rgb({hColR},{hColG},{hColB});"
@@ -232,8 +220,6 @@ class GuiDocViewer(QTextBrowser):
             kColB    = self.theTheme.colKey[2],
         )
         self.qDocument.setDefaultStyleSheet(styleSheet)
-
-        print(styleSheet)
 
         return True
 
