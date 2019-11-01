@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='utf-8'?>
-<novelWriterXML appVersion="0.3.2" fileVersion="1.0" timeStamp="2019-10-31 16:42:12">
+<novelWriterXML appVersion="0.3.2" fileVersion="1.0" timeStamp="2019-11-01 16:56:25">
   <project>
     <name>Sample Project</name>
     <title>Sample Project</title>
@@ -9,9 +9,9 @@
   </project>
   <settings>
     <spellCheck>True</spellCheck>
-    <lastEdited>b8136a5a774a0</lastEdited>
+    <lastEdited>53b69b83cdafc</lastEdited>
     <lastViewed>ba8a28a246524</lastViewed>
-    <lastWordCount>884</lastWordCount>
+    <lastWordCount>895</lastWordCount>
     <autoReplace>
       <A>B</A>
       <B>E</B>
@@ -48,10 +48,10 @@
       <status>Started</status>
       <expanded>False</expanded>
       <layout>TITLE</layout>
-      <charCount>23</charCount>
-      <wordCount>5</wordCount>
-      <paraCount>1</paraCount>
-      <cursorPos>16</cursorPos>
+      <charCount>73</charCount>
+      <wordCount>16</wordCount>
+      <paraCount>5</paraCount>
+      <cursorPos>85</cursorPos>
     </item>
     <item handle="e7ded148d6e4a" order="1" parent="7031beac91f75">
       <name>Some Chapter</name>
@@ -94,7 +94,7 @@
       <charCount>412</charCount>
       <wordCount>82</wordCount>
       <paraCount>2</paraCount>
-      <cursorPos>448</cursorPos>
+      <cursorPos>43</cursorPos>
     </item>
     <item handle="ba8a28a246524" order="3" parent="e7ded148d6e4a">
       <name>Interlude</name>
@@ -103,10 +103,10 @@
       <status>Finished</status>
       <expanded>False</expanded>
       <layout>UNNUMBERED</layout>
-      <charCount>630</charCount>
+      <charCount>633</charCount>
       <wordCount>101</wordCount>
       <paraCount>3</paraCount>
-      <cursorPos>648</cursorPos>
+      <cursorPos>164</cursorPos>
     </item>
     <item handle="96b68994dfa3d" order="4" parent="e7ded148d6e4a">
       <name>A Note on Ipsums</name>
