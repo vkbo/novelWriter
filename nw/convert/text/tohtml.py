@@ -40,10 +40,16 @@ class ToHtml(Tokenizer):
     def doAutoReplace(self):
         Tokenizer.doAutoReplace(self)
 
+        if self.forPreview:
+            tabFmt = "&nbsp;"*8
+        else:
+            tabFmt = "&emsp;"
+
         repDict = {
-            "<" : "&lt;",
-            ">" : "&gt;",
-            "&" : "&amp;",
+            "<"  : "&lt;",
+            ">"  : "&gt;",
+            "&"  : "&amp;",
+            "\t" : tabFmt,
             nwUnicode.U_ENDASH : nwUnicode.H_ENDASH,
             nwUnicode.U_EMDASH : nwUnicode.H_EMDASH,
             nwUnicode.U_HELLIP : nwUnicode.H_HELLIP,
