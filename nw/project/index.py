@@ -18,33 +18,33 @@ from os                  import path
 
 from nw.project.document import NWDoc
 from nw.enum             import nwItemType, nwItemClass, nwItemLayout
-from nw.constants        import nwFiles
+from nw.constants        import nwFiles, nwKeyWords
 from nw.enum             import nwAlert
 
 logger = logging.getLogger(__name__)
 
 class NWIndex():
 
-    TAG_KEY    = "@tag"
-    POV_KEY    = "@pov"
-    CHAR_KEY   = "@char"
-    PLOT_KEY   = "@plot"
-    TIME_KEY   = "@time"
-    WORLD_KEY  = "@location"
-    OBJECT_KEY = "@object"
-    CUSTOM_KEY = "@custom"
-
-    NOTE_KEYS  = [TAG_KEY]
-    NOVEL_KEYS = [PLOT_KEY, POV_KEY, CHAR_KEY, WORLD_KEY, TIME_KEY, OBJECT_KEY, CUSTOM_KEY]
-    VALID_KEYS = [TAG_KEY, PLOT_KEY, POV_KEY, CHAR_KEY, WORLD_KEY, TIME_KEY, OBJECT_KEY, CUSTOM_KEY]
+    VALID_KEYS = [
+        nwKeyWords.TAG_KEY,
+        nwKeyWords.PLOT_KEY,
+        nwKeyWords.POV_KEY,
+        nwKeyWords.CHAR_KEY,
+        nwKeyWords.WORLD_KEY,
+        nwKeyWords.TIME_KEY,
+        nwKeyWords.OBJECT_KEY,
+        nwKeyWords.ENTITY_KEY,
+        nwKeyWords.CUSTOM_KEY
+    ]
     TAG_CLASS  = {
-        CHAR_KEY   : [nwItemClass.CHARACTER, 1],
-        POV_KEY    : [nwItemClass.CHARACTER, 2],
-        PLOT_KEY   : [nwItemClass.PLOT,      1],
-        TIME_KEY   : [nwItemClass.TIMELINE,  1],
-        WORLD_KEY  : [nwItemClass.WORLD,     1],
-        OBJECT_KEY : [nwItemClass.OBJECT,    1],
-        CUSTOM_KEY : [nwItemClass.CUSTOM,    1],
+        nwKeyWords.CHAR_KEY   : [nwItemClass.CHARACTER, 1],
+        nwKeyWords.POV_KEY    : [nwItemClass.CHARACTER, 2],
+        nwKeyWords.PLOT_KEY   : [nwItemClass.PLOT,      1],
+        nwKeyWords.TIME_KEY   : [nwItemClass.TIMELINE,  1],
+        nwKeyWords.WORLD_KEY  : [nwItemClass.WORLD,     1],
+        nwKeyWords.OBJECT_KEY : [nwItemClass.OBJECT,    1],
+        nwKeyWords.ENTITY_KEY : [nwItemClass.ENTITY,    1],
+        nwKeyWords.CUSTOM_KEY : [nwItemClass.CUSTOM,    1],
     }
 
     def __init__(self, theProject, theParent):
@@ -275,10 +275,9 @@ class NWIndex():
         if not isValid or len(theBits) == 0:
             return False
 
-        theKey = theBits[0]
-        if theKey in self.NOVEL_KEYS:
+        if theBits[0] != nwKeyWords.TAG_KEY:
             for aVal in theBits[1:]:
-                self.refIndex[tHandle].append([nLine, theKey, aVal, nTitle])
+                self.refIndex[tHandle].append([nLine, theBits[0], aVal, nTitle])
 
         return True
 
@@ -290,7 +289,7 @@ class NWIndex():
         if not isValid or len(theBits) != 2:
             return False
 
-        if theBits[0] == self.TAG_KEY:
+        if theBits[0] == nwKeyWords.TAG_KEY:
             self.tagIndex[theBits[1]] = [nLine, tHandle, itemClass.name]
 
         return True
@@ -355,7 +354,7 @@ class NWIndex():
             return isGood
 
         # If we have a tag, only the first value is accepted, the rest is ignored
-        if theBits[0] == self.TAG_KEY and nBits > 1:
+        if theBits[0] == nwKeyWords.TAG_KEY and nBits > 1:
             isGood[0] = True
             if theBits[1] in self.tagIndex.keys():
                 if self.tagIndex[theBits[1]][1] == tItem.itemHandle:

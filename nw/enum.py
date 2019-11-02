@@ -31,8 +31,9 @@ class nwItemClass(Enum):
     WORLD     = 4
     TIMELINE  = 5
     OBJECT    = 6
-    CUSTOM    = 7
-    TRASH     = 8
+    ENTITY    = 7
+    CUSTOM    = 8
+    TRASH     = 9
 
 # END Enum nwItemClass
 

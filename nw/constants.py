@@ -32,6 +32,20 @@ class nwFiles():
 
 # END Class nwFiles
 
+class nwKeyWords:
+
+    TAG_KEY    = "@tag"
+    POV_KEY    = "@pov"
+    CHAR_KEY   = "@char"
+    PLOT_KEY   = "@plot"
+    TIME_KEY   = "@time"
+    WORLD_KEY  = "@location"
+    OBJECT_KEY = "@object"
+    ENTITY_KEY = "@entity"
+    CUSTOM_KEY = "@custom"
+
+# END Class nwKeyWords
+
 class nwLabels():
 
     CLASS_NAME = {
@@ -42,6 +56,7 @@ class nwLabels():
         nwItemClass.WORLD     : "Locations",
         nwItemClass.TIMELINE  : "Timeline",
         nwItemClass.OBJECT    : "Objects",
+        nwItemClass.ENTITY    : "Entity",
         nwItemClass.CUSTOM    : "Custom",
         nwItemClass.TRASH     : "Trash",
     }
@@ -53,6 +68,7 @@ class nwLabels():
         nwItemClass.WORLD     : "L",
         nwItemClass.TIMELINE  : "T",
         nwItemClass.OBJECT    : "O",
+        nwItemClass.ENTITY    : "E",
         nwItemClass.CUSTOM    : "X",
         nwItemClass.TRASH     : "R",
     }
@@ -77,6 +93,17 @@ class nwLabels():
         nwItemLayout.CHAPTER    : "Ch",
         nwItemLayout.SCENE      : "Sc",
         nwItemLayout.NOTE       : "Nt",
+    }
+    KEY_NAME = {
+        nwKeyWords.TAG_KEY    : "Tag",
+        nwKeyWords.POV_KEY    : "Point of View",
+        nwKeyWords.CHAR_KEY   : "Characters",
+        nwKeyWords.PLOT_KEY   : "Plot",
+        nwKeyWords.TIME_KEY   : "Time",
+        nwKeyWords.WORLD_KEY  : "Locations",
+        nwKeyWords.OBJECT_KEY : "Objects",
+        nwKeyWords.ENTITY_KEY : "Entities",
+        nwKeyWords.CUSTOM_KEY : "Custom",
     }
 
 # END Class nwLabels

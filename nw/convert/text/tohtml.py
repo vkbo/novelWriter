@@ -15,7 +15,7 @@ import re
 import nw
 
 from nw.convert.tokenizer import Tokenizer
-from nw.constants         import nwUnicode
+from nw.constants         import nwUnicode, nwLabels
 
 logger = logging.getLogger(__name__)
 
@@ -134,17 +134,6 @@ class ToHtml(Tokenizer):
         if not self.forPreview:
             return "<pre>@%s</pre>\n" % tText
 
-        theLabel = {
-            "@tag"      : "Tag",
-            "@pov"      : "Point of View",
-            "@char"     : "Character(s)",
-            "@plot"     : "Plot",
-            "@time"     : "Time",
-            "@location" : "Location(s)",
-            "@object"   : "Object(s)",
-            "@custom"   : "Custom",
-        }
-
         tText = "@"+tText
         isValid, theBits, thePos = self.theParent.theIndex.scanThis(tText)
         if not isValid or not theBits:
@@ -152,8 +141,8 @@ class ToHtml(Tokenizer):
 
         retText = ""
         refTags = []
-        if theBits[0] in theLabel:
-            retText += "<span class='tags'>%s:</span>&nbsp;" % theLabel[theBits[0]]
+        if theBits[0] in nwLabels.KEY_NAME:
+            retText += "<span class='tags'>%s:</span>&nbsp;" % nwLabels.KEY_NAME[theBits[0]]
             for tTag in theBits[1:]:
                 refTags.append("<a href='#%s=%s'>%s</a>" % (
                     theBits[0][1:], tTag, tTag

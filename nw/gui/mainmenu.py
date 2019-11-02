@@ -235,6 +235,7 @@ class GuiMainMenu(QMenuBar):
         self.rootItems[nwItemClass.WORLD]     = QAction("Location Root",  rootMenu)
         self.rootItems[nwItemClass.TIMELINE]  = QAction("Timeline Root",  rootMenu)
         self.rootItems[nwItemClass.OBJECT]    = QAction("Object Root",    rootMenu)
+        self.rootItems[nwItemClass.ENTITY]    = QAction("Entity Root",    rootMenu)
         self.rootItems[nwItemClass.CUSTOM]    = QAction("Custom Root",    rootMenu)
         nCount = 0
         for itemClass in self.rootItems.keys():
