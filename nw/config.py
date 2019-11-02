@@ -76,7 +76,7 @@ class Config:
         ## Text Editor
         self.textFont        = None
         self.textSize        = 12
-        self.textFixedW      = False
+        self.textFixedW      = True
         self.textWidth       = 600
         self.textMargin      = 40
         self.tabWidth        = 40

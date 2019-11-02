@@ -322,8 +322,8 @@ class GuiConfigEditEditor(QWidget):
         self.textFlowForm = QGridLayout(self)
         self.textFlow.setLayout(self.textFlowForm)
 
-        self.textFlowFixed = QCheckBox("Fixed width",self)
-        self.textFlowFixed.setToolTip("Make text in editor fixed width and scale margins instead.")
+        self.textFlowFixed = QCheckBox("Max text width",self)
+        self.textFlowFixed.setToolTip("Maximum width of the text.")
         if self.mainConf.textFixedW:
             self.textFlowFixed.setCheckState(Qt.Checked)
         else:

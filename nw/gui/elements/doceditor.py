@@ -293,8 +293,8 @@ class GuiDocEditor(QTextEdit):
             tW = self.mainConf.textWidth
             wW = self.width()
             tM = int((wW - sW - tW)/2)
-            if tM < 0:
-                tM = 0
+            if tM < self.mainConf.textMargin:
+                tM = self.mainConf.textMargin
             docFormat = self.qDocument.rootFrame().frameFormat()
             docFormat.setLeftMargin(tM)
             docFormat.setRightMargin(tM)
