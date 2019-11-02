@@ -18,7 +18,7 @@ from PyQt5.QtGui     import QIcon, QFont, QColor
 from PyQt5.QtWidgets import QTreeWidget, QTreeWidgetItem, QAbstractItemView, QApplication
 
 from nw.project.item import NWItem
-from nw.enum         import nwItemType, nwItemClass, nwAlert
+from nw.enum         import nwItemType, nwItemClass, nwItemLayout, nwAlert
 from nw.constants    import nwLabels
 
 logger = logging.getLogger(__name__)
@@ -61,6 +61,10 @@ class GuiDocTree(QTreeWidget):
         # Allow Move by Drag & Drop
         self.setDragEnabled(True)
         self.setDragDropMode(QAbstractItemView.InternalMove)
+
+        # But don't allow drop on root level
+        trRoot = self.invisibleRootItem()
+        trRoot.setFlags(trRoot.flags() ^ Qt.ItemIsDropEnabled)
 
         # Set Multiple Selection by CTRL
         self.setSelectionMode(QAbstractItemView.ExtendedSelection)
@@ -183,7 +187,7 @@ class GuiDocTree(QTreeWidget):
                 nIndex = tIndex + nStep
                 if nIndex < 0 or nIndex >= nChild:
                     return False
-                cItem  = self.takeTopLevelItem(tIndex)
+                cItem = self.takeTopLevelItem(tIndex)
                 self.insertTopLevelItem(nIndex, cItem)
             else:
                 tIndex = pItem.indexOfChild(tItem)
@@ -191,7 +195,7 @@ class GuiDocTree(QTreeWidget):
                 nIndex = tIndex + nStep
                 if nIndex < 0 or nIndex >= nChild:
                     return False
-                cItem   = pItem.takeChild(tIndex)
+                cItem = pItem.takeChild(tIndex)
                 pItem.insertChild(nIndex, cItem)
             self.clearSelection()
             cItem.setSelected(True)
@@ -451,12 +455,12 @@ class GuiDocTree(QTreeWidget):
         trItemP = trItemS.parent()
         if trItemP is None:
             logger.error("Failed to find new parent item of %s" % tHandle)
-            return
+            return False
         pHandle = trItemP.text(self.C_HANDLE)
         nwItemS.setParent(pHandle)
         self.setTreeItemValues(tHandle)
         self.theProject.setProjectChanged(True)
-        return
+        return True
 
     def _moveOrphanedItem(self, tHandle, dHandle):
         trItemS = self._getTreeItem(tHandle)
@@ -505,13 +509,14 @@ class GuiDocTree(QTreeWidget):
         dnItem  = self.theProject.getItem(dHandle)
         isSame  = snItem.itemClass == dnItem.itemClass
         isNone  = snItem.itemClass == nwItemClass.NO_CLASS
+        isNote  = snItem.itemLayout == nwItemLayout.NOTE
         onFile  = dnItem.itemType == nwItemType.FILE
         isRoot  = snItem.itemType == nwItemType.ROOT
         onRoot  = dnItem.itemType == nwItemType.ROOT
         isOnTop = self.dropIndicatorPosition() == QAbstractItemView.OnItem
         isAbove = self.dropIndicatorPosition() == QAbstractItemView.AboveItem
         isBelow = self.dropIndicatorPosition() == QAbstractItemView.BelowItem
-        if (isSame or isNone) and not (onFile and isOnTop) and not isRoot:
+        if (isSame or isNone or isNote) and not (onFile and isOnTop) and not isRoot:
             logger.verbose("Drag'n'drop of item %s accepted" % sHandle)
             QTreeWidget.dropEvent(self, theEvent)
             if isNone:
@@ -519,11 +524,14 @@ class GuiDocTree(QTreeWidget):
                 self._cleanOrphanedRoot()
             else:
                 self._updateItemParent(sHandle)
+            if not isSame:
+                snItem.setClass(dnItem.itemClass)
         elif isRoot and (isAbove or isBelow) and onRoot:
             logger.verbose("Drag'n'drop of item %s accepted" % sHandle)
             QTreeWidget.dropEvent(self, theEvent)
         else:
             logger.verbose("Drag'n'drop of item %s not accepted" % sHandle)
+            self.makeAlert("The item cannot be moved to that location.", nwAlert.ERROR)
 
         return
 
