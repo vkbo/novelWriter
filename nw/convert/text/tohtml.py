@@ -26,7 +26,7 @@ class ToHtml(Tokenizer):
         self.forPreview = False
         return
 
-    def setPreview(self, forPreview):
+    def setPreview(self, forPreview, doComments):
         """If we're using this class to generate markdown preview, we need to make a few changes to
         formatting, which is selected by this flag.
         """
@@ -34,6 +34,7 @@ class ToHtml(Tokenizer):
         self.forPreview = forPreview
         if forPreview:
             self.doKeywords = True
+            self.doComments = doComments
 
         return
 
@@ -118,7 +119,7 @@ class ToHtml(Tokenizer):
                     thisPar.append(tTemp.rstrip()+" ")
 
             elif tType == self.T_COMMENT and self.doComments:
-                self.theResult += "<div class='comment'>%s</div>\n" % tText
+                self.theResult += self._formatComments(tText)
 
             elif tType == self.T_KEYWORD and self.doKeywords:
                 self.theResult += self._formatTags(tText)
@@ -150,5 +151,12 @@ class ToHtml(Tokenizer):
             retText += ", ".join(refTags)
 
         return "<div>%s</div>" % retText
+
+    def _formatComments(self, tText):
+
+        if not self.forPreview:
+            return "<div class='comment'>%s</div>\n" % tText
+
+        return "<p class='comment'>%s</p>\n" % tText
 
 # END Class ToHtml

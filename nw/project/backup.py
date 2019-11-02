@@ -17,18 +17,16 @@ from os       import path, mkdir, listdir
 from shutil   import make_archive
 from datetime import datetime
 
-from nw.enum  import nwAlert
+from nw.enum import nwAlert
 
 logger = logging.getLogger(__name__)
 
 class NWBackup():
 
     def __init__(self, theParent, theProject):
-
         self.mainConf   = nw.CONFIG
         self.theParent  = theParent
         self.theProject = theProject
-
         return
 
     def zipIt(self):

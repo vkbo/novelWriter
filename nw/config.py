@@ -103,6 +103,7 @@ class Config:
 
         ## State
         self.showRefPanel = True
+        self.viewComments = True
 
         ## Path
         self.recentList = [""]*10
@@ -251,7 +252,8 @@ class Config:
 
         ## State
         cnfSec = "State"
-        self.showRefPanel = self._parseLine(cnfParse, cnfSec, "showrefdetails", self.CNF_BOOL, self.showRefPanel)
+        self.showRefPanel = self._parseLine(cnfParse, cnfSec, "showrefpanel", self.CNF_BOOL, self.showRefPanel)
+        self.viewComments = self._parseLine(cnfParse, cnfSec, "viewcomments", self.CNF_BOOL, self.viewComments)
 
         ## Path
         cnfSec = "Path"
@@ -324,7 +326,8 @@ class Config:
         ## State
         cnfSec = "State"
         cnfParse.add_section(cnfSec)
-        cnfParse.set(cnfSec,"showrefdetails",str(self.showRefPanel))
+        cnfParse.set(cnfSec,"showrefpanel",str(self.showRefPanel))
+        cnfParse.set(cnfSec,"viewcomments",str(self.viewComments))
 
         ## Path
         cnfSec = "Path"
@@ -401,6 +404,11 @@ class Config:
 
     def setShowRefPanel(self, checkState):
         self.showRefPanel = checkState
+        self.confChanged  = True
+        return
+
+    def setViewComments(self, checkState):
+        self.viewComments = checkState
         self.confChanged  = True
         return
 

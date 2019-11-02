@@ -14,7 +14,7 @@ import logging
 import json
 import nw
 
-from os                  import path
+from os import path
 
 from nw.project.document import NWDoc
 from nw.enum             import nwItemType, nwItemClass, nwItemLayout
