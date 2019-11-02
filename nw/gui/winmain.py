@@ -307,6 +307,10 @@ class GuiMain(QMainWindow):
         if self.theProject.lastViewed is not None:
             self.viewDocument(self.theProject.lastViewed)
 
+        # Check if we need to rebuild the index
+        if self.theIndex.indexBroken:
+            self.rebuildIndex()
+
         return True
 
     def saveProject(self):
