@@ -197,10 +197,15 @@ class NWProject():
         if not self._checkFolder(self.projMeta):  return
         if not self._checkFolder(self.projCache): return
 
-        nwXML = etree.parse(fileName)
-        xRoot = nwXML.getroot()
+        try:
+            nwXML = etree.parse(fileName)
+        except Exception as e:
+            self.makeAlert(["Failed to parse project xml.",str(e)], nwAlert.ERROR)
+            return False
 
-        nwxRoot     = xRoot.tag
+        xRoot   = nwXML.getroot()
+        nwxRoot = xRoot.tag
+
         appVersion  = xRoot.attrib["appVersion"]
         fileVersion = xRoot.attrib["fileVersion"]
 
@@ -709,7 +714,7 @@ class NWProject():
         file gets corrupted.
         """
 
-        countFile = path.join(self.projCache, "projCount.txt")
+        countFile = path.join(self.projCache, nwFiles.PROJ_COUNT)
         projCount = 0
 
         if path.isfile(countFile):
@@ -718,7 +723,7 @@ class NWProject():
                     projCount = int(inFile.read())+1
             except:
                 projCount = 0
-        
+
         if projCount > 9:
             projCount = 0
 

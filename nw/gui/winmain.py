@@ -611,7 +611,7 @@ class GuiMain(QMainWindow):
         """
 
         if isinstance(theMessage, list):
-            popMsg = "<br>".join(theMessage)
+            popMsg = " ".join(theMessage)
             logMsg = theMessage
         else:
             popMsg = theMessage
