@@ -201,6 +201,7 @@ class NWProject():
             nwXML = etree.parse(fileName)
         except Exception as e:
             self.makeAlert(["Failed to parse project xml.",str(e)], nwAlert.ERROR)
+            self.clearProject()
             return False
 
         xRoot   = nwXML.getroot()
