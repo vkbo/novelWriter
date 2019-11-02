@@ -65,8 +65,7 @@ class GuiDocViewDetails(QWidget):
         self.scrollBox.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
         self.scrollBox.setFrameStyle(QFrame.NoFrame)
         self.scrollBox.setWidgetResizable(True)
-        self.scrollBox.setMaximumHeight(300)
-        self.scrollBox.setMinimumHeight(60)
+        self.scrollBox.setFixedHeight(80)
         self.scrollBox.setWidget(self.refList)
 
         self.outerBox.addWidget(self.showHide,  0, 0)

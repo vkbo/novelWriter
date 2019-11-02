@@ -328,11 +328,11 @@ class GuiConfigEditEditor(QWidget):
             self.textFlowFixed.setCheckState(Qt.Checked)
         else:
             self.textFlowFixed.setCheckState(Qt.Unchecked)
-        self.textFlowWidth = QSpinBox(self)
-        self.textFlowWidth.setMinimum(300)
-        self.textFlowWidth.setMaximum(10000)
-        self.textFlowWidth.setSingleStep(10)
-        self.textFlowWidth.setValue(self.mainConf.textWidth)
+        self.textFlowMax = QSpinBox(self)
+        self.textFlowMax.setMinimum(300)
+        self.textFlowMax.setMaximum(10000)
+        self.textFlowMax.setSingleStep(10)
+        self.textFlowMax.setValue(self.mainConf.textWidth)
 
         self.textFlowJustify = QCheckBox("Justify text",self)
         self.textFlowJustify.setToolTip("Justify text in main document editor.")
@@ -342,7 +342,7 @@ class GuiConfigEditEditor(QWidget):
             self.textFlowJustify.setCheckState(Qt.Unchecked)
 
         self.textFlowForm.addWidget(self.textFlowFixed,   0, 0)
-        self.textFlowForm.addWidget(self.textFlowWidth,   0, 1)
+        self.textFlowForm.addWidget(self.textFlowMax,     0, 1)
         self.textFlowForm.addWidget(QLabel("px"),         0, 2)
         self.textFlowForm.addWidget(self.textFlowJustify, 1, 0)
         self.textFlowForm.setColumnStretch(4, 1)
@@ -519,7 +519,7 @@ class GuiConfigEditEditor(QWidget):
         self.mainConf.textFont = textFont
         self.mainConf.textSize = textSize
 
-        textWidth  = self.textFlowWidth.value()
+        textWidth  = self.textFlowMax.value()
         textFixedW = self.textFlowFixed.isChecked()
         doJustify  = self.textFlowJustify.isChecked()
 
