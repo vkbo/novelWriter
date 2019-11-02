@@ -220,7 +220,7 @@ class GuiDocTree(QTreeWidget):
     def deleteItem(self, tHandle=None):
         """Delete items from the tree. Note that this does not delete the item from the item tree in
         the project object. However, since this is only meta data, there isn't really a need to do
-        that to save memory. As items not in the tree are not saved to the project file, a loaded
+        that to save memory. Items not in the tree are not saved to the project file, so a loaded
         project will be clean anyway.
         """
 
@@ -247,6 +247,7 @@ class GuiDocTree(QTreeWidget):
             self.clearSelection()
             trItemP.setSelected(True)
             self.theProject.setProjectChanged(True)
+            self.theParent.theIndex.deleteHandle(tHandle)
 
         elif nwItemS.itemType == nwItemType.FOLDER:
             logger.debug("User requested folder %s deleted" % tHandle)

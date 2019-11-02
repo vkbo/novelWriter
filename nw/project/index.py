@@ -64,10 +64,27 @@ class NWIndex():
 
         return
 
+    ##
+    #  Public Methods
+    ##
+
     def clearIndex(self):
         self.tagIndex   = {}
         self.refIndex   = {}
         self.novelIndex = {}
+        self.noteIndex  = {}
+        return
+
+    def deleteHandle(self, tHandle):
+
+        for tTag in self.tagIndex:
+            if self.tagIndex[tTag][1] == tHandle:
+                self.tagIndex.pop(tTag, None)
+
+        self.refIndex.pop(tHandle, None)
+        self.novelIndex.pop(tHandle, None)
+        self.noteIndex.pop(tHandle, None)
+
         return
 
     ##
@@ -142,6 +159,7 @@ class NWIndex():
         theItem = self.theProject.getItem(tHandle)
         if theItem is None: return False
         if theItem.itemType != nwItemType.FILE: return False
+        if theItem.parHandle == self.theProject.trashRoot: return False
         itemClass  = theItem.itemClass
         itemLayout = theItem.itemLayout
 
@@ -336,19 +354,19 @@ class NWIndex():
 
         return True
 
-    def buildReferenceList(self, theHandle):
-        """Build a list of files referring back to our file, specified by theHandle.
+    def buildReferenceList(self, tHandle):
+        """Build a list of files referring back to our file, specified by tHandle.
         """
 
         theRefs = {}
 
-        tItem = self.theProject.getItem(theHandle)
-        if theHandle is None:
+        tItem = self.theProject.getItem(tHandle)
+        if tHandle is None:
             return theRefs
 
         theTag = None
         for tTag in self.tagIndex:
-            if theHandle == self.tagIndex[tTag][1]:
+            if tHandle == self.tagIndex[tTag][1]:
                 theTag = tTag
                 break
 
