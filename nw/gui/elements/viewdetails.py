@@ -48,7 +48,6 @@ class GuiDocViewDetails(QWidget):
         self.showHide.setToolButtonStyle(Qt.ToolButtonIconOnly)
         self.showHide.setArrowType(Qt.DownArrow)
         self.showHide.setCheckable(True)
-        self.showHide.setChecked(True)
         self.showHide.setIconSize(QSize(16,16))
         self.showHide.toggled.connect(self._doShowHide)
 
@@ -79,6 +78,8 @@ class GuiDocViewDetails(QWidget):
         self.setLayout(self.outerBox)
         self.setContentsMargins(0,0,0,0)
 
+        self._doShowHide(self.mainConf.showRefPanel)
+
         logger.debug("DocViewDetails initialisation complete")
 
         return
@@ -91,12 +92,6 @@ class GuiDocViewDetails(QWidget):
             return
 
         theRefs = self.theParent.theIndex.buildReferenceList(tHandle)
-        if theRefs:
-            self.setVisible(True)
-        else:
-            self.setVisible(False)
-            return
-
         theList = []
         for tHandle in theRefs:
             tItem = self.theProject.getItem(tHandle)
@@ -120,6 +115,7 @@ class GuiDocViewDetails(QWidget):
 
     def _doShowHide(self, chState):
         self.scrollBox.setVisible(chState)
+        self.mainConf.setShowRefPanel(chState)
         if chState:
             self.showHide.setArrowType(Qt.DownArrow)
         else:
