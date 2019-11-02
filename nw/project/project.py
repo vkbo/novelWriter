@@ -280,7 +280,7 @@ class NWProject():
 
         return True
 
-    def saveProject(self):
+    def saveProject(self, isAuto=False):
 
         if self.projPath is None:
             self.makeAlert("Project path not set, cannot save.", nwAlert.ERROR)
@@ -296,7 +296,8 @@ class NWProject():
         logger.debug("Saving project: %s" % self.projPath)
 
         # Save a copy of the current file, just in case
-        self._maintainPrevious()
+        if not isAuto:
+            self._maintainPrevious()
 
         # Root element and project details
         logger.debug("Writing project meta")
