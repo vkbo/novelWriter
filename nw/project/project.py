@@ -14,6 +14,7 @@ import logging
 import nw
 
 from os       import path, mkdir, listdir
+from shutil   import copyfile
 from lxml     import etree
 from hashlib  import sha256
 from datetime import datetime
@@ -287,6 +288,9 @@ class NWProject():
         if not self._checkFolder(self.projCache): return
 
         logger.debug("Saving project: %s" % self.projPath)
+
+        # Save a copy of the current file, just in case
+        self._maintainPrevious()
 
         # Root element and project details
         logger.debug("Writing project meta")
@@ -698,5 +702,42 @@ class NWProject():
             logger.warning("Duplicate handle encountered! Retrying ...")
             itemHandle = self._makeHandle(addSeed+"!")
         return itemHandle
+
+    def _maintainPrevious(self):
+        """This function will take the current project file and copy it into the project cache
+        folder with an incremental file extension added. These serve as a backup in case the xml
+        file gets corrupted.
+        """
+
+        countFile = path.join(self.projCache, "projCount.txt")
+        projCount = 0
+
+        if path.isfile(countFile):
+            try:
+                with open(countFile, mode="r") as inFile:
+                    projCount = int(inFile.read())+1
+            except:
+                projCount = 0
+        
+        if projCount > 9:
+            projCount = 0
+
+        projBackup = "%s.%d" % (nwFiles.PROJ_FILE, projCount)
+
+        try:
+            copyfile(
+                path.join(self.projPath,self.projFile),
+                path.join(self.projCache,projBackup)
+            )
+        except:
+            logger.error("Failed to write to file %s" % projBackup)
+
+        try:
+            with open(countFile, mode="w") as outFile:
+                outFile.write(str(projCount))
+        except:
+            logger.error("Failed to write to file %s" % countFile)
+
+        return
 
 # END Class NWProject
