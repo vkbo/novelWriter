@@ -79,9 +79,13 @@ class NWIndex():
 
     def deleteHandle(self, tHandle):
 
+        delTags = []
         for tTag in self.tagIndex:
             if self.tagIndex[tTag][1] == tHandle:
-                self.tagIndex.pop(tTag, None)
+                delTags.append(tTag)
+
+        for tTag in delTags:
+            self.tagIndex.pop(tTag, None)
 
         self.refIndex.pop(tHandle, None)
         self.novelIndex.pop(tHandle, None)
