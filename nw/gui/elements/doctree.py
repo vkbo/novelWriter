@@ -470,6 +470,8 @@ class GuiDocTree(QTreeWidget):
         self.setTreeItemValues(tHandle)
         self.theProject.setProjectChanged(True)
 
+        logger.debug("The parent of item %s has been changed to %s" % (tHandle,pHandle))
+
         return True
 
     def _moveOrphanedItem(self, tHandle, dHandle):
@@ -524,10 +526,8 @@ class GuiDocTree(QTreeWidget):
         isRoot  = snItem.itemType == nwItemType.ROOT
         onRoot  = dnItem.itemType == nwItemType.ROOT
         isOnTop = self.dropIndicatorPosition() == QAbstractItemView.OnItem
-        isAbove = self.dropIndicatorPosition() == QAbstractItemView.AboveItem
-        isBelow = self.dropIndicatorPosition() == QAbstractItemView.BelowItem
         if (isSame or isNone or isNote) and not (onFile and isOnTop) and not isRoot:
-            logger.verbose("Drag'n'drop of item %s accepted" % sHandle)
+            logger.debug("Drag'n'drop of item %s accepted" % sHandle)
             QTreeWidget.dropEvent(self, theEvent)
             if isNone:
                 self._moveOrphanedItem(sHandle, dHandle)
@@ -535,12 +535,15 @@ class GuiDocTree(QTreeWidget):
             else:
                 self._updateItemParent(sHandle)
             if not isSame:
+                logger.debug("Item %s class has been changed from %s to %s" % (
+                    sHandle,
+                    snItem.itemClass.name,
+                    dnItem.itemClass.name
+                ))
                 snItem.setClass(dnItem.itemClass)
-        elif isRoot and (isAbove or isBelow) and onRoot:
-            logger.verbose("Drag'n'drop of item %s accepted" % sHandle)
-            QTreeWidget.dropEvent(self, theEvent)
+                self.setTreeItemValues(sHandle)
         else:
-            logger.verbose("Drag'n'drop of item %s not accepted" % sHandle)
+            logger.debug("Drag'n'drop of item %s not accepted" % sHandle)
             self.makeAlert("The item cannot be moved to that location.", nwAlert.ERROR)
 
         return
