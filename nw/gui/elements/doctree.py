@@ -450,16 +450,25 @@ class GuiDocTree(QTreeWidget):
         return
 
     def _updateItemParent(self, tHandle):
+        """Update the parent handle of an item so that the information in the project is consistent
+        with the treeView. Also move the word count over to the new parent tree.
+        """
+
         trItemS = self._getTreeItem(tHandle)
         nwItemS = self.theProject.getItem(tHandle)
         trItemP = trItemS.parent()
         if trItemP is None:
             logger.error("Failed to find new parent item of %s" % tHandle)
             return False
+
         pHandle = trItemP.text(self.C_HANDLE)
+        wC = int(trItemS.text(self.C_COUNT))
+        self.propagateCount(tHandle, -wC)
         nwItemS.setParent(pHandle)
+        self.propagateCount(tHandle, wC)
         self.setTreeItemValues(tHandle)
         self.theProject.setProjectChanged(True)
+
         return True
 
     def _moveOrphanedItem(self, tHandle, dHandle):
