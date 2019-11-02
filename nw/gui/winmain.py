@@ -77,7 +77,7 @@ class GuiMain(QMainWindow):
         self.noticeBar = GuiNoticeBar(self)
         self.docEditor = GuiDocEditor(self, self.theProject)
         self.docViewer = GuiDocViewer(self, self.theProject)
-        self.docMeta   = GuiDocViewDetails(self, self.theProject)
+        self.viewMeta  = GuiDocViewDetails(self, self.theProject)
         self.searchBar = GuiSearchBar(self)
         self.treeMeta  = GuiDocDetails(self, self.theProject)
         self.treeView  = GuiDocTree(self, self.theProject)
@@ -107,7 +107,7 @@ class GuiMain(QMainWindow):
         self.docView = QVBoxLayout()
         self.docView.setContentsMargins(0,0,0,0)
         self.docView.addWidget(self.docViewer)
-        self.docView.addWidget(self.docMeta)
+        self.docView.addWidget(self.viewMeta)
         self.docView.setStretch(0, 1)
         self.viewPane.setLayout(self.docView)
 

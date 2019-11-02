@@ -168,6 +168,10 @@ class GuiMainMenu(QMenuBar):
         self.updateRecentProjects()
         return True
 
+    def _showDocumentLocation(self):
+        self.theParent.docEditor.revealLocation()
+        return True
+
     ##
     #  Menu Builders
     ##
@@ -346,6 +350,12 @@ class GuiMainMenu(QMenuBar):
 
         # Document > Separator
         self.docuMenu.addSeparator()
+
+        # Document > Show File Details
+        menuItem = QAction("Show File Details", self)
+        menuItem.setStatusTip("Shows a message box with the document location in the project folder")
+        menuItem.triggered.connect(self._showDocumentLocation)
+        self.docuMenu.addAction(menuItem)
 
         # Document > Import From File
         menuItem = QAction("Import from File", self)

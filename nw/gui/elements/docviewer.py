@@ -117,7 +117,7 @@ class GuiDocViewer(QTextBrowser):
         self.theHandle = tHandle
         self.theProject.setLastViewed(tHandle)
 
-        self.theParent.docMeta.refreshReferences(tHandle)
+        self.theParent.viewMeta.refreshReferences(tHandle)
 
         return True
 

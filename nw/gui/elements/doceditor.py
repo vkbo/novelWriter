@@ -16,9 +16,9 @@ import nw
 from time import time
 
 from PyQt5.QtCore    import Qt, QTimer, QSizeF
-from PyQt5.QtWidgets import qApp, QTextEdit, QAction, QMenu, QShortcut
+from PyQt5.QtWidgets import qApp, QTextEdit, QAction, QMenu, QShortcut, QMessageBox
 from PyQt5.QtGui     import (
-    QTextCursor, QTextOption, QIcon, QKeySequence, QFont, QColor, QPalette, QTextDocument
+    QTextCursor, QTextOption, QIcon, QKeySequence, QFont, QColor, QPalette, QTextDocument,
 )
 
 from nw.project.document       import NWDoc
@@ -331,6 +331,19 @@ class GuiDocEditor(QTextEdit):
 
     def isEmpty(self):
         return self.qDocument.isEmpty()
+
+    def revealLocation(self):
+        if self.theHandle is not None:
+            msgBox = QMessageBox()
+            msgBox.information(self, "File Location", (
+                "File details for the currently open file<br>"
+                "Handle: {handle:s}<br>"
+                "Location: {fileLoc:s}"
+            ).format(
+                handle  = self.theHandle,
+                fileLoc = str(self.nwDocument.fileLoc)
+            ))
+        return
 
     ##
     #  Document Events and Maintenance

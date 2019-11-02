@@ -6,7 +6,7 @@
  Class holding the document view details panel
 
  File History:
- Created: 2019-09-31 [0.3.2]
+ Created: 2019-10-31 [0.3.2]
 
 """
 
@@ -20,7 +20,7 @@ from PyQt5.QtWidgets import (
     QSizePolicy, QCheckBox, QGridLayout
 )
 
-from nw.constants    import nwLabels
+from nw.constants import nwLabels
 
 logger = logging.getLogger(__name__)
 
