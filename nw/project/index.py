@@ -17,7 +17,7 @@ import nw
 from os                  import path
 
 from nw.project.document import NWDoc
-from nw.enum             import nwItemType, nwItemClass
+from nw.enum             import nwItemType, nwItemClass, nwItemLayout
 from nw.constants        import nwFiles
 
 logger = logging.getLogger(__name__)
@@ -35,6 +35,7 @@ class NWIndex():
 
     NOTE_KEYS  = [TAG_KEY]
     NOVEL_KEYS = [PLOT_KEY, POV_KEY, CHAR_KEY, WORLD_KEY, TIME_KEY, OBJECT_KEY, CUSTOM_KEY]
+    VALID_KEYS = [TAG_KEY, PLOT_KEY, POV_KEY, CHAR_KEY, WORLD_KEY, TIME_KEY, OBJECT_KEY, CUSTOM_KEY]
     TAG_CLASS  = {
         CHAR_KEY   : [nwItemClass.CHARACTER, 1],
         POV_KEY    : [nwItemClass.CHARACTER, 2],
@@ -56,6 +57,7 @@ class NWIndex():
         self.tagIndex   = {}
         self.refIndex   = {}
         self.novelIndex = {}
+        self.noteIndex  = {}
 
         # Lists
         self.novelList  = []
@@ -95,6 +97,8 @@ class NWIndex():
                 self.refIndex = theData["refIndex"]
             if "novelIndex" in theData.keys():
                 self.novelIndex = theData["novelIndex"]
+            if "noteIndex" in theData.keys():
+                self.noteIndex = theData["noteIndex"]
 
             return True
 
@@ -116,6 +120,7 @@ class NWIndex():
                     "tagIndex"   : self.tagIndex,
                     "refIndex"   : self.refIndex,
                     "novelIndex" : self.novelIndex,
+                    "noteIndex"  : self.noteIndex,
                 }, indent=nIndent))
         except Exception as e:
             logger.error("Failed to save index file")
@@ -148,6 +153,8 @@ class NWIndex():
             self.refIndex[tHandle]   = []
             isNovel = True
         else:
+            self.noteIndex[tHandle] = []
+            self.refIndex[tHandle]  = []
             isNovel = False
 
         # Also clear references to file in tag index
@@ -166,19 +173,16 @@ class NWIndex():
             nChar  = len(aLine)
             if nChar == 0: continue
             if aLine[0] == "#":
-                if isNovel:
-                    isTitle = self.indexTitle(tHandle, aLine, nLine, itemLayout)
-                    if isTitle:
-                        nTitle = nLine
+                isTitle = self.indexTitle(tHandle, isNovel, aLine, nLine, itemLayout)
+                if isTitle:
+                    nTitle = nLine
             elif aLine[0] == "@":
-                if isNovel:
-                    self.indexNoteRef(tHandle, aLine, nLine, nTitle)
-                else:
-                    self.indexTag(tHandle, aLine, nLine, itemClass)
+                self.indexNoteRef(tHandle, aLine, nLine, nTitle)
+                self.indexTag(tHandle, aLine, nLine, itemClass)
 
         return True
 
-    def indexTitle(self, tHandle, aLine, nLine, itemLayout):
+    def indexTitle(self, tHandle, isNovel, aLine, nLine, itemLayout):
         """Save information about the title and its location in the file.
         """
 
@@ -198,7 +202,12 @@ class NWIndex():
             return False
 
         if hText != "":
-            self.novelIndex[tHandle].append([nLine, hDepth, hText, itemLayout.name])
+            if isNovel:
+                if tHandle in self.novelIndex:
+                    self.novelIndex[tHandle].append([nLine, hDepth, hText, itemLayout.name])
+            else:
+                if tHandle in self.noteIndex:
+                    self.noteIndex[tHandle].append([nLine, hDepth, hText, itemLayout.name])
 
         return True
 
@@ -284,6 +293,11 @@ class NWIndex():
         if nBits == 0:
             return []
 
+        # Check that the key is valid
+        isGood[0] = theBits[0] in self.VALID_KEYS
+        if not isGood[0] or nBits == 1:
+            return isGood
+
         # If we have a tag, only the first value is accepted, the rest is ignored
         if theBits[0] == self.TAG_KEY and nBits > 1:
             isGood[0] = True
@@ -297,13 +311,6 @@ class NWIndex():
             return isGood
 
         # If we're still here, we better check that the references exist
-        if tItem.itemClass == nwItemClass.NOVEL:
-            isGood[0] = theBits[0] in self.NOVEL_KEYS
-        else:
-            isGood[0] = theBits[0] in self.NOTE_KEYS
-        if not isGood[0] or nBits == 1:
-            return isGood
-
         for n in range(1,nBits):
             if theBits[n] in self.tagIndex:
                 isGood[n] = self.TAG_CLASS[theBits[0]][0].name == self.tagIndex[theBits[n]][2]
