@@ -67,8 +67,9 @@ class GuiDocTree(QTreeWidget):
         trRoot.setFlags(trRoot.flags() ^ Qt.ItemIsDropEnabled)
 
         # Set Multiple Selection by CTRL
-        self.setSelectionMode(QAbstractItemView.ExtendedSelection)
-        self.setSelectionBehavior(QAbstractItemView.SelectRows)
+        # Disabled for now, until the merge files option has been added
+        # self.setSelectionMode(QAbstractItemView.ExtendedSelection)
+        # self.setSelectionBehavior(QAbstractItemView.SelectRows)
 
         for colN in range(len(self.mainConf.treeColWidth)):
             self.setColumnWidth(colN,self.mainConf.treeColWidth[colN])
