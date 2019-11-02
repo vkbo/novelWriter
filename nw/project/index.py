@@ -19,6 +19,7 @@ from os                  import path
 from nw.project.document import NWDoc
 from nw.enum             import nwItemType, nwItemClass, nwItemLayout
 from nw.constants        import nwFiles
+from nw.enum             import nwAlert
 
 logger = logging.getLogger(__name__)
 
@@ -49,9 +50,10 @@ class NWIndex():
     def __init__(self, theProject, theParent):
 
         # Internal
-        self.theProject = theProject
-        self.theParent  = theParent
-        self.mainConf   = self.theParent.mainConf
+        self.theProject  = theProject
+        self.theParent   = theParent
+        self.mainConf    = self.theParent.mainConf
+        self.indexBroken = False
 
         # Indices
         self.tagIndex   = {}
@@ -117,6 +119,8 @@ class NWIndex():
             if "noteIndex" in theData.keys():
                 self.noteIndex = theData["noteIndex"]
 
+            self.checkIndex()
+
             return True
 
         return False
@@ -145,6 +149,40 @@ class NWIndex():
             return False
 
         return True
+
+    def checkIndex(self):
+        """Check that the entries in the index are valid and contain the elements it should.
+        """
+
+        self.indexBroken = False
+
+        for tTag in self.tagIndex:
+            if len(self.tagIndex[tTag]) != 3:
+                self.indexBroken = True
+
+        for tHandle in self.refIndex:
+            for tEntry in self.refIndex[tHandle]:
+                if len(tEntry) != 4:
+                    self.indexBroken = True
+
+        for tHandle in self.novelIndex:
+            for tEntry in self.novelIndex[tHandle]:
+                if len(tEntry) != 4:
+                    self.indexBroken = True
+
+        for tHandle in self.noteIndex:
+            for tEntry in self.noteIndex[tHandle]:
+                if len(tEntry) != 4:
+                    self.indexBroken = True
+
+        if self.indexBroken:
+            self.clearIndex()
+            self.theParent.makeAlert(
+                "The project index loaded from cache contains errors. Triggering Rebuild Index.",
+                nwAlert.WARN
+            )
+
+        return
 
     ##
     #  Index Building
