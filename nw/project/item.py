@@ -13,11 +13,11 @@
 import logging
 import nw
 
-from os        import path, mkdir
-from lxml      import etree
-from datetime  import datetime
+from os import path, mkdir
+from lxml import etree
+from datetime import datetime
 
-from nw.enum   import nwItemType, nwItemClass, nwItemLayout
+from nw.enum import nwItemType, nwItemClass, nwItemLayout
 from nw.common import checkInt
 
 logger = logging.getLogger(__name__)
@@ -28,23 +28,23 @@ class NWItem():
 
     def __init__(self, theProject):
 
-        self.theProject  = theProject
+        self.theProject = theProject
 
-        self.itemName    = ""
-        self.itemHandle  = None
-        self.parHandle   = None
-        self.itemOrder   = None
-        self.itemType    = nwItemType.NO_TYPE
-        self.itemClass   = nwItemClass.NO_CLASS
-        self.itemLayout  = nwItemLayout.NO_LAYOUT
-        self.itemStatus  = None
-        self.isExpanded  = False
+        self.itemName   = ""
+        self.itemHandle = None
+        self.parHandle  = None
+        self.itemOrder  = None
+        self.itemType   = nwItemType.NO_TYPE
+        self.itemClass  = nwItemClass.NO_CLASS
+        self.itemLayout = nwItemLayout.NO_LAYOUT
+        self.itemStatus = None
+        self.isExpanded = False
 
         # Document Meta Data
-        self.charCount   = 0
-        self.wordCount   = 0
-        self.paraCount   = 0
-        self.cursorPos   = 0
+        self.charCount = 0
+        self.wordCount = 0
+        self.paraCount = 0
+        self.cursorPos = 0
 
         return
 
@@ -85,17 +85,28 @@ class NWItem():
 
     def setFromTag(self, tagName, tagValue):
         logger.verbose("Setting tag '%s' to value '%s'" % (tagName, str(tagValue)))
-        if   tagName == "name":      self.setName(tagValue)
-        elif tagName == "order":     self.setOrder(tagValue)
-        elif tagName == "type":      self.setType(tagValue)
-        elif tagName == "class":     self.setClass(tagValue)
-        elif tagName == "layout":    self.setLayout(tagValue)
-        elif tagName == "status":    self.setStatus(tagValue)
-        elif tagName == "expanded":  self.setExpanded(tagValue)
-        elif tagName == "charCount": self.setCharCount(tagValue)
-        elif tagName == "wordCount": self.setWordCount(tagValue)
-        elif tagName == "paraCount": self.setParaCount(tagValue)
-        elif tagName == "cursorPos": self.setCursorPos(tagValue)
+        if tagName == "name":
+            self.setName(tagValue)
+        elif tagName == "order":
+            self.setOrder(tagValue)
+        elif tagName == "type":
+            self.setType(tagValue)
+        elif tagName == "class":
+            self.setClass(tagValue)
+        elif tagName == "layout":
+            self.setLayout(tagValue)
+        elif tagName == "status":
+            self.setStatus(tagValue)
+        elif tagName == "expanded":
+            self.setExpanded(tagValue)
+        elif tagName == "charCount":
+            self.setCharCount(tagValue)
+        elif tagName == "wordCount":
+            self.setWordCount(tagValue)
+        elif tagName == "paraCount":
+            self.setParaCount(tagValue)
+        elif tagName == "cursorPos":
+            self.setCursorPos(tagValue)
         else:
             logger.error("Unknown tag '%s'" % tagName)
         return

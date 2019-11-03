@@ -13,11 +13,12 @@
 import logging
 import nw
 
-from os              import path
+from os import path
+
 from PyQt5.QtWidgets import QMessageBox
 
 from nw.convert.text.totext import ToText
-from nw.enum                import nwAlert, nwItemType, nwItemLayout, nwItemClass
+from nw.enum import nwAlert, nwItemType, nwItemLayout, nwItemClass
 
 logger = logging.getLogger(__name__)
 
@@ -29,14 +30,14 @@ class TextFile():
         self.theProject = theProject
         self.theParent  = theParent
 
-        self.outFile    = None
-        self.fileName   = ""
-        self.theText    = ""
-        self.expNovel   = True
-        self.expNotes   = False
+        self.outFile  = None
+        self.fileName = ""
+        self.theText  = ""
+        self.expNovel = True
+        self.expNotes = False
 
-        self.theConv    = ToText(self.theProject, self.theParent)
-        self.makeAlert  = self.theParent.makeAlert
+        self.theConv   = ToText(self.theProject, self.theParent)
+        self.makeAlert = self.theParent.makeAlert
 
         self.setComments(False)
         self.setKeywords(False)
@@ -100,9 +101,9 @@ class TextFile():
         self.fileName = path.basename(filePath)
         if path.isfile(filePath) and self.mainConf.showGUI:
             msgBox = QMessageBox()
-            msgRes = msgBox.question(
-                self.theParent, "Overwrite", ("File '%s' already exists.<br>Do you want to overwrite it?" % self.fileName)
-            )
+            msgRes = msgBox.question(self.theParent, "Overwrite", (
+                "File '%s' already exists.<br>Do you want to overwrite it?" % self.fileName
+            ))
             if msgRes != QMessageBox.Yes:
                 return False
 
@@ -137,11 +138,14 @@ class TextFile():
         return True
 
     def checkInclude(self, tHandle):
-        """This function checks whether a file should be included in the export or not. For standard
-        note and novel files, this is controlled by the options selected by the user. For other
-        files classified as non-exportable, a few checks must be made, and the following are not:
+        """This function checks whether a file should be included in the
+        export or not. For standard note and novel files, this is
+        controlled by the options selected by the user. For other files
+        classified as non-exportable, a few checks must be made, and the
+        following are not:
         * Items that are not actual files.
-        * Items that have been orphaned which are tagged as NO_LAYOUT and NO_CLASS.
+        * Items that have been orphaned which are tagged as NO_LAYOUT
+          and NO_CLASS.
         * Items that appear in the TRASH folder
         """
 
@@ -168,8 +172,9 @@ class TextFile():
     ##
 
     def _doOpenFile(self, filePath):
-        """This function does the actual opening of the file, and can be overloaded by a subclass
-        that uses a different file format that requires a different approach.
+        """This function does the actual opening of the file, and can be
+        overloaded by a subclass that uses a different file format that
+        requires a different approach.
         """
         try:
             self.outFile = open(filePath,mode="wt+",encoding="utf8")
@@ -180,8 +185,8 @@ class TextFile():
         return True
 
     def _doCloseFile(self):
-        """This function closes the file, and is meant to be overloaded by the subclass for other
-        file formats.
+        """This function closes the file, and is meant to be overloaded
+        by the subclass for other file formats.
         """
         if self.outFile is not None:
             self.outFile.close()

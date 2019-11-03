@@ -13,12 +13,13 @@
 import logging
 import nw
 
-from os              import path
+from os import path
+
 from PyQt5.QtWidgets import QMessageBox
 
 from nw.convert.file.text import TextFile
 from nw.convert.tokenizer import Tokenizer
-from nw.enum              import nwAlert, nwItemLayout
+from nw.enum import nwAlert, nwItemLayout
 
 logger = logging.getLogger(__name__)
 
@@ -26,9 +27,7 @@ class ConcatFile(TextFile):
 
     def __init__(self, theProject, theParent):
         TextFile.__init__(self, theProject, theParent)
-
         self.theConv = Tokenizer(self.theProject, self.theParent)
-
         return
 
     def addText(self, tHandle):

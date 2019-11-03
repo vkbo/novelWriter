@@ -13,18 +13,18 @@
 import logging
 import nw
 
-from os       import path, mkdir, listdir
-from shutil   import copyfile
-from lxml     import etree
-from hashlib  import sha256
+from os import path, mkdir, listdir
+from shutil import copyfile
+from lxml import etree
+from hashlib import sha256
 from datetime import datetime
-from time     import time
+from time import time
 
-from nw.project.item   import NWItem
+from nw.project.item import NWItem
 from nw.project.status import NWStatus
-from nw.enum           import nwItemType, nwItemClass, nwItemLayout, nwAlert
-from nw.common         import checkString, checkBool, checkInt
-from nw.constants      import nwFiles, nwConst
+from nw.enum import nwItemType, nwItemClass, nwItemLayout, nwAlert
+from nw.common import checkString, checkBool, checkInt
+from nw.constants import nwFiles, nwConst
 
 logger = logging.getLogger(__name__)
 
@@ -37,21 +37,21 @@ class NWProject():
         self.mainConf    = self.theParent.mainConf
         self.projOpened  = None # The time stamp of when the project file was opened
         self.projChanged = None # The project has unsaved changes
-        self.projAltered = None # The project has been altered this session (used to trigger backup)
+        self.projAltered = None # The project has been altered this session
 
         # Debug
-        self.handleSeed  = None
+        self.handleSeed = None
 
         # Class Settings
-        self.projTree    = None # Holds all the items of the project
-        self.treeOrder   = None # The order of the tree items on the tree view
-        self.treeRoots   = None # The root items of the tree
-        self.trashRoot   = None # The handle of the trash root folder
-        self.projPath    = None # The full path to where the currently open project is saved
-        self.projMeta    = None # The full path to the project's meta data folder
-        self.projCache   = None # The full path to the project's cache folder
-        self.projDict    = None # The spell check dictionary
-        self.projFile    = None # The file name of the project main xml file
+        self.projTree  = None # Holds all the items of the project
+        self.treeOrder = None # The order of the tree items on the tree view
+        self.treeRoots = None # The root items of the tree
+        self.trashRoot = None # The handle of the trash root folder
+        self.projPath  = None # The full path to where the currently open project is saved
+        self.projMeta  = None # The full path to the project's meta data folder
+        self.projCache = None # The full path to the project's cache folder
+        self.projDict  = None # The spell check dictionary
+        self.projFile  = None # The file name of the project main xml file
 
         # Project Meta
         self.projName    = None
@@ -194,8 +194,10 @@ class NWProject():
         self.projCache = path.join(self.projPath,"cache")
         self.projDict  = path.join(self.projMeta, nwFiles.PROJ_DICT)
 
-        if not self._checkFolder(self.projMeta):  return
-        if not self._checkFolder(self.projCache): return
+        if not self._checkFolder(self.projMeta):
+            return
+        if not self._checkFolder(self.projCache):
+            return
 
         try:
             nwXML = etree.parse(fileName)
@@ -214,14 +216,18 @@ class NWProject():
         logger.verbose("File version is %s" % fileVersion)
 
         if not nwxRoot == "novelWriterXML" or not fileVersion == "1.0":
-            self.makeAlert("Project file does not appear to be a novelWriterXML file version 1.0", nwAlert.ERROR)
+            self.makeAlert(
+                "Project file does not appear to be a novelWriterXML file version 1.0",
+                nwAlert.ERROR
+            )
             return False
 
         for xChild in xRoot:
             if xChild.tag == "project":
                 logger.debug("Found project meta")
                 for xItem in xChild:
-                    if xItem.text is None: continue
+                    if xItem.text is None:
+                        continue
                     if xItem.tag == "name":
                         logger.verbose("Working Title: '%s'" % xItem.text)
                         self.projName = xItem.text
@@ -236,7 +242,8 @@ class NWProject():
             elif xChild.tag == "settings":
                 logger.debug("Found project settings")
                 for xItem in xChild:
-                    if xItem.text is None: continue
+                    if xItem.text is None:
+                        continue
                     if xItem.tag == "spellCheck":
                         self.spellCheck = checkBool(xItem.text,False)
                     elif xItem.tag == "lastEdited":
@@ -308,19 +315,19 @@ class NWProject():
         })
 
         # Save Project Meta
-        xProject = etree.SubElement(nwXML,"project")
-        self._saveProjectValue(xProject,"name",  self.projName,  True)
-        self._saveProjectValue(xProject,"title", self.bookTitle, True)
-        self._saveProjectValue(xProject,"author",self.bookAuthors)
-        self._saveProjectValue(xProject,"backup",self.doBackup)
+        xProject = etree.SubElement(nwXML, "project")
+        self._saveProjectValue(xProject, "name", self.projName,  True)
+        self._saveProjectValue(xProject, "title", self.bookTitle, True)
+        self._saveProjectValue(xProject, "author", self.bookAuthors)
+        self._saveProjectValue(xProject, "backup", self.doBackup)
 
         # Save Project Settings
-        xSettings = etree.SubElement(nwXML,"settings")
-        self._saveProjectValue(xSettings,"spellCheck",   self.spellCheck)
-        self._saveProjectValue(xSettings,"lastEdited",   self.lastEdited)
-        self._saveProjectValue(xSettings,"lastViewed",   self.lastViewed)
-        self._saveProjectValue(xSettings,"lastWordCount",self.currWCount)
-        xAutoRep = etree.SubElement(xSettings,"autoReplace")
+        xSettings = etree.SubElement(nwXML, "settings")
+        self._saveProjectValue(xSettings, "spellCheck", self.spellCheck)
+        self._saveProjectValue(xSettings, "lastEdited", self.lastEdited)
+        self._saveProjectValue(xSettings, "lastViewed", self.lastViewed)
+        self._saveProjectValue(xSettings, "lastWordCount", self.currWCount)
+        xAutoRep = etree.SubElement(xSettings, "autoReplace")
         for aKey, aValue in self.autoReplace.items():
             if len(aKey) > 0:
                 self._saveProjectValue(xAutoRep,aKey,aValue)
@@ -332,7 +339,7 @@ class NWProject():
 
         # Save Tree Content
         logger.debug("Writing project content")
-        xContent = etree.SubElement(nwXML,"content",attrib={"count":str(len(self.treeOrder))})
+        xContent = etree.SubElement(nwXML, "content", attrib={"count":str(len(self.treeOrder))})
         for tHandle in self.treeOrder:
             self.projTree[tHandle].packXML(xContent)
 
@@ -399,16 +406,16 @@ class NWProject():
         self.doBackup = False
         if doBackup:
             if not path.isdir(self.mainConf.backupPath):
-                self.theParent.makeAlert(
-                    "You must set a valid backup path in preferences<br>to use the automatic project backup feature.",
-                    nwAlert.ERROR
-                )
+                self.theParent.makeAlert((
+                    "You must set a valid backup path in preferences to use "
+                    "the automatic project backup feature."
+                ), nwAlert.ERROR)
                 return False
             if self.projName == "":
-                self.theParent.makeAlert(
-                    "You must set a valid project name in project settings<br>to use the automatic project backup feature.",
-                    nwAlert.ERROR
-                )
+                self.theParent.makeAlert((
+                    "You must set a valid project name in project settings to "
+                    "use the automatic project backup feature."
+                ), nwAlert.ERROR)
                 return False
             self.doBackup = True
         return True
@@ -490,8 +497,9 @@ class NWProject():
         return None
 
     def getRootItem(self, tHandle):
-        """Iterate upwards in the tree until we find the item with parent None, the root item.
-        We do this with a for loop with a maximum depth of 200 to make infinite loops impossible.
+        """Iterate upwards in the tree until we find the item with
+        parent None, the root item. We do this with a for loop with a
+        maximum depth of 200 to make infinite loops impossible.
         """
         tItem = self.getItem(tHandle)
         if tItem is not None:
@@ -503,9 +511,10 @@ class NWProject():
         return None
 
     def getProjectItems(self):
-        """This function is called from the tree view when building the tree. Each item in the
-        project is returned in the order saved in the project file, but first it checks that it has
-        a parent item already sent to the tree.
+        """This function is called from the tree view when building the
+        tree. Each item in the project is returned in the order saved in
+        the project file, but first it checks that it has a parent item
+        already sent to the tree.
         """
         sentItems = []
         iterItems = self.treeOrder.copy()
@@ -518,10 +527,12 @@ class NWProject():
             if n > 10000:
                 return # Just in case
             if tItem is None:
-                # Technically a bug since treeOrder is built from the same data as projTree
+                # Technically a bug since treeOrder is built from the
+                # same data as projTree
                 continue
             elif tItem.parHandle is None:
-                # Item is a root, or already been identified as an orphaned item
+                # Item is a root, or already been identified as an
+                # orphaned item
                 sentItems.append(tHandle)
                 yield tItem
             elif tItem.parHandle in sentItems:
@@ -529,7 +540,8 @@ class NWProject():
                 sentItems.append(tHandle)
                 yield tItem
             elif tItem.parHandle in iterItems:
-                # Item's parent exists, but hasn't been sent yet, so add it again to the end
+                # Item's parent exists, but hasn't been sent yet, so add
+                # it again to the end
                 logger.warning("Item %s found before its parent" % tHandle)
                 iterItems.append(tHandle)
                 nMax = len(iterItems)
@@ -544,7 +556,8 @@ class NWProject():
     ##
 
     def deleteItem(self, tHandle):
-        """This only removes the item from the order list, but not from the project tree.
+        """This only removes the item from the order list, but not from
+        the project tree.
         """
         self.treeOrder.remove(tHandle)
         self.setProjectChanged(True)
@@ -557,8 +570,8 @@ class NWProject():
         return None
 
     def checkRootUnique(self, theClass):
-        """Checks if there already is a root entry of class 'theClass' in the
-        root of the project tree.
+        """Checks if there already is a root entry of class 'theClass'
+        in the root of the project tree.
         """
         if theClass == nwItemClass.CUSTOM:
             return True
@@ -634,7 +647,10 @@ class NWProject():
 
         # Report status
         if len(orphanFiles) > 0:
-            self.makeAlert("Found %d orphaned file(s) in project folder!" % len(orphanFiles), nwAlert.WARN)
+            self.makeAlert(
+                "Found %d orphaned file(s) in project folder!" % len(orphanFiles),
+                nwAlert.WARN
+            )
         else:
             logger.debug("File check OK")
             return
@@ -683,7 +699,9 @@ class NWProject():
         if self.projMeta is None:
             return False
 
-        with open(path.join(self.projMeta, nwFiles.SESS_INFO),mode="a+",encoding="utf8") as outFile:
+        sessionFile = path.join(self.projMeta, nwFiles.SESS_INFO)
+
+        with open(sessionFile, mode="a+", encoding="utf8") as outFile:
             print((
                 "Start: {opened:s}  "
                 "End: {closed:s}  "
@@ -711,9 +729,10 @@ class NWProject():
         return itemHandle
 
     def _maintainPrevious(self):
-        """This function will take the current project file and copy it into the project cache
-        folder with an incremental file extension added. These serve as a backup in case the xml
-        file gets corrupted.
+        """This function will take the current project file and copy it
+        into the project cache folder with an incremental file extension
+        added. These serve as a backup in case the xml file gets
+        corrupted.
         """
 
         countFile = path.join(self.projCache, nwFiles.PROJ_COUNT)
@@ -733,8 +752,8 @@ class NWProject():
 
         try:
             copyfile(
-                path.join(self.projPath,self.projFile),
-                path.join(self.projCache,projBackup)
+                path.join(self.projPath, self.projFile),
+                path.join(self.projCache, projBackup)
             )
         except:
             logger.error("Failed to write to file %s" % projBackup)

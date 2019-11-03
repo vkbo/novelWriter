@@ -13,9 +13,9 @@
 import logging
 import nw
 
-from nw.convert.file.text   import TextFile
+from nw.convert.file.text import TextFile
 from nw.convert.text.tohtml import ToHtml
-from nw.enum                import nwAlert
+from nw.enum import nwAlert
 
 logger = logging.getLogger(__name__)
 
@@ -23,9 +23,7 @@ class HtmlFile(TextFile):
 
     def __init__(self, theProject, theParent):
         TextFile.__init__(self, theProject, theParent)
-
         self.theConv = ToHtml(self.theProject, self.theParent)
-
         return
 
     ##

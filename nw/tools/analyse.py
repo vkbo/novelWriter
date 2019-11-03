@@ -58,7 +58,7 @@ class TextAnalysis():
         return rScore, gLevel
 
     def getReadabilityText(self, rScore):
-        if   rScore >= 90.0:
+        if rScore >= 90.0:
             return "Very Easy"
         elif rScore >= 80.0:
             return "Easy"
@@ -78,13 +78,15 @@ class TextAnalysis():
     #
 
     def _countWords(self):
-        """Counts the number of words in a text by simply splitting on all white spaces.
+        """Counts the number of words in a text by simply splitting on
+        all white spaces.
         """
         return len(self.theText.strip().split())
 
     def _countSentences(self):
-        """Counts the number of non-repeated sentence endings seen in the text.
-        Note: This will count filenames and urls as multiple sentences.
+        """Counts the number of non-repeated sentence endings seen in
+        the text. Note: This will count filenames and urls as multiple
+        sentences.
         """
         nSent  = 0
         sawEnd = False
@@ -98,7 +100,8 @@ class TextAnalysis():
         return nSent
 
     def _countParagraphs(self, pThreshold=2):
-        """Counts the number of paragraphs by counting repeated line breaks.
+        """Counts the number of paragraphs by counting repeated line
+        breaks.
         """
         nPara  = 1
         sawEnd = 0
@@ -114,9 +117,10 @@ class TextAnalysis():
         return nPara
 
     def _countSyllablesEN(self):
-        """Attempt to count the syllables in a piece of English language text.
-        This function tends to slightly over-estimate the number of syllables as it doesn't handle
-        the complexity of silent vowels in endings very well. It will count them all.
+        """Attempt to count the syllables in a piece of English language
+        text. This function tends to slightly over-estimate the number
+        of syllables as it doesn't handle the complexity of silent
+        vowels in endings very well. It will count them all.
         """
 
         cleanText = ""
@@ -126,8 +130,8 @@ class TextAnalysis():
             else:
                 cleanText += " "
 
-        asVow    = "aeiouy'’"
-        dExept   = ("ei","ie","ua","ia","eo")
+        asVow = "aeiouy'’"
+        dExept = ("ei","ie","ua","ia","eo")
         theWords = cleanText.lower().split()
         allSylls = 0
         for inWord in theWords:
@@ -160,7 +164,6 @@ class TextAnalysis():
                 nSyll += 1
             if nSyll < 1:
                 nSyll = 1
-            # print("%-15s: %d" % (inWord,nSyll))
             allSylls += nSyll
 
         return allSylls/len(theWords)

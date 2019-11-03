@@ -34,7 +34,7 @@ def countWords(theText):
         if aLine[0] == "@" or aLine[0] == "%":
             continue
 
-        if   aLine[0:5] == "#### ":
+        if aLine[0:5] == "#### ":
             wordCount -= 1
             charCount -= 5
             countPara = False

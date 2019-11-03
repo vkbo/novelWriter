@@ -13,11 +13,13 @@
 import logging
 import nw
 
-from PyQt5.QtCore    import Qt
-from PyQt5.QtGui     import QIcon
-from PyQt5.QtWidgets import QFrame, QGridLayout, QLabel, QLineEdit, QPushButton, QApplication
+from PyQt5.QtCore import Qt
+from PyQt5.QtGui import QIcon
+from PyQt5.QtWidgets import (
+    QFrame, QGridLayout, QLabel, QLineEdit, QPushButton, QApplication
+)
 
-from nw.enum         import nwDocAction
+from nw.enum import nwDocAction
 
 logger = logging.getLogger(__name__)
 

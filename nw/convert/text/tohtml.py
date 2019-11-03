@@ -15,7 +15,7 @@ import re
 import nw
 
 from nw.convert.tokenizer import Tokenizer
-from nw.constants         import nwUnicode, nwLabels
+from nw.constants import nwUnicode, nwLabels
 
 logger = logging.getLogger(__name__)
 
@@ -27,15 +27,14 @@ class ToHtml(Tokenizer):
         return
 
     def setPreview(self, forPreview, doComments):
-        """If we're using this class to generate markdown preview, we need to make a few changes to
-        formatting, which is selected by this flag.
+        """If we're using this class to generate markdown preview, we
+        need to make a few changes to formatting, which is selected by
+        this flag.
         """
-
         self.forPreview = forPreview
         if forPreview:
             self.doKeywords = True
             self.doComments = doComments
-
         return
 
     def doAutoReplace(self):

@@ -17,16 +17,20 @@ logger = logging.getLogger(__name__)
 
 def checkString(checkValue, defaultValue, allowNone=False):
     if allowNone:
-        if checkValue == None:   return None
-        if checkValue == "None": return None
+        if checkValue == None:
+            return None
+        if checkValue == "None":
+            return None
     if isinstance(checkValue,str):
         return str(checkValue)
     return defaultValue
 
 def checkInt(checkValue, defaultValue, allowNone=False):
     if allowNone:
-        if checkValue == None:   return None
-        if checkValue == "None": return None
+        if checkValue == None:
+            return None
+        if checkValue == "None":
+            return None
     try:
         return int(checkValue)
     except:
@@ -34,8 +38,10 @@ def checkInt(checkValue, defaultValue, allowNone=False):
 
 def checkBool(checkValue, defaultValue, allowNone=False):
     if allowNone:
-        if checkValue == None:   return None
-        if checkValue == "None": return None
+        if checkValue == None:
+            return None
+        if checkValue == "None":
+            return None
     if isinstance(checkValue, str):
         if checkValue == "True":
             return True
@@ -83,8 +89,8 @@ def colRange(rgbStart, rgbEnd, nStep):
     return retCol
 
 def splitVersionNumber(vString):
-    """ Splits a version string on the form aa.bb.cc into major, minor and patch, and computes an
-    integer value aabbcc.
+    """ Splits a version string on the form aa.bb.cc into major, minor
+    and patch, and computes an integer value aabbcc.
     """
 
     vMajor = 0
@@ -92,8 +98,8 @@ def splitVersionNumber(vString):
     vPatch = 0
     vInt   = 0
 
-    vBits  = vString.split(".")
-    nBits  = len(vBits)
+    vBits = vString.split(".")
+    nBits = len(vBits)
 
     if nBits > 0:
         vMajor = checkInt(vBits[0],0)

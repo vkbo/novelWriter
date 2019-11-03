@@ -16,7 +16,7 @@ import re
 import nw
 
 from nw.convert.tokenizer import Tokenizer
-from nw.constants         import nwUnicode
+from nw.constants import nwUnicode
 
 logger = logging.getLogger(__name__)
 
@@ -28,7 +28,8 @@ class ToLaTeX(Tokenizer):
         return
 
     def doPostProcessing(self):
-        """The latexcodec misses dashes and non-breaking spaces, so we do those here.
+        """The latexcodec misses dashes and non-breaking spaces, so we
+        do those here.
         """
 
         repDict = {
@@ -62,8 +63,9 @@ class ToLaTeX(Tokenizer):
                 begText = "\\begin{center}\n"
                 endText = "\\end{center}\n\n"
 
-            # First check if we have a comment or plain text, as they need some
-            # extra replacing before we proceed to wrapping and final formatting.
+            # First check if we have a comment or plain text, as they
+            # need some extra replacing before we proceed to wrapping
+            # and final formatting.
             if tType == self.T_COMMENT:
                 tText = "%% %s" % tText
 
@@ -75,8 +77,9 @@ class ToLaTeX(Tokenizer):
 
             tLen = len(tText)
 
-            # Then the text can receive final formatting before we append it to the results.
-            # We also store text lines in a buffer and merge them only when we find an empty line
+            # Then the text can receive final formatting before we
+            # append it to the results. We also store text lines in a
+            # buffer and merge them only when we find an empty line
             # indicating a new paragraph.
             if tType == self.T_EMPTY:
                 if len(thisPar) > 0:

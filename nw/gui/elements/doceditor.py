@@ -15,18 +15,21 @@ import nw
 
 from time import time
 
-from PyQt5.QtCore    import Qt, QTimer, QSizeF
-from PyQt5.QtWidgets import qApp, QTextEdit, QAction, QMenu, QShortcut, QMessageBox
-from PyQt5.QtGui     import (
-    QTextCursor, QTextOption, QIcon, QKeySequence, QFont, QColor, QPalette, QTextDocument,
+from PyQt5.QtCore import Qt, QTimer, QSizeF
+from PyQt5.QtWidgets import (
+    qApp, QTextEdit, QAction, QMenu, QShortcut, QMessageBox
+)
+from PyQt5.QtGui import (
+    QTextCursor, QTextOption, QIcon, QKeySequence, QFont, QColor,
+    QPalette, QTextDocument,
 )
 
-from nw.project.document       import NWDoc
+from nw.project.document import NWDoc
 from nw.gui.tools.dochighlight import GuiDocHighlighter
-from nw.gui.tools.wordcounter  import WordCounter
-from nw.tools.spellcheck       import NWSpellCheck
-from nw.constants              import nwFiles, nwUnicode
-from nw.enum                   import nwDocAction, nwAlert
+from nw.gui.tools.wordcounter import WordCounter
+from nw.tools.spellcheck import NWSpellCheck
+from nw.constants import nwFiles, nwUnicode
+from nw.enum import nwDocAction, nwAlert
 
 logger = logging.getLogger(__name__)
 
@@ -82,9 +85,24 @@ class GuiDocEditor(QTextEdit):
         self.setAcceptRichText(False)
 
         # Custom Shortcuts
-        QShortcut(QKeySequence("Ctrl+."), self, context=Qt.WidgetShortcut, activated=self._openSpellContext)
-        QShortcut(Qt.Key_Return | Qt.ControlModifier, self, context=Qt.WidgetShortcut, activated=self._followTag)
-        QShortcut(Qt.Key_Enter  | Qt.ControlModifier, self, context=Qt.WidgetShortcut, activated=self._followTag)
+        QShortcut(
+            QKeySequence("Ctrl+."),
+            self,
+            context=Qt.WidgetShortcut,
+            activated=self._openSpellContext
+        )
+        QShortcut(
+            Qt.Key_Return | Qt.ControlModifier,
+            self,
+            context=Qt.WidgetShortcut,
+            activated=self._followTag
+        )
+        QShortcut(
+            Qt.Key_Enter | Qt.ControlModifier,
+            self,
+            context=Qt.WidgetShortcut,
+            activated=self._followTag
+        )
 
         # Set Up Word Count Thread and Timer
         self.wcInterval = self.mainConf.wordCountTimer
@@ -121,9 +139,9 @@ class GuiDocEditor(QTextEdit):
         return True
 
     def initEditor(self):
-        """Initialise or re-initialise the editor with the user's settings.
-        This function is both called when the editor is created, and when the user changes the
-        main editor preferences.
+        """Initialise or re-initialise the editor with the user's
+        settings. This function is both called when the editor is
+        created, and when the user changes the main editor preferences.
         """
 
         # Reload dictionaries
@@ -164,10 +182,12 @@ class GuiDocEditor(QTextEdit):
         # Initialise the syntax highlighter
         self.hLight.initHighlighter()
 
-        # If we have a document open, we should reload it in case the font changed, otherwise
-        # we just clear the editor entirely, which makes it read only.
+        # If we have a document open, we should reload it in case the
+        # font changed, otherwise we just clear the editor entirely,
+        # which makes it read only.
         if self.theHandle is not None:
-            # We must save the current handle as clearEditor() sets it to None
+            # We must save the current handle as clearEditor() sets it
+            # to None
             tHandle = self.theHandle
             self.clearEditor()
             self.loadText(tHandle)
@@ -178,11 +198,13 @@ class GuiDocEditor(QTextEdit):
         return True
 
     def loadText(self, tHandle):
-        """Load text from a document into the editor. If we have an io error, we must handle this
-        and clear the editor so that we don't risk overwriting the file if it exists. This can for
-        instance happen of the file contains binary elements or an encoding that novelWriter does
-        not support. If load is successful, ot the document is new (empty string) we set up the
-        editor for editing the file.
+        """Load text from a document into the editor. If we have an io
+        error, we must handle this and clear the editor so that we don't
+        risk overwriting the file if it exists. This can for instance
+        happen of the file contains binary elements or an encoding that
+        novelWriter does not support. If load is successful, or the
+        document is new (empty string) we set up the editor for editing
+        the file.
         """
 
         theDoc = self.nwDocument.openDocument(tHandle)
@@ -236,8 +258,9 @@ class GuiDocEditor(QTextEdit):
         return self.docChanged
 
     def getText(self):
-        """Get the text content of the current document. This method uses QTextEdit->toPlainText for
-        Qt versions lower than 5.9, and the QDocument->toRawText for higher version. The latter
+        """Get the text content of the current document. This method
+        uses QTextEdit->toPlainText for Qt versions lower than 5.9, and
+        the QDocument->toRawText for higher version. The latter
         preserves non-breaking spaces, which the former does not.
         """
         if self.mainConf.verQtValue >= 50900:
@@ -281,8 +304,8 @@ class GuiDocEditor(QTextEdit):
     ##
 
     def changeWidth(self):
-        """Automatically adjust the margins so the text is centred, but only if Config.textFixedW is
-        set to True.
+        """Automatically adjust the margins so the text is centred, but
+        only if Config.textFixedW is set to True.
         """
         if self.mainConf.textFixedW:
             vBar = self.verticalScrollBar()
@@ -307,23 +330,40 @@ class GuiDocEditor(QTextEdit):
         if not self.theParent.hasProject:
             logger.error("No project open")
             return False
-        if   theAction == nwDocAction.UNDO:      self.undo()
-        elif theAction == nwDocAction.REDO:      self.redo()
-        elif theAction == nwDocAction.CUT:       self.cut()
-        elif theAction == nwDocAction.COPY:      self.copy()
-        elif theAction == nwDocAction.PASTE:     self.paste()
-        elif theAction == nwDocAction.BOLD:      self._wrapSelection("**","**")
-        elif theAction == nwDocAction.ITALIC:    self._wrapSelection("_","_")
-        elif theAction == nwDocAction.U_LINE:    self._wrapSelection("__","__")
-        elif theAction == nwDocAction.S_QUOTE:   self._wrapSelection(self.typSQOpen,self.typSQClose)
-        elif theAction == nwDocAction.D_QUOTE:   self._wrapSelection(self.typDQOpen,self.typDQClose)
-        elif theAction == nwDocAction.SEL_ALL:   self._makeSelection(QTextCursor.Document)
-        elif theAction == nwDocAction.SEL_PARA:  self._makeSelection(QTextCursor.BlockUnderCursor)
-        elif theAction == nwDocAction.FIND:      self._beginSearch()
-        elif theAction == nwDocAction.REPLACE:   self._beginReplace()
-        elif theAction == nwDocAction.GO_NEXT:   self._findNext()
-        elif theAction == nwDocAction.GO_PREV:   self._findPrev()
-        elif theAction == nwDocAction.REPL_NEXT: self._replaceNext()
+        if theAction == nwDocAction.UNDO:
+            self.undo()
+        elif theAction == nwDocAction.REDO:
+            self.redo()
+        elif theAction == nwDocAction.CUT:
+            self.cut()
+        elif theAction == nwDocAction.COPY:
+            self.copy()
+        elif theAction == nwDocAction.PASTE:
+            self.paste()
+        elif theAction == nwDocAction.BOLD:
+            self._wrapSelection("**","**")
+        elif theAction == nwDocAction.ITALIC:
+            self._wrapSelection("_","_")
+        elif theAction == nwDocAction.U_LINE:
+            self._wrapSelection("__","__")
+        elif theAction == nwDocAction.S_QUOTE:
+            self._wrapSelection(self.typSQOpen,self.typSQClose)
+        elif theAction == nwDocAction.D_QUOTE:
+            self._wrapSelection(self.typDQOpen,self.typDQClose)
+        elif theAction == nwDocAction.SEL_ALL:
+            self._makeSelection(QTextCursor.Document)
+        elif theAction == nwDocAction.SEL_PARA:
+            self._makeSelection(QTextCursor.BlockUnderCursor)
+        elif theAction == nwDocAction.FIND:
+            self._beginSearch()
+        elif theAction == nwDocAction.REPLACE:
+            self._beginReplace()
+        elif theAction == nwDocAction.GO_NEXT:
+            self._findNext()
+        elif theAction == nwDocAction.GO_PREV:
+            self._findPrev()
+        elif theAction == nwDocAction.REPL_NEXT:
+            self._replaceNext()
         else:
             logger.error("Unknown or unsupported document action %s" % str(theAction))
             return False
@@ -351,13 +391,15 @@ class GuiDocEditor(QTextEdit):
 
     def keyPressEvent(self, keyEvent):
         """Intercept key press events.
-        We need to intercept key presses briefly to record the state of selection. This is in order
-        to know whether we had a selection prior to triggering the _docChange slot, as we do not
-        want to trigger autoreplace on selections. Autoreplace on selections messes with undo/redo
-        history.
-        We also need to intercept the Shift key modifier for certain key combinations that modifies
-        standard keys like enter and space. However, we don't want to spend a lot of time in this
-        function as it is triggered on every keypress when typing.
+        We need to intercept key presses briefly to record the state of
+        selection. This is in order to know whether we had a selection
+        prior to triggering the _docChange slot, as we do not want to
+        trigger autoreplace on selections. Autoreplace on selections
+        messes with undo/redo history.
+        We also need to intercept the Shift key modifier for certain key
+        combinations that modifies standard keys like enter and space.
+        However, we don't want to spend a lot of time in this function
+        as it is triggered on every keypress when typing.
         """
 
         self.hasSelection = self.textCursor().hasSelection()
@@ -378,8 +420,9 @@ class GuiDocEditor(QTextEdit):
         return
 
     def mouseReleaseEvent(self, mEvent):
-        """If the mouse button is released and the control key is pressed, check if we're clicking
-        on a tag, and trigger the follow tag function.
+        """If the mouse button is released and the control key is
+        pressed, check if we're clicking on a tag, and trigger the
+        follow tag function.
         """
         if qApp.keyboardModifiers() == Qt.ControlModifier:
             theCursor = self.cursorForPosition(mEvent.pos())
@@ -392,9 +435,11 @@ class GuiDocEditor(QTextEdit):
     ##
 
     def _followTag(self, theCursor=None):
-        """Activated by Ctrl+Enter. Checks that we're in a block starting with '@'. We then find the
-        word under the cursor and check that it is after the ':'. If all this is fine, we have a tag
-        and can tell the document viewer to try and find and load the file where the tag is defined.
+        """Activated by Ctrl+Enter. Checks that we're in a block
+        starting with '@'. We then find the word under the cursor and
+        check that it is after the ':'. If all this is fine, we have a
+        tag and can tell the document viewer to try and find and load
+        the file where the tag is defined.
         """
 
         if theCursor is None:
@@ -459,7 +504,9 @@ class GuiDocEditor(QTextEdit):
         if len(theSuggest) > 0:
             for aWord in theSuggest:
                 mnuWord = QAction(aWord, mnuSuggest)
-                mnuWord.triggered.connect(lambda thePos, aWord=aWord : self._correctWord(theCursor, aWord))
+                mnuWord.triggered.connect(
+                    lambda thePos, aWord=aWord : self._correctWord(theCursor, aWord)
+                )
                 mnuSuggest.addAction(mnuWord)
             mnuSuggest.addSeparator()
             mnuAdd = QAction("Add Word to Dictionary", mnuSuggest)
@@ -557,7 +604,8 @@ class GuiDocEditor(QTextEdit):
         return
 
     def _runCounter(self):
-        """Decide whether to run the word counter, or stop the timer due to inactivity.
+        """Decide whether to run the word counter, or stop the timer due
+        to inactivity.
         """
         sinceActive = time()-self.lastEdit
         if sinceActive > 5*self.wcInterval:
@@ -586,9 +634,10 @@ class GuiDocEditor(QTextEdit):
         return
 
     def _wrapSelection(self, tBefore, tAfter):
-        """Wraps the selected text in whatever is in tBefore and tAfter. If there is no selection,
-        the autoSelect setting decides the action. AutoSelect will select the word under the cursor
-        before wrapping it. If this feature is disabled, nothing is done.
+        """Wraps the selected text in whatever is in tBefore and tAfter.
+        If there is no selection, the autoSelect setting decides the
+        action. AutoSelect will select the word under the cursor before
+        wrapping it. If this feature is disabled, nothing is done.
         """
         theCursor = self.textCursor()
         if self.mainConf.autoSelect and not theCursor.hasSelection():
@@ -626,18 +675,19 @@ class GuiDocEditor(QTextEdit):
         return
 
     def _beginReplace(self):
-        """Opens the replace line of the search bar and sets the replace text.
+        """Opens the replace line of the search bar and sets the replace
+        text.
         """
         self._beginSearch()
         self.theParent.searchBar.setReplaceText("")
         return
 
     def _findNext(self):
-        """Searches for the next occurrence of the search bar text in the document.
-        Wraps back to the top if not found.
+        """Searches for the next occurrence of the search bar text in
+        the document. Wraps back to the top if not found.
         """
         searchFor = self.theParent.searchBar.getSearchText()
-        wasFound = self.find(searchFor)
+        wasFound  = self.find(searchFor)
         if not wasFound:
             theCursor = self.textCursor()
             theCursor.movePosition(QTextCursor.Start)
@@ -645,8 +695,8 @@ class GuiDocEditor(QTextEdit):
         return
 
     def _findPrev(self):
-        """Searches for the previous occurrence of the search bar text in the document.
-        Wraps back to the end if not found.
+        """Searches for the previous occurrence of the search bar text
+        in the document. Wraps back to the end if not found.
         """
         searchFor = self.theParent.searchBar.getSearchText()
         wasFound  = self.find(searchFor, QTextDocument.FindBackward)
@@ -657,8 +707,9 @@ class GuiDocEditor(QTextEdit):
         return
 
     def _replaceNext(self):
-        """Searches for the next occurrence of the search bar text in the document and replaces it
-        with the replace text. Wraps back to the top if not found.
+        """Searches for the next occurrence of the search bar text in
+        the document and replaces it with the replace text. Wraps back
+        to the top if not found.
         """
         theCursor = self.textCursor()
         searchFor = self.theParent.searchBar.getSearchText()

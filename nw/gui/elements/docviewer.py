@@ -13,13 +13,13 @@
 import logging
 import nw
 
-from PyQt5.QtCore    import Qt
+from PyQt5.QtCore import Qt
 from PyQt5.QtWidgets import QTextBrowser
-from PyQt5.QtGui     import QTextOption, QFont, QPalette, QColor
+from PyQt5.QtGui import QTextOption, QFont, QPalette, QColor
 
-from nw.convert.tokenizer   import Tokenizer
+from nw.convert.tokenizer import Tokenizer
 from nw.convert.text.tohtml import ToHtml
-from nw.enum                import nwAlert, nwItemType
+from nw.enum import nwAlert, nwItemType
 
 logger = logging.getLogger(__name__)
 
@@ -205,24 +205,24 @@ class GuiDocViewer(QTextBrowser):
         ).format(
             textSize = self.mainConf.textSize,
             preSize  = self.mainConf.textSize*0.9,
-            tColR    = self.theTheme.colText[0],
-            tColG    = self.theTheme.colText[1],
-            tColB    = self.theTheme.colText[2],
-            hColR    = self.theTheme.colHead[0],
-            hColG    = self.theTheme.colHead[1],
-            hColB    = self.theTheme.colHead[2],
-            cColR    = self.theTheme.colComm[0],
-            cColG    = self.theTheme.colComm[1],
-            cColB    = self.theTheme.colComm[2],
-            eColR    = self.theTheme.colEmph[0],
-            eColG    = self.theTheme.colEmph[1],
-            eColB    = self.theTheme.colEmph[2],
-            aColR    = self.theTheme.colVal[0],
-            aColG    = self.theTheme.colVal[1],
-            aColB    = self.theTheme.colVal[2],
-            kColR    = self.theTheme.colKey[0],
-            kColG    = self.theTheme.colKey[1],
-            kColB    = self.theTheme.colKey[2],
+            tColR = self.theTheme.colText[0],
+            tColG = self.theTheme.colText[1],
+            tColB = self.theTheme.colText[2],
+            hColR = self.theTheme.colHead[0],
+            hColG = self.theTheme.colHead[1],
+            hColB = self.theTheme.colHead[2],
+            cColR = self.theTheme.colComm[0],
+            cColG = self.theTheme.colComm[1],
+            cColB = self.theTheme.colComm[2],
+            eColR = self.theTheme.colEmph[0],
+            eColG = self.theTheme.colEmph[1],
+            eColB = self.theTheme.colEmph[2],
+            aColR = self.theTheme.colVal[0],
+            aColG = self.theTheme.colVal[1],
+            aColB = self.theTheme.colVal[2],
+            kColR = self.theTheme.colKey[0],
+            kColG = self.theTheme.colKey[1],
+            kColB = self.theTheme.colKey[2],
         )
         self.qDocument.setDefaultStyleSheet(styleSheet)
 

@@ -15,15 +15,15 @@ import configparser
 import sys
 import nw
 
-from os           import path, mkdir, makedirs, getcwd
-from appdirs      import user_config_dir
-from datetime     import datetime
+from os import path, mkdir, makedirs, getcwd
+from appdirs import user_config_dir
+from datetime import datetime
+
+from PyQt5.Qt import PYQT_VERSION_STR
+from PyQt5.QtCore import QT_VERSION_STR
 
 from nw.constants import nwFiles, nwUnicode
-from nw.common    import splitVersionNumber
-
-from PyQt5.Qt     import PYQT_VERSION_STR
-from PyQt5.QtCore import QT_VERSION_STR
+from nw.common import splitVersionNumber
 
 logger = logging.getLogger(__name__)
 
@@ -40,7 +40,6 @@ class Config:
         self.appName   = nw.__package__
         self.appHandle = nw.__package__.lower()
         self.showGUI   = True
-        self.debugGUI  = False
         self.debugInfo = False
         self.spellTool = None
 
@@ -60,8 +59,8 @@ class Config:
         self.confChanged  = False
 
         ## General
-        self.guiTheme     = "default"
-        self.guiSyntax    = "default_light"
+        self.guiTheme  = "default"
+        self.guiSyntax = "default_light"
 
         ## Sizes
         self.winGeometry  = [1100, 650]
@@ -201,65 +200,133 @@ class Config:
         logger.debug("Loading config file")
         cnfParse = configparser.ConfigParser()
         try:
-            cnfParse.read_file(open(path.join(self.confPath,self.confFile),mode="r",encoding="utf8"))
+            cnfParse.read_file(
+                open(path.join(self.confPath,self.confFile),mode="r",encoding="utf8")
+            )
         except Exception as e:
             logger.error("Could not load config file")
             return False
 
         ## Main
         cnfSec = "Main"
-        self.guiTheme        = self._parseLine(cnfParse, cnfSec, "theme",  self.CNF_STR, self.guiTheme)
-        self.guiSyntax       = self._parseLine(cnfParse, cnfSec, "syntax", self.CNF_STR, self.guiSyntax)
+        self.guiTheme = self._parseLine(
+            cnfParse, cnfSec, "theme", self.CNF_STR, self.guiTheme
+        )
+        self.guiSyntax = self._parseLine(
+            cnfParse, cnfSec, "syntax", self.CNF_STR, self.guiSyntax
+        )
 
         ## Sizes
         cnfSec = "Sizes"
-        self.winGeometry     = self._parseLine(cnfParse, cnfSec, "geometry", self.CNF_LIST, self.winGeometry)
-        self.treeColWidth    = self._parseLine(cnfParse, cnfSec, "treecols", self.CNF_LIST, self.treeColWidth)
-        self.mainPanePos     = self._parseLine(cnfParse, cnfSec, "mainpane", self.CNF_LIST, self.mainPanePos)
-        self.docPanePos      = self._parseLine(cnfParse, cnfSec, "docpane",  self.CNF_LIST, self.docPanePos)
+        self.winGeometry = self._parseLine(
+            cnfParse, cnfSec, "geometry", self.CNF_LIST, self.winGeometry
+        )
+        self.treeColWidth = self._parseLine(
+            cnfParse, cnfSec, "treecols", self.CNF_LIST, self.treeColWidth
+        )
+        self.mainPanePos = self._parseLine(
+            cnfParse, cnfSec, "mainpane", self.CNF_LIST, self.mainPanePos
+        )
+        self.docPanePos = self._parseLine(
+            cnfParse, cnfSec, "docpane", self.CNF_LIST, self.docPanePos
+        )
 
         ## Project
         cnfSec = "Project"
-        self.autoSaveProj    = self._parseLine(cnfParse, cnfSec, "autosaveproject", self.CNF_INT, self.autoSaveProj)
-        self.autoSaveDoc     = self._parseLine(cnfParse, cnfSec, "autosavedoc",     self.CNF_INT, self.autoSaveDoc)
+        self.autoSaveProj = self._parseLine(
+            cnfParse, cnfSec, "autosaveproject", self.CNF_INT, self.autoSaveProj
+        )
+        self.autoSaveDoc = self._parseLine(
+            cnfParse, cnfSec, "autosavedoc", self.CNF_INT, self.autoSaveDoc
+        )
 
         ## Editor
         cnfSec = "Editor"
-        self.textFont        = self._parseLine(cnfParse, cnfSec, "textfont",        self.CNF_STR,  self.textFont)
-        self.textSize        = self._parseLine(cnfParse, cnfSec, "textsize",        self.CNF_INT,  self.textSize)
-        self.textFixedW      = self._parseLine(cnfParse, cnfSec, "fixedwidth",      self.CNF_BOOL, self.textFixedW)
-        self.textWidth       = self._parseLine(cnfParse, cnfSec, "width",           self.CNF_INT,  self.textWidth)
-        self.textMargin      = self._parseLine(cnfParse, cnfSec, "margin",          self.CNF_INT,  self.textMargin)
-        self.tabWidth        = self._parseLine(cnfParse, cnfSec, "tabwidth",        self.CNF_INT,  self.tabWidth)
-        self.doJustify       = self._parseLine(cnfParse, cnfSec, "justify",         self.CNF_BOOL, self.doJustify)
-        self.autoSelect      = self._parseLine(cnfParse, cnfSec, "autoselect",      self.CNF_BOOL, self.autoSelect)
-        self.doReplace       = self._parseLine(cnfParse, cnfSec, "autoreplace",     self.CNF_BOOL, self.doReplace)
-        self.doReplaceSQuote = self._parseLine(cnfParse, cnfSec, "repsquotes",      self.CNF_BOOL, self.doReplaceSQuote)
-        self.doReplaceDQuote = self._parseLine(cnfParse, cnfSec, "repdquotes",      self.CNF_BOOL, self.doReplaceDQuote)
-        self.doReplaceDash   = self._parseLine(cnfParse, cnfSec, "repdash",         self.CNF_BOOL, self.doReplaceDash)
-        self.doReplaceDots   = self._parseLine(cnfParse, cnfSec, "repdots",         self.CNF_BOOL, self.doReplaceDots)
-        self.fmtSingleQuotes = self._parseLine(cnfParse, cnfSec, "fmtsinglequote",  self.CNF_LIST, self.fmtSingleQuotes)
-        self.fmtDoubleQuotes = self._parseLine(cnfParse, cnfSec, "fmtdoublequote",  self.CNF_LIST, self.fmtDoubleQuotes)
-        self.spellLanguage   = self._parseLine(cnfParse, cnfSec, "spellcheck",      self.CNF_STR,  self.spellLanguage)
-        self.showTabsNSpaces = self._parseLine(cnfParse, cnfSec, "showtabsnspaces", self.CNF_BOOL, self.showTabsNSpaces)
-        self.showLineEndings = self._parseLine(cnfParse, cnfSec, "showlineendings", self.CNF_BOOL, self.showLineEndings)
+        self.textFont = self._parseLine(
+            cnfParse, cnfSec, "textfont", self.CNF_STR, self.textFont
+        )
+        self.textSize = self._parseLine(
+            cnfParse, cnfSec, "textsize", self.CNF_INT, self.textSize
+        )
+        self.textFixedW = self._parseLine(
+            cnfParse, cnfSec, "fixedwidth", self.CNF_BOOL, self.textFixedW
+        )
+        self.textWidth = self._parseLine(
+            cnfParse, cnfSec, "width", self.CNF_INT, self.textWidth
+        )
+        self.textMargin = self._parseLine(
+            cnfParse, cnfSec, "margin", self.CNF_INT, self.textMargin
+        )
+        self.tabWidth = self._parseLine(
+            cnfParse, cnfSec, "tabwidth", self.CNF_INT, self.tabWidth
+        )
+        self.doJustify = self._parseLine(
+            cnfParse, cnfSec, "justify", self.CNF_BOOL, self.doJustify
+        )
+        self.autoSelect = self._parseLine(
+            cnfParse, cnfSec, "autoselect", self.CNF_BOOL, self.autoSelect
+        )
+        self.doReplace = self._parseLine(
+            cnfParse, cnfSec, "autoreplace", self.CNF_BOOL, self.doReplace
+        )
+        self.doReplaceSQuote = self._parseLine(
+            cnfParse, cnfSec, "repsquotes", self.CNF_BOOL, self.doReplaceSQuote
+        )
+        self.doReplaceDQuote = self._parseLine(
+            cnfParse, cnfSec, "repdquotes", self.CNF_BOOL, self.doReplaceDQuote
+        )
+        self.doReplaceDash = self._parseLine(
+            cnfParse, cnfSec, "repdash", self.CNF_BOOL, self.doReplaceDash
+        )
+        self.doReplaceDots = self._parseLine(
+            cnfParse, cnfSec, "repdots", self.CNF_BOOL, self.doReplaceDots
+        )
+        self.fmtSingleQuotes = self._parseLine(
+            cnfParse, cnfSec, "fmtsinglequote", self.CNF_LIST, self.fmtSingleQuotes
+        )
+        self.fmtDoubleQuotes = self._parseLine(
+            cnfParse, cnfSec, "fmtdoublequote", self.CNF_LIST, self.fmtDoubleQuotes
+        )
+        self.spellLanguage = self._parseLine(
+            cnfParse, cnfSec, "spellcheck", self.CNF_STR,  self.spellLanguage
+        )
+        self.showTabsNSpaces = self._parseLine(
+            cnfParse, cnfSec, "showtabsnspaces", self.CNF_BOOL, self.showTabsNSpaces
+        )
+        self.showLineEndings = self._parseLine(
+            cnfParse, cnfSec, "showlineendings", self.CNF_BOOL, self.showLineEndings
+        )
 
         ## Backup
         cnfSec = "Backup"
-        self.backupPath      = self._parseLine(cnfParse, cnfSec, "backuppath",      self.CNF_STR,  self.backupPath)
-        self.backupOnClose   = self._parseLine(cnfParse, cnfSec, "backuponclose",   self.CNF_BOOL, self.backupOnClose)
-        self.askBeforeBackup = self._parseLine(cnfParse, cnfSec, "askbeforebackup", self.CNF_BOOL, self.askBeforeBackup)
+        self.backupPath = self._parseLine(
+            cnfParse, cnfSec, "backuppath", self.CNF_STR,  self.backupPath
+        )
+        self.backupOnClose = self._parseLine(
+            cnfParse, cnfSec, "backuponclose", self.CNF_BOOL, self.backupOnClose
+        )
+        self.askBeforeBackup = self._parseLine(
+            cnfParse, cnfSec, "askbeforebackup", self.CNF_BOOL, self.askBeforeBackup
+        )
 
         ## State
         cnfSec = "State"
-        self.showRefPanel = self._parseLine(cnfParse, cnfSec, "showrefpanel", self.CNF_BOOL, self.showRefPanel)
-        self.viewComments = self._parseLine(cnfParse, cnfSec, "viewcomments", self.CNF_BOOL, self.viewComments)
+        self.showRefPanel = self._parseLine(
+            cnfParse, cnfSec, "showrefpanel", self.CNF_BOOL, self.showRefPanel
+        )
+        self.viewComments = self._parseLine(
+            cnfParse, cnfSec, "viewcomments", self.CNF_BOOL, self.viewComments
+        )
 
         ## Path
         cnfSec = "Path"
-        self.lastPath = self._parseLine(cnfParse, cnfSec, "lastpath", self.CNF_STR, self.lastPath)
+        self.lastPath = self._parseLine(
+            cnfParse, cnfSec, "lastpath", self.CNF_STR, self.lastPath
+        )
         for i in range(10):
-            self.recentList[i] = self._parseLine(cnfParse, cnfSec, "recent%d" % i,self.CNF_STR, self.recentList[i])
+            self.recentList[i] = self._parseLine(
+                cnfParse, cnfSec, "recent%d" % i,self.CNF_STR, self.recentList[i]
+            )
 
         # Check Certain Values for None
         self.spellLanguage = self._checkNone(self.spellLanguage)

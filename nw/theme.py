@@ -17,7 +17,7 @@ import nw
 from os import path, listdir
 
 from PyQt5.QtWidgets import qApp
-from PyQt5.QtGui     import QPalette, QColor, QIcon
+from PyQt5.QtGui import QPalette, QColor, QIcon
 
 from nw.enum import nwAlert
 
@@ -41,30 +41,30 @@ class Theme:
 
     def __init__(self, theParent):
 
-        self.mainConf     = nw.CONFIG
-        self.theParent    = theParent
-        self.guiPalette   = QPalette()
-        self.guiPath      = "gui"
-        self.iconPath     = "icons"
-        self.syntaxPath   = "syntax"
-        self.cssName      = "style.qss"
-        self.confName     = "theme.conf"
-        self.themeList    = []
-        self.syntaxList   = []
+        self.mainConf   = nw.CONFIG
+        self.theParent  = theParent
+        self.guiPalette = QPalette()
+        self.guiPath    = "gui"
+        self.iconPath   = "icons"
+        self.syntaxPath = "syntax"
+        self.cssName    = "style.qss"
+        self.confName   = "theme.conf"
+        self.themeList  = []
+        self.syntaxList = []
 
         # Loaded Theme Settings
 
         ## Theme
-        self.themeName    = ""
-        self.themeAuthor  = ""
-        self.themeCredit  = ""
-        self.themeUrl     = ""
+        self.themeName   = ""
+        self.themeAuthor = ""
+        self.themeCredit = ""
+        self.themeUrl    = ""
 
         ## GUI
-        self.treeWCount   = [  0,  0,  0]
-        self.statNone     = [120,120,120]
-        self.statUnsaved  = [120,120, 40]
-        self.statSaved    = [ 40,120,  0]
+        self.treeWCount  = [  0,  0,  0]
+        self.statNone    = [120,120,120]
+        self.statUnsaved = [120,120, 40]
+        self.statSaved   = [ 40,120,  0]
 
         # Loaded Syntax Settings
 
@@ -75,33 +75,33 @@ class Theme:
         self.syntaxUrl    = ""
 
         ## Colours
-        self.colBack      = [255,255,255]
-        self.colText      = [  0,  0,  0]
-        self.colLink      = [  0,  0,  0]
-        self.colHead      = [  0,  0,  0]
-        self.colHeadH     = [  0,  0,  0]
-        self.colEmph      = [  0,  0,  0]
-        self.colDialN     = [  0,  0,  0]
-        self.colDialD     = [  0,  0,  0]
-        self.colDialS     = [  0,  0,  0]
-        self.colComm      = [  0,  0,  0]
-        self.colKey       = [  0,  0,  0]
-        self.colVal       = [  0,  0,  0]
-        self.colSpell     = [  0,  0,  0]
-        self.colTagErr    = [  0,  0,  0]
-        self.colRepTag    = [  0,  0,  0]
+        self.colBack   = [255,255,255]
+        self.colText   = [  0,  0,  0]
+        self.colLink   = [  0,  0,  0]
+        self.colHead   = [  0,  0,  0]
+        self.colHeadH  = [  0,  0,  0]
+        self.colEmph   = [  0,  0,  0]
+        self.colDialN  = [  0,  0,  0]
+        self.colDialD  = [  0,  0,  0]
+        self.colDialS  = [  0,  0,  0]
+        self.colComm   = [  0,  0,  0]
+        self.colKey    = [  0,  0,  0]
+        self.colVal    = [  0,  0,  0]
+        self.colSpell  = [  0,  0,  0]
+        self.colTagErr = [  0,  0,  0]
+        self.colRepTag = [  0,  0,  0]
 
         ## Icons
-        self.themeIcons   = {}
+        self.themeIcons = {}
 
         # Changeable Settings
-        self.guiTheme     = None
-        self.guiSyntax    = None
-        self.themeRoot    = None
-        self.themePath    = None
-        self.syntaxFile   = None
-        self.confFile     = None
-        self.cssFile      = None
+        self.guiTheme   = None
+        self.guiSyntax  = None
+        self.themeRoot  = None
+        self.themePath  = None
+        self.syntaxFile = None
+        self.confFile   = None
+        self.cssFile    = None
 
         self.updateTheme()
 
@@ -162,36 +162,36 @@ class Theme:
         ## Main
         cnfSec = "Main"
         if confParser.has_section(cnfSec):
-            self.themeName   = self._parseLine(confParser,cnfSec,"name",  "")
-            self.themeAuthor = self._parseLine(confParser,cnfSec,"author","")
-            self.themeCredit = self._parseLine(confParser,cnfSec,"credit","")
-            self.themeUrl    = self._parseLine(confParser,cnfSec,"url",   "")
+            self.themeName   = self._parseLine( confParser, cnfSec, "name",   "")
+            self.themeAuthor = self._parseLine( confParser, cnfSec, "author", "")
+            self.themeCredit = self._parseLine( confParser, cnfSec, "credit", "")
+            self.themeUrl    = self._parseLine( confParser, cnfSec, "url",    "")
 
         ## Palette
         cnfSec = "Palette"
         if confParser.has_section(cnfSec):
-            self._setPalette(confParser,cnfSec,"window",         QPalette.Window)
-            self._setPalette(confParser,cnfSec,"windowtext",     QPalette.WindowText)
-            self._setPalette(confParser,cnfSec,"base",           QPalette.Base)
-            self._setPalette(confParser,cnfSec,"alternatebase",  QPalette.AlternateBase)
-            self._setPalette(confParser,cnfSec,"text",           QPalette.Text)
-            self._setPalette(confParser,cnfSec,"tooltipbase",    QPalette.ToolTipBase)
-            self._setPalette(confParser,cnfSec,"tooltiptext",    QPalette.ToolTipText)
-            self._setPalette(confParser,cnfSec,"button",         QPalette.Button)
-            self._setPalette(confParser,cnfSec,"buttontext",     QPalette.ButtonText)
-            self._setPalette(confParser,cnfSec,"brighttext",     QPalette.BrightText)
-            self._setPalette(confParser,cnfSec,"highlight",      QPalette.Highlight)
-            self._setPalette(confParser,cnfSec,"highlightedtext",QPalette.HighlightedText)
-            self._setPalette(confParser,cnfSec,"link",           QPalette.Link)
-            self._setPalette(confParser,cnfSec,"linkvisited",    QPalette.LinkVisited)
+            self._setPalette(confParser, cnfSec, "window",          QPalette.Window)
+            self._setPalette(confParser, cnfSec, "windowtext",      QPalette.WindowText)
+            self._setPalette(confParser, cnfSec, "base",            QPalette.Base)
+            self._setPalette(confParser, cnfSec, "alternatebase",   QPalette.AlternateBase)
+            self._setPalette(confParser, cnfSec, "text",            QPalette.Text)
+            self._setPalette(confParser, cnfSec, "tooltipbase",     QPalette.ToolTipBase)
+            self._setPalette(confParser, cnfSec, "tooltiptext",     QPalette.ToolTipText)
+            self._setPalette(confParser, cnfSec, "button",          QPalette.Button)
+            self._setPalette(confParser, cnfSec, "buttontext",      QPalette.ButtonText)
+            self._setPalette(confParser, cnfSec, "brighttext",      QPalette.BrightText)
+            self._setPalette(confParser, cnfSec, "highlight",       QPalette.Highlight)
+            self._setPalette(confParser, cnfSec, "highlightedtext", QPalette.HighlightedText)
+            self._setPalette(confParser, cnfSec, "link",            QPalette.Link)
+            self._setPalette(confParser, cnfSec, "linkvisited",     QPalette.LinkVisited)
 
         ## GUI
         cnfSec = "GUI"
         if confParser.has_section(cnfSec):
-            self.treeWCount  = self._loadColour(confParser,cnfSec,"treewordcount")
-            self.statNone    = self._loadColour(confParser,cnfSec,"statusnone")
-            self.statUnsaved = self._loadColour(confParser,cnfSec,"statusunsaved")
-            self.statSaved   = self._loadColour(confParser,cnfSec,"statussaved")
+            self.treeWCount  = self._loadColour(confParser, cnfSec, "treewordcount")
+            self.statNone    = self._loadColour(confParser, cnfSec, "statusnone")
+            self.statUnsaved = self._loadColour(confParser, cnfSec, "statusunsaved")
+            self.statSaved   = self._loadColour(confParser, cnfSec, "statussaved")
 
         # Apply Styles
         qApp.setStyleSheet(cssData)
@@ -205,7 +205,7 @@ class Theme:
 
         confParser = configparser.ConfigParser()
         try:
-            confParser.read_file(open(self.syntaxFile,mode="r",encoding="utf8"))
+            confParser.read_file(open(self.syntaxFile, mode="r", encoding="utf8"))
         except Exception as e:
             logger.error("Could not load syntax colours from: %s" % self.syntaxFile)
             return False
@@ -213,29 +213,29 @@ class Theme:
         ## Main
         cnfSec = "Main"
         if confParser.has_section(cnfSec):
-            self.syntaxName   = self._parseLine(confParser,cnfSec,"name","")
-            self.syntaxAuthor = self._parseLine(confParser,cnfSec,"author","")
-            self.syntaxCredit = self._parseLine(confParser,cnfSec,"credit","")
-            self.syntaxUrl    = self._parseLine(confParser,cnfSec,"url",   "")
+            self.syntaxName   = self._parseLine(confParser, cnfSec, "name",   "")
+            self.syntaxAuthor = self._parseLine(confParser, cnfSec, "author", "")
+            self.syntaxCredit = self._parseLine(confParser, cnfSec, "credit", "")
+            self.syntaxUrl    = self._parseLine(confParser, cnfSec, "url",    "")
 
         ## Syntax
         cnfSec = "Syntax"
         if confParser.has_section(cnfSec):
-            self.colBack   = self._loadColour(confParser,cnfSec,"background")
-            self.colText   = self._loadColour(confParser,cnfSec,"text")
-            self.colLink   = self._loadColour(confParser,cnfSec,"link")
-            self.colHead   = self._loadColour(confParser,cnfSec,"headertext")
-            self.colHeadH  = self._loadColour(confParser,cnfSec,"headertag")
-            self.colEmph   = self._loadColour(confParser,cnfSec,"emphasis")
-            self.colDialN  = self._loadColour(confParser,cnfSec,"straightquotes")
-            self.colDialD  = self._loadColour(confParser,cnfSec,"doublequotes")
-            self.colDialS  = self._loadColour(confParser,cnfSec,"singlequotes")
-            self.colComm   = self._loadColour(confParser,cnfSec,"hidden")
-            self.colKey    = self._loadColour(confParser,cnfSec,"keyword")
-            self.colVal    = self._loadColour(confParser,cnfSec,"value")
-            self.colSpell  = self._loadColour(confParser,cnfSec,"spellcheckline")
-            self.colTagErr = self._loadColour(confParser,cnfSec,"tagerror")
-            self.colRepTag = self._loadColour(confParser,cnfSec,"replacetag")
+            self.colBack   = self._loadColour(confParser, cnfSec, "background")
+            self.colText   = self._loadColour(confParser, cnfSec, "text")
+            self.colLink   = self._loadColour(confParser, cnfSec, "link")
+            self.colHead   = self._loadColour(confParser, cnfSec, "headertext")
+            self.colHeadH  = self._loadColour(confParser, cnfSec, "headertag")
+            self.colEmph   = self._loadColour(confParser, cnfSec, "emphasis")
+            self.colDialN  = self._loadColour(confParser, cnfSec, "straightquotes")
+            self.colDialD  = self._loadColour(confParser, cnfSec, "doublequotes")
+            self.colDialS  = self._loadColour(confParser, cnfSec, "singlequotes")
+            self.colComm   = self._loadColour(confParser, cnfSec, "hidden")
+            self.colKey    = self._loadColour(confParser, cnfSec, "keyword")
+            self.colVal    = self._loadColour(confParser, cnfSec, "value")
+            self.colSpell  = self._loadColour(confParser, cnfSec, "spellcheckline")
+            self.colTagErr = self._loadColour(confParser, cnfSec, "tagerror")
+            self.colRepTag = self._loadColour(confParser, cnfSec, "replacetag")
 
         logger.info("Loaded syntax theme '%s'" % self.guiSyntax)
 
@@ -251,7 +251,7 @@ class Theme:
             themeConf = path.join(self.mainConf.themeRoot, self.guiPath, themeDir, self.confName)
             logger.verbose("Checking theme config for '%s'" % themeDir)
             try:
-                confParser.read_file(open(themeConf,mode="r",encoding="utf8"))
+                confParser.read_file(open(themeConf, mode="r", encoding="utf8"))
             except Exception as e:
                 self.theParent.makeAlert(["Could not load theme config file",str(e)],nwAlert.ERROR)
                 continue
@@ -279,7 +279,7 @@ class Theme:
                 continue
             logger.verbose("Checking theme syntax for '%s'" % syntaxFile)
             try:
-                confParser.read_file(open(syntaxPath,mode="r",encoding="utf8"))
+                confParser.read_file(open(syntaxPath, mode="r", encoding="utf8"))
             except Exception as e:
                 self.theParent.makeAlert(["Could not load syntax file",str(e)],nwAlert.ERROR)
                 return []

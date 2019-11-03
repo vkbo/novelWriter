@@ -15,15 +15,15 @@ import nw
 
 from os import path
 
-from PyQt5.QtCore    import Qt, QSize
-from PyQt5.QtGui     import QIcon, QPixmap, QColor, QBrush, QStandardItemModel, QFont
-from PyQt5.QtSvg     import QSvgWidget
+from PyQt5.QtCore import Qt, QSize
+from PyQt5.QtGui import QIcon, QPixmap, QColor, QBrush, QStandardItemModel, QFont
+from PyQt5.QtSvg import QSvgWidget
 from PyQt5.QtWidgets import (
     QDialog, QHBoxLayout, QVBoxLayout, QFormLayout, QLineEdit, QPlainTextEdit, QLabel,
     QWidget, QTabWidget, QDialogButtonBox, QSpinBox, QGroupBox, QComboBox, QMessageBox,
     QCheckBox, QGridLayout, QFontComboBox, QPushButton, QFileDialog
 )
-from nw.enum      import nwAlert
+from nw.enum import nwAlert
 from nw.constants import nwQuotes
 
 logger = logging.getLogger(__name__)
@@ -80,8 +80,8 @@ class GuiConfigEditor(QDialog):
 
         logger.verbose("ConfigEditor save button clicked")
 
-        validEntries  = True
-        needsRestart  = False
+        validEntries = True
+        needsRestart = False
 
         retA, retB    = self.tabMain.saveValues()
         validEntries &= retA
@@ -407,7 +407,9 @@ class GuiConfigEditEditor(QWidget):
             self.autoReplaceDQ.setCheckState(Qt.Unchecked)
 
         self.autoReplaceDash = QCheckBox(self)
-        self.autoReplaceDash.setToolTip("Auto-replace double and triple hyphens with short and long dash.")
+        self.autoReplaceDash.setToolTip(
+            "Auto-replace double and triple hyphens with short and long dash."
+        )
         if self.mainConf.doReplaceDash:
             self.autoReplaceDash.setCheckState(Qt.Checked)
         else:
@@ -555,25 +557,33 @@ class GuiConfigEditEditor(QWidget):
         if self._checkQuoteSymbol(fmtSingleQuotesO):
             self.mainConf.fmtSingleQuotes[0] = fmtSingleQuotesO
         else:
-            self.theParent.makeAlert("Invalid quote symbol: %s" % fmtSingleQuotesO, nwAlert.ERROR)
+            self.theParent.makeAlert(
+                "Invalid quote symbol: %s" % fmtSingleQuotesO, nwAlert.ERROR
+            )
             validEntries = False
 
         if self._checkQuoteSymbol(fmtSingleQuotesC):
             self.mainConf.fmtSingleQuotes[1] = fmtSingleQuotesC
         else:
-            self.theParent.makeAlert("Invalid quote symbol: %s" % fmtSingleQuotesC, nwAlert.ERROR)
+            self.theParent.makeAlert(
+                "Invalid quote symbol: %s" % fmtSingleQuotesC, nwAlert.ERROR
+            )
             validEntries = False
 
         if self._checkQuoteSymbol(fmtDoubleQuotesO):
             self.mainConf.fmtDoubleQuotes[0] = fmtDoubleQuotesO
         else:
-            self.theParent.makeAlert("Invalid quote symbol: %s" % fmtDoubleQuotesO, nwAlert.ERROR)
+            self.theParent.makeAlert(
+                "Invalid quote symbol: %s" % fmtDoubleQuotesO, nwAlert.ERROR
+            )
             validEntries = False
 
         if self._checkQuoteSymbol(fmtDoubleQuotesC):
             self.mainConf.fmtDoubleQuotes[1] = fmtDoubleQuotesC
         else:
-            self.theParent.makeAlert("Invalid quote symbol: %s" % fmtDoubleQuotesC, nwAlert.ERROR)
+            self.theParent.makeAlert(
+                "Invalid quote symbol: %s" % fmtDoubleQuotesC, nwAlert.ERROR
+            )
             validEntries = False
 
         showTabsNSpaces = self.showTabsNSpaces.isChecked()

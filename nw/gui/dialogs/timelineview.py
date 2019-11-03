@@ -13,17 +13,19 @@
 import logging
 import nw
 
-from os              import path
-from PyQt5.QtCore    import Qt
-from PyQt5.QtGui     import QIcon, QColor, QPixmap
+from os import path
+
+from PyQt5.QtCore import Qt
+from PyQt5.QtGui import QIcon, QColor, QPixmap
 from PyQt5.QtWidgets import (
-    QDialog, QVBoxLayout, QHBoxLayout, QTableWidget, QTableWidgetItem, QDialogButtonBox, QLabel,
-    QPushButton, QHeaderView, QGridLayout, QGroupBox, QCheckBox
+    QDialog, QVBoxLayout, QHBoxLayout, QTableWidget, QTableWidgetItem,
+    QDialogButtonBox, QLabel, QPushButton, QHeaderView, QGridLayout,
+    QGroupBox, QCheckBox
 )
 
 from nw.tools.optlaststate import OptLastState
-from nw.constants          import nwFiles
-from nw.enum               import nwItemClass
+from nw.constants import nwFiles
+from nw.enum import nwItemClass
 
 logger = logging.getLogger(__name__)
 
@@ -41,21 +43,25 @@ class GuiTimeLineView(QDialog):
         self.optState   = TimeLineLastState(self.theProject,nwFiles.TLINE_OPT)
         self.optState.loadSettings()
 
-        self.theMatrix  = {}
-        self.numRows    = 0
-        self.numCols    = 0
+        self.theMatrix = {}
+        self.numRows   = 0
+        self.numCols   = 0
 
-        self.outerBox   = QVBoxLayout()
-        self.filterBox  = QVBoxLayout()
-        self.centreBox  = QHBoxLayout()
-        self.bottomBox  = QHBoxLayout()
+        self.outerBox  = QVBoxLayout()
+        self.filterBox = QVBoxLayout()
+        self.centreBox = QHBoxLayout()
+        self.bottomBox = QHBoxLayout()
 
         self.setWindowTitle("Timeline View")
         self.setMinimumWidth(700)
         self.setMinimumHeight(400)
 
-        winWidth  = self.optState.validIntRange(self.optState.getSetting("winWidth"),  700, 10000, 700)
-        winHeight = self.optState.validIntRange(self.optState.getSetting("winHeight"), 400, 10000, 400)
+        winWidth = self.optState.validIntRange(
+            self.optState.getSetting("winWidth"),  700, 10000, 700
+        )
+        winHeight = self.optState.validIntRange(
+            self.optState.getSetting("winHeight"), 400, 10000, 400
+        )
         self.resize(winWidth,winHeight)
 
         # TimeLine Table

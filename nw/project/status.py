@@ -13,9 +13,9 @@
 import logging
 import nw
 
-from lxml      import etree
+from lxml import etree
 
-from nw.enum   import nwItemClass
+from nw.enum import nwItemClass
 from nw.common import checkInt
 
 logger = logging.getLogger(__name__)

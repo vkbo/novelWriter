@@ -16,37 +16,37 @@ import nw
 
 from os import path
 
-from PyQt5.QtCore    import Qt, QTimer
-from PyQt5.QtGui     import QIcon, QPixmap, QColor
+from PyQt5.QtCore import Qt, QTimer
+from PyQt5.QtGui import QIcon, QPixmap, QColor
 from PyQt5.QtWidgets import (
     qApp, QWidget, QMainWindow, QVBoxLayout, QFrame, QSplitter, QFileDialog,
     QShortcut, QMessageBox, QProgressDialog, QDialog
 )
 
-from nw.gui.mainmenu              import GuiMainMenu
-from nw.gui.statusbar             import GuiMainStatus
-from nw.gui.elements.doctree      import GuiDocTree
-from nw.gui.elements.doceditor    import GuiDocEditor
-from nw.gui.elements.docviewer    import GuiDocViewer
-from nw.gui.elements.docdetails   import GuiDocDetails
-from nw.gui.elements.searchbar    import GuiSearchBar
-from nw.gui.elements.noticebar    import GuiNoticeBar
-from nw.gui.elements.viewdetails  import GuiDocViewDetails
-from nw.gui.dialogs.configeditor  import GuiConfigEditor
+from nw.gui.mainmenu import GuiMainMenu
+from nw.gui.statusbar import GuiMainStatus
+from nw.gui.elements.doctree import GuiDocTree
+from nw.gui.elements.doceditor import GuiDocEditor
+from nw.gui.elements.docviewer import GuiDocViewer
+from nw.gui.elements.docdetails import GuiDocDetails
+from nw.gui.elements.searchbar import GuiSearchBar
+from nw.gui.elements.noticebar import GuiNoticeBar
+from nw.gui.elements.viewdetails import GuiDocViewDetails
+from nw.gui.dialogs.configeditor import GuiConfigEditor
 from nw.gui.dialogs.projecteditor import GuiProjectEditor
-from nw.gui.dialogs.export        import GuiExport
-from nw.gui.dialogs.itemeditor    import GuiItemEditor
-from nw.gui.dialogs.timelineview  import GuiTimeLineView
-from nw.gui.dialogs.sessionlog    import GuiSessionLogView
-from nw.project.project           import NWProject
-from nw.project.document          import NWDoc
-from nw.project.item              import NWItem
-from nw.project.index             import NWIndex
-from nw.project.backup            import NWBackup
-from nw.tools.wordcount           import countWords
-from nw.theme                     import Theme
-from nw.enum                      import nwItemType, nwAlert
-from nw.constants                 import nwFiles
+from nw.gui.dialogs.export import GuiExport
+from nw.gui.dialogs.itemeditor import GuiItemEditor
+from nw.gui.dialogs.timelineview import GuiTimeLineView
+from nw.gui.dialogs.sessionlog import GuiSessionLogView
+from nw.project.project import NWProject
+from nw.project.document import NWDoc
+from nw.project.item import NWItem
+from nw.project.index import NWIndex
+from nw.project.backup import NWBackup
+from nw.tools.wordcount import countWords
+from nw.theme import Theme
+from nw.enum import nwItemType, nwAlert
+from nw.constants import nwFiles
 
 logger = logging.getLogger(__name__)
 
@@ -63,10 +63,18 @@ class GuiMain(QMainWindow):
         self.theIndex   = NWIndex(self.theProject, self)
         self.hasProject = False
 
-        logger.info("OS:             %s"        % (self.mainConf.osType))
-        logger.info("Qt5 Version:    %s (%d)"   % (self.mainConf.verQtString,   self.mainConf.verQtValue))
-        logger.info("PyQt5 Version:  %s (%d)"   % (self.mainConf.verPyQtString, self.mainConf.verPyQtValue))
-        logger.info("Python Version: %s (0x%x)" % (self.mainConf.verPyString,   self.mainConf.verPyHexVal))
+        logger.info("OS:             %s"        % (
+            self.mainConf.osType)
+        )
+        logger.info("Qt5 Version:    %s (%d)"   % (
+            self.mainConf.verQtString,   self.mainConf.verQtValue)
+        )
+        logger.info("PyQt5 Version:  %s (%d)"   % (
+            self.mainConf.verPyQtString, self.mainConf.verPyQtValue)
+        )
+        logger.info("Python Version: %s (0x%x)" % (
+            self.mainConf.verPyString,   self.mainConf.verPyHexVal)
+        )
 
         self.resize(*self.mainConf.winGeometry)
         self._setWindowTitle()
@@ -157,11 +165,20 @@ class GuiMain(QMainWindow):
         self.asDocTimer.timeout.connect(self._autoSaveDocument)
 
         # Keyboard Shortcuts
-        QShortcut(Qt.Key_Return, self.treeView, context=Qt.WidgetShortcut, activated=self._treeKeyPressReturn)
-        QShortcut(Qt.Key_Escape, self, activated=self._keyPressEscape)
+        QShortcut(
+            Qt.Key_Return,
+            self.treeView,
+            context=Qt.WidgetShortcut,
+            activated=self._treeKeyPressReturn
+        )
+        QShortcut(
+            Qt.Key_Escape,
+            self,
+            activated=self._keyPressEscape
+        )
 
         # Forward Functions
-        self.setStatus        = self.statusBar.setStatus
+        self.setStatus = self.statusBar.setStatus
         self.setProjectStatus = self.statusBar.setProjectStatus
 
         if self.mainConf.showGUI:
@@ -227,7 +244,8 @@ class GuiMain(QMainWindow):
 
     def closeProject(self, isYes=False):
         """Closes the project if one is open.
-        isYes is passed on from the close application event so the user doesn't get prompted twice.
+        isYes is passed on from the close application event so the user
+        doesn't get prompted twice.
         """
         if not self.hasProject:
             # There is no project loaded, everything OK
@@ -271,15 +289,17 @@ class GuiMain(QMainWindow):
         return saveOK
 
     def openProject(self, projFile=None):
-        """Open a project.
-        projFile is passed from the open recent projects menu, so can be set. If not, we pop the dialog.
+        """Open a project. The parameter projFile is passed from the
+        open recent projects menu, so can be set. If not, we pop the
+        dialog.
         """
         if projFile is None:
             projFile = self.openProjectDialog()
         if projFile is None:
             return False
 
-        # Make sure any open project is cleared out first before we load another one
+        # Make sure any open project is cleared out first before we load
+        # another one
         if not self.closeProject():
             return False
 
@@ -415,20 +435,26 @@ class GuiMain(QMainWindow):
             with open(loadFile,mode="rt",encoding="utf8") as inFile:
                 theText = inFile.read()
         except Exception as e:
-            self.makeAlert(["Could not read file. The file cannot be a binary file.",str(e)], nwAlert.ERROR)
+            self.makeAlert(
+                ["Could not read file. The file cannot be a binary file.",str(e)],
+                nwAlert.ERROR
+            )
             return False
 
         if self.docEditor.theHandle is None:
-            self.makeAlert(["Please open a document to import the text file into."], nwAlert.ERROR)
+            self.makeAlert(
+                ["Please open a document to import the text file into."],
+                nwAlert.ERROR
+            )
             return False
 
         if not self.docEditor.isEmpty():
             if self.mainConf.showGUI:
                 msgBox = QMessageBox()
-                msgRes = msgBox.question(
-                    self, "Import Document",
-                    "Importing the file will overwrite the current content of the document. Do you want to proceed?"
-                )
+                msgRes = msgBox.question(self, "Import Document",(
+                    "Importing the file will overwrite the current content of the document. "
+                    "Do you want to proceed?"
+                ))
                 if msgRes != QMessageBox.Yes:
                     return False
             else:
@@ -552,7 +578,7 @@ class GuiMain(QMainWindow):
         dlgOpt |= QFileDialog.ShowDirsOnly
         dlgOpt |= QFileDialog.DontUseNativeDialog
         projPath = QFileDialog.getExistingDirectory(
-            self,"Save novelWriter Project","",options=dlgOpt
+            self, "Save novelWriter Project", "", options=dlgOpt
         )
         if projPath:
             return projPath
@@ -563,7 +589,7 @@ class GuiMain(QMainWindow):
         dlgOpt |= QFileDialog.ShowDirsOnly
         dlgOpt |= QFileDialog.DontUseNativeDialog
         projPath = QFileDialog.getExistingDirectory(
-            self,"Select Location for New novelWriter Project","",options=dlgOpt
+            self, "Select Location for New novelWriter Project", "", options=dlgOpt
         )
         if projPath:
             return projPath
@@ -606,8 +632,9 @@ class GuiMain(QMainWindow):
         return True
 
     def makeAlert(self, theMessage, theLevel=nwAlert.INFO):
-        """Alert both the user and the logger at the same time. Message can be either a string or an
-        array of strings. Severity level is 0 = info, 1 = warning, and 2 = error.
+        """Alert both the user and the logger at the same time. Message
+        can be either a string or an array of strings. Severity level is
+        0 = info, 1 = warning, and 2 = error.
         """
 
         if isinstance(theMessage, list):
@@ -701,7 +728,8 @@ class GuiMain(QMainWindow):
         return True
 
     def _autoSaveProject(self):
-        if self.hasProject and self.theProject.projChanged and self.theProject.projPath is not None:
+        if (self.hasProject and self.theProject.projChanged and
+            self.theProject.projPath is not None):
             logger.debug("Autosaving project")
             self.saveProject(isAuto=True)
         return
@@ -733,7 +761,8 @@ class GuiMain(QMainWindow):
     ##
 
     def resizeEvent(self, theEvent):
-        """Extend QMainWindow.resizeEvent to signal dependent GUI elements that its pane may have changed size.
+        """Extend QMainWindow.resizeEvent to signal dependent GUI
+        elements that its pane may have changed size.
         """
         QMainWindow.resizeEvent(self,theEvent)
         self.docEditor.changeWidth()
@@ -779,7 +808,8 @@ class GuiMain(QMainWindow):
         return
 
     def _keyPressEscape(self):
-        """When the escape key is pressed somewhere in the main window, do the following, in order
+        """When the escape key is pressed somewhere in the main window,
+        do the following, in order.
         """
         if self.searchBar.isVisible():
             self.searchBar.setVisible(False)
@@ -787,13 +817,15 @@ class GuiMain(QMainWindow):
         return
 
     def _splitMainMove(self, pWidth, pHeight):
-        """Alert dependent GUI elements that the main pane splitter has been moved.
+        """Alert dependent GUI elements that the main pane splitter has
+        been moved.
         """
         self.docEditor.changeWidth()
         return
 
     def _splitViewMove(self, pWidth, pHeight):
-        """Alert dependent GUI elements that the main pane splitter has been moved.
+        """Alert dependent GUI elements that the main pane splitter has
+        been moved.
         """
         self.docEditor.changeWidth()
         return

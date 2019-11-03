@@ -13,9 +13,10 @@
 import logging
 import nw
 
-from time            import time
-from PyQt5.QtCore    import Qt, QTimer
-from PyQt5.QtGui     import QIcon, QColor, QPixmap
+from time import time
+
+from PyQt5.QtCore import Qt, QTimer
+from PyQt5.QtGui import QIcon, QColor, QPixmap
 from PyQt5.QtWidgets import QStatusBar, QLabel, QFrame
 
 logger = logging.getLogger(__name__)
@@ -60,9 +61,6 @@ class GuiMainStatus(QStatusBar):
         self.docChanged.setFixedWidth(16)
         self.docChanged.setToolTip("Document Changes Saved")
 
-        self.boxDocHandle = QLabel()
-        self.boxDocHandle.setFrameStyle(QFrame.Panel | QFrame.Sunken);
-
         # Add Them
         self.addPermanentWidget(self.docChanged)
         self.addPermanentWidget(self.boxCounts)
@@ -70,8 +68,6 @@ class GuiMainStatus(QStatusBar):
         self.addPermanentWidget(self.projChanged)
         self.addPermanentWidget(self.boxStats)
         self.addPermanentWidget(self.boxTime)
-        if self.mainConf.debugGUI:
-            self.addPermanentWidget(self.boxDocHandle)
 
         self.setSizeGripEnabled(True)
 
@@ -90,7 +86,6 @@ class GuiMainStatus(QStatusBar):
         self.setRefTime(None)
         self.setStats(0,0)
         self.setCounts(0,0,0)
-        self.setDocHandle(None)
         self.setProjectStatus(None)
         self.setDocumentStatus(None)
         self._updateTime()
@@ -132,13 +127,6 @@ class GuiMainStatus(QStatusBar):
 
     def setCounts(self, cC, wC, pC):
         self.boxCounts.setText("<b>Document:</b> {:d} : {:d} : {:d}".format(cC,wC,pC))
-        return
-
-    def setDocHandle(self, theHandle):
-        if theHandle is None:
-            self.boxDocHandle.setText("0000000000000")
-        else:
-            self.boxDocHandle.setText("%13s" % theHandle)
         return
 
     ##

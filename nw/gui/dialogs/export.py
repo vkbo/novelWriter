@@ -16,24 +16,25 @@ import nw
 
 from os import path
 
-from PyQt5.QtCore    import Qt, QSize
-from PyQt5.QtSvg     import QSvgWidget
+from PyQt5.QtCore import Qt, QSize
+from PyQt5.QtSvg import QSvgWidget
 from PyQt5.QtWidgets import (
-    QDialog, QHBoxLayout, QVBoxLayout, QWidget, QTabWidget, QGridLayout, QGroupBox, QCheckBox,
-    QLabel, QComboBox, QLineEdit, QPushButton, QFileDialog, QProgressBar, QSpinBox, QMessageBox
+    QDialog, QHBoxLayout, QVBoxLayout, QWidget, QTabWidget, QGridLayout,
+    QGroupBox, QCheckBox, QLabel, QComboBox, QLineEdit, QPushButton,
+    QFileDialog, QProgressBar, QSpinBox, QMessageBox
 )
 
-from nw.project.document      import NWDoc
-from nw.tools.translate       import numberToWord
-from nw.tools.optlaststate    import OptLastState
-from nw.convert.file.text     import TextFile
-from nw.convert.file.html     import HtmlFile
+from nw.project.document import NWDoc
+from nw.tools.translate import numberToWord
+from nw.tools.optlaststate import OptLastState
+from nw.convert.file.text import TextFile
+from nw.convert.file.html import HtmlFile
 from nw.convert.file.markdown import MarkdownFile
-from nw.convert.file.latex    import LaTeXFile
-from nw.convert.file.concat   import ConcatFile
-from nw.common                import packageRefURL
-from nw.constants             import nwFiles
-from nw.enum                  import nwItemType, nwAlert
+from nw.convert.file.latex import LaTeXFile
+from nw.convert.file.concat import ConcatFile
+from nw.common import packageRefURL
+from nw.constants import nwFiles
+from nw.enum import nwItemType, nwAlert
 
 logger = logging.getLogger(__name__)
 
@@ -201,9 +202,10 @@ class GuiExport(QDialog):
             # Check that encoding was successful
             if outFile.texCodecFail:
                 self.theParent.makeAlert((
-                    "Failed to escape unicode characters while writing LaTeX file. The generated "
-                    ".tex file may not build properly. Make sure the python package '{package:s}' "
-                    "is installed and working."
+                    "Failed to escape unicode characters while writing LaTeX "
+                    "file. The generated .tex file may not build properly. "
+                    "Make sure the python package '{package:s}' is installed "
+                    "and working."
                 ).format(
                     package = packageRefURL("latexcodec")
                 ), nwAlert.WARN)
@@ -343,27 +345,31 @@ class GuiExportMain(QWidget):
     }
     FMT_HELP  = {
         FMT_NWD : (
-            "Exports a document using the novelWriter markdown format. The files selected by the "
-            "filters are appended as-is, including comments and other settings."
+            "Exports a document using the novelWriter markdown format. "
+            "The files selected by the filters are appended as-is, "
+            "including comments and other settings."
         ),
         FMT_TXT : (
-            "Exports a plain text file. All formatting is stripped and comments are in square "
-            "brackets."
+            "Exports a plain text file. All formatting is stripped and "
+            "comments are in square brackets."
         ),
         FMT_MD : (
-            "Exports a standard markdown file. Comments are converted to preformatted text blocks."
+            "Exports a standard markdown file. Comments are converted "
+            "to preformatted text blocks."
         ),
         FMT_HTML : (
-            "Exports a plain html5 file. Comments are wrapped in blocks with a yellow background "
-            "colour."
+            "Exports a plain html5 file. Comments are wrapped in "
+            "blocks with a yellow background colour."
         ),
         FMT_TEX : (
-            "Exports a LaTeX file that can be compiled to PDF using for instance PDFLaTeX. "
-            "Comments are exported as LaTeX comments."
+            "Exports a LaTeX file that can be compiled to PDF using "
+            "for instance PDFLaTeX. Comments are exported as LaTeX "
+            "comments."
         ),
         FMT_PDOC : (
-            "Exports first to markdown or html5. The file is then passed on to Pandoc for a second "
-            "stage. Use the Pandoc tab for settings up the conversion."
+            "Exports first to markdown or html5. The file is then "
+            "passed on to Pandoc for a second stage. Use the Pandoc "
+            "tab for settings up the conversion."
         ),
     }
 
@@ -510,7 +516,9 @@ class GuiExportMain(QWidget):
         self.fixedWidth.setMaximum(999)
         self.fixedWidth.setSingleStep(1)
         self.fixedWidth.setValue(self.optState.getSetting("fixWidth"))
-        self.fixedWidth.setToolTip("Applies to .txt and .md files. A value of '0' disables the feature.")
+        self.fixedWidth.setToolTip(
+            "Applies to .txt and .md files. A value of '0' disables the feature."
+        )
 
         self.addSettingsForm.addWidget(QLabel("Fixed width"), 0, 0)
         self.addSettingsForm.addWidget(self.fixedWidth,       0, 1)
@@ -535,7 +543,8 @@ class GuiExportMain(QWidget):
     ##
 
     def _updateFormat(self, currIdx):
-        """Update help text under output format selection and file extension in file box
+        """Update help text under output format selection and file
+        extension in file box
         """
         if currIdx == -1:
             self.outputHelp.setText("")
@@ -563,7 +572,8 @@ class GuiExportMain(QWidget):
         dlgOpt  = QFileDialog.Options()
         dlgOpt |= QFileDialog.DontUseNativeDialog
         saveTo  = QFileDialog.getSaveFileName(
-            self,"Export File",self.exportPath.text(),options=dlgOpt,filter=";;".join(extFilter)
+            self, "Export File", self.exportPath.text(),
+            options=dlgOpt, filter=";;".join(extFilter)
         )
         if saveTo:
             self.exportPath.setText(saveTo[0])
@@ -655,7 +665,6 @@ class GuiExportPandoc(QWidget):
         self.outputFormat.addItem("ePUB eBook v2 (.epub2)",      self.FMT_EPUB2)
         self.outputFormat.addItem("ePUB eBook v3 (.epub3)",      self.FMT_EPUB3)
         self.outputFormat.addItem("Zim Wiki (.txt)",             self.FMT_ZIM)
-        # self.outputFormat.currentIndexChanged.connect(self._updateFormat)
 
         optIdx = self.outputFormat.findData(self.optState.getSetting("pFormat"))
         if optIdx == -1:
@@ -671,9 +680,6 @@ class GuiExportPandoc(QWidget):
         self.outerBox.addWidget(self.guiInfo,   0, 0)
         self.outerBox.addWidget(self.guiOutput, 1, 0)
         self.outerBox.setRowStretch(2, 1)
-        # self.outerBox.setColumnStretch(0, 1)
-        # self.outerBox.setColumnStretch(1, 1)
-        # self.outerBox.setColumnStretch(2, 1)
         self.setLayout(self.outerBox)
 
         return

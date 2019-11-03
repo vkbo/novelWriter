@@ -13,8 +13,8 @@
 import logging
 import nw
 
-from PyQt5.QtCore    import Qt
-from PyQt5.QtGui     import QPalette, QColor
+from PyQt5.QtCore import Qt
+from PyQt5.QtGui import QPalette, QColor
 from PyQt5.QtWidgets import QFrame, QHBoxLayout, QLabel, QPushButton
 
 logger = logging.getLogger(__name__)
@@ -36,7 +36,8 @@ class GuiNoticeBar(QFrame):
         self.mainBox = QHBoxLayout(self)
         self.mainBox.setContentsMargins(8,2,2,2)
 
-        self.noteLabel   = QLabel("Hi there!")
+        self.noteLabel = QLabel("Hi there!")
+
         self.closeButton = QPushButton(self.theTheme.getIcon("close"),"")
         self.closeButton.clicked.connect(self.hideNote)
 

@@ -13,18 +13,20 @@
 import logging
 import nw
 
-from os              import path
-from datetime        import datetime
-from PyQt5.QtCore    import Qt
-from PyQt5.QtGui     import QIcon, QColor, QPixmap, QFont
+from os import path
+from datetime import datetime
+
+from PyQt5.QtCore import Qt
+from PyQt5.QtGui import QIcon, QColor, QPixmap, QFont
 from PyQt5.QtWidgets import (
-    QDialog, QVBoxLayout, QHBoxLayout, QTreeWidget, QTreeWidgetItem, QDialogButtonBox, QHeaderView,
-    QGridLayout, QLabel, QGroupBox, QCheckBox
+    QDialog, QVBoxLayout, QHBoxLayout, QTreeWidget, QTreeWidgetItem,
+    QDialogButtonBox, QHeaderView, QGridLayout, QLabel, QGroupBox,
+    QCheckBox
 )
 
 from nw.tools.optlaststate import OptLastState
-from nw.constants          import nwConst, nwFiles
-from nw.enum               import nwAlert
+from nw.constants import nwConst, nwFiles
+from nw.enum import nwAlert
 
 logger = logging.getLogger(__name__)
 
@@ -44,16 +46,22 @@ class GuiSessionLogView(QDialog):
         self.timeFilter = 0.0
         self.timeTotal  = 0.0
 
-        self.outerBox   = QGridLayout()
-        self.bottomBox  = QHBoxLayout()
+        self.outerBox  = QGridLayout()
+        self.bottomBox = QHBoxLayout()
 
         self.setWindowTitle("Session Log")
         self.setMinimumWidth(420)
         self.setMinimumHeight(400)
 
-        widthCol0 = self.optState.validIntRange(self.optState.getSetting("widthCol0"), 30, 999, 180)
-        widthCol1 = self.optState.validIntRange(self.optState.getSetting("widthCol1"), 30, 999, 80)
-        widthCol2 = self.optState.validIntRange(self.optState.getSetting("widthCol2"), 30, 999, 80)
+        widthCol0 = self.optState.validIntRange(
+            self.optState.getSetting("widthCol0"), 30, 999, 180
+        )
+        widthCol1 = self.optState.validIntRange(
+            self.optState.getSetting("widthCol1"), 30, 999, 80
+        )
+        widthCol2 = self.optState.validIntRange(
+            self.optState.getSetting("widthCol2"), 30, 999, 80
+        )
 
         self.listBox = QTreeWidget()
         self.listBox.setHeaderLabels(["Session Start","Length","Words",""])
@@ -70,8 +78,12 @@ class GuiSessionLogView(QDialog):
         self.monoFont = QFont("Monospace",10)
 
         sortValid = (Qt.AscendingOrder, Qt.DescendingOrder)
-        sortCol   = self.optState.validIntRange(self.optState.getSetting("sortCol"), 0, 2, 0)
-        sortOrder = self.optState.validIntTuple(self.optState.getSetting("sortOrder"), sortValid, Qt.DescendingOrder)
+        sortCol = self.optState.validIntRange(
+            self.optState.getSetting("sortCol"), 0, 2, 0
+        )
+        sortOrder = self.optState.validIntTuple(
+            self.optState.getSetting("sortOrder"), sortValid, Qt.DescendingOrder
+        )
 
         self.listBox.sortByColumn(sortCol, sortOrder)
         self.listBox.setSortingEnabled(True)
@@ -81,7 +93,7 @@ class GuiSessionLogView(QDialog):
         self.infoBoxForm = QGridLayout(self)
         self.infoBox.setLayout(self.infoBoxForm)
 
-        self.labelTotal  = QLabel(self._formatTime(0))
+        self.labelTotal = QLabel(self._formatTime(0))
         self.labelTotal.setFont(self.monoFont)
         self.labelTotal.setAlignment(Qt.AlignVCenter | Qt.AlignRight)
 
@@ -152,11 +164,11 @@ class GuiSessionLogView(QDialog):
                     inData = inLine.split()
                     if len(inData) != 8:
                         continue
-                    dStart  = datetime.strptime("%s %s" % (inData[1],inData[2]),nwConst.tStampFmt)
-                    dEnd    = datetime.strptime("%s %s" % (inData[4],inData[5]),nwConst.tStampFmt)
-                    nWords  = int(inData[7])
-                    tDiff   = dEnd - dStart
-                    sDiff   = tDiff.total_seconds()
+                    dStart = datetime.strptime("%s %s" % (inData[1],inData[2]),nwConst.tStampFmt)
+                    dEnd   = datetime.strptime("%s %s" % (inData[4],inData[5]),nwConst.tStampFmt)
+                    nWords = int(inData[7])
+                    tDiff  = dEnd - dStart
+                    sDiff  = tDiff.total_seconds()
 
                     self.timeTotal  += sDiff
                     if abs(nWords) > 0:

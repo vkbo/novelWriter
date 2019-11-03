@@ -15,12 +15,12 @@ import logging
 import re
 import nw
 
-from operator            import itemgetter
-from PyQt5.QtCore        import QRegularExpression
+from operator import itemgetter
+from PyQt5.QtCore import QRegularExpression
 
 from nw.project.document import NWDoc
-from nw.tools.translate  import numberToWord
-from nw.enum             import nwItemLayout
+from nw.tools.translate import numberToWord
+from nw.enum import nwItemLayout
 
 logger = logging.getLogger(__name__)
 
@@ -153,10 +153,11 @@ class Tokenizer():
         return
 
     def tokenizeText(self):
-        """Scan the text for either lines starting with specific characters that indicate headers,
-        comments, commands etc, or just contains plain text. in the case of plain text, apply the
-        same RegExes that the syntax highlighter uses and save the locations of these formatting
-        tags into the token array.
+        """Scan the text for either lines starting with specific
+        characters that indicate headers, comments, commands etc, or
+        just contains plain text. in the case of plain text, apply the
+        same RegExes that the syntax highlighter uses and save the
+        locations of these formatting tags into the token array.
         """
 
         # RegExes for adding formatting tags within text lines
@@ -203,7 +204,8 @@ class Tokenizer():
                                 xLen = rxMatch.capturedLength(n)
                                 fmtPos.append([xPos,xLen,theKeys[n]])
 
-                # Save the line as is, but append the array of formatting locations sorted by position
+                # Save the line as is, but append the array of formatting locations
+                # sorted by position
                 fmtPos = sorted(fmtPos,key=itemgetter(0))
                 self.theTokens.append((self.T_TEXT,aLine,fmtPos,self.A_LEFT))
 
@@ -228,7 +230,8 @@ class Tokenizer():
         if isNone: return
         if isNote: return
 
-        # For novel files, we need to handle chapter numbering and scene breaks
+        # For novel files, we need to handle chapter numbering and scene
+        # breaks
         if isBook or isUnNum or isChap or isScene:
             for n in range(len(self.theTokens)):
 

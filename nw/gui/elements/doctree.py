@@ -13,13 +13,15 @@
 import logging
 import nw
 
-from PyQt5.QtCore    import Qt, QSize
-from PyQt5.QtGui     import QIcon, QFont, QColor
-from PyQt5.QtWidgets import QTreeWidget, QTreeWidgetItem, QAbstractItemView, QApplication
+from PyQt5.QtCore import Qt, QSize
+from PyQt5.QtGui import QIcon, QFont, QColor
+from PyQt5.QtWidgets import (
+    QTreeWidget, QTreeWidgetItem, QAbstractItemView, QApplication
+)
 
 from nw.project.item import NWItem
-from nw.enum         import nwItemType, nwItemClass, nwItemLayout, nwAlert
-from nw.constants    import nwLabels
+from nw.constants import nwLabels
+from nw.enum import nwItemType, nwItemClass, nwItemLayout, nwAlert
 
 logger = logging.getLogger(__name__)
 
@@ -35,7 +37,6 @@ class GuiDocTree(QTreeWidget):
 
         logger.debug("Initialising DocTree ...")
         self.mainConf   = nw.CONFIG
-        self.debugGUI   = self.mainConf.debugGUI
         self.theParent  = theParent
         self.theTheme   = theParent.theTheme
         self.theProject = theProject
@@ -52,8 +53,7 @@ class GuiDocTree(QTreeWidget):
         self.setIndentation(13)
         self.setColumnCount(4)
         self.setHeaderLabels(["Label","Words","Flags","Handle"])
-        if not self.debugGUI:
-            self.hideColumn(self.C_HANDLE)
+        self.hideColumn(self.C_HANDLE)
 
         treeHead = self.headerItem()
         treeHead.setTextAlignment(self.C_COUNT,Qt.AlignRight)
@@ -131,7 +131,8 @@ class GuiDocTree(QTreeWidget):
             tHandle = self.theProject.newRoot(nwLabels.CLASS_NAME[itemClass], itemClass)
 
         else:
-            # If no parent has been selected, make the new file under the root NOVEL item.
+            # If no parent has been selected, make the new file under
+            # the root NOVEL item.
             if pHandle is None:
                 pHandle = self.theProject.findRootItem(nwItemClass.NOVEL)
 
@@ -140,18 +141,23 @@ class GuiDocTree(QTreeWidget):
                 logger.error("Did not find anywhere to add the item!")
                 return False
 
-            # Now check if the selected item is a file, in which case the new file will be a sibling
+            # Now check if the selected item is a file, in which case
+            # the new file will be a sibling
             pItem = self.theProject.getItem(pHandle)
             if pItem.itemType == nwItemType.FILE:
                 pHandle = pItem.parHandle
 
             # If we again has no home, give up
             if pHandle is None:
-                self.makeAlert("Did not find anywhere to add the file or folder!", nwAlert.ERROR)
+                self.makeAlert(
+                    "Did not find anywhere to add the file or folder!", nwAlert.ERROR
+                )
                 return False
 
             if pHandle == self.theProject.trashRoot:
-                self.makeAlert("Cannot add new files or folders to the trash folder.", nwAlert.ERROR)
+                self.makeAlert(
+                    "Cannot add new files or folders to the trash folder.", nwAlert.ERROR
+                )
                 return False
 
             # If we're still here, add the file or folder
@@ -175,8 +181,8 @@ class GuiDocTree(QTreeWidget):
         return True
 
     def moveTreeItem(self, nStep):
-        """Move an item up or down in the tree, but only if the treeView has focus. This also
-        applies when the menu is used.
+        """Move an item up or down in the tree, but only if the treeView
+        has focus. This also applies when the menu is used.
         """
         if QApplication.focusWidget() == self and self.theParent.hasProject:
             tHandle = self.getSelectedHandle()
@@ -223,10 +229,11 @@ class GuiDocTree(QTreeWidget):
         return retVals
 
     def deleteItem(self, tHandle=None):
-        """Delete items from the tree. Note that this does not delete the item from the item tree in
-        the project object. However, since this is only meta data, there isn't really a need to do
-        that to save memory. Items not in the tree are not saved to the project file, so a loaded
-        project will be clean anyway.
+        """Delete items from the tree. Note that this does not delete
+        the item from the item tree in the project object. However,
+        since this is only meta data, there isn't really a need to do
+        that to save memory. Items not in the tree are not saved to the
+        project file, so a loaded project will be clean anyway.
         """
 
         if tHandle is None:
@@ -297,10 +304,10 @@ class GuiDocTree(QTreeWidget):
             tStatus += "."+nwLabels.LAYOUT_FLAG[nwItem.itemLayout]
         iStatus = nwItem.itemStatus
         if tClass == nwItemClass.NOVEL:
-            iStatus  = self.theProject.statusItems.checkEntry(iStatus) # Make sure it's a valid index
+            iStatus  = self.theProject.statusItems.checkEntry(iStatus) # Make sure it's valid
             flagIcon = self.theParent.statusIcons[iStatus]
         else:
-            iStatus  = self.theProject.importItems.checkEntry(iStatus) # Make sure it's a valid index
+            iStatus  = self.theProject.importItems.checkEntry(iStatus) # Make sure it's valid
             flagIcon = self.theParent.importIcons[iStatus]
 
         trItem.setText(self.C_NAME, tName)
@@ -451,8 +458,9 @@ class GuiDocTree(QTreeWidget):
         return
 
     def _updateItemParent(self, tHandle):
-        """Update the parent handle of an item so that the information in the project is consistent
-        with the treeView. Also move the word count over to the new parent tree.
+        """Update the parent handle of an item so that the information
+        in the project is consistent with the treeView. Also move the
+        word count over to the new parent tree.
         """
 
         trItemS = self._getTreeItem(tHandle)
@@ -494,8 +502,8 @@ class GuiDocTree(QTreeWidget):
     ##
 
     def mousePressEvent(self, theEvent):
-        """Overload mousePressEvent to clear selection if clicking the mouse in a blank
-        area of the tree view.
+        """Overload mousePressEvent to clear selection if clicking the
+        mouse in a blank area of the tree view.
         """
         QTreeWidget.mousePressEvent(self, theEvent)
         selItem = self.indexAt(theEvent.pos())
@@ -504,8 +512,8 @@ class GuiDocTree(QTreeWidget):
         return
 
     def dropEvent(self, theEvent):
-        """Overload the drop of dragged item event to check whether the drop is allowed
-        or not. Disallowed drops are cancelled.
+        """Overload the drop of dragged item event to check whether the
+        drop is allowed or not. Disallowed drops are cancelled.
         """
         sHandle = self.getSelectedHandle()
         if sHandle is None:

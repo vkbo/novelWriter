@@ -13,11 +13,11 @@
 import logging
 import nw
 
-from PyQt5.QtCore    import Qt, QSize
-from PyQt5.QtGui     import QFont
+from PyQt5.QtCore import Qt, QSize
+from PyQt5.QtGui import QFont
 from PyQt5.QtWidgets import (
-    QWidget, QHBoxLayout, QVBoxLayout, QLabel, QGroupBox, QScrollArea, QFrame, QToolButton,
-    QSizePolicy, QCheckBox, QGridLayout
+    QWidget, QHBoxLayout, QVBoxLayout, QLabel, QGroupBox, QScrollArea, QFrame,
+    QToolButton, QSizePolicy, QCheckBox, QGridLayout
 )
 
 from nw.constants import nwLabels
@@ -31,7 +31,6 @@ class GuiDocViewDetails(QWidget):
 
         logger.debug("Initialising DocViewDetails ...")
         self.mainConf   = nw.CONFIG
-        self.debugGUI   = self.mainConf.debugGUI
         self.theParent  = theParent
         self.theProject = theProject
         self.currHandle = None
