@@ -133,6 +133,11 @@ The different notes can be assigned tags, which the novel files can refer back t
 Currently, this information can be used to display a Timeline View of the story, showing where each scene connects to the plot, and which characters, etc. occur in them.
 Further features using this meta data will be added in the future.
 
+## Contribution
+
+If you ant to contribute to novelWriter, please follow the coding convention laid out in the [Style Guide](docs/markdown/style.md).
+They broadly follow Python PEP8, but there are a few modifications.
+
 ## Screenshot
 
 ![Screenshot 1](docs/source/images/screenshot.png)
