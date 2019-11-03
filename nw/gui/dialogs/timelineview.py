@@ -23,8 +23,8 @@ from PyQt5.QtWidgets import (
     QGroupBox, QCheckBox
 )
 
-from nw.tools.optlaststate import OptLastState
 from nw.constants import nwFiles
+from nw.tools import OptLastState
 from nw.enum import nwItemClass
 
 logger = logging.getLogger(__name__)

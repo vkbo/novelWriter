@@ -23,30 +23,17 @@ from PyQt5.QtWidgets import (
     QShortcut, QMessageBox, QProgressDialog, QDialog
 )
 
-from nw.gui.mainmenu import GuiMainMenu
-from nw.gui.statusbar import GuiMainStatus
-from nw.gui.elements.doctree import GuiDocTree
-from nw.gui.elements.doceditor import GuiDocEditor
-from nw.gui.elements.docviewer import GuiDocViewer
-from nw.gui.elements.docdetails import GuiDocDetails
-from nw.gui.elements.searchbar import GuiSearchBar
-from nw.gui.elements.noticebar import GuiNoticeBar
-from nw.gui.elements.viewdetails import GuiDocViewDetails
-from nw.gui.dialogs.configeditor import GuiConfigEditor
-from nw.gui.dialogs.projecteditor import GuiProjectEditor
-from nw.gui.dialogs.export import GuiExport
-from nw.gui.dialogs.itemeditor import GuiItemEditor
-from nw.gui.dialogs.timelineview import GuiTimeLineView
-from nw.gui.dialogs.sessionlog import GuiSessionLogView
-from nw.project.project import NWProject
-from nw.project.document import NWDoc
-from nw.project.item import NWItem
-from nw.project.index import NWIndex
-from nw.project.backup import NWBackup
-from nw.tools.wordcount import countWords
+from nw.gui import (
+    GuiMainMenu, GuiMainStatus, GuiDocTree, GuiDocEditor, GuiDocViewer,
+    GuiDocDetails, GuiSearchBar, GuiNoticeBar, GuiDocViewDetails,
+    GuiConfigEditor, GuiProjectEditor, GuiExport, GuiItemEditor,
+    GuiTimeLineView, GuiSessionLogView
+)
+from nw.constants import nwFiles
+from nw.project import NWProject, NWDoc, NWItem, NWIndex, NWBackup
+from nw.tools import countWords
 from nw.theme import Theme
 from nw.enum import nwItemType, nwAlert
-from nw.constants import nwFiles
 
 logger = logging.getLogger(__name__)
 
@@ -63,17 +50,17 @@ class GuiMain(QMainWindow):
         self.theIndex   = NWIndex(self.theProject, self)
         self.hasProject = False
 
-        logger.info("OS:             %s"        % (
+        logger.info("OS: %s" % (
             self.mainConf.osType)
         )
-        logger.info("Qt5 Version:    %s (%d)"   % (
-            self.mainConf.verQtString,   self.mainConf.verQtValue)
+        logger.info("Qt5 Version: %s (%d)" % (
+            self.mainConf.verQtString, self.mainConf.verQtValue)
         )
-        logger.info("PyQt5 Version:  %s (%d)"   % (
+        logger.info("PyQt5 Version: %s (%d)" % (
             self.mainConf.verPyQtString, self.mainConf.verPyQtValue)
         )
         logger.info("Python Version: %s (0x%x)" % (
-            self.mainConf.verPyString,   self.mainConf.verPyHexVal)
+            self.mainConf.verPyString, self.mainConf.verPyHexVal)
         )
 
         self.resize(*self.mainConf.winGeometry)
@@ -138,8 +125,8 @@ class GuiMain(QMainWindow):
         self.idxEditor = self.splitView.indexOf(self.editPane)
         self.idxViewer = self.splitView.indexOf(self.viewPane)
 
-        self.splitMain.setCollapsible(self.idxTree,   False)
-        self.splitMain.setCollapsible(self.idxMain,   False)
+        self.splitMain.setCollapsible(self.idxTree, False)
+        self.splitMain.setCollapsible(self.idxMain, False)
         self.splitView.setCollapsible(self.idxEditor, False)
         self.splitView.setCollapsible(self.idxViewer, True)
 
@@ -290,7 +277,7 @@ class GuiMain(QMainWindow):
 
     def openProject(self, projFile=None):
         """Open a project. The parameter projFile is passed from the
-        open recent projects menu, so can be set. If not, we pop the
+        open recent projects menu, so it can be set. If not, we pop the
         dialog.
         """
         if projFile is None:
@@ -402,7 +389,7 @@ class GuiMain(QMainWindow):
         if self.docViewer.loadText(tHandle) and not self.viewPane.isVisible():
             bPos = self.splitMain.sizes()
             self.viewPane.setVisible(True)
-            vPos    = [0,0]
+            vPos = [0,0]
             vPos[0] = int(bPos[1]/2)
             vPos[1] = bPos[1]-vPos[0]
             self.splitView.setSizes(vPos)

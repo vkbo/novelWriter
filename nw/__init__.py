@@ -14,10 +14,12 @@ import sys
 import getopt
 import logging
 
-from os              import path, remove, rename
+from os import path, remove, rename
+
 from PyQt5.QtWidgets import QApplication
-from nw.gui.winmain  import GuiMain
-from nw.config       import Config
+
+from nw.guimain import GuiMain
+from nw.config import Config
 
 __package__    = "novelWriter"
 __author__     = "Veronica Berglyd Olsen"

@@ -24,8 +24,8 @@ from PyQt5.QtWidgets import (
     QCheckBox
 )
 
-from nw.tools.optlaststate import OptLastState
 from nw.constants import nwConst, nwFiles
+from nw.tools import OptLastState
 from nw.enum import nwAlert
 
 logger = logging.getLogger(__name__)
