@@ -15,7 +15,7 @@ import re
 import nw
 
 from nw.convert.tokenizer import Tokenizer
-from nw.constants         import nwUnicode
+from nw.constants         import nwUnicode, nwLabels
 
 logger = logging.getLogger(__name__)
 
@@ -26,7 +26,7 @@ class ToHtml(Tokenizer):
         self.forPreview = False
         return
 
-    def setPreview(self, forPreview):
+    def setPreview(self, forPreview, doComments):
         """If we're using this class to generate markdown preview, we need to make a few changes to
         formatting, which is selected by this flag.
         """
@@ -34,6 +34,7 @@ class ToHtml(Tokenizer):
         self.forPreview = forPreview
         if forPreview:
             self.doKeywords = True
+            self.doComments = doComments
 
         return
 
@@ -118,7 +119,7 @@ class ToHtml(Tokenizer):
                     thisPar.append(tTemp.rstrip()+" ")
 
             elif tType == self.T_COMMENT and self.doComments:
-                self.theResult += "<div class='comment'>%s</div>\n" % tText
+                self.theResult += self._formatComments(tText)
 
             elif tType == self.T_KEYWORD and self.doKeywords:
                 self.theResult += self._formatTags(tText)
@@ -134,17 +135,6 @@ class ToHtml(Tokenizer):
         if not self.forPreview:
             return "<pre>@%s</pre>\n" % tText
 
-        theLabel = {
-            "@tag"      : "Tag",
-            "@pov"      : "Point of View",
-            "@char"     : "Character(s)",
-            "@plot"     : "Plot",
-            "@time"     : "Time",
-            "@location" : "Location(s)",
-            "@object"   : "Object(s)",
-            "@custom"   : "Custom",
-        }
-
         tText = "@"+tText
         isValid, theBits, thePos = self.theParent.theIndex.scanThis(tText)
         if not isValid or not theBits:
@@ -152,8 +142,8 @@ class ToHtml(Tokenizer):
 
         retText = ""
         refTags = []
-        if theBits[0] in theLabel:
-            retText += "<span class='tags'>%s:</span>&nbsp;" % theLabel[theBits[0]]
+        if theBits[0] in nwLabels.KEY_NAME:
+            retText += "<span class='tags'>%s:</span>&nbsp;" % nwLabels.KEY_NAME[theBits[0]]
             for tTag in theBits[1:]:
                 refTags.append("<a href='#%s=%s'>%s</a>" % (
                     theBits[0][1:], tTag, tTag
@@ -161,5 +151,12 @@ class ToHtml(Tokenizer):
             retText += ", ".join(refTags)
 
         return "<div>%s</div>" % retText
+
+    def _formatComments(self, tText):
+
+        if not self.forPreview:
+            return "<div class='comment'>%s</div>\n" % tText
+
+        return "<p class='comment'>%s</p>\n" % tText
 
 # END Class ToHtml

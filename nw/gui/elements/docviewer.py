@@ -105,7 +105,7 @@ class GuiDocViewer(QTextBrowser):
         logger.debug("Generating preview for item %s" % tHandle)
         sPos = self.verticalScrollBar().value()
         aDoc = ToHtml(self.theProject, self.theParent)
-        aDoc.setPreview(True)
+        aDoc.setPreview(True, self.mainConf.viewComments)
         aDoc.setText(tHandle)
         aDoc.doAutoReplace()
         aDoc.tokenizeText()
@@ -117,9 +117,13 @@ class GuiDocViewer(QTextBrowser):
         self.theHandle = tHandle
         self.theProject.setLastViewed(tHandle)
 
-        self.theParent.docMeta.refreshReferences(tHandle)
+        self.theParent.viewMeta.refreshReferences(tHandle)
 
         return True
+
+    def reloadText(self):
+        self.loadText(self.theHandle)
+        return
 
     def loadFromTag(self, theTag):
 
@@ -180,10 +184,6 @@ class GuiDocViewer(QTextBrowser):
             "a {{"
             "  color: rgb({aColR},{aColG},{aColB});"
             "}}\n"
-            "pre {{"
-            "  color: rgb({cColR},{cColG},{cColB});"
-            "  font-size: {preSize:.1f}pt;"
-            "}}\n"
             "mark {{"
             "  color: rgb({eColR},{eColG},{eColB});"
             "}}\n"
@@ -196,6 +196,11 @@ class GuiDocViewer(QTextBrowser):
             ".tags {{"
             "  color: rgb({kColR},{kColG},{kColB});"
             "  font-wright: bold;"
+            "}}\n"
+            ".comment {{"
+            "  color: rgb({cColR},{cColG},{cColB});"
+            "  margin-left: 1em;"
+            "  margin-right: 1em;"
             "}}\n"
         ).format(
             textSize = self.mainConf.textSize,
@@ -212,9 +217,9 @@ class GuiDocViewer(QTextBrowser):
             eColR    = self.theTheme.colEmph[0],
             eColG    = self.theTheme.colEmph[1],
             eColB    = self.theTheme.colEmph[2],
-            aColR    = self.theTheme.colLink[0],
-            aColG    = self.theTheme.colLink[1],
-            aColB    = self.theTheme.colLink[2],
+            aColR    = self.theTheme.colVal[0],
+            aColG    = self.theTheme.colVal[1],
+            aColB    = self.theTheme.colVal[2],
             kColR    = self.theTheme.colKey[0],
             kColG    = self.theTheme.colKey[1],
             kColB    = self.theTheme.colKey[2],

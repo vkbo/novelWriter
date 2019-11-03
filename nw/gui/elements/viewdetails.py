@@ -6,7 +6,7 @@
  Class holding the document view details panel
 
  File History:
- Created: 2019-09-31 [0.3.2]
+ Created: 2019-10-31 [0.3.2]
 
 """
 
@@ -20,7 +20,7 @@ from PyQt5.QtWidgets import (
     QSizePolicy, QCheckBox, QGridLayout
 )
 
-from nw.constants    import nwLabels
+from nw.constants import nwLabels
 
 logger = logging.getLogger(__name__)
 
@@ -48,7 +48,6 @@ class GuiDocViewDetails(QWidget):
         self.showHide.setToolButtonStyle(Qt.ToolButtonIconOnly)
         self.showHide.setArrowType(Qt.DownArrow)
         self.showHide.setCheckable(True)
-        self.showHide.setChecked(True)
         self.showHide.setIconSize(QSize(16,16))
         self.showHide.toggled.connect(self._doShowHide)
 
@@ -66,8 +65,7 @@ class GuiDocViewDetails(QWidget):
         self.scrollBox.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
         self.scrollBox.setFrameStyle(QFrame.NoFrame)
         self.scrollBox.setWidgetResizable(True)
-        self.scrollBox.setMaximumHeight(300)
-        self.scrollBox.setMinimumHeight(60)
+        self.scrollBox.setFixedHeight(80)
         self.scrollBox.setWidget(self.refList)
 
         self.outerBox.addWidget(self.showHide,  0, 0)
@@ -78,6 +76,8 @@ class GuiDocViewDetails(QWidget):
 
         self.setLayout(self.outerBox)
         self.setContentsMargins(0,0,0,0)
+
+        self._doShowHide(self.mainConf.showRefPanel)
 
         logger.debug("DocViewDetails initialisation complete")
 
@@ -91,12 +91,6 @@ class GuiDocViewDetails(QWidget):
             return
 
         theRefs = self.theParent.theIndex.buildReferenceList(tHandle)
-        if theRefs:
-            self.setVisible(True)
-        else:
-            self.setVisible(False)
-            return
-
         theList = []
         for tHandle in theRefs:
             tItem = self.theProject.getItem(tHandle)
@@ -120,6 +114,7 @@ class GuiDocViewDetails(QWidget):
 
     def _doShowHide(self, chState):
         self.scrollBox.setVisible(chState)
+        self.mainConf.setShowRefPanel(chState)
         if chState:
             self.showHide.setArrowType(Qt.DownArrow)
         else:

@@ -31,6 +31,7 @@ class NWDoc():
         self.theItem     = None
         self.docHandle   = None
         self.docEditable = False
+        self.fileLoc     = None
 
         # Internal Mapping
         self.makeAlert = self.theParent.makeAlert
@@ -58,7 +59,8 @@ class NWDoc():
             self.docEditable = False
 
         docDir, docFile = self._assemblePath(self.FILE_MN)
-        logger.debug("Opening document %s" % path.join(docDir,docFile))
+        self.fileLoc = path.join(docDir,docFile)
+        logger.debug("Opening document %s" % self.fileLoc)
         dataDir = path.join(self.theProject.projPath, docDir)
         docPath = path.join(dataDir, docFile)
 

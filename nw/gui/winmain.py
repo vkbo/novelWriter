@@ -77,7 +77,7 @@ class GuiMain(QMainWindow):
         self.noticeBar = GuiNoticeBar(self)
         self.docEditor = GuiDocEditor(self, self.theProject)
         self.docViewer = GuiDocViewer(self, self.theProject)
-        self.docMeta   = GuiDocViewDetails(self, self.theProject)
+        self.viewMeta  = GuiDocViewDetails(self, self.theProject)
         self.searchBar = GuiSearchBar(self)
         self.treeMeta  = GuiDocDetails(self, self.theProject)
         self.treeView  = GuiDocTree(self, self.theProject)
@@ -107,7 +107,7 @@ class GuiMain(QMainWindow):
         self.docView = QVBoxLayout()
         self.docView.setContentsMargins(0,0,0,0)
         self.docView.addWidget(self.docViewer)
-        self.docView.addWidget(self.docMeta)
+        self.docView.addWidget(self.viewMeta)
         self.docView.setStretch(0, 1)
         self.viewPane.setLayout(self.docView)
 
@@ -313,7 +313,7 @@ class GuiMain(QMainWindow):
 
         return True
 
-    def saveProject(self):
+    def saveProject(self, isAuto=False):
         """Save the current project.
         """
         if not self.hasProject:
@@ -327,7 +327,7 @@ class GuiMain(QMainWindow):
             return False
 
         self.treeView.saveTreeOrder()
-        self.theProject.saveProject()
+        self.theProject.saveProject(isAuto)
         self.theIndex.saveIndex()
         self.mainMenu.updateRecentProjects()
 
@@ -703,7 +703,7 @@ class GuiMain(QMainWindow):
     def _autoSaveProject(self):
         if self.hasProject and self.theProject.projChanged and self.theProject.projPath is not None:
             logger.debug("Autosaving project")
-            self.saveProject()
+            self.saveProject(isAuto=True)
         return
 
     def _autoSaveDocument(self):

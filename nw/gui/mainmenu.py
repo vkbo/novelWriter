@@ -112,6 +112,11 @@ class GuiMainMenu(QMenuBar):
             self.toolsSpellCheck.setChecked(False)
         return True
 
+    def _toggleViewComments(self):
+        self.mainConf.setViewComments(self.docViewComments.isChecked())
+        self.theParent.docViewer.reloadText()
+        return True
+
     def _showAbout(self):
         listPrefix = "&nbsp;&nbsp;&bull;&nbsp;&nbsp;"
         aboutMsg   = (
@@ -161,6 +166,10 @@ class GuiMainMenu(QMenuBar):
     def _clearRecentProjects(self):
         self.mainConf.clearRecent()
         self.updateRecentProjects()
+        return True
+
+    def _showDocumentLocation(self):
+        self.theParent.docEditor.revealLocation()
         return True
 
     ##
@@ -235,6 +244,7 @@ class GuiMainMenu(QMenuBar):
         self.rootItems[nwItemClass.WORLD]     = QAction("Location Root",  rootMenu)
         self.rootItems[nwItemClass.TIMELINE]  = QAction("Timeline Root",  rootMenu)
         self.rootItems[nwItemClass.OBJECT]    = QAction("Object Root",    rootMenu)
+        self.rootItems[nwItemClass.ENTITY]    = QAction("Entity Root",    rootMenu)
         self.rootItems[nwItemClass.CUSTOM]    = QAction("Custom Root",    rootMenu)
         nCount = 0
         for itemClass in self.rootItems.keys():
@@ -330,10 +340,24 @@ class GuiMainMenu(QMenuBar):
         menuItem.triggered.connect(self.theParent.closeDocViewer)
         self.docuMenu.addAction(menuItem)
 
+        # Document > Toggle View Comments
+        self.docViewComments = QAction("View Comments", self)
+        self.docViewComments.setStatusTip("Show comments in view panel")
+        self.docViewComments.setCheckable(True)
+        self.docViewComments.setChecked(self.mainConf.viewComments)
+        self.docViewComments.toggled.connect(self._toggleViewComments)
+        self.docuMenu.addAction(self.docViewComments)
+
         # Document > Separator
         self.docuMenu.addSeparator()
 
-        # Document > Close Preview
+        # Document > Show File Details
+        menuItem = QAction("Show File Details", self)
+        menuItem.setStatusTip("Shows a message box with the document location in the project folder")
+        menuItem.triggered.connect(self._showDocumentLocation)
+        self.docuMenu.addAction(menuItem)
+
+        # Document > Import From File
         menuItem = QAction("Import from File", self)
         menuItem.setStatusTip("Import document from a text or markdown file")
         menuItem.setShortcut("Ctrl+Shift+I")

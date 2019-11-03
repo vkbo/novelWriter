@@ -62,6 +62,8 @@ class Config:
         ## General
         self.guiTheme     = "default"
         self.guiSyntax    = "default_light"
+
+        ## Sizes
         self.winGeometry  = [1100, 650]
         self.treeColWidth = [120, 30, 50]
         self.mainPanePos  = [300, 800]
@@ -74,7 +76,7 @@ class Config:
         ## Text Editor
         self.textFont        = None
         self.textSize        = 12
-        self.textFixedW      = False
+        self.textFixedW      = True
         self.textWidth       = 600
         self.textMargin      = 40
         self.tabWidth        = 40
@@ -94,12 +96,16 @@ class Config:
 
         self.spellLanguage   = "en_GB"
 
-        # Backup
+        ## Backup
         self.backupPath      = ""
         self.backupOnClose   = False
         self.askBeforeBackup = True
 
-        # Path
+        ## State
+        self.showRefPanel = True
+        self.viewComments = True
+
+        ## Path
         self.recentList = [""]*10
 
         # Check Qt5 Versions
@@ -244,6 +250,11 @@ class Config:
         self.backupOnClose   = self._parseLine(cnfParse, cnfSec, "backuponclose",   self.CNF_BOOL, self.backupOnClose)
         self.askBeforeBackup = self._parseLine(cnfParse, cnfSec, "askbeforebackup", self.CNF_BOOL, self.askBeforeBackup)
 
+        ## State
+        cnfSec = "State"
+        self.showRefPanel = self._parseLine(cnfParse, cnfSec, "showrefpanel", self.CNF_BOOL, self.showRefPanel)
+        self.viewComments = self._parseLine(cnfParse, cnfSec, "viewcomments", self.CNF_BOOL, self.viewComments)
+
         ## Path
         cnfSec = "Path"
         self.lastPath = self._parseLine(cnfParse, cnfSec, "lastpath", self.CNF_STR, self.lastPath)
@@ -311,6 +322,12 @@ class Config:
         cnfParse.set(cnfSec,"backuppath",     str(self.backupPath))
         cnfParse.set(cnfSec,"backuponclose",  str(self.backupOnClose))
         cnfParse.set(cnfSec,"askbeforebackup",str(self.askBeforeBackup))
+
+        ## State
+        cnfSec = "State"
+        cnfParse.add_section(cnfSec)
+        cnfParse.set(cnfSec,"showrefpanel",str(self.showRefPanel))
+        cnfParse.set(cnfSec,"viewcomments",str(self.viewComments))
 
         ## Path
         cnfSec = "Path"
@@ -384,6 +401,16 @@ class Config:
         self.docPanePos  = panePos
         self.confChanged = True
         return True
+
+    def setShowRefPanel(self, checkState):
+        self.showRefPanel = checkState
+        self.confChanged  = True
+        return
+
+    def setViewComments(self, checkState):
+        self.viewComments = checkState
+        self.confChanged  = True
+        return
 
     ##
     #  Internal Functions
