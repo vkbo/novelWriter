@@ -130,7 +130,8 @@ class NWIndex():
         return False
 
     def saveIndex(self):
-        """Save the current index as a json file in the project meta folder.
+        """Save the current index as a json file in the project meta
+        folder.
         """
 
         indexFile = path.join(self.theProject.projMeta, nwFiles.INDEX_FILE)
@@ -155,7 +156,8 @@ class NWIndex():
         return True
 
     def checkIndex(self):
-        """Check that the entries in the index are valid and contain the elements it should.
+        """Check that the entries in the index are valid and contain the
+        elements it should.
         """
 
         self.indexBroken = False
@@ -193,8 +195,9 @@ class NWIndex():
     ##
 
     def scanText(self, tHandle, theText):
-        """Scan a piece of text associated with a handle. This will update the indices accordingly.
-        This function takes the handle and text as separate inputs as we want to primarily scan the
+        """Scan a piece of text associated with a handle. This will
+        update the indices accordingly. This function takes the handle
+        and text as separate inputs as we want to primarily scan the
         files before we save them, unless we're rebuilding the index.
         """
 
@@ -243,7 +246,8 @@ class NWIndex():
         return True
 
     def indexTitle(self, tHandle, isNovel, aLine, nLine, itemLayout):
-        """Save information about the title and its location in the file.
+        """Save information about the title and its location in the
+        file.
         """
 
         if aLine.startswith("# "):
@@ -272,7 +276,8 @@ class NWIndex():
         return True
 
     def indexNoteRef(self, tHandle, aLine, nLine, nTitle):
-        """Validate and save the information about a reference to a tag in another file.
+        """Validate and save the information about a reference to a tag
+        in another file.
         """
 
         isValid, theBits, thePos = self.scanThis(aLine)
@@ -303,8 +308,9 @@ class NWIndex():
     ##
 
     def scanThis(self, aLine):
-        """Scan a line starting with @ to check that it's valid and to split up its elements into
-        an array and an array of positions. The latter is needed for the syntax highlighter.
+        """Scan a line starting with @ to check that it's valid and to
+        split up its elements into an array and an array of positions.
+        The latter is needed for the syntax highlighter.
         """
 
         theBits = []
@@ -343,8 +349,8 @@ class NWIndex():
         return True, theBits, thePos
 
     def checkThese(self, theBits, tItem):
-        """Check the tags against the index to see if they are valid tags. This is needed for syntax
-        highlighting.
+        """Check the tags against the index to see if they are valid
+        tags. This is needed for syntax highlighting.
         """
 
         nBits  = len(theBits)
@@ -357,7 +363,8 @@ class NWIndex():
         if not isGood[0] or nBits == 1:
             return isGood
 
-        # If we have a tag, only the first value is accepted, the rest is ignored
+        # If we have a tag, only the first value is accepted, the rest
+        # is ignored
         if theBits[0] == nwKeyWords.TAG_KEY and nBits > 1:
             isGood[0] = True
             if theBits[1] in self.tagIndex.keys():
@@ -396,7 +403,8 @@ class NWIndex():
         return True
 
     def buildReferenceList(self, tHandle):
-        """Build a list of files referring back to our file, specified by tHandle.
+        """Build a list of files referring back to our file, specified
+        by tHandle.
         """
 
         theRefs = {}
@@ -429,8 +437,9 @@ class NWIndex():
         return None, 0
 
     def buildTagNovelMap(self, theTags, theFilters=None):
-        """Build a two-dimensional map of all titles of the novel and which tags they link to from
-        the various meta tags. This map is used to display the timeline view.
+        """Build a two-dimensional map of all titles of the novel and
+        which tags they link to from the various meta tags. This map is
+        used to display the timeline view.
         """
 
         tagMap   = {}

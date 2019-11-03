@@ -362,8 +362,8 @@ class GuiExportMain(QWidget):
             "Comments are exported as LaTeX comments."
         ),
         FMT_PDOC : (
-            "Exports first to markdown or html5. The file is then passed on to Pandoc for a second "
-            "stage. Use the Pandoc tab for settings up the conversion."
+            "Exports first to markdown or html5. The file is then passed on to Pandoc for a "
+            "second stage. Use the Pandoc tab for settings up the conversion."
         ),
     }
 
@@ -537,7 +537,8 @@ class GuiExportMain(QWidget):
     ##
 
     def _updateFormat(self, currIdx):
-        """Update help text under output format selection and file extension in file box
+        """Update help text under output format selection and file
+        extension in file box
         """
         if currIdx == -1:
             self.outputHelp.setText("")

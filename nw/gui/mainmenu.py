@@ -17,7 +17,7 @@ from PyQt5.QtCore    import QUrl
 from PyQt5.QtGui     import QIcon, QDesktopServices
 from PyQt5.QtWidgets import QMenuBar, QAction, QMessageBox
 
-from nw.enum         import nwItemType, nwItemClass, nwDocAction
+from nw.enum import nwItemType, nwItemClass, nwDocAction
 
 logger = logging.getLogger(__name__)
 
@@ -122,8 +122,9 @@ class GuiMainMenu(QMenuBar):
         aboutMsg   = (
             "<h3>About {name:s}</h3>"
             "<p>Version: {version:s}<br>Release Date: {date:s}</p>"
-            "<p>{name:s} is a markdown-like text editor designed for organising and writing novels. "
-            "It is written in Python 3 with a Qt5 GUI, using PyQt5</p>"
+            "<p>{name:s} is a markdown-like text editor designed for organising "
+            "and writing novels. It is written in Python 3 with a Qt5 GUI, "
+            "using PyQt5</p>"
             "<p>{name:s} is licensed under GPL v3.0</p>"
             "<p>{copyright:s}</p>"
             "<p>Website: <a href='{website:s}'>{website:s}</a></p>"

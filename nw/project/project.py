@@ -37,7 +37,7 @@ class NWProject():
         self.mainConf    = self.theParent.mainConf
         self.projOpened  = None # The time stamp of when the project file was opened
         self.projChanged = None # The project has unsaved changes
-        self.projAltered = None # The project has been altered this session (used to trigger backup)
+        self.projAltered = None # The project has been altered this session
 
         # Debug
         self.handleSeed  = None
@@ -224,7 +224,8 @@ class NWProject():
             if xChild.tag == "project":
                 logger.debug("Found project meta")
                 for xItem in xChild:
-                    if xItem.text is None: continue
+                    if xItem.text is None:
+                        continue
                     if xItem.tag == "name":
                         logger.verbose("Working Title: '%s'" % xItem.text)
                         self.projName = xItem.text
@@ -239,7 +240,8 @@ class NWProject():
             elif xChild.tag == "settings":
                 logger.debug("Found project settings")
                 for xItem in xChild:
-                    if xItem.text is None: continue
+                    if xItem.text is None:
+                        continue
                     if xItem.tag == "spellCheck":
                         self.spellCheck = checkBool(xItem.text,False)
                     elif xItem.tag == "lastEdited":
@@ -493,8 +495,9 @@ class NWProject():
         return None
 
     def getRootItem(self, tHandle):
-        """Iterate upwards in the tree until we find the item with parent None, the root item.
-        We do this with a for loop with a maximum depth of 200 to make infinite loops impossible.
+        """Iterate upwards in the tree until we find the item with
+        parent None, the root item. We do this with a for loop with a
+        maximum depth of 200 to make infinite loops impossible.
         """
         tItem = self.getItem(tHandle)
         if tItem is not None:
@@ -506,9 +509,10 @@ class NWProject():
         return None
 
     def getProjectItems(self):
-        """This function is called from the tree view when building the tree. Each item in the
-        project is returned in the order saved in the project file, but first it checks that it has
-        a parent item already sent to the tree.
+        """This function is called from the tree view when building the
+        tree. Each item in the project is returned in the order saved in
+        the project file, but first it checks that it has a parent item
+        already sent to the tree.
         """
         sentItems = []
         iterItems = self.treeOrder.copy()
@@ -521,10 +525,12 @@ class NWProject():
             if n > 10000:
                 return # Just in case
             if tItem is None:
-                # Technically a bug since treeOrder is built from the same data as projTree
+                # Technically a bug since treeOrder is built from the
+                # same data as projTree
                 continue
             elif tItem.parHandle is None:
-                # Item is a root, or already been identified as an orphaned item
+                # Item is a root, or already been identified as an
+                # orphaned item
                 sentItems.append(tHandle)
                 yield tItem
             elif tItem.parHandle in sentItems:
@@ -532,7 +538,8 @@ class NWProject():
                 sentItems.append(tHandle)
                 yield tItem
             elif tItem.parHandle in iterItems:
-                # Item's parent exists, but hasn't been sent yet, so add it again to the end
+                # Item's parent exists, but hasn't been sent yet, so add
+                # it again to the end
                 logger.warning("Item %s found before its parent" % tHandle)
                 iterItems.append(tHandle)
                 nMax = len(iterItems)
@@ -547,7 +554,8 @@ class NWProject():
     ##
 
     def deleteItem(self, tHandle):
-        """This only removes the item from the order list, but not from the project tree.
+        """This only removes the item from the order list, but not from
+        the project tree.
         """
         self.treeOrder.remove(tHandle)
         self.setProjectChanged(True)
@@ -560,8 +568,8 @@ class NWProject():
         return None
 
     def checkRootUnique(self, theClass):
-        """Checks if there already is a root entry of class 'theClass' in the
-        root of the project tree.
+        """Checks if there already is a root entry of class 'theClass'
+        in the root of the project tree.
         """
         if theClass == nwItemClass.CUSTOM:
             return True
@@ -689,7 +697,9 @@ class NWProject():
         if self.projMeta is None:
             return False
 
-        with open(path.join(self.projMeta, nwFiles.SESS_INFO),mode="a+",encoding="utf8") as outFile:
+        sessionFile = path.join(self.projMeta, nwFiles.SESS_INFO)
+
+        with open(sessionFile,mode="a+",encoding="utf8") as outFile:
             print((
                 "Start: {opened:s}  "
                 "End: {closed:s}  "
@@ -717,9 +727,10 @@ class NWProject():
         return itemHandle
 
     def _maintainPrevious(self):
-        """This function will take the current project file and copy it into the project cache
-        folder with an incremental file extension added. These serve as a backup in case the xml
-        file gets corrupted.
+        """This function will take the current project file and copy it
+        into the project cache folder with an incremental file extension
+        added. These serve as a backup in case the xml file gets
+        corrupted.
         """
 
         countFile = path.join(self.projCache, nwFiles.PROJ_COUNT)

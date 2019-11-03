@@ -27,8 +27,9 @@ class ToHtml(Tokenizer):
         return
 
     def setPreview(self, forPreview, doComments):
-        """If we're using this class to generate markdown preview, we need to make a few changes to
-        formatting, which is selected by this flag.
+        """If we're using this class to generate markdown preview, we
+        need to make a few changes to formatting, which is selected by
+        this flag.
         """
 
         self.forPreview = forPreview

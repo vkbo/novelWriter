@@ -83,8 +83,8 @@ def colRange(rgbStart, rgbEnd, nStep):
     return retCol
 
 def splitVersionNumber(vString):
-    """ Splits a version string on the form aa.bb.cc into major, minor and patch, and computes an
-    integer value aabbcc.
+    """ Splits a version string on the form aa.bb.cc into major, minor
+    and patch, and computes an integer value aabbcc.
     """
 
     vMajor = 0

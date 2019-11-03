@@ -153,10 +153,11 @@ class Tokenizer():
         return
 
     def tokenizeText(self):
-        """Scan the text for either lines starting with specific characters that indicate headers,
-        comments, commands etc, or just contains plain text. in the case of plain text, apply the
-        same RegExes that the syntax highlighter uses and save the locations of these formatting
-        tags into the token array.
+        """Scan the text for either lines starting with specific
+        characters that indicate headers, comments, commands etc, or
+        just contains plain text. in the case of plain text, apply the
+        same RegExes that the syntax highlighter uses and save the
+        locations of these formatting tags into the token array.
         """
 
         # RegExes for adding formatting tags within text lines

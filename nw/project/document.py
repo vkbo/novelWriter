@@ -53,7 +53,8 @@ class NWDoc():
             self.clearDocument()
             return None
 
-        # By default, the document is editable. Except for files in the trash folder.
+        # By default, the document is editable.
+        # Except for files in the trash folder.
         self.docEditable = True
         if self.theItem.parHandle == self.theProject.trashRoot:
             self.docEditable = False
@@ -70,13 +71,14 @@ class NWDoc():
                     theDoc = inFile.read()
             except Exception as e:
                 self.makeAlert(["Failed to open document file.",str(e)], nwAlert.ERROR)
-                # Note: Document must be cleared in case of an io error, or else the auto-save or
-                # save will try to overwrite it with an empty file. Return None to alert the caller.
+                # Note: Document must be cleared in case of an io error,
+                # or else the auto-save or save will try to overwrite it
+                # with an empty file. Return None to alert the caller.
                 self.clearDocument()
                 return None
         else:
-            # The document file does not exist, so we assume it's a new document and initialise an
-            # empty text string.
+            # The document file does not exist, so we assume it's a new
+            # document and initialise an empty text string.
             logger.debug("The requested document does not exist.")
             return ""
 

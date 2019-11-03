@@ -129,7 +129,8 @@ class GuiDocTree(QTreeWidget):
             tHandle = self.theProject.newRoot(nwLabels.CLASS_NAME[itemClass], itemClass)
 
         else:
-            # If no parent has been selected, make the new file under the root NOVEL item.
+            # If no parent has been selected, make the new file under
+            # the root NOVEL item.
             if pHandle is None:
                 pHandle = self.theProject.findRootItem(nwItemClass.NOVEL)
 
@@ -138,7 +139,8 @@ class GuiDocTree(QTreeWidget):
                 logger.error("Did not find anywhere to add the item!")
                 return False
 
-            # Now check if the selected item is a file, in which case the new file will be a sibling
+            # Now check if the selected item is a file, in which case
+            # the new file will be a sibling
             pItem = self.theProject.getItem(pHandle)
             if pItem.itemType == nwItemType.FILE:
                 pHandle = pItem.parHandle
@@ -177,8 +179,8 @@ class GuiDocTree(QTreeWidget):
         return True
 
     def moveTreeItem(self, nStep):
-        """Move an item up or down in the tree, but only if the treeView has focus. This also
-        applies when the menu is used.
+        """Move an item up or down in the tree, but only if the treeView
+        has focus. This also applies when the menu is used.
         """
         if QApplication.focusWidget() == self and self.theParent.hasProject:
             tHandle = self.getSelectedHandle()
@@ -225,10 +227,11 @@ class GuiDocTree(QTreeWidget):
         return retVals
 
     def deleteItem(self, tHandle=None):
-        """Delete items from the tree. Note that this does not delete the item from the item tree in
-        the project object. However, since this is only meta data, there isn't really a need to do
-        that to save memory. Items not in the tree are not saved to the project file, so a loaded
-        project will be clean anyway.
+        """Delete items from the tree. Note that this does not delete
+        the item from the item tree in the project object. However,
+        since this is only meta data, there isn't really a need to do
+        that to save memory. Items not in the tree are not saved to the
+        project file, so a loaded project will be clean anyway.
         """
 
         if tHandle is None:
@@ -453,8 +456,9 @@ class GuiDocTree(QTreeWidget):
         return
 
     def _updateItemParent(self, tHandle):
-        """Update the parent handle of an item so that the information in the project is consistent
-        with the treeView. Also move the word count over to the new parent tree.
+        """Update the parent handle of an item so that the information
+        in the project is consistent with the treeView. Also move the
+        word count over to the new parent tree.
         """
 
         trItemS = self._getTreeItem(tHandle)
@@ -496,8 +500,8 @@ class GuiDocTree(QTreeWidget):
     ##
 
     def mousePressEvent(self, theEvent):
-        """Overload mousePressEvent to clear selection if clicking the mouse in a blank
-        area of the tree view.
+        """Overload mousePressEvent to clear selection if clicking the
+        mouse in a blank area of the tree view.
         """
         QTreeWidget.mousePressEvent(self, theEvent)
         selItem = self.indexAt(theEvent.pos())
@@ -506,8 +510,8 @@ class GuiDocTree(QTreeWidget):
         return
 
     def dropEvent(self, theEvent):
-        """Overload the drop of dragged item event to check whether the drop is allowed
-        or not. Disallowed drops are cancelled.
+        """Overload the drop of dragged item event to check whether the
+        drop is allowed or not. Disallowed drops are cancelled.
         """
         sHandle = self.getSelectedHandle()
         if sHandle is None:

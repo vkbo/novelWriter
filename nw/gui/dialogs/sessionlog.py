@@ -51,9 +51,15 @@ class GuiSessionLogView(QDialog):
         self.setMinimumWidth(420)
         self.setMinimumHeight(400)
 
-        widthCol0 = self.optState.validIntRange(self.optState.getSetting("widthCol0"), 30, 999, 180)
-        widthCol1 = self.optState.validIntRange(self.optState.getSetting("widthCol1"), 30, 999, 80)
-        widthCol2 = self.optState.validIntRange(self.optState.getSetting("widthCol2"), 30, 999, 80)
+        widthCol0 = self.optState.validIntRange(
+            self.optState.getSetting("widthCol0"), 30, 999, 180
+        )
+        widthCol1 = self.optState.validIntRange(
+            self.optState.getSetting("widthCol1"), 30, 999, 80
+        )
+        widthCol2 = self.optState.validIntRange(
+            self.optState.getSetting("widthCol2"), 30, 999, 80
+        )
 
         self.listBox = QTreeWidget()
         self.listBox.setHeaderLabels(["Session Start","Length","Words",""])

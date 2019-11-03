@@ -32,8 +32,9 @@ class NWSpellEnchant(NWSpellCheck):
         return
 
     def setLanguage(self, theLang, projectDict=None):
-        """Load a dictionary for the language specified in the config. If that fails, we load a
-        dummy dictionary so that lookups don't crash.
+        """Load a dictionary for the language specified in the config.
+        If that fails, we load a dummy dictionary so that lookups don't
+        crash.
         """
         try:
             if projectDict is None:

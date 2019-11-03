@@ -55,8 +55,9 @@ class ToMarkdown(Tokenizer):
         thisPar = []
         for tType, tText, tFormat, tAlign in self.theTokens:
 
-            # First check if we have a comment or plain text, as they need some
-            # extra replacing before we proceed to wrapping and final formatting.
+            # First check if we have a comment or plain text, as they
+            # need some extra replacing before we proceed to wrapping
+            # and final formatting.
             if tType == self.T_COMMENT:
                 tText = "    %s" % tText
 
@@ -68,7 +69,8 @@ class ToMarkdown(Tokenizer):
 
             tLen = len(tText)
 
-            # The text can now be word wrapped, if we have requested this and it's needed.
+            # The text can now be word wrapped, if we have requested
+            # this and it's needed.
             if self.wordWrap > 0 and tLen > self.wordWrap:
                 if tType == self.T_COMMENT:
                     tText = textwrap.fill(
@@ -77,8 +79,9 @@ class ToMarkdown(Tokenizer):
                 else:
                     tText = tWrap.fill(tText)
 
-            # Then the text can receive final formatting before we append it to the results.
-            # We also store text lines in a buffer and merge them only when we find an empty line,
+            # Then the text can receive final formatting before we
+            # append it to the results. We also store text lines in a
+            # buffer and merge them only when we find an empty line,
             # indicating a new paragraph.
             if tType == self.T_EMPTY:
                 if len(thisPar) > 0:

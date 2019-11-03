@@ -244,7 +244,8 @@ class GuiMain(QMainWindow):
 
     def closeProject(self, isYes=False):
         """Closes the project if one is open.
-        isYes is passed on from the close application event so the user doesn't get prompted twice.
+        isYes is passed on from the close application event so the user
+        doesn't get prompted twice.
         """
         if not self.hasProject:
             # There is no project loaded, everything OK
@@ -288,15 +289,17 @@ class GuiMain(QMainWindow):
         return saveOK
 
     def openProject(self, projFile=None):
-        """Open a project. The parameter projFile is passed from the open recent projects menu, so
-        can be set. If not, we pop the dialog.
+        """Open a project. The parameter projFile is passed from the
+        open recent projects menu, so can be set. If not, we pop the
+        dialog.
         """
         if projFile is None:
             projFile = self.openProjectDialog()
         if projFile is None:
             return False
 
-        # Make sure any open project is cleared out first before we load another one
+        # Make sure any open project is cleared out first before we load
+        # another one
         if not self.closeProject():
             return False
 
@@ -629,8 +632,9 @@ class GuiMain(QMainWindow):
         return True
 
     def makeAlert(self, theMessage, theLevel=nwAlert.INFO):
-        """Alert both the user and the logger at the same time. Message can be either a string or an
-        array of strings. Severity level is 0 = info, 1 = warning, and 2 = error.
+        """Alert both the user and the logger at the same time. Message
+        can be either a string or an array of strings. Severity level is
+        0 = info, 1 = warning, and 2 = error.
         """
 
         if isinstance(theMessage, list):
@@ -724,7 +728,8 @@ class GuiMain(QMainWindow):
         return True
 
     def _autoSaveProject(self):
-        if self.hasProject and self.theProject.projChanged and self.theProject.projPath is not None:
+        if (self.hasProject and self.theProject.projChanged and
+            self.theProject.projPath is not None):
             logger.debug("Autosaving project")
             self.saveProject(isAuto=True)
         return
@@ -756,8 +761,8 @@ class GuiMain(QMainWindow):
     ##
 
     def resizeEvent(self, theEvent):
-        """Extend QMainWindow.resizeEvent to signal dependent GUI elements that its pane may have
-        changed size.
+        """Extend QMainWindow.resizeEvent to signal dependent GUI
+        elements that its pane may have changed size.
         """
         QMainWindow.resizeEvent(self,theEvent)
         self.docEditor.changeWidth()
@@ -803,7 +808,8 @@ class GuiMain(QMainWindow):
         return
 
     def _keyPressEscape(self):
-        """When the escape key is pressed somewhere in the main window, do the following, in order.
+        """When the escape key is pressed somewhere in the main window,
+        do the following, in order.
         """
         if self.searchBar.isVisible():
             self.searchBar.setVisible(False)
@@ -811,13 +817,15 @@ class GuiMain(QMainWindow):
         return
 
     def _splitMainMove(self, pWidth, pHeight):
-        """Alert dependent GUI elements that the main pane splitter has been moved.
+        """Alert dependent GUI elements that the main pane splitter has
+        been moved.
         """
         self.docEditor.changeWidth()
         return
 
     def _splitViewMove(self, pWidth, pHeight):
-        """Alert dependent GUI elements that the main pane splitter has been moved.
+        """Alert dependent GUI elements that the main pane splitter has
+        been moved.
         """
         self.docEditor.changeWidth()
         return
