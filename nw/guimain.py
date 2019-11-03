@@ -54,13 +54,13 @@ class GuiMain(QMainWindow):
             self.mainConf.osType)
         )
         logger.info("Qt5 Version: %s (%d)" % (
-            self.mainConf.verQtString,   self.mainConf.verQtValue)
+            self.mainConf.verQtString, self.mainConf.verQtValue)
         )
         logger.info("PyQt5 Version: %s (%d)" % (
             self.mainConf.verPyQtString, self.mainConf.verPyQtValue)
         )
         logger.info("Python Version: %s (0x%x)" % (
-            self.mainConf.verPyString,   self.mainConf.verPyHexVal)
+            self.mainConf.verPyString, self.mainConf.verPyHexVal)
         )
 
         self.resize(*self.mainConf.winGeometry)
