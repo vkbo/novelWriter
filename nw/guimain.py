@@ -50,13 +50,13 @@ class GuiMain(QMainWindow):
         self.theIndex   = NWIndex(self.theProject, self)
         self.hasProject = False
 
-        logger.info("OS:             %s"        % (
+        logger.info("OS: %s" % (
             self.mainConf.osType)
         )
-        logger.info("Qt5 Version:    %s (%d)"   % (
+        logger.info("Qt5 Version: %s (%d)" % (
             self.mainConf.verQtString,   self.mainConf.verQtValue)
         )
-        logger.info("PyQt5 Version:  %s (%d)"   % (
+        logger.info("PyQt5 Version: %s (%d)" % (
             self.mainConf.verPyQtString, self.mainConf.verPyQtValue)
         )
         logger.info("Python Version: %s (0x%x)" % (
@@ -125,8 +125,8 @@ class GuiMain(QMainWindow):
         self.idxEditor = self.splitView.indexOf(self.editPane)
         self.idxViewer = self.splitView.indexOf(self.viewPane)
 
-        self.splitMain.setCollapsible(self.idxTree,   False)
-        self.splitMain.setCollapsible(self.idxMain,   False)
+        self.splitMain.setCollapsible(self.idxTree, False)
+        self.splitMain.setCollapsible(self.idxMain, False)
         self.splitView.setCollapsible(self.idxEditor, False)
         self.splitView.setCollapsible(self.idxViewer, True)
 
@@ -277,7 +277,7 @@ class GuiMain(QMainWindow):
 
     def openProject(self, projFile=None):
         """Open a project. The parameter projFile is passed from the
-        open recent projects menu, so can be set. If not, we pop the
+        open recent projects menu, so it can be set. If not, we pop the
         dialog.
         """
         if projFile is None:
@@ -389,7 +389,7 @@ class GuiMain(QMainWindow):
         if self.docViewer.loadText(tHandle) and not self.viewPane.isVisible():
             bPos = self.splitMain.sizes()
             self.viewPane.setVisible(True)
-            vPos    = [0,0]
+            vPos = [0,0]
             vPos[0] = int(bPos[1]/2)
             vPos[1] = bPos[1]-vPos[0]
             self.splitView.setSizes(vPos)
