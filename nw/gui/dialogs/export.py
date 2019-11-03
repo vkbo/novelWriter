@@ -411,11 +411,13 @@ class GuiExportMain(QWidget):
         self.guiChapters.setLayout(self.guiChaptersForm)
 
         self.chapterFormat = QLineEdit()
+        self.chapterFormat.setMaxLength(200)
         self.chapterFormat.setText(self.optState.getSetting("chFormat"))
         self.chapterFormat.setToolTip("Available formats: %num%, %numword%, %title%")
         self.chapterFormat.setMinimumWidth(250)
 
         self.unnumFormat = QLineEdit()
+        self.unnumFormat.setMaxLength(200)
         self.unnumFormat.setText(self.optState.getSetting("unFormat"))
         self.unnumFormat.setToolTip("Available formats: %title%")
         self.unnumFormat.setMinimumWidth(250)
@@ -431,11 +433,13 @@ class GuiExportMain(QWidget):
         self.guiScenes.setLayout(self.guiScenesForm)
 
         self.sceneFormat = QLineEdit()
+        self.sceneFormat.setMaxLength(200)
         self.sceneFormat.setText(self.optState.getSetting("scFormat"))
         self.sceneFormat.setToolTip("Available formats: %title%")
         self.sceneFormat.setMinimumWidth(100)
 
         self.sectionFormat = QLineEdit()
+        self.sectionFormat.setMaxLength(200)
         self.sectionFormat.setText(self.optState.getSetting("seFormat"))
         self.sectionFormat.setToolTip("Available formats: %title%")
         self.sectionFormat.setMinimumWidth(100)
