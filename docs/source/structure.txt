@@ -2,8 +2,11 @@
 Project Structure
 *****************
 
-This section concerns files under the Novel type root folder.
-There are some restrictions and features that only applies to these type of files.
+This section covers the structure of a novel project.
+
+.. note::
+   This section concerns files under the Novel type root folder only.
+   There are some restrictions and features that only applies to these type of files.
 
 Importance of Headings
 ======================
@@ -30,6 +33,7 @@ Each section, indicated by a heading, can contain references to tags set in the 
 See the File Tags section.
 
 The references are gathered by the indexer and used to generate the timeline view of how the different parts of the novel are connected.
+References and tags are also clickable in the view panel, and makes it easy to navigate reference notes while writing.
 
 References are set as keyword and a list of corresponding tags.
 The valid keywords are listed below. The format of such a line is ``@keyword: value1, [value2] ... [valueN]``.
@@ -54,20 +58,24 @@ Note that not all keywords allow multiple values.
 * ``@object``: Objects present in the current section.
   The target must be a note tag in the object root folder.
   Multiple values are allowed.
+* ``@entity``: Entities present in the current section.
+  The target must be a note tag in the entities root folder.
+  Multiple values are allowed.
 * ``@custom``: Custom references in the current section.
   The target must be a note tag in the custom root folder.
   Multiple values are allowed.
 
-the syntax highlighter will alert the user that only the correct keywords are used, and that the tags referenced exist.
-If the index of defined tags is out of date, press F9 to regenerate it, or select :menuselection:`Tools --> Rebuild Indices` from the menu.
+The syntax highlighter will alert the user that only the correct keywords are used, and that the tags referenced exist.
+If the index of defined tags is out of date, press :kbd:`F9` to regenerate it, or select :menuselection:`Tools --> Rebuild Indices` from the menu.
 In general, the index for a file is regenerated when a file is saved, so this shouldn't normally be necessary.
 
 Novel File Layout
 =================
 
-Files that exist under the NOVEL type root folder can have a number of layouts set.
+Files that exist under the Novel type root folder can have a number of layouts set.
 See overview below.
-These layouts are currently not used for any internal feature, but when the export feature is added they will be important in determining how the different sections of the novel is formatted.
+These layouts are important when the project is exported, as they indicate how to treat the content in terms of formatting, headings and page breaks.
+the layout selected also shows up as flags in the tree view, making it easier to track what kind of files they are.
 
 * **Title Page**: The title page layout.
   The title should be formatted as a heading level one.
@@ -86,5 +94,8 @@ These layouts are currently not used for any internal feature, but when the expo
   This file should have a header of level three.
   Further sections can have headers of level four.
   These will not impact the overall structure, but will allow for setting new characters and plot references in parts of a scene if such granularity is needed.
-* **Note**: A generic file that is ignored when the novel is exported.
-  These layout is allowed within the Novel root folder, and is the only layout allowed for a file outside the Novel root folder.
+* **Note**: A generic file that is optionally ignored when the novel is exported.
+
+The layout granularity is entirely optional.
+In principle, you can write the entire novel in a single file with layout "Book".
+You can also have a single file per chapter.
