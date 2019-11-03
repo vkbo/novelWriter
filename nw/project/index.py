@@ -17,9 +17,8 @@ import nw
 from os import path
 
 from nw.project.document import NWDoc
-from nw.enum import nwItemType, nwItemClass, nwItemLayout
 from nw.constants import nwFiles, nwKeyWords
-from nw.enum import nwAlert
+from nw.enum import nwItemType, nwItemClass, nwItemLayout, nwAlert
 
 logger = logging.getLogger(__name__)
 

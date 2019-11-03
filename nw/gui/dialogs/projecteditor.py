@@ -24,6 +24,7 @@ from PyQt5.QtWidgets import (
     QListWidgetItem, QPushButton, QColorDialog, QAbstractItemView, QTreeWidget,
     QTreeWidgetItem, QCheckBox
 )
+
 from nw.enum import nwAlert
 
 logger = logging.getLogger(__name__)

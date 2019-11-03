@@ -19,7 +19,7 @@ from PyQt5.QtWidgets import (
     QTreeWidget, QTreeWidgetItem, QAbstractItemView, QApplication
 )
 
-from nw.project.item import NWItem
+from nw.project import NWItem
 from nw.constants import nwLabels
 from nw.enum import nwItemType, nwItemClass, nwItemLayout, nwAlert
 

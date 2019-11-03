@@ -24,10 +24,9 @@ from PyQt5.QtGui import (
     QPalette, QTextDocument,
 )
 
-from nw.project.document import NWDoc
-from nw.gui.tools.dochighlight import GuiDocHighlighter
-from nw.gui.tools.wordcounter import WordCounter
-from nw.tools.spellcheck import NWSpellCheck
+from nw.project import NWDoc
+from nw.gui.tools import GuiDocHighlighter, WordCounter
+from nw.tools import NWSpellCheck
 from nw.constants import nwFiles, nwUnicode
 from nw.enum import nwDocAction, nwAlert
 

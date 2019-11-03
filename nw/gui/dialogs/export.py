@@ -24,16 +24,11 @@ from PyQt5.QtWidgets import (
     QFileDialog, QProgressBar, QSpinBox, QMessageBox
 )
 
-from nw.project.document import NWDoc
-from nw.tools.translate import numberToWord
-from nw.tools.optlaststate import OptLastState
-from nw.convert.file.text import TextFile
-from nw.convert.file.html import HtmlFile
-from nw.convert.file.markdown import MarkdownFile
-from nw.convert.file.latex import LaTeXFile
-from nw.convert.file.concat import ConcatFile
-from nw.common import packageRefURL
+from nw.convert import TextFile, HtmlFile, MarkdownFile, LaTeXFile, ConcatFile
+from nw.project import NWDoc
+from nw.tools import numberToWord, OptLastState
 from nw.constants import nwFiles
+from nw.common import packageRefURL
 from nw.enum import nwItemType, nwAlert
 
 logger = logging.getLogger(__name__)

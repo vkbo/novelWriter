@@ -23,30 +23,17 @@ from PyQt5.QtWidgets import (
     QShortcut, QMessageBox, QProgressDialog, QDialog
 )
 
-from nw.gui.mainmenu import GuiMainMenu
-from nw.gui.statusbar import GuiMainStatus
-from nw.gui.elements.doctree import GuiDocTree
-from nw.gui.elements.doceditor import GuiDocEditor
-from nw.gui.elements.docviewer import GuiDocViewer
-from nw.gui.elements.docdetails import GuiDocDetails
-from nw.gui.elements.searchbar import GuiSearchBar
-from nw.gui.elements.noticebar import GuiNoticeBar
-from nw.gui.elements.viewdetails import GuiDocViewDetails
-from nw.gui.dialogs.configeditor import GuiConfigEditor
-from nw.gui.dialogs.projecteditor import GuiProjectEditor
-from nw.gui.dialogs.export import GuiExport
-from nw.gui.dialogs.itemeditor import GuiItemEditor
-from nw.gui.dialogs.timelineview import GuiTimeLineView
-from nw.gui.dialogs.sessionlog import GuiSessionLogView
-from nw.project.project import NWProject
-from nw.project.document import NWDoc
-from nw.project.item import NWItem
-from nw.project.index import NWIndex
-from nw.project.backup import NWBackup
-from nw.tools.wordcount import countWords
+from nw.gui import (
+    GuiMainMenu, GuiMainStatus, GuiDocTree, GuiDocEditor, GuiDocViewer,
+    GuiDocDetails, GuiSearchBar, GuiNoticeBar, GuiDocViewDetails,
+    GuiConfigEditor, GuiProjectEditor, GuiExport, GuiItemEditor,
+    GuiTimeLineView, GuiSessionLogView
+)
+from nw.constants import nwFiles
+from nw.project import NWProject, NWDoc, NWItem, NWIndex, NWBackup
+from nw.tools import countWords
 from nw.theme import Theme
 from nw.enum import nwItemType, nwAlert
-from nw.constants import nwFiles
 
 logger = logging.getLogger(__name__)
 
