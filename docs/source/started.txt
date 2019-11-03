@@ -14,7 +14,8 @@ Extract the archive to a location of your choice.
 Installing Dependencies
 =======================
 
-If you already have Python installed, and don't mind starting novelWriter from command line, all you need to do is to open your command line tool, find the folder and run:
+If you already have Python installed, all you need to do is install the dependencies.
+To do this, your need to open your command line tool, find the folder where you extracted novelWriter, and run:
 
 .. code-block:: console
 
@@ -59,7 +60,7 @@ To list all options, run:
 Building a Standalone Executable
 ================================
 
-A standalone executable can be built with pyinstaller, using the python script named "install.py" in the source folder.
+A standalone executable can be built with pyinstaller, using the provided python script "install.py" in the source folder.
 This script will automatically try to install all dependencies and build the standalone executable of novelWriter.
 You can run the script by typing the following into your command prompt:
 
@@ -85,13 +86,3 @@ Also, make sure you select the "Add Python to PATH" option.
    :width: 600
 
 Once Python is set up and running, you can either run novelWriter from the folder where you extracted it, or you can build an executable and run that from a desktop icon instead.
-
-An install script is provided to automatically pull all dependencies and build a single executable.
-Open a command prompt in the folder where you extracted novelWriter, and run:
-
-.. code-block:: console
-
-   python install.py
-
-If everything went well, you should find a "novelWriter.exe" file in a folder named "dist".
-You can right-click it and create a desktop icon if you wish.

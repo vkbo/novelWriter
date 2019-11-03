@@ -601,7 +601,7 @@ class GuiMainMenu(QMenuBar):
         self.toolsMenu.addSeparator()
 
         # Tools > Rebuild Indices
-        menuItem = QAction("Rebuild Indices", self)
+        menuItem = QAction("Rebuild Index", self)
         menuItem.setStatusTip("Rebuild the tag indices and word counts")
         menuItem.setShortcut("F9")
         menuItem.triggered.connect(self.theParent.rebuildIndex)

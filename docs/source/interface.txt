@@ -2,24 +2,32 @@
 User Interface
 ***************
 
-The user interface is kept as simple as possible to avoid distractions.
-The main window contains a tree vew pane with the entire structure of the project, and a small details panel below it to display additional information.
+The user interface is kept as simple as possible to avoid distractions when writing.
+The main window contains a tree view pane with the entire structure of the project, and a small details panel below it to display additional information about the currently selected item.
 
-Editing a document can be done by either double-clicking on it, or hitting the return key when the item is selected.
-This will open the source editor which uses a simplified markdown format described in the section below.
+Editing a document can be done by either double-clicking on it, or hitting the return key when a file is selected.
+This will open the document editor, which uses a simplified markdown format, described in the section below.
 
-The document can also be viewed as html with all the comments and commands stripped out. To view a document, simply press Ctrl+R or select a file and go to :menuselection:`Document --> View Document` in the menu.
+The document currently being edited can also be viewed in parallel in a right hand side view pane.
+To view a document, simply press :kbd:`Ctrl-R`, or select a file and go to :menuselection:`Document --> View Document` in the menu.
 The document viewed does not need to be the same document currently being edited.
+
+References to tags can also be opened in the view pane from the document editor by moving the cursor to a reference to a tag and hitting :kbd:`Ctrl-Enter`.
+In the view panel, the references become clickable links, and the "Referenced By" panel at the bottom will show links to all documents referring back to it.
+
+.. note::
+   The "Referenced By" panel relies on an up-to-date index of the project.
+   If anything is missing, or seems wrong, the index can always be rebuilt from :menuselection:`Tools --> Rebuild Index` or by pressing :kbd:`F9`.
 
 Markdown Format
 ===============
 
-the document editor uses a simplified markdown format.
+The document editor uses a simplified markdown format.
 That is, it supports basic formatting like bold, italics and underline, as well as four levels of headings.
 The formats are listed below.
 
-In addition to these standard markdown features, the editor also allows for comments, that is text that is ignored by the word counter and not exported or seen in the document viewer.
-The editor also has a minimal set of commands used for setting tags and references between files.
+In addition to these standard markdown features, the editor also allows for comments, that is text that is ignored by the word counter and not exported or, optionally, hidden in the document viewer.
+The editor also has a minimal set of keywords used for setting tags and references between files.
 
 .. csv-table:: Formatting Syntax
    :header: "Format", "Description"
@@ -34,6 +42,13 @@ The editor also has a minimal set of commands used for setting tags and referenc
    "``__text__``",        "The text is renderred as underlined text."
    "``% text...``",       "A comment. The text is not exported, seen in viewer, or counted towards word counts."
    "``@keyword: value``", "A keyword argument followed by a value, or a comma separated list of values."
+
+The editor and viewer also supports markdown standard hard line breaks, and preserves non-breaking spaces.
+A hard line break is achieved by leaving two or more spaces at the end of the line.
+Alternatively, the user can press :kbd:`Shift-Enter` to insert this.
+A non-breaking space is inserted with :kbd:`Shift-Space`.
+
+Both hard line breaks and non-breaking spaces are highlighted by the syntax highlighter as an alternate coloured background, depending on the selected theme.
 
 Keyboard Shortcuts
 ==================
@@ -71,6 +86,7 @@ These are as following:
    ":kbd:`Ctrl-Z`",          "Undo latest changes."
    ":kbd:`Ctrl-F7`",         "Toggle spell checking."
    ":kbd:`Ctrl-Del`",        "If in tree view, move a document to trash, or delete a folder."
+   ":kbd:`Ctrl-Enter`",      "Open the tag or reference under the cursor in the view panel."
    ":kbd:`Ctrl-Shift-,`",    "Change project settings."
    ":kbd:`Ctrl-Shift-1`",    "Replace occurrence of word in current document, and search for next occurrence."
    ":kbd:`Ctrl-Shift-A`",    "Select all text in current paragraph."
@@ -89,5 +105,7 @@ These are as following:
    ":kbd:`F5`",              "Export project dialog."
    ":kbd:`F7`",              "Re-run spell checker."
    ":kbd:`F9`",              "Re-build project indices."
+   ":kbd:`Shift-Enter`",     "Insert a hard line break at the cursor position."
    ":kbd:`Shift-F3`",        "Find previous occurrence of word in current document."
-   ":kbd:`Return`",          "If in tree view, open a document for editing."
+   ":kbd:`Shift-Space`",     "Insert a non-breaking space at the cursor position."
+   ":kbd:`Enter`",           "If in tree view, open a document for editing."
