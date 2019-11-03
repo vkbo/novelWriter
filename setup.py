@@ -15,8 +15,8 @@ setuptools.setup(
     license = "GNU General Public License v3",
     url = "https://github.com/vkbo/novelWriter",
     entry_points = {
-        "console_scripts" : ["novelWriter=nw:main"],
-        "gui_scripts" :     ["novelWriter-gui=nw:main"],
+        "console_scripts" : ["novelWriter-cli=nw:main"],
+        "gui_scripts" :     ["novelWriter=nw:main"],
     },
     packages = setuptools.find_packages(exclude=["docs","tests","sample"]),
     include_package_data = True,
