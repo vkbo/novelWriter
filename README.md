@@ -135,4 +135,4 @@ Further features using this meta data will be added in the future.
 
 ## Screenshot
 
-![Screenshot 1](screenshot.png)
+![Screenshot 1](docs/source/images/screenshot.png)
