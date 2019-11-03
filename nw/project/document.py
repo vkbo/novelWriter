@@ -82,7 +82,6 @@ class NWDoc():
 
         if showStatus:
             self.theParent.statusBar.setStatus("Opened Document: %s" % self.theItem.itemName)
-            self.theParent.statusBar.setDocHandle(tHandle)
 
         return theDoc
 

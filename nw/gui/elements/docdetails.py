@@ -32,7 +32,6 @@ class GuiDocDetails(QFrame):
 
         logger.debug("Initialising DocDetails ...")
         self.mainConf   = nw.CONFIG
-        self.debugGUI   = self.mainConf.debugGUI
         self.theParent  = theParent
         self.theProject = theProject
 

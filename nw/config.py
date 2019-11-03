@@ -40,7 +40,6 @@ class Config:
         self.appName   = nw.__package__
         self.appHandle = nw.__package__.lower()
         self.showGUI   = True
-        self.debugGUI  = False
         self.debugInfo = False
         self.spellTool = None
 

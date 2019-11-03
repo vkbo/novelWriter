@@ -31,7 +31,6 @@ class GuiDocViewDetails(QWidget):
 
         logger.debug("Initialising DocViewDetails ...")
         self.mainConf   = nw.CONFIG
-        self.debugGUI   = self.mainConf.debugGUI
         self.theParent  = theParent
         self.theProject = theProject
         self.currHandle = None

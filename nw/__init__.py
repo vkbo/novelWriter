@@ -80,7 +80,6 @@ def main(sysArgs=None):
         "help",
         "debug",
         "verbose",
-        "debuggui",
         "quiet",
         "time",
         "logfile=",
@@ -100,7 +99,6 @@ def main(sysArgs=None):
         " -v, --version   Print program version and exit.\n"
         " -d, --debug     Print debug output.\n"
         "     --verbose   Increase verbosity of debug output.\n"
-        " -D, --debuggui  Shows additional debug GUI elements. Includes -d.\n"
         " -q, --quiet     Disable output to command line. Does not affect log file.\n"
         " -t, --time      Shows time stamp in logging output.\n"
         " -l, --logfile=  Specify log file.\n"
@@ -124,7 +122,6 @@ def main(sysArgs=None):
     showTime   = False
     confPath   = None
     testMode   = False
-    debugGUI   = False
     spellTool  = None
     qtStyle    = "Fusion"
 
@@ -162,14 +159,9 @@ def main(sysArgs=None):
             testMode = True
         elif inOpt in ("--spell"):
             spellTool = inArg
-        elif inOpt in ("-D","--debuggui"):
-            debugLevel = logging.DEBUG
-            debugStr   = "{name:>30}:{lineno:<4d}  {levelname:8}  {message:}"
-            debugGUI   = True
 
     # Set Config Options
     CONFIG.showGUI   = not testMode
-    CONFIG.debugGUI  = debugGUI
     CONFIG.debugInfo = debugLevel < logging.INFO
     CONFIG.spellTool = spellTool
 

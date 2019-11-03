@@ -35,7 +35,6 @@ class GuiDocTree(QTreeWidget):
 
         logger.debug("Initialising DocTree ...")
         self.mainConf   = nw.CONFIG
-        self.debugGUI   = self.mainConf.debugGUI
         self.theParent  = theParent
         self.theTheme   = theParent.theTheme
         self.theProject = theProject
@@ -52,8 +51,7 @@ class GuiDocTree(QTreeWidget):
         self.setIndentation(13)
         self.setColumnCount(4)
         self.setHeaderLabels(["Label","Words","Flags","Handle"])
-        if not self.debugGUI:
-            self.hideColumn(self.C_HANDLE)
+        self.hideColumn(self.C_HANDLE)
 
         treeHead = self.headerItem()
         treeHead.setTextAlignment(self.C_COUNT,Qt.AlignRight)
