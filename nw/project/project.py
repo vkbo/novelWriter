@@ -214,7 +214,10 @@ class NWProject():
         logger.verbose("File version is %s" % fileVersion)
 
         if not nwxRoot == "novelWriterXML" or not fileVersion == "1.0":
-            self.makeAlert("Project file does not appear to be a novelWriterXML file version 1.0", nwAlert.ERROR)
+            self.makeAlert(
+                "Project file does not appear to be a novelWriterXML file version 1.0",
+                nwAlert.ERROR
+            )
             return False
 
         for xChild in xRoot:
@@ -399,16 +402,16 @@ class NWProject():
         self.doBackup = False
         if doBackup:
             if not path.isdir(self.mainConf.backupPath):
-                self.theParent.makeAlert(
-                    "You must set a valid backup path in preferences<br>to use the automatic project backup feature.",
-                    nwAlert.ERROR
-                )
+                self.theParent.makeAlert((
+                    "You must set a valid backup path in preferences to use "
+                    "the automatic project backup feature."
+                ), nwAlert.ERROR)
                 return False
             if self.projName == "":
-                self.theParent.makeAlert(
-                    "You must set a valid project name in project settings<br>to use the automatic project backup feature.",
-                    nwAlert.ERROR
-                )
+                self.theParent.makeAlert((
+                    "You must set a valid project name in project settings to use "
+                    "the automatic project backup feature."
+                ), nwAlert.ERROR)
                 return False
             self.doBackup = True
         return True
@@ -634,7 +637,10 @@ class NWProject():
 
         # Report status
         if len(orphanFiles) > 0:
-            self.makeAlert("Found %d orphaned file(s) in project folder!" % len(orphanFiles), nwAlert.WARN)
+            self.makeAlert(
+                "Found %d orphaned file(s) in project folder!" % len(orphanFiles),
+                nwAlert.WARN
+            )
         else:
             logger.debug("File check OK")
             return

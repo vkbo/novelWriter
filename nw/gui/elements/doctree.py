@@ -18,8 +18,8 @@ from PyQt5.QtGui     import QIcon, QFont, QColor
 from PyQt5.QtWidgets import QTreeWidget, QTreeWidgetItem, QAbstractItemView, QApplication
 
 from nw.project.item import NWItem
-from nw.enum         import nwItemType, nwItemClass, nwItemLayout, nwAlert
 from nw.constants    import nwLabels
+from nw.enum         import nwItemType, nwItemClass, nwItemLayout, nwAlert
 
 logger = logging.getLogger(__name__)
 
@@ -145,11 +145,15 @@ class GuiDocTree(QTreeWidget):
 
             # If we again has no home, give up
             if pHandle is None:
-                self.makeAlert("Did not find anywhere to add the file or folder!", nwAlert.ERROR)
+                self.makeAlert(
+                    "Did not find anywhere to add the file or folder!", nwAlert.ERROR
+                )
                 return False
 
             if pHandle == self.theProject.trashRoot:
-                self.makeAlert("Cannot add new files or folders to the trash folder.", nwAlert.ERROR)
+                self.makeAlert(
+                    "Cannot add new files or folders to the trash folder.", nwAlert.ERROR
+                )
                 return False
 
             # If we're still here, add the file or folder
@@ -295,10 +299,10 @@ class GuiDocTree(QTreeWidget):
             tStatus += "."+nwLabels.LAYOUT_FLAG[nwItem.itemLayout]
         iStatus = nwItem.itemStatus
         if tClass == nwItemClass.NOVEL:
-            iStatus  = self.theProject.statusItems.checkEntry(iStatus) # Make sure it's a valid index
+            iStatus  = self.theProject.statusItems.checkEntry(iStatus) # Make sure it's valid
             flagIcon = self.theParent.statusIcons[iStatus]
         else:
-            iStatus  = self.theProject.importItems.checkEntry(iStatus) # Make sure it's a valid index
+            iStatus  = self.theProject.importItems.checkEntry(iStatus) # Make sure it's valid
             flagIcon = self.theParent.importIcons[iStatus]
 
         trItem.setText(self.C_NAME, tName)

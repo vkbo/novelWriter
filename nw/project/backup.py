@@ -32,11 +32,15 @@ class NWBackup():
     def zipIt(self):
 
         if self.mainConf.backupPath is None:
-            self.theParent.makeAlert("Cannot backup project because no backup path is set.",nwAlert.WARN)
+            self.theParent.makeAlert(
+                "Cannot backup project because no backup path is set.",nwAlert.WARN
+            )
             return False
 
         if self.theProject.projName is None:
-            self.theParent.makeAlert("Cannot backup project because no project name is set.",nwAlert.WARN)
+            self.theParent.makeAlert(
+                "Cannot backup project because no project name is set.",nwAlert.WARN
+            )
             return False
 
         logger.info("Backing up project")
@@ -55,7 +59,10 @@ class NWBackup():
         try:
             make_archive(baseName, "zip", self.theProject.projPath, ".")
         except Exception as e:
-            self.theParent.makeAlert(["Could not write backup archive.",str(e)],nwAlert.ERROR)
+            self.theParent.makeAlert(
+                ["Could not write backup archive.",str(e)],
+                nwAlert.ERROR
+            )
             return False
 
         self.theParent.statusBar.setStatus("Project backup complete")

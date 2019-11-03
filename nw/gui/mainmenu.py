@@ -353,7 +353,9 @@ class GuiMainMenu(QMenuBar):
 
         # Document > Show File Details
         menuItem = QAction("Show File Details", self)
-        menuItem.setStatusTip("Shows a message box with the document location in the project folder")
+        menuItem.setStatusTip(
+            "Shows a message box with the document location in the project folder"
+        )
         menuItem.triggered.connect(self._showDocumentLocation)
         self.docuMenu.addAction(menuItem)
 

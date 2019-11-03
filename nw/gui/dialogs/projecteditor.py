@@ -221,7 +221,9 @@ class GuiProjectEditStatus(QWidget):
     def _selectColour(self):
         logger.verbose("Item colour button clicked")
         if self.selColour is not None:
-            newCol = QColorDialog.getColor(self.selColour, self, "Select Colour", QColorDialog.DontUseNativeDialog)
+            newCol = QColorDialog.getColor(
+                self.selColour, self, "Select Colour", QColorDialog.DontUseNativeDialog
+            )
             if newCol:
                 self.selColour = newCol
                 colPixmap = QPixmap(16,16)

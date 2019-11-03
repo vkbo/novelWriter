@@ -203,7 +203,8 @@ class Tokenizer():
                                 xLen = rxMatch.capturedLength(n)
                                 fmtPos.append([xPos,xLen,theKeys[n]])
 
-                # Save the line as is, but append the array of formatting locations sorted by position
+                # Save the line as is, but append the array of formatting locations
+                # sorted by position
                 fmtPos = sorted(fmtPos,key=itemgetter(0))
                 self.theTokens.append((self.T_TEXT,aLine,fmtPos,self.A_LEFT))
 

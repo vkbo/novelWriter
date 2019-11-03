@@ -13,14 +13,16 @@
 import logging
 import nw
 
-from os              import path
+from os import path
 
 from PyQt5.QtCore    import Qt, QSize
-from PyQt5.QtWidgets import QDialog, QHBoxLayout, QVBoxLayout, QGroupBox, QFormLayout, QLineEdit, QPushButton, QComboBox
 from PyQt5.QtSvg     import QSvgWidget
+from PyQt5.QtWidgets import (
+    QDialog, QHBoxLayout, QVBoxLayout, QGroupBox, QFormLayout, QLineEdit, QPushButton, QComboBox
+)
 
-from nw.enum         import nwItemLayout, nwItemClass, nwItemType
-from nw.constants    import nwLabels
+from nw.enum      import nwItemLayout, nwItemClass, nwItemType
+from nw.constants import nwLabels
 
 logger = logging.getLogger(__name__)
 
@@ -36,8 +38,8 @@ class GuiItemEditor(QDialog):
         self.theParent  = theParent
         self.theItem    = self.theProject.getItem(tHandle)
 
-        self.outerBox   = QHBoxLayout()
-        self.innerBox   = QVBoxLayout()
+        self.outerBox = QHBoxLayout()
+        self.innerBox = QVBoxLayout()
 
         self.setWindowTitle("Item Settings")
 

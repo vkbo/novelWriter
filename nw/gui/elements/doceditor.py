@@ -82,9 +82,24 @@ class GuiDocEditor(QTextEdit):
         self.setAcceptRichText(False)
 
         # Custom Shortcuts
-        QShortcut(QKeySequence("Ctrl+."), self, context=Qt.WidgetShortcut, activated=self._openSpellContext)
-        QShortcut(Qt.Key_Return | Qt.ControlModifier, self, context=Qt.WidgetShortcut, activated=self._followTag)
-        QShortcut(Qt.Key_Enter  | Qt.ControlModifier, self, context=Qt.WidgetShortcut, activated=self._followTag)
+        QShortcut(
+            QKeySequence("Ctrl+."),
+            self,
+            context = Qt.WidgetShortcut,
+            activated = self._openSpellContext
+        )
+        QShortcut(
+            Qt.Key_Return | Qt.ControlModifier,
+            self,
+            context = Qt.WidgetShortcut,
+            activated = self._followTag
+        )
+        QShortcut(
+            Qt.Key_Enter | Qt.ControlModifier,
+            self,
+            context = Qt.WidgetShortcut,
+            activated = self._followTag
+        )
 
         # Set Up Word Count Thread and Timer
         self.wcInterval = self.mainConf.wordCountTimer
@@ -459,7 +474,9 @@ class GuiDocEditor(QTextEdit):
         if len(theSuggest) > 0:
             for aWord in theSuggest:
                 mnuWord = QAction(aWord, mnuSuggest)
-                mnuWord.triggered.connect(lambda thePos, aWord=aWord : self._correctWord(theCursor, aWord))
+                mnuWord.triggered.connect(
+                    lambda thePos, aWord=aWord : self._correctWord(theCursor, aWord)
+                )
                 mnuSuggest.addAction(mnuWord)
             mnuSuggest.addSeparator()
             mnuAdd = QAction("Add Word to Dictionary", mnuSuggest)

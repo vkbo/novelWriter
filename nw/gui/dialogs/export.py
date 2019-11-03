@@ -510,7 +510,9 @@ class GuiExportMain(QWidget):
         self.fixedWidth.setMaximum(999)
         self.fixedWidth.setSingleStep(1)
         self.fixedWidth.setValue(self.optState.getSetting("fixWidth"))
-        self.fixedWidth.setToolTip("Applies to .txt and .md files. A value of '0' disables the feature.")
+        self.fixedWidth.setToolTip(
+            "Applies to .txt and .md files. A value of '0' disables the feature."
+        )
 
         self.addSettingsForm.addWidget(QLabel("Fixed width"), 0, 0)
         self.addSettingsForm.addWidget(self.fixedWidth,       0, 1)

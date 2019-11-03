@@ -407,7 +407,9 @@ class GuiConfigEditEditor(QWidget):
             self.autoReplaceDQ.setCheckState(Qt.Unchecked)
 
         self.autoReplaceDash = QCheckBox(self)
-        self.autoReplaceDash.setToolTip("Auto-replace double and triple hyphens with short and long dash.")
+        self.autoReplaceDash.setToolTip(
+            "Auto-replace double and triple hyphens with short and long dash."
+        )
         if self.mainConf.doReplaceDash:
             self.autoReplaceDash.setCheckState(Qt.Checked)
         else:

@@ -71,7 +71,9 @@ class ToMarkdown(Tokenizer):
             # The text can now be word wrapped, if we have requested this and it's needed.
             if self.wordWrap > 0 and tLen > self.wordWrap:
                 if tType == self.T_COMMENT:
-                    tText = textwrap.fill(tText.strip(),initial_indent="    ",subsequent_indent="    ")
+                    tText = textwrap.fill(
+                        tText.strip(),initial_indent="    ",subsequent_indent="    "
+                    )
                 else:
                     tText = tWrap.fill(tText)
 

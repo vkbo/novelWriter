@@ -70,8 +70,12 @@ class GuiSessionLogView(QDialog):
         self.monoFont = QFont("Monospace",10)
 
         sortValid = (Qt.AscendingOrder, Qt.DescendingOrder)
-        sortCol   = self.optState.validIntRange(self.optState.getSetting("sortCol"), 0, 2, 0)
-        sortOrder = self.optState.validIntTuple(self.optState.getSetting("sortOrder"), sortValid, Qt.DescendingOrder)
+        sortCol   = self.optState.validIntRange(
+            self.optState.getSetting("sortCol"), 0, 2, 0
+        )
+        sortOrder = self.optState.validIntTuple(
+            self.optState.getSetting("sortOrder"), sortValid, Qt.DescendingOrder
+        )
 
         self.listBox.sortByColumn(sortCol, sortOrder)
         self.listBox.setSortingEnabled(True)

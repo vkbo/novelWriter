@@ -63,10 +63,18 @@ class GuiMain(QMainWindow):
         self.theIndex   = NWIndex(self.theProject, self)
         self.hasProject = False
 
-        logger.info("OS:             %s"        % (self.mainConf.osType))
-        logger.info("Qt5 Version:    %s (%d)"   % (self.mainConf.verQtString,   self.mainConf.verQtValue))
-        logger.info("PyQt5 Version:  %s (%d)"   % (self.mainConf.verPyQtString, self.mainConf.verPyQtValue))
-        logger.info("Python Version: %s (0x%x)" % (self.mainConf.verPyString,   self.mainConf.verPyHexVal))
+        logger.info("OS:             %s"        % (
+            self.mainConf.osType)
+        )
+        logger.info("Qt5 Version:    %s (%d)"   % (
+            self.mainConf.verQtString,   self.mainConf.verQtValue)
+        )
+        logger.info("PyQt5 Version:  %s (%d)"   % (
+            self.mainConf.verPyQtString, self.mainConf.verPyQtValue)
+        )
+        logger.info("Python Version: %s (0x%x)" % (
+            self.mainConf.verPyString,   self.mainConf.verPyHexVal)
+        )
 
         self.resize(*self.mainConf.winGeometry)
         self._setWindowTitle()
@@ -157,8 +165,17 @@ class GuiMain(QMainWindow):
         self.asDocTimer.timeout.connect(self._autoSaveDocument)
 
         # Keyboard Shortcuts
-        QShortcut(Qt.Key_Return, self.treeView, context=Qt.WidgetShortcut, activated=self._treeKeyPressReturn)
-        QShortcut(Qt.Key_Escape, self, activated=self._keyPressEscape)
+        QShortcut(
+            Qt.Key_Return,
+            self.treeView,
+            context = Qt.WidgetShortcut,
+            activated = self._treeKeyPressReturn
+        )
+        QShortcut(
+            Qt.Key_Escape,
+            self,
+            activated = self._keyPressEscape
+        )
 
         # Forward Functions
         self.setStatus        = self.statusBar.setStatus
@@ -271,8 +288,8 @@ class GuiMain(QMainWindow):
         return saveOK
 
     def openProject(self, projFile=None):
-        """Open a project.
-        projFile is passed from the open recent projects menu, so can be set. If not, we pop the dialog.
+        """Open a project. The parameter projFile is passed from the open recent projects menu, so
+        can be set. If not, we pop the dialog.
         """
         if projFile is None:
             projFile = self.openProjectDialog()
@@ -415,20 +432,26 @@ class GuiMain(QMainWindow):
             with open(loadFile,mode="rt",encoding="utf8") as inFile:
                 theText = inFile.read()
         except Exception as e:
-            self.makeAlert(["Could not read file. The file cannot be a binary file.",str(e)], nwAlert.ERROR)
+            self.makeAlert(
+                ["Could not read file. The file cannot be a binary file.",str(e)],
+                nwAlert.ERROR
+            )
             return False
 
         if self.docEditor.theHandle is None:
-            self.makeAlert(["Please open a document to import the text file into."], nwAlert.ERROR)
+            self.makeAlert(
+                ["Please open a document to import the text file into."],
+                nwAlert.ERROR
+            )
             return False
 
         if not self.docEditor.isEmpty():
             if self.mainConf.showGUI:
                 msgBox = QMessageBox()
-                msgRes = msgBox.question(
-                    self, "Import Document",
-                    "Importing the file will overwrite the current content of the document. Do you want to proceed?"
-                )
+                msgRes = msgBox.question(self, "Import Document",(
+                    "Importing the file will overwrite the current content of the document. "
+                    "Do you want to proceed?"
+                ))
                 if msgRes != QMessageBox.Yes:
                     return False
             else:
@@ -733,7 +756,8 @@ class GuiMain(QMainWindow):
     ##
 
     def resizeEvent(self, theEvent):
-        """Extend QMainWindow.resizeEvent to signal dependent GUI elements that its pane may have changed size.
+        """Extend QMainWindow.resizeEvent to signal dependent GUI elements that its pane may have
+        changed size.
         """
         QMainWindow.resizeEvent(self,theEvent)
         self.docEditor.changeWidth()
@@ -779,7 +803,7 @@ class GuiMain(QMainWindow):
         return
 
     def _keyPressEscape(self):
-        """When the escape key is pressed somewhere in the main window, do the following, in order
+        """When the escape key is pressed somewhere in the main window, do the following, in order.
         """
         if self.searchBar.isVisible():
             self.searchBar.setVisible(False)
