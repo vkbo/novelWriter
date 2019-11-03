@@ -103,9 +103,12 @@ class NWDoc():
         docTemp = path.join(dataPath,docFile[:-3]+"tmp")
         docBack = path.join(dataPath,docFile[:-3]+"bak")
 
-        if path.isfile(docTemp): unlink(docTemp)
-        if path.isfile(docBack): rename(docBack,docTemp)
-        if path.isfile(docPath): rename(docPath,docBack)
+        if path.isfile(docTemp):
+            unlink(docTemp)
+        if path.isfile(docBack):
+            rename(docBack,docTemp)
+        if path.isfile(docPath):
+            rename(docPath,docBack)
 
         try:
             with open(docPath,mode="w",encoding="utf8") as outFile:

@@ -13,13 +13,15 @@
 import logging
 import nw
 
-from PyQt5.QtCore    import Qt, QSize
-from PyQt5.QtGui     import QIcon, QFont, QColor
-from PyQt5.QtWidgets import QTreeWidget, QTreeWidgetItem, QAbstractItemView, QApplication
+from PyQt5.QtCore import Qt, QSize
+from PyQt5.QtGui import QIcon, QFont, QColor
+from PyQt5.QtWidgets import (
+    QTreeWidget, QTreeWidgetItem, QAbstractItemView, QApplication
+)
 
 from nw.project.item import NWItem
-from nw.constants    import nwLabels
-from nw.enum         import nwItemType, nwItemClass, nwItemLayout, nwAlert
+from nw.constants import nwLabels
+from nw.enum import nwItemType, nwItemClass, nwItemLayout, nwAlert
 
 logger = logging.getLogger(__name__)
 

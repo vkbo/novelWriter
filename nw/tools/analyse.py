@@ -130,8 +130,8 @@ class TextAnalysis():
             else:
                 cleanText += " "
 
-        asVow    = "aeiouy'’"
-        dExept   = ("ei","ie","ua","ia","eo")
+        asVow = "aeiouy'’"
+        dExept = ("ei","ie","ua","ia","eo")
         theWords = cleanText.lower().split()
         allSylls = 0
         for inWord in theWords:

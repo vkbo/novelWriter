@@ -17,9 +17,9 @@ import nw
 from os import path
 
 from nw.project.document import NWDoc
-from nw.enum             import nwItemType, nwItemClass, nwItemLayout
-from nw.constants        import nwFiles, nwKeyWords
-from nw.enum             import nwAlert
+from nw.enum import nwItemType, nwItemClass, nwItemLayout
+from nw.constants import nwFiles, nwKeyWords
+from nw.enum import nwAlert
 
 logger = logging.getLogger(__name__)
 
@@ -62,7 +62,7 @@ class NWIndex():
         self.noteIndex  = {}
 
         # Lists
-        self.novelList  = []
+        self.novelList = []
 
         return
 
@@ -101,7 +101,7 @@ class NWIndex():
         """Load index from last session from the project meta folder.
         """
 
-        theData   = {}
+        theData = {}
         indexFile = path.join(self.theProject.projMeta, nwFiles.INDEX_FILE)
         if path.isfile(indexFile):
             logger.debug("Loading index file")
@@ -213,11 +213,11 @@ class NWIndex():
         # Check file type, and reset its old index
         if itemClass == nwItemClass.NOVEL:
             self.novelIndex[tHandle] = []
-            self.refIndex[tHandle]   = []
+            self.refIndex[tHandle] = []
             isNovel = True
         else:
             self.noteIndex[tHandle] = []
-            self.refIndex[tHandle]  = []
+            self.refIndex[tHandle] = []
             isNovel = False
 
         # Also clear references to file in tag index
@@ -390,7 +390,6 @@ class NWIndex():
     def buildNovelList(self):
         """Build a list of the content of the novel.
         """
-
         self.novelList  = []
         self.novelOrder = []
         for tHandle in self.theProject.treeOrder:
@@ -399,7 +398,6 @@ class NWIndex():
             for tEntry in self.novelIndex[tHandle]:
                 self.novelList.append(tEntry)
                 self.novelOrder.append("%s:%d" % (tHandle,tEntry[0]))
-
         return True
 
     def buildReferenceList(self, tHandle):

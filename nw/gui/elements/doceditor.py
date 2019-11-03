@@ -15,18 +15,21 @@ import nw
 
 from time import time
 
-from PyQt5.QtCore    import Qt, QTimer, QSizeF
-from PyQt5.QtWidgets import qApp, QTextEdit, QAction, QMenu, QShortcut, QMessageBox
-from PyQt5.QtGui     import (
-    QTextCursor, QTextOption, QIcon, QKeySequence, QFont, QColor, QPalette, QTextDocument,
+from PyQt5.QtCore import Qt, QTimer, QSizeF
+from PyQt5.QtWidgets import (
+    qApp, QTextEdit, QAction, QMenu, QShortcut, QMessageBox
+)
+from PyQt5.QtGui import (
+    QTextCursor, QTextOption, QIcon, QKeySequence, QFont, QColor,
+    QPalette, QTextDocument,
 )
 
-from nw.project.document       import NWDoc
+from nw.project.document import NWDoc
 from nw.gui.tools.dochighlight import GuiDocHighlighter
-from nw.gui.tools.wordcounter  import WordCounter
-from nw.tools.spellcheck       import NWSpellCheck
-from nw.constants              import nwFiles, nwUnicode
-from nw.enum                   import nwDocAction, nwAlert
+from nw.gui.tools.wordcounter import WordCounter
+from nw.tools.spellcheck import NWSpellCheck
+from nw.constants import nwFiles, nwUnicode
+from nw.enum import nwDocAction, nwAlert
 
 logger = logging.getLogger(__name__)
 
@@ -85,20 +88,20 @@ class GuiDocEditor(QTextEdit):
         QShortcut(
             QKeySequence("Ctrl+."),
             self,
-            context = Qt.WidgetShortcut,
-            activated = self._openSpellContext
+            context=Qt.WidgetShortcut,
+            activated=self._openSpellContext
         )
         QShortcut(
             Qt.Key_Return | Qt.ControlModifier,
             self,
-            context = Qt.WidgetShortcut,
-            activated = self._followTag
+            context=Qt.WidgetShortcut,
+            activated=self._followTag
         )
         QShortcut(
             Qt.Key_Enter | Qt.ControlModifier,
             self,
-            context = Qt.WidgetShortcut,
-            activated = self._followTag
+            context=Qt.WidgetShortcut,
+            activated=self._followTag
         )
 
         # Set Up Word Count Thread and Timer
@@ -684,7 +687,7 @@ class GuiDocEditor(QTextEdit):
         the document. Wraps back to the top if not found.
         """
         searchFor = self.theParent.searchBar.getSearchText()
-        wasFound = self.find(searchFor)
+        wasFound  = self.find(searchFor)
         if not wasFound:
             theCursor = self.textCursor()
             theCursor.movePosition(QTextCursor.Start)

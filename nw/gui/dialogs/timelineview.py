@@ -15,16 +15,17 @@ import nw
 
 from os import path
 
-from PyQt5.QtCore    import Qt
-from PyQt5.QtGui     import QIcon, QColor, QPixmap
+from PyQt5.QtCore import Qt
+from PyQt5.QtGui import QIcon, QColor, QPixmap
 from PyQt5.QtWidgets import (
-    QDialog, QVBoxLayout, QHBoxLayout, QTableWidget, QTableWidgetItem, QDialogButtonBox, QLabel,
-    QPushButton, QHeaderView, QGridLayout, QGroupBox, QCheckBox
+    QDialog, QVBoxLayout, QHBoxLayout, QTableWidget, QTableWidgetItem,
+    QDialogButtonBox, QLabel, QPushButton, QHeaderView, QGridLayout,
+    QGroupBox, QCheckBox
 )
 
 from nw.tools.optlaststate import OptLastState
-from nw.constants          import nwFiles
-from nw.enum               import nwItemClass
+from nw.constants import nwFiles
+from nw.enum import nwItemClass
 
 logger = logging.getLogger(__name__)
 

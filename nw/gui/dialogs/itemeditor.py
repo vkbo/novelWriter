@@ -15,13 +15,14 @@ import nw
 
 from os import path
 
-from PyQt5.QtCore    import Qt, QSize
-from PyQt5.QtSvg     import QSvgWidget
+from PyQt5.QtCore import Qt, QSize
+from PyQt5.QtSvg import QSvgWidget
 from PyQt5.QtWidgets import (
-    QDialog, QHBoxLayout, QVBoxLayout, QGroupBox, QFormLayout, QLineEdit, QPushButton, QComboBox
+    QDialog, QHBoxLayout, QVBoxLayout, QGroupBox, QFormLayout,
+    QLineEdit, QPushButton, QComboBox
 )
 
-from nw.enum      import nwItemLayout, nwItemClass, nwItemType
+from nw.enum import nwItemLayout, nwItemClass, nwItemType
 from nw.constants import nwLabels
 
 logger = logging.getLogger(__name__)

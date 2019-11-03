@@ -15,13 +15,14 @@ import nw
 
 from os import path
 
-from PyQt5.QtCore    import Qt, QSize
-from PyQt5.QtGui     import QIcon, QPixmap, QColor, QBrush, QStandardItemModel
-from PyQt5.QtSvg     import QSvgWidget
+from PyQt5.QtCore import Qt, QSize
+from PyQt5.QtGui import QIcon, QPixmap, QColor, QBrush, QStandardItemModel
+from PyQt5.QtSvg import QSvgWidget
 from PyQt5.QtWidgets import (
-    QDialog, QHBoxLayout, QVBoxLayout, QFormLayout, QLineEdit, QPlainTextEdit, QLabel,
-    QWidget, QTabWidget, QDialogButtonBox, QListWidget, QListWidgetItem, QPushButton,
-    QColorDialog, QAbstractItemView, QTreeWidget, QTreeWidgetItem, QCheckBox
+    QDialog, QHBoxLayout, QVBoxLayout, QFormLayout, QLineEdit, QPlainTextEdit,
+    QLabel, QWidget, QTabWidget, QDialogButtonBox, QListWidget,
+    QListWidgetItem, QPushButton, QColorDialog, QAbstractItemView, QTreeWidget,
+    QTreeWidgetItem, QCheckBox
 )
 from nw.enum import nwAlert
 
@@ -173,7 +174,7 @@ class GuiProjectEditStatus(QWidget):
         for iName, iCol, nUse in self.theStatus:
             self._addItem(iName, iCol, iName, nUse)
 
-        self.editName   = QLineEdit()
+        self.editName = QLineEdit()
         self.editName.setEnabled(False)
         self.newButton  = QPushButton("New")
         self.delButton  = QPushButton("Delete")

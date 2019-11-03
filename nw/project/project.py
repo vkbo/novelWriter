@@ -13,18 +13,18 @@
 import logging
 import nw
 
-from os       import path, mkdir, listdir
-from shutil   import copyfile
-from lxml     import etree
-from hashlib  import sha256
+from os import path, mkdir, listdir
+from shutil import copyfile
+from lxml import etree
+from hashlib import sha256
 from datetime import datetime
-from time     import time
+from time import time
 
-from nw.project.item   import NWItem
+from nw.project.item import NWItem
 from nw.project.status import NWStatus
-from nw.enum           import nwItemType, nwItemClass, nwItemLayout, nwAlert
-from nw.common         import checkString, checkBool, checkInt
-from nw.constants      import nwFiles, nwConst
+from nw.enum import nwItemType, nwItemClass, nwItemLayout, nwAlert
+from nw.common import checkString, checkBool, checkInt
+from nw.constants import nwFiles, nwConst
 
 logger = logging.getLogger(__name__)
 
@@ -40,18 +40,18 @@ class NWProject():
         self.projAltered = None # The project has been altered this session
 
         # Debug
-        self.handleSeed  = None
+        self.handleSeed = None
 
         # Class Settings
-        self.projTree    = None # Holds all the items of the project
-        self.treeOrder   = None # The order of the tree items on the tree view
-        self.treeRoots   = None # The root items of the tree
-        self.trashRoot   = None # The handle of the trash root folder
-        self.projPath    = None # The full path to where the currently open project is saved
-        self.projMeta    = None # The full path to the project's meta data folder
-        self.projCache   = None # The full path to the project's cache folder
-        self.projDict    = None # The spell check dictionary
-        self.projFile    = None # The file name of the project main xml file
+        self.projTree  = None # Holds all the items of the project
+        self.treeOrder = None # The order of the tree items on the tree view
+        self.treeRoots = None # The root items of the tree
+        self.trashRoot = None # The handle of the trash root folder
+        self.projPath  = None # The full path to where the currently open project is saved
+        self.projMeta  = None # The full path to the project's meta data folder
+        self.projCache = None # The full path to the project's cache folder
+        self.projDict  = None # The spell check dictionary
+        self.projFile  = None # The file name of the project main xml file
 
         # Project Meta
         self.projName    = None
@@ -194,8 +194,10 @@ class NWProject():
         self.projCache = path.join(self.projPath,"cache")
         self.projDict  = path.join(self.projMeta, nwFiles.PROJ_DICT)
 
-        if not self._checkFolder(self.projMeta):  return
-        if not self._checkFolder(self.projCache): return
+        if not self._checkFolder(self.projMeta):
+            return
+        if not self._checkFolder(self.projCache):
+            return
 
         try:
             nwXML = etree.parse(fileName)
@@ -313,19 +315,19 @@ class NWProject():
         })
 
         # Save Project Meta
-        xProject = etree.SubElement(nwXML,"project")
-        self._saveProjectValue(xProject,"name",  self.projName,  True)
-        self._saveProjectValue(xProject,"title", self.bookTitle, True)
-        self._saveProjectValue(xProject,"author",self.bookAuthors)
-        self._saveProjectValue(xProject,"backup",self.doBackup)
+        xProject = etree.SubElement(nwXML, "project")
+        self._saveProjectValue(xProject, "name", self.projName,  True)
+        self._saveProjectValue(xProject, "title", self.bookTitle, True)
+        self._saveProjectValue(xProject, "author", self.bookAuthors)
+        self._saveProjectValue(xProject, "backup", self.doBackup)
 
         # Save Project Settings
-        xSettings = etree.SubElement(nwXML,"settings")
-        self._saveProjectValue(xSettings,"spellCheck",   self.spellCheck)
-        self._saveProjectValue(xSettings,"lastEdited",   self.lastEdited)
-        self._saveProjectValue(xSettings,"lastViewed",   self.lastViewed)
-        self._saveProjectValue(xSettings,"lastWordCount",self.currWCount)
-        xAutoRep = etree.SubElement(xSettings,"autoReplace")
+        xSettings = etree.SubElement(nwXML, "settings")
+        self._saveProjectValue(xSettings, "spellCheck", self.spellCheck)
+        self._saveProjectValue(xSettings, "lastEdited", self.lastEdited)
+        self._saveProjectValue(xSettings, "lastViewed", self.lastViewed)
+        self._saveProjectValue(xSettings, "lastWordCount", self.currWCount)
+        xAutoRep = etree.SubElement(xSettings, "autoReplace")
         for aKey, aValue in self.autoReplace.items():
             if len(aKey) > 0:
                 self._saveProjectValue(xAutoRep,aKey,aValue)
@@ -337,7 +339,7 @@ class NWProject():
 
         # Save Tree Content
         logger.debug("Writing project content")
-        xContent = etree.SubElement(nwXML,"content",attrib={"count":str(len(self.treeOrder))})
+        xContent = etree.SubElement(nwXML, "content", attrib={"count":str(len(self.treeOrder))})
         for tHandle in self.treeOrder:
             self.projTree[tHandle].packXML(xContent)
 
@@ -411,8 +413,8 @@ class NWProject():
                 return False
             if self.projName == "":
                 self.theParent.makeAlert((
-                    "You must set a valid project name in project settings to use "
-                    "the automatic project backup feature."
+                    "You must set a valid project name in project settings to "
+                    "use the automatic project backup feature."
                 ), nwAlert.ERROR)
                 return False
             self.doBackup = True
@@ -699,7 +701,7 @@ class NWProject():
 
         sessionFile = path.join(self.projMeta, nwFiles.SESS_INFO)
 
-        with open(sessionFile,mode="a+",encoding="utf8") as outFile:
+        with open(sessionFile, mode="a+", encoding="utf8") as outFile:
             print((
                 "Start: {opened:s}  "
                 "End: {closed:s}  "
@@ -750,8 +752,8 @@ class NWProject():
 
         try:
             copyfile(
-                path.join(self.projPath,self.projFile),
-                path.join(self.projCache,projBackup)
+                path.join(self.projPath, self.projFile),
+                path.join(self.projCache, projBackup)
             )
         except:
             logger.error("Failed to write to file %s" % projBackup)

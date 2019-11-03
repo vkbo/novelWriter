@@ -16,37 +16,37 @@ import nw
 
 from os import path
 
-from PyQt5.QtCore    import Qt, QTimer
-from PyQt5.QtGui     import QIcon, QPixmap, QColor
+from PyQt5.QtCore import Qt, QTimer
+from PyQt5.QtGui import QIcon, QPixmap, QColor
 from PyQt5.QtWidgets import (
     qApp, QWidget, QMainWindow, QVBoxLayout, QFrame, QSplitter, QFileDialog,
     QShortcut, QMessageBox, QProgressDialog, QDialog
 )
 
-from nw.gui.mainmenu              import GuiMainMenu
-from nw.gui.statusbar             import GuiMainStatus
-from nw.gui.elements.doctree      import GuiDocTree
-from nw.gui.elements.doceditor    import GuiDocEditor
-from nw.gui.elements.docviewer    import GuiDocViewer
-from nw.gui.elements.docdetails   import GuiDocDetails
-from nw.gui.elements.searchbar    import GuiSearchBar
-from nw.gui.elements.noticebar    import GuiNoticeBar
-from nw.gui.elements.viewdetails  import GuiDocViewDetails
-from nw.gui.dialogs.configeditor  import GuiConfigEditor
+from nw.gui.mainmenu import GuiMainMenu
+from nw.gui.statusbar import GuiMainStatus
+from nw.gui.elements.doctree import GuiDocTree
+from nw.gui.elements.doceditor import GuiDocEditor
+from nw.gui.elements.docviewer import GuiDocViewer
+from nw.gui.elements.docdetails import GuiDocDetails
+from nw.gui.elements.searchbar import GuiSearchBar
+from nw.gui.elements.noticebar import GuiNoticeBar
+from nw.gui.elements.viewdetails import GuiDocViewDetails
+from nw.gui.dialogs.configeditor import GuiConfigEditor
 from nw.gui.dialogs.projecteditor import GuiProjectEditor
-from nw.gui.dialogs.export        import GuiExport
-from nw.gui.dialogs.itemeditor    import GuiItemEditor
-from nw.gui.dialogs.timelineview  import GuiTimeLineView
-from nw.gui.dialogs.sessionlog    import GuiSessionLogView
-from nw.project.project           import NWProject
-from nw.project.document          import NWDoc
-from nw.project.item              import NWItem
-from nw.project.index             import NWIndex
-from nw.project.backup            import NWBackup
-from nw.tools.wordcount           import countWords
-from nw.theme                     import Theme
-from nw.enum                      import nwItemType, nwAlert
-from nw.constants                 import nwFiles
+from nw.gui.dialogs.export import GuiExport
+from nw.gui.dialogs.itemeditor import GuiItemEditor
+from nw.gui.dialogs.timelineview import GuiTimeLineView
+from nw.gui.dialogs.sessionlog import GuiSessionLogView
+from nw.project.project import NWProject
+from nw.project.document import NWDoc
+from nw.project.item import NWItem
+from nw.project.index import NWIndex
+from nw.project.backup import NWBackup
+from nw.tools.wordcount import countWords
+from nw.theme import Theme
+from nw.enum import nwItemType, nwAlert
+from nw.constants import nwFiles
 
 logger = logging.getLogger(__name__)
 
@@ -168,17 +168,17 @@ class GuiMain(QMainWindow):
         QShortcut(
             Qt.Key_Return,
             self.treeView,
-            context = Qt.WidgetShortcut,
-            activated = self._treeKeyPressReturn
+            context=Qt.WidgetShortcut,
+            activated=self._treeKeyPressReturn
         )
         QShortcut(
             Qt.Key_Escape,
             self,
-            activated = self._keyPressEscape
+            activated=self._keyPressEscape
         )
 
         # Forward Functions
-        self.setStatus        = self.statusBar.setStatus
+        self.setStatus = self.statusBar.setStatus
         self.setProjectStatus = self.statusBar.setProjectStatus
 
         if self.mainConf.showGUI:
@@ -578,7 +578,7 @@ class GuiMain(QMainWindow):
         dlgOpt |= QFileDialog.ShowDirsOnly
         dlgOpt |= QFileDialog.DontUseNativeDialog
         projPath = QFileDialog.getExistingDirectory(
-            self,"Save novelWriter Project","",options=dlgOpt
+            self, "Save novelWriter Project", "", options=dlgOpt
         )
         if projPath:
             return projPath
@@ -589,7 +589,7 @@ class GuiMain(QMainWindow):
         dlgOpt |= QFileDialog.ShowDirsOnly
         dlgOpt |= QFileDialog.DontUseNativeDialog
         projPath = QFileDialog.getExistingDirectory(
-            self,"Select Location for New novelWriter Project","",options=dlgOpt
+            self, "Select Location for New novelWriter Project", "", options=dlgOpt
         )
         if projPath:
             return projPath

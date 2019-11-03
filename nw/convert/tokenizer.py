@@ -15,12 +15,12 @@ import logging
 import re
 import nw
 
-from operator            import itemgetter
-from PyQt5.QtCore        import QRegularExpression
+from operator import itemgetter
+from PyQt5.QtCore import QRegularExpression
 
 from nw.project.document import NWDoc
-from nw.tools.translate  import numberToWord
-from nw.enum             import nwItemLayout
+from nw.tools.translate import numberToWord
+from nw.enum import nwItemLayout
 
 logger = logging.getLogger(__name__)
 
@@ -230,7 +230,8 @@ class Tokenizer():
         if isNone: return
         if isNote: return
 
-        # For novel files, we need to handle chapter numbering and scene breaks
+        # For novel files, we need to handle chapter numbering and scene
+        # breaks
         if isBook or isUnNum or isChap or isScene:
             for n in range(len(self.theTokens)):
 

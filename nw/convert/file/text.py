@@ -13,11 +13,12 @@
 import logging
 import nw
 
-from os              import path
+from os import path
+
 from PyQt5.QtWidgets import QMessageBox
 
 from nw.convert.text.totext import ToText
-from nw.enum                import nwAlert, nwItemType, nwItemLayout, nwItemClass
+from nw.enum import nwAlert, nwItemType, nwItemLayout, nwItemClass
 
 logger = logging.getLogger(__name__)
 
@@ -29,14 +30,14 @@ class TextFile():
         self.theProject = theProject
         self.theParent  = theParent
 
-        self.outFile    = None
-        self.fileName   = ""
-        self.theText    = ""
-        self.expNovel   = True
-        self.expNotes   = False
+        self.outFile  = None
+        self.fileName = ""
+        self.theText  = ""
+        self.expNovel = True
+        self.expNotes = False
 
-        self.theConv    = ToText(self.theProject, self.theParent)
-        self.makeAlert  = self.theParent.makeAlert
+        self.theConv   = ToText(self.theProject, self.theParent)
+        self.makeAlert = self.theParent.makeAlert
 
         self.setComments(False)
         self.setKeywords(False)

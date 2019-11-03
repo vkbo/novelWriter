@@ -16,7 +16,7 @@ import re
 import nw
 
 from nw.convert.tokenizer import Tokenizer
-from nw.constants         import nwUnicode
+from nw.constants import nwUnicode
 
 logger = logging.getLogger(__name__)
 

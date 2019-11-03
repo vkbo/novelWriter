@@ -13,13 +13,13 @@
 import logging
 import nw
 
-from PyQt5.QtCore    import Qt
+from PyQt5.QtCore import Qt
 from PyQt5.QtWidgets import QTextBrowser
-from PyQt5.QtGui     import QTextOption, QFont, QPalette, QColor
+from PyQt5.QtGui import QTextOption, QFont, QPalette, QColor
 
-from nw.convert.tokenizer   import Tokenizer
+from nw.convert.tokenizer import Tokenizer
 from nw.convert.text.tohtml import ToHtml
-from nw.enum                import nwAlert, nwItemType
+from nw.enum import nwAlert, nwItemType
 
 logger = logging.getLogger(__name__)
 

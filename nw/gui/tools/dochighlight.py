@@ -14,7 +14,9 @@ import logging
 import nw
 
 from PyQt5.QtCore import Qt, QRegularExpression
-from PyQt5.QtGui  import QColor, QTextCharFormat, QFont, QSyntaxHighlighter, QBrush
+from PyQt5.QtGui import (
+    QColor, QTextCharFormat, QFont, QSyntaxHighlighter, QBrush
+)
 
 from nw.constants import nwUnicode
 
@@ -38,18 +40,18 @@ class GuiDocHighlighter(QSyntaxHighlighter):
         self.hRules     = []
         self.hStyles    = {}
 
-        self.colHead    = QColor(0,0,0)
-        self.colHeadH   = QColor(0,0,0)
-        self.colEmph    = QColor(0,0,0)
-        self.colDialN   = QColor(0,0,0)
-        self.colDialD   = QColor(0,0,0)
-        self.colDialS   = QColor(0,0,0)
-        self.colComm    = QColor(0,0,0)
-        self.colKey     = QColor(0,0,0)
-        self.colVal     = QColor(0,0,0)
-        self.colSpell   = QColor(0,0,0)
-        self.colTagErr  = QColor(0,0,0)
-        self.colRepTag  = QColor(0,0,0)
+        self.colHead   = QColor(0,0,0)
+        self.colHeadH  = QColor(0,0,0)
+        self.colEmph   = QColor(0,0,0)
+        self.colDialN  = QColor(0,0,0)
+        self.colDialD  = QColor(0,0,0)
+        self.colDialS  = QColor(0,0,0)
+        self.colComm   = QColor(0,0,0)
+        self.colKey    = QColor(0,0,0)
+        self.colVal    = QColor(0,0,0)
+        self.colSpell  = QColor(0,0,0)
+        self.colTagErr = QColor(0,0,0)
+        self.colRepTag = QColor(0,0,0)
 
         self.initHighlighter()
 
@@ -196,7 +198,7 @@ class GuiDocHighlighter(QSyntaxHighlighter):
         ))
 
         self.hRules.append((
-            "<(\S+?)>", {
+            r"<(\S+?)>", {
                 0 : self.hStyles["replace"],
             }
         ))

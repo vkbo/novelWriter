@@ -13,8 +13,8 @@
 import logging
 import nw
 
-from PyQt5.QtCore    import QUrl
-from PyQt5.QtGui     import QIcon, QDesktopServices
+from PyQt5.QtCore import QUrl
+from PyQt5.QtGui import QIcon, QDesktopServices
 from PyQt5.QtWidgets import QMenuBar, QAction, QMessageBox
 
 from nw.enum import nwItemType, nwItemClass, nwDocAction
@@ -78,7 +78,9 @@ class GuiMainMenu(QMenuBar):
             recentProject = self.mainConf.recentList[n]
             if recentProject == "": continue
             menuItem = QAction("%s" % recentProject, self.projMenu)
-            menuItem.triggered.connect(lambda menuItem, n=n : self.openRecentProject(menuItem, n))
+            menuItem.triggered.connect(
+                lambda menuItem, n=n : self.openRecentProject(menuItem, n)
+            )
             self.recentMenu.addAction(menuItem)
 
         self.recentMenu.addSeparator()

@@ -15,15 +15,15 @@ import configparser
 import sys
 import nw
 
-from os           import path, mkdir, makedirs, getcwd
-from appdirs      import user_config_dir
-from datetime     import datetime
+from os import path, mkdir, makedirs, getcwd
+from appdirs import user_config_dir
+from datetime import datetime
+
+from PyQt5.Qt import PYQT_VERSION_STR
+from PyQt5.QtCore import QT_VERSION_STR
 
 from nw.constants import nwFiles, nwUnicode
-from nw.common    import splitVersionNumber
-
-from PyQt5.Qt     import PYQT_VERSION_STR
-from PyQt5.QtCore import QT_VERSION_STR
+from nw.common import splitVersionNumber
 
 logger = logging.getLogger(__name__)
 
@@ -59,8 +59,8 @@ class Config:
         self.confChanged  = False
 
         ## General
-        self.guiTheme     = "default"
-        self.guiSyntax    = "default_light"
+        self.guiTheme  = "default"
+        self.guiSyntax = "default_light"
 
         ## Sizes
         self.winGeometry  = [1100, 650]

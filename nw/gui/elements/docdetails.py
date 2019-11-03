@@ -13,10 +13,10 @@
 import logging
 import nw
 
-from PyQt5.QtGui     import QFont
+from PyQt5.QtGui import QFont
 from PyQt5.QtWidgets import QFrame, QGridLayout, QLabel
 
-from nw.constants    import nwLabels
+from nw.constants import nwLabels
 
 logger = logging.getLogger(__name__)
 

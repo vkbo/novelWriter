@@ -13,9 +13,9 @@
 import logging
 import nw
 
-from nw.convert.file.text    import TextFile
+from nw.convert.file.text import TextFile
 from nw.convert.text.tolatex import ToLaTeX
-from nw.enum                 import nwAlert
+from nw.enum import nwAlert
 
 logger = logging.getLogger(__name__)
 
@@ -32,7 +32,6 @@ class LaTeXFile(TextFile):
     ##
 
     def _doOpenFile(self, filePath):
-
         try:
             self.outFile = open(filePath,mode="wt+",encoding="utf8")
             self.outFile.write("\\documentclass[12pt]{report}\n")
@@ -43,17 +42,13 @@ class LaTeXFile(TextFile):
         except Exception as e:
             self.makeAlert(["Failed to open file.",str(e)], nwAlert.ERROR)
             return False
-
         return True
 
     def _doCloseFile(self):
-
         if self.outFile is not None:
             self.outFile.write("\\end{document}\n")
             self.outFile.close()
-
         self.texCodecFail = self.theConv.texCodecFail
-
         return True
 
 # END Class LaTeXFile

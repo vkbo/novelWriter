@@ -13,9 +13,10 @@
 import logging
 import nw
 
-from time            import time
-from PyQt5.QtCore    import Qt, QTimer
-from PyQt5.QtGui     import QIcon, QColor, QPixmap
+from time import time
+
+from PyQt5.QtCore import Qt, QTimer
+from PyQt5.QtGui import QIcon, QColor, QPixmap
 from PyQt5.QtWidgets import QStatusBar, QLabel, QFrame
 
 logger = logging.getLogger(__name__)

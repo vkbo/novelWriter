@@ -13,8 +13,8 @@
 import logging
 import nw
 
-from os       import path, mkdir, listdir
-from shutil   import make_archive
+from os import path, mkdir, listdir
+from shutil import make_archive
 from datetime import datetime
 
 from nw.enum import nwAlert
