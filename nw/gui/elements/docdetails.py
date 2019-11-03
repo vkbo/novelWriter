@@ -13,6 +13,7 @@
 import logging
 import nw
 
+from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QFont
 from PyQt5.QtWidgets import QFrame, QGridLayout, QLabel
 
@@ -57,8 +58,11 @@ class GuiDocDetails(QFrame):
         for nRow in range(4):
             lblOne = QLabel(colOne[nRow])
             lblOne.setFont(self.fntOne)
+            lblOne.setAlignment(Qt.AlignTop)
             self.mainBox.addWidget(lblOne,nRow,0)
             self.mainBox.addWidget(self.colTwo[nRow],nRow,1)
+            self.colTwo[nRow].setWordWrap(True)
+            self.colTwo[nRow].setAlignment(Qt.AlignTop)
 
         self.mainBox.setColumnStretch(0,0)
         self.mainBox.setColumnStretch(1,1)
@@ -74,8 +78,11 @@ class GuiDocDetails(QFrame):
         if nwItem is None:
             colTwo = [""]*4
         else:
+            theLabel = nwItem.itemName
+            if len(theLabel) > 100:
+                theLabel = theLabel[:96].rstrip()+" ..."
             colTwo = [
-                nwItem.itemName,
+                theLabel,
                 nwItem.itemStatus,
                 nwLabels.CLASS_NAME[nwItem.itemClass],
                 nwLabels.LAYOUT_NAME[nwItem.itemLayout],
