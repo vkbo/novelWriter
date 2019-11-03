@@ -1,5 +1,42 @@
 # novelWriter ChangeLog
 
+## Version 0.4 [2019-11-03]
+
+**Features**
+
+* The export dialog now allows limited support for exports using Pandoc. The Pandoc conversion is run as a stage two of the export process. Pandoc integration is fickly on Windows, but works well on Linux. PRs #82 and #104
+* The editor now supports Markdown standard hard line breaks, and export these correctly to the various file formats and to the document view pane. Hard line breaks can be inserted by either appending two or more spaces to the end of a line, or by pressing `Shift+Enter`. PR #83
+* The editor now supports and preserves non-breaking spaces. Unfortunately, the preservation of these spaces on save and reload is dependent on Qt 5.9 or larger. Non-breaking spaces are preserved on export to html and LaTeX. PR #87
+* An option to show tabs/spaces and line endings in the document editor has been added to the Preferences dialog. PR #90
+* The document view pane now has a "Referenced By" panel at the bottom, showing links to all documents referring back to the document being viewed. The panel is collapsible, and has a sticky option that will prevent it from updating if links are followed. PRs #109 and #110
+* The tag and reference system no longer has any restrictions on file class. That is, any file can have tags and references, and they are indexed by the indexer and displayed as links in the document view pane. The timeline view behaves as before, only listing active Novel files. PR #114
+* A new root folder type and keyword for "Entities" has been added. These can be useful for describing plot elements fitting under such a category. PR #115
+
+**User Interface**
+
+* Tags and references in the editor are now "clickable" in the sense that pressing `Ctrl+Enter` with the cursor on them will open the reference in the view pane. PR #98
+* Warnings triggered when the user tries to use features with missing package dependencies will now provide a link to the package website. PR #86
+* Adding the `~` character in file path boxes is now expanded to the user's home directory. PR #94
+* The recent projects submenu no longer has a number prefix, and a "Clear Recent Projects" option has been added. PRs #86 and #94
+* Syntax themes based on Night Owl and Light Owl themes have been added. PR #97
+* Read-only files now have a notification popping up at the top of the edit pane, and the files are actually not editable. PR #106
+* Tabs are now properly exported in formats where this makes sense. For plain text files, a tab is converted to four spaces. For html exports they are converted to a long space, equivalent to four spaces. PR #113
+* A toggle button in the Document menu now allows displaying file comments in the document view panel. PR #115
+
+**Bug Fixes**
+
+* Some issues with unicode conversion and LaTeX export have been addressed, but the escaping of unicode characters is prone to errors. The user should be careful with using special symbols if export to LaTeX is intended. The package `latexcodec` should be able to handle Latin based, language specific characters. PRs #73, #79.
+* Fixed some long-standing issues with running novelWriter on Windows. The config folder requires a set of two folders to be created on first use, which the config class did not expect. This is now resolved. In addition, Python does not default to utf-8 when writing files on Windows, so all open statements now have encoding defined. Failing to open files also had the risk of truncating them. This has been avoided by distinguishing new files from broken files. PR #81
+* Dark theme was not rendering properly on multiple platforms. This was resolved by forcing the QT5 style to "Fusion", which allows further formatting by the novelWriter themes code. The user can override the Qt styling option through the `--style=` flag on the command line. PR #96
+* The behaviour of files in the Trash folder has been fixed. These are now read only. PR #106
+* Fixed a bug where the last line of a title or partition page would be ignored on export. PR #113
+* Drag and drop onto the root level of the tree has been disabled. This was anyway only allowed for root folder items, but it was tricky to enforce this properly for other files. In order to move root folders around now, the move up and down features need to be used instead. #115
+
+**Installation**
+
+* A script for `pyinstaller` has been added, making it possible to generate standalone executables of novelWriter on at least Windows and Linux. PR #91
+* novelWriter has been makde `pip install` ready. PRs #107 and 108
+
 ## Version 0.3.2 [2019-10-27]
 
 **Documentation**
