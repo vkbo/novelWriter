@@ -55,7 +55,9 @@ class GuiItemEditor(QDialog):
         self.mainGroup = QGroupBox("Item Settings")
         self.mainForm  = QFormLayout()
 
-        self.editName   = QLineEdit()
+        self.editName = QLineEdit()
+        self.editName.setMaxLength(200)
+
         self.editStatus = QComboBox()
         self.editLayout = QComboBox()
 
