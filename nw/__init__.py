@@ -102,7 +102,7 @@ def main(sysArgs=None):
         "     --verbose   Increase verbosity of debug output.\n"
         " -D, --debuggui  Shows additional debug GUI elements. Includes -d.\n"
         " -q, --quiet     Disable output to command line. Does not affect log file.\n"
-        " -t, --time      Shows time stamp in logging output. Adds milliseconds when --verbose.\n"
+        " -t, --time      Shows time stamp in logging output.\n"
         " -l, --logfile=  Specify log file.\n"
         "     --style=    Set Qt5 style flag. Defaults to Fusion.\n"
         "     --config=   Alternative config file.\n"
@@ -152,7 +152,6 @@ def main(sysArgs=None):
             toStd = False
         elif inOpt in ("--verbose"):
             debugLevel = VERBOSE
-            timeStr    = "[{asctime:}.{msecs:03.0f}] "
         elif inOpt in ("-t","--time"):
             showTime = True
         elif inOpt in ("--style"):
@@ -165,7 +164,7 @@ def main(sysArgs=None):
             spellTool = inArg
         elif inOpt in ("-D","--debuggui"):
             debugLevel = logging.DEBUG
-            debugStr   = "{name:>20}:{lineno:<4d}  {levelname:8}  {message:}"
+            debugStr   = "{name:>30}:{lineno:<4d}  {levelname:8}  {message:}"
             debugGUI   = True
 
     # Set Config Options
