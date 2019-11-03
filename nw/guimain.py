@@ -811,8 +811,8 @@ class GuiMain(QMainWindow):
         return
 
     def _splitViewMove(self, pWidth, pHeight):
-        """Alert dependent GUI elements that the main pane splitter has
-        been moved.
+        """Alert dependent GUI elements that the edit/view pane splitter
+        has been moved.
         """
         self.docEditor.changeWidth()
         return
