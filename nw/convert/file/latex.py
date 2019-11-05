@@ -15,7 +15,7 @@ import nw
 
 from nw.convert.file.text import TextFile
 from nw.convert.text.tolatex import ToLaTeX
-from nw.enum import nwAlert
+from nw.constants import nwAlert
 
 logger = logging.getLogger(__name__)
 

@@ -27,9 +27,8 @@ from PyQt5.QtWidgets import (
 from nw.convert import TextFile, HtmlFile, MarkdownFile, LaTeXFile, ConcatFile
 from nw.project import NWDoc
 from nw.tools import numberToWord, OptLastState
-from nw.constants import nwFiles
 from nw.common import packageRefURL
-from nw.enum import nwItemType, nwAlert
+from nw.constants import nwFiles, nwItemType, nwAlert
 
 logger = logging.getLogger(__name__)
 

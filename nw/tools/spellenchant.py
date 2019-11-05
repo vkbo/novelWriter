@@ -14,13 +14,8 @@ import logging
 import enchant
 import nw
 
-try:
-    import pycountry
-    hasPyCountry = True
-except:
-    hasPyCountry = False
-
 from nw.tools.spellcheck import NWSpellCheck
+from nw.constants import isoLanguage
 
 logger = logging.getLogger(__name__)
 
@@ -61,19 +56,16 @@ class NWSpellEnchant(NWSpellCheck):
     def listDictionaries(self):
         retList = []
         for spTag, spProvider in enchant.list_dicts():
-            if hasPyCountry:
-                spList  = []
-                try:
-                    langObj = pycountry.languages.get(alpha_2 = spTag[:2])
-                    spList.append(langObj.name)
-                except:
-                    spList.append(spTag[:2])
-                if len(spTag) > 3:
-                    spList.append("(%s)" % spTag[3:])
-                spList.append("[%s]" % spProvider.name)
-                spName = " ".join(spList)
+            spList = []
+            if spTag[:2] in isoLanguage.ISO_639_1:
+                langName = isoLanguage.ISO_639_1[spTag[:2]]
             else:
-                spName = "%s [%s]" % (spTag, spProvider.name)
+                langName = spTag[:2]
+            spList.append(langName)
+            if len(spTag) > 3:
+                spList.append("(%s)" % spTag[3:])
+            spList.append("[%s]" % spProvider.name)
+            spName = " ".join(spList)
             retList.append((spTag, spName))
         return retList
 

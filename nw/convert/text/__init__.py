@@ -6,8 +6,8 @@ from nw.convert.text.tomarkdown import ToMarkdown
 from nw.convert.text.totext import ToText
 
 __all__ = [
-    ToHtml,
-    ToLaTeX,
-    ToMarkdown,
-    ToText,
+    "ToHtml",
+    "ToLaTeX",
+    "ToMarkdown",
+    "ToText",
 ]

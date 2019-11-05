@@ -10,7 +10,7 @@
 
 """
 
-from nw.enum import nwItemClass, nwItemLayout
+from nw.constants.enum import nwItemClass, nwItemLayout
 
 class nwConst():
 
@@ -125,10 +125,6 @@ class nwDependencies():
             "docs" : "",
         },
         "pyenchant"  : {
-            "site" : "",
-            "docs" : "",
-        },
-        "pycountry"  : {
             "site" : "",
             "docs" : "",
         },

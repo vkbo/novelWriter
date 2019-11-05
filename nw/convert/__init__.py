@@ -14,14 +14,14 @@ from nw.convert.text.tomarkdown import ToMarkdown
 from nw.convert.text.totext import ToText
 
 __all__ = [
-    Tokenizer,
-    ConcatFile,
-    HtmlFile,
-    LaTeXFile,
-    MarkdownFile,
-    TextFile,
-    ToHtml,
-    ToLaTeX,
-    ToMarkdown,
-    ToText,
+    "Tokenizer",
+    "ConcatFile",
+    "HtmlFile",
+    "LaTeXFile",
+    "MarkdownFile",
+    "TextFile",
+    "ToHtml",
+    "ToLaTeX",
+    "ToMarkdown",
+    "ToText",
 ]

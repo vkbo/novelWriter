@@ -12,7 +12,7 @@ from nw.gui.dialogs.projecteditor import GuiProjectEditor
 from nw.gui.dialogs.timelineview  import GuiTimeLineView
 from nw.gui.dialogs.itemeditor    import GuiItemEditor
 
-from nw.enum import *
+from nw.constants import *
 
 keyDelay  = 10
 stepDelay = 50

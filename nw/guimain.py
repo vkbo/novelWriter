@@ -29,11 +29,10 @@ from nw.gui import (
     GuiConfigEditor, GuiProjectEditor, GuiExport, GuiItemEditor,
     GuiTimeLineView, GuiSessionLogView
 )
-from nw.constants import nwFiles
 from nw.project import NWProject, NWDoc, NWItem, NWIndex, NWBackup
 from nw.tools import countWords
 from nw.theme import Theme
-from nw.enum import nwItemType, nwAlert
+from nw.constants import nwFiles, nwItemType, nwAlert
 
 logger = logging.getLogger(__name__)
 

@@ -12,7 +12,7 @@ from nw.config          import Config
 from nw.project.project import NWProject
 from nw.project.item    import NWItem
 from nw.project.index   import NWIndex
-from nw.enum            import nwItemClass
+from nw.constants       import nwItemClass
 
 theConf = Config()
 theMain = DummyMain()

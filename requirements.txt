@@ -2,6 +2,5 @@ pyqt5
 appdirs
 lxml
 pyenchant
-pycountry
 latexcodec
 pypandoc

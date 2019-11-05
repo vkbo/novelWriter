@@ -8,10 +8,10 @@ from nw.gui.dialogs.sessionlog import GuiSessionLogView
 from nw.gui.dialogs.timelineview import GuiTimeLineView
 
 __all__ = [
-    GuiConfigEditor,
-    GuiExport,
-    GuiItemEditor,
-    GuiProjectEditor,
-    GuiSessionLogView,
-    GuiTimeLineView,
+    "GuiConfigEditor",
+    "GuiExport",
+    "GuiItemEditor",
+    "GuiProjectEditor",
+    "GuiSessionLogView",
+    "GuiTimeLineView",
 ]

@@ -17,7 +17,7 @@ from PyQt5.QtCore import QUrl
 from PyQt5.QtGui import QIcon, QDesktopServices
 from PyQt5.QtWidgets import QMenuBar, QAction, QMessageBox
 
-from nw.enum import nwItemType, nwItemClass, nwDocAction
+from nw.constants import nwItemType, nwItemClass, nwDocAction
 
 logger = logging.getLogger(__name__)
 

@@ -19,7 +19,7 @@ from PyQt5.QtWidgets import QMessageBox
 
 from nw.convert.file.text import TextFile
 from nw.convert.tokenizer import Tokenizer
-from nw.enum import nwAlert, nwItemLayout
+from nw.constants import nwAlert, nwItemLayout
 
 logger = logging.getLogger(__name__)
 

@@ -25,7 +25,7 @@ from PyQt5.QtWidgets import (
     QTreeWidgetItem, QCheckBox
 )
 
-from nw.enum import nwAlert
+from nw.constants import nwAlert
 
 logger = logging.getLogger(__name__)
 

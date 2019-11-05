@@ -9,11 +9,11 @@ from nw.gui.elements.searchbar import GuiSearchBar
 from nw.gui.elements.viewdetails import GuiDocViewDetails
 
 __all__ = [
-    GuiDocDetails,
-    GuiDocEditor,
-    GuiDocTree,
-    GuiDocViewer,
-    GuiNoticeBar,
-    GuiSearchBar,
-    GuiDocViewDetails,
+    "GuiDocDetails",
+    "GuiDocEditor",
+    "GuiDocTree",
+    "GuiDocViewer",
+    "GuiNoticeBar",
+    "GuiSearchBar",
+    "GuiDocViewDetails",
 ]
