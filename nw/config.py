@@ -51,9 +51,10 @@ class Config:
         self.appPath   = None
         self.appRoot   = None
         self.appIcon   = None
-        self.guiPath   = None
+        self.assetPath = None
         self.themeRoot = None
-        self.themePath = None
+        self.graphPath = None
+        self.dictPath  = None
 
         # Set default values
         self.confChanged  = False
@@ -165,10 +166,10 @@ class Config:
         self.lastPath  = self.homePath
         self.appPath   = getattr(sys, "_MEIPASS", path.abspath(path.dirname(__file__)))
         self.appRoot   = path.join(self.appPath,path.pardir)
-        self.helpPath  = path.join(self.appRoot,"help","en_GB")
-        self.guiPath   = path.join(self.appPath,"gui")
+        self.assetPath = path.join(self.appPath,"assets")
         self.themeRoot = path.join(self.appPath,"themes")
         self.graphPath = path.join(self.appPath,"graphics")
+        self.dictPath  = path.join(self.assetPath,"dict")
         self.appIcon   = path.join(self.graphPath, nwFiles.APP_ICON)
 
         # If config folder does not exist, make it.
