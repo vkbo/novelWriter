@@ -40,7 +40,7 @@ logger = logging.getLogger(__name__)
 class GuiMain(QMainWindow):
 
     def __init__(self):
-        QWidget.__init__(self)
+        QMainWindow.__init__(self)
 
         logger.info("Starting %s" % nw.__package__)
         logger.debug("Initialising GUI ...")

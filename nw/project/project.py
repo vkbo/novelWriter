@@ -598,7 +598,7 @@ class NWProject():
         if not path.isdir(thePath):
             try:
                 mkdir(thePath)
-                logger.info("Created folder %s" % thePath)
+                logger.debug("Created folder %s" % thePath)
             except Exception as e:
                 self.makeAlert(["Could not create folder.",str(e)], nwAlert.ERROR)
                 return False

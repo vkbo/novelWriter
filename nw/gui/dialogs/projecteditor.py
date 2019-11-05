@@ -126,6 +126,9 @@ class GuiProjectEditMain(QWidget):
         self.editAuthors = QPlainTextEdit()
         self.doBackup    = QCheckBox(self)
 
+        self.editName.setMaxLength(200)
+        self.editTitle.setMaxLength(200)
+
         self.mainForm.addRow("Working Title",  self.editName)
         self.mainForm.addRow("Book Title",     self.editTitle)
         self.mainForm.addRow("Book Authors",   self.editAuthors)
@@ -176,6 +179,7 @@ class GuiProjectEditStatus(QWidget):
             self._addItem(iName, iCol, iName, nUse)
 
         self.editName = QLineEdit()
+        self.editName.setMaxLength(40)
         self.editName.setEnabled(False)
         self.newButton  = QPushButton("New")
         self.delButton  = QPushButton("Delete")
@@ -351,7 +355,9 @@ class GuiProjectEditReplace(QWidget):
         self.delButton  = QPushButton(self.theTheme.getIcon("remove"),"")
 
         self.editKey.setEnabled(False)
+        self.editKey.setMaxLength(40)
         self.editValue.setEnabled(False)
+        self.editValue.setMaxLength(80)
 
         self.saveButton.clicked.connect(self._saveEntry)
         self.addButton.clicked.connect(self._addEntry)
