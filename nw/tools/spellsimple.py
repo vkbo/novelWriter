@@ -3,7 +3,7 @@
 
  novelWriter – Spell Check Simple
 ==================================
- Simple Python3 spell checker based on difflib
+ Simple spell checker based on difflib
 
  File History:
  Created: 2019-06-11 [0.1.5]
@@ -13,13 +13,13 @@
 import logging
 import nw
 
-from os import path
-from collections import Counter
+from os import path, listdir
 from difflib import get_close_matches
 
 logger = logging.getLogger(__name__)
 
 from nw.tools.spellcheck import NWSpellCheck
+from nw.constants import isoLanguage
 
 class NWSpellSimple(NWSpellCheck):
 
@@ -28,7 +28,7 @@ class NWSpellSimple(NWSpellCheck):
     def __init__(self):
         NWSpellCheck.__init__(self)
         self.mainConf = nw.CONFIG
-        logger.debug("Norvig spell checking activated")
+        logger.debug("Simple spell checking activated")
         return
 
     def setLanguage(self, theLang, projectDict=None):
@@ -51,12 +51,34 @@ class NWSpellSimple(NWSpellCheck):
         return theWord in self.WORDS
 
     def suggestWords(self, theWord):
-        return get_close_matches(theWord.lower(), self.WORDS, n=10, cutoff=0.60)
+        return get_close_matches(theWord.lower(), self.WORDS, n=10, cutoff=0.75)
 
     def addWord(self, newWord):
         return
 
     def listDictionaries(self):
-        return ["default"]
+
+        retList = []
+        for dictFile in listdir(self.mainConf.dictPath):
+
+            theBits = path.splitext(dictFile)
+            if len(theBits) != 2:
+                continue
+            if theBits[1] != ".dict":
+                continue
+
+            spTag = theBits[0]
+            spList = []
+            if spTag[:2] in isoLanguage.ISO_639_1:
+                spList.append(isoLanguage.ISO_639_1[spTag[:2]])
+            else:
+                spList.append(spTag[:2])
+            if len(spTag) > 3:
+                spList.append("(%s)" % spTag[3:])
+            spList.append("[internal]")
+            spName = " ".join(spList)
+            retList.append((spTag, spName))
+
+        return retList
 
 # END Class NWSpellSimple
