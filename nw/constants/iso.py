@@ -207,7 +207,7 @@ class isoLanguage():
 
 class isoCountry():
 
-    ISO_3166_1_alpha_2 : {
+    ISO_3166_1_alpha_2 = {
         "AD" : "Andorra",
         "AE" : "United Arab Emirates",
         "AF" : "Afghanistan",
