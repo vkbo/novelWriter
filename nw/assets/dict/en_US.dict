@@ -1,5 +1,3 @@
-# aspell 0.60
-# aspell -d en_US-w_accents dump master > en_US.dict
 W
 w
 WW
@@ -603,13 +601,11 @@ Ubuntu
 urbanity
 abandon
 abounding
-UbuntuOne
 abandonment
 abandonment's
 abandoning
 abandons
 abundance
-UbuntuOne's
 abundance's
 abundances
 abandoned
@@ -1810,6 +1806,7 @@ affirmation
 affirmation's
 affirmations
 overmuches
+affine
 AFN
 avenue
 avian
@@ -3476,6 +3473,7 @@ Arkansan's
 Arkansans
 agencies
 agency's
+agenesis
 Arkansas
 Arkansas's
 Ignacio's
@@ -3853,6 +3851,9 @@ aggression
 accretion's
 accretions
 aggression's
+eukaryote
+eukaryotic
+eukaryote's
 eukaryotes
 accuse
 accuser
@@ -4250,6 +4251,7 @@ Uccello's
 exalt
 exiled
 exult
+oxalate
 axolotl
 axolotl's
 axolotls
@@ -4965,6 +4967,7 @@ Augustine's
 augustness
 augustness's
 extensible
+extensibility
 extensive
 extensively
 extensiveness
@@ -8728,6 +8731,7 @@ immaterialness
 immaterialness's
 immateriality
 immateriality's
+amitriptyline
 Amaterasu
 armature's
 armatures
@@ -10050,6 +10054,7 @@ enc
 energy
 Eng
 enjoy
+enqueue
 Inc
 inc
 Inca
@@ -10828,6 +10833,7 @@ incrementalism
 incrementalist
 incrementalist's
 incrementalists
+incrementing
 incriminating
 incriminatory
 increment's
@@ -10996,6 +11002,7 @@ energies
 energy's
 Eng's
 enjoys
+enqueues
 Inca's
 Incas
 incs
@@ -11168,6 +11175,7 @@ Encarta
 encode
 encoder
 Enkidu
+enqueued
 inequity
 ingot
 iniquity
@@ -12016,6 +12024,7 @@ INRI
 inure
 ornerier
 ornery
+unary
 anaerobe
 anaerobic
 anaerobically
@@ -12488,10 +12497,12 @@ ensemble's
 ensembles
 unseemlier
 unseemly
+unassimilable
 unsmiling
 unseemliness
 unseemliness's
 unseemliest
+unassimilated
 insomnia
 unassuming
 insomniac
@@ -14562,6 +14573,7 @@ Andropov's
 entrapment
 entrapment's
 entrapping
+interoperable
 interoperability
 entrepreneur
 entrepreneurial
@@ -14569,6 +14581,8 @@ entrepreneur's
 entrepreneurs
 entrepreneurship
 underrepresented
+interoperate
+interoperates
 underappreciated
 entraps
 entropy's
@@ -18968,9 +18982,7 @@ autobahn
 Audubon's
 autobahn's
 autobahns
-Edubuntu
 outbound
-Edubuntu's
 outbreak
 outbreak's
 outbreaks
@@ -19091,7 +19103,6 @@ adverser
 advice
 advise
 adviser
-advisor
 artifice
 artificer
 edifice
@@ -22592,8 +22603,11 @@ buffalo
 bivalve
 bivalve's
 bivalves
+biofilm
 bafflement
 bafflement's
+biofilm's
+biofilms
 baffling
 befallen
 befalling
@@ -24224,7 +24238,6 @@ blackness
 blackness's
 bleakness
 bleakness's
-blogging's
 blowgun's
 blowguns
 bludgeon's
@@ -24454,6 +24467,7 @@ bluing
 boiling
 Boleyn
 Boolean
+boolean
 bouillon
 bowline
 bowling
@@ -25470,7 +25484,10 @@ bombshells
 bumf
 bumph
 Bamako
+biomarker
 Bamako's
+biomarker's
+biomarkers
 barman
 barmen
 beaming
@@ -26201,6 +26218,7 @@ bindings
 bonding's
 bunting's
 buntings
+bentonite
 bindery
 boundary
 bantering
@@ -30655,6 +30673,7 @@ flaccidly
 flextime
 flextime's
 flagstone
+fluoxetine
 flagstone's
 flagstones
 flaccidity
@@ -31136,7 +31155,6 @@ flourish's
 flourished
 flurrying
 faille's
-fail's
 fails
 fallacy
 fallow's
@@ -32450,6 +32468,7 @@ finding
 founding
 fountain
 funding
+phenytoin
 fountainhead
 fountainhead's
 fountainheads
@@ -33480,6 +33499,7 @@ frizzle's
 frizzles
 frazzled
 frizzled
+furosemide
 foreseeing
 foreseen
 freezing
@@ -33677,7 +33697,9 @@ foredooming
 freedman
 freedmen
 Friedman
+Friedmann
 freedman's
+Friedmann's
 Friedman's
 firedamp
 firedamp's
@@ -34615,6 +34637,7 @@ ftp
 footpath
 footpath's
 footpaths
+phytoplankton
 footplate
 footplates
 ftping
@@ -39205,6 +39228,7 @@ hetero
 Hydra
 hydra
 hydro
+hydrothermal
 hydrotherapy
 hydrotherapy's
 Hyderabad
@@ -39238,6 +39262,7 @@ hydrogenation's
 hydroxide
 hydroxide's
 hydroxides
+hydrocortisone
 hydraulic
 hydrology
 hydraulically
@@ -39324,6 +39349,7 @@ hatreds
 hydrate's
 hydrates
 hydrated
+hydrochloride
 hydration
 hydration's
 hairdryer
@@ -40181,7 +40207,6 @@ cabinet
 carbonate
 cobnut
 jawboned
-Kubuntu
 cabinetmaker
 cabinetmaking
 cabinetmaking's
@@ -40199,7 +40224,6 @@ cabinets
 carbonate's
 carbonates
 cobnuts
-Kubuntu's
 carbonated
 cabinetwork
 cabinetwork's
@@ -43381,6 +43405,7 @@ gallantly
 glandular
 Glendale
 Clinton
+clonidine
 garlanding
 glinting
 Clinton's
@@ -44071,6 +44096,7 @@ jalousies
 jealousies
 jealousy's
 Kelsey's
+classism
 Gallicism
 Gallicism's
 Gallicisms
@@ -44161,6 +44187,7 @@ Calder
 called
 carload
 clad
+clade
 clatter
 Claude
 Claudia
@@ -45559,13 +45586,13 @@ compromise's
 compromises
 compromised
 comparing
-compare's
 compares
 compress
 compressor
 compress's
 comprise
 compressible
+compressive
 comparison
 compressing
 comprising
@@ -45649,6 +45676,7 @@ jumpsuits
 composited
 composted
 composition
+compositional
 composition's
 compositions
 camped
@@ -47276,10 +47304,8 @@ cannonball's
 cannonballs
 Cunningham
 Cunningham's
-Canonical
 canonical
 canonically
-Canonical's
 cunningly
 genuinely
 cannoning
@@ -51439,6 +51465,7 @@ currencies
 currency's
 grainiest
 greenest
+greenstone
 greensward
 greensward's
 careened
@@ -51839,6 +51866,9 @@ cryptography's
 cryptogram
 cryptogram's
 cryptograms
+cryptocurrency
+cryptocurrencies
+cryptocurrency's
 corruptly
 corrupting
 krypton
@@ -57507,6 +57537,7 @@ lookout
 lucked
 lugged
 lurked
+Lactobacillus
 lactic
 lacteal
 laggardly
@@ -57977,6 +58008,7 @@ limping
 lumpen
 lumping
 lampooning
+lumpenproletariat
 lampoon's
 lampoons
 limpness
@@ -58150,6 +58182,8 @@ lanthanum's
 linebacker
 linebacker's
 linebackers
+learnable
+learnability
 L'Enfant
 linefeed
 lionhearted
@@ -58901,6 +58935,7 @@ lopsidedness
 lopsidedness's
 lapped
 lappet
+leapt
 leopard
 lepta
 lipid
@@ -60817,6 +60852,7 @@ magic
 Magog
 Majorca
 McGee
+McJob
 McGuffey
 McGovern
 McGovern's
@@ -62307,6 +62343,7 @@ Moulton
 Multan
 Miltonic
 Miltonic's
+Miltonian
 Melton's
 mildness
 mildness's
@@ -62438,6 +62475,7 @@ muleteers
 mullet's
 mullets
 melodiously
+multicellular
 melodiousness
 melodiousness's
 Maltese's
@@ -64551,6 +64589,7 @@ maritally
 Myrdal
 Myrtle
 myrtle
+meritless
 Myrdal's
 Myrtle's
 myrtle's
@@ -64881,6 +64920,7 @@ musicales
 musical's
 musicals
 MySQL's
+musculoskeletal
 miscalled
 muscled
 musicality
@@ -65286,9 +65326,7 @@ misinterpretation
 misinterpretation's
 misinterpretations
 McIntyre
-misandry
 McIntyre's
-misandrist
 maisonette's
 maisonettes
 Masonite's
@@ -65395,6 +65433,10 @@ misrule's
 misrules
 mozzarella's
 misruled
+misremember
+misremembering
+misremembered
+misremembers
 measurement
 measurement's
 measurements
@@ -65986,6 +66028,7 @@ mudflat
 midfielders
 mudflat's
 mudflats
+metformin
 metaphoric
 metaphorical
 metaphorically
@@ -67749,6 +67792,7 @@ Nevadan
 Nevadian
 Nevadan's
 Nevadans
+nifedipine
 NAFTA's
 naivety's
 neophyte's
@@ -68145,6 +68189,7 @@ negativity's
 narcotic
 narcotic's
 narcotics
+neocortex
 nakedly
 niggardly
 niggardliness
@@ -71297,6 +71342,7 @@ paella
 pail
 pal
 pale
+paleo
 paler
 Paley
 pall
@@ -74815,7 +74861,10 @@ progression
 procreation's
 progression's
 progressions
+prokaryote
 prokaryotic
+prokaryote's
+prokaryotes
 Paraguay's
 peerage's
 peerages
@@ -75573,6 +75622,7 @@ paraprofessional
 paraprofessional's
 paraprofessionals
 preparing
+propranolol
 prepares
 properest
 prepared
@@ -76493,6 +76543,7 @@ puritanism
 Puritanism's
 Puritanisms
 puritanism's
+prednisone
 Prudence's
 prudence's
 preordained
@@ -82566,6 +82617,7 @@ roundelay's
 roundelays
 roundels
 random
+runtime
 randomly
 randomness
 randomness's
@@ -83664,6 +83716,10 @@ resembles
 reassembled
 resembled
 resuming
+resample
+resampling
+resamples
+resampled
 resumption
 resumption's
 resumptions
@@ -84610,6 +84666,7 @@ ridicule
 roadkill
 Radcliffe
 Radcliffe's
+reticulum
 ridiculing
 radical's
 radicals
@@ -87441,6 +87498,7 @@ schoolbag's
 schoolbags
 schoolbook's
 schoolbooks
+scalability
 schoolboy's
 schoolboys
 Skylab's
@@ -93710,6 +93768,7 @@ splinted
 supplanted
 splendidly
 splendidest
+splanchnic
 sapless
 sepal's
 sepals
@@ -94626,6 +94685,7 @@ spastic
 spastic's
 spastics
 supposedly
+spacetime
 soapstone
 superseding
 soapstone's
@@ -99106,6 +99166,7 @@ Zyuganov
 Zyuganov's
 cyan
 saying
+cyanobacteria
 Soyinka
 Soyinka's
 cyan's
@@ -100577,6 +100638,7 @@ decor
 decoy
 deejay
 deg
+dequeue
 Dick
 dick
 dicker
@@ -100681,6 +100743,7 @@ decaffeinate
 decaffeinating
 decaffeinates
 decaffeinated
+tocopherol
 decaffs
 decaf's
 decafs
@@ -101134,6 +101197,7 @@ decorum
 diagram
 diagramming
 decrement
+decrementing
 decrements
 decremented
 darkroom's
@@ -101254,6 +101318,7 @@ deejays
 Degas
 degas
 Degas's
+dequeues
 dickers
 dickey's
 dickeys
@@ -101551,6 +101616,7 @@ Decatur
 decked
 decode
 decoder
+dequeued
 dict
 dicta
 digit
@@ -104507,6 +104573,7 @@ Tennessean
 Tennyson
 tensing
 Tanzanian
+Tennysonian
 Tanzanian's
 Tanzanians
 dancing's
@@ -106106,6 +106173,7 @@ tract
 tractor
 tragedy
 trekked
+triaged
 tricked
 trucked
 trudged
@@ -109124,6 +109192,7 @@ discipleship's
 displayable
 displaying
 displayed
+diazepam
 teaspoon
 teaspoonful
 teaspoonful's
@@ -110396,6 +110465,7 @@ determines
 determinism
 determinism's
 deterministic
+deterministically
 determent
 determinate
 determined
@@ -110853,6 +110923,7 @@ tortoise's
 tortoises
 Tutsi's
 dadaist
+dateset
 deadest
 deduced
 detest
@@ -110877,6 +110948,8 @@ toadstools
 detesting
 dadaist's
 dadaists
+dataset's
+datasets
 detests
 tattooist's
 tattooists
@@ -111856,6 +111929,7 @@ wayfarer
 vivarium
 vivarium's
 vivariums
+warfarin
 wavering
 wayfaring
 waveringly
@@ -112243,6 +112317,7 @@ weeknight
 vacantly
 vignetting
 weekending
+vaginitis
 vignette's
 vignettes
 virginity's
@@ -112830,6 +112905,7 @@ walking's
 welkin's
 Wilkins
 Wilkins's
+volcanism
 Wilkinson
 Wilkinson's
 Valkyrie
@@ -114743,6 +114819,7 @@ warranty's
 warranted
 warrantied
 warrantying
+verapamil
 whereupon
 Varese
 varies
@@ -119012,8 +119089,6 @@ shortlisted
 chortled
 shitload
 shuttled
-Shuttleworth
-Shuttleworth's
 showtime
 Chadian
 Chaitin
@@ -119809,6 +119884,8 @@ authorization's
 authorizations
 abbé
 arbor
+Auburn
+Auburn's
 urbanize
 urbanizing
 urbanizes
@@ -119843,6 +119920,8 @@ evangelized
 offense
 offense's
 offenses
+Avondale
+Avondale's
 overemphasize
 overemphasizing
 overemphasizes
@@ -119858,6 +119937,7 @@ afterward
 ax
 okay
 éclair
+Ocala
 acclimatize
 acclimatizing
 acclimatizes
@@ -119869,6 +119949,7 @@ equaling
 éclairs
 equalize
 equalizer
+Ocala's
 equalizing
 equalizer's
 equalizers
@@ -119952,7 +120033,9 @@ oxidized
 oxidization
 oxidization's
 accouter
+Aguadilla
 actualize
+Aguadilla's
 actualizing
 actualizes
 actualized
@@ -119974,6 +120057,8 @@ alphabetized
 alphabetization
 alphabetization's
 alphabetizations
+Elkhart
+Elkhart's
 alkalize
 alkalizing
 alkalizes
@@ -119987,15 +120072,25 @@ eulogizes
 eulogized
 aluminum
 aluminum's
+Elmira
+Elmira's
 élan
 élan's
+Elyria
+Elyria's
 Elysée
 olé's
+Elizabethtown
+Elizabethtown's
 Elysée's
 elasticize
 elasticizing
 elasticizes
 elasticized
+Altoona
+Altoona's
+Eldersburg
+Eldersburg's
 armor
 immobilize
 immobilizer
@@ -120057,6 +120152,8 @@ armorers
 armories
 armory's
 armored
+Ames
+Ames's
 armor's
 armors
 immortalize
@@ -120106,6 +120203,8 @@ anglicizing
 anglicizes
 anglicized
 unequaled
+Angleton
+Angleton's
 ingénue
 ingénue's
 ingénues
@@ -120164,6 +120263,8 @@ unionizes
 unionized
 unionization
 unionization's
+Uniontown
+Uniontown's
 uninitialized
 unpracticed
 unpasteurized
@@ -120213,6 +120314,8 @@ installment
 installment's
 installments
 instills
+Anniston
+Anniston's
 institutionalize
 institutionalizing
 institutionalizes
@@ -120221,6 +120324,7 @@ institutionalization
 institutionalization's
 ionization
 ionization's
+Indio
 endeavor
 endeavoring
 endeavored
@@ -120262,6 +120366,7 @@ entrée's
 entrées
 underutilized
 anodize
+Indio's
 unitize
 anodizing
 unitizing
@@ -120332,9 +120437,15 @@ appetizing
 appetizingly
 appetizer's
 appetizers
+Orem
 uremia
 uremic
+Orem's
 uremia's
+Arecibo
+Arecibo's
+Isabela
+Isabela's
 esophagi
 esophagus
 ischemia
@@ -120345,6 +120456,7 @@ Esterházy
 Esterházy's
 estrogen
 estrogen's
+estrogens
 estrous
 estrus
 estrus's
@@ -120353,6 +120465,9 @@ ostracize
 ostracizing
 ostracizes
 ostracized
+estradiol
+Eustis
+Eustis's
 ardor
 odor
 artifact
@@ -120361,6 +120476,8 @@ artifacts
 advisor
 advisor's
 advisors
+Utica
+Utica's
 idealize
 idolize
 odorless
@@ -120423,6 +120540,8 @@ ardors
 iodize
 odor's
 odors
+Atascadero
+Atascadero's
 iodizing
 iodizes
 iodized
@@ -120442,7 +120561,11 @@ attitudinized
 attaché
 attaché's
 attachés
+Owensboro
+Owensboro's
 ocher
+Asheville
+Asheville's
 asshole
 etiology
 etiology's
@@ -120487,10 +120610,12 @@ behaviors
 behooves
 behooved
 burka
+Beckley
 burglarize
 burglarizing
 burglarizes
 burglarized
+Beckley's
 backpedaling
 backpedaled
 burka's
@@ -120507,17 +120632,31 @@ balk
 balking
 balk's
 balks
+Blacksburg
+Blacksburg's
 balked
 blamable
+Bloomington
+Bloomington's
+Bloomsburg
+Bloomsburg's
+Bellingham
+Bellingham's
 blasé
 blowzier
 blowzy
 blowziest
+Beloit
+Beloit's
+Binghamton
+Binghamton's
 Buñuel
 Buñuel's
+Bend
 bandanna
 bandanna's
 bandannas
+Bend's
 baptize
 baptizer
 baptizing
@@ -120541,6 +120680,8 @@ bureaucratization
 bureaucratization's
 barreling
 barreled
+Bremerton
+Bremerton's
 Beria's
 brier's
 briers
@@ -120550,6 +120691,10 @@ brutalizes
 brutalized
 brutalization
 brutalization's
+Bradenton
+Bradenton's
+Barceloneta
+Barceloneta's
 busing
 busing's
 bused
@@ -120576,6 +120721,8 @@ boutonnière's
 boutonnières
 Boötes
 Boötes's
+Berwick
+Berwick's
 busheling
 busheled
 Beyer
@@ -120593,6 +120740,8 @@ fiber's
 fibers
 favor
 fervor
+Fairfield
+Fairfield's
 favorable
 favorably
 favoring
@@ -120605,6 +120754,8 @@ favoritism's
 favor's
 favors
 fervor's
+Fairhope
+Fairhope's
 fogy
 forgather
 forgathering
@@ -120614,6 +120765,7 @@ fecal
 fogies
 fogy's
 fagot
+Fajardo
 fagoting
 factorize
 factorizing
@@ -120622,6 +120774,7 @@ factorized
 factorization
 fagot's
 fagots
+Fajardo's
 fictionalize
 fictionalizing
 fictionalizes
@@ -120641,6 +120794,8 @@ flavorings
 flavored
 flavor's
 flavorsome
+Flagstaff
+Flagstaff's
 flambé
 flambé's
 flambéed
@@ -120679,6 +120834,8 @@ feminize
 feminizing
 feminizes
 feminized
+Farmington
+Farmington's
 phony
 funneling
 finalize
@@ -120719,6 +120876,8 @@ fraternizes
 fraternized
 fraternization
 fraternization's
+Fredericksburg
+Fredericksburg's
 fossilize
 fossilizing
 fossilizes
@@ -120751,7 +120910,11 @@ photosynthesizes
 photosynthesized
 Furtwängler
 Furtwängler's
+Fitchburg
+Fitchburg's
 fayer
+Fayetteville
+Fayetteville's
 harbor
 harboring
 harbored
@@ -120766,15 +120929,22 @@ harbors
 habitué
 habitué's
 habitués
+Hickory
+Hickory's
+Hagerstown
+Hagerstown's
 hectometer
 hectometer's
 hectometers
+Harlingen
+Harlingen's
 Hellenize
 Hellenization
 Hellenization's
 Héloise
 Héloise's
 heme
+Houma
 humor
 hemophilia
 hemophiliac
@@ -120819,8 +120989,10 @@ hemorrhoid
 hemorrhoids
 humoring
 humored
+Houma's
 humor's
 humors
+Hemet
 hematology
 hematologic
 hematological
@@ -120828,9 +121000,12 @@ hematology's
 hematologist
 hematologist's
 hematologists
+Hemet's
 hematite
 hematite's
 honor
+Hanford
+Hanford's
 hankie
 hankie's
 honoree
@@ -120847,6 +121022,8 @@ honorers
 honored
 honor's
 honors
+Hinesville
+Hinesville's
 hippie
 hypothesize
 hypothesizing
@@ -120857,6 +121034,12 @@ hypnotizing
 hypnotizes
 hypnotized
 hippie's
+Harrisonburg
+Harrisonburg's
+Hazleton
+Hazleton's
+Hesperia
+Hesperia's
 hospitalize
 hospitalizing
 hospitalizes
@@ -120868,6 +121051,10 @@ hydrolyze
 hydrolyzing
 hydrolyzes
 hydrolyzed
+Hattiesburg
+Hattiesburg's
+Hightstown
+Hightstown's
 catheterize
 catheterizing
 catheterizes
@@ -120882,6 +121069,8 @@ carbonize
 carbonizing
 carbonizes
 carbonized
+Carbondale
+Carbondale's
 carburetor
 carburetor's
 carburetors
@@ -120895,14 +121084,20 @@ cavilings
 caviler's
 cavilers
 caviled
+Covington
+Covington's
 café's
 cafés
 caftan
 caftan's
 caftans
+Kahului
+Kahului's
 cudgeling
 cudgelings
 cudgeled
+Kokomo
+Kokomo's
 garçon
 garçon's
 garçons
@@ -120912,6 +121107,7 @@ cognizance's
 cognizant
 color
 coulée
+Kailua
 caliber
 colorblind
 colorblindness
@@ -120934,6 +121130,8 @@ galvanizes
 galvanized
 galvanization
 galvanization's
+Gulfport
+Gulfport's
 colorfast
 colorfastness
 colorfastness's
@@ -120941,6 +121139,10 @@ calk
 calking
 calk's
 calks
+Clarksville
+Clarksville's
+Calexico
+Calexico's
 calked
 collectible
 collectible's
@@ -120972,10 +121174,12 @@ clamors
 kilometer
 kilometer's
 kilometers
+Killeen
 clangor
 clangor's
 colonize
 colonizer
+Killeen's
 colonizing
 colonizer's
 colonizers
@@ -120989,6 +121193,7 @@ clientèles
 jalapeño
 jalapeño's
 jalapeños
+Gilroy
 coloring
 coloring's
 colorant
@@ -120998,6 +121203,7 @@ clarinetist
 clarinetist's
 clarinetists
 colorize
+Gilroy's
 colorizing
 colorizes
 colorist
@@ -121013,6 +121219,7 @@ colors
 coulée's
 coulées
 glacé
+Kailua's
 calisthenics
 cloisonné
 glacéing
@@ -121022,6 +121229,8 @@ glycerin's
 glacés
 glacéed
 collateralize
+Goldsboro
+Goldsboro's
 colorway
 colorways
 cliché
@@ -121055,6 +121264,8 @@ computerizes
 computerized
 computerization
 computerization's
+Camarillo
+Camarillo's
 commercialize
 commercializing
 commercializes
@@ -121074,6 +121285,10 @@ conventionalized
 confrère
 confrère's
 confrères
+Kaneohe
+Kaneohe's
+Kankakee
+Kankakee's
 gynecology
 gynecologic
 gynecological
@@ -121083,6 +121298,8 @@ gynecologist's
 gynecologists
 kenneling
 canalize
+Connellsville
+Connellsville's
 canalizing
 canalizes
 canalized
@@ -121099,6 +121316,7 @@ canonizations
 canapé
 canapé's
 canapés
+Conroe
 gonorrhea
 gonorrheal
 gonorrhea's
@@ -121109,6 +121327,13 @@ generalized
 generalization
 generalization's
 generalizations
+Conroe's
+Jonesboro
+Jonesboro's
+Gainesville
+Janesville
+Gainesville's
+Janesville's
 canceler
 councilor
 counselor
@@ -121127,6 +121352,7 @@ consommé
 consommé's
 Concepción
 Concepción's
+Kingsport
 conceptualize
 conceptualizing
 conceptualizes
@@ -121134,6 +121360,9 @@ conceptualized
 conceptualization
 conceptualization's
 conceptualizations
+Kingsport's
+Johnstown
+Johnstown's
 concertize
 concertizing
 concertizes
@@ -121156,6 +121385,10 @@ containerization's
 candor's
 quantize
 quantization
+Kennewick
+Kennewick's
+Kenosha
+Kenosha's
 capsulize
 capsulizing
 capsulizes
@@ -121205,6 +121438,8 @@ criminalizes
 criminalized
 króna
 krónur
+Greenville
+Greenville's
 crenelate
 crenelating
 crenelates
@@ -121220,6 +121455,8 @@ Grünewald's
 crosier
 gray's
 grays
+Grayslake
+Grayslake's
 crosier's
 crosiers
 crystallize
@@ -121254,8 +121491,12 @@ cozier
 cozy
 czar
 cozily
+Kissimmee
+Kissimmee's
 coziness
 coziness's
+Casper
+Casper's
 cozies
 cozy's
 czar's
@@ -121268,6 +121509,8 @@ customizes
 customized
 customization
 customization's
+Gastonia
+Gastonia's
 cardie
 goiter
 Göteborg
@@ -121312,6 +121555,8 @@ cauterization's
 ghettoize
 goiter's
 goiters
+Cartersville
+Cartersville's
 ghettoizing
 ghettoizes
 ghettoized
@@ -121328,6 +121573,8 @@ jewelers
 jeweled
 Gewürztraminer
 Gewürztraminer's
+Guayama
+Guayama's
 labor
 libeler
 labeling
@@ -121363,6 +121610,8 @@ leveling
 leveler's
 levelers
 leveled
+Livermore
+Livermore's
 louvered
 louver's
 louvers
@@ -121371,6 +121620,8 @@ likableness
 likableness's
 likability
 likability's
+Lakeland
+Lakeland's
 legalize
 localize
 legalizing
@@ -121405,17 +121656,31 @@ liquidizer's
 liquidizers
 liquidizes
 liquidized
+Leominster
+Leominster's
+Lompoc
+Lompoc's
 Lumière
 Lumière's
+Longview
+Longview's
+Longmont
+Longmont's
 lionize
 lionizing
 lionizes
 lionized
 lionization
 lionization's
+Lynchburg
+Lynchburg's
 lupine's
 lupines
 leaped
+Lorain
+Lorain's
+Leesburg
+Leesburg's
 lasagna
 lasagna's
 lasagnas
@@ -121425,11 +121690,21 @@ luster
 lusterless
 luster's
 liter
+Lodi
+Lawton
+Layton
+Lawton's
+Layton's
 littérateur
 littérateur's
 littérateurs
 liter's
 liters
+Lodi's
+Lewisville
+Lewisville's
+Lewiston
+Lewiston's
 meow
 math
 mythologize
@@ -121454,13 +121729,19 @@ marveling
 marvelous
 marvelously
 marveled
+Murfreesboro
+Murfreesboro's
 meager
 moggy
+McAllen
+McAllen's
 marginalize
 marginalizing
 marginalizes
 marginalized
 marginalization
+Morgantown
+Morgantown's
 magnetize
 magnetizable
 magnetizing
@@ -121500,8 +121781,10 @@ moldier
 moldy
 molt
 multicolored
+Mauldin
 molding
 molting
+Mauldin's
 molding's
 moldings
 moldering
@@ -121536,6 +121819,7 @@ mom's
 moms
 myna
 maneuver
+Menifee
 maneuverable
 maneuverability
 maneuverability's
@@ -121544,9 +121828,12 @@ maneuverings
 maneuvered
 maneuver's
 maneuvers
+Menifee's
 manège
 manqué
 manège's
+Mankato
+Mankato's
 Manila
 manila
 Manila's
@@ -121568,9 +121855,19 @@ monopolizes
 monopolized
 monopolization
 monopolization's
+Muncie
 myna's
 mynas
+Monessen
+Monessen's
+Muncie's
+Mandeville
+Mandeville's
+Manteca
+Manteca's
+Monterey
 miniaturize
+Monterey's
 miniaturizing
 miniaturizes
 miniaturized
@@ -121581,6 +121878,7 @@ monetize
 monetizing
 monetizes
 monetized
+monetization
 Münchhausen
 Münchhausen's
 moralize
@@ -121592,15 +121890,25 @@ moralizes
 moralized
 moralization
 moralization's
+Marysville
+Marysville's
+Morristown
+Morristown's
+Murrieta
+Murrieta's
 meow's
 meows
 misbehavior
 misbehavior's
+Muskegon
+Muskegon's
 misjudgment
 misjudgment's
 misjudgments
+Missoula
 mislabeling
 mislabeled
+Missoula's
 mesmerize
 mesmerizer
 mesmerizing
@@ -121612,6 +121920,7 @@ mercerize
 mercerizing
 mercerizes
 mercerized
+Merced
 misdemeanor
 misdemeanor's
 misdemeanors
@@ -121622,6 +121931,7 @@ moisturizer's
 moisturizers
 moisturizes
 moisturized
+Merced's
 mustache
 mustache's
 mustaches
@@ -121632,10 +121942,13 @@ metabolize
 metabolizing
 metabolizes
 metabolized
+Medford
+Medford's
 modeler
 modeling
 modeling's
 modelings
+modularization
 modeler's
 modelers
 medalist
@@ -121643,6 +121956,8 @@ medalist's
 medalists
 metaled
 modeled
+Middletown
+Middletown's
 matinée
 matinée's
 matinées
@@ -121655,6 +121970,7 @@ modernizes
 modernized
 modernization
 modernization's
+Madera
 matériel
 materialize
 matériel's
@@ -121664,6 +121980,7 @@ materialized
 materialization
 materialization's
 mitering
+Madera's
 motorize
 motorizing
 metricize
@@ -121688,6 +122005,8 @@ meowing
 meowed
 marshaling
 marshaled
+McHenry
+McHenry's
 mechanize
 mechanizing
 mechanizes
@@ -121696,6 +122015,7 @@ mechanization
 mechanization's
 née
 neighbor
+Newburgh
 neighborhood
 neighborhood's
 neighborhoods
@@ -121706,6 +122026,7 @@ neighboring
 neighbored
 neighbor's
 neighbors
+Newburgh's
 novelize
 novelizing
 novelizes
@@ -121722,17 +122043,23 @@ narcotizes
 narcotized
 narcotization
 narcotization's
+Normal
 normalize
+Normal's
 normalizing
 normalizes
 normalized
 normalization
 normalization's
+Nampa
+Nampa's
 numskull
 numskull's
 numskulls
 nonsympathizer
 nonsympathizer's
+Napa
+Napa's
 nasalize
 nasalizing
 nasalizes
@@ -121784,6 +122111,12 @@ Pokémon
 Pokémon's
 pajamas
 pajamas's
+Poughkeepsie
+Poughkeepsie's
+Parkersburg
+Parkersburg's
+Pocatello
+Pocatello's
 parlor
 plow
 pulverize
@@ -121810,6 +122143,8 @@ polymerizes
 polymerized
 polymerization
 polymerization's
+Palmdale
+Palmdale's
 paleontology
 paleontology's
 paleontologist
@@ -121886,6 +122221,7 @@ popularizes
 popularized
 popularization
 popularization's
+perpend
 pauperize
 pauperizing
 pauperizes
@@ -121909,6 +122245,8 @@ prejudgment's
 prejudgments
 practicing
 practiced
+parallelized
+parallelization
 periling
 paralyze
 paralyzing
@@ -121967,6 +122305,10 @@ preterit's
 preterits
 passé
 passivization
+Pasco
+Pascagoula
+Pascagoula's
+Pasco's
 parceling
 parceled
 personalize
@@ -121992,7 +122334,9 @@ psychoanalyzed
 Pôrto
 pedophile
 pedophilia
+Porterville
 pedophiles
+Porterville's
 particularize
 particularizing
 particularizes
@@ -122000,6 +122344,8 @@ particularized
 particularization
 particularization's
 peddler
+Petaluma
+Petaluma's
 pedaling
 peddler's
 peddlers
@@ -122020,6 +122366,10 @@ patronized
 portière's
 portières
 Pôrto's
+Pittsfield
+Pittsfield's
+Pottstown
+Pottstown's
 pedestrianize
 pedestrianizing
 pedestrianizes
@@ -122063,6 +122413,7 @@ revolutionize
 revolutionizing
 revolutionizes
 revolutionized
+Riverside's
 revitalize
 revitalizing
 revitalizes
@@ -122175,6 +122526,8 @@ rhapsodized
 roué's
 roués
 risqué
+Radcliff
+Radcliff's
 radicalize
 radicalizing
 radicalizes
@@ -122184,6 +122537,8 @@ radicalization's
 redialing
 ritualized
 redialed
+Redding
+Redding's
 routinize
 routinizing
 routinizes
@@ -122203,6 +122558,8 @@ cybercafé
 cybercafés
 seborrhea
 seborrhea's
+Sebring
+Sebring's
 saber's
 sabers
 subsidize
@@ -122230,6 +122587,8 @@ civilization's
 civilizations
 savorier
 savory
+Zephyrhills
+Zephyrhills's
 savoring
 savoriness
 savoriness's
@@ -122295,6 +122654,8 @@ scrutinizes
 scrutinized
 succor's
 succors
+Socastee
+Socastee's
 cicatrix
 cicatrix's
 slier
@@ -122327,6 +122688,8 @@ slenderizing
 slenderizes
 slenderized
 sliest
+Slidell
+Slidell's
 saltpeter
 saltpeter's
 somber
@@ -122359,6 +122722,8 @@ sympathizer's
 sympathizers
 sympathizes
 sympathized
+Simpsonville
+Simpsonville's
 summarize
 summarizing
 summarizes
@@ -122461,12 +122826,16 @@ sepulchers
 spirea
 spiraling
 spiraled
+Springdale
+Springdale's
 spirea's
 spireas
 spirochete
 spirochete's
 spirochetes
 scepter
+Spartanburg
+Spartanburg's
 scepter's
 scepters
 septicemia
@@ -122484,6 +122853,7 @@ specialties
 specialty's
 soirée
 serialize
+serializable
 serializing
 serializes
 serialized
@@ -122497,12 +122867,14 @@ Zürich's
 sizable
 cesium
 cesium's
+Seaside
 systematize
 systematizing
 systematizes
 systematized
 systematization
 systematization's
+Seaside's
 sauté
 stabilize
 stabilizer
@@ -122513,6 +122885,8 @@ stabilizes
 stabilized
 stabilization
 stabilization's
+Steubenville
+Steubenville's
 stigmatize
 stigmatizing
 stigmatizes
@@ -122530,6 +122904,8 @@ sodomized
 sautéing
 stenciling
 stenciled
+Staunton
+Staunton's
 standardize
 standardizing
 standardizes
@@ -122565,6 +122941,10 @@ socialization
 socialization's
 Schrödinger
 Schrödinger's
+Dothan
+Dothan's
+Dubuque
+Dubuque's
 débridement
 débutante
 débutante's
@@ -122582,6 +122962,8 @@ defenses
 defensed
 Dvorák
 Dvorák's
+Tavares
+Tavares's
 divorcée
 divorcée's
 divorcées
@@ -122595,6 +122977,8 @@ dehumanizes
 dehumanized
 dehumanization
 dehumanization's
+DeKalb
+DeKalb's
 decolonize
 decolonizing
 decolonizes
@@ -122612,6 +122996,8 @@ decriminalized
 decriminalization
 decriminalization's
 dike's
+Texarkana
+Texarkana's
 toxemia
 toxemia's
 digitize
@@ -122622,6 +123008,8 @@ digitization
 dolor
 dueler
 dialog
+Turlock
+Turlock's
 dialing
 dueling
 dialings
@@ -122636,6 +123024,8 @@ duelist's
 duelists
 dialed
 dueled
+Deltona
+Deltona's
 Timor
 tumor
 demobilize
@@ -122647,6 +123037,8 @@ demobilization's
 tumbrel
 tumbrel's
 tumbrels
+Temecula
+Temecula's
 demagnetize
 demagnetizing
 demagnetizes
@@ -122678,6 +123070,8 @@ demonetizes
 demonetized
 demonetization
 demonetization's
+Temple
+Temple's
 temporize
 temporizer
 temporizing
@@ -122696,6 +123090,10 @@ tumor's
 tumors
 démodé
 Danaë
+Danbury
+Danbury's
+Danville
+Danville's
 Tannhäuser
 Tannhäuser's
 denuclearize
@@ -122722,7 +123120,9 @@ tantalized
 tantalization
 tantalization's
 dentin
+Denton
 dentin's
+Denton's
 downdraft
 downdraft's
 tenderize
@@ -122927,6 +123327,8 @@ deodorizes
 deodorized
 deodorization
 deodorization's
+Titusville
+Titusville's
 teetotaler
 teetotaler's
 teetotalers
@@ -122958,6 +123360,8 @@ verbalized
 verbalization
 verbalization's
 vigor
+Vacaville
+Vacaville's
 vocalize
 vocalizing
 vocalizes
@@ -122969,6 +123373,8 @@ vicuña
 vicuña's
 vicuñas
 vigor's
+Victorville
+Victorville's
 victualing
 victualed
 victimize
@@ -122998,12 +123404,19 @@ vulgarizes
 vulgarized
 vulgarization
 vulgarization's
+Vallejo's
+Williamsburg
+Williamsburg's
+Williamsport
+Williamsport's
 woolen
 woolen's
 woolens
 Valéry
 Valéry's
 valor's
+Villas
+Villas's
 Velásquez
 Velázquez
 Velásquez's
@@ -123012,6 +123425,8 @@ volatilize
 volatilizing
 volatilizes
 volatilized
+Valdosta
+Valdosta's
 womanize
 womanizer
 womanizing
@@ -123019,6 +123434,10 @@ womanizer's
 womanizers
 womanizes
 womanized
+Vineland
+Vineland's
+Waynesboro
+Waynesboro's
 wainscoting
 wainscoting's
 wainscotings
@@ -123031,6 +123450,8 @@ winterize
 winterizing
 winterizes
 winterized
+Wenatchee
+Wenatchee's
 vapor
 vapory
 vaporize
@@ -123048,13 +123469,16 @@ varicolored
 veranda
 veranda's
 verandas
+Wausau
 whir's
 whirs
 whiz
 whiskey
 whiskey's
 whiskeys
+Visalia
 weaseling
+Visalia's
 visualize
 visualizer
 visualizing
@@ -123066,6 +123490,7 @@ visualization
 visualization's
 visualizations
 weaseled
+Wausau's
 whiz's
 westernize
 westernizing
@@ -123076,6 +123501,8 @@ westernization's
 watercolor
 watercolor's
 watercolors
+Woodland
+Woodland's
 vitalize
 vitalizing
 vitalizes
@@ -123083,13 +123510,22 @@ vitalized
 virtualization
 vitalization
 vitalization's
+Weirton
+Weirton's
+Watsonville
+Watsonville's
+Watertown
+Watertown's
 worshiper
 worshiping
 worshiper's
 worshipers
 worshiped
+Sheboygan
+Sheboygan's
 shoveling
 shoveled
+Chico
 checkbook
 checkbook's
 checkbooks
@@ -123102,9 +123538,16 @@ sheikhs
 chocolaty
 checkering
 checkered
+Chico's
 chili
 chilies
 chili's
+Charlottesville
+Charlottesville's
+Chambersburg
+Chambersburg's
+Champaign
+Champaign's
 channeling
 channelize
 channelizing
@@ -123137,6 +123580,8 @@ châtelaine
 châtelaine's
 châtelaines
 château's
+Yauco
+Yauco's
 yogurt
 yogurt's
 yogurts

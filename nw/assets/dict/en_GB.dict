@@ -1,5 +1,3 @@
-# aspell 0.60
-# aspell -d en_GB-ise-w_accents dump master > en_GB.dict
 W
 w
 WW
@@ -603,13 +601,11 @@ Ubuntu
 urbanity
 abandon
 abounding
-UbuntuOne
 abandonment
 abandonment's
 abandoning
 abandons
 abundance
-UbuntuOne's
 abundance's
 abundances
 abandoned
@@ -1810,6 +1806,7 @@ affirmation
 affirmation's
 affirmations
 overmuches
+affine
 AFN
 avenue
 avian
@@ -3476,6 +3473,7 @@ Arkansan's
 Arkansans
 agencies
 agency's
+agenesis
 Arkansas
 Arkansas's
 Ignacio's
@@ -3853,6 +3851,9 @@ aggression
 accretion's
 accretions
 aggression's
+eukaryote
+eukaryotic
+eukaryote's
 eukaryotes
 accuse
 accuser
@@ -4250,6 +4251,7 @@ Uccello's
 exalt
 exiled
 exult
+oxalate
 axolotl
 axolotl's
 axolotls
@@ -4965,6 +4967,7 @@ Augustine's
 augustness
 augustness's
 extensible
+extensibility
 extensive
 extensively
 extensiveness
@@ -8728,6 +8731,7 @@ immaterialness
 immaterialness's
 immateriality
 immateriality's
+amitriptyline
 Amaterasu
 armature's
 armatures
@@ -10050,6 +10054,7 @@ enc
 energy
 Eng
 enjoy
+enqueue
 Inc
 inc
 Inca
@@ -10828,6 +10833,7 @@ incrementalism
 incrementalist
 incrementalist's
 incrementalists
+incrementing
 incriminating
 incriminatory
 increment's
@@ -10996,6 +11002,7 @@ energies
 energy's
 Eng's
 enjoys
+enqueues
 Inca's
 Incas
 incs
@@ -11168,6 +11175,7 @@ Encarta
 encode
 encoder
 Enkidu
+enqueued
 inequity
 ingot
 iniquity
@@ -12016,6 +12024,7 @@ INRI
 inure
 ornerier
 ornery
+unary
 anaerobe
 anaerobic
 anaerobically
@@ -12488,10 +12497,12 @@ ensemble's
 ensembles
 unseemlier
 unseemly
+unassimilable
 unsmiling
 unseemliness
 unseemliness's
 unseemliest
+unassimilated
 insomnia
 unassuming
 insomniac
@@ -14562,6 +14573,7 @@ Andropov's
 entrapment
 entrapment's
 entrapping
+interoperable
 interoperability
 entrepreneur
 entrepreneurial
@@ -14569,6 +14581,8 @@ entrepreneur's
 entrepreneurs
 entrepreneurship
 underrepresented
+interoperate
+interoperates
 underappreciated
 entraps
 entropy's
@@ -18968,9 +18982,7 @@ autobahn
 Audubon's
 autobahn's
 autobahns
-Edubuntu
 outbound
-Edubuntu's
 outbreak
 outbreak's
 outbreaks
@@ -19091,7 +19103,6 @@ adverser
 advice
 advise
 adviser
-advisor
 artifice
 artificer
 edifice
@@ -22592,8 +22603,11 @@ buffalo
 bivalve
 bivalve's
 bivalves
+biofilm
 bafflement
 bafflement's
+biofilm's
+biofilms
 baffling
 befallen
 befalling
@@ -24224,7 +24238,6 @@ blackness
 blackness's
 bleakness
 bleakness's
-blogging's
 blowgun's
 blowguns
 bludgeon's
@@ -24454,6 +24467,7 @@ bluing
 boiling
 Boleyn
 Boolean
+boolean
 bouillon
 bowline
 bowling
@@ -25470,7 +25484,10 @@ bombshells
 bumf
 bumph
 Bamako
+biomarker
 Bamako's
+biomarker's
+biomarkers
 barman
 barmen
 beaming
@@ -26201,6 +26218,7 @@ bindings
 bonding's
 bunting's
 buntings
+bentonite
 bindery
 boundary
 bantering
@@ -30655,6 +30673,7 @@ flaccidly
 flextime
 flextime's
 flagstone
+fluoxetine
 flagstone's
 flagstones
 flaccidity
@@ -31136,7 +31155,6 @@ flourish's
 flourished
 flurrying
 faille's
-fail's
 fails
 fallacy
 fallow's
@@ -32450,6 +32468,7 @@ finding
 founding
 fountain
 funding
+phenytoin
 fountainhead
 fountainhead's
 fountainheads
@@ -33480,6 +33499,7 @@ frizzle's
 frizzles
 frazzled
 frizzled
+furosemide
 foreseeing
 foreseen
 freezing
@@ -33677,7 +33697,9 @@ foredooming
 freedman
 freedmen
 Friedman
+Friedmann
 freedman's
+Friedmann's
 Friedman's
 firedamp
 firedamp's
@@ -34615,6 +34637,7 @@ ftp
 footpath
 footpath's
 footpaths
+phytoplankton
 footplate
 footplates
 ftping
@@ -39205,6 +39228,7 @@ hetero
 Hydra
 hydra
 hydro
+hydrothermal
 hydrotherapy
 hydrotherapy's
 Hyderabad
@@ -39238,6 +39262,7 @@ hydrogenation's
 hydroxide
 hydroxide's
 hydroxides
+hydrocortisone
 hydraulic
 hydrology
 hydraulically
@@ -39324,6 +39349,7 @@ hatreds
 hydrate's
 hydrates
 hydrated
+hydrochloride
 hydration
 hydration's
 hairdryer
@@ -40181,7 +40207,6 @@ cabinet
 carbonate
 cobnut
 jawboned
-Kubuntu
 cabinetmaker
 cabinetmaking
 cabinetmaking's
@@ -40199,7 +40224,6 @@ cabinets
 carbonate's
 carbonates
 cobnuts
-Kubuntu's
 carbonated
 cabinetwork
 cabinetwork's
@@ -43381,6 +43405,7 @@ gallantly
 glandular
 Glendale
 Clinton
+clonidine
 garlanding
 glinting
 Clinton's
@@ -44071,6 +44096,7 @@ jalousies
 jealousies
 jealousy's
 Kelsey's
+classism
 Gallicism
 Gallicism's
 Gallicisms
@@ -44161,6 +44187,7 @@ Calder
 called
 carload
 clad
+clade
 clatter
 Claude
 Claudia
@@ -45559,13 +45586,13 @@ compromise's
 compromises
 compromised
 comparing
-compare's
 compares
 compress
 compressor
 compress's
 comprise
 compressible
+compressive
 comparison
 compressing
 comprising
@@ -45649,6 +45676,7 @@ jumpsuits
 composited
 composted
 composition
+compositional
 composition's
 compositions
 camped
@@ -47276,10 +47304,8 @@ cannonball's
 cannonballs
 Cunningham
 Cunningham's
-Canonical
 canonical
 canonically
-Canonical's
 cunningly
 genuinely
 cannoning
@@ -51439,6 +51465,7 @@ currencies
 currency's
 grainiest
 greenest
+greenstone
 greensward
 greensward's
 careened
@@ -51839,6 +51866,9 @@ cryptography's
 cryptogram
 cryptogram's
 cryptograms
+cryptocurrency
+cryptocurrencies
+cryptocurrency's
 corruptly
 corrupting
 krypton
@@ -57507,6 +57537,7 @@ lookout
 lucked
 lugged
 lurked
+Lactobacillus
 lactic
 lacteal
 laggardly
@@ -57977,6 +58008,7 @@ limping
 lumpen
 lumping
 lampooning
+lumpenproletariat
 lampoon's
 lampoons
 limpness
@@ -58150,6 +58182,8 @@ lanthanum's
 linebacker
 linebacker's
 linebackers
+learnable
+learnability
 L'Enfant
 linefeed
 lionhearted
@@ -58901,6 +58935,7 @@ lopsidedness
 lopsidedness's
 lapped
 lappet
+leapt
 leopard
 lepta
 lipid
@@ -60817,6 +60852,7 @@ magic
 Magog
 Majorca
 McGee
+McJob
 McGuffey
 McGovern
 McGovern's
@@ -62307,6 +62343,7 @@ Moulton
 Multan
 Miltonic
 Miltonic's
+Miltonian
 Melton's
 mildness
 mildness's
@@ -62438,6 +62475,7 @@ muleteers
 mullet's
 mullets
 melodiously
+multicellular
 melodiousness
 melodiousness's
 Maltese's
@@ -64551,6 +64589,7 @@ maritally
 Myrdal
 Myrtle
 myrtle
+meritless
 Myrdal's
 Myrtle's
 myrtle's
@@ -64881,6 +64920,7 @@ musicales
 musical's
 musicals
 MySQL's
+musculoskeletal
 miscalled
 muscled
 musicality
@@ -65286,9 +65326,7 @@ misinterpretation
 misinterpretation's
 misinterpretations
 McIntyre
-misandry
 McIntyre's
-misandrist
 maisonette's
 maisonettes
 Masonite's
@@ -65395,6 +65433,10 @@ misrule's
 misrules
 mozzarella's
 misruled
+misremember
+misremembering
+misremembered
+misremembers
 measurement
 measurement's
 measurements
@@ -65986,6 +66028,7 @@ mudflat
 midfielders
 mudflat's
 mudflats
+metformin
 metaphoric
 metaphorical
 metaphorically
@@ -67749,6 +67792,7 @@ Nevadan
 Nevadian
 Nevadan's
 Nevadans
+nifedipine
 NAFTA's
 naivety's
 neophyte's
@@ -68145,6 +68189,7 @@ negativity's
 narcotic
 narcotic's
 narcotics
+neocortex
 nakedly
 niggardly
 niggardliness
@@ -71297,6 +71342,7 @@ paella
 pail
 pal
 pale
+paleo
 paler
 Paley
 pall
@@ -74815,7 +74861,10 @@ progression
 procreation's
 progression's
 progressions
+prokaryote
 prokaryotic
+prokaryote's
+prokaryotes
 Paraguay's
 peerage's
 peerages
@@ -75573,6 +75622,7 @@ paraprofessional
 paraprofessional's
 paraprofessionals
 preparing
+propranolol
 prepares
 properest
 prepared
@@ -76493,6 +76543,7 @@ puritanism
 Puritanism's
 Puritanisms
 puritanism's
+prednisone
 Prudence's
 prudence's
 preordained
@@ -82566,6 +82617,7 @@ roundelay's
 roundelays
 roundels
 random
+runtime
 randomly
 randomness
 randomness's
@@ -83664,6 +83716,10 @@ resembles
 reassembled
 resembled
 resuming
+resample
+resampling
+resamples
+resampled
 resumption
 resumption's
 resumptions
@@ -84610,6 +84666,7 @@ ridicule
 roadkill
 Radcliffe
 Radcliffe's
+reticulum
 ridiculing
 radical's
 radicals
@@ -87441,6 +87498,7 @@ schoolbag's
 schoolbags
 schoolbook's
 schoolbooks
+scalability
 schoolboy's
 schoolboys
 Skylab's
@@ -93710,6 +93768,7 @@ splinted
 supplanted
 splendidly
 splendidest
+splanchnic
 sapless
 sepal's
 sepals
@@ -94626,6 +94685,7 @@ spastic
 spastic's
 spastics
 supposedly
+spacetime
 soapstone
 superseding
 soapstone's
@@ -99106,6 +99166,7 @@ Zyuganov
 Zyuganov's
 cyan
 saying
+cyanobacteria
 Soyinka
 Soyinka's
 cyan's
@@ -100577,6 +100638,7 @@ decor
 decoy
 deejay
 deg
+dequeue
 Dick
 dick
 dicker
@@ -100681,6 +100743,7 @@ decaffeinate
 decaffeinating
 decaffeinates
 decaffeinated
+tocopherol
 decaffs
 decaf's
 decafs
@@ -101134,6 +101197,7 @@ decorum
 diagram
 diagramming
 decrement
+decrementing
 decrements
 decremented
 darkroom's
@@ -101254,6 +101318,7 @@ deejays
 Degas
 degas
 Degas's
+dequeues
 dickers
 dickey's
 dickeys
@@ -101551,6 +101616,7 @@ Decatur
 decked
 decode
 decoder
+dequeued
 dict
 dicta
 digit
@@ -104507,6 +104573,7 @@ Tennessean
 Tennyson
 tensing
 Tanzanian
+Tennysonian
 Tanzanian's
 Tanzanians
 dancing's
@@ -106106,6 +106173,7 @@ tract
 tractor
 tragedy
 trekked
+triaged
 tricked
 trucked
 trudged
@@ -109124,6 +109192,7 @@ discipleship's
 displayable
 displaying
 displayed
+diazepam
 teaspoon
 teaspoonful
 teaspoonful's
@@ -110396,6 +110465,7 @@ determines
 determinism
 determinism's
 deterministic
+deterministically
 determent
 determinate
 determined
@@ -110853,6 +110923,7 @@ tortoise's
 tortoises
 Tutsi's
 dadaist
+dateset
 deadest
 deduced
 detest
@@ -110877,6 +110948,8 @@ toadstools
 detesting
 dadaist's
 dadaists
+dataset's
+datasets
 detests
 tattooist's
 tattooists
@@ -111856,6 +111929,7 @@ wayfarer
 vivarium
 vivarium's
 vivariums
+warfarin
 wavering
 wayfaring
 waveringly
@@ -112243,6 +112317,7 @@ weeknight
 vacantly
 vignetting
 weekending
+vaginitis
 vignette's
 vignettes
 virginity's
@@ -112830,6 +112905,7 @@ walking's
 welkin's
 Wilkins
 Wilkins's
+volcanism
 Wilkinson
 Wilkinson's
 Valkyrie
@@ -114743,6 +114819,7 @@ warranty's
 warranted
 warrantied
 warrantying
+verapamil
 whereupon
 Varese
 varies
@@ -119012,8 +119089,6 @@ shortlisted
 chortled
 shitload
 shuttled
-Shuttleworth
-Shuttleworth's
 showtime
 Chadian
 Chaitin
@@ -120364,6 +120439,7 @@ Esterházy
 Esterházy's
 oestrogen
 oestrogen's
+oestrogens
 oestrous
 oestrus
 oestrus's
@@ -120372,6 +120448,7 @@ ostracise
 ostracising
 ostracises
 ostracised
+oestradiol
 ischaemia
 ischaemic
 ardour
@@ -121443,7 +121520,7 @@ learnt
 lupin
 lupin's
 lupins
-leapt
+leaped
 lasagne
 lasagne's
 lasagnes
@@ -121613,6 +121690,7 @@ monetise
 monetising
 monetises
 monetised
+monetisation
 Münchhausen
 Münchhausen's
 moralise
@@ -121668,6 +121746,7 @@ modeller
 modelling
 modelling's
 modellings
+modularisation
 modeller's
 modellers
 medallist
@@ -121951,6 +122030,8 @@ practise
 practising
 practises
 practised
+parallelised
+parallelisation
 perilling
 paralyse
 paralysing
@@ -121969,6 +122050,7 @@ propagandise
 propagandising
 propagandises
 propagandised
+prepend
 prioritise
 prioritising
 prioritises
@@ -122526,6 +122608,7 @@ specialities
 speciality's
 soirée
 serialise
+serialisable
 serialising
 serialises
 serialised
