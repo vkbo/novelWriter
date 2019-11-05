@@ -18,7 +18,7 @@ from os import path
 from PyQt5.QtWidgets import QMessageBox
 
 from nw.convert.text.totext import ToText
-from nw.enum import nwAlert, nwItemType, nwItemLayout, nwItemClass
+from nw.constants import nwAlert, nwItemType, nwItemLayout, nwItemClass
 
 logger = logging.getLogger(__name__)
 

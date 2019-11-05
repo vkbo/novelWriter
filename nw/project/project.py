@@ -22,9 +22,10 @@ from time import time
 
 from nw.project.status import NWStatus
 from nw.project.item import NWItem
-from nw.constants import nwFiles, nwConst
 from nw.common import checkString, checkBool, checkInt
-from nw.enum import nwItemType, nwItemClass, nwItemLayout, nwAlert
+from nw.constants import (
+    nwFiles, nwConst, nwItemType, nwItemClass, nwItemLayout, nwAlert
+)
 
 logger = logging.getLogger(__name__)
 

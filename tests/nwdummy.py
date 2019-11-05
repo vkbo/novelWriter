@@ -2,7 +2,7 @@
 """novelWriter Test Dummy GUI Classes
 """
 
-from nw.enum import nwAlert
+from nw.constants import nwAlert
 
 class DummyMain():
 

@@ -7,9 +7,9 @@ from nw.convert.file.markdown import MarkdownFile
 from nw.convert.file.text import TextFile
 
 __all__ = [
-    ConcatFile,
-    HtmlFile,
-    LaTeXFile,
-    MarkdownFile,
-    TextFile,
+    "ConcatFile",
+    "HtmlFile",
+    "LaTeXFile",
+    "MarkdownFile",
+    "TextFile",
 ]

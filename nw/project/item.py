@@ -18,7 +18,7 @@ from lxml import etree
 from datetime import datetime
 
 from nw.common import checkInt
-from nw.enum import nwItemType, nwItemClass, nwItemLayout
+from nw.constants import nwItemType, nwItemClass, nwItemLayout
 
 logger = logging.getLogger(__name__)
 

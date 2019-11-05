@@ -27,8 +27,7 @@ from PyQt5.QtGui import (
 from nw.project import NWDoc
 from nw.gui.tools import GuiDocHighlighter, WordCounter
 from nw.tools import NWSpellCheck
-from nw.constants import nwFiles, nwUnicode
-from nw.enum import nwDocAction, nwAlert
+from nw.constants import nwFiles, nwUnicode, nwDocAction, nwAlert
 
 logger = logging.getLogger(__name__)
 

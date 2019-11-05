@@ -25,8 +25,7 @@ from PyQt5.QtWidgets import (
     QFileDialog
 )
 
-from nw.enum import nwAlert
-from nw.constants import nwQuotes
+from nw.constants import nwAlert, nwQuotes
 
 logger = logging.getLogger(__name__)
 

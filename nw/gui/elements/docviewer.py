@@ -18,7 +18,7 @@ from PyQt5.QtWidgets import QTextBrowser
 from PyQt5.QtGui import QTextOption, QFont, QPalette, QColor
 
 from nw.convert import Tokenizer, ToHtml
-from nw.enum import nwAlert, nwItemType
+from nw.constants import nwAlert, nwItemType
 
 logger = logging.getLogger(__name__)
 

@@ -19,7 +19,7 @@ from PyQt5.QtWidgets import (
     QFrame, QGridLayout, QLabel, QLineEdit, QPushButton, QApplication
 )
 
-from nw.enum import nwDocAction
+from nw.constants import nwDocAction
 
 logger = logging.getLogger(__name__)
 

@@ -19,7 +19,7 @@ from os import path, listdir
 from PyQt5.QtWidgets import qApp
 from PyQt5.QtGui import QPalette, QColor, QIcon
 
-from nw.enum import nwAlert
+from nw.constants import nwAlert
 
 logger = logging.getLogger(__name__)
 

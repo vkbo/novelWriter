@@ -8,10 +8,10 @@ from nw.tools.translate import numberToWord
 from nw.tools.wordcount import countWords
 
 __all__ = [
-    TextAnalysis,
-    OptLastState,
-    NWSpellCheck,
-    NWSpellEnchant,
-    numberToWord,
-    countWords,
+    "TextAnalysis",
+    "OptLastState",
+    "NWSpellCheck",
+    "NWSpellEnchant",
+    "numberToWord",
+    "countWords",
 ]

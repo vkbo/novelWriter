@@ -17,7 +17,7 @@ from os import path, mkdir, listdir
 from shutil import make_archive
 from datetime import datetime
 
-from nw.enum import nwAlert
+from nw.constants import nwAlert
 
 logger = logging.getLogger(__name__)
 

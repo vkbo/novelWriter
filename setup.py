@@ -41,7 +41,6 @@ setuptools.setup(
         "appdirs",
         "lxml",
         "pyenchant",
-        "pycountry",
         "latexcodec",
         "pypandoc",
     ],

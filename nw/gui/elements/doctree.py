@@ -20,8 +20,9 @@ from PyQt5.QtWidgets import (
 )
 
 from nw.project import NWItem
-from nw.constants import nwLabels
-from nw.enum import nwItemType, nwItemClass, nwItemLayout, nwAlert
+from nw.constants import (
+    nwLabels, nwItemType, nwItemClass, nwItemLayout, nwAlert
+)
 
 logger = logging.getLogger(__name__)
 

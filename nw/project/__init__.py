@@ -8,10 +8,10 @@ from nw.project.project import NWProject
 from nw.project.status import NWStatus
 
 __all__ = [
-    NWBackup,
-    NWDoc,
-    NWIndex,
-    NWItem,
-    NWProject,
-    NWStatus,
+    "NWBackup",
+    "NWDoc",
+    "NWIndex",
+    "NWItem",
+    "NWProject",
+    "NWStatus",
 ]

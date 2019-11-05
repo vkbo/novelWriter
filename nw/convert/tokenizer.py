@@ -20,7 +20,7 @@ from PyQt5.QtCore import QRegularExpression
 
 from nw.project.document import NWDoc
 from nw.tools.translate import numberToWord
-from nw.enum import nwItemLayout
+from nw.constants import nwItemLayout
 
 logger = logging.getLogger(__name__)
 

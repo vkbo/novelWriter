@@ -22,8 +22,7 @@ from PyQt5.QtWidgets import (
     QLineEdit, QPushButton, QComboBox
 )
 
-from nw.enum import nwItemLayout, nwItemClass, nwItemType
-from nw.constants import nwLabels
+from nw.constants import nwLabels, nwItemLayout, nwItemClass, nwItemType
 
 logger = logging.getLogger(__name__)
 
