@@ -77,10 +77,11 @@ def main(sysArgs=None):
         sysArgs = sys.argv[1:]
 
     # Valid Input Options
-    shortOpt = "hdDqtl:v"
+    shortOpt = "hdiqtl:v"
     longOpt  = [
         "help",
         "debug",
+        "info",
         "verbose",
         "quiet",
         "time",
@@ -99,6 +100,7 @@ def main(sysArgs=None):
         "Usage:\n"
         " -h, --help      Print this message.\n"
         " -v, --version   Print program version and exit.\n"
+        " -i, --info      Print additional runtime information.\n"
         " -d, --debug     Print debug output.\n"
         "     --verbose   Increase verbosity of debug output.\n"
         " -q, --quiet     Disable output to command line. Does not affect log file.\n"
@@ -141,6 +143,8 @@ def main(sysArgs=None):
         elif inOpt in ("-v", "--version"):
             print("%s %s Version %s" % (__package__,__status__,__version__))
             sys.exit()
+        elif inOpt in ("-i", "--info"):
+            debugLevel = logging.INFO
         elif inOpt in ("-d", "--debug"):
             debugLevel = logging.DEBUG
             debugStr   = "{name:>30}:{lineno:<4d}  {levelname:8}  {message:}"

@@ -531,7 +531,7 @@ class GuiDocEditor(QTextEdit):
 
     def _addWord(self, theCursor):
         theWord = theCursor.selectedText().strip()
-        logger.info("Added '%s' to project dictionary" % theWord)
+        logger.debug("Added '%s' to project dictionary" % theWord)
         self.theDict.addWord(theWord)
         self.hLight.setDict(self.theDict)
         self.hLight.rehighlightBlock(theCursor.block())
