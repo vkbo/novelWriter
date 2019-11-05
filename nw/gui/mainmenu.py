@@ -475,21 +475,30 @@ class GuiMainMenu(QMenuBar):
         # Edit > Replace
         menuItem = QAction("Replace", self)
         menuItem.setStatusTip("Replace text in document")
-        menuItem.setShortcut("Ctrl+H")
+        if self.mainConf.osDarwin:
+            menuItem.setShortcut("Ctrl+=")
+        else:
+            menuItem.setShortcut("Ctrl+H")
         menuItem.triggered.connect(lambda: self._docAction(nwDocAction.REPLACE))
         self.editMenu.addAction(menuItem)
 
         # Edit > Find Next
         menuItem = QAction("Find Next", self)
         menuItem.setStatusTip("Find next occurrence text in document")
-        menuItem.setShortcut("F3")
+        if self.mainConf.osDarwin:
+            menuItem.setShortcuts(["Ctrl+G","F3"])
+        else:
+            menuItem.setShortcuts(["F3","Ctrl+G"])
         menuItem.triggered.connect(lambda: self._docAction(nwDocAction.GO_NEXT))
         self.editMenu.addAction(menuItem)
 
         # Edit > Find Prev
         menuItem = QAction("Find Previous", self)
         menuItem.setStatusTip("Find previous occurrence text in document")
-        menuItem.setShortcut("Shift+F3")
+        if self.mainConf.osDarwin:
+            menuItem.setShortcuts(["Ctrl+Shift+G","Shift+F3"])
+        else:
+            menuItem.setShortcuts(["Shift+F3","Ctrl+Shift+G"])
         menuItem.triggered.connect(lambda: self._docAction(nwDocAction.GO_PREV))
         self.editMenu.addAction(menuItem)
 
