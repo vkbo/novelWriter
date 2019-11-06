@@ -89,7 +89,6 @@ def main(sysArgs=None):
         "version",
         "config=",
         "testmode",
-        "spell=",
         "style=",
     ]
 
@@ -106,7 +105,7 @@ def main(sysArgs=None):
         " -q, --quiet     Disable output to command line. Does not affect log file.\n"
         " -t, --time      Shows time stamp in logging output.\n"
         " -l, --logfile=  Specify log file.\n"
-        "     --style=    Set Qt5 style flag. Defaults to Fusion.\n"
+        "     --style=    Set Qt5 style flag. Defaults to 'Fusion'.\n"
         "     --config=   Alternative config file.\n"
         "     --headless  Do not display GUI. Useful for testing scripts.\n"
     ).format(
@@ -126,7 +125,6 @@ def main(sysArgs=None):
     showTime   = False
     confPath   = None
     testMode   = False
-    spellTool  = None
     qtStyle    = "Fusion"
 
     # Parse Options
@@ -163,13 +161,10 @@ def main(sysArgs=None):
             confPath = inArg
         elif inOpt in ("--testmode"):
             testMode = True
-        elif inOpt in ("--spell"):
-            spellTool = inArg
 
     # Set Config Options
     CONFIG.showGUI   = not testMode
     CONFIG.debugInfo = debugLevel < logging.INFO
-    CONFIG.spellTool = spellTool
 
     # Set Logging
     if showTime: debugStr = timeStr+debugStr

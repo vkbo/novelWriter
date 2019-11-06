@@ -26,7 +26,7 @@ from PyQt5.QtGui import (
 
 from nw.project import NWDoc
 from nw.gui.tools import GuiDocHighlighter, WordCounter
-from nw.tools import NWSpellCheck
+from nw.tools import NWSpellCheck, NWSpellSimple
 from nw.constants import nwFiles, nwUnicode, nwDocAction, nwAlert
 
 logger = logging.getLogger(__name__)
@@ -64,11 +64,7 @@ class GuiDocEditor(QTextEdit):
         self.qDocument = self.document()
         self.qDocument.setDocumentMargin(self.mainConf.textMargin)
         self.qDocument.contentsChange.connect(self._docChange)
-        if self.mainConf.spellTool == "enchant":
-            from nw.tools.spellenchant import NWSpellEnchant
-            self.theDict = NWSpellEnchant()
-        else:
-            self.theDict = NWSpellCheck()
+        self._setupSpellChecking()
 
         self.hLight = GuiDocHighlighter(self.qDocument, self.theParent)
         self.hLight.setDict(self.theDict)
@@ -725,6 +721,17 @@ class GuiDocEditor(QTextEdit):
             ))
         if searchFor != "":
             self._findNext()
+        return
+
+    def _setupSpellChecking(self):
+        """Create the spell checking object based on the spellTool
+        setting in config.
+        """
+        if self.mainConf.spellTool == "enchant":
+            from nw.tools.spellenchant import NWSpellEnchant
+            self.theDict = NWSpellEnchant()
+        else:
+            self.theDict = NWSpellSimple()
         return
 
 # END Class GuiDocEditor
