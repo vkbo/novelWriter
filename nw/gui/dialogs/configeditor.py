@@ -16,8 +16,10 @@ import nw
 from os import path
 
 from PyQt5.QtCore import Qt, QSize
-from PyQt5.QtGui import QIcon, QPixmap, QColor, QBrush, QStandardItemModel, QFont
 from PyQt5.QtSvg import QSvgWidget
+from PyQt5.QtGui import (
+    QIcon, QPixmap, QColor, QBrush, QStandardItemModel, QFont
+)
 from PyQt5.QtWidgets import (
     QDialog, QHBoxLayout, QVBoxLayout, QFormLayout, QLineEdit, QPlainTextEdit,
     QLabel, QWidget, QTabWidget, QDialogButtonBox, QSpinBox, QGroupBox,
@@ -25,6 +27,7 @@ from PyQt5.QtWidgets import (
     QFileDialog
 )
 
+from nw.tools import NWSpellCheck
 from nw.constants import nwAlert, nwQuotes
 
 logger = logging.getLogger(__name__)
@@ -155,6 +158,17 @@ class GuiConfigEditGeneral(QWidget):
         self.spellLangForm = QGridLayout(self)
         self.spellLang.setLayout(self.spellLangForm)
 
+        self.spellToolList = QComboBox(self)
+        self.spellToolList.addItem("Internal (difflib)",        NWSpellCheck.SP_INTERNAL)
+        self.spellToolList.addItem("Spell Enchant (pyenchant)", NWSpellCheck.SP_ENCHANT)
+        self.spellToolList.addItem("SymSpell (symspellpy)",     NWSpellCheck.SP_SYMSPELL)
+
+        theModel   = self.spellToolList.model()
+        idEnchant  = self.spellToolList.findData(NWSpellCheck.SP_ENCHANT)
+        idSymSpell = self.spellToolList.findData(NWSpellCheck.SP_SYMSPELL)
+        theModel.item(idEnchant).setEnabled(self.mainConf.hasEnchant)
+        theModel.item(idSymSpell).setEnabled(self.mainConf.hasSymSpell)
+
         self.spellLangList = QComboBox(self)
         for spTag, spName in self.theParent.docEditor.theDict.listDictionaries():
             self.spellLangList.addItem(spName, spTag)
@@ -162,8 +176,10 @@ class GuiConfigEditGeneral(QWidget):
         if spellIdx != -1:
             self.spellLangList.setCurrentIndex(spellIdx)
 
-        self.spellLangForm.addWidget(QLabel("Language"), 0, 0)
-        self.spellLangForm.addWidget(self.spellLangList, 0, 1)
+        self.spellLangForm.addWidget(QLabel("Provider"), 0, 0)
+        self.spellLangForm.addWidget(self.spellToolList, 0, 1)
+        self.spellLangForm.addWidget(QLabel("Language"), 1, 0)
+        self.spellLangForm.addWidget(self.spellLangList, 1, 1)
         self.spellLangForm.setColumnStretch(2, 1)
 
         # AutoSave
@@ -241,6 +257,7 @@ class GuiConfigEditGeneral(QWidget):
 
         guiTheme        = self.guiLookTheme.currentData()
         guiSyntax       = self.guiLookSyntax.currentData()
+        spellTool       = self.spellToolList.currentData()
         spellLanguage   = self.spellLangList.currentData()
         autoSaveDoc     = self.autoSaveDoc.value()
         autoSaveProj    = self.autoSaveProj.value()
@@ -253,6 +270,7 @@ class GuiConfigEditGeneral(QWidget):
 
         self.mainConf.guiTheme        = guiTheme
         self.mainConf.guiSyntax       = guiSyntax
+        self.mainConf.spellTool       = spellTool
         self.mainConf.spellLanguage   = spellLanguage
         self.mainConf.autoSaveDoc     = autoSaveDoc
         self.mainConf.autoSaveProj    = autoSaveProj
@@ -285,6 +303,13 @@ class GuiConfigEditGeneral(QWidget):
             return True
 
         return False
+
+    def _disableComboItem(self, theList, theValue):
+        theIdx = theList.findData(theValue)
+        theModel = theList.model()
+        anItem = theModel.item(1)
+        anItem.setFlags(anItem.flags() ^ Qt.ItemIsEnabled)
+        return theModel
 
 # END Class GuiConfigEditGeneral
 
@@ -536,12 +561,12 @@ class GuiConfigEditEditor(QWidget):
         self.mainConf.textMargin = textMargin
         self.mainConf.tabWidth   = tabWidth
 
-        autoSelect       = self.autoSelect.isChecked()
-        doReplace        = self.autoReplaceMain.isChecked()
-        doReplaceSQuote  = self.autoReplaceSQ.isChecked()
-        doReplaceDQuote  = self.autoReplaceDQ.isChecked()
-        doReplaceDash    = self.autoReplaceDash.isChecked()
-        doReplaceDots    = self.autoReplaceDash.isChecked()
+        autoSelect      = self.autoSelect.isChecked()
+        doReplace       = self.autoReplaceMain.isChecked()
+        doReplaceSQuote = self.autoReplaceSQ.isChecked()
+        doReplaceDQuote = self.autoReplaceDQ.isChecked()
+        doReplaceDash   = self.autoReplaceDash.isChecked()
+        doReplaceDots   = self.autoReplaceDash.isChecked()
 
         self.mainConf.autoSelect      = autoSelect
         self.mainConf.doReplace       = doReplace

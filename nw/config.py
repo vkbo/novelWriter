@@ -148,7 +148,8 @@ class Config:
             self.osUnknown = True
 
         # Packages
-        self.hasEnchant = False
+        self.hasEnchant  = False
+        self.hasSymSpell = False
 
         return
 
@@ -196,7 +197,7 @@ class Config:
         self._checkOptionalPackages()
 
         if self.spellTool is None:
-            self.spellTool = "simple"
+            self.spellTool = "internal"
         if self.spellLanguage is None:
             self.spellLanguage = "en"
 

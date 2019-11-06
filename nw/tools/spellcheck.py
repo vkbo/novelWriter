@@ -17,6 +17,10 @@ logger = logging.getLogger(__name__)
 
 class NWSpellCheck():
 
+    SP_INTERNAL = "internal"
+    SP_ENCHANT  = "enchant"
+    SP_SYMSPELL = "symspell"
+
     theDict = None
 
     def __init__(self):
