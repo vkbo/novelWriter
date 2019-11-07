@@ -47,8 +47,7 @@ For the apt package manager on Debian systems, the following Python3 packages ar
 
 These are optional, but recommended:
 
-* `python3-enchant` for spell checking
-* `python3-pycountry` for translating language codes to language names
+* `python3-enchant` for better spell checking
 * `python3-latexcodec` for escaping unicode characters in LaTeX export
 * `python3-pandoc` for additional exports to Word, Open Office, eBooks, etc.
 
@@ -64,12 +63,14 @@ python3 -m pip install pyqt5
 python3 -m pip install appdirs
 python3 -m pip install lxml
 python3 -m pip install pyenchant
-python3 -m pip install pycountry
 python3 -m pip install latexcodec
 python3 -m pip install pypandoc
 ```
 On Windows,`pyenchant` may cause problems.
-I'm looking for a good alternative for spell checking.
+If no external spell checking tool is installed, novelWriter will use a basic spell checker based on standard Python package `difflib`.
+Currently, only English dictionaries are available, but more can be added to the `nw/assets/dict` folder.
+See the RADME.md file in that folder for how to generate more dictionaries.
+This option is both slow and limited.
 
 Note: On Windows, make sure Python3 is in your PATH if you want to launch novelWriter from command line.
 You can also right click the `novelWriter.py` file, create a shortcut, then right click again, select "Properties" and change the target to your python executable and `novelWriter.py`.

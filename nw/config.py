@@ -536,7 +536,7 @@ class Config:
         """
 
         try:
-            import pyenchant
+            import enchant
             self.hasEnchant = True
             logger.debug("Checking package pyenchant: Ok")
         except:

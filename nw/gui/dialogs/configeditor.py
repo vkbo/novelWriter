@@ -27,7 +27,7 @@ from PyQt5.QtWidgets import (
     QFileDialog
 )
 
-from nw.tools import NWSpellCheck
+from nw.tools import NWSpellCheck, NWSpellSimple, NWSpellEnchant
 from nw.constants import nwAlert, nwQuotes
 
 logger = logging.getLogger(__name__)
@@ -158,6 +158,7 @@ class GuiConfigEditGeneral(QWidget):
         self.spellLangForm = QGridLayout(self)
         self.spellLang.setLayout(self.spellLangForm)
 
+        self.spellLangList = QComboBox(self)
         self.spellToolList = QComboBox(self)
         self.spellToolList.addItem("Internal (difflib)",        NWSpellCheck.SP_INTERNAL)
         self.spellToolList.addItem("Spell Enchant (pyenchant)", NWSpellCheck.SP_ENCHANT)
@@ -169,12 +170,11 @@ class GuiConfigEditGeneral(QWidget):
         theModel.item(idEnchant).setEnabled(self.mainConf.hasEnchant)
         theModel.item(idSymSpell).setEnabled(self.mainConf.hasSymSpell)
 
-        self.spellLangList = QComboBox(self)
-        for spTag, spName in self.theParent.docEditor.theDict.listDictionaries():
-            self.spellLangList.addItem(spName, spTag)
-        spellIdx = self.spellLangList.findData(self.mainConf.spellLanguage)
-        if spellIdx != -1:
-            self.spellLangList.setCurrentIndex(spellIdx)
+        self.spellToolList.currentIndexChanged.connect(self._doUpdateSpellTool)
+        toolIdx = self.spellToolList.findData(self.mainConf.spellTool)
+        if toolIdx != -1:
+            self.spellToolList.setCurrentIndex(toolIdx)
+        self._doUpdateSpellTool(0)
 
         self.spellLangForm.addWidget(QLabel("Provider"), 0, 0)
         self.spellLangForm.addWidget(self.spellToolList, 0, 1)
@@ -243,8 +243,8 @@ class GuiConfigEditGeneral(QWidget):
         self.outerBox.addWidget(self.guiLook,    0, 0)
         self.outerBox.addWidget(self.spellLang,  1, 0)
         self.outerBox.addWidget(self.autoSave,   2, 0)
-        self.outerBox.addWidget(self.projBackup, 3, 0)
-        self.outerBox.setColumnStretch(2, 1)
+        self.outerBox.addWidget(self.projBackup, 3, 0, 1, 2)
+        self.outerBox.setColumnStretch(1, 1)
         self.outerBox.setRowStretch(4, 1)
         self.setLayout(self.outerBox)
 
@@ -310,6 +310,32 @@ class GuiConfigEditGeneral(QWidget):
         anItem = theModel.item(1)
         anItem.setFlags(anItem.flags() ^ Qt.ItemIsEnabled)
         return theModel
+
+    def _doUpdateSpellTool(self, currIdx):
+        spellTool = self.spellToolList.currentData()
+        self._updateLanguageList(spellTool)
+        return
+
+    def _updateLanguageList(self, spellTool):
+        """Updates the list of available spell checking dictionaries
+        available for the selected spell check tool. It will try to
+        preserve the language choice, if the language exists in the
+        updated list.
+        """
+        if spellTool == NWSpellCheck.SP_ENCHANT:
+            theDict = NWSpellEnchant()
+        else:
+            theDict = NWSpellSimple()
+
+        self.spellLangList.clear()
+        for spTag, spName in theDict.listDictionaries():
+            self.spellLangList.addItem(spName, spTag)
+
+        spellIdx = self.spellLangList.findData(self.mainConf.spellLanguage)
+        if spellIdx != -1:
+            self.spellLangList.setCurrentIndex(spellIdx)
+
+        return
 
 # END Class GuiConfigEditGeneral
 

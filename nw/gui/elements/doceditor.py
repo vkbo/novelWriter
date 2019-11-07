@@ -64,10 +64,9 @@ class GuiDocEditor(QTextEdit):
         self.qDocument = self.document()
         self.qDocument.setDocumentMargin(self.mainConf.textMargin)
         self.qDocument.contentsChange.connect(self._docChange)
-        self._setupSpellChecking()
 
+        # Syntax
         self.hLight = GuiDocHighlighter(self.qDocument, self.theParent)
-        self.hLight.setDict(self.theDict)
 
         # Context Menu
         self.setContextMenuPolicy(Qt.CustomContextMenu)
@@ -138,7 +137,8 @@ class GuiDocEditor(QTextEdit):
         created, and when the user changes the main editor preferences.
         """
 
-        # Reload dictionaries
+        # Reload spell check and dictionaries
+        self._setupSpellChecking()
         self.setDictionaries()
 
         # Set font
@@ -727,11 +727,15 @@ class GuiDocEditor(QTextEdit):
         """Create the spell checking object based on the spellTool
         setting in config.
         """
+
         if self.mainConf.spellTool == "enchant":
             from nw.tools.spellenchant import NWSpellEnchant
             self.theDict = NWSpellEnchant()
         else:
             self.theDict = NWSpellSimple()
+
+        self.hLight.setDict(self.theDict)
+
         return
 
 # END Class GuiDocEditor
