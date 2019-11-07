@@ -22,8 +22,11 @@ class NWSpellCheck():
     SP_SYMSPELL = "symspell"
 
     theDict = None
+    PROJW = []
 
     def __init__(self):
+        self.mainConf = nw.CONFIG
+        self.projectDict = None
         return
 
     def setLanguage(self, theLang, projectDict=None):
@@ -36,9 +39,40 @@ class NWSpellCheck():
         return []
 
     def addWord(self, newWord):
+        if self.projectDict is not None and newWord not in self.PROJW:
+            newWord = newWord.strip()
+            self.PROJW.append(newWord)
+            try:
+                with open(self.projectDict,mode="w+",encoding="utf-8") as outFile:
+                    for pWord in self.PROJW:
+                        outFile.write("%s\n" % pWord)
+            except Exception as e:
+                logger.error("Failed to write to project word list at %s" % str(self.projectDict))
+                logger.error(str(e))
         return
 
     def listDictionaries(self):
         return []
+
+    ##
+    #  Internal Functions
+    ##
+
+    def _readProjectDictionary(self, projectDict):
+        self.PROJW = []
+        if projectDict is not None:
+            self.projectDict = projectDict
+            try:
+                with open(projectDict,mode="r",encoding="utf-8") as wordsFile:
+                    for theLine in wordsFile:
+                        theLine = theLine.strip()
+                        if len(theLine) > 0 and theLine not in self.PROJW:
+                            self.PROJW.append(theLine)
+                logger.debug("Project word list")
+                logger.debug("Project word list contains %d words" % len(self.PROJW))
+            except Exception as e:
+                logger.error("Failed to load project word list")
+                logger.error(str(e))
+        return
 
 # END Class NWSpellCheck

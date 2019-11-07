@@ -90,6 +90,7 @@ class Config:
         self.showTabsNSpaces = False
         self.showLineEndings = False
 
+        self.fmtApostrophe   = nwUnicode.U_RSQUO
         self.fmtSingleQuotes = [nwUnicode.U_LSQUO,nwUnicode.U_RSQUO]
         self.fmtDoubleQuotes = [nwUnicode.U_LDQUO,nwUnicode.U_RDQUO]
 
