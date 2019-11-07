@@ -1,5 +1,13 @@
 ## Where has John Gone?
 
 @pov: Jane
+@location: Space
 
-% We continue the saga of John and Jane
+% Further chapters can be added by adding another chapter file. This time we can add a quick scene in the same file to introduce it.
+
+### Jane Cannot Find John
+
+@pov: Jane
+@location: Space
+
+Jane has been looking all over for John. He’s nowhere to be found on Earth, so Jane goes to space.

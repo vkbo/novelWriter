@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='utf-8'?>
-<novelWriterXML appVersion="0.3.2" fileVersion="1.0" timeStamp="2019-11-03 12:08:56">
+<novelWriterXML appVersion="0.4.0" fileVersion="1.0" timeStamp="2019-11-07 22:03:42">
   <project>
     <name>Sample Project</name>
     <title>Sample Project</title>
@@ -9,9 +9,9 @@
   </project>
   <settings>
     <spellCheck>True</spellCheck>
-    <lastEdited>636b6aa9b697b</lastEdited>
-    <lastViewed>bb2c23b3c42cc</lastViewed>
-    <lastWordCount>895</lastWordCount>
+    <lastEdited>96b68994dfa3d</lastEdited>
+    <lastViewed>b3e74dbc1f584</lastViewed>
+    <lastWordCount>855</lastWordCount>
     <autoReplace>
       <A>B</A>
       <B>E</B>
@@ -38,7 +38,7 @@
       <name>Novel</name>
       <type>ROOT</type>
       <class>NOVEL</class>
-      <status>New</status>
+      <status>Started</status>
       <expanded>True</expanded>
     </item>
     <item handle="53b69b83cdafc" order="0" parent="7031beac91f75">
@@ -48,53 +48,53 @@
       <status>Started</status>
       <expanded>False</expanded>
       <layout>TITLE</layout>
-      <charCount>73</charCount>
-      <wordCount>16</wordCount>
-      <paraCount>5</paraCount>
-      <cursorPos>85</cursorPos>
+      <charCount>72</charCount>
+      <wordCount>15</wordCount>
+      <paraCount>2</paraCount>
+      <cursorPos>78</cursorPos>
     </item>
     <item handle="e7ded148d6e4a" order="1" parent="7031beac91f75">
-      <name>Some Chapter</name>
+      <name>A Folder</name>
       <type>FOLDER</type>
       <class>NOVEL</class>
-      <status>Notes</status>
+      <status>1st Draft</status>
       <expanded>True</expanded>
     </item>
     <item handle="6a2d6d5f4f401" order="0" parent="e7ded148d6e4a">
       <name>Chapter One</name>
       <type>FILE</type>
       <class>NOVEL</class>
-      <status>New</status>
+      <status>Notes</status>
       <expanded>False</expanded>
       <layout>CHAPTER</layout>
       <charCount>12</charCount>
       <wordCount>3</wordCount>
       <paraCount>0</paraCount>
-      <cursorPos>75</cursorPos>
+      <cursorPos>45</cursorPos>
     </item>
     <item handle="636b6aa9b697b" order="1" parent="e7ded148d6e4a">
       <name>Making a Scene</name>
       <type>FILE</type>
       <class>NOVEL</class>
-      <status>Notes</status>
+      <status>1st Draft</status>
       <expanded>False</expanded>
       <layout>SCENE</layout>
-      <charCount>783</charCount>
-      <wordCount>146</wordCount>
+      <charCount>1076</charCount>
+      <wordCount>196</wordCount>
       <paraCount>6</paraCount>
-      <cursorPos>0</cursorPos>
+      <cursorPos>59</cursorPos>
     </item>
     <item handle="bc0cbd2a407f3" order="2" parent="e7ded148d6e4a">
       <name>Another Scene</name>
       <type>FILE</type>
       <class>NOVEL</class>
-      <status>Notes</status>
+      <status>1st Draft</status>
       <expanded>False</expanded>
       <layout>SCENE</layout>
-      <charCount>412</charCount>
-      <wordCount>82</wordCount>
-      <paraCount>2</paraCount>
-      <cursorPos>43</cursorPos>
+      <charCount>476</charCount>
+      <wordCount>93</wordCount>
+      <paraCount>3</paraCount>
+      <cursorPos>551</cursorPos>
     </item>
     <item handle="ba8a28a246524" order="3" parent="e7ded148d6e4a">
       <name>Interlude</name>
@@ -106,43 +106,43 @@
       <charCount>633</charCount>
       <wordCount>101</wordCount>
       <paraCount>3</paraCount>
-      <cursorPos>164</cursorPos>
+      <cursorPos>1238</cursorPos>
     </item>
     <item handle="96b68994dfa3d" order="4" parent="e7ded148d6e4a">
-      <name>A Note on Ipsums</name>
+      <name>A Note on Structure</name>
       <type>FILE</type>
       <class>NOVEL</class>
-      <status>Started</status>
+      <status>2nd Draft</status>
       <expanded>False</expanded>
       <layout>NOTE</layout>
-      <charCount>2571</charCount>
-      <wordCount>377</wordCount>
-      <paraCount>5</paraCount>
-      <cursorPos>0</cursorPos>
+      <charCount>1692</charCount>
+      <wordCount>313</wordCount>
+      <paraCount>6</paraCount>
+      <cursorPos>216</cursorPos>
     </item>
     <item handle="88706ddc78b1b" order="5" parent="e7ded148d6e4a">
       <name>Chapter Two</name>
       <type>FILE</type>
       <class>NOVEL</class>
-      <status>New</status>
+      <status>1st Draft</status>
       <expanded>False</expanded>
       <layout>CHAPTER</layout>
-      <charCount>20</charCount>
-      <wordCount>4</wordCount>
-      <paraCount>0</paraCount>
-      <cursorPos>76</cursorPos>
+      <charCount>139</charCount>
+      <wordCount>28</wordCount>
+      <paraCount>1</paraCount>
+      <cursorPos>343</cursorPos>
     </item>
     <item handle="ae7339df26ded" order="6" parent="e7ded148d6e4a">
       <name>We Found John!</name>
       <type>FILE</type>
       <class>NOVEL</class>
-      <status>New</status>
+      <status>1st Draft</status>
       <expanded>False</expanded>
       <layout>SCENE</layout>
-      <charCount>567</charCount>
-      <wordCount>112</wordCount>
-      <paraCount>6</paraCount>
-      <cursorPos>326</cursorPos>
+      <charCount>189</charCount>
+      <wordCount>37</wordCount>
+      <paraCount>1</paraCount>
+      <cursorPos>224</cursorPos>
     </item>
     <item handle="f6622b4617424" order="1" parent="None">
       <name>Characters</name>
@@ -193,7 +193,7 @@
       <name>Earth</name>
       <type>FILE</type>
       <class>WORLD</class>
-      <status>None</status>
+      <status>Main</status>
       <expanded>False</expanded>
       <layout>NOTE</layout>
       <charCount>76</charCount>
@@ -205,13 +205,25 @@
       <name>Space</name>
       <type>FILE</type>
       <class>WORLD</class>
-      <status>None</status>
+      <status>Minor</status>
       <expanded>False</expanded>
       <layout>NOTE</layout>
-      <charCount>38</charCount>
-      <wordCount>7</wordCount>
+      <charCount>115</charCount>
+      <wordCount>24</wordCount>
       <paraCount>1</paraCount>
-      <cursorPos>57</cursorPos>
+      <cursorPos>133</cursorPos>
+    </item>
+    <item handle="5eaea4e8cdee8" order="2" parent="15c4492bd5107">
+      <name>Mars</name>
+      <type>FILE</type>
+      <class>WORLD</class>
+      <status>Major</status>
+      <expanded>False</expanded>
+      <layout>NOTE</layout>
+      <charCount>28</charCount>
+      <wordCount>6</wordCount>
+      <paraCount>1</paraCount>
+      <cursorPos>45</cursorPos>
     </item>
     <item handle="98acd8c76c93a" order="3" parent="None">
       <name>Trash</name>
@@ -231,18 +243,6 @@
       <wordCount>6</wordCount>
       <paraCount>1</paraCount>
       <cursorPos>36</cursorPos>
-    </item>
-    <item handle="4cd0bd12b087d" order="1" parent="98acd8c76c93a">
-      <name>Orphaned File 1</name>
-      <type>FILE</type>
-      <class>NO_CLASS</class>
-      <status>None</status>
-      <expanded>False</expanded>
-      <layout>NO_LAYOUT</layout>
-      <charCount>42</charCount>
-      <wordCount>8</wordCount>
-      <paraCount>1</paraCount>
-      <cursorPos>47</cursorPos>
     </item>
   </content>
 </novelWriterXML>
