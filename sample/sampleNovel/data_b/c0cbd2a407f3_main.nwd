@@ -3,6 +3,16 @@
 @pov: John
 @location: Earth
 
-This is the second scene in out story. We have no idea what’s going on, so we’re just going to ramble on until we have a few lines of text so that the editor has something to work with.
+Adding more scenes to a chapter is as easy as adding more scene files, with a level three heading, or just adding another level three heading in the same file if that works for the way you want to structure your files.
 
-In fact, this scene is supposed to be about John, but we don’t really know anything about John, except that he is somewhere in space. Perhaps he’s lost? Or has gone where no man has gone before? Where is Jane then?
+In fact, if you wish, you can add all the scenes in the chapter file too. All novelWriter cares about is the level of the headings.
+
+### More Scenes
+
+@pov: Jane
+@location: Earth
+
+This is a second scene in the same file as the previous scene. You can always split the files up later.
+
+
+
