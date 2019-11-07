@@ -1,5 +1,6 @@
 ## So it Begins
 
 @pov: Jane
+@location: Earth
 
-% The first chapter with much action and such.
+% We can add a chapter file, but keep the scene files separate. In the chapter file we can set the meta data that applies to the whole chapter if we wish.

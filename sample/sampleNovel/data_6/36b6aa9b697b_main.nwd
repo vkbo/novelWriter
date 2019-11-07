@@ -2,18 +2,18 @@
 
 @pov: Jane
 @char: John
-@location: Space
+@location: Earth
 
-Some text here would look good as well, and maybe some "dialogue"?
+A scene is defined by a level three heading, like the one at the top of this page. The scene will be assigned to the chapter preceding it in the project tree.
 
-#### Some Section
+Each paragraph in the scene is separated by a blank line. The text supports minimal formatting, like **bold**, _italic_ and  __underscore__.
 
-So, this is some __text__ that we’ve been adding to this document. It is utterly meaningless text, _but_ since this is just dummy text, that doesn’t really matter. The text is perfectly happy to live in this document regardless.
+In addition, the editor supports automatic formatting of “quotes”, both double and ‘single’. Depending on the syntax highlighter, these can be in different colours.
 
-This paragraph is also meaningless. At least a bit. It’s also very short. But we could make it less meaningless if we wanted to … but we won’t, will we.
+If you have the need for it, you can also add text that can be automatically replaced by other text when you generate a preview or export the project. Now, let’s auto-replace this A with <A>, and this C with <C>.  While <E> is just <E>. Press Ctrl+R to see what this looks like in the view pane.
 
-This one is a bit longer. “It also has some dialogue in it” she said, before she moved on to check if the spellchecker worked. It did. “Cool,” she concluded.
+#### Some Section Here
 
-Let’s auto-replace this A with <A>, and this C with <C>.  While <E> is just <E>.
+If you need to split a scene file up into further pieces, you can do so with the level four heading, like above. This is referred to as a section.
 
-Let’s also add some text with a non-breaking space in it, like right here!
+Both scene and section titles can be left out of the final exported document. The formatting of titles can be selected from the export dialog.

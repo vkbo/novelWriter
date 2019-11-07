@@ -1,5 +1,7 @@
 ## Interlude
 
+% Notice that this is a file with the flag ‘N.Un’. The ‘N’ means it’s a novel file, and the ‘Un’ means it’s an unnumbered chapter. Unnumbered chapters can be treated separately from numbered chapters during export. Perfect for when you want to add an interlude, or for a prologue or epilogue.
+
 I am the very model of a modern Major-General  
 I've information vegetable, animal, and mineral  
 I know the kings of England, and I quote the fights historical  
@@ -13,3 +15,5 @@ With many cheerful facts about the square of the hypotenuse
 	With many cheerful facts about the square of the hypotenuse  
 	With many cheerful facts about the square of the hypotenuse  
 	With many cheerful facts about the square of the hypotepotenuse
+
+% Notice that the lines in the verse have highlighted spaces at the end of each line. (If the syntax theme allows it.) These are two spaces, which indicates that you want a hard line break at that point. The blank lines still indicate a paragraph. Press Ctrl+R to see what this renders like.

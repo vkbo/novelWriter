@@ -1,17 +1,21 @@
-# Lorem Ipsum
+# A Note on Structure
 
-## Header 2
+This file is just a note. You can save notes anywhere you like in the project tree. Notes can be filtered out when you export the project.
 
-### Header 3
+In root folders that isn’t the Novel root folder, you can _only_ add notes. In the Novel root folder, you can choose between a number of layouts. Some of them are just to let yourself know what each file is for.
 
-#### Header 4
+## Headers in Notes
 
-**Lorem** ipsum dolor sit amet, consectetur "adipiscing" elit. Proin vitae nisi augue. Sed elementum lacus risus, eu lobortis ipsum malesuada rutrum. Nam egestas elit id commodo porta. **Ut eget lacinia ipsum, non interdum mi.** Sed tincidunt commodo metus, at faucibus nisi finibus eget. In malesuada egestas nulla et tempor. _Nulla eu sem_ vel mi sollicitudin cursus. “Nullam ultricies ex eu dui ‘scelerisque’, ut venenatis turpis ultricies.”
+Unlike in novel files, headers in notes have no particular meaning other than visual aids for you, and for correct formatting in the export or view pane.
 
-Nunc in ex molestie, __efficitur__ diam semper, pellentesque eros. Morbi vel lacus quis turpis sagittis iaculis. Sed rhoncus tortor et finibus lobortis. Suspendisse non ultrices odio, at venenatis mi. Sed congue congue tortor, et egestas neque malesuada ac. Nulla facilisi. Maecenas finibus elementum vestibulum. Nam id rhoncus mauris, vel “ullamcorper” «neque».
+## Folders in the Tree View
 
-Quisque mattis magna purus, vel ultricies sem feugiat pellentesque. Nam mi nisl, consectetur vel facilisis nec, condimentum at libero. Sed dolor lacus, fermentum vel nisi sed, auctor pretium urna. Nulla accumsan arcu ut ligula faucibus, non facilisis mi tempor. Nam consectetur dui dapibus lectus cursus, sed laoreet nisl maximus. Maecenas eleifend sapien eu porttitor placerat. Maecenas quis massa non tortor imperdiet porta. Nunc non tristique magna. Vivamus ornare quam convallis metus vestibulum, id molestie quam pretium. Maecenas tincidunt tincidunt tortor lobortis suscipit. Vivamus tempor dolor quis auctor sollicitudin. Integer imperdiet urna dui, at vehicula dui consequat vitae. Donec aliquet feugiat tellus sed dignissim. Nulla pretium libero ut elit porta sagittis. Praesent commodo vulputate lacinia.
+The folders in the tree view have no structural meaning other than they’re a way for you to organise your files into groups in whatever way suits you. They are not intended to represent chapters, but you can of course use them for that. If you do, know that you still need to define chapter headers in your structure so novelWriter knows where you want them.
 
-Proin cursus augue nec dignissim tincidunt. Nunc tincidunt efficitur sapien, ac dictum ligula varius eu. In pretium tristique volutpat. Aenean efficitur enim ut eros finibus, nec gravida neque vestibulum. Interdum et malesuada fames ac ante ipsum primis in faucibus. Etiam fermentum sit amet libero vel placerat. Nunc in nunc vulputate, elementum nisl vitae, dignissim leo. Nunc felis augue, dapibus sit amet orci et, fermentum posuere velit. Curabitur eros purus, pretium ac magna non, tempor gravida justo. Vivamus in ipsum magna.
+## Linking Files and Notes
 
-Sed quis felis ante. Sed rhoncus turpis risus, ac malesuada velit dictum eget. Curabitur malesuada justo a augue lacinia dictum. Cras hendrerit lorem turpis, et ultrices lectus fermentum at. Quisque volutpat dignissim felis id commodo. Mauris convallis arcu id tempor tincidunt. Cras porttitor ut erat non bibendum. Cras non velit ac libero tincidunt suscipit. Aliquam at neque lacus.
+You can link files and notes together by assigning tags to them, and then reference them from other files. The file class of a file determines which reference keywords apply to each file. For instance a file in the Characters root folder can be referenced using either the @char keyword or the @pov keyword.
+
+If you want to see the content of the file the reference points to, you can click Ctrl+Enter with the cursor on top of the reference, and the view pane will show you the file. In the view pane, all references are clickable, so you can navigate further. At the bottom of the view pane, a list of files referencing the one your viewing will appear. This panel updates when you navigate, unless you make it sticky by clicking the sticky checkbox.
+
+
