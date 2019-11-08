@@ -65,7 +65,7 @@ instOpt = [
     "--onefile",
     "--add-data=%s%s%s" % (os.path.join("nw", "themes"),  dotDot,"themes"),
     "--add-data=%s%s%s" % (os.path.join("nw", "graphics"),dotDot,"graphics"),
-    "--icon=%s" % os.path.join("nw", "graphics", "novelWriter.ico"),
+    "--icon=%s" % os.path.join("nw", "assets", "icons", "novelWriter.ico"),
 ]
 if buildWindowed:
     instOpt.append("--windowed")

@@ -54,6 +54,7 @@ class Config:
         self.themeRoot = None
         self.graphPath = None
         self.dictPath  = None
+        self.iconPath  = None
 
         # Set default values
         self.confChanged  = False
@@ -61,6 +62,7 @@ class Config:
         ## General
         self.guiTheme  = "default"
         self.guiSyntax = "default_light"
+        self.guiDark   = False
 
         ## Sizes
         self.winGeometry  = [1100, 650]
@@ -175,7 +177,8 @@ class Config:
         self.themeRoot = path.join(self.assetPath,"themes")
         self.graphPath = path.join(self.assetPath,"graphics")
         self.dictPath  = path.join(self.assetPath,"dict")
-        self.appIcon   = path.join(self.graphPath, nwFiles.APP_ICON)
+        self.iconPath  = path.join(self.assetPath,"icons")
+        self.appIcon   = path.join(self.iconPath, nwFiles.APP_ICON)
 
         # If config folder does not exist, make it.
         # This assumes that the os config folder itself exists.
@@ -223,6 +226,9 @@ class Config:
         )
         self.guiSyntax = self._parseLine(
             cnfParse, cnfSec, "syntax", self.CNF_STR, self.guiSyntax
+        )
+        self.guiDark = self._parseLine(
+            cnfParse, cnfSec, "guidark", self.CNF_BOOL, self.guiDark
         )
 
         ## Sizes
@@ -358,6 +364,7 @@ class Config:
         cnfParse.set(cnfSec,"timestamp", datetime.now().strftime("%Y-%m-%d %H:%M:%S"))
         cnfParse.set(cnfSec,"theme",     str(self.guiTheme))
         cnfParse.set(cnfSec,"syntax",    str(self.guiSyntax))
+        cnfParse.set(cnfSec,"guidark",   str(self.guiDark))
 
         ## Sizes
         cnfSec = "Sizes"
