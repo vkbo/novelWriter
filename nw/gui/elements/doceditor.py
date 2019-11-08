@@ -26,7 +26,7 @@ from PyQt5.QtGui import (
 
 from nw.project import NWDoc
 from nw.gui.tools import GuiDocHighlighter, WordCounter
-from nw.tools import NWSpellCheck
+from nw.tools import NWSpellCheck, NWSpellSimple
 from nw.constants import nwFiles, nwUnicode, nwDocAction, nwAlert
 
 logger = logging.getLogger(__name__)
@@ -64,14 +64,9 @@ class GuiDocEditor(QTextEdit):
         self.qDocument = self.document()
         self.qDocument.setDocumentMargin(self.mainConf.textMargin)
         self.qDocument.contentsChange.connect(self._docChange)
-        if self.mainConf.spellTool == "enchant":
-            from nw.tools.spellenchant import NWSpellEnchant
-            self.theDict = NWSpellEnchant()
-        else:
-            self.theDict = NWSpellCheck()
 
+        # Syntax
         self.hLight = GuiDocHighlighter(self.qDocument, self.theParent)
-        self.hLight.setDict(self.theDict)
 
         # Context Menu
         self.setContextMenuPolicy(Qt.CustomContextMenu)
@@ -142,7 +137,8 @@ class GuiDocEditor(QTextEdit):
         created, and when the user changes the main editor preferences.
         """
 
-        # Reload dictionaries
+        # Reload spell check and dictionaries
+        self._setupSpellChecking()
         self.setDictionaries()
 
         # Set font
@@ -725,6 +721,21 @@ class GuiDocEditor(QTextEdit):
             ))
         if searchFor != "":
             self._findNext()
+        return
+
+    def _setupSpellChecking(self):
+        """Create the spell checking object based on the spellTool
+        setting in config.
+        """
+
+        if self.mainConf.spellTool == "enchant":
+            from nw.tools.spellenchant import NWSpellEnchant
+            self.theDict = NWSpellEnchant()
+        else:
+            self.theDict = NWSpellSimple()
+
+        self.hLight.setDict(self.theDict)
+
         return
 
 # END Class GuiDocEditor

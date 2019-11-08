@@ -1,3 +1,4 @@
 include LICENSE.md
+recursive-include nw/assets *
 recursive-include nw/graphics *
 recursive-include nw/themes *

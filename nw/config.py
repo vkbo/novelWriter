@@ -41,7 +41,6 @@ class Config:
         self.appHandle = nw.__package__.lower()
         self.showGUI   = True
         self.debugInfo = False
-        self.spellTool = None
 
         # Set Paths
         self.confPath  = None
@@ -51,9 +50,10 @@ class Config:
         self.appPath   = None
         self.appRoot   = None
         self.appIcon   = None
-        self.guiPath   = None
+        self.assetPath = None
         self.themeRoot = None
-        self.themePath = None
+        self.graphPath = None
+        self.dictPath  = None
 
         # Set default values
         self.confChanged  = False
@@ -90,10 +90,12 @@ class Config:
         self.showTabsNSpaces = False
         self.showLineEndings = False
 
+        self.fmtApostrophe   = nwUnicode.U_RSQUO
         self.fmtSingleQuotes = [nwUnicode.U_LSQUO,nwUnicode.U_RSQUO]
         self.fmtDoubleQuotes = [nwUnicode.U_LDQUO,nwUnicode.U_RDQUO]
 
-        self.spellLanguage   = "en_GB"
+        self.spellTool     = None
+        self.spellLanguage = None
 
         ## Backup
         self.backupPath      = ""
@@ -136,15 +138,19 @@ class Config:
         self.osDarwin  = False
         self.osUnknown = False
         if self.osType.startswith("linux"):
-            self.osLinux   = True
+            self.osLinux = True
         elif self.osType.startswith("darwin"):
-            self.osDarwin  = True
+            self.osDarwin = True
         elif self.osType.startswith("win32"):
             self.osWindows = True
         elif self.osType.startswith("cygwin"):
             self.osWindows = True
         else:
             self.osUnknown = True
+
+        # Packages
+        self.hasEnchant  = False
+        self.hasSymSpell = False
 
         return
 
@@ -165,10 +171,10 @@ class Config:
         self.lastPath  = self.homePath
         self.appPath   = getattr(sys, "_MEIPASS", path.abspath(path.dirname(__file__)))
         self.appRoot   = path.join(self.appPath,path.pardir)
-        self.helpPath  = path.join(self.appRoot,"help","en_GB")
-        self.guiPath   = path.join(self.appPath,"gui")
+        self.assetPath = path.join(self.appPath,"assets")
         self.themeRoot = path.join(self.appPath,"themes")
         self.graphPath = path.join(self.appPath,"graphics")
+        self.dictPath  = path.join(self.assetPath,"dict")
         self.appIcon   = path.join(self.graphPath, nwFiles.APP_ICON)
 
         # If config folder does not exist, make it.
@@ -185,13 +191,16 @@ class Config:
             # If it exists, load it
             self.loadConfig()
         else:
-            # If it does not exist, save a copy of the defaults
+            # If it does not exist, save a copy of the default values
             self.saveConfig()
 
+        # Check the availability of optional packages
+        self._checkOptionalPackages()
+
         if self.spellTool is None:
-            logger.warning("No spell check tool available")
-        else:
-            logger.debug("Using spell check tool '%s'" % self.spellTool)
+            self.spellTool = "internal"
+        if self.spellLanguage is None:
+            self.spellLanguage = "en"
 
         return True
 
@@ -287,8 +296,11 @@ class Config:
         self.fmtDoubleQuotes = self._parseLine(
             cnfParse, cnfSec, "fmtdoublequote", self.CNF_LIST, self.fmtDoubleQuotes
         )
+        self.spellTool = self._parseLine(
+            cnfParse, cnfSec, "spelltool", self.CNF_STR, self.spellTool
+        )
         self.spellLanguage = self._parseLine(
-            cnfParse, cnfSec, "spellcheck", self.CNF_STR,  self.spellLanguage
+            cnfParse, cnfSec, "spellcheck", self.CNF_STR, self.spellLanguage
         )
         self.showTabsNSpaces = self._parseLine(
             cnfParse, cnfSec, "showtabsnspaces", self.CNF_BOOL, self.showTabsNSpaces
@@ -379,6 +391,7 @@ class Config:
         cnfParse.set(cnfSec,"repdots",         str(self.doReplaceDots))
         cnfParse.set(cnfSec,"fmtsinglequote",  self._packList(self.fmtSingleQuotes))
         cnfParse.set(cnfSec,"fmtdoublequote",  self._packList(self.fmtDoubleQuotes))
+        cnfParse.set(cnfSec,"spelltool",       str(self.spellTool))
         cnfParse.set(cnfSec,"spellcheck",      str(self.spellLanguage))
         cnfParse.set(cnfSec,"showtabsnspaces", str(self.showTabsNSpaces))
         cnfParse.set(cnfSec,"showlineendings", str(self.showLineEndings))
@@ -518,5 +531,19 @@ class Config:
             if checkVal.lower == "none":
                 return None
         return checkVal
+
+    def _checkOptionalPackages(self):
+        """Cheks if we have the optional packages used by some features.
+        """
+
+        try:
+            import enchant
+            self.hasEnchant = True
+            logger.debug("Checking package pyenchant: Ok")
+        except:
+            self.hasEnchant = False
+            logger.debug("Checking package pyenchant: Missing")
+
+        return
 
 # End Class Config

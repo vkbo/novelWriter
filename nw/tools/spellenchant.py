@@ -32,14 +32,15 @@ class NWSpellEnchant(NWSpellCheck):
         crash.
         """
         try:
-            if projectDict is None:
-                self.theDict = enchant.Dict(theLang)
-            else:
-                self.theDict = enchant.DictWithPWL(theLang, projectDict)
+            self.theDict = enchant.Dict(theLang)
             logger.debug("Enchant spell checking for language %s loaded" % theLang)
         except:
             logger.error("Failed to load enchant spell checking for language %s" % theLang)
             self.theDict = NWSpellEnchantDummy()
+
+        self._readProjectDictionary(projectDict)
+        for pWord in self.PROJW:
+            self.theDict.add_to_session(pWord)
 
         return
 
@@ -50,7 +51,8 @@ class NWSpellEnchant(NWSpellCheck):
         return self.theDict.suggest(theWord)
 
     def addWord(self, newWord):
-        self.theDict.add_to_pwl(newWord)
+        self.theDict.add_to_session(newWord)
+        NWSpellCheck.addWord(self, newWord)
         return
 
     def listDictionaries(self):
@@ -58,10 +60,9 @@ class NWSpellEnchant(NWSpellCheck):
         for spTag, spProvider in enchant.list_dicts():
             spList = []
             if spTag[:2] in isoLanguage.ISO_639_1:
-                langName = isoLanguage.ISO_639_1[spTag[:2]]
+                spList.append(isoLanguage.ISO_639_1[spTag[:2]])
             else:
-                langName = spTag[:2]
-            spList.append(langName)
+                spList.append(spTag[:2])
             if len(spTag) > 3:
                 spList.append("(%s)" % spTag[3:])
             spList.append("[%s]" % spProvider.name)
@@ -82,7 +83,7 @@ class NWSpellEnchantDummy:
     def suggest(self, theWord):
         return []
 
-    def add_to_pwl(self, theWord):
+    def add_to_session(self, theWord):
         return
 
 # END Class NWSpellEnchantDummy

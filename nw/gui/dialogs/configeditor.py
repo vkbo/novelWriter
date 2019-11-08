@@ -16,8 +16,10 @@ import nw
 from os import path
 
 from PyQt5.QtCore import Qt, QSize
-from PyQt5.QtGui import QIcon, QPixmap, QColor, QBrush, QStandardItemModel, QFont
 from PyQt5.QtSvg import QSvgWidget
+from PyQt5.QtGui import (
+    QIcon, QPixmap, QColor, QBrush, QStandardItemModel, QFont
+)
 from PyQt5.QtWidgets import (
     QDialog, QHBoxLayout, QVBoxLayout, QFormLayout, QLineEdit, QPlainTextEdit,
     QLabel, QWidget, QTabWidget, QDialogButtonBox, QSpinBox, QGroupBox,
@@ -25,6 +27,7 @@ from PyQt5.QtWidgets import (
     QFileDialog
 )
 
+from nw.tools import NWSpellCheck, NWSpellSimple, NWSpellEnchant
 from nw.constants import nwAlert, nwQuotes
 
 logger = logging.getLogger(__name__)
@@ -156,14 +159,27 @@ class GuiConfigEditGeneral(QWidget):
         self.spellLang.setLayout(self.spellLangForm)
 
         self.spellLangList = QComboBox(self)
-        for spTag, spName in self.theParent.docEditor.theDict.listDictionaries():
-            self.spellLangList.addItem(spName, spTag)
-        spellIdx = self.spellLangList.findData(self.mainConf.spellLanguage)
-        if spellIdx != -1:
-            self.spellLangList.setCurrentIndex(spellIdx)
+        self.spellToolList = QComboBox(self)
+        self.spellToolList.addItem("Internal (difflib)",        NWSpellCheck.SP_INTERNAL)
+        self.spellToolList.addItem("Spell Enchant (pyenchant)", NWSpellCheck.SP_ENCHANT)
+        self.spellToolList.addItem("SymSpell (symspellpy)",     NWSpellCheck.SP_SYMSPELL)
 
-        self.spellLangForm.addWidget(QLabel("Language"), 0, 0)
-        self.spellLangForm.addWidget(self.spellLangList, 0, 1)
+        theModel   = self.spellToolList.model()
+        idEnchant  = self.spellToolList.findData(NWSpellCheck.SP_ENCHANT)
+        idSymSpell = self.spellToolList.findData(NWSpellCheck.SP_SYMSPELL)
+        theModel.item(idEnchant).setEnabled(self.mainConf.hasEnchant)
+        theModel.item(idSymSpell).setEnabled(self.mainConf.hasSymSpell)
+
+        self.spellToolList.currentIndexChanged.connect(self._doUpdateSpellTool)
+        toolIdx = self.spellToolList.findData(self.mainConf.spellTool)
+        if toolIdx != -1:
+            self.spellToolList.setCurrentIndex(toolIdx)
+        self._doUpdateSpellTool(0)
+
+        self.spellLangForm.addWidget(QLabel("Provider"), 0, 0)
+        self.spellLangForm.addWidget(self.spellToolList, 0, 1)
+        self.spellLangForm.addWidget(QLabel("Language"), 1, 0)
+        self.spellLangForm.addWidget(self.spellLangList, 1, 1)
         self.spellLangForm.setColumnStretch(2, 1)
 
         # AutoSave
@@ -227,8 +243,8 @@ class GuiConfigEditGeneral(QWidget):
         self.outerBox.addWidget(self.guiLook,    0, 0)
         self.outerBox.addWidget(self.spellLang,  1, 0)
         self.outerBox.addWidget(self.autoSave,   2, 0)
-        self.outerBox.addWidget(self.projBackup, 3, 0)
-        self.outerBox.setColumnStretch(2, 1)
+        self.outerBox.addWidget(self.projBackup, 3, 0, 1, 2)
+        self.outerBox.setColumnStretch(1, 1)
         self.outerBox.setRowStretch(4, 1)
         self.setLayout(self.outerBox)
 
@@ -241,6 +257,7 @@ class GuiConfigEditGeneral(QWidget):
 
         guiTheme        = self.guiLookTheme.currentData()
         guiSyntax       = self.guiLookSyntax.currentData()
+        spellTool       = self.spellToolList.currentData()
         spellLanguage   = self.spellLangList.currentData()
         autoSaveDoc     = self.autoSaveDoc.value()
         autoSaveProj    = self.autoSaveProj.value()
@@ -253,6 +270,7 @@ class GuiConfigEditGeneral(QWidget):
 
         self.mainConf.guiTheme        = guiTheme
         self.mainConf.guiSyntax       = guiSyntax
+        self.mainConf.spellTool       = spellTool
         self.mainConf.spellLanguage   = spellLanguage
         self.mainConf.autoSaveDoc     = autoSaveDoc
         self.mainConf.autoSaveProj    = autoSaveProj
@@ -285,6 +303,39 @@ class GuiConfigEditGeneral(QWidget):
             return True
 
         return False
+
+    def _disableComboItem(self, theList, theValue):
+        theIdx = theList.findData(theValue)
+        theModel = theList.model()
+        anItem = theModel.item(1)
+        anItem.setFlags(anItem.flags() ^ Qt.ItemIsEnabled)
+        return theModel
+
+    def _doUpdateSpellTool(self, currIdx):
+        spellTool = self.spellToolList.currentData()
+        self._updateLanguageList(spellTool)
+        return
+
+    def _updateLanguageList(self, spellTool):
+        """Updates the list of available spell checking dictionaries
+        available for the selected spell check tool. It will try to
+        preserve the language choice, if the language exists in the
+        updated list.
+        """
+        if spellTool == NWSpellCheck.SP_ENCHANT:
+            theDict = NWSpellEnchant()
+        else:
+            theDict = NWSpellSimple()
+
+        self.spellLangList.clear()
+        for spTag, spName in theDict.listDictionaries():
+            self.spellLangList.addItem(spName, spTag)
+
+        spellIdx = self.spellLangList.findData(self.mainConf.spellLanguage)
+        if spellIdx != -1:
+            self.spellLangList.setCurrentIndex(spellIdx)
+
+        return
 
 # END Class GuiConfigEditGeneral
 
@@ -536,12 +587,12 @@ class GuiConfigEditEditor(QWidget):
         self.mainConf.textMargin = textMargin
         self.mainConf.tabWidth   = tabWidth
 
-        autoSelect       = self.autoSelect.isChecked()
-        doReplace        = self.autoReplaceMain.isChecked()
-        doReplaceSQuote  = self.autoReplaceSQ.isChecked()
-        doReplaceDQuote  = self.autoReplaceDQ.isChecked()
-        doReplaceDash    = self.autoReplaceDash.isChecked()
-        doReplaceDots    = self.autoReplaceDash.isChecked()
+        autoSelect      = self.autoSelect.isChecked()
+        doReplace       = self.autoReplaceMain.isChecked()
+        doReplaceSQuote = self.autoReplaceSQ.isChecked()
+        doReplaceDQuote = self.autoReplaceDQ.isChecked()
+        doReplaceDash   = self.autoReplaceDash.isChecked()
+        doReplaceDots   = self.autoReplaceDash.isChecked()
 
         self.mainConf.autoSelect      = autoSelect
         self.mainConf.doReplace       = doReplace
