@@ -16,7 +16,7 @@ import nw
 from time import time
 
 from PyQt5.QtCore import Qt, QTimer
-from PyQt5.QtGui import QIcon, QColor, QPixmap
+from PyQt5.QtGui import QIcon, QColor, QPixmap, QFont
 from PyQt5.QtWidgets import QStatusBar, QLabel, QFrame
 
 logger = logging.getLogger(__name__)
@@ -28,13 +28,15 @@ class GuiMainStatus(QStatusBar):
 
         logger.debug("Initialising MainStatus ...")
 
-        self.mainConf   = nw.CONFIG
-        self.theParent  = theParent
-        self.refTime    = None
+        self.mainConf  = nw.CONFIG
+        self.theParent = theParent
+        self.refTime   = None
 
         self.iconGrey   = QPixmap(16,16)
         self.iconYellow = QPixmap(16,16)
         self.iconGreen  = QPixmap(16,16)
+
+        self.monoFont = QFont("Monospace",10)
 
         self.iconGrey.fill(QColor(*self.theParent.theTheme.statNone))
         self.iconYellow.fill(QColor(*self.theParent.theTheme.statUnsaved))
@@ -45,21 +47,23 @@ class GuiMainStatus(QStatusBar):
 
         self.boxTime = QLabel("")
         self.boxTime.setToolTip("Session Time")
-        self.boxTime.setAlignment(Qt.AlignRight)
-        self.boxTime.setMinimumWidth(80)
+        self.boxTime.setAlignment(Qt.AlignVCenter | Qt.AlignRight)
+        self.boxTime.setFont(self.monoFont)
 
         self.boxCounts = QLabel()
         self.boxCounts.setToolTip("Document Character | Word | Paragraph Count")
 
         self.projChanged = QLabel("")
-        self.projChanged.setFixedHeight(16)
-        self.projChanged.setFixedWidth(16)
+        self.projChanged.setFixedHeight(14)
+        self.projChanged.setFixedWidth(14)
         self.projChanged.setToolTip("Project Changes Saved")
 
         self.docChanged = QLabel("")
-        self.docChanged.setFixedHeight(16)
-        self.docChanged.setFixedWidth(16)
+        self.docChanged.setFixedHeight(14)
+        self.docChanged.setFixedWidth(14)
         self.docChanged.setToolTip("Document Changes Saved")
+
+        self.docLanguage = QLabel("")
 
         # Add Them
         self.addPermanentWidget(self.docChanged)
@@ -67,6 +71,7 @@ class GuiMainStatus(QStatusBar):
         self.addPermanentWidget(QLabel("  "))
         self.addPermanentWidget(self.projChanged)
         self.addPermanentWidget(self.boxStats)
+        self.addPermanentWidget(QLabel("  "))
         self.addPermanentWidget(self.boxTime)
 
         self.setSizeGripEnabled(True)
