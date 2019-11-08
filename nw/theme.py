@@ -25,6 +25,10 @@ logger = logging.getLogger(__name__)
 
 class Theme:
 
+    # Icons should either have a valid icon name by using Qt internal
+    # QIcon.fromTheme, as specified here:
+    # https://specifications.freedesktop.org/icon-naming-spec/icon-naming-spec-latest.html
+    # If there is no fallback, the variable should be None.
     ICON_MAP = {
         "root"     : "drive-harddisk",
         "folder"   : "folder",
@@ -37,6 +41,7 @@ class Theme:
         "close"    : "edit-delete",
         "search"   : "edit-find",
         "replace"  : "edit-find-replace",
+        "time"     : None,
     }
 
     def __init__(self, theParent):
@@ -132,6 +137,7 @@ class Theme:
     def loadTheme(self):
 
         logger.debug("Loading theme files")
+        logger.debug("System icon theme is '%s'" % str(QIcon.themeName()))
 
         # CSS File
         cssData = ""
@@ -147,9 +153,16 @@ class Theme:
         iconsDir = path.join(self.themePath,self.iconPath)
         if path.isdir(iconsDir):
             for iconName in self.ICON_MAP:
+                iconFile = path.join(iconsDir,iconName+".svg")
+                if path.isfile(iconFile):
+                    self.themeIcons[iconName] = QIcon(iconFile)
+                    logger.verbose("Loaded theme icon '%s'" % (iconName+".svg"))
+                    continue
                 iconFile = path.join(iconsDir,iconName+".png")
                 if path.isfile(iconFile):
                     self.themeIcons[iconName] = QIcon(iconFile)
+                    logger.verbose("Loaded theme icon '%s'" % (iconName+".png"))
+                    continue
 
         # Config File
         confParser = configparser.ConfigParser()
