@@ -143,11 +143,16 @@ class GuiConfigEditGeneral(QWidget):
         if syntaxIdx != -1:
             self.guiLookSyntax.setCurrentIndex(syntaxIdx)
 
+        self.guiDarkIcons = QCheckBox("Prefer icons for dark backgrounds", self)
+        self.guiDarkIcons.setToolTip("This may improve the look of icons if the system theme is dark.")
+        self.guiDarkIcons.setChecked(self.mainConf.guiDark)
+
         self.guiLookForm.addWidget(QLabel("Theme"),    0, 0)
         self.guiLookForm.addWidget(self.guiLookTheme,  0, 1)
         self.guiLookForm.addWidget(QLabel("Syntax"),   1, 0)
         self.guiLookForm.addWidget(self.guiLookSyntax, 1, 1)
-        self.guiLookForm.setColumnStretch(2, 1)
+        self.guiLookForm.addWidget(self.guiDarkIcons,  2, 0, 1, 2)
+        self.guiLookForm.setColumnStretch(3, 1)
 
         # Spell Checking
         self.spellLang     = QGroupBox("Spell Checker", self)
@@ -217,17 +222,11 @@ class GuiConfigEditGeneral(QWidget):
 
         self.projBackupClose = QCheckBox("Run on close",self)
         self.projBackupClose.setToolTip("Backup automatically on project close.")
-        if self.mainConf.backupOnClose:
-            self.projBackupClose.setCheckState(Qt.Checked)
-        else:
-            self.projBackupClose.setCheckState(Qt.Unchecked)
+        self.projBackupClose.setChecked(self.mainConf.backupOnClose)
 
         self.projBackupAsk = QCheckBox("Ask before backup",self)
         self.projBackupAsk.setToolTip("Ask before backup.")
-        if self.mainConf.askBeforeBackup:
-            self.projBackupAsk.setCheckState(Qt.Checked)
-        else:
-            self.projBackupAsk.setCheckState(Qt.Unchecked)
+        self.projBackupAsk.setChecked(self.mainConf.askBeforeBackup)
 
         self.projBackupForm.addWidget(self.projBackupPath,    0, 0, 1, 2)
         self.projBackupForm.addWidget(self.projBackupGetPath, 0, 2)
@@ -253,6 +252,7 @@ class GuiConfigEditGeneral(QWidget):
 
         guiTheme        = self.guiLookTheme.currentData()
         guiSyntax       = self.guiLookSyntax.currentData()
+        guiDark         = self.guiDarkIcons.isChecked()
         spellTool       = self.spellToolList.currentData()
         spellLanguage   = self.spellLangList.currentData()
         autoSaveDoc     = self.autoSaveDoc.value()
@@ -266,6 +266,7 @@ class GuiConfigEditGeneral(QWidget):
 
         self.mainConf.guiTheme        = guiTheme
         self.mainConf.guiSyntax       = guiSyntax
+        self.mainConf.guiDark         = guiDark
         self.mainConf.spellTool       = spellTool
         self.mainConf.spellLanguage   = spellLanguage
         self.mainConf.autoSaveDoc     = autoSaveDoc
