@@ -19,7 +19,6 @@ from difflib import get_close_matches
 logger = logging.getLogger(__name__)
 
 from nw.tools.spellcheck import NWSpellCheck
-from nw.constants import isoLanguage
 
 class NWSpellSimple(NWSpellCheck):
 
@@ -105,17 +104,8 @@ class NWSpellSimple(NWSpellCheck):
             if theBits[1] != ".dict":
                 continue
 
-            spTag = theBits[0]
-            spList = []
-            if spTag[:2] in isoLanguage.ISO_639_1:
-                spList.append(isoLanguage.ISO_639_1[spTag[:2]])
-            else:
-                spList.append(spTag[:2])
-            if len(spTag) > 3:
-                spList.append("(%s)" % spTag[3:])
-            spList.append("[internal]")
-            spName = " ".join(spList)
-            retList.append((spTag, spName))
+            spName = "%s [nternal]" % self.expandLanguage(theBits[0])
+            retList.append((theBits[0], spName))
 
         return retList
 

@@ -13,6 +13,8 @@
 import logging
 import nw
 
+from nw.constants import isoLanguage
+
 logger = logging.getLogger(__name__)
 
 class NWSpellCheck():
@@ -53,6 +55,17 @@ class NWSpellCheck():
 
     def listDictionaries(self):
         return []
+
+    @staticmethod
+    def expandLanguage(spTag):
+        spBits = spTag.split("_")
+        if spBits[0] in isoLanguage.ISO_639_1:
+            spLang = isoLanguage.ISO_639_1[spBits[0]]
+        else:
+            spLang = spBits[0]
+        if len(spBits) > 1:
+            spLang += " (%s)" % spBits[1]
+        return spLang
 
     ##
     #  Internal Functions

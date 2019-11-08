@@ -280,6 +280,7 @@ class GuiDocEditor(QTextEdit):
 
     def setDictionaries(self):
         self.theDict.setLanguage(self.mainConf.spellLanguage, self.theProject.projDict)
+        self.theParent.statusBar.setLanguage(self.mainConf.spellLanguage)
         return True
 
     def setSpellCheck(self, theMode):

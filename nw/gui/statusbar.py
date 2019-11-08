@@ -16,8 +16,10 @@ import nw
 from time import time
 
 from PyQt5.QtCore import Qt, QTimer
-from PyQt5.QtGui import QIcon, QColor, QPixmap
+from PyQt5.QtGui import QIcon, QColor, QPixmap, QFont
 from PyQt5.QtWidgets import QStatusBar, QLabel, QFrame
+
+from nw.tools import NWSpellCheck
 
 logger = logging.getLogger(__name__)
 
@@ -28,13 +30,15 @@ class GuiMainStatus(QStatusBar):
 
         logger.debug("Initialising MainStatus ...")
 
-        self.mainConf   = nw.CONFIG
-        self.theParent  = theParent
-        self.refTime    = None
+        self.mainConf  = nw.CONFIG
+        self.theParent = theParent
+        self.refTime   = None
 
         self.iconGrey   = QPixmap(16,16)
         self.iconYellow = QPixmap(16,16)
         self.iconGreen  = QPixmap(16,16)
+
+        self.monoFont = QFont("Monospace",10)
 
         self.iconGrey.fill(QColor(*self.theParent.theTheme.statNone))
         self.iconYellow.fill(QColor(*self.theParent.theTheme.statUnsaved))
@@ -43,31 +47,43 @@ class GuiMainStatus(QStatusBar):
         self.boxStats = QLabel()
         self.boxStats.setToolTip("Project Word Count | Session Word Count")
 
-        self.boxTime = QLabel("")
-        self.boxTime.setToolTip("Session Time")
-        self.boxTime.setAlignment(Qt.AlignRight)
-        self.boxTime.setMinimumWidth(80)
+        self.timeBox = QLabel("")
+        self.timeBox.setToolTip("Session Time")
+        self.timeBox.setAlignment(Qt.AlignVCenter | Qt.AlignRight)
+        self.timeBox.setFont(self.monoFont)
+
+        self.timeIcon = QLabel()
+        self.timeIcon.setPixmap(self.theParent.theTheme.getPixmap("time",(14,14)))
 
         self.boxCounts = QLabel()
         self.boxCounts.setToolTip("Document Character | Word | Paragraph Count")
 
         self.projChanged = QLabel("")
-        self.projChanged.setFixedHeight(16)
-        self.projChanged.setFixedWidth(16)
+        self.projChanged.setFixedHeight(14)
+        self.projChanged.setFixedWidth(14)
         self.projChanged.setToolTip("Project Changes Saved")
 
         self.docChanged = QLabel("")
-        self.docChanged.setFixedHeight(16)
-        self.docChanged.setFixedWidth(16)
+        self.docChanged.setFixedHeight(14)
+        self.docChanged.setFixedWidth(14)
         self.docChanged.setToolTip("Document Changes Saved")
 
+        self.langBox = QLabel("None")
+        self.langIcon = QLabel("")
+        self.langIcon.setPixmap(self.theParent.theTheme.getPixmap("globe",(14,14)))
+
         # Add Them
+        self.addPermanentWidget(self.langIcon)
+        self.addPermanentWidget(self.langBox)
+        self.addPermanentWidget(QLabel("  "))
         self.addPermanentWidget(self.docChanged)
         self.addPermanentWidget(self.boxCounts)
         self.addPermanentWidget(QLabel("  "))
         self.addPermanentWidget(self.projChanged)
         self.addPermanentWidget(self.boxStats)
-        self.addPermanentWidget(self.boxTime)
+        self.addPermanentWidget(QLabel("  "))
+        self.addPermanentWidget(self.timeIcon)
+        self.addPermanentWidget(self.timeBox)
 
         self.setSizeGripEnabled(True)
 
@@ -97,6 +113,10 @@ class GuiMainStatus(QStatusBar):
 
     def setStatus(self, theMessage, timeOut=10.0):
         self.showMessage(theMessage, int(timeOut*1000))
+        return
+
+    def setLanguage(self, theLanguage):
+        self.langBox.setText(NWSpellCheck.expandLanguage(theLanguage))
         return
 
     def setProjectStatus(self, isChanged):
@@ -144,7 +164,7 @@ class GuiMainStatus(QStatusBar):
             tM = tM - tH*60
             tS = tS - tM*60 - tH*3600
             theTime = "%02d:%02d:%02d" % (tH,tM,tS)
-        self.boxTime.setText(theTime)
+        self.timeBox.setText(theTime)
         return
 
 # END Class GuiMainStatus

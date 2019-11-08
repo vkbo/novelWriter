@@ -15,7 +15,6 @@ import enchant
 import nw
 
 from nw.tools.spellcheck import NWSpellCheck
-from nw.constants import isoLanguage
 
 logger = logging.getLogger(__name__)
 
@@ -58,15 +57,7 @@ class NWSpellEnchant(NWSpellCheck):
     def listDictionaries(self):
         retList = []
         for spTag, spProvider in enchant.list_dicts():
-            spList = []
-            if spTag[:2] in isoLanguage.ISO_639_1:
-                spList.append(isoLanguage.ISO_639_1[spTag[:2]])
-            else:
-                spList.append(spTag[:2])
-            if len(spTag) > 3:
-                spList.append("(%s)" % spTag[3:])
-            spList.append("[%s]" % spProvider.name)
-            spName = " ".join(spList)
+            spName = "%s [%s]" % (self.expandLanguage(spTag), spProvider.name)
             retList.append((spTag, spName))
         return retList
 

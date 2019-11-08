@@ -17,7 +17,7 @@ import nw
 from os import path, listdir
 
 from PyQt5.QtWidgets import qApp
-from PyQt5.QtGui import QPalette, QColor, QIcon
+from PyQt5.QtGui import QPalette, QColor, QIcon, QPixmap
 
 from nw.constants import nwAlert
 from nw.gui.icons import GuiIcons
@@ -91,6 +91,7 @@ class GuiTheme:
         self.updateTheme()
 
         self.getIcon = self.theIcons.getIcon
+        self.getPixmap = self.theIcons.getPixmap
         self.loadDecoration = self.theIcons.loadDecoration
 
         return
@@ -233,7 +234,7 @@ class GuiTheme:
             try:
                 confParser.read_file(open(themeConf, mode="r", encoding="utf8"))
             except Exception as e:
-                self.theParent.makeAlert(["Could not load theme config file",str(e)],nwAlert.ERROR)
+                self.theParent.makeAlert(["Could not load theme config file.",str(e)],nwAlert.ERROR)
                 continue
             themeName = ""
             if confParser.has_section("Main"):
@@ -261,7 +262,7 @@ class GuiTheme:
             try:
                 confParser.read_file(open(syntaxPath, mode="r", encoding="utf8"))
             except Exception as e:
-                self.theParent.makeAlert(["Could not load syntax file",str(e)],nwAlert.ERROR)
+                self.theParent.makeAlert(["Could not load syntax file.",str(e)],nwAlert.ERROR)
                 return []
             syntaxName = ""
             if confParser.has_section("Main"):
