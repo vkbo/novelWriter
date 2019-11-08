@@ -17,7 +17,7 @@ from os import path
 
 from PyQt5.QtCore import QSize
 from PyQt5.QtSvg import QSvgWidget
-from PyQt5.QtGui import QIcon
+from PyQt5.QtGui import QIcon, QPixmap
 
 logger = logging.getLogger(__name__)
 
@@ -41,6 +41,7 @@ class GuiIcons:
         "search"   : "edit-find",
         "replace"  : "edit-find-replace",
         "time"     : None,
+        "globe"    : None,
     }
 
     DECO_MAP = {
@@ -95,6 +96,11 @@ class GuiIcons:
         if iconKey in self.qIcons:
             return self.qIcons[iconKey]
         return QIcon()
+
+    def getPixmap(self, iconKey, iconSize):
+        if iconKey in self.qIcons:
+            return self.qIcons[iconKey].pixmap(iconSize[0], iconSize[1], QIcon.Normal)
+        return QPixmap()
 
     ##
     #  Internal Functions

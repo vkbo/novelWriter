@@ -91,6 +91,7 @@ class GuiTheme:
         self.updateTheme()
 
         self.getIcon = self.theIcons.getIcon
+        self.getPixmap = self.theIcons.getPixmap
         self.loadDecoration = self.theIcons.loadDecoration
 
         return
