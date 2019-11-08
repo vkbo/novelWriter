@@ -15,8 +15,7 @@ import nw
 
 from os import path
 
-from PyQt5.QtCore import Qt, QSize
-from PyQt5.QtSvg import QSvgWidget
+from PyQt5.QtCore import Qt
 from PyQt5.QtWidgets import (
     QDialog, QHBoxLayout, QVBoxLayout, QGroupBox, QFormLayout,
     QLineEdit, QPushButton, QComboBox
@@ -42,13 +41,10 @@ class GuiItemEditor(QDialog):
         self.innerBox = QVBoxLayout()
 
         self.setWindowTitle("Item Settings")
-
-        self.gradPath = path.abspath(path.join(self.mainConf.graphPath,"gear.svg"))
-        self.svgGradient = QSvgWidget(self.gradPath)
-        self.svgGradient.setFixedSize(QSize(64,64))
+        self.guiDeco = self.theParent.theTheme.loadDecoration("settings",(64,64))
 
         self.setLayout(self.outerBox)
-        self.outerBox.addWidget(self.svgGradient, 0, Qt.AlignTop)
+        self.outerBox.addWidget(self.guiDeco, 0, Qt.AlignTop)
         self.outerBox.addLayout(self.innerBox)
 
         self.mainGroup = QGroupBox("Item Settings")

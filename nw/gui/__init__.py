@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
 # Main Window Elements
+from nw.gui.icons import GuiIcons
 from nw.gui.mainmenu import GuiMainMenu
 from nw.gui.statusbar import GuiMainStatus
 from nw.gui.theme import GuiTheme
@@ -27,6 +28,7 @@ from nw.gui.tools.dochighlight import GuiDocHighlighter
 from nw.gui.tools.wordcounter import WordCounter
 
 __all__ = [
+    "GuiIcons",
     "GuiMainMenu",
     "GuiMainStatus",
     "GuiTheme",
