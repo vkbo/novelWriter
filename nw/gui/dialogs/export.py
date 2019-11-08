@@ -16,8 +16,7 @@ import nw
 
 from os import path
 
-from PyQt5.QtCore import Qt, QSize
-from PyQt5.QtSvg import QSvgWidget
+from PyQt5.QtCore import Qt
 from PyQt5.QtWidgets import (
     QDialog, QHBoxLayout, QVBoxLayout, QWidget, QTabWidget, QGridLayout,
     QGroupBox, QCheckBox, QLabel, QComboBox, QLineEdit, QPushButton,
@@ -50,9 +49,7 @@ class GuiExport(QDialog):
         self.setWindowTitle("Export Project")
         self.setLayout(self.outerBox)
 
-        self.gradPath = path.abspath(path.join(self.mainConf.graphPath,"export.svg"))
-        self.svgGradient = QSvgWidget(self.gradPath)
-        self.svgGradient.setFixedSize(QSize(64,64))
+        self.guiDeco = self.theParent.theTheme.loadDecoration("export",(64,64))
 
         self.theProject.countStatus()
         self.tabMain   = GuiExportMain(self.theParent, self.theProject, self.optState)
@@ -62,7 +59,7 @@ class GuiExport(QDialog):
         self.tabWidget.addTab(self.tabMain,   "Settings")
         self.tabWidget.addTab(self.tabPandoc, "Pandoc")
 
-        self.outerBox.addWidget(self.svgGradient, 0, Qt.AlignTop)
+        self.outerBox.addWidget(self.guiDeco, 0, Qt.AlignTop)
         self.outerBox.addLayout(self.innerBox)
 
         self.doExportForm = QGridLayout()

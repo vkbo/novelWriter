@@ -20,29 +20,17 @@ from PyQt5.QtWidgets import qApp
 from PyQt5.QtGui import QPalette, QColor, QIcon
 
 from nw.constants import nwAlert
+from nw.gui.icons import GuiIcons
 
 logger = logging.getLogger(__name__)
 
-class Theme:
-
-    ICON_MAP = {
-        "root"     : "drive-harddisk",
-        "folder"   : "folder",
-        "document" : "x-office-document",
-        "trash"    : "user-trash",
-        "orphan"   : "dialog-warning",
-        "save"     : "document-save",
-        "add"      : "list-add",
-        "remove"   : "list-remove",
-        "close"    : "edit-delete",
-        "search"   : "edit-find",
-        "replace"  : "edit-find-replace",
-    }
+class GuiTheme:
 
     def __init__(self, theParent):
 
         self.mainConf   = nw.CONFIG
         self.theParent  = theParent
+        self.theIcons   = GuiIcons(self.theParent)
         self.guiPalette = QPalette()
         self.guiPath    = "gui"
         self.iconPath   = "icons"
@@ -91,9 +79,6 @@ class Theme:
         self.colTagErr = [  0,  0,  0]
         self.colRepTag = [  0,  0,  0]
 
-        ## Icons
-        self.themeIcons = {}
-
         # Changeable Settings
         self.guiTheme   = None
         self.guiSyntax  = None
@@ -104,6 +89,9 @@ class Theme:
         self.cssFile    = None
 
         self.updateTheme()
+
+        self.getIcon = self.theIcons.getIcon
+        self.loadDecoration = self.theIcons.loadDecoration
 
         return
 
@@ -121,8 +109,7 @@ class Theme:
         self.confFile   = path.join(self.themePath,self.confName)
         self.cssFile    = path.join(self.themePath,self.cssName)
 
-        for iconName in self.ICON_MAP:
-            self.themeIcons[iconName] = QIcon.fromTheme(self.ICON_MAP[iconName])
+        self.theIcons.initIcons(path.join(self.themePath,self.iconPath))
 
         self.loadTheme()
         self.loadSyntax()
@@ -132,6 +119,7 @@ class Theme:
     def loadTheme(self):
 
         logger.debug("Loading theme files")
+        logger.debug("System icon theme is '%s'" % str(QIcon.themeName()))
 
         # CSS File
         cssData = ""
@@ -142,14 +130,6 @@ class Theme:
         except Exception as e:
             logger.error("Could not load theme css file")
             return False
-
-        # Icon Files
-        iconsDir = path.join(self.themePath,self.iconPath)
-        if path.isdir(iconsDir):
-            for iconName in self.ICON_MAP:
-                iconFile = path.join(iconsDir,iconName+".png")
-                if path.isfile(iconFile):
-                    self.themeIcons[iconName] = QIcon(iconFile)
 
         # Config File
         confParser = configparser.ConfigParser()
@@ -294,11 +274,6 @@ class Theme:
 
         return self.syntaxList
 
-    def getIcon(self, iconName, iconSize=None):
-        if iconName in self.themeIcons:
-            return self.themeIcons[iconName]
-        return QIcon()
-
     ##
     #  Internal Functions
     ##
@@ -340,4 +315,4 @@ class Theme:
                 return confParser.get(cnfSec, cnfName)
         return cnfDefault
 
-# End Class Theme
+# End Class GuiTheme
