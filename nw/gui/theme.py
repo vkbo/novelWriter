@@ -23,7 +23,7 @@ from nw.constants import nwAlert
 
 logger = logging.getLogger(__name__)
 
-class Theme:
+class GuiTheme:
 
     # Icons should either have a valid icon name by using Qt internal
     # QIcon.fromTheme, as specified here:
@@ -353,4 +353,4 @@ class Theme:
                 return confParser.get(cnfSec, cnfName)
         return cnfDefault
 
-# End Class Theme
+# End Class GuiTheme

@@ -3,6 +3,7 @@
 # Main Window Elements
 from nw.gui.mainmenu import GuiMainMenu
 from nw.gui.statusbar import GuiMainStatus
+from nw.gui.theme import GuiTheme
 
 # Dialogs
 from nw.gui.dialogs.configeditor import GuiConfigEditor
@@ -28,6 +29,7 @@ from nw.gui.tools.wordcounter import WordCounter
 __all__ = [
     "GuiMainMenu",
     "GuiMainStatus",
+    "GuiTheme",
     "GuiConfigEditor",
     "GuiExport",
     "GuiItemEditor",

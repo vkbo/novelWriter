@@ -24,14 +24,13 @@ from PyQt5.QtWidgets import (
 )
 
 from nw.gui import (
-    GuiMainMenu, GuiMainStatus, GuiDocTree, GuiDocEditor, GuiDocViewer,
-    GuiDocDetails, GuiSearchBar, GuiNoticeBar, GuiDocViewDetails,
-    GuiConfigEditor, GuiProjectEditor, GuiExport, GuiItemEditor,
-    GuiTimeLineView, GuiSessionLogView
+    GuiMainMenu, GuiMainStatus, GuiTheme, GuiDocTree, GuiDocEditor,
+    GuiDocViewer, GuiDocDetails, GuiSearchBar, GuiNoticeBar,
+    GuiDocViewDetails, GuiConfigEditor, GuiProjectEditor, GuiExport,
+    GuiItemEditor, GuiTimeLineView, GuiSessionLogView
 )
 from nw.project import NWProject, NWDoc, NWItem, NWIndex, NWBackup
 from nw.tools import countWords
-from nw.theme import Theme
 from nw.constants import nwFiles, nwItemType, nwAlert
 
 logger = logging.getLogger(__name__)
@@ -44,7 +43,7 @@ class GuiMain(QMainWindow):
         logger.info("Starting %s" % nw.__package__)
         logger.debug("Initialising GUI ...")
         self.mainConf   = nw.CONFIG
-        self.theTheme   = Theme(self)
+        self.theTheme   = GuiTheme(self)
         self.theProject = NWProject(self)
         self.theIndex   = NWIndex(self.theProject, self)
         self.hasProject = False
