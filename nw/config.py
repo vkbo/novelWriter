@@ -172,8 +172,8 @@ class Config:
         self.appPath   = getattr(sys, "_MEIPASS", path.abspath(path.dirname(__file__)))
         self.appRoot   = path.join(self.appPath,path.pardir)
         self.assetPath = path.join(self.appPath,"assets")
-        self.themeRoot = path.join(self.appPath,"themes")
-        self.graphPath = path.join(self.appPath,"graphics")
+        self.themeRoot = path.join(self.assetPath,"themes")
+        self.graphPath = path.join(self.assetPath,"graphics")
         self.dictPath  = path.join(self.assetPath,"dict")
         self.appIcon   = path.join(self.graphPath, nwFiles.APP_ICON)
 
