@@ -13,8 +13,6 @@
 import logging
 import nw
 
-from os import path
-
 logger = logging.getLogger(__name__)
 
 def numberToWord(numVal, theLanguage):

@@ -19,9 +19,9 @@ from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QIcon, QPixmap, QColor, QBrush
 from PyQt5.QtWidgets import (
     QDialog, QHBoxLayout, QVBoxLayout, QFormLayout, QLineEdit, QPlainTextEdit,
-    QLabel, QWidget, QTabWidget, QDialogButtonBox, QListWidget,
-    QListWidgetItem, QPushButton, QColorDialog, QAbstractItemView, QTreeWidget,
-    QTreeWidgetItem, QCheckBox
+    QLabel, QWidget, QTabWidget, QDialogButtonBox, QListWidget, QPushButton,
+    QListWidgetItem, QColorDialog, QAbstractItemView, QTreeWidget, QCheckBox,
+    QTreeWidgetItem
 )
 
 from nw.constants import nwAlert

@@ -17,11 +17,10 @@ from os import path
 from datetime import datetime
 
 from PyQt5.QtCore import Qt
-from PyQt5.QtGui import QIcon, QColor, QPixmap, QFont
+from PyQt5.QtGui import QFont
 from PyQt5.QtWidgets import (
-    QDialog, QVBoxLayout, QHBoxLayout, QTreeWidget, QTreeWidgetItem,
-    QDialogButtonBox, QHeaderView, QGridLayout, QLabel, QGroupBox,
-    QCheckBox
+    QDialog, QHBoxLayout, QTreeWidget, QTreeWidgetItem, QDialogButtonBox,
+    QGridLayout, QLabel, QGroupBox, QCheckBox
 )
 
 from nw.constants import nwConst, nwFiles, nwAlert

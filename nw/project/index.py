@@ -16,9 +16,8 @@ import nw
 
 from os import path
 
-from nw.project.document import NWDoc
 from nw.constants import (
-    nwFiles, nwKeyWords, nwItemType, nwItemClass, nwItemLayout, nwAlert
+    nwFiles, nwKeyWords, nwItemType, nwItemClass, nwAlert
 )
 
 logger = logging.getLogger(__name__)

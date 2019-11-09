@@ -17,8 +17,8 @@ from os import path
 
 from PyQt5.QtCore import Qt
 from PyQt5.QtWidgets import (
-    QDialog, QHBoxLayout, QVBoxLayout, QGroupBox, QFormLayout,
-    QLineEdit, QPushButton, QComboBox
+    QDialog, QHBoxLayout, QVBoxLayout, QGroupBox, QFormLayout, QLineEdit,
+    QPushButton, QComboBox
 )
 
 from nw.constants import nwLabels, nwItemLayout, nwItemClass, nwItemType

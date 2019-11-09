@@ -15,11 +15,9 @@ import nw
 
 from os import path
 
-from PyQt5.QtWidgets import QMessageBox
-
 from nw.convert.file.text import TextFile
 from nw.convert.tokenizer import Tokenizer
-from nw.constants import nwAlert, nwItemLayout
+from nw.constants import nwAlert
 
 logger = logging.getLogger(__name__)
 

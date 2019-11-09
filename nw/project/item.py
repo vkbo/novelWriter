@@ -13,7 +13,6 @@
 import logging
 import nw
 
-from os import path, mkdir
 from lxml import etree
 from datetime import datetime
 

@@ -16,11 +16,11 @@ import nw
 from os import path
 
 from PyQt5.QtCore import Qt
-from PyQt5.QtGui import QIcon, QColor, QPixmap
+from PyQt5.QtGui import QColor, QPixmap
 from PyQt5.QtWidgets import (
-    QDialog, QVBoxLayout, QHBoxLayout, QTableWidget, QTableWidgetItem,
-    QDialogButtonBox, QLabel, QPushButton, QHeaderView, QGridLayout,
-    QGroupBox, QCheckBox
+    QDialog, QVBoxLayout, QHBoxLayout, QTableWidget, QTableWidgetItem, QLabel,
+    QDialogButtonBox, QPushButton, QHeaderView, QGridLayout, QGroupBox,
+    QCheckBox
 )
 
 from nw.constants import nwFiles, nwItemClass

@@ -15,13 +15,13 @@ import nw
 
 from time import time
 
-from PyQt5.QtCore import Qt, QTimer, QSizeF
+from PyQt5.QtCore import Qt, QTimer
 from PyQt5.QtWidgets import (
     qApp, QTextEdit, QAction, QMenu, QShortcut, QMessageBox
 )
 from PyQt5.QtGui import (
-    QTextCursor, QTextOption, QIcon, QKeySequence, QFont, QColor,
-    QPalette, QTextDocument
+    QTextCursor, QTextOption, QKeySequence, QFont, QColor, QPalette,
+    QTextDocument
 )
 
 from nw.project import NWDoc

@@ -17,7 +17,7 @@ import nw
 from os import path, listdir
 
 from PyQt5.QtWidgets import qApp
-from PyQt5.QtGui import QPalette, QColor, QIcon, QPixmap
+from PyQt5.QtGui import QPalette, QColor, QIcon
 
 from nw.constants import nwAlert
 from nw.gui.icons import GuiIcons
