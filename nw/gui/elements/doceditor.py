@@ -21,7 +21,7 @@ from PyQt5.QtWidgets import (
 )
 from PyQt5.QtGui import (
     QTextCursor, QTextOption, QIcon, QKeySequence, QFont, QColor,
-    QPalette, QTextDocument,
+    QPalette, QTextDocument
 )
 
 from nw.project import NWDoc
@@ -185,7 +185,6 @@ class GuiDocEditor(QTextEdit):
             tHandle = self.theHandle
             self.clearEditor()
             self.loadText(tHandle)
-            self.changeWidth()
         else:
             self.clearEditor()
 
@@ -298,11 +297,13 @@ class GuiDocEditor(QTextEdit):
     #  General Class Methods
     ##
 
-    def changeWidth(self):
+    def resizeEvent(self, theEvent):
         """Automatically adjust the margins so the text is centred, but
         only if Config.textFixedW is set to True.
         """
-        if self.mainConf.textFixedW:
+        QTextEdit.resizeEvent(self, theEvent)
+
+        if self.mainConf.textFixedW or self.theParent.isZenMode:
             vBar = self.verticalScrollBar()
             if vBar.isVisible():
                 sW = vBar.width()
@@ -313,10 +314,13 @@ class GuiDocEditor(QTextEdit):
             tM = int((wW - sW - tW)/2)
             if tM < self.mainConf.textMargin:
                 tM = self.mainConf.textMargin
-            docFormat = self.qDocument.rootFrame().frameFormat()
-            docFormat.setLeftMargin(tM)
-            docFormat.setRightMargin(tM)
-            self.qDocument.rootFrame().setFrameFormat(docFormat)
+        else:
+            tM = self.mainConf.textMargin
+
+        docFormat = self.qDocument.rootFrame().frameFormat()
+        docFormat.setLeftMargin(tM)
+        docFormat.setRightMargin(tM)
+        self.qDocument.rootFrame().setFrameFormat(docFormat)
 
         return
 

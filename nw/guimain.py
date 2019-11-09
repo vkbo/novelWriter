@@ -47,6 +47,7 @@ class GuiMain(QMainWindow):
         self.theProject = NWProject(self)
         self.theIndex   = NWIndex(self.theProject, self)
         self.hasProject = False
+        self.isZenMode  = False
 
         logger.info("OS: %s" % (
             self.mainConf.osType)
@@ -107,14 +108,12 @@ class GuiMain(QMainWindow):
         self.splitView = QSplitter(Qt.Horizontal)
         self.splitView.addWidget(self.editPane)
         self.splitView.addWidget(self.viewPane)
-        self.splitView.splitterMoved.connect(self._splitViewMove)
 
         self.splitMain = QSplitter(Qt.Horizontal)
         self.splitMain.setContentsMargins(4,4,4,4)
         self.splitMain.addWidget(self.treePane)
         self.splitMain.addWidget(self.splitView)
         self.splitMain.setSizes(self.mainConf.mainPanePos)
-        self.splitMain.splitterMoved.connect(self._splitMainMove)
 
         self.setCentralWidget(self.splitMain)
 
@@ -359,7 +358,6 @@ class GuiMain(QMainWindow):
             self.closeDocument()
             if self.docEditor.loadText(tHandle):
                 self.docEditor.setFocus()
-                self.docEditor.changeWidth()
                 self.theProject.setLastEdited(tHandle)
             else:
                 return False
@@ -391,7 +389,6 @@ class GuiMain(QMainWindow):
             vPos[0] = int(bPos[1]/2)
             vPos[1] = bPos[1]-vPos[0]
             self.splitView.setSizes(vPos)
-            self.docEditor.changeWidth()
 
         return True
 
@@ -698,8 +695,24 @@ class GuiMain(QMainWindow):
         self.viewPane.setVisible(False)
         vPos = [bPos[1],0]
         self.splitView.setSizes(vPos)
-        self.docEditor.changeWidth()
         return not self.viewPane.isVisible()
+
+    def toggleZenMode(self):
+        """Main GUI Zen Mode hides tree, view pane and optionally also
+        statusbar and menu.
+        """
+
+        self.isZenMode = not self.isZenMode
+        if self.isZenMode:
+            logger.debug("Activating Zen Mode")
+        else:
+            logger.debug("Deactivating Zen Mode")
+
+        isVisible = not self.isZenMode
+        self.viewPane.setVisible(isVisible)
+        self.treePane.setVisible(isVisible)
+
+        return
 
     ##
     #  Internal Functions
@@ -744,14 +757,6 @@ class GuiMain(QMainWindow):
     ##
     #  Events
     ##
-
-    def resizeEvent(self, theEvent):
-        """Extend QMainWindow.resizeEvent to signal dependent GUI
-        elements that its pane may have changed size.
-        """
-        QMainWindow.resizeEvent(self,theEvent)
-        self.docEditor.changeWidth()
-        return
 
     def closeEvent(self, theEvent):
         if self.closeMain():
@@ -799,20 +804,6 @@ class GuiMain(QMainWindow):
         if self.searchBar.isVisible():
             self.searchBar.setVisible(False)
             return
-        return
-
-    def _splitMainMove(self, pWidth, pHeight):
-        """Alert dependent GUI elements that the main pane splitter has
-        been moved.
-        """
-        self.docEditor.changeWidth()
-        return
-
-    def _splitViewMove(self, pWidth, pHeight):
-        """Alert dependent GUI elements that the edit/view pane splitter
-        has been moved.
-        """
-        self.docEditor.changeWidth()
         return
 
 # END Class GuiMain
