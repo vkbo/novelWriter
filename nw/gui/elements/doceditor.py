@@ -414,7 +414,10 @@ class GuiDocEditor(QTextEdit):
                 sW = vBar.width()
             else:
                 sW = 0
-            tW = self.mainConf.textWidth
+            if self.theParent.isZenMode:
+                tW = self.mainConf.zenWidth
+            else:
+                tW = self.mainConf.textWidth
             wW = self.width()
             tM = int((wW - sW - tW)/2)
             if tM < self.mainConf.textMargin:
