@@ -373,10 +373,8 @@ class GuiConfigEditEditor(QWidget):
 
         self.textFlowFixed = QCheckBox("Max text width",self)
         self.textFlowFixed.setToolTip("Maximum width of the text.")
-        if self.mainConf.textFixedW:
-            self.textFlowFixed.setCheckState(Qt.Checked)
-        else:
-            self.textFlowFixed.setCheckState(Qt.Unchecked)
+        self.textFlowFixed.setChecked(self.mainConf.textFixedW)
+
         self.textFlowMax = QSpinBox(self)
         self.textFlowMax.setMinimum(300)
         self.textFlowMax.setMaximum(10000)
@@ -385,10 +383,7 @@ class GuiConfigEditEditor(QWidget):
 
         self.textFlowJustify = QCheckBox("Justify text",self)
         self.textFlowJustify.setToolTip("Justify text in main document editor.")
-        if self.mainConf.doJustify:
-            self.textFlowJustify.setCheckState(Qt.Checked)
-        else:
-            self.textFlowJustify.setCheckState(Qt.Unchecked)
+        self.textFlowJustify.setChecked(self.mainConf.doJustify)
 
         self.textFlowForm.addWidget(self.textFlowFixed,   0, 0)
         self.textFlowForm.addWidget(self.textFlowMax,     0, 1)
@@ -422,6 +417,22 @@ class GuiConfigEditEditor(QWidget):
         self.textMarginForm.addWidget(QLabel("px"),         2, 2)
         self.textMarginForm.setColumnStretch(4, 1)
 
+        # Zen Mode
+        self.zenMode     = QGroupBox("Zen Mode", self)
+        self.zenModeForm = QGridLayout(self)
+        self.zenMode.setLayout(self.zenModeForm)
+
+        self.zenDocWidth = QSpinBox(self)
+        self.zenDocWidth.setMinimum(300)
+        self.zenDocWidth.setMaximum(10000)
+        self.zenDocWidth.setSingleStep(10)
+        self.zenDocWidth.setValue(self.mainConf.zenWidth)
+
+        self.zenModeForm.addWidget(QLabel("Document width"), 0, 0)
+        self.zenModeForm.addWidget(self.zenDocWidth,         0, 1)
+        self.zenModeForm.addWidget(QLabel("px"),             0, 2)
+        self.zenModeForm.setColumnStretch(3, 1)
+
         # Automatic Features
         self.autoReplace     = QGroupBox("Automatic Features", self)
         self.autoReplaceForm = QGridLayout(self)
@@ -429,47 +440,29 @@ class GuiConfigEditEditor(QWidget):
 
         self.autoSelect = QCheckBox(self)
         self.autoSelect.setToolTip("Auto-select word under cursor when applying formatting.")
-        if self.mainConf.autoSelect:
-            self.autoSelect.setCheckState(Qt.Checked)
-        else:
-            self.autoSelect.setCheckState(Qt.Unchecked)
+        self.autoSelect.setChecked(self.mainConf.autoSelect)
 
         self.autoReplaceMain = QCheckBox(self)
         self.autoReplaceMain.setToolTip("Auto-replace text as you type.")
-        if self.mainConf.doReplace:
-            self.autoReplaceMain.setCheckState(Qt.Checked)
-        else:
-            self.autoReplaceMain.setCheckState(Qt.Unchecked)
+        self.autoReplaceMain.setChecked(self.mainConf.doReplace)
 
         self.autoReplaceSQ = QCheckBox(self)
         self.autoReplaceSQ.setToolTip("Auto-replace single quotes.")
-        if self.mainConf.doReplaceSQuote:
-            self.autoReplaceSQ.setCheckState(Qt.Checked)
-        else:
-            self.autoReplaceSQ.setCheckState(Qt.Unchecked)
+        self.autoReplaceSQ.setChecked(self.mainConf.doReplaceSQuote)
 
         self.autoReplaceDQ = QCheckBox(self)
         self.autoReplaceDQ.setToolTip("Auto-replace double quotes.")
-        if self.mainConf.doReplaceDQuote:
-            self.autoReplaceDQ.setCheckState(Qt.Checked)
-        else:
-            self.autoReplaceDQ.setCheckState(Qt.Unchecked)
+        self.autoReplaceDQ.setChecked(self.mainConf.doReplaceDQuote)
 
         self.autoReplaceDash = QCheckBox(self)
         self.autoReplaceDash.setToolTip(
             "Auto-replace double and triple hyphens with short and long dash."
         )
-        if self.mainConf.doReplaceDash:
-            self.autoReplaceDash.setCheckState(Qt.Checked)
-        else:
-            self.autoReplaceDash.setCheckState(Qt.Unchecked)
+        self.autoReplaceDash.setChecked(self.mainConf.doReplaceDash)
 
         self.autoReplaceDots = QCheckBox(self)
         self.autoReplaceDots.setToolTip("Auto-replace three dots with ellipsis.")
-        if self.mainConf.doReplaceDots:
-            self.autoReplaceDots.setCheckState(Qt.Checked)
-        else:
-            self.autoReplaceDots.setCheckState(Qt.Unchecked)
+        self.autoReplaceDots.setChecked(self.mainConf.doReplaceDots)
 
         self.autoReplaceForm.addWidget(QLabel("Auto-select text"),          0, 0)
         self.autoReplaceForm.addWidget(self.autoSelect,                     0, 1)
@@ -534,16 +527,10 @@ class GuiConfigEditEditor(QWidget):
         self.showGuides.setLayout(self.showGuidesForm)
 
         self.showTabsNSpaces = QCheckBox("Show tabs and spaces",self)
-        if self.mainConf.showTabsNSpaces:
-            self.showTabsNSpaces.setCheckState(Qt.Checked)
-        else:
-            self.showTabsNSpaces.setCheckState(Qt.Unchecked)
+        self.showTabsNSpaces.setChecked(self.mainConf.showTabsNSpaces)
 
         self.showLineEndings = QCheckBox("Show line endings",self)
-        if self.mainConf.showTabsNSpaces:
-            self.showLineEndings.setCheckState(Qt.Checked)
-        else:
-            self.showLineEndings.setCheckState(Qt.Unchecked)
+        self.showLineEndings.setChecked(self.mainConf.showLineEndings)
 
         self.showGuidesForm.addWidget(self.showTabsNSpaces, 0, 0)
         self.showGuidesForm.addWidget(self.showLineEndings, 1, 0)
@@ -552,9 +539,10 @@ class GuiConfigEditEditor(QWidget):
         self.outerBox.addWidget(self.textStyle,   0, 0, 1, 2)
         self.outerBox.addWidget(self.textFlow,    1, 0)
         self.outerBox.addWidget(self.textMargin,  1, 1)
-        self.outerBox.addWidget(self.quoteStyle,  2, 0)
-        self.outerBox.addWidget(self.autoReplace, 2, 1, 2, 1)
-        self.outerBox.addWidget(self.showGuides,  3, 0)
+        self.outerBox.addWidget(self.zenMode,     2, 0)
+        self.outerBox.addWidget(self.autoReplace, 3, 0, 2, 1)
+        self.outerBox.addWidget(self.quoteStyle,  2, 1, 2, 1)
+        self.outerBox.addWidget(self.showGuides,  4, 1)
         self.outerBox.setColumnStretch(2, 1)
         self.setLayout(self.outerBox)
 
@@ -577,6 +565,10 @@ class GuiConfigEditEditor(QWidget):
         self.mainConf.textWidth  = textWidth
         self.mainConf.textFixedW = textFixedW
         self.mainConf.doJustify  = doJustify
+
+        zenWidth = self.zenDocWidth.value()
+
+        self.mainConf.zenWidth = zenWidth
 
         textMargin = self.textMarginDoc.value()
         tabWidth   = self.textMarginTab.value()

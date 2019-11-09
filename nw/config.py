@@ -69,6 +69,7 @@ class Config:
         self.treeColWidth = [120, 30, 50]
         self.mainPanePos  = [300, 800]
         self.docPanePos   = [400, 400]
+        self.isFullScreen = False
 
         ## Project
         self.autoSaveProj = 60
@@ -81,6 +82,7 @@ class Config:
         self.textWidth       = 600
         self.textMargin      = 40
         self.tabWidth        = 40
+        self.zenWidth        = 800
         self.doJustify       = False
         self.autoSelect      = True
         self.doReplace       = True
@@ -245,6 +247,9 @@ class Config:
         self.docPanePos = self._parseLine(
             cnfParse, cnfSec, "docpane", self.CNF_LIST, self.docPanePos
         )
+        self.isFullScreen = self._parseLine(
+            cnfParse, cnfSec, "fullscreen", self.CNF_BOOL, self.isFullScreen
+        )
 
         ## Project
         cnfSec = "Project"
@@ -274,6 +279,9 @@ class Config:
         )
         self.tabWidth = self._parseLine(
             cnfParse, cnfSec, "tabwidth", self.CNF_INT, self.tabWidth
+        )
+        self.zenWidth = self._parseLine(
+            cnfParse, cnfSec, "zenwidth", self.CNF_INT, self.zenWidth
         )
         self.doJustify = self._parseLine(
             cnfParse, cnfSec, "justify", self.CNF_BOOL, self.doJustify
@@ -369,10 +377,11 @@ class Config:
         ## Sizes
         cnfSec = "Sizes"
         cnfParse.add_section(cnfSec)
-        cnfParse.set(cnfSec,"geometry", self._packList(self.winGeometry))
-        cnfParse.set(cnfSec,"treecols", self._packList(self.treeColWidth))
-        cnfParse.set(cnfSec,"mainpane", self._packList(self.mainPanePos))
-        cnfParse.set(cnfSec,"docpane",  self._packList(self.docPanePos))
+        cnfParse.set(cnfSec,"geometry",   self._packList(self.winGeometry))
+        cnfParse.set(cnfSec,"treecols",   self._packList(self.treeColWidth))
+        cnfParse.set(cnfSec,"mainpane",   self._packList(self.mainPanePos))
+        cnfParse.set(cnfSec,"docpane",    self._packList(self.docPanePos))
+        cnfParse.set(cnfSec,"fullscreen", str(self.isFullScreen))
 
         ## Project
         cnfSec = "Project"
@@ -389,6 +398,7 @@ class Config:
         cnfParse.set(cnfSec,"width",           str(self.textWidth))
         cnfParse.set(cnfSec,"margin",          str(self.textMargin))
         cnfParse.set(cnfSec,"tabwidth",        str(self.tabWidth))
+        cnfParse.set(cnfSec,"zenwidth",        str(self.zenWidth))
         cnfParse.set(cnfSec,"justify",         str(self.doJustify))
         cnfParse.set(cnfSec,"autoselect",      str(self.autoSelect))
         cnfParse.set(cnfSec,"autoreplace",     str(self.doReplace))

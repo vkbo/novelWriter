@@ -410,6 +410,25 @@ class GuiMainMenu(QMenuBar):
         # View > Separator
         self.viewMenu.addSeparator()
 
+        # View > Toggle Distraction Free Mode
+        menuItem = QAction("Zen Mode", self)
+        menuItem.setStatusTip("Toggles distraction free mode, only showing text editor")
+        menuItem.setShortcut("F8")
+        menuItem.setCheckable(True)
+        menuItem.setChecked(self.theParent.isZenMode)
+        menuItem.toggled.connect(self.theParent.toggleZenMode)
+        self.viewMenu.addAction(menuItem)
+
+        # View > Toggle Full Screen
+        menuItem = QAction("Full Screen Mode", self)
+        menuItem.setStatusTip("Maximises the main window")
+        menuItem.setShortcut("F11")
+        menuItem.triggered.connect(self.theParent.toggleFullScreenMode)
+        self.viewMenu.addAction(menuItem)
+
+        # View > Separator
+        self.viewMenu.addSeparator()
+
         # View > Project Timeline
         menuItem = QAction("Show Project Timeline", self)
         menuItem.setStatusTip("Open the project timeline window")

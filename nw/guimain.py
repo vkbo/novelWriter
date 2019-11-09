@@ -47,6 +47,7 @@ class GuiMain(QMainWindow):
         self.theProject = NWProject(self)
         self.theIndex   = NWIndex(self.theProject, self)
         self.hasProject = False
+        self.isZenMode  = False
 
         logger.info("OS: %s" % (
             self.mainConf.osType)
@@ -107,14 +108,12 @@ class GuiMain(QMainWindow):
         self.splitView = QSplitter(Qt.Horizontal)
         self.splitView.addWidget(self.editPane)
         self.splitView.addWidget(self.viewPane)
-        self.splitView.splitterMoved.connect(self._splitViewMove)
 
         self.splitMain = QSplitter(Qt.Horizontal)
         self.splitMain.setContentsMargins(4,4,4,4)
         self.splitMain.addWidget(self.treePane)
         self.splitMain.addWidget(self.splitView)
         self.splitMain.setSizes(self.mainConf.mainPanePos)
-        self.splitMain.splitterMoved.connect(self._splitMainMove)
 
         self.setCentralWidget(self.splitMain)
 
@@ -173,6 +172,9 @@ class GuiMain(QMainWindow):
         self.asProjTimer.start()
         self.asDocTimer.start()
         self.statusBar.clearStatus()
+
+        if self.mainConf.isFullScreen:
+            self.toggleFullScreenMode()
 
         logger.debug("GUI initialisation complete")
 
@@ -359,7 +361,6 @@ class GuiMain(QMainWindow):
             self.closeDocument()
             if self.docEditor.loadText(tHandle):
                 self.docEditor.setFocus()
-                self.docEditor.changeWidth()
                 self.theProject.setLastEdited(tHandle)
             else:
                 return False
@@ -391,7 +392,6 @@ class GuiMain(QMainWindow):
             vPos[0] = int(bPos[1]/2)
             vPos[1] = bPos[1]-vPos[0]
             self.splitView.setSizes(vPos)
-            self.docEditor.changeWidth()
 
         return True
 
@@ -667,10 +667,12 @@ class GuiMain(QMainWindow):
         logger.info("Exiting %s" % nw.__package__)
         self.closeProject(True)
 
-        self.mainConf.setWinSize(self.width(), self.height())
         self.mainConf.setTreeColWidths(self.treeView.getColumnSizes())
-        self.mainConf.setMainPanePos(self.splitMain.sizes())
-        self.mainConf.setDocPanePos(self.splitView.sizes())
+        if not self.mainConf.isFullScreen:
+            self.mainConf.setWinSize(self.width(), self.height())
+        if not self.isZenMode:
+            self.mainConf.setMainPanePos(self.splitMain.sizes())
+            self.mainConf.setDocPanePos(self.splitView.sizes())
         self.mainConf.saveConfig()
 
         qApp.quit()
@@ -698,8 +700,53 @@ class GuiMain(QMainWindow):
         self.viewPane.setVisible(False)
         vPos = [bPos[1],0]
         self.splitView.setSizes(vPos)
-        self.docEditor.changeWidth()
         return not self.viewPane.isVisible()
+
+    def toggleZenMode(self):
+        """Main GUI Zen Mode hides tree, view pane and optionally also
+        statusbar and menu.
+        """
+
+        if self.docEditor.theHandle is None:
+            logger.error("No document open, so not activating Zen Mode")
+            return False
+
+        self.isZenMode = not self.isZenMode
+        if self.isZenMode:
+            logger.debug("Activating Zen mode")
+        else:
+            logger.debug("Deactivating Zen mode")
+
+        isVisible = not self.isZenMode
+        self.treePane.setVisible(isVisible)
+        self.statusBar.setVisible(isVisible)
+
+        if self.viewPane.isVisible():
+            self.viewPane.setVisible(False)
+        elif self.docViewer.theHandle is not None:
+            self.viewPane.setVisible(True)
+
+        return True
+
+    def toggleFullScreenMode(self):
+        """Main GUI full screen mode. The mode is tracked by the flag
+        in config. This only tracks whether the window has been
+        maximised using the internal commands, and may not be correct
+        if the user uses the system window manager. Currently, Qt
+        doesn't have access to the exact state of the window.
+        """
+
+        self.setWindowState(self.windowState() ^ Qt.WindowFullScreen)
+
+        winState = self.windowState() & Qt.WindowFullScreen == Qt.WindowFullScreen
+        if winState:
+            logger.debug("Activated full screen mode")
+        else:
+            logger.debug("Deactivated full screen mode")
+
+        self.mainConf.isFullScreen = winState
+
+        return
 
     ##
     #  Internal Functions
@@ -744,14 +791,6 @@ class GuiMain(QMainWindow):
     ##
     #  Events
     ##
-
-    def resizeEvent(self, theEvent):
-        """Extend QMainWindow.resizeEvent to signal dependent GUI
-        elements that its pane may have changed size.
-        """
-        QMainWindow.resizeEvent(self,theEvent)
-        self.docEditor.changeWidth()
-        return
 
     def closeEvent(self, theEvent):
         if self.closeMain():
@@ -799,20 +838,6 @@ class GuiMain(QMainWindow):
         if self.searchBar.isVisible():
             self.searchBar.setVisible(False)
             return
-        return
-
-    def _splitMainMove(self, pWidth, pHeight):
-        """Alert dependent GUI elements that the main pane splitter has
-        been moved.
-        """
-        self.docEditor.changeWidth()
-        return
-
-    def _splitViewMove(self, pWidth, pHeight):
-        """Alert dependent GUI elements that the edit/view pane splitter
-        has been moved.
-        """
-        self.docEditor.changeWidth()
         return
 
 # END Class GuiMain
