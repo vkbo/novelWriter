@@ -173,6 +173,9 @@ class GuiMain(QMainWindow):
         self.asDocTimer.start()
         self.statusBar.clearStatus()
 
+        if self.mainConf.isFullScreen:
+            self.toggleFullScreenMode()
+
         logger.debug("GUI initialisation complete")
 
         return
@@ -664,8 +667,9 @@ class GuiMain(QMainWindow):
         logger.info("Exiting %s" % nw.__package__)
         self.closeProject(True)
 
-        self.mainConf.setWinSize(self.width(), self.height())
         self.mainConf.setTreeColWidths(self.treeView.getColumnSizes())
+        if not self.mainConf.isFullScreen:
+            self.mainConf.setWinSize(self.width(), self.height())
         if not self.isZenMode:
             self.mainConf.setMainPanePos(self.splitMain.sizes())
             self.mainConf.setDocPanePos(self.splitView.sizes())
@@ -705,13 +709,33 @@ class GuiMain(QMainWindow):
 
         self.isZenMode = not self.isZenMode
         if self.isZenMode:
-            logger.debug("Activating Zen Mode")
+            logger.debug("Activating Zen mode")
         else:
-            logger.debug("Deactivating Zen Mode")
+            logger.debug("Deactivating Zen mode")
 
         isVisible = not self.isZenMode
         self.viewPane.setVisible(isVisible)
         self.treePane.setVisible(isVisible)
+        self.statusBar.setVisible(isVisible)
+        # self.mainMenu.setVisible(isVisible)
+
+        return
+
+    def toggleFullScreenMode(self):
+        """Main GUI full screen mode. The mode is tracked by the flag
+        in config. This only tracks whether the window has been
+        maximised using the internal commands, and may not be correct
+        if the user uses the system window manager. Currently, Qt
+        doesn't have access to the exact state of the window.
+        """
+
+        self.mainConf.isFullScreen = not self.mainConf.isFullScreen
+        if self.mainConf.isFullScreen:
+            logger.debug("Activating full screen mode")
+        else:
+            logger.debug("Deactivating full screen mode")
+
+        self.setWindowState(self.windowState() ^ Qt.WindowFullScreen)
 
         return
 

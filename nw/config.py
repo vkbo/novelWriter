@@ -69,6 +69,7 @@ class Config:
         self.treeColWidth = [120, 30, 50]
         self.mainPanePos  = [300, 800]
         self.docPanePos   = [400, 400]
+        self.isFullScreen = False
 
         ## Project
         self.autoSaveProj = 60
@@ -245,6 +246,9 @@ class Config:
         self.docPanePos = self._parseLine(
             cnfParse, cnfSec, "docpane", self.CNF_LIST, self.docPanePos
         )
+        self.isFullScreen = self._parseLine(
+            cnfParse, cnfSec, "fullscreen", self.CNF_BOOL, self.isFullScreen
+        )
 
         ## Project
         cnfSec = "Project"
@@ -369,10 +373,11 @@ class Config:
         ## Sizes
         cnfSec = "Sizes"
         cnfParse.add_section(cnfSec)
-        cnfParse.set(cnfSec,"geometry", self._packList(self.winGeometry))
-        cnfParse.set(cnfSec,"treecols", self._packList(self.treeColWidth))
-        cnfParse.set(cnfSec,"mainpane", self._packList(self.mainPanePos))
-        cnfParse.set(cnfSec,"docpane",  self._packList(self.docPanePos))
+        cnfParse.set(cnfSec,"geometry",   self._packList(self.winGeometry))
+        cnfParse.set(cnfSec,"treecols",   self._packList(self.treeColWidth))
+        cnfParse.set(cnfSec,"mainpane",   self._packList(self.mainPanePos))
+        cnfParse.set(cnfSec,"docpane",    self._packList(self.docPanePos))
+        cnfParse.set(cnfSec,"fullscreen", str(self.isFullScreen))
 
         ## Project
         cnfSec = "Project"

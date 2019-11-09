@@ -297,33 +297,6 @@ class GuiDocEditor(QTextEdit):
     #  General Class Methods
     ##
 
-    def resizeEvent(self, theEvent):
-        """Automatically adjust the margins so the text is centred, but
-        only if Config.textFixedW is set to True.
-        """
-        QTextEdit.resizeEvent(self, theEvent)
-
-        if self.mainConf.textFixedW or self.theParent.isZenMode:
-            vBar = self.verticalScrollBar()
-            if vBar.isVisible():
-                sW = vBar.width()
-            else:
-                sW = 0
-            tW = self.mainConf.textWidth
-            wW = self.width()
-            tM = int((wW - sW - tW)/2)
-            if tM < self.mainConf.textMargin:
-                tM = self.mainConf.textMargin
-        else:
-            tM = self.mainConf.textMargin
-
-        docFormat = self.qDocument.rootFrame().frameFormat()
-        docFormat.setLeftMargin(tM)
-        docFormat.setRightMargin(tM)
-        self.qDocument.rootFrame().setFrameFormat(docFormat)
-
-        return
-
     def docAction(self, theAction):
         logger.verbose("Requesting action: %s" % theAction.name)
         if not self.theParent.hasProject:
@@ -427,6 +400,33 @@ class GuiDocEditor(QTextEdit):
             theCursor = self.cursorForPosition(mEvent.pos())
             self._followTag(theCursor)
         QTextEdit.mouseReleaseEvent(self, mEvent)
+        return
+
+    def resizeEvent(self, theEvent):
+        """Automatically adjust the margins so the text is centred, but
+        only if Config.textFixedW is set to True.
+        """
+        QTextEdit.resizeEvent(self, theEvent)
+
+        if self.mainConf.textFixedW or self.theParent.isZenMode:
+            vBar = self.verticalScrollBar()
+            if vBar.isVisible():
+                sW = vBar.width()
+            else:
+                sW = 0
+            tW = self.mainConf.textWidth
+            wW = self.width()
+            tM = int((wW - sW - tW)/2)
+            if tM < self.mainConf.textMargin:
+                tM = self.mainConf.textMargin
+        else:
+            tM = self.mainConf.textMargin
+
+        docFormat = self.qDocument.rootFrame().frameFormat()
+        docFormat.setLeftMargin(tM)
+        docFormat.setRightMargin(tM)
+        self.qDocument.rootFrame().setFrameFormat(docFormat)
+
         return
 
     ##
