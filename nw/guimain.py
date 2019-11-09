@@ -666,8 +666,9 @@ class GuiMain(QMainWindow):
 
         self.mainConf.setWinSize(self.width(), self.height())
         self.mainConf.setTreeColWidths(self.treeView.getColumnSizes())
-        self.mainConf.setMainPanePos(self.splitMain.sizes())
-        self.mainConf.setDocPanePos(self.splitView.sizes())
+        if not self.isZenMode:
+            self.mainConf.setMainPanePos(self.splitMain.sizes())
+            self.mainConf.setDocPanePos(self.splitView.sizes())
         self.mainConf.saveConfig()
 
         qApp.quit()
