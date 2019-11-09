@@ -410,9 +410,9 @@ class GuiMainMenu(QMenuBar):
         # View > Separator
         self.viewMenu.addSeparator()
 
-        # View > Toggle Zen Mode
-        menuItem = QAction("Zen Mode", self)
-        menuItem.setStatusTip("Toggles zen mode, only showing text editor")
+        # View > Toggle Distraction Free Mode
+        menuItem = QAction("Distraction Free Mode", self)
+        menuItem.setStatusTip("Toggles distraction free mode, only showing text editor")
         menuItem.setShortcut("F8")
         menuItem.setCheckable(True)
         menuItem.setChecked(self.theParent.isZenMode)
