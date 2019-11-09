@@ -15,7 +15,7 @@ import configparser
 import sys
 import nw
 
-from os import path, mkdir, makedirs, getcwd
+from os import path, mkdir, makedirs
 from appdirs import user_config_dir
 from datetime import datetime
 

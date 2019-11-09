@@ -14,7 +14,7 @@ import logging
 import nw
 
 from PyQt5.QtCore import Qt, QSize
-from PyQt5.QtGui import QIcon, QFont, QColor
+from PyQt5.QtGui import QFont, QColor
 from PyQt5.QtWidgets import (
     QTreeWidget, QTreeWidgetItem, QAbstractItemView, QApplication
 )

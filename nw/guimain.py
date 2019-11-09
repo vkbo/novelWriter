@@ -19,8 +19,8 @@ from os import path
 from PyQt5.QtCore import Qt, QTimer
 from PyQt5.QtGui import QIcon, QPixmap, QColor
 from PyQt5.QtWidgets import (
-    qApp, QWidget, QMainWindow, QVBoxLayout, QFrame, QSplitter, QFileDialog,
-    QShortcut, QMessageBox, QProgressDialog, QDialog
+    qApp, QMainWindow, QVBoxLayout, QFrame, QSplitter, QFileDialog, QShortcut,
+    QMessageBox, QProgressDialog, QDialog
 )
 
 from nw.gui import (

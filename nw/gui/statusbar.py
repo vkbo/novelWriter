@@ -16,8 +16,8 @@ import nw
 from time import time
 
 from PyQt5.QtCore import Qt, QTimer
-from PyQt5.QtGui import QIcon, QColor, QPixmap, QFont
-from PyQt5.QtWidgets import QStatusBar, QLabel, QFrame
+from PyQt5.QtGui import QColor, QPixmap, QFont
+from PyQt5.QtWidgets import QStatusBar, QLabel
 
 from nw.tools import NWSpellCheck
 

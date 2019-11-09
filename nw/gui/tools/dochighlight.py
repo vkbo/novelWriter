@@ -18,8 +18,6 @@ from PyQt5.QtGui import (
     QColor, QTextCharFormat, QFont, QSyntaxHighlighter, QBrush
 )
 
-from nw.constants import nwUnicode
-
 logger = logging.getLogger(__name__)
 
 class GuiDocHighlighter(QSyntaxHighlighter):

@@ -24,8 +24,7 @@ from PyQt5.QtWidgets import (
 )
 
 from nw.convert import TextFile, HtmlFile, MarkdownFile, LaTeXFile, ConcatFile
-from nw.project import NWDoc
-from nw.tools import numberToWord, OptLastState
+from nw.tools import OptLastState
 from nw.common import packageRefURL
 from nw.constants import nwFiles, nwItemType, nwAlert
 

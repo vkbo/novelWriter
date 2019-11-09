@@ -10,7 +10,6 @@
 
 """
 
-import textwrap
 import logging
 import re
 import nw

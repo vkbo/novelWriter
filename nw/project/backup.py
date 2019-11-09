@@ -13,7 +13,7 @@
 import logging
 import nw
 
-from os import path, mkdir, listdir
+from os import path
 from shutil import make_archive
 from datetime import datetime
 
