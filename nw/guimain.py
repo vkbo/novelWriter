@@ -729,13 +729,15 @@ class GuiMain(QMainWindow):
         doesn't have access to the exact state of the window.
         """
 
-        self.mainConf.isFullScreen = not self.mainConf.isFullScreen
-        if self.mainConf.isFullScreen:
-            logger.debug("Activating full screen mode")
-        else:
-            logger.debug("Deactivating full screen mode")
-
         self.setWindowState(self.windowState() ^ Qt.WindowFullScreen)
+
+        winState = self.windowState() & Qt.WindowFullScreen == Qt.WindowFullScreen
+        if winState:
+            logger.debug("Activated full screen mode")
+        else:
+            logger.debug("Deactivated full screen mode")
+
+        self.mainConf.isFullScreen = winState
 
         return
 
