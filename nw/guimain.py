@@ -707,6 +707,10 @@ class GuiMain(QMainWindow):
         statusbar and menu.
         """
 
+        if self.docEditor.theHandle is None:
+            logger.error("No document open, so not activating Zen Mode")
+            return False
+
         self.isZenMode = not self.isZenMode
         if self.isZenMode:
             logger.debug("Activating Zen mode")
@@ -714,12 +718,15 @@ class GuiMain(QMainWindow):
             logger.debug("Deactivating Zen mode")
 
         isVisible = not self.isZenMode
-        self.viewPane.setVisible(isVisible)
         self.treePane.setVisible(isVisible)
         self.statusBar.setVisible(isVisible)
-        # self.mainMenu.setVisible(isVisible)
 
-        return
+        if self.viewPane.isVisible():
+            self.viewPane.setVisible(False)
+        elif self.docViewer.theHandle is not None:
+            self.viewPane.setVisible(True)
+
+        return True
 
     def toggleFullScreenMode(self):
         """Main GUI full screen mode. The mode is tracked by the flag

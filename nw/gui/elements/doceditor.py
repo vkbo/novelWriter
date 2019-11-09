@@ -185,6 +185,7 @@ class GuiDocEditor(QTextEdit):
             tHandle = self.theHandle
             self.clearEditor()
             self.loadText(tHandle)
+            self.updateDocMargins()
         else:
             self.clearEditor()
 
@@ -240,6 +241,35 @@ class GuiDocEditor(QTextEdit):
         self.theParent.theIndex.scanText(theItem.itemHandle, docText)
 
         return True
+
+    def updateDocMargins(self):
+        """Automatically adjust the margins so the text is centred, but
+        only if Config.textFixedW is set to True.
+        """
+
+        if self.mainConf.textFixedW or self.theParent.isZenMode:
+            vBar = self.verticalScrollBar()
+            if vBar.isVisible():
+                sW = vBar.width()
+            else:
+                sW = 0
+            if self.theParent.isZenMode:
+                tW = self.mainConf.zenWidth
+            else:
+                tW = self.mainConf.textWidth
+            wW = self.width()
+            tM = int((wW - sW - tW)/2)
+            if tM < self.mainConf.textMargin:
+                tM = self.mainConf.textMargin
+        else:
+            tM = self.mainConf.textMargin
+
+        docFormat = self.qDocument.rootFrame().frameFormat()
+        docFormat.setLeftMargin(tM)
+        docFormat.setRightMargin(tM)
+        self.qDocument.rootFrame().setFrameFormat(docFormat)
+
+        return
 
     ##
     #  Setters and Getters
@@ -403,33 +433,11 @@ class GuiDocEditor(QTextEdit):
         return
 
     def resizeEvent(self, theEvent):
-        """Automatically adjust the margins so the text is centred, but
-        only if Config.textFixedW is set to True.
+        """If the text editor is resize, we must make sure the document
+        has its margins adjusted according to user preferences.
         """
         QTextEdit.resizeEvent(self, theEvent)
-
-        if self.mainConf.textFixedW or self.theParent.isZenMode:
-            vBar = self.verticalScrollBar()
-            if vBar.isVisible():
-                sW = vBar.width()
-            else:
-                sW = 0
-            if self.theParent.isZenMode:
-                tW = self.mainConf.zenWidth
-            else:
-                tW = self.mainConf.textWidth
-            wW = self.width()
-            tM = int((wW - sW - tW)/2)
-            if tM < self.mainConf.textMargin:
-                tM = self.mainConf.textMargin
-        else:
-            tM = self.mainConf.textMargin
-
-        docFormat = self.qDocument.rootFrame().frameFormat()
-        docFormat.setLeftMargin(tM)
-        docFormat.setRightMargin(tM)
-        self.qDocument.rootFrame().setFrameFormat(docFormat)
-
+        self.updateDocMargins()
         return
 
     ##
