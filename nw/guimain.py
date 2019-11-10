@@ -523,16 +523,16 @@ class GuiMain(QMainWindow):
                 theDoc  = NWDoc(self.theProject, self)
                 theText = theDoc.openDocument(tHandle, False)
 
-                # Run Word Count
-                cC, wC, pC = countWords(theText)
+                # Build tag index
+                self.theIndex.scanText(tHandle, theText)
+
+                # Get Word Counts
+                cC, wC, pC = self.theIndex.getCounts(tHandle)
                 tItem.setCharCount(cC)
                 tItem.setWordCount(wC)
                 tItem.setParaCount(pC)
                 self.treeView.propagateCount(tHandle, wC)
                 self.treeView.projectWordCount()
-
-                # Build tag index
-                self.theIndex.scanText(tHandle, theText)
 
             nDone += 1
             if dlgProg.wasCanceled():

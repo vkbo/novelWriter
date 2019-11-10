@@ -19,6 +19,7 @@ from os import path
 from nw.constants import (
     nwFiles, nwKeyWords, nwItemType, nwItemClass, nwAlert
 )
+from nw.tools import countWords
 
 logger = logging.getLogger(__name__)
 
@@ -60,6 +61,10 @@ class NWIndex():
         self.novelIndex = {}
         self.noteIndex  = {}
 
+        # Meta Data
+        self.textCounts   = {}
+        self.fileSynopsis = {}
+
         # Lists
         self.novelList = []
 
@@ -70,10 +75,12 @@ class NWIndex():
     ##
 
     def clearIndex(self):
-        self.tagIndex   = {}
-        self.refIndex   = {}
-        self.novelIndex = {}
-        self.noteIndex  = {}
+        self.tagIndex     = {}
+        self.refIndex     = {}
+        self.novelIndex   = {}
+        self.noteIndex    = {}
+        self.textCounts   = {}
+        self.fileSynopsis = {}
         return
 
     def deleteHandle(self, tHandle):
@@ -101,7 +108,10 @@ class NWIndex():
         """
 
         theData = {}
+        loadsOK = False
         indexFile = path.join(self.theProject.projMeta, nwFiles.INDEX_FILE)
+        metaFile  = path.join(self.theProject.projMeta, nwFiles.META_FILE)
+
         if path.isfile(indexFile):
             logger.debug("Loading index file")
             try:
@@ -122,11 +132,29 @@ class NWIndex():
             if "noteIndex" in theData.keys():
                 self.noteIndex = theData["noteIndex"]
 
-            self.checkIndex()
+            loadsOK = True
 
-            return True
+        if path.isfile(indexFile):
+            logger.debug("Loading meta file")
+            try:
+                with open(metaFile,mode="r",encoding="utf8") as inFile:
+                    theJson = inFile.read()
+                theData = json.loads(theJson)
+            except Exception as e:
+                logger.error("Failed to load meta file")
+                logger.error(str(e))
+                return False
 
-        return False
+            if "textCounts" in theData.keys():
+                self.textCounts = theData["textCounts"]
+            if "fileSynopsis" in theData.keys():
+                self.fileSynopsis = theData["fileSynopsis"]
+
+            loadsOK &= True
+
+        self.checkIndex()
+
+        return loadsOK
 
     def saveIndex(self):
         """Save the current index as a json file in the project meta
@@ -134,11 +162,14 @@ class NWIndex():
         """
 
         indexFile = path.join(self.theProject.projMeta, nwFiles.INDEX_FILE)
-        logger.debug("Saving index file")
+        metaFile  = path.join(self.theProject.projMeta, nwFiles.META_FILE)
+
+        logger.debug("Saving index and meta files")
         if self.mainConf.debugInfo:
             nIndent = 2
         else:
             nIndent = None
+
         try:
             with open(indexFile,mode="w+",encoding="utf8") as outFile:
                 outFile.write(json.dumps({
@@ -149,6 +180,17 @@ class NWIndex():
                 }, indent=nIndent))
         except Exception as e:
             logger.error("Failed to save index file")
+            logger.error(str(e))
+            return False
+
+        try:
+            with open(metaFile,mode="w+",encoding="utf8") as outFile:
+                outFile.write(json.dumps({
+                    "textCounts"   : self.textCounts,
+                    "fileSynopsis" : self.fileSynopsis,
+                }, indent=nIndent))
+        except Exception as e:
+            logger.error("Failed to save meta file")
             logger.error(str(e))
             return False
 
@@ -179,6 +221,10 @@ class NWIndex():
             for tEntry in self.noteIndex[tHandle]:
                 if len(tEntry) != 4:
                     self.indexBroken = True
+
+        for tHandle in self.textCounts:
+            if len(self.textCounts[tHandle]) != 3:
+                self.indexBroken = True
 
         if self.indexBroken:
             self.clearIndex()
@@ -230,17 +276,23 @@ class NWIndex():
         nLine  = 0
         nTitle = 0
         for aLine in theText.splitlines():
-            aLine  = aLine.strip()
+            aLine  = aLine
             nLine += 1
-            nChar  = len(aLine)
+            nChar  = len(aLine.strip())
             if nChar == 0: continue
-            if aLine[0] == "#":
+            if aLine.startswith(r"#"):
                 isTitle = self.indexTitle(tHandle, isNovel, aLine, nLine, itemLayout)
                 if isTitle:
                     nTitle = nLine
-            elif aLine[0] == "@":
+            elif aLine.startswith(r"@"):
                 self.indexNoteRef(tHandle, aLine, nLine, nTitle)
                 self.indexTag(tHandle, aLine, nLine, itemClass)
+            elif aLine.startswith(r"%synopsis:"):
+                self.fileSynopsis[tHandle] = aLine[10:].strip()
+
+        # Run word counter
+        cC, wC, pC = countWords(theText)
+        self.textCounts[tHandle] = [cC, wC, pC]
 
         return True
 
@@ -385,6 +437,16 @@ class NWIndex():
     ##
     #  Extract Data
     ##
+
+    def getCounts(self, tHandle):
+        cC = 0
+        wC = 0
+        pC = 0
+        if tHandle in self.textCounts:
+            cC = self.textCounts[tHandle][0]
+            wC = self.textCounts[tHandle][1]
+            pC = self.textCounts[tHandle][2]
+        return cC, wC, pC
 
     def buildNovelList(self):
         """Build a list of the content of the novel.

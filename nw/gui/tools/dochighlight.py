@@ -140,6 +140,13 @@ class GuiDocHighlighter(QSyntaxHighlighter):
                 0 : self.hStyles["hidden"],
             }
         ))
+        self.hRules.append((
+            r"^(%)(synopsis:\s+)(.*)$", {
+                1 : self.hStyles["hidden"],
+                2 : self.hStyles["keyword"],
+                3 : self.hStyles["hidden"],
+            }
+        ))
 
         # Trailing Spaces, 2+
         self.hRules.append((
