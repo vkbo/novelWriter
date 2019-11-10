@@ -1,2 +1,3 @@
 include LICENSE.md
 recursive-include nw/assets *
+recursive-include sample *.nwx *.nwd

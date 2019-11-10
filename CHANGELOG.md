@@ -1,5 +1,31 @@
 # novelWriter ChangeLog
 
+## Version 0.4.1 [2019-11-10]
+
+**Features**
+
+* If no external spell check package is available, novelWriter can now fall back to use a simple spell checker based on word similarity comparison provided by the Python standard package distlib. That means spell checking is always available, although the distlib-based spell checker is both slow and lacks many features of other packages. This feature comes with a general English dictionary, and a GB and US dictionary. These are just lists of correct words provided by aspell. PR #130.
+* Language information (spell checker) is now shown on the status bar. In addition, the timer has been converted to monospace font and received an icon. PR #136.
+* The new icons exist in both dark and neutral mode, and the mode can be set in the preferences. This makes it easier to see the icons on a dark system theme. PR #135.
+* Distraction free mode, key shortcut `F8`, and full screen mode, shortcut `F11`, are now available. This PR also fixes some issues with rescaling of text margins when windows or panels are resized. PR #137.
+
+**User Interface**
+
+* Most text boxes now have a character limit. Before, the only limit was the limit set by Qt itself of ~32k characters. PR #126.
+* Key combination `Ctrl+G` is now an alternative to `F3`, forward search, and vice versa for backwards search. This makes more sense on macOS. PR #126, issue #124.
+* The shortcut for the replace feature is now `Cmd+=` on macOS, and remains `Ctrl+H` on Linux and Windows. PR #126, issue #124.
+* The sample project in the source code has been improved to better show the features of novelWriter as they currently are. The old text was a bit out of date. The new text also explains the features it demonstrates. PR #132.
+
+**Bug Fixes**
+
+* Fixed a bug where a long file label would expand the tree pane due to the details panel expanding. The label itself will no longer show more than 100 characters, and is word wrapped. PR #122, issue #120.
+
+**Code Improvements**
+
+* The code has been reorganised, import headers been cleaned up, and the code made more or less PEP8 compliant. PRs #118, #119, and #138.
+* The dependency on the pycountry package has been dropped. The feature based on it now uses an internal list of country codes for describing spell checker languages. PR #129.
+* The themes manager has been improved, and the loading of icons now supports a number of fallback steps to ensure something is shown in most cases. The final fallback is the system's own icon theme. PR #135.
+
 ## Version 0.4 [2019-11-03]
 
 **Features**
