@@ -173,6 +173,7 @@ class GuiMain(QMainWindow):
         self.asDocTimer.start()
         self.statusBar.clearStatus()
 
+        self.showNormal()
         if self.mainConf.isFullScreen:
             self.toggleFullScreenMode()
 
