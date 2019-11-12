@@ -202,7 +202,11 @@ class GuiDocHighlighter(QSyntaxHighlighter):
         ))
 
         # Build a QRegExp for each pattern and for the spell checker
-        self.rules   = [(QRegularExpression(a),b) for (a,b) in self.hRules]
+        self.rxRules = []
+        for regEx, regRules in self.hRules:
+            hReg = QRegularExpression(regEx)
+            hReg.setPatternOptions(QRegularExpression.UseUnicodePropertiesOption)
+            self.rxRules.append((hReg, regRules))
         self.spellRx = QRegularExpression(r"\b[^\s]+\b")
         self.spellRx.setPatternOptions(QRegularExpression.UseUnicodePropertiesOption)
 
@@ -253,9 +257,12 @@ class GuiDocHighlighter(QSyntaxHighlighter):
                         kwFmt.setUnderlineStyle(QTextCharFormat.SpellCheckUnderline)
                         self.setFormat(xPos, xLen, kwFmt)
 
+            # We're done, no need to continue
+            return
+
         else:
-            # Other text just uses regex
-            for rX, xFmt in self.rules:
+            # For other text, just use our regex rules
+            for rX, xFmt in self.rxRules:
                 rxItt = rX.globalMatch(theText, 0)
                 while rxItt.hasNext():
                     rxMatch = rxItt.next()
@@ -264,10 +271,10 @@ class GuiDocHighlighter(QSyntaxHighlighter):
                         xLen = rxMatch.capturedLength(xM)
                         self.setFormat(xPos, xLen, xFmt[xM])
 
-        if self.theDict is None or not self.spellCheck or theText.startswith("@"):
+        if self.theDict is None or not self.spellCheck:
             return
 
-        rxSpell = self.spellRx.globalMatch(theText.replace("_"," "), 0)
+        rxSpell = self.spellRx.globalMatch(theText, 0)
         while rxSpell.hasNext():
             rxMatch = rxSpell.next()
             if not self.theDict.checkWord(rxMatch.captured(0)):
