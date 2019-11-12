@@ -53,6 +53,7 @@ class GuiDocEditor(QTextEdit):
         self.wordCount = 0
         self.paraCount = 0
         self.lastEdit  = 0
+        self.nonWord   = "\"'"
 
         # Typography
         self.typDQOpen  = self.mainConf.fmtDoubleQuotes[0]
@@ -136,6 +137,11 @@ class GuiDocEditor(QTextEdit):
         settings. This function is both called when the editor is
         created, and when the user changes the main editor preferences.
         """
+
+        # Some Constants
+        self.nonWord  = "\"'"
+        self.nonWord += "".join(self.mainConf.fmtDoubleQuotes)
+        self.nonWord += "".join(self.mainConf.fmtSingleQuotes)
 
         # Reload spell check and dictionaries
         self._setupSpellChecking()
@@ -500,7 +506,7 @@ class GuiDocEditor(QTextEdit):
 
         theCursor = self.cursorForPosition(thePos)
         theCursor.select(QTextCursor.WordUnderCursor)
-        theWord = theCursor.selectedText()
+        theWord = theCursor.selectedText().strip().strip(self.nonWord)
         if theWord == "":
             return
         if self.theDict.checkWord(theWord):
@@ -541,7 +547,7 @@ class GuiDocEditor(QTextEdit):
         return
 
     def _addWord(self, theCursor):
-        theWord = theCursor.selectedText().strip()
+        theWord = theCursor.selectedText().strip().strip(self.nonWord)
         logger.debug("Added '%s' to project dictionary" % theWord)
         self.theDict.addWord(theWord)
         self.hLight.setDict(self.theDict)
