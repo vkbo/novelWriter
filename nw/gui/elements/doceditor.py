@@ -314,17 +314,41 @@ class GuiDocEditor(QTextEdit):
     ##
 
     def setDictionaries(self):
+        """Set the spell checker dictionary language, and update the
+        status bar to show the one actually loaded by the spell checker
+        class.
+        """
         self.theDict.setLanguage(self.mainConf.spellLanguage, self.theProject.projDict)
         self.theParent.statusBar.setLanguage(self.theDict.spellLanguage)
         return True
 
     def setSpellCheck(self, theMode):
+        """This is the master spell check setting function, and this one
+        should call all other setSpellCheck functions in other classes.
+        If the spell check mode is not defined, then toggle the current
+        status saved in the class.
+        """
+
+        if theMode is None:
+            theMode = not self.spellCheck
+
+        if self.theDict.spellLanguage is None:
+            theMode = False
+
         self.spellCheck = theMode
+        self.theParent.mainMenu.setSpellCheck(theMode)
+        self.theProject.setSpellCheck(theMode)
         self.hLight.setSpellCheck(theMode)
         self.hLight.rehighlight()
+
+        logger.verbose("Spell check is set to %s" % str(theMode))
+
         return True
 
     def updateSpellCheck(self):
+        """Rerun the highlighter to update spell checking status of the
+        currently loaded text.
+        """
         if self.spellCheck:
             self.hLight.rehighlight()
         return True

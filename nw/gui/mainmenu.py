@@ -91,6 +91,10 @@ class GuiMainMenu(QMenuBar):
 
         return
 
+    def setSpellCheck(self, theMode):
+        self.aSpellCheck.setChecked(theMode)
+        return
+
     def updateSpellCheck(self):
         if self.theParent.hasProject:
             self.aSpellCheck.setChecked(self.theProject.spellCheck)
@@ -106,12 +110,7 @@ class GuiMainMenu(QMenuBar):
         return
 
     def _toggleSpellCheck(self):
-        if self.theParent.hasProject:
-            self.theProject.setSpellCheck(self.aSpellCheck.isChecked())
-            self.theParent.docEditor.setSpellCheck(self.aSpellCheck.isChecked())
-            logger.verbose("Spell check is set to %s" % str(self.theProject.spellCheck))
-        else:
-            self.aSpellCheck.setChecked(False)
+        self.theParent.docEditor.setSpellCheck(None)
         return True
 
     def _toggleViewComments(self):
