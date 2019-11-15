@@ -68,7 +68,6 @@ class GuiMainMenu(QMenuBar):
 
     def updateMenu(self):
         self.updateRecentProjects()
-        self.updateSpellCheck()
         return
 
     def updateRecentProjects(self):
@@ -92,13 +91,11 @@ class GuiMainMenu(QMenuBar):
         return
 
     def setSpellCheck(self, theMode):
+        """Set the spell check check box to theMode. This is controlled
+        by the document editor class, which holds the master spell check
+        flag.
+        """
         self.aSpellCheck.setChecked(theMode)
-        return
-
-    def updateSpellCheck(self):
-        if self.theParent.hasProject:
-            self.aSpellCheck.setChecked(self.theProject.spellCheck)
-            logger.verbose("Spell check is set to %s" % str(self.theProject.spellCheck))
         return
 
     ##
@@ -110,6 +107,10 @@ class GuiMainMenu(QMenuBar):
         return
 
     def _toggleSpellCheck(self):
+        """Toggle spell checking. The active status of the spell check
+        flag is handled by the document editor class, so we make no
+        decision, just pass a None to the function and let it decide.
+        """
         self.theParent.docEditor.setSpellCheck(None)
         return True
 
@@ -608,7 +609,8 @@ class GuiMainMenu(QMenuBar):
         self.aSpellCheck.setStatusTip("Toggle check spelling")
         self.aSpellCheck.setCheckable(True)
         self.aSpellCheck.setChecked(self.theProject.spellCheck)
-        self.aSpellCheck.toggled.connect(self._toggleSpellCheck)
+        # Here we must used triggered, not toggled, to avoid recursion
+        self.aSpellCheck.triggered.connect(self._toggleSpellCheck)
         self.aSpellCheck.setShortcut("Ctrl+F7")
         self.toolsMenu.addAction(self.aSpellCheck)
 
