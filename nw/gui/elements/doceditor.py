@@ -530,9 +530,12 @@ class GuiDocEditor(QTextEdit):
 
         theCursor = self.cursorForPosition(thePos)
         theCursor.select(QTextCursor.WordUnderCursor)
+
         theWord = theCursor.selectedText().strip().strip(self.nonWord)
         if theWord == "":
             return
+
+        logger.verbose("Looking up '%s' in the dictionary" % theWord)
         if self.theDict.checkWord(theWord):
             return
 

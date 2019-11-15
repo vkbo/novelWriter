@@ -13,6 +13,8 @@
 import logging
 import nw
 
+from os import path
+
 from nw.constants import isoLanguage
 
 logger = logging.getLogger(__name__)
@@ -75,6 +77,8 @@ class NWSpellCheck():
         self.PROJW = []
         if projectDict is not None:
             self.projectDict = projectDict
+            if not path.isfile(projectDict):
+                return
             try:
                 with open(projectDict,mode="r",encoding="utf-8") as wordsFile:
                     for theLine in wordsFile:

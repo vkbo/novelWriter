@@ -201,12 +201,14 @@ class GuiDocHighlighter(QSyntaxHighlighter):
             }
         ))
 
-        # Build a QRegExp for each pattern and for the spell checker
+        # Build a QRegExp for each highlight pattern
         self.rxRules = []
         for regEx, regRules in self.hRules:
             hReg = QRegularExpression(regEx)
             hReg.setPatternOptions(QRegularExpression.UseUnicodePropertiesOption)
             self.rxRules.append((hReg, regRules))
+
+        # Build a QRegExp for spell checker
         self.spellRx = QRegularExpression(r"\b[^\s]+\b")
         self.spellRx.setPatternOptions(QRegularExpression.UseUnicodePropertiesOption)
 
