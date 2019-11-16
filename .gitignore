@@ -23,6 +23,7 @@ sample/**/*.json
 tests/temp
 .pytest_cache
 pytestdebug.log
+prof/
 
 # Coverage
 .coverage
