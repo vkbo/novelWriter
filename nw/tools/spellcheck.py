@@ -13,6 +13,8 @@
 import logging
 import nw
 
+from os import path
+
 from nw.constants import isoLanguage
 
 logger = logging.getLogger(__name__)
@@ -29,6 +31,7 @@ class NWSpellCheck():
     def __init__(self):
         self.mainConf = nw.CONFIG
         self.projectDict = None
+        self.spellLanguage = None
         return
 
     def setLanguage(self, theLang, projectDict=None):
@@ -45,11 +48,10 @@ class NWSpellCheck():
             newWord = newWord.strip()
             self.PROJW.append(newWord)
             try:
-                with open(self.projectDict,mode="w+",encoding="utf-8") as outFile:
-                    for pWord in self.PROJW:
-                        outFile.write("%s\n" % pWord)
+                with open(self.projectDict,mode="a+",encoding="utf-8") as outFile:
+                    outFile.write("%s\n" % newWord)
             except Exception as e:
-                logger.error("Failed to write to project word list at %s" % str(self.projectDict))
+                logger.error("Failed to add word to project word list %s" % str(self.projectDict))
                 logger.error(str(e))
         return
 
@@ -75,6 +77,8 @@ class NWSpellCheck():
         self.PROJW = []
         if projectDict is not None:
             self.projectDict = projectDict
+            if not path.isfile(projectDict):
+                return
             try:
                 with open(projectDict,mode="r",encoding="utf-8") as wordsFile:
                     for theLine in wordsFile:

@@ -18,6 +18,8 @@ from PyQt5.QtGui import (
     QColor, QTextCharFormat, QFont, QSyntaxHighlighter, QBrush
 )
 
+from nw.constants import nwUnicode
+
 logger = logging.getLogger(__name__)
 
 class GuiDocHighlighter(QSyntaxHighlighter):
@@ -150,7 +152,7 @@ class GuiDocHighlighter(QSyntaxHighlighter):
 
         # Non-breaking Space
         self.hRules.append((
-            "[\u00a0]+", {
+            "[%s]+" % nwUnicode.U_NBSP, {
                 0 : self.hStyles["nobreak"],
             }
         ))
@@ -201,13 +203,19 @@ class GuiDocHighlighter(QSyntaxHighlighter):
             }
         ))
 
-        # Build a QRegExp for each pattern and for the spell checker
+        # Build a QRegExp for each highlight pattern
         self.rxRules = []
         for regEx, regRules in self.hRules:
             hReg = QRegularExpression(regEx)
             hReg.setPatternOptions(QRegularExpression.UseUnicodePropertiesOption)
             self.rxRules.append((hReg, regRules))
-        self.spellRx = QRegularExpression(r"\b[^\s]+\b")
+
+        # Build a QRegExp for spell checker
+        # Include additional characters that the highlighter should
+        # consider to be word separators
+        wordSep  = "_+"
+        wordSep += nwUnicode.U_EMDASH
+        self.spellRx = QRegularExpression("\\b[^\\s%s]+\\b" % wordSep)
         self.spellRx.setPatternOptions(QRegularExpression.UseUnicodePropertiesOption)
 
         return True

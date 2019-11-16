@@ -41,9 +41,11 @@ class NWSpellSimple(NWSpellCheck):
                     self.WORDS.append(theLine.strip().lower())
             logger.debug("Spell check word list for language %s loaded" % theLang)
             logger.debug("Word list contains %d words" % len(self.WORDS))
+            self.spellLanguage = theLang
         except Exception as e:
             logger.error("Failed to load spell check word list for language %s" % theLang)
             logger.error(str(e))
+            self.spellLanguage = None
 
         self._readProjectDictionary(projectDict)
         for pWord in self.PROJW:
@@ -104,7 +106,7 @@ class NWSpellSimple(NWSpellCheck):
             if theBits[1] != ".dict":
                 continue
 
-            spName = "%s [nternal]" % self.expandLanguage(theBits[0])
+            spName = "%s [Internal]" % self.expandLanguage(theBits[0])
             retList.append((theBits[0], spName))
 
         return retList

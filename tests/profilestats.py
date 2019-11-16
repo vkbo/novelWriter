@@ -13,4 +13,4 @@ print("")
 
 profMainWindows = pstats.Stats(path.join(profDir,"testMainWindows.prof"))
 profMainWindows.sort_stats("cumtime")
-profMainWindows.print_stats("nw",50)
+profMainWindows.print_stats("nw/")

@@ -116,7 +116,10 @@ class GuiMainStatus(QStatusBar):
         return
 
     def setLanguage(self, theLanguage):
-        self.langBox.setText(NWSpellCheck.expandLanguage(theLanguage))
+        if theLanguage is None:
+            self.langBox.setText("None")
+        else:
+            self.langBox.setText(NWSpellCheck.expandLanguage(theLanguage))
         return
 
     def setProjectStatus(self, isChanged):
