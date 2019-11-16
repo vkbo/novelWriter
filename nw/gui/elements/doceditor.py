@@ -53,6 +53,7 @@ class GuiDocEditor(QTextEdit):
         self.wordCount = 0
         self.paraCount = 0
         self.lastEdit  = 0
+        self.nonWord   = "\"'"
 
         # Typography
         self.typDQOpen  = self.mainConf.fmtDoubleQuotes[0]
@@ -136,6 +137,11 @@ class GuiDocEditor(QTextEdit):
         settings. This function is both called when the editor is
         created, and when the user changes the main editor preferences.
         """
+
+        # Some Constants
+        self.nonWord  = "\"'"
+        self.nonWord += "".join(self.mainConf.fmtDoubleQuotes)
+        self.nonWord += "".join(self.mainConf.fmtSingleQuotes)
 
         # Reload spell check and dictionaries
         self._setupSpellChecking()
@@ -308,17 +314,41 @@ class GuiDocEditor(QTextEdit):
     ##
 
     def setDictionaries(self):
+        """Set the spell checker dictionary language, and update the
+        status bar to show the one actually loaded by the spell checker
+        class.
+        """
         self.theDict.setLanguage(self.mainConf.spellLanguage, self.theProject.projDict)
-        self.theParent.statusBar.setLanguage(self.mainConf.spellLanguage)
+        self.theParent.statusBar.setLanguage(self.theDict.spellLanguage)
         return True
 
     def setSpellCheck(self, theMode):
+        """This is the master spell check setting function, and this one
+        should call all other setSpellCheck functions in other classes.
+        If the spell check mode is not defined, then toggle the current
+        status saved in the class.
+        """
+
+        if theMode is None:
+            theMode = not self.spellCheck
+
+        if self.theDict.spellLanguage is None:
+            theMode = False
+
         self.spellCheck = theMode
+        self.theParent.mainMenu.setSpellCheck(theMode)
+        self.theProject.setSpellCheck(theMode)
         self.hLight.setSpellCheck(theMode)
         self.hLight.rehighlight()
+
+        logger.verbose("Spell check is set to %s" % str(theMode))
+
         return True
 
     def updateSpellCheck(self):
+        """Rerun the highlighter to update spell checking status of the
+        currently loaded text.
+        """
         if self.spellCheck:
             self.hLight.rehighlight()
         return True
@@ -500,9 +530,12 @@ class GuiDocEditor(QTextEdit):
 
         theCursor = self.cursorForPosition(thePos)
         theCursor.select(QTextCursor.WordUnderCursor)
-        theWord = theCursor.selectedText()
+
+        theWord = theCursor.selectedText().strip().strip(self.nonWord)
         if theWord == "":
             return
+
+        logger.verbose("Looking up '%s' in the dictionary" % theWord)
         if self.theDict.checkWord(theWord):
             return
 
@@ -541,7 +574,7 @@ class GuiDocEditor(QTextEdit):
         return
 
     def _addWord(self, theCursor):
-        theWord = theCursor.selectedText().strip()
+        theWord = theCursor.selectedText().strip().strip(self.nonWord)
         logger.debug("Added '%s' to project dictionary" % theWord)
         self.theDict.addWord(theWord)
         self.hLight.setDict(self.theDict)

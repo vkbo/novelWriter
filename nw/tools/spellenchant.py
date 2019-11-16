@@ -32,10 +32,12 @@ class NWSpellEnchant(NWSpellCheck):
         """
         try:
             self.theDict = enchant.Dict(theLang)
+            self.spellLanguage = theLang
             logger.debug("Enchant spell checking for language %s loaded" % theLang)
         except:
             logger.error("Failed to load enchant spell checking for language %s" % theLang)
             self.theDict = NWSpellEnchantDummy()
+            self.spellLanguage = None
 
         self._readProjectDictionary(projectDict)
         for pWord in self.PROJW:

@@ -18,6 +18,8 @@ from PyQt5.QtGui import (
     QColor, QTextCharFormat, QFont, QSyntaxHighlighter, QBrush
 )
 
+from nw.constants import nwUnicode
+
 logger = logging.getLogger(__name__)
 
 class GuiDocHighlighter(QSyntaxHighlighter):
@@ -157,7 +159,7 @@ class GuiDocHighlighter(QSyntaxHighlighter):
 
         # Non-breaking Space
         self.hRules.append((
-            "[\u00a0]+", {
+            "[%s]+" % nwUnicode.U_NBSP, {
                 0 : self.hStyles["nobreak"],
             }
         ))
@@ -208,9 +210,19 @@ class GuiDocHighlighter(QSyntaxHighlighter):
             }
         ))
 
-        # Build a QRegExp for each pattern and for the spell checker
-        self.rules   = [(QRegularExpression(a),b) for (a,b) in self.hRules]
-        self.spellRx = QRegularExpression(r"\b[^\s]+\b")
+        # Build a QRegExp for each highlight pattern
+        self.rxRules = []
+        for regEx, regRules in self.hRules:
+            hReg = QRegularExpression(regEx)
+            hReg.setPatternOptions(QRegularExpression.UseUnicodePropertiesOption)
+            self.rxRules.append((hReg, regRules))
+
+        # Build a QRegExp for spell checker
+        # Include additional characters that the highlighter should
+        # consider to be word separators
+        wordSep  = "_+"
+        wordSep += nwUnicode.U_EMDASH
+        self.spellRx = QRegularExpression("\\b[^\\s%s]+\\b" % wordSep)
         self.spellRx.setPatternOptions(QRegularExpression.UseUnicodePropertiesOption)
 
         return True
@@ -260,9 +272,12 @@ class GuiDocHighlighter(QSyntaxHighlighter):
                         kwFmt.setUnderlineStyle(QTextCharFormat.SpellCheckUnderline)
                         self.setFormat(xPos, xLen, kwFmt)
 
+            # We're done, no need to continue
+            return
+
         else:
-            # Other text just uses regex
-            for rX, xFmt in self.rules:
+            # For other text, just use our regex rules
+            for rX, xFmt in self.rxRules:
                 rxItt = rX.globalMatch(theText, 0)
                 while rxItt.hasNext():
                     rxMatch = rxItt.next()
@@ -271,10 +286,10 @@ class GuiDocHighlighter(QSyntaxHighlighter):
                         xLen = rxMatch.capturedLength(xM)
                         self.setFormat(xPos, xLen, xFmt[xM])
 
-        if self.theDict is None or not self.spellCheck or theText.startswith("@"):
+        if self.theDict is None or not self.spellCheck:
             return
 
-        rxSpell = self.spellRx.globalMatch(theText.replace("_"," "), 0)
+        rxSpell = self.spellRx.globalMatch(theText, 0)
         while rxSpell.hasNext():
             rxMatch = rxSpell.next()
             if not self.theDict.checkWord(rxMatch.captured(0)):

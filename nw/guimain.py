@@ -148,7 +148,8 @@ class GuiMain(QMainWindow):
         self.asDocTimer = QTimer()
         self.asDocTimer.timeout.connect(self._autoSaveDocument)
 
-        # Keyboard Shortcuts
+        # Shortcuts and Actions
+        self._connectMenuActions()
         QShortcut(
             Qt.Key_Return,
             self.treeView,
@@ -173,6 +174,7 @@ class GuiMain(QMainWindow):
         self.asDocTimer.start()
         self.statusBar.clearStatus()
 
+        self.showNormal()
         if self.mainConf.isFullScreen:
             self.toggleFullScreenMode()
 
@@ -181,6 +183,8 @@ class GuiMain(QMainWindow):
         return
 
     def clearGUI(self):
+        """Wrapper function to clear all sub-elements of the main GUI.
+        """
         self.treeView.clearTree()
         self.docEditor.clearEditor()
         self.closeDocViewer()
@@ -720,6 +724,7 @@ class GuiMain(QMainWindow):
         isVisible = not self.isZenMode
         self.treePane.setVisible(isVisible)
         self.statusBar.setVisible(isVisible)
+        self.mainMenu.setVisible(isVisible)
 
         if self.viewPane.isVisible():
             self.viewPane.setVisible(False)
@@ -751,6 +756,35 @@ class GuiMain(QMainWindow):
     ##
     #  Internal Functions
     ##
+
+    def _connectMenuActions(self):
+        """Connect to the main window all menu actions that need to be
+        available also when the main menu is hidden.
+        """
+        self.addAction(self.mainMenu.aSaveProject)
+        self.addAction(self.mainMenu.aExitNW)
+        self.addAction(self.mainMenu.aSaveDoc)
+        self.addAction(self.mainMenu.aFileDetails)
+        self.addAction(self.mainMenu.aZenMode)
+        self.addAction(self.mainMenu.aFullScreen)
+        self.addAction(self.mainMenu.aViewTimeLine)
+        self.addAction(self.mainMenu.aEditUndo)
+        self.addAction(self.mainMenu.aEditRedo)
+        self.addAction(self.mainMenu.aEditCut)
+        self.addAction(self.mainMenu.aEditCopy)
+        self.addAction(self.mainMenu.aEditPaste)
+        self.addAction(self.mainMenu.aSelectAll)
+        self.addAction(self.mainMenu.aSelectPar)
+        self.addAction(self.mainMenu.aFmtBold)
+        self.addAction(self.mainMenu.aFmtItalic)
+        self.addAction(self.mainMenu.aFmtULine)
+        self.addAction(self.mainMenu.aFmtDQuote)
+        self.addAction(self.mainMenu.aFmtSQuote)
+        self.addAction(self.mainMenu.aSpellCheck)
+        self.addAction(self.mainMenu.aReRunSpell)
+        self.addAction(self.mainMenu.aPreferences)
+        self.addAction(self.mainMenu.aHelp)
+        return True
 
     def _setWindowTitle(self, projName=None):
         winTitle = "%s" % nw.__package__
@@ -838,6 +872,8 @@ class GuiMain(QMainWindow):
         if self.searchBar.isVisible():
             self.searchBar.setVisible(False)
             return
+        elif self.isZenMode:
+            self.toggleZenMode()
         return
 
 # END Class GuiMain

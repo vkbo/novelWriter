@@ -77,7 +77,7 @@ def testMainWindows(qtbot, nwTempGUI, nwRef):
     assert nwGUI.treeView._getTreeItem("71ee45a3c0db9") is not None
     assert nwGUI.treeView._getTreeItem("811786ad1ae74") is not None
 
-    nwGUI.mainMenu.toolsSpellCheck.setChecked(True)
+    nwGUI.mainMenu.aSpellCheck.setChecked(True)
     assert nwGUI.mainMenu._toggleSpellCheck()
 
     # Add a Character File
