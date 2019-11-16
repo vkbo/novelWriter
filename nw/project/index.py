@@ -62,8 +62,9 @@ class NWIndex():
         self.noteIndex  = {}
 
         # Meta Data
+        self.fileCounts   = {}
         self.textCounts   = {}
-        self.fileSynopsis = {}
+        self.textSynopsis = {}
 
         # Lists
         self.novelList = []
@@ -79,8 +80,9 @@ class NWIndex():
         self.refIndex     = {}
         self.novelIndex   = {}
         self.noteIndex    = {}
+        self.fileCounts   = {}
         self.textCounts   = {}
-        self.fileSynopsis = {}
+        self.textSynopsis = {}
         return
 
     def deleteHandle(self, tHandle):
@@ -145,10 +147,12 @@ class NWIndex():
                 logger.error(str(e))
                 return False
 
+            if "fileCounts" in theData.keys():
+                self.fileCounts = theData["fileCounts"]
             if "textCounts" in theData.keys():
                 self.textCounts = theData["textCounts"]
-            if "fileSynopsis" in theData.keys():
-                self.fileSynopsis = theData["fileSynopsis"]
+            if "textSynopsis" in theData.keys():
+                self.textSynopsis = theData["textSynopsis"]
 
             loadsOK &= True
 
@@ -186,8 +190,9 @@ class NWIndex():
         try:
             with open(metaFile,mode="w+",encoding="utf8") as outFile:
                 outFile.write(json.dumps({
+                    "fileCounts"   : self.fileCounts,
                     "textCounts"   : self.textCounts,
-                    "fileSynopsis" : self.fileSynopsis,
+                    "textSynopsis" : self.textSynopsis,
                 }, indent=nIndent))
         except Exception as e:
             logger.error("Failed to save meta file")
@@ -203,28 +208,37 @@ class NWIndex():
 
         self.indexBroken = False
 
-        for tTag in self.tagIndex:
-            if len(self.tagIndex[tTag]) != 3:
-                self.indexBroken = True
-
-        for tHandle in self.refIndex:
-            for tEntry in self.refIndex[tHandle]:
-                if len(tEntry) != 4:
+        try:
+            for tTag in self.tagIndex:
+                if len(self.tagIndex[tTag]) != 3:
                     self.indexBroken = True
 
-        for tHandle in self.novelIndex:
-            for tEntry in self.novelIndex[tHandle]:
-                if len(tEntry) != 4:
+            for tHandle in self.refIndex:
+                for tEntry in self.refIndex[tHandle]:
+                    if len(tEntry) != 4:
+                        self.indexBroken = True
+
+            for tHandle in self.novelIndex:
+                for tEntry in self.novelIndex[tHandle]:
+                    if len(tEntry) != 4:
+                        self.indexBroken = True
+
+            for tHandle in self.noteIndex:
+                for tEntry in self.noteIndex[tHandle]:
+                    if len(tEntry) != 4:
+                        self.indexBroken = True
+
+            for tHandle in self.fileCounts:
+                if len(self.fileCounts[tHandle]) != 3:
                     self.indexBroken = True
 
-        for tHandle in self.noteIndex:
-            for tEntry in self.noteIndex[tHandle]:
-                if len(tEntry) != 4:
-                    self.indexBroken = True
+            for tHandle in self.textCounts:
+                for tLine in self.textCounts[tHandle]:
+                    if len(self.textCounts[tHandle][tLine]) != 3:
+                        self.indexBroken = True
 
-        for tHandle in self.textCounts:
-            if len(self.textCounts[tHandle]) != 3:
-                self.indexBroken = True
+        except:
+            self.indexBroken = True
 
         if self.indexBroken:
             self.clearIndex()
@@ -275,24 +289,47 @@ class NWIndex():
 
         nLine  = 0
         nTitle = 0
-        for aLine in theText.splitlines():
+        theSynopsis = {}
+        theCounts   = {}
+        theLines    = theText.splitlines()
+        for aLine in theLines:
             aLine  = aLine
             nLine += 1
             nChar  = len(aLine.strip())
             if nChar == 0: continue
+
             if aLine.startswith(r"#"):
                 isTitle = self.indexTitle(tHandle, isNovel, aLine, nLine, itemLayout)
-                if isTitle:
+                if isTitle and nLine > 0:
+                    # Count words in the previous section, before we tag
+                    # the new title location
+                    if nTitle > 0:
+                        lastText = "\n".join(theLines[nTitle-1:nLine-1])
+                        cC, wC, pC = countWords(lastText)
+                        theCounts[str(nTitle)] = [cC, wC, pC]
                     nTitle = nLine
+
             elif aLine.startswith(r"@"):
                 self.indexNoteRef(tHandle, aLine, nLine, nTitle)
                 self.indexTag(tHandle, aLine, nLine, itemClass)
-            elif aLine.startswith(r"%synopsis:"):
-                self.fileSynopsis[tHandle] = aLine[10:].strip()
 
-        # Run word counter
+            elif aLine.startswith(r"%synopsis:"):
+                theSynopsis[str(nTitle)] = aLine[10:].strip()
+
+        # Count words for remaining text after last heading
+        if nTitle > 0:
+            lastText = "\n".join(theLines[nTitle-1:])
+            cC, wC, pC = countWords(lastText)
+            theCounts[str(nTitle)] = [cC, wC, pC]
+        
+        if theSynopsis:
+            self.textSynopsis[tHandle] = theSynopsis
+        if theCounts:
+            self.textCounts[tHandle] = theCounts
+
+        # Run word counter for whole text
         cC, wC, pC = countWords(theText)
-        self.textCounts[tHandle] = [cC, wC, pC]
+        self.fileCounts[tHandle] = [cC, wC, pC]
 
         return True
 
@@ -438,14 +475,27 @@ class NWIndex():
     #  Extract Data
     ##
 
-    def getCounts(self, tHandle):
+    def getCounts(self, tHandle, tLine=None):
+        """Returns the counts for a file, or a section of a file
+        starting at line tLine.
+        """
+
         cC = 0
         wC = 0
         pC = 0
-        if tHandle in self.textCounts:
-            cC = self.textCounts[tHandle][0]
-            wC = self.textCounts[tHandle][1]
-            pC = self.textCounts[tHandle][2]
+
+        if tLine is None:
+            if tHandle in self.fileCounts:
+                cC = self.fileCounts[tHandle][0]
+                wC = self.fileCounts[tHandle][1]
+                pC = self.fileCounts[tHandle][2]
+        else:
+            if tHandle in self.textCounts:
+                if tLine in self.textCounts[tHandle]:
+                    cC = self.textCounts[tHandle][tLine][0]
+                    wC = self.textCounts[tHandle][tLine][1]
+                    pC = self.textCounts[tHandle][tLine][2]
+
         return cC, wC, pC
 
     def buildNovelList(self):
