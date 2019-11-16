@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='utf-8'?>
-<novelWriterXML appVersion="0.4.0" fileVersion="1.0" timeStamp="2019-11-07 22:03:42">
+<novelWriterXML appVersion="0.4.1" fileVersion="1.0" timeStamp="2019-11-16 12:31:19">
   <project>
     <name>Sample Project</name>
     <title>Sample Project</title>
@@ -9,9 +9,9 @@
   </project>
   <settings>
     <spellCheck>True</spellCheck>
-    <lastEdited>96b68994dfa3d</lastEdited>
+    <lastEdited>636b6aa9b697b</lastEdited>
     <lastViewed>b3e74dbc1f584</lastViewed>
-    <lastWordCount>855</lastWordCount>
+    <lastWordCount>875</lastWordCount>
     <autoReplace>
       <A>B</A>
       <B>E</B>
@@ -79,10 +79,10 @@
       <status>1st Draft</status>
       <expanded>False</expanded>
       <layout>SCENE</layout>
-      <charCount>1076</charCount>
-      <wordCount>196</wordCount>
-      <paraCount>6</paraCount>
-      <cursorPos>59</cursorPos>
+      <charCount>1199</charCount>
+      <wordCount>216</wordCount>
+      <paraCount>7</paraCount>
+      <cursorPos>949</cursorPos>
     </item>
     <item handle="bc0cbd2a407f3" order="2" parent="e7ded148d6e4a">
       <name>Another Scene</name>
@@ -118,7 +118,7 @@
       <charCount>1692</charCount>
       <wordCount>313</wordCount>
       <paraCount>6</paraCount>
-      <cursorPos>216</cursorPos>
+      <cursorPos>530</cursorPos>
     </item>
     <item handle="88706ddc78b1b" order="5" parent="e7ded148d6e4a">
       <name>Chapter Two</name>
