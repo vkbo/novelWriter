@@ -475,28 +475,43 @@ class NWIndex():
     #  Extract Data
     ##
 
-    def getCounts(self, tHandle, tLine=None):
+    def getCounts(self, tHandle, nTitle=None):
         """Returns the counts for a file, or a section of a file
-        starting at line tLine.
+        starting at title nTitle.
         """
 
         cC = 0
         wC = 0
         pC = 0
 
-        if tLine is None:
+        if nTitle is None:
             if tHandle in self.fileCounts:
                 cC = self.fileCounts[tHandle][0]
                 wC = self.fileCounts[tHandle][1]
                 pC = self.fileCounts[tHandle][2]
         else:
             if tHandle in self.textCounts:
-                if tLine in self.textCounts[tHandle]:
-                    cC = self.textCounts[tHandle][tLine][0]
-                    wC = self.textCounts[tHandle][tLine][1]
-                    pC = self.textCounts[tHandle][tLine][2]
+                if nTitle in self.textCounts[tHandle]:
+                    cC = self.textCounts[tHandle][nTitle][0]
+                    wC = self.textCounts[tHandle][nTitle][1]
+                    pC = self.textCounts[tHandle][nTitle][2]
 
         return cC, wC, pC
+
+    def getReferences(self, tHandle, tTitle=None):
+        """Extract all references made in a file, and optionally title
+        section. tTitle must be a string.
+        """
+
+        theRefs = []
+        if tHandle not in self.refIndex:
+            return theRefs
+
+        for nLine, tKey, tTag, nTitle in self.refIndex[tHandle]:
+            if tTitle is None or tTitle == str(nTitle):
+                theRefs.append((tKey, tTag))
+
+        return theRefs
 
     def buildNovelList(self):
         """Build a list of the content of the novel.
