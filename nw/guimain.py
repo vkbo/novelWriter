@@ -20,14 +20,14 @@ from PyQt5.QtCore import Qt, QTimer
 from PyQt5.QtGui import QIcon, QPixmap, QColor
 from PyQt5.QtWidgets import (
     qApp, QMainWindow, QVBoxLayout, QFrame, QSplitter, QFileDialog, QShortcut,
-    QMessageBox, QProgressDialog, QDialog
+    QMessageBox, QProgressDialog, QDialog, QTabWidget
 )
 
 from nw.gui import (
     GuiMainMenu, GuiMainStatus, GuiTheme, GuiDocTree, GuiDocEditor,
     GuiDocViewer, GuiDocDetails, GuiSearchBar, GuiNoticeBar,
     GuiDocViewDetails, GuiConfigEditor, GuiProjectEditor, GuiExport,
-    GuiItemEditor, GuiTimeLineView, GuiSessionLogView
+    GuiItemEditor, GuiTimeLineView, GuiSessionLogView, GuiProjectOutline
 )
 from nw.project import NWProject, NWDoc, NWItem, NWIndex, NWBackup
 from nw.tools import countWords
@@ -75,6 +75,7 @@ class GuiMain(QMainWindow):
         self.searchBar = GuiSearchBar(self)
         self.treeMeta  = GuiDocDetails(self, self.theProject)
         self.treeView  = GuiDocTree(self, self.theProject)
+        self.projView  = GuiProjectOutline(self, self.theProject)
         self.mainMenu  = GuiMainMenu(self, self.theProject)
 
         # Minor Gui Elements
@@ -109,18 +110,28 @@ class GuiMain(QMainWindow):
         self.splitView.addWidget(self.editPane)
         self.splitView.addWidget(self.viewPane)
 
+        self.tabWidget = QTabWidget()
+        self.tabWidget.setTabPosition(QTabWidget.East)
+        self.tabWidget.setStyleSheet("QTabWidget::pane {border: 0;}")
+        self.tabWidget.addTab(self.splitView, "Editor")
+        self.tabWidget.addTab(self.projView,  "Outline")
+        self.tabWidget.currentChanged.connect(self._mainTabChanged)
+
         self.splitMain = QSplitter(Qt.Horizontal)
         self.splitMain.setContentsMargins(4,4,4,4)
         self.splitMain.addWidget(self.treePane)
-        self.splitMain.addWidget(self.splitView)
+        self.splitMain.addWidget(self.tabWidget)
         self.splitMain.setSizes(self.mainConf.mainPanePos)
 
         self.setCentralWidget(self.splitMain)
 
         self.idxTree   = self.splitMain.indexOf(self.treePane)
-        self.idxMain   = self.splitMain.indexOf(self.splitView)
+        self.idxMain   = self.splitMain.indexOf(self.tabWidget)
         self.idxEditor = self.splitView.indexOf(self.editPane)
         self.idxViewer = self.splitView.indexOf(self.viewPane)
+
+        self.idxTabEdit = self.tabWidget.indexOf(self.splitView)
+        self.idxTabProj = self.tabWidget.indexOf(self.projView)
 
         self.splitMain.setCollapsible(self.idxTree, False)
         self.splitMain.setCollapsible(self.idxMain, False)
@@ -874,6 +885,17 @@ class GuiMain(QMainWindow):
             return
         elif self.isZenMode:
             self.toggleZenMode()
+        return
+
+    def _mainTabChanged(self, tabIndex):
+        """Activated when the main window tab is changed.
+        """
+        if tabIndex == self.idxTabEdit:
+            logger.verbose("Editor tab activated")
+        elif tabIndex == self.idxTabProj:
+            logger.verbose("Project outline tab activated")
+            if self.hasProject:
+                self.projView.populateTree()
         return
 
 # END Class GuiMain
