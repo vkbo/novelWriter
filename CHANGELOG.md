@@ -1,5 +1,16 @@
 # novelWriter ChangeLog
 
+## Version 0.4.2 [2019-11-17]
+
+**User Interface**
+
+* Distraction free mode now also hides the menu bar, but all keyboard shortcuts used for editing remain active. The rest are disabled. PR #142.
+
+**Bug Fixes**
+
+* Fixed various issues with spell checking highlighting. The highlighting and the editor didn't always agree on what words were spelled wrong. PR #141.
+* The status bar now shows what spell checking language is actually loaded. Previously, it just showed the language selected in the settings. That was a bit misleading as the available dictionaries can change due to the change in installed dictionary on the system. PR #145.
+
 ## Version 0.4.1 [2019-11-10]
 
 **Features**
