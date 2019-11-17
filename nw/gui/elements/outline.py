@@ -14,6 +14,7 @@ import logging
 import nw
 
 from os import path
+from time import time
 
 from PyQt5.QtCore import Qt
 from PyQt5.QtWidgets import (
@@ -83,9 +84,11 @@ class GuiProjectOutline(QWidget):
         self.showSynopsis = True
         self.showFilePath = False
 
-        self.outerBox = QVBoxLayout()
-        self.mainTree = QTreeWidget()
-        self.treeCols = self.COL_ORDER
+        self.outerBox  = QVBoxLayout()
+        self.mainTree  = QTreeWidget()
+        self.treeCols  = self.COL_ORDER
+        self.lastBuild = 0
+        self.treeMap   = {}
 
         self.outerBox.addWidget(self.mainTree)
         self.outerBox.setContentsMargins(0,0,0,0)
@@ -113,31 +116,41 @@ class GuiProjectOutline(QWidget):
         currChapter = None
         currScene   = None
 
-        theTitles = self.theIndex.getNovelStructure()
+        for titleKey in self.theIndex.getNovelStructure():
 
-        for tHandle in self.theProject.treeOrder:
+            tHandle = titleKey[:13]
+            sTitle  = titleKey[14:]
 
             if tHandle not in self.theIndex.novelIndex:
                 continue
+            if sTitle not in self.theIndex.novelIndex[tHandle]:
+                continue
 
-            for sTitle in self.theIndex.novelIndex[tHandle]:
+            tLevel = self.theIndex.novelIndex[tHandle][sTitle]["level"]
+            tTime  = self.theIndex.novelIndex[tHandle][sTitle]["updated"]
+            tItem  = self._createTreeItem(tHandle, sTitle)
+            self.treeMap[titleKey] = tItem
 
-                nwItem = self.theProject.getItem(tHandle)
-                tTitle = self.theIndex.novelIndex[tHandle][sTitle]["title"]
-                tLevel = self.theIndex.novelIndex[tHandle][sTitle]["level"]
-                tLabel = nwItem.itemName
-                tItem  = self._createTreeItem(tHandle, sTitle, tTitle, tLevel, tLabel)
-
-                if tLevel == "H1":
-                    currTitle = tItem
+            if tLevel == "H1":
+                currTitle = tItem
+                self.mainTree.addTopLevelItem(tItem)
+            elif tLevel == "H2":
+                if currTitle is None:
                     self.mainTree.addTopLevelItem(tItem)
-                elif tLevel == "H2":
+                else:
+                    currTitle.addChild(tItem)
+                currChapter = tItem
+            elif tLevel == "H3":
+                if currChapter is None:
                     if currTitle is None:
                         self.mainTree.addTopLevelItem(tItem)
                     else:
                         currTitle.addChild(tItem)
-                    currChapter = tItem
-                elif tLevel == "H3":
+                else:
+                    currChapter.addChild(tItem)
+                currScene = tItem
+            elif tLevel == "H4":
+                if currScene is None:
                     if currChapter is None:
                         if currTitle is None:
                             self.mainTree.addTopLevelItem(tItem)
@@ -145,20 +158,12 @@ class GuiProjectOutline(QWidget):
                             currTitle.addChild(tItem)
                     else:
                         currChapter.addChild(tItem)
-                    currScene = tItem
-                elif tLevel == "H4":
-                    if currScene is None:
-                        if currChapter is None:
-                            if currTitle is None:
-                                self.mainTree.addTopLevelItem(tItem)
-                            else:
-                                currTitle.addChild(tItem)
-                        else:
-                            currChapter.addChild(tItem)
-                    else:
-                        currScene.addChild(tItem)
+                else:
+                    currScene.addChild(tItem)
 
-                tItem.setExpanded(True)
+            tItem.setExpanded(True)
+
+        self.lastBuild = time()
 
         return
 
@@ -166,56 +171,33 @@ class GuiProjectOutline(QWidget):
     #  Internal Functions
     ##
 
-    def _createTreeItem(self, tHandle, sTitle, tTitle, tLevel, tLabel):
+    def _createTreeItem(self, tHandle, sTitle):
+
+        nwItem = self.theProject.getItem(tHandle)
+        novIdx = self.theIndex.novelIndex[tHandle][sTitle]
 
         newItem = QTreeWidgetItem()
-        newItem.setText(self.I_TITLE, tTitle)
-        newItem.setText(self.I_LEVEL, tLevel)
-        newItem.setText(self.I_LABEL, tLabel)
-        newItem.setText(self.I_LINE,  sTitle)
+        newItem.setText(self.I_TITLE, novIdx["title"])
+        newItem.setText(self.I_LEVEL, novIdx["level"])
+        newItem.setText(self.I_LABEL, nwItem.itemName)
+        newItem.setText(self.I_LINE,  sTitle[1:])
 
-        cC, wC, pC = self.theIndex.getCounts(tHandle, sTitle)
-        newItem.setText(self.I_CCOUNT, str(cC))
-        newItem.setText(self.I_WCOUNT, str(wC))
-        newItem.setText(self.I_PCOUNT, str(pC))
+        newItem.setText(self.I_CCOUNT, str(novIdx["cCount"]))
+        newItem.setText(self.I_WCOUNT, str(novIdx["wCount"]))
+        newItem.setText(self.I_PCOUNT, str(novIdx["pCount"]))
         newItem.setTextAlignment(self.I_CCOUNT,Qt.AlignRight)
         newItem.setTextAlignment(self.I_WCOUNT,Qt.AlignRight)
         newItem.setTextAlignment(self.I_PCOUNT,Qt.AlignRight)
 
-        povList    = []
-        charList   = []
-        plotList   = []
-        timeList   = []
-        worldList  = []
-        objectList = []
-        entityList = []
-        customList = []
-        for tKey, tTag in self.theIndex.getReferences(tHandle, sTitle):
-            if tKey == nwKeyWords.POV_KEY:
-                povList.append(tTag)
-            elif tKey == nwKeyWords.CHAR_KEY:
-                charList.append(tTag)
-            elif tKey == nwKeyWords.PLOT_KEY:
-                plotList.append(tTag)
-            elif tKey == nwKeyWords.TIME_KEY:
-                timeList.append(tTag)
-            elif tKey == nwKeyWords.WORLD_KEY:
-                worldList.append(tTag)
-            elif tKey == nwKeyWords.OBJECT_KEY:
-                objectList.append(tTag)
-            elif tKey == nwKeyWords.ENTITY_KEY:
-                entityList.append(tTag)
-            elif tKey == nwKeyWords.CUSTOM_KEY:
-                customList.append(tTag)
-
-        newItem.setText(self.I_POV,    ", ".join(povList))
-        newItem.setText(self.I_CHAR,   ", ".join(charList))
-        newItem.setText(self.I_PLOT,   ", ".join(plotList))
-        newItem.setText(self.I_TIME,   ", ".join(timeList))
-        newItem.setText(self.I_WORLD,  ", ".join(worldList))
-        newItem.setText(self.I_OBJECT, ", ".join(objectList))
-        newItem.setText(self.I_ENTITY, ", ".join(entityList))
-        newItem.setText(self.I_CUSTOM, ", ".join(customList))
+        theRefs = self.theIndex.getReferences(tHandle, sTitle)
+        newItem.setText(self.I_POV,    ", ".join(theRefs[nwKeyWords.POV_KEY]))
+        newItem.setText(self.I_CHAR,   ", ".join(theRefs[nwKeyWords.CHAR_KEY]))
+        newItem.setText(self.I_PLOT,   ", ".join(theRefs[nwKeyWords.PLOT_KEY]))
+        newItem.setText(self.I_TIME,   ", ".join(theRefs[nwKeyWords.TIME_KEY]))
+        newItem.setText(self.I_WORLD,  ", ".join(theRefs[nwKeyWords.WORLD_KEY]))
+        newItem.setText(self.I_OBJECT, ", ".join(theRefs[nwKeyWords.OBJECT_KEY]))
+        newItem.setText(self.I_ENTITY, ", ".join(theRefs[nwKeyWords.ENTITY_KEY]))
+        newItem.setText(self.I_CUSTOM, ", ".join(theRefs[nwKeyWords.CUSTOM_KEY]))
 
         return newItem
 

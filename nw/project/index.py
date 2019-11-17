@@ -528,14 +528,21 @@ class NWIndex():
         section. tTitle must be a string.
         """
 
-        theRefs = []
+        theRefs = {}
+        for tKey in self.TAG_CLASS:
+            theRefs[tKey] = []
+
         if tHandle not in self.refIndex:
             return theRefs
 
-        for sTitle in self.refIndex[tHandle]:
-            for nLine, tKey, tTag in self.refIndex[tHandle][sTitle]["tags"]:
-                if tTitle is None or tTitle == sTitle:
-                    theRefs.append((tKey, tTag))
+        try:
+            for sTitle in self.refIndex[tHandle]:
+                for nLine, tKey, tTag in self.refIndex[tHandle][sTitle]["tags"]:
+                    if tTitle is None or tTitle == sTitle:
+                        theRefs[tKey].append(tTag)
+        except Exception as e:
+            logger.error("Failed to generate reference list")
+            logger.error(str(e))
 
         return theRefs
 
