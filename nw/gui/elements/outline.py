@@ -60,7 +60,7 @@ class GuiProjectOutline(QWidget):
         I_CCOUNT : "Chars",
         I_PCOUNT : "Pars",
         I_SYNOP  : "Synopsis",
-        I_POV    : nwLabels.KEY_NAME[nwKeyWords.POV_KEY],
+        I_POV    : "POV",
         I_CHAR   : nwLabels.KEY_NAME[nwKeyWords.CHAR_KEY],
         I_PLOT   : nwLabels.KEY_NAME[nwKeyWords.PLOT_KEY],
         I_TIME   : nwLabels.KEY_NAME[nwKeyWords.TIME_KEY],
@@ -118,7 +118,7 @@ class GuiProjectOutline(QWidget):
 
         for titleKey in self.theIndex.getNovelStructure():
 
-            if len(titleKey) < 15:
+            if len(titleKey) < 16:
                 continue
 
             tHandle = titleKey[:13]

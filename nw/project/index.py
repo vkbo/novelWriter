@@ -140,7 +140,7 @@ class NWIndex():
 
         indexFile = path.join(self.theProject.projMeta, nwFiles.INDEX_FILE)
 
-        logger.debug("Saving index and meta files")
+        logger.debug("Saving index file")
         if self.mainConf.debugInfo:
             nIndent = 2
         else:
@@ -251,7 +251,6 @@ class NWIndex():
 
         nLine  = 0
         nTitle = 0
-        sTitle = None
         theLines = theText.splitlines()
         for aLine in theLines:
             aLine  = aLine
@@ -495,7 +494,7 @@ class NWIndex():
 
         return theStructure
 
-    def getCounts(self, tHandle, nTitle=None):
+    def getCounts(self, tHandle, sTitle=None):
         """Returns the counts for a file, or a section of a file
         starting at title nTitle.
         """
@@ -504,28 +503,28 @@ class NWIndex():
         wC = 0
         pC = 0
 
-        if nTitle is None:
+        if sTitle is None:
             if tHandle in self.textCounts:
                 cC = self.textCounts[tHandle][0]
                 wC = self.textCounts[tHandle][1]
                 pC = self.textCounts[tHandle][2]
         else:
             if tHandle in self.novelIndex:
-                if nTitle in self.novelIndex[tHandle]:
-                    cC = self.novelIndex[tHandle][nTitle]["cCount"]
-                    wC = self.novelIndex[tHandle][nTitle]["wCount"]
-                    pC = self.novelIndex[tHandle][nTitle]["pCount"]
+                if sTitle in self.novelIndex[tHandle]:
+                    cC = self.novelIndex[tHandle][sTitle]["cCount"]
+                    wC = self.novelIndex[tHandle][sTitle]["wCount"]
+                    pC = self.novelIndex[tHandle][sTitle]["pCount"]
             elif tHandle in self.noteIndex:
-                if nTitle in self.noteIndex[tHandle]:
-                    cC = self.noteIndex[tHandle][nTitle]["cCount"]
-                    wC = self.noteIndex[tHandle][nTitle]["wCount"]
-                    pC = self.noteIndex[tHandle][nTitle]["pCount"]
+                if sTitle in self.noteIndex[tHandle]:
+                    cC = self.noteIndex[tHandle][sTitle]["cCount"]
+                    wC = self.noteIndex[tHandle][sTitle]["wCount"]
+                    pC = self.noteIndex[tHandle][sTitle]["pCount"]
 
         return cC, wC, pC
 
-    def getReferences(self, tHandle, tTitle=None):
+    def getReferences(self, tHandle, sTitle=None):
         """Extract all references made in a file, and optionally title
-        section. tTitle must be a string.
+        section. sTitle must be a string.
         """
 
         theRefs = {}
@@ -536,9 +535,9 @@ class NWIndex():
             return theRefs
 
         try:
-            for sTitle in self.refIndex[tHandle]:
-                for nLine, tKey, tTag in self.refIndex[tHandle][sTitle]["tags"]:
-                    if tTitle is None or tTitle == sTitle:
+            for refTitle in self.refIndex[tHandle]:
+                for nLine, tKey, tTag in self.refIndex[tHandle][refTitle]["tags"]:
+                    if sTitle is None or sTitle == refTitle:
                         theRefs[tKey].append(tTag)
         except Exception as e:
             logger.error("Failed to generate reference list")
