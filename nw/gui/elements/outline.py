@@ -118,6 +118,9 @@ class GuiProjectOutline(QWidget):
 
         for titleKey in self.theIndex.getNovelStructure():
 
+            if len(titleKey) < 15:
+                continue
+
             tHandle = titleKey[:13]
             sTitle  = titleKey[14:]
 
