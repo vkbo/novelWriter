@@ -83,9 +83,9 @@ class GuiProjectOutline(QWidget):
         self.showSynopsis = True
         self.showFilePath = False
 
-        self.outerBox  = QVBoxLayout()
-        self.mainTree  = QTreeWidget()
-        self.treeOrder = self.COL_ORDER
+        self.outerBox = QVBoxLayout()
+        self.mainTree = QTreeWidget()
+        self.treeCols = self.COL_ORDER
 
         self.outerBox.addWidget(self.mainTree)
         self.outerBox.setContentsMargins(0,0,0,0)
@@ -98,7 +98,7 @@ class GuiProjectOutline(QWidget):
     def populateTree(self):
 
         theLabels = []
-        for n in self.treeOrder:
+        for n in self.treeCols:
             theLabels.append(self.COL_LABELS[n])
 
         self.mainTree.clear()
@@ -113,16 +113,18 @@ class GuiProjectOutline(QWidget):
         currChapter = None
         currScene   = None
 
+        theTitles = self.theIndex.getNovelStructure()
+
         for tHandle in self.theProject.treeOrder:
 
             if tHandle not in self.theIndex.novelIndex:
                 continue
 
             for sTitle in self.theIndex.novelIndex[tHandle]:
-    
+
                 nwItem = self.theProject.getItem(tHandle)
-                tTitle = self.theIndex.novelIndex[tHandle][sTitle][1]
-                tLevel = self.theIndex.novelIndex[tHandle][sTitle][0]
+                tTitle = self.theIndex.novelIndex[tHandle][sTitle]["title"]
+                tLevel = self.theIndex.novelIndex[tHandle][sTitle]["level"]
                 tLabel = nwItem.itemName
                 tItem  = self._createTreeItem(tHandle, sTitle, tTitle, tLevel, tLabel)
 
@@ -216,6 +218,5 @@ class GuiProjectOutline(QWidget):
         newItem.setText(self.I_CUSTOM, ", ".join(customList))
 
         return newItem
-
 
 # END Class GuiProjectOutline
