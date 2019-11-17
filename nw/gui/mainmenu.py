@@ -416,16 +416,6 @@ class GuiMainMenu(QMenuBar):
         self.aFullScreen.triggered.connect(self.theParent.toggleFullScreenMode)
         self.viewMenu.addAction(self.aFullScreen)
 
-        # View > Separator
-        self.viewMenu.addSeparator()
-
-        # View > Project Timeline
-        self.aViewTimeLine = QAction("Show Project Timeline", self)
-        self.aViewTimeLine.setStatusTip("Open the project timeline window")
-        self.aViewTimeLine.setShortcut("Ctrl+T")
-        self.aViewTimeLine.triggered.connect(self.theParent.showTimeLineDialog)
-        self.viewMenu.addAction(self.aViewTimeLine)
-
         return
 
     def _buildEditMenu(self):

@@ -17,7 +17,7 @@ import nw
 from os import path
 
 from nw.constants import (
-    nwFiles, nwKeyWords, nwItemType, nwItemClass, nwAlert
+    nwFiles, nwKeyWords, nwItemType, nwItemClass, nwItemLayout, nwAlert
 )
 from nw.tools import countWords
 
@@ -65,9 +65,6 @@ class NWIndex():
         self.fileCounts   = {}
         self.textCounts   = {}
         self.textSynopsis = {}
-
-        # Lists
-        self.novelList = []
 
         return
 
@@ -261,23 +258,28 @@ class NWIndex():
         """
 
         theItem = self.theProject.getItem(tHandle)
-        if theItem is None: return False
-        if theItem.itemType != nwItemType.FILE: return False
-        if theItem.parHandle == self.theProject.trashRoot: return False
+        if theItem is None:
+            return False
+        if theItem.itemType != nwItemType.FILE:
+            return False
+        if theItem.parHandle == self.theProject.trashRoot:
+            return False
+        if theItem.itemLayout == nwItemLayout.NO_LAYOUT:
+            return False
+
         itemClass  = theItem.itemClass
         itemLayout = theItem.itemLayout
 
         logger.debug("Indexing item with handle %s" % tHandle)
 
         # Check file type, and reset its old index
-        if itemClass == nwItemClass.NOVEL:
-            self.novelIndex[tHandle] = []
-            self.refIndex[tHandle] = []
-            isNovel = True
-        else:
+        self.refIndex[tHandle] = []
+        if itemLayout == nwItemLayout.NOTE:
             self.noteIndex[tHandle] = []
-            self.refIndex[tHandle] = []
             isNovel = False
+        else:
+            self.novelIndex[tHandle] = []
+            isNovel = True
 
         # Also clear references to file in tag index
         clearTags = []
@@ -296,7 +298,8 @@ class NWIndex():
             aLine  = aLine
             nLine += 1
             nChar  = len(aLine.strip())
-            if nChar == 0: continue
+            if nChar == 0:
+                continue
 
             if aLine.startswith(r"#"):
                 isTitle = self.indexTitle(tHandle, isNovel, aLine, nLine, itemLayout)
@@ -513,20 +516,7 @@ class NWIndex():
 
         return theRefs
 
-    def buildNovelList(self):
-        """Build a list of the content of the novel.
-        """
-        self.novelList  = []
-        self.novelOrder = []
-        for tHandle in self.theProject.treeOrder:
-            if tHandle not in self.novelIndex:
-                continue
-            for tEntry in self.novelIndex[tHandle]:
-                self.novelList.append(tEntry)
-                self.novelOrder.append("%s:%d" % (tHandle,tEntry[0]))
-        return True
-
-    def buildReferenceList(self, tHandle):
+    def getBackReferenceList(self, tHandle):
         """Build a list of files referring back to our file, specified
         by tHandle.
         """
@@ -559,47 +549,5 @@ class NWIndex():
             if len(theRef) == 3:
                 return theRef[1], theRef[0]
         return None, 0
-
-    def buildTagNovelMap(self, theTags, theFilters=None):
-        """Build a two-dimensional map of all titles of the novel and
-        which tags they link to from the various meta tags. This map is
-        used to display the timeline view.
-        """
-
-        tagMap   = {}
-        tagClass = {}
-        exClass  = []
-
-        if theFilters is not None:
-            if "exClass" in theFilters.keys():
-                exClass = theFilters["exClass"]
-
-        for theTag in theTags:
-            try:
-                tagClass[theTag] = nwItemClass[self.tagIndex[theTag][2]]
-            except:
-                logger.error("Could not map '%s' to nwItemClass" % self.tagIndex[theTag][2])
-                tagClass[theTag] = None
-            if tagClass[theTag] not in exClass:
-                tagMap[theTag] = [0]*len(self.novelOrder)
-
-        for tHandle in self.refIndex:
-            for nLine, tKey, tTag, nTitle in self.refIndex[tHandle]:
-                if tTag in tagMap.keys() and tKey in self.TAG_CLASS:
-                    try:
-                        nPos = self.novelOrder.index("%s:%d" % (tHandle, nTitle))
-                        if self.TAG_CLASS[tKey][0] == tagClass[tTag]:
-                            tagMap[tTag][nPos] = self.TAG_CLASS[tKey][1]
-                    except:
-                        logger.error("Could not find '%s:%d' in novelOrder" % (tHandle, nTitle))
-
-        if theFilters["hUnused"]:
-            tagMapFiltered = {}
-            for theTag in tagMap.keys():
-                if sum(tagMap[theTag]) > 0:
-                    tagMapFiltered[theTag] = tagMap[theTag]
-            return tagMapFiltered
-
-        return tagMap
 
 # END Class NWIndex

@@ -27,7 +27,7 @@ from nw.gui import (
     GuiMainMenu, GuiMainStatus, GuiTheme, GuiDocTree, GuiDocEditor,
     GuiDocViewer, GuiDocDetails, GuiSearchBar, GuiNoticeBar,
     GuiDocViewDetails, GuiConfigEditor, GuiProjectEditor, GuiExport,
-    GuiItemEditor, GuiTimeLineView, GuiSessionLogView, GuiProjectOutline
+    GuiItemEditor, GuiSessionLogView, GuiProjectOutline
 )
 from nw.project import NWProject, NWDoc, NWItem, NWIndex, NWBackup
 from nw.tools import countWords
@@ -619,12 +619,6 @@ class GuiMain(QMainWindow):
             dlgExport.exec_()
         return True
 
-    def showTimeLineDialog(self):
-        if self.hasProject:
-            dlgTLine = GuiTimeLineView(self, self.theProject, self.theIndex)
-            dlgTLine.exec_()
-        return True
-
     def showSessionLogDialog(self):
         if self.hasProject:
             dlgTLine = GuiSessionLogView(self, self.theProject)
@@ -778,7 +772,6 @@ class GuiMain(QMainWindow):
         self.addAction(self.mainMenu.aFileDetails)
         self.addAction(self.mainMenu.aZenMode)
         self.addAction(self.mainMenu.aFullScreen)
-        self.addAction(self.mainMenu.aViewTimeLine)
         self.addAction(self.mainMenu.aEditUndo)
         self.addAction(self.mainMenu.aEditRedo)
         self.addAction(self.mainMenu.aEditCut)
