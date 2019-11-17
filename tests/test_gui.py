@@ -9,7 +9,6 @@ from os import path, unlink
 from PyQt5.QtCore import Qt
 
 from nw.gui.dialogs.projecteditor import GuiProjectEditor
-from nw.gui.dialogs.timelineview  import GuiTimeLineView
 from nw.gui.dialogs.itemeditor    import GuiItemEditor
 
 from nw.constants import *
@@ -248,34 +247,9 @@ def testMainWindows(qtbot, nwTempGUI, nwRef):
     assert cmpFiles(refFile, path.join(nwRef,"gui","1_1489056e0916_main.nwd"))
     refFile = path.join(nwTempGUI,"data_7","688b6ef52555_main.nwd")
     assert cmpFiles(refFile, path.join(nwRef,"gui","1_688b6ef52555_main.nwd"))
-    if sys.version_info[0] >= 3 and sys.version_info[1] >= 6:
-        refFile = path.join(nwTempGUI,"meta","tagsIndex.json")
-        assert cmpFiles(refFile, path.join(nwRef,"gui","1_tagsIndex.json"))
 
     nwGUI.closeMain()
     # qtbot.stopForInteraction()
-
-@pytest.mark.gui
-def testTimeLineView(qtbot, nwTempGUI, nwRef):
-    nwGUI = nw.main(["--testmode","--config=%s" % nwTempGUI])
-    qtbot.addWidget(nwGUI)
-    nwGUI.show()
-    qtbot.waitForWindowShown(nwGUI)
-    qtbot.wait(stepDelay)
-
-    # Create new, save, open project
-    nwGUI.theProject.handleSeed = 42
-    assert nwGUI.openProject(nwTempGUI)
-    qtbot.wait(stepDelay)
-
-    timeLine = GuiTimeLineView(nwGUI, nwGUI.theProject, nwGUI.theIndex)
-    qtbot.addWidget(timeLine)
-
-    assert timeLine.numRows == 4
-    assert timeLine.numCols == 3
-
-    # qtbot.stopForInteraction()
-    nwGUI.closeMain()
 
 @pytest.mark.gui
 def testProjectEditor(qtbot, nwTempGUI, nwRef):
