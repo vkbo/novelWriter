@@ -118,28 +118,24 @@ class GuiProjectOutline(QWidget):
             if tHandle not in self.theIndex.novelIndex:
                 continue
 
-            nwItem = self.theProject.getItem(tHandle)
-            if nwItem.itemLayout == nwItemLayout.NOTE:
-                continue
-
-            for tEntry in self.theIndex.novelIndex[tHandle]:
-
-                nTitle = str(tEntry[0])
-                tTitle = tEntry[2]
-                tLevel = str(tEntry[1])
+            for sTitle in self.theIndex.novelIndex[tHandle]:
+    
+                nwItem = self.theProject.getItem(tHandle)
+                tTitle = self.theIndex.novelIndex[tHandle][sTitle][1]
+                tLevel = self.theIndex.novelIndex[tHandle][sTitle][0]
                 tLabel = nwItem.itemName
-                tItem  = self._createTreeItem(tHandle, nTitle, tTitle, tLevel, tLabel)
+                tItem  = self._createTreeItem(tHandle, sTitle, tTitle, tLevel, tLabel)
 
-                if tEntry[1] == 1:
+                if tLevel == "H1":
                     currTitle = tItem
                     self.mainTree.addTopLevelItem(tItem)
-                elif tEntry[1] == 2:
+                elif tLevel == "H2":
                     if currTitle is None:
                         self.mainTree.addTopLevelItem(tItem)
                     else:
                         currTitle.addChild(tItem)
                     currChapter = tItem
-                elif tEntry[1] == 3:
+                elif tLevel == "H3":
                     if currChapter is None:
                         if currTitle is None:
                             self.mainTree.addTopLevelItem(tItem)
@@ -148,7 +144,7 @@ class GuiProjectOutline(QWidget):
                     else:
                         currChapter.addChild(tItem)
                     currScene = tItem
-                elif tEntry[1] == 4:
+                elif tLevel == "H4":
                     if currScene is None:
                         if currChapter is None:
                             if currTitle is None:
@@ -168,15 +164,15 @@ class GuiProjectOutline(QWidget):
     #  Internal Functions
     ##
 
-    def _createTreeItem(self, tHandle, nTitle, tTitle, tLevel, tLabel):
+    def _createTreeItem(self, tHandle, sTitle, tTitle, tLevel, tLabel):
 
         newItem = QTreeWidgetItem()
         newItem.setText(self.I_TITLE, tTitle)
         newItem.setText(self.I_LEVEL, tLevel)
         newItem.setText(self.I_LABEL, tLabel)
-        newItem.setText(self.I_LINE,  nTitle)
+        newItem.setText(self.I_LINE,  sTitle)
 
-        cC, wC, pC = self.theIndex.getCounts(tHandle, nTitle)
+        cC, wC, pC = self.theIndex.getCounts(tHandle, sTitle)
         newItem.setText(self.I_CCOUNT, str(cC))
         newItem.setText(self.I_WCOUNT, str(wC))
         newItem.setText(self.I_PCOUNT, str(pC))
@@ -192,7 +188,7 @@ class GuiProjectOutline(QWidget):
         objectList = []
         entityList = []
         customList = []
-        for tKey, tTag in self.theIndex.getReferences(tHandle, nTitle):
+        for tKey, tTag in self.theIndex.getReferences(tHandle, sTitle):
             if tKey == nwKeyWords.POV_KEY:
                 povList.append(tTag)
             elif tKey == nwKeyWords.CHAR_KEY:

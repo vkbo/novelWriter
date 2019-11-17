@@ -37,14 +37,14 @@ class NWIndex():
         nwKeyWords.CUSTOM_KEY
     ]
     TAG_CLASS  = {
-        nwKeyWords.CHAR_KEY   : [nwItemClass.CHARACTER, 1],
-        nwKeyWords.POV_KEY    : [nwItemClass.CHARACTER, 2],
-        nwKeyWords.PLOT_KEY   : [nwItemClass.PLOT,      1],
-        nwKeyWords.TIME_KEY   : [nwItemClass.TIMELINE,  1],
-        nwKeyWords.WORLD_KEY  : [nwItemClass.WORLD,     1],
-        nwKeyWords.OBJECT_KEY : [nwItemClass.OBJECT,    1],
-        nwKeyWords.ENTITY_KEY : [nwItemClass.ENTITY,    1],
-        nwKeyWords.CUSTOM_KEY : [nwItemClass.CUSTOM,    1],
+        nwKeyWords.CHAR_KEY   : nwItemClass.CHARACTER,
+        nwKeyWords.POV_KEY    : nwItemClass.CHARACTER,
+        nwKeyWords.PLOT_KEY   : nwItemClass.PLOT,
+        nwKeyWords.TIME_KEY   : nwItemClass.TIMELINE,
+        nwKeyWords.WORLD_KEY  : nwItemClass.WORLD,
+        nwKeyWords.OBJECT_KEY : nwItemClass.OBJECT,
+        nwKeyWords.ENTITY_KEY : nwItemClass.ENTITY,
+        nwKeyWords.CUSTOM_KEY : nwItemClass.CUSTOM,
     }
 
     def __init__(self, theProject, theParent):
@@ -211,18 +211,19 @@ class NWIndex():
                     self.indexBroken = True
 
             for tHandle in self.refIndex:
-                for tEntry in self.refIndex[tHandle]:
-                    if len(tEntry) != 4:
-                        self.indexBroken = True
+                for sTitle in self.refIndex[tHandle]:
+                    for tEntry in self.refIndex[tHandle][sTitle]:
+                        if len(tEntry) != 3:
+                            self.indexBroken = True
 
             for tHandle in self.novelIndex:
-                for tEntry in self.novelIndex[tHandle]:
-                    if len(tEntry) != 4:
+                for sLine in self.novelIndex[tHandle]:
+                    if len(self.novelIndex[tHandle][sLine]) != 3:
                         self.indexBroken = True
 
             for tHandle in self.noteIndex:
-                for tEntry in self.noteIndex[tHandle]:
-                    if len(tEntry) != 4:
+                for sLine in self.noteIndex[tHandle]:
+                    if len(self.noteIndex[tHandle][sLine]) != 3:
                         self.indexBroken = True
 
             for tHandle in self.fileCounts:
@@ -240,7 +241,7 @@ class NWIndex():
         if self.indexBroken:
             self.clearIndex()
             self.theParent.makeAlert(
-                "The project index loaded from cache contains errors. Triggering Rebuild Index.",
+                "The index loaded from project cache contains errors. Rebuilding index.",
                 nwAlert.WARN
             )
 
@@ -273,12 +274,12 @@ class NWIndex():
         logger.debug("Indexing item with handle %s" % tHandle)
 
         # Check file type, and reset its old index
-        self.refIndex[tHandle] = []
+        self.refIndex[tHandle] = {}
         if itemLayout == nwItemLayout.NOTE:
-            self.noteIndex[tHandle] = []
+            self.noteIndex[tHandle] = {}
             isNovel = False
         else:
-            self.novelIndex[tHandle] = []
+            self.novelIndex[tHandle] = {}
             isNovel = True
 
         # Also clear references to file in tag index
@@ -309,7 +310,7 @@ class NWIndex():
                     if nTitle > 0:
                         lastText = "\n".join(theLines[nTitle-1:nLine-1])
                         cC, wC, pC = countWords(lastText)
-                        theCounts[str(nTitle)] = [cC, wC, pC]
+                        theCounts["T%d" % nTitle] = [cC, wC, pC]
                     nTitle = nLine
 
             elif aLine.startswith(r"@"):
@@ -317,14 +318,14 @@ class NWIndex():
                 self.indexTag(tHandle, aLine, nLine, itemClass)
 
             elif aLine.startswith(r"%synopsis:"):
-                theSynopsis[str(nTitle)] = aLine[10:].strip()
+                theSynopsis["T%d" % nTitle] = aLine[10:].strip()
 
         # Count words for remaining text after last heading
         if nTitle > 0:
             lastText = "\n".join(theLines[nTitle-1:])
             cC, wC, pC = countWords(lastText)
-            theCounts[str(nTitle)] = [cC, wC, pC]
-        
+            theCounts["T%d" % nTitle] = [cC, wC, pC]
+
         if theSynopsis:
             self.textSynopsis[tHandle] = theSynopsis
         if theCounts:
@@ -342,27 +343,30 @@ class NWIndex():
         """
 
         if aLine.startswith("# "):
-            hDepth = 1
+            hDepth = "H1"
             hText  = aLine[2:].strip()
         elif aLine.startswith("## "):
-            hDepth = 2
+            hDepth = "H2"
             hText  = aLine[3:].strip()
         elif aLine.startswith("### "):
-            hDepth = 3
+            hDepth = "H3"
             hText  = aLine[4:].strip()
         elif aLine.startswith("#### "):
-            hDepth = 4
+            hDepth = "H4"
             hText  = aLine[5:].strip()
         else:
             return False
 
+        sTitle = "T%d" % nLine
+        self.refIndex[tHandle][sTitle] = []
+
         if hText != "":
             if isNovel:
                 if tHandle in self.novelIndex:
-                    self.novelIndex[tHandle].append([nLine, hDepth, hText, itemLayout.name])
+                    self.novelIndex[tHandle][sTitle] = [hDepth, hText, itemLayout.name]
             else:
                 if tHandle in self.noteIndex:
-                    self.noteIndex[tHandle].append([nLine, hDepth, hText, itemLayout.name])
+                    self.noteIndex[tHandle][sTitle] = [hDepth, hText, itemLayout.name]
 
         return True
 
@@ -375,9 +379,11 @@ class NWIndex():
         if not isValid or len(theBits) == 0:
             return False
 
+        sTitle = "T%d" % nTitle
+
         if theBits[0] != nwKeyWords.TAG_KEY:
             for aVal in theBits[1:]:
-                self.refIndex[tHandle].append([nLine, theBits[0], aVal, nTitle])
+                self.refIndex[tHandle][sTitle].append([nLine, theBits[0], aVal])
 
         return True
 
@@ -470,7 +476,7 @@ class NWIndex():
         # If we're still here, we better check that the references exist
         for n in range(1,nBits):
             if theBits[n] in self.tagIndex:
-                isGood[n] = self.TAG_CLASS[theBits[0]][0].name == self.tagIndex[theBits[n]][2]
+                isGood[n] = self.TAG_CLASS[theBits[0]].name == self.tagIndex[theBits[n]][2]
 
         return isGood
 
@@ -510,9 +516,10 @@ class NWIndex():
         if tHandle not in self.refIndex:
             return theRefs
 
-        for nLine, tKey, tTag, nTitle in self.refIndex[tHandle]:
-            if tTitle is None or tTitle == str(nTitle):
-                theRefs.append((tKey, tTag))
+        for sTitle in self.refIndex[tHandle]:
+            for nLine, tKey, tTag in self.refIndex[tHandle][sTitle]:
+                if tTitle is None or tTitle == sTitle:
+                    theRefs.append((tKey, tTag))
 
         return theRefs
 
@@ -535,9 +542,10 @@ class NWIndex():
 
         if theTag is not None:
             for tHandle in self.refIndex:
-                for nLine, tKey, tTag, nTitle in self.refIndex[tHandle]:
-                    if tTag == theTag:
-                        theRefs[tHandle] = nLine
+                for sTitle in self.refIndex[tHandle]:
+                    for nLine, tKey, tTag in self.refIndex[tHandle][sTitle]:
+                        if tTag == theTag:
+                            theRefs[tHandle] = nLine
 
         return theRefs
 
