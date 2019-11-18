@@ -41,6 +41,8 @@ class NWStatus():
         return True
 
     def lookupEntry(self, theLabel):
+        if theLabel is None:
+            return None
         theLabel = theLabel.strip()
         if theLabel in self.theMap.keys():
             return self.theMap[theLabel]

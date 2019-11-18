@@ -85,7 +85,8 @@ class ToMarkdown(Tokenizer):
             # indicating a new paragraph.
             if tType == self.T_EMPTY:
                 if len(thisPar) > 0:
-                    self.theResult += "%s\n\n" % " ".join(thisPar)
+                    tTemp = "\n".join(thisPar)
+                    self.theResult += "%s\n\n" % tTemp.rstrip()
                 thisPar = []
 
             elif tType == self.T_HEAD1:
@@ -104,7 +105,7 @@ class ToMarkdown(Tokenizer):
                 self.theResult += "%s\n\n" % tText
 
             elif tType == self.T_SKIP:
-                self.theResult += "\n\n\n\n"
+                self.theResult += "\n\n\n"
 
             elif tType == self.T_TEXT:
                 thisPar.append(tText)

@@ -44,7 +44,6 @@ class GuiConfigEditor(QDialog):
         self.setWindowTitle("Preferences")
         self.guiDeco = self.theParent.theTheme.loadDecoration("settings",(64,64))
 
-        self.theProject.countStatus()
         self.tabMain   = GuiConfigEditGeneral(self.theParent)
         self.tabEditor = GuiConfigEditEditor(self.theParent)
 

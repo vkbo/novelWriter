@@ -122,8 +122,8 @@ class ToText(Tokenizer):
                     tText = self._centreText(tText,self.wordWrap)
                 self.theResult += "%s\n\n" % tText
 
-            elif tType == self.T_SEP:
-                self.theResult += "\n\n\n\n"
+            elif tType == self.T_SKIP:
+                self.theResult += "\n\n\n"
 
             elif tType == self.T_TEXT:
                 thisPar.append(tText)
