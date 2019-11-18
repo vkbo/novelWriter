@@ -50,7 +50,6 @@ class GuiExport(QDialog):
 
         self.guiDeco = self.theParent.theTheme.loadDecoration("export",(64,64))
 
-        self.theProject.countStatus()
         self.tabMain   = GuiExportMain(self.theParent, self.theProject, self.optState)
         self.tabPandoc = GuiExportPandoc(self.theParent, self.theProject, self.optState)
 
