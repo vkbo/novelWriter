@@ -229,6 +229,14 @@ class GuiDocEditor(QTextEdit):
 
         return True
 
+    def replaceText(self, theText):
+        """Replaces the text of the current document with the provided
+        text. This also clears undo history.
+        """
+        self.setPlainText(theText)
+        self.setDocumentChanged(True)
+        return
+
     def saveText(self):
 
         if self.nwDocument.theItem is None:
