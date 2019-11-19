@@ -53,6 +53,7 @@ class GuiDocEditor(QTextEdit):
         self.wordCount = 0
         self.paraCount = 0
         self.lastEdit  = 0
+        self.bigDoc    = False
         self.nonWord   = "\"'"
 
         # Typography
@@ -114,17 +115,22 @@ class GuiDocEditor(QTextEdit):
         return
 
     def clearEditor(self):
+        """Clear the current document and reset all document related
+         flags and counters.
+        """
 
         self.nwDocument.clearDocument()
         self.setReadOnly(True)
         self.clear()
         self.wcTimer.stop()
 
-        self.theHandle    = None
-        self.charCount    = 0
-        self.wordCount    = 0
-        self.paraCount    = 0
-        self.lastEdit     = 0
+        self.theHandle = None
+        self.charCount = 0
+        self.wordCount = 0
+        self.paraCount = 0
+        self.lastEdit  = 0
+        self.bigDoc    = False
+
         self.hasSelection = False
 
         self.setDocumentChanged(False)
@@ -214,7 +220,19 @@ class GuiDocEditor(QTextEdit):
             return False
 
         self.hLight.setHandle(tHandle)
+
+        # Check that the document is not too big for full, initial spell
+        # checking. If it is too big, we switch to only check as we type
+        self._checkDocSize(len(theDoc))
+        spTemp = self.hLight.spellCheck
+        if self.bigDoc:
+            self.hLight.spellCheck = False
+
+        bfTime = time()
         self.setPlainText(theDoc)
+        afTime = time()
+        logger.debug("Document highlighted in %.3f milliseconds" % (1000*(afTime-bfTime)))
+
         self.setCursorPosition(self.nwDocument.theItem.cursorPos)
         self.lastEdit = time()
         self._runCounter()
@@ -226,6 +244,8 @@ class GuiDocEditor(QTextEdit):
             self.setReadOnly(False)
         else:
             self.theParent.noticeBar.showNote("This document is read only.")
+
+        self.hLight.spellCheck = spTemp
 
         return True
 
@@ -285,9 +305,11 @@ class GuiDocEditor(QTextEdit):
         # Updating root frame triggers a QTextDocument->contentsChange
         # signal, which we do not want as it re-runs the syntax
         # highlighter and spell checker, so we block it briefly.
+        # We then emit a signal that does not trigger re-highlighting.
         self.qDocument.blockSignals(True)
         self.qDocument.rootFrame().setFrameFormat(docFormat)
         self.qDocument.blockSignals(False)
+        self.qDocument.contentsChange.emit(0,0,0)
 
         return
 
@@ -353,18 +375,26 @@ class GuiDocEditor(QTextEdit):
         self.theParent.mainMenu.setSpellCheck(theMode)
         self.theProject.setSpellCheck(theMode)
         self.hLight.setSpellCheck(theMode)
-        self.hLight.rehighlight()
+        self.reHighlightDocument()
 
         logger.verbose("Spell check is set to %s" % str(theMode))
 
         return True
 
-    def updateSpellCheck(self):
+    def reHighlightDocument(self):
         """Rerun the highlighter to update spell checking status of the
-        currently loaded text.
+        currently loaded text. The fastest way to do this, at least as
+        of Qt 5.13, is to clear the text and put it back.
         """
+
         if self.spellCheck:
-            self.hLight.rehighlight()
+            theText = self.getText()
+            self.clear()
+            bfTime = time()
+            self.setPlainText(theText)
+            afTime = time()
+            logger.debug("Document re-highlighted in %.3f milliseconds" % (1000*(afTime-bfTime)))
+
         return True
 
     ##
@@ -596,6 +626,9 @@ class GuiDocEditor(QTextEdit):
         return
 
     def _docChange(self, thePos, charsRemoved, charsAdded):
+        """Triggered by QTextDocument->contentsChanged. This also
+        triggers the syntax highlighter.
+        """
         self.lastEdit = time()
         if not self.docChanged:
             self.setDocumentChanged(True)
@@ -687,7 +720,22 @@ class GuiDocEditor(QTextEdit):
         self.theParent.statusBar.setCounts(self.charCount,self.wordCount,self.paraCount)
         self.theParent.treeView.propagateCount(tHandle, self.wordCount)
         self.theParent.treeView.projectWordCount()
+        self._checkDocSize(self.charCount)
 
+        return
+
+    def _checkDocSize(self, theSize):
+        """Check if document size crosses the big document limit set in
+        config. If so, we will set the big document flag to True.
+        """
+        if theSize > self.mainConf.bigDocLimit*1000:
+            logger.info(
+                "The document size is %d > %d, big doc mode is enabled" % (
+                theSize, self.mainConf.bigDocLimit*1000
+            ))
+            self.bigDoc = True
+        else:
+            self.bigDoc = False
         return
 
     def _wrapSelection(self, tBefore, tAfter):
