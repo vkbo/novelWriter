@@ -214,7 +214,14 @@ class GuiDocEditor(QTextEdit):
             return False
 
         self.hLight.setHandle(tHandle)
+        spTemp = self.hLight.spellCheck
+        self.hLight.spellCheck = False
+
+        bfTime = time()
         self.setPlainText(theDoc)
+        afTime = time()
+        logger.debug("Document highlighted in %.3f milliseconds" % (1000*(afTime-bfTime)))
+
         self.setCursorPosition(self.nwDocument.theItem.cursorPos)
         self.lastEdit = time()
         self._runCounter()
@@ -226,6 +233,8 @@ class GuiDocEditor(QTextEdit):
             self.setReadOnly(False)
         else:
             self.theParent.noticeBar.showNote("This document is read only.")
+
+        self.hLight.spellCheck = spTemp
 
         return True
 

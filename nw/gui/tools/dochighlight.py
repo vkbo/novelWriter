@@ -101,47 +101,7 @@ class GuiDocHighlighter(QSyntaxHighlighter):
             "value"     : self._makeFormat(self.colVal),
         }
 
-        # Headers
         self.hRules = []
-        self.hRules.append((
-            r"^(#{1}) (.*)[^\n]", {
-                0 : self.hStyles["header1"],
-                1 : self.hStyles["header1h"],
-            }
-        ))
-        self.hRules.append((
-            r"^(#{2}) (.*)[^\n]", {
-                0 : self.hStyles["header2"],
-                1 : self.hStyles["header2h"],
-            }
-        ))
-        self.hRules.append((
-            r"^(#{3}) (.*)[^\n]", {
-                0 : self.hStyles["header3"],
-                1 : self.hStyles["header3h"],
-            }
-        ))
-        self.hRules.append((
-            r"^(#{4}) (.*)[^\n]", {
-                0 : self.hStyles["header4"],
-                1 : self.hStyles["header4h"],
-            }
-        ))
-
-        # Keyword/Value
-        # self.hRules.append((
-        #     r"^(@.+?)\s*:\s*(.+?)$", {
-        #         1 : self.hStyles["keyword"],
-        #         2 : self.hStyles["value"],
-        #     }
-        # ))
-
-        # Comments
-        self.hRules.append((
-            r"^%.*$", {
-                0 : self.hStyles["hidden"],
-            }
-        ))
 
         # Trailing Spaces, 2+
         self.hRules.append((
@@ -242,11 +202,10 @@ class GuiDocHighlighter(QSyntaxHighlighter):
 
     def highlightBlock(self, theText):
 
-        if self.theHandle is None:
+        if self.theHandle is None or not theText:
             return
 
-        if theText.startswith("@"):
-            # Highlighting of keywords and commands
+        if theText.startswith("@"): # Keywords and commands
             tItem = self.theParent.theProject.getItem(self.theHandle)
             isValid, theBits, thePos = self.theIndex.scanThis(theText)
             isGood = self.theIndex.checkThese(theBits, tItem)
@@ -265,11 +224,26 @@ class GuiDocHighlighter(QSyntaxHighlighter):
                         kwFmt.setUnderlineStyle(QTextCharFormat.SpellCheckUnderline)
                         self.setFormat(xPos, xLen, kwFmt)
 
-            # We're done, no need to continue
-            return
+        elif theText.startswith("# "): # Header 1
+            self.setFormat(0, 1, self.hStyles["header1"])
+            self.setFormat(1, len(theText), self.hStyles["header1h"])
 
-        else:
-            # For other text, just use our regex rules
+        elif theText.startswith("## "): # Header 2
+            self.setFormat(0, 2, self.hStyles["header2"])
+            self.setFormat(2, len(theText), self.hStyles["header2h"])
+
+        elif theText.startswith("### "): # Header 3
+            self.setFormat(0, 3, self.hStyles["header3"])
+            self.setFormat(3, len(theText), self.hStyles["header3h"])
+
+        elif theText.startswith("#### "): # Header 4
+            self.setFormat(0, 4, self.hStyles["header4"])
+            self.setFormat(4, len(theText), self.hStyles["header4h"])
+
+        elif theText.startswith("%"): # Comments
+            self.setFormat(0, len(theText), self.hStyles["hidden"])
+
+        else: # Text Paragraph
             for rX, xFmt in self.rxRules:
                 rxItt = rX.globalMatch(theText, 0)
                 while rxItt.hasNext():
