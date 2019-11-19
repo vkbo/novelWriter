@@ -201,6 +201,11 @@ class GuiDocHighlighter(QSyntaxHighlighter):
     ##
 
     def highlightBlock(self, theText):
+        """Highlight a single block. Prefer to check first character for
+        all formats that are defined by their initial characters. This
+        is significantly faster than running the regex checks we use for
+        text paragraphs.
+        """
 
         if self.theHandle is None or not theText:
             return
@@ -223,6 +228,10 @@ class GuiDocHighlighter(QSyntaxHighlighter):
                         kwFmt.setUnderlineColor(self.colTagErr)
                         kwFmt.setUnderlineStyle(QTextCharFormat.SpellCheckUnderline)
                         self.setFormat(xPos, xLen, kwFmt)
+
+            # We never want to run the spell checker on keyword/values,
+            # so we force a return here
+            return
 
         elif theText.startswith("# "): # Header 1
             self.setFormat(0, 1, self.hStyles["header1"])
@@ -277,6 +286,10 @@ class GuiDocHighlighter(QSyntaxHighlighter):
     ##
 
     def _makeFormat(self, fmtCol=None, fmtStyle=None, fmtSize=None):
+        """Generate a valid character format to be applied to the text
+        that is to be highlighted.
+        """
+
         theFormat = QTextCharFormat()
 
         if fmtCol is not None:

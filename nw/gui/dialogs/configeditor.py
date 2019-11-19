@@ -264,6 +264,7 @@ class GuiConfigEditGeneral(QWidget):
         guiDark         = self.guiDarkIcons.isChecked()
         spellTool       = self.spellToolList.currentData()
         spellLanguage   = self.spellLangList.currentData()
+        bigDocLimit     = self.spellBigDoc.value()
         autoSaveDoc     = self.autoSaveDoc.value()
         autoSaveProj    = self.autoSaveProj.value()
         backupPath      = self.projBackupPath.text()
@@ -278,6 +279,7 @@ class GuiConfigEditGeneral(QWidget):
         self.mainConf.guiDark         = guiDark
         self.mainConf.spellTool       = spellTool
         self.mainConf.spellLanguage   = spellLanguage
+        self.mainConf.bigDocLimit     = bigDocLimit
         self.mainConf.autoSaveDoc     = autoSaveDoc
         self.mainConf.autoSaveProj    = autoSaveProj
         self.mainConf.backupPath      = backupPath

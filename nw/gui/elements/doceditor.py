@@ -304,9 +304,11 @@ class GuiDocEditor(QTextEdit):
         # Updating root frame triggers a QTextDocument->contentsChange
         # signal, which we do not want as it re-runs the syntax
         # highlighter and spell checker, so we block it briefly.
+        # We then emit a signal that does not trigger re-highlighting.
         self.qDocument.blockSignals(True)
         self.qDocument.rootFrame().setFrameFormat(docFormat)
         self.qDocument.blockSignals(False)
+        self.qDocument.contentsChange.emit(0,0,0)
 
         return
 
@@ -372,18 +374,26 @@ class GuiDocEditor(QTextEdit):
         self.theParent.mainMenu.setSpellCheck(theMode)
         self.theProject.setSpellCheck(theMode)
         self.hLight.setSpellCheck(theMode)
-        self.hLight.rehighlight()
+        self.reHighlightDocument()
 
         logger.verbose("Spell check is set to %s" % str(theMode))
 
         return True
 
-    def updateSpellCheck(self):
+    def reHighlightDocument(self):
         """Rerun the highlighter to update spell checking status of the
-        currently loaded text.
+        currently loaded text. The fastest way to do this, at least as
+        of Qt 5.13, is to clear the text and put it back.
         """
+
         if self.spellCheck:
-            self.hLight.rehighlight()
+            theText = self.getText()
+            self.clear()
+            bfTime = time()
+            self.setPlainText(theText)
+            afTime = time()
+            logger.debug("Document re-highlighted in %.3f milliseconds" % (1000*(afTime-bfTime)))
+
         return True
 
     ##
@@ -615,6 +625,9 @@ class GuiDocEditor(QTextEdit):
         return
 
     def _docChange(self, thePos, charsRemoved, charsAdded):
+        """Triggered by QTextDocument->contentsChanged. This also
+        triggers the syntax highlighter.
+        """
         self.lastEdit = time()
         if not self.docChanged:
             self.setDocumentChanged(True)
