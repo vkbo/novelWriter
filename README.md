@@ -4,7 +4,7 @@
 [![codecov](https://codecov.io/gh/vkbo/novelWriter/branch/master/graph/badge.svg)](https://codecov.io/gh/vkbo/novelWriter)
 [![Documentation Status](https://readthedocs.org/projects/novelwriter/badge/?version=latest)](https://novelwriter.readthedocs.io/en/latest/?badge=latest)
 
-novelWriter is a markdown-like text editor designed fro writing novels and larger projects of many smaller plain text documents.
+novelWriter is a markdown-like text editor designed for writing novels and larger projects of many smaller plain text documents.
 
 The documentation is available here: [novelwriter.readthedocs.io](https://novelwriter.readthedocs.io/).
 
@@ -19,6 +19,34 @@ Until then, novelWriter is in a pre-release alpha state, and should be considere
 If you do use it for real projects, please run backups frequently to avoid data losses.
 There is a built in backup feature that can pack the entire project into a zip file on close.
 Please check the documentation for further details.
+
+## Markdown Flavour
+
+novelWriter is **not** a full-feature Markdown editor.
+It allows for a minimal set of formatting needed for writing text documents for novels.
+These are currently limited to:
+
+* Headings level 1 to 4 using the `#` syntax only.
+* Bold, italic and underline text.
+* Hard line breaks using two or more spaces at the end of a line.
+
+That is it.
+Features not supported in the editor are also not exported when using the export tool.
+
+In addition, novelWriter adds the following, which is otherwise not supported by Markdown:
+
+* A line starting with `%` is treated as a comment and not rendered on exports unless requested.
+  Comments do not count towards the word count.
+* A set of meta data keyword/value sets starting with the character `@`.
+  This is used for tagging and inter-linking documents.
+* Non-breaking spaces are supported as long as your system is using at least Qt 5.9.
+  For earlier version, non-breaking spaces are converted to normal spaces when saving the document.
+  This is done by the Qt library.
+* Tabs may be rendered, depending on export format.
+
+The core export format that should render properly all supported features is the HTML export.
+This format also forms the basis of conversion to Office type document formats with Pandoc.
+Note that Pandoc itself strips some formatting from the document during conversion, so the final result may be different than expected.
 
 ## Implementation
 
