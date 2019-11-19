@@ -225,7 +225,8 @@ class GuiDocEditor(QTextEdit):
         # checking. If it is too big, we switch to only check as we type
         self._checkDocSize(len(theDoc))
         spTemp = self.hLight.spellCheck
-        self.hLight.spellCheck = not self.bigDoc
+        if self.bigDoc:
+            self.hLight.spellCheck = False
 
         bfTime = time()
         self.setPlainText(theDoc)
