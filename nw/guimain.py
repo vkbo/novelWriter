@@ -106,11 +106,13 @@ class GuiMain(QMainWindow):
         self.viewPane.setLayout(self.docView)
 
         self.splitView = QSplitter(Qt.Horizontal)
+        self.splitView.setOpaqueResize(False)
         self.splitView.addWidget(self.editPane)
         self.splitView.addWidget(self.viewPane)
 
         self.splitMain = QSplitter(Qt.Horizontal)
         self.splitMain.setContentsMargins(4,4,4,4)
+        self.splitMain.setOpaqueResize(False)
         self.splitMain.addWidget(self.treePane)
         self.splitMain.addWidget(self.splitView)
         self.splitMain.setSizes(self.mainConf.mainPanePos)

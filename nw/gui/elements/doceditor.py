@@ -258,7 +258,7 @@ class GuiDocEditor(QTextEdit):
 
     def updateDocMargins(self):
         """Automatically adjust the margins so the text is centred, but
-        only if Config.textFixedW is set to True.
+        only if Config.textFixedW is enabled or we're in Zen mode.
         """
 
         if self.mainConf.textFixedW or self.theParent.isZenMode:
@@ -281,7 +281,13 @@ class GuiDocEditor(QTextEdit):
         docFormat = self.qDocument.rootFrame().frameFormat()
         docFormat.setLeftMargin(tM)
         docFormat.setRightMargin(tM)
+
+        # Updating root frame triggers a QTextDocument->contentsChange
+        # signal, which we do not want as it re-runs the syntax
+        # highlighter and spell checker, so we block it briefly.
+        self.qDocument.blockSignals(True)
         self.qDocument.rootFrame().setFrameFormat(docFormat)
+        self.qDocument.blockSignals(False)
 
         return
 
