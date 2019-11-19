@@ -53,6 +53,7 @@ class GuiDocEditor(QTextEdit):
         self.wordCount = 0
         self.paraCount = 0
         self.lastEdit  = 0
+        self.bigDoc    = False
         self.nonWord   = "\"'"
 
         # Typography
@@ -114,17 +115,22 @@ class GuiDocEditor(QTextEdit):
         return
 
     def clearEditor(self):
+        """Clear the current document and reset all document related
+         flags and counters.
+        """
 
         self.nwDocument.clearDocument()
         self.setReadOnly(True)
         self.clear()
         self.wcTimer.stop()
 
-        self.theHandle    = None
-        self.charCount    = 0
-        self.wordCount    = 0
-        self.paraCount    = 0
-        self.lastEdit     = 0
+        self.theHandle = None
+        self.charCount = 0
+        self.wordCount = 0
+        self.paraCount = 0
+        self.lastEdit  = 0
+        self.bigDoc    = False
+
         self.hasSelection = False
 
         self.setDocumentChanged(False)
@@ -214,8 +220,12 @@ class GuiDocEditor(QTextEdit):
             return False
 
         self.hLight.setHandle(tHandle)
+
+        # Check that the document is not too big for full, initial spell
+        # checking. If it is too big, we switch to only check as we type
+        self._checkDocSize(len(theDoc))
         spTemp = self.hLight.spellCheck
-        self.hLight.spellCheck = False
+        self.hLight.spellCheck = not self.bigDoc
 
         bfTime = time()
         self.setPlainText(theDoc)
@@ -696,7 +706,22 @@ class GuiDocEditor(QTextEdit):
         self.theParent.statusBar.setCounts(self.charCount,self.wordCount,self.paraCount)
         self.theParent.treeView.propagateCount(tHandle, self.wordCount)
         self.theParent.treeView.projectWordCount()
+        self._checkDocSize(self.charCount)
 
+        return
+
+    def _checkDocSize(self, theSize):
+        """Check if document size crosses the big document limit set in
+        config. If so, we will set the big document flag to True.
+        """
+        if theSize > self.mainConf.bigDocLimit*1000:
+            logger.info(
+                "The document size is %d > %d, big doc mode is enabled" % (
+                theSize, self.mainConf.bigDocLimit*1000
+            ))
+            self.bigDoc = True
+        else:
+            self.bigDoc = False
         return
 
     def _wrapSelection(self, tBefore, tAfter):

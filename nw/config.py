@@ -93,6 +93,7 @@ class Config:
         self.wordCountTimer  = 5.0
         self.showTabsNSpaces = False
         self.showLineEndings = False
+        self.bigDocLimit     = 800
 
         self.fmtApostrophe   = nwUnicode.U_RSQUO
         self.fmtSingleQuotes = [nwUnicode.U_LSQUO,nwUnicode.U_RSQUO]
