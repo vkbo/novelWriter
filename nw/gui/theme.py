@@ -78,6 +78,7 @@ class GuiTheme:
         self.colSpell  = [  0,  0,  0]
         self.colTagErr = [  0,  0,  0]
         self.colRepTag = [  0,  0,  0]
+        self.colMod    = [  0,  0,  0]
 
         # Changeable Settings
         self.guiTheme   = None
@@ -217,6 +218,7 @@ class GuiTheme:
             self.colSpell  = self._loadColour(confParser, cnfSec, "spellcheckline")
             self.colTagErr = self._loadColour(confParser, cnfSec, "tagerror")
             self.colRepTag = self._loadColour(confParser, cnfSec, "replacetag")
+            self.colMod    = self._loadColour(confParser, cnfSec, "modifier")
 
         logger.info("Loaded syntax theme '%s'" % self.guiSyntax)
 
