@@ -582,6 +582,9 @@ class NWProject():
         return True
 
     def countStatus(self):
+        """Count how many times the various status flags are used in the
+        project tree.
+        """
         self.statusItems.resetCounts()
         self.importItems.resetCounts()
         for nwItem in self.projTree.values():

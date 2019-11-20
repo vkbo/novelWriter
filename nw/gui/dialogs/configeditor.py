@@ -44,7 +44,6 @@ class GuiConfigEditor(QDialog):
         self.setWindowTitle("Preferences")
         self.guiDeco = self.theParent.theTheme.loadDecoration("settings",(64,64))
 
-        self.theProject.countStatus()
         self.tabMain   = GuiConfigEditGeneral(self.theParent)
         self.tabEditor = GuiConfigEditEditor(self.theParent)
 
@@ -174,11 +173,24 @@ class GuiConfigEditGeneral(QWidget):
             self.spellToolList.setCurrentIndex(toolIdx)
         self._doUpdateSpellTool(0)
 
-        self.spellLangForm.addWidget(QLabel("Provider"), 0, 0)
-        self.spellLangForm.addWidget(self.spellToolList, 0, 1)
-        self.spellLangForm.addWidget(QLabel("Language"), 1, 0)
-        self.spellLangForm.addWidget(self.spellLangList, 1, 1)
-        self.spellLangForm.setColumnStretch(2, 1)
+        self.spellBigDoc = QSpinBox(self)
+        self.spellBigDoc.setMinimum(10)
+        self.spellBigDoc.setMaximum(10000)
+        self.spellBigDoc.setSingleStep(10)
+        self.spellBigDoc.setToolTip((
+            "Disable spell checking when loading large documents. "
+            "Spell checking will only run on paragraphs you edit."
+        ))
+        self.spellBigDoc.setValue(self.mainConf.bigDocLimit)
+
+        self.spellLangForm.addWidget(QLabel("Provider"),   0, 0)
+        self.spellLangForm.addWidget(self.spellToolList,   0, 1, 1, 3)
+        self.spellLangForm.addWidget(QLabel("Language"),   1, 0)
+        self.spellLangForm.addWidget(self.spellLangList,   1, 1, 1, 3)
+        self.spellLangForm.addWidget(QLabel("Size limit"), 2, 0)
+        self.spellLangForm.addWidget(self.spellBigDoc,     2, 1)
+        self.spellLangForm.addWidget(QLabel("kb"),         2, 2)
+        self.spellLangForm.setColumnStretch(4, 1)
 
         # AutoSave
         self.autoSave     = QGroupBox("Automatic Save", self)
@@ -252,6 +264,7 @@ class GuiConfigEditGeneral(QWidget):
         guiDark         = self.guiDarkIcons.isChecked()
         spellTool       = self.spellToolList.currentData()
         spellLanguage   = self.spellLangList.currentData()
+        bigDocLimit     = self.spellBigDoc.value()
         autoSaveDoc     = self.autoSaveDoc.value()
         autoSaveProj    = self.autoSaveProj.value()
         backupPath      = self.projBackupPath.text()
@@ -266,6 +279,7 @@ class GuiConfigEditGeneral(QWidget):
         self.mainConf.guiDark         = guiDark
         self.mainConf.spellTool       = spellTool
         self.mainConf.spellLanguage   = spellLanguage
+        self.mainConf.bigDocLimit     = bigDocLimit
         self.mainConf.autoSaveDoc     = autoSaveDoc
         self.mainConf.autoSaveProj    = autoSaveProj
         self.mainConf.backupPath      = backupPath
@@ -541,6 +555,7 @@ class GuiConfigEditEditor(QWidget):
         self.outerBox.addWidget(self.quoteStyle,  2, 1, 2, 1)
         self.outerBox.addWidget(self.showGuides,  4, 1)
         self.outerBox.setColumnStretch(2, 1)
+        self.outerBox.setRowStretch(5, 1)
         self.setLayout(self.outerBox)
 
         return

@@ -93,6 +93,7 @@ class Config:
         self.wordCountTimer  = 5.0
         self.showTabsNSpaces = False
         self.showLineEndings = False
+        self.bigDocLimit     = 800
 
         self.fmtApostrophe   = nwUnicode.U_RSQUO
         self.fmtSingleQuotes = [nwUnicode.U_LSQUO,nwUnicode.U_RSQUO]
@@ -322,6 +323,9 @@ class Config:
         self.showLineEndings = self._parseLine(
             cnfParse, cnfSec, "showlineendings", self.CNF_BOOL, self.showLineEndings
         )
+        self.bigDocLimit = self._parseLine(
+            cnfParse, cnfSec, "bigdoclimit", self.CNF_INT, self.bigDocLimit
+        )
 
         ## Backup
         cnfSec = "Backup"
@@ -412,6 +416,7 @@ class Config:
         cnfParse.set(cnfSec,"spellcheck",      str(self.spellLanguage))
         cnfParse.set(cnfSec,"showtabsnspaces", str(self.showTabsNSpaces))
         cnfParse.set(cnfSec,"showlineendings", str(self.showLineEndings))
+        cnfParse.set(cnfSec,"bigdoclimit",     str(self.bigDocLimit))
 
         ## Backup
         cnfSec = "Backup"

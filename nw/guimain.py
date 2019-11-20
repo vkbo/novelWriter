@@ -107,6 +107,7 @@ class GuiMain(QMainWindow):
         self.viewPane.setLayout(self.docView)
 
         self.splitView = QSplitter(Qt.Horizontal)
+        self.splitView.setOpaqueResize(False)
         self.splitView.addWidget(self.editPane)
         self.splitView.addWidget(self.viewPane)
 
@@ -119,6 +120,7 @@ class GuiMain(QMainWindow):
 
         self.splitMain = QSplitter(Qt.Horizontal)
         self.splitMain.setContentsMargins(4,4,4,4)
+        self.splitMain.setOpaqueResize(False)
         self.splitMain.addWidget(self.treePane)
         self.splitMain.addWidget(self.tabWidget)
         self.splitMain.setSizes(self.mainConf.mainPanePos)
@@ -426,17 +428,20 @@ class GuiMain(QMainWindow):
         )
         if inPath:
             loadFile = inPath[0]
-            self.mainConf.setLastPath(loadFile)
         else:
+            return False
+
+        if loadFile.strip() == "":
             return False
 
         theText = None
         try:
             with open(loadFile,mode="rt",encoding="utf8") as inFile:
                 theText = inFile.read()
+            self.mainConf.setLastPath(loadFile)
         except Exception as e:
             self.makeAlert(
-                ["Could not read file. The file cannot be a binary file.",str(e)],
+                ["Could not read file. The file must be an existing text file.",str(e)],
                 nwAlert.ERROR
             )
             return False
@@ -460,7 +465,7 @@ class GuiMain(QMainWindow):
             else:
                 return False
 
-        self.docEditor.setText(theText)
+        self.docEditor.replaceText(theText)
 
         return True
 

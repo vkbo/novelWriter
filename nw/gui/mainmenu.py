@@ -608,7 +608,7 @@ class GuiMainMenu(QMenuBar):
         self.aReRunSpell = QAction("Re-Run Spell Check", self)
         self.aReRunSpell.setStatusTip("Run the spell checker on current document")
         self.aReRunSpell.setShortcut("F7")
-        self.aReRunSpell.triggered.connect(self.theParent.docEditor.updateSpellCheck)
+        self.aReRunSpell.triggered.connect(self.theParent.docEditor.reHighlightDocument)
         self.toolsMenu.addAction(self.aReRunSpell)
 
         # Tools > Separator
