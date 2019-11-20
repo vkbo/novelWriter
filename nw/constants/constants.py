@@ -20,15 +20,15 @@ class nwConst():
 
 class nwFiles():
 
-    APP_ICON   = "novelWriter.svg"
-    PROJ_FILE  = "nwProject.nwx"
-    PROJ_COUNT = "projCount.txt"
-    PROJ_DICT  = "wordlist.txt"
-    SESS_INFO  = "sessionInfo.log"
-    INDEX_FILE = "tagsIndex.json"
-    EXPORT_OPT = "exportOptions.json"
-    TLINE_OPT  = "timelineOptions.json"
-    SLOG_OPT   = "sessionLogOptions.json"
+    APP_ICON    = "novelWriter.svg"
+    PROJ_FILE   = "nwProject.nwx"
+    PROJ_COUNT  = "projCount.txt"
+    PROJ_DICT   = "wordlist.txt"
+    SESS_INFO   = "sessionInfo.log"
+    INDEX_FILE  = "tagsIndex.json"
+    EXPORT_OPT  = "exportOptions.json"
+    OUTLINE_OPT = "outlineOptions.json"
+    SLOG_OPT    = "sessionLogOptions.json"
 
 # END Class nwFiles
 

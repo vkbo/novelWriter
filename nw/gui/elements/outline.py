@@ -16,12 +16,13 @@ import nw
 from os import path
 from time import time
 
-from PyQt5.QtCore import Qt
+from PyQt5.QtCore import Qt, QByteArray
 from PyQt5.QtWidgets import (
     QWidget, QVBoxLayout, QTreeWidget, QTreeWidgetItem
 )
 
-from nw.constants import nwItemLayout, nwKeyWords, nwLabels
+from nw.tools import OptLastState
+from nw.constants import nwItemLayout, nwKeyWords, nwLabels, nwFiles
 
 logger = logging.getLogger(__name__)
 
@@ -44,12 +45,7 @@ class GuiProjectOutline(QWidget):
     I_ENTITY = 14
     I_CUSTOM = 15
 
-    COL_ORDER = [
-        I_TITLE,  I_LEVEL,  I_LABEL,  I_LINE,
-        I_WCOUNT, I_CCOUNT, I_PCOUNT, I_SYNOP,
-        I_POV,    I_CHAR,   I_PLOT,   I_TIME,
-        I_WORLD,  I_OBJECT, I_ENTITY, I_CUSTOM,
-    ]
+    COL_MAX = 15
 
     COL_LABELS = {
         I_TITLE  : "Title",
@@ -79,6 +75,7 @@ class GuiProjectOutline(QWidget):
         self.theParent  = theParent
         self.theProject = theProject
         self.theIndex   = self.theParent.theIndex
+        self.optState   = OutlineLastState(self.theProject,nwFiles.OUTLINE_OPT)
 
         self.showWords    = True
         self.showSynopsis = True
@@ -86,9 +83,18 @@ class GuiProjectOutline(QWidget):
 
         self.outerBox  = QVBoxLayout()
         self.mainTree  = QTreeWidget()
-        self.treeCols  = self.COL_ORDER
         self.lastBuild = 0
         self.treeMap   = {}
+        self.treeCols  = {
+            "order" : [
+                self.I_TITLE,  self.I_LABEL,
+                self.I_WCOUNT, self.I_POV,
+                self.I_CHAR,   self.I_PLOT,
+                self.I_WORLD,  self.I_SYNOP
+            ],
+            "width" : [150, 100, 80, 100, 100, 100, 100, 300],
+        }
+        self.colIndex = {}
 
         self.outerBox.addWidget(self.mainTree)
         self.outerBox.setContentsMargins(0,0,0,0)
@@ -98,19 +104,57 @@ class GuiProjectOutline(QWidget):
 
         return
 
+    def saveHeaderState(self):
+
+        colW = []
+        for iCol in range(self.mainTree.columnCount()):
+            colW.append(self.mainTree.columnWidth(iCol))
+
+        self.treeCols["width"] = colW
+        self.optState.setSetting("headState", self.treeCols)
+        self.optState.saveSettings()
+        return
+
+    def loadHeaderState(self):
+        self.optState.loadSettings()
+        treeCols = self.optState.getSetting("headState")
+
+        if "order" not in treeCols.keys(): return
+        if not isinstance(treeCols["order"], list): return
+        if len(treeCols["order"]) == 0: return
+
+        self.treeCols["order"] = []
+        for colID in treeCols["order"]:
+            if colID >= 0 and colID <= self.COL_MAX:
+                self.treeCols["order"].append(colID)
+
+        if "width" in treeCols.keys():
+            if isinstance(treeCols["width"],list):
+                self.treeCols["width"] = treeCols["width"]
+
+        return
+
     def populateTree(self):
 
+        self.loadHeaderState()
+
         theLabels = []
-        for n in self.treeCols:
+        for i, n in enumerate(self.treeCols["order"]):
             theLabels.append(self.COL_LABELS[n])
+            self.colIndex[n] = i
 
         self.mainTree.clear()
         self.mainTree.setHeaderLabels(theLabels)
+        for n, colW in enumerate(self.treeCols["width"]):
+            self.mainTree.setColumnWidth(n,colW)
 
         treeHead = self.mainTree.headerItem()
-        treeHead.setTextAlignment(self.I_CCOUNT,Qt.AlignRight)
-        treeHead.setTextAlignment(self.I_WCOUNT,Qt.AlignRight)
-        treeHead.setTextAlignment(self.I_PCOUNT,Qt.AlignRight)
+        if self.I_CCOUNT in self.colIndex:
+            treeHead.setTextAlignment(self.colIndex[self.I_CCOUNT],Qt.AlignRight)
+        if self.I_WCOUNT in self.colIndex:
+            treeHead.setTextAlignment(self.colIndex[self.I_WCOUNT],Qt.AlignRight)
+        if self.I_PCOUNT in self.colIndex:
+            treeHead.setTextAlignment(self.colIndex[self.I_PCOUNT],Qt.AlignRight)
 
         currTitle   = None
         currChapter = None
@@ -180,28 +224,44 @@ class GuiProjectOutline(QWidget):
         novIdx = self.theIndex.novelIndex[tHandle][sTitle]
 
         newItem = QTreeWidgetItem()
-        newItem.setText(self.I_TITLE, novIdx["title"])
-        newItem.setText(self.I_LEVEL, novIdx["level"])
-        newItem.setText(self.I_LABEL, nwItem.itemName)
-        newItem.setText(self.I_LINE,  sTitle[1:])
-
-        newItem.setText(self.I_CCOUNT, str(novIdx["cCount"]))
-        newItem.setText(self.I_WCOUNT, str(novIdx["wCount"]))
-        newItem.setText(self.I_PCOUNT, str(novIdx["pCount"]))
-        newItem.setTextAlignment(self.I_CCOUNT,Qt.AlignRight)
-        newItem.setTextAlignment(self.I_WCOUNT,Qt.AlignRight)
-        newItem.setTextAlignment(self.I_PCOUNT,Qt.AlignRight)
+        self._setItemText(newItem, self.I_TITLE,  novIdx["title"])
+        self._setItemText(newItem, self.I_LEVEL,  novIdx["level"])
+        self._setItemText(newItem, self.I_LABEL,  nwItem.itemName)
+        self._setItemText(newItem, self.I_LINE,   sTitle[1:])
+        self._setItemText(newItem, self.I_SYNOP,  novIdx["synopsis"])
+        self._setItemText(newItem, self.I_CCOUNT, str(novIdx["cCount"]), True)
+        self._setItemText(newItem, self.I_WCOUNT, str(novIdx["wCount"]), True)
+        self._setItemText(newItem, self.I_PCOUNT, str(novIdx["pCount"]), True)
 
         theRefs = self.theIndex.getReferences(tHandle, sTitle)
-        newItem.setText(self.I_POV,    ", ".join(theRefs[nwKeyWords.POV_KEY]))
-        newItem.setText(self.I_CHAR,   ", ".join(theRefs[nwKeyWords.CHAR_KEY]))
-        newItem.setText(self.I_PLOT,   ", ".join(theRefs[nwKeyWords.PLOT_KEY]))
-        newItem.setText(self.I_TIME,   ", ".join(theRefs[nwKeyWords.TIME_KEY]))
-        newItem.setText(self.I_WORLD,  ", ".join(theRefs[nwKeyWords.WORLD_KEY]))
-        newItem.setText(self.I_OBJECT, ", ".join(theRefs[nwKeyWords.OBJECT_KEY]))
-        newItem.setText(self.I_ENTITY, ", ".join(theRefs[nwKeyWords.ENTITY_KEY]))
-        newItem.setText(self.I_CUSTOM, ", ".join(theRefs[nwKeyWords.CUSTOM_KEY]))
+        self._setItemText(newItem, self.I_POV,    ", ".join(theRefs[nwKeyWords.POV_KEY]))
+        self._setItemText(newItem, self.I_CHAR,   ", ".join(theRefs[nwKeyWords.CHAR_KEY]))
+        self._setItemText(newItem, self.I_PLOT,   ", ".join(theRefs[nwKeyWords.PLOT_KEY]))
+        self._setItemText(newItem, self.I_TIME,   ", ".join(theRefs[nwKeyWords.TIME_KEY]))
+        self._setItemText(newItem, self.I_WORLD,  ", ".join(theRefs[nwKeyWords.WORLD_KEY]))
+        self._setItemText(newItem, self.I_OBJECT, ", ".join(theRefs[nwKeyWords.OBJECT_KEY]))
+        self._setItemText(newItem, self.I_ENTITY, ", ".join(theRefs[nwKeyWords.ENTITY_KEY]))
+        self._setItemText(newItem, self.I_CUSTOM, ", ".join(theRefs[nwKeyWords.CUSTOM_KEY]))
 
         return newItem
 
+    def _setItemText(self, tItem, colID, theText, rAlign=False):
+        if colID in self.colIndex:
+            tItem.setText(self.colIndex[colID], theText)
+            if rAlign:
+                tItem.setTextAlignment(self.colIndex[colID],Qt.AlignRight)
+        return
+
 # END Class GuiProjectOutline
+
+class OutlineLastState(OptLastState):
+
+    def __init__(self, theProject, theFile):
+        OptLastState.__init__(self, theProject, theFile)
+        self.theState = {
+            "headState" : {},
+        }
+        self.dictOpt = ("headState")
+        return
+
+# END Class OutlineLastState

@@ -679,6 +679,8 @@ class GuiMain(QMainWindow):
                 return False
 
         logger.info("Exiting %s" % nw.__package__)
+        self.projView.saveHeaderState()
+
         self.closeProject(True)
 
         self.mainConf.setTreeColWidths(self.treeView.getColumnSizes())

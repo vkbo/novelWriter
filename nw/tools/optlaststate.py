@@ -28,12 +28,21 @@ class OptLastState():
         self.theState   = {}
         self.stringOpt  = ()
         self.boolOpt    = ()
+        self.dictOpt    = ()
         self.intOpt     = ()
         return
 
     def loadSettings(self):
+
+        if self.theProject.projMeta is None or self.theFile is None:
+            logger.error("Cannot load file '%s' to path '%s'" % (
+                str(self.theFile), str(self.theProject.projMeta)
+            ))
+            return False
+
         stateFile = path.join(self.theProject.projMeta,self.theFile)
         theState  = {}
+
         if path.isfile(stateFile):
             logger.debug("Loading options file")
             try:
@@ -44,11 +53,20 @@ class OptLastState():
                 logger.error("Failed to load options file")
                 logger.error(str(e))
                 return False
+
         for anOpt in theState:
             self.theState[anOpt] = theState[anOpt]
+
         return True
 
     def saveSettings(self):
+
+        if self.theProject.projMeta is None or self.theFile is None:
+            logger.error("Cannot save file '%s' to path '%s'" % (
+                str(self.theFile), str(self.theProject.projMeta)
+            ))
+            return False
+
         stateFile = path.join(self.theProject.projMeta,self.theFile)
         logger.debug("Saving options file")
         try:
@@ -58,6 +76,7 @@ class OptLastState():
             logger.error("Failed to save options file")
             logger.error(str(e))
             return False
+
         return True
 
     def setSetting(self, setName, setValue):
@@ -72,6 +91,11 @@ class OptLastState():
             return checkString(self.theState[setName],self.theState[setName],False)
         elif setName in self.boolOpt:
             return checkBool(self.theState[setName],self.theState[setName],False)
+        elif setName in self.dictOpt:
+            if isinstance(self.theState[setName], dict):
+                return self.theState[setName]
+            else:
+                return {}
         elif setName in self.intOpt:
             return checkInt(self.theState[setName],self.theState[setName],False)
         return None

@@ -683,7 +683,7 @@ class ExportLastState(OptLastState):
 
     def __init__(self, theProject, theFile):
         OptLastState.__init__(self, theProject, theFile)
-        self.theState   = {
+        self.theState = {
             "wNovel"    : True,
             "wNotes"    : False,
             "eFormat"   : 1,
