@@ -15,10 +15,10 @@ import nw
 
 from PyQt5.QtCore import Qt
 from PyQt5.QtWidgets import QTextBrowser
-from PyQt5.QtGui import QTextOption, QFont, QPalette, QColor
+from PyQt5.QtGui import QTextOption, QFont, QPalette, QColor, QTextCursor
 
 from nw.convert import ToHtml
-from nw.constants import nwAlert, nwItemType
+from nw.constants import nwAlert, nwItemType, nwDocAction
 
 logger = logging.getLogger(__name__)
 
@@ -47,6 +47,7 @@ class GuiDocViewer(QTextBrowser):
         self.qDocument.setDefaultTextOption(theOpt)
 
         self.anchorClicked.connect(self._linkClicked)
+        self.setFocusPolicy(Qt.StrongFocus)
 
         logger.debug("DocViewer initialisation complete")
 
@@ -142,9 +143,34 @@ class GuiDocViewer(QTextBrowser):
 
         return True
 
+    def docAction(self, theAction):
+        logger.verbose("Requesting action: %s" % theAction.name)
+        if self.theHandle is None:
+            logger.error("No document open")
+            return False
+        if theAction == nwDocAction.CUT:
+            self.copy()
+        elif theAction == nwDocAction.COPY:
+            self.copy()
+        elif theAction == nwDocAction.SEL_ALL:
+            self._makeSelection(QTextCursor.Document)
+        elif theAction == nwDocAction.SEL_PARA:
+            self._makeSelection(QTextCursor.BlockUnderCursor)
+        else:
+            logger.debug("Unknown or unsupported document action %s" % str(theAction))
+            return False
+        return True
+
     ##
     #  Internal Functions
     ##
+
+    def _makeSelection(self, selMode):
+        theCursor = self.textCursor()
+        theCursor.clearSelection()
+        theCursor.select(selMode)
+        self.setTextCursor(theCursor)
+        return
 
     def _linkClicked(self, theURL):
 
