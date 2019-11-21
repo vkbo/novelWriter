@@ -799,6 +799,9 @@ class GuiDocEditor(QTextEdit):
         if theText.startswith("@"):
             logger.error("Cannot apply block format to keyword/value line")
             return
+        elif theText.startswith("% "):
+            newText = theText[2:]
+            cOffset = 2
         elif theText.startswith("%"):
             newText = theText[1:]
             cOffset = 1
@@ -820,8 +823,8 @@ class GuiDocEditor(QTextEdit):
 
         # Apply new format
         if docAction == nwDocAction.BLOCK_COM:
-            theText = "%"+newText
-            cOffset -= 1
+            theText = "% "+newText
+            cOffset -= 2
         elif docAction == nwDocAction.BLOCK_H1:
             theText = "# "+newText
             cOffset -= 2
