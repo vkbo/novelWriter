@@ -71,6 +71,11 @@ class nwDocAction(Enum):
     GO_NEXT   = 15
     GO_PREV   = 16
     REPL_NEXT = 17
+    BLOCK_H1  = 18
+    BLOCK_H2  = 19
+    BLOCK_H3  = 20
+    BLOCK_H4  = 21
+    BLOCK_COM = 22
 
 # END Enum nwDocAction
 

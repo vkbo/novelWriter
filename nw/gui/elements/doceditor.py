@@ -440,6 +440,16 @@ class GuiDocEditor(QTextEdit):
             self._findPrev()
         elif theAction == nwDocAction.REPL_NEXT:
             self._replaceNext()
+        elif theAction == nwDocAction.BLOCK_H1:
+            self._formatBlock(nwDocAction.BLOCK_H1)
+        elif theAction == nwDocAction.BLOCK_H2:
+            self._formatBlock(nwDocAction.BLOCK_H2)
+        elif theAction == nwDocAction.BLOCK_H3:
+            self._formatBlock(nwDocAction.BLOCK_H3)
+        elif theAction == nwDocAction.BLOCK_H4:
+            self._formatBlock(nwDocAction.BLOCK_H4)
+        elif theAction == nwDocAction.BLOCK_COM:
+            self._formatBlock(nwDocAction.BLOCK_COM)
         else:
             logger.debug("Unknown or unsupported document action %s" % str(theAction))
             return False
@@ -766,6 +776,18 @@ class GuiDocEditor(QTextEdit):
             theCursor.endEditBlock()
         else:
             logger.warning("No selection made, nothing to do")
+        return
+
+    def _formatBlock(self, docAction):
+        """Changes the block format of the block under the cursor.
+        """
+
+        theCursor = self.textCursor()
+        theBlock = theCursor.block()
+        if theBlock.isValid():
+            theText = theBlock.text()
+            print(theText)
+
         return
 
     def _makeSelection(self, selMode):
