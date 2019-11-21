@@ -441,7 +441,7 @@ class GuiDocEditor(QTextEdit):
         elif theAction == nwDocAction.REPL_NEXT:
             self._replaceNext()
         else:
-            logger.error("Unknown or unsupported document action %s" % str(theAction))
+            logger.debug("Unknown or unsupported document action %s" % str(theAction))
             return False
         return True
 

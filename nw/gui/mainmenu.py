@@ -40,7 +40,7 @@ class GuiMainMenu(QMenuBar):
         self._buildHelpMenu()
 
         # Function Pointers
-        self._docAction    = self.theParent.docEditor.docAction
+        self._docAction    = self.theParent.passDocumentAction
         self._moveTreeItem = self.theParent.treeView.moveTreeItem
         self._newTreeItem  = self.theParent.treeView.newTreeItem
 
