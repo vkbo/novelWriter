@@ -40,7 +40,7 @@ class GuiMainMenu(QMenuBar):
         self._buildHelpMenu()
 
         # Function Pointers
-        self._docAction    = self.theParent.docEditor.docAction
+        self._docAction    = self.theParent.passDocumentAction
         self._moveTreeItem = self.theParent.treeView.moveTreeItem
         self._newTreeItem  = self.theParent.treeView.newTreeItem
 
@@ -379,21 +379,21 @@ class GuiMainMenu(QMenuBar):
         # View > TreeView
         self.aFocusTree = QAction("TreeView", self)
         self.aFocusTree.setStatusTip("Move focus to project tree")
-        self.aFocusTree.setShortcut("Ctrl+1")
+        self.aFocusTree.setShortcut("Alt+1")
         self.aFocusTree.triggered.connect(lambda : self.theParent.setFocus(1))
         self.viewMenu.addAction(self.aFocusTree)
 
         # View > Document Pane 1
         self.aFocusEditor = QAction("Left Document Pane", self)
         self.aFocusEditor.setStatusTip("Move focus to left document pane")
-        self.aFocusEditor.setShortcut("Ctrl+2")
+        self.aFocusEditor.setShortcut("Alt+2")
         self.aFocusEditor.triggered.connect(lambda : self.theParent.setFocus(2))
         self.viewMenu.addAction(self.aFocusEditor)
 
         # View > Document Pane 2
         self.aFocusView = QAction("Right Document Pane", self)
         self.aFocusView.setStatusTip("Move focus to right document pane")
-        self.aFocusView.setShortcut("Ctrl+3")
+        self.aFocusView.setShortcut("Alt+3")
         self.aFocusView.triggered.connect(lambda : self.theParent.setFocus(3))
         self.viewMenu.addAction(self.aFocusView)
 
@@ -580,6 +580,51 @@ class GuiMainMenu(QMenuBar):
         self.aFmtSQuote.triggered.connect(lambda: self._docAction(nwDocAction.S_QUOTE))
         self.fmtMenu.addAction(self.aFmtSQuote)
 
+        # Edit > Separator
+        self.fmtMenu.addSeparator()
+
+        # Format > Header 1
+        self.aFmtHead1 = QAction("Header 1", self)
+        self.aFmtHead1.setStatusTip("Change the block format to Header 1")
+        self.aFmtHead1.setShortcut("Ctrl+1")
+        self.aFmtHead1.triggered.connect(lambda: self._docAction(nwDocAction.BLOCK_H1))
+        self.fmtMenu.addAction(self.aFmtHead1)
+
+        # Format > Header 2
+        self.aFmtHead2 = QAction("Header 2", self)
+        self.aFmtHead2.setStatusTip("Change the block format to Header 2")
+        self.aFmtHead2.setShortcut("Ctrl+2")
+        self.aFmtHead2.triggered.connect(lambda: self._docAction(nwDocAction.BLOCK_H2))
+        self.fmtMenu.addAction(self.aFmtHead2)
+
+        # Format > Header 3
+        self.aFmtHead3 = QAction("Header 3", self)
+        self.aFmtHead3.setStatusTip("Change the block format to Header 3")
+        self.aFmtHead3.setShortcut("Ctrl+3")
+        self.aFmtHead3.triggered.connect(lambda: self._docAction(nwDocAction.BLOCK_H3))
+        self.fmtMenu.addAction(self.aFmtHead3)
+
+        # Format > Header 4
+        self.aFmtHead4 = QAction("Header 4", self)
+        self.aFmtHead4.setStatusTip("Change the block format to Header 4")
+        self.aFmtHead4.setShortcut("Ctrl+4")
+        self.aFmtHead4.triggered.connect(lambda: self._docAction(nwDocAction.BLOCK_H4))
+        self.fmtMenu.addAction(self.aFmtHead4)
+
+        # Format > Comment
+        self.aFmtComment = QAction("Comment", self)
+        self.aFmtComment.setStatusTip("Change the block format to comment")
+        self.aFmtComment.setShortcut("Ctrl+/")
+        self.aFmtComment.triggered.connect(lambda: self._docAction(nwDocAction.BLOCK_COM))
+        self.fmtMenu.addAction(self.aFmtComment)
+
+        # Format > Remove Format
+        self.aFmtNoFormat = QAction("Remove Format", self)
+        self.aFmtNoFormat.setStatusTip("Strips block format")
+        self.aFmtNoFormat.setShortcuts(["Ctrl+0","Ctrl+Shift+/"])
+        self.aFmtNoFormat.triggered.connect(lambda: self._docAction(nwDocAction.BLOCK_TXT))
+        self.fmtMenu.addAction(self.aFmtNoFormat)
+
         return
 
     def _buildToolsMenu(self):
@@ -667,8 +712,8 @@ class GuiMainMenu(QMenuBar):
         self.helpMenu.addSeparator()
 
         # Document > Preview
-        self.aHelp = QAction("Documentation", self)
-        self.aHelp.setStatusTip("View documentation")
+        self.aHelp = QAction("Online Documentation", self)
+        self.aHelp.setStatusTip("View online documentation")
         self.aHelp.setShortcut("F1")
         self.aHelp.triggered.connect(self._openHelp)
         self.helpMenu.addAction(self.aHelp)
