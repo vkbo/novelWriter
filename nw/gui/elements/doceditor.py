@@ -515,59 +515,26 @@ class GuiDocEditor(QTextEdit):
         return
 
     ##
-    #  Internal Functions
+    #  Signals and Slots
     ##
 
-    def _followTag(self, theCursor=None):
-        """Activated by Ctrl+Enter. Checks that we're in a block
-        starting with '@'. We then find the word under the cursor and
-        check that it is after the ':'. If all this is fine, we have a
-        tag and can tell the document viewer to try and find and load
-        the file where the tag is defined.
+    def _docChange(self, thePos, charsRemoved, charsAdded):
+        """Triggered by QTextDocument->contentsChanged. This also
+        triggers the syntax highlighter.
         """
-
-        if theCursor is None:
-            theCursor = self.textCursor()
-
-        theBlock = theCursor.block()
-        theText  = theBlock.text()
-
-        if len(theText) == 0:
-            return False
-
-        if theText.startswith("@"):
-
-            theCursor.select(QTextCursor.WordUnderCursor)
-            theWord = theCursor.selectedText()
-            cPos = theText.find(":")
-            wPos = theCursor.selectionStart() - theBlock.position()
-            if wPos <= cPos:
-                return False
-
-            logger.verbose("Attempting to follow tag '%s'" % theWord)
-            self.theParent.docViewer.loadFromTag(theWord)
-
-        return True
-
-    def _insertHardBreak(self):
-        theCursor = self.textCursor()
-        theCursor.beginEditBlock()
-        theCursor.insertText("  \n")
-        theCursor.endEditBlock()
-        return
-
-    def _insertNonBreakingSpace(self):
-        theCursor = self.textCursor()
-        theCursor.beginEditBlock()
-        theCursor.insertText(nwUnicode.U_NBSP)
-        theCursor.endEditBlock()
-        return
-
-    def _openSpellContext(self):
-        self._openContextMenu(self.cursorRect().center())
+        self.lastEdit = time()
+        if not self.docChanged:
+            self.setDocumentChanged(True)
+        if not self.wcTimer.isActive():
+            self.wcTimer.start()
+        if self.mainConf.doReplace and not self.hasSelection:
+            self._docAutoReplace(self.qDocument.findBlock(thePos))
         return
 
     def _openContextMenu(self, thePos):
+        """Triggered by right click to open the context menu. Also
+        triggered by the Ctrl+. shortcut.
+        """
 
         if not self.spellCheck:
             return
@@ -625,17 +592,88 @@ class GuiDocEditor(QTextEdit):
         self.hLight.rehighlightBlock(theCursor.block())
         return
 
-    def _docChange(self, thePos, charsRemoved, charsAdded):
-        """Triggered by QTextDocument->contentsChanged. This also
-        triggers the syntax highlighter.
+    def _runCounter(self):
+        """Decide whether to run the word counter, or stop the timer due
+        to inactivity.
         """
-        self.lastEdit = time()
-        if not self.docChanged:
-            self.setDocumentChanged(True)
-        if not self.wcTimer.isActive():
-            self.wcTimer.start()
-        if self.mainConf.doReplace and not self.hasSelection:
-            self._docAutoReplace(self.qDocument.findBlock(thePos))
+        sinceActive = time()-self.lastEdit
+        if sinceActive > 5*self.wcInterval:
+            logger.debug("Stopping word count timer: no activity last %.1f seconds" % sinceActive)
+            self.wcTimer.stop()
+        elif self.wCounter.isRunning():
+            logger.verbose("Word counter thread is busy")
+        else:
+            logger.verbose("Starting word counter")
+            self.wCounter.start()
+        return
+
+    def _updateCounts(self):
+        """Slot for the word counter's finished signal
+        """
+        logger.verbose("Updating word count")
+
+        tHandle = self.nwDocument.docHandle
+        self.charCount = self.wCounter.charCount
+        self.wordCount = self.wCounter.wordCount
+        self.paraCount = self.wCounter.paraCount
+        self.theParent.statusBar.setCounts(self.charCount,self.wordCount,self.paraCount)
+        self.theParent.treeView.propagateCount(tHandle, self.wordCount)
+        self.theParent.treeView.projectWordCount()
+        self._checkDocSize(self.charCount)
+
+        return
+
+    ##
+    #  Internal Functions
+    ##
+
+    def _followTag(self, theCursor=None):
+        """Activated by Ctrl+Enter. Checks that we're in a block
+        starting with '@'. We then find the word under the cursor and
+        check that it is after the ':'. If all this is fine, we have a
+        tag and can tell the document viewer to try and find and load
+        the file where the tag is defined.
+        """
+
+        if theCursor is None:
+            theCursor = self.textCursor()
+
+        theBlock = theCursor.block()
+        theText  = theBlock.text()
+
+        if len(theText) == 0:
+            return False
+
+        if theText.startswith("@"):
+
+            theCursor.select(QTextCursor.WordUnderCursor)
+            theWord = theCursor.selectedText()
+            cPos = theText.find(":")
+            wPos = theCursor.selectionStart() - theBlock.position()
+            if wPos <= cPos:
+                return False
+
+            logger.verbose("Attempting to follow tag '%s'" % theWord)
+            self.theParent.docViewer.loadFromTag(theWord)
+
+        return True
+
+    def _insertHardBreak(self):
+        theCursor = self.textCursor()
+        theCursor.beginEditBlock()
+        theCursor.insertText("  \n")
+        theCursor.endEditBlock()
+        return
+
+    def _insertNonBreakingSpace(self):
+        theCursor = self.textCursor()
+        theCursor.beginEditBlock()
+        theCursor.insertText(nwUnicode.U_NBSP)
+        theCursor.endEditBlock()
+        return
+
+    def _openSpellContext(self):
+        self._openContextMenu(self.cursorRect().center())
         return
 
     def _docAutoReplace(self, theBlock):
@@ -690,37 +728,6 @@ class GuiDocEditor(QTextEdit):
         elif self.mainConf.doReplaceDots and theThree == "...":
             theCursor.movePosition(QTextCursor.Left, QTextCursor.KeepAnchor, 3)
             theCursor.insertText(nwUnicode.U_HELLIP)
-
-        return
-
-    def _runCounter(self):
-        """Decide whether to run the word counter, or stop the timer due
-        to inactivity.
-        """
-        sinceActive = time()-self.lastEdit
-        if sinceActive > 5*self.wcInterval:
-            logger.debug("Stopping word count timer: no activity last %.1f seconds" % sinceActive)
-            self.wcTimer.stop()
-        elif self.wCounter.isRunning():
-            logger.verbose("Word counter thread is busy")
-        else:
-            logger.verbose("Starting word counter")
-            self.wCounter.start()
-        return
-
-    def _updateCounts(self):
-        """Slot for the word counter's finished signal
-        """
-        logger.verbose("Updating word count")
-
-        tHandle = self.nwDocument.docHandle
-        self.charCount = self.wCounter.charCount
-        self.wordCount = self.wCounter.wordCount
-        self.paraCount = self.wCounter.paraCount
-        self.theParent.statusBar.setCounts(self.charCount,self.wordCount,self.paraCount)
-        self.theParent.treeView.propagateCount(tHandle, self.wordCount)
-        self.theParent.treeView.projectWordCount()
-        self._checkDocSize(self.charCount)
 
         return
 
