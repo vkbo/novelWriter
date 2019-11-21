@@ -618,6 +618,13 @@ class GuiMainMenu(QMenuBar):
         self.aFmtComment.triggered.connect(lambda: self._docAction(nwDocAction.BLOCK_COM))
         self.fmtMenu.addAction(self.aFmtComment)
 
+        # Format > Remove Format
+        self.aFmtNoFormat = QAction("Remove Format", self)
+        self.aFmtNoFormat.setStatusTip("Strips block format")
+        self.aFmtNoFormat.setShortcuts(["Ctrl+0","Ctrl+Shift+/"])
+        self.aFmtNoFormat.triggered.connect(lambda: self._docAction(nwDocAction.BLOCK_TXT))
+        self.fmtMenu.addAction(self.aFmtNoFormat)
+
         return
 
     def _buildToolsMenu(self):

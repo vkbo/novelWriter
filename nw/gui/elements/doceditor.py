@@ -450,6 +450,8 @@ class GuiDocEditor(QTextEdit):
             self._formatBlock(nwDocAction.BLOCK_H4)
         elif theAction == nwDocAction.BLOCK_COM:
             self._formatBlock(nwDocAction.BLOCK_COM)
+        elif theAction == nwDocAction.BLOCK_TXT:
+            self._formatBlock(nwDocAction.BLOCK_TXT)
         else:
             logger.debug("Unknown or unsupported document action %s" % str(theAction))
             return False
@@ -784,9 +786,75 @@ class GuiDocEditor(QTextEdit):
 
         theCursor = self.textCursor()
         theBlock = theCursor.block()
-        if theBlock.isValid():
-            theText = theBlock.text()
-            print(theText)
+        if not theBlock.isValid():
+            logger.debug("Invalid block selected for action %s" % str(docAction))
+            return
+
+        theText = theBlock.text()
+        if len(theText.strip()) == 0:
+            logger.debug("Empty block selected for action %s" % str(docAction))
+            return
+
+        # Remove existing format first, if any
+        if theText.startswith("@"):
+            logger.error("Cannot apply block format to keyword/value line")
+            return
+        elif theText.startswith("%"):
+            newText = theText[1:]
+            cOffset = 1
+        elif theText.startswith("# "):
+            newText = theText[2:]
+            cOffset = 2
+        elif theText.startswith("## "):
+            newText = theText[3:]
+            cOffset = 3
+        elif theText.startswith("### "):
+            newText = theText[4:]
+            cOffset = 4
+        elif theText.startswith("#### "):
+            newText = theText[5:]
+            cOffset = 5
+        else:
+            newText = theText
+            cOffset = 0
+
+        # Apply new format
+        if docAction == nwDocAction.BLOCK_COM:
+            theText = "%"+newText
+            cOffset -= 1
+        elif docAction == nwDocAction.BLOCK_H1:
+            theText = "# "+newText
+            cOffset -= 2
+        elif docAction == nwDocAction.BLOCK_H2:
+            theText = "## "+newText
+            cOffset -= 3
+        elif docAction == nwDocAction.BLOCK_H3:
+            theText = "### "+newText
+            cOffset -= 4
+        elif docAction == nwDocAction.BLOCK_H4:
+            theText = "#### "+newText
+            cOffset -= 5
+        elif docAction == nwDocAction.BLOCK_TXT:
+            theText = newText
+            cOffset -= 0
+        else:
+            logger.error("Unknown or unsupported block format requested: %s" % str(docAction))
+            return
+
+        # Replace the block text
+        theCursor.beginEditBlock()
+        posO = theCursor.position()
+        theCursor.select(QTextCursor.BlockUnderCursor)
+        posS = theCursor.selectionStart()
+        theCursor.removeSelectedText()
+        theCursor.setPosition(posS)
+        if posS > 0:
+            theCursor.insertBlock()
+        theCursor.insertText(theText)
+        if posO - cOffset >= 0:
+            theCursor.setPosition(posO - cOffset)
+        theCursor.endEditBlock()
+        self.setTextCursor(theCursor)
 
         return
 

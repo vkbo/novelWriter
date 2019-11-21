@@ -76,6 +76,7 @@ class nwDocAction(Enum):
     BLOCK_H3  = 20
     BLOCK_H4  = 21
     BLOCK_COM = 22
+    BLOCK_TXT = 23
 
 # END Enum nwDocAction
 
