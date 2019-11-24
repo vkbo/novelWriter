@@ -1,5 +1,19 @@
 # novelWriter ChangeLog
 
+## Version 0.4.3 [2019-11-24]
+
+**User Interface**
+
+* Added keyboard shortcuts and menu entries for formatting headers, comments, and removing block formats. PR #155.
+* Disable re-highlighting of open file when resizing window. This is potentially a slow process if the spell checker is on and the file is large. There is no need to do this just for reflowing text, so it is now disabled on resize events. PR #153 fixing issue #150.
+* Improved the speed of the syntax highlighter by about 40% by not using regular expressions for highlighting block formats and by skipping empty lines entirely. PR #154.
+
+**Bug Fixes**
+
+* Fixed an issue when closing the import file dialog without selecting a file, the import would procede, but fail on file not found. The import is now cancelled when there is no file selected. PR #149.
+* Fixed an issue with markdown export did not take into account hard line breaks. PR #152 fixing issue #151.
+* Fixed a crash when running file status check when the project contains orphaned files. PR #152.
+
 ## Version 0.4.2 [2019-11-17]
 
 **User Interface**
