@@ -393,11 +393,13 @@ class GuiDocEditor(QTextEdit):
 
         logger.verbose("Running spell checker")
         if self.spellCheck:
-            theText = self.getText()
-            self.clear()
             bfTime = time()
             qApp.setOverrideCursor(QCursor(Qt.WaitCursor))
-            self.setPlainText(theText)
+            if self.bigDoc:
+                theText = self.getText()
+                self.setPlainText(theText)
+            else:
+                self.hLight.rehighlight()
             qApp.restoreOverrideCursor()
             afTime = time()
             logger.debug("Document re-highlighted in %.3f milliseconds" % (1000*(afTime-bfTime)))
