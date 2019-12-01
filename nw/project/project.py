@@ -370,6 +370,39 @@ class NWProject():
         return True
 
     ##
+    #  Document Methods
+    ##
+
+    def splitDocument(self, tHandle, headerLevel, folderLevel):
+        """Split a document into multiple documents under the same
+        header. Header level threshold determines at what level the
+        splitting should occur, and folders can also be created at a
+        certain structure level.
+        """
+
+        return True
+
+    def mergeDocuments(self, handleList):
+        """Merge a list of document handles into a single document.
+        """
+
+        fileList = []
+        for tHandle in handleList:
+            tItem = self.getItem(tHandle)
+            if tItem is None:
+                continue
+            if tItem.itemType == nwItemType.FILE:
+                fileList.append(tHandle)
+            else:
+                pass
+
+        mergeText = ""
+        for tHandle in fileList:
+            pass
+
+        return True
+
+    ##
     #  Set Functions
     ##
 
