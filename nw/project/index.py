@@ -233,7 +233,12 @@ class NWIndex():
         logger.debug("Indexing item with handle %s" % tHandle)
 
         # Check file type, and reset its old index
+        # Also add an entry for T0 in case the file has no title
         self.refIndex[tHandle] = {}
+        self.refIndex[tHandle]["T0"] = {
+            "tags"    : [],
+            "updated" : time(),
+        }
         if itemLayout == nwItemLayout.NOTE:
             self.noteIndex[tHandle] = {}
             isNovel = False
@@ -375,6 +380,9 @@ class NWIndex():
             return False
 
         sTitle = "T%d" % nTitle
+        if sTitle not in self.refIndex[tHandle]:
+            logger.error("Cannot save tags to file %s, no title %s" % (tHandle, sTitle))
+            return False
 
         if theBits[0] != nwKeyWords.TAG_KEY:
             for aVal in theBits[1:]:
