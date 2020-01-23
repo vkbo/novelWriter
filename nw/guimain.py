@@ -27,7 +27,7 @@ from nw.gui import (
     GuiMainMenu, GuiMainStatus, GuiTheme, GuiDocTree, GuiDocEditor,
     GuiDocViewer, GuiDocDetails, GuiSearchBar, GuiNoticeBar,
     GuiDocViewDetails, GuiConfigEditor, GuiProjectEditor, GuiExport,
-    GuiItemEditor, GuiTimeLineView, GuiSessionLogView
+    GuiItemEditor, GuiTimeLineView, GuiSessionLogView, GuiDocMerge
 )
 from nw.project import NWProject, NWDoc, NWItem, NWIndex, NWBackup
 from nw.tools import countWords
@@ -455,6 +455,17 @@ class GuiMain(QMainWindow):
                 return False
 
         self.docEditor.replaceText(theText)
+
+        return True
+
+    def mergeDocuments(self):
+        """Merge multiple documents to one single new document.
+        """
+
+        if self.mainConf.showGUI:
+            dlgMerge = GuiDocMerge(self, self.theProject)
+            if dlgMerge.exec_():
+                pass
 
         return True
 

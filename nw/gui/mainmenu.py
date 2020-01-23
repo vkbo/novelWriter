@@ -369,6 +369,13 @@ class GuiMainMenu(QMenuBar):
         self.aImportFile.triggered.connect(self.theParent.importDocument)
         self.docuMenu.addAction(self.aImportFile)
 
+        # Document > Merge Documents
+        self.aMergeDocs = QAction("Merge Documents", self)
+        self.aMergeDocs.setStatusTip("Merge multiple documents")
+        # self.aMergeDocs.setShortcut("Ctrl+Shift+I")
+        self.aMergeDocs.triggered.connect(self.theParent.mergeDocuments)
+        self.docuMenu.addAction(self.aMergeDocs)
+
         return
 
     def _buildViewMenu(self):

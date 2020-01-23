@@ -46,7 +46,9 @@ class GuiIcons:
 
     DECO_MAP = {
         "export"   : "export.svg",
+        "merge"    : "merge.svg",
         "settings" : "gear.svg",
+        "split"    : "split.svg",
     }
 
     def __init__(self, theParent):
