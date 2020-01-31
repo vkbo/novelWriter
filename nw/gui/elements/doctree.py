@@ -171,14 +171,21 @@ class GuiDocTree(QTreeWidget):
                 return False
 
         # Add the new item to the tree
-        nwItem = self.theProject.getItem(tHandle)
-        trItem = self._addTreeItem(nwItem)
+        self.revealTreeItem(tHandle)
+        self.theParent.editItem()
+
+        return True
+
+    def revealTreeItem(self, tHandle):
+        """Reveal a newly added project item in the project tree.
+        """
+        nwItem  = self.theProject.getItem(tHandle)
+        trItem  = self._addTreeItem(nwItem)
+        pHandle = nwItem.parHandle
         if pHandle is not None and pHandle in self.theMap.keys():
             self.theMap[pHandle].setExpanded(True)
         self.clearSelection()
         trItem.setSelected(True)
-        self.theParent.editItem()
-
         return True
 
     def moveTreeItem(self, nStep):
@@ -220,6 +227,16 @@ class GuiDocTree(QTreeWidget):
             theList = self._scanChildren(theList, self.topLevelItem(i), i)
         self.theProject.setTreeOrder(theList)
         return True
+
+    def getTreeFromHandle(self, tHandle):
+        """Recursively return all the children items starting from a
+        given item handle.
+        """
+        theList = []
+        theItem = self._getTreeItem(tHandle)
+        if theItem is not None:
+            theList = self._scanChildren(theList, theItem, 0)
+        return theList
 
     def getColumnSizes(self):
         retVals = [
