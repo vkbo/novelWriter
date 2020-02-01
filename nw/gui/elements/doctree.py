@@ -16,10 +16,10 @@ import nw
 from PyQt5.QtCore import Qt, QSize
 from PyQt5.QtGui import QFont, QColor
 from PyQt5.QtWidgets import (
-    QTreeWidget, QTreeWidgetItem, QAbstractItemView, QApplication
+    QTreeWidget, QTreeWidgetItem, QAbstractItemView, QApplication, QMessageBox
 )
 
-from nw.project import NWItem
+from nw.project import NWItem, NWDoc
 from nw.constants import (
     nwLabels, nwItemType, nwItemClass, nwItemLayout, nwAlert
 )
@@ -263,21 +263,65 @@ class GuiDocTree(QTreeWidget):
         trItemS = self._getTreeItem(tHandle)
         nwItemS = self.theProject.getItem(tHandle)
 
+        if nwItemS is None:
+            return False
+
         if nwItemS.itemType == nwItemType.FILE:
             logger.debug("User requested file %s moved to trash" % tHandle)
             trItemP = trItemS.parent()
             trItemT = self._addTrashRoot()
             if trItemP is None or trItemT is None:
-                logger.error("Could not move item to trash")
+                logger.error("Could not delete item")
                 return False
-            tIndex  = trItemP.indexOfChild(trItemS)
-            trItemC = trItemP.takeChild(tIndex)
-            trItemT.addChild(trItemC)
-            nwItemS.setParent(self.theProject.trashRoot)
-            self.clearSelection()
-            trItemP.setSelected(True)
-            self.theProject.setProjectChanged(True)
-            self.theParent.theIndex.deleteHandle(tHandle)
+
+            pHandle = nwItemS.parHandle
+            if pHandle is not None and pHandle == self.theProject.trashRoot:
+                # If the file is in the trash folder already, as the
+                # user if they want to permanently delete the file.
+
+                doPermanent = False
+                if self.mainConf.showGUI:
+                    msgBox = QMessageBox()
+                    msgRes = msgBox.question(
+                        self, "Delete File", "Permanently delete file '%s'?" % nwItemS.itemName
+                    )
+                    if msgRes == QMessageBox.Yes:
+                        doPermanent = True
+                else:
+                    doPermanent = True
+
+                if doPermanent:
+                    logger.debug("Permanently deleting file with handle %s" % tHandle)
+
+                    tIndex  = trItemP.indexOfChild(trItemS)
+                    trItemC = trItemP.takeChild(tIndex)
+                    self.clearSelection()
+                    trItemP.setSelected(True)
+
+                    if self.theParent.docEditor.theHandle == tHandle:
+                        self.theParent.closeDocument()
+
+                    theDoc = NWDoc(self.theProject, self.theParent)
+                    theDoc.deleteDocument(tHandle)
+                    self.theProject.deleteItem(tHandle)
+                    self.theParent.theIndex.deleteHandle(tHandle)
+
+            else:
+                # The file is not already in the trash folder, so we
+                # move it there.
+
+                if pHandle is None:
+                    logger.warning("File has no parent item")
+
+                tIndex  = trItemP.indexOfChild(trItemS)
+                trItemC = trItemP.takeChild(tIndex)
+                trItemT.addChild(trItemC)
+                nwItemS.setParent(self.theProject.trashRoot)
+                self.clearSelection()
+                trItemP.setSelected(True)
+
+                self.theProject.setProjectChanged(True)
+                self.theParent.theIndex.deleteHandle(tHandle)
 
         elif nwItemS.itemType == nwItemType.FOLDER:
             logger.debug("User requested folder %s deleted" % tHandle)
@@ -445,6 +489,9 @@ class GuiDocTree(QTreeWidget):
         return newItem
 
     def _addTrashRoot(self):
+        """Adds the trash root folder if it doesn't already exist in the
+        project tree.
+        """
         if self.theProject.trashRoot is None:
             self.theProject.addTrash()
             trItem = self._addTreeItem(

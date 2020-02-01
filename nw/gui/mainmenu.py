@@ -370,8 +370,8 @@ class GuiMainMenu(QMenuBar):
         self.docuMenu.addAction(self.aImportFile)
 
         # Document > Merge Documents
-        self.aMergeDocs = QAction("Merge Documents", self)
-        self.aMergeDocs.setStatusTip("Merge multiple documents")
+        self.aMergeDocs = QAction("Merge Folder to Document", self)
+        self.aMergeDocs.setStatusTip("Merge a folder of documents to a single document")
         # self.aMergeDocs.setShortcut("Ctrl+Shift+I")
         self.aMergeDocs.triggered.connect(self.theParent.mergeDocuments)
         self.docuMenu.addAction(self.aMergeDocs)

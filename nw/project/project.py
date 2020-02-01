@@ -13,7 +13,7 @@
 import logging
 import nw
 
-from os import path, mkdir, listdir
+from os import path, mkdir, listdir, unlink
 from shutil import copyfile
 from lxml import etree
 from hashlib import sha256
@@ -370,39 +370,6 @@ class NWProject():
         return True
 
     ##
-    #  Document Methods
-    ##
-
-    def splitDocument(self, tHandle, headerLevel, folderLevel):
-        """Split a document into multiple documents under the same
-        header. Header level threshold determines at what level the
-        splitting should occur, and folders can also be created at a
-        certain structure level.
-        """
-
-        return True
-
-    def mergeDocuments(self, handleList):
-        """Merge a list of document handles into a single document.
-        """
-
-        fileList = []
-        for tHandle in handleList:
-            tItem = self.getItem(tHandle)
-            if tItem is None:
-                continue
-            if tItem.itemType == nwItemType.FILE:
-                fileList.append(tHandle)
-            else:
-                pass
-
-        mergeText = ""
-        for tHandle in fileList:
-            pass
-
-        return True
-
-    ##
     #  Set Functions
     ##
 
@@ -485,9 +452,6 @@ class NWProject():
             self.setProjectChanged(True)
         return True
 
-    def getSessionWordCount(self):
-        return self.currWCount - self.lastWCount
-
     def setStatusColours(self, newCols):
         replaceMap = self.statusItems.setNewEntries(newCols)
         if self.projTree is not None:
@@ -530,6 +494,9 @@ class NWProject():
         logger.error("No tree item with handle %s" % str(tHandle))
         return None
 
+    def getSessionWordCount(self):
+        return self.currWCount - self.lastWCount
+
     def getRootItem(self, tHandle):
         """Iterate upwards in the tree until we find the item with
         parent None, the root item. We do this with a for loop with a
@@ -538,10 +505,13 @@ class NWProject():
         tItem = self.getItem(tHandle)
         if tItem is not None:
             for i in range(200):
-                tHandle = tItem.parHandle
-                tItem   = self.getItem(tHandle)
-                if tItem is None:
+                if tItem.parHandle is None:
                     return tHandle
+                else:
+                    tHandle = tItem.parHandle
+                    tItem   = self.getItem(tHandle)
+                    if tItem is None:
+                        return tHandle
         return None
 
     def getProjectItems(self):
