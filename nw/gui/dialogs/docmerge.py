@@ -15,12 +15,11 @@ import nw
 
 from PyQt5.QtCore import Qt
 from PyQt5.QtWidgets import (
-    QDialog, QHBoxLayout, QVBoxLayout, QGridLayout, QPushButton, QLabel,
-    QProgressBar, QListWidget, QAbstractItemView, QListWidgetItem
+    QDialog, QHBoxLayout, QVBoxLayout, QGridLayout, QPushButton,
+    QListWidget, QAbstractItemView, QListWidgetItem
 )
-from nw.constants import nwFiles, nwAlert, nwItemClass, nwItemType
+from nw.constants import nwAlert, nwItemType
 from nw.project import NWDoc
-from nw.tools import OptLastState
 
 logger = logging.getLogger(__name__)
 
@@ -35,8 +34,6 @@ class GuiDocMerge(QDialog):
         self.theParent  = theParent
         self.theProject = theProject
         self.sourceItem = None
-        self.optState   = DocMergeLastState(self.theProject,nwFiles.MERGE_OPT)
-        self.optState.loadSettings()
 
         self.outerBox = QHBoxLayout()
         self.innerBox = QVBoxLayout()
@@ -80,6 +77,10 @@ class GuiDocMerge(QDialog):
     ##
 
     def _doMerge(self):
+        """Perform the merge of the files in the selected folder, and
+        create a new file in the same parent folder. The old files are
+        not removed in the merge process, and must be deleted manually.
+        """
 
         logger.verbose("GuiDocMerge merge button clicked")
 
@@ -111,12 +112,10 @@ class GuiDocMerge(QDialog):
         return
 
     def _doClose(self):
-
+        """Close the dialog window without doing anything.
+        """
         logger.verbose("GuiDocMerge close button clicked")
-
-        self.optState.saveSettings()
         self.close()
-
         return
 
     ##
@@ -124,6 +123,11 @@ class GuiDocMerge(QDialog):
     ##
 
     def _populateList(self):
+        """Get the item selected in the tree, check that it is a folder,
+        and try to find all files associated with it. The valid files
+        are then added to the list view in order. The list itself can be
+        reordered by the user.
+        """
 
         tHandle = self.theParent.treeView.getSelectedHandle()
         self.sourceItem = tHandle
@@ -151,16 +155,3 @@ class GuiDocMerge(QDialog):
         return
 
 # END Class GuiDocMerge
-
-class DocMergeLastState(OptLastState):
-
-    def __init__(self, theProject, theFile):
-        OptLastState.__init__(self, theProject, theFile)
-        self.theState   = {
-        }
-        self.stringOpt = ()
-        self.boolOpt   = ()
-        self.intOpt    = ()
-        return
-
-# END Class DocMergeLastState
