@@ -66,7 +66,7 @@ class GuiDocSplit(QDialog):
         self.closeButton.clicked.connect(self._doClose)
 
         self.doMergeForm.addWidget(self.listBox,     0, 0, 1, 3)
-        self.doMergeForm.addWidget(self.splitLevel,  1, 0, 1, 2)
+        self.doMergeForm.addWidget(self.splitLevel,  1, 0, 1, 3)
         self.doMergeForm.addWidget(self.splitButton, 2, 1)
         self.doMergeForm.addWidget(self.closeButton, 2, 2)
 
@@ -112,6 +112,9 @@ class GuiDocSplit(QDialog):
         theLines = theText.splitlines()
         nLines   = len(theLines)
         theLines.insert(0, "%Split Doc")
+        logger.debug(
+            "Splitting document %s with %d lines" % (self.sourceItem,nLines)
+        )
 
         finalOrder = []
         for i in range(self.listBox.count()):
@@ -130,6 +133,7 @@ class GuiDocSplit(QDialog):
 
         fHandle = self.theProject.newFolder(srcItem.itemName, srcItem.itemClass, srcItem.parHandle)
         self.theParent.treeView.revealTreeItem(fHandle)
+        logger.verbose("Creating folder %s" % fHandle)
 
         for wTitle, iStart, iEnd in finalOrder:
 
@@ -146,36 +150,19 @@ class GuiDocSplit(QDialog):
 
             wTitle = wTitle.lstrip("#")
             wTitle = wTitle.strip()
-            print(wTitle, iStart, iEnd)
 
             nHandle = self.theProject.newFile(wTitle, srcItem.itemClass, fHandle)
             newItem = self.theProject.getItem(nHandle)
             newItem.setLayout(itemLayout)
+            logger.verbose(
+                "Creating new document %s with text from line %d to %d" % (nHandle, iStart, iEnd-1)
+            )
 
             theText = "\n".join(theLines[iStart:iEnd])
             theDoc.openDocument(nHandle, False)
             theDoc.saveDocument(theText)
             theDoc.clearDocument()
             self.theParent.treeView.revealTreeItem(nHandle)
-
-        # theDoc = NWDoc(self.theProject, self.theParent)
-        # theText = ""
-        # for tHandle in finalOrder:
-        #     theText += theDoc.openDocument(tHandle, False).rstrip()
-        #     theText += "\n\n"
-
-        # if self.sourceItem is None:
-        #     self.theParent.makeAlert((
-        #         "Cannot parse source item."
-        #     ), nwAlert.ERROR)
-        #     return
-
-        # srcItem = self.theProject.getItem(self.sourceItem)
-        # nHandle = self.theProject.newFile(srcItem.itemName, srcItem.itemClass, srcItem.parHandle)
-        # self.theParent.treeView.revealTreeItem(nHandle)
-        # theDoc.openDocument(nHandle, False)
-        # theDoc.saveDocument(theText)
-        # self.theParent.openDocument(nHandle)
 
         self.close()
 
