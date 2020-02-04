@@ -295,8 +295,6 @@ class GuiDocTree(QTreeWidget):
 
                     tIndex  = trItemP.indexOfChild(trItemS)
                     trItemC = trItemP.takeChild(tIndex)
-                    self.clearSelection()
-                    trItemP.setSelected(True)
 
                     if self.theParent.docEditor.theHandle == tHandle:
                         self.theParent.closeDocument()
@@ -317,8 +315,6 @@ class GuiDocTree(QTreeWidget):
                 trItemC = trItemP.takeChild(tIndex)
                 trItemT.addChild(trItemC)
                 nwItemS.setParent(self.theProject.trashRoot)
-                self.clearSelection()
-                trItemP.setSelected(True)
 
                 self.theProject.setProjectChanged(True)
                 self.theParent.theIndex.deleteHandle(tHandle)
@@ -332,8 +328,6 @@ class GuiDocTree(QTreeWidget):
             tIndex = trItemP.indexOfChild(trItemS)
             if trItemS.childCount() == 0:
                 trItemP.takeChild(tIndex)
-                self.clearSelection()
-                trItemP.setSelected(True)
                 self.theProject.deleteItem(tHandle)
             else:
                 self.makeAlert(["Cannot delete folder.","It is not empty."], nwAlert.ERROR)
