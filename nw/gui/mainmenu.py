@@ -372,9 +372,14 @@ class GuiMainMenu(QMenuBar):
         # Document > Merge Documents
         self.aMergeDocs = QAction("Merge Folder to Document", self)
         self.aMergeDocs.setStatusTip("Merge a folder of documents to a single document")
-        # self.aMergeDocs.setShortcut("Ctrl+Shift+I")
         self.aMergeDocs.triggered.connect(self.theParent.mergeDocuments)
         self.docuMenu.addAction(self.aMergeDocs)
+
+        # Document > Split Document
+        self.aSplitDoc = QAction("Split Document to Folder", self)
+        self.aSplitDoc.setStatusTip("Split a document into a folder of multiple documents")
+        self.aSplitDoc.triggered.connect(self.theParent.splitDocument)
+        self.docuMenu.addAction(self.aSplitDoc)
 
         return
 

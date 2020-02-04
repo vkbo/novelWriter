@@ -563,6 +563,11 @@ class NWProject():
         """This only removes the item from the order list, but not from
         the project tree.
         """
+        if tHandle not in self.treeOrder:
+            logger.warning(
+                "Could not remove item %s from treeOrder as it does not exist" % tHandle
+            )
+            return False
         self.treeOrder.remove(tHandle)
         self.setProjectChanged(True)
         return True
