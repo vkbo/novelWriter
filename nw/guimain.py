@@ -24,10 +24,10 @@ from PyQt5.QtWidgets import (
 )
 
 from nw.gui import (
-    GuiMainMenu, GuiMainStatus, GuiTheme, GuiDocTree, GuiDocEditor,
-    GuiDocViewer, GuiDocDetails, GuiSearchBar, GuiNoticeBar,
-    GuiDocViewDetails, GuiConfigEditor, GuiProjectEditor, GuiExport,
-    GuiItemEditor, GuiTimeLineView, GuiSessionLogView
+    GuiMainMenu, GuiMainStatus, GuiTheme, GuiDocTree, GuiDocEditor, GuiExport,
+    GuiDocViewer, GuiDocDetails, GuiSearchBar, GuiNoticeBar, GuiDocViewDetails,
+    GuiConfigEditor, GuiProjectEditor, GuiItemEditor, GuiTimeLineView,
+    GuiSessionLogView, GuiDocMerge, GuiDocSplit
 )
 from nw.project import NWProject, NWDoc, NWItem, NWIndex, NWBackup
 from nw.tools import countWords
@@ -83,7 +83,7 @@ class GuiMain(QMainWindow):
 
         # Assemble Main Window
         self.treePane = QFrame()
-        self.treeBox  = QVBoxLayout()
+        self.treeBox = QVBoxLayout()
         self.treeBox.setContentsMargins(0,0,0,0)
         self.treeBox.addWidget(self.treeView)
         self.treeBox.addWidget(self.treeMeta)
@@ -456,6 +456,22 @@ class GuiMain(QMainWindow):
 
         self.docEditor.replaceText(theText)
 
+        return True
+
+    def mergeDocuments(self):
+        """Merge multiple documents to one single new document.
+        """
+        if self.mainConf.showGUI:
+            dlgMerge = GuiDocMerge(self, self.theProject)
+            dlgMerge.exec_()
+        return True
+
+    def splitDocument(self):
+        """Split a single document into multiple documents.
+        """
+        if self.mainConf.showGUI:
+            dlgSplit = GuiDocSplit(self, self.theProject)
+            dlgSplit.exec_()
         return True
 
     def passDocumentAction(self, theAction):

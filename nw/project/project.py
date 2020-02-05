@@ -13,7 +13,7 @@
 import logging
 import nw
 
-from os import path, mkdir, listdir
+from os import path, mkdir, listdir, unlink
 from shutil import copyfile
 from lxml import etree
 from hashlib import sha256
@@ -452,9 +452,6 @@ class NWProject():
             self.setProjectChanged(True)
         return True
 
-    def getSessionWordCount(self):
-        return self.currWCount - self.lastWCount
-
     def setStatusColours(self, newCols):
         replaceMap = self.statusItems.setNewEntries(newCols)
         if self.projTree is not None:
@@ -497,6 +494,9 @@ class NWProject():
         logger.error("No tree item with handle %s" % str(tHandle))
         return None
 
+    def getSessionWordCount(self):
+        return self.currWCount - self.lastWCount
+
     def getRootItem(self, tHandle):
         """Iterate upwards in the tree until we find the item with
         parent None, the root item. We do this with a for loop with a
@@ -505,10 +505,13 @@ class NWProject():
         tItem = self.getItem(tHandle)
         if tItem is not None:
             for i in range(200):
-                tHandle = tItem.parHandle
-                tItem   = self.getItem(tHandle)
-                if tItem is None:
+                if tItem.parHandle is None:
                     return tHandle
+                else:
+                    tHandle = tItem.parHandle
+                    tItem   = self.getItem(tHandle)
+                    if tItem is None:
+                        return tHandle
         return None
 
     def getProjectItems(self):
@@ -560,6 +563,11 @@ class NWProject():
         """This only removes the item from the order list, but not from
         the project tree.
         """
+        if tHandle not in self.treeOrder:
+            logger.warning(
+                "Could not remove item %s from treeOrder as it does not exist" % tHandle
+            )
+            return False
         self.treeOrder.remove(tHandle)
         self.setProjectChanged(True)
         return True
