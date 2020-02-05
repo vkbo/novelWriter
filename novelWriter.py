@@ -3,8 +3,8 @@
 
 import sys
 
-if sys.hexversion < 0x030500F0:
-    print("ERROR: At least Python 3.5 is required")
+if sys.hexversion < 0x030600F0:
+    print("ERROR: At least Python 3.6 is required")
     sys.exit(1)
 
 try:
