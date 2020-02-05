@@ -1,10 +1,9 @@
 os: linux
-dist: xenial
+dist: bionic
 services:
   - xvfb
 language: python
 cache: bundler
-sudo: required
 addons:
   apt:
     packages:
@@ -13,7 +12,7 @@ addons:
       - python3-pyqt5.qtsvg
 python:
   - "3.5"
-  - "3.7"
+  - "3.8"
 install:
   - pip install --upgrade pip
   - pip install -r requirements.txt
