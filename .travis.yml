@@ -9,19 +9,15 @@ addons:
   apt:
     packages:
       - libenchant-dev
-#     - python3-pyqt5
-#     - python3-pyqt5.qtsvg
-#     - python3-appdirs
-#     - python3-lxml
-#     - python3-enchant
+      - python3-pyqt5
+      - python3-pyqt5.qtsvg
 python:
   - "3.5"
   - "3.7"
 install:
+  - pip install --upgrade pip
   - pip install -r requirements.txt
 # - pip install pytest-faulthandler
-# - pip install latexcodec
-# - pip install pypandoc
   - pip install pytest-xvfb
   - pip install pytest-cov
   - pip install pytest-qt
