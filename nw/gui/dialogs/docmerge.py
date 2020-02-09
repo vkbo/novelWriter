@@ -46,7 +46,7 @@ class GuiDocMerge(QDialog):
         self.outerBox.addLayout(self.innerBox)
 
         self.doMergeForm = QGridLayout()
-        self.doMergeForm.setContentsMargins(10,5,0,10)
+        self.doMergeForm.setContentsMargins(0,0,0,0)
 
         self.listBox = QListWidget()
         self.listBox.setDragDropMode(QAbstractItemView.InternalMove)
