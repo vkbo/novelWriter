@@ -252,6 +252,7 @@ class GuiDocTree(QTreeWidget):
         deleteItem function for each document in the Trash folder.
         """
 
+        logger.debug("Emptying Trash folder")
         if self.theProject.trashRoot is None:
             self.makeAlert("There is no Trash folder.", nwAlert.INFO)
             return False
@@ -261,7 +262,6 @@ class GuiDocTree(QTreeWidget):
             theTrash.remove(self.theProject.trashRoot)
 
         nTrash = len(theTrash)
-        print(theTrash)
         if nTrash == 0:
             self.makeAlert("The Trash folder is empty.", nwAlert.INFO)
             return False
@@ -275,6 +275,7 @@ class GuiDocTree(QTreeWidget):
         if msgRes != QMessageBox.Yes:
             return False
 
+        logger.verbose("Deleting %d files from Trash" % nTrash)
         for tHandle in self.getTreeFromHandle(self.theProject.trashRoot):
             if tHandle == self.theProject.trashRoot:
                 continue
