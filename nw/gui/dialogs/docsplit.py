@@ -46,16 +46,16 @@ class GuiDocSplit(QDialog):
         self.outerBox.addLayout(self.innerBox)
 
         self.doMergeForm = QGridLayout()
-        self.doMergeForm.setContentsMargins(10,5,0,10)
+        self.doMergeForm.setContentsMargins(0,0,0,0)
 
         self.listBox = QListWidget()
         self.listBox.setDragDropMode(QAbstractItemView.NoDragDrop)
 
         self.splitLevel = QComboBox(self)
-        self.splitLevel.addItem("Split on Title (Level 1)",   1)
-        self.splitLevel.addItem("Split on Chapter (Level 2)", 2)
-        self.splitLevel.addItem("Split on Scene (Level 3)",   3)
-        self.splitLevel.addItem("Split on Section (Level 4)", 4)
+        self.splitLevel.addItem("Split on Header Level 1 (Title)",      1)
+        self.splitLevel.addItem("Split up to Header Level 2 (Chapter)", 2)
+        self.splitLevel.addItem("Split up to Header Level 3 (Scene)",   3)
+        self.splitLevel.addItem("Split up to Header Level 4 (Section)", 4)
         self.splitLevel.setCurrentIndex(2)
         self.splitLevel.currentIndexChanged.connect(self._populateList)
 
