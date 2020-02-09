@@ -613,16 +613,22 @@ class GuiDocTree(QTreeWidget):
         """
         sHandle = self.getSelectedHandle()
         if sHandle is None:
+            logger.error("No handle selected")
             return
 
-        dIndex  = self.indexAt(theEvent.pos())
+        dIndex = self.indexAt(theEvent.pos())
         if not dIndex.isValid():
+            logger.error("Invalid drop index")
             return
 
         dItem   = self.itemFromIndex(dIndex)
         dHandle = dItem.text(self.C_HANDLE)
         snItem  = self.theProject.getItem(sHandle)
         dnItem  = self.theProject.getItem(dHandle)
+        if dnItem is None:
+            self.makeAlert("The item cannot be moved to that location.", nwAlert.ERROR)
+            return
+
         isSame  = snItem.itemClass == dnItem.itemClass
         isNone  = snItem.itemClass == nwItemClass.NO_CLASS
         isNote  = snItem.itemLayout == nwItemLayout.NOTE
