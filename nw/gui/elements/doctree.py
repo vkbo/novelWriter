@@ -246,7 +246,43 @@ class GuiDocTree(QTreeWidget):
         ]
         return retVals
 
-    def deleteItem(self, tHandle=None):
+    def emptyTrash(self):
+        """Permanently delete all documents in the Trash folder. This
+        function only asks for confirmation once, and calls the regular
+        deleteItem function for each document in the Trash folder.
+        """
+
+        if self.theProject.trashRoot is None:
+            self.makeAlert("There is no Trash folder.", nwAlert.INFO)
+            return False
+
+        theTrash = self.getTreeFromHandle(self.theProject.trashRoot)
+        if self.theProject.trashRoot in theTrash:
+            theTrash.remove(self.theProject.trashRoot)
+
+        nTrash = len(theTrash)
+        print(theTrash)
+        if nTrash == 0:
+            self.makeAlert("The Trash folder is empty.", nwAlert.INFO)
+            return False
+
+        msgBox = QMessageBox()
+        msgRes = msgBox.question(
+            self, "Empty Trash", "Permanently delete %d file%s from Trash?" % (
+                nTrash, "s"*int(nTrash > 1)
+            )
+        )
+        if msgRes != QMessageBox.Yes:
+            return False
+
+        for tHandle in self.getTreeFromHandle(self.theProject.trashRoot):
+            if tHandle == self.theProject.trashRoot:
+                continue
+            self.deleteItem(tHandle, True)
+
+        return True
+
+    def deleteItem(self, tHandle=None, alreadyAsked=False):
         """Delete items from the tree. Note that this does not delete
         the item from the item tree in the project object. However,
         since this is only meta data, there isn't really a need to do
@@ -280,7 +316,7 @@ class GuiDocTree(QTreeWidget):
                 # user if they want to permanently delete the file.
 
                 doPermanent = False
-                if self.mainConf.showGUI:
+                if self.mainConf.showGUI and not alreadyAsked:
                     msgBox = QMessageBox()
                     msgRes = msgBox.question(
                         self, "Delete File", "Permanently delete file '%s'?" % nwItemS.itemName

@@ -281,6 +281,12 @@ class GuiMainMenu(QMenuBar):
         self.aDeleteItem.triggered.connect(lambda : self.theParent.treeView.deleteItem(None))
         self.projMenu.addAction(self.aDeleteItem)
 
+        # Project > Empty Trash
+        self.aEmptyTrash = QAction("Empty Trash", self)
+        self.aEmptyTrash.setStatusTip("Permanently delete all files in the Trash folder")
+        self.aEmptyTrash.triggered.connect(self.theParent.treeView.emptyTrash)
+        self.projMenu.addAction(self.aEmptyTrash)
+
         # Project > Separator
         self.projMenu.addSeparator()
 
