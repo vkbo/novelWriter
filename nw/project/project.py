@@ -210,8 +210,20 @@ class NWProject():
             nwXML = etree.parse(fileName)
         except Exception as e:
             self.makeAlert(["Failed to parse project xml.",str(e)], nwAlert.ERROR)
-            self.clearProject()
-            return False
+
+            # Trying to open backup file instead
+            backFile = fileName[:-3]+"bak"
+            if path.isfile(backFile):
+                self.makeAlert("Attempting to open backup project file instead.", nwAlert.INFO)
+                try:
+                    nwXML = etree.parse(backFile)
+                except Exception as e:
+                    self.makeAlert(["Failed to parse project xml.",str(e)], nwAlert.ERROR)
+                    self.clearProject()
+                    return False
+            else:
+                self.clearProject()
+                return False
 
         xRoot   = nwXML.getroot()
         nwxRoot = xRoot.tag
@@ -295,6 +307,11 @@ class NWProject():
         return True
 
     def saveProject(self):
+        """Save the project main XML file. The saving command itself
+        uses a temporary filename, and the file is renamed afterwards to
+        make sure if the save fails, we're not left with a truncated
+        file.
+        """
 
         if self.projPath is None:
             self.makeAlert("Project path not set, cannot save.", nwAlert.ERROR)
