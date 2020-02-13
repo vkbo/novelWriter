@@ -50,7 +50,6 @@ class NWProject():
         self.trashRoot = None # The handle of the trash root folder
         self.projPath  = None # The full path to where the currently open project is saved
         self.projMeta  = None # The full path to the project's meta data folder
-        self.projCache = None # The full path to the project's cache folder
         self.projDict  = None # The spell check dictionary
         self.projFile  = None # The file name of the project main xml file
 
@@ -154,7 +153,6 @@ class NWProject():
         self.trashRoot   = None
         self.projPath    = None
         self.projMeta    = None
-        self.projCache   = None
         self.projDict    = None
         self.projFile    = nwFiles.PROJ_FILE
         self.projName    = ""
@@ -196,13 +194,10 @@ class NWProject():
         self.projPath = path.dirname(fileName)
         logger.debug("Opening project: %s" % self.projPath)
 
-        self.projMeta  = path.join(self.projPath,"meta")
-        self.projCache = path.join(self.projPath,"cache")
-        self.projDict  = path.join(self.projMeta, nwFiles.PROJ_DICT)
+        self.projMeta = path.join(self.projPath,"meta")
+        self.projDict = path.join(self.projMeta, nwFiles.PROJ_DICT)
 
         if not self._checkFolder(self.projMeta):
-            return
-        if not self._checkFolder(self.projCache):
             return
 
         try:
@@ -299,12 +294,10 @@ class NWProject():
             self.makeAlert("Project path not set, cannot save.", nwAlert.ERROR)
             return False
 
-        self.projMeta  = path.join(self.projPath,"meta")
-        self.projCache = path.join(self.projPath,"cache")
+        self.projMeta = path.join(self.projPath,"meta")
 
-        if not self._checkFolder(self.projPath):  return
-        if not self._checkFolder(self.projMeta):  return
-        if not self._checkFolder(self.projCache): return
+        if not self._checkFolder(self.projPath): return
+        if not self._checkFolder(self.projMeta): return
 
         logger.debug("Saving project: %s" % self.projPath)
 
