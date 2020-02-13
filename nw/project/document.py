@@ -100,25 +100,23 @@ class NWDoc():
             mkdir(dataPath)
             logger.debug("Created folder %s" % dataPath)
 
-        docTemp = path.join(dataPath,docFile[:-3]+"tmp")
-        docBack = path.join(dataPath,docFile[:-3]+"bak")
-
-        if path.isfile(docTemp):
-            unlink(docTemp)
-        if path.isfile(docBack):
-            rename(docBack,docTemp)
-        if path.isfile(docPath):
-            rename(docPath,docBack)
+        docTemp = path.join(dataPath, docFile+"~")
+        docBack = path.join(dataPath, docFile[:-3]+"bak")
 
         try:
-            with open(docPath,mode="w",encoding="utf8") as outFile:
+            with open(docTemp,mode="w",encoding="utf8") as outFile:
                 outFile.write(docText)
         except Exception as e:
             self.makeAlert(["Could not save document.",str(e)], nwAlert.ERROR)
             return False
 
-        if path.isfile(docTemp):
-            unlink(docTemp)
+        # If we're here, the file was successfully saved,
+        # so let's sort out the temps and backups
+        if path.isfile(docBack):
+            unlink(docBack)
+        if path.isfile(docPath):
+            rename(docPath, docBack)
+        rename(docTemp, docPath)
 
         self.theParent.statusBar.setStatus("Saved Document: %s" % self.theItem.itemName)
 
@@ -132,8 +130,8 @@ class NWDoc():
         dataPath = path.join(self.theProject.projPath, docDir)
         chkList = []
         chkList.append(path.join(dataPath, docFile))
-        chkList.append(path.join(dataPath,docFile[:-3]+"tmp"))
-        chkList.append(path.join(dataPath,docFile[:-3]+"bak"))
+        chkList.append(path.join(dataPath, docFile+"~"))
+        chkList.append(path.join(dataPath, docFile[:-3]+"bak"))
         for chkFile in chkList:
             if path.isfile(chkFile):
                 try:
@@ -147,7 +145,7 @@ class NWDoc():
     @staticmethod
     def assemblePath(tHandle, docExt):
         if tHandle is None:
-            return None
+            return None, None
         docDir  = "data_"+tHandle[0]
         docFile = tHandle[1:13]+"_"+docExt
         return docDir, docFile
