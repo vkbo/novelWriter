@@ -22,6 +22,7 @@ from time import time
 
 from nw.project.status import NWStatus
 from nw.project.item import NWItem
+from nw.tools import projectMaintenance
 from nw.common import checkString, checkBool, checkInt
 from nw.constants import (
     nwFiles, nwConst, nwItemType, nwItemClass, nwItemLayout, nwAlert
@@ -199,6 +200,11 @@ class NWProject():
 
         if not self._checkFolder(self.projMeta):
             return
+
+        try:
+            projectMaintenance(self)
+        except Exception as E:
+            logger.error(str(E))
 
         try:
             nwXML = etree.parse(fileName)
