@@ -13,7 +13,7 @@
 import logging
 import nw
 
-from os import path, mkdir, listdir, unlink
+from os import path, mkdir, listdir, unlink, rename
 from shutil import copyfile
 from lxml import etree
 from hashlib import sha256
@@ -180,6 +180,11 @@ class NWProject():
         return
 
     def openProject(self, fileName):
+        """Open the project file provided, or if doesn't exist, assume
+        it is a folder, and look for the file within it. If successful,
+        parse the XML of the file and populate the project variables and
+        build the tree of project items.
+        """
 
         if not path.isfile(fileName):
             fileName = path.join(fileName, nwFiles.PROJ_FILE)
@@ -288,7 +293,7 @@ class NWProject():
 
         return True
 
-    def saveProject(self, isAuto=False):
+    def saveProject(self):
 
         if self.projPath is None:
             self.makeAlert("Project path not set, cannot save.", nwAlert.ERROR)
@@ -302,10 +307,6 @@ class NWProject():
         if not self._checkFolder(self.projCache): return
 
         logger.debug("Saving project: %s" % self.projPath)
-
-        # Save a copy of the current file, just in case
-        if not isAuto:
-            self._maintainPrevious()
 
         # Root element and project details
         logger.debug("Writing project meta")
@@ -345,9 +346,11 @@ class NWProject():
             self.projTree[tHandle].packXML(xContent)
 
         # Write the xml tree to file
-        saveFile = path.join(self.projPath,self.projFile)
+        tempFile = path.join(self.projPath, self.projFile+"~")
+        saveFile = path.join(self.projPath, self.projFile)
+        backFile = path.join(self.projPath, self.projFile[:-3]+"bak")
         try:
-            with open(saveFile,mode="wb") as outFile:
+            with open(tempFile, mode="wb") as outFile:
                 outFile.write(etree.tostring(
                     nwXML,
                     pretty_print    = True,
@@ -357,6 +360,14 @@ class NWProject():
         except Exception as e:
             self.makeAlert(["Failed to save project.",str(e)], nwAlert.ERROR)
             return False
+
+        # If we're here, the file was successfully saved,
+        # so let's sort out the temps and backups
+        if path.isfile(backFile):
+            unlink(backFile)
+        if path.isfile(saveFile):
+            rename(saveFile, backFile)
+        rename(tempFile, saveFile)
 
         self.mainConf.setRecent(self.projPath)
         self.theParent.setStatus("Saved Project: %s" % self.projName)
@@ -739,43 +750,5 @@ class NWProject():
             logger.warning("Duplicate handle encountered! Retrying ...")
             itemHandle = self._makeHandle(addSeed+"!")
         return itemHandle
-
-    def _maintainPrevious(self):
-        """This function will take the current project file and copy it
-        into the project cache folder with an incremental file extension
-        added. These serve as a backup in case the xml file gets
-        corrupted.
-        """
-
-        countFile = path.join(self.projCache, nwFiles.PROJ_COUNT)
-        projCount = 0
-
-        if path.isfile(countFile):
-            try:
-                with open(countFile, mode="r") as inFile:
-                    projCount = int(inFile.read())+1
-            except:
-                projCount = 0
-
-        if projCount > 9:
-            projCount = 0
-
-        projBackup = "%s.%d" % (nwFiles.PROJ_FILE, projCount)
-
-        try:
-            copyfile(
-                path.join(self.projPath, self.projFile),
-                path.join(self.projCache, projBackup)
-            )
-        except:
-            logger.error("Failed to write to file %s" % projBackup)
-
-        try:
-            with open(countFile, mode="w") as outFile:
-                outFile.write(str(projCount))
-        except:
-            logger.error("Failed to write to file %s" % countFile)
-
-        return
 
 # END Class NWProject
