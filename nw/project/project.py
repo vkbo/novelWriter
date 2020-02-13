@@ -192,7 +192,7 @@ class NWProject():
                 return False
 
         self.clearProject()
-        self.projPath = path.dirname(fileName)
+        self.projPath = path.abspath(path.dirname(fileName))
         logger.debug("Opening project: %s" % self.projPath)
 
         self.projMeta = path.join(self.projPath,"meta")
