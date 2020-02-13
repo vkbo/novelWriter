@@ -41,6 +41,7 @@ class Config:
         self.appHandle = nw.__package__.lower()
         self.showGUI   = True
         self.debugInfo = False
+        self.cmdOpen   = None
 
         # Set Paths
         self.confPath  = None
@@ -57,7 +58,7 @@ class Config:
         self.iconPath  = None
 
         # Set default values
-        self.confChanged  = False
+        self.confChanged = False
 
         ## General
         self.guiTheme  = "default"

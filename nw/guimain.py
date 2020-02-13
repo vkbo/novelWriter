@@ -182,6 +182,10 @@ class GuiMain(QMainWindow):
 
         logger.debug("GUI initialisation complete")
 
+        if self.mainConf.cmdOpen is not None:
+            logger.debug("Opening project from additional command line option")
+            self.openProject(self.mainConf.cmdOpen)
+
         return
 
     def clearGUI(self):

@@ -126,13 +126,17 @@ def main(sysArgs=None):
     confPath   = None
     testMode   = False
     qtStyle    = "Fusion"
+    cmdOpen    = None
 
     # Parse Options
     try:
-        inOpts, inArgs = getopt.getopt(sysArgs,shortOpt,longOpt)
+        inOpts, inRemain = getopt.getopt(sysArgs,shortOpt,longOpt)
     except getopt.GetoptError:
         print(helpMsg)
         sys.exit(2)
+
+    if len(inRemain) > 0:
+        cmdOpen = inRemain[0]
 
     for inOpt, inArg in inOpts:
         if inOpt in ("-h","--help"):
@@ -165,6 +169,7 @@ def main(sysArgs=None):
     # Set Config Options
     CONFIG.showGUI   = not testMode
     CONFIG.debugInfo = debugLevel < logging.INFO
+    CONFIG.cmdOpen   = cmdOpen
 
     # Set Logging
     if showTime: debugStr = timeStr+debugStr
