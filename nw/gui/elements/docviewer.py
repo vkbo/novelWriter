@@ -13,9 +13,9 @@
 import logging
 import nw
 
-from PyQt5.QtCore import Qt
-from PyQt5.QtWidgets import QTextBrowser
-from PyQt5.QtGui import QTextOption, QFont, QPalette, QColor, QTextCursor
+from PySide2.QtCore import Qt
+from PySide2.QtWidgets import QTextBrowser
+from PySide2.QtGui import QTextOption, QFont, QPalette, QColor, QTextCursor
 
 from nw.convert import ToHtml
 from nw.constants import nwAlert, nwItemType, nwDocAction

@@ -15,7 +15,7 @@ import nw
 
 from os import path
 
-from PyQt5.QtWidgets import QMessageBox
+from PySide2.QtWidgets import QMessageBox
 
 from nw.convert.text.totext import ToText
 from nw.constants import nwAlert, nwItemType, nwItemLayout, nwItemClass

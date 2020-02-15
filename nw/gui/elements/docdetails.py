@@ -13,9 +13,9 @@
 import logging
 import nw
 
-from PyQt5.QtCore import Qt
-from PyQt5.QtGui import QFont
-from PyQt5.QtWidgets import QFrame, QGridLayout, QLabel
+from PySide2.QtCore import Qt
+from PySide2.QtGui import QFont
+from PySide2.QtWidgets import QFrame, QGridLayout, QLabel
 
 from nw.constants import nwLabels
 

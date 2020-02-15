@@ -16,8 +16,8 @@ import nw
 
 from os import path
 
-from PyQt5.QtCore import Qt
-from PyQt5.QtWidgets import (
+from PySide2.QtCore import Qt
+from PySide2.QtWidgets import (
     QDialog, QHBoxLayout, QVBoxLayout, QWidget, QTabWidget, QGridLayout,
     QGroupBox, QCheckBox, QLabel, QComboBox, QLineEdit, QPushButton,
     QFileDialog, QProgressBar, QSpinBox, QMessageBox

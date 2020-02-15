@@ -13,8 +13,8 @@
 import logging
 import nw
 
-from PyQt5.QtCore import Qt, QRegularExpression
-from PyQt5.QtGui import (
+from PySide2.QtCore import Qt, QRegularExpression
+from PySide2.QtGui import (
     QColor, QTextCharFormat, QFont, QSyntaxHighlighter, QBrush
 )
 

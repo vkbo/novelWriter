@@ -15,9 +15,9 @@ import nw
 
 from os import path
 
-from PyQt5.QtCore import QSize
-from PyQt5.QtSvg import QSvgWidget
-from PyQt5.QtGui import QIcon, QPixmap
+from PySide2.QtCore import QSize
+from PySide2.QtSvg import QSvgWidget
+from PySide2.QtGui import QIcon, QPixmap
 
 logger = logging.getLogger(__name__)
 

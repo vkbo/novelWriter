@@ -16,7 +16,7 @@ import logging
 
 from os import path, remove, rename
 
-from PyQt5.QtWidgets import QApplication
+from PySide2.QtWidgets import QApplication
 
 from nw.guimain import GuiMain
 from nw.config import Config

@@ -13,9 +13,9 @@
 import logging
 import nw
 
-from PyQt5.QtCore import QUrl
-from PyQt5.QtGui import QDesktopServices
-from PyQt5.QtWidgets import QMenuBar, QAction, QMessageBox
+from PySide2.QtCore import QUrl
+from PySide2.QtGui import QDesktopServices
+from PySide2.QtWidgets import QMenuBar, QAction, QMessageBox
 
 from nw.constants import nwItemType, nwItemClass, nwDocAction
 

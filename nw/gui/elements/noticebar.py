@@ -13,7 +13,7 @@
 import logging
 import nw
 
-from PyQt5.QtWidgets import QFrame, QHBoxLayout, QLabel, QPushButton
+from PySide2.QtWidgets import QFrame, QHBoxLayout, QLabel, QPushButton
 
 logger = logging.getLogger(__name__)
 

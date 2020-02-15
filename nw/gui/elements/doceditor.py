@@ -15,11 +15,11 @@ import nw
 
 from time import time
 
-from PyQt5.QtCore import Qt, QTimer
-from PyQt5.QtWidgets import (
+from PySide2.QtCore import Qt, QTimer
+from PySide2.QtWidgets import (
     qApp, QTextEdit, QAction, QMenu, QShortcut, QMessageBox
 )
-from PyQt5.QtGui import (
+from PySide2.QtGui import (
     QTextCursor, QTextOption, QKeySequence, QFont, QColor, QPalette,
     QTextDocument, QCursor
 )

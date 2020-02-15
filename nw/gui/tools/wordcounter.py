@@ -13,7 +13,7 @@
 import logging
 import nw
 
-from PyQt5.QtCore import QThread
+from PySide2.QtCore import QThread
 
 from nw.tools.wordcount import countWords
 

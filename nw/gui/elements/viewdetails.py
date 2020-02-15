@@ -13,8 +13,8 @@
 import logging
 import nw
 
-from PyQt5.QtCore import Qt, QSize
-from PyQt5.QtWidgets import (
+from PySide2.QtCore import Qt, QSize
+from PySide2.QtWidgets import (
     QWidget, QLabel, QScrollArea, QFrame, QToolButton, QCheckBox, QGridLayout
 )
 

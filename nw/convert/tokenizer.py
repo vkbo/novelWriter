@@ -15,7 +15,7 @@ import re
 import nw
 
 from operator import itemgetter
-from PyQt5.QtCore import QRegularExpression
+from PySide2.QtCore import QRegularExpression
 
 from nw.project.document import NWDoc
 from nw.tools.translate import numberToWord

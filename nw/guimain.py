@@ -16,9 +16,9 @@ import nw
 
 from os import path
 
-from PyQt5.QtCore import Qt, QTimer
-from PyQt5.QtGui import QIcon, QPixmap, QColor
-from PyQt5.QtWidgets import (
+from PySide2.QtCore import Qt, QTimer
+from PySide2.QtGui import QIcon, QPixmap, QColor
+from PySide2.QtWidgets import (
     qApp, QMainWindow, QVBoxLayout, QFrame, QSplitter, QFileDialog, QShortcut,
     QMessageBox, QProgressDialog, QDialog
 )
@@ -55,7 +55,7 @@ class GuiMain(QMainWindow):
         logger.info("Qt5 Version: %s (%d)" % (
             self.mainConf.verQtString, self.mainConf.verQtValue)
         )
-        logger.info("PyQt5 Version: %s (%d)" % (
+        logger.info("PySide2 Version: %s (%d)" % (
             self.mainConf.verPyQtString, self.mainConf.verPyQtValue)
         )
         logger.info("Python Version: %s (0x%x)" % (

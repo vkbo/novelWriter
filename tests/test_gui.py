@@ -6,7 +6,7 @@ import nw, pytest, sys
 from nwtools import *
 
 from os import path, unlink
-from PyQt5.QtCore import Qt
+from PySide2.QtCore import Qt
 
 from nw.gui.dialogs.projecteditor import GuiProjectEditor
 from nw.gui.dialogs.timelineview  import GuiTimeLineView

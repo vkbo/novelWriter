@@ -8,17 +8,27 @@ if sys.hexversion < 0x030600F0:
     sys.exit(1)
 
 try:
-    import PyQt5.QtWidgets
-    import PyQt5.QtGui
-    import PyQt5.QtCore
+    import PySide2.QtCore
 except:
-    print("ERROR: Failed to load dependency python3-pyqt5")
+    print("ERROR: Failed to load dependency python3-pyside2.qtcore")
     sys.exit(1)
 
 try:
-    import PyQt5.QtSvg
+    import PySide2.QtGui
 except:
-    print("ERROR: Failed to load dependency python3-pyqt5.qtsvg")
+    print("ERROR: Failed to load dependency python3-pyside2.qtgui")
+    sys.exit(1)
+
+try:
+    import PySide2.QtWidgets
+except:
+    print("ERROR: Failed to load dependency python3-pyside2.qtwidgets")
+    sys.exit(1)
+
+try:
+    import PySide2.QtSvg
+except:
+    print("ERROR: Failed to load dependency python3-pyside2.qtsvg")
     sys.exit(1)
 
 try:
