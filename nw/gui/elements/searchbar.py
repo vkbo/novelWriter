@@ -86,13 +86,13 @@ class GuiSearchBar(QFrame):
         if not self.isVisible():
             self.setVisible(True)
         self.searchBox.setText(theText)
-        self.searchBox.setFocus(True)
+        self.searchBox.setFocus()
         logger.verbose("Setting search text to '%s'" % theText)
         return True
 
     def setReplaceText(self, theText):
         self._replaceVisible(True)
-        self.replaceBox.setFocus(True)
+        self.replaceBox.setFocus()
         self.replaceBox.setText(theText)
         return True
 

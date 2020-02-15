@@ -17,7 +17,7 @@ import nw
 from os import path
 
 from PyQt5.QtCore import Qt, QTimer
-from PyQt5.QtGui import QIcon, QPixmap, QColor
+from PyQt5.QtGui import QIcon, QPixmap, QColor, QKeySequence
 from PyQt5.QtWidgets import (
     qApp, QMainWindow, QVBoxLayout, QFrame, QSplitter, QFileDialog, QShortcut,
     QMessageBox, QProgressDialog, QDialog
@@ -152,17 +152,12 @@ class GuiMain(QMainWindow):
 
         # Shortcuts and Actions
         self._connectMenuActions()
-        QShortcut(
-            Qt.Key_Return,
-            self.treeView,
-            context=Qt.WidgetShortcut,
-            activated=self._treeKeyPressReturn
-        )
-        QShortcut(
-            Qt.Key_Escape,
-            self,
-            activated=self._keyPressEscape
-        )
+        keyReturn = QShortcut(self.treeView)
+        keyReturn.setKey(QKeySequence(Qt.Key_Return))
+        keyReturn.activated.connect(self._treeKeyPressReturn)
+        keyEscape = QShortcut(self)
+        keyEscape.setKey(QKeySequence(Qt.Key_Escape))
+        keyEscape.activated.connect(self._keyPressEscape)
 
         # Forward Functions
         self.setStatus = self.statusBar.setStatus

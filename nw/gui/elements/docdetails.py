@@ -23,11 +23,6 @@ logger = logging.getLogger(__name__)
 
 class GuiDocDetails(QFrame):
 
-    C_NAME   = 0
-    C_COUNT  = 1
-    C_FLAGS  = 2
-    C_HANDLE = 3
-
     def __init__(self, theParent, theProject):
         QFrame.__init__(self, theParent)
 

@@ -78,7 +78,7 @@ class GuiMainMenu(QMenuBar):
             if recentProject == "": continue
             menuItem = QAction("%s" % recentProject, self.projMenu)
             menuItem.triggered.connect(
-                lambda menuItem, n=n : self.openRecentProject(menuItem, n)
+                lambda a1=menuItem, a2=n : self.openRecentProject(a1, a2)
             )
             self.recentMenu.addAction(menuItem)
 
@@ -255,7 +255,7 @@ class GuiMainMenu(QMenuBar):
             self.rootItems[itemClass].triggered.connect(
                 lambda nCount, itemClass=itemClass : self._newTreeItem(nwItemType.ROOT, itemClass)
             )
-        self.rootMenu.addActions(self.rootItems.values())
+            self.rootMenu.addAction(self.rootItems[itemClass])
 
         # Project > New Folder
         self.aCreateFolder = QAction("Create Folder", self)
