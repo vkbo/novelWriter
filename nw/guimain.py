@@ -152,17 +152,17 @@ class GuiMain(QMainWindow):
 
         # Shortcuts and Actions
         self._connectMenuActions()
-        QShortcut(
-            Qt.Key_Return,
-            self.treeView,
-            context=Qt.WidgetShortcut,
-            activated=self._treeKeyPressReturn
-        )
-        QShortcut(
-            Qt.Key_Escape,
-            self,
-            activated=self._keyPressEscape
-        )
+        # QShortcut(
+        #     Qt.Key_Return,
+        #     self.treeView,
+        #     context=Qt.WidgetShortcut,
+        #     activated=self._treeKeyPressReturn
+        # )
+        # QShortcut(
+        #     Qt.Key_Escape,
+        #     self,
+        #     activated=self._keyPressEscape
+        # )
 
         # Forward Functions
         self.setStatus = self.statusBar.setStatus

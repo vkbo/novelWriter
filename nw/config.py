@@ -19,8 +19,8 @@ from os import path, mkdir, makedirs
 from appdirs import user_config_dir
 from datetime import datetime
 
-from PySide2.Qt import PYQT_VERSION_STR
-from PySide2.QtCore import QT_VERSION_STR
+from PySide2 import __version__ as PYQT_VERSION_STR
+from PySide2.QtCore import __version__ as QT_VERSION_STR
 
 from nw.constants import nwFiles, nwUnicode
 from nw.common import splitVersionNumber

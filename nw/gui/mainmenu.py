@@ -255,7 +255,7 @@ class GuiMainMenu(QMenuBar):
             self.rootItems[itemClass].triggered.connect(
                 lambda nCount, itemClass=itemClass : self._newTreeItem(nwItemType.ROOT, itemClass)
             )
-        self.rootMenu.addActions(self.rootItems.values())
+            self.rootMenu.addAction(self.rootItems[itemClass])
 
         # Project > New Folder
         self.aCreateFolder = QAction("Create Folder", self)
