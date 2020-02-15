@@ -222,7 +222,7 @@ class GuiDocTree(QTreeWidget):
     def saveTreeOrder(self):
         theList = []
         for i in range(self.topLevelItemCount()):
-            if self.topLevelItem(i) == self.orphRoot:
+            if id(self.topLevelItem(i)) == id(self.orphRoot):
                 continue
             theList = self._scanChildren(theList, self.topLevelItem(i), i)
         self.theProject.setTreeOrder(theList)
@@ -427,7 +427,7 @@ class GuiDocTree(QTreeWidget):
         nWords = 0
         for n in range(self.topLevelItemCount()):
             tItem = self.topLevelItem(n)
-            if tItem == self.orphRoot:
+            if id(tItem) == id(self.orphRoot):
                 continue
             nWords += int(tItem.text(self.C_COUNT))
         self.theProject.setProjectWordCount(nWords)
