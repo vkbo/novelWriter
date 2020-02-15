@@ -55,8 +55,10 @@ class GuiMainMenu(QMenuBar):
 
     def setAvailableRoot(self):
         for itemClass in nwItemClass:
-            if itemClass == nwItemClass.NO_CLASS: continue
-            if itemClass == nwItemClass.TRASH:    continue
+            if itemClass == nwItemClass.NO_CLASS:
+                continue
+            if itemClass == nwItemClass.TRASH:
+                continue
             self.rootItems[itemClass].setEnabled(
                 self.theProject.checkRootUnique(itemClass)
             )
@@ -75,10 +77,11 @@ class GuiMainMenu(QMenuBar):
         self.recentMenu.clear()
         for n in range(len(self.mainConf.recentList)):
             recentProject = self.mainConf.recentList[n]
-            if recentProject == "": continue
+            if recentProject == "":
+                continue
             menuItem = QAction("%s" % recentProject, self.projMenu)
             menuItem.triggered.connect(
-                lambda menuItem, n=n : self.openRecentProject(menuItem, n)
+                lambda a1=menuItem, a2=n : self.openRecentProject(a1, a2)
             )
             self.recentMenu.addAction(menuItem)
 
@@ -249,11 +252,9 @@ class GuiMainMenu(QMenuBar):
         self.rootItems[nwItemClass.OBJECT]    = QAction("Object Root",    self.rootMenu)
         self.rootItems[nwItemClass.ENTITY]    = QAction("Entity Root",    self.rootMenu)
         self.rootItems[nwItemClass.CUSTOM]    = QAction("Custom Root",    self.rootMenu)
-        nCount = 0
         for itemClass in self.rootItems.keys():
-            nCount += 1 # This forces the lambdas to be unique
             self.rootItems[itemClass].triggered.connect(
-                lambda nCount, itemClass=itemClass : self._newTreeItem(nwItemType.ROOT, itemClass)
+                lambda a1=nwItemType.ROOT, a2=itemClass : self._newTreeItem(a1, a2)
             )
             self.rootMenu.addAction(self.rootItems[itemClass])
 
