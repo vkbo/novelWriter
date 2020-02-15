@@ -26,7 +26,6 @@ On some operating systems you need to use ``python3`` instead of ``python``.
 The following Python packages are required to run novelWriter:
 
 * ``pyqt5`` for the GUI
-* ``appdirs`` for locating the system's config folder
 * ``lxml`` for writing project files
 
 .. note::
