@@ -116,10 +116,6 @@ class nwDependencies():
             "site" : "",
             "docs" : "",
         },
-        "appdirs"    : {
-            "site" : "",
-            "docs" : "",
-        },
         "lxml"       : {
             "site" : "",
             "docs" : "",

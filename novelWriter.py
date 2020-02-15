@@ -27,12 +27,6 @@ except:
     print("ERROR: Failed to load dependency python3-lxml")
     sys.exit(1)
 
-try:
-    import appdirs
-except:
-    print("ERROR: Failed to load dependency python3-appdirs")
-    sys.exit(1)
-
 if __name__ == "__main__":
     import nw
     nw.main(sys.argv[1:])

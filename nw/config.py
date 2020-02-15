@@ -16,11 +16,10 @@ import sys
 import nw
 
 from os import path, mkdir, makedirs
-from appdirs import user_config_dir
 from datetime import datetime
 
 from PyQt5.Qt import PYQT_VERSION_STR
-from PyQt5.QtCore import QT_VERSION_STR
+from PyQt5.QtCore import QT_VERSION_STR, QStandardPaths
 
 from nw.constants import nwFiles, nwUnicode
 from nw.common import splitVersionNumber
@@ -167,7 +166,8 @@ class Config:
     def initConfig(self, confPath=None):
 
         if confPath is None:
-            self.confPath = user_config_dir(self.appHandle)
+            confRoot = QStandardPaths.writableLocation(QStandardPaths.ConfigLocation)
+            self.confPath = path.join(confRoot, self.appHandle)
         else:
             logger.info("Setting config from alternative path: %s" % confPath)
             self.confPath = confPath

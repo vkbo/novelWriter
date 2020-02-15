@@ -70,7 +70,6 @@ For the apt package manager on Debian systems, the following Python3 packages ar
 
 * `python3-pyqt5` for the GUI
 * `python3-pyqt5.qtsvg` may need to be installed separately
-* `python3-appdirs` for locating the system's config folder
 * `python3-lxml` for writing project files
 
 These are optional, but recommended:
@@ -88,7 +87,6 @@ in the application folder.
 You can also do them one at a time, skipping the ones you don't need:
 ```
 python3 -m pip install pyqt5
-python3 -m pip install appdirs
 python3 -m pip install lxml
 python3 -m pip install pyenchant
 python3 -m pip install latexcodec
