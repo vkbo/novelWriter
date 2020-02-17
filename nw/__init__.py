@@ -23,7 +23,7 @@ from nw.config import Config
 
 __package__    = "novelWriter"
 __author__     = "Veronica Berglyd Olsen"
-__copyright__  = "Copyright 2018–2019, Veronica Berglyd Olsen"
+__copyright__  = "Copyright 2018–2020, Veronica Berglyd Olsen"
 __license__    = "GPLv3"
 __version__    = "0.4.4"
 __date__       = "2020-02-17"
