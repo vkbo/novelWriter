@@ -13,8 +13,6 @@
 import logging
 import nw
 
-from os import path
-
 from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QColor, QPixmap
 from PyQt5.QtWidgets import (

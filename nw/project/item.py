@@ -14,7 +14,6 @@ import logging
 import nw
 
 from lxml import etree
-from datetime import datetime
 
 from nw.common import checkInt
 from nw.constants import nwItemType, nwItemClass, nwItemLayout
@@ -22,8 +21,6 @@ from nw.constants import nwItemType, nwItemClass, nwItemLayout
 logger = logging.getLogger(__name__)
 
 class NWItem():
-
-    MAX_DEPTH = 8
 
     def __init__(self, theProject):
 

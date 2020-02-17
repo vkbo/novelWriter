@@ -15,7 +15,7 @@ import configparser
 import sys
 import nw
 
-from os import path, mkdir, makedirs
+from os import path, mkdir
 from datetime import datetime
 
 from PyQt5.Qt import PYQT_VERSION_STR
