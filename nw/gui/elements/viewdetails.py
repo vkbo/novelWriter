@@ -18,8 +18,6 @@ from PyQt5.QtWidgets import (
     QWidget, QLabel, QScrollArea, QFrame, QToolButton, QCheckBox, QGridLayout
 )
 
-from nw.constants import nwLabels
-
 logger = logging.getLogger(__name__)
 
 class GuiDocViewDetails(QWidget):

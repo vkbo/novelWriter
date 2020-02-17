@@ -14,7 +14,6 @@ import logging
 import nw
 
 from os import path, mkdir, listdir, unlink, rename
-from shutil import copyfile
 from lxml import etree
 from hashlib import sha256
 from datetime import datetime
