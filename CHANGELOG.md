@@ -1,6 +1,6 @@
 # novelWriter ChangeLog
 
-## Version 0.4.4 [2020-02-17]
+## Version 0.4.5 [2020-02-17]
 
 **Features**
 
@@ -22,6 +22,10 @@
 * The way project files are saved has been altered slightly. When a project file or document file is saved, the data is first streamed to a temp file. Then the old storage file is renamed to .bak, and and the temp file is renamed to the correct storage file name. This ensures that the storage file is only replaced after a complete and successful write. PR #165.
 * The cache folder has been removed. It was used to store the 10 most recent versions of the project file. Instead, the previous project file is renamed to .bak, and can be restored if opening from the latest project file fails. Any additional restore capabilities should be ensured by backup solutions, either the internal simple zip backup, or other third party tools. PR #165.
 * The dependency on the Python package `appdirs` has been dropped. It was used only for extracting the path to the user's config folder, a feature which is also provided by Qt. PR #169.
+
+## Version 0.4.4 [2020-02-17]
+
+* Botched release. Replaced with 0.4.5
 
 ## Version 0.4.3 [2019-11-24]
 

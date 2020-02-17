@@ -6,7 +6,7 @@ with open("README.md", "r") as inFile:
 
 setuptools.setup(
     name = "novelWriter",
-    version = "0.4.4",
+    version = "0.4.5",
     author = "Veronica Berglyd Olsen",
     author_email = "code@vkbo.net",
     description = "A markdown-like document editor for writing novels",
