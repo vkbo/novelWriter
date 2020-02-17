@@ -76,7 +76,7 @@ These are optional, but recommended:
 
 * `python3-enchant` for better spell checking
 * `python3-latexcodec` for escaping unicode characters in LaTeX export
-* `python3-pandoc` for additional exports to Word, Open Office, eBooks, etc.
+* `python3-pypandoc` for additional exports to Word, Open Office, eBooks, etc.
 
 Alternatively, the packages can be installed with `pip` by running
 ```
