@@ -63,8 +63,8 @@ else:
 instOpt = [
     "--name=novelWriter",
     "--onefile",
-    "--add-data=%s%s%s" % (os.path.join("nw", "themes"),  dotDot,"themes"),
-    "--add-data=%s%s%s" % (os.path.join("nw", "graphics"),dotDot,"graphics"),
+    "--add-data=%s%s%s" % (os.path.join("nw", "assets", "themes"),   dotDot,"themes"),
+    "--add-data=%s%s%s" % (os.path.join("nw", "assets", "graphics"), dotDot,"graphics"),
     "--icon=%s" % os.path.join("nw", "assets", "icons", "novelWriter.ico"),
 ]
 if buildWindowed:
