@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='utf-8'?>
-<novelWriterXML appVersion="0.4.1" fileVersion="1.0" timeStamp="2019-11-16 12:31:19">
+<novelWriterXML appVersion="0.4.5" fileVersion="1.0" timeStamp="2020-02-19 19:55:13">
   <project>
     <name>Sample Project</name>
     <title>Sample Project</title>
@@ -82,7 +82,7 @@
       <charCount>1199</charCount>
       <wordCount>216</wordCount>
       <paraCount>7</paraCount>
-      <cursorPos>949</cursorPos>
+      <cursorPos>19</cursorPos>
     </item>
     <item handle="bc0cbd2a407f3" order="2" parent="e7ded148d6e4a">
       <name>Another Scene</name>

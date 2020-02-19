@@ -22,7 +22,6 @@ from PyQt5.QtWidgets import (
 )
 
 from nw.constants import nwFiles, nwItemClass
-from nw.tools import OptLastState
 
 logger = logging.getLogger(__name__)
 
@@ -37,8 +36,7 @@ class GuiTimeLineView(QDialog):
         self.theProject = theProject
         self.theParent  = theParent
         self.theIndex   = theIndex
-        self.optState   = TimeLineLastState(self.theProject,nwFiles.TLINE_OPT)
-        self.optState.loadSettings()
+        self.optState   = self.theProject.optState
 
         self.theMatrix = {}
         self.numRows   = 0
@@ -54,10 +52,10 @@ class GuiTimeLineView(QDialog):
         self.setMinimumHeight(400)
 
         winWidth = self.optState.validIntRange(
-            self.optState.getSetting("winWidth"),  700, 10000, 700
+            self.optState.getInt("GuiTimeLine", "winWidth", 700), 700, 10000, 700
         )
         winHeight = self.optState.validIntRange(
-            self.optState.getSetting("winHeight"), 400, 10000, 400
+            self.optState.getInt("GuiTimeLine", "winHeight", 400), 400, 10000, 400
         )
         self.resize(winWidth,winHeight)
 
@@ -79,27 +77,39 @@ class GuiTimeLineView(QDialog):
         self.optFilter.setLayout(self.optFilterGrid)
 
         self.filterPlot = QCheckBox("Plot tags", self)
-        self.filterPlot.setChecked(self.optState.getSetting("fPlot"))
+        self.filterPlot.setChecked(
+            self.optState.getBool("GuiTimeLine", "fPlot", True)
+        )
         self.filterPlot.stateChanged.connect(self._filterChange)
 
         self.filterChar = QCheckBox("Character tags", self)
-        self.filterChar.setChecked(self.optState.getSetting("fChar"))
+        self.filterChar.setChecked(
+            self.optState.getBool("GuiTimeLine", "fChar", True)
+        )
         self.filterChar.stateChanged.connect(self._filterChange)
 
         self.filterWorld = QCheckBox("Location tags", self)
-        self.filterWorld.setChecked(self.optState.getSetting("fWorld"))
+        self.filterWorld.setChecked(
+            self.optState.getBool("GuiTimeLine", "fWorld", True)
+        )
         self.filterWorld.stateChanged.connect(self._filterChange)
 
         self.filterTime = QCheckBox("Timeline tags", self)
-        self.filterTime.setChecked(self.optState.getSetting("fTime"))
+        self.filterTime.setChecked(
+            self.optState.getBool("GuiTimeLine", "fTime", True)
+        )
         self.filterTime.stateChanged.connect(self._filterChange)
 
         self.filterObject = QCheckBox("Object tags", self)
-        self.filterObject.setChecked(self.optState.getSetting("fObject"))
+        self.filterObject.setChecked(
+            self.optState.getBool("GuiTimeLine", "fObject", True)
+        )
         self.filterObject.stateChanged.connect(self._filterChange)
 
         self.filterCustom = QCheckBox("Custom tags", self)
-        self.filterCustom.setChecked(self.optState.getSetting("fCustom"))
+        self.filterCustom.setChecked(
+            self.optState.getBool("GuiTimeLine", "fCustom", True)
+        )
         self.filterCustom.stateChanged.connect(self._filterChange)
 
         self.optFilterGrid.addWidget(self.filterPlot,   0, 1)
@@ -114,7 +124,9 @@ class GuiTimeLineView(QDialog):
         self.optHide.setLayout(self.optHideGrid)
 
         self.hideUnused = QCheckBox("Hide unused", self)
-        self.hideUnused.setChecked(self.optState.getSetting("hUnused"))
+        self.hideUnused.setChecked(
+            self.optState.getBool("GuiTimeLine", "hUnused", True)
+        )
         self.hideUnused.stateChanged.connect(self._filterChange)
 
         self.optHideGrid.addWidget(self.hideUnused, 0, 1)
@@ -227,15 +239,15 @@ class GuiTimeLineView(QDialog):
         fCustom   = self.filterCustom.isChecked()
         hUnused   = self.hideUnused.isChecked()
 
-        self.optState.setSetting("winWidth", winWidth)
-        self.optState.setSetting("winHeight",winHeight)
-        self.optState.setSetting("fPlot",    fPlot)
-        self.optState.setSetting("fChar",    fChar)
-        self.optState.setSetting("fWorld",   fWorld)
-        self.optState.setSetting("fTime",    fTime)
-        self.optState.setSetting("fObject",  fObject)
-        self.optState.setSetting("fCustom",  fCustom)
-        self.optState.setSetting("hUnused",  hUnused)
+        self.optState.setValue("GuiTimeLine", "winWidth",  winWidth)
+        self.optState.setValue("GuiTimeLine", "winHeight", winHeight)
+        self.optState.setValue("GuiTimeLine", "fPlot",     fPlot)
+        self.optState.setValue("GuiTimeLine", "fChar",     fChar)
+        self.optState.setValue("GuiTimeLine", "fWorld",    fWorld)
+        self.optState.setValue("GuiTimeLine", "fTime",     fTime)
+        self.optState.setValue("GuiTimeLine", "fObject",   fObject)
+        self.optState.setValue("GuiTimeLine", "fCustom",   fCustom)
+        self.optState.setValue("GuiTimeLine", "hUnused",   hUnused)
 
         self.optState.saveSettings()
         self.close()
@@ -247,25 +259,3 @@ class GuiTimeLineView(QDialog):
         return
 
 # END Class GuiTimeLineView
-
-class TimeLineLastState(OptLastState):
-
-    def __init__(self, theProject, theFile):
-        OptLastState.__init__(self, theProject, theFile)
-        self.theState  = {
-            "winWidth"  : 700,
-            "winHeight" : 400,
-            "fPlot"     : True,
-            "fChar"     : True,
-            "fWorld"    : True,
-            "fTime"     : True,
-            "fObject"   : True,
-            "fCustom"   : True,
-            "hUnused"   : True,
-        }
-        self.stringOpt = ()
-        self.boolOpt   = ("fPlot","fChar","fWorld","fTime","fObject","fCustom","hUnused")
-        self.intOpt    = ("winWidth","winHeight")
-        return
-
-# END Class TimeLineLastState

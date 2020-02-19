@@ -33,6 +33,7 @@ class GuiDocSplit(QDialog):
         self.mainConf   = nw.CONFIG
         self.theParent  = theParent
         self.theProject = theProject
+        self.optState   = self.theProject.optState
         self.sourceItem = None
 
         self.outerBox = QHBoxLayout()
@@ -56,7 +57,11 @@ class GuiDocSplit(QDialog):
         self.splitLevel.addItem("Split up to Header Level 2 (Chapter)", 2)
         self.splitLevel.addItem("Split up to Header Level 3 (Scene)",   3)
         self.splitLevel.addItem("Split up to Header Level 4 (Section)", 4)
-        self.splitLevel.setCurrentIndex(2)
+        spIndex = self.splitLevel.findData(
+            self.optState.getInt("GuiDocSplit", "spLevel", 3)
+        )
+        if spIndex != -1:
+            self.splitLevel.setCurrentIndex(spIndex)
         self.splitLevel.currentIndexChanged.connect(self._populateList)
 
         self.splitButton = QPushButton("Split")
@@ -172,6 +177,7 @@ class GuiDocSplit(QDialog):
         """Close the dialog window without doing anything.
         """
         logger.verbose("GuiDocSplit close button clicked")
+        self.optState.saveSettings()
         self.close()
         return
 
@@ -206,6 +212,7 @@ class GuiDocSplit(QDialog):
         theText = theDoc.openDocument(self.sourceItem, False)
 
         spLevel = self.splitLevel.currentData()
+        self.optState.setValue("GuiDocSplit", "spLevel", spLevel)
         logger.debug("Scanning document %s for headings level <= %d" % (self.sourceItem, spLevel))
 
         lineNo = 0

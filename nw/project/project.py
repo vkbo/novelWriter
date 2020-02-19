@@ -21,7 +21,7 @@ from time import time
 
 from nw.project.status import NWStatus
 from nw.project.item import NWItem
-from nw.tools import projectMaintenance
+from nw.tools import projectMaintenance, OptionState
 from nw.common import checkString, checkBool, checkInt
 from nw.constants import (
     nwFiles, nwConst, nwItemType, nwItemClass, nwItemLayout, nwAlert
@@ -36,6 +36,7 @@ class NWProject():
         # Internal
         self.theParent   = theParent
         self.mainConf    = self.theParent.mainConf
+        self.optState    = OptionState(self)
         self.projOpened  = None # The time stamp of when the project file was opened
         self.projChanged = None # The project has unsaved changes
         self.projAltered = None # The project has been altered this session
@@ -295,6 +296,7 @@ class NWProject():
                         nwItem.setFromTag(xValue.tag,xValue.text)
                     self._appendItem(tHandle,pHandle,nwItem)
 
+        self.optState.loadSettings()
         self.mainConf.setRecent(self.projPath)
         self.theParent.setStatus("Opened Project: %s" % self.projName)
 
@@ -384,6 +386,7 @@ class NWProject():
             rename(saveFile, backFile)
         rename(tempFile, saveFile)
 
+        self.optState.saveSettings()
         self.mainConf.setRecent(self.projPath)
         self.theParent.setStatus("Saved Project: %s" % self.projName)
         self.setProjectChanged(False)

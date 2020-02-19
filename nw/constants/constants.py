@@ -25,10 +25,7 @@ class nwFiles():
     PROJ_DICT  = "wordlist.txt"
     SESS_INFO  = "sessionInfo.log"
     INDEX_FILE = "tagsIndex.json"
-    EXPORT_OPT = "exportOptions.json"
-    TLINE_OPT  = "timelineOptions.json"
-    SLOG_OPT   = "sessionLogOptions.json"
-    MERGE_OPT  = "docMergeOptions.json"
+    OPTS_FILE  = "guiOptions.json"
 
 # END Class nwFiles
 
