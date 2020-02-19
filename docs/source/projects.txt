@@ -22,7 +22,7 @@ These other root folder types are intended for your notes on the various element
 Using these is of course entirely optional.
 A new project will not have all of the root folders present, but you can add the ones you want from :menuselection:`Project --> Create Root Folder`.
 
-The root folders are intended for the follwing use, but aside from the Novel folder, not restrictions apply.
+The root folders are intended for the following use, but aside from the Novel folder, no restrictions apply.
 
 * **Novel:** The root folder of all text that goes into the final novel.
   This class of files have other rules and features than other files in the project.
@@ -44,7 +44,7 @@ Orphaned Documents
 ------------------
 
 In the event the editor crashes or otherwise exits without saving the project state, files that have been added to the project tree and are saved to disk will appear in a special "Orphaned Items" root folder next time the application is started.
-These orphaned files will not have any meta data associated with them, so the label and other information has to be set again, and the files moved back to the correct location in the project.
+These orphaned files will not have any meta data associated with them, so the label and other information will have to be set again, and the files moved back to the correct location in the project.
 
 Using Folders in the Project Tree
 ---------------------------------

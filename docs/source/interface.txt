@@ -37,9 +37,9 @@ The editor also has a minimal set of keywords used for setting tags and referenc
    "``## Title``",        "Heading level two. The space after the # is mandatory."
    "``### Title``",       "Heading level three. The space after the # is mandatory."
    "``#### Title``",      "Heading level four. The space after the # is mandatory."
-   "``**text**``",        "The text is renderred as bold text."
-   "``_text_``",          "The text is renderred as italics text."
-   "``__text__``",        "The text is renderred as underlined text."
+   "``**text**``",        "The text is rendered as bold text."
+   "``_text_``",          "The text is rendered as italicized text."
+   "``__text__``",        "The text is rendered as underlined text."
    "``% text...``",       "A comment. The text is not exported, seen in viewer, or counted towards word counts."
    "``@keyword: value``", "A keyword argument followed by a value, or a comma separated list of values."
 
