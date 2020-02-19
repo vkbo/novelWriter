@@ -22,7 +22,6 @@ from PyQt5.QtWidgets import (
 )
 
 from nw.constants import nwFiles, nwItemClass
-from nw.tools import OptionState
 
 logger = logging.getLogger(__name__)
 
