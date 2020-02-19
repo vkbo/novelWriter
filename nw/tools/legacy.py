@@ -44,4 +44,20 @@ def projectMaintenance(theProject):
             except Exception as e:
                 logger.error(str(e))
 
+    # Remove no longer used meta files
+    rmList = []
+    rmList.append(path.join(theProject.projMeta, "mainOptions.json"))
+    rmList.append(path.join(theProject.projMeta, "exportOptions.json"))
+    rmList.append(path.join(theProject.projMeta, "outlineOptions.json"))
+    rmList.append(path.join(theProject.projMeta, "timelineOptions.json"))
+    rmList.append(path.join(theProject.projMeta, "docMergeOptions.json"))
+    rmList.append(path.join(theProject.projMeta, "sessionLogOptions.json"))
+    for rmFile in rmList:
+        if path.isfile(rmFile):
+            logger.info("Deleting: %s" % rmFile)
+            try:
+                unlink(rmFile)
+            except Exception as e:
+                logger.error(str(e))
+
     return
