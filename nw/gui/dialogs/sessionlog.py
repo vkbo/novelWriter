@@ -24,7 +24,7 @@ from PyQt5.QtWidgets import (
 )
 
 from nw.constants import nwConst, nwFiles, nwAlert
-from nw.tools import OptLastState
+from nw.tools import OptionState
 
 logger = logging.getLogger(__name__)
 
@@ -38,8 +38,7 @@ class GuiSessionLogView(QDialog):
         self.mainConf   = nw.CONFIG
         self.theProject = theProject
         self.theParent  = theParent
-        self.optState   = SessionLogLastState(self.theProject,nwFiles.SLOG_OPT)
-        self.optState.loadSettings()
+        self.optState   = self.theProject.optState
 
         self.timeFilter = 0.0
         self.timeTotal  = 0.0
@@ -52,13 +51,13 @@ class GuiSessionLogView(QDialog):
         self.setMinimumHeight(400)
 
         widthCol0 = self.optState.validIntRange(
-            self.optState.getSetting("widthCol0"), 30, 999, 180
+            self.optState.getInt("GuiSession", "widthCol0", 180), 30, 999, 180
         )
         widthCol1 = self.optState.validIntRange(
-            self.optState.getSetting("widthCol1"), 30, 999, 80
+            self.optState.getInt("GuiSession", "widthCol1", 80), 30, 999, 80
         )
         widthCol2 = self.optState.validIntRange(
-            self.optState.getSetting("widthCol2"), 30, 999, 80
+            self.optState.getInt("GuiSession", "widthCol2", 80), 30, 999, 80
         )
 
         self.listBox = QTreeWidget()
@@ -77,10 +76,11 @@ class GuiSessionLogView(QDialog):
 
         sortValid = (Qt.AscendingOrder, Qt.DescendingOrder)
         sortCol = self.optState.validIntRange(
-            self.optState.getSetting("sortCol"), 0, 2, 0
+            self.optState.getInt("GuiSession", "sortCol", 0), 0, 2, 0
         )
         sortOrder = self.optState.validIntTuple(
-            self.optState.getSetting("sortOrder"), sortValid, Qt.DescendingOrder
+            self.optState.getInt("GuiSession", "sortOrder", Qt.DescendingOrder),
+            sortValid, Qt.DescendingOrder
         )
 
         self.listBox.sortByColumn(sortCol, sortOrder)
@@ -110,11 +110,15 @@ class GuiSessionLogView(QDialog):
         self.filterBox.setLayout(self.filterBoxForm)
 
         self.hideZeros = QCheckBox("Hide zero word count", self)
-        self.hideZeros.setChecked(self.optState.getSetting("hideZeros"))
+        self.hideZeros.setChecked(
+            self.optState.getBool("GuiSession", "hideZeros", True)
+        )
         self.hideZeros.stateChanged.connect(self._doHideZeros)
 
         self.hideNegative = QCheckBox("Hide negative word count", self)
-        self.hideNegative.setChecked(self.optState.getSetting("hideNegative"))
+        self.hideNegative.setChecked(
+            self.optState.getBool("GuiSession", "hideNegative", False)
+        )
         self.hideNegative.stateChanged.connect(self._doHideNegative)
 
         self.filterBoxForm.addWidget(self.hideZeros,    0, 0)
@@ -208,13 +212,13 @@ class GuiSessionLogView(QDialog):
         hideZeros    = self.hideZeros.isChecked()
         hideNegative = self.hideNegative.isChecked()
 
-        self.optState.setSetting("widthCol0",   widthCol0)
-        self.optState.setSetting("widthCol1",   widthCol1)
-        self.optState.setSetting("widthCol2",   widthCol2)
-        self.optState.setSetting("sortCol",     sortCol)
-        self.optState.setSetting("sortOrder",   sortOrder)
-        self.optState.setSetting("hideZeros",   hideZeros)
-        self.optState.setSetting("hideNegative",hideNegative)
+        self.optState.setValue("GuiSession", "widthCol0",    widthCol0)
+        self.optState.setValue("GuiSession", "widthCol1",    widthCol1)
+        self.optState.setValue("GuiSession", "widthCol2",    widthCol2)
+        self.optState.setValue("GuiSession", "sortCol",      sortCol)
+        self.optState.setValue("GuiSession", "sortOrder",    sortOrder)
+        self.optState.setValue("GuiSession", "hideZeros",    hideZeros)
+        self.optState.setValue("GuiSession", "hideNegative", hideNegative)
 
         self.optState.saveSettings()
         self.close()
@@ -237,23 +241,3 @@ class GuiSessionLogView(QDialog):
         return "%02d:%02d:%02d" % (tH,tM,tS)
 
 # END Class GuiSessionLogView
-
-class SessionLogLastState(OptLastState):
-
-    def __init__(self, theProject, theFile):
-        OptLastState.__init__(self, theProject, theFile)
-        self.theState  = {
-            "widthCol0"    : 180,
-            "widthCol1"    : 80,
-            "widthCol2"    : 80,
-            "sortCol"      : 0,
-            "sortOrder"    : Qt.DescendingOrder,
-            "hideZeros"    : True,
-            "hideNegative" : False,
-        }
-        self.stringOpt = ()
-        self.boolOpt   = ("hideZeros","hideNegative")
-        self.intOpt    = ("widthCol0","widthCol1","widthCol2","sortCol","sortOrder")
-        return
-
-# END Class SessionLogLastState
