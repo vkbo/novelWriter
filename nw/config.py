@@ -42,9 +42,14 @@ class Config:
         self.debugInfo = False
         self.cmdOpen   = None
 
+        # Config Error Handling
+        self.hasError  = False
+        self.errData   = []
+
         # Set Paths
         self.confPath  = None
         self.confFile  = None
+        self.dataPath  = None
         self.homePath  = None
         self.lastPath  = None
         self.appPath   = None
@@ -172,6 +177,15 @@ class Config:
             logger.info("Setting config from alternative path: %s" % confPath)
             self.confPath = confPath
 
+        if self.verQtValue >= 50400:
+            dataRoot = QStandardPaths.writableLocation(QStandardPaths.AppDataLocation)
+        else:
+            dataRoot = QStandardPaths.writableLocation(QStandardPaths.DataLocation)
+        self.dataPath = path.join(path.abspath(dataRoot), self.appHandle)
+
+        logger.verbose("Config path: %s" % self.confPath)
+        logger.verbose("Data path: %s" % self.dataPath)
+
         self.confFile  = self.appHandle+".conf"
         self.homePath  = path.expanduser("~")
         self.lastPath  = self.homePath
@@ -192,7 +206,10 @@ class Config:
             except Exception as e:
                 logger.error("Could not create folder: %s" % self.confPath)
                 logger.error(str(e))
-                return False
+                self.hasError = True
+                self.errData.append("Could not create folder: %s" % self.confPath)
+                self.errData.append(str(e))
+                self.confPath = None
 
         # Check if config file exists
         if path.isfile(path.join(self.confPath,self.confFile)):
@@ -201,6 +218,19 @@ class Config:
         else:
             # If it does not exist, save a copy of the default values
             self.saveConfig()
+
+        # If data folder does not exist, make it.
+        # This assumes that the os data folder itself exists.
+        if not path.isdir(self.dataPath):
+            try:
+                mkdir(self.dataPath)
+            except Exception as e:
+                logger.error("Could not create folder: %s" % self.dataPath)
+                logger.error(str(e))
+                self.hasError = True
+                self.errData.append("Could not create folder: %s" % self.dataPath)
+                self.errData.append(str(e))
+                self.dataPath = None
 
         # Check the availability of optional packages
         self._checkOptionalPackages()
@@ -222,6 +252,10 @@ class Config:
             )
         except Exception as e:
             logger.error("Could not load config file")
+            logger.error(str(e))
+            self.hasError = True
+            self.errData.append("Could not load config file")
+            self.errData.append(str(e))
             return False
 
         ## Main
@@ -446,12 +480,16 @@ class Config:
             self.confChanged = False
         except Exception as e:
             logger.error("Could not save config file")
+            logger.error(str(e))
+            self.hasError = True
+            self.errData.append("Could not save config file")
+            self.errData.append(str(e))
             return False
 
         return True
 
     ##
-    #  Setters
+    #  Setters and Getters
     ##
 
     def setRecent(self, recentPath):
@@ -515,6 +553,12 @@ class Config:
         self.viewComments = checkState
         self.confChanged  = True
         return
+
+    def getErrData(self):
+        errMessage = "<br>".join(self.errData)
+        self.hasError = False
+        self.errData = []
+        return errMessage
 
     ##
     #  Internal Functions
