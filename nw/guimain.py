@@ -166,6 +166,9 @@ class GuiMain(QMainWindow):
         if self.mainConf.showGUI:
             self.show()
 
+        # Check that config loaded fine
+        self.reportConfErr()
+
         self.initMain()
         self.asProjTimer.start()
         self.asDocTimer.start()
@@ -686,6 +689,16 @@ class GuiMain(QMainWindow):
 
         return
 
+    def reportConfErr(self):
+        """Checks if the Config module has any errors to report, and let
+        the user know if this is the case. The Config module caches
+        errors since it is initialised before the GUI itself.
+        """
+        if self.mainConf.hasError:
+            self.makeAlert(self.mainConf.getErrData(), nwAlert.ERROR)
+            return True
+        return False
+
     ##
     #  Main Window Actions
     ##
@@ -710,6 +723,7 @@ class GuiMain(QMainWindow):
             self.mainConf.setMainPanePos(self.splitMain.sizes())
             self.mainConf.setDocPanePos(self.splitView.sizes())
         self.mainConf.saveConfig()
+        self.reportConfErr()
 
         qApp.quit()
 
