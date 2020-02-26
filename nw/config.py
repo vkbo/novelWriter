@@ -20,7 +20,7 @@ from os import path, mkdir, unlink, rename
 from datetime import datetime
 
 from PyQt5.Qt import PYQT_VERSION_STR
-from PyQt5.QtCore import QT_VERSION_STR, QStandardPaths
+from PyQt5.QtCore import QT_VERSION_STR, QStandardPaths, QSysInfo
 
 from nw.constants import nwFiles, nwUnicode
 from nw.common import splitVersionNumber
@@ -155,6 +155,10 @@ class Config:
             self.osWindows = True
         else:
             self.osUnknown = True
+
+        # Other System Info
+        self.hostName  = QSysInfo.machineHostName()
+        self.kernelVer = QSysInfo.kernelVersion()
 
         # Packages
         self.hasEnchant  = False

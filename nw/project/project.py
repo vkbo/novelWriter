@@ -40,6 +40,7 @@ class NWProject():
         self.projOpened  = None # The time stamp of when the project file was opened
         self.projChanged = None # The project has unsaved changes
         self.projAltered = None # The project has been altered this session
+        self.lockedBy    = None # Data on which computer has the project open
 
         # Debug
         self.handleSeed = None
@@ -178,7 +179,7 @@ class NWProject():
 
         return
 
-    def openProject(self, fileName):
+    def openProject(self, fileName, overrideLock=False):
         """Open the project file provided, or if doesn't exist, assume
         it is a folder, and look for the file within it. If successful,
         parse the XML of the file and populate the project variables and
@@ -200,6 +201,21 @@ class NWProject():
 
         if not self._checkFolder(self.projMeta):
             return
+
+        if overrideLock:
+            self._clearLockFile()
+
+        lockStatus = self._readLockFile()
+        if len(lockStatus) > 0:
+            if lockStatus[0] == "ERROR":
+                logger.warning("Failed to check lock file")
+            else:
+                logger.error("Project is locked, so not opening")
+                self.lockedBy = lockStatus
+                self.clearProject()
+                return False
+        else:
+            logger.verbose("Project is not locked")
 
         try:
             projectMaintenance(self)
@@ -308,6 +324,7 @@ class NWProject():
         self.setProjectChanged(False)
         self.projOpened = time()
         self.projAltered = False
+        self._writeLockFile()
 
         return True
 
@@ -398,14 +415,19 @@ class NWProject():
         self.mainConf.updateRecentCache(self.projPath, self.projName, self.currWCount, saveTime)
         self.mainConf.saveRecentCache()
 
+        self._writeLockFile()
         self.theParent.setStatus("Saved Project: %s" % self.projName)
         self.setProjectChanged(False)
 
         return True
 
     def closeProject(self):
+        """Close the current project and clear all meta data.
+        """
         self._appendSessionStats()
+        self._clearLockFile()
         self.clearProject()
+        self.lockedBy = None
         return True
 
     ##
@@ -644,6 +666,73 @@ class NWProject():
     ##
     #  Internal Functions
     ##
+
+    def _readLockFile(self):
+        """Reads the lock file in the project folder.
+        """
+
+        if self.projPath is None:
+            return ["ERROR"]
+
+        lockFile = path.join(self.projPath, nwFiles.PROJ_LOCK)
+        if not path.isfile(lockFile):
+            return []
+
+        try:
+            with open(lockFile, mode="r", encoding="utf8") as inFile:
+                theData = inFile.read()
+                theLines = theData.splitlines()
+                if len(theLines) == 4:
+                    return theLines
+                else:
+                    return ["ERROR"]
+
+        except Exception as e:
+            logger.error("Failed to read project lockfile")
+            logger.error(str(e))
+            return ["ERROR"]
+
+        return ["ERROR"]
+
+    def _writeLockFile(self):
+        """Writes a lock file to the project folder.
+        """
+
+        if self.projPath is None:
+            return False
+
+        lockFile = path.join(self.projPath, nwFiles.PROJ_LOCK)
+        try:
+            with open(lockFile, mode="w+", encoding="utf8") as outFile:
+                outFile.write("%s\n" % self.mainConf.hostName)
+                outFile.write("%s\n" % self.mainConf.osType)
+                outFile.write("%s\n" % self.mainConf.kernelVer)
+                outFile.write("%d\n" % time())
+
+        except Exception as e:
+            logger.error("Failed to write project lockfile")
+            logger.error(str(e))
+            return False
+
+        return True
+
+    def _clearLockFile(self):
+        """Remove the lock file, if it exists.
+        """
+        if self.projPath is None:
+            return False
+
+        lockFile = path.join(self.projPath, nwFiles.PROJ_LOCK)
+        if path.isfile(lockFile):
+            try:
+                unlink(lockFile)
+                return True
+            except Exception as e:
+                logger.error("Failed to remove project lockfile")
+                logger.error(str(e))
+                return False
+
+        return None
 
     def _checkFolder(self, thePath):
         if not path.isdir(thePath):
