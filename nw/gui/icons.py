@@ -45,10 +45,11 @@ class GuiIcons:
     }
 
     DECO_MAP = {
-        "export"   : "export.svg",
-        "merge"    : "merge.svg",
-        "settings" : "gear.svg",
-        "split"    : "split.svg",
+        "nwicon"   : ["icons", "novelWriter.svg"],
+        "export"   : ["graphics", "export.svg"],
+        "merge"    : ["graphics", "merge.svg"],
+        "settings" : ["graphics", "gear.svg"],
+        "split"    : ["graphics", "split.svg"],
     }
 
     def __init__(self, theParent):
@@ -67,6 +68,9 @@ class GuiIcons:
         return
 
     def initIcons(self, priPath):
+        """Load all icons listed in the icon map. Can be overridden by
+        the selected theme.
+        """
 
         self.priPath  = priPath
         self.secPath  = self.mainConf.iconPath
@@ -78,12 +82,19 @@ class GuiIcons:
         return
 
     def loadDecoration(self, decoKey, decoSize=None):
+        """Load graphical decoration element based on the decoration
+        map. This function always returns a QSwgWidget.
+        """
 
         if decoKey not in self.DECO_MAP:
             logger.error("Decoration with name '%s' does not exist" % decoKey)
             return QSvgWidget()
 
-        svgPath = path.join(self.mainConf.graphPath, self.DECO_MAP[decoKey])
+        svgPath = path.join(
+            self.mainConf.assetPath,
+            self.DECO_MAP[decoKey][0],
+            self.DECO_MAP[decoKey][1]
+        )
         if not path.isfile(svgPath):
             logger.error("Decoration file '%s' not in assets folder" % self.DECO_MAP[decoKey])
             return QSvgWidget()
@@ -95,11 +106,17 @@ class GuiIcons:
         return svgDeco
 
     def getIcon(self, iconKey, iconSize=None):
+        """Return an icon from the icon buffer. If it doesn't exist,
+        return an empty icon.
+        """
         if iconKey in self.qIcons:
             return self.qIcons[iconKey]
         return QIcon()
 
     def getPixmap(self, iconKey, iconSize):
+        """Return an icon from the icon buffer as a QPixmap. If it
+        doesn't exist, return an empty QPixmap.
+        """
         if iconKey in self.qIcons:
             return self.qIcons[iconKey].pixmap(iconSize[0], iconSize[1], QIcon.Normal)
         return QPixmap()
@@ -109,6 +126,11 @@ class GuiIcons:
     ##
 
     def _loadIcon(self, iconKey):
+        """Load an icon from the assets or theme folder, with a
+        preference for dark/light icons depending on theme type, if such
+        an icon exists. Prefer svg files over png files. Always returns
+        a QIcon.
+        """
 
         if iconKey not in self.ICON_MAP:
             logger.error("Icon with name '%s' does not exist" % iconKey)

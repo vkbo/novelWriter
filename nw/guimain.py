@@ -27,7 +27,7 @@ from nw.gui import (
     GuiMainMenu, GuiMainStatus, GuiTheme, GuiDocTree, GuiDocEditor, GuiExport,
     GuiDocViewer, GuiDocDetails, GuiSearchBar, GuiNoticeBar, GuiDocViewDetails,
     GuiConfigEditor, GuiProjectEditor, GuiItemEditor, GuiTimeLineView,
-    GuiSessionLogView, GuiDocMerge, GuiDocSplit
+    GuiSessionLogView, GuiDocMerge, GuiDocSplit, GuiProjectLoad
 )
 from nw.project import NWProject, NWDoc, NWItem, NWIndex, NWBackup
 from nw.tools import countWords
@@ -64,7 +64,7 @@ class GuiMain(QMainWindow):
 
         self.resize(*self.mainConf.winGeometry)
         self._setWindowTitle()
-        self.setWindowIcon(QIcon(path.join(self.mainConf.appIcon)))
+        self.setWindowIcon(QIcon(self.mainConf.appIcon))
 
         # Main GUI Elements
         self.statusBar = GuiMainStatus(self)
@@ -183,6 +183,8 @@ class GuiMain(QMainWindow):
         if self.mainConf.cmdOpen is not None:
             logger.debug("Opening project from additional command line option")
             self.openProject(self.mainConf.cmdOpen)
+        else:
+            self.manageProjects()
 
         return
 
@@ -203,6 +205,17 @@ class GuiMain(QMainWindow):
     ##
     #  Project Actions
     ##
+
+    def manageProjects(self):
+        """
+        """
+
+        if self.mainConf.showGUI:
+            dlgProj = GuiProjectLoad(self)
+            dlgProj.exec_()
+
+
+        return True
 
     def newProject(self, projPath=None, forceNew=False):
 
