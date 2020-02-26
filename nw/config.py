@@ -117,9 +117,6 @@ class Config:
         self.showRefPanel = True
         self.viewComments = True
 
-        ## Path
-        self.recentList = [""]*10
-
         # Check Qt5 Versions
         verQt = splitVersionNumber(QT_VERSION_STR)
         self.verQtString = QT_VERSION_STR
@@ -172,7 +169,10 @@ class Config:
     #  Actions
     ##
 
-    def initConfig(self, confPath=None):
+    def initConfig(self, confPath=None, dataPath=None):
+        """Initialise the config class. The manual setting of confPath
+        and dataPath is mainly intended for the test suite.
+        """
 
         if confPath is None:
             confRoot = QStandardPaths.writableLocation(QStandardPaths.ConfigLocation)
@@ -181,11 +181,15 @@ class Config:
             logger.info("Setting config from alternative path: %s" % confPath)
             self.confPath = confPath
 
-        if self.verQtValue >= 50400:
-            dataRoot = QStandardPaths.writableLocation(QStandardPaths.AppDataLocation)
+        if dataPath is None:
+            if self.verQtValue >= 50400:
+                dataRoot = QStandardPaths.writableLocation(QStandardPaths.AppDataLocation)
+            else:
+                dataRoot = QStandardPaths.writableLocation(QStandardPaths.DataLocation)
+            self.dataPath = path.join(path.abspath(dataRoot), self.appHandle)
         else:
-            dataRoot = QStandardPaths.writableLocation(QStandardPaths.DataLocation)
-        self.dataPath = path.join(path.abspath(dataRoot), self.appHandle)
+            logger.info("Setting data path from alternative path: %s" % dataPath)
+            self.dataPath = dataPath
 
         logger.verbose("Config path: %s" % self.confPath)
         logger.verbose("Data path: %s" % self.dataPath)
@@ -569,6 +573,15 @@ class Config:
             return False
         self.confPath = path.dirname(newPath)
         self.confFile = path.basename(newPath)
+        return True
+
+    def setDataPath(self, newPath):
+        if newPath is None:
+            return True
+        if not path.isdir(newPath):
+            logger.error("Config: Path not found. Using default data path instead.")
+            return False
+        self.dataPath = path.dirname(newPath)
         return True
 
     def setLastPath(self, lastPath):

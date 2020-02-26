@@ -22,10 +22,10 @@ theProject = NWProject(theMain)
 theProject.handleSeed = 42
 
 @pytest.mark.project
-def testProjectNew(nwTempProj,nwRef):
+def testProjectNew(nwTempProj,nwRef,nwTemp):
     projFile = path.join(nwTempProj,"nwProject.nwx")
     refFile  = path.join(nwRef,"proj","1_nwProject.nwx")
-    assert theConf.initConfig(nwRef)
+    assert theConf.initConfig(nwRef, nwTemp)
     assert theProject.newProject()
     assert theProject.setProjectPath(nwTempProj)
     assert theProject.saveProject()
