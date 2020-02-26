@@ -220,28 +220,30 @@ class Config:
                 self.confPath = None
 
         # Check if config file exists
-        if path.isfile(path.join(self.confPath,self.confFile)):
-            # If it exists, load it
-            self.loadConfig()
-        else:
-            # If it does not exist, save a copy of the default values
-            self.saveConfig()
-
-        # Load re3cent projects cache
-        self.loadRecentCache()
+        if self.confPath is not None:
+            if path.isfile(path.join(self.confPath,self.confFile)):
+                # If it exists, load it
+                self.loadConfig()
+            else:
+                # If it does not exist, save a copy of the default values
+                self.saveConfig()
 
         # If data folder does not exist, make it.
         # This assumes that the os data folder itself exists.
-        if not path.isdir(self.dataPath):
-            try:
-                mkdir(self.dataPath)
-            except Exception as e:
-                logger.error("Could not create folder: %s" % self.dataPath)
-                logger.error(str(e))
-                self.hasError = True
-                self.errData.append("Could not create folder: %s" % self.dataPath)
-                self.errData.append(str(e))
-                self.dataPath = None
+        if self.dataPath is not None:
+            if not path.isdir(self.dataPath):
+                try:
+                    mkdir(self.dataPath)
+                except Exception as e:
+                    logger.error("Could not create folder: %s" % self.dataPath)
+                    logger.error(str(e))
+                    self.hasError = True
+                    self.errData.append("Could not create folder: %s" % self.dataPath)
+                    self.errData.append(str(e))
+                    self.dataPath = None
+
+        # Load recent projects cache
+        self.loadRecentCache()
 
         # Check the availability of optional packages
         self._checkOptionalPackages()
@@ -496,6 +498,10 @@ class Config:
     def loadRecentCache(self):
         """Load the cache file for recent projects.
         """
+
+        if self.dataPath is None:
+            return False
+
         cacheFile = path.join(self.dataPath, nwFiles.RECENT_FILE)
         self.recentProj = {}
 
@@ -533,6 +539,10 @@ class Config:
     def saveRecentCache(self):
         """Save the cache dictionary of recent projects.
         """
+
+        if self.dataPath is None:
+            return False
+
         cacheFile = path.join(self.dataPath, nwFiles.RECENT_FILE)
         cacheTemp = path.join(self.dataPath, nwFiles.RECENT_FILE+"~")
 
@@ -581,7 +591,7 @@ class Config:
         if not path.isdir(newPath):
             logger.error("Config: Path not found. Using default data path instead.")
             return False
-        self.dataPath = path.dirname(newPath)
+        self.dataPath = path.abspath(newPath)
         return True
 
     def setLastPath(self, lastPath):
@@ -618,12 +628,12 @@ class Config:
     def setShowRefPanel(self, checkState):
         self.showRefPanel = checkState
         self.confChanged  = True
-        return
+        return self.showRefPanel
 
     def setViewComments(self, checkState):
         self.viewComments = checkState
         self.confChanged  = True
-        return
+        return self.viewComments
 
     def getErrData(self):
         errMessage = "<br>".join(self.errData)
@@ -667,7 +677,7 @@ class Config:
         if checkVal is None:
             return None
         if isinstance(checkVal, str):
-            if checkVal.lower == "none":
+            if checkVal.lower() == "none":
                 return None
         return checkVal
 

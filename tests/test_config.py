@@ -38,6 +38,14 @@ def testConfigSetConfPath(nwTemp):
     assert not theConf.confChanged
 
 @pytest.mark.core
+def testConfigSetDataPath(nwTemp):
+    assert theConf.setDataPath(None)
+    assert not theConf.setDataPath(path.join("somewhere","over","the","rainbow"))
+    assert theConf.setDataPath(nwTemp)
+    assert theConf.dataPath == nwTemp
+    assert not theConf.confChanged
+
+@pytest.mark.core
 def testConfigLoad():
     assert theConf.loadConfig()
     assert not theConf.confChanged
@@ -67,7 +75,7 @@ def testConfigSetTreeColWidths(nwTemp,nwRef):
     assert not theConf.confChanged
 
 @pytest.mark.core
-def testConfigSetMainPanePos(nwTemp,nwRef):
+def testConfigSetPanePos(nwTemp,nwRef):
     tmpConf = path.join(nwTemp,"novelwriter.conf")
     refConf = path.join(nwRef, "novelwriter.conf")
     assert theConf.setMainPanePos([0, 0])
@@ -77,3 +85,31 @@ def testConfigSetMainPanePos(nwTemp,nwRef):
     assert theConf.saveConfig()
     assert cmpFiles(tmpConf, refConf, [2])
     assert not theConf.confChanged
+
+@pytest.mark.core
+def testConfigFlags(nwTemp,nwRef):
+    tmpConf = path.join(nwTemp,"novelwriter.conf")
+    refConf = path.join(nwRef, "novelwriter.conf")
+    assert not theConf.setShowRefPanel(False)
+    assert theConf.setShowRefPanel(True)
+    assert not theConf.setViewComments(False)
+    assert theConf.setViewComments(True)
+    assert theConf.confChanged
+    assert theConf.saveConfig()
+    assert cmpFiles(tmpConf, refConf, [2])
+    assert not theConf.confChanged
+
+@pytest.mark.core
+def testConfigErrors(nwTemp):
+    nonPath = path.join("somewhere","over","the","rainbow")
+    assert theConf.initConfig(nonPath, nonPath)
+    assert theConf.hasError
+    assert not theConf.loadConfig()
+    assert not theConf.saveConfig()
+    assert not theConf.loadRecentCache()
+    assert len(theConf.getErrData()) > 0
+
+@pytest.mark.core
+def testConfigInternals():
+    assert theConf._checkNone(None) is None
+    assert theConf._checkNone("None") is None
