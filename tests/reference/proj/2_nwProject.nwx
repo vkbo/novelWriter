@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='utf-8'?>
-<novelWriterXML appVersion="0.1.4" fileVersion="1.0" timeStamp="2019-06-08 20:53:03">
+<novelWriterXML appVersion="0.4.5" fileVersion="1.0" timeStamp="2020-02-26 22:05:41">
   <project>
     <name></name>
     <title></title>
@@ -72,28 +72,28 @@
       <paraCount>0</paraCount>
       <cursorPos>0</cursorPos>
     </item>
-    <item handle="39fa9ec190eee" order="None" parent="None">
+    <item handle="8722616204217" order="None" parent="None">
       <name>Timeline</name>
       <type>ROOT</type>
       <class>TIMELINE</class>
       <status>New</status>
       <expanded>False</expanded>
     </item>
-    <item handle="d029fa3a95e17" order="None" parent="None">
+    <item handle="96061e92f58e4" order="None" parent="None">
       <name>Object</name>
       <type>ROOT</type>
       <class>OBJECT</class>
       <status>New</status>
       <expanded>False</expanded>
     </item>
-    <item handle="81b8a03f97e87" order="None" parent="None">
+    <item handle="eb624dbe56eb6" order="None" parent="None">
       <name>Custom1</name>
       <type>ROOT</type>
       <class>CUSTOM</class>
       <status>New</status>
       <expanded>False</expanded>
     </item>
-    <item handle="da4ea2a5506f2" order="None" parent="None">
+    <item handle="f369cb89fc627" order="None" parent="None">
       <name>Custom2</name>
       <type>ROOT</type>
       <class>CUSTOM</class>
