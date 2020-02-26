@@ -87,6 +87,7 @@ def main(sysArgs=None):
         "logfile=",
         "version",
         "config=",
+        "data=",
         "testmode",
         "style=",
     ]
@@ -105,6 +106,7 @@ def main(sysArgs=None):
         " -l, --logfile=  Specify log file.\n"
         "     --style=    Set Qt5 style flag. Defaults to 'Fusion'.\n"
         "     --config=   Alternative config file.\n"
+        "     --data=     Alternative user data path.\n"
         "     --headless  Do not display GUI. Useful for testing scripts.\n"
     ).format(
         appname   = __package__,
@@ -120,6 +122,7 @@ def main(sysArgs=None):
     toFile     = False
     toStd      = True
     confPath   = None
+    dataPath   = None
     testMode   = False
     qtStyle    = "Fusion"
     cmdOpen    = None
@@ -157,6 +160,8 @@ def main(sysArgs=None):
             qtStyle = inArg
         elif inOpt in ("--config"):
             confPath = inArg
+        elif inOpt in ("--data"):
+            dataPath = inArg
         elif inOpt in ("--testmode"):
             testMode = True
 
@@ -187,7 +192,7 @@ def main(sysArgs=None):
 
     logger.setLevel(debugLevel)
 
-    CONFIG.initConfig(confPath)
+    CONFIG.initConfig(confPath, dataPath)
 
     if testMode:
         nwGUI = GuiMain()

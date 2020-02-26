@@ -12,10 +12,11 @@
 
 import logging
 import configparser
+import json
 import sys
 import nw
 
-from os import path, mkdir
+from os import path, mkdir, unlink, rename
 from datetime import datetime
 
 from PyQt5.Qt import PYQT_VERSION_STR
@@ -116,9 +117,6 @@ class Config:
         self.showRefPanel = True
         self.viewComments = True
 
-        ## Path
-        self.recentList = [""]*10
-
         # Check Qt5 Versions
         verQt = splitVersionNumber(QT_VERSION_STR)
         self.verQtString = QT_VERSION_STR
@@ -162,13 +160,19 @@ class Config:
         self.hasEnchant  = False
         self.hasSymSpell = False
 
+        # Recent Cache
+        self.recentProj = {}
+
         return
 
     ##
     #  Actions
     ##
 
-    def initConfig(self, confPath=None):
+    def initConfig(self, confPath=None, dataPath=None):
+        """Initialise the config class. The manual setting of confPath
+        and dataPath is mainly intended for the test suite.
+        """
 
         if confPath is None:
             confRoot = QStandardPaths.writableLocation(QStandardPaths.ConfigLocation)
@@ -177,11 +181,15 @@ class Config:
             logger.info("Setting config from alternative path: %s" % confPath)
             self.confPath = confPath
 
-        if self.verQtValue >= 50400:
-            dataRoot = QStandardPaths.writableLocation(QStandardPaths.AppDataLocation)
+        if dataPath is None:
+            if self.verQtValue >= 50400:
+                dataRoot = QStandardPaths.writableLocation(QStandardPaths.AppDataLocation)
+            else:
+                dataRoot = QStandardPaths.writableLocation(QStandardPaths.DataLocation)
+            self.dataPath = path.join(path.abspath(dataRoot), self.appHandle)
         else:
-            dataRoot = QStandardPaths.writableLocation(QStandardPaths.DataLocation)
-        self.dataPath = path.join(path.abspath(dataRoot), self.appHandle)
+            logger.info("Setting data path from alternative path: %s" % dataPath)
+            self.dataPath = dataPath
 
         logger.verbose("Config path: %s" % self.confPath)
         logger.verbose("Data path: %s" % self.dataPath)
@@ -212,25 +220,30 @@ class Config:
                 self.confPath = None
 
         # Check if config file exists
-        if path.isfile(path.join(self.confPath,self.confFile)):
-            # If it exists, load it
-            self.loadConfig()
-        else:
-            # If it does not exist, save a copy of the default values
-            self.saveConfig()
+        if self.confPath is not None:
+            if path.isfile(path.join(self.confPath,self.confFile)):
+                # If it exists, load it
+                self.loadConfig()
+            else:
+                # If it does not exist, save a copy of the default values
+                self.saveConfig()
 
         # If data folder does not exist, make it.
         # This assumes that the os data folder itself exists.
-        if not path.isdir(self.dataPath):
-            try:
-                mkdir(self.dataPath)
-            except Exception as e:
-                logger.error("Could not create folder: %s" % self.dataPath)
-                logger.error(str(e))
-                self.hasError = True
-                self.errData.append("Could not create folder: %s" % self.dataPath)
-                self.errData.append(str(e))
-                self.dataPath = None
+        if self.dataPath is not None:
+            if not path.isdir(self.dataPath):
+                try:
+                    mkdir(self.dataPath)
+                except Exception as e:
+                    logger.error("Could not create folder: %s" % self.dataPath)
+                    logger.error(str(e))
+                    self.hasError = True
+                    self.errData.append("Could not create folder: %s" % self.dataPath)
+                    self.errData.append(str(e))
+                    self.dataPath = None
+
+        # Load recent projects cache
+        self.loadRecentCache()
 
         # Check the availability of optional packages
         self._checkOptionalPackages()
@@ -389,10 +402,6 @@ class Config:
         self.lastPath = self._parseLine(
             cnfParse, cnfSec, "lastpath", self.CNF_STR, self.lastPath
         )
-        for i in range(10):
-            self.recentList[i] = self._parseLine(
-                cnfParse, cnfSec, "recent%d" % i,self.CNF_STR, self.recentList[i]
-            )
 
         # Check Certain Values for None
         self.spellLanguage = self._checkNone(self.spellLanguage)
@@ -471,8 +480,6 @@ class Config:
         cnfSec = "Path"
         cnfParse.add_section(cnfSec)
         cnfParse.set(cnfSec,"lastpath", str(self.lastPath))
-        for i in range(10):
-            cnfParse.set(cnfSec,"recent%d" % i, str(self.recentList[i]))
 
         # Write config file
         try:
@@ -488,20 +495,85 @@ class Config:
 
         return True
 
+    def loadRecentCache(self):
+        """Load the cache file for recent projects.
+        """
+
+        if self.dataPath is None:
+            return False
+
+        cacheFile = path.join(self.dataPath, nwFiles.RECENT_FILE)
+        self.recentProj = {}
+
+        if path.isfile(cacheFile):
+            try:
+                with open(cacheFile, mode="r", encoding="utf8") as inFile:
+                    theJson = inFile.read()
+                theData = json.loads(theJson)
+
+                for projPath in theData.keys():
+                    theEntry  = theData[projPath]
+                    theTitle  = ""
+                    lastTime  = 0
+                    wordCount = 0
+                    if "title" in theEntry.keys():
+                        theTitle = theEntry["title"]
+                    if "time" in theEntry.keys():
+                        lastTime = int(theEntry["time"])
+                    if "words" in theEntry.keys():
+                        wordCount = int(theEntry["words"])
+                    self.recentProj[projPath] = {
+                        "title" : theTitle,
+                        "time"  : lastTime,
+                        "words" : wordCount,
+                    }
+
+            except Exception as e:
+                self.hasError = True
+                self.errData.append("Could not load recent project cache")
+                self.errData.append(str(e))
+                return False
+
+        return True
+
+    def saveRecentCache(self):
+        """Save the cache dictionary of recent projects.
+        """
+
+        if self.dataPath is None:
+            return False
+
+        cacheFile = path.join(self.dataPath, nwFiles.RECENT_FILE)
+        cacheTemp = path.join(self.dataPath, nwFiles.RECENT_FILE+"~")
+
+        try:
+            with open(cacheTemp, mode="w+", encoding="utf8") as outFile:
+                outFile.write(json.dumps(self.recentProj, indent=2))
+        except Exception as e:
+            self.hasError = True
+            self.errData.append("Could not save recent project cache")
+            self.errData.append(str(e))
+            return False
+
+        if path.isfile(cacheFile):
+            unlink(cacheFile)
+        rename(cacheTemp, cacheFile)
+
+        return True
+
+    def updateRecentCache(self, projPath, projTitle, wordCount, saveTime):
+        """Add or update recent cache information o9n a given project.
+        """
+        self.recentProj[path.abspath(projPath)] = {
+            "title" : projTitle,
+            "time"  : int(saveTime),
+            "words" : int(wordCount),
+        }
+        return True
+
     ##
     #  Setters and Getters
     ##
-
-    def setRecent(self, recentPath):
-        if recentPath == "": return
-        if recentPath in self.recentList[0:10]:
-            self.recentList.remove(recentPath)
-        self.recentList.insert(0,recentPath)
-        return
-
-    def clearRecent(self):
-        self.recentList = [""]*10
-        return
 
     def setConfPath(self, newPath):
         if newPath is None:
@@ -511,6 +583,15 @@ class Config:
             return False
         self.confPath = path.dirname(newPath)
         self.confFile = path.basename(newPath)
+        return True
+
+    def setDataPath(self, newPath):
+        if newPath is None:
+            return True
+        if not path.isdir(newPath):
+            logger.error("Config: Path not found. Using default data path instead.")
+            return False
+        self.dataPath = path.abspath(newPath)
         return True
 
     def setLastPath(self, lastPath):
@@ -547,12 +628,12 @@ class Config:
     def setShowRefPanel(self, checkState):
         self.showRefPanel = checkState
         self.confChanged  = True
-        return
+        return self.showRefPanel
 
     def setViewComments(self, checkState):
         self.viewComments = checkState
         self.confChanged  = True
-        return
+        return self.viewComments
 
     def getErrData(self):
         errMessage = "<br>".join(self.errData)
@@ -596,7 +677,7 @@ class Config:
         if checkVal is None:
             return None
         if isinstance(checkVal, str):
-            if checkVal.lower == "none":
+            if checkVal.lower() == "none":
                 return None
         return checkVal
 

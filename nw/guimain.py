@@ -27,7 +27,7 @@ from nw.gui import (
     GuiMainMenu, GuiMainStatus, GuiTheme, GuiDocTree, GuiDocEditor, GuiExport,
     GuiDocViewer, GuiDocDetails, GuiSearchBar, GuiNoticeBar, GuiDocViewDetails,
     GuiConfigEditor, GuiProjectEditor, GuiItemEditor, GuiTimeLineView,
-    GuiSessionLogView, GuiDocMerge, GuiDocSplit
+    GuiSessionLogView, GuiDocMerge, GuiDocSplit, GuiProjectLoad
 )
 from nw.project import NWProject, NWDoc, NWItem, NWIndex, NWBackup
 from nw.tools import countWords
@@ -64,7 +64,7 @@ class GuiMain(QMainWindow):
 
         self.resize(*self.mainConf.winGeometry)
         self._setWindowTitle()
-        self.setWindowIcon(QIcon(path.join(self.mainConf.appIcon)))
+        self.setWindowIcon(QIcon(self.mainConf.appIcon))
 
         # Main GUI Elements
         self.statusBar = GuiMainStatus(self)
@@ -183,6 +183,8 @@ class GuiMain(QMainWindow):
         if self.mainConf.cmdOpen is not None:
             logger.debug("Opening project from additional command line option")
             self.openProject(self.mainConf.cmdOpen)
+        else:
+            self.manageProjects()
 
         return
 
@@ -204,13 +206,30 @@ class GuiMain(QMainWindow):
     #  Project Actions
     ##
 
+    def manageProjects(self):
+        """Opens the projects dialog for selecting either existing
+        projects from a cache of recently opened projects, or provide a
+        browse button for projects not yet cached.
+        """
+        if not self.mainConf.showGUI:
+            return False
+
+        dlgProj = GuiProjectLoad(self)
+        dlgProj.exec_()
+        if dlgProj.result() == QDialog.Accepted:
+            self.openProject(dlgProj.openPath)
+
+        return True
+
     def newProject(self, projPath=None, forceNew=False):
+        """Create new project with a few default files and folders.
+        """
 
         if self.hasProject:
             msgBox = QMessageBox()
             msgRes = msgBox.warning(
                 self, "New Project",
-                "Please close the current project<br>before making a new one."
+                "Please close the current project before making a new one."
             )
             return False
 
@@ -223,7 +242,7 @@ class GuiMain(QMainWindow):
             msgBox = QMessageBox()
             msgRes = msgBox.critical(
                 self, "New Project",
-                "A project already exists in that location.<br>Please choose another folder."
+                "A project already exists in that location. Please choose another folder."
             )
             return False
 
@@ -238,9 +257,9 @@ class GuiMain(QMainWindow):
         return True
 
     def closeProject(self, isYes=False):
-        """Closes the project if one is open.
-        isYes is passed on from the close application event so the user
-        doesn't get prompted twice.
+        """Closes the project if one is open. isYes is passed on from
+        the close application event so the user doesn't get prompted
+        twice.
         """
         if not self.hasProject:
             # There is no project loaded, everything OK
@@ -314,7 +333,6 @@ class GuiMain(QMainWindow):
         self.docEditor.setDictionaries()
         self.docEditor.setSpellCheck(self.theProject.spellCheck)
         self.statusBar.setRefTime(self.theProject.projOpened)
-        self.mainMenu.updateMenu()
 
         # Restore previously open documents, if any
         if self.theProject.lastEdited is not None:
@@ -344,7 +362,6 @@ class GuiMain(QMainWindow):
         self.treeView.saveTreeOrder()
         self.theProject.saveProject()
         self.theIndex.saveIndex()
-        self.mainMenu.updateRecentProjects()
 
         return True
 

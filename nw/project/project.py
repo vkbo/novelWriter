@@ -297,7 +297,11 @@ class NWProject():
                     self._appendItem(tHandle,pHandle,nwItem)
 
         self.optState.loadSettings()
-        self.mainConf.setRecent(self.projPath)
+
+        # Update recent projects
+        self.mainConf.updateRecentCache(self.projPath, self.projName, self.lastWCount, time())
+        self.mainConf.saveRecentCache()
+
         self.theParent.setStatus("Opened Project: %s" % self.projName)
 
         self._scanProjectFolder()
@@ -319,6 +323,7 @@ class NWProject():
             return False
 
         self.projMeta = path.join(self.projPath,"meta")
+        saveTime = time()
 
         if not self._checkFolder(self.projPath): return
         if not self._checkFolder(self.projMeta): return
@@ -330,7 +335,7 @@ class NWProject():
         nwXML = etree.Element("novelWriterXML",attrib={
             "appVersion"  : str(nw.__version__),
             "fileVersion" : "1.0",
-            "timeStamp"   : datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+            "timeStamp"   : datetime.fromtimestamp(saveTime).strftime("%Y-%m-%d %H:%M:%S"),
         })
 
         # Save Project Meta
@@ -386,8 +391,13 @@ class NWProject():
             rename(saveFile, backFile)
         rename(tempFile, saveFile)
 
+        # Save project GUI options
         self.optState.saveSettings()
-        self.mainConf.setRecent(self.projPath)
+
+        # Update recent projects
+        self.mainConf.updateRecentCache(self.projPath, self.projName, self.currWCount, saveTime)
+        self.mainConf.saveRecentCache()
+
         self.theParent.setStatus("Saved Project: %s" % self.projName)
         self.setProjectChanged(False)
 
