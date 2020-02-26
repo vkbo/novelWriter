@@ -222,6 +222,8 @@ class GuiMain(QMainWindow):
         return True
 
     def newProject(self, projPath=None, forceNew=False):
+        """Create new project with a few default files and folders.
+        """
 
         if self.hasProject:
             msgBox = QMessageBox()
@@ -255,9 +257,9 @@ class GuiMain(QMainWindow):
         return True
 
     def closeProject(self, isYes=False):
-        """Closes the project if one is open.
-        isYes is passed on from the close application event so the user
-        doesn't get prompted twice.
+        """Closes the project if one is open. isYes is passed on from
+        the close application event so the user doesn't get prompted
+        twice.
         """
         if not self.hasProject:
             # There is no project loaded, everything OK

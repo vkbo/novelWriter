@@ -39,7 +39,7 @@ class GuiProjectLoad(QDialog):
 
         self.outerBox = QHBoxLayout()
         self.innerBox = QVBoxLayout()
-        self.setWindowTitle("Manage Projects")
+        self.setWindowTitle("Open Project")
         self.setLayout(self.outerBox)
 
         self.guiDeco = self.theParent.theTheme.loadDecoration("nwicon", (128, 128))
@@ -147,6 +147,7 @@ class GuiProjectLoad(QDialog):
                 listData[theTime] = [theTitle, theWords, projPath]
 
         self.listBox.clear()
+        hasSelection = False
         for timeStamp in sorted(listOrder, reverse=True):
             newItem = QTreeWidgetItem([""]*4)
             newItem.setText(0, listData[timeStamp][0])
@@ -155,6 +156,9 @@ class GuiProjectLoad(QDialog):
             newItem.setText(3, listData[timeStamp][2])
             newItem.setTextAlignment(1, Qt.AlignRight)
             self.listBox.addTopLevelItem(newItem)
+            if not hasSelection:
+                newItem.setSelected(True)
+                hasSelection = True
 
         self.listBox.resizeColumnToContents(0)
         self.listBox.resizeColumnToContents(1)
