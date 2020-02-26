@@ -23,6 +23,7 @@ class nwFiles():
     APP_ICON    = "novelWriter.svg"
     PROJ_FILE   = "nwProject.nwx"
     PROJ_DICT   = "wordlist.txt"
+    PROJ_LOCK   = "nwProject.lock"
     SESS_INFO   = "sessionInfo.log"
     INDEX_FILE  = "tagsIndex.json"
     OPTS_FILE   = "guiOptions.json"

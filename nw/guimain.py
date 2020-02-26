@@ -15,6 +15,7 @@ import time
 import nw
 
 from os import path
+from datetime import datetime
 
 from PyQt5.QtCore import Qt, QTimer
 from PyQt5.QtGui import QIcon, QPixmap, QColor, QKeySequence
@@ -49,9 +50,9 @@ class GuiMain(QMainWindow):
         self.hasProject = False
         self.isZenMode  = False
 
-        logger.info("OS: %s" % (
-            self.mainConf.osType)
-        )
+        logger.info("OS: %s" % self.mainConf.osType)
+        logger.info("Kernel: %s" % self.mainConf.kernelVer)
+        logger.info("Host: %s" % self.mainConf.hostName)
         logger.info("Qt5 Version: %s (%d)" % (
             self.mainConf.verQtString, self.mainConf.verQtValue)
         )
@@ -319,7 +320,42 @@ class GuiMain(QMainWindow):
 
         # Try to open the project
         if not self.theProject.openProject(projFile):
-            return False
+            if self.theProject.lockedBy is not None:
+                if self.mainConf.showGUI:
+                    try:
+                        lockDetails = (
+                            "<br><br>The project was locked by the computer "
+                            "'%s' (%s %s), last active on %s"
+                        ) % (
+                            self.theProject.lockedBy[0],
+                            self.theProject.lockedBy[1],
+                            self.theProject.lockedBy[2],
+                            datetime.fromtimestamp(
+                                int(self.theProject.lockedBy[3])
+                            ).strftime("%x %X")
+                        )
+                    except:
+                        lockDetails = ""
+
+                    msgBox = QMessageBox()
+                    msgRes = msgBox.warning(
+                        self, "Project Locked", (
+                            "The project is already open by another instance of %s, and is "
+                            "therefore locked. Override lock and continue anyway?<br><br>"
+                            "Note: If the program or the computer previously crashed, the lock "
+                            "can safely be overridden. If, however, another instance of %s has "
+                            "the project open, overriding the lock may corrupt the project, and "
+                            "is not recommended.%s"
+                        ) % (nw.__package__, nw.__package__, lockDetails),
+                        QMessageBox.Yes | QMessageBox.No, QMessageBox.No
+                    )
+                    if msgRes == QMessageBox.Yes:
+                        if not self.theProject.openProject(projFile, overrideLock=True):
+                            return False
+                    else:
+                        return False
+            else:
+                return False
 
         # project is loaded
         self.hasProject = True

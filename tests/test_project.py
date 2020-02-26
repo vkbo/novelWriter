@@ -29,6 +29,7 @@ def testProjectNew(nwTempProj,nwRef,nwTemp):
     assert theProject.newProject()
     assert theProject.setProjectPath(nwTempProj)
     assert theProject.saveProject()
+    assert theProject.closeProject()
     assert cmpFiles(projFile, refFile, [2])
 
 @pytest.mark.project
@@ -41,8 +42,20 @@ def testProjectSave(nwTempProj,nwRef):
     projFile = path.join(nwTempProj,"nwProject.nwx")
     refFile  = path.join(nwRef,"proj","1_nwProject.nwx")
     assert theProject.saveProject()
+    assert theProject.closeProject()
     assert cmpFiles(projFile, refFile, [2])
     assert not theProject.projChanged
+
+@pytest.mark.project
+def testProjectOpenTwice(nwTempProj,nwRef):
+    projFile = path.join(nwTempProj,"nwProject.nwx")
+    refFile  = path.join(nwRef,"proj","1_nwProject.nwx")
+    assert theProject.openProject(projFile)
+    assert not theProject.openProject(projFile)
+    assert theProject.openProject(projFile, overrideLock=True)
+    assert theProject.saveProject()
+    assert theProject.closeProject()
+    assert cmpFiles(projFile, refFile, [2])
 
 @pytest.mark.project
 def testProjectNewRoot(nwTempProj,nwRef):
@@ -59,6 +72,7 @@ def testProjectNewRoot(nwTempProj,nwRef):
     assert isinstance(theProject.newRoot("Custom2",   nwItemClass.CUSTOM),    str)
     assert theProject.projChanged
     assert theProject.saveProject()
+    assert theProject.closeProject()
     assert cmpFiles(projFile, refFile, [2])
     assert not theProject.projChanged
 
@@ -96,6 +110,8 @@ def testIndexScanThis(nwTempProj):
     assert str(theBits) == "['@tag', 'this', 'and this']"
     assert str(thePos)  == "[0, 6, 12]"
 
+    assert theProject.closeProject()
+
 @pytest.mark.project
 def testBuildIndex(nwTempProj):
     projFile = path.join(nwTempProj,"nwProject.nwx")
@@ -117,3 +133,4 @@ def testBuildIndex(nwTempProj):
     assert theIndex.buildNovelList()
     assert str(theIndex.novelList)  == "[[1, 1, 'Novel', 'SCENE'], [3, 2, 'Chapter', 'SCENE'], [5, 3, 'Scene', 'SCENE'], [7, 4, 'Section', 'SCENE']]"
     assert str(theIndex.novelOrder) == "['31489056e0916:1', '31489056e0916:3', '31489056e0916:5', '31489056e0916:7']"
+    assert theProject.closeProject()
