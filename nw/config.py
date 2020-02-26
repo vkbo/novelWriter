@@ -396,10 +396,6 @@ class Config:
         self.lastPath = self._parseLine(
             cnfParse, cnfSec, "lastpath", self.CNF_STR, self.lastPath
         )
-        for i in range(10):
-            self.recentList[i] = self._parseLine(
-                cnfParse, cnfSec, "recent%d" % i,self.CNF_STR, self.recentList[i]
-            )
 
         # Check Certain Values for None
         self.spellLanguage = self._checkNone(self.spellLanguage)
@@ -478,8 +474,6 @@ class Config:
         cnfSec = "Path"
         cnfParse.add_section(cnfSec)
         cnfParse.set(cnfSec,"lastpath", str(self.lastPath))
-        for i in range(10):
-            cnfParse.set(cnfSec,"recent%d" % i, str(self.recentList[i]))
 
         # Write config file
         try:
@@ -566,17 +560,6 @@ class Config:
     ##
     #  Setters and Getters
     ##
-
-    def setRecent(self, recentPath):
-        if recentPath == "": return
-        if recentPath in self.recentList[0:10]:
-            self.recentList.remove(recentPath)
-        self.recentList.insert(0,recentPath)
-        return
-
-    def clearRecent(self):
-        self.recentList = [""]*10
-        return
 
     def setConfPath(self, newPath):
         if newPath is None:

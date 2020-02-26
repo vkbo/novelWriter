@@ -331,7 +331,6 @@ class GuiMain(QMainWindow):
         self.docEditor.setDictionaries()
         self.docEditor.setSpellCheck(self.theProject.spellCheck)
         self.statusBar.setRefTime(self.theProject.projOpened)
-        self.mainMenu.updateMenu()
 
         # Restore previously open documents, if any
         if self.theProject.lastEdited is not None:
@@ -361,7 +360,6 @@ class GuiMain(QMainWindow):
         self.treeView.saveTreeOrder()
         self.theProject.saveProject()
         self.theIndex.saveIndex()
-        self.mainMenu.updateRecentProjects()
 
         return True
 

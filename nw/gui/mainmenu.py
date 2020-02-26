@@ -48,11 +48,6 @@ class GuiMainMenu(QMenuBar):
 
         return
 
-    def openRecentProject(self, menuItem, recentItem):
-        logger.verbose("User requested opening recent project #%d" % recentItem)
-        self.theParent.openProject(self.mainConf.recentList[recentItem])
-        return True
-
     def setAvailableRoot(self):
         for itemClass in nwItemClass:
             if itemClass == nwItemClass.NO_CLASS: continue
@@ -65,30 +60,6 @@ class GuiMainMenu(QMenuBar):
     ##
     #  Update Menu on Settings Changed
     ##
-
-    def updateMenu(self):
-        self.updateRecentProjects()
-        return
-
-    def updateRecentProjects(self):
-
-        self.recentMenu.clear()
-        for n in range(len(self.mainConf.recentList)):
-            recentProject = self.mainConf.recentList[n]
-            if recentProject == "": continue
-            menuItem = QAction("%s" % recentProject, self.projMenu)
-            menuItem.triggered.connect(
-                lambda a1=menuItem, a2=n : self.openRecentProject(a1, a2)
-            )
-            self.recentMenu.addAction(menuItem)
-
-        self.recentMenu.addSeparator()
-        menuItem = QAction("Clear Recent Projects", self)
-        menuItem.setStatusTip("Clear the list of recent projects")
-        menuItem.triggered.connect(self._clearRecentProjects)
-        self.recentMenu.addAction(menuItem)
-
-        return
 
     def setSpellCheck(self, theMode):
         """Set the spell check check box to theMode. This is controlled
@@ -166,11 +137,6 @@ class GuiMainMenu(QMenuBar):
         QDesktopServices.openUrl(QUrl(nw.__docurl__))
         return True
 
-    def _clearRecentProjects(self):
-        self.mainConf.clearRecent()
-        self.updateRecentProjects()
-        return True
-
     def _showDocumentLocation(self):
         self.theParent.docEditor.revealLocation()
         return True
@@ -210,10 +176,6 @@ class GuiMainMenu(QMenuBar):
         self.aCloseProject.setShortcut("Ctrl+Shift+W")
         self.aCloseProject.triggered.connect(lambda : self.theParent.closeProject(False))
         self.projMenu.addAction(self.aCloseProject)
-
-        # Project > Recent Projects
-        self.recentMenu = self.projMenu.addMenu("Recent Projects")
-        self.updateRecentProjects()
 
         # Project > Project Settings
         self.aProjectSettings = QAction("Project Settings", self)

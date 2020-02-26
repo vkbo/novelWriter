@@ -297,7 +297,11 @@ class NWProject():
                     self._appendItem(tHandle,pHandle,nwItem)
 
         self.optState.loadSettings()
-        self.mainConf.setRecent(self.projPath)
+
+        # Update recent projects
+        self.mainConf.updateRecentCache(self.projPath, self.projName, self.lastWCount, time())
+        self.mainConf.saveRecentCache()
+
         self.theParent.setStatus("Opened Project: %s" % self.projName)
 
         self._scanProjectFolder()
@@ -391,7 +395,6 @@ class NWProject():
         self.optState.saveSettings()
 
         # Update recent projects
-        self.mainConf.setRecent(self.projPath)
         self.mainConf.updateRecentCache(self.projPath, self.projName, self.currWCount, saveTime)
         self.mainConf.saveRecentCache()
 
