@@ -194,7 +194,7 @@ class GuiMainMenu(QMenuBar):
         self.aOpenProject = QAction("Open Project", self)
         self.aOpenProject.setStatusTip("Open project")
         self.aOpenProject.setShortcut("Ctrl+Shift+O")
-        self.aOpenProject.triggered.connect(lambda : self.theParent.openProject(None))
+        self.aOpenProject.triggered.connect(self.theParent.manageProjects)
         self.projMenu.addAction(self.aOpenProject)
 
         # Project > Save Project

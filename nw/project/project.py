@@ -319,6 +319,7 @@ class NWProject():
             return False
 
         self.projMeta = path.join(self.projPath,"meta")
+        saveTime = time()
 
         if not self._checkFolder(self.projPath): return
         if not self._checkFolder(self.projMeta): return
@@ -330,7 +331,7 @@ class NWProject():
         nwXML = etree.Element("novelWriterXML",attrib={
             "appVersion"  : str(nw.__version__),
             "fileVersion" : "1.0",
-            "timeStamp"   : datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+            "timeStamp"   : datetime.fromtimestamp(saveTime).strftime("%Y-%m-%d %H:%M:%S"),
         })
 
         # Save Project Meta
@@ -386,8 +387,14 @@ class NWProject():
             rename(saveFile, backFile)
         rename(tempFile, saveFile)
 
+        # Save project GUI options
         self.optState.saveSettings()
+
+        # Update recent projects
         self.mainConf.setRecent(self.projPath)
+        self.mainConf.updateRecentCache(self.projPath, self.projName, self.currWCount, saveTime)
+        self.mainConf.saveRecentCache()
+
         self.theParent.setStatus("Saved Project: %s" % self.projName)
         self.setProjectChanged(False)
 

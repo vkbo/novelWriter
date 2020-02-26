@@ -207,13 +207,17 @@ class GuiMain(QMainWindow):
     ##
 
     def manageProjects(self):
+        """Opens the projects dialog for selecting either existing
+        projects from a cache of recently opened projects, or provide a
+        browse button for projects not yet cached.
         """
-        """
+        if not self.mainConf.showGUI:
+            return False
 
-        if self.mainConf.showGUI:
-            dlgProj = GuiProjectLoad(self)
-            dlgProj.exec_()
-
+        dlgProj = GuiProjectLoad(self)
+        dlgProj.exec_()
+        if dlgProj.result() == QDialog.Accepted:
+            self.openProject(dlgProj.openPath)
 
         return True
 
@@ -223,7 +227,7 @@ class GuiMain(QMainWindow):
             msgBox = QMessageBox()
             msgRes = msgBox.warning(
                 self, "New Project",
-                "Please close the current project<br>before making a new one."
+                "Please close the current project before making a new one."
             )
             return False
 
@@ -236,7 +240,7 @@ class GuiMain(QMainWindow):
             msgBox = QMessageBox()
             msgRes = msgBox.critical(
                 self, "New Project",
-                "A project already exists in that location.<br>Please choose another folder."
+                "A project already exists in that location. Please choose another folder."
             )
             return False
 

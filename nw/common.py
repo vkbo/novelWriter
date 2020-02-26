@@ -88,6 +88,25 @@ def colRange(rgbStart, rgbEnd, nStep):
 
     return retCol
 
+def formatInt(theInt):
+    """Formats an integer with k, M, G etc.
+    """
+    postFix = ["k","M","G","T","P","E"]
+    theVal = float(theInt)
+
+    if theVal > 1000.0:
+        for pF in postFix:
+            theVal /= 1000.0
+            if theVal < 1000.0:
+                if theVal < 10.0:
+                    return "%4.2f%s" % (theVal,pF)
+                elif theVal < 100.0:
+                    return "%4.1f%s" % (theVal,pF)
+                else:
+                    return "%3.0f%s" % (theVal,pF)
+
+    return "%d" % theInt
+
 def splitVersionNumber(vString):
     """ Splits a version string on the form aa.bb.cc into major, minor
     and patch, and computes an integer value aabbcc.

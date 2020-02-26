@@ -12,10 +12,11 @@
 
 import logging
 import configparser
+import json
 import sys
 import nw
 
-from os import path, mkdir
+from os import path, mkdir, unlink, rename
 from datetime import datetime
 
 from PyQt5.Qt import PYQT_VERSION_STR
@@ -162,6 +163,9 @@ class Config:
         self.hasEnchant  = False
         self.hasSymSpell = False
 
+        # Recent Cache
+        self.recentProj = {}
+
         return
 
     ##
@@ -218,6 +222,9 @@ class Config:
         else:
             # If it does not exist, save a copy of the default values
             self.saveConfig()
+
+        # Load re3cent projects cache
+        self.loadRecentCache()
 
         # If data folder does not exist, make it.
         # This assumes that the os data folder itself exists.
@@ -486,6 +493,74 @@ class Config:
             self.errData.append(str(e))
             return False
 
+        return True
+
+    def loadRecentCache(self):
+        """Load the cache file for recent projects.
+        """
+        cacheFile = path.join(self.dataPath, nwFiles.RECENT_FILE)
+        self.recentProj = {}
+
+        if path.isfile(cacheFile):
+            try:
+                with open(cacheFile, mode="r", encoding="utf8") as inFile:
+                    theJson = inFile.read()
+                theData = json.loads(theJson)
+
+                for projPath in theData.keys():
+                    theEntry  = theData[projPath]
+                    theTitle  = ""
+                    lastTime  = 0
+                    wordCount = 0
+                    if "title" in theEntry.keys():
+                        theTitle = theEntry["title"]
+                    if "time" in theEntry.keys():
+                        lastTime = int(theEntry["time"])
+                    if "words" in theEntry.keys():
+                        wordCount = int(theEntry["words"])
+                    self.recentProj[projPath] = {
+                        "title" : theTitle,
+                        "time"  : lastTime,
+                        "words" : wordCount,
+                    }
+
+            except Exception as e:
+                self.hasError = True
+                self.errData.append("Could not load recent project cache")
+                self.errData.append(str(e))
+                return False
+
+        return True
+
+    def saveRecentCache(self):
+        """Save the cache dictionary of recent projects.
+        """
+        cacheFile = path.join(self.dataPath, nwFiles.RECENT_FILE)
+        cacheTemp = path.join(self.dataPath, nwFiles.RECENT_FILE+"~")
+
+        try:
+            with open(cacheTemp, mode="w+", encoding="utf8") as outFile:
+                outFile.write(json.dumps(self.recentProj, indent=2))
+        except Exception as e:
+            self.hasError = True
+            self.errData.append("Could not save recent project cache")
+            self.errData.append(str(e))
+            return False
+
+        if path.isfile(cacheFile):
+            unlink(cacheFile)
+        rename(cacheTemp, cacheFile)
+
+        return True
+
+    def updateRecentCache(self, projPath, projTitle, wordCount, saveTime):
+        """Add or update recent cache information o9n a given project.
+        """
+        self.recentProj[path.abspath(projPath)] = {
+            "title" : projTitle,
+            "time"  : int(saveTime),
+            "words" : int(wordCount),
+        }
         return True
 
     ##
