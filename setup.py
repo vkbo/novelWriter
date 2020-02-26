@@ -6,7 +6,7 @@ with open("README.md", "r") as inFile:
 
 setuptools.setup(
     name = "novelWriter",
-    version = "0.4.2",
+    version = "0.4.5",
     author = "Veronica Berglyd Olsen",
     author_email = "code@vkbo.net",
     description = "A markdown-like document editor for writing novels",
@@ -35,10 +35,9 @@ setuptools.setup(
         "Natural Language :: English",
         "Topic :: Text Editors",
     ],
-    python_requires = ">=3.5",
+    python_requires = ">=3.6",
     install_requires = [
         "pyqt5",
-        "appdirs",
         "lxml",
         "pyenchant",
         "latexcodec",

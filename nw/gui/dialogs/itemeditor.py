@@ -13,8 +13,6 @@
 import logging
 import nw
 
-from os import path
-
 from PyQt5.QtCore import Qt
 from PyQt5.QtWidgets import (
     QDialog, QHBoxLayout, QVBoxLayout, QGroupBox, QFormLayout, QLineEdit,

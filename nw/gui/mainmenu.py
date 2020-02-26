@@ -48,11 +48,6 @@ class GuiMainMenu(QMenuBar):
 
         return
 
-    def openRecentProject(self, menuItem, recentItem):
-        logger.verbose("User requested opening recent project #%d" % recentItem)
-        self.theParent.openProject(self.mainConf.recentList[recentItem])
-        return True
-
     def setAvailableRoot(self):
         for itemClass in nwItemClass:
             if itemClass == nwItemClass.NO_CLASS: continue
@@ -65,30 +60,6 @@ class GuiMainMenu(QMenuBar):
     ##
     #  Update Menu on Settings Changed
     ##
-
-    def updateMenu(self):
-        self.updateRecentProjects()
-        return
-
-    def updateRecentProjects(self):
-
-        self.recentMenu.clear()
-        for n in range(len(self.mainConf.recentList)):
-            recentProject = self.mainConf.recentList[n]
-            if recentProject == "": continue
-            menuItem = QAction("%s" % recentProject, self.projMenu)
-            menuItem.triggered.connect(
-                lambda menuItem, n=n : self.openRecentProject(menuItem, n)
-            )
-            self.recentMenu.addAction(menuItem)
-
-        self.recentMenu.addSeparator()
-        menuItem = QAction("Clear Recent Projects", self)
-        menuItem.setStatusTip("Clear the list of recent projects")
-        menuItem.triggered.connect(self._clearRecentProjects)
-        self.recentMenu.addAction(menuItem)
-
-        return
 
     def setSpellCheck(self, theMode):
         """Set the spell check check box to theMode. This is controlled
@@ -166,11 +137,6 @@ class GuiMainMenu(QMenuBar):
         QDesktopServices.openUrl(QUrl(nw.__docurl__))
         return True
 
-    def _clearRecentProjects(self):
-        self.mainConf.clearRecent()
-        self.updateRecentProjects()
-        return True
-
     def _showDocumentLocation(self):
         self.theParent.docEditor.revealLocation()
         return True
@@ -194,7 +160,7 @@ class GuiMainMenu(QMenuBar):
         self.aOpenProject = QAction("Open Project", self)
         self.aOpenProject.setStatusTip("Open project")
         self.aOpenProject.setShortcut("Ctrl+Shift+O")
-        self.aOpenProject.triggered.connect(lambda : self.theParent.openProject(None))
+        self.aOpenProject.triggered.connect(self.theParent.manageProjects)
         self.projMenu.addAction(self.aOpenProject)
 
         # Project > Save Project
@@ -210,10 +176,6 @@ class GuiMainMenu(QMenuBar):
         self.aCloseProject.setShortcut("Ctrl+Shift+W")
         self.aCloseProject.triggered.connect(lambda : self.theParent.closeProject(False))
         self.projMenu.addAction(self.aCloseProject)
-
-        # Project > Recent Projects
-        self.recentMenu = self.projMenu.addMenu("Recent Projects")
-        self.updateRecentProjects()
 
         # Project > Project Settings
         self.aProjectSettings = QAction("Project Settings", self)
@@ -255,7 +217,7 @@ class GuiMainMenu(QMenuBar):
             self.rootItems[itemClass].triggered.connect(
                 lambda nCount, itemClass=itemClass : self._newTreeItem(nwItemType.ROOT, itemClass)
             )
-        self.rootMenu.addActions(self.rootItems.values())
+            self.rootMenu.addAction(self.rootItems[itemClass])
 
         # Project > New Folder
         self.aCreateFolder = QAction("Create Folder", self)
@@ -280,6 +242,12 @@ class GuiMainMenu(QMenuBar):
         self.aDeleteItem.setShortcut("Ctrl+Del")
         self.aDeleteItem.triggered.connect(lambda : self.theParent.treeView.deleteItem(None))
         self.projMenu.addAction(self.aDeleteItem)
+
+        # Project > Empty Trash
+        self.aEmptyTrash = QAction("Empty Trash", self)
+        self.aEmptyTrash.setStatusTip("Permanently delete all files in the Trash folder")
+        self.aEmptyTrash.triggered.connect(self.theParent.treeView.emptyTrash)
+        self.projMenu.addAction(self.aEmptyTrash)
 
         # Project > Separator
         self.projMenu.addSeparator()
@@ -368,6 +336,18 @@ class GuiMainMenu(QMenuBar):
         self.aImportFile.setShortcut("Ctrl+Shift+I")
         self.aImportFile.triggered.connect(self.theParent.importDocument)
         self.docuMenu.addAction(self.aImportFile)
+
+        # Document > Merge Documents
+        self.aMergeDocs = QAction("Merge Folder to Document", self)
+        self.aMergeDocs.setStatusTip("Merge a folder of documents to a single document")
+        self.aMergeDocs.triggered.connect(self.theParent.mergeDocuments)
+        self.docuMenu.addAction(self.aMergeDocs)
+
+        # Document > Split Document
+        self.aSplitDoc = QAction("Split Document to Folder", self)
+        self.aSplitDoc.setStatusTip("Split a document into a folder of multiple documents")
+        self.aSplitDoc.triggered.connect(self.theParent.splitDocument)
+        self.docuMenu.addAction(self.aSplitDoc)
 
         return
 
@@ -653,7 +633,7 @@ class GuiMainMenu(QMenuBar):
         self.aReRunSpell = QAction("Re-Run Spell Check", self)
         self.aReRunSpell.setStatusTip("Run the spell checker on current document")
         self.aReRunSpell.setShortcut("F7")
-        self.aReRunSpell.triggered.connect(self.theParent.docEditor.reHighlightDocument)
+        self.aReRunSpell.triggered.connect(self.theParent.docEditor.spellCheckDocument)
         self.toolsMenu.addAction(self.aReRunSpell)
 
         # Tools > Separator

@@ -21,7 +21,6 @@ from PyQt5.QtWidgets import (
     QWidget, QVBoxLayout, QTreeWidget, QTreeWidgetItem
 )
 
-from nw.tools import OptLastState
 from nw.constants import nwItemLayout, nwKeyWords, nwLabels, nwFiles
 
 logger = logging.getLogger(__name__)
@@ -75,7 +74,7 @@ class GuiProjectOutline(QWidget):
         self.theParent  = theParent
         self.theProject = theProject
         self.theIndex   = self.theParent.theIndex
-        self.optState   = OutlineLastState(self.theProject,nwFiles.OUTLINE_OPT)
+        self.optState   = self.theProject.optState
 
         self.showWords    = True
         self.showSynopsis = True
@@ -111,13 +110,13 @@ class GuiProjectOutline(QWidget):
             colW.append(self.mainTree.columnWidth(iCol))
 
         self.treeCols["width"] = colW
-        self.optState.setSetting("headState", self.treeCols)
+        self.optState.setValue("GuiProjectOutline", "headState", self.treeCols)
         self.optState.saveSettings()
         return
 
     def loadHeaderState(self):
-        self.optState.loadSettings()
-        treeCols = self.optState.getSetting("headState")
+
+        treeCols = self.optState.getValue("GuiProjectOutline", "headState", {})
 
         if "order" not in treeCols.keys(): return
         if not isinstance(treeCols["order"], list): return
@@ -253,15 +252,3 @@ class GuiProjectOutline(QWidget):
         return
 
 # END Class GuiProjectOutline
-
-class OutlineLastState(OptLastState):
-
-    def __init__(self, theProject, theFile):
-        OptLastState.__init__(self, theProject, theFile)
-        self.theState = {
-            "headState" : {},
-        }
-        self.dictOpt = ("headState")
-        return
-
-# END Class OutlineLastState

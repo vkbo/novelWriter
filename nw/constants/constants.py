@@ -22,13 +22,12 @@ class nwFiles():
 
     APP_ICON    = "novelWriter.svg"
     PROJ_FILE   = "nwProject.nwx"
-    PROJ_COUNT  = "projCount.txt"
     PROJ_DICT   = "wordlist.txt"
+    PROJ_LOCK   = "nwProject.lock"
     SESS_INFO   = "sessionInfo.log"
     INDEX_FILE  = "tagsIndex.json"
-    EXPORT_OPT  = "exportOptions.json"
-    OUTLINE_OPT = "outlineOptions.json"
-    SLOG_OPT    = "sessionLogOptions.json"
+    OPTS_FILE   = "guiOptions.json"
+    RECENT_FILE = "recentProjects.json"
 
 # END Class nwFiles
 
@@ -113,10 +112,6 @@ class nwDependencies():
     """
     PACKS = {
         "pyqt5"      : {
-            "site" : "",
-            "docs" : "",
-        },
-        "appdirs"    : {
             "site" : "",
             "docs" : "",
         },

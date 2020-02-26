@@ -1,5 +1,46 @@
 # novelWriter ChangeLog
 
+## Version 0.4.5 [2020-02-17]
+
+**Features**
+
+* A project can now be opened from the command line by providing the project path to the launching script. PRs #164 and #166.
+
+**User Interface**
+
+* Added functionality to split a document into a folder of multiple documents, and also to merge a folder of documents into a single document. PRs #159 and #163.
+* It is now possible to permanently delete files from the Trash folder. This can be done file-by-file or by using the Empty Trash option in the menu. PRs #159 and #163.
+* When running the spell checker, a wait cursor is displayed. This will alert the user that novelWriter is working on something when, for instance, a very large document is opened and initial spell checking is running. PR #158.
+
+**Bug Fixes**
+
+* Fixed a few keyboard shortcuts that were not working in distraction free mode. PR #157.
+* Added a check to ensure the user does not drag and drop an item into the Orphaned Items folder. Since this folder is not an actual project item, novelWriter would crash when trying to change the dropped item's parent item to the Orphaned Items folder. Now, instead, the drop event is cancelled if the target folder is Orphaned Items. PR #163.
+
+**Code Improvements**
+
+* The way project files are saved has been altered slightly. When a project file or document file is saved, the data is first streamed to a temp file. Then the old storage file is renamed to .bak, and and the temp file is renamed to the correct storage file name. This ensures that the storage file is only replaced after a complete and successful write. PR #165.
+* The cache folder has been removed. It was used to store the 10 most recent versions of the project file. Instead, the previous project file is renamed to .bak, and can be restored if opening from the latest project file fails. Any additional restore capabilities should be ensured by backup solutions, either the internal simple zip backup, or other third party tools. PR #165.
+* The dependency on the Python package `appdirs` has been dropped. It was used only for extracting the path to the user's config folder, a feature which is also provided by Qt. PR #169.
+
+## Version 0.4.4 [2020-02-17]
+
+* Botched release. Replaced with 0.4.5
+
+## Version 0.4.3 [2019-11-24]
+
+**User Interface**
+
+* Added keyboard shortcuts and menu entries for formatting headers, comments, and removing block formats. PR #155.
+* Disable re-highlighting of open file when resizing window. This is potentially a slow process if the spell checker is on and the file is large. There is no need to do this just for reflowing text, so it is now disabled on resize events. PR #153 fixing issue #150.
+* Improved the speed of the syntax highlighter by about 40% by not using regular expressions for highlighting block formats and by skipping empty lines entirely. PR #154.
+
+**Bug Fixes**
+
+* Fixed an issue when closing the import file dialog without selecting a file, the import would procede, but fail on file not found. The import is now cancelled when there is no file selected. PR #149.
+* Fixed an issue with markdown export did not take into account hard line breaks. PR #152 fixing issue #151.
+* Fixed a crash when running file status check when the project contains orphaned files. PR #152.
+
 ## Version 0.4.2 [2019-11-17]
 
 **User Interface**

@@ -20,13 +20,13 @@
 # -- Project information -----------------------------------------------------
 
 project = "novelWriter"
-copyright = "2018-2019, Veronica Berglyd Olsen"
+copyright = "2018-2020, Veronica Berglyd Olsen"
 author = "Veronica Berglyd Olsen"
 
 # The short X.Y version
-version = "0.4.2"
+version = "0.4.5"
 # The full version, including alpha/beta/rc tags
-release = "0.4.2"
+release = "0.4.5"
 
 
 # -- General configuration ---------------------------------------------------

@@ -28,7 +28,7 @@ The project XML file is suitable for diff tools and version control, although a 
 Project Documents
 -----------------
 
-The project documents are saved in folders staring with ``data_``.
+The project documents are saved in folders starting with ``data_``.
 Each document has a file handle taken from the first 13 characters of a SHA256 hash of the system time when the file was first created.
 The documents are saved with a folder and filename derived from this hash.
 If you wish to find the physical location of a file in the project, you can either look it up in the project XML file, or select :menuselection:`Document --> Show File Details` in the menu when having the document open.

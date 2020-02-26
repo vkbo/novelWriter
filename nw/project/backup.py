@@ -57,7 +57,9 @@ class NWBackup():
         baseName = path.join(self.mainConf.backupPath, archName)
 
         try:
+            self.theProject._clearLockFile()
             make_archive(baseName, "zip", self.theProject.projPath, ".")
+            self.theProject._writeLockFile()
         except Exception as e:
             self.theParent.makeAlert(
                 ["Could not write backup archive.",str(e)],

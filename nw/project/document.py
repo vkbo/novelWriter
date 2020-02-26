@@ -59,7 +59,7 @@ class NWDoc():
         if self.theItem.parHandle == self.theProject.trashRoot:
             self.docEditable = False
 
-        docDir, docFile = self._assemblePath(self.FILE_MN)
+        docDir, docFile = self.assemblePath(self.docHandle, self.FILE_MN)
         self.fileLoc = path.join(docDir,docFile)
         logger.debug("Opening document %s" % self.fileLoc)
         dataDir = path.join(self.theProject.projPath, docDir)
@@ -92,7 +92,7 @@ class NWDoc():
         if self.docHandle is None or not self.docEditable:
             return False
 
-        docDir, docFile = self._assemblePath(self.FILE_MN)
+        docDir, docFile = self.assemblePath(self.docHandle, self.FILE_MN)
         logger.debug("Saving document %s" % path.join(docDir,docFile))
         dataPath = path.join(self.theProject.projPath, docDir)
         docPath  = path.join(dataPath, docFile)
@@ -100,39 +100,54 @@ class NWDoc():
             mkdir(dataPath)
             logger.debug("Created folder %s" % dataPath)
 
-        docTemp = path.join(dataPath,docFile[:-3]+"tmp")
-        docBack = path.join(dataPath,docFile[:-3]+"bak")
-
-        if path.isfile(docTemp):
-            unlink(docTemp)
-        if path.isfile(docBack):
-            rename(docBack,docTemp)
-        if path.isfile(docPath):
-            rename(docPath,docBack)
+        docTemp = path.join(dataPath, docFile+"~")
+        docBack = path.join(dataPath, docFile[:-3]+"bak")
 
         try:
-            with open(docPath,mode="w",encoding="utf8") as outFile:
+            with open(docTemp,mode="w",encoding="utf8") as outFile:
                 outFile.write(docText)
         except Exception as e:
             self.makeAlert(["Could not save document.",str(e)], nwAlert.ERROR)
             return False
 
-        if path.isfile(docTemp):
-            unlink(docTemp)
+        # If we're here, the file was successfully saved,
+        # so let's sort out the temps and backups
+        if path.isfile(docBack):
+            unlink(docBack)
+        if path.isfile(docPath):
+            rename(docPath, docBack)
+        rename(docTemp, docPath)
 
         self.theParent.statusBar.setStatus("Saved Document: %s" % self.theItem.itemName)
 
         return True
 
-    ##
-    #  Internal Functions
-    ##
+    def deleteDocument(self, tHandle):
+        """Permanently delete a document source file and its backups
+        from the project data folder.
+        """
+        docDir, docFile = self.assemblePath(tHandle, self.FILE_MN)
+        dataPath = path.join(self.theProject.projPath, docDir)
+        chkList = []
+        chkList.append(path.join(dataPath, docFile))
+        chkList.append(path.join(dataPath, docFile+"~"))
+        chkList.append(path.join(dataPath, docFile[:-3]+"bak"))
+        for chkFile in chkList:
+            if path.isfile(chkFile):
+                try:
+                    unlink(chkFile)
+                    logger.debug("Deleted: %s" % chkFile)
+                except Exception as e:
+                    self.makeAlert(["Could not delete document file.",str(e)], nwAlert.ERROR)
+                    return False
+        return True
 
-    def _assemblePath(self, docExt):
-        if self.docHandle is None:
-            return None
-        docDir  = "data_"+self.docHandle[0]
-        docFile = self.docHandle[1:13]+"_"+docExt
+    @staticmethod
+    def assemblePath(tHandle, docExt):
+        if tHandle is None:
+            return None, None
+        docDir  = "data_"+tHandle[0]
+        docFile = tHandle[1:13]+"_"+docExt
         return docDir, docFile
 
 # END Class NWDoc

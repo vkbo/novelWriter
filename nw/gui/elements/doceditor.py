@@ -21,13 +21,13 @@ from PyQt5.QtWidgets import (
 )
 from PyQt5.QtGui import (
     QTextCursor, QTextOption, QKeySequence, QFont, QColor, QPalette,
-    QTextDocument
+    QTextDocument, QCursor
 )
 
 from nw.project import NWDoc
 from nw.gui.tools import GuiDocHighlighter, WordCounter
-from nw.tools import NWSpellCheck, NWSpellSimple
-from nw.constants import nwFiles, nwUnicode, nwDocAction, nwAlert
+from nw.tools import NWSpellSimple
+from nw.constants import nwUnicode, nwDocAction
 
 logger = logging.getLogger(__name__)
 
@@ -209,7 +209,7 @@ class GuiDocEditor(QTextEdit):
         risk overwriting the file if it exists. This can for instance
         happen of the file contains binary elements or an encoding that
         novelWriter does not support. If load is successful, or the
-        document is new (empty string) we set up the editor for editing
+        document is new (empty string), we set up the editor for editing
         the file.
         """
 
@@ -219,6 +219,7 @@ class GuiDocEditor(QTextEdit):
             self.clearEditor()
             return False
 
+        qApp.setOverrideCursor(QCursor(Qt.WaitCursor))
         self.hLight.setHandle(tHandle)
 
         # Check that the document is not too big for full, initial spell
@@ -246,6 +247,7 @@ class GuiDocEditor(QTextEdit):
             self.theParent.noticeBar.showNote("This document is read only.")
 
         self.hLight.spellCheck = spTemp
+        qApp.restoreOverrideCursor()
 
         return True
 
@@ -277,8 +279,9 @@ class GuiDocEditor(QTextEdit):
         return True
 
     def updateDocMargins(self):
-        """Automatically adjust the margins so the text is centred, but
-        only if Config.textFixedW is enabled or we're in Zen mode.
+        """Automatically adjust the margins so the text is centred if
+        Config.textFixedW is enabled or we're in Zen mode. Otherwise,
+        just ensure the margins are set correctly.
         """
 
         if self.mainConf.textFixedW or self.theParent.isZenMode:
@@ -335,7 +338,7 @@ class GuiDocEditor(QTextEdit):
         return theText
 
     def setCursorPosition(self, thePosition):
-        if thePosition > 0:
+        if thePosition >= 0:
             theCursor = self.textCursor()
             theCursor.setPosition(thePosition)
             self.setTextCursor(theCursor)
@@ -361,8 +364,8 @@ class GuiDocEditor(QTextEdit):
     def setSpellCheck(self, theMode):
         """This is the master spell check setting function, and this one
         should call all other setSpellCheck functions in other classes.
-        If the spell check mode is not defined, then toggle the current
-        status saved in the class.
+        If the spell check mode (theMode) is not defined (None), then
+        toggle the current status saved in this class.
         """
 
         if theMode is None:
@@ -375,23 +378,29 @@ class GuiDocEditor(QTextEdit):
         self.theParent.mainMenu.setSpellCheck(theMode)
         self.theProject.setSpellCheck(theMode)
         self.hLight.setSpellCheck(theMode)
-        self.reHighlightDocument()
+        if not self.bigDoc:
+            self.spellCheckDocument()
 
         logger.verbose("Spell check is set to %s" % str(theMode))
 
         return True
 
-    def reHighlightDocument(self):
+    def spellCheckDocument(self):
         """Rerun the highlighter to update spell checking status of the
         currently loaded text. The fastest way to do this, at least as
         of Qt 5.13, is to clear the text and put it back.
         """
 
+        logger.verbose("Running spell checker")
         if self.spellCheck:
-            theText = self.getText()
-            self.clear()
             bfTime = time()
-            self.setPlainText(theText)
+            qApp.setOverrideCursor(QCursor(Qt.WaitCursor))
+            if self.bigDoc:
+                theText = self.getText()
+                self.setPlainText(theText)
+            else:
+                self.hLight.rehighlight()
+            qApp.restoreOverrideCursor()
             afTime = time()
             logger.debug("Document re-highlighted in %.3f milliseconds" % (1000*(afTime-bfTime)))
 

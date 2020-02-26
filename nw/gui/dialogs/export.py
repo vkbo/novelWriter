@@ -24,7 +24,6 @@ from PyQt5.QtWidgets import (
 )
 
 from nw.convert import TextFile, HtmlFile, MarkdownFile, LaTeXFile, ConcatFile
-from nw.tools import OptLastState
 from nw.common import packageRefURL
 from nw.constants import nwFiles, nwItemType, nwAlert
 
@@ -40,8 +39,7 @@ class GuiExport(QDialog):
         self.mainConf   = nw.CONFIG
         self.theParent  = theParent
         self.theProject = theProject
-        self.optState   = ExportLastState(self.theProject,nwFiles.EXPORT_OPT)
-        self.optState.loadSettings()
+        self.optState   = self.theProject.optState
 
         self.outerBox   = QHBoxLayout()
         self.innerBox   = QVBoxLayout()
@@ -50,8 +48,8 @@ class GuiExport(QDialog):
 
         self.guiDeco = self.theParent.theTheme.loadDecoration("export",(64,64))
 
-        self.tabMain   = GuiExportMain(self.theParent, self.theProject, self.optState)
-        self.tabPandoc = GuiExportPandoc(self.theParent, self.theProject, self.optState)
+        self.tabMain   = GuiExportMain(self.theParent, self.theProject)
+        self.tabPandoc = GuiExportPandoc(self.theParent, self.theProject)
 
         self.tabWidget = QTabWidget()
         self.tabWidget.addTab(self.tabMain,   "Settings")
@@ -290,24 +288,24 @@ class GuiExport(QDialog):
         if saveTo.startswith("~"):
             saveTo = path.expanduser(saveTo)
 
-        self.optState.setSetting("wNovel",   wNovel)
-        self.optState.setSetting("wNotes",   wNotes)
-        self.optState.setSetting("eFormat",  eFormat)
-        self.optState.setSetting("fixWidth", fixWidth)
-        self.optState.setSetting("wComments",wComments)
-        self.optState.setSetting("wKeywords",wKeywords)
-        self.optState.setSetting("chFormat", chFormat)
-        self.optState.setSetting("unFormat", unFormat)
-        self.optState.setSetting("scFormat", scFormat)
-        self.optState.setSetting("seFormat", seFormat)
-        self.optState.setSetting("saveTo",   saveTo)
-        self.optState.setSetting("hScene",   hScene)
-        self.optState.setSetting("hSection", hSection)
+        self.optState.setValue("GuiExport", "wNovel",    wNovel)
+        self.optState.setValue("GuiExport", "wNotes",    wNotes)
+        self.optState.setValue("GuiExport", "eFormat",   eFormat)
+        self.optState.setValue("GuiExport", "fixWidth",  fixWidth)
+        self.optState.setValue("GuiExport", "wComments", wComments)
+        self.optState.setValue("GuiExport", "wKeywords", wKeywords)
+        self.optState.setValue("GuiExport", "chFormat",  chFormat)
+        self.optState.setValue("GuiExport", "unFormat",  unFormat)
+        self.optState.setValue("GuiExport", "scFormat",  scFormat)
+        self.optState.setValue("GuiExport", "seFormat",  seFormat)
+        self.optState.setValue("GuiExport", "saveTo",    saveTo)
+        self.optState.setValue("GuiExport", "hScene",    hScene)
+        self.optState.setValue("GuiExport", "hSection",  hSection)
 
         # Pandoc Settings
         pFormat   = self.tabPandoc.outputFormat.currentData()
 
-        self.optState.setSetting("pFormat",  pFormat)
+        self.optState.setValue("GuiExport", "pFormat",  pFormat)
 
         self.optState.saveSettings()
         self.close()
@@ -362,14 +360,14 @@ class GuiExportMain(QWidget):
         ),
     }
 
-    def __init__(self, theParent, theProject, optState):
+    def __init__(self, theParent, theProject):
         QWidget.__init__(self, theParent)
 
         self.theParent  = theParent
         self.theProject = theProject
         self.theTheme   = theParent.theTheme
         self.outerBox   = QGridLayout()
-        self.optState   = optState
+        self.optState   = self.theProject.optState
         self.currFormat = self.FMT_TXT
 
         # Select Files
@@ -378,19 +376,27 @@ class GuiExportMain(QWidget):
         self.guiFiles.setLayout(self.guiFilesForm)
 
         self.expNovel = QCheckBox("Novel files",self)
-        self.expNovel.setChecked(self.optState.getSetting("wNovel"))
+        self.expNovel.setChecked(
+            self.optState.getBool("GuiExport", "wNovel", True)
+        )
         self.expNovel.setToolTip("Include all novel files in the exported document")
 
         self.expNotes = QCheckBox("Note files",self)
-        self.expNotes.setChecked(self.optState.getSetting("wNotes"))
+        self.expNotes.setChecked(
+            self.optState.getBool("GuiExport", "wNotes", False)
+        )
         self.expNotes.setToolTip("Include all note files in the exported document")
 
         self.expComments = QCheckBox("Comments",self)
-        self.expComments.setChecked(self.optState.getSetting("wComments"))
+        self.expComments.setChecked(
+            self.optState.getBool("GuiExport", "wComments", False)
+        )
         self.expComments.setToolTip("Export comments from all files")
 
         self.expKeywords = QCheckBox("Keywords",self)
-        self.expKeywords.setChecked(self.optState.getSetting("wKeywords"))
+        self.expKeywords.setChecked(
+            self.optState.getBool("GuiExport", "wKeywords", False)
+        )
         self.expKeywords.setToolTip("Export @keywords from all files")
 
         self.guiFilesForm.addWidget(self.expNovel,    0, 1)
@@ -406,13 +412,17 @@ class GuiExportMain(QWidget):
 
         self.chapterFormat = QLineEdit()
         self.chapterFormat.setMaxLength(200)
-        self.chapterFormat.setText(self.optState.getSetting("chFormat"))
+        self.chapterFormat.setText(
+            self.optState.getString("GuiExport", "chFormat", "Chapter %numword%")
+        )
         self.chapterFormat.setToolTip("Available formats: %num%, %numword%, %title%")
         self.chapterFormat.setMinimumWidth(250)
 
         self.unnumFormat = QLineEdit()
         self.unnumFormat.setMaxLength(200)
-        self.unnumFormat.setText(self.optState.getSetting("unFormat"))
+        self.unnumFormat.setText(
+            self.optState.getString("GuiExport", "unFormat", "%title%")
+        )
         self.unnumFormat.setToolTip("Available formats: %title%")
         self.unnumFormat.setMinimumWidth(250)
 
@@ -428,22 +438,30 @@ class GuiExportMain(QWidget):
 
         self.sceneFormat = QLineEdit()
         self.sceneFormat.setMaxLength(200)
-        self.sceneFormat.setText(self.optState.getSetting("scFormat"))
+        self.sceneFormat.setText(
+            self.optState.getString("GuiExport", "scFormat", "* * *")
+        )
         self.sceneFormat.setToolTip("Available formats: %title%")
         self.sceneFormat.setMinimumWidth(100)
 
         self.sectionFormat = QLineEdit()
         self.sectionFormat.setMaxLength(200)
-        self.sectionFormat.setText(self.optState.getSetting("seFormat"))
+        self.sectionFormat.setText(
+            self.optState.getString("GuiExport", "seFormat", "")
+        )
         self.sectionFormat.setToolTip("Available formats: %title%")
         self.sectionFormat.setMinimumWidth(100)
 
         self.hideScene = QCheckBox("Skip",self)
-        self.hideScene.setChecked(self.optState.getSetting("hScene"))
+        self.hideScene.setChecked(
+            self.optState.getBool("GuiExport", "hScene", False)
+        )
         self.hideScene.setToolTip("Skip scene titles in export")
 
         self.hideSection = QCheckBox("Skip",self)
-        self.hideSection.setChecked(self.optState.getSetting("hSection"))
+        self.hideSection.setChecked(
+            self.optState.getBool("GuiExport", "hSection", False)
+        )
         self.hideSection.setToolTip("Skip section titles in export")
 
         self.guiScenesForm.addWidget(QLabel("Scenes"),   0, 0)
@@ -458,8 +476,9 @@ class GuiExportMain(QWidget):
         self.exportToForm = QGridLayout(self)
         self.exportTo.setLayout(self.exportToForm)
 
-        self.exportPath = QLineEdit(self.optState.getSetting("saveTo"))
-
+        self.exportPath = QLineEdit(
+            self.optState.getString("GuiExport", "saveTo", "")
+        )
         self.exportGetPath = QPushButton(self.theTheme.getIcon("folder"),"")
         self.exportGetPath.clicked.connect(self._exportFolder)
 
@@ -486,7 +505,9 @@ class GuiExportMain(QWidget):
         self.outputFormat.addItem("Pandoc via Markdown or HTML", self.FMT_PDOC)
         self.outputFormat.currentIndexChanged.connect(self._updateFormat)
 
-        optIdx = self.outputFormat.findData(self.optState.getSetting("eFormat"))
+        optIdx = self.outputFormat.findData(
+            self.optState.getInt("GuiExport", "eFormat", 1)
+        )
         if optIdx == -1:
             self.outputFormat.setCurrentIndex(1)
             self._updateFormat(1)
@@ -508,7 +529,9 @@ class GuiExportMain(QWidget):
         self.fixedWidth.setMinimum(0)
         self.fixedWidth.setMaximum(999)
         self.fixedWidth.setSingleStep(1)
-        self.fixedWidth.setValue(self.optState.getSetting("fixWidth"))
+        self.fixedWidth.setValue(
+            self.optState.getInt("GuiExport", "fixWidth", 80)
+        )
         self.fixedWidth.setToolTip(
             "Applies to .txt and .md files. A value of '0' disables the feature."
         )
@@ -609,13 +632,13 @@ class GuiExportPandoc(QWidget):
         FMT_ZIM   : "markdown",
     }
 
-    def __init__(self, theParent, theProject, optState):
+    def __init__(self, theParent, theProject):
         QWidget.__init__(self, theParent)
 
         self.theParent  = theParent
         self.theProject = theProject
         self.outerBox   = QGridLayout()
-        self.optState   = optState
+        self.optState   = self.theProject.optState
 
         try:
             import pypandoc
@@ -659,7 +682,9 @@ class GuiExportPandoc(QWidget):
         self.outputFormat.addItem("ePUB eBook v3 (.epub3)",      self.FMT_EPUB3)
         self.outputFormat.addItem("Zim Wiki (.txt)",             self.FMT_ZIM)
 
-        optIdx = self.outputFormat.findData(self.optState.getSetting("pFormat"))
+        optIdx = self.outputFormat.findData(
+            self.optState.getInt("GuiExport", "pFormat", 1)
+        )
         if optIdx == -1:
             self.outputFormat.setCurrentIndex(1)
         else:
@@ -678,30 +703,3 @@ class GuiExportPandoc(QWidget):
         return
 
 # END Class GuiExportPandoc
-
-class ExportLastState(OptLastState):
-
-    def __init__(self, theProject, theFile):
-        OptLastState.__init__(self, theProject, theFile)
-        self.theState = {
-            "wNovel"    : True,
-            "wNotes"    : False,
-            "eFormat"   : 1,
-            "pFormat"   : 1,
-            "fixWidth"  : 80,
-            "wComments" : False,
-            "wKeywords" : False,
-            "chFormat"  : "Chapter %numword%",
-            "unFormat"  : "%title%",
-            "scFormat"  : "* * *",
-            "seFormat"  : "",
-            "saveTo"    : "",
-            "hScene"    : False,
-            "hSection"  : False,
-        }
-        self.stringOpt = ("chFormat","unFormat","scFormat","seFormat","saveTo")
-        self.boolOpt   = ("wNovel","wNotes","wComments","wKeywords","hScene","hSection")
-        self.intOpt    = ("eFormat","pFormat","fixWidth")
-        return
-
-# END Class ExportLastState

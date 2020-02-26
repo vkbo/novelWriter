@@ -13,8 +13,7 @@
 import logging
 import nw
 
-from os import path, mkdir, listdir
-from shutil import copyfile
+from os import path, mkdir, listdir, unlink, rename
 from lxml import etree
 from hashlib import sha256
 from datetime import datetime
@@ -22,6 +21,7 @@ from time import time
 
 from nw.project.status import NWStatus
 from nw.project.item import NWItem
+from nw.tools import projectMaintenance, OptionState
 from nw.common import checkString, checkBool, checkInt
 from nw.constants import (
     nwFiles, nwConst, nwItemType, nwItemClass, nwItemLayout, nwAlert
@@ -36,9 +36,11 @@ class NWProject():
         # Internal
         self.theParent   = theParent
         self.mainConf    = self.theParent.mainConf
+        self.optState    = OptionState(self)
         self.projOpened  = None # The time stamp of when the project file was opened
         self.projChanged = None # The project has unsaved changes
         self.projAltered = None # The project has been altered this session
+        self.lockedBy    = None # Data on which computer has the project open
 
         # Debug
         self.handleSeed = None
@@ -50,7 +52,6 @@ class NWProject():
         self.trashRoot = None # The handle of the trash root folder
         self.projPath  = None # The full path to where the currently open project is saved
         self.projMeta  = None # The full path to the project's meta data folder
-        self.projCache = None # The full path to the project's cache folder
         self.projDict  = None # The spell check dictionary
         self.projFile  = None # The file name of the project main xml file
 
@@ -154,7 +155,6 @@ class NWProject():
         self.trashRoot   = None
         self.projPath    = None
         self.projMeta    = None
-        self.projCache   = None
         self.projDict    = None
         self.projFile    = nwFiles.PROJ_FILE
         self.projName    = ""
@@ -179,7 +179,12 @@ class NWProject():
 
         return
 
-    def openProject(self, fileName):
+    def openProject(self, fileName, overrideLock=False):
+        """Open the project file provided, or if doesn't exist, assume
+        it is a folder, and look for the file within it. If successful,
+        parse the XML of the file and populate the project variables and
+        build the tree of project items.
+        """
 
         if not path.isfile(fileName):
             fileName = path.join(fileName, nwFiles.PROJ_FILE)
@@ -188,24 +193,53 @@ class NWProject():
                 return False
 
         self.clearProject()
-        self.projPath = path.dirname(fileName)
+        self.projPath = path.abspath(path.dirname(fileName))
         logger.debug("Opening project: %s" % self.projPath)
 
-        self.projMeta  = path.join(self.projPath,"meta")
-        self.projCache = path.join(self.projPath,"cache")
-        self.projDict  = path.join(self.projMeta, nwFiles.PROJ_DICT)
+        self.projMeta = path.join(self.projPath,"meta")
+        self.projDict = path.join(self.projMeta, nwFiles.PROJ_DICT)
 
         if not self._checkFolder(self.projMeta):
             return
-        if not self._checkFolder(self.projCache):
-            return
+
+        if overrideLock:
+            self._clearLockFile()
+
+        lockStatus = self._readLockFile()
+        if len(lockStatus) > 0:
+            if lockStatus[0] == "ERROR":
+                logger.warning("Failed to check lock file")
+            else:
+                logger.error("Project is locked, so not opening")
+                self.lockedBy = lockStatus
+                self.clearProject()
+                return False
+        else:
+            logger.verbose("Project is not locked")
+
+        try:
+            projectMaintenance(self)
+        except Exception as E:
+            logger.error(str(E))
 
         try:
             nwXML = etree.parse(fileName)
         except Exception as e:
             self.makeAlert(["Failed to parse project xml.",str(e)], nwAlert.ERROR)
-            self.clearProject()
-            return False
+
+            # Trying to open backup file instead
+            backFile = fileName[:-3]+"bak"
+            if path.isfile(backFile):
+                self.makeAlert("Attempting to open backup project file instead.", nwAlert.INFO)
+                try:
+                    nwXML = etree.parse(backFile)
+                except Exception as e:
+                    self.makeAlert(["Failed to parse project xml.",str(e)], nwAlert.ERROR)
+                    self.clearProject()
+                    return False
+            else:
+                self.clearProject()
+                return False
 
         xRoot   = nwXML.getroot()
         nwxRoot = xRoot.tag
@@ -278,41 +312,47 @@ class NWProject():
                         nwItem.setFromTag(xValue.tag,xValue.text)
                     self._appendItem(tHandle,pHandle,nwItem)
 
-        self.mainConf.setRecent(self.projPath)
+        self.optState.loadSettings()
+
+        # Update recent projects
+        self.mainConf.updateRecentCache(self.projPath, self.projName, self.lastWCount, time())
+        self.mainConf.saveRecentCache()
+
         self.theParent.setStatus("Opened Project: %s" % self.projName)
 
         self._scanProjectFolder()
         self.setProjectChanged(False)
         self.projOpened = time()
         self.projAltered = False
+        self._writeLockFile()
 
         return True
 
-    def saveProject(self, isAuto=False):
+    def saveProject(self):
+        """Save the project main XML file. The saving command itself
+        uses a temporary filename, and the file is renamed afterwards to
+        make sure if the save fails, we're not left with a truncated
+        file.
+        """
 
         if self.projPath is None:
             self.makeAlert("Project path not set, cannot save.", nwAlert.ERROR)
             return False
 
-        self.projMeta  = path.join(self.projPath,"meta")
-        self.projCache = path.join(self.projPath,"cache")
+        self.projMeta = path.join(self.projPath,"meta")
+        saveTime = time()
 
-        if not self._checkFolder(self.projPath):  return
-        if not self._checkFolder(self.projMeta):  return
-        if not self._checkFolder(self.projCache): return
+        if not self._checkFolder(self.projPath): return
+        if not self._checkFolder(self.projMeta): return
 
         logger.debug("Saving project: %s" % self.projPath)
-
-        # Save a copy of the current file, just in case
-        if not isAuto:
-            self._maintainPrevious()
 
         # Root element and project details
         logger.debug("Writing project meta")
         nwXML = etree.Element("novelWriterXML",attrib={
             "appVersion"  : str(nw.__version__),
             "fileVersion" : "1.0",
-            "timeStamp"   : datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+            "timeStamp"   : datetime.fromtimestamp(saveTime).strftime("%Y-%m-%d %H:%M:%S"),
         })
 
         # Save Project Meta
@@ -345,9 +385,11 @@ class NWProject():
             self.projTree[tHandle].packXML(xContent)
 
         # Write the xml tree to file
-        saveFile = path.join(self.projPath,self.projFile)
+        tempFile = path.join(self.projPath, self.projFile+"~")
+        saveFile = path.join(self.projPath, self.projFile)
+        backFile = path.join(self.projPath, self.projFile[:-3]+"bak")
         try:
-            with open(saveFile,mode="wb") as outFile:
+            with open(tempFile, mode="wb") as outFile:
                 outFile.write(etree.tostring(
                     nwXML,
                     pretty_print    = True,
@@ -358,15 +400,34 @@ class NWProject():
             self.makeAlert(["Failed to save project.",str(e)], nwAlert.ERROR)
             return False
 
-        self.mainConf.setRecent(self.projPath)
+        # If we're here, the file was successfully saved,
+        # so let's sort out the temps and backups
+        if path.isfile(backFile):
+            unlink(backFile)
+        if path.isfile(saveFile):
+            rename(saveFile, backFile)
+        rename(tempFile, saveFile)
+
+        # Save project GUI options
+        self.optState.saveSettings()
+
+        # Update recent projects
+        self.mainConf.updateRecentCache(self.projPath, self.projName, self.currWCount, saveTime)
+        self.mainConf.saveRecentCache()
+
+        self._writeLockFile()
         self.theParent.setStatus("Saved Project: %s" % self.projName)
         self.setProjectChanged(False)
 
         return True
 
     def closeProject(self):
+        """Close the current project and clear all meta data.
+        """
         self._appendSessionStats()
+        self._clearLockFile()
         self.clearProject()
+        self.lockedBy = None
         return True
 
     ##
@@ -452,9 +513,6 @@ class NWProject():
             self.setProjectChanged(True)
         return True
 
-    def getSessionWordCount(self):
-        return self.currWCount - self.lastWCount
-
     def setStatusColours(self, newCols):
         replaceMap = self.statusItems.setNewEntries(newCols)
         if self.projTree is not None:
@@ -497,6 +555,9 @@ class NWProject():
         logger.error("No tree item with handle %s" % str(tHandle))
         return None
 
+    def getSessionWordCount(self):
+        return self.currWCount - self.lastWCount
+
     def getRootItem(self, tHandle):
         """Iterate upwards in the tree until we find the item with
         parent None, the root item. We do this with a for loop with a
@@ -505,10 +566,13 @@ class NWProject():
         tItem = self.getItem(tHandle)
         if tItem is not None:
             for i in range(200):
-                tHandle = tItem.parHandle
-                tItem   = self.getItem(tHandle)
-                if tItem is None:
+                if tItem.parHandle is None:
                     return tHandle
+                else:
+                    tHandle = tItem.parHandle
+                    tItem   = self.getItem(tHandle)
+                    if tItem is None:
+                        return tHandle
         return None
 
     def getProjectItems(self):
@@ -560,6 +624,11 @@ class NWProject():
         """This only removes the item from the order list, but not from
         the project tree.
         """
+        if tHandle not in self.treeOrder:
+            logger.warning(
+                "Could not remove item %s from treeOrder as it does not exist" % tHandle
+            )
+            return False
         self.treeOrder.remove(tHandle)
         self.setProjectChanged(True)
         return True
@@ -597,6 +666,73 @@ class NWProject():
     ##
     #  Internal Functions
     ##
+
+    def _readLockFile(self):
+        """Reads the lock file in the project folder.
+        """
+
+        if self.projPath is None:
+            return ["ERROR"]
+
+        lockFile = path.join(self.projPath, nwFiles.PROJ_LOCK)
+        if not path.isfile(lockFile):
+            return []
+
+        try:
+            with open(lockFile, mode="r", encoding="utf8") as inFile:
+                theData = inFile.read()
+                theLines = theData.splitlines()
+                if len(theLines) == 4:
+                    return theLines
+                else:
+                    return ["ERROR"]
+
+        except Exception as e:
+            logger.error("Failed to read project lockfile")
+            logger.error(str(e))
+            return ["ERROR"]
+
+        return ["ERROR"]
+
+    def _writeLockFile(self):
+        """Writes a lock file to the project folder.
+        """
+
+        if self.projPath is None:
+            return False
+
+        lockFile = path.join(self.projPath, nwFiles.PROJ_LOCK)
+        try:
+            with open(lockFile, mode="w+", encoding="utf8") as outFile:
+                outFile.write("%s\n" % self.mainConf.hostName)
+                outFile.write("%s\n" % self.mainConf.osType)
+                outFile.write("%s\n" % self.mainConf.kernelVer)
+                outFile.write("%d\n" % time())
+
+        except Exception as e:
+            logger.error("Failed to write project lockfile")
+            logger.error(str(e))
+            return False
+
+        return True
+
+    def _clearLockFile(self):
+        """Remove the lock file, if it exists.
+        """
+        if self.projPath is None:
+            return False
+
+        lockFile = path.join(self.projPath, nwFiles.PROJ_LOCK)
+        if path.isfile(lockFile):
+            try:
+                unlink(lockFile)
+                return True
+            except Exception as e:
+                logger.error("Failed to remove project lockfile")
+                logger.error(str(e))
+                return False
+
+        return None
 
     def _checkFolder(self, thePath):
         if not path.isdir(thePath):
@@ -731,43 +867,5 @@ class NWProject():
             logger.warning("Duplicate handle encountered! Retrying ...")
             itemHandle = self._makeHandle(addSeed+"!")
         return itemHandle
-
-    def _maintainPrevious(self):
-        """This function will take the current project file and copy it
-        into the project cache folder with an incremental file extension
-        added. These serve as a backup in case the xml file gets
-        corrupted.
-        """
-
-        countFile = path.join(self.projCache, nwFiles.PROJ_COUNT)
-        projCount = 0
-
-        if path.isfile(countFile):
-            try:
-                with open(countFile, mode="r") as inFile:
-                    projCount = int(inFile.read())+1
-            except:
-                projCount = 0
-
-        if projCount > 9:
-            projCount = 0
-
-        projBackup = "%s.%d" % (nwFiles.PROJ_FILE, projCount)
-
-        try:
-            copyfile(
-                path.join(self.projPath, self.projFile),
-                path.join(self.projCache, projBackup)
-            )
-        except:
-            logger.error("Failed to write to file %s" % projBackup)
-
-        try:
-            with open(countFile, mode="w") as outFile:
-                outFile.write(str(projCount))
-        except:
-            logger.error("Failed to write to file %s" % countFile)
-
-        return
 
 # END Class NWProject

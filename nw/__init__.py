@@ -23,10 +23,10 @@ from nw.config import Config
 
 __package__    = "novelWriter"
 __author__     = "Veronica Berglyd Olsen"
-__copyright__  = "Copyright 2018–2019, Veronica Berglyd Olsen"
+__copyright__  = "Copyright 2018–2020, Veronica Berglyd Olsen"
 __license__    = "GPLv3"
-__version__    = "0.4.2"
-__date__       = "2019-11-17"
+__version__    = "0.4.5"
+__date__       = "2020-02-17"
 __maintainer__ = "Veronica Berglyd Olsen"
 __email__      = "code@vkbo.net"
 __status__     = "Development"
@@ -77,17 +77,17 @@ def main(sysArgs=None):
         sysArgs = sys.argv[1:]
 
     # Valid Input Options
-    shortOpt = "hdiqtl:v"
+    shortOpt = "hdiql:v"
     longOpt  = [
         "help",
         "debug",
         "info",
         "verbose",
         "quiet",
-        "time",
         "logfile=",
         "version",
         "config=",
+        "data=",
         "testmode",
         "style=",
     ]
@@ -103,10 +103,10 @@ def main(sysArgs=None):
         " -d, --debug     Print debug output.\n"
         "     --verbose   Increase verbosity of debug output.\n"
         " -q, --quiet     Disable output to command line. Does not affect log file.\n"
-        " -t, --time      Shows time stamp in logging output.\n"
         " -l, --logfile=  Specify log file.\n"
         "     --style=    Set Qt5 style flag. Defaults to 'Fusion'.\n"
         "     --config=   Alternative config file.\n"
+        "     --data=     Alternative user data path.\n"
         "     --headless  Do not display GUI. Useful for testing scripts.\n"
     ).format(
         appname   = __package__,
@@ -118,21 +118,24 @@ def main(sysArgs=None):
     # Defaults
     debugLevel = logging.WARN
     debugStr   = "{levelname:8}  {message:}"
-    timeStr    = "[{asctime:}] "
     logFile    = ""
     toFile     = False
     toStd      = True
-    showTime   = False
     confPath   = None
+    dataPath   = None
     testMode   = False
     qtStyle    = "Fusion"
+    cmdOpen    = None
 
     # Parse Options
     try:
-        inOpts, inArgs = getopt.getopt(sysArgs,shortOpt,longOpt)
+        inOpts, inRemain = getopt.getopt(sysArgs,shortOpt,longOpt)
     except getopt.GetoptError:
         print(helpMsg)
         sys.exit(2)
+
+    if len(inRemain) > 0:
+        cmdOpen = inRemain[0]
 
     for inOpt, inArg in inOpts:
         if inOpt in ("-h","--help"):
@@ -145,7 +148,7 @@ def main(sysArgs=None):
             debugLevel = logging.INFO
         elif inOpt in ("-d", "--debug"):
             debugLevel = logging.DEBUG
-            debugStr   = "{name:>30}:{lineno:<4d}  {levelname:8}  {message:}"
+            debugStr   = "[{asctime:}] {name:>30}:{lineno:<4d}  {levelname:8}  {message:}"
         elif inOpt in ("-l","--logfile"):
             logFile = inArg
             toFile  = True
@@ -153,21 +156,21 @@ def main(sysArgs=None):
             toStd = False
         elif inOpt in ("--verbose"):
             debugLevel = VERBOSE
-        elif inOpt in ("-t","--time"):
-            showTime = True
         elif inOpt in ("--style"):
             qtStyle = inArg
         elif inOpt in ("--config"):
             confPath = inArg
+        elif inOpt in ("--data"):
+            dataPath = inArg
         elif inOpt in ("--testmode"):
             testMode = True
 
     # Set Config Options
     CONFIG.showGUI   = not testMode
     CONFIG.debugInfo = debugLevel < logging.INFO
+    CONFIG.cmdOpen   = cmdOpen
 
     # Set Logging
-    if showTime: debugStr = timeStr+debugStr
     logFmt = logging.Formatter(fmt=debugStr,datefmt="%Y-%m-%d %H:%M:%S",style="{")
 
     if not logFile == "" and toFile:
@@ -189,13 +192,15 @@ def main(sysArgs=None):
 
     logger.setLevel(debugLevel)
 
-    CONFIG.initConfig(confPath)
+    CONFIG.initConfig(confPath, dataPath)
 
     if testMode:
         nwGUI = GuiMain()
         return nwGUI
     else:
         nwApp = QApplication([__package__,("-style=%s" % qtStyle)])
+        nwApp.setApplicationName(__package__)
+        nwApp.setApplicationVersion(__version__)
         nwGUI = GuiMain()
         sys.exit(nwApp.exec_())
 

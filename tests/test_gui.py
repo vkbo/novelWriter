@@ -17,8 +17,8 @@ keyDelay  = 10
 stepDelay = 50
 
 @pytest.mark.gui
-def testMainWindows(qtbot, nwTempGUI, nwRef):
-    nwGUI = nw.main(["--testmode","--config=%s" % nwTempGUI])
+def testMainWindows(qtbot, nwTempGUI, nwRef, nwTemp):
+    nwGUI = nw.main(["--testmode","--config=%s" % nwTempGUI, "--data=%s" % nwTemp])
     qtbot.addWidget(nwGUI)
     nwGUI.show()
     qtbot.waitForWindowShown(nwGUI)
@@ -36,7 +36,6 @@ def testMainWindows(qtbot, nwTempGUI, nwRef):
     assert nwGUI.theProject.trashRoot is None
     assert nwGUI.theProject.projPath is None
     assert nwGUI.theProject.projMeta is None
-    assert nwGUI.theProject.projCache is None
     assert nwGUI.theProject.projFile == "nwProject.nwx"
     assert nwGUI.theProject.projName == ""
     assert nwGUI.theProject.bookTitle == ""
@@ -61,7 +60,6 @@ def testMainWindows(qtbot, nwTempGUI, nwRef):
     assert nwGUI.theProject.trashRoot is None
     assert nwGUI.theProject.projPath == nwTempGUI
     assert nwGUI.theProject.projMeta == path.join(nwTempGUI,"meta")
-    assert nwGUI.theProject.projCache == path.join(nwTempGUI,"cache")
     assert nwGUI.theProject.projFile == "nwProject.nwx"
     assert nwGUI.theProject.projName == ""
     assert nwGUI.theProject.bookTitle == ""
@@ -252,8 +250,8 @@ def testMainWindows(qtbot, nwTempGUI, nwRef):
     # qtbot.stopForInteraction()
 
 @pytest.mark.gui
-def testProjectEditor(qtbot, nwTempGUI, nwRef):
-    nwGUI = nw.main(["--testmode","--config=%s" % nwTempGUI])
+def testProjectEditor(qtbot, nwTempGUI, nwRef, nwTemp):
+    nwGUI = nw.main(["--testmode","--config=%s" % nwTempGUI, "--data=%s" % nwTemp])
     qtbot.addWidget(nwGUI)
     nwGUI.show()
     qtbot.waitForWindowShown(nwGUI)
@@ -339,8 +337,8 @@ def testProjectEditor(qtbot, nwTempGUI, nwRef):
     # qtbot.stopForInteraction()
 
 @pytest.mark.gui
-def testItemEditor(qtbot, nwTempGUI, nwRef):
-    nwGUI = nw.main(["--testmode","--config=%s" % nwTempGUI])
+def testItemEditor(qtbot, nwTempGUI, nwRef, nwTemp):
+    nwGUI = nw.main(["--testmode","--config=%s" % nwTempGUI, "--data=%s" % nwTemp])
     qtbot.addWidget(nwGUI)
     nwGUI.show()
     qtbot.waitForWindowShown(nwGUI)

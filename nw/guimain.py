@@ -15,19 +15,20 @@ import time
 import nw
 
 from os import path
+from datetime import datetime
 
 from PyQt5.QtCore import Qt, QTimer
-from PyQt5.QtGui import QIcon, QPixmap, QColor
+from PyQt5.QtGui import QIcon, QPixmap, QColor, QKeySequence
 from PyQt5.QtWidgets import (
     qApp, QMainWindow, QVBoxLayout, QFrame, QSplitter, QFileDialog, QShortcut,
     QMessageBox, QProgressDialog, QDialog, QTabWidget
 )
 
 from nw.gui import (
-    GuiMainMenu, GuiMainStatus, GuiTheme, GuiDocTree, GuiDocEditor,
-    GuiDocViewer, GuiDocDetails, GuiSearchBar, GuiNoticeBar,
-    GuiDocViewDetails, GuiConfigEditor, GuiProjectEditor, GuiExport,
-    GuiItemEditor, GuiSessionLogView, GuiProjectOutline
+    GuiMainMenu, GuiMainStatus, GuiTheme, GuiDocTree, GuiDocEditor, GuiExport,
+    GuiDocViewer, GuiDocDetails, GuiSearchBar, GuiNoticeBar, GuiDocViewDetails,
+    GuiConfigEditor, GuiProjectEditor, GuiItemEditor, GuiProjectOutline,
+    GuiSessionLogView, GuiDocMerge, GuiDocSplit, GuiProjectLoad
 )
 from nw.project import NWProject, NWDoc, NWItem, NWIndex, NWBackup
 from nw.tools import countWords
@@ -49,9 +50,9 @@ class GuiMain(QMainWindow):
         self.hasProject = False
         self.isZenMode  = False
 
-        logger.info("OS: %s" % (
-            self.mainConf.osType)
-        )
+        logger.info("OS: %s" % self.mainConf.osType)
+        logger.info("Kernel: %s" % self.mainConf.kernelVer)
+        logger.info("Host: %s" % self.mainConf.hostName)
         logger.info("Qt5 Version: %s (%d)" % (
             self.mainConf.verQtString, self.mainConf.verQtValue)
         )
@@ -64,7 +65,7 @@ class GuiMain(QMainWindow):
 
         self.resize(*self.mainConf.winGeometry)
         self._setWindowTitle()
-        self.setWindowIcon(QIcon(path.join(self.mainConf.appIcon)))
+        self.setWindowIcon(QIcon(self.mainConf.appIcon))
 
         # Main GUI Elements
         self.statusBar = GuiMainStatus(self)
@@ -84,7 +85,7 @@ class GuiMain(QMainWindow):
 
         # Assemble Main Window
         self.treePane = QFrame()
-        self.treeBox  = QVBoxLayout()
+        self.treeBox = QVBoxLayout()
         self.treeBox.setContentsMargins(0,0,0,0)
         self.treeBox.addWidget(self.treeView)
         self.treeBox.addWidget(self.treeMeta)
@@ -163,17 +164,12 @@ class GuiMain(QMainWindow):
 
         # Shortcuts and Actions
         self._connectMenuActions()
-        QShortcut(
-            Qt.Key_Return,
-            self.treeView,
-            context=Qt.WidgetShortcut,
-            activated=self._treeKeyPressReturn
-        )
-        QShortcut(
-            Qt.Key_Escape,
-            self,
-            activated=self._keyPressEscape
-        )
+        keyReturn = QShortcut(self.treeView)
+        keyReturn.setKey(QKeySequence(Qt.Key_Return))
+        keyReturn.activated.connect(self._treeKeyPressReturn)
+        keyEscape = QShortcut(self)
+        keyEscape.setKey(QKeySequence(Qt.Key_Escape))
+        keyEscape.activated.connect(self._keyPressEscape)
 
         # Forward Functions
         self.setStatus = self.statusBar.setStatus
@@ -181,6 +177,9 @@ class GuiMain(QMainWindow):
 
         if self.mainConf.showGUI:
             self.show()
+
+        # Check that config loaded fine
+        self.reportConfErr()
 
         self.initMain()
         self.asProjTimer.start()
@@ -192,6 +191,12 @@ class GuiMain(QMainWindow):
             self.toggleFullScreenMode()
 
         logger.debug("GUI initialisation complete")
+
+        if self.mainConf.cmdOpen is not None:
+            logger.debug("Opening project from additional command line option")
+            self.openProject(self.mainConf.cmdOpen)
+        else:
+            self.manageProjects()
 
         return
 
@@ -213,13 +218,30 @@ class GuiMain(QMainWindow):
     #  Project Actions
     ##
 
+    def manageProjects(self):
+        """Opens the projects dialog for selecting either existing
+        projects from a cache of recently opened projects, or provide a
+        browse button for projects not yet cached.
+        """
+        if not self.mainConf.showGUI:
+            return False
+
+        dlgProj = GuiProjectLoad(self)
+        dlgProj.exec_()
+        if dlgProj.result() == QDialog.Accepted:
+            self.openProject(dlgProj.openPath)
+
+        return True
+
     def newProject(self, projPath=None, forceNew=False):
+        """Create new project with a few default files and folders.
+        """
 
         if self.hasProject:
             msgBox = QMessageBox()
             msgRes = msgBox.warning(
                 self, "New Project",
-                "Please close the current project<br>before making a new one."
+                "Please close the current project before making a new one."
             )
             return False
 
@@ -232,7 +254,7 @@ class GuiMain(QMainWindow):
             msgBox = QMessageBox()
             msgRes = msgBox.critical(
                 self, "New Project",
-                "A project already exists in that location.<br>Please choose another folder."
+                "A project already exists in that location. Please choose another folder."
             )
             return False
 
@@ -247,9 +269,9 @@ class GuiMain(QMainWindow):
         return True
 
     def closeProject(self, isYes=False):
-        """Closes the project if one is open.
-        isYes is passed on from the close application event so the user
-        doesn't get prompted twice.
+        """Closes the project if one is open. isYes is passed on from
+        the close application event so the user doesn't get prompted
+        twice.
         """
         if not self.hasProject:
             # There is no project loaded, everything OK
@@ -309,7 +331,42 @@ class GuiMain(QMainWindow):
 
         # Try to open the project
         if not self.theProject.openProject(projFile):
-            return False
+            if self.theProject.lockedBy is not None:
+                if self.mainConf.showGUI:
+                    try:
+                        lockDetails = (
+                            "<br><br>The project was locked by the computer "
+                            "'%s' (%s %s), last active on %s"
+                        ) % (
+                            self.theProject.lockedBy[0],
+                            self.theProject.lockedBy[1],
+                            self.theProject.lockedBy[2],
+                            datetime.fromtimestamp(
+                                int(self.theProject.lockedBy[3])
+                            ).strftime("%x %X")
+                        )
+                    except:
+                        lockDetails = ""
+
+                    msgBox = QMessageBox()
+                    msgRes = msgBox.warning(
+                        self, "Project Locked", (
+                            "The project is already open by another instance of %s, and is "
+                            "therefore locked. Override lock and continue anyway?<br><br>"
+                            "Note: If the program or the computer previously crashed, the lock "
+                            "can safely be overridden. If, however, another instance of %s has "
+                            "the project open, overriding the lock may corrupt the project, and "
+                            "is not recommended.%s"
+                        ) % (nw.__package__, nw.__package__, lockDetails),
+                        QMessageBox.Yes | QMessageBox.No, QMessageBox.No
+                    )
+                    if msgRes == QMessageBox.Yes:
+                        if not self.theProject.openProject(projFile, overrideLock=True):
+                            return False
+                    else:
+                        return False
+            else:
+                return False
 
         # project is loaded
         self.hasProject = True
@@ -323,7 +380,6 @@ class GuiMain(QMainWindow):
         self.docEditor.setDictionaries()
         self.docEditor.setSpellCheck(self.theProject.spellCheck)
         self.statusBar.setRefTime(self.theProject.projOpened)
-        self.mainMenu.updateMenu()
 
         # Restore previously open documents, if any
         if self.theProject.lastEdited is not None:
@@ -337,7 +393,7 @@ class GuiMain(QMainWindow):
 
         return True
 
-    def saveProject(self, isAuto=False):
+    def saveProject(self):
         """Save the current project.
         """
         if not self.hasProject:
@@ -351,9 +407,8 @@ class GuiMain(QMainWindow):
             return False
 
         self.treeView.saveTreeOrder()
-        self.theProject.saveProject(isAuto)
+        self.theProject.saveProject()
         self.theIndex.saveIndex()
-        self.mainMenu.updateRecentProjects()
 
         return True
 
@@ -467,6 +522,22 @@ class GuiMain(QMainWindow):
 
         self.docEditor.replaceText(theText)
 
+        return True
+
+    def mergeDocuments(self):
+        """Merge multiple documents to one single new document.
+        """
+        if self.mainConf.showGUI:
+            dlgMerge = GuiDocMerge(self, self.theProject)
+            dlgMerge.exec_()
+        return True
+
+    def splitDocument(self):
+        """Split a single document into multiple documents.
+        """
+        if self.mainConf.showGUI:
+            dlgSplit = GuiDocSplit(self, self.theProject)
+            dlgSplit.exec_()
         return True
 
     def passDocumentAction(self, theAction):
@@ -676,6 +747,16 @@ class GuiMain(QMainWindow):
 
         return
 
+    def reportConfErr(self):
+        """Checks if the Config module has any errors to report, and let
+        the user know if this is the case. The Config module caches
+        errors since it is initialised before the GUI itself.
+        """
+        if self.mainConf.hasError:
+            self.makeAlert(self.mainConf.getErrData(), nwAlert.ERROR)
+            return True
+        return False
+
     ##
     #  Main Window Actions
     ##
@@ -691,9 +772,9 @@ class GuiMain(QMainWindow):
                 return False
 
         logger.info("Exiting %s" % nw.__package__)
-        self.projView.saveHeaderState()
-
-        self.closeProject(True)
+        if self.hasProject:
+            self.projView.saveHeaderState()
+            self.closeProject(True)
 
         self.mainConf.setTreeColWidths(self.treeView.getColumnSizes())
         if not self.mainConf.isFullScreen:
@@ -702,6 +783,7 @@ class GuiMain(QMainWindow):
             self.mainConf.setMainPanePos(self.splitMain.sizes())
             self.mainConf.setDocPanePos(self.splitView.sizes())
         self.mainConf.saveConfig()
+        self.reportConfErr()
 
         qApp.quit()
 
@@ -803,6 +885,12 @@ class GuiMain(QMainWindow):
         self.addAction(self.mainMenu.aFmtULine)
         self.addAction(self.mainMenu.aFmtDQuote)
         self.addAction(self.mainMenu.aFmtSQuote)
+        self.addAction(self.mainMenu.aFmtHead1)
+        self.addAction(self.mainMenu.aFmtHead2)
+        self.addAction(self.mainMenu.aFmtHead3)
+        self.addAction(self.mainMenu.aFmtHead4)
+        self.addAction(self.mainMenu.aFmtComment)
+        self.addAction(self.mainMenu.aFmtNoFormat)
         self.addAction(self.mainMenu.aSpellCheck)
         self.addAction(self.mainMenu.aReRunSpell)
         self.addAction(self.mainMenu.aPreferences)
@@ -820,7 +908,7 @@ class GuiMain(QMainWindow):
         if (self.hasProject and self.theProject.projChanged and
             self.theProject.projPath is not None):
             logger.debug("Autosaving project")
-            self.saveProject(isAuto=True)
+            self.saveProject()
         return
 
     def _autoSaveDocument(self):
