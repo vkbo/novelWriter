@@ -129,20 +129,12 @@ class GuiProjectOutline(QWidget):
     #  Internal Functions
     ##
 
-    def _saveHeaderState(self):
-
-        colW = []
-        for iCol in range(self.mainTree.columnCount()):
-            colW.append(self.mainTree.columnWidth(iCol))
-
-        self.treeCols["width"] = colW
-        self.optState.setValue("GuiProjectOutline", "headState", self.treeCols)
-        self.optState.saveSettings()
-        return
-
     def _loadHeaderState(self):
+        """Load the state of the main tree header, that is, column order
+        and column width.
+        """
 
-        treeCols = self.optState.getValue("GuiProjectOutline", "headState", {})
+        treeCols = self.optState.getValue("GuiProjectOutline", "headerState", self.treeCols)
 
         if "order" not in treeCols.keys(): return
         if not isinstance(treeCols["order"], list): return
@@ -159,7 +151,24 @@ class GuiProjectOutline(QWidget):
 
         return
 
+    def _saveHeaderState(self):
+        """Save the state of the main tree header, that is, column order
+        and column width.
+        """
+
+        colW = []
+        for iCol in range(self.mainTree.columnCount()):
+            colW.append(self.mainTree.columnWidth(iCol))
+
+        self.treeCols["width"] = colW
+        self.optState.setValue("GuiProjectOutline", "headerState", self.treeCols)
+        self.optState.saveSettings()
+
+        return
+
     def _populateTree(self):
+        """Build the tree based on the project index.
+        """
 
         theLabels = []
         for i, n in enumerate(self.treeCols["order"]):
@@ -238,6 +247,8 @@ class GuiProjectOutline(QWidget):
         return
 
     def _createTreeItem(self, tHandle, sTitle):
+        """Populate a tree item with all the column values.
+        """
 
         nwItem = self.theProject.getItem(tHandle)
         novIdx = self.theIndex.novelIndex[tHandle][sTitle]
@@ -265,10 +276,13 @@ class GuiProjectOutline(QWidget):
         return newItem
 
     def _setItemText(self, tItem, colID, theText, rAlign=False):
+        """Set the correct text in the correct column, and if necessary,
+        right align it.
+        """
         if colID in self.colIndex:
             tItem.setText(self.colIndex[colID], theText)
             if rAlign:
-                tItem.setTextAlignment(self.colIndex[colID],Qt.AlignRight)
+                tItem.setTextAlignment(self.colIndex[colID], Qt.AlignRight)
         return
 
 # END Class GuiProjectOutline
