@@ -307,6 +307,7 @@ class GuiMain(QMainWindow):
 
         if saveOK:
             self.closeDocument()
+            self.projView.closeOutline()
             self.theProject.closeProject()
             self.theIndex.clearIndex()
             self.clearGUI()
@@ -328,6 +329,9 @@ class GuiMain(QMainWindow):
         # another one
         if not self.closeProject():
             return False
+
+        # Switch main tab to editor view
+        self.tabWidget.setCurrentWidget(self.splitView)
 
         # Try to open the project
         if not self.theProject.openProject(projFile):
@@ -773,7 +777,6 @@ class GuiMain(QMainWindow):
 
         logger.info("Exiting %s" % nw.__package__)
         if self.hasProject:
-            self.projView.saveHeaderState()
             self.closeProject(True)
 
         self.mainConf.setTreeColWidths(self.treeView.getColumnSizes())
@@ -824,6 +827,7 @@ class GuiMain(QMainWindow):
         self.isZenMode = not self.isZenMode
         if self.isZenMode:
             logger.debug("Activating Zen mode")
+            self.tabWidget.setCurrentWidget(self.splitView)
         else:
             logger.debug("Deactivating Zen mode")
 
@@ -831,6 +835,7 @@ class GuiMain(QMainWindow):
         self.treePane.setVisible(isVisible)
         self.statusBar.setVisible(isVisible)
         self.mainMenu.setVisible(isVisible)
+        self.tabWidget.tabBar().setVisible(isVisible)
 
         if self.viewPane.isVisible():
             self.viewPane.setVisible(False)
@@ -995,7 +1000,7 @@ class GuiMain(QMainWindow):
         elif tabIndex == self.idxTabProj:
             logger.verbose("Project outline tab activated")
             if self.hasProject:
-                self.projView.populateTree()
+                self.projView.refreshTree()
         return
 
 # END Class GuiMain

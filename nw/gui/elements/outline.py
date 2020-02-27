@@ -21,7 +21,7 @@ from PyQt5.QtWidgets import (
     QWidget, QVBoxLayout, QTreeWidget, QTreeWidgetItem
 )
 
-from nw.constants import nwItemLayout, nwKeyWords, nwLabels, nwFiles
+from nw.constants import nwKeyWords, nwLabels
 
 logger = logging.getLogger(__name__)
 
@@ -76,9 +76,7 @@ class GuiProjectOutline(QWidget):
         self.theIndex   = self.theParent.theIndex
         self.optState   = self.theProject.optState
 
-        self.showWords    = True
-        self.showSynopsis = True
-        self.showFilePath = False
+        self.firstView = True
 
         self.outerBox  = QVBoxLayout()
         self.mainTree  = QTreeWidget()
@@ -103,7 +101,35 @@ class GuiProjectOutline(QWidget):
 
         return
 
-    def saveHeaderState(self):
+    def refreshTree(self):
+        """Called whenever the Outline tab is activated and controls
+        what data to load, and if necessary, force a rebuild of the
+        tree.
+        """
+
+        if self.firstView:
+            self._loadHeaderState()
+            self._populateTree()
+
+        self.firstView = False
+
+        return
+
+    def closeOutline(self):
+        """Called before a project is closed.
+        """
+
+        self._saveHeaderState()
+        self.mainTree.clear()
+        self.firstView = True
+
+        return
+
+    ##
+    #  Internal Functions
+    ##
+
+    def _saveHeaderState(self):
 
         colW = []
         for iCol in range(self.mainTree.columnCount()):
@@ -114,7 +140,7 @@ class GuiProjectOutline(QWidget):
         self.optState.saveSettings()
         return
 
-    def loadHeaderState(self):
+    def _loadHeaderState(self):
 
         treeCols = self.optState.getValue("GuiProjectOutline", "headState", {})
 
@@ -133,9 +159,7 @@ class GuiProjectOutline(QWidget):
 
         return
 
-    def populateTree(self):
-
-        self.loadHeaderState()
+    def _populateTree(self):
 
         theLabels = []
         for i, n in enumerate(self.treeCols["order"]):
@@ -212,10 +236,6 @@ class GuiProjectOutline(QWidget):
         self.lastBuild = time()
 
         return
-
-    ##
-    #  Internal Functions
-    ##
 
     def _createTreeItem(self, tHandle, sTitle):
 
