@@ -18,14 +18,15 @@ from time import time
 
 from PyQt5.QtCore import Qt, QByteArray
 from PyQt5.QtWidgets import (
-    QWidget, QVBoxLayout, QTreeWidget, QTreeWidgetItem
+    QWidget, QVBoxLayout, QTreeWidget, QTreeWidgetItem,
+    QAbstractItemView
 )
 
 from nw.constants import nwKeyWords, nwLabels
 
 logger = logging.getLogger(__name__)
 
-class GuiProjectOutline(QWidget):
+class GuiProjectOutline(QTreeWidget):
 
     I_TITLE  = 0
     I_LEVEL  = 1
@@ -66,7 +67,7 @@ class GuiProjectOutline(QWidget):
     }
 
     def __init__(self, theParent, theProject):
-        QWidget.__init__(self, theParent)
+        QTreeWidget.__init__(self, theParent)
 
         logger.debug("Initialising ProjectOutline ...")
 
@@ -77,10 +78,18 @@ class GuiProjectOutline(QWidget):
         self.optState   = self.theProject.optState
 
         self.firstView = True
-
-        self.outerBox  = QVBoxLayout()
-        self.mainTree  = QTreeWidget()
         self.lastBuild = 0
+
+        self.setSelectionBehavior(QAbstractItemView.SelectRows)
+        self.setSelectionMode(QAbstractItemView.SingleSelection)
+        self.setExpandsOnDoubleClick(False)
+        self.setDragEnabled(False)
+        self.itemDoubleClicked.connect(self._treeDoubleClick)
+
+        # self.mainHead = self.header()
+        # self.mainHead.setContextMenuPolicy(Qt.CustomContextMenu)
+        # self.mainHead.
+
         self.treeMap   = {}
         self.treeCols  = {
             "order" : [
@@ -92,10 +101,6 @@ class GuiProjectOutline(QWidget):
             "width" : [150, 100, 80, 100, 100, 100, 100, 300],
         }
         self.colIndex = {}
-
-        self.outerBox.addWidget(self.mainTree)
-        self.outerBox.setContentsMargins(0,0,0,0)
-        self.setLayout(self.outerBox)
 
         logger.debug("ProjectOutline initialisation complete")
 
@@ -120,9 +125,17 @@ class GuiProjectOutline(QWidget):
         """
 
         self._saveHeaderState()
-        self.mainTree.clear()
+        self.clear()
         self.firstView = True
 
+        return
+
+    ##
+    #  Slots
+    ##
+
+    def _treeDoubleClick(self, tItem, tCol):
+        print(tItem, tCol)
         return
 
     ##
@@ -157,8 +170,8 @@ class GuiProjectOutline(QWidget):
         """
 
         colW = []
-        for iCol in range(self.mainTree.columnCount()):
-            colW.append(self.mainTree.columnWidth(iCol))
+        for iCol in range(self.columnCount()):
+            colW.append(self.columnWidth(iCol))
 
         self.treeCols["width"] = colW
         self.optState.setValue("GuiProjectOutline", "headerState", self.treeCols)
@@ -175,12 +188,12 @@ class GuiProjectOutline(QWidget):
             theLabels.append(self.COL_LABELS[n])
             self.colIndex[n] = i
 
-        self.mainTree.clear()
-        self.mainTree.setHeaderLabels(theLabels)
+        self.clear()
+        self.setHeaderLabels(theLabels)
         for n, colW in enumerate(self.treeCols["width"]):
-            self.mainTree.setColumnWidth(n,colW)
+            self.setColumnWidth(n,colW)
 
-        treeHead = self.mainTree.headerItem()
+        treeHead = self.headerItem()
         if self.I_CCOUNT in self.colIndex:
             treeHead.setTextAlignment(self.colIndex[self.I_CCOUNT],Qt.AlignRight)
         if self.I_WCOUNT in self.colIndex:
@@ -212,17 +225,17 @@ class GuiProjectOutline(QWidget):
 
             if tLevel == "H1":
                 currTitle = tItem
-                self.mainTree.addTopLevelItem(tItem)
+                self.addTopLevelItem(tItem)
             elif tLevel == "H2":
                 if currTitle is None:
-                    self.mainTree.addTopLevelItem(tItem)
+                    self.addTopLevelItem(tItem)
                 else:
                     currTitle.addChild(tItem)
                 currChapter = tItem
             elif tLevel == "H3":
                 if currChapter is None:
                     if currTitle is None:
-                        self.mainTree.addTopLevelItem(tItem)
+                        self.addTopLevelItem(tItem)
                     else:
                         currTitle.addChild(tItem)
                 else:
@@ -232,7 +245,7 @@ class GuiProjectOutline(QWidget):
                 if currScene is None:
                     if currChapter is None:
                         if currTitle is None:
-                            self.mainTree.addTopLevelItem(tItem)
+                            self.addTopLevelItem(tItem)
                         else:
                             currTitle.addChild(tItem)
                     else:

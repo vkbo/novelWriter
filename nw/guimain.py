@@ -112,11 +112,14 @@ class GuiMain(QMainWindow):
         self.splitView.addWidget(self.editPane)
         self.splitView.addWidget(self.viewPane)
 
+        self.splitOutline = QSplitter(Qt.Vertical)
+        self.splitOutline.addWidget(self.projView)
+
         self.tabWidget = QTabWidget()
         self.tabWidget.setTabPosition(QTabWidget.East)
         self.tabWidget.setStyleSheet("QTabWidget::pane {border: 0;}")
-        self.tabWidget.addTab(self.splitView, "Editor")
-        self.tabWidget.addTab(self.projView,  "Outline")
+        self.tabWidget.addTab(self.splitView,    "Editor")
+        self.tabWidget.addTab(self.splitOutline, "Outline")
         self.tabWidget.currentChanged.connect(self._mainTabChanged)
 
         self.splitMain = QSplitter(Qt.Horizontal)
@@ -134,7 +137,7 @@ class GuiMain(QMainWindow):
         self.idxViewer = self.splitView.indexOf(self.viewPane)
 
         self.idxTabEdit = self.tabWidget.indexOf(self.splitView)
-        self.idxTabProj = self.tabWidget.indexOf(self.projView)
+        self.idxTabProj = self.tabWidget.indexOf(self.splitOutline)
 
         self.splitMain.setCollapsible(self.idxTree, False)
         self.splitMain.setCollapsible(self.idxMain, False)
