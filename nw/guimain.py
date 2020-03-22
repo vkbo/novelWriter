@@ -382,7 +382,7 @@ class GuiMain(QMainWindow):
 
         return True
 
-    def saveProject(self):
+    def saveProject(self, autoSave=False):
         """Save the current project.
         """
         if not self.hasProject:
@@ -396,7 +396,7 @@ class GuiMain(QMainWindow):
             return False
 
         self.treeView.saveTreeOrder()
-        self.theProject.saveProject()
+        self.theProject.saveProject(autoSave)
         self.theIndex.saveIndex()
 
         return True
@@ -902,7 +902,7 @@ class GuiMain(QMainWindow):
         if (self.hasProject and self.theProject.projChanged and
             self.theProject.projPath is not None):
             logger.debug("Autosaving project")
-            self.saveProject()
+            self.saveProject(autoSave=True)
         return
 
     def _autoSaveDocument(self):
