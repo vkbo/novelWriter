@@ -41,6 +41,8 @@ class NWProject():
         self.projChanged = None # The project has unsaved changes
         self.projAltered = None # The project has been altered this session
         self.lockedBy    = None # Data on which computer has the project open
+        self.saveCount   = None # Meta data: number of saves
+        self.autoCount   = None # Meta data: number of automatic saves
 
         # Debug
         self.handleSeed = None
@@ -143,10 +145,15 @@ class NWProject():
         return True
 
     def clearProject(self):
+        """Clear the data for the current project, and set them to
+        default values.
+        """
 
         self.projOpened  = None
         self.projChanged = None
         self.projAltered = False
+        self.saveCount   = 0
+        self.autoCount   = 0
 
         # Project Settings
         self.projTree    = {}
@@ -244,8 +251,19 @@ class NWProject():
         xRoot   = nwXML.getroot()
         nwxRoot = xRoot.tag
 
-        appVersion  = xRoot.attrib["appVersion"]
-        fileVersion = xRoot.attrib["fileVersion"]
+        appVersion = "Unknown"
+        fileVersion = "Unknown"
+        self.saveCount = 0
+        self.autoCount = 0
+
+        if "appVersion" in xRoot.attrib:
+            appVersion  = xRoot.attrib["appVersion"]
+        if "fileVersion" in xRoot.attrib:
+            fileVersion = xRoot.attrib["fileVersion"]
+        if "saveCount" in xRoot.attrib:
+            self.saveCount = checkInt(xRoot.attrib["saveCount"], 0, False)
+        if "autoCount" in xRoot.attrib:
+            self.autoCount = checkInt(xRoot.attrib["autoCount"], 0, False)
 
         logger.verbose("XML root is %s" % nwxRoot)
         logger.verbose("File version is %s" % fileVersion)
@@ -328,7 +346,7 @@ class NWProject():
 
         return True
 
-    def saveProject(self):
+    def saveProject(self, autoSave=False):
         """Save the project main XML file. The saving command itself
         uses a temporary filename, and the file is renamed afterwards to
         make sure if the save fails, we're not left with a truncated
@@ -347,11 +365,18 @@ class NWProject():
 
         logger.debug("Saving project: %s" % self.projPath)
 
+        if autoSave:
+            self.autoCount += 1
+        else:
+            self.saveCount += 1
+
         # Root element and project details
         logger.debug("Writing project meta")
         nwXML = etree.Element("novelWriterXML",attrib={
             "appVersion"  : str(nw.__version__),
             "fileVersion" : "1.0",
+            "saveCount"   : str(self.saveCount),
+            "autoCount"   : str(self.autoCount),
             "timeStamp"   : datetime.fromtimestamp(saveTime).strftime("%Y-%m-%d %H:%M:%S"),
         })
 
