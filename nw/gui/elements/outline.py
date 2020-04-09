@@ -23,50 +23,29 @@ from PyQt5.QtWidgets import (
     QAbstractItemView
 )
 
-from nw.constants import nwKeyWords, nwLabels
+from nw.constants import nwKeyWords, nwLabels, nwOutline
 
 logger = logging.getLogger(__name__)
 
-class HCols(Enum):
-
-    TITLE  = 0
-    LEVEL  = 1
-    LABEL  = 2
-    LINE   = 3
-    WCOUNT = 4
-    CCOUNT = 5
-    PCOUNT = 6
-    SYNOP  = 7
-    POV    = 8
-    CHAR   = 9
-    PLOT   = 10
-    TIME   = 11
-    WORLD  = 12
-    OBJECT = 13
-    ENTITY = 14
-    CUSTOM = 15
-
-# END Enum HCols
-
 class GuiProjectOutline(QTreeWidget):
 
-    COL_LABELS = {
-        HCols.TITLE  : "Title",
-        HCols.LEVEL  : "Level",
-        HCols.LABEL  : "Document",
-        HCols.LINE   : "Line",
-        HCols.WCOUNT : "Words",
-        HCols.CCOUNT : "Chars",
-        HCols.PCOUNT : "Pars",
-        HCols.POV    : "POV",
-        HCols.CHAR   : nwLabels.KEY_NAME[nwKeyWords.CHAR_KEY],
-        HCols.PLOT   : nwLabels.KEY_NAME[nwKeyWords.PLOT_KEY],
-        HCols.TIME   : nwLabels.KEY_NAME[nwKeyWords.TIME_KEY],
-        HCols.WORLD  : nwLabels.KEY_NAME[nwKeyWords.WORLD_KEY],
-        HCols.OBJECT : nwLabels.KEY_NAME[nwKeyWords.OBJECT_KEY],
-        HCols.ENTITY : nwLabels.KEY_NAME[nwKeyWords.ENTITY_KEY],
-        HCols.CUSTOM : nwLabels.KEY_NAME[nwKeyWords.CUSTOM_KEY],
-        HCols.SYNOP  : "Synopsis",
+    COL_DEF = {
+        nwOutline.TITLE  : (200, True,  nwLabels.OUTLINE_COLS[nwOutline.TITLE]),
+        nwOutline.LEVEL  : ( 40, False, nwLabels.OUTLINE_COLS[nwOutline.LEVEL]),
+        nwOutline.LABEL  : (150, True,  nwLabels.OUTLINE_COLS[nwOutline.LABEL]),
+        nwOutline.LINE   : ( 40, False, nwLabels.OUTLINE_COLS[nwOutline.LINE]),
+        nwOutline.CCOUNT : ( 50, False, nwLabels.OUTLINE_COLS[nwOutline.CCOUNT]),
+        nwOutline.WCOUNT : ( 50, True,  nwLabels.OUTLINE_COLS[nwOutline.WCOUNT]),
+        nwOutline.PCOUNT : ( 50, True,  nwLabels.OUTLINE_COLS[nwOutline.PCOUNT]),
+        nwOutline.POV    : (100, True,  nwLabels.OUTLINE_COLS[nwOutline.POV]),
+        nwOutline.CHAR   : (100, True,  nwLabels.OUTLINE_COLS[nwOutline.CHAR]),
+        nwOutline.PLOT   : (100, True,  nwLabels.OUTLINE_COLS[nwOutline.PLOT]),
+        nwOutline.TIME   : (100, False, nwLabels.OUTLINE_COLS[nwOutline.TIME]),
+        nwOutline.WORLD  : (100, True,  nwLabels.OUTLINE_COLS[nwOutline.WORLD]),
+        nwOutline.OBJECT : (100, False, nwLabels.OUTLINE_COLS[nwOutline.OBJECT]),
+        nwOutline.ENTITY : (100, False, nwLabels.OUTLINE_COLS[nwOutline.ENTITY]),
+        nwOutline.CUSTOM : (100, False, nwLabels.OUTLINE_COLS[nwOutline.CUSTOM]),
+        nwOutline.SYNOP  : (200, True,  nwLabels.OUTLINE_COLS[nwOutline.SYNOP]),
     }
 
     def __init__(self, theParent, theProject):
@@ -79,7 +58,7 @@ class GuiProjectOutline(QTreeWidget):
         self.theProject = theProject
         self.theIndex   = self.theParent.theIndex
         self.optState   = self.theProject.optState
-        self.headerMenu = GuiOutlineHeaderMenu(self)
+        self.headerMenu = GuiOutlineHeaderMenu(self, self.COL_DEF, nwOutline.TITLE)
 
         self.firstView = True
         self.lastBuild = 0
@@ -96,10 +75,16 @@ class GuiProjectOutline(QTreeWidget):
         self.treeHead.sectionMoved.connect(self._columnMoved)
 
         self.treeMap   = {}
-        self.treeOrder = self.COL_LABELS.keys()
+        self.treeOrder = self.COL_DEF.keys()
         self.treeNCols = len(self.treeOrder)
-        self.treeWidth = [150]*self.treeNCols
+        self.colWidth  = [150]*self.treeNCols
+        self.colHidden = [False]*self.treeNCols
         self.colIndex  = {}
+
+        # Set defaults
+        for hItem in self.treeOrder:
+            self.colWidth[hItem.value] = self.COL_DEF[hItem][0]
+            self.colHidden[hItem.value] = self.COL_DEF[hItem][1]
 
         logger.debug("ProjectOutline initialisation complete")
 
@@ -136,9 +121,8 @@ class GuiProjectOutline(QTreeWidget):
         return
 
     def _headerRightClick(self, clickPos):
-        print(clickPos)
-        globPos = self.mapToGlobal(clickPos)
-        print(globPos)
+        self.headerMenu.exec_(self.mapToGlobal(clickPos))
+        print("Menu closed")
         return
 
     def _columnMoved(self, logIdx, oldVisualIdx, newVisualIdx):
@@ -148,7 +132,7 @@ class GuiProjectOutline(QTreeWidget):
         rebuild.
         """
         self.treeOrder.insert(newVisualIdx, self.treeOrder.pop(oldVisualIdx))
-        self.treeWidth.insert(newVisualIdx, self.treeWidth.pop(oldVisualIdx))
+        self.colWidth.insert(newVisualIdx, self.colWidth.pop(oldVisualIdx))
         return
 
     ##
@@ -162,11 +146,11 @@ class GuiProjectOutline(QTreeWidget):
 
         # Load whatever we saved last time, regardless of wether it
         # contains the correct names or number of columns.
-        keysOrder = self.COL_LABELS.keys()
+        keysOrder = self.COL_DEF.keys()
         tempOrder = self.optState.getValue("GuiProjectOutline", "headerOrder", keysOrder)
         treeOrder = []
         for hName in tempOrder:
-            for hItem in HCols:
+            for hItem in nwOutline:
                 if hItem.name == hName:
                     treeOrder.append(hItem)
 
@@ -184,11 +168,16 @@ class GuiProjectOutline(QTreeWidget):
             logger.error("Failed to extract outline column order from previous session")
             logger.error("Column count doesn't match %d != %d" % (len(treeOrder), self.treeNCols))
 
-        # The columns widths we just fill whatever we've got, and append
-        # the rest with defaults, and truncate to desired length.
-        tempWidth = self.optState.getValue("GuiProjectOutline", "headerWidth", [])
-        treeWidth = [int(w) for w in tempWidth]
-        self.treeWidth = (treeWidth + self.treeWidth)[0:self.treeNCols]
+        # The columns widths and hidden state we just fill with whatever
+        # we've got, and append the rest with defaults, and truncate to
+        # desired length.
+        tmpWidth = self.optState.getValue("GuiProjectOutline", "columnWidth", [])
+        colWidth = [int(w) for w in tmpWidth]
+        self.colWidth = (colWidth + self.colWidth)[0:self.treeNCols]
+
+        tmpHidden = self.optState.getValue("GuiProjectOutline", "columnHidden", [])
+        colHidden = [int(w) for w in tmpHidden]
+        self.colHidden = (colHidden + self.colHidden)[0:self.treeNCols]
 
         return
 
@@ -197,15 +186,22 @@ class GuiProjectOutline(QTreeWidget):
         and column width.
         """
 
-        treeWidth = []
+        # If we haven't built the tree, there is nothing to save.
+        if self.lastBuild == 0:
+            return
+
         treeOrder = []
+        colWidth  = []
+        colHidden = []
         for iCol in range(self.columnCount()):
             treeOrder.append(self.treeOrder[iCol].name)
             iLog = self.treeHead.logicalIndex(iCol)
-            treeWidth.append(self.columnWidth(iLog))
+            colWidth.append(self.columnWidth(iLog))
+            colHidden.append(self.isColumnHidden(iLog))
 
-        self.optState.setValue("GuiProjectOutline", "headerOrder", treeOrder)
-        self.optState.setValue("GuiProjectOutline", "headerWidth", treeWidth)
+        self.optState.setValue("GuiProjectOutline", "headerOrder",  treeOrder)
+        self.optState.setValue("GuiProjectOutline", "columnWidth",  colWidth)
+        self.optState.setValue("GuiProjectOutline", "columnHidden", colHidden)
         self.optState.saveSettings()
 
         return
@@ -216,18 +212,18 @@ class GuiProjectOutline(QTreeWidget):
 
         theLabels = []
         for i, hItem in enumerate(self.treeOrder):
-            theLabels.append(self.COL_LABELS[hItem])
+            theLabels.append(self.COL_DEF[hItem][2])
             self.colIndex[hItem] = i
 
         self.clear()
         self.setHeaderLabels(theLabels)
-        for n, colW in enumerate(self.treeWidth):
+        for n, colW in enumerate(self.colWidth):
             self.setColumnWidth(n,colW)
 
         headItem = self.headerItem()
-        headItem.setTextAlignment(self.colIndex[HCols.CCOUNT],Qt.AlignRight)
-        headItem.setTextAlignment(self.colIndex[HCols.WCOUNT],Qt.AlignRight)
-        headItem.setTextAlignment(self.colIndex[HCols.PCOUNT],Qt.AlignRight)
+        headItem.setTextAlignment(self.colIndex[nwOutline.CCOUNT], Qt.AlignRight)
+        headItem.setTextAlignment(self.colIndex[nwOutline.WCOUNT], Qt.AlignRight)
+        headItem.setTextAlignment(self.colIndex[nwOutline.PCOUNT], Qt.AlignRight)
 
         currTitle   = None
         currChapter = None
@@ -296,27 +292,27 @@ class GuiProjectOutline(QTreeWidget):
 
         newItem = QTreeWidgetItem()
 
-        newItem.setText(self.colIndex[HCols.TITLE],  novIdx["title"])
-        newItem.setText(self.colIndex[HCols.LEVEL],  novIdx["level"])
-        newItem.setText(self.colIndex[HCols.LABEL],  nwItem.itemName)
-        newItem.setText(self.colIndex[HCols.LINE],   sTitle[1:])
-        newItem.setText(self.colIndex[HCols.SYNOP],  novIdx["synopsis"])
-        newItem.setText(self.colIndex[HCols.CCOUNT], str(novIdx["cCount"]))
-        newItem.setText(self.colIndex[HCols.WCOUNT], str(novIdx["wCount"]))
-        newItem.setText(self.colIndex[HCols.PCOUNT], str(novIdx["pCount"]))
-        newItem.setTextAlignment(self.colIndex[HCols.CCOUNT], Qt.AlignRight)
-        newItem.setTextAlignment(self.colIndex[HCols.WCOUNT], Qt.AlignRight)
-        newItem.setTextAlignment(self.colIndex[HCols.PCOUNT], Qt.AlignRight)
+        newItem.setText(self.colIndex[nwOutline.TITLE],  novIdx["title"])
+        newItem.setText(self.colIndex[nwOutline.LEVEL],  novIdx["level"])
+        newItem.setText(self.colIndex[nwOutline.LABEL],  nwItem.itemName)
+        newItem.setText(self.colIndex[nwOutline.LINE],   sTitle[1:])
+        newItem.setText(self.colIndex[nwOutline.SYNOP],  novIdx["synopsis"])
+        newItem.setText(self.colIndex[nwOutline.CCOUNT], str(novIdx["cCount"]))
+        newItem.setText(self.colIndex[nwOutline.WCOUNT], str(novIdx["wCount"]))
+        newItem.setText(self.colIndex[nwOutline.PCOUNT], str(novIdx["pCount"]))
+        newItem.setTextAlignment(self.colIndex[nwOutline.CCOUNT], Qt.AlignRight)
+        newItem.setTextAlignment(self.colIndex[nwOutline.WCOUNT], Qt.AlignRight)
+        newItem.setTextAlignment(self.colIndex[nwOutline.PCOUNT], Qt.AlignRight)
 
         theRefs = self.theIndex.getReferences(tHandle, sTitle)
-        newItem.setText(self.colIndex[HCols.POV],    ", ".join(theRefs[nwKeyWords.POV_KEY]))
-        newItem.setText(self.colIndex[HCols.CHAR],   ", ".join(theRefs[nwKeyWords.CHAR_KEY]))
-        newItem.setText(self.colIndex[HCols.PLOT],   ", ".join(theRefs[nwKeyWords.PLOT_KEY]))
-        newItem.setText(self.colIndex[HCols.TIME],   ", ".join(theRefs[nwKeyWords.TIME_KEY]))
-        newItem.setText(self.colIndex[HCols.WORLD],  ", ".join(theRefs[nwKeyWords.WORLD_KEY]))
-        newItem.setText(self.colIndex[HCols.OBJECT], ", ".join(theRefs[nwKeyWords.OBJECT_KEY]))
-        newItem.setText(self.colIndex[HCols.ENTITY], ", ".join(theRefs[nwKeyWords.ENTITY_KEY]))
-        newItem.setText(self.colIndex[HCols.CUSTOM], ", ".join(theRefs[nwKeyWords.CUSTOM_KEY]))
+        newItem.setText(self.colIndex[nwOutline.POV],    ", ".join(theRefs[nwKeyWords.POV_KEY]))
+        newItem.setText(self.colIndex[nwOutline.CHAR],   ", ".join(theRefs[nwKeyWords.CHAR_KEY]))
+        newItem.setText(self.colIndex[nwOutline.PLOT],   ", ".join(theRefs[nwKeyWords.PLOT_KEY]))
+        newItem.setText(self.colIndex[nwOutline.TIME],   ", ".join(theRefs[nwKeyWords.TIME_KEY]))
+        newItem.setText(self.colIndex[nwOutline.WORLD],  ", ".join(theRefs[nwKeyWords.WORLD_KEY]))
+        newItem.setText(self.colIndex[nwOutline.OBJECT], ", ".join(theRefs[nwKeyWords.OBJECT_KEY]))
+        newItem.setText(self.colIndex[nwOutline.ENTITY], ", ".join(theRefs[nwKeyWords.ENTITY_KEY]))
+        newItem.setText(self.colIndex[nwOutline.CUSTOM], ", ".join(theRefs[nwKeyWords.CUSTOM_KEY]))
 
         return newItem
 
@@ -324,9 +320,32 @@ class GuiProjectOutline(QTreeWidget):
 
 class GuiOutlineHeaderMenu(QMenu):
 
-    def __init__(self, theParent):
+    def __init__(self, theParent, colDefault, skipCol):
         QMenu.__init__(self, theParent)
 
+        mnuHead = QAction("Select Columns", self)
+        self.addAction(mnuHead)
+        self.addSeparator()
+
+        self.actionMap = {}
+
+        for hItem in nwOutline:
+            if hItem == skipCol:
+                continue
+            if hItem not in colDefault:
+                continue
+            self.actionMap[hItem] = QAction(colDefault[hItem][2], self)
+            self.actionMap[hItem].setCheckable(True)
+            self.actionMap[hItem].setChecked(colDefault[hItem][1])
+            self.actionMap[hItem].toggled.connect(
+                lambda isChecked, tItem=hItem : self._columnToggled(isChecked, tItem)
+            )
+            self.addAction(self.actionMap[hItem])
+
+        return
+
+    def _columnToggled(self, isChecked, theItem):
+        print(isChecked, theItem.name)
         return
 
 # END Class GuiOutlineHeaderMenu
