@@ -4,7 +4,7 @@ from nw.constants.constants import (
     nwConst, nwFiles, nwKeyWords, nwLabels, nwDependencies, nwQuotes, nwUnicode
 )
 from nw.constants.enum import (
-    nwAlert, nwDocAction, nwItemClass, nwItemLayout, nwItemType
+    nwAlert, nwDocAction, nwItemClass, nwItemLayout, nwItemType, nwOutline
 )
 
 __all__ = [
@@ -22,4 +22,5 @@ __all__ = [
     "nwItemClass",
     "nwItemLayout",
     "nwItemType",
+    "nwOutline",
 ]
