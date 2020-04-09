@@ -20,7 +20,8 @@ from PyQt5.QtGui import QFont
 from PyQt5.QtWidgets import (
     QDialog, QHBoxLayout, QVBoxLayout, QLineEdit, QLabel, QWidget, QTabWidget,
     QDialogButtonBox, QSpinBox, QGroupBox, QComboBox, QMessageBox, QCheckBox,
-    QGridLayout, QFontComboBox, QPushButton, QFileDialog
+    QGridLayout, QFontComboBox, QPushButton, QFileDialog, QListWidget,
+    QSizePolicy, QRadioButton, QButtonGroup
 )
 
 from nw.tools import NWSpellCheck, NWSpellSimple, NWSpellEnchant
@@ -44,12 +45,14 @@ class GuiConfigEditor(QDialog):
         self.setWindowTitle("Preferences")
         self.guiDeco = self.theParent.theTheme.loadDecoration("settings",(64,64))
 
-        self.tabMain   = GuiConfigEditGeneral(self.theParent)
-        self.tabEditor = GuiConfigEditEditor(self.theParent)
+        self.tabMain    = GuiConfigEditGeneral(self.theParent)
+        self.tabEditor  = GuiConfigEditEditor(self.theParent)
+        self.tabOutline = GuiConfigEditOutline(self.theParent)
 
         self.tabWidget = QTabWidget()
-        self.tabWidget.addTab(self.tabMain,   "General")
+        self.tabWidget.addTab(self.tabMain, "General")
         self.tabWidget.addTab(self.tabEditor, "Editor")
+        self.tabWidget.addTab(self.tabOutline, "Outline")
 
         self.setLayout(self.outerBox)
         self.outerBox.addWidget(self.guiDeco, 0, Qt.AlignTop)
@@ -79,11 +82,15 @@ class GuiConfigEditor(QDialog):
         validEntries = True
         needsRestart = False
 
-        retA, retB    = self.tabMain.saveValues()
+        retA, retB = self.tabMain.saveValues()
         validEntries &= retA
         needsRestart |= retB
 
-        retA, retB    = self.tabEditor.saveValues()
+        retA, retB = self.tabEditor.saveValues()
+        validEntries &= retA
+        needsRestart |= retB
+
+        retA, retB = self.tabOutline.saveValues()
         validEntries &= retA
         needsRestart |= retB
 
@@ -661,3 +668,63 @@ class GuiConfigEditEditor(QWidget):
         return False
 
 # END Class GuiConfigEditEditor
+
+class GuiConfigEditOutline(QWidget):
+
+    def __init__(self, theParent):
+        QWidget.__init__(self, theParent)
+
+        self.mainConf  = nw.CONFIG
+        self.theParent = theParent
+        self.outerBox  = QVBoxLayout()
+        self.innerBox  = QHBoxLayout()
+
+        self.selectBox = QVBoxLayout()
+        self.selectList = QListWidget()
+        self.selectList.setMaximumWidth(180)
+        self.selectBox.addWidget(QLabel("Selected"))
+        self.selectBox.addWidget(self.selectList)
+
+        self.availBox = QVBoxLayout()
+        self.availList = QListWidget()
+        self.availList.setMaximumWidth(180)
+        self.availBox.addWidget(QLabel("Available"))
+        self.availBox.addWidget(self.availList)
+
+        self.buttonBox = QVBoxLayout()
+
+        self.upButton = QPushButton("Move Up")
+        self.addButton = QPushButton("< Add")
+        self.delButton = QPushButton("Remove >")
+        self.downButton = QPushButton("Move Down")
+
+        self.buttonBox.addStretch(1)
+        self.buttonBox.addWidget(self.upButton)
+        self.buttonBox.addWidget(self.addButton)
+        self.buttonBox.addWidget(self.delButton)
+        self.buttonBox.addWidget(self.downButton)
+        self.buttonBox.addStretch(1)
+
+        self.projectOnly = QCheckBox("Use these settings for the current project only", self)
+
+        # Assemble
+        self.innerBox.addLayout(self.selectBox)
+        self.innerBox.addStretch(1)
+        self.innerBox.addLayout(self.buttonBox)
+        self.innerBox.addStretch(1)
+        self.innerBox.addLayout(self.availBox)
+
+        self.outerBox.addLayout(self.innerBox)
+        self.outerBox.addWidget(self.projectOnly)
+
+        self.setLayout(self.outerBox)
+
+        return
+
+    def saveValues(self):
+
+        validEntries = True
+
+        return validEntries, False
+
+# END Class GuiConfigEditOutline
