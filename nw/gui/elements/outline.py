@@ -13,14 +13,11 @@
 import logging
 import nw
 
-from os import path
 from time import time
-from enum import Enum
 
-from PyQt5.QtCore import Qt, QByteArray
+from PyQt5.QtCore import Qt
 from PyQt5.QtWidgets import (
-    QWidget, QVBoxLayout, QTreeWidget, QTreeWidgetItem, QMenu, QAction,
-    QAbstractItemView
+    QTreeWidget, QTreeWidgetItem, QMenu, QAction, QAbstractItemView
 )
 
 from nw.constants import nwKeyWords, nwLabels, nwOutline
@@ -157,17 +154,9 @@ class GuiProjectOutline(QTreeWidget):
         return
 
     def _headerRightClick(self, clickPos):
-        """Show the header column menu, and check afterwards if a
-        column's visibility was changed.
+        """Show the header column menu.
         """
         self.headerMenu.exec_(self.mapToGlobal(clickPos))
-
-        hItem = self.headerMenu.toggledItem
-        if hItem is not None:
-            self.setColumnHidden(self.colIndex[hItem], not self.headerMenu.toggleState)
-            self.headerMenu.toggledItem = None
-            self.headerMenu.toggleState = None
-
         return
 
     def _columnMoved(self, logIdx, oldVisualIdx, newVisualIdx):
@@ -175,6 +164,15 @@ class GuiProjectOutline(QTreeWidget):
         of the columns.
         """
         self.treeOrder.insert(newVisualIdx, self.treeOrder.pop(oldVisualIdx))
+        return
+
+    def _menuColumnToggled(self, isChecked, theItem):
+        """Receive the changes to column visibility forwarded by the
+        header context menu.
+        """
+        logger.verbose("User toggled Outline column '%s'" % theItem.name)
+        if theItem in self.colIndex:
+            self.setColumnHidden(self.colIndex[theItem], not isChecked)
         return
 
     ##
@@ -187,7 +185,8 @@ class GuiProjectOutline(QTreeWidget):
         """
 
         # Load whatever we saved last time, regardless of wether it
-        # contains the correct names or number of columns.
+        # contains the correct names or number of columns. The names
+        # must be valid though.
         tempOrder = self.optState.getValue("GuiProjectOutline", "headerOrder", [])
         treeOrder = []
         for hName in tempOrder:
@@ -196,8 +195,7 @@ class GuiProjectOutline(QTreeWidget):
             except:
                 logger.warning("Ignored unknown outline column '%s'" % str(hName))
 
-        # Add columns that were not in tempOrder to treeOrder, but in
-        # the default column order.
+        # Add columns that was not in the file to the treeOrder array.
         for hItem in nwOutline:
             if hItem not in treeOrder:
                 treeOrder.append(hItem)
@@ -210,8 +208,8 @@ class GuiProjectOutline(QTreeWidget):
             logger.error("Failed to extract outline column order from previous session")
             logger.error("Column count doesn't match %d != %d" % (len(treeOrder), self.treeNCols))
 
-        # We load the column widths and hidden state we find in the
-        # file, and leave the rest in their default state.
+        # We load whatever column widths and hidden states we find in
+        # the file, and leave the rest in their default state.
         tmpWidth = self.optState.getValue("GuiProjectOutline", "columnWidth", {})
         for hName in tmpWidth:
             try:
@@ -386,6 +384,9 @@ class GuiOutlineHeaderMenu(QMenu):
     def __init__(self, theParent):
         QMenu.__init__(self, theParent)
 
+        self.theParent = theParent
+        self.acceptToggle = True
+
         mnuHead = QAction("Select Columns", self)
         self.addAction(mnuHead)
         self.addSeparator()
@@ -401,38 +402,33 @@ class GuiOutlineHeaderMenu(QMenu):
             )
             self.addAction(self.actionMap[hItem])
 
-        self.ignoreToggle = False
-        self.toggledItem = None
-        self.toggleState = None
-
         return
 
     def setHiddenState(self, hiddenState):
         """Overwrite the checked state of the columns as the inverse of
         the hidden state. Skip the TITLE column as it cannot be hidden.
         """
-        self.ignoreToggle = True
+        self.acceptToggle = False
 
         for hItem in nwOutline:
             if hItem == nwOutline.TITLE or hItem not in hiddenState:
                 continue
             self.actionMap[hItem].setChecked(not hiddenState[hItem])
 
-        self.ignoreToggle = False
+        self.acceptToggle = True
 
         return
 
+    ##
+    #  Slots
+    ##
+
     def _columnToggled(self, isChecked, theItem):
-        """The user has toggled the visibility of a column. Record the
-        change, but do nothing more.
+        """The user has toggled the visibility of a column. Forward the
+        event to the parent class only if we're accepting changes.
         """
-        if self.ignoreToggle:
-            return
-
-        logger.verbose("User toggled Outline column '%s'" % theItem.name)
-        self.toggledItem = theItem
-        self.toggleState = isChecked
-
+        if self.acceptToggle:
+            self.theParent._menuColumnToggled(isChecked, theItem)
         return
 
 # END Class GuiOutlineHeaderMenu
