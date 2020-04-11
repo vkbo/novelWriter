@@ -29,23 +29,42 @@ logger = logging.getLogger(__name__)
 
 class GuiProjectOutline(QTreeWidget):
 
-    COL_DEF = {
-        nwOutline.TITLE  : (200, True,  nwLabels.OUTLINE_COLS[nwOutline.TITLE]),
-        nwOutline.LEVEL  : ( 40, False, nwLabels.OUTLINE_COLS[nwOutline.LEVEL]),
-        nwOutline.LABEL  : (150, True,  nwLabels.OUTLINE_COLS[nwOutline.LABEL]),
-        nwOutline.LINE   : ( 40, False, nwLabels.OUTLINE_COLS[nwOutline.LINE]),
-        nwOutline.CCOUNT : ( 50, False, nwLabels.OUTLINE_COLS[nwOutline.CCOUNT]),
-        nwOutline.WCOUNT : ( 50, True,  nwLabels.OUTLINE_COLS[nwOutline.WCOUNT]),
-        nwOutline.PCOUNT : ( 50, True,  nwLabels.OUTLINE_COLS[nwOutline.PCOUNT]),
-        nwOutline.POV    : (100, True,  nwLabels.OUTLINE_COLS[nwOutline.POV]),
-        nwOutline.CHAR   : (100, True,  nwLabels.OUTLINE_COLS[nwOutline.CHAR]),
-        nwOutline.PLOT   : (100, True,  nwLabels.OUTLINE_COLS[nwOutline.PLOT]),
-        nwOutline.TIME   : (100, False, nwLabels.OUTLINE_COLS[nwOutline.TIME]),
-        nwOutline.WORLD  : (100, True,  nwLabels.OUTLINE_COLS[nwOutline.WORLD]),
-        nwOutline.OBJECT : (100, False, nwLabels.OUTLINE_COLS[nwOutline.OBJECT]),
-        nwOutline.ENTITY : (100, False, nwLabels.OUTLINE_COLS[nwOutline.ENTITY]),
-        nwOutline.CUSTOM : (100, False, nwLabels.OUTLINE_COLS[nwOutline.CUSTOM]),
-        nwOutline.SYNOP  : (200, True,  nwLabels.OUTLINE_COLS[nwOutline.SYNOP]),
+    DEF_WIDTH = {
+        nwOutline.TITLE  : 200,
+        nwOutline.LEVEL  :  40,
+        nwOutline.LABEL  : 150,
+        nwOutline.LINE   :  40,
+        nwOutline.CCOUNT :  50,
+        nwOutline.WCOUNT :  50,
+        nwOutline.PCOUNT :  50,
+        nwOutline.POV    : 100,
+        nwOutline.CHAR   : 100,
+        nwOutline.PLOT   : 100,
+        nwOutline.TIME   : 100,
+        nwOutline.WORLD  : 100,
+        nwOutline.OBJECT : 100,
+        nwOutline.ENTITY : 100,
+        nwOutline.CUSTOM : 100,
+        nwOutline.SYNOP  : 200,
+    }
+
+    DEF_HIDDEN = {
+        nwOutline.TITLE  : False,
+        nwOutline.LEVEL  : True,
+        nwOutline.LABEL  : False,
+        nwOutline.LINE   : True,
+        nwOutline.CCOUNT : True,
+        nwOutline.WCOUNT : False,
+        nwOutline.PCOUNT : False,
+        nwOutline.POV    : False,
+        nwOutline.CHAR   : False,
+        nwOutline.PLOT   : False,
+        nwOutline.TIME   : True,
+        nwOutline.WORLD  : False,
+        nwOutline.OBJECT : True,
+        nwOutline.ENTITY : True,
+        nwOutline.CUSTOM : True,
+        nwOutline.SYNOP  : False,
     }
 
     def __init__(self, theParent, theProject):
@@ -58,7 +77,7 @@ class GuiProjectOutline(QTreeWidget):
         self.theProject = theProject
         self.theIndex   = self.theParent.theIndex
         self.optState   = self.theProject.optState
-        self.headerMenu = GuiOutlineHeaderMenu(self, self.COL_DEF, nwOutline.TITLE)
+        self.headerMenu = GuiOutlineHeaderMenu(self)
 
         self.firstView = True
         self.lastBuild = 0
@@ -75,28 +94,45 @@ class GuiProjectOutline(QTreeWidget):
         self.treeHead.sectionMoved.connect(self._columnMoved)
 
         self.treeMap   = {}
-        self.treeOrder = self.COL_DEF.keys()
-        self.treeNCols = len(self.treeOrder)
-        self.colWidth  = [150]*self.treeNCols
-        self.colHidden = [False]*self.treeNCols
+        self.treeOrder = []
+        self.colWidth  = {}
+        self.colHidden = {}
         self.colIndex  = {}
+        self.treeNCols = 0
 
-        # Set defaults
-        for hItem in self.treeOrder:
-            self.colWidth[hItem.value] = self.COL_DEF[hItem][0]
-            self.colHidden[hItem.value] = self.COL_DEF[hItem][1]
+        self.initOutline()
+        self.headerMenu.setHiddenState(self.colHidden)
 
         logger.debug("ProjectOutline initialisation complete")
 
         return
 
-    def refreshTree(self):
+    def initOutline(self):
+        """Set the default values for the Outline tree.
+        """
+
+        self.treeOrder = []
+        self.colWidth  = {}
+        self.colHidden = {}
+        self.colIndex  = {}
+        self.treeNCols = 0
+
+        for hItem in nwOutline:
+            self.treeOrder.append(hItem)
+            self.colWidth[hItem] = self.DEF_WIDTH[hItem]
+            self.colHidden[hItem] = self.DEF_HIDDEN[hItem]
+
+        self.treeNCols = len(self.treeOrder)
+
+        return
+
+    def refreshTree(self, overRide=False):
         """Called whenever the Outline tab is activated and controls
         what data to load, and if necessary, force a rebuild of the
         tree.
         """
 
-        if self.firstView:
+        if self.firstView or overRide:
             self._loadHeaderState()
             self._populateTree()
 
@@ -121,18 +157,24 @@ class GuiProjectOutline(QTreeWidget):
         return
 
     def _headerRightClick(self, clickPos):
+        """Show the header column menu, and check afterwards if a
+        column's visibility was changed.
+        """
         self.headerMenu.exec_(self.mapToGlobal(clickPos))
-        print("Menu closed")
+
+        hItem = self.headerMenu.toggledItem
+        if hItem is not None:
+            self.setColumnHidden(self.colIndex[hItem], not self.headerMenu.toggleState)
+            self.headerMenu.toggledItem = None
+            self.headerMenu.toggleState = None
+
         return
 
     def _columnMoved(self, logIdx, oldVisualIdx, newVisualIdx):
-        """Make sure the order and width read from settings file, or
-        with default values, is kept up-to-date when columns are moved
-        around. Otherwise, the original order will be restored on a tree
-        rebuild.
+        """Make sure the order array is up to date with the actual order
+        of the columns.
         """
         self.treeOrder.insert(newVisualIdx, self.treeOrder.pop(oldVisualIdx))
-        self.colWidth.insert(newVisualIdx, self.colWidth.pop(oldVisualIdx))
         return
 
     ##
@@ -146,19 +188,19 @@ class GuiProjectOutline(QTreeWidget):
 
         # Load whatever we saved last time, regardless of wether it
         # contains the correct names or number of columns.
-        keysOrder = self.COL_DEF.keys()
-        tempOrder = self.optState.getValue("GuiProjectOutline", "headerOrder", keysOrder)
+        tempOrder = self.optState.getValue("GuiProjectOutline", "headerOrder", [])
         treeOrder = []
         for hName in tempOrder:
-            for hItem in nwOutline:
-                if hItem.name == hName:
-                    treeOrder.append(hItem)
+            try:
+                treeOrder.append(nwOutline[hName])
+            except:
+                logger.warning("Ignored unknown outline column '%s'" % str(hName))
 
         # Add columns that were not in tempOrder to treeOrder, but in
         # the default column order.
-        for cItem in keysOrder:
-            if cItem not in treeOrder:
-                treeOrder.append(cItem)
+        for hItem in nwOutline:
+            if hItem not in treeOrder:
+                treeOrder.append(hItem)
 
         # Check that we now have a complete list, and only if so, save
         # the order loaded from file. Otherwise, we keep the default.
@@ -168,22 +210,31 @@ class GuiProjectOutline(QTreeWidget):
             logger.error("Failed to extract outline column order from previous session")
             logger.error("Column count doesn't match %d != %d" % (len(treeOrder), self.treeNCols))
 
-        # The columns widths and hidden state we just fill with whatever
-        # we've got, and append the rest with defaults, and truncate to
-        # desired length.
-        tmpWidth = self.optState.getValue("GuiProjectOutline", "columnWidth", [])
-        colWidth = [int(w) for w in tmpWidth]
-        self.colWidth = (colWidth + self.colWidth)[0:self.treeNCols]
+        # We load the column widths and hidden state we find in the
+        # file, and leave the rest in their default state.
+        tmpWidth = self.optState.getValue("GuiProjectOutline", "columnWidth", {})
+        for hName in tmpWidth:
+            try:
+                self.colWidth[nwOutline[hName]] = tmpWidth[hName]
+            except:
+                logger.warning("Ignored unknown outline column '%s'" % str(hName))
 
-        tmpHidden = self.optState.getValue("GuiProjectOutline", "columnHidden", [])
-        colHidden = [int(w) for w in tmpHidden]
-        self.colHidden = (colHidden + self.colHidden)[0:self.treeNCols]
+        tmpHidden = self.optState.getValue("GuiProjectOutline", "columnHidden", {})
+        for hName in tmpHidden:
+            try:
+                self.colHidden[nwOutline[hName]] = tmpHidden[hName]
+            except:
+                logger.warning("Ignored unknown outline column '%s'" % str(hName))
+
+        self.headerMenu.setHiddenState(self.colHidden)
 
         return
 
     def _saveHeaderState(self):
-        """Save the state of the main tree header, that is, column order
-        and column width.
+        """Save the state of the main tree header, that is, column
+        order, column width and column hidden state. We don't want to
+        save the current width of hidden columns though. This preserves
+        the last known width in case they're unhidden again.
         """
 
         # If we haven't built the tree, there is nothing to save.
@@ -191,13 +242,24 @@ class GuiProjectOutline(QTreeWidget):
             return
 
         treeOrder = []
-        colWidth  = []
-        colHidden = []
+        colWidth  = {}
+        colHidden = {}
+
+        for hItem in nwOutline:
+            colWidth[hItem.name] = self.colWidth[hItem]
+            colHidden[hItem.name] = self.colHidden[hItem]
+
         for iCol in range(self.columnCount()):
-            treeOrder.append(self.treeOrder[iCol].name)
+            hName = self.treeOrder[iCol].name
+            treeOrder.append(hName)
+
             iLog = self.treeHead.logicalIndex(iCol)
-            colWidth.append(self.columnWidth(iLog))
-            colHidden.append(self.isColumnHidden(iLog))
+            logWidth = self.columnWidth(iLog)
+            logHidden = self.isColumnHidden(iLog)
+
+            colHidden[hName] = logHidden
+            if not logHidden and logWidth > 0:
+                colWidth[hName] = logWidth
 
         self.optState.setValue("GuiProjectOutline", "headerOrder",  treeOrder)
         self.optState.setValue("GuiProjectOutline", "columnWidth",  colWidth)
@@ -212,13 +274,14 @@ class GuiProjectOutline(QTreeWidget):
 
         theLabels = []
         for i, hItem in enumerate(self.treeOrder):
-            theLabels.append(self.COL_DEF[hItem][2])
+            theLabels.append(nwLabels.OUTLINE_COLS[hItem])
             self.colIndex[hItem] = i
 
         self.clear()
         self.setHeaderLabels(theLabels)
-        for n, colW in enumerate(self.colWidth):
-            self.setColumnWidth(n,colW)
+        for hItem in self.treeOrder:
+            self.setColumnWidth(self.colIndex[hItem], self.colWidth[hItem])
+            self.setColumnHidden(self.colIndex[hItem], self.colHidden[hItem])
 
         headItem = self.headerItem()
         headItem.setTextAlignment(self.colIndex[nwOutline.CCOUNT], Qt.AlignRight)
@@ -320,7 +383,7 @@ class GuiProjectOutline(QTreeWidget):
 
 class GuiOutlineHeaderMenu(QMenu):
 
-    def __init__(self, theParent, colDefault, skipCol):
+    def __init__(self, theParent):
         QMenu.__init__(self, theParent)
 
         mnuHead = QAction("Select Columns", self)
@@ -328,24 +391,48 @@ class GuiOutlineHeaderMenu(QMenu):
         self.addSeparator()
 
         self.actionMap = {}
-
         for hItem in nwOutline:
-            if hItem == skipCol:
+            if hItem == nwOutline.TITLE:
                 continue
-            if hItem not in colDefault:
-                continue
-            self.actionMap[hItem] = QAction(colDefault[hItem][2], self)
+            self.actionMap[hItem] = QAction(nwLabels.OUTLINE_COLS[hItem], self)
             self.actionMap[hItem].setCheckable(True)
-            self.actionMap[hItem].setChecked(colDefault[hItem][1])
             self.actionMap[hItem].toggled.connect(
                 lambda isChecked, tItem=hItem : self._columnToggled(isChecked, tItem)
             )
             self.addAction(self.actionMap[hItem])
 
+        self.ignoreToggle = False
+        self.toggledItem = None
+        self.toggleState = None
+
+        return
+
+    def setHiddenState(self, hiddenState):
+        """Overwrite the checked state of the columns as the inverse of
+        the hidden state. Skip the TITLE column as it cannot be hidden.
+        """
+        self.ignoreToggle = True
+
+        for hItem in nwOutline:
+            if hItem == nwOutline.TITLE or hItem not in hiddenState:
+                continue
+            self.actionMap[hItem].setChecked(not hiddenState[hItem])
+
+        self.ignoreToggle = False
+
         return
 
     def _columnToggled(self, isChecked, theItem):
-        print(isChecked, theItem.name)
+        """The user has toggled the visibility of a column. Record the
+        change, but do nothing more.
+        """
+        if self.ignoreToggle:
+            return
+
+        logger.verbose("User toggled Outline column '%s'" % theItem.name)
+        self.toggledItem = theItem
+        self.toggleState = isChecked
+
         return
 
 # END Class GuiOutlineHeaderMenu
