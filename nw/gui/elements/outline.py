@@ -130,7 +130,7 @@ class GuiProjectOutline(QTreeWidget):
         """
 
         # If it's the first time, we always build
-        if self.firstView or overRide:
+        if self.firstView or self.firstView and overRide:
             self._loadHeaderState()
             self._populateTree()
             self.firstView = False
@@ -176,6 +176,7 @@ class GuiProjectOutline(QTreeWidget):
         of the columns.
         """
         self.treeOrder.insert(newVisualIdx, self.treeOrder.pop(oldVisualIdx))
+        self._saveHeaderState()
         return
 
     def _menuColumnToggled(self, isChecked, theItem):
@@ -185,6 +186,7 @@ class GuiProjectOutline(QTreeWidget):
         logger.verbose("User toggled Outline column '%s'" % theItem.name)
         if theItem in self.colIndex:
             self.setColumnHidden(self.colIndex[theItem], not isChecked)
+            self._saveHeaderState()
         return
 
     ##
@@ -282,21 +284,23 @@ class GuiProjectOutline(QTreeWidget):
         """Build the tree based on the project index.
         """
 
-        theLabels = []
-        for i, hItem in enumerate(self.treeOrder):
-            theLabels.append(nwLabels.OUTLINE_COLS[hItem])
-            self.colIndex[hItem] = i
-
         self.clear()
-        self.setHeaderLabels(theLabels)
-        for hItem in self.treeOrder:
-            self.setColumnWidth(self.colIndex[hItem], self.colWidth[hItem])
-            self.setColumnHidden(self.colIndex[hItem], self.colHidden[hItem])
 
-        headItem = self.headerItem()
-        headItem.setTextAlignment(self.colIndex[nwOutline.CCOUNT], Qt.AlignRight)
-        headItem.setTextAlignment(self.colIndex[nwOutline.WCOUNT], Qt.AlignRight)
-        headItem.setTextAlignment(self.colIndex[nwOutline.PCOUNT], Qt.AlignRight)
+        if self.firstView:
+            theLabels = []
+            for i, hItem in enumerate(self.treeOrder):
+                theLabels.append(nwLabels.OUTLINE_COLS[hItem])
+                self.colIndex[hItem] = i
+
+            self.setHeaderLabels(theLabels)
+            for hItem in self.treeOrder:
+                self.setColumnWidth(self.colIndex[hItem], self.colWidth[hItem])
+                self.setColumnHidden(self.colIndex[hItem], self.colHidden[hItem])
+
+            headItem = self.headerItem()
+            headItem.setTextAlignment(self.colIndex[nwOutline.CCOUNT], Qt.AlignRight)
+            headItem.setTextAlignment(self.colIndex[nwOutline.WCOUNT], Qt.AlignRight)
+            headItem.setTextAlignment(self.colIndex[nwOutline.PCOUNT], Qt.AlignRight)
 
         currTitle   = None
         currChapter = None
