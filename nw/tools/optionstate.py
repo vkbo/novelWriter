@@ -81,6 +81,18 @@ class OptionState():
         self.theState[setGroup][setName] = setValue
         return True
 
+    def getValue(self, getGroup, getName, defaultValue):
+        """Return an arbitrary type value, if it exists. Otherwise,
+        return the default value.
+        """
+        if getGroup in self.theState:
+            if getName in self.theState[getGroup]:
+                try:
+                    return self.theState[getGroup][getName]
+                except:
+                    return defaultValue
+        return defaultValue
+
     def getString(self, getGroup, getName, defaultValue):
         """Return the value as a string, if it exists. Otherwise, return
         the default value.

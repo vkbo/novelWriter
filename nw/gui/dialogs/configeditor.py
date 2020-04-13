@@ -44,11 +44,11 @@ class GuiConfigEditor(QDialog):
         self.setWindowTitle("Preferences")
         self.guiDeco = self.theParent.theTheme.loadDecoration("settings",(64,64))
 
-        self.tabMain   = GuiConfigEditGeneral(self.theParent)
-        self.tabEditor = GuiConfigEditEditor(self.theParent)
+        self.tabMain    = GuiConfigEditGeneral(self.theParent)
+        self.tabEditor  = GuiConfigEditEditor(self.theParent)
 
         self.tabWidget = QTabWidget()
-        self.tabWidget.addTab(self.tabMain,   "General")
+        self.tabWidget.addTab(self.tabMain, "General")
         self.tabWidget.addTab(self.tabEditor, "Editor")
 
         self.setLayout(self.outerBox)
@@ -79,11 +79,11 @@ class GuiConfigEditor(QDialog):
         validEntries = True
         needsRestart = False
 
-        retA, retB    = self.tabMain.saveValues()
+        retA, retB = self.tabMain.saveValues()
         validEntries &= retA
         needsRestart |= retB
 
-        retA, retB    = self.tabEditor.saveValues()
+        retA, retB = self.tabEditor.saveValues()
         validEntries &= retA
         needsRestart |= retB
 

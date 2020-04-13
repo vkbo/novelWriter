@@ -67,6 +67,7 @@ class NWProject():
 
         # Project Settings
         self.spellCheck  = False
+        self.autoOutline = True
         self.statusItems = None
         self.importItems = None
         self.lastEdited  = None
@@ -169,6 +170,7 @@ class NWProject():
         self.bookAuthors = []
         self.autoReplace = {}
         self.spellCheck  = False
+        self.autoOutline = True
         self.statusItems = NWStatus()
         self.statusItems.addEntry("New",     (100,100,100))
         self.statusItems.addEntry("Note",    (200, 50,  0))
@@ -299,6 +301,8 @@ class NWProject():
                         continue
                     if xItem.tag == "spellCheck":
                         self.spellCheck = checkBool(xItem.text,False)
+                    elif xItem.tag == "autoOutline":
+                        self.autoOutline = checkBool(xItem.text,True)
                     elif xItem.tag == "lastEdited":
                         self.lastEdited = checkString(xItem.text,None,True)
                     elif xItem.tag == "lastViewed":
@@ -390,6 +394,7 @@ class NWProject():
         # Save Project Settings
         xSettings = etree.SubElement(nwXML, "settings")
         self._saveProjectValue(xSettings, "spellCheck", self.spellCheck)
+        self._saveProjectValue(xSettings, "autoOutline", self.autoOutline)
         self._saveProjectValue(xSettings, "lastEdited", self.lastEdited)
         self._saveProjectValue(xSettings, "lastViewed", self.lastViewed)
         self._saveProjectValue(xSettings, "lastWordCount", self.currWCount)
@@ -510,6 +515,12 @@ class NWProject():
     def setSpellCheck(self, theMode):
         if self.spellCheck != theMode:
             self.spellCheck = theMode
+            self.setProjectChanged(True)
+        return True
+
+    def setAutoOutline(self, theMode):
+        if self.autoOutline != theMode:
+            self.autoOutline = theMode
             self.setProjectChanged(True)
         return True
 

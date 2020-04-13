@@ -85,7 +85,7 @@ class GuiDocViewDetails(QWidget):
         if self.isSticky.isChecked():
             return
 
-        theRefs = self.theParent.theIndex.buildReferenceList(tHandle)
+        theRefs = self.theParent.theIndex.getBackReferenceList(tHandle)
         theList = []
         for tHandle in theRefs:
             tItem = self.theProject.getItem(tHandle)

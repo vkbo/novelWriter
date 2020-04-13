@@ -10,7 +10,7 @@
 
 """
 
-from nw.constants.enum import nwItemClass, nwItemLayout
+from nw.constants.enum import nwItemClass, nwItemLayout, nwOutline
 
 class nwConst():
 
@@ -103,6 +103,24 @@ class nwLabels():
         nwKeyWords.OBJECT_KEY : "Objects",
         nwKeyWords.ENTITY_KEY : "Entities",
         nwKeyWords.CUSTOM_KEY : "Custom",
+    }
+    OUTLINE_COLS = {
+        nwOutline.TITLE  : "Title",
+        nwOutline.LEVEL  : "Level",
+        nwOutline.LABEL  : "Document",
+        nwOutline.LINE   : "Line",
+        nwOutline.CCOUNT : "Chars",
+        nwOutline.WCOUNT : "Words",
+        nwOutline.PCOUNT : "Pars",
+        nwOutline.POV    : "POV",
+        nwOutline.CHAR   : KEY_NAME[nwKeyWords.CHAR_KEY],
+        nwOutline.PLOT   : KEY_NAME[nwKeyWords.PLOT_KEY],
+        nwOutline.TIME   : KEY_NAME[nwKeyWords.TIME_KEY],
+        nwOutline.WORLD  : KEY_NAME[nwKeyWords.WORLD_KEY],
+        nwOutline.OBJECT : KEY_NAME[nwKeyWords.OBJECT_KEY],
+        nwOutline.ENTITY : KEY_NAME[nwKeyWords.ENTITY_KEY],
+        nwOutline.CUSTOM : KEY_NAME[nwKeyWords.CUSTOM_KEY],
+        nwOutline.SYNOP  : "Synopsis",
     }
 
 # END Class nwLabels

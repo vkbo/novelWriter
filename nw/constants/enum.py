@@ -88,3 +88,24 @@ class nwAlert(Enum):
     BUG   = 3
 
 # END Enum nwAlert
+
+class nwOutline(Enum):
+
+    TITLE  = 0
+    LEVEL  = 1
+    LABEL  = 2
+    LINE   = 3
+    CCOUNT = 4
+    WCOUNT = 5
+    PCOUNT = 6
+    POV    = 7
+    CHAR   = 8
+    PLOT   = 9
+    TIME   = 10
+    WORLD  = 11
+    OBJECT = 12
+    ENTITY = 13
+    CUSTOM = 14
+    SYNOP  = 15
+
+# END Enum nwOutline

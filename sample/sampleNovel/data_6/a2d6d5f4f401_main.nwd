@@ -3,4 +3,4 @@
 @pov: Jane
 @location: Earth
 
-% We can add a chapter file, but keep the scene files separate. In the chapter file we can set the meta data that applies to the whole chapter if we wish.
+%synopsis: We can add a chapter file, but keep the scene files separate. In the chapter file we can set the meta data that applies to the whole chapter if we wish to.

@@ -7,6 +7,7 @@
   </project>
   <settings>
     <spellCheck>True</spellCheck>
+    <autoOutline>True</autoOutline>
     <lastEdited>31489056e0916</lastEdited>
     <lastViewed>31489056e0916</lastViewed>
     <lastWordCount>86</lastWordCount>

@@ -111,26 +111,3 @@ def testIndexScanThis(nwTempProj):
     assert str(thePos)  == "[0, 6, 12]"
 
     assert theProject.closeProject()
-
-@pytest.mark.project
-def testBuildIndex(nwTempProj):
-    projFile = path.join(nwTempProj,"nwProject.nwx")
-    assert theProject.openProject(projFile)
-
-    theIndex = NWIndex(theProject,theMain)
-    tHandle  = "31489056e0916"
-
-    theIndex.scanText(tHandle, (
-        "# Novel\n\n"
-        "## Chapter\n\n"
-        "### Scene\n\n"
-        "#### Section\n\n"
-        "@pov: John\n"
-        "@char: Jane\n"
-        "@location: Somewhere\n"
-    ))
-
-    assert theIndex.buildNovelList()
-    assert str(theIndex.novelList)  == "[[1, 1, 'Novel', 'SCENE'], [3, 2, 'Chapter', 'SCENE'], [5, 3, 'Scene', 'SCENE'], [7, 4, 'Section', 'SCENE']]"
-    assert str(theIndex.novelOrder) == "['31489056e0916:1', '31489056e0916:3', '31489056e0916:5', '31489056e0916:7']"
-    assert theProject.closeProject()

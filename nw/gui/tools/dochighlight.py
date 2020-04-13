@@ -75,6 +75,7 @@ class GuiDocHighlighter(QSyntaxHighlighter):
         self.colSpell  = QColor(*self.theTheme.colSpell)
         self.colTagErr = QColor(*self.theTheme.colTagErr)
         self.colRepTag = QColor(*self.theTheme.colRepTag)
+        self.colMod    = QColor(*self.theTheme.colMod)
         self.colTrail  = QColor(*self.theTheme.colEmph,64)
 
         self.hStyles = {
@@ -98,6 +99,7 @@ class GuiDocHighlighter(QSyntaxHighlighter):
             "replace"   : self._makeFormat(self.colRepTag),
             "hidden"    : self._makeFormat(self.colComm),
             "keyword"   : self._makeFormat(self.colKey),
+            "modifier"  : self._makeFormat(self.colMod),
             "value"     : self._makeFormat(self.colVal),
         }
 
@@ -250,7 +252,11 @@ class GuiDocHighlighter(QSyntaxHighlighter):
             self.setFormat(4, len(theText), self.hStyles["header4"])
 
         elif theText.startswith("%"): # Comments
-            self.setFormat(0, len(theText), self.hStyles["hidden"])
+            if theText.startswith("%synopsis:"):
+                self.setFormat(0, 10, self.hStyles["modifier"])
+                self.setFormat(10, len(theText), self.hStyles["hidden"])
+            else:
+                self.setFormat(0, len(theText), self.hStyles["hidden"])
 
         else: # Text Paragraph
             for rX, xFmt in self.rxRules:

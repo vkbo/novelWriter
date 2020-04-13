@@ -21,13 +21,13 @@ from PyQt5.QtCore import Qt, QTimer
 from PyQt5.QtGui import QIcon, QPixmap, QColor, QKeySequence
 from PyQt5.QtWidgets import (
     qApp, QMainWindow, QVBoxLayout, QFrame, QSplitter, QFileDialog, QShortcut,
-    QMessageBox, QProgressDialog, QDialog
+    QMessageBox, QProgressDialog, QDialog, QTabWidget
 )
 
 from nw.gui import (
     GuiMainMenu, GuiMainStatus, GuiTheme, GuiDocTree, GuiDocEditor, GuiExport,
     GuiDocViewer, GuiDocDetails, GuiSearchBar, GuiNoticeBar, GuiDocViewDetails,
-    GuiConfigEditor, GuiProjectEditor, GuiItemEditor, GuiTimeLineView,
+    GuiConfigEditor, GuiProjectEditor, GuiItemEditor, GuiProjectOutline,
     GuiSessionLogView, GuiDocMerge, GuiDocSplit, GuiProjectLoad
 )
 from nw.project import NWProject, NWDoc, NWItem, NWIndex, NWBackup
@@ -76,6 +76,7 @@ class GuiMain(QMainWindow):
         self.searchBar = GuiSearchBar(self)
         self.treeMeta  = GuiDocDetails(self, self.theProject)
         self.treeView  = GuiDocTree(self, self.theProject)
+        self.projView  = GuiProjectOutline(self, self.theProject)
         self.mainMenu  = GuiMainMenu(self, self.theProject)
 
         # Minor Gui Elements
@@ -111,19 +112,32 @@ class GuiMain(QMainWindow):
         self.splitView.addWidget(self.editPane)
         self.splitView.addWidget(self.viewPane)
 
+        self.splitOutline = QSplitter(Qt.Vertical)
+        self.splitOutline.addWidget(self.projView)
+
+        self.tabWidget = QTabWidget()
+        self.tabWidget.setTabPosition(QTabWidget.East)
+        self.tabWidget.setStyleSheet("QTabWidget::pane {border: 0;}")
+        self.tabWidget.addTab(self.splitView,    "Editor")
+        self.tabWidget.addTab(self.splitOutline, "Outline")
+        self.tabWidget.currentChanged.connect(self._mainTabChanged)
+
         self.splitMain = QSplitter(Qt.Horizontal)
         self.splitMain.setContentsMargins(4,4,4,4)
         self.splitMain.setOpaqueResize(False)
         self.splitMain.addWidget(self.treePane)
-        self.splitMain.addWidget(self.splitView)
+        self.splitMain.addWidget(self.tabWidget)
         self.splitMain.setSizes(self.mainConf.mainPanePos)
 
         self.setCentralWidget(self.splitMain)
 
         self.idxTree   = self.splitMain.indexOf(self.treePane)
-        self.idxMain   = self.splitMain.indexOf(self.splitView)
+        self.idxMain   = self.splitMain.indexOf(self.tabWidget)
         self.idxEditor = self.splitView.indexOf(self.editPane)
         self.idxViewer = self.splitView.indexOf(self.viewPane)
+
+        self.idxTabEdit = self.tabWidget.indexOf(self.splitView)
+        self.idxTabProj = self.tabWidget.indexOf(self.splitOutline)
 
         self.splitMain.setCollapsible(self.idxTree, False)
         self.splitMain.setCollapsible(self.idxMain, False)
@@ -296,6 +310,7 @@ class GuiMain(QMainWindow):
 
         if saveOK:
             self.closeDocument()
+            self.projView.closeOutline()
             self.theProject.closeProject()
             self.theIndex.clearIndex()
             self.clearGUI()
@@ -317,6 +332,9 @@ class GuiMain(QMainWindow):
         # another one
         if not self.closeProject():
             return False
+
+        # Switch main tab to editor view
+        self.tabWidget.setCurrentWidget(self.splitView)
 
         # Try to open the project
         if not self.theProject.openProject(projFile):
@@ -368,6 +386,7 @@ class GuiMain(QMainWindow):
         self.rebuildTree()
         self.docEditor.setDictionaries()
         self.docEditor.setSpellCheck(self.theProject.spellCheck)
+        self.mainMenu.setAutoOutline(self.theProject.autoOutline)
         self.statusBar.setRefTime(self.theProject.projOpened)
 
         # Restore previously open documents, if any
@@ -420,6 +439,7 @@ class GuiMain(QMainWindow):
     def openDocument(self, tHandle):
         if self.hasProject:
             self.closeDocument()
+            self.tabWidget.setCurrentWidget(self.splitView)
             if self.docEditor.loadText(tHandle):
                 self.docEditor.setFocus()
                 self.theProject.setLastEdited(tHandle)
@@ -445,6 +465,9 @@ class GuiMain(QMainWindow):
         if tHandle is None:
             logger.debug("No document selected, giving up")
             return False
+
+        # Make sure main tab is in Editor view
+        self.tabWidget.setCurrentWidget(self.splitView)
 
         if self.docViewer.loadText(tHandle) and not self.viewPane.isVisible():
             bPos = self.splitMain.sizes()
@@ -615,16 +638,16 @@ class GuiMain(QMainWindow):
                 theDoc  = NWDoc(self.theProject, self)
                 theText = theDoc.openDocument(tHandle, False)
 
-                # Run Word Count
-                cC, wC, pC = countWords(theText)
+                # Build tag index
+                self.theIndex.scanText(tHandle, theText)
+
+                # Get Word Counts
+                cC, wC, pC = self.theIndex.getCounts(tHandle)
                 tItem.setCharCount(cC)
                 tItem.setWordCount(wC)
                 tItem.setParaCount(pC)
                 self.treeView.propagateCount(tHandle, wC)
                 self.treeView.projectWordCount()
-
-                # Build tag index
-                self.theIndex.scanText(tHandle, theText)
 
             nDone += 1
             if dlgProg.wasCanceled():
@@ -632,6 +655,14 @@ class GuiMain(QMainWindow):
 
         dlgProg.setValue(nItems)
 
+        return True
+
+    def rebuildOutline(self):
+        """Force a rebuild of the Outline view.
+        """
+        logger.verbose("Forcing a rebuild of the Project Outline")
+        self.tabWidget.setCurrentWidget(self.splitOutline)
+        self.projView.refreshTree(overRide=True)
         return True
 
     ##
@@ -694,12 +725,6 @@ class GuiMain(QMainWindow):
         if self.hasProject:
             dlgExport = GuiExport(self, self.theProject)
             dlgExport.exec_()
-        return True
-
-    def showTimeLineDialog(self):
-        if self.hasProject:
-            dlgTLine = GuiTimeLineView(self, self.theProject, self.theIndex)
-            dlgTLine.exec_()
         return True
 
     def showSessionLogDialog(self):
@@ -767,7 +792,8 @@ class GuiMain(QMainWindow):
                 return False
 
         logger.info("Exiting %s" % nw.__package__)
-        self.closeProject(True)
+        if self.hasProject:
+            self.closeProject(True)
 
         self.mainConf.setTreeColWidths(self.treeView.getColumnSizes())
         if not self.mainConf.isFullScreen:
@@ -817,6 +843,7 @@ class GuiMain(QMainWindow):
         self.isZenMode = not self.isZenMode
         if self.isZenMode:
             logger.debug("Activating Zen mode")
+            self.tabWidget.setCurrentWidget(self.splitView)
         else:
             logger.debug("Deactivating Zen mode")
 
@@ -824,6 +851,7 @@ class GuiMain(QMainWindow):
         self.treePane.setVisible(isVisible)
         self.statusBar.setVisible(isVisible)
         self.mainMenu.setVisible(isVisible)
+        self.tabWidget.tabBar().setVisible(isVisible)
 
         if self.viewPane.isVisible():
             self.viewPane.setVisible(False)
@@ -866,7 +894,6 @@ class GuiMain(QMainWindow):
         self.addAction(self.mainMenu.aFileDetails)
         self.addAction(self.mainMenu.aZenMode)
         self.addAction(self.mainMenu.aFullScreen)
-        self.addAction(self.mainMenu.aViewTimeLine)
         self.addAction(self.mainMenu.aEditUndo)
         self.addAction(self.mainMenu.aEditRedo)
         self.addAction(self.mainMenu.aEditCut)
@@ -972,13 +999,24 @@ class GuiMain(QMainWindow):
 
     def _keyPressEscape(self):
         """When the escape key is pressed somewhere in the main window,
-        do the following, in order.
+        do the following, in order:
         """
         if self.searchBar.isVisible():
             self.searchBar.setVisible(False)
             return
         elif self.isZenMode:
             self.toggleZenMode()
+        return
+
+    def _mainTabChanged(self, tabIndex):
+        """Activated when the main window tab is changed.
+        """
+        if tabIndex == self.idxTabEdit:
+            logger.verbose("Editor tab activated")
+        elif tabIndex == self.idxTabProj:
+            logger.verbose("Project outline tab activated")
+            if self.hasProject:
+                self.projView.refreshTree()
         return
 
 # END Class GuiMain

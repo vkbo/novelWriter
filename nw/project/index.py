@@ -15,10 +15,12 @@ import json
 import nw
 
 from os import path
+from time import time
 
 from nw.constants import (
-    nwFiles, nwKeyWords, nwItemType, nwItemClass, nwAlert
+    nwFiles, nwKeyWords, nwItemType, nwItemClass, nwItemLayout, nwAlert
 )
+from nw.tools import countWords
 
 logger = logging.getLogger(__name__)
 
@@ -36,14 +38,14 @@ class NWIndex():
         nwKeyWords.CUSTOM_KEY
     ]
     TAG_CLASS  = {
-        nwKeyWords.CHAR_KEY   : [nwItemClass.CHARACTER, 1],
-        nwKeyWords.POV_KEY    : [nwItemClass.CHARACTER, 2],
-        nwKeyWords.PLOT_KEY   : [nwItemClass.PLOT,      1],
-        nwKeyWords.TIME_KEY   : [nwItemClass.TIMELINE,  1],
-        nwKeyWords.WORLD_KEY  : [nwItemClass.WORLD,     1],
-        nwKeyWords.OBJECT_KEY : [nwItemClass.OBJECT,    1],
-        nwKeyWords.ENTITY_KEY : [nwItemClass.ENTITY,    1],
-        nwKeyWords.CUSTOM_KEY : [nwItemClass.CUSTOM,    1],
+        nwKeyWords.CHAR_KEY   : nwItemClass.CHARACTER,
+        nwKeyWords.POV_KEY    : nwItemClass.CHARACTER,
+        nwKeyWords.PLOT_KEY   : nwItemClass.PLOT,
+        nwKeyWords.TIME_KEY   : nwItemClass.TIMELINE,
+        nwKeyWords.WORLD_KEY  : nwItemClass.WORLD,
+        nwKeyWords.OBJECT_KEY : nwItemClass.OBJECT,
+        nwKeyWords.ENTITY_KEY : nwItemClass.ENTITY,
+        nwKeyWords.CUSTOM_KEY : nwItemClass.CUSTOM,
     }
 
     def __init__(self, theProject, theParent):
@@ -55,13 +57,18 @@ class NWIndex():
         self.indexBroken = False
 
         # Indices
-        self.tagIndex   = {}
-        self.refIndex   = {}
-        self.novelIndex = {}
-        self.noteIndex  = {}
+        self.tagIndex   = None
+        self.refIndex   = None
+        self.novelIndex = None
+        self.noteIndex  = None
+        self.textCounts = None
 
-        # Lists
-        self.novelList = []
+        # TimeStamps
+        self.timeNovel = 0
+        self.timeNote  = 0
+        self.timeIndex = 0
+
+        self.clearIndex()
 
         return
 
@@ -70,13 +77,21 @@ class NWIndex():
     ##
 
     def clearIndex(self):
+        """Clear the index dictionaries and time stamps.
+        """
         self.tagIndex   = {}
         self.refIndex   = {}
         self.novelIndex = {}
         self.noteIndex  = {}
+        self.textCounts = {}
+        self.timeNovel  = 0
+        self.timeNote   = 0
+        self.timeIndex  = 0
         return
 
     def deleteHandle(self, tHandle):
+        """Delete all entries of a given document handle.
+        """
 
         delTags = []
         for tTag in self.tagIndex:
@@ -89,6 +104,7 @@ class NWIndex():
         self.refIndex.pop(tHandle, None)
         self.novelIndex.pop(tHandle, None)
         self.noteIndex.pop(tHandle, None)
+        self.textCounts.pop(tHandle, None)
 
         return
 
@@ -100,8 +116,9 @@ class NWIndex():
         """Load index from last session from the project meta folder.
         """
 
-        theData = {}
+        theData   = {}
         indexFile = path.join(self.theProject.projMeta, nwFiles.INDEX_FILE)
+
         if path.isfile(indexFile):
             logger.debug("Loading index file")
             try:
@@ -121,24 +138,31 @@ class NWIndex():
                 self.novelIndex = theData["novelIndex"]
             if "noteIndex" in theData.keys():
                 self.noteIndex = theData["noteIndex"]
+            if "textCounts" in theData.keys():
+                self.textCounts = theData["textCounts"]
 
-            self.checkIndex()
+            nowTime = time()
+            self.timeNovel = nowTime
+            self.timeNote  = nowTime
+            self.timeIndex = nowTime
 
-            return True
+        self.checkIndex()
 
-        return False
+        return True
 
     def saveIndex(self):
         """Save the current index as a json file in the project meta
-        folder.
+        data folder.
         """
 
         indexFile = path.join(self.theProject.projMeta, nwFiles.INDEX_FILE)
+
         logger.debug("Saving index file")
         if self.mainConf.debugInfo:
             nIndent = 2
         else:
             nIndent = None
+
         try:
             with open(indexFile,mode="w+",encoding="utf8") as outFile:
                 outFile.write(json.dumps({
@@ -146,6 +170,7 @@ class NWIndex():
                     "refIndex"   : self.refIndex,
                     "novelIndex" : self.novelIndex,
                     "noteIndex"  : self.noteIndex,
+                    "textCounts" : self.textCounts,
                 }, indent=nIndent))
         except Exception as e:
             logger.error("Failed to save index file")
@@ -161,29 +186,38 @@ class NWIndex():
 
         self.indexBroken = False
 
-        for tTag in self.tagIndex:
-            if len(self.tagIndex[tTag]) != 3:
-                self.indexBroken = True
-
-        for tHandle in self.refIndex:
-            for tEntry in self.refIndex[tHandle]:
-                if len(tEntry) != 4:
+        try:
+            for tTag in self.tagIndex:
+                if len(self.tagIndex[tTag]) != 3:
                     self.indexBroken = True
 
-        for tHandle in self.novelIndex:
-            for tEntry in self.novelIndex[tHandle]:
-                if len(tEntry) != 4:
+            for tHandle in self.refIndex:
+                for sTitle in self.refIndex[tHandle]:
+                    for tEntry in self.refIndex[tHandle][sTitle]["tags"]:
+                        if len(tEntry) != 3:
+                            self.indexBroken = True
+
+            for tHandle in self.novelIndex:
+                for sLine in self.novelIndex[tHandle]:
+                    if len(self.novelIndex[tHandle][sLine].keys()) != 8:
+                        self.indexBroken = True
+
+            for tHandle in self.noteIndex:
+                for sLine in self.noteIndex[tHandle]:
+                    if len(self.noteIndex[tHandle][sLine].keys()) != 8:
+                        self.indexBroken = True
+
+            for tHandle in self.textCounts:
+                if len(self.textCounts[tHandle]) != 3:
                     self.indexBroken = True
 
-        for tHandle in self.noteIndex:
-            for tEntry in self.noteIndex[tHandle]:
-                if len(tEntry) != 4:
-                    self.indexBroken = True
+        except:
+            self.indexBroken = True
 
         if self.indexBroken:
             self.clearIndex()
             self.theParent.makeAlert(
-                "The project index loaded from cache contains errors. Triggering Rebuild Index.",
+                "The index loaded from project cache contains errors. Rebuilding index.",
                 nwAlert.WARN
             )
 
@@ -201,23 +235,33 @@ class NWIndex():
         """
 
         theItem = self.theProject.getItem(tHandle)
-        if theItem is None: return False
-        if theItem.itemType != nwItemType.FILE: return False
-        if theItem.parHandle == self.theProject.trashRoot: return False
+        if theItem is None:
+            return False
+        if theItem.itemType != nwItemType.FILE:
+            return False
+        if theItem.parHandle == self.theProject.trashRoot:
+            return False
+        if theItem.itemLayout == nwItemLayout.NO_LAYOUT:
+            return False
+
         itemClass  = theItem.itemClass
         itemLayout = theItem.itemLayout
 
         logger.debug("Indexing item with handle %s" % tHandle)
 
         # Check file type, and reset its old index
-        if itemClass == nwItemClass.NOVEL:
-            self.novelIndex[tHandle] = []
-            self.refIndex[tHandle] = []
-            isNovel = True
-        else:
-            self.noteIndex[tHandle] = []
-            self.refIndex[tHandle] = []
+        # Also add an entry for T0 in case the file has no title
+        self.refIndex[tHandle] = {}
+        self.refIndex[tHandle]["T0"] = {
+            "tags"    : [],
+            "updated" : time(),
+        }
+        if itemLayout == nwItemLayout.NOTE:
+            self.noteIndex[tHandle] = {}
             isNovel = False
+        else:
+            self.novelIndex[tHandle] = {}
+            isNovel = True
 
         # Also clear references to file in tag index
         clearTags = []
@@ -229,18 +273,46 @@ class NWIndex():
 
         nLine  = 0
         nTitle = 0
-        for aLine in theText.splitlines():
-            aLine  = aLine.strip()
+        theLines = theText.splitlines()
+        for aLine in theLines:
+            aLine  = aLine
             nLine += 1
-            nChar  = len(aLine)
-            if nChar == 0: continue
-            if aLine[0] == "#":
+            nChar  = len(aLine.strip())
+            if nChar == 0:
+                continue
+
+            if aLine.startswith(r"#"):
                 isTitle = self.indexTitle(tHandle, isNovel, aLine, nLine, itemLayout)
-                if isTitle:
+                if isTitle and nLine > 0:
+                    if nTitle > 0:
+                        lastText = "\n".join(theLines[nTitle-1:nLine-1])
+                        self.indexWordCounts(tHandle, isNovel, lastText, nTitle)
                     nTitle = nLine
-            elif aLine[0] == "@":
+
+            elif aLine.startswith(r"@"):
                 self.indexNoteRef(tHandle, aLine, nLine, nTitle)
                 self.indexTag(tHandle, aLine, nLine, itemClass)
+
+            elif aLine.startswith(r"%synopsis:"):
+                if nTitle > 0:
+                    self.indexSynopsis(tHandle, isNovel, aLine[10:].strip(), nTitle)
+
+        # Count words for remaining text after last heading
+        if nTitle > 0:
+            lastText = "\n".join(theLines[nTitle-1:nLine-1])
+            self.indexWordCounts(tHandle, isNovel, lastText, nTitle)
+
+        # Run word counter for whole text
+        cC, wC, pC = countWords(theText)
+        self.textCounts[tHandle] = [cC, wC, pC]
+
+        # Update timestamps for index changes
+        nowTime = time()
+        self.timeIndex = nowTime
+        if isNovel:
+            self.timeNovel = nowTime
+        else:
+            self.timeNote = nowTime
 
         return True
 
@@ -250,29 +322,78 @@ class NWIndex():
         """
 
         if aLine.startswith("# "):
-            hDepth = 1
+            hDepth = "H1"
             hText  = aLine[2:].strip()
         elif aLine.startswith("## "):
-            hDepth = 2
+            hDepth = "H2"
             hText  = aLine[3:].strip()
         elif aLine.startswith("### "):
-            hDepth = 3
+            hDepth = "H3"
             hText  = aLine[4:].strip()
         elif aLine.startswith("#### "):
-            hDepth = 4
+            hDepth = "H4"
             hText  = aLine[5:].strip()
         else:
             return False
 
+        sTitle = "T%d" % nLine
+        self.refIndex[tHandle][sTitle] = {
+            "tags"    : [],
+            "updated" : time(),
+        }
+        theData = {
+            "level"    : hDepth,
+            "title"    : hText,
+            "layout"   : itemLayout.name,
+            "synopsis" : "",
+            "cCount"   : 0,
+            "wCount"   : 0,
+            "pCount"   : 0,
+            "updated"  : time(),
+        }
+
         if hText != "":
             if isNovel:
                 if tHandle in self.novelIndex:
-                    self.novelIndex[tHandle].append([nLine, hDepth, hText, itemLayout.name])
+                    self.novelIndex[tHandle][sTitle] = theData
             else:
                 if tHandle in self.noteIndex:
-                    self.noteIndex[tHandle].append([nLine, hDepth, hText, itemLayout.name])
+                    self.noteIndex[tHandle][sTitle] = theData
 
         return True
+
+    def indexWordCounts(self, tHandle, isNovel, theText, nTitle):
+        cC, wC, pC = countWords(theText)
+        sTitle = "T%d" % nTitle
+        if isNovel:
+            if tHandle in self.novelIndex:
+                if sTitle in self.novelIndex[tHandle]:
+                    self.novelIndex[tHandle][sTitle]["cCount"] = cC
+                    self.novelIndex[tHandle][sTitle]["wCount"] = wC
+                    self.novelIndex[tHandle][sTitle]["pCount"] = pC
+                    self.novelIndex[tHandle][sTitle]["updated"] = time()
+        else:
+            if tHandle in self.noteIndex:
+                if sTitle in self.noteIndex[tHandle]:
+                    self.noteIndex[tHandle][sTitle]["cCount"] = cC
+                    self.noteIndex[tHandle][sTitle]["wCount"] = wC
+                    self.noteIndex[tHandle][sTitle]["pCount"] = pC
+                    self.noteIndex[tHandle][sTitle]["updated"] = time()
+        return
+
+    def indexSynopsis(self, tHandle, isNovel, theText, nTitle):
+        sTitle = "T%d" % nTitle
+        if isNovel:
+            if tHandle in self.novelIndex:
+                if sTitle in self.novelIndex[tHandle]:
+                    self.novelIndex[tHandle][sTitle]["synopsis"] = theText
+                    self.novelIndex[tHandle][sTitle]["updated"] = time()
+        else:
+            if tHandle in self.noteIndex:
+                if sTitle in self.noteIndex[tHandle]:
+                    self.noteIndex[tHandle][sTitle]["synopsis"] = theText
+                    self.noteIndex[tHandle][sTitle]["updated"] = time()
+        return
 
     def indexNoteRef(self, tHandle, aLine, nLine, nTitle):
         """Validate and save the information about a reference to a tag
@@ -283,9 +404,14 @@ class NWIndex():
         if not isValid or len(theBits) == 0:
             return False
 
+        sTitle = "T%d" % nTitle
+        if sTitle not in self.refIndex[tHandle]:
+            logger.error("Cannot save tags to file %s, no title %s" % (tHandle, sTitle))
+            return False
+
         if theBits[0] != nwKeyWords.TAG_KEY:
             for aVal in theBits[1:]:
-                self.refIndex[tHandle].append([nLine, theBits[0], aVal, nTitle])
+                self.refIndex[tHandle][sTitle]["tags"].append([nLine, theBits[0], aVal])
 
         return True
 
@@ -378,7 +504,7 @@ class NWIndex():
         # If we're still here, we better check that the references exist
         for n in range(1,nBits):
             if theBits[n] in self.tagIndex:
-                isGood[n] = self.TAG_CLASS[theBits[0]][0].name == self.tagIndex[theBits[n]][2]
+                isGood[n] = self.TAG_CLASS[theBits[0]].name == self.tagIndex[theBits[n]][2]
 
         return isGood
 
@@ -386,20 +512,73 @@ class NWIndex():
     #  Extract Data
     ##
 
-    def buildNovelList(self):
-        """Build a list of the content of the novel.
+    def getNovelStructure(self):
+        """Builds a list of all titles in the novel, in the correct
+        order as they appear in the tree view and in the respective
+        document files, but skipping all note files.
         """
-        self.novelList  = []
-        self.novelOrder = []
+
+        theStructure = []
         for tHandle in self.theProject.treeOrder:
             if tHandle not in self.novelIndex:
                 continue
-            for tEntry in self.novelIndex[tHandle]:
-                self.novelList.append(tEntry)
-                self.novelOrder.append("%s:%d" % (tHandle,tEntry[0]))
-        return True
+            for sTitle in sorted(self.novelIndex[tHandle].keys()):
+                theStructure.append("%s:%s" % (tHandle, sTitle))
 
-    def buildReferenceList(self, tHandle):
+        return theStructure
+
+    def getCounts(self, tHandle, sTitle=None):
+        """Returns the counts for a file, or a section of a file
+        starting at title nTitle.
+        """
+
+        cC = 0
+        wC = 0
+        pC = 0
+
+        if sTitle is None:
+            if tHandle in self.textCounts:
+                cC = self.textCounts[tHandle][0]
+                wC = self.textCounts[tHandle][1]
+                pC = self.textCounts[tHandle][2]
+        else:
+            if tHandle in self.novelIndex:
+                if sTitle in self.novelIndex[tHandle]:
+                    cC = self.novelIndex[tHandle][sTitle]["cCount"]
+                    wC = self.novelIndex[tHandle][sTitle]["wCount"]
+                    pC = self.novelIndex[tHandle][sTitle]["pCount"]
+            elif tHandle in self.noteIndex:
+                if sTitle in self.noteIndex[tHandle]:
+                    cC = self.noteIndex[tHandle][sTitle]["cCount"]
+                    wC = self.noteIndex[tHandle][sTitle]["wCount"]
+                    pC = self.noteIndex[tHandle][sTitle]["pCount"]
+
+        return cC, wC, pC
+
+    def getReferences(self, tHandle, sTitle=None):
+        """Extract all references made in a file, and optionally title
+        section. sTitle must be a string.
+        """
+
+        theRefs = {}
+        for tKey in self.TAG_CLASS:
+            theRefs[tKey] = []
+
+        if tHandle not in self.refIndex:
+            return theRefs
+
+        try:
+            for refTitle in self.refIndex[tHandle]:
+                for nLine, tKey, tTag in self.refIndex[tHandle][refTitle]["tags"]:
+                    if sTitle is None or sTitle == refTitle:
+                        theRefs[tKey].append(tTag)
+        except Exception as e:
+            logger.error("Failed to generate reference list")
+            logger.error(str(e))
+
+        return theRefs
+
+    def getBackReferenceList(self, tHandle):
         """Build a list of files referring back to our file, specified
         by tHandle.
         """
@@ -418,9 +597,10 @@ class NWIndex():
 
         if theTag is not None:
             for tHandle in self.refIndex:
-                for nLine, tKey, tTag, nTitle in self.refIndex[tHandle]:
-                    if tTag == theTag:
-                        theRefs[tHandle] = nLine
+                for sTitle in self.refIndex[tHandle]:
+                    for nLine, tKey, tTag in self.refIndex[tHandle][sTitle]["tags"]:
+                        if tTag == theTag:
+                            theRefs[tHandle] = nLine
 
         return theRefs
 
@@ -432,47 +612,5 @@ class NWIndex():
             if len(theRef) == 3:
                 return theRef[1], theRef[0]
         return None, 0
-
-    def buildTagNovelMap(self, theTags, theFilters=None):
-        """Build a two-dimensional map of all titles of the novel and
-        which tags they link to from the various meta tags. This map is
-        used to display the timeline view.
-        """
-
-        tagMap   = {}
-        tagClass = {}
-        exClass  = []
-
-        if theFilters is not None:
-            if "exClass" in theFilters.keys():
-                exClass = theFilters["exClass"]
-
-        for theTag in theTags:
-            try:
-                tagClass[theTag] = nwItemClass[self.tagIndex[theTag][2]]
-            except:
-                logger.error("Could not map '%s' to nwItemClass" % self.tagIndex[theTag][2])
-                tagClass[theTag] = None
-            if tagClass[theTag] not in exClass:
-                tagMap[theTag] = [0]*len(self.novelOrder)
-
-        for tHandle in self.refIndex:
-            for nLine, tKey, tTag, nTitle in self.refIndex[tHandle]:
-                if tTag in tagMap.keys() and tKey in self.TAG_CLASS:
-                    try:
-                        nPos = self.novelOrder.index("%s:%d" % (tHandle, nTitle))
-                        if self.TAG_CLASS[tKey][0] == tagClass[tTag]:
-                            tagMap[tTag][nPos] = self.TAG_CLASS[tKey][1]
-                    except:
-                        logger.error("Could not find '%s:%d' in novelOrder" % (tHandle, nTitle))
-
-        if theFilters["hUnused"]:
-            tagMapFiltered = {}
-            for theTag in tagMap.keys():
-                if sum(tagMap[theTag]) > 0:
-                    tagMapFiltered[theTag] = tagMap[theTag]
-            return tagMapFiltered
-
-        return tagMap
 
 # END Class NWIndex

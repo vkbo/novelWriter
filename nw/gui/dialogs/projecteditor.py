@@ -162,10 +162,10 @@ class GuiProjectEditStatus(QWidget):
         self.colChanged = False
         self.selColour  = None
 
-        self.mainBox    = QHBoxLayout()
-        self.mainForm   = QVBoxLayout()
+        self.mainBox  = QHBoxLayout()
+        self.mainForm = QVBoxLayout()
 
-        self.listBox    = QListWidget()
+        self.listBox = QListWidget()
         self.listBox.setDragDropMode(QAbstractItemView.InternalMove)
         self.listBox.itemSelectionChanged.connect(self._selectedItem)
         self.listBox.model().rowsMoved.connect(self._rowsMoved)
