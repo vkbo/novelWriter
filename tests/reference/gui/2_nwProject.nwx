@@ -9,6 +9,7 @@
   </project>
   <settings>
     <spellCheck>False</spellCheck>
+    <autoOutline>True</autoOutline>
     <lastEdited>None</lastEdited>
     <lastViewed>None</lastViewed>
     <lastWordCount>0</lastWordCount>
