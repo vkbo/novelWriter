@@ -386,6 +386,7 @@ class GuiMain(QMainWindow):
         self.rebuildTree()
         self.docEditor.setDictionaries()
         self.docEditor.setSpellCheck(self.theProject.spellCheck)
+        self.mainMenu.setAutoOutline(self.theProject.autoOutline)
         self.statusBar.setRefTime(self.theProject.projOpened)
 
         # Restore previously open documents, if any
@@ -438,6 +439,7 @@ class GuiMain(QMainWindow):
     def openDocument(self, tHandle):
         if self.hasProject:
             self.closeDocument()
+            self.tabWidget.setCurrentWidget(self.splitView)
             if self.docEditor.loadText(tHandle):
                 self.docEditor.setFocus()
                 self.theProject.setLastEdited(tHandle)
@@ -463,6 +465,9 @@ class GuiMain(QMainWindow):
         if tHandle is None:
             logger.debug("No document selected, giving up")
             return False
+
+        # Make sure main tab is in Editor view
+        self.tabWidget.setCurrentWidget(self.splitView)
 
         if self.docViewer.loadText(tHandle) and not self.viewPane.isVisible():
             bPos = self.splitMain.sizes()
@@ -650,6 +655,14 @@ class GuiMain(QMainWindow):
 
         dlgProg.setValue(nItems)
 
+        return True
+
+    def rebuildOutline(self):
+        """Force a rebuild of the Outline view.
+        """
+        logger.verbose("Forcing a rebuild of the Project Outline")
+        self.tabWidget.setCurrentWidget(self.splitOutline)
+        self.projView.refreshTree(overRide=True)
         return True
 
     ##
@@ -986,7 +999,7 @@ class GuiMain(QMainWindow):
 
     def _keyPressEscape(self):
         """When the escape key is pressed somewhere in the main window,
-        do the following, in order.
+        do the following, in order:
         """
         if self.searchBar.isVisible():
             self.searchBar.setVisible(False)

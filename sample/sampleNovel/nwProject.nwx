@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='utf-8'?>
-<novelWriterXML appVersion="0.4.5" fileVersion="1.0" saveCount="22" autoCount="0" timeStamp="2020-04-11 17:55:40">
+<novelWriterXML appVersion="0.4.5" fileVersion="1.0" saveCount="31" autoCount="5" timeStamp="2020-04-13 15:55:18">
   <project>
     <name>Sample Project</name>
     <title>Sample Project</title>
@@ -9,7 +9,8 @@
   </project>
   <settings>
     <spellCheck>True</spellCheck>
-    <lastEdited>88706ddc78b1b</lastEdited>
+    <autoOutline>True</autoOutline>
+    <lastEdited>6a2d6d5f4f401</lastEdited>
     <lastViewed>b3e74dbc1f584</lastViewed>
     <lastWordCount>869</lastWordCount>
     <autoReplace>
@@ -70,7 +71,7 @@
       <charCount>12</charCount>
       <wordCount>3</wordCount>
       <paraCount>0</paraCount>
-      <cursorPos>212</cursorPos>
+      <cursorPos>15</cursorPos>
     </item>
     <item handle="636b6aa9b697b" order="1" parent="e7ded148d6e4a">
       <name>Making a Scene</name>

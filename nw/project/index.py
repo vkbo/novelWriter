@@ -63,6 +63,11 @@ class NWIndex():
         self.noteIndex  = None
         self.textCounts = None
 
+        # TimeStamps
+        self.timeNovel = 0
+        self.timeNote  = 0
+        self.timeIndex = 0
+
         self.clearIndex()
 
         return
@@ -72,14 +77,21 @@ class NWIndex():
     ##
 
     def clearIndex(self):
+        """Clear the index dictionaries and time stamps.
+        """
         self.tagIndex   = {}
         self.refIndex   = {}
         self.novelIndex = {}
         self.noteIndex  = {}
         self.textCounts = {}
+        self.timeNovel  = 0
+        self.timeNote   = 0
+        self.timeIndex  = 0
         return
 
     def deleteHandle(self, tHandle):
+        """Delete all entries of a given document handle.
+        """
 
         delTags = []
         for tTag in self.tagIndex:
@@ -128,6 +140,11 @@ class NWIndex():
                 self.noteIndex = theData["noteIndex"]
             if "textCounts" in theData.keys():
                 self.textCounts = theData["textCounts"]
+
+            nowTime = time()
+            self.timeNovel = nowTime
+            self.timeNote  = nowTime
+            self.timeIndex = nowTime
 
         self.checkIndex()
 
@@ -288,6 +305,14 @@ class NWIndex():
         # Run word counter for whole text
         cC, wC, pC = countWords(theText)
         self.textCounts[tHandle] = [cC, wC, pC]
+
+        # Update timestamps for index changes
+        nowTime = time()
+        self.timeIndex = nowTime
+        if isNovel:
+            self.timeNovel = nowTime
+        else:
+            self.timeNote = nowTime
 
         return True
 

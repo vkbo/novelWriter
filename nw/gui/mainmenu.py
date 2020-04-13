@@ -69,6 +69,13 @@ class GuiMainMenu(QMenuBar):
         self.aSpellCheck.setChecked(theMode)
         return
 
+    def setAutoOutline(self, theMode):
+        """Set the auto outline check box to theMode. Used during
+        initialisation.
+        """
+        self.aAutoOutline.setChecked(theMode)
+        return
+
     ##
     #  Menu Action
     ##
@@ -83,6 +90,12 @@ class GuiMainMenu(QMenuBar):
         decision, just pass a None to the function and let it decide.
         """
         self.theParent.docEditor.setSpellCheck(None)
+        return True
+
+    def _toggleAutoOutline(self, theMode):
+        """Toggle auto outline when the menu entry is checked.
+        """
+        self.theProject.setAutoOutline(theMode)
         return True
 
     def _toggleViewComments(self):
@@ -645,6 +658,24 @@ class GuiMainMenu(QMenuBar):
         self.aRebuildIndex.setShortcut("F9")
         self.aRebuildIndex.triggered.connect(self.theParent.rebuildIndex)
         self.toolsMenu.addAction(self.aRebuildIndex)
+
+        # Tools > Rebuild Outline
+        self.aRebuildOutline = QAction("Rebuild Outline", self)
+        self.aRebuildOutline.setStatusTip("Rebuild the novel outline tree")
+        self.aRebuildOutline.setShortcut("F10")
+        self.aRebuildOutline.triggered.connect(self.theParent.rebuildOutline)
+        self.toolsMenu.addAction(self.aRebuildOutline)
+
+        # Tools > Toggle Auto Build Outline
+        self.aAutoOutline = QAction("Auto-Update Outline", self)
+        self.aAutoOutline.setStatusTip("Update project outline when a novel file is changed")
+        self.aAutoOutline.setCheckable(True)
+        self.aAutoOutline.toggled.connect(self._toggleAutoOutline)
+        self.aAutoOutline.setShortcut("Ctrl+F10")
+        self.toolsMenu.addAction(self.aAutoOutline)
+
+        # Tools > Separator
+        self.toolsMenu.addSeparator()
 
         # Tools > Backup
         self.aBackupProject = QAction("Backup Project", self)

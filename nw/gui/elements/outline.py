@@ -129,11 +129,23 @@ class GuiProjectOutline(QTreeWidget):
         tree.
         """
 
+        # If it's the first time, we always build
         if self.firstView or overRide:
             self._loadHeaderState()
             self._populateTree()
+            self.firstView = False
+            return
 
-        self.firstView = False
+        # If the novel index has changed since the tree was last built,
+        # we rebuild the tree from the updated index.
+        lastChange = self.theParent.theIndex.timeNovel
+        logger.verbose("Last outline build: %.3f" % self.lastBuild)
+        logger.verbose("Novel index change: %.3f" % lastChange)
+
+        doBuild = lastChange > self.lastBuild and self.theProject.autoOutline
+        if doBuild or overRide:
+            logger.debug("Rebuilding Project Outline")
+            self._populateTree()
 
         return
 
