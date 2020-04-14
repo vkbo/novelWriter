@@ -315,6 +315,7 @@ class GuiMain(QMainWindow):
             self.theIndex.clearIndex()
             self.clearGUI()
             self.hasProject = False
+            self.tabWidget.setCurrentWidget(self.splitView)
 
         return saveOK
 
