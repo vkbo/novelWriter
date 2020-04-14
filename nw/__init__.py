@@ -77,7 +77,7 @@ def main(sysArgs=None):
         sysArgs = sys.argv[1:]
 
     # Valid Input Options
-    shortOpt = "hvidVql:"
+    shortOpt = "hidvql:"
     longOpt  = [
         "help",
         "version",
@@ -98,10 +98,10 @@ def main(sysArgs=None):
         "\n"
         "Usage:\n"
         " -h, --help      Print this message.\n"
-        " -v, --version   Print program version and exit.\n"
+        "     --version   Print program version and exit.\n"
         " -i, --info      Print additional runtime information.\n"
         " -d, --debug     Print debug output. Includes -i.\n"
-        " -V, --verbose   Increase verbosity of debug output. Includes -d.\n"
+        " -v, --verbose   Increase verbosity of debug output. Includes -d.\n"
         " -q, --quiet     Disable output to command line. Does not affect log file.\n"
         " -l, --logfile=  Specify log file.\n"
         "     --style=    Sets Qt5 style flag. Defaults to 'Fusion'.\n"
@@ -130,8 +130,9 @@ def main(sysArgs=None):
     # Parse Options
     try:
         inOpts, inRemain = getopt.getopt(sysArgs,shortOpt,longOpt)
-    except getopt.GetoptError:
+    except getopt.GetoptError as E:
         print(helpMsg)
+        print("ERROR: %s" % str(E))
         sys.exit(2)
 
     if len(inRemain) > 0:
@@ -141,7 +142,7 @@ def main(sysArgs=None):
         if inOpt in ("-h","--help"):
             print(helpMsg)
             sys.exit()
-        elif inOpt in ("-v", "--version"):
+        elif inOpt == "--version":
             print("%s %s Version %s" % (__package__,__status__,__version__))
             sys.exit()
         elif inOpt in ("-i", "--info"):
@@ -154,16 +155,16 @@ def main(sysArgs=None):
             toFile  = True
         elif inOpt in ("-q","--quiet"):
             toStd = False
-        elif inOpt in ("-V","--verbose"):
+        elif inOpt in ("-v","--verbose"):
             debugLevel = VERBOSE
             logFormat  = "[{asctime:}] {name:>30}:{lineno:<4d}  {levelname:8}  {message:}"
-        elif inOpt in ("--style"):
+        elif inOpt == "--style":
             qtStyle = inArg
-        elif inOpt in ("--config"):
+        elif inOpt == "--config":
             confPath = inArg
-        elif inOpt in ("--data"):
+        elif inOpt == "--data":
             dataPath = inArg
-        elif inOpt in ("--testmode"):
+        elif inOpt == "--testmode":
             testMode = True
 
     # Set Config Options
