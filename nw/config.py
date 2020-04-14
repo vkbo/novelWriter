@@ -73,6 +73,7 @@ class Config:
         ## Sizes
         self.winGeometry  = [1100, 650]
         self.treeColWidth = [120, 30, 50]
+        self.projColWidth = [140, 55, 140]
         self.mainPanePos  = [300, 800]
         self.docPanePos   = [400, 400]
         self.isFullScreen = False
@@ -295,6 +296,9 @@ class Config:
         self.treeColWidth = self._parseLine(
             cnfParse, cnfSec, "treecols", self.CNF_LIST, self.treeColWidth
         )
+        self.projColWidth = self._parseLine(
+            cnfParse, cnfSec, "projcols", self.CNF_LIST, self.projColWidth
+        )
         self.mainPanePos = self._parseLine(
             cnfParse, cnfSec, "mainpane", self.CNF_LIST, self.mainPanePos
         )
@@ -432,6 +436,7 @@ class Config:
         cnfParse.add_section(cnfSec)
         cnfParse.set(cnfSec,"geometry",   self._packList(self.winGeometry))
         cnfParse.set(cnfSec,"treecols",   self._packList(self.treeColWidth))
+        cnfParse.set(cnfSec,"projcols",   self._packList(self.projColWidth))
         cnfParse.set(cnfSec,"mainpane",   self._packList(self.mainPanePos))
         cnfParse.set(cnfSec,"docpane",    self._packList(self.docPanePos))
         cnfParse.set(cnfSec,"fullscreen", str(self.isFullScreen))
@@ -616,6 +621,11 @@ class Config:
 
     def setTreeColWidths(self, colWidths):
         self.treeColWidth = colWidths
+        self.confChanged = True
+        return True
+
+    def setProjColWidths(self, colWidths):
+        self.projColWidth = colWidths
         self.confChanged = True
         return True
 
