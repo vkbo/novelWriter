@@ -77,19 +77,19 @@ def main(sysArgs=None):
         sysArgs = sys.argv[1:]
 
     # Valid Input Options
-    shortOpt = "hdiql:v"
+    shortOpt = "hvidVql:"
     longOpt  = [
         "help",
-        "debug",
+        "version",
         "info",
+        "debug",
         "verbose",
         "quiet",
         "logfile=",
-        "version",
+        "style=",
         "config=",
         "data=",
         "testmode",
-        "style=",
     ]
 
     helpMsg = (
@@ -100,14 +100,14 @@ def main(sysArgs=None):
         " -h, --help      Print this message.\n"
         " -v, --version   Print program version and exit.\n"
         " -i, --info      Print additional runtime information.\n"
-        " -d, --debug     Print debug output.\n"
-        "     --verbose   Increase verbosity of debug output.\n"
+        " -d, --debug     Print debug output. Includes -i.\n"
+        " -V, --verbose   Increase verbosity of debug output. Includes -d.\n"
         " -q, --quiet     Disable output to command line. Does not affect log file.\n"
         " -l, --logfile=  Specify log file.\n"
-        "     --style=    Set Qt5 style flag. Defaults to 'Fusion'.\n"
+        "     --style=    Sets Qt5 style flag. Defaults to 'Fusion'.\n"
         "     --config=   Alternative config file.\n"
         "     --data=     Alternative user data path.\n"
-        "     --headless  Do not display GUI. Useful for testing scripts.\n"
+        "     --testmode  Do not display GUI. Used by the test suite.\n"
     ).format(
         appname   = __package__,
         version   = __version__,
@@ -117,7 +117,7 @@ def main(sysArgs=None):
 
     # Defaults
     debugLevel = logging.WARN
-    debugStr   = "{levelname:8}  {message:}"
+    logFormat  = "{levelname:8}  {message:}"
     logFile    = ""
     toFile     = False
     toStd      = True
@@ -148,14 +148,15 @@ def main(sysArgs=None):
             debugLevel = logging.INFO
         elif inOpt in ("-d", "--debug"):
             debugLevel = logging.DEBUG
-            debugStr   = "[{asctime:}] {name:>30}:{lineno:<4d}  {levelname:8}  {message:}"
+            logFormat  = "[{asctime:}] {name:>30}:{lineno:<4d}  {levelname:8}  {message:}"
         elif inOpt in ("-l","--logfile"):
             logFile = inArg
             toFile  = True
         elif inOpt in ("-q","--quiet"):
             toStd = False
-        elif inOpt in ("--verbose"):
+        elif inOpt in ("-V","--verbose"):
             debugLevel = VERBOSE
+            logFormat  = "[{asctime:}] {name:>30}:{lineno:<4d}  {levelname:8}  {message:}"
         elif inOpt in ("--style"):
             qtStyle = inArg
         elif inOpt in ("--config"):
@@ -171,7 +172,7 @@ def main(sysArgs=None):
     CONFIG.cmdOpen   = cmdOpen
 
     # Set Logging
-    logFmt = logging.Formatter(fmt=debugStr,datefmt="%Y-%m-%d %H:%M:%S",style="{")
+    logFmt = logging.Formatter(fmt=logFormat,datefmt="%Y-%m-%d %H:%M:%S",style="{")
 
     if not logFile == "" and toFile:
         if path.isfile(logFile+".bak"):
