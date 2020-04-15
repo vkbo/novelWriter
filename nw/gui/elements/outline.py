@@ -97,16 +97,21 @@ class GuiProjectOutline(QTreeWidget):
         self.colIndex  = {}
         self.treeNCols = 0
 
-        self.initOutline()
+        self.clearOutline()
         self.headerMenu.setHiddenState(self.colHidden)
 
         logger.debug("ProjectOutline initialisation complete")
 
         return
 
-    def initOutline(self):
-        """Set the default values for the Outline tree.
+    def clearOutline(self):
+        """Clear the tree and header and set the default values for the
+        columns arrays.
         """
+
+        self.clear()
+        self.setColumnCount(1)
+        self.setHeaderLabel(nwLabels.OUTLINE_COLS[nwOutline.TITLE])
 
         self.treeOrder = []
         self.colWidth  = {}
@@ -114,7 +119,7 @@ class GuiProjectOutline(QTreeWidget):
         self.colIndex  = {}
         self.treeNCols = 0
 
-        for hItem in nwOutline:
+        for i, hItem in enumerate(nwOutline):
             self.treeOrder.append(hItem)
             self.colWidth[hItem] = self.DEF_WIDTH[hItem]
             self.colHidden[hItem] = self.DEF_HIDDEN[hItem]
@@ -153,7 +158,7 @@ class GuiProjectOutline(QTreeWidget):
         """Called before a project is closed.
         """
         self._saveHeaderState()
-        self.clear()
+        self.clearOutline()
         self.firstView = True
         return
 

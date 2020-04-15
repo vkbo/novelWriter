@@ -38,6 +38,9 @@ class OptionState():
         """Load the options dictionary from the project settings file.
         """
 
+        if self.theProject.projMeta is None:
+            return False
+
         stateFile = path.join(self.theProject.projMeta, nwFiles.OPTS_FILE)
         theState  = {}
 
@@ -59,6 +62,9 @@ class OptionState():
     def saveSettings(self):
         """Save the options dictionary to the project settings file.
         """
+
+        if self.theProject.projMeta is None:
+            return False
 
         stateFile = path.join(self.theProject.projMeta, nwFiles.OPTS_FILE)
         logger.debug("Saving GUI options file")

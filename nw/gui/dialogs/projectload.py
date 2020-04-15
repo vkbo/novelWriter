@@ -54,11 +54,13 @@ class GuiProjectLoad(QDialog):
         self.listBox.setSelectionMode(QAbstractItemView.SingleSelection)
         self.listBox.setDragDropMode(QAbstractItemView.NoDragDrop)
         self.listBox.setColumnCount(4)
-        self.listBox.setHeaderLabels(["Working Title","Words","Accessed","Path"])
+        self.listBox.setHeaderLabels(["Working Title","Words","Last Opened","Path"])
         self.listBox.setRootIsDecorated(False)
+        self.listBox.itemDoubleClicked.connect(self._doOpenRecent)
 
         treeHead = self.listBox.headerItem()
         treeHead.setTextAlignment(1, Qt.AlignRight)
+        treeHead.setTextAlignment(2, Qt.AlignRight)
 
         self.recentButton = QPushButton("Open")
         self.recentButton.clicked.connect(self._doOpenRecent)
@@ -95,7 +97,7 @@ class GuiProjectLoad(QDialog):
         """Close the dialog window with a recent project selected.
         """
         logger.verbose("GuiProjectLoad open button clicked")
-
+        self._saveDialogState()
         selItems = self.listBox.selectedItems()
         if selItems:
             self.openPath = selItems[0].text(3)
@@ -110,6 +112,7 @@ class GuiProjectLoad(QDialog):
         project browser dialog.
         """
         logger.verbose("GuiProjectLoad browse button clicked")
+        self._saveDialogState()
         self.openPath = None
         self.accept()
         return
@@ -118,12 +121,22 @@ class GuiProjectLoad(QDialog):
         """Close the dialog window without doing anything.
         """
         logger.verbose("GuiProjectLoad close button clicked")
+        self._saveDialogState()
         self.close()
         return
 
     ##
     #  Internal Functions
     ##
+
+    def _saveDialogState(self):
+        """Save the changes made to the dialog.
+        """
+        colWidths = [50]*3
+        for i in range(3):
+            colWidths[i] = self.listBox.columnWidth(i)
+        self.mainConf.setProjColWidths(colWidths)
+        return
 
     def _populateList(self):
         """Populate the list box with recent project data.
@@ -155,14 +168,14 @@ class GuiProjectLoad(QDialog):
             newItem.setText(2, datetime.fromtimestamp(timeStamp).strftime("%x %X"))
             newItem.setText(3, listData[timeStamp][2])
             newItem.setTextAlignment(1, Qt.AlignRight)
+            newItem.setTextAlignment(2, Qt.AlignRight)
             self.listBox.addTopLevelItem(newItem)
             if not hasSelection:
                 newItem.setSelected(True)
                 hasSelection = True
 
-        self.listBox.resizeColumnToContents(0)
-        self.listBox.resizeColumnToContents(1)
-        self.listBox.resizeColumnToContents(2)
+        for i in range(3):
+            self.listBox.setColumnWidth(i, self.mainConf.projColWidth[i])
 
         return
 
