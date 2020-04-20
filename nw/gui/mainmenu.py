@@ -121,7 +121,7 @@ class GuiMainMenu(QMenuBar):
     def _showAbout(self):
         listPrefix = "&nbsp;&nbsp;&bull;&nbsp;&nbsp;"
         aboutMsg   = (
-            "<h3>This is {name:s}</h3>"
+            "<h3>About {name:s}</h3>"
             "<p>Version {version:s}, released {date:s}.</p>"
             "<p>{copyright:s}.</p>"
             "<p>{name:s} is a markdown-like text editor designed for organising "
