@@ -8,6 +8,21 @@
  File History:
  Created: 2019-04-27 [0.0.1] (Split from winmain)
 
+ This file is a part of novelWriter
+ Copyright 2020, Veronica Berglyd Olsen
+
+ This program is free software: you can redistribute it and/or modify
+ it under the terms of the GNU General Public License as published by
+ the Free Software Foundation, either version 3 of the License, or
+ (at your option) any later version.
+
+ This program is distributed in the hope that it will be useful, but
+ WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ General Public License for more details.
+
+ You should have received a copy of the GNU General Public License
+ along with this program. If not, see https://www.gnu.org/licenses/.
 """
 
 import logging
@@ -107,12 +122,20 @@ class GuiMainMenu(QMenuBar):
         listPrefix = "&nbsp;&nbsp;&bull;&nbsp;&nbsp;"
         aboutMsg   = (
             "<h3>About {name:s}</h3>"
-            "<p>Version: {version:s}<br>Release Date: {date:s}</p>"
+            "<p>Version {version:s}, released {date:s}.</p>"
+            "<p>{copyright:s}.</p>"
             "<p>{name:s} is a markdown-like text editor designed for organising "
             "and writing novels. It is written in Python 3 with a Qt5 GUI, "
-            "using PyQt5</p>"
-            "<p>{name:s} is licensed under GPL v3.0</p>"
-            "<p>{copyright:s}</p>"
+            "using PyQt5.</p>"
+            "<p>{name:s} is free software: you can redistribute it and/or "
+            "modify it under the terms of the GNU General Public License as "
+            "published by the Free Software Foundation, either version 3 of the "
+            "License, or (at your option) any later version.</p>"
+            "<p>{name:s} is distributed in the hope that it will be useful, "
+            "but WITHOUT ANY WARRANTY; without even the implied warranty of "
+            "MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.</p><p>See the "
+            "<a href='https://www.gnu.org/licenses/gpl-3.0.html'>GPL v3.0</a> "
+            "License for more details.</p>"
             "<p>Website: <a href='{website:s}'>{website:s}</a></p>"
             "<h4>Credits</h4>"
             "<p>{credits:s}</p>"
