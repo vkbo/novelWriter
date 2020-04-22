@@ -26,12 +26,18 @@
 """
 
 import logging
-import enchant
 import nw
+try:
+    import enchant
+except:
+    # No need to do anything
+    # setLanguage will fall back to dummy dictionary
+    pass
 
 from nw.tools.spellcheck import NWSpellCheck
 
 logger = logging.getLogger(__name__)
+
 
 class NWSpellEnchant(NWSpellCheck):
 
