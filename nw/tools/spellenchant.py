@@ -38,7 +38,6 @@ from nw.tools.spellcheck import NWSpellCheck
 
 logger = logging.getLogger(__name__)
 
-
 class NWSpellEnchant(NWSpellCheck):
 
     def __init__(self):
