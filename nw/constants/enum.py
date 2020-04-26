@@ -107,20 +107,21 @@ class nwAlert(Enum):
 class nwOutline(Enum):
 
     TITLE  = 0
-    LEVEL  = 1
-    LABEL  = 2
-    LINE   = 3
-    CCOUNT = 4
-    WCOUNT = 5
-    PCOUNT = 6
-    POV    = 7
-    CHAR   = 8
-    PLOT   = 9
-    TIME   = 10
-    WORLD  = 11
-    OBJECT = 12
-    ENTITY = 13
-    CUSTOM = 14
-    SYNOP  = 15
+    HANDLE = 1
+    LEVEL  = 2
+    LABEL  = 3
+    LINE   = 4
+    CCOUNT = 5
+    WCOUNT = 6
+    PCOUNT = 7
+    POV    = 8
+    CHAR   = 9
+    PLOT   = 10
+    TIME   = 11
+    WORLD  = 12
+    OBJECT = 13
+    ENTITY = 14
+    CUSTOM = 15
+    SYNOP  = 16
 
 # END Enum nwOutline
