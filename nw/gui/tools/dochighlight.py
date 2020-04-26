@@ -267,11 +267,15 @@ class GuiDocHighlighter(QSyntaxHighlighter):
             self.setFormat(4, len(theText), self.hStyles["header4"])
 
         elif theText.startswith("%"): # Comments
-            if theText.startswith("%synopsis:"):
-                self.setFormat(0, 10, self.hStyles["modifier"])
-                self.setFormat(10, len(theText), self.hStyles["hidden"])
+            toCheck = theText[1:].lstrip().lower()
+            tLen = len(theText)
+            cLen = len(toCheck)
+            cOff = tLen - cLen
+            if toCheck.startswith("synopsis:"):
+                self.setFormat(0, cOff+9, self.hStyles["modifier"])
+                self.setFormat(cOff+9, tLen, self.hStyles["hidden"])
             else:
-                self.setFormat(0, len(theText), self.hStyles["hidden"])
+                self.setFormat(0, tLen, self.hStyles["hidden"])
 
         else: # Text Paragraph
             for rX, xFmt in self.rxRules:

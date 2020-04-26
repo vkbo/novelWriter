@@ -452,11 +452,13 @@ class GuiMain(QMainWindow):
             self.docEditor.clearEditor()
         return True
 
-    def openDocument(self, tHandle):
+    def openDocument(self, tHandle, tLine=None):
+        """Open a specific document, optionally at a given line.
+        """
         if self.hasProject:
             self.closeDocument()
             self.tabWidget.setCurrentWidget(self.splitView)
-            if self.docEditor.loadText(tHandle):
+            if self.docEditor.loadText(tHandle, tLine):
                 self.docEditor.setFocus()
                 self.theProject.setLastEdited(tHandle)
             else:

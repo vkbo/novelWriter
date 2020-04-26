@@ -218,7 +218,7 @@ class GuiDocEditor(QTextEdit):
 
         return True
 
-    def loadText(self, tHandle):
+    def loadText(self, tHandle, tLine=None):
         """Load text from a document into the editor. If we have an io
         error, we must handle this and clear the editor so that we don't
         risk overwriting the file if it exists. This can for instance
@@ -249,7 +249,10 @@ class GuiDocEditor(QTextEdit):
         afTime = time()
         logger.debug("Document highlighted in %.3f milliseconds" % (1000*(afTime-bfTime)))
 
-        self.setCursorPosition(self.nwDocument.theItem.cursorPos)
+        if tLine is None:
+            self.setCursorPosition(self.nwDocument.theItem.cursorPos)
+        else:
+            self.setCursorLine(tLine)
         self.lastEdit = time()
         self._runCounter()
         self.wcTimer.start()
@@ -353,6 +356,8 @@ class GuiDocEditor(QTextEdit):
         return theText
 
     def setCursorPosition(self, thePosition):
+        """Move the cursor to a given position in the document.
+        """
         if thePosition >= 0:
             theCursor = self.textCursor()
             theCursor.setPosition(thePosition)
@@ -360,8 +365,21 @@ class GuiDocEditor(QTextEdit):
         return True
 
     def getCursorPosition(self):
+        """Find the cursor position in the document.
+        """
         theCursor = self.textCursor()
         return theCursor.position()
+
+    def setCursorLine(self, theLine):
+        """Move the cursor to a given line in the document.
+        """
+        if theLine is None:
+            return False
+        if theLine >= 0:
+            theBlock = self.qDocument.findBlockByLineNumber(theLine)
+            if theBlock:
+                self.setCursorPosition(theBlock.position())
+        return True
 
     ##
     #  Spell Checking

@@ -43,6 +43,7 @@ class GuiProjectOutline(QTreeWidget):
 
     DEF_WIDTH = {
         nwOutline.TITLE  : 200,
+        nwOutline.HANDLE :   0,
         nwOutline.LEVEL  :  40,
         nwOutline.LABEL  : 150,
         nwOutline.LINE   :  40,
@@ -62,6 +63,7 @@ class GuiProjectOutline(QTreeWidget):
 
     DEF_HIDDEN = {
         nwOutline.TITLE  : False,
+        nwOutline.HANDLE : True,
         nwOutline.LEVEL  : True,
         nwOutline.LABEL  : False,
         nwOutline.LINE   : True,
@@ -182,7 +184,17 @@ class GuiProjectOutline(QTreeWidget):
     ##
 
     def _treeDoubleClick(self, tItem, tCol):
-        print(tItem, tCol)
+        """Extract the handle and line number of the title double-
+        clicked, and send it to the main gui class for opening in the
+        document editor.
+        """
+        tHandle = tItem.text(self.colIndex[nwOutline.HANDLE])
+        try:
+            tLine = int(tItem.text(self.colIndex[nwOutline.LINE]))
+        except:
+            tLine = 1
+        logger.verbose("User selected entry with handle %s on line %s" % (tHandle, tLine))
+        self.theParent.openDocument(tHandle, tLine - 1)
         return
 
     def _headerRightClick(self, clickPos):
@@ -301,7 +313,11 @@ class GuiProjectOutline(QTreeWidget):
         return
 
     def _populateTree(self):
-        """Build the tree based on the project index.
+        """Build the tree based on the project index, and the header
+        based on the defined constants, default values and user selected
+        width, order and hidden state. All columns are populated, even
+        if they are hidden. This ensures that showing and hiding columns
+        is fast and doesn't require a rebuild of the tree.
         """
 
         self.clear()
@@ -316,6 +332,11 @@ class GuiProjectOutline(QTreeWidget):
             for hItem in self.treeOrder:
                 self.setColumnWidth(self.colIndex[hItem], self.colWidth[hItem])
                 self.setColumnHidden(self.colIndex[hItem], self.colHidden[hItem])
+
+            # Make sure title column is always visible,
+            # and handle column always hidden
+            self.setColumnHidden(self.colIndex[nwOutline.TITLE], False)
+            self.setColumnHidden(self.colIndex[nwOutline.HANDLE], True)
 
             headItem = self.headerItem()
             headItem.setTextAlignment(self.colIndex[nwOutline.CCOUNT], Qt.AlignRight)
@@ -390,6 +411,7 @@ class GuiProjectOutline(QTreeWidget):
         newItem = QTreeWidgetItem()
 
         newItem.setText(self.colIndex[nwOutline.TITLE],  novIdx["title"])
+        newItem.setText(self.colIndex[nwOutline.HANDLE], tHandle)
         newItem.setText(self.colIndex[nwOutline.LEVEL],  novIdx["level"])
         newItem.setText(self.colIndex[nwOutline.LABEL],  nwItem.itemName)
         newItem.setText(self.colIndex[nwOutline.LINE],   sTitle[1:])
@@ -429,7 +451,7 @@ class GuiOutlineHeaderMenu(QMenu):
 
         self.actionMap = {}
         for hItem in nwOutline:
-            if hItem == nwOutline.TITLE:
+            if hItem == nwOutline.TITLE or hItem == nwOutline.HANDLE:
                 continue
             self.actionMap[hItem] = QAction(nwLabels.OUTLINE_COLS[hItem], self)
             self.actionMap[hItem].setCheckable(True)
@@ -447,7 +469,7 @@ class GuiOutlineHeaderMenu(QMenu):
         self.acceptToggle = False
 
         for hItem in nwOutline:
-            if hItem == nwOutline.TITLE or hItem not in hiddenState:
+            if hItem == nwOutline.TITLE or hItem == nwOutline.HANDLE or hItem not in hiddenState:
                 continue
             self.actionMap[hItem].setChecked(not hiddenState[hItem])
 

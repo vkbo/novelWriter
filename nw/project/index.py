@@ -308,9 +308,14 @@ class NWIndex():
                 self.indexNoteRef(tHandle, aLine, nLine, nTitle)
                 self.indexTag(tHandle, aLine, nLine, itemClass)
 
-            elif aLine.startswith(r"%synopsis:"):
+            elif aLine.startswith(r"%"):
                 if nTitle > 0:
-                    self.indexSynopsis(tHandle, isNovel, aLine[10:].strip(), nTitle)
+                    toCheck = aLine[1:].lstrip().lower()
+                    tLen = len(aLine)
+                    cLen = len(toCheck)
+                    cOff = tLen - cLen
+                    if toCheck.startswith("synopsis:"):
+                        self.indexSynopsis(tHandle, isNovel, aLine[cOff+9:].strip(), nTitle)
 
         # Count words for remaining text after last heading
         if nTitle > 0:
