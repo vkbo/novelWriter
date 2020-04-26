@@ -131,7 +131,7 @@ class GuiDocEditor(QTextEdit):
 
     def clearEditor(self):
         """Clear the current document and reset all document related
-         flags and counters.
+        flags and counters.
         """
 
         self.nwDocument.clearDocument()

@@ -43,7 +43,7 @@ from nw.gui import (
     GuiMainMenu, GuiMainStatus, GuiTheme, GuiDocTree, GuiDocEditor, GuiExport,
     GuiDocViewer, GuiDocDetails, GuiSearchBar, GuiNoticeBar, GuiDocViewDetails,
     GuiConfigEditor, GuiProjectEditor, GuiItemEditor, GuiProjectOutline,
-    GuiSessionLogView, GuiDocMerge, GuiDocSplit, GuiProjectLoad
+    GuiSessionLogView, GuiDocMerge, GuiDocSplit, GuiProjectLoad, GuiDocTitleBar
 )
 from nw.project import NWProject, NWDoc, NWItem, NWIndex, NWBackup
 from nw.tools import countWords
@@ -93,6 +93,8 @@ class GuiMain(QMainWindow):
         self.treeView  = GuiDocTree(self, self.theProject)
         self.projView  = GuiProjectOutline(self, self.theProject)
         self.mainMenu  = GuiMainMenu(self, self.theProject)
+        self.viewTitle = GuiDocTitleBar(self)
+        self.editTitle = GuiDocTitleBar(self)
 
         # Minor Gui Elements
         self.statusIcons = []
@@ -109,17 +111,21 @@ class GuiMain(QMainWindow):
         self.editPane = QFrame()
         self.docEdit = QVBoxLayout()
         self.docEdit.setContentsMargins(0,0,0,0)
+        self.docEdit.setSpacing(0)
         self.docEdit.addWidget(self.searchBar)
         self.docEdit.addWidget(self.noticeBar)
+        self.docEdit.addWidget(self.editTitle)
         self.docEdit.addWidget(self.docEditor)
         self.editPane.setLayout(self.docEdit)
 
         self.viewPane = QFrame()
         self.docView = QVBoxLayout()
         self.docView.setContentsMargins(0,0,0,0)
+        self.docView.setSpacing(0)
+        self.docView.addWidget(self.viewTitle)
         self.docView.addWidget(self.docViewer)
         self.docView.addWidget(self.viewMeta)
-        self.docView.setStretch(0, 1)
+        self.docView.setStretch(1, 1)
         self.viewPane.setLayout(self.docView)
 
         self.splitView = QSplitter(Qt.Horizontal)
