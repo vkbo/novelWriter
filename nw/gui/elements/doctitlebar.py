@@ -63,6 +63,10 @@ class GuiDocTitleBar(QLabel):
 
         return
 
+    ##
+    #  Setters
+    ##
+
     def setTitleFromHandle(self, tHandle):
         """Sets the document title from the handle, or alternatively,
         set the whole document path.
@@ -90,5 +94,16 @@ class GuiDocTitleBar(QLabel):
             self.setText(nwItem.itemName)
 
         return True
+
+    ##
+    #  Events
+    ##
+
+    def mousePressEvent(self, theEvent):
+        """Capture a click on the title and ensure that the item is
+        selected in the project tree.
+        """
+        self.theParent.treeView.setSelectedHandle(self.theHandle)
+        return
 
 # END Class GuiDocTitleBar

@@ -69,8 +69,12 @@ class GuiDocViewer(QTextBrowser):
         return
 
     def clearViewer(self):
+        """Clear the content of the document and reset key variables.
+        """
         self.clear()
         self.setSearchPaths([""])
+        self.theHandle = None
+        self.theParent.updateViewTitle()
         return True
 
     def initViewer(self):
@@ -108,6 +112,8 @@ class GuiDocViewer(QTextBrowser):
         return True
 
     def loadText(self, tHandle):
+        """Load text into the viewer from an item handle.
+        """
 
         tItem = self.theProject.getItem(tHandle)
         if tItem is None:
@@ -132,7 +138,9 @@ class GuiDocViewer(QTextBrowser):
         self.theHandle = tHandle
         self.theProject.setLastViewed(tHandle)
 
+        # Make sure the main GUI knows we changed the content
         self.theParent.viewMeta.refreshReferences(tHandle)
+        self.theParent.updateViewTitle()
 
         return True
 

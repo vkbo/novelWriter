@@ -150,6 +150,7 @@ class GuiDocEditor(QTextEdit):
 
         self.setDocumentChanged(False)
         self.theParent.noticeBar.hideNote()
+        self.theParent.updateEditTitle()
 
         return True
 
@@ -264,6 +265,7 @@ class GuiDocEditor(QTextEdit):
         else:
             self.theParent.noticeBar.showNote("This document is read only.")
 
+        self.theParent.updateEditTitle()
         self.hLight.spellCheck = spTemp
         qApp.restoreOverrideCursor()
 

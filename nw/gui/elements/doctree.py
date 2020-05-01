@@ -457,6 +457,9 @@ class GuiDocTree(QTreeWidget):
         return True
 
     def getSelectedHandle(self):
+        """Get the currently selected handle. If multiple items are
+        selected, return the first.
+        """
         selItem = self.selectedItems()
         if len(selItem) == 0:
             return None
@@ -465,12 +468,23 @@ class GuiDocTree(QTreeWidget):
         return None
 
     def getSelectedHandles(self):
+        """Return a list of all currently selected item handles.
+        """
         selItems   = self.selectedItems()
         selHandles = []
         for n in range(len(selItems)):
             if isinstance(selItems[n], QTreeWidgetItem):
                 selHandles.append(selItems[n].text(self.C_HANDLE))
         return selHandles
+
+    def setSelectedHandle(self, tHandle):
+        """Set a specific handle as the selected item.
+        """
+        if tHandle in self.theMap:
+            self.clearSelection()
+            self.theMap[tHandle].setSelected(True)
+            return True
+        return False
 
     ##
     #  Internal Functions

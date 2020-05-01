@@ -65,6 +65,11 @@ class GuiMain(QMainWindow):
         self.hasProject = False
         self.isZenMode  = False
 
+        # Init early to avoid circular dependencies
+        self.docEditor = None
+        self.docViewer = None
+
+        # Some runtime info useful for debugging
         logger.info("OS: %s" % self.mainConf.osType)
         logger.info("Kernel: %s" % self.mainConf.kernelVer)
         logger.info("Host: %s" % self.mainConf.hostName)
@@ -78,13 +83,19 @@ class GuiMain(QMainWindow):
             self.mainConf.verPyString, self.mainConf.verPyHexVal)
         )
 
+        # Prepare main window
         self.resize(*self.mainConf.winGeometry)
         self._setWindowTitle()
         self.setWindowIcon(QIcon(self.mainConf.appIcon))
 
+        # Build the GUI
+        ################
+
         # Main GUI Elements
         self.statusBar = GuiMainStatus(self)
         self.noticeBar = GuiNoticeBar(self)
+        self.viewTitle = GuiDocTitleBar(self, self.theProject)
+        self.editTitle = GuiDocTitleBar(self, self.theProject)
         self.docEditor = GuiDocEditor(self, self.theProject)
         self.docViewer = GuiDocViewer(self, self.theProject)
         self.viewMeta  = GuiDocViewDetails(self, self.theProject)
@@ -93,8 +104,6 @@ class GuiMain(QMainWindow):
         self.treeView  = GuiDocTree(self, self.theProject)
         self.projView  = GuiProjectOutline(self, self.theProject)
         self.mainMenu  = GuiMainMenu(self, self.theProject)
-        self.viewTitle = GuiDocTitleBar(self, self.theProject)
-        self.editTitle = GuiDocTitleBar(self, self.theProject)
 
         # Minor Gui Elements
         self.statusIcons = []
@@ -168,7 +177,7 @@ class GuiMain(QMainWindow):
         self.viewPane.setVisible(False)
         self.searchBar.setVisible(False)
 
-        # Build The Tree View
+        # Build the Tree View
         self.treeView.itemSelectionChanged.connect(self._treeSingleClick)
         self.treeView.itemDoubleClicked.connect(self._treeDoubleClick)
         self.rebuildTree()
@@ -177,6 +186,9 @@ class GuiMain(QMainWindow):
         self.setMenuBar(self.mainMenu)
         self.setStatusBar(self.statusBar)
         self.statusBar.setStatus("Ready")
+
+        # Finalise Initialisation
+        ##########################
 
         # Set Up Autosaving Project Timer
         self.asProjTimer = QTimer()
@@ -216,6 +228,8 @@ class GuiMain(QMainWindow):
 
         logger.debug("GUI initialisation complete")
 
+        # Check if a project path was provided at command line, and if
+        # not, open the project manager instead.
         if self.mainConf.cmdOpen is not None:
             logger.debug("Opening project from additional command line option")
             self.openProject(self.mainConf.cmdOpen)
@@ -234,6 +248,8 @@ class GuiMain(QMainWindow):
         return True
 
     def initMain(self):
+        """Initialise elements that depend on user settings.
+        """
         self.asProjTimer.setInterval(int(self.mainConf.autoSaveProj*1000))
         self.asDocTimer.setInterval(int(self.mainConf.autoSaveDoc*1000))
         return True
@@ -443,6 +459,8 @@ class GuiMain(QMainWindow):
         return True
 
     def backupProject(self):
+        """Trigger the project backup process.
+        """
         theBackup = NWBackup(self, self.theProject)
         theBackup.zipIt()
         return True
@@ -458,7 +476,6 @@ class GuiMain(QMainWindow):
             if self.docEditor.docChanged:
                 self.saveDocument()
             self.docEditor.clearEditor()
-            self.editTitle.setTitleFromHandle(None)
         return True
 
     def openDocument(self, tHandle, tLine=None):
@@ -470,7 +487,7 @@ class GuiMain(QMainWindow):
             if self.docEditor.loadText(tHandle, tLine):
                 self.docEditor.setFocus()
                 self.theProject.setLastEdited(tHandle)
-                self.editTitle.setTitleFromHandle(tHandle)
+                self.treeView.setSelectedHandle(tHandle)
             else:
                 return False
         return True
@@ -500,7 +517,6 @@ class GuiMain(QMainWindow):
         self.tabWidget.setCurrentWidget(self.splitView)
 
         if self.docViewer.loadText(tHandle) and not self.viewPane.isVisible():
-            self.viewTitle.setTitleFromHandle(tHandle)
             bPos = self.splitMain.sizes()
             self.viewPane.setVisible(True)
             vPos = [0,0]
@@ -511,6 +527,9 @@ class GuiMain(QMainWindow):
         return True
 
     def importDocument(self):
+        """Import the text contained in an out-of-project text file, and
+        insert the text into the currently open document.
+        """
 
         lastPath = self.mainConf.lastPath
 
@@ -594,6 +613,24 @@ class GuiMain(QMainWindow):
         else:
             logger.debug("Document action requested, but no document has focus")
         return True
+
+    def updateEditTitle(self):
+        """Ensure the editor title is up to date with the editor text.
+        This should only be called by loadText and clearEditor in the
+        editor class.
+        """
+        if self.docEditor is not None:
+            self.editTitle.setTitleFromHandle(self.docEditor.theHandle)
+        return
+
+    def updateViewTitle(self):
+        """Ensure the viewer title is up to date with the viewer text.
+        This should only be called by loadText and clearViewer in the
+        viewer class.
+        """
+        if self.docViewer is not None:
+            self.viewTitle.setTitleFromHandle(self.docViewer.theHandle)
+        return
 
     ##
     #  Tree Item Actions
