@@ -234,6 +234,12 @@ class nwUnicode:
     U_NBSP   = "\u00a0" # Non-breaking space
     U_PARA   = "\u2029" # Paragraph separator
 
+    ## Arrows
+    U_UTRI   = "\u2bc5" # Up-pointing triangle
+    U_DTRI   = "\u2bc6" # Down-pointing triangle
+    U_LTRI   = "\u2bc7" # Left-pointing triangle
+    U_RTRI   = "\u2bc8" # Right-pointing triangle
+
     # HTML Equivalents
 
     ## Quotes
@@ -264,5 +270,11 @@ class nwUnicode:
 
     ## Other
     H_NBSP   = "&nbsp;"
+
+    ## Arrows
+    H_UTRI   = "&#11205;"
+    H_DTRI   = "&#11206;"
+    H_LTRI   = "&#11207;"
+    H_RTRI   = "&#11208;"
 
 # END Class nwUnicode

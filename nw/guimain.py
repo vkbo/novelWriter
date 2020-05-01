@@ -93,8 +93,8 @@ class GuiMain(QMainWindow):
         self.treeView  = GuiDocTree(self, self.theProject)
         self.projView  = GuiProjectOutline(self, self.theProject)
         self.mainMenu  = GuiMainMenu(self, self.theProject)
-        self.viewTitle = GuiDocTitleBar(self)
-        self.editTitle = GuiDocTitleBar(self)
+        self.viewTitle = GuiDocTitleBar(self, self.theProject)
+        self.editTitle = GuiDocTitleBar(self, self.theProject)
 
         # Minor Gui Elements
         self.statusIcons = []
@@ -452,10 +452,13 @@ class GuiMain(QMainWindow):
     ##
 
     def closeDocument(self):
+        """Close the document and clear the editor and title field.
+        """
         if self.hasProject:
             if self.docEditor.docChanged:
                 self.saveDocument()
             self.docEditor.clearEditor()
+            self.editTitle.setTitleFromHandle(None)
         return True
 
     def openDocument(self, tHandle, tLine=None):
@@ -467,6 +470,7 @@ class GuiMain(QMainWindow):
             if self.docEditor.loadText(tHandle, tLine):
                 self.docEditor.setFocus()
                 self.theProject.setLastEdited(tHandle)
+                self.editTitle.setTitleFromHandle(tHandle)
             else:
                 return False
         return True
@@ -477,6 +481,8 @@ class GuiMain(QMainWindow):
         return True
 
     def viewDocument(self, tHandle=None):
+        """Load a document for viewing in the view panel.
+        """
 
         if tHandle is None:
             tHandle = self.treeView.getSelectedHandle()
@@ -494,6 +500,7 @@ class GuiMain(QMainWindow):
         self.tabWidget.setCurrentWidget(self.splitView)
 
         if self.docViewer.loadText(tHandle) and not self.viewPane.isVisible():
+            self.viewTitle.setTitleFromHandle(tHandle)
             bPos = self.splitMain.sizes()
             self.viewPane.setVisible(True)
             vPos = [0,0]
