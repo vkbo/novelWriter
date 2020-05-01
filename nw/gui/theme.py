@@ -110,6 +110,10 @@ class GuiTheme:
         self.getPixmap = self.theIcons.getPixmap
         self.loadDecoration = self.theIcons.loadDecoration
 
+        # Extract Other Info
+        self.defFont = qApp.font()
+        self.defFontSize = self.defFont.pointSizeF()
+
         return
 
     ##

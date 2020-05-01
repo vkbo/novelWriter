@@ -43,7 +43,7 @@ from nw.gui import (
     GuiMainMenu, GuiMainStatus, GuiTheme, GuiDocTree, GuiDocEditor, GuiExport,
     GuiDocViewer, GuiDocDetails, GuiSearchBar, GuiNoticeBar, GuiDocViewDetails,
     GuiConfigEditor, GuiProjectEditor, GuiItemEditor, GuiProjectOutline,
-    GuiSessionLogView, GuiDocMerge, GuiDocSplit, GuiProjectLoad, GuiDocTitleBar
+    GuiSessionLogView, GuiDocMerge, GuiDocSplit, GuiProjectLoad
 )
 from nw.project import NWProject, NWDoc, NWItem, NWIndex, NWBackup
 from nw.tools import countWords
@@ -64,10 +64,6 @@ class GuiMain(QMainWindow):
         self.theIndex   = NWIndex(self.theProject, self)
         self.hasProject = False
         self.isZenMode  = False
-
-        # Init early to avoid circular dependencies
-        self.docEditor = None
-        self.docViewer = None
 
         # Some runtime info useful for debugging
         logger.info("OS: %s" % self.mainConf.osType)
@@ -94,8 +90,6 @@ class GuiMain(QMainWindow):
         # Main GUI Elements
         self.statusBar = GuiMainStatus(self)
         self.noticeBar = GuiNoticeBar(self)
-        self.viewTitle = GuiDocTitleBar(self, self.theProject)
-        self.editTitle = GuiDocTitleBar(self, self.theProject)
         self.docEditor = GuiDocEditor(self, self.theProject)
         self.docViewer = GuiDocViewer(self, self.theProject)
         self.viewMeta  = GuiDocViewDetails(self, self.theProject)
@@ -123,7 +117,6 @@ class GuiMain(QMainWindow):
         self.docEdit.setSpacing(0)
         self.docEdit.addWidget(self.searchBar)
         self.docEdit.addWidget(self.noticeBar)
-        self.docEdit.addWidget(self.editTitle)
         self.docEdit.addWidget(self.docEditor)
         self.editPane.setLayout(self.docEdit)
 
@@ -131,10 +124,9 @@ class GuiMain(QMainWindow):
         self.docView = QVBoxLayout()
         self.docView.setContentsMargins(0,0,0,0)
         self.docView.setSpacing(0)
-        self.docView.addWidget(self.viewTitle)
         self.docView.addWidget(self.docViewer)
         self.docView.addWidget(self.viewMeta)
-        self.docView.setStretch(1, 1)
+        self.docView.setStretch(0, 1)
         self.viewPane.setLayout(self.docView)
 
         self.splitView = QSplitter(Qt.Horizontal)
@@ -613,24 +605,6 @@ class GuiMain(QMainWindow):
         else:
             logger.debug("Document action requested, but no document has focus")
         return True
-
-    def updateEditTitle(self):
-        """Ensure the editor title is up to date with the editor text.
-        This should only be called by loadText and clearEditor in the
-        editor class.
-        """
-        if self.docEditor is not None:
-            self.editTitle.setTitleFromHandle(self.docEditor.theHandle)
-        return
-
-    def updateViewTitle(self):
-        """Ensure the viewer title is up to date with the viewer text.
-        This should only be called by loadText and clearViewer in the
-        viewer class.
-        """
-        if self.docViewer is not None:
-            self.viewTitle.setTitleFromHandle(self.docViewer.theHandle)
-        return
 
     ##
     #  Tree Item Actions

@@ -34,6 +34,7 @@ from PyQt5.QtGui import QTextOption, QFont, QPalette, QColor, QTextCursor
 
 from nw.convert import ToHtml
 from nw.constants import nwAlert, nwItemType, nwDocAction
+from nw.gui.elements.doctitlebar import GuiDocTitleBar
 
 logger = logging.getLogger(__name__)
 
@@ -56,6 +57,10 @@ class GuiDocViewer(QTextBrowser):
         self.setOpenExternalLinks(False)
         self.initViewer()
 
+        # Document Title
+        self.docTitle = GuiDocTitleBar(self, self.theProject)
+        self.docTitle.setGeometry(0,0,self.docTitle.width(),self.docTitle.height())
+
         theOpt = QTextOption()
         if self.mainConf.doJustify:
             theOpt.setAlignment(Qt.AlignJustify)
@@ -74,7 +79,7 @@ class GuiDocViewer(QTextBrowser):
         self.clear()
         self.setSearchPaths([""])
         self.theHandle = None
-        self.theParent.updateViewTitle()
+        self.docTitle.setTitleFromHandle(self.theHandle)
         return True
 
     def initViewer(self):
@@ -137,10 +142,10 @@ class GuiDocViewer(QTextBrowser):
             self.verticalScrollBar().setValue(sPos)
         self.theHandle = tHandle
         self.theProject.setLastViewed(tHandle)
+        self.docTitle.setTitleFromHandle(self.theHandle)
 
         # Make sure the main GUI knows we changed the content
         self.theParent.viewMeta.refreshReferences(tHandle)
-        self.theParent.updateViewTitle()
 
         return True
 
@@ -183,6 +188,26 @@ class GuiDocViewer(QTextBrowser):
             logger.debug("Unknown or unsupported document action %s" % str(theAction))
             return False
         return True
+
+    ##
+    #  Events
+    ##
+
+    def resizeEvent(self, theEvent):
+        """Make sure the document title is the same width as the window.
+        """
+        QTextBrowser.resizeEvent(self, theEvent)
+
+        tB = self.lineWidth()
+        tW = self.width() - 2*tB
+        tH = self.docTitle.height()
+        self.docTitle.setGeometry(tB, tB, tW, tH)
+
+        docFormat = self.qDocument.rootFrame().frameFormat()
+        if docFormat.topMargin() < tH:
+            docFormat.setTopMargin(tH + 2)
+
+        return
 
     ##
     #  Internal Functions

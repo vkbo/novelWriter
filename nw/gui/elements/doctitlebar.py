@@ -30,7 +30,7 @@ import nw
 
 from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QPalette, QColor
-from PyQt5.QtWidgets import QLabel
+from PyQt5.QtWidgets import QLabel, QFrame, QStyle
 
 from nw.constants import nwUnicode
 
@@ -50,14 +50,22 @@ class GuiDocTitleBar(QLabel):
         self.theHandle  = None
 
         self.setText("")
-        self.setContentsMargins(8,2,8,2)
+        self.setIndent(0)
+        self.setMargin(0)
+        self.setContentsMargins(0,0,0,0)
         self.setAutoFillBackground(True)
         self.setAlignment(Qt.AlignCenter)
         self.setWordWrap(True)
-        docPalette = self.palette()
-        docPalette.setColor(QPalette.Window, QColor(*self.theTheme.colBack))
-        docPalette.setColor(QPalette.Text, QColor(*self.theTheme.colText))
-        self.setPalette(docPalette)
+        self.setFrameShape(QFrame.NoFrame)
+        self.setLineWidth(0)
+        lblPalette = self.palette()
+        lblPalette.setColor(QPalette.Window, QColor(*self.theTheme.colBack))
+        lblPalette.setColor(QPalette.Text, QColor(*self.theTheme.colText))
+        self.setPalette(lblPalette)
+
+        lblFont = self.font()
+        lblFont.setPointSizeF(0.9*self.theTheme.defFontSize)
+        self.setFont(lblFont)
 
         logger.debug("DocTitleBar initialisation complete")
 
@@ -103,7 +111,7 @@ class GuiDocTitleBar(QLabel):
         """Capture a click on the title and ensure that the item is
         selected in the project tree.
         """
-        self.theParent.treeView.setSelectedHandle(self.theHandle)
+        self.theParent.theParent.treeView.setSelectedHandle(self.theHandle)
         return
 
 # END Class GuiDocTitleBar
