@@ -85,7 +85,7 @@ class GuiDocTitleBar(QLabel):
         if tHandle is None:
             return False
 
-        if True:
+        if self.mainConf.showFullPath:
             tTitle = []
             tTree = self.theProject.getItemPath(tHandle)
             for aHandle in reversed(tTree):
@@ -111,7 +111,7 @@ class GuiDocTitleBar(QLabel):
         """Capture a click on the title and ensure that the item is
         selected in the project tree.
         """
-        self.theParent.theParent.treeView.setSelectedHandle(self.theHandle)
+        self.theParent.setSelectedHandle(self.theHandle)
         return
 
 # END Class GuiDocTitleBar

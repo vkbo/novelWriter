@@ -132,6 +132,9 @@ class GuiDocEditor(QTextEdit):
 
         logger.debug("DocEditor initialisation complete")
 
+        # Connect Functions
+        self.setSelectedHandle = self.theParent.treeView.setSelectedHandle
+
         return
 
     def clearEditor(self):

@@ -71,6 +71,9 @@ class GuiDocViewer(QTextBrowser):
 
         logger.debug("DocViewer initialisation complete")
 
+        # Connect Functions
+        self.setSelectedHandle = self.theParent.treeView.setSelectedHandle
+
         return
 
     def clearViewer(self):
