@@ -19,6 +19,7 @@ from nw.gui.dialogs.sessionlog import GuiSessionLogView
 # GUI Elements
 from nw.gui.elements.docdetails import GuiDocDetails
 from nw.gui.elements.doceditor import GuiDocEditor
+from nw.gui.elements.doctitlebar import GuiDocTitleBar
 from nw.gui.elements.doctree import GuiDocTree
 from nw.gui.elements.docviewer import GuiDocViewer
 from nw.gui.elements.noticebar import GuiNoticeBar
@@ -45,6 +46,7 @@ __all__ = [
     "GuiSessionLogView",
     "GuiDocDetails",
     "GuiDocEditor",
+    "GuiDocTitleBar",
     "GuiDocTree",
     "GuiDocViewer",
     "GuiNoticeBar",

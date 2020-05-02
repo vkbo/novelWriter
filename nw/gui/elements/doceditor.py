@@ -32,7 +32,7 @@ from time import time
 
 from PyQt5.QtCore import Qt, QTimer
 from PyQt5.QtWidgets import (
-    qApp, QTextEdit, QAction, QMenu, QShortcut, QMessageBox
+    qApp, QTextEdit, QAction, QMenu, QShortcut, QMessageBox, QLabel
 )
 from PyQt5.QtGui import (
     QTextCursor, QTextOption, QKeySequence, QFont, QColor, QPalette,
@@ -41,6 +41,7 @@ from PyQt5.QtGui import (
 
 from nw.project import NWDoc
 from nw.gui.tools import GuiDocHighlighter, WordCounter
+from nw.gui.elements.doctitlebar import GuiDocTitleBar
 from nw.tools import NWSpellSimple
 from nw.constants import nwUnicode, nwDocAction
 
@@ -81,6 +82,10 @@ class GuiDocEditor(QTextEdit):
         self.qDocument = self.document()
         self.qDocument.setDocumentMargin(self.mainConf.textMargin)
         self.qDocument.contentsChange.connect(self._docChange)
+
+        # Document Title
+        self.docTitle = GuiDocTitleBar(self, self.theProject)
+        self.docTitle.setGeometry(0,0,self.docTitle.width(),self.docTitle.height())
 
         # Syntax
         self.hLight = GuiDocHighlighter(self.qDocument, self.theParent)
@@ -127,11 +132,14 @@ class GuiDocEditor(QTextEdit):
 
         logger.debug("DocEditor initialisation complete")
 
+        # Connect Functions
+        self.setSelectedHandle = self.theParent.treeView.setSelectedHandle
+
         return
 
     def clearEditor(self):
         """Clear the current document and reset all document related
-         flags and counters.
+        flags and counters.
         """
 
         self.nwDocument.clearDocument()
@@ -150,6 +158,7 @@ class GuiDocEditor(QTextEdit):
 
         self.setDocumentChanged(False)
         self.theParent.noticeBar.hideNote()
+        self.docTitle.setTitleFromHandle(self.theHandle)
 
         return True
 
@@ -264,6 +273,7 @@ class GuiDocEditor(QTextEdit):
         else:
             self.theParent.noticeBar.showNote("This document is read only.")
 
+        self.docTitle.setTitleFromHandle(self.theHandle)
         self.hLight.spellCheck = spTemp
         qApp.restoreOverrideCursor()
 
@@ -319,9 +329,16 @@ class GuiDocEditor(QTextEdit):
         else:
             tM = self.mainConf.textMargin
 
+        tB = self.lineWidth()
+        tW = self.width() - 2*tB
+        tH = self.docTitle.height()
+        self.docTitle.setGeometry(tB, tB, tW, tH)
+
         docFormat = self.qDocument.rootFrame().frameFormat()
         docFormat.setLeftMargin(tM)
         docFormat.setRightMargin(tM)
+        if docFormat.topMargin() < tH:
+            docFormat.setTopMargin(tH + 2)
 
         # Updating root frame triggers a QTextDocument->contentsChange
         # signal, which we do not want as it re-runs the syntax

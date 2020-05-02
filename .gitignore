@@ -18,6 +18,7 @@ sample/**/wordlist.txt
 sample/**/sessionInfo.log
 sample/**/*.bak
 sample/**/*.json
+sample/**/*.lock
 
 # PyTest
 tests/temp

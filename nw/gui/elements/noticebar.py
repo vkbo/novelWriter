@@ -49,7 +49,7 @@ class GuiNoticeBar(QFrame):
         self.mainBox = QHBoxLayout(self)
         self.mainBox.setContentsMargins(8,2,2,2)
 
-        self.noteLabel = QLabel("Hi there!")
+        self.noteLabel = QLabel("")
 
         self.closeButton = QPushButton(self.theTheme.getIcon("close"),"")
         self.closeButton.clicked.connect(self.hideNote)

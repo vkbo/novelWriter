@@ -601,6 +601,9 @@ class NWProject():
     ##
 
     def getItem(self, tHandle):
+        """Return a project item based on its handle. Returns None if
+        the handle doesn't exist in the project.
+        """
         if tHandle in self.projTree:
             return self.projTree[tHandle]
         logger.error("No tree item with handle %s" % str(tHandle))
@@ -625,6 +628,28 @@ class NWProject():
                     if tItem is None:
                         return tHandle
         return None
+
+    def getItemPath(self, tHandle):
+        """Iterate upwards in the tree until we find the item with
+        parent None, the root item, and return the list of handles.
+        We do this with a for loop with a maximum depth of 200 to make
+        infinite loops impossible.
+        """
+        tTree = []
+        tItem = self.getItem(tHandle)
+        if tItem is not None:
+            tTree.append(tHandle)
+            for i in range(200):
+                if tItem.parHandle is None:
+                    return tTree
+                else:
+                    tHandle = tItem.parHandle
+                    tItem   = self.getItem(tHandle)
+                    if tItem is None:
+                        return tTree
+                    else:
+                        tTree.append(tHandle)
+        return tTree
 
     def getProjectItems(self):
         """This function is called from the tree view when building the
