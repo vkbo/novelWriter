@@ -89,7 +89,7 @@ class QConfigLayout(QGridLayout):
         if isinstance(theLabel, QLabel):
             qLabel = theLabel
         elif isinstance(theLabel, str):
-            qLabel = QLabel(theLabel)
+            qLabel = QLabel("<b>%s</b>" % theLabel)
         else:
             qLabel = None
             raise ValueError("theLabel must be a QLabel")

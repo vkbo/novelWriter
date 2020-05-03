@@ -61,12 +61,14 @@ class GuiConfigEditor(QDialog):
         self.guiDeco = self.theParent.theTheme.loadDecoration("settings",(64,64))
 
         self.tabGeneral = GuiConfigEditGeneralTab(self.theParent)
+        self.tabLayout  = GuiConfigEditLayoutTab(self.theParent)
         self.tabMain    = GuiConfigEditGeneral(self.theParent)
         self.tabEditor  = GuiConfigEditEditor(self.theParent)
 
         self.tabWidget = QTabWidget()
         self.tabWidget.setMinimumWidth(600)
         self.tabWidget.addTab(self.tabGeneral, "General")
+        self.tabWidget.addTab(self.tabLayout, "Layout")
         self.tabWidget.addTab(self.tabMain, "General")
         self.tabWidget.addTab(self.tabEditor, "Editor")
 
@@ -99,6 +101,10 @@ class GuiConfigEditor(QDialog):
         needsRestart = False
 
         retA, retB = self.tabGeneral.saveValues()
+        validEntries &= retA
+        needsRestart |= retB
+
+        retA, retB = self.tabLayout.saveValues()
         validEntries &= retA
         needsRestart |= retB
 
@@ -303,6 +309,140 @@ class GuiConfigEditGeneralTab(QWidget):
 
 # END Class GuiConfigEditGeneralTab
 
+class GuiConfigEditLayoutTab(QWidget):
+
+    def __init__(self, theParent):
+        QWidget.__init__(self, theParent)
+
+        self.mainConf  = nw.CONFIG
+        self.theParent = theParent
+        self.theTheme  = theParent.theTheme
+
+        # The Form
+        self.mainForm = QConfigLayout()
+        self.mainForm.setHelpTextStyle(self.theTheme.helpText)
+        self.setLayout(self.mainForm)
+
+        # Text Style
+        # ==========
+        self.mainForm.addGroupLabel("Text Style")
+
+        self.textStyleFont = QFontComboBox()
+        self.textStyleFont.setMaximumWidth(200)
+        self.textStyleFont.setCurrentFont(QFont(self.mainConf.textFont))
+        self.mainForm.addRow(
+            "Font family",
+            self.textStyleFont,
+            "For the document editor and viewer"
+        )
+
+        self.textStyleSize = QSpinBox(self)
+        self.textStyleSize.setMinimum(5)
+        self.textStyleSize.setMaximum(120)
+        self.textStyleSize.setSingleStep(1)
+        self.textStyleSize.setValue(self.mainConf.textSize)
+        self.mainForm.addRow(
+            "Font size",
+            self.textStyleSize,
+            theUnit="pt"
+        )
+
+        # Text Flow
+        # =========
+        self.mainForm.addGroupLabel("Text Flow")
+
+        self.textFlowMax = QSpinBox(self)
+        self.textFlowMax.setMinimum(300)
+        self.textFlowMax.setMaximum(10000)
+        self.textFlowMax.setSingleStep(10)
+        self.textFlowMax.setValue(self.mainConf.textWidth)
+        self.mainForm.addRow(
+            "Maximum text width in Normal mode",
+            self.textFlowMax,
+            theUnit="px"
+        )
+
+        self.zenDocWidth = QSpinBox(self)
+        self.zenDocWidth.setMinimum(300)
+        self.zenDocWidth.setMaximum(10000)
+        self.zenDocWidth.setSingleStep(10)
+        self.zenDocWidth.setValue(self.mainConf.zenWidth)
+        self.mainForm.addRow(
+            "Maximum text width in Zen mode",
+            self.zenDocWidth,
+            theUnit="px"
+        )
+
+        self.textFlowFixed = QSwitch()
+        self.textFlowFixed.setChecked(not self.mainConf.textFixedW)
+        self.mainForm.addRow(
+            "Disable maximum text width in Normal mode",
+            self.textFlowFixed,
+            "Only fixed margins are applied to the document"
+        )
+
+        self.textJustify = QSwitch()
+        self.textJustify.setChecked(self.mainConf.textFixedW)
+        self.mainForm.addRow(
+            "Justify the text margins in editor and viewer",
+            self.textJustify
+        )
+
+        self.textMargin = QSpinBox(self)
+        self.textMargin.setMinimum(0)
+        self.textMargin.setMaximum(2000)
+        self.textMargin.setSingleStep(1)
+        self.textMargin.setValue(self.mainConf.textMargin)
+        self.mainForm.addRow(
+            "Document text margin",
+            self.textMargin,
+            "The minimum horizontal text margin if max with is enabled",
+            theUnit="px"
+        )
+
+        self.tabWidth = QSpinBox(self)
+        self.tabWidth.setMinimum(0)
+        self.tabWidth.setMaximum(200)
+        self.tabWidth.setSingleStep(1)
+        self.tabWidth.setValue(self.mainConf.tabWidth)
+        self.mainForm.addRow(
+            "Editor tab width",
+            self.tabWidth,
+            "This feature requires Qt 5.9 or later",
+            theUnit="px"
+        )
+
+        return
+
+    def saveValues(self):
+
+        validEntries = True
+        needsRestart = False
+
+        textFont   = self.textStyleFont.currentFont().family()
+        textSize   = self.textStyleSize.value()
+        textWidth  = self.textFlowMax.value()
+        zenWidth   = self.zenDocWidth.value()
+        textFixedW = not self.textFlowFixed.isChecked()
+        doJustify  = self.textJustify.isChecked()
+        textMargin = self.textMargin.value()
+        tabWidth   = self.tabWidth.value()
+
+        self.mainConf.textFont   = textFont
+        self.mainConf.textSize   = textSize
+        self.mainConf.textWidth  = textWidth
+        self.mainConf.zenWidth   = zenWidth
+        self.mainConf.textFixedW = textFixedW
+        self.mainConf.doJustify  = doJustify
+        self.mainConf.textMargin = textMargin
+        self.mainConf.tabWidth   = tabWidth
+
+        self.mainConf.confChanged = True
+
+        return validEntries, needsRestart
+
+# END Class GuiConfigEditLayoutTab
+
 class GuiConfigEditGeneral(QWidget):
 
     def __init__(self, theParent):
@@ -428,94 +568,6 @@ class GuiConfigEditEditor(QWidget):
         self.theParent = theParent
         self.outerBox  = QGridLayout()
 
-        # Text Style
-        self.textStyle     = QGroupBox("Text Style", self)
-        self.textStyleForm = QGridLayout(self)
-        self.textStyle.setLayout(self.textStyleForm)
-
-        self.textStyleFont = QFontComboBox()
-        self.textStyleFont.setMaximumWidth(250)
-        self.textStyleFont.setCurrentFont(QFont(self.mainConf.textFont))
-
-        self.textStyleSize = QSpinBox(self)
-        self.textStyleSize.setMinimum(5)
-        self.textStyleSize.setMaximum(120)
-        self.textStyleSize.setSingleStep(1)
-        self.textStyleSize.setValue(self.mainConf.textSize)
-
-        self.textStyleForm.addWidget(QLabel("Font family"), 0, 0)
-        self.textStyleForm.addWidget(self.textStyleFont,    0, 1)
-        self.textStyleForm.addWidget(QLabel("Size"),        0, 2)
-        self.textStyleForm.addWidget(self.textStyleSize,    0, 3)
-        self.textStyleForm.setColumnStretch(4, 1)
-
-        # Text Flow
-        self.textFlow     = QGroupBox("Text Flow", self)
-        self.textFlowForm = QGridLayout(self)
-        self.textFlow.setLayout(self.textFlowForm)
-
-        self.textFlowFixed = QCheckBox("Max text width",self)
-        self.textFlowFixed.setToolTip("Maximum width of the text.")
-        self.textFlowFixed.setChecked(self.mainConf.textFixedW)
-
-        self.textFlowMax = QSpinBox(self)
-        self.textFlowMax.setMinimum(300)
-        self.textFlowMax.setMaximum(10000)
-        self.textFlowMax.setSingleStep(10)
-        self.textFlowMax.setValue(self.mainConf.textWidth)
-
-        self.textFlowJustify = QCheckBox("Justify text",self)
-        self.textFlowJustify.setToolTip("Justify text in main document editor.")
-        self.textFlowJustify.setChecked(self.mainConf.doJustify)
-
-        self.textFlowForm.addWidget(self.textFlowFixed,   0, 0)
-        self.textFlowForm.addWidget(self.textFlowMax,     0, 1)
-        self.textFlowForm.addWidget(QLabel("px"),         0, 2)
-        self.textFlowForm.addWidget(self.textFlowJustify, 1, 0)
-        self.textFlowForm.setColumnStretch(4, 1)
-
-        # Text Margins
-        self.textMargin     = QGroupBox("Margins", self)
-        self.textMarginForm = QGridLayout(self)
-        self.textMargin.setLayout(self.textMarginForm)
-
-        self.textMarginDoc = QSpinBox(self)
-        self.textMarginDoc.setMinimum(0)
-        self.textMarginDoc.setMaximum(2000)
-        self.textMarginDoc.setSingleStep(1)
-        self.textMarginDoc.setValue(self.mainConf.textMargin)
-
-        self.textMarginTab = QSpinBox(self)
-        self.textMarginTab.setMinimum(0)
-        self.textMarginTab.setMaximum(200)
-        self.textMarginTab.setSingleStep(1)
-        self.textMarginTab.setValue(self.mainConf.tabWidth)
-        self.textMarginTab.setToolTip("Requires Qt 5.9 or later.")
-
-        self.textMarginForm.addWidget(QLabel("Document"),   0, 0)
-        self.textMarginForm.addWidget(self.textMarginDoc,   0, 1)
-        self.textMarginForm.addWidget(QLabel("px"),         0, 2)
-        self.textMarginForm.addWidget(QLabel("Tab width"),  2, 0)
-        self.textMarginForm.addWidget(self.textMarginTab,   2, 1)
-        self.textMarginForm.addWidget(QLabel("px"),         2, 2)
-        self.textMarginForm.setColumnStretch(4, 1)
-
-        # Zen Mode
-        self.zenMode     = QGroupBox("Zen Mode", self)
-        self.zenModeForm = QGridLayout(self)
-        self.zenMode.setLayout(self.zenModeForm)
-
-        self.zenDocWidth = QSpinBox(self)
-        self.zenDocWidth.setMinimum(300)
-        self.zenDocWidth.setMaximum(10000)
-        self.zenDocWidth.setSingleStep(10)
-        self.zenDocWidth.setValue(self.mainConf.zenWidth)
-
-        self.zenModeForm.addWidget(QLabel("Document width"), 0, 0)
-        self.zenModeForm.addWidget(self.zenDocWidth,         0, 1)
-        self.zenModeForm.addWidget(QLabel("px"),             0, 2)
-        self.zenModeForm.setColumnStretch(3, 1)
-
         # Automatic Features
         self.autoReplace     = QGroupBox("Automatic Features", self)
         self.autoReplaceForm = QGridLayout(self)
@@ -619,10 +671,6 @@ class GuiConfigEditEditor(QWidget):
         self.showGuidesForm.addWidget(self.showLineEndings, 1, 0)
 
         # Assemble
-        self.outerBox.addWidget(self.textStyle,   0, 0, 1, 2)
-        self.outerBox.addWidget(self.textFlow,    1, 0)
-        self.outerBox.addWidget(self.textMargin,  1, 1)
-        self.outerBox.addWidget(self.zenMode,     2, 0)
         self.outerBox.addWidget(self.autoReplace, 3, 0, 2, 1)
         self.outerBox.addWidget(self.quoteStyle,  2, 1, 2, 1)
         self.outerBox.addWidget(self.showGuides,  4, 1)
@@ -635,30 +683,6 @@ class GuiConfigEditEditor(QWidget):
     def saveValues(self):
 
         validEntries = True
-
-        textFont = self.textStyleFont.currentFont().family()
-        textSize = self.textStyleSize.value()
-
-        self.mainConf.textFont = textFont
-        self.mainConf.textSize = textSize
-
-        textWidth  = self.textFlowMax.value()
-        textFixedW = self.textFlowFixed.isChecked()
-        doJustify  = self.textFlowJustify.isChecked()
-
-        self.mainConf.textWidth  = textWidth
-        self.mainConf.textFixedW = textFixedW
-        self.mainConf.doJustify  = doJustify
-
-        zenWidth = self.zenDocWidth.value()
-
-        self.mainConf.zenWidth = zenWidth
-
-        textMargin = self.textMarginDoc.value()
-        tabWidth   = self.textMarginTab.value()
-
-        self.mainConf.textMargin = textMargin
-        self.mainConf.tabWidth   = tabWidth
 
         autoSelect      = self.autoSelect.isChecked()
         doReplace       = self.autoReplaceMain.isChecked()
