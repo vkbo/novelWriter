@@ -62,14 +62,14 @@ class GuiConfigEditor(QDialog):
 
         self.tabGeneral = GuiConfigEditGeneralTab(self.theParent)
         self.tabLayout  = GuiConfigEditLayoutTab(self.theParent)
-        self.tabMain    = GuiConfigEditGeneral(self.theParent)
+        self.tabEditing = GuiConfigEditEditingTab(self.theParent)
         self.tabEditor  = GuiConfigEditEditor(self.theParent)
 
         self.tabWidget = QTabWidget()
         self.tabWidget.setMinimumWidth(600)
         self.tabWidget.addTab(self.tabGeneral, "General")
-        self.tabWidget.addTab(self.tabLayout, "Layout")
-        self.tabWidget.addTab(self.tabMain, "General")
+        self.tabWidget.addTab(self.tabLayout,  "Layout")
+        self.tabWidget.addTab(self.tabEditing, "Editing")
         self.tabWidget.addTab(self.tabEditor, "Editor")
 
         self.setLayout(self.outerBox)
@@ -108,7 +108,7 @@ class GuiConfigEditor(QDialog):
         validEntries &= retA
         needsRestart |= retB
 
-        retA, retB = self.tabMain.saveValues()
+        retA, retB = self.tabEditing.saveValues()
         validEntries &= retA
         needsRestart |= retB
 
@@ -183,7 +183,7 @@ class GuiConfigEditGeneralTab(QWidget):
         self.mainForm.addRow(
             "Prefer icons for dark backgrounds",
             self.preferDarkIcons,
-            "May improve the look of icons on dark themes"
+            "May improve the look of icons on dark themes."
         )
 
         # AutoSave Settings
@@ -233,7 +233,7 @@ class GuiConfigEditGeneralTab(QWidget):
         self.mainForm.addRow(
             "Run backup when closing project",
             self.backupOnClose,
-            "This option can be overridden in project settings"
+            "This option can be overridden in project settings."
         )
 
         ## Ask before backup
@@ -333,7 +333,7 @@ class GuiConfigEditLayoutTab(QWidget):
         self.mainForm.addRow(
             "Font family",
             self.textStyleFont,
-            "For the document editor and viewer"
+            "For the document editor and viewer."
         )
 
         self.textStyleSize = QSpinBox(self)
@@ -378,7 +378,7 @@ class GuiConfigEditLayoutTab(QWidget):
         self.mainForm.addRow(
             "Disable maximum text width in Normal mode",
             self.textFlowFixed,
-            "Only fixed margins are applied to the document"
+            "Only fixed margins are applied to the document."
         )
 
         self.textJustify = QSwitch()
@@ -390,13 +390,13 @@ class GuiConfigEditLayoutTab(QWidget):
 
         self.textMargin = QSpinBox(self)
         self.textMargin.setMinimum(0)
-        self.textMargin.setMaximum(2000)
+        self.textMargin.setMaximum(900)
         self.textMargin.setSingleStep(1)
         self.textMargin.setValue(self.mainConf.textMargin)
         self.mainForm.addRow(
             "Document text margin",
             self.textMargin,
-            "The minimum horizontal text margin if max with is enabled",
+            "The minimum horizontal text margin if max with is enabled.",
             theUnit="px"
         )
 
@@ -408,8 +408,26 @@ class GuiConfigEditLayoutTab(QWidget):
         self.mainForm.addRow(
             "Editor tab width",
             self.tabWidth,
-            "This feature requires Qt 5.9 or later",
+            "This feature requires Qt 5.9 or later.",
             theUnit="px"
+        )
+
+        # Writing Guides
+        # ==============
+        self.mainForm.addGroupLabel("Writing Guides")
+
+        self.showTabsNSpaces = QSwitch()
+        self.showTabsNSpaces.setChecked(self.mainConf.showTabsNSpaces)
+        self.mainForm.addRow(
+            "Show tabs and spaces",
+            self.showTabsNSpaces
+        )
+
+        self.showLineEndings = QSwitch()
+        self.showLineEndings.setChecked(self.mainConf.showLineEndings)
+        self.mainForm.addRow(
+            "Show line endings",
+            self.showLineEndings
         )
 
         return
@@ -419,23 +437,27 @@ class GuiConfigEditLayoutTab(QWidget):
         validEntries = True
         needsRestart = False
 
-        textFont   = self.textStyleFont.currentFont().family()
-        textSize   = self.textStyleSize.value()
-        textWidth  = self.textFlowMax.value()
-        zenWidth   = self.zenDocWidth.value()
-        textFixedW = not self.textFlowFixed.isChecked()
-        doJustify  = self.textJustify.isChecked()
-        textMargin = self.textMargin.value()
-        tabWidth   = self.tabWidth.value()
+        textFont        = self.textStyleFont.currentFont().family()
+        textSize        = self.textStyleSize.value()
+        textWidth       = self.textFlowMax.value()
+        zenWidth        = self.zenDocWidth.value()
+        textFixedW      = not self.textFlowFixed.isChecked()
+        doJustify       = self.textJustify.isChecked()
+        textMargin      = self.textMargin.value()
+        tabWidth        = self.tabWidth.value()
+        showTabsNSpaces = self.showTabsNSpaces.isChecked()
+        showLineEndings = self.showLineEndings.isChecked()
 
-        self.mainConf.textFont   = textFont
-        self.mainConf.textSize   = textSize
-        self.mainConf.textWidth  = textWidth
-        self.mainConf.zenWidth   = zenWidth
-        self.mainConf.textFixedW = textFixedW
-        self.mainConf.doJustify  = doJustify
-        self.mainConf.textMargin = textMargin
-        self.mainConf.tabWidth   = tabWidth
+        self.mainConf.textFont        = textFont
+        self.mainConf.textSize        = textSize
+        self.mainConf.textWidth       = textWidth
+        self.mainConf.zenWidth        = zenWidth
+        self.mainConf.textFixedW      = textFixedW
+        self.mainConf.doJustify       = doJustify
+        self.mainConf.textMargin      = textMargin
+        self.mainConf.tabWidth        = tabWidth
+        self.mainConf.showTabsNSpaces = showTabsNSpaces
+        self.mainConf.showLineEndings = showLineEndings
 
         self.mainConf.confChanged = True
 
@@ -443,7 +465,7 @@ class GuiConfigEditLayoutTab(QWidget):
 
 # END Class GuiConfigEditLayoutTab
 
-class GuiConfigEditGeneral(QWidget):
+class GuiConfigEditEditingTab(QWidget):
 
     def __init__(self, theParent):
         QWidget.__init__(self, theParent)
@@ -451,24 +473,27 @@ class GuiConfigEditGeneral(QWidget):
         self.mainConf  = nw.CONFIG
         self.theParent = theParent
         self.theTheme  = theParent.theTheme
-        self.outerBox  = QGridLayout()
+
+        # The Form
+        self.mainForm = QConfigLayout()
+        self.mainForm.setHelpTextStyle(self.theTheme.helpText)
+        self.setLayout(self.mainForm)
 
         # Spell Checking
-        self.spellLang     = QGroupBox("Spell Checker", self)
-        self.spellLangForm = QGridLayout(self)
-        self.spellLang.setLayout(self.spellLangForm)
+        # ==============
+        self.mainForm.addGroupLabel("Spell Checking")
 
         self.spellLangList = QComboBox(self)
         self.spellToolList = QComboBox(self)
         self.spellToolList.addItem("Internal (difflib)",        NWSpellCheck.SP_INTERNAL)
         self.spellToolList.addItem("Spell Enchant (pyenchant)", NWSpellCheck.SP_ENCHANT)
-        self.spellToolList.addItem("SymSpell (symspellpy)",     NWSpellCheck.SP_SYMSPELL)
+        # self.spellToolList.addItem("SymSpell (symspellpy)",     NWSpellCheck.SP_SYMSPELL)
 
         theModel   = self.spellToolList.model()
         idEnchant  = self.spellToolList.findData(NWSpellCheck.SP_ENCHANT)
-        idSymSpell = self.spellToolList.findData(NWSpellCheck.SP_SYMSPELL)
+        # idSymSpell = self.spellToolList.findData(NWSpellCheck.SP_SYMSPELL)
         theModel.item(idEnchant).setEnabled(self.mainConf.hasEnchant)
-        theModel.item(idSymSpell).setEnabled(self.mainConf.hasSymSpell)
+        # theModel.item(idSymSpell).setEnabled(self.mainConf.hasSymSpell)
 
         self.spellToolList.currentIndexChanged.connect(self._doUpdateSpellTool)
         toolIdx = self.spellToolList.findData(self.mainConf.spellTool)
@@ -476,30 +501,27 @@ class GuiConfigEditGeneral(QWidget):
             self.spellToolList.setCurrentIndex(toolIdx)
         self._doUpdateSpellTool(0)
 
-        self.spellBigDoc = QSpinBox(self)
-        self.spellBigDoc.setMinimum(10)
-        self.spellBigDoc.setMaximum(10000)
-        self.spellBigDoc.setSingleStep(10)
-        self.spellBigDoc.setToolTip((
-            "Disable spell checking when loading large documents. "
-            "Spell checking will only run on paragraphs you edit."
-        ))
-        self.spellBigDoc.setValue(self.mainConf.bigDocLimit)
+        self.mainForm.addRow(
+            "Spell check provider",
+            self.spellToolList,
+            "Note that the internal spell check tool is quite slow."
+        )
+        self.mainForm.addRow(
+            "Spell check language",
+            self.spellLangList
+        )
 
-        self.spellLangForm.addWidget(QLabel("Provider"),   0, 0)
-        self.spellLangForm.addWidget(self.spellToolList,   0, 1, 1, 3)
-        self.spellLangForm.addWidget(QLabel("Language"),   1, 0)
-        self.spellLangForm.addWidget(self.spellLangList,   1, 1, 1, 3)
-        self.spellLangForm.addWidget(QLabel("Size limit"), 2, 0)
-        self.spellLangForm.addWidget(self.spellBigDoc,     2, 1)
-        self.spellLangForm.addWidget(QLabel("kb"),         2, 2)
-        self.spellLangForm.setColumnStretch(4, 1)
-
-        # Assemble
-        self.outerBox.addWidget(self.spellLang,  1, 0)
-        self.outerBox.setColumnStretch(1, 1)
-        self.outerBox.setRowStretch(4, 1)
-        self.setLayout(self.outerBox)
+        self.bigDocLimit = QSpinBox(self)
+        self.bigDocLimit.setMinimum(10)
+        self.bigDocLimit.setMaximum(10000)
+        self.bigDocLimit.setSingleStep(10)
+        self.bigDocLimit.setValue(self.mainConf.bigDocLimit)
+        self.mainForm.addRow(
+            "Big document limit",
+            self.bigDocLimit,
+            "Disables full spell checking over the size limit.",
+            theUnit="kb"
+        )
 
         return
 
@@ -508,13 +530,13 @@ class GuiConfigEditGeneral(QWidget):
         validEntries = True
         needsRestart = False
 
-        spellTool       = self.spellToolList.currentData()
-        spellLanguage   = self.spellLangList.currentData()
-        bigDocLimit     = self.spellBigDoc.value()
+        spellTool     = self.spellToolList.currentData()
+        spellLanguage = self.spellLangList.currentData()
+        bigDocLimit   = self.bigDocLimit.value()
 
-        self.mainConf.spellTool       = spellTool
-        self.mainConf.spellLanguage   = spellLanguage
-        self.mainConf.bigDocLimit     = bigDocLimit
+        self.mainConf.spellTool     = spellTool
+        self.mainConf.spellLanguage = spellLanguage
+        self.mainConf.bigDocLimit   = bigDocLimit
 
         self.mainConf.confChanged = True
 
@@ -557,7 +579,7 @@ class GuiConfigEditGeneral(QWidget):
 
         return
 
-# END Class GuiConfigEditGeneral
+# END Class GuiConfigEditEditingTab
 
 class GuiConfigEditEditor(QWidget):
 
@@ -656,24 +678,24 @@ class GuiConfigEditEditor(QWidget):
         self.quoteStyleForm.setColumnStretch(4, 1)
         self.quoteStyleForm.setRowStretch(4, 1)
 
-        # Writing Guides
-        self.showGuides     = QGroupBox("Writing Guides", self)
-        self.showGuidesForm = QGridLayout(self)
-        self.showGuides.setLayout(self.showGuidesForm)
+        # # Writing Guides
+        # self.showGuides     = QGroupBox("Writing Guides", self)
+        # self.showGuidesForm = QGridLayout(self)
+        # self.showGuides.setLayout(self.showGuidesForm)
 
-        self.showTabsNSpaces = QCheckBox("Show tabs and spaces",self)
-        self.showTabsNSpaces.setChecked(self.mainConf.showTabsNSpaces)
+        # self.showTabsNSpaces = QCheckBox("Show tabs and spaces",self)
+        # self.showTabsNSpaces.setChecked(self.mainConf.showTabsNSpaces)
 
-        self.showLineEndings = QCheckBox("Show line endings",self)
-        self.showLineEndings.setChecked(self.mainConf.showLineEndings)
+        # self.showLineEndings = QCheckBox("Show line endings",self)
+        # self.showLineEndings.setChecked(self.mainConf.showLineEndings)
 
-        self.showGuidesForm.addWidget(self.showTabsNSpaces, 0, 0)
-        self.showGuidesForm.addWidget(self.showLineEndings, 1, 0)
+        # self.showGuidesForm.addWidget(self.showTabsNSpaces, 0, 0)
+        # self.showGuidesForm.addWidget(self.showLineEndings, 1, 0)
 
         # Assemble
         self.outerBox.addWidget(self.autoReplace, 3, 0, 2, 1)
         self.outerBox.addWidget(self.quoteStyle,  2, 1, 2, 1)
-        self.outerBox.addWidget(self.showGuides,  4, 1)
+        # self.outerBox.addWidget(self.showGuides,  4, 1)
         self.outerBox.setColumnStretch(2, 1)
         self.outerBox.setRowStretch(5, 1)
         self.setLayout(self.outerBox)
@@ -735,11 +757,11 @@ class GuiConfigEditEditor(QWidget):
             )
             validEntries = False
 
-        showTabsNSpaces = self.showTabsNSpaces.isChecked()
-        showLineEndings = self.showLineEndings.isChecked()
+        # showTabsNSpaces = self.showTabsNSpaces.isChecked()
+        # showLineEndings = self.showLineEndings.isChecked()
 
-        self.mainConf.showTabsNSpaces = showTabsNSpaces
-        self.mainConf.showLineEndings = showLineEndings
+        # self.mainConf.showTabsNSpaces = showTabsNSpaces
+        # self.mainConf.showLineEndings = showLineEndings
 
         self.mainConf.confChanged = True
 
