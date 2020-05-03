@@ -33,11 +33,12 @@ from os import path
 from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QFont
 from PyQt5.QtWidgets import (
-    QDialog, QHBoxLayout, QVBoxLayout, QLineEdit, QLabel, QWidget, QTabWidget,
-    QDialogButtonBox, QSpinBox, QGroupBox, QComboBox, QMessageBox, QCheckBox,
-    QGridLayout, QFontComboBox, QPushButton, QFileDialog
+    QDialog, QWidget, QHBoxLayout, QVBoxLayout, QTabWidget, QComboBox, QSpinBox,
+    QPushButton, QFontComboBox, QLineEdit, QDialogButtonBox, QMessageBox,
+    QFileDialog
 )
 
+from nw.additions import QSwitch, QConfigLayout
 from nw.tools import NWSpellCheck, NWSpellSimple, NWSpellEnchant
 from nw.constants import nwAlert, nwQuotes
 
@@ -59,12 +60,17 @@ class GuiConfigEditor(QDialog):
         self.setWindowTitle("Preferences")
         self.guiDeco = self.theParent.theTheme.loadDecoration("settings",(64,64))
 
-        self.tabMain    = GuiConfigEditGeneral(self.theParent)
-        self.tabEditor  = GuiConfigEditEditor(self.theParent)
+        self.tabGeneral = GuiConfigEditGeneralTab(self.theParent)
+        self.tabLayout  = GuiConfigEditLayoutTab(self.theParent)
+        self.tabEditing = GuiConfigEditEditingTab(self.theParent)
+        self.tabAutoRep = GuiConfigEditAutoReplaceTab(self.theParent)
 
         self.tabWidget = QTabWidget()
-        self.tabWidget.addTab(self.tabMain, "General")
-        self.tabWidget.addTab(self.tabEditor, "Editor")
+        self.tabWidget.setMinimumWidth(600)
+        self.tabWidget.addTab(self.tabGeneral, "General")
+        self.tabWidget.addTab(self.tabLayout,  "Layout")
+        self.tabWidget.addTab(self.tabEditing, "Editing")
+        self.tabWidget.addTab(self.tabAutoRep, "Auto-Replace")
 
         self.setLayout(self.outerBox)
         self.outerBox.addWidget(self.guiDeco, 0, Qt.AlignTop)
@@ -94,11 +100,19 @@ class GuiConfigEditor(QDialog):
         validEntries = True
         needsRestart = False
 
-        retA, retB = self.tabMain.saveValues()
+        retA, retB = self.tabGeneral.saveValues()
         validEntries &= retA
         needsRestart |= retB
 
-        retA, retB = self.tabEditor.saveValues()
+        retA, retB = self.tabLayout.saveValues()
+        validEntries &= retA
+        needsRestart |= retB
+
+        retA, retB = self.tabEditing.saveValues()
+        validEntries &= retA
+        needsRestart |= retB
+
+        retA, retB = self.tabAutoRep.saveValues()
         validEntries &= retA
         needsRestart |= retB
 
@@ -106,7 +120,7 @@ class GuiConfigEditor(QDialog):
             msgBox = QMessageBox()
             msgBox.information(
                 self, "Preferences",
-                "Some changes will not be applied until<br>%s has been restarted." % nw.__package__
+                "Some changes will not be applied until<br>%s has been restarted" % nw.__package__
             )
 
         if validEntries:
@@ -121,7 +135,7 @@ class GuiConfigEditor(QDialog):
 
 # END Class GuiConfigEditor
 
-class GuiConfigEditGeneral(QWidget):
+class GuiConfigEditGeneralTab(QWidget):
 
     def __init__(self, theParent):
         QWidget.__init__(self, theParent)
@@ -129,143 +143,126 @@ class GuiConfigEditGeneral(QWidget):
         self.mainConf  = nw.CONFIG
         self.theParent = theParent
         self.theTheme  = theParent.theTheme
-        self.outerBox  = QGridLayout()
 
-        # User Interface
-        self.guiLook     = QGroupBox("User Interface", self)
-        self.guiLookForm = QGridLayout(self)
-        self.guiLook.setLayout(self.guiLookForm)
+        # The Form
+        self.mainForm = QConfigLayout()
+        self.mainForm.setHelpTextStyle(self.theTheme.helpText)
+        self.setLayout(self.mainForm)
 
-        self.guiLookTheme = QComboBox()
-        self.guiLookTheme.setMinimumWidth(200)
+        # Look and Feel
+        # =============
+        self.mainForm.addGroupLabel("Look and Feel")
+
+        ## Select Theme
+        self.selectTheme = QComboBox()
+        self.selectTheme.setMinimumWidth(200)
         self.theThemes = self.theTheme.listThemes()
         for themeDir, themeName in self.theThemes:
-            self.guiLookTheme.addItem(themeName, themeDir)
-        themeIdx = self.guiLookTheme.findData(self.mainConf.guiTheme)
+            self.selectTheme.addItem(themeName, themeDir)
+        themeIdx = self.selectTheme.findData(self.mainConf.guiTheme)
         if themeIdx != -1:
-            self.guiLookTheme.setCurrentIndex(themeIdx)
+            self.selectTheme.setCurrentIndex(themeIdx)
 
-        self.guiLookSyntax = QComboBox()
-        self.guiLookSyntax.setMinimumWidth(200)
+        self.mainForm.addRow(
+            "Main GUI theme",
+            self.selectTheme,
+            "Changing this requires restarting %s" % nw.__package__
+        )
+
+        ## Syntax Highlighting
+        self.selectSyntax = QComboBox()
+        self.selectSyntax.setMinimumWidth(200)
         self.theSyntaxes = self.theTheme.listSyntax()
         for syntaxFile, syntaxName in self.theSyntaxes:
-            self.guiLookSyntax.addItem(syntaxName, syntaxFile)
-        syntaxIdx = self.guiLookSyntax.findData(self.mainConf.guiSyntax)
+            self.selectSyntax.addItem(syntaxName, syntaxFile)
+        syntaxIdx = self.selectSyntax.findData(self.mainConf.guiSyntax)
         if syntaxIdx != -1:
-            self.guiLookSyntax.setCurrentIndex(syntaxIdx)
+            self.selectSyntax.setCurrentIndex(syntaxIdx)
 
-        self.guiDarkIcons = QCheckBox("Prefer icons for dark backgrounds", self)
-        self.guiDarkIcons.setToolTip("This may improve the look of icons if the system theme is dark.")
-        self.guiDarkIcons.setChecked(self.mainConf.guiDark)
+        self.mainForm.addRow(
+            "Syntax highlight theme",
+            self.selectSyntax
+        )
 
-        self.guiLookForm.addWidget(QLabel("Theme"),    0, 0)
-        self.guiLookForm.addWidget(self.guiLookTheme,  0, 1)
-        self.guiLookForm.addWidget(QLabel("Syntax"),   1, 0)
-        self.guiLookForm.addWidget(self.guiLookSyntax, 1, 1)
-        self.guiLookForm.addWidget(self.guiDarkIcons,  2, 0, 1, 2)
-        self.guiLookForm.setColumnStretch(3, 1)
+        ## Dark Icons
+        self.preferDarkIcons = QSwitch()
+        self.preferDarkIcons.setChecked(self.mainConf.guiDark)
+        self.mainForm.addRow(
+            "Prefer icons for dark backgrounds",
+            self.preferDarkIcons,
+            "May improve the look of icons on dark themes"
+        )
 
-        # Spell Checking
-        self.spellLang     = QGroupBox("Spell Checker", self)
-        self.spellLangForm = QGridLayout(self)
-        self.spellLang.setLayout(self.spellLangForm)
+        # GUI Settings
+        # ============
+        self.mainForm.addGroupLabel("GUI Settings")
 
-        self.spellLangList = QComboBox(self)
-        self.spellToolList = QComboBox(self)
-        self.spellToolList.addItem("Internal (difflib)",        NWSpellCheck.SP_INTERNAL)
-        self.spellToolList.addItem("Spell Enchant (pyenchant)", NWSpellCheck.SP_ENCHANT)
-        self.spellToolList.addItem("SymSpell (symspellpy)",     NWSpellCheck.SP_SYMSPELL)
+        self.showFullPath = QSwitch()
+        self.showFullPath.setChecked(self.mainConf.showFullPath)
+        self.mainForm.addRow(
+            "Show full path in document header",
+            self.showFullPath
+        )
 
-        theModel   = self.spellToolList.model()
-        idEnchant  = self.spellToolList.findData(NWSpellCheck.SP_ENCHANT)
-        idSymSpell = self.spellToolList.findData(NWSpellCheck.SP_SYMSPELL)
-        theModel.item(idEnchant).setEnabled(self.mainConf.hasEnchant)
-        theModel.item(idSymSpell).setEnabled(self.mainConf.hasSymSpell)
+        # AutoSave Settings
+        # =================
+        self.mainForm.addGroupLabel("Automatic Save")
 
-        self.spellToolList.currentIndexChanged.connect(self._doUpdateSpellTool)
-        toolIdx = self.spellToolList.findData(self.mainConf.spellTool)
-        if toolIdx != -1:
-            self.spellToolList.setCurrentIndex(toolIdx)
-        self._doUpdateSpellTool(0)
-
-        self.spellBigDoc = QSpinBox(self)
-        self.spellBigDoc.setMinimum(10)
-        self.spellBigDoc.setMaximum(10000)
-        self.spellBigDoc.setSingleStep(10)
-        self.spellBigDoc.setToolTip((
-            "Disable spell checking when loading large documents. "
-            "Spell checking will only run on paragraphs you edit."
-        ))
-        self.spellBigDoc.setValue(self.mainConf.bigDocLimit)
-
-        self.spellLangForm.addWidget(QLabel("Provider"),   0, 0)
-        self.spellLangForm.addWidget(self.spellToolList,   0, 1, 1, 3)
-        self.spellLangForm.addWidget(QLabel("Language"),   1, 0)
-        self.spellLangForm.addWidget(self.spellLangList,   1, 1, 1, 3)
-        self.spellLangForm.addWidget(QLabel("Size limit"), 2, 0)
-        self.spellLangForm.addWidget(self.spellBigDoc,     2, 1)
-        self.spellLangForm.addWidget(QLabel("kb"),         2, 2)
-        self.spellLangForm.setColumnStretch(4, 1)
-
-        # AutoSave
-        self.autoSave     = QGroupBox("Automatic Save", self)
-        self.autoSaveForm = QGridLayout(self)
-        self.autoSave.setLayout(self.autoSaveForm)
-
+        ## Document Save Timer
         self.autoSaveDoc = QSpinBox(self)
         self.autoSaveDoc.setMinimum(5)
         self.autoSaveDoc.setMaximum(600)
         self.autoSaveDoc.setSingleStep(1)
         self.autoSaveDoc.setValue(self.mainConf.autoSaveDoc)
+        self.backupPathRow = self.mainForm.addRow(
+            "Save interval for the currently open document",
+            self.autoSaveDoc,
+            theUnit="seconds"
+        )
 
+        ## Project Save Timer
         self.autoSaveProj = QSpinBox(self)
         self.autoSaveProj.setMinimum(5)
         self.autoSaveProj.setMaximum(600)
         self.autoSaveProj.setSingleStep(1)
         self.autoSaveProj.setValue(self.mainConf.autoSaveProj)
+        self.backupPathRow = self.mainForm.addRow(
+            "Save interval for the currently open project",
+            self.autoSaveProj,
+            theUnit="seconds"
+        )
 
-        self.autoSaveForm.addWidget(QLabel("Document"), 0, 0)
-        self.autoSaveForm.addWidget(self.autoSaveDoc,   0, 1)
-        self.autoSaveForm.addWidget(QLabel("seconds"),  0, 2)
-        self.autoSaveForm.addWidget(QLabel("Project"),  1, 0)
-        self.autoSaveForm.addWidget(self.autoSaveProj,  1, 1)
-        self.autoSaveForm.addWidget(QLabel("seconds"),  1, 2)
-        self.autoSaveForm.setColumnStretch(3, 1)
+        # Backup Settings
+        # ===============
+        self.mainForm.addGroupLabel("Project Backup")
 
-        # Backup
-        self.projBackup     = QGroupBox("Backup Folder", self)
-        self.projBackupForm = QGridLayout(self)
-        self.projBackup.setLayout(self.projBackupForm)
+        ## Backup Path
+        self.backupPath = self.mainConf.backupPath
+        self.backupGetPath = QPushButton(self.theTheme.getIcon("folder"),"Select Folder")
+        self.backupGetPath.clicked.connect(self._backupFolder)
+        self.backupPathRow = self.mainForm.addRow(
+            "Backup storage location",
+            self.backupGetPath,
+            "Path: %s" % self.backupPath
+        )
 
-        self.projBackupPath = QLineEdit()
-        if path.isdir(self.mainConf.backupPath):
-            self.projBackupPath.setText(self.mainConf.backupPath)
+        ## Run when closing
+        self.backupOnClose = QSwitch()
+        self.backupOnClose.setChecked(self.mainConf.backupOnClose)
+        self.backupOnClose.toggled.connect(self._toggledBackupOnClose)
+        self.mainForm.addRow(
+            "Run backup when closing project",
+            self.backupOnClose,
+            "This option can be overridden in project settings"
+        )
 
-        self.projBackupGetPath = QPushButton(self.theTheme.getIcon("folder"),"")
-        self.projBackupGetPath.clicked.connect(self._backupFolder)
-
-        self.projBackupClose = QCheckBox("Run on close",self)
-        self.projBackupClose.setToolTip("Backup automatically on project close.")
-        self.projBackupClose.setChecked(self.mainConf.backupOnClose)
-
-        self.projBackupAsk = QCheckBox("Ask before backup",self)
-        self.projBackupAsk.setToolTip("Ask before backup.")
-        self.projBackupAsk.setChecked(self.mainConf.askBeforeBackup)
-
-        self.projBackupForm.addWidget(self.projBackupPath,    0, 0, 1, 2)
-        self.projBackupForm.addWidget(self.projBackupGetPath, 0, 2)
-        self.projBackupForm.addWidget(self.projBackupClose,   1, 0)
-        self.projBackupForm.addWidget(self.projBackupAsk,     1, 1, 1, 2)
-        self.projBackupForm.setColumnStretch(1, 1)
-
-        # Assemble
-        self.outerBox.addWidget(self.guiLook,    0, 0)
-        self.outerBox.addWidget(self.spellLang,  1, 0)
-        self.outerBox.addWidget(self.autoSave,   2, 0)
-        self.outerBox.addWidget(self.projBackup, 3, 0, 1, 2)
-        self.outerBox.setColumnStretch(1, 1)
-        self.outerBox.setRowStretch(4, 1)
-        self.setLayout(self.outerBox)
+        ## Ask before backup
+        self.askBeforeBackup = QSwitch()
+        self.askBeforeBackup.setChecked(self.mainConf.askBeforeBackup)
+        self.mainForm.addRow(
+            "Ask before running backup",
+            self.askBeforeBackup
+        )
 
         return
 
@@ -274,17 +271,15 @@ class GuiConfigEditGeneral(QWidget):
         validEntries = True
         needsRestart = False
 
-        guiTheme        = self.guiLookTheme.currentData()
-        guiSyntax       = self.guiLookSyntax.currentData()
-        guiDark         = self.guiDarkIcons.isChecked()
-        spellTool       = self.spellToolList.currentData()
-        spellLanguage   = self.spellLangList.currentData()
-        bigDocLimit     = self.spellBigDoc.value()
+        guiTheme        = self.selectTheme.currentData()
+        guiSyntax       = self.selectSyntax.currentData()
+        guiDark         = self.preferDarkIcons.isChecked()
+        showFullPath    = self.showFullPath.isChecked()
         autoSaveDoc     = self.autoSaveDoc.value()
         autoSaveProj    = self.autoSaveProj.value()
-        backupPath      = self.projBackupPath.text()
-        backupOnClose   = self.projBackupClose.isChecked()
-        askBeforeBackup = self.projBackupAsk.isChecked()
+        backupPath      = self.backupPath
+        backupOnClose   = self.backupOnClose.isChecked()
+        askBeforeBackup = self.askBeforeBackup.isChecked()
 
         # Check if restart is needed
         needsRestart |= self.mainConf.guiTheme != guiTheme
@@ -292,9 +287,7 @@ class GuiConfigEditGeneral(QWidget):
         self.mainConf.guiTheme        = guiTheme
         self.mainConf.guiSyntax       = guiSyntax
         self.mainConf.guiDark         = guiDark
-        self.mainConf.spellTool       = spellTool
-        self.mainConf.spellLanguage   = spellLanguage
-        self.mainConf.bigDocLimit     = bigDocLimit
+        self.mainConf.showFullPath    = showFullPath
         self.mainConf.autoSaveDoc     = autoSaveDoc
         self.mainConf.autoSaveProj    = autoSaveProj
         self.mainConf.backupPath      = backupPath
@@ -306,12 +299,12 @@ class GuiConfigEditGeneral(QWidget):
         return validEntries, needsRestart
 
     ##
-    #  Internal Functions
+    #  Slots
     ##
 
     def _backupFolder(self):
 
-        currDir = self.projBackupPath.text()
+        currDir = self.backupPath
         if not path.isdir(currDir):
             currDir = ""
 
@@ -322,10 +315,269 @@ class GuiConfigEditGeneral(QWidget):
             self,"Backup Directory",currDir,options=dlgOpt
         )
         if newDir:
-            self.projBackupPath.setText(newDir)
+            self.backupPath = newDir
+            self.mainForm.setHelpText(self.backupPathRow, "Path: %s" % self.backupPath)
             return True
 
         return False
+
+    def _toggledBackupOnClose(self, theState):
+        """Enable or disable switch that depends on the backup on close
+        switch,
+        """
+        self.askBeforeBackup.setEnabled(theState)
+        return
+
+# END Class GuiConfigEditGeneralTab
+
+class GuiConfigEditLayoutTab(QWidget):
+
+    def __init__(self, theParent):
+        QWidget.__init__(self, theParent)
+
+        self.mainConf  = nw.CONFIG
+        self.theParent = theParent
+        self.theTheme  = theParent.theTheme
+
+        # The Form
+        self.mainForm = QConfigLayout()
+        self.mainForm.setHelpTextStyle(self.theTheme.helpText)
+        self.setLayout(self.mainForm)
+
+        # Text Style
+        # ==========
+        self.mainForm.addGroupLabel("Text Style")
+
+        ## Font Family
+        self.textStyleFont = QFontComboBox()
+        self.textStyleFont.setMaximumWidth(200)
+        self.textStyleFont.setCurrentFont(QFont(self.mainConf.textFont))
+        self.mainForm.addRow(
+            "Font family",
+            self.textStyleFont,
+            "For the document editor and viewer"
+        )
+
+        ## Font Size
+        self.textStyleSize = QSpinBox(self)
+        self.textStyleSize.setMinimum(5)
+        self.textStyleSize.setMaximum(120)
+        self.textStyleSize.setSingleStep(1)
+        self.textStyleSize.setValue(self.mainConf.textSize)
+        self.mainForm.addRow(
+            "Font size",
+            self.textStyleSize,
+            theUnit="pt"
+        )
+
+        # Text Flow
+        # =========
+        self.mainForm.addGroupLabel("Text Flow")
+
+        ## Max Text Width in Normal Mode
+        self.textFlowMax = QSpinBox(self)
+        self.textFlowMax.setMinimum(300)
+        self.textFlowMax.setMaximum(10000)
+        self.textFlowMax.setSingleStep(10)
+        self.textFlowMax.setValue(self.mainConf.textWidth)
+        self.mainForm.addRow(
+            "Maximum text width in Normal mode",
+            self.textFlowMax,
+            theUnit="px"
+        )
+
+        ## Max Text Width in Zen Mode
+        self.zenDocWidth = QSpinBox(self)
+        self.zenDocWidth.setMinimum(300)
+        self.zenDocWidth.setMaximum(10000)
+        self.zenDocWidth.setSingleStep(10)
+        self.zenDocWidth.setValue(self.mainConf.zenWidth)
+        self.mainForm.addRow(
+            "Maximum text width in Zen mode",
+            self.zenDocWidth,
+            theUnit="px"
+        )
+
+        ## Document Fixed Width
+        self.textFlowFixed = QSwitch()
+        self.textFlowFixed.setChecked(not self.mainConf.textFixedW)
+        self.mainForm.addRow(
+            "Disable maximum text width in Normal mode",
+            self.textFlowFixed,
+            "Only fixed margins are applied to the document"
+        )
+
+        ## Justify Text
+        self.textJustify = QSwitch()
+        self.textJustify.setChecked(self.mainConf.textFixedW)
+        self.mainForm.addRow(
+            "Justify the text margins in editor and viewer",
+            self.textJustify
+        )
+
+        ## Document Margins
+        self.textMargin = QSpinBox(self)
+        self.textMargin.setMinimum(0)
+        self.textMargin.setMaximum(900)
+        self.textMargin.setSingleStep(1)
+        self.textMargin.setValue(self.mainConf.textMargin)
+        self.mainForm.addRow(
+            "Document text margin",
+            self.textMargin,
+            "The minimum horizontal text margin if max with is enabled",
+            theUnit="px"
+        )
+
+        ## Tab Width
+        self.tabWidth = QSpinBox(self)
+        self.tabWidth.setMinimum(0)
+        self.tabWidth.setMaximum(200)
+        self.tabWidth.setSingleStep(1)
+        self.tabWidth.setValue(self.mainConf.tabWidth)
+        self.mainForm.addRow(
+            "Editor tab width",
+            self.tabWidth,
+            "This feature requires Qt 5.9 or later",
+            theUnit="px"
+        )
+
+        # Writing Guides
+        # ==============
+        self.mainForm.addGroupLabel("Writing Guides")
+
+        ## Show Tabs and Spaces
+        self.showTabsNSpaces = QSwitch()
+        self.showTabsNSpaces.setChecked(self.mainConf.showTabsNSpaces)
+        self.mainForm.addRow(
+            "Show tabs and spaces",
+            self.showTabsNSpaces
+        )
+
+        ## Show Line Endings
+        self.showLineEndings = QSwitch()
+        self.showLineEndings.setChecked(self.mainConf.showLineEndings)
+        self.mainForm.addRow(
+            "Show line endings",
+            self.showLineEndings
+        )
+
+        return
+
+    def saveValues(self):
+
+        validEntries = True
+        needsRestart = False
+
+        textFont        = self.textStyleFont.currentFont().family()
+        textSize        = self.textStyleSize.value()
+        textWidth       = self.textFlowMax.value()
+        zenWidth        = self.zenDocWidth.value()
+        textFixedW      = not self.textFlowFixed.isChecked()
+        doJustify       = self.textJustify.isChecked()
+        textMargin      = self.textMargin.value()
+        tabWidth        = self.tabWidth.value()
+        showTabsNSpaces = self.showTabsNSpaces.isChecked()
+        showLineEndings = self.showLineEndings.isChecked()
+
+        self.mainConf.textFont        = textFont
+        self.mainConf.textSize        = textSize
+        self.mainConf.textWidth       = textWidth
+        self.mainConf.zenWidth        = zenWidth
+        self.mainConf.textFixedW      = textFixedW
+        self.mainConf.doJustify       = doJustify
+        self.mainConf.textMargin      = textMargin
+        self.mainConf.tabWidth        = tabWidth
+        self.mainConf.showTabsNSpaces = showTabsNSpaces
+        self.mainConf.showLineEndings = showLineEndings
+
+        self.mainConf.confChanged = True
+
+        return validEntries, needsRestart
+
+# END Class GuiConfigEditLayoutTab
+
+class GuiConfigEditEditingTab(QWidget):
+
+    def __init__(self, theParent):
+        QWidget.__init__(self, theParent)
+
+        self.mainConf  = nw.CONFIG
+        self.theParent = theParent
+        self.theTheme  = theParent.theTheme
+
+        # The Form
+        self.mainForm = QConfigLayout()
+        self.mainForm.setHelpTextStyle(self.theTheme.helpText)
+        self.setLayout(self.mainForm)
+
+        # Spell Checking
+        # ==============
+        self.mainForm.addGroupLabel("Spell Checking")
+
+        ## Spell Check Provider and Language
+        self.spellLangList = QComboBox(self)
+        self.spellToolList = QComboBox(self)
+        self.spellToolList.addItem("Internal (difflib)",        NWSpellCheck.SP_INTERNAL)
+        self.spellToolList.addItem("Spell Enchant (pyenchant)", NWSpellCheck.SP_ENCHANT)
+        # self.spellToolList.addItem("SymSpell (symspellpy)",     NWSpellCheck.SP_SYMSPELL)
+
+        theModel   = self.spellToolList.model()
+        idEnchant  = self.spellToolList.findData(NWSpellCheck.SP_ENCHANT)
+        # idSymSpell = self.spellToolList.findData(NWSpellCheck.SP_SYMSPELL)
+        theModel.item(idEnchant).setEnabled(self.mainConf.hasEnchant)
+        # theModel.item(idSymSpell).setEnabled(self.mainConf.hasSymSpell)
+
+        self.spellToolList.currentIndexChanged.connect(self._doUpdateSpellTool)
+        toolIdx = self.spellToolList.findData(self.mainConf.spellTool)
+        if toolIdx != -1:
+            self.spellToolList.setCurrentIndex(toolIdx)
+        self._doUpdateSpellTool(0)
+
+        self.mainForm.addRow(
+            "Spell check provider",
+            self.spellToolList,
+            "Note that the internal spell check tool is quite slow"
+        )
+        self.mainForm.addRow(
+            "Spell check language",
+            self.spellLangList
+        )
+
+        ## Big Document Size Limit
+        self.bigDocLimit = QSpinBox(self)
+        self.bigDocLimit.setMinimum(10)
+        self.bigDocLimit.setMaximum(10000)
+        self.bigDocLimit.setSingleStep(10)
+        self.bigDocLimit.setValue(self.mainConf.bigDocLimit)
+        self.mainForm.addRow(
+            "Big document limit",
+            self.bigDocLimit,
+            "Disables full spell checking over the size limit",
+            theUnit="kb"
+        )
+
+        return
+
+    def saveValues(self):
+
+        validEntries = True
+        needsRestart = False
+
+        spellTool     = self.spellToolList.currentData()
+        spellLanguage = self.spellLangList.currentData()
+        bigDocLimit   = self.bigDocLimit.value()
+
+        self.mainConf.spellTool     = spellTool
+        self.mainConf.spellLanguage = spellLanguage
+        self.mainConf.bigDocLimit   = bigDocLimit
+
+        self.mainConf.confChanged = True
+
+        return validEntries, needsRestart
+
+    ##
+    #  Internal Functions
+    ##
 
     def _disableComboItem(self, theList, theValue):
         theIdx = theList.findData(theValue)
@@ -360,218 +612,134 @@ class GuiConfigEditGeneral(QWidget):
 
         return
 
-# END Class GuiConfigEditGeneral
+# END Class GuiConfigEditEditingTab
 
-class GuiConfigEditEditor(QWidget):
+class GuiConfigEditAutoReplaceTab(QWidget):
 
     def __init__(self, theParent):
         QWidget.__init__(self, theParent)
 
         self.mainConf  = nw.CONFIG
         self.theParent = theParent
-        self.outerBox  = QGridLayout()
+        self.theTheme  = theParent.theTheme
 
-        # Text Style
-        self.textStyle     = QGroupBox("Text Style", self)
-        self.textStyleForm = QGridLayout(self)
-        self.textStyle.setLayout(self.textStyleForm)
-
-        self.textStyleFont = QFontComboBox()
-        self.textStyleFont.setMaximumWidth(250)
-        self.textStyleFont.setCurrentFont(QFont(self.mainConf.textFont))
-
-        self.textStyleSize = QSpinBox(self)
-        self.textStyleSize.setMinimum(5)
-        self.textStyleSize.setMaximum(120)
-        self.textStyleSize.setSingleStep(1)
-        self.textStyleSize.setValue(self.mainConf.textSize)
-
-        self.textStyleForm.addWidget(QLabel("Font family"), 0, 0)
-        self.textStyleForm.addWidget(self.textStyleFont,    0, 1)
-        self.textStyleForm.addWidget(QLabel("Size"),        0, 2)
-        self.textStyleForm.addWidget(self.textStyleSize,    0, 3)
-        self.textStyleForm.setColumnStretch(4, 1)
-
-        # Text Flow
-        self.textFlow     = QGroupBox("Text Flow", self)
-        self.textFlowForm = QGridLayout(self)
-        self.textFlow.setLayout(self.textFlowForm)
-
-        self.textFlowFixed = QCheckBox("Max text width",self)
-        self.textFlowFixed.setToolTip("Maximum width of the text.")
-        self.textFlowFixed.setChecked(self.mainConf.textFixedW)
-
-        self.textFlowMax = QSpinBox(self)
-        self.textFlowMax.setMinimum(300)
-        self.textFlowMax.setMaximum(10000)
-        self.textFlowMax.setSingleStep(10)
-        self.textFlowMax.setValue(self.mainConf.textWidth)
-
-        self.textFlowJustify = QCheckBox("Justify text",self)
-        self.textFlowJustify.setToolTip("Justify text in main document editor.")
-        self.textFlowJustify.setChecked(self.mainConf.doJustify)
-
-        self.textFlowForm.addWidget(self.textFlowFixed,   0, 0)
-        self.textFlowForm.addWidget(self.textFlowMax,     0, 1)
-        self.textFlowForm.addWidget(QLabel("px"),         0, 2)
-        self.textFlowForm.addWidget(self.textFlowJustify, 1, 0)
-        self.textFlowForm.setColumnStretch(4, 1)
-
-        # Text Margins
-        self.textMargin     = QGroupBox("Margins", self)
-        self.textMarginForm = QGridLayout(self)
-        self.textMargin.setLayout(self.textMarginForm)
-
-        self.textMarginDoc = QSpinBox(self)
-        self.textMarginDoc.setMinimum(0)
-        self.textMarginDoc.setMaximum(2000)
-        self.textMarginDoc.setSingleStep(1)
-        self.textMarginDoc.setValue(self.mainConf.textMargin)
-
-        self.textMarginTab = QSpinBox(self)
-        self.textMarginTab.setMinimum(0)
-        self.textMarginTab.setMaximum(200)
-        self.textMarginTab.setSingleStep(1)
-        self.textMarginTab.setValue(self.mainConf.tabWidth)
-        self.textMarginTab.setToolTip("Requires Qt 5.9 or later.")
-
-        self.textMarginForm.addWidget(QLabel("Document"),   0, 0)
-        self.textMarginForm.addWidget(self.textMarginDoc,   0, 1)
-        self.textMarginForm.addWidget(QLabel("px"),         0, 2)
-        self.textMarginForm.addWidget(QLabel("Tab width"),  2, 0)
-        self.textMarginForm.addWidget(self.textMarginTab,   2, 1)
-        self.textMarginForm.addWidget(QLabel("px"),         2, 2)
-        self.textMarginForm.setColumnStretch(4, 1)
-
-        # Zen Mode
-        self.zenMode     = QGroupBox("Zen Mode", self)
-        self.zenModeForm = QGridLayout(self)
-        self.zenMode.setLayout(self.zenModeForm)
-
-        self.zenDocWidth = QSpinBox(self)
-        self.zenDocWidth.setMinimum(300)
-        self.zenDocWidth.setMaximum(10000)
-        self.zenDocWidth.setSingleStep(10)
-        self.zenDocWidth.setValue(self.mainConf.zenWidth)
-
-        self.zenModeForm.addWidget(QLabel("Document width"), 0, 0)
-        self.zenModeForm.addWidget(self.zenDocWidth,         0, 1)
-        self.zenModeForm.addWidget(QLabel("px"),             0, 2)
-        self.zenModeForm.setColumnStretch(3, 1)
+        # The Form
+        self.mainForm = QConfigLayout()
+        self.mainForm.setHelpTextStyle(self.theTheme.helpText)
+        self.setLayout(self.mainForm)
 
         # Automatic Features
-        self.autoReplace     = QGroupBox("Automatic Features", self)
-        self.autoReplaceForm = QGridLayout(self)
-        self.autoReplace.setLayout(self.autoReplaceForm)
+        # ==================
+        self.mainForm.addGroupLabel("Automatic Features")
 
-        self.autoSelect = QCheckBox(self)
-        self.autoSelect.setToolTip("Auto-select word under cursor when applying formatting.")
+        ## Auto-Select Word Under Cursor
+        self.autoSelect = QSwitch()
         self.autoSelect.setChecked(self.mainConf.autoSelect)
-
-        self.autoReplaceMain = QCheckBox(self)
-        self.autoReplaceMain.setToolTip("Auto-replace text as you type.")
-        self.autoReplaceMain.setChecked(self.mainConf.doReplace)
-
-        self.autoReplaceSQ = QCheckBox(self)
-        self.autoReplaceSQ.setToolTip("Auto-replace single quotes.")
-        self.autoReplaceSQ.setChecked(self.mainConf.doReplaceSQuote)
-
-        self.autoReplaceDQ = QCheckBox(self)
-        self.autoReplaceDQ.setToolTip("Auto-replace double quotes.")
-        self.autoReplaceDQ.setChecked(self.mainConf.doReplaceDQuote)
-
-        self.autoReplaceDash = QCheckBox(self)
-        self.autoReplaceDash.setToolTip(
-            "Auto-replace double and triple hyphens with short and long dash."
+        self.mainForm.addRow(
+            "Auto-select word under cursor",
+            self.autoSelect,
+            "Apply formatting to word under cursor if no selection is made"
         )
+
+        ## Auto-Replace as You Type Main Switch
+        self.autoReplaceMain = QSwitch()
+        self.autoReplaceMain.setChecked(self.mainConf.doReplace)
+        self.autoReplaceMain.toggled.connect(self._toggleAutoReplaceMain)
+        self.mainForm.addRow(
+            "Auto-replace text as you type",
+            self.autoReplaceMain,
+            "Apply formatting to word under cursor if no selection is made"
+        )
+
+        # Auto-Replace
+        # ============
+        self.mainForm.addGroupLabel("Replace as You Type")
+
+        ## Auto-Replace Single Quotes
+        self.autoReplaceSQ = QSwitch()
+        self.autoReplaceSQ.setChecked(self.mainConf.doReplaceSQuote)
+        self.mainForm.addRow(
+            "Auto-replace single quotes",
+            self.autoReplaceSQ,
+            "The feature will try to guess opening or closing single quote"
+        )
+
+        ## Auto-Replace Double Quotes
+        self.autoReplaceDQ = QSwitch()
+        self.autoReplaceDQ.setChecked(self.mainConf.doReplaceDQuote)
+        self.mainForm.addRow(
+            "Auto-replace double quotes",
+            self.autoReplaceDQ,
+            "The feature will try to guess opening or closing quote quote"
+        )
+
+        ## Auto-Replace Hyphens
+        self.autoReplaceDash = QSwitch()
         self.autoReplaceDash.setChecked(self.mainConf.doReplaceDash)
+        self.mainForm.addRow(
+            "Auto-replace dashes",
+            self.autoReplaceDash,
+            "Auto-replace double and triple hyphens with short and long dash"
+        )
 
-        self.autoReplaceDots = QCheckBox(self)
-        self.autoReplaceDots.setToolTip("Auto-replace three dots with ellipsis.")
+        ## Auto-Replace Dots
+        self.autoReplaceDots = QSwitch()
         self.autoReplaceDots.setChecked(self.mainConf.doReplaceDots)
+        self.mainForm.addRow(
+            "Auto-replace dots",
+            self.autoReplaceDots,
+            "Auto-replace three dots with ellipsis"
+        )
 
-        self.autoReplaceForm.addWidget(QLabel("Auto-select text"),          0, 0)
-        self.autoReplaceForm.addWidget(self.autoSelect,                     0, 1)
-        self.autoReplaceForm.addWidget(QLabel("Auto-replace:"),             1, 0)
-        self.autoReplaceForm.addWidget(self.autoReplaceMain,                1, 1)
-        self.autoReplaceForm.addWidget(QLabel("\u2192 Single quotes"),      2, 0)
-        self.autoReplaceForm.addWidget(self.autoReplaceSQ,                  2, 1)
-        self.autoReplaceForm.addWidget(QLabel("\u2192 Double quotes"),      3, 0)
-        self.autoReplaceForm.addWidget(self.autoReplaceDQ,                  3, 1)
-        self.autoReplaceForm.addWidget(QLabel("\u2192 Hyphens with dash"),  4, 0)
-        self.autoReplaceForm.addWidget(self.autoReplaceDash,                4, 1)
-        self.autoReplaceForm.addWidget(QLabel("\u2192 Dots with ellipsis"), 5, 0)
-        self.autoReplaceForm.addWidget(self.autoReplaceDots,                5, 1)
-        self.autoReplaceForm.setColumnStretch(2, 1)
-        self.autoReplaceForm.setRowStretch(6, 1)
+        # Quotation Style
+        # ===============
+        self.mainForm.addGroupLabel("Quotation Style")
 
-        # Quote Style
-        self.quoteStyle     = QGroupBox("Quotation Style", self)
-        self.quoteStyleForm = QGridLayout(self)
-        self.quoteStyle.setLayout(self.quoteStyleForm)
-
+        ## Single Quote Style
         self.quoteSingleStyleO = QLineEdit()
         self.quoteSingleStyleO.setMaxLength(1)
-        self.quoteSingleStyleO.setFixedWidth(30)
+        self.quoteSingleStyleO.setFixedWidth(40)
         self.quoteSingleStyleO.setAlignment(Qt.AlignCenter)
         self.quoteSingleStyleO.setText(self.mainConf.fmtSingleQuotes[0])
+        self.mainForm.addRow(
+            "Single quote open style",
+            self.quoteSingleStyleO,
+            "Auto-replaces apostrophe before words"
+        )
 
         self.quoteSingleStyleC = QLineEdit()
         self.quoteSingleStyleC.setMaxLength(1)
-        self.quoteSingleStyleC.setFixedWidth(30)
+        self.quoteSingleStyleC.setFixedWidth(40)
         self.quoteSingleStyleC.setAlignment(Qt.AlignCenter)
         self.quoteSingleStyleC.setText(self.mainConf.fmtSingleQuotes[1])
+        self.mainForm.addRow(
+            "Single quote close style",
+            self.quoteSingleStyleC,
+            "Auto-replaces apostrophe after words"
+        )
 
+        ## Double Quote Style
         self.quoteDoubleStyleO = QLineEdit()
         self.quoteDoubleStyleO.setMaxLength(1)
-        self.quoteDoubleStyleO.setFixedWidth(30)
+        self.quoteDoubleStyleO.setFixedWidth(40)
         self.quoteDoubleStyleO.setAlignment(Qt.AlignCenter)
         self.quoteDoubleStyleO.setText(self.mainConf.fmtDoubleQuotes[0])
+        self.mainForm.addRow(
+            "Double quote open style",
+            self.quoteDoubleStyleO,
+            "Auto-replaces straight quotes before words"
+        )
 
         self.quoteDoubleStyleC = QLineEdit()
         self.quoteDoubleStyleC.setMaxLength(1)
-        self.quoteDoubleStyleC.setFixedWidth(30)
+        self.quoteDoubleStyleC.setFixedWidth(40)
         self.quoteDoubleStyleC.setAlignment(Qt.AlignCenter)
         self.quoteDoubleStyleC.setText(self.mainConf.fmtDoubleQuotes[1])
-
-        self.quoteStyleForm.addWidget(QLabel("Single Quotes"), 0, 0, 1, 3)
-        self.quoteStyleForm.addWidget(QLabel("Open"),          1, 0)
-        self.quoteStyleForm.addWidget(self.quoteSingleStyleO,  1, 1)
-        self.quoteStyleForm.addWidget(QLabel("Close"),         1, 2)
-        self.quoteStyleForm.addWidget(self.quoteSingleStyleC,  1, 3)
-        self.quoteStyleForm.addWidget(QLabel("Double Quotes"), 2, 0, 1, 3)
-        self.quoteStyleForm.addWidget(QLabel("Open"),          3, 0)
-        self.quoteStyleForm.addWidget(self.quoteDoubleStyleO,  3, 1)
-        self.quoteStyleForm.addWidget(QLabel("Close"),         3, 2)
-        self.quoteStyleForm.addWidget(self.quoteDoubleStyleC,  3, 3)
-        self.quoteStyleForm.setColumnStretch(4, 1)
-        self.quoteStyleForm.setRowStretch(4, 1)
-
-        # Writing Guides
-        self.showGuides     = QGroupBox("Writing Guides", self)
-        self.showGuidesForm = QGridLayout(self)
-        self.showGuides.setLayout(self.showGuidesForm)
-
-        self.showTabsNSpaces = QCheckBox("Show tabs and spaces",self)
-        self.showTabsNSpaces.setChecked(self.mainConf.showTabsNSpaces)
-
-        self.showLineEndings = QCheckBox("Show line endings",self)
-        self.showLineEndings.setChecked(self.mainConf.showLineEndings)
-
-        self.showGuidesForm.addWidget(self.showTabsNSpaces, 0, 0)
-        self.showGuidesForm.addWidget(self.showLineEndings, 1, 0)
-
-        # Assemble
-        self.outerBox.addWidget(self.textStyle,   0, 0, 1, 2)
-        self.outerBox.addWidget(self.textFlow,    1, 0)
-        self.outerBox.addWidget(self.textMargin,  1, 1)
-        self.outerBox.addWidget(self.zenMode,     2, 0)
-        self.outerBox.addWidget(self.autoReplace, 3, 0, 2, 1)
-        self.outerBox.addWidget(self.quoteStyle,  2, 1, 2, 1)
-        self.outerBox.addWidget(self.showGuides,  4, 1)
-        self.outerBox.setColumnStretch(2, 1)
-        self.outerBox.setRowStretch(5, 1)
-        self.setLayout(self.outerBox)
+        self.mainForm.addRow(
+            "Double quote close style",
+            self.quoteDoubleStyleC,
+            "Auto-replaces straight quotes after words"
+        )
 
         return
 
@@ -579,36 +747,12 @@ class GuiConfigEditEditor(QWidget):
 
         validEntries = True
 
-        textFont = self.textStyleFont.currentFont().family()
-        textSize = self.textStyleSize.value()
-
-        self.mainConf.textFont = textFont
-        self.mainConf.textSize = textSize
-
-        textWidth  = self.textFlowMax.value()
-        textFixedW = self.textFlowFixed.isChecked()
-        doJustify  = self.textFlowJustify.isChecked()
-
-        self.mainConf.textWidth  = textWidth
-        self.mainConf.textFixedW = textFixedW
-        self.mainConf.doJustify  = doJustify
-
-        zenWidth = self.zenDocWidth.value()
-
-        self.mainConf.zenWidth = zenWidth
-
-        textMargin = self.textMarginDoc.value()
-        tabWidth   = self.textMarginTab.value()
-
-        self.mainConf.textMargin = textMargin
-        self.mainConf.tabWidth   = tabWidth
-
         autoSelect      = self.autoSelect.isChecked()
         doReplace       = self.autoReplaceMain.isChecked()
         doReplaceSQuote = self.autoReplaceSQ.isChecked()
         doReplaceDQuote = self.autoReplaceDQ.isChecked()
         doReplaceDash   = self.autoReplaceDash.isChecked()
-        doReplaceDots   = self.autoReplaceDash.isChecked()
+        doReplaceDots   = self.autoReplaceDots.isChecked()
 
         self.mainConf.autoSelect      = autoSelect
         self.mainConf.doReplace       = doReplace
@@ -654,25 +798,36 @@ class GuiConfigEditEditor(QWidget):
             )
             validEntries = False
 
-        showTabsNSpaces = self.showTabsNSpaces.isChecked()
-        showLineEndings = self.showLineEndings.isChecked()
-
-        self.mainConf.showTabsNSpaces = showTabsNSpaces
-        self.mainConf.showLineEndings = showLineEndings
-
         self.mainConf.confChanged = True
 
         return validEntries, False
+
+    ##
+    #  Slots
+    ##
+
+    def _toggleAutoReplaceMain(self, theState):
+        """Enables or disables switches controlled by the main auto
+        replace switch.
+        """
+        self.autoReplaceSQ.setEnabled(theState)
+        self.autoReplaceDQ.setEnabled(theState)
+        self.autoReplaceDash.setEnabled(theState)
+        self.autoReplaceDots.setEnabled(theState)
+        return
 
     ##
     #  Internal Functions
     ##
 
     def _checkQuoteSymbol(self, toCheck):
+        """Check that the quote symbols entered are in nwQuotes and is
+        therefore a valid quote symbol for this app.
+        """
         if len(toCheck) != 1:
             return False
         if toCheck in nwQuotes.SYMBOLS:
             return True
         return False
 
-# END Class GuiConfigEditEditor
+# END Class GuiConfigEditAutoReplaceTab
