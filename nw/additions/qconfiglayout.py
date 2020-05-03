@@ -31,7 +31,7 @@ import nw
 from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QColor, QPalette
 from PyQt5.QtWidgets import (
-    QGridLayout, QLabel, QWidget, QVBoxLayout, QHBoxLayout, QLayout
+    QGridLayout, QLabel, QWidget, QVBoxLayout, QHBoxLayout
 )
 
 from nw.constants import nwUnicode

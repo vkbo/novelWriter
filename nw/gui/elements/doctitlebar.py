@@ -30,7 +30,7 @@ import nw
 
 from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QPalette, QColor
-from PyQt5.QtWidgets import QLabel, QFrame, QStyle
+from PyQt5.QtWidgets import QLabel, QFrame
 
 from nw.constants import nwUnicode
 
