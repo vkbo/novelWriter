@@ -35,9 +35,10 @@ from PyQt5.QtGui import QFont
 from PyQt5.QtWidgets import (
     QDialog, QHBoxLayout, QVBoxLayout, QLineEdit, QLabel, QWidget, QTabWidget,
     QDialogButtonBox, QSpinBox, QGroupBox, QComboBox, QMessageBox, QCheckBox,
-    QGridLayout, QFontComboBox, QPushButton, QFileDialog
+    QGridLayout, QFontComboBox, QPushButton, QFileDialog, QFormLayout
 )
 
+from nw.additions import QSwitch, QConfigLayout
 from nw.tools import NWSpellCheck, NWSpellSimple, NWSpellEnchant
 from nw.constants import nwAlert, nwQuotes
 
@@ -59,10 +60,13 @@ class GuiConfigEditor(QDialog):
         self.setWindowTitle("Preferences")
         self.guiDeco = self.theParent.theTheme.loadDecoration("settings",(64,64))
 
+        self.tabGeneral = GuiConfigEditGeneralTab(self.theParent)
         self.tabMain    = GuiConfigEditGeneral(self.theParent)
         self.tabEditor  = GuiConfigEditEditor(self.theParent)
 
         self.tabWidget = QTabWidget()
+        self.tabWidget.setMinimumWidth(600)
+        self.tabWidget.addTab(self.tabGeneral, "General")
         self.tabWidget.addTab(self.tabMain, "General")
         self.tabWidget.addTab(self.tabEditor, "Editor")
 
@@ -94,6 +98,10 @@ class GuiConfigEditor(QDialog):
         validEntries = True
         needsRestart = False
 
+        retA, retB = self.tabGeneral.saveValues()
+        validEntries &= retA
+        needsRestart |= retB
+
         retA, retB = self.tabMain.saveValues()
         validEntries &= retA
         needsRestart |= retB
@@ -121,6 +129,180 @@ class GuiConfigEditor(QDialog):
 
 # END Class GuiConfigEditor
 
+class GuiConfigEditGeneralTab(QWidget):
+
+    def __init__(self, theParent):
+        QWidget.__init__(self, theParent)
+
+        self.mainConf  = nw.CONFIG
+        self.theParent = theParent
+        self.theTheme  = theParent.theTheme
+
+        # The Form
+        self.mainForm = QConfigLayout()
+        self.mainForm.setHelpTextStyle(self.theTheme.helpText)
+        self.setLayout(self.mainForm)
+
+        # GUI Settings
+        # ============
+        self.mainForm.addGroupLabel("GUI")
+
+        ## Select Theme
+        self.selectTheme = QComboBox()
+        self.selectTheme.setMinimumWidth(200)
+        self.theThemes = self.theTheme.listThemes()
+        for themeDir, themeName in self.theThemes:
+            self.selectTheme.addItem(themeName, themeDir)
+        themeIdx = self.selectTheme.findData(self.mainConf.guiTheme)
+        if themeIdx != -1:
+            self.selectTheme.setCurrentIndex(themeIdx)
+
+        self.mainForm.addRow("Colour theme", self.selectTheme)
+
+        ## Syntax Highlighting
+        self.selectSyntax = QComboBox()
+        self.selectSyntax.setMinimumWidth(200)
+        self.theSyntaxes = self.theTheme.listSyntax()
+        for syntaxFile, syntaxName in self.theSyntaxes:
+            self.selectSyntax.addItem(syntaxName, syntaxFile)
+        syntaxIdx = self.selectSyntax.findData(self.mainConf.guiSyntax)
+        if syntaxIdx != -1:
+            self.selectSyntax.setCurrentIndex(syntaxIdx)
+
+        self.mainForm.addRow("Syntax highlight theme", self.selectSyntax)
+
+        ## Dark Icons
+        self.preferDarkIcons = QSwitch()
+        self.preferDarkIcons.setChecked(self.mainConf.guiDark)
+        self.mainForm.addRow(
+            "Prefer icons for dark backgrounds",
+            self.preferDarkIcons,
+            "May improve the look of icons on dark themes"
+        )
+
+        # AutoSave Settings
+        # =================
+        self.mainForm.addGroupLabel("Automatic Save")
+
+        self.autoSaveDoc = QSpinBox(self)
+        self.autoSaveDoc.setMinimum(5)
+        self.autoSaveDoc.setMaximum(600)
+        self.autoSaveDoc.setSingleStep(1)
+        self.autoSaveDoc.setValue(self.mainConf.autoSaveDoc)
+        self.backupPathRow = self.mainForm.addRow(
+            "Save interval for the currently open document",
+            self.autoSaveDoc,
+            theUnit="seconds"
+        )
+
+        self.autoSaveProj = QSpinBox(self)
+        self.autoSaveProj.setMinimum(5)
+        self.autoSaveProj.setMaximum(600)
+        self.autoSaveProj.setSingleStep(1)
+        self.autoSaveProj.setValue(self.mainConf.autoSaveProj)
+        self.backupPathRow = self.mainForm.addRow(
+            "Save interval for the currently open project",
+            self.autoSaveProj,
+            theUnit="seconds"
+        )
+
+        # Backup Settings
+        # ===============
+        self.mainForm.addGroupLabel("Project Backup")
+
+        ## Backup Path
+        self.backupPath = self.mainConf.backupPath
+        self.backupGetPath = QPushButton(self.theTheme.getIcon("folder"),"Select Folder")
+        self.backupGetPath.clicked.connect(self._backupFolder)
+        self.backupPathRow = self.mainForm.addRow(
+            "Backup storage location",
+            self.backupGetPath,
+            "Path: %s" % self.backupPath
+        )
+
+        ## Run when closing
+        self.backupOnClose = QSwitch()
+        self.backupOnClose.setChecked(self.mainConf.backupOnClose)
+        self.backupOnClose.toggled.connect(self._toggledBackupOnClose)
+        self.mainForm.addRow(
+            "Run backup when closing project",
+            self.backupOnClose,
+            "This option can be overridden in project settings"
+        )
+
+        ## Ask before backup
+        self.askBeforeBackup = QSwitch()
+        self.askBeforeBackup.setChecked(self.mainConf.askBeforeBackup)
+        self.mainForm.addRow(
+            "Ask before running backup",
+            self.askBeforeBackup
+        )
+
+        return
+
+    def saveValues(self):
+
+        validEntries = True
+        needsRestart = False
+
+        guiTheme        = self.selectTheme.currentData()
+        guiSyntax       = self.selectSyntax.currentData()
+        guiDark         = self.preferDarkIcons.isChecked()
+        autoSaveDoc     = self.autoSaveDoc.value()
+        autoSaveProj    = self.autoSaveProj.value()
+        backupPath      = self.backupPath
+        backupOnClose   = self.backupOnClose.isChecked()
+        askBeforeBackup = self.askBeforeBackup.isChecked()
+
+        # Check if restart is needed
+        needsRestart |= self.mainConf.guiTheme != guiTheme
+
+        self.mainConf.guiTheme        = guiTheme
+        self.mainConf.guiSyntax       = guiSyntax
+        self.mainConf.guiDark         = guiDark
+        self.mainConf.autoSaveDoc     = autoSaveDoc
+        self.mainConf.autoSaveProj    = autoSaveProj
+        self.mainConf.backupPath      = backupPath
+        self.mainConf.backupOnClose   = backupOnClose
+        self.mainConf.askBeforeBackup = askBeforeBackup
+
+        self.mainConf.confChanged = True
+
+        return validEntries, needsRestart
+
+    ##
+    #  Slots
+    ##
+
+    def _backupFolder(self):
+
+        currDir = self.backupPath
+        if not path.isdir(currDir):
+            currDir = ""
+
+        dlgOpt  = QFileDialog.Options()
+        dlgOpt |= QFileDialog.ShowDirsOnly
+        dlgOpt |= QFileDialog.DontUseNativeDialog
+        newDir = QFileDialog.getExistingDirectory(
+            self,"Backup Directory",currDir,options=dlgOpt
+        )
+        if newDir:
+            self.backupPath = newDir
+            self.mainForm.setHelpText(self.backupPathRow, "Path: %s" % self.backupPath)
+            return True
+
+        return False
+
+    def _toggledBackupOnClose(self, theState):
+        """If "backup on close" is disabled, also disable "ask before
+        backup".
+        """
+        if not theState:
+            self.askBeforeBackup.setChecked(False)
+        return
+
+# END Class GuiConfigEditGeneralTab
+
 class GuiConfigEditGeneral(QWidget):
 
     def __init__(self, theParent):
@@ -130,40 +312,6 @@ class GuiConfigEditGeneral(QWidget):
         self.theParent = theParent
         self.theTheme  = theParent.theTheme
         self.outerBox  = QGridLayout()
-
-        # User Interface
-        self.guiLook     = QGroupBox("User Interface", self)
-        self.guiLookForm = QGridLayout(self)
-        self.guiLook.setLayout(self.guiLookForm)
-
-        self.guiLookTheme = QComboBox()
-        self.guiLookTheme.setMinimumWidth(200)
-        self.theThemes = self.theTheme.listThemes()
-        for themeDir, themeName in self.theThemes:
-            self.guiLookTheme.addItem(themeName, themeDir)
-        themeIdx = self.guiLookTheme.findData(self.mainConf.guiTheme)
-        if themeIdx != -1:
-            self.guiLookTheme.setCurrentIndex(themeIdx)
-
-        self.guiLookSyntax = QComboBox()
-        self.guiLookSyntax.setMinimumWidth(200)
-        self.theSyntaxes = self.theTheme.listSyntax()
-        for syntaxFile, syntaxName in self.theSyntaxes:
-            self.guiLookSyntax.addItem(syntaxName, syntaxFile)
-        syntaxIdx = self.guiLookSyntax.findData(self.mainConf.guiSyntax)
-        if syntaxIdx != -1:
-            self.guiLookSyntax.setCurrentIndex(syntaxIdx)
-
-        self.guiDarkIcons = QCheckBox("Prefer icons for dark backgrounds", self)
-        self.guiDarkIcons.setToolTip("This may improve the look of icons if the system theme is dark.")
-        self.guiDarkIcons.setChecked(self.mainConf.guiDark)
-
-        self.guiLookForm.addWidget(QLabel("Theme"),    0, 0)
-        self.guiLookForm.addWidget(self.guiLookTheme,  0, 1)
-        self.guiLookForm.addWidget(QLabel("Syntax"),   1, 0)
-        self.guiLookForm.addWidget(self.guiLookSyntax, 1, 1)
-        self.guiLookForm.addWidget(self.guiDarkIcons,  2, 0, 1, 2)
-        self.guiLookForm.setColumnStretch(3, 1)
 
         # Spell Checking
         self.spellLang     = QGroupBox("Spell Checker", self)
@@ -207,62 +355,8 @@ class GuiConfigEditGeneral(QWidget):
         self.spellLangForm.addWidget(QLabel("kb"),         2, 2)
         self.spellLangForm.setColumnStretch(4, 1)
 
-        # AutoSave
-        self.autoSave     = QGroupBox("Automatic Save", self)
-        self.autoSaveForm = QGridLayout(self)
-        self.autoSave.setLayout(self.autoSaveForm)
-
-        self.autoSaveDoc = QSpinBox(self)
-        self.autoSaveDoc.setMinimum(5)
-        self.autoSaveDoc.setMaximum(600)
-        self.autoSaveDoc.setSingleStep(1)
-        self.autoSaveDoc.setValue(self.mainConf.autoSaveDoc)
-
-        self.autoSaveProj = QSpinBox(self)
-        self.autoSaveProj.setMinimum(5)
-        self.autoSaveProj.setMaximum(600)
-        self.autoSaveProj.setSingleStep(1)
-        self.autoSaveProj.setValue(self.mainConf.autoSaveProj)
-
-        self.autoSaveForm.addWidget(QLabel("Document"), 0, 0)
-        self.autoSaveForm.addWidget(self.autoSaveDoc,   0, 1)
-        self.autoSaveForm.addWidget(QLabel("seconds"),  0, 2)
-        self.autoSaveForm.addWidget(QLabel("Project"),  1, 0)
-        self.autoSaveForm.addWidget(self.autoSaveProj,  1, 1)
-        self.autoSaveForm.addWidget(QLabel("seconds"),  1, 2)
-        self.autoSaveForm.setColumnStretch(3, 1)
-
-        # Backup
-        self.projBackup     = QGroupBox("Backup Folder", self)
-        self.projBackupForm = QGridLayout(self)
-        self.projBackup.setLayout(self.projBackupForm)
-
-        self.projBackupPath = QLineEdit()
-        if path.isdir(self.mainConf.backupPath):
-            self.projBackupPath.setText(self.mainConf.backupPath)
-
-        self.projBackupGetPath = QPushButton(self.theTheme.getIcon("folder"),"")
-        self.projBackupGetPath.clicked.connect(self._backupFolder)
-
-        self.projBackupClose = QCheckBox("Run on close",self)
-        self.projBackupClose.setToolTip("Backup automatically on project close.")
-        self.projBackupClose.setChecked(self.mainConf.backupOnClose)
-
-        self.projBackupAsk = QCheckBox("Ask before backup",self)
-        self.projBackupAsk.setToolTip("Ask before backup.")
-        self.projBackupAsk.setChecked(self.mainConf.askBeforeBackup)
-
-        self.projBackupForm.addWidget(self.projBackupPath,    0, 0, 1, 2)
-        self.projBackupForm.addWidget(self.projBackupGetPath, 0, 2)
-        self.projBackupForm.addWidget(self.projBackupClose,   1, 0)
-        self.projBackupForm.addWidget(self.projBackupAsk,     1, 1, 1, 2)
-        self.projBackupForm.setColumnStretch(1, 1)
-
         # Assemble
-        self.outerBox.addWidget(self.guiLook,    0, 0)
         self.outerBox.addWidget(self.spellLang,  1, 0)
-        self.outerBox.addWidget(self.autoSave,   2, 0)
-        self.outerBox.addWidget(self.projBackup, 3, 0, 1, 2)
         self.outerBox.setColumnStretch(1, 1)
         self.outerBox.setRowStretch(4, 1)
         self.setLayout(self.outerBox)
@@ -274,32 +368,13 @@ class GuiConfigEditGeneral(QWidget):
         validEntries = True
         needsRestart = False
 
-        guiTheme        = self.guiLookTheme.currentData()
-        guiSyntax       = self.guiLookSyntax.currentData()
-        guiDark         = self.guiDarkIcons.isChecked()
         spellTool       = self.spellToolList.currentData()
         spellLanguage   = self.spellLangList.currentData()
         bigDocLimit     = self.spellBigDoc.value()
-        autoSaveDoc     = self.autoSaveDoc.value()
-        autoSaveProj    = self.autoSaveProj.value()
-        backupPath      = self.projBackupPath.text()
-        backupOnClose   = self.projBackupClose.isChecked()
-        askBeforeBackup = self.projBackupAsk.isChecked()
 
-        # Check if restart is needed
-        needsRestart |= self.mainConf.guiTheme != guiTheme
-
-        self.mainConf.guiTheme        = guiTheme
-        self.mainConf.guiSyntax       = guiSyntax
-        self.mainConf.guiDark         = guiDark
         self.mainConf.spellTool       = spellTool
         self.mainConf.spellLanguage   = spellLanguage
         self.mainConf.bigDocLimit     = bigDocLimit
-        self.mainConf.autoSaveDoc     = autoSaveDoc
-        self.mainConf.autoSaveProj    = autoSaveProj
-        self.mainConf.backupPath      = backupPath
-        self.mainConf.backupOnClose   = backupOnClose
-        self.mainConf.askBeforeBackup = askBeforeBackup
 
         self.mainConf.confChanged = True
 
@@ -308,24 +383,6 @@ class GuiConfigEditGeneral(QWidget):
     ##
     #  Internal Functions
     ##
-
-    def _backupFolder(self):
-
-        currDir = self.projBackupPath.text()
-        if not path.isdir(currDir):
-            currDir = ""
-
-        dlgOpt  = QFileDialog.Options()
-        dlgOpt |= QFileDialog.ShowDirsOnly
-        dlgOpt |= QFileDialog.DontUseNativeDialog
-        newDir = QFileDialog.getExistingDirectory(
-            self,"Backup Directory",currDir,options=dlgOpt
-        )
-        if newDir:
-            self.projBackupPath.setText(newDir)
-            return True
-
-        return False
 
     def _disableComboItem(self, theList, theValue):
         theIdx = theList.findData(theValue)

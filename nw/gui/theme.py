@@ -68,6 +68,7 @@ class GuiTheme:
         self.statNone    = [120,120,120]
         self.statUnsaved = [120,120, 40]
         self.statSaved   = [ 40,120,  0]
+        self.helpText    = [  0,  0,  0]
 
         # Loaded Syntax Settings
 
@@ -121,6 +122,8 @@ class GuiTheme:
     ##
 
     def updateTheme(self):
+        """Update the GUI theme from theme files.
+        """
 
         self.guiTheme   = self.mainConf.guiTheme
         self.guiSyntax  = self.mainConf.guiSyntax
@@ -134,6 +137,20 @@ class GuiTheme:
 
         self.loadTheme()
         self.loadSyntax()
+
+        # Update dependant colours
+        backCol = qApp.palette().window().color()
+        textCol = qApp.palette().windowText().color()
+
+        backLCol = backCol.lightnessF()
+        textLCol = textCol.lightnessF()
+
+        if backLCol > textLCol:
+            helpLCol = textLCol + 0.65*(backLCol - textLCol)
+        else:
+            helpLCol = backLCol + 0.65*(textLCol - backLCol)
+
+        self.helpText = [int(255*helpLCol)]*3
 
         return True
 
