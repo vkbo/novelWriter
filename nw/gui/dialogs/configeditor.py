@@ -63,14 +63,14 @@ class GuiConfigEditor(QDialog):
         self.tabGeneral = GuiConfigEditGeneralTab(self.theParent)
         self.tabLayout  = GuiConfigEditLayoutTab(self.theParent)
         self.tabEditing = GuiConfigEditEditingTab(self.theParent)
-        self.tabEditor  = GuiConfigEditEditor(self.theParent)
+        self.tabAutoRep = GuiConfigEditAutoReplaceTab(self.theParent)
 
         self.tabWidget = QTabWidget()
         self.tabWidget.setMinimumWidth(600)
         self.tabWidget.addTab(self.tabGeneral, "General")
         self.tabWidget.addTab(self.tabLayout,  "Layout")
         self.tabWidget.addTab(self.tabEditing, "Editing")
-        self.tabWidget.addTab(self.tabEditor, "Editor")
+        self.tabWidget.addTab(self.tabAutoRep, "Auto-Replace")
 
         self.setLayout(self.outerBox)
         self.outerBox.addWidget(self.guiDeco, 0, Qt.AlignTop)
@@ -112,7 +112,7 @@ class GuiConfigEditor(QDialog):
         validEntries &= retA
         needsRestart |= retB
 
-        retA, retB = self.tabEditor.saveValues()
+        retA, retB = self.tabAutoRep.saveValues()
         validEntries &= retA
         needsRestart |= retB
 
@@ -120,7 +120,7 @@ class GuiConfigEditor(QDialog):
             msgBox = QMessageBox()
             msgBox.information(
                 self, "Preferences",
-                "Some changes will not be applied until<br>%s has been restarted." % nw.__package__
+                "Some changes will not be applied until<br>%s has been restarted" % nw.__package__
             )
 
         if validEntries:
@@ -183,7 +183,7 @@ class GuiConfigEditGeneralTab(QWidget):
         self.mainForm.addRow(
             "Prefer icons for dark backgrounds",
             self.preferDarkIcons,
-            "May improve the look of icons on dark themes."
+            "May improve the look of icons on dark themes"
         )
 
         # AutoSave Settings
@@ -233,7 +233,7 @@ class GuiConfigEditGeneralTab(QWidget):
         self.mainForm.addRow(
             "Run backup when closing project",
             self.backupOnClose,
-            "This option can be overridden in project settings."
+            "This option can be overridden in project settings"
         )
 
         ## Ask before backup
@@ -332,7 +332,7 @@ class GuiConfigEditLayoutTab(QWidget):
         self.mainForm.addRow(
             "Font family",
             self.textStyleFont,
-            "For the document editor and viewer."
+            "For the document editor and viewer"
         )
 
         self.textStyleSize = QSpinBox(self)
@@ -377,7 +377,7 @@ class GuiConfigEditLayoutTab(QWidget):
         self.mainForm.addRow(
             "Disable maximum text width in Normal mode",
             self.textFlowFixed,
-            "Only fixed margins are applied to the document."
+            "Only fixed margins are applied to the document"
         )
 
         self.textJustify = QSwitch()
@@ -395,7 +395,7 @@ class GuiConfigEditLayoutTab(QWidget):
         self.mainForm.addRow(
             "Document text margin",
             self.textMargin,
-            "The minimum horizontal text margin if max with is enabled.",
+            "The minimum horizontal text margin if max with is enabled",
             theUnit="px"
         )
 
@@ -407,7 +407,7 @@ class GuiConfigEditLayoutTab(QWidget):
         self.mainForm.addRow(
             "Editor tab width",
             self.tabWidth,
-            "This feature requires Qt 5.9 or later.",
+            "This feature requires Qt 5.9 or later",
             theUnit="px"
         )
 
@@ -503,7 +503,7 @@ class GuiConfigEditEditingTab(QWidget):
         self.mainForm.addRow(
             "Spell check provider",
             self.spellToolList,
-            "Note that the internal spell check tool is quite slow."
+            "Note that the internal spell check tool is quite slow"
         )
         self.mainForm.addRow(
             "Spell check language",
@@ -518,61 +518,8 @@ class GuiConfigEditEditingTab(QWidget):
         self.mainForm.addRow(
             "Big document limit",
             self.bigDocLimit,
-            "Disables full spell checking over the size limit.",
+            "Disables full spell checking over the size limit",
             theUnit="kb"
-        )
-
-        # Automatic Features
-        # ==================
-        self.mainForm.addGroupLabel("Automatic Features")
-
-        self.autoSelect = QSwitch()
-        self.autoSelect.setChecked(self.mainConf.autoSelect)
-        self.mainForm.addRow(
-            "Auto-select word under cursor",
-            self.autoSelect,
-            "Apply formatting to word under cursor if no selection is made."
-        )
-
-        self.autoReplaceMain = QSwitch()
-        self.autoReplaceMain.setChecked(self.mainConf.doReplace)
-        self.autoReplaceMain.toggled.connect(self._toggleAutoReplaceMain)
-        self.mainForm.addRow(
-            "Auto-replace text as you type",
-            self.autoReplaceMain,
-            "Apply formatting to word under cursor if no selection is made."
-        )
-
-        self.autoReplaceSQ = QSwitch()
-        self.autoReplaceSQ.setChecked(self.mainConf.doReplaceSQuote)
-        self.mainForm.addRow(
-            "Auto-replace single quotes",
-            self.autoReplaceSQ,
-            "The feature will try to guess opening or closing symbol."
-        )
-
-        self.autoReplaceDQ = QSwitch()
-        self.autoReplaceDQ.setChecked(self.mainConf.doReplaceDQuote)
-        self.mainForm.addRow(
-            "Auto-replace double quotes",
-            self.autoReplaceDQ,
-            "The feature will try to guess opening or closing symbol."
-        )
-
-        self.autoReplaceDash = QSwitch()
-        self.autoReplaceDash.setChecked(self.mainConf.doReplaceDash)
-        self.mainForm.addRow(
-            "Auto-replace dashes",
-            self.autoReplaceDash,
-            "Auto-replace double and triple hyphens with short and long dash."
-        )
-
-        self.autoReplaceDots = QSwitch()
-        self.autoReplaceDots.setChecked(self.mainConf.doReplaceDots)
-        self.mainForm.addRow(
-            "Auto-replace dots",
-            self.autoReplaceDots,
-            "Auto-replace three dots with ellipsis."
         )
 
         return
@@ -582,43 +529,17 @@ class GuiConfigEditEditingTab(QWidget):
         validEntries = True
         needsRestart = False
 
-        spellTool       = self.spellToolList.currentData()
-        spellLanguage   = self.spellLangList.currentData()
-        bigDocLimit     = self.bigDocLimit.value()
-        autoSelect      = self.autoSelect.isChecked()
-        doReplace       = self.autoReplaceMain.isChecked()
-        doReplaceSQuote = self.autoReplaceSQ.isChecked()
-        doReplaceDQuote = self.autoReplaceDQ.isChecked()
-        doReplaceDash   = self.autoReplaceDash.isChecked()
-        doReplaceDots   = self.autoReplaceDots.isChecked()
+        spellTool     = self.spellToolList.currentData()
+        spellLanguage = self.spellLangList.currentData()
+        bigDocLimit   = self.bigDocLimit.value()
 
-        self.mainConf.spellTool       = spellTool
-        self.mainConf.spellLanguage   = spellLanguage
-        self.mainConf.bigDocLimit     = bigDocLimit
-        self.mainConf.autoSelect      = autoSelect
-        self.mainConf.doReplace       = doReplace
-        self.mainConf.doReplaceSQuote = doReplaceSQuote
-        self.mainConf.doReplaceDQuote = doReplaceDQuote
-        self.mainConf.doReplaceDash   = doReplaceDash
-        self.mainConf.doReplaceDots   = doReplaceDots
+        self.mainConf.spellTool     = spellTool
+        self.mainConf.spellLanguage = spellLanguage
+        self.mainConf.bigDocLimit   = bigDocLimit
 
         self.mainConf.confChanged = True
 
         return validEntries, needsRestart
-
-    ##
-    #  Slots
-    ##
-
-    def _toggleAutoReplaceMain(self, theState):
-        """Enables or disables switches controlled by the main auto
-        replace switch.
-        """
-        self.autoReplaceSQ.setEnabled(theState)
-        self.autoReplaceDQ.setEnabled(theState)
-        self.autoReplaceDash.setEnabled(theState)
-        self.autoReplaceDots.setEnabled(theState)
-        return
 
     ##
     #  Internal Functions
@@ -659,68 +580,144 @@ class GuiConfigEditEditingTab(QWidget):
 
 # END Class GuiConfigEditEditingTab
 
-class GuiConfigEditEditor(QWidget):
+class GuiConfigEditAutoReplaceTab(QWidget):
 
     def __init__(self, theParent):
         QWidget.__init__(self, theParent)
 
         self.mainConf  = nw.CONFIG
         self.theParent = theParent
-        self.outerBox  = QGridLayout()
+        self.theTheme  = theParent.theTheme
 
-        # Quote Style
-        self.quoteStyle     = QGroupBox("Quotation Style", self)
-        self.quoteStyleForm = QGridLayout(self)
-        self.quoteStyle.setLayout(self.quoteStyleForm)
+        # The Form
+        self.mainForm = QConfigLayout()
+        self.mainForm.setHelpTextStyle(self.theTheme.helpText)
+        self.setLayout(self.mainForm)
+
+        # Automatic Features
+        # ==================
+        self.mainForm.addGroupLabel("Automatic Features")
+
+        self.autoSelect = QSwitch()
+        self.autoSelect.setChecked(self.mainConf.autoSelect)
+        self.mainForm.addRow(
+            "Auto-select word under cursor",
+            self.autoSelect,
+            "Apply formatting to word under cursor if no selection is made"
+        )
+
+        self.autoReplaceMain = QSwitch()
+        self.autoReplaceMain.setChecked(self.mainConf.doReplace)
+        self.autoReplaceMain.toggled.connect(self._toggleAutoReplaceMain)
+        self.mainForm.addRow(
+            "Auto-replace text as you type",
+            self.autoReplaceMain,
+            "Apply formatting to word under cursor if no selection is made"
+        )
+
+        # Auto-Replace
+        # ============
+        self.mainForm.addGroupLabel("Replace as You Type")
+
+        self.autoReplaceSQ = QSwitch()
+        self.autoReplaceSQ.setChecked(self.mainConf.doReplaceSQuote)
+        self.mainForm.addRow(
+            "Auto-replace single quotes",
+            self.autoReplaceSQ,
+            "The feature will try to guess opening or closing single quote"
+        )
+
+        self.autoReplaceDQ = QSwitch()
+        self.autoReplaceDQ.setChecked(self.mainConf.doReplaceDQuote)
+        self.mainForm.addRow(
+            "Auto-replace double quotes",
+            self.autoReplaceDQ,
+            "The feature will try to guess opening or closing quote quote"
+        )
+
+        self.autoReplaceDash = QSwitch()
+        self.autoReplaceDash.setChecked(self.mainConf.doReplaceDash)
+        self.mainForm.addRow(
+            "Auto-replace dashes",
+            self.autoReplaceDash,
+            "Auto-replace double and triple hyphens with short and long dash"
+        )
+
+        self.autoReplaceDots = QSwitch()
+        self.autoReplaceDots.setChecked(self.mainConf.doReplaceDots)
+        self.mainForm.addRow(
+            "Auto-replace dots",
+            self.autoReplaceDots,
+            "Auto-replace three dots with ellipsis"
+        )
+
+        # Quotation Style
+        # ===============
+        self.mainForm.addGroupLabel("Quotation Style")
 
         self.quoteSingleStyleO = QLineEdit()
         self.quoteSingleStyleO.setMaxLength(1)
-        self.quoteSingleStyleO.setFixedWidth(30)
+        self.quoteSingleStyleO.setFixedWidth(40)
         self.quoteSingleStyleO.setAlignment(Qt.AlignCenter)
         self.quoteSingleStyleO.setText(self.mainConf.fmtSingleQuotes[0])
+        self.mainForm.addRow(
+            "Single quote open style",
+            self.quoteSingleStyleO,
+            "Auto-replaces apostrophe before words"
+        )
 
         self.quoteSingleStyleC = QLineEdit()
         self.quoteSingleStyleC.setMaxLength(1)
-        self.quoteSingleStyleC.setFixedWidth(30)
+        self.quoteSingleStyleC.setFixedWidth(40)
         self.quoteSingleStyleC.setAlignment(Qt.AlignCenter)
         self.quoteSingleStyleC.setText(self.mainConf.fmtSingleQuotes[1])
+        self.mainForm.addRow(
+            "Single quote close style",
+            self.quoteSingleStyleC,
+            "Auto-replaces apostrophe after words"
+        )
 
         self.quoteDoubleStyleO = QLineEdit()
         self.quoteDoubleStyleO.setMaxLength(1)
-        self.quoteDoubleStyleO.setFixedWidth(30)
+        self.quoteDoubleStyleO.setFixedWidth(40)
         self.quoteDoubleStyleO.setAlignment(Qt.AlignCenter)
         self.quoteDoubleStyleO.setText(self.mainConf.fmtDoubleQuotes[0])
+        self.mainForm.addRow(
+            "Double quote open style",
+            self.quoteDoubleStyleO,
+            "Auto-replaces straight quotes before words"
+        )
 
         self.quoteDoubleStyleC = QLineEdit()
         self.quoteDoubleStyleC.setMaxLength(1)
-        self.quoteDoubleStyleC.setFixedWidth(30)
+        self.quoteDoubleStyleC.setFixedWidth(40)
         self.quoteDoubleStyleC.setAlignment(Qt.AlignCenter)
         self.quoteDoubleStyleC.setText(self.mainConf.fmtDoubleQuotes[1])
-
-        self.quoteStyleForm.addWidget(QLabel("Single Quotes"), 0, 0, 1, 3)
-        self.quoteStyleForm.addWidget(QLabel("Open"),          1, 0)
-        self.quoteStyleForm.addWidget(self.quoteSingleStyleO,  1, 1)
-        self.quoteStyleForm.addWidget(QLabel("Close"),         1, 2)
-        self.quoteStyleForm.addWidget(self.quoteSingleStyleC,  1, 3)
-        self.quoteStyleForm.addWidget(QLabel("Double Quotes"), 2, 0, 1, 3)
-        self.quoteStyleForm.addWidget(QLabel("Open"),          3, 0)
-        self.quoteStyleForm.addWidget(self.quoteDoubleStyleO,  3, 1)
-        self.quoteStyleForm.addWidget(QLabel("Close"),         3, 2)
-        self.quoteStyleForm.addWidget(self.quoteDoubleStyleC,  3, 3)
-        self.quoteStyleForm.setColumnStretch(4, 1)
-        self.quoteStyleForm.setRowStretch(4, 1)
-
-        # Assemble
-        self.outerBox.addWidget(self.quoteStyle,  2, 1, 2, 1)
-        self.outerBox.setColumnStretch(2, 1)
-        self.outerBox.setRowStretch(5, 1)
-        self.setLayout(self.outerBox)
+        self.mainForm.addRow(
+            "Double quote close style",
+            self.quoteDoubleStyleC,
+            "Auto-replaces straight quotes after words"
+        )
 
         return
 
     def saveValues(self):
 
         validEntries = True
+
+        autoSelect      = self.autoSelect.isChecked()
+        doReplace       = self.autoReplaceMain.isChecked()
+        doReplaceSQuote = self.autoReplaceSQ.isChecked()
+        doReplaceDQuote = self.autoReplaceDQ.isChecked()
+        doReplaceDash   = self.autoReplaceDash.isChecked()
+        doReplaceDots   = self.autoReplaceDots.isChecked()
+
+        self.mainConf.autoSelect      = autoSelect
+        self.mainConf.doReplace       = doReplace
+        self.mainConf.doReplaceSQuote = doReplaceSQuote
+        self.mainConf.doReplaceDQuote = doReplaceDQuote
+        self.mainConf.doReplaceDash   = doReplaceDash
+        self.mainConf.doReplaceDots   = doReplaceDots
 
         fmtSingleQuotesO = self.quoteSingleStyleO.text()
         fmtSingleQuotesC = self.quoteSingleStyleC.text()
@@ -764,14 +761,31 @@ class GuiConfigEditEditor(QWidget):
         return validEntries, False
 
     ##
+    #  Slots
+    ##
+
+    def _toggleAutoReplaceMain(self, theState):
+        """Enables or disables switches controlled by the main auto
+        replace switch.
+        """
+        self.autoReplaceSQ.setEnabled(theState)
+        self.autoReplaceDQ.setEnabled(theState)
+        self.autoReplaceDash.setEnabled(theState)
+        self.autoReplaceDots.setEnabled(theState)
+        return
+
+    ##
     #  Internal Functions
     ##
 
     def _checkQuoteSymbol(self, toCheck):
+        """Check that the quote symbols entered are in nwQuotes and is
+        therefore a valid quote symbol for this app.
+        """
         if len(toCheck) != 1:
             return False
         if toCheck in nwQuotes.SYMBOLS:
             return True
         return False
 
-# END Class GuiConfigEditEditor
+# END Class GuiConfigEditAutoReplaceTab
