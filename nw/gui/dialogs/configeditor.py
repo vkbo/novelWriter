@@ -149,9 +149,9 @@ class GuiConfigEditGeneralTab(QWidget):
         self.mainForm.setHelpTextStyle(self.theTheme.helpText)
         self.setLayout(self.mainForm)
 
-        # GUI Settings
-        # ============
-        self.mainForm.addGroupLabel("GUI")
+        # Look and Feel
+        # =============
+        self.mainForm.addGroupLabel("Look and Feel")
 
         ## Select Theme
         self.selectTheme = QComboBox()
@@ -163,7 +163,11 @@ class GuiConfigEditGeneralTab(QWidget):
         if themeIdx != -1:
             self.selectTheme.setCurrentIndex(themeIdx)
 
-        self.mainForm.addRow("Colour theme", self.selectTheme)
+        self.mainForm.addRow(
+            "Main GUI theme",
+            self.selectTheme,
+            "Changing this requires restarting %s" % nw.__package__
+        )
 
         ## Syntax Highlighting
         self.selectSyntax = QComboBox()
@@ -175,7 +179,10 @@ class GuiConfigEditGeneralTab(QWidget):
         if syntaxIdx != -1:
             self.selectSyntax.setCurrentIndex(syntaxIdx)
 
-        self.mainForm.addRow("Syntax highlight theme", self.selectSyntax)
+        self.mainForm.addRow(
+            "Syntax highlight theme",
+            self.selectSyntax
+        )
 
         ## Dark Icons
         self.preferDarkIcons = QSwitch()
@@ -186,10 +193,22 @@ class GuiConfigEditGeneralTab(QWidget):
             "May improve the look of icons on dark themes"
         )
 
+        # GUI Settings
+        # ============
+        self.mainForm.addGroupLabel("GUI Settings")
+
+        self.showFullPath = QSwitch()
+        self.showFullPath.setChecked(self.mainConf.showFullPath)
+        self.mainForm.addRow(
+            "Show full path in document header",
+            self.showFullPath
+        )
+
         # AutoSave Settings
         # =================
         self.mainForm.addGroupLabel("Automatic Save")
 
+        ## Document Save Timer
         self.autoSaveDoc = QSpinBox(self)
         self.autoSaveDoc.setMinimum(5)
         self.autoSaveDoc.setMaximum(600)
@@ -201,6 +220,7 @@ class GuiConfigEditGeneralTab(QWidget):
             theUnit="seconds"
         )
 
+        ## Project Save Timer
         self.autoSaveProj = QSpinBox(self)
         self.autoSaveProj.setMinimum(5)
         self.autoSaveProj.setMaximum(600)
@@ -254,6 +274,7 @@ class GuiConfigEditGeneralTab(QWidget):
         guiTheme        = self.selectTheme.currentData()
         guiSyntax       = self.selectSyntax.currentData()
         guiDark         = self.preferDarkIcons.isChecked()
+        showFullPath    = self.showFullPath.isChecked()
         autoSaveDoc     = self.autoSaveDoc.value()
         autoSaveProj    = self.autoSaveProj.value()
         backupPath      = self.backupPath
@@ -266,6 +287,7 @@ class GuiConfigEditGeneralTab(QWidget):
         self.mainConf.guiTheme        = guiTheme
         self.mainConf.guiSyntax       = guiSyntax
         self.mainConf.guiDark         = guiDark
+        self.mainConf.showFullPath    = showFullPath
         self.mainConf.autoSaveDoc     = autoSaveDoc
         self.mainConf.autoSaveProj    = autoSaveProj
         self.mainConf.backupPath      = backupPath
@@ -326,6 +348,7 @@ class GuiConfigEditLayoutTab(QWidget):
         # ==========
         self.mainForm.addGroupLabel("Text Style")
 
+        ## Font Family
         self.textStyleFont = QFontComboBox()
         self.textStyleFont.setMaximumWidth(200)
         self.textStyleFont.setCurrentFont(QFont(self.mainConf.textFont))
@@ -335,6 +358,7 @@ class GuiConfigEditLayoutTab(QWidget):
             "For the document editor and viewer"
         )
 
+        ## Font Size
         self.textStyleSize = QSpinBox(self)
         self.textStyleSize.setMinimum(5)
         self.textStyleSize.setMaximum(120)
@@ -350,6 +374,7 @@ class GuiConfigEditLayoutTab(QWidget):
         # =========
         self.mainForm.addGroupLabel("Text Flow")
 
+        ## Max Text Width in Normal Mode
         self.textFlowMax = QSpinBox(self)
         self.textFlowMax.setMinimum(300)
         self.textFlowMax.setMaximum(10000)
@@ -361,6 +386,7 @@ class GuiConfigEditLayoutTab(QWidget):
             theUnit="px"
         )
 
+        ## Max Text Width in Zen Mode
         self.zenDocWidth = QSpinBox(self)
         self.zenDocWidth.setMinimum(300)
         self.zenDocWidth.setMaximum(10000)
@@ -372,6 +398,7 @@ class GuiConfigEditLayoutTab(QWidget):
             theUnit="px"
         )
 
+        ## Document Fixed Width
         self.textFlowFixed = QSwitch()
         self.textFlowFixed.setChecked(not self.mainConf.textFixedW)
         self.mainForm.addRow(
@@ -380,6 +407,7 @@ class GuiConfigEditLayoutTab(QWidget):
             "Only fixed margins are applied to the document"
         )
 
+        ## Justify Text
         self.textJustify = QSwitch()
         self.textJustify.setChecked(self.mainConf.textFixedW)
         self.mainForm.addRow(
@@ -387,6 +415,7 @@ class GuiConfigEditLayoutTab(QWidget):
             self.textJustify
         )
 
+        ## Document Margins
         self.textMargin = QSpinBox(self)
         self.textMargin.setMinimum(0)
         self.textMargin.setMaximum(900)
@@ -399,6 +428,7 @@ class GuiConfigEditLayoutTab(QWidget):
             theUnit="px"
         )
 
+        ## Tab Width
         self.tabWidth = QSpinBox(self)
         self.tabWidth.setMinimum(0)
         self.tabWidth.setMaximum(200)
@@ -415,6 +445,7 @@ class GuiConfigEditLayoutTab(QWidget):
         # ==============
         self.mainForm.addGroupLabel("Writing Guides")
 
+        ## Show Tabs and Spaces
         self.showTabsNSpaces = QSwitch()
         self.showTabsNSpaces.setChecked(self.mainConf.showTabsNSpaces)
         self.mainForm.addRow(
@@ -422,6 +453,7 @@ class GuiConfigEditLayoutTab(QWidget):
             self.showTabsNSpaces
         )
 
+        ## Show Line Endings
         self.showLineEndings = QSwitch()
         self.showLineEndings.setChecked(self.mainConf.showLineEndings)
         self.mainForm.addRow(
@@ -482,6 +514,7 @@ class GuiConfigEditEditingTab(QWidget):
         # ==============
         self.mainForm.addGroupLabel("Spell Checking")
 
+        ## Spell Check Provider and Language
         self.spellLangList = QComboBox(self)
         self.spellToolList = QComboBox(self)
         self.spellToolList.addItem("Internal (difflib)",        NWSpellCheck.SP_INTERNAL)
@@ -510,6 +543,7 @@ class GuiConfigEditEditingTab(QWidget):
             self.spellLangList
         )
 
+        ## Big Document Size Limit
         self.bigDocLimit = QSpinBox(self)
         self.bigDocLimit.setMinimum(10)
         self.bigDocLimit.setMaximum(10000)
@@ -598,6 +632,7 @@ class GuiConfigEditAutoReplaceTab(QWidget):
         # ==================
         self.mainForm.addGroupLabel("Automatic Features")
 
+        ## Auto-Select Word Under Cursor
         self.autoSelect = QSwitch()
         self.autoSelect.setChecked(self.mainConf.autoSelect)
         self.mainForm.addRow(
@@ -606,6 +641,7 @@ class GuiConfigEditAutoReplaceTab(QWidget):
             "Apply formatting to word under cursor if no selection is made"
         )
 
+        ## Auto-Replace as You Type Main Switch
         self.autoReplaceMain = QSwitch()
         self.autoReplaceMain.setChecked(self.mainConf.doReplace)
         self.autoReplaceMain.toggled.connect(self._toggleAutoReplaceMain)
@@ -619,6 +655,7 @@ class GuiConfigEditAutoReplaceTab(QWidget):
         # ============
         self.mainForm.addGroupLabel("Replace as You Type")
 
+        ## Auto-Replace Single Quotes
         self.autoReplaceSQ = QSwitch()
         self.autoReplaceSQ.setChecked(self.mainConf.doReplaceSQuote)
         self.mainForm.addRow(
@@ -627,6 +664,7 @@ class GuiConfigEditAutoReplaceTab(QWidget):
             "The feature will try to guess opening or closing single quote"
         )
 
+        ## Auto-Replace Double Quotes
         self.autoReplaceDQ = QSwitch()
         self.autoReplaceDQ.setChecked(self.mainConf.doReplaceDQuote)
         self.mainForm.addRow(
@@ -635,6 +673,7 @@ class GuiConfigEditAutoReplaceTab(QWidget):
             "The feature will try to guess opening or closing quote quote"
         )
 
+        ## Auto-Replace Hyphens
         self.autoReplaceDash = QSwitch()
         self.autoReplaceDash.setChecked(self.mainConf.doReplaceDash)
         self.mainForm.addRow(
@@ -643,6 +682,7 @@ class GuiConfigEditAutoReplaceTab(QWidget):
             "Auto-replace double and triple hyphens with short and long dash"
         )
 
+        ## Auto-Replace Dots
         self.autoReplaceDots = QSwitch()
         self.autoReplaceDots.setChecked(self.mainConf.doReplaceDots)
         self.mainForm.addRow(
@@ -655,6 +695,7 @@ class GuiConfigEditAutoReplaceTab(QWidget):
         # ===============
         self.mainForm.addGroupLabel("Quotation Style")
 
+        ## Single Quote Style
         self.quoteSingleStyleO = QLineEdit()
         self.quoteSingleStyleO.setMaxLength(1)
         self.quoteSingleStyleO.setFixedWidth(40)
@@ -677,6 +718,7 @@ class GuiConfigEditAutoReplaceTab(QWidget):
             "Auto-replaces apostrophe after words"
         )
 
+        ## Double Quote Style
         self.quoteDoubleStyleO = QLineEdit()
         self.quoteDoubleStyleO.setMaxLength(1)
         self.quoteDoubleStyleO.setFixedWidth(40)
