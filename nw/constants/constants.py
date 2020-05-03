@@ -233,6 +233,8 @@ class nwUnicode:
     ## Other
     U_NBSP   = "\u00a0" # Non-breaking space
     U_PARA   = "\u2029" # Paragraph separator
+    U_CHECK  = "\u2714" # Heavy check mark
+    U_MULT   = "\u2715" # Multiplication x
 
     ## Arrows
     U_UTRI   = "\u2bc5" # Up-pointing triangle
@@ -270,6 +272,8 @@ class nwUnicode:
 
     ## Other
     H_NBSP   = "&nbsp;"
+    H_CHECK  = "&#10004;"
+    H_MULT   = "&#10005;"
 
     ## Arrows
     H_UTRI   = "&#11205;"
