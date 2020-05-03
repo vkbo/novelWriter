@@ -98,7 +98,9 @@ class QSwitch(QAbstractButton):
                 True: nwUnicode.U_CHECK,
                 False: nwUnicode.U_MULT,
             }
-            self._trackOpacity = 1
+            self._trackOpacity = 1.0
+
+        return
 
     ##
     #  Properties
