@@ -46,16 +46,25 @@ class NWBackup():
 
     def zipIt(self):
 
-        if self.mainConf.backupPath is None:
-            self.theParent.makeAlert(
-                "Cannot backup project because no backup path is set.",nwAlert.WARN
-            )
+        if self.mainConf.backupPath is None or self.mainConf.backupPath == "":
+            self.theParent.makeAlert((
+                "Cannot backup project because no backup path is set. "
+                "Please set a valid backup location in Tools > Preferences."
+            ), nwAlert.WARN)
             return False
 
-        if self.theProject.projName is None:
-            self.theParent.makeAlert(
-                "Cannot backup project because no project name is set.",nwAlert.WARN
-            )
+        if self.theProject.projName is None or self.theProject.projName == "":
+            self.theParent.makeAlert((
+                "Cannot backup project because no project name is set. "
+                "Please set a Working Title in Project > Project Settings."
+            ), nwAlert.WARN)
+            return False
+
+        if not path.isdir(self.mainConf.backupPath):
+            self.theParent.makeAlert((
+                "Cannot backup project because the backup path does not exist. "
+                "Please set a valid backup location in Tools > Preferences."
+            ), nwAlert.WARN)
             return False
 
         logger.info("Backing up project")
@@ -75,6 +84,7 @@ class NWBackup():
             self.theProject._clearLockFile()
             make_archive(baseName, "zip", self.theProject.projPath, ".")
             self.theProject._writeLockFile()
+            logger.info("Backup written to: %s" % archName)
         except Exception as e:
             self.theParent.makeAlert(
                 ["Could not write backup archive.",str(e)],
