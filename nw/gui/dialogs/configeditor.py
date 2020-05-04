@@ -120,7 +120,7 @@ class GuiConfigEditor(QDialog):
             msgBox = QMessageBox()
             msgBox.information(
                 self, "Preferences",
-                "Some changes will not be applied until<br>%s has been restarted" % nw.__package__
+                "Some changes will not be applied until %s has been restarted." % nw.__package__
             )
 
         if validEntries:
@@ -257,8 +257,10 @@ class GuiConfigEditGeneralTab(QWidget):
         )
 
         ## Ask before backup
+        ## Only enabled when "Run when closing" is checked
         self.askBeforeBackup = QSwitch()
         self.askBeforeBackup.setChecked(self.mainConf.askBeforeBackup)
+        self.askBeforeBackup.setEnabled(self.mainConf.backupOnClose)
         self.mainForm.addRow(
             "Ask before running backup",
             self.askBeforeBackup
@@ -393,7 +395,7 @@ class GuiConfigEditLayoutTab(QWidget):
         self.zenDocWidth.setSingleStep(10)
         self.zenDocWidth.setValue(self.mainConf.zenWidth)
         self.mainForm.addRow(
-            "Maximum text width in Zen mode",
+            "Maximum text width in distraction free mode",
             self.zenDocWidth,
             theUnit="px"
         )
@@ -402,9 +404,9 @@ class GuiConfigEditLayoutTab(QWidget):
         self.textFlowFixed = QSwitch()
         self.textFlowFixed.setChecked(not self.mainConf.textFixedW)
         self.mainForm.addRow(
-            "Disable maximum text width in Normal mode",
+            "Disable maximum text width in normal mode",
             self.textFlowFixed,
-            "Only fixed margins are applied to the document"
+            "Only horizontal margins are applied to the document"
         )
 
         ## Justify Text
@@ -658,6 +660,7 @@ class GuiConfigEditAutoReplaceTab(QWidget):
         ## Auto-Replace Single Quotes
         self.autoReplaceSQ = QSwitch()
         self.autoReplaceSQ.setChecked(self.mainConf.doReplaceSQuote)
+        self.autoReplaceSQ.setEnabled(self.mainConf.doReplace)
         self.mainForm.addRow(
             "Auto-replace single quotes",
             self.autoReplaceSQ,
@@ -667,6 +670,7 @@ class GuiConfigEditAutoReplaceTab(QWidget):
         ## Auto-Replace Double Quotes
         self.autoReplaceDQ = QSwitch()
         self.autoReplaceDQ.setChecked(self.mainConf.doReplaceDQuote)
+        self.autoReplaceDQ.setEnabled(self.mainConf.doReplace)
         self.mainForm.addRow(
             "Auto-replace double quotes",
             self.autoReplaceDQ,
@@ -676,6 +680,7 @@ class GuiConfigEditAutoReplaceTab(QWidget):
         ## Auto-Replace Hyphens
         self.autoReplaceDash = QSwitch()
         self.autoReplaceDash.setChecked(self.mainConf.doReplaceDash)
+        self.autoReplaceDash.setEnabled(self.mainConf.doReplace)
         self.mainForm.addRow(
             "Auto-replace dashes",
             self.autoReplaceDash,
@@ -685,6 +690,7 @@ class GuiConfigEditAutoReplaceTab(QWidget):
         ## Auto-Replace Dots
         self.autoReplaceDots = QSwitch()
         self.autoReplaceDots.setChecked(self.mainConf.doReplaceDots)
+        self.autoReplaceDots.setEnabled(self.mainConf.doReplace)
         self.mainForm.addRow(
             "Auto-replace dots",
             self.autoReplaceDots,
