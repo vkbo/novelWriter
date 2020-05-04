@@ -237,10 +237,14 @@ class nwUnicode:
     U_MULT   = "\u2715" # Multiplication x
 
     ## Arrows
-    U_UTRI   = "\u2bc5" # Up-pointing triangle
-    U_DTRI   = "\u2bc6" # Down-pointing triangle
-    U_LTRI   = "\u2bc7" # Left-pointing triangle
-    U_RTRI   = "\u2bc8" # Right-pointing triangle
+    U_UTRI   = "\u25b2" # Up-pointing triangle
+    U_UTRIS  = "\u25b4" # Up-pointing triangle, small
+    U_RTRI   = "\u25b6" # Right-pointing triangle
+    U_RTRIS  = "\u25b8" # Right-pointing triangle, small
+    U_DTRI   = "\u25bc" # Down-pointing triangle
+    U_DTRIS  = "\u25be" # Down-pointing triangle, small
+    U_LTRI   = "\u25c0" # Left-pointing triangle
+    U_LTRIS  = "\u25c2" # Left-pointing triangle, small
 
     # HTML Equivalents
 
@@ -276,9 +280,13 @@ class nwUnicode:
     H_MULT   = "&#10005;"
 
     ## Arrows
-    H_UTRI   = "&#11205;"
-    H_DTRI   = "&#11206;"
-    H_LTRI   = "&#11207;"
-    H_RTRI   = "&#11208;"
+    H_UTRI   = "&#9650;"
+    H_UTRIS  = "&#9652;"
+    H_RTRI   = "&#9654;"
+    H_RTRIS  = "&#9656;"
+    H_DTRI   = "&#9660;"
+    H_DTRIS  = "&#9662;"
+    H_LTRI   = "&#9664;"
+    H_LTRIS  = "&#9666;"
 
 # END Class nwUnicode
