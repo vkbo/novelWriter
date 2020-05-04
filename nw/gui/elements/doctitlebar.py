@@ -22,7 +22,7 @@
  General Public License for more details.
 
  You should have received a copy of the GNU General Public License
- along with this program. If not, see https://www.gnu.org/licenses/.
+ along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
 
 import logging
@@ -92,7 +92,7 @@ class GuiDocTitleBar(QLabel):
                 nwItem = self.theProject.getItem(aHandle)
                 if nwItem is not None:
                     tTitle.append(nwItem.itemName)
-            sSep = " %s " % nwUnicode.U_RTRI
+            sSep = "  %s  " % nwUnicode.U_RSAQUO
             self.setText(sSep.join(tTitle))
         else:
             nwItem = self.theProject.getItem(tHandle)

@@ -22,7 +22,7 @@
  General Public License for more details.
 
  You should have received a copy of the GNU General Public License
- along with this program. If not, see https://www.gnu.org/licenses/.
+ along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
 
 import logging
@@ -120,7 +120,7 @@ class GuiConfigEditor(QDialog):
             msgBox = QMessageBox()
             msgBox.information(
                 self, "Preferences",
-                "Some changes will not be applied until<br>%s has been restarted" % nw.__package__
+                "Some changes will not be applied until %s has been restarted." % nw.__package__
             )
 
         if validEntries:
@@ -166,7 +166,7 @@ class GuiConfigEditGeneralTab(QWidget):
         self.mainForm.addRow(
             "Main GUI theme",
             self.selectTheme,
-            "Changing this requires restarting %s" % nw.__package__
+            "Changing this requires restarting %s." % nw.__package__
         )
 
         ## Syntax Highlighting
@@ -190,7 +190,7 @@ class GuiConfigEditGeneralTab(QWidget):
         self.mainForm.addRow(
             "Prefer icons for dark backgrounds",
             self.preferDarkIcons,
-            "May improve the look of icons on dark themes"
+            "This may improve the look of icons on dark themes."
         )
 
         # GUI Settings
@@ -253,12 +253,14 @@ class GuiConfigEditGeneralTab(QWidget):
         self.mainForm.addRow(
             "Run backup when closing project",
             self.backupOnClose,
-            "This option can be overridden in project settings"
+            "This option can be overridden in project settings."
         )
 
         ## Ask before backup
+        ## Only enabled when "Run when closing" is checked
         self.askBeforeBackup = QSwitch()
         self.askBeforeBackup.setChecked(self.mainConf.askBeforeBackup)
+        self.askBeforeBackup.setEnabled(self.mainConf.backupOnClose)
         self.mainForm.addRow(
             "Ask before running backup",
             self.askBeforeBackup
@@ -355,7 +357,7 @@ class GuiConfigEditLayoutTab(QWidget):
         self.mainForm.addRow(
             "Font family",
             self.textStyleFont,
-            "For the document editor and viewer"
+            "Font for the document editor and viewer."
         )
 
         ## Font Size
@@ -381,7 +383,7 @@ class GuiConfigEditLayoutTab(QWidget):
         self.textFlowMax.setSingleStep(10)
         self.textFlowMax.setValue(self.mainConf.textWidth)
         self.mainForm.addRow(
-            "Maximum text width in Normal mode",
+            "Maximum text width in \"Normal Mode\"",
             self.textFlowMax,
             theUnit="px"
         )
@@ -393,7 +395,7 @@ class GuiConfigEditLayoutTab(QWidget):
         self.zenDocWidth.setSingleStep(10)
         self.zenDocWidth.setValue(self.mainConf.zenWidth)
         self.mainForm.addRow(
-            "Maximum text width in Zen mode",
+            "Maximum text width in \"Zen Mode\"",
             self.zenDocWidth,
             theUnit="px"
         )
@@ -402,9 +404,9 @@ class GuiConfigEditLayoutTab(QWidget):
         self.textFlowFixed = QSwitch()
         self.textFlowFixed.setChecked(not self.mainConf.textFixedW)
         self.mainForm.addRow(
-            "Disable maximum text width in Normal mode",
+            "Disable maximum text width in \"Normal Mode\"",
             self.textFlowFixed,
-            "Only fixed margins are applied to the document"
+            "If disabled, minimum text width is defined by the margin setting."
         )
 
         ## Justify Text
@@ -424,7 +426,7 @@ class GuiConfigEditLayoutTab(QWidget):
         self.mainForm.addRow(
             "Document text margin",
             self.textMargin,
-            "The minimum horizontal text margin if max with is enabled",
+            "If max width is enabled, this is the minimum margin.",
             theUnit="px"
         )
 
@@ -437,7 +439,7 @@ class GuiConfigEditLayoutTab(QWidget):
         self.mainForm.addRow(
             "Editor tab width",
             self.tabWidth,
-            "This feature requires Qt 5.9 or later",
+            "This feature requires Qt 5.9 or later.",
             theUnit="px"
         )
 
@@ -536,7 +538,7 @@ class GuiConfigEditEditingTab(QWidget):
         self.mainForm.addRow(
             "Spell check provider",
             self.spellToolList,
-            "Note that the internal spell check tool is quite slow"
+            "Note that the internal spell check tool is quite slow."
         )
         self.mainForm.addRow(
             "Spell check language",
@@ -552,7 +554,7 @@ class GuiConfigEditEditingTab(QWidget):
         self.mainForm.addRow(
             "Big document limit",
             self.bigDocLimit,
-            "Disables full spell checking over the size limit",
+            "Disables full spell checking over the size limit.",
             theUnit="kb"
         )
 
@@ -638,7 +640,7 @@ class GuiConfigEditAutoReplaceTab(QWidget):
         self.mainForm.addRow(
             "Auto-select word under cursor",
             self.autoSelect,
-            "Apply formatting to word under cursor if no selection is made"
+            "Apply formatting to word under cursor if no selection is made."
         )
 
         ## Auto-Replace as You Type Main Switch
@@ -648,7 +650,7 @@ class GuiConfigEditAutoReplaceTab(QWidget):
         self.mainForm.addRow(
             "Auto-replace text as you type",
             self.autoReplaceMain,
-            "Apply formatting to word under cursor if no selection is made"
+            "Apply formatting to word under cursor if no selection is made."
         )
 
         # Auto-Replace
@@ -658,37 +660,41 @@ class GuiConfigEditAutoReplaceTab(QWidget):
         ## Auto-Replace Single Quotes
         self.autoReplaceSQ = QSwitch()
         self.autoReplaceSQ.setChecked(self.mainConf.doReplaceSQuote)
+        self.autoReplaceSQ.setEnabled(self.mainConf.doReplace)
         self.mainForm.addRow(
             "Auto-replace single quotes",
             self.autoReplaceSQ,
-            "The feature will try to guess opening or closing single quote"
+            "The feature will try to guess opening or closing single quote."
         )
 
         ## Auto-Replace Double Quotes
         self.autoReplaceDQ = QSwitch()
         self.autoReplaceDQ.setChecked(self.mainConf.doReplaceDQuote)
+        self.autoReplaceDQ.setEnabled(self.mainConf.doReplace)
         self.mainForm.addRow(
             "Auto-replace double quotes",
             self.autoReplaceDQ,
-            "The feature will try to guess opening or closing quote quote"
+            "The feature will try to guess opening or closing quote quote."
         )
 
         ## Auto-Replace Hyphens
         self.autoReplaceDash = QSwitch()
         self.autoReplaceDash.setChecked(self.mainConf.doReplaceDash)
+        self.autoReplaceDash.setEnabled(self.mainConf.doReplace)
         self.mainForm.addRow(
             "Auto-replace dashes",
             self.autoReplaceDash,
-            "Auto-replace double and triple hyphens with short and long dash"
+            "Auto-replace double and triple hyphens with short and long dash."
         )
 
         ## Auto-Replace Dots
         self.autoReplaceDots = QSwitch()
         self.autoReplaceDots.setChecked(self.mainConf.doReplaceDots)
+        self.autoReplaceDots.setEnabled(self.mainConf.doReplace)
         self.mainForm.addRow(
             "Auto-replace dots",
             self.autoReplaceDots,
-            "Auto-replace three dots with ellipsis"
+            "Auto-replace three dots with ellipsis."
         )
 
         # Quotation Style
@@ -704,7 +710,7 @@ class GuiConfigEditAutoReplaceTab(QWidget):
         self.mainForm.addRow(
             "Single quote open style",
             self.quoteSingleStyleO,
-            "Auto-replaces apostrophe before words"
+            "Auto-replaces apostrophe before words."
         )
 
         self.quoteSingleStyleC = QLineEdit()
@@ -715,7 +721,7 @@ class GuiConfigEditAutoReplaceTab(QWidget):
         self.mainForm.addRow(
             "Single quote close style",
             self.quoteSingleStyleC,
-            "Auto-replaces apostrophe after words"
+            "Auto-replaces apostrophe after words."
         )
 
         ## Double Quote Style
@@ -727,7 +733,7 @@ class GuiConfigEditAutoReplaceTab(QWidget):
         self.mainForm.addRow(
             "Double quote open style",
             self.quoteDoubleStyleO,
-            "Auto-replaces straight quotes before words"
+            "Auto-replaces straight quotes before words."
         )
 
         self.quoteDoubleStyleC = QLineEdit()
@@ -738,7 +744,7 @@ class GuiConfigEditAutoReplaceTab(QWidget):
         self.mainForm.addRow(
             "Double quote close style",
             self.quoteDoubleStyleC,
-            "Auto-replaces straight quotes after words"
+            "Auto-replaces straight quotes after words."
         )
 
         return
