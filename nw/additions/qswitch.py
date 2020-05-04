@@ -106,18 +106,21 @@ class QSwitch(QAbstractButton):
         if self.isChecked():
             trackBrush = qPalette.highlight()
             thumbBrush = qPalette.highlightedText()
-            textColor = qPalette.highlight().color()
-            thumbText = nwUnicode.U_CHECK
+            textColor  = qPalette.highlight().color()
+            thumbText  = nwUnicode.U_CHECK
         else:
             trackBrush = qPalette.dark()
             thumbBrush = qPalette.light()
-            textColor = qPalette.dark().color()
-            thumbText = nwUnicode.U_MULT
+            textColor  = qPalette.dark().color()
+            thumbText  = nwUnicode.U_MULT
 
         if self.isEnabled():
             trackOpacity = 1.0
         else:
             trackOpacity = 0.6
+            trackBrush = qPalette.shadow()
+            thumbBrush = qPalette.mid()
+            textColor  = qPalette.shadow().color()
 
         qPaint.setBrush(trackBrush)
         qPaint.setOpacity(trackOpacity)
