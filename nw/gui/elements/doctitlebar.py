@@ -58,7 +58,6 @@ class GuiDocTitleBar(QLabel):
         self.setWordWrap(True)
         self.setFrameShape(QFrame.NoFrame)
         self.setLineWidth(0)
-        self.setTextFormat(Qt.RichText)
         lblPalette = self.palette()
         lblPalette.setColor(QPalette.Window, QColor(*self.theTheme.colBack))
         lblPalette.setColor(QPalette.Text, QColor(*self.theTheme.colText))
@@ -93,7 +92,7 @@ class GuiDocTitleBar(QLabel):
                 nwItem = self.theProject.getItem(aHandle)
                 if nwItem is not None:
                     tTitle.append(nwItem.itemName)
-            sSep = " %s " % nwUnicode.H_RTRIS
+            sSep = "  %s  " % nwUnicode.U_RSAQUO
             self.setText(sSep.join(tTitle))
         else:
             nwItem = self.theProject.getItem(tHandle)
