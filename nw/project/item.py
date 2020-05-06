@@ -146,40 +146,31 @@ class NWItem():
     def setType(self, theType):
         if isinstance(theType, nwItemType):
             self.itemType = theType
-            return
+        elif theType in nwItemType.__members__:
+            self.itemType = nwItemType[theType]
         else:
-            for itemType in nwItemType:
-                if theType == itemType.name:
-                    self.itemType = itemType
-                    return
-        logger.error("Unrecognised item type '%s'" % theType)
-        self.itemType = nwItemType.NO_TYPE
+            logger.error("Unrecognised item type '%s'" % theType)
+            self.itemType = nwItemType.NO_TYPE
         return
 
     def setClass(self, theClass):
         if isinstance(theClass, nwItemClass):
             self.itemClass = theClass
-            return
+        elif theClass in nwItemClass.__members__:
+            self.itemClass = nwItemClass[theClass]
         else:
-            for itemClass in nwItemClass:
-                if theClass == itemClass.name:
-                    self.itemClass = itemClass
-                    return
-        logger.error("Unrecognised item class '%s'" % theClass)
-        self.itemClass = nwItemClass.NO_CLASS
+            logger.error("Unrecognised item class '%s'" % theClass)
+            self.itemClass = nwItemClass.NO_CLASS
         return
 
     def setLayout(self, theLayout):
         if isinstance(theLayout, nwItemLayout):
             self.itemLayout = theLayout
-            return
+        elif theLayout in nwItemLayout.__members__:
+            self.itemLayout = nwItemLayout[theLayout]
         else:
-            for itemLayout in nwItemLayout:
-                if theLayout == itemLayout.name:
-                    self.itemLayout = itemLayout
-                    return
-        logger.error("Unrecognised item layout '%s'" % theLayout)
-        self.itemLayout = nwItemLayout.NO_LAYOUT
+            logger.error("Unrecognised item layout '%s'" % theLayout)
+            self.itemLayout = nwItemLayout.NO_LAYOUT
         return
 
     def setStatus(self, theStatus):
