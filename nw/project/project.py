@@ -334,20 +334,9 @@ class NWProject():
             elif xChild.tag == "content":
                 logger.debug("Found project content")
                 for xItem in xChild:
-                    itemAttrib = xItem.attrib
-                    if "handle" in xItem.attrib:
-                        tHandle = itemAttrib["handle"]
-                    else:
-                        logger.error("Skipping entry missing handle")
-                        continue
-                    if "parent" in xItem.attrib:
-                        pHandle = itemAttrib["parent"]
-                    else:
-                        pHandle = None
                     nwItem = NWItem(self)
-                    for xValue in xItem:
-                        nwItem.setFromTag(xValue.tag,xValue.text)
-                    self._appendItem(tHandle,pHandle,nwItem)
+                    if nwItem.unpackXML(xItem):
+                        self._appendItem(nwItem.itemHandle, nwItem.parHandle, nwItem)
 
         self.optState.loadSettings()
 

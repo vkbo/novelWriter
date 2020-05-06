@@ -99,6 +99,28 @@ class NWItem():
             xSub = self._subPack(xPack,"cursorPos", text=str(self.cursorPos), none=False)
         return xPack
 
+    def unpackXML(self, xItem):
+        """Sets the values from an XML entry of type 'item'.
+        """
+
+        if xItem.tag != "item":
+            logger.error("XML entry is not an NWItem")
+            return False
+
+        if "handle" in xItem.attrib:
+            self.itemHandle = xItem.attrib["handle"]
+        else:
+            logger.error("XML item entry does not have a handle")
+            return False
+
+        if "parent" in xItem.attrib:
+            self.parHandle = xItem.attrib["parent"]
+
+        for xValue in xItem:
+            self.setFromTag(xValue.tag, xValue.text)
+
+        return True
+
     @staticmethod
     def _subPack(xParent, name, attrib=None, text=None, none=True):
         if not none and (text == None or text == "None"):
