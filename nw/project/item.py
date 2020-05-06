@@ -57,6 +57,21 @@ class NWItem():
         self.paraCount = 0
         self.cursorPos = 0
 
+        # Map of Setters
+        self._setMap = {
+            "name"      : self.setName,
+            "order"     : self.setOrder,
+            "type"      : self.setType,
+            "class"     : self.setClass,
+            "layout"    : self.setLayout,
+            "status"    : self.setStatus,
+            "expanded"  : self.setExpanded,
+            "charCount" : self.setCharCount,
+            "wordCount" : self.setWordCount,
+            "paraCount" : self.setParaCount,
+            "cursorPos" : self.setCursorPos,
+        }
+
         return
 
     ##
@@ -64,6 +79,8 @@ class NWItem():
     ##
 
     def packXML(self, xParent):
+        """Packs all the data in the class instance into an XML object.
+        """
         xPack = etree.SubElement(xParent,"item",attrib={
             "handle" : str(self.itemHandle),
             "order"  : str(self.itemOrder),
@@ -82,7 +99,8 @@ class NWItem():
             xSub = self._subPack(xPack,"cursorPos", text=str(self.cursorPos), none=False)
         return xPack
 
-    def _subPack(self, xParent, name, attrib=None, text=None, none=True):
+    @staticmethod
+    def _subPack(xParent, name, attrib=None, text=None, none=True):
         if not none and (text == None or text == "None"):
             return None
         xSub = etree.SubElement(xParent,name,attrib=attrib)
@@ -95,29 +113,12 @@ class NWItem():
     ##
 
     def setFromTag(self, tagName, tagValue):
+        """Set a value from a given tag name rather than call the set
+        function directly. Useful when setting data read in from XML.
+        """
         logger.verbose("Setting tag '%s' to value '%s'" % (tagName, str(tagValue)))
-        if tagName == "name":
-            self.setName(tagValue)
-        elif tagName == "order":
-            self.setOrder(tagValue)
-        elif tagName == "type":
-            self.setType(tagValue)
-        elif tagName == "class":
-            self.setClass(tagValue)
-        elif tagName == "layout":
-            self.setLayout(tagValue)
-        elif tagName == "status":
-            self.setStatus(tagValue)
-        elif tagName == "expanded":
-            self.setExpanded(tagValue)
-        elif tagName == "charCount":
-            self.setCharCount(tagValue)
-        elif tagName == "wordCount":
-            self.setWordCount(tagValue)
-        elif tagName == "paraCount":
-            self.setParaCount(tagValue)
-        elif tagName == "cursorPos":
-            self.setCursorPos(tagValue)
+        if tagName in self._setMap:
+            self._setMap[tagName](tagValue)
         else:
             logger.error("Unknown tag '%s'" % tagName)
         return

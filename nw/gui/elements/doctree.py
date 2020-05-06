@@ -34,7 +34,7 @@ from PyQt5.QtWidgets import (
     QTreeWidget, QTreeWidgetItem, QAbstractItemView, QApplication, QMessageBox
 )
 
-from nw.project import NWItem, NWDoc
+from nw.project import NWDoc
 from nw.constants import (
     nwLabels, nwItemType, nwItemClass, nwItemLayout, nwAlert
 )
