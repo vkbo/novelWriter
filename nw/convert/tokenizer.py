@@ -142,7 +142,7 @@ class Tokenizer():
     def setText(self, theHandle, theText=None):
 
         self.theHandle = theHandle
-        self.theItem   = self.theProject.getItem(theHandle)
+        self.theItem   = self.theProject.projTree[theHandle]
 
         if theText is not None:
             # If the text is set, just use that

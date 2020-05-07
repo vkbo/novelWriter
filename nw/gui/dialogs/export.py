@@ -134,7 +134,7 @@ class GuiExport(QDialog):
             self.exportStatus.setText("Export failed ...")
             return False
 
-        nItems = len(self.theProject.treeOrder)
+        nItems = len(self.theProject.projTree)
         if eFormat == GuiExportMain.FMT_PDOC:
             nItems += int(0.2*nItems)
         self.exportProgress.setMinimum(0)
@@ -182,16 +182,14 @@ class GuiExport(QDialog):
         time.sleep(0.5)
 
         nDone = 0
-        for tHandle in self.theProject.treeOrder:
+        for tItem in self.theProject.projTree:
 
             self.exportProgress.setValue(nDone)
-            tItem = self.theProject.getItem(tHandle)
-
             self.exportStatus.setText("Exporting: %s" % tItem.itemName)
             logger.verbose("Exporting: %s" % tItem.itemName)
 
             if tItem is not None and tItem.itemType == nwItemType.FILE:
-                outFile.addText(tHandle)
+                outFile.addText(tItem.itemHandle)
 
             nDone += 1
 

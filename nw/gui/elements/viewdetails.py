@@ -103,7 +103,7 @@ class GuiDocViewDetails(QWidget):
         theRefs = self.theParent.theIndex.getBackReferenceList(tHandle)
         theList = []
         for tHandle in theRefs:
-            tItem = self.theProject.getItem(tHandle)
+            tItem = self.theProject.projTree[tHandle]
             if tItem is not None:
                 theList.append("<a href='#tag=%s'>%s</a>" % (tHandle,tItem.itemName))
 

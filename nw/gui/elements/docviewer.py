@@ -123,7 +123,7 @@ class GuiDocViewer(QTextBrowser):
         """Load text into the viewer from an item handle.
         """
 
-        tItem = self.theProject.getItem(tHandle)
+        tItem = self.theProject.projTree[tHandle]
         if tItem is None:
             logger.warning("Item not found")
             return False

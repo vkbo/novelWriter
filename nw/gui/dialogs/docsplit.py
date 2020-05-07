@@ -120,7 +120,7 @@ class GuiDocSplit(QDialog):
             ), nwAlert.ERROR)
             return
 
-        srcItem = self.theProject.getItem(self.sourceItem)
+        srcItem = self.theProject.projTree[self.sourceItem]
         if srcItem is None:
             self.theParent.makeAlert((
                 "Could not parse source document."
@@ -172,7 +172,7 @@ class GuiDocSplit(QDialog):
             wTitle = wTitle.strip()
 
             nHandle = self.theProject.newFile(wTitle, srcItem.itemClass, fHandle)
-            newItem = self.theProject.getItem(nHandle)
+            newItem = self.theProject.projTree[nHandle]
             newItem.setLayout(itemLayout)
             logger.verbose(
                 "Creating new document %s with text from line %d to %d" % (nHandle, iStart, iEnd-1)
@@ -213,7 +213,7 @@ class GuiDocSplit(QDialog):
         if self.sourceItem is None:
             return
 
-        nwItem = self.theProject.getItem(self.sourceItem)
+        nwItem = self.theProject.projTree[self.sourceItem]
         if nwItem is None:
             return
         if nwItem.itemType is not nwItemType.FILE:

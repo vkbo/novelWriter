@@ -164,12 +164,12 @@ class TextFile():
         * Items that appear in the TRASH folder
         """
 
-        theItem = self.theProject.getItem(tHandle)
+        theItem = self.theProject.projTree[tHandle]
         isNone  = theItem.itemType != nwItemType.FILE
         isNone |= theItem.itemLayout == nwItemLayout.NO_LAYOUT
         isNone |= theItem.itemClass == nwItemClass.NO_CLASS
         isNone |= theItem.itemClass == nwItemClass.TRASH
-        isNone |= theItem.parHandle == self.theProject.trashRoot
+        isNone |= theItem.parHandle == self.theProject.projTree.trashRoot()
         isNote  = theItem.itemLayout == nwItemLayout.NOTE
         isNovel = not isNone and not isNote
 

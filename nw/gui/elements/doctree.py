@@ -118,7 +118,7 @@ class GuiDocTree(QTreeWidget):
             return False
 
         if itemClass is None and pHandle is not None:
-            pItem = self.theProject.getItem(pHandle)
+            pItem = self.theProject.projTree[pHandle]
             if pItem is not None:
                 itemClass = pItem.itemClass
 
@@ -150,7 +150,7 @@ class GuiDocTree(QTreeWidget):
             # If no parent has been selected, make the new file under
             # the root NOVEL item.
             if pHandle is None:
-                pHandle = self.theProject.findRootItem(nwItemClass.NOVEL)
+                pHandle = self.theProject.projTree.findRoot(nwItemClass.NOVEL)
 
             # If still nothing, give up
             if pHandle is None:
@@ -159,7 +159,7 @@ class GuiDocTree(QTreeWidget):
 
             # Now check if the selected item is a file, in which case
             # the new file will be a sibling
-            pItem = self.theProject.getItem(pHandle)
+            pItem = self.theProject.projTree[pHandle]
             if pItem.itemType == nwItemType.FILE:
                 pHandle = pItem.parHandle
 
@@ -170,7 +170,7 @@ class GuiDocTree(QTreeWidget):
                 )
                 return False
 
-            if pHandle == self.theProject.trashRoot:
+            if pHandle == self.theProject.projTree.trashRoot():
                 self.makeAlert(
                     "Cannot add new files or folders to the trash folder.", nwAlert.ERROR
                 )
@@ -194,7 +194,7 @@ class GuiDocTree(QTreeWidget):
     def revealTreeItem(self, tHandle):
         """Reveal a newly added project item in the project tree.
         """
-        nwItem  = self.theProject.getItem(tHandle)
+        nwItem  = self.theProject.projTree[tHandle]
         trItem  = self._addTreeItem(nwItem)
         pHandle = nwItem.parHandle
         if pHandle is not None and pHandle in self.theMap.keys():
@@ -267,14 +267,16 @@ class GuiDocTree(QTreeWidget):
         deleteItem function for each document in the Trash folder.
         """
 
+        trashHandle = self.theProject.projTree.trashRoot()
+
         logger.debug("Emptying Trash folder")
-        if self.theProject.trashRoot is None:
+        if trashHandle is None:
             self.makeAlert("There is no Trash folder.", nwAlert.INFO)
             return False
 
-        theTrash = self.getTreeFromHandle(self.theProject.trashRoot)
-        if self.theProject.trashRoot in theTrash:
-            theTrash.remove(self.theProject.trashRoot)
+        theTrash = self.getTreeFromHandle(trashHandle)
+        if trashHandle in theTrash:
+            theTrash.remove(trashHandle)
 
         nTrash = len(theTrash)
         if nTrash == 0:
@@ -291,8 +293,8 @@ class GuiDocTree(QTreeWidget):
             return False
 
         logger.verbose("Deleting %d files from Trash" % nTrash)
-        for tHandle in self.getTreeFromHandle(self.theProject.trashRoot):
-            if tHandle == self.theProject.trashRoot:
+        for tHandle in self.getTreeFromHandle(trashHandle):
+            if tHandle == trashHandle:
                 continue
             self.deleteItem(tHandle, True)
 
@@ -313,7 +315,7 @@ class GuiDocTree(QTreeWidget):
             return False
 
         trItemS = self._getTreeItem(tHandle)
-        nwItemS = self.theProject.getItem(tHandle)
+        nwItemS = self.theProject.projTree[tHandle]
 
         if nwItemS is None:
             return False
@@ -327,7 +329,7 @@ class GuiDocTree(QTreeWidget):
                 return False
 
             pHandle = nwItemS.parHandle
-            if pHandle is not None and pHandle == self.theProject.trashRoot:
+            if pHandle is not None and pHandle == self.theProject.projTree.trashRoot():
                 # If the file is in the trash folder already, as the
                 # user if they want to permanently delete the file.
 
@@ -353,7 +355,7 @@ class GuiDocTree(QTreeWidget):
 
                     theDoc = NWDoc(self.theProject, self.theParent)
                     theDoc.deleteDocument(tHandle)
-                    self.theProject.deleteItem(tHandle)
+                    del self.theProject.projTree[tHandle]
                     self.theParent.theIndex.deleteHandle(tHandle)
 
             else:
@@ -366,7 +368,7 @@ class GuiDocTree(QTreeWidget):
                 tIndex  = trItemP.indexOfChild(trItemS)
                 trItemC = trItemP.takeChild(tIndex)
                 trItemT.addChild(trItemC)
-                nwItemS.setParent(self.theProject.trashRoot)
+                nwItemS.setParent(self.theProject.projTree.trashRoot())
 
                 self.theProject.setProjectChanged(True)
                 self.theParent.theIndex.deleteHandle(tHandle)
@@ -380,7 +382,7 @@ class GuiDocTree(QTreeWidget):
             tIndex = trItemP.indexOfChild(trItemS)
             if trItemS.childCount() == 0:
                 trItemP.takeChild(tIndex)
-                self.theProject.deleteItem(tHandle)
+                del self.theProject.projTree[tHandle]
             else:
                 self.makeAlert(["Cannot delete folder.","It is not empty."], nwAlert.ERROR)
                 return False
@@ -401,7 +403,7 @@ class GuiDocTree(QTreeWidget):
     def setTreeItemValues(self, tHandle):
 
         trItem  = self._getTreeItem(tHandle)
-        nwItem  = self.theProject.getItem(tHandle)
+        nwItem  = self.theProject.projTree[tHandle]
         tName   = nwItem.itemName
         tClass  = nwItem.itemClass
         tHandle = nwItem.itemHandle
@@ -552,14 +554,15 @@ class GuiDocTree(QTreeWidget):
         """Adds the trash root folder if it doesn't already exist in the
         project tree.
         """
-        if self.theProject.trashRoot is None:
+        trashHandle = self.theProject.projTree.trashRoot()
+        if trashHandle is None:
             self.theProject.addTrash()
             trItem = self._addTreeItem(
-                self.theProject.getItem(self.theProject.trashRoot)
+                self.theProject.projTree[trashHandle]
             )
             trItem.setExpanded(True)
         else:
-            trItem = self._getTreeItem(self.theProject.trashRoot)
+            trItem = self._getTreeItem(trashHandle)
         return trItem
 
     def _addOrphanedRoot(self):
@@ -589,7 +592,7 @@ class GuiDocTree(QTreeWidget):
         """
 
         trItemS = self._getTreeItem(tHandle)
-        nwItemS = self.theProject.getItem(tHandle)
+        nwItemS = self.theProject.projTree[tHandle]
         trItemP = trItemS.parent()
         if trItemP is None:
             logger.error("Failed to find new parent item of %s" % tHandle)
@@ -609,8 +612,8 @@ class GuiDocTree(QTreeWidget):
 
     def _moveOrphanedItem(self, tHandle, dHandle):
         trItemS = self._getTreeItem(tHandle)
-        nwItemS = self.theProject.getItem(tHandle)
-        nwItemD = self.theProject.getItem(dHandle)
+        nwItemS = self.theProject.projTree[tHandle]
+        nwItemD = self.theProject.projTree[dHandle]
         trItemP = trItemS.parent()
         nwItemS.setClass(nwItemD.itemClass)
         if trItemP is None:
@@ -652,8 +655,8 @@ class GuiDocTree(QTreeWidget):
 
         dItem   = self.itemFromIndex(dIndex)
         dHandle = dItem.text(self.C_HANDLE)
-        snItem  = self.theProject.getItem(sHandle)
-        dnItem  = self.theProject.getItem(dHandle)
+        snItem  = self.theProject.projTree[sHandle]
+        dnItem  = self.theProject.projTree[dHandle]
         if dnItem is None:
             self.makeAlert("The item cannot be moved to that location.", nwAlert.ERROR)
             return
