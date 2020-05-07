@@ -6,9 +6,12 @@
  Class holding a project
 
  File History:
- Created: 2018-09-29 [0.0.1]
- Merged:  2020-05-07 [0.4.5] Merged NWItem class into file
- Merged:  2020-05-07 [0.4.5] Merged NWStatus class into file
+ Created: 2018-09-29 [0.0.1] NWProject
+ Added:   2018-10-27 [0.0.1] NWItem
+ Added:   2019-05-19 [0.1.3] NWStatus
+ Merged:  2020-05-07 [0.4.5] Moved NWItem class to this file
+ Merged:  2020-05-07 [0.4.5] Moved NWStatus class to this file
+ Added:   2020-05-07 [0.4.5] NWTree
 
  This file is a part of novelWriter
  Copyright 2020, Veronica Berglyd Olsen
@@ -49,9 +52,14 @@ class NWProject():
     def __init__(self, theParent):
 
         # Internal
-        self.theParent   = theParent
-        self.mainConf    = self.theParent.mainConf
-        self.optState    = OptionState(self)
+        self.theParent = theParent
+        self.mainConf  = nw.CONFIG
+
+        # Core Elements
+        self.optState = OptionState(self) # Project-specific GUI options
+        self.projTree = NWTree(self)      # The project tree
+
+        # Project Status
         self.projOpened  = None # The time stamp of when the project file was opened
         self.projChanged = None # The project has unsaved changes
         self.projAltered = None # The project has been altered this session
@@ -60,11 +68,10 @@ class NWProject():
         self.autoCount   = None # Meta data: number of automatic saves
 
         # Class Settings
-        self.projTree = NWTree(self)
         self.projPath = None # The full path to where the currently open project is saved
         self.projMeta = None # The full path to the project's meta data folder
         self.projDict = None # The spell check dictionary
-        self.projFile = None # The file name of the project main xml file
+        self.projFile = None # The file name of the project main XML file
 
         # Project Meta
         self.projName    = None
@@ -154,6 +161,9 @@ class NWProject():
     ##
 
     def newProject(self):
+        """Create a new project by populating the project tree with a
+        few starter items.
+        """
         hNovel = self.newRoot("Novel",         nwItemClass.NOVEL)
         hChars = self.newRoot("Characters",    nwItemClass.CHARACTER)
         hWorld = self.newRoot("Plot",          nwItemClass.PLOT)
@@ -469,7 +479,7 @@ class NWProject():
         return True
 
     ##
-    #  Set Functions
+    #  Setters
     ##
 
     def setProjectPath(self, projPath):
@@ -590,60 +600,25 @@ class NWProject():
         return self.projChanged
 
     ##
-    #  Get Functions
+    #  Getters
     ##
 
     def getSessionWordCount(self):
+        """Returns the number of words added or removed this session.
+        """
         return self.currWCount - self.lastWCount
 
-    def getRootItem(self, tHandle):
-        """Iterate upwards in the tree until we find the item with
-        parent None, the root item. We do this with a for loop with a
-        maximum depth of 200 to make infinite loops impossible.
-        """
-        tItem = self.projTree[tHandle]
-        if tItem is not None:
-            for i in range(200):
-                if tItem.parHandle is None:
-                    return tHandle
-                else:
-                    tHandle = tItem.parHandle
-                    tItem   = self.projTree[tHandle]
-                    if tItem is None:
-                        return tHandle
-        return None
-
-    def getItemPath(self, tHandle):
-        """Iterate upwards in the tree until we find the item with
-        parent None, the root item, and return the list of handles.
-        We do this with a for loop with a maximum depth of 200 to make
-        infinite loops impossible.
-        """
-        tTree = []
-        tItem = self.projTree[tHandle]
-        if tItem is not None:
-            tTree.append(tHandle)
-            for i in range(200):
-                if tItem.parHandle is None:
-                    return tTree
-                else:
-                    tHandle = tItem.parHandle
-                    tItem   = self.projTree[tHandle]
-                    if tItem is None:
-                        return tTree
-                    else:
-                        tTree.append(tHandle)
-        return tTree
-
     def getProjectItems(self):
-        """This function is called from the tree view when building the
-        tree. Each item in the project is returned in the order saved in
-        the project file, but first it checks that it has a parent item
-        already sent to the tree.
+        """This function ensures that the item tree loaded is sent to
+        the GUI tree view in such a way that the tree can be built. That
+        is, the parent item must be sent before its child. In principle,
+        a proper XML file will already ensure that, but in the event the
+        order has been altered, or a file is orphaned, this function is
+        capable of handling it.
         """
         sentItems = []
         iterItems = self.projTree.handles()
-        n    = 0
+        n = 0
         nMax = len(iterItems)
         while n < nMax:
             tHandle = iterItems[n]
@@ -786,6 +761,11 @@ class NWProject():
         return
 
     def _scanProjectFolder(self):
+        """Scan the project folder and check that the files in it are
+        also in the project CML file. If they aren't, import them as
+        orphaned files so the user can either delete them, or put them
+        back into the project tree.
+        """
 
         if self.projPath is None:
             return
@@ -829,16 +809,18 @@ class NWProject():
         nOrph = 0
         for oHandle in orphanFiles:
             nOrph += 1
-            orItem = NWItem(self)
-            orItem.setName("Orphaned File %d" % nOrph)
-            orItem.setType(nwItemType.FILE)
-            orItem.setClass(nwItemClass.NO_CLASS)
-            orItem.setLayout(nwItemLayout.NO_LAYOUT)
-            self.projTree.append(oHandle, None, orItem)
+            orphItem = NWItem(self)
+            orphItem.setName("Orphaned File %d" % nOrph)
+            orphItem.setType(nwItemType.FILE)
+            orphItem.setClass(nwItemClass.NO_CLASS)
+            orphItem.setLayout(nwItemLayout.NO_LAYOUT)
+            self.projTree.append(oHandle, None, orphItem)
 
         return
 
     def _appendSessionStats(self):
+        """Append session statistics to the sessions log file.
+        """
 
         if self.projMeta is None:
             return False
@@ -895,8 +877,8 @@ class NWTree():
         self._treeOrder = []
         self._treeRoots = []
         self._trashRoot = ""
-        self._theLength   = 0
-        self._theIndex    = 0
+        self._theLength = 0
+        self._theIndex  = 0
         self._treeChanged = False
         return
 
@@ -937,6 +919,10 @@ class NWTree():
 
         return
 
+    ##
+    #  Tree Structure Methods
+    ##
+
     def trashRoot(self):
         """Returns the handle of the trash folder, or None if there
         isn't one.
@@ -968,6 +954,45 @@ class NWTree():
             if theClass == tItem.itemClass:
                 return False
         return True
+
+    def getRootItem(self, tHandle):
+        """Iterate upwards in the tree until we find the item with
+        parent None, the root item. We do this with a for loop with a
+        maximum depth of 200 to make infinite loops impossible.
+        """
+        tItem = self.__getitem__(tHandle)
+        if tItem is not None:
+            for i in range(200):
+                if tItem.parHandle is None:
+                    return tHandle
+                else:
+                    tHandle = tItem.parHandle
+                    tItem   = self.__getitem__(tHandle)
+                    if tItem is None:
+                        return tHandle
+        return None
+
+    def getItemPath(self, tHandle):
+        """Iterate upwards in the tree until we find the item with
+        parent None, the root item, and return the list of handles.
+        We do this with a for loop with a maximum depth of 200 to make
+        infinite loops impossible.
+        """
+        tTree = []
+        tItem = self.__getitem__(tHandle)
+        if tItem is not None:
+            tTree.append(tHandle)
+            for i in range(200):
+                if tItem.parHandle is None:
+                    return tTree
+                else:
+                    tHandle = tItem.parHandle
+                    tItem   = self.__getitem__(tHandle)
+                    if tItem is None:
+                        return tTree
+                    else:
+                        tTree.append(tHandle)
+        return tTree
 
     ##
     #  Setters
@@ -1053,7 +1078,7 @@ class NWTree():
     ##
 
     def __iter__(self):
-        """Initiates the iterator,
+        """Initiates the iterator.
         """
         self._theIndex = 0
         return self
@@ -1074,7 +1099,7 @@ class NWTree():
 
     def _setTreeChanged(self, theState):
         """Set the changed flag to theState, and if being set to True,
-        propagate that change to the parent NWProject class.
+        propagate that state change to the parent NWProject class.
         """
         self._treeChanged = theState
         if theState:
@@ -1130,7 +1155,7 @@ class NWItem():
         return
 
     ##
-    #  XML Pack
+    #  XML Pack/Unpack
     ##
 
     def packXML(self, xParent):
@@ -1375,6 +1400,9 @@ class NWStatus():
         return
 
     def packEntries(self, xParent):
+        """Pack the status entries into an XML object for saving to the
+        main project file.
+        """
         for n in range(self.theLength):
             xSub = etree.SubElement(xParent,"entry",attrib={
                 "blue"  : str(self.theColours[n][2]),
@@ -1385,6 +1413,8 @@ class NWStatus():
         return True
 
     def unpackEntries(self, xParent):
+        """Unpack an XML tree and set the class values.
+        """
 
         theLabels  = []
         theColours = []

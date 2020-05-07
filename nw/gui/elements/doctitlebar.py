@@ -87,7 +87,7 @@ class GuiDocTitleBar(QLabel):
 
         if self.mainConf.showFullPath:
             tTitle = []
-            tTree = self.theProject.getItemPath(tHandle)
+            tTree = self.theProject.projTree.getItemPath(tHandle)
             for aHandle in reversed(tTree):
                 nwItem = self.theProject.projTree[aHandle]
                 if nwItem is not None:
