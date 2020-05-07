@@ -2,17 +2,17 @@
 """novelWriter Project Class Tester
 """
 
-import nw, pytest, types
+import nw
+import pytest
 from os import path
 
 from nwtools import *
 from nwdummy import DummyMain
 
-from nw.config          import Config
+from nw.config import Config
 from nw.project.project import NWProject
-from nw.project.item    import NWItem
-from nw.project.index   import NWIndex
-from nw.constants       import nwItemClass
+from nw.project.index import NWIndex
+from nw.constants import nwItemClass
 
 theConf = Config()
 theMain = DummyMain()
