@@ -19,7 +19,7 @@ theMain = DummyMain()
 theMain.mainConf = theConf
 
 theProject = NWProject(theMain)
-theProject.handleSeed = 42
+theProject.projTree.setSeed(42)
 
 @pytest.mark.project
 def testProjectNew(nwTempProj,nwRef,nwTemp):
