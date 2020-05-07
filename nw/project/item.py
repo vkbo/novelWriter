@@ -57,21 +57,6 @@ class NWItem():
         self.paraCount = 0
         self.cursorPos = 0
 
-        # Map of Setters
-        self._setMap = {
-            "name"      : self.setName,
-            "order"     : self.setOrder,
-            "type"      : self.setType,
-            "class"     : self.setClass,
-            "layout"    : self.setLayout,
-            "status"    : self.setStatus,
-            "expanded"  : self.setExpanded,
-            "charCount" : self.setCharCount,
-            "wordCount" : self.setWordCount,
-            "paraCount" : self.setParaCount,
-            "cursorPos" : self.setCursorPos,
-        }
-
         return
 
     ##
@@ -97,7 +82,7 @@ class NWItem():
             xSub = self._subPack(xPack,"wordCount", text=str(self.wordCount), none=False)
             xSub = self._subPack(xPack,"paraCount", text=str(self.paraCount), none=False)
             xSub = self._subPack(xPack,"cursorPos", text=str(self.cursorPos), none=False)
-        return xPack
+        return
 
     def unpackXML(self, xItem):
         """Sets the values from an XML entry of type 'item'.
@@ -116,8 +101,24 @@ class NWItem():
         if "parent" in xItem.attrib:
             self.parHandle = xItem.attrib["parent"]
 
+        setMap = {
+            "name"      : self.setName,
+            "order"     : self.setOrder,
+            "type"      : self.setType,
+            "class"     : self.setClass,
+            "layout"    : self.setLayout,
+            "status"    : self.setStatus,
+            "expanded"  : self.setExpanded,
+            "charCount" : self.setCharCount,
+            "wordCount" : self.setWordCount,
+            "paraCount" : self.setParaCount,
+            "cursorPos" : self.setCursorPos,
+        }
         for xValue in xItem:
-            self.setFromTag(xValue.tag, xValue.text)
+            if xValue.tag in setMap:
+                setMap[xValue.tag](xValue.text)
+            else:
+                logger.error("Unknown tag '%s'" % xValue.tag)
 
         return True
 
@@ -131,21 +132,6 @@ class NWItem():
         return xSub
 
     ##
-    #  Settings Wrapper
-    ##
-
-    def setFromTag(self, tagName, tagValue):
-        """Set a value from a given tag name rather than call the set
-        function directly. Useful when setting data read in from XML.
-        """
-        logger.verbose("Setting tag '%s' to value '%s'" % (tagName, str(tagValue)))
-        if tagName in self._setMap:
-            self._setMap[tagName](tagValue)
-        else:
-            logger.error("Unknown tag '%s'" % tagName)
-        return
-
-    ##
     #  Set Item Values
     ##
 
@@ -154,15 +140,29 @@ class NWItem():
         return
 
     def setHandle(self, theHandle):
-        self.itemHandle = theHandle
+        if isinstance(theHandle, str):
+            if len(theHandle) == 13:
+                self.itemHandle = theHandle
+            else:
+                self.itemHandle = None
+        else:
+            self.itemHandle = None
         return
 
     def setParent(self, theParent):
-        self.parHandle = theParent
+        if theParent is None:
+            self.parHandle = None
+        elif isinstance(theParent, str):
+            if len(theParent) == 13:
+                self.parHandle = theParent
+            else:
+                self.parHandle = None
+        else:
+            self.parHandle = None
         return
 
     def setOrder(self, theOrder):
-        self.itemOrder = theOrder
+        self.itemOrder = checkInt(theOrder, 0)
         return
 
     def setType(self, theType):
@@ -206,7 +206,7 @@ class NWItem():
         if isinstance(expState, str):
             self.isExpanded = expState == str(True)
         else:
-            self.isExpanded = expState
+            self.isExpanded = expState == True
         return
 
     ##
@@ -214,23 +214,19 @@ class NWItem():
     ##
 
     def setCharCount(self, theCount):
-        theCount = checkInt(theCount,0)
-        self.charCount = theCount
+        self.charCount = checkInt(theCount,0)
         return
 
     def setWordCount(self, theCount):
-        theCount = checkInt(theCount,0)
-        self.wordCount = theCount
+        self.wordCount = checkInt(theCount,0)
         return
 
     def setParaCount(self, theCount):
-        theCount = checkInt(theCount,0)
-        self.paraCount = theCount
+        self.paraCount = checkInt(theCount,0)
         return
 
     def setCursorPos(self, thePosition):
-        thePosition = checkInt(thePosition,0)
-        self.cursorPos = thePosition
+        self.cursorPos = checkInt(thePosition,0)
         return
 
 # END Class NWItem
