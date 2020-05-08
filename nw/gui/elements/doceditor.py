@@ -30,7 +30,7 @@ import nw
 
 from time import time
 
-from PyQt5.QtCore import Qt, QTimer
+from PyQt5.QtCore import Qt, QTimer, pyqtSlot
 from PyQt5.QtWidgets import (
     qApp, QTextEdit, QAction, QMenu, QShortcut, QMessageBox, QLabel
 )
@@ -589,6 +589,7 @@ class GuiDocEditor(QTextEdit):
     #  Signals and Slots
     ##
 
+    @pyqtSlot(int, int, int)
     def _docChange(self, thePos, charsRemoved, charsAdded):
         """Triggered by QTextDocument->contentsChanged. This also
         triggers the syntax highlighter.
@@ -602,6 +603,7 @@ class GuiDocEditor(QTextEdit):
             self._docAutoReplace(self.qDocument.findBlock(thePos))
         return
 
+    @pyqtSlot("QPoint")
     def _openContextMenu(self, thePos):
         """Triggered by right click to open the context menu. Also
         triggered by the Ctrl+. shortcut.
@@ -663,6 +665,7 @@ class GuiDocEditor(QTextEdit):
         self.hLight.rehighlightBlock(theCursor.block())
         return
 
+    @pyqtSlot()
     def _runCounter(self):
         """Decide whether to run the word counter, or stop the timer due
         to inactivity.
@@ -678,6 +681,7 @@ class GuiDocEditor(QTextEdit):
             self.wCounter.start()
         return
 
+    @pyqtSlot()
     def _updateCounts(self):
         """Slot for the word counter's finished signal
         """
@@ -730,6 +734,8 @@ class GuiDocEditor(QTextEdit):
         return True
 
     def _insertHardBreak(self):
+        """Inserts a hard line break at the cursor position.
+        """
         theCursor = self.textCursor()
         theCursor.beginEditBlock()
         theCursor.insertText("  \n")
@@ -737,6 +743,8 @@ class GuiDocEditor(QTextEdit):
         return
 
     def _insertNonBreakingSpace(self):
+        """Inserts a non-breaking space at the cursor position.
+        """
         theCursor = self.textCursor()
         theCursor.beginEditBlock()
         theCursor.insertText(nwUnicode.U_NBSP)
