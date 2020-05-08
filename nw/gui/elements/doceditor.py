@@ -1007,7 +1007,7 @@ class GuiDocEditor(QTextEdit):
         """
 
         if self.mainConf.spellTool == "enchant":
-            from nw.tools.spellenchant import NWSpellEnchant
+            from nw.tools.spellcheck import NWSpellEnchant
             self.theDict = NWSpellEnchant()
         else:
             self.theDict = NWSpellSimple()
