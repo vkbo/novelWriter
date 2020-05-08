@@ -10,8 +10,8 @@ from nwtools import *
 from nwdummy import DummyMain
 
 from nw.config import Config
-from nw.project.project import NWProject
-from nw.project.index import NWIndex
+from nw.core.project import NWProject
+from nw.core.index import NWIndex
 from nw.constants import nwItemClass
 
 theConf = Config()

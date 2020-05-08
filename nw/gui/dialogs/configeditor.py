@@ -38,8 +38,8 @@ from PyQt5.QtWidgets import (
     QFileDialog
 )
 
-from nw.additions import QSwitch, QConfigLayout
-from nw.tools import NWSpellCheck, NWSpellSimple, NWSpellEnchant
+from nw.gui.additions import QSwitch, QConfigLayout
+from nw.core import NWSpellCheck, NWSpellSimple, NWSpellEnchant
 from nw.constants import nwAlert, nwQuotes
 
 logger = logging.getLogger(__name__)

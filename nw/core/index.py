@@ -35,7 +35,7 @@ from time import time
 from nw.constants import (
     nwFiles, nwKeyWords, nwItemType, nwItemClass, nwItemLayout, nwAlert
 )
-from nw.tools import countWords
+from nw.core.tools import countWords
 
 logger = logging.getLogger(__name__)
 

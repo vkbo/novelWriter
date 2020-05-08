@@ -1,5 +1,9 @@
 # -*- coding: utf-8 -*-
 
+# Qt Additions
+from nw.gui.additions.qconfiglayout import QConfigLayout
+from nw.gui.additions.qswitch import QSwitch
+
 # Main Window Elements
 from nw.gui.icons import GuiIcons
 from nw.gui.mainmenu import GuiMainMenu
@@ -29,9 +33,12 @@ from nw.gui.elements.viewdetails import GuiDocViewDetails
 
 # Tools
 from nw.gui.tools.dochighlight import GuiDocHighlighter
+from nw.gui.tools.optionstate import OptionState
 from nw.gui.tools.wordcounter import WordCounter
 
 __all__ = [
+    "QConfigLayout",
+    "QSwitch",
     "GuiIcons",
     "GuiMainMenu",
     "GuiMainStatus",
@@ -54,5 +61,6 @@ __all__ = [
     "GuiSearchBar",
     "GuiDocViewDetails",
     "GuiDocHighlighter",
+    "OptionState",
     "WordCounter",
 ]

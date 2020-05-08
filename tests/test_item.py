@@ -9,7 +9,7 @@ from lxml import etree
 from nwdummy import DummyMain
 
 from nw.config import Config
-from nw.project.project import NWProject, NWItem
+from nw.core.project import NWProject, NWItem
 from nw.constants import nwItemClass, nwItemType, nwItemLayout
 
 theConf = Config()

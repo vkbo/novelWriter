@@ -40,7 +40,8 @@ from datetime import datetime
 from time import time
 from shutil import make_archive
 
-from nw.tools import projectMaintenance, OptionState
+from nw.gui.tools import OptionState
+from nw.core.tools import projectMaintenance
 from nw.common import checkString, checkBool, checkInt
 from nw.constants import (
     nwFiles, nwConst, nwItemType, nwItemClass, nwItemLayout, nwAlert
