@@ -42,7 +42,7 @@ from PyQt5.QtGui import (
 from nw.core import NWDoc
 from nw.gui.tools import GuiDocHighlighter, WordCounter
 from nw.gui.elements.doctitlebar import GuiDocTitleBar
-from nw.tools import NWSpellSimple
+from nw.core import NWSpellSimple
 from nw.constants import nwUnicode, nwDocAction
 
 logger = logging.getLogger(__name__)
@@ -1007,7 +1007,7 @@ class GuiDocEditor(QTextEdit):
         """
 
         if self.mainConf.spellTool == "enchant":
-            from nw.tools.spellcheck import NWSpellEnchant
+            from nw.core.spellcheck import NWSpellEnchant
             self.theDict = NWSpellEnchant()
         else:
             self.theDict = NWSpellSimple()
