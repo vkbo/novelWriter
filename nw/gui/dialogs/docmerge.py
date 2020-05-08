@@ -34,7 +34,7 @@ from PyQt5.QtWidgets import (
     QListWidget, QAbstractItemView, QListWidgetItem
 )
 from nw.constants import nwAlert, nwItemType
-from nw.project import NWDoc
+from nw.core import NWDoc
 
 logger = logging.getLogger(__name__)
 

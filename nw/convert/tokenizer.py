@@ -32,7 +32,7 @@ import nw
 from operator import itemgetter
 from PyQt5.QtCore import QRegularExpression
 
-from nw.project.document import NWDoc
+from nw.core.document import NWDoc
 from nw.tools.translate import numberToWord
 from nw.constants import nwItemLayout
 

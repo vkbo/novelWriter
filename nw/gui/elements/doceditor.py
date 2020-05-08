@@ -39,7 +39,7 @@ from PyQt5.QtGui import (
     QTextDocument, QCursor
 )
 
-from nw.project import NWDoc
+from nw.core import NWDoc
 from nw.gui.tools import GuiDocHighlighter, WordCounter
 from nw.gui.elements.doctitlebar import GuiDocTitleBar
 from nw.tools import NWSpellSimple

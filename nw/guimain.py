@@ -45,7 +45,7 @@ from nw.gui import (
     GuiConfigEditor, GuiProjectEditor, GuiItemEditor, GuiProjectOutline,
     GuiSessionLogView, GuiDocMerge, GuiDocSplit, GuiProjectLoad
 )
-from nw.project import NWProject, NWDoc, NWIndex
+from nw.core import NWProject, NWDoc, NWIndex
 from nw.tools import countWords
 from nw.constants import nwFiles, nwItemType, nwAlert
 
