@@ -177,6 +177,10 @@ class GuiMainMenu(QMenuBar):
         self.theParent.docEditor.revealLocation()
         return True
 
+    def _doBackup(self):
+        self.theProject.zipIt(True)
+        return True
+
     ##
     #  Menu Builders
     ##
@@ -703,7 +707,7 @@ class GuiMainMenu(QMenuBar):
         # Tools > Backup
         self.aBackupProject = QAction("Backup Project", self)
         self.aBackupProject.setStatusTip("Backup Project")
-        self.aBackupProject.triggered.connect(self.theParent.backupProject)
+        self.aBackupProject.triggered.connect(self._doBackup)
         self.toolsMenu.addAction(self.aBackupProject)
 
         # Tools > Settings
