@@ -518,8 +518,15 @@ class NWProject():
 
         baseDir = path.join(self.mainConf.backupPath, cleanName)
         if not path.isdir(baseDir):
-            mkdir(baseDir)
-            logger.debug("Created folder %s" % baseDir)
+            try:
+                mkdir(baseDir)
+                logger.debug("Created folder %s" % baseDir)
+            except Exception as e:
+                self.theParent.makeAlert(
+                    ["Could not create backup folder.",str(e)],
+                    nwAlert.ERROR
+                )
+                return False
 
         archName = "Backup on %s" % datetime.now().strftime("%Y-%m-%d at %H.%M.%S")
         baseName = path.join(baseDir, archName)
