@@ -47,19 +47,31 @@ class NWDoc():
         self.docHandle   = None
         self.docEditable = False
         self.fileLoc     = None
+        self.docMeta     = ""
 
         # Internal Mapping
         self.makeAlert = self.theParent.makeAlert
 
         return
 
+    ##
+    #  Class Methods
+    ##
+
     def clearDocument(self):
+        """Clear the document contents.
+        """
         self.theItem     = None
         self.docHandle   = None
         self.docEditable = False
+        self.fileLoc     = None
+        self.docMeta     = ""
         return
 
     def openDocument(self, tHandle, showStatus=True):
+        """Open a document from handle, capturing potential file system
+        errors and parse meta data.
+        """
 
         self.docHandle = tHandle
         self.theItem   = self.theProject.projTree[tHandle]
@@ -80,10 +92,19 @@ class NWDoc():
         dataDir = path.join(self.theProject.projPath, docDir)
         docPath = path.join(dataDir, docFile)
 
+        theText = ""
+        self.docMeta = ""
         if path.isfile(docPath):
             try:
                 with open(docPath,mode="r",encoding="utf8") as inFile:
-                    theDoc = inFile.read()
+                    fstLine = inFile.readline()
+                    if fstLine.startswith("%%~ "):
+                        # This is the meta line
+                        self.docMeta = fstLine.strip()
+                    else:
+                        theText = fstLine
+                    theText += inFile.read()
+
             except Exception as e:
                 self.makeAlert(["Failed to open document file.",str(e)], nwAlert.ERROR)
                 # Note: Document must be cleared in case of an io error,
@@ -97,12 +118,17 @@ class NWDoc():
             logger.debug("The requested document does not exist.")
             return ""
 
+        logger.verbose("DocMeta: '%s'" % self.docMeta)
+
         if showStatus:
             self.theParent.statusBar.setStatus("Opened Document: %s" % self.theItem.itemName)
 
-        return theDoc
+        return theText
 
     def saveDocument(self, docText):
+        """Save the document via temp file in case of save failure, and
+        in any case keep a backup of the file.
+        """
 
         if self.docHandle is None or not self.docEditable:
             return False
@@ -118,8 +144,12 @@ class NWDoc():
         docTemp = path.join(dataPath, docFile+"~")
         docBack = path.join(dataPath, docFile[:-3]+"bak")
 
+        itemPath = self.theProject.projTree.getItemPath(self.docHandle)
+        docMeta  = "%%~ "+":".join(itemPath)+":"+self.theItem.itemName+"\n"
+
         try:
             with open(docTemp,mode="w",encoding="utf8") as outFile:
+                outFile.write(docMeta)
                 outFile.write(docText)
         except Exception as e:
             self.makeAlert(["Could not save document.",str(e)], nwAlert.ERROR)

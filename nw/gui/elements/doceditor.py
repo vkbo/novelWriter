@@ -257,6 +257,7 @@ class GuiDocEditor(QTextEdit):
         self.setPlainText(theDoc)
         afTime = time()
         logger.debug("Document highlighted in %.3f milliseconds" % (1000*(afTime-bfTime)))
+        self.updateDocMargins()
 
         if tLine is None:
             self.setCursorPosition(self.nwDocument.theItem.cursorPos)
