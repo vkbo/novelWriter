@@ -35,6 +35,10 @@ from nw.constants import isoLanguage
 
 logger = logging.getLogger(__name__)
 
+# ================================================================================================ #
+#  SpellChecking SuperClass
+# ================================================================================================ #
+
 class NWSpellCheck():
 
     SP_INTERNAL = "internal"
@@ -155,9 +159,13 @@ class NWSpellEnchant(NWSpellCheck):
 
     def listDictionaries(self):
         retList = []
-        for spTag, spProvider in enchant.list_dicts():
-            spName = "%s [%s]" % (self.expandLanguage(spTag), spProvider.name)
-            retList.append((spTag, spName))
+        try:
+            import enchant
+            for spTag, spProvider in enchant.list_dicts():
+                spName = "%s [%s]" % (self.expandLanguage(spTag), spProvider.name)
+                retList.append((spTag, spName))
+        except:
+            logger.error("Failed to list languages for enchant spell checking")
         return retList
 
 # END Class NWSpellEnchant
