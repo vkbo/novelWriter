@@ -33,7 +33,7 @@ from operator import itemgetter
 from PyQt5.QtCore import QRegularExpression
 
 from nw.core.document import NWDoc
-from nw.tools.translate import numberToWord
+from nw.core.tools import numberToWord
 from nw.constants import nwItemLayout
 
 logger = logging.getLogger(__name__)

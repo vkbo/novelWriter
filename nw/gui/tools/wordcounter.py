@@ -30,7 +30,7 @@ import nw
 
 from PyQt5.QtCore import QThread
 
-from nw.tools.wordcount import countWords
+from nw.core.tools import countWords
 
 logger = logging.getLogger(__name__)
 

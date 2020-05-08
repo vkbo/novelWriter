@@ -6,6 +6,9 @@ from nw.core.project import NWProject
 from nw.core.spellcheck import NWSpellCheck
 from nw.core.spellcheck import NWSpellEnchant
 from nw.core.spellcheck import NWSpellSimple
+from nw.core.tools import countWords
+from nw.core.tools import projectMaintenance
+from nw.core.tools import numberToWord
 
 __all__ = [
     "NWDoc",
@@ -14,4 +17,7 @@ __all__ = [
     "NWSpellCheck",
     "NWSpellEnchant",
     "NWSpellSimple",
+    "countWords",
+    "projectMaintenance",
+    "numberToWord",
 ]
