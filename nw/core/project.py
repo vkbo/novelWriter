@@ -929,16 +929,14 @@ class NWTree():
 
         self.theProject = theProject
 
-        self._projTree  = {} # Holds all the items of the project
-        self._treeOrder = [] # The order of the tree items on the tree view
-        self._treeRoots = [] # The root items of the tree
-        self._trashRoot = "" # The handle of the trash root folder
-
+        self._projTree    = {}    # Holds all the items of the project
+        self._treeOrder   = []    # The order of the tree items on the tree view
+        self._treeRoots   = []    # The root items of the tree
+        self._trashRoot   = None  # The handle of the trash root folder
         self._theLength   = 0     # Always the length of _treeOrder
         self._theIndex    = 0     # The current iterator index
         self._treeChanged = False # True if tree structure has changed
-
-        self._handleSeed = None # Used for generating handles for testing
+        self._handleSeed  = None  # Used for generating handles for testing
 
         return
 
@@ -952,7 +950,7 @@ class NWTree():
         self._projTree  = {}
         self._treeOrder = []
         self._treeRoots = []
-        self._trashRoot = ""
+        self._trashRoot = None
         self._theLength = 0
         self._theIndex  = 0
         self._treeChanged = False
