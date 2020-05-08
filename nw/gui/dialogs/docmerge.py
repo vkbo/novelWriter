@@ -115,7 +115,7 @@ class GuiDocMerge(QDialog):
             ), nwAlert.ERROR)
             return
 
-        srcItem = self.theProject.getItem(self.sourceItem)
+        srcItem = self.theProject.projTree[self.sourceItem]
         nHandle = self.theProject.newFile(srcItem.itemName, srcItem.itemClass, srcItem.parHandle)
         self.theParent.treeView.revealTreeItem(nHandle)
         theDoc.openDocument(nHandle, False)
@@ -149,7 +149,7 @@ class GuiDocMerge(QDialog):
         if tHandle is None:
             return
 
-        nwItem = self.theProject.getItem(tHandle)
+        nwItem = self.theProject.projTree[tHandle]
         if nwItem is None:
             return
         if nwItem.itemType is not nwItemType.FOLDER:
@@ -160,7 +160,7 @@ class GuiDocMerge(QDialog):
 
         for sHandle in self.theParent.treeView.getTreeFromHandle(tHandle):
             newItem = QListWidgetItem()
-            nwItem  = self.theProject.getItem(sHandle)
+            nwItem  = self.theProject.projTree[sHandle]
             if nwItem.itemType is not nwItemType.FILE:
                 continue
             newItem.setText(nwItem.itemName)

@@ -45,7 +45,7 @@ from nw.gui import (
     GuiConfigEditor, GuiProjectEditor, GuiItemEditor, GuiProjectOutline,
     GuiSessionLogView, GuiDocMerge, GuiDocSplit, GuiProjectLoad
 )
-from nw.project import NWProject, NWDoc, NWItem, NWIndex, NWBackup
+from nw.project import NWProject, NWDoc, NWIndex, NWBackup
 from nw.tools import countWords
 from nw.constants import nwFiles, nwItemType, nwAlert
 
@@ -617,7 +617,7 @@ class GuiMain(QMainWindow):
             return False
 
         logger.verbose("Opening item %s" % tHandle)
-        nwItem = self.theProject.getItem(tHandle)
+        nwItem = self.theProject.projTree[tHandle]
         if nwItem.itemType == nwItemType.FILE:
             logger.verbose("Requested item %s is a file" % tHandle)
             self.openDocument(tHandle)
@@ -656,7 +656,7 @@ class GuiMain(QMainWindow):
 
         self.treeView.saveTreeOrder()
         self.theIndex.clearIndex()
-        nItems = len(self.theProject.treeOrder)
+        nItems = len(self.theProject.projTree)
 
         dlgProg = QProgressDialog("Scanning files ...", "Cancel", 0, nItems, self)
         dlgProg.setWindowModality(Qt.WindowModal)
@@ -668,27 +668,27 @@ class GuiMain(QMainWindow):
         time.sleep(0.5)
 
         nDone = 0
-        for tHandle in self.theProject.treeOrder:
-
-            tItem = self.theProject.getItem(tHandle)
+        for tItem in self.theProject.projTree:
 
             dlgProg.setValue(nDone)
-            dlgProg.setLabelText("Scanning: %s" % tItem.itemName)
-            logger.verbose("Scanning: %s" % tItem.itemName)
 
             if tItem is not None and tItem.itemType == nwItemType.FILE:
+
+                dlgProg.setLabelText("Scanning: %s" % tItem.itemName)
+                logger.verbose("Scanning: %s" % tItem.itemName)
+
                 theDoc  = NWDoc(self.theProject, self)
-                theText = theDoc.openDocument(tHandle, False)
+                theText = theDoc.openDocument(tItem.itemHandle, False)
 
                 # Build tag index
-                self.theIndex.scanText(tHandle, theText)
+                self.theIndex.scanText(tItem.itemHandle, theText)
 
                 # Get Word Counts
-                cC, wC, pC = self.theIndex.getCounts(tHandle)
+                cC, wC, pC = self.theIndex.getCounts(tItem.itemHandle)
                 tItem.setCharCount(cC)
                 tItem.setWordCount(wC)
                 tItem.setParaCount(pC)
-                self.treeView.propagateCount(tHandle, wC)
+                self.treeView.propagateCount(tItem.itemHandle, wC)
                 self.treeView.projectWordCount()
 
             nDone += 1
@@ -1020,7 +1020,7 @@ class GuiMain(QMainWindow):
     def _treeDoubleClick(self, tItem, colNo):
         tHandle = tItem.text(3)
         logger.verbose("User double clicked tree item with handle %s" % tHandle)
-        nwItem = self.theProject.getItem(tHandle)
+        nwItem = self.theProject.projTree[tHandle]
         if nwItem.itemType == nwItemType.FILE:
             logger.verbose("Requested item %s is a file" % tHandle)
             self.openDocument(tHandle)
@@ -1031,7 +1031,7 @@ class GuiMain(QMainWindow):
     def _treeKeyPressReturn(self):
         tHandle = self.treeView.getSelectedHandle()
         logger.verbose("User pressed return on tree item with handle %s" % tHandle)
-        nwItem = self.theProject.getItem(tHandle)
+        nwItem = self.theProject.projTree[tHandle]
         if nwItem.itemType == nwItemType.FILE:
             logger.verbose("Requested item %s is a file" % tHandle)
             self.openDocument(tHandle)

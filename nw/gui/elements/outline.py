@@ -405,7 +405,7 @@ class GuiProjectOutline(QTreeWidget):
         """Populate a tree item with all the column values.
         """
 
-        nwItem = self.theProject.getItem(tHandle)
+        nwItem = self.theProject.projTree[tHandle]
         novIdx = self.theIndex.novelIndex[tHandle][sTitle]
 
         newItem = QTreeWidgetItem()

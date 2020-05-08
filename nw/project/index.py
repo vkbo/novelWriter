@@ -249,12 +249,12 @@ class NWIndex():
         files before we save them, unless we're rebuilding the index.
         """
 
-        theItem = self.theProject.getItem(tHandle)
+        theItem = self.theProject.projTree[tHandle]
         if theItem is None:
             return False
         if theItem.itemType != nwItemType.FILE:
             return False
-        if theItem.parHandle == self.theProject.trashRoot:
+        if theItem.parHandle == self.theProject.projTree.trashRoot():
             return False
         if theItem.itemLayout == nwItemLayout.NO_LAYOUT:
             return False
@@ -539,7 +539,7 @@ class NWIndex():
         """
 
         theStructure = []
-        for tHandle in self.theProject.treeOrder:
+        for tHandle in self.theProject.projTree.handles():
             if tHandle not in self.novelIndex:
                 continue
             for sTitle in sorted(self.novelIndex[tHandle].keys()):
@@ -605,7 +605,7 @@ class NWIndex():
 
         theRefs = {}
 
-        tItem = self.theProject.getItem(tHandle)
+        tItem = self.theProject.projTree[tHandle]
         if tHandle is None:
             return theRefs
 

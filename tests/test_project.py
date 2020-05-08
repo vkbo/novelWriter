@@ -2,24 +2,24 @@
 """novelWriter Project Class Tester
 """
 
-import nw, pytest, types
+import nw
+import pytest
 from os import path
 
 from nwtools import *
 from nwdummy import DummyMain
 
-from nw.config          import Config
+from nw.config import Config
 from nw.project.project import NWProject
-from nw.project.item    import NWItem
-from nw.project.index   import NWIndex
-from nw.constants       import nwItemClass
+from nw.project.index import NWIndex
+from nw.constants import nwItemClass
 
 theConf = Config()
 theMain = DummyMain()
 theMain.mainConf = theConf
 
 theProject = NWProject(theMain)
-theProject.handleSeed = 42
+theProject.projTree.setSeed(42)
 
 @pytest.mark.project
 def testProjectNew(nwTempProj,nwRef,nwTemp):

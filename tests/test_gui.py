@@ -25,15 +25,15 @@ def testMainWindows(qtbot, nwTempGUI, nwRef, nwTemp):
     qtbot.wait(stepDelay)
 
     # Create new, save, close project
-    nwGUI.theProject.handleSeed = 42
+    nwGUI.theProject.projTree.setSeed(42)
     assert nwGUI.newProject(nwTempGUI, True)
     assert nwGUI.saveProject()
     assert nwGUI.closeProject()
 
     assert len(nwGUI.theProject.projTree) == 0
-    assert len(nwGUI.theProject.treeOrder) == 0
-    assert len(nwGUI.theProject.treeRoots) == 0
-    assert nwGUI.theProject.trashRoot is None
+    assert len(nwGUI.theProject.projTree._treeOrder) == 0
+    assert len(nwGUI.theProject.projTree._treeRoots) == 0
+    assert nwGUI.theProject.projTree.trashRoot() is None
     assert nwGUI.theProject.projPath is None
     assert nwGUI.theProject.projMeta is None
     assert nwGUI.theProject.projFile == "nwProject.nwx"
@@ -55,9 +55,9 @@ def testMainWindows(qtbot, nwTempGUI, nwRef, nwTemp):
 
     # Check that we loaded the data
     assert len(nwGUI.theProject.projTree) == 6
-    assert len(nwGUI.theProject.treeOrder) == 6
-    assert len(nwGUI.theProject.treeRoots) == 4
-    assert nwGUI.theProject.trashRoot is None
+    assert len(nwGUI.theProject.projTree._treeOrder) == 6
+    assert len(nwGUI.theProject.projTree._treeRoots) == 4
+    assert nwGUI.theProject.projTree.trashRoot() is None
     assert nwGUI.theProject.projPath == nwTempGUI
     assert nwGUI.theProject.projMeta == path.join(nwTempGUI,"meta")
     assert nwGUI.theProject.projFile == "nwProject.nwx"
@@ -237,14 +237,14 @@ def testMainWindows(qtbot, nwTempGUI, nwRef, nwTemp):
     # Check the files
     refFile = path.join(nwTempGUI,"nwProject.nwx")
     assert cmpFiles(refFile, path.join(nwRef,"gui","1_nwProject.nwx"), [2])
-    refFile = path.join(nwTempGUI,"data_0","2d20bbd7e394_main.nwd")
-    assert cmpFiles(refFile, path.join(nwRef,"gui","1_2d20bbd7e394_main.nwd"))
-    refFile = path.join(nwTempGUI,"data_2","fca346db6561_main.nwd")
-    assert cmpFiles(refFile, path.join(nwRef,"gui","1_fca346db6561_main.nwd"))
+    refFile = path.join(nwTempGUI,"data_0","e17daca5f3e1_main.nwd")
+    assert cmpFiles(refFile, path.join(nwRef,"gui","1_e17daca5f3e1_main.nwd"))
+    refFile = path.join(nwTempGUI,"data_9","8010bd9270f9_main.nwd")
+    assert cmpFiles(refFile, path.join(nwRef,"gui","1_8010bd9270f9_main.nwd"))
     refFile = path.join(nwTempGUI,"data_3","1489056e0916_main.nwd")
     assert cmpFiles(refFile, path.join(nwRef,"gui","1_1489056e0916_main.nwd"))
-    refFile = path.join(nwTempGUI,"data_7","688b6ef52555_main.nwd")
-    assert cmpFiles(refFile, path.join(nwRef,"gui","1_688b6ef52555_main.nwd"))
+    refFile = path.join(nwTempGUI,"data_1","a6562590ef19_main.nwd")
+    assert cmpFiles(refFile, path.join(nwRef,"gui","1_a6562590ef19_main.nwd"))
 
     nwGUI.closeMain()
     # qtbot.stopForInteraction()
@@ -258,7 +258,7 @@ def testProjectEditor(qtbot, nwTempGUI, nwRef, nwTemp):
     qtbot.wait(stepDelay)
 
     # Create new, save, open project
-    nwGUI.theProject.handleSeed = 42
+    nwGUI.theProject.projTree.setSeed(42)
     assert nwGUI.newProject(nwTempGUI, True)
     nwGUI.mainConf.backupPath = nwTempGUI
 
@@ -345,7 +345,7 @@ def testItemEditor(qtbot, nwTempGUI, nwRef, nwTemp):
     qtbot.wait(stepDelay)
 
     # Create new, save, open project
-    nwGUI.theProject.handleSeed = 42
+    nwGUI.theProject.projTree.setSeed(42)
     assert nwGUI.newProject(nwTempGUI, True)
 
     itemEdit = GuiItemEditor(nwGUI, nwGUI.theProject, "31489056e0916")

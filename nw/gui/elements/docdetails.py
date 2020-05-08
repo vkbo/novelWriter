@@ -83,7 +83,7 @@ class GuiDocDetails(QFrame):
 
     def buildViewBox(self, tHandle):
 
-        nwItem = self.theProject.getItem(tHandle)
+        nwItem = self.theProject.projTree[tHandle]
 
         if nwItem is None:
             colTwo = [""]*4

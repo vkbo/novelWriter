@@ -62,7 +62,7 @@ class NWDoc():
     def openDocument(self, tHandle, showStatus=True):
 
         self.docHandle = tHandle
-        self.theItem   = self.theProject.getItem(tHandle)
+        self.theItem   = self.theProject.projTree[tHandle]
 
         if self.theItem is None:
             self.clearDocument()
@@ -71,7 +71,7 @@ class NWDoc():
         # By default, the document is editable.
         # Except for files in the trash folder.
         self.docEditable = True
-        if self.theItem.parHandle == self.theProject.trashRoot:
+        if self.theItem.parHandle == self.theProject.projTree.trashRoot():
             self.docEditable = False
 
         docDir, docFile = self.assemblePath(self.docHandle, self.FILE_MN)

@@ -6,7 +6,12 @@
  Class holding a project
 
  File History:
- Created: 2018-09-29 [0.0.1]
+ Created: 2018-09-29 [0.0.1] NWProject
+ Added:   2018-10-27 [0.0.1] NWItem
+ Added:   2019-05-19 [0.1.3] NWStatus
+ Merged:  2020-05-07 [0.4.5] Moved NWItem class to this file
+ Merged:  2020-05-07 [0.4.5] Moved NWStatus class to this file
+ Added:   2020-05-07 [0.4.5] NWTree
 
  This file is a part of novelWriter
  Copyright 2020, Veronica Berglyd Olsen
@@ -34,8 +39,6 @@ from hashlib import sha256
 from datetime import datetime
 from time import time
 
-from nw.project.status import NWStatus
-from nw.project.item import NWItem
 from nw.tools import projectMaintenance, OptionState
 from nw.common import checkString, checkBool, checkInt
 from nw.constants import (
@@ -49,9 +52,14 @@ class NWProject():
     def __init__(self, theParent):
 
         # Internal
-        self.theParent   = theParent
-        self.mainConf    = self.theParent.mainConf
-        self.optState    = OptionState(self)
+        self.theParent = theParent
+        self.mainConf  = nw.CONFIG
+
+        # Core Elements
+        self.optState = OptionState(self) # Project-specific GUI options
+        self.projTree = NWTree(self)      # The project tree
+
+        # Project Status
         self.projOpened  = None # The time stamp of when the project file was opened
         self.projChanged = None # The project has unsaved changes
         self.projAltered = None # The project has been altered this session
@@ -59,18 +67,11 @@ class NWProject():
         self.saveCount   = None # Meta data: number of saves
         self.autoCount   = None # Meta data: number of automatic saves
 
-        # Debug
-        self.handleSeed = None
-
         # Class Settings
-        self.projTree  = None # Holds all the items of the project
-        self.treeOrder = None # The order of the tree items on the tree view
-        self.treeRoots = None # The root items of the tree
-        self.trashRoot = None # The handle of the trash root folder
-        self.projPath  = None # The full path to where the currently open project is saved
-        self.projMeta  = None # The full path to the project's meta data folder
-        self.projDict  = None # The spell check dictionary
-        self.projFile  = None # The file name of the project main xml file
+        self.projPath = None # The full path to where the currently open project is saved
+        self.projMeta = None # The full path to the project's meta data folder
+        self.projDict = None # The spell check dictionary
+        self.projFile = None # The file name of the project main XML file
 
         # Project Meta
         self.projName    = None
@@ -104,7 +105,10 @@ class NWProject():
     ##
 
     def newRoot(self, rootName, rootClass):
-        if not self.checkRootUnique(rootClass):
+        """Add a new root item. These items are unique, except for item class
+        CUSTOM, and always have parent handle set to None.
+        """
+        if not self.projTree.checkRootUnique(rootClass):
             self.makeAlert("Duplicate root item detected!", nwAlert.ERROR)
             return None
         newItem = NWItem(self)
@@ -112,19 +116,24 @@ class NWProject():
         newItem.setType(nwItemType.ROOT)
         newItem.setClass(rootClass)
         newItem.setStatus(0)
-        self._appendItem(None,None,newItem)
+        self.projTree.append(None, None, newItem)
         return newItem.itemHandle
 
     def newFolder(self, folderName, folderClass, pHandle):
+        """Add a new folder with a given name and class and parent item.
+        """
         newItem = NWItem(self)
         newItem.setName(folderName)
         newItem.setType(nwItemType.FOLDER)
         newItem.setClass(folderClass)
         newItem.setStatus(0)
-        self._appendItem(None,pHandle,newItem)
+        self.projTree.append(None, pHandle, newItem)
         return newItem.itemHandle
 
     def newFile(self, fileName, fileClass, pHandle):
+        """Add a new file with a given name and class, and set a default
+        layout based on the class. SCENE for NOVEL, and otherwise NOTE.
+        """
         newItem = NWItem(self)
         newItem.setName(fileName)
         newItem.setType(nwItemType.FILE)
@@ -134,15 +143,17 @@ class NWProject():
             newItem.setLayout(nwItemLayout.NOTE)
         newItem.setClass(fileClass)
         newItem.setStatus(0)
-        self._appendItem(None,pHandle,newItem)
+        self.projTree.append(None, pHandle, newItem)
         return newItem.itemHandle
 
     def addTrash(self):
+        """Add the special trash root folder to the project.
+        """
         newItem = NWItem(self)
         newItem.setName("Trash")
         newItem.setType(nwItemType.TRASH)
         newItem.setClass(nwItemClass.TRASH)
-        self._appendItem(None,None,newItem)
+        self.projTree.append(None, None, newItem)
         return newItem.itemHandle
 
     ##
@@ -150,6 +161,9 @@ class NWProject():
     ##
 
     def newProject(self):
+        """Create a new project by populating the project tree with a
+        few starter items.
+        """
         hNovel = self.newRoot("Novel",         nwItemClass.NOVEL)
         hChars = self.newRoot("Characters",    nwItemClass.CHARACTER)
         hWorld = self.newRoot("Plot",          nwItemClass.PLOT)
@@ -165,17 +179,17 @@ class NWProject():
         default values.
         """
 
+        # Project Status
         self.projOpened  = None
         self.projChanged = None
         self.projAltered = False
         self.saveCount   = 0
         self.autoCount   = 0
 
+        # Project Tree
+        self.projTree.clear()
+
         # Project Settings
-        self.projTree    = {}
-        self.treeOrder   = []
-        self.treeRoots   = []
-        self.trashRoot   = None
         self.projPath    = None
         self.projMeta    = None
         self.projDict    = None
@@ -334,20 +348,9 @@ class NWProject():
             elif xChild.tag == "content":
                 logger.debug("Found project content")
                 for xItem in xChild:
-                    itemAttrib = xItem.attrib
-                    if "handle" in xItem.attrib:
-                        tHandle = itemAttrib["handle"]
-                    else:
-                        logger.error("Skipping entry missing handle")
-                        continue
-                    if "parent" in xItem.attrib:
-                        pHandle = itemAttrib["parent"]
-                    else:
-                        pHandle = None
                     nwItem = NWItem(self)
-                    for xValue in xItem:
-                        nwItem.setFromTag(xValue.tag,xValue.text)
-                    self._appendItem(tHandle,pHandle,nwItem)
+                    if nwItem.unpackXML(xItem):
+                        self.projTree.append(nwItem.itemHandle, nwItem.parHandle, nwItem)
 
         self.optState.loadSettings()
 
@@ -425,9 +428,9 @@ class NWProject():
 
         # Save Tree Content
         logger.debug("Writing project content")
-        xContent = etree.SubElement(nwXML, "content", attrib={"count":str(len(self.treeOrder))})
-        for tHandle in self.treeOrder:
-            self.projTree[tHandle].packXML(xContent)
+        xContent = etree.SubElement(nwXML, "content", attrib={"count":str(len(self.projTree))})
+        for tItem in self.projTree:
+            tItem.packXML(xContent)
 
         # Write the xml tree to file
         tempFile = path.join(self.projPath, self.projFile+"~")
@@ -476,7 +479,7 @@ class NWProject():
         return True
 
     ##
-    #  Set Functions
+    #  Setters
     ##
 
     def setProjectPath(self, projPath):
@@ -540,9 +543,9 @@ class NWProject():
         return True
 
     def setTreeOrder(self, newOrder):
-        if len(self.treeOrder) != len(newOrder):
+        if len(self.projTree) != len(newOrder):
             logger.warning("Size of new and old tree order does not match")
-        self.treeOrder = newOrder
+        self.projTree.setOrder(newOrder)
         self.setProjectChanged(True)
         return True
 
@@ -566,8 +569,8 @@ class NWProject():
 
     def setStatusColours(self, newCols):
         replaceMap = self.statusItems.setNewEntries(newCols)
-        if self.projTree is not None:
-            for nwItem in self.projTree.values():
+        if self.projTree:
+            for nwItem in self.projTree:
                 if nwItem.itemClass == nwItemClass.NOVEL:
                     if nwItem.itemStatus in replaceMap.keys():
                         nwItem.setStatus(replaceMap[nwItem.itemStatus])
@@ -576,8 +579,8 @@ class NWProject():
 
     def setImportColours(self, newCols):
         replaceMap = self.importItems.setNewEntries(newCols)
-        if self.projTree is not None:
-            for nwItem in self.projTree.values():
+        if self.projTree:
+            for nwItem in self.projTree:
                 if nwItem.itemClass != nwItemClass.NOVEL:
                     if nwItem.itemStatus in replaceMap.keys():
                         nwItem.setStatus(replaceMap[nwItem.itemStatus])
@@ -597,73 +600,29 @@ class NWProject():
         return self.projChanged
 
     ##
-    #  Get Functions
+    #  Getters
     ##
 
-    def getItem(self, tHandle):
-        """Return a project item based on its handle. Returns None if
-        the handle doesn't exist in the project.
-        """
-        if tHandle in self.projTree:
-            return self.projTree[tHandle]
-        logger.error("No tree item with handle %s" % str(tHandle))
-        return None
-
     def getSessionWordCount(self):
+        """Returns the number of words added or removed this session.
+        """
         return self.currWCount - self.lastWCount
 
-    def getRootItem(self, tHandle):
-        """Iterate upwards in the tree until we find the item with
-        parent None, the root item. We do this with a for loop with a
-        maximum depth of 200 to make infinite loops impossible.
-        """
-        tItem = self.getItem(tHandle)
-        if tItem is not None:
-            for i in range(200):
-                if tItem.parHandle is None:
-                    return tHandle
-                else:
-                    tHandle = tItem.parHandle
-                    tItem   = self.getItem(tHandle)
-                    if tItem is None:
-                        return tHandle
-        return None
-
-    def getItemPath(self, tHandle):
-        """Iterate upwards in the tree until we find the item with
-        parent None, the root item, and return the list of handles.
-        We do this with a for loop with a maximum depth of 200 to make
-        infinite loops impossible.
-        """
-        tTree = []
-        tItem = self.getItem(tHandle)
-        if tItem is not None:
-            tTree.append(tHandle)
-            for i in range(200):
-                if tItem.parHandle is None:
-                    return tTree
-                else:
-                    tHandle = tItem.parHandle
-                    tItem   = self.getItem(tHandle)
-                    if tItem is None:
-                        return tTree
-                    else:
-                        tTree.append(tHandle)
-        return tTree
-
     def getProjectItems(self):
-        """This function is called from the tree view when building the
-        tree. Each item in the project is returned in the order saved in
-        the project file, but first it checks that it has a parent item
-        already sent to the tree.
+        """This function ensures that the item tree loaded is sent to
+        the GUI tree view in such a way that the tree can be built. That
+        is, the parent item must be sent before its child. In principle,
+        a proper XML file will already ensure that, but in the event the
+        order has been altered, or a file is orphaned, this function is
+        capable of handling it.
         """
         sentItems = []
-        iterItems = self.treeOrder.copy()
-        n    = 0
+        iterItems = self.projTree.handles()
+        n = 0
         nMax = len(iterItems)
         while n < nMax:
             tHandle = iterItems[n]
-            tItem   = self.getItem(tHandle)
+            tItem   = self.projTree[tHandle]
             n += 1
             if n > 10000:
                 return # Just in case
@@ -696,43 +655,13 @@ class NWProject():
     #  Class Methods
     ##
 
-    def deleteItem(self, tHandle):
-        """This only removes the item from the order list, but not from
-        the project tree.
-        """
-        if tHandle not in self.treeOrder:
-            logger.warning(
-                "Could not remove item %s from treeOrder as it does not exist" % tHandle
-            )
-            return False
-        self.treeOrder.remove(tHandle)
-        self.setProjectChanged(True)
-        return True
-
-    def findRootItem(self, theClass):
-        for aRoot in self.treeRoots:
-            if theClass == self.projTree[aRoot].itemClass:
-                return self.projTree[aRoot].itemHandle
-        return None
-
-    def checkRootUnique(self, theClass):
-        """Checks if there already is a root entry of class 'theClass'
-        in the root of the project tree.
-        """
-        if theClass == nwItemClass.CUSTOM:
-            return True
-        for aRoot in self.treeRoots:
-            if theClass == self.projTree[aRoot].itemClass:
-                return False
-        return True
-
     def countStatus(self):
         """Count how many times the various status flags are used in the
         project tree.
         """
         self.statusItems.resetCounts()
         self.importItems.resetCounts()
-        for nwItem in self.projTree.values():
+        for nwItem in self.projTree:
             if nwItem.itemClass == nwItemClass.NOVEL:
                 self.statusItems.countEntry(nwItem.itemStatus)
             else:
@@ -832,6 +761,11 @@ class NWProject():
         return
 
     def _scanProjectFolder(self):
+        """Scan the project folder and check that the files in it are
+        also in the project CML file. If they aren't, import them as
+        orphaned files so the user can either delete them, or put them
+        back into the project tree.
+        """
 
         if self.projPath is None:
             return
@@ -855,7 +789,7 @@ class NWProject():
                 logger.warning("Skipping file %s" % fileItem)
                 continue
             fHandle = fileItem[5]+fileItem[7:19]
-            if fHandle in self.treeOrder:
+            if fHandle in self.projTree:
                 logger.debug("Checking file %s, handle %s: OK" % (fileItem,fHandle))
             else:
                 logger.debug("Checking file %s, handle %s: Orphaned" % (fileItem,fHandle))
@@ -875,42 +809,18 @@ class NWProject():
         nOrph = 0
         for oHandle in orphanFiles:
             nOrph += 1
-            orItem = NWItem(self)
-            orItem.setName("Orphaned File %d" % nOrph)
-            orItem.setType(nwItemType.FILE)
-            orItem.setClass(nwItemClass.NO_CLASS)
-            orItem.setLayout(nwItemLayout.NO_LAYOUT)
-            self._appendItem(oHandle,None,orItem)
-
-        return
-
-    def _appendItem(self, tHandle, pHandle, nwItem):
-        tHandle = checkString(tHandle,self._makeHandle(),False)
-        pHandle = checkString(pHandle,None,True)
-        logger.verbose("Adding entry %s with parent %s" % (str(tHandle),str(pHandle)))
-
-        nwItem.setHandle(tHandle)
-        nwItem.setParent(pHandle)
-
-        self.projTree[tHandle] = nwItem
-        self.treeOrder.append(tHandle)
-
-        if nwItem.itemType == nwItemType.ROOT:
-            logger.verbose("Entry %s is a root item" % str(tHandle))
-            self.treeRoots.append(tHandle)
-
-        if nwItem.itemType == nwItemType.TRASH:
-            if self.trashRoot is None:
-                logger.verbose("Entry %s is the trash folder" % str(tHandle))
-                self.trashRoot = tHandle
-            else:
-                logger.error("Only one trash folder allowed")
-
-        self.setProjectChanged(True)
+            orphItem = NWItem(self)
+            orphItem.setName("Orphaned File %d" % nOrph)
+            orphItem.setType(nwItemType.FILE)
+            orphItem.setClass(nwItemClass.NO_CLASS)
+            orphItem.setLayout(nwItemLayout.NO_LAYOUT)
+            self.projTree.append(oHandle, None, orphItem)
 
         return
 
     def _appendSessionStats(self):
+        """Append session statistics to the sessions log file.
+        """
 
         if self.projMeta is None:
             return False
@@ -930,18 +840,633 @@ class NWProject():
 
         return True
 
+# END Class NWProject
+
+# ================================================================================================ #
+#  NWTree
+#  Class holding the project tree for the NWProject
+# ================================================================================================ #
+
+class NWTree():
+
+    def __init__(self, theProject):
+
+        self.theProject = theProject
+
+        self._projTree  = {} # Holds all the items of the project
+        self._treeOrder = [] # The order of the tree items on the tree view
+        self._treeRoots = [] # The root items of the tree
+        self._trashRoot = "" # The handle of the trash root folder
+
+        self._theLength   = 0     # Always the length of _treeOrder
+        self._theIndex    = 0     # The current iterator index
+        self._treeChanged = False # True if tree structure has changed
+
+        self._handleSeed = None # Used for generating handles for testing
+
+        return
+
+    ##
+    #  Class Methods
+    ##
+
+    def clear(self):
+        """Clear the item tree entirely.
+        """
+        self._projTree  = {}
+        self._treeOrder = []
+        self._treeRoots = []
+        self._trashRoot = ""
+        self._theLength = 0
+        self._theIndex  = 0
+        self._treeChanged = False
+        return
+
+    def handles(self):
+        """Returns a copy of the list of all the active handles.
+        """
+        return self._treeOrder.copy()
+
+    def append(self, tHandle, pHandle, nwItem):
+        """Add a new item to the end of the tree.
+        """
+        tHandle = checkString(tHandle, None, True)
+        pHandle = checkString(pHandle, None, True)
+        if tHandle is None:
+            tHandle = self._makeHandle()
+
+        logger.verbose("Adding entry %s with parent %s" % (str(tHandle), str(pHandle)))
+
+        nwItem.setHandle(tHandle)
+        nwItem.setParent(pHandle)
+
+        self._projTree[tHandle] = nwItem
+        self._treeOrder.append(tHandle)
+
+        if nwItem.itemType == nwItemType.ROOT:
+            logger.verbose("Entry %s is a root item" % str(tHandle))
+            self._treeRoots.append(tHandle)
+
+        if nwItem.itemType == nwItemType.TRASH:
+            if self._trashRoot is None:
+                logger.verbose("Entry %s is the trash folder" % str(tHandle))
+                self._trashRoot = tHandle
+            else:
+                logger.error("Only one trash folder allowed")
+
+        self._theLength = len(self._treeOrder)
+        self._setTreeChanged(True)
+
+        return
+
+    ##
+    #  Tree Structure Methods
+    ##
+
+    def trashRoot(self):
+        """Returns the handle of the trash folder, or None if there
+        isn't one.
+        """
+        if self._trashRoot:
+            return self._trashRoot
+        return None
+
+    def findRoot(self, theClass):
+        """Find the root item for a given class.
+        Note: This returns the first item for class CUSTOM.
+        """
+        for aRoot in self._treeRoots:
+            tItem = self.__getitem__(aRoot)
+            if tItem is None:
+                continue
+            if theClass == tItem.itemClass:
+                return tItem.itemHandle
+        return None
+
+    def checkRootUnique(self, theClass):
+        """Checks if there already is a root entry of class 'theClass'
+        in the root of the project tree.
+        """
+        if theClass == nwItemClass.CUSTOM:
+            return True
+        for aRoot in self._treeRoots:
+            tItem = self.__getitem__(aRoot)
+            if theClass == tItem.itemClass:
+                return False
+        return True
+
+    def getRootItem(self, tHandle):
+        """Iterate upwards in the tree until we find the item with
+        parent None, the root item. We do this with a for loop with a
+        maximum depth of 200 to make infinite loops impossible.
+        """
+        tItem = self.__getitem__(tHandle)
+        if tItem is not None:
+            for i in range(200):
+                if tItem.parHandle is None:
+                    return tHandle
+                else:
+                    tHandle = tItem.parHandle
+                    tItem   = self.__getitem__(tHandle)
+                    if tItem is None:
+                        return tHandle
+        return None
+
+    def getItemPath(self, tHandle):
+        """Iterate upwards in the tree until we find the item with
+        parent None, the root item, and return the list of handles.
+        We do this with a for loop with a maximum depth of 200 to make
+        infinite loops impossible.
+        """
+        tTree = []
+        tItem = self.__getitem__(tHandle)
+        if tItem is not None:
+            tTree.append(tHandle)
+            for i in range(200):
+                if tItem.parHandle is None:
+                    return tTree
+                else:
+                    tHandle = tItem.parHandle
+                    tItem   = self.__getitem__(tHandle)
+                    if tItem is None:
+                        return tTree
+                    else:
+                        tTree.append(tHandle)
+        return tTree
+
+    ##
+    #  Setters
+    ##
+
+    def setOrder(self, newOrder):
+        """Reorders the tree based on a list of items.
+        """
+        tmpOrder = []
+
+        # Add all known elements to a new temp list
+        for tHandle in newOrder:
+            if tHandle in self._projTree:
+                tmpOrder.append(tHandle)
+            else:
+                logger.error("Handle %s in new tree order is not in project tree" % tHandle)
+
+        # Do a reverse lookup to check for items that will be lost
+        # This is mainly for debugging purposes
+        for tHandle in self._treeOrder:
+            if tHandle not in tmpOrder:
+                logger.warning("Handle %s in old tree order is not in new tree order" % tHandle)
+
+        # Save the temp list
+        self._treeOrder = tmpOrder
+        self._theLength = len(self._treeOrder)
+        self._setTreeChanged(True)
+
+        return
+
+    def setSeed(self, theSeed):
+        """Used for debugging!
+        Sets a seed for generating handles so that they always come out
+        in a predictable order.
+        """
+        self._handleSeed = theSeed
+        return
+
+    ##
+    #  Meta Methods
+    ##
+
+    def __len__(self):
+        return self._theLength
+
+    def __bool__(self):
+        return self._theLength > 0
+
+    ##
+    #  Item Access Methods
+    ##
+
+    def __getitem__(self, tHandle):
+        """Return a project item based on its handle. Returns None if
+        the handle doesn't exist in the project.
+        """
+        if tHandle in self._projTree:
+            return self._projTree[tHandle]
+        logger.error("No tree item with handle %s" % str(tHandle))
+        return None
+
+    def __delitem__(self, tHandle):
+        """This only removes the item from the order list, but not from
+        the project tree.
+        """
+        if tHandle not in self._treeOrder:
+            logger.warning(
+                "Could not remove item %s from project tree as it does not exist" % tHandle
+            )
+            return False
+        self._treeOrder.remove(tHandle)
+        self._theLength = len(self._treeOrder)
+        self._setTreeChanged(True)
+        return True
+
+    def __contains__(self, tHandle):
+        """Checks if a handle exists in the tree.
+        """
+        return tHandle in self._treeOrder
+
+    ##
+    #  Iterator Methods
+    ##
+
+    def __iter__(self):
+        """Initiates the iterator.
+        """
+        self._theIndex = 0
+        return self
+
+    def __next__(self):
+        """Returns the item from the next entry in the _treeOrder list.
+        """
+        if self._theIndex < self._theLength:
+            theItem = self.__getitem__(self._treeOrder[self._theIndex])
+            self._theIndex += 1
+            return theItem
+        else:
+            raise StopIteration
+
+    ##
+    #  Internal Functions
+    ##
+
+    def _setTreeChanged(self, theState):
+        """Set the changed flag to theState, and if being set to True,
+        propagate that state change to the parent NWProject class.
+        """
+        self._treeChanged = theState
+        if theState:
+            self.theProject.setProjectChanged(True)
+        return
+
     def _makeHandle(self, addSeed=""):
-        if self.handleSeed is None:
+        """Generate a unique item handle. In the unlikely event that the
+        key already exists, salt the seed and generate a new handle.
+        """
+        if self._handleSeed is None:
             newSeed = str(time()) + addSeed
         else:
             # This is used for debugging
-            newSeed = str(self.handleSeed)
-            self.handleSeed += 1
+            newSeed = str(self._handleSeed)
+            self._handleSeed += 1
         logger.verbose("Generating handle with seed '%s'" % newSeed)
         itemHandle = sha256(newSeed.encode()).hexdigest()[0:13]
-        if itemHandle in self.projTree.keys():
+        if itemHandle in self._projTree:
             logger.warning("Duplicate handle encountered! Retrying ...")
             itemHandle = self._makeHandle(addSeed+"!")
         return itemHandle
 
-# END Class NWProject
+# END Class NWTree
+
+# ================================================================================================ #
+#  NWItem
+#  Class holding the project items making up the NWProject
+# ================================================================================================ #
+
+class NWItem():
+
+    def __init__(self, theProject):
+
+        self.theProject = theProject
+
+        self.itemName   = ""
+        self.itemHandle = None
+        self.parHandle  = None
+        self.itemOrder  = None
+        self.itemType   = nwItemType.NO_TYPE
+        self.itemClass  = nwItemClass.NO_CLASS
+        self.itemLayout = nwItemLayout.NO_LAYOUT
+        self.itemStatus = None
+        self.isExpanded = False
+
+        # Document Meta Data
+        self.charCount = 0
+        self.wordCount = 0
+        self.paraCount = 0
+        self.cursorPos = 0
+
+        return
+
+    ##
+    #  XML Pack/Unpack
+    ##
+
+    def packXML(self, xParent):
+        """Packs all the data in the class instance into an XML object.
+        """
+        xPack = etree.SubElement(xParent,"item",attrib={
+            "handle" : str(self.itemHandle),
+            "order"  : str(self.itemOrder),
+            "parent" : str(self.parHandle),
+        })
+        xSub = self._subPack(xPack,"name",     text=str(self.itemName))
+        xSub = self._subPack(xPack,"type",     text=str(self.itemType.name))
+        xSub = self._subPack(xPack,"class",    text=str(self.itemClass.name))
+        xSub = self._subPack(xPack,"status",   text=str(self.itemStatus))
+        xSub = self._subPack(xPack,"expanded", text=str(self.isExpanded))
+        if self.itemType == nwItemType.FILE:
+            xSub = self._subPack(xPack,"layout",    text=str(self.itemLayout.name))
+            xSub = self._subPack(xPack,"charCount", text=str(self.charCount), none=False)
+            xSub = self._subPack(xPack,"wordCount", text=str(self.wordCount), none=False)
+            xSub = self._subPack(xPack,"paraCount", text=str(self.paraCount), none=False)
+            xSub = self._subPack(xPack,"cursorPos", text=str(self.cursorPos), none=False)
+        return
+
+    def unpackXML(self, xItem):
+        """Sets the values from an XML entry of type 'item'.
+        """
+
+        if xItem.tag != "item":
+            logger.error("XML entry is not an NWItem")
+            return False
+
+        if "handle" in xItem.attrib:
+            self.itemHandle = xItem.attrib["handle"]
+        else:
+            logger.error("XML item entry does not have a handle")
+            return False
+
+        if "parent" in xItem.attrib:
+            self.parHandle = xItem.attrib["parent"]
+
+        setMap = {
+            "name"      : self.setName,
+            "order"     : self.setOrder,
+            "type"      : self.setType,
+            "class"     : self.setClass,
+            "layout"    : self.setLayout,
+            "status"    : self.setStatus,
+            "expanded"  : self.setExpanded,
+            "charCount" : self.setCharCount,
+            "wordCount" : self.setWordCount,
+            "paraCount" : self.setParaCount,
+            "cursorPos" : self.setCursorPos,
+        }
+        for xValue in xItem:
+            if xValue.tag in setMap:
+                setMap[xValue.tag](xValue.text)
+            else:
+                logger.error("Unknown tag '%s'" % xValue.tag)
+
+        return True
+
+    @staticmethod
+    def _subPack(xParent, name, attrib=None, text=None, none=True):
+        if not none and (text == None or text == "None"):
+            return None
+        xSub = etree.SubElement(xParent,name,attrib=attrib)
+        if text is not None:
+            xSub.text = text
+        return xSub
+
+    ##
+    #  Set Item Values
+    ##
+
+    def setName(self, theName):
+        self.itemName = theName.strip()
+        return
+
+    def setHandle(self, theHandle):
+        if isinstance(theHandle, str):
+            if len(theHandle) == 13:
+                self.itemHandle = theHandle
+            else:
+                self.itemHandle = None
+        else:
+            self.itemHandle = None
+        return
+
+    def setParent(self, theParent):
+        if theParent is None:
+            self.parHandle = None
+        elif isinstance(theParent, str):
+            if len(theParent) == 13:
+                self.parHandle = theParent
+            else:
+                self.parHandle = None
+        else:
+            self.parHandle = None
+        return
+
+    def setOrder(self, theOrder):
+        self.itemOrder = checkInt(theOrder, 0)
+        return
+
+    def setType(self, theType):
+        if isinstance(theType, nwItemType):
+            self.itemType = theType
+        elif theType in nwItemType.__members__:
+            self.itemType = nwItemType[theType]
+        else:
+            logger.error("Unrecognised item type '%s'" % theType)
+            self.itemType = nwItemType.NO_TYPE
+        return
+
+    def setClass(self, theClass):
+        if isinstance(theClass, nwItemClass):
+            self.itemClass = theClass
+        elif theClass in nwItemClass.__members__:
+            self.itemClass = nwItemClass[theClass]
+        else:
+            logger.error("Unrecognised item class '%s'" % theClass)
+            self.itemClass = nwItemClass.NO_CLASS
+        return
+
+    def setLayout(self, theLayout):
+        if isinstance(theLayout, nwItemLayout):
+            self.itemLayout = theLayout
+        elif theLayout in nwItemLayout.__members__:
+            self.itemLayout = nwItemLayout[theLayout]
+        else:
+            logger.error("Unrecognised item layout '%s'" % theLayout)
+            self.itemLayout = nwItemLayout.NO_LAYOUT
+        return
+
+    def setStatus(self, theStatus):
+        if self.itemClass == nwItemClass.NOVEL:
+            self.itemStatus = self.theProject.statusItems.checkEntry(theStatus)
+        else:
+            self.itemStatus = self.theProject.importItems.checkEntry(theStatus)
+        return
+
+    def setExpanded(self, expState):
+        if isinstance(expState, str):
+            self.isExpanded = expState == str(True)
+        else:
+            self.isExpanded = expState == True
+        return
+
+    ##
+    #  Set Document Meta Data
+    ##
+
+    def setCharCount(self, theCount):
+        self.charCount = checkInt(theCount,0)
+        return
+
+    def setWordCount(self, theCount):
+        self.wordCount = checkInt(theCount,0)
+        return
+
+    def setParaCount(self, theCount):
+        self.paraCount = checkInt(theCount,0)
+        return
+
+    def setCursorPos(self, thePosition):
+        self.cursorPos = checkInt(thePosition,0)
+        return
+
+# END Class NWItem
+
+# ================================================================================================ #
+#  NWStatus
+#  Class holding the item status values stored in the NWProject
+# ================================================================================================ #
+
+class NWStatus():
+
+    def __init__(self):
+        self.theLabels  = []
+        self.theColours = []
+        self.theCounts  = []
+        self.theMap     = {}
+        self.theLength  = 0
+        self.theIndex   = 0
+        return
+
+    def addEntry(self, theLabel, theColours):
+        theLabel = theLabel.strip()
+        if self.lookupEntry(theLabel) is None:
+            self.theLabels.append(theLabel)
+            self.theColours.append(theColours)
+            self.theCounts.append(0)
+            self.theMap[theLabel] = self.theLength
+            self.theLength += 1
+        return True
+
+    def lookupEntry(self, theLabel):
+        if theLabel is None:
+            return None
+        theLabel = theLabel.strip()
+        if theLabel in self.theMap.keys():
+            return self.theMap[theLabel]
+        return None
+
+    def checkEntry(self, theStatus):
+        if isinstance(theStatus, str):
+            theStatus = theStatus.strip()
+            if self.lookupEntry(theStatus) is not None:
+                return theStatus
+        theStatus = checkInt(theStatus, 0, False)
+        if theStatus >= 0 and theStatus < self.theLength:
+            return self.theLabels[theStatus]
+
+    def setNewEntries(self, newList):
+
+        replaceMap = {}
+
+        if newList is not None:
+
+            self.theLabels  = []
+            self.theColours = []
+            self.theCounts  = []
+            self.theMap     = {}
+            self.theLength  = 0
+            self.theIndex   = 0
+
+            for nName, nR, nG, nB, oName in newList:
+                self.addEntry(nName, (nR, nG, nB))
+                if nName != oName and oName is not None:
+                    replaceMap[oName] = nName
+
+        return replaceMap
+
+    def resetCounts(self):
+        self.theCounts = [0]*self.theLength
+        return
+
+    def countEntry(self, theLabel):
+        theIndex = self.lookupEntry(theLabel)
+        if theIndex is not None:
+            self.theCounts[theIndex] += 1
+        return
+
+    def packEntries(self, xParent):
+        """Pack the status entries into an XML object for saving to the
+        main project file.
+        """
+        for n in range(self.theLength):
+            xSub = etree.SubElement(xParent,"entry",attrib={
+                "blue"  : str(self.theColours[n][2]),
+                "green" : str(self.theColours[n][1]),
+                "red"   : str(self.theColours[n][0]),
+            })
+            xSub.text = self.theLabels[n]
+        return True
+
+    def unpackEntries(self, xParent):
+        """Unpack an XML tree and set the class values.
+        """
+
+        theLabels  = []
+        theColours = []
+
+        for xChild in xParent:
+            theLabels.append(xChild.text)
+            if "red" in xChild.attrib:
+                cR = checkInt(xChild.attrib["red"],0,False)
+            else:
+                cR = 0
+            if "green" in xChild.attrib:
+                cG = checkInt(xChild.attrib["green"],0,False)
+            else:
+                cG = 0
+            if "blue" in xChild.attrib:
+                cB = checkInt(xChild.attrib["blue"],0,False)
+            else:
+                cB = 0
+            theColours.append((cR,cG,cB))
+
+        if len(theLabels) > 0:
+            self.theLabels  = []
+            self.theColours = []
+            self.theCounts  = []
+            self.theMap     = {}
+            self.theLength  = 0
+            self.theIndex   = 0
+
+            for n in range(len(theLabels)):
+                self.addEntry(theLabels[n], theColours[n])
+
+        return True
+
+    ##
+    #  Iterator Bits
+    ##
+
+    def __getitem__(self, n):
+        if n >= 0 and n < self.theLength:
+            return self.theLabels[n], self.theColours[n], self.theCounts[n]
+        return None, None, None
+
+    def __iter__(self):
+        self.theIndex = 0
+        return self
+
+    def __next__(self):
+        if self.theIndex < self.theLength:
+            theLabel, theColour, theCount = self.__getitem__(self.theIndex)
+            self.theIndex += 1
+            return theLabel, theColour, theCount
+        else:
+            raise StopIteration
+
+# END Class NWStatus

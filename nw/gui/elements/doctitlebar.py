@@ -87,15 +87,15 @@ class GuiDocTitleBar(QLabel):
 
         if self.mainConf.showFullPath:
             tTitle = []
-            tTree = self.theProject.getItemPath(tHandle)
+            tTree = self.theProject.projTree.getItemPath(tHandle)
             for aHandle in reversed(tTree):
-                nwItem = self.theProject.getItem(aHandle)
+                nwItem = self.theProject.projTree[aHandle]
                 if nwItem is not None:
                     tTitle.append(nwItem.itemName)
             sSep = "  %s  " % nwUnicode.U_RSAQUO
             self.setText(sSep.join(tTitle))
         else:
-            nwItem = self.theProject.getItem(tHandle)
+            nwItem = self.theProject.projTree[tHandle]
             if nwItem is None:
                 return False
 

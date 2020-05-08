@@ -228,7 +228,7 @@ class GuiDocHighlighter(QSyntaxHighlighter):
             return
 
         if theText.startswith("@"): # Keywords and commands
-            tItem = self.theParent.theProject.getItem(self.theHandle)
+            tItem = self.theParent.theProject.projTree[self.theHandle]
             isValid, theBits, thePos = self.theIndex.scanThis(theText)
             isGood = self.theIndex.checkThese(theBits, tItem)
             if isValid:

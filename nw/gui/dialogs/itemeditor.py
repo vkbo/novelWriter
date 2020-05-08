@@ -48,7 +48,7 @@ class GuiItemEditor(QDialog):
         self.mainConf   = nw.CONFIG
         self.theProject = theProject
         self.theParent  = theParent
-        self.theItem    = self.theProject.getItem(tHandle)
+        self.theItem    = self.theProject.projTree[tHandle]
 
         self.outerBox = QHBoxLayout()
         self.innerBox = QVBoxLayout()
