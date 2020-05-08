@@ -38,6 +38,7 @@ from lxml import etree
 from hashlib import sha256
 from datetime import datetime
 from time import time
+from shutil import make_archive
 
 from nw.tools import projectMaintenance, OptionState
 from nw.common import checkString, checkBool, checkInt
@@ -476,6 +477,80 @@ class NWProject():
         self._clearLockFile()
         self.clearProject()
         self.lockedBy = None
+        return True
+
+    ##
+    #  Backup Project
+    ##
+
+    def zipIt(self, doNotify):
+        """Create a zip file of the entire project.
+        """
+
+        logger.info("Backing up project")
+        self.theParent.statusBar.setStatus("Backing up project ...")
+
+        if self.mainConf.backupPath is None or self.mainConf.backupPath == "":
+            self.theParent.makeAlert((
+                "Cannot backup project because no backup path is set. "
+                "Please set a valid backup location in Tools > Preferences."
+            ), nwAlert.WARN)
+            return False
+
+        if self.projName is None or self.projName == "":
+            self.theParent.makeAlert((
+                "Cannot backup project because no project name is set. "
+                "Please set a Working Title in Project > Project Settings."
+            ), nwAlert.WARN)
+            return False
+
+        if not path.isdir(self.mainConf.backupPath):
+            self.theParent.makeAlert((
+                "Cannot backup project because the backup path does not exist. "
+                "Please set a valid backup location in Tools > Preferences."
+            ), nwAlert.WARN)
+            return False
+
+        cleanName = ""
+        for c in self.projName.strip():
+            if c.isalpha() or c.isdigit() or c == " ":
+                cleanName += c
+
+        baseDir = path.join(self.mainConf.backupPath, cleanName)
+        if not path.isdir(baseDir):
+            try:
+                mkdir(baseDir)
+                logger.debug("Created folder %s" % baseDir)
+            except Exception as e:
+                self.theParent.makeAlert(
+                    ["Could not create backup folder.",str(e)],
+                    nwAlert.ERROR
+                )
+                return False
+
+        archName = "Backup on %s" % datetime.now().strftime("%Y-%m-%d at %H.%M.%S")
+        baseName = path.join(baseDir, archName)
+
+        try:
+            self._clearLockFile()
+            make_archive(baseName, "zip", self.projPath, ".")
+            self._writeLockFile()
+            if doNotify:
+                self.theParent.makeAlert(
+                    "Backup archive file written to: '%s.zip'" % path.join(cleanName, archName),
+                    nwAlert.INFO
+                )
+            else:
+                logger.info("Backup written to: %s" % archName)
+        except Exception as e:
+            self.theParent.makeAlert(
+                ["Could not write backup archive.",str(e)],
+                nwAlert.ERROR
+            )
+            return False
+
+        self.theParent.statusBar.setStatus("Project backed up to '%s.zip'" % baseName)
+
         return True
 
     ##

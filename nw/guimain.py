@@ -45,7 +45,7 @@ from nw.gui import (
     GuiConfigEditor, GuiProjectEditor, GuiItemEditor, GuiProjectOutline,
     GuiSessionLogView, GuiDocMerge, GuiDocSplit, GuiProjectLoad
 )
-from nw.project import NWProject, NWDoc, NWIndex, NWBackup
+from nw.project import NWProject, NWDoc, NWIndex
 from nw.tools import countWords
 from nw.constants import nwFiles, nwItemType, nwAlert
 
@@ -333,7 +333,7 @@ class GuiMain(QMainWindow):
                     if msgRes != QMessageBox.Yes:
                         doBackup = False
             if doBackup:
-                self.backupProject()
+                self.theProject.zipIt(False)
         else:
             saveOK = True
 
@@ -448,13 +448,6 @@ class GuiMain(QMainWindow):
         self.theProject.saveProject(autoSave)
         self.theIndex.saveIndex()
 
-        return True
-
-    def backupProject(self):
-        """Trigger the project backup process.
-        """
-        theBackup = NWBackup(self, self.theProject)
-        theBackup.zipIt()
         return True
 
     ##
