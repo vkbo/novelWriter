@@ -3,7 +3,7 @@
 
  novelWriter – Project Wrapper
 ===============================
- Class holding a project
+ Class wrapping the data if a novelWriter project
 
  File History:
  Created: 2018-09-29 [0.0.1] NWProject
@@ -62,12 +62,12 @@ class NWProject():
         self.projTree = NWTree(self)      # The project tree
 
         # Project Status
-        self.projOpened  = None # The time stamp of when the project file was opened
-        self.projChanged = None # The project has unsaved changes
-        self.projAltered = None # The project has been altered this session
-        self.lockedBy    = None # Data on which computer has the project open
-        self.saveCount   = None # Meta data: number of saves
-        self.autoCount   = None # Meta data: number of automatic saves
+        self.projOpened  = 0     # The time stamp of when the project file was opened
+        self.projChanged = False # The project has unsaved changes
+        self.projAltered = False # The project has been altered this session
+        self.lockedBy    = None  # Data on which computer has the project open
+        self.saveCount   = None  # Meta data: number of saves
+        self.autoCount   = None  # Meta data: number of automatic saves
 
         # Class Settings
         self.projPath = None # The full path to where the currently open project is saved
@@ -76,23 +76,23 @@ class NWProject():
         self.projFile = None # The file name of the project main XML file
 
         # Project Meta
-        self.projName    = None
-        self.bookTitle   = None
-        self.bookAuthors = None
+        self.projName    = "" # Project name (working title)
+        self.bookTitle   = "" # The final title; should only be used for exports
+        self.bookAuthors = [] # A list of book authors
 
         # Various
-        self.autoReplace = None
+        self.autoReplace = {} # Text to auto-replace on exports
 
         # Project Settings
-        self.spellCheck  = False
-        self.autoOutline = True
-        self.statusItems = None
-        self.importItems = None
-        self.lastEdited  = None
-        self.lastViewed  = None
-        self.lastWCount  = 0
-        self.currWCount  = 0
-        self.doBackup    = True
+        self.spellCheck  = False # Controls the spellcheck-as-you-type feature
+        self.autoOutline = True  # If true, the Project Outline is updated automatically
+        self.statusItems = None  # Novel file progress status values
+        self.importItems = None  # Note file importance values
+        self.lastEdited  = None  # The handle of the last file to be edited
+        self.lastViewed  = None  # The handle of the last file to be viewed
+        self.lastWCount  = 0     # The project word count from last session
+        self.currWCount  = 0     # The project word count in current session
+        self.doBackup    = True  # Run project backup on exit
 
         # Set Defaults
         self.clearProject()
@@ -182,8 +182,8 @@ class NWProject():
         """
 
         # Project Status
-        self.projOpened  = None
-        self.projChanged = None
+        self.projOpened  = 0
+        self.projChanged = False
         self.projAltered = False
         self.saveCount   = 0
         self.autoCount   = 0
@@ -240,7 +240,7 @@ class NWProject():
         self.projDict = path.join(self.projMeta, nwFiles.PROJ_DICT)
 
         if not self._checkFolder(self.projMeta):
-            return
+            return False
 
         if overrideLock:
             self._clearLockFile()
@@ -384,8 +384,10 @@ class NWProject():
         self.projMeta = path.join(self.projPath,"meta")
         saveTime = time()
 
-        if not self._checkFolder(self.projPath): return
-        if not self._checkFolder(self.projMeta): return
+        if not self._checkFolder(self.projPath):
+            return False
+        if not self._checkFolder(self.projMeta):
+            return False
 
         logger.debug("Saving project: %s" % self.projPath)
 
@@ -559,6 +561,9 @@ class NWProject():
     ##
 
     def setProjectPath(self, projPath):
+        """Set the project storage path, and also expand ~ to the user
+        directory using the path library.
+        """
         if projPath is None or projPath == "":
             self.projPath = None
         else:
@@ -569,16 +574,23 @@ class NWProject():
         return True
 
     def setProjectName(self, projName):
+        """Set the project name (working title), This is the the title
+        used for backup files etc.
+        """
         self.projName = projName.strip()
         self.setProjectChanged(True)
         return True
 
     def setBookTitle(self, bookTitle):
+        """Set the boom title, that is, the title to include in exports.
+        """
         self.bookTitle = bookTitle.strip()
         self.setProjectChanged(True)
         return True
 
     def setBookAuthors(self, bookAuthors):
+        """A line separated list of book authors, parsed into an array.
+        """
         self.bookAuthors = []
         for bookAuthor in bookAuthors.split("\n"):
             bookAuthor = bookAuthor.strip()
@@ -589,36 +601,44 @@ class NWProject():
         return True
 
     def setProjBackup(self, doBackup):
-        self.doBackup = False
+        """Set whether projects should be backed up or not. The user
+        will notified in case dependant settings are missing.
+        """
+        self.doBackup = doBackup
         if doBackup:
             if not path.isdir(self.mainConf.backupPath):
                 self.theParent.makeAlert((
                     "You must set a valid backup path in preferences to use "
                     "the automatic project backup feature."
-                ), nwAlert.ERROR)
-                return False
+                ), nwAlert.WARN)
             if self.projName == "":
                 self.theParent.makeAlert((
                     "You must set a valid project name in project settings to "
                     "use the automatic project backup feature."
-                ), nwAlert.ERROR)
-                return False
-            self.doBackup = True
+                ), nwAlert.WARN)
         return True
 
     def setSpellCheck(self, theMode):
+        """Enable/disable spell checking.
+        """
         if self.spellCheck != theMode:
             self.spellCheck = theMode
             self.setProjectChanged(True)
         return True
 
     def setAutoOutline(self, theMode):
+        """Enable/disable automatic update of project outline.
+        """
         if self.autoOutline != theMode:
             self.autoOutline = theMode
             self.setProjectChanged(True)
         return True
 
     def setTreeOrder(self, newOrder):
+        """A list representing the liner/flattened order of project
+        items in the GUI project tree. The user can rearrange the order
+        by drag-and-drop. Forwarded to the NWTree class.
+        """
         if len(self.projTree) != len(newOrder):
             logger.warning("Size of new and old tree order does not match")
         self.projTree.setOrder(newOrder)
@@ -626,48 +646,64 @@ class NWProject():
         return True
 
     def setLastEdited(self, tHandle):
+        """Set last edited project item.
+        """
         if self.lastEdited != tHandle:
             self.lastEdited = tHandle
             self.setProjectChanged(True)
         return True
 
     def setLastViewed(self, tHandle):
+        """Set last viewed project item.
+        """
         if self.lastViewed != tHandle:
             self.lastViewed = tHandle
             self.setProjectChanged(True)
         return True
 
     def setProjectWordCount(self, theCount):
+        """Set the current project word count.
+        """
         if self.currWCount != theCount:
             self.currWCount = theCount
             self.setProjectChanged(True)
         return True
 
     def setStatusColours(self, newCols):
+        """Update the list of novel file status flags. Also iterate
+        through the project and replace keys that have been renamed.
+        """
         replaceMap = self.statusItems.setNewEntries(newCols)
-        if self.projTree:
-            for nwItem in self.projTree:
-                if nwItem.itemClass == nwItemClass.NOVEL:
-                    if nwItem.itemStatus in replaceMap.keys():
-                        nwItem.setStatus(replaceMap[nwItem.itemStatus])
+        for nwItem in self.projTree:
+            if nwItem.itemClass == nwItemClass.NOVEL:
+                if nwItem.itemStatus in replaceMap.keys():
+                    nwItem.setStatus(replaceMap[nwItem.itemStatus])
         self.setProjectChanged(True)
         return
 
     def setImportColours(self, newCols):
+        """Update the list of note file importance flags. Also iterate
+        through the project and replace keys that have been renamed.
+        """
         replaceMap = self.importItems.setNewEntries(newCols)
-        if self.projTree:
-            for nwItem in self.projTree:
-                if nwItem.itemClass != nwItemClass.NOVEL:
-                    if nwItem.itemStatus in replaceMap.keys():
-                        nwItem.setStatus(replaceMap[nwItem.itemStatus])
+        for nwItem in self.projTree:
+            if nwItem.itemClass != nwItemClass.NOVEL:
+                if nwItem.itemStatus in replaceMap.keys():
+                    nwItem.setStatus(replaceMap[nwItem.itemStatus])
         self.setProjectChanged(True)
         return
 
     def setAutoReplace(self, autoReplace):
+        """Update the auto-replace dictionary. This replaces the entire
+        dictionary, so alterations have to be made in a copy.
+        """
         self.autoReplace = autoReplace
         return
 
     def setProjectChanged(self, bValue):
+        """Toggle the project changed flag, and propagate the
+        information to the GUI statusbar.
+        """
         self.projChanged = bValue
         self.theParent.setProjectStatus(self.projChanged)
         if bValue:
@@ -733,7 +769,8 @@ class NWProject():
 
     def countStatus(self):
         """Count how many times the various status flags are used in the
-        project tree.
+        project tree. The counts themselves are kept in the NWStatus
+        objects. This is essentially a refresh.
         """
         self.statusItems.resetCounts()
         self.importItems.resetCounts()
@@ -838,7 +875,7 @@ class NWProject():
 
     def _scanProjectFolder(self):
         """Scan the project folder and check that the files in it are
-        also in the project CML file. If they aren't, import them as
+        also in the project XML file. If they aren't, import them as
         orphaned files so the user can either delete them, or put them
         back into the project tree.
         """
@@ -1019,7 +1056,8 @@ class NWTree():
 
     def checkRootUnique(self, theClass):
         """Checks if there already is a root entry of class 'theClass'
-        in the root of the project tree.
+        in the root of the project tree. CUSTOM class is skipped as it
+        is not required to be unique.
         """
         if theClass == nwItemClass.CUSTOM:
             return True
