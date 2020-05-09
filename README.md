@@ -167,4 +167,8 @@ They broadly follow Python PEP8, but there are a few modifications.
 
 ## Screenshot
 
-![Screenshot 1](docs/source/images/screenshot.png)
+**novelWriter with default system theme:**
+![Screenshot 1](docs/source/images/screenshot_default.png)
+
+**novelWriter with dark theme:**
+![Screenshot 1](docs/source/images/screenshot_dark.png)

@@ -16,57 +16,49 @@ The structure is instead dictated by the heading level.
 Four levels of headings are supported, signified by the number of hashes preceding the title.
 See the Markdown section.
 
-The header levels are not only important when generating the exported novel file, but is also used by the indexer and timeline view.
-Each heading starts a new region where new references to tags can be set, and will show up as a new row in the timeline view.
+The header levels are not only important when generating the exported novel file, but they are also used by the indexer and Outline View.
+Each heading starts a new region where new references to tags can be set.
 
 The different header levels are interpreted as specific section types of the novel.
 
 * ``# Header1``: Header level 1 signifies that the text refers to either the novel title or the name of a top level partition.
 * ``## Header2``: Header level 2 signifies a chapter level partition.
 * ``### Header3``: Header level 3 signifies a scene level partition.
-* ``#### Header4``: Header level 4 signifies a sub-scene level partition.
+* ``#### Header4``: Header level 4 signifies a sub-scene level partition (section).
 
 Tag References
 ==============
 
-Each section, indicated by a heading, can contain references to tags set in the supporting files of the project.
-See the File Tags section.
+Each partition, indicated by a heading, can contain references to tags set in the supporting files of the project.
 
-The references are gathered by the indexer and used to generate the timeline view of how the different parts of the novel are connected.
+The references are gathered by the indexer and used to generate the Outline View of how the different parts of the novel are connected.
 References and tags are also clickable in the view panel, and makes it easy to navigate reference notes while writing.
+For setting the targets of references, see the "Supporting Files" section.
 
 References are set as keyword and a list of corresponding tags.
 The valid keywords are listed below. The format of such a line is ``@keyword: value1, [value2] ... [valueN]``.
-Note that not all keywords allow multiple values.
+All keywords allow multiple values.
 
 * ``@pov``: The point-of-view character for the current section.
   The target must be a note tag in the character root folder.
-  Only one value is accepted. further values are ignored.
 * ``@char``: Other characters in the current section.
   The target must be a note tag in the character root folder.
-  Multiple values are allowed.
   This should not include the point-of-view character.
 * ``@plot``: The plot timelines touched by the current section.
   The target must be a note tag in the plot root folder.
-  Multiple values are allowed.
 * ``@time``: The timelines touched by the current section.
   The target must be a note tag in the timeline root folder.
-  Multiple values are allowed.
 * ``@location``: The location the current section takes place in.
   The target must be a note tag in the locations root folder.
-  Multiple values are allowed.
 * ``@object``: Objects present in the current section.
   The target must be a note tag in the object root folder.
-  Multiple values are allowed.
 * ``@entity``: Entities present in the current section.
   The target must be a note tag in the entities root folder.
-  Multiple values are allowed.
 * ``@custom``: Custom references in the current section.
   The target must be a note tag in the custom root folder.
-  Multiple values are allowed.
 
 The syntax highlighter will alert the user that only the correct keywords are used, and that the tags referenced exist.
-If the index of defined tags is out of date, press :kbd:`F9` to regenerate it, or select :menuselection:`Tools --> Rebuild Indices` from the menu.
+If the index of defined tags is out of date, press :kbd:`F9` to regenerate it, or select :menuselection:`Tools --> Rebuild Index` from the menu.
 In general, the index for a file is regenerated when a file is saved, so this shouldn't normally be necessary.
 
 Novel File Layout
@@ -96,6 +88,7 @@ the layout selected also shows up as flags in the tree view, making it easier to
   These will not impact the overall structure, but will allow for setting new characters and plot references in parts of a scene if such granularity is needed.
 * **Note**: A generic file that is optionally ignored when the novel is exported.
 
-The layout granularity is entirely optional.
-In principle, you can write the entire novel in a single file with layout "Book".
-You can also have a single file per chapter.
+.. note::
+   The layout granularity is entirely optional.
+   In principle, you can write the entire novel in a single file with layout "Book".
+   You can also have a single file per chapter.

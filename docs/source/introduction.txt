@@ -13,7 +13,7 @@ The user interface is intended to be as minimalistic as practically possible, wh
 
 .. note::
    novelWriter is not intended to be a full office type word processor.
-   It doesn't support images, links, tables, and its formatting is limited to headers, and bold, italics and underlined text.
+   It doesn't support images, links, tables, and its formatting is limited to headers, and bold, italicised and underlined text.
 
 Most features are accessible through the menu and through keyboard shortcuts.
 The colour scheme of the user interface can be modified with various themes, and new themes are fairly straight forward to add.
@@ -42,8 +42,15 @@ Additional export options are available through `Pandoc <https://pandoc.org/>`_.
 Currently, novelWriter will assist in converting the project to Open Office documents, Word documents, and epub.
 However, to be able to fully take advantage of the many features of Pandoc, you may want to run it yourself and use the novelWriter html or markdown export as input.
 
-screenshot
+Screenshot
 ----------
 
-.. image:: images/screenshot.png
+**novelWriter with default system theme:**
+
+.. image:: images/screenshot_default.png
+   :width: 800
+
+**novelWriter with dark theme:**
+
+.. image:: images/screenshot_dark.png
    :width: 800

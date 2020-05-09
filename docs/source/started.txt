@@ -34,7 +34,6 @@ The following Python packages are required to run novelWriter:
 The following are optional, but recommended:
 
 * ``pyenchant`` for spell checking
-* ``pycountry`` for translating language codes to language names
 * ``latexcodec`` for escaping unicode characters in LaTeX export
 * ``pypandoc`` for additional exports to Word, Open Office, eBooks, etc.
 
@@ -42,11 +41,13 @@ The following are optional, but recommended:
 Running novelWriter
 ===================
 
-If all the required dependencies are met, you can run novelWriter from the command line:
+If all the required dependencies are met, you can run novelWriter from the command line in one of the following ways:
 
 .. code-block:: console
 
    python novelWriter.py
+   python3 novelWriter.py
+   ./novelWriter.py
 
 A few switches are supported from the command line, mostly to assist in debugging if an error is encountered.
 To list all options, run:
