@@ -29,8 +29,9 @@ import logging
 import nw
 
 from PyQt5.QtCore import Qt
+from PyQt5.QtGui import QTextOption, QPalette, QColor
 from PyQt5.QtWidgets import (
-    QDialog
+    QDialog, QVBoxLayout, QHBoxLayout, QTextBrowser
 )
 
 from nw.constants import nwConst, nwFiles, nwAlert
@@ -49,6 +50,20 @@ class GuiBuildNovel(QDialog):
         self.theParent  = theParent
         self.optState   = self.theProject.optState
 
+        self.setWindowTitle("Build Project")
+        self.setMinimumWidth(400)
+        self.setMinimumHeight(400)
+
+        self.outerBox = QVBoxLayout()
+        self.innerBox = QHBoxLayout()
+
+        self.docView = GuiBuildNovelDocView(self, self.theProject)
+
+        # Assemble GUI
+        self.innerBox.addWidget(self.docView)
+        self.outerBox.addLayout(self.innerBox)
+        self.setLayout(self.outerBox)
+
         self.show()
 
         logger.debug("GuiBuildNovel initialisation complete")
@@ -56,3 +71,38 @@ class GuiBuildNovel(QDialog):
         return
 
 # END Class GuiBuildNovel
+
+class GuiBuildNovelDocView(QTextBrowser):
+
+    def __init__(self, theParent, theProject):
+        QTextBrowser.__init__(self, theParent)
+
+        logger.debug("Initialising GuiBuildNovelDocView ...")
+
+        self.mainConf   = nw.CONFIG
+        self.theProject = theProject
+        self.theParent  = theParent
+
+        self.qDocument = self.document()
+        self.setMinimumWidth(300)
+        self.setOpenExternalLinks(False)
+
+        theOpt = QTextOption()
+        if self.mainConf.doJustify:
+            theOpt.setAlignment(Qt.AlignJustify)
+        self.qDocument.setDefaultTextOption(theOpt)
+
+        docPalette = self.palette()
+        docPalette.setColor(QPalette.Base, QColor(255, 255, 255))
+        docPalette.setColor(QPalette.Text, QColor(  0,   0,   0))
+        self.setPalette(docPalette)
+
+        self.setHtml("<h1>Hello World</h1><p>Some text ...</p>")
+
+        self.show()
+
+        logger.debug("GuiBuildNovelDocView initialisation complete")
+
+        return
+
+# END Class GuiBuildNovelDocView
