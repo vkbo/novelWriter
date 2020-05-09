@@ -28,6 +28,10 @@
 import logging
 import nw
 
+from datetime import datetime
+
+from nw.constants import nwConst
+
 logger = logging.getLogger(__name__)
 
 def checkString(checkValue, defaultValue, allowNone=False):
@@ -121,6 +125,12 @@ def formatInt(theInt):
                     return "%3.0f%s" % (theVal,pF)
 
     return "%d" % theInt
+
+def formatTimeStamp(theTime, fileSafe=False):
+    if fileSafe:
+        return datetime.fromtimestamp(theTime).strftime(nwConst.fStampFmt)
+    else:
+        return datetime.fromtimestamp(theTime).strftime(nwConst.tStampFmt)
 
 def splitVersionNumber(vString):
     """ Splits a version string on the form aa.bb.cc into major, minor

@@ -180,8 +180,8 @@ class GuiSessionLogView(QDialog):
                     inData = inLine.split()
                     if len(inData) != 8:
                         continue
-                    dStart = datetime.strptime("%s %s" % (inData[1],inData[2]),nwConst.tStampFmt)
-                    dEnd   = datetime.strptime("%s %s" % (inData[4],inData[5]),nwConst.tStampFmt)
+                    dStart = datetime.strptime("%s %s" % (inData[1],inData[2]), nwConst.tStampFmt)
+                    dEnd   = datetime.strptime("%s %s" % (inData[4],inData[5]), nwConst.tStampFmt)
                     nWords = int(inData[7])
                     tDiff  = dEnd - dStart
                     sDiff  = tDiff.total_seconds()

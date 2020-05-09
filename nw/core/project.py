@@ -7,8 +7,8 @@
 
  File History:
  Created: 2018-09-29 [0.0.1] NWProject
- Added:   2018-10-27 [0.0.1] NWItem
- Added:   2019-05-19 [0.1.3] NWStatus
+ Created: 2018-10-27 [0.0.1] NWItem
+ Created: 2019-05-19 [0.1.3] NWStatus
  Merged:  2020-05-07 [0.4.5] Moved NWItem class to this file
  Merged:  2020-05-07 [0.4.5] Moved NWStatus class to this file
  Added:   2020-05-07 [0.4.5] NWTree
@@ -36,13 +36,12 @@ import nw
 from os import path, mkdir, listdir, unlink, rename
 from lxml import etree
 from hashlib import sha256
-from datetime import datetime
 from time import time
 from shutil import make_archive
 
 from nw.gui.tools import OptionState
 from nw.core.tools import projectMaintenance
-from nw.common import checkString, checkBool, checkInt
+from nw.common import checkString, checkBool, checkInt, formatTimeStamp
 from nw.constants import (
     nwFiles, nwConst, nwItemType, nwItemClass, nwItemLayout, nwAlert
 )
@@ -290,7 +289,7 @@ class NWProject():
         self.autoCount = 0
 
         if "appVersion" in xRoot.attrib:
-            appVersion  = xRoot.attrib["appVersion"]
+            appVersion = xRoot.attrib["appVersion"]
         if "fileVersion" in xRoot.attrib:
             fileVersion = xRoot.attrib["fileVersion"]
         if "saveCount" in xRoot.attrib:
@@ -324,35 +323,32 @@ class NWProject():
                         logger.verbose("Author: '%s'" % xItem.text)
                         self.bookAuthors.append(xItem.text)
                     elif xItem.tag == "backup":
-                        self.doBackup = checkBool(xItem.text,False)
+                        self.doBackup = checkBool(xItem.text, False)
             elif xChild.tag == "settings":
                 logger.debug("Found project settings")
                 for xItem in xChild:
                     if xItem.text is None:
                         continue
                     if xItem.tag == "spellCheck":
-                        self.spellCheck = checkBool(xItem.text,False)
+                        self.spellCheck = checkBool(xItem.text, False)
                     elif xItem.tag == "autoOutline":
-                        self.autoOutline = checkBool(xItem.text,True)
+                        self.autoOutline = checkBool(xItem.text, True)
                     elif xItem.tag == "lastEdited":
-                        self.lastEdited = checkString(xItem.text,None,True)
+                        self.lastEdited = checkString(xItem.text, None, True)
                     elif xItem.tag == "lastViewed":
-                        self.lastViewed = checkString(xItem.text,None,True)
+                        self.lastViewed = checkString(xItem.text, None, True)
                     elif xItem.tag == "lastWordCount":
-                        self.lastWCount = checkInt(xItem.text,0,False)
+                        self.lastWCount = checkInt(xItem.text, 0, False)
                     elif xItem.tag == "status":
                         self.statusItems.unpackEntries(xItem)
                     elif xItem.tag == "importance":
                         self.importItems.unpackEntries(xItem)
                     elif xItem.tag == "autoReplace":
                         for xEntry in xItem:
-                            self.autoReplace[xEntry.tag] = checkString(xEntry.text,None,False)
+                            self.autoReplace[xEntry.tag] = checkString(xEntry.text, None, False)
             elif xChild.tag == "content":
                 logger.debug("Found project content")
-                for xItem in xChild:
-                    nwItem = NWItem(self)
-                    if nwItem.unpackXML(xItem):
-                        self.projTree.append(nwItem.itemHandle, nwItem.parHandle, nwItem)
+                self.projTree.unpackXML(xChild)
 
         self.optState.loadSettings()
 
@@ -403,27 +399,27 @@ class NWProject():
             "fileVersion" : "1.0",
             "saveCount"   : str(self.saveCount),
             "autoCount"   : str(self.autoCount),
-            "timeStamp"   : datetime.fromtimestamp(saveTime).strftime("%Y-%m-%d %H:%M:%S"),
+            "timeStamp"   : formatTimeStamp(saveTime),
         })
 
         # Save Project Meta
         xProject = etree.SubElement(nwXML, "project")
-        self._saveProjectValue(xProject, "name", self.projName,  True)
-        self._saveProjectValue(xProject, "title", self.bookTitle, True)
-        self._saveProjectValue(xProject, "author", self.bookAuthors)
-        self._saveProjectValue(xProject, "backup", self.doBackup)
+        self._packProjectValue(xProject, "name", self.projName,  True)
+        self._packProjectValue(xProject, "title", self.bookTitle, True)
+        self._packProjectValue(xProject, "author", self.bookAuthors)
+        self._packProjectValue(xProject, "backup", self.doBackup)
 
         # Save Project Settings
         xSettings = etree.SubElement(nwXML, "settings")
-        self._saveProjectValue(xSettings, "spellCheck", self.spellCheck)
-        self._saveProjectValue(xSettings, "autoOutline", self.autoOutline)
-        self._saveProjectValue(xSettings, "lastEdited", self.lastEdited)
-        self._saveProjectValue(xSettings, "lastViewed", self.lastViewed)
-        self._saveProjectValue(xSettings, "lastWordCount", self.currWCount)
+        self._packProjectValue(xSettings, "spellCheck", self.spellCheck)
+        self._packProjectValue(xSettings, "autoOutline", self.autoOutline)
+        self._packProjectValue(xSettings, "lastEdited", self.lastEdited)
+        self._packProjectValue(xSettings, "lastViewed", self.lastViewed)
+        self._packProjectValue(xSettings, "lastWordCount", self.currWCount)
         xAutoRep = etree.SubElement(xSettings, "autoReplace")
         for aKey, aValue in self.autoReplace.items():
             if len(aKey) > 0:
-                self._saveProjectValue(xAutoRep,aKey,aValue)
+                self._packProjectValue(xAutoRep,aKey,aValue)
 
         xStatus = etree.SubElement(xSettings,"status")
         self.statusItems.packEntries(xStatus)
@@ -432,9 +428,7 @@ class NWProject():
 
         # Save Tree Content
         logger.debug("Writing project content")
-        xContent = etree.SubElement(nwXML, "content", attrib={"count":str(len(self.projTree))})
-        for tItem in self.projTree:
-            tItem.packXML(xContent)
+        self.projTree.packXML(nwXML)
 
         # Write the xml tree to file
         tempFile = path.join(self.projPath, self.projFile+"~")
@@ -531,7 +525,7 @@ class NWProject():
                 )
                 return False
 
-        archName = "Backup on %s" % datetime.now().strftime("%Y-%m-%d at %H.%M.%S")
+        archName = "Backup from %s" % formatTimeStamp(time(),True)
         baseName = path.join(baseDir, archName)
 
         try:
@@ -862,7 +856,7 @@ class NWProject():
                 return False
         return True
 
-    def _saveProjectValue(self, xParent, theName, theValue, allowNone=True):
+    def _packProjectValue(self, xParent, theName, theValue, allowNone=True):
         if not isinstance(theValue, list):
             theValue = [theValue]
         for aValue in theValue:
@@ -946,8 +940,8 @@ class NWProject():
                 "End: {closed:s}  "
                 "Words: {words:8d}"
             ).format(
-                opened = datetime.fromtimestamp(self.projOpened).strftime(nwConst.tStampFmt),
-                closed = datetime.now().strftime(nwConst.tStampFmt),
+                opened = formatTimeStamp(self.projOpened),
+                closed = formatTimeStamp(time()),
                 words  = self.getSessionWordCount(),
             ), file=outFile)
 
@@ -1029,6 +1023,33 @@ class NWTree():
         self._setTreeChanged(True)
 
         return
+
+    def packXML(self, xParent):
+        """Pack the content of the tree into an XML object.
+        """
+        xContent = etree.SubElement(xParent, "content", attrib={
+            "count":str(self._theLength)}
+        )
+        for tHandle in self._treeOrder:
+            tItem = self.__getitem__(tHandle)
+            tItem.packXML(xContent)
+        return 
+
+    def unpackXML(self, xContent):
+        """Iterate through all items of a content XML object and add
+        them to the project tree.
+        """
+        if xContent.tag != "content":
+            logger.error("XML entry is not a NWTree")
+            return False
+
+        self.clear()
+        for xItem in xContent:
+            nwItem = NWItem(self.theProject)
+            if nwItem.unpackXML(xItem):
+                self.append(nwItem.itemHandle, nwItem.parHandle, nwItem)
+
+        return True
 
     ##
     #  Tree Structure Methods
