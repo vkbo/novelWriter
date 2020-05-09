@@ -526,7 +526,7 @@ class NWProject():
                 )
                 return False
 
-        archName = "Backup from %s" % formatTimeStamp(time(),True)
+        archName = "Backup from %s" % formatTimeStamp(time(), fileSafe=True)
         baseName = path.join(baseDir, archName)
 
         try:
