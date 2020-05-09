@@ -1,5 +1,61 @@
 # novelWriter ChangeLog
 
+## Version 0.5 [2020-05-09]
+
+This release of novelWriter has a number of feature updates, bringing it one step closer to initial feature completeness for a version 1.0 release.
+
+In the pipeline for 1.0 is a completely new export tool with improved and added options, including printing. Further improvements are also planned for the new Outline View added in this version. When these additions are completed, novelWriter will start moving towards a 1.0 release via release candidates. I'm hoping to wrap up this year and a half long stage of initial development soon so that I can spend more time using it than creating it.
+
+**Additional thanks** to @countjocular for PRs #173 and #174, and to @johnblommers for all the helpful feedback and issue reports for the new features added in this, and previous releases.
+
+### Noteable Changes
+
+* The Timeline View dialog is now gone. Instead, the main window area has been split into two tabs. The first, the "Editor", contains the Document Editor and Viewer panels. The second, the "Outline", contains a new Outline View of the novel part of the project, broken down into a tree view of all the project headings. All meta data associated with each part of the novel can be viewed in further columns, selectable from a drop down menu by right-clicking the header. These columns can also be rearranged.
+* Both the Editor and Viewer panels now have a header showing the document label as seen in the Project Tree. Optionally, the full path of the document can be viewed. Clicking this header will select the document in the Project Tree, making it easier to find where the document belongs in the structure.
+* A project load dialog has been added when novelWriter is launched. It will show you your recently opened projects, let you browse for those that aren't listed, or create a new project. More features will be added to this dialog later on.
+* The Preferences dialog has been completely redesigned to make it easier to find the various settings and understand what they do.
+
+### Detailed Changelog
+
+**Features**
+
+* An Outline View panel has been added to the main GUI window. The Outline View can show all meta data associated with a novel heading in a column-wise manner. The Timeline View feature has been dropped in favour of the new Outline View. PRs #140, #181 and #191
+* A synopsis feature has been added. It allows a comment to be flagged as a synopsis comment to be picked up by the indexer and displayed in the GUI. Currently available in the Outline View. PRs #140 and #191
+* A document title bar has been added to the top of the editor and viewer. These show the document label as seen in the project tree. Optionally, the full document path can be shown. Clicking the title will highlight the document in the project tree. PRs #192 and #194
+
+**User Interface**
+
+* A Project Load dialog has been added, which pops up when novelWriter is launched. It allows for opening other recent projects, browse for projects, or start a new project. This replaces the former Open and New Project features, as well as the Recent Projects menu entry. PRs #177 and #183
+* The command line switches for debugging have been changed a bit. Higher level of debugging now includes the lower levels, preventing the need for specifying for instance both debug and verbose debug. PR #182
+* The Preference dialog has been completely redesigned. The options are now displayed vertically, in four tabs instead of two, and with more informative text explaining what they do. Some previously unconnected options have also been added. PR #193
+
+**Bug Fixes**
+
+* The `install.py` script has been fixed to reflect changes in storage location of the themes. PR #174
+* Fixed a bug with launching Preferences without Enchant spell checking installed. PR #190
+* A minor issue with running backups with no backup path set has been fixed. The backups would be written into the source folder, or wherever novelWriter was launched from, which is a very messy fallback. PR #195
+
+**Documentation**
+
+* Some outdated links and a number of typos and spelling errors have been corrected. PR #173
+* Documentation has been brought up to date with the current set of features of novelWriter. PR #202
+
+**Project Structure**
+
+* Opening a project now writes a lock file to alert the user if the same project is opened more than once. The warning can be ignored if the user wants to proceed. PR #179
+* Two new meta tags have been added to the project file to store a counter for the number of times the project has been saved or autosaved. The meta information is not currently displayed in the GUI, but could be added to an About Project dialog in the future. The PR also adds checks to ensure XML attributes exist before attempting to load them. PR #180
+* A single line of document meta data is now written to the top of document files. They mainly serve to identify the file content if one opens the file directly in an external editor, but also assist the Orphaned Files tool to identify the files when they are found, but missing from the project tree. PRs #200 and #201
+
+**Code Improvements**
+
+* For the Outline View, the `NWIndex` class has been restructure and extensively rewritten. It is more fault tolerant, and will automatically rebuild a corrupt index loaded from cache. PR #140
+* The way that dialog options (which options were selected last time a dialog was open) has been rewritten. All data is now stored in a single JSON file in the project meta folder. PR #175
+* Since the config class is instanciated before the GUI, error reporting to the user was tricky. An error cache has now been added to allow non-critical errors to be displayed after the GUI is built. PR #176
+* All source files now have the minimal GPLv3 license note at the top. PR #188
+* Also added license info to the command line output. PR #189
+* Large chunks of the code has been restructured. Mainly the non-GUI parts, which have mostly been merged into a new `core` folder. Several classes which are only used by a single object have been merged into the same file, reducing the total number of source files a bit. PR #199
+
+
 ## Version 0.4.5 [2020-02-17]
 
 **Features**
@@ -23,9 +79,11 @@
 * The cache folder has been removed. It was used to store the 10 most recent versions of the project file. Instead, the previous project file is renamed to .bak, and can be restored if opening from the latest project file fails. Any additional restore capabilities should be ensured by backup solutions, either the internal simple zip backup, or other third party tools. PR #165.
 * The dependency on the Python package `appdirs` has been dropped. It was used only for extracting the path to the user's config folder, a feature which is also provided by Qt. PR #169.
 
+
 ## Version 0.4.4 [2020-02-17]
 
 * Botched release. Replaced with 0.4.5
+
 
 ## Version 0.4.3 [2019-11-24]
 
@@ -41,6 +99,7 @@
 * Fixed an issue with markdown export did not take into account hard line breaks. PR #152 fixing issue #151.
 * Fixed a crash when running file status check when the project contains orphaned files. PR #152.
 
+
 ## Version 0.4.2 [2019-11-17]
 
 **User Interface**
@@ -51,6 +110,7 @@
 
 * Fixed various issues with spell checking highlighting. The highlighting and the editor didn't always agree on what words were spelled wrong. PR #141.
 * The status bar now shows what spell checking language is actually loaded. Previously, it just showed the language selected in the settings. That was a bit misleading as the available dictionaries can change due to the change in installed dictionary on the system. PR #145.
+
 
 ## Version 0.4.1 [2019-11-10]
 
@@ -77,6 +137,7 @@
 * The code has been reorganised, import headers been cleaned up, and the code made more or less PEP8 compliant. PRs #118, #119, and #138.
 * The dependency on the pycountry package has been dropped. The feature based on it now uses an internal list of country codes for describing spell checker languages. PR #129.
 * The themes manager has been improved, and the loading of icons now supports a number of fallback steps to ensure something is shown in most cases. The final fallback is the system's own icon theme. PR #135.
+
 
 ## Version 0.4 [2019-11-03]
 
@@ -115,6 +176,7 @@
 * A script for `pyinstaller` has been added, making it possible to generate standalone executables of novelWriter on at least Windows and Linux. PR #91
 * novelWriter has been makde `pip install` ready. PRs #107 and 108
 
+
 ## Version 0.3.2 [2019-10-27]
 
 **Documentation**
@@ -129,6 +191,7 @@
 * The Export feature now includes exporting to LaTeX, which allows building PDFs with pdflatex or other tools. PR #73
 * Export of a novelWriter flavour markdown file is also supported. This file can be imported back in as-is, and almost completes an export-edit-import cycle. A split document into multiple files feature will be added soon. PR #73
 
+
 ## Version 0.3.1 [2019-10-20]
 
 **Bug Fixes**
@@ -142,11 +205,13 @@
 * Added a GUI to display the session log. The log has been around for a while, and records when a project is opened, when it's closed, and how many words were added or removed during the session. This information is now available in a small dialog under `Project > Session Log` in the main menu. PR #59
 * The export project feature now also exports the project to Markdown and HTML5 format. PR #57
 
+
 ## Version 0.3 [2019-10-19]
 
 **User Interface**
 
 * Added project export feature with a new GUI dialog and a number of export setting. The export feature currently only exports to a plain text file. PR #55
+
 
 ## Version 0.2.3 [2019-10-06]
 
@@ -154,6 +219,7 @@
 
 * The search feature now also allows for replacing text, so the basic search/replace tools in now complete. PRs #51 and #52
 * All icons have been removed from the menu, and the dark theme has received a new set of basic icons. They are not very fancy, so will perhaps be replaced by a proper icon set later. PR #53
+
 
 ## Version 0.2.2 [2019-09-29]
 
@@ -164,6 +230,7 @@
 **User Interface**
 
 * Added a basic search function for the currently open document. This is a simple interface to the find command that exists in the Qt document editor. It will be extended further in the future. PR #49
+
 
 ## Version 0.2.1 [2019-09-14]
 
@@ -183,6 +250,7 @@
 **Code Improvements**
 
 * Minor changes to the About novelWriter dialog and to how backup filenames are generated. PR #41
+
 
 ## Version 0.2 [2019-06-27]
 
@@ -207,6 +275,7 @@
 
 * Spell checking is now handled by a standard class that can be subclassed to support different spell check tools. This was done because pyenchant is no longer maintained and having a standard wrapper makes it easier to support other tools. #31
 
+
 ## Version 0.1.5 [2019-06-08]
 
 **Bug Fixes**
@@ -230,6 +299,7 @@
 * Spell checker now ignores lines staring with `@` and words in all uppercase. #21
 * A document can be closed, which also clears it from last edited document in the project file. I.e. it is not re-opened on next start. #21
 * Tab width is now by default 40 pixels, and can be set in the config. #21
+
 
 ## Version 0.1.4 [2019-05-25]
 
@@ -257,6 +327,7 @@
 
 * Loading the project with the items in the wrong order is possible. That is, the child item is stored before its parent. A saved file should not ever be like that, but an edited file might. Even if the file shouldn't be edited manually. PR #16.
 
+
 ## Version 0.1.3 [2019-05-18]
 
 **User Interface**
@@ -266,6 +337,7 @@
 **Test Suite**
 
 * Major upgrades to the test suite, now also testing GUI elements. Coverage at 73%. PRs #9 and #11.
+
 
 ## Version 0.1.2 [2019-05-12]
 
@@ -278,6 +350,7 @@
 
 * Changed the way user alerts are generated, and added the alert levels to an enum class named `nwAlert`. Also added a new level named `BUG`.
 
+
 ## Version 0.1.1 [2019-05-12]
 
 **User Interface**
@@ -287,6 +360,7 @@
 **Test Suite**
 
 * Added a unit test framework based on `pytest`. This currently checks basic opening and saving of the main config file and the main project file. PR #2 (V.K. Berglyd Olsen)
+
 
 ## Version 0.1 [2019-05-10]
 
