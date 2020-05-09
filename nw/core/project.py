@@ -41,6 +41,7 @@ from shutil import make_archive
 
 from nw.gui.tools import OptionState
 from nw.core.tools import projectMaintenance
+from nw.core.document import NWDoc
 from nw.common import checkString, checkBool, checkInt, formatTimeStamp
 from nw.constants import (
     nwFiles, nwConst, nwItemType, nwItemClass, nwItemLayout, nwAlert
@@ -913,11 +914,20 @@ class NWProject():
             return
 
         # Handle orphans
+        aDoc = NWDoc(self, self.theParent)
         nOrph = 0
         for oHandle in orphanFiles:
-            nOrph += 1
+
+            # Look for meta data
+            if aDoc.openDocument(oHandle, showStatus=False, isOrphan=True):
+                oName, oPath = aDoc.getMeta()
+                aDoc.clearDocument()
+            else:
+                nOrph += 1
+                oName = "Orphaned File %d" % nOrph
+
             orphItem = NWItem(self)
-            orphItem.setName("Orphaned File %d" % nOrph)
+            orphItem.setName(oName)
             orphItem.setType(nwItemType.FILE)
             orphItem.setClass(nwItemClass.NO_CLASS)
             orphItem.setLayout(nwItemLayout.NO_LAYOUT)

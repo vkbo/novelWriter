@@ -77,6 +77,20 @@ def checkBool(checkValue, defaultValue, allowNone=False):
             return defaultValue
     return defaultValue
 
+def isHandle(theString):
+    """Check if a string is a valid novelWriter handle.
+    Note: This is case sensitive. Must be lower case!
+    """
+    if not isinstance(theString, str):
+        return False
+    if len(theString) != 13:
+        return False
+    invalidChar = False
+    for c in theString:
+        if c not in "0123456789abcdef":
+            invalidChar = True
+    return not invalidChar
+
 def colRange(rgbStart, rgbEnd, nStep):
 
     if len(rgbStart) != 3 and len(rgbEnd) != 3 and nStep < 1:
@@ -127,6 +141,9 @@ def formatInt(theInt):
     return "%d" % theInt
 
 def formatTimeStamp(theTime, fileSafe=False):
+    """Take a number (on the format returned by time.time()) and convert
+    it to a timestamp string.
+    """
     if fileSafe:
         return datetime.fromtimestamp(theTime).strftime(nwConst.fStampFmt)
     else:
