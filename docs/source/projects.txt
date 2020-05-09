@@ -6,7 +6,7 @@ A novelWriter project requires a dedicated folder for storing its files on the l
 See the Technical Information section for further details.
 
 A new project can be created from the Project menu by selecting :menuselection:`Project --> New Project`.
-A list of recently opened projects is also maintained and can be selected from the menu.
+A list of recently opened projects is maintained, and displayed in the "Open Project" dialog.
 
 The project specific settings are available in :menuselection:`Project --> Project Settings`.
 See further details below.
@@ -23,28 +23,42 @@ Using these is of course entirely optional.
 A new project will not have all of the root folders present, but you can add the ones you want from :menuselection:`Project --> Create Root Folder`.
 
 The root folders are intended for the following use, but aside from the Novel folder, no restrictions apply.
+You can use them however you want.
+The root folders correspond to the categories of tags that can be used.
+See the "Project Structure" section for further details.
 
 * **Novel:** The root folder of all text that goes into the final novel.
   This class of files have other rules and features than other files in the project.
   See the Novel Structure section for more details.
 * **Plot:** This is the root folder where main plots can be outlined.
-  It is optional, but adding at least dummy files can be useful in order to generate the timeline view.
+  It is optional, but adding at least dummy files can be useful in order to tag plot elements for the Outline View.
 * **Characters:** Character files go in this root folder.
-  These are especially important if one wants to use the timeline view to see which character appears where and which part of the story is told from a specific character's point-of-view.
-* **Locations:** Location is for various scene locations that one wants to track in the timeline view if that applies to the story.
+  These are especially important if one wants to use the Outline View to see which character appears where, and which part of the story is told from a specific character's point-of-view.
+* **Locations:** Location is for various scene locations that one wants to track.
 * **Timeline:** If the story jumps in time within the same plot, this class of files can be used to track this.
 * **Objects:** Important objects in the story can be tracked here.
 * **Entities:** Entities, like organisations or companies, that are part of the plot, can be organised here.
 * **Custom:** The custom root folder can be used for tracking anything else not covered by the above options.
 
 Deleted files will be moved into a special "Trash" root folder.
-Currently, these files cannot be permanently deleted from the project.
+Files in the Trash folder can be deleted permanently.
 
 Orphaned Documents
 ------------------
 
 In the event the editor crashes or otherwise exits without saving the project state, files that have been added to the project tree and are saved to disk will appear in a special "Orphaned Items" root folder next time the application is started.
-These orphaned files will not have any meta data associated with them, so the label and other information will have to be set again, and the files moved back to the correct location in the project.
+These orphaned files will not have any meta data associated with them, although novelWriter will try to restore the file label it had in the project tree. Other information will have to be set again, and the files moved back to the correct location in the project.
+
+Project Lockfile
+----------------
+
+To prevent orphaned files caused by file conflicts when novelWriter projects are synced with file synchronisation tools, a project lockfile is written to the project folder.
+If you try to open a project which has such a file, you will be presented with a warning, and some information about where the project is potentially open.
+You will be give the option to ignore this warning, and continue opening the project.
+However, if multiple instances are in fact editing the same project, you are likely to cause inconsistencies and create diverging project files.
+
+.. note::
+   If, for some reason, novelWriter crashes, the lock file may remain. If so, it is safe to ignore the lock file warning when re-opening the project.
 
 Using Folders in the Project Tree
 ---------------------------------
@@ -121,10 +135,11 @@ Backup
 An automatic backup system is built into novelWriter.
 In order to use it, a backup path to where the backups are to be stored needs to be provided in :menuselection:`Tools --> Preferences`.
 Backups can be run automatically when a project is closed, which also implies it is run when the application is closed.
-Backups are date stamped zip files of the entire project folder.
+Backups are date stamped zip files of the entire project folder, and are stored in a subfolder of the backup path with the same name as the project working title set in Project Settings.
 
-The backup feature, when configured, can also be run manually from the Tools menu.
+The backup feature, when configured, can also be run manually from the :menuselection:`Tools` menu.
+It is also possible to dissable automated backup for a given project in Project Settings.
 
-For the backup to be able to run, the Working Title must be set in Project Settings.
-This value is used to generate the file name.
-It is also possible to dissable automated backup for a given project in its project settings.
+.. note::
+   For the backup to be able to run, the Working Title must be set in Project Settings.
+   This value is used to generate the folder name for the zip files.

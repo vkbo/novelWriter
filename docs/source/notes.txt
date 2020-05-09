@@ -4,16 +4,16 @@ Supporting Files (Notes)
 
 Supporting files, or notes, are any files stored in root folders that are not the Novel root folder.
 These files are intended for summaries and outlines of the various plot elements, characters, locations, and so on, of the novel.
-These are not required, but making at least minimal files for each such element, and add a tag to them, makes it possible to use the timeline view feature to see how each element intersects with each section of the novel itself.
+These are not required, but making at least minimal files for each such element, and add a tag to them, makes it possible to use the Outline View feature to see how each element intersects with each section of the novel itself, and add clickable cross-references between document in the editor and viewer.
 
 File Tags
 =========
 
 Each note file can have a tag associated with it,
 The format of a tag is ``@tag: tagname``, where tagname is a unique identifier.
-Tags can then be referenced in the novel files and will then show up as dots in the timeline view.
+Tags can then be referenced in the novel files and will show up in the Outline View.
 
-The syntax highlighter will alert the user that the keyword is correctly used and that the tag is allowed.
+The syntax highlighter will alert the user that the keyword is correctly used and that the tag is allowed, that is, the tag is unique.
 Duplicate tags should be detected as long as the index is up to date.
 
 The tag is the only part of these files that the application uses.
