@@ -352,6 +352,14 @@ class GuiDocEditor(QTextEdit):
 
         return
 
+    def updateDocTitle(self, tHandle):
+        """Called when an item label is changed to check if the document
+        title bar needs updating,
+        """
+        if tHandle == self.theHandle:
+            self.docTitle.setTitleFromHandle(self.theHandle)
+        return
+
     ##
     #  Setters and Getters
     ##

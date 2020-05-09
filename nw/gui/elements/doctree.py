@@ -526,8 +526,8 @@ class GuiDocTree(QTreeWidget):
         newItem.setText(self.C_HANDLE, tHandle)
 
         # newItem.setForeground(self.C_COUNT,QColor(*self.theParent.theTheme.treeWCount))
-        newItem.setTextAlignment(self.C_COUNT,Qt.AlignRight)
-        newItem.setFont(self.C_FLAGS,self.fontFlags)
+        newItem.setTextAlignment(self.C_COUNT, Qt.AlignRight)
+        newItem.setFont(self.C_FLAGS, self.fontFlags)
 
         self.theMap[tHandle] = newItem
         if pHandle is None:

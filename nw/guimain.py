@@ -629,6 +629,9 @@ class GuiMain(QMainWindow):
             dlgProj = GuiItemEditor(self, self.theProject, tHandle)
             if dlgProj.exec_():
                 self.treeView.setTreeItemValues(tHandle)
+                self.treeMeta.updateViewBox(tHandle)
+                self.docEditor.updateDocTitle(tHandle)
+                self.docViewer.updateDocTitle(tHandle)
 
         return
 
@@ -1006,7 +1009,7 @@ class GuiMain(QMainWindow):
     def _treeSingleClick(self):
         sHandle = self.treeView.getSelectedHandle()
         if sHandle is not None:
-            self.treeMeta.buildViewBox(sHandle)
+            self.treeMeta.updateViewBox(sHandle)
         return
 
     def _treeDoubleClick(self, tItem, colNo):

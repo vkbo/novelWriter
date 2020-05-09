@@ -44,7 +44,7 @@ class GuiItemEditor(QDialog):
     def __init__(self, theParent, theProject, tHandle):
         QDialog.__init__(self, theParent)
 
-        logger.debug("Initialising ItemEditor ...")
+        logger.debug("Initialising GuiItemEditor ...")
 
         self.mainConf   = nw.CONFIG
         self.theProject = theProject
@@ -141,7 +141,7 @@ class GuiItemEditor(QDialog):
 
         self.editName.selectAll()
 
-        logger.debug("ItemEditor initialisation complete")
+        logger.debug("GuiItemEditor initialisation complete")
 
         return
 
