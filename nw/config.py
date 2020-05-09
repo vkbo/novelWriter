@@ -32,13 +32,13 @@ import sys
 import nw
 
 from os import path, mkdir, unlink, rename
-from datetime import datetime
+from time import time
 
 from PyQt5.Qt import PYQT_VERSION_STR
 from PyQt5.QtCore import QT_VERSION_STR, QStandardPaths, QSysInfo
 
 from nw.constants import nwFiles, nwUnicode
-from nw.common import splitVersionNumber
+from nw.common import splitVersionNumber, formatTimeStamp
 
 logger = logging.getLogger(__name__)
 
@@ -445,7 +445,7 @@ class Config:
         ## Main
         cnfSec = "Main"
         cnfParse.add_section(cnfSec)
-        cnfParse.set(cnfSec,"timestamp", datetime.now().strftime("%Y-%m-%d %H:%M:%S"))
+        cnfParse.set(cnfSec,"timestamp", formatTimeStamp(time()))
         cnfParse.set(cnfSec,"theme",     str(self.guiTheme))
         cnfParse.set(cnfSec,"syntax",    str(self.guiSyntax))
         cnfParse.set(cnfSec,"guidark",   str(self.guiDark))

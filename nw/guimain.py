@@ -404,7 +404,7 @@ class GuiMain(QMainWindow):
             else:
                 return False
 
-        # project is loaded
+        # Project is loaded
         self.hasProject = True
 
         # Load the tag index

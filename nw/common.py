@@ -28,6 +28,10 @@
 import logging
 import nw
 
+from datetime import datetime
+
+from nw.constants import nwConst
+
 logger = logging.getLogger(__name__)
 
 def checkString(checkValue, defaultValue, allowNone=False):
@@ -72,6 +76,20 @@ def checkBool(checkValue, defaultValue, allowNone=False):
         else:
             return defaultValue
     return defaultValue
+
+def isHandle(theString):
+    """Check if a string is a valid novelWriter handle.
+    Note: This is case sensitive. Must be lower case!
+    """
+    if not isinstance(theString, str):
+        return False
+    if len(theString) != 13:
+        return False
+    invalidChar = False
+    for c in theString:
+        if c not in "0123456789abcdef":
+            invalidChar = True
+    return not invalidChar
 
 def colRange(rgbStart, rgbEnd, nStep):
 
@@ -121,6 +139,15 @@ def formatInt(theInt):
                     return "%3.0f%s" % (theVal,pF)
 
     return "%d" % theInt
+
+def formatTimeStamp(theTime, fileSafe=False):
+    """Take a number (on the format returned by time.time()) and convert
+    it to a timestamp string.
+    """
+    if fileSafe:
+        return datetime.fromtimestamp(theTime).strftime(nwConst.fStampFmt)
+    else:
+        return datetime.fromtimestamp(theTime).strftime(nwConst.tStampFmt)
 
 def splitVersionNumber(vString):
     """ Splits a version string on the form aa.bb.cc into major, minor

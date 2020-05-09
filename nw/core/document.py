@@ -31,6 +31,7 @@ import nw
 from os import path, mkdir, rename, unlink
 
 from nw.constants import nwAlert
+from nw.common import isHandle
 
 logger = logging.getLogger(__name__)
 
@@ -68,25 +69,29 @@ class NWDoc():
         self.docMeta     = ""
         return
 
-    def openDocument(self, tHandle, showStatus=True):
+    def openDocument(self, tHandle, showStatus=True, isOrphan=False):
         """Open a document from handle, capturing potential file system
         errors and parse meta data.
         """
 
         self.docHandle = tHandle
-        self.theItem   = self.theProject.projTree[tHandle]
+        if not isOrphan:
+            self.theItem = self.theProject.projTree[tHandle]
+        else:
+            self.theItem = None
 
-        if self.theItem is None:
+        if self.theItem is None and not isOrphan:
             self.clearDocument()
             return None
 
         # By default, the document is editable.
         # Except for files in the trash folder.
         self.docEditable = True
-        if self.theItem.parHandle == self.theProject.projTree.trashRoot():
-            self.docEditable = False
+        if self.theItem is not None:
+            if self.theItem.parHandle == self.theProject.projTree.trashRoot():
+                self.docEditable = False
 
-        docDir, docFile = self.assemblePath(self.docHandle, self.FILE_MN)
+        docDir, docFile = self._assemblePath(self.docHandle, self.FILE_MN)
         self.fileLoc = path.join(docDir,docFile)
         logger.debug("Opening document %s" % self.fileLoc)
         dataDir = path.join(self.theProject.projPath, docDir)
@@ -100,7 +105,7 @@ class NWDoc():
                     fstLine = inFile.readline()
                     if fstLine.startswith("%%~ "):
                         # This is the meta line
-                        self.docMeta = fstLine.strip()
+                        self.docMeta = fstLine[4:].strip()
                     else:
                         theText = fstLine
                     theText += inFile.read()
@@ -120,7 +125,7 @@ class NWDoc():
 
         logger.verbose("DocMeta: '%s'" % self.docMeta)
 
-        if showStatus:
+        if showStatus and not isOrphan:
             self.theParent.statusBar.setStatus("Opened Document: %s" % self.theItem.itemName)
 
         return theText
@@ -133,7 +138,7 @@ class NWDoc():
         if self.docHandle is None or not self.docEditable:
             return False
 
-        docDir, docFile = self.assemblePath(self.docHandle, self.FILE_MN)
+        docDir, docFile = self._assemblePath(self.docHandle, self.FILE_MN)
         logger.debug("Saving document %s" % path.join(docDir,docFile))
         dataPath = path.join(self.theProject.projPath, docDir)
         docPath  = path.join(dataPath, docFile)
@@ -171,7 +176,7 @@ class NWDoc():
         """Permanently delete a document source file and its backups
         from the project data folder.
         """
-        docDir, docFile = self.assemblePath(tHandle, self.FILE_MN)
+        docDir, docFile = self._assemblePath(tHandle, self.FILE_MN)
         dataPath = path.join(self.theProject.projPath, docDir)
         chkList = []
         chkList.append(path.join(dataPath, docFile))
@@ -187,8 +192,44 @@ class NWDoc():
                     return False
         return True
 
+    ##
+    #  Getters
+    ##
+
+    def getMeta(self):
+        """Parses the document meta tag and returns the path and name as
+        a list and a string.
+        """
+
+        if len(self.docMeta) < 14:
+            # Not enough information
+            return "", []
+
+        theMeta = self.docMeta
+
+        # Scan for handles
+        thePath = []
+        for n in range(200):
+            if len(theMeta) < 14:
+                break
+            if theMeta[13] == ":":
+                theHandle = theMeta[:13]
+                if isHandle(theHandle):
+                    thePath.append(theHandle)
+                    theMeta = theMeta[14:]
+                else:
+                    break
+            else:
+                break
+
+        return theMeta, thePath
+
+    ##
+    #  Internal Functions
+    ##
+
     @staticmethod
-    def assemblePath(tHandle, docExt):
+    def _assemblePath(tHandle, docExt):
         if tHandle is None:
             return None, None
         docDir  = "data_"+tHandle[0]

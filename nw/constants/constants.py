@@ -29,7 +29,8 @@ from nw.constants.enum import nwItemClass, nwItemLayout, nwOutline
 
 class nwConst():
 
-    tStampFmt = "%Y-%m-%d %H:%M:%S"
+    tStampFmt = "%Y-%m-%d %H:%M:%S" # Default format
+    fStampFmt = "%Y-%m-%d %H.%M.%S" # FileName safe format
 
 # END Class nwConst
 

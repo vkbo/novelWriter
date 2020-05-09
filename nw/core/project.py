@@ -3,12 +3,12 @@
 
  novelWriter – Project Wrapper
 ===============================
- Class holding a project
+ Class wrapping the data if a novelWriter project
 
  File History:
  Created: 2018-09-29 [0.0.1] NWProject
- Added:   2018-10-27 [0.0.1] NWItem
- Added:   2019-05-19 [0.1.3] NWStatus
+ Created: 2018-10-27 [0.0.1] NWItem
+ Created: 2019-05-19 [0.1.3] NWStatus
  Merged:  2020-05-07 [0.4.5] Moved NWItem class to this file
  Merged:  2020-05-07 [0.4.5] Moved NWStatus class to this file
  Added:   2020-05-07 [0.4.5] NWTree
@@ -36,13 +36,13 @@ import nw
 from os import path, mkdir, listdir, unlink, rename
 from lxml import etree
 from hashlib import sha256
-from datetime import datetime
 from time import time
 from shutil import make_archive
 
 from nw.gui.tools import OptionState
 from nw.core.tools import projectMaintenance
-from nw.common import checkString, checkBool, checkInt
+from nw.core.document import NWDoc
+from nw.common import checkString, checkBool, checkInt, formatTimeStamp
 from nw.constants import (
     nwFiles, nwConst, nwItemType, nwItemClass, nwItemLayout, nwAlert
 )
@@ -62,12 +62,12 @@ class NWProject():
         self.projTree = NWTree(self)      # The project tree
 
         # Project Status
-        self.projOpened  = None # The time stamp of when the project file was opened
-        self.projChanged = None # The project has unsaved changes
-        self.projAltered = None # The project has been altered this session
-        self.lockedBy    = None # Data on which computer has the project open
-        self.saveCount   = None # Meta data: number of saves
-        self.autoCount   = None # Meta data: number of automatic saves
+        self.projOpened  = 0     # The time stamp of when the project file was opened
+        self.projChanged = False # The project has unsaved changes
+        self.projAltered = False # The project has been altered this session
+        self.lockedBy    = None  # Data on which computer has the project open
+        self.saveCount   = None  # Meta data: number of saves
+        self.autoCount   = None  # Meta data: number of automatic saves
 
         # Class Settings
         self.projPath = None # The full path to where the currently open project is saved
@@ -76,23 +76,23 @@ class NWProject():
         self.projFile = None # The file name of the project main XML file
 
         # Project Meta
-        self.projName    = None
-        self.bookTitle   = None
-        self.bookAuthors = None
+        self.projName    = "" # Project name (working title)
+        self.bookTitle   = "" # The final title; should only be used for exports
+        self.bookAuthors = [] # A list of book authors
 
         # Various
-        self.autoReplace = None
+        self.autoReplace = {} # Text to auto-replace on exports
 
         # Project Settings
-        self.spellCheck  = False
-        self.autoOutline = True
-        self.statusItems = None
-        self.importItems = None
-        self.lastEdited  = None
-        self.lastViewed  = None
-        self.lastWCount  = 0
-        self.currWCount  = 0
-        self.doBackup    = True
+        self.spellCheck  = False # Controls the spellcheck-as-you-type feature
+        self.autoOutline = True  # If true, the Project Outline is updated automatically
+        self.statusItems = None  # Novel file progress status values
+        self.importItems = None  # Note file importance values
+        self.lastEdited  = None  # The handle of the last file to be edited
+        self.lastViewed  = None  # The handle of the last file to be viewed
+        self.lastWCount  = 0     # The project word count from last session
+        self.currWCount  = 0     # The project word count in current session
+        self.doBackup    = True  # Run project backup on exit
 
         # Set Defaults
         self.clearProject()
@@ -182,8 +182,8 @@ class NWProject():
         """
 
         # Project Status
-        self.projOpened  = None
-        self.projChanged = None
+        self.projOpened  = 0
+        self.projChanged = False
         self.projAltered = False
         self.saveCount   = 0
         self.autoCount   = 0
@@ -240,7 +240,7 @@ class NWProject():
         self.projDict = path.join(self.projMeta, nwFiles.PROJ_DICT)
 
         if not self._checkFolder(self.projMeta):
-            return
+            return False
 
         if overrideLock:
             self._clearLockFile()
@@ -290,7 +290,7 @@ class NWProject():
         self.autoCount = 0
 
         if "appVersion" in xRoot.attrib:
-            appVersion  = xRoot.attrib["appVersion"]
+            appVersion = xRoot.attrib["appVersion"]
         if "fileVersion" in xRoot.attrib:
             fileVersion = xRoot.attrib["fileVersion"]
         if "saveCount" in xRoot.attrib:
@@ -324,35 +324,32 @@ class NWProject():
                         logger.verbose("Author: '%s'" % xItem.text)
                         self.bookAuthors.append(xItem.text)
                     elif xItem.tag == "backup":
-                        self.doBackup = checkBool(xItem.text,False)
+                        self.doBackup = checkBool(xItem.text, False)
             elif xChild.tag == "settings":
                 logger.debug("Found project settings")
                 for xItem in xChild:
                     if xItem.text is None:
                         continue
                     if xItem.tag == "spellCheck":
-                        self.spellCheck = checkBool(xItem.text,False)
+                        self.spellCheck = checkBool(xItem.text, False)
                     elif xItem.tag == "autoOutline":
-                        self.autoOutline = checkBool(xItem.text,True)
+                        self.autoOutline = checkBool(xItem.text, True)
                     elif xItem.tag == "lastEdited":
-                        self.lastEdited = checkString(xItem.text,None,True)
+                        self.lastEdited = checkString(xItem.text, None, True)
                     elif xItem.tag == "lastViewed":
-                        self.lastViewed = checkString(xItem.text,None,True)
+                        self.lastViewed = checkString(xItem.text, None, True)
                     elif xItem.tag == "lastWordCount":
-                        self.lastWCount = checkInt(xItem.text,0,False)
+                        self.lastWCount = checkInt(xItem.text, 0, False)
                     elif xItem.tag == "status":
                         self.statusItems.unpackEntries(xItem)
                     elif xItem.tag == "importance":
                         self.importItems.unpackEntries(xItem)
                     elif xItem.tag == "autoReplace":
                         for xEntry in xItem:
-                            self.autoReplace[xEntry.tag] = checkString(xEntry.text,None,False)
+                            self.autoReplace[xEntry.tag] = checkString(xEntry.text, None, False)
             elif xChild.tag == "content":
                 logger.debug("Found project content")
-                for xItem in xChild:
-                    nwItem = NWItem(self)
-                    if nwItem.unpackXML(xItem):
-                        self.projTree.append(nwItem.itemHandle, nwItem.parHandle, nwItem)
+                self.projTree.unpackXML(xChild)
 
         self.optState.loadSettings()
 
@@ -384,8 +381,10 @@ class NWProject():
         self.projMeta = path.join(self.projPath,"meta")
         saveTime = time()
 
-        if not self._checkFolder(self.projPath): return
-        if not self._checkFolder(self.projMeta): return
+        if not self._checkFolder(self.projPath):
+            return False
+        if not self._checkFolder(self.projMeta):
+            return False
 
         logger.debug("Saving project: %s" % self.projPath)
 
@@ -401,27 +400,27 @@ class NWProject():
             "fileVersion" : "1.0",
             "saveCount"   : str(self.saveCount),
             "autoCount"   : str(self.autoCount),
-            "timeStamp"   : datetime.fromtimestamp(saveTime).strftime("%Y-%m-%d %H:%M:%S"),
+            "timeStamp"   : formatTimeStamp(saveTime),
         })
 
         # Save Project Meta
         xProject = etree.SubElement(nwXML, "project")
-        self._saveProjectValue(xProject, "name", self.projName,  True)
-        self._saveProjectValue(xProject, "title", self.bookTitle, True)
-        self._saveProjectValue(xProject, "author", self.bookAuthors)
-        self._saveProjectValue(xProject, "backup", self.doBackup)
+        self._packProjectValue(xProject, "name", self.projName,  True)
+        self._packProjectValue(xProject, "title", self.bookTitle, True)
+        self._packProjectValue(xProject, "author", self.bookAuthors)
+        self._packProjectValue(xProject, "backup", self.doBackup)
 
         # Save Project Settings
         xSettings = etree.SubElement(nwXML, "settings")
-        self._saveProjectValue(xSettings, "spellCheck", self.spellCheck)
-        self._saveProjectValue(xSettings, "autoOutline", self.autoOutline)
-        self._saveProjectValue(xSettings, "lastEdited", self.lastEdited)
-        self._saveProjectValue(xSettings, "lastViewed", self.lastViewed)
-        self._saveProjectValue(xSettings, "lastWordCount", self.currWCount)
+        self._packProjectValue(xSettings, "spellCheck", self.spellCheck)
+        self._packProjectValue(xSettings, "autoOutline", self.autoOutline)
+        self._packProjectValue(xSettings, "lastEdited", self.lastEdited)
+        self._packProjectValue(xSettings, "lastViewed", self.lastViewed)
+        self._packProjectValue(xSettings, "lastWordCount", self.currWCount)
         xAutoRep = etree.SubElement(xSettings, "autoReplace")
         for aKey, aValue in self.autoReplace.items():
             if len(aKey) > 0:
-                self._saveProjectValue(xAutoRep,aKey,aValue)
+                self._packProjectValue(xAutoRep,aKey,aValue)
 
         xStatus = etree.SubElement(xSettings,"status")
         self.statusItems.packEntries(xStatus)
@@ -430,9 +429,7 @@ class NWProject():
 
         # Save Tree Content
         logger.debug("Writing project content")
-        xContent = etree.SubElement(nwXML, "content", attrib={"count":str(len(self.projTree))})
-        for tItem in self.projTree:
-            tItem.packXML(xContent)
+        self.projTree.packXML(nwXML)
 
         # Write the xml tree to file
         tempFile = path.join(self.projPath, self.projFile+"~")
@@ -529,7 +526,7 @@ class NWProject():
                 )
                 return False
 
-        archName = "Backup on %s" % datetime.now().strftime("%Y-%m-%d at %H.%M.%S")
+        archName = "Backup from %s" % formatTimeStamp(time(), fileSafe=True)
         baseName = path.join(baseDir, archName)
 
         try:
@@ -559,6 +556,9 @@ class NWProject():
     ##
 
     def setProjectPath(self, projPath):
+        """Set the project storage path, and also expand ~ to the user
+        directory using the path library.
+        """
         if projPath is None or projPath == "":
             self.projPath = None
         else:
@@ -569,16 +569,23 @@ class NWProject():
         return True
 
     def setProjectName(self, projName):
+        """Set the project name (working title), This is the the title
+        used for backup files etc.
+        """
         self.projName = projName.strip()
         self.setProjectChanged(True)
         return True
 
     def setBookTitle(self, bookTitle):
+        """Set the boom title, that is, the title to include in exports.
+        """
         self.bookTitle = bookTitle.strip()
         self.setProjectChanged(True)
         return True
 
     def setBookAuthors(self, bookAuthors):
+        """A line separated list of book authors, parsed into an array.
+        """
         self.bookAuthors = []
         for bookAuthor in bookAuthors.split("\n"):
             bookAuthor = bookAuthor.strip()
@@ -589,36 +596,44 @@ class NWProject():
         return True
 
     def setProjBackup(self, doBackup):
-        self.doBackup = False
+        """Set whether projects should be backed up or not. The user
+        will notified in case dependant settings are missing.
+        """
+        self.doBackup = doBackup
         if doBackup:
             if not path.isdir(self.mainConf.backupPath):
                 self.theParent.makeAlert((
                     "You must set a valid backup path in preferences to use "
                     "the automatic project backup feature."
-                ), nwAlert.ERROR)
-                return False
+                ), nwAlert.WARN)
             if self.projName == "":
                 self.theParent.makeAlert((
                     "You must set a valid project name in project settings to "
                     "use the automatic project backup feature."
-                ), nwAlert.ERROR)
-                return False
-            self.doBackup = True
+                ), nwAlert.WARN)
         return True
 
     def setSpellCheck(self, theMode):
+        """Enable/disable spell checking.
+        """
         if self.spellCheck != theMode:
             self.spellCheck = theMode
             self.setProjectChanged(True)
         return True
 
     def setAutoOutline(self, theMode):
+        """Enable/disable automatic update of project outline.
+        """
         if self.autoOutline != theMode:
             self.autoOutline = theMode
             self.setProjectChanged(True)
         return True
 
     def setTreeOrder(self, newOrder):
+        """A list representing the liner/flattened order of project
+        items in the GUI project tree. The user can rearrange the order
+        by drag-and-drop. Forwarded to the NWTree class.
+        """
         if len(self.projTree) != len(newOrder):
             logger.warning("Size of new and old tree order does not match")
         self.projTree.setOrder(newOrder)
@@ -626,48 +641,64 @@ class NWProject():
         return True
 
     def setLastEdited(self, tHandle):
+        """Set last edited project item.
+        """
         if self.lastEdited != tHandle:
             self.lastEdited = tHandle
             self.setProjectChanged(True)
         return True
 
     def setLastViewed(self, tHandle):
+        """Set last viewed project item.
+        """
         if self.lastViewed != tHandle:
             self.lastViewed = tHandle
             self.setProjectChanged(True)
         return True
 
     def setProjectWordCount(self, theCount):
+        """Set the current project word count.
+        """
         if self.currWCount != theCount:
             self.currWCount = theCount
             self.setProjectChanged(True)
         return True
 
     def setStatusColours(self, newCols):
+        """Update the list of novel file status flags. Also iterate
+        through the project and replace keys that have been renamed.
+        """
         replaceMap = self.statusItems.setNewEntries(newCols)
-        if self.projTree:
-            for nwItem in self.projTree:
-                if nwItem.itemClass == nwItemClass.NOVEL:
-                    if nwItem.itemStatus in replaceMap.keys():
-                        nwItem.setStatus(replaceMap[nwItem.itemStatus])
+        for nwItem in self.projTree:
+            if nwItem.itemClass == nwItemClass.NOVEL:
+                if nwItem.itemStatus in replaceMap.keys():
+                    nwItem.setStatus(replaceMap[nwItem.itemStatus])
         self.setProjectChanged(True)
         return
 
     def setImportColours(self, newCols):
+        """Update the list of note file importance flags. Also iterate
+        through the project and replace keys that have been renamed.
+        """
         replaceMap = self.importItems.setNewEntries(newCols)
-        if self.projTree:
-            for nwItem in self.projTree:
-                if nwItem.itemClass != nwItemClass.NOVEL:
-                    if nwItem.itemStatus in replaceMap.keys():
-                        nwItem.setStatus(replaceMap[nwItem.itemStatus])
+        for nwItem in self.projTree:
+            if nwItem.itemClass != nwItemClass.NOVEL:
+                if nwItem.itemStatus in replaceMap.keys():
+                    nwItem.setStatus(replaceMap[nwItem.itemStatus])
         self.setProjectChanged(True)
         return
 
     def setAutoReplace(self, autoReplace):
+        """Update the auto-replace dictionary. This replaces the entire
+        dictionary, so alterations have to be made in a copy.
+        """
         self.autoReplace = autoReplace
         return
 
     def setProjectChanged(self, bValue):
+        """Toggle the project changed flag, and propagate the
+        information to the GUI statusbar.
+        """
         self.projChanged = bValue
         self.theParent.setProjectStatus(self.projChanged)
         if bValue:
@@ -733,7 +764,8 @@ class NWProject():
 
     def countStatus(self):
         """Count how many times the various status flags are used in the
-        project tree.
+        project tree. The counts themselves are kept in the NWStatus
+        objects. This is essentially a refresh.
         """
         self.statusItems.resetCounts()
         self.importItems.resetCounts()
@@ -825,7 +857,7 @@ class NWProject():
                 return False
         return True
 
-    def _saveProjectValue(self, xParent, theName, theValue, allowNone=True):
+    def _packProjectValue(self, xParent, theName, theValue, allowNone=True):
         if not isinstance(theValue, list):
             theValue = [theValue]
         for aValue in theValue:
@@ -838,7 +870,7 @@ class NWProject():
 
     def _scanProjectFolder(self):
         """Scan the project folder and check that the files in it are
-        also in the project CML file. If they aren't, import them as
+        also in the project XML file. If they aren't, import them as
         orphaned files so the user can either delete them, or put them
         back into the project tree.
         """
@@ -882,11 +914,20 @@ class NWProject():
             return
 
         # Handle orphans
+        aDoc = NWDoc(self, self.theParent)
         nOrph = 0
         for oHandle in orphanFiles:
-            nOrph += 1
+
+            # Look for meta data
+            if aDoc.openDocument(oHandle, showStatus=False, isOrphan=True):
+                oName, oPath = aDoc.getMeta()
+                aDoc.clearDocument()
+            else:
+                nOrph += 1
+                oName = "Orphaned File %d" % nOrph
+
             orphItem = NWItem(self)
-            orphItem.setName("Orphaned File %d" % nOrph)
+            orphItem.setName(oName)
             orphItem.setType(nwItemType.FILE)
             orphItem.setClass(nwItemClass.NO_CLASS)
             orphItem.setLayout(nwItemLayout.NO_LAYOUT)
@@ -909,8 +950,8 @@ class NWProject():
                 "End: {closed:s}  "
                 "Words: {words:8d}"
             ).format(
-                opened = datetime.fromtimestamp(self.projOpened).strftime(nwConst.tStampFmt),
-                closed = datetime.now().strftime(nwConst.tStampFmt),
+                opened = formatTimeStamp(self.projOpened),
+                closed = formatTimeStamp(time()),
                 words  = self.getSessionWordCount(),
             ), file=outFile)
 
@@ -993,6 +1034,33 @@ class NWTree():
 
         return
 
+    def packXML(self, xParent):
+        """Pack the content of the tree into an XML object.
+        """
+        xContent = etree.SubElement(xParent, "content", attrib={
+            "count":str(self._theLength)}
+        )
+        for tHandle in self._treeOrder:
+            tItem = self.__getitem__(tHandle)
+            tItem.packXML(xContent)
+        return 
+
+    def unpackXML(self, xContent):
+        """Iterate through all items of a content XML object and add
+        them to the project tree.
+        """
+        if xContent.tag != "content":
+            logger.error("XML entry is not a NWTree")
+            return False
+
+        self.clear()
+        for xItem in xContent:
+            nwItem = NWItem(self.theProject)
+            if nwItem.unpackXML(xItem):
+                self.append(nwItem.itemHandle, nwItem.parHandle, nwItem)
+
+        return True
+
     ##
     #  Tree Structure Methods
     ##
@@ -1019,7 +1087,8 @@ class NWTree():
 
     def checkRootUnique(self, theClass):
         """Checks if there already is a root entry of class 'theClass'
-        in the root of the project tree.
+        in the root of the project tree. CUSTOM class is skipped as it
+        is not required to be unique.
         """
         if theClass == nwItemClass.CUSTOM:
             return True
