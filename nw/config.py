@@ -227,6 +227,9 @@ class Config:
         self.iconPath  = path.join(self.assetPath,"icons")
         self.appIcon   = path.join(self.iconPath, nwFiles.APP_ICON)
 
+        logger.verbose("App path: %s" % self.appPath)
+        logger.verbose("Home path: %s" % self.homePath)
+
         # If config folder does not exist, make it.
         # This assumes that the os config folder itself exists.
         if not path.isdir(self.confPath):
