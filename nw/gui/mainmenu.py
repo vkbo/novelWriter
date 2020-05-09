@@ -225,11 +225,11 @@ class GuiMainMenu(QMenuBar):
         self.projMenu.addAction(self.aProjectSettings)
 
         # Project > Export Project
-        self.aExportProject = QAction("Export Project", self)
-        self.aExportProject.setStatusTip("Export project")
-        self.aExportProject.setShortcut("F5")
-        self.aExportProject.triggered.connect(self.theParent.exportProjectDialog)
-        self.projMenu.addAction(self.aExportProject)
+        self.aBuildProject = QAction("Build Project", self)
+        self.aBuildProject.setStatusTip("Build project")
+        self.aBuildProject.setShortcut("F5")
+        self.aBuildProject.triggered.connect(self.theParent.buildProjectDialog)
+        self.projMenu.addAction(self.aBuildProject)
 
         # Project > Session Log
         self.aSessionLog = QAction("Session Log", self)

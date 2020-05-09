@@ -40,10 +40,10 @@ from PyQt5.QtWidgets import (
 )
 
 from nw.gui import (
-    GuiMainMenu, GuiMainStatus, GuiTheme, GuiDocTree, GuiDocEditor, GuiExport,
+    GuiMainMenu, GuiMainStatus, GuiTheme, GuiDocTree, GuiDocEditor,
     GuiDocViewer, GuiDocDetails, GuiSearchBar, GuiNoticeBar, GuiDocViewDetails,
     GuiConfigEditor, GuiProjectEditor, GuiItemEditor, GuiProjectOutline,
-    GuiSessionLogView, GuiDocMerge, GuiDocSplit, GuiProjectLoad
+    GuiSessionLogView, GuiDocMerge, GuiDocSplit, GuiProjectLoad, GuiBuildNovel
 )
 from nw.core import NWProject, NWDoc, NWIndex, countWords
 from nw.constants import nwFiles, nwItemType, nwAlert
@@ -755,9 +755,9 @@ class GuiMain(QMainWindow):
             self._setWindowTitle(self.theProject.projName)
         return True
 
-    def exportProjectDialog(self):
+    def buildProjectDialog(self):
         if self.hasProject:
-            dlgExport = GuiExport(self, self.theProject)
+            dlgExport = GuiBuildNovel(self, self.theProject)
             dlgExport.exec_()
         return True
 
