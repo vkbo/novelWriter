@@ -1288,6 +1288,7 @@ class NWItem():
         self.itemLayout = nwItemLayout.NO_LAYOUT
         self.itemStatus = None
         self.isExpanded = False
+        self.isExported = True
 
         # Document Meta Data
         self.charCount = 0
@@ -1314,6 +1315,7 @@ class NWItem():
         xSub = self._subPack(xPack,"class",    text=str(self.itemClass.name))
         xSub = self._subPack(xPack,"status",   text=str(self.itemStatus))
         xSub = self._subPack(xPack,"expanded", text=str(self.isExpanded))
+        xSub = self._subPack(xPack,"exported", text=str(self.isExported))
         if self.itemType == nwItemType.FILE:
             xSub = self._subPack(xPack,"layout",    text=str(self.itemLayout.name))
             xSub = self._subPack(xPack,"charCount", text=str(self.charCount), none=False)
@@ -1347,6 +1349,7 @@ class NWItem():
             "layout"    : self.setLayout,
             "status"    : self.setStatus,
             "expanded"  : self.setExpanded,
+            "exported"  : self.setExported,
             "charCount" : self.setCharCount,
             "wordCount" : self.setWordCount,
             "paraCount" : self.setParaCount,
@@ -1445,6 +1448,13 @@ class NWItem():
             self.isExpanded = expState == str(True)
         else:
             self.isExpanded = expState == True
+        return
+
+    def setExported(self, expState):
+        if isinstance(expState, str):
+            self.isExported = expState == str(True)
+        else:
+            self.isExported = expState == True
         return
 
     ##
