@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='utf-8'?>
-<novelWriterXML appVersion="0.4.5" fileVersion="1.0" saveCount="127" autoCount="17" timeStamp="2020-05-09 16:03:23">
+<novelWriterXML appVersion="0.5" fileVersion="1.0" saveCount="162" autoCount="19" timeStamp="2020-05-09 20:50:45">
   <project>
     <name>Sample Project</name>
     <title>Sample Project</title>
@@ -10,7 +10,7 @@
   <settings>
     <spellCheck>True</spellCheck>
     <autoOutline>True</autoOutline>
-    <lastEdited>96b68994dfa3d</lastEdited>
+    <lastEdited>6a2d6d5f4f401</lastEdited>
     <lastViewed>b3e74dbc1f584</lastViewed>
     <lastWordCount>875</lastWordCount>
     <autoReplace>
@@ -41,6 +41,7 @@
       <class>NOVEL</class>
       <status>Started</status>
       <expanded>True</expanded>
+      <exported>True</exported>
     </item>
     <item handle="53b69b83cdafc" order="0" parent="7031beac91f75">
       <name>Title Page</name>
@@ -48,6 +49,7 @@
       <class>NOVEL</class>
       <status>Started</status>
       <expanded>False</expanded>
+      <exported>True</exported>
       <layout>TITLE</layout>
       <charCount>72</charCount>
       <wordCount>15</wordCount>
@@ -60,6 +62,7 @@
       <class>NOVEL</class>
       <status>1st Draft</status>
       <expanded>True</expanded>
+      <exported>True</exported>
     </item>
     <item handle="6a2d6d5f4f401" order="0" parent="e7ded148d6e4a">
       <name>Chapter One</name>
@@ -67,6 +70,7 @@
       <class>NOVEL</class>
       <status>Notes</status>
       <expanded>False</expanded>
+      <exported>True</exported>
       <layout>CHAPTER</layout>
       <charCount>12</charCount>
       <wordCount>3</wordCount>
@@ -79,6 +83,7 @@
       <class>NOVEL</class>
       <status>1st Draft</status>
       <expanded>False</expanded>
+      <exported>True</exported>
       <layout>SCENE</layout>
       <charCount>1199</charCount>
       <wordCount>216</wordCount>
@@ -91,6 +96,7 @@
       <class>NOVEL</class>
       <status>1st Draft</status>
       <expanded>False</expanded>
+      <exported>True</exported>
       <layout>SCENE</layout>
       <charCount>476</charCount>
       <wordCount>93</wordCount>
@@ -103,6 +109,7 @@
       <class>NOVEL</class>
       <status>Finished</status>
       <expanded>False</expanded>
+      <exported>True</exported>
       <layout>UNNUMBERED</layout>
       <charCount>633</charCount>
       <wordCount>101</wordCount>
@@ -115,6 +122,7 @@
       <class>NOVEL</class>
       <status>2nd Draft</status>
       <expanded>False</expanded>
+      <exported>False</exported>
       <layout>NOTE</layout>
       <charCount>1692</charCount>
       <wordCount>313</wordCount>
@@ -127,6 +135,7 @@
       <class>NOVEL</class>
       <status>1st Draft</status>
       <expanded>False</expanded>
+      <exported>True</exported>
       <layout>CHAPTER</layout>
       <charCount>139</charCount>
       <wordCount>28</wordCount>
@@ -139,6 +148,7 @@
       <class>NOVEL</class>
       <status>1st Draft</status>
       <expanded>False</expanded>
+      <exported>True</exported>
       <layout>SCENE</layout>
       <charCount>189</charCount>
       <wordCount>37</wordCount>
@@ -151,6 +161,7 @@
       <class>CHARACTER</class>
       <status>None</status>
       <expanded>True</expanded>
+      <exported>True</exported>
     </item>
     <item handle="f7e2d9f330615" order="0" parent="f6622b4617424">
       <name>Main Characters</name>
@@ -158,6 +169,7 @@
       <class>CHARACTER</class>
       <status>None</status>
       <expanded>True</expanded>
+      <exported>True</exported>
     </item>
     <item handle="14298de4d9524" order="0" parent="f7e2d9f330615">
       <name>John Smith</name>
@@ -165,6 +177,7 @@
       <class>CHARACTER</class>
       <status>Minor</status>
       <expanded>False</expanded>
+      <exported>True</exported>
       <layout>NOTE</layout>
       <charCount>49</charCount>
       <wordCount>9</wordCount>
@@ -177,6 +190,7 @@
       <class>CHARACTER</class>
       <status>Major</status>
       <expanded>False</expanded>
+      <exported>True</exported>
       <layout>NOTE</layout>
       <charCount>55</charCount>
       <wordCount>9</wordCount>
@@ -189,6 +203,7 @@
       <class>WORLD</class>
       <status>None</status>
       <expanded>True</expanded>
+      <exported>True</exported>
     </item>
     <item handle="b3e74dbc1f584" order="0" parent="15c4492bd5107">
       <name>Earth</name>
@@ -196,6 +211,7 @@
       <class>WORLD</class>
       <status>Main</status>
       <expanded>False</expanded>
+      <exported>True</exported>
       <layout>NOTE</layout>
       <charCount>76</charCount>
       <wordCount>15</wordCount>
@@ -208,6 +224,7 @@
       <class>WORLD</class>
       <status>Minor</status>
       <expanded>False</expanded>
+      <exported>True</exported>
       <layout>NOTE</layout>
       <charCount>115</charCount>
       <wordCount>24</wordCount>
@@ -220,6 +237,7 @@
       <class>WORLD</class>
       <status>Major</status>
       <expanded>False</expanded>
+      <exported>True</exported>
       <layout>NOTE</layout>
       <charCount>28</charCount>
       <wordCount>6</wordCount>
@@ -232,6 +250,7 @@
       <class>TRASH</class>
       <status>None</status>
       <expanded>True</expanded>
+      <exported>True</exported>
     </item>
     <item handle="b8136a5a774a0" order="0" parent="98acd8c76c93a">
       <name>Delete Me!</name>
@@ -239,6 +258,7 @@
       <class>NOVEL</class>
       <status>New</status>
       <expanded>False</expanded>
+      <exported>True</exported>
       <layout>SCENE</layout>
       <charCount>30</charCount>
       <wordCount>6</wordCount>
