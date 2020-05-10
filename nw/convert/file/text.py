@@ -143,7 +143,7 @@ class TextFile():
         self.theConv.setText(tHandle)
         self.theConv.doAutoReplace()
         self.theConv.tokenizeText()
-        self.theConv.doHeaders()
+        self.theConv.formatHeaders()
         self.theConv.doConvert()
         self.theConv.doPostProcessing()
 

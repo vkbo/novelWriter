@@ -41,6 +41,10 @@ class ToHtml(Tokenizer):
         self.forPreview = False
         return
 
+    ##
+    #  Setters
+    ##
+
     def setPreview(self, forPreview, doComments):
         """If we're using this class to generate markdown preview, we
         need to make a few changes to formatting, which is selected by
@@ -52,7 +56,14 @@ class ToHtml(Tokenizer):
             self.doComments = doComments
         return
 
+    ##
+    #  Class Methods
+    ##
+
     def doAutoReplace(self):
+        """Extend the auto-replace to also properly encode some unicode
+        characters into their respective HTML entities.
+        """
         Tokenizer.doAutoReplace(self)
 
         if self.forPreview:
@@ -76,6 +87,9 @@ class ToHtml(Tokenizer):
         return
 
     def doConvert(self):
+        """Convert the list of text tokens into a HTML document saved
+        to theResult.
+        """
 
         htmlTags = {
             self.FMT_B_B : "<strong>",
@@ -136,7 +150,7 @@ class ToHtml(Tokenizer):
                 self.theResult += self._formatComments(tText)
 
             elif tType == self.T_KEYWORD and self.doKeywords:
-                self.theResult += self._formatTags(tText)
+                self.theResult += self._formatKeywords(tText)
 
         return
 
@@ -144,7 +158,9 @@ class ToHtml(Tokenizer):
     #  Internal Functions
     ##
 
-    def _formatTags(self, tText):
+    def _formatKeywords(self, tText):
+        """Apply HTML formatting to keywords.
+        """
 
         if not self.forPreview:
             return "<pre>@%s</pre>\n" % tText
@@ -167,6 +183,8 @@ class ToHtml(Tokenizer):
         return "<div>%s</div>" % retText
 
     def _formatComments(self, tText):
+        """Apply HTML formatting to comments.
+        """
 
         if not self.forPreview:
             return "<div class='comment'>%s</div>\n" % tText

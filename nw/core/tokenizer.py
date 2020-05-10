@@ -70,28 +70,43 @@ class Tokenizer():
         self.theProject  = theProject
         self.theParent   = theParent
 
-        self.theText     = None
-        self.theHandle   = None
-        self.theItem     = None
-        self.theTokens   = None
-        self.theResult   = None
+        # Data Variables
+        self.theText     = None # The raw text to be tokenized
+        self.theHandle   = None # The handle associated with the text
+        self.theItem     = None # The NWItem associated with the handle
+        self.theTokens   = None # The list of the processed tokens
+        self.theResult   = None # The result text after conversion
 
-        self.wordWrap    = 0
-        self.doComments  = False
-        self.doKeywords  = False
+        # User Settings
+        self.doComments  = False # Also process comments
+        self.doKeywords  = False # Also process keywords like tags and references
 
-        self.fmtTitle    = "%title%"
-        self.fmtChapter  = "%title%"
-        self.fmtUnNum    = "%title%"
-        self.fmtScene    = "%title%"
-        self.fmtSection  = "%title%"
+        self.fmtTitle    = "%title%" # Formatting for titles
+        self.fmtChapter  = "%title%" # Formatting for numbered chapters
+        self.fmtUnNum    = "%title%" # Formatting for unnumbered chapters
+        self.fmtScene    = "%title%" # Formatting for scenes
+        self.fmtSection  = "%title%" # Formatting for sections
 
-        self.hideScene   = False
-        self.hideSection = False
+        self.hideScene   = False # Do not include scene headers
+        self.hideSection = False # Do not include section headers
 
-        self.numChapter  = 0
-        self.firstScene  = False
+        # Instance Variables
+        self.numChapter  = 0     # Counter for chapter numbers
+        self.firstScene  = False # Flag to indicate that the first scene of the chapter
 
+        return
+
+    def clearData(self):
+        """Clear the data arrays and variables, but not settings, so the class
+        can be reused for multiple documents.
+        """
+        self.theText    = None
+        self.theHandle  = None
+        self.theItem    = None
+        self.theTokens  = None
+        self.theResult  = None
+        self.numChapter = 0
+        self.firstScene = False
         return
 
     ##
@@ -104,13 +119,6 @@ class Tokenizer():
 
     def setKeywords(self, doKeywords):
         self.doKeywords = doKeywords
-        return
-
-    def setWordWrap(self, wordWrap):
-        if wordWrap >= 0:
-            self.wordWrap = wordWrap
-        else:
-            self.wordWrap = 0
         return
 
     def setTitleFormat(self, fmtTitle):
@@ -140,6 +148,9 @@ class Tokenizer():
     ##
 
     def setText(self, theHandle, theText=None):
+        """Set the text for the tokenizer from a handle. If theText is
+        not set, load it from the file.
+        """
 
         self.theHandle = theHandle
         self.theItem   = self.theProject.projTree[theHandle]
@@ -155,12 +166,16 @@ class Tokenizer():
         return
 
     def doAutoReplace(self):
+        """Run through the user's auto-replace dictionary.
+        """
+
         if len(self.theProject.autoReplace) > 0:
             repDict = {}
             for aKey, aVal in self.theProject.autoReplace.items():
                 repDict["<%s>" % aKey] = aVal
             xRep = re.compile("|".join([re.escape(k) for k in repDict.keys()]), flags=re.DOTALL)
             self.theText = xRep.sub(lambda x: repDict[x.group(0)], self.theText)
+
         return
 
     def doPostProcessing(self):
@@ -229,6 +244,9 @@ class Tokenizer():
         return
 
     def doHeaders(self):
+        """Apply formatting to the text headers according to document
+        layout and user settings.
+        """
 
         isNone  = self.theItem.itemLayout == nwItemLayout.NO_LAYOUT
         isTitle = self.theItem.itemLayout == nwItemLayout.TITLE
@@ -241,8 +259,8 @@ class Tokenizer():
         isNote  = self.theItem.itemLayout == nwItemLayout.NOTE
 
         # No special header formatting for notes and no-layout files
-        if isNone: return
-        if isNote: return
+        if isNone or isNote:
+            return
 
         # For novel files, we need to handle chapter numbering and scene
         # breaks
@@ -259,12 +277,12 @@ class Tokenizer():
                 elif tType == self.T_HEAD2:
                     if not isUnNum:
                         self.numChapter += 1
-                    tText = self._doFormatChapter(tText,isUnNum)
+                    tText = self._formatChapter(tText,isUnNum)
                     self.theTokens[n] = (tType,tText,None,self.A_LEFT)
                     self.firstScene = True
 
                 elif tType == self.T_HEAD3:
-                    tTemp = self._doFormatScene(tText)
+                    tTemp = self._formatScene(tText)
                     if tTemp == "" and self.hideScene:
                         self.theTokens[n] = (self.T_EMPTY,"",None,self.A_LEFT)
                     elif tTemp == "" and not self.hideScene:
@@ -282,7 +300,7 @@ class Tokenizer():
                     self.firstScene = False
 
                 elif tType == self.T_HEAD4:
-                    tTemp = self._doFormatSection(tText)
+                    tTemp = self._formatSection(tText)
                     if tTemp == "" and self.hideSection:
                         self.theTokens[n] = (self.T_EMPTY,"",None,self.A_LEFT)
                     elif tTemp == "" and not self.hideSection:
@@ -310,12 +328,16 @@ class Tokenizer():
     #  Internal Functions
     ##
 
-    def _doFormatTitle(self, theText):
+    def _formatTitle(self, theText):
+        """Replace tokens for headers level 1.
+        """
         theTitle = self.fmtTitle
         theTitle = theTitle.replace("%title%", theText)
         return theTitle
 
-    def _doFormatChapter(self, theText, noNum):
+    def _formatChapter(self, theText, noNum):
+        """Replace tokens for headers level 2.
+        """
         if noNum:
             theTitle = self.fmtUnNum
             theTitle = theTitle.replace("%title%", theText)
@@ -326,20 +348,18 @@ class Tokenizer():
             theTitle = theTitle.replace("%numword%", numberToWord(self.numChapter,"en"))
         return theTitle
 
-    def _doFormatScene(self, theText):
+    def _formatScene(self, theText):
+        """Replace tokens for headers level 3.
+        """
         theTitle = self.fmtScene
         theTitle = theTitle.replace("%title%", theText)
         return theTitle
 
-    def _doFormatSection(self, theText):
+    def _formatSection(self, theText):
+        """Replace tokens for headers level 4.
+        """
         theTitle = self.fmtSection
         theTitle = theTitle.replace("%title%", theText)
         return theTitle
-
-    def _centreText(self, theText, theWidth):
-        tLen = len(theText)
-        if tLen < theWidth:
-            return " "*int((theWidth-tLen)/2) + theText
-        return theText
 
 # END Class Tokenizer
