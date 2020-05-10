@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='utf-8'?>
-<novelWriterXML appVersion="0.5" fileVersion="1.0" saveCount="4" autoCount="0" timeStamp="2020-05-10 16:05:52">
+<novelWriterXML appVersion="0.5" fileVersion="1.0" saveCount="4" autoCount="0" timeStamp="2020-05-10 19:34:57">
   <project>
     <name></name>
     <title></title>
@@ -14,12 +14,13 @@
     <autoReplace/>
     <titleFormat>
       <title>%title%</title>
-      <chapter>Chapter %num%</chapter>
-      <chapterSub>%title%</chapterSub>
+      <chapter>Chapter %num%\\%title%</chapter>
       <unnumbered>%title%</unnumbered>
-      <scene></scene>
-      <sceneSep>* * *</sceneSep>
+      <scene>* * *</scene>
       <section></section>
+      <withSynopsis>False</withSynopsis>
+      <withComments>False</withComments>
+      <withKeywords>False</withKeywords>
     </titleFormat>
     <status>
       <entry blue="100" green="100" red="100">New</entry>
