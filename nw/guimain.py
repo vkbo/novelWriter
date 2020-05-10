@@ -45,7 +45,7 @@ from nw.gui import (
     GuiConfigEditor, GuiProjectEditor, GuiItemEditor, GuiProjectOutline,
     GuiSessionLogView, GuiDocMerge, GuiDocSplit, GuiProjectLoad, GuiBuildNovel
 )
-from nw.core import NWProject, NWDoc, NWIndex, countWords
+from nw.core import NWProject, NWDoc, NWIndex
 from nw.constants import nwFiles, nwItemType, nwAlert
 
 logger = logging.getLogger(__name__)

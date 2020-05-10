@@ -35,9 +35,8 @@ from PyQt5.QtGui import (
     QTextOption, QPalette, QColor, QTextDocumentWriter
 )
 from PyQt5.QtWidgets import (
-    QDialog, QVBoxLayout, QHBoxLayout, QTextBrowser, QPushButton,
-    QLabel, QLineEdit, QGroupBox, QGridLayout, QComboBox, QProgressBar,
-    QMenu, QAction, QFileDialog
+    QDialog, QVBoxLayout, QHBoxLayout, QTextBrowser, QPushButton, QLabel,
+    QLineEdit, QGroupBox, QGridLayout, QProgressBar, QMenu, QAction, QFileDialog
 )
 
 from nw.gui.additions import QSwitch

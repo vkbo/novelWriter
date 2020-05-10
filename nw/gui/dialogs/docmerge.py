@@ -52,10 +52,11 @@ class GuiDocMerge(QDialog):
 
         self.outerBox = QHBoxLayout()
         self.innerBox = QVBoxLayout()
-        self.setWindowTitle("Merge Documents")
         self.setLayout(self.outerBox)
 
+        self.setWindowTitle("Merge Documents")
         self.guiDeco = self.theParent.theTheme.loadDecoration("merge",(64,64))
+        self.outerBox.setSpacing(16)
 
         self.outerBox.addWidget(self.guiDeco, 0, Qt.AlignTop)
         self.outerBox.addLayout(self.innerBox)

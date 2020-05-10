@@ -32,7 +32,7 @@ from time import time
 
 from PyQt5.QtCore import Qt, QTimer, pyqtSlot
 from PyQt5.QtWidgets import (
-    qApp, QTextEdit, QAction, QMenu, QShortcut, QMessageBox, QLabel
+    qApp, QTextEdit, QAction, QMenu, QShortcut, QMessageBox
 )
 from PyQt5.QtGui import (
     QTextCursor, QTextOption, QKeySequence, QFont, QColor, QPalette,

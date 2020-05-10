@@ -32,7 +32,6 @@ import nw
 
 from os import path
 
-from nw.common import checkString, checkBool, checkInt
 from nw.constants import nwFiles
 
 logger = logging.getLogger(__name__)

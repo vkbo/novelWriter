@@ -31,7 +31,7 @@ import nw
 from PyQt5.QtCore import Qt
 from PyQt5.QtWidgets import (
     QDialog, QHBoxLayout, QVBoxLayout, QGroupBox, QGridLayout, QLineEdit,
-    QPushButton, QComboBox, QLabel, QSpacerItem, QSizePolicy, QDialogButtonBox
+    QComboBox, QLabel, QSpacerItem, QSizePolicy, QDialogButtonBox
 )
 
 from nw.gui.additions import QSwitch

@@ -44,7 +44,7 @@ from nw.core.tools import projectMaintenance
 from nw.core.document import NWDoc
 from nw.common import checkString, checkBool, checkInt, formatTimeStamp
 from nw.constants import (
-    nwFiles, nwConst, nwItemType, nwItemClass, nwItemLayout, nwAlert
+    nwFiles, nwItemType, nwItemClass, nwItemLayout, nwAlert
 )
 
 logger = logging.getLogger(__name__)
