@@ -40,29 +40,30 @@ logger = logging.getLogger(__name__)
 
 class Tokenizer():
 
-    FMT_B_B   =  1 # Begin bold
-    FMT_B_E   =  2 # End bold
-    FMT_I_B   =  3 # Begin italics
-    FMT_I_E   =  4 # End italics
-    FMT_U_B   =  5 # Begin underline
-    FMT_U_E   =  6 # End underline
+    FMT_B_B    =  1 # Begin bold
+    FMT_B_E    =  2 # End bold
+    FMT_I_B    =  3 # Begin italics
+    FMT_I_E    =  4 # End italics
+    FMT_U_B    =  5 # Begin underline
+    FMT_U_E    =  6 # End underline
 
-    T_EMPTY   =  1 # Empty line (new paragraph)
-    T_COMMENT =  2 # Comment line
-    T_KEYWORD =  3 # Command line
-    T_HEAD1   =  4 # Header 1 (title)
-    T_HEAD2   =  5 # Header 2 (chapter)
-    T_HEAD3   =  6 # Header 3 (scene)
-    T_HEAD4   =  7 # Header 4
-    T_TEXT    =  8 # Text line
-    T_SEP     =  9 # Scene separator
-    T_SKIP    = 10 # Paragraph break
-    T_PBREAK  = 11 # Page break
+    T_EMPTY    =  1 # Empty line (new paragraph)
+    T_SYNOPSIS =  2 # Synopsis comment
+    T_COMMENT  =  3 # Comment line
+    T_KEYWORD  =  4 # Command line
+    T_HEAD1    =  5 # Header 1 (title)
+    T_HEAD2    =  6 # Header 2 (chapter)
+    T_HEAD3    =  7 # Header 3 (scene)
+    T_HEAD4    =  8 # Header 4
+    T_TEXT     =  9 # Text line
+    T_SEP      = 10 # Scene separator
+    T_SKIP     = 11 # Paragraph break
+    T_PBREAK   = 12 # Page break
 
-    A_LEFT    =  1 # Left aligned
-    A_RIGHT   =  2 # Right aligned
-    A_CENTRE  =  3 # Centred
-    A_JUSTIFY =  4 # Justified
+    A_LEFT     =  1 # Left aligned
+    A_RIGHT    =  2 # Right aligned
+    A_CENTRE   =  3 # Centred
+    A_JUSTIFY  =  4 # Justified
 
     def __init__(self, theProject, theParent):
 
@@ -78,8 +79,11 @@ class Tokenizer():
         self.theResult   = None # The result text after conversion
 
         # User Settings
+        self.doBodyText  = True  # Include body text
+        self.doSynopsis  = False # Also process synopsis comments
         self.doComments  = False # Also process comments
         self.doKeywords  = False # Also process keywords like tags and references
+        self.doJustify   = False # Justify text
 
         self.fmtTitle    = "%title%" # Formatting for titles
         self.fmtChapter  = "%title%" # Formatting for numbered chapters
@@ -113,14 +117,6 @@ class Tokenizer():
     #  Setters
     ##
 
-    def setComments(self, doComments):
-        self.doComments = doComments
-        return
-
-    def setKeywords(self, doKeywords):
-        self.doKeywords = doKeywords
-        return
-
     def setTitleFormat(self, fmtTitle):
         self.fmtTitle = fmtTitle
         return
@@ -141,6 +137,26 @@ class Tokenizer():
     def setSectionFormat(self, fmtSection, hideSection):
         self.fmtSection  = fmtSection
         self.hideSection = hideSection
+        return
+
+    def setBodyText(self, doBodyText):
+        self.doBodyText = doBodyText
+        return
+
+    def setSynopsis(self, doSynopsis):
+        self.doSynopsis = doSynopsis
+        return
+
+    def setComments(self, doComments):
+        self.doComments = doComments
+        return
+
+    def setKeywords(self, doKeywords):
+        self.doKeywords = doKeywords
+        return
+
+    def setJustify(self, doJustify):
+        self.doJustify = doJustify
         return
 
     ##
@@ -207,25 +223,38 @@ class Tokenizer():
             [None, self.FMT_U_B, None, self.FMT_U_E]
         )]
 
+        if self.doJustify:
+            defAlign = self.A_JUSTIFY
+        else:
+            defAlign = self.A_LEFT
+
         self.theTokens = []
         for aLine in self.theText.splitlines():
 
             # Tag lines starting with specific characters
             if len(aLine.strip()) == 0:
-                self.theTokens.append((self.T_EMPTY,"",None,self.A_LEFT))
+                self.theTokens.append((self.T_EMPTY, "", None, self.A_LEFT))
             elif aLine[0] == "%":
-                self.theTokens.append((self.T_COMMENT,aLine[1:].strip(),None,self.A_LEFT))
+                cLine = aLine[1:].strip()
+                if cLine.lower().startswith("synopsis:"):
+                    self.theTokens.append((self.T_SYNOPSIS, cLine[9:].strip(), None, defAlign))
+                else:
+                    self.theTokens.append((self.T_COMMENT, aLine[1:].strip(), None, defAlign))
             elif aLine[0] == "@":
-                self.theTokens.append((self.T_KEYWORD,aLine[1:].strip(),None,self.A_LEFT))
+                self.theTokens.append((self.T_KEYWORD, aLine[1:].strip(), None, self.A_LEFT))
             elif aLine[:2] == "# ":
-                self.theTokens.append((self.T_HEAD1,aLine[2:].strip(),None,self.A_LEFT))
+                self.theTokens.append((self.T_HEAD1, aLine[2:].strip(), None, self.A_LEFT))
             elif aLine[:3] == "## ":
-                self.theTokens.append((self.T_HEAD2,aLine[3:].strip(),None,self.A_LEFT))
+                self.theTokens.append((self.T_HEAD2, aLine[3:].strip(), None, self.A_LEFT))
             elif aLine[:4] == "### ":
-                self.theTokens.append((self.T_HEAD3,aLine[4:].strip(),None,self.A_LEFT))
+                self.theTokens.append((self.T_HEAD3, aLine[4:].strip(), None, self.A_LEFT))
             elif aLine[:5] == "#### ":
-                self.theTokens.append((self.T_HEAD4,aLine[5:].strip(),None,self.A_LEFT))
+                self.theTokens.append((self.T_HEAD4, aLine[5:].strip(), None, self.A_LEFT))
             else:
+                if not self.doBodyText:
+                    # Skip all body text
+                    continue
+
                 # Otherwise we use RegEx to find formatting tags within a line of text
                 fmtPos = []
                 for theRX, theKeys in rxFormats:
@@ -240,11 +269,11 @@ class Tokenizer():
 
                 # Save the line as is, but append the array of formatting locations
                 # sorted by position
-                fmtPos = sorted(fmtPos,key=itemgetter(0))
-                self.theTokens.append((self.T_TEXT,aLine,fmtPos,self.A_LEFT))
+                fmtPos = sorted(fmtPos, key=itemgetter(0))
+                self.theTokens.append((self.T_TEXT, aLine, fmtPos, defAlign))
 
         # Always add an empty line at the end
-        self.theTokens.append((self.T_EMPTY,"",None,self.A_LEFT))
+        self.theTokens.append((self.T_EMPTY, "", None, self.A_LEFT))
 
         return
 
@@ -283,37 +312,37 @@ class Tokenizer():
                     if not isUnNum:
                         self.numChapter += 1
                     tText = self._formatChapter(tText,isUnNum)
-                    self.theTokens[n] = (tType,tText,None,self.A_LEFT)
+                    self.theTokens[n] = (tType, tText, None, self.A_LEFT)
                     self.firstScene = True
 
                 elif tType == self.T_HEAD3:
                     tTemp = self._formatScene(tText)
                     if tTemp == "" and self.hideScene:
-                        self.theTokens[n] = (self.T_EMPTY,"",None,self.A_LEFT)
+                        self.theTokens[n] = (self.T_EMPTY, "", None, self.A_LEFT)
                     elif tTemp == "" and not self.hideScene:
                         if self.firstScene:
-                            self.theTokens[n] = (self.T_EMPTY,"",None,self.A_LEFT)
+                            self.theTokens[n] = (self.T_EMPTY, "", None, self.A_LEFT)
                         else:
-                            self.theTokens[n] = (self.T_SKIP,"",None,self.A_LEFT)
+                            self.theTokens[n] = (self.T_SKIP, "", None, self.A_LEFT)
                     elif tTemp == self.fmtScene:
                         if self.firstScene:
-                            self.theTokens[n] = (self.T_EMPTY,"",None,self.A_LEFT)
+                            self.theTokens[n] = (self.T_EMPTY, "", None, self.A_LEFT)
                         else:
-                            self.theTokens[n] = (self.T_SEP,tTemp,None,self.A_CENTRE)
+                            self.theTokens[n] = (self.T_SEP, tTemp, None, self.A_CENTRE)
                     else:
-                        self.theTokens[n] = (tType,tTemp,None,self.A_LEFT)
+                        self.theTokens[n] = (tType, tTemp, None, self.A_LEFT)
                     self.firstScene = False
 
                 elif tType == self.T_HEAD4:
                     tTemp = self._formatSection(tText)
                     if tTemp == "" and self.hideSection:
-                        self.theTokens[n] = (self.T_EMPTY,"",None,self.A_LEFT)
+                        self.theTokens[n] = (self.T_EMPTY, "", None, self.A_LEFT)
                     elif tTemp == "" and not self.hideSection:
-                        self.theTokens[n] = (self.T_SKIP,"",None,self.A_LEFT)
+                        self.theTokens[n] = (self.T_SKIP, "", None, self.A_LEFT)
                     elif tTemp == self.fmtSection:
-                        self.theTokens[n] = (self.T_SEP,tTemp,None,self.A_CENTRE)
+                        self.theTokens[n] = (self.T_SEP, tTemp, None, self.A_CENTRE)
                     else:
-                        self.theTokens[n] = (tType,tTemp,None,self.A_LEFT)
+                        self.theTokens[n] = (tType, tTemp, None, self.A_LEFT)
 
         # For title page and partitions, we need to centre all text
         # and for some formats, we need a page break
@@ -323,9 +352,9 @@ class Tokenizer():
                 tType   = tToken[0]
                 tText   = tToken[1]
                 tFormat = tToken[2]
-                self.theTokens[n] = (tType,tText,tFormat,self.A_CENTRE)
+                self.theTokens[n] = (tType, tText, tFormat, self.A_CENTRE)
 
-            self.theTokens.append((self.T_PBREAK,"",None,self.A_LEFT))
+            self.theTokens.append((self.T_PBREAK, "", None, self.A_LEFT))
 
         return
 

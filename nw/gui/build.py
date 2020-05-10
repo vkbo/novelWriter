@@ -42,7 +42,9 @@ from PyQt5.QtWidgets import (
 
 from nw.gui.additions import QSwitch
 from nw.core import ToHtml
-from nw.constants import nwConst, nwFiles, nwAlert, nwItemType
+from nw.constants import (
+    nwConst, nwFiles, nwAlert, nwItemType, nwItemLayout, nwItemClass
+)
 
 logger = logging.getLogger(__name__)
 
@@ -70,11 +72,11 @@ class GuiBuildNovel(QDialog):
 
         self.setWindowTitle("Build Project")
         self.setMinimumWidth(800)
-        self.setMinimumHeight(700)
+        self.setMinimumHeight(800)
 
         self.resize(
             self.optState.getInt("GuiBuildNovel", "winWidth", 800),
-            self.optState.getInt("GuiBuildNovel", "winHeight", 700)
+            self.optState.getInt("GuiBuildNovel", "winHeight", 800)
         )
 
         self.outerBox = QVBoxLayout()
@@ -128,6 +130,21 @@ class GuiBuildNovel(QDialog):
         self.titleForm.setColumnStretch(0, 1)
         self.titleForm.setColumnStretch(1, 0)
 
+        # Text Options
+        # =============
+        self.textGroup = QGroupBox("Text Options", self)
+        self.textForm  = QGridLayout(self)
+        self.textGroup.setLayout(self.textForm)
+
+        self.justifyText = QSwitch()
+        self.justifyText.setChecked(self.optState.getBool("GuiBuildNovel", "justifyText", False))
+
+        self.textForm.addWidget(QLabel("Justify text"), 0, 0)
+        self.textForm.addWidget(self.justifyText,       0, 1)
+
+        self.textForm.setColumnStretch(0, 1)
+        self.textForm.setColumnStretch(1, 0)
+
         # Build Settings
         # ==============
         self.buildGroup = QGroupBox("Build Overrides", self)
@@ -156,11 +173,11 @@ class GuiBuildNovel(QDialog):
         self.includeKeywords = QSwitch()
         self.includeKeywords.setChecked(self.theProject.titleFormat["withKeywords"])
 
-        self.includeForm.addWidget(QLabel("Include Synopsis"), 0, 0)
+        self.includeForm.addWidget(QLabel("Include synopsis"), 0, 0)
         self.includeForm.addWidget(self.includeSynopsis,       0, 1)
-        self.includeForm.addWidget(QLabel("Include Comments"), 1, 0)
+        self.includeForm.addWidget(QLabel("Include comments"), 1, 0)
         self.includeForm.addWidget(self.includeComments,       1, 1)
-        self.includeForm.addWidget(QLabel("Include Keywords"), 2, 0)
+        self.includeForm.addWidget(QLabel("Include keywords"), 2, 0)
         self.includeForm.addWidget(self.includeKeywords,       2, 1)
 
         self.includeForm.setColumnStretch(0, 1)
@@ -179,11 +196,11 @@ class GuiBuildNovel(QDialog):
         self.ignoreFlag = QSwitch()
         self.ignoreFlag.setChecked(self.optState.getBool("GuiBuildNovel", "ignoreFlag", False))
 
-        self.addsForm.addWidget(QLabel("Include Novel Files"), 0, 0)
+        self.addsForm.addWidget(QLabel("Include novel files"), 0, 0)
         self.addsForm.addWidget(self.novelFiles,               0, 1)
-        self.addsForm.addWidget(QLabel("Include Note Files"),  1, 0)
+        self.addsForm.addWidget(QLabel("Include note files"),  1, 0)
         self.addsForm.addWidget(self.noteFiles,                1, 1)
-        self.addsForm.addWidget(QLabel("Ignore Export Flag"),  2, 0)
+        self.addsForm.addWidget(QLabel("Ignore export flag"),  2, 0)
         self.addsForm.addWidget(self.ignoreFlag,               2, 1)
 
         self.addsForm.setColumnStretch(0, 1)
@@ -245,6 +262,7 @@ class GuiBuildNovel(QDialog):
         # Assemble GUI
         # ============
         self.toolsBox.addWidget(self.titleGroup)
+        self.toolsBox.addWidget(self.textGroup)
         self.toolsBox.addWidget(self.buildGroup)
         self.toolsBox.addWidget(self.includeGroup)
         self.toolsBox.addWidget(self.addsGroup)
@@ -280,11 +298,50 @@ class GuiBuildNovel(QDialog):
         """Build a preview of the project in the document viewer.
         """
 
-        makeHtml = ToHtml(self.theProject, self.theParent)
-        self.htmlText = ""
+        # Get Settings
+        fmtTitle      = self.fmtTitle.text().strip()
+        fmtChapter    = self.fmtChapter.text().strip()
+        fmtUnnumbered = self.fmtUnnumbered.text().strip()
+        fmtScene      = self.fmtScene.text().strip()
+        fmtSection    = self.fmtSection.text().strip()
+        justifyText   = self.justifyText.isChecked()
+        outlineMode   = self.outlineMode.isChecked()
+        incSynopsis   = self.includeSynopsis.isChecked()
+        incComments   = self.includeComments.isChecked()
+        incKeywords   = self.includeKeywords.isChecked()
+        novelFiles    = self.novelFiles.isChecked()
+        noteFiles     = self.noteFiles.isChecked()
+        ignoreFlag    = self.ignoreFlag.isChecked()
+        doBodyText    = True
 
-        for tItem in self.theProject.projTree:
-            if tItem is not None and tItem.itemType == nwItemType.FILE:
+        if outlineMode:
+            fmtTitle      = "%title%"
+            fmtChapter    = "Chapter: %title%"
+            fmtUnnumbered = "Chapter: %title%"
+            fmtScene      = "Scene: %title%"
+            fmtSection    = "Section: %title%"
+            doBodyText    = False
+            incSynopsis   = True
+            novelFiles    = True
+            noteFiles     = False
+
+        makeHtml = ToHtml(self.theProject, self.theParent)
+        makeHtml.setTitleFormat(fmtTitle)
+        makeHtml.setChapterFormat(fmtChapter)
+        makeHtml.setUnNumberedFormat(fmtUnnumbered)
+        makeHtml.setSceneFormat(fmtScene, fmtScene == "")
+        makeHtml.setSectionFormat(fmtSection, fmtSection == "")
+        makeHtml.setBodyText(doBodyText)
+        makeHtml.setSynopsis(incSynopsis)
+        makeHtml.setComments(incComments)
+        makeHtml.setKeywords(incKeywords)
+        makeHtml.setJustify(justifyText)
+
+        self.htmlText = ""
+        self.buildProgress.setMaximum(len(self.theProject.projTree))
+        self.buildProgress.setValue(0)
+        for nItt, tItem in enumerate(self.theProject.projTree):
+            if self._checkInclude(tItem, noteFiles, novelFiles, ignoreFlag):
                 makeHtml.setText(tItem.itemHandle)
                 makeHtml.doAutoReplace()
                 makeHtml.tokenizeText()
@@ -292,10 +349,48 @@ class GuiBuildNovel(QDialog):
                 makeHtml.doConvert()
                 makeHtml.doPostProcessing()
                 self.htmlText += makeHtml.getResult()
+            self.buildProgress.setValue(nItt+1)
 
         self.docView.setHtml(self.htmlText)
 
         return
+
+    def _checkInclude(self, theItem, noteFiles, novelFiles, ignoreFlag):
+        """This function checks whether a file should be included in the
+        export or not. For standard note and novel files, this is
+        controlled by the options selected by the user. For other files
+        classified as non-exportable, a few checks must be made, and the
+        following are not:
+        * Items that are not actual files.
+        * Items that have been orphaned which are tagged as NO_LAYOUT
+          and NO_CLASS.
+        * Items that appear in the TRASH folder or have parent set to
+          None (orphaned files).
+        """
+
+        if theItem is None:
+            return False
+
+        if not theItem.isExported and not ignoreFlag:
+            return False
+
+        isNone  = theItem.itemType != nwItemType.FILE
+        isNone |= theItem.itemLayout == nwItemLayout.NO_LAYOUT
+        isNone |= theItem.itemClass == nwItemClass.NO_CLASS
+        isNone |= theItem.itemClass == nwItemClass.TRASH
+        isNone |= theItem.parHandle == self.theProject.projTree.trashRoot()
+        isNone |= theItem.parHandle is None
+        isNote  = theItem.itemLayout == nwItemLayout.NOTE
+        isNovel = not isNone and not isNote
+
+        if isNone:
+            return False
+        if isNote and not noteFiles:
+            return False
+        if isNovel and not novelFiles:
+            return False
+
+        return True
 
     def _saveDocument(self, theFormat):
         """Save the document to various formats.
@@ -474,6 +569,7 @@ class GuiBuildNovel(QDialog):
         # GUI Settings
         self.optState.setValue("GuiBuildNovel", "winWidth",    self.width())
         self.optState.setValue("GuiBuildNovel", "winHeight",   self.height())
+        self.optState.setValue("GuiBuildNovel", "justifyText", self.justifyText.isChecked())
         self.optState.setValue("GuiBuildNovel", "outlineMode", self.outlineMode.isChecked())
         self.optState.setValue("GuiBuildNovel", "addNovel",    self.novelFiles.isChecked())
         self.optState.setValue("GuiBuildNovel", "addNotes",    self.noteFiles.isChecked())
@@ -556,6 +652,10 @@ class GuiBuildNovelDocView(QTextBrowser):
             "}\n"
             "mark {"
             "  background-color: rgb(240, 198, 116);"
+            "}\n"
+            ".tags {"
+            "  color: rgb(245, 135, 31);"
+            "  font-wright: bold;"
             "}\n"
         )
         self.qDocument.setDefaultStyleSheet(styleSheet)

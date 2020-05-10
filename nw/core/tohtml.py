@@ -104,15 +104,24 @@ class ToHtml(Tokenizer):
         thisPar = []
         for tType, tText, tFormat, tAlign in self.theTokens:
 
+            # Styles
             aStyle = []
             if tAlign == self.A_CENTRE:
                 aStyle.append("text-align: center;")
+            elif tAlign == self.A_RIGHT:
+                aStyle.append("text-align: right;")
+            elif tAlign == self.A_JUSTIFY:
+                aStyle.append("text-align: justify;")
+
+            if tType == self.T_HEAD2:
+                aStyle.append("page-break-before: always;")
 
             if len(aStyle) > 0:
                 hStyle = " style='%s'" % (" ".join(aStyle))
             else:
                 hStyle = ""
 
+            # Process TextType
             if tType == self.T_EMPTY:
                 if len(thisPar) > 0:
                     tTemp = "".join(thisPar)
@@ -120,22 +129,29 @@ class ToHtml(Tokenizer):
                 thisPar = []
 
             elif tType == self.T_HEAD1:
-                self.theResult += "<h1%s>%s</h1>\n" % (hStyle,tText)
+                tHead = tText.replace(r"\\", "<br/>")
+                self.theResult += "<h1%s>%s</h1>\n" % (hStyle, tHead)
 
             elif tType == self.T_HEAD2:
-                self.theResult += "<h2%s>%s</h2>\n" % (hStyle,tText)
+                tHead = tText.replace(r"\\", "<br/>")
+                self.theResult += "<h2%s>%s</h2>\n" % (hStyle, tHead)
 
             elif tType == self.T_HEAD3:
-                self.theResult += "<h3%s>%s</h3>\n" % (hStyle,tText)
+                tHead = tText.replace(r"\\", "<br/>")
+                self.theResult += "<h3%s>%s</h3>\n" % (hStyle, tHead)
 
             elif tType == self.T_HEAD4:
-                self.theResult += "<h4%s>%s</h4>\n" % (hStyle,tText)
+                tHead = tText.replace(r"\\", "<br/>")
+                self.theResult += "<h4%s>%s</h4>\n" % (hStyle, tHead)
 
             elif tType == self.T_SEP:
-                self.theResult += "<p%s>%s</p>\n" % (hStyle,tText)
+                self.theResult += "<p%s>%s</p>\n" % (hStyle, tText)
 
             elif tType == self.T_SKIP:
                 self.theResult += "<p>&nbsp;</p>\n"
+
+            elif tType == self.T_PBREAK:
+                self.theResult += "<p style='page-break-after: always;'>&nbsp;</p>\n"
 
             elif tType == self.T_TEXT:
                 tTemp = tText
@@ -145,6 +161,9 @@ class ToHtml(Tokenizer):
                     thisPar.append(tTemp.rstrip()+"<br/>")
                 else:
                     thisPar.append(tTemp.rstrip()+" ")
+
+            elif tType == self.T_SYNOPSIS and self.doSynopsis:
+                self.theResult += self._formatSynopsis(tText)
 
             elif tType == self.T_COMMENT and self.doComments:
                 self.theResult += self._formatComments(tText)
@@ -158,12 +177,27 @@ class ToHtml(Tokenizer):
     #  Internal Functions
     ##
 
-    def _formatKeywords(self, tText):
-        """Apply HTML formatting to keywords.
+    def _formatSynopsis(self, tText):
+        """Apply HTML formatting to synopsis.
         """
 
         if not self.forPreview:
-            return "<pre>@%s</pre>\n" % tText
+            return "<p class='synopsis'><strong>Synopsis: </strong>%s</p>\n" % tText
+
+        return "<p class='comment'>%s</p>\n" % tText
+
+    def _formatComments(self, tText):
+        """Apply HTML formatting to comments.
+        """
+
+        if not self.forPreview:
+            return "<p class='comment'><strong>Comment: </strong>%s</p>\n" % tText
+
+        return "<p class='comment'>%s</p>\n" % tText
+
+    def _formatKeywords(self, tText):
+        """Apply HTML formatting to keywords.
+        """
 
         tText = "@"+tText
         isValid, theBits, thePos = self.theParent.theIndex.scanThis(tText)
@@ -181,14 +215,5 @@ class ToHtml(Tokenizer):
             retText += ", ".join(refTags)
 
         return "<div>%s</div>" % retText
-
-    def _formatComments(self, tText):
-        """Apply HTML formatting to comments.
-        """
-
-        if not self.forPreview:
-            return "<div class='comment'>%s</div>\n" % tText
-
-        return "<p class='comment'>%s</p>\n" % tText
 
 # END Class ToHtml
