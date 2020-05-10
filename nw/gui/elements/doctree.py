@@ -412,13 +412,19 @@ class GuiDocTree(QTreeWidget):
         tHandle = nwItem.itemHandle
         pHandle = nwItem.parHandle
 
-        if nwItem.isExported:
-            tStatus = nwUnicode.U_CHECK
-        else:
-            tStatus = " "
-        tStatus += " "+nwLabels.CLASS_FLAG[nwItem.itemClass]
+        stExport = " "
+        stClass  = nwLabels.CLASS_FLAG[nwItem.itemClass]
+        stLayout = ""
+
         if nwItem.itemType == nwItemType.FILE:
-            tStatus += "."+nwLabels.LAYOUT_FLAG[nwItem.itemLayout]
+            stLayout = "."+nwLabels.LAYOUT_FLAG[nwItem.itemLayout]
+            if nwItem.isExported:
+                stExport = nwUnicode.U_CHECK
+        else:
+            stExport = "+"
+
+        tStatus = stExport+" "+stClass+stLayout
+
         iStatus = nwItem.itemStatus
         if tClass == nwItemClass.NOVEL:
             iStatus  = self.theProject.statusItems.checkEntry(iStatus) # Make sure it's valid

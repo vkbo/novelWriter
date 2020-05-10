@@ -105,9 +105,14 @@ class GuiItemEditor(QDialog):
             if itemLayout in self.validLayouts:
                 self.editLayout.addItem(nwLabels.LAYOUT_NAME[itemLayout],itemLayout)
 
-        self.editExport = QSwitch()
-        self.editExport.setChecked(self.theItem.isExported)
         self.textExport = QLabel("Include when building project")
+        self.editExport = QSwitch()
+        if self.theItem.itemType == nwItemType.FILE:
+            self.editExport.setEnabled(True)
+            self.editExport.setChecked(self.theItem.isExported)
+        else:
+            self.editExport.setEnabled(False)
+            self.editExport.setChecked(False)
 
         self.mainForm.addWidget(QLabel("Label"),  0, 0)
         self.mainForm.addWidget(self.editName,    0, 1, 1, 2)

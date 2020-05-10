@@ -1350,8 +1350,8 @@ class NWItem():
         xSub = self._subPack(xPack,"class",    text=str(self.itemClass.name))
         xSub = self._subPack(xPack,"status",   text=str(self.itemStatus))
         xSub = self._subPack(xPack,"expanded", text=str(self.isExpanded))
-        xSub = self._subPack(xPack,"exported", text=str(self.isExported))
         if self.itemType == nwItemType.FILE:
+            xSub = self._subPack(xPack,"exported",  text=str(self.isExported))
             xSub = self._subPack(xPack,"layout",    text=str(self.itemLayout.name))
             xSub = self._subPack(xPack,"charCount", text=str(self.charCount), none=False)
             xSub = self._subPack(xPack,"wordCount", text=str(self.wordCount), none=False)

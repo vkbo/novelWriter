@@ -32,7 +32,7 @@ from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QFont
 from PyQt5.QtWidgets import QFrame, QGridLayout, QLabel
 
-from nw.constants import nwLabels, nwItemClass, nwUnicode
+from nw.constants import nwLabels, nwItemClass, nwItemType, nwUnicode
 
 logger = logging.getLogger(__name__)
 
@@ -170,10 +170,13 @@ class GuiDocDetails(QFrame):
                 iStatus  = self.theProject.importItems.checkEntry(iStatus) # Make sure it's valid
                 flagIcon = self.theParent.importIcons[iStatus]
 
-            if nwItem.isExported:
-                exportFlag = nwUnicode.U_CHECK
+            if nwItem.itemType == nwItemType.FILE:
+                if nwItem.isExported:
+                    exportFlag = nwUnicode.U_CHECK
+                else:
+                    exportFlag = " "
             else:
-                exportFlag = " "
+                exportFlag = "+"
 
             self.labelFlag.setText(exportFlag)
             self.statusFlag.setPixmap(flagIcon.pixmap(10, 10))

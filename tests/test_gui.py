@@ -361,6 +361,9 @@ def testItemEditor(qtbot, nwTempGUI, nwRef, nwTemp):
     layoutIdx = itemEdit.editLayout.findData(nwItemLayout.PAGE)
     itemEdit.editLayout.setCurrentIndex(layoutIdx)
 
+    itemEdit.editExport.setChecked(False)
+    assert not itemEdit.editExport.isChecked()
+
     itemEdit._doSave()
 
     itemEdit = GuiItemEditor(nwGUI, nwGUI.theProject, "31489056e0916")
