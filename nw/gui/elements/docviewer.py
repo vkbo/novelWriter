@@ -32,7 +32,7 @@ from PyQt5.QtCore import Qt
 from PyQt5.QtWidgets import QTextBrowser
 from PyQt5.QtGui import QTextOption, QFont, QPalette, QColor, QTextCursor
 
-from nw.convert import ToHtml
+from nw.core import ToHtml
 from nw.constants import nwAlert, nwItemType, nwDocAction
 from nw.gui.elements.doctitlebar import GuiDocTitleBar
 

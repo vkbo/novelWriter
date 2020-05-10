@@ -29,7 +29,7 @@ import logging
 import re
 import nw
 
-from nw.convert.tokenizer import Tokenizer
+from nw.core.tokenizer import Tokenizer
 from nw.constants import nwUnicode, nwLabels
 
 logger = logging.getLogger(__name__)
