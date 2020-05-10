@@ -165,6 +165,11 @@ class Tokenizer():
 
         return
 
+    def getResult(self):
+        """Return the result from the conversion.
+        """
+        return self.theResult
+
     def doAutoReplace(self):
         """Run through the user's auto-replace dictionary.
         """

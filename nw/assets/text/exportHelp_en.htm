@@ -1,0 +1,44 @@
+<h1>Help!</h1>
+<p>A brief guide to make the most out of the Build Project tool.</p>
+
+<h2>Novel Title Formats</h2>
+<p>The format of the various title levels in the files under the Novel folder can be customised in
+    these settings. The actual title given in the headings of your files will replace all
+    occurrences of the keyword <mark>%title%</mark>. Any static text will be left as-is in the
+    final title. An empty field means the title isn't written out at all.</p>
+<p>The available formatting keywords are:</p>
+<p><mark>%title%</mark> &ndash; This is replaced with the text you put in your headings in your 
+    documents</p>
+<p><mark>%num%</mark> &ndash; This is replaced with the chapter number of your chapter type
+    headings. These are generated automaticall starting from 1.</p>
+<p><mark>%numword%</mark> &ndash; This is replaced with the chapter number of your chapter type
+    headings, but instead of an arabic number, the word for it is used instead, e.g. One, Two,
+    Fifteen, Twenty-Five, etc.</p>
+<p><mark>\\</mark> &ndash; Two backslashes are replaced by a line break.</p>
+<p><b>Note:</b> The Scene format is treated slightly differently than the other title formats. If a
+    scene format is a constant text, that is, contains no <mark>%title%</mark>, it will be treated
+    as a scene separator instead. Scene separators are centred, and not shown if the chapter starts
+    directly on the first scene. If the field is blank, a large space between the scenes is added
+    instead.</p>
+
+<h2>Build Overrides</h2>
+<p><b>Novel Outline Mode:</b> This option will build an outline version of the novel rather than the
+    full thing. It overrides the title format settings without changing them. Each title will be
+    written out, and the synopsis text will appear instead of the body text of the files. Some of
+    the other options are still available in Outline Mode.</p>
+
+<h2>Include Non-Text Elements</h2>
+<p><b>Include Synopsis:</b> This will add the synopsis comment as the first paragraph after each
+    heading.</p>
+<p><b>Include Comments:</b> This will include any comments as additional paragraphs in the text.</p>
+<p><b>Include Keywords:</b> This will include any keywords and tags as clickable links after each
+    heading.</p>
+
+<h2>Additional Options</h2>
+<p><b>Include Novel Files:</b> This means all files that don't have a layout of type "Note" will be
+    included. This is the normal mode when exporting the novel itself without the notes.</p>
+<p><b>Include Note Files:</b> This means all files with a layout of type "Note" <i>will</i> be
+    included. Titles in note files are always left as they appear.</p>
+<p><b>Ignore Export Flag:</b> Each file in the project tree has an "Include when building project"
+    option set, which is indicated by a little check mark in the "Flags" column. Files without This
+    tick will normally be skipped during build, but can be included if this option is enabled.</p>

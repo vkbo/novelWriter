@@ -200,13 +200,14 @@ class NWProject():
         self.bookAuthors = []
         self.autoReplace = {}
         self.titleFormat = {
-            "title":      "%title%",
-            "chapter":    "Chapter %num%",
-            "chapterSub": "%title%",
-            "unnumbered": "%title%",
-            "scene":      "",
-            "sceneSep":   "* * *",
-            "section":    "",
+            "title"        : r"%title%",
+            "chapter"      : r"Chapter %num%\\%title%",
+            "unnumbered"   : r"%title%",
+            "scene"        : r"* * *",
+            "section"      : r"",
+            "withSynopsis" : False,
+            "withComments" : False,
+            "withKeywords" : False,
         }
         self.spellCheck  = False
         self.autoOutline = True
@@ -717,9 +718,11 @@ class NWProject():
     def setTitleFormat(self, titleFormat):
         """Set the formatting of titles in the project.
         """
-        for valKey in titleFormat:
-            if valKey in self.titleFormat:
-                self.titleFormat[valKey] = titleFormat[valKey]
+        for valKey, valEntry in titleFormat.items():
+            if valKey in ("title","chapter","unnumbered","scene","section"):
+                self.titleFormat[valKey] = checkString(valEntry, self.titleFormat[valKey], False)
+            elif valKey in ("withSynopsis","withComments","withKeywords"):
+                self.titleFormat[valKey] = checkBool(valEntry, False, False)
         return
 
     def setProjectChanged(self, bValue):
