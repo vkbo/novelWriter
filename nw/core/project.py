@@ -80,10 +80,9 @@ class NWProject():
         self.bookTitle   = "" # The final title; should only be used for exports
         self.bookAuthors = [] # A list of book authors
 
-        # Various
-        self.autoReplace = {} # Text to auto-replace on exports
-
         # Project Settings
+        self.autoReplace = {}    # Text to auto-replace on exports
+        self.titleFormat = {}    # The formatting of titles for exports
         self.spellCheck  = False # Controls the spellcheck-as-you-type feature
         self.autoOutline = True  # If true, the Project Outline is updated automatically
         self.statusItems = None  # Novel file progress status values
@@ -200,6 +199,15 @@ class NWProject():
         self.bookTitle   = ""
         self.bookAuthors = []
         self.autoReplace = {}
+        self.titleFormat = {
+            "title":      "%title%",
+            "chapter":    "Chapter %num%",
+            "chapterSub": "%title%",
+            "unnumbered": "%title%",
+            "scene":      "",
+            "sceneSep":   "* * *",
+            "section":    "",
+        }
         self.spellCheck  = False
         self.autoOutline = True
         self.statusItems = NWStatus()
@@ -347,6 +355,11 @@ class NWProject():
                     elif xItem.tag == "autoReplace":
                         for xEntry in xItem:
                             self.autoReplace[xEntry.tag] = checkString(xEntry.text, None, False)
+                    elif xItem.tag == "titleFormat":
+                        titleFormat = self.titleFormat.copy()
+                        for xEntry in xItem:
+                            titleFormat[xEntry.tag] = checkString(xEntry.text, None, False)
+                        self.setTitleFormat(titleFormat)
             elif xChild.tag == "content":
                 logger.debug("Found project content")
                 self.projTree.unpackXML(xChild)
@@ -417,10 +430,16 @@ class NWProject():
         self._packProjectValue(xSettings, "lastEdited", self.lastEdited)
         self._packProjectValue(xSettings, "lastViewed", self.lastViewed)
         self._packProjectValue(xSettings, "lastWordCount", self.currWCount)
+
         xAutoRep = etree.SubElement(xSettings, "autoReplace")
         for aKey, aValue in self.autoReplace.items():
             if len(aKey) > 0:
-                self._packProjectValue(xAutoRep,aKey,aValue)
+                self._packProjectValue(xAutoRep, aKey, aValue)
+
+        xTitleFmt = etree.SubElement(xSettings, "titleFormat")
+        for aKey, aValue in self.titleFormat.items():
+            if len(aKey) > 0:
+                self._packProjectValue(xTitleFmt, aKey, aValue)
 
         xStatus = etree.SubElement(xSettings,"status")
         self.statusItems.packEntries(xStatus)
@@ -693,6 +712,14 @@ class NWProject():
         dictionary, so alterations have to be made in a copy.
         """
         self.autoReplace = autoReplace
+        return
+
+    def setTitleFormat(self, titleFormat):
+        """Set the formatting of titles in the project.
+        """
+        for valKey in titleFormat:
+            if valKey in self.titleFormat:
+                self.titleFormat[valKey] = titleFormat[valKey]
         return
 
     def setProjectChanged(self, bValue):
