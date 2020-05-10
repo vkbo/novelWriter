@@ -92,7 +92,7 @@ def main(sysArgs=None):
         sysArgs = sys.argv[1:]
 
     # Valid Input Options
-    shortOpt = "hidvql:"
+    shortOpt = "hvq"
     longOpt  = [
         "help",
         "version",
@@ -118,12 +118,12 @@ def main(sysArgs=None):
         "\n"
         "Usage:\n"
         " -h, --help      Print this message.\n"
-        "     --version   Print program version and exit.\n"
-        " -i, --info      Print additional runtime information.\n"
-        " -d, --debug     Print debug output. Includes -i.\n"
-        " -v, --verbose   Increase verbosity of debug output. Includes -d.\n"
+        " -v, --version   Print program version and exit.\n"
+        "     --info      Print additional runtime information.\n"
+        "     --debug     Print debug output. Includes -i.\n"
+        "     --verbose   Increase verbosity of debug output. Includes -d.\n"
         " -q, --quiet     Disable output to command line. Does not affect log file.\n"
-        " -l, --logfile=  Specify log file.\n"
+        "     --logfile=  Specify log file.\n"
         "     --style=    Sets Qt5 style flag. Defaults to 'Fusion'.\n"
         "     --config=   Alternative config file.\n"
         "     --data=     Alternative user data path.\n"
@@ -162,20 +162,20 @@ def main(sysArgs=None):
         if inOpt in ("-h","--help"):
             print(helpMsg)
             sys.exit()
-        elif inOpt == "--version":
+        elif inOptin ("-v", "--version"):
             print("%s %s Version %s" % (__package__,__status__,__version__))
             sys.exit()
-        elif inOpt in ("-i", "--info"):
+        elif inOpt == "--info":
             debugLevel = logging.INFO
-        elif inOpt in ("-d", "--debug"):
+        elif inOpt == "--debug":
             debugLevel = logging.DEBUG
             logFormat  = "[{asctime:}] {name:>30}:{lineno:<4d}  {levelname:8}  {message:}"
-        elif inOpt in ("-l","--logfile"):
+        elif inOpt == "--logfile":
             logFile = inArg
             toFile  = True
         elif inOpt in ("-q","--quiet"):
             toStd = False
-        elif inOpt in ("-v","--verbose"):
+        elif inOpt == "--verbose":
             debugLevel = VERBOSE
             logFormat  = "[{asctime:}] {name:>30}:{lineno:<4d}  {levelname:8}  {message:}"
         elif inOpt == "--style":
