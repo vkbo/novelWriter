@@ -108,7 +108,7 @@ def main(sysArgs=None):
     ]
 
     helpMsg = (
-        "{appname} {version} ({status})\n"
+        "{appname} {version} ({status} {date})\n"
         "{copyright}\n"
         "\n"
         "This program is distributed in the hope that it will be useful,\n"
@@ -120,8 +120,8 @@ def main(sysArgs=None):
         " -h, --help      Print this message.\n"
         " -v, --version   Print program version and exit.\n"
         "     --info      Print additional runtime information.\n"
-        "     --debug     Print debug output. Includes -i.\n"
-        "     --verbose   Increase verbosity of debug output. Includes -d.\n"
+        "     --debug     Print debug output. Includes --info.\n"
+        "     --verbose   Increase verbosity of debug output. Includes --debug.\n"
         " -q, --quiet     Disable output to command line. Does not affect log file.\n"
         "     --logfile=  Specify log file.\n"
         "     --style=    Sets Qt5 style flag. Defaults to 'Fusion'.\n"
@@ -132,7 +132,8 @@ def main(sysArgs=None):
         appname   = __package__,
         version   = __version__,
         status    = __status__,
-        copyright = __copyright__
+        copyright = __copyright__,
+        date      = __date__,
     )
 
     # Defaults
@@ -163,7 +164,7 @@ def main(sysArgs=None):
             print(helpMsg)
             sys.exit()
         elif inOpt in ("-v", "--version"):
-            print("%s %s Version %s" % (__package__,__status__,__version__))
+            print("%s %s Version %s [%s]" % (__package__,__status__,__version__,__date__))
             sys.exit()
         elif inOpt == "--info":
             debugLevel = logging.INFO
