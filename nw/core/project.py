@@ -358,7 +358,7 @@ class NWProject():
                     elif xItem.tag == "titleFormat":
                         titleFormat = self.titleFormat.copy()
                         for xEntry in xItem:
-                            titleFormat[xEntry.tag] = checkString(xEntry.text, None, False)
+                            titleFormat[xEntry.tag] = checkString(xEntry.text, "", False)
                         self.setTitleFormat(titleFormat)
             elif xChild.tag == "content":
                 logger.debug("Found project content")

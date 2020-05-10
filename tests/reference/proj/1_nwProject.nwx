@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='utf-8'?>
-<novelWriterXML appVersion="0.1.4" fileVersion="1.0" timeStamp="2019-06-08 20:52:21">
+<novelWriterXML appVersion="0.5" fileVersion="1.0" saveCount="1" autoCount="0" timeStamp="2020-05-10 16:01:19">
   <project>
     <name></name>
     <title></title>
@@ -12,6 +12,15 @@
     <lastViewed>None</lastViewed>
     <lastWordCount>0</lastWordCount>
     <autoReplace/>
+    <titleFormat>
+      <title>%title%</title>
+      <chapter>Chapter %num%</chapter>
+      <chapterSub>%title%</chapterSub>
+      <unnumbered>%title%</unnumbered>
+      <scene></scene>
+      <sceneSep>* * *</sceneSep>
+      <section></section>
+    </titleFormat>
     <status>
       <entry blue="100" green="100" red="100">New</entry>
       <entry blue="0" green="50" red="200">Note</entry>
@@ -32,6 +41,7 @@
       <class>NOVEL</class>
       <status>New</status>
       <expanded>False</expanded>
+      <exported>True</exported>
     </item>
     <item handle="44cb730c42048" order="None" parent="None">
       <name>Characters</name>
@@ -39,6 +49,7 @@
       <class>CHARACTER</class>
       <status>New</status>
       <expanded>False</expanded>
+      <exported>True</exported>
     </item>
     <item handle="71ee45a3c0db9" order="None" parent="None">
       <name>Plot</name>
@@ -46,6 +57,7 @@
       <class>PLOT</class>
       <status>New</status>
       <expanded>False</expanded>
+      <exported>True</exported>
     </item>
     <item handle="811786ad1ae74" order="None" parent="None">
       <name>World</name>
@@ -53,6 +65,7 @@
       <class>WORLD</class>
       <status>New</status>
       <expanded>False</expanded>
+      <exported>True</exported>
     </item>
     <item handle="25fc0e7096fc6" order="None" parent="73475cb40a568">
       <name>New Chapter</name>
@@ -60,6 +73,7 @@
       <class>NOVEL</class>
       <status>New</status>
       <expanded>False</expanded>
+      <exported>True</exported>
     </item>
     <item handle="31489056e0916" order="None" parent="25fc0e7096fc6">
       <name>New Scene</name>
@@ -67,6 +81,7 @@
       <class>NOVEL</class>
       <status>New</status>
       <expanded>False</expanded>
+      <exported>True</exported>
       <layout>SCENE</layout>
       <charCount>0</charCount>
       <wordCount>0</wordCount>

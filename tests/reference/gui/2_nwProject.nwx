@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='utf-8'?>
-<novelWriterXML appVersion="0.1.4" fileVersion="1.0" timeStamp="2019-06-08 21:05:51">
+<novelWriterXML appVersion="0.5" fileVersion="1.0" saveCount="2" autoCount="0" timeStamp="2020-05-10 16:07:36">
   <project>
     <name>Project Name</name>
     <title>Project Title</title>
@@ -16,6 +16,15 @@
     <autoReplace>
       <This>With This Stuff </This>
     </autoReplace>
+    <titleFormat>
+      <title>%title%</title>
+      <chapter>Chapter %num%</chapter>
+      <chapterSub>%title%</chapterSub>
+      <unnumbered>%title%</unnumbered>
+      <scene></scene>
+      <sceneSep>* * *</sceneSep>
+      <section></section>
+    </titleFormat>
     <status>
       <entry blue="100" green="100" red="100">New</entry>
       <entry blue="0" green="50" red="200">Note</entry>
@@ -36,6 +45,7 @@
       <class>NOVEL</class>
       <status>New</status>
       <expanded>False</expanded>
+      <exported>True</exported>
     </item>
     <item handle="25fc0e7096fc6" order="0" parent="73475cb40a568">
       <name>New Chapter</name>
@@ -43,6 +53,7 @@
       <class>NOVEL</class>
       <status>New</status>
       <expanded>False</expanded>
+      <exported>True</exported>
     </item>
     <item handle="31489056e0916" order="0" parent="25fc0e7096fc6">
       <name>New Scene</name>
@@ -50,6 +61,7 @@
       <class>NOVEL</class>
       <status>New</status>
       <expanded>False</expanded>
+      <exported>True</exported>
       <layout>SCENE</layout>
       <charCount>0</charCount>
       <wordCount>0</wordCount>
@@ -62,6 +74,7 @@
       <class>CHARACTER</class>
       <status>New</status>
       <expanded>False</expanded>
+      <exported>True</exported>
     </item>
     <item handle="71ee45a3c0db9" order="2" parent="None">
       <name>Plot</name>
@@ -69,6 +82,7 @@
       <class>PLOT</class>
       <status>New</status>
       <expanded>False</expanded>
+      <exported>True</exported>
     </item>
     <item handle="811786ad1ae74" order="3" parent="None">
       <name>World</name>
@@ -76,6 +90,7 @@
       <class>WORLD</class>
       <status>New</status>
       <expanded>False</expanded>
+      <exported>True</exported>
     </item>
   </content>
 </novelWriterXML>

@@ -197,7 +197,8 @@ def testItemXMLPackUnpack():
     assert etree.tostring(xContent, pretty_print=False, encoding="utf-8") == (
         b"<content>"
         b"<item handle=\"0123456789abc\" order=\"1\" parent=\"0123456789abc\">"
-        b"<name>A Name</name><type>TRASH</type><class>TRASH</class><status>Main</status><expanded>True</expanded>"
+        b"<name>A Name</name><type>TRASH</type><class>TRASH</class><status>Main</status>"
+        b"<expanded>True</expanded><exported>True</exported>"
         b"</item>"
         b"</content>"
     )
