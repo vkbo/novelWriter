@@ -162,7 +162,7 @@ def main(sysArgs=None):
         if inOpt in ("-h","--help"):
             print(helpMsg)
             sys.exit()
-        elif inOptin ("-v", "--version"):
+        elif inOpt in ("-v", "--version"):
             print("%s %s Version %s" % (__package__,__status__,__version__))
             sys.exit()
         elif inOpt == "--info":
