@@ -172,11 +172,3 @@ def splitVersionNumber(vString):
     vInt = vMajor*10000 + vMinor*100 + vPatch
 
     return [vMajor, vMinor, vPatch, vInt]
-
-def packageRefURL(packName):
-    from nw.constants import nwDependencies
-    if packName in nwDependencies.PACKS.keys():
-        return "<a href=\"%s\">%s</a>" % (
-            nwDependencies.PACKS[packName]["site"], packName
-        )
-    return packName
