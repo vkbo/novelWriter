@@ -30,12 +30,14 @@ import nw
 
 from os import path
 
-from PyQt5.QtCore import Qt
-from PyQt5.QtGui import QTextOption, QPalette, QColor
+from PyQt5.QtCore import Qt, QByteArray
+from PyQt5.QtGui import (
+    QTextOption, QPalette, QColor, QTextDocumentWriter
+)
 from PyQt5.QtWidgets import (
     QDialog, QVBoxLayout, QHBoxLayout, QTextBrowser, QPushButton,
     QLabel, QLineEdit, QGroupBox, QGridLayout, QComboBox, QProgressBar,
-    QMenu, QAction
+    QMenu, QAction, QFileDialog
 )
 
 from nw.gui.additions import QSwitch
@@ -46,10 +48,12 @@ logger = logging.getLogger(__name__)
 
 class GuiBuildNovel(QDialog):
 
-    FMT_ODT = 1
-    FMT_PDF = 2
-    FMT_HTM = 3
-    FMT_MD  = 4
+    FMT_ODT  = 1
+    FMT_PDF  = 2
+    FMT_HTM1 = 3
+    FMT_HTM2 = 4
+    FMT_MD   = 4
+    FMT_TXT  = 5
 
     def __init__(self, theParent, theProject):
         QDialog.__init__(self, theParent)
@@ -61,6 +65,8 @@ class GuiBuildNovel(QDialog):
         self.theParent  = theParent
         self.theTheme   = theParent.theTheme
         self.optState   = self.theProject.optState
+
+        self.htmlText = ""
 
         self.setWindowTitle("Build Project")
         self.setMinimumWidth(800)
@@ -202,19 +208,31 @@ class GuiBuildNovel(QDialog):
 
         self.btnSave = QPushButton("Save As")
         self.saveMenu = QMenu(self)
-        self.saveODT = QAction("Open Document (.odt)")
-        self.savePDF = QAction("Portable Document (.pdf)")
-        self.saveHTM = QAction("HTML5 (.htm)")
-        self.saveMD  = QAction("Markdown (.md)")
-        self.saveODT.triggered.connect(lambda: self._saveDocument(self.FMT_ODT))
-        self.savePDF.triggered.connect(lambda: self._saveDocument(self.FMT_PDF))
-        self.saveHTM.triggered.connect(lambda: self._saveDocument(self.FMT_HTM))
-        self.saveMD.triggered.connect(lambda: self._saveDocument(self.FMT_MD))
-        self.saveMenu.addAction(self.saveODT)
-        self.saveMenu.addAction(self.savePDF)
-        self.saveMenu.addAction(self.saveHTM)
-        self.saveMenu.addAction(self.saveMD)
         self.btnSave.setMenu(self.saveMenu)
+
+        self.saveODT = QAction("Open Document (.odt)")
+        self.saveODT.triggered.connect(lambda: self._saveDocument(self.FMT_ODT))
+        self.saveMenu.addAction(self.saveODT)
+
+        # self.savePDF = QAction("Portable Document (.pdf)")
+        # self.savePDF.triggered.connect(lambda: self._saveDocument(self.FMT_PDF))
+        # self.saveMenu.addAction(self.savePDF)
+
+        self.saveHTM1 = QAction("Qt Style HTML (.htm)")
+        self.saveHTM1.triggered.connect(lambda: self._saveDocument(self.FMT_HTM1))
+        self.saveMenu.addAction(self.saveHTM1)
+
+        self.saveHTM2 = QAction("Plain HTML (.htm)")
+        self.saveHTM2.triggered.connect(lambda: self._saveDocument(self.FMT_HTM2))
+        self.saveMenu.addAction(self.saveHTM2)
+
+        # self.saveMD = QAction("Markdown (.md)")
+        # self.saveMD.triggered.connect(lambda: self._saveDocument(self.FMT_MD))
+        # self.saveMenu.addAction(self.saveMD)
+
+        self.saveTXT = QAction("Plain Text (.txt)")
+        self.saveTXT.triggered.connect(lambda: self._saveDocument(self.FMT_TXT))
+        self.saveMenu.addAction(self.saveTXT)
 
         self.btnClose = QPushButton("Close")
         self.btnClose.clicked.connect(self._doClose)
@@ -263,7 +281,7 @@ class GuiBuildNovel(QDialog):
         """
 
         makeHtml = ToHtml(self.theProject, self.theParent)
-        theText = ""
+        self.htmlText = ""
 
         for tItem in self.theProject.projTree:
             if tItem is not None and tItem.itemType == nwItemType.FILE:
@@ -273,14 +291,130 @@ class GuiBuildNovel(QDialog):
                 makeHtml.doHeaders()
                 makeHtml.doConvert()
                 makeHtml.doPostProcessing()
-                theText += makeHtml.getResult()
+                self.htmlText += makeHtml.getResult()
 
-        self.docView.setHtml(theText)
+        self.docView.setHtml(self.htmlText)
 
         return
 
     def _saveDocument(self, theFormat):
-        return
+        """Save the document to various formats.
+        """
+
+        # FMT_PDF
+
+        byteFmt = QByteArray()
+        fileExt = ""
+        textFmt = ""
+        outTool = ""
+
+        # Create the settings
+        if theFormat == self.FMT_ODT:
+            byteFmt.append("odf")
+            fileExt = "odf"
+            textFmt = "Open Document"
+            outTool = "Qt"
+
+        elif theFormat == self.FMT_HTM1:
+            byteFmt.append("html")
+            fileExt = "htm"
+            textFmt = "Qt Style HTML"
+            outTool = "Qt"
+
+        elif theFormat == self.FMT_HTM2:
+            fileExt = "htm"
+            textFmt = "Plain HTML"
+            outTool = "NW"
+
+        elif theFormat == self.FMT_MD:
+            byteFmt.append("markdown")
+            fileExt = "md"
+            textFmt = "Markdown"
+            outTool = "Qt"
+
+        elif theFormat == self.FMT_TXT:
+            byteFmt.append("plaintext")
+            fileExt = "txt"
+            textFmt = "Plain Text"
+            outTool = "Qt"
+
+        else:
+            return False
+
+        # Generate the file name
+        if fileExt:
+
+            cleanName = self.theProject.getFileSafeProjectName()
+            fileName  = "%s.%s" % (cleanName, fileExt)
+            saveDir   = self.mainConf.lastPath
+            savePath  = path.join(saveDir, fileName)
+            if not path.isdir(saveDir):
+                saveDir = self.mainConf.homePath
+
+            dlgOpt  = QFileDialog.Options()
+            dlgOpt |= QFileDialog.DontUseNativeDialog
+            saveTo  = QFileDialog.getSaveFileName(
+                self, "Save Document As", savePath, options=dlgOpt
+            )
+            if saveTo[0]:
+                savePath = saveTo[0]
+            else:
+                return False
+
+            self.mainConf.setLastPath(savePath)
+
+        else:
+            return False
+
+        # Do the actual writing
+        if outTool == "Qt":
+            docWriter = QTextDocumentWriter()
+            docWriter.setFileName(savePath)
+            docWriter.setFormat(byteFmt)
+            if docWriter.write(self.docView.qDocument):
+                self.theParent.makeAlert(
+                    "Document successfully written in %s format to file: %s" % (
+                        textFmt, savePath
+                    ), nwAlert.INFO
+                )
+            else:
+                self.theParent.makeAlert(
+                    "Failed to write document in %s format to file: %s" % (
+                        textFmt, savePath
+                    ), nwAlert.ERROR
+                )
+
+        elif outTool == "NW":
+            if theFormat == self.FMT_HTM2:
+                try:
+                    with open(savePath, mode="w", encoding="utf8") as outFile:
+                        outFile.write("<!DOCTYPE html>\n")
+                        outFile.write("<html>\n")
+                        outFile.write("<head>\n")
+                        outFile.write("<meta charset='utf-8'>\n")
+                        outFile.write("</head>\n")
+                        outFile.write("<body>\n")
+                        outFile.write(self.htmlText)
+                        outFile.write("</body>\n")
+                        outFile.write("</html>\n")
+
+                    self.theParent.makeAlert(
+                        "Document successfully written in %s format to file: %s" % (
+                            textFmt, savePath
+                        ), nwAlert.INFO
+                    )
+
+                except Exception as e:
+                    self.theParent.makeAlert(
+                        "Failed to write document in %s format to file: %s" % (
+                            textFmt, str(e)
+                        ), nwAlert.ERROR
+                    )
+
+        else:
+            return False
+
+        return True
 
     def _printDocument(self):
         return

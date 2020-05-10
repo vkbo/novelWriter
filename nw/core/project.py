@@ -529,11 +529,7 @@ class NWProject():
             ), nwAlert.WARN)
             return False
 
-        cleanName = ""
-        for c in self.projName.strip():
-            if c.isalpha() or c.isdigit() or c == " ":
-                cleanName += c
-
+        cleanName = self.getFileSafeProjectName()
         baseDir = path.join(self.mainConf.backupPath, cleanName)
         if not path.isdir(baseDir):
             try:
@@ -739,6 +735,15 @@ class NWProject():
     ##
     #  Getters
     ##
+
+    def getFileSafeProjectName(self):
+        """Returns a filename safe version of the project name.
+        """
+        cleanName = ""
+        for c in self.projName.strip():
+            if c.isalpha() or c.isdigit() or c == " ":
+                cleanName += c
+        return cleanName
 
     def getSessionWordCount(self):
         """Returns the number of words added or removed this session.
