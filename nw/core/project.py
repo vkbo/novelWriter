@@ -39,6 +39,8 @@ from hashlib import sha256
 from time import time
 from shutil import make_archive
 
+from PyQt5.QtWidgets import QMessageBox
+
 from nw.gui.tools import OptionState
 from nw.core.tools import projectMaintenance
 from nw.core.document import NWDoc
@@ -285,12 +287,15 @@ class NWProject():
         nwxRoot = xRoot.tag
 
         appVersion = "Unknown"
+        hexVersion = "0x0"
         fileVersion = "Unknown"
         self.saveCount = 0
         self.autoCount = 0
 
         if "appVersion" in xRoot.attrib:
             appVersion = xRoot.attrib["appVersion"]
+        if "hexVersion" in xRoot.attrib:
+            hexVersion = xRoot.attrib["hexVersion"]
         if "fileVersion" in xRoot.attrib:
             fileVersion = xRoot.attrib["fileVersion"]
         if "saveCount" in xRoot.attrib:
@@ -307,6 +312,18 @@ class NWProject():
                 nwAlert.ERROR
             )
             return False
+
+        if int(hexVersion, 16) > int(nw.__hexversion__, 16):
+            msgBox = QMessageBox()
+            msgRes = msgBox.question(self.theParent, "Version Conflict", (
+                "This project was saved by a newer version of %s, version %s. This is version %s. "
+                "If you continue to open the project, some attributes and settings may not be "
+                "preserved. Continue opening the project?"
+            ) % (
+                nw.__package__, appVersion, nw.__version__
+            ))
+            if msgRes != QMessageBox.Yes:
+                return False
 
         for xChild in xRoot:
             if xChild.tag == "project":
@@ -397,6 +414,7 @@ class NWProject():
         logger.debug("Writing project meta")
         nwXML = etree.Element("novelWriterXML",attrib={
             "appVersion"  : str(nw.__version__),
+            "hexVersion"  : str(nw.__hexversion__),
             "fileVersion" : "1.0",
             "saveCount"   : str(self.saveCount),
             "autoCount"   : str(self.autoCount),
