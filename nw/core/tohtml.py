@@ -30,15 +30,19 @@ import re
 import nw
 
 from nw.core.tokenizer import Tokenizer
-from nw.constants import nwUnicode, nwLabels
+from nw.constants import nwUnicode, nwLabels, nwKeyWords
 
 logger = logging.getLogger(__name__)
 
 class ToHtml(Tokenizer):
 
+    M_PREVIEW = 0 # Tweak output for the DocViewer
+    M_EXPORT  = 1 # Tweak output for saving to HTML or printing
+    M_EBOOK   = 2 # Tweak output for converting to epub
+
     def __init__(self, theProject, theParent):
         Tokenizer.__init__(self, theProject, theParent)
-        self.forPreview = False
+        self.genMode = self.M_EXPORT
         return
 
     ##
@@ -47,11 +51,11 @@ class ToHtml(Tokenizer):
 
     def setPreview(self, forPreview, doComments):
         """If we're using this class to generate markdown preview, we
-        need to make a few changes to formatting, which is selected by
-        this flag.
+        need to make a few changes to formatting, which is managed by
+        these flags.
         """
-        self.forPreview = forPreview
         if forPreview:
+            self.genMode    = self.M_PREVIEW
             self.doKeywords = True
             self.doComments = doComments
         return
@@ -66,7 +70,7 @@ class ToHtml(Tokenizer):
         """
         Tokenizer.doAutoReplace(self)
 
-        if self.forPreview:
+        if self.genMode == self.M_PREVIEW:
             tabFmt = "&nbsp;"*8
         else:
             tabFmt = "&emsp;"
@@ -102,6 +106,7 @@ class ToHtml(Tokenizer):
 
         self.theResult = ""
         thisPar = []
+        parStyle = ""
         for tType, tText, tFormat, tStyle in self.theTokens:
 
             # Styles
@@ -141,8 +146,9 @@ class ToHtml(Tokenizer):
             if tType == self.T_EMPTY:
                 if len(thisPar) > 0:
                     tTemp = "".join(thisPar)
-                    self.theResult += "<p%s>%s</p>\n" % (hStyle,tTemp.rstrip())
+                    self.theResult += "<p%s>%s</p>\n" % (parStyle,tTemp.rstrip())
                 thisPar = []
+                parStyle = ""
 
             elif tType == self.T_HEAD1:
                 tHead = tText.replace(r"\\", "<br/>")
@@ -164,13 +170,11 @@ class ToHtml(Tokenizer):
                 self.theResult += "<p%s>%s</p>\n" % (hStyle, tText)
 
             elif tType == self.T_SKIP:
-                self.theResult += "<p>&nbsp;</p>\n"
-
-            elif tType == self.T_PBREAK:
-                self.theResult += "<p style='page-break-after: always;'>&nbsp;</p>\n"
+                self.theResult += "<p%s>&nbsp;</p>\n" % hStyle
 
             elif tType == self.T_TEXT:
                 tTemp = tText
+                parStyle = hStyle
                 for xPos, xLen, xFmt in reversed(tFormat):
                     tTemp = tTemp[:xPos]+htmlTags[xFmt]+tTemp[xPos+xLen:]
                 if tText.endswith("  "):
@@ -196,20 +200,18 @@ class ToHtml(Tokenizer):
     def _formatSynopsis(self, tText):
         """Apply HTML formatting to synopsis.
         """
-
-        if not self.forPreview:
+        if self.genMode == self.M_EXPORT:
             return "<p class='synopsis'><strong>Synopsis: </strong>%s</p>\n" % tText
-
-        return "<p class='comment'>%s</p>\n" % tText
+        else:
+            return "<p class='comment'>%s</p>\n" % tText
 
     def _formatComments(self, tText):
         """Apply HTML formatting to comments.
         """
-
-        if not self.forPreview:
+        if self.genMode == self.M_EXPORT:
             return "<p class='comment'><strong>Comment: </strong>%s</p>\n" % tText
-
-        return "<p class='comment'>%s</p>\n" % tText
+        else:
+            return "<p class='comment'>%s</p>\n" % tText
 
     def _formatKeywords(self, tText):
         """Apply HTML formatting to keywords.
@@ -224,11 +226,23 @@ class ToHtml(Tokenizer):
         refTags = []
         if theBits[0] in nwLabels.KEY_NAME:
             retText += "<span class='tags'>%s:</span>&nbsp;" % nwLabels.KEY_NAME[theBits[0]]
-            for tTag in theBits[1:]:
-                refTags.append("<a href='#%s=%s'>%s</a>" % (
-                    theBits[0][1:], tTag, tTag
-                ))
-            retText += ", ".join(refTags)
+            if self.genMode == self.M_PREVIEW:
+                for tTag in theBits[1:]:
+                    refTags.append("<a href='#%s=%s'>%s</a>" % (
+                        theBits[0][1:], tTag, tTag
+                    ))
+                retText += ", ".join(refTags)
+            else:
+                if theBits[0] == nwKeyWords.TAG_KEY:
+                    retText += "<a name='tag_%s'/>%s" % (
+                        theBits[1], theBits[1]
+                    )
+                else:
+                    for tTag in theBits[1:]:
+                        refTags.append("<a href='#tag_%s'>%s</a>" % (
+                            tTag, tTag
+                        ))
+                    retText += ", ".join(refTags)
 
         return "<div>%s</div>" % retText
 

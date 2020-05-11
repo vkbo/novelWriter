@@ -58,7 +58,6 @@ class Tokenizer():
     T_TEXT     =  9 # Text line
     T_SEP      = 10 # Scene separator
     T_SKIP     = 11 # Paragraph break
-    T_PBREAK   = 12 # Page break
 
     A_LEFT     =    1 # Left aligned
     A_RIGHT    =    2 # Right aligned
@@ -108,6 +107,18 @@ class Tokenizer():
         self.numAbsScene = 0     # Counter for scene number within novel
         self.firstScene  = False # Flag to indicate that the first scene of the chapter
 
+        # This File
+        self.isNone  = False
+        self.isTitle = False
+        self.isBook  = False
+        self.isPage  = False
+        self.isPart  = False
+        self.isUnNum = False
+        self.isChap  = False
+        self.isScene = False
+        self.isNote  = False
+        self.isNovel = False
+
         return
 
     def clearData(self):
@@ -121,6 +132,18 @@ class Tokenizer():
         self.theResult  = None
         self.numChapter = 0
         self.firstScene = False
+
+        self.isNone  = False
+        self.isTitle = False
+        self.isBook  = False
+        self.isPage  = False
+        self.isPart  = False
+        self.isUnNum = False
+        self.isChap  = False
+        self.isScene = False
+        self.isNote  = False
+        self.isNovel = False
+
         return
 
     ##
@@ -189,6 +212,17 @@ class Tokenizer():
             theDocument  = NWDoc(self.theProject, self.theParent)
             self.theText = theDocument.openDocument(theHandle)
 
+        self.isNone  = self.theItem.itemLayout == nwItemLayout.NO_LAYOUT
+        self.isTitle = self.theItem.itemLayout == nwItemLayout.TITLE
+        self.isBook  = self.theItem.itemLayout == nwItemLayout.BOOK
+        self.isPage  = self.theItem.itemLayout == nwItemLayout.PAGE
+        self.isPart  = self.theItem.itemLayout == nwItemLayout.PARTITION
+        self.isUnNum = self.theItem.itemLayout == nwItemLayout.UNNUMBERED
+        self.isChap  = self.theItem.itemLayout == nwItemLayout.CHAPTER
+        self.isScene = self.theItem.itemLayout == nwItemLayout.SCENE
+        self.isNote  = self.theItem.itemLayout == nwItemLayout.NOTE
+        self.isNovel = self.isBook or self.isUnNum or self.isChap or self.isScene
+
         return
 
     def getResult(self):
@@ -251,61 +285,37 @@ class Tokenizer():
             # Tag lines starting with specific characters
             if len(aLine.strip()) == 0:
                 self.theTokens.append((
-                    self.T_EMPTY,
-                    "",
-                    None,
-                    None
+                    self.T_EMPTY, "", None, None
                 ))
             elif aLine[0] == "%":
                 cLine = aLine[1:].strip()
                 if cLine.lower().startswith("synopsis:"):
                     self.theTokens.append((
-                        self.T_SYNOPSIS,
-                        cLine[9:].strip(),
-                        None,
-                        defAlign
+                        self.T_SYNOPSIS, cLine[9:].strip(), None, defAlign
                     ))
                 else:
                     self.theTokens.append((
-                        self.T_COMMENT,
-                        aLine[1:].strip(),
-                        None,
-                        defAlign
+                        self.T_COMMENT, aLine[1:].strip(), None, defAlign
                     ))
             elif aLine[0] == "@":
                 self.theTokens.append((
-                    self.T_KEYWORD,
-                    aLine[1:].strip(),
-                    None,
-                    self.A_LEFT
+                    self.T_KEYWORD, aLine[1:].strip(), None, self.A_LEFT
                 ))
             elif aLine[:2] == "# ":
                 self.theTokens.append((
-                    self.T_HEAD1,
-                    aLine[2:].strip(),
-                    None,
-                    self.A_LEFT | self.A_PBB
+                    self.T_HEAD1, aLine[2:].strip(), None, self.A_LEFT | self.A_PBB
                 ))
             elif aLine[:3] == "## ":
                 self.theTokens.append((
-                    self.T_HEAD2,
-                    aLine[3:].strip(),
-                    None,
-                    self.A_LEFT | self.A_PBA_AV
+                    self.T_HEAD2, aLine[3:].strip(), None, self.A_LEFT | self.A_PBA_AV
                 ))
             elif aLine[:4] == "### ":
                 self.theTokens.append((
-                    self.T_HEAD3,
-                    aLine[4:].strip(),
-                    None,
-                    self.A_LEFT | self.A_PBA_AV
+                    self.T_HEAD3, aLine[4:].strip(), None, self.A_LEFT | self.A_PBA_AV
                 ))
             elif aLine[:5] == "#### ":
                 self.theTokens.append((
-                    self.T_HEAD4,
-                    aLine[5:].strip(),
-                    None,
-                    self.A_LEFT | self.A_PBA_AV
+                    self.T_HEAD4, aLine[5:].strip(), None, self.A_LEFT | self.A_PBA_AV
                 ))
             else:
                 if not self.doBodyText:
@@ -328,18 +338,12 @@ class Tokenizer():
                 # sorted by position
                 fmtPos = sorted(fmtPos, key=itemgetter(0))
                 self.theTokens.append((
-                    self.T_TEXT,
-                    aLine,
-                    fmtPos,
-                    defAlign
+                    self.T_TEXT, aLine, fmtPos, defAlign
                 ))
 
         # Always add an empty line at the end
         self.theTokens.append((
-            self.T_EMPTY,
-            "",
-            None,
-            None
+            self.T_EMPTY, "", None, None
         ))
 
         return
@@ -349,23 +353,13 @@ class Tokenizer():
         layout and user settings.
         """
 
-        isNone  = self.theItem.itemLayout == nwItemLayout.NO_LAYOUT
-        isTitle = self.theItem.itemLayout == nwItemLayout.TITLE
-        isBook  = self.theItem.itemLayout == nwItemLayout.BOOK
-        isPage  = self.theItem.itemLayout == nwItemLayout.PAGE
-        isPart  = self.theItem.itemLayout == nwItemLayout.PARTITION
-        isUnNum = self.theItem.itemLayout == nwItemLayout.UNNUMBERED
-        isChap  = self.theItem.itemLayout == nwItemLayout.CHAPTER
-        isScene = self.theItem.itemLayout == nwItemLayout.SCENE
-        isNote  = self.theItem.itemLayout == nwItemLayout.NOTE
-
         # No special header formatting for notes and no-layout files
-        if isNone or isNote:
+        if self.isNone or self.isNote:
             return
 
         # For novel files, we need to handle chapter numbering and scene
         # breaks
-        if isBook or isUnNum or isChap or isScene:
+        if self.isNovel:
             for n in range(len(self.theTokens)):
 
                 tToken = self.theTokens[n]
@@ -382,10 +376,7 @@ class Tokenizer():
 
                     tText = self._formatHeading(self.fmtTitle, tText)
                     self.theTokens[n] = (
-                        tType,
-                        tText,
-                        None,
-                        self.A_LEFT | self.A_PBB_R
+                        tType, tText, None, self.A_LEFT | self.A_PBB_R
                     )
 
                 elif tType == self.T_HEAD2:
@@ -393,7 +384,7 @@ class Tokenizer():
                     # =============
 
                     # Numbered or Unnumbered
-                    if isUnNum:
+                    if self.isUnNum:
                         tText = self._formatHeading(self.fmtUnNum, tText)
                     else:
                         self.numChapter += 1
@@ -401,10 +392,7 @@ class Tokenizer():
 
                     # Format the chapter header
                     self.theTokens[n] = (
-                        tType,
-                        tText,
-                        None,
-                        self.A_LEFT | self.A_PBB_R
+                        tType, tText, None, self.A_LEFT | self.A_PBB_R
                     )
 
                     # Set scene variables
@@ -421,47 +409,29 @@ class Tokenizer():
                     tTemp = self._formatHeading(self.fmtScene, tText)
                     if tTemp == "" and self.hideScene:
                         self.theTokens[n] = (
-                            self.T_EMPTY,
-                            "",
-                            None,
-                            None
+                            self.T_EMPTY, "", None, None
                         )
                     elif tTemp == "" and not self.hideScene:
                         if self.firstScene:
                             self.theTokens[n] = (
-                                self.T_EMPTY,
-                                "",
-                                None,
-                                None
+                                self.T_EMPTY, "", None, None
                             )
                         else:
                             self.theTokens[n] = (
-                                self.T_SKIP,
-                                "",
-                                None,
-                                None
+                                self.T_SKIP, "", None, None
                             )
                     elif tTemp == self.fmtScene:
                         if self.firstScene:
                             self.theTokens[n] = (
-                                self.T_EMPTY,
-                                "",
-                                None,
-                                None
+                                self.T_EMPTY, "", None, None
                             )
                         else:
                             self.theTokens[n] = (
-                                self.T_SEP,
-                                tTemp,
-                                None,
-                                self.A_CENTRE
+                                self.T_SEP, tTemp, None, self.A_CENTRE
                             )
                     else:
                         self.theTokens[n] = (
-                            tType,
-                            tTemp,
-                            None,
-                            self.A_LEFT | self.A_PBA_AV
+                            tType, tTemp, None, self.A_LEFT | self.A_PBA_AV
                         )
 
                     # Definitely no longer the first scene
@@ -474,62 +444,41 @@ class Tokenizer():
                     tTemp = self._formatHeading(self.fmtSection, tText)
                     if tTemp == "" and self.hideSection:
                         self.theTokens[n] = (
-                            self.T_EMPTY,
-                            "",
-                            None,
-                            None
+                            self.T_EMPTY, "", None, None
                         )
                     elif tTemp == "" and not self.hideSection:
                         self.theTokens[n] = (
-                            self.T_SKIP,
-                            "",
-                            None,
-                            None
+                            self.T_SKIP, "", None, None
                         )
                     elif tTemp == self.fmtSection:
                         self.theTokens[n] = (
-                            self.T_SEP,
-                            tTemp,
-                            None,
-                            self.A_CENTRE
+                            self.T_SEP, tTemp, None, self.A_CENTRE
                         )
                     else:
                         self.theTokens[n] = (
-                            tType,
-                            tTemp,
-                            None,
-                            self.A_LEFT | self.A_PBA_AV
+                            tType, tTemp, None, self.A_LEFT | self.A_PBA_AV
                         )
 
         # For title page and partitions, we need to centre all text.
         # For partition, we also add a page break before, and for
         # both types we always add a page break after the content.
-        if isTitle or isPart:
-            for n in range(len(self.theTokens)):
-                tToken  = self.theTokens[n]
+        if self.isTitle or self.isPart:
+            for n, tToken in enumerate(self.theTokens):
                 tType   = tToken[0]
                 tText   = tToken[1]
                 tFormat = tToken[2]
-                if isTitle:
+                if self.isTitle:
                     self.theTokens[n] = (
-                        tType,
-                        tText,
-                        tFormat,
-                        self.A_CENTRE
+                        tType, tText, tFormat, self.A_CENTRE
                     )
-                else:
-                    self.theTokens[n] = (
-                        tType,
-                        tText,
-                        tFormat,
-                        self.A_CENTRE | self.A_PBB_R
-                    )
-            self.theTokens.append((
-                self.T_PBREAK,
-                "",
-                None,
-                None
-            ))
+
+            # Add a page break after the last entry
+            n = len(self.theTokens) - 1
+            if n >= 0:
+                tToken = self.theTokens[n]
+                self.theTokens[n] = (
+                    tToken[0], tToken[1], tToken[2], tToken[3] | self.A_PBA
+                )
 
         return
 

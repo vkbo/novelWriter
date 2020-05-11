@@ -31,6 +31,7 @@ import nw
 from os import path
 
 from PyQt5.QtCore import Qt, QByteArray
+from PyQt5.QtPrintSupport import QPrinter, QPrintPreviewDialog
 from PyQt5.QtGui import (
     QTextOption, QPalette, QColor, QTextDocumentWriter
 )
@@ -230,9 +231,9 @@ class GuiBuildNovel(QDialog):
         self.saveODT.triggered.connect(lambda: self._saveDocument(self.FMT_ODT))
         self.saveMenu.addAction(self.saveODT)
 
-        # self.savePDF = QAction("Portable Document Format (.pdf)")
-        # self.savePDF.triggered.connect(lambda: self._saveDocument(self.FMT_PDF))
-        # self.saveMenu.addAction(self.savePDF)
+        self.savePDF = QAction("Portable Document Format (.pdf)")
+        self.savePDF.triggered.connect(lambda: self._saveDocument(self.FMT_PDF))
+        self.saveMenu.addAction(self.savePDF)
 
         self.saveHTM1 = QAction("Qt Style HTML (.htm)")
         self.saveHTM1.triggered.connect(lambda: self._saveDocument(self.FMT_HTM1))
@@ -406,9 +407,14 @@ class GuiBuildNovel(QDialog):
         # Create the settings
         if theFormat == self.FMT_ODT:
             byteFmt.append("odf")
-            fileExt = "odf"
+            fileExt = "odt"
             textFmt = "Open Document"
             outTool = "Qt"
+
+        elif theFormat == self.FMT_PDF:
+            fileExt = "pdf"
+            textFmt = "PDF"
+            outTool = "QtPrint"
 
         elif theFormat == self.FMT_HTM1:
             byteFmt.append("html")
@@ -479,32 +485,56 @@ class GuiBuildNovel(QDialog):
                     ), nwAlert.ERROR
                 )
 
-        elif outTool == "NW":
-            if theFormat == self.FMT_HTM2:
-                try:
-                    with open(savePath, mode="w", encoding="utf8") as outFile:
-                        outFile.write("<!DOCTYPE html>\n")
-                        outFile.write("<html>\n")
-                        outFile.write("<head>\n")
-                        outFile.write("<meta charset='utf-8'>\n")
-                        outFile.write("</head>\n")
-                        outFile.write("<body>\n")
-                        outFile.write(self.htmlText)
-                        outFile.write("</body>\n")
-                        outFile.write("</html>\n")
+        elif outTool == "NW" and theFormat == self.FMT_HTM2:
+            try:
+                with open(savePath, mode="w", encoding="utf8") as outFile:
+                    outFile.write("<!DOCTYPE html>\n")
+                    outFile.write("<html>\n")
+                    outFile.write("<head>\n")
+                    outFile.write("<meta charset='utf-8'>\n")
+                    outFile.write("</head>\n")
+                    outFile.write("<body>\n")
+                    outFile.write("<article style='width: 800px; margin: 40px auto'>\n")
+                    outFile.write(self.htmlText)
+                    outFile.write("</article>\n")
+                    outFile.write("</body>\n")
+                    outFile.write("</html>\n")
 
-                    self.theParent.makeAlert(
-                        "Document successfully written in %s format to file: %s" % (
-                            textFmt, savePath
-                        ), nwAlert.INFO
-                    )
+                self.theParent.makeAlert(
+                    "Document successfully written in %s format to file: %s" % (
+                        textFmt, savePath
+                    ), nwAlert.INFO
+                )
 
-                except Exception as e:
-                    self.theParent.makeAlert(
-                        "Failed to write document in %s format to file: %s" % (
-                            textFmt, str(e)
-                        ), nwAlert.ERROR
-                    )
+            except Exception as e:
+                self.theParent.makeAlert(
+                    "Failed to write document in %s format to file: %s" % (
+                        textFmt, str(e)
+                    ), nwAlert.ERROR
+                )
+
+        elif outTool == "QtPrint" and theFormat == self.FMT_PDF:
+            try:
+                thePrinter = QPrinter()
+                thePrinter.setOutputFormat(QPrinter.PdfFormat)
+                thePrinter.setOrientation(QPrinter.Portrait)
+                thePrinter.setDuplex(QPrinter.DuplexLongSide)
+                thePrinter.setFontEmbeddingEnabled(True)
+                thePrinter.setColorMode(QPrinter.Color)
+                thePrinter.setOutputFileName(savePath)
+                self.docView.qDocument.print(thePrinter)
+                self.theParent.makeAlert(
+                    "Document successfully written in %s format to file: %s" % (
+                        textFmt, savePath
+                    ), nwAlert.INFO
+                )
+
+            except Exception as e:
+                self.theParent.makeAlert(
+                    "Failed to write document in %s format to file: %s" % (
+                        textFmt, str(e)
+                    ), nwAlert.ERROR
+                )
 
         else:
             return False
@@ -512,6 +542,19 @@ class GuiBuildNovel(QDialog):
         return True
 
     def _printDocument(self):
+        """Open the print preview dialog.
+        """
+        thePreview = QPrintPreviewDialog(self)
+        thePreview.paintRequested.connect(self._doPrintPreview)
+        thePreview.exec_()
+        return
+
+    def _doPrintPreview(self, thePrinter):
+        """Connect the print preview painter to the document viewer.
+        """
+        thePrinter.setOrientation(QPrinter.Portrait)
+        thePrinter.setOutputFormat(QPrinter.NativeFormat | QPrinter.PdfFormat)
+        self.docView.qDocument.print(thePrinter)
         return
 
     def _toggelOutlineMode(self, theState):

@@ -352,7 +352,7 @@ class GuiMainMenu(QMenuBar):
         self.docuMenu.addAction(self.aCloseView)
 
         # Document > Toggle View Comments
-        self.aViewDocComments = QAction("View Comments", self)
+        self.aViewDocComments = QAction("Show Comments", self)
         self.aViewDocComments.setStatusTip("Show comments in view panel")
         self.aViewDocComments.setCheckable(True)
         self.aViewDocComments.setChecked(self.mainConf.viewComments)
