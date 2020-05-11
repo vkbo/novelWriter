@@ -69,7 +69,7 @@ class GuiBuildNovel(QDialog):
 
         self.htmlText = ""
 
-        self.setWindowTitle("Build Project")
+        self.setWindowTitle("Build Novel Project")
         self.setMinimumWidth(800)
         self.setMinimumHeight(800)
 
@@ -315,11 +315,11 @@ class GuiBuildNovel(QDialog):
         doBodyText    = True
 
         if outlineMode:
-            fmtTitle      = "%title%"
-            fmtChapter    = "Chapter: %title%"
-            fmtUnnumbered = "Chapter: %title%"
-            fmtScene      = "Scene: %title%"
-            fmtSection    = "Section: %title%"
+            fmtTitle      = r"%title%"
+            fmtChapter    = r"Chapter %chnum%: %title%"
+            fmtUnnumbered = r"%title%"
+            fmtScene      = r"Scene %chnum%.%scnum%: %title%"
+            fmtSection    = r"Section: %title%"
             doBodyText    = False
             incSynopsis   = True
             novelFiles    = True

@@ -104,6 +104,8 @@ class Tokenizer():
 
         # Instance Variables
         self.numChapter  = 0     # Counter for chapter numbers
+        self.numChScene  = 0     # Counter for scene number within chapter
+        self.numAbsScene = 0     # Counter for scene number within novel
         self.firstScene  = False # Flag to indicate that the first scene of the chapter
 
         return
@@ -370,23 +372,53 @@ class Tokenizer():
                 tType  = tToken[0]
                 tText  = tToken[1]
 
+                # In case we see text before a scene, we reset the flag
                 if tType == self.T_TEXT:
                     self.firstScene = False
 
-                elif tType == self.T_HEAD2: # Novel Chapter
-                    if not isUnNum:
-                        self.numChapter += 1
-                    tText = self._formatChapter(tText,isUnNum)
+                elif tType == self.T_HEAD1:
+                    # Main Title
+                    # ==========
+
+                    tText = self._formatHeading(self.fmtTitle, tText)
                     self.theTokens[n] = (
                         tType,
                         tText,
                         None,
                         self.A_LEFT | self.A_PBB_R
                     )
-                    self.firstScene = True
 
-                elif tType == self.T_HEAD3: # Novel Scene
-                    tTemp = self._formatScene(tText)
+                elif tType == self.T_HEAD2:
+                    # Novel Chapter
+                    # =============
+
+                    # Numbered or Unnumbered
+                    if isUnNum:
+                        tText = self._formatHeading(self.fmtUnNum, tText)
+                    else:
+                        self.numChapter += 1
+                        tText = self._formatHeading(self.fmtChapter, tText)
+
+                    # Format the chapter header
+                    self.theTokens[n] = (
+                        tType,
+                        tText,
+                        None,
+                        self.A_LEFT | self.A_PBB_R
+                    )
+
+                    # Set scene variables
+                    self.firstScene = True
+                    self.numChScene = 0
+
+                elif tType == self.T_HEAD3:
+                    # Novel Scene
+                    # ===========
+
+                    self.numChScene += 1
+                    self.numAbsScene += 1
+
+                    tTemp = self._formatHeading(self.fmtScene, tText)
                     if tTemp == "" and self.hideScene:
                         self.theTokens[n] = (
                             self.T_EMPTY,
@@ -431,10 +463,15 @@ class Tokenizer():
                             None,
                             self.A_LEFT | self.A_PBA_AV
                         )
+
+                    # Definitely no longer the first scene
                     self.firstScene = False
 
-                elif tType == self.T_HEAD4: # Novel Section
-                    tTemp = self._formatSection(tText)
+                elif tType == self.T_HEAD4:
+                    # Novel Section
+                    # =============
+
+                    tTemp = self._formatHeading(self.fmtSection, tText)
                     if tTemp == "" and self.hideSection:
                         self.theTokens[n] = (
                             self.T_EMPTY,
@@ -500,38 +537,14 @@ class Tokenizer():
     #  Internal Functions
     ##
 
-    def _formatTitle(self, theText):
-        """Replace tokens for headers level 1.
+    def _formatHeading(self, theTitle, theText):
+        """Replaces the %keyword% strings.
         """
-        theTitle = self.fmtTitle
-        theTitle = theTitle.replace("%title%", theText)
-        return theTitle
-
-    def _formatChapter(self, theText, noNum):
-        """Replace tokens for headers level 2.
-        """
-        if noNum:
-            theTitle = self.fmtUnNum
-            theTitle = theTitle.replace("%title%", theText)
-        else:
-            theTitle = self.fmtChapter
-            theTitle = theTitle.replace("%title%", theText)
-            theTitle = theTitle.replace("%num%", str(self.numChapter))
-            theTitle = theTitle.replace("%numword%", numberToWord(self.numChapter,"en"))
-        return theTitle
-
-    def _formatScene(self, theText):
-        """Replace tokens for headers level 3.
-        """
-        theTitle = self.fmtScene
-        theTitle = theTitle.replace("%title%", theText)
-        return theTitle
-
-    def _formatSection(self, theText):
-        """Replace tokens for headers level 4.
-        """
-        theTitle = self.fmtSection
-        theTitle = theTitle.replace("%title%", theText)
+        theTitle = theTitle.replace(r"%title%", theText)
+        theTitle = theTitle.replace(r"%chnum%", str(self.numChapter))
+        theTitle = theTitle.replace(r"%scnum%", str(self.numChScene))
+        theTitle = theTitle.replace(r"%scabsnum%", str(self.numAbsScene))
+        theTitle = theTitle.replace(r"%chnumword%", numberToWord(self.numChapter,"en"))
         return theTitle
 
 # END Class Tokenizer
