@@ -313,7 +313,7 @@ class NWProject():
             )
             return False
 
-        if int(hexVersion, 16) > int(nw.__hexversion__, 16):
+        if int(hexVersion, 16) > int(nw.__hexversion__, 16) and self.mainConf.showGUI:
             msgBox = QMessageBox()
             msgRes = msgBox.question(self.theParent, "Version Conflict", (
                 "This project was saved by a newer version of %s, version %s. This is version %s. "
