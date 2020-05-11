@@ -129,21 +129,6 @@ class GuiBuildNovel(QDialog):
         self.titleForm.setColumnStretch(0, 1)
         self.titleForm.setColumnStretch(1, 0)
 
-        # Text Options
-        # =============
-        self.textGroup = QGroupBox("Text Options", self)
-        self.textForm  = QGridLayout(self)
-        self.textGroup.setLayout(self.textForm)
-
-        self.justifyText = QSwitch()
-        self.justifyText.setChecked(self.optState.getBool("GuiBuildNovel", "justifyText", False))
-
-        self.textForm.addWidget(QLabel("Justify text"), 0, 0)
-        self.textForm.addWidget(self.justifyText,       0, 1)
-
-        self.textForm.setColumnStretch(0, 1)
-        self.textForm.setColumnStretch(1, 0)
-
         # Build Settings
         # ==============
         self.buildGroup = QGroupBox("Build Overrides", self)
@@ -158,6 +143,21 @@ class GuiBuildNovel(QDialog):
 
         self.buildForm.setColumnStretch(0, 1)
         self.buildForm.setColumnStretch(1, 0)
+
+        # Text Options
+        # =============
+        self.textGroup = QGroupBox("Text Options", self)
+        self.textForm  = QGridLayout(self)
+        self.textGroup.setLayout(self.textForm)
+
+        self.justifyText = QSwitch()
+        self.justifyText.setChecked(self.optState.getBool("GuiBuildNovel", "justifyText", False))
+
+        self.textForm.addWidget(QLabel("Justify text"), 0, 0)
+        self.textForm.addWidget(self.justifyText,       0, 1)
+
+        self.textForm.setColumnStretch(0, 1)
+        self.textForm.setColumnStretch(1, 0)
 
         # Include Switches
         # ================
@@ -230,7 +230,7 @@ class GuiBuildNovel(QDialog):
         self.saveODT.triggered.connect(lambda: self._saveDocument(self.FMT_ODT))
         self.saveMenu.addAction(self.saveODT)
 
-        # self.savePDF = QAction("Portable Document (.pdf)")
+        # self.savePDF = QAction("Portable Document Format (.pdf)")
         # self.savePDF.triggered.connect(lambda: self._saveDocument(self.FMT_PDF))
         # self.saveMenu.addAction(self.savePDF)
 
@@ -238,13 +238,14 @@ class GuiBuildNovel(QDialog):
         self.saveHTM1.triggered.connect(lambda: self._saveDocument(self.FMT_HTM1))
         self.saveMenu.addAction(self.saveHTM1)
 
-        self.saveHTM2 = QAction("Plain HTML (.htm)")
+        self.saveHTM2 = QAction("%s HTML (.htm)" % nw.__package__)
         self.saveHTM2.triggered.connect(lambda: self._saveDocument(self.FMT_HTM2))
         self.saveMenu.addAction(self.saveHTM2)
 
-        # self.saveMD = QAction("Markdown (.md)")
-        # self.saveMD.triggered.connect(lambda: self._saveDocument(self.FMT_MD))
-        # self.saveMenu.addAction(self.saveMD)
+        if self.mainConf.verQtValue >= 51400:
+            self.saveMD = QAction("Markdown (.md)")
+            self.saveMD.triggered.connect(lambda: self._saveDocument(self.FMT_MD))
+            self.saveMenu.addAction(self.saveMD)
 
         self.saveTXT = QAction("Plain Text (.txt)")
         self.saveTXT.triggered.connect(lambda: self._saveDocument(self.FMT_TXT))
@@ -261,8 +262,8 @@ class GuiBuildNovel(QDialog):
         # Assemble GUI
         # ============
         self.toolsBox.addWidget(self.titleGroup)
-        self.toolsBox.addWidget(self.textGroup)
         self.toolsBox.addWidget(self.buildGroup)
+        self.toolsBox.addWidget(self.textGroup)
         self.toolsBox.addWidget(self.includeGroup)
         self.toolsBox.addWidget(self.addsGroup)
         self.toolsBox.addStretch(1)

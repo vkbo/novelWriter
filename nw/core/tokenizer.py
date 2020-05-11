@@ -60,10 +60,18 @@ class Tokenizer():
     T_SKIP     = 11 # Paragraph break
     T_PBREAK   = 12 # Page break
 
-    A_LEFT     =  1 # Left aligned
-    A_RIGHT    =  2 # Right aligned
-    A_CENTRE   =  3 # Centred
-    A_JUSTIFY  =  4 # Justified
+    A_LEFT     =    1 # Left aligned
+    A_RIGHT    =    2 # Right aligned
+    A_CENTRE   =    4 # Centred
+    A_JUSTIFY  =    8 # Justified
+    A_PBB      =   16 # Page break before
+    A_PBB_L    =   32 # Page break before, left
+    A_PBB_R    =   64 # Page break before, right
+    A_PBB_AV   =  128 # Page break, avoid
+    A_PBA      =  256 # Page break after
+    A_PBA_L    =  512 # Page break after, left
+    A_PBA_R    = 1024 # Page break after, right
+    A_PBA_AV   = 2048 # Page break, avoid
 
     def __init__(self, theProject, theParent):
 
@@ -208,6 +216,13 @@ class Tokenizer():
         just contains plain text. in the case of plain text, apply the
         same RegExes that the syntax highlighter uses and save the
         locations of these formatting tags into the token array.
+
+        The format of the token list is an entry with a four-tuple for
+        each line in the file. The tuple is as follows:
+          1: The type of the block, self.T_*
+          2: The text content of the block, without leading tags
+          3: The internal formatting map of the text, self.FMT_*
+          4: The style of the block, self.A_*
         """
 
         # RegExes for adding formatting tags within text lines
@@ -233,23 +248,63 @@ class Tokenizer():
 
             # Tag lines starting with specific characters
             if len(aLine.strip()) == 0:
-                self.theTokens.append((self.T_EMPTY, "", None, self.A_LEFT))
+                self.theTokens.append((
+                    self.T_EMPTY,
+                    "",
+                    None,
+                    None
+                ))
             elif aLine[0] == "%":
                 cLine = aLine[1:].strip()
                 if cLine.lower().startswith("synopsis:"):
-                    self.theTokens.append((self.T_SYNOPSIS, cLine[9:].strip(), None, defAlign))
+                    self.theTokens.append((
+                        self.T_SYNOPSIS,
+                        cLine[9:].strip(),
+                        None,
+                        defAlign
+                    ))
                 else:
-                    self.theTokens.append((self.T_COMMENT, aLine[1:].strip(), None, defAlign))
+                    self.theTokens.append((
+                        self.T_COMMENT,
+                        aLine[1:].strip(),
+                        None,
+                        defAlign
+                    ))
             elif aLine[0] == "@":
-                self.theTokens.append((self.T_KEYWORD, aLine[1:].strip(), None, self.A_LEFT))
+                self.theTokens.append((
+                    self.T_KEYWORD,
+                    aLine[1:].strip(),
+                    None,
+                    self.A_LEFT
+                ))
             elif aLine[:2] == "# ":
-                self.theTokens.append((self.T_HEAD1, aLine[2:].strip(), None, self.A_LEFT))
+                self.theTokens.append((
+                    self.T_HEAD1,
+                    aLine[2:].strip(),
+                    None,
+                    self.A_LEFT | self.A_PBB
+                ))
             elif aLine[:3] == "## ":
-                self.theTokens.append((self.T_HEAD2, aLine[3:].strip(), None, self.A_LEFT))
+                self.theTokens.append((
+                    self.T_HEAD2,
+                    aLine[3:].strip(),
+                    None,
+                    self.A_LEFT | self.A_PBA_AV
+                ))
             elif aLine[:4] == "### ":
-                self.theTokens.append((self.T_HEAD3, aLine[4:].strip(), None, self.A_LEFT))
+                self.theTokens.append((
+                    self.T_HEAD3,
+                    aLine[4:].strip(),
+                    None,
+                    self.A_LEFT | self.A_PBA_AV
+                ))
             elif aLine[:5] == "#### ":
-                self.theTokens.append((self.T_HEAD4, aLine[5:].strip(), None, self.A_LEFT))
+                self.theTokens.append((
+                    self.T_HEAD4,
+                    aLine[5:].strip(),
+                    None,
+                    self.A_LEFT | self.A_PBA_AV
+                ))
             else:
                 if not self.doBodyText:
                     # Skip all body text
@@ -270,10 +325,20 @@ class Tokenizer():
                 # Save the line as is, but append the array of formatting locations
                 # sorted by position
                 fmtPos = sorted(fmtPos, key=itemgetter(0))
-                self.theTokens.append((self.T_TEXT, aLine, fmtPos, defAlign))
+                self.theTokens.append((
+                    self.T_TEXT,
+                    aLine,
+                    fmtPos,
+                    defAlign
+                ))
 
         # Always add an empty line at the end
-        self.theTokens.append((self.T_EMPTY, "", None, self.A_LEFT))
+        self.theTokens.append((
+            self.T_EMPTY,
+            "",
+            None,
+            None
+        ))
 
         return
 
@@ -308,53 +373,126 @@ class Tokenizer():
                 if tType == self.T_TEXT:
                     self.firstScene = False
 
-                elif tType == self.T_HEAD2:
+                elif tType == self.T_HEAD2: # Novel Chapter
                     if not isUnNum:
                         self.numChapter += 1
                     tText = self._formatChapter(tText,isUnNum)
-                    self.theTokens[n] = (tType, tText, None, self.A_LEFT)
+                    self.theTokens[n] = (
+                        tType,
+                        tText,
+                        None,
+                        self.A_LEFT | self.A_PBB_R
+                    )
                     self.firstScene = True
 
-                elif tType == self.T_HEAD3:
+                elif tType == self.T_HEAD3: # Novel Scene
                     tTemp = self._formatScene(tText)
                     if tTemp == "" and self.hideScene:
-                        self.theTokens[n] = (self.T_EMPTY, "", None, self.A_LEFT)
+                        self.theTokens[n] = (
+                            self.T_EMPTY,
+                            "",
+                            None,
+                            None
+                        )
                     elif tTemp == "" and not self.hideScene:
                         if self.firstScene:
-                            self.theTokens[n] = (self.T_EMPTY, "", None, self.A_LEFT)
+                            self.theTokens[n] = (
+                                self.T_EMPTY,
+                                "",
+                                None,
+                                None
+                            )
                         else:
-                            self.theTokens[n] = (self.T_SKIP, "", None, self.A_LEFT)
+                            self.theTokens[n] = (
+                                self.T_SKIP,
+                                "",
+                                None,
+                                None
+                            )
                     elif tTemp == self.fmtScene:
                         if self.firstScene:
-                            self.theTokens[n] = (self.T_EMPTY, "", None, self.A_LEFT)
+                            self.theTokens[n] = (
+                                self.T_EMPTY,
+                                "",
+                                None,
+                                None
+                            )
                         else:
-                            self.theTokens[n] = (self.T_SEP, tTemp, None, self.A_CENTRE)
+                            self.theTokens[n] = (
+                                self.T_SEP,
+                                tTemp,
+                                None,
+                                self.A_CENTRE
+                            )
                     else:
-                        self.theTokens[n] = (tType, tTemp, None, self.A_LEFT)
+                        self.theTokens[n] = (
+                            tType,
+                            tTemp,
+                            None,
+                            self.A_LEFT | self.A_PBA_AV
+                        )
                     self.firstScene = False
 
-                elif tType == self.T_HEAD4:
+                elif tType == self.T_HEAD4: # Novel Section
                     tTemp = self._formatSection(tText)
                     if tTemp == "" and self.hideSection:
-                        self.theTokens[n] = (self.T_EMPTY, "", None, self.A_LEFT)
+                        self.theTokens[n] = (
+                            self.T_EMPTY,
+                            "",
+                            None,
+                            None
+                        )
                     elif tTemp == "" and not self.hideSection:
-                        self.theTokens[n] = (self.T_SKIP, "", None, self.A_LEFT)
+                        self.theTokens[n] = (
+                            self.T_SKIP,
+                            "",
+                            None,
+                            None
+                        )
                     elif tTemp == self.fmtSection:
-                        self.theTokens[n] = (self.T_SEP, tTemp, None, self.A_CENTRE)
+                        self.theTokens[n] = (
+                            self.T_SEP,
+                            tTemp,
+                            None,
+                            self.A_CENTRE
+                        )
                     else:
-                        self.theTokens[n] = (tType, tTemp, None, self.A_LEFT)
+                        self.theTokens[n] = (
+                            tType,
+                            tTemp,
+                            None,
+                            self.A_LEFT | self.A_PBA_AV
+                        )
 
-        # For title page and partitions, we need to centre all text
-        # and for some formats, we need a page break
+        # For title page and partitions, we need to centre all text.
+        # For partition, we also add a page break before, and for
+        # both types we always add a page break after the content.
         if isTitle or isPart:
             for n in range(len(self.theTokens)):
                 tToken  = self.theTokens[n]
                 tType   = tToken[0]
                 tText   = tToken[1]
                 tFormat = tToken[2]
-                self.theTokens[n] = (tType, tText, tFormat, self.A_CENTRE)
-
-            self.theTokens.append((self.T_PBREAK, "", None, self.A_LEFT))
+                if isTitle:
+                    self.theTokens[n] = (
+                        tType,
+                        tText,
+                        tFormat,
+                        self.A_CENTRE
+                    )
+                else:
+                    self.theTokens[n] = (
+                        tType,
+                        tText,
+                        tFormat,
+                        self.A_CENTRE | self.A_PBB_R
+                    )
+            self.theTokens.append((
+                self.T_PBREAK,
+                "",
+                None,
+                None
+            ))
 
         return
 

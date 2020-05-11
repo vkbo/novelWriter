@@ -102,19 +102,35 @@ class ToHtml(Tokenizer):
 
         self.theResult = ""
         thisPar = []
-        for tType, tText, tFormat, tAlign in self.theTokens:
+        for tType, tText, tFormat, tStyle in self.theTokens:
 
             # Styles
             aStyle = []
-            if tAlign == self.A_CENTRE:
-                aStyle.append("text-align: center;")
-            elif tAlign == self.A_RIGHT:
-                aStyle.append("text-align: right;")
-            elif tAlign == self.A_JUSTIFY:
-                aStyle.append("text-align: justify;")
-
-            if tType == self.T_HEAD2:
-                aStyle.append("page-break-before: always;")
+            if tStyle is not None:
+                if tStyle & self.A_LEFT:
+                    aStyle.append("text-align: left;")
+                if tStyle & self.A_RIGHT:
+                    aStyle.append("text-align: right;")
+                if tStyle & self.A_CENTRE:
+                    aStyle.append("text-align: center;")
+                if tStyle & self.A_JUSTIFY:
+                    aStyle.append("text-align: justify;")
+                if tStyle & self.A_PBB:
+                    aStyle.append("page-break-before: always;")
+                if tStyle & self.A_PBB_L:
+                    aStyle.append("page-break-before: left;")
+                if tStyle & self.A_PBB_R:
+                    aStyle.append("page-break-before: right;")
+                if tStyle & self.A_PBB_AV:
+                    aStyle.append("page-break-before: avoid;")
+                if tStyle & self.A_PBA:
+                    aStyle.append("page-break-after: always;")
+                if tStyle & self.A_PBA_L:
+                    aStyle.append("page-break-after: left;")
+                if tStyle & self.A_PBA_R:
+                    aStyle.append("page-break-after: right;")
+                if tStyle & self.A_PBA_AV:
+                    aStyle.append("page-break-after: avoid;")
 
             if len(aStyle) > 0:
                 hStyle = " style='%s'" % (" ".join(aStyle))
