@@ -30,7 +30,7 @@ import nw
 
 from PyQt5.QtCore import Qt
 from PyQt5.QtWidgets import (
-    QFrame, QGridLayout, QLabel, QLineEdit, QPushButton, QApplication
+    qApp, QFrame, QGridLayout, QLabel, QLineEdit, QPushButton
 )
 
 from nw.constants import nwDocAction
@@ -127,7 +127,7 @@ class GuiSearchBar(QFrame):
         return
 
     def _doSearch(self):
-        modKey = QApplication.keyboardModifiers()
+        modKey = qApp.keyboardModifiers()
         if modKey == Qt.ShiftModifier:
             self.theParent.docEditor.docAction(nwDocAction.GO_PREV)
         else:

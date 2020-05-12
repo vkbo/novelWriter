@@ -31,7 +31,7 @@ import nw
 from PyQt5.QtCore import Qt, QSize
 from PyQt5.QtGui import QFont, QColor
 from PyQt5.QtWidgets import (
-    QTreeWidget, QTreeWidgetItem, QAbstractItemView, QApplication, QMessageBox
+    qApp, QTreeWidget, QTreeWidgetItem, QAbstractItemView, QMessageBox
 )
 
 from nw.core import NWDoc
@@ -207,7 +207,7 @@ class GuiDocTree(QTreeWidget):
         """Move an item up or down in the tree, but only if the treeView
         has focus. This also applies when the menu is used.
         """
-        if QApplication.focusWidget() == self and self.theParent.hasProject:
+        if qApp.focusWidget() == self and self.theParent.hasProject:
             tHandle = self.getSelectedHandle()
             tItem   = self._getTreeItem(tHandle)
             pItem   = tItem.parent()
