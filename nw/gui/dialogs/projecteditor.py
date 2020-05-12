@@ -54,10 +54,10 @@ class GuiProjectEditor(QDialog):
 
         self.outerBox   = QHBoxLayout()
         self.innerBox   = QVBoxLayout()
-        self.setWindowTitle("Project Settings")
-        self.setLayout(self.outerBox)
 
+        self.setWindowTitle("Project Settings")
         self.guiDeco = self.theParent.theTheme.loadDecoration("settings",(64,64))
+        self.outerBox.setSpacing(16)
 
         self.theProject.countStatus()
         self.tabMain    = GuiProjectEditMain(self.theParent, self.theProject)
@@ -78,6 +78,7 @@ class GuiProjectEditor(QDialog):
         self.buttonBox.accepted.connect(self._doSave)
         self.buttonBox.rejected.connect(self._doClose)
 
+        self.setLayout(self.outerBox)
         self.innerBox.addWidget(self.tabWidget)
         self.innerBox.addWidget(self.buttonBox)
 

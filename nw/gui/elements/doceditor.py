@@ -32,7 +32,7 @@ from time import time
 
 from PyQt5.QtCore import Qt, QTimer, pyqtSlot
 from PyQt5.QtWidgets import (
-    qApp, QTextEdit, QAction, QMenu, QShortcut, QMessageBox, QLabel
+    qApp, QTextEdit, QAction, QMenu, QShortcut, QMessageBox
 )
 from PyQt5.QtGui import (
     QTextCursor, QTextOption, QKeySequence, QFont, QColor, QPalette,
@@ -350,6 +350,14 @@ class GuiDocEditor(QTextEdit):
         self.qDocument.blockSignals(False)
         self.qDocument.contentsChange.emit(0,0,0)
 
+        return
+
+    def updateDocTitle(self, tHandle):
+        """Called when an item label is changed to check if the document
+        title bar needs updating,
+        """
+        if tHandle == self.theHandle:
+            self.docTitle.setTitleFromHandle(self.theHandle)
         return
 
     ##

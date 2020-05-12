@@ -36,7 +36,7 @@ from PyQt5.QtWidgets import (
 
 from nw.core import NWDoc
 from nw.constants import (
-    nwLabels, nwItemType, nwItemClass, nwItemLayout, nwAlert
+    nwLabels, nwItemType, nwItemClass, nwItemLayout, nwAlert, nwUnicode
 )
 
 logger = logging.getLogger(__name__)
@@ -254,6 +254,8 @@ class GuiDocTree(QTreeWidget):
         return theList
 
     def getColumnSizes(self):
+        """Return the column widths for the tree columns.
+        """
         retVals = [
             self.columnWidth(0),
             self.columnWidth(1),
@@ -401,7 +403,8 @@ class GuiDocTree(QTreeWidget):
         return True
 
     def setTreeItemValues(self, tHandle):
-
+        """Set the name and flag values for a tree item.
+        """
         trItem  = self._getTreeItem(tHandle)
         nwItem  = self.theProject.projTree[tHandle]
         tName   = nwItem.itemName
@@ -409,9 +412,19 @@ class GuiDocTree(QTreeWidget):
         tHandle = nwItem.itemHandle
         pHandle = nwItem.parHandle
 
-        tStatus = nwLabels.CLASS_FLAG[nwItem.itemClass]
+        stExport = " "
+        stClass  = nwLabels.CLASS_FLAG[nwItem.itemClass]
+        stLayout = ""
+
         if nwItem.itemType == nwItemType.FILE:
-            tStatus += "."+nwLabels.LAYOUT_FLAG[nwItem.itemLayout]
+            stLayout = "."+nwLabels.LAYOUT_FLAG[nwItem.itemLayout]
+            if nwItem.isExported:
+                stExport = nwUnicode.U_CHECK
+        else:
+            stExport = "+"
+
+        tStatus = stExport+" "+stClass+stLayout
+
         iStatus = nwItem.itemStatus
         if tClass == nwItemClass.NOVEL:
             iStatus  = self.theProject.statusItems.checkEntry(iStatus) # Make sure it's valid
@@ -519,8 +532,8 @@ class GuiDocTree(QTreeWidget):
         newItem.setText(self.C_HANDLE, tHandle)
 
         # newItem.setForeground(self.C_COUNT,QColor(*self.theParent.theTheme.treeWCount))
-        newItem.setTextAlignment(self.C_COUNT,Qt.AlignRight)
-        newItem.setFont(self.C_FLAGS,self.fontFlags)
+        newItem.setTextAlignment(self.C_COUNT, Qt.AlignRight)
+        newItem.setFont(self.C_FLAGS, self.fontFlags)
 
         self.theMap[tHandle] = newItem
         if pHandle is None:

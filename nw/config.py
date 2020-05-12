@@ -84,6 +84,7 @@ class Config:
         self.guiTheme  = "default"
         self.guiSyntax = "default_light"
         self.guiDark   = False
+        self.guiLang   = "en" # Hardcoded for now
 
         ## Sizes
         self.winGeometry  = [1100, 650]

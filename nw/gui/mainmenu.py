@@ -225,11 +225,11 @@ class GuiMainMenu(QMenuBar):
         self.projMenu.addAction(self.aProjectSettings)
 
         # Project > Export Project
-        self.aExportProject = QAction("Export Project", self)
-        self.aExportProject.setStatusTip("Export project")
-        self.aExportProject.setShortcut("F5")
-        self.aExportProject.triggered.connect(self.theParent.exportProjectDialog)
-        self.projMenu.addAction(self.aExportProject)
+        self.aBuildProject = QAction("Build Project", self)
+        self.aBuildProject.setStatusTip("Build project")
+        self.aBuildProject.setShortcut("F5")
+        self.aBuildProject.triggered.connect(self.theParent.buildProjectDialog)
+        self.projMenu.addAction(self.aBuildProject)
 
         # Project > Session Log
         self.aSessionLog = QAction("Session Log", self)
@@ -352,7 +352,7 @@ class GuiMainMenu(QMenuBar):
         self.docuMenu.addAction(self.aCloseView)
 
         # Document > Toggle View Comments
-        self.aViewDocComments = QAction("View Comments", self)
+        self.aViewDocComments = QAction("Show Comments", self)
         self.aViewDocComments.setStatusTip("Show comments in view panel")
         self.aViewDocComments.setCheckable(True)
         self.aViewDocComments.setChecked(self.mainConf.viewComments)

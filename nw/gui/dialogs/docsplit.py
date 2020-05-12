@@ -53,10 +53,11 @@ class GuiDocSplit(QDialog):
 
         self.outerBox = QHBoxLayout()
         self.innerBox = QVBoxLayout()
-        self.setWindowTitle("Split Document")
         self.setLayout(self.outerBox)
 
+        self.setWindowTitle("Split Document")
         self.guiDeco = self.theParent.theTheme.loadDecoration("split",(64,64))
+        self.outerBox.setSpacing(16)
 
         self.outerBox.addWidget(self.guiDeco, 0, Qt.AlignTop)
         self.outerBox.addLayout(self.innerBox)

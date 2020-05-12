@@ -1,20 +1,20 @@
 # -*- coding: utf-8 -*-
 
-# Qt Additions
-from nw.gui.additions.qconfiglayout import QConfigLayout
-from nw.gui.additions.qswitch import QSwitch
-
 # Main Window Elements
+from nw.gui.build import GuiBuildNovel
 from nw.gui.icons import GuiIcons
 from nw.gui.mainmenu import GuiMainMenu
 from nw.gui.statusbar import GuiMainStatus
 from nw.gui.theme import GuiTheme
 
+# Qt Additions
+from nw.gui.additions.qconfiglayout import QConfigLayout
+from nw.gui.additions.qswitch import QSwitch
+
 # Dialogs
 from nw.gui.dialogs.configeditor import GuiConfigEditor
 from nw.gui.dialogs.docmerge import GuiDocMerge
 from nw.gui.dialogs.docsplit import GuiDocSplit
-from nw.gui.dialogs.export import GuiExport
 from nw.gui.dialogs.itemeditor import GuiItemEditor
 from nw.gui.dialogs.projecteditor import GuiProjectEditor
 from nw.gui.dialogs.projectload import GuiProjectLoad
@@ -37,16 +37,16 @@ from nw.gui.tools.optionstate import OptionState
 from nw.gui.tools.wordcounter import WordCounter
 
 __all__ = [
-    "QConfigLayout",
-    "QSwitch",
+    "GuiBuildNovel",
     "GuiIcons",
     "GuiMainMenu",
     "GuiMainStatus",
     "GuiTheme",
+    "QConfigLayout",
+    "QSwitch",
     "GuiConfigEditor",
     "GuiDocMerge",
     "GuiDocSplit",
-    "GuiExport",
     "GuiItemEditor",
     "GuiProjectEditor",
     "GuiProjectLoad",

@@ -1,0 +1,49 @@
+<h1>Help!</h1>
+<p><i>A brief guide to make the most out of the Build Novel Project tool.</i></p>
+
+<h2>Novel Title Formats</h2>
+<p>The format of the various title levels in the files under the Novel folder can be customised in
+    these settings. The actual title given in the headings of your files will for instance replace
+    all occurrences of the keyword <mark>%title%</mark>. Any static text will be left as-is in the
+    final title. An empty field means the title isn't written out at all.</p>
+<p>The available formatting keywords are:</p>
+<p><mark>%title%</mark> &ndash; This is replaced with the text you put in your headings in your 
+    documents</p>
+<p><mark>%chnum%</mark> &ndash; This is replaced with the chapter number of your chapter type
+    headings. These are generated automaticall starting from 1, but ignoring chapter headings in
+    files with "Unnumbered" layout.</p>
+<p><mark>%chnumword%</mark> &ndash; This is replaced with the chapter number, but instead of an
+    arabic number, the word for it is used, e.g. One, Two, Fifteen, Twenty-Five, etc.</p>
+<p><mark>%scnum%</mark> &ndash; This is replaced with the scene number. The number is reset to one
+    for each new chapter, so it is the scene number within the current chapter.</p>
+<p><mark>%scabsnum%</mark> &ndash; This is replaced with the absolute scene number. That is, the
+    number is counted from the first scene in the novel, and not reset for each chapter.</p>
+<p><mark>\\</mark> &ndash; Two backslashes are replaced by a line break.</p>
+<p><b>Note:</b> The Scene and Section formats are treated slightly differently than the other title
+    formats. If the format is a constant text, that is, contains no <mark>%keyword%</mark> tags, it
+    will be treated as a separator instead. Scene and Section separators are centred, and for
+    scenes, not shown if placed directly after the chapter heading. For instance, it you want the
+    classic three asterisk <mark>* * *</mark> separator between scenes, just put that into the
+    scene format box, and nothing else.</p>
+
+<h2>Build Overrides</h2>
+<p><b>Novel Outline Mode:</b> This option will build an outline version of the novel rather than the
+    full thing. It overrides the title format settings without changing them. Each title will be
+    written out, and the synopsis text will appear instead of the body text of the files. Some of
+    the other options are still available in Outline Mode.</p>
+
+<h2>Include Non-Text Elements</h2>
+<p><b>Include Synopsis:</b> This will add the synopsis comment as the first paragraph after each
+    heading.</p>
+<p><b>Include Comments:</b> This will include any comments as additional paragraphs in the text.</p>
+<p><b>Include Keywords:</b> This will include any keywords and tags as clickable links after each
+    heading.</p>
+
+<h2>Additional Options</h2>
+<p><b>Include Novel Files:</b> This means all files that don't have a layout of type "Note" will be
+    included. This is the normal mode when exporting the novel itself without the notes.</p>
+<p><b>Include Note Files:</b> This means all files with a layout of type "Note" <i>will</i> be
+    included. Titles in note files are always left as they appear.</p>
+<p><b>Ignore Export Flag:</b> Each file in the project tree has an "Include when building project"
+    option set, which is indicated by a little check mark in the "Flags" column. Files without This
+    tick will normally be skipped during build, but can be included if this option is enabled.</p>

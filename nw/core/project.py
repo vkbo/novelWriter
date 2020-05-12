@@ -46,7 +46,7 @@ from nw.core.tools import projectMaintenance
 from nw.core.document import NWDoc
 from nw.common import checkString, checkBool, checkInt, formatTimeStamp
 from nw.constants import (
-    nwFiles, nwConst, nwItemType, nwItemClass, nwItemLayout, nwAlert
+    nwFiles, nwItemType, nwItemClass, nwItemLayout, nwAlert
 )
 
 logger = logging.getLogger(__name__)
@@ -82,10 +82,9 @@ class NWProject():
         self.bookTitle   = "" # The final title; should only be used for exports
         self.bookAuthors = [] # A list of book authors
 
-        # Various
-        self.autoReplace = {} # Text to auto-replace on exports
-
         # Project Settings
+        self.autoReplace = {}    # Text to auto-replace on exports
+        self.titleFormat = {}    # The formatting of titles for exports
         self.spellCheck  = False # Controls the spellcheck-as-you-type feature
         self.autoOutline = True  # If true, the Project Outline is updated automatically
         self.statusItems = None  # Novel file progress status values
@@ -202,6 +201,16 @@ class NWProject():
         self.bookTitle   = ""
         self.bookAuthors = []
         self.autoReplace = {}
+        self.titleFormat = {
+            "title"        : r"%title%",
+            "chapter"      : r"Chapter %num%\\%title%",
+            "unnumbered"   : r"%title%",
+            "scene"        : r"* * *",
+            "section"      : r"",
+            "withSynopsis" : False,
+            "withComments" : False,
+            "withKeywords" : False,
+        }
         self.spellCheck  = False
         self.autoOutline = True
         self.statusItems = NWStatus()
@@ -364,6 +373,11 @@ class NWProject():
                     elif xItem.tag == "autoReplace":
                         for xEntry in xItem:
                             self.autoReplace[xEntry.tag] = checkString(xEntry.text, None, False)
+                    elif xItem.tag == "titleFormat":
+                        titleFormat = self.titleFormat.copy()
+                        for xEntry in xItem:
+                            titleFormat[xEntry.tag] = checkString(xEntry.text, "", False)
+                        self.setTitleFormat(titleFormat)
             elif xChild.tag == "content":
                 logger.debug("Found project content")
                 self.projTree.unpackXML(xChild)
@@ -435,10 +449,16 @@ class NWProject():
         self._packProjectValue(xSettings, "lastEdited", self.lastEdited)
         self._packProjectValue(xSettings, "lastViewed", self.lastViewed)
         self._packProjectValue(xSettings, "lastWordCount", self.currWCount)
+
         xAutoRep = etree.SubElement(xSettings, "autoReplace")
         for aKey, aValue in self.autoReplace.items():
             if len(aKey) > 0:
-                self._packProjectValue(xAutoRep,aKey,aValue)
+                self._packProjectValue(xAutoRep, aKey, aValue)
+
+        xTitleFmt = etree.SubElement(xSettings, "titleFormat")
+        for aKey, aValue in self.titleFormat.items():
+            if len(aKey) > 0:
+                self._packProjectValue(xTitleFmt, aKey, aValue)
 
         xStatus = etree.SubElement(xSettings,"status")
         self.statusItems.packEntries(xStatus)
@@ -527,11 +547,7 @@ class NWProject():
             ), nwAlert.WARN)
             return False
 
-        cleanName = ""
-        for c in self.projName.strip():
-            if c.isalpha() or c.isdigit() or c == " ":
-                cleanName += c
-
+        cleanName = self.getFileSafeProjectName()
         baseDir = path.join(self.mainConf.backupPath, cleanName)
         if not path.isdir(baseDir):
             try:
@@ -713,6 +729,16 @@ class NWProject():
         self.autoReplace = autoReplace
         return
 
+    def setTitleFormat(self, titleFormat):
+        """Set the formatting of titles in the project.
+        """
+        for valKey, valEntry in titleFormat.items():
+            if valKey in ("title","chapter","unnumbered","scene","section"):
+                self.titleFormat[valKey] = checkString(valEntry, self.titleFormat[valKey], False)
+            elif valKey in ("withSynopsis","withComments","withKeywords"):
+                self.titleFormat[valKey] = checkBool(valEntry, False, False)
+        return
+
     def setProjectChanged(self, bValue):
         """Toggle the project changed flag, and propagate the
         information to the GUI statusbar.
@@ -727,6 +753,15 @@ class NWProject():
     ##
     #  Getters
     ##
+
+    def getFileSafeProjectName(self):
+        """Returns a filename safe version of the project name.
+        """
+        cleanName = ""
+        for c in self.projName.strip():
+            if c.isalpha() or c.isdigit() or c == " ":
+                cleanName += c
+        return cleanName
 
     def getSessionWordCount(self):
         """Returns the number of words added or removed this session.
@@ -1306,6 +1341,7 @@ class NWItem():
         self.itemLayout = nwItemLayout.NO_LAYOUT
         self.itemStatus = None
         self.isExpanded = False
+        self.isExported = True
 
         # Document Meta Data
         self.charCount = 0
@@ -1333,6 +1369,7 @@ class NWItem():
         xSub = self._subPack(xPack,"status",   text=str(self.itemStatus))
         xSub = self._subPack(xPack,"expanded", text=str(self.isExpanded))
         if self.itemType == nwItemType.FILE:
+            xSub = self._subPack(xPack,"exported",  text=str(self.isExported))
             xSub = self._subPack(xPack,"layout",    text=str(self.itemLayout.name))
             xSub = self._subPack(xPack,"charCount", text=str(self.charCount), none=False)
             xSub = self._subPack(xPack,"wordCount", text=str(self.wordCount), none=False)
@@ -1365,6 +1402,7 @@ class NWItem():
             "layout"    : self.setLayout,
             "status"    : self.setStatus,
             "expanded"  : self.setExpanded,
+            "exported"  : self.setExported,
             "charCount" : self.setCharCount,
             "wordCount" : self.setWordCount,
             "paraCount" : self.setParaCount,
@@ -1463,6 +1501,13 @@ class NWItem():
             self.isExpanded = expState == str(True)
         else:
             self.isExpanded = expState == True
+        return
+
+    def setExported(self, expState):
+        if isinstance(expState, str):
+            self.isExported = expState == str(True)
+        else:
+            self.isExported = expState == True
         return
 
     ##

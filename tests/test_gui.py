@@ -13,7 +13,7 @@ from nw.gui.dialogs.itemeditor    import GuiItemEditor
 
 from nw.constants import *
 
-keyDelay  = 10
+keyDelay  =  5
 stepDelay = 50
 
 @pytest.mark.gui
@@ -361,7 +361,10 @@ def testItemEditor(qtbot, nwTempGUI, nwRef, nwTemp):
     layoutIdx = itemEdit.editLayout.findData(nwItemLayout.PAGE)
     itemEdit.editLayout.setCurrentIndex(layoutIdx)
 
-    qtbot.mouseClick(itemEdit.saveButton, Qt.LeftButton)
+    itemEdit.editExport.setChecked(False)
+    assert not itemEdit.editExport.isChecked()
+
+    itemEdit._doSave()
 
     itemEdit = GuiItemEditor(nwGUI, nwGUI.theProject, "31489056e0916")
     qtbot.addWidget(itemEdit)
@@ -369,7 +372,7 @@ def testItemEditor(qtbot, nwTempGUI, nwRef, nwTemp):
     assert itemEdit.editStatus.currentData() == "Note"
     assert itemEdit.editLayout.currentData() == nwItemLayout.PAGE
 
-    qtbot.mouseClick(itemEdit.closeButton, Qt.LeftButton)
+    itemEdit._doClose()
 
     qtbot.wait(stepDelay)
     assert nwGUI.saveProject()
