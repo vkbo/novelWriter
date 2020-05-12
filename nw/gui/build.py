@@ -29,6 +29,7 @@ import logging
 import nw
 
 from os import path
+from time import time
 
 from PyQt5.QtCore import Qt, QByteArray
 from PyQt5.QtPrintSupport import QPrinter, QPrintPreviewDialog
@@ -69,6 +70,7 @@ class GuiBuildNovel(QDialog):
         self.optState   = self.theProject.optState
 
         self.htmlText = ""
+        self.nwdText  = ""
 
         self.setWindowTitle("Build Novel Project")
         self.setMinimumWidth(800)
@@ -311,9 +313,13 @@ class GuiBuildNovel(QDialog):
         makeHtml.setKeywords(incKeywords)
         makeHtml.setJustify(justifyText)
 
-        self.htmlText = ""
         self.buildProgress.setMaximum(len(self.theProject.projTree))
         self.buildProgress.setValue(0)
+
+        tStart = time()
+
+        tmpHtml = []
+        tmpNwd = []
         for nItt, tItem in enumerate(self.theProject.projTree):
             if self._checkInclude(tItem, noteFiles, novelFiles, ignoreFlag):
                 makeHtml.setText(tItem.itemHandle)
@@ -322,8 +328,15 @@ class GuiBuildNovel(QDialog):
                 makeHtml.doHeaders()
                 makeHtml.doConvert()
                 makeHtml.doPostProcessing()
-                self.htmlText += makeHtml.getResult()
+                tmpHtml.append(makeHtml.getResult())
+                tmpNwd.append(makeHtml.getFilteredMarkdown())
             self.buildProgress.setValue(nItt+1)
+
+        self.htmlText = "".join(tmpHtml)
+        self.nwdText  = "".join(tmpNwd)
+
+        tEnd = time()
+        logger.debug("Built project in %.3f ms" % (1000*(tEnd-tStart)))
 
         self.docView.setHtml(self.htmlText)
 

@@ -105,8 +105,10 @@ class ToHtml(Tokenizer):
         }
 
         self.theResult = ""
+
         thisPar = []
         parStyle = ""
+        tmpResult = []
         for tType, tText, tFormat, tStyle in self.theTokens:
 
             # Styles
@@ -146,31 +148,31 @@ class ToHtml(Tokenizer):
             if tType == self.T_EMPTY:
                 if len(thisPar) > 0:
                     tTemp = "".join(thisPar)
-                    self.theResult += "<p%s>%s</p>\n" % (parStyle,tTemp.rstrip())
+                    tmpResult.append("<p%s>%s</p>\n" % (parStyle, tTemp.rstrip()))
                 thisPar = []
                 parStyle = ""
 
             elif tType == self.T_HEAD1:
                 tHead = tText.replace(r"\\", "<br/>")
-                self.theResult += "<h1%s>%s</h1>\n" % (hStyle, tHead)
+                tmpResult.append("<h1%s>%s</h1>\n" % (hStyle, tHead))
 
             elif tType == self.T_HEAD2:
                 tHead = tText.replace(r"\\", "<br/>")
-                self.theResult += "<h2%s>%s</h2>\n" % (hStyle, tHead)
+                tmpResult.append("<h2%s>%s</h2>\n" % (hStyle, tHead))
 
             elif tType == self.T_HEAD3:
                 tHead = tText.replace(r"\\", "<br/>")
-                self.theResult += "<h3%s>%s</h3>\n" % (hStyle, tHead)
+                tmpResult.append("<h3%s>%s</h3>\n" % (hStyle, tHead))
 
             elif tType == self.T_HEAD4:
                 tHead = tText.replace(r"\\", "<br/>")
-                self.theResult += "<h4%s>%s</h4>\n" % (hStyle, tHead)
+                tmpResult.append("<h4%s>%s</h4>\n" % (hStyle, tHead))
 
             elif tType == self.T_SEP:
-                self.theResult += "<p%s>%s</p>\n" % (hStyle, tText)
+                tmpResult.append("<p%s>%s</p>\n" % (hStyle, tText))
 
             elif tType == self.T_SKIP:
-                self.theResult += "<p%s>&nbsp;</p>\n" % hStyle
+                tmpResult.append("<p%s>&nbsp;</p>\n" % hStyle)
 
             elif tType == self.T_TEXT:
                 tTemp = tText
@@ -183,13 +185,16 @@ class ToHtml(Tokenizer):
                     thisPar.append(tTemp.rstrip()+" ")
 
             elif tType == self.T_SYNOPSIS and self.doSynopsis:
-                self.theResult += self._formatSynopsis(tText)
+                tmpResult.append(self._formatSynopsis(tText))
 
             elif tType == self.T_COMMENT and self.doComments:
-                self.theResult += self._formatComments(tText)
+                tmpResult.append(self._formatComments(tText))
 
             elif tType == self.T_KEYWORD and self.doKeywords:
-                self.theResult += self._formatKeywords(tText)
+                tmpResult.append(self._formatKeywords(tText))
+
+        self.theResult = "".join(tmpResult)
+        tmpResult = []
 
         return
 

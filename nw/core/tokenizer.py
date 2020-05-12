@@ -84,6 +84,7 @@ class Tokenizer():
         self.theItem     = None # The NWItem associated with the handle
         self.theTokens   = None # The list of the processed tokens
         self.theResult   = None # The result text after conversion
+        self.theMarkdown = None # The result text in novelWriter markdown
 
         # User Settings
         self.doBodyText  = True  # Include body text
@@ -125,13 +126,14 @@ class Tokenizer():
         """Clear the data arrays and variables, but not settings, so the class
         can be reused for multiple documents.
         """
-        self.theText    = None
-        self.theHandle  = None
-        self.theItem    = None
-        self.theTokens  = None
-        self.theResult  = None
-        self.numChapter = 0
-        self.firstScene = False
+        self.theText     = None
+        self.theHandle   = None
+        self.theItem     = None
+        self.theTokens   = None
+        self.theResult   = None
+        self.theMarkdown = None
+        self.numChapter  = 0
+        self.firstScene  = False
 
         self.isNone  = False
         self.isTitle = False
@@ -230,6 +232,11 @@ class Tokenizer():
         """
         return self.theResult
 
+    def getFilteredMarkdown(self):
+        """Return the novelWriter markdown after the filters have been applied.
+        """
+        return self.theMarkdown
+
     def doAutoReplace(self):
         """Run through the user's auto-replace dictionary.
         """
@@ -280,6 +287,8 @@ class Tokenizer():
             defAlign = self.A_LEFT
 
         self.theTokens = []
+        self.theMarkdown = ""
+        tmpMarkdown = []
         for aLine in self.theText.splitlines():
 
             # Tag lines starting with specific characters
@@ -287,36 +296,54 @@ class Tokenizer():
                 self.theTokens.append((
                     self.T_EMPTY, "", None, None
                 ))
+                tmpMarkdown.append("\n")
+
             elif aLine[0] == "%":
                 cLine = aLine[1:].strip()
                 if cLine.lower().startswith("synopsis:"):
                     self.theTokens.append((
                         self.T_SYNOPSIS, cLine[9:].strip(), None, defAlign
                     ))
+                    if self.doSynopsis:
+                        tmpMarkdown.append("%s\n" % aLine)
                 else:
                     self.theTokens.append((
                         self.T_COMMENT, aLine[1:].strip(), None, defAlign
                     ))
+                    if self.doComments:
+                        tmpMarkdown.append("%s\n" % aLine)
+
             elif aLine[0] == "@":
                 self.theTokens.append((
                     self.T_KEYWORD, aLine[1:].strip(), None, self.A_LEFT
                 ))
+                if self.doKeywords:
+                    tmpMarkdown.append("%s\n" % aLine)
+
             elif aLine[:2] == "# ":
                 self.theTokens.append((
                     self.T_HEAD1, aLine[2:].strip(), None, self.A_LEFT | self.A_PBB
                 ))
+                tmpMarkdown.append("%s\n" % aLine)
+
             elif aLine[:3] == "## ":
                 self.theTokens.append((
                     self.T_HEAD2, aLine[3:].strip(), None, self.A_LEFT | self.A_PBA_AV
                 ))
+                tmpMarkdown.append("%s\n" % aLine)
+
             elif aLine[:4] == "### ":
                 self.theTokens.append((
                     self.T_HEAD3, aLine[4:].strip(), None, self.A_LEFT | self.A_PBA_AV
                 ))
+                tmpMarkdown.append("%s\n" % aLine)
+
             elif aLine[:5] == "#### ":
                 self.theTokens.append((
                     self.T_HEAD4, aLine[5:].strip(), None, self.A_LEFT | self.A_PBA_AV
                 ))
+                tmpMarkdown.append("%s\n" % aLine)
+
             else:
                 if not self.doBodyText:
                     # Skip all body text
@@ -340,11 +367,16 @@ class Tokenizer():
                 self.theTokens.append((
                     self.T_TEXT, aLine, fmtPos, defAlign
                 ))
+                tmpMarkdown.append("%s\n" % aLine)
 
         # Always add an empty line at the end
         self.theTokens.append((
             self.T_EMPTY, "", None, None
         ))
+        tmpMarkdown.append("\n")
+
+        self.theMarkdown = "".join(tmpMarkdown)
+        tmpMarkdown = []
 
         return
 
