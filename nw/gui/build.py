@@ -130,21 +130,6 @@ class GuiBuildNovel(QDialog):
         self.titleForm.setColumnStretch(0, 1)
         self.titleForm.setColumnStretch(1, 0)
 
-        # Build Settings
-        # ==============
-        self.buildGroup = QGroupBox("Build Overrides", self)
-        self.buildForm  = QGridLayout(self)
-        self.buildGroup.setLayout(self.buildForm)
-
-        self.outlineMode = QSwitch()
-        self.outlineMode.setChecked(self.optState.getBool("GuiBuildNovel", "outlineMode", False))
-
-        self.buildForm.addWidget(QLabel("Novel Outline Mode"), 0, 0)
-        self.buildForm.addWidget(self.outlineMode,             0, 1)
-
-        self.buildForm.setColumnStretch(0, 1)
-        self.buildForm.setColumnStretch(1, 0)
-
         # Text Options
         # =============
         self.textGroup = QGroupBox("Text Options", self)
@@ -195,6 +180,8 @@ class GuiBuildNovel(QDialog):
         self.noteFiles.setChecked(self.optState.getBool("GuiBuildNovel", "addNotes", False))
         self.ignoreFlag = QSwitch()
         self.ignoreFlag.setChecked(self.optState.getBool("GuiBuildNovel", "ignoreFlag", False))
+        self.excludeBody = QSwitch()
+        self.excludeBody.setChecked(self.optState.getBool("GuiBuildNovel", "excludeBody", False))
 
         self.addsForm.addWidget(QLabel("Include novel files"), 0, 0)
         self.addsForm.addWidget(self.novelFiles,               0, 1)
@@ -202,6 +189,8 @@ class GuiBuildNovel(QDialog):
         self.addsForm.addWidget(self.noteFiles,                1, 1)
         self.addsForm.addWidget(QLabel("Ignore export flag"),  2, 0)
         self.addsForm.addWidget(self.ignoreFlag,               2, 1)
+        self.addsForm.addWidget(QLabel("Exclude body text"),   3, 0)
+        self.addsForm.addWidget(self.excludeBody,              3, 1)
 
         self.addsForm.setColumnStretch(0, 1)
         self.addsForm.setColumnStretch(1, 0)
@@ -263,7 +252,6 @@ class GuiBuildNovel(QDialog):
         # Assemble GUI
         # ============
         self.toolsBox.addWidget(self.titleGroup)
-        self.toolsBox.addWidget(self.buildGroup)
         self.toolsBox.addWidget(self.textGroup)
         self.toolsBox.addWidget(self.includeGroup)
         self.toolsBox.addWidget(self.addsGroup)
@@ -281,9 +269,6 @@ class GuiBuildNovel(QDialog):
 
         self.innerBox.setStretch(0, 0)
         self.innerBox.setStretch(1, 1)
-
-        self.outlineMode.toggled.connect(self._toggelOutlineMode)
-        self._toggelOutlineMode(self.outlineMode.isChecked())
 
         self.show()
 
@@ -306,25 +291,13 @@ class GuiBuildNovel(QDialog):
         fmtScene      = self.fmtScene.text().strip()
         fmtSection    = self.fmtSection.text().strip()
         justifyText   = self.justifyText.isChecked()
-        outlineMode   = self.outlineMode.isChecked()
         incSynopsis   = self.includeSynopsis.isChecked()
         incComments   = self.includeComments.isChecked()
         incKeywords   = self.includeKeywords.isChecked()
         novelFiles    = self.novelFiles.isChecked()
         noteFiles     = self.noteFiles.isChecked()
         ignoreFlag    = self.ignoreFlag.isChecked()
-        doBodyText    = True
-
-        if outlineMode:
-            fmtTitle      = r"%title%"
-            fmtChapter    = r"Chapter %chnum%: %title%"
-            fmtUnnumbered = r"%title%"
-            fmtScene      = r"Scene %chnum%.%scnum%: %title%"
-            fmtSection    = r"Section: %title%"
-            doBodyText    = False
-            incSynopsis   = True
-            novelFiles    = True
-            noteFiles     = False
+        excludeBody   = self.excludeBody.isChecked()
 
         makeHtml = ToHtml(self.theProject, self.theParent)
         makeHtml.setTitleFormat(fmtTitle)
@@ -332,7 +305,7 @@ class GuiBuildNovel(QDialog):
         makeHtml.setUnNumberedFormat(fmtUnnumbered)
         makeHtml.setSceneFormat(fmtScene, fmtScene == "")
         makeHtml.setSectionFormat(fmtSection, fmtSection == "")
-        makeHtml.setBodyText(doBodyText)
+        makeHtml.setBodyText(not excludeBody)
         makeHtml.setSynopsis(incSynopsis)
         makeHtml.setComments(incComments)
         makeHtml.setKeywords(incKeywords)
@@ -557,20 +530,6 @@ class GuiBuildNovel(QDialog):
         self.docView.qDocument.print(thePrinter)
         return
 
-    def _toggelOutlineMode(self, theState):
-        """Enables or disables the options that are overridden in#
-        outline mode.
-        """
-        self.fmtTitle.setEnabled(not theState)
-        self.fmtChapter.setEnabled(not theState)
-        self.fmtUnnumbered.setEnabled(not theState)
-        self.fmtScene.setEnabled(not theState)
-        self.fmtSection.setEnabled(not theState)
-        self.includeSynopsis.setEnabled(not theState)
-        self.novelFiles.setEnabled(not theState)
-        self.noteFiles.setEnabled(not theState)
-        return
-
     def _doClose(self):
         """Close button was clicked.
         """
@@ -613,10 +572,10 @@ class GuiBuildNovel(QDialog):
         self.optState.setValue("GuiBuildNovel", "winWidth",    self.width())
         self.optState.setValue("GuiBuildNovel", "winHeight",   self.height())
         self.optState.setValue("GuiBuildNovel", "justifyText", self.justifyText.isChecked())
-        self.optState.setValue("GuiBuildNovel", "outlineMode", self.outlineMode.isChecked())
         self.optState.setValue("GuiBuildNovel", "addNovel",    self.novelFiles.isChecked())
         self.optState.setValue("GuiBuildNovel", "addNotes",    self.noteFiles.isChecked())
         self.optState.setValue("GuiBuildNovel", "ignoreFlag",  self.ignoreFlag.isChecked())
+        self.optState.setValue("GuiBuildNovel", "excludeBody", self.excludeBody.isChecked())
         self.optState.saveSettings()
 
         return
