@@ -51,12 +51,12 @@ logger = logging.getLogger(__name__)
 
 class GuiBuildNovel(QDialog):
 
-    FMT_ODT  = 1
-    FMT_PDF  = 2
-    FMT_HTM1 = 3
-    FMT_HTM2 = 4
-    FMT_MD   = 4
-    FMT_TXT  = 5
+    FMT_ODT = 1
+    FMT_PDF = 2
+    FMT_HTM = 3
+    FMT_MD  = 4
+    FMT_NWD = 5
+    FMT_TXT = 6
 
     def __init__(self, theParent, theProject):
         QDialog.__init__(self, theParent)
@@ -69,8 +69,9 @@ class GuiBuildNovel(QDialog):
         self.theTheme   = theParent.theTheme
         self.optState   = self.theProject.optState
 
-        self.htmlText = ""
-        self.nwdText  = ""
+        self.htmlText   = [] # List of html document
+        self.nwdText    = [] # List of markdown documents
+        self.textLayout = [] # List of nwItemLayout entries
 
         self.setWindowTitle("Build Novel Project")
         self.setMinimumWidth(800)
@@ -226,18 +227,18 @@ class GuiBuildNovel(QDialog):
         self.savePDF.triggered.connect(lambda: self._saveDocument(self.FMT_PDF))
         self.saveMenu.addAction(self.savePDF)
 
-        self.saveHTM1 = QAction("Qt Style HTML (.htm)")
-        self.saveHTM1.triggered.connect(lambda: self._saveDocument(self.FMT_HTM1))
-        self.saveMenu.addAction(self.saveHTM1)
-
-        self.saveHTM2 = QAction("%s HTML (.htm)" % nw.__package__)
-        self.saveHTM2.triggered.connect(lambda: self._saveDocument(self.FMT_HTM2))
-        self.saveMenu.addAction(self.saveHTM2)
+        self.saveHTM = QAction("%s HTML (.htm)" % nw.__package__)
+        self.saveHTM.triggered.connect(lambda: self._saveDocument(self.FMT_HTM))
+        self.saveMenu.addAction(self.saveHTM)
 
         if self.mainConf.verQtValue >= 51400:
             self.saveMD = QAction("Markdown (.md)")
             self.saveMD.triggered.connect(lambda: self._saveDocument(self.FMT_MD))
             self.saveMenu.addAction(self.saveMD)
+
+        self.saveNWD = QAction("novelWriter Markdown (.nwd)")
+        self.saveNWD.triggered.connect(lambda: self._saveDocument(self.FMT_NWD))
+        self.saveMenu.addAction(self.saveNWD)
 
         self.saveTXT = QAction("Plain Text (.txt)")
         self.saveTXT.triggered.connect(lambda: self._saveDocument(self.FMT_TXT))
@@ -318,8 +319,10 @@ class GuiBuildNovel(QDialog):
 
         tStart = time()
 
-        tmpHtml = []
-        tmpNwd = []
+        self.htmlText = []
+        self.nwdText = []
+        self.textLayout = []
+
         for nItt, tItem in enumerate(self.theProject.projTree):
             if self._checkInclude(tItem, noteFiles, novelFiles, ignoreFlag):
                 makeHtml.setText(tItem.itemHandle)
@@ -328,17 +331,18 @@ class GuiBuildNovel(QDialog):
                 makeHtml.doHeaders()
                 makeHtml.doConvert()
                 makeHtml.doPostProcessing()
-                tmpHtml.append(makeHtml.getResult())
-                tmpNwd.append(makeHtml.getFilteredMarkdown())
-            self.buildProgress.setValue(nItt+1)
+                self.htmlText.append(makeHtml.getResult())
+                self.nwdText.append(makeHtml.getFilteredMarkdown())
+                self.textLayout.append(tItem.itemLayout)
 
-        self.htmlText = "".join(tmpHtml)
-        self.nwdText  = "".join(tmpNwd)
+            # Update progress bar, also for skipped items
+            self.buildProgress.setValue(nItt+1)
 
         tEnd = time()
         logger.debug("Built project in %.3f ms" % (1000*(tEnd-tStart)))
 
-        self.docView.setHtml(self.htmlText)
+        # Load the preview document with the html data
+        self.docView.setHtml("".join(self.htmlText))
 
         return
 
@@ -402,13 +406,7 @@ class GuiBuildNovel(QDialog):
             textFmt = "PDF"
             outTool = "QtPrint"
 
-        elif theFormat == self.FMT_HTM1:
-            byteFmt.append("html")
-            fileExt = "htm"
-            textFmt = "Qt Style HTML"
-            outTool = "Qt"
-
-        elif theFormat == self.FMT_HTM2:
+        elif theFormat == self.FMT_HTM:
             fileExt = "htm"
             textFmt = "Plain HTML"
             outTool = "NW"
@@ -418,6 +416,11 @@ class GuiBuildNovel(QDialog):
             fileExt = "md"
             textFmt = "Markdown"
             outTool = "Qt"
+
+        elif theFormat == self.FMT_NWD:
+            fileExt = "nwd"
+            textFmt = "%s markdown" % nw.__package__
+            outTool = "NW"
 
         elif theFormat == self.FMT_TXT:
             byteFmt.append("plaintext")
@@ -471,20 +474,28 @@ class GuiBuildNovel(QDialog):
                     ), nwAlert.ERROR
                 )
 
-        elif outTool == "NW" and theFormat == self.FMT_HTM2:
+        elif outTool == "NW":
             try:
                 with open(savePath, mode="w", encoding="utf8") as outFile:
-                    outFile.write("<!DOCTYPE html>\n")
-                    outFile.write("<html>\n")
-                    outFile.write("<head>\n")
-                    outFile.write("<meta charset='utf-8'>\n")
-                    outFile.write("</head>\n")
-                    outFile.write("<body>\n")
-                    outFile.write("<article style='width: 800px; margin: 40px auto'>\n")
-                    outFile.write(self.htmlText)
-                    outFile.write("</article>\n")
-                    outFile.write("</body>\n")
-                    outFile.write("</html>\n")
+                    if theFormat == self.FMT_HTM:
+                        # Write novelWriter HTML data
+                        outFile.write("<!DOCTYPE html>\n")
+                        outFile.write("<html>\n")
+                        outFile.write("<head>\n")
+                        outFile.write("<meta charset='utf-8'>\n")
+                        outFile.write("</head>\n")
+                        outFile.write("<body>\n")
+                        outFile.write("<article style='width: 800px; margin: 40px auto'>\n")
+                        for aLine in self.htmlText:
+                            outFile.write(aLine)
+                        outFile.write("</article>\n")
+                        outFile.write("</body>\n")
+                        outFile.write("</html>\n")
+
+                    elif theFormat == self.FMT_NWD:
+                        # Write novelWriter markdown data
+                        for aLine in self.nwdText:
+                            outFile.write(aLine)
 
                 self.theParent.makeAlert(
                     "Document successfully written in %s format to file: %s" % (

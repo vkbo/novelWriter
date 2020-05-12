@@ -251,6 +251,8 @@ class Tokenizer():
         return
 
     def doPostProcessing(self):
+        """Do some postprocessing. Overloaded by subclasses.
+        """
         return
 
     def tokenizeText(self):

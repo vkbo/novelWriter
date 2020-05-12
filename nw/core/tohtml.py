@@ -43,6 +43,18 @@ class ToHtml(Tokenizer):
     def __init__(self, theProject, theParent):
         Tokenizer.__init__(self, theProject, theParent)
         self.genMode = self.M_EXPORT
+
+        self.repDict = {
+            "<"  : "&lt;",
+            ">"  : "&gt;",
+            "&"  : "&amp;",
+            "\t" : "&emsp;",
+            nwUnicode.U_ENDASH : nwUnicode.H_ENDASH,
+            nwUnicode.U_EMDASH : nwUnicode.H_EMDASH,
+            nwUnicode.U_HELLIP : nwUnicode.H_HELLIP,
+            nwUnicode.U_NBSP   : nwUnicode.H_NBSP,
+        }
+
         return
 
     ##
@@ -58,6 +70,7 @@ class ToHtml(Tokenizer):
             self.genMode    = self.M_PREVIEW
             self.doKeywords = True
             self.doComments = doComments
+            self.repDict["\t"] = "&nbsp;"*8
         return
 
     ##
@@ -70,23 +83,22 @@ class ToHtml(Tokenizer):
         """
         Tokenizer.doAutoReplace(self)
 
-        if self.genMode == self.M_PREVIEW:
-            tabFmt = "&nbsp;"*8
-        else:
-            tabFmt = "&emsp;"
+        xRep = re.compile("|".join([re.escape(k) for k in self.repDict.keys()]), flags=re.DOTALL)
+        self.theText = xRep.sub(lambda x: self.repDict[x.group(0)], self.theText)
 
-        repDict = {
-            "<"  : "&lt;",
-            ">"  : "&gt;",
-            "&"  : "&amp;",
-            "\t" : tabFmt,
-            nwUnicode.U_ENDASH : nwUnicode.H_ENDASH,
-            nwUnicode.U_EMDASH : nwUnicode.H_EMDASH,
-            nwUnicode.U_HELLIP : nwUnicode.H_HELLIP,
-            nwUnicode.U_NBSP   : nwUnicode.H_NBSP,
-        }
-        xRep = re.compile("|".join([re.escape(k) for k in repDict.keys()]), flags=re.DOTALL)
-        self.theText = xRep.sub(lambda x: repDict[x.group(0)], self.theText)
+        return
+
+    def doPostProcessing(self):
+        """Reverse the html entities replacement on the markdown text.
+        Otherwise, all the &something; bits will also be in there.
+        """
+        if self.genMode == self.M_PREVIEW:
+            # Doesn't matter for preview as we don't use the markdown
+            return
+
+        revDict = dict(map(reversed, self.repDict.items()))
+        xRep = re.compile("|".join([re.escape(k) for k in revDict.keys()]), flags=re.DOTALL)
+        self.theMarkdown = xRep.sub(lambda x: revDict[x.group(0)], self.theMarkdown)
 
         return
 
