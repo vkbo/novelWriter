@@ -511,6 +511,7 @@ class GuiDocTree(QTreeWidget):
 
         tHandle = nwItem.itemHandle
         pHandle = nwItem.parHandle
+        tClass  = nwItem.itemClass
         newItem = QTreeWidgetItem([""]*4)
 
         newItem.setText(self.C_NAME,   "")
@@ -540,13 +541,13 @@ class GuiDocTree(QTreeWidget):
         newItem.setExpanded(nwItem.isExpanded)
 
         if nwItem.itemType == nwItemType.ROOT:
-            newItem.setIcon(self.C_NAME, self.theTheme.getIcon("root"))
+            newItem.setIcon(self.C_NAME, self.theTheme.getIcon(nwLabels.CLASS_ICON[tClass]))
         elif nwItem.itemType == nwItemType.FOLDER:
-            newItem.setIcon(self.C_NAME, self.theTheme.getIcon("folder"))
+            newItem.setIcon(self.C_NAME, self.theTheme.getIcon("proj_folder"))
         elif nwItem.itemType == nwItemType.FILE:
-            newItem.setIcon(self.C_NAME, self.theTheme.getIcon("document"))
+            newItem.setIcon(self.C_NAME, self.theTheme.getIcon("proj_document"))
         elif nwItem.itemType == nwItemType.TRASH:
-            newItem.setIcon(self.C_NAME, self.theTheme.getIcon("trash"))
+            newItem.setIcon(self.C_NAME, self.theTheme.getIcon(nwLabels.CLASS_ICON[tClass]))
 
         return newItem
 
@@ -575,7 +576,7 @@ class GuiDocTree(QTreeWidget):
             self.addTopLevelItem(newItem)
             self.orphRoot = newItem
             newItem.setExpanded(True)
-            newItem.setIcon(self.C_NAME, self.theTheme.getIcon("orphan"))
+            newItem.setIcon(self.C_NAME, self.theTheme.getIcon("warning"))
         return
 
     def _cleanOrphanedRoot(self):

@@ -83,6 +83,7 @@ class Config:
         ## General
         self.guiTheme  = "default"
         self.guiSyntax = "default_light"
+        self.guiIcons  = "typicons_grey_light"
         self.guiDark   = False
 
         ## Sizes

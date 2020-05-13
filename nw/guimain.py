@@ -58,11 +58,6 @@ class GuiMain(QMainWindow):
         logger.info("Starting %s" % nw.__package__)
         logger.debug("Initialising GUI ...")
         self.mainConf   = nw.CONFIG
-        self.theTheme   = GuiTheme(self)
-        self.theProject = NWProject(self)
-        self.theIndex   = NWIndex(self.theProject, self)
-        self.hasProject = False
-        self.isZenMode  = False
 
         # Some runtime info useful for debugging
         logger.info("OS: %s" % self.mainConf.osType)
@@ -77,6 +72,13 @@ class GuiMain(QMainWindow):
         logger.info("Python Version: %s (0x%x)" % (
             self.mainConf.verPyString, self.mainConf.verPyHexVal)
         )
+
+        # Core Classes and settings
+        self.theTheme   = GuiTheme(self)
+        self.theProject = NWProject(self)
+        self.theIndex   = NWIndex(self.theProject, self)
+        self.hasProject = False
+        self.isZenMode  = False
 
         # Prepare main window
         self.resize(*self.mainConf.winGeometry)

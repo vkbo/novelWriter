@@ -106,6 +106,7 @@ class GuiTheme:
         self.cssFile    = None
 
         self.updateTheme()
+        self.theIcons.updateTheme()
 
         self.getIcon = self.theIcons.getIcon
         self.getPixmap = self.theIcons.getPixmap
@@ -132,8 +133,6 @@ class GuiTheme:
         self.syntaxFile = path.join(self.themeRoot,self.syntaxPath,self.guiSyntax+".conf")
         self.confFile   = path.join(self.themePath,self.confName)
         self.cssFile    = path.join(self.themePath,self.cssName)
-
-        self.theIcons.initIcons(path.join(self.themePath,self.iconPath))
 
         self.loadTheme()
         self.loadSyntax()

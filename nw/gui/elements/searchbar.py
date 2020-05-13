@@ -60,7 +60,7 @@ class GuiSearchBar(QFrame):
         self.replaceLabel  = QLabel("Replace")
         self.closeButton   = QPushButton(self.theTheme.getIcon("close"),"")
         self.searchButton  = QPushButton(self.theTheme.getIcon("search"),"")
-        self.replaceButton = QPushButton(self.theTheme.getIcon("replace"),"")
+        self.replaceButton = QPushButton(self.theTheme.getIcon("search-replace"),"")
 
         self.closeButton.clicked.connect(self._doClose)
         self.searchButton.clicked.connect(self._doSearch)

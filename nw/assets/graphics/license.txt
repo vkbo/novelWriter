@@ -6,7 +6,3 @@ Applies to:
  * graphics/export.svg
  * graphics/merge.svg
  * graphics/split.svg
- * icons/globe-dark.svg
- * icons/globe.svg
- * icons/time-dark.svg
- * icons/time.svg

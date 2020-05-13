@@ -238,7 +238,7 @@ class GuiConfigEditGeneralTab(QWidget):
 
         ## Backup Path
         self.backupPath = self.mainConf.backupPath
-        self.backupGetPath = QPushButton(self.theTheme.getIcon("folder"),"Select Folder")
+        self.backupGetPath = QPushButton(self.theTheme.getIcon("folder-open"),"Select Folder")
         self.backupGetPath.clicked.connect(self._backupFolder)
         self.backupPathRow = self.mainForm.addRow(
             "Backup storage location",

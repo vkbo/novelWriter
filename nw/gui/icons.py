@@ -26,6 +26,7 @@
 """
 
 import logging
+import configparser
 import nw
 
 from os import path
@@ -33,6 +34,7 @@ from os import path
 from PyQt5.QtCore import QSize
 from PyQt5.QtSvg import QSvgWidget
 from PyQt5.QtGui import QIcon, QPixmap
+from PyQt5.QtWidgets import QStyle, qApp
 
 logger = logging.getLogger(__name__)
 
@@ -44,19 +46,34 @@ class GuiIcons:
     # https://specifications.freedesktop.org/icon-naming-spec/icon-naming-spec-latest.html
     # or, if there is no fallback, the variable should be None.
     ICON_MAP = {
-        "root"     : "drive-harddisk",
-        "folder"   : "folder",
-        "document" : "x-office-document",
-        "trash"    : "user-trash",
-        "orphan"   : "dialog-warning",
-        "save"     : "document-save",
-        "add"      : "list-add",
-        "remove"   : "list-remove",
-        "close"    : "edit-delete",
-        "search"   : "edit-find",
-        "replace"  : "edit-find-replace",
-        "time"     : None,
-        "globe"    : None,
+        "cls_none"       : (QStyle.SP_DriveHDIcon,         "drive-harddisk"),
+        "cls_novel"      : (QStyle.SP_DriveHDIcon,         "drive-harddisk"),
+        "cls_plot"       : (QStyle.SP_DriveHDIcon,         "drive-harddisk"),
+        "cls_character"  : (QStyle.SP_DriveHDIcon,         "drive-harddisk"),
+        "cls_world"      : (QStyle.SP_DriveHDIcon,         "drive-harddisk"),
+        "cls_timeline"   : (QStyle.SP_DriveHDIcon,         "drive-harddisk"),
+        "cls_object"     : (QStyle.SP_DriveHDIcon,         "drive-harddisk"),
+        "cls_entity"     : (QStyle.SP_DriveHDIcon,         "drive-harddisk"),
+        "cls_custom"     : (QStyle.SP_DriveHDIcon,         "drive-harddisk"),
+        "cls_trash"      : (QStyle.SP_DriveHDIcon,         "drive-harddisk"),
+        "proj_document"  : (QStyle.SP_FileIcon,            "x-office-document"),
+        "proj_folder"    : (QStyle.SP_DirIcon,             "folder"),
+        "status_lang"    : (None,                          None),
+        "status_time"    : (None,                          None),
+        ## Button Icons
+        "folder-open"    : (QStyle.SP_DirOpenIcon,         "folder-open"),
+        "delete"         : (QStyle.SP_DialogDiscardButton, "edit-delete"),
+        "add"            : (None,                          "list-add"),
+        "remove"         : (None,                          "list-remove"),
+        "close"          : (QStyle.SP_DialogCloseButton,   "window-close"),
+        "done"           : (QStyle.SP_DialogApplyButton,    None),
+        "search"         : (None,                          "edit-find"),
+        "search-replace" : (None,                          "edit-find-replace"),
+        "clear"          : (QStyle.SP_LineEditClearButton, "clear_left"),
+        "save"           : (QStyle.SP_DialogSaveButton,    "document-save"),
+        "edit"           : (None,                          None),
+        ## Other Icons
+        "warning"        : (QStyle.SP_MessageBoxWarning,   "dialog-warning"),
     }
 
     DECO_MAP = {
@@ -73,28 +90,75 @@ class GuiIcons:
         self.theParent = theParent
 
         # Storage
-        self.qIcons = {}
+        self.qIcons   = {}
+        self.themeMap = {}
 
-        # Look for files in
-        self.priPath  = ""    # The gui theme's icon folder
-        self.secPath  = ""    # The main assets icon folder
-        self.prefDark = False # Load dark icons, if available
+        # Icon Theme Path
+        self.iconPath = None
+        self.confFile = None
 
-        return
-
-    def initIcons(self, priPath):
-        """Load all icons listed in the icon map. Can be overridden by
-        the selected theme.
-        """
-
-        self.priPath  = priPath
-        self.secPath  = self.mainConf.iconPath
-        self.prefDark = self.mainConf.guiDark
-
-        for iconKey in self.ICON_MAP.keys():
-            self.qIcons[iconKey] = self._loadIcon(iconKey)
+        # Icon Theme Meta
+        self.themeName   = ""
+        self.themeAuthor = ""
+        self.themeCredit = ""
+        self.themeUrl    = ""
 
         return
+
+    ##
+    #  Actions
+    ##
+
+    def updateTheme(self):
+
+        logger.debug("Loading icon theme files")
+
+        self.themeMap = {}
+        checkPath = path.join(self.mainConf.iconPath, self.mainConf.guiIcons)
+        if path.isdir(checkPath):
+            logger.debug("Loading icon theme '%s'" % self.mainConf.guiIcons)
+            self.iconPath = checkPath
+            self.confFile = path.join(checkPath, "icons.conf")
+        else:
+            return False
+
+        # Config File
+        confParser = configparser.ConfigParser()
+        try:
+            confParser.read_file(open(self.confFile, mode="r", encoding="utf8"))
+        except Exception as e:
+            logger.error("Could not load icon theme settings from: %s" % self.confFile)
+            return False
+
+        ## Main
+        cnfSec = "Main"
+        if confParser.has_section(cnfSec):
+            self.themeName   = self._parseLine( confParser, cnfSec, "name",   "")
+            self.themeAuthor = self._parseLine( confParser, cnfSec, "author", "")
+            self.themeCredit = self._parseLine( confParser, cnfSec, "credit", "")
+            self.themeUrl    = self._parseLine( confParser, cnfSec, "url",    "")
+
+        ## Palette
+        cnfSec = "Map"
+        if confParser.has_section(cnfSec):
+            for iconName, iconFile in confParser.items(cnfSec):
+                if iconName not in self.ICON_MAP:
+                    logger.error("Unknown icon name '%s' in config file" % iconName)
+                else:
+                    iconPath = path.join(self.iconPath, iconFile)
+                    if path.isfile(iconPath):
+                        self.themeMap[iconName] = iconPath
+                        logger.verbose("Icon slot '%s' using file '%s'" % (iconName, iconFile))
+                    else:
+                        logger.error("Icon file '%s' not in theme folder" % iconFile)
+
+        logger.info("Loaded icon theme '%s'" % self.mainConf.guiIcons)
+
+        return True
+
+    ##
+    #  Access Functions
+    ##
 
     def loadDecoration(self, decoKey, decoSize=None):
         """Load graphical decoration element based on the decoration
@@ -122,19 +186,22 @@ class GuiIcons:
 
     def getIcon(self, iconKey, iconSize=None):
         """Return an icon from the icon buffer. If it doesn't exist,
-        return an empty icon.
+        return, load it, and if it still doesn't exist, return an empty
+        icon.
         """
         if iconKey in self.qIcons:
             return self.qIcons[iconKey]
-        return QIcon()
+        else:
+            qIcon = self._loadIcon(iconKey)
+            self.qIcons[iconKey] = qIcon
+            return qIcon
 
     def getPixmap(self, iconKey, iconSize):
         """Return an icon from the icon buffer as a QPixmap. If it
         doesn't exist, return an empty QPixmap.
         """
-        if iconKey in self.qIcons:
-            return self.qIcons[iconKey].pixmap(iconSize[0], iconSize[1], QIcon.Normal)
-        return QPixmap()
+        qIcon = self.getIcon(iconKey)
+        return qIcon.pixmap(iconSize[0], iconSize[1], QIcon.Normal)
 
     ##
     #  Internal Functions
@@ -148,49 +215,32 @@ class GuiIcons:
         """
 
         if iconKey not in self.ICON_MAP:
-            logger.error("Icon with name '%s' does not exist" % iconKey)
+            logger.error("Requested unknown icon name '%s'" % iconKey)
             return QIcon()
 
-        if self.prefDark:
-            iconSuffix = "dark"
-        else:
-            iconSuffix = "light"
+        if iconKey in self.themeMap:
+            logger.verbose("Loading: %s" % self.themeMap[iconKey])
+            return QIcon(self.themeMap[iconKey])
 
-        iconNames = []
-        iconNames.append("%s-%s.svg" % (iconKey, iconSuffix))
-        iconNames.append("%s-%s.png" % (iconKey, iconSuffix))
-        iconNames.append("%s.svg" % iconKey)
-        iconNames.append("%s.png" % iconKey)
-
-        # Check theme folder
-        loadFrom = None
-        for iconName in iconNames:
-            checkPath = path.join(self.priPath, iconName)
-            if path.isfile(checkPath):
-                loadFrom = checkPath
-                logger.verbose("Loading icon '%s' from theme" % iconName)
-                break
-        if loadFrom is not None:
-            return QIcon(loadFrom)
-
-        # Check assets folder
-        for iconName in iconNames:
-            checkPath = path.join(self.secPath, iconName)
-            if path.isfile(checkPath):
-                loadFrom = checkPath
-                logger.verbose("Loading icon '%s' from assets" % iconName)
-                break
-        if loadFrom is not None:
-            return QIcon(loadFrom)
+        # Next, we try to load the Qt style icons
+        if self.ICON_MAP[iconKey][0] is not None:
+            logger.verbose("Loading icon '%s' from Qt QStyle.standardIcon" % iconKey)
+            return qApp.style().standardIcon(self.ICON_MAP[iconKey][0])
 
         # If we're still here, try to set from system theme
-        if self.ICON_MAP[iconKey] is not None:
+        if self.ICON_MAP[iconKey][1] is not None:
             logger.verbose("Loading icon '%s' from system theme" % iconKey)
-            return QIcon().fromTheme(self.ICON_MAP[iconKey])
+            return QIcon().fromTheme(self.ICON_MAP[iconKey][1])
 
-        # Give up and return an empty icomn
+        # Give up and return an empty icon
         logger.warning("Did not load an icon for '%s'" % iconKey)
 
         return QIcon()
+
+    def _parseLine(self, confParser, cnfSec, cnfName, cnfDefault):
+        if confParser.has_section(cnfSec):
+            if confParser.has_option(cnfSec, cnfName):
+                return confParser.get(cnfSec, cnfName)
+        return cnfDefault
 
 # END Class GuiIcons

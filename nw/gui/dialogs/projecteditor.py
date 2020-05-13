@@ -360,7 +360,7 @@ class GuiProjectEditReplace(QWidget):
 
         self.editKey    = QLineEdit()
         self.editValue  = QLineEdit()
-        self.saveButton = QPushButton(self.theTheme.getIcon("save"),"")
+        self.saveButton = QPushButton(self.theTheme.getIcon("done"),"")
         self.addButton  = QPushButton(self.theTheme.getIcon("add"),"")
         self.delButton  = QPushButton(self.theTheme.getIcon("remove"),"")
 
