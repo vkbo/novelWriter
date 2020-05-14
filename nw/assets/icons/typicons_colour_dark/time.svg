@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   inkscape:version="0.92.5 (2060ec1f9f, 2020-04-08)"
+   sodipodi:docname="time.svg"
+   id="svg8332"
+   viewBox="0 0 24 24"
+   height="24"
+   width="24"
+   version="1.2">
+  <metadata
+     id="metadata8338">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <defs
+     id="defs8336" />
+  <sodipodi:namedview
+     inkscape:current-layer="svg8332"
+     inkscape:window-maximized="0"
+     inkscape:window-y="27"
+     inkscape:window-x="48"
+     inkscape:cy="12"
+     inkscape:cx="2.4262296"
+     inkscape:zoom="38.125"
+     showgrid="false"
+     id="namedview8334"
+     inkscape:window-height="1376"
+     inkscape:window-width="2374"
+     inkscape:pageshadow="2"
+     inkscape:pageopacity="0"
+     guidetolerance="10"
+     gridtolerance="10"
+     objecttolerance="10"
+     borderopacity="1"
+     bordercolor="#666666"
+     pagecolor="#ffffff"
+     inkscape:document-rotation="0" />
+  <path
+     style="display:inline;opacity:0.95;fill:#eaeaea;fill-opacity:1;stroke:none;stroke-width:1.79999995;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+     d="M 12 4.2226562 C 7.7122222 4.2226563 4.2226562 7.7122222 4.2226562 12 C 4.2226563 16.287778 7.7122222 19.777344 12 19.777344 C 16.287778 19.777344 19.777344 16.287778 19.777344 12 C 19.777344 7.7122222 16.287778 4.2226562 12 4.2226562 z M 12 5.3339844 C 15.68 5.3339844 18.666016 8.317778 18.666016 12 C 18.666016 15.68 15.68 18.666016 12 18.666016 C 8.32 18.666016 5.3339844 15.68 5.3339844 12 C 5.3339844 8.317778 8.32 5.3339844 12 5.3339844 z M 12 6.4453125 C 8.9366667 6.4453125 6.4453125 8.936667 6.4453125 12 C 6.4453125 15.063333 8.9366667 17.554688 12 17.554688 C 15.063333 17.554687 17.554688 15.063333 17.554688 12 C 17.554687 8.936667 15.063333 6.4453125 12 6.4453125 z M 12 7.5546875 C 12.611111 7.5546875 13.111328 8.0549046 13.111328 8.6660156 L 13.111328 10.888672 L 15.333984 10.888672 C 15.945095 10.888672 16.445312 11.388889 16.445312 12 C 16.445313 12.611111 15.945095 13.111328 15.333984 13.111328 L 12 13.111328 C 11.847222 13.111328 11.701172 13.079861 11.568359 13.023438 C 11.169922 12.854167 10.888672 12.458333 10.888672 12 L 10.888672 8.6660156 C 10.888672 8.0549046 11.388889 7.5546875 12 7.5546875 z "
+     id="path20730"
+     inkscape:label="Face" />
+  <path
+     style="display:inline;fill:#cda66f;fill-opacity:1;stroke-width:1.11110997"
+     inkscape:connector-curvature="0"
+     id="path8330"
+     d="m 16.444444,12 c 0,-0.611111 -0.5,-1.111111 -1.111111,-1.111111 H 12 c -0.611111,0 -1.111111,0.5 -1.111111,1.111111 0,0.611111 0.5,1.111111 1.111111,1.111111 h 3.333333 c 0.611111,0 1.111111,-0.5 1.111111,-1.111111 z M 12,4.2222222 c 4.287778,0 7.777778,3.49 7.777778,7.7777778 0,4.287778 -3.49,7.777778 -7.777778,7.777778 -4.2877778,0 -7.7777778,-3.49 -7.7777778,-7.777778 0,-4.2877778 3.49,-7.7777778 7.7777778,-7.7777778 M 12,2 C 6.4766667,2 2,6.4766667 2,12 2,17.523333 6.4766667,22 12,22 17.523333,22 22,17.523333 22,12 22,6.4766667 17.523333,2 12,2 Z m 1.111111,6.666667 c 0,-0.611111 -0.5,-1.1111114 -1.111111,-1.1111114 -0.611111,0 -1.111111,0.5000004 -1.111111,1.1111114 V 12 c 0,0.611111 0.5,1.111111 1.111111,1.111111 0.611111,0 1.111111,-0.5 1.111111,-1.111111 z M 12,6.4444444 c 3.063333,0 5.555556,2.4922226 5.555556,5.5555556 0,3.063333 -2.492223,5.555556 -5.555556,5.555556 C 8.9366667,17.555556 6.4444444,15.063333 6.4444444,12 6.4444444,8.936667 8.9366667,6.4444444 12,6.4444444 M 12,5.3333333 C 8.32,5.3333333 5.3333333,8.317778 5.3333333,12 5.3333333,15.68 8.32,18.666667 12,18.666667 15.68,18.666667 18.666667,15.68 18.666667,12 18.666667,8.317778 15.68,5.3333333 12,5.3333333 Z"
+     inkscape:label="Outline" />
+</svg>

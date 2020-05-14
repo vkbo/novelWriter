@@ -87,6 +87,18 @@ class nwLabels():
         nwItemClass.CUSTOM    : "X",
         nwItemClass.TRASH     : "R",
     }
+    CLASS_ICON = {
+        nwItemClass.NO_CLASS  : "cls_none",
+        nwItemClass.NOVEL     : "cls_novel",
+        nwItemClass.PLOT      : "cls_plot",
+        nwItemClass.CHARACTER : "cls_character",
+        nwItemClass.WORLD     : "cls_world",
+        nwItemClass.TIMELINE  : "cls_timeline",
+        nwItemClass.OBJECT    : "cls_object",
+        nwItemClass.ENTITY    : "cls_entity",
+        nwItemClass.CUSTOM    : "cls_custom",
+        nwItemClass.TRASH     : "cls_trash",
+    }
     LAYOUT_NAME = {
         nwItemLayout.NO_LAYOUT  : "None",
         nwItemLayout.TITLE      : "Title Page",

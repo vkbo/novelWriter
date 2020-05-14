@@ -68,7 +68,7 @@ class GuiMainStatus(QStatusBar):
         self.timeBox.setFont(self.monoFont)
 
         self.timeIcon = QLabel()
-        self.timeIcon.setPixmap(self.theParent.theTheme.getPixmap("time",(14,14)))
+        self.timeIcon.setPixmap(self.theParent.theTheme.getPixmap("status_time",(14,14)))
 
         self.boxCounts = QLabel()
         self.boxCounts.setToolTip("Document Character | Word | Paragraph Count")
@@ -85,7 +85,7 @@ class GuiMainStatus(QStatusBar):
 
         self.langBox = QLabel("None")
         self.langIcon = QLabel("")
-        self.langIcon.setPixmap(self.theParent.theTheme.getPixmap("globe",(14,14)))
+        self.langIcon.setPixmap(self.theParent.theTheme.getPixmap("status_lang",(14,14)))
 
         # Add Them
         self.addPermanentWidget(self.langIcon)

@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   inkscape:version="0.92.5 (2060ec1f9f, 2020-04-08)"
+   sodipodi:docname="book.svg"
+   id="svg891"
+   viewBox="0 0 24 24"
+   height="24"
+   width="24"
+   version="1.2">
+  <metadata
+     id="metadata897">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <defs
+     id="defs895" />
+  <sodipodi:namedview
+     inkscape:current-layer="svg891"
+     inkscape:window-maximized="0"
+     inkscape:window-y="27"
+     inkscape:window-x="48"
+     inkscape:cy="12"
+     inkscape:cx="6.8268552"
+     inkscape:zoom="47.166667"
+     showgrid="false"
+     id="namedview893"
+     inkscape:window-height="1376"
+     inkscape:window-width="2374"
+     inkscape:pageshadow="2"
+     inkscape:pageopacity="0"
+     guidetolerance="10"
+     gridtolerance="10"
+     objecttolerance="10"
+     borderopacity="1"
+     bordercolor="#666666"
+     pagecolor="#ffffff"
+     inkscape:document-rotation="0" />
+  <path
+     style="opacity:0.95;fill:#aeaeae;fill-opacity:1;stroke:none;stroke-width:1.79999995;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+     d="M 6.9042969 4.2226562 L 5.7929688 5.3339844 L 15.333984 5.3339844 C 17.171762 5.3339844 18.666016 6.8282378 18.666016 8.6660156 L 18.666016 17.554688 L 19.222656 17.554688 C 19.418212 17.554687 19.777344 17.134201 19.777344 16.445312 L 19.777344 5.3339844 C 19.777344 4.7206511 19.278238 4.2226562 18.666016 4.2226562 L 6.9042969 4.2226562 z M 5.3222656 7.5546875 L 5.3222656 18.466797 L 6.4453125 18.466797 L 6.4453125 7.5546875 L 5.3222656 7.5546875 z M 7.5546875 7.5546875 L 7.5546875 18.466797 L 16.445312 18.466797 L 16.445312 8.6660156 C 16.445313 8.0526822 15.946207 7.5546875 15.333984 7.5546875 L 7.5546875 7.5546875 z "
+     id="rect11733"
+     inkscape:label="Pages" />
+  <path
+     style="display:inline;opacity:0.95;fill:#d64848;fill-opacity:1;stroke:none;stroke-width:1.83457506;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+     d="M 4.2226562 7.5546875 L 4.2226562 18.666016 C 4.2226563 19.279349 4.7217622 19.777344 5.3339844 19.777344 L 6.4453125 19.777344 L 6.4453125 7.5546875 L 4.2226562 7.5546875 z M 7.5546875 7.5546875 L 7.5546875 19.777344 L 15.333984 19.777344 C 15.946207 19.777344 16.445312 19.279349 16.445312 18.666016 L 16.445312 8.6660156 C 16.445313 8.0526822 15.946207 7.5546875 15.333984 7.5546875 L 7.5546875 7.5546875 z "
+     id="rect11731"
+     inkscape:label="Cover" />
+  <path
+     style="display:inline;fill:#8d1919;fill-opacity:1;stroke-width:1.11110997"
+     inkscape:connector-curvature="0"
+     id="path889"
+     d="M 18.666667,2 H 6.4444444 C 6.15,2 5.8666667,2.1166667 5.6588889,2.3255556 l -3.3333333,3.3333333 -0.063333,0.068889 c -0.1544444,0.1833333 -0.25,0.4144444 -0.2611111,0.6666666 L 2,6.4533333 V 18.666667 C 2,20.504444 3.4955556,22 5.3333333,22 h 9.9999997 c 1.448889,0 2.684445,-0.928889 3.143334,-2.222222 h 0.745555 C 20.78,19.777778 22,18.314444 22,16.444444 V 5.3333333 C 22,3.4955556 20.504444,2 18.666667,2 Z M 5.3333333,19.777778 c -0.6122222,0 -1.1111111,-0.497778 -1.1111111,-1.111111 V 7.5555556 H 6.4444444 V 19.777778 Z M 16.444444,18.666667 c 0,0.613333 -0.498888,1.111111 -1.111111,1.111111 H 7.5555556 V 7.5555556 h 7.7777774 c 0.612223,0 1.111111,0.4977777 1.111111,1.1111111 z m 3.333334,-2.222223 c 0,0.688889 -0.36,1.111112 -0.555556,1.111112 H 18.666667 V 8.6666667 c 0,-1.8377778 -1.495556,-3.3333334 -3.333334,-3.3333334 H 5.7933333 L 6.9044444,4.2222222 H 18.666667 c 0.612222,0 1.111111,0.4977778 1.111111,1.1111111 z"
+     inkscape:label="Outline" />
+</svg>

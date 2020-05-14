@@ -31,7 +31,7 @@ import nw
 from PyQt5.QtCore import Qt, QSize
 from PyQt5.QtGui import QFont, QColor
 from PyQt5.QtWidgets import (
-    QTreeWidget, QTreeWidgetItem, QAbstractItemView, QApplication, QMessageBox
+    qApp, QTreeWidget, QTreeWidgetItem, QAbstractItemView, QMessageBox
 )
 
 from nw.core import NWDoc
@@ -207,7 +207,7 @@ class GuiDocTree(QTreeWidget):
         """Move an item up or down in the tree, but only if the treeView
         has focus. This also applies when the menu is used.
         """
-        if QApplication.focusWidget() == self and self.theParent.hasProject:
+        if qApp.focusWidget() == self and self.theParent.hasProject:
             tHandle = self.getSelectedHandle()
             tItem   = self._getTreeItem(tHandle)
             pItem   = tItem.parent()
@@ -511,6 +511,7 @@ class GuiDocTree(QTreeWidget):
 
         tHandle = nwItem.itemHandle
         pHandle = nwItem.parHandle
+        tClass  = nwItem.itemClass
         newItem = QTreeWidgetItem([""]*4)
 
         newItem.setText(self.C_NAME,   "")
@@ -540,13 +541,13 @@ class GuiDocTree(QTreeWidget):
         newItem.setExpanded(nwItem.isExpanded)
 
         if nwItem.itemType == nwItemType.ROOT:
-            newItem.setIcon(self.C_NAME, self.theTheme.getIcon("root"))
+            newItem.setIcon(self.C_NAME, self.theTheme.getIcon(nwLabels.CLASS_ICON[tClass]))
         elif nwItem.itemType == nwItemType.FOLDER:
-            newItem.setIcon(self.C_NAME, self.theTheme.getIcon("folder"))
+            newItem.setIcon(self.C_NAME, self.theTheme.getIcon("proj_folder"))
         elif nwItem.itemType == nwItemType.FILE:
-            newItem.setIcon(self.C_NAME, self.theTheme.getIcon("document"))
+            newItem.setIcon(self.C_NAME, self.theTheme.getIcon("proj_document"))
         elif nwItem.itemType == nwItemType.TRASH:
-            newItem.setIcon(self.C_NAME, self.theTheme.getIcon("trash"))
+            newItem.setIcon(self.C_NAME, self.theTheme.getIcon(nwLabels.CLASS_ICON[tClass]))
 
         return newItem
 
@@ -575,7 +576,7 @@ class GuiDocTree(QTreeWidget):
             self.addTopLevelItem(newItem)
             self.orphRoot = newItem
             newItem.setExpanded(True)
-            newItem.setIcon(self.C_NAME, self.theTheme.getIcon("orphan"))
+            newItem.setIcon(self.C_NAME, self.theTheme.getIcon("warning"))
         return
 
     def _cleanOrphanedRoot(self):
