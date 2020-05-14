@@ -937,10 +937,12 @@ class NWProject():
         for oHandle in orphanFiles:
 
             # Look for meta data
+            oName = ""
             if aDoc.openDocument(oHandle, showStatus=False, isOrphan=True):
                 oName, oPath = aDoc.getMeta()
                 aDoc.clearDocument()
-            else:
+
+            if oName == "":
                 nOrph += 1
                 oName = "Orphaned File %d" % nOrph
 
