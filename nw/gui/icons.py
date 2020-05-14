@@ -98,10 +98,13 @@ class GuiIcons:
         self.confFile = None
 
         # Icon Theme Meta
-        self.themeName   = ""
-        self.themeAuthor = ""
-        self.themeCredit = ""
-        self.themeUrl    = ""
+        self.themeName        = ""
+        self.themeDescription = ""
+        self.themeAuthor      = ""
+        self.themeCredit      = ""
+        self.themeUrl         = ""
+        self.themeLicense     = ""
+        self.themeLicenseUrl  = ""
 
         return
 
@@ -133,10 +136,13 @@ class GuiIcons:
         ## Main
         cnfSec = "Main"
         if confParser.has_section(cnfSec):
-            self.themeName   = self._parseLine( confParser, cnfSec, "name",   "")
-            self.themeAuthor = self._parseLine( confParser, cnfSec, "author", "")
-            self.themeCredit = self._parseLine( confParser, cnfSec, "credit", "")
-            self.themeUrl    = self._parseLine( confParser, cnfSec, "url",    "")
+            self.themeName        = self._parseLine( confParser, cnfSec, "name", "")
+            self.themeDescription = self._parseLine( confParser, cnfSec, "description", "")
+            self.themeAuthor      = self._parseLine( confParser, cnfSec, "author", "")
+            self.themeCredit      = self._parseLine( confParser, cnfSec, "credit", "")
+            self.themeUrl         = self._parseLine( confParser, cnfSec, "url", "")
+            self.themeLicense     = self._parseLine( confParser, cnfSec, "license", "")
+            self.themeLicenseUrl  = self._parseLine( confParser, cnfSec, "licenseurl", "")
 
         ## Palette
         cnfSec = "Map"
@@ -219,7 +225,7 @@ class GuiIcons:
             return QIcon()
 
         if iconKey in self.themeMap:
-            logger.verbose("Loading: %s" % self.themeMap[iconKey])
+            logger.verbose("Loading: %s" % path.relpath(self.themeMap[iconKey]))
             return QIcon(self.themeMap[iconKey])
 
         # Next, we try to load the Qt style icons

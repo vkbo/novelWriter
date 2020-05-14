@@ -31,7 +31,7 @@ import nw
 from PyQt5.QtCore import Qt
 from PyQt5.QtWidgets import (
     QDialog, QHBoxLayout, QVBoxLayout, QGroupBox, QFormLayout, QLineEdit,
-    QPushButton, QComboBox
+    QPushButton, QComboBox, QLabel
 )
 
 from nw.constants import nwLabels, nwItemLayout, nwItemClass, nwItemType
@@ -54,11 +54,17 @@ class GuiItemEditor(QDialog):
         self.innerBox = QVBoxLayout()
 
         self.setWindowTitle("Item Settings")
-        self.guiDeco = self.theParent.theTheme.loadDecoration("settings",(64,64))
+        self.guiDeco = QLabel()
+        self.guiDeco.setPixmap(
+            self.theParent.theTheme.getPixmap(
+                nwLabels.CLASS_ICON[self.theItem.itemClass], (64,64)
+            )
+        )
 
         self.setLayout(self.outerBox)
         self.outerBox.addWidget(self.guiDeco, 0, Qt.AlignTop)
         self.outerBox.addLayout(self.innerBox)
+        self.outerBox.setSpacing(16)
 
         self.mainGroup = QGroupBox("Item Settings")
         self.mainForm  = QFormLayout()
