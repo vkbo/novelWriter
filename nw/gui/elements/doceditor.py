@@ -289,7 +289,9 @@ class GuiDocEditor(QTextEdit):
         return
 
     def saveText(self):
-
+        """Save the text currently in the editor to the NWDoc object,
+        and update the NWItem meta data.
+        """
         if self.nwDocument.theItem is None:
             return False
 
@@ -348,7 +350,11 @@ class GuiDocEditor(QTextEdit):
         self.qDocument.blockSignals(True)
         self.qDocument.rootFrame().setFrameFormat(docFormat)
         self.qDocument.blockSignals(False)
-        self.qDocument.contentsChange.emit(0,0,0)
+
+        # The line below causes issues with large documents as it
+        # triggers an early repaint that seems to only render a part of
+        # the document. Leaving it here as a warning for now.
+        # self.qDocument.contentsChange.emit(0,0,0)
 
         return
 
