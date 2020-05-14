@@ -1,5 +1,20 @@
 # novelWriter ChangeLog
 
+## Version 0.5.1 [2020-05-14]
+
+**Bugfixes**
+
+* Fixed a bug where only some of the text would be rendered in the editor window when a large text document was loaded. The text is there in the buffer, but the rendering process was interrupted by the function that recalculates margins. This recalculation was added with the document tiles in 0.5. The re-rendering of the text could be triggered by opening the search bar, indicating that it was caused by the shifting of the vertical document frame. PR #208
+
+**User Interface**
+
+* The icon theme functionality of novelWriter has been reworked. For the default system theme, very little has changed. It should still load whatever the system provides, but this doesn't work for all icons on Windows 10 for instance. It is now possible to select between three icon themes in the Preferences dialog, independent of the GUI theme. Using a theme breaks the dependency on the operating system to provide standard icons. Qt provides some, but not all needed by novelWriter. PR #207
+* Added a check that warns if the project file was saved with a newer version of novelWriter as that may cause meta information to be lost. This warning will remain there until the file format is finalised. This is an issue with preserving certain settings, not the project structure itself. PR #205
+
+**Debugging**
+
+* Reduced the number of command line switches needed for debug runs. PR #205
+
 ## Version 0.5 [2020-05-09]
 
 This release of novelWriter has a number of feature updates, bringing it one step closer to initial feature completeness for a version 1.0 release.
