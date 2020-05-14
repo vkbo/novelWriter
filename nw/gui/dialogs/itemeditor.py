@@ -60,11 +60,10 @@ class GuiItemEditor(QDialog):
                 nwLabels.CLASS_ICON[self.theItem.itemClass], (64,64)
             )
         )
-
-        self.setLayout(self.outerBox)
         self.outerBox.addWidget(self.guiDeco, 0, Qt.AlignTop)
         self.outerBox.addLayout(self.innerBox)
         self.outerBox.setSpacing(16)
+        self.setLayout(self.outerBox)
 
         self.mainGroup = QGroupBox("Item Settings")
         self.mainForm  = QFormLayout()

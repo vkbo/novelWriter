@@ -260,8 +260,9 @@ class GuiTheme:
         return True
 
     def listThemes(self):
-
-        if len(self.themeList) > 0:
+        """Scan the gui themes folder and list all themes.
+        """
+        if self.themeList:
             return self.themeList
 
         confParser = configparser.ConfigParser()
@@ -275,8 +276,9 @@ class GuiTheme:
                 continue
             themeName = ""
             if confParser.has_section("Main"):
-                themeName = confParser.get("Main","name")
-                logger.verbose("Theme name is '%s'" % themeName)
+                if confParser.has_option("Main", "name"):
+                    themeName = confParser.get("Main", "name")
+                    logger.verbose("Theme name is '%s'" % themeName)
             if themeName != "":
                 self.themeList.append((themeDir, themeName))
 
@@ -285,8 +287,9 @@ class GuiTheme:
         return self.themeList
 
     def listSyntax(self):
-
-        if len(self.syntaxList) > 0:
+        """Scan the syntax themes folder and list all themes.
+        """
+        if self.syntaxList:
             return self.syntaxList
 
         confParser = configparser.ConfigParser()
@@ -303,7 +306,8 @@ class GuiTheme:
                 return []
             syntaxName = ""
             if confParser.has_section("Main"):
-                syntaxName = confParser.get("Main","name")
+                if confParser.has_option("Main", "name"):
+                    syntaxName = confParser.get("Main", "name")
             if len(syntaxFile) > 5 and syntaxName != "":
                 self.syntaxList.append((syntaxFile[:-5], syntaxName))
                 logger.verbose("Syntax name is '%s'" % syntaxName)

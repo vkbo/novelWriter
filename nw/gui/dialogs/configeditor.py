@@ -58,7 +58,11 @@ class GuiConfigEditor(QDialog):
         self.innerBox   = QVBoxLayout()
 
         self.setWindowTitle("Preferences")
-        self.guiDeco = self.theParent.theTheme.loadDecoration("settings",(64,64))
+        self.guiDeco = self.theParent.theTheme.loadDecoration("settings", (64,64))
+        self.outerBox.addWidget(self.guiDeco, 0, Qt.AlignTop)
+        self.outerBox.addLayout(self.innerBox)
+        self.outerBox.setSpacing(16)
+        self.setLayout(self.outerBox)
 
         self.tabGeneral = GuiConfigEditGeneralTab(self.theParent)
         self.tabLayout  = GuiConfigEditLayoutTab(self.theParent)
@@ -71,10 +75,6 @@ class GuiConfigEditor(QDialog):
         self.tabWidget.addTab(self.tabLayout,  "Layout")
         self.tabWidget.addTab(self.tabEditing, "Editing")
         self.tabWidget.addTab(self.tabAutoRep, "Auto-Replace")
-
-        self.setLayout(self.outerBox)
-        self.outerBox.addWidget(self.guiDeco, 0, Qt.AlignTop)
-        self.outerBox.addLayout(self.innerBox)
 
         self.buttonBox = QDialogButtonBox(QDialogButtonBox.Ok | QDialogButtonBox.Cancel)
         self.buttonBox.accepted.connect(self._doSave)
@@ -169,6 +169,22 @@ class GuiConfigEditGeneralTab(QWidget):
             "Changing this requires restarting %s." % nw.__package__
         )
 
+        ## Select Icon Theme
+        self.selectIcons = QComboBox()
+        self.selectIcons.setMinimumWidth(200)
+        self.theIcons = self.theTheme.theIcons.listThemes()
+        for iconDir, iconName in self.theIcons:
+            self.selectIcons.addItem(iconName, iconDir)
+        iconIdx = self.selectIcons.findData(self.mainConf.guiIcons)
+        if iconIdx != -1:
+            self.selectIcons.setCurrentIndex(iconIdx)
+
+        self.mainForm.addRow(
+            "Main icon theme",
+            self.selectIcons,
+            "Changing this requires restarting %s." % nw.__package__
+        )
+
         ## Syntax Highlighting
         self.selectSyntax = QComboBox()
         self.selectSyntax.setMinimumWidth(200)
@@ -181,7 +197,8 @@ class GuiConfigEditGeneralTab(QWidget):
 
         self.mainForm.addRow(
             "Syntax highlight theme",
-            self.selectSyntax
+            self.selectSyntax,
+            ""
         )
 
         ## Dark Icons
@@ -275,6 +292,7 @@ class GuiConfigEditGeneralTab(QWidget):
 
         guiTheme        = self.selectTheme.currentData()
         guiSyntax       = self.selectSyntax.currentData()
+        guiIcons        = self.selectIcons.currentData()
         guiDark         = self.preferDarkIcons.isChecked()
         showFullPath    = self.showFullPath.isChecked()
         autoSaveDoc     = self.autoSaveDoc.value()
@@ -285,9 +303,11 @@ class GuiConfigEditGeneralTab(QWidget):
 
         # Check if restart is needed
         needsRestart |= self.mainConf.guiTheme != guiTheme
+        needsRestart |= self.mainConf.guiIcons != guiIcons
 
         self.mainConf.guiTheme        = guiTheme
         self.mainConf.guiSyntax       = guiSyntax
+        self.mainConf.guiIcons        = guiIcons
         self.mainConf.guiDark         = guiDark
         self.mainConf.showFullPath    = showFullPath
         self.mainConf.autoSaveDoc     = autoSaveDoc

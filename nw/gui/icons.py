@@ -29,7 +29,7 @@ import logging
 import configparser
 import nw
 
-from os import path
+from os import path, listdir
 
 from PyQt5.QtCore import QSize
 from PyQt5.QtSvg import QSvgWidget
@@ -90,8 +90,11 @@ class GuiIcons:
         self.theParent = theParent
 
         # Storage
-        self.qIcons   = {}
-        self.themeMap = {}
+        self.qIcons    = {}
+        self.themeMap  = {}
+        self.themeList = []
+        self.fbackName = "fallback"
+        self.confName  = "icons.conf"
 
         # Icon Theme Path
         self.iconPath = None
@@ -121,7 +124,7 @@ class GuiIcons:
         if path.isdir(checkPath):
             logger.debug("Loading icon theme '%s'" % self.mainConf.guiIcons)
             self.iconPath = checkPath
-            self.confFile = path.join(checkPath, "icons.conf")
+            self.confFile = path.join(checkPath, self.confName)
         else:
             return False
 
@@ -170,7 +173,6 @@ class GuiIcons:
         """Load graphical decoration element based on the decoration
         map. This function always returns a QSwgWidget.
         """
-
         if decoKey not in self.DECO_MAP:
             logger.error("Decoration with name '%s' does not exist" % decoKey)
             return QSvgWidget()
@@ -209,6 +211,37 @@ class GuiIcons:
         qIcon = self.getIcon(iconKey)
         return qIcon.pixmap(iconSize[0], iconSize[1], QIcon.Normal)
 
+    def listThemes(self):
+        """Scan the icons themes folder and list all themes.
+        """
+        if self.themeList:
+            return self.themeList
+
+        confParser = configparser.ConfigParser()
+        for themeDir in listdir(self.mainConf.iconPath):
+            themePath = path.join(self.mainConf.iconPath, themeDir)
+            if not path.isdir(themePath) or themeDir == self.fbackName:
+                continue
+            themeConf = path.join(themePath, self.confName)
+            logger.verbose("Checking icon theme config for '%s'" % themeDir)
+            try:
+                confParser.read_file(open(themeConf, mode="r", encoding="utf8"))
+            except Exception as e:
+                self.theParent.makeAlert(["Could not load theme config file.",str(e)],nwAlert.ERROR)
+                continue
+            themeName = ""
+            if confParser.has_section("Main"):
+                if confParser.has_option("Main", "name"):
+                    themeName = confParser.get("Main", "name")
+                    logger.verbose("Theme name is '%s'" % themeName)
+            if themeName != "":
+                self.themeList.append((themeDir, themeName))
+
+        self.themeList = sorted(self.themeList, key=lambda x: x[1])
+        self.themeList.insert(0, ("default", "System Icons"))
+
+        return self.themeList
+
     ##
     #  Internal Functions
     ##
@@ -237,6 +270,15 @@ class GuiIcons:
         if self.ICON_MAP[iconKey][1] is not None:
             logger.verbose("Loading icon '%s' from system theme" % iconKey)
             return QIcon().fromTheme(self.ICON_MAP[iconKey][1])
+
+        # Finally. we check if we have a fallback icon
+        if self.mainConf.guiDark:
+            fbackIcon = path.join(self.mainConf.iconPath, self.fbackName, "%s-dark.svg" % iconKey)
+        else:
+            fbackIcon = path.join(self.mainConf.iconPath, self.fbackName, "%s.svg" % iconKey)
+        if path.isfile(fbackIcon):
+            logger.verbose("Loading icon '%s' from fallback theme" % iconKey)
+            return QIcon(fbackIcon)
 
         # Give up and return an empty icon
         logger.warning("Did not load an icon for '%s'" % iconKey)
