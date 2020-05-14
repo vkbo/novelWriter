@@ -83,6 +83,7 @@ class Config:
         ## General
         self.guiTheme  = "default"
         self.guiSyntax = "default_light"
+        self.guiIcons  = "default"
         self.guiDark   = False
         self.guiLang   = "en" # Hardcoded for now
 
@@ -304,6 +305,9 @@ class Config:
         self.guiSyntax = self._parseLine(
             cnfParse, cnfSec, "syntax", self.CNF_STR, self.guiSyntax
         )
+        self.guiIcons = self._parseLine(
+            cnfParse, cnfSec, "icons", self.CNF_STR, self.guiIcons
+        )
         self.guiDark = self._parseLine(
             cnfParse, cnfSec, "guidark", self.CNF_BOOL, self.guiDark
         )
@@ -452,6 +456,7 @@ class Config:
         cnfParse.set(cnfSec,"timestamp", formatTimeStamp(time()))
         cnfParse.set(cnfSec,"theme",     str(self.guiTheme))
         cnfParse.set(cnfSec,"syntax",    str(self.guiSyntax))
+        cnfParse.set(cnfSec,"icons",     str(self.guiIcons))
         cnfParse.set(cnfSec,"guidark",   str(self.guiDark))
 
         ## Sizes

@@ -31,6 +31,7 @@ import logging
 
 from os import path, remove, rename
 
+from PyQt5.QtGui import QIcon
 from PyQt5.QtWidgets import QApplication
 
 from nw.guimain import GuiMain
@@ -225,6 +226,8 @@ def main(sysArgs=None):
         nwApp = QApplication([__package__,("-style=%s" % qtStyle)])
         nwApp.setApplicationName(__package__)
         nwApp.setApplicationVersion(__version__)
+        nwApp.setWindowIcon(QIcon(CONFIG.appIcon))
+        nwApp.setOrganizationDomain("novelwriter.io")
         nwGUI = GuiMain()
         sys.exit(nwApp.exec_())
 

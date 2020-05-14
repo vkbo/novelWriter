@@ -52,12 +52,18 @@ class GuiProjectEditor(QDialog):
         self.theParent  = theParent
         self.theProject = theProject
 
-        self.outerBox   = QHBoxLayout()
-        self.innerBox   = QVBoxLayout()
+        self.outerBox = QHBoxLayout()
+        self.innerBox = QVBoxLayout()
 
         self.setWindowTitle("Project Settings")
-        self.guiDeco = self.theParent.theTheme.loadDecoration("settings",(64,64))
+        self.guiDeco = QLabel()
+        self.guiDeco.setPixmap(
+            self.theParent.theTheme.getPixmap("cls_novel", (64,64))
+        )
+        self.outerBox.addWidget(self.guiDeco, 0, Qt.AlignTop)
+        self.outerBox.addLayout(self.innerBox)
         self.outerBox.setSpacing(16)
+        self.setLayout(self.outerBox)
 
         self.theProject.countStatus()
         self.tabMain    = GuiProjectEditMain(self.theParent, self.theProject)
@@ -71,14 +77,10 @@ class GuiProjectEditor(QDialog):
         self.tabWidget.addTab(self.tabImport, "Importance")
         self.tabWidget.addTab(self.tabReplace,"Auto-Replace")
 
-        self.outerBox.addWidget(self.guiDeco, 0, Qt.AlignTop)
-        self.outerBox.addLayout(self.innerBox)
-
         self.buttonBox = QDialogButtonBox(QDialogButtonBox.Ok | QDialogButtonBox.Cancel)
         self.buttonBox.accepted.connect(self._doSave)
         self.buttonBox.rejected.connect(self._doClose)
 
-        self.setLayout(self.outerBox)
         self.innerBox.addWidget(self.tabWidget)
         self.innerBox.addWidget(self.buttonBox)
 
@@ -361,9 +363,12 @@ class GuiProjectEditReplace(QWidget):
 
         self.editKey    = QLineEdit()
         self.editValue  = QLineEdit()
-        self.saveButton = QPushButton(self.theTheme.getIcon("save"),"")
+        self.saveButton = QPushButton(self.theTheme.getIcon("done"),"")
         self.addButton  = QPushButton(self.theTheme.getIcon("add"),"")
         self.delButton  = QPushButton(self.theTheme.getIcon("remove"),"")
+        self.saveButton.setToolTip("Save entry")
+        self.addButton.setToolTip("Add new entry")
+        self.delButton.setToolTip("Delete selected entry")
 
         self.editKey.setEnabled(False)
         self.editKey.setMaxLength(40)
