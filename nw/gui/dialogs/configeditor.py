@@ -59,9 +59,10 @@ class GuiConfigEditor(QDialog):
 
         self.setWindowTitle("Preferences")
         self.guiDeco = self.theParent.theTheme.loadDecoration("settings", (64,64))
+        self.outerBox.setSpacing(16)
+
         self.outerBox.addWidget(self.guiDeco, 0, Qt.AlignTop)
         self.outerBox.addLayout(self.innerBox)
-        self.outerBox.setSpacing(16)
         self.setLayout(self.outerBox)
 
         self.tabGeneral = GuiConfigEditGeneralTab(self.theParent)

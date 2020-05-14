@@ -56,13 +56,11 @@ class GuiProjectEditor(QDialog):
         self.innerBox = QVBoxLayout()
 
         self.setWindowTitle("Project Settings")
-        self.guiDeco = QLabel()
-        self.guiDeco.setPixmap(
-            self.theParent.theTheme.getPixmap("cls_novel", (64,64))
-        )
+        self.guiDeco = self.theParent.theTheme.loadDecoration("settings", (64,64))
+        self.outerBox.setSpacing(16)
+
         self.outerBox.addWidget(self.guiDeco, 0, Qt.AlignTop)
         self.outerBox.addLayout(self.innerBox)
-        self.outerBox.setSpacing(16)
         self.setLayout(self.outerBox)
 
         self.theProject.countStatus()
