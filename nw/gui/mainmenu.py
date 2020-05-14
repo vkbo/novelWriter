@@ -148,12 +148,17 @@ class GuiMainMenu(QMenuBar):
             credits   = "<br/>".join(["%s%s" % (listPrefix, x) for x in nw.__credits__]),
         )
         theTheme = self.theParent.theTheme
+        theIcons = self.theParent.theTheme.theIcons
         if theTheme.themeCredit != "" or theTheme.syntaxCredit != "":
             aboutMsg += "<h4>GUI Theme and Syntax Highlighting</h4>"
             aboutMsg += "<p>"
             if theTheme.themeCredit != "":
                 aboutMsg += "%s\"%s\" by %s<br/>" % (
                     listPrefix, theTheme.themeName, theTheme.themeCredit
+                )
+            if theIcons.themeCredit != "":
+                aboutMsg += "%s\"%s\" by %s<br/>" % (
+                    listPrefix, theIcons.themeName, theIcons.themeCredit
                 )
             if theTheme.syntaxCredit != "":
                 aboutMsg += "%s\"%s\" by %s<br/>" % (
