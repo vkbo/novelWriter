@@ -36,6 +36,7 @@ from time import time
 
 from PyQt5.Qt import PYQT_VERSION_STR
 from PyQt5.QtCore import QT_VERSION_STR, QStandardPaths, QSysInfo
+from PyQt5.QtWidgets import QErrorMessage
 
 from nw.constants import nwFiles, nwUnicode
 from nw.common import splitVersionNumber, formatTimeStamp
