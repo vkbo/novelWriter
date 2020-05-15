@@ -67,7 +67,7 @@ __credits__    = [
 #    VERBOSE   Use for outputting values and program flow details
 #
 
-# Adding verbose logging levels
+# Add verbose logging level
 VERBOSE = 5
 logging.addLevelName(VERBOSE, "VERBOSE")
 def logVerbose(self, message, *args, **kws):
@@ -254,8 +254,8 @@ def main(sysArgs=None):
         errApp.exec_()
         sys.exit(1)
 
+    # Finish initialising config, and launch GUI
     CONFIG.initConfig(confPath, dataPath)
-
     if testMode:
         nwGUI = GuiMain()
         return nwGUI
