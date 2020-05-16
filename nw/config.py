@@ -176,8 +176,12 @@ class Config:
             self.osUnknown = True
 
         # Other System Info
-        self.hostName  = QSysInfo.machineHostName()
-        self.kernelVer = QSysInfo.kernelVersion()
+        if self.verQtValue >= 50600:
+            self.hostName  = QSysInfo.machineHostName()
+            self.kernelVer = QSysInfo.kernelVersion()
+        else:
+            self.hostName  = "Unknown"
+            self.kernelVer = "Unknown"
 
         # Packages
         self.hasEnchant  = False

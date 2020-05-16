@@ -296,7 +296,7 @@ class GuiProjectEditStatus(QWidget):
         newItem.setIcon(QIcon(newIcon))
         newItem.setData(Qt.UserRole, len(self.colData))
         self.listBox.addItem(newItem)
-        self.colData.append((iName,*iCol,oName))
+        self.colData.append((iName,iCol[0],iCol[1],iCol[2],oName))
         self.colCounts.append(nUse)
         return newItem
 
