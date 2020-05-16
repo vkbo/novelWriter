@@ -31,10 +31,11 @@ import nw
 from time import time
 
 from PyQt5.QtCore import Qt, QTimer
-from PyQt5.QtGui import QColor, QPixmap, QFont
-from PyQt5.QtWidgets import qApp, QStatusBar, QLabel
+from PyQt5.QtGui import QColor, QPixmap, QFont, QPainter
+from PyQt5.QtWidgets import qApp, QStatusBar, QLabel, QAbstractButton
 
 from nw.core import NWSpellCheck
+from nw.common import formatInt
 
 logger = logging.getLogger(__name__)
 
@@ -49,59 +50,71 @@ class GuiMainStatus(QStatusBar):
         self.theParent = theParent
         self.refTime   = None
 
-        self.iconGrey   = QPixmap(16,16)
-        self.iconYellow = QPixmap(16,16)
-        self.iconGreen  = QPixmap(16,16)
+        self.charCount = 0
+        self.wordCount = 0
+        self.paraCount = 0
+        self.projWords = 0
+        self.sessWords = 0
 
         self.monoFont = QFont("Monospace",10)
 
-        self.iconGrey.fill(QColor(*self.theParent.theTheme.statNone))
-        self.iconYellow.fill(QColor(*self.theParent.theTheme.statUnsaved))
-        self.iconGreen.fill(QColor(*self.theParent.theTheme.statSaved))
+        colNone  = QColor(*self.theParent.theTheme.statNone)
+        colTrue  = QColor(*self.theParent.theTheme.statUnsaved)
+        colFalse = QColor(*self.theParent.theTheme.statSaved)
 
-        self.boxStats = QLabel()
-        self.boxStats.setToolTip("Project Word Count | Session Word Count")
+        # Permanent Widgets
+        # =================
 
-        self.timeBox = QLabel("")
-        self.timeBox.setToolTip("Session Time")
-        self.timeBox.setAlignment(Qt.AlignVCenter | Qt.AlignRight)
-        self.timeBox.setFont(self.monoFont)
-
-        self.timeIcon = QLabel()
-        self.timeIcon.setPixmap(self.theParent.theTheme.getPixmap("status_time",(14,14)))
-
-        self.boxCounts = QLabel()
-        self.boxCounts.setToolTip("Document Character | Word | Paragraph Count")
-
-        self.projChanged = QLabel("")
-        self.projChanged.setFixedHeight(14)
-        self.projChanged.setFixedWidth(14)
-        self.projChanged.setToolTip("Project Changes Saved")
-
-        self.docChanged = QLabel("")
-        self.docChanged.setFixedHeight(14)
-        self.docChanged.setFixedWidth(14)
-        self.docChanged.setToolTip("Document Changes Saved")
-
-        self.langBox = QLabel("None")
+        ## The Spell Checker Language
         self.langIcon = QLabel("")
+        self.langText = QLabel("None")
         self.langIcon.setPixmap(self.theParent.theTheme.getPixmap("status_lang",(14,14)))
-
-        # Add Them
+        self.langIcon.setContentsMargins(0, 0, 0, 0)
+        self.langText.setContentsMargins(0, 0, 8, 0)
         self.addPermanentWidget(self.langIcon)
-        self.addPermanentWidget(self.langBox)
-        self.addPermanentWidget(QLabel("  "))
-        self.addPermanentWidget(self.docChanged)
-        self.addPermanentWidget(self.boxCounts)
-        self.addPermanentWidget(QLabel("  "))
-        self.addPermanentWidget(self.projChanged)
-        self.addPermanentWidget(self.boxStats)
-        self.addPermanentWidget(QLabel("  "))
-        self.addPermanentWidget(self.timeIcon)
-        self.addPermanentWidget(self.timeBox)
+        self.addPermanentWidget(self.langText)
 
+        ## The Editor Status
+        self.docIcon = StatusLED(colNone, colTrue, colFalse, 14, 14, self)
+        self.docText = QLabel("Editor")
+        self.docIcon.setContentsMargins(0, 0, 0, 0)
+        self.docText.setContentsMargins(0, 0, 8, 0)
+        self.addPermanentWidget(self.docIcon)
+        self.addPermanentWidget(self.docText)
+
+        ## The Project Status
+        self.projIcon = StatusLED(colNone, colTrue, colFalse, 14, 14, self)
+        self.projText = QLabel("Project")
+        self.projIcon.setContentsMargins(0, 0, 0, 0)
+        self.projText.setContentsMargins(0, 0, 8, 0)
+        self.addPermanentWidget(self.projIcon)
+        self.addPermanentWidget(self.projText)
+
+        ## The Project and Session Stats
+        self.statsIcon = QLabel()
+        self.statsText = QLabel("")
+        self.statsIcon.setPixmap(self.theParent.theTheme.getPixmap("status_stats",(14,14)))
+        self.statsIcon.setContentsMargins(0, 0, 0, 0)
+        self.statsText.setContentsMargins(0, 0, 8, 0)
+        self.addPermanentWidget(self.statsIcon)
+        self.addPermanentWidget(self.statsText)
+
+        ## The Session Clock
+        self.timeIcon = QLabel()
+        self.timeText = QLabel("")
+        self.timeIcon.setPixmap(self.theParent.theTheme.getPixmap("status_time",(14,14)))
+        self.timeText.setToolTip("Session Time")
+        self.timeText.setAlignment(Qt.AlignVCenter | Qt.AlignRight)
+        self.timeText.setFont(self.monoFont)
+        self.timeIcon.setContentsMargins(0, 0, 0, 0)
+        self.timeText.setContentsMargins(0, 0, 0, 0)
+        self.addPermanentWidget(self.timeIcon)
+        self.addPermanentWidget(self.timeText)
+
+        # Other Settings
         self.setSizeGripEnabled(True)
 
+        # Start the Clock
         self.sessionTimer = QTimer()
         self.sessionTimer.setInterval(1000)
         self.sessionTimer.timeout.connect(self._updateTime)
@@ -141,52 +154,71 @@ class GuiMainStatus(QStatusBar):
         """Set the language code for the spell checker.
         """
         if theLanguage is None:
-            self.langBox.setText("None")
+            self.langText.setText("None")
         else:
-            self.langBox.setText(NWSpellCheck.expandLanguage(theLanguage))
+            self.langText.setText(NWSpellCheck.expandLanguage(theLanguage))
         return
 
     def setProjectStatus(self, isChanged):
         """Set the project status colour icon.
         """
-        if isChanged is None:
-            self.projChanged.setPixmap(self.iconGrey)
-        elif isChanged == True:
-            self.projChanged.setPixmap(self.iconYellow)
-        elif isChanged == False:
-            self.projChanged.setPixmap(self.iconGreen)
-        else:
-            self.projChanged.setPixmap(self.iconGrey)
+        self.projIcon.setState(isChanged)
         return
 
     def setDocumentStatus(self, isChanged):
         """Set the document status colour icon.
         """
-        if isChanged is None:
-            self.docChanged.setPixmap(self.iconGrey)
-        elif isChanged == True:
-            self.docChanged.setPixmap(self.iconYellow)
-        elif isChanged == False:
-            self.docChanged.setPixmap(self.iconGreen)
-        else:
-            self.docChanged.setPixmap(self.iconGrey)
+        self.docIcon.setState(isChanged)
         return
 
     def setStats(self, pWC, sWC):
         """Set the current project statistics.
         """
-        self.boxStats.setText("<b>Project:</b> {:d} : {:d}".format(pWC,sWC))
+        self.projWords = pWC
+        self.sessWords = sWC
+        self._updateStats()
         return
 
     def setCounts(self, cC, wC, pC):
         """Set the current document statistics.
         """
-        self.boxCounts.setText("<b>Document:</b> {:d} : {:d} : {:d}".format(cC,wC,pC))
+        self.charCount = cC
+        self.wordCount = wC
+        self.paraCount = pC
+        self._updateStats()
         return
 
     ##
     #  Internal Functions
     ##
+
+    def _updateStats(self):
+        """Update statistics.
+        """
+        self.statsText.setToolTip((
+            "<b>Document Stats</b><br>"
+            "Characters: {cC:n}<br>"
+            "Words: {wC:n}<br>"
+            "Paragraphs: {pC:n}<br>"
+            "<br>"
+            "<b>Project Stats</b><br>"
+            "Words Total: {pWC:n}<br>"
+            "This Session: {sWC:n}"
+        ).format(
+            cC  = self.charCount,
+            wC  = self.wordCount,
+            pC  = self.paraCount,
+            pWC = self.projWords,
+            sWC = self.sessWords,
+        ))
+        self.statsText.setText((
+            "D:{wC:n}  P:{pWC:n}  S:{sWC:n}"
+        ).format(
+            wC  = self.wordCount,
+            pWC = self.projWords,
+            sWC = self.sessWords,
+        ))
+        return
 
     def _updateTime(self):
         """Update the session clock.
@@ -201,7 +233,58 @@ class GuiMainStatus(QStatusBar):
             tM = tM - tH*60
             tS = tS - tM*60 - tH*3600
             theTime = "%02d:%02d:%02d" % (tH,tM,tS)
-        self.timeBox.setText(theTime)
+        self.timeText.setText(theTime)
         return
 
 # END Class GuiMainStatus
+
+class StatusLED(QAbstractButton):
+
+    def __init__(self, colNone, colTrue, colFalse, sW, sH, parent=None):
+        super().__init__(parent=parent)
+
+        self.colNone   = colNone
+        self.colTrue   = colTrue
+        self.colFalse  = colFalse
+        self._theCol   = colNone
+
+        self.setFixedWidth(sW)
+        self.setFixedHeight(sH)
+
+        return
+
+    ##
+    #  Getters and Setters
+    ##
+
+    def setState(self, theState):
+        """Set the colour state.
+        """
+        if theState is None:
+            self._theCol = self.colNone
+        elif theState == True:
+            self._theCol = self.colTrue
+        elif theState == False:
+            self._theCol = self.colFalse
+        else:
+            self._theCol = self.colNone
+        self.update()
+        return
+
+    ##
+    #  Events
+    ##
+
+    def paintEvent(self, event):
+        """Drawing the LED.
+        """
+        qPalette = self.palette()
+        qPaint = QPainter(self)
+        qPaint.setRenderHint(QPainter.Antialiasing, True)
+        qPaint.setPen(qPalette.dark().color())
+        qPaint.setBrush(self._theCol)
+        qPaint.setOpacity(1.0)
+        qPaint.drawEllipse(1, 1, self.width()-2, self.height()-2)
+        return
+
+# END Class StatusLED
