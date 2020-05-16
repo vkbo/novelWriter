@@ -60,6 +60,7 @@ class GuiIcons:
         "proj_folder"    : (QStyle.SP_DirIcon,             "folder"),
         "status_lang"    : (None,                          None),
         "status_time"    : (None,                          None),
+        "status_stats"   : (None,                          None),
         ## Button Icons
         "folder-open"    : (QStyle.SP_DirOpenIcon,         "folder-open"),
         "delete"         : (QStyle.SP_DialogDiscardButton, "edit-delete"),

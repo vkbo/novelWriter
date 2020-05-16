@@ -940,7 +940,6 @@ class NWProject():
             oName = ""
             if aDoc.openDocument(oHandle, showStatus=False, isOrphan=True):
                 oName, oPath = aDoc.getMeta()
-                aDoc.clearDocument()
 
             if oName == "":
                 nOrph += 1
