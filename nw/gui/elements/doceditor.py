@@ -216,18 +216,23 @@ class GuiDocEditor(QTextEdit):
         # font changed, otherwise we just clear the editor entirely,
         # which makes it read only.
         if self.theHandle is not None:
-            # We must save the current handle as clearEditor() sets it
-            # to None
-            tHandle = self.theHandle
-            self.clearEditor()
-            self.loadText(tHandle)
-            self.updateDocMargins()
+            self.reloadText()
         else:
             self.clearEditor()
 
         return True
 
-    def loadText(self, tHandle, tLine=None):
+    def reloadText(self):
+        """Reloads the document currently being edited.
+        """
+        if self.theHandle is not None:
+            tHandle = self.theHandle
+            self.clearEditor()
+            self.loadText(tHandle, showStatus=False)
+            self.updateDocMargins()
+        return
+
+    def loadText(self, tHandle, tLine=None, showStatus=True):
         """Load text from a document into the editor. If we have an io
         error, we must handle this and clear the editor so that we don't
         risk overwriting the file if it exists. This can for instance
@@ -237,7 +242,7 @@ class GuiDocEditor(QTextEdit):
         the file.
         """
 
-        theDoc = self.nwDocument.openDocument(tHandle)
+        theDoc = self.nwDocument.openDocument(tHandle, showStatus=showStatus)
         if theDoc is None:
             # There was an io error
             self.clearEditor()

@@ -32,7 +32,7 @@ from time import time
 
 from PyQt5.QtCore import Qt, QTimer
 from PyQt5.QtGui import QColor, QPixmap, QFont
-from PyQt5.QtWidgets import QStatusBar, QLabel
+from PyQt5.QtWidgets import qApp, QStatusBar, QLabel
 
 from nw.core import NWSpellCheck
 
@@ -114,23 +114,32 @@ class GuiMainStatus(QStatusBar):
         return
 
     def clearStatus(self):
+        """Reset all widgets on the status bar to default values.
+        """
         self.setRefTime(None)
-        self.setStats(0,0)
-        self.setCounts(0,0,0)
+        self.setStats(0, 0)
+        self.setCounts(0, 0, 0)
         self.setProjectStatus(None)
         self.setDocumentStatus(None)
         self._updateTime()
         return True
 
     def setRefTime(self, theTime):
+        """Set the reference time for the status bar clock.
+        """
         self.refTime = theTime
         return
 
     def setStatus(self, theMessage, timeOut=10.0):
+        """Set the status bar message to display for 'timeOut' seconds.
+        """
         self.showMessage(theMessage, int(timeOut*1000))
+        qApp.processEvents()
         return
 
     def setLanguage(self, theLanguage):
+        """Set the language code for the spell checker.
+        """
         if theLanguage is None:
             self.langBox.setText("None")
         else:
@@ -138,6 +147,8 @@ class GuiMainStatus(QStatusBar):
         return
 
     def setProjectStatus(self, isChanged):
+        """Set the project status colour icon.
+        """
         if isChanged is None:
             self.projChanged.setPixmap(self.iconGrey)
         elif isChanged == True:
@@ -149,6 +160,8 @@ class GuiMainStatus(QStatusBar):
         return
 
     def setDocumentStatus(self, isChanged):
+        """Set the document status colour icon.
+        """
         if isChanged is None:
             self.docChanged.setPixmap(self.iconGrey)
         elif isChanged == True:
@@ -160,10 +173,14 @@ class GuiMainStatus(QStatusBar):
         return
 
     def setStats(self, pWC, sWC):
+        """Set the current project statistics.
+        """
         self.boxStats.setText("<b>Project:</b> {:d} : {:d}".format(pWC,sWC))
         return
 
     def setCounts(self, cC, wC, pC):
+        """Set the current document statistics.
+        """
         self.boxCounts.setText("<b>Document:</b> {:d} : {:d} : {:d}".format(cC,wC,pC))
         return
 
@@ -172,6 +189,8 @@ class GuiMainStatus(QStatusBar):
     ##
 
     def _updateTime(self):
+        """Update the session clock.
+        """
         if self.refTime is None:
             theTime = "00:00:00"
         else:
