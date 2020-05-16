@@ -36,6 +36,7 @@ from time import time
 
 from PyQt5.Qt import PYQT_VERSION_STR
 from PyQt5.QtCore import QT_VERSION_STR, QStandardPaths, QSysInfo
+from PyQt5.QtWidgets import QErrorMessage
 
 from nw.constants import nwFiles, nwUnicode
 from nw.common import splitVersionNumber, formatTimeStamp
@@ -176,8 +177,12 @@ class Config:
             self.osUnknown = True
 
         # Other System Info
-        self.hostName  = QSysInfo.machineHostName()
-        self.kernelVer = QSysInfo.kernelVersion()
+        if self.verQtValue >= 50600:
+            self.hostName  = QSysInfo.machineHostName()
+            self.kernelVer = QSysInfo.kernelVersion()
+        else:
+            self.hostName  = "Unknown"
+            self.kernelVer = "Unknown"
 
         # Packages
         self.hasEnchant  = False

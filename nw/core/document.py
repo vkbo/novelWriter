@@ -73,6 +73,8 @@ class NWDoc():
         """Open a document from handle, capturing potential file system
         errors and parse meta data.
         """
+        # Always clear first, since the object will often be reused.
+        self.clearDocument()
 
         self.docHandle = tHandle
         if not isOrphan:

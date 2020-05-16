@@ -32,9 +32,8 @@ import logging
 from os import path, remove, rename
 
 from PyQt5.QtGui import QIcon
-from PyQt5.QtWidgets import QApplication
+from PyQt5.QtWidgets import QApplication, QErrorMessage
 
-from nw.guimain import GuiMain
 from nw.config import Config
 
 __package__    = "novelWriter"
@@ -67,7 +66,7 @@ __credits__    = [
 #    VERBOSE   Use for outputting values and program flow details
 #
 
-# Adding verbose logging levels
+# Add verbose logging level
 VERBOSE = 5
 logging.addLevelName(VERBOSE, "VERBOSE")
 def logVerbose(self, message, *args, **kws):
@@ -217,8 +216,48 @@ def main(sysArgs=None):
 
     logger.setLevel(debugLevel)
 
+    # Check Packages and Versions
+    errorData = []
+    if sys.hexversion < 0x030403F0:
+        errorData.append(
+            "At least Python 3.4.3 is required, but 3.6 is highly recommended."
+        )
+    if CONFIG.verQtValue < 50200:
+        errorData.append(
+            "At least Qt5 version 5.2 is required, found %s." % CONFIG.verQtString
+        )
+    if CONFIG.verPyQtValue < 50200:
+        errorData.append(
+            "At least PyQt5 version 5.2 is required, found %s." % CONFIG.verPyQtString
+        )
+    try:
+        import PyQt5.QtSvg
+    except:
+        errorData.append("Python module 'PyQt5.QtSvg' is missing.")
+    try:
+        import lxml
+    except:
+        errorData.append("Python module 'lxml' is missing.")
+
+    if errorData:
+        errApp = QApplication([])
+        errMsg = QErrorMessage()
+        errMsg.setMinimumWidth(500)
+        errMsg.setMinimumHeight(300)
+        errMsg.showMessage((
+            "ERROR: %s cannot start due to the following issues:<br><br>"
+            "&nbsp;-&nbsp;%s<br><br>Exiting."
+        ) % (
+            __package__, "<br>&nbsp;-&nbsp;".join(errorData)
+        ))
+        errApp.exec_()
+        sys.exit(1)
+
+    # Finish initialising config
     CONFIG.initConfig(confPath, dataPath)
 
+    # Import GUI (after dependency checks), and launch
+    from nw.guimain import GuiMain
     if testMode:
         nwGUI = GuiMain()
         return nwGUI

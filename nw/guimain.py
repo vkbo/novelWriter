@@ -26,17 +26,17 @@
 """
 
 import logging
-import time
 import nw
 
 from os import path
 from datetime import datetime
+from time import time
 
 from PyQt5.QtCore import Qt, QTimer
-from PyQt5.QtGui import QIcon, QPixmap, QColor, QKeySequence
+from PyQt5.QtGui import QIcon, QPixmap, QColor, QKeySequence, QCursor
 from PyQt5.QtWidgets import (
     qApp, QMainWindow, QVBoxLayout, QFrame, QSplitter, QFileDialog, QShortcut,
-    QMessageBox, QProgressDialog, QDialog, QTabWidget
+    QMessageBox, QDialog, QTabWidget
 )
 
 from nw.gui import (
@@ -638,6 +638,8 @@ class GuiMain(QMainWindow):
         return
 
     def rebuildTree(self):
+        """Rebuild the project tree.
+        """
         self._makeStatusIcons()
         self._makeImportIcons()
         self.treeView.clearTree()
@@ -645,37 +647,25 @@ class GuiMain(QMainWindow):
         return
 
     def rebuildIndex(self):
+        """Rebuild the entire index.
+        """
 
         if not self.hasProject:
             return False
 
-        logger.debug("Rebuilding indices ...")
+        logger.debug("Rebuilding index ...")
+        qApp.setOverrideCursor(QCursor(Qt.WaitCursor))
+        tStart = time()
 
         self.treeView.saveTreeOrder()
         self.theIndex.clearIndex()
         nItems = len(self.theProject.projTree)
 
-        dlgProg = QProgressDialog("Scanning files ...", "Cancel", 0, nItems, self)
-        dlgProg.setWindowModality(Qt.WindowModal)
-        dlgProg.setMinimumDuration(0)
-        dlgProg.setFixedWidth(480)
-        dlgProg.setLabelText("Starting file scan ...")
-        dlgProg.setValue(0)
-        dlgProg.show()
-        time.sleep(0.5)
-
-        nDone = 0
-        for tItem in self.theProject.projTree:
-
-            dlgProg.setValue(nDone)
-
+        theDoc = NWDoc(self.theProject, self)
+        for nDone, tItem in enumerate(self.theProject.projTree):
             if tItem is not None and tItem.itemType == nwItemType.FILE:
-
-                dlgProg.setLabelText("Scanning: %s" % tItem.itemName)
                 logger.verbose("Scanning: %s" % tItem.itemName)
-
-                theDoc  = NWDoc(self.theProject, self)
-                theText = theDoc.openDocument(tItem.itemHandle, False)
+                theText = theDoc.openDocument(tItem.itemHandle, showStatus=False)
 
                 # Build tag index
                 self.theIndex.scanText(tItem.itemHandle, theText)
@@ -688,11 +678,16 @@ class GuiMain(QMainWindow):
                 self.treeView.propagateCount(tItem.itemHandle, wC)
                 self.treeView.projectWordCount()
 
-            nDone += 1
-            if dlgProg.wasCanceled():
-                break
+            self.statusBar.setStatus("Building index: %.2f%%" % (100.0*(nDone + 1)/nItems))
 
-        dlgProg.setValue(nItems)
+        self.docEditor.reloadText()
+        qApp.restoreOverrideCursor()
+        tEnd = time()
+
+        if self.mainConf.showGUI:
+            self.makeAlert(
+                "Project index rebuilt in %.3f seconds." % (tEnd - tStart), nwAlert.INFO
+            )
 
         return True
 
