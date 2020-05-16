@@ -34,7 +34,6 @@ from os import path, remove, rename
 from PyQt5.QtGui import QIcon
 from PyQt5.QtWidgets import QApplication, QErrorMessage
 
-from nw.guimain import GuiMain
 from nw.config import Config
 
 __package__    = "novelWriter"
@@ -254,8 +253,11 @@ def main(sysArgs=None):
         errApp.exec_()
         sys.exit(1)
 
-    # Finish initialising config, and launch GUI
+    # Finish initialising config
     CONFIG.initConfig(confPath, dataPath)
+
+    # Import GUI (after dependency checks), and launch
+    from nw.guimain import GuiMain
     if testMode:
         nwGUI = GuiMain()
         return nwGUI
