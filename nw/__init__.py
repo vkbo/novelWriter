@@ -219,9 +219,9 @@ def main(sysArgs=None):
 
     # Check Packages and Versions
     errorData = []
-    if sys.hexversion < 0x030600F0:
+    if sys.hexversion < 0x030403F0:
         errorData.append(
-            "At least Python 3.6 is required."
+            "At least Python 3.4.3 is required, but 3.6 is highly recommended."
         )
     if CONFIG.verQtValue < 50200:
         errorData.append(

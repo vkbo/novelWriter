@@ -64,7 +64,10 @@ There are no launcher icons yet.
 Consult your operating system documentation for how to make those.
 These will be added at some point, and I would appreciate any assistance from people working on Windows and MacOS as I don't use either of those operating systems.
 
-## Dependencies
+## Package Dependencies
+
+It is recommended that novelWriter runs with Qt 5.9 or later, and Python 3.6 or later.
+Running with Qt as low as 5.2.1 and Python 3.4.3 has been tested, and worked in the past, but there are no guarantees that this will keep working as these are not a part of the test builds.
 
 For the apt package manager on Debian systems, the following Python3 packages are needed:
 
