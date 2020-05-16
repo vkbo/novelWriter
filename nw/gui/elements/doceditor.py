@@ -257,7 +257,6 @@ class GuiDocEditor(QTextEdit):
         self.setPlainText(theDoc)
         afTime = time()
         logger.debug("Document highlighted in %.3f milliseconds" % (1000*(afTime-bfTime)))
-        self.updateDocMargins()
 
         if tLine is None:
             self.setCursorPosition(self.nwDocument.theItem.cursorPos)
@@ -275,6 +274,7 @@ class GuiDocEditor(QTextEdit):
             self.theParent.noticeBar.showNote("This document is read only.")
 
         self.docTitle.setTitleFromHandle(self.theHandle)
+        self.updateDocMargins()
         self.hLight.spellCheck = spTemp
         qApp.restoreOverrideCursor()
 
@@ -354,7 +354,7 @@ class GuiDocEditor(QTextEdit):
         # The line below causes issues with large documents as it
         # triggers an early repaint that seems to only render a part of
         # the document. Leaving it here as a warning for now.
-        # self.qDocument.contentsChange.emit(0,0,0)
+        # self.qDocument.contentsChange.emit(0, 0, 0)
 
         return
 
