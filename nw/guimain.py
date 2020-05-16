@@ -681,9 +681,10 @@ class GuiMain(QMainWindow):
         qApp.restoreOverrideCursor()
         tEnd = time()
 
-        self.makeAlert(
-            "Project index rebuilt in %.3f seconds." % (tEnd - tStart), nwAlert.INFO
-        )
+        if self.mainConf.showGUI:
+            self.makeAlert(
+                "Project index rebuilt in %.3f seconds." % (tEnd - tStart), nwAlert.INFO
+            )
 
         return True
 
