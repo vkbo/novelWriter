@@ -293,7 +293,8 @@ class GuiIcons:
         # If we're still here, try to set from system theme
         if self.ICON_MAP[iconKey][1] is not None:
             logger.verbose("Loading icon '%s' from system theme" % iconKey)
-            return QIcon().fromTheme(self.ICON_MAP[iconKey][1])
+            if QIcon().hasThemeIcon(self.ICON_MAP[iconKey][1]):
+                return QIcon().fromTheme(self.ICON_MAP[iconKey][1])
 
         # Finally. we check if we have a fallback icon
         if self.mainConf.guiDark:
