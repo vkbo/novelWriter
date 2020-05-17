@@ -276,7 +276,7 @@ def testProjectEditor(qtbot, nwTempGUI, nwRef, nwTemp):
         qtbot.keyClick(projEdit.tabMain.editAuthors, c, delay=keyDelay)
 
     # Test Status Tab
-    projEdit.tabWidget.setCurrentWidget(projEdit.tabStatus)
+    projEdit._tabBox.setCurrentWidget(projEdit.tabStatus)
     projEdit.tabStatus.listBox.item(2).setSelected(True)
     qtbot.mouseClick(projEdit.tabStatus.delButton, Qt.LeftButton)
     qtbot.mouseClick(projEdit.tabStatus.newButton, Qt.LeftButton)
@@ -288,7 +288,7 @@ def testProjectEditor(qtbot, nwTempGUI, nwRef, nwTemp):
     qtbot.mouseClick(projEdit.tabStatus.saveButton, Qt.LeftButton)
 
     # Auto-Replace Tab
-    projEdit.tabWidget.setCurrentWidget(projEdit.tabReplace)
+    projEdit._tabBox.setCurrentWidget(projEdit.tabReplace)
 
     qtbot.mouseClick(projEdit.tabReplace.addButton, Qt.LeftButton)
     projEdit.tabReplace.listBox.topLevelItem(0).setSelected(True)

@@ -29,10 +29,9 @@ import logging
 import nw
 
 from PyQt5.QtCore import Qt, QRect, QPoint
-from PyQt5.QtGui import QPalette
 from PyQt5.QtWidgets import (
-    QWidget, QDialog, QHBoxLayout, QVBoxLayout, QTabWidget, QTabBar,
-    QStylePainter, QStyleOptionTab, QStyle, QLabel
+    QDialog, QHBoxLayout, QVBoxLayout, QTabWidget, QTabBar, QStyle,
+    QStylePainter, QStyleOptionTab
 )
 
 from nw.constants import nwUnicode
