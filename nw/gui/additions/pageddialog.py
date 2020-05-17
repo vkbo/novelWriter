@@ -34,14 +34,12 @@ from PyQt5.QtWidgets import (
     QStylePainter, QStyleOptionTab
 )
 
-from nw.constants import nwUnicode
-
 logger = logging.getLogger(__name__)
 
 class PagedDialog(QDialog):
 
-    def __init__(self, parent=None):
-        QDialog.__init__(self, parent=parent)
+    def __init__(self, theParent=None):
+        QDialog.__init__(self, parent=theParent)
 
         self._outerBox  = QVBoxLayout()
         self._buttonBox = QHBoxLayout()
@@ -82,8 +80,8 @@ class PagedDialog(QDialog):
 
 class VerticalTabBar(QTabBar):
 
-    def __init__(self, parent=None):
-        QTabBar.__init__(self, parent=parent)
+    def __init__(self, theParent=None):
+        QTabBar.__init__(self, parent=theParent)
         return
 
     def tabSizeHint(self, theIndex):
