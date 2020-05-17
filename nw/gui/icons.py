@@ -39,13 +39,31 @@ from PyQt5.QtWidgets import QStyle, qApp
 logger = logging.getLogger(__name__)
 
 class GuiIcons:
+    """The icon class manages the content of the assets/icons folder,
+    and provides a simple interface for requesting icons. Only icons
+    listed in the ICON_MAP are handled.
 
-    # Icon keys should either be a .svg or .png file under the gui
-    # theme folder, or have a fallback that is either compatible with
-    # QIcon.fromTheme, as specified here:
-    # https://specifications.freedesktop.org/icon-naming-spec/icon-naming-spec-latest.html
-    # or, if there is no fallback, the variable should be None.
+    Icons are loaded on first request, and then cached for further
+    requests. Each icon key in the ICON_MAP has a series of fallbacks:
+      * The first lookup is in the key-to-file map for the selected icon
+        theme. The map is specified in the icons.conf file in the theme
+        folder. The map makes it possible to preserve the original file
+        name from the icon theme were the icons were extracted.
+      * Second, if the icon does not exist in the theme map, the
+        GuiIcons class will check if there is a QStyle icon specified in
+        the ICON_MAP data tuple[0]. This will let Qt pull the closest
+        system icon.
+      * Third action is to look up the freedesktop icon theme name using
+        the fromTheme Qt call. This generally produces the same results
+        as the step above, but has more icons available in other cases.
+      * Fourth, and finally, the icon is looked up in the fallback
+        folder. Files in this folder must have the same file name as the
+        novelWriter internal icon key, with '-dark' appended to it for
+        the dark background version of the icon.
+    """
+
     ICON_MAP = {
+        # Project and GUI icons
         "cls_none"       : (QStyle.SP_DriveHDIcon,         "drive-harddisk"),
         "cls_novel"      : (QStyle.SP_DriveHDIcon,         "drive-harddisk"),
         "cls_plot"       : (QStyle.SP_DriveHDIcon,         "drive-harddisk"),
@@ -61,7 +79,8 @@ class GuiIcons:
         "status_lang"    : (None,                          None),
         "status_time"    : (None,                          None),
         "status_stats"   : (None,                          None),
-        ## Button Icons
+
+        ## General Button Icons
         "folder-open"    : (QStyle.SP_DirOpenIcon,         "folder-open"),
         "delete"         : (QStyle.SP_DialogDiscardButton, "edit-delete"),
         "add"            : (None,                          "list-add"),
@@ -73,6 +92,7 @@ class GuiIcons:
         "clear"          : (QStyle.SP_LineEditClearButton, "clear_left"),
         "save"           : (QStyle.SP_DialogSaveButton,    "document-save"),
         "edit"           : (None,                          None),
+
         ## Other Icons
         "warning"        : (QStyle.SP_MessageBoxWarning,   "dialog-warning"),
     }
@@ -117,6 +137,10 @@ class GuiIcons:
     ##
 
     def updateTheme(self):
+        """Update the theme map. This is more of an init, since many of
+        the GUI icons cannot really be replaced without writing specific
+        update functions for the classes where they're used.
+        """
 
         logger.debug("Loading icon theme files")
 
@@ -239,7 +263,6 @@ class GuiIcons:
                 self.themeList.append((themeDir, themeName))
 
         self.themeList = sorted(self.themeList, key=lambda x: x[1])
-        self.themeList.insert(0, ("default", "System Icons"))
 
         return self.themeList
 
@@ -287,6 +310,9 @@ class GuiIcons:
         return QIcon()
 
     def _parseLine(self, confParser, cnfSec, cnfName, cnfDefault):
+        """Simple wrapper for the config parser check for entry existing
+        before arrempting to load.
+        """
         if confParser.has_section(cnfSec):
             if confParser.has_option(cnfSec, cnfName):
                 return confParser.get(cnfSec, cnfName)
