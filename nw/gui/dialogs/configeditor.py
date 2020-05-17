@@ -761,6 +761,7 @@ class GuiConfigEditAutoReplaceTab(QWidget):
     def saveValues(self):
 
         validEntries = True
+        needsRestart = False
 
         autoSelect      = self.autoSelect.isChecked()
         doReplace       = self.autoReplaceMain.isChecked()
@@ -815,7 +816,7 @@ class GuiConfigEditAutoReplaceTab(QWidget):
 
         self.mainConf.confChanged = True
 
-        return validEntries, False
+        return validEntries, needsRestart
 
     ##
     #  Slots
