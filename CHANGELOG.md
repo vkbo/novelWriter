@@ -1,5 +1,22 @@
 # novelWriter ChangeLog
 
+## Version 0.6 [2020-xx-xx]
+
+**Bugfixes**
+
+* Added more fallback icons so that all icons are properly set also on Windows 10. PR #211
+
+**User Interface**
+
+* The Export Tool has been removed and replaced by a new tool called "Build Novel Project". The new tool has the same filtering options as the Export Tool, but with more formatting options for titles. It also has a preview window to display the generated document. A Save As button provides exports to HTML, novelWriter Markdown. plain text, PDF and Open Document format. LaTeX export has not been ported over, and interfacing with Pandoc is no longer supported either. Although. as before, the HTML export can be converted with Pandoc still. The new tool also supports printing. PR #204
+* The statusbar has been reorganised a bit. The stats section has been separated from the save status icons, and the save status icons replaced with generated LED-looking widgets. The amount of statistics has been reduced to three numbers, and the rest moved to a tooltip. PR #210
+* The Project Settings, Preferences, Item Editor, Merge Documents, and Split Documents dialogs have been redesigned. The ones with tabs, now have vertical tabs on the left with horizontal labels. The dialog design should be more compact, and have room for more tabs for future settings. PR #212
+
+**Other Improvements**
+
+* Some of the package and version checks have been moved to a later point in the start-up so that a dialog can alert the user that the system is missing dependencies. This is only possible after the core PyQt5 elements have been imported, so if these are missing, the dialog will never show. PR #210
+* With a few minor changes, novelWriter was successfully tested on Ubuntu 14.04 with Python 3.4.3 and Qt 5.2.1. This is not necessarily a level of legacy compatibility that will be maintained, but it does currently work. PR #210
+
 ## Version 0.5.1 [2020-05-14]
 
 **Bugfixes**
