@@ -28,9 +28,11 @@
 import logging
 import nw
 
-from PyQt5.QtCore import Qt
+from PyQt5.QtCore import Qt, QRect, QPoint
+from PyQt5.QtGui import QPalette
 from PyQt5.QtWidgets import (
-    QDialog, QHBoxLayout, QVBoxLayout, QTabWidget
+    QWidget, QDialog, QHBoxLayout, QVBoxLayout, QTabWidget, QTabBar,
+    QStylePainter, QStyleOptionTab, QStyle, QLabel
 )
 
 from nw.constants import nwUnicode
@@ -40,26 +42,79 @@ logger = logging.getLogger(__name__)
 class PagedDialog(QDialog):
 
     def __init__(self, parent=None):
-        super().__init__(parent=parent)
+        QDialog.__init__(self, parent=parent)
 
-        self._outerBox = QVBoxLayout()
-        self._innerBox = QHBoxLayout()
-        self._navBox   = QVBoxLayout()
-        self._tabBox   = QTabWidget()
+        self._outerBox  = QVBoxLayout()
+        self._buttonBox = QHBoxLayout()
+        self._tabBox    = QTabWidget()
 
-        self._outerBox.addLayout(self._innerBox)
-        self._innerBox.addLayout(self._navBox)
-        self._innerBox.addWidget(self._tabBox)
+        self._tabBar = VerticalTabBar(self)
+        self._tabBox.setTabBar(self._tabBar)
+        self._tabBox.setTabPosition(QTabWidget.West)
+        self._tabBar.setExpanding(False)
+
+        self._outerBox.addWidget(self._tabBox)
+        self._outerBox.addLayout(self._buttonBox)
         self.setLayout(self._outerBox)
+
+        # Default Margins
+        qM = self._outerBox.contentsMargins()
+        mL = qM.left()
+        mR = qM.right()
+        mT = qM.top()
+        mB = qM.bottom()
+
+        self.setContentsMargins(0, 0, 0, 0)
+        self._outerBox.setContentsMargins(0, 0, 0, mB)
+        self._buttonBox.setContentsMargins(mL, 0, mR, 0)
+        self._outerBox.setSpacing(mT)
 
         return
 
-    def addPage(self, tabWidget, tabLabel):
+    def addTab(self, tabWidget, tabLabel):
         self._tabBox.addTab(tabWidget, tabLabel)
         return
 
     def addControls(self, buttonBar):
-        self._outerBox.addWidget(buttonBar)
+        self._buttonBox.addWidget(buttonBar)
         return
 
 # END Class PagedDialog
+
+class VerticalTabBar(QTabBar):
+
+    def __init__(self, parent=None):
+        QTabBar.__init__(self, parent=parent)
+        return
+
+    def tabSizeHint(self, theIndex):
+        tSize = QTabBar.tabSizeHint(self, theIndex)
+        tSize.transpose()
+        return tSize
+
+    def paintEvent(self, theEvent):
+
+        pObj = QStylePainter(self)
+        oObj = QStyleOptionTab()
+
+        for i in range(self.count()):
+            self.initStyleOption(oObj, i)
+            pObj.drawControl(QStyle.CE_TabBarTabShape, oObj)
+            pObj.save()
+
+            oSize = oObj.rect.size()
+            oSize.transpose()
+            oRect = QRect(QPoint(), oSize)
+            oRect.moveCenter(oObj.rect.center())
+            oObj.rect = oRect
+
+            oCenter = self.tabRect(i).center()
+            pObj.translate(oCenter)
+            pObj.rotate(90)
+            pObj.translate(-oCenter)
+            pObj.drawControl(QStyle.CE_TabBarTabLabel, oObj)
+            pObj.restore()
+
+        return
+
+# END Class VerticalTabBar

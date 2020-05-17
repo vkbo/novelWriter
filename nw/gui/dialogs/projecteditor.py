@@ -61,10 +61,10 @@ class GuiProjectEditor(PagedDialog):
         self.tabImport  = GuiProjectEditStatus(self.theParent, self.theProject.importItems)
         self.tabReplace = GuiProjectEditReplace(self.theParent, self.theProject)
 
-        self.addPage(self.tabMain,   "Settings")
-        self.addPage(self.tabStatus, "Status")
-        self.addPage(self.tabImport, "Importance")
-        self.addPage(self.tabReplace,"Auto-Replace")
+        self.addTab(self.tabMain,   "Settings")
+        self.addTab(self.tabStatus, "Status")
+        self.addTab(self.tabImport, "Importance")
+        self.addTab(self.tabReplace,"Auto-Replace")
 
         self.buttonBox = QDialogButtonBox(QDialogButtonBox.Ok | QDialogButtonBox.Cancel)
         self.buttonBox.accepted.connect(self._doSave)
