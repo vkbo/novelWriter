@@ -31,20 +31,21 @@ import nw
 from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QIcon, QPixmap, QColor, QBrush
 from PyQt5.QtWidgets import (
-    QDialog, QHBoxLayout, QVBoxLayout, QFormLayout, QLineEdit, QPlainTextEdit,
+    QDialog, QHBoxLayout, QVBoxLayout, QGridLayout, QLineEdit, QPlainTextEdit,
     QLabel, QWidget, QTabWidget, QDialogButtonBox, QListWidget, QPushButton,
     QListWidgetItem, QColorDialog, QAbstractItemView, QTreeWidget, QCheckBox,
     QTreeWidgetItem
 )
 
 from nw.constants import nwAlert
+from nw.gui.additions import QSwitch, PagedDialog
 
 logger = logging.getLogger(__name__)
 
-class GuiProjectEditor(QDialog):
+class GuiProjectEditor(PagedDialog):
 
     def __init__(self, theParent, theProject):
-        QDialog.__init__(self, theParent)
+        PagedDialog.__init__(self, theParent)
 
         logger.debug("Initialising ProjectEditor ...")
 
@@ -52,35 +53,23 @@ class GuiProjectEditor(QDialog):
         self.theParent  = theParent
         self.theProject = theProject
 
-        self.outerBox = QHBoxLayout()
-        self.innerBox = QVBoxLayout()
-
-        self.setWindowTitle("Project Settings")
-        self.guiDeco = self.theParent.theTheme.loadDecoration("settings", (64,64))
-        self.outerBox.setSpacing(16)
-
-        self.outerBox.addWidget(self.guiDeco, 0, Qt.AlignTop)
-        self.outerBox.addLayout(self.innerBox)
-        self.setLayout(self.outerBox)
-
         self.theProject.countStatus()
+        self.setWindowTitle("Project Settings")
+
         self.tabMain    = GuiProjectEditMain(self.theParent, self.theProject)
         self.tabStatus  = GuiProjectEditStatus(self.theParent, self.theProject.statusItems)
         self.tabImport  = GuiProjectEditStatus(self.theParent, self.theProject.importItems)
         self.tabReplace = GuiProjectEditReplace(self.theParent, self.theProject)
 
-        self.tabWidget = QTabWidget()
-        self.tabWidget.addTab(self.tabMain,   "Settings")
-        self.tabWidget.addTab(self.tabStatus, "Status")
-        self.tabWidget.addTab(self.tabImport, "Importance")
-        self.tabWidget.addTab(self.tabReplace,"Auto-Replace")
+        self.addTab(self.tabMain,   "Settings")
+        self.addTab(self.tabStatus, "Status")
+        self.addTab(self.tabImport, "Importance")
+        self.addTab(self.tabReplace,"Auto-Replace")
 
         self.buttonBox = QDialogButtonBox(QDialogButtonBox.Ok | QDialogButtonBox.Cancel)
         self.buttonBox.accepted.connect(self._doSave)
         self.buttonBox.rejected.connect(self._doClose)
-
-        self.innerBox.addWidget(self.tabWidget)
-        self.innerBox.addWidget(self.buttonBox)
+        self.addControls(self.buttonBox)
 
         self.show()
 
@@ -94,7 +83,7 @@ class GuiProjectEditor(QDialog):
         projName    = self.tabMain.editName.text()
         bookTitle   = self.tabMain.editTitle.text()
         bookAuthors = self.tabMain.editAuthors.toPlainText()
-        doBackup    = self.tabMain.doBackup.isChecked()
+        doBackup    = not self.tabMain.doBackup.isChecked()
         self.theProject.setProjectName(projName)
         self.theProject.setBookTitle(bookTitle)
         self.theProject.setBookAuthors(bookAuthors)
@@ -130,37 +119,39 @@ class GuiProjectEditMain(QWidget):
 
         self.theParent   = theParent
         self.theProject  = theProject
-        self.mainForm    = QFormLayout()
+        self.mainForm    = QGridLayout()
         self.backupBox   = QHBoxLayout()
-        self.editName    = QLineEdit()
-        self.editTitle   = QLineEdit()
-        self.editAuthors = QPlainTextEdit()
-        self.doBackup    = QCheckBox(self)
 
+        self.editName  = QLineEdit()
         self.editName.setMaxLength(200)
-        self.editTitle.setMaxLength(200)
-
-        self.mainForm.addRow("Working Title",  self.editName)
-        self.mainForm.addRow("Book Title",     self.editTitle)
-        self.mainForm.addRow("Book Authors",   self.editAuthors)
-        self.mainForm.addRow(self.backupBox)
-        self.backupBox.addStretch(1)
-        self.backupBox.addWidget(QLabel("Backup on Close"))
-        self.backupBox.addWidget(self.doBackup)
-
         self.editName.setText(self.theProject.projName)
+
+        self.editTitle = QLineEdit()
+        self.editTitle.setMaxLength(200)
         self.editTitle.setText(self.theProject.bookTitle)
+
+        self.editAuthors = QPlainTextEdit()
         bookAuthors = ""
         for bookAuthor in self.theProject.bookAuthors:
             bookAuthors += bookAuthor+"\n"
         self.editAuthors.setPlainText(bookAuthors)
-        if self.theProject.doBackup:
-            self.doBackup.setCheckState(Qt.Checked)
-        else:
-            self.doBackup.setCheckState(Qt.Unchecked)
+        self.editAuthors.setMaximumHeight(120)
+
+        self.doBackup = QSwitch(self)
+        self.doBackup.setChecked(not self.theProject.doBackup)
+        self.backupBox.addStretch(1)
+        self.backupBox.addWidget(QLabel("Disable backup on close"))
+        self.backupBox.addWidget(self.doBackup)
+
+        self.mainForm.addWidget(QLabel("Working title"), 0, 0, 1, 1, Qt.AlignTop)
+        self.mainForm.addWidget(self.editName,           0, 1, 1, 1, Qt.AlignTop)
+        self.mainForm.addWidget(QLabel("Book title"),    1, 0, 1, 1, Qt.AlignTop)
+        self.mainForm.addWidget(self.editTitle,          1, 1, 1, 1, Qt.AlignTop)
+        self.mainForm.addWidget(QLabel("Book authors"),  2, 0, 1, 1, Qt.AlignTop)
+        self.mainForm.addWidget(self.editAuthors,        2, 1, 1, 1, Qt.AlignTop)
+        self.mainForm.addLayout(self.backupBox,          3, 0, 1, 2, Qt.AlignTop)
 
         self.setLayout(self.mainForm)
-        self.editAuthors.setMaximumHeight(120)
 
         return
 

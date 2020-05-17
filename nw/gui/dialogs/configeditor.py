@@ -38,51 +38,39 @@ from PyQt5.QtWidgets import (
     QFileDialog
 )
 
-from nw.gui.additions import QSwitch, QConfigLayout
+from nw.gui.additions import QSwitch, QConfigLayout, PagedDialog
 from nw.core import NWSpellCheck, NWSpellSimple, NWSpellEnchant
 from nw.constants import nwAlert, nwQuotes
 
 logger = logging.getLogger(__name__)
 
-class GuiConfigEditor(QDialog):
+class GuiConfigEditor(PagedDialog):
 
     def __init__(self, theParent, theProject):
-        QDialog.__init__(self, theParent)
+        PagedDialog.__init__(self, theParent)
 
         logger.debug("Initialising ConfigEditor ...")
 
         self.mainConf   = nw.CONFIG
         self.theParent  = theParent
         self.theProject = theProject
-        self.outerBox   = QHBoxLayout()
-        self.innerBox   = QVBoxLayout()
 
         self.setWindowTitle("Preferences")
-        self.guiDeco = self.theParent.theTheme.loadDecoration("settings", (64,64))
-        self.outerBox.setSpacing(16)
-
-        self.outerBox.addWidget(self.guiDeco, 0, Qt.AlignTop)
-        self.outerBox.addLayout(self.innerBox)
-        self.setLayout(self.outerBox)
 
         self.tabGeneral = GuiConfigEditGeneralTab(self.theParent)
         self.tabLayout  = GuiConfigEditLayoutTab(self.theParent)
         self.tabEditing = GuiConfigEditEditingTab(self.theParent)
         self.tabAutoRep = GuiConfigEditAutoReplaceTab(self.theParent)
 
-        self.tabWidget = QTabWidget()
-        self.tabWidget.setMinimumWidth(600)
-        self.tabWidget.addTab(self.tabGeneral, "General")
-        self.tabWidget.addTab(self.tabLayout,  "Layout")
-        self.tabWidget.addTab(self.tabEditing, "Editing")
-        self.tabWidget.addTab(self.tabAutoRep, "Auto-Replace")
+        self.addTab(self.tabGeneral, "General")
+        self.addTab(self.tabLayout,  "Layout")
+        self.addTab(self.tabEditing, "Editing")
+        self.addTab(self.tabAutoRep, "Auto-Replace")
 
         self.buttonBox = QDialogButtonBox(QDialogButtonBox.Ok | QDialogButtonBox.Cancel)
         self.buttonBox.accepted.connect(self._doSave)
         self.buttonBox.rejected.connect(self._doClose)
-
-        self.innerBox.addWidget(self.tabWidget)
-        self.innerBox.addWidget(self.buttonBox)
+        self.addControls(self.buttonBox)
 
         self.show()
 
@@ -773,6 +761,7 @@ class GuiConfigEditAutoReplaceTab(QWidget):
     def saveValues(self):
 
         validEntries = True
+        needsRestart = False
 
         autoSelect      = self.autoSelect.isChecked()
         doReplace       = self.autoReplaceMain.isChecked()
@@ -827,7 +816,7 @@ class GuiConfigEditAutoReplaceTab(QWidget):
 
         self.mainConf.confChanged = True
 
-        return validEntries, False
+        return validEntries, needsRestart
 
     ##
     #  Slots
