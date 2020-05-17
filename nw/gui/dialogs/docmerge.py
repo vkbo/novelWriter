@@ -29,10 +29,9 @@ import logging
 import nw
 
 from PyQt5.QtCore import Qt
-from PyQt5.QtGui import QColor, QPalette
 from PyQt5.QtWidgets import (
-    QDialog, QHBoxLayout, QVBoxLayout, QGridLayout, QPushButton, QLabel,
-    QListWidget, QAbstractItemView, QListWidgetItem, QDialogButtonBox
+    QDialog, QVBoxLayout, QLabel, QListWidget, QAbstractItemView,
+    QListWidgetItem, QDialogButtonBox
 )
 
 from nw.constants import nwAlert, nwItemType

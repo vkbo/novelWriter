@@ -30,11 +30,11 @@ import nw
 
 from PyQt5.QtCore import Qt
 from PyQt5.QtWidgets import (
-    QDialog, QHBoxLayout, QVBoxLayout, QGroupBox, QGridLayout, QLineEdit,
-    QComboBox, QLabel, QSpacerItem, QSizePolicy, QDialogButtonBox
+    QDialog, QVBoxLayout, QGridLayout, QLineEdit, QComboBox, QLabel,
+    QDialogButtonBox
 )
 
-from nw.gui.additions import QSwitch
+from nw.gui.additions import QSwitch, QHelpLabel
 from nw.constants import nwLabels, nwItemLayout, nwItemClass, nwItemType
 
 logger = logging.getLogger(__name__)
@@ -49,31 +49,30 @@ class GuiItemEditor(QDialog):
         self.mainConf   = nw.CONFIG
         self.theProject = theProject
         self.theParent  = theParent
-        self.outerBox = QHBoxLayout()
-        self.innerBox = QVBoxLayout()
 
-        self.theItem    = self.theProject.projTree[tHandle]
+        self.outerBox = QVBoxLayout()
+
+        self.theItem = self.theProject.projTree[tHandle]
         if self.theItem is None:
             self._doClose()
 
         self.setWindowTitle("Item Settings")
-        self.guiDeco = self.theParent.theTheme.loadDecoration("settings", (64,64))
-        self.outerBox.setSpacing(16)
-
-        self.outerBox.addWidget(self.guiDeco, 0, Qt.AlignTop)
-        self.outerBox.addLayout(self.innerBox)
         self.setLayout(self.outerBox)
 
-        self.mainGroup = QGroupBox("Item Settings")
-        self.mainForm  = QGridLayout()
+        # Labels
+        self.headLabel = QLabel("<b>Edit Item Settings</b>")
+        self.helpLabel = QHelpLabel(
+            "Item layout and status options depend on the root folder.",
+            self.theParent.theTheme.helpText
+        )
 
+        # Item Label
         self.editName = QLineEdit()
         self.editName.setMinimumWidth(220)
         self.editName.setMaxLength(200)
 
+        # Item Status
         self.editStatus = QComboBox()
-        self.editLayout = QComboBox()
-
         if self.theItem.itemClass == nwItemClass.NOVEL:
             for sLabel, _, _ in self.theProject.statusItems:
                 self.editStatus.addItem(
@@ -85,6 +84,8 @@ class GuiItemEditor(QDialog):
                     self.theParent.importIcons[sLabel], sLabel, sLabel
                 )
 
+        # Item Layout
+        self.editLayout = QComboBox()
         self.validLayouts = []
         if self.theItem.itemType == nwItemType.FILE:
             if self.theItem.itemClass == nwItemClass.NOVEL:
@@ -105,6 +106,7 @@ class GuiItemEditor(QDialog):
             if itemLayout in self.validLayouts:
                 self.editLayout.addItem(nwLabels.LAYOUT_NAME[itemLayout],itemLayout)
 
+        # Export Switch
         self.textExport = QLabel("Include when building project")
         self.editExport = QSwitch()
         if self.theItem.itemType == nwItemType.FILE:
@@ -114,18 +116,6 @@ class GuiItemEditor(QDialog):
             self.editExport.setEnabled(False)
             self.editExport.setChecked(False)
 
-        self.mainForm.addWidget(QLabel("Label"),  0, 0)
-        self.mainForm.addWidget(self.editName,    0, 1, 1, 2)
-        self.mainForm.addWidget(QLabel("Status"), 1, 0)
-        self.mainForm.addWidget(self.editStatus,  1, 1, 1, 2)
-        self.mainForm.addWidget(QLabel("Layout"), 2, 0)
-        self.mainForm.addWidget(self.editLayout,  2, 1, 1, 2)
-        self.mainForm.addWidget(self.textExport,  4, 0, 1, 2)
-        self.mainForm.addWidget(self.editExport,  4, 2)
-
-        self.spacerItem = QSpacerItem(12, 12, QSizePolicy.Fixed, QSizePolicy.Fixed)
-        self.mainForm.addItem(self.spacerItem,  3, 0)
-
         self.editName.setText(self.theItem.itemName)
         statusIdx = self.editStatus.findData(self.theItem.itemStatus)
         if statusIdx != -1:
@@ -134,14 +124,34 @@ class GuiItemEditor(QDialog):
         if layoutIdx != -1:
             self.editLayout.setCurrentIndex(layoutIdx)
 
+        # Buttons
         self.buttonBox = QDialogButtonBox(QDialogButtonBox.Ok | QDialogButtonBox.Cancel)
         self.buttonBox.accepted.connect(self._doSave)
         self.buttonBox.rejected.connect(self._doClose)
 
-        self.mainGroup.setLayout(self.mainForm)
-        self.innerBox.addWidget(self.mainGroup)
-        self.innerBox.addWidget(self.buttonBox)
+        # Assemble
+        self.mainForm = QGridLayout()
+        self.mainForm.setVerticalSpacing(4)
+        self.mainForm.addWidget(QLabel("Label"),  0, 0, 1, 1)
+        self.mainForm.addWidget(self.editName,    0, 1, 1, 2)
+        self.mainForm.addWidget(QLabel("Status"), 1, 0, 1, 1)
+        self.mainForm.addWidget(self.editStatus,  1, 1, 1, 2)
+        self.mainForm.addWidget(QLabel("Layout"), 2, 0, 1, 1)
+        self.mainForm.addWidget(self.editLayout,  2, 1, 1, 2)
+        self.mainForm.addWidget(self.textExport,  3, 0, 1, 2)
+        self.mainForm.addWidget(self.editExport,  3, 2, 1, 1)
 
+        self.outerBox.setSpacing(0)
+        self.outerBox.addWidget(self.headLabel)
+        self.outerBox.addWidget(self.helpLabel)
+        self.outerBox.addSpacing(8)
+        self.outerBox.addLayout(self.mainForm)
+        self.outerBox.addSpacing(12)
+        self.outerBox.addStretch(1)
+        self.outerBox.addWidget(self.buttonBox)
+        self.setLayout(self.outerBox)
+
+        self.rejected.connect(self._doClose)
         self.show()
 
         self.editName.selectAll()
@@ -175,7 +185,6 @@ class GuiItemEditor(QDialog):
 
     def _doClose(self):
         logger.verbose("ItemEditor close button clicked")
-        self.reject()
         self.close()
         return
 

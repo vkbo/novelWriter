@@ -99,7 +99,6 @@ class GuiIcons:
 
     DECO_MAP = {
         "nwicon"   : ["icons", "novelWriter.svg"],
-        "settings" : ["graphics", "gear.svg"],
     }
 
     def __init__(self, theParent):
