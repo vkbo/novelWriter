@@ -38,13 +38,14 @@ from PyQt5.QtWidgets import (
 )
 
 from nw.constants import nwAlert
+from nw.gui.additions import PagedDialog
 
 logger = logging.getLogger(__name__)
 
-class GuiProjectEditor(QDialog):
+class GuiProjectEditor(PagedDialog):
 
     def __init__(self, theParent, theProject):
-        QDialog.__init__(self, theParent)
+        PagedDialog.__init__(self, theParent)
 
         logger.debug("Initialising ProjectEditor ...")
 
@@ -52,35 +53,23 @@ class GuiProjectEditor(QDialog):
         self.theParent  = theParent
         self.theProject = theProject
 
-        self.outerBox = QHBoxLayout()
-        self.innerBox = QVBoxLayout()
-
-        self.setWindowTitle("Project Settings")
-        self.guiDeco = self.theParent.theTheme.loadDecoration("settings", (64,64))
-        self.outerBox.setSpacing(16)
-
-        self.outerBox.addWidget(self.guiDeco, 0, Qt.AlignTop)
-        self.outerBox.addLayout(self.innerBox)
-        self.setLayout(self.outerBox)
-
         self.theProject.countStatus()
+        self.setWindowTitle("Project Settings")
+
         self.tabMain    = GuiProjectEditMain(self.theParent, self.theProject)
         self.tabStatus  = GuiProjectEditStatus(self.theParent, self.theProject.statusItems)
         self.tabImport  = GuiProjectEditStatus(self.theParent, self.theProject.importItems)
         self.tabReplace = GuiProjectEditReplace(self.theParent, self.theProject)
 
-        self.tabWidget = QTabWidget()
-        self.tabWidget.addTab(self.tabMain,   "Settings")
-        self.tabWidget.addTab(self.tabStatus, "Status")
-        self.tabWidget.addTab(self.tabImport, "Importance")
-        self.tabWidget.addTab(self.tabReplace,"Auto-Replace")
+        self.addPage(self.tabMain,   "Settings")
+        self.addPage(self.tabStatus, "Status")
+        self.addPage(self.tabImport, "Importance")
+        self.addPage(self.tabReplace,"Auto-Replace")
 
         self.buttonBox = QDialogButtonBox(QDialogButtonBox.Ok | QDialogButtonBox.Cancel)
         self.buttonBox.accepted.connect(self._doSave)
         self.buttonBox.rejected.connect(self._doClose)
-
-        self.innerBox.addWidget(self.tabWidget)
-        self.innerBox.addWidget(self.buttonBox)
+        self.addControls(self.buttonBox)
 
         self.show()
 

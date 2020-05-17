@@ -7,10 +7,6 @@ from nw.gui.mainmenu import GuiMainMenu
 from nw.gui.statusbar import GuiMainStatus
 from nw.gui.theme import GuiTheme
 
-# Qt Additions
-from nw.gui.additions.qconfiglayout import QConfigLayout
-from nw.gui.additions.qswitch import QSwitch
-
 # Dialogs
 from nw.gui.dialogs.configeditor import GuiConfigEditor
 from nw.gui.dialogs.docmerge import GuiDocMerge
@@ -42,8 +38,6 @@ __all__ = [
     "GuiMainMenu",
     "GuiMainStatus",
     "GuiTheme",
-    "QConfigLayout",
-    "QSwitch",
     "GuiConfigEditor",
     "GuiDocMerge",
     "GuiDocSplit",
