@@ -99,10 +99,7 @@ class GuiIcons:
 
     DECO_MAP = {
         "nwicon"   : ["icons", "novelWriter.svg"],
-        "export"   : ["graphics", "export.svg"],
-        "merge"    : ["graphics", "merge.svg"],
         "settings" : ["graphics", "gear.svg"],
-        "split"    : ["graphics", "split.svg"],
     }
 
     def __init__(self, theParent):

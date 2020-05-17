@@ -31,9 +31,10 @@ import nw
 from PyQt5.QtCore import Qt
 from PyQt5.QtWidgets import (
     QDialog, QHBoxLayout, QVBoxLayout, QGridLayout, QPushButton, QComboBox,
-    QListWidget, QAbstractItemView, QListWidgetItem
+    QListWidget, QAbstractItemView, QListWidgetItem, QDialogButtonBox, QLabel
 )
 from nw.constants import nwAlert, nwItemType, nwItemClass, nwItemLayout
+from nw.gui.additions import QHelpLabel
 from nw.core import NWDoc
 
 logger = logging.getLogger(__name__)
@@ -51,22 +52,18 @@ class GuiDocSplit(QDialog):
         self.optState   = self.theProject.optState
         self.sourceItem = None
 
-        self.outerBox = QHBoxLayout()
-        self.innerBox = QVBoxLayout()
-        self.setLayout(self.outerBox)
-
+        self.outerBox = QVBoxLayout()
         self.setWindowTitle("Split Document")
-        self.guiDeco = self.theParent.theTheme.loadDecoration("split",(64,64))
-        self.outerBox.setSpacing(16)
 
-        self.outerBox.addWidget(self.guiDeco, 0, Qt.AlignTop)
-        self.outerBox.addLayout(self.innerBox)
-
-        self.doMergeForm = QGridLayout()
-        self.doMergeForm.setContentsMargins(0,0,0,0)
+        self.headLabel = QLabel("<b>Document Headers</b>")
+        self.helpLabel = QHelpLabel(
+            "Select the maximum level to split into files at.", self.theParent.theTheme.helpText
+        )
 
         self.listBox = QListWidget()
         self.listBox.setDragDropMode(QAbstractItemView.NoDragDrop)
+        self.listBox.setMinimumWidth(400)
+        self.listBox.setMinimumHeight(180)
 
         self.splitLevel = QComboBox(self)
         self.splitLevel.addItem("Split on Header Level 1 (Title)",      1)
@@ -80,18 +77,19 @@ class GuiDocSplit(QDialog):
             self.splitLevel.setCurrentIndex(spIndex)
         self.splitLevel.currentIndexChanged.connect(self._populateList)
 
-        self.splitButton = QPushButton("Split")
-        self.splitButton.clicked.connect(self._doSplit)
+        self.buttonBox = QDialogButtonBox(QDialogButtonBox.Ok | QDialogButtonBox.Cancel)
+        self.buttonBox.accepted.connect(self._doSplit)
+        self.buttonBox.rejected.connect(self._doClose)
 
-        self.closeButton = QPushButton("Close")
-        self.closeButton.clicked.connect(self._doClose)
-
-        self.doMergeForm.addWidget(self.listBox,     0, 0, 1, 3)
-        self.doMergeForm.addWidget(self.splitLevel,  1, 0, 1, 3)
-        self.doMergeForm.addWidget(self.splitButton, 2, 1)
-        self.doMergeForm.addWidget(self.closeButton, 2, 2)
-
-        self.innerBox.addLayout(self.doMergeForm)
+        self.outerBox.setSpacing(0)
+        self.outerBox.addWidget(self.headLabel)
+        self.outerBox.addWidget(self.helpLabel)
+        self.outerBox.addSpacing(8)
+        self.outerBox.addWidget(self.listBox)
+        self.outerBox.addWidget(self.splitLevel)
+        self.outerBox.addSpacing(12)
+        self.outerBox.addWidget(self.buttonBox)
+        self.setLayout(self.outerBox)
 
         self.rejected.connect(self._doClose)
         self.show()

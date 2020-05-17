@@ -130,16 +130,8 @@ class QConfigLayout(QGridLayout):
 
         qLabel.setIndent(8)
         if helpText is not None:
-            qHelp = QLabel(str(helpText))
+            qHelp = QHelpLabel(str(helpText), self._helpCol, self._fontScale)
             qHelp.setIndent(8)
-
-            lblCol = qHelp.palette()
-            lblCol.setColor(QPalette.WindowText, self._helpCol)
-            qHelp.setPalette(lblCol)
-
-            lblFont = qHelp.font()
-            lblFont.setPointSizeF(self._fontScale*lblFont.pointSizeF())
-            qHelp.setFont(lblFont)
 
             labelBox = QVBoxLayout()
             labelBox.addWidget(qLabel)
@@ -176,3 +168,25 @@ class QConfigLayout(QGridLayout):
         return self._nextRow - 1
 
 # END Class QConfigLayout
+
+class QHelpLabel(QLabel):
+
+    def __init__(self, theText, textCol, fontSize=0.9):
+        QLabel.__init__(self, theText)
+
+        if isinstance(textCol, QColor):
+            qCol = textCol
+        else:
+            qCol = QColor(*textCol)
+
+        lblCol = self.palette()
+        lblCol.setColor(QPalette.WindowText, qCol)
+        self.setPalette(lblCol)
+
+        lblFont = self.font()
+        lblFont.setPointSizeF(fontSize*lblFont.pointSizeF())
+        self.setFont(lblFont)
+
+        return
+
+# END Class QHelpLabel
