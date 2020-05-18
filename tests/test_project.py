@@ -77,17 +77,36 @@ def testProjectNewRoot(nwTempProj,nwRef):
     assert not theProject.projChanged
 
 @pytest.mark.project
+def testProjectNewFile(nwTempProj,nwRef):
+    projFile = path.join(nwTempProj,"nwProject.nwx")
+    refFile  = path.join(nwRef,"proj","3_nwProject.nwx")
+    assert theProject.openProject(projFile)
+    assert isinstance(theProject.newFile("Hello", nwItemClass.NOVEL,     "73475cb40a568"), str)
+    assert isinstance(theProject.newFile("Jane",  nwItemClass.CHARACTER, "44cb730c42048"), str)
+    assert theProject.projChanged
+    assert theProject.saveProject()
+    assert theProject.closeProject()
+    assert cmpFiles(projFile, refFile, [2])
+    assert not theProject.projChanged
+
+@pytest.mark.project
 def testIndexScanThis(nwTempProj):
     projFile = path.join(nwTempProj,"nwProject.nwx")
     assert theProject.openProject(projFile)
 
-    theIndex = NWIndex(theProject,theMain)
+    theIndex = NWIndex(theProject, theMain)
     tHandle  = "31489056e0916"
 
     isValid, theBits, thePos = theIndex.scanThis("tag: this, and this")
     assert not isValid
 
+    isValid, theBits, thePos = theIndex.scanThis("@")
+    assert not isValid
+
     isValid, theBits, thePos = theIndex.scanThis("@:")
+    assert not isValid
+
+    isValid, theBits, thePos = theIndex.scanThis(" @a: b")
     assert not isValid
 
     isValid, theBits, thePos = theIndex.scanThis("@a:")
@@ -105,9 +124,96 @@ def testIndexScanThis(nwTempProj):
     assert str(theBits) == "['@a', 'b', 'c', 'd']"
     assert str(thePos)  == "[0, 3, 5, 7]"
 
+    isValid, theBits, thePos = theIndex.scanThis("@a : b , c , d")
+    assert isValid
+    assert str(theBits) == "['@a', 'b', 'c', 'd']"
+    assert str(thePos)  == "[0, 5, 9, 13]"
+
     isValid, theBits, thePos = theIndex.scanThis("@tag: this, and this")
     assert isValid
     assert str(theBits) == "['@tag', 'this', 'and this']"
     assert str(thePos)  == "[0, 6, 12]"
+
+    assert theProject.closeProject()
+
+@pytest.mark.project
+def testIndexCheckThese(nwTempProj):
+    projFile = path.join(nwTempProj,"nwProject.nwx")
+    assert theProject.openProject(projFile)
+
+    theIndex = NWIndex(theProject, theMain)
+    nHandle  = "41cfc0d1f2d12"
+    nItem    = theProject.projTree[nHandle]
+    cHandle  = "2858dcd1057d3"
+    cItem    = theProject.projTree[cHandle]
+
+    assert theIndex.scanText(cHandle, (
+        "# Jane Smith\n"
+        "@tag: Jane"
+    ))
+    assert theIndex.scanText(nHandle, (
+        "# Hello World!\n"
+        "@pov: Jane"
+    ))
+    assert str(theIndex.tagIndex) == "{'Jane': [2, '2858dcd1057d3', 'CHARACTER']}"
+    assert theIndex.novelIndex[nHandle]["T1"]["title"] == "Hello World!"
+
+    assert str(theIndex.checkThese(["@tag",  "Jane"], cItem)) == "[True, True]"
+    assert str(theIndex.checkThese(["@tag",  "John"], cItem)) == "[True, True]"
+    assert str(theIndex.checkThese(["@tag",  "Jane"], nItem)) == "[True, False]"
+    assert str(theIndex.checkThese(["@tag",  "John"], nItem)) == "[True, True]"
+    assert str(theIndex.checkThese(["@pov",  "John"], nItem)) == "[True, False]"
+    assert str(theIndex.checkThese(["@pov",  "Jane"], nItem)) == "[True, True]"
+    assert str(theIndex.checkThese(["@ pov", "Jane"], nItem)) == "[False, False]"
+    assert str(theIndex.checkThese(["@what", "Jane"], nItem)) == "[False, False]"
+
+    assert theProject.closeProject()
+
+@pytest.mark.project
+def testIndexMeta(nwTempProj):
+    projFile = path.join(nwTempProj,"nwProject.nwx")
+    assert theProject.openProject(projFile)
+
+    theIndex = NWIndex(theProject, theMain)
+    nHandle  = "41cfc0d1f2d12"
+    nItem    = theProject.projTree[nHandle]
+    cHandle  = "2858dcd1057d3"
+    cItem    = theProject.projTree[cHandle]
+
+    assert theIndex.scanText(cHandle, (
+        "# Jane Smith\n"
+        "@tag: Jane\n"
+    ))
+    assert theIndex.scanText(nHandle, (
+        "# Hello World!\n"
+        "@pov: Jane\n"
+        "@char: Jane\n"
+        "\n"
+        "% this is a comment\n"
+        "\n"
+        "This is a story about Jane Smith.\n"
+        "\n"
+        "Well, not really.\n"
+    ))
+    assert str(theIndex.tagIndex) == "{'Jane': [2, '2858dcd1057d3', 'CHARACTER']}"
+    assert theIndex.novelIndex[nHandle]["T1"]["title"] == "Hello World!"
+
+    # The novel structure should contain the pointer to the novel file header
+    assert str(theIndex.getNovelStructure()) == "['41cfc0d1f2d12:T1']"
+
+    # The novel file should have the correct counts
+    cC, wC, pC = theIndex.getCounts(nHandle)
+    assert cC == 62 # Characters in text and title only
+    assert wC == 12 # Words in text and title only
+    assert pC == 2  # Paragraphs in text only
+
+    # The novel file should now refer to Jane as @pov and @char
+    theRefs = theIndex.getReferences(nHandle)
+    assert str(theRefs["@pov"]) == "['Jane']"
+    assert str(theRefs["@char"]) == "['Jane']"
+
+    # The character file should have a record of the reference from the novel file
+    theRefs = theIndex.getBackReferenceList(cHandle)
+    assert str(theRefs) == "{'41cfc0d1f2d12': 3}"
 
     assert theProject.closeProject()
