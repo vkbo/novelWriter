@@ -1,0 +1,10 @@
+[Desktop Entry]
+Type=Application
+Encoding=UTF-8
+Name=novelWriter
+Comment=Multi-document markdown editor for novels
+Exec=%%exec%% %f
+Icon=novelwriter
+Categories=GTK;GNOME;Office;
+Terminal=false
+MimeType=application/x-novelwriter-project

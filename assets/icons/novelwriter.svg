@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   sodipodi:docname="icon.svg"
+   inkscape:version="1.0 (4035a4fb49, 2020-05-01)"
+   id="svg8"
+   version="1.1"
+   viewBox="0 0 270.93333 270.93334"
+   height="1024"
+   width="1024"
+   inkscape:export-filename="/home/vkbo/Code/novelWriter/Icons/novelWriter/Version 3/icons/18x18@2x/novelwriter.png"
+   inkscape:export-xdpi="3.375"
+   inkscape:export-ydpi="3.375">
+  <defs
+     id="defs2">
+    <rect
+       x="60.484347"
+       y="205.79962"
+       width="130.57787"
+       height="65.785888"
+       id="rect852" />
+    <rect
+       id="rect1474"
+       height="28.631245"
+       width="177.70083"
+       y="18.019813"
+       x="13.463703" />
+    <rect
+       id="rect852-7"
+       height="65.785889"
+       width="130.57787"
+       y="205.79962"
+       x="60.484348" />
+    <rect
+       id="rect1544"
+       height="65.785889"
+       width="130.57787"
+       y="205.79962"
+       x="60.484348" />
+    <rect
+       x="60.484348"
+       y="205.79962"
+       width="130.57787"
+       height="65.785889"
+       id="rect1570" />
+    <rect
+       x="13.463703"
+       y="18.019813"
+       width="177.70083"
+       height="28.631245"
+       id="rect1587" />
+  </defs>
+  <sodipodi:namedview
+     inkscape:window-maximized="1"
+     inkscape:window-y="0"
+     inkscape:window-x="0"
+     inkscape:window-height="1344"
+     inkscape:window-width="2560"
+     inkscape:pagecheckerboard="true"
+     units="px"
+     showgrid="false"
+     inkscape:document-rotation="0"
+     inkscape:current-layer="layer1"
+     inkscape:document-units="px"
+     inkscape:cy="665.4051"
+     inkscape:cx="469.95914"
+     inkscape:zoom="0.49497475"
+     inkscape:pageshadow="2"
+     inkscape:pageopacity="0"
+     borderopacity="1.0"
+     bordercolor="#666666"
+     pagecolor="#ffffff"
+     id="base" />
+  <metadata
+     id="metadata5">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+        <dc:title></dc:title>
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <g
+     style="display:inline"
+     id="layer1"
+     inkscape:groupmode="layer"
+     inkscape:label="Background">
+    <rect
+       inkscape:label="Box"
+       ry="21.166666"
+       rx="21.166666"
+       y="5.8208332"
+       x="5.8208332"
+       height="259.29166"
+       width="259.29166"
+       id="rect1467"
+       style="display:inline;fill:#b6afaf;fill-opacity:0.69999999;stroke:#857a7a;stroke-width:2.64583;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:0.69803923" />
+  </g>
+  <g
+     inkscape:label="Logo"
+     id="layer2">
+    <path
+       inkscape:label="n"
+       d="m 82.55,52.916667 c -11.726333,0 -21.166666,9.440333 -21.166666,21.166666 v 52.916147 a 74.08333,74.08333 0 0 0 0,5.3e-4 74.08333,74.08333 0 0 0 0,0.005 v 52.912 c 0,11.72633 9.440333,21.16666 21.166666,21.16666 11.726333,0 21.16667,-9.44033 21.16667,-21.16666 v -52.91667 a 31.75,31.75 0 0 1 31.74999,-31.749997 31.75,31.75 0 0 1 31.75,31.749997 v 74.87708 h -22.6441 c -1.45336,0 -2.62361,0.59079 -2.62361,1.32447 0,0.13836 0.0421,0.27171 0.11937,0.39687 h -0.11782 c 0.0818,0.53871 0.32835,1.05778 0.74517,1.47433 l 43.8149,43.78699 c 1.03733,1.03666 2.70767,1.03667 3.74499,0 l 43.81541,-43.78699 c 0.4169,-0.41662 0.66338,-0.93551 0.74518,-1.47433 h -0.11782 c 0.0773,-0.12516 0.11937,-0.25851 0.11937,-0.39687 0,-0.73368 -1.17027,-1.32447 -2.62362,-1.32447 h -22.64409 v -74.87708 a 74.08333,74.08333 0 0 0 -74.08333,-74.083333 74.08333,74.08333 0 0 0 -0.21446,0 74.08333,74.08333 0 0 0 -35.312564,9.074382 C 96.123154,56.500593 89.772151,52.916667 82.55,52.916667 Z"
+       style="fill:#740c0c;fill-opacity:1;stroke:#631d1d;stroke-width:2.64583;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+       id="rect1406" />
+  </g>
+</svg>
