@@ -1,4 +1,4 @@
-# novelWriter
+# ![Logo](assets/icons/24x24/novelwriter.png) novelWriter
 
 [![Build Status](https://travis-ci.com/vkbo/novelWriter.svg?branch=master)](https://travis-ci.com/vkbo/novelWriter)
 [![codecov](https://codecov.io/gh/vkbo/novelWriter/branch/master/graph/badge.svg)](https://codecov.io/gh/vkbo/novelWriter)
@@ -174,4 +174,4 @@ They broadly follow Python PEP8, but there are a few modifications.
 ![Screenshot 1](docs/source/images/screenshot_default.png)
 
 **novelWriter with dark theme:**
-![Screenshot 1](docs/source/images/screenshot_dark.png)
+![Screenshot 2](docs/source/images/screenshot_dark.png)
