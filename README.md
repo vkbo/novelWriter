@@ -1,12 +1,18 @@
-# ![Logo](assets/icons/24x24/novelwriter.png) novelWriter
+# novelWriter
 
 [![Build Status](https://travis-ci.com/vkbo/novelWriter.svg?branch=master)](https://travis-ci.com/vkbo/novelWriter)
 [![codecov](https://codecov.io/gh/vkbo/novelWriter/branch/master/graph/badge.svg)](https://codecov.io/gh/vkbo/novelWriter)
 [![Documentation Status](https://readthedocs.org/projects/novelwriter/badge/?version=latest)](https://novelwriter.readthedocs.io/en/latest/?badge=latest)
 
+<img align="left" style="margin: 0 12px 8px 0;" src="assets/icons/96x96/novelwriter.png">
 novelWriter is a markdown-like text editor designed for writing novels and larger projects of many smaller plain text documents.
+novelWriter uses its own flavour of markdown that supports mete data syntax for comments, synopsis and cross-referencing between files.
 
-The documentation is available here: [novelwriter.readthedocs.io](https://novelwriter.readthedocs.io/).
+novelWriter is licensed under GPLv3, see the [GNU General Public License website](https://www.gnu.org/licenses/gpl-3.0.en.html) for more details, or consult the [LICENSE](LICENSE.md) file.
+The bundled Typicon-based icon themes are licensed under [CC BY-SA 4.0](http://creativecommons.org/licenses/by-sa/4.0/).
+
+Below is a short overview of the features of novelWriter.
+The full documentation is available at [novelwriter.readthedocs.io](https://novelwriter.readthedocs.io/).
 
 ### Note
 
