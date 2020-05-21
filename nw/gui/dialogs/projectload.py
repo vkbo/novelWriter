@@ -33,7 +33,7 @@ from datetime import datetime
 from PyQt5.QtCore import Qt
 from PyQt5.QtWidgets import (
     QDialog, QHBoxLayout, QVBoxLayout, QGridLayout, QPushButton, QTreeWidget,
-    QAbstractItemView, QTreeWidgetItem
+    QAbstractItemView, QTreeWidgetItem, QDialogButtonBox, QLabel
 )
 
 from nw.common import formatInt
@@ -42,25 +42,33 @@ logger = logging.getLogger(__name__)
 
 class GuiProjectLoad(QDialog):
 
+    NONE_STATE   = 0
+    BROWSE_STATE = 1
+    NEW_STATE    = 2
+    OPEN_STATE   = 3
+
     def __init__(self, theParent):
         QDialog.__init__(self, theParent)
 
         logger.debug("Initialising GuiProjectLoad ...")
 
-        self.mainConf   = nw.CONFIG
-        self.theParent  = theParent
-        self.sourceItem = None
-        self.openPath   = None
+        self.mainConf  = nw.CONFIG
+        self.theParent = theParent
+        self.openState = self.NONE_STATE
+        self.openPath  = None
 
-        self.outerBox = QHBoxLayout()
-        self.innerBox = QVBoxLayout()
+        self.outerBox = QVBoxLayout()
+        self.innerBox = QHBoxLayout()
+        self.outerBox.setSpacing(16)
+        self.innerBox.setSpacing(16)
+
         self.setWindowTitle("Open Project")
-        self.setLayout(self.outerBox)
+        self.setMinimumWidth(650)
+        self.setMinimumHeight(400)
+        self.setModal(True)
 
-        self.guiDeco = self.theParent.theTheme.loadDecoration("nwicon", (128, 128))
-
-        self.outerBox.addWidget(self.guiDeco, 0, Qt.AlignTop)
-        self.outerBox.addLayout(self.innerBox)
+        self.guiDeco = self.theParent.theTheme.loadDecoration("nwicon", (96, 96))
+        self.innerBox.addWidget(self.guiDeco, 0, Qt.AlignTop)
 
         self.projectForm = QGridLayout()
         self.projectForm.setContentsMargins(0, 0, 0, 0)
@@ -71,34 +79,45 @@ class GuiProjectLoad(QDialog):
         self.listBox.setColumnCount(4)
         self.listBox.setHeaderLabels(["Working Title","Words","Last Opened","Path"])
         self.listBox.setRootIsDecorated(False)
+        self.listBox.setColumnHidden(3, True)
+        self.listBox.itemClicked.connect(self._doSelectRecent)
         self.listBox.itemDoubleClicked.connect(self._doOpenRecent)
 
         treeHead = self.listBox.headerItem()
         treeHead.setTextAlignment(1, Qt.AlignRight)
         treeHead.setTextAlignment(2, Qt.AlignRight)
 
-        self.recentButton = QPushButton("Open")
-        self.recentButton.clicked.connect(self._doOpenRecent)
-        self.browseButton = QPushButton("Browse")
-        self.browseButton.clicked.connect(self._doBrowse)
-        self.closeButton = QPushButton("Close")
-        self.closeButton.clicked.connect(self._doClose)
+        self.lblRecent = QLabel("<b>Recently Opened:</b>")
+        self.lblPath   = QLabel("<b>Path:</b>")
+        self.selPath   = QLabel("")
+        self.selPath.setWordWrap(True)
 
-        self.projectForm.addWidget(self.listBox,      0, 0, 1, 4)
-        self.projectForm.addWidget(self.recentButton, 1, 1)
-        self.projectForm.addWidget(self.browseButton, 1, 2)
-        self.projectForm.addWidget(self.closeButton,  1, 3)
-        self.projectForm.setColumnStretch(0, 1)
+        self.projectForm.addWidget(self.lblRecent, 0, 0, 1, 2)
+        self.projectForm.addWidget(self.listBox,   1, 0, 1, 2)
+        self.projectForm.addWidget(self.lblPath,   2, 0, 1, 1, Qt.AlignTop)
+        self.projectForm.addWidget(self.selPath,   2, 1, 1, 1, Qt.AlignTop)
+        self.projectForm.setColumnStretch(1, 1)
+        self.projectForm.setVerticalSpacing(4)
+        self.projectForm.setHorizontalSpacing(8)
 
         self.innerBox.addLayout(self.projectForm)
 
-        self.rejected.connect(self._doClose)
-        self.setModal(True)
-        self.setMinimumWidth(750)
-        self.setMinimumHeight(450)
-        self.show()
+        self.buttonBox = QDialogButtonBox(QDialogButtonBox.Open | QDialogButtonBox.Cancel)
+        self.buttonBox.accepted.connect(self._doOpenRecent)
+        self.buttonBox.rejected.connect(self._doClose)
+
+        self.newButton = self.buttonBox.addButton("New", QDialogButtonBox.ActionRole)
+        self.newButton.clicked.connect(self._doNewProject)
+
+        self.browseButton = self.buttonBox.addButton("Browse", QDialogButtonBox.ActionRole)
+        self.browseButton.clicked.connect(self._doBrowse)
+
+        self.outerBox.addLayout(self.innerBox)
+        self.outerBox.addWidget(self.buttonBox)
+        self.setLayout(self.outerBox)
 
         self._populateList()
+        self._doSelectRecent()
 
         logger.debug("GuiProjectLoad initialisation complete")
 
@@ -116,10 +135,19 @@ class GuiProjectLoad(QDialog):
         selItems = self.listBox.selectedItems()
         if selItems:
             self.openPath = selItems[0].text(3)
+            self.openState = self.OPEN_STATE
             self.accept()
         else:
             self.openPath = None
+            self.openState = self.NONE_STATE
+        return
 
+    def _doSelectRecent(self):
+        """A recent item has been selected.
+        """
+        selList = self.listBox.selectedItems()
+        if selList:
+            self.selPath.setText(selList[0].text(3))
         return
 
     def _doBrowse(self):
@@ -129,6 +157,7 @@ class GuiProjectLoad(QDialog):
         logger.verbose("GuiProjectLoad browse button clicked")
         self._saveDialogState()
         self.openPath = None
+        self.openState = self.BROWSE_STATE
         self.accept()
         return
 
@@ -138,6 +167,16 @@ class GuiProjectLoad(QDialog):
         logger.verbose("GuiProjectLoad close button clicked")
         self._saveDialogState()
         self.close()
+        return
+
+    def _doNewProject(self):
+        """Create a new project.
+        """
+        logger.verbose("GuiProjectLoad new project button clicked")
+        self._saveDialogState()
+        self.openPath = None
+        self.openState = self.NEW_STATE
+        self.accept()
         return
 
     ##
@@ -156,7 +195,6 @@ class GuiProjectLoad(QDialog):
     def _populateList(self):
         """Populate the list box with recent project data.
         """
-
         listOrder = []
         listData  = {}
         for projPath in self.mainConf.recentProj.keys():
@@ -178,6 +216,7 @@ class GuiProjectLoad(QDialog):
         hasSelection = False
         for timeStamp in sorted(listOrder, reverse=True):
             newItem = QTreeWidgetItem([""]*4)
+            newItem.setIcon(0, self.theParent.theTheme.getIcon("proj_nwx"))
             newItem.setText(0, listData[timeStamp][0])
             newItem.setText(1, formatInt(listData[timeStamp][1]))
             newItem.setText(2, datetime.fromtimestamp(timeStamp).strftime("%x %X"))

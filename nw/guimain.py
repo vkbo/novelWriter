@@ -262,7 +262,12 @@ class GuiMain(QMainWindow):
         dlgProj = GuiProjectLoad(self)
         dlgProj.exec_()
         if dlgProj.result() == QDialog.Accepted:
-            self.openProject(dlgProj.openPath)
+            if dlgProj.openState == GuiProjectLoad.OPEN_STATE:
+                self.openProject(dlgProj.openPath)
+            elif dlgProj.openState == GuiProjectLoad.BROWSE_STATE:
+                self.openProject(dlgProj.openPath)
+            elif dlgProj.openState == GuiProjectLoad.NEW_STATE:
+                self.newProject()
 
         return True
 
