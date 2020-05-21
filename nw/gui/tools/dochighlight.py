@@ -159,22 +159,24 @@ class GuiDocHighlighter(QSyntaxHighlighter):
         ))
 
         # Quoted Strings
-        self.hRules.append((
-            "{:s}(.+?){:s}".format('"','"'), {
-                0 : self.hStyles["dialogue1"],
-            }
-        ))
-        self.hRules.append((
-            "{:s}(.+?){:s}".format(*self.mainConf.fmtDoubleQuotes), {
-                0 : self.hStyles["dialogue2"],
-            }
-        ))
-        self.hRules.append((
-            "{:s}(.+?){:s}".format(*self.mainConf.fmtSingleQuotes), {
-                0 : self.hStyles["dialogue3"],
-            }
-        ))
+        if self.mainConf.highlightQuotes:
+            self.hRules.append((
+                "{:s}(.+?){:s}".format('"','"'), {
+                    0 : self.hStyles["dialogue1"],
+                }
+            ))
+            self.hRules.append((
+                "{:s}(.+?){:s}".format(*self.mainConf.fmtDoubleQuotes), {
+                    0 : self.hStyles["dialogue2"],
+                }
+            ))
+            self.hRules.append((
+                "{:s}(.+?){:s}".format(*self.mainConf.fmtSingleQuotes), {
+                    0 : self.hStyles["dialogue3"],
+                }
+            ))
 
+        # Auto-Replace Tags
         self.hRules.append((
             r"<(\S+?)>", {
                 0 : self.hStyles["replace"],
