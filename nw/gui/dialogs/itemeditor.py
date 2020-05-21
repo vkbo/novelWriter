@@ -34,7 +34,7 @@ from PyQt5.QtWidgets import (
     QDialogButtonBox
 )
 
-from nw.gui.additions import QSwitch, QHelpLabel
+from nw.gui.additions import QSwitch
 from nw.constants import nwLabels, nwItemLayout, nwItemClass, nwItemType
 
 logger = logging.getLogger(__name__)
@@ -58,13 +58,6 @@ class GuiItemEditor(QDialog):
 
         self.setWindowTitle("Item Settings")
         self.setLayout(self.outerBox)
-
-        # Labels
-        self.headLabel = QLabel("<b>Edit Item Settings</b>")
-        self.helpLabel = QHelpLabel(
-            "Item layout and status options depend on the root folder.",
-            self.theParent.theTheme.helpText
-        )
 
         # Item Label
         self.editName = QLineEdit()
@@ -132,6 +125,7 @@ class GuiItemEditor(QDialog):
         # Assemble
         self.mainForm = QGridLayout()
         self.mainForm.setVerticalSpacing(4)
+        self.mainForm.setHorizontalSpacing(16)
         self.mainForm.addWidget(QLabel("Label"),  0, 0, 1, 1)
         self.mainForm.addWidget(self.editName,    0, 1, 1, 2)
         self.mainForm.addWidget(QLabel("Status"), 1, 0, 1, 1)
@@ -141,19 +135,13 @@ class GuiItemEditor(QDialog):
         self.mainForm.addWidget(self.textExport,  3, 0, 1, 2)
         self.mainForm.addWidget(self.editExport,  3, 2, 1, 1)
 
-        self.outerBox.setSpacing(0)
-        self.outerBox.addWidget(self.headLabel)
-        self.outerBox.addWidget(self.helpLabel)
-        self.outerBox.addSpacing(8)
+        self.outerBox.setSpacing(16)
         self.outerBox.addLayout(self.mainForm)
-        self.outerBox.addSpacing(12)
         self.outerBox.addStretch(1)
         self.outerBox.addWidget(self.buttonBox)
         self.setLayout(self.outerBox)
 
         self.rejected.connect(self._doClose)
-        self.show()
-
         self.editName.selectAll()
 
         logger.debug("GuiItemEditor initialisation complete")
