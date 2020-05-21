@@ -47,6 +47,7 @@ __maintainer__ = "Veronica Berglyd Olsen"
 __email__      = "code@vkbo.net"
 __status__     = "Pre-Release"
 __url__        = "https://github.com/vkbo/novelWriter"
+__domain__     = "novelwriter.io"
 __docurl__     = "https://novelwriter.readthedocs.io"
 __credits__    = [
     "Veronica Berglyd Olsen (developer)",
