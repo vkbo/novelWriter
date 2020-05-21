@@ -85,8 +85,6 @@ For the apt package manager on Debian systems, the following Python3 packages ar
 These are optional, but recommended:
 
 * `python3-enchant` for better spell checking
-* `python3-latexcodec` for escaping unicode characters in LaTeX export
-* `python3-pypandoc` for additional exports to Word, Open Office, eBooks, etc.
 
 Alternatively, the packages can be installed with `pip` by running
 ```
@@ -99,14 +97,12 @@ You can also do them one at a time, skipping the ones you don't need:
 python3 -m pip install pyqt5
 python3 -m pip install lxml
 python3 -m pip install pyenchant
-python3 -m pip install latexcodec
-python3 -m pip install pypandoc
 ```
-On Windows,`pyenchant` may cause problems.
+
 If no external spell checking tool is installed, novelWriter will use a basic spell checker based on standard Python package `difflib`.
-Currently, only English dictionaries are available, but more can be added to the `nw/assets/dict` folder.
-See the RADME.md file in that folder for how to generate more dictionaries.
-This option is both slow and limited.
+Currently, only English dictionaries are available for this spell checker, but more can be added to the `nw/assets/dict` folder.
+See the [nw/assets/dict/README.md](README.md) file in that folder for how to generate more dictionaries.
+Note that the difflib-based option is both slow and limited.
 
 Note: On Windows, make sure Python3 is in your PATH if you want to launch novelWriter from command line.
 You can also right click the `novelWriter.py` file, create a shortcut, then right click again, select "Properties" and change the target to your python executable and `novelWriter.py`.
@@ -118,7 +114,7 @@ C:\...\AppData\Local\Programs\Python\Python38\python.exe novelWriter.py
 
 ## Key Features
 
-The text documents of novelWriter uses a format similar to markdown, but with a few extensions and a few omissions.
+The text documents of novelWriter use a format similar to markdown, but with a few extensions and a few omissions.
 Project meta data is stored as XML.
 
 ### Colour Themes
@@ -129,15 +125,15 @@ The GUI also has an optional dark theme in addition to the default system theme.
 Note that the dark theme may not render all elements of the GUI as dark colours if you are running an early version of Qt5.
 This is not due to a bug in novelWriter, but due to the fact that the the styling options in the Qt API in some versions were incomplete.
 
-New themes can easily be added to the `nw/themes` folder.
+New themes can easily be added to the `nw/assets/themes` folder.
 Have a look in the existing folders for examples of how to define the colours.
 
 ### Auto-Saving and Document Stats
 
-Open documents and the project file itself is saved regularly on a timer if they have been altered.
-The status of this is indicated by two indicators in the right corner of the status bar.
-Unsaved changes are in yellow, and saved is indicated by green.
-Latest character count, word count, and paragraph count is shown next to these indicators in the status bar.
+Open documents and the project file itself is saved regularly on a timer – if they have been altered.
+The status of this is indicated by two indicators on the right hand side of the status bar.
+Unsaved changes are in yellow, and saved is indicated by green in the default theme.
+Latest word count for the document and project is shown next to these indicators in the status bar.
 The counts are updated regularly, but not as-you-type.
 
 ### Easy Organising of Project Files
@@ -154,8 +150,8 @@ Headings of level two signify the start of a new chapter.
 Headings of level three signify the start of a new scene.
 Headings of level four can be used internally in each scene to separate sections.
 
-Each novel file can be assigned a layout format, which shows up as a flag next to the item in the tree view.
-These are mostly to help the user see what they contain, but some of them have impact on the format of the exported document.
+Each novel file can be assigned a layout format, which shows up as a flag next to the item in the project tree.
+These are mostly to help the user see what they contain, but they also have some impact on the format of the exported document.
 See the documentation for further details.
 
 #### Project Notes
@@ -167,12 +163,13 @@ These are optional files.
 ### Visualisation of Story Elements
 
 The different notes can be assigned tags, which the novel files can refer back to using special meta keywords.
-Currently, this information can be used to display a Timeline View of the story, showing where each scene connects to the plot, and which characters, etc. occur in them.
-Further features using this meta data will be added in the future.
+This information can be used to display an outline of the story, showing where each scene connects to the plot, and which characters, etc. occur in them.
+In addition, the tags themselves are clickable in the document view pane, and control-clickable in the editor.
+They make it possible to quickly navigate between the documents while editing.
 
 ## Contribution
 
-If you ant to contribute to novelWriter, please follow the coding convention laid out in the [Style Guide](docs/markdown/style.md).
+If you want to contribute to novelWriter, please follow the coding convention laid out in the [Style Guide](docs/markdown/style.md).
 They broadly follow Python PEP8, but there are a few modifications.
 
 ## Screenshot
