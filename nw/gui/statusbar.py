@@ -212,7 +212,7 @@ class GuiMainStatus(QStatusBar):
             sWC = self.sessWords,
         ))
         self.statsText.setText((
-            "D:{wC:n}  P:{pWC:n}  S:{sWC:n}"
+            "D:{wC:n}  P:{pWC:n} ({sWC:+n})"
         ).format(
             wC  = self.wordCount,
             pWC = self.projWords,
@@ -243,10 +243,10 @@ class StatusLED(QAbstractButton):
     def __init__(self, colNone, colTrue, colFalse, sW, sH, parent=None):
         super().__init__(parent=parent)
 
-        self.colNone   = colNone
-        self.colTrue   = colTrue
-        self.colFalse  = colFalse
-        self._theCol   = colNone
+        self.colNone  = colNone
+        self.colTrue  = colTrue
+        self.colFalse = colFalse
+        self._theCol  = colNone
 
         self.setFixedWidth(sW)
         self.setFixedHeight(sH)
