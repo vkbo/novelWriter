@@ -2,6 +2,10 @@
 
 ## Version 0.6 [2020-xx-xx]
 
+**Bugfixes**
+
+* Fixed a bug in validation of `@tag:` meta tags where one or more spaces before the `:` would still pass as valid tags, but the keyword index array would be missing those spaces in its counter. This mainly affected the highlighting of keywords, which would be misaligned. PR #206
+
 **User Interface**
 
 * The Export Tool has been removed and replaced by a new tool called "Build Novel Project". The new tool has the same filtering options as the Export Tool, but with more formatting options for titles. It also has a preview window to display the generated document. A Save As button provides exports to HTML, novelWriter Markdown. plain text, PDF and Open Document format. LaTeX export has not been ported over, and interfacing with Pandoc is no longer supported either. Although, as before, the HTML export can be converted with Pandoc to other formats outside of novelWriter. The new tool also supports printing. PR #204
