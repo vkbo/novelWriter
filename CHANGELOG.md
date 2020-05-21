@@ -1,5 +1,23 @@
 # novelWriter ChangeLog
 
+## Version 0.5.2 [2020-05-21]
+
+**Bugfixes**
+
+* When running on Windows 10, some of the buttons were missing icons. More fallback icons have been added to ensure that all current buttons have a fallback path that always ends in an icon. PR #211
+
+**User Interface**
+
+* The statusbar has been redesigned a bit. The block icons showing document and project saved status have been replaced by LED icons. The statistics has been moved to a separate label, and most of the detailed stats moved to its tooltip. PR #210
+* Default icon theme is now `Typicons Grey Light`. PR #211
+* Clicking on the document header selects the document in the project tree, but this functionality has been enhanced to also ensure the document is expanded and visible in the tree. If it's scrolled out of view, the tree will scroll it into view. PR #215
+* Syntax highlighting of text in quotes can now be turned off in Preferences. #215
+
+**Core Functionality**
+
+* Checking for version dependencies and a few packages (aside from PyQt5) is now done later in the start-up so that it is possible to alert the user with a dialog box instead of terminal error messages. PR #210
+* Made a few minor changes to the code so novelWriter can run with Python 3.4.3 and Qt 5.2.1, that is, it runs on last version of Ubuntu 14.04. This level of compatibility is not guaranteed to remain in the future, but for now, the changes have no impact on functionality. PR #210
+
 ## Version 0.5.1 [2020-05-14]
 
 **Bugfixes**
