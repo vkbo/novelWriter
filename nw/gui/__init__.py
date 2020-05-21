@@ -8,6 +8,7 @@ from nw.gui.statusbar import GuiMainStatus
 from nw.gui.theme import GuiTheme
 
 # Dialogs
+from nw.gui.dialogs.about import GuiAbout
 from nw.gui.dialogs.configeditor import GuiConfigEditor
 from nw.gui.dialogs.docmerge import GuiDocMerge
 from nw.gui.dialogs.docsplit import GuiDocSplit
@@ -38,6 +39,7 @@ __all__ = [
     "GuiMainMenu",
     "GuiMainStatus",
     "GuiTheme",
+    "GuiAbout",
     "GuiConfigEditor",
     "GuiDocMerge",
     "GuiDocSplit",

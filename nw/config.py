@@ -233,7 +233,7 @@ class Config:
         self.graphPath = path.join(self.assetPath,"graphics")
         self.dictPath  = path.join(self.assetPath,"dict")
         self.iconPath  = path.join(self.assetPath,"icons")
-        self.appIcon   = path.join(self.iconPath, nwFiles.APP_ICON)
+        self.appIcon   = path.join(self.iconPath, "novelwriter.svg")
 
         logger.verbose("App path: %s" % self.appPath)
         logger.verbose("Home path: %s" % self.homePath)
