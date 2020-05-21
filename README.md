@@ -4,9 +4,16 @@
 [![codecov](https://codecov.io/gh/vkbo/novelWriter/branch/master/graph/badge.svg)](https://codecov.io/gh/vkbo/novelWriter)
 [![Documentation Status](https://readthedocs.org/projects/novelwriter/badge/?version=latest)](https://novelwriter.readthedocs.io/en/latest/?badge=latest)
 
+<img align="left" style="margin: 0 16px 4px 0;" src="assets/icons/96x96/novelwriter.png">
 novelWriter is a markdown-like text editor designed for writing novels and larger projects of many smaller plain text documents.
 
-The documentation is available here: [novelwriter.readthedocs.io](https://novelwriter.readthedocs.io/).
+novelWriter uses its own flavour of markdown that supports a meta data syntax for comments, synopsis and cross-referencing between files.
+
+novelWriter is licensed under GPLv3, see the [GNU General Public License website](https://www.gnu.org/licenses/gpl-3.0.en.html) for more details, or consult the [LICENSE](LICENSE.md) file.
+The bundled Typicon-based icon themes are licensed under [CC BY-SA 4.0](http://creativecommons.org/licenses/by-sa/4.0/).
+
+Below is a short overview of the features of novelWriter.
+The full documentation is available at [novelwriter.readthedocs.io](https://novelwriter.readthedocs.io/).
 
 ### Note
 
@@ -174,4 +181,4 @@ They broadly follow Python PEP8, but there are a few modifications.
 ![Screenshot 1](docs/source/images/screenshot_default.png)
 
 **novelWriter with dark theme:**
-![Screenshot 1](docs/source/images/screenshot_dark.png)
+![Screenshot 2](docs/source/images/screenshot_dark.png)

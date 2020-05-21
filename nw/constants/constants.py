@@ -36,7 +36,6 @@ class nwConst():
 
 class nwFiles():
 
-    APP_ICON    = "novelWriter.svg"
     PROJ_FILE   = "nwProject.nwx"
     PROJ_DICT   = "wordlist.txt"
     PROJ_LOCK   = "nwProject.lock"
@@ -153,34 +152,6 @@ class nwLabels():
     }
 
 # END Class nwLabels
-
-class nwDependencies():
-    """Python package dependencies and their reference links.
-    """
-    PACKS = {
-        "pyqt5"      : {
-            "site" : "",
-            "docs" : "",
-        },
-        "lxml"       : {
-            "site" : "",
-            "docs" : "",
-        },
-        "pyenchant"  : {
-            "site" : "",
-            "docs" : "",
-        },
-        "latexcodec" : {
-            "site" : "https://pypi.org/project/latexcodec/",
-            "docs" : "https://latexcodec.readthedocs.io/en/latest/",
-        },
-        "pypandoc" : {
-            "site" : "https://pypi.org/project/pypandoc/",
-            "docs" : "https://pypi.org/project/pypandoc/",
-        },
-    }
-
-# END Class nwDependencies
 
 class nwQuotes():
     """Allowed quotation marks.

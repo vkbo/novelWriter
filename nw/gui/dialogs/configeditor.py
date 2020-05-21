@@ -38,51 +38,39 @@ from PyQt5.QtWidgets import (
     QFileDialog
 )
 
-from nw.gui.additions import QSwitch, QConfigLayout
+from nw.gui.additions import QSwitch, QConfigLayout, PagedDialog
 from nw.core import NWSpellCheck, NWSpellSimple, NWSpellEnchant
 from nw.constants import nwAlert, nwQuotes
 
 logger = logging.getLogger(__name__)
 
-class GuiConfigEditor(QDialog):
+class GuiConfigEditor(PagedDialog):
 
     def __init__(self, theParent, theProject):
-        QDialog.__init__(self, theParent)
+        PagedDialog.__init__(self, theParent)
 
         logger.debug("Initialising ConfigEditor ...")
 
         self.mainConf   = nw.CONFIG
         self.theParent  = theParent
         self.theProject = theProject
-        self.outerBox   = QHBoxLayout()
-        self.innerBox   = QVBoxLayout()
 
         self.setWindowTitle("Preferences")
-        self.guiDeco = self.theParent.theTheme.loadDecoration("settings", (64,64))
-        self.outerBox.setSpacing(16)
-
-        self.outerBox.addWidget(self.guiDeco, 0, Qt.AlignTop)
-        self.outerBox.addLayout(self.innerBox)
-        self.setLayout(self.outerBox)
 
         self.tabGeneral = GuiConfigEditGeneralTab(self.theParent)
         self.tabLayout  = GuiConfigEditLayoutTab(self.theParent)
         self.tabEditing = GuiConfigEditEditingTab(self.theParent)
         self.tabAutoRep = GuiConfigEditAutoReplaceTab(self.theParent)
 
-        self.tabWidget = QTabWidget()
-        self.tabWidget.setMinimumWidth(600)
-        self.tabWidget.addTab(self.tabGeneral, "General")
-        self.tabWidget.addTab(self.tabLayout,  "Layout")
-        self.tabWidget.addTab(self.tabEditing, "Editing")
-        self.tabWidget.addTab(self.tabAutoRep, "Auto-Replace")
+        self.addTab(self.tabGeneral, "General")
+        self.addTab(self.tabLayout,  "Layout")
+        self.addTab(self.tabEditing, "Editor")
+        self.addTab(self.tabAutoRep, "Auto-Replace")
 
         self.buttonBox = QDialogButtonBox(QDialogButtonBox.Ok | QDialogButtonBox.Cancel)
         self.buttonBox.accepted.connect(self._doSave)
         self.buttonBox.rejected.connect(self._doClose)
-
-        self.innerBox.addWidget(self.tabWidget)
-        self.innerBox.addWidget(self.buttonBox)
+        self.addControls(self.buttonBox)
 
         self.show()
 
@@ -186,22 +174,6 @@ class GuiConfigEditGeneralTab(QWidget):
             "Changing this requires restarting %s." % nw.__package__
         )
 
-        ## Syntax Highlighting
-        self.selectSyntax = QComboBox()
-        self.selectSyntax.setMinimumWidth(200)
-        self.theSyntaxes = self.theTheme.listSyntax()
-        for syntaxFile, syntaxName in self.theSyntaxes:
-            self.selectSyntax.addItem(syntaxName, syntaxFile)
-        syntaxIdx = self.selectSyntax.findData(self.mainConf.guiSyntax)
-        if syntaxIdx != -1:
-            self.selectSyntax.setCurrentIndex(syntaxIdx)
-
-        self.mainForm.addRow(
-            "Syntax highlight theme",
-            self.selectSyntax,
-            ""
-        )
-
         ## Dark Icons
         self.preferDarkIcons = QSwitch()
         self.preferDarkIcons.setChecked(self.mainConf.guiDark)
@@ -220,13 +192,6 @@ class GuiConfigEditGeneralTab(QWidget):
         self.mainForm.addRow(
             "Show full path in document header",
             self.showFullPath
-        )
-
-        self.highlightQuotes = QSwitch()
-        self.highlightQuotes.setChecked(self.mainConf.highlightQuotes)
-        self.mainForm.addRow(
-            "Add highlighting to text in quotes",
-            self.highlightQuotes
         )
 
         # AutoSave Settings
@@ -299,11 +264,9 @@ class GuiConfigEditGeneralTab(QWidget):
         needsRestart = False
 
         guiTheme        = self.selectTheme.currentData()
-        guiSyntax       = self.selectSyntax.currentData()
         guiIcons        = self.selectIcons.currentData()
         guiDark         = self.preferDarkIcons.isChecked()
         showFullPath    = self.showFullPath.isChecked()
-        highlightQuotes = self.highlightQuotes.isChecked()
         autoSaveDoc     = self.autoSaveDoc.value()
         autoSaveProj    = self.autoSaveProj.value()
         backupPath      = self.backupPath
@@ -315,11 +278,9 @@ class GuiConfigEditGeneralTab(QWidget):
         needsRestart |= self.mainConf.guiIcons != guiIcons
 
         self.mainConf.guiTheme        = guiTheme
-        self.mainConf.guiSyntax       = guiSyntax
         self.mainConf.guiIcons        = guiIcons
         self.mainConf.guiDark         = guiDark
         self.mainConf.showFullPath    = showFullPath
-        self.mainConf.highlightQuotes = highlightQuotes
         self.mainConf.autoSaveDoc     = autoSaveDoc
         self.mainConf.autoSaveProj    = autoSaveProj
         self.mainConf.backupPath      = backupPath
@@ -544,6 +505,33 @@ class GuiConfigEditEditingTab(QWidget):
 
         # Spell Checking
         # ==============
+        self.mainForm.addGroupLabel("Syntax Highlighting")
+
+        ## Syntax Highlighting
+        self.selectSyntax = QComboBox()
+        self.selectSyntax.setMinimumWidth(200)
+        self.theSyntaxes = self.theTheme.listSyntax()
+        for syntaxFile, syntaxName in self.theSyntaxes:
+            self.selectSyntax.addItem(syntaxName, syntaxFile)
+        syntaxIdx = self.selectSyntax.findData(self.mainConf.guiSyntax)
+        if syntaxIdx != -1:
+            self.selectSyntax.setCurrentIndex(syntaxIdx)
+
+        self.mainForm.addRow(
+            "Highlight theme",
+            self.selectSyntax,
+            ""
+        )
+
+        self.highlightQuotes = QSwitch()
+        self.highlightQuotes.setChecked(self.mainConf.highlightQuotes)
+        self.mainForm.addRow(
+            "Highlight text wrapped in quotes",
+            self.highlightQuotes
+        )
+
+        # Spell Checking
+        # ==============
         self.mainForm.addGroupLabel("Spell Checking")
 
         ## Spell Check Provider and Language
@@ -595,13 +583,17 @@ class GuiConfigEditEditingTab(QWidget):
         validEntries = True
         needsRestart = False
 
-        spellTool     = self.spellToolList.currentData()
-        spellLanguage = self.spellLangList.currentData()
-        bigDocLimit   = self.bigDocLimit.value()
+        guiSyntax       = self.selectSyntax.currentData()
+        highlightQuotes = self.highlightQuotes.isChecked()
+        spellTool       = self.spellToolList.currentData()
+        spellLanguage   = self.spellLangList.currentData()
+        bigDocLimit     = self.bigDocLimit.value()
 
-        self.mainConf.spellTool     = spellTool
-        self.mainConf.spellLanguage = spellLanguage
-        self.mainConf.bigDocLimit   = bigDocLimit
+        self.mainConf.guiSyntax       = guiSyntax
+        self.mainConf.highlightQuotes = highlightQuotes
+        self.mainConf.spellTool       = spellTool
+        self.mainConf.spellLanguage   = spellLanguage
+        self.mainConf.bigDocLimit     = bigDocLimit
 
         self.mainConf.confChanged = True
 
@@ -782,6 +774,7 @@ class GuiConfigEditAutoReplaceTab(QWidget):
     def saveValues(self):
 
         validEntries = True
+        needsRestart = False
 
         autoSelect      = self.autoSelect.isChecked()
         doReplace       = self.autoReplaceMain.isChecked()
@@ -836,7 +829,7 @@ class GuiConfigEditAutoReplaceTab(QWidget):
 
         self.mainConf.confChanged = True
 
-        return validEntries, False
+        return validEntries, needsRestart
 
     ##
     #  Slots

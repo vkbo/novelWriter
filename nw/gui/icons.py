@@ -76,6 +76,7 @@ class GuiIcons:
         "cls_trash"      : (QStyle.SP_DriveHDIcon,         "drive-harddisk"),
         "proj_document"  : (QStyle.SP_FileIcon,            "x-office-document"),
         "proj_folder"    : (QStyle.SP_DirIcon,             "folder"),
+        "proj_nwx"       : (None,                          None),
         "status_lang"    : (None,                          None),
         "status_time"    : (None,                          None),
         "status_stats"   : (None,                          None),
@@ -98,11 +99,7 @@ class GuiIcons:
     }
 
     DECO_MAP = {
-        "nwicon"   : ["icons", "novelWriter.svg"],
-        "export"   : ["graphics", "export.svg"],
-        "merge"    : ["graphics", "merge.svg"],
-        "settings" : ["graphics", "gear.svg"],
-        "split"    : ["graphics", "split.svg"],
+        "nwicon" : ["icons", "novelwriter.svg"],
     }
 
     def __init__(self, theParent):
@@ -299,8 +296,10 @@ class GuiIcons:
         # Finally. we check if we have a fallback icon
         if self.mainConf.guiDark:
             fbackIcon = path.join(self.mainConf.iconPath, self.fbackName, "%s-dark.svg" % iconKey)
-        else:
-            fbackIcon = path.join(self.mainConf.iconPath, self.fbackName, "%s.svg" % iconKey)
+            if path.isfile(fbackIcon):
+                logger.verbose("Loading icon '%s' from fallback theme" % iconKey)
+                return QIcon(fbackIcon)
+        fbackIcon = path.join(self.mainConf.iconPath, self.fbackName, "%s.svg" % iconKey)
         if path.isfile(fbackIcon):
             logger.verbose("Loading icon '%s' from fallback theme" % iconKey)
             return QIcon(fbackIcon)

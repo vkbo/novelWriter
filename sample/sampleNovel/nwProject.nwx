@@ -11,13 +11,23 @@
     <spellCheck>True</spellCheck>
     <autoOutline>True</autoOutline>
     <lastEdited>96b68994dfa3d</lastEdited>
-    <lastViewed>b3e74dbc1f584</lastViewed>
+    <lastViewed>6a2d6d5f4f401</lastViewed>
     <lastWordCount>875</lastWordCount>
     <autoReplace>
       <A>B</A>
       <B>E</B>
       <C>D</C>
     </autoReplace>
+    <titleFormat>
+      <title>%title%</title>
+      <chapter>Chapter %chnum%.\\%title%</chapter>
+      <unnumbered>%title%</unnumbered>
+      <scene>Scene %chnum%.%scnum%: %title%</scene>
+      <section></section>
+      <withSynopsis>True</withSynopsis>
+      <withComments>False</withComments>
+      <withKeywords>False</withKeywords>
+    </titleFormat>
     <status>
       <entry blue="100" green="100" red="100">New</entry>
       <entry blue="0" green="50" red="200">Notes</entry>
@@ -48,6 +58,7 @@
       <class>NOVEL</class>
       <status>Started</status>
       <expanded>False</expanded>
+      <exported>True</exported>
       <layout>TITLE</layout>
       <charCount>72</charCount>
       <wordCount>15</wordCount>
@@ -67,6 +78,7 @@
       <class>NOVEL</class>
       <status>Notes</status>
       <expanded>False</expanded>
+      <exported>True</exported>
       <layout>CHAPTER</layout>
       <charCount>12</charCount>
       <wordCount>3</wordCount>
@@ -79,6 +91,7 @@
       <class>NOVEL</class>
       <status>1st Draft</status>
       <expanded>False</expanded>
+      <exported>True</exported>
       <layout>SCENE</layout>
       <charCount>1199</charCount>
       <wordCount>216</wordCount>
@@ -91,6 +104,7 @@
       <class>NOVEL</class>
       <status>1st Draft</status>
       <expanded>False</expanded>
+      <exported>True</exported>
       <layout>SCENE</layout>
       <charCount>476</charCount>
       <wordCount>93</wordCount>
@@ -103,6 +117,7 @@
       <class>NOVEL</class>
       <status>Finished</status>
       <expanded>False</expanded>
+      <exported>True</exported>
       <layout>UNNUMBERED</layout>
       <charCount>633</charCount>
       <wordCount>101</wordCount>
@@ -115,6 +130,7 @@
       <class>NOVEL</class>
       <status>2nd Draft</status>
       <expanded>False</expanded>
+      <exported>False</exported>
       <layout>NOTE</layout>
       <charCount>1692</charCount>
       <wordCount>313</wordCount>
@@ -127,6 +143,7 @@
       <class>NOVEL</class>
       <status>1st Draft</status>
       <expanded>False</expanded>
+      <exported>True</exported>
       <layout>CHAPTER</layout>
       <charCount>139</charCount>
       <wordCount>28</wordCount>
@@ -139,6 +156,7 @@
       <class>NOVEL</class>
       <status>1st Draft</status>
       <expanded>False</expanded>
+      <exported>True</exported>
       <layout>SCENE</layout>
       <charCount>189</charCount>
       <wordCount>37</wordCount>
@@ -165,6 +183,7 @@
       <class>CHARACTER</class>
       <status>Minor</status>
       <expanded>False</expanded>
+      <exported>True</exported>
       <layout>NOTE</layout>
       <charCount>49</charCount>
       <wordCount>9</wordCount>
@@ -177,6 +196,7 @@
       <class>CHARACTER</class>
       <status>Major</status>
       <expanded>False</expanded>
+      <exported>True</exported>
       <layout>NOTE</layout>
       <charCount>55</charCount>
       <wordCount>9</wordCount>
@@ -196,6 +216,7 @@
       <class>WORLD</class>
       <status>Main</status>
       <expanded>False</expanded>
+      <exported>True</exported>
       <layout>NOTE</layout>
       <charCount>76</charCount>
       <wordCount>15</wordCount>
@@ -208,6 +229,7 @@
       <class>WORLD</class>
       <status>Minor</status>
       <expanded>False</expanded>
+      <exported>True</exported>
       <layout>NOTE</layout>
       <charCount>115</charCount>
       <wordCount>24</wordCount>
@@ -220,6 +242,7 @@
       <class>WORLD</class>
       <status>Major</status>
       <expanded>False</expanded>
+      <exported>True</exported>
       <layout>NOTE</layout>
       <charCount>28</charCount>
       <wordCount>6</wordCount>
@@ -239,6 +262,7 @@
       <class>NOVEL</class>
       <status>New</status>
       <expanded>False</expanded>
+      <exported>True</exported>
       <layout>SCENE</layout>
       <charCount>30</charCount>
       <wordCount>6</wordCount>

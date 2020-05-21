@@ -58,10 +58,13 @@ class GuiTheme:
         # Loaded Theme Settings
 
         ## Theme
-        self.themeName   = ""
-        self.themeAuthor = ""
-        self.themeCredit = ""
-        self.themeUrl    = ""
+        self.themeName        = ""
+        self.themeDescription = ""
+        self.themeAuthor      = ""
+        self.themeCredit      = ""
+        self.themeUrl         = ""
+        self.themeLicense     = ""
+        self.themeLicenseUrl  = ""
 
         ## GUI
         self.treeWCount  = [  0,  0,  0]
@@ -73,10 +76,13 @@ class GuiTheme:
         # Loaded Syntax Settings
 
         ## Main
-        self.syntaxName   = ""
-        self.syntaxAuthor = ""
-        self.syntaxCredit = ""
-        self.syntaxUrl    = ""
+        self.syntaxName        = ""
+        self.syntaxDescription = ""
+        self.syntaxAuthor      = ""
+        self.syntaxCredit      = ""
+        self.syntaxUrl         = ""
+        self.syntaxLicense     = ""
+        self.syntaxLicenseUrl  = ""
 
         ## Colours
         self.colBack   = [255,255,255]
@@ -179,10 +185,13 @@ class GuiTheme:
         ## Main
         cnfSec = "Main"
         if confParser.has_section(cnfSec):
-            self.themeName   = self._parseLine( confParser, cnfSec, "name",   "")
-            self.themeAuthor = self._parseLine( confParser, cnfSec, "author", "")
-            self.themeCredit = self._parseLine( confParser, cnfSec, "credit", "")
-            self.themeUrl    = self._parseLine( confParser, cnfSec, "url",    "")
+            self.themeName        = self._parseLine( confParser, cnfSec, "name", "")
+            self.themeDescription = self._parseLine( confParser, cnfSec, "description", "")
+            self.themeAuthor      = self._parseLine( confParser, cnfSec, "author", "")
+            self.themeCredit      = self._parseLine( confParser, cnfSec, "credit", "")
+            self.themeUrl         = self._parseLine( confParser, cnfSec, "url", "")
+            self.themeLicense     = self._parseLine( confParser, cnfSec, "license", "")
+            self.themeLicenseUrl  = self._parseLine( confParser, cnfSec, "licenseurl", "")
 
         ## Palette
         cnfSec = "Palette"
@@ -230,10 +239,13 @@ class GuiTheme:
         ## Main
         cnfSec = "Main"
         if confParser.has_section(cnfSec):
-            self.syntaxName   = self._parseLine(confParser, cnfSec, "name",   "")
-            self.syntaxAuthor = self._parseLine(confParser, cnfSec, "author", "")
-            self.syntaxCredit = self._parseLine(confParser, cnfSec, "credit", "")
-            self.syntaxUrl    = self._parseLine(confParser, cnfSec, "url",    "")
+            self.syntaxName        = self._parseLine( confParser, cnfSec, "name", "")
+            self.syntaxDescription = self._parseLine( confParser, cnfSec, "description", "")
+            self.syntaxAuthor      = self._parseLine( confParser, cnfSec, "author", "")
+            self.syntaxCredit      = self._parseLine( confParser, cnfSec, "credit", "")
+            self.syntaxUrl         = self._parseLine( confParser, cnfSec, "url", "")
+            self.syntaxLicense     = self._parseLine( confParser, cnfSec, "license", "")
+            self.syntaxLicenseUrl  = self._parseLine( confParser, cnfSec, "licenseurl", "")
 
         ## Syntax
         cnfSec = "Syntax"

@@ -40,12 +40,12 @@ from PyQt5.QtWidgets import (
 )
 
 from nw.gui import (
-    GuiMainMenu, GuiMainStatus, GuiTheme, GuiDocTree, GuiDocEditor, GuiExport,
+    GuiMainMenu, GuiMainStatus, GuiTheme, GuiDocTree, GuiDocEditor,
     GuiDocViewer, GuiDocDetails, GuiSearchBar, GuiNoticeBar, GuiDocViewDetails,
     GuiConfigEditor, GuiProjectEditor, GuiItemEditor, GuiProjectOutline,
-    GuiSessionLogView, GuiDocMerge, GuiDocSplit, GuiProjectLoad
+    GuiSessionLogView, GuiDocMerge, GuiDocSplit, GuiProjectLoad, GuiBuildNovel
 )
-from nw.core import NWProject, NWDoc, NWIndex, countWords
+from nw.core import NWProject, NWDoc, NWIndex
 from nw.constants import nwFiles, nwItemType, nwAlert
 
 logger = logging.getLogger(__name__)
@@ -262,7 +262,12 @@ class GuiMain(QMainWindow):
         dlgProj = GuiProjectLoad(self)
         dlgProj.exec_()
         if dlgProj.result() == QDialog.Accepted:
-            self.openProject(dlgProj.openPath)
+            if dlgProj.openState == GuiProjectLoad.OPEN_STATE:
+                self.openProject(dlgProj.openPath)
+            elif dlgProj.openState == GuiProjectLoad.BROWSE_STATE:
+                self.openProject(dlgProj.openPath)
+            elif dlgProj.openState == GuiProjectLoad.NEW_STATE:
+                self.newProject()
 
         return True
 
@@ -631,6 +636,9 @@ class GuiMain(QMainWindow):
             dlgProj = GuiItemEditor(self, self.theProject, tHandle)
             if dlgProj.exec_():
                 self.treeView.setTreeItemValues(tHandle)
+                self.treeMeta.updateViewBox(tHandle)
+                self.docEditor.updateDocTitle(tHandle)
+                self.docViewer.updateDocTitle(tHandle)
 
         return
 
@@ -752,9 +760,9 @@ class GuiMain(QMainWindow):
             self._setWindowTitle(self.theProject.projName)
         return True
 
-    def exportProjectDialog(self):
+    def buildProjectDialog(self):
         if self.hasProject:
-            dlgExport = GuiExport(self, self.theProject)
+            dlgExport = GuiBuildNovel(self, self.theProject)
             dlgExport.exec_()
         return True
 
@@ -1003,7 +1011,7 @@ class GuiMain(QMainWindow):
     def _treeSingleClick(self):
         sHandle = self.treeView.getSelectedHandle()
         if sHandle is not None:
-            self.treeMeta.buildViewBox(sHandle)
+            self.treeMeta.updateViewBox(sHandle)
         return
 
     def _treeDoubleClick(self, tItem, colNo):

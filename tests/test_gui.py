@@ -13,7 +13,7 @@ from nw.gui.dialogs.itemeditor    import GuiItemEditor
 
 from nw.constants import *
 
-keyDelay  = 10
+keyDelay  =  5
 stepDelay = 50
 
 @pytest.mark.gui
@@ -276,7 +276,7 @@ def testProjectEditor(qtbot, nwTempGUI, nwRef, nwTemp):
         qtbot.keyClick(projEdit.tabMain.editAuthors, c, delay=keyDelay)
 
     # Test Status Tab
-    projEdit.tabWidget.setCurrentWidget(projEdit.tabStatus)
+    projEdit._tabBox.setCurrentWidget(projEdit.tabStatus)
     projEdit.tabStatus.listBox.item(2).setSelected(True)
     qtbot.mouseClick(projEdit.tabStatus.delButton, Qt.LeftButton)
     qtbot.mouseClick(projEdit.tabStatus.newButton, Qt.LeftButton)
@@ -288,7 +288,7 @@ def testProjectEditor(qtbot, nwTempGUI, nwRef, nwTemp):
     qtbot.mouseClick(projEdit.tabStatus.saveButton, Qt.LeftButton)
 
     # Auto-Replace Tab
-    projEdit.tabWidget.setCurrentWidget(projEdit.tabReplace)
+    projEdit._tabBox.setCurrentWidget(projEdit.tabReplace)
 
     qtbot.mouseClick(projEdit.tabReplace.addButton, Qt.LeftButton)
     projEdit.tabReplace.listBox.topLevelItem(0).setSelected(True)
@@ -361,7 +361,10 @@ def testItemEditor(qtbot, nwTempGUI, nwRef, nwTemp):
     layoutIdx = itemEdit.editLayout.findData(nwItemLayout.PAGE)
     itemEdit.editLayout.setCurrentIndex(layoutIdx)
 
-    qtbot.mouseClick(itemEdit.saveButton, Qt.LeftButton)
+    itemEdit.editExport.setChecked(False)
+    assert not itemEdit.editExport.isChecked()
+
+    itemEdit._doSave()
 
     itemEdit = GuiItemEditor(nwGUI, nwGUI.theProject, "31489056e0916")
     qtbot.addWidget(itemEdit)
@@ -369,7 +372,7 @@ def testItemEditor(qtbot, nwTempGUI, nwRef, nwTemp):
     assert itemEdit.editStatus.currentData() == "Note"
     assert itemEdit.editLayout.currentData() == nwItemLayout.PAGE
 
-    qtbot.mouseClick(itemEdit.closeButton, Qt.LeftButton)
+    itemEdit._doClose()
 
     qtbot.wait(stepDelay)
     assert nwGUI.saveProject()

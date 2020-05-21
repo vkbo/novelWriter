@@ -32,6 +32,7 @@ from PyQt5.QtCore import QUrl
 from PyQt5.QtGui import QDesktopServices
 from PyQt5.QtWidgets import QMenuBar, QAction, QMessageBox
 
+from nw.gui.dialogs import GuiAbout
 from nw.constants import nwItemType, nwItemClass, nwDocAction
 
 logger = logging.getLogger(__name__)
@@ -119,54 +120,11 @@ class GuiMainMenu(QMenuBar):
         return True
 
     def _showAbout(self):
-        listPrefix = "&nbsp;&nbsp;&bull;&nbsp;&nbsp;"
-        aboutMsg   = (
-            "<h3>About {name:s}</h3>"
-            "<p>Version {version:s}, released {date:s}.</p>"
-            "<p>{copyright:s}.</p>"
-            "<p>{name:s} is a markdown-like text editor designed for organising "
-            "and writing novels. It is written in Python 3 with a Qt5 GUI, "
-            "using PyQt5.</p>"
-            "<p>{name:s} is free software: you can redistribute it and/or "
-            "modify it under the terms of the GNU General Public License as "
-            "published by the Free Software Foundation, either version 3 of the "
-            "License, or (at your option) any later version.</p>"
-            "<p>{name:s} is distributed in the hope that it will be useful, "
-            "but WITHOUT ANY WARRANTY; without even the implied warranty of "
-            "MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.</p><p>See the "
-            "<a href='https://www.gnu.org/licenses/gpl-3.0.html'>GPL v3.0</a> "
-            "License for more details.</p>"
-            "<p>Website: <a href='{website:s}'>{website:s}</a></p>"
-            "<h4>Credits</h4>"
-            "<p>{credits:s}</p>"
-        ).format(
-            name      = nw.__package__,
-            version   = nw.__version__,
-            date      = nw.__date__,
-            copyright = nw.__copyright__,
-            website   = nw.__url__,
-            credits   = "<br/>".join(["%s%s" % (listPrefix, x) for x in nw.__credits__]),
-        )
-        theTheme = self.theParent.theTheme
-        theIcons = self.theParent.theTheme.theIcons
-        if theTheme.themeCredit != "" or theTheme.syntaxCredit != "":
-            aboutMsg += "<h4>GUI Theme and Syntax Highlighting</h4>"
-            aboutMsg += "<p>"
-            if theTheme.themeCredit != "":
-                aboutMsg += "%s\"%s\" by %s<br/>" % (
-                    listPrefix, theTheme.themeName, theTheme.themeCredit
-                )
-            if theIcons.themeCredit != "":
-                aboutMsg += "%s\"%s\" by %s<br/>" % (
-                    listPrefix, theIcons.themeName, theIcons.themeCredit
-                )
-            if theTheme.syntaxCredit != "":
-                aboutMsg += "%s\"%s\" by %s<br/>" % (
-                    listPrefix, theTheme.syntaxName, theTheme.syntaxCredit
-                )
-            aboutMsg += "</p>"
-        msgBox = QMessageBox()
-        msgBox.about(self.theParent, "About %s" % nw.__package__, aboutMsg)
+        """Show the about dialog.
+        """
+        if self.mainConf.showGUI:
+            msgAbout = GuiAbout(self.theParent)
+            msgAbout.exec_()
         return True
 
     def _showAboutQt(self):
@@ -230,11 +188,11 @@ class GuiMainMenu(QMenuBar):
         self.projMenu.addAction(self.aProjectSettings)
 
         # Project > Export Project
-        self.aExportProject = QAction("Export Project", self)
-        self.aExportProject.setStatusTip("Export project")
-        self.aExportProject.setShortcut("F5")
-        self.aExportProject.triggered.connect(self.theParent.exportProjectDialog)
-        self.projMenu.addAction(self.aExportProject)
+        self.aBuildProject = QAction("Build Project", self)
+        self.aBuildProject.setStatusTip("Build project")
+        self.aBuildProject.setShortcut("F5")
+        self.aBuildProject.triggered.connect(self.theParent.buildProjectDialog)
+        self.projMenu.addAction(self.aBuildProject)
 
         # Project > Session Log
         self.aSessionLog = QAction("Session Log", self)
@@ -357,7 +315,7 @@ class GuiMainMenu(QMenuBar):
         self.docuMenu.addAction(self.aCloseView)
 
         # Document > Toggle View Comments
-        self.aViewDocComments = QAction("View Comments", self)
+        self.aViewDocComments = QAction("Show Comments", self)
         self.aViewDocComments.setStatusTip("Show comments in view panel")
         self.aViewDocComments.setCheckable(True)
         self.aViewDocComments.setChecked(self.mainConf.viewComments)

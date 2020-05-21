@@ -30,10 +30,11 @@ import nw
 
 from PyQt5.QtCore import Qt
 from PyQt5.QtWidgets import (
-    QDialog, QHBoxLayout, QVBoxLayout, QGroupBox, QFormLayout, QLineEdit,
-    QPushButton, QComboBox, QLabel
+    QDialog, QVBoxLayout, QGridLayout, QLineEdit, QComboBox, QLabel,
+    QDialogButtonBox
 )
 
+from nw.gui.additions import QSwitch
 from nw.constants import nwLabels, nwItemLayout, nwItemClass, nwItemType
 
 logger = logging.getLogger(__name__)
@@ -43,33 +44,28 @@ class GuiItemEditor(QDialog):
     def __init__(self, theParent, theProject, tHandle):
         QDialog.__init__(self, theParent)
 
-        logger.debug("Initialising ItemEditor ...")
+        logger.debug("Initialising GuiItemEditor ...")
 
         self.mainConf   = nw.CONFIG
         self.theProject = theProject
         self.theParent  = theParent
-        self.theItem    = self.theProject.projTree[tHandle]
 
-        self.outerBox = QHBoxLayout()
-        self.innerBox = QVBoxLayout()
+        self.outerBox = QVBoxLayout()
+
+        self.theItem = self.theProject.projTree[tHandle]
+        if self.theItem is None:
+            self._doClose()
 
         self.setWindowTitle("Item Settings")
-        self.guiDeco = self.theParent.theTheme.loadDecoration("settings", (64,64))
-        self.outerBox.setSpacing(16)
-
-        self.outerBox.addWidget(self.guiDeco, 0, Qt.AlignTop)
-        self.outerBox.addLayout(self.innerBox)
         self.setLayout(self.outerBox)
 
-        self.mainGroup = QGroupBox("Item Settings")
-        self.mainForm  = QFormLayout()
-
+        # Item Label
         self.editName = QLineEdit()
+        self.editName.setMinimumWidth(220)
         self.editName.setMaxLength(200)
 
+        # Item Status
         self.editStatus = QComboBox()
-        self.editLayout = QComboBox()
-
         if self.theItem.itemClass == nwItemClass.NOVEL:
             for sLabel, _, _ in self.theProject.statusItems:
                 self.editStatus.addItem(
@@ -81,6 +77,8 @@ class GuiItemEditor(QDialog):
                     self.theParent.importIcons[sLabel], sLabel, sLabel
                 )
 
+        # Item Layout
+        self.editLayout = QComboBox()
         self.validLayouts = []
         if self.theItem.itemType == nwItemType.FILE:
             if self.theItem.itemClass == nwItemClass.NOVEL:
@@ -101,11 +99,15 @@ class GuiItemEditor(QDialog):
             if itemLayout in self.validLayouts:
                 self.editLayout.addItem(nwLabels.LAYOUT_NAME[itemLayout],itemLayout)
 
-        self.mainForm.addRow("Label",  self.editName)
-        self.mainForm.addRow("Status", self.editStatus)
-        self.mainForm.addRow("Layout", self.editLayout)
-
-        self.editName.setMinimumWidth(200)
+        # Export Switch
+        self.textExport = QLabel("Include when building project")
+        self.editExport = QSwitch()
+        if self.theItem.itemType == nwItemType.FILE:
+            self.editExport.setEnabled(True)
+            self.editExport.setChecked(self.theItem.isExported)
+        else:
+            self.editExport.setEnabled(False)
+            self.editExport.setChecked(False)
 
         self.editName.setText(self.theItem.itemName)
         statusIdx = self.editStatus.findData(self.theItem.itemStatus)
@@ -115,44 +117,62 @@ class GuiItemEditor(QDialog):
         if layoutIdx != -1:
             self.editLayout.setCurrentIndex(layoutIdx)
 
-        self.buttonBox = QHBoxLayout()
-        self.closeButton = QPushButton("Close")
-        self.closeButton.clicked.connect(self._doClose)
-        self.saveButton = QPushButton("Save")
-        self.saveButton.setDefault(True)
-        self.saveButton.clicked.connect(self._doSave)
-        self.buttonBox.addStretch(1)
-        self.buttonBox.addWidget(self.closeButton)
-        self.buttonBox.addWidget(self.saveButton)
+        # Buttons
+        self.buttonBox = QDialogButtonBox(QDialogButtonBox.Ok | QDialogButtonBox.Cancel)
+        self.buttonBox.accepted.connect(self._doSave)
+        self.buttonBox.rejected.connect(self._doClose)
 
-        self.mainGroup.setLayout(self.mainForm)
-        self.innerBox.addWidget(self.mainGroup)
-        self.innerBox.addLayout(self.buttonBox)
+        # Assemble
+        self.mainForm = QGridLayout()
+        self.mainForm.setVerticalSpacing(4)
+        self.mainForm.setHorizontalSpacing(16)
+        self.mainForm.addWidget(QLabel("Label"),  0, 0, 1, 1)
+        self.mainForm.addWidget(self.editName,    0, 1, 1, 2)
+        self.mainForm.addWidget(QLabel("Status"), 1, 0, 1, 1)
+        self.mainForm.addWidget(self.editStatus,  1, 1, 1, 2)
+        self.mainForm.addWidget(QLabel("Layout"), 2, 0, 1, 1)
+        self.mainForm.addWidget(self.editLayout,  2, 1, 1, 2)
+        self.mainForm.addWidget(self.textExport,  3, 0, 1, 2)
+        self.mainForm.addWidget(self.editExport,  3, 2, 1, 1)
 
-        self.show()
+        self.outerBox.setSpacing(16)
+        self.outerBox.addLayout(self.mainForm)
+        self.outerBox.addStretch(1)
+        self.outerBox.addWidget(self.buttonBox)
+        self.setLayout(self.outerBox)
 
+        self.rejected.connect(self._doClose)
         self.editName.selectAll()
 
-        logger.debug("ItemEditor initialisation complete")
+        logger.debug("GuiItemEditor initialisation complete")
 
         return
 
     def _doSave(self):
+        """Save the setting to the item.
+        """
+
         logger.verbose("ItemEditor save button clicked")
+
         itemName   = self.editName.text()
         itemStatus = self.editStatus.currentData()
         itemLayout = self.editLayout.currentData()
+        isExported = self.editExport.isChecked()
+
         self.theItem.setName(itemName)
         self.theItem.setStatus(itemStatus)
         self.theItem.setLayout(itemLayout)
+        self.theItem.setExported(isExported)
+
         self.theProject.setProjectChanged(True)
+
         self.accept()
         self.close()
+
         return
 
     def _doClose(self):
         logger.verbose("ItemEditor close button clicked")
-        self.reject()
         self.close()
         return
 

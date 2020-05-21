@@ -41,7 +41,7 @@ logger = logging.getLogger(__name__)
 
 class NWIndex():
 
-    VALID_KEYS = [
+    VALID_KEYS = set([
         nwKeyWords.TAG_KEY,
         nwKeyWords.PLOT_KEY,
         nwKeyWords.POV_KEY,
@@ -51,7 +51,7 @@ class NWIndex():
         nwKeyWords.OBJECT_KEY,
         nwKeyWords.ENTITY_KEY,
         nwKeyWords.CUSTOM_KEY
-    ]
+    ])
     TAG_CLASS  = {
         nwKeyWords.CHAR_KEY   : nwItemClass.CHARACTER,
         nwKeyWords.POV_KEY    : nwItemClass.CHARACTER,
@@ -107,7 +107,6 @@ class NWIndex():
     def deleteHandle(self, tHandle):
         """Delete all entries of a given document handle.
         """
-
         delTags = []
         for tTag in self.tagIndex:
             if self.tagIndex[tTag][1] == tHandle:
@@ -130,7 +129,6 @@ class NWIndex():
     def loadIndex(self):
         """Load index from last session from the project meta folder.
         """
-
         theData   = {}
         indexFile = path.join(self.theProject.projMeta, nwFiles.INDEX_FILE)
 
@@ -169,7 +167,6 @@ class NWIndex():
         """Save the current index as a json file in the project meta
         data folder.
         """
-
         indexFile = path.join(self.theProject.projMeta, nwFiles.INDEX_FILE)
 
         logger.debug("Saving index file")
@@ -179,7 +176,7 @@ class NWIndex():
             nIndent = None
 
         try:
-            with open(indexFile,mode="w+",encoding="utf8") as outFile:
+            with open(indexFile, mode="w+", encoding="utf8") as outFile:
                 outFile.write(json.dumps({
                     "tagIndex"   : self.tagIndex,
                     "refIndex"   : self.refIndex,
@@ -198,7 +195,6 @@ class NWIndex():
         """Check that the entries in the index are valid and contain the
         elements it should.
         """
-
         self.indexBroken = False
 
         try:
@@ -265,7 +261,7 @@ class NWIndex():
         logger.debug("Indexing item with handle %s" % tHandle)
 
         # Check file type, and reset its old index
-        # Also add an entry for T0 in case the file has no title
+        # Also add a dummy entry for T0 in case the file has no title
         self.refIndex[tHandle] = {}
         self.refIndex[tHandle]["T0"] = {
             "tags"    : [],
@@ -297,16 +293,16 @@ class NWIndex():
                 continue
 
             if aLine.startswith(r"#"):
-                isTitle = self.indexTitle(tHandle, isNovel, aLine, nLine, itemLayout)
+                isTitle = self._indexTitle(tHandle, isNovel, aLine, nLine, itemLayout)
                 if isTitle and nLine > 0:
                     if nTitle > 0:
                         lastText = "\n".join(theLines[nTitle-1:nLine-1])
-                        self.indexWordCounts(tHandle, isNovel, lastText, nTitle)
+                        self._indexWordCounts(tHandle, isNovel, lastText, nTitle)
                     nTitle = nLine
 
             elif aLine.startswith(r"@"):
-                self.indexNoteRef(tHandle, aLine, nLine, nTitle)
-                self.indexTag(tHandle, aLine, nLine, itemClass)
+                self._indexNoteRef(tHandle, aLine, nLine, nTitle)
+                self._indexTag(tHandle, aLine, nLine, itemClass)
 
             elif aLine.startswith(r"%"):
                 if nTitle > 0:
@@ -315,12 +311,12 @@ class NWIndex():
                     cLen = len(toCheck)
                     cOff = tLen - cLen
                     if toCheck.startswith("synopsis:"):
-                        self.indexSynopsis(tHandle, isNovel, aLine[cOff+9:].strip(), nTitle)
+                        self._indexSynopsis(tHandle, isNovel, aLine[cOff+9:].strip(), nTitle)
 
         # Count words for remaining text after last heading
         if nTitle > 0:
             lastText = "\n".join(theLines[nTitle-1:nLine-1])
-            self.indexWordCounts(tHandle, isNovel, lastText, nTitle)
+            self._indexWordCounts(tHandle, isNovel, lastText, nTitle)
 
         # Run word counter for whole text
         cC, wC, pC = countWords(theText)
@@ -336,11 +332,14 @@ class NWIndex():
 
         return True
 
-    def indexTitle(self, tHandle, isNovel, aLine, nLine, itemLayout):
-        """Save information about the title and its location in the
-        file.
-        """
+    ##
+    #  Internal Indexers
+    ##
 
+    def _indexTitle(self, tHandle, isNovel, aLine, nLine, itemLayout):
+        """Save information about the title and its location in the
+        file to the index.
+        """
         if aLine.startswith("# "):
             hDepth = "H1"
             hText  = aLine[2:].strip()
@@ -382,7 +381,9 @@ class NWIndex():
 
         return True
 
-    def indexWordCounts(self, tHandle, isNovel, theText, nTitle):
+    def _indexWordCounts(self, tHandle, isNovel, theText, nTitle):
+        """Count text stats and save the counts to the index.
+        """
         cC, wC, pC = countWords(theText)
         sTitle = "T%d" % nTitle
         if isNovel:
@@ -401,7 +402,9 @@ class NWIndex():
                     self.noteIndex[tHandle][sTitle]["updated"] = time()
         return
 
-    def indexSynopsis(self, tHandle, isNovel, theText, nTitle):
+    def _indexSynopsis(self, tHandle, isNovel, theText, nTitle):
+        """Save the synopsis to the index.
+        """
         sTitle = "T%d" % nTitle
         if isNovel:
             if tHandle in self.novelIndex:
@@ -415,11 +418,10 @@ class NWIndex():
                     self.noteIndex[tHandle][sTitle]["updated"] = time()
         return
 
-    def indexNoteRef(self, tHandle, aLine, nLine, nTitle):
+    def _indexNoteRef(self, tHandle, aLine, nLine, nTitle):
         """Validate and save the information about a reference to a tag
         in another file.
         """
-
         isValid, theBits, thePos = self.scanThis(aLine)
         if not isValid or len(theBits) == 0:
             return False
@@ -435,10 +437,9 @@ class NWIndex():
 
         return True
 
-    def indexTag(self, tHandle, aLine, nLine, itemClass):
+    def _indexTag(self, tHandle, aLine, nLine, itemClass):
         """Validate and save the information from a tag.
         """
-
         isValid, theBits, thePos = self.scanThis(aLine)
         if not isValid or len(theBits) != 2:
             return False
@@ -453,42 +454,39 @@ class NWIndex():
     ##
 
     def scanThis(self, aLine):
-        """Scan a line starting with @ to check that it's valid and to
-        split up its elements into an array and an array of positions.
-        The latter is needed for the syntax highlighter.
+        """Scan a line starting with @ to check that it's valid. Then
+        split it up into its elements and positions as two arrays.
         """
+        theBits = [] # The elements of the string
+        thePos  = [] # The absolute position of each element
 
-        theBits = []
-        thePos  = []
-
-        aLine = aLine.strip()
+        aLine = aLine.rstrip() # Remove all trailing white spaces
         nChar = len(aLine)
         if nChar < 2:
             return False, theBits, thePos
         if aLine[0] != "@":
             return False, theBits, thePos
 
-        cPos = 0
-        cKey, cSep, cVals = aLine.partition(":")
+        cKey, _, cVals = aLine.partition(":")
         sKey = cKey.strip()
         if sKey == "@":
             return False, theBits, thePos
 
+        cPos = 0
         theBits.append(sKey)
         thePos.append(cPos)
-        cPos += len(sKey) + 1
+        cPos += len(cKey) + 1
 
-        if cVals == "":
+        if not cVals:
             # No values, so we're done
             return True, theBits, thePos
 
-        aVals = cVals.split(",")
-        for cVal in aVals:
+        for cVal in cVals.split(","):
             sVal = cVal.strip()
             rLen = len(cVal.lstrip())
             tLen = len(cVal)
             theBits.append(sVal)
-            thePos.append(cPos+tLen-rLen)
+            thePos.append(cPos + tLen - rLen)
             cPos += tLen + 1
 
         return True, theBits, thePos
@@ -497,8 +495,7 @@ class NWIndex():
         """Check the tags against the index to see if they are valid
         tags. This is needed for syntax highlighting.
         """
-
-        nBits  = len(theBits)
+        nBits = len(theBits)
         isGood = [False]*nBits
         if nBits == 0:
             return []
@@ -512,7 +509,7 @@ class NWIndex():
         # is ignored
         if theBits[0] == nwKeyWords.TAG_KEY and nBits > 1:
             isGood[0] = True
-            if theBits[1] in self.tagIndex.keys():
+            if theBits[1] in self.tagIndex:
                 if self.tagIndex[theBits[1]][1] == tItem.itemHandle:
                     isGood[1] = True
                 else:
@@ -537,7 +534,6 @@ class NWIndex():
         order as they appear in the tree view and in the respective
         document files, but skipping all note files.
         """
-
         theStructure = []
         for tHandle in self.theProject.projTree.handles():
             if tHandle not in self.novelIndex:
@@ -551,7 +547,6 @@ class NWIndex():
         """Returns the counts for a file, or a section of a file
         starting at title nTitle.
         """
-
         cC = 0
         wC = 0
         pC = 0
@@ -579,7 +574,6 @@ class NWIndex():
         """Extract all references made in a file, and optionally title
         section. sTitle must be a string.
         """
-
         theRefs = {}
         for tKey in self.TAG_CLASS:
             theRefs[tKey] = []
@@ -602,7 +596,6 @@ class NWIndex():
         """Build a list of files referring back to our file, specified
         by tHandle.
         """
-
         theRefs = {}
 
         tItem = self.theProject.projTree[tHandle]

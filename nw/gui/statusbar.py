@@ -195,24 +195,11 @@ class GuiMainStatus(QStatusBar):
     def _updateStats(self):
         """Update statistics.
         """
-        self.statsText.setToolTip((
-            "<b>Document Stats</b><br>"
-            "Characters: {cC:n}<br>"
-            "Words: {wC:n}<br>"
-            "Paragraphs: {pC:n}<br>"
-            "<br>"
-            "<b>Project Stats</b><br>"
-            "Words Total: {pWC:n}<br>"
-            "This Session: {sWC:n}"
-        ).format(
-            cC  = self.charCount,
-            wC  = self.wordCount,
-            pC  = self.paraCount,
-            pWC = self.projWords,
-            sWC = self.sessWords,
-        ))
+        self.statsText.setToolTip(
+            "D: Document word count<br>P: Project word count"
+        )
         self.statsText.setText((
-            "D:{wC:n}  P:{pWC:n}  S:{sWC:n}"
+            "D:{wC:n}  P:{pWC:n} ({sWC:+n})"
         ).format(
             wC  = self.wordCount,
             pWC = self.projWords,
@@ -243,10 +230,10 @@ class StatusLED(QAbstractButton):
     def __init__(self, colNone, colTrue, colFalse, sW, sH, parent=None):
         super().__init__(parent=parent)
 
-        self.colNone   = colNone
-        self.colTrue   = colTrue
-        self.colFalse  = colFalse
-        self._theCol   = colNone
+        self.colNone  = colNone
+        self.colTrue  = colTrue
+        self.colFalse = colFalse
+        self._theCol  = colNone
 
         self.setFixedWidth(sW)
         self.setFixedHeight(sH)

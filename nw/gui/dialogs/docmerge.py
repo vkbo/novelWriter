@@ -30,10 +30,12 @@ import nw
 
 from PyQt5.QtCore import Qt
 from PyQt5.QtWidgets import (
-    QDialog, QHBoxLayout, QVBoxLayout, QGridLayout, QPushButton,
-    QListWidget, QAbstractItemView, QListWidgetItem
+    QDialog, QVBoxLayout, QLabel, QListWidget, QAbstractItemView,
+    QListWidgetItem, QDialogButtonBox
 )
+
 from nw.constants import nwAlert, nwItemType
+from nw.gui.additions import QHelpLabel
 from nw.core import NWDoc
 
 logger = logging.getLogger(__name__)
@@ -50,33 +52,31 @@ class GuiDocMerge(QDialog):
         self.theProject = theProject
         self.sourceItem = None
 
-        self.outerBox = QHBoxLayout()
-        self.innerBox = QVBoxLayout()
+        self.outerBox = QVBoxLayout()
         self.setWindowTitle("Merge Documents")
-        self.setLayout(self.outerBox)
 
-        self.guiDeco = self.theParent.theTheme.loadDecoration("merge",(64,64))
-
-        self.outerBox.addWidget(self.guiDeco, 0, Qt.AlignTop)
-        self.outerBox.addLayout(self.innerBox)
-
-        self.doMergeForm = QGridLayout()
-        self.doMergeForm.setContentsMargins(0,0,0,0)
+        self.headLabel = QLabel("<b>Documents to Merge</b>")
+        self.helpLabel = QHelpLabel(
+            "Drag and drop items to change the order.", self.theParent.theTheme.helpText
+        )
 
         self.listBox = QListWidget()
         self.listBox.setDragDropMode(QAbstractItemView.InternalMove)
+        self.listBox.setMinimumWidth(400)
+        self.listBox.setMinimumHeight(180)
 
-        self.mergeButton = QPushButton("Merge")
-        self.mergeButton.clicked.connect(self._doMerge)
+        self.buttonBox = QDialogButtonBox(QDialogButtonBox.Ok | QDialogButtonBox.Cancel)
+        self.buttonBox.accepted.connect(self._doMerge)
+        self.buttonBox.rejected.connect(self._doClose)
 
-        self.closeButton = QPushButton("Close")
-        self.closeButton.clicked.connect(self._doClose)
-
-        self.doMergeForm.addWidget(self.listBox,     0, 0, 1, 3)
-        self.doMergeForm.addWidget(self.mergeButton, 1, 1)
-        self.doMergeForm.addWidget(self.closeButton, 1, 2)
-
-        self.innerBox.addLayout(self.doMergeForm)
+        self.outerBox.setSpacing(0)
+        self.outerBox.addWidget(self.headLabel)
+        self.outerBox.addWidget(self.helpLabel)
+        self.outerBox.addSpacing(8)
+        self.outerBox.addWidget(self.listBox)
+        self.outerBox.addSpacing(12)
+        self.outerBox.addWidget(self.buttonBox)
+        self.setLayout(self.outerBox)
 
         self.rejected.connect(self._doClose)
         self.show()

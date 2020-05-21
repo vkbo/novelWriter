@@ -32,7 +32,7 @@ from PyQt5.QtCore import Qt
 from PyQt5.QtWidgets import QTextBrowser
 from PyQt5.QtGui import QTextOption, QFont, QPalette, QColor, QTextCursor
 
-from nw.convert import ToHtml
+from nw.core import ToHtml
 from nw.constants import nwAlert, nwItemType, nwDocAction
 from nw.gui.elements.doctitlebar import GuiDocTitleBar
 
@@ -191,6 +191,14 @@ class GuiDocViewer(QTextBrowser):
             logger.debug("Unknown or unsupported document action %s" % str(theAction))
             return False
         return True
+
+    def updateDocTitle(self, tHandle):
+        """Called when an item label is changed to check if the document
+        title bar needs updating,
+        """
+        if tHandle == self.theHandle:
+            self.docTitle.setTitleFromHandle(self.theHandle)
+        return
 
     ##
     #  Events
