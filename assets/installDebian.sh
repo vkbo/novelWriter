@@ -18,4 +18,11 @@ cp -v assets/icons/x-novelwriter-project.svg /usr/share/icons/hicolor/scalable/m
 cp -v assets/mime/x-novelwriter-project.xml  /usr/share/mime/packages/
 
 update-mime-database /usr/share/mime/
-update-icon-caches /usr/share/icons/hicolor/
+update-icon-caches /usr/share/icons/hicolor/24x24/apps/
+update-icon-caches /usr/share/icons/hicolor/48x48/apps/
+update-icon-caches /usr/share/icons/hicolor/96x96/apps/
+update-icon-caches /usr/share/icons/hicolor/256x256/apps/
+update-icon-caches /usr/share/icons/hicolor/512x512/apps/
+update-icon-caches /usr/share/icons/hicolor/1024x1024/apps/
+update-icon-caches /usr/share/icons/hicolor/scalable/apps/
+update-icon-caches /usr/share/icons/hicolor/scalable/mimetypes/
