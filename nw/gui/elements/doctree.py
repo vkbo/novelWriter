@@ -498,6 +498,11 @@ class GuiDocTree(QTreeWidget):
         if tHandle in self.theMap:
             self.clearSelection()
             self.theMap[tHandle].setSelected(True)
+            selItems = self.selectedIndexes()
+            if selItems:
+                self.scrollTo(
+                    selItems[0], QAbstractItemView.PositionAtCenter
+                )
             return True
         return False
 

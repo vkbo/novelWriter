@@ -2,20 +2,28 @@
 
 ## Version 0.6 [2020-xx-xx]
 
-**Bugfixes**
-
-* Added more fallback icons so that all icons are properly set also on Windows 10. PR #211
-
 **User Interface**
 
 * The Export Tool has been removed and replaced by a new tool called "Build Novel Project". The new tool has the same filtering options as the Export Tool, but with more formatting options for titles. It also has a preview window to display the generated document. A Save As button provides exports to HTML, novelWriter Markdown. plain text, PDF and Open Document format. LaTeX export has not been ported over, and interfacing with Pandoc is no longer supported either. Although. as before, the HTML export can be converted with Pandoc still. The new tool also supports printing. PR #204
-* The statusbar has been reorganised a bit. The stats section has been separated from the save status icons, and the save status icons replaced with generated LED-looking widgets. The amount of statistics has been reduced to three numbers, and the rest moved to a tooltip. PR #210
 * The Project Settings, Preferences, Item Editor, Merge Documents, and Split Documents dialogs have been redesigned. The ones with tabs, now have vertical tabs on the left with horizontal labels. The dialog design should be more compact, and have room for more tabs for future settings. PR #212
 
-**Other Improvements**
+## Version 0.5.2 [2020-05-21]
 
-* Some of the package and version checks have been moved to a later point in the start-up so that a dialog can alert the user that the system is missing dependencies. This is only possible after the core PyQt5 elements have been imported, so if these are missing, the dialog will never show. PR #210
-* With a few minor changes, novelWriter was successfully tested on Ubuntu 14.04 with Python 3.4.3 and Qt 5.2.1. This is not necessarily a level of legacy compatibility that will be maintained, but it does currently work. PR #210
+**Bugfixes**
+
+* When running on Windows 10, some of the buttons were missing icons. More fallback icons have been added to ensure that all current buttons have a fallback path that always ends in an icon. PR #211
+
+**User Interface**
+
+* The statusbar has been redesigned a bit. The block icons showing document and project saved status have been replaced by LED icons. The statistics has been moved to a separate label, and most of the detailed stats moved to its tooltip. PR #210
+* Default icon theme is now `Typicons Grey Light`. PR #211
+* Clicking on the document header selects the document in the project tree, but this functionality has been enhanced to also ensure the document is expanded and visible in the tree. If it's scrolled out of view, the tree will scroll it into view. PR #215
+* Syntax highlighting of text in quotes can now be turned off in Preferences. #215
+
+**Core Functionality**
+
+* Checking for version dependencies and a few packages (aside from PyQt5) is now done later in the start-up so that it is possible to alert the user with a dialog box instead of terminal error messages. PR #210
+* Made a few minor changes to the code so novelWriter can run with Python 3.4.3 and Qt 5.2.1, that is, it runs on last version of Ubuntu 14.04. This level of compatibility is not guaranteed to remain in the future, but for now, the changes have no impact on functionality. PR #210
 
 ## Version 0.5.1 [2020-05-14]
 
