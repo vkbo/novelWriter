@@ -421,7 +421,7 @@ class GuiDocTree(QTreeWidget):
             if nwItem.isExported:
                 stExport = nwUnicode.U_CHECK
         else:
-            stExport = "+"
+            stExport = "-"
 
         tStatus = stExport+" "+stClass+stLayout
 

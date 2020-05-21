@@ -51,83 +51,119 @@ class GuiDocDetails(QFrame):
         self.mainBox.setHorizontalSpacing(6)
         self.setLayout(self.mainBox)
 
-        self.fntOne = QFont()
-        self.fntOne.setPointSize(10)
-        self.fntOne.setBold(True)
+        self.fntLabel = QFont()
+        self.fntLabel.setPointSize(10)
+        self.fntLabel.setBold(True)
 
-        self.fntTwo = QFont()
-        self.fntTwo.setFamily("Monospace")
-        self.fntTwo.setPointSize(10)
+        self.fntFixed = QFont()
+        self.fntFixed.setFamily("Monospace")
+        self.fntFixed.setPointSize(10)
 
-        self.fntThree = QFont()
-        self.fntThree.setPointSize(10)
+        self.fntValue = QFont()
+        self.fntValue.setPointSize(10)
 
         # Label
         self.labelName = QLabel("Label   ")
-        self.labelName.setFont(self.fntOne)
+        self.labelName.setFont(self.fntLabel)
         self.labelName.setAlignment(Qt.AlignLeft | Qt.AlignBaseline)
 
         self.labelFlag = QLabel("")
-        self.labelFlag.setFont(self.fntTwo)
+        self.labelFlag.setFont(self.fntFixed)
         self.labelFlag.setAlignment(Qt.AlignRight | Qt.AlignBaseline)
 
         self.labelData = QLabel("")
-        self.labelData.setFont(self.fntThree)
+        self.labelData.setFont(self.fntValue)
         self.labelData.setAlignment(Qt.AlignLeft | Qt.AlignBaseline)
         self.labelData.setWordWrap(True)
 
         # Status
         self.statusName = QLabel("Status   ")
-        self.statusName.setFont(self.fntOne)
+        self.statusName.setFont(self.fntLabel)
         self.statusName.setAlignment(Qt.AlignLeft)
 
         self.statusFlag = QLabel("")
-        self.statusFlag.setFont(self.fntTwo)
+        self.statusFlag.setFont(self.fntFixed)
         self.statusFlag.setAlignment(Qt.AlignRight | Qt.AlignVCenter)
 
         self.statusData = QLabel("")
-        self.statusData.setFont(self.fntThree)
+        self.statusData.setFont(self.fntValue)
         self.statusData.setAlignment(Qt.AlignLeft)
 
         # Class
         self.className = QLabel("Class   ")
-        self.className.setFont(self.fntOne)
+        self.className.setFont(self.fntLabel)
         self.className.setAlignment(Qt.AlignLeft)
 
         self.classFlag = QLabel("")
-        self.classFlag.setFont(self.fntTwo)
+        self.classFlag.setFont(self.fntFixed)
         self.classFlag.setAlignment(Qt.AlignRight)
 
         self.classData = QLabel("")
-        self.classData.setFont(self.fntThree)
+        self.classData.setFont(self.fntValue)
         self.classData.setAlignment(Qt.AlignLeft)
 
         # Layout
         self.layoutName = QLabel("Layout   ")
-        self.layoutName.setFont(self.fntOne)
+        self.layoutName.setFont(self.fntLabel)
         self.layoutName.setAlignment(Qt.AlignLeft)
 
         self.layoutFlag = QLabel("")
-        self.layoutFlag.setFont(self.fntTwo)
+        self.layoutFlag.setFont(self.fntFixed)
         self.layoutFlag.setAlignment(Qt.AlignRight)
 
         self.layoutData = QLabel("")
-        self.layoutData.setFont(self.fntThree)
+        self.layoutData.setFont(self.fntValue)
         self.layoutData.setAlignment(Qt.AlignLeft)
 
+        # Character Count
+        self.cCountName = QLabel("  Characters")
+        self.cCountName.setFont(self.fntLabel)
+        self.cCountName.setAlignment(Qt.AlignRight)
+
+        self.cCountData = QLabel("")
+        self.cCountData.setFont(self.fntValue)
+        self.cCountData.setAlignment(Qt.AlignRight)
+
+        # Word Count
+        self.wCountName = QLabel("  Words")
+        self.wCountName.setFont(self.fntLabel)
+        self.wCountName.setAlignment(Qt.AlignRight)
+
+        self.wCountData = QLabel("")
+        self.wCountData.setFont(self.fntValue)
+        self.wCountData.setAlignment(Qt.AlignRight)
+
+        # Paragraph Count
+        self.pCountName = QLabel("  Paragraphs")
+        self.pCountName.setFont(self.fntLabel)
+        self.pCountName.setAlignment(Qt.AlignRight)
+
+        self.pCountData = QLabel("")
+        self.pCountData.setFont(self.fntValue)
+        self.pCountData.setAlignment(Qt.AlignRight)
+
         # Assemble
-        self.mainBox.addWidget(self.labelName,  0, 0)
-        self.mainBox.addWidget(self.statusName, 1, 0)
-        self.mainBox.addWidget(self.className,  2, 0)
-        self.mainBox.addWidget(self.layoutName, 3, 0)
-        self.mainBox.addWidget(self.labelFlag,  0, 1)
-        self.mainBox.addWidget(self.statusFlag, 1, 1)
-        self.mainBox.addWidget(self.classFlag,  2, 1)
-        self.mainBox.addWidget(self.layoutFlag, 3, 1)
-        self.mainBox.addWidget(self.labelData,  0, 2)
-        self.mainBox.addWidget(self.statusData, 1, 2)
-        self.mainBox.addWidget(self.classData,  2, 2)
-        self.mainBox.addWidget(self.layoutData, 3, 2)
+        self.mainBox.addWidget(self.labelName,  0, 0, 1, 1)
+        self.mainBox.addWidget(self.labelFlag,  0, 1, 1, 1)
+        self.mainBox.addWidget(self.labelData,  0, 2, 1, 3)
+
+        self.mainBox.addWidget(self.statusName, 1, 0, 1, 1)
+        self.mainBox.addWidget(self.statusFlag, 1, 1, 1, 1)
+        self.mainBox.addWidget(self.statusData, 1, 2, 1, 1)
+        self.mainBox.addWidget(self.cCountName, 1, 3, 1, 1)
+        self.mainBox.addWidget(self.cCountData, 1, 4, 1, 1)
+
+        self.mainBox.addWidget(self.className,  2, 0, 1, 1)
+        self.mainBox.addWidget(self.classFlag,  2, 1, 1, 1)
+        self.mainBox.addWidget(self.classData,  2, 2, 1, 1)
+        self.mainBox.addWidget(self.wCountName, 2, 3, 1, 1)
+        self.mainBox.addWidget(self.wCountData, 2, 4, 1, 1)
+
+        self.mainBox.addWidget(self.layoutName, 3, 0, 1, 1)
+        self.mainBox.addWidget(self.layoutFlag, 3, 1, 1, 1)
+        self.mainBox.addWidget(self.layoutData, 3, 2, 1, 1)
+        self.mainBox.addWidget(self.pCountName, 3, 3, 1, 1)
+        self.mainBox.addWidget(self.pCountData, 3, 4, 1, 1)
 
         self.mainBox.setColumnStretch(0,0)
         self.mainBox.setColumnStretch(1,0)
@@ -149,13 +185,16 @@ class GuiDocDetails(QFrame):
 
         if nwItem is None:
             self.labelFlag.setText("")
-            self.statusFlag.setText("")
-            self.classFlag.setText("")
-            self.layoutFlag.setText("")
             self.labelData.setText("")
+            self.statusFlag.setText("")
             self.statusData.setText("")
+            self.classFlag.setText("")
             self.classData.setText("")
+            self.layoutFlag.setText("")
             self.layoutData.setText("")
+            self.cCountData.setText("–")
+            self.wCountData.setText("–")
+            self.pCountData.setText("–")
 
         else:
             theLabel = nwItem.itemName
@@ -176,7 +215,7 @@ class GuiDocDetails(QFrame):
                 else:
                     exportFlag = " "
             else:
-                exportFlag = "+"
+                exportFlag = "-"
 
             self.labelFlag.setText(exportFlag)
             self.statusFlag.setPixmap(flagIcon.pixmap(10, 10))
@@ -187,6 +226,15 @@ class GuiDocDetails(QFrame):
             self.statusData.setText(nwItem.itemStatus)
             self.classData.setText(nwLabels.CLASS_NAME[nwItem.itemClass])
             self.layoutData.setText(nwLabels.LAYOUT_NAME[nwItem.itemLayout])
+
+            if nwItem.itemType == nwItemType.FILE:
+                self.cCountData.setText("{:n}".format(nwItem.charCount))
+                self.wCountData.setText("{:n}".format(nwItem.wordCount))
+                self.pCountData.setText("{:n}".format(nwItem.paraCount))
+            else:
+                self.cCountData.setText("–")
+                self.wCountData.setText("–")
+                self.pCountData.setText("–")
 
         return
 
