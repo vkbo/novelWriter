@@ -222,6 +222,13 @@ class GuiConfigEditGeneralTab(QWidget):
             self.showFullPath
         )
 
+        self.highlightQuotes = QSwitch()
+        self.highlightQuotes.setChecked(self.mainConf.highlightQuotes)
+        self.mainForm.addRow(
+            "Add highlighting to text in quotes",
+            self.highlightQuotes
+        )
+
         # AutoSave Settings
         # =================
         self.mainForm.addGroupLabel("Automatic Save")
@@ -296,6 +303,7 @@ class GuiConfigEditGeneralTab(QWidget):
         guiIcons        = self.selectIcons.currentData()
         guiDark         = self.preferDarkIcons.isChecked()
         showFullPath    = self.showFullPath.isChecked()
+        highlightQuotes = self.highlightQuotes.isChecked()
         autoSaveDoc     = self.autoSaveDoc.value()
         autoSaveProj    = self.autoSaveProj.value()
         backupPath      = self.backupPath
@@ -311,6 +319,7 @@ class GuiConfigEditGeneralTab(QWidget):
         self.mainConf.guiIcons        = guiIcons
         self.mainConf.guiDark         = guiDark
         self.mainConf.showFullPath    = showFullPath
+        self.mainConf.highlightQuotes = highlightQuotes
         self.mainConf.autoSaveDoc     = autoSaveDoc
         self.mainConf.autoSaveProj    = autoSaveProj
         self.mainConf.backupPath      = backupPath
