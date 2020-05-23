@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='utf-8'?>
-<novelWriterXML appVersion="0.5" hexVersion="0x000500f0" fileVersion="1.0" saveCount="130" autoCount="17" timeStamp="2020-05-11 19:23:21">
+<novelWriterXML appVersion="0.5.2" hexVersion="0x000502f0" fileVersion="1.0" saveCount="145" autoCount="18" timeStamp="2020-05-23 19:28:41">
   <project>
     <name>Sample Project</name>
     <title>Sample Project</title>
@@ -10,7 +10,7 @@
   <settings>
     <spellCheck>True</spellCheck>
     <autoOutline>True</autoOutline>
-    <lastEdited>96b68994dfa3d</lastEdited>
+    <lastEdited>636b6aa9b697b</lastEdited>
     <lastViewed>6a2d6d5f4f401</lastViewed>
     <lastWordCount>875</lastWordCount>
     <autoReplace>
@@ -44,7 +44,7 @@
       <entry blue="175" green="0" red="117">Main</entry>
     </importance>
   </settings>
-  <content count="20">
+  <content count="21">
     <item handle="7031beac91f75" order="0" parent="None">
       <name>Novel</name>
       <type>ROOT</type>
@@ -65,7 +65,20 @@
       <paraCount>2</paraCount>
       <cursorPos>78</cursorPos>
     </item>
-    <item handle="e7ded148d6e4a" order="1" parent="7031beac91f75">
+    <item handle="edca4be2fcaf8" order="1" parent="7031beac91f75">
+      <name>Part 1</name>
+      <type>FILE</type>
+      <class>NOVEL</class>
+      <status>New</status>
+      <expanded>False</expanded>
+      <exported>True</exported>
+      <layout>PARTITION</layout>
+      <charCount>0</charCount>
+      <wordCount>0</wordCount>
+      <paraCount>0</paraCount>
+      <cursorPos>0</cursorPos>
+    </item>
+    <item handle="e7ded148d6e4a" order="2" parent="7031beac91f75">
       <name>A Folder</name>
       <type>FOLDER</type>
       <class>NOVEL</class>

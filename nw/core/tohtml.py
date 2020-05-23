@@ -148,30 +148,26 @@ class ToHtml(Tokenizer):
             # Styles
             aStyle = []
             if tStyle is not None:
-                # if tStyle & self.A_LEFT:
-                #     aStyle.append("text-align: left;")
-                # if tStyle & self.A_RIGHT:
-                #     aStyle.append("text-align: right;")
+                if tStyle & self.A_LEFT:
+                    aStyle.append("text-align: left;")
+                if tStyle & self.A_RIGHT:
+                    aStyle.append("text-align: right;")
                 if tStyle & self.A_CENTRE:
                     aStyle.append("text-align: center;")
-                # if tStyle & self.A_JUSTIFY:
-                #     aStyle.append("text-align: justify;")
-                # if tStyle & self.A_PBB:
-                #     aStyle.append("page-break-before: always;")
-                # if tStyle & self.A_PBB_L:
-                #     aStyle.append("page-break-before: left;")
-                # if tStyle & self.A_PBB_R:
-                #     aStyle.append("page-break-before: right;")
-                # if tStyle & self.A_PBB_AV:
-                #     aStyle.append("page-break-before: avoid;")
-                # if tStyle & self.A_PBA:
-                #     aStyle.append("page-break-after: always;")
-                # if tStyle & self.A_PBA_L:
-                #     aStyle.append("page-break-after: left;")
-                # if tStyle & self.A_PBA_R:
-                #     aStyle.append("page-break-after: right;")
-                # if tStyle & self.A_PBA_AV:
-                #     aStyle.append("page-break-after: avoid;")
+                if tStyle & self.A_JUSTIFY:
+                    aStyle.append("text-align: justify;")
+                if tStyle & self.A_PBB:
+                    aStyle.append("page-break-before: always;")
+                if tStyle & self.A_PBB_AV:
+                    aStyle.append("page-break-before: avoid;")
+                if tStyle & self.A_PBB_NO:
+                    aStyle.append("page-break-before: never;")
+                if tStyle & self.A_PBA:
+                    aStyle.append("page-break-after: always;")
+                if tStyle & self.A_PBA_AV:
+                    aStyle.append("page-break-after: avoid;")
+                if tStyle & self.A_PBA_NO:
+                    aStyle.append("page-break-after: never;")
 
             if len(aStyle) > 0:
                 hStyle = " style='%s'" % (" ".join(aStyle))
@@ -195,7 +191,7 @@ class ToHtml(Tokenizer):
 
             elif tType == self.T_TITLE:
                 tHead = tText.replace(r"\\", "<br/>")
-                tmpResult.append("<header class='title'%s>%s</header>\n" % (hStyle, tHead))
+                tmpResult.append("<h1 class='title'%s>%s</h1>\n" % (hStyle, tHead))
 
             elif tType == self.T_HEAD1:
                 tHead = tText.replace(r"\\", "<br/>")
@@ -258,8 +254,7 @@ class ToHtml(Tokenizer):
         theStyles.append(r"h1, h2 {color: rgb(66, 113, 174);}")
         theStyles.append(r"h3, h4 {color: rgb(50, 50, 50);}")
         theStyles.append(r"h1, h2, h3, h4 {page-break-after: avoid;}")
-        theStyles.append(r"h1 {page-break-before: always;}")
-        theStyles.append(r".title {font-size: 2.5em; font-weight: bold; page-break-before: never;}")
+        theStyles.append(r".title {font-size: 2.5em; font-weight: bold;}")
         theStyles.append(r".tags {color: rgb(245, 135, 31); font-weight: bold;}")
         theStyles.append(r".break {text-align: left;}")
         theStyles.append(r".sep {text-align: center; margin-top: 1em; margin-bottom: 1em;}")
