@@ -351,7 +351,7 @@ class GuiBuildNovel(QDialog):
 
         tEnd = time()
         logger.debug("Built project in %.3f ms" % (1000*(tEnd-tStart)))
-        self.htmlStyle = makeHtml.getStylesheet()
+        self.htmlStyle = makeHtml.getStyleSheet()
 
         # Load the preview document with the html data
         self.docView.setStyleSheet(self.htmlStyle)
