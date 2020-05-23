@@ -34,7 +34,7 @@ from PyQt5.QtCore import QRegularExpression
 
 from nw.core.document import NWDoc
 from nw.core.tools import numberToWord
-from nw.constants import nwItemLayout
+from nw.constants import nwItemLayout, nwItemType
 
 logger = logging.getLogger(__name__)
 
@@ -198,6 +198,25 @@ class Tokenizer():
     #  Class Methods
     ##
 
+    def addRootHeading(self, theHandle):
+        """Add a heading at the start if a new root folder.
+        """
+        theItem = self.theProject.projTree[theHandle]
+        if theItem is None:
+            return False
+
+        if theItem.itemType != nwItemType.ROOT:
+            return False
+
+        theTitle = "Notes: %s" % theItem.itemName
+        self.theTokens = []
+        self.theTokens.append((
+            self.T_TITLE, theTitle, None, self.A_PBB | self.A_CENTRE
+        ))
+        self.theMarkdown = "# %s\n\n" % theTitle
+
+        return True
+
     def setText(self, theHandle, theText=None):
         """Set the text for the tokenizer from a handle. If theText is
         not set, load it from the file.
@@ -205,6 +224,8 @@ class Tokenizer():
 
         self.theHandle = theHandle
         self.theItem   = self.theProject.projTree[theHandle]
+        if self.theItem is None:
+            return
 
         if theText is not None:
             # If the text is set, just use that
@@ -319,7 +340,7 @@ class Tokenizer():
 
             elif aLine[:2] == "# ":
                 self.theTokens.append((
-                    self.T_HEAD1, aLine[2:].strip(), None, self.A_PBB
+                    self.T_HEAD1, aLine[2:].strip(), None, self.A_NONE
                 ))
                 tmpMarkdown.append("%s\n" % aLine)
 
@@ -386,8 +407,8 @@ class Tokenizer():
         if self.isNone or self.isNote:
             return
 
-        # For novel files, we need to handle chapter numbering and scene
-        # breaks
+        # For novel files, we need to handle chapter numbering, scene
+        # numbering, and scene breaks
         if self.isNovel:
             for n in range(len(self.theTokens)):
 
@@ -504,7 +525,7 @@ class Tokenizer():
                         )
                     else:
                         self.theTokens[n] = (
-                            tType, tText, tFormat, self.A_PBB  | self.A_CENTRE
+                            tType, tText, tFormat, self.A_PBB | self.A_CENTRE
                         )
                 else:
                     self.theTokens[n] = (

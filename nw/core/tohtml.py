@@ -119,9 +119,9 @@ class ToHtml(Tokenizer):
 
         if self.isNovel and self.genMode != self.M_PREVIEW:
             # For novel files for export, we bump the titles one level
-            # up, as this is more useful for printing and word processor
+            # up as this is more useful for printing and word processor
             # imports.
-            h1 = "h1 class=\"title\""
+            h1 = "h1 class='title'"
             h2 = "h1"
             h3 = "h2"
             h4 = "h3"
@@ -254,7 +254,7 @@ class ToHtml(Tokenizer):
         theStyles.append(r"h1, h2 {color: rgb(66, 113, 174);}")
         theStyles.append(r"h3, h4 {color: rgb(50, 50, 50);}")
         theStyles.append(r"h1, h2, h3, h4 {page-break-after: avoid;}")
-        theStyles.append(r".title {font-size: 2.5em; font-weight: bold;}")
+        theStyles.append(r".title {font-size: 2.5em;}")
         theStyles.append(r".tags {color: rgb(245, 135, 31); font-weight: bold;}")
         theStyles.append(r".break {text-align: left;}")
         theStyles.append(r".sep {text-align: center; margin-top: 1em; margin-bottom: 1em;}")
