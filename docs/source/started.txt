@@ -34,8 +34,6 @@ The following Python packages are required to run novelWriter:
 The following are optional, but recommended:
 
 * ``pyenchant`` for spell checking
-* ``latexcodec`` for escaping unicode characters in LaTeX export
-* ``pypandoc`` for additional exports to Word, Open Office, eBooks, etc.
 
 
 Running novelWriter
