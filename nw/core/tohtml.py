@@ -119,7 +119,7 @@ class ToHtml(Tokenizer):
         self.theResult = ""
 
         thisPar = []
-        parStyle = ""
+        parStyle = None
         tmpResult = []
         for tType, tText, tFormat, tStyle in self.theTokens:
 
@@ -158,11 +158,13 @@ class ToHtml(Tokenizer):
 
             # Process TextType
             if tType == self.T_EMPTY:
+                if parStyle is None:
+                    parStyle = ""
                 if len(thisPar) > 0:
                     tTemp = "".join(thisPar)
                     tmpResult.append("<p%s>%s</p>\n" % (parStyle, tTemp.rstrip()))
                 thisPar = []
-                parStyle = ""
+                parStyle = None
 
             elif tType == self.T_HEAD1:
                 tHead = tText.replace(r"\\", "<br/>")
@@ -188,7 +190,8 @@ class ToHtml(Tokenizer):
 
             elif tType == self.T_TEXT:
                 tTemp = tText
-                parStyle = hStyle
+                if parStyle is None:
+                    parStyle = hStyle
                 for xPos, xLen, xFmt in reversed(tFormat):
                     tTemp = tTemp[:xPos]+htmlTags[xFmt]+tTemp[xPos+xLen:]
                 if tText.endswith("  "):

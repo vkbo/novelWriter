@@ -366,9 +366,14 @@ class Tokenizer():
                 # Save the line as is, but append the array of formatting locations
                 # sorted by position
                 fmtPos = sorted(fmtPos, key=itemgetter(0))
-                self.theTokens.append((
-                    self.T_TEXT, aLine, fmtPos, defAlign
-                ))
+                if aLine.endswith("  "):
+                    self.theTokens.append((
+                        self.T_TEXT, aLine, fmtPos, self.A_LEFT
+                    ))
+                else:
+                    self.theTokens.append((
+                        self.T_TEXT, aLine, fmtPos, defAlign
+                    ))
                 tmpMarkdown.append("%s\n" % aLine)
 
         # Always add an empty line at the end
