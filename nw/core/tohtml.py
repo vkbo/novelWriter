@@ -48,20 +48,16 @@ class ToHtml(Tokenizer):
             "<"  : "&lt;",
             ">"  : "&gt;",
             "&"  : "&amp;",
-            "\t" : "&emsp;",
+            "\t" : "&emsp;"*2,
             nwUnicode.U_ENDASH : nwUnicode.H_ENDASH,
             nwUnicode.U_EMDASH : nwUnicode.H_EMDASH,
             nwUnicode.U_HELLIP : nwUnicode.H_HELLIP,
             nwUnicode.U_NBSP   : nwUnicode.H_NBSP,
         }
-        self.revDict = dict(map(reversed, self.repDict.items()))
-
-        self.reReplace = re.compile(
-            "|".join([re.escape(k) for k in self.repDict.keys()]), flags=re.DOTALL
-        )
-        self.reReverse = re.compile(
-            "|".join([re.escape(k) for k in self.revDict.keys()]), flags=re.DOTALL
-        )
+        self.revDict = {}
+        self.reReplace = []
+        self.reReverse = []
+        self._buildRegEx()
 
         return
 
@@ -79,6 +75,7 @@ class ToHtml(Tokenizer):
             self.doKeywords = True
             self.doComments = doComments
             self.repDict["\t"] = "&nbsp;"*8
+            self._buildRegEx()
         return
 
     ##
@@ -120,40 +117,61 @@ class ToHtml(Tokenizer):
             self.FMT_U_E : "</u>",
         }
 
+        if self.isNovel and self.genMode != self.M_PREVIEW:
+            # For novel files for export, we bump the titles one level
+            # up, as this is more useful for printing and word processor
+            # imports.
+            h1 = "h1 class=\"title\""
+            h2 = "h1"
+            h3 = "h2"
+            h4 = "h3"
+        else:
+            h1 = "h1"
+            h2 = "h2"
+            h3 = "h3"
+            h4 = "h4"
+
+        alignHead = self.A_LEFT
+        if self.doJustify:
+            alignPar = self.A_JUSTIFY
+        else:
+            alignPar = self.A_LEFT
+
         self.theResult = ""
 
         thisPar = []
         parStyle = None
         tmpResult = []
+        hasHardBreak = False
         for tType, tText, tFormat, tStyle in self.theTokens:
 
             # Styles
             aStyle = []
             if tStyle is not None:
-                if tStyle & self.A_LEFT:
-                    aStyle.append("text-align: left;")
-                if tStyle & self.A_RIGHT:
-                    aStyle.append("text-align: right;")
+                # if tStyle & self.A_LEFT:
+                #     aStyle.append("text-align: left;")
+                # if tStyle & self.A_RIGHT:
+                #     aStyle.append("text-align: right;")
                 if tStyle & self.A_CENTRE:
                     aStyle.append("text-align: center;")
-                if tStyle & self.A_JUSTIFY:
-                    aStyle.append("text-align: justify;")
-                if tStyle & self.A_PBB:
-                    aStyle.append("page-break-before: always;")
-                if tStyle & self.A_PBB_L:
-                    aStyle.append("page-break-before: left;")
-                if tStyle & self.A_PBB_R:
-                    aStyle.append("page-break-before: right;")
-                if tStyle & self.A_PBB_AV:
-                    aStyle.append("page-break-before: avoid;")
-                if tStyle & self.A_PBA:
-                    aStyle.append("page-break-after: always;")
-                if tStyle & self.A_PBA_L:
-                    aStyle.append("page-break-after: left;")
-                if tStyle & self.A_PBA_R:
-                    aStyle.append("page-break-after: right;")
-                if tStyle & self.A_PBA_AV:
-                    aStyle.append("page-break-after: avoid;")
+                # if tStyle & self.A_JUSTIFY:
+                #     aStyle.append("text-align: justify;")
+                # if tStyle & self.A_PBB:
+                #     aStyle.append("page-break-before: always;")
+                # if tStyle & self.A_PBB_L:
+                #     aStyle.append("page-break-before: left;")
+                # if tStyle & self.A_PBB_R:
+                #     aStyle.append("page-break-before: right;")
+                # if tStyle & self.A_PBB_AV:
+                #     aStyle.append("page-break-before: avoid;")
+                # if tStyle & self.A_PBA:
+                #     aStyle.append("page-break-after: always;")
+                # if tStyle & self.A_PBA_L:
+                #     aStyle.append("page-break-after: left;")
+                # if tStyle & self.A_PBA_R:
+                #     aStyle.append("page-break-after: right;")
+                # if tStyle & self.A_PBA_AV:
+                #     aStyle.append("page-break-after: avoid;")
 
             if len(aStyle) > 0:
                 hStyle = " style='%s'" % (" ".join(aStyle))
@@ -164,33 +182,42 @@ class ToHtml(Tokenizer):
             if tType == self.T_EMPTY:
                 if parStyle is None:
                     parStyle = ""
+                if hasHardBreak:
+                    parClass = " class='break'"
+                else:
+                    parClass = ""
                 if len(thisPar) > 0:
                     tTemp = "".join(thisPar)
-                    tmpResult.append("<p%s>%s</p>\n" % (parStyle, tTemp.rstrip()))
+                    tmpResult.append("<p%s%s>%s</p>\n" % (parStyle, parClass, tTemp.rstrip()))
                 thisPar = []
                 parStyle = None
+                hasHardBreak = False
+
+            elif tType == self.T_TITLE:
+                tHead = tText.replace(r"\\", "<br/>")
+                tmpResult.append("<header class='title'%s>%s</header>\n" % (hStyle, tHead))
 
             elif tType == self.T_HEAD1:
                 tHead = tText.replace(r"\\", "<br/>")
-                tmpResult.append("<h1%s>%s</h1>\n" % (hStyle, tHead))
+                tmpResult.append("<%s%s>%s</%s>\n" % (h1, hStyle, tHead, h1))
 
             elif tType == self.T_HEAD2:
                 tHead = tText.replace(r"\\", "<br/>")
-                tmpResult.append("<h2%s>%s</h2>\n" % (hStyle, tHead))
+                tmpResult.append("<%s%s>%s</%s>\n" % (h2, hStyle, tHead, h2))
 
             elif tType == self.T_HEAD3:
                 tHead = tText.replace(r"\\", "<br/>")
-                tmpResult.append("<h3%s>%s</h3>\n" % (hStyle, tHead))
+                tmpResult.append("<%s%s>%s</%s>\n" % (h3, hStyle, tHead, h3))
 
             elif tType == self.T_HEAD4:
                 tHead = tText.replace(r"\\", "<br/>")
-                tmpResult.append("<h4%s>%s</h4>\n" % (hStyle, tHead))
+                tmpResult.append("<%s%s>%s</%s>\n" % (h4, hStyle, tHead, h4))
 
             elif tType == self.T_SEP:
-                tmpResult.append("<p%s>%s</p>\n" % (hStyle, tText))
+                tmpResult.append("<p class='sep'>%s</p>\n" % tText)
 
             elif tType == self.T_SKIP:
-                tmpResult.append("<p%s>&nbsp;</p>\n" % hStyle)
+                tmpResult.append("<p class='skip'>&nbsp;</p>\n")
 
             elif tType == self.T_TEXT:
                 tTemp = tText
@@ -200,6 +227,7 @@ class ToHtml(Tokenizer):
                     tTemp = tTemp[:xPos]+htmlTags[xFmt]+tTemp[xPos+xLen:]
                 if tText.endswith("  "):
                     thisPar.append(tTemp.rstrip()+"<br/>")
+                    hasHardBreak = True
                 else:
                     thisPar.append(tTemp.rstrip()+" ")
 
@@ -216,6 +244,30 @@ class ToHtml(Tokenizer):
         tmpResult = []
 
         return
+
+    def getStylesheet(self):
+        """Generate a stylesheet appropriate for the current settings.
+        """
+        theStyles = []
+
+        if self.doJustify:
+            theStyles.append(r"p {text-align: justify;}")
+        else:
+            theStyles.append(r"p {text-align: left;}")
+
+        theStyles.append(r"h1, h2 {color: rgb(66, 113, 174);}")
+        theStyles.append(r"h3, h4 {color: rgb(50, 50, 50);}")
+        theStyles.append(r"h1, h2, h3, h4 {page-break-after: avoid;}")
+        theStyles.append(r"h1 {page-break-before: always;}")
+        theStyles.append(r".title {font-size: 2.5em; font-weight: bold; page-break-before: never;}")
+        theStyles.append(r".tags {color: rgb(245, 135, 31); font-weight: bold;}")
+        theStyles.append(r".break {text-align: left;}")
+        theStyles.append(r".sep {text-align: center; margin-top: 1em; margin-bottom: 1em;}")
+        theStyles.append(r".skip {margin-top: 1em; margin-bottom: 1em;}")
+        theStyles.append(r".synopsis {font-style: italic;}")
+        theStyles.append(r".comment {font-style: italic; color: rgb(100, 100, 100);}")
+
+        return theStyles
 
     ##
     #  Internal Functions
@@ -240,7 +292,6 @@ class ToHtml(Tokenizer):
     def _formatKeywords(self, tText):
         """Apply HTML formatting to keywords.
         """
-
         tText = "@"+tText
         isValid, theBits, thePos = self.theParent.theIndex.scanThis(tText)
         if not isValid or not theBits:
@@ -269,5 +320,17 @@ class ToHtml(Tokenizer):
                     retText += ", ".join(refTags)
 
         return "<div>%s</div>" % retText
+
+    def _buildRegEx(self):
+        """Build the regular expressions
+        """
+        self.revDict = dict(map(reversed, self.repDict.items()))
+        self.reReplace = re.compile(
+            "|".join([re.escape(k) for k in self.repDict.keys()]), flags=re.DOTALL
+        )
+        self.reReverse = re.compile(
+            "|".join([re.escape(k) for k in self.revDict.keys()]), flags=re.DOTALL
+        )
+        return
 
 # END Class ToHtml

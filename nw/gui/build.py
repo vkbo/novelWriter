@@ -70,6 +70,7 @@ class GuiBuildNovel(QDialog):
         self.optState   = self.theProject.optState
 
         self.htmlText   = [] # List of html document
+        self.htmlStyle  = [] # List of html styles
         self.nwdText    = [] # List of markdown documents
         self.textLayout = [] # List of nwItemLayout entries
 
@@ -320,6 +321,7 @@ class GuiBuildNovel(QDialog):
         tStart = time()
 
         self.htmlText = []
+        self.htmlStyle = []
         self.nwdText = []
         self.textLayout = []
 
@@ -340,9 +342,11 @@ class GuiBuildNovel(QDialog):
 
         tEnd = time()
         logger.debug("Built project in %.3f ms" % (1000*(tEnd-tStart)))
+        self.htmlStyle = makeHtml.getStylesheet()
 
         # Load the preview document with the html data
-        self.docView.setHtml("".join(self.htmlText))
+        self.docView.setStyleSheet(self.htmlStyle)
+        self.docView.setContent(self.htmlText)
 
         return
 
@@ -484,6 +488,9 @@ class GuiBuildNovel(QDialog):
                         outFile.write("<head>\n")
                         outFile.write("<meta charset='utf-8'>\n")
                         outFile.write("</head>\n")
+                        outFile.write("<style>\n")
+                        outFile.write("%s\n" % "\n".join(self.htmlStyle))
+                        outFile.write("</style>\n")
                         outFile.write("<body>\n")
                         outFile.write("<article style='width: 800px; margin: 40px auto'>\n")
                         for aLine in self.htmlText:
@@ -612,7 +619,8 @@ class GuiBuildNovel(QDialog):
         if path.isfile(docPath):
             with open(docPath, mode="r", encoding="utf8") as inFile:
                 helpText = inFile.read()
-            self.docView.setText(helpText)
+            self.docView.setStyleSheet()
+            self.docView.setContent(helpText)
         else:
             self.theParent.makeAlert(
                 "Could not open help text file for Build Project.", nwAlert.ERROR
@@ -648,7 +656,7 @@ class GuiBuildNovelDocView(QTextBrowser):
         docPalette.setColor(QPalette.Text, QColor(  0,   0,   0))
         self.setPalette(docPalette)
 
-        self._makeStyleSheet()
+        self.setStyleSheet()
 
         self.show()
 
@@ -656,35 +664,26 @@ class GuiBuildNovelDocView(QTextBrowser):
 
         return
 
-    def setText(self, theText):
-        self.setHtml(theText)
+    def setContent(self, theText):
+        """Set the content, either from text or list of text.
+        """
+        if isinstance(theText, str):
+            self.setHtml(theText)
+        else:
+            self.setHtml("".join(theText))
         return
 
-    ##
-    #  Internal Functions
-    ##
+    def setStyleSheet(self, theStyles=[]):
+        """Set the stylesheet for the preview document.
+        """
+        if not theStyles:
+            theStyles.append(r"h1, h2 {color: rgb(66, 113, 174);}")
+            theStyles.append(r"h3, h4 {color: rgb(50, 50, 50);}")
+            theStyles.append(r"a {color: rgb(137, 89, 168);}")
+            theStyles.append(r"mark {background-color: rgb(240, 198, 116);}")
+            theStyles.append(r".tags {color: rgb(245, 135, 31); font-weight: bold;}")
 
-    def _makeStyleSheet(self):
-
-        styleSheet = (
-            "h1, h2 {"
-            "  color: rgb(66, 113, 174);"
-            "}\n"
-            "h3, h4 {"
-            "  color: rgb(50, 50, 50);"
-            "}\n"
-            "a {"
-            "  color: rgb(137, 89, 168);"
-            "}\n"
-            "mark {"
-            "  background-color: rgb(240, 198, 116);"
-            "}\n"
-            ".tags {"
-            "  color: rgb(245, 135, 31);"
-            "  font-wright: bold;"
-            "}\n"
-        )
-        self.qDocument.setDefaultStyleSheet(styleSheet)
+        self.qDocument.setDefaultStyleSheet("\n".join(theStyles))
 
         return
 
