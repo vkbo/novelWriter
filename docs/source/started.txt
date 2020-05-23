@@ -6,8 +6,8 @@ You can download novelWriter from https://github.com/vkbo/novelWriter/releases
 
 Latest version is |version|:
 
-* ZIP file: https://github.com/vkbo/novelWriter/archive/v0.5.2.zip
-* TAR file: https://github.com/vkbo/novelWriter/archive/v0.5.2.tar.gz
+* ZIP file: https://github.com/vkbo/novelWriter/archive/v0.6.zip
+* TAR file: https://github.com/vkbo/novelWriter/archive/v0.6.tar.gz
 
 Extract the archive to a location of your choice.
 

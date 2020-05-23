@@ -6,7 +6,7 @@ with open("README.md", "r") as inFile:
 
 setuptools.setup(
     name = "novelWriter",
-    version = "0.5.2",
+    version = "0.6",
     author = "Veronica Berglyd Olsen",
     author_email = "code@vkbo.net",
     description = "A markdown-like document editor for writing novels",
@@ -40,7 +40,5 @@ setuptools.setup(
         "pyqt5",
         "lxml",
         "pyenchant",
-        "latexcodec",
-        "pypandoc",
     ],
 )
