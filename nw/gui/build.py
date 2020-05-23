@@ -34,7 +34,7 @@ from time import time
 from PyQt5.QtCore import Qt, QByteArray
 from PyQt5.QtPrintSupport import QPrinter, QPrintPreviewDialog
 from PyQt5.QtGui import (
-    QTextOption, QPalette, QColor, QTextDocumentWriter
+    QTextOption, QPalette, QColor, QTextDocumentWriter, QFont
 )
 from PyQt5.QtWidgets import (
     QDialog, QVBoxLayout, QHBoxLayout, QTextBrowser, QPushButton, QLabel,
@@ -44,7 +44,7 @@ from PyQt5.QtWidgets import (
 from nw.gui.additions import QSwitch
 from nw.core import ToHtml
 from nw.constants import (
-    nwConst, nwFiles, nwAlert, nwItemType, nwItemLayout, nwItemClass
+    nwAlert, nwItemType, nwItemLayout, nwItemClass
 )
 
 logger = logging.getLogger(__name__)
@@ -69,9 +69,9 @@ class GuiBuildNovel(QDialog):
         self.theTheme   = theParent.theTheme
         self.optState   = self.theProject.optState
 
-        self.htmlText   = [] # List of html document
-        self.nwdText    = [] # List of markdown documents
-        self.textLayout = [] # List of nwItemLayout entries
+        self.htmlText  = [] # List of html document
+        self.htmlStyle = [] # List of html styles
+        self.nwdText   = [] # List of markdown documents
 
         self.setWindowTitle("Build Novel Project")
         self.setMinimumWidth(800)
@@ -320,11 +320,23 @@ class GuiBuildNovel(QDialog):
         tStart = time()
 
         self.htmlText = []
+        self.htmlStyle = []
         self.nwdText = []
-        self.textLayout = []
 
         for nItt, tItem in enumerate(self.theProject.projTree):
-            if self._checkInclude(tItem, noteFiles, novelFiles, ignoreFlag):
+
+            noteRoot  = noteFiles
+            noteRoot &= tItem.itemType == nwItemType.ROOT
+            noteRoot &= tItem.itemClass != nwItemClass.NOVEL
+
+            if noteRoot:
+                # Add headers for root folders of notes
+                makeHtml.addRootHeading(tItem.itemHandle)
+                makeHtml.doConvert()
+                self.htmlText.append(makeHtml.getResult())
+                self.nwdText.append(makeHtml.getFilteredMarkdown())
+
+            elif self._checkInclude(tItem, noteFiles, novelFiles, ignoreFlag):
                 makeHtml.setText(tItem.itemHandle)
                 makeHtml.doAutoReplace()
                 makeHtml.tokenizeText()
@@ -333,16 +345,17 @@ class GuiBuildNovel(QDialog):
                 makeHtml.doPostProcessing()
                 self.htmlText.append(makeHtml.getResult())
                 self.nwdText.append(makeHtml.getFilteredMarkdown())
-                self.textLayout.append(tItem.itemLayout)
 
             # Update progress bar, also for skipped items
             self.buildProgress.setValue(nItt+1)
 
         tEnd = time()
         logger.debug("Built project in %.3f ms" % (1000*(tEnd-tStart)))
+        self.htmlStyle = makeHtml.getStylesheet()
 
         # Load the preview document with the html data
-        self.docView.setHtml("".join(self.htmlText))
+        self.docView.setStyleSheet(self.htmlStyle)
+        self.docView.setContent(self.htmlText)
 
         return
 
@@ -457,58 +470,53 @@ class GuiBuildNovel(QDialog):
             return False
 
         # Do the actual writing
+        wSuccess = False
+        errMsg = ""
         if outTool == "Qt":
             docWriter = QTextDocumentWriter()
             docWriter.setFileName(savePath)
             docWriter.setFormat(byteFmt)
-            if docWriter.write(self.docView.qDocument):
-                self.theParent.makeAlert(
-                    "Document successfully written in %s format to file: %s" % (
-                        textFmt, savePath
-                    ), nwAlert.INFO
-                )
-            else:
-                self.theParent.makeAlert(
-                    "Failed to write document in %s format to file: %s" % (
-                        textFmt, savePath
-                    ), nwAlert.ERROR
-                )
+            wSuccess = docWriter.write(self.docView.qDocument)
 
         elif outTool == "NW":
             try:
                 with open(savePath, mode="w", encoding="utf8") as outFile:
                     if theFormat == self.FMT_HTM:
                         # Write novelWriter HTML data
-                        outFile.write("<!DOCTYPE html>\n")
-                        outFile.write("<html>\n")
-                        outFile.write("<head>\n")
-                        outFile.write("<meta charset='utf-8'>\n")
-                        outFile.write("</head>\n")
-                        outFile.write("<body>\n")
-                        outFile.write("<article style='width: 800px; margin: 40px auto'>\n")
-                        for aLine in self.htmlText:
-                            outFile.write(aLine)
-                        outFile.write("</article>\n")
-                        outFile.write("</body>\n")
-                        outFile.write("</html>\n")
+                        theStyle = self.htmlStyle.copy()
+                        theStyle.append(r"article {width: 800px; margin: 40px auto;}")
+                        theHtml = (
+                            "<!DOCTYPE html>\n"
+                            "<html>\n"
+                            "<head>\n"
+                            "<meta charset='utf-8'>\n"
+                            "<title>{projTitle:s}</title>\n"
+                            "</head>\n"
+                            "<style>\n"
+                            "{htmlStyle:s}\n"
+                            "</style>\n"
+                            "<body>\n"
+                            "<article>\n"
+                            "{bodyText:s}\n"
+                            "</article>\n"
+                            "</body>\n"
+                            "</html>\n"
+                        ).format(
+                            projTitle = self.theProject.projName,
+                            htmlStyle = "\n".join(theStyle),
+                            bodyText = "".join(self.htmlText),
+                        )
+                        outFile.write(theHtml)
 
                     elif theFormat == self.FMT_NWD:
                         # Write novelWriter markdown data
                         for aLine in self.nwdText:
                             outFile.write(aLine)
 
-                self.theParent.makeAlert(
-                    "Document successfully written in %s format to file: %s" % (
-                        textFmt, savePath
-                    ), nwAlert.INFO
-                )
+                wSuccess = True
 
             except Exception as e:
-                self.theParent.makeAlert(
-                    "Failed to write document in %s format to file: %s" % (
-                        textFmt, str(e)
-                    ), nwAlert.ERROR
-                )
+                errMsg = str(e)
 
         elif outTool == "QtPrint" and theFormat == self.FMT_PDF:
             try:
@@ -520,23 +528,29 @@ class GuiBuildNovel(QDialog):
                 thePrinter.setColorMode(QPrinter.Color)
                 thePrinter.setOutputFileName(savePath)
                 self.docView.qDocument.print(thePrinter)
-                self.theParent.makeAlert(
-                    "Document successfully written in %s format to file: %s" % (
-                        textFmt, savePath
-                    ), nwAlert.INFO
-                )
+                wSuccess = True
 
             except Exception as e:
-                self.theParent.makeAlert(
-                    "Failed to write document in %s format to file: %s" % (
-                        textFmt, str(e)
-                    ), nwAlert.ERROR
-                )
+                errMsg - str(e)
 
         else:
-            return False
+            errMsg = "Unknown format"
 
-        return True
+        # Report to user
+        if wSuccess:
+            self.theParent.makeAlert(
+                "%s file successfully written to:<br> %s" % (
+                    textFmt, savePath
+                ), nwAlert.INFO
+            )
+        else:
+            self.theParent.makeAlert(
+                "Failed to write %s file. %s" % (
+                    textFmt, errMsg
+                ), nwAlert.ERROR
+            )
+
+        return wSuccess
 
     def _printDocument(self):
         """Open the print preview dialog.
@@ -550,7 +564,6 @@ class GuiBuildNovel(QDialog):
         """Connect the print preview painter to the document viewer.
         """
         thePrinter.setOrientation(QPrinter.Portrait)
-        thePrinter.setOutputFormat(QPrinter.NativeFormat | QPrinter.PdfFormat)
         self.docView.qDocument.print(thePrinter)
         return
 
@@ -612,7 +625,8 @@ class GuiBuildNovel(QDialog):
         if path.isfile(docPath):
             with open(docPath, mode="r", encoding="utf8") as inFile:
                 helpText = inFile.read()
-            self.docView.setText(helpText)
+            self.docView.setStyleSheet()
+            self.docView.setContent(helpText)
         else:
             self.theParent.makeAlert(
                 "Could not open help text file for Build Project.", nwAlert.ERROR
@@ -638,6 +652,14 @@ class GuiBuildNovelDocView(QTextBrowser):
         self.qDocument = self.document()
         self.qDocument.setDocumentMargin(self.mainConf.textMargin)
 
+        theFont = QFont()
+        if self.mainConf.textFont is None:
+            # If none is defined, set the default back to config
+            self.mainConf.textFont = self.qDocument.defaultFont().family()
+        theFont.setFamily(self.mainConf.textFont)
+        theFont.setPointSize(self.mainConf.textSize)
+        self.setFont(theFont)
+
         theOpt = QTextOption()
         if self.mainConf.doJustify:
             theOpt.setAlignment(Qt.AlignJustify)
@@ -648,7 +670,7 @@ class GuiBuildNovelDocView(QTextBrowser):
         docPalette.setColor(QPalette.Text, QColor(  0,   0,   0))
         self.setPalette(docPalette)
 
-        self._makeStyleSheet()
+        self.setStyleSheet()
 
         self.show()
 
@@ -656,35 +678,26 @@ class GuiBuildNovelDocView(QTextBrowser):
 
         return
 
-    def setText(self, theText):
+    def setContent(self, theText):
+        """Set the content, either from text or list of text.
+        """
+        if isinstance(theText, list):
+            theText = "".join(theText)
+        theText = theText.replace("&emsp;","&nbsp;"*4)
         self.setHtml(theText)
         return
 
-    ##
-    #  Internal Functions
-    ##
+    def setStyleSheet(self, theStyles=[]):
+        """Set the stylesheet for the preview document.
+        """
+        if not theStyles:
+            theStyles.append(r"h1, h2 {color: rgb(66, 113, 174);}")
+            theStyles.append(r"h3, h4 {color: rgb(50, 50, 50);}")
+            theStyles.append(r"a {color: rgb(137, 89, 168);}")
+            theStyles.append(r"mark {background-color: rgb(240, 198, 116);}")
+            theStyles.append(r".tags {color: rgb(245, 135, 31); font-weight: bold;}")
 
-    def _makeStyleSheet(self):
-
-        styleSheet = (
-            "h1, h2 {"
-            "  color: rgb(66, 113, 174);"
-            "}\n"
-            "h3, h4 {"
-            "  color: rgb(50, 50, 50);"
-            "}\n"
-            "a {"
-            "  color: rgb(137, 89, 168);"
-            "}\n"
-            "mark {"
-            "  background-color: rgb(240, 198, 116);"
-            "}\n"
-            ".tags {"
-            "  color: rgb(245, 135, 31);"
-            "  font-wright: bold;"
-            "}\n"
-        )
-        self.qDocument.setDefaultStyleSheet(styleSheet)
+        self.qDocument.setDefaultStyleSheet("\n".join(theStyles))
 
         return
 
