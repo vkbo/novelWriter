@@ -54,6 +54,14 @@ class ToHtml(Tokenizer):
             nwUnicode.U_HELLIP : nwUnicode.H_HELLIP,
             nwUnicode.U_NBSP   : nwUnicode.H_NBSP,
         }
+        self.revDict = dict(map(reversed, self.repDict.items()))
+
+        self.reReplace = re.compile(
+            "|".join([re.escape(k) for k in self.repDict.keys()]), flags=re.DOTALL
+        )
+        self.reReverse = re.compile(
+            "|".join([re.escape(k) for k in self.revDict.keys()]), flags=re.DOTALL
+        )
 
         return
 
@@ -82,10 +90,9 @@ class ToHtml(Tokenizer):
         characters into their respective HTML entities.
         """
         Tokenizer.doAutoReplace(self)
-
-        xRep = re.compile("|".join([re.escape(k) for k in self.repDict.keys()]), flags=re.DOTALL)
-        self.theText = xRep.sub(lambda x: self.repDict[x.group(0)], self.theText)
-
+        self.theText = self.reReplace.sub(
+            lambda x: self.repDict[x.group(0)], self.theText
+        )
         return
 
     def doPostProcessing(self):
@@ -95,18 +102,15 @@ class ToHtml(Tokenizer):
         if self.genMode == self.M_PREVIEW:
             # Doesn't matter for preview as we don't use the markdown
             return
-
-        revDict = dict(map(reversed, self.repDict.items()))
-        xRep = re.compile("|".join([re.escape(k) for k in revDict.keys()]), flags=re.DOTALL)
-        self.theMarkdown = xRep.sub(lambda x: revDict[x.group(0)], self.theMarkdown)
-
+        self.theMarkdown = self.reReverse.sub(
+            lambda x: self.revDict[x.group(0)], self.theMarkdown
+        )
         return
 
     def doConvert(self):
         """Convert the list of text tokens into a HTML document saved
         to theResult.
         """
-
         htmlTags = {
             self.FMT_B_B : "<strong>",
             self.FMT_B_E : "</strong>",
