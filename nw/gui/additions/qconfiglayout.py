@@ -69,11 +69,15 @@ class QConfigLayout(QGridLayout):
         return
 
     def setHelpText(self, intRow, theText):
+        """Set the text for the help label.
+        """
         if intRow in self._itemMap:
             self._itemMap[intRow]["help"].setText(theText)
         return
 
     def setLabelText(self, intRow, theText):
+        """Set the text for the main label.
+        """
         if intRow in self._itemMap:
             self._itemMap[intRow]["label"].setText(theText)
         return
@@ -85,7 +89,6 @@ class QConfigLayout(QGridLayout):
     def addGroupLabel(self, theLabel):
         """Adds a text label to separate groups of settings.
         """
-
         if isinstance(theLabel, QLabel):
             qLabel = theLabel
         elif isinstance(theLabel, str):
@@ -107,7 +110,6 @@ class QConfigLayout(QGridLayout):
     def addRow(self, theLabel, theWidget, helpText=None, theUnit=None):
         """Add a label and a widget as a new row of the grid.
         """
-
         thisEntry = {
             "label"  : None,
             "help"   : None,

@@ -88,7 +88,6 @@ class GuiDocViewer(QTextBrowser):
     def initViewer(self):
         """Set editor settings from main config.
         """
-
         self._makeStyleSheet()
 
         # Set Font
@@ -122,7 +121,6 @@ class GuiDocViewer(QTextBrowser):
     def loadText(self, tHandle):
         """Load text into the viewer from an item handle.
         """
-
         tItem = self.theProject.projTree[tHandle]
         if tItem is None:
             logger.warning("Item not found")
@@ -153,11 +151,16 @@ class GuiDocViewer(QTextBrowser):
         return True
 
     def reloadText(self):
+        """Reload the text in the current document.
+        """
         self.loadText(self.theHandle)
         return
 
     def loadFromTag(self, theTag):
-
+        """Load text in the document from a reference given by a meta
+        tag rather than a known handle. This function depends on the
+        index being up to date.
+        """
         logger.debug("Loading document from tag '%s'" % theTag)
 
         if theTag in self.theParent.theIndex.tagIndex.keys():
@@ -175,6 +178,9 @@ class GuiDocViewer(QTextBrowser):
         return True
 
     def docAction(self, theAction):
+        """Wrapper function for various document actions on the current
+        document.
+        """
         logger.verbose("Requesting action: %s" % theAction.name)
         if self.theHandle is None:
             logger.error("No document open")
@@ -225,6 +231,9 @@ class GuiDocViewer(QTextBrowser):
     ##
 
     def _makeSelection(self, selMode):
+        """Wrapper function for making a selection based on a specific
+        selection mode.
+        """
         theCursor = self.textCursor()
         theCursor.clearSelection()
         theCursor.select(selMode)
@@ -232,7 +241,8 @@ class GuiDocViewer(QTextBrowser):
         return
 
     def _linkClicked(self, theURL):
-
+        """Slot for a link in the document being clicked.
+        """
         theLink = theURL.url()
         tHandle = None
         onLine  = 0
@@ -256,7 +266,9 @@ class GuiDocViewer(QTextBrowser):
         return
 
     def _makeStyleSheet(self):
-
+        """Generate an appropriate style sheet for the document viewer,
+        based on the current syntax highlighter theme,
+        """
         styleSheet = (
             "body {{"
             "  color: rgb({tColR},{tColG},{tColB});"

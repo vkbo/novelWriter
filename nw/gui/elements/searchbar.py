@@ -98,6 +98,9 @@ class GuiSearchBar(QFrame):
     ##
 
     def setSearchText(self, theText):
+        """Open the search bar and set the search text to the text
+        provided, if any.
+        """
         if not self.isVisible():
             self.setVisible(True)
         self.searchBox.setText(theText)
@@ -106,15 +109,21 @@ class GuiSearchBar(QFrame):
         return True
 
     def setReplaceText(self, theText):
+        """Set the replace text.
+        """
         self._replaceVisible(True)
         self.replaceBox.setFocus()
         self.replaceBox.setText(theText)
         return True
 
     def getSearchText(self):
+        """Return the current search text.
+        """
         return self.searchBox.text()
 
     def getReplaceText(self):
+        """Return the current replace text.
+        """
         return self.replaceBox.text()
 
     ##
@@ -122,11 +131,15 @@ class GuiSearchBar(QFrame):
     ##
 
     def _doClose(self):
+        """Hide the search/replace bar.
+        """
         self._replaceVisible(False)
         self.setVisible(False)
         return
 
     def _doSearch(self):
+        """Call the search action function for the document editor.
+        """
         modKey = qApp.keyboardModifiers()
         if modKey == Qt.ShiftModifier:
             self.theParent.docEditor.docAction(nwDocAction.GO_PREV)
@@ -135,10 +148,14 @@ class GuiSearchBar(QFrame):
         return
 
     def _doReplace(self):
+        """Call the replace action function for the document editor.
+        """
         self.theParent.docEditor.docAction(nwDocAction.REPL_NEXT)
         return
 
     def _replaceVisible(self, isVisible):
+        """Set the visibility of all the replace widgets.
+        """
         self.replaceLabel.setVisible(isVisible)
         self.replaceBox.setVisible(isVisible)
         self.replaceButton.setVisible(isVisible)

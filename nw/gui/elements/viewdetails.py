@@ -94,7 +94,9 @@ class GuiDocViewDetails(QWidget):
         return
 
     def refreshReferences(self, tHandle):
-
+        """Update the current list of document references from the
+        project index.
+        """
         self.currHandle = tHandle
 
         if self.isSticky.isChecked():
@@ -117,12 +119,17 @@ class GuiDocViewDetails(QWidget):
     ##
 
     def _linkClicked(self, theLink):
+        """Capture the link-click and forward it to the document viewer
+        class for handling.
+        """
         if len(theLink) == 18:
             tHandle = theLink[-13:]
             self.theParent.viewDocument(tHandle)
         return
 
     def _doShowHide(self, chState):
+        """Toggle the expand/collapse of the panel.
+        """
         self.scrollBox.setVisible(chState)
         self.mainConf.setShowRefPanel(chState)
         if chState:
@@ -132,6 +139,8 @@ class GuiDocViewDetails(QWidget):
         return
 
     def _doSticky(self, chState):
+        """Toggle the sticky feature of the references.
+        """
         if not chState and self.currHandle is not None:
             self.refreshReferences(self.currHandle)
         return

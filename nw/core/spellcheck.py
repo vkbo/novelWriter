@@ -55,15 +55,23 @@ class NWSpellCheck():
         return
 
     def setLanguage(self, theLang, projectDict=None):
+        """Dummy function.
+        """
         return
 
     def checkWord(self, theWord):
+        """Dummy function.
+        """
         return True
 
     def suggestWords(self, theWord):
+        """Dummy function.
+        """
         return []
 
     def addWord(self, newWord):
+        """Add a word to the project dictionary.
+        """
         if self.projectDict is not None and newWord not in self.PROJW:
             newWord = newWord.strip()
             self.PROJW.append(newWord)
@@ -76,10 +84,14 @@ class NWSpellCheck():
         return
 
     def listDictionaries(self):
+        """Dummy function.
+        """
         return []
 
     @staticmethod
     def expandLanguage(spTag):
+        """Translate a language tag to something more suer friendly.
+        """
         spBits = spTag.split("_")
         if spBits[0] in isoLanguage.ISO_639_1:
             spLang = isoLanguage.ISO_639_1[spBits[0]]
@@ -94,6 +106,9 @@ class NWSpellCheck():
     ##
 
     def _readProjectDictionary(self, projectDict):
+        """Read the content of the project dictionary, and add it to the
+        lookup lists.
+        """
         self.PROJW = []
         if projectDict is not None:
             self.projectDict = projectDict
@@ -147,17 +162,25 @@ class NWSpellEnchant(NWSpellCheck):
         return
 
     def checkWord(self, theWord):
+        """Wrapper function for pyenchant.
+        """
         return self.theDict.check(theWord)
 
     def suggestWords(self, theWord):
+        """Wrapper function for pyenchant.
+        """
         return self.theDict.suggest(theWord)
 
     def addWord(self, newWord):
+        """Wrapper function for pyenchant.
+        """
         self.theDict.add_to_session(newWord)
         NWSpellCheck.addWord(self, newWord)
         return
 
     def listDictionaries(self):
+        """Wrapper function for pyenchant.
+        """
         retList = []
         try:
             import enchant
@@ -171,6 +194,8 @@ class NWSpellEnchant(NWSpellCheck):
 # END Class NWSpellEnchant
 
 class NWSpellEnchantDummy:
+    """Fallback for when Enchant is selected, but not installed.
+    """
 
     def __init__(self):
         return
@@ -191,6 +216,11 @@ class NWSpellEnchantDummy:
 # ================================================================================================ #
 
 class NWSpellSimple(NWSpellCheck):
+    """Internal spell check tool that uses standard Python packages with
+    no other external dependencies. This is the fallback spell checker
+    when no other is available. This method is fairly slow compared to
+    other implementations.
+    """
 
     WORDS = []
 
@@ -200,7 +230,8 @@ class NWSpellSimple(NWSpellCheck):
         return
 
     def setLanguage(self, theLang, projectDict=None):
-
+        """Load a dictionary as a list from the app assets folder.
+        """
         self.WORDS = []
         dictFile = path.join(self.mainConf.dictPath,theLang+".dict")
         try:
@@ -259,6 +290,8 @@ class NWSpellSimple(NWSpellCheck):
         return theOptions
 
     def addWord(self, newWord):
+        """Wrapper for the internal project dictionary feature.
+        """
         newWord = newWord.strip().lower()
         if newWord not in self.WORDS:
             self.WORDS.append(newWord)
@@ -266,7 +299,8 @@ class NWSpellSimple(NWSpellCheck):
         return
 
     def listDictionaries(self):
-
+        """Lists the dictionary files in the app assets folder.
+        """
         retList = []
         for dictFile in listdir(self.mainConf.dictPath):
 

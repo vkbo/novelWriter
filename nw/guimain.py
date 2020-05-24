@@ -57,7 +57,7 @@ class GuiMain(QMainWindow):
 
         logger.info("Starting %s" % nw.__package__)
         logger.debug("Initialising GUI ...")
-        self.mainConf   = nw.CONFIG
+        self.mainConf = nw.CONFIG
 
         # Some runtime info useful for debugging
         logger.info("OS: %s" % self.mainConf.osType)

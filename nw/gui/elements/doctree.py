@@ -105,13 +105,19 @@ class GuiDocTree(QTreeWidget):
     ##
 
     def clearTree(self):
+        """Clear the GUI content and the related maps.
+        """
         self.clear()
         self.theMap   = {}
         self.orphRoot = None
         return
 
     def newTreeItem(self, itemType, itemClass):
-
+        """Add new item to the tree, with a given itemType and
+        itemClass, and attach it to the selected handle. Also make sure
+        the item is added in a place it can be added, and that other
+        meta data is set correctly to ensure a valid project tree.
+        """
         pHandle = self.getSelectedHandle()
 
         if not self.theParent.hasProject:
@@ -274,7 +280,6 @@ class GuiDocTree(QTreeWidget):
         function only asks for confirmation once, and calls the regular
         deleteItem function for each document in the Trash folder.
         """
-
         trashHandle = self.theProject.projTree.trashRoot()
 
         logger.debug("Emptying Trash folder")
@@ -315,7 +320,6 @@ class GuiDocTree(QTreeWidget):
         that to save memory. Items not in the tree are not saved to the
         project file, so a loaded project will be clean anyway.
         """
-
         if tHandle is None:
             tHandle = self.getSelectedHandle()
 
@@ -446,6 +450,13 @@ class GuiDocTree(QTreeWidget):
         return
 
     def propagateCount(self, tHandle, theCount, nDepth=0):
+        """Recursive function setting the word count for a given item,
+        and propagating that count upwards in the tree until reaching a
+        root item. This function is more efficient than recalculating
+        everything each time the word count is updated, but is also
+        prone to diverging from the true values if the counts are not
+        properly reported to the function.
+        """
         tItem = self._getTreeItem(tHandle)
         if tItem is not None:
             tItem.setText(self.C_COUNT,str(theCount))
@@ -460,6 +471,12 @@ class GuiDocTree(QTreeWidget):
         return
 
     def projectWordCount(self):
+        """Sum up the word counts for all root items and set the
+        relevant values in the project and on the status bar. This call
+        is a fast way of getting this number, and depends on the
+        propagateCount function being called when it should to maintain
+        the correct count.
+        """
         nWords = 0
         for n in range(self.topLevelItemCount()):
             tItem = self.topLevelItem(n)
@@ -472,6 +489,11 @@ class GuiDocTree(QTreeWidget):
         return
 
     def buildTree(self):
+        """Build the entire project tree from scratch. This depends on
+        the save project item iterator in the project class which will
+        always make sure items with a parent have had their parent item
+        sent first.
+        """
         self.clear()
         for nwItem in self.theProject.getProjectItems():
             self._addTreeItem(nwItem)
@@ -517,11 +539,16 @@ class GuiDocTree(QTreeWidget):
     ##
 
     def _getTreeItem(self, tHandle):
+        """Returns the QTreeWidgetItem of a given item handle.
+        """
         if tHandle in self.theMap.keys():
             return self.theMap[tHandle]
         return None
 
     def _scanChildren(self, theList, theItem, theIndex):
+        """This is a recursive function returning all items in a tree
+        starting at a given QTreeWidgetItem.
+        """
         tHandle = theItem.text(self.C_HANDLE)
         nwItem  = self.theProject.projTree[tHandle]
         nwItem.setExpanded(theItem.isExpanded())
@@ -532,7 +559,9 @@ class GuiDocTree(QTreeWidget):
         return theList
 
     def _addTreeItem(self, nwItem):
-
+        """Create a QTreeWidgetItem from an NWItem and add it to the
+        project tree.
+        """
         tHandle = nwItem.itemHandle
         pHandle = nwItem.parHandle
         tClass  = nwItem.itemClass
@@ -591,6 +620,9 @@ class GuiDocTree(QTreeWidget):
         return trItem
 
     def _addOrphanedRoot(self):
+        """Add the special Orphaned Files root item to hold non-root
+        items with no parent set.
+        """
         if self.orphRoot is None:
             newItem = QTreeWidgetItem([""]*4)
             newItem.setText(self.C_NAME,   "Orphaned Files")
@@ -604,6 +636,8 @@ class GuiDocTree(QTreeWidget):
         return
 
     def _cleanOrphanedRoot(self):
+        """Remove the special Orphaned Files root folder if it is empty.
+        """
         if self.orphRoot is not None:
             if self.orphRoot.childCount() == 0:
                 self.takeTopLevelItem(self.indexOfTopLevelItem(self.orphRoot))
@@ -615,7 +649,6 @@ class GuiDocTree(QTreeWidget):
         in the project is consistent with the treeView. Also move the
         word count over to the new parent tree.
         """
-
         trItemS = self._getTreeItem(tHandle)
         nwItemS = self.theProject.projTree[tHandle]
         trItemP = trItemS.parent()
@@ -636,6 +669,10 @@ class GuiDocTree(QTreeWidget):
         return True
 
     def _moveOrphanedItem(self, tHandle, dHandle):
+        """Move an Orphaned Item to a new dHandle parent item. This
+        function will set all the missing meta data based on the meta
+        data of the destination item.
+        """
         trItemS = self._getTreeItem(tHandle)
         nwItemS = self.theProject.projTree[tHandle]
         nwItemD = self.theProject.projTree[dHandle]

@@ -143,31 +143,33 @@ class GuiDocDetails(QFrame):
         self.pCountData.setAlignment(Qt.AlignRight)
 
         # Assemble
-        self.mainBox.addWidget(self.labelName,  0, 0, 1, 1)
-        self.mainBox.addWidget(self.labelFlag,  0, 1, 1, 1)
-        self.mainBox.addWidget(self.labelData,  0, 2, 1, 3)
+        self.mainBox.addWidget(self.labelName,  0, 0, 1, 1, Qt.AlignTop)
+        self.mainBox.addWidget(self.labelFlag,  0, 1, 1, 1, Qt.AlignTop)
+        self.mainBox.addWidget(self.labelData,  0, 2, 1, 3, Qt.AlignTop)
 
-        self.mainBox.addWidget(self.statusName, 1, 0, 1, 1)
-        self.mainBox.addWidget(self.statusFlag, 1, 1, 1, 1)
-        self.mainBox.addWidget(self.statusData, 1, 2, 1, 1)
-        self.mainBox.addWidget(self.cCountName, 1, 3, 1, 1)
-        self.mainBox.addWidget(self.cCountData, 1, 4, 1, 1)
+        self.mainBox.addWidget(self.statusName, 1, 0, 1, 1, Qt.AlignTop)
+        self.mainBox.addWidget(self.statusFlag, 1, 1, 1, 1, Qt.AlignTop)
+        self.mainBox.addWidget(self.statusData, 1, 2, 1, 1, Qt.AlignTop)
+        self.mainBox.addWidget(self.cCountName, 1, 3, 1, 1, Qt.AlignTop)
+        self.mainBox.addWidget(self.cCountData, 1, 4, 1, 1, Qt.AlignTop)
 
-        self.mainBox.addWidget(self.className,  2, 0, 1, 1)
-        self.mainBox.addWidget(self.classFlag,  2, 1, 1, 1)
-        self.mainBox.addWidget(self.classData,  2, 2, 1, 1)
-        self.mainBox.addWidget(self.wCountName, 2, 3, 1, 1)
-        self.mainBox.addWidget(self.wCountData, 2, 4, 1, 1)
+        self.mainBox.addWidget(self.className,  2, 0, 1, 1, Qt.AlignTop)
+        self.mainBox.addWidget(self.classFlag,  2, 1, 1, 1, Qt.AlignTop)
+        self.mainBox.addWidget(self.classData,  2, 2, 1, 1, Qt.AlignTop)
+        self.mainBox.addWidget(self.wCountName, 2, 3, 1, 1, Qt.AlignTop)
+        self.mainBox.addWidget(self.wCountData, 2, 4, 1, 1, Qt.AlignTop)
 
-        self.mainBox.addWidget(self.layoutName, 3, 0, 1, 1)
-        self.mainBox.addWidget(self.layoutFlag, 3, 1, 1, 1)
-        self.mainBox.addWidget(self.layoutData, 3, 2, 1, 1)
-        self.mainBox.addWidget(self.pCountName, 3, 3, 1, 1)
-        self.mainBox.addWidget(self.pCountData, 3, 4, 1, 1)
+        self.mainBox.addWidget(self.layoutName, 3, 0, 1, 1, Qt.AlignTop)
+        self.mainBox.addWidget(self.layoutFlag, 3, 1, 1, 1, Qt.AlignTop)
+        self.mainBox.addWidget(self.layoutData, 3, 2, 1, 1, Qt.AlignTop)
+        self.mainBox.addWidget(self.pCountName, 3, 3, 1, 1, Qt.AlignTop)
+        self.mainBox.addWidget(self.pCountData, 3, 4, 1, 1, Qt.AlignTop)
 
         self.mainBox.setColumnStretch(0,0)
         self.mainBox.setColumnStretch(1,0)
         self.mainBox.setColumnStretch(2,1)
+        self.mainBox.setColumnStretch(3,0)
+        self.mainBox.setColumnStretch(4,0)
 
         logger.debug("DocDetails initialisation complete")
 
@@ -180,7 +182,6 @@ class GuiDocDetails(QFrame):
     def updateViewBox(self, tHandle):
         """Populate the details box from a given handle.
         """
-
         nwItem = self.theProject.projTree[tHandle]
 
         if nwItem is None:

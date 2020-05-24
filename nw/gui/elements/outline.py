@@ -125,7 +125,6 @@ class GuiProjectOutline(QTreeWidget):
         """Clear the tree and header and set the default values for the
         columns arrays.
         """
-
         self.clear()
         self.setColumnCount(1)
         self.setHeaderLabel(nwLabels.OUTLINE_COLS[nwOutline.TITLE])
@@ -150,7 +149,6 @@ class GuiProjectOutline(QTreeWidget):
         what data to load, and if necessary, force a rebuild of the
         tree.
         """
-
         # If it's the first time, we always build
         if self.firstView or self.firstView and overRide:
             self._loadHeaderState()
@@ -229,7 +227,6 @@ class GuiProjectOutline(QTreeWidget):
         """Load the state of the main tree header, that is, column order
         and column width.
         """
-
         # Load whatever we saved last time, regardless of wether it
         # contains the correct names or number of columns. The names
         # must be valid though.
@@ -280,7 +277,6 @@ class GuiProjectOutline(QTreeWidget):
         save the current width of hidden columns though. This preserves
         the last known width in case they're unhidden again.
         """
-
         # If we haven't built the tree, there is nothing to save.
         if self.lastBuild == 0:
             return
@@ -319,7 +315,6 @@ class GuiProjectOutline(QTreeWidget):
         if they are hidden. This ensures that showing and hiding columns
         is fast and doesn't require a rebuild of the tree.
         """
-
         self.clear()
 
         if self.firstView:
@@ -347,7 +342,7 @@ class GuiProjectOutline(QTreeWidget):
         currChapter = None
         currScene   = None
 
-        for titleKey in self.theIndex.getNovelStructure():
+        for titleKey in self.theIndex.getNovelStructure(skipExcluded=True):
 
             if len(titleKey) < 16:
                 continue
@@ -404,7 +399,6 @@ class GuiProjectOutline(QTreeWidget):
     def _createTreeItem(self, tHandle, sTitle):
         """Populate a tree item with all the column values.
         """
-
         nwItem = self.theProject.projTree[tHandle]
         novIdx = self.theIndex.novelIndex[tHandle][sTitle]
 

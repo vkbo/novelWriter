@@ -39,7 +39,6 @@ def countWords(theText):
     """Count words in a piece of text, skipping special syntax and
     comments.
     """
-
     charCount = 0
     wordCount = 0
     paraCount = 0
@@ -86,7 +85,6 @@ def projectMaintenance(theProject):
     """Wrapper class for handling various tasks related to managing old
     projects with content from older versions of novelWriter.
     """
-
     # Remove no longer used project cache folder
     if path.isdir(theProject.projPath):
         cacheDir = path.join(theProject.projPath, "cache")
@@ -141,7 +139,6 @@ def numberToWord(numVal, theLanguage):
 def _numberToWordEN(numVal):
     """Convert numbers to English words.
     """
-
     numWord = ""
     oneWord = ""
     tenWord = ""

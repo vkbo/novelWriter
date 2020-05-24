@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='utf-8'?>
-<novelWriterXML appVersion="0.5.2" hexVersion="0x000502f0" fileVersion="1.0" saveCount="158" autoCount="21" timeStamp="2020-05-23 21:12:53">
+<novelWriterXML appVersion="0.6" hexVersion="0x000600f0" fileVersion="1.0" saveCount="168" autoCount="26" timeStamp="2020-05-24 18:33:34">
   <project>
     <name>Sample Project</name>
     <title>Sample Project</title>
@@ -11,8 +11,8 @@
     <spellCheck>True</spellCheck>
     <autoOutline>True</autoOutline>
     <lastEdited>636b6aa9b697b</lastEdited>
-    <lastViewed>6a2d6d5f4f401</lastViewed>
-    <lastWordCount>875</lastWordCount>
+    <lastViewed>ba8a28a246524</lastViewed>
+    <lastWordCount>914</lastWordCount>
     <autoReplace>
       <A>B</A>
       <B>E</B>
@@ -44,7 +44,7 @@
       <entry blue="175" green="0" red="117">Main</entry>
     </importance>
   </settings>
-  <content count="21">
+  <content count="22">
     <item handle="7031beac91f75" order="0" parent="None">
       <name>Novel</name>
       <type>ROOT</type>
@@ -65,20 +65,33 @@
       <paraCount>2</paraCount>
       <cursorPos>78</cursorPos>
     </item>
-    <item handle="edca4be2fcaf8" order="1" parent="7031beac91f75">
-      <name>Part 1</name>
+    <item handle="974e400180a99" order="1" parent="7031beac91f75">
+      <name>Page</name>
+      <type>FILE</type>
+      <class>NOVEL</class>
+      <status>New</status>
+      <expanded>False</expanded>
+      <exported>True</exported>
+      <layout>PAGE</layout>
+      <charCount>208</charCount>
+      <wordCount>40</wordCount>
+      <paraCount>2</paraCount>
+      <cursorPos>213</cursorPos>
+    </item>
+    <item handle="edca4be2fcaf8" order="2" parent="7031beac91f75">
+      <name>Part One</name>
       <type>FILE</type>
       <class>NOVEL</class>
       <status>New</status>
       <expanded>False</expanded>
       <exported>True</exported>
       <layout>PARTITION</layout>
-      <charCount>0</charCount>
-      <wordCount>0</wordCount>
-      <paraCount>0</paraCount>
+      <charCount>23</charCount>
+      <wordCount>5</wordCount>
+      <paraCount>1</paraCount>
       <cursorPos>0</cursorPos>
     </item>
-    <item handle="e7ded148d6e4a" order="2" parent="7031beac91f75">
+    <item handle="e7ded148d6e4a" order="3" parent="7031beac91f75">
       <name>A Folder</name>
       <type>FOLDER</type>
       <class>NOVEL</class>
@@ -109,7 +122,7 @@
       <charCount>1199</charCount>
       <wordCount>216</wordCount>
       <paraCount>7</paraCount>
-      <cursorPos>0</cursorPos>
+      <cursorPos>527</cursorPos>
     </item>
     <item handle="bc0cbd2a407f3" order="2" parent="e7ded148d6e4a">
       <name>Another Scene</name>
@@ -277,9 +290,9 @@
       <expanded>False</expanded>
       <exported>True</exported>
       <layout>SCENE</layout>
-      <charCount>30</charCount>
-      <wordCount>6</wordCount>
-      <paraCount>1</paraCount>
+      <charCount>0</charCount>
+      <wordCount>0</wordCount>
+      <paraCount>0</paraCount>
       <cursorPos>36</cursorPos>
     </item>
   </content>

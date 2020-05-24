@@ -136,7 +136,6 @@ class NWDoc():
         """Save the document via temp file in case of save failure, and
         in any case keep a backup of the file.
         """
-
         if self.docHandle is None or not self.docEditable:
             return False
 
@@ -202,7 +201,6 @@ class NWDoc():
         """Parses the document meta tag and returns the path and name as
         a list and a string.
         """
-
         if len(self.docMeta) < 14:
             # Not enough information
             return "", []
@@ -232,6 +230,8 @@ class NWDoc():
 
     @staticmethod
     def _assemblePath(tHandle, docExt):
+        """Assemble the file path for a given handle.
+        """
         if tHandle is None:
             return None, None
         docDir  = "data_"+tHandle[0]

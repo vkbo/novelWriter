@@ -67,11 +67,15 @@ class GuiNoticeBar(QFrame):
         return
 
     def showNote(self, theNote):
+        """Show the note on the noticebar.
+        """
         self.noteLabel.setText("<b>Note:</b> %s" % theNote)
         self.setVisible(True)
         return
 
     def hideNote(self):
+        """Clear the noticebar and hide it.
+        """
         self.noteLabel.setText("")
         self.setVisible(False)
         return

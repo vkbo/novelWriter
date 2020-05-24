@@ -69,10 +69,14 @@ class PagedDialog(QDialog):
         return
 
     def addTab(self, tabWidget, tabLabel):
+        """Forwards the adding of tabs to the QTabWidget.
+        """
         self._tabBox.addTab(tabWidget, tabLabel)
         return
 
     def addControls(self, buttonBar):
+        """Adds a button bar to the dialog.
+        """
         self._buttonBox.addWidget(buttonBar)
         return
 
@@ -85,12 +89,16 @@ class VerticalTabBar(QTabBar):
         return
 
     def tabSizeHint(self, theIndex):
+        """Returns a transposed size hint for the rotated bar.
+        """
         tSize = QTabBar.tabSizeHint(self, theIndex)
         tSize.transpose()
         return tSize
 
     def paintEvent(self, theEvent):
-
+        """Custom implementation of the label painter that rotates the
+        label 90 degrees.
+        """
         pObj = QStylePainter(self)
         oObj = QStyleOptionTab()
 

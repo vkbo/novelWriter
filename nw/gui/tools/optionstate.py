@@ -51,7 +51,6 @@ class OptionState():
     def loadSettings(self):
         """Load the options dictionary from the project settings file.
         """
-
         if self.theProject.projMeta is None:
             return False
 
@@ -76,7 +75,6 @@ class OptionState():
     def saveSettings(self):
         """Save the options dictionary to the project settings file.
         """
-
         if self.theProject.projMeta is None:
             return False
 
