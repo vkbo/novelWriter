@@ -80,7 +80,7 @@ class GuiProjectLoad(QDialog):
         self.listBox.setHeaderLabels(["Working Title","Words","Last Opened","Path"])
         self.listBox.setRootIsDecorated(False)
         self.listBox.setColumnHidden(3, True)
-        self.listBox.itemClicked.connect(self._doSelectRecent)
+        self.listBox.itemSelectionChanged.connect(self._doSelectRecent)
         self.listBox.itemDoubleClicked.connect(self._doOpenRecent)
 
         treeHead = self.listBox.headerItem()
