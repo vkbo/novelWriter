@@ -1,6 +1,6 @@
 # novelWriter ChangeLog
 
-## Version 0.6 [2020-xx-xx]
+## Version 0.6 [2020-05-24]
 
 **Bugfixes**
 
@@ -8,11 +8,12 @@
 
 **User Interface**
 
-* The Export Tool has been removed and replaced by a new tool called "Build Novel Project". The new tool has the same filtering options as the Export Tool, but with more formatting options for titles. It also has a preview window to display the generated document. A Save As button provides exports to HTML, novelWriter Markdown. plain text, PDF and Open Document format. LaTeX export has not been ported over, and interfacing with Pandoc is no longer supported either. Although, as before, the HTML export can be converted with Pandoc to other formats outside of novelWriter. The new tool also supports printing. PR #204
+* The Export Tool has been removed and replaced by a new tool called "Build Novel Project". The new tool has the same filtering options as the Export Tool, but with more formatting options for titles. It also has a preview window to display the generated document. A Save As button provides exports to HTML, novelWriter Markdown. plain text, PDF and Open Document format. LaTeX export has not been ported over, and interfacing with Pandoc is no longer supported either. Although, as before, the HTML export can be converted with Pandoc to other formats outside of novelWriter. The new tool also supports printing. PRs #204, #220 and #221
 * The Project Settings, Preferences, Item Editor, Merge Documents, and Split Documents dialogs have been redesigned. The ones with tabs now have vertical tabs on the left with horizontal labels. The dialog design should be more compact, and have room for more tabs for future settings. PR #212
 * A new icon, as well as a mimetype icon for the project files, have been designed and added to the app. PRs #213 and #214
 * The About dialog has been completely redesigned to allow more information. PR #217
 * The Open Project dialog has been cleaned up and made more readable. The project paths have been moved out of the list, and are now displayed when an item is selected instead. Icons have been added, and the New project dialog can also be triggered from this dialog. PR #218
+* The document stats have been added to the details panel below the project tree. PR #219
 
 ## Version 0.5.2 [2020-05-21]
 

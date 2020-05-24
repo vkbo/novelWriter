@@ -241,7 +241,7 @@ class ToHtml(Tokenizer):
 
         return
 
-    def getStylesheet(self):
+    def getStyleSheet(self):
         """Generate a stylesheet appropriate for the current settings.
         """
         theStyles = []
