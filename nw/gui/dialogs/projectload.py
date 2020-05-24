@@ -31,9 +31,10 @@ import nw
 from datetime import datetime
 
 from PyQt5.QtCore import Qt
+from PyQt5.QtGui import QKeySequence
 from PyQt5.QtWidgets import (
     QDialog, QHBoxLayout, QVBoxLayout, QGridLayout, QPushButton, QTreeWidget,
-    QAbstractItemView, QTreeWidgetItem, QDialogButtonBox, QLabel
+    QAbstractItemView, QTreeWidgetItem, QDialogButtonBox, QLabel, QShortcut
 )
 
 from nw.common import formatInt
@@ -119,6 +120,10 @@ class GuiProjectLoad(QDialog):
         self._populateList()
         self._doSelectRecent()
 
+        keyDelete = QShortcut(self.listBox)
+        keyDelete.setKey(QKeySequence(Qt.Key_Delete))
+        keyDelete.activated.connect(self._keyPressDelete)
+
         logger.debug("GuiProjectLoad initialisation complete")
 
         return
@@ -177,6 +182,15 @@ class GuiProjectLoad(QDialog):
         self.openPath = None
         self.openState = self.NEW_STATE
         self.accept()
+        return
+
+    def _keyPressDelete(self):
+        """Remove an entry from the recent projects list.
+        """
+        selList = self.listBox.selectedItems()
+        if selList:
+            self.mainConf.removeFromRecentCache(selList[0].text(3))
+            self._populateList()
         return
 
     ##
