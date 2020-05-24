@@ -235,11 +235,17 @@ class GuiDocTree(QTreeWidget):
         return True
 
     def saveTreeOrder(self):
+        """Build a list of the items in the project tree and send them
+        to the project class. This syncs up the two versions of the
+        project structure, and must be called before any code that
+        depends on this order to be up to date.
+        """
         theList = []
         for i in range(self.topLevelItemCount()):
             if self.topLevelItem(i) == self.orphRoot:
                 continue
             theList = self._scanChildren(theList, self.topLevelItem(i), i)
+        logger.debug("Saving project tree item order")
         self.theProject.setTreeOrder(theList)
         return True
 

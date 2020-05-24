@@ -314,6 +314,9 @@ class GuiBuildNovel(QDialog):
         makeHtml.setKeywords(incKeywords)
         makeHtml.setJustify(justifyText)
 
+        # Make sure the tree order is correct
+        self.theParent.treeView.saveTreeOrder()
+
         self.buildProgress.setMaximum(len(self.theProject.projTree))
         self.buildProgress.setValue(0)
 
