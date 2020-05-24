@@ -669,7 +669,7 @@ class NWProject():
         by drag-and-drop. Forwarded to the NWTree class.
         """
         if len(self.projTree) != len(newOrder):
-            logger.warning("Size of new and old tree order does not match")
+            logger.warning("Size of new and old tree order do not match")
         self.projTree.setOrder(newOrder)
         self.setProjectChanged(True)
         return True
@@ -1217,6 +1217,7 @@ class NWTree():
         self._treeOrder = tmpOrder
         self._theLength = len(self._treeOrder)
         self._setTreeChanged(True)
+        logger.verbose("Project tree order updated")
 
         return
 
