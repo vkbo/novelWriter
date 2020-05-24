@@ -79,7 +79,6 @@ class GuiDocTitleBar(QLabel):
         """Sets the document title from the handle, or alternatively,
         set the whole document path.
         """
-
         self.setText("")
         self.theHandle = tHandle
         if tHandle is None:

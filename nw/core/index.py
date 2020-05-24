@@ -244,7 +244,6 @@ class NWIndex():
         and text as separate inputs as we want to primarily scan the
         files before we save them, unless we're rebuilding the index.
         """
-
         theItem = self.theProject.projTree[tHandle]
         if theItem is None:
             return False

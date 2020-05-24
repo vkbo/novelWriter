@@ -97,7 +97,6 @@ class QSwitch(QAbstractButton):
     def paintEvent(self, event):
         """Drawing the switch itself.
         """
-
         qPaint = QPainter(self)
         qPaint.setRenderHint(QPainter.Antialiasing, True)
         qPaint.setPen(Qt.NoPen)

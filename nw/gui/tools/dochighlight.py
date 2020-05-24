@@ -75,6 +75,9 @@ class GuiDocHighlighter(QSyntaxHighlighter):
         return
 
     def initHighlighter(self):
+        """Initialise the syntax highlighter, setting all the colour
+        rules and building the regexes.
+        """
 
         logger.debug("Setting up highlighting rules")
 
@@ -205,14 +208,21 @@ class GuiDocHighlighter(QSyntaxHighlighter):
     ##
 
     def setDict(self, theDict):
+        """Set the dictionary object for spell check underlines lookup.
+        """
         self.theDict = theDict
         return True
 
     def setSpellCheck(self, theMode):
+        """Enable/disable the real time spell checker.
+        """
         self.spellCheck = theMode
         return True
 
     def setHandle(self, theHandle):
+        """Set the handle of the currently highlighted document. This is
+        needed for the index lookup for validating tags and references.
+        """
         self.theHandle = theHandle
         return True
 
@@ -226,7 +236,6 @@ class GuiDocHighlighter(QSyntaxHighlighter):
         is significantly faster than running the regex checks we use for
         text paragraphs.
         """
-
         if self.theHandle is None or not theText:
             return
 
@@ -317,7 +326,6 @@ class GuiDocHighlighter(QSyntaxHighlighter):
         """Generate a valid character format to be applied to the text
         that is to be highlighted.
         """
-
         theFormat = QTextCharFormat()
 
         if fmtCol is not None:

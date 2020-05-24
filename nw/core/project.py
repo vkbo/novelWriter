@@ -181,7 +181,6 @@ class NWProject():
         """Clear the data for the current project, and set them to
         default values.
         """
-
         # Project Status
         self.projOpened  = 0
         self.projChanged = False
@@ -236,7 +235,6 @@ class NWProject():
         parse the XML of the file and populate the project variables and
         build the tree of project items.
         """
-
         if not path.isfile(fileName):
             fileName = path.join(fileName, nwFiles.PROJ_FILE)
             if not path.isfile(fileName):
@@ -404,7 +402,6 @@ class NWProject():
         make sure if the save fails, we're not left with a truncated
         file.
         """
-
         if self.projPath is None:
             self.makeAlert("Project path not set, cannot save.", nwAlert.ERROR)
             return False
@@ -522,7 +519,6 @@ class NWProject():
     def zipIt(self, doNotify):
         """Create a zip file of the entire project.
         """
-
         logger.info("Backing up project")
         self.theParent.statusBar.setStatus("Backing up project ...")
 
@@ -836,7 +832,6 @@ class NWProject():
     def _readLockFile(self):
         """Reads the lock file in the project folder.
         """
-
         if self.projPath is None:
             return ["ERROR"]
 
@@ -863,7 +858,6 @@ class NWProject():
     def _writeLockFile(self):
         """Writes a lock file to the project folder.
         """
-
         if self.projPath is None:
             return False
 
@@ -901,6 +895,8 @@ class NWProject():
         return None
 
     def _checkFolder(self, thePath):
+        """Check if a folder exists, and if it doesn't, create it.
+        """
         if not path.isdir(thePath):
             try:
                 mkdir(thePath)
@@ -911,6 +907,8 @@ class NWProject():
         return True
 
     def _packProjectValue(self, xParent, theName, theValue, allowNone=True):
+        """Pack a list of values into an xml element.
+        """
         if not isinstance(theValue, list):
             theValue = [theValue]
         for aValue in theValue:
@@ -927,7 +925,6 @@ class NWProject():
         orphaned files so the user can either delete them, or put them
         back into the project tree.
         """
-
         if self.projPath is None:
             return
 
@@ -992,7 +989,6 @@ class NWProject():
     def _appendSessionStats(self):
         """Append session statistics to the sessions log file.
         """
-
         if self.projMeta is None:
             return False
 
@@ -1234,9 +1230,13 @@ class NWTree():
     ##
 
     def __len__(self):
+        """Return the length counter. Does not check that it is correct!
+        """
         return self._theLength
 
     def __bool__(self):
+        """Returns True if the tree has any entries.
+        """
         return self._theLength > 0
 
     ##
@@ -1382,7 +1382,6 @@ class NWItem():
     def unpackXML(self, xItem):
         """Sets the values from an XML entry of type 'item'.
         """
-
         if xItem.tag != "item":
             logger.error("XML entry is not an NWItem")
             return False
@@ -1420,9 +1419,11 @@ class NWItem():
 
     @staticmethod
     def _subPack(xParent, name, attrib=None, text=None, none=True):
+        """Packs the values into an xml element.
+        """
         if not none and (text == None or text == "None"):
             return None
-        xSub = etree.SubElement(xParent,name,attrib=attrib)
+        xSub = etree.SubElement(xParent, name, attrib=attrib)
         if text is not None:
             xSub.text = text
         return xSub
@@ -1432,10 +1433,14 @@ class NWItem():
     ##
 
     def setName(self, theName):
+        """Set the item name.
+        """
         self.itemName = theName.strip()
         return
 
     def setHandle(self, theHandle):
+        """Set the item handle, and ensure it is valid.
+        """
         if isinstance(theHandle, str):
             if len(theHandle) == 13:
                 self.itemHandle = theHandle
@@ -1446,6 +1451,8 @@ class NWItem():
         return
 
     def setParent(self, theParent):
+        """Set the parent handle, and ensure that it is valid.
+        """
         if theParent is None:
             self.parHandle = None
         elif isinstance(theParent, str):
@@ -1458,10 +1465,16 @@ class NWItem():
         return
 
     def setOrder(self, theOrder):
+        """Set the item order, and ensure that it is valid. This value
+        is purely a meta value, not actually used by novelWriter.
+        """
         self.itemOrder = checkInt(theOrder, 0)
         return
 
     def setType(self, theType):
+        """Set the item type from either a proper nwItemType, or set it
+        from a string representing a nwItemType.
+        """
         if isinstance(theType, nwItemType):
             self.itemType = theType
         elif theType in nwItemType.__members__:
@@ -1472,6 +1485,9 @@ class NWItem():
         return
 
     def setClass(self, theClass):
+        """Set the item class from either a proper nwItemClass, or set
+        it from a string representing a nwItemClass.
+        """
         if isinstance(theClass, nwItemClass):
             self.itemClass = theClass
         elif theClass in nwItemClass.__members__:
@@ -1482,6 +1498,9 @@ class NWItem():
         return
 
     def setLayout(self, theLayout):
+        """Set the item layout from either a proper nwItemLayout, or set
+        it from a string representing a nwItemLayout.
+        """
         if isinstance(theLayout, nwItemLayout):
             self.itemLayout = theLayout
         elif theLayout in nwItemLayout.__members__:
@@ -1492,6 +1511,9 @@ class NWItem():
         return
 
     def setStatus(self, theStatus):
+        """Set the item status by looking it up in the valid status
+        items of the current project.
+        """
         if self.itemClass == nwItemClass.NOVEL:
             self.itemStatus = self.theProject.statusItems.checkEntry(theStatus)
         else:
@@ -1499,6 +1521,8 @@ class NWItem():
         return
 
     def setExpanded(self, expState):
+        """Save the expanded status of an item in the project tree.
+        """
         if isinstance(expState, str):
             self.isExpanded = expState == str(True)
         else:
@@ -1506,6 +1530,8 @@ class NWItem():
         return
 
     def setExported(self, expState):
+        """Save the export flag.
+        """
         if isinstance(expState, str):
             self.isExported = expState == str(True)
         else:
@@ -1517,19 +1543,27 @@ class NWItem():
     ##
 
     def setCharCount(self, theCount):
-        self.charCount = checkInt(theCount,0)
+        """Set the character count, and ensure that it is an integer.
+        """
+        self.charCount = checkInt(theCount, 0)
         return
 
     def setWordCount(self, theCount):
-        self.wordCount = checkInt(theCount,0)
+        """Set the word count, and ensure that it is an integer.
+        """
+        self.wordCount = checkInt(theCount, 0)
         return
 
     def setParaCount(self, theCount):
-        self.paraCount = checkInt(theCount,0)
+        """Set the paragraph count, and ensure that it is an integer.
+        """
+        self.paraCount = checkInt(theCount, 0)
         return
 
     def setCursorPos(self, thePosition):
-        self.cursorPos = checkInt(thePosition,0)
+        """Set the cursor position, and ensure that it is an integer.
+        """
+        self.cursorPos = checkInt(thePosition, 0)
         return
 
 # END Class NWItem
@@ -1551,6 +1585,9 @@ class NWStatus():
         return
 
     def addEntry(self, theLabel, theColours):
+        """Add a status entry to the status object, but ensure it isn't
+        a duplicate.
+        """
         theLabel = theLabel.strip()
         if self.lookupEntry(theLabel) is None:
             self.theLabels.append(theLabel)
@@ -1561,6 +1598,9 @@ class NWStatus():
         return True
 
     def lookupEntry(self, theLabel):
+        """Look up a status entry in the object lists, and return it if
+        it exists.
+        """
         if theLabel is None:
             return None
         theLabel = theLabel.strip()
@@ -1569,6 +1609,9 @@ class NWStatus():
         return None
 
     def checkEntry(self, theStatus):
+        """Check if a status value is valid, and returns the safe
+        reference to be used internally.
+        """
         if isinstance(theStatus, str):
             theStatus = theStatus.strip()
             if self.lookupEntry(theStatus) is not None:
@@ -1578,11 +1621,12 @@ class NWStatus():
             return self.theLabels[theStatus]
 
     def setNewEntries(self, newList):
-
+        """Update the list of entries after they have been modified by
+        the GUI tool.
+        """
         replaceMap = {}
 
         if newList is not None:
-
             self.theLabels  = []
             self.theColours = []
             self.theCounts  = []
@@ -1598,10 +1642,14 @@ class NWStatus():
         return replaceMap
 
     def resetCounts(self):
+        """Clear the counts of references to the status entries.
+        """
         self.theCounts = [0]*self.theLength
         return
 
     def countEntry(self, theLabel):
+        """Lookup the usage count of a given entry.
+        """
         theIndex = self.lookupEntry(theLabel)
         if theIndex is not None:
             self.theCounts[theIndex] += 1
@@ -1623,7 +1671,6 @@ class NWStatus():
     def unpackEntries(self, xParent):
         """Unpack an XML tree and set the class values.
         """
-
         theLabels  = []
         theColours = []
 
@@ -1661,15 +1708,21 @@ class NWStatus():
     ##
 
     def __getitem__(self, n):
+        """Return an entry by its index.
+        """
         if n >= 0 and n < self.theLength:
             return self.theLabels[n], self.theColours[n], self.theCounts[n]
         return None, None, None
 
     def __iter__(self):
+        """Initialise the iterator.
+        """
         self.theIndex = 0
         return self
 
     def __next__(self):
+        """Return the next entry for the iterator.
+        """
         if self.theIndex < self.theLength:
             theLabel, theColour, theCount = self.__getitem__(self.theIndex)
             self.theIndex += 1

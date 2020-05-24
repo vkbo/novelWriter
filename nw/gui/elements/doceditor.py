@@ -141,7 +141,6 @@ class GuiDocEditor(QTextEdit):
         """Clear the current document and reset all document related
         flags and counters.
         """
-
         self.nwDocument.clearDocument()
         self.setReadOnly(True)
         self.clear()
@@ -167,7 +166,6 @@ class GuiDocEditor(QTextEdit):
         settings. This function is both called when the editor is
         created, and when the user changes the main editor preferences.
         """
-
         # Some Constants
         self.nonWord  = "\"'"
         self.nonWord += "".join(self.mainConf.fmtDoubleQuotes)
@@ -241,7 +239,6 @@ class GuiDocEditor(QTextEdit):
         document is new (empty string), we set up the editor for editing
         the file.
         """
-
         theDoc = self.nwDocument.openDocument(tHandle, showStatus=showStatus)
         if theDoc is None:
             # There was an io error
@@ -319,7 +316,6 @@ class GuiDocEditor(QTextEdit):
         Config.textFixedW is enabled or we're in Zen mode. Otherwise,
         just ensure the margins are set correctly.
         """
-
         if self.mainConf.textFixedW or self.theParent.isZenMode:
             vBar = self.verticalScrollBar()
             if vBar.isVisible():
@@ -376,6 +372,10 @@ class GuiDocEditor(QTextEdit):
     ##
 
     def setDocumentChanged(self, bValue):
+        """Keeps track of the document changed variable, and ensures
+        that the corresponding icon on the status bar shows the same
+        status.
+        """
         self.docChanged = bValue
         self.theParent.statusBar.setDocumentStatus(self.docChanged)
         return self.docChanged
@@ -437,7 +437,6 @@ class GuiDocEditor(QTextEdit):
         If the spell check mode (theMode) is not defined (None), then
         toggle the current status saved in this class.
         """
-
         if theMode is None:
             theMode = not self.spellCheck
 
@@ -460,7 +459,6 @@ class GuiDocEditor(QTextEdit):
         currently loaded text. The fastest way to do this, at least as
         of Qt 5.13, is to clear the text and put it back.
         """
-
         logger.verbose("Running spell checker")
         if self.spellCheck:
             bfTime = time()
@@ -481,6 +479,12 @@ class GuiDocEditor(QTextEdit):
     ##
 
     def docAction(self, theAction):
+        """Perform an action on the current document based on an action
+        flag. This is just a single entry point wrapper function to
+        ensure all the feature functions get the correct information
+        passed to it without having to consider the internal logic of
+        this class when calling these actions from other classes.
+        """
         logger.verbose("Requesting action: %s" % theAction.name)
         if not self.theParent.hasProject:
             logger.error("No project open")
@@ -537,9 +541,14 @@ class GuiDocEditor(QTextEdit):
         return True
 
     def isEmpty(self):
+        """Wrapper function to check if the current document is empty.
+        """
         return self.qDocument.isEmpty()
 
     def revealLocation(self):
+        """Tell the user where on the file system the file in the editor
+        is saved.
+        """
         if self.theHandle is not None:
             msgBox = QMessageBox()
             msgBox.information(self, "File Location", (
@@ -568,7 +577,6 @@ class GuiDocEditor(QTextEdit):
         However, we don't want to spend a lot of time in this function
         as it is triggered on every keypress when typing.
         """
-
         self.hasSelection = self.textCursor().hasSelection()
 
         if keyEvent.modifiers() == Qt.ShiftModifier:
@@ -628,7 +636,6 @@ class GuiDocEditor(QTextEdit):
         """Triggered by right click to open the context menu. Also
         triggered by the Ctrl+. shortcut.
         """
-
         if not self.spellCheck:
             return
 
@@ -667,7 +674,11 @@ class GuiDocEditor(QTextEdit):
 
         return
 
+    @pyqtSlot("QTextCursor", str)
     def _correctWord(self, theCursor, theWord):
+        """Slot for the spell check context menu triggering the
+        replacement of a word with the word from the dictionary.
+        """
         xPos = theCursor.selectionStart()
         theCursor.beginEditBlock()
         theCursor.removeSelectedText()
@@ -677,7 +688,11 @@ class GuiDocEditor(QTextEdit):
         self.setTextCursor(theCursor)
         return
 
+    @pyqtSlot("QTextCursor")
     def _addWord(self, theCursor):
+        """Slot for the spell check context menu triggered when the user
+        wants to add a word to the project dictionary.
+        """
         theWord = theCursor.selectedText().strip().strip(self.nonWord)
         logger.debug("Added '%s' to project dictionary" % theWord)
         self.theDict.addWord(theWord)
@@ -729,7 +744,6 @@ class GuiDocEditor(QTextEdit):
         tag and can tell the document viewer to try and find and load
         the file where the tag is defined.
         """
-
         if theCursor is None:
             theCursor = self.textCursor()
 
@@ -772,13 +786,15 @@ class GuiDocEditor(QTextEdit):
         return
 
     def _openSpellContext(self):
+        """Opens the spell check context menu at the current point of
+        the cursor.
+        """
         self._openContextMenu(self.cursorRect().center())
         return
 
     def _docAutoReplace(self, theBlock):
         """Autoreplace text elements based on main configuration.
         """
-
         if not theBlock.isValid():
             return
 
@@ -870,7 +886,6 @@ class GuiDocEditor(QTextEdit):
     def _formatBlock(self, docAction):
         """Changes the block format of the block under the cursor.
         """
-
         theCursor = self.textCursor()
         theBlock = theCursor.block()
         if not theBlock.isValid():
@@ -949,6 +964,8 @@ class GuiDocEditor(QTextEdit):
         return
 
     def _makeSelection(self, selMode):
+        """Wrapper function to select a word based on a selection mode.
+        """
         theCursor = self.textCursor()
         theCursor.clearSelection()
         theCursor.select(selMode)
@@ -1025,7 +1042,6 @@ class GuiDocEditor(QTextEdit):
         """Create the spell checking object based on the spellTool
         setting in config.
         """
-
         if self.mainConf.spellTool == "enchant":
             from nw.core.spellcheck import NWSpellEnchant
             self.theDict = NWSpellEnchant()

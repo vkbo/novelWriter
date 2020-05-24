@@ -45,7 +45,9 @@ class WordCounter(QThread):
         return
 
     def run(self):
-
+        """Overloaded run function for the word counter, forwarding the
+        call to the function that does the actual counting.
+        """
         theText = self.theParent.getText()
         cC, wC, pC = countWords(theText)
 
