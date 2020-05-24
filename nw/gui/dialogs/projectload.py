@@ -28,24 +28,27 @@
 import logging
 import nw
 
+from os import path
 from datetime import datetime
 
 from PyQt5.QtCore import Qt
+from PyQt5.QtGui import QKeySequence
 from PyQt5.QtWidgets import (
     QDialog, QHBoxLayout, QVBoxLayout, QGridLayout, QPushButton, QTreeWidget,
-    QAbstractItemView, QTreeWidgetItem, QDialogButtonBox, QLabel
+    QAbstractItemView, QTreeWidgetItem, QDialogButtonBox, QLabel, QShortcut,
+    QFileDialog, QLineEdit
 )
 
 from nw.common import formatInt
+from nw.constants import nwFiles
 
 logger = logging.getLogger(__name__)
 
 class GuiProjectLoad(QDialog):
 
-    NONE_STATE   = 0
-    BROWSE_STATE = 1
-    NEW_STATE    = 2
-    OPEN_STATE   = 3
+    NONE_STATE = 0
+    NEW_STATE  = 1
+    OPEN_STATE = 2
 
     def __init__(self, theParent):
         QDialog.__init__(self, theParent)
@@ -87,16 +90,23 @@ class GuiProjectLoad(QDialog):
         treeHead.setTextAlignment(1, Qt.AlignRight)
         treeHead.setTextAlignment(2, Qt.AlignRight)
 
-        self.lblRecent = QLabel("<b>Recently Opened:</b>")
-        self.lblPath   = QLabel("<b>Path:</b>")
-        self.selPath   = QLabel("")
-        self.selPath.setWordWrap(True)
+        self.lblRecent = QLabel("<b>Recently Opened Projects</b>")
+        self.lblPath   = QLabel("<b>Path</b>")
+        self.selPath   = QLineEdit("")
+        self.selPath.setEnabled(False)
 
-        self.projectForm.addWidget(self.lblRecent, 0, 0, 1, 2)
-        self.projectForm.addWidget(self.listBox,   1, 0, 1, 2)
-        self.projectForm.addWidget(self.lblPath,   2, 0, 1, 1, Qt.AlignTop)
-        self.projectForm.addWidget(self.selPath,   2, 1, 1, 1, Qt.AlignTop)
+        self.browseButton = QPushButton("...")
+        self.browseButton.setMaximumWidth(30)
+        self.browseButton.clicked.connect(self._doBrowse)
+
+        self.projectForm.addWidget(self.lblRecent,    0, 0, 1, 3)
+        self.projectForm.addWidget(self.listBox,      1, 0, 1, 3)
+        self.projectForm.addWidget(self.lblPath,      2, 0, 1, 1)
+        self.projectForm.addWidget(self.selPath,      2, 1, 1, 1)
+        self.projectForm.addWidget(self.browseButton, 2, 2, 1, 1)
+        self.projectForm.setColumnStretch(0, 0)
         self.projectForm.setColumnStretch(1, 1)
+        self.projectForm.setColumnStretch(2, 0)
         self.projectForm.setVerticalSpacing(4)
         self.projectForm.setHorizontalSpacing(8)
 
@@ -109,15 +119,16 @@ class GuiProjectLoad(QDialog):
         self.newButton = self.buttonBox.addButton("New", QDialogButtonBox.ActionRole)
         self.newButton.clicked.connect(self._doNewProject)
 
-        self.browseButton = self.buttonBox.addButton("Browse", QDialogButtonBox.ActionRole)
-        self.browseButton.clicked.connect(self._doBrowse)
-
         self.outerBox.addLayout(self.innerBox)
         self.outerBox.addWidget(self.buttonBox)
         self.setLayout(self.outerBox)
 
         self._populateList()
         self._doSelectRecent()
+
+        keyDelete = QShortcut(self.listBox)
+        keyDelete.setKey(QKeySequence(Qt.Key_Delete))
+        keyDelete.activated.connect(self._keyPressDelete)
 
         logger.debug("GuiProjectLoad initialisation complete")
 
@@ -155,10 +166,20 @@ class GuiProjectLoad(QDialog):
         project browser dialog.
         """
         logger.verbose("GuiProjectLoad browse button clicked")
-        self._saveDialogState()
-        self.openPath = None
-        self.openState = self.BROWSE_STATE
-        self.accept()
+        if self.mainConf.showGUI:
+            dlgOpt  = QFileDialog.Options()
+            dlgOpt |= QFileDialog.DontUseNativeDialog
+            projFile, _ = QFileDialog.getOpenFileName(
+                self, "Open novelWriter Project", "",
+                "novelWriter Project File (%s);;All Files (*)" % nwFiles.PROJ_FILE,
+                options=dlgOpt
+            )
+            if projFile:
+                thePath = path.abspath(path.dirname(projFile))
+                self.selPath.setText(thePath)
+                self.openPath = thePath
+                self.openState = self.OPEN_STATE
+                self.accept()
         return
 
     def _doClose(self):
@@ -177,6 +198,15 @@ class GuiProjectLoad(QDialog):
         self.openPath = None
         self.openState = self.NEW_STATE
         self.accept()
+        return
+
+    def _keyPressDelete(self):
+        """Remove an entry from the recent projects list.
+        """
+        selList = self.listBox.selectedItems()
+        if selList:
+            self.mainConf.removeFromRecentCache(selList[0].text(3))
+            self._populateList()
         return
 
     ##

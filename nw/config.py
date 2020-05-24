@@ -288,7 +288,8 @@ class Config:
         return True
 
     def loadConfig(self):
-
+        """Load preferences from file and replace default settings.
+        """
         logger.debug("Loading config file")
         cnfParse = configparser.ConfigParser()
         try:
@@ -453,7 +454,8 @@ class Config:
         return True
 
     def saveConfig(self):
-
+        """Save the current preferences to file.
+        """
         logger.debug("Saving config file")
         cnfParse = configparser.ConfigParser()
 
@@ -546,7 +548,6 @@ class Config:
     def loadRecentCache(self):
         """Load the cache file for recent projects.
         """
-
         if self.dataPath is None:
             return False
 
@@ -587,7 +588,6 @@ class Config:
     def saveRecentCache(self):
         """Save the cache dictionary of recent projects.
         """
-
         if self.dataPath is None:
             return False
 
@@ -617,6 +617,18 @@ class Config:
             "time"  : int(saveTime),
             "words" : int(wordCount),
         }
+        return True
+
+    def removeFromRecentCache(self, thePath):
+        """Trying to remove a path from the recent projects cache.
+        """
+        if thePath in self.recentProj:
+            del self.recentProj[thePath]
+            logger.verbose("Removed recent: %s" % thePath)
+            self.saveRecentCache()
+        else:
+            logger.error("Unknown recent: %s" % thePath)
+            return False
         return True
 
     ##
@@ -737,7 +749,6 @@ class Config:
     def _checkOptionalPackages(self):
         """Cheks if we have the optional packages used by some features.
         """
-
         try:
             import enchant
             self.hasEnchant = True

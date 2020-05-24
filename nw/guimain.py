@@ -264,8 +264,6 @@ class GuiMain(QMainWindow):
         if dlgProj.result() == QDialog.Accepted:
             if dlgProj.openState == GuiProjectLoad.OPEN_STATE:
                 self.openProject(dlgProj.openPath)
-            elif dlgProj.openState == GuiProjectLoad.BROWSE_STATE:
-                self.openProject(dlgProj.openPath)
             elif dlgProj.openState == GuiProjectLoad.NEW_STATE:
                 self.newProject()
 
@@ -274,7 +272,6 @@ class GuiMain(QMainWindow):
     def newProject(self, projPath=None, forceNew=False):
         """Create new project with a few default files and folders.
         """
-
         if self.hasProject:
             msgBox = QMessageBox()
             msgRes = msgBox.warning(
@@ -354,13 +351,11 @@ class GuiMain(QMainWindow):
 
         return saveOK
 
-    def openProject(self, projFile=None):
+    def openProject(self, projFile):
         """Open a project. The parameter projFile is passed from the
-        open recent projects menu, so it can be set. If not, we pop the
-        dialog.
+        open recent projects menu, and must be set to be forwarded to
+        the project class. Otherwise, we just return.
         """
-        if projFile is None:
-            projFile = self.openProjectDialog()
         if projFile is None:
             return False
 
@@ -484,6 +479,8 @@ class GuiMain(QMainWindow):
         return True
 
     def saveDocument(self):
+        """Save the current documents.
+        """
         if self.hasProject:
             self.docEditor.saveText()
         return True
@@ -491,7 +488,6 @@ class GuiMain(QMainWindow):
     def viewDocument(self, tHandle=None):
         """Load a document for viewing in the view panel.
         """
-
         if tHandle is None:
             tHandle = self.treeView.getSelectedHandle()
         if tHandle is None:
@@ -521,7 +517,6 @@ class GuiMain(QMainWindow):
         """Import the text contained in an out-of-project text file, and
         insert the text into the currently open document.
         """
-
         lastPath = self.mainConf.lastPath
 
         extFilter = [
@@ -610,6 +605,8 @@ class GuiMain(QMainWindow):
     ##
 
     def openSelectedItem(self):
+        """Open the selected documents.
+        """
         tHandle = self.treeView.getSelectedHandle()
         if tHandle is None:
             logger.warning("No item selected")
@@ -626,6 +623,8 @@ class GuiMain(QMainWindow):
         return True
 
     def editItem(self):
+        """Open the edit item dialog.
+        """
         tHandle = self.treeView.getSelectedHandle()
         if tHandle is None:
             logger.warning("No item selected")
@@ -654,7 +653,6 @@ class GuiMain(QMainWindow):
     def rebuildIndex(self):
         """Rebuild the entire index.
         """
-
         if not self.hasProject:
             return False
 
@@ -708,19 +706,9 @@ class GuiMain(QMainWindow):
     #  Main Dialogs
     ##
 
-    def openProjectDialog(self):
-        dlgOpt  = QFileDialog.Options()
-        dlgOpt |= QFileDialog.DontUseNativeDialog
-        projFile, _ = QFileDialog.getOpenFileName(
-            self, "Open novelWriter Project", "",
-            "novelWriter Project File (%s);;All Files (*)" % nwFiles.PROJ_FILE,
-            options=dlgOpt
-        )
-        if projFile:
-            return projFile
-        return None
-
     def saveProjectDialog(self):
+        """Select where to save project.
+        """
         dlgOpt  = QFileDialog.Options()
         dlgOpt |= QFileDialog.ShowDirsOnly
         dlgOpt |= QFileDialog.DontUseNativeDialog
@@ -732,6 +720,8 @@ class GuiMain(QMainWindow):
         return None
 
     def newProjectDialog(self):
+        """Select where to save new project.
+        """
         dlgOpt  = QFileDialog.Options()
         dlgOpt |= QFileDialog.ShowDirsOnly
         dlgOpt |= QFileDialog.DontUseNativeDialog
@@ -743,6 +733,8 @@ class GuiMain(QMainWindow):
         return None
 
     def editConfigDialog(self):
+        """Open the preferences dialog.
+        """
         dlgConf = GuiConfigEditor(self, self.theProject)
         if dlgConf.exec_() == QDialog.Accepted:
             logger.debug("Applying new preferences")
@@ -754,6 +746,8 @@ class GuiMain(QMainWindow):
         return True
 
     def editProjectDialog(self):
+        """Open the project settings dialog.
+        """
         if self.hasProject:
             dlgProj = GuiProjectEditor(self, self.theProject)
             dlgProj.exec_()
@@ -761,12 +755,16 @@ class GuiMain(QMainWindow):
         return True
 
     def buildProjectDialog(self):
+        """Open the build project dialog.
+        """
         if self.hasProject:
             dlgExport = GuiBuildNovel(self, self.theProject)
             dlgExport.exec_()
         return True
 
     def showSessionLogDialog(self):
+        """Open the session log dialog.
+        """
         if self.hasProject:
             dlgTLine = GuiSessionLogView(self, self.theProject)
             dlgTLine.exec_()
@@ -777,7 +775,6 @@ class GuiMain(QMainWindow):
         can be either a string or an array of strings. Severity level is
         0 = info, 1 = warning, and 2 = error.
         """
-
         if isinstance(theMessage, list):
             popMsg = " ".join(theMessage)
             logMsg = theMessage
@@ -821,7 +818,8 @@ class GuiMain(QMainWindow):
     ##
 
     def closeMain(self):
-
+        """Save everything, and close novelWriter.
+        """
         if self.mainConf.showGUI and self.hasProject:
             msgBox = QMessageBox()
             msgRes = msgBox.question(
@@ -874,7 +872,6 @@ class GuiMain(QMainWindow):
         """Main GUI Zen Mode hides tree, view pane and optionally also
         statusbar and menu.
         """
-
         if self.docEditor.theHandle is None:
             logger.error("No document open, so not activating Zen Mode")
             return False
@@ -906,7 +903,6 @@ class GuiMain(QMainWindow):
         if the user uses the system window manager. Currently, Qt
         doesn't have access to the exact state of the window.
         """
-
         self.setWindowState(self.windowState() ^ Qt.WindowFullScreen)
 
         winState = self.windowState() & Qt.WindowFullScreen == Qt.WindowFullScreen
