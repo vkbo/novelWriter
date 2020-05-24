@@ -272,7 +272,6 @@ class GuiMain(QMainWindow):
     def newProject(self, projPath=None, forceNew=False):
         """Create new project with a few default files and folders.
         """
-
         if self.hasProject:
             msgBox = QMessageBox()
             msgRes = msgBox.warning(
@@ -734,6 +733,8 @@ class GuiMain(QMainWindow):
         return None
 
     def editConfigDialog(self):
+        """Open the preferences dialog.
+        """
         dlgConf = GuiConfigEditor(self, self.theProject)
         if dlgConf.exec_() == QDialog.Accepted:
             logger.debug("Applying new preferences")
@@ -745,6 +746,8 @@ class GuiMain(QMainWindow):
         return True
 
     def editProjectDialog(self):
+        """Open the project settings dialog.
+        """
         if self.hasProject:
             dlgProj = GuiProjectEditor(self, self.theProject)
             dlgProj.exec_()
@@ -752,12 +755,16 @@ class GuiMain(QMainWindow):
         return True
 
     def buildProjectDialog(self):
+        """Open the build project dialog.
+        """
         if self.hasProject:
             dlgExport = GuiBuildNovel(self, self.theProject)
             dlgExport.exec_()
         return True
 
     def showSessionLogDialog(self):
+        """Open the session log dialog.
+        """
         if self.hasProject:
             dlgTLine = GuiSessionLogView(self, self.theProject)
             dlgTLine.exec_()
@@ -768,7 +775,6 @@ class GuiMain(QMainWindow):
         can be either a string or an array of strings. Severity level is
         0 = info, 1 = warning, and 2 = error.
         """
-
         if isinstance(theMessage, list):
             popMsg = " ".join(theMessage)
             logMsg = theMessage
@@ -812,7 +818,8 @@ class GuiMain(QMainWindow):
     ##
 
     def closeMain(self):
-
+        """Save everything, and close novelWriter.
+        """
         if self.mainConf.showGUI and self.hasProject:
             msgBox = QMessageBox()
             msgRes = msgBox.question(
@@ -865,7 +872,6 @@ class GuiMain(QMainWindow):
         """Main GUI Zen Mode hides tree, view pane and optionally also
         statusbar and menu.
         """
-
         if self.docEditor.theHandle is None:
             logger.error("No document open, so not activating Zen Mode")
             return False
@@ -897,7 +903,6 @@ class GuiMain(QMainWindow):
         if the user uses the system window manager. Currently, Qt
         doesn't have access to the exact state of the window.
         """
-
         self.setWindowState(self.windowState() ^ Qt.WindowFullScreen)
 
         winState = self.windowState() & Qt.WindowFullScreen == Qt.WindowFullScreen
