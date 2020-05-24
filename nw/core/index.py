@@ -354,7 +354,7 @@ class NWIndex():
         else:
             return False
 
-        sTitle = "T%d" % nLine
+        sTitle = "T%06d" % nLine
         self.refIndex[tHandle][sTitle] = {
             "tags"    : [],
             "updated" : time(),
@@ -384,7 +384,7 @@ class NWIndex():
         """Count text stats and save the counts to the index.
         """
         cC, wC, pC = countWords(theText)
-        sTitle = "T%d" % nTitle
+        sTitle = "T%06d" % nTitle
         if isNovel:
             if tHandle in self.novelIndex:
                 if sTitle in self.novelIndex[tHandle]:
@@ -404,7 +404,7 @@ class NWIndex():
     def _indexSynopsis(self, tHandle, isNovel, theText, nTitle):
         """Save the synopsis to the index.
         """
-        sTitle = "T%d" % nTitle
+        sTitle = "T%06d" % nTitle
         if isNovel:
             if tHandle in self.novelIndex:
                 if sTitle in self.novelIndex[tHandle]:
@@ -425,7 +425,7 @@ class NWIndex():
         if not isValid or len(theBits) == 0:
             return False
 
-        sTitle = "T%d" % nTitle
+        sTitle = "T%06d" % nTitle
         if sTitle not in self.refIndex[tHandle]:
             logger.error("Cannot save tags to file %s, no title %s" % (tHandle, sTitle))
             return False

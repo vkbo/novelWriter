@@ -156,7 +156,7 @@ def testIndexCheckThese(nwTempProj):
         "@pov: Jane"
     ))
     assert str(theIndex.tagIndex) == "{'Jane': [2, '2858dcd1057d3', 'CHARACTER']}"
-    assert theIndex.novelIndex[nHandle]["T1"]["title"] == "Hello World!"
+    assert theIndex.novelIndex[nHandle]["T000001"]["title"] == "Hello World!"
 
     assert str(theIndex.checkThese(["@tag",  "Jane"], cItem)) == "[True, True]"
     assert str(theIndex.checkThese(["@tag",  "John"], cItem)) == "[True, True]"
@@ -196,10 +196,10 @@ def testIndexMeta(nwTempProj):
         "Well, not really.\n"
     ))
     assert str(theIndex.tagIndex) == "{'Jane': [2, '2858dcd1057d3', 'CHARACTER']}"
-    assert theIndex.novelIndex[nHandle]["T1"]["title"] == "Hello World!"
+    assert theIndex.novelIndex[nHandle]["T000001"]["title"] == "Hello World!"
 
     # The novel structure should contain the pointer to the novel file header
-    assert str(theIndex.getNovelStructure()) == "['41cfc0d1f2d12:T1']"
+    assert str(theIndex.getNovelStructure()) == "['41cfc0d1f2d12:T000001']"
 
     # The novel file should have the correct counts
     cC, wC, pC = theIndex.getCounts(nHandle)
