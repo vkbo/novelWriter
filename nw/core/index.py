@@ -529,13 +529,18 @@ class NWIndex():
     #  Extract Data
     ##
 
-    def getNovelStructure(self):
+    def getNovelStructure(self, skipExcluded=True):
         """Builds a list of all titles in the novel, in the correct
         order as they appear in the tree view and in the respective
         document files, but skipping all note files.
         """
         theStructure = []
-        for tHandle in self.theProject.projTree.handles():
+        for tItem in self.theProject.projTree:
+            if tItem is None:
+                continue
+            if not tItem.isExported and skipExcluded:
+                continue
+            tHandle = tItem.itemHandle
             if tHandle not in self.novelIndex:
                 continue
             for sTitle in sorted(self.novelIndex[tHandle].keys()):

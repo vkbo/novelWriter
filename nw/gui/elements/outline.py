@@ -319,7 +319,6 @@ class GuiProjectOutline(QTreeWidget):
         if they are hidden. This ensures that showing and hiding columns
         is fast and doesn't require a rebuild of the tree.
         """
-
         self.clear()
 
         if self.firstView:
@@ -347,7 +346,7 @@ class GuiProjectOutline(QTreeWidget):
         currChapter = None
         currScene   = None
 
-        for titleKey in self.theIndex.getNovelStructure():
+        for titleKey in self.theIndex.getNovelStructure(skipExcluded=True):
 
             if len(titleKey) < 16:
                 continue
@@ -404,7 +403,6 @@ class GuiProjectOutline(QTreeWidget):
     def _createTreeItem(self, tHandle, sTitle):
         """Populate a tree item with all the column values.
         """
-
         nwItem = self.theProject.projTree[tHandle]
         novIdx = self.theIndex.novelIndex[tHandle][sTitle]
 
