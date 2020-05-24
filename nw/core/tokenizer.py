@@ -540,6 +540,20 @@ class Tokenizer():
                     tToken[0], tToken[1], tToken[2], tToken[3] | self.A_PBA
                 )
 
+        if self.isPage:
+            for n, tToken in enumerate(self.theTokens):
+                tType   = tToken[0]
+                tText   = tToken[1]
+                tFormat = tToken[2]
+                if n == 0:
+                    self.theTokens[n] = (
+                        tType, tText, tFormat, self.A_LEFT | self.A_PBB
+                    )
+                else:
+                    self.theTokens[n] = (
+                        tType, tText, tFormat, self.A_LEFT
+                    )
+
         return
 
     ##
