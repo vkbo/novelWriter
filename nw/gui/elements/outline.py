@@ -408,7 +408,7 @@ class GuiProjectOutline(QTreeWidget):
         newItem.setText(self.colIndex[nwOutline.HANDLE], tHandle)
         newItem.setText(self.colIndex[nwOutline.LEVEL],  novIdx["level"])
         newItem.setText(self.colIndex[nwOutline.LABEL],  nwItem.itemName)
-        newItem.setText(self.colIndex[nwOutline.LINE],   sTitle[1:])
+        newItem.setText(self.colIndex[nwOutline.LINE],   sTitle[1:].lstrip("0"))
         newItem.setText(self.colIndex[nwOutline.SYNOP],  novIdx["synopsis"])
         newItem.setText(self.colIndex[nwOutline.CCOUNT], str(novIdx["cCount"]))
         newItem.setText(self.colIndex[nwOutline.WCOUNT], str(novIdx["wCount"]))
