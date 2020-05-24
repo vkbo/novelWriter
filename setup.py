@@ -37,8 +37,8 @@ setuptools.setup(
     ],
     python_requires = ">=3.6",
     install_requires = [
-        "pyqt5",
-        "lxml",
-        "pyenchant",
+        "pyqt5>=5.2.1",
+        "lxml>=4.2.0",
+        "pyenchant>=3.0.0",
     ],
 )

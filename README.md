@@ -99,6 +99,12 @@ python3 -m pip install lxml
 python3 -m pip install pyenchant
 ```
 
+PyQt/Qt should be at least 5.2.1, but ideally 5.10 or higher for nearly all features to work.
+Exporting to markdown requires PyQt/Qt 5.14.
+There are no known minimum for lxml, but the code was originally written with 4.2.
+The optional spell check library must be at least 3.0.0 to work with Windows.
+On Linux, 2.0.0 also works fine.
+
 If no external spell checking tool is installed, novelWriter will use a basic spell checker based on standard Python package `difflib`.
 Currently, only English dictionaries are available for this spell checker, but more can be added to the `nw/assets/dict` folder.
 See the [nw/assets/dict/README.md](README.md) file in that folder for how to generate more dictionaries.
