@@ -540,6 +540,8 @@ class Tokenizer():
                     tToken[0], tToken[1], tToken[2], tToken[3] | self.A_PBA
                 )
 
+        # A single page is always left-aligned and starts on a fresh
+        # page, unless it's empty.
         if self.isPage:
             for n, tToken in enumerate(self.theTokens):
                 tType   = tToken[0]
