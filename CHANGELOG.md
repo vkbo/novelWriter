@@ -1,5 +1,28 @@
 # novelWriter ChangeLog
 
+## Version 0.6.1 [2020-05-25]
+
+**Bugfixes**
+
+* The Outline view now takes into consideration the exported flag, and does not show excluded files in the outline. PR #224
+* Page layout format was ignored when exporting project. The formatting of this layout has now been added. PR #224
+* If multiple headings were present in a file, the sorting of headings in the Outline view would follow a text sort not a numerical sort of the line numbers. That is, it would be sorted as "1", "10", "2", "20", etc. This has been fixed. PR #226
+* The text justification in the preview in the  Build Novel Project was following the main Preferences settings, not the Build settings. This did not affect the formatting of the exported file itself, but the preview is now made consistent with the build settings. Issue #228, PR #231
+
+**User Interface**
+
+* Recent projects in the open project dialog can be removed from the list by hitting the delete key. PR #225
+* Moved the browse button to after the path box in the open project dialog. PR #225
+
+**Other Changes**
+
+* The three remaining dependencies now have a minimum version set. PR #224
+* Moved the sample project up one folder level. PR #224
+
+**Documentation**
+
+* The export page in the documentation erroneously stated that line breaks could be added to titles by adding `%\\%`. The correct syntax is `\\`. Issue #229, PR #231
+
 ## Version 0.6 [2020-05-24]
 
 **Bugfixes**
