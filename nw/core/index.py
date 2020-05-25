@@ -260,9 +260,9 @@ class NWIndex():
         logger.debug("Indexing item with handle %s" % tHandle)
 
         # Check file type, and reset its old index
-        # Also add a dummy entry for T0 in case the file has no title
+        # Also add a dummy entry T000000 in case the file has no title
         self.refIndex[tHandle] = {}
-        self.refIndex[tHandle]["T0"] = {
+        self.refIndex[tHandle]["T000000"] = {
             "tags"    : [],
             "updated" : time(),
         }
@@ -606,18 +606,17 @@ class NWIndex():
         if tHandle is None:
             return theRefs
 
-        theTag = None
+        theTags = []
         for tTag in self.tagIndex:
             if tHandle == self.tagIndex[tTag][1]:
-                theTag = tTag
-                break
+                theTags.append(tTag)
 
-        if theTag is not None:
+        if theTags:
             for tHandle in self.refIndex:
                 for sTitle in self.refIndex[tHandle]:
-                    for nLine, tKey, tTag in self.refIndex[tHandle][sTitle]["tags"]:
-                        if tTag == theTag:
-                            theRefs[tHandle] = nLine
+                    for _, _, tTag in self.refIndex[tHandle][sTitle]["tags"]:
+                        if tTag in theTags and tHandle not in theRefs:
+                            theRefs[tHandle] = sTitle
 
         return theRefs
 

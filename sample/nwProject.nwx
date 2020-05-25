@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='utf-8'?>
-<novelWriterXML appVersion="0.6" hexVersion="0x000600f0" fileVersion="1.0" saveCount="168" autoCount="26" timeStamp="2020-05-24 18:33:34">
+<novelWriterXML appVersion="0.6.1" hexVersion="0x000601f0" fileVersion="1.0" saveCount="182" autoCount="34" timeStamp="2020-05-25 21:08:45">
   <project>
     <name>Sample Project</name>
     <title>Sample Project</title>
@@ -10,9 +10,9 @@
   <settings>
     <spellCheck>True</spellCheck>
     <autoOutline>True</autoOutline>
-    <lastEdited>636b6aa9b697b</lastEdited>
-    <lastViewed>ba8a28a246524</lastViewed>
-    <lastWordCount>914</lastWordCount>
+    <lastEdited>ae7339df26ded</lastEdited>
+    <lastViewed>ae7339df26ded</lastViewed>
+    <lastWordCount>941</lastWordCount>
     <autoReplace>
       <A>B</A>
       <B>E</B>
@@ -73,7 +73,7 @@
       <expanded>False</expanded>
       <exported>True</exported>
       <layout>PAGE</layout>
-      <charCount>208</charCount>
+      <charCount>210</charCount>
       <wordCount>40</wordCount>
       <paraCount>2</paraCount>
       <cursorPos>213</cursorPos>
@@ -174,7 +174,7 @@
       <charCount>139</charCount>
       <wordCount>28</wordCount>
       <paraCount>1</paraCount>
-      <cursorPos>343</cursorPos>
+      <cursorPos>237</cursorPos>
     </item>
     <item handle="ae7339df26ded" order="6" parent="e7ded148d6e4a">
       <name>We Found John!</name>
@@ -187,7 +187,7 @@
       <charCount>189</charCount>
       <wordCount>37</wordCount>
       <paraCount>1</paraCount>
-      <cursorPos>224</cursorPos>
+      <cursorPos>236</cursorPos>
     </item>
     <item handle="f6622b4617424" order="1" parent="None">
       <name>Characters</name>
@@ -257,10 +257,10 @@
       <expanded>False</expanded>
       <exported>True</exported>
       <layout>NOTE</layout>
-      <charCount>115</charCount>
-      <wordCount>24</wordCount>
-      <paraCount>1</paraCount>
-      <cursorPos>133</cursorPos>
+      <charCount>241</charCount>
+      <wordCount>51</wordCount>
+      <paraCount>3</paraCount>
+      <cursorPos>286</cursorPos>
     </item>
     <item handle="5eaea4e8cdee8" order="2" parent="15c4492bd5107">
       <name>Mars</name>
