@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='utf-8'?>
-<novelWriterXML appVersion="0.6.1" hexVersion="0x000601f0" fileVersion="1.0" saveCount="182" autoCount="34" timeStamp="2020-05-25 21:08:45">
+<novelWriterXML appVersion="0.6.1" hexVersion="0x000601f0" fileVersion="1.0" saveCount="192" autoCount="36" timeStamp="2020-05-25 23:29:01">
   <project>
     <name>Sample Project</name>
     <title>Sample Project</title>
@@ -11,7 +11,7 @@
     <spellCheck>True</spellCheck>
     <autoOutline>True</autoOutline>
     <lastEdited>ae7339df26ded</lastEdited>
-    <lastViewed>ae7339df26ded</lastViewed>
+    <lastViewed>bb2c23b3c42cc</lastViewed>
     <lastWordCount>941</lastWordCount>
     <autoReplace>
       <A>B</A>
