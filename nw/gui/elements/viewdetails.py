@@ -107,11 +107,9 @@ class GuiDocViewDetails(QWidget):
         for tHandle in theRefs:
             tItem = self.theProject.projTree[tHandle]
             if tItem is not None:
-                theList.append("<a href='#tag=%s:%s'>%s</a>" % (
+                theList.append("<a href='#head_%s:%s'>%s</a>" % (
                     tHandle, theRefs[tHandle], tItem.itemName
                 ))
-
-        # print(theList)
 
         self.refList.setText(", ".join(theList))
         self.refList.adjustSize()
@@ -127,14 +125,9 @@ class GuiDocViewDetails(QWidget):
         class for handling.
         """
         logger.verbose("Clicked link: '%s'" % theLink)
-        if len(theLink) == 26:
-            tHandle = theLink[5:18]
-            tLine = theLink[19:26]
-            if tLine[1:].isdigit():
-                nLine = int(tLine[1:])
-            else:
-                nLine = 1
-            self.theParent.viewDocument(tHandle, nLine)
+        if len(theLink) == 27:
+            tHandle = theLink[6:19]
+            self.theParent.viewDocument(tHandle, theLink)
         return
 
     def _doShowHide(self, chState):

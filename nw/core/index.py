@@ -199,7 +199,7 @@ class NWIndex():
 
         try:
             for tTag in self.tagIndex:
-                if len(self.tagIndex[tTag]) != 3:
+                if len(self.tagIndex[tTag]) != 4:
                     self.indexBroken = True
 
             for tHandle in self.refIndex:
@@ -228,7 +228,7 @@ class NWIndex():
         if self.indexBroken:
             self.clearIndex()
             self.theParent.makeAlert(
-                "The index loaded from project cache contains errors. Rebuilding index.",
+                "The project index is outdated or broken. Rebuilding index.",
                 nwAlert.WARN
             )
 
@@ -301,7 +301,7 @@ class NWIndex():
 
             elif aLine.startswith(r"@"):
                 self._indexNoteRef(tHandle, aLine, nLine, nTitle)
-                self._indexTag(tHandle, aLine, nLine, itemClass)
+                self._indexTag(tHandle, aLine, nLine, nTitle, itemClass)
 
             elif aLine.startswith(r"%"):
                 if nTitle > 0:
@@ -436,7 +436,7 @@ class NWIndex():
 
         return True
 
-    def _indexTag(self, tHandle, aLine, nLine, itemClass):
+    def _indexTag(self, tHandle, aLine, nLine, nTitle, itemClass):
         """Validate and save the information from a tag.
         """
         isValid, theBits, thePos = self.scanThis(aLine)
@@ -444,7 +444,8 @@ class NWIndex():
             return False
 
         if theBits[0] == nwKeyWords.TAG_KEY:
-            self.tagIndex[theBits[1]] = [nLine, tHandle, itemClass.name]
+            sTitle = "T%06d" % nTitle
+            self.tagIndex[theBits[1]] = [nLine, tHandle, itemClass.name, sTitle]
 
         return True
 
@@ -606,10 +607,10 @@ class NWIndex():
         if tHandle is None:
             return theRefs
 
-        theTags = []
+        theTags = set()
         for tTag in self.tagIndex:
             if tHandle == self.tagIndex[tTag][1]:
-                theTags.append(tTag)
+                theTags.add(tTag)
 
         if theTags:
             for tHandle in self.refIndex:
@@ -625,8 +626,8 @@ class NWIndex():
         """
         if theTag in self.tagIndex:
             theRef = self.tagIndex[theTag]
-            if len(theRef) == 3:
-                return theRef[1], theRef[0]
-        return None, 0
+            if len(theRef) == 4:
+                return theRef[1], theRef[0], theRef[3]
+        return None, 0, "T000000"
 
 # END Class NWIndex

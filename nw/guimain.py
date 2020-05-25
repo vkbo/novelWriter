@@ -485,7 +485,7 @@ class GuiMain(QMainWindow):
             self.docEditor.saveText()
         return True
 
-    def viewDocument(self, tHandle=None, nLine=0):
+    def viewDocument(self, tHandle=None, navLink=None):
         """Load a document for viewing in the view panel.
         """
         if tHandle is None:
@@ -511,7 +511,7 @@ class GuiMain(QMainWindow):
                 vPos[0] = int(bPos[1]/2)
                 vPos[1] = bPos[1]-vPos[0]
                 self.splitView.setSizes(vPos)
-            self.docViewer.setCursorLine(nLine)
+            self.docViewer.navigateTo(navLink)
 
         return True
 
