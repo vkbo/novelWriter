@@ -22,7 +22,7 @@ Likewise, the keywords ``%scnum%`` and ``%scabsnum%`` are number counters for sc
 These are incremented each time a heading of level three is encountered.
 The former keyword is reset to one for each new chapter, while the latter is not reset but counts from first scene encountered.
 
-If you want to insert a line break in you=r title format, add two backslashes ``%\\%``.
+If you want to insert a line break in you=r title format, add two backslashes ``\\``.
 
 .. note::
    Header formatting only applies to novel files.

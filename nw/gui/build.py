@@ -357,6 +357,7 @@ class GuiBuildNovel(QDialog):
         self.htmlStyle = makeHtml.getStyleSheet()
 
         # Load the preview document with the html data
+        self.docView.setJustify(justifyText)
         self.docView.setStyleSheet(self.htmlStyle)
         self.docView.setContent(self.htmlText)
 
@@ -663,11 +664,6 @@ class GuiBuildNovelDocView(QTextBrowser):
         theFont.setPointSize(self.mainConf.textSize)
         self.setFont(theFont)
 
-        theOpt = QTextOption()
-        if self.mainConf.doJustify:
-            theOpt.setAlignment(Qt.AlignJustify)
-        self.qDocument.setDefaultTextOption(theOpt)
-
         docPalette = self.palette()
         docPalette.setColor(QPalette.Base, QColor(255, 255, 255))
         docPalette.setColor(QPalette.Text, QColor(  0,   0,   0))
@@ -679,6 +675,17 @@ class GuiBuildNovelDocView(QTextBrowser):
 
         logger.debug("GuiBuildNovelDocView initialisation complete")
 
+        return
+
+    def setJustify(self, doJustify):
+        """Set the justify text option.
+        """
+        theOpt = self.qDocument.defaultTextOption()
+        if doJustify:
+            theOpt.setAlignment(Qt.AlignJustify)
+        else:
+            theOpt.setAlignment(Qt.AlignAbsolute)
+        self.qDocument.setDefaultTextOption(theOpt)
         return
 
     def setContent(self, theText):
