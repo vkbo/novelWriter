@@ -337,7 +337,7 @@ class GuiDocEditor(QTextEdit):
         tB = self.lineWidth()
         tW = self.width() - 2*tB
         tH = self.docTitle.height()
-        tT = tM - tH
+        tT = self.mainConf.textMargin - tH
         self.docTitle.setGeometry(tB, tB, tW, tH)
         self.setViewportMargins(0, tH, 0, 0)
 
