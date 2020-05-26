@@ -59,7 +59,8 @@ class GuiDocViewer(QTextBrowser):
 
         # Document Title
         self.docTitle = GuiDocTitleBar(self, self.theProject)
-        self.docTitle.setGeometry(0,0,self.docTitle.width(),self.docTitle.height())
+        self.docTitle.setGeometry(0, 0, self.docTitle.width(), self.docTitle.height())
+        self.setViewportMargins(0, self.docTitle.height(), 0, 0)
 
         theOpt = QTextOption()
         if self.mainConf.doJustify:
@@ -218,11 +219,19 @@ class GuiDocViewer(QTextBrowser):
         tB = self.lineWidth()
         tW = self.width() - 2*tB
         tH = self.docTitle.height()
+        tT = self.mainConf.textMargin - tH
         self.docTitle.setGeometry(tB, tB, tW, tH)
+        self.setViewportMargins(0, tH, 0, 0)
 
         docFormat = self.qDocument.rootFrame().frameFormat()
-        if docFormat.topMargin() < tH:
-            docFormat.setTopMargin(tH + 2)
+        if tT > 0:
+            docFormat.setTopMargin(tT)
+        else:
+            docFormat.setTopMargin(0)
+
+        self.qDocument.blockSignals(True)
+        self.qDocument.rootFrame().setFrameFormat(docFormat)
+        self.qDocument.blockSignals(False)
 
         return
 
