@@ -1,5 +1,14 @@
 # novelWriter ChangeLog
 
+## Not Yet Released
+
+**User Interface**
+
+* Renamed the "Generate Preview" button on the "Build Novel Project" tool to "Build Novel Project". You must actually click this to be able to export or print. Issue #237, PR #238.
+* Added font family and font size selectors to the "Build Novel Project" tool. You may want a different print font than used in the editor itself. Issue #230, PR #238.
+* A margin of the viewport (outside the document) has been added to the document editor and viewer to make room for the document title bar. Previously, the title bar would sit on top of the document top margin, which would sometimes hide text that would otherwise be visible. PR #236.
+
+
 ## Version 0.6.1 [2020-05-25]
 
 **Bugfixes**
