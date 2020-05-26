@@ -237,8 +237,8 @@ class GuiBuildNovel(QDialog):
         # ============
         self.buildProgress = QProgressBar()
 
-        self.genPreview = QPushButton("Generate Preview")
-        self.genPreview.clicked.connect(self._buildPreview)
+        self.buildNovel = QPushButton("Build Novel Project")
+        self.buildNovel.clicked.connect(self._buildPreview)
 
         # Action Buttons
         # ==============
@@ -295,7 +295,7 @@ class GuiBuildNovel(QDialog):
         self.toolsBox.addWidget(self.addsGroup)
         self.toolsBox.addStretch(1)
         self.toolsBox.addWidget(self.buildProgress)
-        self.toolsBox.addWidget(self.genPreview)
+        self.toolsBox.addWidget(self.buildNovel)
         self.toolsBox.addSpacing(8)
         self.toolsBox.addLayout(self.buttonForm)
 
