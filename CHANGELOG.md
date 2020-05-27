@@ -13,6 +13,7 @@
 * A margin of the viewport (outside the document) has been added to the document editor and viewer to make room for the document title bar. Previously, the title bar would sit on top of the document top margin, which would sometimes hide text that would otherwise be visible. PR #236.
 * Fixed some alignment issue for the status icon on the project tree details panel. Mentioned in #235, PR #239.
 * Removed the `Xo` icon for NO_LAYOUT in the project tree details panel. Mentioned in #235, PR #239.
+* Added a Details tab to the Project Settings dialog, which also lists the project path. Issue #242, PR #239.
 
 
 ## Version 0.6.1 [2020-05-25]
