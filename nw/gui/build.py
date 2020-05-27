@@ -205,7 +205,7 @@ class GuiBuildNovel(QDialog):
         self.novelFiles.setChecked(
             self.optState.getBool("GuiBuildNovel", "addNovel", True)
         )
-        
+
         self.noteFiles = QSwitch()
         self.noteFiles.setChecked(
             self.optState.getBool("GuiBuildNovel", "addNotes", False)

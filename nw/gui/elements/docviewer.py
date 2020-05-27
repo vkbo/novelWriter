@@ -145,6 +145,7 @@ class GuiDocViewer(QTextBrowser):
         self.theHandle = tHandle
         self.theProject.setLastViewed(tHandle)
         self.docTitle.setTitleFromHandle(self.theHandle)
+        self.updateDocMargins()
 
         # Make sure the main GUI knows we changed the content
         self.theParent.viewMeta.refreshReferences(tHandle)
@@ -199,23 +200,11 @@ class GuiDocViewer(QTextBrowser):
             return False
         return True
 
-    def updateDocTitle(self, tHandle):
-        """Called when an item label is changed to check if the document
-        title bar needs updating,
+    def updateDocMargins(self):
+        """Automatically adjust the margins so the text is centred if
+        Config.textFixedW is enabled or we're in Zen mode. Otherwise,
+        just ensure the margins are set correctly.
         """
-        if tHandle == self.theHandle:
-            self.docTitle.setTitleFromHandle(self.theHandle)
-        return
-
-    ##
-    #  Events
-    ##
-
-    def resizeEvent(self, theEvent):
-        """Make sure the document title is the same width as the window.
-        """
-        QTextBrowser.resizeEvent(self, theEvent)
-
         tB = self.lineWidth()
         tW = self.width() - 2*tB
         tH = self.docTitle.height()
@@ -233,6 +222,26 @@ class GuiDocViewer(QTextBrowser):
         self.qDocument.rootFrame().setFrameFormat(docFormat)
         self.qDocument.blockSignals(False)
 
+        return
+
+    def updateDocTitle(self, tHandle):
+        """Called when an item label is changed to check if the document
+        title bar needs updating,
+        """
+        if tHandle == self.theHandle:
+            self.docTitle.setTitleFromHandle(self.theHandle)
+            self.updateDocMargins()
+        return
+
+    ##
+    #  Events
+    ##
+
+    def resizeEvent(self, theEvent):
+        """Make sure the document title is the same width as the window.
+        """
+        QTextBrowser.resizeEvent(self, theEvent)
+        self.updateDocMargins()
         return
 
     ##

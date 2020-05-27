@@ -42,7 +42,7 @@ from PyQt5.QtWidgets import (
 from nw.gui import (
     GuiMainMenu, GuiMainStatus, GuiTheme, GuiDocTree, GuiDocEditor,
     GuiDocViewer, GuiDocDetails, GuiSearchBar, GuiNoticeBar, GuiDocViewDetails,
-    GuiConfigEditor, GuiProjectEditor, GuiItemEditor, GuiProjectOutline,
+    GuiConfigEditor, GuiProjectSettings, GuiItemEditor, GuiProjectOutline,
     GuiSessionLogView, GuiDocMerge, GuiDocSplit, GuiProjectLoad, GuiBuildNovel
 )
 from nw.core import NWProject, NWDoc, NWIndex
@@ -749,7 +749,7 @@ class GuiMain(QMainWindow):
         """Open the project settings dialog.
         """
         if self.hasProject:
-            dlgProj = GuiProjectEditor(self, self.theProject)
+            dlgProj = GuiProjectSettings(self, self.theProject)
             dlgProj.exec_()
             self._setWindowTitle(self.theProject.projName)
         return True
