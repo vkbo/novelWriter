@@ -526,25 +526,25 @@ class NWProject():
             self.theParent.makeAlert((
                 "Cannot backup project because no backup path is set. "
                 "Please set a valid backup location in Tools > Preferences."
-            ), nwAlert.WARN)
+            ), nwAlert.ERROR)
             return False
 
         if self.projName is None or self.projName == "":
             self.theParent.makeAlert((
                 "Cannot backup project because no project name is set. "
                 "Please set a Working Title in Project > Project Settings."
-            ), nwAlert.WARN)
+            ), nwAlert.ERROR)
             return False
 
         if not path.isdir(self.mainConf.backupPath):
             self.theParent.makeAlert((
                 "Cannot backup project because the backup path does not exist. "
                 "Please set a valid backup location in Tools > Preferences."
-            ), nwAlert.WARN)
+            ), nwAlert.ERROR)
             return False
 
         cleanName = self.getFileSafeProjectName()
-        baseDir = path.join(self.mainConf.backupPath, cleanName)
+        baseDir = path.abspath(path.join(self.mainConf.backupPath, cleanName))
         if not path.isdir(baseDir):
             try:
                 mkdir(baseDir)
@@ -556,6 +556,14 @@ class NWProject():
                 )
                 return False
 
+        if path.commonpath([self.projPath, baseDir]) == self.projPath:
+            self.theParent.makeAlert((
+                "Cannot backup project because the backup path is within the "
+                "project folder to be backed up. Please choose a different "
+                "backup path in Tools > Preferences."
+            ), nwAlert.ERROR)
+            return False
+
         archName = "Backup from %s" % formatTimeStamp(time(), fileSafe=True)
         baseName = path.join(baseDir, archName)
 
@@ -565,7 +573,7 @@ class NWProject():
             self._writeLockFile()
             if doNotify:
                 self.theParent.makeAlert(
-                    "Backup archive file written to: '%s.zip'" % path.join(cleanName, archName),
+                    "Backup archive file written to: %s.zip" % path.join(cleanName, archName),
                     nwAlert.INFO
                 )
             else:
@@ -594,7 +602,7 @@ class NWProject():
         else:
             if projPath.startswith("~"):
                 projPath = path.expanduser(projPath)
-            self.projPath = projPath
+            self.projPath = path.abspath(projPath)
         self.setProjectChanged(True)
         return True
 
