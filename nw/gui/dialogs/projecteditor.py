@@ -42,12 +42,12 @@ from nw.gui.additions import QSwitch, PagedDialog
 
 logger = logging.getLogger(__name__)
 
-class GuiProjectEditor(PagedDialog):
+class GuiProjectSettings(PagedDialog):
 
     def __init__(self, theParent, theProject):
         PagedDialog.__init__(self, theParent)
 
-        logger.debug("Initialising ProjectEditor ...")
+        logger.debug("Initialising GuiProjectSettings ...")
 
         self.mainConf   = nw.CONFIG
         self.theParent  = theParent
@@ -73,12 +73,12 @@ class GuiProjectEditor(PagedDialog):
 
         self.show()
 
-        logger.debug("ProjectEditor initialisation complete")
+        logger.debug("GuiProjectSettings initialisation complete")
 
         return
 
     def _doSave(self):
-        logger.verbose("ProjectEditor save button clicked")
+        logger.verbose("GuiProjectSettings save button clicked")
 
         projName    = self.tabMain.editName.text()
         bookTitle   = self.tabMain.editTitle.text()
@@ -106,11 +106,11 @@ class GuiProjectEditor(PagedDialog):
         return
 
     def _doClose(self):
-        logger.verbose("ProjectEditor close button clicked")
+        logger.verbose("GuiProjectSettings close button clicked")
         self.close()
         return
 
-# END Class GuiProjectEditor
+# END Class GuiProjectSettings
 
 class GuiProjectEditMain(QWidget):
 
