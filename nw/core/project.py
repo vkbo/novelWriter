@@ -556,8 +556,7 @@ class NWProject():
                 )
                 return False
 
-        backPath = path.abspath(self.projPath)
-        if path.commonpath([backPath, baseDir]) == backPath:
+        if path.commonpath([self.projPath, baseDir]) == self.projPath:
             self.theParent.makeAlert((
                 "Cannot backup project because the backup path is within the "
                 "project folder to be backed up. Please choose a different "
@@ -570,7 +569,7 @@ class NWProject():
 
         try:
             self._clearLockFile()
-            make_archive(baseName, "zip", backPath, ".")
+            make_archive(baseName, "zip", self.projPath, ".")
             self._writeLockFile()
             if doNotify:
                 self.theParent.makeAlert(
@@ -603,7 +602,7 @@ class NWProject():
         else:
             if projPath.startswith("~"):
                 projPath = path.expanduser(projPath)
-            self.projPath = projPath
+            self.projPath = path.abspath(projPath)
         self.setProjectChanged(True)
         return True
 

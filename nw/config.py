@@ -424,7 +424,7 @@ class Config:
         ## Backup
         cnfSec = "Backup"
         self.backupPath = self._parseLine(
-            cnfParse, cnfSec, "backuppath", self.CNF_STR,  self.backupPath
+            cnfParse, cnfSec, "backuppath", self.CNF_STR, self.backupPath
         )
         self.backupOnClose = self._parseLine(
             cnfParse, cnfSec, "backuponclose", self.CNF_BOOL, self.backupOnClose
@@ -639,7 +639,7 @@ class Config:
         if newPath is None:
             return True
         if not path.isfile(newPath):
-            logger.error("Config: File not found. Using default config path instead.")
+            logger.error("File not found, using default config path instead")
             return False
         self.confPath = path.dirname(newPath)
         self.confFile = path.basename(newPath)
@@ -649,7 +649,7 @@ class Config:
         if newPath is None:
             return True
         if not path.isdir(newPath):
-            logger.error("Config: Path not found. Using default data path instead.")
+            logger.error("Path not found, using default data path instead")
             return False
         self.dataPath = path.abspath(newPath)
         return True
