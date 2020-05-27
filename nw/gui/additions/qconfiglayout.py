@@ -141,19 +141,19 @@ class QConfigLayout(QGridLayout):
             labelBox.setSpacing(0)
 
             thisEntry["help"] = qHelp
-            self.addLayout(labelBox, self._nextRow, 0, Qt.AlignLeft)
+            self.addLayout(labelBox, self._nextRow, 0, 1, 1, Qt.AlignLeft | Qt.AlignTop)
 
         else:
-            self.addWidget(qLabel, self._nextRow, 0, Qt.AlignLeft)
+            self.addWidget(qLabel, self._nextRow, 0, 1, 1, Qt.AlignLeft | Qt.AlignTop)
 
         if theUnit is not None:
             controlBox = QHBoxLayout()
             controlBox.addWidget(qWidget, 0, Qt.AlignVCenter)
             controlBox.addWidget(QLabel(theUnit), 0, Qt.AlignVCenter)
             controlBox.setSpacing(8)
-            self.addLayout(controlBox, self._nextRow, 1, Qt.AlignRight)
+            self.addLayout(controlBox, self._nextRow, 1, 1, 1, Qt.AlignRight | Qt.AlignVCenter)
         else:
-            self.addWidget(qWidget, self._nextRow, 1, Qt.AlignRight)
+            self.addWidget(qWidget, self._nextRow, 1, 1, 1, Qt.AlignRight | Qt.AlignVCenter)
 
         qLabel.setBuddy(qWidget)
 
