@@ -1,5 +1,11 @@
 # novelWriter ChangeLog
 
+## Version 0.7 [2020-xx-xx]
+
+**Other Changes**
+
+* Dropped the usage of .bak copies of document files. This was the old method to ensure the document data was written successfully, but it uses twice the storage space. Instead, writing via a temp file is the safe way to save files. PR #248.
+
 ## Not Yet Released
 
 **Bugfixes**
