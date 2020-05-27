@@ -228,7 +228,6 @@ class GuiDocEditor(QTextEdit):
             tHandle = self.theHandle
             self.clearEditor()
             self.loadText(tHandle, showStatus=False)
-            self.updateDocMargins()
         return
 
     def loadText(self, tHandle, tLine=None, showStatus=True):
@@ -289,6 +288,7 @@ class GuiDocEditor(QTextEdit):
         """
         self.setPlainText(theText)
         self.setDocumentChanged(True)
+        self.updateDocMargins()
         return
 
     def saveText(self):
@@ -370,6 +370,7 @@ class GuiDocEditor(QTextEdit):
         """
         if tHandle == self.theHandle:
             self.docTitle.setTitleFromHandle(self.theHandle)
+            self.updateDocMargins()
         return
 
     ##
