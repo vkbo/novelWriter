@@ -59,7 +59,8 @@ class GuiDocViewer(QTextBrowser):
 
         # Document Title
         self.docTitle = GuiDocTitleBar(self, self.theProject)
-        self.docTitle.setGeometry(0,0,self.docTitle.width(),self.docTitle.height())
+        self.docTitle.setGeometry(0, 0, self.docTitle.width(), self.docTitle.height())
+        self.setViewportMargins(0, self.docTitle.height(), 0, 0)
 
         theOpt = QTextOption()
         if self.mainConf.doJustify:
@@ -145,6 +146,7 @@ class GuiDocViewer(QTextBrowser):
         self.theHandle = tHandle
         self.theProject.setLastViewed(tHandle)
         self.docTitle.setTitleFromHandle(self.theHandle)
+        self.updateDocMargins()
 
         # Make sure the main GUI knows we changed the content
         self.theParent.viewMeta.refreshReferences(tHandle)
@@ -206,12 +208,37 @@ class GuiDocViewer(QTextBrowser):
             self.setSource(QUrl(navLink))
         return True
 
+    def updateDocMargins(self):
+        """Automatically adjust the margins so the text is centred if
+        Config.textFixedW is enabled or we're in Zen mode. Otherwise,
+        just ensure the margins are set correctly.
+        """
+        tB = self.lineWidth()
+        tW = self.width() - 2*tB
+        tH = self.docTitle.height()
+        tT = self.mainConf.textMargin - tH
+        self.docTitle.setGeometry(tB, tB, tW, tH)
+        self.setViewportMargins(0, tH, 0, 0)
+
+        docFormat = self.qDocument.rootFrame().frameFormat()
+        if tT > 0:
+            docFormat.setTopMargin(tT)
+        else:
+            docFormat.setTopMargin(0)
+
+        self.qDocument.blockSignals(True)
+        self.qDocument.rootFrame().setFrameFormat(docFormat)
+        self.qDocument.blockSignals(False)
+
+        return
+
     def updateDocTitle(self, tHandle):
         """Called when an item label is changed to check if the document
         title bar needs updating,
         """
         if tHandle == self.theHandle:
             self.docTitle.setTitleFromHandle(self.theHandle)
+            self.updateDocMargins()
         return
 
     ##
@@ -249,16 +276,7 @@ class GuiDocViewer(QTextBrowser):
         """Make sure the document title is the same width as the window.
         """
         QTextBrowser.resizeEvent(self, theEvent)
-
-        tB = self.lineWidth()
-        tW = self.width() - 2*tB
-        tH = self.docTitle.height()
-        self.docTitle.setGeometry(tB, tB, tW, tH)
-
-        docFormat = self.qDocument.rootFrame().frameFormat()
-        if docFormat.topMargin() < tH:
-            docFormat.setTopMargin(tH + 2)
-
+        self.updateDocMargins()
         return
 
     ##

@@ -5,7 +5,7 @@ from nw.gui.dialogs.configeditor import GuiConfigEditor
 from nw.gui.dialogs.docmerge import GuiDocMerge
 from nw.gui.dialogs.docsplit import GuiDocSplit
 from nw.gui.dialogs.itemeditor import GuiItemEditor
-from nw.gui.dialogs.projecteditor import GuiProjectEditor
+from nw.gui.dialogs.projectsettings import GuiProjectSettings
 from nw.gui.dialogs.projectload import GuiProjectLoad
 from nw.gui.dialogs.sessionlog import GuiSessionLogView
 
@@ -15,7 +15,7 @@ __all__ = [
     "GuiDocMerge",
     "GuiDocSplit",
     "GuiItemEditor",
-    "GuiProjectEditor",
+    "GuiProjectSettings",
     "GuiProjectLoad",
     "GuiSessionLogView",
 ]

@@ -68,8 +68,8 @@ class NWProject():
         self.projChanged = False # The project has unsaved changes
         self.projAltered = False # The project has been altered this session
         self.lockedBy    = None  # Data on which computer has the project open
-        self.saveCount   = None  # Meta data: number of saves
-        self.autoCount   = None  # Meta data: number of automatic saves
+        self.saveCount   = 0     # Meta data: number of saves
+        self.autoCount   = 0     # Meta data: number of automatic saves
 
         # Class Settings
         self.projPath = None # The full path to where the currently open project is saved
@@ -167,6 +167,7 @@ class NWProject():
         """Create a new project by populating the project tree with a
         few starter items.
         """
+        self.projName = "New Project"
         hNovel = self.newRoot("Novel",         nwItemClass.NOVEL)
         hChars = self.newRoot("Characters",    nwItemClass.CHARACTER)
         hWorld = self.newRoot("Plot",          nwItemClass.PLOT)
@@ -526,25 +527,25 @@ class NWProject():
             self.theParent.makeAlert((
                 "Cannot backup project because no backup path is set. "
                 "Please set a valid backup location in Tools > Preferences."
-            ), nwAlert.WARN)
+            ), nwAlert.ERROR)
             return False
 
         if self.projName is None or self.projName == "":
             self.theParent.makeAlert((
                 "Cannot backup project because no project name is set. "
                 "Please set a Working Title in Project > Project Settings."
-            ), nwAlert.WARN)
+            ), nwAlert.ERROR)
             return False
 
         if not path.isdir(self.mainConf.backupPath):
             self.theParent.makeAlert((
                 "Cannot backup project because the backup path does not exist. "
                 "Please set a valid backup location in Tools > Preferences."
-            ), nwAlert.WARN)
+            ), nwAlert.ERROR)
             return False
 
         cleanName = self.getFileSafeProjectName()
-        baseDir = path.join(self.mainConf.backupPath, cleanName)
+        baseDir = path.abspath(path.join(self.mainConf.backupPath, cleanName))
         if not path.isdir(baseDir):
             try:
                 mkdir(baseDir)
@@ -556,6 +557,14 @@ class NWProject():
                 )
                 return False
 
+        if path.commonpath([self.projPath, baseDir]) == self.projPath:
+            self.theParent.makeAlert((
+                "Cannot backup project because the backup path is within the "
+                "project folder to be backed up. Please choose a different "
+                "backup path in Tools > Preferences."
+            ), nwAlert.ERROR)
+            return False
+
         archName = "Backup from %s" % formatTimeStamp(time(), fileSafe=True)
         baseName = path.join(baseDir, archName)
 
@@ -565,7 +574,7 @@ class NWProject():
             self._writeLockFile()
             if doNotify:
                 self.theParent.makeAlert(
-                    "Backup archive file written to: '%s.zip'" % path.join(cleanName, archName),
+                    "Backup archive file written to: %s.zip" % path.join(cleanName, archName),
                     nwAlert.INFO
                 )
             else:
@@ -594,7 +603,7 @@ class NWProject():
         else:
             if projPath.startswith("~"):
                 projPath = path.expanduser(projPath)
-            self.projPath = projPath
+            self.projPath = path.abspath(projPath)
         self.setProjectChanged(True)
         return True
 
@@ -1224,6 +1233,30 @@ class NWTree():
         """
         self._handleSeed = theSeed
         return
+
+    ##
+    #  Getters
+    ##
+
+    def countTypes(self):
+        """Count the number of files, folders and roots in the project.
+        """
+        nRoot = 0
+        nFolder = 0
+        nFile = 0
+
+        for tHandle in self._treeOrder:
+            tItem = self.__getitem__(tHandle)
+            if tItem is None:
+                continue
+            elif tItem.itemType == nwItemType.ROOT:
+                nRoot += 1
+            elif tItem.itemType == nwItemType.FOLDER:
+                nFolder += 1
+            elif tItem.itemType == nwItemType.FILE:
+                nFile += 1
+
+        return nRoot, nFolder, nFile
 
     ##
     #  Meta Methods
