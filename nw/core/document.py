@@ -147,12 +147,10 @@ class NWDoc():
             mkdir(dataPath)
             logger.debug("Created folder %s" % dataPath)
 
-        docTemp = path.join(dataPath, docFile+"~")
-        docBack = path.join(dataPath, docFile[:-3]+"bak")
-
         itemPath = self.theProject.projTree.getItemPath(self.docHandle)
         docMeta  = "%%~ "+":".join(itemPath)+":"+self.theItem.itemName+"\n"
 
+        docTemp = path.join(dataPath, docFile+"~")
         try:
             with open(docTemp,mode="w",encoding="utf8") as outFile:
                 outFile.write(docMeta)
@@ -161,12 +159,16 @@ class NWDoc():
             self.makeAlert(["Could not save document.",str(e)], nwAlert.ERROR)
             return False
 
-        # If we're here, the file was successfully saved,
-        # so let's sort out the temps and backups
+        # Remove bak files from old file save method, if one exists
+        # This part can eventually be removed
+        docBack = path.join(dataPath, docFile[:-3]+"bak")
         if path.isfile(docBack):
             unlink(docBack)
+
+        # If we're here, the file was successfully saved, so we can
+        # replace the temp file with the actual file
         if path.isfile(docPath):
-            rename(docPath, docBack)
+            unlink(docPath)
         rename(docTemp, docPath)
 
         self.theParent.statusBar.setStatus("Saved Document: %s" % self.theItem.itemName)
