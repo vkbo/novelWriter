@@ -2,6 +2,10 @@
 
 ## Not Yet Released
 
+**Bugfixes**
+
+* It was possible to have the backup folder set to the same folder as the project, resulting in an infinite loop when `make_archive` was building the zip file. This crash of paths is now checked before moving to the archive step. Issue #240, PR #241.
+
 **User Interface**
 
 * Renamed the "Generate Preview" button on the "Build Novel Project" tool to "Build Novel Project". You must actually click this to be able to export or print. Issue #237, PR #238.
