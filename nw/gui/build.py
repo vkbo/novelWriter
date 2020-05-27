@@ -254,28 +254,28 @@ class GuiBuildNovel(QDialog):
         self.saveMenu = QMenu(self)
         self.btnSave.setMenu(self.saveMenu)
 
-        self.saveODT = QAction("Open Document (.odt)")
+        self.saveODT = QAction("Open Document (.odt)", self)
         self.saveODT.triggered.connect(lambda: self._saveDocument(self.FMT_ODT))
         self.saveMenu.addAction(self.saveODT)
 
-        self.savePDF = QAction("Portable Document Format (.pdf)")
+        self.savePDF = QAction("Portable Document Format (.pdf)", self)
         self.savePDF.triggered.connect(lambda: self._saveDocument(self.FMT_PDF))
         self.saveMenu.addAction(self.savePDF)
 
-        self.saveHTM = QAction("%s HTML (.htm)" % nw.__package__)
+        self.saveHTM = QAction("%s HTML (.htm)" % nw.__package__, self)
         self.saveHTM.triggered.connect(lambda: self._saveDocument(self.FMT_HTM))
         self.saveMenu.addAction(self.saveHTM)
 
         if self.mainConf.verQtValue >= 51400:
-            self.saveMD = QAction("Markdown (.md)")
+            self.saveMD = QAction("Markdown (.md)", self)
             self.saveMD.triggered.connect(lambda: self._saveDocument(self.FMT_MD))
             self.saveMenu.addAction(self.saveMD)
 
-        self.saveNWD = QAction("novelWriter Markdown (.nwd)")
+        self.saveNWD = QAction("novelWriter Markdown (.nwd)", self)
         self.saveNWD.triggered.connect(lambda: self._saveDocument(self.FMT_NWD))
         self.saveMenu.addAction(self.saveNWD)
 
-        self.saveTXT = QAction("Plain Text (.txt)")
+        self.saveTXT = QAction("Plain Text (.txt)", self)
         self.saveTXT.triggered.connect(lambda: self._saveDocument(self.FMT_TXT))
         self.saveMenu.addAction(self.saveTXT)
 

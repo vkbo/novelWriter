@@ -5,6 +5,7 @@
 **Bugfixes**
 
 * It was possible to have the backup folder set to the same folder as the project, resulting in an infinite loop when `make_archive` was building the zip file. This crash of paths is now checked before moving to the archive step. Issue #240, PR #241.
+* Fixed an issue with the Build Novel Project tool on Ubuntu 16.04 LTS where the dialog wouldn't open. PR #246.
 
 **User Interface**
 
@@ -14,7 +15,6 @@
 * Fixed some alignment issue for the status icon on the project tree details panel. Mentioned in #235, PR #239.
 * Removed the `Xo` icon for NO_LAYOUT in the project tree details panel. Mentioned in #235, PR #239.
 * Added a Details tab to the Project Settings dialog, which also lists the project path. Issue #242, PR #239.
-
 
 ## Version 0.6.1 [2020-05-25]
 
