@@ -1,7 +1,7 @@
 <?xml version='1.0' encoding='utf-8'?>
-<novelWriterXML appVersion="0.5" fileVersion="1.0" saveCount="4" autoCount="0" timeStamp="2020-05-10 23:16:52">
+<novelWriterXML appVersion="0.6.1" hexVersion="0x000601f0" fileVersion="1.0" saveCount="4" autoCount="0" timeStamp="2020-05-27 18:24:35">
   <project>
-    <name></name>
+    <name>New Project</name>
     <title></title>
     <backup>True</backup>
   </project>

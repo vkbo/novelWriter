@@ -8,8 +8,8 @@ from nwtools import *
 from os import path, unlink
 from PyQt5.QtCore import Qt
 
-from nw.gui.dialogs.projecteditor import GuiProjectSettings
-from nw.gui.dialogs.itemeditor    import GuiItemEditor
+from nw.gui.dialogs.projectsettings import GuiProjectSettings
+from nw.gui.dialogs.itemeditor import GuiItemEditor
 
 from nw.constants import *
 
@@ -61,7 +61,7 @@ def testMainWindows(qtbot, nwTempGUI, nwRef, nwTemp):
     assert nwGUI.theProject.projPath == nwTempGUI
     assert nwGUI.theProject.projMeta == path.join(nwTempGUI,"meta")
     assert nwGUI.theProject.projFile == "nwProject.nwx"
-    assert nwGUI.theProject.projName == ""
+    assert nwGUI.theProject.projName == "New Project"
     assert nwGUI.theProject.bookTitle == ""
     assert len(nwGUI.theProject.bookAuthors) == 0
     assert nwGUI.theProject.spellCheck == False
@@ -265,6 +265,7 @@ def testProjectEditor(qtbot, nwTempGUI, nwRef, nwTemp):
     projEdit = GuiProjectSettings(nwGUI, nwGUI.theProject)
     qtbot.addWidget(projEdit)
 
+    projEdit.tabMain.editName.setText("")
     for c in "Project Name":
         qtbot.keyClick(projEdit.tabMain.editName, c, delay=keyDelay)
     for c in "Project Title":
