@@ -97,7 +97,7 @@ class QConfigLayout(QGridLayout):
             qLabel = None
             raise ValueError("theLabel must be a QLabel")
 
-        qLabel.setContentsMargins(0,4,0,4)
+        qLabel.setContentsMargins(0, 4, 0, 4)
         self.addWidget(qLabel, self._nextRow, 0, 1, 2, Qt.AlignLeft)
 
         self.setRowStretch(self._nextRow, 0)

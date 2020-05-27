@@ -8,7 +8,7 @@ from nwtools import *
 from os import path, unlink
 from PyQt5.QtCore import Qt
 
-from nw.gui.dialogs.projecteditor import GuiProjectEditor
+from nw.gui.dialogs.projecteditor import GuiProjectSettings
 from nw.gui.dialogs.itemeditor    import GuiItemEditor
 
 from nw.constants import *
@@ -262,7 +262,7 @@ def testProjectEditor(qtbot, nwTempGUI, nwRef, nwTemp):
     assert nwGUI.newProject(nwTempGUI, True)
     nwGUI.mainConf.backupPath = nwTempGUI
 
-    projEdit = GuiProjectEditor(nwGUI, nwGUI.theProject)
+    projEdit = GuiProjectSettings(nwGUI, nwGUI.theProject)
     qtbot.addWidget(projEdit)
 
     for c in "Project Name":
@@ -314,7 +314,7 @@ def testProjectEditor(qtbot, nwTempGUI, nwRef, nwTemp):
     projEdit._doSave()
 
     # Open again, and check project settings
-    projEdit = GuiProjectEditor(nwGUI, nwGUI.theProject)
+    projEdit = GuiProjectSettings(nwGUI, nwGUI.theProject)
     qtbot.addWidget(projEdit)
     assert projEdit.tabMain.editName.text()  == "Project Name"
     assert projEdit.tabMain.editTitle.text() == "Project Title"

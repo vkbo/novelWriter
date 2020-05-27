@@ -68,8 +68,8 @@ class NWProject():
         self.projChanged = False # The project has unsaved changes
         self.projAltered = False # The project has been altered this session
         self.lockedBy    = None  # Data on which computer has the project open
-        self.saveCount   = None  # Meta data: number of saves
-        self.autoCount   = None  # Meta data: number of automatic saves
+        self.saveCount   = 0     # Meta data: number of saves
+        self.autoCount   = 0     # Meta data: number of automatic saves
 
         # Class Settings
         self.projPath = None # The full path to where the currently open project is saved
@@ -167,6 +167,7 @@ class NWProject():
         """Create a new project by populating the project tree with a
         few starter items.
         """
+        self.projName = "New Project"
         hNovel = self.newRoot("Novel",         nwItemClass.NOVEL)
         hChars = self.newRoot("Characters",    nwItemClass.CHARACTER)
         hWorld = self.newRoot("Plot",          nwItemClass.PLOT)
@@ -1232,6 +1233,30 @@ class NWTree():
         """
         self._handleSeed = theSeed
         return
+
+    ##
+    #  Getters
+    ##
+
+    def countTypes(self):
+        """Count the number of files, folders and roots in the project.
+        """
+        nRoot = 0
+        nFolder = 0
+        nFile = 0
+
+        for tHandle in self._treeOrder:
+            tItem = self.__getitem__(tHandle)
+            if tItem is None:
+                continue
+            elif tItem.itemType == nwItemType.ROOT:
+                nRoot += 1
+            elif tItem.itemType == nwItemType.FOLDER:
+                nFolder += 1
+            elif tItem.itemType == nwItemType.FILE:
+                nFile += 1
+
+        return nRoot, nFolder, nFile
 
     ##
     #  Meta Methods

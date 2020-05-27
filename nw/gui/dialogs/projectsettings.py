@@ -38,7 +38,7 @@ from PyQt5.QtWidgets import (
 )
 
 from nw.constants import nwAlert
-from nw.gui.additions import QSwitch, PagedDialog
+from nw.gui.additions import QSwitch, PagedDialog, QConfigLayout
 
 logger = logging.getLogger(__name__)
 
@@ -57,11 +57,13 @@ class GuiProjectSettings(PagedDialog):
         self.setWindowTitle("Project Settings")
 
         self.tabMain    = GuiProjectEditMain(self.theParent, self.theProject)
-        self.tabStatus  = GuiProjectEditStatus(self.theParent, self.theProject.statusItems)
-        self.tabImport  = GuiProjectEditStatus(self.theParent, self.theProject.importItems)
+        self.tabMeta    = GuiProjectEditMeta(self.theParent, self.theProject)
+        self.tabStatus  = GuiProjectEditStatus(self.theParent, self.theProject, True)
+        self.tabImport  = GuiProjectEditStatus(self.theParent, self.theProject, False)
         self.tabReplace = GuiProjectEditReplace(self.theParent, self.theProject)
 
         self.addTab(self.tabMain,   "Settings")
+        self.addTab(self.tabMeta,   "Details")
         self.addTab(self.tabStatus, "Status")
         self.addTab(self.tabImport, "Importance")
         self.addTab(self.tabReplace,"Auto-Replace")
@@ -117,58 +119,155 @@ class GuiProjectEditMain(QWidget):
     def __init__(self, theParent, theProject):
         QWidget.__init__(self, theParent)
 
-        self.theParent   = theParent
-        self.theProject  = theProject
-        self.mainForm    = QGridLayout()
-        self.backupBox   = QHBoxLayout()
+        self.theParent  = theParent
+        self.theProject = theProject
 
-        self.editName  = QLineEdit()
+        # The Form
+        self.mainForm = QConfigLayout()
+        self.mainForm.setHelpTextStyle(self.theParent.theTheme.helpText)
+        self.setLayout(self.mainForm)
+
+        self.mainForm.addGroupLabel("Project Settings")
+
+        self.editName = QLineEdit()
         self.editName.setMaxLength(200)
+        self.editName.setFixedWidth(250)
         self.editName.setText(self.theProject.projName)
+        self.mainForm.addRow(
+            "Working title",
+            self.editName,
+            "Should be set only once."
+        )
 
         self.editTitle = QLineEdit()
         self.editTitle.setMaxLength(200)
+        self.editTitle.setFixedWidth(250)
         self.editTitle.setText(self.theProject.bookTitle)
+        self.mainForm.addRow(
+            "Novel title",
+            self.editTitle,
+            "Change whenever you want!"
+        )
 
         self.editAuthors = QPlainTextEdit()
         bookAuthors = ""
         for bookAuthor in self.theProject.bookAuthors:
             bookAuthors += bookAuthor+"\n"
         self.editAuthors.setPlainText(bookAuthors)
-        self.editAuthors.setMaximumHeight(120)
+        self.editAuthors.setFixedHeight(100)
+        self.editAuthors.setFixedWidth(250)
+        self.mainForm.addRow(
+            "Author(s)",
+            self.editAuthors,
+            "One name per line."
+        )
 
         self.doBackup = QSwitch(self)
         self.doBackup.setChecked(not self.theProject.doBackup)
-        self.backupBox.addStretch(1)
-        self.backupBox.addWidget(QLabel("Disable backup on close"))
-        self.backupBox.addWidget(self.doBackup)
-
-        self.mainForm.addWidget(QLabel("Working title"), 0, 0, 1, 1, Qt.AlignTop)
-        self.mainForm.addWidget(self.editName,           0, 1, 1, 1, Qt.AlignTop)
-        self.mainForm.addWidget(QLabel("Book title"),    1, 0, 1, 1, Qt.AlignTop)
-        self.mainForm.addWidget(self.editTitle,          1, 1, 1, 1, Qt.AlignTop)
-        self.mainForm.addWidget(QLabel("Book authors"),  2, 0, 1, 1, Qt.AlignTop)
-        self.mainForm.addWidget(self.editAuthors,        2, 1, 1, 1, Qt.AlignTop)
-        self.mainForm.addLayout(self.backupBox,          3, 0, 1, 2, Qt.AlignTop)
-
-        self.setLayout(self.mainForm)
+        self.mainForm.addRow(
+            "No backup on close",
+            self.doBackup,
+            "Overrides main preferences."
+        )
 
         return
 
 # END Class GuiProjectEditMain
 
-class GuiProjectEditStatus(QWidget):
+class GuiProjectEditMeta(QWidget):
 
-    def __init__(self, theParent, theStatus):
+    def __init__(self, theParent, theProject):
         QWidget.__init__(self, theParent)
 
         self.theParent  = theParent
-        self.theStatus  = theStatus
+        self.theProject = theProject
+
+        # The Form
+        self.mainForm = QGridLayout()
+        self.setLayout(self.mainForm)
+
+        self.headLabel = QLabel("<b>Project Details</b>")
+
+        self.nameLabel = QLabel("Working title:")
+        self.nameLabel.setIndent(8)
+        self.nameValue = QLabel(self.theProject.projName)
+        self.nameValue.setWordWrap(True)
+
+        self.pathLabel = QLabel("Project path:")
+        self.pathLabel.setIndent(8)
+        self.pathValue = QLabel(self.theProject.projPath)
+        self.pathValue.setWordWrap(True)
+
+        self.revLabel = QLabel("Revision count:")
+        self.revLabel.setIndent(8)
+        self.revValue = QLabel("{:n}".format(self.theProject.saveCount))
+
+        self.statsLabel = QLabel("<b>Project Stats</b>")
+
+        nR, nD, nF = self.theProject.projTree.countTypes()
+
+        self.nRootLabel = QLabel("Root folders:")
+        self.nRootLabel.setIndent(8)
+        self.nRootValue = QLabel("{:n}".format(nR))
+
+        self.nDirLabel = QLabel("Folders:")
+        self.nDirLabel.setIndent(8)
+        self.nDirValue = QLabel("{:n}".format(nD))
+
+        self.nFileLabel = QLabel("Documents:")
+        self.nFileLabel.setIndent(8)
+        self.nFileValue = QLabel("{:n}".format(nF))
+
+        self.wordsLabel = QLabel("Word count:")
+        self.wordsLabel.setIndent(8)
+        self.wordsValue = QLabel("{:n}".format(self.theProject.currWCount))
+
+        self.mainForm.addWidget(self.headLabel,  0, 0, 1, 2, Qt.AlignTop)
+        self.mainForm.addWidget(self.nameLabel,  1, 0, 1, 1, Qt.AlignTop)
+        self.mainForm.addWidget(self.nameValue,  1, 1, 1, 1, Qt.AlignTop)
+        self.mainForm.addWidget(self.pathLabel,  2, 0, 1, 1, Qt.AlignTop)
+        self.mainForm.addWidget(self.pathValue,  2, 1, 1, 1, Qt.AlignTop)
+        self.mainForm.addWidget(self.revLabel,   3, 0, 1, 1, Qt.AlignTop)
+        self.mainForm.addWidget(self.revValue,   3, 1, 1, 1, Qt.AlignTop)
+
+        self.mainForm.addWidget(self.statsLabel, 4, 0, 1, 2, Qt.AlignTop)
+        self.mainForm.addWidget(self.nRootLabel, 5, 0, 1, 1, Qt.AlignTop)
+        self.mainForm.addWidget(self.nRootValue, 5, 1, 1, 1, Qt.AlignTop)
+        self.mainForm.addWidget(self.nDirLabel,  6, 0, 1, 1, Qt.AlignTop)
+        self.mainForm.addWidget(self.nDirValue,  6, 1, 1, 1, Qt.AlignTop)
+        self.mainForm.addWidget(self.nFileLabel, 7, 0, 1, 1, Qt.AlignTop)
+        self.mainForm.addWidget(self.nFileValue, 7, 1, 1, 1, Qt.AlignTop)
+        self.mainForm.addWidget(self.wordsLabel, 8, 0, 1, 1, Qt.AlignTop)
+        self.mainForm.addWidget(self.wordsValue, 8, 1, 1, 1, Qt.AlignTop)
+
+        self.mainForm.setVerticalSpacing(6)
+        self.mainForm.setHorizontalSpacing(12)
+        self.mainForm.setColumnStretch(0, 0)
+        self.mainForm.setColumnStretch(1, 1)
+        self.mainForm.setRowStretch(10, 1)
+
+        return
+
+# END Class GuiProjectEditMeta
+
+class GuiProjectEditStatus(QWidget):
+
+    def __init__(self, theParent, theProject, isStatus):
+        QWidget.__init__(self, theParent)
+
+        self.theParent  = theParent
+        self.theProject = theProject
+        if isStatus:
+            self.theStatus = self.theProject.statusItems
+        else:
+            self.theStatus = self.theProject.importItems
+
         self.colData    = []
         self.colCounts  = []
         self.colChanged = False
         self.selColour  = None
 
+        self.outerBox = QVBoxLayout()
         self.mainBox  = QHBoxLayout()
         self.mainForm = QVBoxLayout()
 
@@ -208,7 +307,13 @@ class GuiProjectEditStatus(QWidget):
         self.mainBox.addWidget(self.listBox)
         self.mainBox.addLayout(self.mainForm)
 
-        self.setLayout(self.mainBox)
+        if isStatus:
+            self.outerBox.addWidget(QLabel("<b>Novel File Status Levels</b>"))
+        else:
+            self.outerBox.addWidget(QLabel("<b>Note File Importance Levels</b>"))
+        self.outerBox.addLayout(self.mainBox)
+
+        self.setLayout(self.outerBox)
 
         return
 
@@ -374,6 +479,7 @@ class GuiProjectEditReplace(QWidget):
         self.bottomBox.addWidget(self.addButton)
         self.bottomBox.addWidget(self.delButton)
 
+        self.outerBox.addWidget(QLabel("<b>Text Replace List for Preview and Export</b>"))
         self.outerBox.addWidget(self.listBox)
         self.outerBox.addLayout(self.bottomBox)
         self.setLayout(self.outerBox)
