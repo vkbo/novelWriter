@@ -98,27 +98,37 @@ class GuiBuildNovel(QDialog):
         self.fmtTitle = QLineEdit()
         self.fmtTitle.setMaxLength(200)
         self.fmtTitle.setFixedWidth(220)
-        self.fmtTitle.setText(self.theProject.titleFormat["title"])
+        self.fmtTitle.setText(
+            self._reFmtCodes(self.theProject.titleFormat["title"])
+        )
 
         self.fmtChapter = QLineEdit()
         self.fmtChapter.setMaxLength(200)
         self.fmtChapter.setFixedWidth(220)
-        self.fmtChapter.setText(self.theProject.titleFormat["chapter"])
+        self.fmtChapter.setText(
+            self._reFmtCodes(self.theProject.titleFormat["chapter"])
+        )
 
         self.fmtUnnumbered = QLineEdit()
         self.fmtUnnumbered.setMaxLength(200)
         self.fmtUnnumbered.setFixedWidth(220)
-        self.fmtUnnumbered.setText(self.theProject.titleFormat["unnumbered"])
+        self.fmtUnnumbered.setText(
+            self._reFmtCodes(self.theProject.titleFormat["unnumbered"])
+        )
 
         self.fmtScene = QLineEdit()
         self.fmtScene.setMaxLength(200)
         self.fmtScene.setFixedWidth(220)
-        self.fmtScene.setText(self.theProject.titleFormat["scene"])
+        self.fmtScene.setText(
+            self._reFmtCodes(self.theProject.titleFormat["scene"])
+        )
 
         self.fmtSection = QLineEdit()
         self.fmtSection.setMaxLength(200)
         self.fmtSection.setFixedWidth(220)
-        self.fmtSection.setText(self.theProject.titleFormat["section"])
+        self.fmtSection.setText(
+            self._reFmtCodes(self.theProject.titleFormat["section"])
+        )
 
         self.titleForm.addWidget(QLabel("Title"),      0, 0, 1, 1, Qt.AlignLeft)
         self.titleForm.addWidget(self.fmtTitle,        0, 1, 1, 1, Qt.AlignRight)
@@ -676,6 +686,15 @@ class GuiBuildNovel(QDialog):
                 "Could not open help text file for Build Project.", nwAlert.ERROR
             )
         return
+
+    def _reFmtCodes(self, theFormat):
+        """Translates old formatting codes to new ones.
+        """
+        theFormat = theFormat.replace(r"%chnum%",     r"%ch%")
+        theFormat = theFormat.replace(r"%scnum%",     r"%sc1%")
+        theFormat = theFormat.replace(r"%scabsnum%",  r"%sc2%")
+        theFormat = theFormat.replace(r"%chnumword%", r"%chword%")
+        return theFormat
 
 # END Class GuiBuildNovel
 

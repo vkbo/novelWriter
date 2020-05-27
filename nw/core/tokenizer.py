@@ -565,11 +565,11 @@ class Tokenizer():
     def _formatHeading(self, theTitle, theText):
         """Replaces the %keyword% strings.
         """
-        theTitle = theTitle.replace(r"%title%", theText)
-        theTitle = theTitle.replace(r"%chnum%", str(self.numChapter))
-        theTitle = theTitle.replace(r"%scnum%", str(self.numChScene))
-        theTitle = theTitle.replace(r"%scabsnum%", str(self.numAbsScene))
-        theTitle = theTitle.replace(r"%chnumword%", numberToWord(self.numChapter,"en"))
+        theTitle = theTitle.replace(r"%title%",  theText)
+        theTitle = theTitle.replace(r"%ch%",     str(self.numChapter))
+        theTitle = theTitle.replace(r"%sc1%",    str(self.numChScene))
+        theTitle = theTitle.replace(r"%sc2%",    str(self.numAbsScene))
+        theTitle = theTitle.replace(r"%chword%", numberToWord(self.numChapter,"en"))
         return theTitle
 
 # END Class Tokenizer
