@@ -79,7 +79,7 @@ class GuiBuildNovel(QDialog):
         self.setMinimumHeight(800)
 
         self.resize(
-            self.optState.getInt("GuiBuildNovel", "winWidth", 800),
+            self.optState.getInt("GuiBuildNovel", "winWidth", 900),
             self.optState.getInt("GuiBuildNovel", "winHeight", 800)
         )
 
@@ -97,27 +97,27 @@ class GuiBuildNovel(QDialog):
 
         self.fmtTitle = QLineEdit()
         self.fmtTitle.setMaxLength(200)
-        self.fmtTitle.setFixedWidth(200)
+        self.fmtTitle.setFixedWidth(220)
         self.fmtTitle.setText(self.theProject.titleFormat["title"])
 
         self.fmtChapter = QLineEdit()
         self.fmtChapter.setMaxLength(200)
-        self.fmtChapter.setFixedWidth(200)
+        self.fmtChapter.setFixedWidth(220)
         self.fmtChapter.setText(self.theProject.titleFormat["chapter"])
 
         self.fmtUnnumbered = QLineEdit()
         self.fmtUnnumbered.setMaxLength(200)
-        self.fmtUnnumbered.setFixedWidth(200)
+        self.fmtUnnumbered.setFixedWidth(220)
         self.fmtUnnumbered.setText(self.theProject.titleFormat["unnumbered"])
 
         self.fmtScene = QLineEdit()
         self.fmtScene.setMaxLength(200)
-        self.fmtScene.setFixedWidth(200)
+        self.fmtScene.setFixedWidth(220)
         self.fmtScene.setText(self.theProject.titleFormat["scene"])
 
         self.fmtSection = QLineEdit()
         self.fmtSection.setMaxLength(200)
-        self.fmtSection.setFixedWidth(200)
+        self.fmtSection.setFixedWidth(220)
         self.fmtSection.setText(self.theProject.titleFormat["section"])
 
         self.titleForm.addWidget(QLabel("Title"),      0, 0, 1, 1, Qt.AlignLeft)
@@ -141,7 +141,7 @@ class GuiBuildNovel(QDialog):
         self.textGroup.setLayout(self.textForm)
 
         self.textFont = QFontComboBox()
-        self.textFont.setFixedWidth(200)
+        self.textFont.setFixedWidth(220)
         self.textFont.setCurrentFont(
             QFont(self.optState.getString("GuiBuildNovel", "textFont", self.mainConf.textFont))
         )
