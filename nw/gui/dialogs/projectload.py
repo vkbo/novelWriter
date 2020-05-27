@@ -93,7 +93,7 @@ class GuiProjectLoad(QDialog):
         self.lblRecent = QLabel("<b>Recently Opened Projects</b>")
         self.lblPath   = QLabel("<b>Path</b>")
         self.selPath   = QLineEdit("")
-        self.selPath.setEnabled(False)
+        self.selPath.setReadOnly(True)
 
         self.browseButton = QPushButton("...")
         self.browseButton.setMaximumWidth(30)
