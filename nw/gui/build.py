@@ -691,9 +691,9 @@ class GuiBuildNovel(QDialog):
         """Translates old formatting codes to new ones.
         """
         theFormat = theFormat.replace(r"%chnum%",     r"%ch%")
-        theFormat = theFormat.replace(r"%scnum%",     r"%sc1%")
-        theFormat = theFormat.replace(r"%scabsnum%",  r"%sc2%")
-        theFormat = theFormat.replace(r"%chnumword%", r"%chword%")
+        theFormat = theFormat.replace(r"%scnum%",     r"%sc%")
+        theFormat = theFormat.replace(r"%scabsnum%",  r"%sca%")
+        theFormat = theFormat.replace(r"%chnumword%", r"%chw%")
         return theFormat
 
 # END Class GuiBuildNovel
