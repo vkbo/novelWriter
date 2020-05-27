@@ -1,9 +1,9 @@
 # -*- coding: utf-8 -*-
-"""novelWriter GUI Project Editor
+"""novelWriter GUI Project Settings
 
- novelWriter – GUI Project Editor
-===================================
- Class holding the project editor
+ novelWriter – GUI Project Settings
+====================================
+ Class holding the project settings dialog
 
  File History:
  Created: 2018-09-29 [0.0.1]
