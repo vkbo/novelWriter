@@ -172,7 +172,9 @@ class GuiBuildNovel(QDialog):
 
         self.textFont = QFontComboBox()
         self.textFont.setFixedWidth(220)
-        self.textFont.setToolTip("The font is used for PDF and printing. Other formats have no font set.")
+        self.textFont.setToolTip(
+            "The font is used for PDF and printing. Other formats have no font set."
+        )
         self.textFont.setCurrentFont(
             QFont(self.optState.getString("GuiBuildNovel", "textFont", self.mainConf.textFont))
         )
@@ -182,13 +184,17 @@ class GuiBuildNovel(QDialog):
         self.textSize.setMinimum(5)
         self.textSize.setMaximum(48)
         self.textSize.setSingleStep(1)
-        self.textSize.setToolTip("The size is used for PDF and printing. Other formats have no size set.")
+        self.textSize.setToolTip(
+            "The size is used for PDF and printing. Other formats have no size set."
+        )
         self.textSize.setValue(
             self.optState.getInt("GuiBuildNovel", "textSize", self.mainConf.textSize)
         )
 
         self.justifyText = QSwitch()
-        self.justifyText.setToolTip("Applies to PDF, printing, HTML, and Open Document exports.")
+        self.justifyText.setToolTip(
+            "Applies to PDF, printing, HTML, and Open Document exports."
+        )
         self.justifyText.setChecked(
             self.optState.getBool("GuiBuildNovel", "justifyText", False)
         )
@@ -210,15 +216,21 @@ class GuiBuildNovel(QDialog):
         self.includeGroup.setLayout(self.includeForm)
 
         self.includeSynopsis = QSwitch()
-        self.includeSynopsis.setToolTip("Include synopsis type comments in the output.")
+        self.includeSynopsis.setToolTip(
+            "Include synopsis type comments in the output."
+        )
         self.includeSynopsis.setChecked(self.theProject.titleFormat["withSynopsis"])
 
         self.includeComments = QSwitch()
-        self.includeComments.setToolTip("Include plain comments in the output.")
+        self.includeComments.setToolTip(
+            "Include plain comments in the output."
+        )
         self.includeComments.setChecked(self.theProject.titleFormat["withComments"])
 
         self.includeKeywords = QSwitch()
-        self.includeKeywords.setToolTip("Include meta keywords (tags, references) in the output.")
+        self.includeKeywords.setToolTip(
+            "Include meta keywords (tags, references) in the output."
+        )
         self.includeKeywords.setChecked(self.theProject.titleFormat["withKeywords"])
 
         self.includeForm.addWidget(QLabel("Include synopsis"), 0, 0, 1, 1, Qt.AlignLeft)

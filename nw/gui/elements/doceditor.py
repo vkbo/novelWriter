@@ -479,7 +479,9 @@ class GuiDocEditor(QTextEdit):
                 self.hLight.rehighlight()
             qApp.restoreOverrideCursor()
             afTime = time()
-            logger.debug("Document re-highlighted in %.3f milliseconds" % (1000*(afTime-bfTime)))
+            logger.debug(
+                "Document re-highlighted in %.3f milliseconds" % (1000*(afTime-bfTime))
+            )
 
         return True
 
@@ -716,7 +718,9 @@ class GuiDocEditor(QTextEdit):
         """
         sinceActive = time()-self.lastEdit
         if sinceActive > 5*self.wcInterval:
-            logger.debug("Stopping word count timer: no activity last %.1f seconds" % sinceActive)
+            logger.debug(
+                "Stopping word count timer: no activity last %.1f seconds" % sinceActive
+            )
             self.wcTimer.stop()
         elif self.wCounter.isRunning():
             logger.verbose("Word counter thread is busy")
@@ -952,7 +956,9 @@ class GuiDocEditor(QTextEdit):
             theText = newText
             cOffset -= 0
         else:
-            logger.error("Unknown or unsupported block format requested: %s" % str(docAction))
+            logger.error(
+                "Unknown or unsupported block format requested: %s" % str(docAction)
+            )
             return
 
         # Replace the block text
