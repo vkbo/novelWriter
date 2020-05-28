@@ -1,0 +1,197 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>Project Structure &#8212; novelWriter 0.6.1 documentation</title>
+    <link rel="stylesheet" href="_static/classic.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/doctools.js"></script>
+    <script src="_static/language_data.js"></script>
+    
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Supporting Files (Notes)" href="notes.html" />
+    <link rel="prev" title="Novel Projects" href="projects.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="notes.html" title="Supporting Files (Notes)"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="projects.html" title="Novel Projects"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">novelWriter 0.6.1 documentation</a> &#187;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="project-structure">
+<h1>Project Structure<a class="headerlink" href="#project-structure" title="Permalink to this headline">¶</a></h1>
+<p>This section covers the structure of a novel project.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>This section concerns files under the Novel type root folder only.
+There are some restrictions and features that only applies to these type of files.</p>
+</div>
+<div class="section" id="importance-of-headings">
+<h2>Importance of Headings<a class="headerlink" href="#importance-of-headings" title="Permalink to this headline">¶</a></h2>
+<p>Subfolders under root folders have no impact on the structure of the novel itself.
+The structure is instead dictated by the heading level.
+Four levels of headings are supported, signified by the number of hashes preceding the title.
+See the Markdown section.</p>
+<p>The header levels are not only important when generating the exported novel file, but they are also used by the indexer and Outline View.
+Each heading starts a new region where new references to tags can be set.</p>
+<p>The different header levels are interpreted as specific section types of the novel.</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">#</span> <span class="pre">Header1</span></code>: Header level 1 signifies that the text refers to either the novel title or the name of a top level partition.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">##</span> <span class="pre">Header2</span></code>: Header level 2 signifies a chapter level partition.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">###</span> <span class="pre">Header3</span></code>: Header level 3 signifies a scene level partition.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">####</span> <span class="pre">Header4</span></code>: Header level 4 signifies a sub-scene level partition (section).</p></li>
+</ul>
+</div>
+<div class="section" id="tag-references">
+<h2>Tag References<a class="headerlink" href="#tag-references" title="Permalink to this headline">¶</a></h2>
+<p>Each partition, indicated by a heading, can contain references to tags set in the supporting files of the project.</p>
+<p>The references are gathered by the indexer and used to generate the Outline View of how the different parts of the novel are connected.
+References and tags are also clickable in the view panel, and makes it easy to navigate reference notes while writing.
+For setting the targets of references, see the “Supporting Files” section.</p>
+<p>References are set as keyword and a list of corresponding tags.
+The valid keywords are listed below. The format of such a line is <code class="docutils literal notranslate"><span class="pre">&#64;keyword:</span> <span class="pre">value1,</span> <span class="pre">[value2]</span> <span class="pre">...</span> <span class="pre">[valueN]</span></code>.
+All keywords allow multiple values.</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">&#64;pov</span></code>: The point-of-view character for the current section.
+The target must be a note tag in the character root folder.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">&#64;char</span></code>: Other characters in the current section.
+The target must be a note tag in the character root folder.
+This should not include the point-of-view character.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">&#64;plot</span></code>: The plot timelines touched by the current section.
+The target must be a note tag in the plot root folder.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">&#64;time</span></code>: The timelines touched by the current section.
+The target must be a note tag in the timeline root folder.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">&#64;location</span></code>: The location the current section takes place in.
+The target must be a note tag in the locations root folder.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">&#64;object</span></code>: Objects present in the current section.
+The target must be a note tag in the object root folder.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">&#64;entity</span></code>: Entities present in the current section.
+The target must be a note tag in the entities root folder.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">&#64;custom</span></code>: Custom references in the current section.
+The target must be a note tag in the custom root folder.</p></li>
+</ul>
+<p>The syntax highlighter will alert the user that only the correct keywords are used, and that the tags referenced exist.
+If the index of defined tags is out of date, press <kbd class="kbd docutils literal notranslate">F9</kbd> to regenerate it, or select <span class="menuselection">Tools ‣ Rebuild Index</span> from the menu.
+In general, the index for a file is regenerated when a file is saved, so this shouldn’t normally be necessary.</p>
+</div>
+<div class="section" id="novel-file-layout">
+<h2>Novel File Layout<a class="headerlink" href="#novel-file-layout" title="Permalink to this headline">¶</a></h2>
+<p>Files that exist under the Novel type root folder can have a number of layouts set.
+See overview below.
+These layouts are important when the project is exported, as they indicate how to treat the content in terms of formatting, headings and page breaks.
+the layout selected also shows up as flags in the tree view, making it easier to track what kind of files they are.</p>
+<ul class="simple">
+<li><p><strong>Title Page</strong>: The title page layout.
+The title should be formatted as a heading level one.</p></li>
+<li><p><strong>Book</strong>: In principle, the entire novel can be contained in a single file.
+In that case, use the Book layout on this file.
+The internal structure is then controlled by the heading levels.</p></li>
+<li><p><strong>Plain Page</strong>: A plain page is just that,
+It is not included into content and the heading levels are ignored.</p></li>
+<li><p><strong>Partition</strong>: A partition can be used to split a the novel into parts.
+Use a level one heading for this.</p></li>
+<li><p><strong>Chapter</strong>: Signifies the start of a new chapter.
+If the text itself is contained in scene files, these files should only contain the title and tag references for characters, plot, etc.
+The heading for chapters should be level two.</p></li>
+<li><p><strong>Unnumbered</strong>: Same as Chapter, but when exporting the files and automatic chapter numbering is enabled, this file will not receive a number.</p></li>
+<li><p><strong>Scene</strong>: A scene file.
+This file should have a header of level three.
+Further sections can have headers of level four.
+These will not impact the overall structure, but will allow for setting new characters and plot references in parts of a scene if such granularity is needed.</p></li>
+<li><p><strong>Note</strong>: A generic file that is optionally ignored when the novel is exported.</p></li>
+</ul>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The layout granularity is entirely optional.
+In principle, you can write the entire novel in a single file with layout “Book”.
+You can also have a single file per chapter.</p>
+</div>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Project Structure</a><ul>
+<li><a class="reference internal" href="#importance-of-headings">Importance of Headings</a></li>
+<li><a class="reference internal" href="#tag-references">Tag References</a></li>
+<li><a class="reference internal" href="#novel-file-layout">Novel File Layout</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="projects.html"
+                        title="previous chapter">Novel Projects</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="notes.html"
+                        title="next chapter">Supporting Files (Notes)</a></p>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/structure.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="notes.html" title="Supporting Files (Notes)"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="projects.html" title="Novel Projects"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">novelWriter 0.6.1 documentation</a> &#187;</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2018-2020, Veronica Berglyd Olsen.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 3.0.4.
+    </div>
+  </body>
+</html>

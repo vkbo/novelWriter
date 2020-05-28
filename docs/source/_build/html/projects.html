@@ -1,0 +1,247 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>Novel Projects &#8212; novelWriter 0.6.1 documentation</title>
+    <link rel="stylesheet" href="_static/classic.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/doctools.js"></script>
+    <script src="_static/language_data.js"></script>
+    
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Project Structure" href="structure.html" />
+    <link rel="prev" title="User Interface" href="interface.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="structure.html" title="Project Structure"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="interface.html" title="User Interface"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">novelWriter 0.6.1 documentation</a> &#187;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="novel-projects">
+<h1>Novel Projects<a class="headerlink" href="#novel-projects" title="Permalink to this headline">¶</a></h1>
+<p>A novelWriter project requires a dedicated folder for storing its files on the local file system.
+See the Technical Information section for further details.</p>
+<p>A new project can be created from the Project menu by selecting <span class="menuselection">Project ‣ New Project</span>.
+A list of recently opened projects is maintained, and displayed in the “Open Project” dialog.</p>
+<p>The project specific settings are available in <span class="menuselection">Project ‣ Project Settings</span>.
+See further details below.</p>
+<div class="section" id="project-structure">
+<h2>Project Structure<a class="headerlink" href="#project-structure" title="Permalink to this headline">¶</a></h2>
+<p>Projects are structured into a set of root folders, visible in the left side tree view panel.</p>
+<p>The core novel files go into a root folder of type “Novel”.
+Other supporting files go into root folders of types “Plot”, “Characters”, “Locations”, “Timeline”, “Objects”, “Entities” or “Custom”.
+These other root folder types are intended for your notes on the various elements of your story.
+Using these is of course entirely optional.
+A new project will not have all of the root folders present, but you can add the ones you want from <span class="menuselection">Project ‣ Create Root Folder</span>.</p>
+<p>The root folders are intended for the following use, but aside from the Novel folder, no restrictions apply.
+You can use them however you want.
+The root folders correspond to the categories of tags that can be used.
+See the “Project Structure” section for further details.</p>
+<ul class="simple">
+<li><p><strong>Novel:</strong> The root folder of all text that goes into the final novel.
+This class of files have other rules and features than other files in the project.
+See the Novel Structure section for more details.</p></li>
+<li><p><strong>Plot:</strong> This is the root folder where main plots can be outlined.
+It is optional, but adding at least dummy files can be useful in order to tag plot elements for the Outline View.</p></li>
+<li><p><strong>Characters:</strong> Character files go in this root folder.
+These are especially important if one wants to use the Outline View to see which character appears where, and which part of the story is told from a specific character’s point-of-view.</p></li>
+<li><p><strong>Locations:</strong> Location is for various scene locations that one wants to track.</p></li>
+<li><p><strong>Timeline:</strong> If the story jumps in time within the same plot, this class of files can be used to track this.</p></li>
+<li><p><strong>Objects:</strong> Important objects in the story can be tracked here.</p></li>
+<li><p><strong>Entities:</strong> Entities, like organisations or companies, that are part of the plot, can be organised here.</p></li>
+<li><p><strong>Custom:</strong> The custom root folder can be used for tracking anything else not covered by the above options.</p></li>
+</ul>
+<p>Deleted files will be moved into a special “Trash” root folder.
+Files in the Trash folder can be deleted permanently.</p>
+<div class="section" id="orphaned-documents">
+<h3>Orphaned Documents<a class="headerlink" href="#orphaned-documents" title="Permalink to this headline">¶</a></h3>
+<p>In the event the editor crashes or otherwise exits without saving the project state, files that have been added to the project tree and are saved to disk will appear in a special “Orphaned Items” root folder next time the application is started.
+These orphaned files will not have any meta data associated with them, although novelWriter will try to restore the file label it had in the project tree. Other information will have to be set again, and the files moved back to the correct location in the project.</p>
+</div>
+<div class="section" id="project-lockfile">
+<h3>Project Lockfile<a class="headerlink" href="#project-lockfile" title="Permalink to this headline">¶</a></h3>
+<p>To prevent orphaned files caused by file conflicts when novelWriter projects are synced with file synchronisation tools, a project lockfile is written to the project folder.
+If you try to open a project which has such a file, you will be presented with a warning, and some information about where the project is potentially open.
+You will be give the option to ignore this warning, and continue opening the project.
+However, if multiple instances are in fact editing the same project, you are likely to cause inconsistencies and create diverging project files.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>If, for some reason, novelWriter crashes, the lock file may remain. If so, it is safe to ignore the lock file warning when re-opening the project.</p>
+</div>
+</div>
+<div class="section" id="using-folders-in-the-project-tree">
+<h3>Using Folders in the Project Tree<a class="headerlink" href="#using-folders-in-the-project-tree" title="Permalink to this headline">¶</a></h3>
+<p>Folders, aside from root folders, have no structural significance to the project.
+They are there purely as a way for the user to organise the files in meaningful sections and to be able to close them in the tree view.
+When processing the files in the novel, like for instance during export, the folders are ignored.</p>
+</div>
+</div>
+<div class="section" id="project-settings">
+<h2>Project Settings<a class="headerlink" href="#project-settings" title="Permalink to this headline">¶</a></h2>
+<p>The project settings can be accessed from the <span class="menuselection">Project ‣ Project Settings</span> menu entry.
+This will open a dialog box, with a set of tabs.</p>
+<div class="section" id="settings-tab">
+<h3>Settings Tab<a class="headerlink" href="#settings-tab" title="Permalink to this headline">¶</a></h3>
+<p>The Settings tab holds the project title and author settings.
+Working Title can be set to a different title than the Book Title.
+The difference between them is simply that the Working Title is used for the GUI (main window title) and for generating the backup files.
+The intention is that the working title should remain unchanged, while changing the final title has no effect on features relying on the project name.
+The Book Title is currently not ues for anything, so setting it is just for the benefit of the author.</p>
+<p>The Book Authors text box takes one author per line.</p>
+</div>
+<div class="section" id="status-tab">
+<h3>Status Tab<a class="headerlink" href="#status-tab" title="Permalink to this headline">¶</a></h3>
+<p>Each file of type “Novel” can be given a status level, signified by a coloured icon.
+These are purely there for the user’s convenience, and you are not required to use them for any other feature to work.
+The intention is to use this list to set what stage of writing you are on, although you can in principle make them whatever you want.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The status levels currently in use by a file cannot be deleted.</p>
+</div>
+</div>
+<div class="section" id="importance-tab">
+<h3>Importance Tab<a class="headerlink" href="#importance-tab" title="Permalink to this headline">¶</a></h3>
+<p>Each file of types “Plot”, “Character”, “World”, “Timeline”, “Object”, “Entity”, or “Custom”, can be given an importance level, signified by a coloured icon like for status level.
+These are also purely there for the user’s convenience, and you are not required to use them for any other feature to work.
+The intention is to use this list to set how important the character, plot element, or otherwise, is for the story.
+Again, these can in principle be used for whatever you want.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The importance levels currently in use by a file cannot be deleted.</p>
+</div>
+</div>
+<div class="section" id="auto-replace-tab">
+<h3>Auto-Replace Tab<a class="headerlink" href="#auto-replace-tab" title="Permalink to this headline">¶</a></h3>
+<p>A set of automatically replaced keywords can be added in this tab.
+The keywords in the left column wile be replaced by the text in the right column when documents are opened in the viewer.
+This will also be applied to exports when the feature is added.</p>
+<p>Note that a keyword cannot contain any spaces.
+The angle brackets are added by default, and when used in the text are a part of the keyword to be replaced.
+This is to ensure that parts of the text isn’t unintentionally replaced by the content of the list.</p>
+</div>
+</div>
+<div class="section" id="writing-files">
+<h2>Writing Files<a class="headerlink" href="#writing-files" title="Permalink to this headline">¶</a></h2>
+<p>New document files can be created from the Document menu, or by pressing <kbd class="kbd docutils literal notranslate">Ctrl-N</kbd> while in the tree view pane.
+This will create a new, empty file, and open the item settings dialog where the filename and various other settings can be set.
+This dialog can also be opened again later from either the menu, <span class="menuselection">Project -&gt; Edit</span> item, or by pressing <kbd class="kbd docutils literal notranslate">Ctrl-E</kbd> or <kbd class="kbd docutils literal notranslate">F2</kbd> with the item selected.</p>
+<p>The layout of the file is also defined here.
+For Novel files, the full list of layout options are available.
+For non-Novel files, only “Note” is available.</p>
+<p>See the Project Structure section for more details.</p>
+</div>
+<div class="section" id="backup">
+<h2>Backup<a class="headerlink" href="#backup" title="Permalink to this headline">¶</a></h2>
+<p>An automatic backup system is built into novelWriter.
+In order to use it, a backup path to where the backups are to be stored needs to be provided in <span class="menuselection">Tools ‣ Preferences</span>.
+Backups can be run automatically when a project is closed, which also implies it is run when the application is closed.
+Backups are date stamped zip files of the entire project folder, and are stored in a subfolder of the backup path with the same name as the project working title set in Project Settings.</p>
+<p>The backup feature, when configured, can also be run manually from the <span class="menuselection">Tools</span> menu.
+It is also possible to dissable automated backup for a given project in Project Settings.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>For the backup to be able to run, the Working Title must be set in Project Settings.
+This value is used to generate the folder name for the zip files.</p>
+</div>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Novel Projects</a><ul>
+<li><a class="reference internal" href="#project-structure">Project Structure</a><ul>
+<li><a class="reference internal" href="#orphaned-documents">Orphaned Documents</a></li>
+<li><a class="reference internal" href="#project-lockfile">Project Lockfile</a></li>
+<li><a class="reference internal" href="#using-folders-in-the-project-tree">Using Folders in the Project Tree</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#project-settings">Project Settings</a><ul>
+<li><a class="reference internal" href="#settings-tab">Settings Tab</a></li>
+<li><a class="reference internal" href="#status-tab">Status Tab</a></li>
+<li><a class="reference internal" href="#importance-tab">Importance Tab</a></li>
+<li><a class="reference internal" href="#auto-replace-tab">Auto-Replace Tab</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#writing-files">Writing Files</a></li>
+<li><a class="reference internal" href="#backup">Backup</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="interface.html"
+                        title="previous chapter">User Interface</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="structure.html"
+                        title="next chapter">Project Structure</a></p>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/projects.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="structure.html" title="Project Structure"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="interface.html" title="User Interface"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">novelWriter 0.6.1 documentation</a> &#187;</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2018-2020, Veronica Berglyd Olsen.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 3.0.4.
+    </div>
+  </body>
+</html>
