@@ -294,9 +294,6 @@ class GuiBuildNovel(QDialog):
         # ==============
         self.buttonForm = QGridLayout()
 
-        self.btnHelp = QPushButton("Help")
-        self.btnHelp.clicked.connect(self._showHelp)
-
         self.btnPrint = QPushButton("Print")
         self.btnPrint.clicked.connect(self._printDocument)
 
