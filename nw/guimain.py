@@ -553,7 +553,7 @@ class GuiMain(QMainWindow):
 
         if self.docEditor.theHandle is None:
             self.makeAlert(
-                ["Please open a document to import the text file into."],
+                "Please open a document to import the text file into.",
                 nwAlert.ERROR
             )
             return False
@@ -782,7 +782,7 @@ class GuiMain(QMainWindow):
         0 = info, 1 = warning, and 2 = error.
         """
         if isinstance(theMessage, list):
-            popMsg = " ".join(theMessage)
+            popMsg = "<br>".join(theMessage)
             logMsg = theMessage
         else:
             popMsg = theMessage

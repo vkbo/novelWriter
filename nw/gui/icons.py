@@ -249,7 +249,9 @@ class GuiIcons:
             try:
                 confParser.read_file(open(themeConf, mode="r", encoding="utf8"))
             except Exception as e:
-                self.theParent.makeAlert(["Could not load theme config file.",str(e)],nwAlert.ERROR)
+                self.theParent.makeAlert(
+                    ["Could not load theme config file.",str(e)], nwAlert.ERROR
+                )
                 continue
             themeName = ""
             if confParser.has_section("Main"):

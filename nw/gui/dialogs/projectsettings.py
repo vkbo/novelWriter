@@ -362,7 +362,9 @@ class GuiProjectEditStatus(QWidget):
                 self.listBox.takeItem(iRow)
                 self.colChanged = True
             else:
-                self.theParent.makeAlert("Cannot delete status item that is in use.",nwAlert.ERROR)
+                self.theParent.makeAlert(
+                    "Cannot delete status item that is in use.", nwAlert.ERROR
+                )
         return
 
     def _saveItem(self):

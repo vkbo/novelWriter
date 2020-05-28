@@ -113,7 +113,7 @@ class NWProject():
         CUSTOM, and always have parent handle set to None.
         """
         if not self.projTree.checkRootUnique(rootClass):
-            self.makeAlert("Duplicate root item detected!", nwAlert.ERROR)
+            self.makeAlert("Duplicate root item detected.", nwAlert.ERROR)
             return None
         newItem = NWItem(self)
         newItem.setName(rootName)
@@ -995,7 +995,7 @@ class NWProject():
         # Report status
         if len(orphanFiles) > 0:
             self.makeAlert(
-                "Found %d orphaned file(s) in project folder!" % len(orphanFiles),
+                "Found %d orphaned file(s) in project folder." % len(orphanFiles),
                 nwAlert.WARN
             )
         else:
