@@ -167,7 +167,7 @@ class GuiDocSplit(QDialog):
                 elif wTitle.startswith("### "):
                     itemLayout = nwItemLayout.SCENE
                 elif wTitle.startswith("#### "):
-                    itemLayout = nwItemLayout.PAGE
+                    itemLayout = nwItemLayout.SCENE
 
             wTitle = wTitle.lstrip("#")
             wTitle = wTitle.strip()
