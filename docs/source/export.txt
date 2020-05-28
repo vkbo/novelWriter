@@ -13,12 +13,12 @@ This is done through a series of keyword-replace steps.
 
 The keyword ``%title%`` will always be replaced by the text you put after the ``#`` characters in your document.
 
-The keywords ``%chnum%`` and ``%chnumword%`` is replaced by a number, or a number word, respectively.
+The keywords ``%ch%`` and ``%chw%`` is replaced by a number, or a number word, respectively.
 The number is incremented by one each time the build tool sees a new heading of level two in a file with layout "Chapter".
 If the file has layout "Unnumbered", the counter is not incremented.
 the latter is useful for for instance Prologue and Epilogue chapters.
 
-Likewise, the keywords ``%scnum%`` and ``%scabsnum%`` are number counters for scene files.
+Likewise, the keywords ``%sc%`` and ``%sca%`` are number counters for scene files.
 These are incremented each time a heading of level three is encountered.
 The former keyword is reset to one for each new chapter, while the latter is not reset but counts from first scene encountered.
 

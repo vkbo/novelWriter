@@ -39,7 +39,7 @@ from PyQt5.QtGui import (
 from PyQt5.QtWidgets import (
     QDialog, QVBoxLayout, QHBoxLayout, QTextBrowser, QPushButton, QLabel,
     QLineEdit, QGroupBox, QGridLayout, QProgressBar, QMenu, QAction,
-    QFileDialog, QFontComboBox, QSpinBox
+    QFileDialog, QFontComboBox, QSpinBox, QDialogButtonBox
 )
 
 from nw.gui.additions import QSwitch
@@ -75,11 +75,11 @@ class GuiBuildNovel(QDialog):
         self.nwdText   = [] # List of markdown documents
 
         self.setWindowTitle("Build Novel Project")
-        self.setMinimumWidth(800)
+        self.setMinimumWidth(900)
         self.setMinimumHeight(800)
 
         self.resize(
-            self.optState.getInt("GuiBuildNovel", "winWidth", 800),
+            self.optState.getInt("GuiBuildNovel", "winWidth", 900),
             self.optState.getInt("GuiBuildNovel", "winHeight", 800)
         )
 
@@ -95,30 +95,61 @@ class GuiBuildNovel(QDialog):
         self.titleForm  = QGridLayout(self)
         self.titleGroup.setLayout(self.titleForm)
 
+        fmtHelp = (
+            r"<b>Formatting Codes:</b><br>"
+            r"%title% for the title as set in the document<br>"
+            r"%ch% for chapter number (1, 2, 3)<br>"
+            r"%chw% for chapter number as a word (one, two)<br>"
+            r"%sc% for scene number within chapter<br>"
+            r"%sca% for scene number within novel"
+        )
+        fmtScHelp = (
+            r"<br><br>"
+            r"Leave blank to skip this heading, or set to a static text, like "
+            r"for instance '* * *', to make a separator. The separator will "
+            r"be centred automatically and only appear between sections of "
+            r"the same type."
+        )
+
         self.fmtTitle = QLineEdit()
         self.fmtTitle.setMaxLength(200)
-        self.fmtTitle.setFixedWidth(200)
-        self.fmtTitle.setText(self.theProject.titleFormat["title"])
+        self.fmtTitle.setFixedWidth(220)
+        self.fmtTitle.setToolTip(fmtHelp)
+        self.fmtTitle.setText(
+            self._reFmtCodes(self.theProject.titleFormat["title"])
+        )
 
         self.fmtChapter = QLineEdit()
         self.fmtChapter.setMaxLength(200)
-        self.fmtChapter.setFixedWidth(200)
-        self.fmtChapter.setText(self.theProject.titleFormat["chapter"])
+        self.fmtChapter.setFixedWidth(220)
+        self.fmtChapter.setToolTip(fmtHelp)
+        self.fmtChapter.setText(
+            self._reFmtCodes(self.theProject.titleFormat["chapter"])
+        )
 
         self.fmtUnnumbered = QLineEdit()
         self.fmtUnnumbered.setMaxLength(200)
-        self.fmtUnnumbered.setFixedWidth(200)
-        self.fmtUnnumbered.setText(self.theProject.titleFormat["unnumbered"])
+        self.fmtUnnumbered.setFixedWidth(220)
+        self.fmtUnnumbered.setToolTip(fmtHelp)
+        self.fmtUnnumbered.setText(
+            self._reFmtCodes(self.theProject.titleFormat["unnumbered"])
+        )
 
         self.fmtScene = QLineEdit()
         self.fmtScene.setMaxLength(200)
-        self.fmtScene.setFixedWidth(200)
-        self.fmtScene.setText(self.theProject.titleFormat["scene"])
+        self.fmtScene.setFixedWidth(220)
+        self.fmtScene.setToolTip(fmtHelp + fmtScHelp)
+        self.fmtScene.setText(
+            self._reFmtCodes(self.theProject.titleFormat["scene"])
+        )
 
         self.fmtSection = QLineEdit()
         self.fmtSection.setMaxLength(200)
-        self.fmtSection.setFixedWidth(200)
-        self.fmtSection.setText(self.theProject.titleFormat["section"])
+        self.fmtSection.setFixedWidth(220)
+        self.fmtSection.setToolTip(fmtHelp + fmtScHelp)
+        self.fmtSection.setText(
+            self._reFmtCodes(self.theProject.titleFormat["section"])
+        )
 
         self.titleForm.addWidget(QLabel("Title"),      0, 0, 1, 1, Qt.AlignLeft)
         self.titleForm.addWidget(self.fmtTitle,        0, 1, 1, 1, Qt.AlignRight)
@@ -141,7 +172,8 @@ class GuiBuildNovel(QDialog):
         self.textGroup.setLayout(self.textForm)
 
         self.textFont = QFontComboBox()
-        self.textFont.setFixedWidth(200)
+        self.textFont.setFixedWidth(220)
+        self.textFont.setToolTip("The font is used for PDF and printing. Other formats have no font set.")
         self.textFont.setCurrentFont(
             QFont(self.optState.getString("GuiBuildNovel", "textFont", self.mainConf.textFont))
         )
@@ -151,11 +183,13 @@ class GuiBuildNovel(QDialog):
         self.textSize.setMinimum(5)
         self.textSize.setMaximum(48)
         self.textSize.setSingleStep(1)
+        self.textSize.setToolTip("The size is used for PDF and printing. Other formats have no size set.")
         self.textSize.setValue(
             self.optState.getInt("GuiBuildNovel", "textSize", self.mainConf.textSize)
         )
 
         self.justifyText = QSwitch()
+        self.justifyText.setToolTip("Applies to PDF, printing, HTML, and Open Document exports.")
         self.justifyText.setChecked(
             self.optState.getBool("GuiBuildNovel", "justifyText", False)
         )
@@ -177,12 +211,15 @@ class GuiBuildNovel(QDialog):
         self.includeGroup.setLayout(self.includeForm)
 
         self.includeSynopsis = QSwitch()
+        self.includeSynopsis.setToolTip("Include synopsis type comments in the output.")
         self.includeSynopsis.setChecked(self.theProject.titleFormat["withSynopsis"])
 
         self.includeComments = QSwitch()
+        self.includeComments.setToolTip("Include plain comments in the output.")
         self.includeComments.setChecked(self.theProject.titleFormat["withComments"])
 
         self.includeKeywords = QSwitch()
+        self.includeKeywords.setToolTip("Include meta keywords (tags, references) in the output.")
         self.includeKeywords.setChecked(self.theProject.titleFormat["withKeywords"])
 
         self.includeForm.addWidget(QLabel("Include synopsis"), 0, 0, 1, 1, Qt.AlignLeft)
@@ -202,21 +239,34 @@ class GuiBuildNovel(QDialog):
         self.addsGroup.setLayout(self.addsForm)
 
         self.novelFiles = QSwitch()
+        self.novelFiles.setToolTip(
+            "Include files with layouts 'Book', 'Page', 'Partition', "
+            "'Chapter', 'Unnumbered', and 'Scene'."
+        )
         self.novelFiles.setChecked(
             self.optState.getBool("GuiBuildNovel", "addNovel", True)
         )
 
         self.noteFiles = QSwitch()
+        self.noteFiles.setToolTip("Include files with layout 'Note'.")
         self.noteFiles.setChecked(
             self.optState.getBool("GuiBuildNovel", "addNotes", False)
         )
 
         self.ignoreFlag = QSwitch()
+        self.ignoreFlag.setToolTip(
+            "Ignore the 'Include when building project' setting and include "
+            "all files in the output."
+        )
         self.ignoreFlag.setChecked(
             self.optState.getBool("GuiBuildNovel", "ignoreFlag", False)
         )
 
         self.excludeBody = QSwitch()
+        self.excludeBody.setToolTip(
+            "Exclude body text in the output. Combine with 'Include synopsis' "
+            "for making outline."
+        )
         self.excludeBody.setChecked(
             self.optState.getBool("GuiBuildNovel", "excludeBody", False)
         )
@@ -279,13 +329,12 @@ class GuiBuildNovel(QDialog):
         self.saveTXT.triggered.connect(lambda: self._saveDocument(self.FMT_TXT))
         self.saveMenu.addAction(self.saveTXT)
 
-        self.btnClose = QPushButton("Close")
-        self.btnClose.clicked.connect(self._doClose)
-
-        self.buttonForm.addWidget(self.btnHelp,  0, 0)
+        self.buttonForm.addWidget(self.btnSave,  0, 0)
         self.buttonForm.addWidget(self.btnPrint, 0, 1)
-        self.buttonForm.addWidget(self.btnSave,  1, 0)
-        self.buttonForm.addWidget(self.btnClose, 1, 1)
+
+        # Buttons
+        self.buttonBox = QDialogButtonBox(QDialogButtonBox.Close)
+        self.buttonBox.rejected.connect(self._doClose)
 
         # Assemble GUI
         # ============
@@ -303,6 +352,7 @@ class GuiBuildNovel(QDialog):
         self.innerBox.addWidget(self.docView)
 
         self.outerBox.addLayout(self.innerBox)
+        self.outerBox.addWidget(self.buttonBox)
         self.setLayout(self.outerBox)
 
         self.innerBox.setStretch(0, 0)
@@ -661,21 +711,14 @@ class GuiBuildNovel(QDialog):
 
         return
 
-    def _showHelp(self):
-        """Generate a help text and show it in the document window.
+    def _reFmtCodes(self, theFormat):
+        """Translates old formatting codes to new ones.
         """
-        docName = "exportHelp_%s.htm" % self.mainConf.guiLang
-        docPath = path.join(self.mainConf.assetPath, "text", docName)
-        if path.isfile(docPath):
-            with open(docPath, mode="r", encoding="utf8") as inFile:
-                helpText = inFile.read()
-            self.docView.setStyleSheet()
-            self.docView.setContent(helpText)
-        else:
-            self.theParent.makeAlert(
-                "Could not open help text file for Build Project.", nwAlert.ERROR
-            )
-        return
+        theFormat = theFormat.replace(r"%chnum%",     r"%ch%")
+        theFormat = theFormat.replace(r"%scnum%",     r"%sc%")
+        theFormat = theFormat.replace(r"%scabsnum%",  r"%sca%")
+        theFormat = theFormat.replace(r"%chnumword%", r"%chw%")
+        return theFormat
 
 # END Class GuiBuildNovel
 
