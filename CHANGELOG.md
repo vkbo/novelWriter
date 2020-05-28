@@ -11,7 +11,7 @@
 * Dropped the usage of .bak copies of document files. This was the old method to ensure the document data was written successfully, but it uses twice the storage space. Instead, writing via a temp file is the safe way to save files. PR #248.
 
 
-## Version 0.6.2 [2020-xx-xx]
+## Version 0.6.2 [2020-05-28]
 
 **Bugfixes**
 
