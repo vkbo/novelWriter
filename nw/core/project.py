@@ -33,7 +33,7 @@
 import logging
 import nw
 
-from os import path, mkdir, listdir, unlink, rename
+from os import path, mkdir, listdir, unlink, rename, rmdir
 from lxml import etree
 from hashlib import sha256
 from time import time
@@ -74,6 +74,7 @@ class NWProject():
         # Class Settings
         self.projPath = None # The full path to where the currently open project is saved
         self.projMeta = None # The full path to the project's meta data folder
+        self.projData = None # The full path to the project's data folder
         self.projDict = None # The spell check dictionary
         self.projFile = None # The file name of the project main XML file
 
@@ -195,6 +196,7 @@ class NWProject():
         # Project Settings
         self.projPath    = None
         self.projMeta    = None
+        self.projData    = None
         self.projDict    = None
         self.projFile    = nwFiles.PROJ_FILE
         self.projName    = ""
@@ -247,9 +249,12 @@ class NWProject():
         logger.debug("Opening project: %s" % self.projPath)
 
         self.projMeta = path.join(self.projPath,"meta")
+        self.projData = path.join(self.projPath,"content")
         self.projDict = path.join(self.projMeta, nwFiles.PROJ_DICT)
 
         if not self._checkFolder(self.projMeta):
+            return False
+        if not self._checkFolder(self.projData):
             return False
 
         if overrideLock:
@@ -291,7 +296,7 @@ class NWProject():
                 self.clearProject()
                 return False
 
-        xRoot   = nwXML.getroot()
+        xRoot = nwXML.getroot()
         nwxRoot = xRoot.tag
 
         appVersion = "Unknown"
@@ -314,13 +319,40 @@ class NWProject():
         logger.verbose("XML root is %s" % nwxRoot)
         logger.verbose("File version is %s" % fileVersion)
 
-        if not nwxRoot == "novelWriterXML" or not fileVersion == "1.0":
+        # Check File Type
+        # ===============
+        if not nwxRoot == "novelWriterXML":
             self.makeAlert(
-                "Project file does not appear to be a novelWriterXML file version 1.0",
+                "Project file does not appear to be a novelWriterXML file.",
                 nwAlert.ERROR
             )
             return False
 
+        # Check Project Storage Version
+        # =============================
+        if fileVersion == "1.0":
+            msgBox = QMessageBox()
+            msgRes = msgBox.question(self.theParent, "Old Project Version", (
+                "The project file and data is created by a %s version lower than 0.7. "
+                "Do you want to upgrade the project to the most recent format?<br><br>"
+                "Note that after the upgrade, you cannot open the project with an older "
+                "version of novelWriter any more, so make sure you have a recent backup."
+            ) % nw.__package__)
+            if msgRes == QMessageBox.Yes:
+                self._updateStorage()
+            else:
+                return False
+        elif fileVersion != "1.1":
+            self.makeAlert((
+                "Unknown or unsupported %s project format. "
+                "The project cannot be opened by this version of %s."
+            ) % (
+                nw.__package__, nw.__package__
+            ), nwAlert.ERROR)
+            return False
+
+        # Check novelWriter Version
+        # =========================
         if int(hexVersion, 16) > int(nw.__hexversion__, 16) and self.mainConf.showGUI:
             msgBox = QMessageBox()
             msgRes = msgBox.question(self.theParent, "Version Conflict", (
@@ -333,6 +365,8 @@ class NWProject():
             if msgRes != QMessageBox.Yes:
                 return False
 
+        # Start Parsing XML
+        # =================
         for xChild in xRoot:
             if xChild.tag == "project":
                 logger.debug("Found project meta")
@@ -404,15 +438,20 @@ class NWProject():
         file.
         """
         if self.projPath is None:
-            self.makeAlert("Project path not set, cannot save.", nwAlert.ERROR)
+            self.makeAlert(
+                "Project path not set, cannot save project.", nwAlert.ERROR
+            )
             return False
 
-        self.projMeta = path.join(self.projPath,"meta")
+        self.projMeta = path.join(self.projPath, "meta")
+        self.projData = path.join(self.projPath, "content")
         saveTime = time()
 
         if not self._checkFolder(self.projPath):
             return False
         if not self._checkFolder(self.projMeta):
+            return False
+        if not self._checkFolder(self.projData):
             return False
 
         logger.debug("Saving project: %s" % self.projPath)
@@ -427,7 +466,7 @@ class NWProject():
         nwXML = etree.Element("novelWriterXML",attrib={
             "appVersion"  : str(nw.__version__),
             "hexVersion"  : str(nw.__hexversion__),
-            "fileVersion" : "1.0",
+            "fileVersion" : "1.1",
             "saveCount"   : str(self.saveCount),
             "autoCount"   : str(self.autoCount),
             "timeStamp"   : formatTimeStamp(saveTime),
@@ -1015,6 +1054,55 @@ class NWProject():
             ), file=outFile)
 
         return True
+
+    def _updateStorage(self):
+        """Updates the project storage folder from 1.0 to 1.1.
+        """
+        contDir = path.join(self.projPath, "content")
+        self._checkFolder(contDir)
+        errList = []
+
+        for projItem in listdir(self.projPath):
+            itemPath = path.join(self.projPath, projItem)
+            if not path.isdir(itemPath) or not projItem.startswith("data_"):
+                continue
+            for dataFile in listdir(itemPath):
+                dataPath = path.join(itemPath, dataFile)
+                if dataFile.endswith(".bak"):
+                    try:
+                        unlink(dataPath)
+                        logger.info("Deleted file: %s" % dataPath)
+                    except:
+                        errList.append("Failed to delete: %s" % dataPath)
+
+                elif dataFile.endswith(".nwd") and len(dataFile) == 21:
+                    tHandle = projItem[-1]+dataFile[:12]
+                    newPath = path.join(contDir, tHandle+".nwd")
+                    try:
+                        rename(dataPath, newPath)
+                        logger.info("Moved file: %s" % dataPath)
+                        logger.info("New location: %s" % newPath)
+                    except:
+                        errList.append("Failed to move: %s" % dataPath)
+
+                else:
+                    newPath = path.join(self.projPath, "unknown_"+dataFile)
+                    try:
+                        rename(dataPath, newPath)
+                        logger.info("Moved file: %s" % dataPath)
+                        logger.info("New location: %s" % newPath)
+                    except:
+                        errList.append("Failed to move: %s" % dataPath)
+            try:
+                rmdir(itemPath)
+                logger.info("Removed folder: %s" % itemPath)
+            except:
+                errList.append("Failed to delete: %s" % itemPath)
+
+        if errList:
+            self.makeAlert(errList, nwAlert.ERROR)
+
+        return
 
 # END Class NWProject
 

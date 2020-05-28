@@ -89,7 +89,7 @@ def projectMaintenance(theProject):
     if path.isdir(theProject.projPath):
         cacheDir = path.join(theProject.projPath, "cache")
         if path.isdir(cacheDir):
-            logger.info("Deprecated cache folder found")
+            logger.info("Deprecated cache folder content found")
             rmList = []
             for i in range(10):
                 rmList.append(path.join(cacheDir, "nwProject.nwx.%d" % i))
@@ -101,11 +101,6 @@ def projectMaintenance(theProject):
                         unlink(rmFile)
                     except Exception as e:
                         logger.error(str(e))
-            logger.info("Deleting: %s" % cacheDir)
-            try:
-                rmdir(cacheDir)
-            except Exception as e:
-                logger.error(str(e))
 
     # Remove no longer used meta files
     rmList = []
