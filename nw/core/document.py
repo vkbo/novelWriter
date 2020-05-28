@@ -37,8 +37,6 @@ logger = logging.getLogger(__name__)
 
 class NWDoc():
 
-    FILE_MN = "main.nwd"
-
     def __init__(self, theProject, theParent):
 
         self.mainConf    = nw.CONFIG
@@ -93,8 +91,9 @@ class NWDoc():
             if self.theItem.parHandle == self.theProject.projTree.trashRoot():
                 self.docEditable = False
 
-        docDir, docFile = self._assemblePath(self.docHandle, self.FILE_MN)
-        self.fileLoc = path.join(docDir,docFile)
+        docDir = "content"
+        docFile = self.docHandle+".nwd"
+        self.fileLoc = path.join(docDir, docFile)
         logger.debug("Opening document %s" % self.fileLoc)
         dataDir = path.join(self.theProject.projPath, docDir)
         docPath = path.join(dataDir, docFile)
@@ -139,8 +138,9 @@ class NWDoc():
         if self.docHandle is None or not self.docEditable:
             return False
 
-        docDir, docFile = self._assemblePath(self.docHandle, self.FILE_MN)
-        logger.debug("Saving document %s" % path.join(docDir,docFile))
+        docDir = "content"
+        docFile = self.docHandle+".nwd"
+        logger.debug("Saving document %s" % path.join(docDir, docFile))
         dataPath = path.join(self.theProject.projPath, docDir)
         docPath  = path.join(dataPath, docFile)
         if not path.isdir(dataPath):
@@ -159,12 +159,6 @@ class NWDoc():
             self.makeAlert(["Could not save document.",str(e)], nwAlert.ERROR)
             return False
 
-        # Remove bak files from old file save method, if one exists
-        # This part can eventually be removed
-        docBack = path.join(dataPath, docFile[:-3]+"bak")
-        if path.isfile(docBack):
-            unlink(docBack)
-
         # If we're here, the file was successfully saved, so we can
         # replace the temp file with the actual file
         if path.isfile(docPath):
@@ -179,7 +173,8 @@ class NWDoc():
         """Permanently delete a document source file and its backups
         from the project data folder.
         """
-        docDir, docFile = self._assemblePath(tHandle, self.FILE_MN)
+        docDir = "content"
+        docFile = self.docHandle+".nwd"
         dataPath = path.join(self.theProject.projPath, docDir)
         chkList = []
         chkList.append(path.join(dataPath, docFile))
@@ -225,19 +220,5 @@ class NWDoc():
                 break
 
         return theMeta, thePath
-
-    ##
-    #  Internal Functions
-    ##
-
-    @staticmethod
-    def _assemblePath(tHandle, docExt):
-        """Assemble the file path for a given handle.
-        """
-        if tHandle is None:
-            return None, None
-        docDir  = "data_"+tHandle[0]
-        docFile = tHandle[1:13]+"_"+docExt
-        return docDir, docFile
 
 # END Class NWDoc

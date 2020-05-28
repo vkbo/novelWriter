@@ -2,6 +2,10 @@
 
 ## Version 0.7 [2020-xx-xx]
 
+**Project Structure**
+
+* The project folder structure has been simplified and cleaned up. We also now pin the main entry values in the main XML file. the XML file is now given version 1.1, and locking it to only be opened by version 0.7 or later. The project is converted on first open, if the user approves. PR #253.
+
 **Other Changes**
 
 * Dropped the usage of .bak copies of document files. This was the old method to ensure the document data was written successfully, but it uses twice the storage space. Instead, writing via a temp file is the safe way to save files. PR #248.
