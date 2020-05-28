@@ -976,29 +976,20 @@ class NWProject():
         if self.projPath is None:
             return
 
-        # First, scan the project data folders
-        itemList = []
-        for subItem in listdir(self.projPath):
-            if subItem[:5] != "data_":
-                continue
-            dataDir = path.join(self.projPath,subItem)
-            for subFile in listdir(dataDir):
-                if subFile[-4:] == ".nwd":
-                    newItem = path.join(subItem,subFile)
-                    itemList.append(newItem)
-
-        # Then check the valid files
+        # Then check the files in the data folder
         orphanFiles = []
-        for fileItem in itemList:
-            if len(fileItem) != 28:
-                # Just to be safe, shouldn't happen
+        for fileItem in listdir(self.projData):
+            if not fileItem.endswith(".nwd"):
                 logger.warning("Skipping file %s" % fileItem)
                 continue
-            fHandle = fileItem[5]+fileItem[7:19]
+            if len(fileItem) != 17:
+                logger.warning("Skipping file %s" % fileItem)
+                continue
+            fHandle = fileItem[:13]
             if fHandle in self.projTree:
-                logger.debug("Checking file %s, handle %s: OK" % (fileItem,fHandle))
+                logger.debug("Checking file %s, handle %s: OK" % (fileItem, fHandle))
             else:
-                logger.debug("Checking file %s, handle %s: Orphaned" % (fileItem,fHandle))
+                logger.debug("Checking file %s, handle %s: Orphaned" % (fileItem, fHandle))
                 orphanFiles.append(fHandle)
 
         # Report status
