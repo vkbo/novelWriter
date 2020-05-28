@@ -4,7 +4,7 @@
 
 **Project Structure**
 
-* The project folder structure has been simplified and cleaned up. We also now pin the main entry values in the main XML file. the XML file is now given version 1.1, and locking it to only be opened by version 0.7 or later. The project is converted on first open, if the user approves. PR #253.
+* The project folder structure has been simplified and cleaned up. We also now freeze the main entry values in the main XML file. The XML file is now given version 1.1, and no further core changes to its structure will be made without bumping this version. We're also locking it to only be opened by version 0.7 or later. An old project file is converted on first open. PR #253.
 
 **Other Changes**
 
