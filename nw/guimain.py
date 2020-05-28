@@ -42,7 +42,7 @@ from PyQt5.QtWidgets import (
 from nw.gui import (
     GuiMainMenu, GuiMainStatus, GuiTheme, GuiDocTree, GuiDocEditor,
     GuiDocViewer, GuiDocDetails, GuiSearchBar, GuiNoticeBar, GuiDocViewDetails,
-    GuiConfigEditor, GuiProjectSettings, GuiItemEditor, GuiProjectOutline,
+    GuiPreferences, GuiProjectSettings, GuiItemEditor, GuiProjectOutline,
     GuiSessionLogView, GuiDocMerge, GuiDocSplit, GuiProjectLoad, GuiBuildNovel
 )
 from nw.core import NWProject, NWDoc, NWIndex
@@ -741,7 +741,7 @@ class GuiMain(QMainWindow):
     def editConfigDialog(self):
         """Open the preferences dialog.
         """
-        dlgConf = GuiConfigEditor(self, self.theProject)
+        dlgConf = GuiPreferences(self, self.theProject)
         if dlgConf.exec_() == QDialog.Accepted:
             logger.debug("Applying new preferences")
             self.initMain()
