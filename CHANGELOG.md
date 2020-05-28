@@ -1,6 +1,6 @@
 # novelWriter ChangeLog
 
-## Version 0.6.2 [2020-xx-xx]
+## Version 0.6.2 [2020-05-28]
 
 **Bugfixes**
 
