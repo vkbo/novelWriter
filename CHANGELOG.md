@@ -15,19 +15,20 @@
 
 **Bugfixes**
 
-* It was possible to have the backup folder set to the same folder as the project, resulting in an infinite loop when `make_archive` was building the zip file. This crash of paths is now checked before moving to the archive step. Issue #240, PR #241.
-* Fixed an issue with the Build Novel Project tool on Ubuntu 16.04 LTS where the dialog wouldn't open. PR #246.
+* It was possible to have the backup folder set to the same folder as the project, resulting in an infinite loop when `make_archive` was building the zip file. This crash of paths is now checked for before moving to the archive step. Issue #240, PR #241.
+* Fixed an issue with the Build Novel Project tool on Ubuntu 16.04 LTS where the dialog wouldn't open. Issue #243, PR #246.
 
 **User Interface**
 
 * Renamed the "Generate Preview" button on the "Build Novel Project" tool to "Build Novel Project". You must actually click this to be able to export or print. Issue #237, PR #238.
 * Added font family and font size selectors to the "Build Novel Project" tool. You may want a different print font than used in the editor itself. Issue #230, PR #238.
-* Removed the "Help" feature in "Build Novel Project" and instead written detailed tooltips. Issue #250, PR #249.
-* Changed the title formnatting codes for "Build Novel Project" to something less verbose. The old codes are translated automatically. Issue #247, PR #249.
-* A margin of the viewport (outside the document) has been added to the document editor and viewer to make room for the document title bar. Previously, the title bar would sit on top of the document top margin, which would sometimes hide text that would otherwise be visible. PR #236.
-* Fixed some alignment issue for the status icon on the project tree details panel. Mentioned in #235, PR #239.
+* Removed the "Help" feature in "Build Novel Project" and instead added detailed tooltips. Issue #250, PR #249.
+* Changed the title formatting codes for "Build Novel Project" to something less verbose. The old codes are translated automatically. Issue #247, PR #249.
+* A margin of the viewport (outside the document) has been added to the document editor and viewer to make room for the document title bar. Previously, the title bar would sit on top of the document's top margin, which would sometimes hide text that would otherwise be visible (when scrolling). PR #236.
+* Fixed an alignment issue for the status icon on the project tree details panel. Mentioned in #235, PR #239.
 * Removed the `Xo` icon for NO_LAYOUT in the project tree details panel. Mentioned in #235, PR #239.
-* Added a Details tab to the Project Settings dialog, which also lists the project path. Issue #242, PR #239.
+* Added a "Details" tab to the "Project Settings" dialog, which also lists the project path. Issue #242, PR #239.
+
 
 
 ## Version 0.6.1 [2020-05-25]
@@ -62,7 +63,7 @@
 
 **User Interface**
 
-* The Export Tool has been removed and replaced by a new tool called "Build Novel Project". The new tool has the same filtering options as the Export Tool, but with more formatting options for titles. It also has a preview window to display the generated document. A Save As button provides exports to HTML, novelWriter Markdown. plain text, PDF and Open Document format. LaTeX export has not been ported over, and interfacing with Pandoc is no longer supported either. Although, as before, the HTML export can be converted with Pandoc to other formats outside of novelWriter. The new tool also supports printing. PRs #204, #220 and #221.
+* The Export Tool has been removed and replaced by a new tool called "Build Novel Project". The new tool has the same filtering options as the Export Tool, but with more formatting options for titles. It also has a preview window to display the generated document. A Save As button provides exports to HTML, novelWriter Markdown, plain text, PDF and Open Document format. LaTeX export has not been ported over, and interfacing with Pandoc is no longer supported either. Although, as before, the HTML export can be converted with Pandoc to other formats outside of novelWriter. The new tool also supports printing. PRs #204, #220 and #221.
 * The Project Settings, Preferences, Item Editor, Merge Documents, and Split Documents dialogs have been redesigned. The ones with tabs now have vertical tabs on the left with horizontal labels. The dialog design should be more compact, and have room for more tabs for future settings. PR #212.
 * A new icon, as well as a mimetype icon for the project files, have been designed and added to the app. PRs #213 and #214.
 * The About dialog has been completely redesigned to allow more information. PR #217.
