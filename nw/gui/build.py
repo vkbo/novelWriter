@@ -34,12 +34,12 @@ from time import time
 from PyQt5.QtCore import Qt, QByteArray
 from PyQt5.QtPrintSupport import QPrinter, QPrintPreviewDialog
 from PyQt5.QtGui import (
-    QTextOption, QPalette, QColor, QTextDocumentWriter, QFont
+    QPalette, QColor, QTextDocumentWriter, QFont
 )
 from PyQt5.QtWidgets import (
     QDialog, QVBoxLayout, QHBoxLayout, QTextBrowser, QPushButton, QLabel,
     QLineEdit, QGroupBox, QGridLayout, QProgressBar, QMenu, QAction,
-    QFileDialog, QFontComboBox, QSpinBox, QDialogButtonBox
+    QFileDialog, QFontComboBox, QSpinBox
 )
 
 from nw.gui.additions import QSwitch
