@@ -401,6 +401,8 @@ class GuiDocEditor(QTextEdit):
     def setCursorPosition(self, thePosition):
         """Move the cursor to a given position in the document.
         """
+        if not isinstance(thePosition, int):
+            return False
         if thePosition >= 0:
             theCursor = self.textCursor()
             theCursor.setPosition(thePosition)
@@ -416,12 +418,13 @@ class GuiDocEditor(QTextEdit):
     def setCursorLine(self, theLine):
         """Move the cursor to a given line in the document.
         """
-        if theLine is None:
+        if not isinstance(theLine, int):
             return False
         if theLine >= 0:
             theBlock = self.qDocument.findBlockByLineNumber(theLine)
             if theBlock:
                 self.setCursorPosition(theBlock.position())
+                logger.verbose("Cursor moved to line %d" % theLine)
         return True
 
     ##

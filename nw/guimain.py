@@ -485,7 +485,7 @@ class GuiMain(QMainWindow):
             self.docEditor.saveText()
         return True
 
-    def viewDocument(self, tHandle=None):
+    def viewDocument(self, tHandle=None, navLink=None):
         """Load a document for viewing in the view panel.
         """
         if tHandle is None:
@@ -503,13 +503,15 @@ class GuiMain(QMainWindow):
         # Make sure main tab is in Editor view
         self.tabWidget.setCurrentWidget(self.splitView)
 
-        if self.docViewer.loadText(tHandle) and not self.viewPane.isVisible():
-            bPos = self.splitMain.sizes()
-            self.viewPane.setVisible(True)
-            vPos = [0,0]
-            vPos[0] = int(bPos[1]/2)
-            vPos[1] = bPos[1]-vPos[0]
-            self.splitView.setSizes(vPos)
+        if self.docViewer.loadText(tHandle):
+            if not self.viewPane.isVisible():
+                bPos = self.splitMain.sizes()
+                self.viewPane.setVisible(True)
+                vPos = [0,0]
+                vPos[0] = int(bPos[1]/2)
+                vPos[1] = bPos[1]-vPos[0]
+                self.splitView.setSizes(vPos)
+            self.docViewer.navigateTo(navLink)
 
         return True
 
