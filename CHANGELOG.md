@@ -2,11 +2,16 @@
 
 ## Version 0.7 [2020-xx-xx]
 
+**Project Structure**
+
+* The project folder structure has been simplified and cleaned up. We also now pin the main entry values in the main XML file. the XML file is now given version 1.1, and locking it to only be opened by version 0.7 or later. The project is converted on first open, if the user approves. PR #253.
+
 **Other Changes**
 
 * Dropped the usage of .bak copies of document files. This was the old method to ensure the document data was written successfully, but it uses twice the storage space. Instead, writing via a temp file is the safe way to save files. PR #248.
 
-## Not Yet Released
+
+## Version 0.6.2 [2020-xx-xx]
 
 **Bugfixes**
 
@@ -17,10 +22,13 @@
 
 * Renamed the "Generate Preview" button on the "Build Novel Project" tool to "Build Novel Project". You must actually click this to be able to export or print. Issue #237, PR #238.
 * Added font family and font size selectors to the "Build Novel Project" tool. You may want a different print font than used in the editor itself. Issue #230, PR #238.
+* Removed the "Help" feature in "Build Novel Project" and instead written detailed tooltips. Issue #250, PR #249.
+* Changed the title formnatting codes for "Build Novel Project" to something less verbose. The old codes are translated automatically. Issue #247, PR #249.
 * A margin of the viewport (outside the document) has been added to the document editor and viewer to make room for the document title bar. Previously, the title bar would sit on top of the document top margin, which would sometimes hide text that would otherwise be visible. PR #236.
 * Fixed some alignment issue for the status icon on the project tree details panel. Mentioned in #235, PR #239.
 * Removed the `Xo` icon for NO_LAYOUT in the project tree details panel. Mentioned in #235, PR #239.
 * Added a Details tab to the Project Settings dialog, which also lists the project path. Issue #242, PR #239.
+
 
 ## Version 0.6.1 [2020-05-25]
 

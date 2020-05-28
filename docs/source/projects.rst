@@ -7,25 +7,28 @@ See the Technical Information section for further details.
 
 A new project can be created from the Project menu by selecting :menuselection:`Project --> New Project`.
 A list of recently opened projects is maintained, and displayed in the "Open Project" dialog.
+A project can be removed from this list by selecting it and pressing the :kbd:`Del` key.
 
 The project specific settings are available in :menuselection:`Project --> Project Settings`.
 See further details below.
 
-Project Structure
-=================
+Project Roots
+=============
 
 Projects are structured into a set of root folders, visible in the left side tree view panel.
 
 The core novel files go into a root folder of type "Novel".
-Other supporting files go into root folders of types "Plot", "Characters", "Locations", "Timeline", "Objects", "Entities" or "Custom".
+Other supporting files go into root folders of types "Plot", "Characters", "Locations", "Timeline", "Objects", "Entities", or "Custom".
 These other root folder types are intended for your notes on the various elements of your story.
 Using these is of course entirely optional.
 A new project will not have all of the root folders present, but you can add the ones you want from :menuselection:`Project --> Create Root Folder`.
 
-The root folders are intended for the following use, but aside from the Novel folder, no restrictions apply.
+The root folders are intended for the following use, but aside from the Novel folder, no restrictions are enforced by the application.
 You can use them however you want.
-The root folders correspond to the categories of tags that can be used.
-See the "Project Structure" section for further details.
+
+.. note::
+   The root folders correspond to the categories of tags that can be used.
+   See the "Project Structure" section for further details.
 
 * **Novel:** The root folder of all text that goes into the final novel.
   This class of files have other rules and features than other files in the project.
@@ -47,18 +50,20 @@ Orphaned Documents
 ------------------
 
 In the event the editor crashes or otherwise exits without saving the project state, files that have been added to the project tree and are saved to disk will appear in a special "Orphaned Items" root folder next time the application is started.
-These orphaned files will not have any meta data associated with them, although novelWriter will try to restore the file label it had in the project tree. Other information will have to be set again, and the files moved back to the correct location in the project.
+These orphaned files will not have any meta data associated with them, although novelWriter will try to restore the file label it had in the project tree.
+Other information will have to be set again, and the files moved back to the correct location in the project.
 
 Project Lockfile
 ----------------
 
 To prevent orphaned files caused by file conflicts when novelWriter projects are synced with file synchronisation tools, a project lockfile is written to the project folder.
-If you try to open a project which has such a file, you will be presented with a warning, and some information about where the project is potentially open.
+If you try to open a project which has such a file, you will be presented with a warning, and some information about where novelWriter thinks the project is open.
 You will be give the option to ignore this warning, and continue opening the project.
-However, if multiple instances are in fact editing the same project, you are likely to cause inconsistencies and create diverging project files.
+However, if multiple instances are in fact editing the same project, you are likely to cause inconsistencies and create diverging project files, potentially resulting in loss of data.
 
 .. note::
-   If, for some reason, novelWriter crashes, the lock file may remain. If so, it is safe to ignore the lock file warning when re-opening the project.
+   If, for some reason, novelWriter crashes, the lock file may remain.
+   In such a case it is safe to ignore the lock file warning when re-opening the project.
 
 Using Folders in the Project Tree
 ---------------------------------
@@ -83,6 +88,12 @@ The intention is that the working title should remain unchanged, while changing 
 The Book Title is currently not ues for anything, so setting it is just for the benefit of the author.
 
 The Book Authors text box takes one author per line.
+
+Details Tab
+-----------
+
+This tab presents an overview of meta data about the project.
+It states where on your file system the project is saved, how may times it has been saved, how many folders and files it contains, and how many words exist in the entire project.
 
 Status Tab
 ----------
@@ -126,6 +137,8 @@ This dialog can also be opened again later from either the menu, :menuselection:
 The layout of the file is also defined here.
 For Novel files, the full list of layout options are available.
 For non-Novel files, only "Note" is available.
+You can also select whether the file is by default included when building the project.
+This setting can be overridden in the export tool if you wish to include them anyway.
 
 See the Project Structure section for more details.
 
@@ -133,7 +146,7 @@ Backup
 ======
 
 An automatic backup system is built into novelWriter.
-In order to use it, a backup path to where the backups are to be stored needs to be provided in :menuselection:`Tools --> Preferences`.
+In order to use it, a backup path to where the backups are to be stored must to be provided in :menuselection:`Tools --> Preferences`.
 Backups can be run automatically when a project is closed, which also implies it is run when the application is closed.
 Backups are date stamped zip files of the entire project folder, and are stored in a subfolder of the backup path with the same name as the project working title set in Project Settings.
 

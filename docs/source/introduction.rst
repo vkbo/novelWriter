@@ -37,10 +37,9 @@ Project Export
 --------------
 
 The project can at any time be exported to a range of different formats.
-Natively, novelWriter supports export to plain text file, html5 document, LaTeX source file, novelWriter flavoured markdown, and standard markdown.
-Additional export options are available through `Pandoc <https://pandoc.org/>`_.
-Currently, novelWriter will assist in converting the project to Open Office documents, Word documents, and epub.
-However, to be able to fully take advantage of the many features of Pandoc, you may want to run it yourself and use the novelWriter html or markdown export as input.
+Natively, novelWriter supports export to plain text file, HTML document, novelWriter flavoured markdown, standard markdown (requires Qt 5.14), and to a basic Open Document.
+In addition, printing and printing to PDF is also possible.
+The best supported export format is HTML, which can be imported or converted by a number of other tools like Pandoc, or simply imported into Libre Office and similar.
 
 Screenshot
 ----------

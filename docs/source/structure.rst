@@ -33,10 +33,12 @@ Each partition, indicated by a heading, can contain references to tags set in th
 
 The references are gathered by the indexer and used to generate the Outline View of how the different parts of the novel are connected.
 References and tags are also clickable in the view panel, and makes it easy to navigate reference notes while writing.
-For setting the targets of references, see the "Supporting Files" section.
+The targets of references can also be set per header.
+This is covered in the "Supporting Files" section.
 
 References are set as keyword and a list of corresponding tags.
-The valid keywords are listed below. The format of such a line is ``@keyword: value1, [value2] ... [valueN]``.
+The valid keywords are listed below.
+The format of a meta line is ``@keyword: value1, [value2] ... [valueN]``.
 All keywords allow multiple values.
 
 * ``@pov``: The point-of-view character for the current section.
@@ -64,29 +66,53 @@ In general, the index for a file is regenerated when a file is saved, so this sh
 Novel File Layout
 =================
 
-Files that exist under the Novel type root folder can have a number of layouts set.
-See overview below.
+Files in a novelWriter project can have a layout format set.
 These layouts are important when the project is exported, as they indicate how to treat the content in terms of formatting, headings and page breaks.
-the layout selected also shows up as flags in the tree view, making it easier to track what kind of files they are.
+The layout for each file is indicated as the last set of characters in the Flags column of the project tree.
+They also help to indicate what each file is for in your project.
+
+Some of these layout types are different, some are just cosmetic.
+The "Book" layout is a generic novel file layout that in formatting is identical to "Chapter" and "Scene", but may help to indicate what files do in your project.
+You can lay out your project using Book files for each act, and then later split those into chapter or scene files by using the "Split Document" tool.
+Scenes can also be contained within chapter files, but you lose the drag and drop feature that comes with having them in separate files.
+
+Some layouts have implications on how the project is exported.
+Files with layout "Title" and "Partition" have all headings and text centred, while the "Unnumbered" layout disables the automatic chapter numbering feature for everything contained within it.
+
+All of the above layout formats are only usable in the Novel root folder.
+Files that are not a part of the novel itself should have the Note layout.
+These files are not getting any special formatting, and it is possible to collectively filter them out during export.
+Note files can be used anywhere in the project.
+
+Below is an overview of all available layout formats.
 
 * **Title Page**: The title page layout.
   The title should be formatted as a heading level one.
-* **Book**: In principle, the entire novel can be contained in a single file.
-  In that case, use the Book layout on this file.
-  The internal structure is then controlled by the heading levels.
-* **Plain Page**: A plain page is just that,
-  It is not included into content and the heading levels are ignored.
-* **Partition**: A partition can be used to split a the novel into parts.
-  Use a level one heading for this.
+  All text is automatically centred on exports.
+* **Plain Page**: A plain page layout useful for instance for front matter pages.
+  Heading levels are ignored for this layout format, and so are formatting options like Justify Text.
+  The page is exported with a page break before it.
+* **Book**: This is the generic novel file format that in principle can be used for all novel files.
+  Since the internal structure of the novel is controlled by the heading levels, this file will produce the same result as a collection of Partition, Chapter and Scene type files.
+  However, it does not provide the functionality of the Unnumbered layout format.
+* **Partition**: A partition can be used to split the novel into parts.
+  Partition titles are indicated with a level one heading.
+  You can also add text and meta data to the page.
+  The Partition file layout will in addition force a page break before the heading, and centre all content on the page.
 * **Chapter**: Signifies the start of a new chapter.
-  If the text itself is contained in scene files, these files should only contain the title and tag references for characters, plot, etc.
+  If the text itself is contained in scene files, these files should only contain the title, comments, synopsis, and tag references for characters, plot, etc.
   The heading for chapters should be level two.
+  If you need an opening text, like a quote or other leading text before the first scene, this is also where you'd want to add this text.
 * **Unnumbered**: Same as Chapter, but when exporting the files and automatic chapter numbering is enabled, this file will not receive a number.
+  This makes the layout suitable for Prologue and Epilogue type chapters.
 * **Scene**: A scene file.
   This file should have a header of level three.
-  Further sections can have headers of level four.
-  These will not impact the overall structure, but will allow for setting new characters and plot references in parts of a scene if such granularity is needed.
+  Further sections can have headers of level four, but there are no file layout specifically for sections.
 * **Note**: A generic file that is optionally ignored when the novel is exported.
+  Use these files for descriptions of content in the supporting root folders.
+  Note files can also be added to the Novel root folder if you need to insert notes there.
+  Note file headers receive no formatting when building the project.
+  They are always exported as-is.
 
 .. note::
    The layout granularity is entirely optional.
