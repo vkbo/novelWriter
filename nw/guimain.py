@@ -42,7 +42,7 @@ from PyQt5.QtWidgets import (
 from nw.gui import (
     GuiMainMenu, GuiMainStatus, GuiTheme, GuiDocTree, GuiDocEditor,
     GuiDocViewer, GuiDocDetails, GuiSearchBar, GuiNoticeBar, GuiDocViewDetails,
-    GuiConfigEditor, GuiProjectSettings, GuiItemEditor, GuiProjectOutline,
+    GuiPreferences, GuiProjectSettings, GuiItemEditor, GuiProjectOutline,
     GuiSessionLogView, GuiDocMerge, GuiDocSplit, GuiProjectLoad, GuiBuildNovel
 )
 from nw.core import NWProject, NWDoc, NWIndex
@@ -553,7 +553,7 @@ class GuiMain(QMainWindow):
 
         if self.docEditor.theHandle is None:
             self.makeAlert(
-                ["Please open a document to import the text file into."],
+                "Please open a document to import the text file into.",
                 nwAlert.ERROR
             )
             return False
@@ -668,6 +668,12 @@ class GuiMain(QMainWindow):
 
         theDoc = NWDoc(self.theProject, self)
         for nDone, tItem in enumerate(self.theProject.projTree):
+
+            if tItem is not None:
+                self.statusBar.setStatus("Indexing: '%s'" % tItem.itemName)
+            else:
+                self.statusBar.setStatus("Indexing: Unknown item")
+
             if tItem is not None and tItem.itemType == nwItemType.FILE:
                 logger.verbose("Scanning: %s" % tItem.itemName)
                 theText = theDoc.openDocument(tItem.itemHandle, showStatus=False)
@@ -683,16 +689,14 @@ class GuiMain(QMainWindow):
                 self.treeView.propagateCount(tItem.itemHandle, wC)
                 self.treeView.projectWordCount()
 
-            self.statusBar.setStatus("Building index: %.2f%%" % (100.0*(nDone + 1)/nItems))
-
-        self.docEditor.reloadText()
-        qApp.restoreOverrideCursor()
         tEnd = time()
+        self.statusBar.setStatus("Indexing completed in %.1f ms" % ((tEnd - tStart)*1000.0))
+        self.docEditor.reloadText()
+
+        qApp.restoreOverrideCursor()
 
         if self.mainConf.showGUI:
-            self.makeAlert(
-                "Project index rebuilt in %.3f seconds." % (tEnd - tStart), nwAlert.INFO
-            )
+            self.makeAlert("The project index has been successfully rebuilt.", nwAlert.INFO)
 
         return True
 
@@ -737,7 +741,7 @@ class GuiMain(QMainWindow):
     def editConfigDialog(self):
         """Open the preferences dialog.
         """
-        dlgConf = GuiConfigEditor(self, self.theProject)
+        dlgConf = GuiPreferences(self, self.theProject)
         if dlgConf.exec_() == QDialog.Accepted:
             logger.debug("Applying new preferences")
             self.initMain()
@@ -778,7 +782,7 @@ class GuiMain(QMainWindow):
         0 = info, 1 = warning, and 2 = error.
         """
         if isinstance(theMessage, list):
-            popMsg = " ".join(theMessage)
+            popMsg = "<br>".join(theMessage)
             logMsg = theMessage
         else:
             popMsg = theMessage

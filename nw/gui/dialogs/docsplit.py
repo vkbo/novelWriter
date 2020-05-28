@@ -150,7 +150,9 @@ class GuiDocSplit(QDialog):
             ), nwAlert.ERROR)
             return
 
-        fHandle = self.theProject.newFolder(srcItem.itemName, srcItem.itemClass, srcItem.parHandle)
+        fHandle = self.theProject.newFolder(
+            srcItem.itemName, srcItem.itemClass, srcItem.parHandle
+        )
         self.theParent.treeView.revealTreeItem(fHandle)
         logger.verbose("Creating folder %s" % fHandle)
 
@@ -174,7 +176,9 @@ class GuiDocSplit(QDialog):
             newItem = self.theProject.projTree[nHandle]
             newItem.setLayout(itemLayout)
             logger.verbose(
-                "Creating new document %s with text from line %d to %d" % (nHandle, iStart, iEnd-1)
+                "Creating new document %s with text from line %d to %d" % (
+                    nHandle, iStart, iEnd-1
+                )
             )
 
             theText = "\n".join(theLines[iStart:iEnd])
@@ -227,7 +231,9 @@ class GuiDocSplit(QDialog):
 
         spLevel = self.splitLevel.currentData()
         self.optState.setValue("GuiDocSplit", "spLevel", spLevel)
-        logger.debug("Scanning document %s for headings level <= %d" % (self.sourceItem, spLevel))
+        logger.debug(
+            "Scanning document %s for headings level <= %d" % (self.sourceItem, spLevel)
+        )
 
         lineNo = 0
         for aLine in theText.splitlines():

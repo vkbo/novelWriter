@@ -113,7 +113,7 @@ class NWProject():
         CUSTOM, and always have parent handle set to None.
         """
         if not self.projTree.checkRootUnique(rootClass):
-            self.makeAlert("Duplicate root item detected!", nwAlert.ERROR)
+            self.makeAlert("Duplicate root item detected.", nwAlert.ERROR)
             return None
         newItem = NWItem(self)
         newItem.setName(rootName)
@@ -995,7 +995,7 @@ class NWProject():
         # Report status
         if len(orphanFiles) > 0:
             self.makeAlert(
-                "Found %d orphaned file(s) in project folder!" % len(orphanFiles),
+                "Found %d orphaned file(s) in project folder." % len(orphanFiles),
                 nwAlert.WARN
             )
         else:
@@ -1097,10 +1097,10 @@ class NWProject():
 
 # END Class NWProject
 
-# ================================================================================================ #
+# =============================================================================================== #
 #  NWTree
 #  Class holding the project tree for the NWProject
-# ================================================================================================ #
+# =============================================================================================== #
 
 class NWTree():
 
@@ -1435,10 +1435,10 @@ class NWTree():
 
 # END Class NWTree
 
-# ================================================================================================ #
+# =============================================================================================== #
 #  NWItem
 #  Class holding the project items making up the NWProject
-# ================================================================================================ #
+# =============================================================================================== #
 
 class NWItem():
 
@@ -1680,10 +1680,10 @@ class NWItem():
 
 # END Class NWItem
 
-# ================================================================================================ #
+# =============================================================================================== #
 #  NWStatus
 #  Class holding the item status values stored in the NWProject
-# ================================================================================================ #
+# =============================================================================================== #
 
 class NWStatus():
 

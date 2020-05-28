@@ -34,12 +34,12 @@ from time import time
 from PyQt5.QtCore import Qt, QByteArray
 from PyQt5.QtPrintSupport import QPrinter, QPrintPreviewDialog
 from PyQt5.QtGui import (
-    QTextOption, QPalette, QColor, QTextDocumentWriter, QFont
+    QPalette, QColor, QTextDocumentWriter, QFont
 )
 from PyQt5.QtWidgets import (
     QDialog, QVBoxLayout, QHBoxLayout, QTextBrowser, QPushButton, QLabel,
     QLineEdit, QGroupBox, QGridLayout, QProgressBar, QMenu, QAction,
-    QFileDialog, QFontComboBox, QSpinBox, QDialogButtonBox
+    QFileDialog, QFontComboBox, QSpinBox
 )
 
 from nw.gui.additions import QSwitch
@@ -83,8 +83,7 @@ class GuiBuildNovel(QDialog):
             self.optState.getInt("GuiBuildNovel", "winHeight", 800)
         )
 
-        self.outerBox = QVBoxLayout()
-        self.innerBox = QHBoxLayout()
+        self.outerBox = QHBoxLayout()
         self.toolsBox = QVBoxLayout()
 
         self.docView = GuiBuildNovelDocView(self, self.theProject)
@@ -173,7 +172,9 @@ class GuiBuildNovel(QDialog):
 
         self.textFont = QFontComboBox()
         self.textFont.setFixedWidth(220)
-        self.textFont.setToolTip("The font is used for PDF and printing. Other formats have no font set.")
+        self.textFont.setToolTip(
+            "The font is used for PDF and printing. Other formats have no font set."
+        )
         self.textFont.setCurrentFont(
             QFont(self.optState.getString("GuiBuildNovel", "textFont", self.mainConf.textFont))
         )
@@ -183,13 +184,17 @@ class GuiBuildNovel(QDialog):
         self.textSize.setMinimum(5)
         self.textSize.setMaximum(48)
         self.textSize.setSingleStep(1)
-        self.textSize.setToolTip("The size is used for PDF and printing. Other formats have no size set.")
+        self.textSize.setToolTip(
+            "The size is used for PDF and printing. Other formats have no size set."
+        )
         self.textSize.setValue(
             self.optState.getInt("GuiBuildNovel", "textSize", self.mainConf.textSize)
         )
 
         self.justifyText = QSwitch()
-        self.justifyText.setToolTip("Applies to PDF, printing, HTML, and Open Document exports.")
+        self.justifyText.setToolTip(
+            "Applies to PDF, printing, HTML, and Open Document exports."
+        )
         self.justifyText.setChecked(
             self.optState.getBool("GuiBuildNovel", "justifyText", False)
         )
@@ -211,15 +216,21 @@ class GuiBuildNovel(QDialog):
         self.includeGroup.setLayout(self.includeForm)
 
         self.includeSynopsis = QSwitch()
-        self.includeSynopsis.setToolTip("Include synopsis type comments in the output.")
+        self.includeSynopsis.setToolTip(
+            "Include synopsis type comments in the output."
+        )
         self.includeSynopsis.setChecked(self.theProject.titleFormat["withSynopsis"])
 
         self.includeComments = QSwitch()
-        self.includeComments.setToolTip("Include plain comments in the output.")
+        self.includeComments.setToolTip(
+            "Include plain comments in the output."
+        )
         self.includeComments.setChecked(self.theProject.titleFormat["withComments"])
 
         self.includeKeywords = QSwitch()
-        self.includeKeywords.setToolTip("Include meta keywords (tags, references) in the output.")
+        self.includeKeywords.setToolTip(
+            "Include meta keywords (tags, references) in the output."
+        )
         self.includeKeywords.setChecked(self.theProject.titleFormat["withKeywords"])
 
         self.includeForm.addWidget(QLabel("Include synopsis"), 0, 0, 1, 1, Qt.AlignLeft)
@@ -292,7 +303,7 @@ class GuiBuildNovel(QDialog):
 
         # Action Buttons
         # ==============
-        self.buttonForm = QGridLayout()
+        self.buttonBox = QHBoxLayout()
 
         self.btnPrint = QPushButton("Print")
         self.btnPrint.clicked.connect(self._printDocument)
@@ -326,12 +337,13 @@ class GuiBuildNovel(QDialog):
         self.saveTXT.triggered.connect(lambda: self._saveDocument(self.FMT_TXT))
         self.saveMenu.addAction(self.saveTXT)
 
-        self.buttonForm.addWidget(self.btnSave,  0, 0)
-        self.buttonForm.addWidget(self.btnPrint, 0, 1)
+        self.btnClose = QPushButton("Close")
+        self.btnClose.clicked.connect(self._doClose)
 
-        # Buttons
-        self.buttonBox = QDialogButtonBox(QDialogButtonBox.Close)
-        self.buttonBox.rejected.connect(self._doClose)
+        self.buttonBox.addWidget(self.btnSave)
+        self.buttonBox.addWidget(self.btnPrint)
+        self.buttonBox.addWidget(self.btnClose)
+        self.buttonBox.setSpacing(4)
 
         # Assemble GUI
         # ============
@@ -343,17 +355,14 @@ class GuiBuildNovel(QDialog):
         self.toolsBox.addWidget(self.buildProgress)
         self.toolsBox.addWidget(self.buildNovel)
         self.toolsBox.addSpacing(8)
-        self.toolsBox.addLayout(self.buttonForm)
+        self.toolsBox.addLayout(self.buttonBox)
 
-        self.innerBox.addLayout(self.toolsBox)
-        self.innerBox.addWidget(self.docView)
+        self.outerBox.addLayout(self.toolsBox)
+        self.outerBox.addWidget(self.docView)
+        self.outerBox.setStretch(0, 0)
+        self.outerBox.setStretch(1, 1)
 
-        self.outerBox.addLayout(self.innerBox)
-        self.outerBox.addWidget(self.buttonBox)
         self.setLayout(self.outerBox)
-
-        self.innerBox.setStretch(0, 0)
-        self.innerBox.setStretch(1, 1)
 
         self.show()
 

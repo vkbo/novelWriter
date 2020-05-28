@@ -44,12 +44,12 @@ from nw.constants import nwAlert, nwQuotes
 
 logger = logging.getLogger(__name__)
 
-class GuiConfigEditor(PagedDialog):
+class GuiPreferences(PagedDialog):
 
     def __init__(self, theParent, theProject):
         PagedDialog.__init__(self, theParent)
 
-        logger.debug("Initialising ConfigEditor ...")
+        logger.debug("Initialising GuiPreferences ...")
 
         self.mainConf   = nw.CONFIG
         self.theParent  = theParent
@@ -74,7 +74,7 @@ class GuiConfigEditor(PagedDialog):
 
         self.show()
 
-        logger.debug("ConfigEditor initialisation complete")
+        logger.debug("GuiPreferences initialisation complete")
 
         return
 
@@ -122,7 +122,7 @@ class GuiConfigEditor(PagedDialog):
         self.close()
         return
 
-# END Class GuiConfigEditor
+# END Class GuiPreferences
 
 class GuiConfigEditGeneralTab(QWidget):
 
@@ -228,7 +228,7 @@ class GuiConfigEditGeneralTab(QWidget):
 
         ## Backup Path
         self.backupPath = self.mainConf.backupPath
-        self.backupGetPath = QPushButton(self.theTheme.getIcon("folder-open"),"Select Folder")
+        self.backupGetPath = QPushButton("Browse")
         self.backupGetPath.clicked.connect(self._backupFolder)
         self.backupPathRow = self.mainForm.addRow(
             "Backup storage location",
