@@ -2,6 +2,11 @@
 
 ## Version 0.7 [2020-xx-xx]
 
+**User Interface**
+
+* The back-references list now shows references to any tag in the open document, not just the first tag. Issue #227, PR #234.
+* Clicking a tag should also tries to scroll to the header where the tag is set. The index needed a couple of minor changes for this feature, so this will invalidate the old index for a project, and require a new to be built. This is done automatically. PR #234.
+
 **Project Structure**
 
 * The project folder structure has been simplified and cleaned up. We also now pin the main entry values in the main XML file. the XML file is now given version 1.1, and locking it to only be opened by version 0.7 or later. The project is converted on first open, if the user approves. PR #253.
