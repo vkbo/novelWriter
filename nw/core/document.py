@@ -37,8 +37,6 @@ logger = logging.getLogger(__name__)
 
 class NWDoc():
 
-    FILE_MN = "main.nwd"
-
     def __init__(self, theProject, theParent):
 
         self.mainConf    = nw.CONFIG
