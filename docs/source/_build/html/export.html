@@ -46,16 +46,16 @@
 <div class="section" id="header-formatting">
 <h2>Header Formatting<a class="headerlink" href="#header-formatting" title="Permalink to this headline">¶</a></h2>
 <p>The titles for the four levels of story structure can be formatted collectively in the export tool.
-This is done through a series of keyword-replace steps.</p>
+This is done through a series of keyword–replace steps.</p>
 <p>The keyword <code class="docutils literal notranslate"><span class="pre">%title%</span></code> will always be replaced by the text you put after the <code class="docutils literal notranslate"><span class="pre">#</span></code> characters in your document.</p>
 <p>The keywords <code class="docutils literal notranslate"><span class="pre">%ch%</span></code> and <code class="docutils literal notranslate"><span class="pre">%chw%</span></code> is replaced by a number, or a number word, respectively.
 The number is incremented by one each time the build tool sees a new heading of level two in a file with layout “Chapter”.
-If the file has layout “Unnumbered”, the counter is not incremented.
-the latter is useful for for instance Prologue and Epilogue chapters.</p>
+If the file has layout “Unnumbered”, the counter is <em>not</em> incremented.
+The latter is useful for for instance Prologue and Epilogue chapters.</p>
 <p>Likewise, the keywords <code class="docutils literal notranslate"><span class="pre">%sc%</span></code> and <code class="docutils literal notranslate"><span class="pre">%sca%</span></code> are number counters for scene files.
 These are incremented each time a heading of level three is encountered.
-The former keyword is reset to one for each new chapter, while the latter is not reset but counts from first scene encountered.</p>
-<p>If you want to insert a line break in you=r title format, add two backslashes <code class="docutils literal notranslate"><span class="pre">\\</span></code>.</p>
+The former keyword is reset to one for each new chapter, while the latter is not reset but counts from first scene encountered in the project.</p>
+<p>If you want to insert a line break in your title format, add two backslashes <code class="docutils literal notranslate"><span class="pre">\\</span></code>.</p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
 <p>Header formatting only applies to novel files.
@@ -72,17 +72,22 @@ In fact, if the format is a piece of static text, it will always be treated as a
 <h2>File Selection<a class="headerlink" href="#file-selection" title="Permalink to this headline">¶</a></h2>
 <p>Which files are selected for export can be controlled from the options on the left side of the dialog window.
 The switch for “Include novel files” will select any file that isn’t classified as a note.
+That is, files with layout “Book”, “Page”, “Partition”, “Chapet”, “Unnumbered”, or “Scene”.
 The switch for “Include note files” will select any file that is a note.
+That is, files with layout “Note”.
 This is allows for exporting just the novel, just your notes, or both, as you see fit.</p>
 <p>In addition, you can select to export the synopsis comments, regular comments, keywords, and even exclude the body text itself.
-If you for instance want to export a document with an outline of the novel, you can enable keywords  and synopsis export and disable body text, thus getting a document with each heading followed by the tags and references and the synopsis.</p>
+If you for instance want to export a document with an outline of the novel, you can enable keywords and synopsis export and disable body text, thus getting a document with each heading followed by the tags and references and the synopsis.</p>
+<p>If you need to exclude specific files from your exports, like draft files or files you want to take out of your build, but don’t want to delete, you can uncheck the “Include when building project” option for each file in the project tree.
+An included file has a checkmark after the status icon in the “Flags” column.
+The “Build Novel Project” tool has a switch to ignore this flag if you need to collectively override these settings.</p>
 </div>
 <div class="section" id="export-formats">
 <h2>Export Formats<a class="headerlink" href="#export-formats" title="Permalink to this headline">¶</a></h2>
-<p>Currently, five formats are supported for exporting.</p>
+<p>Currently, six formats are supported for exporting.</p>
 <div class="section" id="opendocument-format">
 <h3>OpenDocument Format<a class="headerlink" href="#opendocument-format" title="Permalink to this headline">¶</a></h3>
-<p>This is produces an open document odt file.
+<p>This is produces an open document <code class="docutils literal notranslate"><span class="pre">.odt</span></code> file.
 The document produced has very little formatting, and may require further editing afterwards.
 For a better formatted office document, you may get a better result with exporting to HTML and the import that HTML document in your office word processor.</p>
 </div>
@@ -100,6 +105,11 @@ The exported HTML file is suitable for further processing by document conversion
 <p>This is simply a concatenation of the files selected by the filters.
 The files in the project are stacked together in the order they appear in the tree view, with comments, tags, etc. included if they are selected.
 This is a useful format for exporting the project for later import back into novelWriter.</p>
+</div>
+<div class="section" id="standard-markdown">
+<h3>Standard Markdown<a class="headerlink" href="#standard-markdown" title="Permalink to this headline">¶</a></h3>
+<p>If you have Qt 5.14 or higher, the option to export to plain Markdown is available.
+This feature uses Qt’s own Markdown export feature.</p>
 </div>
 <div class="section" id="plain-text">
 <h3>Plain Text<a class="headerlink" href="#plain-text" title="Permalink to this headline">¶</a></h3>
@@ -125,6 +135,7 @@ This is a useful format for exporting the project for later import back into nov
 <li><a class="reference internal" href="#pdf-format">PDF Format</a></li>
 <li><a class="reference internal" href="#novelwriter-html">novelWriter HTML</a></li>
 <li><a class="reference internal" href="#novelwriter-markdown">novelWriter Markdown</a></li>
+<li><a class="reference internal" href="#standard-markdown">Standard Markdown</a></li>
 <li><a class="reference internal" href="#plain-text">Plain Text</a></li>
 </ul>
 </li>
