@@ -6,6 +6,7 @@
 
 * The back-references list now shows references to any tag in the open document, not just the first tag. Issue #227, PR #234.
 * Clicking a tag now tries to scroll to the header where the tag is set. The index needed a couple of minor changes for this feature, so this will invalidate the old index for a project, and require a new to be built. This is done automatically. PR #234.
+* Moved the Close button on the "Build Novel project" dialog to the area with the other buttons since we anyway increased the size of that area. PR #256.
 
 **Project Structure**
 
