@@ -9,23 +9,23 @@ How Data is Stored
 
 All novelWriter files are written with utf-8 encoding.
 Since Python automatically converts Unix line endings to Windows line endings on Windows systems, novelWriter does not make any adaptations to the formatting on Windows systems.
+This is handled entirely by the Python standard library.
 
 Main Project File
 -----------------
 
-The project itself requires a dedicated folder for storing its files.
-The main project file is stored as an XML file with the name ``nwProject.nwx``.
-This file contains all the meta data required for the project.
-That includes project-specific settings.
+The project itself requires a dedicated folder for storing its files, where novelWriter will create its own "file system" where the folder and file hierarchy is described in a project XML file.
+This is the main project file in the project's root folder with the name ``nwProject.nwx``.
+This file also contains all the meta data required for the project, and a number of related project settings.
 
 If this file is lost or corrupted, the structure of the project is lost.
 It is important to keep this file backed up, either through the built-in backup tool, or your own backup solution.
 
 .. note::
    The novelWriter project folder is structured so that it can easily be added to a version control system like git.
-   If so, you may want to add a `.gitignore` file to exclude files with the extensions `.bak` and `.json`.
+   If so, you may want to add a `.gitignore` file to exclude files with the extensions `.json` as JSON files are used to cache the index and various run-time settings.
 
-The project XML file is suitable for diff tools and version control, although a timesetamp is set in the meta section on line 2 each time the file is saved.
+The project XML file is indent-formatted, suitable for diff tools and version control, although a timesetamp is set in the meta section on line 2 each time the file is saved.
 
 Project Documents
 -----------------
@@ -40,16 +40,16 @@ The file meta data in the tree view, except the file label, is only saved in the
 
 Each document file contains a plain text version of the text from the editor.
 The file can in principle be edited in any text editor, and is suitable for diffing and version control if so desired.
-Just make sure the file remains in utf-8 encoding, otherwise unicode chatracters may become mangled.
+Just make sure the file remains in utf-8 encoding, otherwise unicode chatracters may become mangled when opened in novelWriter again.
 
-The first line contains some meta data starting with the characters "%%~".
+The first line of the file contains some meta data starting with the characters "%%~".
 This line is mainly there to restore some information if it is lost from the project file, and the information may be helpful if you do open the file in an external editor as it contains the file label as the last entry.
-The line can be deleted without any consequences to the rest of the content of the file.
+The line can be deleted without any consequences to the rest of the content of the file, and will be added back next time the file is saved in novelWriter.
 
 The File Saving Process
 -----------------------
 
 When saving the project file, or any of the documents, the data is first saved to a temporary file.
-If successful, the old data file is renamed with a `.bak` extension, and the temporary file becomes the new file.
+If successful, the old data file is removed, and the temporary file becomes the new file.
 This ensures that the previously saved data is only replaced when the new data has been successfully saved.
-The `.bak` file will always contain the previous version of the file, although when auto-save is enabled, they may have the same content.
+For the project XML file, a `.bak` file is kept which will always contain the previous version of the file, although when auto-save is enabled, they may have the same content.

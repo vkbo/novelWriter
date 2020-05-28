@@ -9,9 +9,9 @@ These are not required, but making at least minimal files for each such element,
 File Tags
 =========
 
-Each note file can have a tag associated with it,
+Each new heading in a note file can have a tag associated with it.
 The format of a tag is ``@tag: tagname``, where tagname is a unique identifier.
-Tags can then be referenced in the novel files and will show up in the Outline View.
+Tags can then be referenced in the novel files, or other note files, and will show up in the Outline View and in the back-reference panel when a document is being viewed.
 
 The syntax highlighter will alert the user that the keyword is correctly used and that the tag is allowed, that is, the tag is unique.
 Duplicate tags should be detected as long as the index is up to date.
