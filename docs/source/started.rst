@@ -4,12 +4,7 @@ Getting Started
 
 You can download novelWriter from https://github.com/vkbo/novelWriter/releases
 
-Latest version is |version|:
-
-* ZIP file: https://github.com/vkbo/novelWriter/archive/v0.6.1.zip
-* TAR file: https://github.com/vkbo/novelWriter/archive/v0.6.1.tar.gz
-
-Extract the archive to a location of your choice.
+Latest version is |version|.
 
 Installing Dependencies
 =======================
@@ -36,8 +31,8 @@ The following are optional, but recommended:
 * ``pyenchant`` for spell checking
 
 PyQt/Qt should be at least 5.2.1, but ideally 5.10 or higher for nearly all features to work.
-Exporting to markdown requires PyQt/Qt 5.14.
-There are no known minimum for lxml, but the code was originally written with 4.2.
+Exporting to standard Markdown requires PyQt/Qt 5.14.
+There are no known minimum for package lxml, but the code was originally written with 4.2.
 The optional spell check library must be at least 3.0.0 to work with Windows.
 On Linux, 2.0.0 also works fine.
 
@@ -59,6 +54,8 @@ To list all options, run:
 
    python novelWriter.py --help
 
+There are also a couple of install scripts in the assets folder which will assist in setting up launch icon and the novelWriter project file mimetype for Gnome desktops on Linux.
+Currently, there's one script for Debian and one for Ubuntu.
 
 Building a Standalone Executable
 ================================
