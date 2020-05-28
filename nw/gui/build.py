@@ -83,8 +83,7 @@ class GuiBuildNovel(QDialog):
             self.optState.getInt("GuiBuildNovel", "winHeight", 800)
         )
 
-        self.outerBox = QVBoxLayout()
-        self.innerBox = QHBoxLayout()
+        self.outerBox = QHBoxLayout()
         self.toolsBox = QVBoxLayout()
 
         self.docView = GuiBuildNovelDocView(self, self.theProject)
@@ -292,7 +291,7 @@ class GuiBuildNovel(QDialog):
 
         # Action Buttons
         # ==============
-        self.buttonForm = QGridLayout()
+        self.buttonBox = QHBoxLayout()
 
         self.btnPrint = QPushButton("Print")
         self.btnPrint.clicked.connect(self._printDocument)
@@ -326,12 +325,13 @@ class GuiBuildNovel(QDialog):
         self.saveTXT.triggered.connect(lambda: self._saveDocument(self.FMT_TXT))
         self.saveMenu.addAction(self.saveTXT)
 
-        self.buttonForm.addWidget(self.btnSave,  0, 0)
-        self.buttonForm.addWidget(self.btnPrint, 0, 1)
+        self.btnClose = QPushButton("Close")
+        self.btnClose.clicked.connect(self._doClose)
 
-        # Buttons
-        self.buttonBox = QDialogButtonBox(QDialogButtonBox.Close)
-        self.buttonBox.rejected.connect(self._doClose)
+        self.buttonBox.addWidget(self.btnSave)
+        self.buttonBox.addWidget(self.btnPrint)
+        self.buttonBox.addWidget(self.btnClose)
+        self.buttonBox.setSpacing(4)
 
         # Assemble GUI
         # ============
@@ -343,17 +343,14 @@ class GuiBuildNovel(QDialog):
         self.toolsBox.addWidget(self.buildProgress)
         self.toolsBox.addWidget(self.buildNovel)
         self.toolsBox.addSpacing(8)
-        self.toolsBox.addLayout(self.buttonForm)
+        self.toolsBox.addLayout(self.buttonBox)
 
-        self.innerBox.addLayout(self.toolsBox)
-        self.innerBox.addWidget(self.docView)
+        self.outerBox.addLayout(self.toolsBox)
+        self.outerBox.addWidget(self.docView)
+        self.outerBox.setStretch(0, 0)
+        self.outerBox.setStretch(1, 1)
 
-        self.outerBox.addLayout(self.innerBox)
-        self.outerBox.addWidget(self.buttonBox)
         self.setLayout(self.outerBox)
-
-        self.innerBox.setStretch(0, 0)
-        self.innerBox.setStretch(1, 1)
 
         self.show()
 
