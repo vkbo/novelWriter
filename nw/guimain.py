@@ -668,6 +668,12 @@ class GuiMain(QMainWindow):
 
         theDoc = NWDoc(self.theProject, self)
         for nDone, tItem in enumerate(self.theProject.projTree):
+
+            if tItem is not None:
+                self.statusBar.setStatus("Indexing: '%s'" % tItem.itemName)
+            else:
+                self.statusBar.setStatus("Indexing: Unknown item")
+
             if tItem is not None and tItem.itemType == nwItemType.FILE:
                 logger.verbose("Scanning: %s" % tItem.itemName)
                 theText = theDoc.openDocument(tItem.itemHandle, showStatus=False)
@@ -683,16 +689,14 @@ class GuiMain(QMainWindow):
                 self.treeView.propagateCount(tItem.itemHandle, wC)
                 self.treeView.projectWordCount()
 
-            self.statusBar.setStatus("Building index: %.2f%%" % (100.0*(nDone + 1)/nItems))
-
-        self.docEditor.reloadText()
-        qApp.restoreOverrideCursor()
         tEnd = time()
+        self.statusBar.setStatus("Indexing completed in %.1f ms" % ((tEnd - tStart)*1000.0))
+        self.docEditor.reloadText()
+
+        qApp.restoreOverrideCursor()
 
         if self.mainConf.showGUI:
-            self.makeAlert(
-                "Project index rebuilt in %.3f seconds." % (tEnd - tStart), nwAlert.INFO
-            )
+            self.makeAlert("The project index has been successfully rebuilt.", nwAlert.INFO)
 
         return True
 
