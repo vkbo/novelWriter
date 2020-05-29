@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='utf-8'?>
-<novelWriterXML appVersion="0.6.1" hexVersion="0x000601f0" fileVersion="1.0" saveCount="5" autoCount="0" timeStamp="2020-05-27 18:24:56">
+<novelWriterXML appVersion="0.7.0rc1" hexVersion="0x000700c1" fileVersion="1.1" saveCount="5" autoCount="0" timeStamp="2020-05-29 23:04:50">
   <project>
     <name>New Project</name>
     <title></title>
@@ -76,7 +76,6 @@
       <type>FILE</type>
       <class>NOVEL</class>
       <status>New</status>
-      <expanded>False</expanded>
       <exported>True</exported>
       <layout>SCENE</layout>
       <charCount>0</charCount>
@@ -117,7 +116,6 @@
       <type>FILE</type>
       <class>NOVEL</class>
       <status>New</status>
-      <expanded>False</expanded>
       <exported>True</exported>
       <layout>SCENE</layout>
       <charCount>0</charCount>
@@ -130,7 +128,6 @@
       <type>FILE</type>
       <class>CHARACTER</class>
       <status>New</status>
-      <expanded>False</expanded>
       <exported>True</exported>
       <layout>NOTE</layout>
       <charCount>0</charCount>
