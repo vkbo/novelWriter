@@ -1336,6 +1336,7 @@ class NWTree():
                             tItem.itemClass.name,
                             tItem.itemName,
                         ])
+                outFile.write("\n")
 
             # Dump the JSON
             with open(tocJson, mode="w+", encoding="utf8") as outFile:
