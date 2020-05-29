@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='utf-8'?>
-<novelWriterXML appVersion="0.7.0rc1" hexVersion="0x000700c1" fileVersion="1.1" saveCount="193" autoCount="29" timeStamp="2020-05-29 22:52:06">
+<novelWriterXML appVersion="0.7.0rc1" hexVersion="0x000700c1" fileVersion="1.1" saveCount="195" autoCount="29" timeStamp="2020-05-29 23:02:40">
   <project>
     <name>Sample Project</name>
     <title>Sample Project</title>
@@ -57,7 +57,6 @@
       <type>FILE</type>
       <class>NOVEL</class>
       <status>Started</status>
-      <expanded>False</expanded>
       <exported>True</exported>
       <layout>TITLE</layout>
       <charCount>72</charCount>
@@ -70,7 +69,6 @@
       <type>FILE</type>
       <class>NOVEL</class>
       <status>New</status>
-      <expanded>False</expanded>
       <exported>True</exported>
       <layout>PAGE</layout>
       <charCount>208</charCount>
@@ -83,7 +81,6 @@
       <type>FILE</type>
       <class>NOVEL</class>
       <status>New</status>
-      <expanded>False</expanded>
       <exported>True</exported>
       <layout>PARTITION</layout>
       <charCount>23</charCount>
@@ -103,7 +100,6 @@
       <type>FILE</type>
       <class>NOVEL</class>
       <status>Notes</status>
-      <expanded>False</expanded>
       <exported>True</exported>
       <layout>CHAPTER</layout>
       <charCount>12</charCount>
@@ -116,7 +112,6 @@
       <type>FILE</type>
       <class>NOVEL</class>
       <status>1st Draft</status>
-      <expanded>False</expanded>
       <exported>True</exported>
       <layout>SCENE</layout>
       <charCount>1199</charCount>
@@ -129,7 +124,6 @@
       <type>FILE</type>
       <class>NOVEL</class>
       <status>1st Draft</status>
-      <expanded>False</expanded>
       <exported>True</exported>
       <layout>SCENE</layout>
       <charCount>476</charCount>
@@ -142,7 +136,6 @@
       <type>FILE</type>
       <class>NOVEL</class>
       <status>Finished</status>
-      <expanded>False</expanded>
       <exported>True</exported>
       <layout>UNNUMBERED</layout>
       <charCount>633</charCount>
@@ -155,7 +148,6 @@
       <type>FILE</type>
       <class>NOVEL</class>
       <status>2nd Draft</status>
-      <expanded>False</expanded>
       <exported>False</exported>
       <layout>NOTE</layout>
       <charCount>1692</charCount>
@@ -168,7 +160,6 @@
       <type>FILE</type>
       <class>NOVEL</class>
       <status>1st Draft</status>
-      <expanded>False</expanded>
       <exported>True</exported>
       <layout>CHAPTER</layout>
       <charCount>139</charCount>
@@ -181,7 +172,6 @@
       <type>FILE</type>
       <class>NOVEL</class>
       <status>1st Draft</status>
-      <expanded>False</expanded>
       <exported>True</exported>
       <layout>SCENE</layout>
       <charCount>189</charCount>
@@ -208,7 +198,6 @@
       <type>FILE</type>
       <class>CHARACTER</class>
       <status>Minor</status>
-      <expanded>False</expanded>
       <exported>True</exported>
       <layout>NOTE</layout>
       <charCount>49</charCount>
@@ -221,7 +210,6 @@
       <type>FILE</type>
       <class>CHARACTER</class>
       <status>Major</status>
-      <expanded>False</expanded>
       <exported>True</exported>
       <layout>NOTE</layout>
       <charCount>55</charCount>
@@ -241,7 +229,6 @@
       <type>FILE</type>
       <class>WORLD</class>
       <status>Main</status>
-      <expanded>False</expanded>
       <exported>True</exported>
       <layout>NOTE</layout>
       <charCount>76</charCount>
@@ -254,7 +241,6 @@
       <type>FILE</type>
       <class>WORLD</class>
       <status>Minor</status>
-      <expanded>False</expanded>
       <exported>True</exported>
       <layout>NOTE</layout>
       <charCount>115</charCount>
@@ -267,7 +253,6 @@
       <type>FILE</type>
       <class>WORLD</class>
       <status>Major</status>
-      <expanded>False</expanded>
       <exported>True</exported>
       <layout>NOTE</layout>
       <charCount>28</charCount>
@@ -287,7 +272,6 @@
       <type>FILE</type>
       <class>NOVEL</class>
       <status>New</status>
-      <expanded>False</expanded>
       <exported>True</exported>
       <layout>SCENE</layout>
       <charCount>0</charCount>

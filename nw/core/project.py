@@ -1572,7 +1572,6 @@ class NWItem():
         xSub = self._subPack(xPack,"type",     text=str(self.itemType.name))
         xSub = self._subPack(xPack,"class",    text=str(self.itemClass.name))
         xSub = self._subPack(xPack,"status",   text=str(self.itemStatus))
-        xSub = self._subPack(xPack,"expanded", text=str(self.isExpanded))
         if self.itemType == nwItemType.FILE:
             xSub = self._subPack(xPack,"exported",  text=str(self.isExported))
             xSub = self._subPack(xPack,"layout",    text=str(self.itemLayout.name))
@@ -1580,6 +1579,8 @@ class NWItem():
             xSub = self._subPack(xPack,"wordCount", text=str(self.wordCount), none=False)
             xSub = self._subPack(xPack,"paraCount", text=str(self.paraCount), none=False)
             xSub = self._subPack(xPack,"cursorPos", text=str(self.cursorPos), none=False)
+        else:
+            xSub = self._subPack(xPack,"expanded", text=str(self.isExpanded))
         return
 
     def unpackXML(self, xItem):
