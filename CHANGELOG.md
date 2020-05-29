@@ -7,6 +7,7 @@
 * The back-references list now shows references to any tag in the open document, not just the first tag. Issue #227, PR #234.
 * Clicking a tag now tries to scroll to the header where the tag is set. The index needed a couple of minor changes for this feature, so this will invalidate the old index for a project, and require a new to be built. This is done automatically. PR #234.
 * Moved the Close button on the "Build Novel project" dialog to the area with the other buttons since we anyway increased the size of that area. PR #256.
+* Updated the unit for Preferences > Editor > Big document limit from `kb` to `kb`. Issue #258, PR #260.
 
 **Project Structure**
 
@@ -18,13 +19,6 @@
 
 * Dropped the usage of .bak copies of document files. This was the old method to ensure the document data was written successfully, but it uses twice the storage space. Instead, writing via a temp file is the safe way to save files. PR #248.
 * The project class now records the accumulated time in seconds a project has been opened. This data is not yet displayed anywhere, but it is being tracked in the project XML file. PR #261.
-
-
-## Version 0.6.4 [2020-xx-xx]
-
-**User Interface**
-
-* Updated the unit for Preferences > Editor > Big document limit from `kb` to `kb`. Issue #258, PR #260.
 
 
 ## Version 0.6.3 [2020-05-28]
