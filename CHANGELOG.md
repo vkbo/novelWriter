@@ -1,5 +1,12 @@
 # novelWriter ChangeLog
 
+## Version 0.6.4 [2020-xx-xx]
+
+**User Interface**
+
+* Updated the unit for Preferences > Editor > Big document limit from `kb` to `kb`. Issue #258, PR #260.
+
+
 ## Version 0.6.3 [2020-05-28]
 
 **Bugfixes**
