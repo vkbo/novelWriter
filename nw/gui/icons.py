@@ -249,7 +249,9 @@ class GuiIcons:
             try:
                 confParser.read_file(open(themeConf, mode="r", encoding="utf8"))
             except Exception as e:
-                self.theParent.makeAlert(["Could not load theme config file.",str(e)],nwAlert.ERROR)
+                self.theParent.makeAlert(
+                    ["Could not load theme config file.",str(e)], nwAlert.ERROR
+                )
                 continue
             themeName = ""
             if confParser.has_section("Main"):
@@ -295,7 +297,9 @@ class GuiIcons:
 
         # Finally. we check if we have a fallback icon
         if self.mainConf.guiDark:
-            fbackIcon = path.join(self.mainConf.iconPath, self.fbackName, "%s-dark.svg" % iconKey)
+            fbackIcon = path.join(
+                self.mainConf.iconPath, self.fbackName, "%s-dark.svg" % iconKey
+            )
             if path.isfile(fbackIcon):
                 logger.verbose("Loading icon '%s' from fallback theme" % iconKey)
                 return QIcon(fbackIcon)

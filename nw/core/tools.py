@@ -8,7 +8,6 @@
  File History:
  Created: 2019-04-22 [0.0.1] countWords
  Created: 2019-10-13 [0.2.3] numberToWord, _numberToWordEN
- Created: 2020-02-13 [0.4.3] projectMaintenance
  Merged:  2020-05-08 [0.4.5] All of the above into this file
 
  This file is a part of novelWriter
@@ -80,50 +79,6 @@ def countWords(theText):
         prevEmpty = countPara == False
 
     return charCount, wordCount, paraCount
-
-def projectMaintenance(theProject):
-    """Wrapper class for handling various tasks related to managing old
-    projects with content from older versions of novelWriter.
-    """
-    # Remove no longer used project cache folder
-    if path.isdir(theProject.projPath):
-        cacheDir = path.join(theProject.projPath, "cache")
-        if path.isdir(cacheDir):
-            logger.info("Deprecated cache folder found")
-            rmList = []
-            for i in range(10):
-                rmList.append(path.join(cacheDir, "nwProject.nwx.%d" % i))
-            rmList.append(path.join(cacheDir, "projCount.txt"))
-            for rmFile in rmList:
-                if path.isfile(rmFile):
-                    logger.info("Deleting: %s" % rmFile)
-                    try:
-                        unlink(rmFile)
-                    except Exception as e:
-                        logger.error(str(e))
-            logger.info("Deleting: %s" % cacheDir)
-            try:
-                rmdir(cacheDir)
-            except Exception as e:
-                logger.error(str(e))
-
-    # Remove no longer used meta files
-    rmList = []
-    rmList.append(path.join(theProject.projMeta, "mainOptions.json"))
-    rmList.append(path.join(theProject.projMeta, "exportOptions.json"))
-    rmList.append(path.join(theProject.projMeta, "outlineOptions.json"))
-    rmList.append(path.join(theProject.projMeta, "timelineOptions.json"))
-    rmList.append(path.join(theProject.projMeta, "docMergeOptions.json"))
-    rmList.append(path.join(theProject.projMeta, "sessionLogOptions.json"))
-    for rmFile in rmList:
-        if path.isfile(rmFile):
-            logger.info("Deleting: %s" % rmFile)
-            try:
-                unlink(rmFile)
-            except Exception as e:
-                logger.error(str(e))
-
-    return
 
 def numberToWord(numVal, theLanguage):
     """Wrapper for converting numbers to words for chapter headings.

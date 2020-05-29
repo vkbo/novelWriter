@@ -396,7 +396,7 @@ class GuiDocTree(QTreeWidget):
                 trItemP.takeChild(tIndex)
                 del self.theProject.projTree[tHandle]
             else:
-                self.makeAlert(["Cannot delete folder.","It is not empty."], nwAlert.ERROR)
+                self.makeAlert("Cannot delete folder. It is not empty.", nwAlert.ERROR)
                 return False
 
         elif nwItemS.itemType == nwItemType.ROOT:
@@ -407,7 +407,7 @@ class GuiDocTree(QTreeWidget):
                 self.theParent.mainMenu.setAvailableRoot()
                 self.theProject.setProjectChanged(True)
             else:
-                self.makeAlert(["Cannot delete root folder.","It is not empty."], nwAlert.ERROR)
+                self.makeAlert("Cannot delete root folder. It is not empty.", nwAlert.ERROR)
                 return False
 
         return True

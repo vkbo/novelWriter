@@ -137,13 +137,17 @@ class GuiMainStatus(QStatusBar):
         self._updateTime()
         return True
 
+    ##
+    #  Setters
+    ##
+
     def setRefTime(self, theTime):
         """Set the reference time for the status bar clock.
         """
         self.refTime = theTime
         return
 
-    def setStatus(self, theMessage, timeOut=10.0):
+    def setStatus(self, theMessage, timeOut=20.0):
         """Set the status bar message to display for 'timeOut' seconds.
         """
         self.showMessage(theMessage, int(timeOut*1000))

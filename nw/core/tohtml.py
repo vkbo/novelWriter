@@ -143,7 +143,7 @@ class ToHtml(Tokenizer):
         parStyle = None
         tmpResult = []
         hasHardBreak = False
-        for tType, tText, tFormat, tStyle in self.theTokens:
+        for tType, tLine, tText, tFormat, tStyle in self.theTokens:
 
             # Styles
             aStyle = []
@@ -174,6 +174,11 @@ class ToHtml(Tokenizer):
             else:
                 hStyle = ""
 
+            if self.linkHeaders:
+                aNm = "<a name='head_%s:T%06d'></a>" % (self.theHandle, tLine)
+            else:
+                aNm = ""
+
             # Process TextType
             if tType == self.T_EMPTY:
                 if parStyle is None:
@@ -191,23 +196,23 @@ class ToHtml(Tokenizer):
 
             elif tType == self.T_TITLE:
                 tHead = tText.replace(r"\\", "<br/>")
-                tmpResult.append("<h1 class='title'%s>%s</h1>\n" % (hStyle, tHead))
+                tmpResult.append("<h1 class='title'%s>%s%s</h1>\n" % (hStyle, aNm, tHead))
 
             elif tType == self.T_HEAD1:
                 tHead = tText.replace(r"\\", "<br/>")
-                tmpResult.append("<%s%s>%s</%s>\n" % (h1, hStyle, tHead, h1))
+                tmpResult.append("<%s%s>%s%s</%s>\n" % (h1, hStyle, aNm, tHead, h1))
 
             elif tType == self.T_HEAD2:
                 tHead = tText.replace(r"\\", "<br/>")
-                tmpResult.append("<%s%s>%s</%s>\n" % (h2, hStyle, tHead, h2))
+                tmpResult.append("<%s%s>%s%s</%s>\n" % (h2, hStyle, aNm, tHead, h2))
 
             elif tType == self.T_HEAD3:
                 tHead = tText.replace(r"\\", "<br/>")
-                tmpResult.append("<%s%s>%s</%s>\n" % (h3, hStyle, tHead, h3))
+                tmpResult.append("<%s%s>%s%s</%s>\n" % (h3, hStyle, aNm, tHead, h3))
 
             elif tType == self.T_HEAD4:
                 tHead = tText.replace(r"\\", "<br/>")
-                tmpResult.append("<%s%s>%s</%s>\n" % (h4, hStyle, tHead, h4))
+                tmpResult.append("<%s%s>%s%s</%s>\n" % (h4, hStyle, aNm, tHead, h4))
 
             elif tType == self.T_SEP:
                 tmpResult.append("<p class='sep'>%s</p>\n" % tText)
@@ -296,17 +301,17 @@ class ToHtml(Tokenizer):
         refTags = []
         if theBits[0] in nwLabels.KEY_NAME:
             retText += "<span class='tags'>%s:</span>&nbsp;" % nwLabels.KEY_NAME[theBits[0]]
-            if self.genMode == self.M_PREVIEW:
-                for tTag in theBits[1:]:
-                    refTags.append("<a href='#%s=%s'>%s</a>" % (
-                        theBits[0][1:], tTag, tTag
-                    ))
-                retText += ", ".join(refTags)
+            if theBits[0] == nwKeyWords.TAG_KEY:
+                retText += "<a name='tag_%s'>%s</a>" % (
+                    theBits[1], theBits[1]
+                )
             else:
-                if theBits[0] == nwKeyWords.TAG_KEY:
-                    retText += "<a name='tag_%s'/>%s" % (
-                        theBits[1], theBits[1]
-                    )
+                if self.genMode == self.M_PREVIEW:
+                    for tTag in theBits[1:]:
+                        refTags.append("<a href='#%s=%s'>%s</a>" % (
+                            theBits[0][1:], tTag, tTag
+                        ))
+                    retText += ", ".join(refTags)
                 else:
                     for tTag in theBits[1:]:
                         refTags.append("<a href='#tag_%s'>%s</a>" % (

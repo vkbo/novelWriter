@@ -28,7 +28,7 @@
 import logging
 import nw
 
-from PyQt5.QtCore import Qt
+from PyQt5.QtCore import Qt, QUrl
 from PyQt5.QtWidgets import QTextBrowser
 from PyQt5.QtGui import QTextOption, QFont, QPalette, QColor, QTextCursor
 
@@ -134,6 +134,7 @@ class GuiDocViewer(QTextBrowser):
         sPos = self.verticalScrollBar().value()
         aDoc = ToHtml(self.theProject, self.theParent)
         aDoc.setPreview(True, self.mainConf.viewComments)
+        aDoc.setLinkHeaders(True)
         aDoc.setText(tHandle)
         aDoc.doAutoReplace()
         aDoc.tokenizeText()
@@ -164,19 +165,17 @@ class GuiDocViewer(QTextBrowser):
         index being up to date.
         """
         logger.debug("Loading document from tag '%s'" % theTag)
-
-        if theTag in self.theParent.theIndex.tagIndex.keys():
-            theTarget = self.theParent.theIndex.tagIndex[theTag]
+        tHandle, onLine, sTitle = self.theParent.theIndex.getTagSource(theTag)
+        if tHandle is None:
+            self.theParent.makeAlert((
+                "Could not find the reference for tag '%s'. It either doesn't "
+                "exist, or the index is out of date. The index can be updated "
+                "from the Tools menu, or by pressing F9."
+            ) % theTag, nwAlert.ERROR)
+            return
         else:
-            logger.debug("The tag was not found in the index")
-            return False
-
-        if len(theTarget) != 3:
-            # Just to make sure the index is not messed up
-            return False
-
-        self.loadText(theTarget[1])
-
+            self.loadText(tHandle)
+            self.navigateTo("#head_%s:%s" % (tHandle, sTitle))
         return True
 
     def docAction(self, theAction):
@@ -198,6 +197,15 @@ class GuiDocViewer(QTextBrowser):
         else:
             logger.debug("Unknown or unsupported document action %s" % str(theAction))
             return False
+        return True
+
+    def navigateTo(self, navLink):
+        """Go to a specific #link in the document.
+        """
+        if not isinstance(navLink, str):
+            return False
+        if navLink.startswith("#"):
+            self.setSource(QUrl(navLink))
         return True
 
     def updateDocMargins(self):
@@ -234,6 +242,33 @@ class GuiDocViewer(QTextBrowser):
         return
 
     ##
+    #  Setters
+    ##
+
+    def setCursorPosition(self, thePosition):
+        """Move the cursor to a given position in the document.
+        """
+        if not isinstance(thePosition, int):
+            return False
+        if thePosition >= 0:
+            theCursor = self.textCursor()
+            theCursor.setPosition(thePosition)
+            self.setTextCursor(theCursor)
+        return True
+
+    def setCursorLine(self, theLine):
+        """Move the cursor to a given line in the document.
+        """
+        if not isinstance(theLine, int):
+            return False
+        if theLine >= 0:
+            theBlock = self.qDocument.findBlockByLineNumber(theLine)
+            if theBlock:
+                self.setCursorPosition(theBlock.position())
+                logger.verbose("Cursor moved to line %d" % theLine)
+        return True
+
+    ##
     #  Events
     ##
 
@@ -262,25 +297,11 @@ class GuiDocViewer(QTextBrowser):
         """Slot for a link in the document being clicked.
         """
         theLink = theURL.url()
-        tHandle = None
-        onLine  = 0
-        theTag  = ""
+        logger.verbose("Clicked link: '%s'" % theLink)
         if len(theLink) > 0:
             theBits = theLink.split("=")
             if len(theBits) == 2:
-                theTag = theBits[1]
-                tHandle, onLine = self.theParent.theIndex.getTagSource(theBits[1])
-
-        if tHandle is None:
-            self.theParent.makeAlert((
-                "Could not find the reference for tag '%s'. It either doesn't exist, or the index "
-                "is out of date. The index can be updated from the Tools menu.") % theTag,
-                nwAlert.ERROR
-            )
-            return
-        else:
-            self.loadText(tHandle)
-
+                self.loadFromTag(theBits[1])
         return
 
     def _makeStyleSheet(self):

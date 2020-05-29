@@ -6,7 +6,7 @@ with open("README.md", "r") as inFile:
 
 setuptools.setup(
     name = "novelWriter",
-    version = "0.6.3",
+    version = "0.7.0rc1",
     author = "Veronica Berglyd Olsen",
     author_email = "code@vkbo.net",
     description = "A markdown-like document editor for writing novels",
@@ -27,7 +27,10 @@ setuptools.setup(
         "Source Code": "https://github.com/vkbo/novelWriter",
     },
     classifiers = [
-        "Programming Language :: Python :: 3",
+        "Programming Language :: Python :: 3 :: Only",
+        "Programming Language :: Python :: 3.6",
+        "Programming Language :: Python :: 3.7",
+        "Programming Language :: Python :: 3.8",
         "License :: OSI Approved :: GNU General Public License v3 (GPLv3)",
         "Development Status :: 3 - Alpha",
         "Operating System :: OS Independent",

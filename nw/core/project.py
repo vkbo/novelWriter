@@ -31,9 +31,10 @@
 """
 
 import logging
+import json
 import nw
 
-from os import path, mkdir, listdir, unlink, rename
+from os import path, mkdir, listdir, unlink, rename, rmdir
 from lxml import etree
 from hashlib import sha256
 from time import time
@@ -42,7 +43,6 @@ from shutil import make_archive
 from PyQt5.QtWidgets import QMessageBox
 
 from nw.gui.tools import OptionState
-from nw.core.tools import projectMaintenance
 from nw.core.document import NWDoc
 from nw.common import checkString, checkBool, checkInt, formatTimeStamp
 from nw.constants import (
@@ -70,12 +70,15 @@ class NWProject():
         self.lockedBy    = None  # Data on which computer has the project open
         self.saveCount   = 0     # Meta data: number of saves
         self.autoCount   = 0     # Meta data: number of automatic saves
+        self.editTime    = 0     # The accumulated edit time read from the project file
 
         # Class Settings
-        self.projPath = None # The full path to where the currently open project is saved
-        self.projMeta = None # The full path to the project's meta data folder
-        self.projDict = None # The spell check dictionary
-        self.projFile = None # The file name of the project main XML file
+        self.projPath    = None # The full path to where the currently open project is saved
+        self.projMeta    = None # The full path to the project's meta data folder
+        self.projCache   = None # The full path to the project's cache folder
+        self.projContent = None # The full path to the project's content folder
+        self.projDict    = None # The spell check dictionary
+        self.projFile    = None # The file name of the project main XML file
 
         # Project Meta
         self.projName    = "" # Project name (working title)
@@ -112,7 +115,7 @@ class NWProject():
         CUSTOM, and always have parent handle set to None.
         """
         if not self.projTree.checkRootUnique(rootClass):
-            self.makeAlert("Duplicate root item detected!", nwAlert.ERROR)
+            self.makeAlert("Duplicate root item detected.", nwAlert.ERROR)
             return None
         newItem = NWItem(self)
         newItem.setName(rootName)
@@ -195,6 +198,8 @@ class NWProject():
         # Project Settings
         self.projPath    = None
         self.projMeta    = None
+        self.projCache   = None
+        self.projContent = None
         self.projDict    = None
         self.projFile    = nwFiles.PROJ_FILE
         self.projName    = ""
@@ -203,7 +208,7 @@ class NWProject():
         self.autoReplace = {}
         self.titleFormat = {
             "title"        : r"%title%",
-            "chapter"      : r"Chapter %num%\\%title%",
+            "chapter"      : r"Chapter %ch%: %title%",
             "unnumbered"   : r"%title%",
             "scene"        : r"* * *",
             "section"      : r"",
@@ -246,11 +251,30 @@ class NWProject():
         self.projPath = path.abspath(path.dirname(fileName))
         logger.debug("Opening project: %s" % self.projPath)
 
-        self.projMeta = path.join(self.projPath,"meta")
+        # Standard Folders and Files
+        # ==========================
+
+        if not self.ensureFolderStructure():
+            return False
+
         self.projDict = path.join(self.projMeta, nwFiles.PROJ_DICT)
 
-        if not self._checkFolder(self.projMeta):
-            return False
+        # Check for Old Legacy Data
+        # =========================
+
+        errList = []
+        for projItem in listdir(self.projPath):
+            logger.verbose("Project contains: %s" % projItem)
+            if projItem.startswith("data_"):
+                self._legacyDataFolder(projItem)
+
+        if errList:
+            self.makeAlert(errList, nwAlert.ERROR)
+
+        self._deprecatedFiles()
+
+        # Project Lock
+        # ============
 
         if overrideLock:
             self._clearLockFile()
@@ -267,10 +291,8 @@ class NWProject():
         else:
             logger.verbose("Project is not locked")
 
-        try:
-            projectMaintenance(self)
-        except Exception as E:
-            logger.error(str(E))
+        # Open The Project XML File
+        # =========================
 
         try:
             nwXML = etree.parse(fileName)
@@ -291,7 +313,7 @@ class NWProject():
                 self.clearProject()
                 return False
 
-        xRoot   = nwXML.getroot()
+        xRoot = nwXML.getroot()
         nwxRoot = xRoot.tag
 
         appVersion = "Unknown"
@@ -310,16 +332,50 @@ class NWProject():
             self.saveCount = checkInt(xRoot.attrib["saveCount"], 0, False)
         if "autoCount" in xRoot.attrib:
             self.autoCount = checkInt(xRoot.attrib["autoCount"], 0, False)
+        if "editTime" in xRoot.attrib:
+            self.editTime = checkInt(xRoot.attrib["editTime"], 0, False)
 
         logger.verbose("XML root is %s" % nwxRoot)
         logger.verbose("File version is %s" % fileVersion)
 
-        if not nwxRoot == "novelWriterXML" or not fileVersion == "1.0":
+        # Check File Type
+        # ===============
+
+        if not nwxRoot == "novelWriterXML":
             self.makeAlert(
-                "Project file does not appear to be a novelWriterXML file version 1.0",
+                "Project file does not appear to be a novelWriterXML file.",
                 nwAlert.ERROR
             )
             return False
+
+        # Check Project Storage Version
+        # =============================
+
+        if fileVersion == "1.0":
+            msgBox = QMessageBox()
+            msgRes = msgBox.question(self.theParent, "Old Project Version", (
+                "The project file and data is created by a %s version lower than 0.7. "
+                "Do you want to upgrade the project to the most recent format?<br><br>"
+                "Note that after the upgrade, you cannot open the project with an older "
+                "version of %s any more, so make sure you have a recent backup."
+            ) % (
+                nw.__package__, nw.__package__
+            ))
+            if msgRes == QMessageBox.Yes:
+                self._updateStorage()
+            else:
+                return False
+        elif fileVersion != "1.1":
+            self.makeAlert((
+                "Unknown or unsupported %s project format. "
+                "The project cannot be opened by this version of %s."
+            ) % (
+                nw.__package__, nw.__package__
+            ), nwAlert.ERROR)
+            return False
+
+        # Check novelWriter Version
+        # =========================
 
         if int(hexVersion, 16) > int(nw.__hexversion__, 16) and self.mainConf.showGUI:
             msgBox = QMessageBox()
@@ -332,6 +388,9 @@ class NWProject():
             ))
             if msgRes != QMessageBox.Yes:
                 return False
+
+        # Start Parsing XML
+        # =================
 
         for xChild in xRoot:
             if xChild.tag == "project":
@@ -350,6 +409,7 @@ class NWProject():
                         self.bookAuthors.append(xItem.text)
                     elif xItem.tag == "backup":
                         self.doBackup = checkBool(xItem.text, False)
+
             elif xChild.tag == "settings":
                 logger.debug("Found project settings")
                 for xItem in xChild:
@@ -377,6 +437,7 @@ class NWProject():
                         for xEntry in xItem:
                             titleFormat[xEntry.tag] = checkString(xEntry.text, "", False)
                         self.setTitleFormat(titleFormat)
+
             elif xChild.tag == "content":
                 logger.debug("Found project content")
                 self.projTree.unpackXML(xChild)
@@ -404,15 +465,13 @@ class NWProject():
         file.
         """
         if self.projPath is None:
-            self.makeAlert("Project path not set, cannot save.", nwAlert.ERROR)
+            self.makeAlert(
+                "Project path not set, cannot save project.", nwAlert.ERROR
+            )
             return False
 
-        self.projMeta = path.join(self.projPath,"meta")
         saveTime = time()
-
-        if not self._checkFolder(self.projPath):
-            return False
-        if not self._checkFolder(self.projMeta):
+        if not self.ensureFolderStructure():
             return False
 
         logger.debug("Saving project: %s" % self.projPath)
@@ -427,10 +486,11 @@ class NWProject():
         nwXML = etree.Element("novelWriterXML",attrib={
             "appVersion"  : str(nw.__version__),
             "hexVersion"  : str(nw.__hexversion__),
-            "fileVersion" : "1.0",
+            "fileVersion" : "1.1",
             "saveCount"   : str(self.saveCount),
             "autoCount"   : str(self.autoCount),
             "timeStamp"   : formatTimeStamp(saveTime),
+            "editTime"    : str(int(self.editTime + saveTime - self.projOpened)),
         })
 
         # Save Project Meta
@@ -480,7 +540,7 @@ class NWProject():
                     xml_declaration = True
                 ))
         except Exception as e:
-            self.makeAlert(["Failed to save project.",str(e)], nwAlert.ERROR)
+            self.makeAlert(["Failed to save project.", str(e)], nwAlert.ERROR)
             return False
 
         # If we're here, the file was successfully saved,
@@ -507,10 +567,31 @@ class NWProject():
     def closeProject(self):
         """Close the current project and clear all meta data.
         """
+        self.projTree.writeToCFiles()
         self._appendSessionStats()
         self._clearLockFile()
         self.clearProject()
         self.lockedBy = None
+        return True
+
+    def ensureFolderStructure(self):
+        """Ensure that all necessary folders exist in the project
+        folder.
+        """
+        if self.projPath is None or self.projPath == "":
+            return False
+
+        self.projMeta    = path.join(self.projPath, "meta")
+        self.projCache   = path.join(self.projPath, "cache")
+        self.projContent = path.join(self.projPath, "content")
+
+        if not self._checkFolder(self.projMeta):
+            return False
+        if not self._checkFolder(self.projCache):
+            return False
+        if not self._checkFolder(self.projContent):
+            return False
+
         return True
 
     ##
@@ -937,35 +1018,26 @@ class NWProject():
         if self.projPath is None:
             return
 
-        # First, scan the project data folders
-        itemList = []
-        for subItem in listdir(self.projPath):
-            if subItem[:5] != "data_":
-                continue
-            dataDir = path.join(self.projPath,subItem)
-            for subFile in listdir(dataDir):
-                if subFile[-4:] == ".nwd":
-                    newItem = path.join(subItem,subFile)
-                    itemList.append(newItem)
-
-        # Then check the valid files
+        # Then check the files in the data folder
         orphanFiles = []
-        for fileItem in itemList:
-            if len(fileItem) != 28:
-                # Just to be safe, shouldn't happen
+        for fileItem in listdir(self.projContent):
+            if not fileItem.endswith(".nwd"):
                 logger.warning("Skipping file %s" % fileItem)
                 continue
-            fHandle = fileItem[5]+fileItem[7:19]
+            if len(fileItem) != 17:
+                logger.warning("Skipping file %s" % fileItem)
+                continue
+            fHandle = fileItem[:13]
             if fHandle in self.projTree:
-                logger.debug("Checking file %s, handle %s: OK" % (fileItem,fHandle))
+                logger.debug("Checking file %s, handle %s: OK" % (fileItem, fHandle))
             else:
-                logger.debug("Checking file %s, handle %s: Orphaned" % (fileItem,fHandle))
+                logger.debug("Checking file %s, handle %s: Orphaned" % (fileItem, fHandle))
                 orphanFiles.append(fHandle)
 
         # Report status
         if len(orphanFiles) > 0:
             self.makeAlert(
-                "Found %d orphaned file(s) in project folder!" % len(orphanFiles),
+                "Found %d orphaned file(s) in project folder." % len(orphanFiles),
                 nwAlert.WARN
             )
         else:
@@ -998,7 +1070,7 @@ class NWProject():
     def _appendSessionStats(self):
         """Append session statistics to the sessions log file.
         """
-        if self.projMeta is None:
+        if not self.ensureFolderStructure():
             return False
 
         sessionFile = path.join(self.projMeta, nwFiles.SESS_INFO)
@@ -1016,12 +1088,122 @@ class NWProject():
 
         return True
 
+    ##
+    #  Legacy Data Structure Handlers
+    ##
+
+    def _legacyDataFolder(self, theFolder):
+        """Clean up legacy data folders.
+        """
+        errList = []
+        theData = path.join(self.projPath, theFolder)
+        if not path.isdir(theData):
+            errList.append("Not a folder: %s" % theData)
+            return errList
+
+        logger.info("Old data folder %s found" % theFolder)
+
+        # Move Documents to Content
+        # =========================
+        for dataItem in listdir(theData):
+            theFile = path.join(theData, dataItem)
+            if not path.isfile(theFile):
+                theErr = self._moveUnknownItem(theData, dataItem)
+                if theErr:
+                    errList.append(theErr)
+                continue
+
+            if len(dataItem) == 21 and dataItem.endswith("_main.nwd"):
+                tHandle = theFolder[-1]+dataItem[:12]
+                newPath = path.join(self.projContent, tHandle+".nwd")
+                try:
+                    rename(theFile, newPath)
+                    logger.info("Moved file: %s" % theFile)
+                    logger.info("New location: %s" % newPath)
+                except Exception as e:
+                    logger.error(str(e))
+                    errList.append("Could not move: %s" % theFile)
+
+            elif len(dataItem) == 21 and dataItem.endswith("_main.bak"):
+                try:
+                    unlink(theFile)
+                    logger.info("Deleted file: %s" % theFile)
+                except Exception as e:
+                    logger.error(str(e))
+                    errList.append("Could not delete: %s" % theFile)
+
+            else:
+                theErr = self._moveUnknownItem(theData, dataItem)
+                if theErr:
+                    errList.append(theErr)
+
+        # Remove Data Folder
+        # ==================
+        try:
+            rmdir(theData)
+            logger.info("Removed folder: %s" % theFolder)
+        except:
+            errList.append("Failed to remove: %s" % theFolder)
+
+        return errList
+
+    def _moveUnknownItem(self, theDir, theItem):
+        """Move an item that doesn't belong in the project folder to
+        a junk folder.
+        """
+        theJunk = path.join(self.projPath, "junk")
+        if not self._checkFolder(theJunk):
+            return "Could not make folder: %s" % theJunk
+
+        theSrc = path.join(theDir, theItem)
+        theDst = path.join(theJunk, theItem)
+
+        try:
+            rename(theSrc, theDst)
+            logger.info("Moved to junk: %s" % theSrc)
+        except Exception as e:
+            logger.error(str(e))
+            return "Could not move item %s to junk." % theSrc
+
+        return ""
+
+    def _deprecatedFiles(self):
+        """Delete files that are no longer used by novelWriter.
+        """
+        rmList = []
+        rmList.append(path.join(self.projCache, "nwProject.nwx.0"))
+        rmList.append(path.join(self.projCache, "nwProject.nwx.1"))
+        rmList.append(path.join(self.projCache, "nwProject.nwx.2"))
+        rmList.append(path.join(self.projCache, "nwProject.nwx.3"))
+        rmList.append(path.join(self.projCache, "nwProject.nwx.4"))
+        rmList.append(path.join(self.projCache, "nwProject.nwx.5"))
+        rmList.append(path.join(self.projCache, "nwProject.nwx.6"))
+        rmList.append(path.join(self.projCache, "nwProject.nwx.7"))
+        rmList.append(path.join(self.projCache, "nwProject.nwx.8"))
+        rmList.append(path.join(self.projCache, "nwProject.nwx.9"))
+        rmList.append(path.join(self.projMeta,  "mainOptions.json"))
+        rmList.append(path.join(self.projMeta,  "exportOptions.json"))
+        rmList.append(path.join(self.projMeta,  "outlineOptions.json"))
+        rmList.append(path.join(self.projMeta,  "timelineOptions.json"))
+        rmList.append(path.join(self.projMeta,  "docMergeOptions.json"))
+        rmList.append(path.join(self.projMeta,  "sessionLogOptions.json"))
+
+        for rmFile in rmList:
+            if path.isfile(rmFile):
+                logger.info("Deleting: %s" % rmFile)
+                try:
+                    unlink(rmFile)
+                except Exception as e:
+                    logger.error(str(e))
+
+        return
+
 # END Class NWProject
 
-# ================================================================================================ #
+# =============================================================================================== #
 #  NWTree
 #  Class holding the project tree for the NWProject
-# ================================================================================================ #
+# =============================================================================================== #
 
 class NWTree():
 
@@ -1102,7 +1284,7 @@ class NWTree():
         for tHandle in self._treeOrder:
             tItem = self.__getitem__(tHandle)
             tItem.packXML(xContent)
-        return 
+        return
 
     def unpackXML(self, xContent):
         """Iterate through all items of a content XML object and add
@@ -1119,6 +1301,51 @@ class NWTree():
                 self.append(nwItem.itemHandle, nwItem.parHandle, nwItem)
 
         return True
+
+    def writeToCFiles(self):
+        """Write the convenience table of contents files in the root of
+        the project directory. These files are there to assist the user
+        if they wish to browse the stored files.
+        """
+        tocText = path.join(self.theProject.projPath, nwFiles.TOC_TXT)
+        tocJson = path.join(self.theProject.projPath, nwFiles.TOC_JSON)
+
+        jsonData = []
+        try:
+            # Dump the text
+            with open(tocText, mode="w", encoding="utf8") as outFile:
+                outFile.write("\n")
+                outFile.write(" Table of Contents\n")
+                outFile.write("===================\n")
+                outFile.write("\n")
+                outFile.write(" %-25s  %-9s  %s\n" %("File Name","Class","Document Label"))
+                outFile.write("-"*80+"\n")
+                for tHandle in sorted(self._treeOrder):
+                    tItem = self.__getitem__(tHandle)
+                    if tItem is None:
+                        continue
+                    tFile = tHandle+".nwd"
+                    if path.isfile(path.join(self.theProject.projContent, tFile)):
+                        outFile.write(" %-25s  %-9s  %s\n" %(
+                            path.join("content", tFile),
+                            tItem.itemClass.name,
+                            tItem.itemName,
+                        ))
+                        jsonData.append([
+                            path.join("content", tFile),
+                            tItem.itemClass.name,
+                            tItem.itemName,
+                        ])
+                outFile.write("\n")
+
+            # Dump the JSON
+            with open(tocJson, mode="w+", encoding="utf8") as outFile:
+                outFile.write(json.dumps(jsonData, indent=2))
+
+        except Exception as e:
+            logger.error(str(e))
+
+        return
 
     ##
     #  Tree Structure Methods
@@ -1356,10 +1583,10 @@ class NWTree():
 
 # END Class NWTree
 
-# ================================================================================================ #
+# =============================================================================================== #
 #  NWItem
 #  Class holding the project items making up the NWProject
-# ================================================================================================ #
+# =============================================================================================== #
 
 class NWItem():
 
@@ -1402,7 +1629,6 @@ class NWItem():
         xSub = self._subPack(xPack,"type",     text=str(self.itemType.name))
         xSub = self._subPack(xPack,"class",    text=str(self.itemClass.name))
         xSub = self._subPack(xPack,"status",   text=str(self.itemStatus))
-        xSub = self._subPack(xPack,"expanded", text=str(self.isExpanded))
         if self.itemType == nwItemType.FILE:
             xSub = self._subPack(xPack,"exported",  text=str(self.isExported))
             xSub = self._subPack(xPack,"layout",    text=str(self.itemLayout.name))
@@ -1410,6 +1636,8 @@ class NWItem():
             xSub = self._subPack(xPack,"wordCount", text=str(self.wordCount), none=False)
             xSub = self._subPack(xPack,"paraCount", text=str(self.paraCount), none=False)
             xSub = self._subPack(xPack,"cursorPos", text=str(self.cursorPos), none=False)
+        else:
+            xSub = self._subPack(xPack,"expanded", text=str(self.isExpanded))
         return
 
     def unpackXML(self, xItem):
@@ -1601,10 +1829,10 @@ class NWItem():
 
 # END Class NWItem
 
-# ================================================================================================ #
+# =============================================================================================== #
 #  NWStatus
 #  Class holding the item status values stored in the NWProject
-# ================================================================================================ #
+# =============================================================================================== #
 
 class NWStatus():
 

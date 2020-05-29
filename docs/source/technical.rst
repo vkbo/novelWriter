@@ -30,9 +30,9 @@ The project XML file is indent-formatted, suitable for diff tools and version co
 Project Documents
 -----------------
 
-The project documents are saved in folders starting with ``data_``.
+The project documents are saved in a folder in the main project folder named ``content``.
 Each document has a file handle taken from the first 13 characters of a SHA256 hash of the system time when the file was first created.
-The documents are saved with a folder and filename derived from this hash.
+The documents are saved with a filename assembled from this hash and the file extension ``.nwd``.
 If you wish to find the physical location of a file in the project, you can either look it up in the project XML file, or select :menuselection:`Document --> Show File Details` in the menu when having the document open.
 
 The reason for this cryptic file naming is to avoid issues with file naming conventions and restrictions on different operating systems, and also to have a file name that does not depend on what the user names the files, or changes it to.

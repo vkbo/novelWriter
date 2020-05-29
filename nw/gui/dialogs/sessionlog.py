@@ -180,11 +180,15 @@ class GuiSessionLogView(QDialog):
                     inData = inLine.split()
                     if len(inData) != 8:
                         continue
-                    dStart = datetime.strptime("%s %s" % (inData[1],inData[2]), nwConst.tStampFmt)
-                    dEnd   = datetime.strptime("%s %s" % (inData[4],inData[5]), nwConst.tStampFmt)
+                    dStart = datetime.strptime(
+                        "%s %s" % (inData[1],inData[2]), nwConst.tStampFmt
+                    )
+                    dEnd = datetime.strptime(
+                        "%s %s" % (inData[4],inData[5]), nwConst.tStampFmt
+                    )
                     nWords = int(inData[7])
-                    tDiff  = dEnd - dStart
-                    sDiff  = tDiff.total_seconds()
+                    tDiff = dEnd - dStart
+                    sDiff = tDiff.total_seconds()
 
                     self.timeTotal  += sDiff
                     if abs(nWords) > 0:
@@ -196,7 +200,9 @@ class GuiSessionLogView(QDialog):
                     if hideNegative and nWords < 0:
                         continue
 
-                    newItem = QTreeWidgetItem([str(dStart),self._formatTime(sDiff),str(nWords),""])
+                    newItem = QTreeWidgetItem(
+                        [str(dStart), self._formatTime(sDiff), str(nWords), ""]
+                    )
 
                     newItem.setTextAlignment(1,Qt.AlignRight)
                     newItem.setTextAlignment(2,Qt.AlignRight)
@@ -208,7 +214,9 @@ class GuiSessionLogView(QDialog):
                     self.listBox.addTopLevelItem(newItem)
 
         except Exception as e:
-            self.theParent.makeAlert(["Failed to read session log file.",str(e)], nwAlert.ERROR)
+            self.theParent.makeAlert(
+                ["Failed to read session log file.",str(e)], nwAlert.ERROR
+            )
             return False
 
         self.labelFilter.setText(self._formatTime(self.timeFilter))

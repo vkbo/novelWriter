@@ -533,7 +533,9 @@ class Config:
 
         # Write config file
         try:
-            cnfParse.write(open(path.join(self.confPath,self.confFile),mode="w",encoding="utf8"))
+            cnfParse.write(
+                open(path.join(self.confPath, self.confFile), mode="w", encoding="utf8")
+            )
             self.confChanged = False
         except Exception as e:
             logger.error("Could not save config file")
