@@ -17,6 +17,13 @@
 * Dropped the usage of .bak copies of document files. This was the old method to ensure the document data was written successfully, but it uses twice the storage space. Instead, writing via a temp file is the safe way to save files. PR #248.
 
 
+## Version 0.6.4 [2020-xx-xx]
+
+**User Interface**
+
+* Updated the unit for Preferences > Editor > Big document limit from `kb` to `kb`. Issue #258, PR #260.
+
+
 ## Version 0.6.3 [2020-05-28]
 
 **Bugfixes**

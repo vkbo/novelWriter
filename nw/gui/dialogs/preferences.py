@@ -573,7 +573,7 @@ class GuiConfigEditEditingTab(QWidget):
             "Big document limit",
             self.bigDocLimit,
             "Disables full spell checking over the size limit.",
-            theUnit="kb"
+            theUnit="kB"
         )
 
         return

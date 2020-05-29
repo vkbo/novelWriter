@@ -183,10 +183,11 @@ class nwQuotes():
 # END Class nwQuotes
 
 class nwUnicode:
-    """Suppoted unicode character constants and translation maps.
+    """Suppoted unicode character constants and translation maps for HTML.
     """
 
     # Unicode Constants
+    # =================
 
     ## Quotation Marks
     U_QUOT   = "\u0022" # Quotation mark
@@ -216,7 +217,6 @@ class nwUnicode:
 
     ## Other
     U_NBSP   = "\u00a0" # Non-breaking space
-    U_PARA   = "\u2029" # Paragraph separator
     U_CHECK  = "\u2714" # Heavy check mark
     U_MULT   = "\u2715" # Multiplication x
 
@@ -231,6 +231,7 @@ class nwUnicode:
     U_LTRIS  = "\u25c2" # Left-pointing triangle, small
 
     # HTML Equivalents
+    # ================
 
     ## Quotes
     H_QUOT   = "&quot;"
