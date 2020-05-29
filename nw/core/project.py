@@ -31,6 +31,7 @@
 """
 
 import logging
+import json
 import nw
 
 from os import path, mkdir, listdir, unlink, rename, rmdir
@@ -566,6 +567,7 @@ class NWProject():
     def closeProject(self):
         """Close the current project and clear all meta data.
         """
+        self.projTree.writeToCFiles()
         self._appendSessionStats()
         self._clearLockFile()
         self.clearProject()
@@ -1282,7 +1284,7 @@ class NWTree():
         for tHandle in self._treeOrder:
             tItem = self.__getitem__(tHandle)
             tItem.packXML(xContent)
-        return 
+        return
 
     def unpackXML(self, xContent):
         """Iterate through all items of a content XML object and add
@@ -1299,6 +1301,50 @@ class NWTree():
                 self.append(nwItem.itemHandle, nwItem.parHandle, nwItem)
 
         return True
+
+    def writeToCFiles(self):
+        """Write the convenience table of contents files in the root of
+        the project directory. These files are there to assist the user
+        if they wish to browse the stored files.
+        """
+        tocText = path.join(self.theProject.projPath, nwFiles.TOC_TXT)
+        tocJson = path.join(self.theProject.projPath, nwFiles.TOC_JSON)
+
+        jsonData = []
+        try:
+            # Dump the text
+            with open(tocText, mode="w", encoding="utf8") as outFile:
+                outFile.write("\n")
+                outFile.write(" Table of Contents\n")
+                outFile.write("===================\n")
+                outFile.write("\n")
+                outFile.write(" %-25s  %-9s  %s\n" %("File Name","Class","Document Label"))
+                outFile.write("-"*80+"\n")
+                for tHandle in sorted(self._treeOrder):
+                    tItem = self.__getitem__(tHandle)
+                    if tItem is None:
+                        continue
+                    tFile = tHandle+".nwd"
+                    if path.isfile(path.join(self.theProject.projContent, tFile)):
+                        outFile.write(" %-25s  %-9s  %s\n" %(
+                            path.join("content", tFile),
+                            tItem.itemClass.name,
+                            tItem.itemName,
+                        ))
+                        jsonData.append([
+                            path.join("content", tFile),
+                            tItem.itemClass.name,
+                            tItem.itemName,
+                        ])
+
+            # Dump the JSON
+            with open(tocJson, mode="w+", encoding="utf8") as outFile:
+                outFile.write(json.dumps(jsonData, indent=2))
+
+        except Exception as e:
+            logger.error(str(e))
+
+        return
 
     ##
     #  Tree Structure Methods
