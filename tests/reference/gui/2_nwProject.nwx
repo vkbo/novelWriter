@@ -18,7 +18,7 @@
     </autoReplace>
     <titleFormat>
       <title>%title%</title>
-      <chapter>Chapter %num%\\%title%</chapter>
+      <chapter>Chapter %ch%: %title%</chapter>
       <unnumbered>%title%</unnumbered>
       <scene>* * *</scene>
       <section></section>

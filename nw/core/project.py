@@ -69,6 +69,7 @@ class NWProject():
         self.lockedBy    = None  # Data on which computer has the project open
         self.saveCount   = 0     # Meta data: number of saves
         self.autoCount   = 0     # Meta data: number of automatic saves
+        self.editTime    = 0     # The accumulated edit time read from the project file
 
         # Class Settings
         self.projPath    = None # The full path to where the currently open project is saved
@@ -206,7 +207,7 @@ class NWProject():
         self.autoReplace = {}
         self.titleFormat = {
             "title"        : r"%title%",
-            "chapter"      : r"Chapter %num%\\%title%",
+            "chapter"      : r"Chapter %ch%: %title%",
             "unnumbered"   : r"%title%",
             "scene"        : r"* * *",
             "section"      : r"",
@@ -330,6 +331,8 @@ class NWProject():
             self.saveCount = checkInt(xRoot.attrib["saveCount"], 0, False)
         if "autoCount" in xRoot.attrib:
             self.autoCount = checkInt(xRoot.attrib["autoCount"], 0, False)
+        if "editTime" in xRoot.attrib:
+            self.editTime = checkInt(xRoot.attrib["editTime"], 0, False)
 
         logger.verbose("XML root is %s" % nwxRoot)
         logger.verbose("File version is %s" % fileVersion)
@@ -486,6 +489,7 @@ class NWProject():
             "saveCount"   : str(self.saveCount),
             "autoCount"   : str(self.autoCount),
             "timeStamp"   : formatTimeStamp(saveTime),
+            "editTime"    : str(int(self.editTime + saveTime - self.projOpened)),
         })
 
         # Save Project Meta
@@ -535,7 +539,7 @@ class NWProject():
                     xml_declaration = True
                 ))
         except Exception as e:
-            self.makeAlert(["Failed to save project.",str(e)], nwAlert.ERROR)
+            self.makeAlert(["Failed to save project.", str(e)], nwAlert.ERROR)
             return False
 
         # If we're here, the file was successfully saved,
