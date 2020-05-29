@@ -391,9 +391,13 @@ class GuiDocEditor(QTextEdit):
         uses QTextEdit->toPlainText for Qt versions lower than 5.9, and
         the QDocument->toRawText for higher version. The latter
         preserves non-breaking spaces, which the former does not.
+        We still want to get rid of page and line separators though.
+        See: https://doc.qt.io/qt-5/qtextdocument.html#toPlainText
         """
         if self.mainConf.verQtValue >= 50900:
-            theText = self.qDocument.toRawText().replace(nwUnicode.U_PARA,"\n")
+            theText = self.qDocument.toRawText()
+            theText = theText.replace("\u2028", "\n") # Line separators
+            theText = theText.replace("\u2029", "\n") # Paragraph separators
         else:
             theText = self.toPlainText()
         return theText
