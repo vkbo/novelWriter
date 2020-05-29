@@ -91,18 +91,17 @@ class NWDoc():
             if self.theItem.parHandle == self.theProject.projTree.trashRoot():
                 self.docEditable = False
 
-        docDir = "content"
         docFile = self.docHandle+".nwd"
-        self.fileLoc = path.join(docDir, docFile)
-        logger.debug("Opening document %s" % self.fileLoc)
-        dataDir = path.join(self.theProject.projPath, docDir)
-        docPath = path.join(dataDir, docFile)
+        logger.debug("Opening document %s" % docFile)
+
+        docPath = path.join(self.theProject.projContent, docFile)
+        self.fileLoc = docPath
 
         theText = ""
         self.docMeta = ""
         if path.isfile(docPath):
             try:
-                with open(docPath,mode="r",encoding="utf8") as inFile:
+                with open(docPath, mode="r", encoding="utf8") as inFile:
                     fstLine = inFile.readline()
                     if fstLine.startswith("%%~ "):
                         # This is the meta line
@@ -112,7 +111,7 @@ class NWDoc():
                     theText += inFile.read()
 
             except Exception as e:
-                self.makeAlert(["Failed to open document file.",str(e)], nwAlert.ERROR)
+                self.makeAlert(["Failed to open document file.", str(e)], nwAlert.ERROR)
                 # Note: Document must be cleared in case of an io error,
                 # or else the auto-save or save will try to overwrite it
                 # with an empty file. Return None to alert the caller.
@@ -138,25 +137,23 @@ class NWDoc():
         if self.docHandle is None or not self.docEditable:
             return False
 
-        docDir = "content"
+        self.theProject.ensureFolderStructure()
+
         docFile = self.docHandle+".nwd"
-        logger.debug("Saving document %s" % path.join(docDir, docFile))
-        dataPath = path.join(self.theProject.projPath, docDir)
-        docPath  = path.join(dataPath, docFile)
-        if not path.isdir(dataPath):
-            mkdir(dataPath)
-            logger.debug("Created folder %s" % dataPath)
+        logger.debug("Saving document %s" % docFile)
+
+        docPath = path.join(self.theProject.projContent, docFile)
+        docTemp = path.join(self.theProject.projContent, docFile+"~")
 
         itemPath = self.theProject.projTree.getItemPath(self.docHandle)
         docMeta  = "%%~ "+":".join(itemPath)+":"+self.theItem.itemName+"\n"
 
-        docTemp = path.join(dataPath, docFile+"~")
         try:
-            with open(docTemp,mode="w",encoding="utf8") as outFile:
+            with open(docTemp, mode="w", encoding="utf8") as outFile:
                 outFile.write(docMeta)
                 outFile.write(docText)
         except Exception as e:
-            self.makeAlert(["Could not save document.",str(e)], nwAlert.ERROR)
+            self.makeAlert(["Could not save document.", str(e)], nwAlert.ERROR)
             return False
 
         # If we're here, the file was successfully saved, so we can
@@ -173,13 +170,12 @@ class NWDoc():
         """Permanently delete a document source file and its backups
         from the project data folder.
         """
-        docDir = "content"
         docFile = self.docHandle+".nwd"
-        dataPath = path.join(self.theProject.projPath, docDir)
+
         chkList = []
-        chkList.append(path.join(dataPath, docFile))
-        chkList.append(path.join(dataPath, docFile+"~"))
-        chkList.append(path.join(dataPath, docFile[:-3]+"bak"))
+        chkList.append(path.join(self.theProject.projContent, docFile))
+        chkList.append(path.join(self.theProject.projContent, docFile+"~"))
+
         for chkFile in chkList:
             if path.isfile(chkFile):
                 try:
@@ -188,6 +184,7 @@ class NWDoc():
                 except Exception as e:
                     self.makeAlert(["Could not delete document file.",str(e)], nwAlert.ERROR)
                     return False
+
         return True
 
     ##

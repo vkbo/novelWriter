@@ -252,17 +252,10 @@ class NWProject():
         # Standard Folders and Files
         # ==========================
 
-        self.projMeta    = path.join(self.projPath, "meta")
-        self.projCache   = path.join(self.projPath, "cache")
-        self.projContent = path.join(self.projPath, "content")
-        self.projDict    = path.join(self.projMeta, nwFiles.PROJ_DICT)
+        if not self.ensureFolderStructure():
+            return False
 
-        if not self._checkFolder(self.projMeta):
-            return False
-        if not self._checkFolder(self.projCache):
-            return False
-        if not self._checkFolder(self.projContent):
-            return False
+        self.projDict = path.join(self.projMeta, nwFiles.PROJ_DICT)
 
         # Check for Old Legacy Data
         # =========================
@@ -473,15 +466,8 @@ class NWProject():
             )
             return False
 
-        self.projMeta = path.join(self.projPath, "meta")
-        self.projContent = path.join(self.projPath, "content")
         saveTime = time()
-
-        if not self._checkFolder(self.projPath):
-            return False
-        if not self._checkFolder(self.projMeta):
-            return False
-        if not self._checkFolder(self.projContent):
+        if not self.ensureFolderStructure():
             return False
 
         logger.debug("Saving project: %s" % self.projPath)
@@ -580,6 +566,26 @@ class NWProject():
         self._clearLockFile()
         self.clearProject()
         self.lockedBy = None
+        return True
+
+    def ensureFolderStructure(self):
+        """Ensure that all necessary folders exist in the project
+        folder.
+        """
+        if self.projPath is None or self.projPath == "":
+            return False
+
+        self.projMeta    = path.join(self.projPath, "meta")
+        self.projCache   = path.join(self.projPath, "cache")
+        self.projContent = path.join(self.projPath, "content")
+
+        if not self._checkFolder(self.projMeta):
+            return False
+        if not self._checkFolder(self.projCache):
+            return False
+        if not self._checkFolder(self.projContent):
+            return False
+
         return True
 
     ##
@@ -1058,7 +1064,7 @@ class NWProject():
     def _appendSessionStats(self):
         """Append session statistics to the sessions log file.
         """
-        if self.projMeta is None:
+        if not self.ensureFolderStructure():
             return False
 
         sessionFile = path.join(self.projMeta, nwFiles.SESS_INFO)
