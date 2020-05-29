@@ -9,7 +9,6 @@ from nw.core.spellcheck import NWSpellSimple
 from nw.core.tokenizer import Tokenizer
 from nw.core.tohtml import ToHtml
 from nw.core.tools import countWords
-from nw.core.tools import projectMaintenance
 from nw.core.tools import numberToWord
 
 __all__ = [
@@ -22,6 +21,5 @@ __all__ = [
     "Tokenizer",
     "ToHtml",
     "countWords",
-    "projectMaintenance",
     "numberToWord",
 ]

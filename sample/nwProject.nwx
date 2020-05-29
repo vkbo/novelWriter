@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='utf-8'?>
-<novelWriterXML appVersion="0.6.2" hexVersion="0x000602f0" fileVersion="1.1" saveCount="189" autoCount="30" timeStamp="2020-05-28 20:19:28">
+<novelWriterXML appVersion="0.7.0rc1" hexVersion="0x000700c1" fileVersion="1.1" saveCount="193" autoCount="29" timeStamp="2020-05-29 22:52:06">
   <project>
     <name>Sample Project</name>
     <title>Sample Project</title>
@@ -11,8 +11,8 @@
     <spellCheck>True</spellCheck>
     <autoOutline>True</autoOutline>
     <lastEdited>636b6aa9b697b</lastEdited>
-    <lastViewed>bc0cbd2a407f3</lastViewed>
-    <lastWordCount>941</lastWordCount>
+    <lastViewed>ba8a28a246524</lastViewed>
+    <lastWordCount>914</lastWordCount>
     <autoReplace>
       <A>B</A>
       <B>E</B>
@@ -73,7 +73,7 @@
       <expanded>False</expanded>
       <exported>True</exported>
       <layout>PAGE</layout>
-      <charCount>210</charCount>
+      <charCount>208</charCount>
       <wordCount>40</wordCount>
       <paraCount>2</paraCount>
       <cursorPos>213</cursorPos>
@@ -89,7 +89,7 @@
       <charCount>23</charCount>
       <wordCount>5</wordCount>
       <paraCount>1</paraCount>
-      <cursorPos>27</cursorPos>
+      <cursorPos>0</cursorPos>
     </item>
     <item handle="e7ded148d6e4a" order="3" parent="7031beac91f75">
       <name>A Folder</name>
@@ -122,7 +122,7 @@
       <charCount>1199</charCount>
       <wordCount>216</wordCount>
       <paraCount>7</paraCount>
-      <cursorPos>1066</cursorPos>
+      <cursorPos>1266</cursorPos>
     </item>
     <item handle="bc0cbd2a407f3" order="2" parent="e7ded148d6e4a">
       <name>Another Scene</name>
@@ -135,7 +135,7 @@
       <charCount>476</charCount>
       <wordCount>93</wordCount>
       <paraCount>3</paraCount>
-      <cursorPos>428</cursorPos>
+      <cursorPos>551</cursorPos>
     </item>
     <item handle="ba8a28a246524" order="3" parent="e7ded148d6e4a">
       <name>Interlude</name>
@@ -148,7 +148,7 @@
       <charCount>633</charCount>
       <wordCount>101</wordCount>
       <paraCount>3</paraCount>
-      <cursorPos>752</cursorPos>
+      <cursorPos>1238</cursorPos>
     </item>
     <item handle="96b68994dfa3d" order="4" parent="e7ded148d6e4a">
       <name>A Note on Structure</name>
@@ -161,7 +161,7 @@
       <charCount>1692</charCount>
       <wordCount>313</wordCount>
       <paraCount>6</paraCount>
-      <cursorPos>551</cursorPos>
+      <cursorPos>1721</cursorPos>
     </item>
     <item handle="88706ddc78b1b" order="5" parent="e7ded148d6e4a">
       <name>Chapter Two</name>
@@ -174,7 +174,7 @@
       <charCount>139</charCount>
       <wordCount>28</wordCount>
       <paraCount>1</paraCount>
-      <cursorPos>242</cursorPos>
+      <cursorPos>343</cursorPos>
     </item>
     <item handle="ae7339df26ded" order="6" parent="e7ded148d6e4a">
       <name>We Found John!</name>
@@ -214,7 +214,7 @@
       <charCount>49</charCount>
       <wordCount>9</wordCount>
       <paraCount>1</paraCount>
-      <cursorPos>65</cursorPos>
+      <cursorPos>24</cursorPos>
     </item>
     <item handle="bb2c23b3c42cc" order="1" parent="f7e2d9f330615">
       <name>Jane Smith</name>
@@ -227,7 +227,7 @@
       <charCount>55</charCount>
       <wordCount>9</wordCount>
       <paraCount>1</paraCount>
-      <cursorPos>71</cursorPos>
+      <cursorPos>25</cursorPos>
     </item>
     <item handle="15c4492bd5107" order="2" parent="None">
       <name>Locations</name>
@@ -247,7 +247,7 @@
       <charCount>76</charCount>
       <wordCount>15</wordCount>
       <paraCount>1</paraCount>
-      <cursorPos>93</cursorPos>
+      <cursorPos>20</cursorPos>
     </item>
     <item handle="f1471bef9f2ae" order="1" parent="15c4492bd5107">
       <name>Space</name>
@@ -257,10 +257,10 @@
       <expanded>False</expanded>
       <exported>True</exported>
       <layout>NOTE</layout>
-      <charCount>241</charCount>
-      <wordCount>51</wordCount>
-      <paraCount>3</paraCount>
-      <cursorPos>135</cursorPos>
+      <charCount>115</charCount>
+      <wordCount>24</wordCount>
+      <paraCount>1</paraCount>
+      <cursorPos>133</cursorPos>
     </item>
     <item handle="5eaea4e8cdee8" order="2" parent="15c4492bd5107">
       <name>Mars</name>

@@ -42,7 +42,6 @@ from shutil import make_archive
 from PyQt5.QtWidgets import QMessageBox
 
 from nw.gui.tools import OptionState
-from nw.core.tools import projectMaintenance
 from nw.core.document import NWDoc
 from nw.common import checkString, checkBool, checkInt, formatTimeStamp
 from nw.constants import (
@@ -72,11 +71,12 @@ class NWProject():
         self.autoCount   = 0     # Meta data: number of automatic saves
 
         # Class Settings
-        self.projPath = None # The full path to where the currently open project is saved
-        self.projMeta = None # The full path to the project's meta data folder
-        self.projData = None # The full path to the project's data folder
-        self.projDict = None # The spell check dictionary
-        self.projFile = None # The file name of the project main XML file
+        self.projPath    = None # The full path to where the currently open project is saved
+        self.projMeta    = None # The full path to the project's meta data folder
+        self.projCache   = None # The full path to the project's cache folder
+        self.projContent = None # The full path to the project's content folder
+        self.projDict    = None # The spell check dictionary
+        self.projFile    = None # The file name of the project main XML file
 
         # Project Meta
         self.projName    = "" # Project name (working title)
@@ -196,7 +196,8 @@ class NWProject():
         # Project Settings
         self.projPath    = None
         self.projMeta    = None
-        self.projData    = None
+        self.projCache   = None
+        self.projContent = None
         self.projDict    = None
         self.projFile    = nwFiles.PROJ_FILE
         self.projName    = ""
@@ -248,14 +249,37 @@ class NWProject():
         self.projPath = path.abspath(path.dirname(fileName))
         logger.debug("Opening project: %s" % self.projPath)
 
-        self.projMeta = path.join(self.projPath,"meta")
-        self.projData = path.join(self.projPath,"content")
-        self.projDict = path.join(self.projMeta, nwFiles.PROJ_DICT)
+        # Standard Folders and Files
+        # ==========================
+
+        self.projMeta    = path.join(self.projPath, "meta")
+        self.projCache   = path.join(self.projPath, "cache")
+        self.projContent = path.join(self.projPath, "content")
+        self.projDict    = path.join(self.projMeta, nwFiles.PROJ_DICT)
 
         if not self._checkFolder(self.projMeta):
             return False
-        if not self._checkFolder(self.projData):
+        if not self._checkFolder(self.projCache):
             return False
+        if not self._checkFolder(self.projContent):
+            return False
+
+        # Check for Old Legacy Data
+        # =========================
+
+        errList = []
+        for projItem in listdir(self.projPath):
+            logger.verbose("Project contains: %s" % projItem)
+            if projItem.startswith("data_"):
+                self._legacyDataFolder(projItem)
+
+        if errList:
+            self.makeAlert(errList, nwAlert.ERROR)
+
+        self._deprecatedFiles()
+
+        # Project Lock
+        # ============
 
         if overrideLock:
             self._clearLockFile()
@@ -272,10 +296,8 @@ class NWProject():
         else:
             logger.verbose("Project is not locked")
 
-        try:
-            projectMaintenance(self)
-        except Exception as E:
-            logger.error(str(E))
+        # Open The Project XML File
+        # =========================
 
         try:
             nwXML = etree.parse(fileName)
@@ -321,6 +343,7 @@ class NWProject():
 
         # Check File Type
         # ===============
+
         if not nwxRoot == "novelWriterXML":
             self.makeAlert(
                 "Project file does not appear to be a novelWriterXML file.",
@@ -330,14 +353,17 @@ class NWProject():
 
         # Check Project Storage Version
         # =============================
+
         if fileVersion == "1.0":
             msgBox = QMessageBox()
             msgRes = msgBox.question(self.theParent, "Old Project Version", (
                 "The project file and data is created by a %s version lower than 0.7. "
                 "Do you want to upgrade the project to the most recent format?<br><br>"
                 "Note that after the upgrade, you cannot open the project with an older "
-                "version of novelWriter any more, so make sure you have a recent backup."
-            ) % nw.__package__)
+                "version of %s any more, so make sure you have a recent backup."
+            ) % (
+                nw.__package__, nw.__package__
+            ))
             if msgRes == QMessageBox.Yes:
                 self._updateStorage()
             else:
@@ -353,6 +379,7 @@ class NWProject():
 
         # Check novelWriter Version
         # =========================
+
         if int(hexVersion, 16) > int(nw.__hexversion__, 16) and self.mainConf.showGUI:
             msgBox = QMessageBox()
             msgRes = msgBox.question(self.theParent, "Version Conflict", (
@@ -367,6 +394,7 @@ class NWProject():
 
         # Start Parsing XML
         # =================
+
         for xChild in xRoot:
             if xChild.tag == "project":
                 logger.debug("Found project meta")
@@ -384,6 +412,7 @@ class NWProject():
                         self.bookAuthors.append(xItem.text)
                     elif xItem.tag == "backup":
                         self.doBackup = checkBool(xItem.text, False)
+
             elif xChild.tag == "settings":
                 logger.debug("Found project settings")
                 for xItem in xChild:
@@ -411,6 +440,7 @@ class NWProject():
                         for xEntry in xItem:
                             titleFormat[xEntry.tag] = checkString(xEntry.text, "", False)
                         self.setTitleFormat(titleFormat)
+
             elif xChild.tag == "content":
                 logger.debug("Found project content")
                 self.projTree.unpackXML(xChild)
@@ -444,14 +474,14 @@ class NWProject():
             return False
 
         self.projMeta = path.join(self.projPath, "meta")
-        self.projData = path.join(self.projPath, "content")
+        self.projContent = path.join(self.projPath, "content")
         saveTime = time()
 
         if not self._checkFolder(self.projPath):
             return False
         if not self._checkFolder(self.projMeta):
             return False
-        if not self._checkFolder(self.projData):
+        if not self._checkFolder(self.projContent):
             return False
 
         logger.debug("Saving project: %s" % self.projPath)
@@ -978,7 +1008,7 @@ class NWProject():
 
         # Then check the files in the data folder
         orphanFiles = []
-        for fileItem in listdir(self.projData):
+        for fileItem in listdir(self.projContent):
             if not fileItem.endswith(".nwd"):
                 logger.warning("Skipping file %s" % fileItem)
                 continue
@@ -1046,52 +1076,113 @@ class NWProject():
 
         return True
 
-    def _updateStorage(self):
-        """Updates the project storage folder from 1.0 to 1.1.
+    ##
+    #  Legacy Data Structure Handlers
+    ##
+
+    def _legacyDataFolder(self, theFolder):
+        """Clean up legacy data folders.
         """
-        contDir = path.join(self.projPath, "content")
-        self._checkFolder(contDir)
         errList = []
+        theData = path.join(self.projPath, theFolder)
+        if not path.isdir(theData):
+            errList.append("Not a folder: %s" % theData)
+            return errList
 
-        for projItem in listdir(self.projPath):
-            itemPath = path.join(self.projPath, projItem)
-            if not path.isdir(itemPath) or not projItem.startswith("data_"):
+        logger.info("Old data folder %s found" % theFolder)
+
+        # Move Documents to Content
+        # =========================
+        for dataItem in listdir(theData):
+            theFile = path.join(theData, dataItem)
+            if not path.isfile(theFile):
+                theErr = self._moveUnknownItem(theData, dataItem)
+                if theErr:
+                    errList.append(theErr)
                 continue
-            for dataFile in listdir(itemPath):
-                dataPath = path.join(itemPath, dataFile)
-                if dataFile.endswith(".bak"):
-                    try:
-                        unlink(dataPath)
-                        logger.info("Deleted file: %s" % dataPath)
-                    except:
-                        errList.append("Failed to delete: %s" % dataPath)
 
-                elif dataFile.endswith(".nwd") and len(dataFile) == 21:
-                    tHandle = projItem[-1]+dataFile[:12]
-                    newPath = path.join(contDir, tHandle+".nwd")
-                    try:
-                        rename(dataPath, newPath)
-                        logger.info("Moved file: %s" % dataPath)
-                        logger.info("New location: %s" % newPath)
-                    except:
-                        errList.append("Failed to move: %s" % dataPath)
+            if len(dataItem) == 21 and dataItem.endswith("_main.nwd"):
+                tHandle = theFolder[-1]+dataItem[:12]
+                newPath = path.join(self.projContent, tHandle+".nwd")
+                try:
+                    rename(theFile, newPath)
+                    logger.info("Moved file: %s" % theFile)
+                    logger.info("New location: %s" % newPath)
+                except Exception as e:
+                    logger.error(str(e))
+                    errList.append("Could not move: %s" % theFile)
 
-                else:
-                    newPath = path.join(self.projPath, "unknown_"+dataFile)
-                    try:
-                        rename(dataPath, newPath)
-                        logger.info("Moved file: %s" % dataPath)
-                        logger.info("New location: %s" % newPath)
-                    except:
-                        errList.append("Failed to move: %s" % dataPath)
-            try:
-                rmdir(itemPath)
-                logger.info("Removed folder: %s" % itemPath)
-            except:
-                errList.append("Failed to delete: %s" % itemPath)
+            elif len(dataItem) == 21 and dataItem.endswith("_main.bak"):
+                try:
+                    unlink(theFile)
+                    logger.info("Deleted file: %s" % theFile)
+                except Exception as e:
+                    logger.error(str(e))
+                    errList.append("Could not delete: %s" % theFile)
 
-        if errList:
-            self.makeAlert(errList, nwAlert.ERROR)
+            else:
+                theErr = self._moveUnknownItem(theData, dataItem)
+                if theErr:
+                    errList.append(theErr)
+
+        # Remove Data Folder
+        # ==================
+        try:
+            rmdir(theData)
+            logger.info("Removed folder: %s" % theFolder)
+        except:
+            errList.append("Failed to remove: %s" % theFolder)
+
+        return errList
+
+    def _moveUnknownItem(self, theDir, theItem):
+        """Move an item that doesn't belong in the project folder to
+        a junk folder.
+        """
+        theJunk = path.join(self.projPath, "junk")
+        if not self._checkFolder(theJunk):
+            return "Could not make folder: %s" % theJunk
+
+        theSrc = path.join(theDir, theItem)
+        theDst = path.join(theJunk, theItem)
+
+        try:
+            rename(theSrc, theDst)
+            logger.info("Moved to junk: %s" % theSrc)
+        except Exception as e:
+            logger.error(str(e))
+            return "Could not move item %s to junk." % theSrc
+
+        return ""
+
+    def _deprecatedFiles(self):
+        """Delete files that are no longer used by novelWriter.
+        """
+        rmList = []
+        rmList.append(path.join(self.projCache, "nwProject.nwx.0"))
+        rmList.append(path.join(self.projCache, "nwProject.nwx.1"))
+        rmList.append(path.join(self.projCache, "nwProject.nwx.2"))
+        rmList.append(path.join(self.projCache, "nwProject.nwx.3"))
+        rmList.append(path.join(self.projCache, "nwProject.nwx.4"))
+        rmList.append(path.join(self.projCache, "nwProject.nwx.5"))
+        rmList.append(path.join(self.projCache, "nwProject.nwx.6"))
+        rmList.append(path.join(self.projCache, "nwProject.nwx.7"))
+        rmList.append(path.join(self.projCache, "nwProject.nwx.8"))
+        rmList.append(path.join(self.projCache, "nwProject.nwx.9"))
+        rmList.append(path.join(self.projMeta,  "mainOptions.json"))
+        rmList.append(path.join(self.projMeta,  "exportOptions.json"))
+        rmList.append(path.join(self.projMeta,  "outlineOptions.json"))
+        rmList.append(path.join(self.projMeta,  "timelineOptions.json"))
+        rmList.append(path.join(self.projMeta,  "docMergeOptions.json"))
+        rmList.append(path.join(self.projMeta,  "sessionLogOptions.json"))
+
+        for rmFile in rmList:
+            if path.isfile(rmFile):
+                logger.info("Deleting: %s" % rmFile)
+                try:
+                    unlink(rmFile)
+                except Exception as e:
+                    logger.error(str(e))
 
         return
 
