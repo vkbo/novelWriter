@@ -361,10 +361,9 @@ class NWProject():
             ) % (
                 nw.__package__, nw.__package__
             ))
-            if msgRes == QMessageBox.Yes:
-                self._updateStorage()
-            else:
+            if msgRes != QMessageBox.Yes:
                 return False
+
         elif fileVersion != "1.1":
             self.makeAlert((
                 "Unknown or unsupported %s project format. "
