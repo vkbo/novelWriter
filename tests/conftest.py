@@ -51,6 +51,10 @@ def nwLipsum():
     if path.isdir(lipsumDir):
         shutil.rmtree(lipsumDir)
     shutil.copytree(lipsumStore, lipsumDir)
-    shutil.rmtree(path.join(lipsumDir, "cache"))
-    shutil.rmtree(path.join(lipsumDir, "meta"))
+    cacheDir = path.join(lipsumDir, "cache")
+    if path.isdir(cacheDir):
+        shutil.rmtree(cacheDir)
+    metaDir = path.join(lipsumDir, "meta")
+    if path.isdir(metaDir):
+        shutil.rmtree(metaDir)
     return lipsumDir
