@@ -421,6 +421,8 @@ def testBuildTool(qtbot, nwTempBuild, nwLipsum, nwRef, nwTemp):
     nwBuild.fmtSection.setText(r"%ch%.%sc%.1: %title%")
     qtbot.wait(stepDelay)
 
+    qtbot.mouseClick(nwBuild.justifyText, Qt.LeftButton)
+    qtbot.wait(stepDelay)
     qtbot.mouseClick(nwBuild.includeSynopsis, Qt.LeftButton)
     qtbot.wait(stepDelay)
     qtbot.mouseClick(nwBuild.includeComments, Qt.LeftButton)
@@ -434,6 +436,9 @@ def testBuildTool(qtbot, nwTempBuild, nwLipsum, nwRef, nwTemp):
     qtbot.wait(stepDelay)
 
     qtbot.mouseClick(nwBuild.buildNovel, Qt.LeftButton)
+
+    assert nwBuild._saveDocument(nwBuild.FMT_NWD)
+    assert nwBuild._saveDocument(nwBuild.FMT_HTM)
 
     refFile = path.join(nwTempBuild, "Lorem Ipsum.nwd")
     assert cmpFiles(refFile, path.join(nwRef, "build", "2_LoremIpsum.nwd"), [])
@@ -458,6 +463,9 @@ def testBuildTool(qtbot, nwTempBuild, nwLipsum, nwRef, nwTemp):
     qtbot.wait(stepDelay)
 
     qtbot.mouseClick(nwBuild.buildNovel, Qt.LeftButton)
+
+    assert nwBuild._saveDocument(nwBuild.FMT_NWD)
+    assert nwBuild._saveDocument(nwBuild.FMT_HTM)
 
     refFile = path.join(nwTempBuild, "Lorem Ipsum.nwd")
     assert cmpFiles(refFile, path.join(nwRef, "build", "3_LoremIpsum.nwd"), [])
