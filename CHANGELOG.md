@@ -8,17 +8,22 @@
 * Clicking a tag now tries to scroll to the header where the tag is set. The index needed a couple of minor changes for this feature, so this will invalidate the old index for a project, and require a new to be built. This is done automatically. PR #234.
 * Moved the Close button on the "Build Novel project" dialog to the area with the other buttons since we anyway increased the size of that area. PR #256.
 * Updated the unit for Preferences > Editor > Big document limit from `kb` to `kb`. Issue #258, PR #260.
+* Added Typicos-based coloured icon set also for light GUI background. PR #265.
 
 **Project Structure**
 
 * The project folder structure has been simplified and cleaned up. We also now freeze the main entry values in the main XML file. The XML file is now given version 1.1, and no further core changes to its structure will be made without bumping this version. We're also locking it to only be opened by version 0.7 or later. An old project file is converted on first open. PRs #253 and #261.
-* When a project is closed, two table of contents files are written to the project folder. They are named `ToC.txt` and `ToC.json` and are there for the user's convenience if they want to find a specific file from the project in the data folders. As discussed in Issue #259, PR #261.
+* When a project is closed, two table of contents files are written to the project folder. They are named `ToC.txt` and `ToC.json` and are there for the user's convenience if they want to find a specific file from the project in the data folders. As discussed in Issue #259, PRs #261 and #262.
 * The expanded node flag from the project tree was also saved for file entries, which cannot actually be expanded. These flags are no longer saved in the XML file. PR #261.
 
 **Other Changes**
 
 * Dropped the usage of .bak copies of document files. This was the old method to ensure the document data was written successfully, but it uses twice the storage space. Instead, writing via a temp file is the safe way to save files. PR #248.
 * The project class now records the accumulated time in seconds a project has been opened. This data is not yet displayed anywhere, but it is being tracked in the project XML file. PR #261.
+
+**Test Suite**
+
+* Added tests for Build Novel Project, Merge Folder and Split Document tools. PRs #263 and #264.
 
 
 ## Version 0.6.3 [2020-05-28]
