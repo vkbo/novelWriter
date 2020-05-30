@@ -65,7 +65,7 @@ class GuiMainStatus(QStatusBar):
         colTrue  = QColor(*self.theTheme.statUnsaved)
         colFalse = QColor(*self.theTheme.statSaved)
 
-        iPx = int(round(self.theTheme.baseIconSize))
+        iPx = self.theTheme.textIconSize
 
         # Permanent Widgets
         # =================
@@ -73,7 +73,7 @@ class GuiMainStatus(QStatusBar):
         ## The Spell Checker Language
         self.langIcon = QLabel("")
         self.langText = QLabel("None")
-        self.langIcon.setPixmap(self.theTheme.getPixmap("status_lang"  ,(iPx, iPx)))
+        self.langIcon.setPixmap(self.theTheme.getPixmap("status_lang", (iPx, iPx)))
         self.langIcon.setContentsMargins(0, 0, 0, 0)
         self.langText.setContentsMargins(0, 0, 8, 0)
         self.addPermanentWidget(self.langIcon)

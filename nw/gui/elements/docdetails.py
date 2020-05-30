@@ -29,7 +29,7 @@ import logging
 import nw
 
 from PyQt5.QtCore import Qt
-from PyQt5.QtGui import QFont, QIcon, QPixmap
+from PyQt5.QtGui import QFont, QIcon, QPixmap, QFontMetrics
 from PyQt5.QtWidgets import QFrame, QGridLayout, QLabel
 
 from nw.constants import (
@@ -77,7 +77,6 @@ class GuiDocDetails(QFrame):
         self.labelName.setAlignment(Qt.AlignLeft | Qt.AlignBaseline)
 
         self.labelFlag = QLabel("")
-        # self.labelFlag.setFont(self.fntFixed)
         self.labelFlag.setAlignment(Qt.AlignRight | Qt.AlignBaseline)
 
         self.labelData = QLabel("")
@@ -178,7 +177,12 @@ class GuiDocDetails(QFrame):
         self.mainBox.setColumnStretch(2,1)
         self.mainBox.setColumnStretch(3,0)
         self.mainBox.setColumnStretch(4,0)
-        self.mainBox.setColumnMinimumWidth(1, 20)
+
+        # Make sure the columns for flags and counts don't resize too often
+        flagWidth = QFontMetrics(self.fntFixed).boundingRect("Mm").width()
+        countWidth = QFontMetrics(self.fntValue).boundingRect("99,999").width()
+        self.mainBox.setColumnMinimumWidth(1, flagWidth)
+        self.mainBox.setColumnMinimumWidth(4, countWidth)
 
         logger.debug("DocDetails initialisation complete")
 

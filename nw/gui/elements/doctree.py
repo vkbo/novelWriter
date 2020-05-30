@@ -65,11 +65,12 @@ class GuiDocTree(QTreeWidget):
         self.clearTree()
 
         # Build GUI
-        self.setIconSize(QSize(13, 13))
+        iPx = self.theTheme.textIconSize
+        self.setIconSize(QSize(iPx, iPx))
         self.setExpandsOnDoubleClick(True)
-        self.setIndentation(13)
+        self.setIndentation(iPx)
         self.setColumnCount(5)
-        self.setHeaderLabels(["Label","Words","Inc","Flags","Handle"])
+        self.setHeaderLabels(["Label", "Words", "Inc", "Flags", "Handle"])
         self.hideColumn(self.C_HANDLE)
 
         treeHead = self.headerItem()
@@ -92,8 +93,8 @@ class GuiDocTree(QTreeWidget):
         # self.setSelectionMode(QAbstractItemView.ExtendedSelection)
         # self.setSelectionBehavior(QAbstractItemView.SelectRows)
 
-        for colN in range(len(self.mainConf.treeColWidth)):
-            self.setColumnWidth(colN, self.mainConf.treeColWidth[colN])
+        for colN, colW in enumerate(self.mainConf.treeColWidth):
+            self.setColumnWidth(colN, colW)
 
         self.resizeColumnToContents(self.C_EXPORT)
         self.resizeColumnToContents(self.C_FLAGS)
