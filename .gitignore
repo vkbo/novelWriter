@@ -1,29 +1,31 @@
 # Setup/Install
-MANIFEST
-dist/
-build/
-deploy/
+/MANIFEST
+/dist/
+/build/
+/deploy/
 *.spec
 *.egg-info
 
 # Documentation
-docs/build/
-docs/source/_*
+/docs/build/
+/docs/source/_*
 
 # Python Temp
 __pycache__
 
 # Sample Project
-sample/cache
-sample/meta
-sample/*.bak
-sample/*.lock
+/sample/cache
+/sample/meta
+*.bak
+*.lock
 
 # PyTest
-tests/temp
-.pytest_cache
-pytestdebug.log
-prof/
+/prof/
+/tests/temp
+/tests/lipsum/cache
+/tests/lipsum/meta
+/.pytest_cache
+/pytestdebug.log
 
 # Coverage
-.coverage
+/.coverage

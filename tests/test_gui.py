@@ -10,6 +10,7 @@ from PyQt5.QtCore import Qt
 
 from nw.gui.dialogs.projectsettings import GuiProjectSettings
 from nw.gui.dialogs.itemeditor import GuiItemEditor
+from nw.gui.build import GuiBuildNovel
 
 from nw.constants import *
 
@@ -384,4 +385,85 @@ def testItemEditor(qtbot, nwTempGUI, nwRef, nwTemp):
     assert cmpFiles(projFile, path.join(nwRef,"gui","3_nwProject.nwx"), [2])
 
     nwGUI.closeMain()
+    # qtbot.stopForInteraction()
+
+@pytest.mark.gui
+def testBuildTool(qtbot, nwTempBuild, nwLipsum, nwRef, nwTemp):
+
+    nwGUI = nw.main(["--testmode","--config=%s" % nwTempBuild, "--data=%s" % nwTemp])
+    qtbot.addWidget(nwGUI)
+    nwGUI.show()
+    qtbot.waitForWindowShown(nwGUI)
+    qtbot.wait(stepDelay)
+
+    assert nwGUI.openProject(nwLipsum)
+
+    nwGUI.mainConf.lastPath = nwTempBuild
+
+    nwBuild = GuiBuildNovel(nwGUI, nwGUI.theProject)
+
+    # Default Settings
+    qtbot.mouseClick(nwBuild.buildNovel, Qt.LeftButton)
+
+    assert nwBuild._saveDocument(nwBuild.FMT_NWD)
+    assert nwBuild._saveDocument(nwBuild.FMT_HTM)
+
+    refFile = path.join(nwTempBuild, "Lorem Ipsum.nwd")
+    assert cmpFiles(refFile, path.join(nwRef, "build", "1_LoremIpsum.nwd"), [])
+    refFile = path.join(nwTempBuild, "Lorem Ipsum.htm")
+    assert cmpFiles(refFile, path.join(nwRef, "build", "1_LoremIpsum.htm"), [])
+
+    # Change Title Formats and Flip Switches
+    nwBuild.fmtChapter.setText(r"Chapter %chw%: %title%")
+    qtbot.wait(stepDelay)
+    nwBuild.fmtScene.setText(r"Scene %ch%.%sc%: %title%")
+    qtbot.wait(stepDelay)
+    nwBuild.fmtSection.setText(r"%ch%.%sc%.1: %title%")
+    qtbot.wait(stepDelay)
+
+    qtbot.mouseClick(nwBuild.includeSynopsis, Qt.LeftButton)
+    qtbot.wait(stepDelay)
+    qtbot.mouseClick(nwBuild.includeComments, Qt.LeftButton)
+    qtbot.wait(stepDelay)
+    qtbot.mouseClick(nwBuild.includeKeywords, Qt.LeftButton)
+    qtbot.wait(stepDelay)
+
+    qtbot.mouseClick(nwBuild.noteFiles, Qt.LeftButton)
+    qtbot.wait(stepDelay)
+    qtbot.mouseClick(nwBuild.ignoreFlag, Qt.LeftButton)
+    qtbot.wait(stepDelay)
+
+    qtbot.mouseClick(nwBuild.buildNovel, Qt.LeftButton)
+
+    refFile = path.join(nwTempBuild, "Lorem Ipsum.nwd")
+    assert cmpFiles(refFile, path.join(nwRef, "build", "2_LoremIpsum.nwd"), [])
+    refFile = path.join(nwTempBuild, "Lorem Ipsum.htm")
+    assert cmpFiles(refFile, path.join(nwRef, "build", "2_LoremIpsum.htm"), [])
+
+    # Putline Mode
+    nwBuild.fmtChapter.setText(r"Chapter %chw%: %title%")
+    qtbot.wait(stepDelay)
+    nwBuild.fmtScene.setText(r"Scene %sca%: %title%")
+    qtbot.wait(stepDelay)
+    nwBuild.fmtSection.setText(r"Section: %title%")
+    qtbot.wait(stepDelay)
+
+    qtbot.mouseClick(nwBuild.includeComments, Qt.LeftButton)
+    qtbot.wait(stepDelay)
+    qtbot.mouseClick(nwBuild.noteFiles, Qt.LeftButton)
+    qtbot.wait(stepDelay)
+    qtbot.mouseClick(nwBuild.ignoreFlag, Qt.LeftButton)
+    qtbot.wait(stepDelay)
+    qtbot.mouseClick(nwBuild.excludeBody, Qt.LeftButton)
+    qtbot.wait(stepDelay)
+
+    qtbot.mouseClick(nwBuild.buildNovel, Qt.LeftButton)
+
+    refFile = path.join(nwTempBuild, "Lorem Ipsum.nwd")
+    assert cmpFiles(refFile, path.join(nwRef, "build", "3_LoremIpsum.nwd"), [])
+    refFile = path.join(nwTempBuild, "Lorem Ipsum.htm")
+    assert cmpFiles(refFile, path.join(nwRef, "build", "3_LoremIpsum.htm"), [])
+
+    nwBuild._doClose()
+
     # qtbot.stopForInteraction()
