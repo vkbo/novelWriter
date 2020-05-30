@@ -1,6 +1,6 @@
 # novelWriter ChangeLog
 
-## Version 0.7 RC1 [2020-xx-xx]
+## Version 0.7 [2020-06-01]
 
 **User Interface**
 
