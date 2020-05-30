@@ -8,10 +8,10 @@ from nwtools import *
 from os import path, unlink
 from PyQt5.QtCore import Qt
 
-from nw.gui.dialogs.projectsettings import GuiProjectSettings
-from nw.gui.dialogs.itemeditor import GuiItemEditor
-from nw.gui.build import GuiBuildNovel
-
+from nw.gui import (
+    GuiProjectSettings, GuiItemEditor, GuiAbout, GuiBuildNovel,
+    GuiDocMerge
+)
 from nw.constants import *
 
 keyDelay  =  5
@@ -236,16 +236,16 @@ def testMainWindows(qtbot, nwTempGUI, nwRef, nwTemp):
     qtbot.wait(stepDelay)
 
     # Check the files
-    refFile = path.join(nwTempGUI,"nwProject.nwx")
-    assert cmpFiles(refFile, path.join(nwRef,"gui","1_nwProject.nwx"), [2])
-    refFile = path.join(nwTempGUI,"content","0e17daca5f3e1.nwd")
-    assert cmpFiles(refFile, path.join(nwRef,"gui","1_0e17daca5f3e1.nwd"))
-    refFile = path.join(nwTempGUI,"content","98010bd9270f9.nwd")
-    assert cmpFiles(refFile, path.join(nwRef,"gui","1_98010bd9270f9.nwd"))
-    refFile = path.join(nwTempGUI,"content","31489056e0916.nwd")
-    assert cmpFiles(refFile, path.join(nwRef,"gui","1_31489056e0916.nwd"))
-    refFile = path.join(nwTempGUI,"content","1a6562590ef19.nwd")
-    assert cmpFiles(refFile, path.join(nwRef,"gui","1_1a6562590ef19.nwd"))
+    refFile = path.join(nwTempGUI, "nwProject.nwx")
+    assert cmpFiles(refFile, path.join(nwRef, "gui", "1_nwProject.nwx"), [2])
+    refFile = path.join(nwTempGUI, "content", "0e17daca5f3e1.nwd")
+    assert cmpFiles(refFile, path.join(nwRef, "gui", "1_0e17daca5f3e1.nwd"))
+    refFile = path.join(nwTempGUI, "content", "98010bd9270f9.nwd")
+    assert cmpFiles(refFile, path.join(nwRef, "gui", "1_98010bd9270f9.nwd"))
+    refFile = path.join(nwTempGUI, "content", "31489056e0916.nwd")
+    assert cmpFiles(refFile, path.join(nwRef, "gui", "1_31489056e0916.nwd"))
+    refFile = path.join(nwTempGUI, "content", "1a6562590ef19.nwd")
+    assert cmpFiles(refFile, path.join(nwRef, "gui", "1_1a6562590ef19.nwd"))
 
     nwGUI.closeMain()
     # qtbot.stopForInteraction()
@@ -333,7 +333,7 @@ def testProjectEditor(qtbot, nwTempGUI, nwRef, nwTemp):
 
     # Check the files
     projFile = path.join(nwTempGUI,"nwProject.nwx")
-    assert cmpFiles(projFile, path.join(nwRef,"gui","2_nwProject.nwx"), [2])
+    assert cmpFiles(projFile, path.join(nwRef, "gui", "2_nwProject.nwx"), [2])
 
     nwGUI.closeMain()
     # qtbot.stopForInteraction()
@@ -382,10 +382,27 @@ def testItemEditor(qtbot, nwTempGUI, nwRef, nwTemp):
 
     # Check the files
     projFile = path.join(nwTempGUI,"nwProject.nwx")
-    assert cmpFiles(projFile, path.join(nwRef,"gui","3_nwProject.nwx"), [2])
+    assert cmpFiles(projFile, path.join(nwRef, "gui", "3_nwProject.nwx"), [2])
 
     nwGUI.closeMain()
     # qtbot.stopForInteraction()
+
+@pytest.mark.gui
+def testAboutBox(qtbot, nwTempGUI, nwRef, nwTemp):
+    nwGUI = nw.main(["--testmode","--config=%s" % nwTempGUI, "--data=%s" % nwTemp])
+    qtbot.addWidget(nwGUI)
+    nwGUI.show()
+    qtbot.waitForWindowShown(nwGUI)
+    qtbot.wait(stepDelay)
+
+    msgAbout = GuiAbout(nwGUI)
+    assert msgAbout.pageAbout.document().characterCount() > 100
+    assert msgAbout.pageLicense.document().characterCount() > 100
+
+    # qtbot.stopForInteraction()
+
+    msgAbout._doClose()
+    nwGUI.closeMain()
 
 @pytest.mark.gui
 def testBuildTool(qtbot, nwTempBuild, nwLipsum, nwRef, nwTemp):
@@ -472,6 +489,6 @@ def testBuildTool(qtbot, nwTempBuild, nwLipsum, nwRef, nwTemp):
     refFile = path.join(nwTempBuild, "Lorem Ipsum.htm")
     assert cmpFiles(refFile, path.join(nwRef, "build", "3_LoremIpsum.htm"), [])
 
-    nwBuild._doClose()
-
     # qtbot.stopForInteraction()
+    nwBuild._doClose()
+    nwGUI.closeMain()
