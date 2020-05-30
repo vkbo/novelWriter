@@ -32,7 +32,9 @@ import nw
 from os import path, listdir
 
 from PyQt5.QtWidgets import qApp
-from PyQt5.QtGui import QPalette, QColor, QIcon, QFontMetrics
+from PyQt5.QtGui import (
+    QPalette, QColor, QIcon, QFontMetrics, QFontDatabase
+)
 
 from nw.constants import nwAlert
 from nw.gui.icons import GuiIcons
@@ -111,6 +113,8 @@ class GuiTheme:
         self.confFile   = None
         self.cssFile    = None
 
+        self.loadFonts()
+
         # Set Font Size and Theme
         self.guiFont = qApp.font()
         self.guiFont.setPointSizeF(self.mainConf.guiFontSize)
@@ -143,6 +147,29 @@ class GuiTheme:
     ##
     #  Actions
     ##
+
+    def loadFonts(self):
+        """Add the fonts in the assets fonts folder to the app.
+        """
+        ttfList = []
+        fontAssets = path.join(self.mainConf.assetPath, "fonts")
+        for fontFam in listdir(fontAssets):
+            fontDir = path.join(fontAssets, fontFam)
+            if path.isdir(fontDir):
+                for fontFile in listdir(fontDir):
+                    ttfFile = path.join(fontDir, fontFile)
+                    if path.isfile(ttfFile) and fontFile.endswith(".ttf"):
+                        ttfList.append(ttfFile)
+        
+        for ttfFile in ttfList:
+            logger.verbose("Font asset: %s" % path.relpath(ttfFile))
+            try:
+                QFontDatabase.addApplicationFont(ttfFile)
+            except Exception as e:
+                logger.error("Failed to add font: %s" % path.relpath(ttfFile))
+                logger.error(str(e))
+
+        return
 
     def updateTheme(self):
         """Update the GUI theme from theme files.
