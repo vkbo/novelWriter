@@ -29,7 +29,7 @@ import logging
 import nw
 
 from PyQt5.QtCore import Qt
-from PyQt5.QtGui import QFont
+from PyQt5.QtGui import QFont, QIcon, QPixmap
 from PyQt5.QtWidgets import QFrame, QGridLayout, QLabel
 
 from nw.constants import (
@@ -47,30 +47,37 @@ class GuiDocDetails(QFrame):
         self.mainConf   = nw.CONFIG
         self.theParent  = theParent
         self.theProject = theProject
+        self.theTheme   = theParent.theTheme
 
         self.mainBox = QGridLayout(self)
         self.mainBox.setVerticalSpacing(1)
         self.mainBox.setHorizontalSpacing(6)
         self.setLayout(self.mainBox)
 
+        self.pS = 0.9*self.theTheme.fontPointSize
+        self.iS = self.theTheme.textIconSize
+
+        self.expCheck = self.theTheme.getPixmap("check", (self.iS, self.iS))
+        self.expCross = self.theTheme.getPixmap("cross", (self.iS, self.iS))
+
         self.fntLabel = QFont()
         self.fntLabel.setPointSize(10)
-        self.fntLabel.setBold(True)
+        self.fntLabel.setPointSizeF(self.pS)
 
         self.fntFixed = QFont()
         self.fntFixed.setFamily("Monospace")
-        self.fntFixed.setPointSize(10)
+        self.fntFixed.setPointSizeF(self.pS)
 
         self.fntValue = QFont()
-        self.fntValue.setPointSize(10)
+        self.fntValue.setPointSizeF(self.pS)
 
         # Label
-        self.labelName = QLabel("Label   ")
+        self.labelName = QLabel("Label")
         self.labelName.setFont(self.fntLabel)
         self.labelName.setAlignment(Qt.AlignLeft | Qt.AlignBaseline)
 
         self.labelFlag = QLabel("")
-        self.labelFlag.setFont(self.fntFixed)
+        # self.labelFlag.setFont(self.fntFixed)
         self.labelFlag.setAlignment(Qt.AlignRight | Qt.AlignBaseline)
 
         self.labelData = QLabel("")
@@ -79,12 +86,11 @@ class GuiDocDetails(QFrame):
         self.labelData.setWordWrap(True)
 
         # Status
-        self.statusName = QLabel("Status   ")
+        self.statusName = QLabel("Status")
         self.statusName.setFont(self.fntLabel)
         self.statusName.setAlignment(Qt.AlignLeft)
 
         self.statusFlag = QLabel("")
-        self.statusFlag.setFont(self.fntFixed)
         self.statusFlag.setAlignment(Qt.AlignRight | Qt.AlignVCenter)
 
         self.statusData = QLabel("")
@@ -92,7 +98,7 @@ class GuiDocDetails(QFrame):
         self.statusData.setAlignment(Qt.AlignLeft)
 
         # Class
-        self.className = QLabel("Class   ")
+        self.className = QLabel("Class")
         self.className.setFont(self.fntLabel)
         self.className.setAlignment(Qt.AlignLeft)
 
@@ -105,7 +111,7 @@ class GuiDocDetails(QFrame):
         self.classData.setAlignment(Qt.AlignLeft)
 
         # Layout
-        self.layoutName = QLabel("Layout   ")
+        self.layoutName = QLabel("Layout")
         self.layoutName.setFont(self.fntLabel)
         self.layoutName.setAlignment(Qt.AlignLeft)
 
@@ -172,6 +178,7 @@ class GuiDocDetails(QFrame):
         self.mainBox.setColumnStretch(2,1)
         self.mainBox.setColumnStretch(3,0)
         self.mainBox.setColumnStretch(4,0)
+        self.mainBox.setColumnMinimumWidth(1, 20)
 
         logger.debug("DocDetails initialisation complete")
 
@@ -214,14 +221,12 @@ class GuiDocDetails(QFrame):
 
             if nwItem.itemType == nwItemType.FILE:
                 if nwItem.isExported:
-                    exportFlag = nwUnicode.U_CHECK
+                    self.labelFlag.setPixmap(self.expCheck)
                 else:
-                    exportFlag = " "
+                    self.labelFlag.setPixmap(self.expCross)
             else:
-                exportFlag = "-"
-
-            self.labelFlag.setText(exportFlag)
-            self.statusFlag.setPixmap(flagIcon.pixmap(10, 10))
+                self.labelFlag.setPixmap(QPixmap(1,1))
+            self.statusFlag.setPixmap(flagIcon.pixmap(0.9*self.iS, 0.9*self.iS))
             self.classFlag.setText(nwLabels.CLASS_FLAG[nwItem.itemClass])
             if nwItem.itemLayout == nwItemLayout.NO_LAYOUT:
                 self.layoutFlag.setText("-")
