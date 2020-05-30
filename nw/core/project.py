@@ -152,15 +152,19 @@ class NWProject():
         self.projTree.append(None, pHandle, newItem)
         return newItem.itemHandle
 
-    def addTrash(self):
+    def trashFolder(self):
         """Add the special trash root folder to the project.
         """
-        newItem = NWItem(self)
-        newItem.setName("Trash")
-        newItem.setType(nwItemType.TRASH)
-        newItem.setClass(nwItemClass.TRASH)
-        self.projTree.append(None, None, newItem)
-        return newItem.itemHandle
+        trashHandle = self.projTree.trashRoot()
+        if trashHandle is None:
+            newItem = NWItem(self)
+            newItem.setName("Trash")
+            newItem.setType(nwItemType.TRASH)
+            newItem.setClass(nwItemClass.TRASH)
+            self.projTree.append(None, None, newItem)
+            return newItem.itemHandle
+
+        return trashHandle
 
     ##
     #  Project Methods

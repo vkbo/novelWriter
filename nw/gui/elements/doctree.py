@@ -200,8 +200,8 @@ class GuiDocTree(QTreeWidget):
     def revealTreeItem(self, tHandle):
         """Reveal a newly added project item in the project tree.
         """
-        nwItem  = self.theProject.projTree[tHandle]
-        trItem  = self._addTreeItem(nwItem)
+        nwItem = self.theProject.projTree[tHandle]
+        trItem = self._addTreeItem(nwItem)
         pHandle = nwItem.parHandle
         if pHandle is not None and pHandle in self.theMap.keys():
             self.theMap[pHandle].setExpanded(True)
@@ -608,15 +608,15 @@ class GuiDocTree(QTreeWidget):
         """Adds the trash root folder if it doesn't already exist in the
         project tree.
         """
-        trashHandle = self.theProject.projTree.trashRoot()
+        trashHandle = self.theProject.trashFolder()
         if trashHandle is None:
-            self.theProject.addTrash()
+            return None
+        trItem = self._getTreeItem(trashHandle)
+        if trItem is None:
             trItem = self._addTreeItem(
                 self.theProject.projTree[trashHandle]
             )
             trItem.setExpanded(True)
-        else:
-            trItem = self._getTreeItem(trashHandle)
         return trItem
 
     def _addOrphanedRoot(self):

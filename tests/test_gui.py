@@ -235,6 +235,15 @@ def testMainWindows(qtbot, nwTempGUI, nwRef, nwTemp):
     assert nwGUI.closeDocViewer()
     qtbot.wait(stepDelay)
 
+    # Check a Quick Create and Delete
+    assert nwGUI.treeView.newTreeItem(nwItemType.FILE, None)
+    newHandle = nwGUI.treeView.getSelectedHandle()
+    assert nwGUI.theProject.projTree["031b4af5197ec"] is not None
+    assert nwGUI.treeView.deleteItem()
+    assert nwGUI.treeView.setSelectedHandle(newHandle)
+    assert nwGUI.treeView.deleteItem()
+    assert nwGUI.saveProject()
+
     # Check the files
     refFile = path.join(nwTempGUI, "nwProject.nwx")
     assert cmpFiles(refFile, path.join(nwRef, "gui", "1_nwProject.nwx"), [2])

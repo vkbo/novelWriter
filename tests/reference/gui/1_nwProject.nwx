@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='utf-8'?>
-<novelWriterXML appVersion="0.7.0rc1" hexVersion="0x000700c1" fileVersion="1.1" saveCount="4" autoCount="0" timeStamp="2020-05-29 23:06:02">
+<novelWriterXML appVersion="0.7.0rc1" hexVersion="0x000700c1" fileVersion="1.1" saveCount="4" autoCount="1" timeStamp="2020-05-30 15:31:30" editTime="12">
   <project>
     <name>New Project</name>
     <title></title>
@@ -9,7 +9,7 @@
     <spellCheck>True</spellCheck>
     <autoOutline>True</autoOutline>
     <lastEdited>31489056e0916</lastEdited>
-    <lastViewed>31489056e0916</lastViewed>
+    <lastViewed>None</lastViewed>
     <lastWordCount>86</lastWordCount>
     <autoReplace/>
     <titleFormat>
@@ -35,7 +35,7 @@
       <entry blue="0" green="200" red="50">Main</entry>
     </importance>
   </settings>
-  <content count="9">
+  <content count="10">
     <item handle="73475cb40a568" order="0" parent="None">
       <name>Novel</name>
       <type>ROOT</type>
@@ -118,6 +118,13 @@
       <wordCount>9</wordCount>
       <paraCount>1</paraCount>
       <cursorPos>68</cursorPos>
+    </item>
+    <item handle="41cfc0d1f2d12" order="4" parent="None">
+      <name>Trash</name>
+      <type>TRASH</type>
+      <class>TRASH</class>
+      <status>None</status>
+      <expanded>True</expanded>
     </item>
   </content>
 </novelWriterXML>
