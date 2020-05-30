@@ -182,6 +182,7 @@ class GuiDocSplit(QDialog):
             )
 
             theText = "\n".join(theLines[iStart:iEnd])
+            theText = theText.rstrip("\n") + "\n\n"
             theDoc.openDocument(nHandle, False)
             theDoc.saveDocument(theText)
             theDoc.clearDocument()

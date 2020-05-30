@@ -106,7 +106,7 @@ class GuiDocMerge(QDialog):
         theDoc = NWDoc(self.theProject, self.theParent)
         theText = ""
         for tHandle in finalOrder:
-            theText += theDoc.openDocument(tHandle, False).rstrip()
+            theText += theDoc.openDocument(tHandle, False).rstrip("\n")
             theText += "\n\n"
 
         if self.sourceItem is None:
