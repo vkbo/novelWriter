@@ -552,15 +552,16 @@ class GuiBuildNovel(QDialog):
             if not path.isdir(saveDir):
                 saveDir = self.mainConf.homePath
 
-            dlgOpt  = QFileDialog.Options()
-            dlgOpt |= QFileDialog.DontUseNativeDialog
-            saveTo  = QFileDialog.getSaveFileName(
-                self, "Save Document As", savePath, options=dlgOpt
-            )
-            if saveTo[0]:
-                savePath = saveTo[0]
-            else:
-                return False
+            if self.mainConf.showGUI:
+                dlgOpt  = QFileDialog.Options()
+                dlgOpt |= QFileDialog.DontUseNativeDialog
+                saveTo  = QFileDialog.getSaveFileName(
+                    self, "Save Document As", savePath, options=dlgOpt
+                )
+                if saveTo[0]:
+                    savePath = saveTo[0]
+                else:
+                    return False
 
             self.mainConf.setLastPath(savePath)
 
@@ -635,18 +636,19 @@ class GuiBuildNovel(QDialog):
             errMsg = "Unknown format"
 
         # Report to user
-        if wSuccess:
-            self.theParent.makeAlert(
-                "%s file successfully written to:<br> %s" % (
-                    textFmt, savePath
-                ), nwAlert.INFO
-            )
-        else:
-            self.theParent.makeAlert(
-                "Failed to write %s file. %s" % (
-                    textFmt, errMsg
-                ), nwAlert.ERROR
-            )
+        if self.mainConf.showGUI:
+            if wSuccess:
+                self.theParent.makeAlert(
+                    "%s file successfully written to:<br> %s" % (
+                        textFmt, savePath
+                    ), nwAlert.INFO
+                )
+            else:
+                self.theParent.makeAlert(
+                    "Failed to write %s file. %s" % (
+                        textFmt, errMsg
+                    ), nwAlert.ERROR
+                )
 
         return wSuccess
 
