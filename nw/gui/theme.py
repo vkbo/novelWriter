@@ -32,7 +32,7 @@ import nw
 from os import path, listdir
 
 from PyQt5.QtWidgets import qApp
-from PyQt5.QtGui import QPalette, QColor, QIcon
+from PyQt5.QtGui import QPalette, QColor, QIcon, QFontMetrics
 
 from nw.constants import nwAlert
 from nw.gui.icons import GuiIcons
@@ -119,8 +119,20 @@ class GuiTheme:
         self.loadDecoration = self.theIcons.loadDecoration
 
         # Extract Other Info
-        self.defFont = qApp.font()
-        self.defFontSize = self.defFont.pointSizeF()
+        self.guiDPI  = qApp.primaryScreen().physicalDotsPerInch()
+        self.guiFont = qApp.font()
+
+        qMetric = QFontMetrics(self.guiFont)
+        self.fontPointSize = self.guiFont.pointSizeF()
+        self.fontPixelSize = int(round(qMetric.height()))
+        self.baseIconSize  = int(round(qMetric.ascent()))
+        self.textIconSize  = int(round(qMetric.ascent() + qMetric.leading()))
+
+        logger.verbose("GUI Font Family: %s" % self.guiFont.family())
+        logger.verbose("GUI Font Point Size: %.2f" % self.fontPointSize)
+        logger.verbose("GUI Font Pixel Size: %d" % self.fontPixelSize)
+        logger.verbose("GUI Base Icon Size: %d" % self.baseIconSize)
+        logger.verbose("GUI Text Icon Size: %d" % self.textIconSize)
 
         return
 

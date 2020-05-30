@@ -29,7 +29,7 @@ import logging
 import nw
 
 from PyQt5.QtCore import Qt, QSize
-from PyQt5.QtGui import QFont, QColor
+from PyQt5.QtGui import QFont, QColor, QIcon
 from PyQt5.QtWidgets import (
     qApp, QTreeWidget, QTreeWidgetItem, QAbstractItemView, QMessageBox
 )
@@ -45,8 +45,9 @@ class GuiDocTree(QTreeWidget):
 
     C_NAME   = 0
     C_COUNT  = 1
-    C_FLAGS  = 2
-    C_HANDLE = 3
+    C_EXPORT = 2
+    C_FLAGS  = 3
+    C_HANDLE = 4
 
     def __init__(self, theParent, theProject):
         QTreeWidget.__init__(self, theParent)
@@ -64,15 +65,20 @@ class GuiDocTree(QTreeWidget):
         self.clearTree()
 
         # Build GUI
-        self.setIconSize(QSize(13,13))
+        iPx = self.theTheme.textIconSize
+        self.setIconSize(QSize(iPx, iPx))
         self.setExpandsOnDoubleClick(True)
-        self.setIndentation(13)
-        self.setColumnCount(4)
-        self.setHeaderLabels(["Label","Words","Flags","Handle"])
+        self.setIndentation(iPx)
+        self.setColumnCount(5)
+        self.setHeaderLabels(["Label", "Words", "Inc", "Flags", "Handle"])
         self.hideColumn(self.C_HANDLE)
 
         treeHead = self.headerItem()
-        treeHead.setTextAlignment(self.C_COUNT,Qt.AlignRight)
+        treeHead.setTextAlignment(self.C_COUNT, Qt.AlignRight)
+        treeHead.setToolTip(self.C_NAME, "Item label")
+        treeHead.setToolTip(self.C_COUNT, "Word count")
+        treeHead.setToolTip(self.C_EXPORT, "Include in build")
+        treeHead.setToolTip(self.C_FLAGS, "Status, class, and layout flags")
 
         # Allow Move by Drag & Drop
         self.setDragEnabled(True)
@@ -87,11 +93,15 @@ class GuiDocTree(QTreeWidget):
         # self.setSelectionMode(QAbstractItemView.ExtendedSelection)
         # self.setSelectionBehavior(QAbstractItemView.SelectRows)
 
-        for colN in range(len(self.mainConf.treeColWidth)):
-            self.setColumnWidth(colN,self.mainConf.treeColWidth[colN])
+        for colN, colW in enumerate(self.mainConf.treeColWidth):
+            self.setColumnWidth(colN, colW)
 
-        self.fontFlags = QFont("Monospace",10)
-        self.fontCount = QFont("Monospace",10)
+        self.resizeColumnToContents(self.C_EXPORT)
+        self.resizeColumnToContents(self.C_FLAGS)
+
+        self.fntFixed = QFont()
+        self.fntFixed.setFamily("Monospace")
+        self.fntFixed.setPointSizeF(0.9*self.theTheme.fontPointSize)
 
         logger.debug("DocTree initialisation complete")
 
@@ -271,7 +281,6 @@ class GuiDocTree(QTreeWidget):
         retVals = [
             self.columnWidth(0),
             self.columnWidth(1),
-            self.columnWidth(2),
         ]
         return retVals
 
@@ -422,30 +431,30 @@ class GuiDocTree(QTreeWidget):
         tHandle = nwItem.itemHandle
         pHandle = nwItem.parHandle
 
-        stExport = " "
-        stClass  = nwLabels.CLASS_FLAG[nwItem.itemClass]
-        stLayout = ""
+        expIcon = QIcon()
 
+        stClass = nwLabels.CLASS_FLAG[nwItem.itemClass]
+        stLayout = ""
         if nwItem.itemType == nwItemType.FILE:
             stLayout = "."+nwLabels.LAYOUT_FLAG[nwItem.itemLayout]
             if nwItem.isExported:
-                stExport = nwUnicode.U_CHECK
-        else:
-            stExport = "-"
-
-        tStatus = stExport+" "+stClass+stLayout
+                expIcon = self.theTheme.getIcon("check")
+            else:
+                expIcon = self.theTheme.getIcon("cross")
+        tStatus = stClass+stLayout
 
         iStatus = nwItem.itemStatus
         if tClass == nwItemClass.NOVEL:
-            iStatus  = self.theProject.statusItems.checkEntry(iStatus) # Make sure it's valid
+            iStatus = self.theProject.statusItems.checkEntry(iStatus) # Make sure it's valid
             flagIcon = self.theParent.statusIcons[iStatus]
         else:
-            iStatus  = self.theProject.importItems.checkEntry(iStatus) # Make sure it's valid
+            iStatus = self.theProject.importItems.checkEntry(iStatus) # Make sure it's valid
             flagIcon = self.theParent.importIcons[iStatus]
 
         trItem.setText(self.C_NAME, tName)
-        trItem.setText(self.C_FLAGS,tStatus)
-        trItem.setIcon(self.C_FLAGS,flagIcon)
+        trItem.setIcon(self.C_EXPORT, expIcon)
+        trItem.setText(self.C_FLAGS, tStatus)
+        trItem.setIcon(self.C_FLAGS, flagIcon)
 
         return
 
@@ -569,12 +578,14 @@ class GuiDocTree(QTreeWidget):
 
         newItem.setText(self.C_NAME,   "")
         newItem.setText(self.C_COUNT,  "0")
+        newItem.setText(self.C_EXPORT, "")
         newItem.setText(self.C_FLAGS,  "")
         newItem.setText(self.C_HANDLE, tHandle)
 
         # newItem.setForeground(self.C_COUNT,QColor(*self.theParent.theTheme.treeWCount))
         newItem.setTextAlignment(self.C_COUNT, Qt.AlignRight)
-        newItem.setFont(self.C_FLAGS, self.fontFlags)
+        # newItem.setTextAlignment(self.C_EXPORT, Qt.AlignHCenter)
+        newItem.setFont(self.C_FLAGS, self.fntFixed)
 
         self.theMap[tHandle] = newItem
         if pHandle is None:
@@ -627,6 +638,7 @@ class GuiDocTree(QTreeWidget):
             newItem = QTreeWidgetItem([""]*4)
             newItem.setText(self.C_NAME,   "Orphaned Files")
             newItem.setText(self.C_COUNT,  "")
+            newItem.setText(self.C_EXPORT, "")
             newItem.setText(self.C_FLAGS,  "")
             newItem.setText(self.C_HANDLE, "")
             self.addTopLevelItem(newItem)

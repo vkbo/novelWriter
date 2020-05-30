@@ -48,6 +48,7 @@ class GuiMainStatus(QStatusBar):
 
         self.mainConf  = nw.CONFIG
         self.theParent = theParent
+        self.theTheme  = theParent.theTheme
         self.refTime   = None
 
         self.charCount = 0
@@ -56,11 +57,15 @@ class GuiMainStatus(QStatusBar):
         self.projWords = 0
         self.sessWords = 0
 
-        self.monoFont = QFont("Monospace",10)
+        self.fntFixed = QFont()
+        self.fntFixed.setFamily("Monospace")
+        self.fntFixed.setPointSizeF(0.95*self.theTheme.fontPointSize)
 
-        colNone  = QColor(*self.theParent.theTheme.statNone)
-        colTrue  = QColor(*self.theParent.theTheme.statUnsaved)
-        colFalse = QColor(*self.theParent.theTheme.statSaved)
+        colNone  = QColor(*self.theTheme.statNone)
+        colTrue  = QColor(*self.theTheme.statUnsaved)
+        colFalse = QColor(*self.theTheme.statSaved)
+
+        iPx = self.theTheme.textIconSize
 
         # Permanent Widgets
         # =================
@@ -68,14 +73,14 @@ class GuiMainStatus(QStatusBar):
         ## The Spell Checker Language
         self.langIcon = QLabel("")
         self.langText = QLabel("None")
-        self.langIcon.setPixmap(self.theParent.theTheme.getPixmap("status_lang",(14,14)))
+        self.langIcon.setPixmap(self.theTheme.getPixmap("status_lang", (iPx, iPx)))
         self.langIcon.setContentsMargins(0, 0, 0, 0)
         self.langText.setContentsMargins(0, 0, 8, 0)
         self.addPermanentWidget(self.langIcon)
         self.addPermanentWidget(self.langText)
 
         ## The Editor Status
-        self.docIcon = StatusLED(colNone, colTrue, colFalse, 14, 14, self)
+        self.docIcon = StatusLED(colNone, colTrue, colFalse, iPx, iPx, self)
         self.docText = QLabel("Editor")
         self.docIcon.setContentsMargins(0, 0, 0, 0)
         self.docText.setContentsMargins(0, 0, 8, 0)
@@ -83,7 +88,7 @@ class GuiMainStatus(QStatusBar):
         self.addPermanentWidget(self.docText)
 
         ## The Project Status
-        self.projIcon = StatusLED(colNone, colTrue, colFalse, 14, 14, self)
+        self.projIcon = StatusLED(colNone, colTrue, colFalse, iPx, iPx, self)
         self.projText = QLabel("Project")
         self.projIcon.setContentsMargins(0, 0, 0, 0)
         self.projText.setContentsMargins(0, 0, 8, 0)
@@ -93,7 +98,7 @@ class GuiMainStatus(QStatusBar):
         ## The Project and Session Stats
         self.statsIcon = QLabel()
         self.statsText = QLabel("")
-        self.statsIcon.setPixmap(self.theParent.theTheme.getPixmap("status_stats",(14,14)))
+        self.statsIcon.setPixmap(self.theTheme.getPixmap("status_stats", (iPx, iPx)))
         self.statsIcon.setContentsMargins(0, 0, 0, 0)
         self.statsText.setContentsMargins(0, 0, 8, 0)
         self.addPermanentWidget(self.statsIcon)
@@ -102,10 +107,10 @@ class GuiMainStatus(QStatusBar):
         ## The Session Clock
         self.timeIcon = QLabel()
         self.timeText = QLabel("")
-        self.timeIcon.setPixmap(self.theParent.theTheme.getPixmap("status_time",(14,14)))
+        self.timeIcon.setPixmap(self.theTheme.getPixmap("status_time", (iPx, iPx)))
         self.timeText.setToolTip("Session Time")
         self.timeText.setAlignment(Qt.AlignVCenter | Qt.AlignRight)
-        self.timeText.setFont(self.monoFont)
+        self.timeText.setFont(self.fntFixed)
         self.timeIcon.setContentsMargins(0, 0, 0, 0)
         self.timeText.setContentsMargins(0, 0, 0, 0)
         self.addPermanentWidget(self.timeIcon)
