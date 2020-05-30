@@ -8,10 +8,10 @@ from nwtools import *
 from os import path, unlink
 from PyQt5.QtCore import Qt
 
-from nw.gui.dialogs.projectsettings import GuiProjectSettings
-from nw.gui.dialogs.itemeditor import GuiItemEditor
-from nw.gui.build import GuiBuildNovel
-
+from nw.gui import (
+    GuiProjectSettings, GuiItemEditor, GuiAbout, GuiBuildNovel,
+    GuiDocMerge, GuiDocSplit
+)
 from nw.constants import *
 
 keyDelay  =  5
@@ -236,16 +236,16 @@ def testMainWindows(qtbot, nwTempGUI, nwRef, nwTemp):
     qtbot.wait(stepDelay)
 
     # Check the files
-    refFile = path.join(nwTempGUI,"nwProject.nwx")
-    assert cmpFiles(refFile, path.join(nwRef,"gui","1_nwProject.nwx"), [2])
-    refFile = path.join(nwTempGUI,"content","0e17daca5f3e1.nwd")
-    assert cmpFiles(refFile, path.join(nwRef,"gui","1_0e17daca5f3e1.nwd"))
-    refFile = path.join(nwTempGUI,"content","98010bd9270f9.nwd")
-    assert cmpFiles(refFile, path.join(nwRef,"gui","1_98010bd9270f9.nwd"))
-    refFile = path.join(nwTempGUI,"content","31489056e0916.nwd")
-    assert cmpFiles(refFile, path.join(nwRef,"gui","1_31489056e0916.nwd"))
-    refFile = path.join(nwTempGUI,"content","1a6562590ef19.nwd")
-    assert cmpFiles(refFile, path.join(nwRef,"gui","1_1a6562590ef19.nwd"))
+    refFile = path.join(nwTempGUI, "nwProject.nwx")
+    assert cmpFiles(refFile, path.join(nwRef, "gui", "1_nwProject.nwx"), [2])
+    refFile = path.join(nwTempGUI, "content", "0e17daca5f3e1.nwd")
+    assert cmpFiles(refFile, path.join(nwRef, "gui", "1_0e17daca5f3e1.nwd"))
+    refFile = path.join(nwTempGUI, "content", "98010bd9270f9.nwd")
+    assert cmpFiles(refFile, path.join(nwRef, "gui", "1_98010bd9270f9.nwd"))
+    refFile = path.join(nwTempGUI, "content", "31489056e0916.nwd")
+    assert cmpFiles(refFile, path.join(nwRef, "gui", "1_31489056e0916.nwd"))
+    refFile = path.join(nwTempGUI, "content", "1a6562590ef19.nwd")
+    assert cmpFiles(refFile, path.join(nwRef, "gui", "1_1a6562590ef19.nwd"))
 
     nwGUI.closeMain()
     # qtbot.stopForInteraction()
@@ -333,7 +333,7 @@ def testProjectEditor(qtbot, nwTempGUI, nwRef, nwTemp):
 
     # Check the files
     projFile = path.join(nwTempGUI,"nwProject.nwx")
-    assert cmpFiles(projFile, path.join(nwRef,"gui","2_nwProject.nwx"), [2])
+    assert cmpFiles(projFile, path.join(nwRef, "gui", "2_nwProject.nwx"), [2])
 
     nwGUI.closeMain()
     # qtbot.stopForInteraction()
@@ -382,10 +382,27 @@ def testItemEditor(qtbot, nwTempGUI, nwRef, nwTemp):
 
     # Check the files
     projFile = path.join(nwTempGUI,"nwProject.nwx")
-    assert cmpFiles(projFile, path.join(nwRef,"gui","3_nwProject.nwx"), [2])
+    assert cmpFiles(projFile, path.join(nwRef, "gui", "3_nwProject.nwx"), [2])
 
     nwGUI.closeMain()
     # qtbot.stopForInteraction()
+
+@pytest.mark.gui
+def testAboutBox(qtbot, nwTempGUI, nwRef, nwTemp):
+    nwGUI = nw.main(["--testmode","--config=%s" % nwTempGUI, "--data=%s" % nwTemp])
+    qtbot.addWidget(nwGUI)
+    nwGUI.show()
+    qtbot.waitForWindowShown(nwGUI)
+    qtbot.wait(stepDelay)
+
+    msgAbout = GuiAbout(nwGUI)
+    assert msgAbout.pageAbout.document().characterCount() > 100
+    assert msgAbout.pageLicense.document().characterCount() > 100
+
+    # qtbot.stopForInteraction()
+
+    msgAbout._doClose()
+    nwGUI.closeMain()
 
 @pytest.mark.gui
 def testBuildTool(qtbot, nwTempBuild, nwLipsum, nwRef, nwTemp):
@@ -472,6 +489,115 @@ def testBuildTool(qtbot, nwTempBuild, nwLipsum, nwRef, nwTemp):
     refFile = path.join(nwTempBuild, "Lorem Ipsum.htm")
     assert cmpFiles(refFile, path.join(nwRef, "build", "3_LoremIpsum.htm"), [])
 
+    # qtbot.stopForInteraction()
     nwBuild._doClose()
+    nwGUI.closeMain()
+
+@pytest.mark.gui
+def testMergeTool(qtbot, nwTempGUI, nwLipsum, nwRef, nwTemp):
+
+    nwGUI = nw.main(["--testmode","--config=%s" % nwTempGUI, "--data=%s" % nwTemp])
+    qtbot.addWidget(nwGUI)
+    nwGUI.show()
+    qtbot.waitForWindowShown(nwGUI)
+    qtbot.wait(stepDelay)
+
+    nwGUI.theProject.projTree.setSeed(42)
+    assert nwGUI.openProject(nwLipsum)
+    qtbot.wait(stepDelay)
+
+    assert nwGUI.treeView.setSelectedHandle("45e6b01ca35c1")
+    qtbot.wait(stepDelay)
+
+    nwMerge = GuiDocMerge(nwGUI, nwGUI.theProject)
+    qtbot.wait(stepDelay)
+
+    nwMerge._doMerge()
+    qtbot.wait(stepDelay)
+
+    assert nwGUI.theProject.projTree["73475cb40a568"] is not None
+
+    refFile = path.join(nwLipsum, "content", "73475cb40a568.nwd")
+    assert cmpFiles(refFile, path.join(nwRef, "gui", "4_73475cb40a568.nwd"))
 
     # qtbot.stopForInteraction()
+    nwGUI.closeMain()
+
+@pytest.mark.gui
+def testSplitTool(qtbot, nwTempGUI, nwLipsum, nwRef, nwTemp):
+
+    nwGUI = nw.main(["--testmode","--config=%s" % nwTempGUI, "--data=%s" % nwTemp])
+    qtbot.addWidget(nwGUI)
+    nwGUI.show()
+    qtbot.waitForWindowShown(nwGUI)
+    qtbot.wait(stepDelay)
+
+    nwGUI.theProject.projTree.setSeed(42)
+    assert nwGUI.openProject(nwLipsum)
+    qtbot.wait(stepDelay)
+
+    # Split By Chapter
+    assert nwGUI.treeView.setSelectedHandle("73475cb40a568")
+    qtbot.wait(stepDelay)
+    nwSplit = GuiDocSplit(nwGUI, nwGUI.theProject)
+    qtbot.wait(stepDelay)
+    nwSplit.splitLevel.setCurrentIndex(1)
+    qtbot.wait(stepDelay)
+
+    nwSplit._doSplit()
+    assert nwGUI.theProject.projTree["71ee45a3c0db9"] is not None
+
+    # This should give us back the file as it was before
+    refFile = path.join(nwLipsum, "content", "71ee45a3c0db9.nwd")
+    assert cmpFiles(refFile, path.join(nwRef, "gui", "4_73475cb40a568.nwd"), [1])
+
+    # Split By Scene
+    assert nwGUI.treeView.setSelectedHandle("73475cb40a568")
+    qtbot.wait(stepDelay)
+    nwSplit = GuiDocSplit(nwGUI, nwGUI.theProject)
+    qtbot.wait(stepDelay)
+    nwSplit.splitLevel.setCurrentIndex(2)
+    qtbot.wait(stepDelay)
+
+    nwSplit._doSplit()
+
+    assert nwGUI.theProject.projTree["25fc0e7096fc6"] is not None
+    assert nwGUI.theProject.projTree["31489056e0916"] is not None
+    assert nwGUI.theProject.projTree["98010bd9270f9"] is not None
+
+    refFile = path.join(nwLipsum, "content", "25fc0e7096fc6.nwd")
+    assert cmpFiles(refFile, path.join(nwRef, "gui", "5_25fc0e7096fc6.nwd"))
+    refFile = path.join(nwLipsum, "content", "31489056e0916.nwd")
+    assert cmpFiles(refFile, path.join(nwRef, "gui", "5_31489056e0916.nwd"))
+    refFile = path.join(nwLipsum, "content", "98010bd9270f9.nwd")
+    assert cmpFiles(refFile, path.join(nwRef, "gui", "5_98010bd9270f9.nwd"))
+
+    # Split By Section
+    assert nwGUI.treeView.setSelectedHandle("73475cb40a568")
+    qtbot.wait(stepDelay)
+    nwSplit = GuiDocSplit(nwGUI, nwGUI.theProject)
+    qtbot.wait(stepDelay)
+    nwSplit.splitLevel.setCurrentIndex(3)
+    qtbot.wait(stepDelay)
+
+    nwSplit._doSplit()
+
+    assert nwGUI.theProject.projTree["1a6562590ef19"] is not None
+    assert nwGUI.theProject.projTree["031b4af5197ec"] is not None
+    assert nwGUI.theProject.projTree["41cfc0d1f2d12"] is not None
+    assert nwGUI.theProject.projTree["2858dcd1057d3"] is not None
+    assert nwGUI.theProject.projTree["2fca346db6561"] is not None
+
+    refFile = path.join(nwLipsum, "content", "1a6562590ef19.nwd")
+    assert cmpFiles(refFile, path.join(nwRef, "gui", "5_25fc0e7096fc6.nwd"), [1])
+    refFile = path.join(nwLipsum, "content", "031b4af5197ec.nwd")
+    assert cmpFiles(refFile, path.join(nwRef, "gui", "5_031b4af5197ec.nwd"))
+    refFile = path.join(nwLipsum, "content", "41cfc0d1f2d12.nwd")
+    assert cmpFiles(refFile, path.join(nwRef, "gui", "5_41cfc0d1f2d12.nwd"))
+    refFile = path.join(nwLipsum, "content", "2858dcd1057d3.nwd")
+    assert cmpFiles(refFile, path.join(nwRef, "gui", "5_2858dcd1057d3.nwd"))
+    refFile = path.join(nwLipsum, "content", "2fca346db6561.nwd")
+    assert cmpFiles(refFile, path.join(nwRef, "gui", "5_2fca346db6561.nwd"))
+
+    # qtbot.stopForInteraction()
+    nwGUI.closeMain()
