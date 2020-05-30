@@ -71,6 +71,9 @@ class NWDoc():
         """Open a document from handle, capturing potential file system
         errors and parse meta data.
         """
+        if not isHandle(tHandle):
+            return None
+
         # Always clear first, since the object will often be reused.
         self.clearDocument()
 
@@ -170,7 +173,10 @@ class NWDoc():
         """Permanently delete a document source file and its backups
         from the project data folder.
         """
-        docFile = self.docHandle+".nwd"
+        if not isHandle(tHandle):
+            return False
+
+        docFile = tHandle+".nwd"
 
         chkList = []
         chkList.append(path.join(self.theProject.projContent, docFile))
