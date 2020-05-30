@@ -217,7 +217,7 @@ class Tokenizer():
         theTitle = "Notes: %s" % theItem.itemName
         self.theTokens = []
         self.theTokens.append((
-            self.T_TITLE, theTitle, None, self.A_PBB | self.A_CENTRE
+            self.T_TITLE, 0, theTitle, None, self.A_PBB | self.A_CENTRE
         ))
         self.theMarkdown = "# %s\n\n" % theTitle
 
@@ -320,8 +320,10 @@ class Tokenizer():
             # Tag lines starting with specific characters
             if len(aLine.strip()) == 0:
                 self.theTokens.append((
-                    self.T_EMPTY, nLine,
-                    "", None,
+                    self.T_EMPTY,
+                    nLine,
+                    "",
+                    None,
                     self.A_NONE
                 ))
                 tmpMarkdown.append("\n")
@@ -330,16 +332,20 @@ class Tokenizer():
                 cLine = aLine[1:].strip()
                 if cLine.lower().startswith("synopsis:"):
                     self.theTokens.append((
-                        self.T_SYNOPSIS, nLine,
-                        cLine[9:].strip(), None,
+                        self.T_SYNOPSIS,
+                        nLine,
+                        cLine[9:].strip(),
+                        None,
                         self.A_NONE
                     ))
                     if self.doSynopsis:
                         tmpMarkdown.append("%s\n" % aLine)
                 else:
                     self.theTokens.append((
-                        self.T_COMMENT, nLine,
-                        aLine[1:].strip(), None,
+                        self.T_COMMENT,
+                        nLine,
+                        aLine[1:].strip(),
+                        None,
                         self.A_NONE
                     ))
                     if self.doComments:
@@ -347,8 +353,10 @@ class Tokenizer():
 
             elif aLine[0] == "@":
                 self.theTokens.append((
-                    self.T_KEYWORD, nLine,
-                    aLine[1:].strip(), None,
+                    self.T_KEYWORD,
+                    nLine,
+                    aLine[1:].strip(),
+                    None,
                     self.A_NONE
                 ))
                 if self.doKeywords:
@@ -356,32 +364,40 @@ class Tokenizer():
 
             elif aLine[:2] == "# ":
                 self.theTokens.append((
-                    self.T_HEAD1, nLine,
-                    aLine[2:].strip(), None,
+                    self.T_HEAD1,
+                    nLine,
+                    aLine[2:].strip(),
+                    None,
                     self.A_NONE
                 ))
                 tmpMarkdown.append("%s\n" % aLine)
 
             elif aLine[:3] == "## ":
                 self.theTokens.append((
-                    self.T_HEAD2, nLine,
-                    aLine[3:].strip(), None,
+                    self.T_HEAD2,
+                    nLine,
+                    aLine[3:].strip(),
+                    None,
                     self.A_NONE
                 ))
                 tmpMarkdown.append("%s\n" % aLine)
 
             elif aLine[:4] == "### ":
                 self.theTokens.append((
-                    self.T_HEAD3, nLine,
-                    aLine[4:].strip(), None,
+                    self.T_HEAD3,
+                    nLine,
+                    aLine[4:].strip(),
+                    None,
                     self.A_NONE
                 ))
                 tmpMarkdown.append("%s\n" % aLine)
 
             elif aLine[:5] == "#### ":
                 self.theTokens.append((
-                    self.T_HEAD4, nLine,
-                    aLine[5:].strip(), None,
+                    self.T_HEAD4,
+                    nLine,
+                    aLine[5:].strip(),
+                    None,
                     self.A_NONE
                 ))
                 tmpMarkdown.append("%s\n" % aLine)
@@ -407,16 +423,20 @@ class Tokenizer():
                 # sorted by position
                 fmtPos = sorted(fmtPos, key=itemgetter(0))
                 self.theTokens.append((
-                    self.T_TEXT, nLine,
-                    aLine, fmtPos,
+                    self.T_TEXT,
+                    nLine,
+                    aLine,
+                    fmtPos,
                     self.A_NONE
                 ))
                 tmpMarkdown.append("%s\n" % aLine)
 
         # Always add an empty line at the end
         self.theTokens.append((
-            self.T_EMPTY, nLine,
-            "", None,
+            self.T_EMPTY,
+            nLine,
+            "",
+            None,
             self.A_NONE
         ))
         tmpMarkdown.append("\n")
