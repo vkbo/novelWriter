@@ -492,3 +492,32 @@ def testBuildTool(qtbot, nwTempBuild, nwLipsum, nwRef, nwTemp):
     # qtbot.stopForInteraction()
     nwBuild._doClose()
     nwGUI.closeMain()
+
+@pytest.mark.gui
+def testMergeTool(qtbot, nwTempGUI, nwLipsum, nwRef, nwTemp):
+
+    nwGUI = nw.main(["--testmode","--config=%s" % nwTempGUI, "--data=%s" % nwTemp])
+    qtbot.addWidget(nwGUI)
+    nwGUI.show()
+    qtbot.waitForWindowShown(nwGUI)
+    qtbot.wait(stepDelay)
+
+    nwGUI.theProject.projTree.setSeed(42)
+    assert nwGUI.openProject(nwLipsum)
+    qtbot.wait(stepDelay)
+
+    assert nwGUI.treeView.setSelectedHandle("45e6b01ca35c1")
+    qtbot.wait(stepDelay)
+
+    nwMerge = GuiDocMerge(nwGUI, nwGUI.theProject)
+    qtbot.wait(stepDelay)
+
+    nwMerge._doMerge()
+    qtbot.wait(stepDelay)
+
+    assert nwGUI.theProject.projTree["73475cb40a568"] is not None
+
+    refFile = path.join(nwLipsum, "content", "73475cb40a568.nwd")
+    assert cmpFiles(refFile, path.join(nwRef, "gui", "4_73475cb40a568.nwd"))
+
+    nwGUI.closeMain()
