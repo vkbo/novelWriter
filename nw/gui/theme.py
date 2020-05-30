@@ -111,6 +111,11 @@ class GuiTheme:
         self.confFile   = None
         self.cssFile    = None
 
+        # Set Font Size and Theme
+        self.guiFont = qApp.font()
+        self.guiFont.setPointSizeF(self.mainConf.guiFontSize)
+        qApp.setFont(self.guiFont)
+
         self.updateTheme()
         self.theIcons.updateTheme()
 
@@ -119,8 +124,7 @@ class GuiTheme:
         self.loadDecoration = self.theIcons.loadDecoration
 
         # Extract Other Info
-        self.guiDPI  = qApp.primaryScreen().physicalDotsPerInch()
-        self.guiFont = qApp.font()
+        self.guiDPI = qApp.primaryScreen().physicalDotsPerInch()
 
         qMetric = QFontMetrics(self.guiFont)
         self.fontPointSize = self.guiFont.pointSizeF()

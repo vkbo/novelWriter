@@ -183,6 +183,19 @@ class GuiConfigEditGeneralTab(QWidget):
             "This may improve the look of icons on dark themes."
         )
 
+        ## Font Size
+        self.guiFontSize = QSpinBox(self)
+        self.guiFontSize.setMinimum(8)
+        self.guiFontSize.setMaximum(60)
+        self.guiFontSize.setSingleStep(1)
+        self.guiFontSize.setValue(self.mainConf.guiFontSize)
+        self.mainForm.addRow(
+            "Font size",
+            self.guiFontSize,
+            "Changing this requires restarting %s." % nw.__package__,
+            theUnit="pt"
+        )
+
         # GUI Settings
         # ============
         self.mainForm.addGroupLabel("GUI Settings")
@@ -266,6 +279,7 @@ class GuiConfigEditGeneralTab(QWidget):
         guiTheme        = self.selectTheme.currentData()
         guiIcons        = self.selectIcons.currentData()
         guiDark         = self.preferDarkIcons.isChecked()
+        guiFontSize     = self.guiFontSize.value()
         showFullPath    = self.showFullPath.isChecked()
         autoSaveDoc     = self.autoSaveDoc.value()
         autoSaveProj    = self.autoSaveProj.value()
@@ -276,10 +290,12 @@ class GuiConfigEditGeneralTab(QWidget):
         # Check if restart is needed
         needsRestart |= self.mainConf.guiTheme != guiTheme
         needsRestart |= self.mainConf.guiIcons != guiIcons
+        needsRestart |= self.mainConf.guiFontSize != guiFontSize
 
         self.mainConf.guiTheme        = guiTheme
         self.mainConf.guiIcons        = guiIcons
         self.mainConf.guiDark         = guiDark
+        self.mainConf.guiFontSize     = guiFontSize
         self.mainConf.showFullPath    = showFullPath
         self.mainConf.autoSaveDoc     = autoSaveDoc
         self.mainConf.autoSaveProj    = autoSaveProj
@@ -353,8 +369,8 @@ class GuiConfigEditLayoutTab(QWidget):
 
         ## Font Size
         self.textStyleSize = QSpinBox(self)
-        self.textStyleSize.setMinimum(5)
-        self.textStyleSize.setMaximum(120)
+        self.textStyleSize.setMinimum(8)
+        self.textStyleSize.setMaximum(60)
         self.textStyleSize.setSingleStep(1)
         self.textStyleSize.setValue(self.mainConf.textSize)
         self.mainForm.addRow(
