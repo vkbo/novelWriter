@@ -55,10 +55,11 @@ class GuiDocDetails(QFrame):
         self.setLayout(self.mainBox)
 
         self.pS = 0.9*self.theTheme.fontPointSize
-        self.iS = self.theTheme.textIconSize
+        self.iPx = self.theTheme.textIconSize
+        self.sPx = int(round(0.8*self.theTheme.textIconSize))
 
-        self.expCheck = self.theTheme.getPixmap("check", (self.iS, self.iS))
-        self.expCross = self.theTheme.getPixmap("cross", (self.iS, self.iS))
+        self.expCheck = self.theTheme.getPixmap("check", (self.iPx, self.iPx))
+        self.expCross = self.theTheme.getPixmap("cross", (self.iPx, self.iPx))
 
         self.fntLabel = QFont()
         self.fntLabel.setPointSize(10)
@@ -230,7 +231,7 @@ class GuiDocDetails(QFrame):
                     self.labelFlag.setPixmap(self.expCross)
             else:
                 self.labelFlag.setPixmap(QPixmap(1,1))
-            self.statusFlag.setPixmap(flagIcon.pixmap(0.9*self.iS, 0.9*self.iS))
+            self.statusFlag.setPixmap(flagIcon.pixmap(self.sPx, self.sPx))
             self.classFlag.setText(nwLabels.CLASS_FLAG[nwItem.itemClass])
             if nwItem.itemLayout == nwItemLayout.NO_LAYOUT:
                 self.layoutFlag.setText("-")
