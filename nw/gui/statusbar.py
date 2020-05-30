@@ -59,7 +59,7 @@ class GuiMainStatus(QStatusBar):
 
         self.fntFixed = QFont()
         self.fntFixed.setFamily("Monospace")
-        self.fntFixed.setPointSizeF(self.theTheme.fontPointSize)
+        self.fntFixed.setPointSizeF(0.95*self.theTheme.fontPointSize)
 
         colNone  = QColor(*self.theTheme.statNone)
         colTrue  = QColor(*self.theTheme.statUnsaved)

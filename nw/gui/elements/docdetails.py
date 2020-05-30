@@ -62,7 +62,7 @@ class GuiDocDetails(QFrame):
         self.expCross = self.theTheme.getPixmap("cross", (self.iPx, self.iPx))
 
         self.fntLabel = QFont()
-        self.fntLabel.setPointSize(10)
+        self.fntLabel.setBold(True)
         self.fntLabel.setPointSizeF(self.pS)
 
         self.fntFixed = QFont()
