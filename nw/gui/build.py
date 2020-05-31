@@ -53,12 +53,14 @@ logger = logging.getLogger(__name__)
 
 class GuiBuildNovel(QDialog):
 
-    FMT_ODT = 1
-    FMT_PDF = 2
-    FMT_HTM = 3
-    FMT_MD  = 4
-    FMT_NWD = 5
-    FMT_TXT = 6
+    FMT_ODT    = 1
+    FMT_PDF    = 2
+    FMT_HTM    = 3
+    FMT_MD     = 4
+    FMT_NWD    = 5
+    FMT_TXT    = 6
+    FMT_JSON_H = 7
+    FMT_JSON_M = 8
 
     def __init__(self, theParent, theProject):
         QDialog.__init__(self, theParent)
@@ -334,13 +336,21 @@ class GuiBuildNovel(QDialog):
             self.saveMD.triggered.connect(lambda: self._saveDocument(self.FMT_MD))
             self.saveMenu.addAction(self.saveMD)
 
-        self.saveNWD = QAction("novelWriter Markdown (.nwd)", self)
+        self.saveNWD = QAction("%s Markdown (.nwd)" % nw.__package__, self)
         self.saveNWD.triggered.connect(lambda: self._saveDocument(self.FMT_NWD))
         self.saveMenu.addAction(self.saveNWD)
 
         self.saveTXT = QAction("Plain Text (.txt)", self)
         self.saveTXT.triggered.connect(lambda: self._saveDocument(self.FMT_TXT))
         self.saveMenu.addAction(self.saveTXT)
+
+        self.saveJsonH = QAction("JSON + %s HTML (.json)" % nw.__package__, self)
+        self.saveJsonH.triggered.connect(lambda: self._saveDocument(self.FMT_JSON_H))
+        self.saveMenu.addAction(self.saveJsonH)
+
+        self.saveJsonM = QAction("JSON + %s Markdown (.json)" % nw.__package__, self)
+        self.saveJsonM.triggered.connect(lambda: self._saveDocument(self.FMT_JSON_M))
+        self.saveMenu.addAction(self.saveJsonM)
 
         self.btnClose = QPushButton("Close")
         self.btnClose.clicked.connect(self._doClose)
@@ -546,7 +556,7 @@ class GuiBuildNovel(QDialog):
 
         elif theFormat == self.FMT_NWD:
             fileExt = "nwd"
-            textFmt = "%s markdown" % nw.__package__
+            textFmt = "%s Markdown" % nw.__package__
             outTool = "NW"
 
         elif theFormat == self.FMT_TXT:
@@ -554,6 +564,16 @@ class GuiBuildNovel(QDialog):
             fileExt = "txt"
             textFmt = "Plain Text"
             outTool = "Qt"
+
+        elif theFormat == self.FMT_JSON_H:
+            fileExt = "json"
+            textFmt = "JSON + %s HTML" % nw.__package__
+            outTool = "NW"
+
+        elif theFormat == self.FMT_JSON_M:
+            fileExt = "json"
+            textFmt = "JSON + %s Markdown" % nw.__package__
+            outTool = "NW"
 
         else:
             return False
@@ -627,6 +647,33 @@ class GuiBuildNovel(QDialog):
                         # Write novelWriter markdown data
                         for aLine in self.nwdText:
                             outFile.write(aLine)
+
+                    elif theFormat == self.FMT_JSON_H or theFormat == self.FMT_JSON_M:
+                        jsonData = {
+                            "meta" : {
+                                "workingTitle" : self.theProject.projName,
+                                "novelTitle"   : self.theProject.bookTitle,
+                                "authors"      : self.theProject.bookAuthors,
+                            }
+                        }
+
+                        if theFormat == self.FMT_JSON_H:
+                            theBody = []
+                            for htmlPage in self.htmlText:
+                                theBody.append(htmlPage.rstrip("\n").split("\n"))
+                            jsonData["text"] = {
+                                "css"  : self.htmlStyle,
+                                "html" : theBody,
+                            }
+                        elif theFormat == self.FMT_JSON_M:
+                            theBody = []
+                            for nwdPage in self.nwdText:
+                                theBody.append(nwdPage.split("\n"))
+                            jsonData["text"] = {
+                                "nwd" : theBody,
+                            }
+
+                        outFile.write(json.dumps(jsonData, indent=2))
 
                 wSuccess = True
 
