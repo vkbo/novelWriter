@@ -48,6 +48,7 @@ class GuiDocDetails(QFrame):
         self.theParent  = theParent
         self.theProject = theProject
         self.theTheme   = theParent.theTheme
+        self.theHandle  = None
 
         self.mainBox = QGridLayout(self)
         self.mainBox.setVerticalSpacing(1)
@@ -193,9 +194,20 @@ class GuiDocDetails(QFrame):
     #  Class Methods
     ##
 
+    def updateCounts(self, tHandle, cC, wC, pC):
+        """Just update the counts if the handle is the same as the one
+        we're already showing.
+        """
+        if tHandle == self.theHandle:
+            self.cCountData.setText("{:n}".format(cC))
+            self.wCountData.setText("{:n}".format(wC))
+            self.pCountData.setText("{:n}".format(pC))
+        return
+
     def updateViewBox(self, tHandle):
         """Populate the details box from a given handle.
         """
+        self.theHandle = tHandle
         nwItem = self.theProject.projTree[tHandle]
 
         if nwItem is None:

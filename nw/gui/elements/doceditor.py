@@ -300,15 +300,16 @@ class GuiDocEditor(QTextEdit):
 
         docText = self.getText()
         cursPos = self.getCursorPosition()
-        theItem = self.nwDocument.theItem
-        theItem.setCharCount(self.charCount)
-        theItem.setWordCount(self.wordCount)
-        theItem.setParaCount(self.paraCount)
-        theItem.setCursorPos(cursPos)
+        self.nwDocument.theItem.setCharCount(self.charCount)
+        self.nwDocument.theItem.setWordCount(self.wordCount)
+        self.nwDocument.theItem.setParaCount(self.paraCount)
+        self.nwDocument.theItem.setCursorPos(cursPos)
         self.nwDocument.saveDocument(docText)
         self.setDocumentChanged(False)
 
-        self.theParent.theIndex.scanText(theItem.itemHandle, docText)
+        self.theParent.theIndex.scanText(
+            self.nwDocument.theItem.itemHandle, docText
+        )
 
         return True
 
@@ -737,15 +738,24 @@ class GuiDocEditor(QTextEdit):
     def _updateCounts(self):
         """Slot for the word counter's finished signal
         """
+        if self.theHandle is None or self.nwDocument.theItem is None:
+            return
+
         logger.verbose("Updating word count")
 
-        tHandle = self.nwDocument.docHandle
         self.charCount = self.wCounter.charCount
         self.wordCount = self.wCounter.wordCount
         self.paraCount = self.wCounter.paraCount
-        self.theParent.statusBar.setCounts(self.charCount,self.wordCount,self.paraCount)
-        self.theParent.treeView.propagateCount(tHandle, self.wordCount)
+        self.nwDocument.theItem.setCharCount(self.charCount)
+        self.nwDocument.theItem.setWordCount(self.wordCount)
+        self.nwDocument.theItem.setParaCount(self.paraCount)
+
+        self.theParent.statusBar.setCounts(self.charCount, self.wordCount, self.paraCount)
+        self.theParent.treeView.propagateCount(self.theHandle, self.wordCount)
         self.theParent.treeView.projectWordCount()
+        self.theParent.treeMeta.updateCounts(
+            self.theHandle, self.charCount, self.wordCount, self.paraCount
+        )
         self._checkDocSize(self.charCount)
 
         return

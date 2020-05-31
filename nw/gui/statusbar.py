@@ -205,7 +205,7 @@ class GuiMainStatus(QStatusBar):
         """Update statistics.
         """
         self.statsText.setToolTip(
-            "D: Document word count<br>P: Project word count"
+            "D: Document word count<br>P: Project word count (session change)"
         )
         self.statsText.setText((
             "D:{wC:n}  P:{pWC:n} ({sWC:+n})"
