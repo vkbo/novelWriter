@@ -29,7 +29,7 @@ import logging
 import nw
 
 from PyQt5.QtCore import Qt
-from PyQt5.QtGui import QFont, QIcon, QPixmap, QFontMetrics
+from PyQt5.QtGui import QFont, QIcon, QPixmap
 from PyQt5.QtWidgets import QFrame, QGridLayout, QLabel
 
 from nw.constants import (
@@ -65,10 +65,6 @@ class GuiDocDetails(QFrame):
         self.fntLabel.setBold(True)
         self.fntLabel.setPointSizeF(self.pS)
 
-        self.fntFixed = QFont()
-        self.fntFixed.setFamily("Monospace")
-        self.fntFixed.setPointSizeF(self.pS)
-
         self.fntValue = QFont()
         self.fntValue.setPointSizeF(self.pS)
 
@@ -103,7 +99,7 @@ class GuiDocDetails(QFrame):
         self.className.setAlignment(Qt.AlignLeft)
 
         self.classFlag = QLabel("")
-        self.classFlag.setFont(self.fntFixed)
+        self.classFlag.setFont(self.fntValue)
         self.classFlag.setAlignment(Qt.AlignRight)
 
         self.classData = QLabel("")
@@ -116,7 +112,7 @@ class GuiDocDetails(QFrame):
         self.layoutName.setAlignment(Qt.AlignLeft)
 
         self.layoutFlag = QLabel("")
-        self.layoutFlag.setFont(self.fntFixed)
+        self.layoutFlag.setFont(self.fntValue)
         self.layoutFlag.setAlignment(Qt.AlignRight)
 
         self.layoutData = QLabel("")
@@ -180,8 +176,8 @@ class GuiDocDetails(QFrame):
         self.mainBox.setColumnStretch(4,0)
 
         # Make sure the columns for flags and counts don't resize too often
-        flagWidth = QFontMetrics(self.fntFixed).boundingRect("Mm").width()
-        countWidth = QFontMetrics(self.fntValue).boundingRect("99,999").width()
+        flagWidth  = self.theTheme.getTextWidth("Mm", self.fntValue)
+        countWidth = self.theTheme.getTextWidth("99,999", self.fntValue)
         self.mainBox.setColumnMinimumWidth(1, flagWidth)
         self.mainBox.setColumnMinimumWidth(4, countWidth)
 

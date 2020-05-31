@@ -57,10 +57,6 @@ class GuiMainStatus(QStatusBar):
         self.projWords = 0
         self.sessWords = 0
 
-        self.fntFixed = QFont()
-        self.fntFixed.setFamily("Monospace")
-        self.fntFixed.setPointSizeF(0.95*self.theTheme.fontPointSize)
-
         colNone  = QColor(*self.theTheme.statNone)
         colTrue  = QColor(*self.theTheme.statUnsaved)
         colFalse = QColor(*self.theTheme.statSaved)
@@ -109,8 +105,7 @@ class GuiMainStatus(QStatusBar):
         self.timeText = QLabel("")
         self.timeIcon.setPixmap(self.theTheme.getPixmap("status_time", (iPx, iPx)))
         self.timeText.setToolTip("Session Time")
-        self.timeText.setAlignment(Qt.AlignVCenter | Qt.AlignRight)
-        self.timeText.setFont(self.fntFixed)
+        self.timeText.setFixedWidth(self.theTheme.getTextWidth("00:00:00."))
         self.timeIcon.setContentsMargins(0, 0, 0, 0)
         self.timeText.setContentsMargins(0, 0, 0, 0)
         self.addPermanentWidget(self.timeIcon)

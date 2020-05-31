@@ -30,6 +30,7 @@ import configparser
 import nw
 
 from os import path, listdir
+from math import ceil
 
 from PyQt5.QtWidgets import qApp
 from PyQt5.QtGui import (
@@ -140,6 +141,19 @@ class GuiTheme:
         logger.verbose("GUI Text Icon Size: %d" % self.textIconSize)
 
         return
+
+    ##
+    #  Methods
+    ##
+
+    def getTextWidth(self, theText, theFont=None):
+        """Returns the width needed to contain a given piece of text.
+        """
+        if isinstance(theFont, QFont):
+            qMetrics = QFontMetrics(theFont)
+        else:
+            qMetrics = QFontMetrics(self.guiFont)
+        return int(ceil(qMetrics.boundingRect(theText).width()))
 
     ##
     #  Actions
