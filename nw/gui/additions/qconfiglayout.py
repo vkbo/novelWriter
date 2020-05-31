@@ -107,7 +107,7 @@ class QConfigLayout(QGridLayout):
 
         return
 
-    def addRow(self, theLabel, theWidget, helpText=None, theUnit=None):
+    def addRow(self, theLabel, theWidget, helpText=None, theUnit=None, theButton=None):
         """Add a label and a widget as a new row of the grid.
         """
         thisEntry = {
@@ -150,6 +150,12 @@ class QConfigLayout(QGridLayout):
             controlBox = QHBoxLayout()
             controlBox.addWidget(qWidget, 0, Qt.AlignVCenter)
             controlBox.addWidget(QLabel(theUnit), 0, Qt.AlignVCenter)
+            controlBox.setSpacing(8)
+            self.addLayout(controlBox, self._nextRow, 1, 1, 1, Qt.AlignRight | Qt.AlignVCenter)
+        elif theButton is not None:
+            controlBox = QHBoxLayout()
+            controlBox.addWidget(qWidget, 0, Qt.AlignVCenter)
+            controlBox.addWidget(theButton, 0, Qt.AlignVCenter)
             controlBox.setSpacing(8)
             self.addLayout(controlBox, self._nextRow, 1, 1, 1, Qt.AlignRight | Qt.AlignVCenter)
         else:

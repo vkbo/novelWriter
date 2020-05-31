@@ -33,9 +33,8 @@ from os import path
 from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QFont
 from PyQt5.QtWidgets import (
-    QDialog, QWidget, QHBoxLayout, QVBoxLayout, QTabWidget, QComboBox, QSpinBox,
-    QPushButton, QFontComboBox, QLineEdit, QDialogButtonBox, QMessageBox,
-    QFileDialog
+    QDialog, QWidget, QComboBox, QSpinBox, QPushButton, QLineEdit, QMessageBox,
+    QDialogButtonBox, QFileDialog, QFontDialog
 )
 
 from nw.gui.additions import QSwitch, QConfigLayout, PagedDialog
@@ -183,6 +182,21 @@ class GuiConfigEditGeneralTab(QWidget):
             "This may improve the look of icons on dark themes."
         )
 
+        ## Font Family
+        self.guiFont = QLineEdit()
+        self.guiFont.setReadOnly(True)
+        self.guiFont.setFixedWidth(162)
+        self.guiFont.setText(self.mainConf.guiFont)
+        self.fontButton = QPushButton("...")
+        self.fontButton.setMaximumWidth(30)
+        self.fontButton.clicked.connect(self._selectFont)
+        self.mainForm.addRow(
+            "Font family",
+            self.guiFont,
+            "Changing this requires restarting %s." % nw.__package__,
+            theButton = self.fontButton
+        )
+
         ## Font Size
         self.guiFontSize = QSpinBox(self)
         self.guiFontSize.setMinimum(8)
@@ -193,7 +207,7 @@ class GuiConfigEditGeneralTab(QWidget):
             "Font size",
             self.guiFontSize,
             "Changing this requires restarting %s." % nw.__package__,
-            theUnit="pt"
+            theUnit = "pt"
         )
 
         # GUI Settings
@@ -279,6 +293,7 @@ class GuiConfigEditGeneralTab(QWidget):
         guiTheme        = self.selectTheme.currentData()
         guiIcons        = self.selectIcons.currentData()
         guiDark         = self.preferDarkIcons.isChecked()
+        guiFont         = self.guiFont.text()
         guiFontSize     = self.guiFontSize.value()
         showFullPath    = self.showFullPath.isChecked()
         autoSaveDoc     = self.autoSaveDoc.value()
@@ -290,11 +305,13 @@ class GuiConfigEditGeneralTab(QWidget):
         # Check if restart is needed
         needsRestart |= self.mainConf.guiTheme != guiTheme
         needsRestart |= self.mainConf.guiIcons != guiIcons
+        needsRestart |= self.mainConf.guiFont != guiFont
         needsRestart |= self.mainConf.guiFontSize != guiFontSize
 
         self.mainConf.guiTheme        = guiTheme
         self.mainConf.guiIcons        = guiIcons
         self.mainConf.guiDark         = guiDark
+        self.mainConf.guiFont         = guiFont
         self.mainConf.guiFontSize     = guiFontSize
         self.mainConf.showFullPath    = showFullPath
         self.mainConf.autoSaveDoc     = autoSaveDoc
@@ -337,6 +354,18 @@ class GuiConfigEditGeneralTab(QWidget):
         self.askBeforeBackup.setEnabled(theState)
         return
 
+    def _selectFont(self):
+        """Open the QFontDialog and set a font for the font style.
+        """
+        currFont = QFont()
+        currFont.setFamily(self.mainConf.guiFont)
+        currFont.setPointSize(self.mainConf.guiFontSize)
+        theFont, theStatus = QFontDialog.getFont(currFont, self)
+        if theStatus:
+            self.guiFont.setText(theFont.family())
+            self.guiFontSize.setValue(theFont.pointSize())
+        return
+
 # END Class GuiConfigEditGeneralTab
 
 class GuiConfigEditLayoutTab(QWidget):
@@ -357,14 +386,20 @@ class GuiConfigEditLayoutTab(QWidget):
         # ==========
         self.mainForm.addGroupLabel("Text Style")
 
+
         ## Font Family
-        self.textStyleFont = QFontComboBox()
-        self.textStyleFont.setMaximumWidth(200)
-        self.textStyleFont.setCurrentFont(QFont(self.mainConf.textFont))
+        self.textStyleFont = QLineEdit()
+        self.textStyleFont.setReadOnly(True)
+        self.textStyleFont.setFixedWidth(162)
+        self.textStyleFont.setText(self.mainConf.textFont)
+        self.fontButton = QPushButton("...")
+        self.fontButton.setMaximumWidth(30)
+        self.fontButton.clicked.connect(self._selectFont)
         self.mainForm.addRow(
             "Font family",
             self.textStyleFont,
-            "Font for the document editor and viewer."
+            "Font for the document editor and viewer.",
+            theButton = self.fontButton
         )
 
         ## Font Size
@@ -376,7 +411,7 @@ class GuiConfigEditLayoutTab(QWidget):
         self.mainForm.addRow(
             "Font size",
             self.textStyleSize,
-            theUnit="pt"
+            theUnit = "pt"
         )
 
         # Text Flow
@@ -477,7 +512,7 @@ class GuiConfigEditLayoutTab(QWidget):
         validEntries = True
         needsRestart = False
 
-        textFont        = self.textStyleFont.currentFont().family()
+        textFont        = self.textStyleFont.text()
         textSize        = self.textStyleSize.value()
         textWidth       = self.textFlowMax.value()
         zenWidth        = self.zenDocWidth.value()
@@ -502,6 +537,22 @@ class GuiConfigEditLayoutTab(QWidget):
         self.mainConf.confChanged = True
 
         return validEntries, needsRestart
+
+    ##
+    #  Slots
+    ##
+
+    def _selectFont(self):
+        """Open the QFontDialog and set a font for the font style.
+        """
+        currFont = QFont()
+        currFont.setFamily(self.mainConf.textFont)
+        currFont.setPointSize(self.mainConf.textSize)
+        theFont, theStatus = QFontDialog.getFont(currFont, self)
+        if theStatus:
+            self.textStyleFont.setText(theFont.family())
+            self.textStyleSize.setValue(theFont.pointSize())
+        return
 
 # END Class GuiConfigEditLayoutTab
 
