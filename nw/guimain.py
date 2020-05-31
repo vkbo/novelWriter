@@ -1019,14 +1019,15 @@ class GuiMain(QMainWindow):
         return
 
     def _treeDoubleClick(self, tItem, colNo):
-        tHandle = tItem.text(3)
+        tHandle = tItem.text(self.treeView.C_HANDLE)
         logger.verbose("User double clicked tree item with handle %s" % tHandle)
         nwItem = self.theProject.projTree[tHandle]
-        if nwItem.itemType == nwItemType.FILE:
-            logger.verbose("Requested item %s is a file" % tHandle)
-            self.openDocument(tHandle)
-        else:
-            logger.verbose("Requested item %s is a folder" % tHandle)
+        if nwItem is not None:
+            if nwItem.itemType == nwItemType.FILE:
+                logger.verbose("Requested item %s is a file" % tHandle)
+                self.openDocument(tHandle)
+            else:
+                logger.verbose("Requested item %s is a folder" % tHandle)
         return
 
     def _treeKeyPressReturn(self):
