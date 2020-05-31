@@ -39,7 +39,7 @@ from PyQt5.QtGui import (
 from PyQt5.QtWidgets import (
     QDialog, QVBoxLayout, QHBoxLayout, QTextBrowser, QPushButton, QLabel,
     QLineEdit, QGroupBox, QGridLayout, QProgressBar, QMenu, QAction,
-    QFileDialog, QFontComboBox, QSpinBox
+    QFileDialog, QFontDialog, QSpinBox
 )
 
 from nw.gui.additions import QSwitch
@@ -170,19 +170,21 @@ class GuiBuildNovel(QDialog):
         self.textForm  = QGridLayout(self)
         self.textGroup.setLayout(self.textForm)
 
-        self.textFont = QFontComboBox()
-        self.textFont.setFixedWidth(220)
-        self.textFont.setToolTip(
-            "The font is used for PDF and printing. Other formats have no font set."
+        ## Font Family
+        self.textFont = QLineEdit()
+        self.textFont.setReadOnly(True)
+        self.textFont.setFixedWidth(182)
+        self.textFont.setText(
+            self.optState.getString("GuiBuildNovel", "textFont", self.mainConf.textFont)
         )
-        self.textFont.setCurrentFont(
-            QFont(self.optState.getString("GuiBuildNovel", "textFont", self.mainConf.textFont))
-        )
+        self.fontButton = QPushButton("...")
+        self.fontButton.setMaximumWidth(30)
+        self.fontButton.clicked.connect(self._selectFont)
 
         self.textSize = QSpinBox(self)
         self.textSize.setFixedWidth(60)
-        self.textSize.setMinimum(5)
-        self.textSize.setMaximum(48)
+        self.textSize.setMinimum(6)
+        self.textSize.setMaximum(72)
         self.textSize.setSingleStep(1)
         self.textSize.setToolTip(
             "The size is used for PDF and printing. Other formats have no size set."
@@ -201,13 +203,15 @@ class GuiBuildNovel(QDialog):
 
         self.textForm.addWidget(QLabel("Font family"),  0, 0, 1, 1, Qt.AlignLeft)
         self.textForm.addWidget(self.textFont,          0, 1, 1, 1, Qt.AlignRight)
+        self.textForm.addWidget(self.fontButton,        0, 2, 1, 1, Qt.AlignRight)
         self.textForm.addWidget(QLabel("Font size"),    1, 0, 1, 1, Qt.AlignLeft)
-        self.textForm.addWidget(self.textSize,          1, 1, 1, 1, Qt.AlignRight)
+        self.textForm.addWidget(self.textSize,          1, 1, 1, 2, Qt.AlignRight)
         self.textForm.addWidget(QLabel("Justify text"), 2, 0, 1, 1, Qt.AlignLeft)
-        self.textForm.addWidget(self.justifyText,       2, 1, 1, 1, Qt.AlignRight)
+        self.textForm.addWidget(self.justifyText,       2, 1, 1, 2, Qt.AlignRight)
 
         self.textForm.setColumnStretch(0, 1)
         self.textForm.setColumnStretch(1, 0)
+        self.textForm.setColumnStretch(2, 0)
 
         # Include Switches
         # ================
@@ -385,7 +389,7 @@ class GuiBuildNovel(QDialog):
         fmtScene      = self.fmtScene.text().strip()
         fmtSection    = self.fmtSection.text().strip()
         justifyText   = self.justifyText.isChecked()
-        textFont      = self.textFont.currentFont().family()
+        textFont      = self.textFont.text()
         textSize      = self.textSize.value()
         incSynopsis   = self.includeSynopsis.isChecked()
         incComments   = self.includeComments.isChecked()
@@ -667,6 +671,18 @@ class GuiBuildNovel(QDialog):
         self.docView.qDocument.print(thePrinter)
         return
 
+    def _selectFont(self):
+        """Open the QFontDialog and set a font for the font style.
+        """
+        currFont = QFont()
+        currFont.setFamily(self.textFont.text())
+        currFont.setPointSize(self.textSize.value())
+        theFont, theStatus = QFontDialog.getFont(currFont, self)
+        if theStatus:
+            self.textFont.setText(theFont.family())
+            self.textSize.setValue(theFont.pointSize())
+        return
+
     def _doClose(self):
         """Close button was clicked.
         """
@@ -709,7 +725,7 @@ class GuiBuildNovel(QDialog):
         self.optState.setValue("GuiBuildNovel", "winWidth", self.width())
         self.optState.setValue("GuiBuildNovel", "winHeight", self.height())
         self.optState.setValue("GuiBuildNovel", "justifyText", self.justifyText.isChecked())
-        self.optState.setValue("GuiBuildNovel", "textFont", self.textFont.currentFont().family())
+        self.optState.setValue("GuiBuildNovel", "textFont", self.textFont.text())
         self.optState.setValue("GuiBuildNovel", "textSize", self.textSize.value())
         self.optState.setValue("GuiBuildNovel", "addNovel", self.novelFiles.isChecked())
         self.optState.setValue("GuiBuildNovel", "addNotes", self.noteFiles.isChecked())

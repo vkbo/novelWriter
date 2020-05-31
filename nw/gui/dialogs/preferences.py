@@ -546,8 +546,8 @@ class GuiConfigEditLayoutTab(QWidget):
         """Open the QFontDialog and set a font for the font style.
         """
         currFont = QFont()
-        currFont.setFamily(self.mainConf.guiFont)
-        currFont.setPointSize(self.mainConf.guiFontSize)
+        currFont.setFamily(self.mainConf.textFont)
+        currFont.setPointSize(self.mainConf.textSize)
         theFont, theStatus = QFontDialog.getFont(currFont, self)
         if theStatus:
             self.textStyleFont.setText(theFont.family())
