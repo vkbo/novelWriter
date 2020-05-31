@@ -36,7 +36,6 @@ from time import time
 
 from PyQt5.Qt import PYQT_VERSION_STR
 from PyQt5.QtCore import QT_VERSION_STR, QStandardPaths, QSysInfo
-from PyQt5.QtWidgets import QErrorMessage
 
 from nw.constants import nwFiles, nwUnicode
 from nw.common import splitVersionNumber, formatTimeStamp
@@ -82,11 +81,13 @@ class Config:
         self.confChanged = False
 
         ## General
-        self.guiTheme  = "default"
-        self.guiSyntax = "default_light"
-        self.guiIcons  = "typicons_grey_light"
-        self.guiDark   = False
-        self.guiLang   = "en" # Hardcoded for now
+        self.guiTheme    = "default"
+        self.guiSyntax   = "default_light"
+        self.guiIcons    = "typicons_grey_light"
+        self.guiDark     = False
+        self.guiLang     = "en" # Hardcoded for now
+        self.guiFont     = ""
+        self.guiFontSize = 11
 
         ## Sizes
         self.winGeometry  = [1100, 650]
@@ -202,7 +203,6 @@ class Config:
         """Initialise the config class. The manual setting of confPath
         and dataPath is mainly intended for the test suite.
         """
-
         if confPath is None:
             confRoot = QStandardPaths.writableLocation(QStandardPaths.ConfigLocation)
             self.confPath = path.join(path.abspath(confRoot), self.appHandle)
@@ -317,6 +317,12 @@ class Config:
         )
         self.guiDark = self._parseLine(
             cnfParse, cnfSec, "guidark", self.CNF_BOOL, self.guiDark
+        )
+        self.guiFont = self._parseLine(
+            cnfParse, cnfSec, "guifont", self.CNF_STR, self.guiFont
+        )
+        self.guiFontSize = self._parseLine(
+            cnfParse, cnfSec, "guifontsize", self.CNF_INT, self.guiFontSize
         )
 
         ## Sizes
@@ -464,11 +470,13 @@ class Config:
         ## Main
         cnfSec = "Main"
         cnfParse.add_section(cnfSec)
-        cnfParse.set(cnfSec,"timestamp", formatTimeStamp(time()))
-        cnfParse.set(cnfSec,"theme",     str(self.guiTheme))
-        cnfParse.set(cnfSec,"syntax",    str(self.guiSyntax))
-        cnfParse.set(cnfSec,"icons",     str(self.guiIcons))
-        cnfParse.set(cnfSec,"guidark",   str(self.guiDark))
+        cnfParse.set(cnfSec,"timestamp",   formatTimeStamp(time()))
+        cnfParse.set(cnfSec,"theme",       str(self.guiTheme))
+        cnfParse.set(cnfSec,"syntax",      str(self.guiSyntax))
+        cnfParse.set(cnfSec,"icons",       str(self.guiIcons))
+        cnfParse.set(cnfSec,"guidark",     str(self.guiDark))
+        cnfParse.set(cnfSec,"guifont",     str(self.guiFont))
+        cnfParse.set(cnfSec,"guifontsize", str(self.guiFontSize))
 
         ## Sizes
         cnfSec = "Sizes"

@@ -26,6 +26,7 @@
 """
 
 import logging
+import json
 import nw
 
 from os import path
@@ -39,25 +40,27 @@ from PyQt5.QtGui import (
 from PyQt5.QtWidgets import (
     QDialog, QVBoxLayout, QHBoxLayout, QTextBrowser, QPushButton, QLabel,
     QLineEdit, QGroupBox, QGridLayout, QProgressBar, QMenu, QAction,
-    QFileDialog, QFontComboBox, QSpinBox
+    QFileDialog, QFontDialog, QSpinBox
 )
 
 from nw.gui.additions import QSwitch
 from nw.core import ToHtml
 from nw.constants import (
-    nwAlert, nwItemType, nwItemLayout, nwItemClass
+    nwAlert, nwFiles, nwItemType, nwItemLayout, nwItemClass
 )
 
 logger = logging.getLogger(__name__)
 
 class GuiBuildNovel(QDialog):
 
-    FMT_ODT = 1
-    FMT_PDF = 2
-    FMT_HTM = 3
-    FMT_MD  = 4
-    FMT_NWD = 5
-    FMT_TXT = 6
+    FMT_ODT    = 1
+    FMT_PDF    = 2
+    FMT_HTM    = 3
+    FMT_MD     = 4
+    FMT_NWD    = 5
+    FMT_TXT    = 6
+    FMT_JSON_H = 7
+    FMT_JSON_M = 8
 
     def __init__(self, theParent, theProject):
         QDialog.__init__(self, theParent)
@@ -170,19 +173,21 @@ class GuiBuildNovel(QDialog):
         self.textForm  = QGridLayout(self)
         self.textGroup.setLayout(self.textForm)
 
-        self.textFont = QFontComboBox()
-        self.textFont.setFixedWidth(220)
-        self.textFont.setToolTip(
-            "The font is used for PDF and printing. Other formats have no font set."
+        ## Font Family
+        self.textFont = QLineEdit()
+        self.textFont.setReadOnly(True)
+        self.textFont.setFixedWidth(182)
+        self.textFont.setText(
+            self.optState.getString("GuiBuildNovel", "textFont", self.mainConf.textFont)
         )
-        self.textFont.setCurrentFont(
-            QFont(self.optState.getString("GuiBuildNovel", "textFont", self.mainConf.textFont))
-        )
+        self.fontButton = QPushButton("...")
+        self.fontButton.setMaximumWidth(30)
+        self.fontButton.clicked.connect(self._selectFont)
 
         self.textSize = QSpinBox(self)
         self.textSize.setFixedWidth(60)
-        self.textSize.setMinimum(5)
-        self.textSize.setMaximum(48)
+        self.textSize.setMinimum(6)
+        self.textSize.setMaximum(72)
         self.textSize.setSingleStep(1)
         self.textSize.setToolTip(
             "The size is used for PDF and printing. Other formats have no size set."
@@ -201,13 +206,15 @@ class GuiBuildNovel(QDialog):
 
         self.textForm.addWidget(QLabel("Font family"),  0, 0, 1, 1, Qt.AlignLeft)
         self.textForm.addWidget(self.textFont,          0, 1, 1, 1, Qt.AlignRight)
+        self.textForm.addWidget(self.fontButton,        0, 2, 1, 1, Qt.AlignRight)
         self.textForm.addWidget(QLabel("Font size"),    1, 0, 1, 1, Qt.AlignLeft)
-        self.textForm.addWidget(self.textSize,          1, 1, 1, 1, Qt.AlignRight)
+        self.textForm.addWidget(self.textSize,          1, 1, 1, 2, Qt.AlignRight)
         self.textForm.addWidget(QLabel("Justify text"), 2, 0, 1, 1, Qt.AlignLeft)
-        self.textForm.addWidget(self.justifyText,       2, 1, 1, 1, Qt.AlignRight)
+        self.textForm.addWidget(self.justifyText,       2, 1, 1, 2, Qt.AlignRight)
 
         self.textForm.setColumnStretch(0, 1)
         self.textForm.setColumnStretch(1, 0)
+        self.textForm.setColumnStretch(2, 0)
 
         # Include Switches
         # ================
@@ -329,13 +336,21 @@ class GuiBuildNovel(QDialog):
             self.saveMD.triggered.connect(lambda: self._saveDocument(self.FMT_MD))
             self.saveMenu.addAction(self.saveMD)
 
-        self.saveNWD = QAction("novelWriter Markdown (.nwd)", self)
+        self.saveNWD = QAction("%s Markdown (.nwd)" % nw.__package__, self)
         self.saveNWD.triggered.connect(lambda: self._saveDocument(self.FMT_NWD))
         self.saveMenu.addAction(self.saveNWD)
 
         self.saveTXT = QAction("Plain Text (.txt)", self)
         self.saveTXT.triggered.connect(lambda: self._saveDocument(self.FMT_TXT))
         self.saveMenu.addAction(self.saveTXT)
+
+        self.saveJsonH = QAction("JSON + %s HTML (.json)" % nw.__package__, self)
+        self.saveJsonH.triggered.connect(lambda: self._saveDocument(self.FMT_JSON_H))
+        self.saveMenu.addAction(self.saveJsonH)
+
+        self.saveJsonM = QAction("JSON + %s Markdown (.json)" % nw.__package__, self)
+        self.saveJsonM.triggered.connect(lambda: self._saveDocument(self.FMT_JSON_M))
+        self.saveMenu.addAction(self.saveJsonM)
 
         self.btnClose = QPushButton("Close")
         self.btnClose.clicked.connect(self._doClose)
@@ -368,6 +383,20 @@ class GuiBuildNovel(QDialog):
 
         logger.debug("GuiBuildNovel initialisation complete")
 
+        # Load from Cache
+        if self._loadCache():
+            textFont    = self.textFont.text()
+            textSize    = self.textSize.value()
+            justifyText = self.justifyText.isChecked()
+            self.docView.setTextFont(textFont, textSize)
+            self.docView.setJustify(justifyText)
+            self.docView.setStyleSheet(self.htmlStyle)
+            self.docView.setContent(self.htmlText)
+        else:
+            self.htmlText = []
+            self.htmlStyle = []
+            self.nwdText = []
+
         return
 
     ##
@@ -385,7 +414,7 @@ class GuiBuildNovel(QDialog):
         fmtScene      = self.fmtScene.text().strip()
         fmtSection    = self.fmtSection.text().strip()
         justifyText   = self.justifyText.isChecked()
-        textFont      = self.textFont.currentFont().family()
+        textFont      = self.textFont.text()
         textSize      = self.textSize.value()
         incSynopsis   = self.includeSynopsis.isChecked()
         incComments   = self.includeComments.isChecked()
@@ -454,6 +483,8 @@ class GuiBuildNovel(QDialog):
         self.docView.setJustify(justifyText)
         self.docView.setStyleSheet(self.htmlStyle)
         self.docView.setContent(self.htmlText)
+
+        self._saveCache()
 
         return
 
@@ -530,7 +561,7 @@ class GuiBuildNovel(QDialog):
 
         elif theFormat == self.FMT_NWD:
             fileExt = "nwd"
-            textFmt = "%s markdown" % nw.__package__
+            textFmt = "%s Markdown" % nw.__package__
             outTool = "NW"
 
         elif theFormat == self.FMT_TXT:
@@ -538,6 +569,16 @@ class GuiBuildNovel(QDialog):
             fileExt = "txt"
             textFmt = "Plain Text"
             outTool = "Qt"
+
+        elif theFormat == self.FMT_JSON_H:
+            fileExt = "json"
+            textFmt = "JSON + %s HTML" % nw.__package__
+            outTool = "NW"
+
+        elif theFormat == self.FMT_JSON_M:
+            fileExt = "json"
+            textFmt = "JSON + %s Markdown" % nw.__package__
+            outTool = "NW"
 
         else:
             return False
@@ -612,6 +653,33 @@ class GuiBuildNovel(QDialog):
                         for aLine in self.nwdText:
                             outFile.write(aLine)
 
+                    elif theFormat == self.FMT_JSON_H or theFormat == self.FMT_JSON_M:
+                        jsonData = {
+                            "meta" : {
+                                "workingTitle" : self.theProject.projName,
+                                "novelTitle"   : self.theProject.bookTitle,
+                                "authors"      : self.theProject.bookAuthors,
+                            }
+                        }
+
+                        if theFormat == self.FMT_JSON_H:
+                            theBody = []
+                            for htmlPage in self.htmlText:
+                                theBody.append(htmlPage.rstrip("\n").split("\n"))
+                            jsonData["text"] = {
+                                "css"  : self.htmlStyle,
+                                "html" : theBody,
+                            }
+                        elif theFormat == self.FMT_JSON_M:
+                            theBody = []
+                            for nwdPage in self.nwdText:
+                                theBody.append(nwdPage.split("\n"))
+                            jsonData["text"] = {
+                                "nwd" : theBody,
+                            }
+
+                        outFile.write(json.dumps(jsonData, indent=2))
+
                 wSuccess = True
 
             except Exception as e:
@@ -667,6 +735,72 @@ class GuiBuildNovel(QDialog):
         self.docView.qDocument.print(thePrinter)
         return
 
+    def _selectFont(self):
+        """Open the QFontDialog and set a font for the font style.
+        """
+        currFont = QFont()
+        currFont.setFamily(self.textFont.text())
+        currFont.setPointSize(self.textSize.value())
+        theFont, theStatus = QFontDialog.getFont(currFont, self)
+        if theStatus:
+            self.textFont.setText(theFont.family())
+            self.textSize.setValue(theFont.pointSize())
+        return
+
+    def _loadCache(self):
+        """Save the current data to cache.
+        """
+        buildCache = path.join(self.theProject.projCache, nwFiles.BUILD_CACHE)
+        dataCount = 0
+        if path.isfile(buildCache):
+
+            logger.debug("Loading build cache")
+            try:
+                with open(buildCache, mode="r", encoding="utf8") as inFile:
+                    theJson = inFile.read()
+                theData = json.loads(theJson)
+            except Exception as e:
+                logger.error("Failed to load build cache")
+                logger.error(str(e))
+                return False
+
+            if "htmlText" in theData.keys():
+                self.htmlText = theData["htmlText"]
+                dataCount += 1
+            if "htmlStyle" in theData.keys():
+                self.htmlStyle = theData["htmlStyle"]
+                dataCount += 1
+            if "nwdText" in theData.keys():
+                self.nwdText = theData["nwdText"]
+                dataCount += 1
+
+        return dataCount == 3
+
+    def _saveCache(self):
+        """Save the current data to cache.
+        """
+        buildCache = path.join(self.theProject.projCache, nwFiles.BUILD_CACHE)
+
+        if self.mainConf.debugInfo:
+            nIndent = 2
+        else:
+            nIndent = None
+
+        logger.debug("Saving build cache")
+        try:
+            with open(buildCache, mode="w+", encoding="utf8") as outFile:
+                outFile.write(json.dumps({
+                    "htmlText"  : self.htmlText,
+                    "htmlStyle" : self.htmlStyle,
+                    "nwdText"   : self.nwdText,
+                }, indent=nIndent))
+        except Exception as e:
+            logger.error("Failed to save build cache")
+            logger.error(str(e))
+            return False
+
+        return True
+
     def _doClose(self):
         """Close button was clicked.
         """
@@ -709,7 +843,7 @@ class GuiBuildNovel(QDialog):
         self.optState.setValue("GuiBuildNovel", "winWidth", self.width())
         self.optState.setValue("GuiBuildNovel", "winHeight", self.height())
         self.optState.setValue("GuiBuildNovel", "justifyText", self.justifyText.isChecked())
-        self.optState.setValue("GuiBuildNovel", "textFont", self.textFont.currentFont().family())
+        self.optState.setValue("GuiBuildNovel", "textFont", self.textFont.text())
         self.optState.setValue("GuiBuildNovel", "textSize", self.textSize.value())
         self.optState.setValue("GuiBuildNovel", "addNovel", self.novelFiles.isChecked())
         self.optState.setValue("GuiBuildNovel", "addNotes", self.noteFiles.isChecked())
@@ -746,6 +880,11 @@ class GuiBuildNovelDocView(QTextBrowser):
 
         self.qDocument = self.document()
         self.qDocument.setDocumentMargin(self.mainConf.textMargin)
+        self.setPlaceholderText(
+            "This area will show the content of the document to be "
+            "exported or printed. Press the \"Build Novel Project\" "
+            "button to generate content."
+        )
 
         theFont = QFont()
         if self.mainConf.textFont is None:

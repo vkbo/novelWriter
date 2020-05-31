@@ -45,6 +45,7 @@ class nwFiles():
     INDEX_FILE  = "tagsIndex.json"
     OPTS_FILE   = "guiOptions.json"
     RECENT_FILE = "recentProjects.json"
+    BUILD_CACHE = "prevBuild.json"
 
 # END Class nwFiles
 

@@ -93,6 +93,8 @@ class GuiIcons:
         "clear"          : (QStyle.SP_LineEditClearButton, "clear_left"),
         "save"           : (QStyle.SP_DialogSaveButton,    "document-save"),
         "edit"           : (None,                          None),
+        "check"          : (None,                          None),
+        "cross"          : (None,                          None),
 
         ## Other Icons
         "warning"        : (QStyle.SP_MessageBoxWarning,   "dialog-warning"),

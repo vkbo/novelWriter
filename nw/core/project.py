@@ -152,15 +152,19 @@ class NWProject():
         self.projTree.append(None, pHandle, newItem)
         return newItem.itemHandle
 
-    def addTrash(self):
+    def trashFolder(self):
         """Add the special trash root folder to the project.
         """
-        newItem = NWItem(self)
-        newItem.setName("Trash")
-        newItem.setType(nwItemType.TRASH)
-        newItem.setClass(nwItemClass.TRASH)
-        self.projTree.append(None, None, newItem)
-        return newItem.itemHandle
+        trashHandle = self.projTree.trashRoot()
+        if trashHandle is None:
+            newItem = NWItem(self)
+            newItem.setName("Trash")
+            newItem.setType(nwItemType.TRASH)
+            newItem.setClass(nwItemClass.TRASH)
+            self.projTree.append(None, None, newItem)
+            return newItem.itemHandle
+
+        return trashHandle
 
     ##
     #  Project Methods
@@ -179,6 +183,7 @@ class NWProject():
         hScene = self.newFile("New Scene",     nwItemClass.NOVEL, hChapt)
         self.projOpened = time()
         self.setProjectChanged(True)
+        self.saveProject(autoSave=True)
         return True
 
     def clearProject(self):
@@ -674,7 +679,7 @@ class NWProject():
     #  Setters
     ##
 
-    def setProjectPath(self, projPath):
+    def setProjectPath(self, projPath, newProject=False):
         """Set the project storage path, and also expand ~ to the user
         directory using the path library.
         """
@@ -684,7 +689,18 @@ class NWProject():
             if projPath.startswith("~"):
                 projPath = path.expanduser(projPath)
             self.projPath = path.abspath(projPath)
+
+        if newProject and self.mainConf.showGUI:
+            if listdir(self.projPath):
+                self.theParent.makeAlert((
+                    "New project folder is not empty. "
+                    "Each project requires a dedicated project folder."
+                ), nwAlert.ERROR)
+                return False
+
+        self.ensureFolderStructure()
         self.setProjectChanged(True)
+
         return True
 
     def setProjectName(self, projName):

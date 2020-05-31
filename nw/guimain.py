@@ -294,12 +294,14 @@ class GuiMain(QMainWindow):
             return False
 
         logger.info("Creating new project")
-        self.theProject.newProject()
-        self.theProject.setProjectPath(projPath)
-        self.rebuildTree()
-        self.saveProject()
-        self.hasProject = True
-        self.statusBar.setRefTime(self.theProject.projOpened)
+        if self.theProject.setProjectPath(projPath, newProject=True):
+            self.theProject.newProject()
+            self.rebuildTree()
+            self.saveProject()
+            self.hasProject = True
+            self.statusBar.setRefTime(self.theProject.projOpened)
+        else:
+            return False
 
         return True
 
@@ -1017,25 +1019,33 @@ class GuiMain(QMainWindow):
         return
 
     def _treeDoubleClick(self, tItem, colNo):
-        tHandle = tItem.text(3)
+        """The user double-clicked an item in the tree. If it is a file,
+        we open it. Otherwise, we do nothing.
+        """
+        tHandle = tItem.text(self.treeView.C_HANDLE)
         logger.verbose("User double clicked tree item with handle %s" % tHandle)
         nwItem = self.theProject.projTree[tHandle]
-        if nwItem.itemType == nwItemType.FILE:
-            logger.verbose("Requested item %s is a file" % tHandle)
-            self.openDocument(tHandle)
-        else:
-            logger.verbose("Requested item %s is a folder" % tHandle)
+        if nwItem is not None:
+            if nwItem.itemType == nwItemType.FILE:
+                logger.verbose("Requested item %s is a file" % tHandle)
+                self.openDocument(tHandle)
+            else:
+                logger.verbose("Requested item %s is a folder" % tHandle)
         return
 
     def _treeKeyPressReturn(self):
+        """The user pressed return an item in the tree. If it is a file,
+        we open it. Otherwise, we do nothing.
+        """
         tHandle = self.treeView.getSelectedHandle()
         logger.verbose("User pressed return on tree item with handle %s" % tHandle)
         nwItem = self.theProject.projTree[tHandle]
-        if nwItem.itemType == nwItemType.FILE:
-            logger.verbose("Requested item %s is a file" % tHandle)
-            self.openDocument(tHandle)
-        else:
-            logger.verbose("Requested item %s is a folder" % tHandle)
+        if nwItem is not None:
+            if nwItem.itemType == nwItemType.FILE:
+                logger.verbose("Requested item %s is a file" % tHandle)
+                self.openDocument(tHandle)
+            else:
+                logger.verbose("Requested item %s is a folder" % tHandle)
         return
 
     def _keyPressEscape(self):

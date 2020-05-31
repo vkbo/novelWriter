@@ -29,7 +29,7 @@ import logging
 import nw
 
 from PyQt5.QtCore import Qt
-from PyQt5.QtGui import QFont
+from PyQt5.QtGui import QFont, QIcon, QPixmap
 from PyQt5.QtWidgets import QFrame, QGridLayout, QLabel
 
 from nw.constants import (
@@ -47,30 +47,34 @@ class GuiDocDetails(QFrame):
         self.mainConf   = nw.CONFIG
         self.theParent  = theParent
         self.theProject = theProject
+        self.theTheme   = theParent.theTheme
+        self.theHandle  = None
 
         self.mainBox = QGridLayout(self)
         self.mainBox.setVerticalSpacing(1)
         self.mainBox.setHorizontalSpacing(6)
         self.setLayout(self.mainBox)
 
-        self.fntLabel = QFont()
-        self.fntLabel.setPointSize(10)
-        self.fntLabel.setBold(True)
+        self.pS = 0.9*self.theTheme.fontPointSize
+        self.iPx = self.theTheme.textIconSize
+        self.sPx = int(round(0.8*self.theTheme.textIconSize))
 
-        self.fntFixed = QFont()
-        self.fntFixed.setFamily("Monospace")
-        self.fntFixed.setPointSize(10)
+        self.expCheck = self.theTheme.getPixmap("check", (self.iPx, self.iPx))
+        self.expCross = self.theTheme.getPixmap("cross", (self.iPx, self.iPx))
+
+        self.fntLabel = QFont()
+        self.fntLabel.setBold(True)
+        self.fntLabel.setPointSizeF(self.pS)
 
         self.fntValue = QFont()
-        self.fntValue.setPointSize(10)
+        self.fntValue.setPointSizeF(self.pS)
 
         # Label
-        self.labelName = QLabel("Label   ")
+        self.labelName = QLabel("Label")
         self.labelName.setFont(self.fntLabel)
         self.labelName.setAlignment(Qt.AlignLeft | Qt.AlignBaseline)
 
         self.labelFlag = QLabel("")
-        self.labelFlag.setFont(self.fntFixed)
         self.labelFlag.setAlignment(Qt.AlignRight | Qt.AlignBaseline)
 
         self.labelData = QLabel("")
@@ -79,12 +83,11 @@ class GuiDocDetails(QFrame):
         self.labelData.setWordWrap(True)
 
         # Status
-        self.statusName = QLabel("Status   ")
+        self.statusName = QLabel("Status")
         self.statusName.setFont(self.fntLabel)
         self.statusName.setAlignment(Qt.AlignLeft)
 
         self.statusFlag = QLabel("")
-        self.statusFlag.setFont(self.fntFixed)
         self.statusFlag.setAlignment(Qt.AlignRight | Qt.AlignVCenter)
 
         self.statusData = QLabel("")
@@ -92,12 +95,12 @@ class GuiDocDetails(QFrame):
         self.statusData.setAlignment(Qt.AlignLeft)
 
         # Class
-        self.className = QLabel("Class   ")
+        self.className = QLabel("Class")
         self.className.setFont(self.fntLabel)
         self.className.setAlignment(Qt.AlignLeft)
 
         self.classFlag = QLabel("")
-        self.classFlag.setFont(self.fntFixed)
+        self.classFlag.setFont(self.fntValue)
         self.classFlag.setAlignment(Qt.AlignRight)
 
         self.classData = QLabel("")
@@ -105,12 +108,12 @@ class GuiDocDetails(QFrame):
         self.classData.setAlignment(Qt.AlignLeft)
 
         # Layout
-        self.layoutName = QLabel("Layout   ")
+        self.layoutName = QLabel("Layout")
         self.layoutName.setFont(self.fntLabel)
         self.layoutName.setAlignment(Qt.AlignLeft)
 
         self.layoutFlag = QLabel("")
-        self.layoutFlag.setFont(self.fntFixed)
+        self.layoutFlag.setFont(self.fntValue)
         self.layoutFlag.setAlignment(Qt.AlignRight)
 
         self.layoutData = QLabel("")
@@ -173,6 +176,12 @@ class GuiDocDetails(QFrame):
         self.mainBox.setColumnStretch(3,0)
         self.mainBox.setColumnStretch(4,0)
 
+        # Make sure the columns for flags and counts don't resize too often
+        flagWidth  = self.theTheme.getTextWidth("Mm", self.fntValue)
+        countWidth = self.theTheme.getTextWidth("99,999", self.fntValue)
+        self.mainBox.setColumnMinimumWidth(1, flagWidth)
+        self.mainBox.setColumnMinimumWidth(4, countWidth)
+
         logger.debug("DocDetails initialisation complete")
 
         return
@@ -181,9 +190,20 @@ class GuiDocDetails(QFrame):
     #  Class Methods
     ##
 
+    def updateCounts(self, tHandle, cC, wC, pC):
+        """Just update the counts if the handle is the same as the one
+        we're already showing.
+        """
+        if tHandle == self.theHandle:
+            self.cCountData.setText("{:n}".format(cC))
+            self.wCountData.setText("{:n}".format(wC))
+            self.pCountData.setText("{:n}".format(pC))
+        return
+
     def updateViewBox(self, tHandle):
         """Populate the details box from a given handle.
         """
+        self.theHandle = tHandle
         nwItem = self.theProject.projTree[tHandle]
 
         if nwItem is None:
@@ -214,14 +234,12 @@ class GuiDocDetails(QFrame):
 
             if nwItem.itemType == nwItemType.FILE:
                 if nwItem.isExported:
-                    exportFlag = nwUnicode.U_CHECK
+                    self.labelFlag.setPixmap(self.expCheck)
                 else:
-                    exportFlag = " "
+                    self.labelFlag.setPixmap(self.expCross)
             else:
-                exportFlag = "-"
-
-            self.labelFlag.setText(exportFlag)
-            self.statusFlag.setPixmap(flagIcon.pixmap(10, 10))
+                self.labelFlag.setPixmap(QPixmap(1,1))
+            self.statusFlag.setPixmap(flagIcon.pixmap(self.sPx, self.sPx))
             self.classFlag.setText(nwLabels.CLASS_FLAG[nwItem.itemClass])
             if nwItem.itemLayout == nwItemLayout.NO_LAYOUT:
                 self.layoutFlag.setText("-")

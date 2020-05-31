@@ -52,19 +52,20 @@ class GuiDocTitleBar(QLabel):
         self.setText("")
         self.setIndent(0)
         self.setMargin(0)
-        self.setContentsMargins(0,0,0,0)
+        self.setContentsMargins(0, 0, 0, 0)
         self.setAutoFillBackground(True)
         self.setAlignment(Qt.AlignCenter)
         self.setWordWrap(True)
         self.setFrameShape(QFrame.NoFrame)
         self.setLineWidth(0)
+
         lblPalette = self.palette()
         lblPalette.setColor(QPalette.Window, QColor(*self.theTheme.colBack))
         lblPalette.setColor(QPalette.Text, QColor(*self.theTheme.colText))
         self.setPalette(lblPalette)
 
         lblFont = self.font()
-        lblFont.setPointSizeF(0.9*self.theTheme.defFontSize)
+        lblFont.setPointSizeF(0.9*self.theTheme.fontPointSize)
         self.setFont(lblFont)
 
         logger.debug("DocTitleBar initialisation complete")
