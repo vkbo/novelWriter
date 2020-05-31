@@ -86,7 +86,8 @@ class Config:
         self.guiIcons    = "typicons_grey_light"
         self.guiDark     = False
         self.guiLang     = "en" # Hardcoded for now
-        self.guiFontSize = 12
+        self.guiFont     = ""
+        self.guiFontSize = 11
 
         ## Sizes
         self.winGeometry  = [1100, 650]
@@ -317,6 +318,9 @@ class Config:
         self.guiDark = self._parseLine(
             cnfParse, cnfSec, "guidark", self.CNF_BOOL, self.guiDark
         )
+        self.guiFont = self._parseLine(
+            cnfParse, cnfSec, "guifont", self.CNF_STR, self.guiFont
+        )
         self.guiFontSize = self._parseLine(
             cnfParse, cnfSec, "guifontsize", self.CNF_INT, self.guiFontSize
         )
@@ -471,6 +475,7 @@ class Config:
         cnfParse.set(cnfSec,"syntax",      str(self.guiSyntax))
         cnfParse.set(cnfSec,"icons",       str(self.guiIcons))
         cnfParse.set(cnfSec,"guidark",     str(self.guiDark))
+        cnfParse.set(cnfSec,"guifont",     str(self.guiFont))
         cnfParse.set(cnfSec,"guifontsize", str(self.guiFontSize))
 
         ## Sizes

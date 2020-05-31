@@ -33,7 +33,7 @@ from os import path, listdir
 
 from PyQt5.QtWidgets import qApp
 from PyQt5.QtGui import (
-    QPalette, QColor, QIcon, QFontMetrics, QFontDatabase
+    QPalette, QColor, QIcon, QFont, QFontMetrics, QFontDatabase
 )
 
 from nw.constants import nwAlert
@@ -50,7 +50,7 @@ class GuiTheme:
         self.theIcons   = GuiIcons(self.theParent)
         self.guiPalette = QPalette()
         self.guiPath    = "gui"
-        self.iconPath   = "icons"
+        self.fontPath   = "fonts"
         self.syntaxPath = "syntax"
         self.cssName    = "style.qss"
         self.confName   = "theme.conf"
@@ -112,14 +112,10 @@ class GuiTheme:
         self.syntaxFile = None
         self.confFile   = None
         self.cssFile    = None
+        self.guiFontDB  = QFontDatabase()
 
         self.loadFonts()
-
-        # Set Font Size and Theme
-        self.guiFont = qApp.font()
-        self.guiFont.setPointSizeF(self.mainConf.guiFontSize)
-        qApp.setFont(self.guiFont)
-
+        self.updateFont()
         self.updateTheme()
         self.theIcons.updateTheme()
 
@@ -129,6 +125,7 @@ class GuiTheme:
 
         # Extract Other Info
         self.guiDPI = qApp.primaryScreen().physicalDotsPerInch()
+        self.guiFont = qApp.font()
 
         qMetric = QFontMetrics(self.guiFont)
         self.fontPointSize = self.guiFont.pointSizeF()
@@ -152,29 +149,48 @@ class GuiTheme:
         """Add the fonts in the assets fonts folder to the app.
         """
         ttfList = []
-        fontAssets = path.join(self.mainConf.assetPath, "fonts")
+        fontAssets = path.join(self.mainConf.assetPath, self.fontPath)
         for fontFam in listdir(fontAssets):
             fontDir = path.join(fontAssets, fontFam)
             if path.isdir(fontDir):
-                for fontFile in listdir(fontDir):
-                    ttfFile = path.join(fontDir, fontFile)
-                    if path.isfile(ttfFile) and fontFile.endswith(".ttf"):
-                        ttfList.append(ttfFile)
-        
+                if not fontFam in self.guiFontDB.families():
+                    for fontFile in listdir(fontDir):
+                        ttfFile = path.join(fontDir, fontFile)
+                        if path.isfile(ttfFile) and fontFile.endswith(".ttf"):
+                            ttfList.append(ttfFile)
+
         for ttfFile in ttfList:
             logger.verbose("Font asset: %s" % path.relpath(ttfFile))
-            try:
-                QFontDatabase.addApplicationFont(ttfFile)
-            except Exception as e:
+            fontID = self.guiFontDB.addApplicationFont(ttfFile)
+            if fontID < 0:
                 logger.error("Failed to add font: %s" % path.relpath(ttfFile))
-                logger.error(str(e))
+
+        return
+
+    def updateFont(self):
+        """Updated the GUI's font style from settings,
+        """
+        theFont = QFont()
+        if self.mainConf.guiFont not in self.guiFontDB.families():
+            if self.mainConf.osWindows:
+                # On Windows, default to Cantarell provided by novelWriter
+                theFont.setFamily("Cantarell")
+                theFont.setPointSize(11)
+            else:
+                theFont = self.guiFontDB.systemFont(QFontDatabase.GeneralFont)
+            self.mainConf.guiFont = theFont.family()
+            self.mainConf.guiFontSize = theFont.pointSize()
+        else:
+            theFont.setFamily(self.mainConf.guiFont)
+            theFont.setPointSize(self.mainConf.guiFontSize)
+
+        qApp.setFont(theFont)
 
         return
 
     def updateTheme(self):
         """Update the GUI theme from theme files.
         """
-
         self.guiTheme   = self.mainConf.guiTheme
         self.guiSyntax  = self.mainConf.guiSyntax
         self.themeRoot  = self.mainConf.themeRoot
