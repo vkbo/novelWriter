@@ -99,10 +99,6 @@ class GuiDocTree(QTreeWidget):
         self.resizeColumnToContents(self.C_EXPORT)
         self.resizeColumnToContents(self.C_FLAGS)
 
-        self.fntFixed = QFont()
-        self.fntFixed.setFamily("Monospace")
-        self.fntFixed.setPointSizeF(0.9*self.theTheme.fontPointSize)
-
         logger.debug("DocTree initialisation complete")
 
         # Internal Mapping
@@ -582,10 +578,7 @@ class GuiDocTree(QTreeWidget):
         newItem.setText(self.C_FLAGS,  "")
         newItem.setText(self.C_HANDLE, tHandle)
 
-        # newItem.setForeground(self.C_COUNT,QColor(*self.theParent.theTheme.treeWCount))
         newItem.setTextAlignment(self.C_COUNT, Qt.AlignRight)
-        # newItem.setTextAlignment(self.C_EXPORT, Qt.AlignHCenter)
-        newItem.setFont(self.C_FLAGS, self.fntFixed)
 
         self.theMap[tHandle] = newItem
         if pHandle is None:
