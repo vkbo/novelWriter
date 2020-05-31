@@ -385,6 +385,11 @@ class GuiBuildNovel(QDialog):
 
         # Load from Cache
         if self._loadCache():
+            textFont    = self.textFont.text()
+            textSize    = self.textSize.value()
+            justifyText = self.justifyText.isChecked()
+            self.docView.setTextFont(textFont, textSize)
+            self.docView.setJustify(justifyText)
             self.docView.setStyleSheet(self.htmlStyle)
             self.docView.setContent(self.htmlText)
         else:
