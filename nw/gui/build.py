@@ -26,6 +26,7 @@
 """
 
 import logging
+import json
 import nw
 
 from os import path
@@ -45,19 +46,21 @@ from PyQt5.QtWidgets import (
 from nw.gui.additions import QSwitch
 from nw.core import ToHtml
 from nw.constants import (
-    nwAlert, nwItemType, nwItemLayout, nwItemClass
+    nwAlert, nwFiles, nwItemType, nwItemLayout, nwItemClass
 )
 
 logger = logging.getLogger(__name__)
 
 class GuiBuildNovel(QDialog):
 
-    FMT_ODT = 1
-    FMT_PDF = 2
-    FMT_HTM = 3
-    FMT_MD  = 4
-    FMT_NWD = 5
-    FMT_TXT = 6
+    FMT_ODT    = 1
+    FMT_PDF    = 2
+    FMT_HTM    = 3
+    FMT_MD     = 4
+    FMT_NWD    = 5
+    FMT_TXT    = 6
+    FMT_JSON_H = 7
+    FMT_JSON_M = 8
 
     def __init__(self, theParent, theProject):
         QDialog.__init__(self, theParent)
@@ -333,13 +336,21 @@ class GuiBuildNovel(QDialog):
             self.saveMD.triggered.connect(lambda: self._saveDocument(self.FMT_MD))
             self.saveMenu.addAction(self.saveMD)
 
-        self.saveNWD = QAction("novelWriter Markdown (.nwd)", self)
+        self.saveNWD = QAction("%s Markdown (.nwd)" % nw.__package__, self)
         self.saveNWD.triggered.connect(lambda: self._saveDocument(self.FMT_NWD))
         self.saveMenu.addAction(self.saveNWD)
 
         self.saveTXT = QAction("Plain Text (.txt)", self)
         self.saveTXT.triggered.connect(lambda: self._saveDocument(self.FMT_TXT))
         self.saveMenu.addAction(self.saveTXT)
+
+        self.saveJsonH = QAction("JSON + %s HTML (.json)" % nw.__package__, self)
+        self.saveJsonH.triggered.connect(lambda: self._saveDocument(self.FMT_JSON_H))
+        self.saveMenu.addAction(self.saveJsonH)
+
+        self.saveJsonM = QAction("JSON + %s Markdown (.json)" % nw.__package__, self)
+        self.saveJsonM.triggered.connect(lambda: self._saveDocument(self.FMT_JSON_M))
+        self.saveMenu.addAction(self.saveJsonM)
 
         self.btnClose = QPushButton("Close")
         self.btnClose.clicked.connect(self._doClose)
@@ -371,6 +382,20 @@ class GuiBuildNovel(QDialog):
         self.show()
 
         logger.debug("GuiBuildNovel initialisation complete")
+
+        # Load from Cache
+        if self._loadCache():
+            textFont    = self.textFont.text()
+            textSize    = self.textSize.value()
+            justifyText = self.justifyText.isChecked()
+            self.docView.setTextFont(textFont, textSize)
+            self.docView.setJustify(justifyText)
+            self.docView.setStyleSheet(self.htmlStyle)
+            self.docView.setContent(self.htmlText)
+        else:
+            self.htmlText = []
+            self.htmlStyle = []
+            self.nwdText = []
 
         return
 
@@ -459,6 +484,8 @@ class GuiBuildNovel(QDialog):
         self.docView.setStyleSheet(self.htmlStyle)
         self.docView.setContent(self.htmlText)
 
+        self._saveCache()
+
         return
 
     def _checkInclude(self, theItem, noteFiles, novelFiles, ignoreFlag):
@@ -534,7 +561,7 @@ class GuiBuildNovel(QDialog):
 
         elif theFormat == self.FMT_NWD:
             fileExt = "nwd"
-            textFmt = "%s markdown" % nw.__package__
+            textFmt = "%s Markdown" % nw.__package__
             outTool = "NW"
 
         elif theFormat == self.FMT_TXT:
@@ -542,6 +569,16 @@ class GuiBuildNovel(QDialog):
             fileExt = "txt"
             textFmt = "Plain Text"
             outTool = "Qt"
+
+        elif theFormat == self.FMT_JSON_H:
+            fileExt = "json"
+            textFmt = "JSON + %s HTML" % nw.__package__
+            outTool = "NW"
+
+        elif theFormat == self.FMT_JSON_M:
+            fileExt = "json"
+            textFmt = "JSON + %s Markdown" % nw.__package__
+            outTool = "NW"
 
         else:
             return False
@@ -616,6 +653,33 @@ class GuiBuildNovel(QDialog):
                         for aLine in self.nwdText:
                             outFile.write(aLine)
 
+                    elif theFormat == self.FMT_JSON_H or theFormat == self.FMT_JSON_M:
+                        jsonData = {
+                            "meta" : {
+                                "workingTitle" : self.theProject.projName,
+                                "novelTitle"   : self.theProject.bookTitle,
+                                "authors"      : self.theProject.bookAuthors,
+                            }
+                        }
+
+                        if theFormat == self.FMT_JSON_H:
+                            theBody = []
+                            for htmlPage in self.htmlText:
+                                theBody.append(htmlPage.rstrip("\n").split("\n"))
+                            jsonData["text"] = {
+                                "css"  : self.htmlStyle,
+                                "html" : theBody,
+                            }
+                        elif theFormat == self.FMT_JSON_M:
+                            theBody = []
+                            for nwdPage in self.nwdText:
+                                theBody.append(nwdPage.split("\n"))
+                            jsonData["text"] = {
+                                "nwd" : theBody,
+                            }
+
+                        outFile.write(json.dumps(jsonData, indent=2))
+
                 wSuccess = True
 
             except Exception as e:
@@ -682,6 +746,60 @@ class GuiBuildNovel(QDialog):
             self.textFont.setText(theFont.family())
             self.textSize.setValue(theFont.pointSize())
         return
+
+    def _loadCache(self):
+        """Save the current data to cache.
+        """
+        buildCache = path.join(self.theProject.projCache, nwFiles.BUILD_CACHE)
+        dataCount = 0
+        if path.isfile(buildCache):
+
+            logger.debug("Loading build cache")
+            try:
+                with open(buildCache, mode="r", encoding="utf8") as inFile:
+                    theJson = inFile.read()
+                theData = json.loads(theJson)
+            except Exception as e:
+                logger.error("Failed to load build cache")
+                logger.error(str(e))
+                return False
+
+            if "htmlText" in theData.keys():
+                self.htmlText = theData["htmlText"]
+                dataCount += 1
+            if "htmlStyle" in theData.keys():
+                self.htmlStyle = theData["htmlStyle"]
+                dataCount += 1
+            if "nwdText" in theData.keys():
+                self.nwdText = theData["nwdText"]
+                dataCount += 1
+
+        return dataCount == 3
+
+    def _saveCache(self):
+        """Save the current data to cache.
+        """
+        buildCache = path.join(self.theProject.projCache, nwFiles.BUILD_CACHE)
+
+        if self.mainConf.debugInfo:
+            nIndent = 2
+        else:
+            nIndent = None
+
+        logger.debug("Saving build cache")
+        try:
+            with open(buildCache, mode="w+", encoding="utf8") as outFile:
+                outFile.write(json.dumps({
+                    "htmlText"  : self.htmlText,
+                    "htmlStyle" : self.htmlStyle,
+                    "nwdText"   : self.nwdText,
+                }, indent=nIndent))
+        except Exception as e:
+            logger.error("Failed to save build cache")
+            logger.error(str(e))
+            return False
+
+        return True
 
     def _doClose(self):
         """Close button was clicked.
@@ -762,6 +880,11 @@ class GuiBuildNovelDocView(QTextBrowser):
 
         self.qDocument = self.document()
         self.qDocument.setDocumentMargin(self.mainConf.textMargin)
+        self.setPlaceholderText(
+            "This area will show the content of the document to be "
+            "exported or printed. Press the \"Build Novel Project\" "
+            "button to generate content."
+        )
 
         theFont = QFont()
         if self.mainConf.textFont is None:
