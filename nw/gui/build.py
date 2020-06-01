@@ -204,13 +204,23 @@ class GuiBuildNovel(QDialog):
             self.optState.getBool("GuiBuildNovel", "justifyText", False)
         )
 
-        self.textForm.addWidget(QLabel("Font family"),  0, 0, 1, 1, Qt.AlignLeft)
-        self.textForm.addWidget(self.textFont,          0, 1, 1, 1, Qt.AlignRight)
-        self.textForm.addWidget(self.fontButton,        0, 2, 1, 1, Qt.AlignRight)
-        self.textForm.addWidget(QLabel("Font size"),    1, 0, 1, 1, Qt.AlignLeft)
-        self.textForm.addWidget(self.textSize,          1, 1, 1, 2, Qt.AlignRight)
-        self.textForm.addWidget(QLabel("Justify text"), 2, 0, 1, 1, Qt.AlignLeft)
-        self.textForm.addWidget(self.justifyText,       2, 1, 1, 2, Qt.AlignRight)
+        self.noStyling = QSwitch()
+        self.noStyling.setToolTip(
+            "Disable all styling of the text."
+        )
+        self.noStyling.setChecked(
+            self.optState.getBool("GuiBuildNovel", "noStyling", False)
+        )
+
+        self.textForm.addWidget(QLabel("Font family"),     0, 0, 1, 1, Qt.AlignLeft)
+        self.textForm.addWidget(self.textFont,             0, 1, 1, 1, Qt.AlignRight)
+        self.textForm.addWidget(self.fontButton,           0, 2, 1, 1, Qt.AlignRight)
+        self.textForm.addWidget(QLabel("Font size"),       1, 0, 1, 1, Qt.AlignLeft)
+        self.textForm.addWidget(self.textSize,             1, 1, 1, 2, Qt.AlignRight)
+        self.textForm.addWidget(QLabel("Justify text"),    2, 0, 1, 1, Qt.AlignLeft)
+        self.textForm.addWidget(self.justifyText,          2, 1, 1, 2, Qt.AlignRight)
+        self.textForm.addWidget(QLabel("Disable styling"), 3, 0, 1, 1, Qt.AlignLeft)
+        self.textForm.addWidget(self.noStyling,            3, 1, 1, 2, Qt.AlignRight)
 
         self.textForm.setColumnStretch(0, 1)
         self.textForm.setColumnStretch(1, 0)
@@ -305,7 +315,7 @@ class GuiBuildNovel(QDialog):
         # ============
         self.buildProgress = QProgressBar()
 
-        self.buildNovel = QPushButton("Build Novel Project")
+        self.buildNovel = QPushButton("Build Project")
         self.buildNovel.clicked.connect(self._buildPreview)
 
         # Action Buttons
@@ -390,7 +400,10 @@ class GuiBuildNovel(QDialog):
             justifyText = self.justifyText.isChecked()
             self.docView.setTextFont(textFont, textSize)
             self.docView.setJustify(justifyText)
-            self.docView.setStyleSheet(self.htmlStyle)
+            if self.noStyling.isChecked():
+                self.docView.clearStyleSheet()
+            else:
+                self.docView.setStyleSheet(self.htmlStyle)
             self.docView.setContent(self.htmlText)
         else:
             self.htmlText = []
@@ -414,6 +427,7 @@ class GuiBuildNovel(QDialog):
         fmtScene      = self.fmtScene.text().strip()
         fmtSection    = self.fmtSection.text().strip()
         justifyText   = self.justifyText.isChecked()
+        noStyling     = self.noStyling.isChecked()
         textFont      = self.textFont.text()
         textSize      = self.textSize.value()
         incSynopsis   = self.includeSynopsis.isChecked()
@@ -435,6 +449,7 @@ class GuiBuildNovel(QDialog):
         makeHtml.setComments(incComments)
         makeHtml.setKeywords(incKeywords)
         makeHtml.setJustify(justifyText)
+        makeHtml.setStyles(not noStyling)
 
         # Make sure the tree order is correct
         self.theParent.treeView.saveTreeOrder()
@@ -481,7 +496,10 @@ class GuiBuildNovel(QDialog):
         # Load the preview document with the html data
         self.docView.setTextFont(textFont, textSize)
         self.docView.setJustify(justifyText)
-        self.docView.setStyleSheet(self.htmlStyle)
+        if noStyling:
+            self.docView.clearStyleSheet()
+        else:
+            self.docView.setStyleSheet(self.htmlStyle)
         self.docView.setContent(self.htmlText)
 
         self._saveCache()
@@ -843,6 +861,7 @@ class GuiBuildNovel(QDialog):
         self.optState.setValue("GuiBuildNovel", "winWidth", self.width())
         self.optState.setValue("GuiBuildNovel", "winHeight", self.height())
         self.optState.setValue("GuiBuildNovel", "justifyText", self.justifyText.isChecked())
+        self.optState.setValue("GuiBuildNovel", "noStyling", self.noStyling.isChecked())
         self.optState.setValue("GuiBuildNovel", "textFont", self.textFont.text())
         self.optState.setValue("GuiBuildNovel", "textSize", self.textSize.value())
         self.optState.setValue("GuiBuildNovel", "addNovel", self.novelFiles.isChecked())
@@ -948,6 +967,12 @@ class GuiBuildNovelDocView(QTextBrowser):
 
         self.qDocument.setDefaultStyleSheet("\n".join(theStyles))
 
+        return
+
+    def clearStyleSheet(self):
+        """Clears the document stylesheet.
+        """
+        self.qDocument.setDefaultStyleSheet("")
         return
 
 # END Class GuiBuildNovelDocView
