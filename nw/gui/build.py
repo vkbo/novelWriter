@@ -181,7 +181,7 @@ class GuiBuildNovel(QDialog):
             self.optState.getString("GuiBuildNovel", "textFont", self.mainConf.textFont)
         )
         self.fontButton = QPushButton("...")
-        self.fontButton.setMaximumWidth(30)
+        self.fontButton.setMaximumWidth(int(2.5*self.theTheme.getTextWidth("...")))
         self.fontButton.clicked.connect(self._selectFont)
 
         self.textSize = QSpinBox(self)
