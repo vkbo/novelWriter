@@ -29,7 +29,6 @@ from nw.gui.elements.searchbar import GuiSearchBar
 from nw.gui.elements.viewdetails import GuiDocViewDetails
 
 # Tools
-from nw.gui.tools.dochighlight import GuiDocHighlighter
 
 __all__ = [
     "GuiBuildNovel",
@@ -54,5 +53,4 @@ __all__ = [
     "GuiProjectOutline",
     "GuiSearchBar",
     "GuiDocViewDetails",
-    "GuiDocHighlighter",
 ]
