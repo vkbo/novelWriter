@@ -4,18 +4,18 @@
 
 **Bugfixes**
 
-* Fixed a bug where novelWriter might crash if a file was deleted immediately after being created, and also if the project was new. PR #267.
+* Fixed a bug where novelWriter might crash if a file is deleted immediately after being created, and also additional points-of-failure if the project was new. PR #267.
 
 **User Interface**
 
 * The back-references list now shows references to any tag in the open document, not just the first tag. Issue #227, PR #234.
-* Clicking a tag now tries to scroll to the header where the tag is set. The index needed a couple of minor changes for this feature, so this will invalidate the old index for a project, and require a new to be built. This is done automatically. PR #234.
+* Clicking a tag now tries to scroll to the header where the tag is set. The index needed a couple of minor changes for this feature, so this will invalidate the old index for a project and require a new to be built. This is done automatically. PR #234.
 * Moved the Close button on the "Build Novel project" dialog to the area with the other buttons since we anyway increased the size of that area. PR #256.
 * Updated the unit for Preferences > Editor > Big document limit from `kb` to `kb`. Issue #258, PR #260.
-* Added Typicos-based coloured icon set also for light GUI background. PR #265.
+* Added Typicons-based coloured icon set also for light GUI background. PR #265.
 * The export check mark that was added to the Flags column in the project tree in Version 0.6 has been moved to its own column, and been replaced with a proper icon. The details panel below it has been updated as well. PR #268.
 * Icon sizes are now calculated based on the size of the text, and all text and icons should scale relative to the default GUI font size. PR #268.
-* The font family and size of the main GUI font can now be changed in Preferences. For Windows, this defaults to Cantarell 11pt, which is now shipped with novelWriter, on other systems it defaults to the system font. PRs #269 and #270.
+* The font family and size of the main GUI font can now be changed in Preferences. For Windows, this defaults to Cantarell 11pt, which is now shipped with novelWriter, on other systems it defaults to the system font. Special accommodations had be made for Ubuntu where the font size of the tree widget was not updated automatically (Issue #273) PRs #269, #270, #274 and #275.
 * There are no Monospace fonts on the GUI any more. Where fixed with is needed, the size is calculated beforehand with Qt's font metrics class. PR #271.
 * Fonts are now selected via the system's font dialog, rather than the font combo box. PR #270.
 * Word, character and paragraph counts are now updated on the project tree details panel if the currently edited file is selected. PR #272.
@@ -30,7 +30,7 @@
 
 **Other Changes**
 
-* Dropped the usage of .bak copies of document files. This was the old method to ensure the document data was written successfully, but it uses twice the storage space. Instead, writing via a temp file is the safe way to save files. PR #248.
+* Dropped the usage of `.bak` copies of document files. This was the old method to ensure the document data was written successfully, but it uses twice the storage space. Instead, writing via a temp file is the current safe way to save files. PR #248.
 * The project class now records the accumulated time in seconds a project has been opened. This data is not yet displayed anywhere, but it is being tracked in the project XML file. PR #261.
 
 **Test Suite**
