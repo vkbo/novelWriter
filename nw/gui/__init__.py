@@ -30,7 +30,6 @@ from nw.gui.elements.viewdetails import GuiDocViewDetails
 
 # Tools
 from nw.gui.tools.dochighlight import GuiDocHighlighter
-from nw.gui.tools.optionstate import OptionState
 
 __all__ = [
     "GuiBuildNovel",
@@ -56,5 +55,4 @@ __all__ = [
     "GuiSearchBar",
     "GuiDocViewDetails",
     "GuiDocHighlighter",
-    "OptionState",
 ]
