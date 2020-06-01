@@ -32,7 +32,7 @@ from PyQt5.QtCore import QUrl
 from PyQt5.QtGui import QDesktopServices
 from PyQt5.QtWidgets import QMenuBar, QAction, QMessageBox
 
-from nw.gui.dialogs import GuiAbout
+from nw.gui.about import GuiAbout
 from nw.constants import nwItemType, nwItemClass, nwDocAction
 
 logger = logging.getLogger(__name__)

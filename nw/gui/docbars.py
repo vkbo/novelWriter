@@ -6,7 +6,9 @@
  Class holding the main window search bar
 
  File History:
- Created: 2019-09-29 [0.2.1]
+ Created: 2019-09-29 [0.2.1] GuiSearchBar
+ Created: 2019-10-31 [0.3.2] GuiNoticeBar
+ Created: 2020-04-25 [0.4.5] GuiDocTitleBar
 
  This file is a part of novelWriter
  Copyright 2020, Veronica Berglyd Olsen
@@ -29,11 +31,13 @@ import logging
 import nw
 
 from PyQt5.QtCore import Qt
+from PyQt5.QtGui import QPalette, QColor
 from PyQt5.QtWidgets import (
-    qApp, QFrame, QGridLayout, QLabel, QLineEdit, QPushButton
+    qApp, QFrame, QGridLayout, QLabel, QLineEdit, QPushButton,
+    QHBoxLayout
 )
 
-from nw.constants import nwDocAction
+from nw.constants import nwDocAction, nwUnicode
 
 logger = logging.getLogger(__name__)
 
@@ -42,7 +46,7 @@ class GuiSearchBar(QFrame):
     def __init__(self, theParent):
         QFrame.__init__(self, theParent)
 
-        logger.debug("Initialising SearchBar ...")
+        logger.debug("Initialising GuiSearchBar ...")
 
         self.mainConf   = nw.CONFIG
         self.theParent  = theParent
@@ -89,7 +93,7 @@ class GuiSearchBar(QFrame):
 
         self._replaceVisible(False)
 
-        logger.debug("SearchBar initialisation complete")
+        logger.debug("GuiSearchBar initialisation complete")
 
         return
 
@@ -163,3 +167,133 @@ class GuiSearchBar(QFrame):
         return True
 
 # END Class GuiSearchBar
+
+class GuiNoticeBar(QFrame):
+
+    def __init__(self, theParent):
+        QFrame.__init__(self, theParent)
+
+        logger.debug("Initialising GuiNoticeBar ...")
+
+        self.mainConf   = nw.CONFIG
+        self.theParent  = theParent
+        self.theTheme   = theParent.theTheme
+
+        self.setContentsMargins(0,0,0,0)
+        self.setFrameShape(QFrame.Box)
+
+        self.mainBox = QHBoxLayout(self)
+        self.mainBox.setContentsMargins(8,2,2,2)
+
+        self.noteLabel = QLabel("")
+
+        self.closeButton = QPushButton(self.theTheme.getIcon("close"),"")
+        self.closeButton.clicked.connect(self.hideNote)
+
+        self.mainBox.addWidget(self.noteLabel)
+        self.mainBox.addWidget(self.closeButton)
+        self.mainBox.setStretch(0, 1)
+
+        self.setLayout(self.mainBox)
+
+        self.hideNote()
+
+        logger.debug("GuiNoticeBar initialisation complete")
+
+        return
+
+    def showNote(self, theNote):
+        """Show the note on the noticebar.
+        """
+        self.noteLabel.setText("<b>Note:</b> %s" % theNote)
+        self.setVisible(True)
+        return
+
+    def hideNote(self):
+        """Clear the noticebar and hide it.
+        """
+        self.noteLabel.setText("")
+        self.setVisible(False)
+        return
+
+# END Class GuiNoticeBar
+
+class GuiDocTitleBar(QLabel):
+
+    def __init__(self, theParent, theProject):
+        QLabel.__init__(self, theParent)
+
+        logger.debug("Initialising GuiDocTitleBar ...")
+
+        self.mainConf   = nw.CONFIG
+        self.theParent  = theParent
+        self.theProject = theProject
+        self.theTheme   = theParent.theTheme
+        self.theHandle  = None
+
+        self.setText("")
+        self.setIndent(0)
+        self.setMargin(0)
+        self.setContentsMargins(0, 0, 0, 0)
+        self.setAutoFillBackground(True)
+        self.setAlignment(Qt.AlignCenter)
+        self.setWordWrap(True)
+        self.setFrameShape(QFrame.NoFrame)
+        self.setLineWidth(0)
+
+        lblPalette = self.palette()
+        lblPalette.setColor(QPalette.Window, QColor(*self.theTheme.colBack))
+        lblPalette.setColor(QPalette.Text, QColor(*self.theTheme.colText))
+        self.setPalette(lblPalette)
+
+        lblFont = self.font()
+        lblFont.setPointSizeF(0.9*self.theTheme.fontPointSize)
+        self.setFont(lblFont)
+
+        logger.debug("GuiDocTitleBar initialisation complete")
+
+        return
+
+    ##
+    #  Setters
+    ##
+
+    def setTitleFromHandle(self, tHandle):
+        """Sets the document title from the handle, or alternatively,
+        set the whole document path.
+        """
+        self.setText("")
+        self.theHandle = tHandle
+        if tHandle is None:
+            return False
+
+        if self.mainConf.showFullPath:
+            tTitle = []
+            tTree = self.theProject.projTree.getItemPath(tHandle)
+            for aHandle in reversed(tTree):
+                nwItem = self.theProject.projTree[aHandle]
+                if nwItem is not None:
+                    tTitle.append(nwItem.itemName)
+            sSep = "  %s  " % nwUnicode.U_RSAQUO
+            self.setText(sSep.join(tTitle))
+        else:
+            nwItem = self.theProject.projTree[tHandle]
+            if nwItem is None:
+                return False
+
+            self.setText(nwItem.itemName)
+
+        return True
+
+    ##
+    #  Events
+    ##
+
+    def mousePressEvent(self, theEvent):
+        """Capture a click on the title and ensure that the item is
+        selected in the project tree.
+        """
+        self.theParent.setSelectedHandle(self.theHandle)
+        return
+
+# END Class GuiDocTitleBar

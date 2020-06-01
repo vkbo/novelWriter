@@ -6,7 +6,8 @@
  Class holding the document editor
 
  File History:
- Created: 2018-09-29 [0.0.1]
+ Created: 2018-09-29 [0.0.1] GuiDocEditor
+ Created: 2019-04-22 [0.0.1] WordCounter
 
  This file is a part of novelWriter
  Copyright 2020, Veronica Berglyd Olsen
@@ -30,7 +31,7 @@ import nw
 
 from time import time
 
-from PyQt5.QtCore import Qt, QTimer, pyqtSlot
+from PyQt5.QtCore import Qt, QThread, QTimer, pyqtSlot
 from PyQt5.QtWidgets import (
     qApp, QTextEdit, QAction, QMenu, QShortcut, QMessageBox
 )
@@ -40,9 +41,9 @@ from PyQt5.QtGui import (
 )
 
 from nw.core import NWDoc
-from nw.gui.tools import GuiDocHighlighter, WordCounter
-from nw.gui.elements.doctitlebar import GuiDocTitleBar
-from nw.core import NWSpellSimple
+from nw.gui.dochighlight import GuiDocHighlighter
+from nw.gui.docbars import GuiDocTitleBar
+from nw.core import NWSpellSimple, countWords
 from nw.constants import nwUnicode, nwDocAction
 
 logger = logging.getLogger(__name__)
@@ -52,7 +53,7 @@ class GuiDocEditor(QTextEdit):
     def __init__(self, theParent, theProject):
         QTextEdit.__init__(self)
 
-        logger.debug("Initialising DocEditor ...")
+        logger.debug("Initialising GuiDocEditor ...")
 
         # Class Variables
         self.mainConf   = nw.CONFIG
@@ -131,7 +132,7 @@ class GuiDocEditor(QTextEdit):
 
         self.initEditor()
 
-        logger.debug("DocEditor initialisation complete")
+        logger.debug("GuiDocEditor initialisation complete")
 
         # Connect Functions
         self.setSelectedHandle = self.theParent.treeView.setSelectedHandle
@@ -1082,3 +1083,28 @@ class GuiDocEditor(QTextEdit):
         return
 
 # END Class GuiDocEditor
+
+class WordCounter(QThread):
+
+    def __init__(self, theParent):
+        QThread.__init__(self, theParent)
+        self.theParent = theParent
+        self.charCount = 0
+        self.wordCount = 0
+        self.paraCount = 0
+        return
+
+    def run(self):
+        """Overloaded run function for the word counter, forwarding the
+        call to the function that does the actual counting.
+        """
+        theText = self.theParent.getText()
+        cC, wC, pC = countWords(theText)
+
+        self.charCount = cC
+        self.wordCount = wC
+        self.paraCount = pC
+
+        return
+
+## END Class WordCounter

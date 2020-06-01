@@ -34,7 +34,7 @@ from PyQt5.QtWidgets import (
     QListWidgetItem, QDialogButtonBox, QLabel
 )
 from nw.constants import nwAlert, nwItemType, nwItemClass, nwItemLayout
-from nw.gui.additions import QHelpLabel
+from nw.gui.custom import QHelpLabel
 from nw.core import NWDoc
 
 logger = logging.getLogger(__name__)

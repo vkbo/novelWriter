@@ -6,12 +6,14 @@
  Class wrapping the data if a novelWriter project
 
  File History:
- Created: 2018-09-29 [0.0.1] NWProject
- Created: 2018-10-27 [0.0.1] NWItem
- Created: 2019-05-19 [0.1.3] NWStatus
- Merged:  2020-05-07 [0.4.5] Moved NWItem class to this file
- Merged:  2020-05-07 [0.4.5] Moved NWStatus class to this file
- Added:   2020-05-07 [0.4.5] NWTree
+ Created:   2018-09-29 [0.0.1] NWProject
+ Created:   2018-10-27 [0.0.1] NWItem
+ Created:   2019-05-19 [0.1.3] NWStatus
+ Created:   2019-10-21 [0.3.1] OptionState
+ Merged:    2020-05-07 [0.4.5] Moved NWItem class to this file
+ Merged:    2020-05-07 [0.4.5] Moved NWStatus class to this file
+ Added:     2020-05-07 [0.4.5] NWTree
+ Rewritten: 2020-02-19 [0.4.5] OptionState
 
  This file is a part of novelWriter
  Copyright 2020, Veronica Berglyd Olsen
@@ -42,7 +44,6 @@ from shutil import make_archive
 
 from PyQt5.QtWidgets import QMessageBox
 
-from nw.gui.tools import OptionState
 from nw.core.document import NWDoc
 from nw.common import checkString, checkBool, checkInt, formatTimeStamp
 from nw.constants import (
@@ -2007,3 +2008,151 @@ class NWStatus():
             raise StopIteration
 
 # END Class NWStatus
+
+# =============================================================================================== #
+#  OptionState
+#  Save the project-wise state of options that don't go into project XML or main config
+# =============================================================================================== #
+
+class OptionState():
+
+    def __init__(self, theProject):
+
+        self.theProject = theProject
+        self.theState   = {}
+        self.stringOpt  = ()
+        self.boolOpt    = ()
+        self.intOpt     = ()
+
+        return
+
+    def loadSettings(self):
+        """Load the options dictionary from the project settings file.
+        """
+        if self.theProject.projMeta is None:
+            return False
+
+        stateFile = path.join(self.theProject.projMeta, nwFiles.OPTS_FILE)
+        theState  = {}
+
+        if path.isfile(stateFile):
+            logger.debug("Loading GUI options file")
+            try:
+                with open(stateFile,mode="r",encoding="utf8") as inFile:
+                    theJson = inFile.read()
+                theState = json.loads(theJson)
+            except Exception as e:
+                logger.error("Failed to load GUI options file")
+                logger.error(str(e))
+                return False
+        for anOpt in theState:
+            self.theState[anOpt] = theState[anOpt]
+
+        return True
+
+    def saveSettings(self):
+        """Save the options dictionary to the project settings file.
+        """
+        if self.theProject.projMeta is None:
+            return False
+
+        stateFile = path.join(self.theProject.projMeta, nwFiles.OPTS_FILE)
+        logger.debug("Saving GUI options file")
+
+        try:
+            with open(stateFile,mode="w+",encoding="utf8") as outFile:
+                outFile.write(json.dumps(self.theState, indent=2))
+        except Exception as e:
+            logger.error("Failed to save GUI options file")
+            logger.error(str(e))
+            return False
+
+        return True
+
+    def setValue(self, setGroup, setName, setValue):
+        """Saves a value, with a given group and name.
+        """
+        if not setGroup in self.theState:
+            self.theState[setGroup] = {}
+        self.theState[setGroup][setName] = setValue
+        return True
+
+    def getValue(self, getGroup, getName, defaultValue):
+        """Return an arbitrary type value, if it exists. Otherwise,
+        return the default value.
+        """
+        if getGroup in self.theState:
+            if getName in self.theState[getGroup]:
+                try:
+                    return self.theState[getGroup][getName]
+                except:
+                    return defaultValue
+        return defaultValue
+
+    def getString(self, getGroup, getName, defaultValue):
+        """Return the value as a string, if it exists. Otherwise, return
+        the default value.
+        """
+        if getGroup in self.theState:
+            if getName in self.theState[getGroup]:
+                try:
+                    return str(self.theState[getGroup][getName])
+                except:
+                    return defaultValue
+        return defaultValue
+
+    def getInt(self, getGroup, getName, defaultValue):
+        """Return the value as an int, if it exists. Otherwise, return
+        the default value.
+        """
+        if getGroup in self.theState:
+            if getName in self.theState[getGroup]:
+                try:
+                    return int(self.theState[getGroup][getName])
+                except:
+                    return defaultValue
+        return defaultValue
+
+    def getFloat(self, getGroup, getName, defaultValue):
+        """Return the value as a float, if it exists. Otherwise, return
+        the default value.
+        """
+        if getGroup in self.theState:
+            if getName in self.theState[getGroup]:
+                try:
+                    return float(self.theState[getGroup][getName])
+                except:
+                    return defaultValue
+        return defaultValue
+
+    def getBool(self, getGroup, getName, defaultValue):
+        """Return the value as a bool, if it exists. Otherwise, return
+        the default value.
+        """
+        if getGroup in self.theState:
+            if getName in self.theState[getGroup]:
+                try:
+                    return bool(self.theState[getGroup][getName])
+                except:
+                    return defaultValue
+        return defaultValue
+
+    def validIntRange(self, theValue, intA, intB, intDefault):
+        """Check that an int is in a given range. If it isn't, return
+        the default value.
+        """
+        if isinstance(theValue, int):
+            if theValue >= intA and theValue <= intB:
+                return theValue
+        return intDefault
+
+    def validIntTuple(self, theValue, theTuple, intDefault):
+        """Check that an int is an element of a tuple. If it isn't,
+        return the default value.
+        """
+        if isinstance(theValue, int):
+            if theValue in theTuple:
+                return theValue
+        return intDefault
+
+# END Class OptionState
