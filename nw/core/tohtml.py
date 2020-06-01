@@ -43,6 +43,7 @@ class ToHtml(Tokenizer):
     def __init__(self, theProject, theParent):
         Tokenizer.__init__(self, theProject, theParent)
         self.genMode = self.M_EXPORT
+        self.cssStyles = True
 
         self.repDict = {
             "<"  : "&lt;",
@@ -76,6 +77,13 @@ class ToHtml(Tokenizer):
             self.doComments = doComments
             self.repDict["\t"] = "&nbsp;"*8
             self._buildRegEx()
+        return
+
+    def setStyles(self, cssStyles):
+        """Enable/disable CSS styling. Some elements may still have
+        class tags.
+        """
+        self.cssStyles = cssStyles
         return
 
     ##
@@ -147,7 +155,7 @@ class ToHtml(Tokenizer):
 
             # Styles
             aStyle = []
-            if tStyle is not None:
+            if tStyle is not None and self.cssStyles:
                 if tStyle & self.A_LEFT:
                     aStyle.append("text-align: left;")
                 if tStyle & self.A_RIGHT:
@@ -183,7 +191,7 @@ class ToHtml(Tokenizer):
             if tType == self.T_EMPTY:
                 if parStyle is None:
                     parStyle = ""
-                if hasHardBreak:
+                if hasHardBreak and self.cssStyles:
                     parClass = " class='break'"
                 else:
                     parClass = ""
@@ -250,6 +258,8 @@ class ToHtml(Tokenizer):
         """Generate a stylesheet appropriate for the current settings.
         """
         theStyles = []
+        if not self.cssStyles:
+            return theStyles
 
         if self.doJustify:
             theStyles.append(r"p {text-align: justify;}")
