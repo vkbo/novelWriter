@@ -2,7 +2,7 @@
 
 # Main Window Elements
 from nw.gui.build import GuiBuildNovel
-from nw.gui.icons import GuiIcons
+from nw.gui.theme import GuiIcons
 from nw.gui.mainmenu import GuiMainMenu
 from nw.gui.statusbar import GuiMainStatus
 from nw.gui.theme import GuiTheme
