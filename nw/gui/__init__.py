@@ -1,56 +1,49 @@
 # -*- coding: utf-8 -*-
 
-# Main Window Elements
+from nw.gui.about import GuiAbout
 from nw.gui.build import GuiBuildNovel
-from nw.gui.theme import GuiIcons
+from nw.gui.docbars import GuiDocTitleBar
+from nw.gui.docbars import GuiNoticeBar
+from nw.gui.docbars import GuiSearchBar
+from nw.gui.docdetails import GuiDocDetails
+from nw.gui.doceditor import GuiDocEditor
+from nw.gui.docmerge import GuiDocMerge
+from nw.gui.docsplit import GuiDocSplit
+from nw.gui.doctree import GuiDocTree
+from nw.gui.docviewer import GuiDocViewer
+from nw.gui.itemeditor import GuiItemEditor
 from nw.gui.mainmenu import GuiMainMenu
+from nw.gui.outline import GuiProjectOutline
+from nw.gui.preferences import GuiPreferences
+from nw.gui.projectload import GuiProjectLoad
+from nw.gui.projectsettings import GuiProjectSettings
+from nw.gui.sessionlog import GuiSessionLogView
 from nw.gui.statusbar import GuiMainStatus
+from nw.gui.theme import GuiIcons
 from nw.gui.theme import GuiTheme
-
-# Dialogs
-from nw.gui.dialogs.about import GuiAbout
-from nw.gui.dialogs.preferences import GuiPreferences
-from nw.gui.dialogs.docmerge import GuiDocMerge
-from nw.gui.dialogs.docsplit import GuiDocSplit
-from nw.gui.dialogs.itemeditor import GuiItemEditor
-from nw.gui.dialogs.projectsettings import GuiProjectSettings
-from nw.gui.dialogs.projectload import GuiProjectLoad
-from nw.gui.dialogs.sessionlog import GuiSessionLogView
-
-# GUI Elements
-from nw.gui.elements.docdetails import GuiDocDetails
-from nw.gui.elements.doceditor import GuiDocEditor
-from nw.gui.elements.docbars import GuiDocTitleBar
-from nw.gui.elements.doctree import GuiDocTree
-from nw.gui.elements.docviewer import GuiDocViewer
-from nw.gui.elements.docbars import GuiNoticeBar
-from nw.gui.elements.outline import GuiProjectOutline
-from nw.gui.elements.docbars import GuiSearchBar
-from nw.gui.elements.viewdetails import GuiDocViewDetails
-
-# Tools
+from nw.gui.viewdetails import GuiDocViewDetails
 
 __all__ = [
-    "GuiBuildNovel",
-    "GuiIcons",
-    "GuiMainMenu",
-    "GuiMainStatus",
-    "GuiTheme",
     "GuiAbout",
-    "GuiPreferences",
-    "GuiDocMerge",
-    "GuiDocSplit",
-    "GuiItemEditor",
-    "GuiProjectSettings",
-    "GuiProjectLoad",
-    "GuiSessionLogView",
+    "GuiBuildNovel",
+    "GuiDocTitleBar",
+    "GuiNoticeBar",
+    "GuiSearchBar",
     "GuiDocDetails",
     "GuiDocEditor",
-    "GuiDocTitleBar",
+    "GuiDocMerge",
+    "GuiDocSplit",
     "GuiDocTree",
     "GuiDocViewer",
-    "GuiNoticeBar",
+    "GuiItemEditor",
+    "GuiMainMenu",
     "GuiProjectOutline",
-    "GuiSearchBar",
+    "GuiPreferences",
+    "GuiProjectLoad",
+    "GuiProjectSettings",
+    "GuiSessionLogView",
+    "GuiMainStatus",
+    "GuiIcons",
+    "GuiTheme",
     "GuiDocViewDetails",
 ]
