@@ -31,7 +31,7 @@ import nw
 from os import path
 from datetime import datetime
 
-from PyQt5.QtCore import Qt
+from PyQt5.QtCore import Qt, QSize
 from PyQt5.QtGui import QKeySequence
 from PyQt5.QtWidgets import (
     QDialog, QHBoxLayout, QVBoxLayout, QGridLayout, QPushButton, QTreeWidget,
@@ -77,6 +77,7 @@ class GuiProjectLoad(QDialog):
         self.projectForm = QGridLayout()
         self.projectForm.setContentsMargins(0, 0, 0, 0)
 
+        iPx = self.theTheme.textIconSize
         self.listBox = QTreeWidget()
         self.listBox.setSelectionMode(QAbstractItemView.SingleSelection)
         self.listBox.setDragDropMode(QAbstractItemView.NoDragDrop)
@@ -86,6 +87,7 @@ class GuiProjectLoad(QDialog):
         self.listBox.setColumnHidden(3, True)
         self.listBox.itemSelectionChanged.connect(self._doSelectRecent)
         self.listBox.itemDoubleClicked.connect(self._doOpenRecent)
+        self.listBox.setIconSize(QSize(iPx, iPx))
 
         treeHead = self.listBox.headerItem()
         treeHead.setTextAlignment(1, Qt.AlignRight)
