@@ -56,6 +56,7 @@
 * Removed the `Xo` icon for NO_LAYOUT in the project tree details panel. Mentioned in #235, PR #239.
 * Added a "Details" tab to the "Project Settings" dialog, which also lists the project path. Issue #242, PR #239.
 
+
 ## Version 0.6.2 [2020-05-28]
 
 * Botched release. Replaced with 0.6.3. Crashes when Build Novel Project is opened.

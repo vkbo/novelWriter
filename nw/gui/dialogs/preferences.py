@@ -386,7 +386,6 @@ class GuiConfigEditLayoutTab(QWidget):
         # ==========
         self.mainForm.addGroupLabel("Text Style")
 
-
         ## Font Family
         self.textStyleFont = QLineEdit()
         self.textStyleFont.setReadOnly(True)
