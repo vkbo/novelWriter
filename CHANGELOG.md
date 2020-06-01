@@ -1,24 +1,41 @@
 # novelWriter ChangeLog
 
-## Version 0.7 RC1 [2020-xx-xx]
+## Version 0.7 [2020-06-01]
+
+**Bugfixes**
+
+* Fixed a bug where novelWriter might crash if a file is deleted immediately after being created, and also additional points-of-failure if the project was new. PR #267.
 
 **User Interface**
 
 * The back-references list now shows references to any tag in the open document, not just the first tag. Issue #227, PR #234.
-* Clicking a tag now tries to scroll to the header where the tag is set. The index needed a couple of minor changes for this feature, so this will invalidate the old index for a project, and require a new to be built. This is done automatically. PR #234.
+* Clicking a tag now tries to scroll to the header where the tag is set. The index needed a couple of minor changes for this feature, so this will invalidate the old index for a project and require a new to be built. This is done automatically. PR #234.
 * Moved the Close button on the "Build Novel project" dialog to the area with the other buttons since we anyway increased the size of that area. PR #256.
 * Updated the unit for Preferences > Editor > Big document limit from `kb` to `kb`. Issue #258, PR #260.
+* Added Typicons-based coloured icon set also for light GUI background. PR #265.
+* The export check mark that was added to the Flags column in the project tree in Version 0.6 has been moved to its own column, and been replaced with a proper icon. The details panel below it has been updated as well. PR #268.
+* Icon sizes are now calculated based on the size of the text, and all text and icons should scale relative to the default GUI font size. PR #268.
+* The font family and size of the main GUI font can now be changed in Preferences. For Windows, this defaults to Cantarell 11pt, which is now shipped with novelWriter, on other systems it defaults to the system font. Special accommodations had be made for Ubuntu where the font size of the tree widget was not updated automatically (Issue #273) PRs #269, #270, #274 and #275.
+* There are no Monospace fonts on the GUI any more. Where fixed with is needed, the size is calculated beforehand with Qt's font metrics class. PR #271.
+* Fonts are now selected via the system's font dialog, rather than the font combo box. PR #270.
+* Word, character and paragraph counts are now updated on the project tree details panel if the currently edited file is selected. PR #272.
+* The Build Novel Project dialog now shows the previous generated content when it's opened. PR #272.
+* The Build Novel Project tool can now export the HTML and NWD output into a JSON data file. This file is convenient if the user wants to post-process the output with for instance Python, or one of the other numerous langauges that can read JSON files. PR #272.
 
 **Project Structure**
 
 * The project folder structure has been simplified and cleaned up. We also now freeze the main entry values in the main XML file. The XML file is now given version 1.1, and no further core changes to its structure will be made without bumping this version. We're also locking it to only be opened by version 0.7 or later. An old project file is converted on first open. PRs #253 and #261.
-* When a project is closed, two table of contents files are written to the project folder. They are named `ToC.txt` and `ToC.json` and are there for the user's convenience if they want to find a specific file from the project in the data folders. As discussed in Issue #259, PR #261.
+* When a project is closed, two table of contents files are written to the project folder. They are named `ToC.txt` and `ToC.json` and are there for the user's convenience if they want to find a specific file from the project in the data folders. As discussed in Issue #259, PRs #261 and #262.
 * The expanded node flag from the project tree was also saved for file entries, which cannot actually be expanded. These flags are no longer saved in the XML file. PR #261.
 
 **Other Changes**
 
-* Dropped the usage of .bak copies of document files. This was the old method to ensure the document data was written successfully, but it uses twice the storage space. Instead, writing via a temp file is the safe way to save files. PR #248.
+* Dropped the usage of `.bak` copies of document files. This was the old method to ensure the document data was written successfully, but it uses twice the storage space. Instead, writing via a temp file is the current safe way to save files. PR #248.
 * The project class now records the accumulated time in seconds a project has been opened. This data is not yet displayed anywhere, but it is being tracked in the project XML file. PR #261.
+
+**Test Suite**
+
+* Added tests for Build Novel Project, Merge Folder and Split Document tools. PRs #263 and #264.
 
 
 ## Version 0.6.3 [2020-05-28]

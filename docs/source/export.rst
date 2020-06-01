@@ -95,3 +95,18 @@ Plain Text
 ==========
 
 The plain text export format writes a simple ``.txt`` file without any formatting at all.
+
+*************************
+Additional Export Options
+*************************
+
+In addition to the above document formats, the novelWriter HTML and Markdown formats can also be wrapped in a JSON file.
+The files will have a meta data entry and a body entry.
+For HTML, also the accompanying css styles are exported.
+
+The text body is saved in a two-level list.
+The outer list contains one entry per exported file, in the order they appear in the project tree.
+Each file is then split up into a lst as well, with one entry per line.
+
+These files are mainly intended for scripted post-processing for those who want that option.
+A JSON file can be imported directly into a Python dict object or a PHP array, to mentions a few options.
