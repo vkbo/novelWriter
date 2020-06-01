@@ -34,7 +34,7 @@ from PyQt5.QtGui import QTextOption, QFont, QPalette, QColor, QTextCursor
 
 from nw.core import ToHtml
 from nw.constants import nwAlert, nwItemType, nwDocAction
-from nw.gui.elements.doctitlebar import GuiDocTitleBar
+from nw.gui.elements.docbars import GuiDocTitleBar
 
 logger = logging.getLogger(__name__)
 

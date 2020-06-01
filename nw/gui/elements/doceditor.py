@@ -42,7 +42,7 @@ from PyQt5.QtGui import (
 
 from nw.core import NWDoc
 from nw.gui.dochighlight import GuiDocHighlighter
-from nw.gui.elements.doctitlebar import GuiDocTitleBar
+from nw.gui.elements.docbars import GuiDocTitleBar
 from nw.core import NWSpellSimple, countWords
 from nw.constants import nwUnicode, nwDocAction
 
