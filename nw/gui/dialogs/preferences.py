@@ -188,7 +188,7 @@ class GuiConfigEditGeneralTab(QWidget):
         self.guiFont.setFixedWidth(162)
         self.guiFont.setText(self.mainConf.guiFont)
         self.fontButton = QPushButton("...")
-        self.fontButton.setMaximumWidth(30)
+        self.fontButton.setMaximumWidth(int(2.5*self.theTheme.getTextWidth("...")))
         self.fontButton.clicked.connect(self._selectFont)
         self.mainForm.addRow(
             "Font family",
@@ -393,7 +393,7 @@ class GuiConfigEditLayoutTab(QWidget):
         self.textStyleFont.setFixedWidth(162)
         self.textStyleFont.setText(self.mainConf.textFont)
         self.fontButton = QPushButton("...")
-        self.fontButton.setMaximumWidth(30)
+        self.fontButton.setMaximumWidth(int(2.5*self.theTheme.getTextWidth("...")))
         self.fontButton.clicked.connect(self._selectFont)
         self.mainForm.addRow(
             "Font family",

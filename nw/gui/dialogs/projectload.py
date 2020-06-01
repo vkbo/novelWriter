@@ -31,7 +31,7 @@ import nw
 from os import path
 from datetime import datetime
 
-from PyQt5.QtCore import Qt
+from PyQt5.QtCore import Qt, QSize
 from PyQt5.QtGui import QKeySequence
 from PyQt5.QtWidgets import (
     QDialog, QHBoxLayout, QVBoxLayout, QGridLayout, QPushButton, QTreeWidget,
@@ -57,6 +57,7 @@ class GuiProjectLoad(QDialog):
 
         self.mainConf  = nw.CONFIG
         self.theParent = theParent
+        self.theTheme  = theParent.theTheme
         self.openState = self.NONE_STATE
         self.openPath  = None
 
@@ -70,12 +71,13 @@ class GuiProjectLoad(QDialog):
         self.setMinimumHeight(400)
         self.setModal(True)
 
-        self.guiDeco = self.theParent.theTheme.loadDecoration("nwicon", (96, 96))
+        self.guiDeco = self.theTheme.loadDecoration("nwicon", (96, 96))
         self.innerBox.addWidget(self.guiDeco, 0, Qt.AlignTop)
 
         self.projectForm = QGridLayout()
         self.projectForm.setContentsMargins(0, 0, 0, 0)
 
+        iPx = self.theTheme.textIconSize
         self.listBox = QTreeWidget()
         self.listBox.setSelectionMode(QAbstractItemView.SingleSelection)
         self.listBox.setDragDropMode(QAbstractItemView.NoDragDrop)
@@ -85,10 +87,14 @@ class GuiProjectLoad(QDialog):
         self.listBox.setColumnHidden(3, True)
         self.listBox.itemSelectionChanged.connect(self._doSelectRecent)
         self.listBox.itemDoubleClicked.connect(self._doOpenRecent)
+        self.listBox.setIconSize(QSize(iPx, iPx))
 
         treeHead = self.listBox.headerItem()
         treeHead.setTextAlignment(1, Qt.AlignRight)
         treeHead.setTextAlignment(2, Qt.AlignRight)
+        treeHead.setFont(0, self.theTheme.guiFont)
+        treeHead.setFont(1, self.theTheme.guiFont)
+        treeHead.setFont(2, self.theTheme.guiFont)
 
         self.lblRecent = QLabel("<b>Recently Opened Projects</b>")
         self.lblPath   = QLabel("<b>Path</b>")
@@ -96,7 +102,7 @@ class GuiProjectLoad(QDialog):
         self.selPath.setReadOnly(True)
 
         self.browseButton = QPushButton("...")
-        self.browseButton.setMaximumWidth(30)
+        self.browseButton.setMaximumWidth(int(2.5*self.theTheme.getTextWidth("...")))
         self.browseButton.clicked.connect(self._doBrowse)
 
         self.projectForm.addWidget(self.lblRecent,    0, 0, 1, 3)
@@ -251,8 +257,12 @@ class GuiProjectLoad(QDialog):
             newItem.setText(1, formatInt(listData[timeStamp][1]))
             newItem.setText(2, datetime.fromtimestamp(timeStamp).strftime("%x %X"))
             newItem.setText(3, listData[timeStamp][2])
-            newItem.setTextAlignment(1, Qt.AlignRight)
-            newItem.setTextAlignment(2, Qt.AlignRight)
+            newItem.setTextAlignment(0, Qt.AlignLeft  | Qt.AlignVCenter)
+            newItem.setTextAlignment(1, Qt.AlignRight | Qt.AlignVCenter)
+            newItem.setTextAlignment(2, Qt.AlignRight | Qt.AlignVCenter)
+            newItem.setFont(0, self.theTheme.guiFont)
+            newItem.setFont(1, self.theTheme.guiFont)
+            newItem.setFont(2, self.theTheme.guiFont)
             self.listBox.addTopLevelItem(newItem)
             if not hasSelection:
                 newItem.setSelected(True)

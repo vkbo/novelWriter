@@ -52,7 +52,7 @@ class GuiDocTree(QTreeWidget):
     def __init__(self, theParent, theProject):
         QTreeWidget.__init__(self, theParent)
 
-        logger.debug("Initialising DocTree ...")
+        logger.debug("Initialising GuiDocTree ...")
         self.mainConf   = nw.CONFIG
         self.theParent  = theParent
         self.theTheme   = theParent.theTheme
@@ -80,6 +80,14 @@ class GuiDocTree(QTreeWidget):
         treeHead.setToolTip(self.C_EXPORT, "Include in build")
         treeHead.setToolTip(self.C_FLAGS, "Status, class, and layout flags")
 
+        # Force the font to fix font sizing issues on some platforms
+        # like Ubuntu. This must also be set when the rows are added.
+        self.setFont(self.theTheme.guiFont)
+        treeHead.setFont(self.C_NAME, self.theTheme.guiFont)
+        treeHead.setFont(self.C_COUNT,self.theTheme.guiFont)
+        treeHead.setFont(self.C_EXPORT, self.theTheme.guiFont)
+        treeHead.setFont(self.C_FLAGS, self.theTheme.guiFont)
+
         # Allow Move by Drag & Drop
         self.setDragEnabled(True)
         self.setDragDropMode(QAbstractItemView.InternalMove)
@@ -93,13 +101,14 @@ class GuiDocTree(QTreeWidget):
         # self.setSelectionMode(QAbstractItemView.ExtendedSelection)
         # self.setSelectionBehavior(QAbstractItemView.SelectRows)
 
+        # Get user's column width preferences for NAME and COUNT
         for colN, colW in enumerate(self.mainConf.treeColWidth):
             self.setColumnWidth(colN, colW)
 
         self.resizeColumnToContents(self.C_EXPORT)
         self.resizeColumnToContents(self.C_FLAGS)
 
-        logger.debug("DocTree initialisation complete")
+        logger.debug("GuiDocTree initialisation complete")
 
         # Internal Mapping
         self.makeAlert = self.theParent.makeAlert
@@ -114,7 +123,7 @@ class GuiDocTree(QTreeWidget):
         """Clear the GUI content and the related maps.
         """
         self.clear()
-        self.theMap   = {}
+        self.theMap = {}
         self.orphRoot = None
         return
 
@@ -578,7 +587,14 @@ class GuiDocTree(QTreeWidget):
         newItem.setText(self.C_FLAGS,  "")
         newItem.setText(self.C_HANDLE, tHandle)
 
-        newItem.setTextAlignment(self.C_COUNT, Qt.AlignRight)
+        newItem.setTextAlignment(self.C_NAME,   Qt.AlignLeft  | Qt.AlignVCenter)
+        newItem.setTextAlignment(self.C_COUNT,  Qt.AlignRight | Qt.AlignVCenter)
+        newItem.setTextAlignment(self.C_EXPORT, Qt.AlignLeft  | Qt.AlignVCenter)
+        newItem.setTextAlignment(self.C_FLAGS,  Qt.AlignLeft  | Qt.AlignVCenter)
+
+        newItem.setFont(self.C_NAME,  self.theTheme.guiFont)
+        newItem.setFont(self.C_COUNT, self.theTheme.guiFont)
+        newItem.setFont(self.C_FLAGS, self.theTheme.guiFont)
 
         self.theMap[tHandle] = newItem
         if pHandle is None:
