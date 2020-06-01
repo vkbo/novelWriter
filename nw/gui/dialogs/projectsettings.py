@@ -456,6 +456,8 @@ class GuiProjectEditReplace(QWidget):
 
         for aKey, aVal in self.theProject.autoReplace.items():
             newItem = QTreeWidgetItem(["<%s>" % aKey, aVal])
+            newItem.setFont(0, self.theTheme.guiFont)
+            newItem.setFont(1, self.theTheme.guiFont)
             self.listBox.addTopLevelItem(newItem)
 
         self.listBox.sortByColumn(0, Qt.AscendingOrder)
