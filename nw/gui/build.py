@@ -43,7 +43,7 @@ from PyQt5.QtWidgets import (
     QFileDialog, QFontDialog, QSpinBox
 )
 
-from nw.gui.additions import QSwitch
+from nw.gui.custom import QSwitch
 from nw.core import ToHtml
 from nw.constants import (
     nwAlert, nwFiles, nwItemType, nwItemLayout, nwItemClass

@@ -38,7 +38,7 @@ from PyQt5.QtWidgets import (
 )
 
 from nw.constants import nwAlert
-from nw.gui.additions import QSwitch, PagedDialog, QConfigLayout
+from nw.gui.custom import QSwitch, PagedDialog, QConfigLayout
 
 logger = logging.getLogger(__name__)
 

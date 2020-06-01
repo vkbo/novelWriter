@@ -37,7 +37,7 @@ from PyQt5.QtWidgets import (
     QDialogButtonBox, QFileDialog, QFontDialog
 )
 
-from nw.gui.additions import QSwitch, QConfigLayout, PagedDialog
+from nw.gui.custom import QSwitch, QConfigLayout, PagedDialog
 from nw.core import NWSpellCheck, NWSpellSimple, NWSpellEnchant
 from nw.constants import nwAlert, nwQuotes
 
