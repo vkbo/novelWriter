@@ -410,9 +410,10 @@ class GuiProjectOutline(QTreeWidget):
 
         newItem.setText(self.colIndex[nwOutline.TITLE],  novIdx["title"])
         newItem.setData(self.colIndex[nwOutline.TITLE],  Qt.UserRole, tHandle)
-        newItem.setIcon(self.colIndex[nwOutline.TITLE],  self.theTheme.getIcon("proj_document"))
+        newItem.setIcon(self.colIndex[nwOutline.TITLE],  self.theTheme.getIcon("hash"))
         newItem.setText(self.colIndex[nwOutline.LEVEL],  novIdx["level"])
         newItem.setText(self.colIndex[nwOutline.LABEL],  nwItem.itemName)
+        newItem.setIcon(self.colIndex[nwOutline.LABEL],  self.theTheme.getIcon("proj_document"))
         newItem.setText(self.colIndex[nwOutline.LINE],   sTitle[1:].lstrip("0"))
         newItem.setText(self.colIndex[nwOutline.SYNOP],  novIdx["synopsis"])
         newItem.setText(self.colIndex[nwOutline.CCOUNT], str(novIdx["cCount"]))
