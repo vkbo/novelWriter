@@ -42,7 +42,7 @@ from nw.constants import (
 
 logger = logging.getLogger(__name__)
 
-class GuiDocTree(QTreeWidget):
+class GuiProjectTree(QTreeWidget):
 
     C_NAME   = 0
     C_COUNT  = 1
@@ -52,7 +52,7 @@ class GuiDocTree(QTreeWidget):
     def __init__(self, theParent, theProject):
         QTreeWidget.__init__(self, theParent)
 
-        logger.debug("Initialising GuiDocTree ...")
+        logger.debug("Initialising GuiProjectTree ...")
         self.mainConf   = nw.CONFIG
         self.theParent  = theParent
         self.theTheme   = theParent.theTheme
@@ -115,7 +115,7 @@ class GuiDocTree(QTreeWidget):
         # The last column should just auto-scale
         self.resizeColumnToContents(self.C_FLAGS)
 
-        logger.debug("GuiDocTree initialisation complete")
+        logger.debug("GuiProjectTree initialisation complete")
 
         # Internal Mapping
         self.makeAlert = self.theParent.makeAlert
@@ -782,4 +782,4 @@ class GuiDocTree(QTreeWidget):
 
         return
 
-# END Class GuiDocTree
+# END Class GuiProjectTree
