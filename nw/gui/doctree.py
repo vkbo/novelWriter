@@ -31,7 +31,8 @@ import nw
 from PyQt5.QtCore import Qt, QSize
 from PyQt5.QtGui import QFont, QColor, QIcon
 from PyQt5.QtWidgets import (
-    qApp, QTreeWidget, QTreeWidgetItem, QAbstractItemView, QMessageBox
+    qApp, QTreeWidget, QTreeWidgetItem, QAbstractItemView, QMessageBox,
+    QHeaderView
 )
 
 from nw.core import NWDoc
@@ -71,20 +72,27 @@ class GuiDocTree(QTreeWidget):
         self.setColumnCount(4)
         self.setHeaderLabels(["Label", "Words", "Inc", "Flags"])
 
-        treeHead = self.headerItem()
-        treeHead.setTextAlignment(self.C_COUNT, Qt.AlignRight)
-        treeHead.setToolTip(self.C_NAME, "Item label")
-        treeHead.setToolTip(self.C_COUNT, "Word count")
-        treeHead.setToolTip(self.C_EXPORT, "Include in build")
-        treeHead.setToolTip(self.C_FLAGS, "Status, class, and layout flags")
+        treeHeadItem = self.headerItem()
+        treeHeadItem.setTextAlignment(self.C_COUNT, Qt.AlignRight)
+        treeHeadItem.setToolTip(self.C_NAME, "Item label")
+        treeHeadItem.setToolTip(self.C_COUNT, "Word count")
+        treeHeadItem.setToolTip(self.C_EXPORT, "Include in build")
+        treeHeadItem.setToolTip(self.C_FLAGS, "Status, class, and layout flags")
 
         # Force the font to fix font sizing issues on some platforms
         # like Ubuntu. This must also be set when the rows are added.
         self.setFont(self.theTheme.guiFont)
-        treeHead.setFont(self.C_NAME, self.theTheme.guiFont)
-        treeHead.setFont(self.C_COUNT,self.theTheme.guiFont)
-        treeHead.setFont(self.C_EXPORT, self.theTheme.guiFont)
-        treeHead.setFont(self.C_FLAGS, self.theTheme.guiFont)
+        treeHeadItem.setFont(self.C_NAME, self.theTheme.guiFont)
+        treeHeadItem.setFont(self.C_COUNT,self.theTheme.guiFont)
+        treeHeadItem.setFont(self.C_EXPORT, self.theTheme.guiFont)
+        treeHeadItem.setFont(self.C_FLAGS, self.theTheme.guiFont)
+
+        # Let the last column stretch, and set the minimum size to the
+        # size of the icon as the default Qt font metrics approach fails
+        # for some fonts like the Ubuntu font.
+        treeHeader = self.header()
+        treeHeader.setStretchLastSection(True)
+        treeHeader.setMinimumSectionSize(iPx+6)
 
         # Allow Move by Drag & Drop
         self.setDragEnabled(True)
@@ -100,10 +108,11 @@ class GuiDocTree(QTreeWidget):
         # self.setSelectionBehavior(QAbstractItemView.SelectRows)
 
         # Get user's column width preferences for NAME and COUNT
-        for colN, colW in enumerate(self.mainConf.treeColWidth):
-            self.setColumnWidth(colN, colW)
+        if len(self.mainConf.treeColWidth) <= 4:
+            for colN, colW in enumerate(self.mainConf.treeColWidth):
+                self.setColumnWidth(colN, colW)
 
-        self.resizeColumnToContents(self.C_EXPORT)
+        # The last column should just auto-scale
         self.resizeColumnToContents(self.C_FLAGS)
 
         logger.debug("GuiDocTree initialisation complete")
@@ -284,6 +293,7 @@ class GuiDocTree(QTreeWidget):
         retVals = [
             self.columnWidth(0),
             self.columnWidth(1),
+            self.columnWidth(2),
         ]
         return retVals
 
