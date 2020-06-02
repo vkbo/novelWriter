@@ -485,7 +485,7 @@ def testBuildTool(qtbot, nwTempBuild, nwLipsum, nwRef, nwTemp):
     qtbot.wait(stepDelay)
     qtbot.mouseClick(nwBuild.ignoreFlag, Qt.LeftButton)
     qtbot.wait(stepDelay)
-    qtbot.mouseClick(nwBuild.excludeBody, Qt.LeftButton)
+    qtbot.mouseClick(nwBuild.includeBody, Qt.LeftButton)
     qtbot.wait(stepDelay)
 
     qtbot.mouseClick(nwBuild.buildNovel, Qt.LeftButton)
