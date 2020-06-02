@@ -136,7 +136,6 @@ class nwLabels():
     }
     OUTLINE_COLS = {
         nwOutline.TITLE  : "Title",
-        nwOutline.HANDLE : "Handle",
         nwOutline.LEVEL  : "Level",
         nwOutline.LABEL  : "Document",
         nwOutline.LINE   : "Line",
