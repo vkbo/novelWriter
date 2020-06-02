@@ -466,14 +466,15 @@ class GuiMain(QMainWindow):
             self.docEditor.clearEditor()
         return True
 
-    def openDocument(self, tHandle, tLine=None):
+    def openDocument(self, tHandle, tLine=None, changeFocus=True):
         """Open a specific document, optionally at a given line.
         """
         if self.hasProject:
             self.closeDocument()
             self.tabWidget.setCurrentWidget(self.splitView)
             if self.docEditor.loadText(tHandle, tLine):
-                self.docEditor.setFocus()
+                if changeFocus:
+                    self.docEditor.setFocus()
                 self.theProject.setLastEdited(tHandle)
                 self.treeView.setSelectedHandle(tHandle)
             else:
@@ -1035,7 +1036,8 @@ class GuiMain(QMainWindow):
 
     def _treeKeyPressReturn(self):
         """The user pressed return an item in the tree. If it is a file,
-        we open it. Otherwise, we do nothing.
+        we open it. Otherwise, we do nothing. Pressing return does not
+        change focus to the editor as double click does.
         """
         tHandle = self.treeView.getSelectedHandle()
         logger.verbose("User pressed return on tree item with handle %s" % tHandle)
@@ -1043,7 +1045,7 @@ class GuiMain(QMainWindow):
         if nwItem is not None:
             if nwItem.itemType == nwItemType.FILE:
                 logger.verbose("Requested item %s is a file" % tHandle)
-                self.openDocument(tHandle)
+                self.openDocument(tHandle, changeFocus=False)
             else:
                 logger.verbose("Requested item %s is a folder" % tHandle)
         return
