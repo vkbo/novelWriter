@@ -1022,7 +1022,7 @@ class GuiMain(QMainWindow):
         """The user double-clicked an item in the tree. If it is a file,
         we open it. Otherwise, we do nothing.
         """
-        tHandle = tItem.text(self.treeView.C_HANDLE)
+        tHandle = tItem.data(self.treeView.C_NAME, Qt.UserRole)
         logger.verbose("User double clicked tree item with handle %s" % tHandle)
         nwItem = self.theProject.projTree[tHandle]
         if nwItem is not None:
