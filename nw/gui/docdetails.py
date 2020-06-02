@@ -37,13 +37,13 @@ logger = logging.getLogger(__name__)
 
 class GuiDocViewDetails(QWidget):
 
-    def __init__(self, theParent, theProject):
+    def __init__(self, theParent):
         QWidget.__init__(self, theParent)
 
         logger.debug("Initialising DocViewDetails ...")
         self.mainConf   = nw.CONFIG
         self.theParent  = theParent
-        self.theProject = theProject
+        self.theProject = theParent.theProject
         self.currHandle = None
 
         self.outerBox = QGridLayout(self)

@@ -40,16 +40,16 @@ logger = logging.getLogger(__name__)
 
 class GuiDocViewer(QTextBrowser):
 
-    def __init__(self, theParent, theProject):
-        QTextBrowser.__init__(self)
+    def __init__(self, theParent):
+        QTextBrowser.__init__(self, theParent)
 
-        logger.debug("Initialising DocViewer ...")
+        logger.debug("Initialising GuiDocViewer ...")
 
         # Class Variables
         self.mainConf   = nw.CONFIG
-        self.theProject = theProject
         self.theParent  = theParent
         self.theTheme   = theParent.theTheme
+        self.theProject = theParent.theProject
         self.theHandle  = None
 
         self.qDocument = self.document()
@@ -70,7 +70,7 @@ class GuiDocViewer(QTextBrowser):
         self.anchorClicked.connect(self._linkClicked)
         self.setFocusPolicy(Qt.StrongFocus)
 
-        logger.debug("DocViewer initialisation complete")
+        logger.debug("GuiDocViewer initialisation complete")
 
         # Connect Functions
         self.setSelectedHandle = self.theParent.treeView.setSelectedHandle

@@ -40,10 +40,10 @@ from PyQt5.QtWidgets import (
 )
 
 from nw.gui import (
-    GuiMainMenu, GuiMainStatus, GuiTheme, GuiProjectTree, GuiDocEditor,
-    GuiDocViewer, GuiItemDetails, GuiSearchBar, GuiNoticeBar, GuiDocViewDetails,
-    GuiPreferences, GuiProjectSettings, GuiItemEditor, GuiProjectOutline,
-    GuiSessionLogView, GuiDocMerge, GuiDocSplit, GuiProjectLoad, GuiBuildNovel
+    GuiBuildNovel, GuiDocEditor, GuiDocMerge, GuiDocSplit, GuiDocViewDetails,
+    GuiDocViewer, GuiItemDetails, GuiItemEditor, GuiMainMenu, GuiMainStatus,
+    GuiNoticeBar, GuiOutline, GuiOutlineDetails, GuiPreferences, GuiProjectLoad,
+    GuiProjectSettings, GuiProjectTree, GuiSearchBar, GuiSessionLogView, GuiTheme
 )
 from nw.core import NWProject, NWDoc, NWIndex
 from nw.constants import nwFiles, nwItemType, nwAlert
@@ -91,14 +91,15 @@ class GuiMain(QMainWindow):
         # Main GUI Elements
         self.statusBar = GuiMainStatus(self)
         self.noticeBar = GuiNoticeBar(self)
-        self.treeView  = GuiProjectTree(self, self.theProject)
-        self.docEditor = GuiDocEditor(self, self.theProject)
-        self.docViewer = GuiDocViewer(self, self.theProject)
-        self.viewMeta  = GuiDocViewDetails(self, self.theProject)
+        self.treeView  = GuiProjectTree(self)
+        self.docEditor = GuiDocEditor(self)
+        self.docViewer = GuiDocViewer(self)
+        self.viewMeta  = GuiDocViewDetails(self)
         self.searchBar = GuiSearchBar(self)
-        self.treeMeta  = GuiItemDetails(self, self.theProject)
-        self.projView  = GuiProjectOutline(self, self.theProject)
-        self.mainMenu  = GuiMainMenu(self, self.theProject)
+        self.treeMeta  = GuiItemDetails(self)
+        self.projView  = GuiOutline(self)
+        self.projMeta  = GuiOutlineDetails(self)
+        self.mainMenu  = GuiMainMenu(self)
 
         # Minor Gui Elements
         self.statusIcons = []
@@ -137,6 +138,7 @@ class GuiMain(QMainWindow):
 
         self.splitOutline = QSplitter(Qt.Vertical)
         self.splitOutline.addWidget(self.projView)
+        self.splitOutline.addWidget(self.projMeta)
 
         self.tabWidget = QTabWidget()
         self.tabWidget.setTabPosition(QTabWidget.East)

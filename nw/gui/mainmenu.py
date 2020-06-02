@@ -39,13 +39,13 @@ logger = logging.getLogger(__name__)
 
 class GuiMainMenu(QMenuBar):
 
-    def __init__(self, theParent, theProject):
+    def __init__(self, theParent):
         QMenuBar.__init__(self, theParent)
 
-        logger.debug("Initialising Main Menu ...")
+        logger.debug("Initialising GuiMainMenu ...")
         self.mainConf   = nw.CONFIG
         self.theParent  = theParent
-        self.theProject = theProject
+        self.theProject = theParent.theProject
 
         self._buildProjectMenu()
         self._buildDocumentMenu()
@@ -60,7 +60,7 @@ class GuiMainMenu(QMenuBar):
         self._moveTreeItem = self.theParent.treeView.moveTreeItem
         self._newTreeItem  = self.theParent.treeView.newTreeItem
 
-        logger.debug("Main Menu initialisation complete")
+        logger.debug("GuiMainMenu initialisation complete")
 
         return
 

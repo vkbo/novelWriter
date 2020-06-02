@@ -50,16 +50,16 @@ logger = logging.getLogger(__name__)
 
 class GuiDocEditor(QTextEdit):
 
-    def __init__(self, theParent, theProject):
-        QTextEdit.__init__(self)
+    def __init__(self, theParent):
+        QTextEdit.__init__(self, theParent)
 
         logger.debug("Initialising GuiDocEditor ...")
 
         # Class Variables
         self.mainConf   = nw.CONFIG
-        self.theProject = theProject
         self.theParent  = theParent
         self.theTheme   = theParent.theTheme
+        self.theProject = theParent.theProject
         self.docChanged = False
         self.spellCheck = False
         self.nwDocument = NWDoc(self.theProject, self.theParent)
