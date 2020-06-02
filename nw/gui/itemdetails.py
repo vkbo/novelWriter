@@ -38,12 +38,12 @@ from nw.constants import (
 
 logger = logging.getLogger(__name__)
 
-class GuiDocDetails(QFrame):
+class GuiItemDetails(QFrame):
 
     def __init__(self, theParent, theProject):
         QFrame.__init__(self, theParent)
 
-        logger.debug("Initialising DocDetails ...")
+        logger.debug("Initialising GuiItemDetails ...")
         self.mainConf   = nw.CONFIG
         self.theParent  = theParent
         self.theProject = theProject
@@ -182,7 +182,7 @@ class GuiDocDetails(QFrame):
         self.mainBox.setColumnMinimumWidth(1, flagWidth)
         self.mainBox.setColumnMinimumWidth(4, countWidth)
 
-        logger.debug("DocDetails initialisation complete")
+        logger.debug("GuiItemDetails initialisation complete")
 
         return
 
@@ -262,4 +262,4 @@ class GuiDocDetails(QFrame):
 
         return
 
-# END Class GuiDocDetails
+# END Class GuiItemDetails

@@ -5,12 +5,12 @@ from nw.gui.build import GuiBuildNovel
 from nw.gui.docbars import GuiDocTitleBar
 from nw.gui.docbars import GuiNoticeBar
 from nw.gui.docbars import GuiSearchBar
-from nw.gui.docdetails import GuiDocDetails
 from nw.gui.doceditor import GuiDocEditor
 from nw.gui.docmerge import GuiDocMerge
 from nw.gui.docsplit import GuiDocSplit
 from nw.gui.doctree import GuiDocTree
 from nw.gui.docviewer import GuiDocViewer
+from nw.gui.itemdetails import GuiItemDetails
 from nw.gui.itemeditor import GuiItemEditor
 from nw.gui.mainmenu import GuiMainMenu
 from nw.gui.outline import GuiProjectOutline
@@ -29,12 +29,12 @@ __all__ = [
     "GuiDocTitleBar",
     "GuiNoticeBar",
     "GuiSearchBar",
-    "GuiDocDetails",
     "GuiDocEditor",
     "GuiDocMerge",
     "GuiDocSplit",
     "GuiDocTree",
     "GuiDocViewer",
+    "GuiItemDetails",
     "GuiItemEditor",
     "GuiMainMenu",
     "GuiProjectOutline",

@@ -41,7 +41,7 @@ from PyQt5.QtWidgets import (
 
 from nw.gui import (
     GuiMainMenu, GuiMainStatus, GuiTheme, GuiDocTree, GuiDocEditor,
-    GuiDocViewer, GuiDocDetails, GuiSearchBar, GuiNoticeBar, GuiDocViewDetails,
+    GuiDocViewer, GuiItemDetails, GuiSearchBar, GuiNoticeBar, GuiDocViewDetails,
     GuiPreferences, GuiProjectSettings, GuiItemEditor, GuiProjectOutline,
     GuiSessionLogView, GuiDocMerge, GuiDocSplit, GuiProjectLoad, GuiBuildNovel
 )
@@ -96,7 +96,7 @@ class GuiMain(QMainWindow):
         self.docViewer = GuiDocViewer(self, self.theProject)
         self.viewMeta  = GuiDocViewDetails(self, self.theProject)
         self.searchBar = GuiSearchBar(self)
-        self.treeMeta  = GuiDocDetails(self, self.theProject)
+        self.treeMeta  = GuiItemDetails(self, self.theProject)
         self.projView  = GuiProjectOutline(self, self.theProject)
         self.mainMenu  = GuiMainMenu(self, self.theProject)
 
