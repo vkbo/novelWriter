@@ -30,7 +30,7 @@ import nw
 
 from time import time
 
-from PyQt5.QtCore import Qt
+from PyQt5.QtCore import Qt, QSize
 from PyQt5.QtWidgets import (
     QTreeWidget, QTreeWidgetItem, QMenu, QAction, QAbstractItemView
 )
@@ -43,7 +43,6 @@ class GuiProjectOutline(QTreeWidget):
 
     DEF_WIDTH = {
         nwOutline.TITLE  : 200,
-        nwOutline.HANDLE :   0,
         nwOutline.LEVEL  :  40,
         nwOutline.LABEL  : 150,
         nwOutline.LINE   :  40,
@@ -63,7 +62,6 @@ class GuiProjectOutline(QTreeWidget):
 
     DEF_HIDDEN = {
         nwOutline.TITLE  : False,
-        nwOutline.HANDLE : True,
         nwOutline.LEVEL  : True,
         nwOutline.LABEL  : False,
         nwOutline.LINE   : True,
@@ -102,6 +100,10 @@ class GuiProjectOutline(QTreeWidget):
         self.setExpandsOnDoubleClick(False)
         self.setDragEnabled(False)
         self.itemDoubleClicked.connect(self._treeDoubleClick)
+
+        iPx = self.theTheme.textIconSize
+        self.setIconSize(QSize(iPx, iPx))
+        self.setIndentation(iPx)
 
         self.treeHead = self.header()
         self.treeHead.setContextMenuPolicy(Qt.CustomContextMenu)
@@ -187,7 +189,7 @@ class GuiProjectOutline(QTreeWidget):
         clicked, and send it to the main gui class for opening in the
         document editor.
         """
-        tHandle = tItem.text(self.colIndex[nwOutline.HANDLE])
+        tHandle = tItem.data(self.colIndex[nwOutline.TITLE], Qt.UserRole)
         try:
             tLine = int(tItem.text(self.colIndex[nwOutline.LINE]))
         except:
@@ -332,7 +334,6 @@ class GuiProjectOutline(QTreeWidget):
             # Make sure title column is always visible,
             # and handle column always hidden
             self.setColumnHidden(self.colIndex[nwOutline.TITLE], False)
-            self.setColumnHidden(self.colIndex[nwOutline.HANDLE], True)
 
             headItem = self.headerItem()
             headItem.setTextAlignment(self.colIndex[nwOutline.CCOUNT], Qt.AlignRight)
@@ -408,9 +409,11 @@ class GuiProjectOutline(QTreeWidget):
         newItem = QTreeWidgetItem()
 
         newItem.setText(self.colIndex[nwOutline.TITLE],  novIdx["title"])
-        newItem.setText(self.colIndex[nwOutline.HANDLE], tHandle)
+        newItem.setData(self.colIndex[nwOutline.TITLE],  Qt.UserRole, tHandle)
+        newItem.setIcon(self.colIndex[nwOutline.TITLE],  self.theTheme.getIcon("hash"))
         newItem.setText(self.colIndex[nwOutline.LEVEL],  novIdx["level"])
         newItem.setText(self.colIndex[nwOutline.LABEL],  nwItem.itemName)
+        newItem.setIcon(self.colIndex[nwOutline.LABEL],  self.theTheme.getIcon("proj_document"))
         newItem.setText(self.colIndex[nwOutline.LINE],   sTitle[1:].lstrip("0"))
         newItem.setText(self.colIndex[nwOutline.SYNOP],  novIdx["synopsis"])
         newItem.setText(self.colIndex[nwOutline.CCOUNT], str(novIdx["cCount"]))
@@ -451,7 +454,7 @@ class GuiOutlineHeaderMenu(QMenu):
 
         self.actionMap = {}
         for hItem in nwOutline:
-            if hItem == nwOutline.TITLE or hItem == nwOutline.HANDLE:
+            if hItem == nwOutline.TITLE:
                 continue
             self.actionMap[hItem] = QAction(nwLabels.OUTLINE_COLS[hItem], self)
             self.actionMap[hItem].setCheckable(True)
@@ -469,7 +472,7 @@ class GuiOutlineHeaderMenu(QMenu):
         self.acceptToggle = False
 
         for hItem in nwOutline:
-            if hItem == nwOutline.TITLE or hItem == nwOutline.HANDLE or hItem not in hiddenState:
+            if hItem == nwOutline.TITLE or hItem not in hiddenState:
                 continue
             self.actionMap[hItem].setChecked(not hiddenState[hItem])
 

@@ -516,6 +516,7 @@ class GuiIcons:
         "edit"           : (None,                          None),
         "check"          : (None,                          None),
         "cross"          : (None,                          None),
+        "hash"           : (None,                          None),
 
         ## Other Icons
         "warning"        : (QStyle.SP_MessageBoxWarning,   "dialog-warning"),

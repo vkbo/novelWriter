@@ -93,7 +93,7 @@ class GuiBuildNovel(QDialog):
 
         # Title Formats
         # =============
-        self.titleGroup = QGroupBox("Novel Title Formats", self)
+        self.titleGroup = QGroupBox("Title Formats for Novel Files", self)
         self.titleForm  = QGridLayout(self)
         self.titleGroup.setLayout(self.titleForm)
 
@@ -169,9 +169,9 @@ class GuiBuildNovel(QDialog):
 
         # Text Options
         # =============
-        self.textGroup = QGroupBox("Text Options", self)
-        self.textForm  = QGridLayout(self)
-        self.textGroup.setLayout(self.textForm)
+        self.formatGroup = QGroupBox("Formatting Options", self)
+        self.formatForm  = QGridLayout(self)
+        self.formatGroup.setLayout(self.formatForm)
 
         ## Font Family
         self.textFont = QLineEdit()
@@ -212,29 +212,29 @@ class GuiBuildNovel(QDialog):
             self.optState.getBool("GuiBuildNovel", "noStyling", False)
         )
 
-        self.textForm.addWidget(QLabel("Font family"),     0, 0, 1, 1, Qt.AlignLeft)
-        self.textForm.addWidget(self.textFont,             0, 1, 1, 1, Qt.AlignRight)
-        self.textForm.addWidget(self.fontButton,           0, 2, 1, 1, Qt.AlignRight)
-        self.textForm.addWidget(QLabel("Font size"),       1, 0, 1, 1, Qt.AlignLeft)
-        self.textForm.addWidget(self.textSize,             1, 1, 1, 2, Qt.AlignRight)
-        self.textForm.addWidget(QLabel("Justify text"),    2, 0, 1, 1, Qt.AlignLeft)
-        self.textForm.addWidget(self.justifyText,          2, 1, 1, 2, Qt.AlignRight)
-        self.textForm.addWidget(QLabel("Disable styling"), 3, 0, 1, 1, Qt.AlignLeft)
-        self.textForm.addWidget(self.noStyling,            3, 1, 1, 2, Qt.AlignRight)
+        self.formatForm.addWidget(QLabel("Font family"),     0, 0, 1, 1, Qt.AlignLeft)
+        self.formatForm.addWidget(self.textFont,             0, 1, 1, 1, Qt.AlignRight)
+        self.formatForm.addWidget(self.fontButton,           0, 2, 1, 1, Qt.AlignRight)
+        self.formatForm.addWidget(QLabel("Font size"),       1, 0, 1, 1, Qt.AlignLeft)
+        self.formatForm.addWidget(self.textSize,             1, 1, 1, 2, Qt.AlignRight)
+        self.formatForm.addWidget(QLabel("Justify text"),    2, 0, 1, 1, Qt.AlignLeft)
+        self.formatForm.addWidget(self.justifyText,          2, 1, 1, 2, Qt.AlignRight)
+        self.formatForm.addWidget(QLabel("Disable styling"), 3, 0, 1, 1, Qt.AlignLeft)
+        self.formatForm.addWidget(self.noStyling,            3, 1, 1, 2, Qt.AlignRight)
 
-        self.textForm.setColumnStretch(0, 1)
-        self.textForm.setColumnStretch(1, 0)
-        self.textForm.setColumnStretch(2, 0)
+        self.formatForm.setColumnStretch(0, 1)
+        self.formatForm.setColumnStretch(1, 0)
+        self.formatForm.setColumnStretch(2, 0)
 
         # Include Switches
         # ================
-        self.includeGroup = QGroupBox("Include Non-Text Elements", self)
-        self.includeForm  = QGridLayout(self)
-        self.includeGroup.setLayout(self.includeForm)
+        self.textGroup = QGroupBox("Text Options", self)
+        self.textForm  = QGridLayout(self)
+        self.textGroup.setLayout(self.textForm)
 
         self.includeSynopsis = QSwitch()
         self.includeSynopsis.setToolTip(
-            "Include synopsis type comments in the output."
+            "Include synopsis comments in the output."
         )
         self.includeSynopsis.setChecked(self.theProject.titleFormat["withSynopsis"])
 
@@ -250,21 +250,31 @@ class GuiBuildNovel(QDialog):
         )
         self.includeKeywords.setChecked(self.theProject.titleFormat["withKeywords"])
 
-        self.includeForm.addWidget(QLabel("Include synopsis"), 0, 0, 1, 1, Qt.AlignLeft)
-        self.includeForm.addWidget(self.includeSynopsis,       0, 1, 1, 1, Qt.AlignRight)
-        self.includeForm.addWidget(QLabel("Include comments"), 1, 0, 1, 1, Qt.AlignLeft)
-        self.includeForm.addWidget(self.includeComments,       1, 1, 1, 1, Qt.AlignRight)
-        self.includeForm.addWidget(QLabel("Include keywords"), 2, 0, 1, 1, Qt.AlignLeft)
-        self.includeForm.addWidget(self.includeKeywords,       2, 1, 1, 1, Qt.AlignRight)
+        self.includeBody = QSwitch()
+        self.includeBody.setToolTip(
+            "Include body text in the output."
+        )
+        self.includeBody.setChecked(
+            self.optState.getBool("GuiBuildNovel", "includeBody", True)
+        )
 
-        self.includeForm.setColumnStretch(0, 1)
-        self.includeForm.setColumnStretch(1, 0)
+        self.textForm.addWidget(QLabel("Include synopsis"),  0, 0, 1, 1, Qt.AlignLeft)
+        self.textForm.addWidget(self.includeSynopsis,        0, 1, 1, 1, Qt.AlignRight)
+        self.textForm.addWidget(QLabel("Include comments"),  1, 0, 1, 1, Qt.AlignLeft)
+        self.textForm.addWidget(self.includeComments,        1, 1, 1, 1, Qt.AlignRight)
+        self.textForm.addWidget(QLabel("Include keywords"),  2, 0, 1, 1, Qt.AlignLeft)
+        self.textForm.addWidget(self.includeKeywords,        2, 1, 1, 1, Qt.AlignRight)
+        self.textForm.addWidget(QLabel("Include body text"), 3, 0, 1, 1, Qt.AlignLeft)
+        self.textForm.addWidget(self.includeBody,            3, 1, 1, 1, Qt.AlignRight)
+
+        self.textForm.setColumnStretch(0, 1)
+        self.textForm.setColumnStretch(1, 0)
 
         # Additional Options
         # ==================
-        self.addsGroup = QGroupBox("Additional Options", self)
-        self.addsForm  = QGridLayout(self)
-        self.addsGroup.setLayout(self.addsForm)
+        self.fileGroup = QGroupBox("File Options", self)
+        self.fileForm  = QGridLayout(self)
+        self.fileGroup.setLayout(self.fileForm)
 
         self.novelFiles = QSwitch()
         self.novelFiles.setToolTip(
@@ -290,26 +300,15 @@ class GuiBuildNovel(QDialog):
             self.optState.getBool("GuiBuildNovel", "ignoreFlag", False)
         )
 
-        self.excludeBody = QSwitch()
-        self.excludeBody.setToolTip(
-            "Exclude body text in the output. Combine with 'Include synopsis' "
-            "for making outline."
-        )
-        self.excludeBody.setChecked(
-            self.optState.getBool("GuiBuildNovel", "excludeBody", False)
-        )
+        self.fileForm.addWidget(QLabel("Include novel files"), 0, 0, 1, 1, Qt.AlignLeft)
+        self.fileForm.addWidget(self.novelFiles,               0, 1, 1, 1, Qt.AlignRight)
+        self.fileForm.addWidget(QLabel("Include note files"),  1, 0, 1, 1, Qt.AlignLeft)
+        self.fileForm.addWidget(self.noteFiles,                1, 1, 1, 1, Qt.AlignRight)
+        self.fileForm.addWidget(QLabel("Ignore export flag"),  2, 0, 1, 1, Qt.AlignLeft)
+        self.fileForm.addWidget(self.ignoreFlag,               2, 1, 1, 1, Qt.AlignRight)
 
-        self.addsForm.addWidget(QLabel("Include novel files"), 0, 0, 1, 1, Qt.AlignLeft)
-        self.addsForm.addWidget(self.novelFiles,               0, 1, 1, 1, Qt.AlignRight)
-        self.addsForm.addWidget(QLabel("Include note files"),  1, 0, 1, 1, Qt.AlignLeft)
-        self.addsForm.addWidget(self.noteFiles,                1, 1, 1, 1, Qt.AlignRight)
-        self.addsForm.addWidget(QLabel("Ignore export flag"),  2, 0, 1, 1, Qt.AlignLeft)
-        self.addsForm.addWidget(self.ignoreFlag,               2, 1, 1, 1, Qt.AlignRight)
-        self.addsForm.addWidget(QLabel("Exclude body text"),   3, 0, 1, 1, Qt.AlignLeft)
-        self.addsForm.addWidget(self.excludeBody,              3, 1, 1, 1, Qt.AlignRight)
-
-        self.addsForm.setColumnStretch(0, 1)
-        self.addsForm.setColumnStretch(1, 0)
+        self.fileForm.setColumnStretch(0, 1)
+        self.fileForm.setColumnStretch(1, 0)
 
         # Build Button
         # ============
@@ -373,9 +372,9 @@ class GuiBuildNovel(QDialog):
         # Assemble GUI
         # ============
         self.toolsBox.addWidget(self.titleGroup)
+        self.toolsBox.addWidget(self.formatGroup)
         self.toolsBox.addWidget(self.textGroup)
-        self.toolsBox.addWidget(self.includeGroup)
-        self.toolsBox.addWidget(self.addsGroup)
+        self.toolsBox.addWidget(self.fileGroup)
         self.toolsBox.addStretch(1)
         self.toolsBox.addWidget(self.buildProgress)
         self.toolsBox.addWidget(self.buildNovel)
@@ -388,6 +387,7 @@ class GuiBuildNovel(QDialog):
         self.outerBox.setStretch(1, 1)
 
         self.setLayout(self.outerBox)
+        self.buildNovel.setFocus()
 
         self.show()
 
@@ -436,7 +436,7 @@ class GuiBuildNovel(QDialog):
         novelFiles    = self.novelFiles.isChecked()
         noteFiles     = self.noteFiles.isChecked()
         ignoreFlag    = self.ignoreFlag.isChecked()
-        excludeBody   = self.excludeBody.isChecked()
+        includeBody   = self.includeBody.isChecked()
 
         makeHtml = ToHtml(self.theProject, self.theParent)
         makeHtml.setTitleFormat(fmtTitle)
@@ -444,7 +444,7 @@ class GuiBuildNovel(QDialog):
         makeHtml.setUnNumberedFormat(fmtUnnumbered)
         makeHtml.setSceneFormat(fmtScene, fmtScene == "")
         makeHtml.setSectionFormat(fmtSection, fmtSection == "")
-        makeHtml.setBodyText(not excludeBody)
+        makeHtml.setBodyText(includeBody)
         makeHtml.setSynopsis(incSynopsis)
         makeHtml.setComments(incComments)
         makeHtml.setKeywords(incKeywords)
@@ -867,7 +867,7 @@ class GuiBuildNovel(QDialog):
         self.optState.setValue("GuiBuildNovel", "addNovel", self.novelFiles.isChecked())
         self.optState.setValue("GuiBuildNovel", "addNotes", self.noteFiles.isChecked())
         self.optState.setValue("GuiBuildNovel", "ignoreFlag", self.ignoreFlag.isChecked())
-        self.optState.setValue("GuiBuildNovel", "excludeBody", self.excludeBody.isChecked())
+        self.optState.setValue("GuiBuildNovel", "includeBody", self.includeBody.isChecked())
         self.optState.saveSettings()
 
         return

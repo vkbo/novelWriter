@@ -40,8 +40,8 @@ from PyQt5.QtWidgets import (
 )
 
 from nw.gui import (
-    GuiMainMenu, GuiMainStatus, GuiTheme, GuiDocTree, GuiDocEditor,
-    GuiDocViewer, GuiDocDetails, GuiSearchBar, GuiNoticeBar, GuiDocViewDetails,
+    GuiMainMenu, GuiMainStatus, GuiTheme, GuiProjectTree, GuiDocEditor,
+    GuiDocViewer, GuiItemDetails, GuiSearchBar, GuiNoticeBar, GuiDocViewDetails,
     GuiPreferences, GuiProjectSettings, GuiItemEditor, GuiProjectOutline,
     GuiSessionLogView, GuiDocMerge, GuiDocSplit, GuiProjectLoad, GuiBuildNovel
 )
@@ -91,12 +91,12 @@ class GuiMain(QMainWindow):
         # Main GUI Elements
         self.statusBar = GuiMainStatus(self)
         self.noticeBar = GuiNoticeBar(self)
-        self.treeView  = GuiDocTree(self, self.theProject)
+        self.treeView  = GuiProjectTree(self, self.theProject)
         self.docEditor = GuiDocEditor(self, self.theProject)
         self.docViewer = GuiDocViewer(self, self.theProject)
         self.viewMeta  = GuiDocViewDetails(self, self.theProject)
         self.searchBar = GuiSearchBar(self)
-        self.treeMeta  = GuiDocDetails(self, self.theProject)
+        self.treeMeta  = GuiItemDetails(self, self.theProject)
         self.projView  = GuiProjectOutline(self, self.theProject)
         self.mainMenu  = GuiMainMenu(self, self.theProject)
 
@@ -466,14 +466,15 @@ class GuiMain(QMainWindow):
             self.docEditor.clearEditor()
         return True
 
-    def openDocument(self, tHandle, tLine=None):
+    def openDocument(self, tHandle, tLine=None, changeFocus=True):
         """Open a specific document, optionally at a given line.
         """
         if self.hasProject:
             self.closeDocument()
             self.tabWidget.setCurrentWidget(self.splitView)
             if self.docEditor.loadText(tHandle, tLine):
-                self.docEditor.setFocus()
+                if changeFocus:
+                    self.docEditor.setFocus()
                 self.theProject.setLastEdited(tHandle)
                 self.treeView.setSelectedHandle(tHandle)
             else:
@@ -1022,7 +1023,7 @@ class GuiMain(QMainWindow):
         """The user double-clicked an item in the tree. If it is a file,
         we open it. Otherwise, we do nothing.
         """
-        tHandle = tItem.text(self.treeView.C_HANDLE)
+        tHandle = tItem.data(self.treeView.C_NAME, Qt.UserRole)
         logger.verbose("User double clicked tree item with handle %s" % tHandle)
         nwItem = self.theProject.projTree[tHandle]
         if nwItem is not None:
@@ -1035,7 +1036,8 @@ class GuiMain(QMainWindow):
 
     def _treeKeyPressReturn(self):
         """The user pressed return an item in the tree. If it is a file,
-        we open it. Otherwise, we do nothing.
+        we open it. Otherwise, we do nothing. Pressing return does not
+        change focus to the editor as double click does.
         """
         tHandle = self.treeView.getSelectedHandle()
         logger.verbose("User pressed return on tree item with handle %s" % tHandle)
@@ -1043,7 +1045,7 @@ class GuiMain(QMainWindow):
         if nwItem is not None:
             if nwItem.itemType == nwItemType.FILE:
                 logger.verbose("Requested item %s is a file" % tHandle)
-                self.openDocument(tHandle)
+                self.openDocument(tHandle, changeFocus=False)
             else:
                 logger.verbose("Requested item %s is a folder" % tHandle)
         return

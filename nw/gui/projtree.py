@@ -31,7 +31,8 @@ import nw
 from PyQt5.QtCore import Qt, QSize
 from PyQt5.QtGui import QFont, QColor, QIcon
 from PyQt5.QtWidgets import (
-    qApp, QTreeWidget, QTreeWidgetItem, QAbstractItemView, QMessageBox
+    qApp, QTreeWidget, QTreeWidgetItem, QAbstractItemView, QMessageBox,
+    QHeaderView
 )
 
 from nw.core import NWDoc
@@ -41,18 +42,17 @@ from nw.constants import (
 
 logger = logging.getLogger(__name__)
 
-class GuiDocTree(QTreeWidget):
+class GuiProjectTree(QTreeWidget):
 
     C_NAME   = 0
     C_COUNT  = 1
     C_EXPORT = 2
     C_FLAGS  = 3
-    C_HANDLE = 4
 
     def __init__(self, theParent, theProject):
         QTreeWidget.__init__(self, theParent)
 
-        logger.debug("Initialising GuiDocTree ...")
+        logger.debug("Initialising GuiProjectTree ...")
         self.mainConf   = nw.CONFIG
         self.theParent  = theParent
         self.theTheme   = theParent.theTheme
@@ -69,24 +69,30 @@ class GuiDocTree(QTreeWidget):
         self.setIconSize(QSize(iPx, iPx))
         self.setExpandsOnDoubleClick(True)
         self.setIndentation(iPx)
-        self.setColumnCount(5)
-        self.setHeaderLabels(["Label", "Words", "Inc", "Flags", "Handle"])
-        self.hideColumn(self.C_HANDLE)
+        self.setColumnCount(4)
+        self.setHeaderLabels(["Label", "Words", "Inc", "Flags"])
 
-        treeHead = self.headerItem()
-        treeHead.setTextAlignment(self.C_COUNT, Qt.AlignRight)
-        treeHead.setToolTip(self.C_NAME, "Item label")
-        treeHead.setToolTip(self.C_COUNT, "Word count")
-        treeHead.setToolTip(self.C_EXPORT, "Include in build")
-        treeHead.setToolTip(self.C_FLAGS, "Status, class, and layout flags")
+        treeHeadItem = self.headerItem()
+        treeHeadItem.setTextAlignment(self.C_COUNT, Qt.AlignRight)
+        treeHeadItem.setToolTip(self.C_NAME, "Item label")
+        treeHeadItem.setToolTip(self.C_COUNT, "Word count")
+        treeHeadItem.setToolTip(self.C_EXPORT, "Include in build")
+        treeHeadItem.setToolTip(self.C_FLAGS, "Status, class, and layout flags")
 
         # Force the font to fix font sizing issues on some platforms
         # like Ubuntu. This must also be set when the rows are added.
         self.setFont(self.theTheme.guiFont)
-        treeHead.setFont(self.C_NAME, self.theTheme.guiFont)
-        treeHead.setFont(self.C_COUNT,self.theTheme.guiFont)
-        treeHead.setFont(self.C_EXPORT, self.theTheme.guiFont)
-        treeHead.setFont(self.C_FLAGS, self.theTheme.guiFont)
+        treeHeadItem.setFont(self.C_NAME, self.theTheme.guiFont)
+        treeHeadItem.setFont(self.C_COUNT,self.theTheme.guiFont)
+        treeHeadItem.setFont(self.C_EXPORT, self.theTheme.guiFont)
+        treeHeadItem.setFont(self.C_FLAGS, self.theTheme.guiFont)
+
+        # Let the last column stretch, and set the minimum size to the
+        # size of the icon as the default Qt font metrics approach fails
+        # for some fonts like the Ubuntu font.
+        treeHeader = self.header()
+        treeHeader.setStretchLastSection(True)
+        treeHeader.setMinimumSectionSize(iPx+6)
 
         # Allow Move by Drag & Drop
         self.setDragEnabled(True)
@@ -102,13 +108,14 @@ class GuiDocTree(QTreeWidget):
         # self.setSelectionBehavior(QAbstractItemView.SelectRows)
 
         # Get user's column width preferences for NAME and COUNT
-        for colN, colW in enumerate(self.mainConf.treeColWidth):
-            self.setColumnWidth(colN, colW)
+        if len(self.mainConf.treeColWidth) <= 4:
+            for colN, colW in enumerate(self.mainConf.treeColWidth):
+                self.setColumnWidth(colN, colW)
 
-        self.resizeColumnToContents(self.C_EXPORT)
+        # The last column should just auto-scale
         self.resizeColumnToContents(self.C_FLAGS)
 
-        logger.debug("GuiDocTree initialisation complete")
+        logger.debug("GuiProjectTree initialisation complete")
 
         # Internal Mapping
         self.makeAlert = self.theParent.makeAlert
@@ -286,6 +293,7 @@ class GuiDocTree(QTreeWidget):
         retVals = [
             self.columnWidth(0),
             self.columnWidth(1),
+            self.columnWidth(2),
         ]
         return retVals
 
@@ -479,7 +487,7 @@ class GuiDocTree(QTreeWidget):
                 pCount = 0
                 for i in range(pItem.childCount()):
                     pCount += int(pItem.child(i).text(self.C_COUNT))
-                    pHandle = pItem.text(self.C_HANDLE)
+                    pHandle = pItem.data(self.C_NAME, Qt.UserRole)
                 if not nDepth > 200 and pHandle != "":
                     self.propagateCount(pHandle, pCount, nDepth+1)
         return
@@ -521,17 +529,17 @@ class GuiDocTree(QTreeWidget):
         if len(selItem) == 0:
             return None
         if isinstance(selItem[0], QTreeWidgetItem):
-            return selItem[0].text(self.C_HANDLE)
+            return selItem[0].data(self.C_NAME, Qt.UserRole)
         return None
 
     def getSelectedHandles(self):
         """Return a list of all currently selected item handles.
         """
-        selItems   = self.selectedItems()
+        selItems = self.selectedItems()
         selHandles = []
         for n in range(len(selItems)):
             if isinstance(selItems[n], QTreeWidgetItem):
-                selHandles.append(selItems[n].text(self.C_HANDLE))
+                selHandles.append(selItems[n].data(self.C_NAME, Qt.UserRole))
         return selHandles
 
     def setSelectedHandle(self, tHandle):
@@ -563,8 +571,8 @@ class GuiDocTree(QTreeWidget):
         """This is a recursive function returning all items in a tree
         starting at a given QTreeWidgetItem.
         """
-        tHandle = theItem.text(self.C_HANDLE)
-        nwItem  = self.theProject.projTree[tHandle]
+        tHandle = theItem.data(self.C_NAME, Qt.UserRole)
+        nwItem = self.theProject.projTree[tHandle]
         nwItem.setExpanded(theItem.isExpanded())
         nwItem.setOrder(theIndex)
         theList.append(tHandle)
@@ -585,7 +593,6 @@ class GuiDocTree(QTreeWidget):
         newItem.setText(self.C_COUNT,  "0")
         newItem.setText(self.C_EXPORT, "")
         newItem.setText(self.C_FLAGS,  "")
-        newItem.setText(self.C_HANDLE, tHandle)
 
         newItem.setTextAlignment(self.C_NAME,   Qt.AlignLeft  | Qt.AlignVCenter)
         newItem.setTextAlignment(self.C_COUNT,  Qt.AlignRight | Qt.AlignVCenter)
@@ -595,6 +602,8 @@ class GuiDocTree(QTreeWidget):
         newItem.setFont(self.C_NAME,  self.theTheme.guiFont)
         newItem.setFont(self.C_COUNT, self.theTheme.guiFont)
         newItem.setFont(self.C_FLAGS, self.theTheme.guiFont)
+
+        newItem.setData(self.C_NAME, Qt.UserRole, tHandle)
 
         self.theMap[tHandle] = newItem
         if pHandle is None:
@@ -649,10 +658,10 @@ class GuiDocTree(QTreeWidget):
             newItem.setText(self.C_COUNT,  "")
             newItem.setText(self.C_EXPORT, "")
             newItem.setText(self.C_FLAGS,  "")
-            newItem.setText(self.C_HANDLE, "")
             self.addTopLevelItem(newItem)
             self.orphRoot = newItem
             newItem.setExpanded(True)
+            newItem.setData(self.C_NAME, "")
             newItem.setIcon(self.C_NAME, self.theTheme.getIcon("warning"))
         return
 
@@ -677,7 +686,7 @@ class GuiDocTree(QTreeWidget):
             logger.error("Failed to find new parent item of %s" % tHandle)
             return False
 
-        pHandle = trItemP.text(self.C_HANDLE)
+        pHandle = trItemP.data(self.C_NAME, Qt.UserRole)
         wC = int(trItemS.text(self.C_COUNT))
         self.propagateCount(tHandle, -wC)
         nwItemS.setParent(pHandle)
@@ -702,7 +711,7 @@ class GuiDocTree(QTreeWidget):
         if trItemP is None:
             logger.error("Failed to find new parent item of %s" % tHandle)
             return
-        pHandle = trItemP.text(self.C_HANDLE)
+        pHandle = trItemP.data(self.C_NAME, Qt.UserRole)
         nwItemS.setParent(pHandle)
         self.setTreeItemValues(tHandle)
         self.theProject.setProjectChanged(True)
@@ -737,7 +746,7 @@ class GuiDocTree(QTreeWidget):
             return
 
         dItem   = self.itemFromIndex(dIndex)
-        dHandle = dItem.text(self.C_HANDLE)
+        dHandle = dItem.data(self.C_NAME, Qt.UserRole)
         snItem  = self.theProject.projTree[sHandle]
         dnItem  = self.theProject.projTree[dHandle]
         if dnItem is None:
@@ -773,4 +782,4 @@ class GuiDocTree(QTreeWidget):
 
         return
 
-# END Class GuiDocTree
+# END Class GuiProjectTree
