@@ -269,6 +269,21 @@ class GuiDocViewer(QTextBrowser):
         return True
 
     ##
+    #  Slots
+    ##
+
+    def _linkClicked(self, theURL):
+        """Slot for a link in the document being clicked.
+        """
+        theLink = theURL.url()
+        logger.verbose("Clicked link: '%s'" % theLink)
+        if len(theLink) > 0:
+            theBits = theLink.split("=")
+            if len(theBits) == 2:
+                self.loadFromTag(theBits[1])
+        return
+
+    ##
     #  Events
     ##
 
@@ -291,17 +306,6 @@ class GuiDocViewer(QTextBrowser):
         theCursor.clearSelection()
         theCursor.select(selMode)
         self.setTextCursor(theCursor)
-        return
-
-    def _linkClicked(self, theURL):
-        """Slot for a link in the document being clicked.
-        """
-        theLink = theURL.url()
-        logger.verbose("Clicked link: '%s'" % theLink)
-        if len(theLink) > 0:
-            theBits = theLink.split("=")
-            if len(theBits) == 2:
-                self.loadFromTag(theBits[1])
         return
 
     def _makeStyleSheet(self):

@@ -100,6 +100,7 @@ class GuiOutline(QTreeWidget):
         self.setExpandsOnDoubleClick(False)
         self.setDragEnabled(False)
         self.itemDoubleClicked.connect(self._treeDoubleClick)
+        self.itemSelectionChanged.connect(self._itemSelected)
 
         iPx = self.theTheme.textIconSize
         self.setIconSize(QSize(iPx, iPx))
@@ -196,6 +197,18 @@ class GuiOutline(QTreeWidget):
             tLine = 1
         logger.verbose("User selected entry with handle %s on line %s" % (tHandle, tLine))
         self.theParent.openDocument(tHandle, tLine - 1)
+        return
+
+    def _itemSelected(self):
+        """Extract the handle and line number of the currently selected
+        title, and send it to the details panel.
+        """
+        selItems = self.selectedItems()
+        if selItems:
+            tHandle = selItems[0].data(self.colIndex[nwOutline.TITLE], Qt.UserRole)
+            sTitle  = selItems[0].data(self.colIndex[nwOutline.LINE], Qt.UserRole)
+            logger.verbose("User selected entry %s:%s" % (tHandle, sTitle))
+            self.theParent.projMeta.showItem(tHandle, sTitle)
         return
 
     def _headerRightClick(self, clickPos):
@@ -415,6 +428,7 @@ class GuiOutline(QTreeWidget):
         newItem.setText(self.colIndex[nwOutline.LABEL],  nwItem.itemName)
         newItem.setIcon(self.colIndex[nwOutline.LABEL],  self.theTheme.getIcon("proj_document"))
         newItem.setText(self.colIndex[nwOutline.LINE],   sTitle[1:].lstrip("0"))
+        newItem.setData(self.colIndex[nwOutline.LINE],   Qt.UserRole, sTitle)
         newItem.setText(self.colIndex[nwOutline.SYNOP],  novIdx["synopsis"])
         newItem.setText(self.colIndex[nwOutline.CCOUNT], str(novIdx["cCount"]))
         newItem.setText(self.colIndex[nwOutline.WCOUNT], str(novIdx["wCount"]))

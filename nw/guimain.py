@@ -139,6 +139,7 @@ class GuiMain(QMainWindow):
         self.splitOutline = QSplitter(Qt.Vertical)
         self.splitOutline.addWidget(self.projView)
         self.splitOutline.addWidget(self.projMeta)
+        self.splitOutline.setSizes(self.mainConf.outlnPanePos)
 
         self.tabWidget = QTabWidget()
         self.tabWidget.setTabPosition(QTabWidget.East)
@@ -849,6 +850,7 @@ class GuiMain(QMainWindow):
         if not self.isZenMode:
             self.mainConf.setMainPanePos(self.splitMain.sizes())
             self.mainConf.setDocPanePos(self.splitView.sizes())
+            self.mainConf.setOutlinePanePos(self.splitOutline.sizes())
         self.mainConf.saveConfig()
         self.reportConfErr()
 
