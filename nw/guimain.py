@@ -35,7 +35,7 @@ from time import time
 from PyQt5.QtCore import Qt, QTimer
 from PyQt5.QtGui import QIcon, QPixmap, QColor, QKeySequence, QCursor
 from PyQt5.QtWidgets import (
-    qApp, QMainWindow, QVBoxLayout, QFrame, QSplitter, QFileDialog, QShortcut,
+    qApp, QMainWindow, QVBoxLayout, QWidget, QSplitter, QFileDialog, QShortcut,
     QMessageBox, QDialog, QTabWidget
 )
 
@@ -106,14 +106,14 @@ class GuiMain(QMainWindow):
         self.importIcons = []
 
         # Assemble Main Window
-        self.treePane = QFrame()
+        self.treePane = QWidget()
         self.treeBox = QVBoxLayout()
         self.treeBox.setContentsMargins(0,0,0,0)
         self.treeBox.addWidget(self.treeView)
         self.treeBox.addWidget(self.treeMeta)
         self.treePane.setLayout(self.treeBox)
 
-        self.editPane = QFrame()
+        self.editPane = QWidget()
         self.docEdit = QVBoxLayout()
         self.docEdit.setContentsMargins(0,0,0,0)
         self.docEdit.setSpacing(2)
@@ -122,7 +122,7 @@ class GuiMain(QMainWindow):
         self.docEdit.addWidget(self.docEditor)
         self.editPane.setLayout(self.docEdit)
 
-        self.viewPane = QFrame()
+        self.viewPane = QWidget()
         self.docView = QVBoxLayout()
         self.docView.setContentsMargins(0,0,0,0)
         self.docView.setSpacing(2)
