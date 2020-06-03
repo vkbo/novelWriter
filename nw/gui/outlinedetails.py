@@ -30,14 +30,14 @@ import nw
 
 from PyQt5.QtCore import Qt
 from PyQt5.QtWidgets import (
-    QWidget, QGridLayout, QHBoxLayout, QGroupBox, QLabel, QSizePolicy
+    QScrollArea, QWidget, QGridLayout, QHBoxLayout, QGroupBox, QLabel, QSizePolicy
 )
 
 from nw.constants import nwLabels, nwKeyWords
 
 logger = logging.getLogger(__name__)
 
-class GuiOutlineDetails(QWidget):
+class GuiOutlineDetails(QScrollArea):
 
     LVL_MAP = {
         "H1" : "Title",
@@ -47,7 +47,7 @@ class GuiOutlineDetails(QWidget):
     }
 
     def __init__(self, theParent):
-        QWidget.__init__(self, theParent)
+        QScrollArea.__init__(self, theParent)
 
         logger.debug("Initialising GuiOutlineDetails ...")
 
@@ -59,11 +59,11 @@ class GuiOutlineDetails(QWidget):
         self.optState   = theParent.theProject.optState
 
         # Sizes
-        minTitle = self.theTheme.getTextWidth("X"*30)
-        maxTitle = self.theTheme.getTextWidth("X"*50)
-        wCount = self.theTheme.getTextWidth("99,999")
-        hSpace = int(0.5*self.theTheme.fontPixelSize)
-        vSpace = int(0.3*self.theTheme.fontPixelSize)
+        minTitle = 30*self.theTheme.textNWidth
+        maxTitle = 40*self.theTheme.textNWidth
+        wCount = self.theTheme.getTextWidth("999,999")
+        hSpace = int(0.8*self.theTheme.textNWidth)
+        vSpace = int(0.2*self.theTheme.textNHeight)
 
         # Details Area
         self.titleLabel = QLabel("<b>Title</b>")
@@ -72,6 +72,7 @@ class GuiOutlineDetails(QWidget):
         self.titleValue = QLabel("")
         self.levelValue = QLabel("")
         self.fileValue  = QLabel("")
+
         self.titleValue.setMinimumWidth(minTitle)
         self.titleValue.setMaximumWidth(maxTitle)
         self.levelValue.setMinimumWidth(minTitle)
@@ -86,6 +87,7 @@ class GuiOutlineDetails(QWidget):
         self.cCValue = QLabel("")
         self.wCValue = QLabel("")
         self.pCValue = QLabel("")
+
         self.cCValue.setMinimumWidth(wCount)
         self.wCValue.setMinimumWidth(wCount)
         self.pCValue.setMinimumWidth(wCount)
@@ -99,7 +101,6 @@ class GuiOutlineDetails(QWidget):
         self.synopLWrap = QHBoxLayout()
         self.synopValue.setWordWrap(True)
         self.synopValue.setAlignment(Qt.AlignTop | Qt.AlignLeft)
-        self.synopValue.setSizePolicy(QSizePolicy.MinimumExpanding, QSizePolicy.Preferred)
         self.synopLWrap.addWidget(self.synopValue, 1)
 
         # Tags
@@ -111,6 +112,16 @@ class GuiOutlineDetails(QWidget):
         self.objKeyLabel = QLabel("<b>%s</b>" % nwLabels.KEY_NAME[nwKeyWords.OBJECT_KEY])
         self.entKeyLabel = QLabel("<b>%s</b>" % nwLabels.KEY_NAME[nwKeyWords.ENTITY_KEY])
         self.cstKeyLabel = QLabel("<b>%s</b>" % nwLabels.KEY_NAME[nwKeyWords.CUSTOM_KEY])
+
+        self.povKeyLWrap = QHBoxLayout()
+        self.chrKeyLWrap = QHBoxLayout()
+        self.pltKeyLWrap = QHBoxLayout()
+        self.timKeyLWrap = QHBoxLayout()
+        self.wldKeyLWrap = QHBoxLayout()
+        self.objKeyLWrap = QHBoxLayout()
+        self.entKeyLWrap = QHBoxLayout()
+        self.cstKeyLWrap = QHBoxLayout()
+
         self.povKeyValue = QLabel("")
         self.chrKeyValue = QLabel("")
         self.pltKeyValue = QLabel("")
@@ -119,6 +130,16 @@ class GuiOutlineDetails(QWidget):
         self.objKeyValue = QLabel("")
         self.entKeyValue = QLabel("")
         self.cstKeyValue = QLabel("")
+
+        self.povKeyValue.setWordWrap(True)
+        self.chrKeyValue.setWordWrap(True)
+        self.pltKeyValue.setWordWrap(True)
+        self.timKeyValue.setWordWrap(True)
+        self.wldKeyValue.setWordWrap(True)
+        self.objKeyValue.setWordWrap(True)
+        self.entKeyValue.setWordWrap(True)
+        self.cstKeyValue.setWordWrap(True)
+
         self.povKeyValue.linkActivated.connect(self._tagClicked)
         self.chrKeyValue.linkActivated.connect(self._tagClicked)
         self.pltKeyValue.linkActivated.connect(self._tagClicked)
@@ -127,6 +148,15 @@ class GuiOutlineDetails(QWidget):
         self.objKeyValue.linkActivated.connect(self._tagClicked)
         self.entKeyValue.linkActivated.connect(self._tagClicked)
         self.cstKeyValue.linkActivated.connect(self._tagClicked)
+
+        self.povKeyLWrap.addWidget(self.povKeyValue, 1)
+        self.chrKeyLWrap.addWidget(self.chrKeyValue, 1)
+        self.pltKeyLWrap.addWidget(self.pltKeyValue, 1)
+        self.timKeyLWrap.addWidget(self.timKeyValue, 1)
+        self.wldKeyLWrap.addWidget(self.wldKeyValue, 1)
+        self.objKeyLWrap.addWidget(self.objKeyValue, 1)
+        self.entKeyLWrap.addWidget(self.entKeyValue, 1)
+        self.cstKeyLWrap.addWidget(self.cstKeyValue, 1)
 
         # Selected Item Details
         self.mainGroup = QGroupBox("Title Details", self)
@@ -154,39 +184,46 @@ class GuiOutlineDetails(QWidget):
         self.mainForm.setVerticalSpacing(vSpace)
 
         # Selected Item Tags
-        self.tagsGroup = QGroupBox("Tags", self)
+        self.tagsGroup = QGroupBox("Reference Tags", self)
         self.tagsForm  = QGridLayout()
         self.tagsGroup.setLayout(self.tagsForm)
 
         self.tagsForm.addWidget(self.povKeyLabel, 0, 0, 1, 1, Qt.AlignTop | Qt.AlignLeft)
-        self.tagsForm.addWidget(self.povKeyValue, 0, 1, 1, 1, Qt.AlignTop | Qt.AlignLeft)
+        self.tagsForm.addLayout(self.povKeyLWrap, 0, 1, 1, 1, Qt.AlignTop | Qt.AlignLeft)
         self.tagsForm.addWidget(self.chrKeyLabel, 1, 0, 1, 1, Qt.AlignTop | Qt.AlignLeft)
-        self.tagsForm.addWidget(self.chrKeyValue, 1, 1, 1, 1, Qt.AlignTop | Qt.AlignLeft)
+        self.tagsForm.addLayout(self.chrKeyLWrap, 1, 1, 1, 1, Qt.AlignTop | Qt.AlignLeft)
         self.tagsForm.addWidget(self.pltKeyLabel, 2, 0, 1, 1, Qt.AlignTop | Qt.AlignLeft)
-        self.tagsForm.addWidget(self.pltKeyValue, 2, 1, 1, 1, Qt.AlignTop | Qt.AlignLeft)
+        self.tagsForm.addLayout(self.pltKeyLWrap, 2, 1, 1, 1, Qt.AlignTop | Qt.AlignLeft)
         self.tagsForm.addWidget(self.timKeyLabel, 3, 0, 1, 1, Qt.AlignTop | Qt.AlignLeft)
-        self.tagsForm.addWidget(self.timKeyValue, 3, 1, 1, 1, Qt.AlignTop | Qt.AlignLeft)
+        self.tagsForm.addLayout(self.timKeyLWrap, 3, 1, 1, 1, Qt.AlignTop | Qt.AlignLeft)
         self.tagsForm.addWidget(self.wldKeyLabel, 4, 0, 1, 1, Qt.AlignTop | Qt.AlignLeft)
-        self.tagsForm.addWidget(self.wldKeyValue, 4, 1, 1, 1, Qt.AlignTop | Qt.AlignLeft)
+        self.tagsForm.addLayout(self.wldKeyLWrap, 4, 1, 1, 1, Qt.AlignTop | Qt.AlignLeft)
         self.tagsForm.addWidget(self.objKeyLabel, 5, 0, 1, 1, Qt.AlignTop | Qt.AlignLeft)
-        self.tagsForm.addWidget(self.objKeyValue, 5, 1, 1, 1, Qt.AlignTop | Qt.AlignLeft)
+        self.tagsForm.addLayout(self.objKeyLWrap, 5, 1, 1, 1, Qt.AlignTop | Qt.AlignLeft)
         self.tagsForm.addWidget(self.entKeyLabel, 6, 0, 1, 1, Qt.AlignTop | Qt.AlignLeft)
-        self.tagsForm.addWidget(self.entKeyValue, 6, 1, 1, 1, Qt.AlignTop | Qt.AlignLeft)
+        self.tagsForm.addLayout(self.entKeyLWrap, 6, 1, 1, 1, Qt.AlignTop | Qt.AlignLeft)
         self.tagsForm.addWidget(self.cstKeyLabel, 7, 0, 1, 1, Qt.AlignTop | Qt.AlignLeft)
-        self.tagsForm.addWidget(self.cstKeyValue, 7, 1, 1, 1, Qt.AlignTop | Qt.AlignLeft)
+        self.tagsForm.addLayout(self.cstKeyLWrap, 7, 1, 1, 1, Qt.AlignTop | Qt.AlignLeft)
 
         self.tagsForm.setColumnStretch(1, 1)
-        self.tagsForm.setRowStretch(8, 1)
+        self.tagsForm.setRowStretch(7, 1)
         self.tagsForm.setHorizontalSpacing(hSpace)
         self.tagsForm.setVerticalSpacing(vSpace)
 
         # Assemble
+        self.outerWidget = QWidget()
         self.outerBox = QHBoxLayout()
         self.outerBox.addWidget(self.mainGroup, 0)
         self.outerBox.addWidget(self.tagsGroup, 1)
-        self.outerBox.addStretch(1)
+        # self.outerBox.addStretch(1)
 
-        self.setLayout(self.outerBox)
+        self.outerWidget.setLayout(self.outerBox)
+        self.setWidget(self.outerWidget)
+        self.show()
+
+        self.setHorizontalScrollBarPolicy(Qt.ScrollBarAsNeeded)
+        self.setVerticalScrollBarPolicy(Qt.ScrollBarAsNeeded)
+        self.setWidgetResizable(True)
 
         logger.debug("GuiOutlineDetails initialisation complete")
 
@@ -215,9 +252,6 @@ class GuiOutlineDetails(QWidget):
         self.pCValue.setText("{:n}".format(novIdx["wCount"]))
 
         self.synopValue.setText(novIdx["synopsis"])
-        self.synopValue.adjustSize()
-        # print(self.mainForm.sizeHint().width())
-        # self.synopValue.setSizePolicy() (self.mainForm.sizeHint().width())
 
         self.povKeyValue.setText(self._formatTags(theRefs, nwKeyWords.POV_KEY))
         self.chrKeyValue.setText(self._formatTags(theRefs, nwKeyWords.CHAR_KEY))
