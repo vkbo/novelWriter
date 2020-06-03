@@ -34,6 +34,7 @@ from PyQt5.QtWidgets import (
 )
 
 from nw.constants import nwLabels, nwKeyWords
+from nw.common import checkInt
 
 logger = logging.getLogger(__name__)
 
@@ -67,18 +68,18 @@ class GuiOutlineDetails(QScrollArea):
 
         # Details Area
         self.titleLabel = QLabel("<b>Title</b>")
-        self.levelLabel = QLabel("<b>Level</b>")
         self.fileLabel  = QLabel("<b>Document</b>")
+        self.itemLabel  = QLabel("<b>Status</b>")
         self.titleValue = QLabel("")
-        self.levelValue = QLabel("")
         self.fileValue  = QLabel("")
+        self.itemValue  = QLabel("")
 
         self.titleValue.setMinimumWidth(minTitle)
         self.titleValue.setMaximumWidth(maxTitle)
-        self.levelValue.setMinimumWidth(minTitle)
-        self.levelValue.setMaximumWidth(maxTitle)
         self.fileValue.setMinimumWidth(minTitle)
         self.fileValue.setMaximumWidth(maxTitle)
+        self.itemValue.setMinimumWidth(minTitle)
+        self.itemValue.setMaximumWidth(maxTitle)
 
         # Stats Area
         self.cCLabel = QLabel("<b>Characters</b>")
@@ -167,12 +168,12 @@ class GuiOutlineDetails(QScrollArea):
         self.mainForm.addWidget(self.titleValue,  0, 1, 1, 1, Qt.AlignTop | Qt.AlignLeft)
         self.mainForm.addWidget(self.cCLabel,     0, 2, 1, 1, Qt.AlignTop | Qt.AlignLeft)
         self.mainForm.addWidget(self.cCValue,     0, 3, 1, 1, Qt.AlignTop | Qt.AlignRight)
-        self.mainForm.addWidget(self.levelLabel,  1, 0, 1, 1, Qt.AlignTop | Qt.AlignLeft)
-        self.mainForm.addWidget(self.levelValue,  1, 1, 1, 1, Qt.AlignTop | Qt.AlignLeft)
+        self.mainForm.addWidget(self.fileLabel,   1, 0, 1, 1, Qt.AlignTop | Qt.AlignLeft)
+        self.mainForm.addWidget(self.fileValue,   1, 1, 1, 1, Qt.AlignTop | Qt.AlignLeft)
         self.mainForm.addWidget(self.wCLabel,     1, 2, 1, 1, Qt.AlignTop | Qt.AlignLeft)
         self.mainForm.addWidget(self.wCValue,     1, 3, 1, 1, Qt.AlignTop | Qt.AlignRight)
-        self.mainForm.addWidget(self.fileLabel,   2, 0, 1, 1, Qt.AlignTop | Qt.AlignLeft)
-        self.mainForm.addWidget(self.fileValue,   2, 1, 1, 1, Qt.AlignTop | Qt.AlignLeft)
+        self.mainForm.addWidget(self.itemLabel,   2, 0, 1, 1, Qt.AlignTop | Qt.AlignLeft)
+        self.mainForm.addWidget(self.itemValue,   2, 1, 1, 1, Qt.AlignTop | Qt.AlignLeft)
         self.mainForm.addWidget(self.pCLabel,     2, 2, 1, 1, Qt.AlignTop | Qt.AlignLeft)
         self.mainForm.addWidget(self.pCValue,     2, 3, 1, 1, Qt.AlignTop | Qt.AlignRight)
         self.mainForm.addWidget(self.synopLabel,  3, 0, 1, 4, Qt.AlignTop | Qt.AlignLeft)
@@ -240,16 +241,18 @@ class GuiOutlineDetails(QScrollArea):
         except:
             return False
 
-        self.titleValue.setText(novIdx["title"])
         if novIdx["level"] in self.LVL_MAP:
-            self.levelValue.setText(self.LVL_MAP[novIdx["level"]])
+            self.titleLabel.setText("<b>%s</b>" % self.LVL_MAP[novIdx["level"]])
         else:
-            self.levelValue.setText("Unknown")
-        self.fileValue.setText(nwItem.itemName)
+            self.titleLabel.setText("<b>Title</b>")
+        self.titleValue.setText(novIdx["title"])
 
-        self.cCValue.setText("{:n}".format(novIdx["cCount"]))
-        self.wCValue.setText("{:n}".format(novIdx["pCount"]))
-        self.pCValue.setText("{:n}".format(novIdx["wCount"]))
+        self.fileValue.setText(nwItem.itemName)
+        self.itemValue.setText(nwItem.itemStatus)
+
+        self.cCValue.setText("{:n}".format(checkInt(novIdx["cCount"], 0)))
+        self.wCValue.setText("{:n}".format(checkInt(novIdx["pCount"], 0)))
+        self.pCValue.setText("{:n}".format(checkInt(novIdx["wCount"], 0)))
 
         self.synopValue.setText(novIdx["synopsis"])
 
