@@ -88,6 +88,7 @@ class Config:
         self.guiLang     = "en" # Hardcoded for now
         self.guiFont     = ""
         self.guiFontSize = 11
+        self.guiScale    = 1.0
 
         ## Sizes
         self.winGeometry  = [1100, 650]
@@ -197,7 +198,17 @@ class Config:
         return
 
     ##
-    #  Actions
+    #  Methods
+    ##
+
+    def pxInt(self, theSize):
+        return int(self.guiScale*theSize)
+
+    def pxFloat(self, theSize):
+        return self.guiScale*theSize
+
+    ##
+    #  Config Actions
     ##
 
     def initConfig(self, confPath=None, dataPath=None):
