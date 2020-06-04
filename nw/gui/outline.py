@@ -207,7 +207,6 @@ class GuiOutline(QTreeWidget):
         if selItems:
             tHandle = selItems[0].data(self.colIndex[nwOutline.TITLE], Qt.UserRole)
             sTitle  = selItems[0].data(self.colIndex[nwOutline.LINE], Qt.UserRole)
-            logger.verbose("User selected entry %s:%s" % (tHandle, sTitle))
             self.theParent.projMeta.showItem(tHandle, sTitle)
         return
 
