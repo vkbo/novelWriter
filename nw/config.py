@@ -88,7 +88,7 @@ class Config:
         self.guiLang     = "en" # Hardcoded for now
         self.guiFont     = ""
         self.guiFontSize = 11
-        self.guiScale    = 1.0
+        self.guiScale    = 1.0 # Set automatically by Theme class
 
         ## Sizes
         self.winGeometry  = [1100, 650]
@@ -126,8 +126,8 @@ class Config:
         self.highlightQuotes = True
 
         self.fmtApostrophe   = nwUnicode.U_RSQUO
-        self.fmtSingleQuotes = [nwUnicode.U_LSQUO,nwUnicode.U_RSQUO]
-        self.fmtDoubleQuotes = [nwUnicode.U_LDQUO,nwUnicode.U_RDQUO]
+        self.fmtSingleQuotes = [nwUnicode.U_LSQUO, nwUnicode.U_RSQUO]
+        self.fmtDoubleQuotes = [nwUnicode.U_LDQUO, nwUnicode.U_RDQUO]
 
         self.spellTool     = None
         self.spellLanguage = None
@@ -202,9 +202,14 @@ class Config:
     ##
 
     def pxInt(self, theSize):
+        """Used to scale fixed gui sizes by the screen scale factor.
+        This function returns an int, which is always rounded down.
+        """
         return int(self.guiScale*theSize)
 
     def pxFloat(self, theSize):
+        """Used to scale fixed gui sizes by the screen scale factor.
+        """
         return self.guiScale*theSize
 
     ##
