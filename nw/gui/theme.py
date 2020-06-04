@@ -140,6 +140,8 @@ class GuiTheme:
         self.fontPixelSize = int(round(qMetric.height()))
         self.baseIconSize  = int(round(qMetric.ascent()))
         self.textIconSize  = int(round(qMetric.ascent() + qMetric.leading()))
+        self.textNHeight   = qMetric.boundingRect("N").height()
+        self.textNWidth    = qMetric.boundingRect("N").width()
 
         logger.verbose("GUI Font Family: %s" % self.guiFont.family())
         logger.verbose("GUI Font Point Size: %.2f" % self.fontPointSize)

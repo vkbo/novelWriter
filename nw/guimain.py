@@ -35,15 +35,15 @@ from time import time
 from PyQt5.QtCore import Qt, QTimer
 from PyQt5.QtGui import QIcon, QPixmap, QColor, QKeySequence, QCursor
 from PyQt5.QtWidgets import (
-    qApp, QMainWindow, QVBoxLayout, QFrame, QSplitter, QFileDialog, QShortcut,
+    qApp, QMainWindow, QVBoxLayout, QWidget, QSplitter, QFileDialog, QShortcut,
     QMessageBox, QDialog, QTabWidget
 )
 
 from nw.gui import (
-    GuiMainMenu, GuiMainStatus, GuiTheme, GuiProjectTree, GuiDocEditor,
-    GuiDocViewer, GuiItemDetails, GuiSearchBar, GuiNoticeBar, GuiDocViewDetails,
-    GuiPreferences, GuiProjectSettings, GuiItemEditor, GuiProjectOutline,
-    GuiSessionLogView, GuiDocMerge, GuiDocSplit, GuiProjectLoad, GuiBuildNovel
+    GuiBuildNovel, GuiDocEditor, GuiDocMerge, GuiDocSplit, GuiDocViewDetails,
+    GuiDocViewer, GuiItemDetails, GuiItemEditor, GuiMainMenu, GuiMainStatus,
+    GuiNoticeBar, GuiOutline, GuiOutlineDetails, GuiPreferences, GuiProjectLoad,
+    GuiProjectSettings, GuiProjectTree, GuiSearchBar, GuiSessionLogView, GuiTheme
 )
 from nw.core import NWProject, NWDoc, NWIndex
 from nw.constants import nwFiles, nwItemType, nwAlert
@@ -91,28 +91,29 @@ class GuiMain(QMainWindow):
         # Main GUI Elements
         self.statusBar = GuiMainStatus(self)
         self.noticeBar = GuiNoticeBar(self)
-        self.treeView  = GuiProjectTree(self, self.theProject)
-        self.docEditor = GuiDocEditor(self, self.theProject)
-        self.docViewer = GuiDocViewer(self, self.theProject)
-        self.viewMeta  = GuiDocViewDetails(self, self.theProject)
+        self.treeView  = GuiProjectTree(self)
+        self.docEditor = GuiDocEditor(self)
+        self.docViewer = GuiDocViewer(self)
+        self.viewMeta  = GuiDocViewDetails(self)
         self.searchBar = GuiSearchBar(self)
-        self.treeMeta  = GuiItemDetails(self, self.theProject)
-        self.projView  = GuiProjectOutline(self, self.theProject)
-        self.mainMenu  = GuiMainMenu(self, self.theProject)
+        self.treeMeta  = GuiItemDetails(self)
+        self.projView  = GuiOutline(self)
+        self.projMeta  = GuiOutlineDetails(self)
+        self.mainMenu  = GuiMainMenu(self)
 
         # Minor Gui Elements
         self.statusIcons = []
         self.importIcons = []
 
         # Assemble Main Window
-        self.treePane = QFrame()
+        self.treePane = QWidget()
         self.treeBox = QVBoxLayout()
         self.treeBox.setContentsMargins(0,0,0,0)
         self.treeBox.addWidget(self.treeView)
         self.treeBox.addWidget(self.treeMeta)
         self.treePane.setLayout(self.treeBox)
 
-        self.editPane = QFrame()
+        self.editPane = QWidget()
         self.docEdit = QVBoxLayout()
         self.docEdit.setContentsMargins(0,0,0,0)
         self.docEdit.setSpacing(2)
@@ -121,7 +122,7 @@ class GuiMain(QMainWindow):
         self.docEdit.addWidget(self.docEditor)
         self.editPane.setLayout(self.docEdit)
 
-        self.viewPane = QFrame()
+        self.viewPane = QWidget()
         self.docView = QVBoxLayout()
         self.docView.setContentsMargins(0,0,0,0)
         self.docView.setSpacing(2)
@@ -137,6 +138,8 @@ class GuiMain(QMainWindow):
 
         self.splitOutline = QSplitter(Qt.Vertical)
         self.splitOutline.addWidget(self.projView)
+        self.splitOutline.addWidget(self.projMeta)
+        self.splitOutline.setSizes(self.mainConf.outlnPanePos)
 
         self.tabWidget = QTabWidget()
         self.tabWidget.setTabPosition(QTabWidget.East)
@@ -847,6 +850,7 @@ class GuiMain(QMainWindow):
         if not self.isZenMode:
             self.mainConf.setMainPanePos(self.splitMain.sizes())
             self.mainConf.setDocPanePos(self.splitView.sizes())
+            self.mainConf.setOutlinePanePos(self.splitOutline.sizes())
         self.mainConf.saveConfig()
         self.reportConfErr()
 

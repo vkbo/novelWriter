@@ -95,6 +95,7 @@ class Config:
         self.projColWidth = [140, 55, 140]
         self.mainPanePos  = [300, 800]
         self.docPanePos   = [400, 400]
+        self.outlnPanePos = [500, 150]
         self.isFullScreen = False
 
         ## Project
@@ -342,6 +343,9 @@ class Config:
         self.docPanePos = self._parseLine(
             cnfParse, cnfSec, "docpane", self.CNF_LIST, self.docPanePos
         )
+        self.outlnPanePos = self._parseLine(
+            cnfParse, cnfSec, "outlinepane", self.CNF_LIST, self.outlnPanePos
+        )
         self.isFullScreen = self._parseLine(
             cnfParse, cnfSec, "fullscreen", self.CNF_BOOL, self.isFullScreen
         )
@@ -481,12 +485,13 @@ class Config:
         ## Sizes
         cnfSec = "Sizes"
         cnfParse.add_section(cnfSec)
-        cnfParse.set(cnfSec,"geometry",   self._packList(self.winGeometry))
-        cnfParse.set(cnfSec,"treecols",   self._packList(self.treeColWidth))
-        cnfParse.set(cnfSec,"projcols",   self._packList(self.projColWidth))
-        cnfParse.set(cnfSec,"mainpane",   self._packList(self.mainPanePos))
-        cnfParse.set(cnfSec,"docpane",    self._packList(self.docPanePos))
-        cnfParse.set(cnfSec,"fullscreen", str(self.isFullScreen))
+        cnfParse.set(cnfSec,"geometry",    self._packList(self.winGeometry))
+        cnfParse.set(cnfSec,"treecols",    self._packList(self.treeColWidth))
+        cnfParse.set(cnfSec,"projcols",    self._packList(self.projColWidth))
+        cnfParse.set(cnfSec,"mainpane",    self._packList(self.mainPanePos))
+        cnfParse.set(cnfSec,"docpane",     self._packList(self.docPanePos))
+        cnfParse.set(cnfSec,"outlinepane", self._packList(self.outlnPanePos))
+        cnfParse.set(cnfSec,"fullscreen",  str(self.isFullScreen))
 
         ## Project
         cnfSec = "Project"
@@ -698,6 +703,11 @@ class Config:
     def setDocPanePos(self, panePos):
         self.docPanePos  = panePos
         self.confChanged = True
+        return True
+
+    def setOutlinePanePos(self, panePos):
+        self.outlnPanePos = panePos
+        self.confChanged  = True
         return True
 
     def setShowRefPanel(self, checkState):
