@@ -339,7 +339,7 @@ class GuiProjectTree(QTreeWidget):
 
         return True
 
-    def deleteItem(self, tHandle=None, alreadyAsked=False):
+    def deleteItem(self, tHandle=None, alreadyAsked=False, askForTrash=False):
         """Delete items from the tree. Note that this does not delete
         the item from the item tree in the project object. However,
         since this is only meta data, there isn't really a need to do
@@ -370,7 +370,6 @@ class GuiProjectTree(QTreeWidget):
             if pHandle is not None and pHandle == self.theProject.projTree.trashRoot():
                 # If the file is in the trash folder already, as the
                 # user if they want to permanently delete the file.
-
                 doPermanent = False
                 if self.mainConf.showGUI and not alreadyAsked:
                     msgBox = QMessageBox()
@@ -399,17 +398,28 @@ class GuiProjectTree(QTreeWidget):
             else:
                 # The file is not already in the trash folder, so we
                 # move it there.
+                doTrash = False
+                if self.mainConf.showGUI and askForTrash:
+                    msgBox = QMessageBox()
+                    msgRes = msgBox.question(
+                        self, "Delete File", "Move file '%s' to Trash?" % nwItemS.itemName
+                    )
+                    if msgRes == QMessageBox.Yes:
+                        doTrash = True
+                else:
+                    doTrash = True
 
-                if pHandle is None:
-                    logger.warning("File has no parent item")
+                if doTrash:
+                    if pHandle is None:
+                        logger.warning("File has no parent item")
 
-                tIndex  = trItemP.indexOfChild(trItemS)
-                trItemC = trItemP.takeChild(tIndex)
-                trItemT.addChild(trItemC)
-                nwItemS.setParent(self.theProject.projTree.trashRoot())
+                    tIndex  = trItemP.indexOfChild(trItemS)
+                    trItemC = trItemP.takeChild(tIndex)
+                    trItemT.addChild(trItemC)
+                    nwItemS.setParent(self.theProject.projTree.trashRoot())
 
-                self.theProject.setProjectChanged(True)
-                self.theParent.theIndex.deleteHandle(tHandle)
+                    self.theProject.setProjectChanged(True)
+                    self.theParent.theIndex.deleteHandle(tHandle)
 
         elif nwItemS.itemType == nwItemType.FOLDER:
             logger.debug("User requested folder %s deleted" % tHandle)
@@ -569,7 +579,13 @@ class GuiProjectTree(QTreeWidget):
         open a context menu in-place.
         """
         selItem = self.itemAt(clickPos)
-        self.ctxMenu.exec_(self.viewport().mapToGlobal(clickPos))
+        if isinstance(selItem, QTreeWidgetItem):
+            tHandle = selItem.data(self.C_NAME, Qt.UserRole)
+            tItem   = self.theProject.projTree[tHandle]
+            self.setSelectedHandle(tHandle) # Just to be safe
+            if self.ctxMenu.filterActions(tItem):
+                # Only open menu if any actions remain after filter
+                self.ctxMenu.exec_(self.viewport().mapToGlobal(clickPos))
         return
 
     ##
@@ -806,53 +822,108 @@ class GuiProjectTreeMenu(QMenu):
         QMenu.__init__(self, theTree)
 
         self.theTree = theTree
-        self.theItem = theItem
+        self.theItem = None
 
         self.editItem = QAction("Edit Item", self)
         self.editItem.triggered.connect(self._doEditItem)
         self.addAction(self.editItem)
 
-        self.toggleExp = QAction("Toggle Exported", self)
+        self.toggleExp = QAction("Toggle Included Flag", self)
         self.toggleExp.triggered.connect(self._doToggleExported)
         self.addAction(self.toggleExp)
-
-        self.addSeparator()
-
-        self.newFolder = QAction("New Folder", self)
-        self.newFolder.triggered.connect(self._doMakeFolder)
-        self.addAction(self.newFolder)
 
         self.newFile = QAction("New File", self)
         self.newFile.triggered.connect(self._doMakeFile)
         self.addAction(self.newFile)
 
+        self.newFolder = QAction("New Folder", self)
+        self.newFolder.triggered.connect(self._doMakeFolder)
+        self.addAction(self.newFolder)
+
         self.deleteItem = QAction("Delete Item", self)
         self.deleteItem.triggered.connect(self._doDeleteItem)
         self.addAction(self.deleteItem)
 
+        self.emptyTrash = QAction("Empty Trash", self)
+        self.emptyTrash.triggered.connect(self._doEmptyTrash)
+        self.addAction(self.emptyTrash)
+
         return
 
-    def updateFromItem(self, theItem):
+    def filterActions(self, theItem):
+        """Update item settings from the nwItem.
+        """
         self.theItem = theItem
-        return
+        trashHandle = self.theTree.theProject.projTree.trashRoot()
+
+        if theItem is None:
+            return False
+
+        inTrash = theItem.parHandle == trashHandle
+        isTrash = theItem.itemHandle == trashHandle
+        isFile  = theItem.itemType == nwItemType.FILE
+        isOrph  = isFile and theItem.parHandle is None
+
+        showEdit      = not isTrash and not isOrph
+        showExport    = isFile and not inTrash and not isOrph
+        showNewFile   = not isTrash and not inTrash and not isOrph
+        showNewFolder = not isTrash and not inTrash and not isOrph
+        showDelete    = not isTrash
+        showEmpty     = isTrash
+
+        self.editItem.setVisible(showEdit)
+        self.toggleExp.setVisible(showExport)
+        self.newFile.setVisible(showNewFile)
+        self.newFolder.setVisible(showNewFolder)
+        self.deleteItem.setVisible(showDelete)
+        self.emptyTrash.setVisible(showEmpty)
+
+        return True
 
     ##
     #  Slots
     ##
 
     def _doEditItem(self):
-        return
-
-    def _doDeleteItem(self):
-        return
-
-    def _doMakeFolder(self):
+        """Forward the edit item call to the main GUI window.
+        """
+        if self.theItem is not None:
+            self.theTree.theParent.editItem()
         return
 
     def _doMakeFile(self):
+        """Forward the new file call to the project tree.
+        """
+        if self.theItem is not None:
+            self.theTree.newTreeItem(nwItemType.FILE, None)
+        return
+
+    def _doMakeFolder(self):
+        """Forward the new folder call to the project tree.
+        """
+        if self.theItem is not None:
+            self.theTree.newTreeItem(nwItemType.FOLDER, None)
         return
 
     def _doToggleExported(self):
+        """Flip the isExported flag of the current item.
+        """
+        if self.theItem is not None:
+            self.theItem.setExported(not self.theItem.isExported)
+            self.theTree.setTreeItemValues(self.theItem.itemHandle)
+        return
+
+    def _doDeleteItem(self):
+        """Forward the delete item call to the project tree.
+        """
+        if self.theItem is not None:
+            self.theTree.deleteItem(askForTrash=True)
+        return
+
+    def _doEmptyTrash(self):
+        """Forward the delete item call to the project tree.
+        """
+        self.theTree.emptyTrash()
         return
 
 # END Class GuiProjectTreeMenu
