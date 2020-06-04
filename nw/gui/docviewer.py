@@ -53,7 +53,7 @@ class GuiDocViewer(QTextBrowser):
         self.theHandle  = None
 
         self.qDocument = self.document()
-        self.setMinimumWidth(300)
+        self.setMinimumWidth(self.mainConf.pxInt(300))
         self.setOpenExternalLinks(False)
         self.initViewer()
 

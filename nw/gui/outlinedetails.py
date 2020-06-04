@@ -63,8 +63,8 @@ class GuiOutlineDetails(QScrollArea):
         minTitle = 30*self.theTheme.textNWidth
         maxTitle = 40*self.theTheme.textNWidth
         wCount = self.theTheme.getTextWidth("999,999")
-        hSpace = int(0.8*self.theTheme.textNWidth)
-        vSpace = int(0.2*self.theTheme.textNHeight)
+        hSpace = int(self.mainConf.pxInt(10))
+        vSpace = int(self.mainConf.pxInt(4))
 
         # Details Area
         self.titleLabel = QLabel("<b>Title</b>")

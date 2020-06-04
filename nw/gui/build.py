@@ -77,13 +77,17 @@ class GuiBuildNovel(QDialog):
         self.htmlStyle = [] # List of html styles
         self.nwdText   = [] # List of markdown documents
 
+        x800 = self.mainConf.pxInt(800)
+        x900 = self.mainConf.pxInt(900)
+        xFmt = self.mainConf.pxInt(220)
+
         self.setWindowTitle("Build Novel Project")
-        self.setMinimumWidth(900)
-        self.setMinimumHeight(800)
+        self.setMinimumWidth(x900)
+        self.setMinimumHeight(x800)
 
         self.resize(
-            self.optState.getInt("GuiBuildNovel", "winWidth", 900),
-            self.optState.getInt("GuiBuildNovel", "winHeight", 800)
+            self.optState.getInt("GuiBuildNovel", "winWidth", x900),
+            self.optState.getInt("GuiBuildNovel", "winHeight", x800)
         )
 
         self.outerBox = QHBoxLayout()
@@ -115,7 +119,7 @@ class GuiBuildNovel(QDialog):
 
         self.fmtTitle = QLineEdit()
         self.fmtTitle.setMaxLength(200)
-        self.fmtTitle.setFixedWidth(220)
+        self.fmtTitle.setFixedWidth(xFmt)
         self.fmtTitle.setToolTip(fmtHelp)
         self.fmtTitle.setText(
             self._reFmtCodes(self.theProject.titleFormat["title"])
@@ -123,7 +127,7 @@ class GuiBuildNovel(QDialog):
 
         self.fmtChapter = QLineEdit()
         self.fmtChapter.setMaxLength(200)
-        self.fmtChapter.setFixedWidth(220)
+        self.fmtChapter.setFixedWidth(xFmt)
         self.fmtChapter.setToolTip(fmtHelp)
         self.fmtChapter.setText(
             self._reFmtCodes(self.theProject.titleFormat["chapter"])
@@ -131,7 +135,7 @@ class GuiBuildNovel(QDialog):
 
         self.fmtUnnumbered = QLineEdit()
         self.fmtUnnumbered.setMaxLength(200)
-        self.fmtUnnumbered.setFixedWidth(220)
+        self.fmtUnnumbered.setFixedWidth(xFmt)
         self.fmtUnnumbered.setToolTip(fmtHelp)
         self.fmtUnnumbered.setText(
             self._reFmtCodes(self.theProject.titleFormat["unnumbered"])
@@ -139,7 +143,7 @@ class GuiBuildNovel(QDialog):
 
         self.fmtScene = QLineEdit()
         self.fmtScene.setMaxLength(200)
-        self.fmtScene.setFixedWidth(220)
+        self.fmtScene.setFixedWidth(xFmt)
         self.fmtScene.setToolTip(fmtHelp + fmtScHelp)
         self.fmtScene.setText(
             self._reFmtCodes(self.theProject.titleFormat["scene"])
@@ -147,7 +151,7 @@ class GuiBuildNovel(QDialog):
 
         self.fmtSection = QLineEdit()
         self.fmtSection.setMaxLength(200)
-        self.fmtSection.setFixedWidth(220)
+        self.fmtSection.setFixedWidth(xFmt)
         self.fmtSection.setToolTip(fmtHelp + fmtScHelp)
         self.fmtSection.setText(
             self._reFmtCodes(self.theProject.titleFormat["section"])
@@ -176,7 +180,7 @@ class GuiBuildNovel(QDialog):
         ## Font Family
         self.textFont = QLineEdit()
         self.textFont.setReadOnly(True)
-        self.textFont.setFixedWidth(182)
+        self.textFont.setFixedWidth(self.mainConf.pxInt(182))
         self.textFont.setText(
             self.optState.getString("GuiBuildNovel", "textFont", self.mainConf.textFont)
         )
@@ -185,7 +189,7 @@ class GuiBuildNovel(QDialog):
         self.fontButton.clicked.connect(self._selectFont)
 
         self.textSize = QSpinBox(self)
-        self.textSize.setFixedWidth(60)
+        self.textSize.setFixedWidth(5*self.theTheme.textNWidth)
         self.textSize.setMinimum(6)
         self.textSize.setMaximum(72)
         self.textSize.setSingleStep(1)
@@ -894,7 +898,7 @@ class GuiBuildNovelDocView(QTextBrowser):
         self.theProject = theProject
         self.theParent  = theParent
 
-        self.setMinimumWidth(400)
+        self.setMinimumWidth(40*self.theParent.theTheme.textNWidth)
         self.setOpenExternalLinks(False)
 
         self.qDocument = self.document()

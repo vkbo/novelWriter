@@ -61,17 +61,20 @@ class GuiProjectLoad(QDialog):
         self.openState = self.NONE_STATE
         self.openPath  = None
 
+        xSp = self.mainConf.pxInt(16)
+        xIc = self.mainConf.pxInt(96)
+
         self.outerBox = QVBoxLayout()
         self.innerBox = QHBoxLayout()
-        self.outerBox.setSpacing(16)
-        self.innerBox.setSpacing(16)
+        self.outerBox.setSpacing(xSp)
+        self.innerBox.setSpacing(xSp)
 
         self.setWindowTitle("Open Project")
-        self.setMinimumWidth(650)
-        self.setMinimumHeight(400)
+        self.setMinimumWidth(self.mainConf.pxInt(650))
+        self.setMinimumHeight(self.mainConf.pxInt(400))
         self.setModal(True)
 
-        self.guiDeco = self.theTheme.loadDecoration("nwicon", (96, 96))
+        self.guiDeco = self.theTheme.loadDecoration("nwicon", (xIc, xIc))
         self.innerBox.addWidget(self.guiDeco, 0, Qt.AlignTop)
 
         self.projectForm = QGridLayout()
@@ -113,8 +116,8 @@ class GuiProjectLoad(QDialog):
         self.projectForm.setColumnStretch(0, 0)
         self.projectForm.setColumnStretch(1, 1)
         self.projectForm.setColumnStretch(2, 0)
-        self.projectForm.setVerticalSpacing(4)
-        self.projectForm.setHorizontalSpacing(8)
+        self.projectForm.setVerticalSpacing(self.mainConf.pxInt(4))
+        self.projectForm.setHorizontalSpacing(self.mainConf.pxInt(8))
 
         self.innerBox.addLayout(self.projectForm)
 

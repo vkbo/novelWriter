@@ -170,11 +170,11 @@ class GuiItemDetails(QWidget):
         self.mainBox.addWidget(self.pCountName, 3, 3, 1, 1)
         self.mainBox.addWidget(self.pCountData, 3, 4, 1, 1)
 
-        self.mainBox.setColumnStretch(0,0)
-        self.mainBox.setColumnStretch(1,0)
-        self.mainBox.setColumnStretch(2,1)
-        self.mainBox.setColumnStretch(3,0)
-        self.mainBox.setColumnStretch(4,0)
+        self.mainBox.setColumnStretch(0, 0)
+        self.mainBox.setColumnStretch(1, 0)
+        self.mainBox.setColumnStretch(2, 1)
+        self.mainBox.setColumnStretch(3, 0)
+        self.mainBox.setColumnStretch(4, 0)
 
         # Make sure the columns for flags and counts don't resize too often
         flagWidth  = self.theTheme.getTextWidth("Mm", self.fntValue)

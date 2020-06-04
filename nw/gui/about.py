@@ -48,22 +48,24 @@ class GuiAbout(QDialog):
 
         self.mainConf  = nw.CONFIG
         self.theParent = theParent
+        self.theTheme  = theParent.theTheme
 
         self.outerBox = QVBoxLayout()
         self.innerBox = QHBoxLayout()
-        self.innerBox.setSpacing(16)
+        self.innerBox.setSpacing(self.mainConf.pxInt(16))
 
         self.setWindowTitle("About %s" % nw.__package__)
-        self.setMinimumWidth(700)
-        self.setMinimumHeight(600)
+        self.setMinimumWidth(self.mainConf.pxInt(650))
+        self.setMinimumHeight(self.mainConf.pxInt(600))
 
-        self.guiDeco = self.theParent.theTheme.loadDecoration("nwicon", (96, 96))
+        iPx = self.mainConf.pxInt(96)
+        self.guiDeco = self.theParent.theTheme.loadDecoration("nwicon", (iPx, iPx))
         self.lblName = QLabel("<b>%s</b>" % nw.__package__)
         self.lblVers = QLabel("v%s" % nw.__version__)
         self.lblDate = QLabel(datetime.strptime(nw.__date__, "%Y-%m-%d").strftime("%x"))
 
         self.leftBox  = QVBoxLayout()
-        self.leftBox.setSpacing(4)
+        self.leftBox.setSpacing(self.mainConf.pxInt(4))
         self.leftBox.addWidget(self.guiDeco, 0, Qt.AlignCenter)
         self.leftBox.addWidget(self.lblName, 0, Qt.AlignCenter)
         self.leftBox.addWidget(self.lblVers, 0, Qt.AlignCenter)
@@ -74,7 +76,7 @@ class GuiAbout(QDialog):
         # Pages
         self.pageAbout = QTextBrowser()
         self.pageAbout.setOpenExternalLinks(True)
-        self.pageAbout.document().setDocumentMargin(16)
+        self.pageAbout.document().setDocumentMargin(self.mainConf.pxInt(16))
 
         # self.pageCredit = QTextBrowser()
         # self.pageCredit.setOpenExternalLinks(True)
@@ -82,7 +84,7 @@ class GuiAbout(QDialog):
 
         self.pageLicense = QTextBrowser()
         self.pageLicense.setOpenExternalLinks(True)
-        self.pageLicense.document().setDocumentMargin(16)
+        self.pageLicense.document().setDocumentMargin(self.mainConf.pxInt(16))
 
         # Main Tab Area
         self.tabBox = QTabWidget()

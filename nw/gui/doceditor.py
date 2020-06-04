@@ -98,7 +98,7 @@ class GuiDocEditor(QTextEdit):
 
         # Editor State
         self.hasSelection = False
-        self.setMinimumWidth(300)
+        self.setMinimumWidth(self.mainConf.pxInt(300))
         self.setAcceptRichText(False)
 
         # Custom Shortcuts
