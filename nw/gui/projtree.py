@@ -6,7 +6,8 @@
  Class holding the left side document tree view
 
  File History:
- Created: 2018-09-29 [0.0.1]
+ Created: 2018-09-29 [0.0.1] GuiProjectTree
+ Created: 2020-06-04 [0.7.0] GuiProjectTreeMenu
 
  This file is a part of novelWriter
  Copyright 2020, Veronica Berglyd Olsen
@@ -32,7 +33,7 @@ from PyQt5.QtCore import Qt, QSize
 from PyQt5.QtGui import QFont, QColor, QIcon
 from PyQt5.QtWidgets import (
     qApp, QTreeWidget, QTreeWidgetItem, QAbstractItemView, QMessageBox,
-    QHeaderView
+    QHeaderView, QMenu, QAction
 )
 
 from nw.core import NWDoc
@@ -57,6 +58,7 @@ class GuiProjectTree(QTreeWidget):
         self.theParent  = theParent
         self.theTheme   = theParent.theTheme
         self.theProject = theProject
+        self.ctxMenu    = GuiProjectTreeMenu(self)
 
         # Tree Settings
         self.theMap   = None
@@ -71,6 +73,8 @@ class GuiProjectTree(QTreeWidget):
         self.setIndentation(iPx)
         self.setColumnCount(4)
         self.setHeaderLabels(["Label", "Words", "Inc", "Flags"])
+        self.setContextMenuPolicy(Qt.CustomContextMenu)
+        self.customContextMenuRequested.connect(self._rightClickMenu)
 
         treeHeadItem = self.headerItem()
         treeHeadItem.setTextAlignment(self.C_COUNT, Qt.AlignRight)
@@ -557,6 +561,83 @@ class GuiProjectTree(QTreeWidget):
         return False
 
     ##
+    #  Slots
+    ##
+
+    def _rightClickMenu(self, clickPos):
+        """The user right clicked an element in the project tree, so we
+        open a context menu in-place.
+        """
+        selItem = self.itemAt(clickPos)
+        self.ctxMenu.exec_(self.viewport().mapToGlobal(clickPos))
+        return
+
+    ##
+    #  Events
+    ##
+
+    def mousePressEvent(self, theEvent):
+        """Overload mousePressEvent to clear selection if clicking the
+        mouse in a blank area of the tree view.
+        """
+        QTreeWidget.mousePressEvent(self, theEvent)
+        selItem = self.indexAt(theEvent.pos())
+        if not selItem.isValid():
+            self.clearSelection()
+        return
+
+    def dropEvent(self, theEvent):
+        """Overload the drop of dragged item event to check whether the
+        drop is allowed or not. Disallowed drops are cancelled.
+        """
+        sHandle = self.getSelectedHandle()
+        if sHandle is None:
+            logger.error("No handle selected")
+            return
+
+        dIndex = self.indexAt(theEvent.pos())
+        if not dIndex.isValid():
+            logger.error("Invalid drop index")
+            return
+
+        dItem   = self.itemFromIndex(dIndex)
+        dHandle = dItem.data(self.C_NAME, Qt.UserRole)
+        snItem  = self.theProject.projTree[sHandle]
+        dnItem  = self.theProject.projTree[dHandle]
+        if dnItem is None:
+            self.makeAlert("The item cannot be moved to that location.", nwAlert.ERROR)
+            return
+
+        isSame  = snItem.itemClass == dnItem.itemClass
+        isNone  = snItem.itemClass == nwItemClass.NO_CLASS
+        isNote  = snItem.itemLayout == nwItemLayout.NOTE
+        onFile  = dnItem.itemType == nwItemType.FILE
+        isRoot  = snItem.itemType == nwItemType.ROOT
+        onRoot  = dnItem.itemType == nwItemType.ROOT
+        isOnTop = self.dropIndicatorPosition() == QAbstractItemView.OnItem
+        if (isSame or isNone or isNote) and not (onFile and isOnTop) and not isRoot:
+            logger.debug("Drag'n'drop of item %s accepted" % sHandle)
+            QTreeWidget.dropEvent(self, theEvent)
+            if isNone:
+                self._moveOrphanedItem(sHandle, dHandle)
+                self._cleanOrphanedRoot()
+            else:
+                self._updateItemParent(sHandle)
+            if not isSame:
+                logger.debug("Item %s class has been changed from %s to %s" % (
+                    sHandle,
+                    snItem.itemClass.name,
+                    dnItem.itemClass.name
+                ))
+                snItem.setClass(dnItem.itemClass)
+                self.setTreeItemValues(sHandle)
+        else:
+            logger.debug("Drag'n'drop of item %s not accepted" % sHandle)
+            self.makeAlert("The item cannot be moved to that location.", nwAlert.ERROR)
+
+        return
+
+    ##
     #  Internal Functions
     ##
 
@@ -717,69 +798,61 @@ class GuiProjectTree(QTreeWidget):
         self.theProject.setProjectChanged(True)
         return
 
-    ##
-    #  Event Overloading
-    ##
-
-    def mousePressEvent(self, theEvent):
-        """Overload mousePressEvent to clear selection if clicking the
-        mouse in a blank area of the tree view.
-        """
-        QTreeWidget.mousePressEvent(self, theEvent)
-        selItem = self.indexAt(theEvent.pos())
-        if not selItem.isValid():
-            self.clearSelection()
-        return
-
-    def dropEvent(self, theEvent):
-        """Overload the drop of dragged item event to check whether the
-        drop is allowed or not. Disallowed drops are cancelled.
-        """
-        sHandle = self.getSelectedHandle()
-        if sHandle is None:
-            logger.error("No handle selected")
-            return
-
-        dIndex = self.indexAt(theEvent.pos())
-        if not dIndex.isValid():
-            logger.error("Invalid drop index")
-            return
-
-        dItem   = self.itemFromIndex(dIndex)
-        dHandle = dItem.data(self.C_NAME, Qt.UserRole)
-        snItem  = self.theProject.projTree[sHandle]
-        dnItem  = self.theProject.projTree[dHandle]
-        if dnItem is None:
-            self.makeAlert("The item cannot be moved to that location.", nwAlert.ERROR)
-            return
-
-        isSame  = snItem.itemClass == dnItem.itemClass
-        isNone  = snItem.itemClass == nwItemClass.NO_CLASS
-        isNote  = snItem.itemLayout == nwItemLayout.NOTE
-        onFile  = dnItem.itemType == nwItemType.FILE
-        isRoot  = snItem.itemType == nwItemType.ROOT
-        onRoot  = dnItem.itemType == nwItemType.ROOT
-        isOnTop = self.dropIndicatorPosition() == QAbstractItemView.OnItem
-        if (isSame or isNone or isNote) and not (onFile and isOnTop) and not isRoot:
-            logger.debug("Drag'n'drop of item %s accepted" % sHandle)
-            QTreeWidget.dropEvent(self, theEvent)
-            if isNone:
-                self._moveOrphanedItem(sHandle, dHandle)
-                self._cleanOrphanedRoot()
-            else:
-                self._updateItemParent(sHandle)
-            if not isSame:
-                logger.debug("Item %s class has been changed from %s to %s" % (
-                    sHandle,
-                    snItem.itemClass.name,
-                    dnItem.itemClass.name
-                ))
-                snItem.setClass(dnItem.itemClass)
-                self.setTreeItemValues(sHandle)
-        else:
-            logger.debug("Drag'n'drop of item %s not accepted" % sHandle)
-            self.makeAlert("The item cannot be moved to that location.", nwAlert.ERROR)
-
-        return
-
 # END Class GuiProjectTree
+
+class GuiProjectTreeMenu(QMenu):
+
+    def __init__(self, theTree):
+        QMenu.__init__(self, theTree)
+
+        self.theTree = theTree
+        self.theItem = theItem
+
+        self.editItem = QAction("Edit Item", self)
+        self.editItem.triggered.connect(self._doEditItem)
+        self.addAction(self.editItem)
+
+        self.toggleExp = QAction("Toggle Exported", self)
+        self.toggleExp.triggered.connect(self._doToggleExported)
+        self.addAction(self.toggleExp)
+
+        self.addSeparator()
+
+        self.newFolder = QAction("New Folder", self)
+        self.newFolder.triggered.connect(self._doMakeFolder)
+        self.addAction(self.newFolder)
+
+        self.newFile = QAction("New File", self)
+        self.newFile.triggered.connect(self._doMakeFile)
+        self.addAction(self.newFile)
+
+        self.deleteItem = QAction("Delete Item", self)
+        self.deleteItem.triggered.connect(self._doDeleteItem)
+        self.addAction(self.deleteItem)
+
+        return
+
+    def updateFromItem(self, theItem):
+        self.theItem = theItem
+        return
+
+    ##
+    #  Slots
+    ##
+
+    def _doEditItem(self):
+        return
+
+    def _doDeleteItem(self):
+        return
+
+    def _doMakeFolder(self):
+        return
+
+    def _doMakeFile(self):
+        return
+
+    def _doToggleExported(self):
+        return
+
+# END Class GuiProjectTreeMenu
