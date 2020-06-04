@@ -30,7 +30,7 @@ import nw
 
 from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QFont, QIcon, QPixmap
-from PyQt5.QtWidgets import QFrame, QGridLayout, QLabel
+from PyQt5.QtWidgets import QWidget, QGridLayout, QLabel
 
 from nw.constants import (
     nwLabels, nwItemClass, nwItemType, nwItemLayout, nwUnicode
@@ -38,15 +38,15 @@ from nw.constants import (
 
 logger = logging.getLogger(__name__)
 
-class GuiItemDetails(QFrame):
+class GuiItemDetails(QWidget):
 
-    def __init__(self, theParent, theProject):
-        QFrame.__init__(self, theParent)
+    def __init__(self, theParent):
+        QWidget.__init__(self, theParent)
 
         logger.debug("Initialising GuiItemDetails ...")
         self.mainConf   = nw.CONFIG
         self.theParent  = theParent
-        self.theProject = theProject
+        self.theProject = theParent.theProject
         self.theTheme   = theParent.theTheme
         self.theHandle  = None
 

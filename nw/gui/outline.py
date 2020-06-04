@@ -39,7 +39,7 @@ from nw.constants import nwKeyWords, nwLabels, nwOutline
 
 logger = logging.getLogger(__name__)
 
-class GuiProjectOutline(QTreeWidget):
+class GuiOutline(QTreeWidget):
 
     DEF_WIDTH = {
         nwOutline.TITLE  : 200,
@@ -79,17 +79,17 @@ class GuiProjectOutline(QTreeWidget):
         nwOutline.SYNOP  : False,
     }
 
-    def __init__(self, theParent, theProject):
+    def __init__(self, theParent):
         QTreeWidget.__init__(self, theParent)
 
-        logger.debug("Initialising ProjectOutline ...")
+        logger.debug("Initialising GuiOutline ...")
 
         self.mainConf   = nw.CONFIG
         self.theParent  = theParent
-        self.theProject = theProject
+        self.theProject = theParent.theProject
         self.theTheme   = theParent.theTheme
         self.theIndex   = theParent.theIndex
-        self.optState   = theProject.optState
+        self.optState   = theParent.theProject.optState
         self.headerMenu = GuiOutlineHeaderMenu(self)
 
         self.firstView = True
@@ -100,6 +100,7 @@ class GuiProjectOutline(QTreeWidget):
         self.setExpandsOnDoubleClick(False)
         self.setDragEnabled(False)
         self.itemDoubleClicked.connect(self._treeDoubleClick)
+        self.itemSelectionChanged.connect(self._itemSelected)
 
         iPx = self.theTheme.textIconSize
         self.setIconSize(QSize(iPx, iPx))
@@ -120,7 +121,7 @@ class GuiProjectOutline(QTreeWidget):
         self.clearOutline()
         self.headerMenu.setHiddenState(self.colHidden)
 
-        logger.debug("ProjectOutline initialisation complete")
+        logger.debug("GuiOutline initialisation complete")
 
         return
 
@@ -198,6 +199,18 @@ class GuiProjectOutline(QTreeWidget):
         self.theParent.openDocument(tHandle, tLine - 1)
         return
 
+    def _itemSelected(self):
+        """Extract the handle and line number of the currently selected
+        title, and send it to the details panel.
+        """
+        selItems = self.selectedItems()
+        if selItems:
+            tHandle = selItems[0].data(self.colIndex[nwOutline.TITLE], Qt.UserRole)
+            sTitle  = selItems[0].data(self.colIndex[nwOutline.LINE], Qt.UserRole)
+            logger.verbose("User selected entry %s:%s" % (tHandle, sTitle))
+            self.theParent.projMeta.showItem(tHandle, sTitle)
+        return
+
     def _headerRightClick(self, clickPos):
         """Show the header column menu.
         """
@@ -233,7 +246,7 @@ class GuiProjectOutline(QTreeWidget):
         # Load whatever we saved last time, regardless of wether it
         # contains the correct names or number of columns. The names
         # must be valid though.
-        tempOrder = self.optState.getValue("GuiProjectOutline", "headerOrder", [])
+        tempOrder = self.optState.getValue("GuiOutline", "headerOrder", [])
         treeOrder = []
         for hName in tempOrder:
             try:
@@ -256,14 +269,14 @@ class GuiProjectOutline(QTreeWidget):
 
         # We load whatever column widths and hidden states we find in
         # the file, and leave the rest in their default state.
-        tmpWidth = self.optState.getValue("GuiProjectOutline", "columnWidth", {})
+        tmpWidth = self.optState.getValue("GuiOutline", "columnWidth", {})
         for hName in tmpWidth:
             try:
                 self.colWidth[nwOutline[hName]] = tmpWidth[hName]
             except:
                 logger.warning("Ignored unknown outline column '%s'" % str(hName))
 
-        tmpHidden = self.optState.getValue("GuiProjectOutline", "columnHidden", {})
+        tmpHidden = self.optState.getValue("GuiOutline", "columnHidden", {})
         for hName in tmpHidden:
             try:
                 self.colHidden[nwOutline[hName]] = tmpHidden[hName]
@@ -304,9 +317,9 @@ class GuiProjectOutline(QTreeWidget):
             if not logHidden and logWidth > 0:
                 colWidth[hName] = logWidth
 
-        self.optState.setValue("GuiProjectOutline", "headerOrder",  treeOrder)
-        self.optState.setValue("GuiProjectOutline", "columnWidth",  colWidth)
-        self.optState.setValue("GuiProjectOutline", "columnHidden", colHidden)
+        self.optState.setValue("GuiOutline", "headerOrder",  treeOrder)
+        self.optState.setValue("GuiOutline", "columnWidth",  colWidth)
+        self.optState.setValue("GuiOutline", "columnHidden", colHidden)
         self.optState.saveSettings()
 
         return
@@ -415,6 +428,7 @@ class GuiProjectOutline(QTreeWidget):
         newItem.setText(self.colIndex[nwOutline.LABEL],  nwItem.itemName)
         newItem.setIcon(self.colIndex[nwOutline.LABEL],  self.theTheme.getIcon("proj_document"))
         newItem.setText(self.colIndex[nwOutline.LINE],   sTitle[1:].lstrip("0"))
+        newItem.setData(self.colIndex[nwOutline.LINE],   Qt.UserRole, sTitle)
         newItem.setText(self.colIndex[nwOutline.SYNOP],  novIdx["synopsis"])
         newItem.setText(self.colIndex[nwOutline.CCOUNT], str(novIdx["cCount"]))
         newItem.setText(self.colIndex[nwOutline.WCOUNT], str(novIdx["wCount"]))
@@ -438,7 +452,7 @@ class GuiProjectOutline(QTreeWidget):
 
         return newItem
 
-# END Class GuiProjectOutline
+# END Class GuiOutline
 
 class GuiOutlineHeaderMenu(QMenu):
 

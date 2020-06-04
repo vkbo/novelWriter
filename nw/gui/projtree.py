@@ -50,20 +50,20 @@ class GuiProjectTree(QTreeWidget):
     C_EXPORT = 2
     C_FLAGS  = 3
 
-    def __init__(self, theParent, theProject):
+    def __init__(self, theParent):
         QTreeWidget.__init__(self, theParent)
 
         logger.debug("Initialising GuiProjectTree ...")
         self.mainConf   = nw.CONFIG
         self.theParent  = theParent
         self.theTheme   = theParent.theTheme
-        self.theProject = theProject
-        self.ctxMenu    = GuiProjectTreeMenu(self)
+        self.theProject = theParent.theProject
 
         # Tree Settings
         self.theMap   = None
         self.orphRoot = None
 
+        self.ctxMenu = GuiProjectTreeMenu(self)
         self.clearTree()
 
         # Build GUI
