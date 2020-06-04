@@ -6,7 +6,8 @@
  Class holding the left side document tree view
 
  File History:
- Created: 2018-09-29 [0.0.1]
+ Created: 2018-09-29 [0.0.1] GuiProjectTree
+ Created: 2020-06-04 [0.7.0] GuiProjectTreeMenu
 
  This file is a part of novelWriter
  Copyright 2020, Veronica Berglyd Olsen
@@ -32,7 +33,7 @@ from PyQt5.QtCore import Qt, QSize
 from PyQt5.QtGui import QFont, QColor, QIcon
 from PyQt5.QtWidgets import (
     qApp, QTreeWidget, QTreeWidgetItem, QAbstractItemView, QMessageBox,
-    QHeaderView
+    QHeaderView, QMenu, QAction
 )
 
 from nw.core import NWDoc
@@ -62,6 +63,7 @@ class GuiProjectTree(QTreeWidget):
         self.theMap   = None
         self.orphRoot = None
 
+        self.ctxMenu = GuiProjectTreeMenu(self)
         self.clearTree()
 
         # Build GUI
@@ -71,6 +73,8 @@ class GuiProjectTree(QTreeWidget):
         self.setIndentation(iPx)
         self.setColumnCount(4)
         self.setHeaderLabels(["Label", "Words", "Inc", "Flags"])
+        self.setContextMenuPolicy(Qt.CustomContextMenu)
+        self.customContextMenuRequested.connect(self._rightClickMenu)
 
         treeHeadItem = self.headerItem()
         treeHeadItem.setTextAlignment(self.C_COUNT, Qt.AlignRight)
@@ -141,6 +145,7 @@ class GuiProjectTree(QTreeWidget):
         meta data is set correctly to ensure a valid project tree.
         """
         pHandle = self.getSelectedHandle()
+        nHandle = None
 
         if not self.theParent.hasProject:
             return False
@@ -189,6 +194,7 @@ class GuiProjectTree(QTreeWidget):
             # the new file will be a sibling
             pItem = self.theProject.projTree[pHandle]
             if pItem.itemType == nwItemType.FILE:
+                nHandle = pHandle
                 pHandle = pItem.parHandle
 
             # If we again has no home, give up
@@ -214,18 +220,18 @@ class GuiProjectTree(QTreeWidget):
                 return False
 
         # Add the new item to the tree
-        self.revealTreeItem(tHandle)
+        self.revealTreeItem(tHandle, nHandle)
         self.theParent.editItem()
 
         return True
 
-    def revealTreeItem(self, tHandle):
+    def revealTreeItem(self, tHandle, nHandle=None):
         """Reveal a newly added project item in the project tree.
         """
         nwItem = self.theProject.projTree[tHandle]
-        trItem = self._addTreeItem(nwItem)
+        trItem = self._addTreeItem(nwItem, nHandle)
         pHandle = nwItem.parHandle
-        if pHandle is not None and pHandle in self.theMap.keys():
+        if pHandle is not None and pHandle in self.theMap:
             self.theMap[pHandle].setExpanded(True)
         self.clearSelection()
         trItem.setSelected(True)
@@ -335,7 +341,7 @@ class GuiProjectTree(QTreeWidget):
 
         return True
 
-    def deleteItem(self, tHandle=None, alreadyAsked=False):
+    def deleteItem(self, tHandle=None, alreadyAsked=False, askForTrash=False):
         """Delete items from the tree. Note that this does not delete
         the item from the item tree in the project object. However,
         since this is only meta data, there isn't really a need to do
@@ -366,7 +372,6 @@ class GuiProjectTree(QTreeWidget):
             if pHandle is not None and pHandle == self.theProject.projTree.trashRoot():
                 # If the file is in the trash folder already, as the
                 # user if they want to permanently delete the file.
-
                 doPermanent = False
                 if self.mainConf.showGUI and not alreadyAsked:
                     msgBox = QMessageBox()
@@ -395,17 +400,28 @@ class GuiProjectTree(QTreeWidget):
             else:
                 # The file is not already in the trash folder, so we
                 # move it there.
+                doTrash = False
+                if self.mainConf.showGUI and askForTrash:
+                    msgBox = QMessageBox()
+                    msgRes = msgBox.question(
+                        self, "Delete File", "Move file '%s' to Trash?" % nwItemS.itemName
+                    )
+                    if msgRes == QMessageBox.Yes:
+                        doTrash = True
+                else:
+                    doTrash = True
 
-                if pHandle is None:
-                    logger.warning("File has no parent item")
+                if doTrash:
+                    if pHandle is None:
+                        logger.warning("File has no parent item")
 
-                tIndex  = trItemP.indexOfChild(trItemS)
-                trItemC = trItemP.takeChild(tIndex)
-                trItemT.addChild(trItemC)
-                nwItemS.setParent(self.theProject.projTree.trashRoot())
+                    tIndex  = trItemP.indexOfChild(trItemS)
+                    trItemC = trItemP.takeChild(tIndex)
+                    trItemT.addChild(trItemC)
+                    nwItemS.setParent(self.theProject.projTree.trashRoot())
 
-                self.theProject.setProjectChanged(True)
-                self.theParent.theIndex.deleteHandle(tHandle)
+                    self.theProject.setProjectChanged(True)
+                    self.theParent.theIndex.deleteHandle(tHandle)
 
         elif nwItemS.itemType == nwItemType.FOLDER:
             logger.debug("User requested folder %s deleted" % tHandle)
@@ -557,6 +573,89 @@ class GuiProjectTree(QTreeWidget):
         return False
 
     ##
+    #  Slots
+    ##
+
+    def _rightClickMenu(self, clickPos):
+        """The user right clicked an element in the project tree, so we
+        open a context menu in-place.
+        """
+        selItem = self.itemAt(clickPos)
+        if isinstance(selItem, QTreeWidgetItem):
+            tHandle = selItem.data(self.C_NAME, Qt.UserRole)
+            tItem   = self.theProject.projTree[tHandle]
+            self.setSelectedHandle(tHandle) # Just to be safe
+            if self.ctxMenu.filterActions(tItem):
+                # Only open menu if any actions remain after filter
+                self.ctxMenu.exec_(self.viewport().mapToGlobal(clickPos))
+        return
+
+    ##
+    #  Events
+    ##
+
+    def mousePressEvent(self, theEvent):
+        """Overload mousePressEvent to clear selection if clicking the
+        mouse in a blank area of the tree view.
+        """
+        QTreeWidget.mousePressEvent(self, theEvent)
+        selItem = self.indexAt(theEvent.pos())
+        if not selItem.isValid():
+            self.clearSelection()
+        return
+
+    def dropEvent(self, theEvent):
+        """Overload the drop of dragged item event to check whether the
+        drop is allowed or not. Disallowed drops are cancelled.
+        """
+        sHandle = self.getSelectedHandle()
+        if sHandle is None:
+            logger.error("No handle selected")
+            return
+
+        dIndex = self.indexAt(theEvent.pos())
+        if not dIndex.isValid():
+            logger.error("Invalid drop index")
+            return
+
+        dItem   = self.itemFromIndex(dIndex)
+        dHandle = dItem.data(self.C_NAME, Qt.UserRole)
+        snItem  = self.theProject.projTree[sHandle]
+        dnItem  = self.theProject.projTree[dHandle]
+        if dnItem is None:
+            self.makeAlert("The item cannot be moved to that location.", nwAlert.ERROR)
+            return
+
+        isSame  = snItem.itemClass == dnItem.itemClass
+        isNone  = snItem.itemClass == nwItemClass.NO_CLASS
+        isNote  = snItem.itemLayout == nwItemLayout.NOTE
+        onFile  = dnItem.itemType == nwItemType.FILE
+        isRoot  = snItem.itemType == nwItemType.ROOT
+        onRoot  = dnItem.itemType == nwItemType.ROOT
+        isOnTop = self.dropIndicatorPosition() == QAbstractItemView.OnItem
+        if (isSame or isNone or isNote) and not (onFile and isOnTop) and not isRoot:
+            logger.debug("Drag'n'drop of item %s accepted" % sHandle)
+            QTreeWidget.dropEvent(self, theEvent)
+            if isNone:
+                self._moveOrphanedItem(sHandle, dHandle)
+                self._cleanOrphanedRoot()
+            else:
+                self._updateItemParent(sHandle)
+            if not isSame:
+                logger.debug("Item %s class has been changed from %s to %s" % (
+                    sHandle,
+                    snItem.itemClass.name,
+                    dnItem.itemClass.name
+                ))
+                snItem.setClass(dnItem.itemClass)
+                self.setTreeItemValues(sHandle)
+        else:
+            logger.debug("Drag'n'drop of item %s not accepted" % sHandle)
+            self.makeAlert("The item cannot be moved to that location.", nwAlert.ERROR)
+
+        return
+
+    ##
     #  Internal Functions
     ##
 
@@ -580,7 +679,7 @@ class GuiProjectTree(QTreeWidget):
             self._scanChildren(theList, theItem.child(i), i)
         return theList
 
-    def _addTreeItem(self, nwItem):
+    def _addTreeItem(self, nwItem, nHandle=None):
         """Create a QTreeWidgetItem from an NWItem and add it to the
         project tree.
         """
@@ -616,7 +715,16 @@ class GuiProjectTree(QTreeWidget):
                 self._addOrphanedRoot()
                 self.orphRoot.addChild(newItem)
         else:
-            self.theMap[pHandle].addChild(newItem)
+            byIndex = -1
+            if nHandle is not None and nHandle in self.theMap:
+                try:
+                    byIndex = self.theMap[pHandle].indexOfChild(self.theMap[nHandle])
+                except:
+                    logger.error("Failed to get index of item with handle %s" % nHandle)
+            if byIndex >= 0: 
+                self.theMap[pHandle].insertChild(byIndex+1, newItem)
+            else:
+                self.theMap[pHandle].addChild(newItem)
             self.propagateCount(tHandle, nwItem.wordCount)
 
         self.setTreeItemValues(tHandle)
@@ -717,69 +825,116 @@ class GuiProjectTree(QTreeWidget):
         self.theProject.setProjectChanged(True)
         return
 
-    ##
-    #  Event Overloading
-    ##
-
-    def mousePressEvent(self, theEvent):
-        """Overload mousePressEvent to clear selection if clicking the
-        mouse in a blank area of the tree view.
-        """
-        QTreeWidget.mousePressEvent(self, theEvent)
-        selItem = self.indexAt(theEvent.pos())
-        if not selItem.isValid():
-            self.clearSelection()
-        return
-
-    def dropEvent(self, theEvent):
-        """Overload the drop of dragged item event to check whether the
-        drop is allowed or not. Disallowed drops are cancelled.
-        """
-        sHandle = self.getSelectedHandle()
-        if sHandle is None:
-            logger.error("No handle selected")
-            return
-
-        dIndex = self.indexAt(theEvent.pos())
-        if not dIndex.isValid():
-            logger.error("Invalid drop index")
-            return
-
-        dItem   = self.itemFromIndex(dIndex)
-        dHandle = dItem.data(self.C_NAME, Qt.UserRole)
-        snItem  = self.theProject.projTree[sHandle]
-        dnItem  = self.theProject.projTree[dHandle]
-        if dnItem is None:
-            self.makeAlert("The item cannot be moved to that location.", nwAlert.ERROR)
-            return
-
-        isSame  = snItem.itemClass == dnItem.itemClass
-        isNone  = snItem.itemClass == nwItemClass.NO_CLASS
-        isNote  = snItem.itemLayout == nwItemLayout.NOTE
-        onFile  = dnItem.itemType == nwItemType.FILE
-        isRoot  = snItem.itemType == nwItemType.ROOT
-        onRoot  = dnItem.itemType == nwItemType.ROOT
-        isOnTop = self.dropIndicatorPosition() == QAbstractItemView.OnItem
-        if (isSame or isNone or isNote) and not (onFile and isOnTop) and not isRoot:
-            logger.debug("Drag'n'drop of item %s accepted" % sHandle)
-            QTreeWidget.dropEvent(self, theEvent)
-            if isNone:
-                self._moveOrphanedItem(sHandle, dHandle)
-                self._cleanOrphanedRoot()
-            else:
-                self._updateItemParent(sHandle)
-            if not isSame:
-                logger.debug("Item %s class has been changed from %s to %s" % (
-                    sHandle,
-                    snItem.itemClass.name,
-                    dnItem.itemClass.name
-                ))
-                snItem.setClass(dnItem.itemClass)
-                self.setTreeItemValues(sHandle)
-        else:
-            logger.debug("Drag'n'drop of item %s not accepted" % sHandle)
-            self.makeAlert("The item cannot be moved to that location.", nwAlert.ERROR)
-
-        return
-
 # END Class GuiProjectTree
+
+class GuiProjectTreeMenu(QMenu):
+
+    def __init__(self, theTree):
+        QMenu.__init__(self, theTree)
+
+        self.theTree = theTree
+        self.theItem = None
+
+        self.editItem = QAction("Edit Item", self)
+        self.editItem.triggered.connect(self._doEditItem)
+        self.addAction(self.editItem)
+
+        self.toggleExp = QAction("Toggle Included Flag", self)
+        self.toggleExp.triggered.connect(self._doToggleExported)
+        self.addAction(self.toggleExp)
+
+        self.newFile = QAction("New File", self)
+        self.newFile.triggered.connect(self._doMakeFile)
+        self.addAction(self.newFile)
+
+        self.newFolder = QAction("New Folder", self)
+        self.newFolder.triggered.connect(self._doMakeFolder)
+        self.addAction(self.newFolder)
+
+        self.deleteItem = QAction("Delete Item", self)
+        self.deleteItem.triggered.connect(self._doDeleteItem)
+        self.addAction(self.deleteItem)
+
+        self.emptyTrash = QAction("Empty Trash", self)
+        self.emptyTrash.triggered.connect(self._doEmptyTrash)
+        self.addAction(self.emptyTrash)
+
+        return
+
+    def filterActions(self, theItem):
+        """Update item settings from the nwItem.
+        """
+        self.theItem = theItem
+        trashHandle = self.theTree.theProject.projTree.trashRoot()
+
+        if theItem is None:
+            return False
+
+        inTrash = theItem.parHandle == trashHandle
+        isTrash = theItem.itemHandle == trashHandle
+        isFile  = theItem.itemType == nwItemType.FILE
+        isOrph  = isFile and theItem.parHandle is None
+
+        showEdit      = not isTrash and not isOrph
+        showExport    = isFile and not inTrash and not isOrph
+        showNewFile   = not isTrash and not inTrash and not isOrph
+        showNewFolder = not isTrash and not inTrash and not isOrph
+        showDelete    = not isTrash
+        showEmpty     = isTrash
+
+        self.editItem.setVisible(showEdit)
+        self.toggleExp.setVisible(showExport)
+        self.newFile.setVisible(showNewFile)
+        self.newFolder.setVisible(showNewFolder)
+        self.deleteItem.setVisible(showDelete)
+        self.emptyTrash.setVisible(showEmpty)
+
+        return True
+
+    ##
+    #  Slots
+    ##
+
+    def _doEditItem(self):
+        """Forward the edit item call to the main GUI window.
+        """
+        if self.theItem is not None:
+            self.theTree.theParent.editItem()
+        return
+
+    def _doMakeFile(self):
+        """Forward the new file call to the project tree.
+        """
+        if self.theItem is not None:
+            self.theTree.newTreeItem(nwItemType.FILE, None)
+        return
+
+    def _doMakeFolder(self):
+        """Forward the new folder call to the project tree.
+        """
+        if self.theItem is not None:
+            self.theTree.newTreeItem(nwItemType.FOLDER, None)
+        return
+
+    def _doToggleExported(self):
+        """Flip the isExported flag of the current item.
+        """
+        if self.theItem is not None:
+            self.theItem.setExported(not self.theItem.isExported)
+            self.theTree.setTreeItemValues(self.theItem.itemHandle)
+        return
+
+    def _doDeleteItem(self):
+        """Forward the delete item call to the project tree.
+        """
+        if self.theItem is not None:
+            self.theTree.deleteItem(askForTrash=True)
+        return
+
+    def _doEmptyTrash(self):
+        """Forward the delete item call to the project tree.
+        """
+        self.theTree.emptyTrash()
+        return
+
+# END Class GuiProjectTreeMenu
