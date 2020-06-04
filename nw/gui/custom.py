@@ -215,14 +215,22 @@ class QHelpLabel(QLabel):
 
 class QSwitch(QAbstractButton):
 
-    def __init__(self, parent=None):
+    def __init__(self, parent=None, width=40, height=20):
         super().__init__(parent=parent)
+
+        self._xW = int(nw.CONFIG.guiScale*width)
+        self._xH = int(nw.CONFIG.guiScale*height)
+        self._xR = int(self._xH*0.5)
+        self._xT = int(self._xH*0.6)
+        self._rB = int(nw.CONFIG.guiScale*2)
+        self._rH = self._xH - 2*self._rB
+        self._rR = self._xR - self._rB
 
         self.setCheckable(True)
         self.setSizePolicy(QSizePolicy.Fixed, QSizePolicy.Fixed)
-        self.setFixedWidth(40)
-        self.setFixedHeight(20)
-        self._offset = 10
+        self.setFixedWidth(self._xW)
+        self.setFixedHeight(self._xH)
+        self._offset = self._xR
 
         return
 
@@ -249,9 +257,9 @@ class QSwitch(QAbstractButton):
         """
         super().setChecked(isChecked)
         if isChecked:
-            self.offset = 30
+            self.offset = self._xW - self._xR
         else:
-            self.offset = 10
+            self.offset = self._xR
         return
 
     ##
@@ -263,9 +271,9 @@ class QSwitch(QAbstractButton):
         """
         super().resizeEvent(theEvent)
         if self.isChecked():
-            self.offset = 30
+            self.offset = self._xW - self._xR
         else:
-            self.offset = 10
+            self.offset = self._xR
         return
 
     def paintEvent(self, event):
@@ -297,17 +305,17 @@ class QSwitch(QAbstractButton):
 
         qPaint.setBrush(trackBrush)
         qPaint.setOpacity(trackOpacity)
-        qPaint.drawRoundedRect(0, 0, 40, 20, 10, 10)
+        qPaint.drawRoundedRect(0, 0, self._xW, self._xH, self._xR, self._xR)
 
         qPaint.setBrush(thumbBrush)
-        qPaint.drawEllipse(self.offset - 8, 2, 16, 16)
+        qPaint.drawEllipse(self.offset - self._rR, self._rB, self._rH, self._rH)
 
         theFont = qPaint.font()
-        theFont.setPixelSize(12)
+        theFont.setPixelSize(self._xT)
         qPaint.setPen(textColor)
         qPaint.setFont(theFont)
         qPaint.drawText(
-            QRectF(self.offset - 8, 2, 16, 16),
+            QRectF(self.offset - self._rR, self._rB, self._rH, self._rH),
             Qt.AlignCenter, thumbText
         )
 
@@ -322,9 +330,9 @@ class QSwitch(QAbstractButton):
             doAnim.setDuration(120)
             doAnim.setStartValue(self.offset)
             if self.isChecked():
-                doAnim.setEndValue(30)
+                doAnim.setEndValue(self._xW - self._xR)
             else:
-                doAnim.setEndValue(10)
+                doAnim.setEndValue(self._xR)
             doAnim.start()
         return
 
