@@ -145,6 +145,7 @@ class GuiProjectTree(QTreeWidget):
         meta data is set correctly to ensure a valid project tree.
         """
         pHandle = self.getSelectedHandle()
+        nHandle = None
 
         if not self.theParent.hasProject:
             return False
@@ -193,6 +194,7 @@ class GuiProjectTree(QTreeWidget):
             # the new file will be a sibling
             pItem = self.theProject.projTree[pHandle]
             if pItem.itemType == nwItemType.FILE:
+                nHandle = pHandle
                 pHandle = pItem.parHandle
 
             # If we again has no home, give up
@@ -218,18 +220,18 @@ class GuiProjectTree(QTreeWidget):
                 return False
 
         # Add the new item to the tree
-        self.revealTreeItem(tHandle)
+        self.revealTreeItem(tHandle, nHandle)
         self.theParent.editItem()
 
         return True
 
-    def revealTreeItem(self, tHandle):
+    def revealTreeItem(self, tHandle, nHandle=None):
         """Reveal a newly added project item in the project tree.
         """
         nwItem = self.theProject.projTree[tHandle]
-        trItem = self._addTreeItem(nwItem)
+        trItem = self._addTreeItem(nwItem, nHandle)
         pHandle = nwItem.parHandle
-        if pHandle is not None and pHandle in self.theMap.keys():
+        if pHandle is not None and pHandle in self.theMap:
             self.theMap[pHandle].setExpanded(True)
         self.clearSelection()
         trItem.setSelected(True)
@@ -677,7 +679,7 @@ class GuiProjectTree(QTreeWidget):
             self._scanChildren(theList, theItem.child(i), i)
         return theList
 
-    def _addTreeItem(self, nwItem):
+    def _addTreeItem(self, nwItem, nHandle=None):
         """Create a QTreeWidgetItem from an NWItem and add it to the
         project tree.
         """
@@ -713,7 +715,16 @@ class GuiProjectTree(QTreeWidget):
                 self._addOrphanedRoot()
                 self.orphRoot.addChild(newItem)
         else:
-            self.theMap[pHandle].addChild(newItem)
+            byIndex = -1
+            if nHandle is not None and nHandle in self.theMap:
+                try:
+                    byIndex = self.theMap[pHandle].indexOfChild(self.theMap[nHandle])
+                except:
+                    logger.error("Failed to get index of item with handle %s" % nHandle)
+            if byIndex >= 0: 
+                self.theMap[pHandle].insertChild(byIndex+1, newItem)
+            else:
+                self.theMap[pHandle].addChild(newItem)
             self.propagateCount(tHandle, nwItem.wordCount)
 
         self.setTreeItemValues(tHandle)
