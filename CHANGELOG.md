@@ -1,5 +1,12 @@
 # novelWriter ChangeLog
 
+## Version 0.8 [2020-xx-xx]
+
+**User Interface**
+
+* A details panel below the Outline tree view has been added. The panel shows all the information of a selected row in the tree view above, including hidden columns, and some additional information. The tags and references also become clickable links that when clicked will open in the document viewer. PR #281.
+
+
 ## Version 0.7 [2020-06-01]
 
 **Bugfixes**
