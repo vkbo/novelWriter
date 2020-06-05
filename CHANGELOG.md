@@ -13,6 +13,7 @@
 * The way GUI states of switches, column widths, etc., is saved has been improved a bit during the High DPI updates. PRs #285 and #286.
 * Some settings have been moved around to more appropriate sections in the project XML file. The project load function still reads the values from the previous location if opening an older project file. PR #288.
 
+
 ## Version 0.7 [2020-06-01]
 
 **Bugfixes**
