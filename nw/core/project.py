@@ -2015,10 +2015,43 @@ class OptionState():
 
         self.mainConf   = nw.CONFIG
         self.theProject = theProject
-        self.theState   = {}
-        self.stringOpt  = ()
-        self.boolOpt    = ()
-        self.intOpt     = ()
+
+        self.theState = {}
+        self.validMap = {
+            "GuiSession": set([
+                "widthCol0",
+                "widthCol1",
+                "widthCol2",
+                "sortCol",
+                "sortOrder",
+                "hideZeros",
+                "hideNegative",
+            ]),
+            "GuiDocSplit": set([
+                "spLevel",
+            ]),
+            "GuiBuildNovel": set([
+                "winWidth",
+                "winHeight",
+                "addNovel",
+                "addNotes",
+                "ignoreFlag",
+                "justifyText",
+                "excludeBody",
+                "textFont",
+                "textSize",
+                "noStyling",
+                "incSynopsis",
+                "incComments",
+                "incKeywords",
+                "incBodyText",
+            ]),
+            "GuiOutline": set([
+                "headerOrder",
+                "columnWidth",
+                "columnHidden",
+            ])
+        }
 
         return
 
@@ -2045,8 +2078,14 @@ class OptionState():
                 logger.error("Failed to load GUI options file")
                 logger.error(str(e))
                 return False
-        for anOpt in theState:
-            self.theState[anOpt] = theState[anOpt]
+
+        # Filter out unused variables
+        for aGroup in theState:
+            if aGroup in self.validMap:
+                self.theState[aGroup] = {}
+                for anOpt in theState[aGroup]:
+                    if anOpt in self.validMap[aGroup]:
+                        self.theState[aGroup][anOpt] = theState[aGroup][anOpt]
 
         return True
 
@@ -2076,9 +2115,19 @@ class OptionState():
     def setValue(self, setGroup, setName, setValue):
         """Saves a value, with a given group and name.
         """
+        if not setGroup in self.validMap:
+            logger.error("Unknown option group '%s'" % setGroup)
+            return False
+
+        if not setName in self.validMap[setGroup]:
+            logger.error("Unknown option name '%s'" % setName)
+            return False
+
         if not setGroup in self.theState:
             self.theState[setGroup] = {}
+
         self.theState[setGroup][setName] = setValue
+
         return True
 
     ##
@@ -2106,7 +2155,8 @@ class OptionState():
             if getName in self.theState[getGroup]:
                 try:
                     return str(self.theState[getGroup][getName])
-                except:
+                except Exception as e:
+                    logger.warning(str(e))
                     return defaultValue
         return defaultValue
 
