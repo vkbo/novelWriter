@@ -1,11 +1,14 @@
 <?xml version='1.0' encoding='utf-8'?>
-<novelWriterXML appVersion="0.7.0rc1" hexVersion="0x000700c1" fileVersion="1.1" saveCount="1" autoCount="0" timeStamp="2020-05-29 23:03:58">
+<novelWriterXML appVersion="0.8.0rc1" hexVersion="0x000800c1" fileVersion="1.1" timeStamp="2020-06-05 20:58:52">
   <project>
     <name>New Project</name>
     <title></title>
-    <backup>True</backup>
+    <saveCount>1</saveCount>
+    <autoCount>0</autoCount>
+    <editTime>0</editTime>
   </project>
   <settings>
+    <doBackup>True</doBackup>
     <spellCheck>False</spellCheck>
     <autoOutline>True</autoOutline>
     <lastEdited>None</lastEdited>

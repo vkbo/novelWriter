@@ -30,7 +30,7 @@ def testProjectNew(nwTempProj,nwRef,nwTemp):
     assert theProject.setProjectPath(nwTempProj)
     assert theProject.saveProject()
     assert theProject.closeProject()
-    assert cmpFiles(projFile, refFile, [2])
+    assert cmpFiles(projFile, refFile, [2, 6, 7, 8])
 
 @pytest.mark.project
 def testProjectOpen(nwTempProj):
@@ -43,7 +43,7 @@ def testProjectSave(nwTempProj,nwRef):
     refFile  = path.join(nwRef,"proj","1_nwProject.nwx")
     assert theProject.saveProject()
     assert theProject.closeProject()
-    assert cmpFiles(projFile, refFile, [2])
+    assert cmpFiles(projFile, refFile, [2, 6, 7, 8])
     assert not theProject.projChanged
 
 @pytest.mark.project
@@ -55,7 +55,7 @@ def testProjectOpenTwice(nwTempProj,nwRef):
     assert theProject.openProject(projFile, overrideLock=True)
     assert theProject.saveProject()
     assert theProject.closeProject()
-    assert cmpFiles(projFile, refFile, [2])
+    assert cmpFiles(projFile, refFile, [2, 6, 7, 8])
 
 @pytest.mark.project
 def testProjectNewRoot(nwTempProj,nwRef):
@@ -73,7 +73,7 @@ def testProjectNewRoot(nwTempProj,nwRef):
     assert theProject.projChanged
     assert theProject.saveProject()
     assert theProject.closeProject()
-    assert cmpFiles(projFile, refFile, [2])
+    assert cmpFiles(projFile, refFile, [2, 6, 7, 8])
     assert not theProject.projChanged
 
 @pytest.mark.project
@@ -86,7 +86,7 @@ def testProjectNewFile(nwTempProj,nwRef):
     assert theProject.projChanged
     assert theProject.saveProject()
     assert theProject.closeProject()
-    assert cmpFiles(projFile, refFile, [2])
+    assert cmpFiles(projFile, refFile, [2, 6, 7, 8])
     assert not theProject.projChanged
 
 @pytest.mark.project

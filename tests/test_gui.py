@@ -45,7 +45,7 @@ def testMainWindows(qtbot, nwTempGUI, nwRef, nwTemp):
 
     # Check the files
     projFile = path.join(nwTempGUI,"nwProject.nwx")
-    assert cmpFiles(projFile, path.join(nwRef,"gui","0_nwProject.nwx"), [2])
+    assert cmpFiles(projFile, path.join(nwRef,"gui","0_nwProject.nwx"), [2, 6, 7, 8])
     qtbot.wait(stepDelay)
 
     # qtbot.stopForInteraction()
@@ -246,7 +246,7 @@ def testMainWindows(qtbot, nwTempGUI, nwRef, nwTemp):
 
     # Check the files
     refFile = path.join(nwTempGUI, "nwProject.nwx")
-    assert cmpFiles(refFile, path.join(nwRef, "gui", "1_nwProject.nwx"), [2])
+    assert cmpFiles(refFile, path.join(nwRef, "gui", "1_nwProject.nwx"), [2, 6, 7, 8])
     refFile = path.join(nwTempGUI, "content", "0e17daca5f3e1.nwd")
     assert cmpFiles(refFile, path.join(nwRef, "gui", "1_0e17daca5f3e1.nwd"))
     refFile = path.join(nwTempGUI, "content", "98010bd9270f9.nwd")
@@ -342,7 +342,7 @@ def testProjectEditor(qtbot, nwTempGUI, nwRef, nwTemp):
 
     # Check the files
     projFile = path.join(nwTempGUI,"nwProject.nwx")
-    assert cmpFiles(projFile, path.join(nwRef, "gui", "2_nwProject.nwx"), [2])
+    assert cmpFiles(projFile, path.join(nwRef, "gui", "2_nwProject.nwx"), [2, 8, 9, 10])
 
     nwGUI.closeMain()
     # qtbot.stopForInteraction()
@@ -391,7 +391,7 @@ def testItemEditor(qtbot, nwTempGUI, nwRef, nwTemp):
 
     # Check the files
     projFile = path.join(nwTempGUI,"nwProject.nwx")
-    assert cmpFiles(projFile, path.join(nwRef, "gui", "3_nwProject.nwx"), [2])
+    assert cmpFiles(projFile, path.join(nwRef, "gui", "3_nwProject.nwx"), [2, 6, 7, 8])
 
     nwGUI.closeMain()
     # qtbot.stopForInteraction()
