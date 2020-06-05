@@ -331,6 +331,8 @@ class NWProject():
             hexVersion = xRoot.attrib["hexVersion"]
         if "fileVersion" in xRoot.attrib:
             fileVersion = xRoot.attrib["fileVersion"]
+
+        # The following are deprecated and will be removed
         if "saveCount" in xRoot.attrib:
             self.saveCount = checkInt(xRoot.attrib["saveCount"], 0, False)
         if "autoCount" in xRoot.attrib:
@@ -409,6 +411,14 @@ class NWProject():
                     elif xItem.tag == "author":
                         logger.verbose("Author: '%s'" % xItem.text)
                         self.bookAuthors.append(xItem.text)
+                    elif xItem.tag == "saveCount":
+                        self.saveCount = checkInt(xItem.text, 0)
+                    elif xItem.tag == "autoCount":
+                        self.autoCount = checkInt(xItem.text, 0)
+                    elif xItem.tag == "editTime":
+                        self.editTime = checkInt(xItem.text, 0)
+
+                    # The following is deprecated, and will be removed
                     elif xItem.tag == "backup":
                         self.doBackup = checkBool(xItem.text, False)
 
@@ -417,7 +427,9 @@ class NWProject():
                 for xItem in xChild:
                     if xItem.text is None:
                         continue
-                    if xItem.tag == "spellCheck":
+                    if xItem.tag == "doBackup":
+                        self.doBackup = checkBool(xItem.text, False)
+                    elif xItem.tag == "spellCheck":
                         self.spellCheck = checkBool(xItem.text, False)
                     elif xItem.tag == "autoOutline":
                         self.autoOutline = checkBool(xItem.text, True)
@@ -489,21 +501,23 @@ class NWProject():
             "appVersion"  : str(nw.__version__),
             "hexVersion"  : str(nw.__hexversion__),
             "fileVersion" : "1.1",
-            "saveCount"   : str(self.saveCount),
-            "autoCount"   : str(self.autoCount),
             "timeStamp"   : formatTimeStamp(saveTime),
-            "editTime"    : str(int(self.editTime + saveTime - self.projOpened)),
         })
+
+        editTime = int(self.editTime + saveTime - self.projOpened)
 
         # Save Project Meta
         xProject = etree.SubElement(nwXML, "project")
         self._packProjectValue(xProject, "name", self.projName,  True)
         self._packProjectValue(xProject, "title", self.bookTitle, True)
         self._packProjectValue(xProject, "author", self.bookAuthors)
-        self._packProjectValue(xProject, "backup", self.doBackup)
+        self._packProjectValue(xProject, "saveCount", str(self.saveCount))
+        self._packProjectValue(xProject, "autoCount", str(self.autoCount))
+        self._packProjectValue(xProject, "editTime", str(editTime))
 
         # Save Project Settings
         xSettings = etree.SubElement(nwXML, "settings")
+        self._packProjectValue(xSettings, "doBackup", self.doBackup)
         self._packProjectValue(xSettings, "spellCheck", self.spellCheck)
         self._packProjectValue(xSettings, "autoOutline", self.autoOutline)
         self._packProjectValue(xSettings, "lastEdited", self.lastEdited)
