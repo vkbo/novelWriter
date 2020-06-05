@@ -22,9 +22,6 @@
       <unnumbered>%title%</unnumbered>
       <scene>* * *</scene>
       <section></section>
-      <withSynopsis>False</withSynopsis>
-      <withComments>False</withComments>
-      <withKeywords>False</withKeywords>
     </titleFormat>
     <status>
       <entry blue="100" green="100" red="100">New</entry>

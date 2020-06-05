@@ -213,14 +213,11 @@ class NWProject():
         self.bookAuthors = []
         self.autoReplace = {}
         self.titleFormat = {
-            "title"        : r"%title%",
-            "chapter"      : r"Chapter %ch%: %title%",
-            "unnumbered"   : r"%title%",
-            "scene"        : r"* * *",
-            "section"      : r"",
-            "withSynopsis" : False,
-            "withComments" : False,
-            "withKeywords" : False,
+            "title"      : r"%title%",
+            "chapter"    : r"Chapter %ch%: %title%",
+            "unnumbered" : r"%title%",
+            "scene"      : r"* * *",
+            "section"    : r"",
         }
         self.spellCheck  = False
         self.autoOutline = True
@@ -835,10 +832,8 @@ class NWProject():
         """Set the formatting of titles in the project.
         """
         for valKey, valEntry in titleFormat.items():
-            if valKey in ("title","chapter","unnumbered","scene","section"):
+            if valKey in self.titleFormat:
                 self.titleFormat[valKey] = checkString(valEntry, self.titleFormat[valKey], False)
-            elif valKey in ("withSynopsis","withComments","withKeywords"):
-                self.titleFormat[valKey] = checkBool(valEntry, False, False)
         return
 
     def setProjectChanged(self, bValue):
@@ -2018,6 +2013,7 @@ class OptionState():
 
     def __init__(self, theProject):
 
+        self.mainConf   = nw.CONFIG
         self.theProject = theProject
         self.theState   = {}
         self.stringOpt  = ()
@@ -2025,6 +2021,10 @@ class OptionState():
         self.intOpt     = ()
 
         return
+
+    ##
+    #  Load and Save Cache
+    ##
 
     def loadSettings(self):
         """Load the options dictionary from the project settings file.
@@ -2038,7 +2038,7 @@ class OptionState():
         if path.isfile(stateFile):
             logger.debug("Loading GUI options file")
             try:
-                with open(stateFile,mode="r",encoding="utf8") as inFile:
+                with open(stateFile, mode="r", encoding="utf8") as inFile:
                     theJson = inFile.read()
                 theState = json.loads(theJson)
             except Exception as e:
@@ -2060,7 +2060,7 @@ class OptionState():
         logger.debug("Saving GUI options file")
 
         try:
-            with open(stateFile,mode="w+",encoding="utf8") as outFile:
+            with open(stateFile, mode="w+", encoding="utf8") as outFile:
                 outFile.write(json.dumps(self.theState, indent=2))
         except Exception as e:
             logger.error("Failed to save GUI options file")
@@ -2068,6 +2068,10 @@ class OptionState():
             return False
 
         return True
+
+    ##
+    #  Setters
+    ##
 
     def setValue(self, setGroup, setName, setValue):
         """Saves a value, with a given group and name.
@@ -2077,6 +2081,10 @@ class OptionState():
         self.theState[setGroup][setName] = setValue
         return True
 
+    ##
+    #  Getters
+    ##
+
     def getValue(self, getGroup, getName, defaultValue):
         """Return an arbitrary type value, if it exists. Otherwise,
         return the default value.
@@ -2085,7 +2093,8 @@ class OptionState():
             if getName in self.theState[getGroup]:
                 try:
                     return self.theState[getGroup][getName]
-                except:
+                except Exception as e:
+                    logger.warning(str(e))
                     return defaultValue
         return defaultValue
 
@@ -2109,7 +2118,8 @@ class OptionState():
             if getName in self.theState[getGroup]:
                 try:
                     return int(self.theState[getGroup][getName])
-                except:
+                except Exception as e:
+                    logger.warning(str(e))
                     return defaultValue
         return defaultValue
 
@@ -2121,7 +2131,8 @@ class OptionState():
             if getName in self.theState[getGroup]:
                 try:
                     return float(self.theState[getGroup][getName])
-                except:
+                except Exception as e:
+                    logger.warning(str(e))
                     return defaultValue
         return defaultValue
 
@@ -2133,9 +2144,14 @@ class OptionState():
             if getName in self.theState[getGroup]:
                 try:
                     return bool(self.theState[getGroup][getName])
-                except:
+                except Exception as e:
+                    logger.warning(str(e))
                     return defaultValue
         return defaultValue
+
+    ##
+    #  Validators
+    ##
 
     def validIntRange(self, theValue, intA, intB, intDefault):
         """Check that an int is in a given range. If it isn't, return

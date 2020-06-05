@@ -271,7 +271,7 @@ class GuiOutline(QTreeWidget):
         tmpWidth = self.optState.getValue("GuiOutline", "columnWidth", {})
         for hName in tmpWidth:
             try:
-                self.colWidth[nwOutline[hName]] = tmpWidth[hName]
+                self.colWidth[nwOutline[hName]] = self.mainConf.pxInt(tmpWidth[hName])
             except:
                 logger.warning("Ignored unknown outline column '%s'" % str(hName))
 
@@ -301,7 +301,7 @@ class GuiOutline(QTreeWidget):
         colHidden = {}
 
         for hItem in nwOutline:
-            colWidth[hItem.name] = self.colWidth[hItem]
+            colWidth[hItem.name] = self.mainConf.rpxInt(self.colWidth[hItem])
             colHidden[hItem.name] = self.colHidden[hItem]
 
         for iCol in range(self.columnCount()):
@@ -309,7 +309,7 @@ class GuiOutline(QTreeWidget):
             treeOrder.append(hName)
 
             iLog = self.treeHead.logicalIndex(iCol)
-            logWidth = self.columnWidth(iLog)
+            logWidth = self.mainConf.rpxInt(self.columnWidth(iLog))
             logHidden = self.isColumnHidden(iLog)
 
             colHidden[hName] = logHidden

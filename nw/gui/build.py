@@ -78,12 +78,12 @@ class GuiBuildNovel(QDialog):
         self.nwdText   = [] # List of markdown documents
 
         self.setWindowTitle("Build Novel Project")
-        self.setMinimumWidth(900)
-        self.setMinimumHeight(800)
+        self.setMinimumWidth(self.mainConf.pxInt(900))
+        self.setMinimumHeight(self.mainConf.pxInt(800))
 
         self.resize(
-            self.optState.getInt("GuiBuildNovel", "winWidth", 900),
-            self.optState.getInt("GuiBuildNovel", "winHeight", 800)
+            self.mainConf.pxInt(self.optState.getInt("GuiBuildNovel", "winWidth",  900)),
+            self.mainConf.pxInt(self.optState.getInt("GuiBuildNovel", "winHeight", 800))
         )
 
         self.outerBox = QHBoxLayout()
@@ -112,10 +112,11 @@ class GuiBuildNovel(QDialog):
             r"be centred automatically and only appear between sections of "
             r"the same type."
         )
+        xFmt = self.mainConf.pxInt(220)
 
         self.fmtTitle = QLineEdit()
         self.fmtTitle.setMaxLength(200)
-        self.fmtTitle.setFixedWidth(220)
+        self.fmtTitle.setFixedWidth(xFmt)
         self.fmtTitle.setToolTip(fmtHelp)
         self.fmtTitle.setText(
             self._reFmtCodes(self.theProject.titleFormat["title"])
@@ -123,7 +124,7 @@ class GuiBuildNovel(QDialog):
 
         self.fmtChapter = QLineEdit()
         self.fmtChapter.setMaxLength(200)
-        self.fmtChapter.setFixedWidth(220)
+        self.fmtChapter.setFixedWidth(xFmt)
         self.fmtChapter.setToolTip(fmtHelp)
         self.fmtChapter.setText(
             self._reFmtCodes(self.theProject.titleFormat["chapter"])
@@ -131,7 +132,7 @@ class GuiBuildNovel(QDialog):
 
         self.fmtUnnumbered = QLineEdit()
         self.fmtUnnumbered.setMaxLength(200)
-        self.fmtUnnumbered.setFixedWidth(220)
+        self.fmtUnnumbered.setFixedWidth(xFmt)
         self.fmtUnnumbered.setToolTip(fmtHelp)
         self.fmtUnnumbered.setText(
             self._reFmtCodes(self.theProject.titleFormat["unnumbered"])
@@ -139,7 +140,7 @@ class GuiBuildNovel(QDialog):
 
         self.fmtScene = QLineEdit()
         self.fmtScene.setMaxLength(200)
-        self.fmtScene.setFixedWidth(220)
+        self.fmtScene.setFixedWidth(xFmt)
         self.fmtScene.setToolTip(fmtHelp + fmtScHelp)
         self.fmtScene.setText(
             self._reFmtCodes(self.theProject.titleFormat["scene"])
@@ -147,7 +148,7 @@ class GuiBuildNovel(QDialog):
 
         self.fmtSection = QLineEdit()
         self.fmtSection.setMaxLength(200)
-        self.fmtSection.setFixedWidth(220)
+        self.fmtSection.setFixedWidth(xFmt)
         self.fmtSection.setToolTip(fmtHelp + fmtScHelp)
         self.fmtSection.setText(
             self._reFmtCodes(self.theProject.titleFormat["section"])
@@ -176,7 +177,7 @@ class GuiBuildNovel(QDialog):
         ## Font Family
         self.textFont = QLineEdit()
         self.textFont.setReadOnly(True)
-        self.textFont.setFixedWidth(182)
+        self.textFont.setFixedWidth(self.mainConf.pxInt(182))
         self.textFont.setText(
             self.optState.getString("GuiBuildNovel", "textFont", self.mainConf.textFont)
         )
@@ -185,7 +186,7 @@ class GuiBuildNovel(QDialog):
         self.fontButton.clicked.connect(self._selectFont)
 
         self.textSize = QSpinBox(self)
-        self.textSize.setFixedWidth(60)
+        self.textSize.setFixedWidth(5*self.theTheme.textNWidth)
         self.textSize.setMinimum(6)
         self.textSize.setMaximum(72)
         self.textSize.setSingleStep(1)
@@ -236,26 +237,32 @@ class GuiBuildNovel(QDialog):
         self.includeSynopsis.setToolTip(
             "Include synopsis comments in the output."
         )
-        self.includeSynopsis.setChecked(self.theProject.titleFormat["withSynopsis"])
+        self.includeSynopsis.setChecked(
+            self.optState.getBool("GuiBuildNovel", "incSynopsis", False)
+        )
 
         self.includeComments = QSwitch()
         self.includeComments.setToolTip(
             "Include plain comments in the output."
         )
-        self.includeComments.setChecked(self.theProject.titleFormat["withComments"])
+        self.includeComments.setChecked(
+            self.optState.getBool("GuiBuildNovel", "incComments", False)
+        )
 
         self.includeKeywords = QSwitch()
         self.includeKeywords.setToolTip(
             "Include meta keywords (tags, references) in the output."
         )
-        self.includeKeywords.setChecked(self.theProject.titleFormat["withKeywords"])
+        self.includeKeywords.setChecked(
+            self.optState.getBool("GuiBuildNovel", "incKeywords", False)
+        )
 
         self.includeBody = QSwitch()
         self.includeBody.setToolTip(
             "Include body text in the output."
         )
         self.includeBody.setChecked(
-            self.optState.getBool("GuiBuildNovel", "includeBody", True)
+            self.optState.getBool("GuiBuildNovel", "incBodyText", True)
         )
 
         self.textForm.addWidget(QLabel("Include synopsis"),  0, 0, 1, 1, Qt.AlignLeft)
@@ -847,27 +854,41 @@ class GuiBuildNovel(QDialog):
 
         # Formatting
         self.theProject.setTitleFormat({
-            "title"        : self.fmtTitle.text().strip(),
-            "chapter"      : self.fmtChapter.text().strip(),
-            "unnumbered"   : self.fmtUnnumbered.text().strip(),
-            "scene"        : self.fmtScene.text().strip(),
-            "section"      : self.fmtSection.text().strip(),
-            "withSynopsis" : self.includeSynopsis.isChecked(),
-            "withComments" : self.includeComments.isChecked(),
-            "withKeywords" : self.includeKeywords.isChecked(),
+            "title"      : self.fmtTitle.text().strip(),
+            "chapter"    : self.fmtChapter.text().strip(),
+            "unnumbered" : self.fmtUnnumbered.text().strip(),
+            "scene"      : self.fmtScene.text().strip(),
+            "section"    : self.fmtSection.text().strip(),
         })
 
+        winWidth    = self.mainConf.pxInt(self.width())
+        winHeight   = self.mainConf.pxInt(self.height())
+        justifyText = self.justifyText.isChecked()
+        noStyling   = self.noStyling.isChecked()
+        textFont    = self.textFont.text()
+        textSize    = self.textSize.value()
+        novelFiles  = self.novelFiles.isChecked()
+        noteFiles   = self.noteFiles.isChecked()
+        ignoreFlag  = self.ignoreFlag.isChecked()
+        incSynopsis = self.includeSynopsis.isChecked()
+        incComments = self.includeComments.isChecked()
+        incKeywords = self.includeKeywords.isChecked()
+        incBodyText = self.includeBody.isChecked()
+
         # GUI Settings
-        self.optState.setValue("GuiBuildNovel", "winWidth", self.width())
-        self.optState.setValue("GuiBuildNovel", "winHeight", self.height())
-        self.optState.setValue("GuiBuildNovel", "justifyText", self.justifyText.isChecked())
-        self.optState.setValue("GuiBuildNovel", "noStyling", self.noStyling.isChecked())
-        self.optState.setValue("GuiBuildNovel", "textFont", self.textFont.text())
-        self.optState.setValue("GuiBuildNovel", "textSize", self.textSize.value())
-        self.optState.setValue("GuiBuildNovel", "addNovel", self.novelFiles.isChecked())
-        self.optState.setValue("GuiBuildNovel", "addNotes", self.noteFiles.isChecked())
-        self.optState.setValue("GuiBuildNovel", "ignoreFlag", self.ignoreFlag.isChecked())
-        self.optState.setValue("GuiBuildNovel", "includeBody", self.includeBody.isChecked())
+        self.optState.setValue("GuiBuildNovel", "winWidth",    winWidth)
+        self.optState.setValue("GuiBuildNovel", "winHeight",   winHeight)
+        self.optState.setValue("GuiBuildNovel", "justifyText", justifyText)
+        self.optState.setValue("GuiBuildNovel", "noStyling",   noStyling)
+        self.optState.setValue("GuiBuildNovel", "textFont",    textFont)
+        self.optState.setValue("GuiBuildNovel", "textSize",    textSize)
+        self.optState.setValue("GuiBuildNovel", "addNovel",    novelFiles)
+        self.optState.setValue("GuiBuildNovel", "addNotes",    noteFiles)
+        self.optState.setValue("GuiBuildNovel", "ignoreFlag",  ignoreFlag)
+        self.optState.setValue("GuiBuildNovel", "incSynopsis", incSynopsis)
+        self.optState.setValue("GuiBuildNovel", "incComments", incComments)
+        self.optState.setValue("GuiBuildNovel", "incKeywords", incKeywords)
+        self.optState.setValue("GuiBuildNovel", "incBodyText", incBodyText)
         self.optState.saveSettings()
 
         return
@@ -894,7 +915,7 @@ class GuiBuildNovelDocView(QTextBrowser):
         self.theProject = theProject
         self.theParent  = theParent
 
-        self.setMinimumWidth(400)
+        self.setMinimumWidth(40*self.theParent.theTheme.textNWidth)
         self.setOpenExternalLinks(False)
 
         self.qDocument = self.document()

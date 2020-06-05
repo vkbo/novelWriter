@@ -81,7 +81,7 @@ class GuiMain(QMainWindow):
         self.isZenMode  = False
 
         # Prepare main window
-        self.resize(*self.mainConf.winGeometry)
+        self.resize(*self.mainConf.getWinSize())
         self._setWindowTitle()
         self.setWindowIcon(QIcon(self.mainConf.appIcon))
 
@@ -108,15 +108,15 @@ class GuiMain(QMainWindow):
         # Assemble Main Window
         self.treePane = QWidget()
         self.treeBox = QVBoxLayout()
-        self.treeBox.setContentsMargins(0,0,0,0)
+        self.treeBox.setContentsMargins(0, 0, 0, 0)
         self.treeBox.addWidget(self.treeView)
         self.treeBox.addWidget(self.treeMeta)
         self.treePane.setLayout(self.treeBox)
 
         self.editPane = QWidget()
         self.docEdit = QVBoxLayout()
-        self.docEdit.setContentsMargins(0,0,0,0)
-        self.docEdit.setSpacing(2)
+        self.docEdit.setContentsMargins(0, 0, 0, 0)
+        self.docEdit.setSpacing(self.mainConf.pxInt(2))
         self.docEdit.addWidget(self.searchBar)
         self.docEdit.addWidget(self.noticeBar)
         self.docEdit.addWidget(self.docEditor)
@@ -124,8 +124,8 @@ class GuiMain(QMainWindow):
 
         self.viewPane = QWidget()
         self.docView = QVBoxLayout()
-        self.docView.setContentsMargins(0,0,0,0)
-        self.docView.setSpacing(2)
+        self.docView.setContentsMargins(0, 0, 0, 0)
+        self.docView.setSpacing(self.mainConf.pxInt(2))
         self.docView.addWidget(self.docViewer)
         self.docView.addWidget(self.viewMeta)
         self.docView.setStretch(0, 1)
@@ -139,7 +139,7 @@ class GuiMain(QMainWindow):
         self.splitOutline = QSplitter(Qt.Vertical)
         self.splitOutline.addWidget(self.projView)
         self.splitOutline.addWidget(self.projMeta)
-        self.splitOutline.setSizes(self.mainConf.outlnPanePos)
+        self.splitOutline.setSizes(self.mainConf.getOutlinePanePos())
 
         self.tabWidget = QTabWidget()
         self.tabWidget.setTabPosition(QTabWidget.East)
@@ -148,12 +148,13 @@ class GuiMain(QMainWindow):
         self.tabWidget.addTab(self.splitOutline, "Outline")
         self.tabWidget.currentChanged.connect(self._mainTabChanged)
 
+        xCM = self.mainConf.pxInt(4)
         self.splitMain = QSplitter(Qt.Horizontal)
-        self.splitMain.setContentsMargins(4,4,4,4)
+        self.splitMain.setContentsMargins(xCM, xCM, xCM, xCM)
         self.splitMain.setOpaqueResize(False)
         self.splitMain.addWidget(self.treePane)
         self.splitMain.addWidget(self.tabWidget)
-        self.splitMain.setSizes(self.mainConf.mainPanePos)
+        self.splitMain.setSizes(self.mainConf.getMainPanePos())
 
         self.setCentralWidget(self.splitMain)
 
@@ -513,9 +514,9 @@ class GuiMain(QMainWindow):
             if not self.viewPane.isVisible():
                 bPos = self.splitMain.sizes()
                 self.viewPane.setVisible(True)
-                vPos = [0,0]
+                vPos = [0, 0]
                 vPos[0] = int(bPos[1]/2)
-                vPos[1] = bPos[1]-vPos[0]
+                vPos[1] = bPos[1] - vPos[0]
                 self.splitView.setSizes(vPos)
             self.docViewer.navigateTo(navLink)
 
@@ -877,7 +878,7 @@ class GuiMain(QMainWindow):
         self.theProject.setLastViewed(None)
         bPos = self.splitMain.sizes()
         self.viewPane.setVisible(False)
-        vPos = [bPos[1],0]
+        vPos = [bPos[1], 0]
         self.splitView.setSizes(vPos)
         return not self.viewPane.isVisible()
 
@@ -988,16 +989,18 @@ class GuiMain(QMainWindow):
 
     def _makeStatusIcons(self):
         self.statusIcons = {}
+        iPx = self.mainConf.pxInt(32)
         for sLabel, sCol, _ in self.theProject.statusItems:
-            theIcon = QPixmap(32,32)
+            theIcon = QPixmap(iPx, iPx)
             theIcon.fill(QColor(*sCol))
             self.statusIcons[sLabel] = QIcon(theIcon)
         return
 
     def _makeImportIcons(self):
         self.importIcons = {}
+        iPx = self.mainConf.pxInt(32)
         for sLabel, sCol, _ in self.theProject.importItems:
-            theIcon = QPixmap(32,32)
+            theIcon = QPixmap(iPx, iPx)
             theIcon.fill(QColor(*sCol))
             self.importIcons[sLabel] = QIcon(theIcon)
         return

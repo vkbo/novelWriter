@@ -53,7 +53,7 @@ class GuiSearchBar(QFrame):
         self.theTheme   = theParent.theTheme
         self.repVisible = False
 
-        self.setContentsMargins(0,0,0,0)
+        self.setContentsMargins(0, 0, 0, 0)
 
         self.mainBox = QGridLayout(self)
         self.setLayout(self.mainBox)
@@ -72,24 +72,25 @@ class GuiSearchBar(QFrame):
         self.searchBox.returnPressed.connect(self._doSearch)
         self.replaceBox.returnPressed.connect(self._doSearch)
 
-        self.mainBox.addWidget(QLabel(""),         0,0)
-        self.mainBox.addWidget(self.searchLabel,   0,1)
-        self.mainBox.addWidget(self.searchBox,     0,2)
-        self.mainBox.addWidget(self.searchButton,  0,3)
-        self.mainBox.addWidget(self.closeButton,   0,4)
-        self.mainBox.addWidget(self.replaceLabel,  1,1)
-        self.mainBox.addWidget(self.replaceBox,    1,2)
-        self.mainBox.addWidget(self.replaceButton, 1,3)
+        self.mainBox.addWidget(QLabel(""),         0, 0)
+        self.mainBox.addWidget(self.searchLabel,   0, 1)
+        self.mainBox.addWidget(self.searchBox,     0, 2)
+        self.mainBox.addWidget(self.searchButton,  0, 3)
+        self.mainBox.addWidget(self.closeButton,   0, 4)
+        self.mainBox.addWidget(self.replaceLabel,  1, 1)
+        self.mainBox.addWidget(self.replaceBox,    1, 2)
+        self.mainBox.addWidget(self.replaceButton, 1, 3)
 
-        self.mainBox.setColumnStretch(0,1)
-        self.mainBox.setColumnStretch(1,0)
-        self.mainBox.setColumnStretch(2,0)
-        self.mainBox.setColumnStretch(3,0)
-        self.mainBox.setColumnStretch(4,0)
-        self.mainBox.setContentsMargins(0,0,0,0)
+        self.mainBox.setColumnStretch(0, 1)
+        self.mainBox.setColumnStretch(1, 0)
+        self.mainBox.setColumnStretch(2, 0)
+        self.mainBox.setColumnStretch(3, 0)
+        self.mainBox.setColumnStretch(4, 0)
+        self.mainBox.setContentsMargins(0, 0, 0, 0)
 
-        self.searchBox.setMinimumWidth(180)
-        self.replaceBox.setMinimumWidth(180)
+        boxWidth = 16*self.theTheme.textNWidth
+        self.searchBox.setMinimumWidth(boxWidth)
+        self.replaceBox.setMinimumWidth(boxWidth)
 
         self._replaceVisible(False)
 
@@ -175,15 +176,18 @@ class GuiNoticeBar(QFrame):
 
         logger.debug("Initialising GuiNoticeBar ...")
 
-        self.mainConf   = nw.CONFIG
-        self.theParent  = theParent
-        self.theTheme   = theParent.theTheme
+        self.mainConf  = nw.CONFIG
+        self.theParent = theParent
+        self.theTheme  = theParent.theTheme
 
-        self.setContentsMargins(0,0,0,0)
+        self.setContentsMargins(0, 0, 0, 0)
         self.setFrameShape(QFrame.Box)
 
+        m8 = self.mainConf.pxInt(8)
+        m2 = self.mainConf.pxInt(2)
+
         self.mainBox = QHBoxLayout(self)
-        self.mainBox.setContentsMargins(8,2,2,2)
+        self.mainBox.setContentsMargins(m8, m2, m2, m2)
 
         self.noteLabel = QLabel("")
 

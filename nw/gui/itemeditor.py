@@ -61,8 +61,8 @@ class GuiItemEditor(QDialog):
 
         # Item Label
         self.editName = QLineEdit()
-        self.editName.setMinimumWidth(220)
-        self.editName.setMaxLength(200)
+        self.editName.setMinimumWidth(self.mainConf.pxInt(220))
+        self.editName.setMaxLength(self.mainConf.pxInt(200))
 
         # Item Status
         self.editStatus = QComboBox()
@@ -135,7 +135,7 @@ class GuiItemEditor(QDialog):
         self.mainForm.addWidget(self.textExport,  3, 0, 1, 2)
         self.mainForm.addWidget(self.editExport,  3, 2, 1, 1)
 
-        self.outerBox.setSpacing(16)
+        self.outerBox.setSpacing(self.mainConf.pxInt(16))
         self.outerBox.addLayout(self.mainForm)
         self.outerBox.addStretch(1)
         self.outerBox.addWidget(self.buttonBox)

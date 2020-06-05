@@ -62,8 +62,8 @@ class GuiDocSplit(QDialog):
 
         self.listBox = QListWidget()
         self.listBox.setDragDropMode(QAbstractItemView.NoDragDrop)
-        self.listBox.setMinimumWidth(400)
-        self.listBox.setMinimumHeight(180)
+        self.listBox.setMinimumWidth(self.mainConf.pxInt(400))
+        self.listBox.setMinimumHeight(self.mainConf.pxInt(180))
 
         self.splitLevel = QComboBox(self)
         self.splitLevel.addItem("Split on Header Level 1 (Title)",      1)
@@ -84,10 +84,10 @@ class GuiDocSplit(QDialog):
         self.outerBox.setSpacing(0)
         self.outerBox.addWidget(self.headLabel)
         self.outerBox.addWidget(self.helpLabel)
-        self.outerBox.addSpacing(8)
+        self.outerBox.addSpacing(self.mainConf.pxInt(8))
         self.outerBox.addWidget(self.listBox)
         self.outerBox.addWidget(self.splitLevel)
-        self.outerBox.addSpacing(12)
+        self.outerBox.addSpacing(self.mainConf.pxInt(12))
         self.outerBox.addWidget(self.buttonBox)
         self.setLayout(self.outerBox)
 

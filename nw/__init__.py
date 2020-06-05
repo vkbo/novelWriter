@@ -172,7 +172,7 @@ def main(sysArgs=None):
             debugLevel = logging.INFO
         elif inOpt == "--debug":
             debugLevel = logging.DEBUG
-            logFormat  = "[{asctime:}] {name:>20}:{lineno:<4d}  {levelname:8}  {message:}"
+            logFormat  = "[{asctime:}] {name:>22}:{lineno:<4d}  {levelname:8}  {message:}"
         elif inOpt == "--logfile":
             logFile = inArg
             toFile  = True
@@ -180,7 +180,7 @@ def main(sysArgs=None):
             toStd = False
         elif inOpt == "--verbose":
             debugLevel = VERBOSE
-            logFormat  = "[{asctime:}] {name:>20}:{lineno:<4d}  {levelname:8}  {message:}"
+            logFormat  = "[{asctime:}] {name:>22}:{lineno:<4d}  {levelname:8}  {message:}"
         elif inOpt == "--style":
             qtStyle = inArg
         elif inOpt == "--config":
