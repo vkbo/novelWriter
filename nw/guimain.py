@@ -81,7 +81,7 @@ class GuiMain(QMainWindow):
         self.isZenMode  = False
 
         # Prepare main window
-        self.resize(*self.mainConf.winGeometry)
+        self.resize(*self.mainConf.getWinSize())
         self._setWindowTitle()
         self.setWindowIcon(QIcon(self.mainConf.appIcon))
 
@@ -139,7 +139,7 @@ class GuiMain(QMainWindow):
         self.splitOutline = QSplitter(Qt.Vertical)
         self.splitOutline.addWidget(self.projView)
         self.splitOutline.addWidget(self.projMeta)
-        self.splitOutline.setSizes(self.mainConf.outlnPanePos)
+        self.splitOutline.setSizes(self.mainConf.getOutlinePanePos())
 
         self.tabWidget = QTabWidget()
         self.tabWidget.setTabPosition(QTabWidget.East)
@@ -154,7 +154,7 @@ class GuiMain(QMainWindow):
         self.splitMain.setOpaqueResize(False)
         self.splitMain.addWidget(self.treePane)
         self.splitMain.addWidget(self.tabWidget)
-        self.splitMain.setSizes(self.mainConf.mainPanePos)
+        self.splitMain.setSizes(self.mainConf.getMainPanePos())
 
         self.setCentralWidget(self.splitMain)
 

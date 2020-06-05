@@ -81,7 +81,7 @@ class GuiDocEditor(QTextEdit):
 
         # Core Elements
         self.qDocument = self.document()
-        self.qDocument.setDocumentMargin(self.mainConf.textMargin)
+        self.qDocument.setDocumentMargin(self.mainConf.getTextMargin())
         self.qDocument.contentsChange.connect(self._docChange)
 
         # Document Title
@@ -192,14 +192,13 @@ class GuiDocEditor(QTextEdit):
         self.setPalette(docPalette)
 
         # Set default text margins
-        self.qDocument.setDocumentMargin(self.mainConf.textMargin)
+        self.qDocument.setDocumentMargin(self.mainConf.getTextMargin())
 
         # Also set the document text options for the document text flow
         theOpt = QTextOption()
 
-        if self.mainConf.tabWidth is not None:
-            if self.mainConf.verQtValue >= 51000:
-                theOpt.setTabStopDistance(self.mainConf.tabWidth)
+        if self.mainConf.verQtValue >= 51000:
+            theOpt.setTabStopDistance(self.mainConf.getTabWidth())
         if self.mainConf.doJustify:
             theOpt.setAlignment(Qt.AlignJustify)
         if self.mainConf.showTabsNSpaces:
@@ -319,6 +318,7 @@ class GuiDocEditor(QTextEdit):
         Config.textFixedW is enabled or we're in Zen mode. Otherwise,
         just ensure the margins are set correctly.
         """
+        cM = self.mainConf.getTextMargin()
         if self.mainConf.textFixedW or self.theParent.isZenMode:
             vBar = self.verticalScrollBar()
             if vBar.isVisible():
@@ -326,20 +326,20 @@ class GuiDocEditor(QTextEdit):
             else:
                 sW = 0
             if self.theParent.isZenMode:
-                tW = self.mainConf.zenWidth
+                tW = self.mainConf.getZenWidth()
             else:
-                tW = self.mainConf.textWidth
+                tW = self.mainConf.getTextWidth()
             wW = self.width()
             tM = int((wW - sW - tW)/2)
-            if tM < self.mainConf.textMargin:
-                tM = self.mainConf.textMargin
+            if tM < cM:
+                tM = cM
         else:
-            tM = self.mainConf.textMargin
+            tM = cM
 
         tB = self.lineWidth()
         tW = self.width() - 2*tB
         tH = self.docTitle.height()
-        tT = self.mainConf.textMargin - tH
+        tT = cM - tH
         self.docTitle.setGeometry(tB, tB, tW, tH)
         self.setViewportMargins(0, tH, 0, 0)
 

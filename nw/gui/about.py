@@ -64,7 +64,7 @@ class GuiAbout(QDialog):
         self.lblVers = QLabel("v%s" % nw.__version__)
         self.lblDate = QLabel(datetime.strptime(nw.__date__, "%Y-%m-%d").strftime("%x"))
 
-        self.leftBox  = QVBoxLayout()
+        self.leftBox = QVBoxLayout()
         self.leftBox.setSpacing(self.mainConf.pxInt(4))
         self.leftBox.addWidget(self.guiDeco, 0, Qt.AlignCenter)
         self.leftBox.addWidget(self.lblName, 0, Qt.AlignCenter)
@@ -78,10 +78,6 @@ class GuiAbout(QDialog):
         self.pageAbout.setOpenExternalLinks(True)
         self.pageAbout.document().setDocumentMargin(self.mainConf.pxInt(16))
 
-        # self.pageCredit = QTextBrowser()
-        # self.pageCredit.setOpenExternalLinks(True)
-        # self.pageCredit.document().setDocumentMargin(16)
-
         self.pageLicense = QTextBrowser()
         self.pageLicense.setOpenExternalLinks(True)
         self.pageLicense.document().setDocumentMargin(self.mainConf.pxInt(16))
@@ -89,7 +85,6 @@ class GuiAbout(QDialog):
         # Main Tab Area
         self.tabBox = QTabWidget()
         self.tabBox.addTab(self.pageAbout, "About")
-        # self.tabBox.addTab(self.pageCredit, "Credit")
         self.tabBox.addTab(self.pageLicense, "License")
         self.innerBox.addWidget(self.tabBox)
 

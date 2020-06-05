@@ -64,16 +64,16 @@ class GuiSessionLogView(QDialog):
         self.setMinimumWidth(self.mainConf.pxInt(420))
         self.setMinimumHeight(self.mainConf.pxInt(400))
 
-        widthCol0 = self.optState.getInt("GuiSession", "widthCol0", self.mainConf.pxInt(180))
-        widthCol1 = self.optState.getInt("GuiSession", "widthCol1", self.mainConf.pxInt(80))
-        widthCol2 = self.optState.getInt("GuiSession", "widthCol2", self.mainConf.pxInt(80))
+        wCol0 = self.mainConf.pxInt(self.optState.getInt("GuiSession", "widthCol0", 180))
+        wCol1 = self.mainConf.pxInt(self.optState.getInt("GuiSession", "widthCol1", 80))
+        wCol2 = self.mainConf.pxInt(self.optState.getInt("GuiSession", "widthCol2", 80))
 
         self.listBox = QTreeWidget()
         self.listBox.setHeaderLabels(["Session Start","Length","Words",""])
         self.listBox.setIndentation(0)
-        self.listBox.setColumnWidth(0, widthCol0)
-        self.listBox.setColumnWidth(1, widthCol1)
-        self.listBox.setColumnWidth(2, widthCol2)
+        self.listBox.setColumnWidth(0, wCol0)
+        self.listBox.setColumnWidth(1, wCol1)
+        self.listBox.setColumnWidth(2, wCol2)
         self.listBox.setColumnWidth(3, 0)
 
         hHeader = self.listBox.headerItem()
@@ -220,20 +220,20 @@ class GuiSessionLogView(QDialog):
 
     def _doClose(self):
 
-        widthCol0    = self.listBox.columnWidth(0)
-        widthCol1    = self.listBox.columnWidth(1)
-        widthCol2    = self.listBox.columnWidth(2)
+        widthCol0    = self.mainConf.rpxInt(self.listBox.columnWidth(0))
+        widthCol1    = self.mainConf.rpxInt(self.listBox.columnWidth(1))
+        widthCol2    = self.mainConf.rpxInt(self.listBox.columnWidth(2))
         sortCol      = self.listBox.sortColumn()
         sortOrder    = self.listBox.header().sortIndicatorOrder()
         hideZeros    = self.hideZeros.isChecked()
         hideNegative = self.hideNegative.isChecked()
 
-        self.optState.setValue("GuiSession", "widthCol0",    widthCol0)
-        self.optState.setValue("GuiSession", "widthCol1",    widthCol1)
-        self.optState.setValue("GuiSession", "widthCol2",    widthCol2)
-        self.optState.setValue("GuiSession", "sortCol",      sortCol)
-        self.optState.setValue("GuiSession", "sortOrder",    sortOrder)
-        self.optState.setValue("GuiSession", "hideZeros",    hideZeros)
+        self.optState.setValue("GuiSession", "widthCol0", widthCol0)
+        self.optState.setValue("GuiSession", "widthCol1", widthCol1)
+        self.optState.setValue("GuiSession", "widthCol2", widthCol2)
+        self.optState.setValue("GuiSession", "sortCol", sortCol)
+        self.optState.setValue("GuiSession", "sortOrder", sortOrder)
+        self.optState.setValue("GuiSession", "hideZeros", hideZeros)
         self.optState.setValue("GuiSession", "hideNegative", hideNegative)
 
         self.optState.saveSettings()

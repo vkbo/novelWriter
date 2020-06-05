@@ -112,8 +112,9 @@ class GuiProjectTree(QTreeWidget):
         # self.setSelectionBehavior(QAbstractItemView.SelectRows)
 
         # Get user's column width preferences for NAME and COUNT
-        if len(self.mainConf.treeColWidth) <= 4:
-            for colN, colW in enumerate(self.mainConf.treeColWidth):
+        treeColWidth = self.mainConf.getTreeColWidths()
+        if len(treeColWidth) <= 4:
+            for colN, colW in enumerate(treeColWidth):
                 self.setColumnWidth(colN, colW)
 
         # The last column should just auto-scale

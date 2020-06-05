@@ -270,8 +270,9 @@ class GuiProjectLoad(QDialog):
                 newItem.setSelected(True)
                 hasSelection = True
 
+        projColWidth = self.mainConf.getProjColWidths()
         for i in range(3):
-            self.listBox.setColumnWidth(i, self.mainConf.projColWidth[i])
+            self.listBox.setColumnWidth(i, projColWidth[i])
 
         return
 

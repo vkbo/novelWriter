@@ -205,12 +205,13 @@ class Config:
         """Used to scale fixed gui sizes by the screen scale factor.
         This function returns an int, which is always rounded down.
         """
-        return int(self.guiScale*theSize)
+        return int(theSize*self.guiScale)
 
-    def pxFloat(self, theSize):
-        """Used to scale fixed gui sizes by the screen scale factor.
+    def rpxInt(self, theSize):
+        """Used to un-scale fixed gui sizes by the screen scale factor.
+        This function returns an int, which is always rounded down.
         """
-        return self.guiScale*theSize
+        return int(theSize/self.guiScale)
 
     ##
     #  Config Actions
@@ -663,7 +664,7 @@ class Config:
         return True
 
     ##
-    #  Setters and Getters
+    #  Setters
     ##
 
     def setConfPath(self, newPath):
@@ -693,6 +694,8 @@ class Config:
         return True
 
     def setWinSize(self, newWidth, newHeight):
+        newWidth = int(newWidth/self.guiScale)
+        newHeight = int(newHeight/self.guiScale)
         if abs(self.winGeometry[0] - newWidth) > 5:
             self.winGeometry[0] = newWidth
             self.confChanged = True
@@ -702,27 +705,27 @@ class Config:
         return True
 
     def setTreeColWidths(self, colWidths):
-        self.treeColWidth = colWidths
+        self.treeColWidth = [int(x/self.guiScale) for x in colWidths]
         self.confChanged = True
         return True
 
     def setProjColWidths(self, colWidths):
-        self.projColWidth = colWidths
+        self.projColWidth = [int(x/self.guiScale) for x in colWidths]
         self.confChanged = True
         return True
 
     def setMainPanePos(self, panePos):
-        self.mainPanePos = panePos
+        self.mainPanePos = [int(x/self.guiScale) for x in panePos]
         self.confChanged = True
         return True
 
     def setDocPanePos(self, panePos):
-        self.docPanePos  = panePos
+        self.docPanePos  = [int(x/self.guiScale) for x in panePos]
         self.confChanged = True
         return True
 
     def setOutlinePanePos(self, panePos):
-        self.outlnPanePos = panePos
+        self.outlnPanePos = [int(x/self.guiScale) for x in panePos]
         self.confChanged  = True
         return True
 
@@ -741,6 +744,40 @@ class Config:
         self.hasError = False
         self.errData = []
         return errMessage
+
+    ##
+    #  Getters
+    ##
+
+    def getWinSize(self):
+        return [int(x*self.guiScale) for x in self.winGeometry]
+
+    def getTreeColWidths(self):
+        return [int(x*self.guiScale) for x in self.treeColWidth]
+
+    def getProjColWidths(self):
+        return [int(x*self.guiScale) for x in self.projColWidth]
+
+    def getMainPanePos(self):
+        return [int(x*self.guiScale) for x in self.mainPanePos]
+
+    def getDocPanePos(self):
+        return [int(x*self.guiScale) for x in self.docPanePos]
+
+    def getOutlinePanePos(self):
+        return [int(x*self.guiScale) for x in self.outlnPanePos]
+
+    def getTextWidth(self):
+        return self.pxInt(self.textWidth)
+
+    def getTextMargin(self):
+        return self.pxInt(self.textMargin)
+
+    def getTabWidth(self):
+        return self.pxInt(self.tabWidth)
+
+    def getZenWidth(self):
+        return self.pxInt(self.zenWidth)
 
     ##
     #  Internal Functions
