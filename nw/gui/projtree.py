@@ -836,7 +836,15 @@ class GuiProjectTreeMenu(QMenu):
         self.theTree = theTree
         self.theItem = None
 
-        self.editItem = QAction("Edit Item", self)
+        self.openItem = QAction("Open Document", self)
+        self.openItem.triggered.connect(self._doOpenItem)
+        self.addAction(self.openItem)
+
+        self.viewItem = QAction("View Document", self)
+        self.viewItem.triggered.connect(self._doViewItem)
+        self.addAction(self.viewItem)
+
+        self.editItem = QAction("Edit Project Item", self)
         self.editItem.triggered.connect(self._doEditItem)
         self.addAction(self.editItem)
 
@@ -876,6 +884,8 @@ class GuiProjectTreeMenu(QMenu):
         isFile  = theItem.itemType == nwItemType.FILE
         isOrph  = isFile and theItem.parHandle is None
 
+        showOpen      = isFile
+        showView      = isFile
         showEdit      = not isTrash and not isOrph
         showExport    = isFile and not inTrash and not isOrph
         showNewFile   = not isTrash and not inTrash and not isOrph
@@ -883,6 +893,8 @@ class GuiProjectTreeMenu(QMenu):
         showDelete    = not isTrash
         showEmpty     = isTrash
 
+        self.openItem.setVisible(showOpen)
+        self.viewItem.setVisible(showView)
         self.editItem.setVisible(showEdit)
         self.toggleExp.setVisible(showExport)
         self.newFile.setVisible(showNewFile)
@@ -895,6 +907,20 @@ class GuiProjectTreeMenu(QMenu):
     ##
     #  Slots
     ##
+
+    def _doOpenItem(self):
+        """Forward the open document call to the main GUI window.
+        """
+        if self.theItem is not None:
+            self.theTree.theParent.openDocument(self.theItem.itemHandle)
+        return
+
+    def _doViewItem(self):
+        """Forward the view document call to the main GUI window.
+        """
+        if self.theItem is not None:
+            self.theTree.theParent.viewDocument(self.theItem.itemHandle)
+        return
 
     def _doEditItem(self):
         """Forward the edit item call to the main GUI window.
