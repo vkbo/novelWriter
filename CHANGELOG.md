@@ -6,7 +6,12 @@
 
 * A details panel below the Outline tree view has been added. The panel shows all the information of a selected row in the tree view above, including hidden columns, and some additional information. The tags and references also become clickable links that when clicked will open in the document viewer. PR #281.
 * Added a context menu to the project tree for easier access to some of the most use actions on the tree. PR #282.
+* Improved the support for High DPI screens. Margins and box sizes that are hardcoded should now scale. User settings should also scale back and forth when switching between scale factors. Issue #280, PR #285.
 
+**Project Structure**
+
+* The way GUI states of switches, column widths, etc., is saved has been improved a bit during the High DPI updates. PRs #285 and #286.
+* Some settings have been moved around to more appropriate sections in the project XML file. The project load function still reads the values from the previous location if opening an older project file. PR #288.
 
 ## Version 0.7 [2020-06-01]
 
