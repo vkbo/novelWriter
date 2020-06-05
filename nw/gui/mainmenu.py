@@ -233,14 +233,14 @@ class GuiMainMenu(QMenuBar):
         self.projMenu.addSeparator()
 
         # Project > Edit
-        self.aEditItem = QAction("&Edit Item", self)
+        self.aEditItem = QAction("&Edit Project Item", self)
         self.aEditItem.setStatusTip("Change item settings")
         self.aEditItem.setShortcuts(["Ctrl+E", "F2"])
         self.aEditItem.triggered.connect(self.theParent.editItem)
         self.projMenu.addAction(self.aEditItem)
 
         # Project > Delete
-        self.aDeleteItem = QAction("&Delete Item", self)
+        self.aDeleteItem = QAction("&Delete Project Item", self)
         self.aDeleteItem.setStatusTip("Delete selected item")
         self.aDeleteItem.setShortcut("Ctrl+Del")
         self.aDeleteItem.triggered.connect(lambda : self.theParent.treeView.deleteItem(None))
