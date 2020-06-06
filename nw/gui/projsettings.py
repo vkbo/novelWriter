@@ -461,14 +461,8 @@ class GuiProjectEditReplace(QWidget):
         self.listBox.itemSelectionChanged.connect(self._selectedItem)
         self.listBox.setIndentation(0)
 
-        treeHead = self.listBox.headerItem()
-        treeHead.setFont(0, self.theTheme.guiFont)
-        treeHead.setFont(1, self.theTheme.guiFont)
-
         for aKey, aVal in self.theProject.autoReplace.items():
             newItem = QTreeWidgetItem(["<%s>" % aKey, aVal])
-            newItem.setFont(0, self.theTheme.guiFont)
-            newItem.setFont(1, self.theTheme.guiFont)
             self.listBox.addTopLevelItem(newItem)
 
         self.listBox.sortByColumn(0, Qt.AscendingOrder)
@@ -559,8 +553,6 @@ class GuiProjectEditReplace(QWidget):
         saveKey = "<keyword%d>" % (self.listBox.topLevelItemCount() + 1)
         newVal  = ""
         newItem = QTreeWidgetItem([saveKey, newVal])
-        newItem.setFont(0, self.theTheme.guiFont)
-        newItem.setFont(1, self.theTheme.guiFont)
         self.listBox.addTopLevelItem(newItem)
         return True
 

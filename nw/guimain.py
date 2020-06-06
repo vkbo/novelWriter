@@ -197,9 +197,11 @@ class GuiMain(QMainWindow):
 
         # Shortcuts and Actions
         self._connectMenuActions()
+
         keyReturn = QShortcut(self.treeView)
         keyReturn.setKey(QKeySequence(Qt.Key_Return))
         keyReturn.activated.connect(self._treeKeyPressReturn)
+
         keyEscape = QShortcut(self)
         keyEscape.setKey(QKeySequence(Qt.Key_Escape))
         keyEscape.activated.connect(self._keyPressEscape)
@@ -1021,6 +1023,9 @@ class GuiMain(QMainWindow):
     ##
 
     def _treeSingleClick(self):
+        """Single click on a project tree item just updates the details
+        panel below the tree.
+        """
         sHandle = self.treeView.getSelectedHandle()
         if sHandle is not None:
             self.treeMeta.updateViewBox(sHandle)
@@ -1036,7 +1041,7 @@ class GuiMain(QMainWindow):
         if nwItem is not None:
             if nwItem.itemType == nwItemType.FILE:
                 logger.verbose("Requested item %s is a file" % tHandle)
-                self.openDocument(tHandle)
+                self.openDocument(tHandle, changeFocus=False)
             else:
                 logger.verbose("Requested item %s is a folder" % tHandle)
         return
