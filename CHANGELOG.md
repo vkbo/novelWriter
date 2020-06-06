@@ -1,5 +1,26 @@
 # novelWriter ChangeLog
 
+## Version 0.7.1 [2020-06-06]
+
+**Bugfixes**
+
+* For some fonts (especially Ubuntu) the minimum column width in the tree widgets would be estimated to be too large. It especially meant that the "include when exporting" flag had a column much wider than it needed to be. This setting is now overridden with the known size of the icon, plus a 6 pixel margin. PR #278.
+* Correctly fixes issue #273, which was actually due to an old css setting from early development. PR #287.
+
+**User Interface**
+
+* The Build Novel Project tool now has an option to not style the text before printing or exporting to file. PR #276.
+* When opening an item in the project tree, the focus remains on the tree and no longer switches to the editor. It makes it easier to flip through files and look at them by pressing enter repeatedly. PRs #278 and #287.
+* Added a title icon and document icon to the outline view. PR #278.
+* The timeline class root folder now has a calendar icon instead of a clock. PR #287.
+* Regrouped the options on the Build Novel Project tool a bit. They are now sorted into Titles, Format, Text and File categories, with more consistent labelling. PR #278.
+* A link colour has been added to the Build Novel Project tool. It's the same colour as the header. PR #287.
+
+**Other Changes**
+
+* Reduced the number of files and folders in the source code a bit. PR #277.
+
+
 ## Version 0.7 [2020-06-01]
 
 **Bugfixes**
