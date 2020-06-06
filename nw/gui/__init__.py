@@ -2,9 +2,7 @@
 
 from nw.gui.about import GuiAbout
 from nw.gui.build import GuiBuildNovel
-from nw.gui.docbars import GuiDocTitleBar
-from nw.gui.docbars import GuiNoticeBar
-from nw.gui.docbars import GuiSearchBar
+from nw.gui.docbars import GuiDocTitleBar, GuiNoticeBar, GuiSearchBar
 from nw.gui.docdetails import GuiDocViewDetails
 from nw.gui.doceditor import GuiDocEditor
 from nw.gui.docmerge import GuiDocMerge
@@ -21,8 +19,7 @@ from nw.gui.projsettings import GuiProjectSettings
 from nw.gui.projtree import GuiProjectTree
 from nw.gui.sessionlog import GuiSessionLogView
 from nw.gui.statusbar import GuiMainStatus
-from nw.gui.theme import GuiIcons
-from nw.gui.theme import GuiTheme
+from nw.gui.theme import GuiIcons, GuiTheme
 
 __all__ = [
     "GuiAbout",

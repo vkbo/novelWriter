@@ -6,9 +6,7 @@
  Class wrapping the data of a novelWriter project
 
  File History:
- Created:   2018-09-29 [0.0.1] NWProject
- Created:   2019-10-21 [0.3.1] OptionState
- Rewritten: 2020-02-19 [0.4.5] OptionState
+ Created: 2018-09-29 [0.0.1]
 
  This file is a part of novelWriter
  Copyright 2020, Veronica Berglyd Olsen
@@ -33,7 +31,6 @@ import nw
 
 from os import path, mkdir, listdir, unlink, rename, rmdir
 from lxml import etree
-from hashlib import sha256
 from time import time
 from shutil import make_archive
 
