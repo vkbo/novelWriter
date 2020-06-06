@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   inkscape:version="1.0 (4035a4fb49, 2020-05-01)"
+   sodipodi:docname="calendar.svg"
+   id="svg1738"
+   viewBox="0 0 24 24"
+   height="24"
+   width="24"
+   version="1.2">
+  <metadata
+     id="metadata1744">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+        <dc:title></dc:title>
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <defs
+     id="defs1742" />
+  <sodipodi:namedview
+     inkscape:current-layer="svg1738"
+     inkscape:window-maximized="1"
+     inkscape:window-y="1"
+     inkscape:window-x="2560"
+     inkscape:cy="13.97449"
+     inkscape:cx="12.120186"
+     inkscape:zoom="34.117902"
+     showgrid="false"
+     id="namedview1740"
+     inkscape:window-height="1370"
+     inkscape:window-width="2560"
+     inkscape:pageshadow="2"
+     inkscape:pageopacity="0"
+     guidetolerance="10"
+     gridtolerance="10"
+     objecttolerance="10"
+     borderopacity="1"
+     bordercolor="#666666"
+     pagecolor="#ffffff" />
+  <path
+     style="stroke-width:1.11111;fill:#000000;fill-opacity:0.77999997"
+     id="path1736"
+     d="M 19.777778,5.5377778 V 5.3333333 C 19.777778,3.4922222 18.285556,2 16.444444,2 14.603333,2 13.111111,3.4922222 13.111111,5.3333333 H 10.888889 C 10.888889,3.4922222 9.396667,2 7.5555556,2 5.7144444,2 4.2222222,3.4922222 4.2222222,5.3333333 V 5.5377778 C 2.9322222,5.9988889 2,7.22 2,8.6666667 V 18.666667 C 2,20.504444 3.4955556,22 5.3333333,22 H 18.666667 C 20.504444,22 22,20.504444 22,18.666667 V 8.6666667 C 22,7.22 21.067778,5.9988889 19.777778,5.5377778 Z M 15.333333,5.3333333 c 0,-0.6133333 0.496667,-1.1111111 1.111111,-1.1111111 0.614445,0 1.111112,0.4977778 1.111112,1.1111111 v 2.2222223 c 0,0.6133333 -0.496667,1.1111111 -1.111112,1.1111111 -0.614444,0 -1.111111,-0.4977778 -1.111111,-1.1111111 z m -8.8888886,0 C 6.4444444,4.72 6.9411111,4.2222222 7.5555556,4.2222222 8.17,4.2222222 8.6666667,4.72 8.6666667,5.3333333 v 2.2222223 c 0,0.6133333 -0.4966667,1.1111111 -1.1111111,1.1111111 -0.6144445,0 -1.1111112,-0.4977778 -1.1111112,-1.1111111 z M 19.777778,18.666667 c 0,0.612222 -0.497778,1.111111 -1.111111,1.111111 H 5.3333333 C 4.72,19.777778 4.2222222,19.278889 4.2222222,18.666667 V 12 H 19.777778 Z" />
+</svg>

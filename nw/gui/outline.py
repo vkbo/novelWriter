@@ -339,8 +339,6 @@ class GuiProjectOutline(QTreeWidget):
             headItem.setTextAlignment(self.colIndex[nwOutline.CCOUNT], Qt.AlignRight)
             headItem.setTextAlignment(self.colIndex[nwOutline.WCOUNT], Qt.AlignRight)
             headItem.setTextAlignment(self.colIndex[nwOutline.PCOUNT], Qt.AlignRight)
-            for hItem in self.treeOrder:
-                headItem.setFont(self.colIndex[hItem], self.theTheme.guiFont)
 
         currTitle   = None
         currChapter = None
@@ -432,9 +430,6 @@ class GuiProjectOutline(QTreeWidget):
         newItem.setText(self.colIndex[nwOutline.OBJECT], ", ".join(theRefs[nwKeyWords.OBJECT_KEY]))
         newItem.setText(self.colIndex[nwOutline.ENTITY], ", ".join(theRefs[nwKeyWords.ENTITY_KEY]))
         newItem.setText(self.colIndex[nwOutline.CUSTOM], ", ".join(theRefs[nwKeyWords.CUSTOM_KEY]))
-
-        for i in self.treeOrder:
-            newItem.setFont(self.colIndex[i], self.theTheme.guiFont)
 
         return newItem
 
