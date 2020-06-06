@@ -3,7 +3,7 @@
 
  novelWriter – Project Item Class
 ==================================
- Class holding the data off a project tree item
+ Class holding the data of a project tree item
 
  File History:
  Created: 2018-10-27 [0.0.1] NWItem
