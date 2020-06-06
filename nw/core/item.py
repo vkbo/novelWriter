@@ -6,7 +6,7 @@
  Class holding the data of a project tree item
 
  File History:
- Created: 2018-10-27 [0.0.1] NWItem
+ Created: 2018-10-27 [0.0.1]
 
  This file is a part of novelWriter
  Copyright 2020, Veronica Berglyd Olsen

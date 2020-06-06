@@ -6,7 +6,7 @@
  Class holding the data of the project tree
 
  File History:
- Created: 2020-05-07 [0.4.5] NWTree
+ Created: 2020-05-07 [0.4.5]
 
  This file is a part of novelWriter
  Copyright 2020, Veronica Berglyd Olsen
@@ -33,8 +33,6 @@ from os import path
 from lxml import etree
 from hashlib import sha256
 from time import time
-
-from PyQt5.QtWidgets import QMessageBox
 
 from nw.core.item import NWItem
 from nw.common import checkString
