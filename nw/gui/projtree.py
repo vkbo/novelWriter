@@ -79,14 +79,6 @@ class GuiProjectTree(QTreeWidget):
         treeHeadItem.setToolTip(self.C_EXPORT, "Include in build")
         treeHeadItem.setToolTip(self.C_FLAGS, "Status, class, and layout flags")
 
-        # Force the font to fix font sizing issues on some platforms
-        # like Ubuntu. This must also be set when the rows are added.
-        self.setFont(self.theTheme.guiFont)
-        treeHeadItem.setFont(self.C_NAME, self.theTheme.guiFont)
-        treeHeadItem.setFont(self.C_COUNT,self.theTheme.guiFont)
-        treeHeadItem.setFont(self.C_EXPORT, self.theTheme.guiFont)
-        treeHeadItem.setFont(self.C_FLAGS, self.theTheme.guiFont)
-
         # Let the last column stretch, and set the minimum size to the
         # size of the icon as the default Qt font metrics approach fails
         # for some fonts like the Ubuntu font.
@@ -598,10 +590,6 @@ class GuiProjectTree(QTreeWidget):
         newItem.setTextAlignment(self.C_COUNT,  Qt.AlignRight | Qt.AlignVCenter)
         newItem.setTextAlignment(self.C_EXPORT, Qt.AlignLeft  | Qt.AlignVCenter)
         newItem.setTextAlignment(self.C_FLAGS,  Qt.AlignLeft  | Qt.AlignVCenter)
-
-        newItem.setFont(self.C_NAME,  self.theTheme.guiFont)
-        newItem.setFont(self.C_COUNT, self.theTheme.guiFont)
-        newItem.setFont(self.C_FLAGS, self.theTheme.guiFont)
 
         newItem.setData(self.C_NAME, Qt.UserRole, tHandle)
 
