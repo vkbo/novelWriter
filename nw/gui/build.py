@@ -982,8 +982,7 @@ class GuiBuildNovelDocView(QTextBrowser):
         if not theStyles:
             theStyles.append(r"h1, h2 {color: rgb(66, 113, 174);}")
             theStyles.append(r"h3, h4 {color: rgb(50, 50, 50);}")
-            theStyles.append(r"a {color: rgb(137, 89, 168);}")
-            theStyles.append(r"mark {background-color: rgb(240, 198, 116);}")
+            theStyles.append(r"a {color: rgb(66, 113, 174);}")
             theStyles.append(r".tags {color: rgb(245, 135, 31); font-weight: bold;}")
 
         self.qDocument.setDefaultStyleSheet("\n".join(theStyles))

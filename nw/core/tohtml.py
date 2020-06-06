@@ -269,6 +269,7 @@ class ToHtml(Tokenizer):
         theStyles.append(r"h1, h2 {color: rgb(66, 113, 174);}")
         theStyles.append(r"h3, h4 {color: rgb(50, 50, 50);}")
         theStyles.append(r"h1, h2, h3, h4 {page-break-after: avoid;}")
+        theStyles.append(r"a {color: rgb(66, 113, 174);}")
         theStyles.append(r".title {font-size: 2.5em;}")
         theStyles.append(r".tags {color: rgb(245, 135, 31); font-weight: bold;}")
         theStyles.append(r".break {text-align: left;}")
