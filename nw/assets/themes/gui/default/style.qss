@@ -1,7 +1,3 @@
 /**
  * Default Theme: Light
  */
-
-QTreeView, QHeaderView {
-    font-size: 13px;
-}

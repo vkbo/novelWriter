@@ -92,9 +92,6 @@ class GuiProjectLoad(QDialog):
         treeHead = self.listBox.headerItem()
         treeHead.setTextAlignment(1, Qt.AlignRight)
         treeHead.setTextAlignment(2, Qt.AlignRight)
-        treeHead.setFont(0, self.theTheme.guiFont)
-        treeHead.setFont(1, self.theTheme.guiFont)
-        treeHead.setFont(2, self.theTheme.guiFont)
 
         self.lblRecent = QLabel("<b>Recently Opened Projects</b>")
         self.lblPath   = QLabel("<b>Path</b>")
@@ -260,9 +257,6 @@ class GuiProjectLoad(QDialog):
             newItem.setTextAlignment(0, Qt.AlignLeft  | Qt.AlignVCenter)
             newItem.setTextAlignment(1, Qt.AlignRight | Qt.AlignVCenter)
             newItem.setTextAlignment(2, Qt.AlignRight | Qt.AlignVCenter)
-            newItem.setFont(0, self.theTheme.guiFont)
-            newItem.setFont(1, self.theTheme.guiFont)
-            newItem.setFont(2, self.theTheme.guiFont)
             self.listBox.addTopLevelItem(newItem)
             if not hasSelection:
                 newItem.setSelected(True)
