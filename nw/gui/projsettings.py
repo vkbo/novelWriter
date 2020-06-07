@@ -209,6 +209,10 @@ class GuiProjectEditMeta(QWidget):
         self.revLabel.setIndent(xInd)
         self.revValue = QLabel("{:n}".format(self.theProject.saveCount))
 
+        self.editLabel = QLabel("Edit time:")
+        self.editLabel.setIndent(xInd)
+        self.editValue = QLabel("{:.2f} hours".format(self.theProject.editTime/3600))
+
         self.statsLabel = QLabel("<b>Project Stats</b>")
 
         nR, nD, nF = self.theProject.projTree.countTypes()
@@ -236,16 +240,18 @@ class GuiProjectEditMeta(QWidget):
         self.mainForm.addWidget(self.pathValue,  2, 1, 1, 1, Qt.AlignTop)
         self.mainForm.addWidget(self.revLabel,   3, 0, 1, 1, Qt.AlignTop)
         self.mainForm.addWidget(self.revValue,   3, 1, 1, 1, Qt.AlignTop)
+        self.mainForm.addWidget(self.editLabel,  4, 0, 1, 1, Qt.AlignTop)
+        self.mainForm.addWidget(self.editValue,  4, 1, 1, 1, Qt.AlignTop)
 
-        self.mainForm.addWidget(self.statsLabel, 4, 0, 1, 2, Qt.AlignTop)
-        self.mainForm.addWidget(self.nRootLabel, 5, 0, 1, 1, Qt.AlignTop)
-        self.mainForm.addWidget(self.nRootValue, 5, 1, 1, 1, Qt.AlignTop)
-        self.mainForm.addWidget(self.nDirLabel,  6, 0, 1, 1, Qt.AlignTop)
-        self.mainForm.addWidget(self.nDirValue,  6, 1, 1, 1, Qt.AlignTop)
-        self.mainForm.addWidget(self.nFileLabel, 7, 0, 1, 1, Qt.AlignTop)
-        self.mainForm.addWidget(self.nFileValue, 7, 1, 1, 1, Qt.AlignTop)
-        self.mainForm.addWidget(self.wordsLabel, 8, 0, 1, 1, Qt.AlignTop)
-        self.mainForm.addWidget(self.wordsValue, 8, 1, 1, 1, Qt.AlignTop)
+        self.mainForm.addWidget(self.statsLabel, 5, 0, 1, 2, Qt.AlignTop)
+        self.mainForm.addWidget(self.nRootLabel, 6, 0, 1, 1, Qt.AlignTop)
+        self.mainForm.addWidget(self.nRootValue, 6, 1, 1, 1, Qt.AlignTop)
+        self.mainForm.addWidget(self.nDirLabel,  7, 0, 1, 1, Qt.AlignTop)
+        self.mainForm.addWidget(self.nDirValue,  7, 1, 1, 1, Qt.AlignTop)
+        self.mainForm.addWidget(self.nFileLabel, 8, 0, 1, 1, Qt.AlignTop)
+        self.mainForm.addWidget(self.nFileValue, 8, 1, 1, 1, Qt.AlignTop)
+        self.mainForm.addWidget(self.wordsLabel, 9, 0, 1, 1, Qt.AlignTop)
+        self.mainForm.addWidget(self.wordsValue, 9, 1, 1, 1, Qt.AlignTop)
 
         self.mainForm.setVerticalSpacing(self.mainConf.pxInt(6))
         self.mainForm.setHorizontalSpacing(self.mainConf.pxInt(12))
