@@ -39,14 +39,13 @@ class NWDoc():
 
     def __init__(self, theProject, theParent):
 
-        self.mainConf    = nw.CONFIG
-        self.theProject  = theProject
-        self.theParent   = theParent
-        self.theItem     = None
-        self.docHandle   = None
-        self.docEditable = False
-        self.fileLoc     = None
-        self.docMeta     = ""
+        self.mainConf   = nw.CONFIG
+        self.theProject = theProject
+        self.theParent  = theParent
+        self.theItem    = None
+        self.docHandle  = None
+        self.fileLoc    = None
+        self.docMeta    = ""
 
         # Internal Mapping
         self.makeAlert = self.theParent.makeAlert
@@ -60,11 +59,10 @@ class NWDoc():
     def clearDocument(self):
         """Clear the document contents.
         """
-        self.theItem     = None
-        self.docHandle   = None
-        self.docEditable = False
-        self.fileLoc     = None
-        self.docMeta     = ""
+        self.theItem   = None
+        self.docHandle = None
+        self.fileLoc   = None
+        self.docMeta   = ""
         return
 
     def openDocument(self, tHandle, showStatus=True, isOrphan=False):
@@ -86,13 +84,6 @@ class NWDoc():
         if self.theItem is None and not isOrphan:
             self.clearDocument()
             return None
-
-        # By default, the document is editable.
-        # Except for files in the trash folder.
-        self.docEditable = True
-        if self.theItem is not None:
-            if self.theItem.parHandle == self.theProject.projTree.trashRoot():
-                self.docEditable = False
 
         docFile = self.docHandle+".nwd"
         logger.debug("Opening document %s" % docFile)
@@ -137,7 +128,7 @@ class NWDoc():
         """Save the document via temp file in case of save failure, and
         in any case keep a backup of the file.
         """
-        if self.docHandle is None or not self.docEditable:
+        if self.docHandle is None:
             return False
 
         self.theProject.ensureFolderStructure()
