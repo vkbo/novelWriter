@@ -29,10 +29,10 @@
 import logging
 import nw
 
-from PyQt5.QtCore import Qt
+from PyQt5.QtCore import Qt, QSize
 from PyQt5.QtGui import QPalette, QColor
 from PyQt5.QtWidgets import (
-    qApp, QFrame, QGridLayout, QLabel, QLineEdit, QPushButton,
+    qApp, QWidget, QFrame, QGridLayout, QLabel, QLineEdit, QPushButton,
     QHBoxLayout
 )
 
@@ -40,10 +40,10 @@ from nw.constants import nwDocAction, nwUnicode
 
 logger = logging.getLogger(__name__)
 
-class GuiSearchBar(QFrame):
+class GuiSearchBar(QWidget):
 
     def __init__(self, theParent):
-        QFrame.__init__(self, theParent)
+        QWidget.__init__(self, theParent)
 
         logger.debug("Initialising GuiSearchBar ...")
 
@@ -168,10 +168,10 @@ class GuiSearchBar(QFrame):
 
 # END Class GuiSearchBar
 
-class GuiDocTitleBar(QLabel):
+class GuiDocTitleBar(QWidget):
 
-    def __init__(self, theParent, theProject):
-        QLabel.__init__(self, theParent)
+    def __init__(self, theParent, theProject, isEditor):
+        QWidget.__init__(self, theParent)
 
         logger.debug("Initialising GuiDocTitleBar ...")
 
@@ -180,25 +180,78 @@ class GuiDocTitleBar(QLabel):
         self.theProject = theProject
         self.theTheme   = theParent.theTheme
         self.theHandle  = None
+        self.isEditor   = isEditor
 
-        self.setText("")
-        self.setIndent(0)
-        self.setMargin(0)
+        # Make a QPalette that matches the Syntax Theme
+        self.thePalette = QPalette()
+        self.thePalette.setColor(QPalette.Window, QColor(*self.theTheme.colBack))
+        self.thePalette.setColor(QPalette.Text, QColor(*self.theTheme.colText))
+
+        # Main Widget Settings
         self.setContentsMargins(0, 0, 0, 0)
         self.setAutoFillBackground(True)
-        self.setAlignment(Qt.AlignCenter)
-        self.setWordWrap(True)
-        self.setFrameShape(QFrame.NoFrame)
-        self.setLineWidth(0)
+        self.setPalette(self.thePalette)
 
-        lblPalette = self.palette()
-        lblPalette.setColor(QPalette.Window, QColor(*self.theTheme.colBack))
-        lblPalette.setColor(QPalette.Text, QColor(*self.theTheme.colText))
-        self.setPalette(lblPalette)
+        # Title Label
+        self.theTitle = QLabel()
+        self.theTitle.setText("")
+        self.theTitle.setIndent(0)
+        self.theTitle.setMargin(0)
+        self.theTitle.setContentsMargins(10, 0, 0, 0)
+        self.theTitle.setAutoFillBackground(True)
+        self.theTitle.setAlignment(Qt.AlignCenter)
+        self.theTitle.setWordWrap(True)
+        self.theTitle.setFrameShape(QFrame.NoFrame)
+        self.theTitle.setLineWidth(0)
+        self.theTitle.setPalette(self.thePalette)
 
-        lblFont = self.font()
+        lblFont = self.theTitle.font()
         lblFont.setPointSizeF(0.9*self.theTheme.fontPointSize)
-        self.setFont(lblFont)
+        self.theTitle.setFont(lblFont)
+
+        # Buttons
+        iPx = self.theTheme.textIconSize
+
+        self.closeButton = QPushButton("")
+        self.closeButton.setIcon(self.theTheme.getIcon("close"))
+        self.closeButton.setContentsMargins(0, 0, 0, 0)
+        self.closeButton.setIconSize(QSize(iPx, iPx))
+        self.closeButton.setFixedSize(iPx, iPx)
+        self.closeButton.setFlat(True)
+        self.closeButton.setVisible(False)
+        self.closeButton.clicked.connect(self._closeDocument)
+
+        if self.isEditor:
+            self.minmaxButton = QPushButton("")
+            self.minmaxButton.setIcon(self.theTheme.getIcon("maximise"))
+            self.minmaxButton.setContentsMargins(0, 0, 0, 0)
+            self.minmaxButton.setIconSize(QSize(iPx, iPx))
+            self.minmaxButton.setFixedSize(iPx, iPx)
+            self.minmaxButton.setFlat(True)
+            self.minmaxButton.setVisible(False)
+            self.minmaxButton.clicked.connect(self._minmaxDocument)
+        else:
+            self.refreshButton = QPushButton("")
+            self.refreshButton.setIcon(self.theTheme.getIcon("refresh"))
+            self.refreshButton.setContentsMargins(0, 0, 0, 0)
+            self.refreshButton.setIconSize(QSize(iPx, iPx))
+            self.refreshButton.setFixedSize(iPx, iPx)
+            self.refreshButton.setFlat(True)
+            self.refreshButton.setVisible(False)
+            self.refreshButton.clicked.connect(self._refreshDocument)
+
+        # Assemble Layout
+        hSp = self.mainConf.pxInt(6)
+        self.outerBox = QHBoxLayout()
+        self.outerBox.setSpacing(hSp)
+        self.outerBox.addSpacing(2*(iPx + hSp))
+        self.outerBox.addWidget(self.theTitle, 1)
+        if self.isEditor:
+            self.outerBox.addWidget(self.minmaxButton, 0)
+        else:
+            self.outerBox.addWidget(self.refreshButton, 0)
+        self.outerBox.addWidget(self.closeButton, 0)
+        self.setLayout(self.outerBox)
 
         logger.debug("GuiDocTitleBar initialisation complete")
 
@@ -212,9 +265,14 @@ class GuiDocTitleBar(QLabel):
         """Sets the document title from the handle, or alternatively,
         set the whole document path.
         """
-        self.setText("")
+        self.theTitle.setText("")
         self.theHandle = tHandle
         if tHandle is None:
+            self.closeButton.setVisible(False)
+            if self.isEditor:
+                self.minmaxButton.setVisible(False)
+            else:
+                self.refreshButton.setVisible(False)
             return False
 
         if self.mainConf.showFullPath:
@@ -225,15 +283,50 @@ class GuiDocTitleBar(QLabel):
                 if nwItem is not None:
                     tTitle.append(nwItem.itemName)
             sSep = "  %s  " % nwUnicode.U_RSAQUO
-            self.setText(sSep.join(tTitle))
+            self.theTitle.setText(sSep.join(tTitle))
         else:
             nwItem = self.theProject.projTree[tHandle]
             if nwItem is None:
                 return False
+            self.theTitle.setText(nwItem.itemName)
 
-            self.setText(nwItem.itemName)
+        self.closeButton.setVisible(True)
+        if self.isEditor:
+            self.minmaxButton.setVisible(True)
+        else:
+            self.refreshButton.setVisible(True)
 
         return True
+
+    ##
+    #  Slots
+    ##
+
+    def _closeDocument(self):
+        """Trigger the close editor/viewer on the main window.
+        """
+        if self.isEditor:
+            self.theParent.theParent.closeDocEditor()
+        else:
+            self.theParent.theParent.closeDocViewer()
+        return
+
+    def _minmaxDocument(self):
+        """Switch on or off zen mode.
+        """
+        self.theParent.theParent.toggleZenMode()
+        self.closeButton.setVisible(not self.theParent.theParent.isZenMode)
+        if self.theParent.theParent.isZenMode:
+            self.minmaxButton.setIcon(self.theTheme.getIcon("minimise"))
+        else:
+            self.minmaxButton.setIcon(self.theTheme.getIcon("maximise"))
+        return
+
+    def _refreshDocument(self):
+        """Reload the content of the document.
+        """
+        self.theParent.reloadText()
+        return
 
     ##
     #  Events

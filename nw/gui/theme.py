@@ -525,6 +525,9 @@ class GuiIcons:
         "check"          : (None,                          None),
         "cross"          : (None,                          None),
         "hash"           : (None,                          None),
+        "maximise"       : (None,                          None),
+        "minimise"       : (None,                          None),
+        "refresh"        : (None,                          None),
 
         ## Other Icons
         "warning"        : (QStyle.SP_MessageBoxWarning,   "dialog-warning"),
