@@ -158,7 +158,6 @@ class GuiDocEditor(QTextEdit):
         self.hasSelection = False
 
         self.setDocumentChanged(False)
-        self.theParent.noticeBar.hideNote()
         self.docTitle.setTitleFromHandle(self.theHandle)
 
         return True

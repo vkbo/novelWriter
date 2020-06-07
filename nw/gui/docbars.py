@@ -7,7 +7,6 @@
 
  File History:
  Created: 2019-09-29 [0.2.1] GuiSearchBar
- Created: 2019-10-31 [0.3.2] GuiNoticeBar
  Created: 2020-04-25 [0.4.5] GuiDocTitleBar
 
  This file is a part of novelWriter
@@ -168,59 +167,6 @@ class GuiSearchBar(QFrame):
         return True
 
 # END Class GuiSearchBar
-
-class GuiNoticeBar(QFrame):
-
-    def __init__(self, theParent):
-        QFrame.__init__(self, theParent)
-
-        logger.debug("Initialising GuiNoticeBar ...")
-
-        self.mainConf  = nw.CONFIG
-        self.theParent = theParent
-        self.theTheme  = theParent.theTheme
-
-        self.setContentsMargins(0, 0, 0, 0)
-        self.setFrameShape(QFrame.Box)
-
-        m8 = self.mainConf.pxInt(8)
-        m2 = self.mainConf.pxInt(2)
-
-        self.mainBox = QHBoxLayout(self)
-        self.mainBox.setContentsMargins(m8, m2, m2, m2)
-
-        self.noteLabel = QLabel("")
-
-        self.closeButton = QPushButton(self.theTheme.getIcon("close"),"")
-        self.closeButton.clicked.connect(self.hideNote)
-
-        self.mainBox.addWidget(self.noteLabel)
-        self.mainBox.addWidget(self.closeButton)
-        self.mainBox.setStretch(0, 1)
-
-        self.setLayout(self.mainBox)
-
-        self.hideNote()
-
-        logger.debug("GuiNoticeBar initialisation complete")
-
-        return
-
-    def showNote(self, theNote):
-        """Show the note on the noticebar.
-        """
-        self.noteLabel.setText("<b>Note:</b> %s" % theNote)
-        self.setVisible(True)
-        return
-
-    def hideNote(self):
-        """Clear the noticebar and hide it.
-        """
-        self.noteLabel.setText("")
-        self.setVisible(False)
-        return
-
-# END Class GuiNoticeBar
 
 class GuiDocTitleBar(QLabel):
 

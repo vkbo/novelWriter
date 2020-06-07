@@ -42,7 +42,7 @@ from PyQt5.QtWidgets import (
 from nw.gui import (
     GuiBuildNovel, GuiDocEditor, GuiDocMerge, GuiDocSplit, GuiDocViewDetails,
     GuiDocViewer, GuiItemDetails, GuiItemEditor, GuiMainMenu, GuiMainStatus,
-    GuiNoticeBar, GuiOutline, GuiOutlineDetails, GuiPreferences, GuiProjectLoad,
+    GuiOutline, GuiOutlineDetails, GuiPreferences, GuiProjectLoad,
     GuiProjectSettings, GuiProjectTree, GuiSearchBar, GuiSessionLogView, GuiTheme
 )
 from nw.core import NWProject, NWDoc, NWIndex
@@ -90,7 +90,6 @@ class GuiMain(QMainWindow):
 
         # Main GUI Elements
         self.statusBar = GuiMainStatus(self)
-        self.noticeBar = GuiNoticeBar(self)
         self.treeView  = GuiProjectTree(self)
         self.docEditor = GuiDocEditor(self)
         self.docViewer = GuiDocViewer(self)
@@ -118,7 +117,6 @@ class GuiMain(QMainWindow):
         self.docEdit.setContentsMargins(0, 0, 0, 0)
         self.docEdit.setSpacing(self.mainConf.pxInt(2))
         self.docEdit.addWidget(self.searchBar)
-        self.docEdit.addWidget(self.noticeBar)
         self.docEdit.addWidget(self.docEditor)
         self.editPane.setLayout(self.docEdit)
 
