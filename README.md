@@ -6,26 +6,40 @@
 
 <img align="left" style="margin: 0 16px 4px 0;" src="assets/icons/96x96/novelwriter.png">
 novelWriter is a markdown-like text editor designed for writing novels and larger projects of many smaller plain text documents.
+It uses its own flavour of markdown that supports a meta data syntax for comments, synopsis and cross-referencing between files.
+The idea is to have a simple text editor which allows for easy organisation of text files and notes, built on a plain text file project repository for robustness.
+The plain text storage is suitable for version control software, and also well suited for file synchronisation tools.
+The core project structure is stored in a project XML file.
+Other meta data is primarily saved in JSON files.
 
-novelWriter uses its own flavour of markdown that supports a meta data syntax for comments, synopsis and cross-referencing between files.
-
-novelWriter is licensed under GPLv3, see the [GNU General Public License website](https://www.gnu.org/licenses/gpl-3.0.en.html) for more details, or consult the [LICENSE](LICENSE.md) file.
-The bundled Typicon-based icon themes are licensed under [CC BY-SA 4.0](http://creativecommons.org/licenses/by-sa/4.0/).
-
-Below is a short overview of the features of novelWriter.
 The full documentation is available at [novelwriter.readthedocs.io](https://novelwriter.readthedocs.io/).
 
 ### Note
 
-The application is under initial development, and not all planned features are included.
-The core functionality is, however, in place and has been used for a while by the author and collaborators.
+The application is still under initial development, but all core features have now been added.
+The core functionality has been in place for a while, and novelWriter is being used for writing projects by the author and collaborators.
 
-New features are being added regularly, until the core toolset is complete.
-When all planned initial features are in place, a release 1.0 will be made.
-Until then, novelWriter is in a pre-release alpha state, and should be considered experimental.
-If you do use it for real projects, please run backups frequently to avoid data losses.
+No new major features will be added at this time, until the application is stable.
+Until then, novelWriter is in a beta state.
+Please report any issues you may encounter in the repository issue tracker.
+
+You should be able to use novelWriter for real projects, but as with all software, please make regular backups.
 There is a built in backup feature that can pack the entire project into a zip file on close.
 Please check the documentation for further details.
+
+
+## License
+
+This is Open Source software, and novelWriter is licensed under GPLv3.
+See the [GNU General Public License website](https://www.gnu.org/licenses/gpl-3.0.en.html) for more details, or consult the [LICENSE](LICENSE.md) file.
+
+Bundled assets have the following licenses:
+
+* The Typicon-based icon themes by Stephen Hutchings are licensed under [CC BY-SA 4.0](http://creativecommons.org/licenses/by-sa/4.0/). The icons have been altered in size and colour for use with novelWriter, and some additional icons added. The original icon set is available at [stephenhutchings/typicons.font](https://github.com/stephenhutchings/typicons.font).
+* The Cantarell font by Dave Crossland is licensed under [OPEN FONT LICENSE Version 1.1](http://scripts.sil.org/OFL). It is available at [Google Fonts](https://fonts.google.com/specimen/Cantarell).
+* The Tomorrow syntax themes use colour schemes taken from Chris Kempson's collection of code editor themes, licensed with the [MIT License](https://github.com/chriskempson/tomorrow-theme/blob/master/LICENSE.md), and the main repo is available at [chriskempson/tomorrow-theme](https://github.com/chriskempson/tomorrow-theme).
+* Likewise, the Owl syntax themes use colours from Sarah Drasner's code editor themes, licensed with the [MIT License](https://github.com/sdras/night-owl-vscode-theme/blob/master/LICENSE), and the main repo is available at [sdras/night-owl-vscode-theme](https://github.com/sdras/night-owl-vscode-theme).
+
 
 ## Markdown Flavour
 
@@ -49,31 +63,42 @@ In addition, novelWriter adds the following, which is otherwise not supported by
 * Non-breaking spaces are supported as long as your system is using at least Qt 5.9.
   For earlier version, non-breaking spaces are converted to normal spaces when saving the document.
   This is done by the Qt library.
+  From Qt 5.9 and on, it is possible to extract the raw text from a document, which preserves non-breaking spaces.
 * Tabs may be rendered, depending on export format.
+  With Qt 5.10 or higher, the width of a tab in pixels can be changed in Preferences.
 
-The core export format that should render properly all supported features is the HTML export.
-This format also forms the basis of conversion to Office type document formats with Pandoc.
-Note that Pandoc itself strips some formatting from the document during conversion, so the final result may be different than expected.
+The core export format of novelWriter is HTML5.
+You can also export the entire project as a single novelWriter flavour document.
+In addition, other exports to Open Document, PDF, and plain text is offered through the Qt library, although with limitations to formatting.
+
+Even though novelWriter can export to Open Document, the result is actually better when using the HTML output and then importing the HTML document into for instance Libre Office.
+The HTML output is also suitable for conversion with tools like Pandoc.
+
 
 ## Implementation
 
 The application is written in Python3 using Qt5 via PyQt5.
 It is developed on Linux, but it should in principle work fine on other operating systems as well as long as dependencies are met.
+It is regularly tested on Windows 10.
 
-The application can be started from the source folder with the command:
+The application can be started from the source folder with one of the commands:
 ```
 ./novelWriter.py
+python novelWriter.py
+python3 novelWriter.py
 ```
 
 It also takes a few parameters for debugging and such, which can be listed with the switch `--help`.
 
-There are no launcher icons yet.
-Consult your operating system documentation for how to make those.
-These will be added at some point, and I would appreciate any assistance from people working on Windows and MacOS as I don't use either of those operating systems.
+In the root assets folder there are icons and scripts and a template for setting up a launcher on Gnome desktops.
+You may need to modify those scripts slightly, but as they are, they work on Debian and Ubuntu.
+For other operating systems, please consult your operating system documentation for how to make those.
+Feel free to submit more if you are able to make them.
+
 
 ## Package Dependencies
 
-It is recommended that novelWriter runs with Qt 5.9 or later, and Python 3.6 or later.
+It is recommended that novelWriter runs with Qt 5.10 or later, and Python 3.6 or later.
 Running with Qt as low as 5.2.1 and Python 3.4.3 has been tested, and worked in the past, but there are no guarantees that this will keep working as these are not a part of the test builds.
 
 For the apt package manager on Debian systems, the following Python3 packages are needed:
@@ -88,15 +113,15 @@ These are optional, but recommended:
 
 Alternatively, the packages can be installed with `pip` by running
 ```
-python3 -m pip install -r requirements.txt
+pip install -r requirements.txt
 ```
 in the application folder.
 
 You can also do them one at a time, skipping the ones you don't need:
 ```
-python3 -m pip install pyqt5
-python3 -m pip install lxml
-python3 -m pip install pyenchant
+pip install pyqt5
+pip install lxml
+pip install pyenchant
 ```
 
 PyQt/Qt should be at least 5.2.1, but ideally 5.10 or higher for nearly all features to work.
@@ -136,7 +161,7 @@ Have a look in the existing folders for examples of how to define the colours.
 
 ### Auto-Saving and Document Stats
 
-Open documents and the project file itself is saved regularly on a timer – if they have been altered.
+Open documents and the project file itself is saved regularly on a timer.
 The status of this is indicated by two indicators on the right hand side of the status bar.
 Unsaved changes are in yellow, and saved is indicated by green in the default theme.
 Latest word count for the document and project is shown next to these indicators in the status bar.
@@ -168,7 +193,7 @@ These are optional files.
 
 ### Visualisation of Story Elements
 
-The different notes can be assigned tags, which the novel files can refer back to using special meta keywords.
+The different notes can be assigned tags, which other files can refer back to using special meta keywords.
 This information can be used to display an outline of the story, showing where each scene connects to the plot, and which characters, etc. occur in them.
 In addition, the tags themselves are clickable in the document view pane, and control-clickable in the editor.
 They make it possible to quickly navigate between the documents while editing.
