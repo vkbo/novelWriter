@@ -33,7 +33,7 @@ import nw
 from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QPalette, QColor
 from PyQt5.QtWidgets import (
-    qApp, QFrame, QGridLayout, QLabel, QLineEdit, QPushButton,
+    qApp, QWidget, QFrame, QGridLayout, QLabel, QLineEdit, QPushButton,
     QHBoxLayout
 )
 
@@ -41,10 +41,10 @@ from nw.constants import nwDocAction, nwUnicode
 
 logger = logging.getLogger(__name__)
 
-class GuiSearchBar(QFrame):
+class GuiSearchBar(QWidget):
 
     def __init__(self, theParent):
-        QFrame.__init__(self, theParent)
+        QWidget.__init__(self, theParent)
 
         logger.debug("Initialising GuiSearchBar ...")
 
@@ -222,10 +222,10 @@ class GuiNoticeBar(QFrame):
 
 # END Class GuiNoticeBar
 
-class GuiDocTitleBar(QLabel):
+class GuiDocTitleBar(QWidget):
 
     def __init__(self, theParent, theProject):
-        QLabel.__init__(self, theParent)
+        QWidget.__init__(self, theParent)
 
         logger.debug("Initialising GuiDocTitleBar ...")
 
@@ -235,24 +235,36 @@ class GuiDocTitleBar(QLabel):
         self.theTheme   = theParent.theTheme
         self.theHandle  = None
 
-        self.setText("")
-        self.setIndent(0)
-        self.setMargin(0)
+        # Make a QPalette that matches the Syntax Theme
+        self.thePalette = QPalette()
+        self.thePalette.setColor(QPalette.Window, QColor(*self.theTheme.colBack))
+        self.thePalette.setColor(QPalette.Text, QColor(*self.theTheme.colText))
+
+        # Main Widget Settings
         self.setContentsMargins(0, 0, 0, 0)
         self.setAutoFillBackground(True)
-        self.setAlignment(Qt.AlignCenter)
-        self.setWordWrap(True)
-        self.setFrameShape(QFrame.NoFrame)
-        self.setLineWidth(0)
+        self.setPalette(self.thePalette)
 
-        lblPalette = self.palette()
-        lblPalette.setColor(QPalette.Window, QColor(*self.theTheme.colBack))
-        lblPalette.setColor(QPalette.Text, QColor(*self.theTheme.colText))
-        self.setPalette(lblPalette)
+        self.theTitle = QLabel()
+        self.theTitle.setText("")
+        self.theTitle.setIndent(0)
+        self.theTitle.setMargin(0)
+        self.theTitle.setContentsMargins(10, 0, 0, 0)
+        self.theTitle.setAutoFillBackground(True)
+        self.theTitle.setAlignment(Qt.AlignCenter)
+        self.theTitle.setWordWrap(True)
+        self.theTitle.setFrameShape(QFrame.NoFrame)
+        self.theTitle.setLineWidth(0)
+        self.theTitle.setPalette(self.thePalette)
 
-        lblFont = self.font()
+        lblFont = self.theTitle.font()
         lblFont.setPointSizeF(0.9*self.theTheme.fontPointSize)
-        self.setFont(lblFont)
+        self.theTitle.setFont(lblFont)
+
+        # Assemble Layout
+        self.outerBox = QHBoxLayout()
+        self.outerBox.addWidget(self.theTitle)
+        self.setLayout(self.outerBox)
 
         logger.debug("GuiDocTitleBar initialisation complete")
 
@@ -266,7 +278,7 @@ class GuiDocTitleBar(QLabel):
         """Sets the document title from the handle, or alternatively,
         set the whole document path.
         """
-        self.setText("")
+        self.theTitle.setText("")
         self.theHandle = tHandle
         if tHandle is None:
             return False
@@ -279,13 +291,12 @@ class GuiDocTitleBar(QLabel):
                 if nwItem is not None:
                     tTitle.append(nwItem.itemName)
             sSep = "  %s  " % nwUnicode.U_RSAQUO
-            self.setText(sSep.join(tTitle))
+            self.theTitle.setText(sSep.join(tTitle))
         else:
             nwItem = self.theProject.projTree[tHandle]
             if nwItem is None:
                 return False
-
-            self.setText(nwItem.itemName)
+            self.theTitle.setText(nwItem.itemName)
 
         return True
 
