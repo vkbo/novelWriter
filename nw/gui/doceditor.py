@@ -270,11 +270,7 @@ class GuiDocEditor(QTextEdit):
         self.setDocumentChanged(False)
         self.theHandle = tHandle
 
-        if self.nwDocument.docEditable:
-            self.setReadOnly(False)
-        else:
-            self.theParent.noticeBar.showNote("This document is read only.")
-
+        self.setReadOnly(False)
         self.docTitle.setTitleFromHandle(self.theHandle)
         self.updateDocMargins()
         self.hLight.spellCheck = spTemp
