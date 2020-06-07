@@ -2,7 +2,7 @@
 
 from nw.gui.about import GuiAbout
 from nw.gui.build import GuiBuildNovel
-from nw.gui.docbars import GuiDocTitleBar, GuiNoticeBar, GuiSearchBar
+from nw.gui.docbars import GuiDocTitleBar, GuiSearchBar
 from nw.gui.docdetails import GuiDocViewDetails
 from nw.gui.doceditor import GuiDocEditor
 from nw.gui.docmerge import GuiDocMerge
@@ -25,7 +25,6 @@ __all__ = [
     "GuiAbout",
     "GuiBuildNovel",
     "GuiDocTitleBar",
-    "GuiNoticeBar",
     "GuiSearchBar",
     "GuiDocViewDetails",
     "GuiDocEditor",
