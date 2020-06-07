@@ -219,6 +219,7 @@ class GuiDocTitleBar(QWidget):
         self.closeButton.setFixedSize(iPx, iPx)
         self.closeButton.setFlat(True)
         self.closeButton.setVisible(False)
+        self.closeButton.clicked.connect(self._closeDocument)
 
         if self.isEditor:
             self.minmaxButton = QPushButton("")
@@ -228,6 +229,7 @@ class GuiDocTitleBar(QWidget):
             self.minmaxButton.setFixedSize(iPx, iPx)
             self.minmaxButton.setFlat(True)
             self.minmaxButton.setVisible(False)
+            self.minmaxButton.clicked.connect(self._minmaxDocument)
         else:
             self.refreshButton = QPushButton("")
             self.refreshButton.setIcon(self.theTheme.getIcon("refresh"))
@@ -236,6 +238,7 @@ class GuiDocTitleBar(QWidget):
             self.refreshButton.setFixedSize(iPx, iPx)
             self.refreshButton.setFlat(True)
             self.refreshButton.setVisible(False)
+            self.refreshButton.clicked.connect(self._refreshDocument)
 
         # Assemble Layout
         hSp = self.mainConf.pxInt(6)
@@ -294,6 +297,36 @@ class GuiDocTitleBar(QWidget):
             self.refreshButton.setVisible(True)
 
         return True
+
+    ##
+    #  Slots
+    ##
+
+    def _closeDocument(self):
+        """Trigger the close editor/viewer on the main window.
+        """
+        if self.isEditor:
+            self.theParent.theParent.closeDocEditor()
+        else:
+            self.theParent.theParent.closeDocViewer()
+        return
+
+    def _minmaxDocument(self):
+        """Switch on or off zen mode.
+        """
+        self.theParent.theParent.toggleZenMode()
+        self.closeButton.setVisible(not self.theParent.theParent.isZenMode)
+        if self.theParent.theParent.isZenMode:
+            self.minmaxButton.setIcon(self.theTheme.getIcon("minimise"))
+        else:
+            self.minmaxButton.setIcon(self.theTheme.getIcon("maximise"))
+        return
+
+    def _refreshDocument(self):
+        """Reload the content of the document.
+        """
+        self.theParent.reloadText()
+        return
 
     ##
     #  Events
