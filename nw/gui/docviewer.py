@@ -58,7 +58,7 @@ class GuiDocViewer(QTextBrowser):
         self.initViewer()
 
         # Document Title
-        self.docTitle = GuiDocTitleBar(self, self.theProject)
+        self.docTitle = GuiDocTitleBar(self, self.theProject, isEditor=False)
         self.docTitle.setGeometry(0, 0, self.docTitle.width(), self.docTitle.height())
         self.setViewportMargins(0, self.docTitle.height(), 0, 0)
 
