@@ -39,13 +39,13 @@ logger = logging.getLogger(__name__)
 
 class GuiMainMenu(QMenuBar):
 
-    def __init__(self, theParent, theProject):
+    def __init__(self, theParent):
         QMenuBar.__init__(self, theParent)
 
-        logger.debug("Initialising Main Menu ...")
+        logger.debug("Initialising GuiMainMenu ...")
         self.mainConf   = nw.CONFIG
         self.theParent  = theParent
-        self.theProject = theProject
+        self.theProject = theParent.theProject
 
         self._buildProjectMenu()
         self._buildDocumentMenu()
@@ -60,7 +60,7 @@ class GuiMainMenu(QMenuBar):
         self._moveTreeItem = self.theParent.treeView.moveTreeItem
         self._newTreeItem  = self.theParent.treeView.newTreeItem
 
-        logger.debug("Main Menu initialisation complete")
+        logger.debug("GuiMainMenu initialisation complete")
 
         return
 
@@ -233,14 +233,14 @@ class GuiMainMenu(QMenuBar):
         self.projMenu.addSeparator()
 
         # Project > Edit
-        self.aEditItem = QAction("&Edit Item", self)
+        self.aEditItem = QAction("&Edit Project Item", self)
         self.aEditItem.setStatusTip("Change item settings")
         self.aEditItem.setShortcuts(["Ctrl+E", "F2"])
         self.aEditItem.triggered.connect(self.theParent.editItem)
         self.projMenu.addAction(self.aEditItem)
 
         # Project > Delete
-        self.aDeleteItem = QAction("&Delete Item", self)
+        self.aDeleteItem = QAction("&Delete Project Item", self)
         self.aDeleteItem.setStatusTip("Delete selected item")
         self.aDeleteItem.setShortcut("Ctrl+Del")
         self.aDeleteItem.triggered.connect(lambda : self.theParent.treeView.deleteItem(None))

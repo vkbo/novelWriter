@@ -1,13 +1,16 @@
 <?xml version='1.0' encoding='utf-8'?>
-<novelWriterXML appVersion="0.7.0" hexVersion="0x000700f0" fileVersion="1.1" saveCount="228" autoCount="31" timeStamp="2020-06-01 12:54:18" editTime="540">
+<novelWriterXML appVersion="0.8.0rc1" hexVersion="0x000800c1" fileVersion="1.1" timeStamp="2020-06-05 20:53:20">
   <project>
     <name>Sample Project</name>
     <title>Sample Project</title>
     <author>Jane Smith</author>
     <author>Jay Doh</author>
-    <backup>False</backup>
+    <saveCount>273</saveCount>
+    <autoCount>40</autoCount>
+    <editTime>4125</editTime>
   </project>
   <settings>
+    <doBackup>False</doBackup>
     <spellCheck>True</spellCheck>
     <autoOutline>True</autoOutline>
     <lastEdited>636b6aa9b697b</lastEdited>
@@ -24,9 +27,6 @@
       <unnumbered>%title%</unnumbered>
       <scene>Scene %ch%.%sc%: %title%</scene>
       <section></section>
-      <withSynopsis>True</withSynopsis>
-      <withComments>True</withComments>
-      <withKeywords>False</withKeywords>
     </titleFormat>
     <status>
       <entry blue="100" green="100" red="100">New</entry>

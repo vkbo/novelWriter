@@ -132,20 +132,28 @@ class GuiTheme:
         self.loadDecoration = self.theIcons.loadDecoration
 
         # Extract Other Info
-        self.guiDPI = qApp.primaryScreen().physicalDotsPerInch()
-        self.guiFont = qApp.font()
+        self.guiDPI = qApp.primaryScreen().logicalDotsPerInchX()
+        self.guiScale = qApp.primaryScreen().logicalDotsPerInchX()/96.0
+        self.mainConf.guiScale = self.guiScale
+        logger.verbose("GUI DPI: %.1f" % self.guiDPI)
+        logger.verbose("GUI Scale: %.2f" % self.guiScale)
 
+        self.guiFont = qApp.font()
         qMetric = QFontMetrics(self.guiFont)
         self.fontPointSize = self.guiFont.pointSizeF()
         self.fontPixelSize = int(round(qMetric.height()))
         self.baseIconSize  = int(round(qMetric.ascent()))
         self.textIconSize  = int(round(qMetric.ascent() + qMetric.leading()))
+        self.textNHeight   = qMetric.boundingRect("N").height()
+        self.textNWidth    = qMetric.boundingRect("N").width()
 
         logger.verbose("GUI Font Family: %s" % self.guiFont.family())
         logger.verbose("GUI Font Point Size: %.2f" % self.fontPointSize)
         logger.verbose("GUI Font Pixel Size: %d" % self.fontPixelSize)
         logger.verbose("GUI Base Icon Size: %d" % self.baseIconSize)
         logger.verbose("GUI Text Icon Size: %d" % self.textIconSize)
+        logger.verbose("Text 'N' Height: %d" % self.textNHeight)
+        logger.verbose("Text 'N' Width: %d" % self.textNWidth)
 
         return
 

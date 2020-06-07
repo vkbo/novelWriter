@@ -40,9 +40,9 @@ __package__    = "novelWriter"
 __author__     = "Veronica Berglyd Olsen"
 __copyright__  = "Copyright 2018–2020, Veronica Berglyd Olsen"
 __license__    = "GPLv3"
-__version__    = "0.7.1"
-__hexversion__ = "0x000701f0"
-__date__       = "2020-06-06"
+__version__    = "0.8.0rc1"
+__hexversion__ = "0x000800c1"
+__date__       = "2020-06-01"
 __maintainer__ = "Veronica Berglyd Olsen"
 __email__      = "code@vkbo.net"
 __status__     = "Pre-Release"
@@ -172,7 +172,7 @@ def main(sysArgs=None):
             debugLevel = logging.INFO
         elif inOpt == "--debug":
             debugLevel = logging.DEBUG
-            logFormat  = "[{asctime:}] {name:>20}:{lineno:<4d}  {levelname:8}  {message:}"
+            logFormat  = "[{asctime:}] {name:>22}:{lineno:<4d}  {levelname:8}  {message:}"
         elif inOpt == "--logfile":
             logFile = inArg
             toFile  = True
@@ -180,7 +180,7 @@ def main(sysArgs=None):
             toStd = False
         elif inOpt == "--verbose":
             debugLevel = VERBOSE
-            logFormat  = "[{asctime:}] {name:>20}:{lineno:<4d}  {levelname:8}  {message:}"
+            logFormat  = "[{asctime:}] {name:>22}:{lineno:<4d}  {levelname:8}  {message:}"
         elif inOpt == "--style":
             qtStyle = inArg
         elif inOpt == "--config":

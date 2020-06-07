@@ -119,6 +119,7 @@ class GuiProjectEditMain(QWidget):
     def __init__(self, theParent, theProject):
         QWidget.__init__(self, theParent)
 
+        self.mainConf   = nw.CONFIG
         self.theParent  = theParent
         self.theProject = theProject
 
@@ -129,9 +130,12 @@ class GuiProjectEditMain(QWidget):
 
         self.mainForm.addGroupLabel("Project Settings")
 
+        xW = self.mainConf.pxInt(250)
+        xH = self.mainConf.pxInt(100)
+
         self.editName = QLineEdit()
         self.editName.setMaxLength(200)
-        self.editName.setFixedWidth(250)
+        self.editName.setFixedWidth(xW)
         self.editName.setText(self.theProject.projName)
         self.mainForm.addRow(
             "Working title",
@@ -141,7 +145,7 @@ class GuiProjectEditMain(QWidget):
 
         self.editTitle = QLineEdit()
         self.editTitle.setMaxLength(200)
-        self.editTitle.setFixedWidth(250)
+        self.editTitle.setFixedWidth(xW)
         self.editTitle.setText(self.theProject.bookTitle)
         self.mainForm.addRow(
             "Novel title",
@@ -154,8 +158,8 @@ class GuiProjectEditMain(QWidget):
         for bookAuthor in self.theProject.bookAuthors:
             bookAuthors += bookAuthor+"\n"
         self.editAuthors.setPlainText(bookAuthors)
-        self.editAuthors.setFixedHeight(100)
-        self.editAuthors.setFixedWidth(250)
+        self.editAuthors.setFixedHeight(xH)
+        self.editAuthors.setFixedWidth(xW)
         self.mainForm.addRow(
             "Author(s)",
             self.editAuthors,
@@ -179,8 +183,11 @@ class GuiProjectEditMeta(QWidget):
     def __init__(self, theParent, theProject):
         QWidget.__init__(self, theParent)
 
+        self.mainConf   = nw.CONFIG
         self.theParent  = theParent
         self.theProject = theProject
+
+        xInd = self.mainConf.pxInt(8)
 
         # The Form
         self.mainForm = QGridLayout()
@@ -189,17 +196,17 @@ class GuiProjectEditMeta(QWidget):
         self.headLabel = QLabel("<b>Project Details</b>")
 
         self.nameLabel = QLabel("Working title:")
-        self.nameLabel.setIndent(8)
+        self.nameLabel.setIndent(xInd)
         self.nameValue = QLabel(self.theProject.projName)
         self.nameValue.setWordWrap(True)
 
         self.pathLabel = QLabel("Project path:")
-        self.pathLabel.setIndent(8)
+        self.pathLabel.setIndent(xInd)
         self.pathValue = QLabel(self.theProject.projPath)
         self.pathValue.setWordWrap(True)
 
         self.revLabel = QLabel("Revision count:")
-        self.revLabel.setIndent(8)
+        self.revLabel.setIndent(xInd)
         self.revValue = QLabel("{:n}".format(self.theProject.saveCount))
 
         self.statsLabel = QLabel("<b>Project Stats</b>")
@@ -207,19 +214,19 @@ class GuiProjectEditMeta(QWidget):
         nR, nD, nF = self.theProject.projTree.countTypes()
 
         self.nRootLabel = QLabel("Root folders:")
-        self.nRootLabel.setIndent(8)
+        self.nRootLabel.setIndent(xInd)
         self.nRootValue = QLabel("{:n}".format(nR))
 
         self.nDirLabel = QLabel("Folders:")
-        self.nDirLabel.setIndent(8)
+        self.nDirLabel.setIndent(xInd)
         self.nDirValue = QLabel("{:n}".format(nD))
 
         self.nFileLabel = QLabel("Documents:")
-        self.nFileLabel.setIndent(8)
+        self.nFileLabel.setIndent(xInd)
         self.nFileValue = QLabel("{:n}".format(nF))
 
         self.wordsLabel = QLabel("Word count:")
-        self.wordsLabel.setIndent(8)
+        self.wordsLabel.setIndent(xInd)
         self.wordsValue = QLabel("{:n}".format(self.theProject.currWCount))
 
         self.mainForm.addWidget(self.headLabel,  0, 0, 1, 2, Qt.AlignTop)
@@ -240,8 +247,8 @@ class GuiProjectEditMeta(QWidget):
         self.mainForm.addWidget(self.wordsLabel, 8, 0, 1, 1, Qt.AlignTop)
         self.mainForm.addWidget(self.wordsValue, 8, 1, 1, 1, Qt.AlignTop)
 
-        self.mainForm.setVerticalSpacing(6)
-        self.mainForm.setHorizontalSpacing(12)
+        self.mainForm.setVerticalSpacing(self.mainConf.pxInt(6))
+        self.mainForm.setHorizontalSpacing(self.mainConf.pxInt(12))
         self.mainForm.setColumnStretch(0, 0)
         self.mainForm.setColumnStretch(1, 1)
         self.mainForm.setRowStretch(10, 1)
@@ -255,8 +262,10 @@ class GuiProjectEditStatus(QWidget):
     def __init__(self, theParent, theProject, isStatus):
         QWidget.__init__(self, theParent)
 
+        self.mainConf   = nw.CONFIG
         self.theParent  = theParent
         self.theProject = theProject
+        self.theTheme   = theParent.theTheme
         if isStatus:
             self.theStatus = self.theProject.statusItems
         else:
@@ -266,6 +275,8 @@ class GuiProjectEditStatus(QWidget):
         self.colCounts  = []
         self.colChanged = False
         self.selColour  = None
+
+        self.iPx = self.theTheme.textIconSize
 
         self.outerBox = QVBoxLayout()
         self.mainBox  = QHBoxLayout()
@@ -285,8 +296,8 @@ class GuiProjectEditStatus(QWidget):
         self.newButton  = QPushButton("New")
         self.delButton  = QPushButton("Delete")
         self.saveButton = QPushButton("Save")
-        self.colPixmap  = QPixmap(16,16)
-        self.colPixmap.fill(QColor(120,120,120))
+        self.colPixmap  = QPixmap(self.iPx, self.iPx)
+        self.colPixmap.fill(QColor(120, 120, 120))
         self.colButton  = QPushButton(QIcon(self.colPixmap),"Colour")
         self.colButton.setIconSize(self.colPixmap.rect().size())
 
@@ -339,7 +350,7 @@ class GuiProjectEditStatus(QWidget):
             )
             if newCol:
                 self.selColour = newCol
-                colPixmap = QPixmap(16,16)
+                colPixmap = QPixmap(self.iPx, self.iPx)
                 colPixmap.fill(newCol)
                 self.colButton.setIcon(QIcon(colPixmap))
                 self.colButton.setIconSize(colPixmap.rect().size())
@@ -348,7 +359,7 @@ class GuiProjectEditStatus(QWidget):
     def _newItem(self):
         logger.verbose("New item button clicked")
         newItem = self._addItem("New Item", (0, 0, 0), None, 0)
-        newItem.setBackground(QBrush(QColor(0,255,0,80)))
+        newItem.setBackground(QBrush(QColor(0, 255, 0, 80)))
         self.colChanged = True
         return
 
@@ -387,14 +398,14 @@ class GuiProjectEditStatus(QWidget):
         return
 
     def _addItem(self, iName, iCol, oName, nUse):
-        newIcon = QPixmap(16,16)
+        newIcon = QPixmap(self.iPx, self.iPx)
         newIcon.fill(QColor(*iCol))
         newItem = QListWidgetItem()
         newItem.setText("%s [%d]" % (iName, nUse))
         newItem.setIcon(QIcon(newIcon))
         newItem.setData(Qt.UserRole, len(self.colData))
         self.listBox.addItem(newItem)
-        self.colData.append((iName,iCol[0],iCol[1],iCol[2],oName))
+        self.colData.append((iName, iCol[0], iCol[1], iCol[2], oName))
         self.colCounts.append(nUse)
         return newItem
 
@@ -404,8 +415,8 @@ class GuiProjectEditStatus(QWidget):
         if selItem is not None:
             selIdx  = selItem.data(Qt.UserRole)
             selVal  = self.colData[selIdx]
-            self.selColour = QColor(selVal[1],selVal[2],selVal[3])
-            newIcon = QPixmap(16,16)
+            self.selColour = QColor(selVal[1], selVal[2], selVal[3])
+            newIcon = QPixmap(self.iPx, self.iPx)
             newIcon.fill(self.selColour)
             self.editName.setText(selVal[0])
             self.colButton.setIcon(QIcon(newIcon))

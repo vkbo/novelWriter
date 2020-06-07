@@ -143,7 +143,7 @@ class GuiConfigEditGeneralTab(QWidget):
 
         ## Select Theme
         self.selectTheme = QComboBox()
-        self.selectTheme.setMinimumWidth(200)
+        self.selectTheme.setMinimumWidth(self.mainConf.pxInt(200))
         self.theThemes = self.theTheme.listThemes()
         for themeDir, themeName in self.theThemes:
             self.selectTheme.addItem(themeName, themeDir)
@@ -159,7 +159,7 @@ class GuiConfigEditGeneralTab(QWidget):
 
         ## Select Icon Theme
         self.selectIcons = QComboBox()
-        self.selectIcons.setMinimumWidth(200)
+        self.selectIcons.setMinimumWidth(self.mainConf.pxInt(200))
         self.theIcons = self.theTheme.theIcons.listThemes()
         for iconDir, iconName in self.theIcons:
             self.selectIcons.addItem(iconName, iconDir)
@@ -185,7 +185,7 @@ class GuiConfigEditGeneralTab(QWidget):
         ## Font Family
         self.guiFont = QLineEdit()
         self.guiFont.setReadOnly(True)
-        self.guiFont.setFixedWidth(162)
+        self.guiFont.setFixedWidth(self.mainConf.pxInt(162))
         self.guiFont.setText(self.mainConf.guiFont)
         self.fontButton = QPushButton("...")
         self.fontButton.setMaximumWidth(int(2.5*self.theTheme.getTextWidth("...")))
@@ -329,6 +329,8 @@ class GuiConfigEditGeneralTab(QWidget):
     ##
 
     def _backupFolder(self):
+        """Open a dialog to select the backup folder.
+        """
 
         currDir = self.backupPath
         if not path.isdir(currDir):
@@ -389,7 +391,7 @@ class GuiConfigEditLayoutTab(QWidget):
         ## Font Family
         self.textStyleFont = QLineEdit()
         self.textStyleFont.setReadOnly(True)
-        self.textStyleFont.setFixedWidth(162)
+        self.textStyleFont.setFixedWidth(self.mainConf.pxInt(162))
         self.textStyleFont.setText(self.mainConf.textFont)
         self.fontButton = QPushButton("...")
         self.fontButton.setMaximumWidth(int(2.5*self.theTheme.getTextWidth("...")))
@@ -575,7 +577,7 @@ class GuiConfigEditEditingTab(QWidget):
 
         ## Syntax Highlighting
         self.selectSyntax = QComboBox()
-        self.selectSyntax.setMinimumWidth(200)
+        self.selectSyntax.setMinimumWidth(self.mainConf.pxInt(200))
         self.theSyntaxes = self.theTheme.listSyntax()
         for syntaxFile, syntaxName in self.theSyntaxes:
             self.selectSyntax.addItem(syntaxName, syntaxFile)
@@ -789,10 +791,12 @@ class GuiConfigEditAutoReplaceTab(QWidget):
         # ===============
         self.mainForm.addGroupLabel("Quotation Style")
 
+        qWidth = self.mainConf.pxInt(40)
+
         ## Single Quote Style
         self.quoteSingleStyleO = QLineEdit()
         self.quoteSingleStyleO.setMaxLength(1)
-        self.quoteSingleStyleO.setFixedWidth(40)
+        self.quoteSingleStyleO.setFixedWidth(qWidth)
         self.quoteSingleStyleO.setAlignment(Qt.AlignCenter)
         self.quoteSingleStyleO.setText(self.mainConf.fmtSingleQuotes[0])
         self.mainForm.addRow(
@@ -803,7 +807,7 @@ class GuiConfigEditAutoReplaceTab(QWidget):
 
         self.quoteSingleStyleC = QLineEdit()
         self.quoteSingleStyleC.setMaxLength(1)
-        self.quoteSingleStyleC.setFixedWidth(40)
+        self.quoteSingleStyleC.setFixedWidth(qWidth)
         self.quoteSingleStyleC.setAlignment(Qt.AlignCenter)
         self.quoteSingleStyleC.setText(self.mainConf.fmtSingleQuotes[1])
         self.mainForm.addRow(
@@ -815,7 +819,7 @@ class GuiConfigEditAutoReplaceTab(QWidget):
         ## Double Quote Style
         self.quoteDoubleStyleO = QLineEdit()
         self.quoteDoubleStyleO.setMaxLength(1)
-        self.quoteDoubleStyleO.setFixedWidth(40)
+        self.quoteDoubleStyleO.setFixedWidth(qWidth)
         self.quoteDoubleStyleO.setAlignment(Qt.AlignCenter)
         self.quoteDoubleStyleO.setText(self.mainConf.fmtDoubleQuotes[0])
         self.mainForm.addRow(
@@ -826,7 +830,7 @@ class GuiConfigEditAutoReplaceTab(QWidget):
 
         self.quoteDoubleStyleC = QLineEdit()
         self.quoteDoubleStyleC.setMaxLength(1)
-        self.quoteDoubleStyleC.setFixedWidth(40)
+        self.quoteDoubleStyleC.setFixedWidth(qWidth)
         self.quoteDoubleStyleC.setAlignment(Qt.AlignCenter)
         self.quoteDoubleStyleC.setText(self.mainConf.fmtDoubleQuotes[1])
         self.mainForm.addRow(

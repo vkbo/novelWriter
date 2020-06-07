@@ -37,19 +37,24 @@ logger = logging.getLogger(__name__)
 
 class GuiDocViewDetails(QWidget):
 
-    def __init__(self, theParent, theProject):
+    def __init__(self, theParent):
         QWidget.__init__(self, theParent)
 
         logger.debug("Initialising DocViewDetails ...")
         self.mainConf   = nw.CONFIG
         self.theParent  = theParent
-        self.theProject = theProject
+        self.theProject = theParent.theProject
+        self.theTheme   = theParent.theTheme
         self.currHandle = None
 
+        x4  = self.mainConf.pxInt(4)
+        x80 = self.mainConf.pxInt(80)
+        iPx = self.theTheme.textIconSize
+
         self.outerBox = QGridLayout(self)
-        self.outerBox.setContentsMargins(0,0,0,0)
+        self.outerBox.setContentsMargins(0, 0, 0, 0)
         self.outerBox.setHorizontalSpacing(0)
-        self.outerBox.setVerticalSpacing(4)
+        self.outerBox.setVerticalSpacing(x4)
 
         self.refLabel = QLabel("Referenced By", self)
 
@@ -58,7 +63,7 @@ class GuiDocViewDetails(QWidget):
         self.showHide.setToolButtonStyle(Qt.ToolButtonIconOnly)
         self.showHide.setArrowType(Qt.DownArrow)
         self.showHide.setCheckable(True)
-        self.showHide.setIconSize(QSize(16,16))
+        self.showHide.setIconSize(QSize(iPx, iPx))
         self.showHide.toggled.connect(self._doShowHide)
 
         self.isSticky = QCheckBox("Sticky")
@@ -75,7 +80,7 @@ class GuiDocViewDetails(QWidget):
         self.scrollBox.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
         self.scrollBox.setFrameStyle(QFrame.NoFrame)
         self.scrollBox.setWidgetResizable(True)
-        self.scrollBox.setFixedHeight(80)
+        self.scrollBox.setFixedHeight(x80)
         self.scrollBox.setWidget(self.refList)
 
         self.outerBox.addWidget(self.showHide,  0, 0)
@@ -85,7 +90,7 @@ class GuiDocViewDetails(QWidget):
         self.outerBox.setColumnStretch(1, 1)
 
         self.setLayout(self.outerBox)
-        self.setContentsMargins(0,0,0,0)
+        self.setContentsMargins(0, 0, 0, 0)
 
         self._doShowHide(self.mainConf.showRefPanel)
 

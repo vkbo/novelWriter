@@ -61,17 +61,20 @@ class GuiProjectLoad(QDialog):
         self.openState = self.NONE_STATE
         self.openPath  = None
 
+        sPx = self.mainConf.pxInt(16)
+        iPx = self.mainConf.pxInt(96)
+
         self.outerBox = QVBoxLayout()
         self.innerBox = QHBoxLayout()
-        self.outerBox.setSpacing(16)
-        self.innerBox.setSpacing(16)
+        self.outerBox.setSpacing(sPx)
+        self.innerBox.setSpacing(sPx)
 
         self.setWindowTitle("Open Project")
-        self.setMinimumWidth(650)
-        self.setMinimumHeight(400)
+        self.setMinimumWidth(self.mainConf.pxInt(650))
+        self.setMinimumHeight(self.mainConf.pxInt(400))
         self.setModal(True)
 
-        self.guiDeco = self.theTheme.loadDecoration("nwicon", (96, 96))
+        self.guiDeco = self.theTheme.loadDecoration("nwicon", (iPx, iPx))
         self.innerBox.addWidget(self.guiDeco, 0, Qt.AlignTop)
 
         self.projectForm = QGridLayout()
@@ -81,10 +84,9 @@ class GuiProjectLoad(QDialog):
         self.listBox = QTreeWidget()
         self.listBox.setSelectionMode(QAbstractItemView.SingleSelection)
         self.listBox.setDragDropMode(QAbstractItemView.NoDragDrop)
-        self.listBox.setColumnCount(4)
-        self.listBox.setHeaderLabels(["Working Title","Words","Last Opened","Path"])
+        self.listBox.setColumnCount(3)
+        self.listBox.setHeaderLabels(["Working Title", "Words", "Last Opened"])
         self.listBox.setRootIsDecorated(False)
-        self.listBox.setColumnHidden(3, True)
         self.listBox.itemSelectionChanged.connect(self._doSelectRecent)
         self.listBox.itemDoubleClicked.connect(self._doOpenRecent)
         self.listBox.setIconSize(QSize(iPx, iPx))
@@ -110,8 +112,8 @@ class GuiProjectLoad(QDialog):
         self.projectForm.setColumnStretch(0, 0)
         self.projectForm.setColumnStretch(1, 1)
         self.projectForm.setColumnStretch(2, 0)
-        self.projectForm.setVerticalSpacing(4)
-        self.projectForm.setHorizontalSpacing(8)
+        self.projectForm.setVerticalSpacing(self.mainConf.pxInt(4))
+        self.projectForm.setHorizontalSpacing(self.mainConf.pxInt(8))
 
         self.innerBox.addLayout(self.projectForm)
 
@@ -148,7 +150,7 @@ class GuiProjectLoad(QDialog):
         self._saveDialogState()
         selItems = self.listBox.selectedItems()
         if selItems:
-            self.openPath = selItems[0].text(3)
+            self.openPath = selItems[0].data(0, Qt.UserRole)
             self.openState = self.OPEN_STATE
             self.accept()
         else:
@@ -161,7 +163,7 @@ class GuiProjectLoad(QDialog):
         """
         selList = self.listBox.selectedItems()
         if selList:
-            self.selPath.setText(selList[0].text(3))
+            self.selPath.setText(selList[0].data(0, Qt.UserRole))
         return
 
     def _doBrowse(self):
@@ -251,9 +253,9 @@ class GuiProjectLoad(QDialog):
             newItem = QTreeWidgetItem([""]*4)
             newItem.setIcon(0, self.theParent.theTheme.getIcon("proj_nwx"))
             newItem.setText(0, listData[timeStamp][0])
+            newItem.setData(0, Qt.UserRole, listData[timeStamp][2])
             newItem.setText(1, formatInt(listData[timeStamp][1]))
             newItem.setText(2, datetime.fromtimestamp(timeStamp).strftime("%x %X"))
-            newItem.setText(3, listData[timeStamp][2])
             newItem.setTextAlignment(0, Qt.AlignLeft  | Qt.AlignVCenter)
             newItem.setTextAlignment(1, Qt.AlignRight | Qt.AlignVCenter)
             newItem.setTextAlignment(2, Qt.AlignRight | Qt.AlignVCenter)
@@ -262,8 +264,9 @@ class GuiProjectLoad(QDialog):
                 newItem.setSelected(True)
                 hasSelection = True
 
+        projColWidth = self.mainConf.getProjColWidths()
         for i in range(3):
-            self.listBox.setColumnWidth(i, self.mainConf.projColWidth[i])
+            self.listBox.setColumnWidth(i, projColWidth[i])
 
         return
 

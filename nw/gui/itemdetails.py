@@ -30,7 +30,7 @@ import nw
 
 from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QFont, QIcon, QPixmap
-from PyQt5.QtWidgets import QFrame, QGridLayout, QLabel
+from PyQt5.QtWidgets import QWidget, QGridLayout, QLabel
 
 from nw.constants import (
     nwLabels, nwItemClass, nwItemType, nwItemLayout, nwUnicode
@@ -38,15 +38,15 @@ from nw.constants import (
 
 logger = logging.getLogger(__name__)
 
-class GuiItemDetails(QFrame):
+class GuiItemDetails(QWidget):
 
-    def __init__(self, theParent, theProject):
-        QFrame.__init__(self, theParent)
+    def __init__(self, theParent):
+        QWidget.__init__(self, theParent)
 
         logger.debug("Initialising GuiItemDetails ...")
         self.mainConf   = nw.CONFIG
         self.theParent  = theParent
-        self.theProject = theProject
+        self.theProject = theParent.theProject
         self.theTheme   = theParent.theTheme
         self.theHandle  = None
 
@@ -170,11 +170,11 @@ class GuiItemDetails(QFrame):
         self.mainBox.addWidget(self.pCountName, 3, 3, 1, 1)
         self.mainBox.addWidget(self.pCountData, 3, 4, 1, 1)
 
-        self.mainBox.setColumnStretch(0,0)
-        self.mainBox.setColumnStretch(1,0)
-        self.mainBox.setColumnStretch(2,1)
-        self.mainBox.setColumnStretch(3,0)
-        self.mainBox.setColumnStretch(4,0)
+        self.mainBox.setColumnStretch(0, 0)
+        self.mainBox.setColumnStretch(1, 0)
+        self.mainBox.setColumnStretch(2, 1)
+        self.mainBox.setColumnStretch(3, 0)
+        self.mainBox.setColumnStretch(4, 0)
 
         # Make sure the columns for flags and counts don't resize too often
         flagWidth  = self.theTheme.getTextWidth("Mm", self.fntValue)
