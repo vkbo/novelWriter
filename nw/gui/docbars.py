@@ -33,7 +33,7 @@ from PyQt5.QtCore import Qt, QSize
 from PyQt5.QtGui import QPalette, QColor
 from PyQt5.QtWidgets import (
     qApp, QWidget, QFrame, QGridLayout, QLabel, QLineEdit, QPushButton,
-    QHBoxLayout, QSizePolicy
+    QHBoxLayout
 )
 
 from nw.constants import nwDocAction, nwUnicode
@@ -187,9 +187,9 @@ class GuiDocTitleBar(QWidget):
         self.thePalette.setColor(QPalette.Window, QColor(*self.theTheme.colBack))
         self.thePalette.setColor(QPalette.Text, QColor(*self.theTheme.colText))
 
-        iPx = self.theTheme.textIconSize
+        fPx = int(0.9*self.theTheme.fontPixelSize)
         hSp = self.mainConf.pxInt(6)
-        self.buttonSize = iPx + hSp
+        self.buttonSize = fPx + hSp
 
         # Main Widget Settings
         self.setContentsMargins(2*self.buttonSize, 0, 0, 0)
@@ -203,9 +203,8 @@ class GuiDocTitleBar(QWidget):
         self.theTitle.setMargin(0)
         self.theTitle.setContentsMargins(0, 0, 0, 0)
         self.theTitle.setAutoFillBackground(True)
-        self.theTitle.setAlignment(Qt.AlignTop | Qt.AlignHCenter)
-        self.theTitle.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Minimum)
-        self.theTitle.setMinimumHeight(self.theTheme.fontPixelSize)
+        self.theTitle.setAlignment(Qt.AlignHCenter | Qt.AlignTop)
+        self.theTitle.setFixedHeight(fPx)
         self.theTitle.setFrameShape(QFrame.NoFrame)
         self.theTitle.setLineWidth(0)
         self.theTitle.setPalette(self.thePalette)
@@ -218,8 +217,8 @@ class GuiDocTitleBar(QWidget):
         self.closeButton = QPushButton("")
         self.closeButton.setIcon(self.theTheme.getIcon("close"))
         self.closeButton.setContentsMargins(0, 0, 0, 0)
-        self.closeButton.setIconSize(QSize(iPx, iPx))
-        self.closeButton.setFixedSize(iPx, iPx)
+        self.closeButton.setIconSize(QSize(fPx, fPx))
+        self.closeButton.setFixedSize(fPx, fPx)
         self.closeButton.setFlat(True)
         self.closeButton.setVisible(False)
         self.closeButton.clicked.connect(self._closeDocument)
@@ -228,8 +227,8 @@ class GuiDocTitleBar(QWidget):
             self.minmaxButton = QPushButton("")
             self.minmaxButton.setIcon(self.theTheme.getIcon("maximise"))
             self.minmaxButton.setContentsMargins(0, 0, 0, 0)
-            self.minmaxButton.setIconSize(QSize(iPx, iPx))
-            self.minmaxButton.setFixedSize(iPx, iPx)
+            self.minmaxButton.setIconSize(QSize(fPx, fPx))
+            self.minmaxButton.setFixedSize(fPx, fPx)
             self.minmaxButton.setFlat(True)
             self.minmaxButton.setVisible(False)
             self.minmaxButton.clicked.connect(self._minmaxDocument)
@@ -237,8 +236,8 @@ class GuiDocTitleBar(QWidget):
             self.refreshButton = QPushButton("")
             self.refreshButton.setIcon(self.theTheme.getIcon("refresh"))
             self.refreshButton.setContentsMargins(0, 0, 0, 0)
-            self.refreshButton.setIconSize(QSize(iPx, iPx))
-            self.refreshButton.setFixedSize(iPx, iPx)
+            self.refreshButton.setIconSize(QSize(fPx, fPx))
+            self.refreshButton.setFixedSize(fPx, fPx)
             self.refreshButton.setFlat(True)
             self.refreshButton.setVisible(False)
             self.refreshButton.clicked.connect(self._refreshDocument)
@@ -246,12 +245,12 @@ class GuiDocTitleBar(QWidget):
         # Assemble Layout
         self.outerBox = QHBoxLayout()
         self.outerBox.setSpacing(hSp)
-        self.outerBox.addWidget(self.theTitle, 1)
+        self.outerBox.addWidget(self.theTitle, 1, Qt.AlignBottom)
         if self.isEditor:
-            self.outerBox.addWidget(self.minmaxButton, 0)
+            self.outerBox.addWidget(self.minmaxButton, 0, Qt.AlignBottom)
         else:
-            self.outerBox.addWidget(self.refreshButton, 0)
-        self.outerBox.addWidget(self.closeButton, 0)
+            self.outerBox.addWidget(self.refreshButton, 0, Qt.AlignBottom)
+        self.outerBox.addWidget(self.closeButton, 0, Qt.AlignBottom)
         self.setLayout(self.outerBox)
 
         logger.debug("GuiDocTitleBar initialisation complete")
