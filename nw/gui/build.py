@@ -476,22 +476,32 @@ class GuiBuildNovel(QDialog):
             noteRoot &= tItem.itemType == nwItemType.ROOT
             noteRoot &= tItem.itemClass != nwItemClass.NOVEL
 
-            if noteRoot:
-                # Add headers for root folders of notes
-                makeHtml.addRootHeading(tItem.itemHandle)
-                makeHtml.doConvert()
-                self.htmlText.append(makeHtml.getResult())
-                self.nwdText.append(makeHtml.getFilteredMarkdown())
+            try:
+                if noteRoot:
+                    # Add headers for root folders of notes
+                    makeHtml.addRootHeading(tItem.itemHandle)
+                    makeHtml.doConvert()
+                    self.htmlText.append(makeHtml.getResult())
+                    self.nwdText.append(makeHtml.getFilteredMarkdown())
 
-            elif self._checkInclude(tItem, noteFiles, novelFiles, ignoreFlag):
-                makeHtml.setText(tItem.itemHandle)
-                makeHtml.doAutoReplace()
-                makeHtml.tokenizeText()
-                makeHtml.doHeaders()
-                makeHtml.doConvert()
-                makeHtml.doPostProcessing()
-                self.htmlText.append(makeHtml.getResult())
-                self.nwdText.append(makeHtml.getFilteredMarkdown())
+                elif self._checkInclude(tItem, noteFiles, novelFiles, ignoreFlag):
+                    makeHtml.setText(tItem.itemHandle)
+                    makeHtml.doAutoReplace()
+                    makeHtml.tokenizeText()
+                    makeHtml.doHeaders()
+                    makeHtml.doConvert()
+                    makeHtml.doPostProcessing()
+                    self.htmlText.append(makeHtml.getResult())
+                    self.nwdText.append(makeHtml.getFilteredMarkdown())
+
+            except Exception as e:
+                logger.error("Failed to generate html of document '%s'" % tItem.itemHandle)
+                logger.error(str(e))
+                self.docView.setText((
+                    "Failed to generate preview. "
+                    "Document with title '%s' could not be parsed."
+                ) % tItem.itemName)
+                return False
 
             # Update progress bar, also for skipped items
             self.buildProgress.setValue(nItt+1)

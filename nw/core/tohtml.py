@@ -312,23 +312,24 @@ class ToHtml(Tokenizer):
         refTags = []
         if theBits[0] in nwLabels.KEY_NAME:
             retText += "<span class='tags'>%s:</span>&nbsp;" % nwLabels.KEY_NAME[theBits[0]]
-            if theBits[0] == nwKeyWords.TAG_KEY:
-                retText += "<a name='tag_%s'>%s</a>" % (
-                    theBits[1], theBits[1]
-                )
-            else:
-                if self.genMode == self.M_PREVIEW:
-                    for tTag in theBits[1:]:
-                        refTags.append("<a href='#%s=%s'>%s</a>" % (
-                            theBits[0][1:], tTag, tTag
-                        ))
-                    retText += ", ".join(refTags)
+            if len(theBits) > 1:
+                if theBits[0] == nwKeyWords.TAG_KEY:
+                    retText += "<a name='tag_%s'>%s</a>" % (
+                        theBits[1], theBits[1]
+                    )
                 else:
-                    for tTag in theBits[1:]:
-                        refTags.append("<a href='#tag_%s'>%s</a>" % (
-                            tTag, tTag
-                        ))
-                    retText += ", ".join(refTags)
+                    if self.genMode == self.M_PREVIEW:
+                        for tTag in theBits[1:]:
+                            refTags.append("<a href='#%s=%s'>%s</a>" % (
+                                theBits[0][1:], tTag, tTag
+                            ))
+                        retText += ", ".join(refTags)
+                    else:
+                        for tTag in theBits[1:]:
+                            refTags.append("<a href='#tag_%s'>%s</a>" % (
+                                tTag, tTag
+                            ))
+                        retText += ", ".join(refTags)
 
         return "<div>%s</div>" % retText
 
