@@ -309,6 +309,9 @@ class Config:
         """Load preferences from file and replace default settings.
         """
         logger.debug("Loading config file")
+        if self.confPath is None:
+            return False
+
         cnfParse = configparser.ConfigParser()
         cnfPath  = path.join(self.confPath, self.confFile)
         try:
@@ -484,6 +487,9 @@ class Config:
         """Save the current preferences to file.
         """
         logger.debug("Saving config file")
+        if self.confPath is None:
+            return False
+
         cnfParse = configparser.ConfigParser()
 
         # Set options
