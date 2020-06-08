@@ -314,12 +314,14 @@ class GuiDocEditor(QTextEdit):
         just ensure the margins are set correctly.
         """
         cM = self.mainConf.getTextMargin()
+
+        vBar = self.verticalScrollBar()
+        if vBar.isVisible():
+            sW = vBar.width()
+        else:
+            sW = 0
+
         if self.mainConf.textFixedW or self.theParent.isZenMode:
-            vBar = self.verticalScrollBar()
-            if vBar.isVisible():
-                sW = vBar.width()
-            else:
-                sW = 0
             if self.theParent.isZenMode:
                 tW = self.mainConf.getZenWidth()
             else:
@@ -332,7 +334,7 @@ class GuiDocEditor(QTextEdit):
             tM = cM
 
         tB = self.lineWidth()
-        tW = self.width() - 2*tB
+        tW = self.width() - 2*tB - sW
         tH = self.docTitle.height()
         tT = cM - tH
         self.docTitle.setGeometry(tB, tB, tW, tH)
