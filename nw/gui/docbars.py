@@ -245,12 +245,12 @@ class GuiDocTitleBar(QWidget):
         # Assemble Layout
         self.outerBox = QHBoxLayout()
         self.outerBox.setSpacing(hSp)
-        self.outerBox.addWidget(self.theTitle, 1, Qt.AlignBottom)
+        self.outerBox.addWidget(self.theTitle, 1)
         if self.isEditor:
-            self.outerBox.addWidget(self.minmaxButton, 0, Qt.AlignBottom)
+            self.outerBox.addWidget(self.minmaxButton, 0)
         else:
-            self.outerBox.addWidget(self.refreshButton, 0, Qt.AlignBottom)
-        self.outerBox.addWidget(self.closeButton, 0, Qt.AlignBottom)
+            self.outerBox.addWidget(self.refreshButton, 0)
+        self.outerBox.addWidget(self.closeButton, 0)
         self.setLayout(self.outerBox)
 
         logger.debug("GuiDocTitleBar initialisation complete")
