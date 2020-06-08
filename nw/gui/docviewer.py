@@ -135,11 +135,22 @@ class GuiDocViewer(QTextBrowser):
         aDoc = ToHtml(self.theProject, self.theParent)
         aDoc.setPreview(True, self.mainConf.viewComments)
         aDoc.setLinkHeaders(True)
-        aDoc.setText(tHandle)
-        aDoc.doAutoReplace()
-        aDoc.tokenizeText()
-        aDoc.doConvert()
-        aDoc.doPostProcessing()
+
+        # Be extra careful here to prevent crashes when first opening a
+        # project as a crash here leaves no way of recovering.
+        # See issue #298
+        try:
+            aDoc.setText(tHandle)
+            aDoc.doAutoReplace()
+            aDoc.tokenizeText()
+            aDoc.doConvert()
+            aDoc.doPostProcessing()
+        except Exception as e:
+            logger.error("Failed to generate preview for document with handle '%s'" % tHandle)
+            logger.error(str(e))
+            self.setText("An error occurred while generating the preview.")
+            return False
+
         self.setHtml(aDoc.theResult)
         if self.theHandle == tHandle:
             self.verticalScrollBar().setValue(sPos)
