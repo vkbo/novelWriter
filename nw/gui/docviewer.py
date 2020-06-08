@@ -224,8 +224,14 @@ class GuiDocViewer(QTextBrowser):
         Config.textFixedW is enabled or we're in Zen mode. Otherwise,
         just ensure the margins are set correctly.
         """
+        vBar = self.verticalScrollBar()
+        if vBar.isVisible():
+            sW = vBar.width()
+        else:
+            sW = 0
+
         tB = self.lineWidth()
-        tW = self.width() - 2*tB
+        tW = self.width() - 2*tB - sW
         tH = self.docTitle.height()
         tT = self.mainConf.getTextMargin() - tH
         self.docTitle.setGeometry(tB, tB, tW, tH)

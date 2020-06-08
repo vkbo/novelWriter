@@ -87,7 +87,7 @@ Synopsis Feature
 
 The "Synopsis" column of the Outline View takes its information from a specially formatted comment.
 In order to flag a comment as a Synopsis, add the word "Synopsis:" as the first word of the comment.
-The ";" is required, and "synopsis" is not case sensitive.
+The ":" is required, and "synopsis" is not case sensitive.
 If it is correctly formatted, the syntax highlighter will indicate this by altering the colour of the word.
 
 .. note::

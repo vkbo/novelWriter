@@ -187,8 +187,12 @@ class GuiDocTitleBar(QWidget):
         self.thePalette.setColor(QPalette.Window, QColor(*self.theTheme.colBack))
         self.thePalette.setColor(QPalette.Text, QColor(*self.theTheme.colText))
 
+        fPx = int(0.9*self.theTheme.fontPixelSize)
+        hSp = self.mainConf.pxInt(6)
+        self.buttonSize = fPx + hSp
+
         # Main Widget Settings
-        self.setContentsMargins(0, 0, 0, 0)
+        self.setContentsMargins(2*self.buttonSize, 0, 0, 0)
         self.setAutoFillBackground(True)
         self.setPalette(self.thePalette)
 
@@ -197,10 +201,10 @@ class GuiDocTitleBar(QWidget):
         self.theTitle.setText("")
         self.theTitle.setIndent(0)
         self.theTitle.setMargin(0)
-        self.theTitle.setContentsMargins(10, 0, 0, 0)
+        self.theTitle.setContentsMargins(0, 0, 0, 0)
         self.theTitle.setAutoFillBackground(True)
-        self.theTitle.setAlignment(Qt.AlignCenter)
-        self.theTitle.setWordWrap(True)
+        self.theTitle.setAlignment(Qt.AlignHCenter | Qt.AlignTop)
+        self.theTitle.setFixedHeight(fPx)
         self.theTitle.setFrameShape(QFrame.NoFrame)
         self.theTitle.setLineWidth(0)
         self.theTitle.setPalette(self.thePalette)
@@ -210,13 +214,11 @@ class GuiDocTitleBar(QWidget):
         self.theTitle.setFont(lblFont)
 
         # Buttons
-        iPx = self.theTheme.textIconSize
-
         self.closeButton = QPushButton("")
         self.closeButton.setIcon(self.theTheme.getIcon("close"))
         self.closeButton.setContentsMargins(0, 0, 0, 0)
-        self.closeButton.setIconSize(QSize(iPx, iPx))
-        self.closeButton.setFixedSize(iPx, iPx)
+        self.closeButton.setIconSize(QSize(fPx, fPx))
+        self.closeButton.setFixedSize(fPx, fPx)
         self.closeButton.setFlat(True)
         self.closeButton.setVisible(False)
         self.closeButton.clicked.connect(self._closeDocument)
@@ -225,8 +227,8 @@ class GuiDocTitleBar(QWidget):
             self.minmaxButton = QPushButton("")
             self.minmaxButton.setIcon(self.theTheme.getIcon("maximise"))
             self.minmaxButton.setContentsMargins(0, 0, 0, 0)
-            self.minmaxButton.setIconSize(QSize(iPx, iPx))
-            self.minmaxButton.setFixedSize(iPx, iPx)
+            self.minmaxButton.setIconSize(QSize(fPx, fPx))
+            self.minmaxButton.setFixedSize(fPx, fPx)
             self.minmaxButton.setFlat(True)
             self.minmaxButton.setVisible(False)
             self.minmaxButton.clicked.connect(self._minmaxDocument)
@@ -234,17 +236,15 @@ class GuiDocTitleBar(QWidget):
             self.refreshButton = QPushButton("")
             self.refreshButton.setIcon(self.theTheme.getIcon("refresh"))
             self.refreshButton.setContentsMargins(0, 0, 0, 0)
-            self.refreshButton.setIconSize(QSize(iPx, iPx))
-            self.refreshButton.setFixedSize(iPx, iPx)
+            self.refreshButton.setIconSize(QSize(fPx, fPx))
+            self.refreshButton.setFixedSize(fPx, fPx)
             self.refreshButton.setFlat(True)
             self.refreshButton.setVisible(False)
             self.refreshButton.clicked.connect(self._refreshDocument)
 
         # Assemble Layout
-        hSp = self.mainConf.pxInt(6)
         self.outerBox = QHBoxLayout()
         self.outerBox.setSpacing(hSp)
-        self.outerBox.addSpacing(2*(iPx + hSp))
         self.outerBox.addWidget(self.theTitle, 1)
         if self.isEditor:
             self.outerBox.addWidget(self.minmaxButton, 0)
@@ -315,11 +315,14 @@ class GuiDocTitleBar(QWidget):
         """Switch on or off zen mode.
         """
         self.theParent.theParent.toggleZenMode()
-        self.closeButton.setVisible(not self.theParent.theParent.isZenMode)
         if self.theParent.theParent.isZenMode:
             self.minmaxButton.setIcon(self.theTheme.getIcon("minimise"))
+            self.setContentsMargins(self.buttonSize, 0, 0, 0)
+            self.closeButton.setVisible(False)
         else:
             self.minmaxButton.setIcon(self.theTheme.getIcon("maximise"))
+            self.setContentsMargins(2*self.buttonSize, 0, 0, 0)
+            self.closeButton.setVisible(True)
         return
 
     def _refreshDocument(self):

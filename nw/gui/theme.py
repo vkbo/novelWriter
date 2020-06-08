@@ -265,7 +265,8 @@ class GuiTheme:
         # Config File
         confParser = configparser.ConfigParser()
         try:
-            confParser.read_file(open(self.confFile,mode="r",encoding="utf8"))
+            with open(self.confFile, mode="r", encoding="utf8") as inFile:
+                confParser.read_file(inFile)
         except Exception as e:
             logger.error("Could not load theme settings from: %s" % self.confFile)
             return False
@@ -319,7 +320,8 @@ class GuiTheme:
 
         confParser = configparser.ConfigParser()
         try:
-            confParser.read_file(open(self.syntaxFile, mode="r", encoding="utf8"))
+            with open(self.syntaxFile, mode="r", encoding="utf8") as inFile:
+                confParser.read_file(inFile)
         except Exception as e:
             logger.error("Could not load syntax colours from: %s" % self.syntaxFile)
             return False
@@ -370,7 +372,8 @@ class GuiTheme:
             themeConf = path.join(self.mainConf.themeRoot, self.guiPath, themeDir, self.confName)
             logger.verbose("Checking theme config for '%s'" % themeDir)
             try:
-                confParser.read_file(open(themeConf, mode="r", encoding="utf8"))
+                with open(themeConf, mode="r", encoding="utf8") as inFile:
+                    confParser.read_file(inFile)
             except Exception as e:
                 self.theParent.makeAlert(
                     ["Could not load theme config file.",str(e)], nwAlert.ERROR
@@ -402,7 +405,8 @@ class GuiTheme:
                 continue
             logger.verbose("Checking theme syntax for '%s'" % syntaxFile)
             try:
-                confParser.read_file(open(syntaxPath, mode="r", encoding="utf8"))
+                with open(syntaxPath, mode="r", encoding="utf8") as inFile:
+                    confParser.read_file(inFile)
             except Exception as e:
                 self.theParent.makeAlert(
                     ["Could not load syntax file.",str(e)], nwAlert.ERROR
@@ -588,7 +592,8 @@ class GuiIcons:
         # Config File
         confParser = configparser.ConfigParser()
         try:
-            confParser.read_file(open(self.confFile, mode="r", encoding="utf8"))
+            with open(self.confFile, mode="r", encoding="utf8") as inFile:
+                confParser.read_file(inFile)
         except Exception as e:
             logger.error("Could not load icon theme settings from: %s" % self.confFile)
             return False
@@ -682,7 +687,8 @@ class GuiIcons:
             themeConf = path.join(themePath, self.confName)
             logger.verbose("Checking icon theme config for '%s'" % themeDir)
             try:
-                confParser.read_file(open(themeConf, mode="r", encoding="utf8"))
+                with open(themeConf, mode="r", encoding="utf8") as inFile:
+                    confParser.read_file(inFile)
             except Exception as e:
                 self.theParent.makeAlert(
                     ["Could not load theme config file.",str(e)], nwAlert.ERROR
