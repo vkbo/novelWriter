@@ -92,8 +92,8 @@ class GuiMain(QMainWindow):
         self.statusBar = GuiMainStatus(self)
         self.treeView  = GuiProjectTree(self)
         self.docEditor = GuiDocEditor(self)
-        self.docViewer = GuiDocViewer(self)
         self.viewMeta  = GuiDocViewDetails(self)
+        self.docViewer = GuiDocViewer(self)
         self.searchBar = GuiSearchBar(self)
         self.treeMeta  = GuiItemDetails(self)
         self.projView  = GuiOutline(self)
@@ -517,6 +517,7 @@ class GuiMain(QMainWindow):
                 vPos[0] = int(bPos[1]/2)
                 vPos[1] = bPos[1] - vPos[0]
                 self.splitDocs.setSizes(vPos)
+                self.viewMeta.setVisible(self.mainConf.showRefPanel)
             self.docViewer.navigateTo(navLink)
 
         return True
@@ -840,19 +841,22 @@ class GuiMain(QMainWindow):
             if msgRes != QMessageBox.Yes:
                 return False
 
+        logger.info("Exiting %s" % nw.__package__)
+
         if not self.isZenMode:
             self.mainConf.setMainPanePos(self.splitMain.sizes())
             self.mainConf.setDocPanePos(self.splitDocs.sizes())
-            self.mainConf.setViewPanePos(self.splitView.sizes())
             self.mainConf.setOutlinePanePos(self.splitOutline.sizes())
+            if self.viewMeta.isVisible():
+                self.mainConf.setViewPanePos(self.splitView.sizes())
 
-        logger.info("Exiting %s" % nw.__package__)
-        if self.hasProject:
-            self.closeProject(True)
-
+        self.mainConf.setShowRefPanel(self.viewMeta.isVisible())
         self.mainConf.setTreeColWidths(self.treeView.getColumnSizes())
         if not self.mainConf.isFullScreen:
             self.mainConf.setWinSize(self.width(), self.height())
+
+        if self.hasProject:
+            self.closeProject(True)
 
         self.mainConf.saveConfig()
         self.reportConfErr()

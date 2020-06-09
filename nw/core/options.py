@@ -77,7 +77,7 @@ class OptionState():
                 "headerOrder",
                 "columnWidth",
                 "columnHidden",
-            ])
+            ]),
         }
 
         return

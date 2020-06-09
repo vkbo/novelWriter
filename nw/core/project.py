@@ -579,6 +579,7 @@ class NWProject():
     def closeProject(self):
         """Close the current project and clear all meta data.
         """
+        self.optState.saveSettings()
         self.projTree.writeToCFiles()
         self._appendSessionStats()
         self._clearLockFile()

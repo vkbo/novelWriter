@@ -58,8 +58,8 @@ class GuiDocViewer(QTextBrowser):
         self.initViewer()
 
         # Document Title and Footer
-        self.docTitle = GuiDocTitleBar(self, self.theProject, isEditor=False)
-        self.docFooter = GuiDocViewFooter(self, self.theProject)
+        self.docTitle = GuiDocTitleBar(self, isEditor=False)
+        self.docFooter = GuiDocViewFooter(self)
         self.stickyRef = False
 
         theOpt = QTextOption()
