@@ -360,21 +360,21 @@ class GuiMainMenu(QMenuBar):
         self.viewMenu = self.addMenu("&View")
 
         # View > TreeView
-        self.aFocusTree = QAction("TreeView", self)
+        self.aFocusTree = QAction("Focus Project Tree", self)
         self.aFocusTree.setStatusTip("Move focus to project tree")
         self.aFocusTree.setShortcut("Alt+1")
         self.aFocusTree.triggered.connect(lambda : self.theParent.setFocus(1))
         self.viewMenu.addAction(self.aFocusTree)
 
         # View > Document Pane 1
-        self.aFocusEditor = QAction("Left Document Pane", self)
+        self.aFocusEditor = QAction("Focus Document Editor", self)
         self.aFocusEditor.setStatusTip("Move focus to left document pane")
         self.aFocusEditor.setShortcut("Alt+2")
         self.aFocusEditor.triggered.connect(lambda : self.theParent.setFocus(2))
         self.viewMenu.addAction(self.aFocusEditor)
 
         # View > Document Pane 2
-        self.aFocusView = QAction("Right Document Pane", self)
+        self.aFocusView = QAction("Focus Document Viewer", self)
         self.aFocusView.setStatusTip("Move focus to right document pane")
         self.aFocusView.setShortcut("Alt+3")
         self.aFocusView.triggered.connect(lambda : self.theParent.setFocus(3))
@@ -591,8 +591,8 @@ class GuiMainMenu(QMenuBar):
         self.aFmtComment.triggered.connect(lambda: self._docAction(nwDocAction.BLOCK_COM))
         self.fmtMenu.addAction(self.aFmtComment)
 
-        # Format > Remove Format
-        self.aFmtNoFormat = QAction("Remove Format", self)
+        # Format > Remove Block Format
+        self.aFmtNoFormat = QAction("Remove Block Format", self)
         self.aFmtNoFormat.setStatusTip("Strips block format")
         self.aFmtNoFormat.setShortcuts(["Ctrl+0","Ctrl+Shift+/"])
         self.aFmtNoFormat.triggered.connect(lambda: self._docAction(nwDocAction.BLOCK_TXT))
