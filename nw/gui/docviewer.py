@@ -34,7 +34,7 @@ from PyQt5.QtGui import QTextOption, QFont, QPalette, QColor, QTextCursor
 
 from nw.core import ToHtml
 from nw.constants import nwAlert, nwItemType, nwDocAction
-from nw.gui.docbars import GuiDocTitleBar
+from nw.gui.docbars import GuiDocTitleBar, GuiDocViewFooter
 
 logger = logging.getLogger(__name__)
 
@@ -57,10 +57,9 @@ class GuiDocViewer(QTextBrowser):
         self.setOpenExternalLinks(False)
         self.initViewer()
 
-        # Document Title
+        # Document Title and Footer
         self.docTitle = GuiDocTitleBar(self, self.theProject, isEditor=False)
-        self.docTitle.setGeometry(0, 0, self.docTitle.width(), self.docTitle.height())
-        self.setViewportMargins(0, self.docTitle.height(), 0, 0)
+        self.docFooter = GuiDocViewFooter(self, self.theProject)
 
         theOpt = QTextOption()
         if self.mainConf.doJustify:
@@ -233,15 +232,17 @@ class GuiDocViewer(QTextBrowser):
         tB = self.lineWidth()
         tW = self.width() - 2*tB - sW
         tH = self.docTitle.height()
+        fH = self.docFooter.height()
+        fY = self.height() - fH - tB
         tT = self.mainConf.getTextMargin() - tH
+        bT = self.mainConf.getTextMargin() - fH
         self.docTitle.setGeometry(tB, tB, tW, tH)
-        self.setViewportMargins(0, tH, 0, 0)
+        self.docFooter.setGeometry(tB, fY, tW, fH)
+        self.setViewportMargins(0, tH, 0, fH)
 
         docFormat = self.qDocument.rootFrame().frameFormat()
-        if tT > 0:
-            docFormat.setTopMargin(tT)
-        else:
-            docFormat.setTopMargin(0)
+        docFormat.setTopMargin(max(0, tT))
+        docFormat.setBottomMargin(max(0, bT))
 
         self.qDocument.blockSignals(True)
         self.qDocument.rootFrame().setFrameFormat(docFormat)

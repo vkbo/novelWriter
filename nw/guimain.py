@@ -125,14 +125,19 @@ class GuiMain(QMainWindow):
         self.docView.setContentsMargins(0, 0, 0, 0)
         self.docView.setSpacing(self.mainConf.pxInt(2))
         self.docView.addWidget(self.docViewer)
-        self.docView.addWidget(self.viewMeta)
+        # self.docView.addWidget(self.viewMeta)
         self.docView.setStretch(0, 1)
         self.viewPane.setLayout(self.docView)
+
+        self.splitView = QSplitter(Qt.Vertical)
+        self.splitView.addWidget(self.viewPane)
+        self.splitView.addWidget(self.viewMeta)
+        self.splitView.setSizes(self.mainConf.getViewPanePos())
 
         self.splitDocs = QSplitter(Qt.Horizontal)
         self.splitDocs.setOpaqueResize(False)
         self.splitDocs.addWidget(self.editPane)
-        self.splitDocs.addWidget(self.viewPane)
+        self.splitDocs.addWidget(self.splitView)
 
         self.splitOutline = QSplitter(Qt.Vertical)
         self.splitOutline.addWidget(self.projView)
@@ -841,6 +846,12 @@ class GuiMain(QMainWindow):
             if msgRes != QMessageBox.Yes:
                 return False
 
+        if not self.isZenMode:
+            self.mainConf.setMainPanePos(self.splitMain.sizes())
+            self.mainConf.setDocPanePos(self.splitDocs.sizes())
+            self.mainConf.setViewPanePos(self.splitView.sizes())
+            self.mainConf.setOutlinePanePos(self.splitOutline.sizes())
+
         logger.info("Exiting %s" % nw.__package__)
         if self.hasProject:
             self.closeProject(True)
@@ -848,10 +859,7 @@ class GuiMain(QMainWindow):
         self.mainConf.setTreeColWidths(self.treeView.getColumnSizes())
         if not self.mainConf.isFullScreen:
             self.mainConf.setWinSize(self.width(), self.height())
-        if not self.isZenMode:
-            self.mainConf.setMainPanePos(self.splitMain.sizes())
-            self.mainConf.setDocPanePos(self.splitDocs.sizes())
-            self.mainConf.setOutlinePanePos(self.splitOutline.sizes())
+
         self.mainConf.saveConfig()
         self.reportConfErr()
 

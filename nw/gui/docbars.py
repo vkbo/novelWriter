@@ -343,3 +343,49 @@ class GuiDocTitleBar(QWidget):
         return
 
 # END Class GuiDocTitleBar
+
+class GuiDocViewFooter(QWidget):
+
+    def __init__(self, theParent, theProject):
+        QWidget.__init__(self, theParent)
+
+        logger.debug("Initialising GuiDocViewFooter ...")
+
+        self.mainConf   = nw.CONFIG
+        self.theParent  = theParent
+        self.theProject = theProject
+        self.theTheme   = theParent.theTheme
+        self.theHandle  = None
+
+        # Make a QPalette that matches the Syntax Theme
+        self.thePalette = QPalette()
+        self.thePalette.setColor(QPalette.Window, QColor(*self.theTheme.colBack))
+        self.thePalette.setColor(QPalette.Text, QColor(*self.theTheme.colText))
+
+        fPx = int(0.9*self.theTheme.fontPixelSize)
+        hSp = self.mainConf.pxInt(6)
+
+        # Main Widget Settings
+        self.setContentsMargins(0, 0, 0, 0)
+        self.setAutoFillBackground(True)
+        self.setPalette(self.thePalette)
+
+        # Title Label
+        self.theTitle = QLabel()
+        self.theTitle.setText("References")
+
+        lblFont = self.theTitle.font()
+        lblFont.setPointSizeF(0.9*self.theTheme.fontPointSize)
+        self.theTitle.setFont(lblFont)
+
+        # Assemble Layout
+        self.outerBox = QHBoxLayout()
+        self.outerBox.setSpacing(hSp)
+        self.outerBox.addWidget(self.theTitle, 1)
+        self.setLayout(self.outerBox)
+
+        logger.debug("GuiDocViewFooter initialisation complete")
+
+        return
+
+# END Class GuiDocViewFooter
