@@ -213,32 +213,40 @@ class GuiDocTitleBar(QWidget):
         lblFont.setPointSizeF(0.9*self.theTheme.fontPointSize)
         self.theTitle.setFont(lblFont)
 
+        buttonStyle = (
+            "QToolButton {{border: none; background: transparent;}} "
+            "QToolButton:hover {{border: none; background: rgba({0},{1},{2},0.2);}}"
+        ).format(*self.theTheme.colText)
+
         # Buttons
-        self.closeButton = QPushButton("")
+        self.closeButton = QToolButton(self)
         self.closeButton.setIcon(self.theTheme.getIcon("close"))
         self.closeButton.setContentsMargins(0, 0, 0, 0)
         self.closeButton.setIconSize(QSize(fPx, fPx))
         self.closeButton.setFixedSize(fPx, fPx)
-        self.closeButton.setFlat(True)
+        self.closeButton.setStyleSheet(buttonStyle)
+        self.closeButton.setToolButtonStyle(Qt.ToolButtonIconOnly)
         self.closeButton.setVisible(False)
         self.closeButton.clicked.connect(self._closeDocument)
 
         if self.isEditor:
-            self.minmaxButton = QPushButton("")
+            self.minmaxButton = QToolButton(self)
             self.minmaxButton.setIcon(self.theTheme.getIcon("maximise"))
             self.minmaxButton.setContentsMargins(0, 0, 0, 0)
             self.minmaxButton.setIconSize(QSize(fPx, fPx))
             self.minmaxButton.setFixedSize(fPx, fPx)
-            self.minmaxButton.setFlat(True)
+            self.minmaxButton.setStyleSheet(buttonStyle)
+            self.minmaxButton.setToolButtonStyle(Qt.ToolButtonIconOnly)
             self.minmaxButton.setVisible(False)
             self.minmaxButton.clicked.connect(self._minmaxDocument)
         else:
-            self.refreshButton = QPushButton("")
+            self.refreshButton = QToolButton(self)
             self.refreshButton.setIcon(self.theTheme.getIcon("refresh"))
             self.refreshButton.setContentsMargins(0, 0, 0, 0)
             self.refreshButton.setIconSize(QSize(fPx, fPx))
             self.refreshButton.setFixedSize(fPx, fPx)
-            self.refreshButton.setFlat(True)
+            self.refreshButton.setStyleSheet(buttonStyle)
+            self.refreshButton.setToolButtonStyle(Qt.ToolButtonIconOnly)
             self.refreshButton.setVisible(False)
             self.refreshButton.clicked.connect(self._refreshDocument)
 
