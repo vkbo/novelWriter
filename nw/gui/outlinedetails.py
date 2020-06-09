@@ -216,11 +216,9 @@ class GuiOutlineDetails(QScrollArea):
         self.outerBox = QHBoxLayout()
         self.outerBox.addWidget(self.mainGroup, 0)
         self.outerBox.addWidget(self.tagsGroup, 1)
-        # self.outerBox.addStretch(1)
 
         self.outerWidget.setLayout(self.outerBox)
         self.setWidget(self.outerWidget)
-        self.show()
 
         self.setHorizontalScrollBarPolicy(Qt.ScrollBarAsNeeded)
         self.setVerticalScrollBarPolicy(Qt.ScrollBarAsNeeded)

@@ -537,6 +537,9 @@ class GuiIcons:
         "maximise"       : (None,                          None),
         "minimise"       : (None,                          None),
         "refresh"        : (None,                          None),
+        "reference"      : (None,                          None),
+        "sticky-on"      : (None,                          None),
+        "sticky-off"     : (None,                          None),
 
         ## Other Icons
         "warning"        : (QStyle.SP_MessageBoxWarning,   "dialog-warning"),

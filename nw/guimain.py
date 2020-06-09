@@ -92,8 +92,8 @@ class GuiMain(QMainWindow):
         self.statusBar = GuiMainStatus(self)
         self.treeView  = GuiProjectTree(self)
         self.docEditor = GuiDocEditor(self)
-        self.docViewer = GuiDocViewer(self)
         self.viewMeta  = GuiDocViewDetails(self)
+        self.docViewer = GuiDocViewer(self)
         self.searchBar = GuiSearchBar(self)
         self.treeMeta  = GuiItemDetails(self)
         self.projView  = GuiOutline(self)
@@ -120,19 +120,15 @@ class GuiMain(QMainWindow):
         self.docEdit.addWidget(self.docEditor)
         self.editPane.setLayout(self.docEdit)
 
-        self.viewPane = QWidget()
-        self.docView = QVBoxLayout()
-        self.docView.setContentsMargins(0, 0, 0, 0)
-        self.docView.setSpacing(self.mainConf.pxInt(2))
-        self.docView.addWidget(self.docViewer)
-        self.docView.addWidget(self.viewMeta)
-        self.docView.setStretch(0, 1)
-        self.viewPane.setLayout(self.docView)
+        self.splitView = QSplitter(Qt.Vertical)
+        self.splitView.addWidget(self.docViewer)
+        self.splitView.addWidget(self.viewMeta)
+        self.splitView.setSizes(self.mainConf.getViewPanePos())
 
-        self.splitView = QSplitter(Qt.Horizontal)
-        self.splitView.setOpaqueResize(False)
-        self.splitView.addWidget(self.editPane)
-        self.splitView.addWidget(self.viewPane)
+        self.splitDocs = QSplitter(Qt.Horizontal)
+        self.splitDocs.setOpaqueResize(False)
+        self.splitDocs.addWidget(self.editPane)
+        self.splitDocs.addWidget(self.splitView)
 
         self.splitOutline = QSplitter(Qt.Vertical)
         self.splitOutline.addWidget(self.projView)
@@ -142,7 +138,7 @@ class GuiMain(QMainWindow):
         self.tabWidget = QTabWidget()
         self.tabWidget.setTabPosition(QTabWidget.East)
         self.tabWidget.setStyleSheet("QTabWidget::pane {border: 0;}")
-        self.tabWidget.addTab(self.splitView,    "Editor")
+        self.tabWidget.addTab(self.splitDocs,    "Editor")
         self.tabWidget.addTab(self.splitOutline, "Outline")
         self.tabWidget.currentChanged.connect(self._mainTabChanged)
 
@@ -156,20 +152,23 @@ class GuiMain(QMainWindow):
 
         self.setCentralWidget(self.splitMain)
 
-        self.idxTree   = self.splitMain.indexOf(self.treePane)
-        self.idxMain   = self.splitMain.indexOf(self.tabWidget)
-        self.idxEditor = self.splitView.indexOf(self.editPane)
-        self.idxViewer = self.splitView.indexOf(self.viewPane)
-
-        self.idxTabEdit = self.tabWidget.indexOf(self.splitView)
-        self.idxTabProj = self.tabWidget.indexOf(self.splitOutline)
+        self.idxTree     = self.splitMain.indexOf(self.treePane)
+        self.idxMain     = self.splitMain.indexOf(self.tabWidget)
+        self.idxEditor   = self.splitDocs.indexOf(self.editPane)
+        self.idxViewer   = self.splitDocs.indexOf(self.splitView)
+        self.idxViewDoc  = self.splitView.indexOf(self.docViewer)
+        self.idxViewMeta = self.splitView.indexOf(self.viewMeta)
+        self.idxTabEdit  = self.tabWidget.indexOf(self.splitDocs)
+        self.idxTabProj  = self.tabWidget.indexOf(self.splitOutline)
 
         self.splitMain.setCollapsible(self.idxTree, False)
         self.splitMain.setCollapsible(self.idxMain, False)
-        self.splitView.setCollapsible(self.idxEditor, False)
-        self.splitView.setCollapsible(self.idxViewer, True)
+        self.splitDocs.setCollapsible(self.idxEditor, False)
+        self.splitDocs.setCollapsible(self.idxViewer, True)
+        self.splitView.setCollapsible(self.idxViewDoc, False)
+        self.splitView.setCollapsible(self.idxViewMeta, False)
 
-        self.viewPane.setVisible(False)
+        self.splitView.setVisible(False)
         self.searchBar.setVisible(False)
 
         # Build the Tree View
@@ -353,7 +352,7 @@ class GuiMain(QMainWindow):
             self.theIndex.clearIndex()
             self.clearGUI()
             self.hasProject = False
-            self.tabWidget.setCurrentWidget(self.splitView)
+            self.tabWidget.setCurrentWidget(self.splitDocs)
 
         return saveOK
 
@@ -371,7 +370,7 @@ class GuiMain(QMainWindow):
             return False
 
         # Switch main tab to editor view
-        self.tabWidget.setCurrentWidget(self.splitView)
+        self.tabWidget.setCurrentWidget(self.splitDocs)
 
         # Try to open the project
         if not self.theProject.openProject(projFile):
@@ -475,7 +474,7 @@ class GuiMain(QMainWindow):
         """
         if self.hasProject:
             self.closeDocument()
-            self.tabWidget.setCurrentWidget(self.splitView)
+            self.tabWidget.setCurrentWidget(self.splitDocs)
             if self.docEditor.loadText(tHandle, tLine):
                 if changeFocus:
                     self.docEditor.setFocus()
@@ -508,16 +507,17 @@ class GuiMain(QMainWindow):
             return False
 
         # Make sure main tab is in Editor view
-        self.tabWidget.setCurrentWidget(self.splitView)
+        self.tabWidget.setCurrentWidget(self.splitDocs)
 
         if self.docViewer.loadText(tHandle):
-            if not self.viewPane.isVisible():
+            if not self.splitView.isVisible():
                 bPos = self.splitMain.sizes()
-                self.viewPane.setVisible(True)
+                self.splitView.setVisible(True)
                 vPos = [0, 0]
                 vPos[0] = int(bPos[1]/2)
                 vPos[1] = bPos[1] - vPos[0]
-                self.splitView.setSizes(vPos)
+                self.splitDocs.setSizes(vPos)
+                self.viewMeta.setVisible(self.mainConf.showRefPanel)
             self.docViewer.navigateTo(navLink)
 
         return True
@@ -842,16 +842,22 @@ class GuiMain(QMainWindow):
                 return False
 
         logger.info("Exiting %s" % nw.__package__)
-        if self.hasProject:
-            self.closeProject(True)
 
+        if not self.isZenMode:
+            self.mainConf.setMainPanePos(self.splitMain.sizes())
+            self.mainConf.setDocPanePos(self.splitDocs.sizes())
+            self.mainConf.setOutlinePanePos(self.splitOutline.sizes())
+            if self.viewMeta.isVisible():
+                self.mainConf.setViewPanePos(self.splitView.sizes())
+
+        self.mainConf.setShowRefPanel(self.viewMeta.isVisible())
         self.mainConf.setTreeColWidths(self.treeView.getColumnSizes())
         if not self.mainConf.isFullScreen:
             self.mainConf.setWinSize(self.width(), self.height())
-        if not self.isZenMode:
-            self.mainConf.setMainPanePos(self.splitMain.sizes())
-            self.mainConf.setDocPanePos(self.splitView.sizes())
-            self.mainConf.setOutlinePanePos(self.splitOutline.sizes())
+
+        if self.hasProject:
+            self.closeProject(True)
+
         self.mainConf.saveConfig()
         self.reportConfErr()
 
@@ -874,13 +880,15 @@ class GuiMain(QMainWindow):
         return
 
     def closeDocViewer(self):
+        """Close the document view panel.
+        """
         self.docViewer.clearViewer()
         self.theProject.setLastViewed(None)
         bPos = self.splitMain.sizes()
-        self.viewPane.setVisible(False)
+        self.splitView.setVisible(False)
         vPos = [bPos[1], 0]
-        self.splitView.setSizes(vPos)
-        return not self.viewPane.isVisible()
+        self.splitDocs.setSizes(vPos)
+        return not self.splitView.isVisible()
 
     def toggleZenMode(self):
         """Main GUI Zen Mode hides tree, view pane and optionally also
@@ -893,7 +901,7 @@ class GuiMain(QMainWindow):
         self.isZenMode = not self.isZenMode
         if self.isZenMode:
             logger.debug("Activating Zen mode")
-            self.tabWidget.setCurrentWidget(self.splitView)
+            self.tabWidget.setCurrentWidget(self.splitDocs)
         else:
             logger.debug("Deactivating Zen mode")
 
@@ -903,10 +911,10 @@ class GuiMain(QMainWindow):
         self.mainMenu.setVisible(isVisible)
         self.tabWidget.tabBar().setVisible(isVisible)
 
-        if self.viewPane.isVisible():
-            self.viewPane.setVisible(False)
+        if self.splitView.isVisible():
+            self.splitView.setVisible(False)
         elif self.docViewer.theHandle is not None:
-            self.viewPane.setVisible(True)
+            self.splitView.setVisible(True)
 
         return True
 
