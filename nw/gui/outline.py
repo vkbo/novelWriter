@@ -371,7 +371,7 @@ class GuiOutline(QTreeWidget):
 
             tLevel = self.theIndex.novelIndex[tHandle][sTitle]["level"]
             tTime  = self.theIndex.novelIndex[tHandle][sTitle]["updated"]
-            tItem  = self._createTreeItem(tHandle, sTitle)
+            tItem  = self._createTreeItem(tHandle, sTitle, tLevel)
             self.treeMap[titleKey] = tItem
 
             if tLevel == "H1":
@@ -410,17 +410,18 @@ class GuiOutline(QTreeWidget):
 
         return
 
-    def _createTreeItem(self, tHandle, sTitle):
+    def _createTreeItem(self, tHandle, sTitle, tLevel):
         """Populate a tree item with all the column values.
         """
         nwItem = self.theProject.projTree[tHandle]
         novIdx = self.theIndex.novelIndex[tHandle][sTitle]
 
         newItem = QTreeWidgetItem()
+        hIcon   = "doc_%s" % tLevel.lower()
 
         newItem.setText(self.colIndex[nwOutline.TITLE],  novIdx["title"])
         newItem.setData(self.colIndex[nwOutline.TITLE],  Qt.UserRole, tHandle)
-        newItem.setIcon(self.colIndex[nwOutline.TITLE],  self.theTheme.getIcon("hash"))
+        newItem.setIcon(self.colIndex[nwOutline.TITLE],  self.theTheme.getIcon(hIcon))
         newItem.setText(self.colIndex[nwOutline.LEVEL],  novIdx["level"])
         newItem.setText(self.colIndex[nwOutline.LABEL],  nwItem.itemName)
         newItem.setIcon(self.colIndex[nwOutline.LABEL],  self.theTheme.getIcon("proj_document"))

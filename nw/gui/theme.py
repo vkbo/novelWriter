@@ -509,10 +509,15 @@ class GuiIcons:
         "cls_trash"      : (QStyle.SP_DriveHDIcon,         "drive-harddisk"),
         "proj_document"  : (QStyle.SP_FileIcon,            "x-office-document"),
         "proj_folder"    : (QStyle.SP_DirIcon,             "folder"),
+        "proj_orphan"    : (QStyle.SP_MessageBoxWarning,   "dialog-warning"),
         "proj_nwx"       : (None,                          None),
         "status_lang"    : (None,                          None),
         "status_time"    : (None,                          None),
         "status_stats"   : (None,                          None),
+        "doc_h1"         : (QStyle.SP_FileIcon,            "x-office-document"),
+        "doc_h2"         : (QStyle.SP_FileIcon,            "x-office-document"),
+        "doc_h3"         : (QStyle.SP_FileIcon,            "x-office-document"),
+        "doc_h4"         : (QStyle.SP_FileIcon,            "x-office-document"),
 
         ## General Button Icons
         "folder-open"    : (QStyle.SP_DirOpenIcon,         "folder-open"),
