@@ -7,7 +7,9 @@
 
  File History:
  Created: 2019-09-29 [0.2.1] GuiSearchBar
+ Created: 2019-10-31 [0.3.2] GuiDocViewDetails
  Created: 2020-04-25 [0.4.5] GuiDocTitleBar
+ Created: 2020-06-09 [0.8.0] GuiDocViewFooter
 
  This file is a part of novelWriter
  Copyright 2020, Veronica Berglyd Olsen
