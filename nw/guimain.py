@@ -120,17 +120,8 @@ class GuiMain(QMainWindow):
         self.docEdit.addWidget(self.docEditor)
         self.editPane.setLayout(self.docEdit)
 
-        self.viewPane = QWidget()
-        self.docView = QVBoxLayout()
-        self.docView.setContentsMargins(0, 0, 0, 0)
-        self.docView.setSpacing(self.mainConf.pxInt(2))
-        self.docView.addWidget(self.docViewer)
-        # self.docView.addWidget(self.viewMeta)
-        self.docView.setStretch(0, 1)
-        self.viewPane.setLayout(self.docView)
-
         self.splitView = QSplitter(Qt.Vertical)
-        self.splitView.addWidget(self.viewPane)
+        self.splitView.addWidget(self.docViewer)
         self.splitView.addWidget(self.viewMeta)
         self.splitView.setSizes(self.mainConf.getViewPanePos())
 
@@ -161,20 +152,23 @@ class GuiMain(QMainWindow):
 
         self.setCentralWidget(self.splitMain)
 
-        self.idxTree   = self.splitMain.indexOf(self.treePane)
-        self.idxMain   = self.splitMain.indexOf(self.tabWidget)
-        self.idxEditor = self.splitDocs.indexOf(self.editPane)
-        self.idxViewer = self.splitDocs.indexOf(self.viewPane)
-
-        self.idxTabEdit = self.tabWidget.indexOf(self.splitDocs)
-        self.idxTabProj = self.tabWidget.indexOf(self.splitOutline)
+        self.idxTree     = self.splitMain.indexOf(self.treePane)
+        self.idxMain     = self.splitMain.indexOf(self.tabWidget)
+        self.idxEditor   = self.splitDocs.indexOf(self.editPane)
+        self.idxViewer   = self.splitDocs.indexOf(self.splitView)
+        self.idxViewDoc  = self.splitView.indexOf(self.docViewer)
+        self.idxViewMeta = self.splitView.indexOf(self.viewMeta)
+        self.idxTabEdit  = self.tabWidget.indexOf(self.splitDocs)
+        self.idxTabProj  = self.tabWidget.indexOf(self.splitOutline)
 
         self.splitMain.setCollapsible(self.idxTree, False)
         self.splitMain.setCollapsible(self.idxMain, False)
         self.splitDocs.setCollapsible(self.idxEditor, False)
         self.splitDocs.setCollapsible(self.idxViewer, True)
+        self.splitView.setCollapsible(self.idxViewDoc, False)
+        self.splitView.setCollapsible(self.idxViewMeta, False)
 
-        self.viewPane.setVisible(False)
+        self.splitView.setVisible(False)
         self.searchBar.setVisible(False)
 
         # Build the Tree View
@@ -516,9 +510,9 @@ class GuiMain(QMainWindow):
         self.tabWidget.setCurrentWidget(self.splitDocs)
 
         if self.docViewer.loadText(tHandle):
-            if not self.viewPane.isVisible():
+            if not self.splitView.isVisible():
                 bPos = self.splitMain.sizes()
-                self.viewPane.setVisible(True)
+                self.splitView.setVisible(True)
                 vPos = [0, 0]
                 vPos[0] = int(bPos[1]/2)
                 vPos[1] = bPos[1] - vPos[0]
@@ -882,13 +876,15 @@ class GuiMain(QMainWindow):
         return
 
     def closeDocViewer(self):
+        """Close the document view panel.
+        """
         self.docViewer.clearViewer()
         self.theProject.setLastViewed(None)
         bPos = self.splitMain.sizes()
-        self.viewPane.setVisible(False)
+        self.splitView.setVisible(False)
         vPos = [bPos[1], 0]
         self.splitDocs.setSizes(vPos)
-        return not self.viewPane.isVisible()
+        return not self.splitView.isVisible()
 
     def toggleZenMode(self):
         """Main GUI Zen Mode hides tree, view pane and optionally also
@@ -911,10 +907,10 @@ class GuiMain(QMainWindow):
         self.mainMenu.setVisible(isVisible)
         self.tabWidget.tabBar().setVisible(isVisible)
 
-        if self.viewPane.isVisible():
-            self.viewPane.setVisible(False)
+        if self.splitView.isVisible():
+            self.splitView.setVisible(False)
         elif self.docViewer.theHandle is not None:
-            self.viewPane.setVisible(True)
+            self.splitView.setVisible(True)
 
         return True
 

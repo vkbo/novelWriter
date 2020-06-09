@@ -30,15 +30,15 @@ import nw
 
 from PyQt5.QtCore import Qt, QSize
 from PyQt5.QtWidgets import (
-    QWidget, QLabel, QScrollArea, QFrame, QToolButton, QCheckBox, QGridLayout
+    QWidget, QLabel, QScrollArea, QFrame, QToolButton, QCheckBox, QGridLayout, QHBoxLayout
 )
 
 logger = logging.getLogger(__name__)
 
-class GuiDocViewDetails(QWidget):
+class GuiDocViewDetails(QScrollArea):
 
     def __init__(self, theParent):
-        QWidget.__init__(self, theParent)
+        QScrollArea.__init__(self, theParent)
 
         logger.debug("Initialising DocViewDetails ...")
         self.mainConf   = nw.CONFIG
@@ -47,28 +47,28 @@ class GuiDocViewDetails(QWidget):
         self.theTheme   = theParent.theTheme
         self.currHandle = None
 
-        x4  = self.mainConf.pxInt(4)
-        x80 = self.mainConf.pxInt(80)
-        iPx = self.theTheme.textIconSize
+        # x4  = self.mainConf.pxInt(4)
+        # x80 = self.mainConf.pxInt(80)
+        # iPx = self.theTheme.textIconSize
 
-        self.outerBox = QGridLayout(self)
-        self.outerBox.setContentsMargins(0, 0, 0, 0)
-        self.outerBox.setHorizontalSpacing(0)
-        self.outerBox.setVerticalSpacing(x4)
+        # self.outerBox = QGridLayout(self)
+        # self.outerBox.setContentsMargins(0, 0, 0, 0)
+        # self.outerBox.setHorizontalSpacing(0)
+        # self.outerBox.setVerticalSpacing(x4)
 
-        self.refLabel = QLabel("Referenced By", self)
+        # self.refLabel = QLabel("Referenced By", self)
 
-        self.showHide = QToolButton()
-        self.showHide.setStyleSheet("QToolButton { border: none; }")
-        self.showHide.setToolButtonStyle(Qt.ToolButtonIconOnly)
-        self.showHide.setArrowType(Qt.DownArrow)
-        self.showHide.setCheckable(True)
-        self.showHide.setIconSize(QSize(iPx, iPx))
-        self.showHide.toggled.connect(self._doShowHide)
+        # self.showHide = QToolButton()
+        # self.showHide.setStyleSheet("QToolButton { border: none; }")
+        # self.showHide.setToolButtonStyle(Qt.ToolButtonIconOnly)
+        # self.showHide.setArrowType(Qt.DownArrow)
+        # self.showHide.setCheckable(True)
+        # self.showHide.setIconSize(QSize(iPx, iPx))
+        # self.showHide.toggled.connect(self._doShowHide)
 
-        self.isSticky = QCheckBox("Sticky")
-        self.isSticky.setChecked(False)
-        self.isSticky.toggled.connect(self._doSticky)
+        # self.isSticky = QCheckBox("Sticky")
+        # self.isSticky.setChecked(False)
+        # self.isSticky.toggled.connect(self._doSticky)
 
         self.refList = QLabel("None")
         self.refList.setWordWrap(True)
@@ -76,23 +76,31 @@ class GuiDocViewDetails(QWidget):
         self.refList.setScaledContents(True)
         self.refList.linkActivated.connect(self._linkClicked)
 
-        self.scrollBox = QScrollArea()
-        self.scrollBox.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
-        self.scrollBox.setFrameStyle(QFrame.NoFrame)
-        self.scrollBox.setWidgetResizable(True)
-        self.scrollBox.setFixedHeight(x80)
-        self.scrollBox.setWidget(self.refList)
+        # self.scrollBox = QScrollArea()
+        # self.scrollBox.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
+        # self.scrollBox.setFrameStyle(QFrame.NoFrame)
+        # self.scrollBox.setWidgetResizable(True)
+        # self.scrollBox.setFixedHeight(x80)
+        # self.scrollBox.setWidget(self.refList)
 
-        self.outerBox.addWidget(self.showHide,  0, 0)
-        self.outerBox.addWidget(self.refLabel,  0, 1)
-        self.outerBox.addWidget(self.isSticky,  0, 2)
-        self.outerBox.addWidget(self.scrollBox, 1, 1, 1, 2)
-        self.outerBox.setColumnStretch(1, 1)
+        # self.outerBox.addWidget(self.showHide,  0, 0)
+        # self.outerBox.addWidget(self.refLabel,  0, 1)
+        # self.outerBox.addWidget(self.isSticky,  0, 2)
+        # self.outerBox.addWidget(self.scrollBox, 1, 1, 1, 2)
+        # self.outerBox.setColumnStretch(1, 1)
 
-        self.setLayout(self.outerBox)
-        self.setContentsMargins(0, 0, 0, 0)
+        # Assemble
+        self.outerWidget = QWidget()
+        self.outerBox = QHBoxLayout()
+        self.outerBox.addWidget(self.refList, 1)
 
-        self._doShowHide(self.mainConf.showRefPanel)
+        self.outerWidget.setLayout(self.outerBox)
+        self.setWidget(self.outerWidget)
+
+        self.setHorizontalScrollBarPolicy(Qt.ScrollBarAsNeeded)
+        self.setVerticalScrollBarPolicy(Qt.ScrollBarAsNeeded)
+        self.setWidgetResizable(True)
+        self.setMinimumHeight(self.mainConf.pxInt(50))
 
         logger.debug("DocViewDetails initialisation complete")
 
@@ -103,8 +111,7 @@ class GuiDocViewDetails(QWidget):
         project index.
         """
         self.currHandle = tHandle
-
-        if self.isSticky.isChecked():
+        if self.theParent.docViewer.stickyRef:
             return
 
         theRefs = self.theParent.theIndex.getBackReferenceList(tHandle)
@@ -112,9 +119,10 @@ class GuiDocViewDetails(QWidget):
         for tHandle in theRefs:
             tItem = self.theProject.projTree[tHandle]
             if tItem is not None:
-                theList.append("<a href='#head_%s:%s'>%s</a>" % (
-                    tHandle, theRefs[tHandle], tItem.itemName
-                ))
+                for n in range(10):
+                    theList.append("<a href='#head_%s:%s'>%s</a>" % (
+                        tHandle, theRefs[tHandle], tItem.itemName
+                    ))
 
         self.refList.setText(", ".join(theList))
         self.refList.adjustSize()
@@ -135,22 +143,22 @@ class GuiDocViewDetails(QWidget):
             self.theParent.viewDocument(tHandle, theLink)
         return
 
-    def _doShowHide(self, chState):
-        """Toggle the expand/collapse of the panel.
-        """
-        self.scrollBox.setVisible(chState)
-        self.mainConf.setShowRefPanel(chState)
-        if chState:
-            self.showHide.setArrowType(Qt.DownArrow)
-        else:
-            self.showHide.setArrowType(Qt.RightArrow)
-        return
+    # def _doShowHide(self, chState):
+    #     """Toggle the expand/collapse of the panel.
+    #     """
+    #     self.scrollBox.setVisible(chState)
+    #     self.mainConf.setShowRefPanel(chState)
+    #     if chState:
+    #         self.showHide.setArrowType(Qt.DownArrow)
+    #     else:
+    #         self.showHide.setArrowType(Qt.RightArrow)
+    #     return
 
-    def _doSticky(self, chState):
-        """Toggle the sticky feature of the references.
-        """
-        if not chState and self.currHandle is not None:
-            self.refreshReferences(self.currHandle)
-        return
+    # def _doSticky(self, chState):
+    #     """Toggle the sticky feature of the references.
+    #     """
+    #     if not chState and self.currHandle is not None:
+    #         self.refreshReferences(self.currHandle)
+    #     return
 
 # END Class GuiDocViewDetails

@@ -33,7 +33,7 @@ from PyQt5.QtCore import Qt, QSize
 from PyQt5.QtGui import QPalette, QColor
 from PyQt5.QtWidgets import (
     qApp, QWidget, QFrame, QGridLayout, QLabel, QLineEdit, QPushButton,
-    QHBoxLayout
+    QHBoxLayout, QToolButton
 )
 
 from nw.constants import nwDocAction, nwUnicode
@@ -370,9 +370,22 @@ class GuiDocViewFooter(QWidget):
         self.setAutoFillBackground(True)
         self.setPalette(self.thePalette)
 
+        # Show/Hide Details
+        self.showHide = QToolButton()
+        self.showHide.setStyleSheet("QToolButton { border: none; background: transparent; }")
+        self.showHide.setToolButtonStyle(Qt.ToolButtonIconOnly)
+        self.showHide.setIcon(self.theTheme.getIcon("reference"))
+        self.showHide.setFixedSize(QSize(fPx, fPx))
+        self.showHide.setIconSize(QSize(fPx, fPx))
+        self.showHide.clicked.connect(self._doShowHide)
+
         # Title Label
-        self.theTitle = QLabel()
-        self.theTitle.setText("References")
+        self.theTitle = QLabel("References")
+        self.theTitle.setIndent(0)
+        self.theTitle.setMargin(0)
+        self.theTitle.setContentsMargins(0, 0, 0, 0)
+        self.theTitle.setAlignment(Qt.AlignLeft | Qt.AlignTop)
+        self.theTitle.setFixedHeight(fPx)
 
         lblFont = self.theTitle.font()
         lblFont.setPointSizeF(0.9*self.theTheme.fontPointSize)
@@ -381,11 +394,23 @@ class GuiDocViewFooter(QWidget):
         # Assemble Layout
         self.outerBox = QHBoxLayout()
         self.outerBox.setSpacing(hSp)
+        self.outerBox.addWidget(self.showHide, 0)
         self.outerBox.addWidget(self.theTitle, 1)
         self.setLayout(self.outerBox)
 
         logger.debug("GuiDocViewFooter initialisation complete")
 
+        return
+
+    ##
+    #  Slots
+    ##
+
+    def _doShowHide(self):
+        """Toggle the expand/collapse of the panel.
+        """
+        isVisible = self.theParent.theParent.viewMeta.isVisible()
+        self.theParent.theParent.viewMeta.setVisible(not isVisible)
         return
 
 # END Class GuiDocViewFooter
