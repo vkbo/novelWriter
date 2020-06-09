@@ -67,7 +67,7 @@ class GuiProjectTree(QTreeWidget):
         self.clearTree()
 
         # Build GUI
-        iPx = self.theTheme.textIconSize
+        iPx = self.theTheme.baseIconSize
         self.setIconSize(QSize(iPx, iPx))
         self.setExpandsOnDoubleClick(True)
         self.setIndentation(iPx)
@@ -758,8 +758,8 @@ class GuiProjectTree(QTreeWidget):
             self.addTopLevelItem(newItem)
             self.orphRoot = newItem
             newItem.setExpanded(True)
-            newItem.setData(self.C_NAME, "")
-            newItem.setIcon(self.C_NAME, self.theTheme.getIcon("warning"))
+            newItem.setData(self.C_NAME, Qt.UserRole, "")
+            newItem.setIcon(self.C_NAME, self.theTheme.getIcon("proj_orphan"))
         return
 
     def _cleanOrphanedRoot(self):
