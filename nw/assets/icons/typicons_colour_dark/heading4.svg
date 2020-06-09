@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   id="svg1897"
+   viewBox="0 0 24 24"
+   height="24"
+   width="24"
+   version="1.2">
+  <metadata
+     id="metadata1903">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+        <dc:title></dc:title>
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <defs
+     id="defs1901" />
+  <g
+     transform="matrix(1.1111111,0,0,1.1111111,-1.3333334,-1.3333332)"
+     id="g2616">
+    <path
+       d="m 4.029904,3.7531206 c -1.0041608,1.0041608 -1.0041608,2.6319041 0,3.6360649 L 8.6392724,11.999839 4.029904,16.610493 c -1.0041608,1.004161 -1.0041608,2.631904 0,3.636065 C 4.5313415,20.749281 5.189639,21 5.8479364,21 c 0.658298,0 1.316595,-0.250719 1.818033,-0.753442 L 15.913973,11.999839 7.6659694,3.7531206 c -1.002876,-1.0041608 -2.6331904,-1.0041608 -3.6360654,0 z"
+       id="path1895"
+       style="fill:#6699cc;fill-opacity:1;stroke-width:1.28573728" />
+    <circle
+       style="fill:#6699cc;fill-opacity:1;stroke:none;stroke-width:1.79999995;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+       id="path2467"
+       cx="18.723217"
+       cy="5"
+       r="2" />
+    <circle
+       r="2"
+       cy="9.6669998"
+       cx="18.723217"
+       id="circle2469"
+       style="fill:#6699cc;fill-opacity:1;stroke:none;stroke-width:1.79999995;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1" />
+    <circle
+       style="fill:#6699cc;fill-opacity:1;stroke:none;stroke-width:1.79999995;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+       id="circle2471"
+       cx="18.723217"
+       cy="14.333"
+       r="2" />
+    <circle
+       r="2"
+       cy="19"
+       cx="18.723217"
+       id="circle2473"
+       style="fill:#6699cc;fill-opacity:1;stroke:none;stroke-width:1.79999995;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1" />
+  </g>
+</svg>

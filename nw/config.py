@@ -83,7 +83,7 @@ class Config:
         ## General
         self.guiTheme    = "default"
         self.guiSyntax   = "default_light"
-        self.guiIcons    = "typicons_grey_light"
+        self.guiIcons    = "typicons_colour_light"
         self.guiDark     = False
         self.guiLang     = "en" # Hardcoded for now
         self.guiFont     = ""
