@@ -1041,6 +1041,7 @@ class NWProject():
             return
 
         # Then check the files in the data folder
+        logger.debug("Checking files in project content folder")
         orphanFiles = []
         for fileItem in listdir(self.projContent):
             if not fileItem.endswith(".nwd"):

@@ -525,9 +525,13 @@ class GuiProjectTree(QTreeWidget):
         always make sure items with a parent have had their parent item
         sent first.
         """
+        logger.debug("Building project tree ...")
         self.clear()
+        iCount = 0
         for nwItem in self.theProject.getProjectItems():
+            iCount += 1
             self._addTreeItem(nwItem)
+        logger.debug("%d items added to project tree" % iCount)
         return True
 
     def getSelectedHandle(self):

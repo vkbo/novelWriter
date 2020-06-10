@@ -44,7 +44,7 @@ class GuiMainStatus(QStatusBar):
     def __init__(self, theParent):
         QStatusBar.__init__(self, theParent)
 
-        logger.debug("Initialising MainStatus ...")
+        logger.debug("Initialising GuiMainStatus ...")
 
         self.mainConf  = nw.CONFIG
         self.theParent = theParent
@@ -123,7 +123,7 @@ class GuiMainStatus(QStatusBar):
         self.sessionTimer.timeout.connect(self._updateTime)
         self.sessionTimer.start()
 
-        logger.debug("MainStatus initialisation complete")
+        logger.debug("GuiMainStatus initialisation complete")
 
         self.clearStatus()
 

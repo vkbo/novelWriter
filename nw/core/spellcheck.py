@@ -115,12 +115,12 @@ class NWSpellCheck():
             if not path.isfile(projectDict):
                 return
             try:
-                with open(projectDict,mode="r",encoding="utf-8") as wordsFile:
+                logger.debug("Loading project word list")
+                with open(projectDict, mode="r", encoding="utf-8") as wordsFile:
                     for theLine in wordsFile:
                         theLine = theLine.strip()
                         if len(theLine) > 0 and theLine not in self.PROJW:
                             self.PROJW.append(theLine)
-                logger.debug("Project word list")
                 logger.debug("Project word list contains %d words" % len(self.PROJW))
             except Exception as e:
                 logger.error("Failed to load project word list")

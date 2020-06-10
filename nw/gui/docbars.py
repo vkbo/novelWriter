@@ -477,7 +477,7 @@ class GuiDocViewDetails(QScrollArea):
     def __init__(self, theParent):
         QScrollArea.__init__(self, theParent)
 
-        logger.debug("Initialising DocViewDetails ...")
+        logger.debug("Initialising GuiDocViewDetails ...")
         self.mainConf   = nw.CONFIG
         self.theParent  = theParent
         self.theProject = theParent.theProject
@@ -508,7 +508,7 @@ class GuiDocViewDetails(QScrollArea):
         self.setWidgetResizable(True)
         self.setMinimumHeight(self.mainConf.pxInt(50))
 
-        logger.debug("DocViewDetails initialisation complete")
+        logger.debug("GuiDocViewDetails initialisation complete")
 
         return
 

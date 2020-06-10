@@ -42,7 +42,7 @@ class GuiDocHighlighter(QSyntaxHighlighter):
     def __init__(self, theDoc, theParent):
         QSyntaxHighlighter.__init__(self, theDoc)
 
-        logger.debug("Initialising DocHighlighter ...")
+        logger.debug("Initialising GuiDocHighlighter ...")
         self.mainConf   = nw.CONFIG
         self.theDoc     = theDoc
         self.theParent  = theParent
@@ -70,7 +70,7 @@ class GuiDocHighlighter(QSyntaxHighlighter):
 
         self.initHighlighter()
 
-        logger.debug("DocHighlighter initialisation complete")
+        logger.debug("GuiDocHighlighter initialisation complete")
 
         return
 

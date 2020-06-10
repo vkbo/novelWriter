@@ -55,7 +55,6 @@ class GuiMain(QMainWindow):
     def __init__(self):
         QMainWindow.__init__(self)
 
-        logger.info("Starting %s" % nw.__package__)
         logger.debug("Initialising GUI ...")
         self.mainConf = nw.CONFIG
 
@@ -231,6 +230,8 @@ class GuiMain(QMainWindow):
             self.openProject(self.mainConf.cmdOpen)
         else:
             self.manageProjects()
+
+        logger.debug("%s is ready ..." % nw.__package__)
 
         return
 
@@ -434,6 +435,8 @@ class GuiMain(QMainWindow):
         # Check if we need to rebuild the index
         if self.theIndex.indexBroken:
             self.rebuildIndex()
+
+        logger.debug("Project load complete")
 
         return True
 
