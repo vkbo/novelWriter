@@ -78,9 +78,6 @@ class GuiDocViewer(QTextBrowser):
 
         logger.debug("GuiDocViewer initialisation complete")
 
-        # Connect Functions
-        self.setSelectedHandle = self.theParent.treeView.setSelectedHandle
-
         return
 
     def clearViewer(self):
@@ -401,15 +398,16 @@ class GuiDocViewer(QTextBrowser):
 
 class GuiDocViewHeader(QWidget):
 
-    def __init__(self, theParent):
-        QWidget.__init__(self, theParent)
+    def __init__(self, docViewer):
+        QWidget.__init__(self, docViewer)
 
         logger.debug("Initialising GuiDocViewHeader ...")
 
         self.mainConf   = nw.CONFIG
-        self.theParent  = theParent
-        self.theProject = theParent.theProject
-        self.theTheme   = theParent.theTheme
+        self.docViewer  = docViewer
+        self.theParent  = docViewer.theParent
+        self.theProject = docViewer.theProject
+        self.theTheme   = docViewer.theTheme
         self.theHandle  = None
 
         # Make a QPalette that matches the Syntax Theme
@@ -487,12 +485,12 @@ class GuiDocViewHeader(QWidget):
         """Sets the document title from the handle, or alternatively,
         set the whole document path.
         """
-        self.theTitle.setText("")
         self.theHandle = tHandle
         if tHandle is None:
+            self.theTitle.setText("")
             self.closeButton.setVisible(False)
             self.refreshButton.setVisible(False)
-            return False
+            return True
 
         if self.mainConf.showFullPath:
             tTitle = []
@@ -521,13 +519,13 @@ class GuiDocViewHeader(QWidget):
     def _closeDocument(self):
         """Trigger the close editor/viewer on the main window.
         """
-        self.theParent.theParent.closeDocViewer()
+        self.theParent.closeDocViewer()
         return
 
     def _refreshDocument(self):
         """Reload the content of the document.
         """
-        self.theParent.reloadText()
+        self.docViewer.reloadText()
         return
 
     ##
@@ -538,7 +536,7 @@ class GuiDocViewHeader(QWidget):
         """Capture a click on the title and ensure that the item is
         selected in the project tree.
         """
-        self.theParent.setSelectedHandle(self.theHandle)
+        self.theParent.treeView.setSelectedHandle(self.theHandle)
         return
 
 # END Class GuiDocViewHeader
