@@ -222,6 +222,7 @@ class Config:
         """Initialise the config class. The manual setting of confPath
         and dataPath is mainly intended for the test suite.
         """
+        logger.debug("Initialising Config ...")
         if confPath is None:
             confRoot = QStandardPaths.writableLocation(QStandardPaths.ConfigLocation)
             self.confPath = path.join(path.abspath(confRoot), self.appHandle)
@@ -303,6 +304,8 @@ class Config:
             self.spellTool = "internal"
         if self.spellLanguage is None:
             self.spellLanguage = "en"
+
+        logger.debug("Config initialisation complete")
 
         return True
 

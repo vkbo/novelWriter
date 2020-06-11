@@ -8,6 +8,7 @@
  File History:
  Created: 2018-09-29 [0.0.1] GuiDocEditor
  Created: 2019-04-22 [0.0.1] WordCounter
+ Created: 2020-04-25 [0.4.5] GuiDocEditHeader
 
  This file is a part of novelWriter
  Copyright 2020, Veronica Berglyd Olsen
@@ -31,18 +32,18 @@ import nw
 
 from time import time
 
-from PyQt5.QtCore import Qt, QThread, QTimer, pyqtSlot
-from PyQt5.QtWidgets import (
-    qApp, QTextEdit, QAction, QMenu, QShortcut, QMessageBox
-)
+from PyQt5.QtCore import Qt, QSize, QThread, QTimer, pyqtSlot
 from PyQt5.QtGui import (
     QTextCursor, QTextOption, QKeySequence, QFont, QColor, QPalette,
     QTextDocument, QCursor
 )
+from PyQt5.QtWidgets import (
+    qApp, QTextEdit, QAction, QMenu, QShortcut, QMessageBox, QWidget, QLabel,
+    QToolButton, QHBoxLayout
+)
 
 from nw.core import NWDoc
 from nw.gui.dochighlight import GuiDocHighlighter
-from nw.gui.docbars import GuiDocTitleBar
 from nw.core import NWSpellSimple, countWords
 from nw.constants import nwUnicode, nwDocAction
 
@@ -85,9 +86,7 @@ class GuiDocEditor(QTextEdit):
         self.qDocument.contentsChange.connect(self._docChange)
 
         # Document Title
-        self.docTitle = GuiDocTitleBar(self, isEditor=True)
-        self.docTitle.setGeometry(0, 0, self.docTitle.width(), self.docTitle.height())
-        self.setViewportMargins(0, self.docTitle.height(), 0, 0)
+        self.docHeader = GuiDocEditHeader(self)
 
         # Syntax
         self.hLight = GuiDocHighlighter(self.qDocument, self.theParent)
@@ -134,9 +133,6 @@ class GuiDocEditor(QTextEdit):
 
         logger.debug("GuiDocEditor initialisation complete")
 
-        # Connect Functions
-        self.setSelectedHandle = self.theParent.treeView.setSelectedHandle
-
         return
 
     def clearEditor(self):
@@ -158,7 +154,7 @@ class GuiDocEditor(QTextEdit):
         self.hasSelection = False
 
         self.setDocumentChanged(False)
-        self.docTitle.setTitleFromHandle(self.theHandle)
+        self.docHeader.setTitleFromHandle(self.theHandle)
 
         return True
 
@@ -270,7 +266,7 @@ class GuiDocEditor(QTextEdit):
         self.theHandle = tHandle
 
         self.setReadOnly(False)
-        self.docTitle.setTitleFromHandle(self.theHandle)
+        self.docHeader.setTitleFromHandle(self.theHandle)
         self.updateDocMargins()
         self.hLight.spellCheck = spTemp
         qApp.restoreOverrideCursor()
@@ -333,11 +329,11 @@ class GuiDocEditor(QTextEdit):
         else:
             tM = cM
 
-        tB = self.lineWidth()
+        tB = self.frameWidth()
         tW = self.width() - 2*tB - sW
-        tH = self.docTitle.height()
+        tH = self.docHeader.height()
         tT = cM - tH
-        self.docTitle.setGeometry(tB, tB, tW, tH)
+        self.docHeader.setGeometry(tB, tB, tW, tH)
         self.setViewportMargins(0, tH, 0, 0)
 
         docFormat = self.qDocument.rootFrame().frameFormat()
@@ -368,7 +364,7 @@ class GuiDocEditor(QTextEdit):
         title bar needs updating,
         """
         if tHandle == self.theHandle:
-            self.docTitle.setTitleFromHandle(self.theHandle)
+            self.docHeader.setTitleFromHandle(self.theHandle)
             self.updateDocMargins()
         return
 
@@ -1105,3 +1101,158 @@ class WordCounter(QThread):
         return
 
 ## END Class WordCounter
+
+class GuiDocEditHeader(QWidget):
+
+    def __init__(self, docEditor):
+        QWidget.__init__(self, docEditor)
+
+        logger.debug("Initialising GuiDocEditHeader ...")
+
+        self.mainConf   = nw.CONFIG
+        self.docEditor  = docEditor
+        self.theParent  = docEditor.theParent
+        self.theProject = docEditor.theProject
+        self.theTheme   = docEditor.theTheme
+        self.theHandle  = None
+
+        # Make a QPalette that matches the Syntax Theme
+        self.thePalette = QPalette()
+        self.thePalette.setColor(QPalette.Window, QColor(*self.theTheme.colBack))
+        self.thePalette.setColor(QPalette.Text, QColor(*self.theTheme.colText))
+
+        fPx = int(0.9*self.theTheme.fontPixelSize)
+        hSp = self.mainConf.pxInt(6)
+        self.buttonSize = fPx + hSp
+
+        # Main Widget Settings
+        self.setContentsMargins(2*self.buttonSize, 0, 0, 0)
+        self.setAutoFillBackground(True)
+        self.setPalette(self.thePalette)
+
+        # Title Label
+        self.theTitle = QLabel()
+        self.theTitle.setText("")
+        self.theTitle.setIndent(0)
+        self.theTitle.setMargin(0)
+        self.theTitle.setContentsMargins(0, 0, 0, 0)
+        self.theTitle.setAutoFillBackground(True)
+        self.theTitle.setAlignment(Qt.AlignHCenter | Qt.AlignTop)
+        self.theTitle.setFixedHeight(fPx)
+        self.theTitle.setPalette(self.thePalette)
+
+        lblFont = self.theTitle.font()
+        lblFont.setPointSizeF(0.9*self.theTheme.fontPointSize)
+        self.theTitle.setFont(lblFont)
+
+        buttonStyle = (
+            "QToolButton {{border: none; background: transparent;}} "
+            "QToolButton:hover {{border: none; background: rgba({0},{1},{2},0.2);}}"
+        ).format(*self.theTheme.colText)
+
+        # Buttons
+        self.minmaxButton = QToolButton(self)
+        self.minmaxButton.setIcon(self.theTheme.getIcon("maximise"))
+        self.minmaxButton.setContentsMargins(0, 0, 0, 0)
+        self.minmaxButton.setIconSize(QSize(fPx, fPx))
+        self.minmaxButton.setFixedSize(fPx, fPx)
+        self.minmaxButton.setStyleSheet(buttonStyle)
+        self.minmaxButton.setToolButtonStyle(Qt.ToolButtonIconOnly)
+        self.minmaxButton.setVisible(False)
+        self.minmaxButton.clicked.connect(self._minmaxDocument)
+
+        self.closeButton = QToolButton(self)
+        self.closeButton.setIcon(self.theTheme.getIcon("close"))
+        self.closeButton.setContentsMargins(0, 0, 0, 0)
+        self.closeButton.setIconSize(QSize(fPx, fPx))
+        self.closeButton.setFixedSize(fPx, fPx)
+        self.closeButton.setStyleSheet(buttonStyle)
+        self.closeButton.setToolButtonStyle(Qt.ToolButtonIconOnly)
+        self.closeButton.setVisible(False)
+        self.closeButton.clicked.connect(self._closeDocument)
+
+        # Assemble Layout
+        self.outerBox = QHBoxLayout()
+        self.outerBox.setSpacing(hSp)
+        self.outerBox.addWidget(self.theTitle, 1)
+        self.outerBox.addWidget(self.minmaxButton, 0)
+        self.outerBox.addWidget(self.closeButton, 0)
+        self.setLayout(self.outerBox)
+
+        logger.debug("GuiDocEditHeader initialisation complete")
+
+        return
+
+    ##
+    #  Setters
+    ##
+
+    def setTitleFromHandle(self, tHandle):
+        """Sets the document title from the handle, or alternatively,
+        set the whole document path.
+        """
+        self.theHandle = tHandle
+        if tHandle is None:
+            self.theTitle.setText("")
+            self.closeButton.setVisible(False)
+            self.minmaxButton.setVisible(False)
+            return True
+
+        if self.mainConf.showFullPath:
+            tTitle = []
+            tTree = self.theProject.projTree.getItemPath(tHandle)
+            for aHandle in reversed(tTree):
+                nwItem = self.theProject.projTree[aHandle]
+                if nwItem is not None:
+                    tTitle.append(nwItem.itemName)
+            sSep = "  %s  " % nwUnicode.U_RSAQUO
+            self.theTitle.setText(sSep.join(tTitle))
+        else:
+            nwItem = self.theProject.projTree[tHandle]
+            if nwItem is None:
+                return False
+            self.theTitle.setText(nwItem.itemName)
+
+        self.closeButton.setVisible(True)
+        self.minmaxButton.setVisible(True)
+
+        return True
+
+    ##
+    #  Slots
+    ##
+
+    def _closeDocument(self):
+        """Trigger the close editor/viewer on the main window.
+        """
+        self.theParent.closeDocEditor()
+        self.closeButton.setVisible(False)
+        self.minmaxButton.setVisible(False)
+        return
+
+    def _minmaxDocument(self):
+        """Switch on or off zen mode.
+        """
+        self.theParent.toggleZenMode()
+        if self.theParent.isZenMode:
+            self.minmaxButton.setIcon(self.theTheme.getIcon("minimise"))
+            self.setContentsMargins(self.buttonSize, 0, 0, 0)
+            self.closeButton.setVisible(False)
+        else:
+            self.minmaxButton.setIcon(self.theTheme.getIcon("maximise"))
+            self.setContentsMargins(2*self.buttonSize, 0, 0, 0)
+            self.closeButton.setVisible(True)
+        return
+
+    ##
+    #  Events
+    ##
+
+    def mousePressEvent(self, theEvent):
+        """Capture a click on the title and ensure that the item is
+        selected in the project tree.
+        """
+        self.theParent.treeView.setSelectedHandle(self.theHandle)
+        return
+
+# END Class GuiDocEditHeader

@@ -750,11 +750,11 @@ class GuiIcons:
                 self.mainConf.iconPath, self.fbackName, "%s-dark.svg" % iconKey
             )
             if path.isfile(fbackIcon):
-                logger.verbose("Loading icon '%s' from fallback theme" % iconKey)
+                logger.verbose("Loading icon '%s' from fallback theme (dark mode)" % iconKey)
                 return QIcon(fbackIcon)
         fbackIcon = path.join(self.mainConf.iconPath, self.fbackName, "%s.svg" % iconKey)
         if path.isfile(fbackIcon):
-            logger.verbose("Loading icon '%s' from fallback theme" % iconKey)
+            logger.verbose("Loading icon '%s' from fallback theme (light mode)" % iconKey)
             return QIcon(fbackIcon)
 
         # Give up and return an empty icon

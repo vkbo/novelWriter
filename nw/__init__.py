@@ -216,7 +216,9 @@ def main(sysArgs=None):
         logger.addHandler(cHandle)
 
     logger.setLevel(debugLevel)
-    logger.info("This is %s %s" % (__package__, __version__))
+    logger.info("Starting %s" % __package__)
+    logger.info("Version: %s (%s)" % (__version__, __hexversion__))
+    logger.info("Last Release: %s" % __date__)
 
     # Check Packages and Versions
     errorData = []

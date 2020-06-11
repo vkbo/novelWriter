@@ -2,11 +2,11 @@
 
 from nw.gui.about import GuiAbout
 from nw.gui.build import GuiBuildNovel
-from nw.gui.docbars import GuiDocTitleBar, GuiSearchBar, GuiDocViewDetails
+from nw.gui.docbars import GuiSearchBar
 from nw.gui.doceditor import GuiDocEditor
 from nw.gui.docmerge import GuiDocMerge
 from nw.gui.docsplit import GuiDocSplit
-from nw.gui.docviewer import GuiDocViewer
+from nw.gui.docviewer import GuiDocViewer, GuiDocViewDetails
 from nw.gui.itemdetails import GuiItemDetails
 from nw.gui.itemeditor import GuiItemEditor
 from nw.gui.mainmenu import GuiMainMenu
@@ -23,13 +23,12 @@ from nw.gui.theme import GuiIcons, GuiTheme
 __all__ = [
     "GuiAbout",
     "GuiBuildNovel",
-    "GuiDocTitleBar",
     "GuiSearchBar",
-    "GuiDocViewDetails",
     "GuiDocEditor",
     "GuiDocMerge",
     "GuiDocSplit",
     "GuiDocViewer",
+    "GuiDocViewDetails",
     "GuiItemDetails",
     "GuiItemEditor",
     "GuiMainMenu",
