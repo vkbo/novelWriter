@@ -230,7 +230,7 @@ class GuiDocViewer(QTextBrowser):
         else:
             sW = 0
 
-        tB = self.lineWidth()
+        tB = self.frameWidth()
         tW = self.width() - 2*tB - sW
         tH = self.docTitle.height()
         fH = self.docFooter.height()

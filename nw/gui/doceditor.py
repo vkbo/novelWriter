@@ -333,7 +333,7 @@ class GuiDocEditor(QTextEdit):
         else:
             tM = cM
 
-        tB = self.lineWidth()
+        tB = self.frameWidth()
         tW = self.width() - 2*tB - sW
         tH = self.docTitle.height()
         tT = cM - tH
