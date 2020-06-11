@@ -277,7 +277,6 @@ class GuiOutlineDetails(QScrollArea):
             theBits = theLink.split("=")
             if len(theBits) == 2:
                 self.theParent.docViewer.loadFromTag(theBits[1])
-                self.theParent.tabWidget.setCurrentWidget(self.theParent.splitView)
         return
 
     ##

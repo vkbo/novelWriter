@@ -188,7 +188,10 @@ class GuiDocViewer(QTextBrowser):
             ) % theTag, nwAlert.ERROR)
             return
         else:
-            self.loadText(tHandle)
+            # Let the parent handle the opening as it also ensures that
+            # the doc view panel is visible in case this request comes
+            # from outside this class.
+            self.theParent.viewDocument(tHandle)
             self.navigateTo("#head_%s:%s" % (tHandle, sTitle))
         return True
 
