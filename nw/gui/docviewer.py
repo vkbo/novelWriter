@@ -36,8 +36,7 @@ from PyQt5.QtGui import (
     QTextOption, QFont, QPalette, QColor, QTextCursor, QIcon
 )
 from PyQt5.QtWidgets import (
-    QTextBrowser, QWidget, QScrollArea, QLabel, QHBoxLayout, QFrame,
-    QToolButton
+    QTextBrowser, QWidget, QScrollArea, QLabel, QHBoxLayout, QToolButton
 )
 
 from nw.core import ToHtml
@@ -436,8 +435,6 @@ class GuiDocViewHeader(QWidget):
         self.theTitle.setAutoFillBackground(True)
         self.theTitle.setAlignment(Qt.AlignHCenter | Qt.AlignTop)
         self.theTitle.setFixedHeight(fPx)
-        self.theTitle.setFrameShape(QFrame.NoFrame)
-        self.theTitle.setLineWidth(0)
         self.theTitle.setPalette(self.thePalette)
 
         lblFont = self.theTitle.font()
@@ -571,7 +568,8 @@ class GuiDocViewFooter(QWidget):
         self.thePalette.setColor(QPalette.Text, QColor(*self.theTheme.colText))
 
         fPx = int(0.9*self.theTheme.fontPixelSize)
-        hSp = self.mainConf.pxInt(6)
+        bSp = self.mainConf.pxInt(2)
+        hSp = self.mainConf.pxInt(8)
 
         # Main Widget Settings
         self.setContentsMargins(0, 0, 0, 0)
@@ -635,9 +633,10 @@ class GuiDocViewFooter(QWidget):
 
         # Assemble Layout
         self.outerBox = QHBoxLayout()
-        self.outerBox.setSpacing(hSp)
+        self.outerBox.setSpacing(bSp)
         self.outerBox.addWidget(self.showHide, 0)
         self.outerBox.addWidget(self.lblRefs, 0)
+        self.outerBox.addSpacing(hSp)
         self.outerBox.addWidget(self.stickyRefs, 0)
         self.outerBox.addWidget(self.lblSticky, 0)
         self.outerBox.addStretch(1)
