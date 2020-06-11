@@ -45,7 +45,7 @@ from nw.constants import nwUnicode
 logger = logging.getLogger(__name__)
 
 # =============================================================================================== #
-#  Config FOrm Layout
+#  Config Form Layout
 # =============================================================================================== #
 
 class QConfigLayout(QGridLayout):
