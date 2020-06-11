@@ -1,5 +1,8 @@
 # novelWriter ChangeLog
 
+## Version 0.9rc1 [2020-xx-xx]
+
+
 ## Version 0.8 [2020-xx-xx]
 
 **User Interface**
