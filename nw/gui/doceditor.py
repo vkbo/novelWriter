@@ -1107,15 +1107,16 @@ class WordCounter(QThread):
 
 class GuiDocEditHeader(QWidget):
 
-    def __init__(self, theParent):
-        QWidget.__init__(self, theParent)
+    def __init__(self, docEditor):
+        QWidget.__init__(self, docEditor)
 
         logger.debug("Initialising GuiDocEditHeader ...")
 
         self.mainConf   = nw.CONFIG
-        self.theParent  = theParent
-        self.theProject = theParent.theProject
-        self.theTheme   = theParent.theTheme
+        self.docEditor  = docEditor
+        self.theParent  = docEditor.theParent
+        self.theProject = docEditor.theProject
+        self.theTheme   = docEditor.theTheme
         self.theHandle  = None
 
         # Make a QPalette that matches the Syntax Theme
@@ -1193,11 +1194,12 @@ class GuiDocEditHeader(QWidget):
         """Sets the document title from the handle, or alternatively,
         set the whole document path.
         """
-        self.theTitle.setText("")
         self.theHandle = tHandle
         if tHandle is None:
+            self.theTitle.setText("")
             self.closeButton.setVisible(False)
             self.minmaxButton.setVisible(False)
+            return True
 
         if self.mainConf.showFullPath:
             tTitle = []
@@ -1226,14 +1228,16 @@ class GuiDocEditHeader(QWidget):
     def _closeDocument(self):
         """Trigger the close editor/viewer on the main window.
         """
-        self.theParent.theParent.closeDocEditor()
+        self.theParent.closeDocEditor()
+        self.closeButton.setVisible(False)
+        self.minmaxButton.setVisible(False)
         return
 
     def _minmaxDocument(self):
         """Switch on or off zen mode.
         """
-        self.theParent.theParent.toggleZenMode()
-        if self.theParent.theParent.isZenMode:
+        self.theParent.toggleZenMode()
+        if self.theParent.isZenMode:
             self.minmaxButton.setIcon(self.theTheme.getIcon("minimise"))
             self.setContentsMargins(self.buttonSize, 0, 0, 0)
             self.closeButton.setVisible(False)
@@ -1251,7 +1255,7 @@ class GuiDocEditHeader(QWidget):
         """Capture a click on the title and ensure that the item is
         selected in the project tree.
         """
-        self.theParent.setSelectedHandle(self.theHandle)
+        self.theParent.treeView.setSelectedHandle(self.theHandle)
         return
 
 # END Class GuiDocEditHeader
