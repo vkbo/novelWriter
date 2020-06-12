@@ -1081,6 +1081,11 @@ class NWProject():
                 nOrph += 1
                 oName = "Orphaned File %d" % nOrph
 
+            if oClass is None:
+                oClass = nwItemClass.NO_CLASS
+            if oLayout is None:
+                oLayout = nwItemLayout.NO_LAYOUT
+
             orphItem = NWItem(self)
             orphItem.setName(oName)
             orphItem.setType(nwItemType.FILE)

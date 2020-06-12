@@ -206,7 +206,7 @@ class NWDoc():
         """
         if len(self.docMeta) < 14:
             # Not enough information
-            return "", []
+            return "", [], None, None
 
         theMeta = self.docMeta
 
