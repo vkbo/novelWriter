@@ -942,7 +942,28 @@ class GuiDocEditor(QTextEdit):
         return theCursor
 
     def _toggleEmph(self, eLevel):
-        """Toggle emphasis of a given level.
+        """Toggle emphasis of a given level between 1 and 3, where 1 is
+        italic, 2 is bold, and 3 is bold italic. The current level in
+        the text is cLevel. The rules are as follows:
+
+         cLevel     | eLevel     | Result
+        ============+============+============
+         None       | Italic     | Italic
+         None       | Bold       | Bold
+         None       | BoldItalic | BoldItalic
+        ------------+------------+------------
+         Italic     | Italic     | None
+         Italic     | Bold       | BoldItalic
+         Italic     | BoldItalic | BoldItalic
+        ------------+------------+------------
+         Bold       | Italic     | BoldItalic
+         Bold       | Bold       | None
+         Bold       | BoldItalic | BoldItalic
+        ------------+------------+------------
+         BoldItalic | Italic     | Bold
+         BoldItalic | Bold       | Italic
+         BoldItalic | BoldItalic | None
+
         """
         theCursor = self._autoSelect()
         if theCursor.hasSelection():
@@ -950,24 +971,32 @@ class GuiDocEditor(QTextEdit):
             posE = theCursor.selectionEnd()
 
             numB = 0
-            for n in range(4):
+            for n in range(3):
                 if self.qDocument.characterAt(posS-n-1) == "*":
                     numB += 1
                 else:
                     break
 
             numA = 0
-            for n in range(4):
+            for n in range(3):
                 if self.qDocument.characterAt(posE+n) == "*":
                     numA += 1
                 else:
                     break
 
             cLevel = min(numB, numA)
-            if cLevel == eLevel:
+            if cLevel == 0:
+                # Has no emphasis, set to desired level
+                self._wrapSelection("*"*eLevel)
+            elif cLevel == 3:
+                # Has max, so reduce by desired level
                 self._clearSurrounding(theCursor, eLevel)
+            elif cLevel == eLevel:
+                # Toggle mode, so clear what we had set
+                self._clearSurrounding(theCursor, cLevel)
             else:
-                self._wrapSelection("*"*(eLevel - cLevel))
+                # Already at 1 or 2, increase to 3
+                self._wrapSelection("*"*(3 - cLevel))
 
         return
 

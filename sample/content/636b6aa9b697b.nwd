@@ -7,7 +7,7 @@
 
 A scene is defined by a level three heading, like the one at the top of this page. The scene will be assigned to the chapter preceding it in the project tree.
 
-Each paragraph in the scene is separated by a blank line. The text supports minimal formatting, like **bold**, _italic_ and  __underscore__.
+Each paragraph in the scene is separated by a blank line. The text supports minimal formatting, like **bold**, *italic* and  ***bold italic***.
 
 In addition, the editor supports automatic formatting of “quotes”, both double and ‘single’. Depending on the syntax highlighter, these can be in different colours.
 
