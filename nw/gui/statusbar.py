@@ -61,7 +61,7 @@ class GuiMainStatus(QStatusBar):
         colTrue  = QColor(*self.theTheme.statUnsaved)
         colFalse = QColor(*self.theTheme.statSaved)
 
-        iPx = self.theTheme.textIconSize
+        iPx = self.theTheme.baseIconSize
 
         # Permanent Widgets
         # =================

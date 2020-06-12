@@ -102,7 +102,7 @@ class GuiOutline(QTreeWidget):
         self.itemDoubleClicked.connect(self._treeDoubleClick)
         self.itemSelectionChanged.connect(self._itemSelected)
 
-        iPx = self.theTheme.textIconSize
+        iPx = self.theTheme.baseIconSize
         self.setIconSize(QSize(iPx, iPx))
         self.setIndentation(iPx)
 

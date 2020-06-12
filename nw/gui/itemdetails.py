@@ -56,8 +56,8 @@ class GuiItemDetails(QWidget):
         self.setLayout(self.mainBox)
 
         self.pS = 0.9*self.theTheme.fontPointSize
-        self.iPx = self.theTheme.textIconSize
-        self.sPx = int(round(0.8*self.theTheme.textIconSize))
+        self.iPx = self.theTheme.baseIconSize
+        self.sPx = int(round(0.8*self.theTheme.baseIconSize))
 
         self.expCheck = self.theTheme.getPixmap("check", (self.iPx, self.iPx))
         self.expCross = self.theTheme.getPixmap("cross", (self.iPx, self.iPx))

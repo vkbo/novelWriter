@@ -282,7 +282,7 @@ class GuiProjectEditStatus(QWidget):
         self.colChanged = False
         self.selColour  = None
 
-        self.iPx = self.theTheme.textIconSize
+        self.iPx = self.theTheme.baseIconSize
 
         self.outerBox = QVBoxLayout()
         self.mainBox  = QHBoxLayout()
