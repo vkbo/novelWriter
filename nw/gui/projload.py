@@ -66,7 +66,8 @@ class GuiProjectLoad(QDialog):
         self.openPath  = None
 
         sPx = self.mainConf.pxInt(16)
-        iPx = self.mainConf.pxInt(96)
+        nPx = self.mainConf.pxInt(96)
+        iPx = self.theTheme.baseIconSize
 
         self.outerBox = QVBoxLayout()
         self.innerBox = QHBoxLayout()
@@ -78,13 +79,12 @@ class GuiProjectLoad(QDialog):
         self.setMinimumHeight(self.mainConf.pxInt(400))
         self.setModal(True)
 
-        self.guiDeco = self.theTheme.loadDecoration("nwicon", (iPx, iPx))
+        self.guiDeco = self.theTheme.loadDecoration("nwicon", (nPx, nPx))
         self.innerBox.addWidget(self.guiDeco, 0, Qt.AlignTop)
 
         self.projectForm = QGridLayout()
         self.projectForm.setContentsMargins(0, 0, 0, 0)
 
-        iPx = self.theTheme.textIconSize
         self.listBox = QTreeWidget()
         self.listBox.setSelectionMode(QAbstractItemView.SingleSelection)
         self.listBox.setDragDropMode(QAbstractItemView.NoDragDrop)
