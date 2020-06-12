@@ -44,8 +44,8 @@ class Tokenizer():
     FMT_B_E    =  2 # End bold
     FMT_I_B    =  3 # Begin italics
     FMT_I_E    =  4 # End italics
-    FMT_U_B    =  5 # Begin underline
-    FMT_U_E    =  6 # End underline
+    FMT_S_B    =  5 # Begin bold italic
+    FMT_S_E    =  6 # End bold italic
 
     T_EMPTY    =  1 # Empty line (new paragraph)
     T_SYNOPSIS =  2 # Synopsis comment
@@ -300,14 +300,14 @@ class Tokenizer():
         # RegExes for adding formatting tags within text lines
         # Keep in sync with the DocHighlighter class
         rxFormats = [(
-            QRegularExpression(r"(?<![\w|\\])([\*]{2})(?!\s)(?m:(.+?))(?<![\s|\\])(\1)(?!\w)"),
+            QRegularExpression(r"(?<![\w|\*|\\])([\*]{3})(?!\s|\*)(.+?)(?<![\s|\\])(\1)(?!\w)"),
+            [None, self.FMT_S_B, None, self.FMT_S_E]
+        ),(
+            QRegularExpression(r"(?<![\w|\*|\\])([\*]{2})(?!\s|\*)(.+?)(?<![\s|\\])(\1)(?!\w)"),
             [None, self.FMT_B_B, None, self.FMT_B_E]
         ),(
-            QRegularExpression(r"(?<![\w|_|\\])([_])(?!\s|\1)(?m:(.+?))(?<![\s|\\])(\1)(?!\w)"),
+            QRegularExpression(r"(?<![\w|\*|\\])([\*])(?!\s|\1)(.+?)(?<![\s|\\])(\1)(?!\w)"),
             [None, self.FMT_I_B, None, self.FMT_I_E]
-        ),(
-            QRegularExpression(r"(?<![\w|\\])([_]{2})(?!\s)(?m:(.+?))(?<![\s|\\])(\1)(?!\w)"),
-            [None, self.FMT_U_B, None, self.FMT_U_E]
         )]
 
         self.theTokens = []

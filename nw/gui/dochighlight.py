@@ -140,21 +140,21 @@ class GuiDocHighlighter(QSyntaxHighlighter):
 
         # Markdown
         self.hRules.append((
-            r"(?<![\w|\\])([\*]{1})(?!\s)(?m:(.+?))(?<![\s|\\])(\1)(?!\w)", {
+            r"(?<![\w|\*|\\])([\*])(?!\s|\1)(.+?)(?<![\s|\\])(\1)(?!\w)", {
                 1 : self.hStyles["hidden"],
                 2 : self.hStyles["italic"],
                 3 : self.hStyles["hidden"],
             }
         ))
         self.hRules.append((
-            r"(?<![\w|\\])([\*]{2})(?!\s)(?m:(.+?))(?<![\s|\\])(\1)(?!\w)", {
+            r"(?<![\w|\*|\\])([\*]{2})(?!\s|\*)(.+?)(?<![\s|\\])(\1)(?!\w)", {
                 1 : self.hStyles["hidden"],
                 2 : self.hStyles["bold"],
                 3 : self.hStyles["hidden"],
             }
         ))
         self.hRules.append((
-            r"(?<![\w|\\])([\*]{3})(?!\s)(?m:(.+?))(?<![\s|\\])(\1)(?!\w)", {
+            r"(?<![\w|\*|\\])([\*]{3})(?!\s|\*)(.+?)(?<![\s|\\])(\1)(?!\w)", {
                 1 : self.hStyles["hidden"],
                 2 : self.hStyles["bolditalic"],
                 3 : self.hStyles["hidden"],

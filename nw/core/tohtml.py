@@ -121,8 +121,8 @@ class ToHtml(Tokenizer):
             self.FMT_B_E : "</strong>",
             self.FMT_I_B : "<em>",
             self.FMT_I_E : "</em>",
-            self.FMT_U_B : "<u>",
-            self.FMT_U_E : "</u>",
+            self.FMT_S_B : "<strong><em>",
+            self.FMT_S_E : "</em></strong>",
         }
 
         if self.isNovel and self.genMode != self.M_PREVIEW:
