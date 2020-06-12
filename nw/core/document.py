@@ -226,21 +226,17 @@ class NWDoc():
                 break
 
         theClass = nwItemClass.NO_CLASS
+        for aClass in nwItemClass:
+            if theMeta.startswith(aClass.name):
+                theClass = aClass
+                theMeta = theMeta.lstrip(aClass.name+":")
+
         theLayout = nwItemLayout.NO_LAYOUT
-        theData = theMeta.split(":")
+        for aLayout in nwItemLayout:
+            if theMeta.startswith(aLayout.name):
+                theLayout = aLayout
+                theMeta = theMeta.lstrip(aLayout.name+":")
 
-        if (n := len(theData)) > 1:
-            if theData[0] in nwItemClass.__members__:
-                theClass = nwItemClass[theData[0]]
-            if n > 2:
-                if theData[1] in nwItemLayout.__members__:
-                    theLayout = nwItemLayout[theData[1]]
-                    theName   = theData[2]
-            else:
-                theName = theData[1]
-        else:
-            theName = theData[0]
-
-        return theName, thePath, theClass, theLayout
+        return theMeta, thePath, theClass, theLayout
 
 # END Class NWDoc
