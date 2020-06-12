@@ -30,8 +30,10 @@ import nw
 
 from os import path, mkdir, rename, unlink
 
+from nw.core.item import NWItem
 from nw.constants import nwAlert
 from nw.common import isHandle
+from nw.constants import nwItemLayout, nwItemClass
 
 logger = logging.getLogger(__name__)
 
@@ -139,8 +141,18 @@ class NWDoc():
         docPath = path.join(self.theProject.projContent, docFile)
         docTemp = path.join(self.theProject.projContent, docFile+"~")
 
-        itemPath = self.theProject.projTree.getItemPath(self.docHandle)
-        docMeta  = "%%~ "+":".join(itemPath)+":"+self.theItem.itemName+"\n"
+        if isinstance(self.theItem, NWItem):
+            itemPath = self.theProject.projTree.getItemPath(self.docHandle)
+            docMeta = (
+                "%%~ {handlepath:s}:{itemclass:s}:{itemlayout:s}:{itemname:s}\n"
+            ).format(
+                handlepath = ":".join(itemPath),
+                itemclass  = self.theItem.itemClass.name,
+                itemlayout = self.theItem.itemLayout.name,
+                itemname   = self.theItem.itemName,
+            )
+        else:
+            docMeta = ""
 
         try:
             with open(docTemp, mode="w", encoding="utf8") as outFile:
@@ -213,6 +225,22 @@ class NWDoc():
             else:
                 break
 
-        return theMeta, thePath
+        theClass = nwItemClass.NO_CLASS
+        theLayout = nwItemLayout.NO_LAYOUT
+        theData = theMeta.split(":")
+
+        if (n := len(theData)) > 1:
+            if theData[0] in nwItemClass.__members__:
+                theClass = nwItemClass[theData[0]]
+            if n > 2:
+                if theData[1] in nwItemLayout.__members__:
+                    theLayout = nwItemLayout[theData[1]]
+                    theName   = theData[2]
+            else:
+                theName = theData[1]
+        else:
+            theName = theData[0]
+
+        return theName, thePath, theClass, theLayout
 
 # END Class NWDoc

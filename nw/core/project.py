@@ -1075,7 +1075,7 @@ class NWProject():
             # Look for meta data
             oName = ""
             if aDoc.openDocument(oHandle, showStatus=False, isOrphan=True):
-                oName, oPath = aDoc.getMeta()
+                oName, oPath, oClass, oLayout = aDoc.getMeta()
 
             if oName == "":
                 nOrph += 1
@@ -1084,8 +1084,8 @@ class NWProject():
             orphItem = NWItem(self)
             orphItem.setName(oName)
             orphItem.setType(nwItemType.FILE)
-            orphItem.setClass(nwItemClass.NO_CLASS)
-            orphItem.setLayout(nwItemLayout.NO_LAYOUT)
+            orphItem.setClass(oClass)
+            orphItem.setLayout(oLayout)
             self.projTree.append(oHandle, None, orphItem)
 
         return
