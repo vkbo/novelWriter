@@ -41,7 +41,7 @@ logger = logging.getLogger(__name__)
 
 class NWIndex():
 
-    VALID_KEYS = set([
+    VALID_KEYS = {
         nwKeyWords.TAG_KEY,
         nwKeyWords.PLOT_KEY,
         nwKeyWords.POV_KEY,
@@ -51,7 +51,7 @@ class NWIndex():
         nwKeyWords.OBJECT_KEY,
         nwKeyWords.ENTITY_KEY,
         nwKeyWords.CUSTOM_KEY
-    ])
+    }
     TAG_CLASS  = {
         nwKeyWords.CHAR_KEY   : nwItemClass.CHARACTER,
         nwKeyWords.POV_KEY    : nwItemClass.CHARACTER,
