@@ -2,6 +2,10 @@
 
 ## Version 0.9rc1 [2020-xx-xx]
 
+**User Interface**
+
+* The Open Project dialog will now ask before removing an entry from the recent projects list. PR #309.
+
 **Other Changes**
 
 * Added the file's class and layout to the meta data string added as the first line of saved document files. This meta data is only used to restore the file meta information into the project if it was lost from the project file. It is also useful information when reading the file in external tools. PR #308.
