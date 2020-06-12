@@ -98,28 +98,28 @@ class GuiDocHighlighter(QSyntaxHighlighter):
         self.colTrail.setAlpha(64)
 
         self.hStyles = {
-            "header1"   : self._makeFormat(self.colHead, "bold",1.8),
-            "header2"   : self._makeFormat(self.colHead, "bold",1.6),
-            "header3"   : self._makeFormat(self.colHead, "bold",1.4),
-            "header4"   : self._makeFormat(self.colHead, "bold",1.2),
-            "header1h"  : self._makeFormat(self.colHeadH,"bold",1.8),
-            "header2h"  : self._makeFormat(self.colHeadH,"bold",1.6),
-            "header3h"  : self._makeFormat(self.colHeadH,"bold",1.4),
-            "header4h"  : self._makeFormat(self.colHeadH,"bold",1.2),
-            "bold"      : self._makeFormat(self.colEmph, "bold"),
-            "italic"    : self._makeFormat(self.colEmph, "italic"),
-            "strike"    : self._makeFormat(self.colEmph, "strike"),
-            "underline" : self._makeFormat(self.colEmph, "underline"),
-            "trailing"  : self._makeFormat(self.colTrail,"background"),
-            "nobreak"   : self._makeFormat(self.colTrail,"background"),
-            "dialogue1" : self._makeFormat(self.colDialN),
-            "dialogue2" : self._makeFormat(self.colDialD),
-            "dialogue3" : self._makeFormat(self.colDialS),
-            "replace"   : self._makeFormat(self.colRepTag),
-            "hidden"    : self._makeFormat(self.colComm),
-            "keyword"   : self._makeFormat(self.colKey),
-            "modifier"  : self._makeFormat(self.colMod),
-            "value"     : self._makeFormat(self.colVal),
+            "header1"    : self._makeFormat(self.colHead,  "bold", 1.8),
+            "header2"    : self._makeFormat(self.colHead,  "bold", 1.6),
+            "header3"    : self._makeFormat(self.colHead,  "bold", 1.4),
+            "header4"    : self._makeFormat(self.colHead,  "bold", 1.2),
+            "header1h"   : self._makeFormat(self.colHeadH, "bold", 1.8),
+            "header2h"   : self._makeFormat(self.colHeadH, "bold", 1.6),
+            "header3h"   : self._makeFormat(self.colHeadH, "bold", 1.4),
+            "header4h"   : self._makeFormat(self.colHeadH, "bold", 1.2),
+            "bold"       : self._makeFormat(self.colEmph,  "bold"),
+            "italic"     : self._makeFormat(self.colEmph,  "italic"),
+            "strike"     : self._makeFormat(self.colEmph,  "strike"),
+            "bolditalic" : self._makeFormat(self.colEmph, ("bold","italic")),
+            "trailing"   : self._makeFormat(self.colTrail, "background"),
+            "nobreak"    : self._makeFormat(self.colTrail, "background"),
+            "dialogue1"  : self._makeFormat(self.colDialN),
+            "dialogue2"  : self._makeFormat(self.colDialD),
+            "dialogue3"  : self._makeFormat(self.colDialS),
+            "replace"    : self._makeFormat(self.colRepTag),
+            "hidden"     : self._makeFormat(self.colComm),
+            "keyword"    : self._makeFormat(self.colKey),
+            "modifier"   : self._makeFormat(self.colMod),
+            "value"      : self._makeFormat(self.colVal,   "underline"),
         }
 
         self.hRules = []
@@ -140,6 +140,13 @@ class GuiDocHighlighter(QSyntaxHighlighter):
 
         # Markdown
         self.hRules.append((
+            r"(?<![\w|\\])([\*]{1})(?!\s)(?m:(.+?))(?<![\s|\\])(\1)(?!\w)", {
+                1 : self.hStyles["hidden"],
+                2 : self.hStyles["italic"],
+                3 : self.hStyles["hidden"],
+            }
+        ))
+        self.hRules.append((
             r"(?<![\w|\\])([\*]{2})(?!\s)(?m:(.+?))(?<![\s|\\])(\1)(?!\w)", {
                 1 : self.hStyles["hidden"],
                 2 : self.hStyles["bold"],
@@ -147,16 +154,9 @@ class GuiDocHighlighter(QSyntaxHighlighter):
             }
         ))
         self.hRules.append((
-            r"(?<![\w|_|\\])([_])(?!\s|\1)(?m:(.+?))(?<![\s|\\])(\1)(?!\w)", {
+            r"(?<![\w|\\])([\*]{3})(?!\s)(?m:(.+?))(?<![\s|\\])(\1)(?!\w)", {
                 1 : self.hStyles["hidden"],
-                2 : self.hStyles["italic"],
-                3 : self.hStyles["hidden"],
-            }
-        ))
-        self.hRules.append((
-            r"(?<![\w|\\])([_]{2})(?!\s)(?m:(.+?))(?<![\s|\\])(\1)(?!\w)", {
-                1 : self.hStyles["hidden"],
-                2 : self.hStyles["underline"],
+                2 : self.hStyles["bolditalic"],
                 3 : self.hStyles["hidden"],
             }
         ))
