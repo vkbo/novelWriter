@@ -36,7 +36,7 @@ from PyQt5.QtGui import QKeySequence
 from PyQt5.QtWidgets import (
     QDialog, QHBoxLayout, QVBoxLayout, QGridLayout, QPushButton, QTreeWidget,
     QAbstractItemView, QTreeWidgetItem, QDialogButtonBox, QLabel, QShortcut,
-    QFileDialog, QLineEdit
+    QFileDialog, QLineEdit, QMessageBox
 )
 
 from nw.common import formatInt
@@ -49,6 +49,10 @@ class GuiProjectLoad(QDialog):
     NONE_STATE = 0
     NEW_STATE  = 1
     OPEN_STATE = 2
+
+    C_NAME  = 0
+    C_COUNT = 1
+    C_TIME  = 2
 
     def __init__(self, theParent):
         QDialog.__init__(self, theParent)
@@ -92,8 +96,8 @@ class GuiProjectLoad(QDialog):
         self.listBox.setIconSize(QSize(iPx, iPx))
 
         treeHead = self.listBox.headerItem()
-        treeHead.setTextAlignment(1, Qt.AlignRight)
-        treeHead.setTextAlignment(2, Qt.AlignRight)
+        treeHead.setTextAlignment(self.C_COUNT, Qt.AlignRight)
+        treeHead.setTextAlignment(self.C_TIME, Qt.AlignRight)
 
         self.lblRecent = QLabel("<b>Recently Opened Projects</b>")
         self.lblPath   = QLabel("<b>Path</b>")
@@ -150,7 +154,7 @@ class GuiProjectLoad(QDialog):
         self._saveDialogState()
         selItems = self.listBox.selectedItems()
         if selItems:
-            self.openPath = selItems[0].data(0, Qt.UserRole)
+            self.openPath = selItems[0].data(self.C_NAME, Qt.UserRole)
             self.openState = self.OPEN_STATE
             self.accept()
         else:
@@ -163,7 +167,7 @@ class GuiProjectLoad(QDialog):
         """
         selList = self.listBox.selectedItems()
         if selList:
-            self.selPath.setText(selList[0].data(0, Qt.UserRole))
+            self.selPath.setText(selList[0].data(self.C_NAME, Qt.UserRole))
         return
 
     def _doBrowse(self):
@@ -210,8 +214,23 @@ class GuiProjectLoad(QDialog):
         """
         selList = self.listBox.selectedItems()
         if selList:
-            self.mainConf.removeFromRecentCache(selList[0].text(3))
-            self._populateList()
+            doRemove = False
+            if self.mainConf.showGUI:
+                msgBox = QMessageBox()
+                msgRes = msgBox.question(
+                    self, "Remove Entry",
+                    "Remove the selected entry from the recent projects list?"
+                )
+                doRemove = (msgRes == QMessageBox.Yes)
+            else:
+                doRemove = True
+
+            if doRemove:
+                self.mainConf.removeFromRecentCache(
+                    selList[0].data(self.C_NAME, Qt.UserRole)
+                )
+                self._populateList()
+
         return
 
     ##
@@ -221,9 +240,10 @@ class GuiProjectLoad(QDialog):
     def _saveDialogState(self):
         """Save the changes made to the dialog.
         """
-        colWidths = [50]*3
-        for i in range(3):
-            colWidths[i] = self.listBox.columnWidth(i)
+        colWidths = [0, 0, 0]
+        colWidths[self.C_NAME]  = self.listBox.columnWidth(self.C_NAME)
+        colWidths[self.C_COUNT] = self.listBox.columnWidth(self.C_COUNT)
+        colWidths[self.C_TIME]  = self.listBox.columnWidth(self.C_TIME)
         self.mainConf.setProjColWidths(colWidths)
         return
 
@@ -251,22 +271,24 @@ class GuiProjectLoad(QDialog):
         hasSelection = False
         for timeStamp in sorted(listOrder, reverse=True):
             newItem = QTreeWidgetItem([""]*4)
-            newItem.setIcon(0, self.theParent.theTheme.getIcon("proj_nwx"))
-            newItem.setText(0, listData[timeStamp][0])
-            newItem.setData(0, Qt.UserRole, listData[timeStamp][2])
-            newItem.setText(1, formatInt(listData[timeStamp][1]))
-            newItem.setText(2, datetime.fromtimestamp(timeStamp).strftime("%x %X"))
-            newItem.setTextAlignment(0, Qt.AlignLeft  | Qt.AlignVCenter)
-            newItem.setTextAlignment(1, Qt.AlignRight | Qt.AlignVCenter)
-            newItem.setTextAlignment(2, Qt.AlignRight | Qt.AlignVCenter)
+            newItem.setIcon(self.C_NAME,  self.theParent.theTheme.getIcon("proj_nwx"))
+            newItem.setText(self.C_NAME,  listData[timeStamp][0])
+            newItem.setData(self.C_NAME,  Qt.UserRole, listData[timeStamp][2])
+            newItem.setText(self.C_COUNT, formatInt(listData[timeStamp][1]))
+            newItem.setText(self.C_TIME,  datetime.fromtimestamp(timeStamp).strftime("%x %X"))
+            newItem.setTextAlignment(self.C_NAME,  Qt.AlignLeft  | Qt.AlignVCenter)
+            newItem.setTextAlignment(self.C_COUNT, Qt.AlignRight | Qt.AlignVCenter)
+            newItem.setTextAlignment(self.C_TIME,  Qt.AlignRight | Qt.AlignVCenter)
             self.listBox.addTopLevelItem(newItem)
             if not hasSelection:
                 newItem.setSelected(True)
                 hasSelection = True
 
         projColWidth = self.mainConf.getProjColWidths()
-        for i in range(3):
-            self.listBox.setColumnWidth(i, projColWidth[i])
+        if len(projColWidth) == 3:
+            self.listBox.setColumnWidth(self.C_NAME,  projColWidth[self.C_NAME])
+            self.listBox.setColumnWidth(self.C_COUNT, projColWidth[self.C_COUNT])
+            self.listBox.setColumnWidth(self.C_TIME,  projColWidth[self.C_TIME])
 
         return
 
