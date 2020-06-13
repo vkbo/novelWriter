@@ -160,6 +160,13 @@ class GuiDocHighlighter(QSyntaxHighlighter):
                 3 : self.hStyles["hidden"],
             }
         ))
+        self.hRules.append((
+            nwRegEx.FMT_ST, {
+                1 : self.hStyles["hidden"],
+                2 : self.hStyles["strike"],
+                3 : self.hStyles["hidden"],
+            }
+        ))
 
         # Quoted Strings
         if self.mainConf.highlightQuotes:

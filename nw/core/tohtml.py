@@ -116,14 +116,28 @@ class ToHtml(Tokenizer):
         """Convert the list of text tokens into a HTML document saved
         to theResult.
         """
-        htmlTags = {
-            self.FMT_B_B : "<strong>",
-            self.FMT_B_E : "</strong>",
-            self.FMT_I_B : "<em>",
-            self.FMT_I_E : "</em>",
-            self.FMT_S_B : "<strong><em>",
-            self.FMT_S_E : "</em></strong>",
-        }
+        if self.genMode == self.M_PREVIEW:
+            htmlTags = {     # HTML4 + CSS2
+                self.FMT_B_B : "<b>",
+                self.FMT_B_E : "</b>",
+                self.FMT_I_B : "<i>",
+                self.FMT_I_E : "</i>",
+                self.FMT_S_B : "<b><i>",
+                self.FMT_S_E : "</i></b>",
+                self.FMT_D_B : "<span style='text-decoration: line-through;'>",
+                self.FMT_D_E : "</span>",
+            }
+        else:
+            htmlTags = {     # HTML5
+                self.FMT_B_B : "<strong>",
+                self.FMT_B_E : "</strong>",
+                self.FMT_I_B : "<em>",
+                self.FMT_I_E : "</em>",
+                self.FMT_S_B : "<strong><em>",
+                self.FMT_S_E : "</em></strong>",
+                self.FMT_D_B : "<del>",
+                self.FMT_D_E : "</del>",
+            }
 
         if self.isNovel and self.genMode != self.M_PREVIEW:
             # For novel files for export, we bump the titles one level

@@ -515,6 +515,8 @@ class GuiDocEditor(QTextEdit):
             self._toggleEmph(2)
         elif theAction == nwDocAction.BOLDITALIC:
             self._toggleEmph(3)
+        elif theAction == nwDocAction.STRIKE:
+            self._toggleStrike()
         elif theAction == nwDocAction.S_QUOTE:
             self._wrapSelection(self.typSQOpen, self.typSQClose)
         elif theAction == nwDocAction.D_QUOTE:
@@ -997,6 +999,36 @@ class GuiDocEditor(QTextEdit):
             else:
                 # Already at 1 or 2, increase to 3
                 self._wrapSelection("*"*(3 - cLevel))
+
+        return
+
+    def _toggleStrike(self):
+        """Toggle strikethrough text.
+        """
+        theCursor = self._autoSelect()
+        if theCursor.hasSelection():
+            posS = theCursor.selectionStart()
+            posE = theCursor.selectionEnd()
+
+            numB = 0
+            for n in range(2):
+                if self.qDocument.characterAt(posS-n-1) == "~":
+                    numB += 1
+                else:
+                    break
+
+            numA = 0
+            for n in range(2):
+                if self.qDocument.characterAt(posE+n) == "~":
+                    numA += 1
+                else:
+                    break
+
+            cLevel = min(numB, numA)
+            if cLevel == 2:
+                self._clearSurrounding(theCursor, 2)
+            else:
+                self._wrapSelection("~~")
 
         return
 

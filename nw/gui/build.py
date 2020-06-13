@@ -982,7 +982,9 @@ class GuiBuildNovelDocView(QTextBrowser):
         """
         if isinstance(theText, list):
             theText = "".join(theText)
-        theText = theText.replace("&emsp;","&nbsp;"*4)
+        theText = theText.replace("&emsp;", "&nbsp;"*4)
+        theText = theText.replace("<del>", "<span style='text-decoration: line-through;'>")
+        theText = theText.replace("</del>", "</span>")
         self.setHtml(theText)
         return
 

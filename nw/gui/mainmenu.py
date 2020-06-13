@@ -536,6 +536,13 @@ class GuiMainMenu(QMenuBar):
         self.aFmtBoldIt.triggered.connect(lambda: self._docAction(nwDocAction.BOLDITALIC))
         self.fmtMenu.addAction(self.aFmtBoldIt)
 
+        # Format > Strikethrough
+        self.aFmtStrike = QAction("Strikethrough Text", self)
+        self.aFmtStrike.setStatusTip("Strikethrough selected text")
+        self.aFmtStrike.setShortcut("Ctrl+-")
+        self.aFmtStrike.triggered.connect(lambda: self._docAction(nwDocAction.STRIKE))
+        self.fmtMenu.addAction(self.aFmtStrike)
+
         # Edit > Separator
         self.fmtMenu.addSeparator()
 
