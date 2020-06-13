@@ -141,6 +141,7 @@ class Config:
         ## State
         self.showRefPanel = True
         self.viewComments = True
+        self.viewSynopsis = True
 
         # Check Qt5 Versions
         verQt = splitVersionNumber(QT_VERSION_STR)
@@ -478,6 +479,9 @@ class Config:
         self.viewComments = self._parseLine(
             cnfParse, cnfSec, "viewcomments", self.CNF_BOOL, self.viewComments
         )
+        self.viewSynopsis = self._parseLine(
+            cnfParse, cnfSec, "viewsynopsis", self.CNF_BOOL, self.viewSynopsis
+        )
 
         ## Path
         cnfSec = "Path"
@@ -569,6 +573,7 @@ class Config:
         cnfParse.add_section(cnfSec)
         cnfParse.set(cnfSec,"showrefpanel",str(self.showRefPanel))
         cnfParse.set(cnfSec,"viewcomments",str(self.viewComments))
+        cnfParse.set(cnfSec,"viewsynopsis",str(self.viewSynopsis))
 
         ## Path
         cnfSec = "Path"
@@ -752,11 +757,6 @@ class Config:
         self.showRefPanel = checkState
         self.confChanged  = True
         return self.showRefPanel
-
-    def setViewComments(self, checkState):
-        self.viewComments = checkState
-        self.confChanged  = True
-        return self.viewComments
 
     def getErrData(self):
         errMessage = "<br>".join(self.errData)
