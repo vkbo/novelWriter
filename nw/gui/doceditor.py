@@ -509,16 +509,18 @@ class GuiDocEditor(QTextEdit):
             self.copy()
         elif theAction == nwDocAction.PASTE:
             self.paste()
-        elif theAction == nwDocAction.BOLD:
-            self._wrapSelection("**","**")
         elif theAction == nwDocAction.ITALIC:
-            self._wrapSelection("_","_")
-        elif theAction == nwDocAction.U_LINE:
-            self._wrapSelection("__","__")
+            self._toggleEmph(1)
+        elif theAction == nwDocAction.BOLD:
+            self._toggleEmph(2)
+        elif theAction == nwDocAction.BOLDITALIC:
+            self._toggleEmph(3)
+        elif theAction == nwDocAction.STRIKE:
+            self._toggleStrike()
         elif theAction == nwDocAction.S_QUOTE:
-            self._wrapSelection(self.typSQOpen,self.typSQClose)
+            self._wrapSelection(self.typSQOpen, self.typSQClose)
         elif theAction == nwDocAction.D_QUOTE:
-            self._wrapSelection(self.typDQOpen,self.typDQClose)
+            self._wrapSelection(self.typDQOpen, self.typDQClose)
         elif theAction == nwDocAction.SEL_ALL:
             self._makeSelection(QTextCursor.Document)
         elif theAction == nwDocAction.SEL_PARA:
@@ -881,18 +883,20 @@ class GuiDocEditor(QTextEdit):
             self.bigDoc = False
         return
 
-    def _wrapSelection(self, tBefore, tAfter):
+    def _wrapSelection(self, tBefore, tAfter=None):
         """Wraps the selected text in whatever is in tBefore and tAfter.
         If there is no selection, the autoSelect setting decides the
         action. AutoSelect will select the word under the cursor before
         wrapping it. If this feature is disabled, nothing is done.
         """
-        theCursor = self.textCursor()
-        if self.mainConf.autoSelect and not theCursor.hasSelection():
-            theCursor.select(QTextCursor.WordUnderCursor)
+        if tAfter is None:
+            tAfter = tBefore
+
+        theCursor = self._autoSelect()
         if theCursor.hasSelection():
             posS = theCursor.selectionStart()
             posE = theCursor.selectionEnd()
+
             theCursor.clearSelection()
             theCursor.beginEditBlock()
             theCursor.setPosition(posE)
@@ -900,8 +904,132 @@ class GuiDocEditor(QTextEdit):
             theCursor.setPosition(posS)
             theCursor.insertText(tBefore)
             theCursor.endEditBlock()
+
+            theCursor.setPosition(posE + len(tBefore))
+            theCursor.movePosition(QTextCursor.Left, QTextCursor.KeepAnchor, posE-posS)
+            self.setTextCursor(theCursor)
+
         else:
             logger.warning("No selection made, nothing to do")
+        return
+
+    def _clearSurrounding(self, theCursor, nChars):
+        """Clears n characters before and after the cursor.
+        """
+        if theCursor.hasSelection():
+            posS = theCursor.selectionStart()
+            posE = theCursor.selectionEnd()
+            theCursor.clearSelection()
+            theCursor.beginEditBlock()
+            theCursor.setPosition(posS)
+            for i in range(nChars):
+                theCursor.deletePreviousChar()
+            theCursor.setPosition(posE)
+            for i in range(nChars):
+                theCursor.deletePreviousChar()
+            theCursor.endEditBlock()
+            theCursor.clearSelection()
+        else:
+            logger.warning("No selection made, nothing to do")
+        return
+
+    def _autoSelect(self):
+        """Returns a cursor which may or may not have a selection based
+        on user settings and document action.
+        """
+        theCursor = self.textCursor()
+        if self.mainConf.autoSelect and not theCursor.hasSelection():
+            theCursor.select(QTextCursor.WordUnderCursor)
+            self.setTextCursor(theCursor)
+        return theCursor
+
+    def _toggleEmph(self, eLevel):
+        """Toggle emphasis of a given level between 1 and 3, where 1 is
+        italic, 2 is bold, and 3 is bold italic. The current level in
+        the text is cLevel. The rules are as follows:
+
+         cLevel     | eLevel     | Result
+        ============+============+============
+         None       | Italic     | Italic
+         None       | Bold       | Bold
+         None       | BoldItalic | BoldItalic
+        ------------+------------+------------
+         Italic     | Italic     | None
+         Italic     | Bold       | BoldItalic
+         Italic     | BoldItalic | BoldItalic
+        ------------+------------+------------
+         Bold       | Italic     | BoldItalic
+         Bold       | Bold       | None
+         Bold       | BoldItalic | BoldItalic
+        ------------+------------+------------
+         BoldItalic | Italic     | Bold
+         BoldItalic | Bold       | Italic
+         BoldItalic | BoldItalic | None
+
+        """
+        theCursor = self._autoSelect()
+        if theCursor.hasSelection():
+            posS = theCursor.selectionStart()
+            posE = theCursor.selectionEnd()
+
+            numB = 0
+            for n in range(3):
+                if self.qDocument.characterAt(posS-n-1) == "*":
+                    numB += 1
+                else:
+                    break
+
+            numA = 0
+            for n in range(3):
+                if self.qDocument.characterAt(posE+n) == "*":
+                    numA += 1
+                else:
+                    break
+
+            cLevel = min(numB, numA)
+            if cLevel == 0:
+                # Has no emphasis, set to desired level
+                self._wrapSelection("*"*eLevel)
+            elif cLevel == 3:
+                # Has max, so reduce by desired level
+                self._clearSurrounding(theCursor, eLevel)
+            elif cLevel == eLevel:
+                # Toggle mode, so clear what we had set
+                self._clearSurrounding(theCursor, cLevel)
+            else:
+                # Already at 1 or 2, increase to 3
+                self._wrapSelection("*"*(3 - cLevel))
+
+        return
+
+    def _toggleStrike(self):
+        """Toggle strikethrough text.
+        """
+        theCursor = self._autoSelect()
+        if theCursor.hasSelection():
+            posS = theCursor.selectionStart()
+            posE = theCursor.selectionEnd()
+
+            numB = 0
+            for n in range(2):
+                if self.qDocument.characterAt(posS-n-1) == "~":
+                    numB += 1
+                else:
+                    break
+
+            numA = 0
+            for n in range(2):
+                if self.qDocument.characterAt(posE+n) == "~":
+                    numA += 1
+                else:
+                    break
+
+            cLevel = min(numB, numA)
+            if cLevel == 2:
+                self._clearSurrounding(theCursor, 2)
+            else:
+                self._wrapSelection("~~")
+
         return
 
     def _formatBlock(self, docAction):

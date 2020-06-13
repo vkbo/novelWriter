@@ -34,7 +34,7 @@ from PyQt5.QtCore import QRegularExpression
 
 from nw.core.document import NWDoc
 from nw.core.tools import numberToWord
-from nw.constants import nwItemLayout, nwItemType
+from nw.constants import nwItemLayout, nwItemType, nwRegEx
 
 logger = logging.getLogger(__name__)
 
@@ -44,8 +44,10 @@ class Tokenizer():
     FMT_B_E    =  2 # End bold
     FMT_I_B    =  3 # Begin italics
     FMT_I_E    =  4 # End italics
-    FMT_U_B    =  5 # Begin underline
-    FMT_U_E    =  6 # End underline
+    FMT_S_B    =  5 # Begin bold italic
+    FMT_S_E    =  6 # End bold italic
+    FMT_D_B    =  7 # Begin strikeout
+    FMT_D_E    =  8 # End strikeout
 
     T_EMPTY    =  1 # Empty line (new paragraph)
     T_SYNOPSIS =  2 # Synopsis comment
@@ -292,23 +294,19 @@ class Tokenizer():
         The format of the token list is an entry with a four-tuple for
         each line in the file. The tuple is as follows:
           1: The type of the block, self.T_*
-          2: The text content of the block, without leading tags
-          3: The internal formatting map of the text, self.FMT_*
-          4: The style of the block, self.A_*
+          2: The line in file where this block occurred
+          3: The text content of the block, without leading tags
+          4: The internal formatting map of the text, self.FMT_*
+          5: The style of the block, self.A_*
         """
 
         # RegExes for adding formatting tags within text lines
-        # Keep in sync with the DocHighlighter class
-        rxFormats = [(
-            QRegularExpression(r"(?<![\w|\\])([\*]{2})(?!\s)(?m:(.+?))(?<![\s|\\])(\1)(?!\w)"),
-            [None, self.FMT_B_B, None, self.FMT_B_E]
-        ),(
-            QRegularExpression(r"(?<![\w|_|\\])([_])(?!\s|\1)(?m:(.+?))(?<![\s|\\])(\1)(?!\w)"),
-            [None, self.FMT_I_B, None, self.FMT_I_E]
-        ),(
-            QRegularExpression(r"(?<![\w|\\])([_]{2})(?!\s)(?m:(.+?))(?<![\s|\\])(\1)(?!\w)"),
-            [None, self.FMT_U_B, None, self.FMT_U_E]
-        )]
+        rxFormats = [
+            (QRegularExpression(nwRegEx.FMT_I),  [None, self.FMT_I_B, None, self.FMT_I_E]),
+            (QRegularExpression(nwRegEx.FMT_B),  [None, self.FMT_B_B, None, self.FMT_B_E]),
+            (QRegularExpression(nwRegEx.FMT_BI), [None, self.FMT_S_B, None, self.FMT_S_E]),
+            (QRegularExpression(nwRegEx.FMT_ST), [None, self.FMT_D_B, None, self.FMT_D_E]),
+        ]
 
         self.theTokens = []
         self.theMarkdown = ""
@@ -329,8 +327,9 @@ class Tokenizer():
                 tmpMarkdown.append("\n")
 
             elif aLine[0] == "%":
-                cLine = aLine[1:].strip()
-                if cLine.lower().startswith("synopsis:"):
+                cLine = aLine[1:].lstrip()
+                synTag = cLine[:9].lower()
+                if synTag == "synopsis:":
                     self.theTokens.append((
                         self.T_SYNOPSIS,
                         nLine,

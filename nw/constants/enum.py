@@ -68,30 +68,31 @@ class nwItemLayout(Enum):
 
 class nwDocAction(Enum):
 
-    NO_ACTION = 0
-    UNDO      = 1
-    REDO      = 2
-    CUT       = 3
-    COPY      = 4
-    PASTE     = 5
-    BOLD      = 6
-    ITALIC    = 7
-    U_LINE    = 8
-    S_QUOTE   = 9
-    D_QUOTE   = 10
-    SEL_ALL   = 11
-    SEL_PARA  = 12
-    FIND      = 13
-    REPLACE   = 14
-    GO_NEXT   = 15
-    GO_PREV   = 16
-    REPL_NEXT = 17
-    BLOCK_H1  = 18
-    BLOCK_H2  = 19
-    BLOCK_H3  = 20
-    BLOCK_H4  = 21
-    BLOCK_COM = 22
-    BLOCK_TXT = 23
+    NO_ACTION  = 0
+    UNDO       = 1
+    REDO       = 2
+    CUT        = 3
+    COPY       = 4
+    PASTE      = 5
+    ITALIC     = 6
+    BOLD       = 7
+    BOLDITALIC = 8
+    STRIKE     = 9
+    S_QUOTE    = 10
+    D_QUOTE    = 11
+    SEL_ALL    = 12
+    SEL_PARA   = 13
+    FIND       = 14
+    REPLACE    = 15
+    GO_NEXT    = 16
+    GO_PREV    = 17
+    REPL_NEXT  = 18
+    BLOCK_H1   = 19
+    BLOCK_H2   = 20
+    BLOCK_H3   = 21
+    BLOCK_H4   = 22
+    BLOCK_COM  = 23
+    BLOCK_TXT  = 24
 
 # END Enum nwDocAction
 

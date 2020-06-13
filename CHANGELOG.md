@@ -2,9 +2,15 @@
 
 ## Version 0.9rc1 [2020-xx-xx]
 
+**Core Functionality**
+
+* Underline text formatting has been removed. It is not standard HTML5, not Markdown, and was previously implemented using the double underscore notation that in standard Markdown is renderred as bold text. Instead, novelWriter now renders a single `*` or `-` wrapping a piece of text *within* a paragraphs as italicised text, and a double `**` or `__` as bold text. The keyboard shortcuts and automatic features **only** support the `*` notation. A triple set of `***` are treated as both bold and italicised. PR #310.
+* Strikethrough formatting has been added back into novelWriter using the standard Markdown `~~` wrapping. PR #310.
+
 **User Interface**
 
 * The Open Project dialog will now ask before removing an entry from the recent projects list. PR #309.
+* The text emphasis functions, either selected from the menu or via keyboard shortcuts, will now try to respond to the command in a more meaningful way. That is, the text editor will try to toggle the bold or italics features independently of eachother on the selected text. A feature to apply both at the same time has also been added. PR #310.
 
 **Other Changes**
 

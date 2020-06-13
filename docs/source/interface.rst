@@ -33,8 +33,8 @@ Markdown Format
 ===============
 
 The document editor uses a simplified markdown format.
-That is, it supports basic formatting like bold, italics and underline, as well as four levels of headings.
-The formats are listed below.
+That is, it supports basic formatting like bold, italics and strikethrough, as well as four levels of headings.
+The preference of novelWriter is to use `*` for wrapping emphasised text, but `_` is partially supported when typed, but not by the automatic formatting features and keyboard shortcuts.
 
 In addition to these standard markdown features, the editor also allows for comments, that is text that is ignored by the word counter and not exported or, optionally, hidden in the document viewer.
 If the first word of a comment is "Synopsis:" (with the colon), the comment is treated specially, and will show up in the Outline View.
@@ -48,9 +48,12 @@ The editor also has a minimal set of keywords used for setting tags and referenc
    "``## Title``",            "Heading level two. The space after the # is mandatory."
    "``### Title``",           "Heading level three. The space after the # is mandatory."
    "``#### Title``",          "Heading level four. The space after the # is mandatory."
+   "``*text*``",              "The text is rendered as italicised text."
    "``**text**``",            "The text is rendered as bold text."
-   "``_text_``",              "The text is rendered as italicized text."
-   "``__text__``",            "The text is rendered as underlined text."
+   "``***text***``",          "The text is rendered as bold italicised text."
+   "``_text_``",              "Alternative format for italicised text."
+   "``__text__``",            "Alternative format for bold text."
+   "``~~text~~``",            "Strikethrough text."
    "``% text...``",           "A comment. The text is not exported by default, seen in viewer, or counted towards word counts."
    "``% Synopsis: text...``", "A synopsis comment. Shows up in the Synopsis column of the Outline View, but is otherwise treated as a comment."
    "``@keyword: value``",     "A keyword argument followed by a value, or a comma separated list of values."
@@ -110,6 +113,7 @@ These are as following:
    ":kbd:`Ctrl-.`",          "Correct word under cursor."
    ":kbd:`Ctrl-,`",          "Open the Preferences dialog."
    ":kbd:`Ctrl-/`",          "Change block format to comment."
+   ":kbd:`Ctrl--`",          "Strikethrough selected text, or word under cursor."
    ":kbd:`Ctrl-0`",          "Remove block formatting for block under cursor."
    ":kbd:`Ctrl-1`",          "Change block format to header level 1."
    ":kbd:`Ctrl-2`",          "Change block format to header level 2."
@@ -122,7 +126,7 @@ These are as following:
    ":kbd:`Ctrl-E`",          "If in tree view, edit a document or folder settings. (Same as :kbd:`F2`)"
    ":kbd:`Ctrl-F`",          "Open the search bar and search for selected word, if any is selected."
    ":kbd:`Ctrl-G`",          "Find next occurrence of word in current document. (Same as :kbd:`F3`)"
-   ":kbd:`Ctrl-H`",          "Open the search and replace bar and search for selected word, if any is selected. (On Mac, this is :kbd:`Cmd+=`)"
+   ":kbd:`Ctrl-H`",          "Open the search and replace bar and search for selected word, if any is selected. (On Mac, this is :kbd:`Cmd-=`)"
    ":kbd:`Ctrl-I`",          "Format selected text, or word under cursor, as italic."
    ":kbd:`Ctrl-N`",          "Create new document."
    ":kbd:`Ctrl-O`",          "Open selected document."
@@ -143,6 +147,7 @@ These are as following:
    ":kbd:`Ctrl-Shift-/`",    "Remove block formatting for block under cursor."
    ":kbd:`Ctrl-Shift-1`",    "Replace occurrence of word in current document, and search for next occurrence."
    ":kbd:`Ctrl-Shift-A`",    "Select all text in current paragraph."
+   ":kbd:`Ctrl-Shift-B`",    "Format selected text, or word under cursor, as bold and italic."
    ":kbd:`Ctrl-Shift-D`",    "Wrap selected text, or word under cursor, in single quotes."
    ":kbd:`Ctrl-Shift-G`",    "Find previous occurrence of word in current document. (Same as :kbd:`Shift-F3`"
    ":kbd:`Ctrl-Shift-I`",    "Import text to the current document from a text file."

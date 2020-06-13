@@ -515,13 +515,6 @@ class GuiMainMenu(QMenuBar):
         # Format
         self.fmtMenu = self.addMenu("&Format")
 
-        # Format > Bold Text
-        self.aFmtBold = QAction("Bold Text", self)
-        self.aFmtBold.setStatusTip("Make selected text bold")
-        self.aFmtBold.setShortcut("Ctrl+B")
-        self.aFmtBold.triggered.connect(lambda: self._docAction(nwDocAction.BOLD))
-        self.fmtMenu.addAction(self.aFmtBold)
-
         # Format > Italic Text
         self.aFmtItalic = QAction("Italic Text", self)
         self.aFmtItalic.setStatusTip("Make selected text italic")
@@ -529,12 +522,26 @@ class GuiMainMenu(QMenuBar):
         self.aFmtItalic.triggered.connect(lambda: self._docAction(nwDocAction.ITALIC))
         self.fmtMenu.addAction(self.aFmtItalic)
 
+        # Format > Bold Text
+        self.aFmtBold = QAction("Bold Text", self)
+        self.aFmtBold.setStatusTip("Make selected text bold")
+        self.aFmtBold.setShortcut("Ctrl+B")
+        self.aFmtBold.triggered.connect(lambda: self._docAction(nwDocAction.BOLD))
+        self.fmtMenu.addAction(self.aFmtBold)
+
         # Format > Underline Text
-        self.aFmtULine = QAction("Underline Text", self)
-        self.aFmtULine.setStatusTip("Underline selected text")
-        self.aFmtULine.setShortcut("Ctrl+U")
-        self.aFmtULine.triggered.connect(lambda: self._docAction(nwDocAction.U_LINE))
-        self.fmtMenu.addAction(self.aFmtULine)
+        self.aFmtBoldIt = QAction("Bold Italic Text", self)
+        self.aFmtBoldIt.setStatusTip("Make selected text bold and italic")
+        self.aFmtBoldIt.setShortcut("Ctrl+Shift+B")
+        self.aFmtBoldIt.triggered.connect(lambda: self._docAction(nwDocAction.BOLDITALIC))
+        self.fmtMenu.addAction(self.aFmtBoldIt)
+
+        # Format > Strikethrough
+        self.aFmtStrike = QAction("Strikethrough Text", self)
+        self.aFmtStrike.setStatusTip("Strikethrough selected text")
+        self.aFmtStrike.setShortcut("Ctrl+-")
+        self.aFmtStrike.triggered.connect(lambda: self._docAction(nwDocAction.STRIKE))
+        self.fmtMenu.addAction(self.aFmtStrike)
 
         # Edit > Separator
         self.fmtMenu.addSeparator()

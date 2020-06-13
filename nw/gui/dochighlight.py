@@ -33,7 +33,7 @@ from PyQt5.QtGui import (
     QColor, QTextCharFormat, QFont, QSyntaxHighlighter, QBrush
 )
 
-from nw.constants import nwUnicode
+from nw.constants import nwUnicode, nwRegEx
 
 logger = logging.getLogger(__name__)
 
@@ -78,7 +78,6 @@ class GuiDocHighlighter(QSyntaxHighlighter):
         """Initialise the syntax highlighter, setting all the colour
         rules and building the regexes.
         """
-
         logger.debug("Setting up highlighting rules")
 
         self.colHead   = QColor(*self.theTheme.colHead)
@@ -98,28 +97,28 @@ class GuiDocHighlighter(QSyntaxHighlighter):
         self.colTrail.setAlpha(64)
 
         self.hStyles = {
-            "header1"   : self._makeFormat(self.colHead, "bold",1.8),
-            "header2"   : self._makeFormat(self.colHead, "bold",1.6),
-            "header3"   : self._makeFormat(self.colHead, "bold",1.4),
-            "header4"   : self._makeFormat(self.colHead, "bold",1.2),
-            "header1h"  : self._makeFormat(self.colHeadH,"bold",1.8),
-            "header2h"  : self._makeFormat(self.colHeadH,"bold",1.6),
-            "header3h"  : self._makeFormat(self.colHeadH,"bold",1.4),
-            "header4h"  : self._makeFormat(self.colHeadH,"bold",1.2),
-            "bold"      : self._makeFormat(self.colEmph, "bold"),
-            "italic"    : self._makeFormat(self.colEmph, "italic"),
-            "strike"    : self._makeFormat(self.colEmph, "strike"),
-            "underline" : self._makeFormat(self.colEmph, "underline"),
-            "trailing"  : self._makeFormat(self.colTrail,"background"),
-            "nobreak"   : self._makeFormat(self.colTrail,"background"),
-            "dialogue1" : self._makeFormat(self.colDialN),
-            "dialogue2" : self._makeFormat(self.colDialD),
-            "dialogue3" : self._makeFormat(self.colDialS),
-            "replace"   : self._makeFormat(self.colRepTag),
-            "hidden"    : self._makeFormat(self.colComm),
-            "keyword"   : self._makeFormat(self.colKey),
-            "modifier"  : self._makeFormat(self.colMod),
-            "value"     : self._makeFormat(self.colVal),
+            "header1"    : self._makeFormat(self.colHead,  "bold", 1.8),
+            "header2"    : self._makeFormat(self.colHead,  "bold", 1.6),
+            "header3"    : self._makeFormat(self.colHead,  "bold", 1.4),
+            "header4"    : self._makeFormat(self.colHead,  "bold", 1.2),
+            "header1h"   : self._makeFormat(self.colHeadH, "bold", 1.8),
+            "header2h"   : self._makeFormat(self.colHeadH, "bold", 1.6),
+            "header3h"   : self._makeFormat(self.colHeadH, "bold", 1.4),
+            "header4h"   : self._makeFormat(self.colHeadH, "bold", 1.2),
+            "bold"       : self._makeFormat(self.colEmph,  "bold"),
+            "italic"     : self._makeFormat(self.colEmph,  "italic"),
+            "bolditalic" : self._makeFormat(self.colEmph, ("bold","italic")),
+            "strike"     : self._makeFormat(self.colEmph,  "strike"),
+            "trailing"   : self._makeFormat(self.colTrail, "background"),
+            "nobreak"    : self._makeFormat(self.colTrail, "background"),
+            "dialogue1"  : self._makeFormat(self.colDialN),
+            "dialogue2"  : self._makeFormat(self.colDialD),
+            "dialogue3"  : self._makeFormat(self.colDialS),
+            "replace"    : self._makeFormat(self.colRepTag),
+            "hidden"     : self._makeFormat(self.colComm),
+            "keyword"    : self._makeFormat(self.colKey),
+            "modifier"   : self._makeFormat(self.colMod),
+            "value"      : self._makeFormat(self.colVal,   "underline"),
         }
 
         self.hRules = []
@@ -131,7 +130,7 @@ class GuiDocHighlighter(QSyntaxHighlighter):
             }
         ))
 
-        # Non-breaking Space
+        # Non-Breaking Spaces
         self.hRules.append((
             "[%s]+" % nwUnicode.U_NBSP, {
                 0 : self.hStyles["nobreak"],
@@ -140,23 +139,30 @@ class GuiDocHighlighter(QSyntaxHighlighter):
 
         # Markdown
         self.hRules.append((
-            r"(?<![\w|\\])([\*]{2})(?!\s)(?m:(.+?))(?<![\s|\\])(\1)(?!\w)", {
-                1 : self.hStyles["hidden"],
-                2 : self.hStyles["bold"],
-                3 : self.hStyles["hidden"],
-            }
-        ))
-        self.hRules.append((
-            r"(?<![\w|_|\\])([_])(?!\s|\1)(?m:(.+?))(?<![\s|\\])(\1)(?!\w)", {
+            nwRegEx.FMT_I, {
                 1 : self.hStyles["hidden"],
                 2 : self.hStyles["italic"],
                 3 : self.hStyles["hidden"],
             }
         ))
         self.hRules.append((
-            r"(?<![\w|\\])([_]{2})(?!\s)(?m:(.+?))(?<![\s|\\])(\1)(?!\w)", {
+            nwRegEx.FMT_B, {
                 1 : self.hStyles["hidden"],
-                2 : self.hStyles["underline"],
+                2 : self.hStyles["bold"],
+                3 : self.hStyles["hidden"],
+            }
+        ))
+        self.hRules.append((
+            nwRegEx.FMT_BI, {
+                1 : self.hStyles["hidden"],
+                2 : self.hStyles["bolditalic"],
+                3 : self.hStyles["hidden"],
+            }
+        ))
+        self.hRules.append((
+            nwRegEx.FMT_ST, {
+                1 : self.hStyles["hidden"],
+                2 : self.hStyles["strike"],
                 3 : self.hStyles["hidden"],
             }
         ))
@@ -196,9 +202,10 @@ class GuiDocHighlighter(QSyntaxHighlighter):
         # Build a QRegExp for spell checker
         # Include additional characters that the highlighter should
         # consider to be word separators
-        wordSep  = "_+"
+        wordSep  = r"_\+"
+        wordSep += nwUnicode.U_ENDASH
         wordSep += nwUnicode.U_EMDASH
-        self.spellRx = QRegularExpression("\\b[^\\s%s]+\\b" % wordSep)
+        self.spellRx = QRegularExpression(r"\b[^\s"+wordSep+r"]+\b")
         self.spellRx.setPatternOptions(QRegularExpression.UseUnicodePropertiesOption)
 
         return True
@@ -233,7 +240,7 @@ class GuiDocHighlighter(QSyntaxHighlighter):
     def highlightBlock(self, theText):
         """Highlight a single block. Prefer to check first character for
         all formats that are defined by their initial characters. This
-        is significantly faster than running the regex checks we use for
+        is significantly faster than running the regex checks used for
         text paragraphs.
         """
         if self.theHandle is None or not theText:
@@ -244,9 +251,9 @@ class GuiDocHighlighter(QSyntaxHighlighter):
             isValid, theBits, thePos = self.theIndex.scanThis(theText)
             isGood = self.theIndex.checkThese(theBits, tItem)
             if isValid:
-                for n in range(len(theBits)):
+                for n, theBit in enumerate(theBits):
                     xPos = thePos[n]
-                    xLen = len(theBits[n])
+                    xLen = len(theBit)
                     if isGood[n]:
                         if n == 0:
                             self.setFormat(xPos, xLen, self.hStyles["keyword"])
@@ -279,11 +286,12 @@ class GuiDocHighlighter(QSyntaxHighlighter):
             self.setFormat(4, len(theText), self.hStyles["header4"])
 
         elif theText.startswith("%"): # Comments
-            toCheck = theText[1:].lstrip().lower()
+            toCheck = theText[1:].lstrip()
+            synTag  = toCheck[:9].lower()
             tLen = len(theText)
             cLen = len(toCheck)
             cOff = tLen - cLen
-            if toCheck.startswith("synopsis:"):
+            if synTag == "synopsis:":
                 self.setFormat(0, cOff+9, self.hStyles["modifier"])
                 self.setFormat(cOff+9, tLen, self.hStyles["hidden"])
             else:
@@ -341,7 +349,7 @@ class GuiDocHighlighter(QSyntaxHighlighter):
             if "underline" in fmtStyle:
                 theFormat.setFontUnderline(True)
             if "background" in fmtStyle:
-                theFormat.setBackground(QBrush(fmtCol,Qt.SolidPattern))
+                theFormat.setBackground(QBrush(fmtCol, Qt.SolidPattern))
 
         if fmtSize is not None:
             theFormat.setFontPointSize(round(fmtSize*self.mainConf.textSize))

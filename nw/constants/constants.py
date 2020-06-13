@@ -34,6 +34,15 @@ class nwConst():
 
 # END Class nwConst
 
+class nwRegEx():
+
+    FMT_B  = r"(?<![\w|\*|_|\\])([\*|_]{2})(?!\s|\*|_)(.+?)(?<![\s|\\])(\1)(?!\w)"
+    FMT_I  = r"(?<![\w|\*|_|\\])([\*|_])(?!\s|\*|_)(.+?)(?<![\s|\\])(\1)(?!\w)"
+    FMT_BI = r"(?<![\w|\*|\\])([\*]{3})(?!\s|\*)(.+?)(?<![\s|\\])(\1)(?!\w)"
+    FMT_ST = r"(?<![\w|~|\\])([~]{2})(?!\s|~)(.+?)(?<![\s|\\])(\1)(?!\w)"
+
+# END Class nwRegEx
+
 class nwFiles():
 
     PROJ_FILE   = "nwProject.nwx"
