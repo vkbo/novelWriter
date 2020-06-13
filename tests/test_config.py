@@ -70,6 +70,7 @@ def testConfigSetTreeColWidths(nwTemp,nwRef):
     assert theConf.setTreeColWidths([0, 0, 0])
     assert theConf.confChanged
     assert theConf.setTreeColWidths([120, 30, 50])
+    assert theConf.setProjColWidths([140, 55, 140])
     assert theConf.saveConfig()
     assert cmpFiles(tmpConf, refConf, [2])
     assert not theConf.confChanged
@@ -82,6 +83,8 @@ def testConfigSetPanePos(nwTemp,nwRef):
     assert theConf.confChanged
     assert theConf.setMainPanePos([300, 800])
     assert theConf.setDocPanePos([400, 400])
+    assert theConf.setViewPanePos([500, 150])
+    assert theConf.setOutlinePanePos([500, 150])
     assert theConf.saveConfig()
     assert cmpFiles(tmpConf, refConf, [2])
     assert not theConf.confChanged
@@ -92,8 +95,6 @@ def testConfigFlags(nwTemp,nwRef):
     refConf = path.join(nwRef, "novelwriter.conf")
     assert not theConf.setShowRefPanel(False)
     assert theConf.setShowRefPanel(True)
-    assert not theConf.setViewComments(False)
-    assert theConf.setViewComments(True)
     assert theConf.confChanged
     assert theConf.saveConfig()
     assert cmpFiles(tmpConf, refConf, [2])
