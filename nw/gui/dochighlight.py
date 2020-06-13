@@ -33,7 +33,7 @@ from PyQt5.QtGui import (
     QColor, QTextCharFormat, QFont, QSyntaxHighlighter, QBrush
 )
 
-from nw.constants import nwUnicode
+from nw.constants import nwUnicode, nwRegEx
 
 logger = logging.getLogger(__name__)
 
@@ -140,21 +140,21 @@ class GuiDocHighlighter(QSyntaxHighlighter):
 
         # Markdown
         self.hRules.append((
-            r"(?<![\w|\*|\\])([\*])(?!\s|\1)(.+?)(?<![\s|\\])(\1)(?!\w)", {
+            nwRegEx.FMT_I, {
                 1 : self.hStyles["hidden"],
                 2 : self.hStyles["italic"],
                 3 : self.hStyles["hidden"],
             }
         ))
         self.hRules.append((
-            r"(?<![\w|\*|\\])([\*]{2})(?!\s|\*)(.+?)(?<![\s|\\])(\1)(?!\w)", {
+            nwRegEx.FMT_B, {
                 1 : self.hStyles["hidden"],
                 2 : self.hStyles["bold"],
                 3 : self.hStyles["hidden"],
             }
         ))
         self.hRules.append((
-            r"(?<![\w|\*|\\])([\*]{3})(?!\s|\*)(.+?)(?<![\s|\\])(\1)(?!\w)", {
+            nwRegEx.FMT_BI, {
                 1 : self.hStyles["hidden"],
                 2 : self.hStyles["bolditalic"],
                 3 : self.hStyles["hidden"],
