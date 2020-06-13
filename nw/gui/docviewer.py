@@ -136,7 +136,7 @@ class GuiDocViewer(QTextBrowser):
         logger.debug("Generating preview for item %s" % tHandle)
         sPos = self.verticalScrollBar().value()
         aDoc = ToHtml(self.theProject, self.theParent)
-        aDoc.setPreview(True, self.mainConf.viewComments)
+        aDoc.setPreview(True, self.mainConf.viewComments, self.mainConf.viewSynopsis)
         aDoc.setLinkHeaders(True)
 
         # Be extra careful here to prevent crashes when first opening a
@@ -366,6 +366,10 @@ class GuiDocViewer(QTextBrowser):
             "  margin-left: 1em;"
             "  margin-right: 1em;"
             "}}\n"
+            ".synopsis {{"
+            "  color: rgb({mColR},{mColG},{mColB});"
+            "  font-wright: bold;"
+            "}}\n"
         ).format(
             textSize = self.mainConf.textSize,
             preSize  = self.mainConf.textSize*0.9,
@@ -387,6 +391,9 @@ class GuiDocViewer(QTextBrowser):
             kColR = self.theTheme.colKey[0],
             kColG = self.theTheme.colKey[1],
             kColB = self.theTheme.colKey[2],
+            mColR = self.theTheme.colMod[0],
+            mColG = self.theTheme.colMod[1],
+            mColB = self.theTheme.colMod[2],
         )
         self.qDocument.setDefaultStyleSheet(styleSheet)
 
