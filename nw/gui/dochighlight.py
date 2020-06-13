@@ -78,7 +78,6 @@ class GuiDocHighlighter(QSyntaxHighlighter):
         """Initialise the syntax highlighter, setting all the colour
         rules and building the regexes.
         """
-
         logger.debug("Setting up highlighting rules")
 
         self.colHead   = QColor(*self.theTheme.colHead)
@@ -108,8 +107,8 @@ class GuiDocHighlighter(QSyntaxHighlighter):
             "header4h"   : self._makeFormat(self.colHeadH, "bold", 1.2),
             "bold"       : self._makeFormat(self.colEmph,  "bold"),
             "italic"     : self._makeFormat(self.colEmph,  "italic"),
-            "strike"     : self._makeFormat(self.colEmph,  "strike"),
             "bolditalic" : self._makeFormat(self.colEmph, ("bold","italic")),
+            "strike"     : self._makeFormat(self.colEmph,  "strike"),
             "trailing"   : self._makeFormat(self.colTrail, "background"),
             "nobreak"    : self._makeFormat(self.colTrail, "background"),
             "dialogue1"  : self._makeFormat(self.colDialN),
@@ -131,7 +130,7 @@ class GuiDocHighlighter(QSyntaxHighlighter):
             }
         ))
 
-        # Non-breaking Space
+        # Non-Breaking Spaces
         self.hRules.append((
             "[%s]+" % nwUnicode.U_NBSP, {
                 0 : self.hStyles["nobreak"],
@@ -203,7 +202,7 @@ class GuiDocHighlighter(QSyntaxHighlighter):
         # Build a QRegExp for spell checker
         # Include additional characters that the highlighter should
         # consider to be word separators
-        wordSep  = "_\+"
+        wordSep  = r"_\+"
         wordSep += nwUnicode.U_ENDASH
         wordSep += nwUnicode.U_EMDASH
         self.spellRx = QRegularExpression(r"\b[^\s"+wordSep+r"]+\b")
@@ -241,7 +240,7 @@ class GuiDocHighlighter(QSyntaxHighlighter):
     def highlightBlock(self, theText):
         """Highlight a single block. Prefer to check first character for
         all formats that are defined by their initial characters. This
-        is significantly faster than running the regex checks we use for
+        is significantly faster than running the regex checks used for
         text paragraphs.
         """
         if self.theHandle is None or not theText:
@@ -252,9 +251,9 @@ class GuiDocHighlighter(QSyntaxHighlighter):
             isValid, theBits, thePos = self.theIndex.scanThis(theText)
             isGood = self.theIndex.checkThese(theBits, tItem)
             if isValid:
-                for n in range(len(theBits)):
+                for n, theBit in enumerate(theBits):
                     xPos = thePos[n]
-                    xLen = len(theBits[n])
+                    xLen = len(theBit)
                     if isGood[n]:
                         if n == 0:
                             self.setFormat(xPos, xLen, self.hStyles["keyword"])
@@ -287,11 +286,12 @@ class GuiDocHighlighter(QSyntaxHighlighter):
             self.setFormat(4, len(theText), self.hStyles["header4"])
 
         elif theText.startswith("%"): # Comments
-            toCheck = theText[1:].lstrip().lower()
+            toCheck = theText[1:].lstrip()
+            synTag  = toCheck[:9].lower()
             tLen = len(theText)
             cLen = len(toCheck)
             cOff = tLen - cLen
-            if toCheck.startswith("synopsis:"):
+            if synTag == "synopsis:":
                 self.setFormat(0, cOff+9, self.hStyles["modifier"])
                 self.setFormat(cOff+9, tLen, self.hStyles["hidden"])
             else:
@@ -349,7 +349,7 @@ class GuiDocHighlighter(QSyntaxHighlighter):
             if "underline" in fmtStyle:
                 theFormat.setFontUnderline(True)
             if "background" in fmtStyle:
-                theFormat.setBackground(QBrush(fmtCol,Qt.SolidPattern))
+                theFormat.setBackground(QBrush(fmtCol, Qt.SolidPattern))
 
         if fmtSize is not None:
             theFormat.setFontPointSize(round(fmtSize*self.mainConf.textSize))

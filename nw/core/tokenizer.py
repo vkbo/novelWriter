@@ -327,8 +327,9 @@ class Tokenizer():
                 tmpMarkdown.append("\n")
 
             elif aLine[0] == "%":
-                cLine = aLine[1:].strip()
-                if cLine.lower().startswith("synopsis:"):
+                cLine = aLine[1:].lstrip()
+                synTag = cLine[:9].lower()
+                if synTag == "synopsis:":
                     self.theTokens.append((
                         self.T_SYNOPSIS,
                         nLine,
