@@ -34,7 +34,7 @@ from PyQt5.QtCore import QRegularExpression
 
 from nw.core.document import NWDoc
 from nw.core.tools import numberToWord
-from nw.constants import nwItemLayout, nwItemType
+from nw.constants import nwItemLayout, nwItemType, nwRegEx
 
 logger = logging.getLogger(__name__)
 
@@ -298,17 +298,11 @@ class Tokenizer():
         """
 
         # RegExes for adding formatting tags within text lines
-        # Keep in sync with the DocHighlighter class
-        rxFormats = [(
-            QRegularExpression(r"(?<![\w|\*|\\])([\*]{3})(?!\s|\*)(.+?)(?<![\s|\\])(\1)(?!\w)"),
-            [None, self.FMT_S_B, None, self.FMT_S_E]
-        ),(
-            QRegularExpression(r"(?<![\w|\*|\\])([\*]{2})(?!\s|\*)(.+?)(?<![\s|\\])(\1)(?!\w)"),
-            [None, self.FMT_B_B, None, self.FMT_B_E]
-        ),(
-            QRegularExpression(r"(?<![\w|\*|\\])([\*])(?!\s|\1)(.+?)(?<![\s|\\])(\1)(?!\w)"),
-            [None, self.FMT_I_B, None, self.FMT_I_E]
-        )]
+        rxFormats = [
+            (QRegularExpression(nwRegEx.FMT_BI), [None, self.FMT_S_B, None, self.FMT_S_E]),
+            (QRegularExpression(nwRegEx.FMT_B),  [None, self.FMT_B_B, None, self.FMT_B_E]),
+            (QRegularExpression(nwRegEx.FMT_I),  [None, self.FMT_I_B, None, self.FMT_I_E]),
+        ]
 
         self.theTokens = []
         self.theMarkdown = ""
