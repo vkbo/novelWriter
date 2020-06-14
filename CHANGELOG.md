@@ -1,17 +1,36 @@
 # novelWriter ChangeLog
 
-## Version 0.8 [2020-xx-xx]
+## Version 0.8 [2020-06-14]
+
+**Bugfixes**
+
+* The HTML converter, used for the document view window as well as the Build Novel Project tool, would crash novelWriter if a file included an `@tag:` entry with no actual tag name following it. In addition to fixing this issue, the call to the converter is now also wrapped in a `try/except` construct to prevent crashes caused by potential edge cases in document content. If the rendering fails, the view window will show an error message instead of the intended document. Issue #298, PR #299.
+* Clipping of the descended part of fonts in the document title bar has been fixed. Issue #295, PR #300.
+* When clicking a tag in the editor while the viewer was closed, nothing would happen. Now, the viewer is first opened before navigating to the source of the reference tag. Issue #294, PR #306.
+* The missing optional rendering of synopsis comments in the document view panel has been added. Mentioned in Issue #301, PR #311.
 
 **User Interface**
 
 * A details panel below the Outline tree view has been added. The panel shows all the information of a selected row in the tree view above, including hidden columns, and some additional information. The tags and references also become clickable links that when clicked will open in the document viewer. PR #281.
+* Icons have been added to the Title and Document columns in the Outline. The titles get a new icon indicating the header level, while the documents get the already existing document icon. PR #302.
 * Added a context menu to the project tree for easier access to some of the most use actions on the tree. PR #282.
-* Improved the support for High DPI screens. Margins and box sizes that are hardcoded should now scale. User settings should also scale back and forth when switching between scale factors. Issue #280, PR #285.
+* Improved the support for High DPI screens. Margins and box sizes that were hardcoded should now scale. User settings should also scale back and forth when switching between scale factors. Issue #280, PR #285.
+* The total edit time of a project is no displayed on the Details tab of the Project Settings dialog. PR #290.
+* The title bar in the document editor now has a full screen button and a close button, and in the document viewer a reload button and a close button. The full screen button toggles the distraction free mode, and the reload button regenerates the document being viewed to update any changes that may have been made to it. PRs #293, #300, #303 and #306.
+* The References panel below the document viewer has been redesigned. It now sits in a resizeable panel below the document, and its controls sit in a footer bar in the document itself. The functionality of the feature is otherwise unchanged, but the buttons have received new icons. PRs #304 and #306.
+* The option to render comments and synopsis in the document view panel has been added to Preferences. The toggle option for comments that was previously in the menu has been removed. PR #311.
 
 **Project Structure**
 
 * The way GUI states of switches, column widths, etc., is saved has been improved a bit during the High DPI updates. PRs #285 and #286.
 * Some settings have been moved around to more appropriate sections in the project XML file. The project load function still reads the values from the previous location if opening an older project file. PR #288.
+* A file opened in the Trash folder is no longer "Read Only". The feature was rather arbitrary, and also required a GUI element to notify the user of the fact. Any file can now be edited. PR #292.
+
+**Code Structure**
+
+* The core classes making up the project itself were previously merged into a single source code file. This file was getting a bit big, so they have been split up again. PR #289.
+* A lot of Inkscape meta data has been removed from the SVG icons, reducing the file sizes quite a bit. PR #291.
+* Opening and closing of files are now properly handled also when using the ConfigParser tool. Previously, files were not properly closed after the content had been read, leaving the handles open until the Python garbage collector handled them. PR #300.
 
 
 ## Version 0.7.1 [2020-06-06]
