@@ -66,7 +66,7 @@ class ToHtml(Tokenizer):
     #  Setters
     ##
 
-    def setPreview(self, forPreview, doComments):
+    def setPreview(self, forPreview, doComments, doSynopsis):
         """If we're using this class to generate markdown preview, we
         need to make a few changes to formatting, which is managed by
         these flags.
@@ -75,6 +75,7 @@ class ToHtml(Tokenizer):
             self.genMode    = self.M_PREVIEW
             self.doKeywords = True
             self.doComments = doComments
+            self.doSynopsis = doSynopsis
             self.repDict["\t"] = "&nbsp;"*8
             self._buildRegEx()
         return
@@ -301,18 +302,18 @@ class ToHtml(Tokenizer):
     def _formatSynopsis(self, tText):
         """Apply HTML formatting to synopsis.
         """
-        if self.genMode == self.M_EXPORT:
-            return "<p class='synopsis'><strong>Synopsis: </strong>%s</p>\n" % tText
+        if self.genMode == self.M_PREVIEW:
+            return "<p class='comment'><span class='synopsis'>Synopsis: </span>%s</p>\n" % tText
         else:
-            return "<p class='comment'>%s</p>\n" % tText
+            return "<p class='synopsis'><strong>Synopsis: </strong>%s</p>\n" % tText
 
     def _formatComments(self, tText):
         """Apply HTML formatting to comments.
         """
-        if self.genMode == self.M_EXPORT:
-            return "<p class='comment'><strong>Comment: </strong>%s</p>\n" % tText
-        else:
+        if self.genMode == self.M_PREVIEW:
             return "<p class='comment'>%s</p>\n" % tText
+        else:
+            return "<p class='comment'><strong>Comment: </strong>%s</p>\n" % tText
 
     def _formatKeywords(self, tText):
         """Apply HTML formatting to keywords.

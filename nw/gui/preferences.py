@@ -62,7 +62,7 @@ class GuiPreferences(PagedDialog):
         self.tabAutoRep = GuiConfigEditAutoReplaceTab(self.theParent)
 
         self.addTab(self.tabGeneral, "General")
-        self.addTab(self.tabLayout,  "Layout")
+        self.addTab(self.tabLayout,  "Text Layout")
         self.addTab(self.tabEditing, "Editor")
         self.addTab(self.tabAutoRep, "Auto-Replace")
 
@@ -506,6 +506,26 @@ class GuiConfigEditLayoutTab(QWidget):
             self.showLineEndings
         )
 
+        # Render Options
+        # ==============
+        self.mainForm.addGroupLabel("Render Text")
+
+        ## Render Comments
+        self.viewComments = QSwitch()
+        self.viewComments.setChecked(self.mainConf.viewComments)
+        self.mainForm.addRow(
+            "Render comments in document view panel",
+            self.viewComments
+        )
+
+        ## Render Synopsis
+        self.viewSynopsis = QSwitch()
+        self.viewSynopsis.setChecked(self.mainConf.viewSynopsis)
+        self.mainForm.addRow(
+            "Render synopsis in document view panel",
+            self.viewSynopsis
+        )
+
         return
 
     def saveValues(self):
@@ -523,6 +543,8 @@ class GuiConfigEditLayoutTab(QWidget):
         tabWidth        = self.tabWidth.value()
         showTabsNSpaces = self.showTabsNSpaces.isChecked()
         showLineEndings = self.showLineEndings.isChecked()
+        viewComments    = self.viewComments.isChecked()
+        viewSynopsis    = self.viewSynopsis.isChecked()
 
         self.mainConf.textFont        = textFont
         self.mainConf.textSize        = textSize
@@ -534,6 +556,8 @@ class GuiConfigEditLayoutTab(QWidget):
         self.mainConf.tabWidth        = tabWidth
         self.mainConf.showTabsNSpaces = showTabsNSpaces
         self.mainConf.showLineEndings = showLineEndings
+        self.mainConf.viewComments    = viewComments
+        self.mainConf.viewSynopsis    = viewSynopsis
 
         self.mainConf.confChanged = True
 

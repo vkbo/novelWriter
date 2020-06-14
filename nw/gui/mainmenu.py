@@ -114,11 +114,6 @@ class GuiMainMenu(QMenuBar):
         self.theProject.setAutoOutline(theMode)
         return True
 
-    def _toggleViewComments(self):
-        self.mainConf.setViewComments(self.aViewDocComments.isChecked())
-        self.theParent.docViewer.reloadText()
-        return True
-
     def _showAbout(self):
         """Show the about dialog.
         """
@@ -313,14 +308,6 @@ class GuiMainMenu(QMenuBar):
         self.aCloseView.setShortcut("Ctrl+Shift+R")
         self.aCloseView.triggered.connect(self.theParent.closeDocViewer)
         self.docuMenu.addAction(self.aCloseView)
-
-        # Document > Toggle View Comments
-        self.aViewDocComments = QAction("Show Comments", self)
-        self.aViewDocComments.setStatusTip("Show comments in view panel")
-        self.aViewDocComments.setCheckable(True)
-        self.aViewDocComments.setChecked(self.mainConf.viewComments)
-        self.aViewDocComments.toggled.connect(self._toggleViewComments)
-        self.docuMenu.addAction(self.aViewDocComments)
 
         # Document > Separator
         self.docuMenu.addSeparator()
