@@ -34,7 +34,7 @@ from time import time
 
 from PyQt5.QtCore import Qt, QSize, QThread, QTimer, pyqtSlot
 from PyQt5.QtGui import (
-    QTextCursor, QTextOption, QKeySequence, QFont, QColor, QPalette,
+    QTextCursor, QTextOption, QKeySequence, QFont, QColor, QPalette, QIcon,
     QTextDocument, QCursor
 )
 from PyQt5.QtWidgets import (
@@ -45,7 +45,7 @@ from PyQt5.QtWidgets import (
 from nw.core import NWDoc
 from nw.gui.dochighlight import GuiDocHighlighter
 from nw.core import NWSpellSimple, countWords
-from nw.constants import nwUnicode, nwDocAction
+from nw.constants import nwUnicode, nwDocAction, nwItemClass
 
 logger = logging.getLogger(__name__)
 
@@ -87,6 +87,7 @@ class GuiDocEditor(QTextEdit):
 
         # Document Title
         self.docHeader = GuiDocEditHeader(self)
+        self.docFooter = GuiDocEditFooter(self)
 
         # Syntax
         self.hLight = GuiDocHighlighter(self.qDocument, self.theParent)
@@ -267,6 +268,7 @@ class GuiDocEditor(QTextEdit):
 
         self.setReadOnly(False)
         self.docHeader.setTitleFromHandle(self.theHandle)
+        self.docFooter.setHandle(self.theHandle)
         self.updateDocMargins()
         self.hLight.spellCheck = spTemp
         qApp.restoreOverrideCursor()
@@ -332,17 +334,19 @@ class GuiDocEditor(QTextEdit):
         tB = self.frameWidth()
         tW = self.width() - 2*tB - sW
         tH = self.docHeader.height()
+        fH = self.docFooter.height()
+        fY = self.height() - fH - tB
         tT = cM - tH
+        bT = cM - fH
         self.docHeader.setGeometry(tB, tB, tW, tH)
-        self.setViewportMargins(0, tH, 0, 0)
+        self.docFooter.setGeometry(tB, fY, tW, fH)
+        self.setViewportMargins(0, tH, 0, fH)
 
         docFormat = self.qDocument.rootFrame().frameFormat()
         docFormat.setLeftMargin(tM)
         docFormat.setRightMargin(tM)
-        if tT > 0:
-            docFormat.setTopMargin(tT)
-        else:
-            docFormat.setTopMargin(0)
+        docFormat.setTopMargin(max(0, tT))
+        docFormat.setBottomMargin(max(0, bT))
 
         # Updating root frame triggers a QTextDocument->contentsChange
         # signal, which we do not want as it re-runs the syntax
@@ -1230,6 +1234,11 @@ class WordCounter(QThread):
 
 ## END Class WordCounter
 
+# =============================================================================================== #
+#  The Embedded Document Header
+#  Only used by DocEditor, and is at a fixed position in the QTextBrowser's viewport
+# =============================================================================================== #
+
 class GuiDocEditHeader(QWidget):
 
     def __init__(self, docEditor):
@@ -1384,3 +1393,105 @@ class GuiDocEditHeader(QWidget):
         return
 
 # END Class GuiDocEditHeader
+
+# =============================================================================================== #
+#  The Embedded Document Footer
+#  Only used by DocEditor, and is at a fixed position in the QTextEdit's viewport
+# =============================================================================================== #
+
+class GuiDocEditFooter(QWidget):
+
+    def __init__(self, docEditor):
+        QWidget.__init__(self, docEditor)
+
+        logger.debug("Initialising GuiDocEditFooter ...")
+
+        self.mainConf   = nw.CONFIG
+        self.docEditor  = docEditor
+        self.theParent  = docEditor.theParent
+        self.theProject = docEditor.theProject
+        self.theTheme   = docEditor.theTheme
+        self.optState   = docEditor.theProject.optState
+        self.theHandle  = None
+
+        # Make a QPalette that matches the Syntax Theme
+        self.thePalette = QPalette()
+        self.thePalette.setColor(QPalette.Window, QColor(*self.theTheme.colBack))
+        self.thePalette.setColor(QPalette.Text, QColor(*self.theTheme.colText))
+
+        self.sPx = int(round(0.8*self.theTheme.baseIconSize))
+        fPx = int(0.9*self.theTheme.fontPixelSize)
+        bSp = self.mainConf.pxInt(2)
+        hSp = self.mainConf.pxInt(8)
+
+        lblFont = self.font()
+        lblFont.setPointSizeF(0.9*self.theTheme.fontPointSize)
+
+        # Main Widget Settings
+        self.setContentsMargins(0, 0, 0, 0)
+        self.setAutoFillBackground(True)
+        self.setPalette(self.thePalette)
+
+        buttonStyle = (
+            "QToolButton {{border: none; background: transparent;}} "
+            "QToolButton:hover {{border: none; background: rgba({0},{1},{2},0.2);}}"
+        ).format(*self.theTheme.colText)
+
+        # Status
+        self.statusIcon = QLabel("")
+        self.statusIcon.setAlignment(Qt.AlignLeft | Qt.AlignBaseline)
+
+        self.statusName = QLabel("Status")
+        self.statusName.setIndent(0)
+        self.statusName.setMargin(0)
+        self.statusName.setContentsMargins(0, 0, 0, 0)
+        self.statusName.setAutoFillBackground(True)
+        self.statusName.setFixedHeight(fPx)
+        self.statusName.setAlignment(Qt.AlignLeft | Qt.AlignTop)
+        self.statusName.setPalette(self.thePalette)
+        self.statusName.setFont(lblFont)
+        self.statusName.setAlignment(Qt.AlignLeft | Qt.AlignBaseline)
+
+        # Assemble Layout
+        self.outerBox = QHBoxLayout()
+        self.outerBox.setSpacing(bSp)
+        self.outerBox.addWidget(self.statusIcon)
+        self.outerBox.addWidget(self.statusName)
+        self.outerBox.addStretch(1)
+        self.setLayout(self.outerBox)
+
+        logger.debug("GuiDocEditFooter initialisation complete")
+
+        return
+
+    ##
+    #  Methods
+    ##
+
+    def setHandle(self, tHandle):
+        """Set the handle that will populate the footer's data.
+        """
+        self.theHandle = tHandle
+        nwItem = self.theProject.projTree[tHandle]
+        if nwItem is None:
+            return False
+
+        iStatus = nwItem.itemStatus
+        if nwItem.itemClass == nwItemClass.NOVEL:
+            iStatus = self.theProject.statusItems.checkEntry(iStatus)
+            theIcon = self.theParent.statusIcons[iStatus]
+        else:
+            iStatus = self.theProject.importItems.checkEntry(iStatus)
+            theIcon = self.theParent.importIcons[iStatus]
+
+        self.statusIcon.setPixmap(theIcon.pixmap(self.sPx, self.sPx))
+        self.statusName.setText(nwItem.itemStatus)
+
+        return True
+
+    def updateStatus(self):
+        """Update the content of the status and importance menus.
+        """
+        return
+
+# END Class GuiDocEditFooter

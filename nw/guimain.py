@@ -304,6 +304,7 @@ class GuiMain(QMainWindow):
             self.saveProject()
             self.hasProject = True
             self.statusBar.setRefTime(self.theProject.projOpened)
+            self.docEditor.docFooter.updateStatus()
         else:
             return False
 
@@ -423,6 +424,7 @@ class GuiMain(QMainWindow):
         self.rebuildTree()
         self.docEditor.setDictionaries()
         self.docEditor.setSpellCheck(self.theProject.spellCheck)
+        self.docEditor.docFooter.updateStatus()
         self.mainMenu.setAutoOutline(self.theProject.autoOutline)
         self.statusBar.setRefTime(self.theProject.projOpened)
 
