@@ -43,7 +43,7 @@ from nw.gui import (
     GuiBuildNovel, GuiDocEditor, GuiDocMerge, GuiDocSplit, GuiDocViewDetails,
     GuiDocViewer, GuiItemDetails, GuiItemEditor, GuiMainMenu, GuiMainStatus,
     GuiOutline, GuiOutlineDetails, GuiPreferences, GuiProjectLoad,
-    GuiProjectSettings, GuiProjectTree, GuiSearchBar, GuiSessionLogView, GuiTheme
+    GuiProjectSettings, GuiProjectTree, GuiSessionLogView, GuiTheme
 )
 from nw.core import NWProject, NWDoc, NWIndex
 from nw.constants import nwFiles, nwItemType, nwAlert
@@ -93,7 +93,6 @@ class GuiMain(QMainWindow):
         self.docEditor = GuiDocEditor(self)
         self.viewMeta  = GuiDocViewDetails(self)
         self.docViewer = GuiDocViewer(self)
-        self.searchBar = GuiSearchBar(self)
         self.treeMeta  = GuiItemDetails(self)
         self.projView  = GuiOutline(self)
         self.projMeta  = GuiOutlineDetails(self)
@@ -115,7 +114,6 @@ class GuiMain(QMainWindow):
         self.docEdit = QVBoxLayout()
         self.docEdit.setContentsMargins(0, 0, 0, 0)
         self.docEdit.setSpacing(self.mainConf.pxInt(2))
-        self.docEdit.addWidget(self.searchBar)
         self.docEdit.addWidget(self.docEditor)
         self.editPane.setLayout(self.docEdit)
 
@@ -168,7 +166,7 @@ class GuiMain(QMainWindow):
         self.splitView.setCollapsible(self.idxViewMeta, False)
 
         self.splitView.setVisible(False)
-        self.searchBar.setVisible(False)
+        self.docEditor.closeSearch()
 
         # Build the Tree View
         self.treeView.itemSelectionChanged.connect(self._treeSingleClick)
@@ -1075,8 +1073,8 @@ class GuiMain(QMainWindow):
         """When the escape key is pressed somewhere in the main window,
         do the following, in order:
         """
-        if self.searchBar.isVisible():
-            self.searchBar.setVisible(False)
+        if self.docEditor.docSearch.isVisible():
+            self.docEditor.closeSearch()
             return
         elif self.isZenMode:
             self.toggleZenMode()
