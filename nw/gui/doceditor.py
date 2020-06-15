@@ -41,7 +41,7 @@ from PyQt5.QtGui import (
 )
 from PyQt5.QtWidgets import (
     qApp, QTextEdit, QAction, QMenu, QShortcut, QMessageBox, QWidget, QLabel,
-    QToolButton, QHBoxLayout, QGridLayout, QLineEdit, QPushButton, QFrame, QVBoxLayout
+    QToolButton, QHBoxLayout, QGridLayout, QLineEdit, QPushButton, QFrame, QVBoxLayout, QSizePolicy
 )
 
 from nw.core import NWDoc
@@ -337,9 +337,13 @@ class GuiDocEditor(QTextEdit):
         tH = self.docHeader.height()
         tT = cM - tH
 
-        rH = self.docSearch.height()
-        rW = self.docSearch.width()
-        rL = wW - sW - rW - tB
+        if self.docSearch.isVisible():
+            rH = self.docSearch.height()
+            rW = self.docSearch.width()
+            rL = wW - sW - rW - tB
+        else:
+            rH = 0
+            rL = 0
 
         self.docHeader.setGeometry(tB, tB, tW, tH)
         self.docSearch.move(rL, tB)
@@ -581,8 +585,7 @@ class GuiDocEditor(QTextEdit):
     def closeSearch(self):
         """Close the search box.
         """
-        self.docSearch.setVisible(False)
-        self.updateDocMargins()
+        self.docSearch.closeSearch()
         return self.docSearch.isVisible()
 
     ##
@@ -1159,24 +1162,36 @@ class GuiDocEditor(QTextEdit):
         """Searches for the next occurrence of the search bar text in
         the document. Wraps back to the top if not found.
         """
+        if not self.docSearch.isVisible():
+            self._beginSearch()
+            return
+
         searchFor = self.docSearch.getSearchText()
         wasFound  = self.find(searchFor)
         if not wasFound:
             theCursor = self.textCursor()
             theCursor.movePosition(QTextCursor.Start)
             self.setTextCursor(theCursor)
+            self.find(searchFor)
+
         return
 
     def _findPrev(self):
         """Searches for the previous occurrence of the search bar text
         in the document. Wraps back to the end if not found.
         """
+        if not self.docSearch.isVisible():
+            self._beginSearch()
+            return
+
         searchFor = self.docSearch.getSearchText()
         wasFound  = self.find(searchFor, QTextDocument.FindBackward)
         if not wasFound:
             theCursor = self.textCursor()
             theCursor.movePosition(QTextCursor.End)
             self.setTextCursor(theCursor)
+            self.find(searchFor, QTextDocument.FindBackward)
+
         return
 
     def _replaceNext(self):
@@ -1184,6 +1199,10 @@ class GuiDocEditor(QTextEdit):
         the document and replaces it with the replace text. Wraps back
         to the top if not found.
         """
+        if not self.docSearch.isVisible():
+            self._beginSearch()
+            return
+
         theCursor = self.textCursor()
         searchFor = self.docSearch.getSearchText()
         replWith  = self.docSearch.getReplaceText()
@@ -1200,6 +1219,7 @@ class GuiDocEditor(QTextEdit):
             ))
         if searchFor != "":
             self._findNext()
+
         return
 
     def _setupSpellChecking(self):
@@ -1266,32 +1286,45 @@ class GuiDocEditSearch(QWidget):
 
         self.repVisible = False
 
+        mPx = self.mainConf.pxInt(6)
         fPx = int(0.9*self.theTheme.fontPixelSize)
         boxFont = self.theTheme.guiFont
         boxFont.setPointSizeF(0.9*self.theTheme.fontPointSize)
 
-        # self.setContentsMargins(0, 0, 0, 0)
-        # self.setFrameStyle(QFrame.Box)
+        self.setContentsMargins(mPx, mPx, mPx, mPx)
         self.setAutoFillBackground(True)
 
         self.mainBox = QGridLayout(self)
         self.setLayout(self.mainBox)
 
+        # Text Boxes
+        # ==========
         self.searchBox = QLineEdit()
         self.searchBox.setFont(boxFont)
+        self.searchBox.returnPressed.connect(self._doSearch)
 
-        self.replaceBox    = QLineEdit()
+        self.replaceBox = QLineEdit()
         self.replaceBox.setFont(boxFont)
+        self.replaceBox.returnPressed.connect(self._doSearch)
+
+        # Buttons
+        # =======
+        bPx = self.searchBox.sizeHint().height()
+
+        self.searchButton = QPushButton(self.theTheme.getIcon("search"),"")
+        self.searchButton.setFixedSize(QSize(bPx, bPx))
+        self.searchButton.setToolTip("Find in current document")
+        self.searchButton.clicked.connect(self._doSearch)
+
+        self.replaceButton = QPushButton(self.theTheme.getIcon("search-replace"),"")
+        self.replaceButton.setFixedSize(QSize(bPx, bPx))
+        self.replaceButton.setToolTip("Find and replace in current document")
+        self.replaceButton.clicked.connect(self._doReplace)
 
         self.closeButton = QPushButton(self.theTheme.getIcon("close"),"")
-        self.searchButton = QPushButton(self.theTheme.getIcon("search"),"")
-        self.replaceButton = QPushButton(self.theTheme.getIcon("search-replace"),"")
-
+        self.closeButton.setFixedSize(QSize(bPx, bPx))
+        self.closeButton.setToolTip("Close search tool")
         self.closeButton.clicked.connect(self._doClose)
-        self.searchButton.clicked.connect(self._doSearch)
-        self.replaceButton.clicked.connect(self._doReplace)
-        self.searchBox.returnPressed.connect(self._doSearch)
-        self.replaceBox.returnPressed.connect(self._doSearch)
 
         self.mainBox.addWidget(self.searchBox,     0, 0)
         self.mainBox.addWidget(self.searchButton,  0, 1)
@@ -1304,18 +1337,27 @@ class GuiDocEditSearch(QWidget):
         self.mainBox.setColumnStretch(2, 0)
         self.mainBox.setColumnStretch(3, 0)
         self.mainBox.setColumnStretch(4, 0)
-        self.mainBox.setVerticalSpacing(0)
-        self.mainBox.setHorizontalSpacing(2)
-        # self.mainBox.setContentsMargins(0, 0, 0, 0)
+        self.mainBox.setSpacing(self.mainConf.pxInt(2))
+        self.mainBox.setContentsMargins(0, 0, 0, 0)
 
-        boxWidth = 16*self.theTheme.textNWidth
+        boxWidth = 18*self.theTheme.textNWidth
         self.searchBox.setFixedWidth(boxWidth)
         self.replaceBox.setFixedWidth(boxWidth)
+        self.adjustSize()
 
-        # self._replaceVisible(False)
+        self._replaceVisible(False)
 
         logger.debug("GuiDocEditSearch initialisation complete")
 
+        return
+
+    def closeSearch(self):
+        """Close the search box.
+        """
+        self._replaceVisible(False)
+        self.setVisible(False)
+        self.docEditor.updateDocMargins()
+        self.docEditor.setFocus()
         return
 
     ##
@@ -1358,8 +1400,7 @@ class GuiDocEditSearch(QWidget):
     def _doClose(self):
         """Hide the search/replace bar.
         """
-        self._replaceVisible(False)
-        self.docEditor.closeSearch()
+        self.closeSearch()
         return
 
     def _doSearch(self):
@@ -1388,6 +1429,7 @@ class GuiDocEditSearch(QWidget):
         self.replaceBox.setVisible(isVisible)
         self.replaceButton.setVisible(isVisible)
         self.repVisible = isVisible
+        self.adjustSize()
         return True
 
 # END Class GuiDocEditSearch
