@@ -42,8 +42,8 @@ from PyQt5.QtWidgets import (
 from nw.gui import (
     GuiBuildNovel, GuiDocEditor, GuiDocMerge, GuiDocSplit, GuiDocViewDetails,
     GuiDocViewer, GuiItemDetails, GuiItemEditor, GuiMainMenu, GuiMainStatus,
-    GuiOutline, GuiOutlineDetails, GuiPreferences, GuiProjectLoad,
-    GuiProjectSettings, GuiProjectTree, GuiSessionLogView, GuiTheme
+    GuiOutline, GuiOutlineDetails, GuiPreferences, GuiProjectLoad, GuiTheme,
+    GuiProjectSettings, GuiProjectTree, GuiSessionLogView
 )
 from nw.core import NWProject, NWDoc, NWIndex
 from nw.constants import nwFiles, nwItemType, nwAlert
@@ -110,13 +110,6 @@ class GuiMain(QMainWindow):
         self.treeBox.addWidget(self.treeMeta)
         self.treePane.setLayout(self.treeBox)
 
-        self.editPane = QWidget()
-        self.docEdit = QVBoxLayout()
-        self.docEdit.setContentsMargins(0, 0, 0, 0)
-        self.docEdit.setSpacing(self.mainConf.pxInt(2))
-        self.docEdit.addWidget(self.docEditor)
-        self.editPane.setLayout(self.docEdit)
-
         self.splitView = QSplitter(Qt.Vertical)
         self.splitView.addWidget(self.docViewer)
         self.splitView.addWidget(self.viewMeta)
@@ -124,7 +117,7 @@ class GuiMain(QMainWindow):
 
         self.splitDocs = QSplitter(Qt.Horizontal)
         self.splitDocs.setOpaqueResize(False)
-        self.splitDocs.addWidget(self.editPane)
+        self.splitDocs.addWidget(self.docEditor)
         self.splitDocs.addWidget(self.splitView)
 
         self.splitOutline = QSplitter(Qt.Vertical)
@@ -151,7 +144,7 @@ class GuiMain(QMainWindow):
 
         self.idxTree     = self.splitMain.indexOf(self.treePane)
         self.idxMain     = self.splitMain.indexOf(self.tabWidget)
-        self.idxEditor   = self.splitDocs.indexOf(self.editPane)
+        self.idxEditor   = self.splitDocs.indexOf(self.docEditor)
         self.idxViewer   = self.splitDocs.indexOf(self.splitView)
         self.idxViewDoc  = self.splitView.indexOf(self.docViewer)
         self.idxViewMeta = self.splitView.indexOf(self.viewMeta)
@@ -599,15 +592,13 @@ class GuiMain(QMainWindow):
         return True
 
     def passDocumentAction(self, theAction):
-        """Pass on document action theAction to whatever document has
-        the focus. If no document has focus, the action is discarded.
+        """Pass on document action theAction to the document viewer if
+        it has focus, otherwise pass it to the document editor.
         """
-        if self.docEditor.hasFocus():
-            self.docEditor.docAction(theAction)
-        elif self.docViewer.hasFocus():
+        if self.docViewer.hasFocus():
             self.docViewer.docAction(theAction)
         else:
-            logger.debug("Document action requested, but no document has focus")
+            self.docEditor.docAction(theAction)
         return True
 
     ##
