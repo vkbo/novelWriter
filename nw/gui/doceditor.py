@@ -7,7 +7,7 @@
 
  File History:
  Created: 2018-09-29 [0.0.1] GuiDocEditor
- Created: 2019-04-22 [0.0.1] WordCounter
+ Created: 2019-04-22 [0.0.1] BackgroundWordCounter
  Created: 2020-04-25 [0.4.5] GuiDocEditHeader
 
  This file is a part of novelWriter
@@ -126,7 +126,7 @@ class GuiDocEditor(QTextEdit):
         self.wcTimer.setInterval(int(self.wcInterval*1000))
         self.wcTimer.timeout.connect(self._runCounter)
 
-        self.wCounter = WordCounter(self)
+        self.wCounter = BackgroundWordCounter(self)
         self.wCounter.finished.connect(self._updateCounts)
 
         self.initEditor()
@@ -338,11 +338,7 @@ class GuiDocEditor(QTextEdit):
 
         docFormat = self.qDocument.rootFrame().frameFormat()
         docFormat.setLeftMargin(tM)
-        docFormat.setRightMargin(tM)
-        if tT > 0:
-            docFormat.setTopMargin(tT)
-        else:
-            docFormat.setTopMargin(0)
+        docFormat.setTopMargin(max(0, tT))
 
         # Updating root frame triggers a QTextDocument->contentsChange
         # signal, which we do not want as it re-runs the syntax
@@ -1205,7 +1201,12 @@ class GuiDocEditor(QTextEdit):
 
 # END Class GuiDocEditor
 
-class WordCounter(QThread):
+# =============================================================================================== #
+#  The Off GUI Thread Word Counter
+#  Runs the word counter in the background for the doCEditor
+# =============================================================================================== #
+
+class BackgroundWordCounter(QThread):
 
     def __init__(self, theParent):
         QThread.__init__(self, theParent)
@@ -1228,7 +1229,12 @@ class WordCounter(QThread):
 
         return
 
-## END Class WordCounter
+## END Class BackgroundWordCounter
+
+# =============================================================================================== #
+#  The Embedded Document Header
+#  Only used by DocEditor, and is at a fixed position in the QTextEdit's viewport
+# =============================================================================================== #
 
 class GuiDocEditHeader(QWidget):
 

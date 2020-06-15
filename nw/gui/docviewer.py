@@ -236,13 +236,14 @@ class GuiDocViewer(QTextBrowser):
         else:
             sW = 0
 
+        cM = self.mainConf.getTextMargin()
         tB = self.frameWidth()
         tW = self.width() - 2*tB - sW
         tH = self.docHeader.height()
         fH = self.docFooter.height()
         fY = self.height() - fH - tB
-        tT = self.mainConf.getTextMargin() - tH
-        bT = self.mainConf.getTextMargin() - fH
+        tT = cM - tH
+        bT = cM - fH
         self.docHeader.setGeometry(tB, tB, tW, tH)
         self.docFooter.setGeometry(tB, fY, tW, fH)
         self.setViewportMargins(0, tH, 0, fH)
@@ -558,16 +559,16 @@ class GuiDocViewHeader(QWidget):
 
 class GuiDocViewFooter(QWidget):
 
-    def __init__(self, theParent):
-        QWidget.__init__(self, theParent)
+    def __init__(self, docViewer):
+        QWidget.__init__(self, docViewer)
 
         logger.debug("Initialising GuiDocViewFooter ...")
 
         self.mainConf  = nw.CONFIG
-        self.theParent = theParent
-        self.theTheme  = theParent.theTheme
-        self.optState  = theParent.theProject.optState
-        self.viewMeta  = theParent.theParent.viewMeta
+        self.docViewer = docViewer
+        self.theParent = docViewer.theParent
+        self.theTheme  = docViewer.theTheme
+        self.viewMeta  = docViewer.theParent.viewMeta
         self.theHandle = None
 
         # Make a QPalette that matches the Syntax Theme
@@ -669,9 +670,9 @@ class GuiDocViewFooter(QWidget):
         """Toggle the sticky flag for the reference panel.
         """
         logger.verbose("Reference sticky is %s" % str(theState))
-        self.theParent.stickyRef = theState
-        if not theState and self.theParent.theHandle is not None:
-            self.viewMeta.refreshReferences(self.theParent.theHandle)
+        self.docViewer.stickyRef = theState
+        if not theState and self.docViewer.theHandle is not None:
+            self.viewMeta.refreshReferences(self.docViewer.theHandle)
         return
 
 # END Class GuiDocViewFooter
