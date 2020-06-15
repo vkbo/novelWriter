@@ -116,7 +116,6 @@ class GuiMain(QMainWindow):
         self.splitView.setSizes(self.mainConf.getViewPanePos())
 
         self.splitDocs = QSplitter(Qt.Horizontal)
-        self.splitDocs.setOpaqueResize(False)
         self.splitDocs.addWidget(self.docEditor)
         self.splitDocs.addWidget(self.splitView)
 
@@ -135,7 +134,6 @@ class GuiMain(QMainWindow):
         xCM = self.mainConf.pxInt(4)
         self.splitMain = QSplitter(Qt.Horizontal)
         self.splitMain.setContentsMargins(xCM, xCM, xCM, xCM)
-        self.splitMain.setOpaqueResize(False)
         self.splitMain.addWidget(self.treePane)
         self.splitMain.addWidget(self.tabWidget)
         self.splitMain.setSizes(self.mainConf.getMainPanePos())

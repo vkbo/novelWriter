@@ -101,6 +101,7 @@ class GuiDocEditor(QTextEdit):
         # Editor State
         self.hasSelection = False
         self.setMinimumWidth(self.mainConf.pxInt(300))
+        self.setAutoFillBackground(True)
         self.setAcceptRichText(False)
 
         # Custom Shortcuts
@@ -185,12 +186,15 @@ class GuiDocEditor(QTextEdit):
         self.setFont(theFont)
 
         docPalette = self.palette()
+        docPalette.setColor(QPalette.Window, QColor(*self.theTheme.colBack))
         docPalette.setColor(QPalette.Base, QColor(*self.theTheme.colBack))
         docPalette.setColor(QPalette.Text, QColor(*self.theTheme.colText))
         self.setPalette(docPalette)
 
         # Set default text margins
-        self.qDocument.setDocumentMargin(self.mainConf.getTextMargin())
+        cM = self.mainConf.getTextMargin()
+        self.qDocument.setDocumentMargin(0)
+        self.setViewportMargins(cM, cM, cM, cM)
 
         # Also set the document text options for the document text flow
         theOpt = QTextOption()
@@ -326,7 +330,7 @@ class GuiDocEditor(QTextEdit):
                 tW = self.mainConf.getZenWidth()
             else:
                 tW = self.mainConf.getTextWidth()
-            tM = int((wW - sW - tW)/2)
+            tM = (wW - sW - tW)//2
             if tM < cM:
                 tM = cM
         else:
@@ -335,36 +339,18 @@ class GuiDocEditor(QTextEdit):
         tB = self.frameWidth()
         tW = wW - 2*tB - sW
         tH = self.docHeader.height()
-        tT = cM - tH
+        self.docHeader.setGeometry(tB, tB, tW, tH)
 
         if self.docSearch.isVisible():
             rH = self.docSearch.height()
             rW = self.docSearch.width()
             rL = wW - sW - rW - tB
+            self.docSearch.move(rL, tB)
         else:
             rH = 0
-            rL = 0
 
-        self.docHeader.setGeometry(tB, tB, tW, tH)
-        self.docSearch.move(rL, tB)
-        self.setViewportMargins(0, tH, 0, 0)
-
-        docFormat = self.qDocument.rootFrame().frameFormat()
-        docFormat.setLeftMargin(tM)
-        docFormat.setTopMargin(max(0, tT, rH))
-
-        # Updating root frame triggers a QTextDocument->contentsChange
-        # signal, which we do not want as it re-runs the syntax
-        # highlighter and spell checker, so we block it briefly.
-        # We then emit a signal that does not trigger re-highlighting.
-        self.qDocument.blockSignals(True)
-        self.qDocument.rootFrame().setFrameFormat(docFormat)
-        self.qDocument.blockSignals(False)
-
-        # The line below causes issues with large documents as it
-        # triggers an early repaint that seems to only render a part of
-        # the document. Leaving it here as a warning for now.
-        # self.qDocument.contentsChange.emit(0, 0, 0)
+        # print(tM, tH, rH, max(tM, tH, rH))
+        self.setViewportMargins(tM, max(cM, tH, rH), tM, cM)
 
         return
 
