@@ -1203,14 +1203,14 @@ class GuiDocEditor(QTextEdit):
 
 # =============================================================================================== #
 #  The Off GUI Thread Word Counter
-#  Runs the word counter in the background for the doCEditor
+#  Runs the word counter in the background for the DocEditor
 # =============================================================================================== #
 
 class BackgroundWordCounter(QThread):
 
-    def __init__(self, theParent):
-        QThread.__init__(self, theParent)
-        self.theParent = theParent
+    def __init__(self, docEditor):
+        QThread.__init__(self, docEditor)
+        self.docEditor = docEditor
         self.charCount = 0
         self.wordCount = 0
         self.paraCount = 0
@@ -1220,13 +1220,11 @@ class BackgroundWordCounter(QThread):
         """Overloaded run function for the word counter, forwarding the
         call to the function that does the actual counting.
         """
-        theText = self.theParent.getText()
+        theText = self.docEditor.getText()
         cC, wC, pC = countWords(theText)
-
         self.charCount = cC
         self.wordCount = wC
         self.paraCount = pC
-
         return
 
 ## END Class BackgroundWordCounter
