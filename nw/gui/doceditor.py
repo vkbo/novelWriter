@@ -1274,7 +1274,7 @@ class GuiDocEditSearch(QWidget):
         self.repVisible  = False
         self.isCaseSense = False
         self.isWholeWord = False
-        self.isRegEx     = True
+        self.isRegEx     = False
 
         mPx = self.mainConf.pxInt(6)
         fPx = int(0.9*self.theTheme.fontPixelSize)
@@ -1337,6 +1337,24 @@ class GuiDocEditSearch(QWidget):
 
         self._replaceVisible(False)
 
+        # Construct Box Colours
+        qPalette = self.searchBox.palette()
+        baseCol = qPalette.base().color()
+        rCol = baseCol.redF()   + 0.1
+        gCol = baseCol.greenF() - 0.1
+        bCol = baseCol.blueF()  - 0.1 
+
+        mCol = max(rCol, gCol, bCol, 1.0)
+        errCol = QColor()
+        errCol.setRedF(rCol/mCol)
+        errCol.setGreenF(gCol/mCol)
+        errCol.setBlueF(bCol/mCol)
+
+        self.rxCol = {
+            True  : baseCol,
+            False : errCol
+        }
+
         logger.debug("GuiDocEditSearch initialisation complete")
 
         return
@@ -1362,6 +1380,8 @@ class GuiDocEditSearch(QWidget):
             self.setVisible(True)
         self.searchBox.setText(theText)
         self.searchBox.setFocus()
+        if self.isRegEx:
+            self._alertSearchValid(True)
         logger.verbose("Setting search text to '%s'" % theText)
         return True
 
@@ -1374,9 +1394,20 @@ class GuiDocEditSearch(QWidget):
         return True
 
     def getSearchText(self):
-        """Return the current search text.
+        """Return the current search text either as text or as a regular
+        expression object.
         """
-        return self.searchBox.text()
+        theText = self.searchBox.text()
+        if self.isRegEx and self.mainConf.verQtValue >= 50300:
+            if self.isCaseSense:
+                rxCase = Qt.CaseSensitive
+            else:
+                rxCase = Qt.CaseInsensitive
+            theRegEx = QRegExp(theText, rxCase)
+            self._alertSearchValid(theRegEx.isValid())
+            return theRegEx
+
+        return theText
 
     def getReplaceText(self):
         """Return the current replace text.
@@ -1412,6 +1443,15 @@ class GuiDocEditSearch(QWidget):
     ##
     #  Internal Functions
     ##
+
+    def _alertSearchValid(self, isValid):
+        """Highlight the search box to indicate the search string is or
+        isn't valid. Take the colour from the replace box.
+        """
+        qPalette = self.replaceBox.palette()
+        qPalette.setColor(QPalette.Base, self.rxCol[isValid])
+        self.searchBox.setPalette(qPalette)
+        return
 
     def _replaceVisible(self, isVisible):
         """Set the visibility of all the replace widgets.
