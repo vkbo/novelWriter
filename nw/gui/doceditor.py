@@ -34,7 +34,7 @@ import nw
 
 from time import time
 
-from PyQt5.QtCore import Qt, QSize, QThread, QTimer, pyqtSlot
+from PyQt5.QtCore import Qt, QSize, QThread, QTimer, pyqtSlot, QRegExp
 from PyQt5.QtGui import (
     QTextCursor, QTextOption, QKeySequence, QFont, QColor, QPalette,
     QTextDocument, QCursor
@@ -527,7 +527,7 @@ class GuiDocEditor(QTextEdit):
         elif theAction == nwDocAction.GO_NEXT:
             self._findNext()
         elif theAction == nwDocAction.GO_PREV:
-            self._findPrev()
+            self._findNext(isBackward=True)
         elif theAction == nwDocAction.REPL_NEXT:
             self._replaceNext()
         elif theAction == nwDocAction.BLOCK_H1:
@@ -1147,39 +1147,31 @@ class GuiDocEditor(QTextEdit):
         self.docSearch.setReplaceText("")
         return
 
-    def _findNext(self):
-        """Searches for the next occurrence of the search bar text in
-        the document. Wraps back to the top if not found.
+    def _findNext(self, isBackward=False):
+        """Searches for the next or previous occurrence of the search
+        bar text in the document. Wraps around if not found.
         """
         if not self.docSearch.isVisible():
             self._beginSearch()
             return
 
-        searchFor = self.docSearch.getSearchText()
-        wasFound  = self.find(searchFor)
-        if not wasFound:
-            theCursor = self.textCursor()
-            theCursor.movePosition(QTextCursor.Start)
-            self.setTextCursor(theCursor)
-            self.find(searchFor)
-
-        return
-
-    def _findPrev(self):
-        """Searches for the previous occurrence of the search bar text
-        in the document. Wraps back to the end if not found.
-        """
-        if not self.docSearch.isVisible():
-            self._beginSearch()
-            return
+        findOpt = QTextDocument.FindFlag(0)
+        if isBackward:
+            findOpt |= QTextDocument.FindBackward
+        if self.docSearch.isCaseSense:
+            findOpt |= QTextDocument.FindCaseSensitively
+        if self.docSearch.isWholeWord:
+            findOpt |= QTextDocument.FindWholeWords
 
         searchFor = self.docSearch.getSearchText()
-        wasFound  = self.find(searchFor, QTextDocument.FindBackward)
+        wasFound  = self.find(searchFor, findOpt)
         if not wasFound:
             theCursor = self.textCursor()
-            theCursor.movePosition(QTextCursor.End)
+            theCursor.movePosition(
+                QTextCursor.End if isBackward else QTextCursor.Start
+            )
             self.setTextCursor(theCursor)
-            self.find(searchFor, QTextDocument.FindBackward)
+            self.find(searchFor, findOpt)
 
         return
 
@@ -1195,18 +1187,24 @@ class GuiDocEditor(QTextEdit):
         theCursor = self.textCursor()
         searchFor = self.docSearch.getSearchText()
         replWith  = self.docSearch.getReplaceText()
-        if theCursor.hasSelection() and theCursor.selectedText() == searchFor:
-            xPos = theCursor.selectionStart()
+        selText   = theCursor.selectedText()
+
+        if not self.docSearch.isCaseSense:
+            searchFor = searchFor.lower()
+            selText   = selText.lower()
+
+        if theCursor.hasSelection() and selText == searchFor:
             theCursor.beginEditBlock()
             theCursor.removeSelectedText()
             theCursor.insertText(replWith)
             theCursor.endEditBlock()
-            theCursor.setPosition(xPos)
+            theCursor.setPosition(theCursor.selectionEnd())
             self.setTextCursor(theCursor)
             logger.verbose("Replaced occurrence of '%s' with '%s' on line %d" % (
                 searchFor, replWith, theCursor.blockNumber()
             ))
-        if searchFor != "":
+
+        if searchFor:
             self._findNext()
 
         return
@@ -1273,7 +1271,10 @@ class GuiDocEditSearch(QWidget):
         self.theProject = docEditor.theProject
         self.theTheme   = docEditor.theTheme
 
-        self.repVisible = False
+        self.repVisible  = False
+        self.isCaseSense = False
+        self.isWholeWord = False
+        self.isRegEx     = True
 
         mPx = self.mainConf.pxInt(6)
         fPx = int(0.9*self.theTheme.fontPixelSize)
