@@ -37,7 +37,7 @@ from time import time
 from PyQt5.QtCore import Qt, QSize, QThread, QTimer, pyqtSlot, QRegExp
 from PyQt5.QtGui import (
     QTextCursor, QTextOption, QKeySequence, QFont, QColor, QPalette,
-    QTextDocument, QCursor
+    QTextDocument, QCursor, QIcon
 )
 from PyQt5.QtWidgets import (
     qApp, QTextEdit, QAction, QMenu, QShortcut, QMessageBox, QWidget, QLabel,
@@ -1297,6 +1297,32 @@ class GuiDocEditSearch(QWidget):
         self.replaceBox.setFont(boxFont)
         self.replaceBox.returnPressed.connect(self._doSearch)
 
+        self.searchOpt = QMenu(self)
+
+        self.toggleCase = QAction("Case Sensitive", self)
+        self.toggleCase.setFont(boxFont)
+        self.toggleCase.setCheckable(True)
+        self.toggleCase.toggled.connect(self._doToggleCase)
+        self.searchOpt.addAction(self.toggleCase)
+
+        self.toggleWord = QAction("Whole Words Only", self)
+        self.toggleWord.setFont(boxFont)
+        self.toggleWord.setCheckable(True)
+        self.toggleWord.toggled.connect(self._doToggleWord)
+        self.searchOpt.addAction(self.toggleWord)
+
+        self.toggleRegEx = QAction("RegEx Mode", self)
+        self.toggleRegEx.setFont(boxFont)
+        self.toggleRegEx.setCheckable(True)
+        self.toggleRegEx.toggled.connect(self._doToggleRegEx)
+        self.searchOpt.addAction(self.toggleRegEx)
+
+        self.optButton = QAction(self)
+        self.optButton.setIcon(self.theTheme.getIcon("edit"))
+        self.optButton.setMenu(self.searchOpt)
+
+        self.searchBox.addAction(self.optButton, QLineEdit.TrailingPosition)
+
         # Buttons
         # =======
         bPx = self.searchBox.sizeHint().height()
@@ -1438,6 +1464,24 @@ class GuiDocEditSearch(QWidget):
         """Call the replace action function for the document editor.
         """
         self.docEditor.docAction(nwDocAction.REPL_NEXT)
+        return
+
+    def _doToggleCase(self, theState):
+        """Enable/disable case sensitive mode.
+        """
+        self.isCaseSense = theState
+        return
+
+    def _doToggleWord(self, theState):
+        """Enable/disable whole word search mode.
+        """
+        self.isWholeWord = theState
+        return
+
+    def _doToggleRegEx(self, theState):
+        """Enable/disable regular expression search mode.
+        """
+        self.isRegEx = theState
         return
 
     ##
