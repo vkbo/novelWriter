@@ -476,6 +476,31 @@ class GuiMain(QMainWindow):
                 return False
         return True
 
+    def openNextDocument(self, tHandle):
+        """Opens the next document in the project tree, following the
+        document with the given handle. Stops when reaching the end.
+        """
+        if self.hasProject:
+            self.treeView.flushTreeOrder()
+            nHandle = None
+            goNext = False
+            for tItem in self.theProject.projTree:
+                if tItem is None:
+                    continue
+                if tItem.itemType != nwItemType.FILE:
+                    continue
+                if tItem.itemHandle == tHandle:
+                    goNext = True
+                elif goNext:
+                    nHandle = tItem.itemHandle
+                    break
+
+            if nHandle is not None:
+                self.openDocument(nHandle, tLine=0)
+                return True
+
+        return False
+
     def saveDocument(self):
         """Save the current documents.
         """
