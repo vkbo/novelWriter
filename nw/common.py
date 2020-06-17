@@ -172,3 +172,24 @@ def splitVersionNumber(vString):
     vInt = vMajor*10000 + vMinor*100 + vPatch
 
     return [vMajor, vMinor, vPatch, vInt]
+
+def transferCase(theSource, theTarget):
+    """Transfers the case of the source word to the target word. This
+    will consider all upper or lower, and first char capitalisation.
+    """
+    theResult = theTarget
+
+    if not isinstance(theSource, str) or not isinstance(theTarget, str):
+        return theResult
+    if len(theTarget) < 1 or len(theSource) < 1:
+        return theResult
+
+    if theSource[0] == theSource[0].upper():
+        theResult = theTarget[0].upper() + theTarget[1:]
+
+    if theSource == theSource.upper():
+        theResult = theTarget.upper()
+    elif theSource == theSource.lower():
+        theResult = theTarget.lower()
+
+    return theResult
