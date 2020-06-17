@@ -459,7 +459,7 @@ class GuiBuildNovel(QDialog):
         makeHtml.setStyles(not noStyling)
 
         # Make sure the tree order is correct
-        self.theParent.treeView.saveTreeOrder()
+        self.theParent.treeView.flushTreeOrder()
 
         self.buildProgress.setMaximum(len(self.theProject.projTree))
         self.buildProgress.setValue(0)

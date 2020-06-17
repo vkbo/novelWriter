@@ -42,8 +42,8 @@ from PyQt5.QtWidgets import (
 from nw.gui import (
     GuiBuildNovel, GuiDocEditor, GuiDocMerge, GuiDocSplit, GuiDocViewDetails,
     GuiDocViewer, GuiItemDetails, GuiItemEditor, GuiMainMenu, GuiMainStatus,
-    GuiOutline, GuiOutlineDetails, GuiPreferences, GuiProjectLoad,
-    GuiProjectSettings, GuiProjectTree, GuiSearchBar, GuiSessionLogView, GuiTheme
+    GuiOutline, GuiOutlineDetails, GuiPreferences, GuiProjectLoad, GuiTheme,
+    GuiProjectSettings, GuiProjectTree, GuiSessionLogView
 )
 from nw.core import NWProject, NWDoc, NWIndex
 from nw.constants import nwFiles, nwItemType, nwAlert
@@ -93,7 +93,6 @@ class GuiMain(QMainWindow):
         self.docEditor = GuiDocEditor(self)
         self.viewMeta  = GuiDocViewDetails(self)
         self.docViewer = GuiDocViewer(self)
-        self.searchBar = GuiSearchBar(self)
         self.treeMeta  = GuiItemDetails(self)
         self.projView  = GuiOutline(self)
         self.projMeta  = GuiOutlineDetails(self)
@@ -111,22 +110,13 @@ class GuiMain(QMainWindow):
         self.treeBox.addWidget(self.treeMeta)
         self.treePane.setLayout(self.treeBox)
 
-        self.editPane = QWidget()
-        self.docEdit = QVBoxLayout()
-        self.docEdit.setContentsMargins(0, 0, 0, 0)
-        self.docEdit.setSpacing(self.mainConf.pxInt(2))
-        self.docEdit.addWidget(self.searchBar)
-        self.docEdit.addWidget(self.docEditor)
-        self.editPane.setLayout(self.docEdit)
-
         self.splitView = QSplitter(Qt.Vertical)
         self.splitView.addWidget(self.docViewer)
         self.splitView.addWidget(self.viewMeta)
         self.splitView.setSizes(self.mainConf.getViewPanePos())
 
         self.splitDocs = QSplitter(Qt.Horizontal)
-        self.splitDocs.setOpaqueResize(False)
-        self.splitDocs.addWidget(self.editPane)
+        self.splitDocs.addWidget(self.docEditor)
         self.splitDocs.addWidget(self.splitView)
 
         self.splitOutline = QSplitter(Qt.Vertical)
@@ -144,7 +134,6 @@ class GuiMain(QMainWindow):
         xCM = self.mainConf.pxInt(4)
         self.splitMain = QSplitter(Qt.Horizontal)
         self.splitMain.setContentsMargins(xCM, xCM, xCM, xCM)
-        self.splitMain.setOpaqueResize(False)
         self.splitMain.addWidget(self.treePane)
         self.splitMain.addWidget(self.tabWidget)
         self.splitMain.setSizes(self.mainConf.getMainPanePos())
@@ -153,7 +142,7 @@ class GuiMain(QMainWindow):
 
         self.idxTree     = self.splitMain.indexOf(self.treePane)
         self.idxMain     = self.splitMain.indexOf(self.tabWidget)
-        self.idxEditor   = self.splitDocs.indexOf(self.editPane)
+        self.idxEditor   = self.splitDocs.indexOf(self.docEditor)
         self.idxViewer   = self.splitDocs.indexOf(self.splitView)
         self.idxViewDoc  = self.splitView.indexOf(self.docViewer)
         self.idxViewMeta = self.splitView.indexOf(self.viewMeta)
@@ -168,7 +157,7 @@ class GuiMain(QMainWindow):
         self.splitView.setCollapsible(self.idxViewMeta, False)
 
         self.splitView.setVisible(False)
-        self.searchBar.setVisible(False)
+        self.docEditor.closeSearch()
 
         # Build the Tree View
         self.treeView.itemSelectionChanged.connect(self._treeSingleClick)
@@ -489,6 +478,37 @@ class GuiMain(QMainWindow):
                 return False
         return True
 
+    def openNextDocument(self, tHandle, wrapAround=False):
+        """Opens the next document in the project tree, following the
+        document with the given handle. Stops when reaching the end.
+        """
+        if self.hasProject:
+            self.treeView.flushTreeOrder()
+            nHandle = None  # The next handle after tHandle
+            fHandle = None  # The first file handle we encounter
+            foundIt = False # We've found tHandle, pick the next we see
+            for tItem in self.theProject.projTree:
+                if tItem is None:
+                    continue
+                if tItem.itemType != nwItemType.FILE:
+                    continue
+                if fHandle is None:
+                    fHandle = tItem.itemHandle
+                if tItem.itemHandle == tHandle:
+                    foundIt = True
+                elif foundIt:
+                    nHandle = tItem.itemHandle
+                    break
+
+            if nHandle is not None:
+                self.openDocument(nHandle, tLine=0)
+                return True
+            elif wrapAround:
+                self.openDocument(fHandle, tLine=0)
+                return False
+
+        return False
+
     def saveDocument(self):
         """Save the current documents.
         """
@@ -603,15 +623,13 @@ class GuiMain(QMainWindow):
         return True
 
     def passDocumentAction(self, theAction):
-        """Pass on document action theAction to whatever document has
-        the focus. If no document has focus, the action is discarded.
+        """Pass on document action theAction to the document viewer if
+        it has focus, otherwise pass it to the document editor.
         """
-        if self.docEditor.hasFocus():
-            self.docEditor.docAction(theAction)
-        elif self.docViewer.hasFocus():
+        if self.docViewer.hasFocus():
             self.docViewer.docAction(theAction)
         else:
-            logger.debug("Document action requested, but no document has focus")
+            self.docEditor.docAction(theAction)
         return True
 
     ##
@@ -1077,8 +1095,8 @@ class GuiMain(QMainWindow):
         """When the escape key is pressed somewhere in the main window,
         do the following, in order:
         """
-        if self.searchBar.isVisible():
-            self.searchBar.setVisible(False)
+        if self.docEditor.docSearch.isVisible():
+            self.docEditor.closeSearch()
             return
         elif self.isZenMode:
             self.toggleZenMode()
