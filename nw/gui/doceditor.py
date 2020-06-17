@@ -593,7 +593,7 @@ class GuiDocEditor(QTextEdit):
         as it is triggered on every keypress when typing.
         """
         self.hasSelection = self.textCursor().hasSelection()
-        if not self.hasFocus():
+        if self.docSearch.searchBox.hasFocus():
             # Block the event when the focus is on the search bar.
             return
 
