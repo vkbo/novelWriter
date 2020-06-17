@@ -216,7 +216,6 @@ def testMainWindows(qtbot, nwTempGUI, nwRef, nwTemp):
 
     qtbot.wait(stepDelay)
     nwGUI.docEditor.wCounter.run()
-    nwGUI.docEditor._updateCounts()
     qtbot.wait(stepDelay)
 
     # Save the document

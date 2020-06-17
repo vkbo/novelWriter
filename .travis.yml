@@ -8,15 +8,14 @@ addons:
   apt:
     packages:
       - libenchant-dev
-      - python3-pyqt5
-      - python3-pyqt5.qtsvg
 python:
   - "3.6"
   - "3.7"
   - "3.8"
 install:
   - pip install --upgrade pip
-  - pip install -r requirements.txt
+  - pip install lxml
+  - pip install pyqt5<5.15
 # - pip install pytest-faulthandler
   - pip install PyVirtualDisplay
   - pip install pytest-xvfb
