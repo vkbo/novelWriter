@@ -594,7 +594,8 @@ class GuiDocEditor(QTextEdit):
         """
         self.hasSelection = self.textCursor().hasSelection()
         if self.docSearch.searchBox.hasFocus():
-            # Block the event when the focus is on the search bar.
+            # Block the event when the focus is on the search bar as it
+            # seems to be capturing the return key.
             return
 
         if keyEvent.modifiers() == Qt.ShiftModifier:
