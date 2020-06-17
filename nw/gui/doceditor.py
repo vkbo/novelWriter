@@ -48,6 +48,7 @@ from nw.core import NWDoc
 from nw.gui.dochighlight import GuiDocHighlighter
 from nw.core import NWSpellSimple, countWords
 from nw.constants import nwUnicode, nwDocAction
+from nw.common import transferCase
 
 logger = logging.getLogger(__name__)
 
@@ -1185,16 +1186,23 @@ class GuiDocEditor(QTextEdit):
             self._beginSearch()
             return
 
+        if not theCursor.hasSelection():
+            return
+
         theCursor = self.textCursor()
         searchFor = self.docSearch.getSearchText()
         replWith  = self.docSearch.getReplaceText()
         selText   = theCursor.selectedText()
 
-        if not self.docSearch.isCaseSense:
-            searchFor = searchFor.lower()
-            selText   = selText.lower()
+        if self.docSearch.doPreserve:
+            replWith = transferCase(selText, replWith)
 
-        if theCursor.hasSelection() and selText == searchFor:
+        if not self.docSearch.isCaseSense:
+            isMatch = searchFor.lower() == selText.lower()
+        else:
+            isMatch = searchFor == selText
+
+        if isMatch:
             theCursor.beginEditBlock()
             theCursor.removeSelectedText()
             theCursor.insertText(replWith)
