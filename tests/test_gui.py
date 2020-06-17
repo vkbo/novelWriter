@@ -215,10 +215,11 @@ def testMainWindows(qtbot, nwTempGUI, nwRef, nwTemp):
     qtbot.keyClick(nwGUI.docEditor, Qt.Key_Return, delay=keyDelay)
 
     qtbot.wait(stepDelay)
-    nwGUI.docEditor.wCounter.run()
-    qtbot.wait(stepDelay)
+    nwGUI.docEditor.wCounter.start()
+    qtbot.wait(1000)
 
     # Save the document
+    assert nwGUI.docEditor.docChanged
     assert nwGUI.saveDocument()
     assert not nwGUI.docEditor.docChanged
     qtbot.wait(stepDelay)
