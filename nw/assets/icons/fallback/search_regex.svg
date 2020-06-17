@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   id="svg8"
+   version="1.1"
+   viewBox="0 0 6.3499999 6.3500002"
+   height="24"
+   width="24">
+  <defs
+     id="defs2" />
+  <metadata
+     id="metadata5">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+        <dc:title></dc:title>
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <g
+     transform="translate(0,-290.64999)"
+     id="layer1">
+    <g
+       id="text817"
+       style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:5.64444494px;line-height:1.25;font-family:Roboto;-inkscape-font-specification:Roboto;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.26458335"
+       aria-label=".*">
+      <g
+         style="fill:#000000;fill-opacity:0.78039217"
+         id="g1606">
+        <path
+           d="m 1.9550981,295.54478 c 0.2518833,0 0.4198055,-0.18274 0.4198055,-0.4198 0,-0.25189 -0.1679222,-0.43463 -0.4198055,-0.43463 -0.2568223,0 -0.4247445,0.18274 -0.4247445,0.43463 0,0.23706 0.1679222,0.4198 0.4247445,0.4198 z"
+           style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:4.93888903px;font-family:Cantarell;-inkscape-font-specification:'Cantarell, Bold';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;text-align:start;writing-mode:lr-tb;text-anchor:start;stroke-width:0.26458335;fill:#000000;fill-opacity:0.78039217"
+           id="path1599" />
+        <path
+           d="m 3.5108408,294.12732 h 0.5482167 l -0.1234722,-0.77541 0.6124222,0.49883 0.2568223,-0.43956 -0.7655278,-0.32103 0.7803444,-0.29139 -0.2518833,-0.43956 -0.6371167,0.48401 0.1284111,-0.8001 H 3.5108408 l 0.1382889,0.79516 -0.6223,-0.50377 -0.2518833,0.43956 0.7704667,0.31609 -0.7754056,0.30621 0.2469444,0.4445 0.6321778,-0.50376 z"
+           style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:4.93888903px;font-family:Cantarell;-inkscape-font-specification:'Cantarell, Bold';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;text-align:start;writing-mode:lr-tb;text-anchor:start;stroke-width:0.26458335;fill:#000000;fill-opacity:0.78039217"
+           id="path1601" />
+      </g>
+    </g>
+  </g>
+</svg>

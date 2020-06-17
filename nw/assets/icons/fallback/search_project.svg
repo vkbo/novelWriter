@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   id="svg5828"
+   viewBox="0 0 24 24"
+   height="24"
+   width="24"
+   version="1.2">
+  <metadata
+     id="metadata5834">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+        <dc:title></dc:title>
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <defs
+     id="defs5832" />
+  <g
+     style="fill:#000000;fill-opacity:0.78039217"
+     transform="translate(0.25)"
+     id="g6383">
+    <path
+       style="fill:#000000;fill-opacity:0.78039217"
+       d="m 19,17 h -7 c -1.103,0 -2,0.897 -2,2 0,1.103 0.897,2 2,2 h 7 c 1.103,0 2,-0.897 2,-2 0,-1.103 -0.897,-2 -2,-2 z m 0,-7 h -7 c -1.103,0 -2,0.897 -2,2 0,1.103 0.897,2 2,2 h 7 c 1.103,0 2,-0.897 2,-2 0,-1.103 -0.897,-2 -2,-2 z m 0,-7 h -7 c -1.103,0 -2,0.897 -2,2 0,1.103 0.897,2 2,2 h 7 C 20.103,7 21,6.103 21,5 21,3.897 20.103,3 19,3 Z"
+       id="path5820" />
+    <circle
+       style="fill:#000000;fill-opacity:0.78039217"
+       cx="5"
+       cy="19"
+       r="2.5"
+       id="circle5822" />
+    <circle
+       style="fill:#000000;fill-opacity:0.78039217"
+       cx="5"
+       cy="12"
+       r="2.5"
+       id="circle5824" />
+    <circle
+       style="fill:#000000;fill-opacity:0.78039217"
+       cx="5"
+       cy="5"
+       r="2.5"
+       id="circle5826" />
+  </g>
+</svg>
