@@ -476,28 +476,34 @@ class GuiMain(QMainWindow):
                 return False
         return True
 
-    def openNextDocument(self, tHandle):
+    def openNextDocument(self, tHandle, wrapAround=False):
         """Opens the next document in the project tree, following the
         document with the given handle. Stops when reaching the end.
         """
         if self.hasProject:
             self.treeView.flushTreeOrder()
-            nHandle = None
-            goNext = False
+            nHandle = None  # The next handle after tHandle
+            fHandle = None  # The first file handle we encounter
+            foundIt = False # We've found tHandle, pick the next we see
             for tItem in self.theProject.projTree:
                 if tItem is None:
                     continue
                 if tItem.itemType != nwItemType.FILE:
                     continue
+                if fHandle is None:
+                    fHandle = tItem.itemHandle
                 if tItem.itemHandle == tHandle:
-                    goNext = True
-                elif goNext:
+                    foundIt = True
+                elif foundIt:
                     nHandle = tItem.itemHandle
                     break
 
             if nHandle is not None:
                 self.openDocument(nHandle, tLine=0)
                 return True
+            elif wrapAround:
+                self.openDocument(fHandle, tLine=0)
+                return False
 
         return False
 

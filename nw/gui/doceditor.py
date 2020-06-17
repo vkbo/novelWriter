@@ -1168,15 +1168,17 @@ class GuiDocEditor(QTextEdit):
         searchFor = self.docSearch.getSearchText()
         wasFound  = self.find(searchFor, findOpt)
         if not wasFound:
-            if self.docSearch.doLoop:
+            if self.docSearch.doNextFile and not isBackward:
+                self.theParent.openNextDocument(
+                    self.theHandle, wrapAround=self.docSearch.doLoop
+                )
+            elif self.docSearch.doLoop:
                 theCursor = self.textCursor()
                 theCursor.movePosition(
                     QTextCursor.End if isBackward else QTextCursor.Start
                 )
                 self.setTextCursor(theCursor)
                 self.find(searchFor, findOpt)
-            elif self.docSearch.doNextFile:
-                self.theParent.openNextDocument(self.theHandle)
 
         return
 
