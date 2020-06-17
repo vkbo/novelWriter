@@ -60,6 +60,7 @@ class GuiDocViewer(QTextBrowser):
 
         self.qDocument = self.document()
         self.setMinimumWidth(self.mainConf.pxInt(300))
+        self.setAutoFillBackground(True)
         self.setOpenExternalLinks(False)
         self.initViewer()
 
@@ -104,11 +105,12 @@ class GuiDocViewer(QTextBrowser):
         self.setFont(theFont)
 
         docPalette = self.palette()
+        docPalette.setColor(QPalette.Window, QColor(*self.theTheme.colBack))
         docPalette.setColor(QPalette.Base, QColor(*self.theTheme.colBack))
         docPalette.setColor(QPalette.Text, QColor(*self.theTheme.colText))
         self.setPalette(docPalette)
 
-        self.qDocument.setDocumentMargin(self.mainConf.getTextMargin())
+        self.qDocument.setDocumentMargin(0)
         theOpt = QTextOption()
         if self.mainConf.doJustify:
             theOpt.setAlignment(Qt.AlignJustify)
@@ -242,19 +244,10 @@ class GuiDocViewer(QTextBrowser):
         tH = self.docHeader.height()
         fH = self.docFooter.height()
         fY = self.height() - fH - tB
-        tT = cM - tH
-        bT = cM - fH
+
         self.docHeader.setGeometry(tB, tB, tW, tH)
         self.docFooter.setGeometry(tB, fY, tW, fH)
-        self.setViewportMargins(0, tH, 0, fH)
-
-        docFormat = self.qDocument.rootFrame().frameFormat()
-        docFormat.setTopMargin(max(0, tT))
-        docFormat.setBottomMargin(max(0, bT))
-
-        self.qDocument.blockSignals(True)
-        self.qDocument.rootFrame().setFrameFormat(docFormat)
-        self.qDocument.blockSignals(False)
+        self.setViewportMargins(cM, max(cM, tH), cM, max(cM, fH))
 
         return
 

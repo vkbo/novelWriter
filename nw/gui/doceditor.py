@@ -351,7 +351,6 @@ class GuiDocEditor(QTextEdit):
         else:
             rH = 0
 
-        # print(tM, tH, rH, max(tM, tH, rH))
         self.setViewportMargins(tM, max(cM, tH, rH), tM, cM)
 
         return
