@@ -1286,12 +1286,12 @@ class GuiDocEditSearch(QFrame):
         self.theTheme   = docEditor.theTheme
 
         self.repVisible  = False
-        self.isCaseSense = False
-        self.isWholeWord = False
-        self.isRegEx     = False
-        self.doLoop      = False
-        self.doNextFile  = False
-        self.doPreserve  = False
+        self.isCaseSense = self.mainConf.searchCase
+        self.isWholeWord = self.mainConf.searchWord
+        self.isRegEx     = self.mainConf.searchRegEx
+        self.doLoop      = self.mainConf.searchLoop
+        self.doNextFile  = self.mainConf.searchNextFile
+        self.doPreserve  = self.mainConf.searchMatchCap
 
         mPx = self.mainConf.pxInt(6)
         fPx = int(0.9*self.theTheme.fontPixelSize)
@@ -1332,6 +1332,7 @@ class GuiDocEditSearch(QFrame):
         self.toggleCase.setToolTip("Match case")
         self.toggleCase.setIcon(self.theTheme.getIcon("search_case"))
         self.toggleCase.setCheckable(True)
+        self.toggleCase.setChecked(self.isCaseSense)
         self.toggleCase.toggled.connect(self._doToggleCase)
         self.searchOpt.addAction(self.toggleCase)
 
@@ -1339,6 +1340,7 @@ class GuiDocEditSearch(QFrame):
         self.toggleWord.setToolTip("Match whole words")
         self.toggleWord.setIcon(self.theTheme.getIcon("search_word"))
         self.toggleWord.setCheckable(True)
+        self.toggleWord.setChecked(self.isWholeWord)
         self.toggleWord.toggled.connect(self._doToggleWord)
         self.searchOpt.addAction(self.toggleWord)
 
@@ -1346,6 +1348,7 @@ class GuiDocEditSearch(QFrame):
         self.toggleRegEx.setToolTip("Use regular expressions")
         self.toggleRegEx.setIcon(self.theTheme.getIcon("search_regex"))
         self.toggleRegEx.setCheckable(True)
+        self.toggleRegEx.setChecked(self.isRegEx)
         self.toggleRegEx.toggled.connect(self._doToggleRegEx)
         self.searchOpt.addAction(self.toggleRegEx)
 
@@ -1353,6 +1356,7 @@ class GuiDocEditSearch(QFrame):
         self.toggleLoop.setToolTip("Loop the search when reaching the end")
         self.toggleLoop.setIcon(self.theTheme.getIcon("search_loop"))
         self.toggleLoop.setCheckable(True)
+        self.toggleLoop.setChecked(self.doLoop)
         self.toggleLoop.toggled.connect(self._doToggleLoop)
         self.searchOpt.addAction(self.toggleLoop)
 
@@ -1360,6 +1364,7 @@ class GuiDocEditSearch(QFrame):
         self.toggleProject.setToolTip("Continue searching in the next file")
         self.toggleProject.setIcon(self.theTheme.getIcon("search_project"))
         self.toggleProject.setCheckable(True)
+        self.toggleProject.setChecked(self.doNextFile)
         self.toggleProject.toggled.connect(self._doToggleProject)
         self.searchOpt.addAction(self.toggleProject)
 
@@ -1369,6 +1374,7 @@ class GuiDocEditSearch(QFrame):
         self.togglePreserve.setToolTip("Preserve case on replace")
         self.togglePreserve.setIcon(self.theTheme.getIcon("search_preserve"))
         self.togglePreserve.setCheckable(True)
+        self.togglePreserve.setChecked(self.doPreserve)
         self.togglePreserve.toggled.connect(self._doTogglePreserve)
         self.searchOpt.addAction(self.togglePreserve)
 
@@ -1428,7 +1434,7 @@ class GuiDocEditSearch(QFrame):
         baseCol = qPalette.base().color()
         rCol = baseCol.redF()   + 0.1
         gCol = baseCol.greenF() - 0.1
-        bCol = baseCol.blueF()  - 0.1 
+        bCol = baseCol.blueF()  - 0.1
 
         mCol = max(rCol, gCol, bCol, 1.0)
         errCol = QColor()
@@ -1448,10 +1454,18 @@ class GuiDocEditSearch(QFrame):
     def closeSearch(self):
         """Close the search box.
         """
+        self.mainConf.searchCase     = self.isCaseSense
+        self.mainConf.searchWord     = self.isWholeWord
+        self.mainConf.searchRegEx    = self.isRegEx
+        self.mainConf.searchLoop     = self.doLoop
+        self.mainConf.searchNextFile = self.doNextFile
+        self.mainConf.searchMatchCap = self.doPreserve
+
         self.showReplace.setChecked(False)
         self.setVisible(False)
         self.docEditor.updateDocMargins()
         self.docEditor.setFocus()
+
         return
 
     ##

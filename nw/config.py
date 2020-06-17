@@ -133,6 +133,13 @@ class Config:
         self.spellTool     = None
         self.spellLanguage = None
 
+        self.searchCase     = False
+        self.searchWord     = False
+        self.searchRegEx    = False
+        self.searchLoop     = False
+        self.searchNextFile = False
+        self.searchMatchCap = False
+
         ## Backup
         self.backupPath      = ""
         self.backupOnClose   = False
@@ -482,6 +489,24 @@ class Config:
         self.viewSynopsis = self._parseLine(
             cnfParse, cnfSec, "viewsynopsis", self.CNF_BOOL, self.viewSynopsis
         )
+        self.searchCase = self._parseLine(
+            cnfParse, cnfSec, "searchcase", self.CNF_BOOL, self.searchCase
+        )
+        self.searchWord = self._parseLine(
+            cnfParse, cnfSec, "searchword", self.CNF_BOOL, self.searchWord
+        )
+        self.searchRegEx = self._parseLine(
+            cnfParse, cnfSec, "searchregex", self.CNF_BOOL, self.searchRegEx
+        )
+        self.searchLoop = self._parseLine(
+            cnfParse, cnfSec, "searchloop", self.CNF_BOOL, self.searchLoop
+        )
+        self.searchNextFile = self._parseLine(
+            cnfParse, cnfSec, "searchnextfile", self.CNF_BOOL, self.searchNextFile
+        )
+        self.searchMatchCap = self._parseLine(
+            cnfParse, cnfSec, "searchmatchcap", self.CNF_BOOL, self.searchMatchCap
+        )
 
         ## Path
         cnfSec = "Path"
@@ -571,9 +596,15 @@ class Config:
         ## State
         cnfSec = "State"
         cnfParse.add_section(cnfSec)
-        cnfParse.set(cnfSec,"showrefpanel",str(self.showRefPanel))
-        cnfParse.set(cnfSec,"viewcomments",str(self.viewComments))
-        cnfParse.set(cnfSec,"viewsynopsis",str(self.viewSynopsis))
+        cnfParse.set(cnfSec,"showrefpanel",    str(self.showRefPanel))
+        cnfParse.set(cnfSec,"viewcomments",    str(self.viewComments))
+        cnfParse.set(cnfSec,"viewsynopsis",    str(self.viewSynopsis))
+        cnfParse.set(cnfSec,"searchcase",      str(self.searchCase))
+        cnfParse.set(cnfSec,"searchword",      str(self.searchWord))
+        cnfParse.set(cnfSec,"searchregex",     str(self.searchRegEx))
+        cnfParse.set(cnfSec,"searchloop",      str(self.searchLoop))
+        cnfParse.set(cnfSec,"searchnextfile",  str(self.searchNextFile))
+        cnfParse.set(cnfSec,"searchmatchcap",  str(self.searchMatchCap))
 
         ## Path
         cnfSec = "Path"
