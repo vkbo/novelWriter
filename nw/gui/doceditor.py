@@ -78,6 +78,9 @@ class GuiDocEditor(QTextEdit):
         self.bigDoc    = False
         self.nonWord   = "\"'"
 
+        # Document State
+        self.hasSelection = False
+
         # Typography
         self.typDQOpen  = self.mainConf.fmtDoubleQuotes[0]
         self.typDQClose = self.mainConf.fmtDoubleQuotes[1]
@@ -86,7 +89,6 @@ class GuiDocEditor(QTextEdit):
 
         # Core Elements
         self.qDocument = self.document()
-        self.qDocument.setDocumentMargin(self.mainConf.getTextMargin())
         self.qDocument.contentsChange.connect(self._docChange)
 
         # Document Title
@@ -100,8 +102,7 @@ class GuiDocEditor(QTextEdit):
         self.setContextMenuPolicy(Qt.CustomContextMenu)
         self.customContextMenuRequested.connect(self._openContextMenu)
 
-        # Editor State
-        self.hasSelection = False
+        # Editor Settings
         self.setMinimumWidth(self.mainConf.pxInt(300))
         self.setAutoFillBackground(True)
         self.setAcceptRichText(False)
