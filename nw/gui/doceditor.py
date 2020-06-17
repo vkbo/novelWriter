@@ -1200,7 +1200,7 @@ class GuiDocEditor(QTextEdit):
         replWith  = self.docSearch.getReplaceText()
         selText   = theCursor.selectedText()
 
-        if self.docSearch.doPreserve:
+        if self.docSearch.doMatchCap:
             replWith = transferCase(selText, replWith)
 
         if not self.docSearch.isCaseSense:
@@ -1292,7 +1292,7 @@ class GuiDocEditSearch(QFrame):
         self.isRegEx     = self.mainConf.searchRegEx
         self.doLoop      = self.mainConf.searchLoop
         self.doNextFile  = self.mainConf.searchNextFile
-        self.doPreserve  = self.mainConf.searchMatchCap
+        self.doMatchCap  = self.mainConf.searchMatchCap
 
         mPx = self.mainConf.pxInt(6)
         fPx = int(0.9*self.theTheme.fontPixelSize)
@@ -1371,13 +1371,13 @@ class GuiDocEditSearch(QFrame):
 
         self.searchOpt.addSeparator()
 
-        self.togglePreserve = QAction("Preserve Case", self)
-        self.togglePreserve.setToolTip("Preserve case on replace")
-        self.togglePreserve.setIcon(self.theTheme.getIcon("search_preserve"))
-        self.togglePreserve.setCheckable(True)
-        self.togglePreserve.setChecked(self.doPreserve)
-        self.togglePreserve.toggled.connect(self._doTogglePreserve)
-        self.searchOpt.addAction(self.togglePreserve)
+        self.toggleMatchCap = QAction("Preserve Case", self)
+        self.toggleMatchCap.setToolTip("Preserve case on replace")
+        self.toggleMatchCap.setIcon(self.theTheme.getIcon("search_preserve"))
+        self.toggleMatchCap.setCheckable(True)
+        self.toggleMatchCap.setChecked(self.doMatchCap)
+        self.toggleMatchCap.toggled.connect(self._doToggleMatchCap)
+        self.searchOpt.addAction(self.toggleMatchCap)
 
         self.searchOpt.addSeparator()
 
@@ -1426,9 +1426,9 @@ class GuiDocEditSearch(QFrame):
         boxWidth = self.mainConf.pxInt(200)
         self.searchBox.setFixedWidth(boxWidth)
         self.replaceBox.setFixedWidth(boxWidth)
+        self.replaceBox.setVisible(False)
+        self.replaceButton.setVisible(False)
         self.adjustSize()
-
-        self._doToggleReplace(False)
 
         # Construct Box Colours
         qPalette = self.searchBox.palette()
@@ -1460,7 +1460,7 @@ class GuiDocEditSearch(QFrame):
         self.mainConf.searchRegEx    = self.isRegEx
         self.mainConf.searchLoop     = self.doLoop
         self.mainConf.searchNextFile = self.doNextFile
-        self.mainConf.searchMatchCap = self.doPreserve
+        self.mainConf.searchMatchCap = self.doMatchCap
 
         self.showReplace.setChecked(False)
         self.setVisible(False)
@@ -1552,6 +1552,7 @@ class GuiDocEditSearch(QFrame):
         self.replaceButton.setVisible(theState)
         self.repVisible = theState
         self.adjustSize()
+        self.docEditor.updateDocMargins()
         return
 
     def _doToggleCase(self, theState):
@@ -1584,10 +1585,10 @@ class GuiDocEditSearch(QFrame):
         self.doNextFile = theState
         return
 
-    def _doTogglePreserve(self, theState):
-        """Enable/disable preserving case when replacing.
+    def _doToggleMatchCap(self, theState):
+        """Enable/disable preserving capitalisation when replacing.
         """
-        self.doPreserve = theState
+        self.doMatchCap = theState
         return
 
     ##
