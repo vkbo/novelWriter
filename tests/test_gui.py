@@ -219,7 +219,6 @@ def testMainWindows(qtbot, nwTempGUI, nwRef, nwTemp):
     qtbot.wait(stepDelay)
 
     # Save the document
-    assert nwGUI.docEditor.docChanged
     assert nwGUI.saveDocument()
     assert not nwGUI.docEditor.docChanged
     qtbot.wait(stepDelay)

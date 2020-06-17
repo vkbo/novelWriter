@@ -37,11 +37,12 @@ from time import time
 from PyQt5.QtCore import Qt, QSize, QThread, QTimer, pyqtSlot, QRegExp
 from PyQt5.QtGui import (
     QTextCursor, QTextOption, QKeySequence, QFont, QColor, QPalette,
-    QTextDocument, QCursor, QIcon
+    QTextDocument, QCursor
 )
 from PyQt5.QtWidgets import (
-    qApp, QTextEdit, QAction, QMenu, QShortcut, QMessageBox, QWidget, QLabel, QToolBar,
-    QToolButton, QHBoxLayout, QGridLayout, QLineEdit, QPushButton, QFrame, QVBoxLayout, QSizePolicy
+    qApp, QTextEdit, QAction, QMenu, QShortcut, QMessageBox, QWidget, QLabel,
+    QToolBar, QToolButton, QHBoxLayout, QGridLayout, QLineEdit, QPushButton,
+    QFrame
 )
 
 from nw.core import NWDoc
