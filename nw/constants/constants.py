@@ -231,6 +231,8 @@ class nwUnicode:
 
     ## Other
     U_NBSP   = "\u00a0" # Non-breaking space
+    U_THNSP  = "\u2009" # Thin space
+    U_THNBSP = "\u202f" # Thin non-breaking space
     U_CHECK  = "\u2714" # Heavy check mark
     U_MULT   = "\u2715" # Multiplication x
 
@@ -275,6 +277,8 @@ class nwUnicode:
 
     ## Other
     H_NBSP   = "&nbsp;"
+    H_THNSP  = "&thinsp;"
+    H_THNBSP = "&#8239;"
     H_CHECK  = "&#10004;"
     H_MULT   = "&#10005;"
 
