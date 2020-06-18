@@ -169,27 +169,30 @@ class nwQuotes():
     Source: https://en.wikipedia.org/wiki/Quotation_mark
     """
 
-    SYMBOLS = [
-        "\u0022", # Quotation mark
-        "\u0027", # Apostrophe
-        "\u00ab", # Left-pointing double angle quotation mark
-        "\u00bb", # Right-pointing double angle quotation mark
-        "\u2018", # Left single quotation mark
-        "\u2019", # Right single quotation mark
-        "\u201a", # Single low-9 quotation mark
-        "\u201b", # Single high-reversed-9 quotation mark
-        "\u201c", # Left double quotation mark
-        "\u201d", # Right double quotation mark
-        "\u201e", # Double low-9 quotation mark
-        "\u201f", # Double high-reversed-9 quotation mark
-        "\u2039", # Single left-pointing angle quotation mark
-        "\u203a", # Single right-pointing angle quotation mark
-        "\u2e42", # Double low-reversed-9 quotation mark
-        "\u300c", # Left corner bracket
-        "\u300d", # Right corner bracket
-        "\u300e", # Left white corner bracket
-        "\u300f", # Right white corner bracket
-    ]
+    SYMBOLS = {
+        "\u0027" : "Straight single quotation mark",
+        "\u0022" : "Straight double quotation mark",
+
+        "\u2018" : "Left single quotation mark",
+        "\u2019" : "Right single quotation mark",
+        "\u201a" : "Single low-9 quotation mark",
+        "\u201b" : "Single high-reversed-9 quotation mark",
+        "\u201c" : "Left double quotation mark",
+        "\u201d" : "Right double quotation mark",
+        "\u201e" : "Double low-9 quotation mark",
+        "\u201f" : "Double high-reversed-9 quotation mark",
+        "\u2e42" : "Double low-reversed-9 quotation mark",
+
+        "\u2039" : "Single left-pointing angle quotation mark",
+        "\u203a" : "Single right-pointing angle quotation mark",
+        "\u00ab" : "Left-pointing double angle quotation mark",
+        "\u00bb" : "Right-pointing double angle quotation mark",
+
+        "\u300c" : "Left corner bracket",
+        "\u300d" : "Right corner bracket",
+        "\u300e" : "Left white corner bracket",
+        "\u300f" : "Right white corner bracket",
+    }
 
 # END Class nwQuotes
 
