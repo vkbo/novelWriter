@@ -11,6 +11,8 @@
 
 * The Open Project dialog will now ask before removing an entry from the recent projects list. PR #309.
 * The text emphasis functions, either selected from the menu or via keyboard shortcuts, will now try to respond to the command in a more meaningful way. That is, the text editor will try to toggle the bold or italics features independently of eachother on the selected text. A feature to apply both at the same time has also been added. PR #310.
+* The document editor search tool has been completely rewritten. It now appears as a search box at the top of the document, and has a number of toggle switches added to it. You can modify the search tool to be case sensitive, select only whole words, use regular expression search strings, loop when reaching the end, and continue the search in next file. For the replace feature, you can also select to have the feature try to preserve the case of the replaced word. Issues #84 and #305, PR #314.
+* A dialog has been added for selecting quotation mark style. These are now used in the Preferences dialog instead of a plain text box. PR #317.
 
 **Other Changes**
 
