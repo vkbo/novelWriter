@@ -273,6 +273,7 @@ def testProjectEditor(qtbot, nwTempGUI, nwRef, nwTemp):
     nwGUI.mainConf.backupPath = nwTempGUI
 
     projEdit = GuiProjectSettings(nwGUI, nwGUI.theProject)
+    projEdit.show()
     qtbot.addWidget(projEdit)
 
     projEdit.tabMain.editName.setText("")
