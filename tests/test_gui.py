@@ -623,3 +623,136 @@ def testSplitTool(qtbot, nwTempGUI, nwLipsum, nwRef, nwTemp):
 
     # qtbot.stopForInteraction()
     nwGUI.closeMain()
+
+@pytest.mark.gui
+def testDocAction(qtbot, nwTempGUI, nwLipsum, nwRef, nwTemp):
+
+    nwGUI = nw.main(["--testmode","--config=%s" % nwTempGUI, "--data=%s" % nwTemp])
+    qtbot.addWidget(nwGUI)
+    nwGUI.show()
+    qtbot.waitForWindowShown(nwGUI)
+    qtbot.wait(stepDelay)
+
+    nwGUI.theProject.projTree.setSeed(42)
+    assert nwGUI.openProject(nwLipsum)
+    qtbot.wait(stepDelay)
+
+    # CUT        = 3
+    # COPY       = 4
+    # PASTE      = 5
+    # SEL_ALL    = 12
+    # SEL_PARA   = 13
+    # FIND       = 14
+    # REPLACE    = 15
+    # GO_NEXT    = 16
+    # GO_PREV    = 17
+    # REPL_NEXT  = 18
+
+    # Split By Chapter
+    assert nwGUI.openDocument("4c4f28287af27")
+    assert nwGUI.docEditor.setCursorPosition(30)
+
+    cleanText = nwGUI.docEditor.getText()[27:74]
+
+    # Bold
+    assert nwGUI.passDocumentAction(nwDocAction.BOLD)
+    assert nwGUI.docEditor.getText()[27:78] == "**Pellentesque** nec erat ut nulla posuere commodo."
+    qtbot.wait(stepDelay)
+    assert nwGUI.passDocumentAction(nwDocAction.BOLD)
+    assert nwGUI.docEditor.getText()[27:74] == cleanText
+    qtbot.wait(stepDelay)
+
+    # Italic
+    assert nwGUI.passDocumentAction(nwDocAction.ITALIC)
+    assert nwGUI.docEditor.getText()[27:76] == "*Pellentesque* nec erat ut nulla posuere commodo."
+    qtbot.wait(stepDelay)
+    assert nwGUI.passDocumentAction(nwDocAction.ITALIC)
+    assert nwGUI.docEditor.getText()[27:74] == cleanText
+    qtbot.wait(stepDelay)
+
+    # Bold-Italic
+    assert nwGUI.passDocumentAction(nwDocAction.BOLDITALIC)
+    assert nwGUI.docEditor.getText()[27:80] == "***Pellentesque*** nec erat ut nulla posuere commodo."
+    qtbot.wait(stepDelay)
+    assert nwGUI.passDocumentAction(nwDocAction.BOLDITALIC)
+    assert nwGUI.docEditor.getText()[27:74] == cleanText
+    qtbot.wait(stepDelay)
+
+    # Strikethrough
+    assert nwGUI.passDocumentAction(nwDocAction.STRIKE)
+    assert nwGUI.docEditor.getText()[27:78] == "~~Pellentesque~~ nec erat ut nulla posuere commodo."
+    qtbot.wait(stepDelay)
+    assert nwGUI.passDocumentAction(nwDocAction.STRIKE)
+    assert nwGUI.docEditor.getText()[27:74] == cleanText
+    qtbot.wait(stepDelay)
+
+    # Should get us back to plain
+    assert nwGUI.passDocumentAction(nwDocAction.BOLD)
+    qtbot.wait(stepDelay)
+    assert nwGUI.passDocumentAction(nwDocAction.ITALIC)
+    qtbot.wait(stepDelay)
+    assert nwGUI.passDocumentAction(nwDocAction.ITALIC)
+    qtbot.wait(stepDelay)
+    assert nwGUI.passDocumentAction(nwDocAction.BOLD)
+    assert nwGUI.docEditor.getText()[27:74] == cleanText
+    qtbot.wait(stepDelay)
+
+    # Equivalent of the above
+    assert nwGUI.passDocumentAction(nwDocAction.BOLDITALIC)
+    qtbot.wait(stepDelay)
+    assert nwGUI.passDocumentAction(nwDocAction.ITALIC)
+    qtbot.wait(stepDelay)
+    assert nwGUI.passDocumentAction(nwDocAction.BOLD)
+    assert nwGUI.docEditor.getText()[27:74] == cleanText
+    qtbot.wait(stepDelay)
+
+    # Double Quotes
+    assert nwGUI.passDocumentAction(nwDocAction.D_QUOTE)
+    assert nwGUI.docEditor.getText()[27:76] == "“Pellentesque” nec erat ut nulla posuere commodo."
+    qtbot.wait(stepDelay)
+    assert nwGUI.passDocumentAction(nwDocAction.UNDO)
+    assert nwGUI.docEditor.getText()[27:74] == cleanText
+    qtbot.wait(stepDelay)
+
+    # Single Quotes
+    assert nwGUI.passDocumentAction(nwDocAction.S_QUOTE)
+    assert nwGUI.docEditor.getText()[27:76] == "‘Pellentesque’ nec erat ut nulla posuere commodo."
+    qtbot.wait(stepDelay)
+    assert nwGUI.passDocumentAction(nwDocAction.UNDO)
+    assert nwGUI.docEditor.getText()[27:74] == cleanText
+    qtbot.wait(stepDelay)
+
+    # Block Formats
+    assert nwGUI.docEditor.setCursorPosition(30)
+    assert nwGUI.passDocumentAction(nwDocAction.BLOCK_H1)
+    assert nwGUI.docEditor.getText()[27:76] == "# Pellentesque nec erat ut nulla posuere commodo."
+    qtbot.wait(stepDelay)
+    assert nwGUI.passDocumentAction(nwDocAction.BLOCK_H2)
+    assert nwGUI.docEditor.getText()[27:77] == "## Pellentesque nec erat ut nulla posuere commodo."
+    qtbot.wait(stepDelay)
+    assert nwGUI.passDocumentAction(nwDocAction.BLOCK_H3)
+    assert nwGUI.docEditor.getText()[27:78] == "### Pellentesque nec erat ut nulla posuere commodo."
+    qtbot.wait(stepDelay)
+    assert nwGUI.passDocumentAction(nwDocAction.BLOCK_H4)
+    assert nwGUI.docEditor.getText()[27:79] == "#### Pellentesque nec erat ut nulla posuere commodo."
+    qtbot.wait(stepDelay)
+    assert nwGUI.passDocumentAction(nwDocAction.BLOCK_TXT)
+    assert nwGUI.docEditor.getText()[27:74] == cleanText
+    qtbot.wait(stepDelay)
+    assert nwGUI.passDocumentAction(nwDocAction.BLOCK_COM)
+    assert nwGUI.docEditor.getText()[27:76] == "% Pellentesque nec erat ut nulla posuere commodo."
+    qtbot.wait(stepDelay)
+    assert nwGUI.passDocumentAction(nwDocAction.BLOCK_TXT)
+    assert nwGUI.docEditor.getText()[27:74] == cleanText
+    qtbot.wait(stepDelay)
+
+    # Undo/Redo
+    assert nwGUI.passDocumentAction(nwDocAction.UNDO)
+    assert nwGUI.docEditor.getText()[27:76] == "% Pellentesque nec erat ut nulla posuere commodo."
+    qtbot.wait(stepDelay)
+    assert nwGUI.passDocumentAction(nwDocAction.REDO)
+    assert nwGUI.docEditor.getText()[27:74] == cleanText
+    qtbot.wait(stepDelay)
+
+    # qtbot.stopForInteraction()
+    nwGUI.closeMain()
