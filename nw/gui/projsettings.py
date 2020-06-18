@@ -31,10 +31,9 @@ import nw
 from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QIcon, QPixmap, QColor, QBrush
 from PyQt5.QtWidgets import (
-    QDialog, QHBoxLayout, QVBoxLayout, QGridLayout, QLineEdit, QPlainTextEdit,
-    QLabel, QWidget, QTabWidget, QDialogButtonBox, QListWidget, QPushButton,
-    QListWidgetItem, QColorDialog, QAbstractItemView, QTreeWidget, QCheckBox,
-    QTreeWidgetItem
+    QHBoxLayout, QVBoxLayout, QGridLayout, QLineEdit, QPlainTextEdit, QLabel,
+    QWidget, QDialogButtonBox, QListWidget, QPushButton, QListWidgetItem,
+    QColorDialog, QAbstractItemView, QTreeWidget, QTreeWidgetItem
 )
 
 from nw.constants import nwAlert
@@ -72,8 +71,6 @@ class GuiProjectSettings(PagedDialog):
         self.buttonBox.accepted.connect(self._doSave)
         self.buttonBox.rejected.connect(self._doClose)
         self.addControls(self.buttonBox)
-
-        self.show()
 
         logger.debug("GuiProjectSettings initialisation complete")
 
