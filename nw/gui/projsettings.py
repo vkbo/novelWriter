@@ -73,8 +73,6 @@ class GuiProjectSettings(PagedDialog):
         self.buttonBox.rejected.connect(self._doClose)
         self.addControls(self.buttonBox)
 
-        self.show()
-
         logger.debug("GuiProjectSettings initialisation complete")
 
         return
