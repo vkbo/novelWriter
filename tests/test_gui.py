@@ -127,6 +127,11 @@ def testMainWindows(qtbot, nwTempGUI, nwRef, nwTemp):
     nwGUI.treeView.newTreeItem(nwItemType.FILE, None)
     assert nwGUI.openSelectedItem()
 
+    # Add Some Text
+    nwGUI.docEditor.replaceText("Hello World!")
+    assert nwGUI.docEditor.getText() == "Hello World!"
+    nwGUI.docEditor.replaceText("")
+
     # Type something into the document
     nwGUI.setFocus(2)
     for c in "# Main Location":
@@ -359,6 +364,7 @@ def testItemEditor(qtbot, nwTempGUI, nwRef, nwTemp):
     # Create new, save, open project
     nwGUI.theProject.projTree.setSeed(42)
     assert nwGUI.newProject(nwTempGUI, True)
+    assert nwGUI.openDocument("31489056e0916")
 
     itemEdit = GuiItemEditor(nwGUI, nwGUI.theProject, "31489056e0916")
     qtbot.addWidget(itemEdit)
@@ -375,7 +381,6 @@ def testItemEditor(qtbot, nwTempGUI, nwRef, nwTemp):
 
     itemEdit.editExport.setChecked(False)
     assert not itemEdit.editExport.isChecked()
-
     itemEdit._doSave()
 
     itemEdit = GuiItemEditor(nwGUI, nwGUI.theProject, "31489056e0916")
@@ -383,8 +388,15 @@ def testItemEditor(qtbot, nwTempGUI, nwRef, nwTemp):
     assert itemEdit.editName.text()          == "Just a Page"
     assert itemEdit.editStatus.currentData() == "Note"
     assert itemEdit.editLayout.currentData() == nwItemLayout.PAGE
-
     itemEdit._doClose()
+
+    # Check that the header is updated
+    nwGUI.docEditor.updateDocTitle("31489056e0916")
+    assert nwGUI.docEditor.docHeader.theTitle.text() == "Novel  ›  New Chapter  ›  Just a Page"
+    assert not nwGUI.docEditor.setCursorLine("where?")
+    assert nwGUI.docEditor.setCursorLine(2)
+    qtbot.wait(stepDelay)
+    assert nwGUI.docEditor.getCursorPosition() == 9
 
     qtbot.wait(stepDelay)
     assert nwGUI.saveProject()
