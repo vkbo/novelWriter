@@ -229,10 +229,12 @@ class nwUnicode:
     U_EMDASH = "\u2014" # Long dash
     U_HELLIP = "\u2026" # Ellipsis
 
-    ## Spaces
+    ## Spaces and Lines
     U_NBSP   = "\u00a0" # Non-breaking space
     U_THNSP  = "\u2009" # Thin space
     U_THNBSP = "\u202f" # Thin non-breaking space
+    U_LSEP   = "\u2028" # Line separator
+    U_PSEP   = "\u2029" # Paragraph separator
 
     ## Symbols
     U_CHECK  = "\u2714" # Heavy check mark
