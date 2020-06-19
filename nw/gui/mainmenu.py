@@ -577,7 +577,7 @@ class GuiMainMenu(QMenuBar):
         self.aFmtSQuote.triggered.connect(lambda: self._docAction(nwDocAction.S_QUOTE))
         self.fmtMenu.addAction(self.aFmtSQuote)
 
-        # Edit > Separator
+        # Format > Separator
         self.fmtMenu.addSeparator()
 
         # Format > Header 1
@@ -621,6 +621,21 @@ class GuiMainMenu(QMenuBar):
         self.aFmtNoFormat.setShortcuts(["Ctrl+0","Ctrl+Shift+/"])
         self.aFmtNoFormat.triggered.connect(lambda: self._docAction(nwDocAction.BLOCK_TXT))
         self.fmtMenu.addAction(self.aFmtNoFormat)
+
+        # Format > Separator
+        self.fmtMenu.addSeparator()
+
+        # Format > Replace Single Quotes
+        self.aFmtReplSng = QAction("Replace Single Quotes", self)
+        self.aFmtReplSng.setStatusTip("Replace all straight single quotes in selected text")
+        self.aFmtReplSng.triggered.connect(lambda: self._docAction(nwDocAction.REPL_SNG))
+        self.fmtMenu.addAction(self.aFmtReplSng)
+
+        # Format > Replace Double Quotes
+        self.aFmtReplDbl = QAction("Replace Double Quotes", self)
+        self.aFmtReplDbl.setStatusTip("Replace all straight double quotes in selected text")
+        self.aFmtReplDbl.triggered.connect(lambda: self._docAction(nwDocAction.REPL_DBL))
+        self.fmtMenu.addAction(self.aFmtReplDbl)
 
         return
 
