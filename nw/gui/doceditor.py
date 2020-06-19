@@ -48,7 +48,7 @@ from PyQt5.QtWidgets import (
 from nw.core import NWDoc
 from nw.gui.dochighlight import GuiDocHighlighter
 from nw.core import NWSpellSimple, countWords
-from nw.constants import nwUnicode, nwDocAction
+from nw.constants import nwUnicode, nwDocAction, nwDocInsert, nwInsertSymbols
 from nw.common import transferCase
 
 logger = logging.getLogger(__name__)
@@ -570,6 +570,21 @@ class GuiDocEditor(QTextEdit):
             ))
         return
 
+    def insertText(self, theInsert):
+        """Insert a specific type of text at the cursor position.
+        """
+        if isinstance(theInsert, str):
+            theText = theInsert
+        elif theInsert in nwInsertSymbols.SYMBOLS:
+            theText = nwInsertSymbols.SYMBOLS[theInsert]
+        else:
+            return False
+        theCursor = self.textCursor()
+        theCursor.beginEditBlock()
+        theCursor.insertText(theText)
+        theCursor.endEditBlock()
+        return True
+
     def closeSearch(self):
         """Close the search box.
         """
@@ -598,18 +613,7 @@ class GuiDocEditor(QTextEdit):
             # seems to be capturing the return key.
             return
 
-        if keyEvent.modifiers() == Qt.ShiftModifier:
-            theKey = keyEvent.key()
-            if theKey == Qt.Key_Return:
-                self._insertHardBreak()
-            elif theKey == Qt.Key_Enter:
-                self._insertHardBreak()
-            elif theKey == Qt.Key_Space:
-                self._insertNonBreakingSpace()
-            else:
-                QTextEdit.keyPressEvent(self, keyEvent)
-        else:
-            QTextEdit.keyPressEvent(self, keyEvent)
+        QTextEdit.keyPressEvent(self, keyEvent)
 
         return
 
@@ -796,24 +800,6 @@ class GuiDocEditor(QTextEdit):
             self.theParent.docViewer.loadFromTag(theWord)
 
         return True
-
-    def _insertHardBreak(self):
-        """Inserts a hard line break at the cursor position.
-        """
-        theCursor = self.textCursor()
-        theCursor.beginEditBlock()
-        theCursor.insertText("  \n")
-        theCursor.endEditBlock()
-        return
-
-    def _insertNonBreakingSpace(self):
-        """Inserts a non-breaking space at the cursor position.
-        """
-        theCursor = self.textCursor()
-        theCursor.beginEditBlock()
-        theCursor.insertText(nwUnicode.U_NBSP)
-        theCursor.endEditBlock()
-        return
 
     def _openSpellContext(self):
         """Opens the spell check context menu at the current point of

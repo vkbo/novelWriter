@@ -132,7 +132,7 @@ class GuiDocHighlighter(QSyntaxHighlighter):
 
         # Non-Breaking Spaces
         self.hRules.append((
-            "[%s]+" % nwUnicode.U_NBSP, {
+            "[%s%s]+" % (nwUnicode.U_NBSP, nwUnicode.U_THNBSP), {
                 0 : self.hStyles["nobreak"],
             }
         ))

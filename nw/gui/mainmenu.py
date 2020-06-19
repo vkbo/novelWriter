@@ -33,7 +33,7 @@ from PyQt5.QtGui import QDesktopServices
 from PyQt5.QtWidgets import QMenuBar, QAction, QMessageBox
 
 from nw.gui.about import GuiAbout
-from nw.constants import nwItemType, nwItemClass, nwDocAction
+from nw.constants import nwItemType, nwItemClass, nwDocAction, nwDocInsert
 
 logger = logging.getLogger(__name__)
 
@@ -50,8 +50,9 @@ class GuiMainMenu(QMenuBar):
         self._buildProjectMenu()
         self._buildDocumentMenu()
         self._buildEditMenu()
-        self._buildViewMenu()
+        self._buildInsertMenu()
         self._buildFormatMenu()
+        self._buildViewMenu()
         self._buildToolsMenu()
         self._buildHelpMenu()
 
@@ -59,6 +60,7 @@ class GuiMainMenu(QMenuBar):
         self._docAction    = self.theParent.passDocumentAction
         self._moveTreeItem = self.theParent.treeView.moveTreeItem
         self._newTreeItem  = self.theParent.treeView.newTreeItem
+        self._docInsert    = self.theParent.docEditor.insertText
 
         logger.debug("GuiMainMenu initialisation complete")
 
@@ -97,6 +99,8 @@ class GuiMainMenu(QMenuBar):
     ##
 
     def _menuExit(self):
+        """Exit novelWriter.
+        """
         self.theParent.closeMain()
         return
 
@@ -123,19 +127,33 @@ class GuiMainMenu(QMenuBar):
         return True
 
     def _showAboutQt(self):
+        """Show Qt's own About dialog.
+        """
         msgBox = QMessageBox()
         msgBox.aboutQt(self.theParent,"About Qt")
         return True
 
     def _openHelp(self):
+        """Open the documentation URL in the system's default browser.
+        """
         QDesktopServices.openUrl(QUrl(nw.__docurl__))
         return True
 
+    def _openIssue(self):
+        """Open the issue tracker URL in the system's default browser.
+        """
+        QDesktopServices.openUrl(QUrl(nw.__issuesurl__))
+        return True
+
     def _showDocumentLocation(self):
+        """Open the dialog showing the location of the editor document.
+        """
         self.theParent.docEditor.revealLocation()
         return True
 
     def _doBackup(self):
+        """Call the backup function for the project.
+        """
         self.theProject.zipIt(True)
         return True
 
@@ -228,14 +246,14 @@ class GuiMainMenu(QMenuBar):
         self.projMenu.addSeparator()
 
         # Project > Edit
-        self.aEditItem = QAction("&Edit Project Item", self)
+        self.aEditItem = QAction("Edit Project Item", self)
         self.aEditItem.setStatusTip("Change item settings")
         self.aEditItem.setShortcuts(["Ctrl+E", "F2"])
         self.aEditItem.triggered.connect(self.theParent.editItem)
         self.projMenu.addAction(self.aEditItem)
 
         # Project > Delete
-        self.aDeleteItem = QAction("&Delete Project Item", self)
+        self.aDeleteItem = QAction("Delete Project Item", self)
         self.aDeleteItem.setStatusTip("Delete selected item")
         self.aDeleteItem.setShortcut("Ctrl+Del")
         self.aDeleteItem.triggered.connect(lambda : self.theParent.treeView.deleteItem(None))
@@ -265,21 +283,21 @@ class GuiMainMenu(QMenuBar):
         self.docuMenu = self.addMenu("&Document")
 
         # Document > New
-        self.aNewDoc = QAction("&New Document", self)
+        self.aNewDoc = QAction("New Document", self)
         self.aNewDoc.setStatusTip("Create new document")
         self.aNewDoc.setShortcut("Ctrl+N")
         self.aNewDoc.triggered.connect(lambda : self._newTreeItem(nwItemType.FILE, None))
         self.docuMenu.addAction(self.aNewDoc)
 
         # Document > Open
-        self.aOpenDoc = QAction("&Open Document", self)
+        self.aOpenDoc = QAction("Open Document", self)
         self.aOpenDoc.setStatusTip("Open selected document")
         self.aOpenDoc.setShortcut("Ctrl+O")
         self.aOpenDoc.triggered.connect(self.theParent.openSelectedItem)
         self.docuMenu.addAction(self.aOpenDoc)
 
         # Document > Save
-        self.aSaveDoc = QAction("&Save Document", self)
+        self.aSaveDoc = QAction("Save Document", self)
         self.aSaveDoc.setStatusTip("Save current document")
         self.aSaveDoc.setShortcut("Ctrl+S")
         self.aSaveDoc.triggered.connect(self.theParent.saveDocument)
@@ -338,53 +356,6 @@ class GuiMainMenu(QMenuBar):
         self.aSplitDoc.setStatusTip("Split a document into a folder of multiple documents")
         self.aSplitDoc.triggered.connect(self.theParent.splitDocument)
         self.docuMenu.addAction(self.aSplitDoc)
-
-        return
-
-    def _buildViewMenu(self):
-
-        # View
-        self.viewMenu = self.addMenu("&View")
-
-        # View > TreeView
-        self.aFocusTree = QAction("Focus Project Tree", self)
-        self.aFocusTree.setStatusTip("Move focus to project tree")
-        self.aFocusTree.setShortcut("Alt+1")
-        self.aFocusTree.triggered.connect(lambda : self.theParent.setFocus(1))
-        self.viewMenu.addAction(self.aFocusTree)
-
-        # View > Document Pane 1
-        self.aFocusEditor = QAction("Focus Document Editor", self)
-        self.aFocusEditor.setStatusTip("Move focus to left document pane")
-        self.aFocusEditor.setShortcut("Alt+2")
-        self.aFocusEditor.triggered.connect(lambda : self.theParent.setFocus(2))
-        self.viewMenu.addAction(self.aFocusEditor)
-
-        # View > Document Pane 2
-        self.aFocusView = QAction("Focus Document Viewer", self)
-        self.aFocusView.setStatusTip("Move focus to right document pane")
-        self.aFocusView.setShortcut("Alt+3")
-        self.aFocusView.triggered.connect(lambda : self.theParent.setFocus(3))
-        self.viewMenu.addAction(self.aFocusView)
-
-        # View > Separator
-        self.viewMenu.addSeparator()
-
-        # View > Toggle Distraction Free Mode
-        self.aZenMode = QAction("Zen Mode", self)
-        self.aZenMode.setStatusTip("Toggles distraction free mode, only showing text editor")
-        self.aZenMode.setShortcut("F8")
-        self.aZenMode.setCheckable(True)
-        self.aZenMode.setChecked(self.theParent.isZenMode)
-        self.aZenMode.toggled.connect(self.theParent.toggleZenMode)
-        self.viewMenu.addAction(self.aZenMode)
-
-        # View > Toggle Full Screen
-        self.aFullScreen = QAction("Full Screen Mode", self)
-        self.aFullScreen.setStatusTip("Maximises the main window")
-        self.aFullScreen.setShortcut("F11")
-        self.aFullScreen.triggered.connect(self.theParent.toggleFullScreenMode)
-        self.viewMenu.addAction(self.aFullScreen)
 
         return
 
@@ -497,6 +468,65 @@ class GuiMainMenu(QMenuBar):
 
         return
 
+    def _buildInsertMenu(self):
+
+        # Insert
+        self.insertMenu = self.addMenu("&Insert")
+
+        # Insert > Short Dash
+        self.aInsENDash = QAction("Short Dash", self)
+        self.aInsENDash.setStatusTip("Insert short dash")
+        self.aInsENDash.setShortcut("Ctrl+K, -")
+        self.aInsENDash.triggered.connect(lambda: self._docInsert(nwDocInsert.SHORT_DASH))
+        self.insertMenu.addAction(self.aInsENDash)
+
+        # Insert > Long Dash
+        self.aInsEMDash = QAction("Long Dash", self)
+        self.aInsEMDash.setStatusTip("Insert long dash")
+        self.aInsEMDash.setShortcut("Ctrl+K, _")
+        self.aInsEMDash.triggered.connect(lambda: self._docInsert(nwDocInsert.LONG_DASH))
+        self.insertMenu.addAction(self.aInsEMDash)
+
+        # Insert > Ellipsis
+        self.aInsEllipsis = QAction("Ellipsis", self)
+        self.aInsEllipsis.setStatusTip("Insert ellipsis")
+        self.aInsEllipsis.setShortcut("Ctrl+K, .")
+        self.aInsEllipsis.triggered.connect(lambda: self._docInsert(nwDocInsert.ELLIPSIS))
+        self.insertMenu.addAction(self.aInsEllipsis)
+
+        # Insert > Separator
+        self.insertMenu.addSeparator()
+
+        # Insert > Hard Line Break
+        self.aInsHardBreak = QAction("Hard Line Break", self)
+        self.aInsHardBreak.setStatusTip("Insert a hard line break")
+        self.aInsHardBreak.setShortcut("Ctrl+K, Return")
+        self.aInsHardBreak.triggered.connect(lambda: self._docInsert(nwDocInsert.HARD_BREAK))
+        self.insertMenu.addAction(self.aInsHardBreak)
+
+        # Insert > Non-Breaking Space
+        self.aInsNBSpace = QAction("Non-Breaking Space", self)
+        self.aInsNBSpace.setStatusTip("Insert a non-breaking space")
+        self.aInsNBSpace.setShortcut("Ctrl+K, Space")
+        self.aInsNBSpace.triggered.connect(lambda: self._docInsert(nwDocInsert.NB_SPACE))
+        self.insertMenu.addAction(self.aInsNBSpace)
+
+        # Insert > Thin Space
+        self.aInsThinSpace = QAction("Thin Space", self)
+        self.aInsThinSpace.setStatusTip("Insert a thin space")
+        self.aInsThinSpace.setShortcut("Ctrl+K, Shift+Space")
+        self.aInsThinSpace.triggered.connect(lambda: self._docInsert(nwDocInsert.THIN_SPACE))
+        self.insertMenu.addAction(self.aInsThinSpace)
+
+        # Insert > Thin Non-Breaking Space
+        self.aInsThinNBSpace = QAction("Thin Non-Breaking Space", self)
+        self.aInsThinNBSpace.setStatusTip("Insert a thin non-breaking space")
+        self.aInsThinNBSpace.setShortcut("Ctrl+K, Ctrl+Space")
+        self.aInsThinNBSpace.triggered.connect(lambda: self._docInsert(nwDocInsert.THIN_NB_SPACE))
+        self.insertMenu.addAction(self.aInsThinNBSpace)
+
+        return
+
     def _buildFormatMenu(self):
 
         # Format
@@ -591,6 +621,53 @@ class GuiMainMenu(QMenuBar):
         self.aFmtNoFormat.setShortcuts(["Ctrl+0","Ctrl+Shift+/"])
         self.aFmtNoFormat.triggered.connect(lambda: self._docAction(nwDocAction.BLOCK_TXT))
         self.fmtMenu.addAction(self.aFmtNoFormat)
+
+        return
+
+    def _buildViewMenu(self):
+
+        # View
+        self.viewMenu = self.addMenu("&View")
+
+        # View > TreeView
+        self.aFocusTree = QAction("Focus Project Tree", self)
+        self.aFocusTree.setStatusTip("Move focus to project tree")
+        self.aFocusTree.setShortcut("Alt+1")
+        self.aFocusTree.triggered.connect(lambda : self.theParent.setFocus(1))
+        self.viewMenu.addAction(self.aFocusTree)
+
+        # View > Document Pane 1
+        self.aFocusEditor = QAction("Focus Document Editor", self)
+        self.aFocusEditor.setStatusTip("Move focus to left document pane")
+        self.aFocusEditor.setShortcut("Alt+2")
+        self.aFocusEditor.triggered.connect(lambda : self.theParent.setFocus(2))
+        self.viewMenu.addAction(self.aFocusEditor)
+
+        # View > Document Pane 2
+        self.aFocusView = QAction("Focus Document Viewer", self)
+        self.aFocusView.setStatusTip("Move focus to right document pane")
+        self.aFocusView.setShortcut("Alt+3")
+        self.aFocusView.triggered.connect(lambda : self.theParent.setFocus(3))
+        self.viewMenu.addAction(self.aFocusView)
+
+        # View > Separator
+        self.viewMenu.addSeparator()
+
+        # View > Toggle Distraction Free Mode
+        self.aZenMode = QAction("Zen Mode", self)
+        self.aZenMode.setStatusTip("Toggles distraction free mode, only showing text editor")
+        self.aZenMode.setShortcut("F8")
+        self.aZenMode.setCheckable(True)
+        self.aZenMode.setChecked(self.theParent.isZenMode)
+        self.aZenMode.toggled.connect(self.theParent.toggleZenMode)
+        self.viewMenu.addAction(self.aZenMode)
+
+        # View > Toggle Full Screen
+        self.aFullScreen = QAction("Full Screen Mode", self)
+        self.aFullScreen.setStatusTip("Maximises the main window")
+        self.aFullScreen.setShortcut("F11")
+        self.aFullScreen.triggered.connect(self.theParent.toggleFullScreenMode)
+        self.viewMenu.addAction(self.aFullScreen)
 
         return
 
@@ -702,6 +779,12 @@ class GuiMainMenu(QMenuBar):
         self.aHelp.setShortcut("F1")
         self.aHelp.triggered.connect(self._openHelp)
         self.helpMenu.addAction(self.aHelp)
+
+        # Document > Report Issue
+        self.aIssue = QAction("Report an Issue", self)
+        self.aIssue.setStatusTip("View online documentation")
+        self.aIssue.triggered.connect(self._openIssue)
+        self.helpMenu.addAction(self.aIssue)
 
         return
 

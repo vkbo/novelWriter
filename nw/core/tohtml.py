@@ -54,6 +54,8 @@ class ToHtml(Tokenizer):
             nwUnicode.U_EMDASH : nwUnicode.H_EMDASH,
             nwUnicode.U_HELLIP : nwUnicode.H_HELLIP,
             nwUnicode.U_NBSP   : nwUnicode.H_NBSP,
+            nwUnicode.U_THNSP  : nwUnicode.H_THNSP,
+            nwUnicode.U_THNBSP : nwUnicode.H_THNBSP,
         }
         self.revDict = {}
         self.reReplace = []

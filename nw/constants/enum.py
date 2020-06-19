@@ -96,6 +96,19 @@ class nwDocAction(Enum):
 
 # END Enum nwDocAction
 
+class nwDocInsert(Enum):
+
+    NO_INSERT     = 0
+    HARD_BREAK    = 1
+    NB_SPACE      = 2
+    THIN_SPACE    = 3
+    THIN_NB_SPACE = 4
+    SHORT_DASH    = 5
+    LONG_DASH     = 6
+    ELLIPSIS      = 7
+
+# END Enum nwDocInsert
+
 class nwAlert(Enum):
 
     INFO  = 0

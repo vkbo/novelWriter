@@ -1,21 +1,21 @@
 <?xml version='1.0' encoding='utf-8'?>
-<novelWriterXML appVersion="0.9.0rc1" hexVersion="0x000900c1" fileVersion="1.1" timeStamp="2020-06-13 10:26:35">
+<novelWriterXML appVersion="0.9.0rc1" hexVersion="0x000900c1" fileVersion="1.1" timeStamp="2020-06-19 19:50:54">
   <project>
     <name>Sample Project</name>
     <title>Sample Project</title>
     <author>Jane Smith</author>
     <author>Jay Doh</author>
-    <saveCount>332</saveCount>
-    <autoCount>56</autoCount>
-    <editTime>10692</editTime>
+    <saveCount>407</saveCount>
+    <autoCount>71</autoCount>
+    <editTime>15118</editTime>
   </project>
   <settings>
     <doBackup>False</doBackup>
     <spellCheck>True</spellCheck>
     <autoOutline>True</autoOutline>
     <lastEdited>636b6aa9b697b</lastEdited>
-    <lastViewed>636b6aa9b697b</lastViewed>
-    <lastWordCount>927</lastWordCount>
+    <lastViewed>bb2c23b3c42cc</lastViewed>
+    <lastWordCount>967</lastWordCount>
     <autoReplace>
       <A>B</A>
       <B>E</B>
@@ -114,10 +114,10 @@
       <status>1st Draft</status>
       <exported>True</exported>
       <layout>SCENE</layout>
-      <charCount>1240</charCount>
-      <wordCount>223</wordCount>
-      <paraCount>7</paraCount>
-      <cursorPos>403</cursorPos>
+      <charCount>1483</charCount>
+      <wordCount>263</wordCount>
+      <paraCount>8</paraCount>
+      <cursorPos>1086</cursorPos>
     </item>
     <item handle="bc0cbd2a407f3" order="2" parent="e7ded148d6e4a">
       <name>Another Scene</name>
