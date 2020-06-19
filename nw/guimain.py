@@ -518,20 +518,30 @@ class GuiMain(QMainWindow):
         """Load a document for viewing in the view panel.
         """
         if tHandle is None:
-            tHandle = self.treeView.getSelectedHandle()
-        if tHandle is None:
-            logger.debug("No document selected, trying editor document")
-            tHandle = self.docEditor.theHandle
-        if tHandle is None:
-            logger.debug("No document selected, trying last viewed")
-            tHandle = self.theProject.lastViewed
-        if tHandle is None:
-            logger.debug("No document selected, giving up")
-            return False
+            logger.debug("Viewing document, but no handle provided")
+
+            if self.docEditor.hasFocus():
+                logger.verbose("Trying editor document")
+                tHandle = self.docEditor.theHandle
+
+            if tHandle is not None:
+                self.saveDocument()
+            else:
+                logger.verbose("Trying selected document")
+                tHandle = self.treeView.getSelectedHandle()
+
+            if tHandle is None:
+                logger.verbose("Trying last viewed document")
+                tHandle = self.theProject.lastViewed
+
+            if tHandle is None:
+                logger.verbose("No document to view, giving up")
+                return False
 
         # Make sure main tab is in Editor view
         self.tabWidget.setCurrentWidget(self.splitDocs)
 
+        logger.debug("Viewing document with handle %s" % tHandle)
         if self.docViewer.loadText(tHandle):
             if not self.splitView.isVisible():
                 bPos = self.splitMain.sizes()
