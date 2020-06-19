@@ -28,12 +28,12 @@
 import logging
 import nw
 
-from PyQt5.QtCore import QUrl
+from PyQt5.QtCore import Qt, QUrl
 from PyQt5.QtGui import QDesktopServices
 from PyQt5.QtWidgets import QMenuBar, QAction, QMessageBox
 
 from nw.gui.about import GuiAbout
-from nw.constants import nwItemType, nwItemClass, nwDocAction
+from nw.constants import nwItemType, nwItemClass, nwDocAction, nwDocInsert
 
 logger = logging.getLogger(__name__)
 
@@ -50,8 +50,9 @@ class GuiMainMenu(QMenuBar):
         self._buildProjectMenu()
         self._buildDocumentMenu()
         self._buildEditMenu()
-        self._buildViewMenu()
+        self._buildInsertMenu()
         self._buildFormatMenu()
+        self._buildViewMenu()
         self._buildToolsMenu()
         self._buildHelpMenu()
 
@@ -59,6 +60,7 @@ class GuiMainMenu(QMenuBar):
         self._docAction    = self.theParent.passDocumentAction
         self._moveTreeItem = self.theParent.treeView.moveTreeItem
         self._newTreeItem  = self.theParent.treeView.newTreeItem
+        self._docInsert    = self.theParent.docEditor.insertText
 
         logger.debug("GuiMainMenu initialisation complete")
 
@@ -341,53 +343,6 @@ class GuiMainMenu(QMenuBar):
 
         return
 
-    def _buildViewMenu(self):
-
-        # View
-        self.viewMenu = self.addMenu("&View")
-
-        # View > TreeView
-        self.aFocusTree = QAction("Focus Project Tree", self)
-        self.aFocusTree.setStatusTip("Move focus to project tree")
-        self.aFocusTree.setShortcut("Alt+1")
-        self.aFocusTree.triggered.connect(lambda : self.theParent.setFocus(1))
-        self.viewMenu.addAction(self.aFocusTree)
-
-        # View > Document Pane 1
-        self.aFocusEditor = QAction("Focus Document Editor", self)
-        self.aFocusEditor.setStatusTip("Move focus to left document pane")
-        self.aFocusEditor.setShortcut("Alt+2")
-        self.aFocusEditor.triggered.connect(lambda : self.theParent.setFocus(2))
-        self.viewMenu.addAction(self.aFocusEditor)
-
-        # View > Document Pane 2
-        self.aFocusView = QAction("Focus Document Viewer", self)
-        self.aFocusView.setStatusTip("Move focus to right document pane")
-        self.aFocusView.setShortcut("Alt+3")
-        self.aFocusView.triggered.connect(lambda : self.theParent.setFocus(3))
-        self.viewMenu.addAction(self.aFocusView)
-
-        # View > Separator
-        self.viewMenu.addSeparator()
-
-        # View > Toggle Distraction Free Mode
-        self.aZenMode = QAction("Zen Mode", self)
-        self.aZenMode.setStatusTip("Toggles distraction free mode, only showing text editor")
-        self.aZenMode.setShortcut("F8")
-        self.aZenMode.setCheckable(True)
-        self.aZenMode.setChecked(self.theParent.isZenMode)
-        self.aZenMode.toggled.connect(self.theParent.toggleZenMode)
-        self.viewMenu.addAction(self.aZenMode)
-
-        # View > Toggle Full Screen
-        self.aFullScreen = QAction("Full Screen Mode", self)
-        self.aFullScreen.setStatusTip("Maximises the main window")
-        self.aFullScreen.setShortcut("F11")
-        self.aFullScreen.triggered.connect(self.theParent.toggleFullScreenMode)
-        self.viewMenu.addAction(self.aFullScreen)
-
-        return
-
     def _buildEditMenu(self):
 
         # Edit
@@ -497,6 +452,65 @@ class GuiMainMenu(QMenuBar):
 
         return
 
+    def _buildInsertMenu(self):
+
+        # Insert
+        self.insertMenu = self.addMenu("&Insert")
+
+        # Insert > Short Dash
+        self.aInsENDash = QAction("Short Dash", self)
+        self.aInsENDash.setStatusTip("Insert short dash")
+        self.aInsENDash.setShortcut("Ctrl+K, -")
+        self.aInsENDash.triggered.connect(lambda: self._docInsert(nwDocInsert.SHORT_DASH))
+        self.insertMenu.addAction(self.aInsENDash)
+
+        # Insert > Long Dash
+        self.aInsEMDash = QAction("Long Dash", self)
+        self.aInsEMDash.setStatusTip("Insert long dash")
+        self.aInsEMDash.setShortcut("Ctrl+K, _")
+        self.aInsEMDash.triggered.connect(lambda: self._docInsert(nwDocInsert.LONG_DASH))
+        self.insertMenu.addAction(self.aInsEMDash)
+
+        # Insert > Ellipsis
+        self.aInsEllipsis = QAction("Ellipsis", self)
+        self.aInsEllipsis.setStatusTip("Insert ellipsis")
+        self.aInsEllipsis.setShortcut("Ctrl+K, .")
+        self.aInsEllipsis.triggered.connect(lambda: self._docInsert(nwDocInsert.ELLIPSIS))
+        self.insertMenu.addAction(self.aInsEllipsis)
+
+        # Insert > Separator
+        self.insertMenu.addSeparator()
+
+        # Insert > Hard Line Break
+        self.aInsHardBreak = QAction("Hard Line Break", self)
+        self.aInsHardBreak.setStatusTip("Insert a hard line break")
+        self.aInsHardBreak.setShortcut("Ctrl+K, Return")
+        self.aInsHardBreak.triggered.connect(lambda: self._docInsert(nwDocInsert.HARD_BREAK))
+        self.insertMenu.addAction(self.aInsHardBreak)
+
+        # Insert > Non-Breaking Space
+        self.aInsNBSpace = QAction("Non-Breaking Space", self)
+        self.aInsNBSpace.setStatusTip("Insert a non-breaking space")
+        self.aInsNBSpace.setShortcut("Ctrl+K, Space")
+        self.aInsNBSpace.triggered.connect(lambda: self._docInsert(nwDocInsert.NB_SPACE))
+        self.insertMenu.addAction(self.aInsNBSpace)
+
+        # Insert > Thin Space
+        self.aInsThinSpace = QAction("Thin Space", self)
+        self.aInsThinSpace.setStatusTip("Insert a thin space")
+        self.aInsThinSpace.setShortcut("Ctrl+K, Shift+Space")
+        self.aInsThinSpace.triggered.connect(lambda: self._docInsert(nwDocInsert.THIN_SPACE))
+        self.insertMenu.addAction(self.aInsThinSpace)
+
+        # Insert > Thin Non-Breaking Space
+        self.aInsThinNBSpace = QAction("Thin Non-Breaking Space", self)
+        self.aInsThinNBSpace.setStatusTip("Insert a thin non-breaking space")
+        self.aInsThinNBSpace.setShortcut("Ctrl+K, Ctrl+Space")
+        self.aInsThinNBSpace.triggered.connect(lambda: self._docInsert(nwDocInsert.THIN_NB_SPACE))
+        self.insertMenu.addAction(self.aInsThinNBSpace)
+
+        return
+
     def _buildFormatMenu(self):
 
         # Format
@@ -591,6 +605,53 @@ class GuiMainMenu(QMenuBar):
         self.aFmtNoFormat.setShortcuts(["Ctrl+0","Ctrl+Shift+/"])
         self.aFmtNoFormat.triggered.connect(lambda: self._docAction(nwDocAction.BLOCK_TXT))
         self.fmtMenu.addAction(self.aFmtNoFormat)
+
+        return
+
+    def _buildViewMenu(self):
+
+        # View
+        self.viewMenu = self.addMenu("&View")
+
+        # View > TreeView
+        self.aFocusTree = QAction("Focus Project Tree", self)
+        self.aFocusTree.setStatusTip("Move focus to project tree")
+        self.aFocusTree.setShortcut("Alt+1")
+        self.aFocusTree.triggered.connect(lambda : self.theParent.setFocus(1))
+        self.viewMenu.addAction(self.aFocusTree)
+
+        # View > Document Pane 1
+        self.aFocusEditor = QAction("Focus Document Editor", self)
+        self.aFocusEditor.setStatusTip("Move focus to left document pane")
+        self.aFocusEditor.setShortcut("Alt+2")
+        self.aFocusEditor.triggered.connect(lambda : self.theParent.setFocus(2))
+        self.viewMenu.addAction(self.aFocusEditor)
+
+        # View > Document Pane 2
+        self.aFocusView = QAction("Focus Document Viewer", self)
+        self.aFocusView.setStatusTip("Move focus to right document pane")
+        self.aFocusView.setShortcut("Alt+3")
+        self.aFocusView.triggered.connect(lambda : self.theParent.setFocus(3))
+        self.viewMenu.addAction(self.aFocusView)
+
+        # View > Separator
+        self.viewMenu.addSeparator()
+
+        # View > Toggle Distraction Free Mode
+        self.aZenMode = QAction("Zen Mode", self)
+        self.aZenMode.setStatusTip("Toggles distraction free mode, only showing text editor")
+        self.aZenMode.setShortcut("F8")
+        self.aZenMode.setCheckable(True)
+        self.aZenMode.setChecked(self.theParent.isZenMode)
+        self.aZenMode.toggled.connect(self.theParent.toggleZenMode)
+        self.viewMenu.addAction(self.aZenMode)
+
+        # View > Toggle Full Screen
+        self.aFullScreen = QAction("Full Screen Mode", self)
+        self.aFullScreen.setStatusTip("Maximises the main window")
+        self.aFullScreen.setShortcut("F11")
+        self.aFullScreen.triggered.connect(self.theParent.toggleFullScreenMode)
+        self.viewMenu.addAction(self.aFullScreen)
 
         return
 

@@ -966,12 +966,15 @@ class GuiMain(QMainWindow):
         """Connect to the main window all menu actions that need to be
         available also when the main menu is hidden.
         """
+        # Project
         self.addAction(self.mainMenu.aSaveProject)
         self.addAction(self.mainMenu.aExitNW)
+
+        # Document
         self.addAction(self.mainMenu.aSaveDoc)
         self.addAction(self.mainMenu.aFileDetails)
-        self.addAction(self.mainMenu.aZenMode)
-        self.addAction(self.mainMenu.aFullScreen)
+
+        # Edit
         self.addAction(self.mainMenu.aEditUndo)
         self.addAction(self.mainMenu.aEditRedo)
         self.addAction(self.mainMenu.aEditCut)
@@ -979,6 +982,17 @@ class GuiMain(QMainWindow):
         self.addAction(self.mainMenu.aEditPaste)
         self.addAction(self.mainMenu.aSelectAll)
         self.addAction(self.mainMenu.aSelectPar)
+
+        # Insert
+        self.addAction(self.mainMenu.aInsENDash)
+        self.addAction(self.mainMenu.aInsEMDash)
+        self.addAction(self.mainMenu.aInsEllipsis)
+        self.addAction(self.mainMenu.aInsHardBreak)
+        self.addAction(self.mainMenu.aInsNBSpace)
+        self.addAction(self.mainMenu.aInsThinSpace)
+        self.addAction(self.mainMenu.aInsThinNBSpace)
+
+        # Format
         self.addAction(self.mainMenu.aFmtItalic)
         self.addAction(self.mainMenu.aFmtBold)
         self.addAction(self.mainMenu.aFmtBoldIt)
@@ -990,10 +1004,19 @@ class GuiMain(QMainWindow):
         self.addAction(self.mainMenu.aFmtHead4)
         self.addAction(self.mainMenu.aFmtComment)
         self.addAction(self.mainMenu.aFmtNoFormat)
+
+        # View
+        self.addAction(self.mainMenu.aZenMode)
+        self.addAction(self.mainMenu.aFullScreen)
+
+        # Tools
         self.addAction(self.mainMenu.aSpellCheck)
         self.addAction(self.mainMenu.aReRunSpell)
         self.addAction(self.mainMenu.aPreferences)
+
+        # Help
         self.addAction(self.mainMenu.aHelp)
+
         return True
 
     def _setWindowTitle(self, projName=None):
