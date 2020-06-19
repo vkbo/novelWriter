@@ -529,6 +529,8 @@ class GuiDocViewHeader(QWidget):
     def _refreshDocument(self):
         """Reload the content of the document.
         """
+        if self.docViewer.theHandle == self.theParent.docEditor.theHandle:
+            self.theParent.saveDocument()
         self.docViewer.reloadText()
         return
 
