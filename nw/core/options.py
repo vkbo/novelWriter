@@ -78,6 +78,11 @@ class OptionState():
                 "columnWidth",
                 "columnHidden",
             },
+            "GuiProjectSettings": {
+                "winWidth",
+                "winHeight",
+                "replaceColW",
+            }
         }
 
         return

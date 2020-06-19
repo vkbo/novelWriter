@@ -871,8 +871,8 @@ class GuiBuildNovel(QDialog):
             "section"    : self.fmtSection.text().strip(),
         })
 
-        winWidth    = self.mainConf.pxInt(self.width())
-        winHeight   = self.mainConf.pxInt(self.height())
+        winWidth    = self.mainConf.rpxInt(self.width())
+        winHeight   = self.mainConf.rpxInt(self.height())
         justifyText = self.justifyText.isChecked()
         noStyling   = self.noStyling.isChecked()
         textFont    = self.textFont.text()
