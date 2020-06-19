@@ -28,7 +28,7 @@
 import logging
 import nw
 
-from PyQt5.QtCore import Qt, QUrl
+from PyQt5.QtCore import QUrl
 from PyQt5.QtGui import QDesktopServices
 from PyQt5.QtWidgets import QMenuBar, QAction, QMessageBox
 
@@ -99,6 +99,8 @@ class GuiMainMenu(QMenuBar):
     ##
 
     def _menuExit(self):
+        """Exit novelWriter.
+        """
         self.theParent.closeMain()
         return
 
@@ -125,19 +127,33 @@ class GuiMainMenu(QMenuBar):
         return True
 
     def _showAboutQt(self):
+        """Show Qt's own About dialog.
+        """
         msgBox = QMessageBox()
         msgBox.aboutQt(self.theParent,"About Qt")
         return True
 
     def _openHelp(self):
+        """Open the documentation URL in the system's default browser.
+        """
         QDesktopServices.openUrl(QUrl(nw.__docurl__))
         return True
 
+    def _openIssue(self):
+        """Open the issue tracker URL in the system's default browser.
+        """
+        QDesktopServices.openUrl(QUrl(nw.__issuesurl__))
+        return True
+
     def _showDocumentLocation(self):
+        """Open the dialog showing the location of the editor document.
+        """
         self.theParent.docEditor.revealLocation()
         return True
 
     def _doBackup(self):
+        """Call the backup function for the project.
+        """
         self.theProject.zipIt(True)
         return True
 
@@ -230,14 +246,14 @@ class GuiMainMenu(QMenuBar):
         self.projMenu.addSeparator()
 
         # Project > Edit
-        self.aEditItem = QAction("&Edit Project Item", self)
+        self.aEditItem = QAction("Edit Project Item", self)
         self.aEditItem.setStatusTip("Change item settings")
         self.aEditItem.setShortcuts(["Ctrl+E", "F2"])
         self.aEditItem.triggered.connect(self.theParent.editItem)
         self.projMenu.addAction(self.aEditItem)
 
         # Project > Delete
-        self.aDeleteItem = QAction("&Delete Project Item", self)
+        self.aDeleteItem = QAction("Delete Project Item", self)
         self.aDeleteItem.setStatusTip("Delete selected item")
         self.aDeleteItem.setShortcut("Ctrl+Del")
         self.aDeleteItem.triggered.connect(lambda : self.theParent.treeView.deleteItem(None))
@@ -267,21 +283,21 @@ class GuiMainMenu(QMenuBar):
         self.docuMenu = self.addMenu("&Document")
 
         # Document > New
-        self.aNewDoc = QAction("&New Document", self)
+        self.aNewDoc = QAction("New Document", self)
         self.aNewDoc.setStatusTip("Create new document")
         self.aNewDoc.setShortcut("Ctrl+N")
         self.aNewDoc.triggered.connect(lambda : self._newTreeItem(nwItemType.FILE, None))
         self.docuMenu.addAction(self.aNewDoc)
 
         # Document > Open
-        self.aOpenDoc = QAction("&Open Document", self)
+        self.aOpenDoc = QAction("Open Document", self)
         self.aOpenDoc.setStatusTip("Open selected document")
         self.aOpenDoc.setShortcut("Ctrl+O")
         self.aOpenDoc.triggered.connect(self.theParent.openSelectedItem)
         self.docuMenu.addAction(self.aOpenDoc)
 
         # Document > Save
-        self.aSaveDoc = QAction("&Save Document", self)
+        self.aSaveDoc = QAction("Save Document", self)
         self.aSaveDoc.setStatusTip("Save current document")
         self.aSaveDoc.setShortcut("Ctrl+S")
         self.aSaveDoc.triggered.connect(self.theParent.saveDocument)
@@ -763,6 +779,12 @@ class GuiMainMenu(QMenuBar):
         self.aHelp.setShortcut("F1")
         self.aHelp.triggered.connect(self._openHelp)
         self.helpMenu.addAction(self.aHelp)
+
+        # Document > Report Issue
+        self.aIssue = QAction("Report an Issue", self)
+        self.aIssue.setStatusTip("View online documentation")
+        self.aIssue.triggered.connect(self._openIssue)
+        self.helpMenu.addAction(self.aIssue)
 
         return
 
