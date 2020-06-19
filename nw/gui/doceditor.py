@@ -80,9 +80,6 @@ class GuiDocEditor(QTextEdit):
         self.doReplace = False
         self.nonWord   = "\"'"
 
-        # Document State
-        self.hasSelection = False
-
         # Typography
         self.typDQOpen  = self.mainConf.fmtDoubleQuotes[0]
         self.typDQClose = self.mainConf.fmtDoubleQuotes[1]
@@ -160,8 +157,6 @@ class GuiDocEditor(QTextEdit):
         self.lastEdit  = 0
         self.bigDoc    = False
         self.doReplace = False
-
-        self.hasSelection = False
 
         self.setDocumentChanged(False)
         self.docHeader.setTitleFromHandle(self.theHandle)
