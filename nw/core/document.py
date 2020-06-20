@@ -30,8 +30,10 @@ import nw
 
 from os import path, mkdir, rename, unlink
 
+from nw.core.item import NWItem
 from nw.constants import nwAlert
 from nw.common import isHandle
+from nw.constants import nwItemLayout, nwItemClass
 
 logger = logging.getLogger(__name__)
 
@@ -139,8 +141,18 @@ class NWDoc():
         docPath = path.join(self.theProject.projContent, docFile)
         docTemp = path.join(self.theProject.projContent, docFile+"~")
 
-        itemPath = self.theProject.projTree.getItemPath(self.docHandle)
-        docMeta  = "%%~ "+":".join(itemPath)+":"+self.theItem.itemName+"\n"
+        if isinstance(self.theItem, NWItem):
+            itemPath = self.theProject.projTree.getItemPath(self.docHandle)
+            docMeta = (
+                "%%~ {handlepath:s}:{itemclass:s}:{itemlayout:s}:{itemname:s}\n"
+            ).format(
+                handlepath = ":".join(itemPath),
+                itemclass  = self.theItem.itemClass.name,
+                itemlayout = self.theItem.itemLayout.name,
+                itemname   = self.theItem.itemName,
+            )
+        else:
+            docMeta = ""
 
         try:
             with open(docTemp, mode="w", encoding="utf8") as outFile:
@@ -194,7 +206,7 @@ class NWDoc():
         """
         if len(self.docMeta) < 14:
             # Not enough information
-            return "", []
+            return "", [], None, None
 
         theMeta = self.docMeta
 
@@ -213,6 +225,18 @@ class NWDoc():
             else:
                 break
 
-        return theMeta, thePath
+        theClass = nwItemClass.NO_CLASS
+        for aClass in nwItemClass:
+            if theMeta.startswith(aClass.name):
+                theClass = aClass
+                theMeta = theMeta.lstrip(aClass.name+":")
+
+        theLayout = nwItemLayout.NO_LAYOUT
+        for aLayout in nwItemLayout:
+            if theMeta.startswith(aLayout.name):
+                theLayout = aLayout
+                theMeta = theMeta.lstrip(aLayout.name+":")
+
+        return theMeta, thePath, theClass, theLayout
 
 # END Class NWDoc

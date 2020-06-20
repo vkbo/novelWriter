@@ -143,7 +143,6 @@ class GuiTheme:
         self.fontPointSize = self.guiFont.pointSizeF()
         self.fontPixelSize = int(round(qMetric.height()))
         self.baseIconSize  = int(round(qMetric.ascent()))
-        self.textIconSize  = int(round(qMetric.ascent() + qMetric.leading()))
         self.textNHeight   = qMetric.boundingRect("N").height()
         self.textNWidth    = qMetric.boundingRect("N").width()
 
@@ -151,7 +150,6 @@ class GuiTheme:
         logger.verbose("GUI Font Point Size: %.2f" % self.fontPointSize)
         logger.verbose("GUI Font Pixel Size: %d" % self.fontPixelSize)
         logger.verbose("GUI Base Icon Size: %d" % self.baseIconSize)
-        logger.verbose("GUI Text Icon Size: %d" % self.textIconSize)
         logger.verbose("Text 'N' Height: %d" % self.textNHeight)
         logger.verbose("Text 'N' Width: %d" % self.textNWidth)
 
@@ -497,52 +495,58 @@ class GuiIcons:
 
     ICON_MAP = {
         # Project and GUI icons
-        "cls_none"       : (QStyle.SP_DriveHDIcon,         "drive-harddisk"),
-        "cls_novel"      : (QStyle.SP_DriveHDIcon,         "drive-harddisk"),
-        "cls_plot"       : (QStyle.SP_DriveHDIcon,         "drive-harddisk"),
-        "cls_character"  : (QStyle.SP_DriveHDIcon,         "drive-harddisk"),
-        "cls_world"      : (QStyle.SP_DriveHDIcon,         "drive-harddisk"),
-        "cls_timeline"   : (QStyle.SP_DriveHDIcon,         "drive-harddisk"),
-        "cls_object"     : (QStyle.SP_DriveHDIcon,         "drive-harddisk"),
-        "cls_entity"     : (QStyle.SP_DriveHDIcon,         "drive-harddisk"),
-        "cls_custom"     : (QStyle.SP_DriveHDIcon,         "drive-harddisk"),
-        "cls_trash"      : (QStyle.SP_DriveHDIcon,         "drive-harddisk"),
-        "proj_document"  : (QStyle.SP_FileIcon,            "x-office-document"),
-        "proj_folder"    : (QStyle.SP_DirIcon,             "folder"),
-        "proj_orphan"    : (QStyle.SP_MessageBoxWarning,   "dialog-warning"),
-        "proj_nwx"       : (None,                          None),
-        "status_lang"    : (None,                          None),
-        "status_time"    : (None,                          None),
-        "status_stats"   : (None,                          None),
-        "doc_h1"         : (QStyle.SP_FileIcon,            "x-office-document"),
-        "doc_h2"         : (QStyle.SP_FileIcon,            "x-office-document"),
-        "doc_h3"         : (QStyle.SP_FileIcon,            "x-office-document"),
-        "doc_h4"         : (QStyle.SP_FileIcon,            "x-office-document"),
+        "cls_none"        : (QStyle.SP_DriveHDIcon, "drive-harddisk"),
+        "cls_novel"       : (QStyle.SP_DriveHDIcon, "drive-harddisk"),
+        "cls_plot"        : (QStyle.SP_DriveHDIcon, "drive-harddisk"),
+        "cls_character"   : (QStyle.SP_DriveHDIcon, "drive-harddisk"),
+        "cls_world"       : (QStyle.SP_DriveHDIcon, "drive-harddisk"),
+        "cls_timeline"    : (QStyle.SP_DriveHDIcon, "drive-harddisk"),
+        "cls_object"      : (QStyle.SP_DriveHDIcon, "drive-harddisk"),
+        "cls_entity"      : (QStyle.SP_DriveHDIcon, "drive-harddisk"),
+        "cls_custom"      : (QStyle.SP_DriveHDIcon, "drive-harddisk"),
+        "cls_trash"       : (QStyle.SP_DriveHDIcon, "drive-harddisk"),
+        "proj_document"   : (QStyle.SP_FileIcon,    "x-office-document"),
+        "proj_folder"     : (QStyle.SP_DirIcon,     "folder"),
+        "proj_orphan"     : (QStyle.SP_MessageBoxWarning, "dialog-warning"),
+        "proj_nwx"        : (None, None),
+        "status_lang"     : (None, None),
+        "status_time"     : (None, None),
+        "status_stats"    : (None, None),
+        "doc_h1"          : (QStyle.SP_FileIcon, "x-office-document"),
+        "doc_h2"          : (QStyle.SP_FileIcon, "x-office-document"),
+        "doc_h3"          : (QStyle.SP_FileIcon, "x-office-document"),
+        "doc_h4"          : (QStyle.SP_FileIcon, "x-office-document"),
+        "search_case"     : (None, None),
+        "search_regex"    : (None, None),
+        "search_word"     : (None, None),
+        "search_loop"     : (None, None),
+        "search_project"  : (None, None),
+        "search_cancel"   : (None, None),
+        "search_preserve" : (None, None),
 
         ## General Button Icons
         "folder-open"    : (QStyle.SP_DirOpenIcon,         "folder-open"),
         "delete"         : (QStyle.SP_DialogDiscardButton, "edit-delete"),
-        "add"            : (None,                          "list-add"),
-        "remove"         : (None,                          "list-remove"),
         "close"          : (QStyle.SP_DialogCloseButton,   "window-close"),
         "done"           : (QStyle.SP_DialogApplyButton,    None),
-        "search"         : (None,                          "edit-find"),
-        "search-replace" : (None,                          "edit-find-replace"),
         "clear"          : (QStyle.SP_LineEditClearButton, "clear_left"),
         "save"           : (QStyle.SP_DialogSaveButton,    "document-save"),
-        "edit"           : (None,                          None),
-        "check"          : (None,                          None),
-        "cross"          : (None,                          None),
-        "hash"           : (None,                          None),
-        "maximise"       : (None,                          None),
-        "minimise"       : (None,                          None),
-        "refresh"        : (None,                          None),
-        "reference"      : (None,                          None),
-        "sticky-on"      : (None,                          None),
-        "sticky-off"     : (None,                          None),
+        "add"            : (None, "list-add"),
+        "remove"         : (None, "list-remove"),
+        "search"         : (None, "edit-find"),
+        "search-replace" : (None, "edit-find-replace"),
+        "edit"           : (None, None),
+        "check"          : (None, None),
+        "cross"          : (None, None),
+        "hash"           : (None, None),
+        "maximise"       : (None, None),
+        "minimise"       : (None, None),
+        "refresh"        : (None, None),
+        "reference"      : (None, None),
 
-        ## Other Icons
-        "warning"        : (QStyle.SP_MessageBoxWarning,   "dialog-warning"),
+        ## Switches
+        "sticky-on"      : (None, None),
+        "sticky-off"     : (None, None),
     }
 
     DECO_MAP = {

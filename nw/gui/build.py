@@ -459,7 +459,7 @@ class GuiBuildNovel(QDialog):
         makeHtml.setStyles(not noStyling)
 
         # Make sure the tree order is correct
-        self.theParent.treeView.saveTreeOrder()
+        self.theParent.treeView.flushTreeOrder()
 
         self.buildProgress.setMaximum(len(self.theProject.projTree))
         self.buildProgress.setValue(0)
@@ -871,8 +871,8 @@ class GuiBuildNovel(QDialog):
             "section"    : self.fmtSection.text().strip(),
         })
 
-        winWidth    = self.mainConf.pxInt(self.width())
-        winHeight   = self.mainConf.pxInt(self.height())
+        winWidth    = self.mainConf.rpxInt(self.width())
+        winHeight   = self.mainConf.rpxInt(self.height())
         justifyText = self.justifyText.isChecked()
         noStyling   = self.noStyling.isChecked()
         textFont    = self.textFont.text()
@@ -982,7 +982,9 @@ class GuiBuildNovelDocView(QTextBrowser):
         """
         if isinstance(theText, list):
             theText = "".join(theText)
-        theText = theText.replace("&emsp;","&nbsp;"*4)
+        theText = theText.replace("&emsp;", "&nbsp;"*4)
+        theText = theText.replace("<del>", "<span style='text-decoration: line-through;'>")
+        theText = theText.replace("</del>", "</span>")
         self.setHtml(theText)
         return
 

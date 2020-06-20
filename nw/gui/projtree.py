@@ -60,8 +60,9 @@ class GuiProjectTree(QTreeWidget):
         self.theProject = theParent.theProject
 
         # Tree Settings
-        self.theMap   = None
-        self.orphRoot = None
+        self.theMap      = None
+        self.orphRoot    = None
+        self.treeChanged = False
 
         self.ctxMenu = GuiProjectTreeMenu(self)
         self.clearTree()
@@ -256,7 +257,7 @@ class GuiProjectTree(QTreeWidget):
                 pItem.insertChild(nIndex, cItem)
             self.clearSelection()
             cItem.setSelected(True)
-            self.theProject.setProjectChanged(True)
+            self._setTreeChanged(True)
         else:
             return False
         return True
@@ -275,6 +276,16 @@ class GuiProjectTree(QTreeWidget):
         logger.debug("Saving project tree item order")
         self.theProject.setTreeOrder(theList)
         return True
+
+    def flushTreeOrder(self):
+        """Calls saveTreeOrder if there are unsaved changes, otherwise
+        does nothing.
+        """
+        if self.treeChanged:
+            logger.verbose("Flushing project tree to project class")
+            self.saveTreeOrder()
+            self._setTreeChanged(False)
+        return
 
     def getTreeFromHandle(self, tHandle):
         """Recursively return all the children items starting from a
@@ -331,6 +342,9 @@ class GuiProjectTree(QTreeWidget):
             if tHandle == trashHandle:
                 continue
             self.deleteItem(tHandle, True)
+
+        if nTrash > 0:
+            self._setTreeChanged(True)
 
         return True
 
@@ -413,7 +427,7 @@ class GuiProjectTree(QTreeWidget):
                     trItemT.addChild(trItemC)
                     nwItemS.setParent(self.theProject.projTree.trashRoot())
 
-                    self.theProject.setProjectChanged(True)
+                    self._setTreeChanged(True)
                     self.theParent.theIndex.deleteHandle(tHandle)
 
         elif nwItemS.itemType == nwItemType.FOLDER:
@@ -436,7 +450,7 @@ class GuiProjectTree(QTreeWidget):
             if trItemS.childCount() == 0:
                 self.takeTopLevelItem(tIndex)
                 self.theParent.mainMenu.setAvailableRoot()
-                self.theProject.setProjectChanged(True)
+                self._setTreeChanged(True)
             else:
                 self.makeAlert("Cannot delete root folder. It is not empty.", nwAlert.ERROR)
                 return False
@@ -555,14 +569,14 @@ class GuiProjectTree(QTreeWidget):
                 selHandles.append(selItems[n].data(self.C_NAME, Qt.UserRole))
         return selHandles
 
-    def setSelectedHandle(self, tHandle):
+    def setSelectedHandle(self, tHandle, doScroll=False):
         """Set a specific handle as the selected item.
         """
         if tHandle in self.theMap:
             self.clearSelection()
             self.theMap[tHandle].setSelected(True)
             selItems = self.selectedIndexes()
-            if selItems:
+            if selItems and doScroll:
                 self.scrollTo(
                     selItems[0], QAbstractItemView.PositionAtCenter
                 )
@@ -732,6 +746,8 @@ class GuiProjectTree(QTreeWidget):
         elif nwItem.itemType == nwItemType.TRASH:
             newItem.setIcon(self.C_NAME, self.theTheme.getIcon(nwLabels.CLASS_ICON[tClass]))
 
+        self._setTreeChanged(True)
+
         return newItem
 
     def _addTrashRoot(self):
@@ -747,6 +763,7 @@ class GuiProjectTree(QTreeWidget):
                 self.theProject.projTree[trashHandle]
             )
             trItem.setExpanded(True)
+            self._setTreeChanged(True)
         return trItem
 
     def _addOrphanedRoot(self):
@@ -793,7 +810,7 @@ class GuiProjectTree(QTreeWidget):
         nwItemS.setParent(pHandle)
         self.propagateCount(tHandle, wC)
         self.setTreeItemValues(tHandle)
-        self.theProject.setProjectChanged(True)
+        self._setTreeChanged(True)
 
         logger.debug("The parent of item %s has been changed to %s" % (tHandle,pHandle))
 
@@ -815,7 +832,15 @@ class GuiProjectTree(QTreeWidget):
         pHandle = trItemP.data(self.C_NAME, Qt.UserRole)
         nwItemS.setParent(pHandle)
         self.setTreeItemValues(tHandle)
-        self.theProject.setProjectChanged(True)
+        self._setTreeChanged(True)
+        return
+
+    def _setTreeChanged(self, theState):
+        """Set the tree change flag, and propagate to the project.
+        """
+        self.treeChanged = theState
+        if theState:
+            self.theProject.setProjectChanged(True)
         return
 
 # END Class GuiProjectTree

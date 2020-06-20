@@ -41,7 +41,7 @@ logger = logging.getLogger(__name__)
 
 class NWIndex():
 
-    VALID_KEYS = set([
+    VALID_KEYS = {
         nwKeyWords.TAG_KEY,
         nwKeyWords.PLOT_KEY,
         nwKeyWords.POV_KEY,
@@ -51,7 +51,7 @@ class NWIndex():
         nwKeyWords.OBJECT_KEY,
         nwKeyWords.ENTITY_KEY,
         nwKeyWords.CUSTOM_KEY
-    ])
+    }
     TAG_CLASS  = {
         nwKeyWords.CHAR_KEY   : nwItemClass.CHARACTER,
         nwKeyWords.POV_KEY    : nwItemClass.CHARACTER,
@@ -305,11 +305,12 @@ class NWIndex():
 
             elif aLine.startswith(r"%"):
                 if nTitle > 0:
-                    toCheck = aLine[1:].lstrip().lower()
+                    toCheck = aLine[1:].lstrip()
+                    synTag = toCheck[:9].lower()
                     tLen = len(aLine)
                     cLen = len(toCheck)
                     cOff = tLen - cLen
-                    if toCheck.startswith("synopsis:"):
+                    if synTag == "synopsis:":
                         self._indexSynopsis(tHandle, isNovel, aLine[cOff+9:].strip(), nTitle)
 
         # Count words for remaining text after last heading

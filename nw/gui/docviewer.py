@@ -60,6 +60,7 @@ class GuiDocViewer(QTextBrowser):
 
         self.qDocument = self.document()
         self.setMinimumWidth(self.mainConf.pxInt(300))
+        self.setAutoFillBackground(True)
         self.setOpenExternalLinks(False)
         self.initViewer()
 
@@ -104,11 +105,12 @@ class GuiDocViewer(QTextBrowser):
         self.setFont(theFont)
 
         docPalette = self.palette()
+        docPalette.setColor(QPalette.Window, QColor(*self.theTheme.colBack))
         docPalette.setColor(QPalette.Base, QColor(*self.theTheme.colBack))
         docPalette.setColor(QPalette.Text, QColor(*self.theTheme.colText))
         self.setPalette(docPalette)
 
-        self.qDocument.setDocumentMargin(self.mainConf.getTextMargin())
+        self.qDocument.setDocumentMargin(0)
         theOpt = QTextOption()
         if self.mainConf.doJustify:
             theOpt.setAlignment(Qt.AlignJustify)
@@ -236,24 +238,16 @@ class GuiDocViewer(QTextBrowser):
         else:
             sW = 0
 
+        cM = self.mainConf.getTextMargin()
         tB = self.frameWidth()
         tW = self.width() - 2*tB - sW
         tH = self.docHeader.height()
         fH = self.docFooter.height()
         fY = self.height() - fH - tB
-        tT = self.mainConf.getTextMargin() - tH
-        bT = self.mainConf.getTextMargin() - fH
+
         self.docHeader.setGeometry(tB, tB, tW, tH)
         self.docFooter.setGeometry(tB, fY, tW, fH)
-        self.setViewportMargins(0, tH, 0, fH)
-
-        docFormat = self.qDocument.rootFrame().frameFormat()
-        docFormat.setTopMargin(max(0, tT))
-        docFormat.setBottomMargin(max(0, bT))
-
-        self.qDocument.blockSignals(True)
-        self.qDocument.rootFrame().setFrameFormat(docFormat)
-        self.qDocument.blockSignals(False)
+        self.setViewportMargins(cM, max(cM, tH), cM, max(cM, fH))
 
         return
 
@@ -535,6 +529,8 @@ class GuiDocViewHeader(QWidget):
     def _refreshDocument(self):
         """Reload the content of the document.
         """
+        if self.docViewer.theHandle == self.theParent.docEditor.theHandle:
+            self.theParent.saveDocument()
         self.docViewer.reloadText()
         return
 
@@ -546,7 +542,7 @@ class GuiDocViewHeader(QWidget):
         """Capture a click on the title and ensure that the item is
         selected in the project tree.
         """
-        self.theParent.treeView.setSelectedHandle(self.theHandle)
+        self.theParent.treeView.setSelectedHandle(self.theHandle, doScroll=True)
         return
 
 # END Class GuiDocViewHeader
@@ -558,16 +554,16 @@ class GuiDocViewHeader(QWidget):
 
 class GuiDocViewFooter(QWidget):
 
-    def __init__(self, theParent):
-        QWidget.__init__(self, theParent)
+    def __init__(self, docViewer):
+        QWidget.__init__(self, docViewer)
 
         logger.debug("Initialising GuiDocViewFooter ...")
 
         self.mainConf  = nw.CONFIG
-        self.theParent = theParent
-        self.theTheme  = theParent.theTheme
-        self.optState  = theParent.theProject.optState
-        self.viewMeta  = theParent.theParent.viewMeta
+        self.docViewer = docViewer
+        self.theParent = docViewer.theParent
+        self.theTheme  = docViewer.theTheme
+        self.viewMeta  = docViewer.theParent.viewMeta
         self.theHandle = None
 
         # Make a QPalette that matches the Syntax Theme
@@ -669,9 +665,9 @@ class GuiDocViewFooter(QWidget):
         """Toggle the sticky flag for the reference panel.
         """
         logger.verbose("Reference sticky is %s" % str(theState))
-        self.theParent.stickyRef = theState
-        if not theState and self.theParent.theHandle is not None:
-            self.viewMeta.refreshReferences(self.theParent.theHandle)
+        self.docViewer.stickyRef = theState
+        if not theState and self.docViewer.theHandle is not None:
+            self.viewMeta.refreshReferences(self.docViewer.theHandle)
         return
 
 # END Class GuiDocViewFooter

@@ -48,7 +48,7 @@ It allows for a minimal set of formatting needed for writing text documents for 
 These are currently limited to:
 
 * Headings level 1 to 4 using the `#` syntax only.
-* Bold, italic and underline text.
+* Bold, italic and strikethrough text.
 * Hard line breaks using two or more spaces at the end of a line.
 
 That is it.

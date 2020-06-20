@@ -45,7 +45,7 @@ class OptionState():
 
         self.theState = {}
         self.validMap = {
-            "GuiSession": set([
+            "GuiSession": {
                 "widthCol0",
                 "widthCol1",
                 "widthCol2",
@@ -53,11 +53,11 @@ class OptionState():
                 "sortOrder",
                 "hideZeros",
                 "hideNegative",
-            ]),
-            "GuiDocSplit": set([
+            },
+            "GuiDocSplit": {
                 "spLevel",
-            ]),
-            "GuiBuildNovel": set([
+            },
+            "GuiBuildNovel": {
                 "winWidth",
                 "winHeight",
                 "addNovel",
@@ -72,12 +72,17 @@ class OptionState():
                 "incComments",
                 "incKeywords",
                 "incBodyText",
-            ]),
-            "GuiOutline": set([
+            },
+            "GuiOutline": {
                 "headerOrder",
                 "columnWidth",
                 "columnHidden",
-            ]),
+            },
+            "GuiProjectSettings": {
+                "winWidth",
+                "winHeight",
+                "replaceColW",
+            }
         }
 
         return

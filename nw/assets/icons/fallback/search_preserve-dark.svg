@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   id="svg8"
+   version="1.1"
+   viewBox="0 0 6.3499999 6.3500002"
+   height="24"
+   width="24">
+  <g
+     style="font-size:5.64444px;line-height:1.25;font-family:'Fira Sans';-inkscape-font-specification:'Fira Sans, Normal';letter-spacing:0px;word-spacing:0px;stroke-width:0.264583"
+     id="text1549"
+     aria-label="AB">
+    <path
+       id="path1551"
+       style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:4.93889px;font-family:Cantarell;-inkscape-font-specification:'Cantarell, Bold';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal;stroke-width:0.251875;fill:#aeaeae;fill-opacity:1"
+       d="M 0.52916667,4.8827979 H 1.1423606 L 1.397485,4.023431 H 2.588066 L 2.8431905,4.8827979 H 3.4832396 L 2.4045554,1.4552083 H 1.6660372 Z M 1.5675681,3.4554587 1.9972514,2.003425 2.4224589,3.4554587 Z" />
+    <path
+       id="path1553"
+       style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:4.93889px;font-family:Cantarell;-inkscape-font-specification:'Cantarell, Bold';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal;stroke-width:0.25188;fill:#aeaeae;fill-opacity:1"
+       d="m 3.4395834,4.8827979 h 1.1592928 c 0.7519737,0 1.2219572,-0.4099279 1.2219572,-1.0618613 0,-0.4296835 -0.2058975,-0.7408335 -0.5639802,-0.8840614 0.1969454,-0.1432278 0.3177984,-0.3951112 0.3177984,-0.6667501 0,-0.5284612 -0.389415,-0.8149168 -1.1055804,-0.8149168 H 3.4395834 Z M 4.0125157,1.9688528 h 0.4117952 c 0.3625587,0 0.5639802,0.1679223 0.5639802,0.4642557 0,0.1778 -0.076092,0.3160889 -0.2506578,0.4247445 H 4.0125157 Z m 0,2.4003005 V 3.3566809 h 0.6714051 c 0.3357025,0 0.5416002,0.2173112 0.5416002,0.5482168 0,0.3160889 -0.1745654,0.4642556 -0.5505523,0.4642556 z" />
+  </g>
+  <defs
+     id="defs2" />
+  <metadata
+     id="metadata5">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+        <dc:title></dc:title>
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+</svg>

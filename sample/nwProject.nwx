@@ -1,13 +1,13 @@
 <?xml version='1.0' encoding='utf-8'?>
-<novelWriterXML appVersion="0.8" hexVersion="0x000800f0" fileVersion="1.1" timeStamp="2020-06-11 22:21:20">
+<novelWriterXML appVersion="0.9.0rc1" hexVersion="0x000900c1" fileVersion="1.1" timeStamp="2020-06-19 19:50:54">
   <project>
     <name>Sample Project</name>
     <title>Sample Project</title>
     <author>Jane Smith</author>
     <author>Jay Doh</author>
-    <saveCount>298</saveCount>
-    <autoCount>42</autoCount>
-    <editTime>5113</editTime>
+    <saveCount>407</saveCount>
+    <autoCount>71</autoCount>
+    <editTime>15118</editTime>
   </project>
   <settings>
     <doBackup>False</doBackup>
@@ -15,7 +15,7 @@
     <autoOutline>True</autoOutline>
     <lastEdited>636b6aa9b697b</lastEdited>
     <lastViewed>bb2c23b3c42cc</lastViewed>
-    <lastWordCount>914</lastWordCount>
+    <lastWordCount>967</lastWordCount>
     <autoReplace>
       <A>B</A>
       <B>E</B>
@@ -114,10 +114,10 @@
       <status>1st Draft</status>
       <exported>True</exported>
       <layout>SCENE</layout>
-      <charCount>1199</charCount>
-      <wordCount>216</wordCount>
-      <paraCount>7</paraCount>
-      <cursorPos>28</cursorPos>
+      <charCount>1483</charCount>
+      <wordCount>263</wordCount>
+      <paraCount>8</paraCount>
+      <cursorPos>1086</cursorPos>
     </item>
     <item handle="bc0cbd2a407f3" order="2" parent="e7ded148d6e4a">
       <name>Another Scene</name>
@@ -129,7 +129,7 @@
       <charCount>476</charCount>
       <wordCount>93</wordCount>
       <paraCount>3</paraCount>
-      <cursorPos>551</cursorPos>
+      <cursorPos>428</cursorPos>
     </item>
     <item handle="ba8a28a246524" order="3" parent="e7ded148d6e4a">
       <name>Interlude</name>
@@ -274,9 +274,9 @@
       <status>New</status>
       <exported>True</exported>
       <layout>SCENE</layout>
-      <charCount>0</charCount>
-      <wordCount>0</wordCount>
-      <paraCount>0</paraCount>
+      <charCount>30</charCount>
+      <wordCount>6</wordCount>
+      <paraCount>1</paraCount>
       <cursorPos>36</cursorPos>
     </item>
   </content>

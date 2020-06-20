@@ -3,12 +3,14 @@ codecov:
 
 coverage:
   precision: 2
-  round: down
+  round: up
   range: "70...100"
 
   status:
-    project: yes
-    patch: yes
+    project:
+      default:
+        threshold: 1%
+    patch: no
     changes: no
 
 parsers:

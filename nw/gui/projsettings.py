@@ -31,10 +31,9 @@ import nw
 from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QIcon, QPixmap, QColor, QBrush
 from PyQt5.QtWidgets import (
-    QDialog, QHBoxLayout, QVBoxLayout, QGridLayout, QLineEdit, QPlainTextEdit,
-    QLabel, QWidget, QTabWidget, QDialogButtonBox, QListWidget, QPushButton,
-    QListWidgetItem, QColorDialog, QAbstractItemView, QTreeWidget, QCheckBox,
-    QTreeWidgetItem
+    QHBoxLayout, QVBoxLayout, QGridLayout, QLineEdit, QPlainTextEdit, QLabel,
+    QWidget, QDialogButtonBox, QListWidget, QPushButton, QListWidgetItem,
+    QColorDialog, QAbstractItemView, QTreeWidget, QTreeWidgetItem
 )
 
 from nw.constants import nwAlert
@@ -52,9 +51,17 @@ class GuiProjectSettings(PagedDialog):
         self.mainConf   = nw.CONFIG
         self.theParent  = theParent
         self.theProject = theProject
+        self.optState   = theProject.optState
 
         self.theProject.countStatus()
         self.setWindowTitle("Project Settings")
+        self.setMinimumWidth(self.mainConf.pxInt(570))
+        self.setMinimumHeight(self.mainConf.pxInt(355))
+
+        self.resize(
+            self.mainConf.pxInt(self.optState.getInt("GuiProjectSettings", "winWidth",  570)),
+            self.mainConf.pxInt(self.optState.getInt("GuiProjectSettings", "winHeight", 355))
+        )
 
         self.tabMain    = GuiProjectEditMain(self.theParent, self.theProject)
         self.tabMeta    = GuiProjectEditMeta(self.theParent, self.theProject)
@@ -73,13 +80,17 @@ class GuiProjectSettings(PagedDialog):
         self.buttonBox.rejected.connect(self._doClose)
         self.addControls(self.buttonBox)
 
-        self.show()
-
         logger.debug("GuiProjectSettings initialisation complete")
 
         return
 
+    ##
+    #  Slots
+    ##
+
     def _doSave(self):
+        """Save settings and close dialog.
+        """
         logger.verbose("GuiProjectSettings save button clicked")
 
         projName    = self.tabMain.editName.text()
@@ -103,13 +114,23 @@ class GuiProjectSettings(PagedDialog):
             newList = self.tabReplace.getNewList()
             self.theProject.setAutoReplace(newList)
 
-        self.close()
+        self._doClose()
 
         return
 
     def _doClose(self):
-        logger.verbose("GuiProjectSettings close button clicked")
+        """Close the dialog.
+        """
+        winWidth    = self.mainConf.rpxInt(self.width())
+        winHeight   = self.mainConf.rpxInt(self.height())
+        replaceColW = self.mainConf.rpxInt(self.tabReplace.listBox.columnWidth(0))
+
+        self.optState.setValue("GuiProjectSettings", "winWidth",    winWidth)
+        self.optState.setValue("GuiProjectSettings", "winHeight",   winHeight)
+        self.optState.setValue("GuiProjectSettings", "replaceColW", replaceColW)
+
         self.close()
+
         return
 
 # END Class GuiProjectSettings
@@ -282,7 +303,7 @@ class GuiProjectEditStatus(QWidget):
         self.colChanged = False
         self.selColour  = None
 
-        self.iPx = self.theTheme.textIconSize
+        self.iPx = self.theTheme.baseIconSize
 
         self.outerBox = QVBoxLayout()
         self.mainBox  = QHBoxLayout()
@@ -455,16 +476,23 @@ class GuiProjectEditReplace(QWidget):
     def __init__(self, theParent, theProject):
         QWidget.__init__(self, theParent)
 
+        self.mainConf   = nw.CONFIG
         self.theParent  = theParent
         self.theTheme   = theParent.theTheme
         self.theProject = theProject
+        self.optState   = theProject.optState
         self.arChanged  = False
 
-        self.outerBox   = QVBoxLayout()
-        self.bottomBox  = QHBoxLayout()
-        self.listBox    = QTreeWidget()
+        self.outerBox  = QVBoxLayout()
+        self.bottomBox = QHBoxLayout()
+
+        wCol0 = self.mainConf.pxInt(
+            self.optState.getInt("GuiProjectSettings", "replaceColW", 100)
+        )
+        self.listBox = QTreeWidget()
         self.listBox.setHeaderLabels(["Keyword","Replace With"])
         self.listBox.itemSelectionChanged.connect(self._selectedItem)
+        self.listBox.setColumnWidth(0, wCol0)
         self.listBox.setIndentation(0)
 
         for aKey, aVal in self.theProject.autoReplace.items():

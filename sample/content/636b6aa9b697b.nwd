@@ -1,4 +1,4 @@
-%%~ 636b6aa9b697b:e7ded148d6e4a:7031beac91f75:Making a Scene
+%%~ 636b6aa9b697b:e7ded148d6e4a:7031beac91f75:NOVEL:SCENE:Making a Scene
 ### Making a Scene
 
 @pov: Jane
@@ -7,13 +7,15 @@
 
 A scene is defined by a level three heading, like the one at the top of this page. The scene will be assigned to the chapter preceding it in the project tree.
 
-Each paragraph in the scene is separated by a blank line. The text supports minimal formatting, like **bold**, _italic_ and  __underscore__.
+Each paragraph in the scene is separated by a blank line. The text supports minimal formatting, like **bold**, *italic* and  ***bold italic***. You can also ~~strike through~~ text.
 
 In addition, the editor supports automatic formatting of “quotes”, both double and ‘single’. Depending on the syntax highlighter, these can be in different colours.
 
 If you have the need for it, you can also add text that can be automatically replaced by other text when you generate a preview or export the project. Now, let’s auto-replace this A with <A>, and this C with <C>.  While <E> is just <E>. Press Ctrl+R to see what this looks like in the view pane.
 
-The editor also supports non breaking spaces, and the spell checker accepts long dashes—like this—as valid word separators.
+The editor also supports non breaking spaces, and the spell checker accepts long dashes—like this—as valid word separators. Regular dashes are also supported – and can be automatically inserted when typing two hyphens.
+
+Thin spaces and thin non-breaking spaces are also supported from the Insert menu, and can be used to separate numbers from their units, like: 25 kg.
 
 #### Some Section Here
 

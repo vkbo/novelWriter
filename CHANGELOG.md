@@ -1,5 +1,31 @@
 # novelWriter ChangeLog
 
+## Version 0.9rc1 [2020-xx-xx]
+
+**Core Functionality**
+
+* Underline text formatting has been removed. It is not standard HTML5, not Markdown, and was previously implemented using the double underscore notation that in standard Markdown is renderred as bold text. Instead, novelWriter now renders a single `*` or `_` wrapping a piece of text *within* a paragraphs as italicised text, and a double `**` or `__` as bold text. The keyboard shortcuts and automatic features **only** support the `*` notation. A triple set of `***` are treated as both bold and italicised. PR #310.
+* Strikethrough formatting has been added back into novelWriter using the standard Markdown `~~` wrapping. PR #310.
+* Added support for thin spaces and non-breaking thin spaces. PR #319.
+* The `Ctrl+Z` key sequence would not go through the wrapper function for document action for the document editor, but act directly on the document. This caused some of the logic preventing conflict between auto-replace and undo to be bypassed. This has now been resolved by blocking the keypress itself. Issue #320, PR #321.
+* The dialog window size and column width setting for the auto-replace feature in Project Settings are now preserved between closing and opening the dialog. Issue #322, PR #324.
+
+**User Interface**
+
+* The Open Project dialog will now ask before removing an entry from the recent projects list. PR #309.
+* The text emphasis functions, either selected from the menu or via keyboard shortcuts, will now try to respond to the command in a more meaningful way. That is, the text editor will try to toggle the bold or italics features independently of eachother on the selected text. A feature to apply both at the same time has also been added. PR #310.
+* The document editor search tool has been completely rewritten. It now appears as a search box at the top of the document, and has a number of toggle switches added to it. You can modify the search tool to be case sensitive, select only whole words, use regular expression search strings, loop when reaching the end, and continue the search in next file. For the replace feature, you can also select to have the feature try to preserve the case of the replaced word. Issues #84 and #305, PR #314.
+* A dialog has been added for selecting quotation mark style. These are now used in the Preferences dialog instead of a plain text box. PR #317.
+* Added an insert menu for inserting special symbols like dashes, ellipsis, thin and non-breaking spaces, and hard line breaks. PR #319.
+* A menu option to replace straight single and double quotes in a selected piece of text has been added. This uses the same logic as the auto-replace feature. Issue #312, PR #321.
+* When pressing `Ctrl+R` while the document editor has focus, the edited document will be viewed or refreshed in the document viewer. Previously, the selected document in the project tree had priority. The document is also now saved before loaded in the viewer, censuring that it shows the very latest changes. Issue #143, PR #323.
+* The selection in the project tree should not scroll into view when just opening the document. This can be quite annoying if loading several documents in sequence by double-clicking, as the target may move just when you're about to click. PR #325.
+
+**Other Changes**
+
+* Added the file's class and layout to the meta data string added as the first line of saved document files. This meta data is only used to restore the file meta information into the project if it was lost from the project file. It is also useful information when reading the file in external tools. PR #308.
+
+
 ## Version 0.8 [2020-06-14]
 
 **Bugfixes**
