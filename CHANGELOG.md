@@ -4,7 +4,7 @@
 
 **Core Functionality**
 
-* Underline text formatting has been removed. It is not standard HTML5, not Markdown, and was previously implemented using the double underscore notation that in standard Markdown is renderred as bold text. Instead, novelWriter now renders a single `*` or `-` wrapping a piece of text *within* a paragraphs as italicised text, and a double `**` or `__` as bold text. The keyboard shortcuts and automatic features **only** support the `*` notation. A triple set of `***` are treated as both bold and italicised. PR #310.
+* Underline text formatting has been removed. It is not standard HTML5, not Markdown, and was previously implemented using the double underscore notation that in standard Markdown is renderred as bold text. Instead, novelWriter now renders a single `*` or `_` wrapping a piece of text *within* a paragraphs as italicised text, and a double `**` or `__` as bold text. The keyboard shortcuts and automatic features **only** support the `*` notation. A triple set of `***` are treated as both bold and italicised. PR #310.
 * Strikethrough formatting has been added back into novelWriter using the standard Markdown `~~` wrapping. PR #310.
 * Added support for thin spaces and non-breaking thin spaces. PR #319.
 * The `Ctrl+Z` key sequence would not go through the wrapper function for document action for the document editor, but act directly on the document. This caused some of the logic preventing conflict between auto-replace and undo to be bypassed. This has now been resolved by blocking the keypress itself. Issue #320, PR #321.
