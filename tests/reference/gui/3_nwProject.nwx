@@ -41,14 +41,14 @@
       <type>ROOT</type>
       <class>NOVEL</class>
       <status>New</status>
-      <expanded>True</expanded>
+      <expanded>False</expanded>
     </item>
     <item handle="25fc0e7096fc6" order="0" parent="73475cb40a568">
       <name>New Chapter</name>
       <type>FOLDER</type>
       <class>NOVEL</class>
       <status>New</status>
-      <expanded>True</expanded>
+      <expanded>False</expanded>
     </item>
     <item handle="31489056e0916" order="0" parent="25fc0e7096fc6">
       <name>Just a Page</name>
