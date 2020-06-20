@@ -569,14 +569,14 @@ class GuiProjectTree(QTreeWidget):
                 selHandles.append(selItems[n].data(self.C_NAME, Qt.UserRole))
         return selHandles
 
-    def setSelectedHandle(self, tHandle):
+    def setSelectedHandle(self, tHandle, doScroll=False):
         """Set a specific handle as the selected item.
         """
         if tHandle in self.theMap:
             self.clearSelection()
             self.theMap[tHandle].setSelected(True)
             selItems = self.selectedIndexes()
-            if selItems:
+            if selItems and doScroll:
                 self.scrollTo(
                     selItems[0], QAbstractItemView.PositionAtCenter
                 )
