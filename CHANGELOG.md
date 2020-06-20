@@ -41,7 +41,7 @@
 * Icons have been added to the Title and Document columns in the Outline. The titles get a new icon indicating the header level, while the documents get the already existing document icon. PR #302.
 * Added a context menu to the project tree for easier access to some of the most use actions on the tree. PR #282.
 * Improved the support for High DPI screens. Margins and box sizes that were hardcoded should now scale. User settings should also scale back and forth when switching between scale factors. Issue #280, PR #285.
-* The total edit time of a project is no displayed on the Details tab of the Project Settings dialog. PR #290.
+* The total edit time of a project is now displayed on the Details tab of the Project Settings dialog. PR #290.
 * The title bar in the document editor now has a full screen button and a close button, and in the document viewer a reload button and a close button. The full screen button toggles the distraction free mode, and the reload button regenerates the document being viewed to update any changes that may have been made to it. PRs #293, #300, #303 and #306.
 * The References panel below the document viewer has been redesigned. It now sits in a resizeable panel below the document, and its controls sit in a footer bar in the document itself. The functionality of the feature is otherwise unchanged, but the buttons have received new icons. PRs #304 and #306.
 * The option to render comments and synopsis in the document view panel has been added to Preferences. The toggle option for comments that was previously in the menu has been removed. PR #311.
