@@ -1237,10 +1237,10 @@ class GuiDocEditor(QTextEdit):
             self._beginSearch()
             return
 
+        theCursor = self.textCursor()
         if not theCursor.hasSelection():
             return
 
-        theCursor = self.textCursor()
         searchFor = self.docSearch.getSearchText()
         replWith  = self.docSearch.getReplaceText()
         selText   = theCursor.selectedText()
