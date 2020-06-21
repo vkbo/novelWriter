@@ -1,5 +1,12 @@
 # novelWriter ChangeLog
 
+## Version 0.9.1 [2020-06-21]
+
+**Bugfixes**
+
+* Fixed a serious bug ib the replace part of the search/replace function that caused novelWriter to crash when the replace text function was called. Issue #327, PR #328.
+
+
 ## Version 0.9 [2020-06-21]
 
 **Core Functionality**
