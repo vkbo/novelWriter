@@ -60,8 +60,10 @@ The editor also has a minimal set of keywords used for setting tags and referenc
 
 The editor and viewer also supports markdown standard hard line breaks, and preserves non-breaking spaces.
 A hard line break is achieved by leaving two or more spaces at the end of the line.
-Alternatively, the user can press :kbd:`Shift-Enter` to insert this.
-A non-breaking space is inserted with :kbd:`Shift-Space`.
+Alternatively, the user can press :kbd:`Ctrl-K, Return` to insert this.
+A non-breaking space is inserted with :kbd:`Ctrl-K, Space`.
+
+Thin spaces are also supported, and can be inserted with :kbd:`Ctrl-K, Shift-Space`, and the non-breaking version of it with :kbd:`Ctrl-K, Ctrl-Space`.
 
 Both hard line breaks and non-breaking spaces are highlighted by the syntax highlighter as an alternate coloured background, depending on the selected theme.
 
@@ -133,7 +135,6 @@ These are as following:
    ":kbd:`Ctrl-Q`",          "Exit novelWriter."
    ":kbd:`Ctrl-R`",          "If in tree view, open a document for viewing. If editor pane has focus, open current document for viewing."
    ":kbd:`Ctrl-S`",          "Save the current document in the editor."
-   ":kbd:`Ctrl-U`",          "Format selected text, or word under cursor, as underline."
    ":kbd:`Ctrl-V`",          "Paste text from clipboard to cursor position."
    ":kbd:`Ctrl-W`",          "Close the current document in the editor."
    ":kbd:`Ctrl-X`",          "Cut selected text to clipboard."
@@ -174,3 +175,17 @@ These are as following:
 
 .. note::
    On macOS, replace :kbd:`Ctrl` with :kbd:`Cmd`.
+
+A set of insert features are also available through shortcuts, but they require a double combination of shortcuts.
+
+.. csv-table:: Keyboard Shortcuts
+   :header: "Shortcut", "Description"
+   :widths: 30, 50
+
+   ":kbd:`Ctrl-K, -`",           "Insert a short dash (en dash)."
+   ":kbd:`Ctrl-K, _`",           "Insert a long dash (em dash)."
+   ":kbd:`Ctrl-K, .`",           "Insert ellipsis."
+   ":kbd:`Ctrl-K, Return`",      "Insert a hard line break."
+   ":kbd:`Ctrl-K, Space`",       "Insert a non-breaking space."
+   ":kbd:`Ctrl-K, Shift-Space`", "Insert a thin space."
+   ":kbd:`Ctrl-K, Ctrl-Space`",  "Insert a thin non-breaking space."
