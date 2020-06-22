@@ -417,7 +417,7 @@ class GuiMain(QMainWindow):
 
         # Restore previously open documents, if any
         if self.theProject.lastEdited is not None:
-            self.openDocument(self.theProject.lastEdited)
+            self.openDocument(self.theProject.lastEdited, doScroll=True)
         if self.theProject.lastViewed is not None:
             self.viewDocument(self.theProject.lastViewed)
 
@@ -461,7 +461,7 @@ class GuiMain(QMainWindow):
             self.docEditor.clearEditor()
         return True
 
-    def openDocument(self, tHandle, tLine=None, changeFocus=True):
+    def openDocument(self, tHandle, tLine=None, changeFocus=True, doScroll=False):
         """Open a specific document, optionally at a given line.
         """
         if self.hasProject:
@@ -471,7 +471,7 @@ class GuiMain(QMainWindow):
                 if changeFocus:
                     self.docEditor.setFocus()
                 self.theProject.setLastEdited(tHandle)
-                self.treeView.setSelectedHandle(tHandle)
+                self.treeView.setSelectedHandle(tHandle, doScroll=doScroll)
             else:
                 return False
         return True
@@ -499,10 +499,10 @@ class GuiMain(QMainWindow):
                     break
 
             if nHandle is not None:
-                self.openDocument(nHandle, tLine=0)
+                self.openDocument(nHandle, tLine=0, doScroll=True)
                 return True
             elif wrapAround:
-                self.openDocument(fHandle, tLine=0)
+                self.openDocument(fHandle, tLine=0, doScroll=True)
                 return False
 
         return False
@@ -656,7 +656,7 @@ class GuiMain(QMainWindow):
         nwItem = self.theProject.projTree[tHandle]
         if nwItem.itemType == nwItemType.FILE:
             logger.verbose("Requested item %s is a file" % tHandle)
-            self.openDocument(tHandle)
+            self.openDocument(tHandle, doScroll=False)
         else:
             logger.verbose("Requested item %s is not a file" % tHandle)
 
@@ -1101,7 +1101,7 @@ class GuiMain(QMainWindow):
         if nwItem is not None:
             if nwItem.itemType == nwItemType.FILE:
                 logger.verbose("Requested item %s is a file" % tHandle)
-                self.openDocument(tHandle, changeFocus=False)
+                self.openDocument(tHandle, changeFocus=False, doScroll=False)
             else:
                 logger.verbose("Requested item %s is a folder" % tHandle)
         return
@@ -1117,7 +1117,7 @@ class GuiMain(QMainWindow):
         if nwItem is not None:
             if nwItem.itemType == nwItemType.FILE:
                 logger.verbose("Requested item %s is a file" % tHandle)
-                self.openDocument(tHandle, changeFocus=False)
+                self.openDocument(tHandle, changeFocus=False, doScroll=False)
             else:
                 logger.verbose("Requested item %s is a folder" % tHandle)
         return
