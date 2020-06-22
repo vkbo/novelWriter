@@ -929,7 +929,7 @@ class GuiProjectTreeMenu(QMenu):
         """Forward the open document call to the main GUI window.
         """
         if self.theItem is not None:
-            self.theTree.theParent.openDocument(self.theItem.itemHandle)
+            self.theTree.theParent.openDocument(self.theItem.itemHandle, doScroll=False)
         return
 
     def _doViewItem(self):

@@ -120,7 +120,7 @@ class GuiDocMerge(QDialog):
         self.theParent.treeView.revealTreeItem(nHandle)
         theDoc.openDocument(nHandle, False)
         theDoc.saveDocument(theText)
-        self.theParent.openDocument(nHandle)
+        self.theParent.openDocument(nHandle, doScroll=True)
 
         self.close()
 
