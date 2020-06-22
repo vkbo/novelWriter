@@ -394,7 +394,8 @@ class GuiProjectTree(QTreeWidget):
                 if doPermanent:
                     logger.debug("Permanently deleting file with handle %s" % tHandle)
 
-                    tIndex  = trItemP.indexOfChild(trItemS)
+                    self.propagateCount(tHandle, 0)
+                    tIndex = trItemP.indexOfChild(trItemS)
                     trItemC = trItemP.takeChild(tIndex)
 
                     if self.theParent.docEditor.theHandle == tHandle:
@@ -523,7 +524,7 @@ class GuiProjectTree(QTreeWidget):
         relevant values in the project and on the status bar. This call
         is a fast way of getting this number, and depends on the
         propagateCount function being called when it should to maintain
-        the correct count.
+        the correct count. Orphan folder is not included in the total.
         """
         nWords = 0
         for n in range(self.topLevelItemCount()):
