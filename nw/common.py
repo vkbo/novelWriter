@@ -193,3 +193,30 @@ def transferCase(theSource, theTarget):
         theResult = theTarget.lower()
 
     return theResult
+
+def fuzzyTime(secDiff):
+    """Converts a time difference in seconds into a fuzzy time string.
+    """
+    if secDiff < 0:
+        return "in the future"
+    elif secDiff < 15:
+        return "just now"
+    elif secDiff < 45:
+        return "a few seconds ago"
+    elif secDiff < 90:
+        return "a minute ago"
+    elif secDiff < 3300: # 55 minutes
+        return "%d minutes ago" % int(round(secDiff/60))
+    elif secDiff < 5400: # 90 minutes
+        return "an hour ago"
+    elif secDiff < 84600: # 23.5 hours
+        return "%d hours ago" % int(round(secDiff/3600))
+    elif secDiff < 129600: # 1.5 days
+        return "a day ago"
+    elif secDiff < 31104000: # 360 days
+        return "%d days ago" % int(round(secDiff/86400))
+    elif secDiff < 36288000: # 420 days
+        return "a year ago"
+    else:
+        return "ages ago"
+    return "beyond time and space"
