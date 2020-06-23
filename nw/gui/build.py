@@ -970,7 +970,7 @@ class GuiBuildNovelDocView(QTextBrowser):
         fPx = int(1.1*self.theTheme.fontPixelSize)
         mPx = self.mainConf.pxInt(4)
 
-        self.theTitle = QLabel("", self)
+        self.theTitle = QLabel("<b>Build Time:</b> Unknown", self)
         self.theTitle.setIndent(0)
         self.theTitle.setAutoFillBackground(True)
         self.theTitle.setAlignment(Qt.AlignCenter)
@@ -1062,7 +1062,7 @@ class GuiBuildNovelDocView(QTextBrowser):
     ##
 
     def _updateBuildAge(self):
-        """
+        """Update the build time and the fuzzy age.
         """
         if self.buildTime > 0:
             strBuildTime = "%s (%s)" % (
