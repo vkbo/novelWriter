@@ -58,6 +58,10 @@ The editor also has a minimal set of keywords used for setting tags and referenc
    "``% Synopsis: text...``", "A synopsis comment. Shows up in the Synopsis column of the Outline View, but is otherwise treated as a comment."
    "``@keyword: value``",     "A keyword argument followed by a value, or a comma separated list of values."
 
+.. note::
+   The bold/italic/strikethrough formatting tags do not allow spaces between the words and the tag itself.
+   That is, ``**text**`` is valid, ``**text **`` is not.
+
 The editor and viewer also supports markdown standard hard line breaks, and preserves non-breaking spaces.
 A hard line break is achieved by leaving two or more spaces at the end of the line.
 Alternatively, the user can press :kbd:`Ctrl-K, Return` to insert this.
