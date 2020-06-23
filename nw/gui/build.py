@@ -40,7 +40,7 @@ from PyQt5.QtGui import (
 )
 from PyQt5.QtWidgets import (
     QDialog, QVBoxLayout, QHBoxLayout, QTextBrowser, QPushButton, QLabel,
-    QLineEdit, QGroupBox, QGridLayout, QProgressBar, QMenu, QAction, QFrame,
+    QLineEdit, QGroupBox, QGridLayout, QProgressBar, QMenu, QAction,
     QFileDialog, QFontDialog, QSpinBox
 )
 
