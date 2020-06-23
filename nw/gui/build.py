@@ -33,7 +33,7 @@ from os import path
 from time import time
 from datetime import datetime
 
-from PyQt5.QtCore import Qt, QByteArray
+from PyQt5.QtCore import Qt, QByteArray, QTimer
 from PyQt5.QtPrintSupport import QPrinter, QPrintPreviewDialog
 from PyQt5.QtGui import (
     QPalette, QColor, QTextDocumentWriter, QFont
@@ -44,6 +44,7 @@ from PyQt5.QtWidgets import (
     QFileDialog, QFontDialog, QSpinBox
 )
 
+from nw.common import fuzzyTime
 from nw.gui.custom import QSwitch
 from nw.core import ToHtml
 from nw.constants import (
@@ -933,6 +934,7 @@ class GuiBuildNovelDocView(QTextBrowser):
         self.theProject = theProject
         self.theParent  = theParent
         self.theTheme   = theParent.theTheme
+        self.buildTime  = 0
 
         self.setMinimumWidth(40*self.theParent.theTheme.textNWidth)
         self.setOpenExternalLinks(False)
@@ -979,6 +981,12 @@ class GuiBuildNovelDocView(QTextBrowser):
         self._updateDocMargins()
         self.setStyleSheet()
 
+        # Age Timer
+        self.ageTimer = QTimer()
+        self.ageTimer.setInterval(5000)
+        self.ageTimer.timeout.connect(self._updateBuildAge)
+        self.ageTimer.start()
+
         logger.debug("GuiBuildNovelDocView initialisation complete")
 
         return
@@ -1009,16 +1017,13 @@ class GuiBuildNovelDocView(QTextBrowser):
         if isinstance(theText, list):
             theText = "".join(theText)
 
+        self.buildTime = timeStamp
+
         theText = theText.replace("&emsp;", "&nbsp;"*4)
         theText = theText.replace("<del>", "<span style='text-decoration: line-through;'>")
         theText = theText.replace("</del>", "</span>")
         self.setHtml(theText)
-
-        if timeStamp > 0:
-            strBuildTime = datetime.fromtimestamp(timeStamp).strftime("%x %X")
-        else:
-            strBuildTime = "Unknown"
-        self.theTitle.setText("Build Time: %s" % strBuildTime)
+        self._updateBuildAge()
 
         return
 
@@ -1055,6 +1060,19 @@ class GuiBuildNovelDocView(QTextBrowser):
     ##
     #  Internal Functions
     ##
+
+    def _updateBuildAge(self):
+        """
+        """
+        if self.buildTime > 0:
+            strBuildTime = "%s (%s)" % (
+                datetime.fromtimestamp(self.buildTime).strftime("%x %X"),
+                fuzzyTime(time() - self.buildTime)
+            )
+        else:
+            strBuildTime = "Unknown"
+        self.theTitle.setText("Build Time: %s" % strBuildTime)
+
 
     def _updateDocMargins(self):
         """Automatically adjust the header to fill the top of the
