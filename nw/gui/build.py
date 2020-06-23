@@ -983,7 +983,7 @@ class GuiBuildNovelDocView(QTextBrowser):
 
         # Age Timer
         self.ageTimer = QTimer()
-        self.ageTimer.setInterval(5000)
+        self.ageTimer.setInterval(10000)
         self.ageTimer.timeout.connect(self._updateBuildAge)
         self.ageTimer.start()
 
@@ -1071,7 +1071,7 @@ class GuiBuildNovelDocView(QTextBrowser):
             )
         else:
             strBuildTime = "Unknown"
-        self.theTitle.setText("Build Time: %s" % strBuildTime)
+        self.theTitle.setText("<b>Build Time:</b> %s" % strBuildTime)
 
 
     def _updateDocMargins(self):
