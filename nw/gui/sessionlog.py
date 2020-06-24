@@ -34,7 +34,7 @@ from datetime import datetime
 from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QFont
 from PyQt5.QtWidgets import (
-    QDialog, QHBoxLayout, QTreeWidget, QTreeWidgetItem, QDialogButtonBox,
+    qApp, QDialog, QHBoxLayout, QTreeWidget, QTreeWidgetItem, QDialogButtonBox,
     QGridLayout, QLabel, QGroupBox, QCheckBox
 )
 
@@ -59,6 +59,7 @@ class GuiSessionLogView(QDialog):
         self.theTheme   = theParent.theTheme
         self.optState   = theProject.optState
 
+        self.logData    = []
         self.timeFilter = 0.0
         self.timeTotal  = 0.0
 
@@ -82,6 +83,7 @@ class GuiSessionLogView(QDialog):
         hHeader.setTextAlignment(self.C_COUNT, Qt.AlignRight)
 
         self.monoFont = QFont()
+        self.monoFont.setPointSizeF(0.9*self.theTheme.fontPointSize)
         self.monoFont.setFamily(self.theTheme.guiFontFixed.family())
 
         sortValid = (Qt.AscendingOrder, Qt.DescendingOrder)
@@ -149,78 +151,20 @@ class GuiSessionLogView(QDialog):
 
         logger.debug("SessionLogView initialisation complete")
 
-        self._loadSessionLog()
+        qApp.processEvents()
+        self._loadLogFile()
+        self._updateListBox()
 
         return
 
-    def _loadSessionLog(self):
-
-        logFile = path.join(self.theProject.projMeta, nwFiles.SESS_INFO)
-        if not path.isfile(logFile):
-            logger.warning("No session log file found for this project.")
-            return False
-
-        self.listBox.clear()
-
-        self.timeFilter = 0.0
-        self.timeTotal  = 0.0
-
-        hideZeros    = self.hideZeros.isChecked()
-        hideNegative = self.hideNegative.isChecked()
-
-        logger.debug("Loading session log file")
-        try:
-            with open(logFile,mode="r",encoding="utf8") as inFile:
-                for inLine in inFile:
-                    inData = inLine.split()
-                    if len(inData) != 8:
-                        continue
-                    dStart = datetime.strptime(
-                        "%s %s" % (inData[1], inData[2]), nwConst.tStampFmt
-                    )
-                    dEnd = datetime.strptime(
-                        "%s %s" % (inData[4], inData[5]), nwConst.tStampFmt
-                    )
-                    nWords = int(inData[7])
-                    tDiff = dEnd - dStart
-                    sDiff = tDiff.total_seconds()
-
-                    self.timeTotal += sDiff
-
-                    if hideZeros and nWords == 0:
-                        continue
-
-                    if hideNegative and nWords < 0:
-                        continue
-
-                    self.timeFilter += sDiff
-
-                    newItem = QTreeWidgetItem()
-                    newItem.setText(self.C_TIME, str(dStart))
-                    newItem.setText(self.C_LENGTH, self._formatTime(sDiff))
-                    newItem.setText(self.C_COUNT, str(nWords))
-
-                    newItem.setTextAlignment(self.C_LENGTH, Qt.AlignRight)
-                    newItem.setTextAlignment(self.C_COUNT, Qt.AlignRight)
-
-                    newItem.setFont(self.C_TIME, self.monoFont)
-                    newItem.setFont(self.C_LENGTH, self.monoFont)
-                    newItem.setFont(self.C_COUNT, self.monoFont)
-
-                    self.listBox.addTopLevelItem(newItem)
-
-        except Exception as e:
-            self.theParent.makeAlert(
-                ["Failed to read session log file.",str(e)], nwAlert.ERROR
-            )
-            return False
-
-        self.labelFilter.setText(self._formatTime(self.timeFilter))
-        self.labelTotal.setText(self._formatTime(self.timeTotal))
-
-        return True
+    ##
+    #  Slots
+    ##
 
     def _doClose(self):
+        """Save the state of the window, clear cache, end close.
+        """
+        self.logData = []
 
         widthCol0    = self.mainConf.rpxInt(self.listBox.columnWidth(0))
         widthCol1    = self.mainConf.rpxInt(self.listBox.columnWidth(1))
@@ -242,14 +186,101 @@ class GuiSessionLogView(QDialog):
         return
 
     def _doHideZeros(self, newState):
-        self._loadSessionLog()
+        """Reload the list box with the new filter settings in place.
+        """
+        self._updateListBox()
         return
 
     def _doHideNegative(self, newState):
-        self._loadSessionLog()
+        """Reload the list box with the new filter settings in place.
+        """
+        self._updateListBox()
         return
 
+    ##
+    #  Internal Functions
+    ##
+
+    def _loadLogFile(self):
+        """Load the content of the log file into a buffer.
+        """
+        self.logData = []
+        logger.debug("Loading session log file")
+
+        try:
+            logFile = path.join(self.theProject.projMeta, nwFiles.SESS_INFO)
+            with open(logFile, mode="r", encoding="utf8") as inFile:
+                for inLine in inFile:
+
+                    inData = inLine.split()
+                    if len(inData) != 8:
+                        continue
+
+                    dStart = datetime.strptime(
+                        "%s %s" % (inData[1], inData[2]), nwConst.tStampFmt
+                    )
+                    dEnd = datetime.strptime(
+                        "%s %s" % (inData[4], inData[5]), nwConst.tStampFmt
+                    )
+
+                    nWords = int(inData[7])
+                    tDiff = dEnd - dStart
+                    sDiff = tDiff.total_seconds()
+
+                    self.logData.append((dStart, sDiff, nWords))
+
+        except Exception as e:
+            self.theParent.makeAlert(
+                ["Failed to read session log file.",str(e)], nwAlert.ERROR
+            )
+            return False
+
+        return True
+
+    def _updateListBox(self):
+        """Load/reload the content of the list box.
+        """
+        self.listBox.clear()
+        self.timeFilter = 0.0
+        self.timeTotal  = 0.0
+
+        hideZeros    = self.hideZeros.isChecked()
+        hideNegative = self.hideNegative.isChecked()
+
+        for dStart, sDiff, nWords in self.logData:
+
+            self.timeTotal += sDiff
+
+            if hideZeros and nWords == 0:
+                continue
+
+            if hideNegative and nWords < 0:
+                continue
+
+            self.timeFilter += sDiff
+
+            newItem = QTreeWidgetItem()
+            newItem.setText(self.C_TIME, str(dStart))
+            newItem.setText(self.C_LENGTH, self._formatTime(sDiff))
+            newItem.setText(self.C_COUNT, str(nWords))
+
+            newItem.setTextAlignment(self.C_LENGTH, Qt.AlignRight)
+            newItem.setTextAlignment(self.C_COUNT, Qt.AlignRight)
+
+            newItem.setFont(self.C_TIME, self.monoFont)
+            newItem.setFont(self.C_LENGTH, self.monoFont)
+            newItem.setFont(self.C_COUNT, self.monoFont)
+
+            self.listBox.addTopLevelItem(newItem)
+
+        self.labelFilter.setText(self._formatTime(self.timeFilter))
+        self.labelTotal.setText(self._formatTime(self.timeTotal))
+
+        return True
+
     def _formatTime(self, tS):
+        """Format the time spent in 00:00:00 format.
+        """
         tM = int(tS/60)
         tH = int(tM/60)
         tM = tM - tH*60
