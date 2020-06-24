@@ -48,7 +48,6 @@ class OptionState():
             "GuiSession": {
                 "widthCol0",
                 "widthCol1",
-                "widthCol2",
                 "sortCol",
                 "sortOrder",
                 "hideZeros",

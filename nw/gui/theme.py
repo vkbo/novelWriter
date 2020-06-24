@@ -139,6 +139,8 @@ class GuiTheme:
         logger.verbose("GUI Scale: %.2f" % self.guiScale)
 
         self.guiFont = qApp.font()
+        self.guiFontFixed = QFontDatabase.systemFont(QFontDatabase.FixedFont)
+
         qMetric = QFontMetrics(self.guiFont)
         self.fontPointSize = self.guiFont.pointSizeF()
         self.fontPixelSize = int(round(qMetric.height()))
