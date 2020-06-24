@@ -46,8 +46,11 @@ class OptionState():
         self.theState = {}
         self.validMap = {
             "GuiSessionLog": {
+                "winWidth",
+                "winHeight",
                 "widthCol0",
                 "widthCol1",
+                "widthCol2",
                 "sortCol",
                 "sortOrder",
                 "hideZeros",

@@ -31,11 +31,11 @@ import nw
 from os import path
 from datetime import datetime
 
-from PyQt5.QtCore import Qt
-from PyQt5.QtGui import QFont
+from PyQt5.QtCore import Qt, QRect
+from PyQt5.QtGui import QFont, QPixmap, QIcon, QColor, QPainter
 from PyQt5.QtWidgets import (
     qApp, QDialog, QTreeWidget, QTreeWidgetItem, QDialogButtonBox, QGridLayout,
-    QLabel, QGroupBox
+    QLabel, QGroupBox, QAbstractButton
 )
 
 from nw.constants import nwConst, nwFiles, nwAlert
@@ -48,6 +48,7 @@ class GuiSessionLog(QDialog):
     C_TIME   = 0
     C_LENGTH = 1
     C_COUNT  = 2
+    C_BAR    = 3
 
     def __init__(self, theParent, theProject):
         QDialog.__init__(self, theParent)
@@ -68,6 +69,10 @@ class GuiSessionLog(QDialog):
         self.setWindowTitle("Session Log")
         self.setMinimumWidth(self.mainConf.pxInt(420))
         self.setMinimumHeight(self.mainConf.pxInt(400))
+        self.resize(
+            self.mainConf.pxInt(self.optState.getInt("GuiSessionLog", "winWidth",  550)),
+            self.mainConf.pxInt(self.optState.getInt("GuiSessionLog", "winHeight", 500))
+        )
 
         # List Box
         wCol0 = self.mainConf.pxInt(
@@ -76,12 +81,16 @@ class GuiSessionLog(QDialog):
         wCol1 = self.mainConf.pxInt(
             self.optState.getInt("GuiSessionLog", "widthCol1", 80)
         )
+        wCol2 = self.mainConf.pxInt(
+            self.optState.getInt("GuiSessionLog", "widthCol2", 80)
+        )
 
         self.listBox = QTreeWidget()
-        self.listBox.setHeaderLabels(["Session Start","Length","Words"])
+        self.listBox.setHeaderLabels(["Session Start","Length","Words","Histogram"])
         self.listBox.setIndentation(0)
         self.listBox.setColumnWidth(self.C_TIME, wCol0)
         self.listBox.setColumnWidth(self.C_LENGTH, wCol1)
+        self.listBox.setColumnWidth(self.C_COUNT, wCol2)
         self.listBox.resizeColumnToContents(self.C_COUNT)
 
         hHeader = self.listBox.headerItem()
@@ -103,6 +112,11 @@ class GuiSessionLog(QDialog):
 
         self.listBox.sortByColumn(sortCol, sortOrder)
         self.listBox.setSortingEnabled(True)
+
+        # Word Bar
+        self.barHeight = int(round(0.5*self.theTheme.fontPixelSize))
+        self.barImage = QPixmap(self.barHeight, self.barHeight)
+        self.barImage.fill(self.palette().highlight().color())
 
         # Session Info
         self.infoBox  = QGroupBox("Sum Total Time", self)
@@ -178,18 +192,24 @@ class GuiSessionLog(QDialog):
         """
         self.logData = []
 
+        winWidth     = self.mainConf.rpxInt(self.width())
+        winHeight    = self.mainConf.rpxInt(self.height())
         widthCol0    = self.mainConf.rpxInt(self.listBox.columnWidth(0))
         widthCol1    = self.mainConf.rpxInt(self.listBox.columnWidth(1))
+        widthCol2    = self.mainConf.rpxInt(self.listBox.columnWidth(2))
         sortCol      = self.listBox.sortColumn()
         sortOrder    = self.listBox.header().sortIndicatorOrder()
         hideZeros    = self.hideZeros.isChecked()
         hideNegative = self.hideNegative.isChecked()
 
-        self.optState.setValue("GuiSessionLog", "widthCol0", widthCol0)
-        self.optState.setValue("GuiSessionLog", "widthCol1", widthCol1)
-        self.optState.setValue("GuiSessionLog", "sortCol", sortCol)
-        self.optState.setValue("GuiSessionLog", "sortOrder", sortOrder)
-        self.optState.setValue("GuiSessionLog", "hideZeros", hideZeros)
+        self.optState.setValue("GuiSessionLog", "winWidth",     winWidth)
+        self.optState.setValue("GuiSessionLog", "winHeight",    winHeight)
+        self.optState.setValue("GuiSessionLog", "widthCol0",    widthCol0)
+        self.optState.setValue("GuiSessionLog", "widthCol1",    widthCol1)
+        self.optState.setValue("GuiSessionLog", "widthCol2",    widthCol2)
+        self.optState.setValue("GuiSessionLog", "sortCol",      sortCol)
+        self.optState.setValue("GuiSessionLog", "sortOrder",    sortOrder)
+        self.optState.setValue("GuiSessionLog", "hideZeros",    hideZeros)
         self.optState.setValue("GuiSessionLog", "hideNegative", hideNegative)
 
         self.optState.saveSettings()
@@ -276,8 +296,18 @@ class GuiSessionLog(QDialog):
             newItem.setText(self.C_LENGTH, self._formatTime(sDiff))
             newItem.setText(self.C_COUNT, str(nWords))
 
+            if nWords > 0:
+                theBar = self.barImage.scaled(
+                    int(200*nWords/self.maxWords),
+                    self.barHeight,
+                    Qt.IgnoreAspectRatio,
+                    Qt.FastTransformation
+                )
+                newItem.setData(self.C_BAR, Qt.DecorationRole, theBar)
+
             newItem.setTextAlignment(self.C_LENGTH, Qt.AlignRight)
             newItem.setTextAlignment(self.C_COUNT, Qt.AlignRight)
+            newItem.setTextAlignment(self.C_BAR, Qt.AlignLeft | Qt.AlignVCenter)
 
             newItem.setFont(self.C_TIME, self.monoFont)
             newItem.setFont(self.C_LENGTH, self.monoFont)
@@ -299,3 +329,32 @@ class GuiSessionLog(QDialog):
         return "%02d:%02d:%02d" % (tH,tM,tS)
 
 # END Class GuiSessionLog
+
+# class WordBar(QAbstractButton):
+
+#     def __init__(self, sW, sH, parent=None):
+#         super().__init__(parent=parent)
+
+#         self._theCol = self.palette().highlight().color()
+
+#         self.setFixedWidth(sW)
+#         self.setFixedHeight(sH)
+
+#         return
+
+#     ##
+#     #  Events
+#     ##
+
+#     def paintEvent(self, event):
+#         """Drawing the bar.
+#         """
+#         qPaint = QPainter(self)
+#         qPaint.setRenderHint(QPainter.Antialiasing, True)
+#         qPaint.setPen(self._theCol)
+#         qPaint.setBrush(self._theCol)
+#         qPaint.setOpacity(1.0)
+#         qPaint.drawRect(QRect(0, 0, self.width(), self.height()))
+#         return
+
+# # END Class StatusLED
