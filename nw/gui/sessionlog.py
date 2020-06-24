@@ -31,11 +31,11 @@ import nw
 from os import path
 from datetime import datetime
 
-from PyQt5.QtCore import Qt, QRect
-from PyQt5.QtGui import QFont, QPixmap, QIcon, QColor, QPainter
+from PyQt5.QtCore import Qt
+from PyQt5.QtGui import QFont, QPixmap
 from PyQt5.QtWidgets import (
     qApp, QDialog, QTreeWidget, QTreeWidgetItem, QDialogButtonBox, QGridLayout,
-    QLabel, QGroupBox, QAbstractButton
+    QLabel, QGroupBox
 )
 
 from nw.constants import nwConst, nwFiles, nwAlert
@@ -109,7 +109,6 @@ class GuiSessionLog(QDialog):
             self.optState.getInt("GuiSessionLog", "sortOrder", Qt.DescendingOrder),
             sortValid, Qt.DescendingOrder
         )
-
         self.listBox.sortByColumn(sortCol, sortOrder)
         self.listBox.setSortingEnabled(True)
 
@@ -119,7 +118,7 @@ class GuiSessionLog(QDialog):
         self.barImage.fill(self.palette().highlight().color())
 
         # Session Info
-        self.infoBox  = QGroupBox("Sum Total Time", self)
+        self.infoBox  = QGroupBox("Sum Totals", self)
         self.infoForm = QGridLayout(self)
         self.infoBox.setLayout(self.infoForm)
 
@@ -131,10 +130,11 @@ class GuiSessionLog(QDialog):
         self.labelFilter.setFont(self.monoFont)
         self.labelFilter.setAlignment(Qt.AlignVCenter | Qt.AlignRight)
 
-        self.infoForm.addWidget(QLabel("All:"),      0, 0)
-        self.infoForm.addWidget(self.labelTotal,     0, 1)
-        self.infoForm.addWidget(QLabel("Filtered:"), 1, 0)
-        self.infoForm.addWidget(self.labelFilter,    1, 1)
+        self.infoForm.addWidget(QLabel("Total Time:"),    0, 0)
+        self.infoForm.addWidget(self.labelTotal,          0, 1)
+        self.infoForm.addWidget(QLabel("Filtered Time:"), 1, 0)
+        self.infoForm.addWidget(self.labelFilter,         1, 1)
+        self.infoForm.setRowStretch(2, 1)
 
         # Filter Options
         sPx = self.theTheme.baseIconSize
@@ -148,19 +148,28 @@ class GuiSessionLog(QDialog):
         self.hideZeros.setChecked(
             self.optState.getBool("GuiSessionLog", "hideZeros", True)
         )
-        self.hideZeros.toggled.connect(self._doHideZeros)
+        self.hideZeros.clicked.connect(self._updateListBox)
 
         self.labelNegative = QLabel("Hide negative word count")
         self.hideNegative = QSwitch(width=2*sPx, height=sPx)
         self.hideNegative.setChecked(
             self.optState.getBool("GuiSessionLog", "hideNegative", False)
         )
-        self.hideNegative.toggled.connect(self._doHideNegative)
+        self.hideNegative.clicked.connect(self._updateListBox)
+
+        self.labelByDay = QLabel("Group entries by day")
+        self.groupByDay = QSwitch(width=2*sPx, height=sPx)
+        self.groupByDay.setChecked(
+            self.optState.getBool("GuiSessionLog", "groupByDay", False)
+        )
+        self.groupByDay.clicked.connect(self._updateListBox)
 
         self.filterForm.addWidget(self.labelZeros,    0, 0)
         self.filterForm.addWidget(self.hideZeros,     0, 1)
         self.filterForm.addWidget(self.labelNegative, 1, 0)
         self.filterForm.addWidget(self.hideNegative,  1, 1)
+        self.filterForm.addWidget(self.labelByDay,    2, 0)
+        self.filterForm.addWidget(self.groupByDay,    2, 1)
 
         # Buttons
         self.buttonBox = QDialogButtonBox(QDialogButtonBox.Close)
@@ -172,6 +181,7 @@ class GuiSessionLog(QDialog):
         self.outerBox.addWidget(self.infoBox,   1, 0)
         self.outerBox.addWidget(self.filterBox, 1, 1)
         self.outerBox.addWidget(self.buttonBox, 2, 0, 1, 2)
+        self.outerBox.setRowStretch(0, 1)
 
         self.setLayout(self.outerBox)
 
@@ -201,6 +211,7 @@ class GuiSessionLog(QDialog):
         sortOrder    = self.listBox.header().sortIndicatorOrder()
         hideZeros    = self.hideZeros.isChecked()
         hideNegative = self.hideNegative.isChecked()
+        groupByDay   = self.groupByDay.isChecked()
 
         self.optState.setValue("GuiSessionLog", "winWidth",     winWidth)
         self.optState.setValue("GuiSessionLog", "winHeight",    winHeight)
@@ -211,22 +222,11 @@ class GuiSessionLog(QDialog):
         self.optState.setValue("GuiSessionLog", "sortOrder",    sortOrder)
         self.optState.setValue("GuiSessionLog", "hideZeros",    hideZeros)
         self.optState.setValue("GuiSessionLog", "hideNegative", hideNegative)
+        self.optState.setValue("GuiSessionLog", "groupByDay",   groupByDay)
 
         self.optState.saveSettings()
         self.close()
 
-        return
-
-    def _doHideZeros(self, newState):
-        """Reload the list box with the new filter settings in place.
-        """
-        self._updateListBox()
-        return
-
-    def _doHideNegative(self, newState):
-        """Reload the list box with the new filter settings in place.
-        """
-        self._updateListBox()
         return
 
     ##
@@ -281,8 +281,39 @@ class GuiSessionLog(QDialog):
 
         hideZeros    = self.hideZeros.isChecked()
         hideNegative = self.hideNegative.isChecked()
+        groupByDay   = self.groupByDay.isChecked()
 
-        for dStart, sDiff, nWords in self.logData:
+        # Group the data
+        if groupByDay:
+            listData = []
+            listMax  = 0
+
+            dayDate  = None
+            daySDiff = 0
+            dayWords = 0
+
+            for n, (dStart, sDiff, nWords) in enumerate(self.logData):
+                if n == 0:
+                    dayDate = dStart.date()
+                if dayDate != dStart.date():
+                    listData.append((dayDate, daySDiff, dayWords))
+                    listMax  = max(listMax, dayWords)
+                    dayDate  = dStart.date()
+                    daySDiff = sDiff
+                    dayWords = nWords
+                else:
+                    daySDiff += sDiff
+                    dayWords += nWords
+
+            if dayDate is not None:
+                listData.append((dayDate, daySDiff, dayWords))
+
+        else:
+            listData = self.logData
+            listMax  = self.maxWords
+
+        # Populate the list
+        for dStart, sDiff, nWords in listData:
 
             if hideZeros and nWords == 0:
                 continue
@@ -291,14 +322,19 @@ class GuiSessionLog(QDialog):
 
             self.timeFilter += sDiff
 
+            if groupByDay:
+                sStart = dStart.strftime(nwConst.dStampFmt)
+            else:
+                sStart = dStart.strftime(nwConst.tStampFmt)
+
             newItem = QTreeWidgetItem()
-            newItem.setText(self.C_TIME, str(dStart))
+            newItem.setText(self.C_TIME, sStart)
             newItem.setText(self.C_LENGTH, self._formatTime(sDiff))
             newItem.setText(self.C_COUNT, str(nWords))
 
             if nWords > 0:
                 theBar = self.barImage.scaled(
-                    int(200*nWords/self.maxWords),
+                    int(200*nWords/listMax),
                     self.barHeight,
                     Qt.IgnoreAspectRatio,
                     Qt.FastTransformation
@@ -329,32 +365,3 @@ class GuiSessionLog(QDialog):
         return "%02d:%02d:%02d" % (tH,tM,tS)
 
 # END Class GuiSessionLog
-
-# class WordBar(QAbstractButton):
-
-#     def __init__(self, sW, sH, parent=None):
-#         super().__init__(parent=parent)
-
-#         self._theCol = self.palette().highlight().color()
-
-#         self.setFixedWidth(sW)
-#         self.setFixedHeight(sH)
-
-#         return
-
-#     ##
-#     #  Events
-#     ##
-
-#     def paintEvent(self, event):
-#         """Drawing the bar.
-#         """
-#         qPaint = QPainter(self)
-#         qPaint.setRenderHint(QPainter.Antialiasing, True)
-#         qPaint.setPen(self._theCol)
-#         qPaint.setBrush(self._theCol)
-#         qPaint.setOpacity(1.0)
-#         qPaint.drawRect(QRect(0, 0, self.width(), self.height()))
-#         return
-
-# # END Class StatusLED

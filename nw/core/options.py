@@ -55,6 +55,7 @@ class OptionState():
                 "sortOrder",
                 "hideZeros",
                 "hideNegative",
+                "groupByDay",
             },
             "GuiDocSplit": {
                 "spLevel",
