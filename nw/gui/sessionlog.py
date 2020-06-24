@@ -42,7 +42,7 @@ from nw.constants import nwConst, nwFiles, nwAlert
 
 logger = logging.getLogger(__name__)
 
-class GuiSessionLogView(QDialog):
+class GuiSessionLog(QDialog):
 
     C_TIME   = 0
     C_LENGTH = 1
@@ -51,7 +51,7 @@ class GuiSessionLogView(QDialog):
     def __init__(self, theParent, theProject):
         QDialog.__init__(self, theParent)
 
-        logger.debug("Initialising SessionLogView ...")
+        logger.debug("Initialising GuiSessionLog ...")
 
         self.mainConf   = nw.CONFIG
         self.theParent  = theParent
@@ -68,8 +68,8 @@ class GuiSessionLogView(QDialog):
         self.setMinimumHeight(self.mainConf.pxInt(400))
 
         # List Box
-        wCol0 = self.mainConf.pxInt(self.optState.getInt("GuiSession", "widthCol0", 180))
-        wCol1 = self.mainConf.pxInt(self.optState.getInt("GuiSession", "widthCol1", 80))
+        wCol0 = self.mainConf.pxInt(self.optState.getInt("GuiSessionLog", "widthCol0", 180))
+        wCol1 = self.mainConf.pxInt(self.optState.getInt("GuiSessionLog", "widthCol1", 80))
 
         self.listBox = QTreeWidget()
         self.listBox.setHeaderLabels(["Session Start","Length","Words"])
@@ -88,10 +88,10 @@ class GuiSessionLogView(QDialog):
 
         sortValid = (Qt.AscendingOrder, Qt.DescendingOrder)
         sortCol = self.optState.validIntRange(
-            self.optState.getInt("GuiSession", "sortCol", 0), 0, 2, 0
+            self.optState.getInt("GuiSessionLog", "sortCol", 0), 0, 2, 0
         )
         sortOrder = self.optState.validIntTuple(
-            self.optState.getInt("GuiSession", "sortOrder", Qt.DescendingOrder),
+            self.optState.getInt("GuiSessionLog", "sortOrder", Qt.DescendingOrder),
             sortValid, Qt.DescendingOrder
         )
 
@@ -123,13 +123,13 @@ class GuiSessionLogView(QDialog):
 
         self.hideZeros = QCheckBox("Hide zero word count", self)
         self.hideZeros.setChecked(
-            self.optState.getBool("GuiSession", "hideZeros", True)
+            self.optState.getBool("GuiSessionLog", "hideZeros", True)
         )
         self.hideZeros.stateChanged.connect(self._doHideZeros)
 
         self.hideNegative = QCheckBox("Hide negative word count", self)
         self.hideNegative.setChecked(
-            self.optState.getBool("GuiSession", "hideNegative", False)
+            self.optState.getBool("GuiSessionLog", "hideNegative", False)
         )
         self.hideNegative.stateChanged.connect(self._doHideNegative)
 
@@ -149,7 +149,7 @@ class GuiSessionLogView(QDialog):
 
         self.setLayout(self.outerBox)
 
-        logger.debug("SessionLogView initialisation complete")
+        logger.debug("GuiSessionLog initialisation complete")
 
         qApp.processEvents()
         self._loadLogFile()
@@ -173,12 +173,12 @@ class GuiSessionLogView(QDialog):
         hideZeros    = self.hideZeros.isChecked()
         hideNegative = self.hideNegative.isChecked()
 
-        self.optState.setValue("GuiSession", "widthCol0", widthCol0)
-        self.optState.setValue("GuiSession", "widthCol1", widthCol1)
-        self.optState.setValue("GuiSession", "sortCol", sortCol)
-        self.optState.setValue("GuiSession", "sortOrder", sortOrder)
-        self.optState.setValue("GuiSession", "hideZeros", hideZeros)
-        self.optState.setValue("GuiSession", "hideNegative", hideNegative)
+        self.optState.setValue("GuiSessionLog", "widthCol0", widthCol0)
+        self.optState.setValue("GuiSessionLog", "widthCol1", widthCol1)
+        self.optState.setValue("GuiSessionLog", "sortCol", sortCol)
+        self.optState.setValue("GuiSessionLog", "sortOrder", sortOrder)
+        self.optState.setValue("GuiSessionLog", "hideZeros", hideZeros)
+        self.optState.setValue("GuiSessionLog", "hideNegative", hideNegative)
 
         self.optState.saveSettings()
         self.close()
@@ -226,6 +226,7 @@ class GuiSessionLogView(QDialog):
                     nWords = int(inData[7])
                     tDiff = dEnd - dStart
                     sDiff = tDiff.total_seconds()
+                    self.timeTotal += sDiff
 
                     self.logData.append((dStart, sDiff, nWords))
 
@@ -235,6 +236,8 @@ class GuiSessionLogView(QDialog):
             )
             return False
 
+        self.labelTotal.setText(self._formatTime(self.timeTotal))
+
         return True
 
     def _updateListBox(self):
@@ -242,18 +245,14 @@ class GuiSessionLogView(QDialog):
         """
         self.listBox.clear()
         self.timeFilter = 0.0
-        self.timeTotal  = 0.0
 
         hideZeros    = self.hideZeros.isChecked()
         hideNegative = self.hideNegative.isChecked()
 
         for dStart, sDiff, nWords in self.logData:
 
-            self.timeTotal += sDiff
-
             if hideZeros and nWords == 0:
                 continue
-
             if hideNegative and nWords < 0:
                 continue
 
@@ -274,7 +273,6 @@ class GuiSessionLogView(QDialog):
             self.listBox.addTopLevelItem(newItem)
 
         self.labelFilter.setText(self._formatTime(self.timeFilter))
-        self.labelTotal.setText(self._formatTime(self.timeTotal))
 
         return True
 
@@ -287,4 +285,4 @@ class GuiSessionLogView(QDialog):
         tS = tS - tM*60 - tH*3600
         return "%02d:%02d:%02d" % (tH,tM,tS)
 
-# END Class GuiSessionLogView
+# END Class GuiSessionLog
