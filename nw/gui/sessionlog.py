@@ -34,11 +34,12 @@ from datetime import datetime
 from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QFont
 from PyQt5.QtWidgets import (
-    qApp, QDialog, QHBoxLayout, QTreeWidget, QTreeWidgetItem, QDialogButtonBox,
-    QGridLayout, QLabel, QGroupBox, QCheckBox
+    qApp, QDialog, QTreeWidget, QTreeWidgetItem, QDialogButtonBox, QGridLayout,
+    QLabel, QGroupBox
 )
 
 from nw.constants import nwConst, nwFiles, nwAlert
+from nw.gui.custom import QSwitch
 
 logger = logging.getLogger(__name__)
 
@@ -62,14 +63,19 @@ class GuiSessionLog(QDialog):
         self.logData    = []
         self.timeFilter = 0.0
         self.timeTotal  = 0.0
+        self.maxWords   = 0
 
         self.setWindowTitle("Session Log")
         self.setMinimumWidth(self.mainConf.pxInt(420))
         self.setMinimumHeight(self.mainConf.pxInt(400))
 
         # List Box
-        wCol0 = self.mainConf.pxInt(self.optState.getInt("GuiSessionLog", "widthCol0", 180))
-        wCol1 = self.mainConf.pxInt(self.optState.getInt("GuiSessionLog", "widthCol1", 80))
+        wCol0 = self.mainConf.pxInt(
+            self.optState.getInt("GuiSessionLog", "widthCol0", 180)
+        )
+        wCol1 = self.mainConf.pxInt(
+            self.optState.getInt("GuiSessionLog", "widthCol1", 80)
+        )
 
         self.listBox = QTreeWidget()
         self.listBox.setHeaderLabels(["Session Start","Length","Words"])
@@ -117,24 +123,30 @@ class GuiSessionLog(QDialog):
         self.infoForm.addWidget(self.labelFilter,    1, 1)
 
         # Filter Options
+        sPx = self.theTheme.baseIconSize
+
         self.filterBox  = QGroupBox("Filters", self)
         self.filterForm = QGridLayout(self)
         self.filterBox.setLayout(self.filterForm)
 
-        self.hideZeros = QCheckBox("Hide zero word count", self)
+        self.labelZeros = QLabel("Hide zero word count")
+        self.hideZeros = QSwitch(width=2*sPx, height=sPx)
         self.hideZeros.setChecked(
             self.optState.getBool("GuiSessionLog", "hideZeros", True)
         )
-        self.hideZeros.stateChanged.connect(self._doHideZeros)
+        self.hideZeros.toggled.connect(self._doHideZeros)
 
-        self.hideNegative = QCheckBox("Hide negative word count", self)
+        self.labelNegative = QLabel("Hide negative word count")
+        self.hideNegative = QSwitch(width=2*sPx, height=sPx)
         self.hideNegative.setChecked(
             self.optState.getBool("GuiSessionLog", "hideNegative", False)
         )
-        self.hideNegative.stateChanged.connect(self._doHideNegative)
+        self.hideNegative.toggled.connect(self._doHideNegative)
 
-        self.filterForm.addWidget(self.hideZeros,    0, 0)
-        self.filterForm.addWidget(self.hideNegative, 1, 0)
+        self.filterForm.addWidget(self.labelZeros,    0, 0)
+        self.filterForm.addWidget(self.hideZeros,     0, 1)
+        self.filterForm.addWidget(self.labelNegative, 1, 0)
+        self.filterForm.addWidget(self.hideNegative,  1, 1)
 
         # Buttons
         self.buttonBox = QDialogButtonBox(QDialogButtonBox.Close)
@@ -229,6 +241,7 @@ class GuiSessionLog(QDialog):
                     self.timeTotal += sDiff
 
                     self.logData.append((dStart, sDiff, nWords))
+                    self.maxWords = max(self.maxWords, nWords)
 
         except Exception as e:
             self.theParent.makeAlert(
