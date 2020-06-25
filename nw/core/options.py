@@ -53,6 +53,8 @@ class OptionState():
                 "widthCol2",
                 "sortCol",
                 "sortOrder",
+                "incNovel",
+                "incNotes",
                 "hideZeros",
                 "hideNegative",
                 "groupByDay",

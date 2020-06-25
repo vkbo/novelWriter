@@ -64,7 +64,7 @@ class GuiSessionLog(QDialog):
         self.logData    = []
         self.timeFilter = 0.0
         self.timeTotal  = 0.0
-        self.maxWords   = 0
+        self.wordOffset = 0
 
         self.setWindowTitle("Session Log")
         self.setMinimumWidth(self.mainConf.pxInt(420))
@@ -114,6 +114,7 @@ class GuiSessionLog(QDialog):
 
         # Word Bar
         self.barHeight = int(round(0.5*self.theTheme.fontPixelSize))
+        self.barWidth = self.mainConf.pxInt(200)
         self.barImage = QPixmap(self.barHeight, self.barHeight)
         self.barImage.fill(self.palette().highlight().color())
 
@@ -130,11 +131,29 @@ class GuiSessionLog(QDialog):
         self.labelFilter.setFont(self.monoFont)
         self.labelFilter.setAlignment(Qt.AlignVCenter | Qt.AlignRight)
 
-        self.infoForm.addWidget(QLabel("Total Time:"),    0, 0)
-        self.infoForm.addWidget(self.labelTotal,          0, 1)
-        self.infoForm.addWidget(QLabel("Filtered Time:"), 1, 0)
-        self.infoForm.addWidget(self.labelFilter,         1, 1)
-        self.infoForm.setRowStretch(2, 1)
+        self.novelWords = QLabel("0")
+        self.novelWords.setFont(self.monoFont)
+        self.novelWords.setAlignment(Qt.AlignVCenter | Qt.AlignRight)
+
+        self.notesWords = QLabel("0")
+        self.notesWords.setFont(self.monoFont)
+        self.notesWords.setAlignment(Qt.AlignVCenter | Qt.AlignRight)
+
+        self.totalWords = QLabel("0")
+        self.totalWords.setFont(self.monoFont)
+        self.totalWords.setAlignment(Qt.AlignVCenter | Qt.AlignRight)
+
+        self.infoForm.addWidget(QLabel("Total Time:"),       0, 0)
+        self.infoForm.addWidget(self.labelTotal,             0, 1)
+        self.infoForm.addWidget(QLabel("Filtered Time:"),    1, 0)
+        self.infoForm.addWidget(self.labelFilter,            1, 1)
+        self.infoForm.addWidget(QLabel("Novel Word Count:"), 2, 0)
+        self.infoForm.addWidget(self.novelWords,             2, 1)
+        self.infoForm.addWidget(QLabel("Notes Word Count:"), 3, 0)
+        self.infoForm.addWidget(self.notesWords,             3, 1)
+        self.infoForm.addWidget(QLabel("Total Word Count:"), 4, 0)
+        self.infoForm.addWidget(self.totalWords,             4, 1)
+        self.infoForm.setRowStretch(5, 1)
 
         # Filter Options
         sPx = self.theTheme.baseIconSize
@@ -142,6 +161,20 @@ class GuiSessionLog(QDialog):
         self.filterBox  = QGroupBox("Filters", self)
         self.filterForm = QGridLayout(self)
         self.filterBox.setLayout(self.filterForm)
+
+        self.labelNovel = QLabel("Count novel files")
+        self.incNovel = QSwitch(width=2*sPx, height=sPx)
+        self.incNovel.setChecked(
+            self.optState.getBool("GuiSessionLog", "incNovel", True)
+        )
+        self.incNovel.clicked.connect(self._updateListBox)
+
+        self.labelNotes = QLabel("Count note files")
+        self.incNotes = QSwitch(width=2*sPx, height=sPx)
+        self.incNotes.setChecked(
+            self.optState.getBool("GuiSessionLog", "incNotes", True)
+        )
+        self.incNotes.clicked.connect(self._updateListBox)
 
         self.labelZeros = QLabel("Hide zero word count")
         self.hideZeros = QSwitch(width=2*sPx, height=sPx)
@@ -164,12 +197,16 @@ class GuiSessionLog(QDialog):
         )
         self.groupByDay.clicked.connect(self._updateListBox)
 
-        self.filterForm.addWidget(self.labelZeros,    0, 0)
-        self.filterForm.addWidget(self.hideZeros,     0, 1)
-        self.filterForm.addWidget(self.labelNegative, 1, 0)
-        self.filterForm.addWidget(self.hideNegative,  1, 1)
-        self.filterForm.addWidget(self.labelByDay,    2, 0)
-        self.filterForm.addWidget(self.groupByDay,    2, 1)
+        self.filterForm.addWidget(self.labelNovel,    0, 0)
+        self.filterForm.addWidget(self.incNovel,      0, 1)
+        self.filterForm.addWidget(self.labelNotes,    1, 0)
+        self.filterForm.addWidget(self.incNotes,      1, 1)
+        self.filterForm.addWidget(self.labelZeros,    2, 0)
+        self.filterForm.addWidget(self.hideZeros,     2, 1)
+        self.filterForm.addWidget(self.labelNegative, 3, 0)
+        self.filterForm.addWidget(self.hideNegative,  3, 1)
+        self.filterForm.addWidget(self.labelByDay,    4, 0)
+        self.filterForm.addWidget(self.groupByDay,    4, 1)
 
         # Buttons
         self.buttonBox = QDialogButtonBox(QDialogButtonBox.Close)
@@ -209,6 +246,8 @@ class GuiSessionLog(QDialog):
         widthCol2    = self.mainConf.rpxInt(self.listBox.columnWidth(2))
         sortCol      = self.listBox.sortColumn()
         sortOrder    = self.listBox.header().sortIndicatorOrder()
+        incNovel     = self.incNovel.isChecked()
+        incNotes     = self.incNotes.isChecked()
         hideZeros    = self.hideZeros.isChecked()
         hideNegative = self.hideNegative.isChecked()
         groupByDay   = self.groupByDay.isChecked()
@@ -220,6 +259,8 @@ class GuiSessionLog(QDialog):
         self.optState.setValue("GuiSessionLog", "widthCol2",    widthCol2)
         self.optState.setValue("GuiSessionLog", "sortCol",      sortCol)
         self.optState.setValue("GuiSessionLog", "sortOrder",    sortOrder)
+        self.optState.setValue("GuiSessionLog", "incNovel",     incNovel)
+        self.optState.setValue("GuiSessionLog", "incNotes",     incNotes)
         self.optState.setValue("GuiSessionLog", "hideZeros",    hideZeros)
         self.optState.setValue("GuiSessionLog", "hideNegative", hideNegative)
         self.optState.setValue("GuiSessionLog", "groupByDay",   groupByDay)
@@ -239,29 +280,55 @@ class GuiSessionLog(QDialog):
         self.logData = []
         logger.debug("Loading session log file")
 
+        ttNovel = 0
+        ttNotes = 0
+
+        isFirst = True
+        osNovel = 0
+        osNotes = 0
+
         try:
-            logFile = path.join(self.theProject.projMeta, nwFiles.SESS_INFO)
+            logFile = path.join(self.theProject.projMeta, nwFiles.SESS_STATS)
             with open(logFile, mode="r", encoding="utf8") as inFile:
                 for inLine in inFile:
+                    if inLine.startswith("#"):
+                        if inLine.startswith("# Initial:"):
+                            self.wordOffset = int(inLine[11:].strip())
+                            logger.verbose(
+                                "Initial word count when log was started is %d" % self.wordOffset
+                            )
+                        continue
 
                     inData = inLine.split()
-                    if len(inData) != 8:
+                    if len(inData) != 6:
                         continue
 
                     dStart = datetime.strptime(
-                        "%s %s" % (inData[1], inData[2]), nwConst.tStampFmt
+                        "%s %s" % (inData[0], inData[1]), nwConst.tStampFmt
                     )
                     dEnd = datetime.strptime(
-                        "%s %s" % (inData[4], inData[5]), nwConst.tStampFmt
+                        "%s %s" % (inData[2], inData[3]), nwConst.tStampFmt
                     )
 
-                    nWords = int(inData[7])
                     tDiff = dEnd - dStart
                     sDiff = tDiff.total_seconds()
                     self.timeTotal += sDiff
 
-                    self.logData.append((dStart, sDiff, nWords))
-                    self.maxWords = max(self.maxWords, nWords)
+                    wcNovel = int(inData[4])
+                    wcNotes = int(inData[5])
+                    ttNovel = wcNovel
+                    ttNotes = wcNotes
+
+                    if isFirst:
+                        isFirst = False
+                        if self.wordOffset > 0:
+                            # First entry is used as the reference word
+                            # count, and the data is then discarded.
+                            osNovel = wcNovel
+                            osNotes = wcNotes
+                            continue
+
+                    self.logData.append((dStart, sDiff, wcNovel-osNovel, wcNotes-osNotes))
 
         except Exception as e:
             self.theParent.makeAlert(
@@ -270,6 +337,9 @@ class GuiSessionLog(QDialog):
             return False
 
         self.labelTotal.setText(self._formatTime(self.timeTotal))
+        self.novelWords.setText("{:n}".format(ttNovel))
+        self.notesWords.setText("{:n}".format(ttNotes))
+        self.totalWords.setText("{:n}".format(ttNovel + ttNotes))
 
         return True
 
@@ -279,48 +349,64 @@ class GuiSessionLog(QDialog):
         self.listBox.clear()
         self.timeFilter = 0.0
 
+        incNovel     = self.incNovel.isChecked()
+        incNotes     = self.incNotes.isChecked()
         hideZeros    = self.hideZeros.isChecked()
         hideNegative = self.hideNegative.isChecked()
         groupByDay   = self.groupByDay.isChecked()
 
         # Group the data
         if groupByDay:
-            listData = []
-            listMax  = 0
+            tempData = []
+            sessDate = None
+            sessTime = 0
+            lstNovel = 0
+            lstNotes = 0
 
-            dayDate  = None
-            daySDiff = 0
-            dayWords = 0
-
-            for n, (dStart, sDiff, nWords) in enumerate(self.logData):
+            for n, (dStart, sDiff, wcNovel, wcNotes) in enumerate(self.logData):
                 if n == 0:
-                    dayDate = dStart.date()
-                if dayDate != dStart.date():
-                    listData.append((dayDate, daySDiff, dayWords))
-                    listMax  = max(listMax, dayWords)
-                    dayDate  = dStart.date()
-                    daySDiff = sDiff
-                    dayWords = nWords
+                    sessDate = dStart.date()
+                if sessDate != dStart.date():
+                    tempData.append((sessDate, sessTime, lstNovel, lstNotes))
+                    sessDate = dStart.date()
+                    sessTime = sDiff
+                    lstNovel = wcNovel
+                    lstNotes = wcNotes
                 else:
-                    daySDiff += sDiff
-                    dayWords += nWords
+                    sessTime += sDiff
+                    lstNovel = wcNovel
+                    lstNotes = wcNotes
 
-            if dayDate is not None:
-                listData.append((dayDate, daySDiff, dayWords))
+            if sessDate is not None:
+                tempData.append((sessDate, sessTime, lstNovel, lstNotes))
 
         else:
-            listData = self.logData
-            listMax  = self.maxWords
+            tempData = self.logData
+
+        # Calculate Word Diff
+        listData = []
+        pcTotal = 0
+        listMax = 0
+        for dStart, sDiff, wcNovel, wcNotes in tempData:
+
+            wcTotal = 0
+            if incNovel:
+                wcTotal += wcNovel
+            if incNotes:
+                wcTotal += wcNotes
+
+            dwTotal = wcTotal - pcTotal
+            if hideZeros and dwTotal == 0:
+                continue
+            if hideNegative and dwTotal < 0:
+                continue
+
+            listData.append((dStart, sDiff, dwTotal))
+            listMax = max(listMax, dwTotal)
+            pcTotal = wcTotal
 
         # Populate the list
         for dStart, sDiff, nWords in listData:
-
-            if hideZeros and nWords == 0:
-                continue
-            if hideNegative and nWords < 0:
-                continue
-
-            self.timeFilter += sDiff
 
             if groupByDay:
                 sStart = dStart.strftime(nwConst.dStampFmt)
@@ -332,7 +418,7 @@ class GuiSessionLog(QDialog):
             newItem.setText(self.C_LENGTH, self._formatTime(sDiff))
             newItem.setText(self.C_COUNT, str(nWords))
 
-            if nWords > 0:
+            if nWords > 0 and listMax > 0:
                 theBar = self.barImage.scaled(
                     int(200*nWords/listMax),
                     self.barHeight,
@@ -350,6 +436,7 @@ class GuiSessionLog(QDialog):
             newItem.setFont(self.C_COUNT, self.monoFont)
 
             self.listBox.addTopLevelItem(newItem)
+            self.timeFilter += sDiff
 
         self.labelFilter.setText(self._formatTime(self.timeFilter))
 
