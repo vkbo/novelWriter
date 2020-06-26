@@ -2,7 +2,7 @@
 """novelWriter Main GUI Class Tester
 """
 
-import nw, pytest, sys
+import nw, pytest, sys, json
 from nwtools import *
 
 from os import path, unlink
@@ -10,7 +10,7 @@ from PyQt5.QtCore import Qt
 
 from nw.gui import (
     GuiProjectSettings, GuiItemEditor, GuiAbout, GuiBuildNovel,
-    GuiDocMerge, GuiDocSplit
+    GuiDocMerge, GuiDocSplit, GuiSessionLog
 )
 from nw.constants import *
 
@@ -408,6 +408,115 @@ def testItemEditor(qtbot, nwTempGUI, nwRef, nwTemp):
 
     nwGUI.closeMain()
     # qtbot.stopForInteraction()
+
+@pytest.mark.gui
+def testSessionLogExport(qtbot, nwTempGUI, nwRef, nwTemp):
+    nwGUI = nw.main(["--testmode","--config=%s" % nwTempGUI, "--data=%s" % nwTemp])
+    qtbot.addWidget(nwGUI)
+    nwGUI.show()
+    qtbot.waitForWindowShown(nwGUI)
+    qtbot.wait(stepDelay)
+
+    assert nwGUI.openProject(nwTempGUI)
+    qtbot.wait(stepDelay)
+
+    nwGUI.mainConf.lastPath = nwTempGUI
+    sessLog = GuiSessionLog(nwGUI, nwGUI.theProject)
+    sessLog.show()
+    qtbot.wait(stepDelay)
+
+    assert sessLog._saveData(sessLog.FMT_CSV)
+    qtbot.wait(stepDelay)
+    assert sessLog._saveData(sessLog.FMT_JSON)
+    qtbot.wait(stepDelay)
+
+    jsonStats = path.join(nwTempGUI, "sessionStats.json")
+    with open(jsonStats, mode="r", encoding="utf-8") as inFile:
+        jsonData = json.loads(inFile.read())
+
+    assert len(jsonData) == 3
+    assert jsonData[0]["length"] > 0
+    assert jsonData[0]["newWords"] == 86
+    assert jsonData[0]["novelWords"] == 59
+    assert jsonData[0]["noteWords"] == 27
+
+    # No Novel Files
+    qtbot.mouseClick(sessLog.incNovel, Qt.LeftButton)
+    qtbot.wait(stepDelay)
+    assert sessLog._saveData(sessLog.FMT_JSON)
+    qtbot.wait(stepDelay)
+
+    jsonStats = path.join(nwTempGUI, "sessionStats.json")
+    with open(jsonStats, mode="r", encoding="utf-8") as inFile:
+        jsonData = json.loads(inFile.read())
+
+    assert len(jsonData) == 2
+    assert jsonData[0]["length"] > 0
+    assert jsonData[0]["newWords"] == 27
+    assert jsonData[0]["novelWords"] == 59
+    assert jsonData[0]["noteWords"] == 27
+
+    # No Note Files
+    qtbot.mouseClick(sessLog.incNovel, Qt.LeftButton)
+    qtbot.mouseClick(sessLog.incNotes, Qt.LeftButton)
+    qtbot.wait(stepDelay)
+    assert sessLog._saveData(sessLog.FMT_JSON)
+    qtbot.wait(stepDelay)
+
+    jsonStats = path.join(nwTempGUI, "sessionStats.json")
+    with open(jsonStats, mode="r", encoding="utf-8") as inFile:
+        jsonData = json.loads(inFile.read())
+
+    assert len(jsonData) == 3
+    assert jsonData[0]["length"] > 0
+    assert jsonData[0]["newWords"] == 59
+    assert jsonData[0]["novelWords"] == 59
+    assert jsonData[0]["noteWords"] == 27
+
+    # No Negative Entries
+    qtbot.mouseClick(sessLog.incNotes, Qt.LeftButton)
+    qtbot.mouseClick(sessLog.hideNegative, Qt.LeftButton)
+    qtbot.wait(stepDelay)
+    assert sessLog._saveData(sessLog.FMT_JSON)
+    qtbot.wait(stepDelay)
+
+    jsonStats = path.join(nwTempGUI, "sessionStats.json")
+    with open(jsonStats, mode="r", encoding="utf-8") as inFile:
+        jsonData = json.loads(inFile.read())
+
+    assert len(jsonData) == 1
+
+    # Un-hide Zero Entries
+    qtbot.mouseClick(sessLog.hideNegative, Qt.LeftButton)
+    qtbot.mouseClick(sessLog.hideZeros, Qt.LeftButton)
+    qtbot.wait(stepDelay)
+    assert sessLog._saveData(sessLog.FMT_JSON)
+    qtbot.wait(stepDelay)
+
+    jsonStats = path.join(nwTempGUI, "sessionStats.json")
+    with open(jsonStats, mode="r", encoding="utf-8") as inFile:
+        jsonData = json.loads(inFile.read())
+
+    assert len(jsonData) == 4
+
+    # Group by Day
+    qtbot.mouseClick(sessLog.groupByDay, Qt.LeftButton)
+    qtbot.wait(stepDelay)
+    assert sessLog._saveData(sessLog.FMT_JSON)
+    qtbot.wait(stepDelay)
+
+    jsonStats = path.join(nwTempGUI, "sessionStats.json")
+    with open(jsonStats, mode="r", encoding="utf-8") as inFile:
+        jsonData = json.loads(inFile.read())
+
+    # Check against both 1 and 2 as this can be 2 if test was started just before midnight.
+    # A failed test should in any case produce a 4
+    assert len(jsonData) in (1, 2)
+
+    # qtbot.stopForInteraction()
+
+    sessLog._doClose()
+    nwGUI.closeMain()
 
 @pytest.mark.gui
 def testAboutBox(qtbot, nwTempGUI, nwRef, nwTemp):

@@ -36,7 +36,7 @@ from time import time
 
 from nw.core.item import NWItem
 from nw.common import checkString
-from nw.constants import nwFiles, nwItemType, nwItemClass
+from nw.constants import nwFiles, nwItemType, nwItemClass, nwItemLayout
 
 logger = logging.getLogger(__name__)
 
@@ -181,6 +181,23 @@ class NWTree():
             logger.error(str(e))
 
         return
+
+    def sumWords(self):
+        """Loops over all entries and adds up the word counts.
+        """
+        noteWords = 0
+        novelWords = 0
+        for tHandle in self._treeOrder:
+            tItem = self.__getitem__(tHandle)
+            if tItem is None:
+                continue
+            if tItem.itemLayout == nwItemLayout.NO_LAYOUT:
+                pass
+            elif tItem.itemLayout == nwItemLayout.NOTE:
+                noteWords += tItem.wordCount
+            else:
+                novelWords += tItem.wordCount
+        return novelWords, noteWords
 
     ##
     #  Tree Structure Methods

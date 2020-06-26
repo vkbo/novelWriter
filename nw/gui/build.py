@@ -568,9 +568,6 @@ class GuiBuildNovel(QDialog):
     def _saveDocument(self, theFormat):
         """Save the document to various formats.
         """
-
-        # FMT_PDF
-
         byteFmt = QByteArray()
         fileExt = ""
         textFmt = ""

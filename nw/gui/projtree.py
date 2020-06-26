@@ -54,6 +54,7 @@ class GuiProjectTree(QTreeWidget):
         QTreeWidget.__init__(self, theParent)
 
         logger.debug("Initialising GuiProjectTree ...")
+
         self.mainConf   = nw.CONFIG
         self.theParent  = theParent
         self.theTheme   = theParent.theTheme

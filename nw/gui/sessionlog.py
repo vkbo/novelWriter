@@ -26,78 +26,106 @@
 """
 
 import logging
+import json
 import nw
 
 from os import path
 from datetime import datetime
 
 from PyQt5.QtCore import Qt
-from PyQt5.QtGui import QFont
+from PyQt5.QtGui import QFont, QPixmap
 from PyQt5.QtWidgets import (
-    QDialog, QHBoxLayout, QTreeWidget, QTreeWidgetItem, QDialogButtonBox,
-    QGridLayout, QLabel, QGroupBox, QCheckBox
+    qApp, QDialog, QTreeWidget, QTreeWidgetItem, QDialogButtonBox, QGridLayout,
+    QLabel, QGroupBox, QMenu, QAction, QFileDialog
 )
 
 from nw.constants import nwConst, nwFiles, nwAlert
+from nw.gui.custom import QSwitch
 
 logger = logging.getLogger(__name__)
 
-class GuiSessionLogView(QDialog):
+class GuiSessionLog(QDialog):
+
+    C_TIME   = 0
+    C_LENGTH = 1
+    C_COUNT  = 2
+    C_BAR    = 3
+
+    FMT_JSON = 0
+    FMT_CSV  = 1
 
     def __init__(self, theParent, theProject):
         QDialog.__init__(self, theParent)
 
-        logger.debug("Initialising SessionLogView ...")
+        logger.debug("Initialising GuiSessionLog ...")
 
         self.mainConf   = nw.CONFIG
-        self.theProject = theProject
         self.theParent  = theParent
-        self.optState   = self.theProject.optState
+        self.theProject = theProject
+        self.theTheme   = theParent.theTheme
+        self.optState   = theProject.optState
 
+        self.logData    = []
+        self.filterData = []
         self.timeFilter = 0.0
-        self.timeTotal  = 0.0
-
-        self.outerBox  = QGridLayout()
-        self.bottomBox = QHBoxLayout()
+        self.wordOffset = 0
 
         self.setWindowTitle("Session Log")
         self.setMinimumWidth(self.mainConf.pxInt(420))
         self.setMinimumHeight(self.mainConf.pxInt(400))
+        self.resize(
+            self.mainConf.pxInt(self.optState.getInt("GuiSessionLog", "winWidth",  550)),
+            self.mainConf.pxInt(self.optState.getInt("GuiSessionLog", "winHeight", 500))
+        )
 
-        wCol0 = self.mainConf.pxInt(self.optState.getInt("GuiSession", "widthCol0", 180))
-        wCol1 = self.mainConf.pxInt(self.optState.getInt("GuiSession", "widthCol1", 80))
-        wCol2 = self.mainConf.pxInt(self.optState.getInt("GuiSession", "widthCol2", 80))
+        # List Box
+        wCol0 = self.mainConf.pxInt(
+            self.optState.getInt("GuiSessionLog", "widthCol0", 180)
+        )
+        wCol1 = self.mainConf.pxInt(
+            self.optState.getInt("GuiSessionLog", "widthCol1", 80)
+        )
+        wCol2 = self.mainConf.pxInt(
+            self.optState.getInt("GuiSessionLog", "widthCol2", 80)
+        )
 
         self.listBox = QTreeWidget()
-        self.listBox.setHeaderLabels(["Session Start","Length","Words",""])
+        self.listBox.setHeaderLabels(["Session Start","Length","Words","Histogram"])
         self.listBox.setIndentation(0)
-        self.listBox.setColumnWidth(0, wCol0)
-        self.listBox.setColumnWidth(1, wCol1)
-        self.listBox.setColumnWidth(2, wCol2)
-        self.listBox.setColumnWidth(3, 0)
+        self.listBox.setColumnWidth(self.C_TIME, wCol0)
+        self.listBox.setColumnWidth(self.C_LENGTH, wCol1)
+        self.listBox.setColumnWidth(self.C_COUNT, wCol2)
+        self.listBox.resizeColumnToContents(self.C_COUNT)
 
         hHeader = self.listBox.headerItem()
-        hHeader.setTextAlignment(1,Qt.AlignRight)
-        hHeader.setTextAlignment(2,Qt.AlignRight)
+        hHeader.setTextAlignment(self.C_LENGTH, Qt.AlignRight)
+        hHeader.setTextAlignment(self.C_COUNT, Qt.AlignRight)
 
-        self.monoFont = QFont("Monospace", 10)
+        self.monoFont = QFont()
+        self.monoFont.setPointSizeF(0.9*self.theTheme.fontPointSize)
+        self.monoFont.setFamily(self.theTheme.guiFontFixed.family())
 
         sortValid = (Qt.AscendingOrder, Qt.DescendingOrder)
         sortCol = self.optState.validIntRange(
-            self.optState.getInt("GuiSession", "sortCol", 0), 0, 2, 0
+            self.optState.getInt("GuiSessionLog", "sortCol", 0), 0, 2, 0
         )
         sortOrder = self.optState.validIntTuple(
-            self.optState.getInt("GuiSession", "sortOrder", Qt.DescendingOrder),
+            self.optState.getInt("GuiSessionLog", "sortOrder", Qt.DescendingOrder),
             sortValid, Qt.DescendingOrder
         )
-
         self.listBox.sortByColumn(sortCol, sortOrder)
         self.listBox.setSortingEnabled(True)
 
+        # Word Bar
+        self.barHeight = int(round(0.5*self.theTheme.fontPixelSize))
+        self.barWidth = self.mainConf.pxInt(200)
+        self.barImage = QPixmap(self.barHeight, self.barHeight)
+        self.barImage.fill(self.palette().highlight().color())
+
         # Session Info
-        self.infoBox     = QGroupBox("Sum Total Time", self)
-        self.infoBoxForm = QGridLayout(self)
-        self.infoBox.setLayout(self.infoBoxForm)
+        self.infoBox  = QGroupBox("Sum Totals", self)
+        self.infoForm = QGridLayout(self)
+        self.infoBox.setLayout(self.infoForm)
 
         self.labelTotal = QLabel(self._formatTime(0))
         self.labelTotal.setFont(self.monoFont)
@@ -107,105 +135,300 @@ class GuiSessionLogView(QDialog):
         self.labelFilter.setFont(self.monoFont)
         self.labelFilter.setAlignment(Qt.AlignVCenter | Qt.AlignRight)
 
-        self.infoBoxForm.addWidget(QLabel("All:"),      0, 0)
-        self.infoBoxForm.addWidget(self.labelTotal,     0, 1)
-        self.infoBoxForm.addWidget(QLabel("Filtered:"), 1, 0)
-        self.infoBoxForm.addWidget(self.labelFilter,    1, 1)
+        self.novelWords = QLabel("0")
+        self.novelWords.setFont(self.monoFont)
+        self.novelWords.setAlignment(Qt.AlignVCenter | Qt.AlignRight)
+
+        self.notesWords = QLabel("0")
+        self.notesWords.setFont(self.monoFont)
+        self.notesWords.setAlignment(Qt.AlignVCenter | Qt.AlignRight)
+
+        self.totalWords = QLabel("0")
+        self.totalWords.setFont(self.monoFont)
+        self.totalWords.setAlignment(Qt.AlignVCenter | Qt.AlignRight)
+
+        self.infoForm.addWidget(QLabel("Total Time:"),       0, 0)
+        self.infoForm.addWidget(self.labelTotal,             0, 1)
+        self.infoForm.addWidget(QLabel("Filtered Time:"),    1, 0)
+        self.infoForm.addWidget(self.labelFilter,            1, 1)
+        self.infoForm.addWidget(QLabel("Novel Word Count:"), 2, 0)
+        self.infoForm.addWidget(self.novelWords,             2, 1)
+        self.infoForm.addWidget(QLabel("Notes Word Count:"), 3, 0)
+        self.infoForm.addWidget(self.notesWords,             3, 1)
+        self.infoForm.addWidget(QLabel("Total Word Count:"), 4, 0)
+        self.infoForm.addWidget(self.totalWords,             4, 1)
+        self.infoForm.setRowStretch(5, 1)
 
         # Filter Options
-        self.filterBox     = QGroupBox("Filters", self)
-        self.filterBoxForm = QGridLayout(self)
-        self.filterBox.setLayout(self.filterBoxForm)
+        sPx = self.theTheme.baseIconSize
 
-        self.hideZeros = QCheckBox("Hide zero word count", self)
+        self.filterBox  = QGroupBox("Filters", self)
+        self.filterForm = QGridLayout(self)
+        self.filterBox.setLayout(self.filterForm)
+
+        self.labelNovel = QLabel("Count novel files")
+        self.incNovel = QSwitch(width=2*sPx, height=sPx)
+        self.incNovel.setChecked(
+            self.optState.getBool("GuiSessionLog", "incNovel", True)
+        )
+        self.incNovel.clicked.connect(self._updateListBox)
+
+        self.labelNotes = QLabel("Count note files")
+        self.incNotes = QSwitch(width=2*sPx, height=sPx)
+        self.incNotes.setChecked(
+            self.optState.getBool("GuiSessionLog", "incNotes", True)
+        )
+        self.incNotes.clicked.connect(self._updateListBox)
+
+        self.labelZeros = QLabel("Hide zero word count")
+        self.hideZeros = QSwitch(width=2*sPx, height=sPx)
         self.hideZeros.setChecked(
-            self.optState.getBool("GuiSession", "hideZeros", True)
+            self.optState.getBool("GuiSessionLog", "hideZeros", True)
         )
-        self.hideZeros.stateChanged.connect(self._doHideZeros)
+        self.hideZeros.clicked.connect(self._updateListBox)
 
-        self.hideNegative = QCheckBox("Hide negative word count", self)
+        self.labelNegative = QLabel("Hide negative word count")
+        self.hideNegative = QSwitch(width=2*sPx, height=sPx)
         self.hideNegative.setChecked(
-            self.optState.getBool("GuiSession", "hideNegative", False)
+            self.optState.getBool("GuiSessionLog", "hideNegative", False)
         )
-        self.hideNegative.stateChanged.connect(self._doHideNegative)
+        self.hideNegative.clicked.connect(self._updateListBox)
 
-        self.filterBoxForm.addWidget(self.hideZeros,    0, 0)
-        self.filterBoxForm.addWidget(self.hideNegative, 1, 0)
+        self.labelByDay = QLabel("Group entries by day")
+        self.groupByDay = QSwitch(width=2*sPx, height=sPx)
+        self.groupByDay.setChecked(
+            self.optState.getBool("GuiSessionLog", "groupByDay", False)
+        )
+        self.groupByDay.clicked.connect(self._updateListBox)
+
+        self.filterForm.addWidget(self.labelNovel,    0, 0)
+        self.filterForm.addWidget(self.incNovel,      0, 1)
+        self.filterForm.addWidget(self.labelNotes,    1, 0)
+        self.filterForm.addWidget(self.incNotes,      1, 1)
+        self.filterForm.addWidget(self.labelZeros,    2, 0)
+        self.filterForm.addWidget(self.hideZeros,     2, 1)
+        self.filterForm.addWidget(self.labelNegative, 3, 0)
+        self.filterForm.addWidget(self.hideNegative,  3, 1)
+        self.filterForm.addWidget(self.labelByDay,    4, 0)
+        self.filterForm.addWidget(self.groupByDay,    4, 1)
 
         # Buttons
         self.buttonBox = QDialogButtonBox(QDialogButtonBox.Close)
         self.buttonBox.rejected.connect(self._doClose)
 
+        self.btnSave = self.buttonBox.addButton("Save As", QDialogButtonBox.ActionRole)
+        self.saveMenu = QMenu(self)
+        self.btnSave.setMenu(self.saveMenu)
+
+        self.saveJSON = QAction("JSON Data File (.json)", self)
+        self.saveJSON.triggered.connect(lambda: self._saveData(self.FMT_JSON))
+        self.saveMenu.addAction(self.saveJSON)
+
+        self.saveCSV = QAction("CSV Data File (.csv)", self)
+        self.saveCSV.triggered.connect(lambda: self._saveData(self.FMT_CSV))
+        self.saveMenu.addAction(self.saveCSV)
+
         # Assemble
+        self.outerBox = QGridLayout()
         self.outerBox.addWidget(self.listBox,   0, 0, 1, 2)
         self.outerBox.addWidget(self.infoBox,   1, 0)
         self.outerBox.addWidget(self.filterBox, 1, 1)
         self.outerBox.addWidget(self.buttonBox, 2, 0, 1, 2)
+        self.outerBox.setRowStretch(0, 1)
 
         self.setLayout(self.outerBox)
 
-        self.show()
+        logger.debug("GuiSessionLog initialisation complete")
 
-        logger.debug("SessionLogView initialisation complete")
-
-        self._loadSessionLog()
+        qApp.processEvents()
+        self._loadLogFile()
+        self._updateListBox()
 
         return
 
-    def _loadSessionLog(self):
+    ##
+    #  Slots
+    ##
 
-        logFile = path.join(self.theProject.projMeta, nwFiles.SESS_INFO)
-        if not path.isfile(logFile):
-            logger.warning("No session log file found for this project.")
-            return False
+    def _doClose(self):
+        """Save the state of the window, clear cache, end close.
+        """
+        self.logData = []
 
-        self.listBox.clear()
-
-        self.timeFilter = 0.0
-        self.timeTotal  = 0.0
-
+        winWidth     = self.mainConf.rpxInt(self.width())
+        winHeight    = self.mainConf.rpxInt(self.height())
+        widthCol0    = self.mainConf.rpxInt(self.listBox.columnWidth(0))
+        widthCol1    = self.mainConf.rpxInt(self.listBox.columnWidth(1))
+        widthCol2    = self.mainConf.rpxInt(self.listBox.columnWidth(2))
+        sortCol      = self.listBox.sortColumn()
+        sortOrder    = self.listBox.header().sortIndicatorOrder()
+        incNovel     = self.incNovel.isChecked()
+        incNotes     = self.incNotes.isChecked()
         hideZeros    = self.hideZeros.isChecked()
         hideNegative = self.hideNegative.isChecked()
+        groupByDay   = self.groupByDay.isChecked()
 
-        logger.debug("Loading session log file")
+        self.optState.setValue("GuiSessionLog", "winWidth",     winWidth)
+        self.optState.setValue("GuiSessionLog", "winHeight",    winHeight)
+        self.optState.setValue("GuiSessionLog", "widthCol0",    widthCol0)
+        self.optState.setValue("GuiSessionLog", "widthCol1",    widthCol1)
+        self.optState.setValue("GuiSessionLog", "widthCol2",    widthCol2)
+        self.optState.setValue("GuiSessionLog", "sortCol",      sortCol)
+        self.optState.setValue("GuiSessionLog", "sortOrder",    sortOrder)
+        self.optState.setValue("GuiSessionLog", "incNovel",     incNovel)
+        self.optState.setValue("GuiSessionLog", "incNotes",     incNotes)
+        self.optState.setValue("GuiSessionLog", "hideZeros",    hideZeros)
+        self.optState.setValue("GuiSessionLog", "hideNegative", hideNegative)
+        self.optState.setValue("GuiSessionLog", "groupByDay",   groupByDay)
+
+        self.optState.saveSettings()
+        self.close()
+
+        return
+
+    def _saveData(self, dataFmt):
+        """Save the content of the list box to a file.
+        """
+        fileExt = ""
+        textFmt = ""
+
+        if dataFmt == self.FMT_JSON:
+            fileExt = "json"
+            textFmt = "JSON Data File"
+
+        elif dataFmt == self.FMT_CSV:
+            fileExt = "csv"
+            textFmt = "CSV Data File"
+
+        else:
+            return False
+
+        # Generate the file name
+        if fileExt:
+            fileName  = "sessionStats.%s" % fileExt
+            saveDir   = self.mainConf.lastPath
+            savePath  = path.join(saveDir, fileName)
+            if not path.isdir(saveDir):
+                saveDir = self.mainConf.homePath
+
+            if self.mainConf.showGUI:
+                dlgOpt  = QFileDialog.Options()
+                dlgOpt |= QFileDialog.DontUseNativeDialog
+                saveTo  = QFileDialog.getSaveFileName(
+                    self, "Save Document As", savePath, options=dlgOpt
+                )
+                if saveTo[0]:
+                    savePath = saveTo[0]
+                else:
+                    return False
+
+            self.mainConf.setLastPath(savePath)
+
+        else:
+            return False
+
+        # Do the actual writing
+        wSuccess = False
+        errMsg = ""
+
         try:
-            with open(logFile,mode="r",encoding="utf8") as inFile:
+            with open(savePath, mode="w", encoding="utf8") as outFile:
+                if dataFmt == self.FMT_JSON:
+                    jsonData = []
+                    for _, sD, tT, wD, wA, wB in self.filterData:
+                        jsonData.append({
+                            "date": sD,
+                            "length": tT,
+                            "newWords": wD,
+                            "novelWords": wA,
+                            "noteWords": wB,
+                        })
+                    outFile.write(json.dumps(jsonData, indent=2))
+                    wSuccess = True
+
+                elif dataFmt == self.FMT_CSV:
+                    outFile.write(
+                        "\"%s\",\"%s\",\"%s\",\"%s\",\"%s\"\n" % (
+                            "Date", "Length (sec)", "Words Changed", "Novel Words", "Note Words"
+                        )
+                    )
+                    for _, sD, tT, wD, wA, wB in self.filterData:
+                        outFile.write(
+                            "\"%s\",%d,%d,%d,%d\n" % (sD, tT, wD, wA, wB)
+                        )
+                    wSuccess = True
+
+                else:
+                    errMsg = "Unknown format"
+
+        except Exception as e:
+            errMsg = str(e)
+
+        # Report to user
+        if self.mainConf.showGUI:
+            if wSuccess:
+                self.theParent.makeAlert(
+                    "%s file successfully written to:<br> %s" % (
+                        textFmt, savePath
+                    ), nwAlert.INFO
+                )
+            else:
+                self.theParent.makeAlert(
+                    "Failed to write %s file. %s" % (
+                        textFmt, errMsg
+                    ), nwAlert.ERROR
+                )
+
+        return True
+
+    ##
+    #  Internal Functions
+    ##
+
+    def _loadLogFile(self):
+        """Load the content of the log file into a buffer.
+        """
+        logger.debug("Loading session log file")
+
+        self.logData = []
+
+        ttNovel = 0
+        ttNotes = 0
+        ttTime  = 0
+
+        try:
+            logFile = path.join(self.theProject.projMeta, nwFiles.SESS_STATS)
+            with open(logFile, mode="r", encoding="utf8") as inFile:
                 for inLine in inFile:
-                    inData = inLine.split()
-                    if len(inData) != 8:
+                    if inLine.startswith("#"):
+                        if inLine.startswith("# Offset"):
+                            self.wordOffset = int(inLine[9:].strip())
+                            logger.verbose(
+                                "Initial word count when log was started is %d" % self.wordOffset
+                            )
                         continue
+
+                    inData = inLine.split()
+                    if len(inData) != 6:
+                        continue
+
                     dStart = datetime.strptime(
-                        "%s %s" % (inData[1],inData[2]), nwConst.tStampFmt
+                        "%s %s" % (inData[0], inData[1]), nwConst.tStampFmt
                     )
                     dEnd = datetime.strptime(
-                        "%s %s" % (inData[4],inData[5]), nwConst.tStampFmt
+                        "%s %s" % (inData[2], inData[3]), nwConst.tStampFmt
                     )
-                    nWords = int(inData[7])
+
                     tDiff = dEnd - dStart
                     sDiff = tDiff.total_seconds()
+                    ttTime += sDiff
 
-                    self.timeTotal  += sDiff
-                    if abs(nWords) > 0:
-                        self.timeFilter += sDiff
+                    wcNovel = int(inData[4])
+                    wcNotes = int(inData[5])
+                    ttNovel = wcNovel
+                    ttNotes = wcNotes
 
-                    if hideZeros and nWords == 0:
-                        continue
-
-                    if hideNegative and nWords < 0:
-                        continue
-
-                    newItem = QTreeWidgetItem(
-                        [str(dStart), self._formatTime(sDiff), str(nWords), ""]
-                    )
-
-                    newItem.setTextAlignment(1,Qt.AlignRight)
-                    newItem.setTextAlignment(2,Qt.AlignRight)
-
-                    newItem.setFont(0,self.monoFont)
-                    newItem.setFont(1,self.monoFont)
-                    newItem.setFont(2,self.monoFont)
-
-                    self.listBox.addTopLevelItem(newItem)
+                    self.logData.append((dStart, sDiff, wcNovel, wcNotes))
 
         except Exception as e:
             self.theParent.makeAlert(
@@ -213,47 +436,125 @@ class GuiSessionLogView(QDialog):
             )
             return False
 
-        self.labelFilter.setText(self._formatTime(self.timeFilter))
-        self.labelTotal.setText(self._formatTime(self.timeTotal))
+        self.labelTotal.setText(self._formatTime(ttTime))
+        self.novelWords.setText("{:n}".format(ttNovel))
+        self.notesWords.setText("{:n}".format(ttNotes))
+        self.totalWords.setText("{:n}".format(ttNovel + ttNotes))
 
         return True
 
-    def _doClose(self):
+    def _updateListBox(self):
+        """Load/reload the content of the list box.
+        """
+        self.listBox.clear()
+        self.timeFilter = 0.0
 
-        widthCol0    = self.mainConf.rpxInt(self.listBox.columnWidth(0))
-        widthCol1    = self.mainConf.rpxInt(self.listBox.columnWidth(1))
-        widthCol2    = self.mainConf.rpxInt(self.listBox.columnWidth(2))
-        sortCol      = self.listBox.sortColumn()
-        sortOrder    = self.listBox.header().sortIndicatorOrder()
+        incNovel     = self.incNovel.isChecked()
+        incNotes     = self.incNotes.isChecked()
         hideZeros    = self.hideZeros.isChecked()
         hideNegative = self.hideNegative.isChecked()
+        groupByDay   = self.groupByDay.isChecked()
 
-        self.optState.setValue("GuiSession", "widthCol0", widthCol0)
-        self.optState.setValue("GuiSession", "widthCol1", widthCol1)
-        self.optState.setValue("GuiSession", "widthCol2", widthCol2)
-        self.optState.setValue("GuiSession", "sortCol", sortCol)
-        self.optState.setValue("GuiSession", "sortOrder", sortOrder)
-        self.optState.setValue("GuiSession", "hideZeros", hideZeros)
-        self.optState.setValue("GuiSession", "hideNegative", hideNegative)
+        # Group the data
+        if groupByDay:
+            tempData = []
+            sessDate = None
+            sessTime = 0
+            lstNovel = 0
+            lstNotes = 0
 
-        self.optState.saveSettings()
-        self.close()
+            for n, (dStart, sDiff, wcNovel, wcNotes) in enumerate(self.logData):
+                if n == 0:
+                    sessDate = dStart.date()
+                if sessDate != dStart.date():
+                    tempData.append((sessDate, sessTime, lstNovel, lstNotes))
+                    sessDate = dStart.date()
+                    sessTime = sDiff
+                    lstNovel = wcNovel
+                    lstNotes = wcNotes
+                else:
+                    sessTime += sDiff
+                    lstNovel = wcNovel
+                    lstNotes = wcNotes
 
-        return
+            if sessDate is not None:
+                tempData.append((sessDate, sessTime, lstNovel, lstNotes))
 
-    def _doHideZeros(self, newState):
-        self._loadSessionLog()
-        return
+        else:
+            tempData = self.logData
 
-    def _doHideNegative(self, newState):
-        self._loadSessionLog()
-        return
+        # Calculate Word Diff
+        self.filterData = []
+        pcTotal = 0
+        listMax = 0
+        isFirst = True
+        for dStart, sDiff, wcNovel, wcNotes in tempData:
+
+            wcTotal = 0
+            if incNovel:
+                wcTotal += wcNovel
+            if incNotes:
+                wcTotal += wcNotes
+
+            dwTotal = wcTotal - pcTotal
+            if hideZeros and dwTotal == 0:
+                continue
+            if hideNegative and dwTotal < 0:
+                continue
+
+            if isFirst:
+                # Subtract the offset from the first list entry
+                dwTotal -= self.wordOffset
+                isFirst = False
+
+            if groupByDay:
+                sStart = dStart.strftime(nwConst.dStampFmt)
+            else:
+                sStart = dStart.strftime(nwConst.tStampFmt)
+
+            self.filterData.append((dStart, sStart, sDiff, dwTotal, wcNovel, wcNotes))
+            listMax = max(listMax, dwTotal)
+            pcTotal = wcTotal
+
+        # Populate the list
+        for _, sStart, sDiff, nWords, _, _ in self.filterData:
+
+            newItem = QTreeWidgetItem()
+            newItem.setText(self.C_TIME, sStart)
+            newItem.setText(self.C_LENGTH, self._formatTime(sDiff))
+            newItem.setText(self.C_COUNT, "{:n}".format(nWords))
+
+            if nWords > 0 and listMax > 0:
+                theBar = self.barImage.scaled(
+                    int(200*nWords/listMax),
+                    self.barHeight,
+                    Qt.IgnoreAspectRatio,
+                    Qt.FastTransformation
+                )
+                newItem.setData(self.C_BAR, Qt.DecorationRole, theBar)
+
+            newItem.setTextAlignment(self.C_LENGTH, Qt.AlignRight)
+            newItem.setTextAlignment(self.C_COUNT, Qt.AlignRight)
+            newItem.setTextAlignment(self.C_BAR, Qt.AlignLeft | Qt.AlignVCenter)
+
+            newItem.setFont(self.C_TIME, self.monoFont)
+            newItem.setFont(self.C_LENGTH, self.monoFont)
+            newItem.setFont(self.C_COUNT, self.monoFont)
+
+            self.listBox.addTopLevelItem(newItem)
+            self.timeFilter += sDiff
+
+        self.labelFilter.setText(self._formatTime(self.timeFilter))
+
+        return True
 
     def _formatTime(self, tS):
+        """Format the time spent in 00:00:00 format.
+        """
         tM = int(tS/60)
         tH = int(tM/60)
         tM = tM - tH*60
         tS = tS - tM*60 - tH*3600
         return "%02d:%02d:%02d" % (tH,tM,tS)
 
-# END Class GuiSessionLogView
+# END Class GuiSessionLog

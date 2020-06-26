@@ -31,6 +31,7 @@ class nwConst():
 
     tStampFmt = "%Y-%m-%d %H:%M:%S" # Default format
     fStampFmt = "%Y-%m-%d %H.%M.%S" # FileName safe format
+    dStampFmt = "%Y-%m-%d"          # Date only format
 
 # END Class nwConst
 
@@ -50,7 +51,7 @@ class nwFiles():
     PROJ_LOCK   = "nwProject.lock"
     TOC_TXT     = "ToC.txt"
     TOC_JSON    = "ToC.json"
-    SESS_INFO   = "sessionInfo.log"
+    SESS_STATS  = "sessionStats.log"
     INDEX_FILE  = "tagsIndex.json"
     OPTS_FILE   = "guiOptions.json"
     RECENT_FILE = "recentProjects.json"
