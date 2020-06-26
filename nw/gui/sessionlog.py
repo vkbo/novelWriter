@@ -26,6 +26,7 @@
 """
 
 import logging
+import json
 import nw
 
 from os import path
@@ -35,7 +36,7 @@ from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QFont, QPixmap
 from PyQt5.QtWidgets import (
     qApp, QDialog, QTreeWidget, QTreeWidgetItem, QDialogButtonBox, QGridLayout,
-    QLabel, QGroupBox
+    QLabel, QGroupBox, QMenu, QAction, QFileDialog
 )
 
 from nw.constants import nwConst, nwFiles, nwAlert
@@ -50,6 +51,9 @@ class GuiSessionLog(QDialog):
     C_COUNT  = 2
     C_BAR    = 3
 
+    FMT_JSON = 0
+    FMT_CSV  = 1
+
     def __init__(self, theParent, theProject):
         QDialog.__init__(self, theParent)
 
@@ -62,6 +66,7 @@ class GuiSessionLog(QDialog):
         self.optState   = theProject.optState
 
         self.logData    = []
+        self.filterData = []
         self.timeFilter = 0.0
         self.timeTotal  = 0.0
         self.wordOffset = 0
@@ -212,6 +217,18 @@ class GuiSessionLog(QDialog):
         self.buttonBox = QDialogButtonBox(QDialogButtonBox.Close)
         self.buttonBox.rejected.connect(self._doClose)
 
+        self.btnSave = self.buttonBox.addButton("Save As", QDialogButtonBox.ActionRole)
+        self.saveMenu = QMenu(self)
+        self.btnSave.setMenu(self.saveMenu)
+
+        self.saveJSON = QAction("JSON Data File (.json)", self)
+        self.saveJSON.triggered.connect(lambda: self._saveData(self.FMT_JSON))
+        self.saveMenu.addAction(self.saveJSON)
+
+        self.saveCSV = QAction("CSV Data File (.csv)", self)
+        self.saveCSV.triggered.connect(lambda: self._saveData(self.FMT_CSV))
+        self.saveMenu.addAction(self.saveCSV)
+
         # Assemble
         self.outerBox = QGridLayout()
         self.outerBox.addWidget(self.listBox,   0, 0, 1, 2)
@@ -270,6 +287,101 @@ class GuiSessionLog(QDialog):
 
         return
 
+    def _saveData(self, dataFmt):
+        """Save the content of the list box to a file.
+        """
+        fileExt = ""
+        textFmt = ""
+
+        if dataFmt == self.FMT_JSON:
+            fileExt = "json"
+            textFmt = "JSON Data File"
+
+        elif dataFmt == self.FMT_CSV:
+            fileExt = "csv"
+            textFmt = "CSV Data File"
+
+        else:
+            return False
+
+        # Generate the file name
+        if fileExt:
+            fileName  = "sessionStats.%s" % fileExt
+            saveDir   = self.mainConf.lastPath
+            savePath  = path.join(saveDir, fileName)
+            if not path.isdir(saveDir):
+                saveDir = self.mainConf.homePath
+
+            if self.mainConf.showGUI:
+                dlgOpt  = QFileDialog.Options()
+                dlgOpt |= QFileDialog.DontUseNativeDialog
+                saveTo  = QFileDialog.getSaveFileName(
+                    self, "Save Document As", savePath, options=dlgOpt
+                )
+                if saveTo[0]:
+                    savePath = saveTo[0]
+                else:
+                    return False
+
+            self.mainConf.setLastPath(savePath)
+
+        else:
+            return False
+
+        # Do the actual writing
+        wSuccess = False
+        errMsg = ""
+
+        try:
+            with open(savePath, mode="w", encoding="utf8") as outFile:
+                if dataFmt == self.FMT_JSON:
+                    jsonData = []
+                    for _, sD, tT, wD, wA, wB in self.filterData:
+                        jsonData.append({
+                            "date": sD,
+                            "length": tT,
+                            "newWords": wD,
+                            "novelWords": wA,
+                            "noteWords": wB,
+                        })
+                    outFile.write(json.dumps(jsonData, indent=2))
+                    wSuccess = True
+
+                elif dataFmt == self.FMT_CSV:
+                    outFile.write(
+                        "\"%s\",\"%s\",\"%s\",\"%s\",\"%s\"\n" % (
+                            "Date", "Length (sec)", "Words Changed", "Novel Words", "Note Words"
+                        )
+                    )
+                    for _, sD, tT, wD, wA, wB in self.filterData:
+                        outFile.write(
+                            "\"%s\",%d,%d,%d,%d\n" % (sD, tT, wD, wA, wB)
+                        )
+                    wSuccess = True
+
+                else:
+                    errMsg = "Unknown format"
+
+        except Exception as e:
+            errMsg = str(e)
+
+        # Report to user
+        if self.mainConf.showGUI:
+            if wSuccess:
+                self.theParent.makeAlert(
+                    "%s file successfully written to:<br> %s" % (
+                        textFmt, savePath
+                    ), nwAlert.INFO
+                )
+            else:
+                self.theParent.makeAlert(
+                    "Failed to write %s file. %s" % (
+                        textFmt, errMsg
+                    ), nwAlert.ERROR
+                )
+
+        return True
+
     ##
     #  Internal Functions
     ##
@@ -277,15 +389,12 @@ class GuiSessionLog(QDialog):
     def _loadLogFile(self):
         """Load the content of the log file into a buffer.
         """
-        self.logData = []
         logger.debug("Loading session log file")
+
+        self.logData = []
 
         ttNovel = 0
         ttNotes = 0
-
-        isFirst = True
-        osNovel = 0
-        osNotes = 0
 
         try:
             logFile = path.join(self.theProject.projMeta, nwFiles.SESS_STATS)
@@ -319,16 +428,7 @@ class GuiSessionLog(QDialog):
                     ttNovel = wcNovel
                     ttNotes = wcNotes
 
-                    if isFirst:
-                        isFirst = False
-                        if self.wordOffset > 0:
-                            # First entry is used as the reference word
-                            # count, and the data is then discarded.
-                            osNovel = wcNovel
-                            osNotes = wcNotes
-                            continue
-
-                    self.logData.append((dStart, sDiff, wcNovel-osNovel, wcNotes-osNotes))
+                    self.logData.append((dStart, sDiff, wcNovel, wcNotes))
 
         except Exception as e:
             self.theParent.makeAlert(
@@ -384,9 +484,10 @@ class GuiSessionLog(QDialog):
             tempData = self.logData
 
         # Calculate Word Diff
-        listData = []
+        self.filterData = []
         pcTotal = 0
         listMax = 0
+        isFirst = True
         for dStart, sDiff, wcNovel, wcNotes in tempData:
 
             wcTotal = 0
@@ -401,22 +502,29 @@ class GuiSessionLog(QDialog):
             if hideNegative and dwTotal < 0:
                 continue
 
-            listData.append((dStart, sDiff, dwTotal))
-            listMax = max(listMax, dwTotal)
-            pcTotal = wcTotal
-
-        # Populate the list
-        for dStart, sDiff, nWords in listData:
+            if isFirst:
+                # Subtract the offset from the first list entry
+                dwTotal -= self.wordOffset
+                isFirst = False
 
             if groupByDay:
                 sStart = dStart.strftime(nwConst.dStampFmt)
             else:
                 sStart = dStart.strftime(nwConst.tStampFmt)
 
+            self.filterData.append((dStart, sStart, sDiff, dwTotal, wcNovel, wcNotes))
+            listMax = max(listMax, dwTotal)
+            pcTotal = wcTotal
+
+        # Populate the list
+        for _, sStart, sDiff, nWords, _, _ in self.filterData:
+
             newItem = QTreeWidgetItem()
             newItem.setText(self.C_TIME, sStart)
             newItem.setText(self.C_LENGTH, self._formatTime(sDiff))
-            newItem.setText(self.C_COUNT, str(nWords))
+            newItem.setData(self.C_LENGTH, Qt.UserRole, sDiff)
+            newItem.setText(self.C_COUNT, "{:n}".format(nWords))
+            newItem.setData(self.C_COUNT, Qt.UserRole, nWords)
 
             if nWords > 0 and listMax > 0:
                 theBar = self.barImage.scaled(
