@@ -1,5 +1,21 @@
 # novelWriter ChangeLog
 
+## Version 0.9.2 [2020-06-26]
+
+**Bugfixes**
+
+* The project tree word counts were getting mixed up when a file was moved to the trash folder, or permanently deleted. This has now been fixed, and moving a file should give a zero net change of project word count. Permanently deleting it would result in a negative net change. Issue #333, PR #335.
+
+**User Interface**
+
+* There is a feature in the project tree class that ensures that the tree item being acted on is visible in the tree. It is called when you for instance click the header of an open document. It was also activated when opening a document from the tree view with either double-click by mouse, or by using the Enter key. This meant that the tree view would often move, which made it hard to mouse click on items after eachother since you ended up chasing a moving target. This feature is now disabled for document open. In addition, the scroll into view feature has been added to the search/replace call to move into the next document when reaching the end of the current document. This was requested in Issue #332. PR #334.
+* The Build Novel Project tool will now display the build time of the document in the preview window in order for the user to know if it is potentially out of date. The timestamp is given, as well as a fuzzy time string, indicating the age of the content. Issue #331, PRs #336 and #337.
+
+**Documentation**
+
+* The documentation has been updated to clarify the correct formatting for italic, bold and strikethrough formatting tags. Issue #220, PR #338.
+
+
 ## Version 0.9.1 [2020-06-21]
 
 **Bugfixes**
