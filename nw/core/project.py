@@ -449,7 +449,15 @@ class NWProject():
                         self.importItems.unpackEntries(xItem)
                     elif xItem.tag == "autoReplace":
                         for xEntry in xItem:
-                            self.autoReplace[xEntry.tag] = checkString(xEntry.text, None, False)
+                            if xEntry.tag == "entry":
+                                if "key" in xEntry.attrib:
+                                    self.autoReplace[xEntry.attrib["key"]] = checkString(
+                                        xEntry.text, None, False
+                                    )
+                            else: # Old format
+                                self.autoReplace[xEntry.tag] = checkString(
+                                    xEntry.text, None, False
+                                )
                     elif xItem.tag == "titleFormat":
                         titleFormat = self.titleFormat.copy()
                         for xEntry in xItem:
@@ -501,7 +509,7 @@ class NWProject():
 
         # Root element and project details
         logger.debug("Writing project meta")
-        nwXML = etree.Element("novelWriterXML",attrib={
+        nwXML = etree.Element("novelWriterXML", attrib={
             "appVersion"  : str(nw.__version__),
             "hexVersion"  : str(nw.__hexversion__),
             "fileVersion" : "1.1",
@@ -533,11 +541,7 @@ class NWProject():
         self._packProjectValue(xSettings, "lastWordCount", self.currWCount)
         self._packProjectValue(xSettings, "novelWordCount", wcNovel)
         self._packProjectValue(xSettings, "notesWordCount", wcNotes)
-
-        xAutoRep = etree.SubElement(xSettings, "autoReplace")
-        for aKey, aValue in self.autoReplace.items():
-            if len(aKey) > 0:
-                self._packProjectValue(xAutoRep, aKey, aValue)
+        self._packProjectKeyValue(xSettings, "autoReplace", self.autoReplace)
 
         xTitleFmt = etree.SubElement(xSettings, "titleFormat")
         for aKey, aValue in self.titleFormat.items():
@@ -1041,8 +1045,18 @@ class NWProject():
             if not isinstance(aValue, str):
                 aValue = str(aValue)
             if aValue == "" and not allowNone: continue
-            xItem = etree.SubElement(xParent,theName)
+            xItem = etree.SubElement(xParent, theName)
             xItem.text = aValue
+        return
+
+    def _packProjectKeyValue(self, xParent, theName, theDict):
+        """Pack the entries in the auto-replace dictionary.
+        """
+        xAutoRep = etree.SubElement(xParent, theName)
+        for aKey, aValue in theDict.items():
+            if len(aKey) > 0:
+                xEntry = etree.SubElement(xAutoRep, "entry", attrib={"key": aKey})
+                xEntry.text = aValue
         return
 
     def _scanProjectFolder(self):
