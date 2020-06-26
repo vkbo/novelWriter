@@ -68,7 +68,6 @@ class GuiSessionLog(QDialog):
         self.logData    = []
         self.filterData = []
         self.timeFilter = 0.0
-        self.timeTotal  = 0.0
         self.wordOffset = 0
 
         self.setWindowTitle("Session Log")
@@ -395,6 +394,7 @@ class GuiSessionLog(QDialog):
 
         ttNovel = 0
         ttNotes = 0
+        ttTime  = 0
 
         try:
             logFile = path.join(self.theProject.projMeta, nwFiles.SESS_STATS)
@@ -421,7 +421,7 @@ class GuiSessionLog(QDialog):
 
                     tDiff = dEnd - dStart
                     sDiff = tDiff.total_seconds()
-                    self.timeTotal += sDiff
+                    ttTime += sDiff
 
                     wcNovel = int(inData[4])
                     wcNotes = int(inData[5])
@@ -436,7 +436,7 @@ class GuiSessionLog(QDialog):
             )
             return False
 
-        self.labelTotal.setText(self._formatTime(self.timeTotal))
+        self.labelTotal.setText(self._formatTime(ttTime))
         self.novelWords.setText("{:n}".format(ttNovel))
         self.notesWords.setText("{:n}".format(ttNotes))
         self.totalWords.setText("{:n}".format(ttNovel + ttNotes))
@@ -522,9 +522,7 @@ class GuiSessionLog(QDialog):
             newItem = QTreeWidgetItem()
             newItem.setText(self.C_TIME, sStart)
             newItem.setText(self.C_LENGTH, self._formatTime(sDiff))
-            newItem.setData(self.C_LENGTH, Qt.UserRole, sDiff)
             newItem.setText(self.C_COUNT, "{:n}".format(nWords))
-            newItem.setData(self.C_COUNT, Qt.UserRole, nWords)
 
             if nWords > 0 and listMax > 0:
                 theBar = self.barImage.scaled(
