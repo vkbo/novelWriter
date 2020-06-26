@@ -4,7 +4,7 @@
 
 **Bugfixes**
 
-* The project tree word counts were getting mixed up when a file was moved to the trash folder, or permanently deleted. This has now been fixed, and moving a file should give a zero net change of project word count. Permanently deleting it would result in a negative net change. Issue #333, PR #335.
+* The project tree word counts were getting mixed up when a file was moved to the trash folder, or permanently deleted. This has now been fixed, and moving a file should give a zero net change of project word count. Permanently deleting it will result in a negative net change. Issue #333, PR #335.
 
 **User Interface**
 
