@@ -1121,8 +1121,10 @@ class NWProject():
         with open(sessionFile, mode="a+", encoding="utf8") as outFile:
             if not isFile:
                 # It's a new file, so add a header
-                outFile.write("# Initial: %d\n# %-17s  %-19s  %8s  %8s\n" % (
-                    self.lastWCount, "Start Time", "End Time", "Novel", "Notes"
+                if self.lastWCount > 0:
+                    outFile.write("# Offset %d\n" % self.lastWCount)
+                outFile.write("# %-17s  %-19s  %8s  %8s\n" % (
+                    "Start Time", "End Time", "Novel", "Notes"
                 ))
 
             outFile.write("%-19s  %-19s  %8d  %8d\n" % (

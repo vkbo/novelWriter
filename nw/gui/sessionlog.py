@@ -401,8 +401,8 @@ class GuiSessionLog(QDialog):
             with open(logFile, mode="r", encoding="utf8") as inFile:
                 for inLine in inFile:
                     if inLine.startswith("#"):
-                        if inLine.startswith("# Initial:"):
-                            self.wordOffset = int(inLine[11:].strip())
+                        if inLine.startswith("# Offset"):
+                            self.wordOffset = int(inLine[9:].strip())
                             logger.verbose(
                                 "Initial word count when log was started is %d" % self.wordOffset
                             )
