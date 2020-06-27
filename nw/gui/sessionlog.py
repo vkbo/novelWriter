@@ -497,15 +497,16 @@ class GuiSessionLog(QDialog):
                 wcTotal += wcNotes
 
             dwTotal = wcTotal - pcTotal
+            if isFirst:
+                # Subtract the offset from the first list entry
+                dwTotal -= self.wordOffset
+                dwTotal = max(dwTotal, 0) # But don't go negative
+                isFirst = False
+
             if hideZeros and dwTotal == 0:
                 continue
             if hideNegative and dwTotal < 0:
                 continue
-
-            if isFirst:
-                # Subtract the offset from the first list entry
-                dwTotal -= self.wordOffset
-                isFirst = False
 
             if groupByDay:
                 sStart = dStart.strftime(nwConst.dStampFmt)
