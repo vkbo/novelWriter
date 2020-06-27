@@ -380,11 +380,12 @@ class NWProject():
 
         elif fileVersion != "1.1" and fileVersion != "1.2":
             self.makeAlert((
-                "Unknown or unsupported %s project file format. "
-                "The project cannot be opened by this version of %s. "
-                "The file was saved with novelWriter version %s."
-            ) % (
-                nw.__package__, nw.__package__, appVersion
+                "Unknown or unsupported {nw:s} project file format. "
+                "The project cannot be opened by this version of {nw:s}. "
+                "The file was saved with {nw:s} version {vers:s}."
+            ).format(
+                nw = nw.__package__,
+                vers = appVersion,
             ), nwAlert.ERROR)
             return False
 
