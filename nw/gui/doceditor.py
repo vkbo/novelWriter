@@ -362,12 +362,13 @@ class GuiDocEditor(QTextEdit):
 
         return
 
-    def updateDocTitle(self, tHandle):
+    def updateDocInfo(self, tHandle):
         """Called when an item label is changed to check if the document
         title bar needs updating,
         """
         if tHandle == self.theHandle:
             self.docHeader.setTitleFromHandle(self.theHandle)
+            self.docFooter.updateInfo()
             self.updateDocMargins()
         return
 
@@ -775,7 +776,7 @@ class GuiDocEditor(QTextEdit):
             self.theHandle, self.charCount, self.wordCount, self.paraCount
         )
         self._checkDocSize(self.charCount)
-        self.docFooter.updateInfo()
+        self.docFooter.updateCounts()
 
         return
 
@@ -1925,6 +1926,7 @@ class GuiDocEditFooter(QWidget):
         """
         self.theHandle = tHandle
         self.updateInfo()
+        self.updateCounts()
         return
 
     def updateInfo(self):
@@ -1934,9 +1936,6 @@ class GuiDocEditFooter(QWidget):
         if nwItem is None:
             sIcon  = QPixmap()
             sText  = ""
-            wCount = 0
-            wDiff  = 0
-
         else:
             iStatus = nwItem.itemStatus
             if nwItem.itemClass == nwItemClass.NOVEL:
@@ -1945,14 +1944,24 @@ class GuiDocEditFooter(QWidget):
             else:
                 iStatus = self.theProject.importItems.checkEntry(iStatus)
                 theIcon = self.theParent.importIcons[iStatus]
-
-            sIcon  = theIcon.pixmap(self.sPx, self.sPx)
-            sText  = nwItem.itemStatus
-            wCount = nwItem.wordCount
-            wDiff  = wCount - nwItem.initCount
+            sIcon = theIcon.pixmap(self.sPx, self.sPx)
+            sText = nwItem.itemStatus
 
         self.statusIcon.setPixmap(sIcon)
         self.statusText.setText(sText)
+
+        return
+
+    def updateCounts(self):
+        """Update the word counts.
+        """
+        nwItem = self.theProject.projTree[self.theHandle]
+        if nwItem is None:
+            wCount = 0
+            wDiff  = 0
+        else:
+            wCount = nwItem.wordCount
+            wDiff  = wCount - nwItem.initCount
 
         self.wordsText.setText("Words: {:n} ({:+n})".format(wCount, wDiff))
 
