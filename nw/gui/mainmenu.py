@@ -526,30 +526,30 @@ class GuiMainMenu(QMenuBar):
         # Format
         self.fmtMenu = self.addMenu("&Format")
 
-        # Format > Italic Text
-        self.aFmtItalic = QAction("Italic Text", self)
-        self.aFmtItalic.setStatusTip("Make selected text italic")
-        self.aFmtItalic.setShortcut("Ctrl+I")
-        self.aFmtItalic.triggered.connect(lambda: self._docAction(nwDocAction.ITALIC))
-        self.fmtMenu.addAction(self.aFmtItalic)
+        # Format > Emphasis
+        self.aFmtEmph = QAction("Emphasis", self)
+        self.aFmtEmph.setStatusTip("Add emphasis to selected text (italic)")
+        self.aFmtEmph.setShortcut("Ctrl+I")
+        self.aFmtEmph.triggered.connect(lambda: self._docAction(nwDocAction.ENPH))
+        self.fmtMenu.addAction(self.aFmtEmph)
 
-        # Format > Bold Text
-        self.aFmtBold = QAction("Bold Text", self)
-        self.aFmtBold.setStatusTip("Make selected text bold")
-        self.aFmtBold.setShortcut("Ctrl+B")
-        self.aFmtBold.triggered.connect(lambda: self._docAction(nwDocAction.BOLD))
-        self.fmtMenu.addAction(self.aFmtBold)
+        # Format > Strong Emphasis
+        self.aFmtStrong = QAction("Strong Emphasis", self)
+        self.aFmtStrong.setStatusTip("Add strong emphasis to selected text (bold)")
+        self.aFmtStrong.setShortcut("Ctrl+B")
+        self.aFmtStrong.triggered.connect(lambda: self._docAction(nwDocAction.STRONG))
+        self.fmtMenu.addAction(self.aFmtStrong)
 
-        # Format > Underline Text
-        self.aFmtBoldIt = QAction("Bold Italic Text", self)
-        self.aFmtBoldIt.setStatusTip("Make selected text bold and italic")
-        self.aFmtBoldIt.setShortcut("Ctrl+Shift+B")
-        self.aFmtBoldIt.triggered.connect(lambda: self._docAction(nwDocAction.BOLDITALIC))
-        self.fmtMenu.addAction(self.aFmtBoldIt)
+        # Format > Very Strong Emphasis
+        self.aFmtStrongEmph = QAction("Very Strong Emphasis", self)
+        self.aFmtStrongEmph.setStatusTip("Add very strong emphasis to selected text (bold and italic)")
+        self.aFmtStrongEmph.setShortcut("Ctrl+Shift+B")
+        self.aFmtStrongEmph.triggered.connect(lambda: self._docAction(nwDocAction.STRONGEMPH))
+        self.fmtMenu.addAction(self.aFmtStrongEmph)
 
         # Format > Strikethrough
-        self.aFmtStrike = QAction("Strikethrough Text", self)
-        self.aFmtStrike.setStatusTip("Strikethrough selected text")
+        self.aFmtStrike = QAction("Strikethrough", self)
+        self.aFmtStrike.setStatusTip("Add strikethrough to selected text")
         self.aFmtStrike.setShortcut("Ctrl+-")
         self.aFmtStrike.triggered.connect(lambda: self._docAction(nwDocAction.STRIKE))
         self.fmtMenu.addAction(self.aFmtStrike)

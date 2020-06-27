@@ -514,11 +514,11 @@ class GuiDocEditor(QTextEdit):
             self.copy()
         elif theAction == nwDocAction.PASTE:
             self.paste()
-        elif theAction == nwDocAction.ITALIC:
+        elif theAction == nwDocAction.ENPH:
             self._toggleEmph(1)
-        elif theAction == nwDocAction.BOLD:
+        elif theAction == nwDocAction.STRONG:
             self._toggleEmph(2)
-        elif theAction == nwDocAction.BOLDITALIC:
+        elif theAction == nwDocAction.STRONGEMPH:
             self._toggleEmph(3)
         elif theAction == nwDocAction.STRIKE:
             self._toggleStrike()

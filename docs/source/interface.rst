@@ -48,18 +48,18 @@ The editor also has a minimal set of keywords used for setting tags and referenc
    "``## Title``",            "Heading level two. The space after the # is mandatory."
    "``### Title``",           "Heading level three. The space after the # is mandatory."
    "``#### Title``",          "Heading level four. The space after the # is mandatory."
-   "``*text*``",              "The text is rendered as italicised text."
-   "``**text**``",            "The text is rendered as bold text."
-   "``***text***``",          "The text is rendered as bold italicised text."
-   "``_text_``",              "Alternative format for italicised text."
-   "``__text__``",            "Alternative format for bold text."
+   "``*text*``",              "The text is rendered as emphasised text (italicised)."
+   "``**text**``",            "The text is rendered as strongly emphasised text (bold)."
+   "``***text***``",          "The text is rendered as very strongly emphasised text (italicised, bold)."
+   "``_text_``",              "Alternative format for emphasised text."
+   "``__text__``",            "Alternative format for strongly emphasised text."
    "``~~text~~``",            "Strikethrough text."
    "``% text...``",           "A comment. The text is not exported by default, seen in viewer, or counted towards word counts."
    "``% Synopsis: text...``", "A synopsis comment. Shows up in the Synopsis column of the Outline View, but is otherwise treated as a comment."
    "``@keyword: value``",     "A keyword argument followed by a value, or a comma separated list of values."
 
 .. note::
-   The bold/italic/strikethrough formatting tags do not allow spaces between the words and the tag itself.
+   The emphasis and strikethrough formatting tags do not allow spaces between the words and the tag itself.
    That is, ``**text**`` is valid, ``**text **`` is not.
 
 The editor and viewer also supports markdown standard hard line breaks, and preserves non-breaking spaces.
@@ -126,14 +126,14 @@ These are as following:
    ":kbd:`Ctrl-3`",          "Change block format to header level 3."
    ":kbd:`Ctrl-4`",          "Change block format to header level 4."
    ":kbd:`Ctrl-A`",          "Select all text in document."
-   ":kbd:`Ctrl-B`",          "Format selected text, or word under cursor, as bold."
+   ":kbd:`Ctrl-B`",          "Format selected text, or word under cursor, with strong emphasis (bold)."
    ":kbd:`Ctrl-C`",          "Copy selected text to clipboard."
    ":kbd:`Ctrl-D`",          "Wrap selected text, or word under cursor, in double quotes."
    ":kbd:`Ctrl-E`",          "If in tree view, edit a document or folder settings. (Same as :kbd:`F2`)"
    ":kbd:`Ctrl-F`",          "Open the search bar and search for selected word, if any is selected."
    ":kbd:`Ctrl-G`",          "Find next occurrence of word in current document. (Same as :kbd:`F3`)"
    ":kbd:`Ctrl-H`",          "Open the search and replace bar and search for selected word, if any is selected. (On Mac, this is :kbd:`Cmd-=`)"
-   ":kbd:`Ctrl-I`",          "Format selected text, or word under cursor, as italic."
+   ":kbd:`Ctrl-I`",          "Format selected text, or word under cursor, with emphasis (italic)."
    ":kbd:`Ctrl-N`",          "Create new document."
    ":kbd:`Ctrl-O`",          "Open selected document."
    ":kbd:`Ctrl-Q`",          "Exit novelWriter."
@@ -152,7 +152,7 @@ These are as following:
    ":kbd:`Ctrl-Shift-/`",    "Remove block formatting for block under cursor."
    ":kbd:`Ctrl-Shift-1`",    "Replace occurrence of word in current document, and search for next occurrence."
    ":kbd:`Ctrl-Shift-A`",    "Select all text in current paragraph."
-   ":kbd:`Ctrl-Shift-B`",    "Format selected text, or word under cursor, as bold and italic."
+   ":kbd:`Ctrl-Shift-B`",    "Format selected text, or word under cursor, with very strong emphasis (bold and italic)."
    ":kbd:`Ctrl-Shift-D`",    "Wrap selected text, or word under cursor, in single quotes."
    ":kbd:`Ctrl-Shift-G`",    "Find previous occurrence of word in current document. (Same as :kbd:`Shift-F3`"
    ":kbd:`Ctrl-Shift-I`",    "Import text to the current document from a text file."
