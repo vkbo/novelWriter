@@ -43,7 +43,7 @@ from nw.gui import (
     GuiBuildNovel, GuiDocEditor, GuiDocMerge, GuiDocSplit, GuiDocViewDetails,
     GuiDocViewer, GuiItemDetails, GuiItemEditor, GuiMainMenu, GuiMainStatus,
     GuiOutline, GuiOutlineDetails, GuiPreferences, GuiProjectLoad, GuiTheme,
-    GuiProjectSettings, GuiProjectTree, GuiSessionLogView
+    GuiProjectSettings, GuiProjectTree, GuiSessionLog
 )
 from nw.core import NWProject, NWDoc, NWIndex
 from nw.constants import nwFiles, nwItemType, nwAlert
@@ -810,7 +810,7 @@ class GuiMain(QMainWindow):
         """Open the session log dialog.
         """
         if self.hasProject:
-            dlgTLine = GuiSessionLogView(self, self.theProject)
+            dlgTLine = GuiSessionLog(self, self.theProject)
             dlgTLine.exec_()
         return True
 

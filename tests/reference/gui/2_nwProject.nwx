@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='utf-8'?>
-<novelWriterXML appVersion="0.8.0rc1" hexVersion="0x000800c1" fileVersion="1.1" timeStamp="2020-06-05 21:07:03">
+<novelWriterXML appVersion="0.10.0rc1" hexVersion="0x001000c1" fileVersion="1.1" timeStamp="2020-06-26 19:32:47">
   <project>
     <name>Project Name</name>
     <title>Project Title</title>
@@ -16,8 +16,10 @@
     <lastEdited>None</lastEdited>
     <lastViewed>None</lastViewed>
     <lastWordCount>0</lastWordCount>
+    <novelWordCount>0</novelWordCount>
+    <notesWordCount>0</notesWordCount>
     <autoReplace>
-      <This>With This Stuff </This>
+      <entry key="This">With This Stuff </entry>
     </autoReplace>
     <titleFormat>
       <title>%title%</title>

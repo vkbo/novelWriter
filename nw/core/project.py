@@ -93,6 +93,8 @@ class NWProject():
         self.lastViewed  = None  # The handle of the last file to be viewed
         self.lastWCount  = 0     # The project word count from last session
         self.currWCount  = 0     # The project word count in current session
+        self.novelWCount = 0     # Total number of words in novel files
+        self.notesWCount = 0     # Total number of words in note files
         self.doBackup    = True  # Run project backup on exit
 
         # Set Defaults
@@ -231,6 +233,8 @@ class NWProject():
         self.lastViewed = None
         self.lastWCount = 0
         self.currWCount = 0
+        self.novelWCount = 0
+        self.notesWCount = 0
 
         return
 
@@ -435,13 +439,25 @@ class NWProject():
                         self.lastViewed = checkString(xItem.text, None, True)
                     elif xItem.tag == "lastWordCount":
                         self.lastWCount = checkInt(xItem.text, 0, False)
+                    elif xItem.tag == "novelWordCount":
+                        self.novelWCount = checkInt(xItem.text, 0, False)
+                    elif xItem.tag == "notesWordCount":
+                        self.notesWCount = checkInt(xItem.text, 0, False)
                     elif xItem.tag == "status":
                         self.statusItems.unpackEntries(xItem)
                     elif xItem.tag == "importance":
                         self.importItems.unpackEntries(xItem)
                     elif xItem.tag == "autoReplace":
                         for xEntry in xItem:
-                            self.autoReplace[xEntry.tag] = checkString(xEntry.text, None, False)
+                            if xEntry.tag == "entry":
+                                if "key" in xEntry.attrib:
+                                    self.autoReplace[xEntry.attrib["key"]] = checkString(
+                                        xEntry.text, None, False
+                                    )
+                            else: # Old format
+                                self.autoReplace[xEntry.tag] = checkString(
+                                    xEntry.text, None, False
+                                )
                     elif xItem.tag == "titleFormat":
                         titleFormat = self.titleFormat.copy()
                         for xEntry in xItem:
@@ -493,7 +509,7 @@ class NWProject():
 
         # Root element and project details
         logger.debug("Writing project meta")
-        nwXML = etree.Element("novelWriterXML",attrib={
+        nwXML = etree.Element("novelWriterXML", attrib={
             "appVersion"  : str(nw.__version__),
             "hexVersion"  : str(nw.__hexversion__),
             "fileVersion" : "1.1",
@@ -501,6 +517,10 @@ class NWProject():
         })
 
         editTime = int(self.editTime + saveTime - self.projOpened)
+        wcNovel, wcNotes = self.projTree.sumWords()
+        self.novelWCount = wcNovel
+        self.notesWCount = wcNotes
+        self.setProjectWordCount(wcNovel + wcNotes)
 
         # Save Project Meta
         xProject = etree.SubElement(nwXML, "project")
@@ -519,11 +539,9 @@ class NWProject():
         self._packProjectValue(xSettings, "lastEdited", self.lastEdited)
         self._packProjectValue(xSettings, "lastViewed", self.lastViewed)
         self._packProjectValue(xSettings, "lastWordCount", self.currWCount)
-
-        xAutoRep = etree.SubElement(xSettings, "autoReplace")
-        for aKey, aValue in self.autoReplace.items():
-            if len(aKey) > 0:
-                self._packProjectValue(xAutoRep, aKey, aValue)
+        self._packProjectValue(xSettings, "novelWordCount", wcNovel)
+        self._packProjectValue(xSettings, "notesWordCount", wcNotes)
+        self._packProjectKeyValue(xSettings, "autoReplace", self.autoReplace)
 
         xTitleFmt = etree.SubElement(xSettings, "titleFormat")
         for aKey, aValue in self.titleFormat.items():
@@ -1027,8 +1045,18 @@ class NWProject():
             if not isinstance(aValue, str):
                 aValue = str(aValue)
             if aValue == "" and not allowNone: continue
-            xItem = etree.SubElement(xParent,theName)
+            xItem = etree.SubElement(xParent, theName)
             xItem.text = aValue
+        return
+
+    def _packProjectKeyValue(self, xParent, theName, theDict):
+        """Pack the entries in the auto-replace dictionary.
+        """
+        xAutoRep = etree.SubElement(xParent, theName)
+        for aKey, aValue in theDict.items():
+            if len(aKey) > 0:
+                xEntry = etree.SubElement(xAutoRep, "entry", attrib={"key": aKey})
+                xEntry.text = aValue
         return
 
     def _scanProjectFolder(self):
@@ -1101,18 +1129,24 @@ class NWProject():
         if not self.ensureFolderStructure():
             return False
 
-        sessionFile = path.join(self.projMeta, nwFiles.SESS_INFO)
+        sessionFile = path.join(self.projMeta, nwFiles.SESS_STATS)
+        isFile = path.isfile(sessionFile)
 
         with open(sessionFile, mode="a+", encoding="utf8") as outFile:
-            print((
-                "Start: {opened:s}  "
-                "End: {closed:s}  "
-                "Words: {words:8d}"
-            ).format(
-                opened = formatTimeStamp(self.projOpened),
-                closed = formatTimeStamp(time()),
-                words  = self.getSessionWordCount(),
-            ), file=outFile)
+            if not isFile:
+                # It's a new file, so add a header
+                if self.lastWCount > 0:
+                    outFile.write("# Offset %d\n" % self.lastWCount)
+                outFile.write("# %-17s  %-19s  %8s  %8s\n" % (
+                    "Start Time", "End Time", "Novel", "Notes"
+                ))
+
+            outFile.write("%-19s  %-19s  %8d  %8d\n" % (
+                formatTimeStamp(self.projOpened),
+                formatTimeStamp(time()),
+                self.novelWCount,
+                self.notesWCount,
+            ))
 
         return True
 

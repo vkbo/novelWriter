@@ -1,5 +1,8 @@
 # novelWriter ChangeLog
 
+## Version 0.10.0 RC1 [2020-xx-xx]
+
+
 ## Version 0.9.2 [2020-06-26]
 
 **Bugfixes**
