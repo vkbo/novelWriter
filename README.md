@@ -48,7 +48,8 @@ It allows for a minimal set of formatting needed for writing text documents for 
 These are currently limited to:
 
 * Headings level 1 to 4 using the `#` syntax only.
-* Bold, italic and strikethrough text.
+* Emphasised, strongly emphasised, and very strongly emphasised text. These are rendered as italicised, bold, and bold italicised text, respectively.
+* Strikethrough text.
 * Hard line breaks using two or more spaces at the end of a line.
 
 That is it.
@@ -124,7 +125,7 @@ pip install lxml
 pip install pyenchant
 ```
 
-PyQt/Qt should be at least 5.2.1, but ideally 5.10 or higher for nearly all features to work.
+PyQt/Qt should be at least 5.3, but ideally 5.10 or higher for nearly all features to work.
 Exporting to markdown requires PyQt/Qt 5.14.
 There are no known minimum for lxml, but the code was originally written with 4.2.
 The optional spell check library must be at least 3.0.0 to work with Windows.
