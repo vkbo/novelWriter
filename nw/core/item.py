@@ -53,10 +53,11 @@ class NWItem():
         self.isExported = True
 
         # Document Meta Data
-        self.charCount = 0
-        self.wordCount = 0
-        self.paraCount = 0
-        self.cursorPos = 0
+        self.charCount = 0 # Current character count
+        self.wordCount = 0 # Current word count
+        self.paraCount = 0 # Current paragraph count
+        self.initCount = 0 # Initial word count
+        self.cursorPos = 0 # Last cursor position
 
         return
 
@@ -272,6 +273,12 @@ class NWItem():
         """Set the cursor position, and ensure that it is an integer.
         """
         self.cursorPos = checkInt(thePosition, 0)
+        return
+
+    def saveInitialCount(self):
+        """Set the initial word count.
+        """
+        self.initCount = self.wordCount
         return
 
 # END Class NWItem

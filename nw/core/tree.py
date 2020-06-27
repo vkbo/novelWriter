@@ -134,6 +134,7 @@ class NWTree():
             nwItem = NWItem(self.theProject)
             if nwItem.unpackXML(xItem):
                 self.append(nwItem.itemHandle, nwItem.parHandle, nwItem)
+                nwItem.saveInitialCount()
 
         return True
 

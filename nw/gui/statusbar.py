@@ -51,9 +51,6 @@ class GuiMainStatus(QStatusBar):
         self.theTheme  = theParent.theTheme
         self.refTime   = None
 
-        self.charCount = 0
-        self.wordCount = 0
-        self.paraCount = 0
         self.projWords = 0
         self.sessWords = 0
 
@@ -134,7 +131,6 @@ class GuiMainStatus(QStatusBar):
         """
         self.setRefTime(None)
         self.setStats(0, 0)
-        self.setCounts(0, 0, 0)
         self.setProjectStatus(None)
         self.setDocumentStatus(None)
         self._updateTime()
@@ -186,15 +182,6 @@ class GuiMainStatus(QStatusBar):
         self._updateStats()
         return
 
-    def setCounts(self, cC, wC, pC):
-        """Set the current document statistics.
-        """
-        self.charCount = cC
-        self.wordCount = wC
-        self.paraCount = pC
-        self._updateStats()
-        return
-
     ##
     #  Internal Functions
     ##
@@ -203,12 +190,11 @@ class GuiMainStatus(QStatusBar):
         """Update statistics.
         """
         self.statsText.setToolTip(
-            "D: Document word count<br>P: Project word count (session change)"
+            "Project word count (session change)"
         )
         self.statsText.setText((
-            "D:{wC:n}  P:{pWC:n} ({sWC:+n})"
+            "Words: {pWC:n} ({sWC:+n})"
         ).format(
-            wC  = self.wordCount,
             pWC = self.projWords,
             sWC = self.sessWords,
         ))

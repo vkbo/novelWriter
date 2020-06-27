@@ -769,7 +769,6 @@ class GuiDocEditor(QTextEdit):
         self.nwDocument.theItem.setWordCount(self.wordCount)
         self.nwDocument.theItem.setParaCount(self.paraCount)
 
-        self.theParent.statusBar.setCounts(self.charCount, self.wordCount, self.paraCount)
         self.theParent.treeView.propagateCount(self.theHandle, self.wordCount)
         self.theParent.treeView.projectWordCount()
         self.theParent.treeMeta.updateCounts(
@@ -1845,9 +1844,7 @@ class GuiDocEditFooter(QWidget):
         self.theProject = docEditor.theProject
         self.theTheme   = docEditor.theTheme
         self.optState   = docEditor.theProject.optState
-
-        self.theHandle = None
-        self.initWords = 0
+        self.theHandle  = None
 
         # Make a QPalette that matches the Syntax Theme
         self.thePalette = QPalette()
@@ -1927,15 +1924,7 @@ class GuiDocEditFooter(QWidget):
         """Set the handle that will populate the footer's data.
         """
         self.theHandle = tHandle
-
-        nwItem = self.theProject.projTree[self.theHandle]
-        if nwItem is None:
-            self.initWords = 0
-        else:
-            self.initWords = nwItem.wordCount
-
         self.updateInfo()
-
         return
 
     def updateInfo(self):
@@ -1947,9 +1936,8 @@ class GuiDocEditFooter(QWidget):
             sText  = ""
             wCount = 0
             wDiff  = 0
+
         else:
-            wCount = nwItem.wordCount
-            wDiff  = wCount - self.initWords
             iStatus = nwItem.itemStatus
             if nwItem.itemClass == nwItemClass.NOVEL:
                 iStatus = self.theProject.statusItems.checkEntry(iStatus)
@@ -1957,8 +1945,11 @@ class GuiDocEditFooter(QWidget):
             else:
                 iStatus = self.theProject.importItems.checkEntry(iStatus)
                 theIcon = self.theParent.importIcons[iStatus]
-            sIcon = theIcon.pixmap(self.sPx, self.sPx)
-            sText = nwItem.itemStatus
+
+            sIcon  = theIcon.pixmap(self.sPx, self.sPx)
+            sText  = nwItem.itemStatus
+            wCount = nwItem.wordCount
+            wDiff  = wCount - nwItem.initCount
 
         self.statusIcon.setPixmap(sIcon)
         self.statusText.setText(sText)
