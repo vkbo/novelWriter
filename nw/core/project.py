@@ -356,6 +356,15 @@ class NWProject():
         # Check Project Storage Version
         # =============================
 
+        # Changes:
+        # 1.0 : Original file format.
+        # 1.1 : Changes the way documents are structure in the project
+        #       folder from data_X, where X is the first hex value of
+        #       the handle, to a single content folder.
+        # 1.2 : Changes the way autoReplace entries are stored. The 1.1
+        #       parser will lose the autoReplace settings if allowed to
+        #       read the file. Introduced in version 0.10.
+
         if fileVersion == "1.0":
             msgBox = QMessageBox()
             msgRes = msgBox.question(self.theParent, "Old Project Version", (
@@ -369,12 +378,14 @@ class NWProject():
             if msgRes != QMessageBox.Yes:
                 return False
 
-        elif fileVersion != "1.1":
+        elif fileVersion != "1.1" and fileVersion != "1.2":
             self.makeAlert((
-                "Unknown or unsupported %s project format. "
-                "The project cannot be opened by this version of %s."
-            ) % (
-                nw.__package__, nw.__package__
+                "Unknown or unsupported {nw:s} project file format. "
+                "The project cannot be opened by this version of {nw:s}. "
+                "The file was saved with {nw:s} version {vers:s}."
+            ).format(
+                nw = nw.__package__,
+                vers = appVersion,
             ), nwAlert.ERROR)
             return False
 
@@ -512,7 +523,7 @@ class NWProject():
         nwXML = etree.Element("novelWriterXML", attrib={
             "appVersion"  : str(nw.__version__),
             "hexVersion"  : str(nw.__hexversion__),
-            "fileVersion" : "1.1",
+            "fileVersion" : "1.2",
             "timeStamp"   : formatTimeStamp(saveTime),
         })
 
