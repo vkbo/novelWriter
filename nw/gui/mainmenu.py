@@ -207,12 +207,6 @@ class GuiMainMenu(QMenuBar):
         self.aBuildProject.triggered.connect(self.theParent.buildProjectDialog)
         self.projMenu.addAction(self.aBuildProject)
 
-        # Project > Session Log
-        self.aSessionLog = QAction("Session Log", self)
-        self.aSessionLog.setStatusTip("Show the session log")
-        self.aSessionLog.triggered.connect(self.theParent.showSessionLogDialog)
-        self.projMenu.addAction(self.aSessionLog)
-
         # Project > Separator
         self.projMenu.addSeparator()
 
@@ -758,6 +752,13 @@ class GuiMainMenu(QMenuBar):
         self.aBackupProject.setStatusTip("Backup Project")
         self.aBackupProject.triggered.connect(self._doBackup)
         self.toolsMenu.addAction(self.aBackupProject)
+
+        # Tools > Writing Stats
+        self.aWritingStats = QAction("Show Writing Statistics", self)
+        self.aWritingStats.setStatusTip("Show the writing statistics dialog")
+        self.aWritingStats.setShortcut("F6")
+        self.aWritingStats.triggered.connect(self.theParent.showWritingStatsDialog)
+        self.toolsMenu.addAction(self.aWritingStats)
 
         # Tools > Settings
         self.aPreferences = QAction("Preferences", self)
