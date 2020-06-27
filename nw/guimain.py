@@ -43,7 +43,7 @@ from nw.gui import (
     GuiBuildNovel, GuiDocEditor, GuiDocMerge, GuiDocSplit, GuiDocViewDetails,
     GuiDocViewer, GuiItemDetails, GuiItemEditor, GuiMainMenu, GuiMainStatus,
     GuiOutline, GuiOutlineDetails, GuiPreferences, GuiProjectLoad, GuiTheme,
-    GuiProjectSettings, GuiProjectTree, GuiSessionLog
+    GuiProjectSettings, GuiProjectTree, GuiWritingStats
 )
 from nw.core import NWProject, NWDoc, NWIndex
 from nw.constants import nwFiles, nwItemType, nwAlert
@@ -806,11 +806,11 @@ class GuiMain(QMainWindow):
             dlgExport.exec_()
         return True
 
-    def showSessionLogDialog(self):
+    def showWritingStatsDialog(self):
         """Open the session log dialog.
         """
         if self.hasProject:
-            dlgTLine = GuiSessionLog(self, self.theProject)
+            dlgTLine = GuiWritingStats(self, self.theProject)
             dlgTLine.exec_()
         return True
 

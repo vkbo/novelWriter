@@ -45,7 +45,7 @@ class OptionState():
 
         self.theState = {}
         self.validMap = {
-            "GuiSessionLog": {
+            "GuiWritingStats": {
                 "winWidth",
                 "winHeight",
                 "widthCol0",

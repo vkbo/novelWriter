@@ -167,6 +167,7 @@ These are as following:
    ":kbd:`F2`",              "If in tree view, edit a document or folder settings. (Same as :kbd:`Ctrl-E`)"
    ":kbd:`F3`",              "Find next occurrence of word in current document. (Same as :kbd:`Ctrl-G`)"
    ":kbd:`F5`",              "Open the Build Novel Project dialog."
+   ":kbd:`F6`",              "Open the Writing Statistics dialog."
    ":kbd:`F7`",              "Re-run spell checker."
    ":kbd:`F8`",              "Activate Zen Mode, hiding project tree and view panel."
    ":kbd:`F9`",              "Re-build project index."

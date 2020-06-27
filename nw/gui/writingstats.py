@@ -1,9 +1,9 @@
 # -*- coding: utf-8 -*-
-"""novelWriter GUI Session Log Viewer
+"""novelWriter GUI Writing Statistics
 
- novelWriter – GUI Session Log Viewer
+ novelWriter – GUI Writing Statistics
 ======================================
- Class holding the session log view window
+ Class showing the word count and session statistics
 
  File History:
  Created: 2019-10-20 [0.3]
@@ -44,7 +44,7 @@ from nw.gui.custom import QSwitch
 
 logger = logging.getLogger(__name__)
 
-class GuiSessionLog(QDialog):
+class GuiWritingStats(QDialog):
 
     C_TIME   = 0
     C_LENGTH = 1
@@ -57,7 +57,7 @@ class GuiSessionLog(QDialog):
     def __init__(self, theParent, theProject):
         QDialog.__init__(self, theParent)
 
-        logger.debug("Initialising GuiSessionLog ...")
+        logger.debug("Initialising GuiWritingStats ...")
 
         self.mainConf   = nw.CONFIG
         self.theParent  = theParent
@@ -70,23 +70,23 @@ class GuiSessionLog(QDialog):
         self.timeFilter = 0.0
         self.wordOffset = 0
 
-        self.setWindowTitle("Session Log")
+        self.setWindowTitle("Writing Statistics")
         self.setMinimumWidth(self.mainConf.pxInt(420))
         self.setMinimumHeight(self.mainConf.pxInt(400))
         self.resize(
-            self.mainConf.pxInt(self.optState.getInt("GuiSessionLog", "winWidth",  550)),
-            self.mainConf.pxInt(self.optState.getInt("GuiSessionLog", "winHeight", 500))
+            self.mainConf.pxInt(self.optState.getInt("GuiWritingStats", "winWidth",  550)),
+            self.mainConf.pxInt(self.optState.getInt("GuiWritingStats", "winHeight", 500))
         )
 
         # List Box
         wCol0 = self.mainConf.pxInt(
-            self.optState.getInt("GuiSessionLog", "widthCol0", 180)
+            self.optState.getInt("GuiWritingStats", "widthCol0", 180)
         )
         wCol1 = self.mainConf.pxInt(
-            self.optState.getInt("GuiSessionLog", "widthCol1", 80)
+            self.optState.getInt("GuiWritingStats", "widthCol1", 80)
         )
         wCol2 = self.mainConf.pxInt(
-            self.optState.getInt("GuiSessionLog", "widthCol2", 80)
+            self.optState.getInt("GuiWritingStats", "widthCol2", 80)
         )
 
         self.listBox = QTreeWidget()
@@ -106,10 +106,10 @@ class GuiSessionLog(QDialog):
 
         sortValid = (Qt.AscendingOrder, Qt.DescendingOrder)
         sortCol = self.optState.validIntRange(
-            self.optState.getInt("GuiSessionLog", "sortCol", 0), 0, 2, 0
+            self.optState.getInt("GuiWritingStats", "sortCol", 0), 0, 2, 0
         )
         sortOrder = self.optState.validIntTuple(
-            self.optState.getInt("GuiSessionLog", "sortOrder", Qt.DescendingOrder),
+            self.optState.getInt("GuiWritingStats", "sortOrder", Qt.DescendingOrder),
             sortValid, Qt.DescendingOrder
         )
         self.listBox.sortByColumn(sortCol, sortOrder)
@@ -167,31 +167,31 @@ class GuiSessionLog(QDialog):
 
         self.incNovel = QSwitch(width=2*sPx, height=sPx)
         self.incNovel.setChecked(
-            self.optState.getBool("GuiSessionLog", "incNovel", True)
+            self.optState.getBool("GuiWritingStats", "incNovel", True)
         )
         self.incNovel.clicked.connect(self._updateListBox)
 
         self.incNotes = QSwitch(width=2*sPx, height=sPx)
         self.incNotes.setChecked(
-            self.optState.getBool("GuiSessionLog", "incNotes", True)
+            self.optState.getBool("GuiWritingStats", "incNotes", True)
         )
         self.incNotes.clicked.connect(self._updateListBox)
 
         self.hideZeros = QSwitch(width=2*sPx, height=sPx)
         self.hideZeros.setChecked(
-            self.optState.getBool("GuiSessionLog", "hideZeros", True)
+            self.optState.getBool("GuiWritingStats", "hideZeros", True)
         )
         self.hideZeros.clicked.connect(self._updateListBox)
 
         self.hideNegative = QSwitch(width=2*sPx, height=sPx)
         self.hideNegative.setChecked(
-            self.optState.getBool("GuiSessionLog", "hideNegative", False)
+            self.optState.getBool("GuiWritingStats", "hideNegative", False)
         )
         self.hideNegative.clicked.connect(self._updateListBox)
 
         self.groupByDay = QSwitch(width=2*sPx, height=sPx)
         self.groupByDay.setChecked(
-            self.optState.getBool("GuiSessionLog", "groupByDay", False)
+            self.optState.getBool("GuiWritingStats", "groupByDay", False)
         )
         self.groupByDay.clicked.connect(self._updateListBox)
 
@@ -233,7 +233,7 @@ class GuiSessionLog(QDialog):
 
         self.setLayout(self.outerBox)
 
-        logger.debug("GuiSessionLog initialisation complete")
+        logger.debug("GuiWritingStats initialisation complete")
 
         qApp.processEvents()
         self._loadLogFile()
@@ -263,18 +263,18 @@ class GuiSessionLog(QDialog):
         hideNegative = self.hideNegative.isChecked()
         groupByDay   = self.groupByDay.isChecked()
 
-        self.optState.setValue("GuiSessionLog", "winWidth",     winWidth)
-        self.optState.setValue("GuiSessionLog", "winHeight",    winHeight)
-        self.optState.setValue("GuiSessionLog", "widthCol0",    widthCol0)
-        self.optState.setValue("GuiSessionLog", "widthCol1",    widthCol1)
-        self.optState.setValue("GuiSessionLog", "widthCol2",    widthCol2)
-        self.optState.setValue("GuiSessionLog", "sortCol",      sortCol)
-        self.optState.setValue("GuiSessionLog", "sortOrder",    sortOrder)
-        self.optState.setValue("GuiSessionLog", "incNovel",     incNovel)
-        self.optState.setValue("GuiSessionLog", "incNotes",     incNotes)
-        self.optState.setValue("GuiSessionLog", "hideZeros",    hideZeros)
-        self.optState.setValue("GuiSessionLog", "hideNegative", hideNegative)
-        self.optState.setValue("GuiSessionLog", "groupByDay",   groupByDay)
+        self.optState.setValue("GuiWritingStats", "winWidth",     winWidth)
+        self.optState.setValue("GuiWritingStats", "winHeight",    winHeight)
+        self.optState.setValue("GuiWritingStats", "widthCol0",    widthCol0)
+        self.optState.setValue("GuiWritingStats", "widthCol1",    widthCol1)
+        self.optState.setValue("GuiWritingStats", "widthCol2",    widthCol2)
+        self.optState.setValue("GuiWritingStats", "sortCol",      sortCol)
+        self.optState.setValue("GuiWritingStats", "sortOrder",    sortOrder)
+        self.optState.setValue("GuiWritingStats", "incNovel",     incNovel)
+        self.optState.setValue("GuiWritingStats", "incNotes",     incNotes)
+        self.optState.setValue("GuiWritingStats", "hideZeros",    hideZeros)
+        self.optState.setValue("GuiWritingStats", "hideNegative", hideNegative)
+        self.optState.setValue("GuiWritingStats", "groupByDay",   groupByDay)
 
         self.optState.saveSettings()
         self.close()
@@ -553,4 +553,4 @@ class GuiSessionLog(QDialog):
         tS = tS - tM*60 - tH*3600
         return "%02d:%02d:%02d" % (tH,tM,tS)
 
-# END Class GuiSessionLog
+# END Class GuiWritingStats
