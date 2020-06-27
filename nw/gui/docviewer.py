@@ -251,7 +251,7 @@ class GuiDocViewer(QTextBrowser):
 
         return
 
-    def updateDocTitle(self, tHandle):
+    def updateDocInfo(self, tHandle):
         """Called when an item label is changed to check if the document
         title bar needs updating,
         """

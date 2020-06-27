@@ -676,8 +676,8 @@ class GuiMain(QMainWindow):
             if dlgProj.exec_():
                 self.treeView.setTreeItemValues(tHandle)
                 self.treeMeta.updateViewBox(tHandle)
-                self.docEditor.updateDocTitle(tHandle)
-                self.docViewer.updateDocTitle(tHandle)
+                self.docEditor.updateDocInfo(tHandle)
+                self.docViewer.updateDocInfo(tHandle)
 
         return
 

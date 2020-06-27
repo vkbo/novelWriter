@@ -36,8 +36,8 @@ from time import time
 
 from PyQt5.QtCore import Qt, QSize, QThread, QTimer, pyqtSlot, QRegExp
 from PyQt5.QtGui import (
-    QTextCursor, QTextOption, QKeySequence, QFont, QColor, QPalette,
-    QTextDocument, QCursor
+    QTextCursor, QTextOption, QKeySequence, QFont, QColor, QPalette, QIcon,
+    QTextDocument, QCursor, QPixmap
 )
 from PyQt5.QtWidgets import (
     qApp, QTextEdit, QAction, QMenu, QShortcut, QMessageBox, QWidget, QLabel,
@@ -49,7 +49,7 @@ from nw.core import NWDoc, NWSpellSimple, countWords
 from nw.gui.dochighlight import GuiDocHighlighter
 from nw.common import transferCase
 from nw.constants import (
-    nwAlert, nwUnicode, nwDocAction, nwDocInsert, nwInsertSymbols
+    nwAlert, nwUnicode, nwDocAction, nwDocInsert, nwInsertSymbols, nwItemClass
 )
 
 logger = logging.getLogger(__name__)
@@ -92,6 +92,7 @@ class GuiDocEditor(QTextEdit):
 
         # Document Title
         self.docHeader = GuiDocEditHeader(self)
+        self.docFooter = GuiDocEditFooter(self)
         self.docSearch = GuiDocEditSearch(self)
 
         # Syntax
@@ -160,6 +161,7 @@ class GuiDocEditor(QTextEdit):
 
         self.setDocumentChanged(False)
         self.docHeader.setTitleFromHandle(self.theHandle)
+        self.docFooter.setHandle(self.theHandle)
 
         return True
 
@@ -277,6 +279,7 @@ class GuiDocEditor(QTextEdit):
 
         self.setReadOnly(False)
         self.docHeader.setTitleFromHandle(self.theHandle)
+        self.docFooter.setHandle(self.theHandle)
         self.updateDocMargins()
         self.hLight.spellCheck = spTemp
         qApp.restoreOverrideCursor()
@@ -342,7 +345,10 @@ class GuiDocEditor(QTextEdit):
         tB = self.frameWidth()
         tW = wW - 2*tB - sW
         tH = self.docHeader.height()
+        fH = self.docFooter.height()
+        fY = self.height() - fH - tB
         self.docHeader.setGeometry(tB, tB, tW, tH)
+        self.docFooter.setGeometry(tB, fY, tW, fH)
 
         if self.docSearch.isVisible():
             rH = self.docSearch.height()
@@ -352,16 +358,17 @@ class GuiDocEditor(QTextEdit):
         else:
             rH = 0
 
-        self.setViewportMargins(tM, max(cM, tH, rH), tM, cM)
+        self.setViewportMargins(tM, max(cM, tH, rH), tM, max(cM, fH))
 
         return
 
-    def updateDocTitle(self, tHandle):
+    def updateDocInfo(self, tHandle):
         """Called when an item label is changed to check if the document
         title bar needs updating,
         """
         if tHandle == self.theHandle:
             self.docHeader.setTitleFromHandle(self.theHandle)
+            self.docFooter.updateInfo()
             self.updateDocMargins()
         return
 
@@ -763,13 +770,13 @@ class GuiDocEditor(QTextEdit):
         self.nwDocument.theItem.setWordCount(self.wordCount)
         self.nwDocument.theItem.setParaCount(self.paraCount)
 
-        self.theParent.statusBar.setCounts(self.charCount, self.wordCount, self.paraCount)
         self.theParent.treeView.propagateCount(self.theHandle, self.wordCount)
         self.theParent.treeView.projectWordCount()
         self.theParent.treeMeta.updateCounts(
             self.theHandle, self.charCount, self.wordCount, self.paraCount
         )
         self._checkDocSize(self.charCount)
+        self.docFooter.updateCounts()
 
         return
 
@@ -1819,3 +1826,145 @@ class GuiDocEditHeader(QWidget):
         return
 
 # END Class GuiDocEditHeader
+
+# =============================================================================================== #
+#  The Embedded Document Footer
+#  Only used by DocEditor, and is at a fixed position in the QTextEdit's viewport
+# =============================================================================================== #
+
+class GuiDocEditFooter(QWidget):
+
+    def __init__(self, docEditor):
+        QWidget.__init__(self, docEditor)
+
+        logger.debug("Initialising GuiDocEditFooter ...")
+
+        self.mainConf   = nw.CONFIG
+        self.docEditor  = docEditor
+        self.theParent  = docEditor.theParent
+        self.theProject = docEditor.theProject
+        self.theTheme   = docEditor.theTheme
+        self.optState   = docEditor.theProject.optState
+        self.theHandle  = None
+
+        # Make a QPalette that matches the Syntax Theme
+        self.thePalette = QPalette()
+        self.thePalette.setColor(QPalette.Window, QColor(*self.theTheme.colBack))
+        self.thePalette.setColor(QPalette.Text, QColor(*self.theTheme.colText))
+
+        self.sPx = int(round(0.9*self.theTheme.baseIconSize))
+        fPx = int(0.9*self.theTheme.fontPixelSize)
+        bSp = self.mainConf.pxInt(4)
+        hSp = self.mainConf.pxInt(8)
+
+        lblFont = self.font()
+        lblFont.setPointSizeF(0.9*self.theTheme.fontPointSize)
+
+        # Main Widget Settings
+        self.setContentsMargins(0, 0, 0, 0)
+        self.setAutoFillBackground(True)
+        self.setPalette(self.thePalette)
+
+        buttonStyle = (
+            "QToolButton {{border: none; background: transparent;}} "
+            "QToolButton:hover {{border: none; background: rgba({0},{1},{2},0.2);}}"
+        ).format(*self.theTheme.colText)
+
+        # Status
+        self.statusIcon = QLabel("")
+        self.statusIcon.setContentsMargins(0, 0, 0, 0)
+        self.statusIcon.setFixedHeight(self.sPx)
+        self.statusIcon.setAlignment(Qt.AlignLeft | Qt.AlignTop)
+
+        self.statusText = QLabel("Status")
+        self.statusText.setIndent(0)
+        self.statusText.setMargin(0)
+        self.statusText.setContentsMargins(0, 0, 0, 0)
+        self.statusText.setAutoFillBackground(True)
+        self.statusText.setFixedHeight(fPx)
+        self.statusText.setAlignment(Qt.AlignLeft | Qt.AlignTop)
+        self.statusText.setPalette(self.thePalette)
+        self.statusText.setFont(lblFont)
+
+        # Words
+        self.wordsIcon = QLabel("")
+        self.wordsIcon.setPixmap(self.theTheme.getPixmap("status_stats", (self.sPx, self.sPx)))
+        self.wordsIcon.setContentsMargins(0, 0, 0, 0)
+        self.wordsIcon.setFixedHeight(self.sPx)
+        self.wordsIcon.setAlignment(Qt.AlignLeft | Qt.AlignTop)
+
+        self.wordsText = QLabel("Words: 0")
+        self.wordsText.setIndent(0)
+        self.wordsText.setMargin(0)
+        self.wordsText.setContentsMargins(0, 0, 0, 0)
+        self.wordsText.setAutoFillBackground(True)
+        self.wordsText.setFixedHeight(fPx)
+        self.wordsText.setAlignment(Qt.AlignLeft | Qt.AlignTop)
+        self.wordsText.setPalette(self.thePalette)
+        self.wordsText.setFont(lblFont)
+
+        # Assemble Layout
+        self.outerBox = QHBoxLayout()
+        self.outerBox.setSpacing(bSp)
+        self.outerBox.addWidget(self.statusIcon)
+        self.outerBox.addWidget(self.statusText)
+        self.outerBox.addStretch(1)
+        self.outerBox.addWidget(self.wordsIcon)
+        self.outerBox.addWidget(self.wordsText)
+        self.setLayout(self.outerBox)
+
+        logger.debug("GuiDocEditFooter initialisation complete")
+
+        return
+
+    ##
+    #  Methods
+    ##
+
+    def setHandle(self, tHandle):
+        """Set the handle that will populate the footer's data.
+        """
+        self.theHandle = tHandle
+        self.updateInfo()
+        self.updateCounts()
+        return
+
+    def updateInfo(self):
+        """Update the content of text labels.
+        """
+        nwItem = self.theProject.projTree[self.theHandle]
+        if nwItem is None:
+            sIcon  = QPixmap()
+            sText  = ""
+        else:
+            iStatus = nwItem.itemStatus
+            if nwItem.itemClass == nwItemClass.NOVEL:
+                iStatus = self.theProject.statusItems.checkEntry(iStatus)
+                theIcon = self.theParent.statusIcons[iStatus]
+            else:
+                iStatus = self.theProject.importItems.checkEntry(iStatus)
+                theIcon = self.theParent.importIcons[iStatus]
+            sIcon = theIcon.pixmap(self.sPx, self.sPx)
+            sText = nwItem.itemStatus
+
+        self.statusIcon.setPixmap(sIcon)
+        self.statusText.setText(sText)
+
+        return
+
+    def updateCounts(self):
+        """Update the word counts.
+        """
+        nwItem = self.theProject.projTree[self.theHandle]
+        if nwItem is None:
+            wCount = 0
+            wDiff  = 0
+        else:
+            wCount = nwItem.wordCount
+            wDiff  = wCount - nwItem.initCount
+
+        self.wordsText.setText("Words: {:n} ({:+n})".format(wCount, wDiff))
+
+        return
+
+# END Class GuiDocEditFooter

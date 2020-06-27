@@ -391,7 +391,7 @@ def testItemEditor(qtbot, nwTempGUI, nwRef, nwTemp):
     itemEdit._doClose()
 
     # Check that the header is updated
-    nwGUI.docEditor.updateDocTitle("31489056e0916")
+    nwGUI.docEditor.updateDocInfo("31489056e0916")
     assert nwGUI.docEditor.docHeader.theTitle.text() == "Novel  ›  New Chapter  ›  Just a Page"
     assert not nwGUI.docEditor.setCursorLine("where?")
     assert nwGUI.docEditor.setCursorLine(2)
