@@ -530,7 +530,7 @@ class GuiMainMenu(QMenuBar):
         self.aFmtEmph = QAction("Emphasis", self)
         self.aFmtEmph.setStatusTip("Add emphasis to selected text (italic)")
         self.aFmtEmph.setShortcut("Ctrl+I")
-        self.aFmtEmph.triggered.connect(lambda: self._docAction(nwDocAction.ENPH))
+        self.aFmtEmph.triggered.connect(lambda: self._docAction(nwDocAction.EMPH))
         self.fmtMenu.addAction(self.aFmtEmph)
 
         # Format > Strong Emphasis

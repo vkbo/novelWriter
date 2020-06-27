@@ -514,7 +514,7 @@ class GuiDocEditor(QTextEdit):
             self.copy()
         elif theAction == nwDocAction.PASTE:
             self.paste()
-        elif theAction == nwDocAction.ENPH:
+        elif theAction == nwDocAction.EMPH:
             self._toggleEmph(1)
         elif theAction == nwDocAction.STRONG:
             self._toggleEmph(2)

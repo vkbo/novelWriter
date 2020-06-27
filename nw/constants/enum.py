@@ -74,7 +74,7 @@ class nwDocAction(Enum):
     CUT        = 3
     COPY       = 4
     PASTE      = 5
-    ENPH       = 6
+    EMPH       = 6
     STRONG     = 7
     STRONGEMPH = 8
     STRIKE     = 9

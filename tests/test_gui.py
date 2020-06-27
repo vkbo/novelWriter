@@ -772,10 +772,10 @@ def testDocAction(qtbot, nwTempGUI, nwLipsum, nwRef, nwTemp):
     qtbot.wait(stepDelay)
 
     # Italic
-    assert nwGUI.passDocumentAction(nwDocAction.ENPH)
+    assert nwGUI.passDocumentAction(nwDocAction.EMPH)
     assert nwGUI.docEditor.getText()[27:76] == "*Pellentesque* nec erat ut nulla posuere commodo."
     qtbot.wait(stepDelay)
-    assert nwGUI.passDocumentAction(nwDocAction.ENPH)
+    assert nwGUI.passDocumentAction(nwDocAction.EMPH)
     assert nwGUI.docEditor.getText()[27:74] == cleanText
     qtbot.wait(stepDelay)
 
@@ -798,9 +798,9 @@ def testDocAction(qtbot, nwTempGUI, nwLipsum, nwRef, nwTemp):
     # Should get us back to plain
     assert nwGUI.passDocumentAction(nwDocAction.STRONG)
     qtbot.wait(stepDelay)
-    assert nwGUI.passDocumentAction(nwDocAction.ENPH)
+    assert nwGUI.passDocumentAction(nwDocAction.EMPH)
     qtbot.wait(stepDelay)
-    assert nwGUI.passDocumentAction(nwDocAction.ENPH)
+    assert nwGUI.passDocumentAction(nwDocAction.EMPH)
     qtbot.wait(stepDelay)
     assert nwGUI.passDocumentAction(nwDocAction.STRONG)
     assert nwGUI.docEditor.getText()[27:74] == cleanText
@@ -809,7 +809,7 @@ def testDocAction(qtbot, nwTempGUI, nwLipsum, nwRef, nwTemp):
     # Equivalent of the above
     assert nwGUI.passDocumentAction(nwDocAction.STRONGEMPH)
     qtbot.wait(stepDelay)
-    assert nwGUI.passDocumentAction(nwDocAction.ENPH)
+    assert nwGUI.passDocumentAction(nwDocAction.EMPH)
     qtbot.wait(stepDelay)
     assert nwGUI.passDocumentAction(nwDocAction.STRONG)
     assert nwGUI.docEditor.getText()[27:74] == cleanText
