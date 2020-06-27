@@ -764,26 +764,26 @@ def testDocAction(qtbot, nwTempGUI, nwLipsum, nwRef, nwTemp):
     cleanText = nwGUI.docEditor.getText()[27:74]
 
     # Bold
-    assert nwGUI.passDocumentAction(nwDocAction.BOLD)
+    assert nwGUI.passDocumentAction(nwDocAction.STRONG)
     assert nwGUI.docEditor.getText()[27:78] == "**Pellentesque** nec erat ut nulla posuere commodo."
     qtbot.wait(stepDelay)
-    assert nwGUI.passDocumentAction(nwDocAction.BOLD)
+    assert nwGUI.passDocumentAction(nwDocAction.STRONG)
     assert nwGUI.docEditor.getText()[27:74] == cleanText
     qtbot.wait(stepDelay)
 
     # Italic
-    assert nwGUI.passDocumentAction(nwDocAction.ITALIC)
+    assert nwGUI.passDocumentAction(nwDocAction.ENPH)
     assert nwGUI.docEditor.getText()[27:76] == "*Pellentesque* nec erat ut nulla posuere commodo."
     qtbot.wait(stepDelay)
-    assert nwGUI.passDocumentAction(nwDocAction.ITALIC)
+    assert nwGUI.passDocumentAction(nwDocAction.ENPH)
     assert nwGUI.docEditor.getText()[27:74] == cleanText
     qtbot.wait(stepDelay)
 
     # Bold-Italic
-    assert nwGUI.passDocumentAction(nwDocAction.BOLDITALIC)
+    assert nwGUI.passDocumentAction(nwDocAction.STRONGEMPH)
     assert nwGUI.docEditor.getText()[27:80] == "***Pellentesque*** nec erat ut nulla posuere commodo."
     qtbot.wait(stepDelay)
-    assert nwGUI.passDocumentAction(nwDocAction.BOLDITALIC)
+    assert nwGUI.passDocumentAction(nwDocAction.STRONGEMPH)
     assert nwGUI.docEditor.getText()[27:74] == cleanText
     qtbot.wait(stepDelay)
 
@@ -796,22 +796,22 @@ def testDocAction(qtbot, nwTempGUI, nwLipsum, nwRef, nwTemp):
     qtbot.wait(stepDelay)
 
     # Should get us back to plain
-    assert nwGUI.passDocumentAction(nwDocAction.BOLD)
+    assert nwGUI.passDocumentAction(nwDocAction.STRONG)
     qtbot.wait(stepDelay)
-    assert nwGUI.passDocumentAction(nwDocAction.ITALIC)
+    assert nwGUI.passDocumentAction(nwDocAction.ENPH)
     qtbot.wait(stepDelay)
-    assert nwGUI.passDocumentAction(nwDocAction.ITALIC)
+    assert nwGUI.passDocumentAction(nwDocAction.ENPH)
     qtbot.wait(stepDelay)
-    assert nwGUI.passDocumentAction(nwDocAction.BOLD)
+    assert nwGUI.passDocumentAction(nwDocAction.STRONG)
     assert nwGUI.docEditor.getText()[27:74] == cleanText
     qtbot.wait(stepDelay)
 
     # Equivalent of the above
-    assert nwGUI.passDocumentAction(nwDocAction.BOLDITALIC)
+    assert nwGUI.passDocumentAction(nwDocAction.STRONGEMPH)
     qtbot.wait(stepDelay)
-    assert nwGUI.passDocumentAction(nwDocAction.ITALIC)
+    assert nwGUI.passDocumentAction(nwDocAction.ENPH)
     qtbot.wait(stepDelay)
-    assert nwGUI.passDocumentAction(nwDocAction.BOLD)
+    assert nwGUI.passDocumentAction(nwDocAction.STRONG)
     assert nwGUI.docEditor.getText()[27:74] == cleanText
     qtbot.wait(stepDelay)
 
