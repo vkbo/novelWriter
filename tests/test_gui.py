@@ -10,7 +10,7 @@ from PyQt5.QtCore import Qt
 
 from nw.gui import (
     GuiProjectSettings, GuiItemEditor, GuiAbout, GuiBuildNovel,
-    GuiDocMerge, GuiDocSplit, GuiSessionLog
+    GuiDocMerge, GuiDocSplit, GuiWritingStats
 )
 from nw.constants import *
 
@@ -410,7 +410,7 @@ def testItemEditor(qtbot, nwTempGUI, nwRef, nwTemp):
     # qtbot.stopForInteraction()
 
 @pytest.mark.gui
-def testSessionLogExport(qtbot, nwTempGUI, nwRef, nwTemp):
+def testWritingStatsExport(qtbot, nwTempGUI, nwRef, nwTemp):
     nwGUI = nw.main(["--testmode","--config=%s" % nwTempGUI, "--data=%s" % nwTemp])
     qtbot.addWidget(nwGUI)
     nwGUI.show()
@@ -421,7 +421,7 @@ def testSessionLogExport(qtbot, nwTempGUI, nwRef, nwTemp):
     qtbot.wait(stepDelay)
 
     nwGUI.mainConf.lastPath = nwTempGUI
-    sessLog = GuiSessionLog(nwGUI, nwGUI.theProject)
+    sessLog = GuiWritingStats(nwGUI, nwGUI.theProject)
     sessLog.show()
     qtbot.wait(stepDelay)
 
