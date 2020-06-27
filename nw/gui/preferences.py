@@ -452,6 +452,14 @@ class GuiConfigEditLayoutTab(QWidget):
             "If disabled, minimum text width is defined by the margin setting."
         )
 
+        ## Zen Mode Footer
+        self.hideZenFooter = QSwitch()
+        self.hideZenFooter.setChecked(self.mainConf.hideZenFooter)
+        self.mainForm.addRow(
+            "Hide document footer in \"Zen Mode\"",
+            self.hideZenFooter
+        )
+
         ## Justify Text
         self.textJustify = QSwitch()
         self.textJustify.setChecked(self.mainConf.textFixedW)
@@ -538,6 +546,7 @@ class GuiConfigEditLayoutTab(QWidget):
         textWidth       = self.textFlowMax.value()
         zenWidth        = self.zenDocWidth.value()
         textFixedW      = not self.textFlowFixed.isChecked()
+        hideZenFooter   = self.hideZenFooter.isChecked()
         doJustify       = self.textJustify.isChecked()
         textMargin      = self.textMargin.value()
         tabWidth        = self.tabWidth.value()
@@ -551,6 +560,7 @@ class GuiConfigEditLayoutTab(QWidget):
         self.mainConf.textWidth       = textWidth
         self.mainConf.zenWidth        = zenWidth
         self.mainConf.textFixedW      = textFixedW
+        self.mainConf.hideZenFooter   = hideZenFooter
         self.mainConf.doJustify       = doJustify
         self.mainConf.textMargin      = textMargin
         self.mainConf.tabWidth        = tabWidth
