@@ -942,6 +942,9 @@ class GuiMain(QMainWindow):
         self.mainMenu.setVisible(isVisible)
         self.tabWidget.tabBar().setVisible(isVisible)
 
+        hideDocFooter = self.isZenMode and self.mainConf.hideZenFooter
+        self.docEditor.docFooter.setVisible(not hideDocFooter)
+
         if self.splitView.isVisible():
             self.splitView.setVisible(False)
         elif self.docViewer.theHandle is not None:

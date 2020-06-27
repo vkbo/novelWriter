@@ -112,6 +112,7 @@ class Config:
         self.textMargin      = 40
         self.tabWidth        = 40
         self.zenWidth        = 800
+        self.hideZenFooter   = False
         self.doJustify       = False
         self.autoSelect      = True
         self.doReplace       = True
@@ -417,6 +418,9 @@ class Config:
         self.zenWidth = self._parseLine(
             cnfParse, cnfSec, "zenwidth", self.CNF_INT, self.zenWidth
         )
+        self.hideZenFooter = self._parseLine(
+            cnfParse, cnfSec, "hidezenfooter", self.CNF_BOOL, self.hideZenFooter
+        )
         self.doJustify = self._parseLine(
             cnfParse, cnfSec, "justify", self.CNF_BOOL, self.doJustify
         )
@@ -569,6 +573,7 @@ class Config:
         cnfParse.set(cnfSec,"margin",          str(self.textMargin))
         cnfParse.set(cnfSec,"tabwidth",        str(self.tabWidth))
         cnfParse.set(cnfSec,"zenwidth",        str(self.zenWidth))
+        cnfParse.set(cnfSec,"hidezenfooter",   str(self.hideZenFooter))
         cnfParse.set(cnfSec,"justify",         str(self.doJustify))
         cnfParse.set(cnfSec,"autoselect",      str(self.autoSelect))
         cnfParse.set(cnfSec,"autoreplace",     str(self.doReplace))
