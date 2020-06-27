@@ -196,7 +196,7 @@ class GuiOutline(QTreeWidget):
         except:
             tLine = 1
         logger.verbose("User selected entry with handle %s on line %s" % (tHandle, tLine))
-        self.theParent.openDocument(tHandle, tLine - 1)
+        self.theParent.openDocument(tHandle, tLine=tLine-1, doScroll=True)
         return
 
     def _itemSelected(self):

@@ -54,6 +54,7 @@ class GuiProjectTree(QTreeWidget):
         QTreeWidget.__init__(self, theParent)
 
         logger.debug("Initialising GuiProjectTree ...")
+
         self.mainConf   = nw.CONFIG
         self.theParent  = theParent
         self.theTheme   = theParent.theTheme
@@ -237,8 +238,8 @@ class GuiProjectTree(QTreeWidget):
         """
         if qApp.focusWidget() == self and self.theParent.hasProject:
             tHandle = self.getSelectedHandle()
-            tItem   = self._getTreeItem(tHandle)
-            pItem   = tItem.parent()
+            tItem = self._getTreeItem(tHandle)
+            pItem = tItem.parent()
             if pItem is None:
                 tIndex = self.indexOfTopLevelItem(tItem)
                 nChild = self.topLevelItemCount()
@@ -367,6 +368,7 @@ class GuiProjectTree(QTreeWidget):
         if nwItemS is None:
             return False
 
+        wCount = int(trItemS.text(self.C_COUNT))
         if nwItemS.itemType == nwItemType.FILE:
             logger.debug("User requested file %s moved to trash" % tHandle)
             trItemP = trItemS.parent()
@@ -393,7 +395,8 @@ class GuiProjectTree(QTreeWidget):
                 if doPermanent:
                     logger.debug("Permanently deleting file with handle %s" % tHandle)
 
-                    tIndex  = trItemP.indexOfChild(trItemS)
+                    self.propagateCount(tHandle, 0)
+                    tIndex = trItemP.indexOfChild(trItemS)
                     trItemC = trItemP.takeChild(tIndex)
 
                     if self.theParent.docEditor.theHandle == tHandle:
@@ -422,10 +425,12 @@ class GuiProjectTree(QTreeWidget):
                     if pHandle is None:
                         logger.warning("File has no parent item")
 
+                    self.propagateCount(tHandle, 0)
                     tIndex  = trItemP.indexOfChild(trItemS)
                     trItemC = trItemP.takeChild(tIndex)
                     trItemT.addChild(trItemC)
                     nwItemS.setParent(self.theProject.projTree.trashRoot())
+                    self.propagateCount(tHandle, wCount)
 
                     self._setTreeChanged(True)
                     self.theParent.theIndex.deleteHandle(tHandle)
@@ -504,7 +509,7 @@ class GuiProjectTree(QTreeWidget):
         """
         tItem = self._getTreeItem(tHandle)
         if tItem is not None:
-            tItem.setText(self.C_COUNT,str(theCount))
+            tItem.setText(self.C_COUNT, str(theCount))
             pItem = tItem.parent()
             if pItem is not None:
                 pCount = 0
@@ -520,7 +525,7 @@ class GuiProjectTree(QTreeWidget):
         relevant values in the project and on the status bar. This call
         is a fast way of getting this number, and depends on the
         propagateCount function being called when it should to maintain
-        the correct count.
+        the correct count. Orphan folder is not included in the total.
         """
         nWords = 0
         for n in range(self.topLevelItemCount()):
@@ -569,14 +574,14 @@ class GuiProjectTree(QTreeWidget):
                 selHandles.append(selItems[n].data(self.C_NAME, Qt.UserRole))
         return selHandles
 
-    def setSelectedHandle(self, tHandle):
+    def setSelectedHandle(self, tHandle, doScroll=False):
         """Set a specific handle as the selected item.
         """
         if tHandle in self.theMap:
             self.clearSelection()
             self.theMap[tHandle].setSelected(True)
             selItems = self.selectedIndexes()
-            if selItems:
+            if selItems and doScroll:
                 self.scrollTo(
                     selItems[0], QAbstractItemView.PositionAtCenter
                 )
@@ -629,23 +634,26 @@ class GuiProjectTree(QTreeWidget):
             logger.error("Invalid drop index")
             return
 
-        dItem   = self.itemFromIndex(dIndex)
+        sItem = self._getTreeItem(sHandle)
+        dItem = self.itemFromIndex(dIndex)
         dHandle = dItem.data(self.C_NAME, Qt.UserRole)
-        snItem  = self.theProject.projTree[sHandle]
-        dnItem  = self.theProject.projTree[dHandle]
+        snItem = self.theProject.projTree[sHandle]
+        dnItem = self.theProject.projTree[dHandle]
         if dnItem is None:
             self.makeAlert("The item cannot be moved to that location.", nwAlert.ERROR)
             return
 
-        isSame  = snItem.itemClass == dnItem.itemClass
-        isNone  = snItem.itemClass == nwItemClass.NO_CLASS
-        isNote  = snItem.itemLayout == nwItemLayout.NOTE
-        onFile  = dnItem.itemType == nwItemType.FILE
-        isRoot  = snItem.itemType == nwItemType.ROOT
-        onRoot  = dnItem.itemType == nwItemType.ROOT
+        wCount = int(sItem.text(self.C_COUNT))
+        isSame = snItem.itemClass == dnItem.itemClass
+        isNone = snItem.itemClass == nwItemClass.NO_CLASS
+        isNote = snItem.itemLayout == nwItemLayout.NOTE
+        onFile = dnItem.itemType == nwItemType.FILE
+        isRoot = snItem.itemType == nwItemType.ROOT
+        onRoot = dnItem.itemType == nwItemType.ROOT
         isOnTop = self.dropIndicatorPosition() == QAbstractItemView.OnItem
         if (isSame or isNone or isNote) and not (onFile and isOnTop) and not isRoot:
             logger.debug("Drag'n'drop of item %s accepted" % sHandle)
+            self.propagateCount(sHandle, 0)
             QTreeWidget.dropEvent(self, theEvent)
             if isNone:
                 self._moveOrphanedItem(sHandle, dHandle)
@@ -660,6 +668,7 @@ class GuiProjectTree(QTreeWidget):
                 ))
                 snItem.setClass(dnItem.itemClass)
                 self.setTreeItemValues(sHandle)
+            self.propagateCount(sHandle, wCount)
         else:
             logger.debug("Drag'n'drop of item %s not accepted" % sHandle)
             self.makeAlert("The item cannot be moved to that location.", nwAlert.ERROR)
@@ -794,8 +803,7 @@ class GuiProjectTree(QTreeWidget):
 
     def _updateItemParent(self, tHandle):
         """Update the parent handle of an item so that the information
-        in the project is consistent with the treeView. Also move the
-        word count over to the new parent tree.
+        in the project is consistent with the treeView.
         """
         trItemS = self._getTreeItem(tHandle)
         nwItemS = self.theProject.projTree[tHandle]
@@ -805,10 +813,7 @@ class GuiProjectTree(QTreeWidget):
             return False
 
         pHandle = trItemP.data(self.C_NAME, Qt.UserRole)
-        wC = int(trItemS.text(self.C_COUNT))
-        self.propagateCount(tHandle, -wC)
         nwItemS.setParent(pHandle)
-        self.propagateCount(tHandle, wC)
         self.setTreeItemValues(tHandle)
         self._setTreeChanged(True)
 
@@ -929,7 +934,7 @@ class GuiProjectTreeMenu(QMenu):
         """Forward the open document call to the main GUI window.
         """
         if self.theItem is not None:
-            self.theTree.theParent.openDocument(self.theItem.itemHandle)
+            self.theTree.theParent.openDocument(self.theItem.itemHandle, doScroll=False)
         return
 
     def _doViewItem(self):

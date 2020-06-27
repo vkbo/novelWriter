@@ -15,7 +15,7 @@ from nw.gui.preferences import GuiPreferences
 from nw.gui.projload import GuiProjectLoad
 from nw.gui.projsettings import GuiProjectSettings
 from nw.gui.projtree import GuiProjectTree
-from nw.gui.sessionlog import GuiSessionLogView
+from nw.gui.sessionlog import GuiSessionLog
 from nw.gui.statusbar import GuiMainStatus
 from nw.gui.theme import GuiIcons, GuiTheme
 
@@ -36,7 +36,7 @@ __all__ = [
     "GuiProjectLoad",
     "GuiProjectSettings",
     "GuiProjectTree",
-    "GuiSessionLogView",
+    "GuiSessionLog",
     "GuiMainStatus",
     "GuiIcons",
     "GuiTheme",

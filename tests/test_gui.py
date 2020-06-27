@@ -2,7 +2,7 @@
 """novelWriter Main GUI Class Tester
 """
 
-import nw, pytest, sys
+import nw, pytest, sys, json
 from nwtools import *
 
 from os import path, unlink
@@ -10,7 +10,7 @@ from PyQt5.QtCore import Qt
 
 from nw.gui import (
     GuiProjectSettings, GuiItemEditor, GuiAbout, GuiBuildNovel,
-    GuiDocMerge, GuiDocSplit
+    GuiDocMerge, GuiDocSplit, GuiSessionLog
 )
 from nw.constants import *
 
@@ -126,6 +126,11 @@ def testMainWindows(qtbot, nwTempGUI, nwRef, nwTemp):
     nwGUI.treeView._getTreeItem("811786ad1ae74").setSelected(True)
     nwGUI.treeView.newTreeItem(nwItemType.FILE, None)
     assert nwGUI.openSelectedItem()
+
+    # Add Some Text
+    nwGUI.docEditor.replaceText("Hello World!")
+    assert nwGUI.docEditor.getText() == "Hello World!"
+    nwGUI.docEditor.replaceText("")
 
     # Type something into the document
     nwGUI.setFocus(2)
@@ -273,6 +278,7 @@ def testProjectEditor(qtbot, nwTempGUI, nwRef, nwTemp):
     nwGUI.mainConf.backupPath = nwTempGUI
 
     projEdit = GuiProjectSettings(nwGUI, nwGUI.theProject)
+    projEdit.show()
     qtbot.addWidget(projEdit)
 
     projEdit.tabMain.editName.setText("")
@@ -358,6 +364,7 @@ def testItemEditor(qtbot, nwTempGUI, nwRef, nwTemp):
     # Create new, save, open project
     nwGUI.theProject.projTree.setSeed(42)
     assert nwGUI.newProject(nwTempGUI, True)
+    assert nwGUI.openDocument("31489056e0916")
 
     itemEdit = GuiItemEditor(nwGUI, nwGUI.theProject, "31489056e0916")
     qtbot.addWidget(itemEdit)
@@ -374,7 +381,6 @@ def testItemEditor(qtbot, nwTempGUI, nwRef, nwTemp):
 
     itemEdit.editExport.setChecked(False)
     assert not itemEdit.editExport.isChecked()
-
     itemEdit._doSave()
 
     itemEdit = GuiItemEditor(nwGUI, nwGUI.theProject, "31489056e0916")
@@ -382,8 +388,15 @@ def testItemEditor(qtbot, nwTempGUI, nwRef, nwTemp):
     assert itemEdit.editName.text()          == "Just a Page"
     assert itemEdit.editStatus.currentData() == "Note"
     assert itemEdit.editLayout.currentData() == nwItemLayout.PAGE
-
     itemEdit._doClose()
+
+    # Check that the header is updated
+    nwGUI.docEditor.updateDocTitle("31489056e0916")
+    assert nwGUI.docEditor.docHeader.theTitle.text() == "Novel  ›  New Chapter  ›  Just a Page"
+    assert not nwGUI.docEditor.setCursorLine("where?")
+    assert nwGUI.docEditor.setCursorLine(2)
+    qtbot.wait(stepDelay)
+    assert nwGUI.docEditor.getCursorPosition() == 9
 
     qtbot.wait(stepDelay)
     assert nwGUI.saveProject()
@@ -395,6 +408,115 @@ def testItemEditor(qtbot, nwTempGUI, nwRef, nwTemp):
 
     nwGUI.closeMain()
     # qtbot.stopForInteraction()
+
+@pytest.mark.gui
+def testSessionLogExport(qtbot, nwTempGUI, nwRef, nwTemp):
+    nwGUI = nw.main(["--testmode","--config=%s" % nwTempGUI, "--data=%s" % nwTemp])
+    qtbot.addWidget(nwGUI)
+    nwGUI.show()
+    qtbot.waitForWindowShown(nwGUI)
+    qtbot.wait(stepDelay)
+
+    assert nwGUI.openProject(nwTempGUI)
+    qtbot.wait(stepDelay)
+
+    nwGUI.mainConf.lastPath = nwTempGUI
+    sessLog = GuiSessionLog(nwGUI, nwGUI.theProject)
+    sessLog.show()
+    qtbot.wait(stepDelay)
+
+    assert sessLog._saveData(sessLog.FMT_CSV)
+    qtbot.wait(stepDelay)
+    assert sessLog._saveData(sessLog.FMT_JSON)
+    qtbot.wait(stepDelay)
+
+    jsonStats = path.join(nwTempGUI, "sessionStats.json")
+    with open(jsonStats, mode="r", encoding="utf-8") as inFile:
+        jsonData = json.loads(inFile.read())
+
+    assert len(jsonData) == 3
+    assert jsonData[0]["length"] > 0
+    assert jsonData[0]["newWords"] == 86
+    assert jsonData[0]["novelWords"] == 59
+    assert jsonData[0]["noteWords"] == 27
+
+    # No Novel Files
+    qtbot.mouseClick(sessLog.incNovel, Qt.LeftButton)
+    qtbot.wait(stepDelay)
+    assert sessLog._saveData(sessLog.FMT_JSON)
+    qtbot.wait(stepDelay)
+
+    jsonStats = path.join(nwTempGUI, "sessionStats.json")
+    with open(jsonStats, mode="r", encoding="utf-8") as inFile:
+        jsonData = json.loads(inFile.read())
+
+    assert len(jsonData) == 2
+    assert jsonData[0]["length"] > 0
+    assert jsonData[0]["newWords"] == 27
+    assert jsonData[0]["novelWords"] == 59
+    assert jsonData[0]["noteWords"] == 27
+
+    # No Note Files
+    qtbot.mouseClick(sessLog.incNovel, Qt.LeftButton)
+    qtbot.mouseClick(sessLog.incNotes, Qt.LeftButton)
+    qtbot.wait(stepDelay)
+    assert sessLog._saveData(sessLog.FMT_JSON)
+    qtbot.wait(stepDelay)
+
+    jsonStats = path.join(nwTempGUI, "sessionStats.json")
+    with open(jsonStats, mode="r", encoding="utf-8") as inFile:
+        jsonData = json.loads(inFile.read())
+
+    assert len(jsonData) == 3
+    assert jsonData[0]["length"] > 0
+    assert jsonData[0]["newWords"] == 59
+    assert jsonData[0]["novelWords"] == 59
+    assert jsonData[0]["noteWords"] == 27
+
+    # No Negative Entries
+    qtbot.mouseClick(sessLog.incNotes, Qt.LeftButton)
+    qtbot.mouseClick(sessLog.hideNegative, Qt.LeftButton)
+    qtbot.wait(stepDelay)
+    assert sessLog._saveData(sessLog.FMT_JSON)
+    qtbot.wait(stepDelay)
+
+    jsonStats = path.join(nwTempGUI, "sessionStats.json")
+    with open(jsonStats, mode="r", encoding="utf-8") as inFile:
+        jsonData = json.loads(inFile.read())
+
+    assert len(jsonData) == 1
+
+    # Un-hide Zero Entries
+    qtbot.mouseClick(sessLog.hideNegative, Qt.LeftButton)
+    qtbot.mouseClick(sessLog.hideZeros, Qt.LeftButton)
+    qtbot.wait(stepDelay)
+    assert sessLog._saveData(sessLog.FMT_JSON)
+    qtbot.wait(stepDelay)
+
+    jsonStats = path.join(nwTempGUI, "sessionStats.json")
+    with open(jsonStats, mode="r", encoding="utf-8") as inFile:
+        jsonData = json.loads(inFile.read())
+
+    assert len(jsonData) == 4
+
+    # Group by Day
+    qtbot.mouseClick(sessLog.groupByDay, Qt.LeftButton)
+    qtbot.wait(stepDelay)
+    assert sessLog._saveData(sessLog.FMT_JSON)
+    qtbot.wait(stepDelay)
+
+    jsonStats = path.join(nwTempGUI, "sessionStats.json")
+    with open(jsonStats, mode="r", encoding="utf-8") as inFile:
+        jsonData = json.loads(inFile.read())
+
+    # Check against both 1 and 2 as this can be 2 if test was started just before midnight.
+    # A failed test should in any case produce a 4
+    assert len(jsonData) in (1, 2)
+
+    # qtbot.stopForInteraction()
+
+    sessLog._doClose()
+    nwGUI.closeMain()
 
 @pytest.mark.gui
 def testAboutBox(qtbot, nwTempGUI, nwRef, nwTemp):
@@ -607,6 +729,139 @@ def testSplitTool(qtbot, nwTempGUI, nwLipsum, nwRef, nwTemp):
     assert cmpFiles(refFile, path.join(nwRef, "gui", "5_2858dcd1057d3.nwd"))
     refFile = path.join(nwLipsum, "content", "2fca346db6561.nwd")
     assert cmpFiles(refFile, path.join(nwRef, "gui", "5_2fca346db6561.nwd"))
+
+    # qtbot.stopForInteraction()
+    nwGUI.closeMain()
+
+@pytest.mark.gui
+def testDocAction(qtbot, nwTempGUI, nwLipsum, nwRef, nwTemp):
+
+    nwGUI = nw.main(["--testmode","--config=%s" % nwTempGUI, "--data=%s" % nwTemp])
+    qtbot.addWidget(nwGUI)
+    nwGUI.show()
+    qtbot.waitForWindowShown(nwGUI)
+    qtbot.wait(stepDelay)
+
+    nwGUI.theProject.projTree.setSeed(42)
+    assert nwGUI.openProject(nwLipsum)
+    qtbot.wait(stepDelay)
+
+    # CUT        = 3
+    # COPY       = 4
+    # PASTE      = 5
+    # SEL_ALL    = 12
+    # SEL_PARA   = 13
+    # FIND       = 14
+    # REPLACE    = 15
+    # GO_NEXT    = 16
+    # GO_PREV    = 17
+    # REPL_NEXT  = 18
+
+    # Split By Chapter
+    assert nwGUI.openDocument("4c4f28287af27")
+    assert nwGUI.docEditor.setCursorPosition(30)
+
+    cleanText = nwGUI.docEditor.getText()[27:74]
+
+    # Bold
+    assert nwGUI.passDocumentAction(nwDocAction.BOLD)
+    assert nwGUI.docEditor.getText()[27:78] == "**Pellentesque** nec erat ut nulla posuere commodo."
+    qtbot.wait(stepDelay)
+    assert nwGUI.passDocumentAction(nwDocAction.BOLD)
+    assert nwGUI.docEditor.getText()[27:74] == cleanText
+    qtbot.wait(stepDelay)
+
+    # Italic
+    assert nwGUI.passDocumentAction(nwDocAction.ITALIC)
+    assert nwGUI.docEditor.getText()[27:76] == "*Pellentesque* nec erat ut nulla posuere commodo."
+    qtbot.wait(stepDelay)
+    assert nwGUI.passDocumentAction(nwDocAction.ITALIC)
+    assert nwGUI.docEditor.getText()[27:74] == cleanText
+    qtbot.wait(stepDelay)
+
+    # Bold-Italic
+    assert nwGUI.passDocumentAction(nwDocAction.BOLDITALIC)
+    assert nwGUI.docEditor.getText()[27:80] == "***Pellentesque*** nec erat ut nulla posuere commodo."
+    qtbot.wait(stepDelay)
+    assert nwGUI.passDocumentAction(nwDocAction.BOLDITALIC)
+    assert nwGUI.docEditor.getText()[27:74] == cleanText
+    qtbot.wait(stepDelay)
+
+    # Strikethrough
+    assert nwGUI.passDocumentAction(nwDocAction.STRIKE)
+    assert nwGUI.docEditor.getText()[27:78] == "~~Pellentesque~~ nec erat ut nulla posuere commodo."
+    qtbot.wait(stepDelay)
+    assert nwGUI.passDocumentAction(nwDocAction.STRIKE)
+    assert nwGUI.docEditor.getText()[27:74] == cleanText
+    qtbot.wait(stepDelay)
+
+    # Should get us back to plain
+    assert nwGUI.passDocumentAction(nwDocAction.BOLD)
+    qtbot.wait(stepDelay)
+    assert nwGUI.passDocumentAction(nwDocAction.ITALIC)
+    qtbot.wait(stepDelay)
+    assert nwGUI.passDocumentAction(nwDocAction.ITALIC)
+    qtbot.wait(stepDelay)
+    assert nwGUI.passDocumentAction(nwDocAction.BOLD)
+    assert nwGUI.docEditor.getText()[27:74] == cleanText
+    qtbot.wait(stepDelay)
+
+    # Equivalent of the above
+    assert nwGUI.passDocumentAction(nwDocAction.BOLDITALIC)
+    qtbot.wait(stepDelay)
+    assert nwGUI.passDocumentAction(nwDocAction.ITALIC)
+    qtbot.wait(stepDelay)
+    assert nwGUI.passDocumentAction(nwDocAction.BOLD)
+    assert nwGUI.docEditor.getText()[27:74] == cleanText
+    qtbot.wait(stepDelay)
+
+    # Double Quotes
+    assert nwGUI.passDocumentAction(nwDocAction.D_QUOTE)
+    assert nwGUI.docEditor.getText()[27:76] == "“Pellentesque” nec erat ut nulla posuere commodo."
+    qtbot.wait(stepDelay)
+    assert nwGUI.passDocumentAction(nwDocAction.UNDO)
+    assert nwGUI.docEditor.getText()[27:74] == cleanText
+    qtbot.wait(stepDelay)
+
+    # Single Quotes
+    assert nwGUI.passDocumentAction(nwDocAction.S_QUOTE)
+    assert nwGUI.docEditor.getText()[27:76] == "‘Pellentesque’ nec erat ut nulla posuere commodo."
+    qtbot.wait(stepDelay)
+    assert nwGUI.passDocumentAction(nwDocAction.UNDO)
+    assert nwGUI.docEditor.getText()[27:74] == cleanText
+    qtbot.wait(stepDelay)
+
+    # Block Formats
+    assert nwGUI.docEditor.setCursorPosition(30)
+    assert nwGUI.passDocumentAction(nwDocAction.BLOCK_H1)
+    assert nwGUI.docEditor.getText()[27:76] == "# Pellentesque nec erat ut nulla posuere commodo."
+    qtbot.wait(stepDelay)
+    assert nwGUI.passDocumentAction(nwDocAction.BLOCK_H2)
+    assert nwGUI.docEditor.getText()[27:77] == "## Pellentesque nec erat ut nulla posuere commodo."
+    qtbot.wait(stepDelay)
+    assert nwGUI.passDocumentAction(nwDocAction.BLOCK_H3)
+    assert nwGUI.docEditor.getText()[27:78] == "### Pellentesque nec erat ut nulla posuere commodo."
+    qtbot.wait(stepDelay)
+    assert nwGUI.passDocumentAction(nwDocAction.BLOCK_H4)
+    assert nwGUI.docEditor.getText()[27:79] == "#### Pellentesque nec erat ut nulla posuere commodo."
+    qtbot.wait(stepDelay)
+    assert nwGUI.passDocumentAction(nwDocAction.BLOCK_TXT)
+    assert nwGUI.docEditor.getText()[27:74] == cleanText
+    qtbot.wait(stepDelay)
+    assert nwGUI.passDocumentAction(nwDocAction.BLOCK_COM)
+    assert nwGUI.docEditor.getText()[27:76] == "% Pellentesque nec erat ut nulla posuere commodo."
+    qtbot.wait(stepDelay)
+    assert nwGUI.passDocumentAction(nwDocAction.BLOCK_TXT)
+    assert nwGUI.docEditor.getText()[27:74] == cleanText
+    qtbot.wait(stepDelay)
+
+    # Undo/Redo
+    assert nwGUI.passDocumentAction(nwDocAction.UNDO)
+    assert nwGUI.docEditor.getText()[27:76] == "% Pellentesque nec erat ut nulla posuere commodo."
+    qtbot.wait(stepDelay)
+    assert nwGUI.passDocumentAction(nwDocAction.REDO)
+    assert nwGUI.docEditor.getText()[27:74] == cleanText
+    qtbot.wait(stepDelay)
 
     # qtbot.stopForInteraction()
     nwGUI.closeMain()

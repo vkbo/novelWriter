@@ -45,11 +45,12 @@ from PyQt5.QtWidgets import (
     QFrame
 )
 
-from nw.core import NWDoc
+from nw.core import NWDoc, NWSpellSimple, countWords
 from nw.gui.dochighlight import GuiDocHighlighter
-from nw.core import NWSpellSimple, countWords
-from nw.constants import nwUnicode, nwDocAction, nwItemClass
 from nw.common import transferCase
+from nw.constants import (
+    nwAlert, nwUnicode, nwDocAction, nwDocInsert, nwInsertSymbols
+)
 
 logger = logging.getLogger(__name__)
 
@@ -76,6 +77,7 @@ class GuiDocEditor(QTextEdit):
         self.paraCount = 0
         self.lastEdit  = 0
         self.bigDoc    = False
+        self.doReplace = False
         self.nonWord   = "\"'"
 
         # Typography
@@ -86,7 +88,6 @@ class GuiDocEditor(QTextEdit):
 
         # Core Elements
         self.qDocument = self.document()
-        self.qDocument.setDocumentMargin(self.mainConf.getTextMargin())
         self.qDocument.contentsChange.connect(self._docChange)
 
         # Document Title
@@ -101,8 +102,7 @@ class GuiDocEditor(QTextEdit):
         self.setContextMenuPolicy(Qt.CustomContextMenu)
         self.customContextMenuRequested.connect(self._openContextMenu)
 
-        # Editor State
-        self.hasSelection = False
+        # Editor Settings
         self.setMinimumWidth(self.mainConf.pxInt(300))
         self.setAutoFillBackground(True)
         self.setAcceptRichText(False)
@@ -157,8 +157,7 @@ class GuiDocEditor(QTextEdit):
         self.paraCount = 0
         self.lastEdit  = 0
         self.bigDoc    = False
-
-        self.hasSelection = False
+        self.doReplace = False
 
         self.setDocumentChanged(False)
         self.docHeader.setTitleFromHandle(self.theHandle)
@@ -261,7 +260,9 @@ class GuiDocEditor(QTextEdit):
             self.hLight.spellCheck = False
 
         bfTime = time()
+        self._allowAutoReplace(False)
         self.setPlainText(theDoc)
+        self._allowAutoReplace(True)
         afTime = time()
         logger.debug("Document highlighted in %.3f milliseconds" % (1000*(afTime-bfTime)))
 
@@ -356,7 +357,11 @@ class GuiDocEditor(QTextEdit):
         else:
             rH = 0
 
+<<<<<<< HEAD
         self.setViewportMargins(tM, max(cM, tH, rH), tM, max(cM, fH))
+=======
+        self.setViewportMargins(tM, max(cM, tH, rH), tM, cM)
+>>>>>>> master
 
         return
 
@@ -392,8 +397,8 @@ class GuiDocEditor(QTextEdit):
         """
         if self.mainConf.verQtValue >= 50900:
             theText = self.qDocument.toRawText()
-            theText = theText.replace("\u2028", "\n") # Line separators
-            theText = theText.replace("\u2029", "\n") # Paragraph separators
+            theText = theText.replace(nwUnicode.U_LSEP, "\n") # Line separators
+            theText = theText.replace(nwUnicode.U_PSEP, "\n") # Paragraph separators
         else:
             theText = self.toPlainText()
         return theText
@@ -500,6 +505,7 @@ class GuiDocEditor(QTextEdit):
         if not self.theParent.hasProject:
             logger.error("No project open")
             return False
+        self._allowAutoReplace(False)
         if theAction == nwDocAction.UNDO:
             self.undo()
         elif theAction == nwDocAction.REDO:
@@ -548,9 +554,15 @@ class GuiDocEditor(QTextEdit):
             self._formatBlock(nwDocAction.BLOCK_COM)
         elif theAction == nwDocAction.BLOCK_TXT:
             self._formatBlock(nwDocAction.BLOCK_TXT)
+        elif theAction == nwDocAction.REPL_SNG:
+            self._replaceQuotes("'", self.typSQOpen, self.typSQClose)
+        elif theAction == nwDocAction.REPL_DBL:
+            self._replaceQuotes("\"", self.typDQOpen, self.typDQClose)
         else:
             logger.debug("Unknown or unsupported document action %s" % str(theAction))
+            self._allowAutoReplace(True)
             return False
+        self._allowAutoReplace(True)
         return True
 
     def isEmpty(self):
@@ -574,6 +586,21 @@ class GuiDocEditor(QTextEdit):
             ))
         return
 
+    def insertText(self, theInsert):
+        """Insert a specific type of text at the cursor position.
+        """
+        if isinstance(theInsert, str):
+            theText = theInsert
+        elif theInsert in nwInsertSymbols.SYMBOLS:
+            theText = nwInsertSymbols.SYMBOLS[theInsert]
+        else:
+            return False
+        theCursor = self.textCursor()
+        theCursor.beginEditBlock()
+        theCursor.insertText(theText)
+        theCursor.endEditBlock()
+        return True
+
     def closeSearch(self):
         """Close the search box.
         """
@@ -586,34 +613,23 @@ class GuiDocEditor(QTextEdit):
 
     def keyPressEvent(self, keyEvent):
         """Intercept key press events.
-        We need to intercept key presses briefly to record the state of
-        selection. This is in order to know whether we had a selection
-        prior to triggering the _docChange slot, as we do not want to
-        trigger autoreplace on selections. Autoreplace on selections
-        messes with undo/redo history.
-        We also need to intercept the Shift key modifier for certain key
-        combinations that modifies standard keys like enter and space.
-        However, we don't want to spend a lot of time in this function
-        as it is triggered on every keypress when typing.
+        We need to intercept a few key sequences:
+          * The return key redirects here even if the search box has
+            focus. Since we need the return key to continue search, we
+            block any further interaction here while it's in focus.
+          * The undo sequence bypasses the doAction pathway from the
+            menu, so we redirect it back from here.
+          * The default redo sequence is Ctrl+Shift+Z, which we don't
+            use, so we block it.
         """
-        self.hasSelection = self.textCursor().hasSelection()
         if self.docSearch.searchBox.hasFocus():
-            # Block the event when the focus is on the search bar.
             return
-
-        if keyEvent.modifiers() == Qt.ShiftModifier:
-            theKey = keyEvent.key()
-            if theKey == Qt.Key_Return:
-                self._insertHardBreak()
-            elif theKey == Qt.Key_Enter:
-                self._insertHardBreak()
-            elif theKey == Qt.Key_Space:
-                self._insertNonBreakingSpace()
-            else:
-                QTextEdit.keyPressEvent(self, keyEvent)
+        elif keyEvent == QKeySequence.Redo:
+            return
+        elif keyEvent == QKeySequence.Undo:
+            self.docAction(nwDocAction.UNDO)
         else:
             QTextEdit.keyPressEvent(self, keyEvent)
-
         return
 
     def mouseReleaseEvent(self, mEvent):
@@ -649,7 +665,7 @@ class GuiDocEditor(QTextEdit):
             self.setDocumentChanged(True)
         if not self.wcTimer.isActive():
             self.wcTimer.start()
-        if self.mainConf.doReplace and not self.hasSelection:
+        if self.doReplace and charsAdded == 1:
             self._docAutoReplace(self.qDocument.findBlock(thePos))
         return
 
@@ -800,24 +816,6 @@ class GuiDocEditor(QTextEdit):
 
         return True
 
-    def _insertHardBreak(self):
-        """Inserts a hard line break at the cursor position.
-        """
-        theCursor = self.textCursor()
-        theCursor.beginEditBlock()
-        theCursor.insertText("  \n")
-        theCursor.endEditBlock()
-        return
-
-    def _insertNonBreakingSpace(self):
-        """Inserts a non-breaking space at the cursor position.
-        """
-        theCursor = self.textCursor()
-        theCursor.beginEditBlock()
-        theCursor.insertText(nwUnicode.U_NBSP)
-        theCursor.endEditBlock()
-        return
-
     def _openSpellContext(self):
         """Opens the spell check context menu at the current point of
         the cursor.
@@ -876,6 +874,58 @@ class GuiDocEditor(QTextEdit):
         elif self.mainConf.doReplaceDots and theThree == "...":
             theCursor.movePosition(QTextCursor.Left, QTextCursor.KeepAnchor, 3)
             theCursor.insertText(nwUnicode.U_HELLIP)
+
+        return
+
+    def _replaceQuotes(self, sQuote, oQuote, cQuote):
+        """Replace all straight quotes in the selected text.
+        """
+        theCursor = self.textCursor()
+        if theCursor.hasSelection():
+            posS = theCursor.selectionStart()
+            posE = theCursor.selectionEnd()
+            closeCheck = (
+                " ", "\n", nwUnicode.U_LSEP, nwUnicode.U_PSEP
+            )
+
+            self._allowAutoReplace(False)
+            for posC in range(posS, posE+1):
+                theCursor.setPosition(posC)
+                theCursor.movePosition(QTextCursor.Left, QTextCursor.KeepAnchor, 2)
+                selText = theCursor.selectedText()
+
+                nS = len(selText)
+                if nS == 2:
+                    pC = selText[0]
+                    cC = selText[1]
+                elif nS == 1:
+                    pC = " "
+                    cC = selText[0]
+                else:
+                    continue
+
+                if cC != sQuote:
+                    continue
+
+                theCursor.clearSelection()
+                theCursor.setPosition(posC)
+                if pC in closeCheck:
+                    theCursor.beginEditBlock()
+                    theCursor.movePosition(QTextCursor.Left, QTextCursor.KeepAnchor, 1)
+                    theCursor.insertText(oQuote)
+                    theCursor.endEditBlock()
+                else:
+                    theCursor.beginEditBlock()
+                    theCursor.movePosition(QTextCursor.Left, QTextCursor.KeepAnchor, 1)
+                    theCursor.insertText(cQuote)
+                    theCursor.endEditBlock()
+
+            self._allowAutoReplace(True)
+
+        else:
+            self.theParent.makeAlert(
+                "Please selection some text before calling replace quotes.", nwAlert.ERROR
+            )
 
         return
 
@@ -1196,10 +1246,10 @@ class GuiDocEditor(QTextEdit):
             self._beginSearch()
             return
 
+        theCursor = self.textCursor()
         if not theCursor.hasSelection():
             return
 
-        theCursor = self.textCursor()
         searchFor = self.docSearch.getSearchText()
         replWith  = self.docSearch.getReplaceText()
         selText   = theCursor.selectedText()
@@ -1240,6 +1290,15 @@ class GuiDocEditor(QTextEdit):
 
         self.hLight.setDict(self.theDict)
 
+        return
+
+    def _allowAutoReplace(self, theState):
+        """used to enable/disable the auto-replace feature temporarily.
+        """
+        if theState:
+            self.doReplace = self.mainConf.doReplace
+        else:
+            self.doReplace = False
         return
 
 # END Class GuiDocEditor
@@ -1770,7 +1829,7 @@ class GuiDocEditHeader(QWidget):
         """Capture a click on the title and ensure that the item is
         selected in the project tree.
         """
-        self.theParent.treeView.setSelectedHandle(self.theHandle)
+        self.theParent.treeView.setSelectedHandle(self.theHandle, doScroll=True)
         return
 
 # END Class GuiDocEditHeader

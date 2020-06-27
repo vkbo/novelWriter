@@ -1,20 +1,65 @@
 # novelWriter ChangeLog
 
-## Version 0.9rc1 [2020-xx-xx]
+## Version 0.10.0 RC1 [2020-xx-xx]
+
+Note: If the project file is opened by this version of novelWriter, the project file can no longer be read by an earlier version due to the change of how autoReplace settings are stored.
+
+**User Interface**
+
+* The Session Log dialog has been redesigned and now has a few more filter options. The filters now also update the filtered time count properly. The dialog now shows a histogram of words added in a given session, or optionally, on a given date. The filtered log data can also be saved as a JSON or CSV file, the latter suitable for importing to a spread sheet. The new dialog tool required a new session log file format, so the new session log has been given a new file name. The old log file will be left untouched in the project's `meta` folder. For projects created prior to this change, the log will record a word count offset that will be subtracted from the first entry such that the first word diff will always be 0 instead of the total word count of the entire project. Such a large word diff would otherwise saturate the histogram. PR #339.
+
+**Other Changes**
+
+* The way the auto-replace settings are stored in the project XML file has been changed in order to be more consistent with other features, and to avoid a potential pitfall in defining the tag name from a user-entered string. The project class retains its ability to read the old format of the file, and will save in the new format. PR #344.
+
+
+## Version 0.9.2 [2020-06-26]
+
+**Bugfixes**
+
+* The project tree word counts were getting mixed up when a file was moved to the trash folder, or permanently deleted. This has now been fixed, and moving a file should give a zero net change of project word count. Permanently deleting it will result in a negative net change. Issue #333, PR #335.
+
+**User Interface**
+
+* There is a feature in the project tree class that ensures that the tree item being acted on is visible in the tree. It is called when you for instance click the header of an open document. It was also activated when opening a document from the tree view with either double-click by mouse, or by using the Enter key. This meant that the tree view would often move, which made it hard to mouse click on items after eachother since you ended up chasing a moving target. This feature is now disabled for document open. In addition, the scroll into view feature has been added to the search/replace call to move into the next document when reaching the end of the current document. This was requested in Issue #332. PR #334.
+* The Build Novel Project tool will now display the build time of the document in the preview window in order for the user to know if it is potentially out of date. The timestamp is given, as well as a fuzzy time string, indicating the age of the content. Issue #331, PRs #336 and #337.
+
+**Documentation**
+
+* The documentation has been updated to clarify the correct formatting for italic, bold and strikethrough formatting tags. Issue #220, PR #338.
+
+
+## Version 0.9.1 [2020-06-21]
+
+**Bugfixes**
+
+* Fixed a serious bug in the replace part of the search/replace function that caused novelWriter to crash when the replace text function was called. Issue #327, PR #328.
+
+
+## Version 0.9 [2020-06-21]
 
 **Core Functionality**
 
-* Underline text formatting has been removed. It is not standard HTML5, not Markdown, and was previously implemented using the double underscore notation that in standard Markdown is renderred as bold text. Instead, novelWriter now renders a single `*` or `-` wrapping a piece of text *within* a paragraphs as italicised text, and a double `**` or `__` as bold text. The keyboard shortcuts and automatic features **only** support the `*` notation. A triple set of `***` are treated as both bold and italicised. PR #310.
+* Underline text formatting has been removed. It is not standard HTML5, nor Markdown, and was previously implemented using the double underscore notation that in standard Markdown is renderred as bold text. Instead, novelWriter now renders a single `*` or `_` wrapping a piece of text *within* a paragraphs as italicised text, and a double `**` or `__` as bold text. The keyboard shortcuts and automatic features *only* support the `*` notation. A triple set of `***` are treated as both bold and italicised. PR #310.
 * Strikethrough formatting has been added back into novelWriter using the standard Markdown `~~` wrapping. PR #310.
+* Added support for thin spaces and non-breaking thin spaces. PR #319.
+* The `Ctrl+Z` key sequence (undo) would not go through the wrapper function for document action for the document editor, but act directly on the document. This caused some of the logic preventing conflict between auto-replace and undo to be bypassed. This has now been resolved by blocking the keypress itself and let the menu action handle the key sequence. Issue #320, PR #321.
+* The dialog window size and column width setting for the auto-replace feature in Project Settings are now preserved between closing and opening the dialog. Issue #322, PR #324.
 
 **User Interface**
 
 * The Open Project dialog will now ask before removing an entry from the recent projects list. PR #309.
-* The text emphasis functions, either selected from the menu or via keyboard shortcuts, will now try to respond to the command in a more meaningful way. That is, the text editor will try to toggle the bold or italics features independently of eachother on the selected text. A feature to apply both at the same time has also been added. PR #310.
+* The text emphasis functions, either selected from the menu or via keyboard shortcuts, will now try to respond to the command in a more meaningful way. That is, the text editor will try to toggle the bold or italics features independently of eachother on the selected text. A menu entry to apply both at the same time has also been added. PR #310.
+* The document editor search tool has been completely rewritten. It now appears as a search box at the top of the document, and has a number of toggle switches added to it. You can modify the search tool to be case sensitive, select only whole words, use regular expression search strings, loop when reaching the end, and continue the search in the next file in the project tree. For the replace feature, you can also select to have the feature try to preserve the case of the replaced word. Issues #84 and #305, PR #314.
+* A dialog has been added for selecting quotation mark style. These are now used in the Preferences dialog instead of a plain text edit box. PR #317.
+* Added an insert menu for inserting special symbols like dashes, ellipsis, thin and non-breaking spaces, and hard line breaks. PR #319.
+* A menu option to replace straight single and double quotes in a selected piece of text has been added. This uses the same logic as the auto-replace feature. Issue #312, PR #321.
+* When pressing `Ctrl+R` while the document editor has focus, the edited document will be viewed or refreshed in the document viewer. Previously, the selected document in the project tree had priority. The document is also now saved before loaded in the viewer, ensuring that it shows the very latest changes. Issue #143, PR #323.
+* The selection in the project tree should not scroll into view when just opening the document. This can be quite annoying if loading several documents in sequence by double-clicking as the target may move just when you're about to click. PR #325.
 
 **Other Changes**
 
-* Added the file's class and layout to the meta data string added as the first line of saved document files. This meta data is only used to restore the file meta information into the project if it was lost from the project file. It is also useful information when reading the file in external tools. PR #308.
+* Added the file's class and layout to the meta data string of saved document files. This meta data is only used to restore the file meta information into the project if it was lost from the project file. It is also useful information when reading the file in external tools. PR #308.
 
 
 ## Version 0.8 [2020-06-14]
@@ -32,7 +77,7 @@
 * Icons have been added to the Title and Document columns in the Outline. The titles get a new icon indicating the header level, while the documents get the already existing document icon. PR #302.
 * Added a context menu to the project tree for easier access to some of the most use actions on the tree. PR #282.
 * Improved the support for High DPI screens. Margins and box sizes that were hardcoded should now scale. User settings should also scale back and forth when switching between scale factors. Issue #280, PR #285.
-* The total edit time of a project is no displayed on the Details tab of the Project Settings dialog. PR #290.
+* The total edit time of a project is now displayed on the Details tab of the Project Settings dialog. PR #290.
 * The title bar in the document editor now has a full screen button and a close button, and in the document viewer a reload button and a close button. The full screen button toggles the distraction free mode, and the reload button regenerates the document being viewed to update any changes that may have been made to it. PRs #293, #300, #303 and #306.
 * The References panel below the document viewer has been redesigned. It now sits in a resizeable panel below the document, and its controls sit in a footer bar in the document itself. The functionality of the feature is otherwise unchanged, but the buttons have received new icons. PRs #304 and #306.
 * The option to render comments and synopsis in the document view panel has been added to Preferences. The toggle option for comments that was previously in the menu has been removed. PR #311.

@@ -45,14 +45,19 @@ class OptionState():
 
         self.theState = {}
         self.validMap = {
-            "GuiSession": {
+            "GuiSessionLog": {
+                "winWidth",
+                "winHeight",
                 "widthCol0",
                 "widthCol1",
                 "widthCol2",
                 "sortCol",
                 "sortOrder",
+                "incNovel",
+                "incNotes",
                 "hideZeros",
                 "hideNegative",
+                "groupByDay",
             },
             "GuiDocSplit": {
                 "spLevel",
@@ -78,6 +83,11 @@ class OptionState():
                 "columnWidth",
                 "columnHidden",
             },
+            "GuiProjectSettings": {
+                "winWidth",
+                "winHeight",
+                "replaceColW",
+            }
         }
 
         return

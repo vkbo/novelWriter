@@ -31,8 +31,9 @@ import nw
 
 from os import path
 from time import time
+from datetime import datetime
 
-from PyQt5.QtCore import Qt, QByteArray
+from PyQt5.QtCore import Qt, QByteArray, QTimer
 from PyQt5.QtPrintSupport import QPrinter, QPrintPreviewDialog
 from PyQt5.QtGui import (
     QPalette, QColor, QTextDocumentWriter, QFont
@@ -43,6 +44,7 @@ from PyQt5.QtWidgets import (
     QFileDialog, QFontDialog, QSpinBox
 )
 
+from nw.common import fuzzyTime
 from nw.gui.custom import QSwitch
 from nw.core import ToHtml
 from nw.constants import (
@@ -76,6 +78,7 @@ class GuiBuildNovel(QDialog):
         self.htmlText  = [] # List of html document
         self.htmlStyle = [] # List of html styles
         self.nwdText   = [] # List of markdown documents
+        self.buildTime = 0  # The timestamp of the last build
 
         self.setWindowTitle("Build Novel Project")
         self.setMinimumWidth(self.mainConf.pxInt(900))
@@ -411,11 +414,12 @@ class GuiBuildNovel(QDialog):
                 self.docView.clearStyleSheet()
             else:
                 self.docView.setStyleSheet(self.htmlStyle)
-            self.docView.setContent(self.htmlText)
+            self.docView.setContent(self.htmlText, self.buildTime)
         else:
             self.htmlText = []
             self.htmlStyle = []
             self.nwdText = []
+            self.buildTime = 0
 
         return
 
@@ -509,6 +513,7 @@ class GuiBuildNovel(QDialog):
         tEnd = time()
         logger.debug("Built project in %.3f ms" % (1000*(tEnd-tStart)))
         self.htmlStyle = makeHtml.getStyleSheet()
+        self.buildTime = tEnd
 
         # Load the preview document with the html data
         self.docView.setTextFont(textFont, textSize)
@@ -517,7 +522,7 @@ class GuiBuildNovel(QDialog):
             self.docView.clearStyleSheet()
         else:
             self.docView.setStyleSheet(self.htmlStyle)
-        self.docView.setContent(self.htmlText)
+        self.docView.setContent(self.htmlText, self.buildTime)
 
         self._saveCache()
 
@@ -563,9 +568,6 @@ class GuiBuildNovel(QDialog):
     def _saveDocument(self, theFormat):
         """Save the document to various formats.
         """
-
-        # FMT_PDF
-
         byteFmt = QByteArray()
         fileExt = ""
         textFmt = ""
@@ -694,6 +696,7 @@ class GuiBuildNovel(QDialog):
                                 "workingTitle" : self.theProject.projName,
                                 "novelTitle"   : self.theProject.bookTitle,
                                 "authors"      : self.theProject.bookAuthors,
+                                "buildTime"    : self.buildTime,
                             }
                         }
 
@@ -808,6 +811,8 @@ class GuiBuildNovel(QDialog):
             if "nwdText" in theData.keys():
                 self.nwdText = theData["nwdText"]
                 dataCount += 1
+            if "buildTime" in theData.keys():
+                self.buildTime = theData["buildTime"]
 
         return dataCount == 3
 
@@ -828,6 +833,7 @@ class GuiBuildNovel(QDialog):
                     "htmlText"  : self.htmlText,
                     "htmlStyle" : self.htmlStyle,
                     "nwdText"   : self.nwdText,
+                    "buildTime" : self.buildTime,
                 }, indent=nIndent))
         except Exception as e:
             logger.error("Failed to save build cache")
@@ -871,8 +877,8 @@ class GuiBuildNovel(QDialog):
             "section"    : self.fmtSection.text().strip(),
         })
 
-        winWidth    = self.mainConf.pxInt(self.width())
-        winHeight   = self.mainConf.pxInt(self.height())
+        winWidth    = self.mainConf.rpxInt(self.width())
+        winHeight   = self.mainConf.rpxInt(self.height())
         justifyText = self.justifyText.isChecked()
         noStyling   = self.noStyling.isChecked()
         textFont    = self.textFont.text()
@@ -924,12 +930,14 @@ class GuiBuildNovelDocView(QTextBrowser):
         self.mainConf   = nw.CONFIG
         self.theProject = theProject
         self.theParent  = theParent
+        self.theTheme   = theParent.theTheme
+        self.buildTime  = 0
 
         self.setMinimumWidth(40*self.theParent.theTheme.textNWidth)
         self.setOpenExternalLinks(False)
 
         self.qDocument = self.document()
-        self.qDocument.setDocumentMargin(self.mainConf.textMargin)
+        self.qDocument.setDocumentMargin(self.mainConf.getTextMargin())
         self.setPlaceholderText(
             "This area will show the content of the document to be "
             "exported or printed. Press the \"Build Novel Project\" "
@@ -946,12 +954,35 @@ class GuiBuildNovelDocView(QTextBrowser):
 
         docPalette = self.palette()
         docPalette.setColor(QPalette.Base, QColor(255, 255, 255))
-        docPalette.setColor(QPalette.Text, QColor(  0,   0,   0))
+        docPalette.setColor(QPalette.Text, QColor(0, 0, 0))
         self.setPalette(docPalette)
 
+        lblPalette = self.palette()
+        lblPalette.setColor(QPalette.Background, lblPalette.toolTipBase().color())
+        lblPalette.setColor(QPalette.Foreground, lblPalette.toolTipText().color())
+
+        lblFont = self.font()
+        lblFont.setPointSizeF(0.9*self.theTheme.fontPointSize)
+
+        fPx = int(1.1*self.theTheme.fontPixelSize)
+        mPx = self.mainConf.pxInt(4)
+
+        self.theTitle = QLabel("<b>Build Time:</b> Unknown", self)
+        self.theTitle.setIndent(0)
+        self.theTitle.setAutoFillBackground(True)
+        self.theTitle.setAlignment(Qt.AlignCenter)
+        self.theTitle.setFixedHeight(fPx)
+        self.theTitle.setPalette(lblPalette)
+        self.theTitle.setFont(lblFont)
+
+        self._updateDocMargins()
         self.setStyleSheet()
 
-        self.show()
+        # Age Timer
+        self.ageTimer = QTimer()
+        self.ageTimer.setInterval(10000)
+        self.ageTimer.timeout.connect(self._updateBuildAge)
+        self.ageTimer.start()
 
         logger.debug("GuiBuildNovelDocView initialisation complete")
 
@@ -977,15 +1008,20 @@ class GuiBuildNovelDocView(QTextBrowser):
         self.setFont(theFont)
         return
 
-    def setContent(self, theText):
+    def setContent(self, theText, timeStamp):
         """Set the content, either from text or list of text.
         """
         if isinstance(theText, list):
             theText = "".join(theText)
+
+        self.buildTime = timeStamp
+
         theText = theText.replace("&emsp;", "&nbsp;"*4)
         theText = theText.replace("<del>", "<span style='text-decoration: line-through;'>")
         theText = theText.replace("</del>", "</span>")
         self.setHtml(theText)
+        self._updateBuildAge()
+
         return
 
     def setStyleSheet(self, theStyles=[]):
@@ -1005,6 +1041,53 @@ class GuiBuildNovelDocView(QTextBrowser):
         """Clears the document stylesheet.
         """
         self.qDocument.setDefaultStyleSheet("")
+        return
+
+    ##
+    #  Events
+    ##
+
+    def resizeEvent(self, theEvent):
+        """Make sure the document title is the same width as the window.
+        """
+        QTextBrowser.resizeEvent(self, theEvent)
+        self._updateDocMargins()
+        return
+
+    ##
+    #  Internal Functions
+    ##
+
+    def _updateBuildAge(self):
+        """Update the build time and the fuzzy age.
+        """
+        if self.buildTime > 0:
+            strBuildTime = "%s (%s)" % (
+                datetime.fromtimestamp(self.buildTime).strftime("%x %X"),
+                fuzzyTime(time() - self.buildTime)
+            )
+        else:
+            strBuildTime = "Unknown"
+        self.theTitle.setText("<b>Build Time:</b> %s" % strBuildTime)
+
+
+    def _updateDocMargins(self):
+        """Automatically adjust the header to fill the top of the
+        document within the viewport.
+        """
+        vBar = self.verticalScrollBar()
+        if vBar.isVisible():
+            sW = vBar.width()
+        else:
+            sW = 0
+
+        tB = self.frameWidth()
+        tW = self.width() - 2*tB - sW
+        tH = self.theTitle.height()
+
+        self.theTitle.setGeometry(tB, tB, tW, tH)
+        self.setViewportMargins(0, tH, 0, 0)
+
         return
 
 # END Class GuiBuildNovelDocView

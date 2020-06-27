@@ -13,10 +13,12 @@ In addition, the editor supports automatic formatting of “quotes”, both doub
 
 If you have the need for it, you can also add text that can be automatically replaced by other text when you generate a preview or export the project. Now, let’s auto-replace this A with <A>, and this C with <C>.  While <E> is just <E>. Press Ctrl+R to see what this looks like in the view pane.
 
-The editor also supports non breaking spaces, and the spell checker accepts long dashes—like this—as valid word separators.
+The editor also supports non breaking spaces, and the spell checker accepts long dashes—like this—as valid word separators. Regular dashes are also supported – and can be automatically inserted when typing two hyphens.
+
+Thin spaces and thin non-breaking spaces are also supported from the Insert menu, and can be used to separate numbers from their units, like: 25 kg.
 
 #### Some Section Here
 
 If you need to split a scene file up into further pieces, you can do so with the level four heading, like above. This is referred to as a section.
 
-Both scene and section titles can be left out of the final exported document. The formatting of titles can be selected from the export dialog.
+Both scene and section titles can be left out of the final exported document. The formatting of titles can be selected from the Build Novel Project dialog. You can also have them replaced with scene separators like “* * *”.

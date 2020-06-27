@@ -43,7 +43,7 @@ from nw.gui import (
     GuiBuildNovel, GuiDocEditor, GuiDocMerge, GuiDocSplit, GuiDocViewDetails,
     GuiDocViewer, GuiItemDetails, GuiItemEditor, GuiMainMenu, GuiMainStatus,
     GuiOutline, GuiOutlineDetails, GuiPreferences, GuiProjectLoad, GuiTheme,
-    GuiProjectSettings, GuiProjectTree, GuiSessionLogView
+    GuiProjectSettings, GuiProjectTree, GuiSessionLog
 )
 from nw.core import NWProject, NWDoc, NWIndex
 from nw.constants import nwFiles, nwItemType, nwAlert
@@ -419,7 +419,7 @@ class GuiMain(QMainWindow):
 
         # Restore previously open documents, if any
         if self.theProject.lastEdited is not None:
-            self.openDocument(self.theProject.lastEdited)
+            self.openDocument(self.theProject.lastEdited, doScroll=True)
         if self.theProject.lastViewed is not None:
             self.viewDocument(self.theProject.lastViewed)
 
@@ -463,7 +463,7 @@ class GuiMain(QMainWindow):
             self.docEditor.clearEditor()
         return True
 
-    def openDocument(self, tHandle, tLine=None, changeFocus=True):
+    def openDocument(self, tHandle, tLine=None, changeFocus=True, doScroll=False):
         """Open a specific document, optionally at a given line.
         """
         if self.hasProject:
@@ -473,7 +473,7 @@ class GuiMain(QMainWindow):
                 if changeFocus:
                     self.docEditor.setFocus()
                 self.theProject.setLastEdited(tHandle)
-                self.treeView.setSelectedHandle(tHandle)
+                self.treeView.setSelectedHandle(tHandle, doScroll=doScroll)
             else:
                 return False
         return True
@@ -501,10 +501,10 @@ class GuiMain(QMainWindow):
                     break
 
             if nHandle is not None:
-                self.openDocument(nHandle, tLine=0)
+                self.openDocument(nHandle, tLine=0, doScroll=True)
                 return True
             elif wrapAround:
-                self.openDocument(fHandle, tLine=0)
+                self.openDocument(fHandle, tLine=0, doScroll=True)
                 return False
 
         return False
@@ -520,20 +520,30 @@ class GuiMain(QMainWindow):
         """Load a document for viewing in the view panel.
         """
         if tHandle is None:
-            tHandle = self.treeView.getSelectedHandle()
-        if tHandle is None:
-            logger.debug("No document selected, trying editor document")
-            tHandle = self.docEditor.theHandle
-        if tHandle is None:
-            logger.debug("No document selected, trying last viewed")
-            tHandle = self.theProject.lastViewed
-        if tHandle is None:
-            logger.debug("No document selected, giving up")
-            return False
+            logger.debug("Viewing document, but no handle provided")
+
+            if self.docEditor.hasFocus():
+                logger.verbose("Trying editor document")
+                tHandle = self.docEditor.theHandle
+
+            if tHandle is not None:
+                self.saveDocument()
+            else:
+                logger.verbose("Trying selected document")
+                tHandle = self.treeView.getSelectedHandle()
+
+            if tHandle is None:
+                logger.verbose("Trying last viewed document")
+                tHandle = self.theProject.lastViewed
+
+            if tHandle is None:
+                logger.verbose("No document to view, giving up")
+                return False
 
         # Make sure main tab is in Editor view
         self.tabWidget.setCurrentWidget(self.splitDocs)
 
+        logger.debug("Viewing document with handle %s" % tHandle)
         if self.docViewer.loadText(tHandle):
             if not self.splitView.isVisible():
                 bPos = self.splitMain.sizes()
@@ -648,7 +658,7 @@ class GuiMain(QMainWindow):
         nwItem = self.theProject.projTree[tHandle]
         if nwItem.itemType == nwItemType.FILE:
             logger.verbose("Requested item %s is a file" % tHandle)
-            self.openDocument(tHandle)
+            self.openDocument(tHandle, doScroll=False)
         else:
             logger.verbose("Requested item %s is not a file" % tHandle)
 
@@ -802,7 +812,7 @@ class GuiMain(QMainWindow):
         """Open the session log dialog.
         """
         if self.hasProject:
-            dlgTLine = GuiSessionLogView(self, self.theProject)
+            dlgTLine = GuiSessionLog(self, self.theProject)
             dlgTLine.exec_()
         return True
 
@@ -968,12 +978,15 @@ class GuiMain(QMainWindow):
         """Connect to the main window all menu actions that need to be
         available also when the main menu is hidden.
         """
+        # Project
         self.addAction(self.mainMenu.aSaveProject)
         self.addAction(self.mainMenu.aExitNW)
+
+        # Document
         self.addAction(self.mainMenu.aSaveDoc)
         self.addAction(self.mainMenu.aFileDetails)
-        self.addAction(self.mainMenu.aZenMode)
-        self.addAction(self.mainMenu.aFullScreen)
+
+        # Edit
         self.addAction(self.mainMenu.aEditUndo)
         self.addAction(self.mainMenu.aEditRedo)
         self.addAction(self.mainMenu.aEditCut)
@@ -981,6 +994,17 @@ class GuiMain(QMainWindow):
         self.addAction(self.mainMenu.aEditPaste)
         self.addAction(self.mainMenu.aSelectAll)
         self.addAction(self.mainMenu.aSelectPar)
+
+        # Insert
+        self.addAction(self.mainMenu.aInsENDash)
+        self.addAction(self.mainMenu.aInsEMDash)
+        self.addAction(self.mainMenu.aInsEllipsis)
+        self.addAction(self.mainMenu.aInsHardBreak)
+        self.addAction(self.mainMenu.aInsNBSpace)
+        self.addAction(self.mainMenu.aInsThinSpace)
+        self.addAction(self.mainMenu.aInsThinNBSpace)
+
+        # Format
         self.addAction(self.mainMenu.aFmtItalic)
         self.addAction(self.mainMenu.aFmtBold)
         self.addAction(self.mainMenu.aFmtBoldIt)
@@ -992,10 +1016,19 @@ class GuiMain(QMainWindow):
         self.addAction(self.mainMenu.aFmtHead4)
         self.addAction(self.mainMenu.aFmtComment)
         self.addAction(self.mainMenu.aFmtNoFormat)
+
+        # View
+        self.addAction(self.mainMenu.aZenMode)
+        self.addAction(self.mainMenu.aFullScreen)
+
+        # Tools
         self.addAction(self.mainMenu.aSpellCheck)
         self.addAction(self.mainMenu.aReRunSpell)
         self.addAction(self.mainMenu.aPreferences)
+
+        # Help
         self.addAction(self.mainMenu.aHelp)
+
         return True
 
     def _setWindowTitle(self, projName=None):
@@ -1070,7 +1103,7 @@ class GuiMain(QMainWindow):
         if nwItem is not None:
             if nwItem.itemType == nwItemType.FILE:
                 logger.verbose("Requested item %s is a file" % tHandle)
-                self.openDocument(tHandle, changeFocus=False)
+                self.openDocument(tHandle, changeFocus=False, doScroll=False)
             else:
                 logger.verbose("Requested item %s is a folder" % tHandle)
         return
@@ -1086,7 +1119,7 @@ class GuiMain(QMainWindow):
         if nwItem is not None:
             if nwItem.itemType == nwItemType.FILE:
                 logger.verbose("Requested item %s is a file" % tHandle)
-                self.openDocument(tHandle, changeFocus=False)
+                self.openDocument(tHandle, changeFocus=False, doScroll=False)
             else:
                 logger.verbose("Requested item %s is a folder" % tHandle)
         return

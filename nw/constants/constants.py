@@ -25,12 +25,13 @@
  along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
 
-from nw.constants.enum import nwItemClass, nwItemLayout, nwOutline
+from nw.constants.enum import nwItemClass, nwItemLayout, nwOutline, nwDocInsert
 
 class nwConst():
 
     tStampFmt = "%Y-%m-%d %H:%M:%S" # Default format
     fStampFmt = "%Y-%m-%d %H.%M.%S" # FileName safe format
+    dStampFmt = "%Y-%m-%d"          # Date only format
 
 # END Class nwConst
 
@@ -50,7 +51,7 @@ class nwFiles():
     PROJ_LOCK   = "nwProject.lock"
     TOC_TXT     = "ToC.txt"
     TOC_JSON    = "ToC.json"
-    SESS_INFO   = "sessionInfo.log"
+    SESS_STATS  = "sessionStats.log"
     INDEX_FILE  = "tagsIndex.json"
     OPTS_FILE   = "guiOptions.json"
     RECENT_FILE = "recentProjects.json"
@@ -169,32 +170,35 @@ class nwQuotes():
     Source: https://en.wikipedia.org/wiki/Quotation_mark
     """
 
-    SYMBOLS = [
-        "\u0022", # Quotation mark
-        "\u0027", # Apostrophe
-        "\u00ab", # Left-pointing double angle quotation mark
-        "\u00bb", # Right-pointing double angle quotation mark
-        "\u2018", # Left single quotation mark
-        "\u2019", # Right single quotation mark
-        "\u201a", # Single low-9 quotation mark
-        "\u201b", # Single high-reversed-9 quotation mark
-        "\u201c", # Left double quotation mark
-        "\u201d", # Right double quotation mark
-        "\u201e", # Double low-9 quotation mark
-        "\u201f", # Double high-reversed-9 quotation mark
-        "\u2039", # Single left-pointing angle quotation mark
-        "\u203a", # Single right-pointing angle quotation mark
-        "\u2e42", # Double low-reversed-9 quotation mark
-        "\u300c", # Left corner bracket
-        "\u300d", # Right corner bracket
-        "\u300e", # Left white corner bracket
-        "\u300f", # Right white corner bracket
-    ]
+    SYMBOLS = {
+        "\u0027" : "Straight single quotation mark",
+        "\u0022" : "Straight double quotation mark",
+
+        "\u2018" : "Left single quotation mark",
+        "\u2019" : "Right single quotation mark",
+        "\u201a" : "Single low-9 quotation mark",
+        "\u201b" : "Single high-reversed-9 quotation mark",
+        "\u201c" : "Left double quotation mark",
+        "\u201d" : "Right double quotation mark",
+        "\u201e" : "Double low-9 quotation mark",
+        "\u201f" : "Double high-reversed-9 quotation mark",
+        "\u2e42" : "Double low-reversed-9 quotation mark",
+
+        "\u2039" : "Single left-pointing angle quotation mark",
+        "\u203a" : "Single right-pointing angle quotation mark",
+        "\u00ab" : "Left-pointing double angle quotation mark",
+        "\u00bb" : "Right-pointing double angle quotation mark",
+
+        "\u300c" : "Left corner bracket",
+        "\u300d" : "Right corner bracket",
+        "\u300e" : "Left white corner bracket",
+        "\u300f" : "Right white corner bracket",
+    }
 
 # END Class nwQuotes
 
 class nwUnicode:
-    """Suppoted unicode character constants and translation maps for HTML.
+    """Supported unicode character constants and translation maps for HTML.
     """
 
     # Unicode Constants
@@ -226,8 +230,14 @@ class nwUnicode:
     U_EMDASH = "\u2014" # Long dash
     U_HELLIP = "\u2026" # Ellipsis
 
-    ## Other
+    ## Spaces and Lines
     U_NBSP   = "\u00a0" # Non-breaking space
+    U_THNSP  = "\u2009" # Thin space
+    U_THNBSP = "\u202f" # Thin non-breaking space
+    U_LSEP   = "\u2028" # Line separator
+    U_PSEP   = "\u2029" # Paragraph separator
+
+    ## Symbols
     U_CHECK  = "\u2714" # Heavy check mark
     U_MULT   = "\u2715" # Multiplication x
 
@@ -270,8 +280,12 @@ class nwUnicode:
     H_EMDASH = "&mdash;"
     H_HELLIP = "&hellip;"
 
-    ## Other
+    ## Spaces
     H_NBSP   = "&nbsp;"
+    H_THNSP  = "&thinsp;"
+    H_THNBSP = "&#8239;"
+
+    ## Symbols
     H_CHECK  = "&#10004;"
     H_MULT   = "&#10005;"
 
@@ -286,3 +300,18 @@ class nwUnicode:
     H_LTRIS  = "&#9666;"
 
 # END Class nwUnicode
+
+class nwInsertSymbols():
+
+    SYMBOLS = {
+        nwDocInsert.NO_INSERT     : "",
+        nwDocInsert.HARD_BREAK    : "  \n",
+        nwDocInsert.NB_SPACE      : nwUnicode.U_NBSP,
+        nwDocInsert.THIN_SPACE    : nwUnicode.U_THNSP,
+        nwDocInsert.THIN_NB_SPACE : nwUnicode.U_THNBSP,
+        nwDocInsert.SHORT_DASH    : nwUnicode.U_ENDASH,
+        nwDocInsert.LONG_DASH     : nwUnicode.U_EMDASH,
+        nwDocInsert.ELLIPSIS      : nwUnicode.U_HELLIP,
+    }
+
+# END Enum nwDocInsert
