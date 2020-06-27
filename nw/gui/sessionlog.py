@@ -95,7 +95,6 @@ class GuiSessionLog(QDialog):
         self.listBox.setColumnWidth(self.C_TIME, wCol0)
         self.listBox.setColumnWidth(self.C_LENGTH, wCol1)
         self.listBox.setColumnWidth(self.C_COUNT, wCol2)
-        self.listBox.resizeColumnToContents(self.C_COUNT)
 
         hHeader = self.listBox.headerItem()
         hHeader.setTextAlignment(self.C_LENGTH, Qt.AlignRight)
@@ -148,15 +147,15 @@ class GuiSessionLog(QDialog):
         self.totalWords.setAlignment(Qt.AlignVCenter | Qt.AlignRight)
 
         self.infoForm.addWidget(QLabel("Total Time:"),       0, 0)
-        self.infoForm.addWidget(self.labelTotal,             0, 1)
         self.infoForm.addWidget(QLabel("Filtered Time:"),    1, 0)
-        self.infoForm.addWidget(self.labelFilter,            1, 1)
         self.infoForm.addWidget(QLabel("Novel Word Count:"), 2, 0)
-        self.infoForm.addWidget(self.novelWords,             2, 1)
         self.infoForm.addWidget(QLabel("Notes Word Count:"), 3, 0)
-        self.infoForm.addWidget(self.notesWords,             3, 1)
         self.infoForm.addWidget(QLabel("Total Word Count:"), 4, 0)
-        self.infoForm.addWidget(self.totalWords,             4, 1)
+        self.infoForm.addWidget(self.labelTotal,  0, 1)
+        self.infoForm.addWidget(self.labelFilter, 1, 1)
+        self.infoForm.addWidget(self.novelWords,  2, 1)
+        self.infoForm.addWidget(self.notesWords,  3, 1)
+        self.infoForm.addWidget(self.totalWords,  4, 1)
         self.infoForm.setRowStretch(5, 1)
 
         # Filter Options
@@ -166,51 +165,47 @@ class GuiSessionLog(QDialog):
         self.filterForm = QGridLayout(self)
         self.filterBox.setLayout(self.filterForm)
 
-        self.labelNovel = QLabel("Count novel files")
         self.incNovel = QSwitch(width=2*sPx, height=sPx)
         self.incNovel.setChecked(
             self.optState.getBool("GuiSessionLog", "incNovel", True)
         )
         self.incNovel.clicked.connect(self._updateListBox)
 
-        self.labelNotes = QLabel("Count note files")
         self.incNotes = QSwitch(width=2*sPx, height=sPx)
         self.incNotes.setChecked(
             self.optState.getBool("GuiSessionLog", "incNotes", True)
         )
         self.incNotes.clicked.connect(self._updateListBox)
 
-        self.labelZeros = QLabel("Hide zero word count")
         self.hideZeros = QSwitch(width=2*sPx, height=sPx)
         self.hideZeros.setChecked(
             self.optState.getBool("GuiSessionLog", "hideZeros", True)
         )
         self.hideZeros.clicked.connect(self._updateListBox)
 
-        self.labelNegative = QLabel("Hide negative word count")
         self.hideNegative = QSwitch(width=2*sPx, height=sPx)
         self.hideNegative.setChecked(
             self.optState.getBool("GuiSessionLog", "hideNegative", False)
         )
         self.hideNegative.clicked.connect(self._updateListBox)
 
-        self.labelByDay = QLabel("Group entries by day")
         self.groupByDay = QSwitch(width=2*sPx, height=sPx)
         self.groupByDay.setChecked(
             self.optState.getBool("GuiSessionLog", "groupByDay", False)
         )
         self.groupByDay.clicked.connect(self._updateListBox)
 
-        self.filterForm.addWidget(self.labelNovel,    0, 0)
-        self.filterForm.addWidget(self.incNovel,      0, 1)
-        self.filterForm.addWidget(self.labelNotes,    1, 0)
-        self.filterForm.addWidget(self.incNotes,      1, 1)
-        self.filterForm.addWidget(self.labelZeros,    2, 0)
-        self.filterForm.addWidget(self.hideZeros,     2, 1)
-        self.filterForm.addWidget(self.labelNegative, 3, 0)
-        self.filterForm.addWidget(self.hideNegative,  3, 1)
-        self.filterForm.addWidget(self.labelByDay,    4, 0)
-        self.filterForm.addWidget(self.groupByDay,    4, 1)
+        self.filterForm.addWidget(QLabel("Count novel files"),        0, 0)
+        self.filterForm.addWidget(QLabel("Count note files"),         1, 0)
+        self.filterForm.addWidget(QLabel("Hide zero word count"),     2, 0)
+        self.filterForm.addWidget(QLabel("Hide negative word count"), 3, 0)
+        self.filterForm.addWidget(QLabel("Group entries by day"),     4, 0)
+        self.filterForm.addWidget(self.incNovel,     0, 1)
+        self.filterForm.addWidget(self.incNotes,     1, 1)
+        self.filterForm.addWidget(self.hideZeros,    2, 1)
+        self.filterForm.addWidget(self.hideNegative, 3, 1)
+        self.filterForm.addWidget(self.groupByDay,   4, 1)
+        self.filterForm.setRowStretch(5, 1)
 
         # Buttons
         self.buttonBox = QDialogButtonBox(QDialogButtonBox.Close)
@@ -497,16 +492,16 @@ class GuiSessionLog(QDialog):
                 wcTotal += wcNotes
 
             dwTotal = wcTotal - pcTotal
-            if isFirst:
-                # Subtract the offset from the first list entry
-                dwTotal -= self.wordOffset
-                dwTotal = max(dwTotal, 0) # But don't go negative
-                isFirst = False
-
             if hideZeros and dwTotal == 0:
                 continue
             if hideNegative and dwTotal < 0:
                 continue
+
+            if isFirst:
+                # Subtract the offset from the first list entry
+                dwTotal -= self.wordOffset
+                dwTotal = max(dwTotal, 1) # Don't go zero or negative
+                isFirst = False
 
             if groupByDay:
                 sStart = dStart.strftime(nwConst.dStampFmt)
