@@ -2,6 +2,16 @@
 
 ## Version 0.10.0 RC1 [2020-xx-xx]
 
+Note: If the project file is opened by this version of novelWriter, the project file can no longer be read by an earlier version due to the change of how autoReplace settings are stored.
+
+**User Interface**
+
+* The Session Log dialog has been redesigned and now has a few more filter options. The filters now also update the filtered time count properly. The dialog now shows a histogram of words added in a given session, or optionally, on a given date. The filtered log data can also be saved as a JSON or CSV file, the latter suitable for importing to a spread sheet. The new dialog tool required a new session log file format, so the new session log has been given a new file name. The old log file will be left untouched in the project's `meta` folder. For projects created prior to this change, the log will record a word count offset that will be subtracted from the first entry such that the first word diff will always be 0 instead of the total word count of the entire project. Such a large word diff would otherwise saturate the histogram. PR #339.
+
+**Other Changes**
+
+* The way the auto-replace settings are stored in the project XML file has been changed in order to be more consistent with other features, and to avoid a potential pitfall in defining the tag name from a user-entered string. The project class retains its ability to read the old format of the file, and will save in the new format. PR #344.
+
 
 ## Version 0.9.2 [2020-06-26]
 
