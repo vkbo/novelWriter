@@ -225,6 +225,8 @@ class GuiProjectEditMeta(QWidget):
         self.pathLabel.setIndent(xInd)
         self.pathValue = QLabel(self.theProject.projPath)
         self.pathValue.setWordWrap(True)
+        self.pathValue.setTextInteractionFlags(Qt.TextSelectableByMouse)
+        self.pathValue.setCursor(Qt.IBeamCursor)
 
         self.revLabel = QLabel("Revision count:")
         self.revLabel.setIndent(xInd)
