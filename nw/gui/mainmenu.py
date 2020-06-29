@@ -540,13 +540,6 @@ class GuiMainMenu(QMenuBar):
         self.aFmtStrong.triggered.connect(lambda: self._docAction(nwDocAction.STRONG))
         self.fmtMenu.addAction(self.aFmtStrong)
 
-        # Format > Very Strong Emphasis
-        self.aFmtStrongEmph = QAction("Very Strong Emphasis", self)
-        self.aFmtStrongEmph.setStatusTip("Add very strong emphasis to selected text (bold and italic)")
-        self.aFmtStrongEmph.setShortcut("Ctrl+Shift+B")
-        self.aFmtStrongEmph.triggered.connect(lambda: self._docAction(nwDocAction.STRONGEMPH))
-        self.fmtMenu.addAction(self.aFmtStrongEmph)
-
         # Format > Strikethrough
         self.aFmtStrike = QAction("Strikethrough", self)
         self.aFmtStrike.setStatusTip("Add strikethrough to selected text")
