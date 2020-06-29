@@ -746,17 +746,6 @@ def testDocAction(qtbot, nwTempGUI, nwLipsum, nwRef, nwTemp):
     assert nwGUI.openProject(nwLipsum)
     qtbot.wait(stepDelay)
 
-    # CUT        = 3
-    # COPY       = 4
-    # PASTE      = 5
-    # SEL_ALL    = 12
-    # SEL_PARA   = 13
-    # FIND       = 14
-    # REPLACE    = 15
-    # GO_NEXT    = 16
-    # GO_PREV    = 17
-    # REPL_NEXT  = 18
-
     # Split By Chapter
     assert nwGUI.openDocument("4c4f28287af27")
     assert nwGUI.docEditor.setCursorPosition(30)
@@ -773,17 +762,9 @@ def testDocAction(qtbot, nwTempGUI, nwLipsum, nwRef, nwTemp):
 
     # Italic
     assert nwGUI.passDocumentAction(nwDocAction.EMPH)
-    assert nwGUI.docEditor.getText()[27:76] == "*Pellentesque* nec erat ut nulla posuere commodo."
+    assert nwGUI.docEditor.getText()[27:76] == "_Pellentesque_ nec erat ut nulla posuere commodo."
     qtbot.wait(stepDelay)
     assert nwGUI.passDocumentAction(nwDocAction.EMPH)
-    assert nwGUI.docEditor.getText()[27:74] == cleanText
-    qtbot.wait(stepDelay)
-
-    # Bold-Italic
-    assert nwGUI.passDocumentAction(nwDocAction.STRONGEMPH)
-    assert nwGUI.docEditor.getText()[27:80] == "***Pellentesque*** nec erat ut nulla posuere commodo."
-    qtbot.wait(stepDelay)
-    assert nwGUI.passDocumentAction(nwDocAction.STRONGEMPH)
     assert nwGUI.docEditor.getText()[27:74] == cleanText
     qtbot.wait(stepDelay)
 
@@ -799,15 +780,6 @@ def testDocAction(qtbot, nwTempGUI, nwLipsum, nwRef, nwTemp):
     assert nwGUI.passDocumentAction(nwDocAction.STRONG)
     qtbot.wait(stepDelay)
     assert nwGUI.passDocumentAction(nwDocAction.EMPH)
-    qtbot.wait(stepDelay)
-    assert nwGUI.passDocumentAction(nwDocAction.EMPH)
-    qtbot.wait(stepDelay)
-    assert nwGUI.passDocumentAction(nwDocAction.STRONG)
-    assert nwGUI.docEditor.getText()[27:74] == cleanText
-    qtbot.wait(stepDelay)
-
-    # Equivalent of the above
-    assert nwGUI.passDocumentAction(nwDocAction.STRONGEMPH)
     qtbot.wait(stepDelay)
     assert nwGUI.passDocumentAction(nwDocAction.EMPH)
     qtbot.wait(stepDelay)

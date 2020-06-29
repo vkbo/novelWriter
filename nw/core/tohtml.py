@@ -107,6 +107,7 @@ class ToHtml(Tokenizer):
         """Reverse the html entities replacement on the markdown text.
         Otherwise, all the &something; bits will also be in there.
         """
+        Tokenizer.doPostProcessing(self)
         if self.genMode == self.M_PREVIEW:
             # Doesn't matter for preview as we don't use the markdown
             return
@@ -125,8 +126,6 @@ class ToHtml(Tokenizer):
                 self.FMT_B_E : "</b>",
                 self.FMT_I_B : "<i>",
                 self.FMT_I_E : "</i>",
-                self.FMT_S_B : "<b><i>",
-                self.FMT_S_E : "</i></b>",
                 self.FMT_D_B : "<span style='text-decoration: line-through;'>",
                 self.FMT_D_E : "</span>",
             }
@@ -136,8 +135,6 @@ class ToHtml(Tokenizer):
                 self.FMT_B_E : "</strong>",
                 self.FMT_I_B : "<em>",
                 self.FMT_I_E : "</em>",
-                self.FMT_S_B : "<strong><em>",
-                self.FMT_S_E : "</em></strong>",
                 self.FMT_D_B : "<del>",
                 self.FMT_D_E : "</del>",
             }

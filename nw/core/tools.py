@@ -34,6 +34,10 @@ from os import path, unlink, rmdir
 
 logger = logging.getLogger(__name__)
 
+# =========================================================================== #
+#  Simple Word Counter
+# =========================================================================== #
+
 def countWords(theText):
     """Count words in a piece of text, skipping special syntax and
     comments.
@@ -79,6 +83,10 @@ def countWords(theText):
         prevEmpty = countPara == False
 
     return charCount, wordCount, paraCount
+
+# =========================================================================== #
+#  Convert an Integer to a Word Number
+# =========================================================================== #
 
 def numberToWord(numVal, theLanguage):
     """Wrapper for converting numbers to words for chapter headings.
