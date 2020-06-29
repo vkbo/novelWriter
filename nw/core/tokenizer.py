@@ -44,10 +44,8 @@ class Tokenizer():
     FMT_B_E    =  2 # End bold
     FMT_I_B    =  3 # Begin italics
     FMT_I_E    =  4 # End italics
-    FMT_S_B    =  5 # Begin bold italic
-    FMT_S_E    =  6 # End bold italic
-    FMT_D_B    =  7 # Begin strikeout
-    FMT_D_E    =  8 # End strikeout
+    FMT_D_B    =  5 # Begin strikeout
+    FMT_D_E    =  6 # End strikeout
 
     T_EMPTY    =  1 # Empty line (new paragraph)
     T_SYNOPSIS =  2 # Synopsis comment
@@ -269,7 +267,6 @@ class Tokenizer():
     def doAutoReplace(self):
         """Run through the user's auto-replace dictionary.
         """
-
         if len(self.theProject.autoReplace) > 0:
             repDict = {}
             for aKey, aVal in self.theProject.autoReplace.items():
@@ -280,8 +277,20 @@ class Tokenizer():
         return
 
     def doPostProcessing(self):
-        """Do some postprocessing. Overloaded by subclasses.
+        """Do some postprocessing. Overloaded by subclasses. This just
+        does the standard escaped characters.
         """
+        escapeDict = {
+            "\*" : "*",
+            "\~" : "~",
+            "\_" : "_",
+        }
+        escReplace = re.compile(
+            "|".join([re.escape(k) for k in escapeDict.keys()]), flags=re.DOTALL
+        )
+        self.theResult = escReplace.sub(
+            lambda x: escapeDict[x.group(0)], self.theResult
+        )
         return
 
     def tokenizeText(self):
@@ -304,7 +313,6 @@ class Tokenizer():
         rxFormats = [
             (QRegularExpression(nwRegEx.FMT_I),  [None, self.FMT_I_B, None, self.FMT_I_E]),
             (QRegularExpression(nwRegEx.FMT_B),  [None, self.FMT_B_B, None, self.FMT_B_E]),
-            (QRegularExpression(nwRegEx.FMT_BI), [None, self.FMT_S_B, None, self.FMT_S_E]),
             (QRegularExpression(nwRegEx.FMT_ST), [None, self.FMT_D_B, None, self.FMT_D_E]),
         ]
 

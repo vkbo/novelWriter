@@ -515,13 +515,11 @@ class GuiDocEditor(QTextEdit):
         elif theAction == nwDocAction.PASTE:
             self.paste()
         elif theAction == nwDocAction.EMPH:
-            self._toggleEmph(1)
+            self._toggleFormat(1, "_")
         elif theAction == nwDocAction.STRONG:
-            self._toggleEmph(2)
-        elif theAction == nwDocAction.STRONGEMPH:
-            self._toggleEmph(3)
+            self._toggleFormat(2, "*")
         elif theAction == nwDocAction.STRIKE:
-            self._toggleStrike()
+            self._toggleFormat(2, "~")
         elif theAction == nwDocAction.S_QUOTE:
             self._wrapSelection(self.typSQOpen, self.typSQClose)
         elif theAction == nwDocAction.D_QUOTE:
@@ -998,69 +996,27 @@ class GuiDocEditor(QTextEdit):
         theCursor = self.textCursor()
         if self.mainConf.autoSelect and not theCursor.hasSelection():
             theCursor.select(QTextCursor.WordUnderCursor)
-            self.setTextCursor(theCursor)
-        return theCursor
-
-    def _toggleEmph(self, eLevel):
-        """Toggle emphasis of a given level between 1 and 3, where 1 is
-        italic, 2 is bold, and 3 is bold italic. The current level in
-        the text is cLevel. The rules are as follows:
-
-         cLevel     | eLevel     | Result
-        ============+============+============
-         None       | Italic     | Italic
-         None       | Bold       | Bold
-         None       | BoldItalic | BoldItalic
-        ------------+------------+------------
-         Italic     | Italic     | None
-         Italic     | Bold       | BoldItalic
-         Italic     | BoldItalic | BoldItalic
-        ------------+------------+------------
-         Bold       | Italic     | BoldItalic
-         Bold       | Bold       | None
-         Bold       | BoldItalic | BoldItalic
-        ------------+------------+------------
-         BoldItalic | Italic     | Bold
-         BoldItalic | Bold       | Italic
-         BoldItalic | BoldItalic | None
-
-        """
-        theCursor = self._autoSelect()
-        if theCursor.hasSelection():
             posS = theCursor.selectionStart()
             posE = theCursor.selectionEnd()
 
-            numB = 0
-            for n in range(3):
-                if self.qDocument.characterAt(posS-n-1) == "*":
-                    numB += 1
-                else:
-                    break
+            # Underscore counts as a part of the word, so check that the
+            # selection isn't wrapped in italics markers.
+            reSelect = False
+            if self.qDocument.characterAt(posS) == "_":
+                posS += 1
+                reSelect = True
+            if self.qDocument.characterAt(posE) == "_":
+                posE -= 1
+                reSelect = True
+            if reSelect:
+                theCursor.clearSelection()
+                theCursor.setPosition(posE-1)
+                theCursor.movePosition(QTextCursor.Left, QTextCursor.KeepAnchor, posE-posS-1)
 
-            numA = 0
-            for n in range(3):
-                if self.qDocument.characterAt(posE+n) == "*":
-                    numA += 1
-                else:
-                    break
+            self.setTextCursor(theCursor)
+        return theCursor
 
-            cLevel = min(numB, numA)
-            if cLevel == 0:
-                # Has no emphasis, set to desired level
-                self._wrapSelection("*"*eLevel)
-            elif cLevel == 3:
-                # Has max, so reduce by desired level
-                self._clearSurrounding(theCursor, eLevel)
-            elif cLevel == eLevel:
-                # Toggle mode, so clear what we had set
-                self._clearSurrounding(theCursor, cLevel)
-            else:
-                # Already at 1 or 2, increase to 3
-                self._wrapSelection("*"*(3 - cLevel))
-
-        return
-
-    def _toggleStrike(self):
+    def _toggleFormat(self, fLen, fChar):
         """Toggle strikethrough text.
         """
         theCursor = self._autoSelect()
@@ -1069,24 +1025,24 @@ class GuiDocEditor(QTextEdit):
             posE = theCursor.selectionEnd()
 
             numB = 0
-            for n in range(2):
-                if self.qDocument.characterAt(posS-n-1) == "~":
+            for n in range(fLen):
+                if self.qDocument.characterAt(posS-n-1) == fChar:
                     numB += 1
                 else:
                     break
 
             numA = 0
-            for n in range(2):
-                if self.qDocument.characterAt(posE+n) == "~":
+            for n in range(fLen):
+                if self.qDocument.characterAt(posE+n) == fChar:
                     numA += 1
                 else:
                     break
 
             cLevel = min(numB, numA)
-            if cLevel == 2:
-                self._clearSurrounding(theCursor, 2)
+            if cLevel == fLen:
+                self._clearSurrounding(theCursor, fLen)
             else:
-                self._wrapSelection("~~")
+                self._wrapSelection(fChar*fLen)
 
         return
 

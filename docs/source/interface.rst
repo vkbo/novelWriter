@@ -33,8 +33,9 @@ Markdown Format
 ===============
 
 The document editor uses a simplified markdown format.
-That is, it supports basic formatting like bold, italics and strikethrough, as well as four levels of headings.
-The preference of novelWriter is to use `*` for wrapping emphasised text, but `_` is partially supported when typed, but not by the automatic formatting features and keyboard shortcuts.
+That is, it supports basic formatting like emphasis (italic), strong emphasis (bold) and strikethrough text, as well as four levels of headings.
+It is commonly recommended style to differentiate between strong emphasis and emphasis by using ``**`` for strong emphasis and ``_`` for emphasis, although Markdown generally supports also ``__`` for strong emphasis and ``*`` fdr emphasis.
+However, since the differentiation makes the highlighting and conversion significantly simpler and faster, in novelWriter this is a rule, not just a recommendation.
 
 In addition to these standard markdown features, the editor also allows for comments, that is text that is ignored by the word counter and not exported or, optionally, hidden in the document viewer.
 If the first word of a comment is "Synopsis:" (with the colon), the comment is treated specially, and will show up in the Outline View.
@@ -48,19 +49,21 @@ The editor also has a minimal set of keywords used for setting tags and referenc
    "``## Title``",            "Heading level two. The space after the # is mandatory."
    "``### Title``",           "Heading level three. The space after the # is mandatory."
    "``#### Title``",          "Heading level four. The space after the # is mandatory."
-   "``*text*``",              "The text is rendered as emphasised text (italicised)."
+   "``_text_``",              "The text is rendered as emphasised text (italicised)."
    "``**text**``",            "The text is rendered as strongly emphasised text (bold)."
-   "``***text***``",          "The text is rendered as very strongly emphasised text (italicised, bold)."
-   "``_text_``",              "Alternative format for emphasised text."
-   "``__text__``",            "Alternative format for strongly emphasised text."
    "``~~text~~``",            "Strikethrough text."
    "``% text...``",           "A comment. The text is not exported by default, seen in viewer, or counted towards word counts."
    "``% Synopsis: text...``", "A synopsis comment. Shows up in the Synopsis column of the Outline View, but is otherwise treated as a comment."
    "``@keyword: value``",     "A keyword argument followed by a value, or a comma separated list of values."
 
-.. note::
-   The emphasis and strikethrough formatting tags do not allow spaces between the words and the tag itself.
+Some additional rules:
+
+1. The emphasis and strikethrough formatting tags do not allow spaces between the words and the tag itself.
    That is, ``**text**`` is valid, ``**text **`` is not.
+2. More generally, the delimiters must be on the outer edge of words.
+   That is, ``some **text in bold** here`` is valid, ``some** text in bold** here`` is not.
+3. If using both ``**`` and ``_`` to wrap the same text, the underscore must be the inner wrapper.
+   This is due to the underscore also being a valid word character, so if they are on the outside, they violate rule 2.
 
 The editor and viewer also supports markdown standard hard line breaks, and preserves non-breaking spaces.
 A hard line break is achieved by leaving two or more spaces at the end of the line.
