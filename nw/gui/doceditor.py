@@ -6,11 +6,12 @@
  Class holding the document editor
 
  File History:
- Created:   2018-09-29 [0.0.1] GuiDocEditor
- Created:   2019-04-22 [0.0.1] BackgroundWordCounter
- Created:   2019-09-29 [0.2.1] GuiDocEditSearch
- Created:   2020-04-25 [0.4.5] GuiDocEditHeader
- Rewritten: 2020-06-15 [0.9.0] GuiDocEditSearch
+ Created:   2018-09-29 [0.0.1]  GuiDocEditor
+ Created:   2019-04-22 [0.0.1]  BackgroundWordCounter
+ Created:   2019-09-29 [0.2.1]  GuiDocEditSearch
+ Created:   2020-04-25 [0.4.5]  GuiDocEditHeader
+ Rewritten: 2020-06-15 [0.9.0]  GuiDocEditSearch
+ Created:   2020-06-27 [0.10.0] GuiDocEditFooter
 
  This file is a part of novelWriter
  Copyright 2020, Veronica Berglyd Olsen
