@@ -629,7 +629,16 @@ class GuiConfigEditEditingTab(QWidget):
         self.highlightQuotes.setChecked(self.mainConf.highlightQuotes)
         self.mainForm.addRow(
             "Highlight text wrapped in quotes",
-            self.highlightQuotes
+            self.highlightQuotes,
+            helpText="Applies to single, double and straight quotes."
+        )
+
+        self.highlightEmph = QSwitch()
+        self.highlightEmph.setChecked(self.mainConf.highlightEmph)
+        self.mainForm.addRow(
+            "Add highlight colour to emphasised text",
+            self.highlightEmph,
+            helpText="Applies to emphasis, strong and strikethrough."
         )
 
         # Spell Checking
@@ -687,12 +696,14 @@ class GuiConfigEditEditingTab(QWidget):
 
         guiSyntax       = self.selectSyntax.currentData()
         highlightQuotes = self.highlightQuotes.isChecked()
+        highlightEmph   = self.highlightEmph.isChecked()
         spellTool       = self.spellToolList.currentData()
         spellLanguage   = self.spellLangList.currentData()
         bigDocLimit     = self.bigDocLimit.value()
 
         self.mainConf.guiSyntax       = guiSyntax
         self.mainConf.highlightQuotes = highlightQuotes
+        self.mainConf.highlightEmph   = highlightEmph
         self.mainConf.spellTool       = spellTool
         self.mainConf.spellLanguage   = spellLanguage
         self.mainConf.bigDocLimit     = bigDocLimit

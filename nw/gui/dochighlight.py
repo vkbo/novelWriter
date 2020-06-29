@@ -82,7 +82,6 @@ class GuiDocHighlighter(QSyntaxHighlighter):
 
         self.colHead   = QColor(*self.theTheme.colHead)
         self.colHeadH  = QColor(*self.theTheme.colHeadH)
-        self.colEmph   = QColor(*self.theTheme.colEmph)
         self.colDialN  = QColor(*self.theTheme.colDialN)
         self.colDialD  = QColor(*self.theTheme.colDialD)
         self.colDialS  = QColor(*self.theTheme.colDialS)
@@ -95,6 +94,11 @@ class GuiDocHighlighter(QSyntaxHighlighter):
         self.colMod    = QColor(*self.theTheme.colMod)
         self.colTrail  = QColor(*self.theTheme.colEmph)
         self.colTrail.setAlpha(64)
+
+        if self.mainConf.highlightEmph:
+            self.colEmph = QColor(*self.theTheme.colEmph)
+        else:
+            self.colEmph = None
 
         self.hStyles = {
             "header1"    : self._makeFormat(self.colHead,  "bold", 1.8),
