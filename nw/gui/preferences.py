@@ -494,26 +494,6 @@ class GuiConfigEditLayoutTab(QWidget):
             theUnit="px"
         )
 
-        # Writing Guides
-        # ==============
-        self.mainForm.addGroupLabel("Writing Guides")
-
-        ## Show Tabs and Spaces
-        self.showTabsNSpaces = QSwitch()
-        self.showTabsNSpaces.setChecked(self.mainConf.showTabsNSpaces)
-        self.mainForm.addRow(
-            "Show tabs and spaces",
-            self.showTabsNSpaces
-        )
-
-        ## Show Line Endings
-        self.showLineEndings = QSwitch()
-        self.showLineEndings.setChecked(self.mainConf.showLineEndings)
-        self.mainForm.addRow(
-            "Show line endings",
-            self.showLineEndings
-        )
-
         # Render Options
         # ==============
         self.mainForm.addGroupLabel("Render Text")
@@ -541,33 +521,29 @@ class GuiConfigEditLayoutTab(QWidget):
         validEntries = True
         needsRestart = False
 
-        textFont        = self.textStyleFont.text()
-        textSize        = self.textStyleSize.value()
-        textWidth       = self.textFlowMax.value()
-        zenWidth        = self.zenDocWidth.value()
-        textFixedW      = not self.textFlowFixed.isChecked()
-        hideZenFooter   = self.hideZenFooter.isChecked()
-        doJustify       = self.textJustify.isChecked()
-        textMargin      = self.textMargin.value()
-        tabWidth        = self.tabWidth.value()
-        showTabsNSpaces = self.showTabsNSpaces.isChecked()
-        showLineEndings = self.showLineEndings.isChecked()
-        viewComments    = self.viewComments.isChecked()
-        viewSynopsis    = self.viewSynopsis.isChecked()
+        textFont      = self.textStyleFont.text()
+        textSize      = self.textStyleSize.value()
+        textWidth     = self.textFlowMax.value()
+        zenWidth      = self.zenDocWidth.value()
+        textFixedW    = not self.textFlowFixed.isChecked()
+        hideZenFooter = self.hideZenFooter.isChecked()
+        doJustify     = self.textJustify.isChecked()
+        textMargin    = self.textMargin.value()
+        tabWidth      = self.tabWidth.value()
+        viewComments  = self.viewComments.isChecked()
+        viewSynopsis  = self.viewSynopsis.isChecked()
 
-        self.mainConf.textFont        = textFont
-        self.mainConf.textSize        = textSize
-        self.mainConf.textWidth       = textWidth
-        self.mainConf.zenWidth        = zenWidth
-        self.mainConf.textFixedW      = textFixedW
-        self.mainConf.hideZenFooter   = hideZenFooter
-        self.mainConf.doJustify       = doJustify
-        self.mainConf.textMargin      = textMargin
-        self.mainConf.tabWidth        = tabWidth
-        self.mainConf.showTabsNSpaces = showTabsNSpaces
-        self.mainConf.showLineEndings = showLineEndings
-        self.mainConf.viewComments    = viewComments
-        self.mainConf.viewSynopsis    = viewSynopsis
+        self.mainConf.textFont      = textFont
+        self.mainConf.textSize      = textSize
+        self.mainConf.textWidth     = textWidth
+        self.mainConf.zenWidth      = zenWidth
+        self.mainConf.textFixedW    = textFixedW
+        self.mainConf.hideZenFooter = hideZenFooter
+        self.mainConf.doJustify     = doJustify
+        self.mainConf.textMargin    = textMargin
+        self.mainConf.tabWidth      = tabWidth
+        self.mainConf.viewComments  = viewComments
+        self.mainConf.viewSynopsis  = viewSynopsis
 
         self.mainConf.confChanged = True
 
@@ -629,7 +605,16 @@ class GuiConfigEditEditingTab(QWidget):
         self.highlightQuotes.setChecked(self.mainConf.highlightQuotes)
         self.mainForm.addRow(
             "Highlight text wrapped in quotes",
-            self.highlightQuotes
+            self.highlightQuotes,
+            helpText="Applies to single, double and straight quotes."
+        )
+
+        self.highlightEmph = QSwitch()
+        self.highlightEmph.setChecked(self.mainConf.highlightEmph)
+        self.mainForm.addRow(
+            "Add highlight colour to emphasised text",
+            self.highlightEmph,
+            helpText="Applies to emphasis, strong and strikethrough."
         )
 
         # Spell Checking
@@ -678,6 +663,26 @@ class GuiConfigEditEditingTab(QWidget):
             theUnit="kB"
         )
 
+        # Writing Guides
+        # ==============
+        self.mainForm.addGroupLabel("Writing Guides")
+
+        ## Show Tabs and Spaces
+        self.showTabsNSpaces = QSwitch()
+        self.showTabsNSpaces.setChecked(self.mainConf.showTabsNSpaces)
+        self.mainForm.addRow(
+            "Show tabs and spaces",
+            self.showTabsNSpaces
+        )
+
+        ## Show Line Endings
+        self.showLineEndings = QSwitch()
+        self.showLineEndings.setChecked(self.mainConf.showLineEndings)
+        self.mainForm.addRow(
+            "Show line endings",
+            self.showLineEndings
+        )
+
         return
 
     def saveValues(self):
@@ -687,15 +692,21 @@ class GuiConfigEditEditingTab(QWidget):
 
         guiSyntax       = self.selectSyntax.currentData()
         highlightQuotes = self.highlightQuotes.isChecked()
+        highlightEmph   = self.highlightEmph.isChecked()
         spellTool       = self.spellToolList.currentData()
         spellLanguage   = self.spellLangList.currentData()
         bigDocLimit     = self.bigDocLimit.value()
+        showTabsNSpaces = self.showTabsNSpaces.isChecked()
+        showLineEndings = self.showLineEndings.isChecked()
 
         self.mainConf.guiSyntax       = guiSyntax
         self.mainConf.highlightQuotes = highlightQuotes
+        self.mainConf.highlightEmph   = highlightEmph
         self.mainConf.spellTool       = spellTool
         self.mainConf.spellLanguage   = spellLanguage
         self.mainConf.bigDocLimit     = bigDocLimit
+        self.mainConf.showTabsNSpaces = showTabsNSpaces
+        self.mainConf.showLineEndings = showLineEndings
 
         self.mainConf.confChanged = True
 

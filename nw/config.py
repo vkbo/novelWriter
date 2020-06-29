@@ -126,6 +126,7 @@ class Config:
         self.bigDocLimit     = 800
         self.showFullPath    = True
         self.highlightQuotes = True
+        self.highlightEmph   = True
 
         self.fmtApostrophe   = nwUnicode.U_RSQUO
         self.fmtSingleQuotes = [nwUnicode.U_LSQUO, nwUnicode.U_RSQUO]
@@ -469,6 +470,9 @@ class Config:
         self.highlightQuotes = self._parseLine(
             cnfParse, cnfSec, "highlightquotes", self.CNF_BOOL, self.highlightQuotes
         )
+        self.highlightEmph = self._parseLine(
+            cnfParse, cnfSec, "highlightemph", self.CNF_BOOL, self.highlightEmph
+        )
 
         ## Backup
         cnfSec = "Backup"
@@ -590,6 +594,7 @@ class Config:
         cnfParse.set(cnfSec,"bigdoclimit",     str(self.bigDocLimit))
         cnfParse.set(cnfSec,"showfullpath",    str(self.showFullPath))
         cnfParse.set(cnfSec,"highlightquotes", str(self.highlightQuotes))
+        cnfParse.set(cnfSec,"highlightemph",   str(self.highlightEmph))
 
         ## Backup
         cnfSec = "Backup"
