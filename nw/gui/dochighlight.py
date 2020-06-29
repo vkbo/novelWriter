@@ -107,7 +107,6 @@ class GuiDocHighlighter(QSyntaxHighlighter):
             "header4h"   : self._makeFormat(self.colHeadH, "bold", 1.2),
             "bold"       : self._makeFormat(self.colEmph,  "bold"),
             "italic"     : self._makeFormat(self.colEmph,  "italic"),
-            "bolditalic" : self._makeFormat(self.colEmph, ("bold","italic")),
             "strike"     : self._makeFormat(self.colEmph,  "strike"),
             "trailing"   : self._makeFormat(self.colTrail, "background"),
             "nobreak"    : self._makeFormat(self.colTrail, "background"),
@@ -137,36 +136,6 @@ class GuiDocHighlighter(QSyntaxHighlighter):
             }
         ))
 
-        # Markdown
-        self.hRules.append((
-            nwRegEx.FMT_I, {
-                1 : self.hStyles["hidden"],
-                2 : self.hStyles["italic"],
-                3 : self.hStyles["hidden"],
-            }
-        ))
-        self.hRules.append((
-            nwRegEx.FMT_B, {
-                1 : self.hStyles["hidden"],
-                2 : self.hStyles["bold"],
-                3 : self.hStyles["hidden"],
-            }
-        ))
-        self.hRules.append((
-            nwRegEx.FMT_BI, {
-                1 : self.hStyles["hidden"],
-                2 : self.hStyles["bolditalic"],
-                3 : self.hStyles["hidden"],
-            }
-        ))
-        self.hRules.append((
-            nwRegEx.FMT_ST, {
-                1 : self.hStyles["hidden"],
-                2 : self.hStyles["strike"],
-                3 : self.hStyles["hidden"],
-            }
-        ))
-
         # Quoted Strings
         if self.mainConf.highlightQuotes:
             self.hRules.append((
@@ -184,6 +153,29 @@ class GuiDocHighlighter(QSyntaxHighlighter):
                     0 : self.hStyles["dialogue3"],
                 }
             ))
+
+        # Markdown
+        self.hRules.append((
+            nwRegEx.FMT_I, {
+                1 : self.hStyles["hidden"],
+                2 : self.hStyles["italic"],
+                3 : self.hStyles["hidden"],
+            }
+        ))
+        self.hRules.append((
+            nwRegEx.FMT_B, {
+                1 : self.hStyles["hidden"],
+                2 : self.hStyles["bold"],
+                3 : self.hStyles["hidden"],
+            }
+        ))
+        self.hRules.append((
+            nwRegEx.FMT_ST, {
+                1 : self.hStyles["hidden"],
+                2 : self.hStyles["strike"],
+                3 : self.hStyles["hidden"],
+            }
+        ))
 
         # Auto-Replace Tags
         self.hRules.append((
@@ -302,10 +294,14 @@ class GuiDocHighlighter(QSyntaxHighlighter):
                 rxItt = rX.globalMatch(theText, 0)
                 while rxItt.hasNext():
                     rxMatch = rxItt.next()
-                    for xM in xFmt.keys():
+                    for xM in xFmt:
                         xPos = rxMatch.capturedStart(xM)
                         xLen = rxMatch.capturedLength(xM)
-                        self.setFormat(xPos, xLen, xFmt[xM])
+                        for x in range(xPos, xPos+xLen):
+                            spFmt = self.format(x)
+                            if spFmt != self.hStyles["hidden"]:
+                                spFmt.merge(xFmt[xM])
+                                self.setFormat(x, 1, spFmt)
 
         if self.theDict is None or not self.spellCheck:
             return
@@ -318,11 +314,11 @@ class GuiDocHighlighter(QSyntaxHighlighter):
                     continue
                 xPos = rxMatch.capturedStart(0)
                 xLen = rxMatch.capturedLength(0)
-                for x in range(xLen):
-                    spFmt = self.format(xPos+x)
+                for x in range(xPos, xPos+xLen):
+                    spFmt = self.format(x)
                     spFmt.setUnderlineColor(self.colSpell)
                     spFmt.setUnderlineStyle(QTextCharFormat.SpellCheckUnderline)
-                    self.setFormat(xPos+x, 1, spFmt)
+                    self.setFormat(x, 1, spFmt)
 
         return
 
