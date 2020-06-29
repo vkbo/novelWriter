@@ -176,9 +176,7 @@ These are as following:
    ":kbd:`F9`",              "Re-build project index."
    ":kbd:`F10`",             "Re-build project outline."
    ":kbd:`F11`",             "Activate full screen mode."
-   ":kbd:`Shift-Enter`",     "Insert a hard line break at the cursor position."
    ":kbd:`Shift-F3`",        "Find previous occurrence of word in current document. (Same as :kbd:`Ctrl-Shift-G`"
-   ":kbd:`Shift-Space`",     "Insert a non-breaking space at the cursor position."
    ":kbd:`Enter`",           "If in tree view, open a document for editing."
 
 .. note::
