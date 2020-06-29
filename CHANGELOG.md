@@ -1,16 +1,23 @@
 # novelWriter ChangeLog
 
-## Version 0.10.0 RC1 [2020-xx-xx]
+## Version 0.10.0 [2020-06-30]
 
-Note: If the project file is opened by this version of novelWriter, the project file can no longer be read by an earlier version due to the change of how autoReplace settings are stored.
+**Note:** If the project file is opened by this version of novelWriter, the project file can no longer be read by an earlier version due to the change of how autoReplace settings are stored.
 
 **User Interface**
 
-* The Session Log dialog has been redesigned and now has a few more filter options. The filters now also update the filtered time count properly. The dialog now shows a histogram of words added in a given session, or optionally, on a given date. The filtered log data can also be saved as a JSON or CSV file, the latter suitable for importing to a spread sheet. The new dialog tool required a new session log file format, so the new session log has been given a new file name. The old log file will be left untouched in the project's `meta` folder. For projects created prior to this change, the log will record a word count offset that will be subtracted from the first entry such that the first word diff will always be 0 instead of the total word count of the entire project. Such a large word diff would otherwise saturate the histogram. PR #339.
+* The Session Log dialog, now named Writing Statistics, has been redesigned and now has a few more filter options. This update also fixes the filtered time count properly. The dialog now shows a histogram of words added in a given session, or optionally, on a given date. The filtered log data can also be saved as a JSON or CSV file, the latter suitable for importing to a spread sheet. The new dialog tool required a new session log file format, so the new session log has been given a new file name. The old log file will be left untouched in the project's `meta` folder. For projects created prior to this change, the log will record a word count offset that will be subtracted from the first entry such that the first word diff will always be 1 instead of the total word count of the entire project. Such a large word diff would otherwise saturate the histogram. PRs #339 and #349.
+* The document editor panel has received a footer bar like the one recently added to the document view panel. The footer bar currently shows the status level of the document, and the document word count. In addition, the word counter shows the change in count for the current session in the same way project word count and change is shown in the status bar. The document word count has been removed from the main window status bar. PR #348.
+* The document editor footer can optionally be hidden in Distraction Free (Zen) mode. PR #351.
+* The Italic and Bold menu entries have been renamed to Emphasis and Strong Emphasis, which is more in line with what they represent in Markdown and HTML. They are still renderred as Italic and Bold in the document viewer, but the HTML export is using the `<em>` and `<strong>` tags. PR #350.
+* Due to several issues with the formatting of emphasised text using `*`, `**`, and `***` wrappers, especially when using nested emphasis, the syntax for emphasis (italic) and strong (bold) has been reverted to use `_` and `**` wrapping, respectively. This removes the ambiguity, and resolves the corner cases. It was possible to resolve the issues by using a custom written parser that takes care of all valid combinations, but such a parser would be a bit too slow for use in syntax highlighting. I decided therefore to stick with RegEx parsing, and keeping those RegExes as short and fast as possible while enforcing the basic formatting rules. Separating the notation for emphasis and strong is commonly recommended when writing Markdown anyway, so it is a sensible compromise between speed and flexibility. This PR partially reverses PR #310. Issue #353, PR #355.
+* The syntax highlighter now properly highlights overlapping formattings, including emphasised text inside of highlighted quotes. PR #355.
+* The colour highlighting of emphasis, strong and strikethrough, can now be switch off in Preferences. The syntax highlighter will still apply the italic, bold and strike effects. PR #357.
+* The project path in the Details tab of Project Settings can now be selected and copied to clipboard. Issue #354, PR #356.
 
 **Other Changes**
 
-* The way the auto-replace settings are stored in the project XML file has been changed in order to be more consistent with other features, and to avoid a potential pitfall in defining the tag name from a user-entered string. The project class retains its ability to read the old format of the file, and will save in the new format. PR #344.
+* The way the auto-replace settings are stored in the project XML file has been changed in order to be more consistent with other features, and to avoid a potential pitfall in defining the tag name from a user-entered string. The project class retains its ability to read the old format of the file, and will save in the new format. The file format of the project XML file has been bumped to 1.2. PRs #344, #346 and #347.
 
 
 ## Version 0.9.2 [2020-06-26]
