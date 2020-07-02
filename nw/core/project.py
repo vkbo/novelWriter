@@ -269,7 +269,7 @@ class NWProject():
         for projItem in listdir(self.projPath):
             logger.verbose("Project contains: %s" % projItem)
             if projItem.startswith("data_"):
-                self._legacyDataFolder(projItem)
+                errList = self._legacyDataFolder(projItem, errList)
 
         if errList:
             self.makeAlert(errList, nwAlert.ERROR)
@@ -1165,10 +1165,9 @@ class NWProject():
     #  Legacy Data Structure Handlers
     ##
 
-    def _legacyDataFolder(self, theFolder):
+    def _legacyDataFolder(self, theFolder, errList):
         """Clean up legacy data folders.
         """
-        errList = []
         theData = path.join(self.projPath, theFolder)
         if not path.isdir(theData):
             errList.append("Not a folder: %s" % theData)
