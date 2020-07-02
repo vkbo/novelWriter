@@ -1364,7 +1364,7 @@ class GuiDocEditSearch(QFrame):
         self.searchOpt.addAction(self.toggleWord)
 
         self.toggleRegEx = QAction("RegEx Mode", self)
-        self.toggleRegEx.setToolTip("Use regular expressions")
+        self.toggleRegEx.setToolTip("Use regular expressions (requires Qt 5.3)")
         self.toggleRegEx.setIcon(self.theTheme.getIcon("search_regex"))
         self.toggleRegEx.setCheckable(True)
         self.toggleRegEx.setChecked(self.isRegEx)
