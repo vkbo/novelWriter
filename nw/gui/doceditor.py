@@ -35,7 +35,9 @@ import nw
 
 from time import time
 
-from PyQt5.QtCore import Qt, QSize, QThread, QTimer, pyqtSlot, QRegExp
+from PyQt5.QtCore import (
+    Qt, QSize, QThread, QTimer, pyqtSlot, QRegExp, QRegularExpression
+)
 from PyQt5.QtGui import (
     QTextCursor, QTextOption, QKeySequence, QFont, QColor, QPalette, QIcon,
     QTextDocument, QCursor, QPixmap
@@ -1517,14 +1519,26 @@ class GuiDocEditSearch(QFrame):
         expression object.
         """
         theText = self.searchBox.text()
-        if self.isRegEx and self.mainConf.verQtValue >= 50300:
-            if self.isCaseSense:
-                rxCase = Qt.CaseSensitive
-            else:
-                rxCase = Qt.CaseInsensitive
-            theRegEx = QRegExp(theText, rxCase)
-            self._alertSearchValid(theRegEx.isValid())
-            return theRegEx
+        if self.isRegEx:
+            # Using the Unicode-capable QRegularExpression class was
+            # only added in Qt 5.13. Otherwise, 5.3 and up supports
+            # only the QRegExp class.
+            if self.mainConf.verQtValue >= 51300:
+                rxOpt = QRegularExpression.UseUnicodePropertiesOption
+                if not self.isCaseSense:
+                    rxOpt |= QRegularExpression.CaseInsensitiveOption
+                theRegEx = QRegularExpression(theText, rxOpt)
+                self._alertSearchValid(theRegEx.isValid())
+                return theRegEx
+
+            elif self.mainConf.verQtValue >= 50300:
+                if self.isCaseSense:
+                    rxOpt = Qt.CaseSensitive
+                else:
+                    rxOpt = Qt.CaseInsensitive
+                theRegEx = QRegExp(theText, rxOpt)
+                self._alertSearchValid(theRegEx.isValid())
+                return theRegEx
 
         return theText
 
