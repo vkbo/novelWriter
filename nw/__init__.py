@@ -217,13 +217,13 @@ def main(sysArgs=None):
         logger.addHandler(cHandle)
 
     logger.setLevel(debugLevel)
-    logger.info("Starting %s" % __package__)
-    logger.info("Version: %s (%s)" % (__version__, __hexversion__))
-    logger.info("Last Release: %s" % __date__)
+    logger.info("Starting %s %s (%s) %s" % (
+        __package__, __version__, __hexversion__, __date__
+    ))
 
     # Check Packages and Versions
     errorData = []
-    if sys.hexversion < 0x030403F0:
+    if sys.hexversion < 0x030403f0:
         errorData.append(
             "At least Python 3.4.3 is required, but 3.6 is highly recommended."
         )
@@ -235,10 +235,12 @@ def main(sysArgs=None):
         errorData.append(
             "At least PyQt5 version 5.2 is required, found %s." % CONFIG.verPyQtString
         )
+
     try:
         import PyQt5.QtSvg
     except:
         errorData.append("Python module 'PyQt5.QtSvg' is missing.")
+
     try:
         import lxml
     except:

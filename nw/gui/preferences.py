@@ -431,15 +431,15 @@ class GuiConfigEditLayoutTab(QWidget):
             theUnit="px"
         )
 
-        ## Max Text Width in Zen Mode
-        self.zenDocWidth = QSpinBox(self)
-        self.zenDocWidth.setMinimum(300)
-        self.zenDocWidth.setMaximum(10000)
-        self.zenDocWidth.setSingleStep(10)
-        self.zenDocWidth.setValue(self.mainConf.zenWidth)
+        ## Max Text Width in Focus Mode
+        self.focusDocWidth = QSpinBox(self)
+        self.focusDocWidth.setMinimum(300)
+        self.focusDocWidth.setMaximum(10000)
+        self.focusDocWidth.setSingleStep(10)
+        self.focusDocWidth.setValue(self.mainConf.focusWidth)
         self.mainForm.addRow(
-            "Maximum text width in \"Zen Mode\"",
-            self.zenDocWidth,
+            "Maximum text width in \"Focus Mode\"",
+            self.focusDocWidth,
             theUnit="px"
         )
 
@@ -452,12 +452,12 @@ class GuiConfigEditLayoutTab(QWidget):
             "If disabled, minimum text width is defined by the margin setting."
         )
 
-        ## Zen Mode Footer
-        self.hideZenFooter = QSwitch()
-        self.hideZenFooter.setChecked(self.mainConf.hideZenFooter)
+        ## Focus Mode Footer
+        self.hideFocusFooter = QSwitch()
+        self.hideFocusFooter.setChecked(self.mainConf.hideFocusFooter)
         self.mainForm.addRow(
-            "Hide document footer in \"Zen Mode\"",
-            self.hideZenFooter
+            "Hide document footer in \"Focus Mode\"",
+            self.hideFocusFooter
         )
 
         ## Justify Text
@@ -521,29 +521,29 @@ class GuiConfigEditLayoutTab(QWidget):
         validEntries = True
         needsRestart = False
 
-        textFont      = self.textStyleFont.text()
-        textSize      = self.textStyleSize.value()
-        textWidth     = self.textFlowMax.value()
-        zenWidth      = self.zenDocWidth.value()
-        textFixedW    = not self.textFlowFixed.isChecked()
-        hideZenFooter = self.hideZenFooter.isChecked()
-        doJustify     = self.textJustify.isChecked()
-        textMargin    = self.textMargin.value()
-        tabWidth      = self.tabWidth.value()
-        viewComments  = self.viewComments.isChecked()
-        viewSynopsis  = self.viewSynopsis.isChecked()
+        textFont        = self.textStyleFont.text()
+        textSize        = self.textStyleSize.value()
+        textWidth       = self.textFlowMax.value()
+        focusWidth      = self.focusDocWidth.value()
+        textFixedW      = not self.textFlowFixed.isChecked()
+        hideFocusFooter = self.hideFocusFooter.isChecked()
+        doJustify       = self.textJustify.isChecked()
+        textMargin      = self.textMargin.value()
+        tabWidth        = self.tabWidth.value()
+        viewComments    = self.viewComments.isChecked()
+        viewSynopsis    = self.viewSynopsis.isChecked()
 
-        self.mainConf.textFont      = textFont
-        self.mainConf.textSize      = textSize
-        self.mainConf.textWidth     = textWidth
-        self.mainConf.zenWidth      = zenWidth
-        self.mainConf.textFixedW    = textFixedW
-        self.mainConf.hideZenFooter = hideZenFooter
-        self.mainConf.doJustify     = doJustify
-        self.mainConf.textMargin    = textMargin
-        self.mainConf.tabWidth      = tabWidth
-        self.mainConf.viewComments  = viewComments
-        self.mainConf.viewSynopsis  = viewSynopsis
+        self.mainConf.textFont        = textFont
+        self.mainConf.textSize        = textSize
+        self.mainConf.textWidth       = textWidth
+        self.mainConf.focusWidth      = focusWidth
+        self.mainConf.textFixedW      = textFixedW
+        self.mainConf.hideFocusFooter = hideFocusFooter
+        self.mainConf.doJustify       = doJustify
+        self.mainConf.textMargin      = textMargin
+        self.mainConf.tabWidth        = tabWidth
+        self.mainConf.viewComments    = viewComments
+        self.mainConf.viewSynopsis    = viewSynopsis
 
         self.mainConf.confChanged = True
 

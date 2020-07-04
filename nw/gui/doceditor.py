@@ -322,7 +322,7 @@ class GuiDocEditor(QTextEdit):
 
     def updateDocMargins(self):
         """Automatically adjust the margins so the text is centred if
-        Config.textFixedW is enabled or we're in Zen mode. Otherwise,
+        Config.textFixedW is enabled or we're in Focus Mode. Otherwise,
         just ensure the margins are set correctly.
         """
         wW = self.width()
@@ -334,9 +334,9 @@ class GuiDocEditor(QTextEdit):
         else:
             sW = 0
 
-        if self.mainConf.textFixedW or self.theParent.isZenMode:
-            if self.theParent.isZenMode:
-                tW = self.mainConf.getZenWidth()
+        if self.mainConf.textFixedW or self.theParent.isFocusMode:
+            if self.theParent.isFocusMode:
+                tW = self.mainConf.getFocusWidth()
             else:
                 tW = self.mainConf.getTextWidth()
             tM = (wW - sW - tW)//2
@@ -1414,6 +1414,7 @@ class GuiDocEditSearch(QFrame):
         self.showReplace = QToolButton(self)
         self.showReplace.setArrowType(Qt.RightArrow)
         self.showReplace.setCheckable(True)
+        self.showReplace.setToolTip("Show/hide the replace text box")
         self.showReplace.setStyleSheet(r"QToolButton {border: none; background: transparent;}")
         self.showReplace.toggled.connect(self._doToggleReplace)
 
@@ -1700,6 +1701,7 @@ class GuiDocEditHeader(QWidget):
         self.minmaxButton.setStyleSheet(buttonStyle)
         self.minmaxButton.setToolButtonStyle(Qt.ToolButtonIconOnly)
         self.minmaxButton.setVisible(False)
+        self.minmaxButton.setToolTip("Toggle Focus Mode")
         self.minmaxButton.clicked.connect(self._minmaxDocument)
 
         self.closeButton = QToolButton(self)
@@ -1710,6 +1712,7 @@ class GuiDocEditHeader(QWidget):
         self.closeButton.setStyleSheet(buttonStyle)
         self.closeButton.setToolButtonStyle(Qt.ToolButtonIconOnly)
         self.closeButton.setVisible(False)
+        self.closeButton.setToolTip("Close the document")
         self.closeButton.clicked.connect(self._closeDocument)
 
         # Assemble Layout
@@ -1772,10 +1775,10 @@ class GuiDocEditHeader(QWidget):
         return
 
     def _minmaxDocument(self):
-        """Switch on or off zen mode.
+        """Switch on or off Focus Mode.
         """
-        self.theParent.toggleZenMode()
-        if self.theParent.isZenMode:
+        self.theParent.toggleFocusMode()
+        if self.theParent.isFocusMode:
             self.minmaxButton.setIcon(self.theTheme.getIcon("minimise"))
             self.setContentsMargins(self.buttonSize, 0, 0, 0)
             self.closeButton.setVisible(False)

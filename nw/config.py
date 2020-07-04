@@ -111,8 +111,8 @@ class Config:
         self.textWidth       = 600
         self.textMargin      = 40
         self.tabWidth        = 40
-        self.zenWidth        = 800
-        self.hideZenFooter   = False
+        self.focusWidth      = 800
+        self.hideFocusFooter = False
         self.doJustify       = False
         self.autoSelect      = True
         self.doReplace       = True
@@ -416,11 +416,11 @@ class Config:
         self.tabWidth = self._parseLine(
             cnfParse, cnfSec, "tabwidth", self.CNF_INT, self.tabWidth
         )
-        self.zenWidth = self._parseLine(
-            cnfParse, cnfSec, "zenwidth", self.CNF_INT, self.zenWidth
+        self.focusWidth = self._parseLine(
+            cnfParse, cnfSec, "focuswidth", self.CNF_INT, self.focusWidth
         )
-        self.hideZenFooter = self._parseLine(
-            cnfParse, cnfSec, "hidezenfooter", self.CNF_BOOL, self.hideZenFooter
+        self.hideFocusFooter = self._parseLine(
+            cnfParse, cnfSec, "hidefocusfooter", self.CNF_BOOL, self.hideFocusFooter
         )
         self.doJustify = self._parseLine(
             cnfParse, cnfSec, "justify", self.CNF_BOOL, self.doJustify
@@ -576,8 +576,8 @@ class Config:
         cnfParse.set(cnfSec,"width",           str(self.textWidth))
         cnfParse.set(cnfSec,"margin",          str(self.textMargin))
         cnfParse.set(cnfSec,"tabwidth",        str(self.tabWidth))
-        cnfParse.set(cnfSec,"zenwidth",        str(self.zenWidth))
-        cnfParse.set(cnfSec,"hidezenfooter",   str(self.hideZenFooter))
+        cnfParse.set(cnfSec,"focuswidth",      str(self.focusWidth))
+        cnfParse.set(cnfSec,"hidefocusfooter", str(self.hideFocusFooter))
         cnfParse.set(cnfSec,"justify",         str(self.doJustify))
         cnfParse.set(cnfSec,"autoselect",      str(self.autoSelect))
         cnfParse.set(cnfSec,"autoreplace",     str(self.doReplace))
@@ -839,8 +839,8 @@ class Config:
     def getTabWidth(self):
         return self.pxInt(self.tabWidth)
 
-    def getZenWidth(self):
-        return self.pxInt(self.zenWidth)
+    def getFocusWidth(self):
+        return self.pxInt(self.focusWidth)
 
     ##
     #  Internal Functions

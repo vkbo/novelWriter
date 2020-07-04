@@ -172,7 +172,7 @@ These are as following:
    ":kbd:`F5`",              "Open the Build Novel Project dialog."
    ":kbd:`F6`",              "Open the Writing Statistics dialog."
    ":kbd:`F7`",              "Re-run spell checker."
-   ":kbd:`F8`",              "Activate Zen Mode, hiding project tree and view panel."
+   ":kbd:`F8`",              "Activate Focus Mode, hiding project tree and view panel."
    ":kbd:`F9`",              "Re-build project index."
    ":kbd:`F10`",             "Re-build project outline."
    ":kbd:`F11`",             "Activate full screen mode."

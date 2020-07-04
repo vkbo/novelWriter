@@ -73,11 +73,11 @@ class GuiMain(QMainWindow):
         )
 
         # Core Classes and settings
-        self.theTheme   = GuiTheme(self)
-        self.theProject = NWProject(self)
-        self.theIndex   = NWIndex(self.theProject, self)
-        self.hasProject = False
-        self.isZenMode  = False
+        self.theTheme    = GuiTheme(self)
+        self.theProject  = NWProject(self)
+        self.theIndex    = NWIndex(self.theProject, self)
+        self.hasProject  = False
+        self.isFocusMode = False
 
         # Prepare main window
         self.resize(*self.mainConf.getWinSize())
@@ -874,7 +874,7 @@ class GuiMain(QMainWindow):
 
         logger.info("Exiting %s" % nw.__package__)
 
-        if not self.isZenMode:
+        if not self.isFocusMode:
             self.mainConf.setMainPanePos(self.splitMain.sizes())
             self.mainConf.setDocPanePos(self.splitDocs.sizes())
             self.mainConf.setOutlinePanePos(self.splitOutline.sizes())
@@ -921,28 +921,28 @@ class GuiMain(QMainWindow):
         self.splitDocs.setSizes(vPos)
         return not self.splitView.isVisible()
 
-    def toggleZenMode(self):
-        """Main GUI Zen Mode hides tree, view pane and optionally also
+    def toggleFocusMode(self):
+        """Main GUI Focus Mode hides tree, view pane and optionally also
         statusbar and menu.
         """
         if self.docEditor.theHandle is None:
-            logger.error("No document open, so not activating Zen Mode")
+            logger.error("No document open, so not activating Focus Mode")
             return False
 
-        self.isZenMode = not self.isZenMode
-        if self.isZenMode:
-            logger.debug("Activating Zen mode")
+        self.isFocusMode = not self.isFocusMode
+        if self.isFocusMode:
+            logger.debug("Activating Focus mode")
             self.tabWidget.setCurrentWidget(self.splitDocs)
         else:
-            logger.debug("Deactivating Zen mode")
+            logger.debug("Deactivating Focus mode")
 
-        isVisible = not self.isZenMode
+        isVisible = not self.isFocusMode
         self.treePane.setVisible(isVisible)
         self.statusBar.setVisible(isVisible)
         self.mainMenu.setVisible(isVisible)
         self.tabWidget.tabBar().setVisible(isVisible)
 
-        hideDocFooter = self.isZenMode and self.mainConf.hideZenFooter
+        hideDocFooter = self.isFocusMode and self.mainConf.hideFocusFooter
         self.docEditor.docFooter.setVisible(not hideDocFooter)
 
         if self.splitView.isVisible():
@@ -996,6 +996,10 @@ class GuiMain(QMainWindow):
         self.addAction(self.mainMenu.aSelectAll)
         self.addAction(self.mainMenu.aSelectPar)
 
+        # View
+        self.addAction(self.mainMenu.aFocusMode)
+        self.addAction(self.mainMenu.aFullScreen)
+
         # Insert
         self.addAction(self.mainMenu.aInsENDash)
         self.addAction(self.mainMenu.aInsEMDash)
@@ -1017,10 +1021,6 @@ class GuiMain(QMainWindow):
         self.addAction(self.mainMenu.aFmtHead4)
         self.addAction(self.mainMenu.aFmtComment)
         self.addAction(self.mainMenu.aFmtNoFormat)
-
-        # View
-        self.addAction(self.mainMenu.aZenMode)
-        self.addAction(self.mainMenu.aFullScreen)
 
         # Tools
         self.addAction(self.mainMenu.aSpellCheck)
@@ -1132,8 +1132,8 @@ class GuiMain(QMainWindow):
         if self.docEditor.docSearch.isVisible():
             self.docEditor.closeSearch()
             return
-        elif self.isZenMode:
-            self.toggleZenMode()
+        elif self.isFocusMode:
+            self.toggleFocusMode()
         return
 
     def _mainTabChanged(self, tabIndex):
