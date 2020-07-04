@@ -322,7 +322,7 @@ class GuiDocEditor(QTextEdit):
 
     def updateDocMargins(self):
         """Automatically adjust the margins so the text is centred if
-        Config.textFixedW is enabled or we're in Zen mode. Otherwise,
+        Config.textFixedW is enabled or we're in Focus Mode. Otherwise,
         just ensure the margins are set correctly.
         """
         wW = self.width()
@@ -334,9 +334,9 @@ class GuiDocEditor(QTextEdit):
         else:
             sW = 0
 
-        if self.mainConf.textFixedW or self.theParent.isZenMode:
-            if self.theParent.isZenMode:
-                tW = self.mainConf.getZenWidth()
+        if self.mainConf.textFixedW or self.theParent.isFocusMode:
+            if self.theParent.isFocusMode:
+                tW = self.mainConf.getFocusWidth()
             else:
                 tW = self.mainConf.getTextWidth()
             tM = (wW - sW - tW)//2
@@ -1772,10 +1772,10 @@ class GuiDocEditHeader(QWidget):
         return
 
     def _minmaxDocument(self):
-        """Switch on or off zen mode.
+        """Switch on or off Focus Mode.
         """
-        self.theParent.toggleZenMode()
-        if self.theParent.isZenMode:
+        self.theParent.toggleFocusMode()
+        if self.theParent.isFocusMode:
             self.minmaxButton.setIcon(self.theTheme.getIcon("minimise"))
             self.setContentsMargins(self.buttonSize, 0, 0, 0)
             self.closeButton.setVisible(False)

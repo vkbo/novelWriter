@@ -229,7 +229,7 @@ class GuiDocViewer(QTextBrowser):
 
     def updateDocMargins(self):
         """Automatically adjust the margins so the text is centred if
-        Config.textFixedW is enabled or we're in Zen mode. Otherwise,
+        Config.textFixedW is enabled or we're in Focus Mode. Otherwise,
         just ensure the margins are set correctly.
         """
         vBar = self.verticalScrollBar()

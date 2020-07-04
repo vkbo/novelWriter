@@ -50,9 +50,10 @@ class GuiMainMenu(QMenuBar):
         self._buildProjectMenu()
         self._buildDocumentMenu()
         self._buildEditMenu()
+        self._buildViewMenu()
         self._buildInsertMenu()
         self._buildFormatMenu()
-        self._buildViewMenu()
+        self._buildSearchMenu()
         self._buildToolsMenu()
         self._buildHelpMenu()
 
@@ -199,13 +200,6 @@ class GuiMainMenu(QMenuBar):
         self.aProjectSettings.setShortcut("Ctrl+Shift+,")
         self.aProjectSettings.triggered.connect(self.theParent.editProjectDialog)
         self.projMenu.addAction(self.aProjectSettings)
-
-        # Project > Export Project
-        self.aBuildProject = QAction("Build Project", self)
-        self.aBuildProject.setStatusTip("Build project")
-        self.aBuildProject.setShortcut("F5")
-        self.aBuildProject.triggered.connect(self.theParent.buildProjectDialog)
-        self.projMenu.addAction(self.aBuildProject)
 
         # Project > Separator
         self.projMenu.addSeparator()
@@ -399,53 +393,6 @@ class GuiMainMenu(QMenuBar):
         # Edit > Separator
         self.editMenu.addSeparator()
 
-        # Edit > Find
-        self.aEditFind = QAction("Find", self)
-        self.aEditFind.setStatusTip("Find text in document")
-        self.aEditFind.setShortcut("Ctrl+F")
-        self.aEditFind.triggered.connect(lambda: self._docAction(nwDocAction.FIND))
-        self.editMenu.addAction(self.aEditFind)
-
-        # Edit > Replace
-        self.aEditReplace = QAction("Replace", self)
-        self.aEditReplace.setStatusTip("Replace text in document")
-        if self.mainConf.osDarwin:
-            self.aEditReplace.setShortcut("Ctrl+=")
-        else:
-            self.aEditReplace.setShortcut("Ctrl+H")
-        self.aEditReplace.triggered.connect(lambda: self._docAction(nwDocAction.REPLACE))
-        self.editMenu.addAction(self.aEditReplace)
-
-        # Edit > Find Next
-        self.aFindNext = QAction("Find Next", self)
-        self.aFindNext.setStatusTip("Find next occurrence text in document")
-        if self.mainConf.osDarwin:
-            self.aFindNext.setShortcuts(["Ctrl+G","F3"])
-        else:
-            self.aFindNext.setShortcuts(["F3","Ctrl+G"])
-        self.aFindNext.triggered.connect(lambda: self._docAction(nwDocAction.GO_NEXT))
-        self.editMenu.addAction(self.aFindNext)
-
-        # Edit > Find Prev
-        self.aFindPrev = QAction("Find Previous", self)
-        self.aFindPrev.setStatusTip("Find previous occurrence text in document")
-        if self.mainConf.osDarwin:
-            self.aFindPrev.setShortcuts(["Ctrl+Shift+G","Shift+F3"])
-        else:
-            self.aFindPrev.setShortcuts(["Shift+F3","Ctrl+Shift+G"])
-        self.aFindPrev.triggered.connect(lambda: self._docAction(nwDocAction.GO_PREV))
-        self.editMenu.addAction(self.aFindPrev)
-
-        # Edit > Replace Next
-        self.aReplaceNext = QAction("Replace Next", self)
-        self.aReplaceNext.setStatusTip("Find and replace next occurrence text in document")
-        self.aReplaceNext.setShortcut("Ctrl+Shift+1")
-        self.aReplaceNext.triggered.connect(lambda: self._docAction(nwDocAction.REPL_NEXT))
-        self.editMenu.addAction(self.aReplaceNext)
-
-        # Edit > Separator
-        self.editMenu.addSeparator()
-
         # Edit > Select All
         self.aSelectAll = QAction("Select All", self)
         self.aSelectAll.setStatusTip("Select all text in document")
@@ -459,6 +406,53 @@ class GuiMainMenu(QMenuBar):
         self.aSelectPar.setShortcut("Ctrl+Shift+A")
         self.aSelectPar.triggered.connect(lambda: self._docAction(nwDocAction.SEL_PARA))
         self.editMenu.addAction(self.aSelectPar)
+
+        return
+
+    def _buildViewMenu(self):
+
+        # View
+        self.viewMenu = self.addMenu("&View")
+
+        # View > TreeView
+        self.aFocusTree = QAction("Focus Project Tree", self)
+        self.aFocusTree.setStatusTip("Move focus to project tree")
+        self.aFocusTree.setShortcut("Alt+1")
+        self.aFocusTree.triggered.connect(lambda : self.theParent.setFocus(1))
+        self.viewMenu.addAction(self.aFocusTree)
+
+        # View > Document Pane 1
+        self.aFocusEditor = QAction("Focus Document Editor", self)
+        self.aFocusEditor.setStatusTip("Move focus to left document pane")
+        self.aFocusEditor.setShortcut("Alt+2")
+        self.aFocusEditor.triggered.connect(lambda : self.theParent.setFocus(2))
+        self.viewMenu.addAction(self.aFocusEditor)
+
+        # View > Document Pane 2
+        self.aFocusView = QAction("Focus Document Viewer", self)
+        self.aFocusView.setStatusTip("Move focus to right document pane")
+        self.aFocusView.setShortcut("Alt+3")
+        self.aFocusView.triggered.connect(lambda : self.theParent.setFocus(3))
+        self.viewMenu.addAction(self.aFocusView)
+
+        # View > Separator
+        self.viewMenu.addSeparator()
+
+        # View > Toggle Distraction Free Mode
+        self.aFocusMode = QAction("Distraction Free Mode", self)
+        self.aFocusMode.setStatusTip("Toggles distraction free mode, only showing text editor")
+        self.aFocusMode.setShortcut("F8")
+        self.aFocusMode.setCheckable(True)
+        self.aFocusMode.setChecked(self.theParent.isFocusMode)
+        self.aFocusMode.toggled.connect(self.theParent.toggleFocusMode)
+        self.viewMenu.addAction(self.aFocusMode)
+
+        # View > Toggle Full Screen
+        self.aFullScreen = QAction("Full Screen Mode", self)
+        self.aFullScreen.setStatusTip("Maximises the main window")
+        self.aFullScreen.setShortcut("F11")
+        self.aFullScreen.triggered.connect(self.theParent.toggleFullScreenMode)
+        self.viewMenu.addAction(self.aFullScreen)
 
         return
 
@@ -518,6 +512,57 @@ class GuiMainMenu(QMenuBar):
         self.aInsThinNBSpace.setShortcut("Ctrl+K, Ctrl+Space")
         self.aInsThinNBSpace.triggered.connect(lambda: self._docInsert(nwDocInsert.THIN_NB_SPACE))
         self.insertMenu.addAction(self.aInsThinNBSpace)
+
+        return
+
+    def _buildSearchMenu(self):
+
+        # Search
+        self.srcMenu = self.addMenu("&Search")
+
+        # Search > Find
+        self.aFind = QAction("Find", self)
+        self.aFind.setStatusTip("Find text in document")
+        self.aFind.setShortcut("Ctrl+F")
+        self.aFind.triggered.connect(lambda: self._docAction(nwDocAction.FIND))
+        self.srcMenu.addAction(self.aFind)
+
+        # Search > Replace
+        self.aReplace = QAction("Replace", self)
+        self.aReplace.setStatusTip("Replace text in document")
+        if self.mainConf.osDarwin:
+            self.aReplace.setShortcut("Ctrl+=")
+        else:
+            self.aReplace.setShortcut("Ctrl+H")
+        self.aReplace.triggered.connect(lambda: self._docAction(nwDocAction.REPLACE))
+        self.srcMenu.addAction(self.aReplace)
+
+        # Search > Find Next
+        self.aFindNext = QAction("Find Next", self)
+        self.aFindNext.setStatusTip("Find next occurrence text in document")
+        if self.mainConf.osDarwin:
+            self.aFindNext.setShortcuts(["Ctrl+G","F3"])
+        else:
+            self.aFindNext.setShortcuts(["F3","Ctrl+G"])
+        self.aFindNext.triggered.connect(lambda: self._docAction(nwDocAction.GO_NEXT))
+        self.srcMenu.addAction(self.aFindNext)
+
+        # Search > Find Prev
+        self.aFindPrev = QAction("Find Previous", self)
+        self.aFindPrev.setStatusTip("Find previous occurrence text in document")
+        if self.mainConf.osDarwin:
+            self.aFindPrev.setShortcuts(["Ctrl+Shift+G","Shift+F3"])
+        else:
+            self.aFindPrev.setShortcuts(["Shift+F3","Ctrl+Shift+G"])
+        self.aFindPrev.triggered.connect(lambda: self._docAction(nwDocAction.GO_PREV))
+        self.srcMenu.addAction(self.aFindPrev)
+
+        # Search > Replace Next
+        self.aReplaceNext = QAction("Replace Next", self)
+        self.aReplaceNext.setStatusTip("Find and replace next occurrence text in document")
+        self.aReplaceNext.setShortcut("Ctrl+Shift+1")
+        self.aReplaceNext.triggered.connect(lambda: self._docAction(nwDocAction.REPL_NEXT))
+        self.srcMenu.addAction(self.aReplaceNext)
 
         return
 
@@ -626,53 +671,6 @@ class GuiMainMenu(QMenuBar):
 
         return
 
-    def _buildViewMenu(self):
-
-        # View
-        self.viewMenu = self.addMenu("&View")
-
-        # View > TreeView
-        self.aFocusTree = QAction("Focus Project Tree", self)
-        self.aFocusTree.setStatusTip("Move focus to project tree")
-        self.aFocusTree.setShortcut("Alt+1")
-        self.aFocusTree.triggered.connect(lambda : self.theParent.setFocus(1))
-        self.viewMenu.addAction(self.aFocusTree)
-
-        # View > Document Pane 1
-        self.aFocusEditor = QAction("Focus Document Editor", self)
-        self.aFocusEditor.setStatusTip("Move focus to left document pane")
-        self.aFocusEditor.setShortcut("Alt+2")
-        self.aFocusEditor.triggered.connect(lambda : self.theParent.setFocus(2))
-        self.viewMenu.addAction(self.aFocusEditor)
-
-        # View > Document Pane 2
-        self.aFocusView = QAction("Focus Document Viewer", self)
-        self.aFocusView.setStatusTip("Move focus to right document pane")
-        self.aFocusView.setShortcut("Alt+3")
-        self.aFocusView.triggered.connect(lambda : self.theParent.setFocus(3))
-        self.viewMenu.addAction(self.aFocusView)
-
-        # View > Separator
-        self.viewMenu.addSeparator()
-
-        # View > Toggle Distraction Free Mode
-        self.aZenMode = QAction("Zen Mode", self)
-        self.aZenMode.setStatusTip("Toggles distraction free mode, only showing text editor")
-        self.aZenMode.setShortcut("F8")
-        self.aZenMode.setCheckable(True)
-        self.aZenMode.setChecked(self.theParent.isZenMode)
-        self.aZenMode.toggled.connect(self.theParent.toggleZenMode)
-        self.viewMenu.addAction(self.aZenMode)
-
-        # View > Toggle Full Screen
-        self.aFullScreen = QAction("Full Screen Mode", self)
-        self.aFullScreen.setStatusTip("Maximises the main window")
-        self.aFullScreen.setShortcut("F11")
-        self.aFullScreen.triggered.connect(self.theParent.toggleFullScreenMode)
-        self.viewMenu.addAction(self.aFullScreen)
-
-        return
-
     def _buildToolsMenu(self):
 
         # Tools
@@ -741,13 +739,20 @@ class GuiMainMenu(QMenuBar):
         self.toolsMenu.addSeparator()
 
         # Tools > Backup
-        self.aBackupProject = QAction("Backup Project", self)
+        self.aBackupProject = QAction("Backup Project Folder", self)
         self.aBackupProject.setStatusTip("Backup Project")
         self.aBackupProject.triggered.connect(self._doBackup)
         self.toolsMenu.addAction(self.aBackupProject)
 
+        # Tools > Export Project
+        self.aBuildProject = QAction("Build Novel Project", self)
+        self.aBuildProject.setStatusTip("Launch the Build novel project tool")
+        self.aBuildProject.setShortcut("F5")
+        self.aBuildProject.triggered.connect(self.theParent.buildProjectDialog)
+        self.toolsMenu.addAction(self.aBuildProject)
+
         # Tools > Writing Stats
-        self.aWritingStats = QAction("Show Writing Statistics", self)
+        self.aWritingStats = QAction("Writing Statistics", self)
         self.aWritingStats.setStatusTip("Show the writing statistics dialog")
         self.aWritingStats.setShortcut("F6")
         self.aWritingStats.triggered.connect(self.theParent.showWritingStatsDialog)
