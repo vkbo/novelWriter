@@ -449,16 +449,6 @@ class GuiDocViewHeader(QWidget):
         ).format(*self.theTheme.colText)
 
         # Buttons
-        self.closeButton = QToolButton(self)
-        self.closeButton.setIcon(self.theTheme.getIcon("close"))
-        self.closeButton.setContentsMargins(0, 0, 0, 0)
-        self.closeButton.setIconSize(QSize(fPx, fPx))
-        self.closeButton.setFixedSize(fPx, fPx)
-        self.closeButton.setStyleSheet(buttonStyle)
-        self.closeButton.setToolButtonStyle(Qt.ToolButtonIconOnly)
-        self.closeButton.setVisible(False)
-        self.closeButton.clicked.connect(self._closeDocument)
-
         self.refreshButton = QToolButton(self)
         self.refreshButton.setIcon(self.theTheme.getIcon("refresh"))
         self.refreshButton.setContentsMargins(0, 0, 0, 0)
@@ -467,7 +457,19 @@ class GuiDocViewHeader(QWidget):
         self.refreshButton.setStyleSheet(buttonStyle)
         self.refreshButton.setToolButtonStyle(Qt.ToolButtonIconOnly)
         self.refreshButton.setVisible(False)
+        self.refreshButton.setToolTip("Reload the document")
         self.refreshButton.clicked.connect(self._refreshDocument)
+
+        self.closeButton = QToolButton(self)
+        self.closeButton.setIcon(self.theTheme.getIcon("close"))
+        self.closeButton.setContentsMargins(0, 0, 0, 0)
+        self.closeButton.setIconSize(QSize(fPx, fPx))
+        self.closeButton.setFixedSize(fPx, fPx)
+        self.closeButton.setStyleSheet(buttonStyle)
+        self.closeButton.setToolButtonStyle(Qt.ToolButtonIconOnly)
+        self.closeButton.setVisible(False)
+        self.closeButton.setToolTip("Close the document")
+        self.closeButton.clicked.connect(self._closeDocument)
 
         # Assemble Layout
         self.outerBox = QHBoxLayout()
@@ -593,6 +595,7 @@ class GuiDocViewFooter(QWidget):
         self.showHide.setIconSize(QSize(fPx, fPx))
         self.showHide.setFixedSize(QSize(fPx, fPx))
         self.showHide.clicked.connect(self._doShowHide)
+        self.showHide.setToolTip("Show/hide the reference panel")
 
         # Sticky Button
         stickyOn  = self.theTheme.getPixmap("sticky-on", (fPx, fPx))
@@ -608,6 +611,9 @@ class GuiDocViewFooter(QWidget):
         self.stickyRefs.setIconSize(QSize(fPx, fPx))
         self.stickyRefs.setFixedSize(QSize(fPx, fPx))
         self.stickyRefs.toggled.connect(self._doToggleSticky)
+        self.stickyRefs.setToolTip(
+            "Activate to freeze the content of the references panel when changing document"
+        )
 
         # Labels
         self.lblRefs = QLabel("References")

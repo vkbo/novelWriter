@@ -1414,6 +1414,7 @@ class GuiDocEditSearch(QFrame):
         self.showReplace = QToolButton(self)
         self.showReplace.setArrowType(Qt.RightArrow)
         self.showReplace.setCheckable(True)
+        self.showReplace.setToolTip("Show/hide the replace text box")
         self.showReplace.setStyleSheet(r"QToolButton {border: none; background: transparent;}")
         self.showReplace.toggled.connect(self._doToggleReplace)
 
@@ -1700,6 +1701,7 @@ class GuiDocEditHeader(QWidget):
         self.minmaxButton.setStyleSheet(buttonStyle)
         self.minmaxButton.setToolButtonStyle(Qt.ToolButtonIconOnly)
         self.minmaxButton.setVisible(False)
+        self.minmaxButton.setToolTip("Toggle Focus Mode")
         self.minmaxButton.clicked.connect(self._minmaxDocument)
 
         self.closeButton = QToolButton(self)
@@ -1710,6 +1712,7 @@ class GuiDocEditHeader(QWidget):
         self.closeButton.setStyleSheet(buttonStyle)
         self.closeButton.setToolButtonStyle(Qt.ToolButtonIconOnly)
         self.closeButton.setVisible(False)
+        self.closeButton.setToolTip("Close the document")
         self.closeButton.clicked.connect(self._closeDocument)
 
         # Assemble Layout
