@@ -34,9 +34,9 @@ from os import path, unlink, rmdir
 
 logger = logging.getLogger(__name__)
 
-# =========================================================================== #
+# =============================================================================================== #
 #  Simple Word Counter
-# =========================================================================== #
+# =============================================================================================== #
 
 def countWords(theText):
     """Count words in a piece of text, skipping special syntax and
@@ -84,9 +84,34 @@ def countWords(theText):
 
     return charCount, wordCount, paraCount
 
-# =========================================================================== #
+# =============================================================================================== #
+#  Convert an Integer to a Roman Number
+# =============================================================================================== #
+
+def numberToRoman(numVal, isLower=False):
+    """Convert an integer to a roman number.
+    """
+    if numVal < 1 or numVal > 4999:
+        return "NAN"
+
+    theValues  = [
+        (1000, "M"), (900, "CM"), (500, "D"), (400, "CD"), (100, "C"), (90, "XC"),
+        (50, "L"), (40, "XL"), (10, "X"), (9, "IX"), (5, "V"), (4, "IV"), (1, "I"),
+    ]
+
+    romNum = ""
+    for theDiv, theSym in theValues:
+        for _ in range(numVal//theDiv):
+            romNum += theSym
+            numVal -= theDiv
+        if numVal <= 0:
+            break
+
+    return romNum.lower if isLower else romNum
+
+# =============================================================================================== #
 #  Convert an Integer to a Word Number
-# =========================================================================== #
+# =============================================================================================== #
 
 def numberToWord(numVal, theLanguage):
     """Wrapper for converting numbers to words for chapter headings.
