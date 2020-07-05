@@ -33,7 +33,7 @@ from operator import itemgetter
 from PyQt5.QtCore import QRegularExpression
 
 from nw.core.document import NWDoc
-from nw.core.tools import numberToWord
+from nw.core.tools import numberToWord, numberToRoman
 from nw.constants import nwItemLayout, nwItemType, nwRegEx
 
 logger = logging.getLogger(__name__)
@@ -690,6 +690,10 @@ class Tokenizer():
         theTitle = theTitle.replace(r"%sca%", str(self.numAbsScene))
         if r"%chw%" in theTitle:
             theTitle = theTitle.replace(r"%chw%", numberToWord(self.numChapter,"en"))
+        if r"%chi%" in theTitle:
+            theTitle = theTitle.replace(r"%chi%", numberToRoman(self.numChapter, True))
+        if r"%chI%" in theTitle:
+            theTitle = theTitle.replace(r"%chI%", numberToRoman(self.numChapter, False))
         return theTitle
 
 # END Class Tokenizer

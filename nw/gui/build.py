@@ -46,7 +46,7 @@ from PyQt5.QtWidgets import (
 
 from nw.common import fuzzyTime
 from nw.gui.custom import QSwitch
-from nw.core import ToHtml
+from nw.core import ToHtml, numberToRoman
 from nw.constants import (
     nwAlert, nwFiles, nwItemType, nwItemLayout, nwItemClass
 )
@@ -105,6 +105,8 @@ class GuiBuildNovel(QDialog):
             r"%title% for the title as set in the document<br>"
             r"%ch% for chapter number (1, 2, 3)<br>"
             r"%chw% for chapter number as a word (one, two)<br>"
+            r"%chI% for chapter number in upper case Roman<br>"
+            r"%chi% for chapter number in lower case Roman<br>"
             r"%sc% for scene number within chapter<br>"
             r"%sca% for scene number within novel"
         )
