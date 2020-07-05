@@ -14,6 +14,7 @@ This is done through a series of keyword–replace steps.
 The keyword ``%title%`` will always be replaced by the text you put after the ``#`` characters in your document.
 
 The keywords ``%ch%`` and ``%chw%`` is replaced by a number, or a number word, respectively.
+You can also use ``%chi%`` or ``%chI%`` for lower and upper case Roman numbers.
 The number is incremented by one each time the build tool sees a new heading of level two in a file with layout "Chapter".
 If the file has layout "Unnumbered", the counter is *not* incremented.
 The latter is useful for for instance Prologue and Epilogue chapters.
