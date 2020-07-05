@@ -595,7 +595,7 @@ class GuiDocViewFooter(QWidget):
         self.showHide.setIconSize(QSize(fPx, fPx))
         self.showHide.setFixedSize(QSize(fPx, fPx))
         self.showHide.clicked.connect(self._doShowHide)
-        self.showHide.setToolTip("Show/hide the reference panel")
+        self.showHide.setToolTip("Show/hide the references panel")
 
         # Sticky Button
         stickyOn  = self.theTheme.getPixmap("sticky-on", (fPx, fPx))
