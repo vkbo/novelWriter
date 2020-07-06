@@ -46,7 +46,7 @@ from PyQt5.QtWidgets import (
 
 from nw.common import fuzzyTime
 from nw.gui.custom import QSwitch
-from nw.core import ToHtml, numberToRoman
+from nw.core import ToHtml
 from nw.constants import (
     nwAlert, nwFiles, nwItemType, nwItemLayout, nwItemClass
 )
