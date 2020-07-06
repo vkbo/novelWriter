@@ -91,23 +91,25 @@ def countWords(theText):
 def numberToRoman(numVal, isLower=False):
     """Convert an integer to a roman number.
     """
-    if numVal < 1 or numVal > 4999:
+    if not isinstance(numVal, int):
         return "NAN"
+    if numVal < 1 or numVal > 4999:
+        return "OOR"
 
-    theValues  = [
+    theValues = [
         (1000, "M"), (900, "CM"), (500, "D"), (400, "CD"), (100, "C"), (90, "XC"),
         (50, "L"), (40, "XL"), (10, "X"), (9, "IX"), (5, "V"), (4, "IV"), (1, "I"),
     ]
 
     romNum = ""
     for theDiv, theSym in theValues:
-        for _ in range(numVal//theDiv):
-            romNum += theSym
-            numVal -= theDiv
+        n = numVal//theDiv
+        romNum += n*theSym
+        numVal -= n*theDiv
         if numVal <= 0:
             break
 
-    return romNum.lower if isLower else romNum
+    return romNum.lower() if isLower else romNum
 
 # =============================================================================================== #
 #  Convert an Integer to a Word Number
