@@ -5,6 +5,6 @@ Name=novelWriter
 Comment=Multi-document markdown editor for novels
 Exec=%%exec%% %f
 Icon=novelwriter
-Categories=GTK;GNOME;Office;
+Categories=QT;GNOME;Office;
 Terminal=false
 MimeType=application/x-novelwriter-project
