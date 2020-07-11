@@ -1,5 +1,29 @@
 # novelWriter ChangeLog
 
+## Version 0.10.1 [2020-07-11]
+
+**Bugfixes**
+
+* Any error encountered when converting a project from the old project folder structure to the new were not properly propagated to the origin of the call. Any errors of warnings occurring in the process would previously not have been reported properly. These are no reported in a pop-up dialog. PR #350
+
+**User Interface**
+
+* The tooltip of the search/replace Regular Expression option has been updated to state the feature only works for Qt 5.3 or higher. PR #350.
+* The menus have been restructured a bit. The search options have been moved to a new Search menu. The menu order has been changed to a more standard order. The Build Novel Project tool moved to the Tools menu. The full screen distraction free mode is now named Focus Mode everywhere in the GUI, source code and settings files. Previously, different names were used in different places. PR #361.
+* Tooltips have been added to main GUI buttons without a button text. PRs #361 and #363.
+
+**Features**
+
+* The search/replace Regular Expression option now uses the newest QRegularExpression tool instead of the older QRegExp tool if the Qt version is 5.13 or above. Otherwise, it still uses the old. The main benefit of the newer tool in this context is better Unicode support. PR #360.
+* The Build Novel Project tool can now generate Roman numbers for chapter markers. Both upper and lower case is supported. PRs #362 and #363.
+
+**Other CHanges**
+
+* The install scripts now try to create folders before copying icons. PR #364.
+* The manifest file now lists the root assets folder, so that it is included in the pypi build. PR #364.
+* The .desktop template file has the correct categories set according to the FreeDesktop standard. PR #364.
+
+
 ## Version 0.10.0 [2020-06-30]
 
 **Note:** If the project file is opened by this version of novelWriter, the project file can no longer be read by an earlier version due to the change of how autoReplace settings are stored.
