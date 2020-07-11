@@ -4,11 +4,11 @@
 
 **Bugfixes**
 
-* Any error encountered when converting a project from the old project folder structure to the new were not properly propagated to the origin of the call. Any errors of warnings occurring in the process would previously not have been reported properly. These are no reported in a pop-up dialog. PR #350
+* Any error encountered when converting a project from the old project folder structure to the new were not properly propagated to the origin of the call. Any errors of warnings occurring in the process would previously not have been reported properly. These are no reported in a pop-up dialog. PR #359.
 
 **User Interface**
 
-* The tooltip of the search/replace Regular Expression option has been updated to state the feature only works for Qt 5.3 or higher. PR #350.
+* The tooltip of the search/replace Regular Expression option has been updated to state the feature only works for Qt 5.3 or higher. PR #359.
 * The menus have been restructured a bit. The search options have been moved to a new Search menu. The menu order has been changed to a more standard order. The Build Novel Project tool moved to the Tools menu. The full screen distraction free mode is now named Focus Mode everywhere in the GUI, source code and settings files. Previously, different names were used in different places. PR #361.
 * Tooltips have been added to main GUI buttons without a button text. PRs #361 and #363.
 
