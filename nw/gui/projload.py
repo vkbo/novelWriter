@@ -171,8 +171,7 @@ class GuiProjectLoad(QDialog):
         return
 
     def _doBrowse(self):
-        """Close the dialog window with no selected path, triggering the
-        project browser dialog.
+        """Browse for a folder path.
         """
         logger.verbose("GuiProjectLoad browse button clicked")
         if self.mainConf.showGUI:

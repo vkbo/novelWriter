@@ -44,7 +44,7 @@ from PyQt5.QtWidgets import (
     QFileDialog, QFontDialog, QSpinBox
 )
 
-from nw.common import fuzzyTime
+from nw.common import fuzzyTime, makeFileNameSafe
 from nw.gui.custom import QSwitch
 from nw.core import ToHtml
 from nw.constants import (
@@ -623,7 +623,7 @@ class GuiBuildNovel(QDialog):
         # Generate the file name
         if fileExt:
 
-            cleanName = self.theProject.getFileSafeProjectName()
+            cleanName = makeFileNameSafe(self.theProject.projName)
             fileName  = "%s.%s" % (cleanName, fileExt)
             saveDir   = self.mainConf.lastPath
             savePath  = path.join(saveDir, fileName)

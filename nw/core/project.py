@@ -41,7 +41,9 @@ from nw.core.item import NWItem
 from nw.core.document import NWDoc
 from nw.core.status import NWStatus
 from nw.core.options import OptionState
-from nw.common import checkString, checkBool, checkInt, formatTimeStamp
+from nw.common import (
+    checkString, checkBool, checkInt, formatTimeStamp, makeFileNameSafe
+)
 from nw.constants import (
     nwFiles, nwItemType, nwItemClass, nwItemLayout, nwAlert
 )
@@ -667,7 +669,7 @@ class NWProject():
             ), nwAlert.ERROR)
             return False
 
-        cleanName = self.getFileSafeProjectName()
+        cleanName = makeFileNameSafe(self.projName)
         baseDir = path.abspath(path.join(self.mainConf.backupPath, cleanName))
         if not path.isdir(baseDir):
             try:
@@ -890,15 +892,6 @@ class NWProject():
     ##
     #  Getters
     ##
-
-    def getFileSafeProjectName(self):
-        """Returns a filename safe version of the project name.
-        """
-        cleanName = ""
-        for c in self.projName.strip():
-            if c.isalpha() or c.isdigit() or c == " ":
-                cleanName += c
-        return cleanName
 
     def getSessionWordCount(self):
         """Returns the number of words added or removed this session.

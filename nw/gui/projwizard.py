@@ -28,11 +28,16 @@
 import logging
 import nw
 
+from os import path
+
 from PyQt5.QtGui import QPixmap, QColor
 from PyQt5.QtWidgets import (
     QWizard, QWizardPage, QLabel, QVBoxLayout, QLineEdit, QPlainTextEdit,
-    QFormLayout
+    QPushButton, QFileDialog, QHBoxLayout
 )
+
+from nw.common import makeFileNameSafe
+from nw.gui.custom import QSwitch, QConfigLayout
 
 logger = logging.getLogger(__name__)
 
@@ -57,8 +62,11 @@ class GuiProjectWizard(QWizard):
         # self.setWizardStyle(QWizard.ModernStyle)
         self.setPixmap(QWizard.WatermarkPixmap, self.sideImage)
 
-        self.introPage = ProjWizardIntroPage()
+        self.introPage = ProjWizardIntroPage(self.theParent)
+        self.storagePage = ProjWizardFolderPage(self.theParent)
+
         self.addPage(self.introPage)
+        self.addPage(self.storagePage)
 
         self.setOption(QWizard.NoBackButtonOnStartPage, True)
         # self.setOption(QWizard.ExtendedWatermarkPixmap, True)
@@ -71,10 +79,12 @@ class GuiProjectWizard(QWizard):
 
 class ProjWizardIntroPage(QWizardPage):
 
-    def __init__(self):
+    def __init__(self, theParent):
         QWizardPage.__init__(self)
 
-        self.mainConf = nw.CONFIG
+        self.mainConf  = nw.CONFIG
+        self.theParent = theParent
+        self.theTheme  = theParent.theTheme
 
         self.setTitle("Create New Project")
         self.theText = QLabel(
@@ -85,11 +95,12 @@ class ProjWizardIntroPage(QWizardPage):
         )
         self.theText.setWordWrap(True)
 
-        xW = self.mainConf.pxInt(250)
+        xW = self.mainConf.pxInt(300)
         xH = self.mainConf.pxInt(100)
         vS = self.mainConf.pxInt(12)
         fS = self.mainConf.pxInt(4)
 
+        # The Page Form
         self.projName = QLineEdit()
         self.projName.setMaxLength(200)
         self.projName.setFixedWidth(xW)
@@ -105,11 +116,15 @@ class ProjWizardIntroPage(QWizardPage):
         self.projAuthors.setFixedWidth(xW)
         self.projAuthors.setPlaceholderText("Optional. One name per line.")
 
-        self.mainForm = QFormLayout()
-        self.mainForm.addRow("Working title", self.projName)
-        self.mainForm.addRow("Novel title",   self.projTitle)
-        self.mainForm.addRow("Author(s)",     self.projAuthors)
+        self.mainForm = QConfigLayout()
+        self.mainForm.addRow("Working Title", self.projName)
+        self.mainForm.addRow("Novel Title", self.projTitle)
+        self.mainForm.addRow("Author(s)", self.projAuthors)
         self.mainForm.setVerticalSpacing(fS)
+
+        self.registerField("projName*", self.projName)
+        self.registerField("projTitle", self.projTitle)
+        self.registerField("projAuthors", self.projAuthors)
 
         # Assemble
         self.outerBox = QVBoxLayout()
@@ -122,3 +137,77 @@ class ProjWizardIntroPage(QWizardPage):
         return
 
 # END Class ProjWizardIntroPage
+
+class ProjWizardFolderPage(QWizardPage):
+
+    def __init__(self, theParent):
+        QWizardPage.__init__(self)
+
+        self.mainConf  = nw.CONFIG
+        self.theParent = theParent
+        self.theTheme  = theParent.theTheme
+
+        self.setTitle("Select Project Folder")
+        self.theText = QLabel(
+            "Select a location to store the project. A new project folder "
+            "will be created in the selected location."
+        )
+        self.theText.setWordWrap(True)
+
+        xW = self.mainConf.pxInt(300)
+        # xH = self.mainConf.pxInt(100)
+        vS = self.mainConf.pxInt(12)
+        fS = self.mainConf.pxInt(4)
+
+        self.projPath = QLineEdit("")
+        self.projPath.setFixedWidth(xW)
+        self.projPath.setPlaceholderText("Required")
+
+        self.browseButton = QPushButton("...")
+        self.browseButton.setMaximumWidth(int(2.5*self.theTheme.getTextWidth("...")))
+        self.browseButton.clicked.connect(self._doBrowse)
+
+        self.mainForm = QConfigLayout()
+        self.mainForm.addRow("Project Path", self.projPath, theButton=self.browseButton)
+        self.mainForm.setVerticalSpacing(fS)
+
+        self.registerField("projPath*", self.projPath)
+
+        # Assemble
+        self.outerBox = QVBoxLayout()
+        self.outerBox.setSpacing(vS)
+        self.outerBox.addWidget(self.theText)
+        self.outerBox.addLayout(self.mainForm)
+        self.outerBox.addStretch(1)
+        self.setLayout(self.outerBox)
+
+        return
+
+    ##
+    #  Slots
+    ##
+
+    def _doBrowse(self):
+        """Select a project folder.
+        """
+        lastPath = self.mainConf.lastPath
+        if not path.isdir(lastPath):
+            lastPath = ""
+
+        dlgOpt  = QFileDialog.Options()
+        dlgOpt |= QFileDialog.ShowDirsOnly
+        dlgOpt |= QFileDialog.DontUseNativeDialog
+        projDir = QFileDialog.getExistingDirectory(
+            self,"Select Project Folder", lastPath, options=dlgOpt
+        )
+        if projDir:
+            projName = self.field("projName")
+            if projName is not None:
+                fullDir = path.join(path.abspath(projDir), makeFileNameSafe(projName))
+                self.projPath.setText(fullDir)
+        else:
+            self.projPath.setText("")
+
+        return
+
+# END Class ProjWizardFolderPage

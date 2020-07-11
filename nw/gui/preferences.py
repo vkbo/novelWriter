@@ -331,7 +331,6 @@ class GuiConfigEditGeneralTab(QWidget):
     def _backupFolder(self):
         """Open a dialog to select the backup folder.
         """
-
         currDir = self.backupPath
         if not path.isdir(currDir):
             currDir = ""
