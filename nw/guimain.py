@@ -43,7 +43,7 @@ from nw.gui import (
     GuiBuildNovel, GuiDocEditor, GuiDocMerge, GuiDocSplit, GuiDocViewDetails,
     GuiDocViewer, GuiItemDetails, GuiItemEditor, GuiMainMenu, GuiMainStatus,
     GuiOutline, GuiOutlineDetails, GuiPreferences, GuiProjectLoad, GuiTheme,
-    GuiProjectSettings, GuiProjectTree, GuiWritingStats
+    GuiProjectSettings, GuiProjectTree, GuiWritingStats, GuiProjectWizard
 )
 from nw.core import NWProject, NWDoc, NWIndex
 from nw.constants import nwFiles, nwItemType, nwAlert
@@ -766,14 +766,16 @@ class GuiMain(QMainWindow):
     def newProjectDialog(self):
         """Select where to save new project.
         """
-        dlgOpt  = QFileDialog.Options()
-        dlgOpt |= QFileDialog.ShowDirsOnly
-        dlgOpt |= QFileDialog.DontUseNativeDialog
-        projPath = QFileDialog.getExistingDirectory(
-            self, "Select Location for New novelWriter Project", "", options=dlgOpt
-        )
-        if projPath:
-            return projPath
+        newProj = GuiProjectWizard(self)
+        newProj.exec_()
+        # dlgOpt  = QFileDialog.Options()
+        # dlgOpt |= QFileDialog.ShowDirsOnly
+        # dlgOpt |= QFileDialog.DontUseNativeDialog
+        # projPath = QFileDialog.getExistingDirectory(
+        #     self, "Select Location for New novelWriter Project", "", options=dlgOpt
+        # )
+        # if projPath:
+        #     return projPath
         return None
 
     def editConfigDialog(self):
