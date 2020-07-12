@@ -33,13 +33,19 @@ from os import path
 from PyQt5.QtGui import QPixmap, QColor
 from PyQt5.QtWidgets import (
     QWizard, QWizardPage, QLabel, QVBoxLayout, QLineEdit, QPlainTextEdit,
-    QPushButton, QFileDialog, QHBoxLayout, QLayout
+    QPushButton, QFileDialog, QHBoxLayout, QLayout, QRadioButton
 )
 
 from nw.common import makeFileNameSafe
 from nw.gui.custom import QSwitch, QConfigLayout
 
 logger = logging.getLogger(__name__)
+
+PAGE_INTRO  = 0
+PAGE_STORE  = 1
+PAGE_POP    = 2
+PAGE_CUSTOM = 3
+PAGE_FINAL  = 4
 
 class GuiProjectWizard(QWizard):
 
@@ -60,9 +66,15 @@ class GuiProjectWizard(QWizard):
 
         self.introPage = ProjWizardIntroPage(self.theParent)
         self.storagePage = ProjWizardFolderPage(self.theParent)
+        self.popPage = ProjWizardPopulatePage(self.theParent)
+        self.customPage = ProjWizardCustomPage(self.theParent)
+        self.finalPage = ProjWizardFinalPage(self.theParent)
 
-        self.addPage(self.introPage)
-        self.addPage(self.storagePage)
+        self.setPage(PAGE_INTRO, self.introPage)
+        self.setPage(PAGE_STORE, self.storagePage)
+        self.setPage(PAGE_POP, self.popPage)
+        self.setPage(PAGE_CUSTOM, self.customPage)
+        self.setPage(PAGE_FINAL, self.finalPage)
 
         self.setOption(QWizard.NoBackButtonOnStartPage, True)
 
@@ -156,7 +168,6 @@ class ProjWizardFolderPage(QWizardPage):
         self.theText.setWordWrap(True)
 
         xW = self.mainConf.pxInt(300)
-        # xH = self.mainConf.pxInt(100)
         vS = self.mainConf.pxInt(12)
         fS = self.mainConf.pxInt(4)
 
@@ -212,3 +223,119 @@ class ProjWizardFolderPage(QWizardPage):
         return
 
 # END Class ProjWizardFolderPage
+
+class ProjWizardPopulatePage(QWizardPage):
+
+    def __init__(self, theParent):
+        QWizardPage.__init__(self)
+
+        self.mainConf  = nw.CONFIG
+        self.theParent = theParent
+        self.theTheme  = theParent.theTheme
+
+        self.setTitle("Populate Project")
+        self.theText = QLabel(
+            "Choose how to pre-fill the project. Either with a minimal set of "
+            "starter items, a sample project explaining and showing many of "
+            "the features, or show further custom options on the next page."
+        )
+        self.theText.setWordWrap(True)
+
+        vS = self.mainConf.pxInt(12)
+        fS = self.mainConf.pxInt(4)
+
+        self.popSample = QRadioButton("Fill the project with sample files")
+        self.popMinimal = QRadioButton("Fill the project with a minimal set of items")
+        self.popCustom = QRadioButton("Show detailed options for filling the project")
+        self.popMinimal.setChecked(True)
+
+        self.popBox = QVBoxLayout()
+        self.popBox.setSpacing(fS)
+        self.popBox.addWidget(self.popMinimal)
+        self.popBox.addWidget(self.popSample)
+        self.popBox.addWidget(self.popCustom)
+
+        self.registerField("popSample", self.popSample)
+        self.registerField("popMinimal", self.popMinimal)
+        self.registerField("popCustom", self.popCustom)
+
+        # Assemble
+        self.outerBox = QVBoxLayout()
+        self.outerBox.setSpacing(vS)
+        self.outerBox.addWidget(self.theText)
+        self.outerBox.addLayout(self.popBox)
+        self.outerBox.addStretch(1)
+        self.setLayout(self.outerBox)
+
+        return
+
+    def nextId(self):
+        """Overload the nextID function to skip further pages if custom
+        is not selected.
+        """
+        if self.popCustom.isChecked():
+            return PAGE_CUSTOM
+        else:
+            return PAGE_FINAL
+
+# END Class ProjWizardPopulatePage
+
+class ProjWizardCustomPage(QWizardPage):
+
+    def __init__(self, theParent):
+        QWizardPage.__init__(self)
+
+        self.mainConf  = nw.CONFIG
+        self.theParent = theParent
+        self.theTheme  = theParent.theTheme
+
+        self.setTitle("Custom Project Options")
+        self.theText = QLabel(
+            "Text"
+        )
+        self.theText.setWordWrap(True)
+
+        vS = self.mainConf.pxInt(12)
+        fS = self.mainConf.pxInt(4)
+
+        # Assemble
+        self.outerBox = QVBoxLayout()
+        self.outerBox.setSpacing(vS)
+        self.outerBox.addWidget(self.theText)
+        # self.outerBox.addLayout(self.popBox)
+        self.outerBox.addStretch(1)
+        self.setLayout(self.outerBox)
+
+        return
+
+# END Class ProjWizardCustomPage
+
+class ProjWizardFinalPage(QWizardPage):
+
+    def __init__(self, theParent):
+        QWizardPage.__init__(self)
+
+        self.mainConf  = nw.CONFIG
+        self.theParent = theParent
+        self.theTheme  = theParent.theTheme
+
+        self.setTitle("Overview")
+        self.theText = QLabel(
+            "Text"
+        )
+        self.theText.setWordWrap(True)
+
+        vS = self.mainConf.pxInt(12)
+        fS = self.mainConf.pxInt(4)
+
+        # Assemble
+        self.outerBox = QVBoxLayout()
+        self.outerBox.setSpacing(vS)
+        self.outerBox.addWidget(self.theText)
+        # self.outerBox.addLayout(self.popBox)
+        self.outerBox.addStretch(1)
+        self.setLayout(self.outerBox)
+
+        return
+
+# END Class ProjWizardFinalPage
