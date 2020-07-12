@@ -33,7 +33,7 @@ from os import path
 from PyQt5.QtGui import QPixmap, QColor
 from PyQt5.QtWidgets import (
     QWizard, QWizardPage, QLabel, QVBoxLayout, QLineEdit, QPlainTextEdit,
-    QPushButton, QFileDialog, QHBoxLayout
+    QPushButton, QFileDialog, QHBoxLayout, QLayout
 )
 
 from nw.common import makeFileNameSafe
@@ -52,14 +52,10 @@ class GuiProjectWizard(QWizard):
         self.theParent = theParent
         self.theTheme  = theParent.theTheme
 
-        nPx = self.mainConf.pxInt(96)
-        wmW = self.mainConf.pxInt(100)
-        wmH = self.mainConf.pxInt(340)
-
-        self.sideImage = QPixmap(wmW, wmH)
-        self.sideImage.fill(self.palette().dark().color())
-
-        # self.setWizardStyle(QWizard.ModernStyle)
+        self.sideImage = self.theTheme.loadDecoration(
+            "wiz-back", None, self.mainConf.pxInt(370)
+        )
+        self.setWizardStyle(QWizard.ModernStyle)
         self.setPixmap(QWizard.WatermarkPixmap, self.sideImage)
 
         self.introPage = ProjWizardIntroPage(self.theParent)
@@ -69,7 +65,6 @@ class GuiProjectWizard(QWizard):
         self.addPage(self.storagePage)
 
         self.setOption(QWizard.NoBackButtonOnStartPage, True)
-        # self.setOption(QWizard.ExtendedWatermarkPixmap, True)
 
         logger.debug("GuiProjectWizard initialisation complete")
 
@@ -94,6 +89,11 @@ class ProjWizardIntroPage(QWizardPage):
             "are optional and can be changed at any time in Project Settings."
         )
         self.theText.setWordWrap(True)
+
+        self.imgCredit = QLabel("Side image by Peter Mitterhofer, CC BY-SA 4.0")
+        lblFont = self.imgCredit.font()
+        lblFont.setPointSizeF(0.6*self.theTheme.fontPointSize)
+        self.imgCredit.setFont(lblFont)
 
         xW = self.mainConf.pxInt(300)
         xH = self.mainConf.pxInt(100)
@@ -132,6 +132,7 @@ class ProjWizardIntroPage(QWizardPage):
         self.outerBox.addWidget(self.theText)
         self.outerBox.addLayout(self.mainForm)
         self.outerBox.addStretch(1)
+        self.outerBox.addWidget(self.imgCredit)
         self.setLayout(self.outerBox)
 
         return

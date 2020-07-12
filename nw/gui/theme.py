@@ -33,7 +33,7 @@ import nw
 from os import path, listdir
 from math import ceil
 
-from PyQt5.QtCore import QSize
+from PyQt5.QtCore import Qt, QSize
 from PyQt5.QtSvg import QSvgWidget
 from PyQt5.QtWidgets import QStyle, qApp
 from PyQt5.QtGui import (
@@ -497,6 +497,7 @@ class GuiIcons:
 
     ICON_MAP = {
         # Project and GUI icons
+        "novelwriter"     : (None, None),
         "cls_none"        : (QStyle.SP_DriveHDIcon, "drive-harddisk"),
         "cls_novel"       : (QStyle.SP_DriveHDIcon, "drive-harddisk"),
         "cls_plot"        : (QStyle.SP_DriveHDIcon, "drive-harddisk"),
@@ -552,7 +553,7 @@ class GuiIcons:
     }
 
     DECO_MAP = {
-        "nwicon" : ["icons", "novelwriter.svg"],
+        "wiz-back" : "wizard-back.jpg",
     }
 
     def __init__(self, theParent):
@@ -645,7 +646,7 @@ class GuiIcons:
     #  Access Functions
     ##
 
-    def loadDecoration(self, decoKey, decoSize=None):
+    def loadDecoration(self, decoKey, pxW, pxH):
         """Load graphical decoration element based on the decoration
         map. This function always returns a QSwgWidget.
         """
@@ -653,20 +654,22 @@ class GuiIcons:
             logger.error("Decoration with name '%s' does not exist" % decoKey)
             return QSvgWidget()
 
-        svgPath = path.join(
-            self.mainConf.assetPath,
-            self.DECO_MAP[decoKey][0],
-            self.DECO_MAP[decoKey][1]
+        imgPath = path.join(
+            self.mainConf.assetPath, "images", self.DECO_MAP[decoKey]
         )
-        if not path.isfile(svgPath):
+        if not path.isfile(imgPath):
             logger.error("Decoration file '%s' not in assets folder" % self.DECO_MAP[decoKey])
-            return QSvgWidget()
+            return QPixmap()
 
-        svgDeco = QSvgWidget(svgPath)
-        if decoSize is not None:
-            svgDeco.setFixedSize(QSize(decoSize[0],decoSize[1]))
+        theDeco = QPixmap(imgPath)
+        if pxW is not None and pxH is not None:
+            return theDeco.scaled(pxW, pxH, Qt.IgnoreAspectRatio, Qt.SmoothTransformation)
+        elif pxW is None and pxH is not None:
+            return theDeco.scaledToHeight(pxH, Qt.SmoothTransformation)
+        elif pxW is not None and pxH is None:
+            return theDeco.scaledToWidth(pxW, Qt.SmoothTransformation)
 
-        return svgDeco
+        return theDeco
 
     def getIcon(self, iconKey, iconSize=None):
         """Return an icon from the icon buffer. If it doesn't exist,
@@ -730,11 +733,16 @@ class GuiIcons:
         an icon exists. Prefer svg files over png files. Always returns
         a QIcon.
         """
-
         if iconKey not in self.ICON_MAP:
             logger.error("Requested unknown icon name '%s'" % iconKey)
             return QIcon()
 
+        # If we just want the app icon, return it right away
+        if iconKey == "novelwriter":
+            return QIcon(path.join(self.mainConf.iconPath, "novelwriter.svg"))
+
+        # Otherwise, we start looking for it
+        # First in the theme folder
         if iconKey in self.themeMap:
             logger.verbose("Loading: %s" % path.relpath(self.themeMap[iconKey]))
             return QIcon(self.themeMap[iconKey])
