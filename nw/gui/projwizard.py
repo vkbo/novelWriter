@@ -33,11 +33,11 @@ from os import path
 from PyQt5.QtGui import QPixmap, QColor
 from PyQt5.QtWidgets import (
     QWizard, QWizardPage, QLabel, QVBoxLayout, QLineEdit, QPlainTextEdit,
-    QPushButton, QFileDialog, QHBoxLayout, QLayout, QRadioButton
+    QPushButton, QFileDialog, QHBoxLayout, QRadioButton, QFormLayout
 )
 
 from nw.common import makeFileNameSafe
-from nw.gui.custom import QSwitch, QConfigLayout
+from nw.gui.custom import QSwitch
 
 logger = logging.getLogger(__name__)
 
@@ -128,7 +128,7 @@ class ProjWizardIntroPage(QWizardPage):
         self.projAuthors.setFixedWidth(xW)
         self.projAuthors.setPlaceholderText("Optional. One name per line.")
 
-        self.mainForm = QConfigLayout()
+        self.mainForm = QFormLayout()
         self.mainForm.addRow("Working Title", self.projName)
         self.mainForm.addRow("Novel Title", self.projTitle)
         self.mainForm.addRow("Author(s)", self.projAuthors)
@@ -169,7 +169,7 @@ class ProjWizardFolderPage(QWizardPage):
 
         xW = self.mainConf.pxInt(300)
         vS = self.mainConf.pxInt(12)
-        fS = self.mainConf.pxInt(4)
+        fS = self.mainConf.pxInt(8)
 
         self.projPath = QLineEdit("")
         self.projPath.setFixedWidth(xW)
@@ -179,9 +179,11 @@ class ProjWizardFolderPage(QWizardPage):
         self.browseButton.setMaximumWidth(int(2.5*self.theTheme.getTextWidth("...")))
         self.browseButton.clicked.connect(self._doBrowse)
 
-        self.mainForm = QConfigLayout()
-        self.mainForm.addRow("Project Path", self.projPath, theButton=self.browseButton)
-        self.mainForm.setVerticalSpacing(fS)
+        self.mainForm = QHBoxLayout()
+        self.mainForm.addWidget(QLabel("Project Path"), 0)
+        self.mainForm.addWidget(self.projPath, 1)
+        self.mainForm.addWidget(self.browseButton, 0)
+        self.mainForm.setSpacing(fS)
 
         self.registerField("projPath*", self.projPath)
 
