@@ -299,18 +299,3 @@ class nwUnicode:
     H_LTRIS  = "&#9666;"
 
 # END Class nwUnicode
-
-class nwInsertSymbols():
-
-    SYMBOLS = {
-        nwDocInsert.NO_INSERT     : "",
-        nwDocInsert.HARD_BREAK    : "  \n",
-        nwDocInsert.NB_SPACE      : nwUnicode.U_NBSP,
-        nwDocInsert.THIN_SPACE    : nwUnicode.U_THNSP,
-        nwDocInsert.THIN_NB_SPACE : nwUnicode.U_THNBSP,
-        nwDocInsert.SHORT_DASH    : nwUnicode.U_ENDASH,
-        nwDocInsert.LONG_DASH     : nwUnicode.U_EMDASH,
-        nwDocInsert.ELLIPSIS      : nwUnicode.U_HELLIP,
-    }
-
-# END Enum nwDocInsert
