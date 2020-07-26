@@ -1243,8 +1243,8 @@ class GuiDocEditor(QTextEdit):
         if self.docSearch.doMatchCap:
             replWith = transferCase(selText, replWith)
 
-        # Double check that we have a mach in case this is called on a
-        # plain word selection and not on a search
+        # Double check that we have a real match in case this is called
+        # on a regular word selection and not on a search match
         if not self.docSearch.isCaseSense:
             isMatch = searchFor.lower() == selText.lower()
         else:
