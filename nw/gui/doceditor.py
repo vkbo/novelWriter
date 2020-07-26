@@ -1202,7 +1202,7 @@ class GuiDocEditor(QTextEdit):
         if self.docSearch.isWholeWord:
             findOpt |= QTextDocument.FindWholeWords
 
-        searchFor = self.docSearch.getSearchText()
+        searchFor = self.docSearch.getSearchObject()
         wasFound  = self.find(searchFor, findOpt)
         if not wasFound:
             if self.docSearch.doNextFile and not isBackward:
@@ -1230,6 +1230,7 @@ class GuiDocEditor(QTextEdit):
 
         theCursor = self.textCursor()
         if not theCursor.hasSelection():
+            self._findNext()
             return
 
         searchFor = self.docSearch.getSearchText()
@@ -1239,10 +1240,13 @@ class GuiDocEditor(QTextEdit):
         if self.docSearch.doMatchCap:
             replWith = transferCase(selText, replWith)
 
-        if not self.docSearch.isCaseSense:
-            isMatch = searchFor.lower() == selText.lower()
+        if self.docSearch.isRegEx:
+            isMatch = True
         else:
-            isMatch = searchFor == selText
+            if not self.docSearch.isCaseSense:
+                isMatch = searchFor.lower() == selText.lower()
+            else:
+                isMatch = searchFor == selText
 
         if isMatch:
             theCursor.beginEditBlock()
@@ -1540,7 +1544,7 @@ class GuiDocEditSearch(QFrame):
         self.replaceBox.setText(theText)
         return True
 
-    def getSearchText(self):
+    def getSearchObject(self):
         """Return the current search text either as text or as a regular
         expression object.
         """
@@ -1567,6 +1571,11 @@ class GuiDocEditSearch(QFrame):
                 return theRegEx
 
         return theText
+
+    def getSearchText(self):
+        """Return the current search text.
+        """
+        return self.searchBox.text()
 
     def getReplaceText(self):
         """Return the current replace text.
