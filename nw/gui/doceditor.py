@@ -52,7 +52,7 @@ from nw.core import NWDoc, NWSpellSimple, countWords
 from nw.gui.dochighlight import GuiDocHighlighter
 from nw.common import transferCase
 from nw.constants import (
-    nwAlert, nwUnicode, nwDocAction, nwDocInsert, nwInsertSymbols, nwItemClass
+    nwAlert, nwUnicode, nwDocAction, nwDocInsert, nwItemClass
 )
 
 logger = logging.getLogger(__name__)
@@ -590,8 +590,33 @@ class GuiDocEditor(QTextEdit):
         """
         if isinstance(theInsert, str):
             theText = theInsert
-        elif theInsert in nwInsertSymbols.SYMBOLS:
-            theText = nwInsertSymbols.SYMBOLS[theInsert]
+        elif theInsert in nwDocInsert:
+            if theInsert == nwDocInsert.NO_INSERT:
+                theText = "",
+            elif theInsert == nwDocInsert.HARD_BREAK:
+                theText = "  \n",
+            elif theInsert == nwDocInsert.NB_SPACE:
+                theText = nwUnicode.U_NBSP,
+            elif theInsert == nwDocInsert.THIN_SPACE:
+                theText = nwUnicode.U_THNSP,
+            elif theInsert == nwDocInsert.THIN_NB_SPACE:
+                theText = nwUnicode.U_THNBSP,
+            elif theInsert == nwDocInsert.SHORT_DASH:
+                theText = nwUnicode.U_ENDASH,
+            elif theInsert == nwDocInsert.LONG_DASH:
+                theText = nwUnicode.U_EMDASH,
+            elif theInsert == nwDocInsert.ELLIPSIS:
+                theText = nwUnicode.U_HELLIP,
+            elif theInsert == nwDocInsert.QUOTE_LS:
+                theText = self.typSQOpen
+            elif theInsert == nwDocInsert.QUOTE_RS:
+                theText = self.typSQClose
+            elif theInsert == nwDocInsert.QUOTE_LD:
+                theText = self.typDQOpen
+            elif theInsert == nwDocInsert.QUOTE_RD:
+                theText = self.typDQClose
+            else:
+                return False
         else:
             return False
         theCursor = self.textCursor()
