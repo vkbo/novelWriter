@@ -107,6 +107,10 @@ class nwDocInsert(Enum):
     SHORT_DASH    = 5
     LONG_DASH     = 6
     ELLIPSIS      = 7
+    QUOTE_LS      = 8
+    QUOTE_RS      = 9
+    QUOTE_LD      = 10
+    QUOTE_RD      = 11
 
 # END Enum nwDocInsert
 

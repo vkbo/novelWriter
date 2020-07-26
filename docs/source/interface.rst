@@ -183,6 +183,7 @@ These are as following:
    On macOS, replace :kbd:`Ctrl` with :kbd:`Cmd`.
 
 A set of insert features are also available through shortcuts, but they require a double combination of shortcuts.
+The insert feature is activated with :kbd:`Ctrl-K`, followed by a key for the inserted character or punctuation.
 
 .. csv-table:: Keyboard Shortcuts
    :header: "Shortcut", "Description"
@@ -191,6 +192,10 @@ A set of insert features are also available through shortcuts, but they require 
    ":kbd:`Ctrl-K, -`",           "Insert a short dash (en dash)."
    ":kbd:`Ctrl-K, _`",           "Insert a long dash (em dash)."
    ":kbd:`Ctrl-K, .`",           "Insert ellipsis."
+   ":kbd:`Ctrl-K, 1`",           "Insert left single quote."
+   ":kbd:`Ctrl-K, 2`",           "Insert right single quote."
+   ":kbd:`Ctrl-K, 3`",           "Insert left double quote."
+   ":kbd:`Ctrl-K, 4`",           "Insert right double quote."
    ":kbd:`Ctrl-K, Return`",      "Insert a hard line break."
    ":kbd:`Ctrl-K, Space`",       "Insert a non-breaking space."
    ":kbd:`Ctrl-K, Shift-Space`", "Insert a thin space."

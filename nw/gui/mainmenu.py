@@ -485,6 +485,37 @@ class GuiMainMenu(QMenuBar):
         # Insert > Separator
         self.insertMenu.addSeparator()
 
+        # Insert > Left Single Quote
+        self.aInsQuoteLS = QAction("Left Single Quote", self)
+        self.aInsQuoteLS.setStatusTip("Insert left single quote")
+        self.aInsQuoteLS.setShortcut("Ctrl+K, 1")
+        self.aInsQuoteLS.triggered.connect(lambda: self._docInsert(nwDocInsert.QUOTE_LS))
+        self.insertMenu.addAction(self.aInsQuoteLS)
+
+        # Insert > Right Single Quote
+        self.aInsQuoteRS = QAction("Right Single Quote", self)
+        self.aInsQuoteRS.setStatusTip("Insert right single quote")
+        self.aInsQuoteRS.setShortcut("Ctrl+K, 2")
+        self.aInsQuoteRS.triggered.connect(lambda: self._docInsert(nwDocInsert.QUOTE_RS))
+        self.insertMenu.addAction(self.aInsQuoteRS)
+
+        # Insert > Left Double Quote
+        self.aInsQuoteLD = QAction("Left Double Quote", self)
+        self.aInsQuoteLD.setStatusTip("Insert left double quote")
+        self.aInsQuoteLD.setShortcut("Ctrl+K, 3")
+        self.aInsQuoteLD.triggered.connect(lambda: self._docInsert(nwDocInsert.QUOTE_LD))
+        self.insertMenu.addAction(self.aInsQuoteLD)
+
+        # Insert > Right Double Quote
+        self.aInsQuoteRD = QAction("Right Double Quote", self)
+        self.aInsQuoteRD.setStatusTip("Insert right double quote")
+        self.aInsQuoteRD.setShortcut("Ctrl+K, 4")
+        self.aInsQuoteRD.triggered.connect(lambda: self._docInsert(nwDocInsert.QUOTE_RD))
+        self.insertMenu.addAction(self.aInsQuoteRD)
+
+        # Insert > Separator
+        self.insertMenu.addSeparator()
+
         # Insert > Hard Line Break
         self.aInsHardBreak = QAction("Hard Line Break", self)
         self.aInsHardBreak.setStatusTip("Insert a hard line break")
