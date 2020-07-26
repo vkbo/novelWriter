@@ -1237,10 +1237,18 @@ class GuiDocEditor(QTextEdit):
         replWith  = self.docSearch.getReplaceText()
         selText   = theCursor.selectedText()
 
-        if searchFor:
-            if self.docSearch.doMatchCap:
-                replWith = transferCase(selText, replWith)
+        if self.docSearch.doMatchCap:
+            replWith = transferCase(selText, replWith)
 
+        if self.docSearch.isRegEx:
+            isMatch = True
+        else:
+            if not self.docSearch.isCaseSense:
+                isMatch = searchFor.lower() == selText.lower()
+            else:
+                isMatch = searchFor == selText
+
+        if isMatch:
             theCursor.beginEditBlock()
             theCursor.removeSelectedText()
             theCursor.insertText(replWith)
@@ -1251,6 +1259,7 @@ class GuiDocEditor(QTextEdit):
                 searchFor, replWith, theCursor.blockNumber()
             ))
 
+        if searchFor:
             self._findNext()
 
         return
