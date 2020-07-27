@@ -1262,20 +1262,19 @@ class GuiDocEditor(QTextEdit):
 
         searchFor = self.docSearch.getSearchText()
         replWith  = self.docSearch.getReplaceText()
-        selText   = theCursor.selectedText()
 
         if self.docSearch.doMatchCap:
-            replWith = transferCase(selText, replWith)
+            replWith = transferCase(theCursor.selectedText(), replWith)
 
         # Make sure the selected text was selected by an actual find
         # call, and not the user.
         try:
-            isResult  = self.lastFind[0] == theCursor.selectionStart()
-            isResult &= self.lastFind[1] == theCursor.selectionEnd()
+            isFind  = self.lastFind[0] == theCursor.selectionStart()
+            isFind &= self.lastFind[1] == theCursor.selectionEnd()
         except:
-            isResult = False
+            isFind = False
 
-        if isResult:
+        if isFind:
             theCursor.beginEditBlock()
             theCursor.removeSelectedText()
             theCursor.insertText(replWith)
