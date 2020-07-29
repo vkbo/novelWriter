@@ -1,5 +1,16 @@
 # novelWriter ChangeLog
 
+## Version 0.10.2 [2020-07-29]
+
+**Bugfixes**
+
+* Fixed a crash when using the replace part of search/replace when using regular expressions for the search. The replace code assumed the search field was a string, which isn't the case when using RegEx, rather itb is a QRegularExpression or QRegExp object. This has now been resolved. In addition, the replace feature has been improved to make sure that it only replaces text selected by an actual search, not any user selected text. Issue #371, PRs #372 and #373.
+* The Tokenizer class used for converting novelWriter markdown to other formats produced some invalid escape sequence warnings. The warnings did not seem to affect the results, but have nevertheless been fixed. PR #370.
+
+**Features**
+
+* Insert menu entries to insert single and double open and close quote symbols have been added. These are the symbols selected as the quote symbols in Preferences. They also have keyboard shortcuts associated with them. PR #367.
+
 ## Version 0.10.1 [2020-07-11]
 
 **Bugfixes**
@@ -17,7 +28,7 @@
 * The search/replace Regular Expression option now uses the newest QRegularExpression tool instead of the older QRegExp tool if the Qt version is 5.13 or above. Otherwise, it still uses the old. The main benefit of the newer tool in this context is better Unicode support. PR #360.
 * The Build Novel Project tool can now generate Roman numbers for chapter markers. Both upper and lower case is supported. PRs #362 and #363.
 
-**Other CHanges**
+**Other Changes**
 
 * The install scripts now try to create folders before copying icons. PR #364.
 * The manifest file now lists the root assets folder, so that it is included in the pypi build. PR #364.
