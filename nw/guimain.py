@@ -802,7 +802,8 @@ class GuiMain(QMainWindow):
         """
         if self.mainConf.showGUI:
             dlgHelp = GuiHelp(self)
-            dlgHelp.exec_()
+            dlgHelp.setModal(False)
+            dlgHelp.show()
         return True
 
     def editProjectDialog(self):
@@ -819,7 +820,8 @@ class GuiMain(QMainWindow):
         """
         if self.hasProject:
             dlgExport = GuiBuildNovel(self, self.theProject)
-            dlgExport.exec_()
+            dlgExport.setModal(False)
+            dlgExport.show()
         return True
 
     def showWritingStatsDialog(self):

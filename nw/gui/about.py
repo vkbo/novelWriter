@@ -225,7 +225,13 @@ class GuiAbout(QDialog):
 
         return
 
+    ##
+    #  Slots
+    ##
+
     def _doClose(self):
+        """Close the dialog.
+        """
         self.close()
         return
 

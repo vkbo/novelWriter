@@ -32,7 +32,7 @@ from os import path
 
 from PyQt5.QtCore import Qt
 from PyQt5.QtWidgets import (
-    QDialog
+    QDialog, QVBoxLayout, QHBoxLayout, QDialogButtonBox
 )
 
 logger = logging.getLogger(__name__)
@@ -48,8 +48,36 @@ class GuiHelp(QDialog):
         self.theParent = theParent
         self.theTheme  = theParent.theTheme
 
+        self.setModal(False)
+
+        self.outerBox = QVBoxLayout()
+        self.innerBox = QHBoxLayout()
+        self.innerBox.setSpacing(self.mainConf.pxInt(16))
+
+        self.setWindowTitle("Documentation")
+        self.setMinimumWidth(self.mainConf.pxInt(650))
+        self.setMinimumHeight(self.mainConf.pxInt(600))
+
+        # OK Button
+        self.buttonBox = QDialogButtonBox(QDialogButtonBox.Ok)
+        self.buttonBox.accepted.connect(self._doClose)
+
+        self.outerBox.addLayout(self.innerBox, 1)
+        self.outerBox.addWidget(self.buttonBox, 0)
+        self.setLayout(self.outerBox)
+
         logger.debug("GuiHelp initialisation complete")
 
+        return
+
+    ##
+    #  Slots
+    ##
+
+    def _doClose(self):
+        """Close the dialog.
+        """
+        self.close()
         return
 
 # END Class GuiHelp
