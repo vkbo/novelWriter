@@ -32,7 +32,6 @@ from PyQt5.QtCore import QUrl
 from PyQt5.QtGui import QDesktopServices
 from PyQt5.QtWidgets import QMenuBar, QAction, QMessageBox
 
-from nw.gui.about import GuiAbout
 from nw.constants import nwItemType, nwItemClass, nwDocAction, nwDocInsert
 
 logger = logging.getLogger(__name__)
@@ -119,14 +118,6 @@ class GuiMainMenu(QMenuBar):
         self.theProject.setAutoOutline(theMode)
         return True
 
-    def _showAbout(self):
-        """Show the about dialog.
-        """
-        if self.mainConf.showGUI:
-            msgAbout = GuiAbout(self.theParent)
-            msgAbout.exec_()
-        return True
-
     def _showAboutQt(self):
         """Show Qt's own About dialog.
         """
@@ -134,10 +125,10 @@ class GuiMainMenu(QMenuBar):
         msgBox.aboutQt(self.theParent,"About Qt")
         return True
 
-    def _openHelp(self):
-        """Open the documentation URL in the system's default browser.
+    def _openWebsite(self):
+        """Open the website URL in the system's default browser.
         """
-        QDesktopServices.openUrl(QUrl(nw.__docurl__))
+        QDesktopServices.openUrl(QUrl(nw.__url__))
         return True
 
     def _openIssue(self):
@@ -806,7 +797,7 @@ class GuiMainMenu(QMenuBar):
         # Help > About
         self.aAboutNW = QAction("About %s" % nw.__package__, self)
         self.aAboutNW.setStatusTip("About %s" % nw.__package__)
-        self.aAboutNW.triggered.connect(self._showAbout)
+        self.aAboutNW.triggered.connect(self.theParent.aboutDialog)
         self.helpMenu.addAction(self.aAboutNW)
 
         # Help > About Qt5
@@ -818,16 +809,22 @@ class GuiMainMenu(QMenuBar):
         # Help > Separator
         self.helpMenu.addSeparator()
 
-        # Document > Preview
-        self.aHelp = QAction("Online Documentation", self)
-        self.aHelp.setStatusTip("View online documentation")
+        # Help > Show Help
+        self.aHelp = QAction("Documentation", self)
+        self.aHelp.setStatusTip("Open the help dialog")
         self.aHelp.setShortcut("F1")
-        self.aHelp.triggered.connect(self._openHelp)
+        self.aHelp.triggered.connect(self.theParent.helpDialog)
         self.helpMenu.addAction(self.aHelp)
 
-        # Document > Report Issue
+        # Help > Show Website
+        self.aWebsite = QAction("Open Website", self)
+        self.aWebsite.setStatusTip("Open the %s website" % nw.__package__)
+        self.aWebsite.triggered.connect(self._openWebsite)
+        self.helpMenu.addAction(self.aWebsite)
+
+        # Help > Report Issue
         self.aIssue = QAction("Report an Issue", self)
-        self.aIssue.setStatusTip("View online documentation")
+        self.aIssue.setStatusTip("Report an issue on GitHub's issue tracker")
         self.aIssue.triggered.connect(self._openIssue)
         self.helpMenu.addAction(self.aIssue)
 

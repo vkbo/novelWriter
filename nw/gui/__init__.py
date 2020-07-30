@@ -6,6 +6,7 @@ from nw.gui.doceditor import GuiDocEditor
 from nw.gui.docmerge import GuiDocMerge
 from nw.gui.docsplit import GuiDocSplit
 from nw.gui.docviewer import GuiDocViewer, GuiDocViewDetails
+from nw.gui.help import GuiHelp
 from nw.gui.itemdetails import GuiItemDetails
 from nw.gui.itemeditor import GuiItemEditor
 from nw.gui.mainmenu import GuiMainMenu
@@ -27,6 +28,7 @@ __all__ = [
     "GuiDocSplit",
     "GuiDocViewer",
     "GuiDocViewDetails",
+    "GuiHelp",
     "GuiItemDetails",
     "GuiItemEditor",
     "GuiMainMenu",

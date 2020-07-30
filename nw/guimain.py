@@ -43,7 +43,7 @@ from nw.gui import (
     GuiBuildNovel, GuiDocEditor, GuiDocMerge, GuiDocSplit, GuiDocViewDetails,
     GuiDocViewer, GuiItemDetails, GuiItemEditor, GuiMainMenu, GuiMainStatus,
     GuiOutline, GuiOutlineDetails, GuiPreferences, GuiProjectLoad, GuiTheme,
-    GuiProjectSettings, GuiProjectTree, GuiWritingStats
+    GuiProjectSettings, GuiProjectTree, GuiWritingStats, GuiAbout, GuiHelp
 )
 from nw.core import NWProject, NWDoc, NWIndex
 from nw.constants import nwFiles, nwItemType, nwAlert
@@ -787,6 +787,22 @@ class GuiMain(QMainWindow):
             self.saveDocument()
             self.docEditor.initEditor()
             self.docViewer.initViewer()
+        return True
+
+    def aboutDialog(self):
+        """Show the about dialog.
+        """
+        if self.mainConf.showGUI:
+            dlgAbout = GuiAbout(self)
+            dlgAbout.exec_()
+        return True
+
+    def helpDialog(self):
+        """Open the in-app documentation in a dialog.
+        """
+        if self.mainConf.showGUI:
+            dlgHelp = GuiHelp(self)
+            dlgHelp.exec_()
         return True
 
     def editProjectDialog(self):
