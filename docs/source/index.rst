@@ -1,13 +1,13 @@
-####################################
-Welcome to novelWriter Documentation
-####################################
+########################################
+Welcome to the novelWriter Documentation
+########################################
 
 This is the documentation for novelWriter |version|.
 
 **Contents**
 
 .. toctree::
-   :maxdepth: 2
+   :maxdepth: 1
 
    introduction
    started

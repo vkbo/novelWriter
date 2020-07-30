@@ -3,7 +3,9 @@ User Interface
 ***************
 
 The user interface is kept as simple as possible to avoid distractions when writing.
-The main window contains a tree view pane with the entire structure of the project, and a small details panel below it to display additional information about the currently selected item.
+
+The main window contains a tree view pane with the entire structure of the project, and a small
+details panel below it to display additional information about the currently selected item.
 
 Edit View
 =========
