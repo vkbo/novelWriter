@@ -252,10 +252,10 @@ def main(sysArgs=None):
         errMsg.setMinimumWidth(500)
         errMsg.setMinimumHeight(300)
         errMsg.showMessage((
-            "ERROR: %s cannot start due to the following issues:<br><br>"
+            "ERROR: novelWriter cannot start due to the following issues:<br><br>"
             "&nbsp;-&nbsp;%s<br><br>Exiting."
         ) % (
-            CONFIG.appName, "<br>&nbsp;-&nbsp;".join(errorData)
+            "<br>&nbsp;-&nbsp;".join(errorData)
         ))
         errApp.exec_()
         sys.exit(1)
@@ -268,13 +268,43 @@ def main(sysArgs=None):
     if testMode:
         nwGUI = GuiMain()
         return nwGUI
+
     else:
         nwApp = QApplication([CONFIG.appName, ("-style=%s" % qtStyle)])
         nwApp.setApplicationName(CONFIG.appName)
         nwApp.setApplicationVersion(__version__)
         nwApp.setWindowIcon(QIcon(CONFIG.appIcon))
         nwApp.setOrganizationDomain(__domain__)
-        nwGUI = GuiMain()
-        sys.exit(nwApp.exec_())
+
+        try:
+            nwGUI = GuiMain()
+            sys.exit(nwApp.exec_())
+
+        except:
+            # novelWriter has crashed!
+            from traceback import print_tb, format_tb
+
+            eInfo = sys.exc_info()
+            logger.critical("%s: %s" % (eInfo[0].__name__, eInfo[1]))
+            print_tb(eInfo[2])
+
+            del nwApp
+
+            errApp = QApplication([])
+            errMsg = QErrorMessage()
+            errMsg.setWindowTitle("Critical Error")
+            errMsg.setMinimumWidth(500)
+            errMsg.setMinimumHeight(300)
+            errMsg.showMessage((
+                "<h3>novelWriter has encountered a critical error!</h3>"
+                "<p><b>%s:</b><br>%s</p>"
+                "<p><b>Traceback:</b><br>%s</p>"
+                "<p>Shutting down ...</p>"
+            ) % (eInfo[0].__name__, eInfo[1], "<br>".join(format_tb(eInfo[2]))))
+            errApp.exec_()
+
+            del eInfo
+
+            sys.exit(1)
 
     return
