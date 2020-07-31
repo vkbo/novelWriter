@@ -37,7 +37,6 @@ from PyQt5.QtWidgets import QApplication, QErrorMessage
 from nw.config import Config
 
 __package__    = "nw"
-__appname__    = "novelWriter"
 __author__     = "Veronica Berglyd Olsen"
 __copyright__  = "Copyright 2018–2020, Veronica Berglyd Olsen"
 __license__    = "GPLv3"
@@ -46,7 +45,7 @@ __hexversion__ = "0x001002f0"
 __date__       = "2020-07-29"
 __maintainer__ = "Veronica Berglyd Olsen"
 __email__      = "code@vkbo.net"
-__status__     = "Pre-Release"
+__status__     = "Beta"
 __url__        = "https://github.com/vkbo/novelWriter"
 __issuesurl__  = "https://github.com/vkbo/novelWriter/issues"
 __domain__     = "novelwriter.io"
@@ -91,7 +90,6 @@ CONFIG = Config()
 def main(sysArgs=None):
     """Parses command line, sets up logging, and launches main GUI.
     """
-
     if sysArgs is None:
         sysArgs = sys.argv[1:]
 
@@ -112,7 +110,7 @@ def main(sysArgs=None):
     ]
 
     helpMsg = (
-        "{appname} {version} ({status} {date})\n"
+        "novelWriter {version} ({status} {date})\n"
         "{copyright}\n"
         "\n"
         "This program is distributed in the hope that it will be useful,\n"
@@ -133,7 +131,6 @@ def main(sysArgs=None):
         "     --data=     Alternative user data path.\n"
         "     --testmode  Do not display GUI. Used by the test suite.\n"
     ).format(
-        appname   = __appname__,
         version   = __version__,
         status    = __status__,
         copyright = __copyright__,
@@ -168,7 +165,9 @@ def main(sysArgs=None):
             print(helpMsg)
             sys.exit()
         elif inOpt in ("-v", "--version"):
-            print("%s %s Version %s [%s]" % (__appname__,__status__,__version__,__date__))
+            print("%s %s Version %s [%s]" % (
+                CONFIG.appName, __status__, __version__, __date__)
+            )
             sys.exit()
         elif inOpt == "--info":
             debugLevel = logging.INFO
@@ -219,7 +218,7 @@ def main(sysArgs=None):
 
     logger.setLevel(debugLevel)
     logger.info("Starting %s %s (%s) %s" % (
-        __appname__, __version__, __hexversion__, __date__
+        CONFIG.appName, __version__, __hexversion__, __date__
     ))
 
     # Check Packages and Versions
@@ -256,7 +255,7 @@ def main(sysArgs=None):
             "ERROR: %s cannot start due to the following issues:<br><br>"
             "&nbsp;-&nbsp;%s<br><br>Exiting."
         ) % (
-            __appname__, "<br>&nbsp;-&nbsp;".join(errorData)
+            CONFIG.appName, "<br>&nbsp;-&nbsp;".join(errorData)
         ))
         errApp.exec_()
         sys.exit(1)
@@ -270,11 +269,11 @@ def main(sysArgs=None):
         nwGUI = GuiMain()
         return nwGUI
     else:
-        nwApp = QApplication([__appname__,("-style=%s" % qtStyle)])
-        nwApp.setApplicationName(__appname__)
+        nwApp = QApplication([CONFIG.appName, ("-style=%s" % qtStyle)])
+        nwApp.setApplicationName(CONFIG.appName)
         nwApp.setApplicationVersion(__version__)
         nwApp.setWindowIcon(QIcon(CONFIG.appIcon))
-        nwApp.setOrganizationDomain("novelwriter.io")
+        nwApp.setOrganizationDomain(__domain__)
         nwGUI = GuiMain()
         sys.exit(nwApp.exec_())
 

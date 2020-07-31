@@ -45,8 +45,8 @@ from nw.gui import (
     GuiOutline, GuiOutlineDetails, GuiPreferences, GuiProjectLoad, GuiTheme,
     GuiProjectSettings, GuiProjectTree, GuiWritingStats
 )
-from .core import NWProject, NWDoc, NWIndex
-from .constants import nwFiles, nwItemType, nwAlert
+from nw.core import NWProject, NWDoc, NWIndex
+from nw.constants import nwFiles, nwItemType, nwAlert
 
 logger = logging.getLogger(__name__)
 
@@ -220,7 +220,7 @@ class GuiMain(QMainWindow):
         else:
             self.manageProjects()
 
-        logger.debug("%s is ready ..." % nw.__appname__)
+        logger.debug("novelWriter is ready ...")
 
         return
 
@@ -384,13 +384,13 @@ class GuiMain(QMainWindow):
                     msgBox = QMessageBox()
                     msgRes = msgBox.warning(
                         self, "Project Locked", (
-                            "The project is already open by another instance of %s, and is "
-                            "therefore locked. Override lock and continue anyway?<br><br>"
+                            "The project is already open by another instance of novelWriter, and "
+                            "is therefore locked. Override lock and continue anyway?<br><br>"
                             "Note: If the program or the computer previously crashed, the lock "
-                            "can safely be overridden. If, however, another instance of %s has "
-                            "the project open, overriding the lock may corrupt the project, and "
-                            "is not recommended.%s"
-                        ) % (nw.__appname__, nw.__appname__, lockDetails),
+                            "can safely be overridden. If, however, another instance of "
+                            "novelWriter has the project open, overriding the lock may corrupt "
+                            "the project, and is not recommended.%s"
+                        ) % lockDetails,
                         QMessageBox.Yes | QMessageBox.No, QMessageBox.No
                     )
                     if msgRes == QMessageBox.Yes:
@@ -872,7 +872,7 @@ class GuiMain(QMainWindow):
             if msgRes != QMessageBox.Yes:
                 return False
 
-        logger.info("Exiting %s" % nw.__appname__)
+        logger.info("Exiting novelWriter")
 
         if not self.isFocusMode:
             self.mainConf.setMainPanePos(self.splitMain.sizes())
@@ -1037,7 +1037,7 @@ class GuiMain(QMainWindow):
         return True
 
     def _setWindowTitle(self, projName=None):
-        winTitle = "%s" % nw.__appname__
+        winTitle = self.mainConf.appName
         if projName is not None:
             winTitle += " - %s" % projName
         self.setWindowTitle(winTitle)
