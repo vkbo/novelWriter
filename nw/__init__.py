@@ -36,7 +36,7 @@ from PyQt5.QtWidgets import QApplication, QErrorMessage
 
 from nw.config import Config
 
-__package__    = "novelWriter"
+__package__    = "nw"
 __author__     = "Veronica Berglyd Olsen"
 __copyright__  = "Copyright 2018–2020, Veronica Berglyd Olsen"
 __license__    = "GPLv3"
@@ -45,7 +45,7 @@ __hexversion__ = "0x001002f0"
 __date__       = "2020-07-29"
 __maintainer__ = "Veronica Berglyd Olsen"
 __email__      = "code@vkbo.net"
-__status__     = "Pre-Release"
+__status__     = "Beta"
 __url__        = "https://github.com/vkbo/novelWriter"
 __issuesurl__  = "https://github.com/vkbo/novelWriter/issues"
 __domain__     = "novelwriter.io"
@@ -90,7 +90,6 @@ CONFIG = Config()
 def main(sysArgs=None):
     """Parses command line, sets up logging, and launches main GUI.
     """
-
     if sysArgs is None:
         sysArgs = sys.argv[1:]
 
@@ -111,7 +110,7 @@ def main(sysArgs=None):
     ]
 
     helpMsg = (
-        "{appname} {version} ({status} {date})\n"
+        "novelWriter {version} ({status} {date})\n"
         "{copyright}\n"
         "\n"
         "This program is distributed in the hope that it will be useful,\n"
@@ -132,7 +131,6 @@ def main(sysArgs=None):
         "     --data=     Alternative user data path.\n"
         "     --testmode  Do not display GUI. Used by the test suite.\n"
     ).format(
-        appname   = __package__,
         version   = __version__,
         status    = __status__,
         copyright = __copyright__,
@@ -167,7 +165,9 @@ def main(sysArgs=None):
             print(helpMsg)
             sys.exit()
         elif inOpt in ("-v", "--version"):
-            print("%s %s Version %s [%s]" % (__package__,__status__,__version__,__date__))
+            print("novelWriter %s Version %s [%s]" % (
+                __status__, __version__, __date__)
+            )
             sys.exit()
         elif inOpt == "--info":
             debugLevel = logging.INFO
@@ -197,7 +197,7 @@ def main(sysArgs=None):
     CONFIG.cmdOpen   = cmdOpen
 
     # Set Logging
-    logFmt = logging.Formatter(fmt=logFormat, datefmt="%Y-%m-%d %H:%M:%S", style="{")
+    logFmt = logging.Formatter(fmt=logFormat, style="{")
 
     if not logFile == "" and toFile:
         if path.isfile(logFile+".bak"):
@@ -217,8 +217,8 @@ def main(sysArgs=None):
         logger.addHandler(cHandle)
 
     logger.setLevel(debugLevel)
-    logger.info("Starting %s %s (%s) %s" % (
-        __package__, __version__, __hexversion__, __date__
+    logger.info("Starting novelWriter %s (%s) %s" % (
+        __version__, __hexversion__, __date__
     ))
 
     # Check Packages and Versions
@@ -252,10 +252,10 @@ def main(sysArgs=None):
         errMsg.setMinimumWidth(500)
         errMsg.setMinimumHeight(300)
         errMsg.showMessage((
-            "ERROR: %s cannot start due to the following issues:<br><br>"
+            "ERROR: novelWriter cannot start due to the following issues:<br><br>"
             "&nbsp;-&nbsp;%s<br><br>Exiting."
         ) % (
-            __package__, "<br>&nbsp;-&nbsp;".join(errorData)
+            "<br>&nbsp;-&nbsp;".join(errorData)
         ))
         errApp.exec_()
         sys.exit(1)
@@ -268,13 +268,43 @@ def main(sysArgs=None):
     if testMode:
         nwGUI = GuiMain()
         return nwGUI
+
     else:
-        nwApp = QApplication([__package__,("-style=%s" % qtStyle)])
-        nwApp.setApplicationName(__package__)
+        nwApp = QApplication([CONFIG.appName, ("-style=%s" % qtStyle)])
+        nwApp.setApplicationName(CONFIG.appName)
         nwApp.setApplicationVersion(__version__)
         nwApp.setWindowIcon(QIcon(CONFIG.appIcon))
-        nwApp.setOrganizationDomain("novelwriter.io")
-        nwGUI = GuiMain()
-        sys.exit(nwApp.exec_())
+        nwApp.setOrganizationDomain(__domain__)
+
+        try:
+            nwGUI = GuiMain()
+            sys.exit(nwApp.exec_())
+
+        except Exception:
+            # novelWriter has crashed!
+            from traceback import print_tb, format_tb
+
+            eInfo = sys.exc_info()
+            logger.critical("%s: %s" % (eInfo[0].__name__, eInfo[1]))
+            print_tb(eInfo[2])
+
+            del nwApp
+
+            errApp = QApplication([])
+            errMsg = QErrorMessage()
+            errMsg.setWindowTitle("Critical Error")
+            errMsg.setMinimumWidth(500)
+            errMsg.setMinimumHeight(300)
+            errMsg.showMessage((
+                "<h3>novelWriter has encountered a critical error!</h3>"
+                "<p><b>%s:</b><br>%s</p>"
+                "<p><b>Traceback:</b><br>%s</p>"
+                "<p>Shutting down ...</p>"
+            ) % (eInfo[0].__name__, eInfo[1], "<br>".join(format_tb(eInfo[2]))))
+            errApp.exec_()
+
+            del eInfo
+
+            sys.exit(1)
 
     return
