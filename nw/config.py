@@ -52,8 +52,8 @@ class Config:
     def __init__(self):
 
         # Set Application Variables
-        self.appName   = nw.__package__
-        self.appHandle = nw.__package__.lower()
+        self.appName   = nw.__appname__
+        self.appHandle = nw.__appname__.lower()
         self.showGUI   = True
         self.debugInfo = False
         self.cmdOpen   = None

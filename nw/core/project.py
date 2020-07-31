@@ -373,7 +373,7 @@ class NWProject():
                 "Note that after the upgrade, you cannot open the project with an older "
                 "version of %s any more, so make sure you have a recent backup."
             ) % (
-                nw.__package__, nw.__package__
+                nw.__appname__, nw.__appname__
             ))
             if msgRes != QMessageBox.Yes:
                 return False
@@ -384,7 +384,7 @@ class NWProject():
                 "The project cannot be opened by this version of {nw:s}. "
                 "The file was saved with {nw:s} version {vers:s}."
             ).format(
-                nw = nw.__package__,
+                nw = nw.__appname__,
                 vers = appVersion,
             ), nwAlert.ERROR)
             return False
@@ -399,7 +399,7 @@ class NWProject():
                 "If you continue to open the project, some attributes and settings may not be "
                 "preserved. Continue opening the project?"
             ) % (
-                nw.__package__, appVersion, nw.__version__
+                nw.__appname__, appVersion, nw.__version__
             ))
             if msgRes != QMessageBox.Yes:
                 return False

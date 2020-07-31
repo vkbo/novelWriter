@@ -36,7 +36,8 @@ from PyQt5.QtWidgets import QApplication, QErrorMessage
 
 from nw.config import Config
 
-__package__    = "novelWriter"
+__package__    = "nw"
+__appname__    = "novelWriter"
 __author__     = "Veronica Berglyd Olsen"
 __copyright__  = "Copyright 2018–2020, Veronica Berglyd Olsen"
 __license__    = "GPLv3"
@@ -132,7 +133,7 @@ def main(sysArgs=None):
         "     --data=     Alternative user data path.\n"
         "     --testmode  Do not display GUI. Used by the test suite.\n"
     ).format(
-        appname   = __package__,
+        appname   = __appname__,
         version   = __version__,
         status    = __status__,
         copyright = __copyright__,
@@ -167,7 +168,7 @@ def main(sysArgs=None):
             print(helpMsg)
             sys.exit()
         elif inOpt in ("-v", "--version"):
-            print("%s %s Version %s [%s]" % (__package__,__status__,__version__,__date__))
+            print("%s %s Version %s [%s]" % (__appname__,__status__,__version__,__date__))
             sys.exit()
         elif inOpt == "--info":
             debugLevel = logging.INFO
@@ -218,7 +219,7 @@ def main(sysArgs=None):
 
     logger.setLevel(debugLevel)
     logger.info("Starting %s %s (%s) %s" % (
-        __package__, __version__, __hexversion__, __date__
+        __appname__, __version__, __hexversion__, __date__
     ))
 
     # Check Packages and Versions
@@ -255,7 +256,7 @@ def main(sysArgs=None):
             "ERROR: %s cannot start due to the following issues:<br><br>"
             "&nbsp;-&nbsp;%s<br><br>Exiting."
         ) % (
-            __package__, "<br>&nbsp;-&nbsp;".join(errorData)
+            __appname__, "<br>&nbsp;-&nbsp;".join(errorData)
         ))
         errApp.exec_()
         sys.exit(1)
@@ -269,8 +270,8 @@ def main(sysArgs=None):
         nwGUI = GuiMain()
         return nwGUI
     else:
-        nwApp = QApplication([__package__,("-style=%s" % qtStyle)])
-        nwApp.setApplicationName(__package__)
+        nwApp = QApplication([__appname__,("-style=%s" % qtStyle)])
+        nwApp.setApplicationName(__appname__)
         nwApp.setApplicationVersion(__version__)
         nwApp.setWindowIcon(QIcon(CONFIG.appIcon))
         nwApp.setOrganizationDomain("novelwriter.io")

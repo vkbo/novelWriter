@@ -108,7 +108,7 @@ class GuiPreferences(PagedDialog):
             msgBox = QMessageBox()
             msgBox.information(
                 self, "Preferences",
-                "Some changes will not be applied until %s has been restarted." % nw.__package__
+                "Some changes will not be applied until %s has been restarted." % nw.__appname__
             )
 
         if validEntries:
@@ -154,7 +154,7 @@ class GuiConfigEditGeneralTab(QWidget):
         self.mainForm.addRow(
             "Main GUI theme",
             self.selectTheme,
-            "Changing this requires restarting %s." % nw.__package__
+            "Changing this requires restarting %s." % nw.__appname__
         )
 
         ## Select Icon Theme
@@ -170,7 +170,7 @@ class GuiConfigEditGeneralTab(QWidget):
         self.mainForm.addRow(
             "Main icon theme",
             self.selectIcons,
-            "Changing this requires restarting %s." % nw.__package__
+            "Changing this requires restarting %s." % nw.__appname__
         )
 
         ## Dark Icons
@@ -193,7 +193,7 @@ class GuiConfigEditGeneralTab(QWidget):
         self.mainForm.addRow(
             "Font family",
             self.guiFont,
-            "Changing this requires restarting %s." % nw.__package__,
+            "Changing this requires restarting %s." % nw.__appname__,
             theButton = self.fontButton
         )
 
@@ -206,7 +206,7 @@ class GuiConfigEditGeneralTab(QWidget):
         self.mainForm.addRow(
             "Font size",
             self.guiFontSize,
-            "Changing this requires restarting %s." % nw.__package__,
+            "Changing this requires restarting %s." % nw.__appname__,
             theUnit = "pt"
         )
 

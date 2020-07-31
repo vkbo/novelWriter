@@ -45,8 +45,8 @@ from nw.gui import (
     GuiOutline, GuiOutlineDetails, GuiPreferences, GuiProjectLoad, GuiTheme,
     GuiProjectSettings, GuiProjectTree, GuiWritingStats
 )
-from nw.core import NWProject, NWDoc, NWIndex
-from nw.constants import nwFiles, nwItemType, nwAlert
+from .core import NWProject, NWDoc, NWIndex
+from .constants import nwFiles, nwItemType, nwAlert
 
 logger = logging.getLogger(__name__)
 
@@ -220,7 +220,7 @@ class GuiMain(QMainWindow):
         else:
             self.manageProjects()
 
-        logger.debug("%s is ready ..." % nw.__package__)
+        logger.debug("%s is ready ..." % nw.__appname__)
 
         return
 
@@ -390,7 +390,7 @@ class GuiMain(QMainWindow):
                             "can safely be overridden. If, however, another instance of %s has "
                             "the project open, overriding the lock may corrupt the project, and "
                             "is not recommended.%s"
-                        ) % (nw.__package__, nw.__package__, lockDetails),
+                        ) % (nw.__appname__, nw.__appname__, lockDetails),
                         QMessageBox.Yes | QMessageBox.No, QMessageBox.No
                     )
                     if msgRes == QMessageBox.Yes:
@@ -872,7 +872,7 @@ class GuiMain(QMainWindow):
             if msgRes != QMessageBox.Yes:
                 return False
 
-        logger.info("Exiting %s" % nw.__package__)
+        logger.info("Exiting %s" % nw.__appname__)
 
         if not self.isFocusMode:
             self.mainConf.setMainPanePos(self.splitMain.sizes())
@@ -1037,7 +1037,7 @@ class GuiMain(QMainWindow):
         return True
 
     def _setWindowTitle(self, projName=None):
-        winTitle = "%s" % nw.__package__
+        winTitle = "%s" % nw.__appname__
         if projName is not None:
             winTitle += " - %s" % projName
         self.setWindowTitle(winTitle)
