@@ -165,8 +165,8 @@ def main(sysArgs=None):
             print(helpMsg)
             sys.exit()
         elif inOpt in ("-v", "--version"):
-            print("%s %s Version %s [%s]" % (
-                CONFIG.appName, __status__, __version__, __date__)
+            print("novelWriter %s Version %s [%s]" % (
+                __status__, __version__, __date__)
             )
             sys.exit()
         elif inOpt == "--info":
@@ -197,7 +197,7 @@ def main(sysArgs=None):
     CONFIG.cmdOpen   = cmdOpen
 
     # Set Logging
-    logFmt = logging.Formatter(fmt=logFormat, datefmt="%Y-%m-%d %H:%M:%S", style="{")
+    logFmt = logging.Formatter(fmt=logFormat, style="{")
 
     if not logFile == "" and toFile:
         if path.isfile(logFile+".bak"):
@@ -217,8 +217,8 @@ def main(sysArgs=None):
         logger.addHandler(cHandle)
 
     logger.setLevel(debugLevel)
-    logger.info("Starting %s %s (%s) %s" % (
-        CONFIG.appName, __version__, __hexversion__, __date__
+    logger.info("Starting novelWriter %s (%s) %s" % (
+        __version__, __hexversion__, __date__
     ))
 
     # Check Packages and Versions
@@ -280,7 +280,7 @@ def main(sysArgs=None):
             nwGUI = GuiMain()
             sys.exit(nwApp.exec_())
 
-        except:
+        except Exception:
             # novelWriter has crashed!
             from traceback import print_tb, format_tb
 
