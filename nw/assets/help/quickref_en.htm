@@ -6,18 +6,22 @@
 </head>
 
 <body>
-<h1>Quick Reference Guide</h1>
+<h1><a name="top"></a>Quick Reference Guide</h1>
+
+<p>This is the quick reference guide for novelWriter. It briefly lists the key
+features. The full documentation is available online at
+<a href="https://novelwriter.readthedocs.io/">novelwriter.readthedocs.io</a>.</p>
 
 <h2><a name="intro"></a>How it Works</h2>
 
-<p>novelWriter is designed to be a simple and to the point application for
+<p>novelWriter is designed to be a simple and to-the-point application for
 writing novels. It is not a fancy word processor, and doesn't want to be one
 either.</p>
 
 <p>All of the pieces of your project is kept in the project treeview in the main
 window. The files are organised into <a href="#project-files">novel files and
 notes</a>, which can be <a href="#syntax-tags">cross-referenced</a> and
-displayed in the Overview tab.</p>
+displayed in the Outline tab in the main window.</p>
 
 <p>The text editor panel allows for editing one file at a time, formatted with a
 simplified <a href="#syntax">markdown syntax</a> and with some
@@ -27,14 +31,14 @@ novels. Spell checking is available through third party libraries.</p>
 <p>At any time, the current document being edited, or any other document in the
 project, can be viewed in the additional view panel. It is not open by default,
 but can be activated by selecting a file in the treeview, and selecting
-<code>Document &rsaquo; View Document</code>; from the menu, or simply pressing
+<code>Document &rsaquo; View Document</code> from the menu, or simply pressing
 <kbd>Ctrl</kbd><kbd>R</kbd>.</p>
 
 <h2><a name="syntax"></a>Markdown Syntax</h2>
 
-<p>Only a subset of markdown syntax is supported, with a few special additions
-that are convenient for structuring and cross-referencing novels. All supported
-features are listed in this section.</p>
+<p>Only a subset of markdown syntax is supported in the editor, with a few
+special additions that are convenient for structuring and cross-referencing
+novels. All supported features are listed in this section.</p>
 
 <h3><a name="syntax-headers"></a>Headers</h3>
 
@@ -51,7 +55,7 @@ features are listed in this section.</p>
     <tbody>
         <tr>
             <td><code># Title Text</code></td>
-            <td>Heading Level 1 (Title)</td>
+            <td>Heading Level 1 (Partition, Title)</td>
             <td><kbd>Ctrl</kbd><kbd>1</kbd></td>
         </tr>
         <tr>
@@ -73,8 +77,10 @@ features are listed in this section.</p>
 </table>
 
 <p>The text in parentheses indicate the structure level these headings are
-treated as in novel files. For note files, the headings have no special meaning.
-See the <a href="projects.htm">Project Structure</a> page for more details.</p>
+treated as in novel files. The level of the heading indicates what the following
+text is to be considered as. Whether it is the start of a partition, chapter,
+scene, or a section within a scene. For note files, the headings have no special
+meaning. In notes, a heading is just a heading.</p>
 
 <p>Header formatting can be removed with the keyboard shortcut
 <kbd>Ctrl</kbd><kbd>0</kbd>.</p>
@@ -128,16 +134,16 @@ See the <a href="projects.htm">Project Structure</a> page for more details.</p>
 <h3><a name="syntax-comments"></a>Comments</h3>
 
 <p>Comments are supported, which is not standard in regular markdown. There are
-two type of comments:</p>
+two type of comments available:</p>
 
 <ul>
     <li>Regular comments are lines starting with the character <code>%</code>.
         Such a line is ignored by the word counter, and can be filtered out when
         the project is exported.</li>
     <li>Synopsis comments are a special type of comments used to populate the
-        <a href="tools.htm#outline">Outline View</a>. They are comments where
-        the first word is <code>Synopsis:</code> (remember the <code>:</code>).
-        They can also be filtered out when the project is exported.</li>
+        Outline View. They are comments where the first word is
+        <code>Synopsis:</code> (remember the <code>:</code>). They can also be
+        filtered out when the project is exported.</li>
 </ul>
 
 <p>You can turn a regular line into a comment with the keyboard shortcut
@@ -153,8 +159,7 @@ two type of comments:</p>
 <h3><a name="syntax-tags"></a>Tags and References</h3>
 
 <p>Tags and references are used to cross-reference novel and note files, or note
-and note files. For a full description of how they work, se the
-<a href="tagsrefs.htm">Tags & References</a> page. Here is a quick summary.</p>
+and other note files. Here is a quick summary.</p>
 
 <p>Tags and references use a keyword/value format indicated by the
 <code>@</code> character as the first character on the line. The general format
@@ -163,6 +168,7 @@ is mandatory, and multiple values are separated with a <code>,</code>
 character.</p>
 
 <p>Possible keywords are as follows:</p>
+
 <table>
     <thead>
         <tr>
@@ -212,20 +218,25 @@ character.</p>
 
 <h2><a name="project"></a>Project Layout</h2>
 
-<p>The project is organised into a pre-defined structure. The content is then
-added to this structure as files, optionally organised into subfolders. All
-structure elements are created via the <code>Project</code> menu.</p>
+<p>Projects are structured into a set of top level special folders called
+<em>root folders</em>. The content is then added to these root folders as files,
+optionally organised into subfolders. All structure elements are created via
+the <code>Project</code> menu.</p>
+
+<p>The organisation of files within the root folders are for the user's
+convenience only. When the project files are assembled into a single documents,
+only the order of the files is considered. Subfolders are ignored. Files can be
+reordered by dragging and dropping them.</p>
 
 <p>This section briefly describes the top level structure, and the types of
-files that the user can choose from. For a more detailed description, see the
-<a href="projects.htm">Project Structure</a> page.</p>
+files that the user can choose from.</p>
 
 <h3><a name="project-root"></a>Root Folders</h3>
 
-<p>Projects are structured into a set of top level special folders called
-<em>root folders</em>. The most important of these being the folder for the
-novel files themselves. Additional root folders are meant for organising notes
-for outlining the novel project.</p>
+<p>The most important of the root folders is the folder for the novel files
+themselves. Additional root folders are meant for organising notes for outlining
+the novel project. Root folders can be added from the <code>Project</code>
+menu. Only empty folders can be deleted.</p>
 
 <p>The different type of root folders are:</p>
 
@@ -298,15 +309,15 @@ specific folder.</p>
 each file in the root folder. These short codes are listed in the
 <code>Flags</code> column of the project treeview in the main window.</p>
 
-<h3><a name="project-files"></a>File Types</h3>
+<h3><a name="project-files"></a>File Layout Types</h3>
 
-<p>There is one file type for notes, and eight file types for novel files. The
-file types for novel files are mainly a way for the user to quickly see what the
-files are intended for, but they also have some effect on how the text within
-the file is formatted on export.</p>
+<p>There is one file layout type for notes, and eight file layout types for
+novel files. The layout types for novel files are mainly a way for the user to
+quickly see what the files are intended for as the layout type is shown in the
+project treeview. But they also have some effect on how the text within the file
+is formatted on export. See the full documentation for further details.</p>
 
-<p>The file types are briefly described in the table below. For more details,
-see the <a href="projects.htm">Project Structure</a> page.</p>
+<p>The file layout types are described briefly in the table below.</p>
 
 <table>
     <thead>

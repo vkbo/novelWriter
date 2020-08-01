@@ -2,20 +2,20 @@
  *  Help Docs Styling
  */
 
-body {
+ body {
     margin: 0px;
     padding: 30px 20px 60px 20px;
     line-height: 1.35em;
 }
 
 h1 {
-    margin: 0 0 0.2em 0;
+    margin: 0 0 0.8em 0;
     padding: 0 0 0.2em 0;
     border-bottom: 2px solid #aaaaaa;
 }
 
 h2 {
-    margin: 2.0em 0 0.2em 0;
+    margin: 1.3em 0 0.2em 0;
     padding: 0 0 0.2em 0;
     border-bottom: 1px solid #1e69be;
 }
@@ -44,6 +44,7 @@ table {
 
 td {
     padding: 2px 6px;
+    vertical-align: text-top;
 }
 
 thead {
@@ -78,4 +79,11 @@ pre {
     margin-right: 16px;
     border-radius: 4px;
     line-height: 1.25em;
+}
+
+p.note {
+    background-color: #fffed2;
+    border: 1px solid #e0df9e;
+    border-radius: 4px;
+    padding: 6px 8px;
 }

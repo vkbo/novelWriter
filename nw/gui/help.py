@@ -78,6 +78,7 @@ class GuiHelp(QDialog):
         self.navHeader = QLabel("<b>Table of Contents</b>")
 
         navLinks = {
+            "reload"  : "Quick Reference",
             "intro"   : "How it Works",
             "syntax"  : "Markdown Syntax",
             "project" : "Project Layout",
@@ -126,7 +127,8 @@ class GuiHelp(QDialog):
         ))
 
         if theAnchor is not None:
-            theUrl = QUrl("%s#%s" % (theUrl.toString(), theAnchor))
+            if theAnchor != "reload":
+                theUrl = QUrl("%s#%s" % (theUrl.toString(), theAnchor))
 
         self.webPage.setUrl(theUrl)
 

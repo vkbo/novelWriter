@@ -823,8 +823,9 @@ class GuiMainMenu(QMenuBar):
         self.helpMenu.addAction(self.aQuick)
 
         # Help > Documentation
-        self.aDocs = QAction("Documentation", self)
+        self.aDocs = QAction("Full Documentation", self)
         self.aDocs.setStatusTip("Open the documentation website")
+        self.aDocs.setShortcut("Shift+F1")
         self.aDocs.triggered.connect(self._openDocs)
         self.helpMenu.addAction(self.aDocs)
 
