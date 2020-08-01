@@ -30,7 +30,7 @@ import nw
 
 from os import path
 
-from PyQt5.QtCore import Qt
+from PyQt5.QtCore import Qt, QUrl
 from PyQt5.QtWebEngineWidgets import QWebEngineView
 from PyQt5.QtWidgets import (
     QDialog, QVBoxLayout, QHBoxLayout, QDialogButtonBox, QLabel
@@ -50,13 +50,16 @@ class GuiHelp(QDialog):
         self.theTheme  = theParent.theTheme
 
         self.setModal(False)
+        self.setWindowTitle("Documentation")
 
         self.outerBox = QVBoxLayout()
         self.innerBox = QHBoxLayout()
 
-        self.setWindowTitle("Documentation")
-        self.setMinimumWidth(self.mainConf.pxInt(650))
+        wW = self.mainConf.pxInt(700)
+        wH = self.mainConf.pxInt(750)
+        self.setMinimumWidth(self.mainConf.pxInt(600))
         self.setMinimumHeight(self.mainConf.pxInt(600))
+        self.resize(*self.mainConf.getHelpWinSize())
 
         # Nav Buttons
         self.navButtons = QVBoxLayout()
@@ -74,32 +77,36 @@ class GuiHelp(QDialog):
 
         self.navHeader = QLabel("<b>Table of Contents</b>")
 
-        self.navQuickRef = QLabel("&raquo;&nbsp;<a href='#quickref'>Quick Reference</a>")
-        self.navQuickRef.setStyleSheet(labelStyle)
-        self.navQuickRef.linkActivated.connect(self._doLoadDocument)
-
-        self.navProjects = QLabel("&raquo;&nbsp;<a href='#projects'>Project Structure</a>")
-        self.navProjects.setStyleSheet(labelStyle)
-        self.navProjects.linkActivated.connect(self._doLoadDocument)
+        navLinks = {
+            "quickref.htm"  : "Quick Reference",
+            "projects.htm"  : "Project Structure",
+            "tagsrefs.htm"  : "Tags & References",
+            "tools.htm"     : "Additional Tools",
+            "technical.htm" : "Technical Info",
+        }
 
         self.navButtons.addWidget(self.navHeader)
         self.navButtons.addSpacing(self.mainConf.pxInt(4))
-        self.navButtons.addWidget(self.navQuickRef)
-        self.navButtons.addWidget(self.navProjects)
+        for aTag, aName in navLinks.items():
+            navLabel = QLabel("&raquo;&nbsp;<a href='%s'>%s</a>" % (aTag, aName))
+            navLabel.setStyleSheet(labelStyle)
+            navLabel.linkActivated.connect(self._doLoadDocument)
+            self.navButtons.addWidget(navLabel)
+
         self.navButtons.addStretch(1)
         self.navButtons.setSpacing(0)
 
         # Central Widget
         self.webPage = QWebEngineView()
-        self.webPage.setHtml("<html><body><p>Hello World!</p></body></html>")
+        self.webPage.loadFinished.connect(self._pageLoaded)
 
         # OK Button
         self.buttonBox = QDialogButtonBox(QDialogButtonBox.Ok)
         self.buttonBox.accepted.connect(self._doClose)
 
         # Assemble
-        self.innerBox.addLayout(self.navButtons)
-        self.innerBox.addWidget(self.webPage)
+        self.innerBox.addLayout(self.navButtons, 0)
+        self.innerBox.addWidget(self.webPage, 1)
         self.innerBox.setSpacing(self.mainConf.pxInt(12))
 
         self.outerBox.addLayout(self.innerBox, 1)
@@ -108,14 +115,48 @@ class GuiHelp(QDialog):
 
         logger.debug("GuiHelp initialisation complete")
 
+        self.loadDocument("quickref.htm")
+
+        return
+
+    def loadDocument(self, theLink, theAnchor=None):
+        """Load a help document based on a link keyword, and optionally
+        navigate to a specific heading.
+        """
+        theFile = path.join(
+            self.mainConf.assetPath, "help", self.mainConf.guiLang, theLink
+        )
+        theUrl = QUrl().fromLocalFile(theFile)
+        self.webPage.setUrl(theUrl)
+        return True
+
+    ##
+    #  Events
+    ##
+
+    def closeEvent(self, theEvent):
+        """Save the window size before closing it.
+        """
+        self.mainConf.setHelpWinSize([self.width(), self.height()])
+        QDialog.closeEvent(self, theEvent)
         return
 
     ##
     #  Slots
     ##
 
+    def _pageLoaded(self, isLoaded):
+        """Triggered when a page is done loading.
+        """
+        if isLoaded:
+            self.setWindowTitle("Documentation › %s" % self.webPage.title())
+        return
+
     def _doLoadDocument(self, theLink):
-        print(theLink)
+        """Slot for connecting the ToC entry to a document.
+        """
+        self.loadDocument(theLink)
+        return
 
     def _doClose(self):
         """Close the dialog.

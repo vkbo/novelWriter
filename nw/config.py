@@ -98,6 +98,7 @@ class Config:
         self.docPanePos   = [400, 400]
         self.viewPanePos  = [500, 150]
         self.outlnPanePos = [500, 150]
+        self.helpWinSize  = [700, 700]
         self.isFullScreen = False
 
         ## Project
@@ -383,6 +384,9 @@ class Config:
         self.outlnPanePos = self._parseLine(
             cnfParse, cnfSec, "outlinepane", self.CNF_LIST, self.outlnPanePos
         )
+        self.helpWinSize = self._parseLine(
+            cnfParse, cnfSec, "helpwinsize", self.CNF_LIST, self.helpWinSize
+        )
         self.isFullScreen = self._parseLine(
             cnfParse, cnfSec, "fullscreen", self.CNF_BOOL, self.isFullScreen
         )
@@ -559,6 +563,7 @@ class Config:
         cnfParse.set(cnfSec,"docpane",     self._packList(self.docPanePos))
         cnfParse.set(cnfSec,"viewpane",    self._packList(self.viewPanePos))
         cnfParse.set(cnfSec,"outlinepane", self._packList(self.outlnPanePos))
+        cnfParse.set(cnfSec,"helpwinsize", self._packList(self.helpWinSize))
         cnfParse.set(cnfSec,"fullscreen",  str(self.isFullScreen))
 
         ## Project
@@ -794,6 +799,11 @@ class Config:
         self.confChanged  = True
         return True
 
+    def setHelpWinSize(self, winSize):
+        self.helpWinSize = [int(x/self.guiScale) for x in winSize]
+        self.confChanged = True
+        return True
+
     def setShowRefPanel(self, checkState):
         self.showRefPanel = checkState
         self.confChanged  = True
@@ -829,6 +839,9 @@ class Config:
 
     def getOutlinePanePos(self):
         return [int(x*self.guiScale) for x in self.outlnPanePos]
+
+    def getHelpWinSize(self):
+        return [int(x*self.guiScale) for x in self.helpWinSize]
 
     def getTextWidth(self):
         return self.pxInt(self.textWidth)
