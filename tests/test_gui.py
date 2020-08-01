@@ -5,12 +5,13 @@
 import nw, pytest, sys, json
 from nwtools import *
 
+from time import sleep
 from os import path, unlink
 from PyQt5.QtCore import Qt
 
 from nw.gui import (
     GuiProjectSettings, GuiItemEditor, GuiAbout, GuiBuildNovel,
-    GuiDocMerge, GuiDocSplit, GuiWritingStats
+    GuiDocMerge, GuiDocSplit, GuiWritingStats, GuiHelp
 )
 from nw.constants import *
 
@@ -533,6 +534,31 @@ def testAboutBox(qtbot, nwTempGUI, nwRef, nwTemp):
     # qtbot.stopForInteraction()
 
     msgAbout._doClose()
+    nwGUI.closeMain()
+
+@pytest.mark.gui
+def testHelpBox(qtbot, nwTempGUI, nwRef, nwTemp):
+    nwGUI = nw.main(["--testmode","--config=%s" % nwTempGUI, "--data=%s" % nwTemp])
+    qtbot.addWidget(nwGUI)
+    nwGUI.show()
+    qtbot.waitForWindowShown(nwGUI)
+    qtbot.wait(stepDelay)
+
+    msgHelp = GuiHelp(nwGUI)
+    qtbot.addWidget(msgHelp)
+    msgHelp.show()
+    qtbot.waitForWindowShown(msgHelp)
+    msgHelp.loadDocument("reload")
+
+    # This test only checks that the dialog loads. The below code doesn't
+    # seem to work for some reason. Running it just blocks the web widget
+    # until timeout is reached.
+
+    # def titleSet():
+    #     assert msgHelp.webPage.page().title() == "Quick Reference Guide"
+    # qtbot.waitUntil(titleSet, timeout=5000)
+
+    msgHelp._doClose()
     nwGUI.closeMain()
 
 @pytest.mark.gui
