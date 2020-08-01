@@ -1050,7 +1050,7 @@ class GuiMain(QMainWindow):
         self.addAction(self.mainMenu.aPreferences)
 
         # Help
-        self.addAction(self.mainMenu.aHelp)
+        self.addAction(self.mainMenu.aQuick)
 
         return True
 

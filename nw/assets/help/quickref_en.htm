@@ -2,31 +2,33 @@
 <html>
 <head>
     <title>Quick Reference Guide</title>
-    <link rel="stylesheet" type="text/css" href="../styles.css" />
+    <link rel="stylesheet" type="text/css" href="styles.css" />
 </head>
 
 <body>
 <h1>Quick Reference Guide</h1>
 
-<h3>Page Content</h3>
-<ul id="toc">
-    <li><a href="#syntax">Markdown Syntax</a></li>
-    <ul>
-        <li><a href="#syntax-headers">Headers</a></li>
-        <li><a href="#syntax-emph">Text Emphasis</a></li>
-        <li><a href="#syntax-comments">Comments</a></li>
-        <li><a href="#syntax-tags">Tags and References</a></li>
-    </ul>
-    <li><a href="#project">Project Layout</a></li>
-    <ul>
-        <li><a href="#project-root">Root Folders</a></li>
-        <li><a href="#project-files">File Types</a></li>
-    </ul>
-    <li><a href="#special">Special Characters and Symbols</a></li>
-    <ul>
-        <li><a href="#special-auto">Auto-Replace Characters</a></li>
-    </ul>
-</ul>
+<h2><a name="intro"></a>How it Works</h2>
+
+<p>novelWriter is designed to be a simple and to the point application for
+writing novels. It is not a fancy word processor, and doesn't want to be one
+either.</p>
+
+<p>All of the pieces of your project is kept in the project treeview in the main
+window. The files are organised into <a href="#project-files">novel files and
+notes</a>, which can be <a href="#syntax-tags">cross-referenced</a> and
+displayed in the Overview tab.</p>
+
+<p>The text editor panel allows for editing one file at a time, formatted with a
+simplified <a href="#syntax">markdown syntax</a> and with some
+<a href="#syntax-comments">additional features</a> specially designed for
+novels. Spell checking is available through third party libraries.</p>
+
+<p>At any time, the current document being edited, or any other document in the
+project, can be viewed in the additional view panel. It is not open by default,
+but can be activated by selecting a file in the treeview, and selecting
+<code>Document &rsaquo; View Document</code>; from the menu, or simply pressing
+<kbd>Ctrl</kbd><kbd>R</kbd>.</p>
 
 <h2><a name="syntax"></a>Markdown Syntax</h2>
 
@@ -70,16 +72,16 @@ features are listed in this section.</p>
     </tbody>
 </table>
 
-<p>The text in parentheses indicate the structure level these headings indicate
-in novel files. For note files, the headings have no special meaning. See the
-<a href="projects.htm">Project Structure</a> page for more details.</p>
+<p>The text in parentheses indicate the structure level these headings are
+treated as in novel files. For note files, the headings have no special meaning.
+See the <a href="projects.htm">Project Structure</a> page for more details.</p>
 
 <p>Header formatting can be removed with the keyboard shortcut
 <kbd>Ctrl</kbd><kbd>0</kbd>.</p>
 
 <h3><a name="syntax-emph"></a>Text Emphasis</h3>
 
-<p>Three types of text emphasis or marking are supported</p>
+<p>Three types of text emphasis or marking is supported:</p>
 
 <table>
     <thead>
@@ -211,13 +213,12 @@ character.</p>
 <h2><a name="project"></a>Project Layout</h2>
 
 <p>The project is organised into a pre-defined structure. The content is then
-added to this structure as files, optionally organised into subfolders.</p>
+added to this structure as files, optionally organised into subfolders. All
+structure elements are created via the <code>Project</code> menu.</p>
 
 <p>This section briefly describes the top level structure, and the types of
-files that the user can choose from.</p>
-
-<p>For a more detailed description, see the <a href="projects.htm">Project
-Structure</a> page.</p>
+files that the user can choose from. For a more detailed description, see the
+<a href="projects.htm">Project Structure</a> page.</p>
 
 <h3><a name="project-root"></a>Root Folders</h3>
 
@@ -289,22 +290,23 @@ for outlining the novel project.</p>
     </tbody>
 </table>
 
-<p>The Reference column indicates which <a href="#syntax-tags">keyword</a> can
-be used to reference a note in that specific folder.</p>
+<p>The &ldquo;Reference&rdquo; column indicates which
+<a href="#syntax-tags">keyword</a> can be used to reference a note in that
+specific folder.</p>
 
-<p>The Code column indicates the short code for the file class of each file in
-the root folder. These short codes are listed in the <em>Flags</em> column of
-the project tree in the main windows.</p>
+<p>The &ldquo;Code&rdquo; column indicates the short code for the file class of
+each file in the root folder. These short codes are listed in the
+<code>Flags</code> column of the project treeview in the main window.</p>
 
 <h3><a name="project-files"></a>File Types</h3>
 
 <p>There is one file type for notes, and eight file types for novel files. The
 file types for novel files are mainly a way for the user to quickly see what the
-file is intended for, but it also have some effect on how the text within the
-file is formatted on export.</p>
+files are intended for, but they also have some effect on how the text within
+the file is formatted on export.</p>
 
 <p>The file types are briefly described in the table below. For more details,
-see <a href="projects.htm">Project Structure</a> page.</p>
+see the <a href="projects.htm">Project Structure</a> page.</p>
 
 <table>
     <thead>
@@ -358,30 +360,39 @@ see <a href="projects.htm">Project Structure</a> page.</p>
     </tbody>
 </table>
 
-<p>The Code column indicates the short code for the file type of each file.
-These short codes are listed in the <em>Flags</em> column of the project tree in
-the main windows.</p>
+<p>The &ldquo;Code&rdquo; column indicates the short code for the file type of
+each file. These short codes are listed in the <code>Flags</code> column of the
+project treeview in the main window.</p>
+
+<p class="note"><strong>Note</strong> that the structure of the novel text
+itself, like what is a chapter and what is a scene, is not dictated by the file
+type, but by the header level in the files. This is done so the user can freely
+choose how they want to split up the project into files, and freely change it in
+the process by splitting or merging files.</p>
 
 <h2><a name="special"></a>Special Characters and Symbols</h2>
 
 <p>A set of special characters and symbols can be inserted from the
 <code>Insert</code> menu in the main window. These symbols can also be inserted
-with a double combination of keyboard shortcuts. To activate insert mode press
+with a double combination of keyboard shortcuts. To activate insert mode, press
 <kbd>Ctrl</kbd><kbd>K</kbd>, followed by the key combination for the desired
 symbol. The options are listed in the menu itself.</p>
 
-<h3><a name="#special-auto"></a>Auto-Replace Characters</h3>
+<h3><a name="special-auto"></a>Auto-Replace Characters</h3>
 
-<p>A few options for auto-replacement is available, and can be controlled from
-<em>Preferences</em>. These include replacing a series of two or three regular
-hyphens with short and long dash, respectively. In addition, triple dots can be
-replaced by the ellipsis character.</p>
+<p>A few options for auto-replace as you type is available. These can be
+controlled from the Preferences. These include replacing a series of two or
+three regular hyphens with short and long dash, respectively. In addition,
+triple dots can be replaced by the ellipsis character.</p>
 
 <p>The editor also supports automatic conversion from straight quotes to a
 user-defined set of quote symbols. The default setting is English 99 and 66
-style quotes. The algorithm to detect which one of the two is needed is fairly
-basic, and may not always make the correct guess. In such cases, use the insert
-menu options to insert the correct quote character.</p>
+style quotes.</p>
+
+<p class="note"><strong>Note</strong> that the algorithm that detects whether a
+left or right style quote symbol is needed is fairly basic and may not always
+make the correct guess. In such cases, use the insert menu options to insert the
+correct quote character instead.</p>
 
 </body>
 

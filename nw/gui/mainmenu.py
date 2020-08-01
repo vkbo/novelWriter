@@ -131,6 +131,12 @@ class GuiMainMenu(QMenuBar):
         QDesktopServices.openUrl(QUrl(nw.__url__))
         return True
 
+    def _openDocs(self):
+        """Open the documentation URL in the system's default browser.
+        """
+        QDesktopServices.openUrl(QUrl(nw.__docurl__))
+        return True
+
     def _openIssue(self):
         """Open the issue tracker URL in the system's default browser.
         """
@@ -810,11 +816,17 @@ class GuiMainMenu(QMenuBar):
         self.helpMenu.addSeparator()
 
         # Help > Show Help
-        self.aHelp = QAction("Documentation", self)
-        self.aHelp.setStatusTip("Open the help dialog")
-        self.aHelp.setShortcut("F1")
-        self.aHelp.triggered.connect(self.theParent.helpDialog)
-        self.helpMenu.addAction(self.aHelp)
+        self.aQuick = QAction("Quick Reference Guide", self)
+        self.aQuick.setStatusTip("Open the quick reference help dialog")
+        self.aQuick.setShortcut("F1")
+        self.aQuick.triggered.connect(self.theParent.helpDialog)
+        self.helpMenu.addAction(self.aQuick)
+
+        # Help > Documentation
+        self.aDocs = QAction("Documentation", self)
+        self.aDocs.setStatusTip("Open the documentation website")
+        self.aDocs.triggered.connect(self._openDocs)
+        self.helpMenu.addAction(self.aDocs)
 
         # Help > Show Website
         self.aWebsite = QAction("Open Website", self)

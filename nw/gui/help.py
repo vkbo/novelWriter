@@ -50,7 +50,7 @@ class GuiHelp(QDialog):
         self.theTheme  = theParent.theTheme
 
         self.setModal(False)
-        self.setWindowTitle("Documentation")
+        self.setWindowTitle("Quick Reference Guide")
 
         self.outerBox = QVBoxLayout()
         self.innerBox = QHBoxLayout()
@@ -78,11 +78,10 @@ class GuiHelp(QDialog):
         self.navHeader = QLabel("<b>Table of Contents</b>")
 
         navLinks = {
-            "quickref.htm"  : "Quick Reference",
-            "projects.htm"  : "Project Structure",
-            "tagsrefs.htm"  : "Tags & References",
-            "tools.htm"     : "Additional Tools",
-            "technical.htm" : "Technical Info",
+            "intro"   : "How it Works",
+            "syntax"  : "Markdown Syntax",
+            "project" : "Project Layout",
+            "special" : "Special Symbols",
         }
 
         self.navButtons.addWidget(self.navHeader)
@@ -98,7 +97,6 @@ class GuiHelp(QDialog):
 
         # Central Widget
         self.webPage = QWebEngineView()
-        self.webPage.loadFinished.connect(self._pageLoaded)
 
         # OK Button
         self.buttonBox = QDialogButtonBox(QDialogButtonBox.Ok)
@@ -115,20 +113,24 @@ class GuiHelp(QDialog):
 
         logger.debug("GuiHelp initialisation complete")
 
-        self.loadDocument("quickref.htm")
+        self.loadDocument()
 
         return
 
-    def loadDocument(self, theLink, theAnchor=None):
+    def loadDocument(self, theAnchor=None):
         """Load a help document based on a link keyword, and optionally
         navigate to a specific heading.
         """
-        theFile = path.join(
-            self.mainConf.assetPath, "help", self.mainConf.guiLang, theLink
-        )
-        theUrl = QUrl().fromLocalFile(theFile)
+        theUrl = QUrl().fromLocalFile(path.join(
+            self.mainConf.assetPath, "help", "quickref_%s.htm" % self.mainConf.guiLang
+        ))
+
+        if theAnchor is not None:
+            theUrl = QUrl("%s#%s" % (theUrl.toString(), theAnchor))
+
         self.webPage.setUrl(theUrl)
-        return True
+
+        return
 
     ##
     #  Events
@@ -145,17 +147,10 @@ class GuiHelp(QDialog):
     #  Slots
     ##
 
-    def _pageLoaded(self, isLoaded):
-        """Triggered when a page is done loading.
-        """
-        if isLoaded:
-            self.setWindowTitle("Documentation › %s" % self.webPage.title())
-        return
-
-    def _doLoadDocument(self, theLink):
+    def _doLoadDocument(self, theAnchor):
         """Slot for connecting the ToC entry to a document.
         """
-        self.loadDocument(theLink)
+        self.loadDocument(theAnchor)
         return
 
     def _doClose(self):
