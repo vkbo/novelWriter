@@ -1,0 +1,81 @@
+/*
+ *  Help Docs Styling
+ */
+
+body {
+    margin: 0px;
+    padding: 20px;
+    line-height: 1.35em;
+}
+
+h1 {
+    margin: 0 0 0.2em 0;
+    padding: 0 0 0.2em 0;
+    border-bottom: 2px solid #aaaaaa;
+}
+
+h2 {
+    margin: 1.5em 0 0.2em 0;
+    padding: 0 0 0.2em 0;
+    border-bottom: 1px solid #1e69be;
+}
+
+a {
+    color: #1e69be;
+}
+
+li {
+    margin: 6px 0;
+}
+
+#toc ul {
+    line-height: 1.1em;
+    padding-left: 2em;
+}
+
+table {
+    margin-left: 16px;
+    margin-right: 16px;
+    background-color: #eeeeee;
+    padding: 4px;
+    border-spacing: 0px;
+    border-collapse: separate;
+}
+
+td {
+    padding: 2px 6px;
+}
+
+thead {
+    font-weight: bold;
+}
+thead td {
+    border-bottom: 2px solid #1e69be;
+}
+
+code {
+    background-color: #eeeeee;
+    border: 1px solid #999999;
+    color: #990000;
+    padding: 2px 4px;
+    margin-right: 2px;
+    border-radius: 4px;
+}
+
+kbd {
+    border: 1px solid #999999;
+    padding: 2px 4px;
+    margin-right: 2px;
+    border-radius: 4px;
+}
+
+pre {
+    background-color: #eeeeee;
+    border: 1px solid #999999;
+    color: #990000;
+    padding: 4px 6px;
+    margin-left: 16px;
+    margin-right: 16px;
+    border-radius: 4px;
+    line-height: 1.25em;
+}

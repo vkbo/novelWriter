@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Quick Reference Guide</title>
+    <link rel="stylesheet" type="text/css" href="../styles.css" />
+</head>
+
+<body>
+<h1>Quick Reference Guide</h1>
+
+<h2>Page Content</h2>
+<ul id="toc">
+    <li><a href="#syntax">Markdown Syntax</a></li>
+    <ul>
+        <li><a href="#syntax-headers">Headers</a></li>
+        <li><a href="#syntax-emph">Text Emphasis</a></li>
+        <li><a href="#syntax-comments">Comments</a></li>
+    </ul>
+</ul>
+
+<h2><a name="syntax"></a>Markdown Syntax</h2>
+
+<h3><a name="syntax-headers"></a>Headers</h3>
+<p>Four levels of headers are supported:</p>
+<table>
+    <thead>
+        <tr>
+            <td>Code</td>
+            <td>Description</td>
+            <td>Shortcut</td>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td><code># Title Text</code></td>
+            <td>Heading Level 1 (Title)</td>
+            <td><kbd>Ctrl</kbd><kbd>1</kbd></td>
+        </tr>
+        <tr>
+            <td><code>## Title Text</code></td>
+            <td>Heading Level 2 (Chapter)</td>
+            <td><kbd>Ctrl</kbd><kbd>2</kbd></td>
+        </tr>
+        <tr>
+            <td><code>### Title Text</code></td>
+            <td>Heading Level 3 (Scene)</td>
+            <td><kbd>Ctrl</kbd><kbd>3</kbd></td>
+        </tr>
+        <tr>
+            <td><code>#### Title Text</code></td>
+            <td>Heading Level 4 (Section)</td>
+            <td><kbd>Ctrl</kbd><kbd>4</kbd></td>
+        </tr>
+    </tbody>
+</table>
+<p>The text in parentheses indicate the structure level these headings indicate
+in novel files. For note files, the headings have no special meaning. See the
+<a href="projects.htm">Project Structure</a> page for more details.</p>
+<p>Header formatting can be removed with the keyboard shortcut
+<kbd>Ctrl</kbd><kbd>0</kbd>.</p>
+
+<h3><a name="syntax-emph"></a>Text Emphasis</h3>
+<p>Three types of text emphasis or marking are supported</p>
+<table>
+    <thead>
+        <tr>
+            <td>Code</td>
+            <td>Description</td>
+            <td>Shortcut</td>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td><code>_text_</code></td>
+            <td>Emphasised text (italicised)</td>
+            <td><kbd>Ctrl</kbd><kbd>I</kbd></td>
+        </tr>
+        <tr>
+            <td><code>**text**</code></td>
+            <td>Strongly emphasised text (bold)</td>
+            <td><kbd>Ctrl</kbd><kbd>B</kbd></td>
+        </tr>
+        <tr>
+            <td><code>~~text~~</code></td>
+            <td>Strikethrough text</td>
+            <td><kbd>Ctrl</kbd><kbd>-</kbd></td>
+        </tr>
+    </tbody>
+</table>
+
+<p>Some additional rules:</p>
+<ol>
+    <li>The emphasis and strikethrough formatting tags do not allow spaces
+        between the words and the tag itself. That is, <code>**text**</code> is
+        valid, <code>**text **</code> is not.</li>
+    <li>More generally, the delimiters must be on the outer edge of words. That
+        is, some <code>**text in bold**</code> here is valid, <code>some** text
+        in bold** here</code> is not.</li>
+    <li>If using both <code>**</code> and <code>_</code> to wrap the same text,
+        the underscore must be the inner wrapper. This is due to the underscore
+        also being a valid word character, so if they are on the outside, they
+        violate rule 2.</li>
+</ol>
+
+<div class="note">
+<p></p>
+</div>
+
+<h3><a name="syntax-comments"></a>Comments</h3>
+
+<p>Comments are supported, which is not standard in regular markdown. There are
+two type of comments:</p>
+<ul>
+    <li>Regular comments are lines starting with the character <code>%</code>.
+        Such a line is ignored by the word counter, and can be filtered out when
+        the project is exported.</li>
+    <li>Synopsis comments are a special type of comments used to populate the
+        <a href="tools.htm#outline">Outline View</a>. They are comments where
+        the first word is <code>Synopsis:</code> (remember the <code>:</code>).
+        They can also be filtered out when the project is exported.</li>
+</ul>
+<p>You can turn a regular line into a comment with the keyboard shortcut
+<kbd>Ctrl</kbd><kbd>/</kbd>, and remove it with <kbd>Ctrl</kbd><kbd>0</kbd>.</p>
+
+<p><b>Example:</b></p>
+<pre>
+% This is a regular comment.
+% Synopsis: This is a synopsis style comment.
+</pre>
+
+</body>
+
+</html>
