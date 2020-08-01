@@ -4,7 +4,7 @@
 
 body {
     margin: 0px;
-    padding: 20px;
+    padding: 30px 20px 60px 20px;
     line-height: 1.35em;
 }
 
@@ -15,7 +15,7 @@ h1 {
 }
 
 h2 {
-    margin: 1.5em 0 0.2em 0;
+    margin: 2.0em 0 0.2em 0;
     padding: 0 0 0.2em 0;
     border-bottom: 1px solid #1e69be;
 }

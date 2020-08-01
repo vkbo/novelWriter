@@ -8,20 +8,36 @@
 <body>
 <h1>Quick Reference Guide</h1>
 
-<h2>Page Content</h2>
+<h3>Page Content</h3>
 <ul id="toc">
     <li><a href="#syntax">Markdown Syntax</a></li>
     <ul>
         <li><a href="#syntax-headers">Headers</a></li>
         <li><a href="#syntax-emph">Text Emphasis</a></li>
         <li><a href="#syntax-comments">Comments</a></li>
+        <li><a href="#syntax-tags">Tags and References</a></li>
+    </ul>
+    <li><a href="#project">Project Layout</a></li>
+    <ul>
+        <li><a href="#project-root">Root Folders</a></li>
+        <li><a href="#project-files">File Types</a></li>
+    </ul>
+    <li><a href="#special">Special Characters and Symbols</a></li>
+    <ul>
+        <li><a href="#special-auto">Auto-Replace Characters</a></li>
     </ul>
 </ul>
 
 <h2><a name="syntax"></a>Markdown Syntax</h2>
 
+<p>Only a subset of markdown syntax is supported, with a few special additions
+that are convenient for structuring and cross-referencing novels. All supported
+features are listed in this section.</p>
+
 <h3><a name="syntax-headers"></a>Headers</h3>
+
 <p>Four levels of headers are supported:</p>
+
 <table>
     <thead>
         <tr>
@@ -53,14 +69,18 @@
         </tr>
     </tbody>
 </table>
+
 <p>The text in parentheses indicate the structure level these headings indicate
 in novel files. For note files, the headings have no special meaning. See the
 <a href="projects.htm">Project Structure</a> page for more details.</p>
+
 <p>Header formatting can be removed with the keyboard shortcut
 <kbd>Ctrl</kbd><kbd>0</kbd>.</p>
 
 <h3><a name="syntax-emph"></a>Text Emphasis</h3>
+
 <p>Three types of text emphasis or marking are supported</p>
+
 <table>
     <thead>
         <tr>
@@ -89,6 +109,7 @@ in novel files. For note files, the headings have no special meaning. See the
 </table>
 
 <p>Some additional rules:</p>
+
 <ol>
     <li>The emphasis and strikethrough formatting tags do not allow spaces
         between the words and the tag itself. That is, <code>**text**</code> is
@@ -102,14 +123,11 @@ in novel files. For note files, the headings have no special meaning. See the
         violate rule 2.</li>
 </ol>
 
-<div class="note">
-<p></p>
-</div>
-
 <h3><a name="syntax-comments"></a>Comments</h3>
 
 <p>Comments are supported, which is not standard in regular markdown. There are
 two type of comments:</p>
+
 <ul>
     <li>Regular comments are lines starting with the character <code>%</code>.
         Such a line is ignored by the word counter, and can be filtered out when
@@ -119,14 +137,251 @@ two type of comments:</p>
         the first word is <code>Synopsis:</code> (remember the <code>:</code>).
         They can also be filtered out when the project is exported.</li>
 </ul>
+
 <p>You can turn a regular line into a comment with the keyboard shortcut
 <kbd>Ctrl</kbd><kbd>/</kbd>, and remove it with <kbd>Ctrl</kbd><kbd>0</kbd>.</p>
 
 <p><b>Example:</b></p>
+
 <pre>
 % This is a regular comment.
 % Synopsis: This is a synopsis style comment.
 </pre>
+
+<h3><a name="syntax-tags"></a>Tags and References</h3>
+
+<p>Tags and references are used to cross-reference novel and note files, or note
+and note files. For a full description of how they work, se the
+<a href="tagsrefs.htm">Tags & References</a> page. Here is a quick summary.</p>
+
+<p>Tags and references use a keyword/value format indicated by the
+<code>@</code> character as the first character on the line. The general format
+is <code>@keyword: value1, value2</code>. The <code>:</code> after the keyword
+is mandatory, and multiple values are separated with a <code>,</code>
+character.</p>
+
+<p>Possible keywords are as follows:</p>
+<table>
+    <thead>
+        <tr>
+            <td>Keyword</td>
+            <td>Description</td>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td><code>@tag</code></td>
+            <td>Sets the reference tag for a text section</td>
+        </tr>
+        <tr>
+            <td><code>@pov</code></td>
+            <td>References a character as the point-of-view character</td>
+        </tr>
+        <tr>
+            <td><code>@char</code></td>
+            <td>References further non-POV characters</td>
+        </tr>
+        <tr>
+            <td><code>@plot</code></td>
+            <td>References one or more plot or subplot</td>
+        </tr>
+        <tr>
+            <td><code>@time</code></td>
+            <td>References one or more time event</td>
+        </tr>
+        <tr>
+            <td><code>@location</code></td>
+            <td>References one or more plot location</td>
+        </tr>
+        <tr>
+            <td><code>@object</code></td>
+            <td>References one or more plot object</td>
+        </tr>
+        <tr>
+            <td><code>@entity</code></td>
+            <td>References one or more entity in the plot</td>
+        </tr>
+        <tr>
+            <td><code>@custom</code></td>
+            <td>References one or more custom plot element</td>
+        </tr>
+    </tbody>
+</table>
+
+<h2><a name="project"></a>Project Layout</h2>
+
+<p>The project is organised into a pre-defined structure. The content is then
+added to this structure as files, optionally organised into subfolders.</p>
+
+<p>This section briefly describes the top level structure, and the types of
+files that the user can choose from.</p>
+
+<p>For a more detailed description, see the <a href="projects.htm">Project
+Structure</a> page.</p>
+
+<h3><a name="project-root"></a>Root Folders</h3>
+
+<p>Projects are structured into a set of top level special folders called
+<em>root folders</em>. The most important of these being the folder for the
+novel files themselves. Additional root folders are meant for organising notes
+for outlining the novel project.</p>
+
+<p>The different type of root folders are:</p>
+
+<table>
+    <thead>
+        <tr>
+            <td>Name</td>
+            <td>Description</td>
+            <td>Reference</td>
+            <td>Code</td>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td>Novel</td>
+            <td>The main folder for the novel's text</td>
+            <td>&nbsp;</td>
+            <td><code>N</code></td>
+        </tr>
+        <tr>
+            <td>Plot</td>
+            <td>For notes on the novel's plot and subplots</td>
+            <td><code>@plot</code></td>
+            <td><code>P</code></td>
+        </tr>
+        <tr>
+            <td>Characters</td>
+            <td>For notes on the novel's characters</td>
+            <td><code>@pov</code>, <code>@char</code></td>
+            <td><code>C</code></td>
+        </tr>
+        <tr>
+            <td>Locations</td>
+            <td>For notes on the novel's scene locations</td>
+            <td><code>@location</code></td>
+            <td><code>L</code></td>
+        </tr>
+        <tr>
+            <td>Timeline</td>
+            <td>For notes if the novel has multiple timelines</td>
+            <td><code>@time</code></td>
+            <td><code>T</code></td>
+        </tr>
+        <tr>
+            <td>Objects</td>
+            <td>For notes on special scene objects</td>
+            <td><code>@object</code></td>
+            <td><code>O</code></td>
+        </tr>
+        <tr>
+            <td>Entities</td>
+            <td>For notes on various plot entities</td>
+            <td><code>@entity</code></td>
+            <td><code>E</code></td>
+        </tr>
+        <tr>
+            <td>Custom</td>
+            <td>For any other type of notes</td>
+            <td><code>@custom</code></td>
+            <td><code>C</code></td>
+        </tr>
+    </tbody>
+</table>
+
+<p>The Reference column indicates which <a href="#syntax-tags">keyword</a> can
+be used to reference a note in that specific folder.</p>
+
+<p>The Code column indicates the short code for the file class of each file in
+the root folder. These short codes are listed in the <em>Flags</em> column of
+the project tree in the main windows.</p>
+
+<h3><a name="project-files"></a>File Types</h3>
+
+<p>There is one file type for notes, and eight file types for novel files. The
+file types for novel files are mainly a way for the user to quickly see what the
+file is intended for, but it also have some effect on how the text within the
+file is formatted on export.</p>
+
+<p>The file types are briefly described in the table below. For more details,
+see <a href="projects.htm">Project Structure</a> page.</p>
+
+<table>
+    <thead>
+        <tr>
+            <td>Type</td>
+            <td>Description</td>
+            <td>Code</td>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td>Note</td>
+            <td>This is the one file type for note files</td>
+            <td><code>Nt</code></td>
+        </tr>
+        <tr>
+            <td>Title Page</td>
+            <td>Intended for the cover page</td>
+            <td><code>Tt</code></td>
+        </tr>
+        <tr>
+            <td>Plain Page</td>
+            <td>Intended for front matter pages</td>
+            <td><code>Pg</code></td>
+        </tr>
+        <tr>
+            <td>Book</td>
+            <td>Generic file type for novel text</td>
+            <td><code>Bk</code></td>
+        </tr>
+        <tr>
+            <td>Partition</td>
+            <td>Intended for pages between partitions</td>
+            <td><code>Pt</code></td>
+        </tr>
+        <tr>
+            <td>Chapter</td>
+            <td>Intended for main story chapters</td>
+            <td><code>Ch</code></td>
+        </tr>
+        <tr>
+            <td>Unnumbered</td>
+            <td>Intended for special chapters like a prologue</td>
+            <td><code>Un</code></td>
+        </tr>
+        <tr>
+            <td>Scene</td>
+            <td>Intended for main story scenes</td>
+            <td><code>Sc</code></td>
+        </tr>
+    </tbody>
+</table>
+
+<p>The Code column indicates the short code for the file type of each file.
+These short codes are listed in the <em>Flags</em> column of the project tree in
+the main windows.</p>
+
+<h2><a name="special"></a>Special Characters and Symbols</h2>
+
+<p>A set of special characters and symbols can be inserted from the
+<code>Insert</code> menu in the main window. These symbols can also be inserted
+with a double combination of keyboard shortcuts. To activate insert mode press
+<kbd>Ctrl</kbd><kbd>K</kbd>, followed by the key combination for the desired
+symbol. The options are listed in the menu itself.</p>
+
+<h3><a name="#special-auto"></a>Auto-Replace Characters</h3>
+
+<p>A few options for auto-replacement is available, and can be controlled from
+<em>Preferences</em>. These include replacing a series of two or three regular
+hyphens with short and long dash, respectively. In addition, triple dots can be
+replaced by the ellipsis character.</p>
+
+<p>The editor also supports automatic conversion from straight quotes to a
+user-defined set of quote symbols. The default setting is English 99 and 66
+style quotes. The algorithm to detect which one of the two is needed is fairly
+basic, and may not always make the correct guess. In such cases, use the insert
+menu options to insert the correct quote character.</p>
 
 </body>
 
