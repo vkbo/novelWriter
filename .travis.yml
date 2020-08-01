@@ -10,6 +10,7 @@ addons:
       - libenchant-dev
       - python3-pyqt5
       - python3-pyqt5.qtsvg
+      - python3-pyqt5.qtwebengine
 python:
   - "3.6"
   - "3.7"

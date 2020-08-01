@@ -5,7 +5,6 @@
 import nw, pytest, sys, json
 from nwtools import *
 
-from time import sleep
 from os import path, unlink
 from PyQt5.QtCore import Qt
 
