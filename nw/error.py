@@ -77,12 +77,15 @@ def exceptionHandler(exType, exValue, exTrace):
     """
     import logging
     from traceback import print_tb, format_tb
-    from nw import __issuesurl__
+    from nw import CONFIG
     from PyQt5.QtWidgets import qApp, QApplication, QErrorMessage, QMessageBox
 
     logger = logging.getLogger(__name__)
     logger.error("%s: %s" % (exType.__name__, str(exValue)))
     print_tb(exTrace)
+
+    if not CONFIG.showGUI:
+        return
 
     try:
         nwGUI = None
@@ -104,3 +107,5 @@ def exceptionHandler(exType, exValue, exTrace):
 
     except Exception as e:
         logger.error(str(e))
+
+    return
