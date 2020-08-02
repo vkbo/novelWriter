@@ -29,8 +29,11 @@ def formatHtmlErrMsg(exType, exValue, exTrace):
     """Generates a HTML version of an exception.
     """
     try:
+        import sys
         from traceback import format_tb
-        from nw import __issuesurl__
+        from nw import __issuesurl__, __version__
+        from PyQt5.Qt import PYQT_VERSION_STR
+        from PyQt5.QtCore import QT_VERSION_STR, QSysInfo
 
         fmtTrace = ""
         for trEntry in format_tb(exTrace):
@@ -41,11 +44,25 @@ def formatHtmlErrMsg(exType, exValue, exTrace):
 
         theMessage = (
             "<p>Please report this error by submitting an issue report on "
-            "GitHub, providing a description and this error message.</p>"
-            "<p><b>Issue Tracker</b><br>%s</p>"
-            "<p><b>Error Type</b><br>%s: %s</p>"
-            "<p><b>Traceback</b><br>%s</p>"
-        ) % (__issuesurl__, exType.__name__, str(exValue), fmtTrace)
+            "GitHub, providing a description and this error message. "
+            "URL: &lt;{issueUrl}&gt;.</p>"
+            "<p><b>Environment</b><br>Version: {nwVersion}, OS: {osType} ({osKernel}),"
+            "Python: {pyVersion} ({pyHexVer:#x}), Qt: {qtVers}, PyQt: {pyqtVers}</p>"
+            "<p><b>Error Type</b><br>{exType}: {exMessage}</p>"
+            "<p><b>Traceback</b><br>{exTrace}</p>"
+        ).format(
+            nwVersion = __version__,
+            osType    = sys.platform,
+            osKernel  = QSysInfo.kernelVersion(),
+            pyVersion = sys.version.split()[0],
+            pyHexVer  = sys.hexversion,
+            qtVers    = QT_VERSION_STR,
+            pyqtVers  = PYQT_VERSION_STR,
+            issueUrl  = __issuesurl__,
+            exType    = exType.__name__,
+            exMessage = str(exValue),
+            exTrace   = fmtTrace
+        )
 
         return theMessage
 
