@@ -56,6 +56,7 @@ class GuiMain(QMainWindow):
         QMainWindow.__init__(self)
 
         logger.debug("Initialising GUI ...")
+        self.setObjectName("GuiMain")
         self.mainConf = nw.CONFIG
 
         # Some runtime info useful for debugging

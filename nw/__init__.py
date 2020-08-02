@@ -34,6 +34,7 @@ from os import path, remove, rename
 from PyQt5.QtGui import QIcon
 from PyQt5.QtWidgets import QApplication, QErrorMessage
 
+from nw.error import exceptionHandler
 from nw.config import Config
 
 __package__    = "nw"
@@ -249,11 +250,12 @@ def main(sysArgs=None):
     if errorData:
         errApp = QApplication([])
         errMsg = QErrorMessage()
-        errMsg.setMinimumWidth(500)
-        errMsg.setMinimumHeight(300)
+        errMsg.resize(500, 300)
         errMsg.showMessage((
-            "ERROR: novelWriter cannot start due to the following issues:<br><br>"
-            "&nbsp;-&nbsp;%s<br><br>Exiting."
+            "<h3>A critical error has been encountered</h3>"
+            "<p>novelWriter cannot start due to the following issues:<p>"
+            "<p>&nbsp;-&nbsp;%s</p>"
+            "<p>Shutting down ...</p>"
         ) % (
             "<br>&nbsp;-&nbsp;".join(errorData)
         ))
@@ -276,34 +278,44 @@ def main(sysArgs=None):
         nwApp.setWindowIcon(QIcon(CONFIG.appIcon))
         nwApp.setOrganizationDomain(__domain__)
 
+        # We try to catch critical errors while setting up the main GUI
+        # by wrapping the main GUI in a try/except structure. This will
+        # not catch all exceptions for other parts of the application.
+        # For all other unhandled exceptions, we use a custom exception
+        # handler that pops a dialog box with the error message.
+        sys.excepthook = exceptionHandler
+
         try:
             nwGUI = GuiMain()
             sys.exit(nwApp.exec_())
 
         except Exception:
-            # novelWriter has crashed!
-            from traceback import print_tb, format_tb
 
-            eInfo = sys.exc_info()
-            logger.critical("%s: %s" % (eInfo[0].__name__, eInfo[1]))
-            print_tb(eInfo[2])
+            from traceback import print_tb
+            from nw.error import formatHtmlErrMsg
 
-            del nwApp
+            exType, exValue, exTrace = sys.exc_info()
 
-            errApp = QApplication([])
-            errMsg = QErrorMessage()
-            errMsg.setWindowTitle("Critical Error")
-            errMsg.setMinimumWidth(500)
-            errMsg.setMinimumHeight(300)
-            errMsg.showMessage((
-                "<h3>novelWriter has encountered a critical error!</h3>"
-                "<p><b>%s:</b><br>%s</p>"
-                "<p><b>Traceback:</b><br>%s</p>"
-                "<p>Shutting down ...</p>"
-            ) % (eInfo[0].__name__, eInfo[1], "<br>".join(format_tb(eInfo[2]))))
-            errApp.exec_()
+            logger.critical("%s: %s" % (exType.__name__, str(exValue)))
+            print_tb(exTrace)
 
-            del eInfo
+            try:
+                del nwApp
+
+                errApp = QApplication([])
+                errMsg = QErrorMessage()
+                errMsg.setWindowTitle("Critical Error")
+                errMsg.resize(800, 400)
+                errMsg.showMessage((
+                    "<h3>A critical error has been encountered</h3>"
+                    "%s"
+                    "<p>Shutting down ...</p>"
+                ) % formatHtmlErrMsg(exType, exValue, exTrace))
+                errApp.exec_()
+
+            except Exception as e:
+                logger.critical("Could not create error message dialog.")
+                logger.critical(str(e))
 
             sys.exit(1)
 
