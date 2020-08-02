@@ -1,12 +1,14 @@
 #!/usr/bin/env python3
 import setuptools
 
+from nw import __version__
+
 with open("README.md", "r") as inFile:
     long_description = inFile.read()
 
 setuptools.setup(
     name = "novelWriter",
-    version = "0.10.2",
+    version = __version__,
     author = "Veronica Berglyd Olsen",
     author_email = "code@vkbo.net",
     description = "A markdown-like document editor for writing novels",
