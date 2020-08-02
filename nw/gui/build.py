@@ -432,7 +432,6 @@ class GuiBuildNovel(QDialog):
     def _buildPreview(self):
         """Build a preview of the project in the document viewer.
         """
-
         # Get Settings
         fmtTitle      = self.fmtTitle.text().strip()
         fmtChapter    = self.fmtChapter.text().strip()
