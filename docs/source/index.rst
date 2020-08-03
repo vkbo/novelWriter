@@ -7,7 +7,7 @@ This is the documentation for novelWriter |version|.
 **Contents**
 
 .. toctree::
-   :maxdepth: 1
+   :maxdepth: 2
 
    introduction
    started

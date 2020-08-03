@@ -1,8 +1,13 @@
+.. _a_started:
+
 ***************
 Getting Started
 ***************
 
 Latest version of novelWriter is |version|.
+
+
+.. _a_started_install:
 
 Installation
 ============
@@ -14,6 +19,8 @@ directly from the PyPi_ project page.
 .. _GitHub: https://github.com/vkbo/novelWriter/releases
 .. _PyPi: https://pypi.org/project/novelWriter/
 
+
+.. _a_started_depend:
 
 Dependencies
 ============
@@ -28,6 +35,8 @@ using the internal ``difflib`` of Python to check spelling. This is a much slowe
 is less sophisticated than full spell checking libaries, but if you only work with small files, the
 performance loss is not noticeable.
 
+
+.. _a_started_depend_packages:
 
 Package Installation
 --------------------
@@ -66,6 +75,8 @@ The optional spell check library must be at least 3.0.0 to work with Windows. On
 works fine.
 
 
+.. _a_started_running:
+
 Running novelWriter
 ===================
 
@@ -90,6 +101,8 @@ launch icon and the novelWriter project file mimetype for Gnome desktops on Linu
 there's one script for Debian and one for Ubuntu.
 
 
+.. _a_started_standalone:
+
 Building a Standalone Executable
 ================================
 
@@ -104,6 +117,8 @@ into your command prompt:
 
 If successful, the executable will be in the "dist" folder.
 
+
+.. _a_started_standalone_win:
 
 Additional Instructions for Windows
 -----------------------------------

@@ -1,3 +1,5 @@
+.. _a_intro:
+
 ************
 Introduction
 ************
@@ -16,8 +18,11 @@ These additional features are not standard in markdown, but are available throug
 keywords. Syntax highlighting is provided to make it easier to verify that the markdown tags are
 used correctly.
 
+
+.. _a_intro_design:
+
 Design Philosophy
------------------
+=================
 
 The user interface of novelWriter is intended to be as minimalistic as practically possible, while
 at the same time provide a complete set of features needed for writing a novel. 
@@ -44,8 +49,11 @@ A second tab is also available on the main window. This is the Outline tab where
 structure can be displayed, with all the tags and references listed. Depending on how you structure
 your novel project files, this outline can be quite different than your project tree.
 
+
+.. _a_intro_project:
+
 Project Layout
---------------
+==============
 
 You are free to structure your project files as you wish in subfolders and split between files. All
 that matters to novelWriter is the linear order they appear in the project tree (top to bottom) and
@@ -61,8 +69,11 @@ The four heading levels (H1 to H4) are treated as follows:
 This structure is only considered on novel files. For the files designated as project notes, the
 usage of headers imply no structural meaning, and the user is free to do whatever they want.
 
+
+.. _a_intro_export:
+
 Project Export
---------------
+==============
 
 The project can at any time be exported to a range of different formats. Natively, novelWriter
 supports export to plain text file, HTML document, novelWriter flavoured markdown, standard
@@ -76,8 +87,11 @@ It is also possible to export the content of the project to a JSON file. This is
 to write your own processing script in for instance Python, as the entire novel can be read into a
 Python dictionary with a couple of lines of code.
 
+
+.. _a_intro_screenshots:
+
 Screenshot
-----------
+==========
 
 **novelWriter with default system theme:**
 
