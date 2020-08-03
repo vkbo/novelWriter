@@ -1,8 +1,8 @@
 .. _a_struct:
 
-*****************
-Project Structure
-*****************
+***************
+Novel Structure
+***************
 
 This section covers the structure of a novel project.
 
@@ -68,6 +68,8 @@ All keywords allow multiple values.
 The syntax highlighter will alert the user that only the correct keywords are used, and that the tags referenced exist.
 If the index of defined tags is out of date, press :kbd:`F9` to regenerate it, or select :menuselection:`Tools --> Rebuild Index` from the menu.
 In general, the index for a file is regenerated when a file is saved, so this shouldn't normally be necessary.
+
+.. _a_struct_layout:
 
 Novel File Layout
 =================
