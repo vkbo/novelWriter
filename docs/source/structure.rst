@@ -1,3 +1,5 @@
+.. _a_struct:
+
 *****************
 Project Structure
 *****************
@@ -7,6 +9,8 @@ This section covers the structure of a novel project.
 .. note::
    This section concerns files under the Novel type root folder only.
    There are some restrictions and features that only applies to these type of files.
+
+.. _a_struct_heads:
 
 Importance of Headings
 ======================
@@ -25,6 +29,8 @@ The different header levels are interpreted as specific section types of the nov
 * ``## Header2``: Header level 2 signifies a chapter level partition.
 * ``### Header3``: Header level 3 signifies a scene level partition.
 * ``#### Header4``: Header level 4 signifies a sub-scene level partition (section).
+
+.. _a_struct_tags:
 
 Tag References
 ==============

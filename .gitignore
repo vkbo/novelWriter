@@ -8,7 +8,6 @@
 
 # Documentation
 /docs/build/
-/docs/source/_*
 
 # Python Temp
 __pycache__

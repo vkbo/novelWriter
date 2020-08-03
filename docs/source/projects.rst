@@ -1,3 +1,5 @@
+.. _a_proj:
+
 **************
 Novel Projects
 **************
@@ -11,6 +13,8 @@ A project can be removed from this list by selecting it and pressing the :kbd:`D
 
 The project specific settings are available in :menuselection:`Project --> Project Settings`.
 See further details below.
+
+.. _a_proj_roots:
 
 Project Roots
 =============
