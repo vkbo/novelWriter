@@ -1,8 +1,79 @@
 #!/usr/bin/env python3
+import os
+import sys
+import shutil
+import subprocess
 import setuptools
 
 from nw import __version__, __url__, __docurl__, __issuesurl__, __sourceurl__
 
+##
+#  Build the Package
+##
+
+buildDocs = False
+if "qthelp" in sys.argv:
+    buildDocs = True
+    sys.argv.remove("qthelp")
+
+if buildDocs:
+    inFile  = os.path.join("docs", "build", "qthelp", "novelWriter.qhcp")
+    outFile = os.path.join("docs", "build", "qthelp", "novelWriter.qhc")
+    helpDir = os.path.join("nw", "assets", "help")
+    dstFile = os.path.join(helpDir, "novelWriter.qhc")
+    print("")
+    print("Building Documentation")
+    print("======================")
+    print("")
+
+    buildFail = False
+    try:
+        subprocess.call(["make","-C", "docs", "qthelp"])
+    except Exception as e:
+        print("Failed with error:")
+        print(str(e))
+        buildFail = True
+
+    try:
+        subprocess.call(["qhelpgenerator", inFile])
+    except Exception as e:
+        print("Failed with error:")
+        print(str(e))
+        buildFail = True
+
+    if not os.path.isdir(helpDir):
+        try:
+            os.mkdir(helpDir)
+        except Exception as e:
+            print("Failed with error:")
+            print(str(e))
+            buildFail = True
+
+    try:
+        if os.path.isfile(dstFile):
+            os.unlink(dstFile)
+        os.rename(outFile, dstFile)
+    except Exception as e:
+        print("Failed with error:")
+        print(str(e))
+        buildFail = True
+
+    print("")
+    if buildFail:
+        print("Documentation build: FAILED")
+    else:
+        print("Documentation build: OK")
+    print("")
+
+if len(sys.argv) == 1:
+    # Nothing more to do
+    sys.exit(0)
+
+##
+#  Build the Package
+##
+
+# Read content from files
 with open("README.md", "r") as inFile:
     longDescription = inFile.read()
 

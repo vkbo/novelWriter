@@ -8,6 +8,7 @@
 
 # Documentation
 /docs/build/
+novelWriter.qhc
 
 # Python Temp
 __pycache__
