@@ -17,10 +17,14 @@ if "qthelp" in sys.argv:
     sys.argv.remove("qthelp")
 
 if buildDocs:
-    inFile  = os.path.join("docs", "build", "qthelp", "novelWriter.qhcp")
-    outFile = os.path.join("docs", "build", "qthelp", "novelWriter.qhc")
-    helpDir = os.path.join("nw", "assets", "help")
-    dstFile = os.path.join(helpDir, "novelWriter.qhc")
+
+    buildDir = os.path.join("docs", "build", "qthelp")
+    helpDir  = os.path.join("nw", "assets", "help")
+
+    inFile  = "novelWriter.qhcp"
+    outFile = "novelWriter.qhc"
+    datFile = "novelWriter.qch"
+
     print("")
     print("Building Documentation")
     print("======================")
@@ -35,7 +39,7 @@ if buildDocs:
         buildFail = True
 
     try:
-        subprocess.call(["qhelpgenerator", inFile])
+        subprocess.call(["qhelpgenerator", os.path.join(buildDir, inFile)])
     except Exception as e:
         print("Failed with error:")
         print(str(e))
@@ -50,9 +54,12 @@ if buildDocs:
             buildFail = True
 
     try:
-        if os.path.isfile(dstFile):
-            os.unlink(dstFile)
-        os.rename(outFile, dstFile)
+        if os.path.isfile(os.path.join(helpDir, outFile)):
+            os.unlink(os.path.join(helpDir, outFile))
+        if os.path.isfile(os.path.join(helpDir, datFile)):
+            os.unlink(os.path.join(helpDir, datFile))
+        os.rename(os.path.join(buildDir, outFile), os.path.join(helpDir, outFile))
+        os.rename(os.path.join(buildDir, datFile), os.path.join(helpDir, datFile))
     except Exception as e:
         print("Failed with error:")
         print(str(e))

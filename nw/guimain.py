@@ -892,6 +892,7 @@ class GuiMain(QMainWindow):
 
         self.mainConf.saveConfig()
         self.reportConfErr()
+        self.mainMenu.closeHelp()
 
         qApp.quit()
 

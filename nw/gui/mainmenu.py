@@ -28,7 +28,9 @@
 import logging
 import nw
 
-from PyQt5.QtCore import QUrl
+from os import path
+
+from PyQt5.QtCore import QUrl, QProcess
 from PyQt5.QtGui import QDesktopServices
 from PyQt5.QtWidgets import QMenuBar, QAction, QMessageBox
 
@@ -46,6 +48,10 @@ class GuiMainMenu(QMenuBar):
         self.mainConf   = nw.CONFIG
         self.theParent  = theParent
         self.theProject = theParent.theProject
+
+        self.assistProc = None
+        self.helpPath = path.join(self.mainConf.assetPath, "help", "novelWriter.qhc")
+        self.hasHelp = path.isfile(self.helpPath)
 
         self._buildProjectMenu()
         self._buildDocumentMenu()
@@ -67,6 +73,10 @@ class GuiMainMenu(QMenuBar):
 
         return
 
+    ##
+    #  Methods
+    ##
+
     def setAvailableRoot(self):
         for itemClass in nwItemClass:
             if itemClass == nwItemClass.NO_CLASS: continue
@@ -74,6 +84,25 @@ class GuiMainMenu(QMenuBar):
             self.rootItems[itemClass].setEnabled(
                 self.theProject.projTree.checkRootUnique(itemClass)
             )
+        return
+
+    def closeHelp(self):
+        """Close the process used for the Qt Assistant, if it is open.
+        """
+        if self.assistProc is None:
+            return
+
+        if self.assistProc.state() == QProcess.Starting:
+            if self.assistProc.waitForStarted(10000):
+                self.assistProc.terminate()
+            else:
+                self.assistProc.kill()
+
+        elif self.assistProc.state() == QProcess.Running:
+            self.assistProc.terminate()
+            if not self.assistProc.waitForFinished(10000):
+                self.assistProc.kill()
+
         return
 
     ##
@@ -134,10 +163,21 @@ class GuiMainMenu(QMenuBar):
         msgBox.aboutQt(self.theParent,"About Qt")
         return True
 
-    def _openHelp(self):
-        """Open the documentation URL in the system's default browser.
+    def _openAssistant(self):
+        """Open the documentation in Qt Assistant.
         """
-        QDesktopServices.openUrl(QUrl(nw.__docurl__))
+        self.assistProc = QProcess(self)
+        self.assistProc.start("assistant", [
+            "-collectionFile", self.helpPath, "-enableRemoteControl"
+        ])
+        if not self.assistProc.waitForStarted(20000):
+            return False
+        return True
+
+    def _openWebsite(self, theUrl):
+        """Open an URL in the system's default browser.
+        """
+        QDesktopServices.openUrl(QUrl(theUrl))
         return True
 
     def _openIssue(self):
@@ -818,17 +858,27 @@ class GuiMainMenu(QMenuBar):
         # Help > Separator
         self.helpMenu.addSeparator()
 
-        # Document > Preview
-        self.aHelp = QAction("Online Documentation", self)
-        self.aHelp.setStatusTip("View online documentation")
+        # Document > Documentation
+        self.aHelp = QAction("Documentation", self)
+        if self.hasHelp:
+            self.aHelp.setStatusTip("View local documentation with Qt Assistant")
+            self.aHelp.triggered.connect(self._openAssistant)
+        else:
+            self.aHelp.setStatusTip("View online documentation")
+            self.aHelp.triggered.connect(lambda: self._openWebsite(nw.__docurl__))
         self.aHelp.setShortcut("F1")
-        self.aHelp.triggered.connect(self._openHelp)
         self.helpMenu.addAction(self.aHelp)
+
+        # Document > Go to Website
+        self.aWebsite = QAction("Open the novelWriter Website", self)
+        self.aWebsite.setStatusTip("View the main website")
+        self.aWebsite.triggered.connect(lambda: self._openWebsite(nw.__url__))
+        self.helpMenu.addAction(self.aWebsite)
 
         # Document > Report Issue
         self.aIssue = QAction("Report an Issue", self)
-        self.aIssue.setStatusTip("View online documentation")
-        self.aIssue.triggered.connect(self._openIssue)
+        self.aIssue.setStatusTip("Report a bug or issue on GitHub")
+        self.aIssue.triggered.connect(lambda: self._openWebsite(nw.__issuesurl__))
         self.helpMenu.addAction(self.aIssue)
 
         return

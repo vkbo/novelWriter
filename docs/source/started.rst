@@ -51,7 +51,7 @@ the following command:
 
 .. code-block:: console
 
-   python -m pip install -r requirements.txt
+   pip install -r requirements.txt
 
 On some operating systems you need to use ``python3`` instead of ``python``.
 
@@ -78,6 +78,31 @@ The spell checking extension is optional, but recommended:
 The optional spell check library must be at least 3.0.0 to work with Windows. On Linux, 2.0.0 also
 works fine.
 
+.. _a_started_depend_docs:
+
+Building Documentation
+----------------------
+
+If you installed novelWriter from a package, the documentation should be included. If you're running
+novelWriter from the source code, a local copy of this documentation can be generated. It requires
+the following Python packages on Debian and Ubuntu.
+
+* ``python3-sphinx``
+* ``python3-sphinxcontrib.qthelp``
+
+Or from PyPi:
+
+.. code-block:: console
+
+   pip install sphinx sphinxcontrib-qthelp
+
+To build the help packages from the documentation source, run
+
+.. code-block:: console
+
+   ./setup.py qthelp
+
+from the root source folder.
 
 .. _a_started_running:
 
