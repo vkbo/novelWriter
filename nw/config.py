@@ -33,7 +33,7 @@ import nw
 
 from os import path, mkdir, unlink, rename
 from time import time
-from distutils import spawn
+from shutil import which
 
 from PyQt5.Qt import PYQT_VERSION_STR
 from PyQt5.QtCore import QT_VERSION_STR, QStandardPaths, QSysInfo
@@ -203,9 +203,8 @@ class Config:
             self.kernelVer = "Unknown"
 
         # Packages
-        self.hasEnchant   = False
-        self.hasSymSpell  = False
-        self.hasAssistant = False # The Qt Assistant
+        self.hasEnchant   = False # The pyenchant package
+        self.hasAssistant = False # The Qt Assistant executable
 
         # Recent Cache
         self.recentProj = {}
@@ -896,17 +895,19 @@ class Config:
         try:
             import enchant
             self.hasEnchant = True
-            logger.debug("Checking package pyenchant: Ok")
+            logger.debug("Checking package 'pyenchant': Ok")
         except:
             self.hasEnchant = False
-            logger.debug("Checking package pyenchant: Missing")
+            logger.debug("Checking package 'pyenchant': Missing")
 
         try:
-            self.hasAssistant = spawn.find_executable("assistant")
-            logger.debug("Checking executable assistant: Ok")
+            self.hasAssistant = which("assistant")
         except:
             self.hasAssistant = False
-            logger.debug("Checking executable assistant: Missing")
+        if self.hasAssistant:
+            logger.debug("Checking executable 'assistant': Ok")
+        else:
+            logger.debug("Checking executable 'assistant': Missing")
 
         return
 

@@ -43,7 +43,6 @@ class NWSpellCheck():
 
     SP_INTERNAL = "internal"
     SP_ENCHANT  = "enchant"
-    SP_SYMSPELL = "symspell"
 
     theDict = None
     PROJW = []
