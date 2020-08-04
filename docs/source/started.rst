@@ -4,7 +4,9 @@
 Getting Started
 ***************
 
-Latest version of novelWriter is |version|.
+This is a brief guide to how you can get novelWriter running on your computer. These are the methods
+currently supported by the developer. Packages may also be available in other package managers, but
+those are not managed by me.
 
 
 .. _a_started_install:
@@ -15,6 +17,8 @@ Installation
 You can download the latest version of novelWriter from the source repository on GitHub_. You can
 also install it directly from PyPi with ``pip install novelwriter``, or download the packages
 directly from the PyPi_ project page.
+
+Latest version of novelWriter is |release|.
 
 .. _GitHub: https://github.com/vkbo/novelWriter/releases
 .. _PyPi: https://pypi.org/project/novelWriter/

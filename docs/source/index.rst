@@ -2,7 +2,7 @@
 Welcome to the novelWriter Documentation
 ########################################
 
-This is the documentation for novelWriter |version|.
+This is the documentation for novelWriter |release|.
 
 **Contents**
 
