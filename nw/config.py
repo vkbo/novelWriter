@@ -33,6 +33,7 @@ import nw
 
 from os import path, mkdir, unlink, rename
 from time import time
+from distutils import spawn
 
 from PyQt5.Qt import PYQT_VERSION_STR
 from PyQt5.QtCore import QT_VERSION_STR, QStandardPaths, QSysInfo
@@ -76,9 +77,11 @@ class Config:
         self.graphPath = None
         self.dictPath  = None
         self.iconPath  = None
+        self.helpPath  = None
 
-        # Set default values
+        # Runtime Settings and Variables
         self.confChanged = False
+        self.hasHelp     = False
 
         ## General
         self.guiTheme    = "default"
@@ -200,8 +203,9 @@ class Config:
             self.kernelVer = "Unknown"
 
         # Packages
-        self.hasEnchant  = False
-        self.hasSymSpell = False
+        self.hasEnchant   = False
+        self.hasSymSpell  = False
+        self.hasAssistant = False # The Qt Assistant
 
         # Recent Cache
         self.recentProj = {}
@@ -314,6 +318,10 @@ class Config:
             self.spellTool = "internal"
         if self.spellLanguage is None:
             self.spellLanguage = "en"
+
+        # Check if local help files exist
+        self.helpPath = path.join(self.assetPath, "help", "novelWriter.qhc")
+        self.hasHelp  = path.isfile(self.helpPath)
 
         logger.debug("Config initialisation complete")
 
@@ -892,6 +900,13 @@ class Config:
         except:
             self.hasEnchant = False
             logger.debug("Checking package pyenchant: Missing")
+
+        try:
+            self.hasAssistant = spawn.find_executable("assistant")
+            logger.debug("Checking executable assistant: Ok")
+        except:
+            self.hasAssistant = False
+            logger.debug("Checking executable assistant: Missing")
 
         return
 

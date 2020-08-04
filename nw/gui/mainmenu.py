@@ -49,10 +49,10 @@ class GuiMainMenu(QMenuBar):
         self.theParent  = theParent
         self.theProject = theParent.theProject
 
+        # Internals
         self.assistProc = None
-        self.helpPath = path.join(self.mainConf.assetPath, "help", "novelWriter.qhc")
-        self.hasHelp = path.isfile(self.helpPath)
 
+        # Build Menu
         self._buildProjectMenu()
         self._buildDocumentMenu()
         self._buildEditMenu()
@@ -79,8 +79,10 @@ class GuiMainMenu(QMenuBar):
 
     def setAvailableRoot(self):
         for itemClass in nwItemClass:
-            if itemClass == nwItemClass.NO_CLASS: continue
-            if itemClass == nwItemClass.TRASH:    continue
+            if itemClass == nwItemClass.NO_CLASS:
+                continue
+            if itemClass == nwItemClass.TRASH:
+                continue
             self.rootItems[itemClass].setEnabled(
                 self.theProject.projTree.checkRootUnique(itemClass)
             )
@@ -166,12 +168,15 @@ class GuiMainMenu(QMenuBar):
     def _openAssistant(self):
         """Open the documentation in Qt Assistant.
         """
-        self.assistProc = QProcess(self)
-        self.assistProc.start("assistant", [
-            "-collectionFile", self.helpPath, "-enableRemoteControl"
-        ])
-        if not self.assistProc.waitForStarted(20000):
+        if not self.mainConf.hasHelp:
             return False
+
+        self.assistProc = QProcess(self)
+        self.assistProc.start("assistant", ["-collectionFile", self.mainConf.helpPath])
+
+        if not self.assistProc.waitForStarted(10000):
+            return False
+
         return True
 
     def _openWebsite(self, theUrl):
@@ -860,7 +865,7 @@ class GuiMainMenu(QMenuBar):
 
         # Document > Documentation
         self.aHelp = QAction("Documentation", self)
-        if self.hasHelp:
+        if self.mainConf.hasHelp and self.mainConf.hasAssistant:
             self.aHelp.setStatusTip("View local documentation with Qt Assistant")
             self.aHelp.triggered.connect(self._openAssistant)
         else:
