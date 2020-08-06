@@ -1,8 +1,8 @@
 .. _a_export:
 
-##################
+******************
 Exporting Projects
-##################
+******************
 
 The novelWriter project can be exported in various formats using the build tool available from
 :guilabel:`Build Novel Project` in the :guilabel:`Tools` menu, or by pressing :kbd:`F5`.
@@ -10,9 +10,8 @@ The novelWriter project can be exported in various formats using the build tool 
 
 .. _a_export_headers:
 
-*****************
 Header Formatting
-*****************
+=================
 
 The titles for the four levels of story structure can be formatted collectively in the export tool.
 This is done through a series of keyword–replace steps. They are all on the format ``%keyword%``.
@@ -56,9 +55,8 @@ This is done through a series of keyword–replace steps. They are all on the fo
 
 .. _a_export_scenes:
 
-****************
 Scene Separators
-****************
+================
 
 If you don't want any titles for your scenes (and for your sections if you have them), you can leave
 the boxes empty, and an empty paragraph will be inserted between the scenes or sections instead.
@@ -70,9 +68,8 @@ separator.
 
 .. _a_export_files:
 
-**************
 File Selection
-**************
+==============
 
 Which files are selected for export can also be controlled from the options on the left side of the
 dialog window. The switch for :guilabel:`Include novel files` will select any file that isn't
@@ -98,63 +95,43 @@ ignore this flag if you need to collectively override these settings.
 
 .. _a_export_formats:
 
-**************
 Export Formats
-**************
+==============
 
 Currently, six formats are supported for exporting.
 
-
 OpenDocument Format
-===================
-
-This is produces an open document ``.odt`` file. The document produced has very little formatting,
-and may require further editing afterwards. For a better formatted office document, you may get a
-better result with exporting to HTML and the import that HTML document in your office word
-processor.
-
+   This is produces an open document ``.odt`` file. The document produced has very little
+   formatting, and may require further editing afterwards. For a better formatted office document,
+   you may get a better result with exporting to HTML and the import that HTML document in your
+   office word processor.
 
 PDF Format
-==========
-
-The PDF export is just a shortcut for print to file.
-
+   The PDF export is just a shortcut for print to file.
 
 novelWriter HTML
-================
-
-The HTML export format writes a single ``.htm`` file with minimal style formatting. The exported
-HTML file is suitable for further processing by document conversion tools like Pandoc, for importing
-in word processors, or for printing from browser.
-
+   The HTML export format writes a single ``.htm`` file with minimal style formatting. The exported
+   HTML file is suitable for further processing by document conversion tools like Pandoc, for
+   importing in word processors, or for printing from browser.
 
 novelWriter Markdown
-====================
-
-This is simply a concatenation of the files selected by the filters. The files in the project are
-stacked together in the order they appear in the tree view, with comments, tags, etc. included if
-they are selected. This is a useful format for exporting the project for later import back into
-novelWriter.
-
+   This is simply a concatenation of the files selected by the filters. The files in the project are
+   stacked together in the order they appear in the tree view, with comments, tags, etc. included if
+   they are selected. This is a useful format for exporting the project for later import back into
+   novelWriter.
 
 Standard Markdown
-=================
-
-If you have Qt 5.14 or higher, the option to export to plain Markdown is available. This feature
-uses Qt's own Markdown export feature.
-
+   If you have Qt 5.14 or higher, the option to export to plain Markdown is available. This feature
+   uses Qt's own Markdown export feature.
 
 Plain Text
-==========
-
-The plain text export format writes a simple ``.txt`` file without any formatting at all.
+   The plain text export format writes a simple ``.txt`` file without any formatting at all.
 
 
 .. _a_export_options:
 
-*************************
 Additional Export Options
-*************************
+=========================
 
 In addition to the above document formats, the novelWriter HTML and Markdown formats can also be
 wrapped in a JSON file. The files will have a meta data entry and a body entry. For HTML, also the
