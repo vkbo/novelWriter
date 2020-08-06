@@ -1,6 +1,6 @@
-#######################################
-Documentation for novelWriter |release|
-#######################################
+#####################
+novelWriter |release|
+#####################
 
 .. image:: https://travis-ci.com/vkbo/novelWriter.svg?branch=master
    :target: https://travis-ci.com/vkbo/novelWriter
@@ -47,6 +47,12 @@ Useful Links
 * Issue Tracker: https://github.com/vkbo/novelWriter/issues
 * PyPi Project: https://pypi.org/project/novelWriter
 
+
+#################
+The Documentation
+#################
+
+This is the documentation for novelWriter |release|.
 
 .. toctree::
    :maxdepth: 2
