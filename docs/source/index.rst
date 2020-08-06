@@ -36,9 +36,7 @@ The plain text storage is suitable for version control software, and also well s
 synchronisation tools. The core project structure is stored in a project XML file. Other meta data
 is primarily saved in JSON files.
 
-
-Useful Links
-============
+**Useful Links**
 
 * Website: https://novelwriter.io
 * Documentation: https://novelwriter.readthedocs.io
@@ -47,12 +45,6 @@ Useful Links
 * Issue Tracker: https://github.com/vkbo/novelWriter/issues
 * PyPi Project: https://pypi.org/project/novelWriter
 
-
-#################
-The Documentation
-#################
-
-This is the documentation for novelWriter |release|.
 
 .. toctree::
    :maxdepth: 2
