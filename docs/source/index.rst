@@ -48,19 +48,29 @@ Useful Links
 * PyPi Project: https://pypi.org/project/novelWriter
 
 
-Contents
-========
-
 .. toctree::
    :maxdepth: 2
+   :caption: First Steps
 
    introduction
    started
    interface
+
+
+.. toctree::
+   :maxdepth: 2
+   :caption: Writing Novels
+
    projects
    structure
    notes
    export
+
+
+.. toctree::
+   :maxdepth: 2
+   :caption: Under the Hood
+
    technical
 
 
