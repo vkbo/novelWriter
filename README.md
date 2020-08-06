@@ -1,7 +1,7 @@
 # novelWriter
 
-[![Build Status](https://travis-ci.com/vkbo/novelWriter.svg?branch=master)](https://travis-ci.com/vkbo/novelWriter)
-[![codecov](https://codecov.io/gh/vkbo/novelWriter/branch/master/graph/badge.svg)](https://codecov.io/gh/vkbo/novelWriter)
+[![Build Status](https://travis-ci.com/vkbo/novelWriter.svg?branch=main)](https://travis-ci.com/vkbo/novelWriter)
+[![codecov](https://codecov.io/gh/vkbo/novelWriter/branch/main/graph/badge.svg)](https://codecov.io/gh/vkbo/novelWriter)
 [![Documentation Status](https://readthedocs.org/projects/novelwriter/badge/?version=latest)](https://novelwriter.readthedocs.io/en/latest/?badge=latest)
 
 <img align="left" style="margin: 0 16px 4px 0;" src="assets/icons/96x96/novelwriter.png">
@@ -14,7 +14,9 @@ Other meta data is primarily saved in JSON files.
 
 The full documentation is available at [novelwriter.readthedocs.io](https://novelwriter.readthedocs.io/).
 
-### Note
+**Note:** The default branch on this repository switched to `main` on 6. August 2020.
+
+### Development Status
 
 The application is still under initial development, but all core features have now been added.
 The core functionality has been in place for a while, and novelWriter is being used for writing projects by the author and collaborators.
