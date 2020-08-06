@@ -34,10 +34,10 @@ needed to communicate with the Qt GUI libraries, only one package is required fo
 format of the main project file. Everything else is handled with standard Python libraries.
 
 Optionally, a package can be installed to interface with the Enchant spell checking libaries, but
-this isn't required. If no external spell checking library is available, novelWriter falls back to
-using the internal ``difflib`` of Python to check spelling. This is a much slower approach, and it
-is less sophisticated than full spell checking libaries, but if you only work with small files, the
-performance loss is not noticeable.
+this isn't strictly required. If no external spell checking library is available, novelWriter falls
+back to using the internal ``difflib`` of Python to check spelling. This is a much slower approach,
+and it is less sophisticated than full spell checking libaries, but if you only work with small
+files, the performance loss is not noticeable.
 
 
 .. _a_started_depend_packages:
@@ -53,7 +53,7 @@ the following command:
 
    pip install -r requirements.txt
 
-On some operating systems you need to use ``python3`` instead of ``python``.
+This will install all the dependencies and recommended packages.
 
 The following Python packages are required to run novelWriter:
 
@@ -69,7 +69,7 @@ Exporting to standard Markdown, for instance, requires PyQt/Qt 5.14. Searching u
 expressions requires 5.3, and for full Unicode support, 5.13.
 
 There are no known minimum for package ``lxml``, but the code was originally written with 4.2,
-which is therefore set as the minimum.
+which is therefore set as the minimum. It may work on lower versions. You have to test it.
 
 The spell checking extension is optional, but recommended:
 
@@ -77,6 +77,7 @@ The spell checking extension is optional, but recommended:
 
 The optional spell check library must be at least 3.0.0 to work with Windows. On Linux, 2.0.0 also
 works fine.
+
 
 .. _a_started_depend_docs:
 
@@ -103,6 +104,16 @@ To build the help packages from the documentation source, run
    ./setup.py qthelp
 
 from the root source folder.
+
+The setup script will copy the generated files into the ``nw/assets/help`` folder, and novelWriter
+will detect the presence of the files and redirect the menu help entry to open help locally instead
+of send the user to the website.
+
+.. note::
+   In order for the local version of help to work, the Qt Assistant must be installed on the local
+   computer. If it isn't available, or novelWriter cannot find it, the help feature will fall back
+   to redirecting to the website.
+
 
 .. _a_started_running:
 
@@ -135,7 +146,7 @@ there's one script for Debian and one for Ubuntu.
 Building a Standalone Executable
 ================================
 
-A standalone executable can be built with pyinstaller, using the provided python script
+A standalone executable can be built with ``pyinstaller``, using the provided python script
 ``install.py`` in the source folder. This script will automatically try to install all dependencies
 and build the standalone executable of novelWriter. You can run the script by typing the following
 into your command prompt:

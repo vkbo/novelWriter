@@ -70,6 +70,7 @@ pygments_style = None
 # -- Options for HTML output -------------------------------------------------
 
 html_theme = "sphinx_rtd_theme"
+html_logo = "images/novelwriter.png"
 html_theme_options = {
     # Toc options
     "collapse_navigation": True,
