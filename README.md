@@ -137,7 +137,7 @@ On Linux, 2.0.0 also works fine.
 
 If no external spell checking tool is installed, novelWriter will use a basic spell checker based on standard Python package `difflib`.
 Currently, only English dictionaries are available for this spell checker, but more can be added to the `nw/assets/dict` folder.
-See the [nw/assets/dict/README.md](README.md) file in that folder for how to generate more dictionaries.
+See the [README.md](nw/assets/dict/README.md) file in that folder for how to generate more dictionaries.
 Note that the difflib-based option is both slow and limited.
 
 Note: On Windows, make sure Python3 is in your PATH if you want to launch novelWriter from command line.
