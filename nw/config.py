@@ -33,6 +33,7 @@ import nw
 
 from os import path, mkdir, unlink, rename
 from time import time
+from shutil import which
 
 from PyQt5.Qt import PYQT_VERSION_STR
 from PyQt5.QtCore import QT_VERSION_STR, QStandardPaths, QSysInfo
@@ -76,9 +77,11 @@ class Config:
         self.graphPath = None
         self.dictPath  = None
         self.iconPath  = None
+        self.helpPath  = None
 
-        # Set default values
+        # Runtime Settings and Variables
         self.confChanged = False
+        self.hasHelp     = False
 
         ## General
         self.guiTheme    = "default"
@@ -200,8 +203,8 @@ class Config:
             self.kernelVer = "Unknown"
 
         # Packages
-        self.hasEnchant  = False
-        self.hasSymSpell = False
+        self.hasEnchant   = False # The pyenchant package
+        self.hasAssistant = False # The Qt Assistant executable
 
         # Recent Cache
         self.recentProj = {}
@@ -314,6 +317,10 @@ class Config:
             self.spellTool = "internal"
         if self.spellLanguage is None:
             self.spellLanguage = "en"
+
+        # Check if local help files exist
+        self.helpPath = path.join(self.assetPath, "help", "novelWriter.qhc")
+        self.hasHelp  = path.isfile(self.helpPath)
 
         logger.debug("Config initialisation complete")
 
@@ -888,10 +895,19 @@ class Config:
         try:
             import enchant
             self.hasEnchant = True
-            logger.debug("Checking package pyenchant: Ok")
+            logger.debug("Checking package 'pyenchant': Ok")
         except:
             self.hasEnchant = False
-            logger.debug("Checking package pyenchant: Missing")
+            logger.debug("Checking package 'pyenchant': Missing")
+
+        try:
+            self.hasAssistant = which("assistant")
+        except:
+            self.hasAssistant = False
+        if self.hasAssistant:
+            logger.debug("Checking executable 'assistant': Ok")
+        else:
+            logger.debug("Checking executable 'assistant': Missing")
 
         return
 

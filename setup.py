@@ -1,8 +1,86 @@
 #!/usr/bin/env python3
+import os
+import sys
+import shutil
+import subprocess
 import setuptools
 
 from nw import __version__, __url__, __docurl__, __issuesurl__, __sourceurl__
 
+##
+#  Build the Package
+##
+
+buildDocs = False
+if "qthelp" in sys.argv:
+    buildDocs = True
+    sys.argv.remove("qthelp")
+
+if buildDocs:
+
+    buildDir = os.path.join("docs", "build", "qthelp")
+    helpDir  = os.path.join("nw", "assets", "help")
+
+    inFile  = "novelWriter.qhcp"
+    outFile = "novelWriter.qhc"
+    datFile = "novelWriter.qch"
+
+    print("")
+    print("Building Documentation")
+    print("======================")
+    print("")
+
+    buildFail = False
+    try:
+        subprocess.call(["make","-C", "docs", "qthelp"])
+    except Exception as e:
+        print("Failed with error:")
+        print(str(e))
+        buildFail = True
+
+    try:
+        subprocess.call(["qhelpgenerator", os.path.join(buildDir, inFile)])
+    except Exception as e:
+        print("Failed with error:")
+        print(str(e))
+        buildFail = True
+
+    if not os.path.isdir(helpDir):
+        try:
+            os.mkdir(helpDir)
+        except Exception as e:
+            print("Failed with error:")
+            print(str(e))
+            buildFail = True
+
+    try:
+        if os.path.isfile(os.path.join(helpDir, outFile)):
+            os.unlink(os.path.join(helpDir, outFile))
+        if os.path.isfile(os.path.join(helpDir, datFile)):
+            os.unlink(os.path.join(helpDir, datFile))
+        os.rename(os.path.join(buildDir, outFile), os.path.join(helpDir, outFile))
+        os.rename(os.path.join(buildDir, datFile), os.path.join(helpDir, datFile))
+    except Exception as e:
+        print("Failed with error:")
+        print(str(e))
+        buildFail = True
+
+    print("")
+    if buildFail:
+        print("Documentation build: FAILED")
+    else:
+        print("Documentation build: OK")
+    print("")
+
+if len(sys.argv) == 1:
+    # Nothing more to do
+    sys.exit(0)
+
+##
+#  Build the Package
+##
+
+# Read content from files
 with open("README.md", "r") as inFile:
     longDescription = inFile.read()
 

@@ -626,13 +626,10 @@ class GuiConfigEditEditingTab(QWidget):
         self.spellToolList = QComboBox(self)
         self.spellToolList.addItem("Internal (difflib)",        NWSpellCheck.SP_INTERNAL)
         self.spellToolList.addItem("Spell Enchant (pyenchant)", NWSpellCheck.SP_ENCHANT)
-        # self.spellToolList.addItem("SymSpell (symspellpy)",     NWSpellCheck.SP_SYMSPELL)
 
-        theModel   = self.spellToolList.model()
-        idEnchant  = self.spellToolList.findData(NWSpellCheck.SP_ENCHANT)
-        # idSymSpell = self.spellToolList.findData(NWSpellCheck.SP_SYMSPELL)
+        theModel  = self.spellToolList.model()
+        idEnchant = self.spellToolList.findData(NWSpellCheck.SP_ENCHANT)
         theModel.item(idEnchant).setEnabled(self.mainConf.hasEnchant)
-        # theModel.item(idSymSpell).setEnabled(self.mainConf.hasSymSpell)
 
         self.spellToolList.currentIndexChanged.connect(self._doUpdateSpellTool)
         toolIdx = self.spellToolList.findData(self.mainConf.spellTool)
