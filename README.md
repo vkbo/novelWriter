@@ -205,7 +205,7 @@ They make it possible to quickly navigate between the documents while editing.
 
 ## Contribution
 
-If you want to contribute to novelWriter, please follow the coding convention laid out in the [Style Guide](docs/markdown/style.md).
+If you want to contribute to novelWriter, please follow the coding convention laid out in the [Style Guide](markdown/style.md).
 They broadly follow Python PEP8, but there are a few modifications.
 
 ## Screenshot
