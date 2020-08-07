@@ -8,6 +8,10 @@ This is a brief guide to how you can get novelWriter running on your computer. T
 currently supported by the developer. Packages may also be available in other package managers, but
 those are not managed by me.
 
+As novelWriter matures, more options for how to install it and get it running will be added. At the
+present time, the process is best suited for people used to work with Python projects from command
+line.
+
 
 .. _a_started_install:
 
@@ -60,6 +64,8 @@ The following Python packages are required to run novelWriter:
 * ``pyqt5``, needed for connecting with the Qt5 libraries.
 * ``lxml``, needed full XML support.
 
+You can of course also install these packages from your operating system's package repository.
+
 .. note::
    Sometimes the SVG graphics package for PyQt5 must be installed separately. It is usually called
    something like ``python3-pyqt5.qtsvg``.
@@ -68,8 +74,9 @@ PyQt/Qt should be at least 5.2.1, but ideally 5.10 or higher for nearly all feat
 Exporting to standard Markdown, for instance, requires PyQt/Qt 5.14. Searching using regular
 expressions requires 5.3, and for full Unicode support, 5.13.
 
-There are no known minimum for package ``lxml``, but the code was originally written with 4.2,
-which is therefore set as the minimum. It may work on lower versions. You have to test it.
+There are no known minimum version requirement for package ``lxml``, but the code was originally
+written with 4.2, which is therefore set as the minimum. It may work on lower versions. You have to
+test it.
 
 The spell checking extension is optional, but recommended:
 
@@ -81,8 +88,8 @@ works fine.
 
 .. _a_started_depend_docs:
 
-Building Documentation
-----------------------
+Building the Documentation
+--------------------------
 
 If you installed novelWriter from a package, the documentation should be included. If you're running
 novelWriter from the source code, a local copy of this documentation can be generated. It requires
@@ -107,12 +114,13 @@ from the root source folder.
 
 The setup script will copy the generated files into the ``nw/assets/help`` folder, and novelWriter
 will detect the presence of the files and redirect the menu help entry to open help locally instead
-of send the user to the website.
+of sending the user to the website. Pressing the :kbd:`F1` key will in any case try to open help
+locally first, then send you to the website as a fallback.
 
 .. note::
    In order for the local version of help to work, the Qt Assistant must be installed on the local
    computer. If it isn't available, or novelWriter cannot find it, the help feature will fall back
-   to redirecting to the website.
+   to redirecting you to the documentation website.
 
 
 .. _a_started_running:
@@ -136,7 +144,7 @@ encountered. To list all options, run:
 
    python novelWriter.py --help
 
-There are also a couple of install scripts in the assets folder which will assist in setting up
+There are also a couple of install scripts in the assets folder which will assist in setting up a
 launch icon and the novelWriter project file mimetype for Gnome desktops on Linux. Currently,
 there's one script for Debian and one for Ubuntu.
 
@@ -163,8 +171,8 @@ If successful, the executable will be in the "dist" folder.
 Additional Instructions for Windows
 -----------------------------------
 
-If you don't have Python installed, you can download it from the python.org website.
-The installers for Windows are available at https://www.python.org/downloads/windows/
+If you don't have Python installed, you can download it from the python.org website. The installers
+for Windows are available at https://www.python.org/downloads/windows/
 
 novelWriter should work with Python 3.6 or higher, and the executable installer is the easiest to
 install.
