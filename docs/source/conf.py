@@ -77,7 +77,8 @@ html_theme_options = {
     "sticky_navigation": True,
     "navigation_depth": 3,
     "includehidden": True,
-    "titles_only": False
+    "titles_only": False,
+    "logo_only": True,
 }
 
 html_static_path = ["_static"]
