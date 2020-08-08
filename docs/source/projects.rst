@@ -277,3 +277,20 @@ Settings`.
    For the backup to be able to run, the :guilabel:`Working Title` must be set in :guilabel:`Project
    Settings`. This value is used to generate the folder name for the zip files. Without it, the
    backup will not run at all, but produce a warning message.
+
+.. _a_proj_stats:
+
+Writing Statistics
+==================
+
+When you work on your project, a log file records when you opened it, when you closed it, and how
+many words you added to your novel and note files during the session. You can view this file in the
+``meta`` folder in the directory where you saved your project. The file is named
+``sessionStats.log``.
+
+A small tool to view the content of this file is available in the :guilabel:`Tools` menu under
+:guilabel:`Writing Statistics`. You can also launch it by pressing :kbd:`F6`.
+
+The tool will show a list of all your sessions, and a set of filters to apply to it. You can also
+export the filtered data to a JSON file or to a CSV file that can be opened by a spreadsheet
+application like for instance Libre Office Calc.
