@@ -15,7 +15,7 @@ addons:
 
 install:
 # - pip install --upgrade pip
-# - pip install -r requirements.txt
+  - pip install -r requirements.txt
   - pip install PyVirtualDisplay
   - pip install pytest-cov
   - pip install pytest-xvfb
@@ -25,6 +25,8 @@ install:
 stages:
   - name: Main
   - name: Supported
+  - name: Future
+#   if: branch = main
 
 jobs:
   include:
@@ -51,7 +53,9 @@ jobs:
       script:
       - python -m pytest -v
 
-    - python:
+    - stage:
+      - Future
+      python:
       - 3.9-dev
       script:
       - python -m pytest -v
