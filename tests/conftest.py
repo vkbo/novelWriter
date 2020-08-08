@@ -2,8 +2,10 @@
 """novelWriter Test Config
 """
 
-import pytest, shutil
+import sys, pytest, shutil
 from os import path, mkdir
+
+sys.path.insert(1, path.abspath(path.join(path.dirname(__file__), path.pardir)))
 
 @pytest.fixture(scope="session")
 def nwTemp():

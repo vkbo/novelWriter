@@ -34,19 +34,21 @@ from os import path, remove, rename
 from PyQt5.QtGui import QIcon
 from PyQt5.QtWidgets import QApplication, QErrorMessage
 
+from nw.error import exceptionHandler
 from nw.config import Config
 
-__package__    = "novelWriter"
+__package__    = "nw"
 __author__     = "Veronica Berglyd Olsen"
 __copyright__  = "Copyright 2018–2020, Veronica Berglyd Olsen"
 __license__    = "GPLv3"
-__version__    = "0.10.1"
-__hexversion__ = "0x001001f0"
-__date__       = "2020-07-11"
+__version__    = "0.11.0"
+__hexversion__ = "0x001100f0"
+__date__       = "2020-08-08"
 __maintainer__ = "Veronica Berglyd Olsen"
 __email__      = "code@vkbo.net"
-__status__     = "Pre-Release"
-__url__        = "https://github.com/vkbo/novelWriter"
+__status__     = "Beta"
+__url__        = "https://novelwriter.io"
+__sourceurl__  = "https://github.com/vkbo/novelWriter"
 __issuesurl__  = "https://github.com/vkbo/novelWriter/issues"
 __domain__     = "novelwriter.io"
 __docurl__     = "https://novelwriter.readthedocs.io"
@@ -90,7 +92,6 @@ CONFIG = Config()
 def main(sysArgs=None):
     """Parses command line, sets up logging, and launches main GUI.
     """
-
     if sysArgs is None:
         sysArgs = sys.argv[1:]
 
@@ -111,7 +112,7 @@ def main(sysArgs=None):
     ]
 
     helpMsg = (
-        "{appname} {version} ({status} {date})\n"
+        "novelWriter {version} ({status} {date})\n"
         "{copyright}\n"
         "\n"
         "This program is distributed in the hope that it will be useful,\n"
@@ -132,7 +133,6 @@ def main(sysArgs=None):
         "     --data=     Alternative user data path.\n"
         "     --testmode  Do not display GUI. Used by the test suite.\n"
     ).format(
-        appname   = __package__,
         version   = __version__,
         status    = __status__,
         copyright = __copyright__,
@@ -167,7 +167,9 @@ def main(sysArgs=None):
             print(helpMsg)
             sys.exit()
         elif inOpt in ("-v", "--version"):
-            print("%s %s Version %s [%s]" % (__package__,__status__,__version__,__date__))
+            print("novelWriter %s Version %s [%s]" % (
+                __status__, __version__, __date__)
+            )
             sys.exit()
         elif inOpt == "--info":
             debugLevel = logging.INFO
@@ -197,7 +199,7 @@ def main(sysArgs=None):
     CONFIG.cmdOpen   = cmdOpen
 
     # Set Logging
-    logFmt = logging.Formatter(fmt=logFormat, datefmt="%Y-%m-%d %H:%M:%S", style="{")
+    logFmt = logging.Formatter(fmt=logFormat, style="{")
 
     if not logFile == "" and toFile:
         if path.isfile(logFile+".bak"):
@@ -217,8 +219,8 @@ def main(sysArgs=None):
         logger.addHandler(cHandle)
 
     logger.setLevel(debugLevel)
-    logger.info("Starting %s %s (%s) %s" % (
-        __package__, __version__, __hexversion__, __date__
+    logger.info("Starting novelWriter %s (%s) %s" % (
+        __version__, __hexversion__, __date__
     ))
 
     # Check Packages and Versions
@@ -249,13 +251,14 @@ def main(sysArgs=None):
     if errorData:
         errApp = QApplication([])
         errMsg = QErrorMessage()
-        errMsg.setMinimumWidth(500)
-        errMsg.setMinimumHeight(300)
+        errMsg.resize(500, 300)
         errMsg.showMessage((
-            "ERROR: %s cannot start due to the following issues:<br><br>"
-            "&nbsp;-&nbsp;%s<br><br>Exiting."
+            "<h3>A critical error has been encountered</h3>"
+            "<p>novelWriter cannot start due to the following issues:<p>"
+            "<p>&nbsp;-&nbsp;%s</p>"
+            "<p>Shutting down ...</p>"
         ) % (
-            __package__, "<br>&nbsp;-&nbsp;".join(errorData)
+            "<br>&nbsp;-&nbsp;".join(errorData)
         ))
         errApp.exec_()
         sys.exit(1)
@@ -268,13 +271,53 @@ def main(sysArgs=None):
     if testMode:
         nwGUI = GuiMain()
         return nwGUI
+
     else:
-        nwApp = QApplication([__package__,("-style=%s" % qtStyle)])
-        nwApp.setApplicationName(__package__)
+        nwApp = QApplication([CONFIG.appName, ("-style=%s" % qtStyle)])
+        nwApp.setApplicationName(CONFIG.appName)
         nwApp.setApplicationVersion(__version__)
         nwApp.setWindowIcon(QIcon(CONFIG.appIcon))
-        nwApp.setOrganizationDomain("novelwriter.io")
-        nwGUI = GuiMain()
-        sys.exit(nwApp.exec_())
+        nwApp.setOrganizationDomain(__domain__)
+
+        # We try to catch critical errors while setting up the main GUI
+        # by wrapping the main GUI in a try/except structure. This will
+        # not catch all exceptions for other parts of the application.
+        # For all other unhandled exceptions, we use a custom exception
+        # handler that pops a dialog box with the error message.
+        sys.excepthook = exceptionHandler
+
+        try:
+            nwGUI = GuiMain()
+            sys.exit(nwApp.exec_())
+
+        except Exception:
+
+            from traceback import print_tb
+            from nw.error import formatHtmlErrMsg
+
+            exType, exValue, exTrace = sys.exc_info()
+
+            logger.critical("%s: %s" % (exType.__name__, str(exValue)))
+            print_tb(exTrace)
+
+            try:
+                del nwApp
+
+                errApp = QApplication([])
+                errMsg = QErrorMessage()
+                errMsg.setWindowTitle("Critical Error")
+                errMsg.resize(800, 400)
+                errMsg.showMessage((
+                    "<h3>A critical error has been encountered</h3>"
+                    "%s"
+                    "<p>Shutting down ...</p>"
+                ) % formatHtmlErrMsg(exType, exValue, exTrace))
+                errApp.exec_()
+
+            except Exception as e:
+                logger.critical("Could not create error message dialog.")
+                logger.critical(str(e))
+
+            sys.exit(1)
 
     return

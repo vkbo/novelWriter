@@ -54,14 +54,14 @@ class GuiAbout(QDialog):
         self.innerBox = QHBoxLayout()
         self.innerBox.setSpacing(self.mainConf.pxInt(16))
 
-        self.setWindowTitle("About %s" % nw.__package__)
+        self.setWindowTitle("About %s" % self.mainConf.appName)
         self.setMinimumWidth(self.mainConf.pxInt(650))
         self.setMinimumHeight(self.mainConf.pxInt(600))
 
         nPx = self.mainConf.pxInt(96)
         self.nwIcon = QLabel()
         self.nwIcon.setPixmap(self.theParent.theTheme.getPixmap("novelwriter", (nPx, nPx)))
-        self.lblName = QLabel("<b>%s</b>" % nw.__package__)
+        self.lblName = QLabel("<b>%s</b>" % self.mainConf.appName)
         self.lblVers = QLabel("v%s" % nw.__version__)
         self.lblDate = QLabel(datetime.strptime(nw.__date__, "%Y-%m-%d").strftime("%x"))
 
@@ -133,7 +133,7 @@ class GuiAbout(QDialog):
             "<h3>Credits</h3>"
             "<p>{credits:s}</p>"
         ).format(
-            name      = nw.__package__,
+            name      = self.mainConf.appName,
             copyright = nw.__copyright__,
             website   = nw.__url__,
             domain    = nw.__domain__,

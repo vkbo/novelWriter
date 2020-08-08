@@ -1,5 +1,41 @@
 # novelWriter ChangeLog
 
+## Version 0.11 [2020-08-08]
+
+Note: The source code has now switched to a default branch named `main` ahead of the changes planned by GitHub.
+See their [notes](https://github.com/github/renaming) for more information.
+
+**Bugfixes**
+
+* The `pytest` config file now sets the local source path as the first search path for the main novelWriter package. This ensures that the tests can always find the correct version of the code when running tests. PR #381.
+* The `install.py` script was expecting an older file layout for assets files. This has now been updated to the curren file layout. PR #380.
+
+**User Interface**
+
+* A set  of new exception handling functions have been added. Recoverable errors will now pop an error dialog with the error message and a traceback for the user. The application will not generally exit on such errors, unless it causes Python itself to abort. It is possible to copy and paste the error message so it can be used for a ticket in the issue tracker. PRs #376 and #378.
+
+**Documentation**
+
+* The full documentation for novelWriter, available at [novelwriter.readthedocs.io](https://novelwriter.readthedocs.io/) has been rewritten. It was drifting out of sync with the development of the code. In addition, many improvements have been made to the reStructuredText formatting of the documentation source by providing better cross-reference linking and highlightings. The main repository README file has been updated to match. PRs #375, #382, and #384.
+* The main `setup.py` script has been updated to also build documentation for the Qt Assistant when given a `qthelp` flag. The compiled help files are copied into the `nw/assets/help` folder, and bundled with the source when pushed to PyPi. The GUI has been altered to open the local help files instead of redirecting to the online documentation if the local files are both present and the Qt Assistant is installed. PR #375 and #379.
+
+**Other Changes**
+
+* Some minor changes to the source code has been made to more correctly use the Python `__package__` variable. PR #376.
+
+
+## Version 0.10.2 [2020-07-29]
+
+**Bugfixes**
+
+* Fixed a crash when using the replace part of search/replace when using regular expressions for the search. The replace code assumed the search field was a string, which isn't the case when using RegEx, rather itb is a QRegularExpression or QRegExp object. This has now been resolved. In addition, the replace feature has been improved to make sure that it only replaces text selected by an actual search, not any user selected text. Issue #371, PRs #372 and #373.
+* The Tokenizer class used for converting novelWriter markdown to other formats produced some invalid escape sequence warnings. The warnings did not seem to affect the results, but have nevertheless been fixed. PR #370.
+
+**Features**
+
+* Insert menu entries to insert single and double open and close quote symbols have been added. These are the symbols selected as the quote symbols in Preferences. They also have keyboard shortcuts associated with them. PR #367.
+
+
 ## Version 0.10.1 [2020-07-11]
 
 **Bugfixes**
@@ -17,7 +53,7 @@
 * The search/replace Regular Expression option now uses the newest QRegularExpression tool instead of the older QRegExp tool if the Qt version is 5.13 or above. Otherwise, it still uses the old. The main benefit of the newer tool in this context is better Unicode support. PR #360.
 * The Build Novel Project tool can now generate Roman numbers for chapter markers. Both upper and lower case is supported. PRs #362 and #363.
 
-**Other CHanges**
+**Other Changes**
 
 * The install scripts now try to create folders before copying icons. PR #364.
 * The manifest file now lists the root assets folder, so that it is included in the pypi build. PR #364.

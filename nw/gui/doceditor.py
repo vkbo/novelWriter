@@ -52,7 +52,7 @@ from nw.core import NWDoc, NWSpellSimple, countWords
 from nw.gui.dochighlight import GuiDocHighlighter
 from nw.common import transferCase
 from nw.constants import (
-    nwAlert, nwUnicode, nwDocAction, nwDocInsert, nwInsertSymbols, nwItemClass
+    nwAlert, nwUnicode, nwDocAction, nwDocInsert, nwItemClass
 )
 
 logger = logging.getLogger(__name__)
@@ -79,6 +79,7 @@ class GuiDocEditor(QTextEdit):
         self.wordCount = 0
         self.paraCount = 0
         self.lastEdit  = 0
+        self.lastFind  = None
         self.bigDoc    = False
         self.doReplace = False
         self.nonWord   = "\"'"
@@ -89,7 +90,7 @@ class GuiDocEditor(QTextEdit):
         self.typSQOpen  = self.mainConf.fmtSingleQuotes[0]
         self.typSQClose = self.mainConf.fmtSingleQuotes[1]
 
-        # Core Elements
+        # Core Elements and Signals
         self.qDocument = self.document()
         self.qDocument.contentsChange.connect(self._docChange)
 
@@ -590,8 +591,33 @@ class GuiDocEditor(QTextEdit):
         """
         if isinstance(theInsert, str):
             theText = theInsert
-        elif theInsert in nwInsertSymbols.SYMBOLS:
-            theText = nwInsertSymbols.SYMBOLS[theInsert]
+        elif theInsert in nwDocInsert:
+            if theInsert == nwDocInsert.NO_INSERT:
+                theText = "",
+            elif theInsert == nwDocInsert.HARD_BREAK:
+                theText = "  \n",
+            elif theInsert == nwDocInsert.NB_SPACE:
+                theText = nwUnicode.U_NBSP,
+            elif theInsert == nwDocInsert.THIN_SPACE:
+                theText = nwUnicode.U_THNSP,
+            elif theInsert == nwDocInsert.THIN_NB_SPACE:
+                theText = nwUnicode.U_THNBSP,
+            elif theInsert == nwDocInsert.SHORT_DASH:
+                theText = nwUnicode.U_ENDASH,
+            elif theInsert == nwDocInsert.LONG_DASH:
+                theText = nwUnicode.U_EMDASH,
+            elif theInsert == nwDocInsert.ELLIPSIS:
+                theText = nwUnicode.U_HELLIP,
+            elif theInsert == nwDocInsert.QUOTE_LS:
+                theText = self.typSQOpen
+            elif theInsert == nwDocInsert.QUOTE_RS:
+                theText = self.typSQClose
+            elif theInsert == nwDocInsert.QUOTE_LD:
+                theText = self.typDQOpen
+            elif theInsert == nwDocInsert.QUOTE_RD:
+                theText = self.typDQClose
+            else:
+                return False
         else:
             return False
         theCursor = self.textCursor()
@@ -660,6 +686,7 @@ class GuiDocEditor(QTextEdit):
         triggers the syntax highlighter.
         """
         self.lastEdit = time()
+        self.lastFind = None
         if not self.docChanged:
             self.setDocumentChanged(True)
         if not self.wcTimer.isActive():
@@ -1145,19 +1172,21 @@ class GuiDocEditor(QTextEdit):
         """
         theCursor = self.textCursor()
         if theCursor.hasSelection():
-            selText = theCursor.selectedText()
+            self.docSearch.setSearchText(theCursor.selectedText())
         else:
-            selText = ""
-        self.docSearch.setSearchText(selText)
+            self.docSearch.setSearchText(None)
         self.updateDocMargins()
         return
 
     def _beginReplace(self):
-        """Opens the replace line of the search bar and sets the replace
-        text.
+        """Opens the replace line of the search bar and sets the find
+        text if a selection has been made, and resets the replace text.
         """
-        self._beginSearch()
+        theCursor = self.textCursor()
+        if theCursor.hasSelection():
+            self.docSearch.setSearchText(theCursor.selectedText())
         self.docSearch.setReplaceText("")
+        self.updateDocMargins()
         return
 
     def _findNext(self, isBackward=False):
@@ -1177,7 +1206,7 @@ class GuiDocEditor(QTextEdit):
         if self.docSearch.isWholeWord:
             findOpt |= QTextDocument.FindWholeWords
 
-        searchFor = self.docSearch.getSearchText()
+        searchFor = self.docSearch.getSearchObject()
         wasFound  = self.find(searchFor, findOpt)
         if not wasFound:
             if self.docSearch.doNextFile and not isBackward:
@@ -1190,7 +1219,11 @@ class GuiDocEditor(QTextEdit):
                     QTextCursor.End if isBackward else QTextCursor.Start
                 )
                 self.setTextCursor(theCursor)
-                self.find(searchFor, findOpt)
+                wasFound = self.find(searchFor, findOpt)
+
+        if wasFound:
+            theCursor = self.textCursor()
+            self.lastFind = (theCursor.selectionStart(), theCursor.selectionEnd())
 
         return
 
@@ -1200,26 +1233,48 @@ class GuiDocEditor(QTextEdit):
         next automatically when done.
         """
         if not self.docSearch.isVisible():
+            # The search tool is not active, so we activate it.
             self._beginSearch()
             return
 
         theCursor = self.textCursor()
         if not theCursor.hasSelection():
+            # We have no text selected at all, so just make this a
+            # regular find next call.
+            self._findNext()
+            return
+
+        if self.lastFind is None and theCursor.hasSelection():
+            # If we have a selection but no search, it may have been the
+            # text we triggered the search with, in which case we search
+            # again from the beginning of that selection to make sure we
+            # have a valid result.
+            sPos = theCursor.selectionStart()
+            theCursor.clearSelection()
+            theCursor.setPosition(sPos)
+            self.setTextCursor(theCursor)
+            self._findNext()
+            theCursor = self.textCursor()
+
+        if self.lastFind is None:
+            # In case the above didn't find a result, we give up here.
             return
 
         searchFor = self.docSearch.getSearchText()
         replWith  = self.docSearch.getReplaceText()
-        selText   = theCursor.selectedText()
 
         if self.docSearch.doMatchCap:
-            replWith = transferCase(selText, replWith)
+            replWith = transferCase(theCursor.selectedText(), replWith)
 
-        if not self.docSearch.isCaseSense:
-            isMatch = searchFor.lower() == selText.lower()
-        else:
-            isMatch = searchFor == selText
+        # Make sure the selected text was selected by an actual find
+        # call, and not the user.
+        try:
+            isFind  = self.lastFind[0] == theCursor.selectionStart()
+            isFind &= self.lastFind[1] == theCursor.selectionEnd()
+        except:
+            isFind = False
 
-        if isMatch:
+        if isFind:
             theCursor.beginEditBlock()
             theCursor.removeSelectedText()
             theCursor.insertText(replWith)
@@ -1229,9 +1284,10 @@ class GuiDocEditor(QTextEdit):
             logger.verbose("Replaced occurrence of '%s' with '%s' on line %d" % (
                 searchFor, replWith, theCursor.blockNumber()
             ))
+        else:
+            logger.error("The selected text is not a search result, skipping replace")
 
-        if searchFor:
-            self._findNext()
+        self._findNext()
 
         return
 
@@ -1500,7 +1556,8 @@ class GuiDocEditSearch(QFrame):
         """
         if not self.isVisible():
             self.setVisible(True)
-        self.searchBox.setText(theText)
+        if theText is not None:
+            self.searchBox.setText(theText)
         self.searchBox.setFocus()
         if self.isRegEx:
             self._alertSearchValid(True)
@@ -1515,7 +1572,7 @@ class GuiDocEditSearch(QFrame):
         self.replaceBox.setText(theText)
         return True
 
-    def getSearchText(self):
+    def getSearchObject(self):
         """Return the current search text either as text or as a regular
         expression object.
         """
@@ -1542,6 +1599,11 @@ class GuiDocEditSearch(QFrame):
                 return theRegEx
 
         return theText
+
+    def getSearchText(self):
+        """Return the current search text.
+        """
+        return self.searchBox.text()
 
     def getReplaceText(self):
         """Return the current replace text.

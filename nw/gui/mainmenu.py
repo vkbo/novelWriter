@@ -28,7 +28,9 @@
 import logging
 import nw
 
-from PyQt5.QtCore import QUrl
+from os import path
+
+from PyQt5.QtCore import QUrl, QProcess
 from PyQt5.QtGui import QDesktopServices
 from PyQt5.QtWidgets import QMenuBar, QAction, QMessageBox
 
@@ -47,6 +49,10 @@ class GuiMainMenu(QMenuBar):
         self.theParent  = theParent
         self.theProject = theParent.theProject
 
+        # Internals
+        self.assistProc = None
+
+        # Build Menu
         self._buildProjectMenu()
         self._buildDocumentMenu()
         self._buildEditMenu()
@@ -67,13 +73,38 @@ class GuiMainMenu(QMenuBar):
 
         return
 
+    ##
+    #  Methods
+    ##
+
     def setAvailableRoot(self):
         for itemClass in nwItemClass:
-            if itemClass == nwItemClass.NO_CLASS: continue
-            if itemClass == nwItemClass.TRASH:    continue
+            if itemClass == nwItemClass.NO_CLASS:
+                continue
+            if itemClass == nwItemClass.TRASH:
+                continue
             self.rootItems[itemClass].setEnabled(
                 self.theProject.projTree.checkRootUnique(itemClass)
             )
+        return
+
+    def closeHelp(self):
+        """Close the process used for the Qt Assistant, if it is open.
+        """
+        if self.assistProc is None:
+            return
+
+        if self.assistProc.state() == QProcess.Starting:
+            if self.assistProc.waitForStarted(10000):
+                self.assistProc.terminate()
+            else:
+                self.assistProc.kill()
+
+        elif self.assistProc.state() == QProcess.Running:
+            self.assistProc.terminate()
+            if not self.assistProc.waitForFinished(10000):
+                self.assistProc.kill()
+
         return
 
     ##
@@ -134,10 +165,26 @@ class GuiMainMenu(QMenuBar):
         msgBox.aboutQt(self.theParent,"About Qt")
         return True
 
-    def _openHelp(self):
-        """Open the documentation URL in the system's default browser.
+    def _openAssistant(self):
+        """Open the documentation in Qt Assistant.
         """
-        QDesktopServices.openUrl(QUrl(nw.__docurl__))
+        if not self.mainConf.hasHelp:
+            self._openWebsite(nw.__docurl__)
+            return False
+
+        self.assistProc = QProcess(self)
+        self.assistProc.start("assistant", ["-collectionFile", self.mainConf.helpPath])
+
+        if not self.assistProc.waitForStarted(10000):
+            self._openWebsite(nw.__docurl__)
+            return False
+
+        return True
+
+    def _openWebsite(self, theUrl):
+        """Open an URL in the system's default browser.
+        """
+        QDesktopServices.openUrl(QUrl(theUrl))
         return True
 
     def _openIssue(self):
@@ -258,7 +305,7 @@ class GuiMainMenu(QMenuBar):
 
         # Project > Exit
         self.aExitNW = QAction("Exit", self)
-        self.aExitNW.setStatusTip("Exit %s" % nw.__package__)
+        self.aExitNW.setStatusTip("Exit %s" % self.mainConf.appName)
         self.aExitNW.setShortcut("Ctrl+Q")
         self.aExitNW.triggered.connect(self._menuExit)
         self.projMenu.addAction(self.aExitNW)
@@ -481,6 +528,37 @@ class GuiMainMenu(QMenuBar):
         self.aInsEllipsis.setShortcut("Ctrl+K, .")
         self.aInsEllipsis.triggered.connect(lambda: self._docInsert(nwDocInsert.ELLIPSIS))
         self.insertMenu.addAction(self.aInsEllipsis)
+
+        # Insert > Separator
+        self.insertMenu.addSeparator()
+
+        # Insert > Left Single Quote
+        self.aInsQuoteLS = QAction("Left Single Quote", self)
+        self.aInsQuoteLS.setStatusTip("Insert left single quote")
+        self.aInsQuoteLS.setShortcut("Ctrl+K, 1")
+        self.aInsQuoteLS.triggered.connect(lambda: self._docInsert(nwDocInsert.QUOTE_LS))
+        self.insertMenu.addAction(self.aInsQuoteLS)
+
+        # Insert > Right Single Quote
+        self.aInsQuoteRS = QAction("Right Single Quote", self)
+        self.aInsQuoteRS.setStatusTip("Insert right single quote")
+        self.aInsQuoteRS.setShortcut("Ctrl+K, 2")
+        self.aInsQuoteRS.triggered.connect(lambda: self._docInsert(nwDocInsert.QUOTE_RS))
+        self.insertMenu.addAction(self.aInsQuoteRS)
+
+        # Insert > Left Double Quote
+        self.aInsQuoteLD = QAction("Left Double Quote", self)
+        self.aInsQuoteLD.setStatusTip("Insert left double quote")
+        self.aInsQuoteLD.setShortcut("Ctrl+K, 3")
+        self.aInsQuoteLD.triggered.connect(lambda: self._docInsert(nwDocInsert.QUOTE_LD))
+        self.insertMenu.addAction(self.aInsQuoteLD)
+
+        # Insert > Right Double Quote
+        self.aInsQuoteRD = QAction("Right Double Quote", self)
+        self.aInsQuoteRD.setStatusTip("Insert right double quote")
+        self.aInsQuoteRD.setShortcut("Ctrl+K, 4")
+        self.aInsQuoteRD.triggered.connect(lambda: self._docInsert(nwDocInsert.QUOTE_RD))
+        self.insertMenu.addAction(self.aInsQuoteRD)
 
         # Insert > Separator
         self.insertMenu.addSeparator()
@@ -773,8 +851,8 @@ class GuiMainMenu(QMenuBar):
         self.helpMenu = self.addMenu("&Help")
 
         # Help > About
-        self.aAboutNW = QAction("About %s" % nw.__package__, self)
-        self.aAboutNW.setStatusTip("About %s" % nw.__package__)
+        self.aAboutNW = QAction("About %s" % self.mainConf.appName, self)
+        self.aAboutNW.setStatusTip("About %s" % self.mainConf.appName)
         self.aAboutNW.triggered.connect(self._showAbout)
         self.helpMenu.addAction(self.aAboutNW)
 
@@ -787,17 +865,33 @@ class GuiMainMenu(QMenuBar):
         # Help > Separator
         self.helpMenu.addSeparator()
 
-        # Document > Preview
-        self.aHelp = QAction("Online Documentation", self)
-        self.aHelp.setStatusTip("View online documentation")
-        self.aHelp.setShortcut("F1")
-        self.aHelp.triggered.connect(self._openHelp)
-        self.helpMenu.addAction(self.aHelp)
+        # Document > Documentation
+        if self.mainConf.hasHelp and self.mainConf.hasAssistant:
+            self.aHelpLoc = QAction("Documentation (Local)", self)
+            self.aHelpLoc.setStatusTip("View local documentation with Qt Assistant")
+            self.aHelpLoc.triggered.connect(self._openAssistant)
+            self.aHelpLoc.setShortcut("F1")
+            self.helpMenu.addAction(self.aHelpLoc)
+
+        self.aHelpWeb = QAction("Documentation (Online)", self)
+        self.aHelpWeb.setStatusTip("View online documentation")
+        self.aHelpWeb.triggered.connect(lambda: self._openWebsite(nw.__docurl__))
+        if self.mainConf.hasHelp and self.mainConf.hasAssistant:
+            self.aHelpWeb.setShortcut("Shift+F1")
+        else:
+            self.aHelpWeb.setShortcuts(["F1","Shift+F1"])
+        self.helpMenu.addAction(self.aHelpWeb)
+
+        # Document > Go to Website
+        self.aWebsite = QAction("Open the novelWriter Website", self)
+        self.aWebsite.setStatusTip("View the main website")
+        self.aWebsite.triggered.connect(lambda: self._openWebsite(nw.__url__))
+        self.helpMenu.addAction(self.aWebsite)
 
         # Document > Report Issue
         self.aIssue = QAction("Report an Issue", self)
-        self.aIssue.setStatusTip("View online documentation")
-        self.aIssue.triggered.connect(self._openIssue)
+        self.aIssue.setStatusTip("Report a bug or issue on GitHub")
+        self.aIssue.triggered.connect(lambda: self._openWebsite(nw.__issuesurl__))
         self.helpMenu.addAction(self.aIssue)
 
         return

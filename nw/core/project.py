@@ -370,23 +370,21 @@ class NWProject():
         if fileVersion == "1.0":
             msgBox = QMessageBox()
             msgRes = msgBox.question(self.theParent, "Old Project Version", (
-                "The project file and data is created by a %s version lower than 0.7. "
-                "Do you want to upgrade the project to the most recent format?<br><br>"
-                "Note that after the upgrade, you cannot open the project with an older "
-                "version of %s any more, so make sure you have a recent backup."
-            ) % (
-                nw.__package__, nw.__package__
+                "The project file and data is created by a novelWriter version "
+                "lower than 0.7. Do you want to upgrade the project to the "
+                "most recent format?<br><br>Note that after the upgrade, you "
+                "cannot open the project with an older version of novelWriter "
+                "any more, so make sure you have a recent backup."
             ))
             if msgRes != QMessageBox.Yes:
                 return False
 
         elif fileVersion != "1.1" and fileVersion != "1.2":
             self.makeAlert((
-                "Unknown or unsupported {nw:s} project file format. "
-                "The project cannot be opened by this version of {nw:s}. "
-                "The file was saved with {nw:s} version {vers:s}."
+                "Unknown or unsupported novelWriter project file format. "
+                "The project cannot be opened by this version of novelWriter. "
+                "The file was saved with novelWriter version {vers:s}."
             ).format(
-                nw = nw.__package__,
                 vers = appVersion,
             ), nwAlert.ERROR)
             return False
@@ -397,11 +395,11 @@ class NWProject():
         if int(hexVersion, 16) > int(nw.__hexversion__, 16) and self.mainConf.showGUI:
             msgBox = QMessageBox()
             msgRes = msgBox.question(self.theParent, "Version Conflict", (
-                "This project was saved by a newer version of %s, version %s. This is version %s. "
-                "If you continue to open the project, some attributes and settings may not be "
-                "preserved. Continue opening the project?"
+                "This project was saved by a newer version of novelWriter, version %s. "
+                "This is version %s. If you continue to open the project, some attributes "
+                "and settings may not be preserved. Continue opening the project?"
             ) % (
-                nw.__package__, appVersion, nw.__version__
+                appVersion, nw.__version__
             ))
             if msgRes != QMessageBox.Yes:
                 return False

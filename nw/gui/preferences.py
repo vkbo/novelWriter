@@ -108,7 +108,7 @@ class GuiPreferences(PagedDialog):
             msgBox = QMessageBox()
             msgBox.information(
                 self, "Preferences",
-                "Some changes will not be applied until %s has been restarted." % nw.__package__
+                "Some changes will not be applied until novelWriter has been restarted."
             )
 
         if validEntries:
@@ -154,7 +154,7 @@ class GuiConfigEditGeneralTab(QWidget):
         self.mainForm.addRow(
             "Main GUI theme",
             self.selectTheme,
-            "Changing this requires restarting %s." % nw.__package__
+            "Changing this requires restarting novelWriter."
         )
 
         ## Select Icon Theme
@@ -170,7 +170,7 @@ class GuiConfigEditGeneralTab(QWidget):
         self.mainForm.addRow(
             "Main icon theme",
             self.selectIcons,
-            "Changing this requires restarting %s." % nw.__package__
+            "Changing this requires restarting novelWriter."
         )
 
         ## Dark Icons
@@ -193,7 +193,7 @@ class GuiConfigEditGeneralTab(QWidget):
         self.mainForm.addRow(
             "Font family",
             self.guiFont,
-            "Changing this requires restarting %s." % nw.__package__,
+            "Changing this requires restarting novelWriter.",
             theButton = self.fontButton
         )
 
@@ -206,7 +206,7 @@ class GuiConfigEditGeneralTab(QWidget):
         self.mainForm.addRow(
             "Font size",
             self.guiFontSize,
-            "Changing this requires restarting %s." % nw.__package__,
+            "Changing this requires restarting novelWriter.",
             theUnit = "pt"
         )
 
@@ -625,13 +625,10 @@ class GuiConfigEditEditingTab(QWidget):
         self.spellToolList = QComboBox(self)
         self.spellToolList.addItem("Internal (difflib)",        NWSpellCheck.SP_INTERNAL)
         self.spellToolList.addItem("Spell Enchant (pyenchant)", NWSpellCheck.SP_ENCHANT)
-        # self.spellToolList.addItem("SymSpell (symspellpy)",     NWSpellCheck.SP_SYMSPELL)
 
-        theModel   = self.spellToolList.model()
-        idEnchant  = self.spellToolList.findData(NWSpellCheck.SP_ENCHANT)
-        # idSymSpell = self.spellToolList.findData(NWSpellCheck.SP_SYMSPELL)
+        theModel  = self.spellToolList.model()
+        idEnchant = self.spellToolList.findData(NWSpellCheck.SP_ENCHANT)
         theModel.item(idEnchant).setEnabled(self.mainConf.hasEnchant)
-        # theModel.item(idSymSpell).setEnabled(self.mainConf.hasSymSpell)
 
         self.spellToolList.currentIndexChanged.connect(self._doUpdateSpellTool)
         toolIdx = self.spellToolList.findData(self.mainConf.spellTool)

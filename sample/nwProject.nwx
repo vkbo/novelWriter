@@ -1,13 +1,13 @@
 <?xml version='1.0' encoding='utf-8'?>
-<novelWriterXML appVersion="0.10.0rc1" hexVersion="0x001000c1" fileVersion="1.2" timeStamp="2020-06-29 13:27:47">
+<novelWriterXML appVersion="0.11.0" hexVersion="0x001100f0" fileVersion="1.2" timeStamp="2020-08-08 14:25:39">
   <project>
     <name>Sample Project</name>
     <title>Sample Project</title>
     <author>Jane Smith</author>
     <author>Jay Doh</author>
-    <saveCount>652</saveCount>
+    <saveCount>663</saveCount>
     <autoCount>122</autoCount>
-    <editTime>32716</editTime>
+    <editTime>32747</editTime>
   </project>
   <settings>
     <doBackup>False</doBackup>

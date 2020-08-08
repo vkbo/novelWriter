@@ -56,6 +56,7 @@ class GuiMain(QMainWindow):
         QMainWindow.__init__(self)
 
         logger.debug("Initialising GUI ...")
+        self.setObjectName("GuiMain")
         self.mainConf = nw.CONFIG
 
         # Some runtime info useful for debugging
@@ -220,7 +221,7 @@ class GuiMain(QMainWindow):
         else:
             self.manageProjects()
 
-        logger.debug("%s is ready ..." % nw.__package__)
+        logger.debug("novelWriter is ready ...")
 
         return
 
@@ -384,13 +385,13 @@ class GuiMain(QMainWindow):
                     msgBox = QMessageBox()
                     msgRes = msgBox.warning(
                         self, "Project Locked", (
-                            "The project is already open by another instance of %s, and is "
-                            "therefore locked. Override lock and continue anyway?<br><br>"
+                            "The project is already open by another instance of novelWriter, and "
+                            "is therefore locked. Override lock and continue anyway?<br><br>"
                             "Note: If the program or the computer previously crashed, the lock "
-                            "can safely be overridden. If, however, another instance of %s has "
-                            "the project open, overriding the lock may corrupt the project, and "
-                            "is not recommended.%s"
-                        ) % (nw.__package__, nw.__package__, lockDetails),
+                            "can safely be overridden. If, however, another instance of "
+                            "novelWriter has the project open, overriding the lock may corrupt "
+                            "the project, and is not recommended.%s"
+                        ) % lockDetails,
                         QMessageBox.Yes | QMessageBox.No, QMessageBox.No
                     )
                     if msgRes == QMessageBox.Yes:
@@ -874,7 +875,7 @@ class GuiMain(QMainWindow):
             if msgRes != QMessageBox.Yes:
                 return False
 
-        logger.info("Exiting %s" % nw.__package__)
+        logger.info("Exiting novelWriter")
 
         if not self.isFocusMode:
             self.mainConf.setMainPanePos(self.splitMain.sizes())
@@ -893,6 +894,7 @@ class GuiMain(QMainWindow):
 
         self.mainConf.saveConfig()
         self.reportConfErr()
+        self.mainMenu.closeHelp()
 
         qApp.quit()
 
@@ -1006,6 +1008,10 @@ class GuiMain(QMainWindow):
         self.addAction(self.mainMenu.aInsENDash)
         self.addAction(self.mainMenu.aInsEMDash)
         self.addAction(self.mainMenu.aInsEllipsis)
+        self.addAction(self.mainMenu.aInsQuoteLS)
+        self.addAction(self.mainMenu.aInsQuoteRS)
+        self.addAction(self.mainMenu.aInsQuoteLD)
+        self.addAction(self.mainMenu.aInsQuoteRD)
         self.addAction(self.mainMenu.aInsHardBreak)
         self.addAction(self.mainMenu.aInsNBSpace)
         self.addAction(self.mainMenu.aInsThinSpace)
@@ -1030,12 +1036,14 @@ class GuiMain(QMainWindow):
         self.addAction(self.mainMenu.aPreferences)
 
         # Help
-        self.addAction(self.mainMenu.aHelp)
+        if self.mainConf.hasHelp and self.mainConf.hasAssistant:
+            self.addAction(self.mainMenu.aHelpLoc)
+        self.addAction(self.mainMenu.aHelpWeb)
 
         return True
 
     def _setWindowTitle(self, projName=None):
-        winTitle = "%s" % nw.__package__
+        winTitle = self.mainConf.appName
         if projName is not None:
             winTitle += " - %s" % projName
         self.setWindowTitle(winTitle)
