@@ -169,12 +169,14 @@ class GuiMainMenu(QMenuBar):
         """Open the documentation in Qt Assistant.
         """
         if not self.mainConf.hasHelp:
+            self._openWebsite(nw.__docurl__)
             return False
 
         self.assistProc = QProcess(self)
         self.assistProc.start("assistant", ["-collectionFile", self.mainConf.helpPath])
 
         if not self.assistProc.waitForStarted(10000):
+            self._openWebsite(nw.__docurl__)
             return False
 
         return True
@@ -864,15 +866,21 @@ class GuiMainMenu(QMenuBar):
         self.helpMenu.addSeparator()
 
         # Document > Documentation
-        self.aHelp = QAction("Documentation", self)
         if self.mainConf.hasHelp and self.mainConf.hasAssistant:
-            self.aHelp.setStatusTip("View local documentation with Qt Assistant")
-            self.aHelp.triggered.connect(self._openAssistant)
+            self.aHelpLoc = QAction("Documentation (Local)", self)
+            self.aHelpLoc.setStatusTip("View local documentation with Qt Assistant")
+            self.aHelpLoc.triggered.connect(self._openAssistant)
+            self.aHelpLoc.setShortcut("F1")
+            self.helpMenu.addAction(self.aHelpLoc)
+
+        self.aHelpWeb = QAction("Documentation (Online)", self)
+        self.aHelpWeb.setStatusTip("View online documentation")
+        self.aHelpWeb.triggered.connect(lambda: self._openWebsite(nw.__docurl__))
+        if self.mainConf.hasHelp and self.mainConf.hasAssistant:
+            self.aHelpWeb.setShortcut("Shift+F1")
         else:
-            self.aHelp.setStatusTip("View online documentation")
-            self.aHelp.triggered.connect(lambda: self._openWebsite(nw.__docurl__))
-        self.aHelp.setShortcut("F1")
-        self.helpMenu.addAction(self.aHelp)
+            self.aHelpWeb.setShortcuts(["F1","Shift+F1"])
+        self.helpMenu.addAction(self.aHelpWeb)
 
         # Document > Go to Website
         self.aWebsite = QAction("Open the novelWriter Website", self)

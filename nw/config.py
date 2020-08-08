@@ -321,6 +321,7 @@ class Config:
         # Check if local help files exist
         self.helpPath = path.join(self.assetPath, "help", "novelWriter.qhc")
         self.hasHelp  = path.isfile(self.helpPath)
+        self.hasHelp &= path.isfile(path.join(self.assetPath, "help", "novelWriter.qch"))
 
         logger.debug("Config initialisation complete")
 
