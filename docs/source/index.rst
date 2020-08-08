@@ -26,6 +26,8 @@ novelWriter |release|
    :target: https://pypi.org/project/novelWriter/
    :alt: Python Version
 
+**Last Updated:** |today|
+
 novelWriter is a markdown-like text editor designed for writing novels and larger projects of many
 smaller plain text documents. It uses its own flavour of markdown that supports a meta data syntax
 for comments, synopsis and cross-referencing between files. The idea is to have a simple text editor
