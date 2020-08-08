@@ -212,11 +212,14 @@ class GuiWritingStats(QDialog):
         self.histMax.setMinimum(100)
         self.histMax.setMaximum(100000)
         self.histMax.setSingleStep(100)
+        self.histMax.setValue(
+            self.optState.getInt("GuiWritingStats", "histMax", 2000)
+        )
         self.histMax.valueChanged.connect(self._updateListBox)
 
         self.optsBox = QHBoxLayout()
         self.optsBox.addStretch(1)
-        self.optsBox.addWidget(QLabel("Word count cap for histogram"), 0)
+        self.optsBox.addWidget(QLabel("Word count cap for the histogram"), 0)
         self.optsBox.addWidget(self.histMax, 0)
 
         # Buttons
@@ -280,6 +283,7 @@ class GuiWritingStats(QDialog):
         hideZeros    = self.hideZeros.isChecked()
         hideNegative = self.hideNegative.isChecked()
         groupByDay   = self.groupByDay.isChecked()
+        histMax      = self.histMax.value()
 
         self.optState.setValue("GuiWritingStats", "winWidth",     winWidth)
         self.optState.setValue("GuiWritingStats", "winHeight",    winHeight)
@@ -293,6 +297,7 @@ class GuiWritingStats(QDialog):
         self.optState.setValue("GuiWritingStats", "hideZeros",    hideZeros)
         self.optState.setValue("GuiWritingStats", "hideNegative", hideNegative)
         self.optState.setValue("GuiWritingStats", "groupByDay",   groupByDay)
+        self.optState.setValue("GuiWritingStats", "histMax",      histMax)
 
         self.optState.saveSettings()
         self.close()

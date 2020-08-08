@@ -58,6 +58,7 @@ class OptionState():
                 "hideZeros",
                 "hideNegative",
                 "groupByDay",
+                "histMax",
             },
             "GuiDocSplit": {
                 "spLevel",
