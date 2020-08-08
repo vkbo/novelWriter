@@ -461,8 +461,10 @@ class GuiWritingStats(QDialog):
 
         return True
 
-    def _updateListBox(self):
-        """Load/reload the content of the list box.
+    def _updateListBox(self, dummyVar=None):
+        """Load/reload the content of the list box. The dummyVar
+        variable captures the variable sent from the widgets connecting
+        to it and discards it.
         """
         self.listBox.clear()
         self.timeFilter = 0.0
