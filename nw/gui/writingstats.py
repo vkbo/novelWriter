@@ -220,10 +220,15 @@ class GuiWritingStats(QDialog):
         self.optsBox.addWidget(self.histMax, 0)
 
         # Buttons
-        self.buttonBox = QDialogButtonBox(QDialogButtonBox.Close)
+        self.buttonBox = QDialogButtonBox()
         self.buttonBox.rejected.connect(self._doClose)
 
+        self.btnClose = self.buttonBox.addButton(QDialogButtonBox.Close)
+        self.btnClose.setAutoDefault(False)
+
         self.btnSave = self.buttonBox.addButton("Save As", QDialogButtonBox.ActionRole)
+        self.btnSave.setAutoDefault(False)
+
         self.saveMenu = QMenu(self)
         self.btnSave.setMenu(self.saveMenu)
 
