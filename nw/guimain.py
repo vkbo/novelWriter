@@ -803,16 +803,18 @@ class GuiMain(QMainWindow):
         """Open the build project dialog.
         """
         if self.hasProject:
-            dlgExport = GuiBuildNovel(self, self.theProject)
-            dlgExport.exec_()
+            dlgBuild = GuiBuildNovel(self, self.theProject)
+            dlgBuild.setModal(False)
+            dlgBuild.show()
         return True
 
     def showWritingStatsDialog(self):
         """Open the session log dialog.
         """
         if self.hasProject:
-            dlgTLine = GuiWritingStats(self, self.theProject)
-            dlgTLine.exec_()
+            dlgStats = GuiWritingStats(self, self.theProject)
+            dlgStats.setModal(False)
+            dlgStats.show()
         return True
 
     def makeAlert(self, theMessage, theLevel=nwAlert.INFO):
