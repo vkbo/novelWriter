@@ -110,7 +110,6 @@ class GuiDocSplit(QDialog):
         settings. The old file is not removed in the merge process, and
         must be deleted manually.
         """
-
         logger.verbose("GuiDocSplit split button clicked")
 
         if self.sourceItem is None:
@@ -132,7 +131,7 @@ class GuiDocSplit(QDialog):
         nLines   = len(theLines)
         theLines.insert(0, "%Split Doc")
         logger.debug(
-            "Splitting document %s with %d lines" % (self.sourceItem,nLines)
+            "Splitting document %s with %d lines" % (self.sourceItem, nLines)
         )
 
         finalOrder = []
@@ -210,7 +209,6 @@ class GuiDocSplit(QDialog):
         are then added to the list view in order. The list itself can be
         reordered by the user.
         """
-
         if self.sourceItem is None:
             self.sourceItem = self.theParent.treeView.getSelectedHandle()
 

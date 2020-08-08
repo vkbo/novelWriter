@@ -90,7 +90,7 @@ class GuiProjectTree(QTreeWidget):
         # for some fonts like the Ubuntu font.
         treeHeader = self.header()
         treeHeader.setStretchLastSection(True)
-        treeHeader.setMinimumSectionSize(iPx+6)
+        treeHeader.setMinimumSectionSize(iPx + 6)
 
         # Allow Move by Drag & Drop
         self.setDragEnabled(True)
@@ -237,6 +237,7 @@ class GuiProjectTree(QTreeWidget):
         has focus. This also applies when the menu is used.
         """
         if qApp.focusWidget() == self and self.theParent.hasProject:
+
             tHandle = self.getSelectedHandle()
             tItem = self._getTreeItem(tHandle)
             pItem = tItem.parent()
@@ -248,6 +249,7 @@ class GuiProjectTree(QTreeWidget):
                     return False
                 cItem = self.takeTopLevelItem(tIndex)
                 self.insertTopLevelItem(nIndex, cItem)
+
             else:
                 tIndex = pItem.indexOfChild(tItem)
                 nChild = pItem.childCount()
@@ -256,11 +258,14 @@ class GuiProjectTree(QTreeWidget):
                     return False
                 cItem = pItem.takeChild(tIndex)
                 pItem.insertChild(nIndex, cItem)
+
             self.clearSelection()
             cItem.setSelected(True)
             self._setTreeChanged(True)
+
         else:
             return False
+
         return True
 
     def saveTreeOrder(self):
@@ -516,8 +521,10 @@ class GuiProjectTree(QTreeWidget):
                 for i in range(pItem.childCount()):
                     pCount += int(pItem.child(i).text(self.C_COUNT))
                     pHandle = pItem.data(self.C_NAME, Qt.UserRole)
+
                 if not nDepth > 200 and pHandle != "":
                     self.propagateCount(pHandle, pCount, nDepth+1)
+
         return
 
     def projectWordCount(self):
@@ -533,9 +540,11 @@ class GuiProjectTree(QTreeWidget):
             if tItem == self.orphRoot:
                 continue
             nWords += int(tItem.text(self.C_COUNT))
+
         self.theProject.setProjectWordCount(nWords)
         sWords = self.theProject.getSessionWordCount()
         self.theParent.statusBar.setStats(nWords,sWords)
+
         return
 
     def buildTree(self):
@@ -547,9 +556,11 @@ class GuiProjectTree(QTreeWidget):
         logger.debug("Building project tree ...")
         self.clear()
         iCount = 0
+
         for nwItem in self.theProject.getProjectItems():
             iCount += 1
             self._addTreeItem(nwItem)
+
         logger.debug("%d items added to project tree" % iCount)
         return True
 
@@ -558,10 +569,13 @@ class GuiProjectTree(QTreeWidget):
         selected, return the first.
         """
         selItem = self.selectedItems()
+
         if len(selItem) == 0:
             return None
+
         if isinstance(selItem[0], QTreeWidgetItem):
             return selItem[0].data(self.C_NAME, Qt.UserRole)
+
         return None
 
     def getSelectedHandles(self):
@@ -572,6 +586,7 @@ class GuiProjectTree(QTreeWidget):
         for n in range(len(selItems)):
             if isinstance(selItems[n], QTreeWidgetItem):
                 selHandles.append(selItems[n].data(self.C_NAME, Qt.UserRole))
+
         return selHandles
 
     def setSelectedHandle(self, tHandle, doScroll=False):
@@ -580,12 +595,14 @@ class GuiProjectTree(QTreeWidget):
         if tHandle in self.theMap:
             self.clearSelection()
             self.theMap[tHandle].setSelected(True)
+
             selItems = self.selectedIndexes()
             if selItems and doScroll:
                 self.scrollTo(
                     selItems[0], QAbstractItemView.PositionAtCenter
                 )
             return True
+
         return False
 
     ##
@@ -601,9 +618,11 @@ class GuiProjectTree(QTreeWidget):
             tHandle = selItem.data(self.C_NAME, Qt.UserRole)
             tItem   = self.theProject.projTree[tHandle]
             self.setSelectedHandle(tHandle) # Just to be safe
+
             if self.ctxMenu.filterActions(tItem):
                 # Only open menu if any actions remain after filter
                 self.ctxMenu.exec_(self.viewport().mapToGlobal(clickPos))
+
         return
 
     ##
@@ -615,9 +634,11 @@ class GuiProjectTree(QTreeWidget):
         mouse in a blank area of the tree view.
         """
         QTreeWidget.mousePressEvent(self, theEvent)
+
         selItem = self.indexAt(theEvent.pos())
         if not selItem.isValid():
             self.clearSelection()
+
         return
 
     def dropEvent(self, theEvent):
@@ -766,6 +787,7 @@ class GuiProjectTree(QTreeWidget):
         trashHandle = self.theProject.trashFolder()
         if trashHandle is None:
             return None
+
         trItem = self._getTreeItem(trashHandle)
         if trItem is None:
             trItem = self._addTreeItem(
@@ -773,6 +795,7 @@ class GuiProjectTree(QTreeWidget):
             )
             trItem.setExpanded(True)
             self._setTreeChanged(True)
+
         return trItem
 
     def _addOrphanedRoot(self):
@@ -790,6 +813,7 @@ class GuiProjectTree(QTreeWidget):
             newItem.setExpanded(True)
             newItem.setData(self.C_NAME, Qt.UserRole, "")
             newItem.setIcon(self.C_NAME, self.theTheme.getIcon("proj_orphan"))
+
         return
 
     def _cleanOrphanedRoot(self):
@@ -834,10 +858,12 @@ class GuiProjectTree(QTreeWidget):
         if trItemP is None:
             logger.error("Failed to find new parent item of %s" % tHandle)
             return
+
         pHandle = trItemP.data(self.C_NAME, Qt.UserRole)
         nwItemS.setParent(pHandle)
         self.setTreeItemValues(tHandle)
         self._setTreeChanged(True)
+
         return
 
     def _setTreeChanged(self, theState):

@@ -80,7 +80,9 @@ class GuiPreferences(PagedDialog):
     ##
 
     def _doSave(self):
-
+        """Trigger all the save functions in the tabs, and collect the
+        status of the saves.
+        """
         logger.verbose("ConfigEditor save button clicked")
 
         validEntries = True
@@ -115,6 +117,8 @@ class GuiPreferences(PagedDialog):
         return
 
     def _doClose(self):
+        """Close the preferences without saving the changes.
+        """
         logger.verbose("ConfigEditor close button clicked")
         self.close()
         return
@@ -284,7 +288,8 @@ class GuiConfigEditGeneralTab(QWidget):
         return
 
     def saveValues(self):
-
+        """Save the values set for this tab.
+        """
         validEntries = True
         needsRestart = False
 
@@ -329,7 +334,6 @@ class GuiConfigEditGeneralTab(QWidget):
     def _backupFolder(self):
         """Open a dialog to select the backup folder.
         """
-
         currDir = self.backupPath
         if not path.isdir(currDir):
             currDir = ""
@@ -515,7 +519,8 @@ class GuiConfigEditLayoutTab(QWidget):
         return
 
     def saveValues(self):
-
+        """Save the values set for this tab.
+        """
         validEntries = True
         needsRestart = False
 
@@ -681,7 +686,8 @@ class GuiConfigEditEditingTab(QWidget):
         return
 
     def saveValues(self):
-
+        """Save the values set for this tab.
+        """
         validEntries = True
         needsRestart = False
 
@@ -712,6 +718,8 @@ class GuiConfigEditEditingTab(QWidget):
     ##
 
     def _disableComboItem(self, theList, theValue):
+        """Disable a list item in the combo box.
+        """
         theIdx = theList.findData(theValue)
         theModel = theList.model()
         anItem = theModel.item(1)
@@ -719,6 +727,8 @@ class GuiConfigEditEditingTab(QWidget):
         return theModel
 
     def _doUpdateSpellTool(self, currIdx):
+        """Update the list of dictionaries based on spell tool selected.
+        """
         spellTool = self.spellToolList.currentData()
         self._updateLanguageList(spellTool)
         return
@@ -903,7 +913,8 @@ class GuiConfigEditAutoReplaceTab(QWidget):
         return
 
     def saveValues(self):
-
+        """Save the values set for this tab.
+        """
         validEntries = True
         needsRestart = False
 

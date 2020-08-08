@@ -90,7 +90,7 @@ class GuiWritingStats(QDialog):
         )
 
         self.listBox = QTreeWidget()
-        self.listBox.setHeaderLabels(["Session Start","Length","Words","Histogram"])
+        self.listBox.setHeaderLabels(["Session Start", "Length", "Words", "Histogram"])
         self.listBox.setIndentation(0)
         self.listBox.setColumnWidth(self.C_TIME, wCol0)
         self.listBox.setColumnWidth(self.C_LENGTH, wCol1)

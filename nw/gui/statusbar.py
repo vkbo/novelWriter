@@ -264,7 +264,7 @@ class StatusLED(QAbstractButton):
         qPaint.setPen(qPalette.dark().color())
         qPaint.setBrush(self._theCol)
         qPaint.setOpacity(1.0)
-        qPaint.drawEllipse(1, 1, self.width()-2, self.height()-2)
+        qPaint.drawEllipse(1, 1, self.width() - 2, self.height() - 2)
         return
 
 # END Class StatusLED

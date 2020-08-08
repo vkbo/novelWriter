@@ -150,7 +150,6 @@ class GuiItemEditor(QDialog):
     def _doSave(self):
         """Save the setting to the item.
         """
-
         logger.verbose("ItemEditor save button clicked")
 
         itemName   = self.editName.text()
@@ -171,6 +170,8 @@ class GuiItemEditor(QDialog):
         return
 
     def _doClose(self):
+        """Close the dialog without saving the settings.
+        """
         logger.verbose("ItemEditor close button clicked")
         self.close()
         return

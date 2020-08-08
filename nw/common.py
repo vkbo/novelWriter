@@ -35,6 +35,8 @@ from nw.constants import nwConst
 logger = logging.getLogger(__name__)
 
 def checkString(checkValue, defaultValue, allowNone=False):
+    """Check if a variable is a string or a none.
+    """
     if allowNone:
         if checkValue == None:
             return None
@@ -45,6 +47,8 @@ def checkString(checkValue, defaultValue, allowNone=False):
     return defaultValue
 
 def checkInt(checkValue, defaultValue, allowNone=False):
+    """Check if a variable is an integer or a none.
+    """
     if allowNone:
         if checkValue == None:
             return None
@@ -56,6 +60,8 @@ def checkInt(checkValue, defaultValue, allowNone=False):
         return defaultValue
 
 def checkBool(checkValue, defaultValue, allowNone=False):
+    """Check if a variable is a boolean or a none.
+    """
     if allowNone:
         if checkValue == None:
             return None
@@ -92,7 +98,8 @@ def isHandle(theString):
     return not invalidChar
 
 def colRange(rgbStart, rgbEnd, nStep):
-
+    """Generate a range of colours from one RGB value to another.
+    """
     if len(rgbStart) != 3 and len(rgbEnd) != 3 and nStep < 1:
         logger.error("Cannot create colour range from given parameters")
         return None
@@ -124,7 +131,7 @@ def colRange(rgbStart, rgbEnd, nStep):
 def formatInt(theInt):
     """Formats an integer with k, M, G etc.
     """
-    postFix = ["k","M","G","T","P","E"]
+    postFix = ["k", "M", "G", "T", "P", "E"]
     theVal = float(theInt)
 
     if theVal > 1000.0:
@@ -153,7 +160,6 @@ def splitVersionNumber(vString):
     """ Splits a version string on the form aa.bb.cc into major, minor
     and patch, and computes an integer value aabbcc.
     """
-
     vMajor = 0
     vMinor = 0
     vPatch = 0

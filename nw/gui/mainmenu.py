@@ -192,7 +192,8 @@ class GuiMainMenu(QMenuBar):
     ##
 
     def _buildProjectMenu(self):
-
+        """Assemble the Project menu.
+        """
         # Project
         self.projMenu = self.addMenu("&Project")
 
@@ -295,7 +296,8 @@ class GuiMainMenu(QMenuBar):
         return
 
     def _buildDocumentMenu(self):
-
+        """Assemble the Document menu.
+        """
         # Document
         self.docuMenu = self.addMenu("&Document")
 
@@ -377,7 +379,8 @@ class GuiMainMenu(QMenuBar):
         return
 
     def _buildEditMenu(self):
-
+        """Assemble the Edit menu.
+        """
         # Edit
         self.editMenu = self.addMenu("&Edit")
 
@@ -439,7 +442,8 @@ class GuiMainMenu(QMenuBar):
         return
 
     def _buildViewMenu(self):
-
+        """Assemble the View menu.
+        """
         # View
         self.viewMenu = self.addMenu("&View")
 
@@ -486,7 +490,8 @@ class GuiMainMenu(QMenuBar):
         return
 
     def _buildInsertMenu(self):
-
+        """Assemble the Insert menu.
+        """
         # Insert
         self.insertMenu = self.addMenu("&Insert")
 
@@ -576,7 +581,8 @@ class GuiMainMenu(QMenuBar):
         return
 
     def _buildSearchMenu(self):
-
+        """Assemble the Search menu.
+        """
         # Search
         self.srcMenu = self.addMenu("&Search")
 
@@ -627,7 +633,8 @@ class GuiMainMenu(QMenuBar):
         return
 
     def _buildFormatMenu(self):
-
+        """Assemble the Format menu.
+        """
         # Format
         self.fmtMenu = self.addMenu("&Format")
 
@@ -732,7 +739,8 @@ class GuiMainMenu(QMenuBar):
         return
 
     def _buildToolsMenu(self):
-
+        """Assemble the Tools menu.
+        """
         # Tools
         self.toolsMenu = self.addMenu("&Tools")
 
@@ -828,7 +836,8 @@ class GuiMainMenu(QMenuBar):
         return
 
     def _buildHelpMenu(self):
-
+        """Assemble the Help menu.
+        """
         # Help
         self.helpMenu = self.addMenu("&Help")
 
