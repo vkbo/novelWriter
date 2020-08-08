@@ -76,9 +76,9 @@ def exceptionHandler(exType, exValue, exTrace):
     """Function to catch unhandled global exceptions.
     """
     import logging
-    from traceback import print_tb, format_tb
+    from traceback import print_tb
     from nw import CONFIG
-    from PyQt5.QtWidgets import qApp, QApplication, QErrorMessage, QMessageBox
+    from PyQt5.QtWidgets import qApp, QErrorMessage
 
     logger = logging.getLogger(__name__)
     logger.error("%s: %s" % (exType.__name__, str(exValue)))

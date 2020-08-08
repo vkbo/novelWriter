@@ -28,7 +28,7 @@
 import logging
 import nw
 
-from os import path, mkdir, rename, unlink
+from os import path, rename, unlink
 
 from nw.core.item import NWItem
 from nw.constants import nwAlert

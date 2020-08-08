@@ -29,11 +29,11 @@ import logging
 import nw
 
 from PyQt5.QtCore import Qt
-from PyQt5.QtGui import QFont, QIcon, QPixmap
+from PyQt5.QtGui import QFont, QPixmap
 from PyQt5.QtWidgets import QWidget, QGridLayout, QLabel
 
 from nw.constants import (
-    nwLabels, nwItemClass, nwItemType, nwItemLayout, nwUnicode
+    nwLabels, nwItemClass, nwItemType, nwItemLayout
 )
 
 logger = logging.getLogger(__name__)

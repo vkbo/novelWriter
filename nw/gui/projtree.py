@@ -30,15 +30,15 @@ import logging
 import nw
 
 from PyQt5.QtCore import Qt, QSize
-from PyQt5.QtGui import QFont, QColor, QIcon
+from PyQt5.QtGui import QIcon
 from PyQt5.QtWidgets import (
     qApp, QTreeWidget, QTreeWidgetItem, QAbstractItemView, QMessageBox,
-    QHeaderView, QMenu, QAction
+    QMenu, QAction
 )
 
 from nw.core import NWDoc
 from nw.constants import (
-    nwLabels, nwItemType, nwItemClass, nwItemLayout, nwAlert, nwUnicode
+    nwLabels, nwItemType, nwItemClass, nwItemLayout, nwAlert
 )
 
 logger = logging.getLogger(__name__)

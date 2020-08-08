@@ -33,6 +33,7 @@ from PyQt5.QtWidgets import (
     QDialog, QVBoxLayout, QComboBox, QListWidget, QAbstractItemView,
     QListWidgetItem, QDialogButtonBox, QLabel
 )
+
 from nw.constants import nwAlert, nwItemType, nwItemClass, nwItemLayout
 from nw.gui.custom import QHelpLabel
 from nw.core import NWDoc

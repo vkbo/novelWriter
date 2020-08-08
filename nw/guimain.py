@@ -46,7 +46,7 @@ from nw.gui import (
     GuiProjectSettings, GuiProjectTree, GuiWritingStats, GuiAbout
 )
 from nw.core import NWProject, NWDoc, NWIndex
-from nw.constants import nwFiles, nwItemType, nwAlert
+from nw.constants import nwItemType, nwAlert
 
 logger = logging.getLogger(__name__)
 

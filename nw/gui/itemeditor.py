@@ -28,7 +28,6 @@
 import logging
 import nw
 
-from PyQt5.QtCore import Qt
 from PyQt5.QtWidgets import (
     QDialog, QVBoxLayout, QGridLayout, QLineEdit, QComboBox, QLabel,
     QDialogButtonBox
