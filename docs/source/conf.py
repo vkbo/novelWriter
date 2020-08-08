@@ -15,7 +15,7 @@
 # import os
 # import sys
 # sys.path.insert(0, os.path.abspath("."))
-import sphinx_rtd_theme
+import os, time, sphinx_rtd_theme
 
 # -- Project information -----------------------------------------------------
 
@@ -30,6 +30,9 @@ release = "0.11.0"
 
 
 # -- General configuration ---------------------------------------------------
+
+os.environ["TZ"] = "Europe/Oslo"
+time.tzset()
 
 # needs_sphinx = "1.0"
 extensions = [
