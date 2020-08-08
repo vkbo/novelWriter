@@ -43,7 +43,7 @@ from nw.gui import (
     GuiBuildNovel, GuiDocEditor, GuiDocMerge, GuiDocSplit, GuiDocViewDetails,
     GuiDocViewer, GuiItemDetails, GuiItemEditor, GuiMainMenu, GuiMainStatus,
     GuiOutline, GuiOutlineDetails, GuiPreferences, GuiProjectLoad, GuiTheme,
-    GuiProjectSettings, GuiProjectTree, GuiWritingStats
+    GuiProjectSettings, GuiProjectTree, GuiWritingStats, GuiAbout
 )
 from nw.core import NWProject, NWDoc, NWIndex
 from nw.constants import nwFiles, nwItemType, nwAlert
@@ -803,16 +803,34 @@ class GuiMain(QMainWindow):
         """Open the build project dialog.
         """
         if self.hasProject:
-            dlgExport = GuiBuildNovel(self, self.theProject)
-            dlgExport.exec_()
+            dlgBuild = GuiBuildNovel(self, self.theProject)
+            dlgBuild.setModal(False)
+            dlgBuild.show()
         return True
 
     def showWritingStatsDialog(self):
         """Open the session log dialog.
         """
         if self.hasProject:
-            dlgTLine = GuiWritingStats(self, self.theProject)
-            dlgTLine.exec_()
+            dlgStats = GuiWritingStats(self, self.theProject)
+            dlgStats.setModal(False)
+            dlgStats.show()
+        return True
+
+    def showAboutNWDialog(self):
+        """Show the about dialog for novelWriter.
+        """
+        if self.mainConf.showGUI:
+            dlgAbout = GuiAbout(self)
+            dlgAbout.exec_()
+        return True
+
+    def showAboutQtDialog(self):
+        """Show the about dialog for Qt.
+        """
+        if self.mainConf.showGUI:
+            msgBox = QMessageBox()
+            msgBox.aboutQt(self, "About Qt")
         return True
 
     def makeAlert(self, theMessage, theLevel=nwAlert.INFO):

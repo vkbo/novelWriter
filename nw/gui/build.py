@@ -401,8 +401,6 @@ class GuiBuildNovel(QDialog):
         self.setLayout(self.outerBox)
         self.buildNovel.setFocus()
 
-        self.show()
-
         logger.debug("GuiBuildNovel initialisation complete")
 
         # Load from Cache

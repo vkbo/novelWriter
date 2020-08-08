@@ -28,13 +28,10 @@
 import logging
 import nw
 
-from os import path
-
 from PyQt5.QtCore import QUrl, QProcess
 from PyQt5.QtGui import QDesktopServices
-from PyQt5.QtWidgets import QMenuBar, QAction, QMessageBox
+from PyQt5.QtWidgets import QMenuBar, QAction
 
-from nw.gui.about import GuiAbout
 from nw.constants import nwItemType, nwItemClass, nwDocAction, nwDocInsert
 
 logger = logging.getLogger(__name__)
@@ -148,21 +145,6 @@ class GuiMainMenu(QMenuBar):
         """Toggle auto outline when the menu entry is checked.
         """
         self.theProject.setAutoOutline(theMode)
-        return True
-
-    def _showAbout(self):
-        """Show the about dialog.
-        """
-        if self.mainConf.showGUI:
-            msgAbout = GuiAbout(self.theParent)
-            msgAbout.exec_()
-        return True
-
-    def _showAboutQt(self):
-        """Show Qt's own About dialog.
-        """
-        msgBox = QMessageBox()
-        msgBox.aboutQt(self.theParent,"About Qt")
         return True
 
     def _openAssistant(self):
@@ -853,13 +835,13 @@ class GuiMainMenu(QMenuBar):
         # Help > About
         self.aAboutNW = QAction("About %s" % self.mainConf.appName, self)
         self.aAboutNW.setStatusTip("About %s" % self.mainConf.appName)
-        self.aAboutNW.triggered.connect(self._showAbout)
+        self.aAboutNW.triggered.connect(self.theParent.showAboutNWDialog)
         self.helpMenu.addAction(self.aAboutNW)
 
         # Help > About Qt5
         self.aAboutQt = QAction("About Qt5", self)
         self.aAboutQt.setStatusTip("About Qt5")
-        self.aAboutQt.triggered.connect(self._showAboutQt)
+        self.aAboutQt.triggered.connect(self.theParent.showAboutQtDialog)
         self.helpMenu.addAction(self.aAboutQt)
 
         # Help > Separator

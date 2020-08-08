@@ -92,7 +92,6 @@ class GuiDocSplit(QDialog):
         self.setLayout(self.outerBox)
 
         self.rejected.connect(self._doClose)
-        self.show()
 
         self._populateList()
 
