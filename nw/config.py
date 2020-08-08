@@ -88,7 +88,7 @@ class Config:
         self.guiSyntax   = "default_light"
         self.guiIcons    = "typicons_colour_light"
         self.guiDark     = False
-        self.guiLang     = "en" # Hardcoded for now
+        self.guiLang     = "en" # Hardcoded for now since the GUI is only in English
         self.guiFont     = ""
         self.guiFontSize = 11
         self.guiScale    = 1.0 # Set automatically by Theme class
@@ -286,7 +286,7 @@ class Config:
 
         # Check if config file exists
         if self.confPath is not None:
-            if path.isfile(path.join(self.confPath,self.confFile)):
+            if path.isfile(path.join(self.confPath, self.confFile)):
                 # If it exists, load it
                 self.loadConfig()
             else:
@@ -855,7 +855,9 @@ class Config:
     ##
 
     def _unpackList(self, inStr, listLen, listDefault, castTo=int):
-        inData  = inStr.split(",")
+        """Unpack a comma separated string of items into a list.
+        """
+        inData = inStr.split(",")
         outData = []
         for i in range(listLen):
             try:
@@ -865,9 +867,13 @@ class Config:
         return outData
 
     def _packList(self, inData):
+        """Pack a list of items into a comma separated string.
+        """
         return ", ".join(str(inVal) for inVal in inData)
 
     def _parseLine(self, cnfParse, cnfSec, cnfName, cnfType, cnfDefault):
+        """Parse a line and return the correct datatype.
+        """
         if cnfParse.has_section(cnfSec):
             if cnfParse.has_option(cnfSec, cnfName):
                 if cnfType == self.CNF_STR:
@@ -883,6 +889,8 @@ class Config:
         return cnfDefault
 
     def _checkNone(self, checkVal):
+        """Convert a string to a none type.
+        """
         if checkVal is None:
             return None
         if isinstance(checkVal, str):

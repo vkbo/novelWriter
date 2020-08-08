@@ -227,7 +227,6 @@ class Tokenizer():
         """Set the text for the tokenizer from a handle. If theText is
         not set, load it from the file.
         """
-
         self.theHandle = theHandle
         self.theItem   = self.theProject.projTree[theHandle]
         if self.theItem is None:
@@ -308,7 +307,6 @@ class Tokenizer():
           4: The internal formatting map of the text, self.FMT_*
           5: The style of the block, self.A_*
         """
-
         # RegExes for adding formatting tags within text lines
         rxFormats = [
             (QRegularExpression(nwRegEx.FMT_I),  [None, self.FMT_I_B, None, self.FMT_I_E]),
@@ -457,7 +455,6 @@ class Tokenizer():
         """Apply formatting to the text headers according to document
         layout and user settings.
         """
-
         # No special header formatting for notes and no-layout files
         if self.isNone or self.isNote:
             return

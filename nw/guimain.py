@@ -46,7 +46,7 @@ from nw.gui import (
     GuiProjectSettings, GuiProjectTree, GuiWritingStats, GuiAbout
 )
 from nw.core import NWProject, NWDoc, NWIndex
-from nw.constants import nwFiles, nwItemType, nwAlert
+from nw.constants import nwItemType, nwAlert
 
 logger = logging.getLogger(__name__)
 
@@ -128,7 +128,7 @@ class GuiMain(QMainWindow):
         self.tabWidget = QTabWidget()
         self.tabWidget.setTabPosition(QTabWidget.East)
         self.tabWidget.setStyleSheet("QTabWidget::pane {border: 0;}")
-        self.tabWidget.addTab(self.splitDocs,    "Editor")
+        self.tabWidget.addTab(self.splitDocs, "Editor")
         self.tabWidget.addTab(self.splitOutline, "Outline")
         self.tabWidget.currentChanged.connect(self._mainTabChanged)
 
@@ -138,8 +138,6 @@ class GuiMain(QMainWindow):
         self.splitMain.addWidget(self.treePane)
         self.splitMain.addWidget(self.tabWidget)
         self.splitMain.setSizes(self.mainConf.getMainPanePos())
-
-        self.setCentralWidget(self.splitMain)
 
         self.idxTree     = self.splitMain.indexOf(self.treePane)
         self.idxMain     = self.splitMain.indexOf(self.tabWidget)
@@ -167,8 +165,8 @@ class GuiMain(QMainWindow):
 
         # Set Main Window Elements
         self.setMenuBar(self.mainMenu)
+        self.setCentralWidget(self.splitMain)
         self.setStatusBar(self.statusBar)
-        self.statusBar.setStatus("Ready")
 
         # Finalise Initialisation
         ##########################
@@ -222,6 +220,7 @@ class GuiMain(QMainWindow):
             self.manageProjects()
 
         logger.debug("novelWriter is ready ...")
+        self.statusBar.setStatus("novelWriter is ready ...")
 
         return
 
@@ -348,9 +347,7 @@ class GuiMain(QMainWindow):
         return saveOK
 
     def openProject(self, projFile):
-        """Open a project. The parameter projFile is passed from the
-        open recent projects menu, and must be set to be forwarded to
-        the project class. Otherwise, we just return.
+        """Open a project from a projFile path.
         """
         if projFile is None:
             return False
@@ -365,42 +362,46 @@ class GuiMain(QMainWindow):
 
         # Try to open the project
         if not self.theProject.openProject(projFile):
-            if self.theProject.lockedBy is not None:
-                if self.mainConf.showGUI:
-                    try:
-                        lockDetails = (
-                            "<br><br>The project was locked by the computer "
-                            "'%s' (%s %s), last active on %s"
-                        ) % (
-                            self.theProject.lockedBy[0],
-                            self.theProject.lockedBy[1],
-                            self.theProject.lockedBy[2],
-                            datetime.fromtimestamp(
-                                int(self.theProject.lockedBy[3])
-                            ).strftime("%x %X")
-                        )
-                    except:
-                        lockDetails = ""
+            # The project open failed.
 
-                    msgBox = QMessageBox()
-                    msgRes = msgBox.warning(
-                        self, "Project Locked", (
-                            "The project is already open by another instance of novelWriter, and "
-                            "is therefore locked. Override lock and continue anyway?<br><br>"
-                            "Note: If the program or the computer previously crashed, the lock "
-                            "can safely be overridden. If, however, another instance of "
-                            "novelWriter has the project open, overriding the lock may corrupt "
-                            "the project, and is not recommended.%s"
-                        ) % lockDetails,
-                        QMessageBox.Yes | QMessageBox.No, QMessageBox.No
-                    )
-                    if msgRes == QMessageBox.Yes:
-                        if not self.theProject.openProject(projFile, overrideLock=True):
-                            return False
-                    else:
-                        return False
-            else:
+            if self.theProject.lockedBy is None:
+                # The project is not locked, so failed for some other
+                # reason handled by the project class.
                 return False
+
+            if self.mainConf.showGUI:
+                try:
+                    lockDetails = (
+                        "<br><br>The project was locked by the computer "
+                        "'%s' (%s %s), last active on %s"
+                    ) % (
+                        self.theProject.lockedBy[0],
+                        self.theProject.lockedBy[1],
+                        self.theProject.lockedBy[2],
+                        datetime.fromtimestamp(
+                            int(self.theProject.lockedBy[3])
+                        ).strftime("%x %X")
+                    )
+                except:
+                    lockDetails = ""
+
+                msgBox = QMessageBox()
+                msgRes = msgBox.warning(
+                    self, "Project Locked", (
+                        "The project is already open by another instance of novelWriter, and "
+                        "is therefore locked. Override lock and continue anyway?<br><br>"
+                        "Note: If the program or the computer previously crashed, the lock "
+                        "can safely be overridden. If, however, another instance of "
+                        "novelWriter has the project open, overriding the lock may corrupt "
+                        "the project, and is not recommended.%s"
+                    ) % lockDetails,
+                    QMessageBox.Yes | QMessageBox.No, QMessageBox.No
+                )
+                if msgRes == QMessageBox.Yes:
+                    if not self.theProject.openProject(projFile, overrideLock=True):
+                        return False
+                else:
+                    return False
 
         # Project is loaded
         self.hasProject = True
@@ -570,7 +571,7 @@ class GuiMain(QMainWindow):
         dlgOpt  = QFileDialog.Options()
         dlgOpt |= QFileDialog.DontUseNativeDialog
         inPath  = QFileDialog.getOpenFileName(
-            self,"Import File",lastPath,options=dlgOpt,filter=";;".join(extFilter)
+            self, "Import File", lastPath, options=dlgOpt, filter=";;".join(extFilter)
         )
         if inPath:
             loadFile = inPath[0]
@@ -582,7 +583,7 @@ class GuiMain(QMainWindow):
 
         theText = None
         try:
-            with open(loadFile,mode="rt",encoding="utf8") as inFile:
+            with open(loadFile, mode="rt", encoding="utf8") as inFile:
                 theText = inFile.read()
             self.mainConf.setLastPath(loadFile)
         except Exception as e:
@@ -602,7 +603,7 @@ class GuiMain(QMainWindow):
         if not self.docEditor.isEmpty():
             if self.mainConf.showGUI:
                 msgBox = QMessageBox()
-                msgRes = msgBox.question(self, "Import Document",(
+                msgRes = msgBox.question(self, "Import Document", (
                     "Importing the file will overwrite the current content of the document. "
                     "Do you want to proceed?"
                 ))
@@ -917,6 +918,8 @@ class GuiMain(QMainWindow):
         return True
 
     def setFocus(self, paneNo):
+        """Switch focus to one of the three main gUi panes.
+        """
         if paneNo == 1:
             self.treeView.setFocus()
         elif paneNo == 2:
@@ -926,6 +929,8 @@ class GuiMain(QMainWindow):
         return
 
     def closeDocEditor(self):
+        """Close the document edit panel. This does not hide the editor.
+        """
         self.closeDocument()
         self.theProject.setLastEdited(None)
         return
@@ -1059,6 +1064,8 @@ class GuiMain(QMainWindow):
         return True
 
     def _setWindowTitle(self, projName=None):
+        """Set the window title and add the project's working title.
+        """
         winTitle = self.mainConf.appName
         if projName is not None:
             winTitle += " - %s" % projName
@@ -1066,19 +1073,30 @@ class GuiMain(QMainWindow):
         return True
 
     def _autoSaveProject(self):
-        if (self.hasProject and self.theProject.projChanged and
-            self.theProject.projPath is not None):
+        """Triggered by the auto-save project timer to save the project.
+        """
+        doSave  = self.hasProject
+        doSave &= self.theProject.projChanged
+        doSave &= self.theProject.projPath is not None
+
+        if doSave:
             logger.debug("Autosaving project")
             self.saveProject(autoSave=True)
+
         return
 
     def _autoSaveDocument(self):
+        """Triggered by the auto-save document timer to save the
+        document.
+        """
         if self.hasProject and self.docEditor.docChanged:
             logger.debug("Autosaving document")
             self.saveDocument()
         return
 
     def _makeStatusIcons(self):
+        """Generate all the item status icons based on project settings.
+        """
         self.statusIcons = {}
         iPx = self.mainConf.pxInt(32)
         for sLabel, sCol, _ in self.theProject.statusItems:
@@ -1088,6 +1106,9 @@ class GuiMain(QMainWindow):
         return
 
     def _makeImportIcons(self):
+        """Generate all the item importance icons based on project
+        settings.
+        """
         self.importIcons = {}
         iPx = self.mainConf.pxInt(32)
         for sLabel, sCol, _ in self.theProject.importItems:
@@ -1101,6 +1122,9 @@ class GuiMain(QMainWindow):
     ##
 
     def closeEvent(self, theEvent):
+        """Capture the closing event of the GUI and call the close
+        function to handle all the close process steps.
+        """
         if self.closeMain():
             theEvent.accept()
         else:

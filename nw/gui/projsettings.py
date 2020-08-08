@@ -97,6 +97,7 @@ class GuiProjectSettings(PagedDialog):
         bookTitle   = self.tabMain.editTitle.text()
         bookAuthors = self.tabMain.editAuthors.toPlainText()
         doBackup    = not self.tabMain.doBackup.isChecked()
+
         self.theProject.setProjectName(projName)
         self.theProject.setBookTitle(bookTitle)
         self.theProject.setBookAuthors(bookAuthors)
@@ -105,11 +106,14 @@ class GuiProjectSettings(PagedDialog):
         if self.tabStatus.colChanged:
             statusCol = self.tabStatus.getNewList()
             self.theProject.setStatusColours(statusCol)
+
         if self.tabImport.colChanged:
             importCol = self.tabImport.getNewList()
             self.theProject.setImportColours(importCol)
+
         if self.tabStatus.colChanged or self.tabImport.colChanged:
             self.theParent.rebuildTree()
+
         if self.tabReplace.arChanged:
             newList = self.tabReplace.getNewList()
             self.theProject.setAutoReplace(newList)
@@ -119,7 +123,7 @@ class GuiProjectSettings(PagedDialog):
         return
 
     def _doClose(self):
-        """Close the dialog.
+        """Save settings and close the dialog.
         """
         winWidth    = self.mainConf.rpxInt(self.width())
         winHeight   = self.mainConf.rpxInt(self.height())
@@ -372,6 +376,8 @@ class GuiProjectEditStatus(QWidget):
     ##
 
     def _selectColour(self):
+        """Open a dialog to select the status icon colour.
+        """
         logger.verbose("Item colour button clicked")
         if self.selColour is not None:
             newCol = QColorDialog.getColor(
@@ -386,6 +392,8 @@ class GuiProjectEditStatus(QWidget):
         return
 
     def _newItem(self):
+        """Create a new status item.
+        """
         logger.verbose("New item button clicked")
         newItem = self._addItem("New Item", (0, 0, 0), None, 0)
         newItem.setBackground(QBrush(QColor(0, 255, 0, 80)))
@@ -393,6 +401,8 @@ class GuiProjectEditStatus(QWidget):
         return
 
     def _delItem(self):
+        """Delete a status item.
+        """
         logger.verbose("Delete item button clicked")
         selItem = self._getSelectedItem()
         if selItem is not None:
@@ -408,6 +418,8 @@ class GuiProjectEditStatus(QWidget):
         return
 
     def _saveItem(self):
+        """Save changes made to a status item.
+        """
         logger.verbose("Save item button clicked")
         selItem = self._getSelectedItem()
         iRow    = self.listBox.row(selItem)
@@ -427,6 +439,8 @@ class GuiProjectEditStatus(QWidget):
         return
 
     def _addItem(self, iName, iCol, oName, nUse):
+        """Add a status item to the list.
+        """
         newIcon = QPixmap(self.iPx, self.iPx)
         newIcon.fill(QColor(*iCol))
         newItem = QListWidgetItem()
@@ -439,11 +453,14 @@ class GuiProjectEditStatus(QWidget):
         return newItem
 
     def _selectedItem(self):
+        """Extract the info of a selected item and populate the settings
+        boxes and button.
+        """
         logger.verbose("Item selected")
         selItem = self._getSelectedItem()
         if selItem is not None:
-            selIdx  = selItem.data(Qt.UserRole)
-            selVal  = self.colData[selIdx]
+            selIdx = selItem.data(Qt.UserRole)
+            selVal = self.colData[selIdx]
             self.selColour = QColor(selVal[1], selVal[2], selVal[3])
             newIcon = QPixmap(self.iPx, self.iPx)
             newIcon.fill(self.selColour)
@@ -459,6 +476,8 @@ class GuiProjectEditStatus(QWidget):
     ##
 
     def _getSelectedItem(self):
+        """Get the currently selected item.
+        """
         selItem = self.listBox.selectedItems()
         if len(selItem) == 0:
             return None
@@ -467,6 +486,8 @@ class GuiProjectEditStatus(QWidget):
         return None
 
     def _rowsMoved(self):
+        """A row has been moved, so sett the changed flag.
+        """
         logger.verbose("A drag move event occurred")
         self.colChanged = True
         return
@@ -506,9 +527,9 @@ class GuiProjectEditReplace(QWidget):
 
         self.editKey    = QLineEdit()
         self.editValue  = QLineEdit()
-        self.saveButton = QPushButton(self.theTheme.getIcon("done"),"")
-        self.addButton  = QPushButton(self.theTheme.getIcon("add"),"")
-        self.delButton  = QPushButton(self.theTheme.getIcon("remove"),"")
+        self.saveButton = QPushButton(self.theTheme.getIcon("done"), "")
+        self.addButton  = QPushButton(self.theTheme.getIcon("add"), "")
+        self.delButton  = QPushButton(self.theTheme.getIcon("remove"), "")
         self.saveButton.setToolTip("Save entry")
         self.addButton.setToolTip("Add new entry")
         self.delButton.setToolTip("Delete selected entry")
@@ -536,11 +557,13 @@ class GuiProjectEditReplace(QWidget):
         return
 
     def getNewList(self):
+        """Extract the list from the widget.
+        """
         newList = {}
         for n in range(self.listBox.topLevelItemCount()):
             tItem = self.listBox.topLevelItem(n)
-            aKey  = self._stripNotAllowed(tItem.text(0))
-            aVal  = tItem.text(1)
+            aKey = self._stripNotAllowed(tItem.text(0))
+            aVal = tItem.text(1)
             if len(aKey) > 0:
                 newList[aKey] = aVal
         return newList
@@ -550,6 +573,9 @@ class GuiProjectEditReplace(QWidget):
     ##
 
     def _selectedItem(self):
+        """Extract the details from the selected item and populate the
+        edit form.
+        """
         selItem = self._getSelectedItem()
         if selItem is None:
             return False
@@ -564,7 +590,8 @@ class GuiProjectEditReplace(QWidget):
         return True
 
     def _saveEntry(self):
-
+        """Save the form data into the list widget.
+        """
         selItem = self._getSelectedItem()
         if selItem is None:
             return False
@@ -586,6 +613,8 @@ class GuiProjectEditReplace(QWidget):
         return
 
     def _addEntry(self):
+        """Add a new list entry.
+        """
         saveKey = "<keyword%d>" % (self.listBox.topLevelItemCount() + 1)
         newVal  = ""
         newItem = QTreeWidgetItem([saveKey, newVal])
@@ -593,6 +622,8 @@ class GuiProjectEditReplace(QWidget):
         return True
 
     def _delEntry(self):
+        """Delete the selected entry.
+        """
         selItem = self._getSelectedItem()
         if selItem is None:
             return False
@@ -601,12 +632,16 @@ class GuiProjectEditReplace(QWidget):
         return True
 
     def _getSelectedItem(self):
+        """Extract the currently selected item.
+        """
         selItem = self.listBox.selectedItems()
         if len(selItem) == 0:
             return None
         return selItem[0]
 
     def _stripNotAllowed(self, theKey):
+        """Clean up the replace key string.
+        """
         retKey = ""
         for c in theKey:
             if c.isalnum():

@@ -30,8 +30,6 @@
 import logging
 import nw
 
-from os import path, unlink, rmdir
-
 logger = logging.getLogger(__name__)
 
 # =============================================================================================== #

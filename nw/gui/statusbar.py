@@ -30,8 +30,8 @@ import nw
 
 from time import time
 
-from PyQt5.QtCore import Qt, QTimer
-from PyQt5.QtGui import QColor, QPixmap, QFont, QPainter
+from PyQt5.QtCore import QTimer
+from PyQt5.QtGui import QColor, QPainter
 from PyQt5.QtWidgets import qApp, QStatusBar, QLabel, QAbstractButton
 
 from nw.core import NWSpellCheck
@@ -264,7 +264,7 @@ class StatusLED(QAbstractButton):
         qPaint.setPen(qPalette.dark().color())
         qPaint.setBrush(self._theCol)
         qPaint.setOpacity(1.0)
-        qPaint.drawEllipse(1, 1, self.width()-2, self.height()-2)
+        qPaint.drawEllipse(1, 1, self.width() - 2, self.height() - 2)
         return
 
 # END Class StatusLED

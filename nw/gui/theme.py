@@ -77,11 +77,11 @@ class GuiTheme:
         self.themeLicenseUrl  = ""
 
         ## GUI
-        self.treeWCount  = [  0,  0,  0]
-        self.statNone    = [120,120,120]
-        self.statUnsaved = [120,120, 40]
-        self.statSaved   = [ 40,120,  0]
-        self.helpText    = [  0,  0,  0]
+        self.treeWCount  = [  0,   0,   0]
+        self.statNone    = [120, 120, 120]
+        self.statUnsaved = [120, 120,  40]
+        self.statSaved   = [ 40, 120,   0]
+        self.helpText    = [  0,   0,   0]
 
         # Loaded Syntax Settings
 
@@ -95,22 +95,22 @@ class GuiTheme:
         self.syntaxLicenseUrl  = ""
 
         ## Colours
-        self.colBack   = [255,255,255]
-        self.colText   = [  0,  0,  0]
-        self.colLink   = [  0,  0,  0]
-        self.colHead   = [  0,  0,  0]
-        self.colHeadH  = [  0,  0,  0]
-        self.colEmph   = [  0,  0,  0]
-        self.colDialN  = [  0,  0,  0]
-        self.colDialD  = [  0,  0,  0]
-        self.colDialS  = [  0,  0,  0]
-        self.colComm   = [  0,  0,  0]
-        self.colKey    = [  0,  0,  0]
-        self.colVal    = [  0,  0,  0]
-        self.colSpell  = [  0,  0,  0]
-        self.colTagErr = [  0,  0,  0]
-        self.colRepTag = [  0,  0,  0]
-        self.colMod    = [  0,  0,  0]
+        self.colBack   = [255, 255, 255]
+        self.colText   = [  0,   0,   0]
+        self.colLink   = [  0,   0,   0]
+        self.colHead   = [  0,   0,   0]
+        self.colHeadH  = [  0,   0,   0]
+        self.colEmph   = [  0,   0,   0]
+        self.colDialN  = [  0,   0,   0]
+        self.colDialD  = [  0,   0,   0]
+        self.colDialS  = [  0,   0,   0]
+        self.colComm   = [  0,   0,   0]
+        self.colKey    = [  0,   0,   0]
+        self.colVal    = [  0,   0,   0]
+        self.colSpell  = [  0,   0,   0]
+        self.colTagErr = [  0,   0,   0]
+        self.colRepTag = [  0,   0,   0]
+        self.colMod    = [  0,   0,   0]
 
         # Changeable Settings
         self.guiTheme   = None
@@ -144,9 +144,9 @@ class GuiTheme:
         qMetric = QFontMetrics(self.guiFont)
         self.fontPointSize = self.guiFont.pointSizeF()
         self.fontPixelSize = int(round(qMetric.height()))
-        self.baseIconSize  = int(round(qMetric.ascent()))
-        self.textNHeight   = qMetric.boundingRect("N").height()
-        self.textNWidth    = qMetric.boundingRect("N").width()
+        self.baseIconSize = int(round(qMetric.ascent()))
+        self.textNHeight = qMetric.boundingRect("N").height()
+        self.textNWidth= qMetric.boundingRect("N").width()
 
         logger.verbose("GUI Font Family: %s" % self.guiFont.family())
         logger.verbose("GUI Font Point Size: %.2f" % self.fontPointSize)
@@ -223,10 +223,10 @@ class GuiTheme:
         self.guiTheme   = self.mainConf.guiTheme
         self.guiSyntax  = self.mainConf.guiSyntax
         self.themeRoot  = self.mainConf.themeRoot
-        self.themePath  = path.join(self.mainConf.themeRoot,self.guiPath,self.guiTheme)
-        self.syntaxFile = path.join(self.themeRoot,self.syntaxPath,self.guiSyntax+".conf")
-        self.confFile   = path.join(self.themePath,self.confName)
-        self.cssFile    = path.join(self.themePath,self.cssName)
+        self.themePath  = path.join(self.mainConf.themeRoot, self.guiPath, self.guiTheme)
+        self.syntaxFile = path.join(self.themeRoot, self.syntaxPath, self.guiSyntax+".conf")
+        self.confFile   = path.join(self.themePath, self.confName)
+        self.cssFile    = path.join(self.themePath, self.cssName)
 
         self.loadTheme()
         self.loadSyntax()
@@ -256,7 +256,7 @@ class GuiTheme:
         cssData = ""
         try:
             if path.isfile(self.cssFile):
-                with open(self.cssFile,mode="r",encoding="utf8") as inFile:
+                with open(self.cssFile, mode="r", encoding="utf8") as inFile:
                     cssData = inFile.read()
         except Exception as e:
             logger.error("Could not load theme css file")
@@ -329,13 +329,13 @@ class GuiTheme:
         ## Main
         cnfSec = "Main"
         if confParser.has_section(cnfSec):
-            self.syntaxName        = self._parseLine( confParser, cnfSec, "name", "")
-            self.syntaxDescription = self._parseLine( confParser, cnfSec, "description", "")
-            self.syntaxAuthor      = self._parseLine( confParser, cnfSec, "author", "")
-            self.syntaxCredit      = self._parseLine( confParser, cnfSec, "credit", "")
-            self.syntaxUrl         = self._parseLine( confParser, cnfSec, "url", "")
-            self.syntaxLicense     = self._parseLine( confParser, cnfSec, "license", "")
-            self.syntaxLicenseUrl  = self._parseLine( confParser, cnfSec, "licenseurl", "")
+            self.syntaxName        = self._parseLine(confParser, cnfSec, "name", "")
+            self.syntaxDescription = self._parseLine(confParser, cnfSec, "description", "")
+            self.syntaxAuthor      = self._parseLine(confParser, cnfSec, "author", "")
+            self.syntaxCredit      = self._parseLine(confParser, cnfSec, "credit", "")
+            self.syntaxUrl         = self._parseLine(confParser, cnfSec, "url", "")
+            self.syntaxLicense     = self._parseLine(confParser, cnfSec, "license", "")
+            self.syntaxLicenseUrl  = self._parseLine(confParser, cnfSec, "licenseurl", "")
 
         ## Syntax
         cnfSec = "Syntax"
@@ -376,7 +376,7 @@ class GuiTheme:
                     confParser.read_file(inFile)
             except Exception as e:
                 self.theParent.makeAlert(
-                    ["Could not load theme config file.",str(e)], nwAlert.ERROR
+                    ["Could not load theme config file.", str(e)], nwAlert.ERROR
                 )
                 continue
             themeName = ""
@@ -409,7 +409,7 @@ class GuiTheme:
                     confParser.read_file(inFile)
             except Exception as e:
                 self.theParent.makeAlert(
-                    ["Could not load syntax file.",str(e)], nwAlert.ERROR
+                    ["Could not load syntax file.", str(e)], nwAlert.ERROR
                 )
                 return []
             syntaxName = ""
@@ -429,8 +429,10 @@ class GuiTheme:
     ##
 
     def _loadColour(self, confParser, cnfSec, cnfName):
+        """Load a colour value from a config string.
+        """
         if confParser.has_option(cnfSec,cnfName):
-            inData  = confParser.get(cnfSec,cnfName).split(",")
+            inData = confParser.get(cnfSec,cnfName).split(",")
             outData = []
             try:
                 outData.append(int(inData[0]))
@@ -438,16 +440,18 @@ class GuiTheme:
                 outData.append(int(inData[2]))
             except:
                 logger.error("Could not load theme colours for '%s' from config file" % cnfName)
-                outData = [0,0,0]
+                outData = [0, 0, 0]
         else:
             logger.warning("Could not find theme colours for '%s' in config file" % cnfName)
-            outData = [0,0,0]
+            outData = [0, 0, 0]
         return outData
 
     def _setPalette(self, confParser, cnfSec, cnfName, paletteVal):
+        """Set a palette colour value from a config string.
+        """
         readCol = []
         if confParser.has_option(cnfSec,cnfName):
-            inData  = confParser.get(cnfSec,cnfName).split(",")
+            inData = confParser.get(cnfSec,cnfName).split(",")
             try:
                 readCol.append(int(inData[0]))
                 readCol.append(int(inData[1]))
@@ -547,8 +551,8 @@ class GuiIcons:
         "reference"      : (None, None),
 
         ## Switches
-        "sticky-on"      : (None, None),
-        "sticky-off"     : (None, None),
+        "sticky-on"  : (None, None),
+        "sticky-off" : (None, None),
     }
 
     DECO_MAP = {
@@ -615,13 +619,13 @@ class GuiIcons:
         ## Main
         cnfSec = "Main"
         if confParser.has_section(cnfSec):
-            self.themeName        = self._parseLine( confParser, cnfSec, "name", "")
-            self.themeDescription = self._parseLine( confParser, cnfSec, "description", "")
-            self.themeAuthor      = self._parseLine( confParser, cnfSec, "author", "")
-            self.themeCredit      = self._parseLine( confParser, cnfSec, "credit", "")
-            self.themeUrl         = self._parseLine( confParser, cnfSec, "url", "")
-            self.themeLicense     = self._parseLine( confParser, cnfSec, "license", "")
-            self.themeLicenseUrl  = self._parseLine( confParser, cnfSec, "licenseurl", "")
+            self.themeName        = self._parseLine(confParser, cnfSec, "name", "")
+            self.themeDescription = self._parseLine(confParser, cnfSec, "description", "")
+            self.themeAuthor      = self._parseLine(confParser, cnfSec, "author", "")
+            self.themeCredit      = self._parseLine(confParser, cnfSec, "credit", "")
+            self.themeUrl         = self._parseLine(confParser, cnfSec, "url", "")
+            self.themeLicense     = self._parseLine(confParser, cnfSec, "license", "")
+            self.themeLicenseUrl  = self._parseLine(confParser, cnfSec, "licenseurl", "")
 
         ## Palette
         cnfSec = "Map"
@@ -705,7 +709,7 @@ class GuiIcons:
                     confParser.read_file(inFile)
             except Exception as e:
                 self.theParent.makeAlert(
-                    ["Could not load theme config file.",str(e)], nwAlert.ERROR
+                    ["Could not load theme config file.", str(e)], nwAlert.ERROR
                 )
                 continue
             themeName = ""
@@ -730,7 +734,6 @@ class GuiIcons:
         an icon exists. Prefer svg files over png files. Always returns
         a QIcon.
         """
-
         if iconKey not in self.ICON_MAP:
             logger.error("Requested unknown icon name '%s'" % iconKey)
             return QIcon()

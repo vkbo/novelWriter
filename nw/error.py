@@ -46,7 +46,7 @@ def formatHtmlErrMsg(exType, exValue, exTrace):
             "<p>Please report this error by submitting an issue report on "
             "GitHub, providing a description and this error message. "
             "URL: &lt;{issueUrl}&gt;.</p>"
-            "<p><b>Environment</b><br>Version: {nwVersion}, OS: {osType} ({osKernel}),"
+            "<p><b>Environment</b><br>Version: {nwVersion}, OS: {osType} ({osKernel}), "
             "Python: {pyVersion} ({pyHexVer:#x}), Qt: {qtVers}, PyQt: {pyqtVers}</p>"
             "<p><b>Error Type</b><br>{exType}: {exMessage}</p>"
             "<p><b>Traceback</b><br>{exTrace}</p>"
@@ -76,9 +76,9 @@ def exceptionHandler(exType, exValue, exTrace):
     """Function to catch unhandled global exceptions.
     """
     import logging
-    from traceback import print_tb, format_tb
+    from traceback import print_tb
     from nw import CONFIG
-    from PyQt5.QtWidgets import qApp, QApplication, QErrorMessage, QMessageBox
+    from PyQt5.QtWidgets import qApp, QErrorMessage
 
     logger = logging.getLogger(__name__)
     logger.error("%s: %s" % (exType.__name__, str(exValue)))
