@@ -25,8 +25,8 @@ install:
 stages:
   - name: Main
   - name: Supported
-  - name: Future
-    if: branch = main
+# - name: Future
+#   if: branch = main
 
 jobs:
   include:
@@ -53,9 +53,9 @@ jobs:
       script:
       - python -m pytest -v
 
-    - stage:
-      - Future
-      python:
-      - 3.9-dev
-      script:
-      - python -m pytest -v
+#   - stage:
+#     - Future
+#     python:
+#     - 3.9-dev
+#     script:
+#     - python -m pytest -v
