@@ -4,29 +4,58 @@ services:
   - xvfb
 language: python
 cache: bundler
+
 addons:
   apt:
     packages:
       - libenchant-dev
       - python3-pyqt5
       - python3-pyqt5.qtsvg
-python:
-  - "3.6"
-  - "3.7"
-  - "3.8"
+      - python3-lxml
+
 install:
-  - pip install --upgrade pip
+# - pip install --upgrade pip
   - pip install -r requirements.txt
-# - pip install pytest-faulthandler
   - pip install PyVirtualDisplay
-  - pip install pytest-xvfb
   - pip install pytest-cov
+  - pip install pytest-xvfb
   - pip install pytest-qt
   - pip install codecov
-script:
-  - python -m pytest --cov=nw -m "project|core|gui" -v
-after_success:
-  - codecov
-after_failure:
-  - cat /sys/fs/cgroup/memory/memory.max_usage_in_bytes
 
+stages:
+  - name: Main
+  - name: Supported
+# - name: Future
+#   if: branch = main
+
+jobs:
+  include:
+    - stage:
+      - Main
+      python:
+      - 3.8
+      script:
+      - python -m pytest --cov=nw -v
+      after_success:
+      - codecov
+      after_failure:
+      - cat /sys/fs/cgroup/memory/memory.max_usage_in_bytes
+
+    - stage:
+      - Supported
+      python:
+      - 3.6
+      script:
+      - python -m pytest -v
+
+    - python:
+      - 3.7
+      script:
+      - python -m pytest -v
+
+#   - stage:
+#     - Future
+#     python:
+#     - 3.9-dev
+#     script:
+#     - python -m pytest -v
