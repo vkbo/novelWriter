@@ -26,7 +26,7 @@ stages:
   - name: Main
   - name: Supported
   - name: Future
-#   if: branch = main
+    if: branch = main
 
 jobs:
   include:
