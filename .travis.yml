@@ -11,10 +11,11 @@ addons:
       - libenchant-dev
       - python3-pyqt5
       - python3-pyqt5.qtsvg
+      - python3-lxml
 
 install:
 # - pip install --upgrade pip
-  - pip install -r requirements.txt
+# - pip install -r requirements.txt
   - pip install PyVirtualDisplay
   - pip install pytest-cov
   - pip install pytest-xvfb
@@ -32,7 +33,7 @@ jobs:
       python:
       - 3.8
       script:
-      - python -m pytest --cov=nw -m "project|core|gui" -v
+      - python -m pytest --cov=nw -v
       after_success:
       - codecov
       after_failure:
@@ -43,14 +44,14 @@ jobs:
       python:
       - 3.6
       script:
-      - python -m pytest -m "project|core|gui" -v
+      - python -m pytest -v
 
     - python:
       - 3.7
       script:
-      - python -m pytest -m "project|core|gui" -v
+      - python -m pytest -v
 
     - python:
       - 3.9-dev
       script:
-      - python -m pytest -m "project|core|gui" -v
+      - python -m pytest -v
