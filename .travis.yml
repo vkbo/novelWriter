@@ -29,18 +29,12 @@ stages:
 jobs:
   include:
     - stage: Initial
-      python:
-        - 3.8
-      script:
-        - python -m pytest --cov=nw -m "project|core|gui" -v
-      after_success:
-        - codecov
-      after_failure:
-        - cat /sys/fs/cgroup/memory/memory.max_usage_in_bytes
+      python: 3.8
+      script: python -m pytest --cov=nw -m "project|core|gui" -v
+      after_success: codecov
+      after_failure: cat /sys/fs/cgroup/memory/memory.max_usage_in_bytes
 
     - stage: Full
-      python:
-        - 3.6
-        - 3.7
-      script:
-        - python -m pytest --cov=nw -m "project|core|gui" -v
+      python: 3.6
+    - python: 3.7
+      script: python -m pytest -m "project|core|gui" -v
