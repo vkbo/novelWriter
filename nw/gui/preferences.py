@@ -71,8 +71,6 @@ class GuiPreferences(PagedDialog):
         self.buttonBox.rejected.connect(self._doClose)
         self.addControls(self.buttonBox)
 
-        self.show()
-
         logger.debug("GuiPreferences initialisation complete")
 
         return
