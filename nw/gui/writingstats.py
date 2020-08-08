@@ -36,7 +36,7 @@ from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QFont, QPixmap
 from PyQt5.QtWidgets import (
     qApp, QDialog, QTreeWidget, QTreeWidgetItem, QDialogButtonBox, QGridLayout,
-    QLabel, QGroupBox, QMenu, QAction, QFileDialog
+    QLabel, QGroupBox, QMenu, QAction, QFileDialog, QSpinBox, QHBoxLayout
 )
 
 from nw.constants import nwConst, nwFiles, nwAlert
@@ -207,6 +207,18 @@ class GuiWritingStats(QDialog):
         self.filterForm.addWidget(self.groupByDay,   4, 1)
         self.filterForm.setRowStretch(5, 1)
 
+        # Settings
+        self.histMax = QSpinBox(self)
+        self.histMax.setMinimum(100)
+        self.histMax.setMaximum(100000)
+        self.histMax.setSingleStep(100)
+        self.histMax.valueChanged.connect(self._updateListBox)
+
+        self.optsBox = QHBoxLayout()
+        self.optsBox.addStretch(1)
+        self.optsBox.addWidget(QLabel("Word count cap for histogram"), 0)
+        self.optsBox.addWidget(self.histMax, 0)
+
         # Buttons
         self.buttonBox = QDialogButtonBox(QDialogButtonBox.Close)
         self.buttonBox.rejected.connect(self._doClose)
@@ -226,9 +238,10 @@ class GuiWritingStats(QDialog):
         # Assemble
         self.outerBox = QGridLayout()
         self.outerBox.addWidget(self.listBox,   0, 0, 1, 2)
-        self.outerBox.addWidget(self.infoBox,   1, 0)
-        self.outerBox.addWidget(self.filterBox, 1, 1)
-        self.outerBox.addWidget(self.buttonBox, 2, 0, 1, 2)
+        self.outerBox.addLayout(self.optsBox,   1, 0, 1, 2)
+        self.outerBox.addWidget(self.infoBox,   2, 0)
+        self.outerBox.addWidget(self.filterBox, 2, 1)
+        self.outerBox.addWidget(self.buttonBox, 3, 0, 1, 2)
         self.outerBox.setRowStretch(0, 1)
 
         self.setLayout(self.outerBox)
@@ -449,6 +462,7 @@ class GuiWritingStats(QDialog):
         hideZeros    = self.hideZeros.isChecked()
         hideNegative = self.hideNegative.isChecked()
         groupByDay   = self.groupByDay.isChecked()
+        histMax      = self.histMax.value()
 
         # Group the data
         if groupByDay:
@@ -509,7 +523,7 @@ class GuiWritingStats(QDialog):
                 sStart = dStart.strftime(nwConst.tStampFmt)
 
             self.filterData.append((dStart, sStart, sDiff, dwTotal, wcNovel, wcNotes))
-            listMax = max(listMax, dwTotal)
+            listMax = min(max(listMax, dwTotal), histMax)
             pcTotal = wcTotal
 
         # Populate the list
@@ -522,7 +536,7 @@ class GuiWritingStats(QDialog):
 
             if nWords > 0 and listMax > 0:
                 theBar = self.barImage.scaled(
-                    int(200*nWords/listMax),
+                    int(200*min(nWords, histMax)/listMax),
                     self.barHeight,
                     Qt.IgnoreAspectRatio,
                     Qt.FastTransformation
