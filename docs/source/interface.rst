@@ -362,8 +362,9 @@ Most features are available as keyboard shortcuts. These are as follows:
    ":kbd:`F9`",                          "Re-build the project index."
    ":kbd:`F10`",                         "Re-build the project outline."
    ":kbd:`F11`",                         "Activate full screen mode."
+   ":kbd:`Shift`:kbd:`F1`",              "Open the online documentation in the system default browser."
    ":kbd:`Shift`:kbd:`F3`",              "Find previous occurrence of search word in current document. (Same as :kbd:`Ctrl`:kbd:`Shift`:kbd:`G`)"
-   ":kbd:`Enter`",                       "If in the project tree, open a document for editing."
+   ":kbd:`Return`",                      "If in the project tree, open a document for editing."
 
 .. note::
    On macOS, replace :kbd:`Ctrl` with :kbd:`Cmd`.
