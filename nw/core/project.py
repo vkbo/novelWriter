@@ -171,20 +171,53 @@ class NWProject():
     #  Project Methods
     ##
 
-    def newProject(self):
+    def newProject(self, projData={}):
         """Create a new project by populating the project tree with a
         few starter items.
         """
-        self.projName = "New Project"
-        hNovel = self.newRoot("Novel",         nwItemClass.NOVEL)
-        hChars = self.newRoot("Characters",    nwItemClass.CHARACTER)
-        hWorld = self.newRoot("Plot",          nwItemClass.PLOT)
-        hWorld = self.newRoot("World",         nwItemClass.WORLD)
-        hChapt = self.newFolder("New Chapter", nwItemClass.NOVEL, hNovel)
-        hScene = self.newFile("New Scene",     nwItemClass.NOVEL, hChapt)
+        print(projData)
+        # Project Title and Authors
+        if "projName" in projData:
+            self.setProjectName(projData["projName"])
+        else:
+            self.setProjectName("New Project")
+        if "projTitle" in projData:
+            self.setBookTitle(projData["projTitle"])
+        if "projAuthors" in projData:
+            self.setBookAuthors(projData["projAuthors"])
+
+        popMinimal = True
+        popSample = False
+        popCustom = False
+        if "popMinimal" in projData:
+            popMinimal = projData["popMinimal"]
+        if "popSample" in projData:
+            popSample = projData["popSample"]
+        if "popCustom" in projData:
+            popCustom = projData["popCustom"]
+
+        if popMinimal:
+            hNovel = self.newRoot("Novel",         nwItemClass.NOVEL)
+            hChars = self.newRoot("Characters",    nwItemClass.CHARACTER)
+            hWorld = self.newRoot("Plot",          nwItemClass.PLOT)
+            hWorld = self.newRoot("World",         nwItemClass.WORLD)
+            hChapF = self.newFolder("New Chapter", nwItemClass.NOVEL, hNovel)
+            hScene = self.newFile("New Scene",     nwItemClass.NOVEL, hChapF)
+
+        elif popSample:
+            pass
+
+        elif popCustom:
+            pass
+
+        else:
+            # Fallback just in case.
+            self.newRoot("Novel", nwItemClass.NOVEL)
+
         self.projOpened = time()
         self.setProjectChanged(True)
         self.saveProject(autoSave=True)
+
         return True
 
     def clearProject(self):
@@ -728,13 +761,24 @@ class NWProject():
                 projPath = path.expanduser(projPath)
             self.projPath = path.abspath(projPath)
 
-        if newProject and self.mainConf.showGUI:
-            if listdir(self.projPath):
-                self.theParent.makeAlert((
-                    "New project folder is not empty. "
-                    "Each project requires a dedicated project folder."
-                ), nwAlert.ERROR)
-                return False
+        if newProject:
+            if not path.isdir(projPath):
+                try:
+                    mkdir(projPath)
+                    logger.debug("Created folder %s" % projPath)
+                except Exception as e:
+                    self.theParent.makeAlert((
+                        ["Could not create new project folder.", str(e)]
+                    ), nwAlert.ERROR)
+                    return False
+
+            if path.isdir(projPath):
+                if self.mainConf.showGUI and listdir(self.projPath):
+                    self.theParent.makeAlert((
+                        "New project folder is not empty. "
+                        "Each project requires a dedicated project folder."
+                    ), nwAlert.ERROR)
+                    return False
 
         self.ensureFolderStructure()
         self.setProjectChanged(True)
@@ -759,13 +803,18 @@ class NWProject():
     def setBookAuthors(self, bookAuthors):
         """A line separated list of book authors, parsed into an array.
         """
+        if not isinstance(bookAuthors, str):
+            return False
+
         self.bookAuthors = []
         for bookAuthor in bookAuthors.split("\n"):
             bookAuthor = bookAuthor.strip()
             if bookAuthor == "":
                 continue
             self.bookAuthors.append(bookAuthor)
+
         self.setProjectChanged(True)
+
         return True
 
     def setProjBackup(self, doBackup):

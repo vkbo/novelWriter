@@ -139,7 +139,7 @@ class ProjWizardIntroPage(QWizardPage):
 
         self.registerField("projName*", self.projName)
         self.registerField("projTitle", self.projTitle)
-        self.registerField("projAuthors", self.projAuthors)
+        self.registerField("projAuthors", self.projAuthors, "plainText")
 
         # Assemble
         self.outerBox = QVBoxLayout()

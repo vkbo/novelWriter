@@ -47,7 +47,7 @@ from nw.gui import (
     GuiAbout
 )
 from nw.core import NWProject, NWDoc, NWIndex
-from nw.constants import nwItemType, nwAlert
+from nw.constants import nwItemType, nwItemClass, nwAlert
 
 logger = logging.getLogger(__name__)
 
@@ -274,8 +274,12 @@ class GuiMain(QMainWindow):
             )
             return False
 
+        projData = {}
         if projPath is None:
-            projPath = self.newProjectDialog()
+            projData = self.newProjectDialog()
+            if "projPath" in projData:
+                projPath = projData["projPath"]
+
         if projPath is None:
             return False
 
@@ -289,12 +293,13 @@ class GuiMain(QMainWindow):
 
         logger.info("Creating new project")
         if self.theProject.setProjectPath(projPath, newProject=True):
-            self.theProject.newProject()
+            self.theProject.newProject(projData)
             self.rebuildTree()
             self.saveProject()
             self.hasProject = True
             self.statusBar.setRefTime(self.theProject.projOpened)
         else:
+            self.theProject.clearProject()
             return False
 
         return True
@@ -767,19 +772,44 @@ class GuiMain(QMainWindow):
         return None
 
     def newProjectDialog(self):
-        """Select where to save new project.
+        """Open the wizard and assemble the project options dict.
         """
         newProj = GuiProjectWizard(self)
         newProj.exec_()
-        # dlgOpt  = QFileDialog.Options()
-        # dlgOpt |= QFileDialog.ShowDirsOnly
-        # dlgOpt |= QFileDialog.DontUseNativeDialog
-        # projPath = QFileDialog.getExistingDirectory(
-        #     self, "Select Location for New novelWriter Project", "", options=dlgOpt
-        # )
-        # if projPath:
-        #     return projPath
-        return None
+
+        projData = {
+            "projName": newProj.field("projName"),
+            "projTitle": newProj.field("projTitle"),
+            "projAuthors": newProj.field("projAuthors"),
+            "projPath": newProj.field("projPath"),
+            "popSample": newProj.field("popSample"),
+            "popMinimal": newProj.field("popMinimal"),
+            "popCustom": newProj.field("popCustom"),
+            "addRoots": [],
+            "numChapters": 0,
+            "numScenes": 0,
+            "chFolders": False,
+        }
+        if newProj.field("popCustom"):
+            addRoots = []
+            if newProj.field("addPlot"):
+                addRoots.append(nwItemClass.PLOT)
+            if newProj.field("addChar"):
+                addRoots.append(nwItemClass.CHARACTER)
+            if newProj.field("addWorld"):
+                addRoots.append(nwItemClass.WORLD)
+            if newProj.field("addTime"):
+                addRoots.append(nwItemClass.TIMELINE)
+            if newProj.field("addObject"):
+                addRoots.append(nwItemClass.OBJECT)
+            if newProj.field("addEntity"):
+                addRoots.append(nwItemClass.ENTITY)
+            projData["addRoots"] = addRoots
+            projData["numChapters"] = newProj.field("numChapters")
+            projData["numScenes"] = newProj.field("numScenes")
+            projData["chFolders"] = newProj.field("chFolders")
+
+        return projData
 
     def editConfigDialog(self):
         """Open the preferences dialog.
