@@ -12,9 +12,19 @@ from nw import __version__, __url__, __docurl__, __issuesurl__, __sourceurl__
 ##
 
 buildDocs = False
+buildSample = False
+
 if "qthelp" in sys.argv:
     buildDocs = True
     sys.argv.remove("qthelp")
+
+if "sample" in sys.argv:
+    buildSample = True
+    sys.argv.remove("sample")
+
+##
+#  Qt Assistant Documentation
+##
 
 if buildDocs:
 
@@ -71,6 +81,31 @@ if buildDocs:
     else:
         print("Documentation build: OK")
     print("")
+
+##
+#  Sample Project ZIP file
+##
+
+if buildSample:
+
+    srcSample = "sample"
+    dstSample = os.path.join("nw", "assets", "sample.zip")
+
+    if os.path.isdir(srcSample):
+        if os.path.isfile(dstSample):
+            os.unlink(dstSample)
+
+        from zipfile import ZipFile
+
+        with ZipFile(dstSample, "w") as zipObj:
+            zipObj.write(os.path.join("sample", "nwProject.nwx"), "nwProject.nwx")
+            for docFile in os.listdir(os.path.join(srcSample, "content")):
+                srcDoc = os.path.join(srcSample, "content", docFile)
+                zipObj.write(srcDoc, "content/"+docFile)
+
+    else:
+        print("Error: Could not find sample project source directory.")
+        sys.exit(1)
 
 if len(sys.argv) == 1:
     # Nothing more to do
