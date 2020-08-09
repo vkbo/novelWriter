@@ -45,7 +45,7 @@ from nw.common import (
     checkString, checkBool, checkInt, formatTimeStamp, makeFileNameSafe
 )
 from nw.constants import (
-    nwFiles, nwItemType, nwItemClass, nwItemLayout, nwAlert
+    nwFiles, nwItemType, nwItemClass, nwItemLayout, nwLabels, nwAlert
 )
 
 logger = logging.getLogger(__name__)
@@ -175,7 +175,6 @@ class NWProject():
         """Create a new project by populating the project tree with a
         few starter items.
         """
-        print(projData)
         # Project Title and Authors
         if "projName" in projData:
             self.setProjectName(projData["projName"])
@@ -208,7 +207,49 @@ class NWProject():
             pass
 
         elif popCustom:
-            pass
+            # Create Root Folders
+            hNovel = self.newRoot("Novel", nwItemClass.NOVEL)
+            if "addRoots" in projData:
+                for newRoot in projData["addRoots"]:
+                    if newRoot in nwItemClass:
+                        self.newRoot(nwLabels.CLASS_NAME[newRoot], newRoot)
+
+            # Create Chapters and Scenes
+            numChapters = 0
+            numScenes = 0
+            chFolders = False
+            if "numChapters" in projData:
+                numChapters = projData["numChapters"]
+            if "numScenes" in projData:
+                numScenes = projData["numScenes"]
+            if "chFolders" in projData:
+                chFolders = projData["chFolders"]
+
+            # Create Chapters
+            if numChapters > 0:
+                for ch in range(numChapters):
+                    chTitle = "Chapter %d" % (ch+1)
+                    hParDir = hNovel
+                    if chFolders:
+                        hParDir = self.newFolder(chTitle, nwItemClass.NOVEL, hNovel)
+                    hChapD = self.newFile(chTitle, nwItemClass.NOVEL, hParDir)
+                    chItem = self.projTree[hChapD]
+                    if hChapD is None:
+                        logger.error("Something went wrong when creating chapter file.")
+                        continue
+                    chItem.setLayout(nwItemLayout.CHAPTER)
+
+                    # Create Chapter > Scenes
+                    if numScenes > 0:
+                        for sc in range(numScenes):
+                            scTitle = "Scene %d.%d" % (ch+1, sc+1)
+                            hScene = self.newFile(scTitle, nwItemClass.NOVEL, hParDir)
+
+            # Create Scenes (No Chapters)
+            elif numScenes > 0:
+                for sc in range(numScenes):
+                    scTitle = "Scene %d" % (sc+1)
+                    hScene = self.newFile(scTitle, nwItemClass.NOVEL, hNovel)
 
         else:
             # Fallback just in case.
