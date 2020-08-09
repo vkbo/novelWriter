@@ -248,20 +248,20 @@ class ProjWizardPopulatePage(QWizardPage):
         vS = self.mainConf.pxInt(12)
         fS = self.mainConf.pxInt(4)
 
-        self.popSample = QRadioButton("Fill the project with sample files")
         self.popMinimal = QRadioButton("Fill the project with a minimal set of items")
         self.popCustom = QRadioButton("Show detailed options for filling the project")
+        self.popSample = QRadioButton("Fill the project with example files")
         self.popMinimal.setChecked(True)
 
         self.popBox = QVBoxLayout()
         self.popBox.setSpacing(fS)
         self.popBox.addWidget(self.popMinimal)
-        self.popBox.addWidget(self.popSample)
         self.popBox.addWidget(self.popCustom)
+        self.popBox.addWidget(self.popSample)
 
-        self.registerField("popSample", self.popSample)
         self.registerField("popMinimal", self.popMinimal)
         self.registerField("popCustom", self.popCustom)
+        self.registerField("popSample", self.popSample)
 
         # Assemble
         self.outerBox = QVBoxLayout()

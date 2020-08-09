@@ -293,11 +293,14 @@ class GuiMain(QMainWindow):
 
         logger.info("Creating new project")
         if self.theProject.setProjectPath(projPath, newProject=True):
-            self.theProject.newProject(projData)
-            self.rebuildTree()
-            self.saveProject()
-            self.hasProject = True
-            self.statusBar.setRefTime(self.theProject.projOpened)
+            if self.theProject.newProject(projData):
+                self.rebuildTree()
+                self.saveProject()
+                self.hasProject = True
+                self.statusBar.setRefTime(self.theProject.projOpened)
+            else:
+                self.theProject.clearProject()
+                return False
         else:
             self.theProject.clearProject()
             return False

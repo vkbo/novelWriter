@@ -15,6 +15,7 @@ novelWriter.qhc
 __pycache__
 
 # Sample Project
+/nw/assets/sample.zip
 /sample/cache
 /sample/meta
 *.bak

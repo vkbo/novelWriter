@@ -32,7 +32,7 @@ import nw
 from os import path, mkdir, listdir, unlink, rename, rmdir
 from lxml import etree
 from time import time
-from shutil import make_archive
+from shutil import make_archive, unpack_archive, copyfile
 
 from PyQt5.QtWidgets import QMessageBox
 
@@ -175,6 +175,21 @@ class NWProject():
         """Create a new project by populating the project tree with a
         few starter items.
         """
+        popMinimal = True
+        popCustom = False
+        popSample = False
+        if "popMinimal" in projData:
+            popMinimal = projData["popMinimal"]
+        if "popCustom" in projData:
+            popCustom = projData["popCustom"]
+        if "popSample" in projData:
+            popSample = projData["popSample"]
+
+        # Check if we're extracting the sample project.
+        # This is handled differently as it isn't actually a new project.
+        if popSample:
+            return self.extractSampleProject(projData)
+
         # Project Title and Authors
         if "projName" in projData:
             self.setProjectName(projData["projName"])
@@ -185,17 +200,9 @@ class NWProject():
         if "projAuthors" in projData:
             self.setBookAuthors(projData["projAuthors"])
 
-        popMinimal = True
-        popSample = False
-        popCustom = False
-        if "popMinimal" in projData:
-            popMinimal = projData["popMinimal"]
-        if "popSample" in projData:
-            popSample = projData["popSample"]
-        if "popCustom" in projData:
-            popCustom = projData["popCustom"]
-
         if popMinimal:
+            # Creating a minimal project with a few root folders, a
+            # single chapter folder with a single file.
             hNovel = self.newRoot("Novel",         nwItemClass.NOVEL)
             hChars = self.newRoot("Characters",    nwItemClass.CHARACTER)
             hWorld = self.newRoot("Plot",          nwItemClass.PLOT)
@@ -203,10 +210,11 @@ class NWProject():
             hChapF = self.newFolder("New Chapter", nwItemClass.NOVEL, hNovel)
             hScene = self.newFile("New Scene",     nwItemClass.NOVEL, hChapF)
 
-        elif popSample:
-            pass
-
         elif popCustom:
+            # Create a project structure based on selected root folders
+            # and a number of chapters and scenes selected in the
+            # wizard's custom page.
+
             # Create Root Folders
             hNovel = self.newRoot("Novel", nwItemClass.NOVEL)
             if "addRoots" in projData:
@@ -255,11 +263,71 @@ class NWProject():
             # Fallback just in case.
             self.newRoot("Novel", nwItemClass.NOVEL)
 
+        # Finalise
         self.projOpened = time()
         self.setProjectChanged(True)
         self.saveProject(autoSave=True)
 
         return True
+
+    def extractSampleProject(self, projData):
+        """Make a copy of the sample project.
+        First, try to copy the content of the sample folder to the new
+        project path, or if the folder doesn't exist, look for the zip
+        file in the assets folder.
+        """
+        if "projName" in projData:
+            projName = projData["projName"]
+        else:
+            projName = "Sample Project"
+
+        if "projPath" in projData:
+            projPath = projData["projPath"]
+        else:
+            logger.error("No project path set for the example project")
+            return False
+
+        srcSample = path.abspath(path.join(self.mainConf.appRoot, "sample"))
+        pkgSample = path.join(self.mainConf.assetPath, "sample.zip")
+
+        isSuccess = False
+        if path.isfile(pkgSample):
+
+            try:
+                unpack_archive(pkgSample, projPath)
+                isSuccess = True
+            except Exception as e:
+                self.makeAlert(
+                    ["Failed to create a new example project.", str(e)], nwAlert.ERROR
+                )
+
+        elif path.isdir(srcSample):
+
+            try:
+                srcProj = path.join(srcSample, nwFiles.PROJ_FILE)
+                dstProj = path.join(projPath, nwFiles.PROJ_FILE)
+                copyfile(srcProj, dstProj)
+
+                srcContent = path.join(srcSample, "content")
+                dstContent = path.join(projPath, "content")
+                for srcFile in listdir(srcContent):
+                    srcDoc = path.join(srcContent, srcFile)
+                    dstDoc = path.join(dstContent, srcFile)
+                    copyfile(srcDoc, dstDoc)
+
+                isSuccess = True
+
+            except Exception as e:
+                self.makeAlert(
+                    ["Failed to create a new example project.", str(e)], nwAlert.ERROR
+                )
+
+        if isSuccess:
+            self.clearProject()
+            self.theParent.openProject(projPath)
+            self.theParent.rebuildIndex()
+
+        return isSuccess
 
     def clearProject(self):
         """Clear the data for the current project, and set them to
