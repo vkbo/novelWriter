@@ -30,13 +30,16 @@ import nw
 
 from os import path
 
+from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QPixmap, QColor
 from PyQt5.QtWidgets import (
     QWizard, QWizardPage, QLabel, QVBoxLayout, QLineEdit, QPlainTextEdit,
-    QPushButton, QFileDialog, QHBoxLayout, QRadioButton, QFormLayout
+    QPushButton, QFileDialog, QHBoxLayout, QRadioButton, QFormLayout,
+    QGroupBox, QGridLayout, QSpinBox
 )
 
 from nw.common import makeFileNameSafe
+from nw.constants import nwLabels, nwItemClass
 from nw.gui.custom import QSwitch
 
 logger = logging.getLogger(__name__)
@@ -64,11 +67,11 @@ class GuiProjectWizard(QWizard):
         self.setWizardStyle(QWizard.ModernStyle)
         self.setPixmap(QWizard.WatermarkPixmap, self.sideImage)
 
-        self.introPage = ProjWizardIntroPage(self.theParent)
-        self.storagePage = ProjWizardFolderPage(self.theParent)
-        self.popPage = ProjWizardPopulatePage(self.theParent)
-        self.customPage = ProjWizardCustomPage(self.theParent)
-        self.finalPage = ProjWizardFinalPage(self.theParent)
+        self.introPage = ProjWizardIntroPage(self)
+        self.storagePage = ProjWizardFolderPage(self)
+        self.popPage = ProjWizardPopulatePage(self)
+        self.customPage = ProjWizardCustomPage(self)
+        self.finalPage = ProjWizardFinalPage(self)
 
         self.setPage(PAGE_INTRO, self.introPage)
         self.setPage(PAGE_STORE, self.storagePage)
@@ -86,12 +89,12 @@ class GuiProjectWizard(QWizard):
 
 class ProjWizardIntroPage(QWizardPage):
 
-    def __init__(self, theParent):
+    def __init__(self, theWizard):
         QWizardPage.__init__(self)
 
         self.mainConf  = nw.CONFIG
-        self.theParent = theParent
-        self.theTheme  = theParent.theTheme
+        self.theWizard = theWizard
+        self.theTheme  = theWizard.theTheme
 
         self.setTitle("Create New Project")
         self.theText = QLabel(
@@ -153,12 +156,12 @@ class ProjWizardIntroPage(QWizardPage):
 
 class ProjWizardFolderPage(QWizardPage):
 
-    def __init__(self, theParent):
+    def __init__(self, theWizard):
         QWizardPage.__init__(self)
 
         self.mainConf  = nw.CONFIG
-        self.theParent = theParent
-        self.theTheme  = theParent.theTheme
+        self.theWizard = theWizard
+        self.theTheme  = theWizard.theTheme
 
         self.setTitle("Select Project Folder")
         self.theText = QLabel(
@@ -228,12 +231,11 @@ class ProjWizardFolderPage(QWizardPage):
 
 class ProjWizardPopulatePage(QWizardPage):
 
-    def __init__(self, theParent):
+    def __init__(self, theWizard):
         QWizardPage.__init__(self)
 
         self.mainConf  = nw.CONFIG
-        self.theParent = theParent
-        self.theTheme  = theParent.theTheme
+        self.theWizard = theWizard
 
         self.setTitle("Populate Project")
         self.theText = QLabel(
@@ -284,27 +286,103 @@ class ProjWizardPopulatePage(QWizardPage):
 
 class ProjWizardCustomPage(QWizardPage):
 
-    def __init__(self, theParent):
+    def __init__(self, theWizard):
         QWizardPage.__init__(self)
 
         self.mainConf  = nw.CONFIG
-        self.theParent = theParent
-        self.theTheme  = theParent.theTheme
+        self.theWizard = theWizard
 
         self.setTitle("Custom Project Options")
         self.theText = QLabel(
-            "Text"
+            "Select which additional root folders to make, and how to populate "
+            "the Novel folder. If you don't want to add chapters or scenes, set "
+            "the values to 0. You can add scenes without chapters."
         )
         self.theText.setWordWrap(True)
 
         vS = self.mainConf.pxInt(12)
         fS = self.mainConf.pxInt(4)
 
+        # Root Folders
+        self.rootGroup = QGroupBox("Additional Root Folders")
+        self.rootForm  = QGridLayout()
+        self.rootGroup.setLayout(self.rootForm)
+
+        self.lblPlot   = QLabel("%s folder" % nwLabels.CLASS_NAME[nwItemClass.PLOT])
+        self.lblChar   = QLabel("%s folder" % nwLabels.CLASS_NAME[nwItemClass.CHARACTER])
+        self.lblWorld  = QLabel("%s folder" % nwLabels.CLASS_NAME[nwItemClass.WORLD])
+        self.lblTime   = QLabel("%s folder" % nwLabels.CLASS_NAME[nwItemClass.TIMELINE])
+        self.lblObject = QLabel("%s folder" % nwLabels.CLASS_NAME[nwItemClass.OBJECT])
+        self.lblEntity = QLabel("%s folder" % nwLabels.CLASS_NAME[nwItemClass.ENTITY])
+
+        self.addPlot   = QSwitch()
+        self.addChar   = QSwitch()
+        self.addWorld  = QSwitch()
+        self.addTime   = QSwitch()
+        self.addObject = QSwitch()
+        self.addEntity = QSwitch()
+
+        self.addPlot.setChecked(True)
+        self.addChar.setChecked(True)
+
+        self.rootForm.addWidget(self.lblPlot,   0, 0)
+        self.rootForm.addWidget(self.lblChar,   1, 0)
+        self.rootForm.addWidget(self.lblWorld,  2, 0)
+        self.rootForm.addWidget(self.lblTime,   3, 0)
+        self.rootForm.addWidget(self.lblObject, 4, 0)
+        self.rootForm.addWidget(self.lblEntity, 5, 0)
+        self.rootForm.addWidget(self.addPlot,   0, 1, 1, 1, Qt.AlignRight)
+        self.rootForm.addWidget(self.addChar,   1, 1, 1, 1, Qt.AlignRight)
+        self.rootForm.addWidget(self.addWorld,  2, 1, 1, 1, Qt.AlignRight)
+        self.rootForm.addWidget(self.addTime,   3, 1, 1, 1, Qt.AlignRight)
+        self.rootForm.addWidget(self.addObject, 4, 1, 1, 1, Qt.AlignRight)
+        self.rootForm.addWidget(self.addEntity, 5, 1, 1, 1, Qt.AlignRight)
+        self.rootForm.setRowStretch(6, 1)
+
+        # Novel Options
+        self.novelGroup = QGroupBox("Populate Novel Folder")
+        self.novelForm  = QGridLayout()
+        self.novelGroup.setLayout(self.novelForm)
+
+        self.numChapters = QSpinBox()
+        self.numChapters.setRange(0, 100)
+        self.numChapters.setValue(5)
+
+        self.numScenes = QSpinBox()
+        self.numScenes.setRange(0, 200)
+        self.numScenes.setValue(5)
+
+        self.chFolders = QSwitch()
+        self.chFolders.setChecked(True)
+
+        self.novelForm.addWidget(QLabel("Add chapters"),         0, 0)
+        self.novelForm.addWidget(QLabel("Scenes (per chapter)"), 1, 0)
+        self.novelForm.addWidget(QLabel("Add chapter folders"),  2, 0)
+        self.novelForm.addWidget(self.numChapters, 0, 1, 1, 1, Qt.AlignRight)
+        self.novelForm.addWidget(self.numScenes,   1, 1, 1, 1, Qt.AlignRight)
+        self.novelForm.addWidget(self.chFolders,   2, 1, 1, 1, Qt.AlignRight)
+        self.novelForm.setRowStretch(3, 1)
+
+        # Wizard Fields
+        self.registerField("addPlot", self.addPlot)
+        self.registerField("addChar", self.addChar)
+        self.registerField("addWorld", self.addWorld)
+        self.registerField("addTime", self.addTime)
+        self.registerField("addObject", self.addObject)
+        self.registerField("addEntity", self.addEntity)
+        self.registerField("numChapters", self.numChapters)
+        self.registerField("numScenes", self.numScenes)
+        self.registerField("chFolders", self.chFolders)
+
         # Assemble
+        self.innerBox = QHBoxLayout()
+        self.innerBox.addWidget(self.rootGroup)
+        self.innerBox.addWidget(self.novelGroup)
+
         self.outerBox = QVBoxLayout()
         self.outerBox.setSpacing(vS)
         self.outerBox.addWidget(self.theText)
-        # self.outerBox.addLayout(self.popBox)
+        self.outerBox.addLayout(self.innerBox)
         self.outerBox.addStretch(1)
         self.setLayout(self.outerBox)
 
@@ -314,27 +392,25 @@ class ProjWizardCustomPage(QWizardPage):
 
 class ProjWizardFinalPage(QWizardPage):
 
-    def __init__(self, theParent):
+    def __init__(self, theWizard):
         QWizardPage.__init__(self)
 
         self.mainConf  = nw.CONFIG
-        self.theParent = theParent
-        self.theTheme  = theParent.theTheme
+        self.theWizard = theWizard
 
-        self.setTitle("Overview")
-        self.theText = QLabel(
-            "Text"
-        )
+        self.setTitle("Finished")
+        self.theText = QLabel((
+            "<p>All done.</p>"
+            "<p>Press '{finish}' to create the new project.</p>"
+        ).format(
+            finish = "Done" if self.mainConf.osDarwin else "Finish"
+        ))
         self.theText.setWordWrap(True)
-
-        vS = self.mainConf.pxInt(12)
-        fS = self.mainConf.pxInt(4)
 
         # Assemble
         self.outerBox = QVBoxLayout()
-        self.outerBox.setSpacing(vS)
+        self.outerBox.setSpacing(self.mainConf.pxInt(12))
         self.outerBox.addWidget(self.theText)
-        # self.outerBox.addLayout(self.popBox)
         self.outerBox.addStretch(1)
         self.setLayout(self.outerBox)
 
