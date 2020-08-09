@@ -265,6 +265,7 @@ class GuiMain(QMainWindow):
 
     def newProject(self, projPath=None, forceNew=False):
         """Create new project with a few default files and folders.
+        The variable forceNew is used for testing.
         """
         if self.hasProject:
             msgBox = QMessageBox()
@@ -277,6 +278,8 @@ class GuiMain(QMainWindow):
         projData = {}
         if projPath is None:
             projData = self.newProjectDialog()
+            if projData is None:
+                return False
             if "projPath" in projData:
                 projPath = projData["projPath"]
 
@@ -292,15 +295,11 @@ class GuiMain(QMainWindow):
             return False
 
         logger.info("Creating new project")
-        if self.theProject.setProjectPath(projPath, newProject=True):
-            if self.theProject.newProject(projData):
-                self.rebuildTree()
-                self.saveProject()
-                self.hasProject = True
-                self.statusBar.setRefTime(self.theProject.projOpened)
-            else:
-                self.theProject.clearProject()
-                return False
+        if self.theProject.newProject(projData):
+            self.rebuildTree()
+            self.saveProject()
+            self.hasProject = True
+            self.statusBar.setRefTime(self.theProject.projOpened)
         else:
             self.theProject.clearProject()
             return False
@@ -779,6 +778,9 @@ class GuiMain(QMainWindow):
         """
         newProj = GuiProjectWizard(self)
         newProj.exec_()
+
+        if newProj.result() == QDialog.Rejected:
+            return None
 
         projData = {
             "projName": newProj.field("projName"),

@@ -190,6 +190,13 @@ class NWProject():
         if popSample:
             return self.extractSampleProject(projData)
 
+        # Set the project path
+        if "projPath" in projData:
+            self.setProjectPath(projData["projPath"], newProject=True)
+        else:
+            logger.error("No project path set for the new project")
+            return False
+
         # Project Title and Authors
         if "projName" in projData:
             self.setProjectName(projData["projName"])
@@ -293,6 +300,7 @@ class NWProject():
         isSuccess = False
         if path.isfile(pkgSample):
 
+            self.setProjectPath(projPath, newProject=True)
             try:
                 unpack_archive(pkgSample, projPath)
                 isSuccess = True
@@ -303,6 +311,7 @@ class NWProject():
 
         elif path.isdir(srcSample):
 
+            self.setProjectPath(projPath, newProject=True)
             try:
                 srcProj = path.join(srcSample, nwFiles.PROJ_FILE)
                 dstProj = path.join(projPath, nwFiles.PROJ_FILE)
@@ -321,6 +330,12 @@ class NWProject():
                 self.makeAlert(
                     ["Failed to create a new example project.", str(e)], nwAlert.ERROR
                 )
+
+        else:
+            self.makeAlert((
+                "Failed to create a new example project. "
+                "Could not find the necessary files."
+            ), nwAlert.ERROR)
 
         if isSuccess:
             self.clearProject()
