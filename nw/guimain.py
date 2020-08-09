@@ -263,7 +263,7 @@ class GuiMain(QMainWindow):
 
         return True
 
-    def newProject(self, projPath=None, forceNew=False):
+    def newProject(self, projData=None, forceNew=False):
         """Create new project with a few default files and folders.
         The variable forceNew is used for testing.
         """
@@ -275,15 +275,18 @@ class GuiMain(QMainWindow):
             )
             return False
 
-        projData = {}
-        if projPath is None:
+        if projData is None and self.mainConf.showGUI:
             projData = self.newProjectDialog()
-            if projData is None:
-                return False
-            if "projPath" in projData:
-                projPath = projData["projPath"]
 
-        if projPath is None:
+        if projData is None:
+            return False
+
+        projPath = None
+        if "projPath" in projData:
+            projPath = projData["projPath"]
+
+        if projPath is None or projData is None:
+            logger.error("No projData or projPath set")
             return False
 
         if path.isfile(path.join(projPath,self.theProject.projFile)) and not forceNew:

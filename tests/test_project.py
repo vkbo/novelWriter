@@ -26,7 +26,7 @@ def testProjectNew(nwTempProj,nwRef,nwTemp):
     projFile = path.join(nwTempProj,"nwProject.nwx")
     refFile  = path.join(nwRef,"proj","1_nwProject.nwx")
     assert theConf.initConfig(nwRef, nwTemp)
-    assert theProject.newProject()
+    assert theProject.newProject({"projPath": nwTempProj})
     assert theProject.setProjectPath(nwTempProj)
     assert theProject.saveProject()
     assert theProject.closeProject()

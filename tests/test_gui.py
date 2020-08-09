@@ -27,7 +27,7 @@ def testMainWindows(qtbot, nwTempGUI, nwRef, nwTemp):
 
     # Create new, save, close project
     nwGUI.theProject.projTree.setSeed(42)
-    assert nwGUI.newProject(nwTempGUI, True)
+    assert nwGUI.newProject({"projPath": nwTempGUI}, True)
     assert nwGUI.saveProject()
     assert nwGUI.closeProject()
 
@@ -274,7 +274,7 @@ def testProjectEditor(qtbot, nwTempGUI, nwRef, nwTemp):
 
     # Create new, save, open project
     nwGUI.theProject.projTree.setSeed(42)
-    assert nwGUI.newProject(nwTempGUI, True)
+    assert nwGUI.newProject({"projPath": nwTempGUI}, True)
     nwGUI.mainConf.backupPath = nwTempGUI
 
     projEdit = GuiProjectSettings(nwGUI, nwGUI.theProject)
@@ -363,7 +363,7 @@ def testItemEditor(qtbot, nwTempGUI, nwRef, nwTemp):
 
     # Create new, save, open project
     nwGUI.theProject.projTree.setSeed(42)
-    assert nwGUI.newProject(nwTempGUI, True)
+    assert nwGUI.newProject({"projPath": nwTempGUI}, True)
     assert nwGUI.openDocument("31489056e0916")
 
     itemEdit = GuiItemEditor(nwGUI, nwGUI.theProject, "31489056e0916")
