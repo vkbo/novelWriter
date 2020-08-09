@@ -195,8 +195,10 @@ class GuiOutline(QTreeWidget):
             tLine = int(tItem.text(self.colIndex[nwOutline.LINE]))
         except:
             tLine = 1
+
         logger.verbose("User selected entry with handle %s on line %s" % (tHandle, tLine))
         self.theParent.openDocument(tHandle, tLine=tLine-1, doScroll=True)
+
         return
 
     def _itemSelected(self):
@@ -208,6 +210,7 @@ class GuiOutline(QTreeWidget):
             tHandle = selItems[0].data(self.colIndex[nwOutline.TITLE], Qt.UserRole)
             sTitle  = selItems[0].data(self.colIndex[nwOutline.LINE], Qt.UserRole)
             self.theParent.projMeta.showItem(tHandle, sTitle)
+
         return
 
     def _headerRightClick(self, clickPos):
@@ -232,6 +235,7 @@ class GuiOutline(QTreeWidget):
         if theItem in self.colIndex:
             self.setColumnHidden(self.colIndex[theItem], not isChecked)
             self._saveHeaderState()
+
         return
 
     ##

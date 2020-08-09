@@ -153,6 +153,7 @@ class GuiProjectLoad(QDialog):
         """
         logger.verbose("GuiProjectLoad open button clicked")
         self._saveDialogState()
+
         selItems = self.listBox.selectedItems()
         if selItems:
             self.openPath = selItems[0].data(self.C_NAME, Qt.UserRole)
@@ -161,6 +162,7 @@ class GuiProjectLoad(QDialog):
         else:
             self.openPath = None
             self.openState = self.NONE_STATE
+
         return
 
     def _doSelectRecent(self):
@@ -189,6 +191,7 @@ class GuiProjectLoad(QDialog):
                 self.openPath = thePath
                 self.openState = self.OPEN_STATE
                 self.accept()
+
         return
 
     def _doClose(self):

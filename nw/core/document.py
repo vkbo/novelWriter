@@ -28,7 +28,7 @@
 import logging
 import nw
 
-from os import path, mkdir, rename, unlink
+from os import path, rename, unlink
 
 from nw.core.item import NWItem
 from nw.constants import nwAlert
@@ -44,10 +44,11 @@ class NWDoc():
         self.mainConf   = nw.CONFIG
         self.theProject = theProject
         self.theParent  = theParent
-        self.theItem    = None
-        self.docHandle  = None
-        self.fileLoc    = None
-        self.docMeta    = ""
+
+        self.theItem   = None
+        self.docHandle = None
+        self.fileLoc   = None
+        self.docMeta   = ""
 
         # Internal Mapping
         self.makeAlert = self.theParent.makeAlert

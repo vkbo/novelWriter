@@ -195,7 +195,6 @@ class NWSpellEnchant(NWSpellCheck):
 class NWSpellEnchantDummy:
     """Fallback for when Enchant is selected, but not installed.
     """
-
     def __init__(self):
         return
     

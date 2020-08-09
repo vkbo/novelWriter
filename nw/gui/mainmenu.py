@@ -28,13 +28,10 @@
 import logging
 import nw
 
-from os import path
-
 from PyQt5.QtCore import QUrl, QProcess
 from PyQt5.QtGui import QDesktopServices
-from PyQt5.QtWidgets import QMenuBar, QAction, QMessageBox
+from PyQt5.QtWidgets import QMenuBar, QAction
 
-from nw.gui.about import GuiAbout
 from nw.constants import nwItemType, nwItemClass, nwDocAction, nwDocInsert
 
 logger = logging.getLogger(__name__)
@@ -150,21 +147,6 @@ class GuiMainMenu(QMenuBar):
         self.theProject.setAutoOutline(theMode)
         return True
 
-    def _showAbout(self):
-        """Show the about dialog.
-        """
-        if self.mainConf.showGUI:
-            msgAbout = GuiAbout(self.theParent)
-            msgAbout.exec_()
-        return True
-
-    def _showAboutQt(self):
-        """Show Qt's own About dialog.
-        """
-        msgBox = QMessageBox()
-        msgBox.aboutQt(self.theParent,"About Qt")
-        return True
-
     def _openAssistant(self):
         """Open the documentation in Qt Assistant.
         """
@@ -210,7 +192,8 @@ class GuiMainMenu(QMenuBar):
     ##
 
     def _buildProjectMenu(self):
-
+        """Assemble the Project menu.
+        """
         # Project
         self.projMenu = self.addMenu("&Project")
 
@@ -313,7 +296,8 @@ class GuiMainMenu(QMenuBar):
         return
 
     def _buildDocumentMenu(self):
-
+        """Assemble the Document menu.
+        """
         # Document
         self.docuMenu = self.addMenu("&Document")
 
@@ -395,7 +379,8 @@ class GuiMainMenu(QMenuBar):
         return
 
     def _buildEditMenu(self):
-
+        """Assemble the Edit menu.
+        """
         # Edit
         self.editMenu = self.addMenu("&Edit")
 
@@ -457,7 +442,8 @@ class GuiMainMenu(QMenuBar):
         return
 
     def _buildViewMenu(self):
-
+        """Assemble the View menu.
+        """
         # View
         self.viewMenu = self.addMenu("&View")
 
@@ -504,7 +490,8 @@ class GuiMainMenu(QMenuBar):
         return
 
     def _buildInsertMenu(self):
-
+        """Assemble the Insert menu.
+        """
         # Insert
         self.insertMenu = self.addMenu("&Insert")
 
@@ -594,7 +581,8 @@ class GuiMainMenu(QMenuBar):
         return
 
     def _buildSearchMenu(self):
-
+        """Assemble the Search menu.
+        """
         # Search
         self.srcMenu = self.addMenu("&Search")
 
@@ -645,7 +633,8 @@ class GuiMainMenu(QMenuBar):
         return
 
     def _buildFormatMenu(self):
-
+        """Assemble the Format menu.
+        """
         # Format
         self.fmtMenu = self.addMenu("&Format")
 
@@ -750,7 +739,8 @@ class GuiMainMenu(QMenuBar):
         return
 
     def _buildToolsMenu(self):
-
+        """Assemble the Tools menu.
+        """
         # Tools
         self.toolsMenu = self.addMenu("&Tools")
 
@@ -846,20 +836,21 @@ class GuiMainMenu(QMenuBar):
         return
 
     def _buildHelpMenu(self):
-
+        """Assemble the Help menu.
+        """
         # Help
         self.helpMenu = self.addMenu("&Help")
 
         # Help > About
         self.aAboutNW = QAction("About %s" % self.mainConf.appName, self)
         self.aAboutNW.setStatusTip("About %s" % self.mainConf.appName)
-        self.aAboutNW.triggered.connect(self._showAbout)
+        self.aAboutNW.triggered.connect(self.theParent.showAboutNWDialog)
         self.helpMenu.addAction(self.aAboutNW)
 
         # Help > About Qt5
         self.aAboutQt = QAction("About Qt5", self)
         self.aAboutQt.setStatusTip("About Qt5")
-        self.aAboutQt.triggered.connect(self._showAboutQt)
+        self.aAboutQt.triggered.connect(self.theParent.showAboutQtDialog)
         self.helpMenu.addAction(self.aAboutQt)
 
         # Help > Separator

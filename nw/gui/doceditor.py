@@ -39,7 +39,7 @@ from PyQt5.QtCore import (
     Qt, QSize, QThread, QTimer, pyqtSlot, QRegExp, QRegularExpression
 )
 from PyQt5.QtGui import (
-    QTextCursor, QTextOption, QKeySequence, QFont, QColor, QPalette, QIcon,
+    QTextCursor, QTextOption, QKeySequence, QFont, QColor, QPalette,
     QTextDocument, QCursor, QPixmap
 )
 from PyQt5.QtWidgets import (

@@ -25,7 +25,7 @@
  along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
 
-from nw.constants.enum import nwItemClass, nwItemLayout, nwOutline, nwDocInsert
+from nw.constants.enum import nwItemClass, nwItemLayout, nwOutline
 
 class nwConst():
 

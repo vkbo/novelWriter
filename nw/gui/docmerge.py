@@ -79,7 +79,6 @@ class GuiDocMerge(QDialog):
         self.setLayout(self.outerBox)
 
         self.rejected.connect(self._doClose)
-        self.show()
 
         self._populateList()
 
@@ -96,7 +95,6 @@ class GuiDocMerge(QDialog):
         create a new file in the same parent folder. The old files are
         not removed in the merge process, and must be deleted manually.
         """
-
         logger.verbose("GuiDocMerge merge button clicked")
 
         finalOrder = []
@@ -143,7 +141,6 @@ class GuiDocMerge(QDialog):
         are then added to the list view in order. The list itself can be
         reordered by the user.
         """
-
         tHandle = self.theParent.treeView.getSelectedHandle()
         self.sourceItem = tHandle
         if tHandle is None:
