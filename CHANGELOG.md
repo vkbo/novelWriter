@@ -1,5 +1,26 @@
 # novelWriter ChangeLog
 
+## Version 0.11.1 [2020-08-09]
+
+**Bugfixes**
+
+* The modality of the dialogs have been made more consistent and a few issues with conflicting settings resolved. Mostly the latter relates to some dialogs both having the `exec_()` call and the `show()` call. The former implies modal, the latter does not, and the latter usually took precedence. All dialogs are now modal with the exception of the Writing Statistics and Build Novel Project tools. PR #389.
+
+**User Interface**
+
+* The Help menu entries for the documentation have been improved a bit. If the local copy of the documentations is present (both files are checked now), and the Qt Assistant is installed, the "Documentation (Local)" entry is visible with `F1` as keyboard shortcut. The "Documentation (Online)" is always visible with `Shift+F1` keyboard shortcut. The `F1` key redirects to this too if the local copy isn't available. PR #386.
+* The Writing Statistics tool now has the ability to set a cap between 100 and 100 000 words on the word count histogram bars. This is useful if the user has added a large chunk of text, in which case the histogram bar is dominated by this one entry. Now, anything on and above the cap value will have a full bar, and all other entries scale from 0 to the cap value. PR #387.
+
+**Documentation**
+
+* The main index page of the documentation now has a build date on it. PR #390.
+
+**Other Changes**
+
+* The Travis CI build system has been altered to first check that the tests pass for Python 3.8, for then to move to the other supported Python versions. These are currently 3.6 and 3.7. Python 3.9 will be added when it is released in October. PR #388.
+* Some clean-up of the source code, mostly in terms of unused imports and missing docstrings. PR #391.
+
+
 ## Version 0.11 [2020-08-08]
 
 Note: The source code has now switched to a default branch named `main` ahead of the changes planned by GitHub.
