@@ -255,6 +255,8 @@ class NWProject():
         self.setBookTitle(projTitle)
         self.setBookAuthors(projAuthors)
 
+        aDoc = NWDoc(self, self.theParent)
+
         if popMinimal:
             # Creating a minimal project with a few root folders and a
             # single chapter folder with a single file.
@@ -263,11 +265,24 @@ class NWProject():
             xHandle = self.newRoot("Characters",    nwItemClass.CHARACTER)
             xHandle = self.newRoot("World",         nwItemClass.WORLD)
             tHandle = self.newFile("Title Page",    nwItemClass.NOVEL, nHandle)
-            cHandle = self.newFolder("New Chapter", nwItemClass.NOVEL, nHandle)
-            fHandle = self.newFile("New Chapter",   nwItemClass.NOVEL, cHandle)
-            XHandle = self.newFile("New Scene",     nwItemClass.NOVEL, cHandle)
+            dHandle = self.newFolder("New Chapter", nwItemClass.NOVEL, nHandle)
+            cHandle = self.newFile("New Chapter",   nwItemClass.NOVEL, dHandle)
+            sHandle = self.newFile("New Scene",     nwItemClass.NOVEL, dHandle)
+
             self.projTree.setFileItemLayout(tHandle, nwItemLayout.TITLE)
-            self.projTree.setFileItemLayout(fHandle, nwItemLayout.CHAPTER)
+            self.projTree.setFileItemLayout(cHandle, nwItemLayout.CHAPTER)
+
+            aDoc.openDocument(tHandle, showStatus=False)
+            aDoc.saveDocument("# %s\n\n" % projName)
+            aDoc.clearDocument()
+
+            aDoc.openDocument(cHandle, showStatus=False)
+            aDoc.saveDocument("## New Chapter\n\n")
+            aDoc.clearDocument()
+
+            aDoc.openDocument(sHandle, showStatus=False)
+            aDoc.saveDocument("### New Scene\n\n")
+            aDoc.clearDocument()
 
         elif popCustom:
             # Create a project structure based on selected root folders
@@ -284,6 +299,10 @@ class NWProject():
             tHandle = self.newFile("Title Page", nwItemClass.NOVEL, nHandle)
             self.projTree.setFileItemLayout(tHandle, nwItemLayout.TITLE)
 
+            aDoc.openDocument(tHandle, showStatus=False)
+            aDoc.saveDocument("# %s\n\n" % projName)
+            aDoc.clearDocument()
+
             # Create chapters and scenes
             numChapters = projData.get("numChapters", 0)
             numScenes = projData.get("numScenes", 0)
@@ -296,8 +315,13 @@ class NWProject():
                     pHandle = nHandle
                     if chFolders:
                         pHandle = self.newFolder(chTitle, nwItemClass.NOVEL, nHandle)
+
                     cHandle = self.newFile(chTitle, nwItemClass.NOVEL, pHandle)
                     self.projTree.setFileItemLayout(cHandle, nwItemLayout.CHAPTER)
+
+                    aDoc.openDocument(cHandle, showStatus=False)
+                    aDoc.saveDocument("## %s\n\n" % chTitle)
+                    aDoc.clearDocument()
 
                     # Create chapter scenes
                     if numScenes > 0:
@@ -305,11 +329,19 @@ class NWProject():
                             scTitle = "Scene %d.%d" % (ch+1, sc+1)
                             sHandle = self.newFile(scTitle, nwItemClass.NOVEL, pHandle)
 
+                            aDoc.openDocument(sHandle, showStatus=False)
+                            aDoc.saveDocument("### %s\n\n" % scTitle)
+                            aDoc.clearDocument()
+
             # Create scenes (no chapters)
             elif numScenes > 0:
                 for sc in range(numScenes):
                     scTitle = "Scene %d" % (sc+1)
                     sHandle = self.newFile(scTitle, nwItemClass.NOVEL, nHandle)
+
+                    aDoc.openDocument(sHandle, showStatus=False)
+                    aDoc.saveDocument("### %s\n\n" % scTitle)
+                    aDoc.clearDocument()
 
         else:
             # Fallback just in case. We shouldn't reach here.

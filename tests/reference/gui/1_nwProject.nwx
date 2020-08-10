@@ -1,11 +1,11 @@
 <?xml version='1.0' encoding='utf-8'?>
-<novelWriterXML appVersion="0.11.1" hexVersion="0x001101f0" fileVersion="1.2" timeStamp="2020-08-10 21:15:06">
+<novelWriterXML appVersion="0.11.1" hexVersion="0x001101f0" fileVersion="1.2" timeStamp="2020-08-10 22:00:16">
   <project>
     <name>New Project</name>
     <title></title>
-    <saveCount>4</saveCount>
+    <saveCount>5</saveCount>
     <autoCount>1</autoCount>
-    <editTime>13</editTime>
+    <editTime>14</editTime>
   </project>
   <settings>
     <doBackup>True</doBackup>
@@ -13,8 +13,8 @@
     <autoOutline>True</autoOutline>
     <lastEdited>0e17daca5f3e1</lastEdited>
     <lastViewed>None</lastViewed>
-    <lastWordCount>86</lastWordCount>
-    <novelWordCount>59</novelWordCount>
+    <lastWordCount>90</lastWordCount>
+    <novelWordCount>63</novelWordCount>
     <notesWordCount>27</notesWordCount>
     <autoReplace/>
     <titleFormat>
@@ -52,8 +52,8 @@
       <status>New</status>
       <exported>True</exported>
       <layout>TITLE</layout>
-      <charCount>0</charCount>
-      <wordCount>0</wordCount>
+      <charCount>11</charCount>
+      <wordCount>2</wordCount>
       <paraCount>0</paraCount>
       <cursorPos>0</cursorPos>
     </item>
@@ -71,8 +71,8 @@
       <status>New</status>
       <exported>True</exported>
       <layout>CHAPTER</layout>
-      <charCount>0</charCount>
-      <wordCount>0</wordCount>
+      <charCount>11</charCount>
+      <wordCount>2</wordCount>
       <paraCount>0</paraCount>
       <cursorPos>0</cursorPos>
     </item>

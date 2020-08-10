@@ -8,6 +8,7 @@ class DummyMain():
 
     def __init__(self):
         self.mainConf = None
+        self.statusBar = StatusBar()
         return
 
     def makeAlert(self, theMessage, theLevel):
@@ -33,3 +34,13 @@ class DummyMain():
         return
 
 # END Class GuiMain
+
+class StatusBar():
+
+    def __init__(self):
+        return
+
+    def setStatus(self, theText):
+        return
+
+# END Class StatusBar

@@ -14,8 +14,8 @@ from nw.gui import (
 )
 from nw.constants import *
 
-keyDelay  =  5
-stepDelay = 50
+keyDelay  =  2
+stepDelay = 20
 
 @pytest.mark.gui
 def testMainWindows(qtbot, nwTempGUI, nwRef, nwTemp):
@@ -89,6 +89,7 @@ def testMainWindows(qtbot, nwTempGUI, nwRef, nwTemp):
 
     # Type something into the document
     nwGUI.setFocus(2)
+    qtbot.keyClick(nwGUI.docEditor, "a", modifier=Qt.ControlModifier, delay=keyDelay)
     for c in "# Jane Doe":
         qtbot.keyClick(nwGUI.docEditor, c, delay=keyDelay)
     qtbot.keyClick(nwGUI.docEditor, Qt.Key_Return, delay=keyDelay)
@@ -110,6 +111,7 @@ def testMainWindows(qtbot, nwTempGUI, nwRef, nwTemp):
 
     # Type something into the document
     nwGUI.setFocus(2)
+    qtbot.keyClick(nwGUI.docEditor, "a", modifier=Qt.ControlModifier, delay=keyDelay)
     for c in "# Main Plot":
         qtbot.keyClick(nwGUI.docEditor, c, delay=keyDelay)
     qtbot.keyClick(nwGUI.docEditor, Qt.Key_Return, delay=keyDelay)
@@ -136,6 +138,7 @@ def testMainWindows(qtbot, nwTempGUI, nwRef, nwTemp):
 
     # Type something into the document
     nwGUI.setFocus(2)
+    qtbot.keyClick(nwGUI.docEditor, "a", modifier=Qt.ControlModifier, delay=keyDelay)
     for c in "# Main Location":
         qtbot.keyClick(nwGUI.docEditor, c, delay=keyDelay)
     qtbot.keyClick(nwGUI.docEditor, Qt.Key_Return, delay=keyDelay)
@@ -158,6 +161,7 @@ def testMainWindows(qtbot, nwTempGUI, nwRef, nwTemp):
 
     # Type something into the document
     nwGUI.setFocus(2)
+    qtbot.keyClick(nwGUI.docEditor, "a", modifier=Qt.ControlModifier, delay=keyDelay)
     for c in "# Novel":
         qtbot.keyClick(nwGUI.docEditor, c, delay=keyDelay)
     qtbot.keyClick(nwGUI.docEditor, Qt.Key_Return, delay=keyDelay)
@@ -399,7 +403,7 @@ def testItemEditor(qtbot, nwTempGUI, nwRef, nwTemp):
     assert not nwGUI.docEditor.setCursorLine("where?")
     assert nwGUI.docEditor.setCursorLine(2)
     qtbot.wait(stepDelay)
-    assert nwGUI.docEditor.getCursorPosition() == 9
+    assert nwGUI.docEditor.getCursorPosition() == 15
 
     qtbot.wait(stepDelay)
     assert nwGUI.saveProject()
@@ -438,10 +442,10 @@ def testWritingStatsExport(qtbot, nwTempGUI, nwRef, nwTemp):
         jsonData = json.loads(inFile.read())
 
     assert len(jsonData) == 3
-    assert jsonData[0]["length"] > 0
-    assert jsonData[0]["newWords"] == 86
-    assert jsonData[0]["novelWords"] == 59
-    assert jsonData[0]["noteWords"] == 27
+    assert jsonData[1]["length"] > 0
+    assert jsonData[1]["newWords"] == 84
+    assert jsonData[1]["novelWords"] == 63
+    assert jsonData[1]["noteWords"] == 27
 
     # No Novel Files
     qtbot.mouseClick(sessLog.incNovel, Qt.LeftButton)
@@ -456,7 +460,7 @@ def testWritingStatsExport(qtbot, nwTempGUI, nwRef, nwTemp):
     assert len(jsonData) == 2
     assert jsonData[0]["length"] > 0
     assert jsonData[0]["newWords"] == 27
-    assert jsonData[0]["novelWords"] == 59
+    assert jsonData[0]["novelWords"] == 63
     assert jsonData[0]["noteWords"] == 27
 
     # No Note Files
@@ -471,10 +475,10 @@ def testWritingStatsExport(qtbot, nwTempGUI, nwRef, nwTemp):
         jsonData = json.loads(inFile.read())
 
     assert len(jsonData) == 3
-    assert jsonData[0]["length"] > 0
-    assert jsonData[0]["newWords"] == 59
-    assert jsonData[0]["novelWords"] == 59
-    assert jsonData[0]["noteWords"] == 27
+    assert jsonData[1]["length"] > 0
+    assert jsonData[1]["newWords"] == 57
+    assert jsonData[1]["novelWords"] == 63
+    assert jsonData[1]["noteWords"] == 27
 
     # No Negative Entries
     qtbot.mouseClick(sessLog.incNotes, Qt.LeftButton)
@@ -487,7 +491,7 @@ def testWritingStatsExport(qtbot, nwTempGUI, nwRef, nwTemp):
     with open(jsonStats, mode="r", encoding="utf-8") as inFile:
         jsonData = json.loads(inFile.read())
 
-    assert len(jsonData) == 1
+    assert len(jsonData) == 2
 
     # Un-hide Zero Entries
     qtbot.mouseClick(sessLog.hideNegative, Qt.LeftButton)

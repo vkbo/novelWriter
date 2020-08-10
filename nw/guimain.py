@@ -300,6 +300,7 @@ class GuiMain(QMainWindow):
             self.saveProject()
             self.hasProject = True
             self.statusBar.setRefTime(self.theProject.projOpened)
+            self.rebuildIndex(beQuiet=True)
         else:
             self.theProject.clearProject()
             return False
@@ -700,7 +701,7 @@ class GuiMain(QMainWindow):
         self.treeView.buildTree()
         return
 
-    def rebuildIndex(self):
+    def rebuildIndex(self, beQuiet=False):
         """Rebuild the entire index.
         """
         if not self.hasProject:
@@ -743,7 +744,7 @@ class GuiMain(QMainWindow):
 
         qApp.restoreOverrideCursor()
 
-        if self.mainConf.showGUI:
+        if self.mainConf.showGUI and not beQuiet:
             self.makeAlert("The project index has been successfully rebuilt.", nwAlert.INFO)
 
         return True
