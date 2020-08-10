@@ -33,6 +33,12 @@ class DummyMain():
     def setProjectStatus(self, isChanged):
         return
 
+    def openProject(self, projPath):
+        return
+
+    def rebuildIndex(self):
+        return
+
 # END Class GuiMain
 
 class StatusBar():

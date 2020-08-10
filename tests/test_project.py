@@ -22,9 +22,9 @@ theProject = NWProject(theMain)
 theProject.projTree.setSeed(42)
 
 @pytest.mark.project
-def testProjectNew(nwTempProj,nwRef,nwTemp):
+def testProjectNewMinimal(nwTempProj, nwRef, nwTemp):
     projFile = path.join(nwTempProj,"nwProject.nwx")
-    refFile  = path.join(nwRef,"proj","1_nwProject.nwx")
+    refFile  = path.join(nwRef,"proj", "1_nwProject.nwx")
     assert theConf.initConfig(nwRef, nwTemp)
     assert theProject.newProject({"projPath": nwTempProj})
     assert theProject.setProjectPath(nwTempProj)
@@ -216,4 +216,57 @@ def testIndexMeta(nwTempProj):
     theRefs = theIndex.getBackReferenceList(cHandle)
     assert str(theRefs) == "{'0e17daca5f3e1': 'T000001'}"
 
+    assert theProject.closeProject()
+
+# The two following tests must be at the end as they mess up the config object
+# and the handle seed. They go into their own folders, but use the same project
+# object as the test above.
+
+@pytest.mark.project
+def testProjectNewCustom(nwTempCustom, nwRef, nwTemp):
+    projData = {
+        "projName": "Test Custom",
+        "projTitle": "Test Novel",
+        "projAuthors": "Jane Doe\nJohn Doh\n",
+        "projPath": nwTempCustom,
+        "popSample": False,
+        "popMinimal": False,
+        "popCustom": True,
+        "addRoots": [
+            nwItemClass.PLOT,
+            nwItemClass.CHARACTER,
+            nwItemClass.WORLD,
+            nwItemClass.TIMELINE,
+            nwItemClass.OBJECT,
+            nwItemClass.ENTITY,
+        ],
+        "numChapters": 3,
+        "numScenes": 3,
+        "chFolders": True,
+    }
+    theProject.mainConf = theConf
+    theProject.projTree.setSeed(42)
+    assert theProject.newProject(projData)
+    assert theProject.saveProject()
+    assert theProject.closeProject()
+    projFile = path.join(nwTempCustom, "nwProject.nwx")
+    refFile  = path.join(nwRef, "proj", "4_nwProject.nwx")
+    assert cmpFiles(projFile, refFile, [2, 6, 7, 8])
+
+@pytest.mark.project
+def testProjectNewSample(nwTempSample, nwLipsum, nwRef, nwTemp):
+    projData = {
+        "projName": "Test Sample",
+        "projTitle": "Test Novel",
+        "projAuthors": "Jane Doe\nJohn Doh\n",
+        "projPath": nwTempSample,
+        "popSample": True,
+        "popMinimal": False,
+        "popCustom": False,
+    }
+    theProject.mainConf = theConf
+    assert theProject.newProject(projData)
+    assert theProject.openProject(nwTempSample)
+    assert theProject.projName == "Sample Project"
+    assert theProject.saveProject()
     assert theProject.closeProject()
