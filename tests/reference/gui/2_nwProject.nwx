@@ -1,11 +1,11 @@
 <?xml version='1.0' encoding='utf-8'?>
-<novelWriterXML appVersion="0.10.0rc1" hexVersion="0x001000c1" fileVersion="1.1" timeStamp="2020-06-26 19:32:47">
+<novelWriterXML appVersion="0.11.1" hexVersion="0x001101f0" fileVersion="1.2" timeStamp="2020-08-10 21:21:39">
   <project>
     <name>Project Name</name>
     <title>Project Title</title>
     <author>Jane Doe</author>
     <author>John Doh</author>
-    <saveCount>2</saveCount>
+    <saveCount>1</saveCount>
     <autoCount>1</autoCount>
     <editTime>1</editTime>
   </project>
@@ -41,7 +41,7 @@
       <entry blue="0" green="200" red="50">Main</entry>
     </importance>
   </settings>
-  <content count="6">
+  <content count="8">
     <item handle="73475cb40a568" order="0" parent="None">
       <name>Novel</name>
       <type>ROOT</type>
@@ -50,13 +50,37 @@
       <expanded>False</expanded>
     </item>
     <item handle="25fc0e7096fc6" order="0" parent="73475cb40a568">
+      <name>Title Page</name>
+      <type>FILE</type>
+      <class>NOVEL</class>
+      <status>New</status>
+      <exported>True</exported>
+      <layout>TITLE</layout>
+      <charCount>0</charCount>
+      <wordCount>0</wordCount>
+      <paraCount>0</paraCount>
+      <cursorPos>0</cursorPos>
+    </item>
+    <item handle="31489056e0916" order="1" parent="73475cb40a568">
       <name>New Chapter</name>
       <type>FOLDER</type>
       <class>NOVEL</class>
       <status>New</status>
       <expanded>False</expanded>
     </item>
-    <item handle="31489056e0916" order="0" parent="25fc0e7096fc6">
+    <item handle="98010bd9270f9" order="0" parent="31489056e0916">
+      <name>New Chapter</name>
+      <type>FILE</type>
+      <class>NOVEL</class>
+      <status>New</status>
+      <exported>True</exported>
+      <layout>CHAPTER</layout>
+      <charCount>0</charCount>
+      <wordCount>0</wordCount>
+      <paraCount>0</paraCount>
+      <cursorPos>0</cursorPos>
+    </item>
+    <item handle="0e17daca5f3e1" order="1" parent="31489056e0916">
       <name>New Scene</name>
       <type>FILE</type>
       <class>NOVEL</class>
@@ -69,16 +93,16 @@
       <cursorPos>0</cursorPos>
     </item>
     <item handle="44cb730c42048" order="1" parent="None">
-      <name>Characters</name>
+      <name>Plot</name>
       <type>ROOT</type>
-      <class>CHARACTER</class>
+      <class>PLOT</class>
       <status>New</status>
       <expanded>False</expanded>
     </item>
     <item handle="71ee45a3c0db9" order="2" parent="None">
-      <name>Plot</name>
+      <name>Characters</name>
       <type>ROOT</type>
-      <class>PLOT</class>
+      <class>CHARACTER</class>
       <status>New</status>
       <expanded>False</expanded>
     </item>

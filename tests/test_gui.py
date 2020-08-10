@@ -55,8 +55,8 @@ def testMainWindows(qtbot, nwTempGUI, nwRef, nwTemp):
     qtbot.wait(stepDelay)
 
     # Check that we loaded the data
-    assert len(nwGUI.theProject.projTree) == 6
-    assert len(nwGUI.theProject.projTree._treeOrder) == 6
+    assert len(nwGUI.theProject.projTree) == 8
+    assert len(nwGUI.theProject.projTree._treeOrder) == 8
     assert len(nwGUI.theProject.projTree._treeRoots) == 4
     assert nwGUI.theProject.projTree.trashRoot() is None
     assert nwGUI.theProject.projPath == nwTempGUI
@@ -71,6 +71,8 @@ def testMainWindows(qtbot, nwTempGUI, nwRef, nwTemp):
     assert nwGUI.treeView._getTreeItem("73475cb40a568") is not None
     assert nwGUI.treeView._getTreeItem("25fc0e7096fc6") is not None
     assert nwGUI.treeView._getTreeItem("31489056e0916") is not None
+    assert nwGUI.treeView._getTreeItem("98010bd9270f9") is not None
+    assert nwGUI.treeView._getTreeItem("0e17daca5f3e1") is not None
     assert nwGUI.treeView._getTreeItem("44cb730c42048") is not None
     assert nwGUI.treeView._getTreeItem("71ee45a3c0db9") is not None
     assert nwGUI.treeView._getTreeItem("811786ad1ae74") is not None
@@ -81,7 +83,7 @@ def testMainWindows(qtbot, nwTempGUI, nwRef, nwTemp):
     # Add a Character File
     nwGUI.setFocus(1)
     nwGUI.treeView.clearSelection()
-    nwGUI.treeView._getTreeItem("44cb730c42048").setSelected(True)
+    nwGUI.treeView._getTreeItem("71ee45a3c0db9").setSelected(True)
     nwGUI.treeView.newTreeItem(nwItemType.FILE, None)
     assert nwGUI.openSelectedItem()
 
@@ -102,7 +104,7 @@ def testMainWindows(qtbot, nwTempGUI, nwRef, nwTemp):
     # Add a Plot File
     nwGUI.setFocus(1)
     nwGUI.treeView.clearSelection()
-    nwGUI.treeView._getTreeItem("71ee45a3c0db9").setSelected(True)
+    nwGUI.treeView._getTreeItem("44cb730c42048").setSelected(True)
     nwGUI.treeView.newTreeItem(nwItemType.FILE, None)
     assert nwGUI.openSelectedItem()
 
@@ -150,8 +152,8 @@ def testMainWindows(qtbot, nwTempGUI, nwRef, nwTemp):
     nwGUI.setFocus(1)
     nwGUI.treeView.clearSelection()
     nwGUI.treeView._getTreeItem("73475cb40a568").setExpanded(True)
-    nwGUI.treeView._getTreeItem("25fc0e7096fc6").setExpanded(True)
-    nwGUI.treeView._getTreeItem("31489056e0916").setSelected(True)
+    nwGUI.treeView._getTreeItem("31489056e0916").setExpanded(True)
+    nwGUI.treeView._getTreeItem("0e17daca5f3e1").setSelected(True)
     assert nwGUI.openSelectedItem()
 
     # Type something into the document
@@ -233,8 +235,8 @@ def testMainWindows(qtbot, nwTempGUI, nwRef, nwTemp):
 
     # Open and view the edited document
     nwGUI.setFocus(3)
-    assert nwGUI.openDocument("31489056e0916")
-    assert nwGUI.viewDocument("31489056e0916")
+    assert nwGUI.openDocument("0e17daca5f3e1")
+    assert nwGUI.viewDocument("0e17daca5f3e1")
     qtbot.wait(stepDelay)
     assert nwGUI.saveProject()
     assert nwGUI.closeDocViewer()
@@ -243,23 +245,24 @@ def testMainWindows(qtbot, nwTempGUI, nwRef, nwTemp):
     # Check a Quick Create and Delete
     assert nwGUI.treeView.newTreeItem(nwItemType.FILE, None)
     newHandle = nwGUI.treeView.getSelectedHandle()
-    assert nwGUI.theProject.projTree["031b4af5197ec"] is not None
+    assert nwGUI.theProject.projTree["2858dcd1057d3"] is not None
     assert nwGUI.treeView.deleteItem()
     assert nwGUI.treeView.setSelectedHandle(newHandle)
     assert nwGUI.treeView.deleteItem()
+    assert nwGUI.theProject.projTree["2fca346db6561"] is not None # Trash
     assert nwGUI.saveProject()
 
     # Check the files
     refFile = path.join(nwTempGUI, "nwProject.nwx")
     assert cmpFiles(refFile, path.join(nwRef, "gui", "1_nwProject.nwx"), [2, 6, 7, 8])
-    refFile = path.join(nwTempGUI, "content", "0e17daca5f3e1.nwd")
-    assert cmpFiles(refFile, path.join(nwRef, "gui", "1_0e17daca5f3e1.nwd"))
-    refFile = path.join(nwTempGUI, "content", "98010bd9270f9.nwd")
-    assert cmpFiles(refFile, path.join(nwRef, "gui", "1_98010bd9270f9.nwd"))
-    refFile = path.join(nwTempGUI, "content", "31489056e0916.nwd")
-    assert cmpFiles(refFile, path.join(nwRef, "gui", "1_31489056e0916.nwd"))
+    refFile = path.join(nwTempGUI, "content", "031b4af5197ec.nwd")
+    assert cmpFiles(refFile, path.join(nwRef, "gui", "1_031b4af5197ec.nwd"))
     refFile = path.join(nwTempGUI, "content", "1a6562590ef19.nwd")
     assert cmpFiles(refFile, path.join(nwRef, "gui", "1_1a6562590ef19.nwd"))
+    refFile = path.join(nwTempGUI, "content", "0e17daca5f3e1.nwd")
+    assert cmpFiles(refFile, path.join(nwRef, "gui", "1_0e17daca5f3e1.nwd"))
+    refFile = path.join(nwTempGUI, "content", "41cfc0d1f2d12.nwd")
+    assert cmpFiles(refFile, path.join(nwRef, "gui", "1_41cfc0d1f2d12.nwd"))
 
     nwGUI.closeMain()
     # qtbot.stopForInteraction()
@@ -364,9 +367,9 @@ def testItemEditor(qtbot, nwTempGUI, nwRef, nwTemp):
     # Create new, save, open project
     nwGUI.theProject.projTree.setSeed(42)
     assert nwGUI.newProject({"projPath": nwTempGUI}, True)
-    assert nwGUI.openDocument("31489056e0916")
+    assert nwGUI.openDocument("0e17daca5f3e1")
 
-    itemEdit = GuiItemEditor(nwGUI, nwGUI.theProject, "31489056e0916")
+    itemEdit = GuiItemEditor(nwGUI, nwGUI.theProject, "0e17daca5f3e1")
     qtbot.addWidget(itemEdit)
 
     assert itemEdit.editName.text()          == "New Scene"
@@ -383,7 +386,7 @@ def testItemEditor(qtbot, nwTempGUI, nwRef, nwTemp):
     assert not itemEdit.editExport.isChecked()
     itemEdit._doSave()
 
-    itemEdit = GuiItemEditor(nwGUI, nwGUI.theProject, "31489056e0916")
+    itemEdit = GuiItemEditor(nwGUI, nwGUI.theProject, "0e17daca5f3e1")
     qtbot.addWidget(itemEdit)
     assert itemEdit.editName.text()          == "Just a Page"
     assert itemEdit.editStatus.currentData() == "Note"
@@ -391,7 +394,7 @@ def testItemEditor(qtbot, nwTempGUI, nwRef, nwTemp):
     itemEdit._doClose()
 
     # Check that the header is updated
-    nwGUI.docEditor.updateDocInfo("31489056e0916")
+    nwGUI.docEditor.updateDocInfo("0e17daca5f3e1")
     assert nwGUI.docEditor.docHeader.theTitle.text() == "Novel  ›  New Chapter  ›  Just a Page"
     assert not nwGUI.docEditor.setCursorLine("where?")
     assert nwGUI.docEditor.setCursorLine(2)
