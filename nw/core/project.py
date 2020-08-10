@@ -255,6 +255,11 @@ class NWProject():
         self.setBookTitle(projTitle)
         self.setBookAuthors(projAuthors)
 
+        titlePage = "# %s\n\n" % (self.bookTitle if self.bookTitle else self.projName)
+        if self.bookAuthors:
+            titlePage = "%sBy %s\n" % (titlePage, ", ".join(self.bookAuthors))
+
+        # Document object for writing files
         aDoc = NWDoc(self, self.theParent)
 
         if popMinimal:
@@ -273,7 +278,7 @@ class NWProject():
             self.projTree.setFileItemLayout(cHandle, nwItemLayout.CHAPTER)
 
             aDoc.openDocument(tHandle, showStatus=False)
-            aDoc.saveDocument("# %s\n\n" % projName)
+            aDoc.saveDocument(titlePage)
             aDoc.clearDocument()
 
             aDoc.openDocument(cHandle, showStatus=False)
@@ -300,7 +305,7 @@ class NWProject():
             self.projTree.setFileItemLayout(tHandle, nwItemLayout.TITLE)
 
             aDoc.openDocument(tHandle, showStatus=False)
-            aDoc.saveDocument("# %s\n\n" % projName)
+            aDoc.saveDocument(titlePage)
             aDoc.clearDocument()
 
             # Create chapters and scenes
