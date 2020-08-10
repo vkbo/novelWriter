@@ -281,10 +281,7 @@ class GuiMain(QMainWindow):
         if projData is None:
             return False
 
-        projPath = None
-        if "projPath" in projData:
-            projPath = projData["projPath"]
-
+        projPath = projData.get("projPath", None)
         if projPath is None or projData is None:
             logger.error("No projData or projPath set")
             return False

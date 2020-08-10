@@ -324,6 +324,7 @@ class ProjWizardCustomPage(QWizardPage):
 
         self.addPlot.setChecked(True)
         self.addChar.setChecked(True)
+        self.addWorld.setChecked(True)
 
         self.rootForm.addWidget(self.lblPlot,   0, 0)
         self.rootForm.addWidget(self.lblChar,   1, 0)
