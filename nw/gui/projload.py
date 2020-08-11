@@ -79,8 +79,9 @@ class GuiProjectLoad(QDialog):
         self.setMinimumHeight(self.mainConf.pxInt(400))
         self.setModal(True)
 
-        self.guiDeco = self.theTheme.loadDecoration("nwicon", (nPx, nPx))
-        self.innerBox.addWidget(self.guiDeco, 0, Qt.AlignTop)
+        self.nwIcon = QLabel()
+        self.nwIcon.setPixmap(self.theParent.theTheme.getPixmap("novelwriter", (nPx, nPx)))
+        self.innerBox.addWidget(self.nwIcon, 0, Qt.AlignTop)
 
         self.projectForm = QGridLayout()
         self.projectForm.setContentsMargins(0, 0, 0, 0)
@@ -173,8 +174,7 @@ class GuiProjectLoad(QDialog):
         return
 
     def _doBrowse(self):
-        """Close the dialog window with no selected path, triggering the
-        project browser dialog.
+        """Browse for a folder path.
         """
         logger.verbose("GuiProjectLoad browse button clicked")
         if self.mainConf.showGUI:

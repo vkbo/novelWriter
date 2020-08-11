@@ -314,6 +314,22 @@ class NWTree():
         self._handleSeed = theSeed
         return
 
+    def setFileItemLayout(self, tHandle, itemLayout):
+        """Set the nwItemLayout for a specific file.
+        """
+        tItem = self.__getitem__(tHandle)
+        if tItem is None:
+            return False
+        if tItem.itemType != nwItemType.FILE:
+            logger.error("Item '%s' is not a file" % tHandle)
+            return False
+        if not isinstance(itemLayout, nwItemLayout):
+            return False
+
+        tItem.setLayout(itemLayout)
+
+        return True
+
     ##
     #  Getters
     ##

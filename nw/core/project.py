@@ -32,7 +32,7 @@ import nw
 from os import path, mkdir, listdir, unlink, rename, rmdir
 from lxml import etree
 from time import time
-from shutil import make_archive
+from shutil import make_archive, unpack_archive, copyfile
 
 from PyQt5.QtWidgets import QMessageBox
 
@@ -41,9 +41,11 @@ from nw.core.item import NWItem
 from nw.core.document import NWDoc
 from nw.core.status import NWStatus
 from nw.core.options import OptionState
-from nw.common import checkString, checkBool, checkInt, formatTimeStamp
+from nw.common import (
+    checkString, checkBool, checkInt, formatTimeStamp, makeFileNameSafe
+)
 from nw.constants import (
-    nwFiles, nwItemType, nwItemClass, nwItemLayout, nwAlert
+    nwFiles, nwItemType, nwItemClass, nwItemLayout, nwLabels, nwAlert
 )
 
 logger = logging.getLogger(__name__)
@@ -169,22 +171,6 @@ class NWProject():
     #  Project Methods
     ##
 
-    def newProject(self):
-        """Create a new project by populating the project tree with a
-        few starter items.
-        """
-        self.projName = "New Project"
-        hNovel = self.newRoot("Novel",         nwItemClass.NOVEL)
-        hChars = self.newRoot("Characters",    nwItemClass.CHARACTER)
-        hWorld = self.newRoot("Plot",          nwItemClass.PLOT)
-        hWorld = self.newRoot("World",         nwItemClass.WORLD)
-        hChapt = self.newFolder("New Chapter", nwItemClass.NOVEL, hNovel)
-        hScene = self.newFile("New Scene",     nwItemClass.NOVEL, hChapt)
-        self.projOpened = time()
-        self.setProjectChanged(True)
-        self.saveProject(autoSave=True)
-        return True
-
     def clearProject(self):
         """Clear the data for the current project, and set them to
         default values.
@@ -220,15 +206,15 @@ class NWProject():
         self.spellCheck  = False
         self.autoOutline = True
         self.statusItems = NWStatus()
-        self.statusItems.addEntry("New",     (100,100,100))
-        self.statusItems.addEntry("Note",    (200, 50,  0))
-        self.statusItems.addEntry("Draft",   (200,150,  0))
-        self.statusItems.addEntry("Finished",( 50,200,  0))
+        self.statusItems.addEntry("New",     (100, 100, 100))
+        self.statusItems.addEntry("Note",    (200,  50,   0))
+        self.statusItems.addEntry("Draft",   (200, 150,   0))
+        self.statusItems.addEntry("Finished",( 50, 200,   0))
         self.importItems = NWStatus()
-        self.importItems.addEntry("New",     (100,100,100))
-        self.importItems.addEntry("Minor",   (200, 50,  0))
-        self.importItems.addEntry("Major",   (200,150,  0))
-        self.importItems.addEntry("Main",    ( 50,200,  0))
+        self.importItems.addEntry("New",     (100, 100, 100))
+        self.importItems.addEntry("Minor",   (200,  50,   0))
+        self.importItems.addEntry("Major",   (200, 150,   0))
+        self.importItems.addEntry("Main",    ( 50, 200,   0))
         self.lastEdited = None
         self.lastViewed = None
         self.lastWCount = 0
@@ -237,6 +223,141 @@ class NWProject():
         self.notesWCount = 0
 
         return
+
+    def newProject(self, projData={}):
+        """Create a new project by populating the project tree with a
+        few starter items.
+        """
+        popMinimal = projData.get("popMinimal", True)
+        popCustom = projData.get("popCustom", False)
+        popSample = projData.get("popSample", False)
+
+        # Check if we're extracting the sample project. This is handled
+        # differently as it isn't actually a new project, so we forward
+        # this to another function and return here.
+        if popSample:
+            return self.extractSampleProject(projData)
+
+        # Project Settings
+        projPath = projData.get("projPath", None)
+        projName = projData.get("projName", "New Project")
+        projTitle = projData.get("projTitle", "")
+        projAuthors = projData.get("projAuthors", "")
+
+        if projPath is None:
+            logger.error("No project path set for the new project")
+            return False
+
+        if not self.setProjectPath(projPath, newProject=True):
+            return False
+
+        self.setProjectName(projName)
+        self.setBookTitle(projTitle)
+        self.setBookAuthors(projAuthors)
+
+        titlePage = "# %s\n\n" % (self.bookTitle if self.bookTitle else self.projName)
+        if self.bookAuthors:
+            titlePage = "%sBy %s\n" % (titlePage, ", ".join(self.bookAuthors))
+
+        # Document object for writing files
+        aDoc = NWDoc(self, self.theParent)
+
+        if popMinimal:
+            # Creating a minimal project with a few root folders and a
+            # single chapter folder with a single file.
+            nHandle = self.newRoot("Novel",         nwItemClass.NOVEL)
+            xHandle = self.newRoot("Plot",          nwItemClass.PLOT)
+            xHandle = self.newRoot("Characters",    nwItemClass.CHARACTER)
+            xHandle = self.newRoot("World",         nwItemClass.WORLD)
+            tHandle = self.newFile("Title Page",    nwItemClass.NOVEL, nHandle)
+            dHandle = self.newFolder("New Chapter", nwItemClass.NOVEL, nHandle)
+            cHandle = self.newFile("New Chapter",   nwItemClass.NOVEL, dHandle)
+            sHandle = self.newFile("New Scene",     nwItemClass.NOVEL, dHandle)
+
+            self.projTree.setFileItemLayout(tHandle, nwItemLayout.TITLE)
+            self.projTree.setFileItemLayout(cHandle, nwItemLayout.CHAPTER)
+
+            aDoc.openDocument(tHandle, showStatus=False)
+            aDoc.saveDocument(titlePage)
+            aDoc.clearDocument()
+
+            aDoc.openDocument(cHandle, showStatus=False)
+            aDoc.saveDocument("## New Chapter\n\n")
+            aDoc.clearDocument()
+
+            aDoc.openDocument(sHandle, showStatus=False)
+            aDoc.saveDocument("### New Scene\n\n")
+            aDoc.clearDocument()
+
+        elif popCustom:
+            # Create a project structure based on selected root folders
+            # and a number of chapters and scenes selected in the
+            # wizard's custom page.
+
+            # Create root folders
+            nHandle = self.newRoot("Novel", nwItemClass.NOVEL)
+            for newRoot in projData.get("addRoots", []):
+                if newRoot in nwItemClass:
+                    self.newRoot(nwLabels.CLASS_NAME[newRoot], newRoot)
+
+            # Create a title page
+            tHandle = self.newFile("Title Page", nwItemClass.NOVEL, nHandle)
+            self.projTree.setFileItemLayout(tHandle, nwItemLayout.TITLE)
+
+            aDoc.openDocument(tHandle, showStatus=False)
+            aDoc.saveDocument(titlePage)
+            aDoc.clearDocument()
+
+            # Create chapters and scenes
+            numChapters = projData.get("numChapters", 0)
+            numScenes = projData.get("numScenes", 0)
+            chFolders = projData.get("chFolders", False)
+
+            # Create chapters
+            if numChapters > 0:
+                for ch in range(numChapters):
+                    chTitle = "Chapter %d" % (ch+1)
+                    pHandle = nHandle
+                    if chFolders:
+                        pHandle = self.newFolder(chTitle, nwItemClass.NOVEL, nHandle)
+
+                    cHandle = self.newFile(chTitle, nwItemClass.NOVEL, pHandle)
+                    self.projTree.setFileItemLayout(cHandle, nwItemLayout.CHAPTER)
+
+                    aDoc.openDocument(cHandle, showStatus=False)
+                    aDoc.saveDocument("## %s\n\n" % chTitle)
+                    aDoc.clearDocument()
+
+                    # Create chapter scenes
+                    if numScenes > 0:
+                        for sc in range(numScenes):
+                            scTitle = "Scene %d.%d" % (ch+1, sc+1)
+                            sHandle = self.newFile(scTitle, nwItemClass.NOVEL, pHandle)
+
+                            aDoc.openDocument(sHandle, showStatus=False)
+                            aDoc.saveDocument("### %s\n\n" % scTitle)
+                            aDoc.clearDocument()
+
+            # Create scenes (no chapters)
+            elif numScenes > 0:
+                for sc in range(numScenes):
+                    scTitle = "Scene %d" % (sc+1)
+                    sHandle = self.newFile(scTitle, nwItemClass.NOVEL, nHandle)
+
+                    aDoc.openDocument(sHandle, showStatus=False)
+                    aDoc.saveDocument("### %s\n\n" % scTitle)
+                    aDoc.clearDocument()
+
+        else:
+            # Fallback just in case. We shouldn't reach here.
+            self.newRoot("Novel", nwItemClass.NOVEL)
+
+        # Finalise
+        self.projOpened = time()
+        self.setProjectChanged(True)
+        self.saveProject(autoSave=True)
+
+        return True
 
     def openProject(self, fileName, overrideLock=False):
         """Open the project file provided, or if doesn't exist, assume
@@ -557,9 +678,9 @@ class NWProject():
             if len(aKey) > 0:
                 self._packProjectValue(xTitleFmt, aKey, aValue)
 
-        xStatus = etree.SubElement(xSettings,"status")
+        xStatus = etree.SubElement(xSettings, "status")
         self.statusItems.packEntries(xStatus)
-        xStatus = etree.SubElement(xSettings,"importance")
+        xStatus = etree.SubElement(xSettings, "importance")
         self.importItems.packEntries(xStatus)
 
         # Save Tree Content
@@ -574,8 +695,8 @@ class NWProject():
             with open(tempFile, mode="wb") as outFile:
                 outFile.write(etree.tostring(
                     nwXML,
-                    pretty_print    = True,
-                    encoding        = "utf-8",
+                    pretty_print = True,
+                    encoding = "utf-8",
                     xml_declaration = True
                 ))
         except Exception as e:
@@ -635,7 +756,7 @@ class NWProject():
         return True
 
     ##
-    #  Backup Project
+    #  Zip/Unzip Project
     ##
 
     def zipIt(self, doNotify):
@@ -665,7 +786,7 @@ class NWProject():
             ), nwAlert.ERROR)
             return False
 
-        cleanName = self.getFileSafeProjectName()
+        cleanName = makeFileNameSafe(self.projName)
         baseDir = path.abspath(path.join(self.mainConf.backupPath, cleanName))
         if not path.isdir(baseDir):
             try:
@@ -711,6 +832,68 @@ class NWProject():
 
         return True
 
+    def extractSampleProject(self, projData):
+        """Make a copy of the sample project.
+        First, try to copy the content of the sample folder to the new
+        project path, or if the folder doesn't exist, look for the zip
+        file in the assets folder.
+        """
+        projName = projData.get("projName", "Sample Project")
+        projPath = projData.get("projPath", None)
+        if projPath is None:
+            logger.error("No project path set for the example project")
+            return False
+
+        srcSample = path.abspath(path.join(self.mainConf.appRoot, "sample"))
+        pkgSample = path.join(self.mainConf.assetPath, "sample.zip")
+
+        isSuccess = False
+        if path.isfile(pkgSample):
+
+            self.setProjectPath(projPath, newProject=True)
+            try:
+                unpack_archive(pkgSample, projPath)
+                isSuccess = True
+            except Exception as e:
+                self.makeAlert(
+                    ["Failed to create a new example project.", str(e)], nwAlert.ERROR
+                )
+
+        elif path.isdir(srcSample):
+
+            self.setProjectPath(projPath, newProject=True)
+            try:
+                srcProj = path.join(srcSample, nwFiles.PROJ_FILE)
+                dstProj = path.join(projPath, nwFiles.PROJ_FILE)
+                copyfile(srcProj, dstProj)
+
+                srcContent = path.join(srcSample, "content")
+                dstContent = path.join(projPath, "content")
+                for srcFile in listdir(srcContent):
+                    srcDoc = path.join(srcContent, srcFile)
+                    dstDoc = path.join(dstContent, srcFile)
+                    copyfile(srcDoc, dstDoc)
+
+                isSuccess = True
+
+            except Exception as e:
+                self.makeAlert(
+                    ["Failed to create a new example project.", str(e)], nwAlert.ERROR
+                )
+
+        else:
+            self.makeAlert((
+                "Failed to create a new example project. Could not find the "
+                "necessary files. They seem to be missing from this installation."
+            ), nwAlert.ERROR)
+
+        if isSuccess:
+            self.clearProject()
+            self.theParent.openProject(projPath)
+            self.theParent.rebuildIndex()
+
+        return isSuccess
+
     ##
     #  Setters
     ##
@@ -726,13 +909,24 @@ class NWProject():
                 projPath = path.expanduser(projPath)
             self.projPath = path.abspath(projPath)
 
-        if newProject and self.mainConf.showGUI:
-            if listdir(self.projPath):
-                self.theParent.makeAlert((
-                    "New project folder is not empty. "
-                    "Each project requires a dedicated project folder."
-                ), nwAlert.ERROR)
-                return False
+        if newProject:
+            if not path.isdir(projPath):
+                try:
+                    mkdir(projPath)
+                    logger.debug("Created folder %s" % projPath)
+                except Exception as e:
+                    self.theParent.makeAlert((
+                        ["Could not create new project folder.", str(e)]
+                    ), nwAlert.ERROR)
+                    return False
+
+            if path.isdir(projPath):
+                if self.mainConf.showGUI and listdir(self.projPath):
+                    self.theParent.makeAlert((
+                        "New project folder is not empty. "
+                        "Each project requires a dedicated project folder."
+                    ), nwAlert.ERROR)
+                    return False
 
         self.ensureFolderStructure()
         self.setProjectChanged(True)
@@ -757,13 +951,18 @@ class NWProject():
     def setBookAuthors(self, bookAuthors):
         """A line separated list of book authors, parsed into an array.
         """
+        if not isinstance(bookAuthors, str):
+            return False
+
         self.bookAuthors = []
         for bookAuthor in bookAuthors.split("\n"):
             bookAuthor = bookAuthor.strip()
             if bookAuthor == "":
                 continue
             self.bookAuthors.append(bookAuthor)
+
         self.setProjectChanged(True)
+
         return True
 
     def setProjBackup(self, doBackup):
@@ -888,15 +1087,6 @@ class NWProject():
     ##
     #  Getters
     ##
-
-    def getFileSafeProjectName(self):
-        """Returns a filename safe version of the project name.
-        """
-        cleanName = ""
-        for c in self.projName.strip():
-            if c.isalpha() or c.isdigit() or c == " ":
-                cleanName += c
-        return cleanName
 
     def getSessionWordCount(self):
         """Returns the number of words added or removed this session.

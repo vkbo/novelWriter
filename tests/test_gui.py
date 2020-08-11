@@ -10,12 +10,12 @@ from PyQt5.QtCore import Qt
 
 from nw.gui import (
     GuiProjectSettings, GuiItemEditor, GuiAbout, GuiBuildNovel,
-    GuiDocMerge, GuiDocSplit, GuiWritingStats
+    GuiDocMerge, GuiDocSplit, GuiWritingStats, GuiProjectWizard
 )
 from nw.constants import *
 
-keyDelay  =  5
-stepDelay = 50
+keyDelay  =  2
+stepDelay = 20
 
 @pytest.mark.gui
 def testMainWindows(qtbot, nwTempGUI, nwRef, nwTemp):
@@ -27,7 +27,7 @@ def testMainWindows(qtbot, nwTempGUI, nwRef, nwTemp):
 
     # Create new, save, close project
     nwGUI.theProject.projTree.setSeed(42)
-    assert nwGUI.newProject(nwTempGUI, True)
+    assert nwGUI.newProject({"projPath": nwTempGUI}, True)
     assert nwGUI.saveProject()
     assert nwGUI.closeProject()
 
@@ -55,8 +55,8 @@ def testMainWindows(qtbot, nwTempGUI, nwRef, nwTemp):
     qtbot.wait(stepDelay)
 
     # Check that we loaded the data
-    assert len(nwGUI.theProject.projTree) == 6
-    assert len(nwGUI.theProject.projTree._treeOrder) == 6
+    assert len(nwGUI.theProject.projTree) == 8
+    assert len(nwGUI.theProject.projTree._treeOrder) == 8
     assert len(nwGUI.theProject.projTree._treeRoots) == 4
     assert nwGUI.theProject.projTree.trashRoot() is None
     assert nwGUI.theProject.projPath == nwTempGUI
@@ -71,6 +71,8 @@ def testMainWindows(qtbot, nwTempGUI, nwRef, nwTemp):
     assert nwGUI.treeView._getTreeItem("73475cb40a568") is not None
     assert nwGUI.treeView._getTreeItem("25fc0e7096fc6") is not None
     assert nwGUI.treeView._getTreeItem("31489056e0916") is not None
+    assert nwGUI.treeView._getTreeItem("98010bd9270f9") is not None
+    assert nwGUI.treeView._getTreeItem("0e17daca5f3e1") is not None
     assert nwGUI.treeView._getTreeItem("44cb730c42048") is not None
     assert nwGUI.treeView._getTreeItem("71ee45a3c0db9") is not None
     assert nwGUI.treeView._getTreeItem("811786ad1ae74") is not None
@@ -81,12 +83,13 @@ def testMainWindows(qtbot, nwTempGUI, nwRef, nwTemp):
     # Add a Character File
     nwGUI.setFocus(1)
     nwGUI.treeView.clearSelection()
-    nwGUI.treeView._getTreeItem("44cb730c42048").setSelected(True)
+    nwGUI.treeView._getTreeItem("71ee45a3c0db9").setSelected(True)
     nwGUI.treeView.newTreeItem(nwItemType.FILE, None)
     assert nwGUI.openSelectedItem()
 
     # Type something into the document
     nwGUI.setFocus(2)
+    qtbot.keyClick(nwGUI.docEditor, "a", modifier=Qt.ControlModifier, delay=keyDelay)
     for c in "# Jane Doe":
         qtbot.keyClick(nwGUI.docEditor, c, delay=keyDelay)
     qtbot.keyClick(nwGUI.docEditor, Qt.Key_Return, delay=keyDelay)
@@ -102,12 +105,13 @@ def testMainWindows(qtbot, nwTempGUI, nwRef, nwTemp):
     # Add a Plot File
     nwGUI.setFocus(1)
     nwGUI.treeView.clearSelection()
-    nwGUI.treeView._getTreeItem("71ee45a3c0db9").setSelected(True)
+    nwGUI.treeView._getTreeItem("44cb730c42048").setSelected(True)
     nwGUI.treeView.newTreeItem(nwItemType.FILE, None)
     assert nwGUI.openSelectedItem()
 
     # Type something into the document
     nwGUI.setFocus(2)
+    qtbot.keyClick(nwGUI.docEditor, "a", modifier=Qt.ControlModifier, delay=keyDelay)
     for c in "# Main Plot":
         qtbot.keyClick(nwGUI.docEditor, c, delay=keyDelay)
     qtbot.keyClick(nwGUI.docEditor, Qt.Key_Return, delay=keyDelay)
@@ -134,6 +138,7 @@ def testMainWindows(qtbot, nwTempGUI, nwRef, nwTemp):
 
     # Type something into the document
     nwGUI.setFocus(2)
+    qtbot.keyClick(nwGUI.docEditor, "a", modifier=Qt.ControlModifier, delay=keyDelay)
     for c in "# Main Location":
         qtbot.keyClick(nwGUI.docEditor, c, delay=keyDelay)
     qtbot.keyClick(nwGUI.docEditor, Qt.Key_Return, delay=keyDelay)
@@ -150,12 +155,13 @@ def testMainWindows(qtbot, nwTempGUI, nwRef, nwTemp):
     nwGUI.setFocus(1)
     nwGUI.treeView.clearSelection()
     nwGUI.treeView._getTreeItem("73475cb40a568").setExpanded(True)
-    nwGUI.treeView._getTreeItem("25fc0e7096fc6").setExpanded(True)
-    nwGUI.treeView._getTreeItem("31489056e0916").setSelected(True)
+    nwGUI.treeView._getTreeItem("31489056e0916").setExpanded(True)
+    nwGUI.treeView._getTreeItem("0e17daca5f3e1").setSelected(True)
     assert nwGUI.openSelectedItem()
 
     # Type something into the document
     nwGUI.setFocus(2)
+    qtbot.keyClick(nwGUI.docEditor, "a", modifier=Qt.ControlModifier, delay=keyDelay)
     for c in "# Novel":
         qtbot.keyClick(nwGUI.docEditor, c, delay=keyDelay)
     qtbot.keyClick(nwGUI.docEditor, Qt.Key_Return, delay=keyDelay)
@@ -233,8 +239,8 @@ def testMainWindows(qtbot, nwTempGUI, nwRef, nwTemp):
 
     # Open and view the edited document
     nwGUI.setFocus(3)
-    assert nwGUI.openDocument("31489056e0916")
-    assert nwGUI.viewDocument("31489056e0916")
+    assert nwGUI.openDocument("0e17daca5f3e1")
+    assert nwGUI.viewDocument("0e17daca5f3e1")
     qtbot.wait(stepDelay)
     assert nwGUI.saveProject()
     assert nwGUI.closeDocViewer()
@@ -243,23 +249,24 @@ def testMainWindows(qtbot, nwTempGUI, nwRef, nwTemp):
     # Check a Quick Create and Delete
     assert nwGUI.treeView.newTreeItem(nwItemType.FILE, None)
     newHandle = nwGUI.treeView.getSelectedHandle()
-    assert nwGUI.theProject.projTree["031b4af5197ec"] is not None
+    assert nwGUI.theProject.projTree["2858dcd1057d3"] is not None
     assert nwGUI.treeView.deleteItem()
     assert nwGUI.treeView.setSelectedHandle(newHandle)
     assert nwGUI.treeView.deleteItem()
+    assert nwGUI.theProject.projTree["2fca346db6561"] is not None # Trash
     assert nwGUI.saveProject()
 
     # Check the files
     refFile = path.join(nwTempGUI, "nwProject.nwx")
     assert cmpFiles(refFile, path.join(nwRef, "gui", "1_nwProject.nwx"), [2, 6, 7, 8])
-    refFile = path.join(nwTempGUI, "content", "0e17daca5f3e1.nwd")
-    assert cmpFiles(refFile, path.join(nwRef, "gui", "1_0e17daca5f3e1.nwd"))
-    refFile = path.join(nwTempGUI, "content", "98010bd9270f9.nwd")
-    assert cmpFiles(refFile, path.join(nwRef, "gui", "1_98010bd9270f9.nwd"))
-    refFile = path.join(nwTempGUI, "content", "31489056e0916.nwd")
-    assert cmpFiles(refFile, path.join(nwRef, "gui", "1_31489056e0916.nwd"))
+    refFile = path.join(nwTempGUI, "content", "031b4af5197ec.nwd")
+    assert cmpFiles(refFile, path.join(nwRef, "gui", "1_031b4af5197ec.nwd"))
     refFile = path.join(nwTempGUI, "content", "1a6562590ef19.nwd")
     assert cmpFiles(refFile, path.join(nwRef, "gui", "1_1a6562590ef19.nwd"))
+    refFile = path.join(nwTempGUI, "content", "0e17daca5f3e1.nwd")
+    assert cmpFiles(refFile, path.join(nwRef, "gui", "1_0e17daca5f3e1.nwd"))
+    refFile = path.join(nwTempGUI, "content", "41cfc0d1f2d12.nwd")
+    assert cmpFiles(refFile, path.join(nwRef, "gui", "1_41cfc0d1f2d12.nwd"))
 
     nwGUI.closeMain()
     # qtbot.stopForInteraction()
@@ -274,7 +281,7 @@ def testProjectEditor(qtbot, nwTempGUI, nwRef, nwTemp):
 
     # Create new, save, open project
     nwGUI.theProject.projTree.setSeed(42)
-    assert nwGUI.newProject(nwTempGUI, True)
+    assert nwGUI.newProject({"projPath": nwTempGUI}, True)
     nwGUI.mainConf.backupPath = nwTempGUI
 
     projEdit = GuiProjectSettings(nwGUI, nwGUI.theProject)
@@ -363,10 +370,10 @@ def testItemEditor(qtbot, nwTempGUI, nwRef, nwTemp):
 
     # Create new, save, open project
     nwGUI.theProject.projTree.setSeed(42)
-    assert nwGUI.newProject(nwTempGUI, True)
-    assert nwGUI.openDocument("31489056e0916")
+    assert nwGUI.newProject({"projPath": nwTempGUI}, True)
+    assert nwGUI.openDocument("0e17daca5f3e1")
 
-    itemEdit = GuiItemEditor(nwGUI, nwGUI.theProject, "31489056e0916")
+    itemEdit = GuiItemEditor(nwGUI, nwGUI.theProject, "0e17daca5f3e1")
     qtbot.addWidget(itemEdit)
 
     assert itemEdit.editName.text()          == "New Scene"
@@ -383,7 +390,7 @@ def testItemEditor(qtbot, nwTempGUI, nwRef, nwTemp):
     assert not itemEdit.editExport.isChecked()
     itemEdit._doSave()
 
-    itemEdit = GuiItemEditor(nwGUI, nwGUI.theProject, "31489056e0916")
+    itemEdit = GuiItemEditor(nwGUI, nwGUI.theProject, "0e17daca5f3e1")
     qtbot.addWidget(itemEdit)
     assert itemEdit.editName.text()          == "Just a Page"
     assert itemEdit.editStatus.currentData() == "Note"
@@ -391,12 +398,12 @@ def testItemEditor(qtbot, nwTempGUI, nwRef, nwTemp):
     itemEdit._doClose()
 
     # Check that the header is updated
-    nwGUI.docEditor.updateDocInfo("31489056e0916")
+    nwGUI.docEditor.updateDocInfo("0e17daca5f3e1")
     assert nwGUI.docEditor.docHeader.theTitle.text() == "Novel  ›  New Chapter  ›  Just a Page"
     assert not nwGUI.docEditor.setCursorLine("where?")
     assert nwGUI.docEditor.setCursorLine(2)
     qtbot.wait(stepDelay)
-    assert nwGUI.docEditor.getCursorPosition() == 9
+    assert nwGUI.docEditor.getCursorPosition() == 15
 
     qtbot.wait(stepDelay)
     assert nwGUI.saveProject()
@@ -435,10 +442,10 @@ def testWritingStatsExport(qtbot, nwTempGUI, nwRef, nwTemp):
         jsonData = json.loads(inFile.read())
 
     assert len(jsonData) == 3
-    assert jsonData[0]["length"] > 0
-    assert jsonData[0]["newWords"] == 86
-    assert jsonData[0]["novelWords"] == 59
-    assert jsonData[0]["noteWords"] == 27
+    assert jsonData[1]["length"] > 0
+    assert jsonData[1]["newWords"] == 84
+    assert jsonData[1]["novelWords"] == 63
+    assert jsonData[1]["noteWords"] == 27
 
     # No Novel Files
     qtbot.mouseClick(sessLog.incNovel, Qt.LeftButton)
@@ -453,7 +460,7 @@ def testWritingStatsExport(qtbot, nwTempGUI, nwRef, nwTemp):
     assert len(jsonData) == 2
     assert jsonData[0]["length"] > 0
     assert jsonData[0]["newWords"] == 27
-    assert jsonData[0]["novelWords"] == 59
+    assert jsonData[0]["novelWords"] == 63
     assert jsonData[0]["noteWords"] == 27
 
     # No Note Files
@@ -468,10 +475,10 @@ def testWritingStatsExport(qtbot, nwTempGUI, nwRef, nwTemp):
         jsonData = json.loads(inFile.read())
 
     assert len(jsonData) == 3
-    assert jsonData[0]["length"] > 0
-    assert jsonData[0]["newWords"] == 59
-    assert jsonData[0]["novelWords"] == 59
-    assert jsonData[0]["noteWords"] == 27
+    assert jsonData[1]["length"] > 0
+    assert jsonData[1]["newWords"] == 57
+    assert jsonData[1]["novelWords"] == 63
+    assert jsonData[1]["noteWords"] == 27
 
     # No Negative Entries
     qtbot.mouseClick(sessLog.incNotes, Qt.LeftButton)
@@ -484,7 +491,7 @@ def testWritingStatsExport(qtbot, nwTempGUI, nwRef, nwTemp):
     with open(jsonStats, mode="r", encoding="utf-8") as inFile:
         jsonData = json.loads(inFile.read())
 
-    assert len(jsonData) == 1
+    assert len(jsonData) == 2
 
     # Un-hide Zero Entries
     qtbot.mouseClick(sessLog.hideNegative, Qt.LeftButton)
@@ -729,6 +736,135 @@ def testSplitTool(qtbot, nwTempGUI, nwLipsum, nwRef, nwTemp):
     assert cmpFiles(refFile, path.join(nwRef, "gui", "5_2858dcd1057d3.nwd"))
     refFile = path.join(nwLipsum, "content", "2fca346db6561.nwd")
     assert cmpFiles(refFile, path.join(nwRef, "gui", "5_2fca346db6561.nwd"))
+
+    # qtbot.stopForInteraction()
+    nwGUI.closeMain()
+
+@pytest.mark.gui
+def testNewProjectWizard(qtbot, nwTempGUI, nwLipsum, nwRef, nwTemp):
+
+    from PyQt5.QtWidgets import QWizard
+    from nw.gui.projwizard import (
+        ProjWizardIntroPage, ProjWizardFolderPage, ProjWizardPopulatePage,
+        ProjWizardCustomPage, ProjWizardFinalPage
+    )
+
+    nwGUI = nw.main(["--testmode","--config=%s" % nwTempGUI, "--data=%s" % nwTemp])
+    qtbot.addWidget(nwGUI)
+    nwGUI.show()
+    qtbot.waitForWindowShown(nwGUI)
+    qtbot.wait(stepDelay)
+
+    for wStep in range(3):
+
+        # The Wizard
+        nwWiz = GuiProjectWizard(nwGUI)
+        nwWiz.show()
+        qtbot.waitForWindowShown(nwWiz)
+
+        # Intro Page
+        introPage = nwWiz.currentPage()
+        assert isinstance(introPage, ProjWizardIntroPage)
+        assert not nwWiz.button(QWizard.NextButton).isEnabled()
+
+        qtbot.wait(stepDelay)
+        for c in "Test Minimal":
+            qtbot.keyClick(introPage.projName, c, delay=keyDelay)
+
+        qtbot.wait(stepDelay)
+        for c in "Minimal Novel":
+            qtbot.keyClick(introPage.projTitle, c, delay=keyDelay)
+
+        qtbot.wait(stepDelay)
+        for c in "Jane Doe":
+            qtbot.keyClick(introPage.projAuthors, c, delay=keyDelay)
+
+        # Setting projName should activate the button
+        assert nwWiz.button(QWizard.NextButton).isEnabled()
+
+        qtbot.wait(stepDelay)
+        qtbot.mouseClick(nwWiz.button(QWizard.NextButton), Qt.LeftButton)
+
+        # Folder Page
+        storagePage = nwWiz.currentPage()
+        assert isinstance(storagePage, ProjWizardFolderPage)
+        assert not nwWiz.button(QWizard.NextButton).isEnabled()
+
+        qtbot.wait(stepDelay)
+        projPath = path.join(nwTemp, "dummy")
+        for c in projPath:
+            qtbot.keyClick(storagePage.projPath, c, delay=keyDelay)
+
+        # Setting projPath should activate the button
+        assert nwWiz.button(QWizard.NextButton).isEnabled()
+
+        qtbot.wait(stepDelay)
+        qtbot.mouseClick(nwWiz.button(QWizard.NextButton), Qt.LeftButton)
+
+        # Populate Page
+        popPage = nwWiz.currentPage()
+        assert isinstance(popPage, ProjWizardPopulatePage)
+        assert nwWiz.button(QWizard.NextButton).isEnabled()
+
+        qtbot.wait(stepDelay)
+        if wStep == 0:
+            popPage.popMinimal.setChecked(True)
+        elif wStep == 1:
+            popPage.popCustom.setChecked(True)
+        elif wStep == 2:
+            popPage.popSample.setChecked(True)
+
+        qtbot.wait(stepDelay)
+        qtbot.mouseClick(nwWiz.button(QWizard.NextButton), Qt.LeftButton)
+
+        # Custom Page
+        if wStep == 1:
+            customPage = nwWiz.currentPage()
+            assert isinstance(customPage, ProjWizardCustomPage)
+            assert nwWiz.button(QWizard.NextButton).isEnabled()
+
+            customPage.addPlot.setChecked(True)
+            customPage.addChar.setChecked(True)
+            customPage.addWorld.setChecked(True)
+            customPage.addTime.setChecked(True)
+            customPage.addObject.setChecked(True)
+            customPage.addEntity.setChecked(True)
+
+            qtbot.wait(stepDelay)
+            qtbot.mouseClick(nwWiz.button(QWizard.NextButton), Qt.LeftButton)
+
+        # Final Page
+        finalPage = nwWiz.currentPage()
+        assert isinstance(finalPage, ProjWizardFinalPage)
+        assert nwWiz.button(QWizard.FinishButton).isEnabled()
+        qtbot.mouseClick(nwWiz.button(QWizard.FinishButton), Qt.LeftButton)
+
+        # Check Data
+        projData = nwGUI._assembleProjectWizardData(nwWiz)
+        assert projData["projName"]    == "Test Minimal"
+        assert projData["projTitle"]   == "Minimal Novel"
+        assert projData["projAuthors"] == "Jane Doe"
+        assert projData["projPath"]    == projPath
+        assert projData["popMinimal"]  == (wStep == 0)
+        assert projData["popCustom"]   == (wStep == 1)
+        assert projData["popSample"]   == (wStep == 2)
+        if wStep == 1:
+            assert projData["addRoots"]    == [
+                nwItemClass.PLOT,
+                nwItemClass.CHARACTER,
+                nwItemClass.WORLD,
+                nwItemClass.TIMELINE,
+                nwItemClass.OBJECT,
+                nwItemClass.ENTITY,
+            ]
+            assert projData["numChapters"] == 5
+            assert projData["numScenes"]   == 5
+            assert projData["chFolders"]   == True
+        else:
+            assert projData["addRoots"]    == []
+            assert projData["numChapters"] == 0
+            assert projData["numScenes"]   == 0
+            assert projData["chFolders"]   == False
 
     # qtbot.stopForInteraction()
     nwGUI.closeMain()

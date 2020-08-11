@@ -43,10 +43,11 @@ from nw.gui import (
     GuiBuildNovel, GuiDocEditor, GuiDocMerge, GuiDocSplit, GuiDocViewDetails,
     GuiDocViewer, GuiItemDetails, GuiItemEditor, GuiMainMenu, GuiMainStatus,
     GuiOutline, GuiOutlineDetails, GuiPreferences, GuiProjectLoad, GuiTheme,
-    GuiProjectSettings, GuiProjectTree, GuiWritingStats, GuiAbout
+    GuiProjectSettings, GuiProjectTree, GuiWritingStats, GuiProjectWizard,
+    GuiAbout
 )
 from nw.core import NWProject, NWDoc, NWIndex
-from nw.constants import nwItemType, nwAlert
+from nw.constants import nwItemType, nwItemClass, nwAlert
 
 logger = logging.getLogger(__name__)
 
@@ -262,8 +263,9 @@ class GuiMain(QMainWindow):
 
         return True
 
-    def newProject(self, projPath=None, forceNew=False):
+    def newProject(self, projData=None, forceNew=False):
         """Create new project with a few default files and folders.
+        The variable forceNew is used for testing.
         """
         if self.hasProject:
             msgBox = QMessageBox()
@@ -273,9 +275,15 @@ class GuiMain(QMainWindow):
             )
             return False
 
-        if projPath is None:
-            projPath = self.newProjectDialog()
-        if projPath is None:
+        if projData is None and self.mainConf.showGUI:
+            projData = self.newProjectDialog()
+
+        if projData is None:
+            return False
+
+        projPath = projData.get("projPath", None)
+        if projPath is None or projData is None:
+            logger.error("No projData or projPath set")
             return False
 
         if path.isfile(path.join(projPath,self.theProject.projFile)) and not forceNew:
@@ -287,13 +295,14 @@ class GuiMain(QMainWindow):
             return False
 
         logger.info("Creating new project")
-        if self.theProject.setProjectPath(projPath, newProject=True):
-            self.theProject.newProject()
+        if self.theProject.newProject(projData):
             self.rebuildTree()
             self.saveProject()
             self.hasProject = True
             self.statusBar.setRefTime(self.theProject.projOpened)
+            self.rebuildIndex(beQuiet=True)
         else:
+            self.theProject.clearProject()
             return False
 
         return True
@@ -692,7 +701,7 @@ class GuiMain(QMainWindow):
         self.treeView.buildTree()
         return
 
-    def rebuildIndex(self):
+    def rebuildIndex(self, beQuiet=False):
         """Rebuild the entire index.
         """
         if not self.hasProject:
@@ -735,7 +744,7 @@ class GuiMain(QMainWindow):
 
         qApp.restoreOverrideCursor()
 
-        if self.mainConf.showGUI:
+        if self.mainConf.showGUI and not beQuiet:
             self.makeAlert("The project index has been successfully rebuilt.", nwAlert.INFO)
 
         return True
@@ -766,16 +775,14 @@ class GuiMain(QMainWindow):
         return None
 
     def newProjectDialog(self):
-        """Select where to save new project.
+        """Open the wizard and assemble the project options dict.
         """
-        dlgOpt  = QFileDialog.Options()
-        dlgOpt |= QFileDialog.ShowDirsOnly
-        dlgOpt |= QFileDialog.DontUseNativeDialog
-        projPath = QFileDialog.getExistingDirectory(
-            self, "Select Location for New novelWriter Project", "", options=dlgOpt
-        )
-        if projPath:
-            return projPath
+        newProj = GuiProjectWizard(self)
+        newProj.exec_()
+
+        if newProj.result() == QDialog.Accepted:
+            return self._assembleProjectWizardData(newProj)
+
         return None
 
     def editConfigDialog(self):
@@ -1116,6 +1123,44 @@ class GuiMain(QMainWindow):
             theIcon.fill(QColor(*sCol))
             self.importIcons[sLabel] = QIcon(theIcon)
         return
+
+    def _assembleProjectWizardData(self, newProj):
+        """Extract the user choices from the New Project Wizard and
+        store them in a dictionary.
+        """
+        projData = {
+            "projName": newProj.field("projName"),
+            "projTitle": newProj.field("projTitle"),
+            "projAuthors": newProj.field("projAuthors"),
+            "projPath": newProj.field("projPath"),
+            "popSample": newProj.field("popSample"),
+            "popMinimal": newProj.field("popMinimal"),
+            "popCustom": newProj.field("popCustom"),
+            "addRoots": [],
+            "numChapters": 0,
+            "numScenes": 0,
+            "chFolders": False,
+        }
+        if newProj.field("popCustom"):
+            addRoots = []
+            if newProj.field("addPlot"):
+                addRoots.append(nwItemClass.PLOT)
+            if newProj.field("addChar"):
+                addRoots.append(nwItemClass.CHARACTER)
+            if newProj.field("addWorld"):
+                addRoots.append(nwItemClass.WORLD)
+            if newProj.field("addTime"):
+                addRoots.append(nwItemClass.TIMELINE)
+            if newProj.field("addObject"):
+                addRoots.append(nwItemClass.OBJECT)
+            if newProj.field("addEntity"):
+                addRoots.append(nwItemClass.ENTITY)
+            projData["addRoots"] = addRoots
+            projData["numChapters"] = newProj.field("numChapters")
+            projData["numScenes"] = newProj.field("numScenes")
+            projData["chFolders"] = newProj.field("chFolders")
+
+        return projData
 
     ##
     #  Events

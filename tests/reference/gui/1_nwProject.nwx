@@ -1,20 +1,20 @@
 <?xml version='1.0' encoding='utf-8'?>
-<novelWriterXML appVersion="0.8.0rc1" hexVersion="0x000800c1" fileVersion="1.1" timeStamp="2020-06-05 21:06:00">
+<novelWriterXML appVersion="0.11.1" hexVersion="0x001101f0" fileVersion="1.2" timeStamp="2020-08-10 22:00:16">
   <project>
     <name>New Project</name>
     <title></title>
     <saveCount>5</saveCount>
     <autoCount>1</autoCount>
-    <editTime>11</editTime>
+    <editTime>14</editTime>
   </project>
   <settings>
     <doBackup>True</doBackup>
     <spellCheck>True</spellCheck>
     <autoOutline>True</autoOutline>
-    <lastEdited>31489056e0916</lastEdited>
+    <lastEdited>0e17daca5f3e1</lastEdited>
     <lastViewed>None</lastViewed>
-    <lastWordCount>86</lastWordCount>
-    <novelWordCount>59</novelWordCount>
+    <lastWordCount>90</lastWordCount>
+    <novelWordCount>63</novelWordCount>
     <notesWordCount>27</notesWordCount>
     <autoReplace/>
     <titleFormat>
@@ -37,7 +37,7 @@
       <entry blue="0" green="200" red="50">Main</entry>
     </importance>
   </settings>
-  <content count="10">
+  <content count="12">
     <item handle="73475cb40a568" order="0" parent="None">
       <name>Novel</name>
       <type>ROOT</type>
@@ -46,13 +46,37 @@
       <expanded>True</expanded>
     </item>
     <item handle="25fc0e7096fc6" order="0" parent="73475cb40a568">
+      <name>Title Page</name>
+      <type>FILE</type>
+      <class>NOVEL</class>
+      <status>New</status>
+      <exported>True</exported>
+      <layout>TITLE</layout>
+      <charCount>11</charCount>
+      <wordCount>2</wordCount>
+      <paraCount>0</paraCount>
+      <cursorPos>0</cursorPos>
+    </item>
+    <item handle="31489056e0916" order="1" parent="73475cb40a568">
       <name>New Chapter</name>
       <type>FOLDER</type>
       <class>NOVEL</class>
       <status>New</status>
       <expanded>True</expanded>
     </item>
-    <item handle="31489056e0916" order="0" parent="25fc0e7096fc6">
+    <item handle="98010bd9270f9" order="0" parent="31489056e0916">
+      <name>New Chapter</name>
+      <type>FILE</type>
+      <class>NOVEL</class>
+      <status>New</status>
+      <exported>True</exported>
+      <layout>CHAPTER</layout>
+      <charCount>11</charCount>
+      <wordCount>2</wordCount>
+      <paraCount>0</paraCount>
+      <cursorPos>0</cursorPos>
+    </item>
+    <item handle="0e17daca5f3e1" order="1" parent="31489056e0916">
       <name>New Scene</name>
       <type>FILE</type>
       <class>NOVEL</class>
@@ -65,32 +89,13 @@
       <cursorPos>465</cursorPos>
     </item>
     <item handle="44cb730c42048" order="1" parent="None">
-      <name>Characters</name>
-      <type>ROOT</type>
-      <class>CHARACTER</class>
-      <status>New</status>
-      <expanded>True</expanded>
-    </item>
-    <item handle="98010bd9270f9" order="0" parent="44cb730c42048">
-      <name>New File</name>
-      <type>FILE</type>
-      <class>CHARACTER</class>
-      <status>New</status>
-      <exported>True</exported>
-      <layout>NOTE</layout>
-      <charCount>34</charCount>
-      <wordCount>8</wordCount>
-      <paraCount>1</paraCount>
-      <cursorPos>51</cursorPos>
-    </item>
-    <item handle="71ee45a3c0db9" order="2" parent="None">
       <name>Plot</name>
       <type>ROOT</type>
       <class>PLOT</class>
       <status>New</status>
       <expanded>True</expanded>
     </item>
-    <item handle="0e17daca5f3e1" order="0" parent="71ee45a3c0db9">
+    <item handle="031b4af5197ec" order="0" parent="44cb730c42048">
       <name>New File</name>
       <type>FILE</type>
       <class>PLOT</class>
@@ -102,6 +107,25 @@
       <paraCount>1</paraCount>
       <cursorPos>69</cursorPos>
     </item>
+    <item handle="71ee45a3c0db9" order="2" parent="None">
+      <name>Characters</name>
+      <type>ROOT</type>
+      <class>CHARACTER</class>
+      <status>New</status>
+      <expanded>True</expanded>
+    </item>
+    <item handle="1a6562590ef19" order="0" parent="71ee45a3c0db9">
+      <name>New File</name>
+      <type>FILE</type>
+      <class>CHARACTER</class>
+      <status>New</status>
+      <exported>True</exported>
+      <layout>NOTE</layout>
+      <charCount>34</charCount>
+      <wordCount>8</wordCount>
+      <paraCount>1</paraCount>
+      <cursorPos>51</cursorPos>
+    </item>
     <item handle="811786ad1ae74" order="3" parent="None">
       <name>World</name>
       <type>ROOT</type>
@@ -109,7 +133,7 @@
       <status>New</status>
       <expanded>True</expanded>
     </item>
-    <item handle="1a6562590ef19" order="0" parent="811786ad1ae74">
+    <item handle="41cfc0d1f2d12" order="0" parent="811786ad1ae74">
       <name>New File</name>
       <type>FILE</type>
       <class>WORLD</class>
@@ -121,7 +145,7 @@
       <paraCount>1</paraCount>
       <cursorPos>68</cursorPos>
     </item>
-    <item handle="41cfc0d1f2d12" order="4" parent="None">
+    <item handle="2fca346db6561" order="4" parent="None">
       <name>Trash</name>
       <type>TRASH</type>
       <class>TRASH</class>

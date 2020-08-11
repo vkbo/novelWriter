@@ -5,6 +5,8 @@
 from os import path, mkdir
 from itertools import chain
 
+from PyQt5.QtWidgets import qApp
+
 def ensureDir(theDir):
     if not path.isdir(theDir):
         mkdir(theDir)
@@ -60,3 +62,8 @@ def cmpList(listOne, listTwo):
         if flatOne[i] != flatTwo[i]:
             return False
     return True
+
+def getGuiItem(theName):
+    for qWidget in qApp.topLevelWidgets():
+        if qWidget.objectName() == theName:
+            return qWidget

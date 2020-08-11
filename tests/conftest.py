@@ -39,6 +39,20 @@ def nwTempBuild(nwTemp):
     return buildDir
 
 @pytest.fixture(scope="session")
+def nwTempCustom(nwTemp):
+    customDir = path.join(nwTemp, "custom")
+    if not path.isdir(customDir):
+        mkdir(customDir)
+    return customDir
+
+@pytest.fixture(scope="session")
+def nwTempSample(nwTemp):
+    sampleDir = path.join(nwTemp, "sample")
+    if not path.isdir(sampleDir):
+        mkdir(sampleDir)
+    return sampleDir
+
+@pytest.fixture(scope="session")
 def nwRef():
     testDir = path.dirname(__file__)
     refDir = path.join(testDir, "reference")

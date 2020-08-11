@@ -192,7 +192,7 @@ class GuiProjectTree(QTreeWidget):
                 nHandle = pHandle
                 pHandle = pItem.parHandle
 
-            # If we again has no home, give up
+            # If we again have no home, give up
             if pHandle is None:
                 self.makeAlert(
                     "Did not find anywhere to add the file or folder!", nwAlert.ERROR
