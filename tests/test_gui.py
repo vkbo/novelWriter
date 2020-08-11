@@ -7,10 +7,11 @@ from nwtools import *
 
 from os import path, unlink
 from PyQt5.QtCore import Qt
+# from PyQt5.QtWidgets import qApp
 
 from nw.gui import (
     GuiProjectSettings, GuiItemEditor, GuiAbout, GuiBuildNovel,
-    GuiDocMerge, GuiDocSplit, GuiWritingStats
+    GuiDocMerge, GuiDocSplit, GuiWritingStats, GuiProjectWizard
 )
 from nw.constants import *
 
@@ -736,6 +737,135 @@ def testSplitTool(qtbot, nwTempGUI, nwLipsum, nwRef, nwTemp):
     assert cmpFiles(refFile, path.join(nwRef, "gui", "5_2858dcd1057d3.nwd"))
     refFile = path.join(nwLipsum, "content", "2fca346db6561.nwd")
     assert cmpFiles(refFile, path.join(nwRef, "gui", "5_2fca346db6561.nwd"))
+
+    # qtbot.stopForInteraction()
+    nwGUI.closeMain()
+
+@pytest.mark.gui
+def testNewProjectWizard(qtbot, nwTempGUI, nwLipsum, nwRef, nwTemp):
+
+    from PyQt5.QtWidgets import QWizard
+    from nw.gui.projwizard import (
+        ProjWizardIntroPage, ProjWizardFolderPage, ProjWizardPopulatePage,
+        ProjWizardCustomPage, ProjWizardFinalPage
+    )
+
+    nwGUI = nw.main(["--testmode","--config=%s" % nwTempGUI, "--data=%s" % nwTemp])
+    qtbot.addWidget(nwGUI)
+    nwGUI.show()
+    qtbot.waitForWindowShown(nwGUI)
+    qtbot.wait(stepDelay)
+
+    for wStep in range(3):
+
+        # The Wizard
+        nwWiz = GuiProjectWizard(nwGUI)
+        nwWiz.show()
+        qtbot.waitForWindowShown(nwWiz)
+
+        # Intro Page
+        introPage = nwWiz.currentPage()
+        assert isinstance(introPage, ProjWizardIntroPage)
+        assert not nwWiz.button(QWizard.NextButton).isEnabled()
+
+        qtbot.wait(stepDelay)
+        for c in "Test Minimal":
+            qtbot.keyClick(introPage.projName, c, delay=keyDelay)
+
+        qtbot.wait(stepDelay)
+        for c in "Minimal Novel":
+            qtbot.keyClick(introPage.projTitle, c, delay=keyDelay)
+
+        qtbot.wait(stepDelay)
+        for c in "Jane Doe":
+            qtbot.keyClick(introPage.projAuthors, c, delay=keyDelay)
+
+        # Setting projName should activate the button
+        assert nwWiz.button(QWizard.NextButton).isEnabled()
+
+        qtbot.wait(stepDelay)
+        qtbot.mouseClick(nwWiz.button(QWizard.NextButton), Qt.LeftButton)
+
+        # Folder Page
+        storagePage = nwWiz.currentPage()
+        assert isinstance(storagePage, ProjWizardFolderPage)
+        assert not nwWiz.button(QWizard.NextButton).isEnabled()
+
+        qtbot.wait(stepDelay)
+        projPath = path.join(nwTemp, "dummy")
+        for c in projPath:
+            qtbot.keyClick(storagePage.projPath, c, delay=keyDelay)
+
+        # Setting projPath should activate the button
+        assert nwWiz.button(QWizard.NextButton).isEnabled()
+
+        qtbot.wait(stepDelay)
+        qtbot.mouseClick(nwWiz.button(QWizard.NextButton), Qt.LeftButton)
+
+        # Populate Page
+        popPage = nwWiz.currentPage()
+        assert isinstance(popPage, ProjWizardPopulatePage)
+        assert nwWiz.button(QWizard.NextButton).isEnabled()
+
+        qtbot.wait(stepDelay)
+        if wStep == 0:
+            popPage.popMinimal.setChecked(True)
+        elif wStep == 1:
+            popPage.popCustom.setChecked(True)
+        elif wStep == 2:
+            popPage.popSample.setChecked(True)
+
+        qtbot.wait(stepDelay)
+        qtbot.mouseClick(nwWiz.button(QWizard.NextButton), Qt.LeftButton)
+
+        # Custom Page
+        if wStep == 1:
+            customPage = nwWiz.currentPage()
+            assert isinstance(customPage, ProjWizardCustomPage)
+            assert nwWiz.button(QWizard.NextButton).isEnabled()
+
+            customPage.addPlot.setChecked(True)
+            customPage.addChar.setChecked(True)
+            customPage.addWorld.setChecked(True)
+            customPage.addTime.setChecked(True)
+            customPage.addObject.setChecked(True)
+            customPage.addEntity.setChecked(True)
+
+            qtbot.wait(stepDelay)
+            qtbot.mouseClick(nwWiz.button(QWizard.NextButton), Qt.LeftButton)
+
+        # Final Page
+        finalPage = nwWiz.currentPage()
+        assert isinstance(finalPage, ProjWizardFinalPage)
+        assert nwWiz.button(QWizard.FinishButton).isEnabled()
+        qtbot.mouseClick(nwWiz.button(QWizard.FinishButton), Qt.LeftButton)
+
+        # Check Data
+        projData = nwGUI._assembleProjectWizardData(nwWiz)
+        assert projData["projName"]    == "Test Minimal"
+        assert projData["projTitle"]   == "Minimal Novel"
+        assert projData["projAuthors"] == "Jane Doe"
+        assert projData["projPath"]    == projPath
+        assert projData["popMinimal"]  == (wStep == 0)
+        assert projData["popCustom"]   == (wStep == 1)
+        assert projData["popSample"]   == (wStep == 2)
+        if wStep == 1:
+            assert projData["addRoots"]    == [
+                nwItemClass.PLOT,
+                nwItemClass.CHARACTER,
+                nwItemClass.WORLD,
+                nwItemClass.TIMELINE,
+                nwItemClass.OBJECT,
+                nwItemClass.ENTITY,
+            ]
+            assert projData["numChapters"] == 5
+            assert projData["numScenes"]   == 5
+            assert projData["chFolders"]   == True
+        else:
+            assert projData["addRoots"]    == []
+            assert projData["numChapters"] == 0
+            assert projData["numScenes"]   == 0
+            assert projData["chFolders"]   == False
 
     # qtbot.stopForInteraction()
     nwGUI.closeMain()

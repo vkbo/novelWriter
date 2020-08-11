@@ -56,7 +56,7 @@ class GuiProjectWizard(QWizard):
         QWizard.__init__(self, theParent)
 
         logger.debug("Initialising GuiProjectWizard ...")
-
+        self.setObjectName("GuiProjectWizard")
         self.mainConf  = nw.CONFIG
         self.theParent = theParent
         self.theTheme  = theParent.theTheme

@@ -780,42 +780,10 @@ class GuiMain(QMainWindow):
         newProj = GuiProjectWizard(self)
         newProj.exec_()
 
-        if newProj.result() == QDialog.Rejected:
-            return None
+        if newProj.result() == QDialog.Accepted:
+            return self._assembleProjectWizardData(newProj)
 
-        projData = {
-            "projName": newProj.field("projName"),
-            "projTitle": newProj.field("projTitle"),
-            "projAuthors": newProj.field("projAuthors"),
-            "projPath": newProj.field("projPath"),
-            "popSample": newProj.field("popSample"),
-            "popMinimal": newProj.field("popMinimal"),
-            "popCustom": newProj.field("popCustom"),
-            "addRoots": [],
-            "numChapters": 0,
-            "numScenes": 0,
-            "chFolders": False,
-        }
-        if newProj.field("popCustom"):
-            addRoots = []
-            if newProj.field("addPlot"):
-                addRoots.append(nwItemClass.PLOT)
-            if newProj.field("addChar"):
-                addRoots.append(nwItemClass.CHARACTER)
-            if newProj.field("addWorld"):
-                addRoots.append(nwItemClass.WORLD)
-            if newProj.field("addTime"):
-                addRoots.append(nwItemClass.TIMELINE)
-            if newProj.field("addObject"):
-                addRoots.append(nwItemClass.OBJECT)
-            if newProj.field("addEntity"):
-                addRoots.append(nwItemClass.ENTITY)
-            projData["addRoots"] = addRoots
-            projData["numChapters"] = newProj.field("numChapters")
-            projData["numScenes"] = newProj.field("numScenes")
-            projData["chFolders"] = newProj.field("chFolders")
-
-        return projData
+        return None
 
     def editConfigDialog(self):
         """Open the preferences dialog.
@@ -1155,6 +1123,44 @@ class GuiMain(QMainWindow):
             theIcon.fill(QColor(*sCol))
             self.importIcons[sLabel] = QIcon(theIcon)
         return
+
+    def _assembleProjectWizardData(self, newProj):
+        """Extract the user choices from the New Project Wizard and
+        store them in a dictionary.
+        """
+        projData = {
+            "projName": newProj.field("projName"),
+            "projTitle": newProj.field("projTitle"),
+            "projAuthors": newProj.field("projAuthors"),
+            "projPath": newProj.field("projPath"),
+            "popSample": newProj.field("popSample"),
+            "popMinimal": newProj.field("popMinimal"),
+            "popCustom": newProj.field("popCustom"),
+            "addRoots": [],
+            "numChapters": 0,
+            "numScenes": 0,
+            "chFolders": False,
+        }
+        if newProj.field("popCustom"):
+            addRoots = []
+            if newProj.field("addPlot"):
+                addRoots.append(nwItemClass.PLOT)
+            if newProj.field("addChar"):
+                addRoots.append(nwItemClass.CHARACTER)
+            if newProj.field("addWorld"):
+                addRoots.append(nwItemClass.WORLD)
+            if newProj.field("addTime"):
+                addRoots.append(nwItemClass.TIMELINE)
+            if newProj.field("addObject"):
+                addRoots.append(nwItemClass.OBJECT)
+            if newProj.field("addEntity"):
+                addRoots.append(nwItemClass.ENTITY)
+            projData["addRoots"] = addRoots
+            projData["numChapters"] = newProj.field("numChapters")
+            projData["numScenes"] = newProj.field("numScenes")
+            projData["chFolders"] = newProj.field("chFolders")
+
+        return projData
 
     ##
     #  Events
