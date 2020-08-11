@@ -883,8 +883,8 @@ class NWProject():
 
         else:
             self.makeAlert((
-                "Failed to create a new example project. "
-                "Could not find the necessary files."
+                "Failed to create a new example project. Could not find the "
+                "necessary files. They seem to be missing from this installation."
             ), nwAlert.ERROR)
 
         if isSuccess:

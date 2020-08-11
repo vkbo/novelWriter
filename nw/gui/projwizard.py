@@ -31,7 +31,6 @@ import nw
 from os import path
 
 from PyQt5.QtCore import Qt
-from PyQt5.QtGui import QPixmap, QColor
 from PyQt5.QtWidgets import (
     QWizard, QWizardPage, QLabel, QVBoxLayout, QLineEdit, QPlainTextEdit,
     QPushButton, QFileDialog, QHBoxLayout, QRadioButton, QFormLayout,
@@ -56,7 +55,7 @@ class GuiProjectWizard(QWizard):
         QWizard.__init__(self, theParent)
 
         logger.debug("Initialising GuiProjectWizard ...")
-        self.setObjectName("GuiProjectWizard")
+
         self.mainConf  = nw.CONFIG
         self.theParent = theParent
         self.theTheme  = theParent.theTheme
@@ -240,7 +239,7 @@ class ProjWizardPopulatePage(QWizardPage):
         self.setTitle("Populate Project")
         self.theText = QLabel(
             "Choose how to pre-fill the project. Either with a minimal set of "
-            "starter items, a sample project explaining and showing many of "
+            "starter items, an example project explaining and showing many of "
             "the features, or show further custom options on the next page."
         )
         self.theText.setWordWrap(True)
@@ -249,19 +248,19 @@ class ProjWizardPopulatePage(QWizardPage):
         fS = self.mainConf.pxInt(4)
 
         self.popMinimal = QRadioButton("Fill the project with a minimal set of items")
-        self.popCustom = QRadioButton("Show detailed options for filling the project")
         self.popSample = QRadioButton("Fill the project with example files")
+        self.popCustom = QRadioButton("Show detailed options for filling the project")
         self.popMinimal.setChecked(True)
 
         self.popBox = QVBoxLayout()
         self.popBox.setSpacing(fS)
         self.popBox.addWidget(self.popMinimal)
-        self.popBox.addWidget(self.popCustom)
         self.popBox.addWidget(self.popSample)
+        self.popBox.addWidget(self.popCustom)
 
         self.registerField("popMinimal", self.popMinimal)
-        self.registerField("popCustom", self.popCustom)
         self.registerField("popSample", self.popSample)
+        self.registerField("popCustom", self.popCustom)
 
         # Assemble
         self.outerBox = QVBoxLayout()
@@ -301,7 +300,6 @@ class ProjWizardCustomPage(QWizardPage):
         self.theText.setWordWrap(True)
 
         vS = self.mainConf.pxInt(12)
-        fS = self.mainConf.pxInt(4)
 
         # Root Folders
         self.rootGroup = QGroupBox("Additional Root Folders")

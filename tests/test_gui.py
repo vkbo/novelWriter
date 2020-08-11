@@ -7,7 +7,6 @@ from nwtools import *
 
 from os import path, unlink
 from PyQt5.QtCore import Qt
-# from PyQt5.QtWidgets import qApp
 
 from nw.gui import (
     GuiProjectSettings, GuiItemEditor, GuiAbout, GuiBuildNovel,
