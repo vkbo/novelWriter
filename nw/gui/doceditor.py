@@ -962,8 +962,9 @@ class GuiDocEditor(QTextEdit):
         if theSize > self.mainConf.bigDocLimit*1000:
             logger.info(
                 "The document size is %d > %d, big doc mode is enabled" % (
-                theSize, self.mainConf.bigDocLimit*1000
-            ))
+                    theSize, self.mainConf.bigDocLimit*1000
+                )
+            )
             self.bigDoc = True
         else:
             self.bigDoc = False
