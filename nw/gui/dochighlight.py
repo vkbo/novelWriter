@@ -55,18 +55,18 @@ class GuiDocHighlighter(QSyntaxHighlighter):
         self.hRules     = []
         self.hStyles    = {}
 
-        self.colHead   = QColor(0,0,0)
-        self.colHeadH  = QColor(0,0,0)
-        self.colEmph   = QColor(0,0,0)
-        self.colDialN  = QColor(0,0,0)
-        self.colDialD  = QColor(0,0,0)
-        self.colDialS  = QColor(0,0,0)
-        self.colComm   = QColor(0,0,0)
-        self.colKey    = QColor(0,0,0)
-        self.colVal    = QColor(0,0,0)
-        self.colSpell  = QColor(0,0,0)
-        self.colTagErr = QColor(0,0,0)
-        self.colRepTag = QColor(0,0,0)
+        self.colHead   = QColor(0, 0, 0)
+        self.colHeadH  = QColor(0, 0, 0)
+        self.colEmph   = QColor(0, 0, 0)
+        self.colDialN  = QColor(0, 0, 0)
+        self.colDialD  = QColor(0, 0, 0)
+        self.colDialS  = QColor(0, 0, 0)
+        self.colComm   = QColor(0, 0, 0)
+        self.colKey    = QColor(0, 0, 0)
+        self.colVal    = QColor(0, 0, 0)
+        self.colSpell  = QColor(0, 0, 0)
+        self.colTagErr = QColor(0, 0, 0)
+        self.colRepTag = QColor(0, 0, 0)
 
         self.initHighlighter()
 
@@ -143,7 +143,7 @@ class GuiDocHighlighter(QSyntaxHighlighter):
         # Quoted Strings
         if self.mainConf.highlightQuotes:
             self.hRules.append((
-                "{:s}(.+?){:s}".format('"','"'), {
+                "{:s}(.+?){:s}".format('"', '"'), {
                     0 : self.hStyles["dialogue1"],
                 }
             ))

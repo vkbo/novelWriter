@@ -26,7 +26,6 @@
 """
 
 import logging
-import json
 import nw
 
 from os import path, mkdir, listdir, unlink, rename, rmdir
@@ -206,15 +205,15 @@ class NWProject():
         self.spellCheck  = False
         self.autoOutline = True
         self.statusItems = NWStatus()
-        self.statusItems.addEntry("New",     (100, 100, 100))
-        self.statusItems.addEntry("Note",    (200,  50,   0))
-        self.statusItems.addEntry("Draft",   (200, 150,   0))
-        self.statusItems.addEntry("Finished",( 50, 200,   0))
+        self.statusItems.addEntry("New",      (100, 100, 100))
+        self.statusItems.addEntry("Note",     (200,  50,   0))
+        self.statusItems.addEntry("Draft",    (200, 150,   0))
+        self.statusItems.addEntry("Finished", ( 50, 200,   0))
         self.importItems = NWStatus()
-        self.importItems.addEntry("New",     (100, 100, 100))
-        self.importItems.addEntry("Minor",   (200,  50,   0))
-        self.importItems.addEntry("Major",   (200, 150,   0))
-        self.importItems.addEntry("Main",    ( 50, 200,   0))
+        self.importItems.addEntry("New",      (100, 100, 100))
+        self.importItems.addEntry("Minor",    (200,  50,   0))
+        self.importItems.addEntry("Major",    (200, 150,   0))
+        self.importItems.addEntry("Main",     ( 50, 200,   0))
         self.lastEdited = None
         self.lastViewed = None
         self.lastWCount = 0
@@ -265,27 +264,28 @@ class NWProject():
         if popMinimal:
             # Creating a minimal project with a few root folders and a
             # single chapter folder with a single file.
-            nHandle = self.newRoot("Novel",         nwItemClass.NOVEL)
-            xHandle = self.newRoot("Plot",          nwItemClass.PLOT)
-            xHandle = self.newRoot("Characters",    nwItemClass.CHARACTER)
-            xHandle = self.newRoot("World",         nwItemClass.WORLD)
-            tHandle = self.newFile("Title Page",    nwItemClass.NOVEL, nHandle)
-            dHandle = self.newFolder("New Chapter", nwItemClass.NOVEL, nHandle)
-            cHandle = self.newFile("New Chapter",   nwItemClass.NOVEL, dHandle)
-            sHandle = self.newFile("New Scene",     nwItemClass.NOVEL, dHandle)
+            xHandle = {}
+            xHandle[1] = self.newRoot("Novel",         nwItemClass.NOVEL)
+            xHandle[2] = self.newRoot("Plot",          nwItemClass.PLOT)
+            xHandle[3] = self.newRoot("Characters",    nwItemClass.CHARACTER)
+            xHandle[4] = self.newRoot("World",         nwItemClass.WORLD)
+            xHandle[5] = self.newFile("Title Page",    nwItemClass.NOVEL, xHandle[1])
+            xHandle[6] = self.newFolder("New Chapter", nwItemClass.NOVEL, xHandle[1])
+            xHandle[7] = self.newFile("New Chapter",   nwItemClass.NOVEL, xHandle[6])
+            xHandle[8] = self.newFile("New Scene",     nwItemClass.NOVEL, xHandle[6])
 
-            self.projTree.setFileItemLayout(tHandle, nwItemLayout.TITLE)
-            self.projTree.setFileItemLayout(cHandle, nwItemLayout.CHAPTER)
+            self.projTree.setFileItemLayout(xHandle[5], nwItemLayout.TITLE)
+            self.projTree.setFileItemLayout(xHandle[7], nwItemLayout.CHAPTER)
 
-            aDoc.openDocument(tHandle, showStatus=False)
+            aDoc.openDocument(xHandle[5], showStatus=False)
             aDoc.saveDocument(titlePage)
             aDoc.clearDocument()
 
-            aDoc.openDocument(cHandle, showStatus=False)
+            aDoc.openDocument(xHandle[7], showStatus=False)
             aDoc.saveDocument("## New Chapter\n\n")
             aDoc.clearDocument()
 
-            aDoc.openDocument(sHandle, showStatus=False)
+            aDoc.openDocument(xHandle[8], showStatus=False)
             aDoc.saveDocument("### New Scene\n\n")
             aDoc.clearDocument()
 
@@ -421,7 +421,7 @@ class NWProject():
         try:
             nwXML = etree.parse(fileName)
         except Exception as e:
-            self.makeAlert(["Failed to parse project xml.",str(e)], nwAlert.ERROR)
+            self.makeAlert(["Failed to parse project xml.", str(e)], nwAlert.ERROR)
 
             # Trying to open backup file instead
             backFile = fileName[:-3]+"bak"
@@ -430,7 +430,7 @@ class NWProject():
                 try:
                     nwXML = etree.parse(backFile)
                 except Exception as e:
-                    self.makeAlert(["Failed to parse project xml.",str(e)], nwAlert.ERROR)
+                    self.makeAlert(["Failed to parse project xml.", str(e)], nwAlert.ERROR)
                     self.clearProject()
                     return False
             else:
@@ -794,7 +794,7 @@ class NWProject():
                 logger.debug("Created folder %s" % baseDir)
             except Exception as e:
                 self.theParent.makeAlert(
-                    ["Could not create backup folder.",str(e)],
+                    ["Could not create backup folder.", str(e)],
                     nwAlert.ERROR
                 )
                 return False
@@ -823,7 +823,7 @@ class NWProject():
                 logger.info("Backup written to: %s" % archName)
         except Exception as e:
             self.theParent.makeAlert(
-                ["Could not write backup archive.",str(e)],
+                ["Could not write backup archive.", str(e)],
                 nwAlert.ERROR
             )
             return False
@@ -838,7 +838,6 @@ class NWProject():
         project path, or if the folder doesn't exist, look for the zip
         file in the assets folder.
         """
-        projName = projData.get("projName", "Sample Project")
         projPath = projData.get("projPath", None)
         if projPath is None:
             logger.error("No project path set for the example project")
@@ -1231,7 +1230,7 @@ class NWProject():
                 mkdir(thePath)
                 logger.debug("Created folder %s" % thePath)
             except Exception as e:
-                self.makeAlert(["Could not create folder.",str(e)], nwAlert.ERROR)
+                self.makeAlert(["Could not create folder.", str(e)], nwAlert.ERROR)
                 return False
         return True
 
@@ -1243,7 +1242,8 @@ class NWProject():
         for aValue in theValue:
             if not isinstance(aValue, str):
                 aValue = str(aValue)
-            if aValue == "" and not allowNone: continue
+            if aValue == "" and not allowNone:
+                continue
             xItem = etree.SubElement(xParent, theName)
             xItem.text = aValue
         return
@@ -1402,7 +1402,7 @@ class NWProject():
         try:
             rmdir(theData)
             logger.info("Removed folder: %s" % theFolder)
-        except:
+        except Exception:
             errList.append("Failed to remove: %s" % theFolder)
 
         return errList

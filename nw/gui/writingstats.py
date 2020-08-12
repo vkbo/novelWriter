@@ -450,7 +450,7 @@ class GuiWritingStats(QDialog):
 
         except Exception as e:
             self.theParent.makeAlert(
-                ["Failed to read session log file.",str(e)], nwAlert.ERROR
+                ["Failed to read session log file.", str(e)], nwAlert.ERROR
             )
             return False
 
@@ -577,6 +577,6 @@ class GuiWritingStats(QDialog):
         tH = int(tM/60)
         tM = tM - tH*60
         tS = tS - tM*60 - tH*3600
-        return "%02d:%02d:%02d" % (tH,tM,tS)
+        return "%02d:%02d:%02d" % (tH, tM, tS)
 
 # END Class GuiWritingStats

@@ -35,7 +35,6 @@ from PyQt5.QtGui import QColor, QPainter
 from PyQt5.QtWidgets import qApp, QStatusBar, QLabel, QAbstractButton
 
 from nw.core import NWSpellCheck
-from nw.common import formatInt
 
 logger = logging.getLogger(__name__)
 
@@ -212,7 +211,7 @@ class GuiMainStatus(QStatusBar):
             tH = int(tM/60)
             tM = tM - tH*60
             tS = tS - tM*60 - tH*3600
-            theTime = "%02d:%02d:%02d" % (tH,tM,tS)
+            theTime = "%02d:%02d:%02d" % (tH, tM, tS)
         self.timeText.setText(theTime)
         return
 
@@ -242,9 +241,9 @@ class StatusLED(QAbstractButton):
         """
         if theState is None:
             self._theCol = self.colNone
-        elif theState == True:
+        elif theState:
             self._theCol = self.colTrue
-        elif theState == False:
+        elif not theState:
             self._theCol = self.colFalse
         else:
             self._theCol = self.colNone

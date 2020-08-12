@@ -75,7 +75,7 @@ class NWSpellCheck():
             newWord = newWord.strip()
             self.PROJW.append(newWord)
             try:
-                with open(self.projectDict,mode="a+",encoding="utf-8") as outFile:
+                with open(self.projectDict, mode="a+", encoding="utf-8") as outFile:
                     outFile.write("%s\n" % newWord)
             except Exception as e:
                 logger.error("Failed to add word to project word list %s" % str(self.projectDict))
@@ -149,7 +149,7 @@ class NWSpellEnchant(NWSpellCheck):
             self.theDict = enchant.Dict(theLang)
             self.spellLanguage = theLang
             logger.debug("Enchant spell checking for language %s loaded" % theLang)
-        except:
+        except Exception:
             logger.error("Failed to load enchant spell checking for language %s" % theLang)
             self.theDict = NWSpellEnchantDummy()
             self.spellLanguage = None
@@ -186,7 +186,7 @@ class NWSpellEnchant(NWSpellCheck):
             for spTag, spProvider in enchant.list_dicts():
                 spName = "%s [%s]" % (self.expandLanguage(spTag), spProvider.name)
                 retList.append((spTag, spName))
-        except:
+        except Exception:
             logger.error("Failed to list languages for enchant spell checking")
         return retList
 
@@ -197,7 +197,7 @@ class NWSpellEnchantDummy:
     """
     def __init__(self):
         return
-    
+
     def check(self, theWord):
         return True
 
@@ -231,9 +231,9 @@ class NWSpellSimple(NWSpellCheck):
         """Load a dictionary as a list from the app assets folder.
         """
         self.WORDS = []
-        dictFile = path.join(self.mainConf.dictPath,theLang+".dict")
+        dictFile = path.join(self.mainConf.dictPath, theLang+".dict")
         try:
-            with open(dictFile,mode="r",encoding="utf-8") as wordsFile:
+            with open(dictFile, mode="r", encoding="utf-8") as wordsFile:
                 for theLine in wordsFile:
                     if len(theLine) == 0 or theLine.startswith("#"):
                         continue
@@ -258,7 +258,7 @@ class NWSpellSimple(NWSpellCheck):
         this function as fast as possible as it is called for every
         word by the syntax highlighter.
         """
-        theWord = theWord.replace(self.mainConf.fmtApostrophe,"'").lower()
+        theWord = theWord.replace(self.mainConf.fmtApostrophe, "'").lower()
         return theWord in self.WORDS
 
     def suggestWords(self, theWord):
@@ -282,7 +282,7 @@ class NWSpellSimple(NWSpellCheck):
                 continue
             if firstUp:
                 aWord = aWord[0].upper() + aWord[1:]
-            aWord = aWord.replace("'",self.mainConf.fmtApostrophe)
+            aWord = aWord.replace("'", self.mainConf.fmtApostrophe)
             theOptions.append(aWord)
 
         return theOptions

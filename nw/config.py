@@ -29,7 +29,6 @@ import logging
 import configparser
 import json
 import sys
-import nw
 
 from os import path, mkdir, unlink, rename
 from time import time
@@ -260,12 +259,12 @@ class Config:
         self.homePath  = path.expanduser("~")
         self.lastPath  = self.homePath
         self.appPath   = getattr(sys, "_MEIPASS", path.abspath(path.dirname(__file__)))
-        self.appRoot   = path.join(self.appPath,path.pardir)
-        self.assetPath = path.join(self.appPath,"assets")
-        self.themeRoot = path.join(self.assetPath,"themes")
-        self.graphPath = path.join(self.assetPath,"graphics")
-        self.dictPath  = path.join(self.assetPath,"dict")
-        self.iconPath  = path.join(self.assetPath,"icons")
+        self.appRoot   = path.join(self.appPath, path.pardir)
+        self.assetPath = path.join(self.appPath, "assets")
+        self.themeRoot = path.join(self.assetPath, "themes")
+        self.graphPath = path.join(self.assetPath, "graphics")
+        self.dictPath  = path.join(self.assetPath, "dict")
+        self.iconPath  = path.join(self.assetPath, "icons")
         self.appIcon   = path.join(self.iconPath, "novelwriter.svg")
 
         logger.verbose("App path: %s" % self.appPath)
@@ -549,85 +548,85 @@ class Config:
         ## Main
         cnfSec = "Main"
         cnfParse.add_section(cnfSec)
-        cnfParse.set(cnfSec,"timestamp",   formatTimeStamp(time()))
-        cnfParse.set(cnfSec,"theme",       str(self.guiTheme))
-        cnfParse.set(cnfSec,"syntax",      str(self.guiSyntax))
-        cnfParse.set(cnfSec,"icons",       str(self.guiIcons))
-        cnfParse.set(cnfSec,"guidark",     str(self.guiDark))
-        cnfParse.set(cnfSec,"guifont",     str(self.guiFont))
-        cnfParse.set(cnfSec,"guifontsize", str(self.guiFontSize))
+        cnfParse.set(cnfSec, "timestamp",   formatTimeStamp(time()))
+        cnfParse.set(cnfSec, "theme",       str(self.guiTheme))
+        cnfParse.set(cnfSec, "syntax",      str(self.guiSyntax))
+        cnfParse.set(cnfSec, "icons",       str(self.guiIcons))
+        cnfParse.set(cnfSec, "guidark",     str(self.guiDark))
+        cnfParse.set(cnfSec, "guifont",     str(self.guiFont))
+        cnfParse.set(cnfSec, "guifontsize", str(self.guiFontSize))
 
         ## Sizes
         cnfSec = "Sizes"
         cnfParse.add_section(cnfSec)
-        cnfParse.set(cnfSec,"geometry",    self._packList(self.winGeometry))
-        cnfParse.set(cnfSec,"treecols",    self._packList(self.treeColWidth))
-        cnfParse.set(cnfSec,"projcols",    self._packList(self.projColWidth))
-        cnfParse.set(cnfSec,"mainpane",    self._packList(self.mainPanePos))
-        cnfParse.set(cnfSec,"docpane",     self._packList(self.docPanePos))
-        cnfParse.set(cnfSec,"viewpane",    self._packList(self.viewPanePos))
-        cnfParse.set(cnfSec,"outlinepane", self._packList(self.outlnPanePos))
-        cnfParse.set(cnfSec,"fullscreen",  str(self.isFullScreen))
+        cnfParse.set(cnfSec, "geometry",    self._packList(self.winGeometry))
+        cnfParse.set(cnfSec, "treecols",    self._packList(self.treeColWidth))
+        cnfParse.set(cnfSec, "projcols",    self._packList(self.projColWidth))
+        cnfParse.set(cnfSec, "mainpane",    self._packList(self.mainPanePos))
+        cnfParse.set(cnfSec, "docpane",     self._packList(self.docPanePos))
+        cnfParse.set(cnfSec, "viewpane",    self._packList(self.viewPanePos))
+        cnfParse.set(cnfSec, "outlinepane", self._packList(self.outlnPanePos))
+        cnfParse.set(cnfSec, "fullscreen",  str(self.isFullScreen))
 
         ## Project
         cnfSec = "Project"
         cnfParse.add_section(cnfSec)
-        cnfParse.set(cnfSec,"autosaveproject", str(self.autoSaveProj))
-        cnfParse.set(cnfSec,"autosavedoc",     str(self.autoSaveDoc))
+        cnfParse.set(cnfSec, "autosaveproject", str(self.autoSaveProj))
+        cnfParse.set(cnfSec, "autosavedoc",     str(self.autoSaveDoc))
 
         ## Editor
         cnfSec = "Editor"
         cnfParse.add_section(cnfSec)
-        cnfParse.set(cnfSec,"textfont",        str(self.textFont))
-        cnfParse.set(cnfSec,"textsize",        str(self.textSize))
-        cnfParse.set(cnfSec,"fixedwidth",      str(self.textFixedW))
-        cnfParse.set(cnfSec,"width",           str(self.textWidth))
-        cnfParse.set(cnfSec,"margin",          str(self.textMargin))
-        cnfParse.set(cnfSec,"tabwidth",        str(self.tabWidth))
-        cnfParse.set(cnfSec,"focuswidth",      str(self.focusWidth))
-        cnfParse.set(cnfSec,"hidefocusfooter", str(self.hideFocusFooter))
-        cnfParse.set(cnfSec,"justify",         str(self.doJustify))
-        cnfParse.set(cnfSec,"autoselect",      str(self.autoSelect))
-        cnfParse.set(cnfSec,"autoreplace",     str(self.doReplace))
-        cnfParse.set(cnfSec,"repsquotes",      str(self.doReplaceSQuote))
-        cnfParse.set(cnfSec,"repdquotes",      str(self.doReplaceDQuote))
-        cnfParse.set(cnfSec,"repdash",         str(self.doReplaceDash))
-        cnfParse.set(cnfSec,"repdots",         str(self.doReplaceDots))
-        cnfParse.set(cnfSec,"fmtsinglequote",  self._packList(self.fmtSingleQuotes))
-        cnfParse.set(cnfSec,"fmtdoublequote",  self._packList(self.fmtDoubleQuotes))
-        cnfParse.set(cnfSec,"spelltool",       str(self.spellTool))
-        cnfParse.set(cnfSec,"spellcheck",      str(self.spellLanguage))
-        cnfParse.set(cnfSec,"showtabsnspaces", str(self.showTabsNSpaces))
-        cnfParse.set(cnfSec,"showlineendings", str(self.showLineEndings))
-        cnfParse.set(cnfSec,"bigdoclimit",     str(self.bigDocLimit))
-        cnfParse.set(cnfSec,"showfullpath",    str(self.showFullPath))
-        cnfParse.set(cnfSec,"highlightquotes", str(self.highlightQuotes))
-        cnfParse.set(cnfSec,"highlightemph",   str(self.highlightEmph))
+        cnfParse.set(cnfSec, "textfont",        str(self.textFont))
+        cnfParse.set(cnfSec, "textsize",        str(self.textSize))
+        cnfParse.set(cnfSec, "fixedwidth",      str(self.textFixedW))
+        cnfParse.set(cnfSec, "width",           str(self.textWidth))
+        cnfParse.set(cnfSec, "margin",          str(self.textMargin))
+        cnfParse.set(cnfSec, "tabwidth",        str(self.tabWidth))
+        cnfParse.set(cnfSec, "focuswidth",      str(self.focusWidth))
+        cnfParse.set(cnfSec, "hidefocusfooter", str(self.hideFocusFooter))
+        cnfParse.set(cnfSec, "justify",         str(self.doJustify))
+        cnfParse.set(cnfSec, "autoselect",      str(self.autoSelect))
+        cnfParse.set(cnfSec, "autoreplace",     str(self.doReplace))
+        cnfParse.set(cnfSec, "repsquotes",      str(self.doReplaceSQuote))
+        cnfParse.set(cnfSec, "repdquotes",      str(self.doReplaceDQuote))
+        cnfParse.set(cnfSec, "repdash",         str(self.doReplaceDash))
+        cnfParse.set(cnfSec, "repdots",         str(self.doReplaceDots))
+        cnfParse.set(cnfSec, "fmtsinglequote",  self._packList(self.fmtSingleQuotes))
+        cnfParse.set(cnfSec, "fmtdoublequote",  self._packList(self.fmtDoubleQuotes))
+        cnfParse.set(cnfSec, "spelltool",       str(self.spellTool))
+        cnfParse.set(cnfSec, "spellcheck",      str(self.spellLanguage))
+        cnfParse.set(cnfSec, "showtabsnspaces", str(self.showTabsNSpaces))
+        cnfParse.set(cnfSec, "showlineendings", str(self.showLineEndings))
+        cnfParse.set(cnfSec, "bigdoclimit",     str(self.bigDocLimit))
+        cnfParse.set(cnfSec, "showfullpath",    str(self.showFullPath))
+        cnfParse.set(cnfSec, "highlightquotes", str(self.highlightQuotes))
+        cnfParse.set(cnfSec, "highlightemph",   str(self.highlightEmph))
 
         ## Backup
         cnfSec = "Backup"
         cnfParse.add_section(cnfSec)
-        cnfParse.set(cnfSec,"backuppath",     str(self.backupPath))
-        cnfParse.set(cnfSec,"backuponclose",  str(self.backupOnClose))
-        cnfParse.set(cnfSec,"askbeforebackup",str(self.askBeforeBackup))
+        cnfParse.set(cnfSec, "backuppath",      str(self.backupPath))
+        cnfParse.set(cnfSec, "backuponclose",   str(self.backupOnClose))
+        cnfParse.set(cnfSec, "askbeforebackup", str(self.askBeforeBackup))
 
         ## State
         cnfSec = "State"
         cnfParse.add_section(cnfSec)
-        cnfParse.set(cnfSec,"showrefpanel",    str(self.showRefPanel))
-        cnfParse.set(cnfSec,"viewcomments",    str(self.viewComments))
-        cnfParse.set(cnfSec,"viewsynopsis",    str(self.viewSynopsis))
-        cnfParse.set(cnfSec,"searchcase",      str(self.searchCase))
-        cnfParse.set(cnfSec,"searchword",      str(self.searchWord))
-        cnfParse.set(cnfSec,"searchregex",     str(self.searchRegEx))
-        cnfParse.set(cnfSec,"searchloop",      str(self.searchLoop))
-        cnfParse.set(cnfSec,"searchnextfile",  str(self.searchNextFile))
-        cnfParse.set(cnfSec,"searchmatchcap",  str(self.searchMatchCap))
+        cnfParse.set(cnfSec, "showrefpanel",    str(self.showRefPanel))
+        cnfParse.set(cnfSec, "viewcomments",    str(self.viewComments))
+        cnfParse.set(cnfSec, "viewsynopsis",    str(self.viewSynopsis))
+        cnfParse.set(cnfSec, "searchcase",      str(self.searchCase))
+        cnfParse.set(cnfSec, "searchword",      str(self.searchWord))
+        cnfParse.set(cnfSec, "searchregex",     str(self.searchRegEx))
+        cnfParse.set(cnfSec, "searchloop",      str(self.searchLoop))
+        cnfParse.set(cnfSec, "searchnextfile",  str(self.searchNextFile))
+        cnfParse.set(cnfSec, "searchmatchcap",  str(self.searchMatchCap))
 
         ## Path
         cnfSec = "Path"
         cnfParse.add_section(cnfSec)
-        cnfParse.set(cnfSec,"lastpath", str(self.lastPath))
+        cnfParse.set(cnfSec, "lastpath", str(self.lastPath))
 
         # Write config file
         cnfPath = path.join(self.confPath, self.confFile)
@@ -862,7 +861,7 @@ class Config:
         for i in range(listLen):
             try:
                 outData.append(castTo(inData[i]))
-            except:
+            except Exception:
                 outData.append(listDefault[i])
         return outData
 
@@ -902,16 +901,16 @@ class Config:
         """Cheks if we have the optional packages used by some features.
         """
         try:
-            import enchant
+            import enchant # noqa: F401
             self.hasEnchant = True
             logger.debug("Checking package 'pyenchant': Ok")
-        except:
+        except Exception:
             self.hasEnchant = False
             logger.debug("Checking package 'pyenchant': Missing")
 
         try:
             self.hasAssistant = which("assistant")
-        except:
+        except Exception:
             self.hasAssistant = False
         if self.hasAssistant:
             logger.debug("Checking executable 'assistant': Ok")

@@ -33,7 +33,7 @@ import nw
 from os import path, listdir
 from math import ceil
 
-from PyQt5.QtCore import Qt, QSize
+from PyQt5.QtCore import Qt
 from PyQt5.QtSvg import QSvgWidget
 from PyQt5.QtWidgets import QStyle, qApp
 from PyQt5.QtGui import (
@@ -182,7 +182,7 @@ class GuiTheme:
         for fontFam in listdir(fontAssets):
             fontDir = path.join(fontAssets, fontFam)
             if path.isdir(fontDir):
-                if not fontFam in self.guiFontDB.families():
+                if fontFam not in self.guiFontDB.families():
                     for fontFile in listdir(fontDir):
                         ttfFile = path.join(fontDir, fontFile)
                         if path.isfile(ttfFile) and fontFile.endswith(".ttf"):
@@ -260,6 +260,7 @@ class GuiTheme:
                     cssData = inFile.read()
         except Exception as e:
             logger.error("Could not load theme css file")
+            logger.error(str(e))
             return False
 
         # Config File
@@ -269,6 +270,7 @@ class GuiTheme:
                 confParser.read_file(inFile)
         except Exception as e:
             logger.error("Could not load theme settings from: %s" % self.confFile)
+            logger.error(str(e))
             return False
 
         ## Main
@@ -324,6 +326,7 @@ class GuiTheme:
                 confParser.read_file(inFile)
         except Exception as e:
             logger.error("Could not load syntax colours from: %s" % self.syntaxFile)
+            logger.error(str(e))
             return False
 
         ## Main
@@ -431,14 +434,14 @@ class GuiTheme:
     def _loadColour(self, confParser, cnfSec, cnfName):
         """Load a colour value from a config string.
         """
-        if confParser.has_option(cnfSec,cnfName):
-            inData = confParser.get(cnfSec,cnfName).split(",")
+        if confParser.has_option(cnfSec, cnfName):
+            inData = confParser.get(cnfSec, cnfName).split(",")
             outData = []
             try:
                 outData.append(int(inData[0]))
                 outData.append(int(inData[1]))
                 outData.append(int(inData[2]))
-            except:
+            except Exception:
                 logger.error("Could not load theme colours for '%s' from config file" % cnfName)
                 outData = [0, 0, 0]
         else:
@@ -450,13 +453,13 @@ class GuiTheme:
         """Set a palette colour value from a config string.
         """
         readCol = []
-        if confParser.has_option(cnfSec,cnfName):
-            inData = confParser.get(cnfSec,cnfName).split(",")
+        if confParser.has_option(cnfSec, cnfName):
+            inData = confParser.get(cnfSec, cnfName).split(",")
             try:
                 readCol.append(int(inData[0]))
                 readCol.append(int(inData[1]))
                 readCol.append(int(inData[2]))
-            except:
+            except Exception:
                 logger.error("Could not load theme colours for '%s' from config file" % cnfName)
                 return
         if len(readCol) == 3:
@@ -615,6 +618,7 @@ class GuiIcons:
                 confParser.read_file(inFile)
         except Exception as e:
             logger.error("Could not load icon theme settings from: %s" % self.confFile)
+            logger.error(str(e))
             return False
 
         ## Main

@@ -26,7 +26,6 @@
 """
 
 import logging
-import nw
 
 from lxml import etree
 
@@ -121,7 +120,7 @@ class NWStatus():
         main project file.
         """
         for n in range(self.theLength):
-            xSub = etree.SubElement(xParent,"entry",attrib={
+            xSub = etree.SubElement(xParent, "entry", attrib={
                 "blue"  : str(self.theColours[n][2]),
                 "green" : str(self.theColours[n][1]),
                 "red"   : str(self.theColours[n][0]),
@@ -138,18 +137,18 @@ class NWStatus():
         for xChild in xParent:
             theLabels.append(xChild.text)
             if "red" in xChild.attrib:
-                cR = checkInt(xChild.attrib["red"],0,False)
+                cR = checkInt(xChild.attrib["red"], 0, False)
             else:
                 cR = 0
             if "green" in xChild.attrib:
-                cG = checkInt(xChild.attrib["green"],0,False)
+                cG = checkInt(xChild.attrib["green"], 0, False)
             else:
                 cG = 0
             if "blue" in xChild.attrib:
-                cB = checkInt(xChild.attrib["blue"],0,False)
+                cB = checkInt(xChild.attrib["blue"], 0, False)
             else:
                 cB = 0
-            theColours.append((cR,cG,cB))
+            theColours.append((cR, cG, cB))
 
         if len(theLabels) > 0:
             self.theLabels  = []

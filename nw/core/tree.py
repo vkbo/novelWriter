@@ -27,7 +27,6 @@
 
 import logging
 import json
-import nw
 
 from os import path
 from lxml import etree
@@ -114,7 +113,7 @@ class NWTree():
         """Pack the content of the tree into an XML object.
         """
         xContent = etree.SubElement(xParent, "content", attrib={
-            "count":str(self._theLength)}
+            "count": str(self._theLength)}
         )
         for tHandle in self._treeOrder:
             tItem = self.__getitem__(tHandle)
@@ -154,7 +153,7 @@ class NWTree():
                 outFile.write(" Table of Contents\n")
                 outFile.write("===================\n")
                 outFile.write("\n")
-                outFile.write(" %-25s  %-9s  %s\n" %("File Name","Class","Document Label"))
+                outFile.write(" %-25s  %-9s  %s\n" %("File Name", "Class", "Document Label"))
                 outFile.write("-"*80+"\n")
                 for tHandle in sorted(self._treeOrder):
                     tItem = self.__getitem__(tHandle)

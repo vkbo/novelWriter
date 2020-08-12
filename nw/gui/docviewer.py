@@ -366,7 +366,6 @@ class GuiDocViewer(QTextBrowser):
             "}}\n"
         ).format(
             textSize = self.mainConf.textSize,
-            preSize  = self.mainConf.textSize*0.9,
             tColR = self.theTheme.colText[0],
             tColG = self.theTheme.colText[1],
             tColB = self.theTheme.colText[2],
@@ -701,7 +700,6 @@ class GuiDocViewDetails(QScrollArea):
         self.refList.setScaledContents(True)
         self.refList.linkActivated.connect(self._linkClicked)
 
-        hCol = self.palette().highlight().color()
         self.linkStyle = "style='color: rgb({0},{1},{2})'".format(
             *self.theTheme.colLink
         )

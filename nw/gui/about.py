@@ -146,9 +146,9 @@ class GuiAbout(QDialog):
             aboutMsg += (
                 "<h4>Theme: {name:s}</h4>"
                 "<p>"
-                    "<b>Author:</b> {author:s}<br/>"
-                    "<b>Credit:</b> {credit:s}<br/>"
-                    "<b>License:</b> <a href='{lic_url:s}'>{license:s}</a>"
+                "<b>Author:</b> {author:s}<br/>"
+                "<b>Credit:</b> {credit:s}<br/>"
+                "<b>License:</b> <a href='{lic_url:s}'>{license:s}</a>"
                 "</p>"
             ).format(
                 name    = theTheme.themeName,
@@ -161,9 +161,9 @@ class GuiAbout(QDialog):
             aboutMsg += (
                 "<h4>Icons: {name:s}</h4>"
                 "<p>"
-                    "<b>Author:</b> {author:s}<br/>"
-                    "<b>Credit:</b> {credit:s}<br/>"
-                    "<b>License:</b> <a href='{lic_url:s}'>{license:s}</a>"
+                "<b>Author:</b> {author:s}<br/>"
+                "<b>Credit:</b> {credit:s}<br/>"
+                "<b>License:</b> <a href='{lic_url:s}'>{license:s}</a>"
                 "</p>"
             ).format(
                 name    = theIcons.themeName,
@@ -176,9 +176,9 @@ class GuiAbout(QDialog):
             aboutMsg += (
                 "<h4>Syntax: {name:s}</h4>"
                 "<p>"
-                    "<b>Author:</b> {author:s}<br/>"
-                    "<b>Credit:</b> {credit:s}<br/>"
-                    "<b>License:</b> <a href='{lic_url:s}'>{license:s}</a>"
+                "<b>Author:</b> {author:s}<br/>"
+                "<b>Credit:</b> {credit:s}<br/>"
+                "<b>License:</b> <a href='{lic_url:s}'>{license:s}</a>"
                 "</p>"
             ).format(
                 name    = theTheme.syntaxName,

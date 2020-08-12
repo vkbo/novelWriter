@@ -962,8 +962,9 @@ class GuiDocEditor(QTextEdit):
         if theSize > self.mainConf.bigDocLimit*1000:
             logger.info(
                 "The document size is %d > %d, big doc mode is enabled" % (
-                theSize, self.mainConf.bigDocLimit*1000
-            ))
+                    theSize, self.mainConf.bigDocLimit*1000
+                )
+            )
             self.bigDoc = True
         else:
             self.bigDoc = False
@@ -1271,7 +1272,7 @@ class GuiDocEditor(QTextEdit):
         try:
             isFind  = self.lastFind[0] == theCursor.selectionStart()
             isFind &= self.lastFind[1] == theCursor.selectionEnd()
-        except:
+        except Exception:
             isFind = False
 
         if isFind:
@@ -1371,7 +1372,6 @@ class GuiDocEditSearch(QFrame):
         self.doMatchCap  = self.mainConf.searchMatchCap
 
         mPx = self.mainConf.pxInt(6)
-        fPx = int(0.9*self.theTheme.fontPixelSize)
         tPx = int(0.8*self.theTheme.fontPixelSize)
         boxFont = self.theTheme.guiFont
         boxFont.setPointSizeF(0.9*self.theTheme.fontPointSize)
@@ -1474,12 +1474,12 @@ class GuiDocEditSearch(QFrame):
         self.showReplace.setStyleSheet(r"QToolButton {border: none; background: transparent;}")
         self.showReplace.toggled.connect(self._doToggleReplace)
 
-        self.searchButton = QPushButton(self.theTheme.getIcon("search"),"")
+        self.searchButton = QPushButton(self.theTheme.getIcon("search"), "")
         self.searchButton.setFixedSize(QSize(bPx, bPx))
         self.searchButton.setToolTip("Find in current document")
         self.searchButton.clicked.connect(self._doSearch)
 
-        self.replaceButton = QPushButton(self.theTheme.getIcon("search-replace"),"")
+        self.replaceButton = QPushButton(self.theTheme.getIcon("search-replace"), "")
         self.replaceButton.setFixedSize(QSize(bPx, bPx))
         self.replaceButton.setToolTip("Find and replace in current document")
         self.replaceButton.clicked.connect(self._doReplace)
@@ -1891,7 +1891,6 @@ class GuiDocEditFooter(QWidget):
         self.sPx = int(round(0.9*self.theTheme.baseIconSize))
         fPx = int(0.9*self.theTheme.fontPixelSize)
         bSp = self.mainConf.pxInt(4)
-        hSp = self.mainConf.pxInt(8)
 
         lblFont = self.font()
         lblFont.setPointSizeF(0.9*self.theTheme.fontPointSize)
@@ -1900,11 +1899,6 @@ class GuiDocEditFooter(QWidget):
         self.setContentsMargins(0, 0, 0, 0)
         self.setAutoFillBackground(True)
         self.setPalette(self.thePalette)
-
-        buttonStyle = (
-            "QToolButton {{border: none; background: transparent;}} "
-            "QToolButton:hover {{border: none; background: rgba({0},{1},{2},0.2);}}"
-        ).format(*self.theTheme.colText)
 
         # Status
         self.statusIcon = QLabel("")

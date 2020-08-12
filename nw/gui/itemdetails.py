@@ -238,7 +238,7 @@ class GuiItemDetails(QWidget):
                 else:
                     self.labelFlag.setPixmap(self.expCross)
             else:
-                self.labelFlag.setPixmap(QPixmap(1,1))
+                self.labelFlag.setPixmap(QPixmap(1, 1))
             self.statusFlag.setPixmap(flagIcon.pixmap(self.sPx, self.sPx))
             self.classFlag.setText(nwLabels.CLASS_FLAG[nwItem.itemClass])
             if nwItem.itemLayout == nwItemLayout.NO_LAYOUT:

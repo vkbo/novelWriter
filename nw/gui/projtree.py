@@ -475,7 +475,6 @@ class GuiProjectTree(QTreeWidget):
         tName   = nwItem.itemName
         tClass  = nwItem.itemClass
         tHandle = nwItem.itemHandle
-        pHandle = nwItem.parHandle
 
         expIcon = QIcon()
 
@@ -543,7 +542,7 @@ class GuiProjectTree(QTreeWidget):
 
         self.theProject.setProjectWordCount(nWords)
         sWords = self.theProject.getSessionWordCount()
-        self.theParent.statusBar.setStats(nWords,sWords)
+        self.theParent.statusBar.setStats(nWords, sWords)
 
         return
 
@@ -670,7 +669,6 @@ class GuiProjectTree(QTreeWidget):
         isNote = snItem.itemLayout == nwItemLayout.NOTE
         onFile = dnItem.itemType == nwItemType.FILE
         isRoot = snItem.itemType == nwItemType.ROOT
-        onRoot = dnItem.itemType == nwItemType.ROOT
         isOnTop = self.dropIndicatorPosition() == QAbstractItemView.OnItem
         if (isSame or isNone or isNote) and not (onFile and isOnTop) and not isRoot:
             logger.debug("Drag'n'drop of item %s accepted" % sHandle)
@@ -756,9 +754,9 @@ class GuiProjectTree(QTreeWidget):
             if nHandle is not None and nHandle in self.theMap:
                 try:
                     byIndex = self.theMap[pHandle].indexOfChild(self.theMap[nHandle])
-                except:
+                except Exception:
                     logger.error("Failed to get index of item with handle %s" % nHandle)
-            if byIndex >= 0: 
+            if byIndex >= 0:
                 self.theMap[pHandle].insertChild(byIndex+1, newItem)
             else:
                 self.theMap[pHandle].addChild(newItem)
@@ -841,7 +839,7 @@ class GuiProjectTree(QTreeWidget):
         self.setTreeItemValues(tHandle)
         self._setTreeChanged(True)
 
-        logger.debug("The parent of item %s has been changed to %s" % (tHandle,pHandle))
+        logger.debug("The parent of item %s has been changed to %s" % (tHandle, pHandle))
 
         return True
 
