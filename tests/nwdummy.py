@@ -12,19 +12,6 @@ class DummyMain():
         return
 
     def makeAlert(self, theMessage, theLevel):
-        if theLevel == nwAlert.WARN:
-            lvlMsg = "WARNING: "
-        elif theLevel == nwAlert.ERROR:
-            lvlMsg = "ERROR: "
-        elif theLevel == nwAlert.BUG:
-            lvlMsg = "BUG: "
-        else:
-            lvlMsg = ""
-        if isinstance(theMessage, list):
-            for msgLine in logMsg:
-                print(lvlMsg+msgLine)
-        else:
-            print(lvlMsg+theMessage)
         return
 
     def setStatus(self, theMessage):
