@@ -68,24 +68,24 @@ class NWItem():
     def packXML(self, xParent):
         """Packs all the data in the class instance into an XML object.
         """
-        xPack = etree.SubElement(xParent,"item",attrib={
+        xPack = etree.SubElement(xParent, "item", attrib={
             "handle" : str(self.itemHandle),
             "order"  : str(self.itemOrder),
             "parent" : str(self.parHandle),
         })
-        xSub = self._subPack(xPack,"name",     text=str(self.itemName))
-        xSub = self._subPack(xPack,"type",     text=str(self.itemType.name))
-        xSub = self._subPack(xPack,"class",    text=str(self.itemClass.name))
-        xSub = self._subPack(xPack,"status",   text=str(self.itemStatus))
+        xSub = self._subPack(xPack, "name",   text=str(self.itemName))
+        xSub = self._subPack(xPack, "type",   text=str(self.itemType.name))
+        xSub = self._subPack(xPack, "class",  text=str(self.itemClass.name))
+        xSub = self._subPack(xPack, "status", text=str(self.itemStatus))
         if self.itemType == nwItemType.FILE:
-            xSub = self._subPack(xPack,"exported",  text=str(self.isExported))
-            xSub = self._subPack(xPack,"layout",    text=str(self.itemLayout.name))
-            xSub = self._subPack(xPack,"charCount", text=str(self.charCount), none=False)
-            xSub = self._subPack(xPack,"wordCount", text=str(self.wordCount), none=False)
-            xSub = self._subPack(xPack,"paraCount", text=str(self.paraCount), none=False)
-            xSub = self._subPack(xPack,"cursorPos", text=str(self.cursorPos), none=False)
+            xSub = self._subPack(xPack, "exported",  text=str(self.isExported))
+            xSub = self._subPack(xPack, "layout",    text=str(self.itemLayout.name))
+            xSub = self._subPack(xPack, "charCount", text=str(self.charCount), none=False)
+            xSub = self._subPack(xPack, "wordCount", text=str(self.wordCount), none=False)
+            xSub = self._subPack(xPack, "paraCount", text=str(self.paraCount), none=False)
+            xSub = self._subPack(xPack, "cursorPos", text=str(self.cursorPos), none=False)
         else:
-            xSub = self._subPack(xPack,"expanded", text=str(self.isExpanded))
+            xSub = self._subPack(xPack, "expanded", text=str(self.isExpanded))
         return
 
     def unpackXML(self, xItem):

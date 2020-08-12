@@ -73,7 +73,7 @@ def countWords(theText):
             charCount -= 2
             countPara = False
 
-        theBuff = aLine.replace("–"," ").replace("—"," ")
+        theBuff = aLine.replace("–", " ").replace("—", " ")
         wordCount += len(theBuff.split())
         charCount += theLen
         if countPara and prevEmpty:

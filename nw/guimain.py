@@ -286,7 +286,7 @@ class GuiMain(QMainWindow):
             logger.error("No projData or projPath set")
             return False
 
-        if path.isfile(path.join(projPath,self.theProject.projFile)) and not forceNew:
+        if path.isfile(path.join(projPath, self.theProject.projFile)) and not forceNew:
             msgBox = QMessageBox()
             msgRes = msgBox.critical(
                 self, "New Project",
@@ -597,7 +597,7 @@ class GuiMain(QMainWindow):
             self.mainConf.setLastPath(loadFile)
         except Exception as e:
             self.makeAlert(
-                ["Could not read file. The file must be an existing text file.",str(e)],
+                ["Could not read file. The file must be an existing text file.", str(e)],
                 nwAlert.ERROR
             )
             return False

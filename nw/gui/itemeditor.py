@@ -96,7 +96,7 @@ class GuiItemEditor(QDialog):
 
         for itemLayout in nwItemLayout:
             if itemLayout in self.validLayouts:
-                self.editLayout.addItem(nwLabels.LAYOUT_NAME[itemLayout],itemLayout)
+                self.editLayout.addItem(nwLabels.LAYOUT_NAME[itemLayout], itemLayout)
 
         # Export Switch
         self.textExport = QLabel("Include when building project")

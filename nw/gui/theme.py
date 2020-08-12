@@ -431,8 +431,8 @@ class GuiTheme:
     def _loadColour(self, confParser, cnfSec, cnfName):
         """Load a colour value from a config string.
         """
-        if confParser.has_option(cnfSec,cnfName):
-            inData = confParser.get(cnfSec,cnfName).split(",")
+        if confParser.has_option(cnfSec, cnfName):
+            inData = confParser.get(cnfSec, cnfName).split(",")
             outData = []
             try:
                 outData.append(int(inData[0]))
@@ -450,8 +450,8 @@ class GuiTheme:
         """Set a palette colour value from a config string.
         """
         readCol = []
-        if confParser.has_option(cnfSec,cnfName):
-            inData = confParser.get(cnfSec,cnfName).split(",")
+        if confParser.has_option(cnfSec, cnfName):
+            inData = confParser.get(cnfSec, cnfName).split(",")
             try:
                 readCol.append(int(inData[0]))
                 readCol.append(int(inData[1]))

@@ -42,7 +42,7 @@ def checkString(checkValue, defaultValue, allowNone=False):
             return None
         if checkValue == "None":
             return None
-    if isinstance(checkValue,str):
+    if isinstance(checkValue, str):
         return str(checkValue)
     return defaultValue
 
@@ -109,7 +109,7 @@ def colRange(rgbStart, rgbEnd, nStep):
     elif nStep == 2:
         return [rgbStart, rgbEnd]
 
-    dC = [0,0,0]
+    dC = [0, 0, 0]
     for c in range(3):
         cA = rgbStart[c]
         cB = rgbEnd[c]
@@ -139,11 +139,11 @@ def formatInt(theInt):
             theVal /= 1000.0
             if theVal < 1000.0:
                 if theVal < 10.0:
-                    return "%4.2f%s" % (theVal,pF)
+                    return "%4.2f%s" % (theVal, pF)
                 elif theVal < 100.0:
-                    return "%4.1f%s" % (theVal,pF)
+                    return "%4.1f%s" % (theVal, pF)
                 else:
-                    return "%3.0f%s" % (theVal,pF)
+                    return "%3.0f%s" % (theVal, pF)
 
     return "%d" % theInt
 
@@ -169,11 +169,11 @@ def splitVersionNumber(vString):
     nBits = len(vBits)
 
     if nBits > 0:
-        vMajor = checkInt(vBits[0],0)
+        vMajor = checkInt(vBits[0], 0)
     if nBits > 1:
-        vMinor = checkInt(vBits[1],0)
+        vMinor = checkInt(vBits[1], 0)
     if nBits > 2:
-        vPatch = checkInt(vBits[2],0)
+        vPatch = checkInt(vBits[2], 0)
 
     vInt = vMajor*10000 + vMinor*100 + vPatch
 

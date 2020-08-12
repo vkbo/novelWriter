@@ -69,11 +69,11 @@ class GuiProjectSettings(PagedDialog):
         self.tabImport  = GuiProjectEditStatus(self.theParent, self.theProject, False)
         self.tabReplace = GuiProjectEditReplace(self.theParent, self.theProject)
 
-        self.addTab(self.tabMain,   "Settings")
-        self.addTab(self.tabMeta,   "Details")
-        self.addTab(self.tabStatus, "Status")
-        self.addTab(self.tabImport, "Importance")
-        self.addTab(self.tabReplace,"Auto-Replace")
+        self.addTab(self.tabMain,    "Settings")
+        self.addTab(self.tabMeta,    "Details")
+        self.addTab(self.tabStatus,  "Status")
+        self.addTab(self.tabImport,  "Importance")
+        self.addTab(self.tabReplace, "Auto-Replace")
 
         self.buttonBox = QDialogButtonBox(QDialogButtonBox.Ok | QDialogButtonBox.Cancel)
         self.buttonBox.accepted.connect(self._doSave)
@@ -331,7 +331,7 @@ class GuiProjectEditStatus(QWidget):
         self.saveButton = QPushButton("Save")
         self.colPixmap  = QPixmap(self.iPx, self.iPx)
         self.colPixmap.fill(QColor(120, 120, 120))
-        self.colButton  = QPushButton(QIcon(self.colPixmap),"Colour")
+        self.colButton  = QPushButton(QIcon(self.colPixmap), "Colour")
         self.colButton.setIconSize(self.colPixmap.rect().size())
 
         self.newButton.clicked.connect(self._newItem)
@@ -513,7 +513,7 @@ class GuiProjectEditReplace(QWidget):
             self.optState.getInt("GuiProjectSettings", "replaceColW", 100)
         )
         self.listBox = QTreeWidget()
-        self.listBox.setHeaderLabels(["Keyword","Replace With"])
+        self.listBox.setHeaderLabels(["Keyword", "Replace With"])
         self.listBox.itemSelectionChanged.connect(self._selectedItem)
         self.listBox.setColumnWidth(0, wCol0)
         self.listBox.setIndentation(0)
@@ -601,8 +601,8 @@ class GuiProjectEditReplace(QWidget):
         saveKey = self._stripNotAllowed(newKey)
 
         if len(saveKey) > 0 and len(newVal) > 0:
-            selItem.setText(0,"<%s>" % saveKey)
-            selItem.setText(1,newVal)
+            selItem.setText(0, "<%s>" % saveKey)
+            selItem.setText(1, newVal)
             self.editKey.clear()
             self.editValue.clear()
             self.editKey.setEnabled(False)

@@ -212,7 +212,7 @@ class GuiMainStatus(QStatusBar):
             tH = int(tM/60)
             tM = tM - tH*60
             tS = tS - tM*60 - tH*3600
-            theTime = "%02d:%02d:%02d" % (tH,tM,tS)
+            theTime = "%02d:%02d:%02d" % (tH, tM, tS)
         self.timeText.setText(theTime)
         return
 

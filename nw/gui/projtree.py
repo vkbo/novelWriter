@@ -543,7 +543,7 @@ class GuiProjectTree(QTreeWidget):
 
         self.theProject.setProjectWordCount(nWords)
         sWords = self.theProject.getSessionWordCount()
-        self.theParent.statusBar.setStats(nWords,sWords)
+        self.theParent.statusBar.setStats(nWords, sWords)
 
         return
 
@@ -841,7 +841,7 @@ class GuiProjectTree(QTreeWidget):
         self.setTreeItemValues(tHandle)
         self._setTreeChanged(True)
 
-        logger.debug("The parent of item %s has been changed to %s" % (tHandle,pHandle))
+        logger.debug("The parent of item %s has been changed to %s" % (tHandle, pHandle))
 
         return True
 

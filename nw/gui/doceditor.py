@@ -1475,12 +1475,12 @@ class GuiDocEditSearch(QFrame):
         self.showReplace.setStyleSheet(r"QToolButton {border: none; background: transparent;}")
         self.showReplace.toggled.connect(self._doToggleReplace)
 
-        self.searchButton = QPushButton(self.theTheme.getIcon("search"),"")
+        self.searchButton = QPushButton(self.theTheme.getIcon("search"), "")
         self.searchButton.setFixedSize(QSize(bPx, bPx))
         self.searchButton.setToolTip("Find in current document")
         self.searchButton.clicked.connect(self._doSearch)
 
-        self.replaceButton = QPushButton(self.theTheme.getIcon("search-replace"),"")
+        self.replaceButton = QPushButton(self.theTheme.getIcon("search-replace"), "")
         self.replaceButton.setFixedSize(QSize(bPx, bPx))
         self.replaceButton.setToolTip("Find and replace in current document")
         self.replaceButton.clicked.connect(self._doReplace)

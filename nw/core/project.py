@@ -206,15 +206,15 @@ class NWProject():
         self.spellCheck  = False
         self.autoOutline = True
         self.statusItems = NWStatus()
-        self.statusItems.addEntry("New",     (100, 100, 100))
-        self.statusItems.addEntry("Note",    (200,  50,   0))
-        self.statusItems.addEntry("Draft",   (200, 150,   0))
-        self.statusItems.addEntry("Finished",( 50, 200,   0))
+        self.statusItems.addEntry("New",      (100, 100, 100))
+        self.statusItems.addEntry("Note",     (200,  50,   0))
+        self.statusItems.addEntry("Draft",    (200, 150,   0))
+        self.statusItems.addEntry("Finished", ( 50, 200,   0))
         self.importItems = NWStatus()
-        self.importItems.addEntry("New",     (100, 100, 100))
-        self.importItems.addEntry("Minor",   (200,  50,   0))
-        self.importItems.addEntry("Major",   (200, 150,   0))
-        self.importItems.addEntry("Main",    ( 50, 200,   0))
+        self.importItems.addEntry("New",      (100, 100, 100))
+        self.importItems.addEntry("Minor",    (200,  50,   0))
+        self.importItems.addEntry("Major",    (200, 150,   0))
+        self.importItems.addEntry("Main",     ( 50, 200,   0))
         self.lastEdited = None
         self.lastViewed = None
         self.lastWCount = 0
@@ -421,7 +421,7 @@ class NWProject():
         try:
             nwXML = etree.parse(fileName)
         except Exception as e:
-            self.makeAlert(["Failed to parse project xml.",str(e)], nwAlert.ERROR)
+            self.makeAlert(["Failed to parse project xml.", str(e)], nwAlert.ERROR)
 
             # Trying to open backup file instead
             backFile = fileName[:-3]+"bak"
@@ -430,7 +430,7 @@ class NWProject():
                 try:
                     nwXML = etree.parse(backFile)
                 except Exception as e:
-                    self.makeAlert(["Failed to parse project xml.",str(e)], nwAlert.ERROR)
+                    self.makeAlert(["Failed to parse project xml.", str(e)], nwAlert.ERROR)
                     self.clearProject()
                     return False
             else:
@@ -794,7 +794,7 @@ class NWProject():
                 logger.debug("Created folder %s" % baseDir)
             except Exception as e:
                 self.theParent.makeAlert(
-                    ["Could not create backup folder.",str(e)],
+                    ["Could not create backup folder.", str(e)],
                     nwAlert.ERROR
                 )
                 return False
@@ -823,7 +823,7 @@ class NWProject():
                 logger.info("Backup written to: %s" % archName)
         except Exception as e:
             self.theParent.makeAlert(
-                ["Could not write backup archive.",str(e)],
+                ["Could not write backup archive.", str(e)],
                 nwAlert.ERROR
             )
             return False
@@ -1231,7 +1231,7 @@ class NWProject():
                 mkdir(thePath)
                 logger.debug("Created folder %s" % thePath)
             except Exception as e:
-                self.makeAlert(["Could not create folder.",str(e)], nwAlert.ERROR)
+                self.makeAlert(["Could not create folder.", str(e)], nwAlert.ERROR)
                 return False
         return True
 

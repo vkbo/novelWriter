@@ -135,7 +135,7 @@ class NWIndex():
         if path.isfile(indexFile):
             logger.debug("Loading index file")
             try:
-                with open(indexFile,mode="r",encoding="utf8") as inFile:
+                with open(indexFile, mode="r", encoding="utf8") as inFile:
                     theJson = inFile.read()
                 theData = json.loads(theJson)
             except Exception as e:
@@ -520,7 +520,7 @@ class NWIndex():
             return isGood
 
         # If we're still here, we better check that the references exist
-        for n in range(1,nBits):
+        for n in range(1, nBits):
             if theBits[n] in self.tagIndex:
                 isGood[n] = self.TAG_CLASS[theBits[0]].name == self.tagIndex[theBits[n]][2]
 
