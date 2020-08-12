@@ -19,9 +19,14 @@ jobs:
 
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
-    # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
-    - uses: actions/checkout@v2
-
-    # Runs a single command using the runners shell
-    - name: Check for Syntax Error
-      run: flake8 nw --count --select=E9,F63,F7,F82 --show-source --statistics
+      - name: Setup Python
+        uses: actions/setup-python@v1
+        with:
+          python-version: 3.7
+          architecture: x64
+      - name: Checkout novelWriter
+        uses: actions/checkout@v2
+      - name: Install flake8
+        run: pip install flake8
+      - name: Check for Syntax Error
+        run: flake8 nw --count --select=E9,F63,F7,F82 --show-source --statistics
