@@ -29,7 +29,6 @@ import logging
 import configparser
 import json
 import sys
-import nw
 
 from os import path, mkdir, unlink, rename
 from time import time
@@ -902,7 +901,7 @@ class Config:
         """Cheks if we have the optional packages used by some features.
         """
         try:
-            import enchant
+            import enchant # noqa: F401
             self.hasEnchant = True
             logger.debug("Checking package 'pyenchant': Ok")
         except Exception:

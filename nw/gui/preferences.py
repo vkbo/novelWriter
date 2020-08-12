@@ -720,7 +720,6 @@ class GuiConfigEditEditingTab(QWidget):
     def _disableComboItem(self, theList, theValue):
         """Disable a list item in the combo box.
         """
-        theIdx = theList.findData(theValue)
         theModel = theList.model()
         anItem = theModel.item(1)
         anItem.setFlags(anItem.flags() ^ Qt.ItemIsEnabled)

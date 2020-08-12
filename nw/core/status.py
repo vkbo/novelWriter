@@ -26,7 +26,6 @@
 """
 
 import logging
-import nw
 
 from lxml import etree
 

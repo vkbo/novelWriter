@@ -27,7 +27,6 @@
 
 import logging
 import json
-import nw
 
 from os import path
 from time import time
@@ -603,8 +602,6 @@ class NWIndex():
         by tHandle.
         """
         theRefs = {}
-
-        tItem = self.theProject.projTree[tHandle]
         if tHandle is None:
             return theRefs
 

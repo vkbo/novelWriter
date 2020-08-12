@@ -27,7 +27,6 @@
 
 import logging
 import re
-import nw
 
 from nw.core.tokenizer import Tokenizer
 from nw.constants import nwUnicode, nwLabels, nwKeyWords
@@ -152,12 +151,6 @@ class ToHtml(Tokenizer):
             h2 = "h2"
             h3 = "h3"
             h4 = "h4"
-
-        alignHead = self.A_LEFT
-        if self.doJustify:
-            alignPar = self.A_JUSTIFY
-        else:
-            alignPar = self.A_LEFT
 
         self.theResult = ""
 

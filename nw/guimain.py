@@ -269,7 +269,7 @@ class GuiMain(QMainWindow):
         """
         if self.hasProject:
             msgBox = QMessageBox()
-            msgRes = msgBox.warning(
+            msgBox.warning(
                 self, "New Project",
                 "Please close the current project before making a new one."
             )
@@ -288,7 +288,7 @@ class GuiMain(QMainWindow):
 
         if path.isfile(path.join(projPath, self.theProject.projFile)) and not forceNew:
             msgBox = QMessageBox()
-            msgRes = msgBox.critical(
+            msgBox.critical(
                 self, "New Project",
                 "A project already exists in that location. Please choose another folder."
             )
@@ -713,7 +713,6 @@ class GuiMain(QMainWindow):
 
         self.treeView.saveTreeOrder()
         self.theIndex.clearIndex()
-        nItems = len(self.theProject.projTree)
 
         theDoc = NWDoc(self.theProject, self)
         for nDone, tItem in enumerate(self.theProject.projTree):

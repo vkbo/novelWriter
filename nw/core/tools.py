@@ -28,7 +28,6 @@
 """
 
 import logging
-import nw
 
 logger = logging.getLogger(__name__)
 

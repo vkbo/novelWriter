@@ -422,7 +422,6 @@ class GuiProjectEditStatus(QWidget):
         """
         logger.verbose("Save item button clicked")
         selItem = self._getSelectedItem()
-        iRow    = self.listBox.row(selItem)
         if selItem is not None:
             selIdx = selItem.data(Qt.UserRole)
             self.colData[selIdx] = (

@@ -26,7 +26,6 @@
 """
 
 import logging
-import json
 import nw
 
 from os import path, mkdir, listdir, unlink, rename, rmdir
@@ -265,27 +264,28 @@ class NWProject():
         if popMinimal:
             # Creating a minimal project with a few root folders and a
             # single chapter folder with a single file.
-            nHandle = self.newRoot("Novel",         nwItemClass.NOVEL)
-            xHandle = self.newRoot("Plot",          nwItemClass.PLOT)
-            xHandle = self.newRoot("Characters",    nwItemClass.CHARACTER)
-            xHandle = self.newRoot("World",         nwItemClass.WORLD)
-            tHandle = self.newFile("Title Page",    nwItemClass.NOVEL, nHandle)
-            dHandle = self.newFolder("New Chapter", nwItemClass.NOVEL, nHandle)
-            cHandle = self.newFile("New Chapter",   nwItemClass.NOVEL, dHandle)
-            sHandle = self.newFile("New Scene",     nwItemClass.NOVEL, dHandle)
+            xHandle = {}
+            xHandle[1] = self.newRoot("Novel",         nwItemClass.NOVEL)
+            xHandle[2] = self.newRoot("Plot",          nwItemClass.PLOT)
+            xHandle[3] = self.newRoot("Characters",    nwItemClass.CHARACTER)
+            xHandle[4] = self.newRoot("World",         nwItemClass.WORLD)
+            xHandle[5] = self.newFile("Title Page",    nwItemClass.NOVEL, xHandle[1])
+            xHandle[6] = self.newFolder("New Chapter", nwItemClass.NOVEL, xHandle[1])
+            xHandle[7] = self.newFile("New Chapter",   nwItemClass.NOVEL, xHandle[6])
+            xHandle[8] = self.newFile("New Scene",     nwItemClass.NOVEL, xHandle[6])
 
-            self.projTree.setFileItemLayout(tHandle, nwItemLayout.TITLE)
-            self.projTree.setFileItemLayout(cHandle, nwItemLayout.CHAPTER)
+            self.projTree.setFileItemLayout(xHandle[5], nwItemLayout.TITLE)
+            self.projTree.setFileItemLayout(xHandle[7], nwItemLayout.CHAPTER)
 
-            aDoc.openDocument(tHandle, showStatus=False)
+            aDoc.openDocument(xHandle[5], showStatus=False)
             aDoc.saveDocument(titlePage)
             aDoc.clearDocument()
 
-            aDoc.openDocument(cHandle, showStatus=False)
+            aDoc.openDocument(xHandle[7], showStatus=False)
             aDoc.saveDocument("## New Chapter\n\n")
             aDoc.clearDocument()
 
-            aDoc.openDocument(sHandle, showStatus=False)
+            aDoc.openDocument(xHandle[8], showStatus=False)
             aDoc.saveDocument("### New Scene\n\n")
             aDoc.clearDocument()
 
@@ -838,7 +838,6 @@ class NWProject():
         project path, or if the folder doesn't exist, look for the zip
         file in the assets folder.
         """
-        projName = projData.get("projName", "Sample Project")
         projPath = projData.get("projPath", None)
         if projPath is None:
             logger.error("No project path set for the example project")

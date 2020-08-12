@@ -26,7 +26,6 @@
 """
 
 import logging
-import nw
 
 from datetime import datetime
 

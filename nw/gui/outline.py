@@ -374,7 +374,6 @@ class GuiOutline(QTreeWidget):
                 continue
 
             tLevel = self.theIndex.novelIndex[tHandle][sTitle]["level"]
-            tTime  = self.theIndex.novelIndex[tHandle][sTitle]["updated"]
             tItem  = self._createTreeItem(tHandle, sTitle, tLevel)
             self.treeMap[titleKey] = tItem
 

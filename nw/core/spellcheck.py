@@ -197,7 +197,7 @@ class NWSpellEnchantDummy:
     """
     def __init__(self):
         return
-    
+
     def check(self, theWord):
         return True
 

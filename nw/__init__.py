@@ -239,12 +239,12 @@ def main(sysArgs=None):
         )
 
     try:
-        import PyQt5.QtSvg
+        import PyQt5.QtSvg # noqa: F401
     except ImportError:
         errorData.append("Python module 'PyQt5.QtSvg' is missing.")
 
     try:
-        import lxml
+        import lxml # noqa: F401
     except ImportError:
         errorData.append("Python module 'lxml' is missing.")
 

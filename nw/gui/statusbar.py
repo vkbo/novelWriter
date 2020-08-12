@@ -35,7 +35,6 @@ from PyQt5.QtGui import QColor, QPainter
 from PyQt5.QtWidgets import qApp, QStatusBar, QLabel, QAbstractButton
 
 from nw.core import NWSpellCheck
-from nw.common import formatInt
 
 logger = logging.getLogger(__name__)
 

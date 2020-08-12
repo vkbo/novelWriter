@@ -26,7 +26,6 @@
 """
 
 import logging
-import nw
 
 from lxml import etree
 
@@ -73,19 +72,19 @@ class NWItem():
             "order"  : str(self.itemOrder),
             "parent" : str(self.parHandle),
         })
-        xSub = self._subPack(xPack, "name",   text=str(self.itemName))
-        xSub = self._subPack(xPack, "type",   text=str(self.itemType.name))
-        xSub = self._subPack(xPack, "class",  text=str(self.itemClass.name))
-        xSub = self._subPack(xPack, "status", text=str(self.itemStatus))
+        self._subPack(xPack, "name",   text=str(self.itemName))
+        self._subPack(xPack, "type",   text=str(self.itemType.name))
+        self._subPack(xPack, "class",  text=str(self.itemClass.name))
+        self._subPack(xPack, "status", text=str(self.itemStatus))
         if self.itemType == nwItemType.FILE:
-            xSub = self._subPack(xPack, "exported",  text=str(self.isExported))
-            xSub = self._subPack(xPack, "layout",    text=str(self.itemLayout.name))
-            xSub = self._subPack(xPack, "charCount", text=str(self.charCount), none=False)
-            xSub = self._subPack(xPack, "wordCount", text=str(self.wordCount), none=False)
-            xSub = self._subPack(xPack, "paraCount", text=str(self.paraCount), none=False)
-            xSub = self._subPack(xPack, "cursorPos", text=str(self.cursorPos), none=False)
+            self._subPack(xPack, "exported",  text=str(self.isExported))
+            self._subPack(xPack, "layout",    text=str(self.itemLayout.name))
+            self._subPack(xPack, "charCount", text=str(self.charCount), none=False)
+            self._subPack(xPack, "wordCount", text=str(self.wordCount), none=False)
+            self._subPack(xPack, "paraCount", text=str(self.paraCount), none=False)
+            self._subPack(xPack, "cursorPos", text=str(self.cursorPos), none=False)
         else:
-            xSub = self._subPack(xPack, "expanded", text=str(self.isExpanded))
+            self._subPack(xPack, "expanded", text=str(self.isExpanded))
         return
 
     def unpackXML(self, xItem):
@@ -135,7 +134,7 @@ class NWItem():
         xSub = etree.SubElement(xParent, name, attrib=attrib)
         if text is not None:
             xSub.text = text
-        return xSub
+        return
 
     ##
     #  Set Item Values
@@ -235,7 +234,7 @@ class NWItem():
         if isinstance(expState, str):
             self.isExpanded = (expState == str(True))
         else:
-            self.isExpanded = (expState == True) # noqa
+            self.isExpanded = (expState == True) # noqa: E712
         return
 
     def setExported(self, expState):
@@ -244,7 +243,7 @@ class NWItem():
         if isinstance(expState, str):
             self.isExported = (expState == str(True))
         else:
-            self.isExported = (expState == True) # noqa
+            self.isExported = (expState == True) # noqa: E712
         return
 
     ##

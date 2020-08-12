@@ -27,7 +27,6 @@
 
 import logging
 import json
-import nw
 
 from os import path
 from lxml import etree

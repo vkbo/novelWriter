@@ -1372,7 +1372,6 @@ class GuiDocEditSearch(QFrame):
         self.doMatchCap  = self.mainConf.searchMatchCap
 
         mPx = self.mainConf.pxInt(6)
-        fPx = int(0.9*self.theTheme.fontPixelSize)
         tPx = int(0.8*self.theTheme.fontPixelSize)
         boxFont = self.theTheme.guiFont
         boxFont.setPointSizeF(0.9*self.theTheme.fontPointSize)
@@ -1892,7 +1891,6 @@ class GuiDocEditFooter(QWidget):
         self.sPx = int(round(0.9*self.theTheme.baseIconSize))
         fPx = int(0.9*self.theTheme.fontPixelSize)
         bSp = self.mainConf.pxInt(4)
-        hSp = self.mainConf.pxInt(8)
 
         lblFont = self.font()
         lblFont.setPointSizeF(0.9*self.theTheme.fontPointSize)
@@ -1901,11 +1899,6 @@ class GuiDocEditFooter(QWidget):
         self.setContentsMargins(0, 0, 0, 0)
         self.setAutoFillBackground(True)
         self.setPalette(self.thePalette)
-
-        buttonStyle = (
-            "QToolButton {{border: none; background: transparent;}} "
-            "QToolButton:hover {{border: none; background: rgba({0},{1},{2},0.2);}}"
-        ).format(*self.theTheme.colText)
 
         # Status
         self.statusIcon = QLabel("")

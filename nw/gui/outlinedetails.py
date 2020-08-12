@@ -30,8 +30,7 @@ import nw
 
 from PyQt5.QtCore import Qt
 from PyQt5.QtWidgets import (
-    QScrollArea, QWidget, QGridLayout, QHBoxLayout, QGroupBox, QLabel,
-    QSizePolicy
+    QScrollArea, QWidget, QGridLayout, QHBoxLayout, QGroupBox, QLabel
 )
 
 from nw.constants import nwLabels, nwKeyWords
