@@ -964,7 +964,6 @@ class GuiBuildNovelDocView(QTextBrowser):
         lblFont.setPointSizeF(0.9*self.theTheme.fontPointSize)
 
         fPx = int(1.1*self.theTheme.fontPixelSize)
-        mPx = self.mainConf.pxInt(4)
 
         self.theTitle = QLabel("<b>Build Time:</b> Unknown", self)
         self.theTitle.setIndent(0)

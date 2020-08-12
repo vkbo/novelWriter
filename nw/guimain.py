@@ -269,7 +269,7 @@ class GuiMain(QMainWindow):
         """
         if self.hasProject:
             msgBox = QMessageBox()
-            msgRes = msgBox.warning(
+            msgBox.warning(
                 self, "New Project",
                 "Please close the current project before making a new one."
             )
@@ -286,9 +286,9 @@ class GuiMain(QMainWindow):
             logger.error("No projData or projPath set")
             return False
 
-        if path.isfile(path.join(projPath,self.theProject.projFile)) and not forceNew:
+        if path.isfile(path.join(projPath, self.theProject.projFile)) and not forceNew:
             msgBox = QMessageBox()
-            msgRes = msgBox.critical(
+            msgBox.critical(
                 self, "New Project",
                 "A project already exists in that location. Please choose another folder."
             )
@@ -391,7 +391,7 @@ class GuiMain(QMainWindow):
                             int(self.theProject.lockedBy[3])
                         ).strftime("%x %X")
                     )
-                except:
+                except Exception:
                     lockDetails = ""
 
                 msgBox = QMessageBox()
@@ -597,7 +597,7 @@ class GuiMain(QMainWindow):
             self.mainConf.setLastPath(loadFile)
         except Exception as e:
             self.makeAlert(
-                ["Could not read file. The file must be an existing text file.",str(e)],
+                ["Could not read file. The file must be an existing text file.", str(e)],
                 nwAlert.ERROR
             )
             return False
@@ -713,7 +713,6 @@ class GuiMain(QMainWindow):
 
         self.treeView.saveTreeOrder()
         self.theIndex.clearIndex()
-        nItems = len(self.theProject.projTree)
 
         theDoc = NWDoc(self.theProject, self)
         for nDone, tItem in enumerate(self.theProject.projTree):

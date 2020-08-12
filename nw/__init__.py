@@ -153,7 +153,7 @@ def main(sysArgs=None):
 
     # Parse Options
     try:
-        inOpts, inRemain = getopt.getopt(sysArgs,shortOpt,longOpt)
+        inOpts, inRemain = getopt.getopt(sysArgs, shortOpt, longOpt)
     except getopt.GetoptError as E:
         print(helpMsg)
         print("ERROR: %s" % str(E))
@@ -163,7 +163,7 @@ def main(sysArgs=None):
         cmdOpen = inRemain[0]
 
     for inOpt, inArg in inOpts:
-        if inOpt in ("-h","--help"):
+        if inOpt in ("-h", "--help"):
             print(helpMsg)
             sys.exit()
         elif inOpt in ("-v", "--version"):
@@ -179,7 +179,7 @@ def main(sysArgs=None):
         elif inOpt == "--logfile":
             logFile = inArg
             toFile  = True
-        elif inOpt in ("-q","--quiet"):
+        elif inOpt in ("-q", "--quiet"):
             toStd = False
         elif inOpt == "--verbose":
             debugLevel = VERBOSE
@@ -205,7 +205,7 @@ def main(sysArgs=None):
         if path.isfile(logFile+".bak"):
             remove(logFile+".bak")
         if path.isfile(logFile):
-            rename(logFile,logFile+".bak")
+            rename(logFile, logFile+".bak")
 
         fHandle = logging.FileHandler(logFile)
         fHandle.setLevel(debugLevel)
@@ -239,13 +239,13 @@ def main(sysArgs=None):
         )
 
     try:
-        import PyQt5.QtSvg
-    except:
+        import PyQt5.QtSvg # noqa: F401
+    except ImportError:
         errorData.append("Python module 'PyQt5.QtSvg' is missing.")
 
     try:
-        import lxml
-    except:
+        import lxml # noqa: F401
+    except ImportError:
         errorData.append("Python module 'lxml' is missing.")
 
     if errorData:

@@ -30,8 +30,7 @@ import nw
 
 from PyQt5.QtCore import Qt
 from PyQt5.QtWidgets import (
-    QScrollArea, QWidget, QGridLayout, QHBoxLayout, QGroupBox, QLabel,
-    QSizePolicy
+    QScrollArea, QWidget, QGridLayout, QHBoxLayout, QGroupBox, QLabel
 )
 
 from nw.constants import nwLabels, nwKeyWords
@@ -237,7 +236,7 @@ class GuiOutlineDetails(QScrollArea):
             nwItem  = self.theProject.projTree[tHandle]
             novIdx  = self.theIndex.novelIndex[tHandle][sTitle]
             theRefs = self.theIndex.getReferences(tHandle, sTitle)
-        except:
+        except Exception:
             return False
 
         if novIdx["level"] in self.LVL_MAP:

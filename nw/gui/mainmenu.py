@@ -607,9 +607,9 @@ class GuiMainMenu(QMenuBar):
         self.aFindNext = QAction("Find Next", self)
         self.aFindNext.setStatusTip("Find next occurrence text in document")
         if self.mainConf.osDarwin:
-            self.aFindNext.setShortcuts(["Ctrl+G","F3"])
+            self.aFindNext.setShortcuts(["Ctrl+G", "F3"])
         else:
-            self.aFindNext.setShortcuts(["F3","Ctrl+G"])
+            self.aFindNext.setShortcuts(["F3", "Ctrl+G"])
         self.aFindNext.triggered.connect(lambda: self._docAction(nwDocAction.GO_NEXT))
         self.srcMenu.addAction(self.aFindNext)
 
@@ -617,9 +617,9 @@ class GuiMainMenu(QMenuBar):
         self.aFindPrev = QAction("Find Previous", self)
         self.aFindPrev.setStatusTip("Find previous occurrence text in document")
         if self.mainConf.osDarwin:
-            self.aFindPrev.setShortcuts(["Ctrl+Shift+G","Shift+F3"])
+            self.aFindPrev.setShortcuts(["Ctrl+Shift+G", "Shift+F3"])
         else:
-            self.aFindPrev.setShortcuts(["Shift+F3","Ctrl+Shift+G"])
+            self.aFindPrev.setShortcuts(["Shift+F3", "Ctrl+Shift+G"])
         self.aFindPrev.triggered.connect(lambda: self._docAction(nwDocAction.GO_PREV))
         self.srcMenu.addAction(self.aFindPrev)
 
@@ -717,7 +717,7 @@ class GuiMainMenu(QMenuBar):
         # Format > Remove Block Format
         self.aFmtNoFormat = QAction("Remove Block Format", self)
         self.aFmtNoFormat.setStatusTip("Strips block format")
-        self.aFmtNoFormat.setShortcuts(["Ctrl+0","Ctrl+Shift+/"])
+        self.aFmtNoFormat.setShortcuts(["Ctrl+0", "Ctrl+Shift+/"])
         self.aFmtNoFormat.triggered.connect(lambda: self._docAction(nwDocAction.BLOCK_TXT))
         self.fmtMenu.addAction(self.aFmtNoFormat)
 
@@ -870,7 +870,7 @@ class GuiMainMenu(QMenuBar):
         if self.mainConf.hasHelp and self.mainConf.hasAssistant:
             self.aHelpWeb.setShortcut("Shift+F1")
         else:
-            self.aHelpWeb.setShortcuts(["F1","Shift+F1"])
+            self.aHelpWeb.setShortcuts(["F1", "Shift+F1"])
         self.helpMenu.addAction(self.aHelpWeb)
 
         # Document > Go to Website

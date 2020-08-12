@@ -418,11 +418,11 @@ class Tokenizer():
                     rxThis = theRX.globalMatch(aLine, 0)
                     while rxThis.hasNext():
                         rxMatch = rxThis.next()
-                        for n in range(1,len(theKeys)):
+                        for n in range(1, len(theKeys)):
                             if theKeys[n] is not None:
                                 xPos = rxMatch.capturedStart(n)
                                 xLen = rxMatch.capturedLength(n)
-                                fmtPos.append([xPos,xLen,theKeys[n]])
+                                fmtPos.append([xPos, xLen, theKeys[n]])
 
                 # Save the line as is, but append the array of formatting locations
                 # sorted by position
@@ -686,7 +686,7 @@ class Tokenizer():
         theTitle = theTitle.replace(r"%sc%", str(self.numChScene))
         theTitle = theTitle.replace(r"%sca%", str(self.numAbsScene))
         if r"%chw%" in theTitle:
-            theTitle = theTitle.replace(r"%chw%", numberToWord(self.numChapter,"en"))
+            theTitle = theTitle.replace(r"%chw%", numberToWord(self.numChapter, "en"))
         if r"%chi%" in theTitle:
             theTitle = theTitle.replace(r"%chi%", numberToRoman(self.numChapter, True))
         if r"%chI%" in theTitle:

@@ -214,7 +214,7 @@ class ProjWizardFolderPage(QWizardPage):
         dlgOpt |= QFileDialog.ShowDirsOnly
         dlgOpt |= QFileDialog.DontUseNativeDialog
         projDir = QFileDialog.getExistingDirectory(
-            self,"Select Project Folder", lastPath, options=dlgOpt
+            self, "Select Project Folder", lastPath, options=dlgOpt
         )
         if projDir:
             projName = self.field("projName")

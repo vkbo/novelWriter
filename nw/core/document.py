@@ -192,7 +192,7 @@ class NWDoc():
                     unlink(chkFile)
                     logger.debug("Deleted: %s" % chkFile)
                 except Exception as e:
-                    self.makeAlert(["Could not delete document file.",str(e)], nwAlert.ERROR)
+                    self.makeAlert(["Could not delete document file.", str(e)], nwAlert.ERROR)
                     return False
 
         return True

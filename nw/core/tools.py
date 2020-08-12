@@ -28,7 +28,6 @@
 """
 
 import logging
-import nw
 
 logger = logging.getLogger(__name__)
 
@@ -73,12 +72,13 @@ def countWords(theText):
             charCount -= 2
             countPara = False
 
-        theBuff = aLine.replace("–"," ").replace("—"," ")
+        theBuff = aLine.replace("–", " ").replace("—", " ")
         wordCount += len(theBuff.split())
         charCount += theLen
         if countPara and prevEmpty:
             paraCount += 1
-        prevEmpty = countPara == False
+
+        prevEmpty = not countPara
 
     return charCount, wordCount, paraCount
 
@@ -139,48 +139,31 @@ def _numberToWordEN(numVal):
     tenVal = (numVal-oneVal) % 100
     hunVal = (numVal-tenVal-oneVal) % 1000
 
-    if hunVal == 100: hunWord = "One Hundred"
-    if hunVal == 200: hunWord = "Two Hundred"
-    if hunVal == 300: hunWord = "Three Hundred"
-    if hunVal == 400: hunWord = "Four Hundred"
-    if hunVal == 500: hunWord = "Five Hundred"
-    if hunVal == 600: hunWord = "Six Hundred"
-    if hunVal == 700: hunWord = "Seven Hundred"
-    if hunVal == 800: hunWord = "Eight Hundred"
-    if hunVal == 900: hunWord = "Nine Hundred"
+    theHundreds = {
+        100: "One Hundred",   200: "Two Hundred",   300: "Three Hundred",
+        400: "Four Hundred",  500: "Five Hundred",  600: "Six Hundred",
+        700: "Seven Hundred", 800: "Eight Hundred", 900: "Nine Hundred",
+    }
+    theTens = {
+        20: "Twenty", 30: "Thirty",  40: "Forty",  50: "Fifty",
+        60: "Sixty",  70: "Seventy", 80: "Eighty", 90: "Ninety",
+    }
+    theTeens = {
+        0: "Ten",     1: "Eleven",  2: "Twelve",    3: "Thirteen", 4: "Fourteen",
+        5: "Fifteen", 6: "Sixteen", 7: "Seventeen", 8: "Eighteen", 9: "Nineteen",
+    }
+    theOnes = {
+        0: "",     1: "One", 2: "Two",   3: "Three", 4: "Four",
+        5: "Five", 6: "Six", 7: "Seven", 8: "Eight", 9: "Nine",
+    }
 
-    if tenVal == 20: tenWord = "Twenty"
-    if tenVal == 30: tenWord = "Thirty"
-    if tenVal == 40: tenWord = "Forty"
-    if tenVal == 50: tenWord = "Fifty"
-    if tenVal == 60: tenWord = "Sixty"
-    if tenVal == 70: tenWord = "Seventy"
-    if tenVal == 80: tenWord = "Eighty"
-    if tenVal == 90: tenWord = "Ninety"
-
+    hunWord = theHundreds.get(hunVal, "")
+    tenWord = theTens.get(tenVal, "")
     if tenVal == 10:
-        if oneVal == 0: oneWord = "Ten"
-        if oneVal == 1: oneWord = "Eleven"
-        if oneVal == 2: oneWord = "Twelve"
-        if oneVal == 3: oneWord = "Thirteen"
-        if oneVal == 4: oneWord = "Fourteen"
-        if oneVal == 5: oneWord = "Fifteen"
-        if oneVal == 6: oneWord = "Sixteen"
-        if oneVal == 7: oneWord = "Seventeen"
-        if oneVal == 8: oneWord = "Eighteen"
-        if oneVal == 9: oneWord = "Nineteen"
+        oneWord = theTeens.get(oneVal, "")
         numWord = ("%s %s" % (hunWord, oneWord)).strip()
     else:
-        if oneVal == 0: oneWord = ""
-        if oneVal == 1: oneWord = "One"
-        if oneVal == 2: oneWord = "Two"
-        if oneVal == 3: oneWord = "Three"
-        if oneVal == 4: oneWord = "Four"
-        if oneVal == 5: oneWord = "Five"
-        if oneVal == 6: oneWord = "Six"
-        if oneVal == 7: oneWord = "Seven"
-        if oneVal == 8: oneWord = "Eight"
-        if oneVal == 9: oneWord = "Nine"
+        oneWord = theOnes.get(oneVal, "")
         if tenVal == 0:
             numWord = ("%s %s" % (hunWord, oneWord)).strip()
         else:
