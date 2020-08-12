@@ -19,5 +19,9 @@ jobs:
         uses: actions/checkout@v2
       - name: Install flake8
         run: pip install flake8
-      - name: Check for Syntax Error
+      - name: Check for Syntax Error on novelWriter
         run: flake8 nw --count --select=E9,F63,F7,F82 --show-source --statistics
+      - name: Check for Syntax Error on Tests
+        run: flake8 tests --count --select=E9,F63,F7,F82 --show-source --statistics
+      - name: Check for Code Style on novelWriter
+        run: flake8 nw --count --max-line-length=99  --select E1,E231,E27,E4,E5,E7,E9,W,F  --show-source --statistics
