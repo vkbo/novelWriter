@@ -240,12 +240,12 @@ def main(sysArgs=None):
 
     try:
         import PyQt5.QtSvg
-    except:
+    except ImportError:
         errorData.append("Python module 'PyQt5.QtSvg' is missing.")
 
     try:
         import lxml
-    except:
+    except ImportError:
         errorData.append("Python module 'lxml' is missing.")
 
     if errorData:

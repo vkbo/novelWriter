@@ -222,7 +222,7 @@ class NWIndex():
                 if len(self.textCounts[tHandle]) != 3:
                     self.indexBroken = True
 
-        except:
+        except Exception:
             self.indexBroken = True
 
         if self.indexBroken:

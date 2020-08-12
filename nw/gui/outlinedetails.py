@@ -237,7 +237,7 @@ class GuiOutlineDetails(QScrollArea):
             nwItem  = self.theProject.projTree[tHandle]
             novIdx  = self.theIndex.novelIndex[tHandle][sTitle]
             theRefs = self.theIndex.getReferences(tHandle, sTitle)
-        except:
+        except Exception:
             return False
 
         if novIdx["level"] in self.LVL_MAP:

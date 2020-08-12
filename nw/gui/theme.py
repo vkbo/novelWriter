@@ -182,7 +182,7 @@ class GuiTheme:
         for fontFam in listdir(fontAssets):
             fontDir = path.join(fontAssets, fontFam)
             if path.isdir(fontDir):
-                if not fontFam in self.guiFontDB.families():
+                if fontFam not in self.guiFontDB.families():
                     for fontFile in listdir(fontDir):
                         ttfFile = path.join(fontDir, fontFile)
                         if path.isfile(ttfFile) and fontFile.endswith(".ttf"):
@@ -438,7 +438,7 @@ class GuiTheme:
                 outData.append(int(inData[0]))
                 outData.append(int(inData[1]))
                 outData.append(int(inData[2]))
-            except:
+            except Exception:
                 logger.error("Could not load theme colours for '%s' from config file" % cnfName)
                 outData = [0, 0, 0]
         else:
@@ -456,7 +456,7 @@ class GuiTheme:
                 readCol.append(int(inData[0]))
                 readCol.append(int(inData[1]))
                 readCol.append(int(inData[2]))
-            except:
+            except Exception:
                 logger.error("Could not load theme colours for '%s' from config file" % cnfName)
                 return
         if len(readCol) == 3:

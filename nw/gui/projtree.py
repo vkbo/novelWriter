@@ -756,7 +756,7 @@ class GuiProjectTree(QTreeWidget):
             if nHandle is not None and nHandle in self.theMap:
                 try:
                     byIndex = self.theMap[pHandle].indexOfChild(self.theMap[nHandle])
-                except:
+                except Exception:
                     logger.error("Failed to get index of item with handle %s" % nHandle)
             if byIndex >= 0: 
                 self.theMap[pHandle].insertChild(byIndex+1, newItem)

@@ -242,9 +242,9 @@ class StatusLED(QAbstractButton):
         """
         if theState is None:
             self._theCol = self.colNone
-        elif theState == True:
+        elif theState:
             self._theCol = self.colTrue
-        elif theState == False:
+        elif not theState:
             self._theCol = self.colFalse
         else:
             self._theCol = self.colNone

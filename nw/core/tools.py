@@ -78,7 +78,8 @@ def countWords(theText):
         charCount += theLen
         if countPara and prevEmpty:
             paraCount += 1
-        prevEmpty = countPara == False
+
+        prevEmpty = not countPara
 
     return charCount, wordCount, paraCount
 

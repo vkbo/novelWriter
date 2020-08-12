@@ -862,7 +862,7 @@ class Config:
         for i in range(listLen):
             try:
                 outData.append(castTo(inData[i]))
-            except:
+            except Exception:
                 outData.append(listDefault[i])
         return outData
 
@@ -905,13 +905,13 @@ class Config:
             import enchant
             self.hasEnchant = True
             logger.debug("Checking package 'pyenchant': Ok")
-        except:
+        except Exception:
             self.hasEnchant = False
             logger.debug("Checking package 'pyenchant': Missing")
 
         try:
             self.hasAssistant = which("assistant")
-        except:
+        except Exception:
             self.hasAssistant = False
         if self.hasAssistant:
             logger.debug("Checking executable 'assistant': Ok")

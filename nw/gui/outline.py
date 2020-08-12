@@ -193,7 +193,7 @@ class GuiOutline(QTreeWidget):
         tHandle = tItem.data(self.colIndex[nwOutline.TITLE], Qt.UserRole)
         try:
             tLine = int(tItem.text(self.colIndex[nwOutline.LINE]))
-        except:
+        except Exception:
             tLine = 1
 
         logger.verbose("User selected entry with handle %s on line %s" % (tHandle, tLine))
@@ -254,7 +254,7 @@ class GuiOutline(QTreeWidget):
         for hName in tempOrder:
             try:
                 treeOrder.append(nwOutline[hName])
-            except:
+            except Exception:
                 logger.warning("Ignored unknown outline column '%s'" % str(hName))
 
         # Add columns that was not in the file to the treeOrder array.
@@ -276,14 +276,14 @@ class GuiOutline(QTreeWidget):
         for hName in tmpWidth:
             try:
                 self.colWidth[nwOutline[hName]] = self.mainConf.pxInt(tmpWidth[hName])
-            except:
+            except Exception:
                 logger.warning("Ignored unknown outline column '%s'" % str(hName))
 
         tmpHidden = self.optState.getValue("GuiOutline", "columnHidden", {})
         for hName in tmpHidden:
             try:
                 self.colHidden[nwOutline[hName]] = tmpHidden[hName]
-            except:
+            except Exception:
                 logger.warning("Ignored unknown outline column '%s'" % str(hName))
 
         self.headerMenu.setHiddenState(self.colHidden)

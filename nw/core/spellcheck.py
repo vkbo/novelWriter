@@ -149,7 +149,7 @@ class NWSpellEnchant(NWSpellCheck):
             self.theDict = enchant.Dict(theLang)
             self.spellLanguage = theLang
             logger.debug("Enchant spell checking for language %s loaded" % theLang)
-        except:
+        except Exception:
             logger.error("Failed to load enchant spell checking for language %s" % theLang)
             self.theDict = NWSpellEnchantDummy()
             self.spellLanguage = None
@@ -186,7 +186,7 @@ class NWSpellEnchant(NWSpellCheck):
             for spTag, spProvider in enchant.list_dicts():
                 spName = "%s [%s]" % (self.expandLanguage(spTag), spProvider.name)
                 retList.append((spTag, spName))
-        except:
+        except Exception:
             logger.error("Failed to list languages for enchant spell checking")
         return retList
 

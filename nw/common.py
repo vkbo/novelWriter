@@ -38,7 +38,7 @@ def checkString(checkValue, defaultValue, allowNone=False):
     """Check if a variable is a string or a none.
     """
     if allowNone:
-        if checkValue == None:
+        if checkValue is None:
             return None
         if checkValue == "None":
             return None
@@ -50,20 +50,20 @@ def checkInt(checkValue, defaultValue, allowNone=False):
     """Check if a variable is an integer or a none.
     """
     if allowNone:
-        if checkValue == None:
+        if checkValue is None:
             return None
         if checkValue == "None":
             return None
     try:
         return int(checkValue)
-    except:
+    except Exception:
         return defaultValue
 
 def checkBool(checkValue, defaultValue, allowNone=False):
     """Check if a variable is a boolean or a none.
     """
     if allowNone:
-        if checkValue == None:
+        if checkValue is None:
             return None
         if checkValue == "None":
             return None

@@ -391,7 +391,7 @@ class GuiMain(QMainWindow):
                             int(self.theProject.lockedBy[3])
                         ).strftime("%x %X")
                     )
-                except:
+                except Exception:
                     lockDetails = ""
 
                 msgBox = QMessageBox()

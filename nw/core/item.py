@@ -130,7 +130,7 @@ class NWItem():
     def _subPack(xParent, name, attrib=None, text=None, none=True):
         """Packs the values into an xml element.
         """
-        if not none and (text == None or text == "None"):
+        if not none and (text is None or text == "None"):
             return None
         xSub = etree.SubElement(xParent, name, attrib=attrib)
         if text is not None:
@@ -233,18 +233,18 @@ class NWItem():
         """Save the expanded status of an item in the project tree.
         """
         if isinstance(expState, str):
-            self.isExpanded = expState == str(True)
+            self.isExpanded = (expState == str(True))
         else:
-            self.isExpanded = expState == True
+            self.isExpanded = (expState == True) # noqa
         return
 
     def setExported(self, expState):
         """Save the export flag.
         """
         if isinstance(expState, str):
-            self.isExported = expState == str(True)
+            self.isExported = (expState == str(True))
         else:
-            self.isExported = expState == True
+            self.isExported = (expState == True) # noqa
         return
 
     ##

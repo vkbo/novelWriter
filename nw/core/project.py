@@ -1243,7 +1243,8 @@ class NWProject():
         for aValue in theValue:
             if not isinstance(aValue, str):
                 aValue = str(aValue)
-            if aValue == "" and not allowNone: continue
+            if aValue == "" and not allowNone:
+                continue
             xItem = etree.SubElement(xParent, theName)
             xItem.text = aValue
         return
@@ -1402,7 +1403,7 @@ class NWProject():
         try:
             rmdir(theData)
             logger.info("Removed folder: %s" % theFolder)
-        except:
+        except Exception:
             errList.append("Failed to remove: %s" % theFolder)
 
         return errList

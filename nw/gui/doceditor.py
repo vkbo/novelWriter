@@ -1272,7 +1272,7 @@ class GuiDocEditor(QTextEdit):
         try:
             isFind  = self.lastFind[0] == theCursor.selectionStart()
             isFind &= self.lastFind[1] == theCursor.selectionEnd()
-        except:
+        except Exception:
             isFind = False
 
         if isFind:
