@@ -1068,7 +1068,6 @@ class GuiBuildNovelDocView(QTextBrowser):
             strBuildTime = "Unknown"
         self.theTitle.setText("<b>Build Time:</b> %s" % strBuildTime)
 
-
     def _updateDocMargins(self):
         """Automatically adjust the header to fill the top of the
         document within the viewport.

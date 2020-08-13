@@ -43,12 +43,12 @@ class GuiOutline(QTreeWidget):
 
     DEF_WIDTH = {
         nwOutline.TITLE  : 200,
-        nwOutline.LEVEL  :  40,
+        nwOutline.LEVEL  : 40,
         nwOutline.LABEL  : 150,
-        nwOutline.LINE   :  40,
-        nwOutline.CCOUNT :  50,
-        nwOutline.WCOUNT :  50,
-        nwOutline.PCOUNT :  50,
+        nwOutline.LINE   : 40,
+        nwOutline.CCOUNT : 50,
+        nwOutline.WCOUNT : 50,
+        nwOutline.PCOUNT : 50,
         nwOutline.POV    : 100,
         nwOutline.CHAR   : 100,
         nwOutline.PLOT   : 100,

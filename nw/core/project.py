@@ -206,14 +206,14 @@ class NWProject():
         self.autoOutline = True
         self.statusItems = NWStatus()
         self.statusItems.addEntry("New",      (100, 100, 100))
-        self.statusItems.addEntry("Note",     (200,  50,   0))
-        self.statusItems.addEntry("Draft",    (200, 150,   0))
-        self.statusItems.addEntry("Finished", ( 50, 200,   0))
+        self.statusItems.addEntry("Note",     (200, 50,  0))
+        self.statusItems.addEntry("Draft",    (200, 150, 0))
+        self.statusItems.addEntry("Finished", (50,  200, 0))
         self.importItems = NWStatus()
         self.importItems.addEntry("New",      (100, 100, 100))
-        self.importItems.addEntry("Minor",    (200,  50,   0))
-        self.importItems.addEntry("Major",    (200, 150,   0))
-        self.importItems.addEntry("Main",     ( 50, 200,   0))
+        self.importItems.addEntry("Minor",    (200, 50,  0))
+        self.importItems.addEntry("Major",    (200, 150, 0))
+        self.importItems.addEntry("Main",     (50,  200, 0))
         self.lastEdited = None
         self.lastViewed = None
         self.lastWCount = 0
@@ -1402,7 +1402,8 @@ class NWProject():
         try:
             rmdir(theData)
             logger.info("Removed folder: %s" % theFolder)
-        except Exception:
+        except Exception as e:
+            logger.error(str(e))
             errList.append("Failed to remove: %s" % theFolder)
 
         return errList

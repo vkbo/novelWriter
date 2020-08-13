@@ -76,6 +76,7 @@ logging.addLevelName(VERBOSE, "VERBOSE")
 def logVerbose(self, message, *args, **kws):
     if self.isEnabledFor(VERBOSE):
         self._log(VERBOSE, message, args, **kws)
+
 logging.Logger.verbose = logVerbose
 
 # Initiating logging

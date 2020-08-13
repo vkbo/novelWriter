@@ -20,6 +20,8 @@ is primarily saved in JSON files.
 
 The full documentation is available at [novelwriter.readthedocs.io](https://novelwriter.readthedocs.io/).
 
+The contributing guide is available in [CONTRIBUTING](CONTRIBUTING.md).
+
 
 ### Note on the Default Branch
 

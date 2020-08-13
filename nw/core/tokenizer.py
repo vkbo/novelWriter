@@ -40,34 +40,34 @@ logger = logging.getLogger(__name__)
 
 class Tokenizer():
 
-    FMT_B_B    =  1 # Begin bold
-    FMT_B_E    =  2 # End bold
-    FMT_I_B    =  3 # Begin italics
-    FMT_I_E    =  4 # End italics
-    FMT_D_B    =  5 # Begin strikeout
-    FMT_D_E    =  6 # End strikeout
+    FMT_B_B    = 1 # Begin bold
+    FMT_B_E    = 2 # End bold
+    FMT_I_B    = 3 # Begin italics
+    FMT_I_E    = 4 # End italics
+    FMT_D_B    = 5 # Begin strikeout
+    FMT_D_E    = 6 # End strikeout
 
-    T_EMPTY    =  1 # Empty line (new paragraph)
-    T_SYNOPSIS =  2 # Synopsis comment
-    T_COMMENT  =  3 # Comment line
-    T_KEYWORD  =  4 # Command line
-    T_TITLE    =  5 # Title
-    T_HEAD1    =  6 # Header 1
-    T_HEAD2    =  7 # Header 2
-    T_HEAD3    =  8 # Header 3
-    T_HEAD4    =  9 # Header 4
+    T_EMPTY    = 1  # Empty line (new paragraph)
+    T_SYNOPSIS = 2  # Synopsis comment
+    T_COMMENT  = 3  # Comment line
+    T_KEYWORD  = 4  # Command line
+    T_TITLE    = 5  # Title
+    T_HEAD1    = 6  # Header 1
+    T_HEAD2    = 7  # Header 2
+    T_HEAD3    = 8  # Header 3
+    T_HEAD4    = 9  # Header 4
     T_TEXT     = 10 # Text line
     T_SEP      = 11 # Scene separator
     T_SKIP     = 12 # Paragraph break
 
-    A_NONE     =   0 # No special style
-    A_LEFT     =   1 # Left aligned
-    A_RIGHT    =   2 # Right aligned
-    A_CENTRE   =   4 # Centred
-    A_JUSTIFY  =   8 # Justified
-    A_PBB      =  16 # Page break before always
-    A_PBB_AV   =  32 # Page break before avoid
-    A_PBB_NO   =  64 # Page break before never
+    A_NONE     = 0   # No special style
+    A_LEFT     = 1   # Left aligned
+    A_RIGHT    = 2   # Right aligned
+    A_CENTRE   = 4   # Centred
+    A_JUSTIFY  = 8   # Justified
+    A_PBB      = 16  # Page break before always
+    A_PBB_AV   = 32  # Page break before avoid
+    A_PBB_NO   = 64  # Page break before never
     A_PBA      = 128 # Page break after always
     A_PBA_AV   = 256 # Page break after avoid
     A_PBA_NO   = 512 # Page break after avoid
