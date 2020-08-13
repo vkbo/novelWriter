@@ -77,11 +77,11 @@ class GuiTheme:
         self.themeLicenseUrl  = ""
 
         ## GUI
-        self.treeWCount  = [  0,   0,   0]
+        self.treeWCount  = [0,   0,   0]
         self.statNone    = [120, 120, 120]
-        self.statUnsaved = [120, 120,  40]
-        self.statSaved   = [ 40, 120,   0]
-        self.helpText    = [  0,   0,   0]
+        self.statUnsaved = [120, 120, 40]
+        self.statSaved   = [40,  120, 0]
+        self.helpText    = [0,   0,   0]
 
         # Loaded Syntax Settings
 
@@ -96,21 +96,21 @@ class GuiTheme:
 
         ## Colours
         self.colBack   = [255, 255, 255]
-        self.colText   = [  0,   0,   0]
-        self.colLink   = [  0,   0,   0]
-        self.colHead   = [  0,   0,   0]
-        self.colHeadH  = [  0,   0,   0]
-        self.colEmph   = [  0,   0,   0]
-        self.colDialN  = [  0,   0,   0]
-        self.colDialD  = [  0,   0,   0]
-        self.colDialS  = [  0,   0,   0]
-        self.colComm   = [  0,   0,   0]
-        self.colKey    = [  0,   0,   0]
-        self.colVal    = [  0,   0,   0]
-        self.colSpell  = [  0,   0,   0]
-        self.colTagErr = [  0,   0,   0]
-        self.colRepTag = [  0,   0,   0]
-        self.colMod    = [  0,   0,   0]
+        self.colText   = [0, 0, 0]
+        self.colLink   = [0, 0, 0]
+        self.colHead   = [0, 0, 0]
+        self.colHeadH  = [0, 0, 0]
+        self.colEmph   = [0, 0, 0]
+        self.colDialN  = [0, 0, 0]
+        self.colDialD  = [0, 0, 0]
+        self.colDialS  = [0, 0, 0]
+        self.colComm   = [0, 0, 0]
+        self.colKey    = [0, 0, 0]
+        self.colVal    = [0, 0, 0]
+        self.colSpell  = [0, 0, 0]
+        self.colTagErr = [0, 0, 0]
+        self.colRepTag = [0, 0, 0]
+        self.colMod    = [0, 0, 0]
 
         # Changeable Settings
         self.guiTheme   = None
@@ -146,7 +146,7 @@ class GuiTheme:
         self.fontPixelSize = int(round(qMetric.height()))
         self.baseIconSize = int(round(qMetric.ascent()))
         self.textNHeight = qMetric.boundingRect("N").height()
-        self.textNWidth= qMetric.boundingRect("N").width()
+        self.textNWidth = qMetric.boundingRect("N").width()
 
         logger.verbose("GUI Font Family: %s" % self.guiFont.family())
         logger.verbose("GUI Font Point Size: %.2f" % self.fontPointSize)
@@ -276,13 +276,13 @@ class GuiTheme:
         ## Main
         cnfSec = "Main"
         if confParser.has_section(cnfSec):
-            self.themeName        = self._parseLine( confParser, cnfSec, "name", "")
-            self.themeDescription = self._parseLine( confParser, cnfSec, "description", "")
-            self.themeAuthor      = self._parseLine( confParser, cnfSec, "author", "")
-            self.themeCredit      = self._parseLine( confParser, cnfSec, "credit", "")
-            self.themeUrl         = self._parseLine( confParser, cnfSec, "url", "")
-            self.themeLicense     = self._parseLine( confParser, cnfSec, "license", "")
-            self.themeLicenseUrl  = self._parseLine( confParser, cnfSec, "licenseurl", "")
+            self.themeName        = self._parseLine(confParser, cnfSec, "name", "")
+            self.themeDescription = self._parseLine(confParser, cnfSec, "description", "")
+            self.themeAuthor      = self._parseLine(confParser, cnfSec, "author", "")
+            self.themeCredit      = self._parseLine(confParser, cnfSec, "credit", "")
+            self.themeUrl         = self._parseLine(confParser, cnfSec, "url", "")
+            self.themeLicense     = self._parseLine(confParser, cnfSec, "license", "")
+            self.themeLicenseUrl  = self._parseLine(confParser, cnfSec, "licenseurl", "")
 
         ## Palette
         cnfSec = "Palette"
