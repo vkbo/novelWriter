@@ -8,7 +8,8 @@
 
 **Other Changes**
 
-* Cleaned up code using `flake8` tool and added it as a permanent check on pull requests. The tool filtered out a number of unused variables and imports, which wastes CPU time and memory. Every bit helps. PR #394.
+* Cleaned up code using `flake8` tool and added it as a permanent check on pull requests. The tool filtered out a number of unused variables and imports, which wastes CPU time and memory. Every bit helps. PRs #394 and #397.
+* Added contributing guide, code of conduct and issue templates. Direct push to main, and PR #398.
 
 
 ## Version 0.11.1 [2020-08-09]
