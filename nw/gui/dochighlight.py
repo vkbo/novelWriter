@@ -101,17 +101,17 @@ class GuiDocHighlighter(QSyntaxHighlighter):
             self.colEmph = None
 
         self.hStyles = {
-            "header1"    : self._makeFormat(self.colHead,  "bold", 1.8),
-            "header2"    : self._makeFormat(self.colHead,  "bold", 1.6),
-            "header3"    : self._makeFormat(self.colHead,  "bold", 1.4),
-            "header4"    : self._makeFormat(self.colHead,  "bold", 1.2),
+            "header1"    : self._makeFormat(self.colHead, "bold", 1.8),
+            "header2"    : self._makeFormat(self.colHead, "bold", 1.6),
+            "header3"    : self._makeFormat(self.colHead, "bold", 1.4),
+            "header4"    : self._makeFormat(self.colHead, "bold", 1.2),
             "header1h"   : self._makeFormat(self.colHeadH, "bold", 1.8),
             "header2h"   : self._makeFormat(self.colHeadH, "bold", 1.6),
             "header3h"   : self._makeFormat(self.colHeadH, "bold", 1.4),
             "header4h"   : self._makeFormat(self.colHeadH, "bold", 1.2),
-            "bold"       : self._makeFormat(self.colEmph,  "bold"),
-            "italic"     : self._makeFormat(self.colEmph,  "italic"),
-            "strike"     : self._makeFormat(self.colEmph,  "strike"),
+            "bold"       : self._makeFormat(self.colEmph, "bold"),
+            "italic"     : self._makeFormat(self.colEmph, "italic"),
+            "strike"     : self._makeFormat(self.colEmph, "strike"),
             "trailing"   : self._makeFormat(self.colTrail, "background"),
             "nobreak"    : self._makeFormat(self.colTrail, "background"),
             "dialogue1"  : self._makeFormat(self.colDialN),
@@ -121,7 +121,7 @@ class GuiDocHighlighter(QSyntaxHighlighter):
             "hidden"     : self._makeFormat(self.colComm),
             "keyword"    : self._makeFormat(self.colKey),
             "modifier"   : self._makeFormat(self.colMod),
-            "value"      : self._makeFormat(self.colVal,   "underline"),
+            "value"      : self._makeFormat(self.colVal, "underline"),
         }
 
         self.hRules = []
