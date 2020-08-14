@@ -1,9 +1,13 @@
-os: linux
-dist: bionic
+os:
+  - linux
+dist:
+  - focal
 services:
   - xvfb
-language: python
-cache: bundler
+language:
+  - python
+cache:
+  - bundler
 
 addons:
   apt:
