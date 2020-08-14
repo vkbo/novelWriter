@@ -2,7 +2,9 @@
 """novelWriter Test Config
 """
 
-import sys, pytest, shutil
+import sys
+import pytest
+import shutil
 from os import path, mkdir
 
 sys.path.insert(1, path.abspath(path.join(path.dirname(__file__), path.pardir)))
