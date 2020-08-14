@@ -2,16 +2,16 @@
 """novelWriter Config Class Tester
 """
 
-import nw, pytest
-from nwtools import *
+import pytest
+from nwtools import cmpFiles
 from os import path
 from nw.config import Config
 
 theConf = Config()
 
 @pytest.mark.core
-def testConfigInit(nwTemp,nwRef):
-    tmpConf = path.join(nwTemp,"novelwriter.conf")
+def testConfigInit(nwTemp, nwRef):
+    tmpConf = path.join(nwTemp, "novelwriter.conf")
     refConf = path.join(nwRef, "novelwriter.conf")
     assert theConf.initConfig(nwTemp, nwTemp)
     assert theConf.setLastPath("")
@@ -20,8 +20,8 @@ def testConfigInit(nwTemp,nwRef):
     assert not theConf.confChanged
 
 @pytest.mark.core
-def testConfigSave(nwTemp,nwRef):
-    tmpConf = path.join(nwTemp,"novelwriter.conf")
+def testConfigSave(nwTemp, nwRef):
+    tmpConf = path.join(nwTemp, "novelwriter.conf")
     refConf = path.join(nwRef, "novelwriter.conf")
     assert theConf.confPath == nwTemp
     assert theConf.saveConfig()
@@ -31,8 +31,8 @@ def testConfigSave(nwTemp,nwRef):
 @pytest.mark.core
 def testConfigSetConfPath(nwTemp):
     assert theConf.setConfPath(None)
-    assert not theConf.setConfPath(path.join("somewhere","over","the","rainbow"))
-    assert theConf.setConfPath(path.join(nwTemp,"novelwriter.conf"))
+    assert not theConf.setConfPath(path.join("somewhere", "over", "the", "rainbow"))
+    assert theConf.setConfPath(path.join(nwTemp, "novelwriter.conf"))
     assert theConf.confPath == nwTemp
     assert theConf.confFile == "novelwriter.conf"
     assert not theConf.confChanged
@@ -40,7 +40,7 @@ def testConfigSetConfPath(nwTemp):
 @pytest.mark.core
 def testConfigSetDataPath(nwTemp):
     assert theConf.setDataPath(None)
-    assert not theConf.setDataPath(path.join("somewhere","over","the","rainbow"))
+    assert not theConf.setDataPath(path.join("somewhere", "over", "the", "rainbow"))
     assert theConf.setDataPath(nwTemp)
     assert theConf.dataPath == nwTemp
     assert not theConf.confChanged
@@ -51,12 +51,12 @@ def testConfigLoad():
     assert not theConf.confChanged
 
 @pytest.mark.core
-def testConfigSetWinSize(nwTemp,nwRef):
-    tmpConf = path.join(nwTemp,"novelwriter.conf")
+def testConfigSetWinSize(nwTemp, nwRef):
+    tmpConf = path.join(nwTemp, "novelwriter.conf")
     refConf = path.join(nwRef, "novelwriter.conf")
     assert theConf.setWinSize(1105, 655)
     assert not theConf.confChanged
-    assert theConf.setWinSize(70,70)
+    assert theConf.setWinSize(70, 70)
     assert theConf.confChanged
     assert theConf.setWinSize(1100, 650)
     assert theConf.saveConfig()
@@ -64,8 +64,8 @@ def testConfigSetWinSize(nwTemp,nwRef):
     assert not theConf.confChanged
 
 @pytest.mark.core
-def testConfigSetTreeColWidths(nwTemp,nwRef):
-    tmpConf = path.join(nwTemp,"novelwriter.conf")
+def testConfigSetTreeColWidths(nwTemp, nwRef):
+    tmpConf = path.join(nwTemp, "novelwriter.conf")
     refConf = path.join(nwRef, "novelwriter.conf")
     assert theConf.setTreeColWidths([0, 0, 0])
     assert theConf.confChanged
@@ -76,8 +76,8 @@ def testConfigSetTreeColWidths(nwTemp,nwRef):
     assert not theConf.confChanged
 
 @pytest.mark.core
-def testConfigSetPanePos(nwTemp,nwRef):
-    tmpConf = path.join(nwTemp,"novelwriter.conf")
+def testConfigSetPanePos(nwTemp, nwRef):
+    tmpConf = path.join(nwTemp, "novelwriter.conf")
     refConf = path.join(nwRef, "novelwriter.conf")
     assert theConf.setMainPanePos([0, 0])
     assert theConf.confChanged
@@ -90,8 +90,8 @@ def testConfigSetPanePos(nwTemp,nwRef):
     assert not theConf.confChanged
 
 @pytest.mark.core
-def testConfigFlags(nwTemp,nwRef):
-    tmpConf = path.join(nwTemp,"novelwriter.conf")
+def testConfigFlags(nwTemp, nwRef):
+    tmpConf = path.join(nwTemp, "novelwriter.conf")
     refConf = path.join(nwRef, "novelwriter.conf")
     assert not theConf.setShowRefPanel(False)
     assert theConf.setShowRefPanel(True)
@@ -102,7 +102,7 @@ def testConfigFlags(nwTemp,nwRef):
 
 @pytest.mark.core
 def testConfigErrors(nwTemp):
-    nonPath = path.join("somewhere","over","the","rainbow")
+    nonPath = path.join("somewhere", "over", "the", "rainbow")
     assert theConf.initConfig(nonPath, nonPath)
     assert theConf.hasError
     assert not theConf.loadConfig()

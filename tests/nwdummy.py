@@ -2,8 +2,6 @@
 """novelWriter Test Dummy GUI Classes
 """
 
-from nw.constants import nwAlert
-
 class DummyMain():
 
     def __init__(self):
