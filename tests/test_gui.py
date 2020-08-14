@@ -2,24 +2,26 @@
 """novelWriter Main GUI Class Tester
 """
 
-import nw, pytest, sys, json
-from nwtools import *
+import nw
+import pytest
+import json
+from nwtools import cmpFiles
 
-from os import path, unlink
+from os import path
 from PyQt5.QtCore import Qt
 
 from nw.gui import (
     GuiProjectSettings, GuiItemEditor, GuiAbout, GuiBuildNovel,
     GuiDocMerge, GuiDocSplit, GuiWritingStats, GuiProjectWizard
 )
-from nw.constants import *
+from nw.constants import nwItemType, nwItemLayout, nwItemClass, nwDocAction
 
-keyDelay  =  2
+keyDelay = 2
 stepDelay = 20
 
 @pytest.mark.gui
 def testMainWindows(qtbot, nwTempGUI, nwRef, nwTemp):
-    nwGUI = nw.main(["--testmode","--config=%s" % nwTempGUI, "--data=%s" % nwTemp])
+    nwGUI = nw.main(["--testmode", "--config=%s" % nwTempGUI, "--data=%s" % nwTemp])
     qtbot.addWidget(nwGUI)
     nwGUI.show()
     qtbot.waitForWindowShown(nwGUI)
@@ -41,11 +43,11 @@ def testMainWindows(qtbot, nwTempGUI, nwRef, nwTemp):
     assert nwGUI.theProject.projName == ""
     assert nwGUI.theProject.bookTitle == ""
     assert len(nwGUI.theProject.bookAuthors) == 0
-    assert nwGUI.theProject.spellCheck == False
+    assert not nwGUI.theProject.spellCheck
 
     # Check the files
-    projFile = path.join(nwTempGUI,"nwProject.nwx")
-    assert cmpFiles(projFile, path.join(nwRef,"gui","0_nwProject.nwx"), [2, 6, 7, 8])
+    projFile = path.join(nwTempGUI, "nwProject.nwx")
+    assert cmpFiles(projFile, path.join(nwRef, "gui", "0_nwProject.nwx"), [2, 6, 7, 8])
     qtbot.wait(stepDelay)
 
     # qtbot.stopForInteraction()
@@ -60,12 +62,12 @@ def testMainWindows(qtbot, nwTempGUI, nwRef, nwTemp):
     assert len(nwGUI.theProject.projTree._treeRoots) == 4
     assert nwGUI.theProject.projTree.trashRoot() is None
     assert nwGUI.theProject.projPath == nwTempGUI
-    assert nwGUI.theProject.projMeta == path.join(nwTempGUI,"meta")
+    assert nwGUI.theProject.projMeta == path.join(nwTempGUI, "meta")
     assert nwGUI.theProject.projFile == "nwProject.nwx"
     assert nwGUI.theProject.projName == "New Project"
     assert nwGUI.theProject.bookTitle == ""
     assert len(nwGUI.theProject.bookAuthors) == 0
-    assert nwGUI.theProject.spellCheck == False
+    assert not nwGUI.theProject.spellCheck
 
     # Check that tree items have been created
     assert nwGUI.treeView._getTreeItem("73475cb40a568") is not None
@@ -214,7 +216,10 @@ def testMainWindows(qtbot, nwTempGUI, nwRef, nwTemp):
     qtbot.keyClick(nwGUI.docEditor, Qt.Key_Return, delay=keyDelay)
     qtbot.keyClick(nwGUI.docEditor, Qt.Key_Return, delay=keyDelay)
 
-    for c in "This is another paragraph of much longer dummy text. It is in fact very very dumb dummy text! ":
+    for c in (
+        "This is another paragraph of much longer dummy text. "
+        "It is in fact very very dumb dummy text! "
+    ):
         qtbot.keyClick(nwGUI.docEditor, c, delay=keyDelay)
     for c in "We can also try replacing \"quotes\", even single's quotes are replaced. ":
         qtbot.keyClick(nwGUI.docEditor, c, delay=keyDelay)
@@ -273,7 +278,7 @@ def testMainWindows(qtbot, nwTempGUI, nwRef, nwTemp):
 
 @pytest.mark.gui
 def testProjectEditor(qtbot, nwTempGUI, nwRef, nwTemp):
-    nwGUI = nw.main(["--testmode","--config=%s" % nwTempGUI, "--data=%s" % nwTemp])
+    nwGUI = nw.main(["--testmode", "--config=%s" % nwTempGUI, "--data=%s" % nwTemp])
     qtbot.addWidget(nwGUI)
     nwGUI.show()
     qtbot.waitForWindowShown(nwGUI)
@@ -354,7 +359,7 @@ def testProjectEditor(qtbot, nwTempGUI, nwRef, nwTemp):
     qtbot.wait(stepDelay)
 
     # Check the files
-    projFile = path.join(nwTempGUI,"nwProject.nwx")
+    projFile = path.join(nwTempGUI, "nwProject.nwx")
     assert cmpFiles(projFile, path.join(nwRef, "gui", "2_nwProject.nwx"), [2, 8, 9, 10])
 
     nwGUI.closeMain()
@@ -362,7 +367,7 @@ def testProjectEditor(qtbot, nwTempGUI, nwRef, nwTemp):
 
 @pytest.mark.gui
 def testItemEditor(qtbot, nwTempGUI, nwRef, nwTemp):
-    nwGUI = nw.main(["--testmode","--config=%s" % nwTempGUI, "--data=%s" % nwTemp])
+    nwGUI = nw.main(["--testmode", "--config=%s" % nwTempGUI, "--data=%s" % nwTemp])
     qtbot.addWidget(nwGUI)
     nwGUI.show()
     qtbot.waitForWindowShown(nwGUI)
@@ -410,7 +415,7 @@ def testItemEditor(qtbot, nwTempGUI, nwRef, nwTemp):
     qtbot.wait(stepDelay)
 
     # Check the files
-    projFile = path.join(nwTempGUI,"nwProject.nwx")
+    projFile = path.join(nwTempGUI, "nwProject.nwx")
     assert cmpFiles(projFile, path.join(nwRef, "gui", "3_nwProject.nwx"), [2, 6, 7, 8])
 
     nwGUI.closeMain()
@@ -418,7 +423,7 @@ def testItemEditor(qtbot, nwTempGUI, nwRef, nwTemp):
 
 @pytest.mark.gui
 def testWritingStatsExport(qtbot, nwTempGUI, nwRef, nwTemp):
-    nwGUI = nw.main(["--testmode","--config=%s" % nwTempGUI, "--data=%s" % nwTemp])
+    nwGUI = nw.main(["--testmode", "--config=%s" % nwTempGUI, "--data=%s" % nwTemp])
     qtbot.addWidget(nwGUI)
     nwGUI.show()
     qtbot.waitForWindowShown(nwGUI)
@@ -527,7 +532,7 @@ def testWritingStatsExport(qtbot, nwTempGUI, nwRef, nwTemp):
 
 @pytest.mark.gui
 def testAboutBox(qtbot, nwTempGUI, nwRef, nwTemp):
-    nwGUI = nw.main(["--testmode","--config=%s" % nwTempGUI, "--data=%s" % nwTemp])
+    nwGUI = nw.main(["--testmode", "--config=%s" % nwTempGUI, "--data=%s" % nwTemp])
     qtbot.addWidget(nwGUI)
     nwGUI.show()
     qtbot.waitForWindowShown(nwGUI)
@@ -545,7 +550,7 @@ def testAboutBox(qtbot, nwTempGUI, nwRef, nwTemp):
 @pytest.mark.gui
 def testBuildTool(qtbot, nwTempBuild, nwLipsum, nwRef, nwTemp):
 
-    nwGUI = nw.main(["--testmode","--config=%s" % nwTempBuild, "--data=%s" % nwTemp])
+    nwGUI = nw.main(["--testmode", "--config=%s" % nwTempBuild, "--data=%s" % nwTemp])
     qtbot.addWidget(nwGUI)
     nwGUI.show()
     qtbot.waitForWindowShown(nwGUI)
@@ -634,7 +639,7 @@ def testBuildTool(qtbot, nwTempBuild, nwLipsum, nwRef, nwTemp):
 @pytest.mark.gui
 def testMergeTool(qtbot, nwTempGUI, nwLipsum, nwRef, nwTemp):
 
-    nwGUI = nw.main(["--testmode","--config=%s" % nwTempGUI, "--data=%s" % nwTemp])
+    nwGUI = nw.main(["--testmode", "--config=%s" % nwTempGUI, "--data=%s" % nwTemp])
     qtbot.addWidget(nwGUI)
     nwGUI.show()
     qtbot.waitForWindowShown(nwGUI)
@@ -664,7 +669,7 @@ def testMergeTool(qtbot, nwTempGUI, nwLipsum, nwRef, nwTemp):
 @pytest.mark.gui
 def testSplitTool(qtbot, nwTempGUI, nwLipsum, nwRef, nwTemp):
 
-    nwGUI = nw.main(["--testmode","--config=%s" % nwTempGUI, "--data=%s" % nwTemp])
+    nwGUI = nw.main(["--testmode", "--config=%s" % nwTempGUI, "--data=%s" % nwTemp])
     qtbot.addWidget(nwGUI)
     nwGUI.show()
     qtbot.waitForWindowShown(nwGUI)
@@ -749,7 +754,7 @@ def testNewProjectWizard(qtbot, nwTempGUI, nwLipsum, nwRef, nwTemp):
         ProjWizardCustomPage, ProjWizardFinalPage
     )
 
-    nwGUI = nw.main(["--testmode","--config=%s" % nwTempGUI, "--data=%s" % nwTemp])
+    nwGUI = nw.main(["--testmode", "--config=%s" % nwTempGUI, "--data=%s" % nwTemp])
     qtbot.addWidget(nwGUI)
     nwGUI.show()
     qtbot.waitForWindowShown(nwGUI)
@@ -849,7 +854,7 @@ def testNewProjectWizard(qtbot, nwTempGUI, nwLipsum, nwRef, nwTemp):
         assert projData["popCustom"]   == (wStep == 1)
         assert projData["popSample"]   == (wStep == 2)
         if wStep == 1:
-            assert projData["addRoots"]    == [
+            assert projData["addRoots"] == [
                 nwItemClass.PLOT,
                 nwItemClass.CHARACTER,
                 nwItemClass.WORLD,
@@ -858,13 +863,13 @@ def testNewProjectWizard(qtbot, nwTempGUI, nwLipsum, nwRef, nwTemp):
                 nwItemClass.ENTITY,
             ]
             assert projData["numChapters"] == 5
-            assert projData["numScenes"]   == 5
-            assert projData["chFolders"]   == True
+            assert projData["numScenes"] == 5
+            assert projData["chFolders"]
         else:
-            assert projData["addRoots"]    == []
+            assert projData["addRoots"] == []
             assert projData["numChapters"] == 0
-            assert projData["numScenes"]   == 0
-            assert projData["chFolders"]   == False
+            assert projData["numScenes"] == 0
+            assert not projData["chFolders"]
 
     # qtbot.stopForInteraction()
     nwGUI.closeMain()
@@ -872,7 +877,7 @@ def testNewProjectWizard(qtbot, nwTempGUI, nwLipsum, nwRef, nwTemp):
 @pytest.mark.gui
 def testDocAction(qtbot, nwTempGUI, nwLipsum, nwRef, nwTemp):
 
-    nwGUI = nw.main(["--testmode","--config=%s" % nwTempGUI, "--data=%s" % nwTemp])
+    nwGUI = nw.main(["--testmode", "--config=%s" % nwTempGUI, "--data=%s" % nwTemp])
     qtbot.addWidget(nwGUI)
     nwGUI.show()
     qtbot.waitForWindowShown(nwGUI)
@@ -890,7 +895,8 @@ def testDocAction(qtbot, nwTempGUI, nwLipsum, nwRef, nwTemp):
 
     # Bold
     assert nwGUI.passDocumentAction(nwDocAction.STRONG)
-    assert nwGUI.docEditor.getText()[27:78] == "**Pellentesque** nec erat ut nulla posuere commodo."
+    fmtStr = "**Pellentesque** nec erat ut nulla posuere commodo."
+    assert nwGUI.docEditor.getText()[27:78] == fmtStr
     qtbot.wait(stepDelay)
     assert nwGUI.passDocumentAction(nwDocAction.STRONG)
     assert nwGUI.docEditor.getText()[27:74] == cleanText
@@ -898,7 +904,8 @@ def testDocAction(qtbot, nwTempGUI, nwLipsum, nwRef, nwTemp):
 
     # Italic
     assert nwGUI.passDocumentAction(nwDocAction.EMPH)
-    assert nwGUI.docEditor.getText()[27:76] == "_Pellentesque_ nec erat ut nulla posuere commodo."
+    fmtStr = "_Pellentesque_ nec erat ut nulla posuere commodo."
+    assert nwGUI.docEditor.getText()[27:76] == fmtStr
     qtbot.wait(stepDelay)
     assert nwGUI.passDocumentAction(nwDocAction.EMPH)
     assert nwGUI.docEditor.getText()[27:74] == cleanText
@@ -906,7 +913,8 @@ def testDocAction(qtbot, nwTempGUI, nwLipsum, nwRef, nwTemp):
 
     # Strikethrough
     assert nwGUI.passDocumentAction(nwDocAction.STRIKE)
-    assert nwGUI.docEditor.getText()[27:78] == "~~Pellentesque~~ nec erat ut nulla posuere commodo."
+    fmtStr = "~~Pellentesque~~ nec erat ut nulla posuere commodo."
+    assert nwGUI.docEditor.getText()[27:78] == fmtStr
     qtbot.wait(stepDelay)
     assert nwGUI.passDocumentAction(nwDocAction.STRIKE)
     assert nwGUI.docEditor.getText()[27:74] == cleanText
@@ -925,7 +933,8 @@ def testDocAction(qtbot, nwTempGUI, nwLipsum, nwRef, nwTemp):
 
     # Double Quotes
     assert nwGUI.passDocumentAction(nwDocAction.D_QUOTE)
-    assert nwGUI.docEditor.getText()[27:76] == "“Pellentesque” nec erat ut nulla posuere commodo."
+    fmtStr = "“Pellentesque” nec erat ut nulla posuere commodo."
+    assert nwGUI.docEditor.getText()[27:76] == fmtStr
     qtbot.wait(stepDelay)
     assert nwGUI.passDocumentAction(nwDocAction.UNDO)
     assert nwGUI.docEditor.getText()[27:74] == cleanText
@@ -933,7 +942,8 @@ def testDocAction(qtbot, nwTempGUI, nwLipsum, nwRef, nwTemp):
 
     # Single Quotes
     assert nwGUI.passDocumentAction(nwDocAction.S_QUOTE)
-    assert nwGUI.docEditor.getText()[27:76] == "‘Pellentesque’ nec erat ut nulla posuere commodo."
+    fmtStr = "‘Pellentesque’ nec erat ut nulla posuere commodo."
+    assert nwGUI.docEditor.getText()[27:76] == fmtStr
     qtbot.wait(stepDelay)
     assert nwGUI.passDocumentAction(nwDocAction.UNDO)
     assert nwGUI.docEditor.getText()[27:74] == cleanText
@@ -942,22 +952,27 @@ def testDocAction(qtbot, nwTempGUI, nwLipsum, nwRef, nwTemp):
     # Block Formats
     assert nwGUI.docEditor.setCursorPosition(30)
     assert nwGUI.passDocumentAction(nwDocAction.BLOCK_H1)
-    assert nwGUI.docEditor.getText()[27:76] == "# Pellentesque nec erat ut nulla posuere commodo."
+    fmtStr = "# Pellentesque nec erat ut nulla posuere commodo."
+    assert nwGUI.docEditor.getText()[27:76] == fmtStr
     qtbot.wait(stepDelay)
     assert nwGUI.passDocumentAction(nwDocAction.BLOCK_H2)
-    assert nwGUI.docEditor.getText()[27:77] == "## Pellentesque nec erat ut nulla posuere commodo."
+    fmtStr = "## Pellentesque nec erat ut nulla posuere commodo."
+    assert nwGUI.docEditor.getText()[27:77] == fmtStr
     qtbot.wait(stepDelay)
     assert nwGUI.passDocumentAction(nwDocAction.BLOCK_H3)
-    assert nwGUI.docEditor.getText()[27:78] == "### Pellentesque nec erat ut nulla posuere commodo."
+    fmtStr = "### Pellentesque nec erat ut nulla posuere commodo."
+    assert nwGUI.docEditor.getText()[27:78] == fmtStr
     qtbot.wait(stepDelay)
     assert nwGUI.passDocumentAction(nwDocAction.BLOCK_H4)
-    assert nwGUI.docEditor.getText()[27:79] == "#### Pellentesque nec erat ut nulla posuere commodo."
+    fmtStr = "#### Pellentesque nec erat ut nulla posuere commodo."
+    assert nwGUI.docEditor.getText()[27:79] == fmtStr
     qtbot.wait(stepDelay)
     assert nwGUI.passDocumentAction(nwDocAction.BLOCK_TXT)
     assert nwGUI.docEditor.getText()[27:74] == cleanText
     qtbot.wait(stepDelay)
     assert nwGUI.passDocumentAction(nwDocAction.BLOCK_COM)
-    assert nwGUI.docEditor.getText()[27:76] == "% Pellentesque nec erat ut nulla posuere commodo."
+    fmtStr = "% Pellentesque nec erat ut nulla posuere commodo."
+    assert nwGUI.docEditor.getText()[27:76] == fmtStr
     qtbot.wait(stepDelay)
     assert nwGUI.passDocumentAction(nwDocAction.BLOCK_TXT)
     assert nwGUI.docEditor.getText()[27:74] == cleanText
@@ -965,7 +980,8 @@ def testDocAction(qtbot, nwTempGUI, nwLipsum, nwRef, nwTemp):
 
     # Undo/Redo
     assert nwGUI.passDocumentAction(nwDocAction.UNDO)
-    assert nwGUI.docEditor.getText()[27:76] == "% Pellentesque nec erat ut nulla posuere commodo."
+    fmtStr = "% Pellentesque nec erat ut nulla posuere commodo."
+    assert nwGUI.docEditor.getText()[27:76] == fmtStr
     qtbot.wait(stepDelay)
     assert nwGUI.passDocumentAction(nwDocAction.REDO)
     assert nwGUI.docEditor.getText()[27:74] == cleanText

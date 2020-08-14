@@ -1,9 +1,10 @@
 os: linux
-dist: bionic
+dist: focal
 services:
   - xvfb
 language: python
-cache: bundler
+cache:
+  - bundler
 
 addons:
   apt:
@@ -30,10 +31,8 @@ stages:
 
 jobs:
   include:
-    - stage:
-      - Main
-      python:
-      - 3.8
+    - stage: Main
+      python: 3.8
       script:
       - python -m pytest --cov=nw -v
       after_success:
@@ -41,15 +40,12 @@ jobs:
       after_failure:
       - cat /sys/fs/cgroup/memory/memory.max_usage_in_bytes
 
-    - stage:
-      - Supported
-      python:
-      - 3.6
+    - stage: Supported
+      python: 3.6
       script:
       - python -m pytest -v
 
-    - python:
-      - 3.7
+    - python: 3.7
       script:
       - python -m pytest -v
 

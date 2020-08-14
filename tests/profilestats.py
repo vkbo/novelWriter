@@ -5,12 +5,12 @@ import pstats
 
 from os import path
 
-profDir = path.abspath(path.join(path.dirname(__file__),"..","prof"))
+profDir = path.abspath(path.join(path.dirname(__file__), path.pardir, "prof"))
 
 print("")
 print("Profiles directory: %s" % profDir)
 print("")
 
-profMainWindows = pstats.Stats(path.join(profDir,"testMainWindows.prof"))
+profMainWindows = pstats.Stats(path.join(profDir, "testMainWindows.prof"))
 profMainWindows.sort_stats("cumtime")
 profMainWindows.print_stats("nw/")

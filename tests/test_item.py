@@ -2,7 +2,6 @@
 """novelWriter NWItem Class Tester
 """
 
-import nw
 import pytest
 
 from lxml import etree
