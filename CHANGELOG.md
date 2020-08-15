@@ -1,6 +1,6 @@
 # novelWriter ChangeLog
 
-## Version 0.12 [2020-08-16]
+## Version 0.12 [2020-08-15]
 
 **User Interface**
 
