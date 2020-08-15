@@ -15,7 +15,9 @@
 # import os
 # import sys
 # sys.path.insert(0, os.path.abspath("."))
-import os, time, sphinx_rtd_theme
+import os
+import time
+import sphinx_rtd_theme # noqa: F401
 
 # -- Project information -----------------------------------------------------
 
@@ -24,9 +26,9 @@ copyright = "2018-2020, Veronica Berglyd Olsen"
 author = "Veronica Berglyd Olsen"
 
 # The short X.Y version
-version = "0.12.0"
+version = "1.0"
 # The full version, including alpha/beta/rc tags
-release = "0.12.0"
+release = "1.0b1"
 
 
 # -- General configuration ---------------------------------------------------
