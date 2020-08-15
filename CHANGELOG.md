@@ -2,9 +2,10 @@
 
 ## Version 1.0 Beta 1 [2020-08-23] - Not Yet Released
 
-**Improvements**
+**Feature Improvements**
 
-* The Select Paragraph feature in the Edit menu now selects only the paragraph itself, without the leading line break. This was previously handled entirely by the Qt library, which does this for some reason. Issue #395, PR #403.
+* The Select Paragraph feature in the Edit menu now selects only the paragraph itself, without the leading line break. This was previously handled entirely by the Qt library, which does this for some reason. Issue #395, PR #405.
+* A chapter heading in a file with a different layout than `Unnumbered` can now also be flagged as an unnumbered chapter heading by adding an asterisk to the begfinning of the title text. This only affects the number assignment and counter when running the Build Novel Project tool. The rest of the app ignores the asterisk. Issue #402, PR #406.
 
 
 ## Version 0.12 [2020-08-15]

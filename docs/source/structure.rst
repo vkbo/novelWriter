@@ -56,6 +56,27 @@ instance, chapter numbers can be applied automatically, and so can scene numbers
 a draft manuscript. See the :ref:`a_export` page for more details.
 
 
+.. _a_struct_heads_unnum:
+
+Unnumbered Chapter Headings
+---------------------------
+
+If you use file layout types for your files, the automatic numbering feature for your chapters is
+controlled by whether you use the :guilabel:`Chapter` or :guilabel:`Unnumbered` layout type for your
+file. However, if you have a different file layout where this isn't practical, you can also switch
+off chapter numbering for a chapter by making the first charcater of the chapter title an ``*``.
+Like so:
+
+``## *Unnumbered Chapter Title``
+
+The leading asterisk is only considered by the :guilabel:`Build Novel Project` tool, and will be
+removed before inserted at the location of the ``%title%`` label. See the :ref:`a_export` page for
+more details.
+
+.. note::
+   If you need the first character of the title to be an actual asterisk, you must escape it: ``\*``.
+
+
 .. _a_struct_tags:
 
 Tag References
