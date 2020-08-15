@@ -383,7 +383,7 @@ class GuiProjectEditStatus(QWidget):
             newCol = QColorDialog.getColor(
                 self.selColour, self, "Select Colour", QColorDialog.DontUseNativeDialog
             )
-            if newCol:
+            if newCol.isValid():
                 self.selColour = newCol
                 colPixmap = QPixmap(self.iPx, self.iPx)
                 colPixmap.fill(newCol)
