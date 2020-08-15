@@ -1165,7 +1165,19 @@ class GuiDocEditor(QTextEdit):
         theCursor = self.textCursor()
         theCursor.clearSelection()
         theCursor.select(selMode)
+
+        if selMode == QTextCursor.BlockUnderCursor:
+            # This selection mode also selects the preceding oaragraph
+            # separator, which we want to avoid.
+            posS = theCursor.selectionStart()
+            posE = theCursor.selectionEnd()
+            selTxt = theCursor.selectedText()
+            if selTxt.startswith(nwUnicode.U_PSEP):
+                theCursor.setPosition(posS+1, QTextCursor.MoveAnchor)
+                theCursor.setPosition(posE, QTextCursor.KeepAnchor)
+
         self.setTextCursor(theCursor)
+
         return
 
     def _beginSearch(self):
