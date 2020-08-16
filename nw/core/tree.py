@@ -67,6 +67,7 @@ class NWTree():
         self._treeOrder = []
         self._treeRoots = []
         self._trashRoot = None
+        self._archRoot  = None
         self._theLength = 0
         self._theIndex  = 0
         self._treeChanged = False
@@ -96,6 +97,9 @@ class NWTree():
         if nwItem.itemType == nwItemType.ROOT:
             logger.verbose("Entry %s is a root item" % str(tHandle))
             self._treeRoots.append(tHandle)
+            if nwItem.itemClass == nwItemClass.ARCHIVE:
+                logger.verbose("Entry %s is the archive folder" % str(tHandle))
+                self._archRoot = tHandle
 
         if nwItem.itemType == nwItemType.TRASH:
             if self._trashRoot is None:
@@ -209,6 +213,14 @@ class NWTree():
         """
         if self._trashRoot:
             return self._trashRoot
+        return None
+
+    def archiveRoot(self):
+        """Returns the handle of the archive folder, or None if there
+        isn't one.
+        """
+        if self._archRoot:
+            return self._archRoot
         return None
 
     def findRoot(self, theClass):

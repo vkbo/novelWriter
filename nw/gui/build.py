@@ -478,6 +478,7 @@ class GuiBuildNovel(QDialog):
             noteRoot  = noteFiles
             noteRoot &= tItem.itemType == nwItemType.ROOT
             noteRoot &= tItem.itemClass != nwItemClass.NOVEL
+            noteRoot &= tItem.itemClass != nwItemClass.ARCHIVE
 
             try:
                 if noteRoot:
@@ -551,6 +552,7 @@ class GuiBuildNovel(QDialog):
         isNone |= theItem.itemClass == nwItemClass.NO_CLASS
         isNone |= theItem.itemClass == nwItemClass.TRASH
         isNone |= theItem.parHandle == self.theProject.projTree.trashRoot()
+        isNone |= theItem.parHandle == self.theProject.projTree.archiveRoot()
         isNone |= theItem.parHandle is None
         isNote  = theItem.itemLayout == nwItemLayout.NOTE
         isNovel = not isNone and not isNote
