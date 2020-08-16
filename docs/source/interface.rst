@@ -48,9 +48,10 @@ addition to the word count.
 Project Tree Drag and Drop
 --------------------------
 
-The project tree allows dragging and drop to a certain extent, but it does not allow bulk actions.
-This is deliberate to avoid accidentally messing up your project. The project tree has no undo
-function.
+The project tree allows dragging and drop to a certain extent. This feature is primarily intended
+for rearranging the order of your files within each root folder, and has only limited support for
+moving files elsewhere in the project tree. In general, bulk actions are not allowed. This is
+deliberate to avoid accidentally messing up your project. The project tree has no undo function.
 
 Document files and their folders can be rearranged freely within their root folders. Novel files
 cannot be moved out of the :guilabel:`Novel` folder, except to :guilabel:`Trash` and the
@@ -59,9 +60,9 @@ cannot be moved out of the :guilabel:`Novel` folder, except to :guilabel:`Trash`
 Folders cannot be moved at all outside their root tree. Neither can a folder containing files be
 deleted. You must first delete the files.
 
-Root folders in the project tree cannot be dragged and dropped. However, if you want to reorder
-them, you can move them up or down with respect to eachother from the :guilabel:`Tools` menu, or by
-pressing :kbd:`Ctrl`:kbd:`Shift` and the :kbd:`Up` or :kbd:`Down` key.
+Root folders in the project tree cannot be dragged and dropped at all. However, if you want to
+reorder them, you can move them up or down with respect to eachother from the :guilabel:`Tools`
+menu, or by pressing :kbd:`Ctrl`:kbd:`Shift` and the :kbd:`Up` or :kbd:`Down` key.
 
 
 .. _a_ui_edit:
