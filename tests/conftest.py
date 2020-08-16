@@ -54,6 +54,18 @@ def nwTempSample(nwTemp):
         mkdir(sampleDir)
     return sampleDir
 
+@pytest.fixture(scope="function")
+def nwFuncTemp(nwTemp):
+    funcDir = path.join(nwTemp, "ftemp")
+    if path.isdir(funcDir):
+        shutil.rmtree(funcDir)
+    if not path.isdir(funcDir):
+        mkdir(funcDir)
+    yield funcDir
+    if path.isdir(funcDir):
+        shutil.rmtree(funcDir)
+    return
+
 @pytest.fixture(scope="session")
 def nwRef():
     testDir = path.dirname(__file__)
