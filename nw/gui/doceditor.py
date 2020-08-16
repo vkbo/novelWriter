@@ -649,7 +649,7 @@ class GuiDocEditor(QTextEdit):
         """
         isReturn  = keyEvent.key() == Qt.Key_Return
         isReturn |= keyEvent.key() == Qt.Key_Enter
-        if isReturn and self.docSearch.searchBox.hasFocus():
+        if isReturn and self.docSearch.anyFocus():
             return
         elif keyEvent == QKeySequence.Redo:
             self.docAction(nwDocAction.REDO)
@@ -1425,7 +1425,7 @@ class GuiDocEditSearch(QFrame):
         self.replaceBox = QLineEdit(self)
         self.replaceBox.setFont(boxFont)
         self.replaceBox.setPlaceholderText("Replace")
-        self.replaceBox.returnPressed.connect(self._doSearch)
+        self.replaceBox.returnPressed.connect(self._doReplace)
 
         self.searchOpt = QToolBar(self)
         self.searchOpt.setToolButtonStyle(Qt.ToolButtonIconOnly)
@@ -1590,6 +1590,11 @@ class GuiDocEditSearch(QFrame):
                 self.searchBox.setFocus(True)
                 return True
         return False
+
+    def anyFocus(self):
+        """Returns true if any of the input boxes have focus.
+        """
+        return self.searchBox.hasFocus() | self.replaceBox.hasFocus()
 
     ##
     #  Get and Set Functions
