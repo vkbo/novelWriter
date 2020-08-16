@@ -34,6 +34,7 @@ from time import time
 from nw.constants import (
     nwFiles, nwKeyWords, nwItemType, nwItemClass, nwItemLayout, nwAlert
 )
+from nw.core.document import NWDoc
 from nw.core.tools import countWords
 
 logger = logging.getLogger(__name__)
@@ -106,6 +107,8 @@ class NWIndex():
     def deleteHandle(self, tHandle):
         """Delete all entries of a given document handle.
         """
+        logger.debug("Removing item %s from the index" % tHandle)
+
         delTags = []
         for tTag in self.tagIndex:
             if self.tagIndex[tTag][1] == tHandle:
@@ -120,6 +123,26 @@ class NWIndex():
         self.textCounts.pop(tHandle, None)
 
         return
+
+    def reIndexHandle(self, tHandle):
+        """Put a file back into the index. This is used when files are
+        moved from the archive or trash folders back into the active
+        project.
+        """
+        logger.debug("Re-indexing item %s" % tHandle)
+
+        tItem = self.theProject.projTree[tHandle]
+        if tItem is None:
+            return False
+        if tItem.itemType != nwItemType.FILE:
+            return False
+
+        theDoc = NWDoc(self.theProject, self.theParent)
+        theText = theDoc.openDocument(tHandle, showStatus=False)
+        if theText:
+            self.scanText(tHandle, theText)
+
+        return True
 
     ##
     #  Load and Save Index to/from File

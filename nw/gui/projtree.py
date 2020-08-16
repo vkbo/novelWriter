@@ -663,25 +663,30 @@ class GuiProjectTree(QTreeWidget):
             self.makeAlert("The item cannot be moved to that location.", nwAlert.ERROR)
             return
 
-        wCount  = int(sItem.text(self.C_COUNT))
-        isSame  = snItem.itemClass == dnItem.itemClass
-        isNone  = snItem.itemClass == nwItemClass.NO_CLASS
-        isNote  = snItem.itemLayout == nwItemLayout.NOTE
-        onFile  = dnItem.itemType == nwItemType.FILE
-        isRoot  = snItem.itemType == nwItemType.ROOT
-        isArch  = snItem.itemClass == nwItemClass.ARCHIVE
-        isArch |= dnItem.itemClass == nwItemClass.ARCHIVE
+        wCount = int(sItem.text(self.C_COUNT))
+        isSame = snItem.itemClass == dnItem.itemClass
+        isNone = snItem.itemClass == nwItemClass.NO_CLASS
+        isNote = snItem.itemLayout == nwItemLayout.NOTE
+        onFile = dnItem.itemType == nwItemType.FILE
+        isRoot = snItem.itemType == nwItemType.ROOT
+        onFree = dnItem.itemClass == nwItemClass.ARCHIVE
+        onFree |= dnItem.itemClass == nwItemClass.TRASH
         isOnTop = self.dropIndicatorPosition() == QAbstractItemView.OnItem
-        if (isSame or isNone or isNote or isArch) and not (onFile and isOnTop) and not isRoot:
+        if (isSame or isNone or isNote or onFree) and not (onFile and isOnTop) and not isRoot:
             logger.debug("Drag'n'drop of item %s accepted" % sHandle)
             self.propagateCount(sHandle, 0)
             QTreeWidget.dropEvent(self, theEvent)
+
+            # Handle orphaned files differently than tracked files
             if isNone:
                 self._moveOrphanedItem(sHandle, dHandle)
                 self._cleanOrphanedRoot()
             else:
                 self._updateItemParent(sHandle)
-            if not isSame and not isArch:
+
+            # If the item does not have the same class as the target,
+            # and the target is not a free root folder, update its class
+            if not isSame and not onFree:
                 logger.debug("Item %s class has been changed from %s to %s" % (
                     sHandle,
                     snItem.itemClass.name,
@@ -689,7 +694,16 @@ class GuiProjectTree(QTreeWidget):
                 ))
                 snItem.setClass(dnItem.itemClass)
                 self.setTreeItemValues(sHandle)
+
             self.propagateCount(sHandle, wCount)
+
+            # The items dropped into archive or trash should be removed
+            # from the project index
+            if onFree:
+                self.theParent.theIndex.deleteHandle(sHandle)
+            else:
+                self.theParent.theIndex.reIndexHandle(sHandle)
+
         else:
             logger.debug("Drag'n'drop of item %s not accepted" % sHandle)
             self.makeAlert("The item cannot be moved to that location.", nwAlert.ERROR)
