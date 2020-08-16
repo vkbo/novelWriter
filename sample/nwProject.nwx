@@ -1,13 +1,13 @@
 <?xml version='1.0' encoding='utf-8'?>
-<novelWriterXML appVersion="0.12.1" hexVersion="0x001201f0" fileVersion="1.2" timeStamp="2020-08-16 11:37:18">
+<novelWriterXML appVersion="0.12.1" hexVersion="0x001201f0" fileVersion="1.2" timeStamp="2020-08-16 17:50:53">
   <project>
     <name>Sample Project</name>
     <title>Sample Project</title>
     <author>Jane Smith</author>
     <author>Jay Doh</author>
-    <saveCount>684</saveCount>
-    <autoCount>125</autoCount>
-    <editTime>33351</editTime>
+    <saveCount>713</saveCount>
+    <autoCount>138</autoCount>
+    <editTime>35134</editTime>
   </project>
   <settings>
     <doBackup>False</doBackup>
@@ -15,8 +15,8 @@
     <autoOutline>True</autoOutline>
     <lastEdited>636b6aa9b697b</lastEdited>
     <lastViewed>636b6aa9b697b</lastViewed>
-    <lastWordCount>1022</lastWordCount>
-    <novelWordCount>646</novelWordCount>
+    <lastWordCount>1071</lastWordCount>
+    <novelWordCount>695</novelWordCount>
     <notesWordCount>376</notesWordCount>
     <autoReplace>
       <entry key="A">B</entry>
@@ -46,7 +46,7 @@
       <entry blue="175" green="0" red="117">Main</entry>
     </importance>
   </settings>
-  <content count="22">
+  <content count="24">
     <item handle="7031beac91f75" order="0" parent="None">
       <name>Novel</name>
       <type>ROOT</type>
@@ -119,7 +119,7 @@
       <charCount>1811</charCount>
       <wordCount>318</wordCount>
       <paraCount>8</paraCount>
-      <cursorPos>1880</cursorPos>
+      <cursorPos>1364</cursorPos>
     </item>
     <item handle="bc0cbd2a407f3" order="2" parent="e7ded148d6e4a">
       <name>Another Scene</name>
@@ -137,13 +137,13 @@
       <name>Interlude</name>
       <type>FILE</type>
       <class>NOVEL</class>
-      <status>Finished</status>
+      <status>New</status>
       <exported>True</exported>
       <layout>UNNUMBERED</layout>
       <charCount>633</charCount>
       <wordCount>101</wordCount>
       <paraCount>3</paraCount>
-      <cursorPos>1238</cursorPos>
+      <cursorPos>0</cursorPos>
     </item>
     <item handle="96b68994dfa3d" order="4" parent="e7ded148d6e4a">
       <name>A Note on Structure</name>
@@ -262,7 +262,26 @@
       <paraCount>1</paraCount>
       <cursorPos>45</cursorPos>
     </item>
-    <item handle="98acd8c76c93a" order="3" parent="None">
+    <item handle="6827118336ac1" order="3" parent="None">
+      <name>Outtakes</name>
+      <type>ROOT</type>
+      <class>ARCHIVE</class>
+      <status>None</status>
+      <expanded>True</expanded>
+    </item>
+    <item handle="8a5deb88c0e97" order="0" parent="6827118336ac1">
+      <name>Old File</name>
+      <type>FILE</type>
+      <class>NOVEL</class>
+      <status>1st Draft</status>
+      <exported>True</exported>
+      <layout>SCENE</layout>
+      <charCount>315</charCount>
+      <wordCount>55</wordCount>
+      <paraCount>1</paraCount>
+      <cursorPos>322</cursorPos>
+    </item>
+    <item handle="98acd8c76c93a" order="4" parent="None">
       <name>Trash</name>
       <type>TRASH</type>
       <class>TRASH</class>
@@ -276,9 +295,9 @@
       <status>New</status>
       <exported>True</exported>
       <layout>SCENE</layout>
-      <charCount>30</charCount>
-      <wordCount>6</wordCount>
-      <paraCount>1</paraCount>
+      <charCount>0</charCount>
+      <wordCount>0</wordCount>
+      <paraCount>0</paraCount>
       <cursorPos>36</cursorPos>
     </item>
   </content>
