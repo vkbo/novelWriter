@@ -245,6 +245,7 @@ class GuiMainMenu(QMenuBar):
         self.rootItems[nwItemClass.OBJECT]    = QAction("Object Root",    self.rootMenu)
         self.rootItems[nwItemClass.ENTITY]    = QAction("Entity Root",    self.rootMenu)
         self.rootItems[nwItemClass.CUSTOM]    = QAction("Custom Root",    self.rootMenu)
+        self.rootItems[nwItemClass.ARCHIVE]   = QAction("Outtakes Root",  self.rootMenu)
         nCount = 0
         for itemClass in self.rootItems.keys():
             nCount += 1 # This forces the lambdas to be unique

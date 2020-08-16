@@ -48,7 +48,8 @@ class nwItemClass(Enum):
     OBJECT    = 6
     ENTITY    = 7
     CUSTOM    = 8
-    TRASH     = 9
+    ARCHIVE   = 9
+    TRASH     = 10
 
 # END Enum nwItemClass
 
