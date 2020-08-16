@@ -514,6 +514,7 @@ class GuiIcons:
         "cls_object"      : (QStyle.SP_DriveHDIcon, "drive-harddisk"),
         "cls_entity"      : (QStyle.SP_DriveHDIcon, "drive-harddisk"),
         "cls_custom"      : (QStyle.SP_DriveHDIcon, "drive-harddisk"),
+        "cls_archive"     : (QStyle.SP_DriveHDIcon, "drive-harddisk"),
         "cls_trash"       : (QStyle.SP_DriveHDIcon, "drive-harddisk"),
         "proj_document"   : (QStyle.SP_FileIcon,    "x-office-document"),
         "proj_folder"     : (QStyle.SP_DirIcon,     "folder"),

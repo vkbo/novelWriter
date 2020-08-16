@@ -75,6 +75,9 @@ class GuiMainMenu(QMenuBar):
     ##
 
     def setAvailableRoot(self):
+        """Update the list of available root folders and set the ones
+        that are active.
+        """
         for itemClass in nwItemClass:
             if itemClass == nwItemClass.NO_CLASS:
                 continue
@@ -245,6 +248,7 @@ class GuiMainMenu(QMenuBar):
         self.rootItems[nwItemClass.OBJECT]    = QAction("Object Root",    self.rootMenu)
         self.rootItems[nwItemClass.ENTITY]    = QAction("Entity Root",    self.rootMenu)
         self.rootItems[nwItemClass.CUSTOM]    = QAction("Custom Root",    self.rootMenu)
+        self.rootItems[nwItemClass.ARCHIVE]   = QAction("Outtakes Root",  self.rootMenu)
         nCount = 0
         for itemClass in self.rootItems.keys():
             nCount += 1 # This forces the lambdas to be unique

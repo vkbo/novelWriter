@@ -67,6 +67,7 @@ class NWTree():
         self._treeOrder = []
         self._treeRoots = []
         self._trashRoot = None
+        self._archRoot  = None
         self._theLength = 0
         self._theIndex  = 0
         self._treeChanged = False
@@ -96,6 +97,9 @@ class NWTree():
         if nwItem.itemType == nwItemType.ROOT:
             logger.verbose("Entry %s is a root item" % str(tHandle))
             self._treeRoots.append(tHandle)
+            if nwItem.itemClass == nwItemClass.ARCHIVE:
+                logger.verbose("Entry %s is the archive folder" % str(tHandle))
+                self._archRoot = tHandle
 
         if nwItem.itemType == nwItemType.TRASH:
             if self._trashRoot is None:
@@ -211,6 +215,14 @@ class NWTree():
             return self._trashRoot
         return None
 
+    def archiveRoot(self):
+        """Returns the handle of the archive folder, or None if there
+        isn't one.
+        """
+        if self._archRoot:
+            return self._archRoot
+        return None
+
     def findRoot(self, theClass):
         """Find the root item for a given class.
         Note: This returns the first item for class CUSTOM.
@@ -245,12 +257,10 @@ class NWTree():
         if tItem is not None:
             for i in range(200):
                 if tItem.parHandle is None:
-                    return tHandle
+                    return tItem
                 else:
                     tHandle = tItem.parHandle
-                    tItem   = self.__getitem__(tHandle)
-                    if tItem is None:
-                        return tHandle
+                    tItem = self.__getitem__(tHandle)
         return None
 
     def getItemPath(self, tHandle):
@@ -391,7 +401,12 @@ class NWTree():
             return False
         self._treeOrder.remove(tHandle)
         self._theLength = len(self._treeOrder)
+
+        if tHandle in self._treeRoots:
+            self._treeRoots.remove(tHandle)
+
         self._setTreeChanged(True)
+
         return True
 
     def __contains__(self, tHandle):

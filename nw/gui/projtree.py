@@ -201,7 +201,17 @@ class GuiProjectTree(QTreeWidget):
 
             if pHandle == self.theProject.projTree.trashRoot():
                 self.makeAlert(
-                    "Cannot add new files or folders to the trash folder.", nwAlert.ERROR
+                    "Cannot add new files or folders to the %s folder." % (
+                        nwLabels.CLASS_NAME[nwItemClass.TRASH]
+                    ), nwAlert.ERROR
+                )
+                return False
+
+            if pItem.itemClass == nwItemClass.ARCHIVE:
+                self.makeAlert(
+                    "Cannot add new files or folders to the %s folder." % (
+                        nwLabels.CLASS_NAME[nwItemClass.ARCHIVE]
+                    ), nwAlert.ERROR
                 )
                 return False
 
@@ -459,6 +469,7 @@ class GuiProjectTree(QTreeWidget):
             tIndex = self.indexOfTopLevelItem(trItemS)
             if trItemS.childCount() == 0:
                 self.takeTopLevelItem(tIndex)
+                del self.theProject.projTree[tHandle]
                 self.theParent.mainMenu.setAvailableRoot()
                 self._setTreeChanged(True)
             else:
@@ -669,17 +680,25 @@ class GuiProjectTree(QTreeWidget):
         isNote = snItem.itemLayout == nwItemLayout.NOTE
         onFile = dnItem.itemType == nwItemType.FILE
         isRoot = snItem.itemType == nwItemType.ROOT
+        onFree = dnItem.itemClass == nwItemClass.ARCHIVE
+        onFree |= dnItem.itemClass == nwItemClass.TRASH
+        onFree &= snItem.itemType == nwItemType.FILE
         isOnTop = self.dropIndicatorPosition() == QAbstractItemView.OnItem
-        if (isSame or isNone or isNote) and not (onFile and isOnTop) and not isRoot:
+        if (isSame or isNone or isNote or onFree) and not (onFile and isOnTop) and not isRoot:
             logger.debug("Drag'n'drop of item %s accepted" % sHandle)
             self.propagateCount(sHandle, 0)
             QTreeWidget.dropEvent(self, theEvent)
+
+            # Handle orphaned files differently than tracked files
             if isNone:
                 self._moveOrphanedItem(sHandle, dHandle)
                 self._cleanOrphanedRoot()
             else:
                 self._updateItemParent(sHandle)
-            if not isSame:
+
+            # If the item does not have the same class as the target,
+            # and the target is not a free root folder, update its class
+            if not isSame and not onFree:
                 logger.debug("Item %s class has been changed from %s to %s" % (
                     sHandle,
                     snItem.itemClass.name,
@@ -687,7 +706,16 @@ class GuiProjectTree(QTreeWidget):
                 ))
                 snItem.setClass(dnItem.itemClass)
                 self.setTreeItemValues(sHandle)
+
             self.propagateCount(sHandle, wCount)
+
+            # The items dropped into archive or trash should be removed
+            # from the project index
+            if onFree:
+                self.theParent.theIndex.deleteHandle(sHandle)
+            else:
+                self.theParent.theIndex.reIndexHandle(sHandle)
+
         else:
             logger.debug("Drag'n'drop of item %s not accepted" % sHandle)
             self.makeAlert("The item cannot be moved to that location.", nwAlert.ERROR)
@@ -928,14 +956,15 @@ class GuiProjectTreeMenu(QMenu):
         inTrash = theItem.parHandle == trashHandle
         isTrash = theItem.itemHandle == trashHandle
         isFile  = theItem.itemType == nwItemType.FILE
+        isArch  = theItem.itemClass == nwItemClass.ARCHIVE
         isOrph  = isFile and theItem.parHandle is None
 
         showOpen      = isFile
         showView      = isFile
         showEdit      = not isTrash and not isOrph
         showExport    = isFile and not inTrash and not isOrph
-        showNewFile   = not isTrash and not inTrash and not isOrph
-        showNewFolder = not isTrash and not inTrash and not isOrph
+        showNewFile   = not isTrash and not inTrash and not isOrph and not isArch
+        showNewFolder = not isTrash and not inTrash and not isOrph and not isArch
         showDelete    = not isTrash
         showEmpty     = isTrash
 

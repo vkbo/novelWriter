@@ -84,6 +84,7 @@ class nwLabels():
         nwItemClass.OBJECT    : "Objects",
         nwItemClass.ENTITY    : "Entity",
         nwItemClass.CUSTOM    : "Custom",
+        nwItemClass.ARCHIVE   : "Outtakes",
         nwItemClass.TRASH     : "Trash",
     }
     CLASS_FLAG = {
@@ -96,6 +97,7 @@ class nwLabels():
         nwItemClass.OBJECT    : "O",
         nwItemClass.ENTITY    : "E",
         nwItemClass.CUSTOM    : "X",
+        nwItemClass.ARCHIVE   : "U",
         nwItemClass.TRASH     : "R",
     }
     CLASS_ICON = {
@@ -108,6 +110,7 @@ class nwLabels():
         nwItemClass.OBJECT    : "cls_object",
         nwItemClass.ENTITY    : "cls_entity",
         nwItemClass.CUSTOM    : "cls_custom",
+        nwItemClass.ARCHIVE   : "cls_archive",
         nwItemClass.TRASH     : "cls_trash",
     }
     LAYOUT_NAME = {
