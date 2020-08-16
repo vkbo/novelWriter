@@ -38,7 +38,7 @@ from PyQt5.QtWidgets import (
 
 from nw.core import NWDoc
 from nw.constants import (
-    nwLabels, nwItemType, nwItemClass, nwItemLayout, nwAlert
+    nwLabels, nwItemType, nwItemClass, nwItemLayout, nwAlert, nwConst
 )
 
 logger = logging.getLogger(__name__)
@@ -119,7 +119,6 @@ class GuiProjectTree(QTreeWidget):
 
         # Internal Mapping
         self.makeAlert = self.theParent.makeAlert
-        self.theParent.editItem()
 
         return
 
@@ -215,17 +214,30 @@ class GuiProjectTree(QTreeWidget):
                 )
                 return False
 
+            parTree = self.theProject.projTree.getItemPath(pHandle)
+
             # If we're still here, add the file or folder
             if itemType == nwItemType.FILE:
                 tHandle = self.theProject.newFile("New File", itemClass, pHandle)
+
             elif itemType == nwItemType.FOLDER:
+                if len(parTree) >= nwConst.maxDepth - 1:
+                    # Folders cannot be deeper than maxDepth - 1, leaving room
+                    # for one more level of files.
+                    self.makeAlert((
+                        "Cannot add new folder to this item. "
+                        "Maximum folder depth has been reached."
+                    ), nwAlert.ERROR)
+                    return False
                 tHandle = self.theProject.newFolder("New Folder", itemClass, pHandle)
+
             else:
                 logger.error("Failed to add new item")
                 return False
 
         # Add the new item to the tree
         self.revealTreeItem(tHandle, nHandle)
+        self.theParent.editItem()
 
         return True
 
@@ -541,7 +553,7 @@ class GuiProjectTree(QTreeWidget):
                     pCount += int(pItem.child(i).text(self.C_COUNT))
                     pHandle = pItem.data(self.C_NAME, Qt.UserRole)
 
-                if not nDepth > 200 and pHandle != "":
+                if not nDepth > nwConst.maxDepth + 1 and pHandle != "":
                     self.propagateCount(pHandle, pCount, nDepth+1)
 
         return

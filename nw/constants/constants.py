@@ -33,6 +33,8 @@ class nwConst():
     fStampFmt = "%Y-%m-%d %H.%M.%S" # FileName safe format
     dStampFmt = "%Y-%m-%d"          # Date only format
 
+    maxDepth = 30 # Maximum folder depth of a project
+
 # END Class nwConst
 
 class nwRegEx():
