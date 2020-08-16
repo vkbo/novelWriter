@@ -469,6 +469,7 @@ class GuiProjectTree(QTreeWidget):
             tIndex = self.indexOfTopLevelItem(trItemS)
             if trItemS.childCount() == 0:
                 self.takeTopLevelItem(tIndex)
+                del self.theProject.projTree[tHandle]
                 self.theParent.mainMenu.setAvailableRoot()
                 self._setTreeChanged(True)
             else:

@@ -75,6 +75,9 @@ class GuiMainMenu(QMenuBar):
     ##
 
     def setAvailableRoot(self):
+        """Update the list of available root folders and set the ones
+        that are active.
+        """
         for itemClass in nwItemClass:
             if itemClass == nwItemClass.NO_CLASS:
                 continue

@@ -401,7 +401,12 @@ class NWTree():
             return False
         self._treeOrder.remove(tHandle)
         self._theLength = len(self._treeOrder)
+
+        if tHandle in self._treeRoots:
+            self._treeRoots.remove(tHandle)
+
         self._setTreeChanged(True)
+
         return True
 
     def __contains__(self, tHandle):
