@@ -268,20 +268,27 @@ class NWIndex():
         """
         theItem = self.theProject.projTree[tHandle]
         theRoot = self.theProject.projTree.getRootItem(tHandle)
+
         if theItem is None:
             logger.error("Not indexing unknown item %s" % tHandle)
             return False
         if theItem.itemType != nwItemType.FILE:
             logger.error("Not indexing non-file item %s" % tHandle)
             return False
-        if theItem.parHandle == self.theProject.projTree.trashRoot():
-            logger.error("Not indexing trash item %s" % tHandle)
-            return False
         if theItem.itemLayout == nwItemLayout.NO_LAYOUT:
             logger.error("Not indexing no-layout item %s" % tHandle)
             return False
         if theRoot is None:
             logger.error("Not indexing homeless item %s" % tHandle)
+            return False
+
+        # Run word counter for whole text
+        cC, wC, pC = countWords(theText)
+        self.textCounts[tHandle] = [cC, wC, pC]
+
+        # If the file is archived or trashed, we don't index the file itself
+        if theItem.parHandle == self.theProject.projTree.trashRoot():
+            logger.error("Not indexing trash item %s" % tHandle)
             return False
         if theRoot.itemClass == nwItemClass.ARCHIVE:
             logger.error("Not indexing archived item %s" % tHandle)
@@ -350,10 +357,6 @@ class NWIndex():
         if nTitle > 0:
             lastText = "\n".join(theLines[nTitle-1:nLine-1])
             self._indexWordCounts(tHandle, isNovel, lastText, nTitle)
-
-        # Run word counter for whole text
-        cC, wC, pC = countWords(theText)
-        self.textCounts[tHandle] = [cC, wC, pC]
 
         # Update timestamps for index changes
         nowTime = time()
