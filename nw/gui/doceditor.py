@@ -641,23 +641,35 @@ class GuiDocEditor(QTextEdit):
     def keyPressEvent(self, keyEvent):
         """Intercept key press events.
         We need to intercept a few key sequences:
-          * The return key redirects here even if the search box has
-            focus. Since we need the return key to continue search, we
-            block any further interaction here while it's in focus.
-          * The undo sequence bypasses the doAction pathway from the
-            menu, so we redirect it back from here.
-          * The default redo sequence is Ctrl+Shift+Z, which we don't
-            use, so we block it.
+          * The return and enter key redirects here even if the search
+            box has focus. Since we need these keys to continue search,
+            we block any further interaction here while it's in focus.
+          * The undo/redo sequences bypasses the doAction pathway from
+            the menu, so we redirect them back from here.
         """
-        if self.docSearch.searchBox.hasFocus():
+        isReturn  = keyEvent.key() == Qt.Key_Return
+        isReturn |= keyEvent.key() == Qt.Key_Enter
+        if isReturn and self.docSearch.searchBox.hasFocus():
             return
         elif keyEvent == QKeySequence.Redo:
-            return
+            self.docAction(nwDocAction.REDO)
         elif keyEvent == QKeySequence.Undo:
             self.docAction(nwDocAction.UNDO)
         else:
             QTextEdit.keyPressEvent(self, keyEvent)
         return
+
+    def focusNextPrevChild(self, toNext):
+        """Capture the focus request from the tab key on the text
+        editor. If the editor has focus, we do not change focus and
+        allow the editor to insert a tab. If the search bar has focus,
+        we forward the call to the search object.
+        """
+        if self.hasFocus():
+            return False
+        elif self.docSearch.isVisible():
+            return self.docSearch.cycleFocus(toNext)
+        return True
 
     def mouseReleaseEvent(self, mEvent):
         """If the mouse button is released and the control key is
@@ -890,6 +902,10 @@ class GuiDocEditor(QTextEdit):
                 theCursor.insertText(self.typSQOpen)
             else:
                 theCursor.insertText(self.typSQClose)
+
+        elif self.mainConf.doReplaceDash and theThree == "---":
+            theCursor.movePosition(QTextCursor.Left, QTextCursor.KeepAnchor, 3)
+            theCursor.insertText(nwUnicode.U_EMDASH)
 
         elif self.mainConf.doReplaceDash and theTwo == "--":
             theCursor.movePosition(QTextCursor.Left, QTextCursor.KeepAnchor, 2)
@@ -1200,6 +1216,8 @@ class GuiDocEditor(QTextEdit):
         theCursor = self.textCursor()
         if theCursor.hasSelection():
             self.docSearch.setSearchText(theCursor.selectedText())
+        else:
+            self.docSearch.setSearchText(None)
         self.docSearch.setReplaceText("")
         self.updateDocMargins()
         return
@@ -1399,12 +1417,12 @@ class GuiDocEditSearch(QFrame):
 
         # Text Boxes
         # ==========
-        self.searchBox = QLineEdit()
+        self.searchBox = QLineEdit(self)
         self.searchBox.setFont(boxFont)
         self.searchBox.setPlaceholderText("Search")
         self.searchBox.returnPressed.connect(self._doSearch)
 
-        self.replaceBox = QLineEdit()
+        self.replaceBox = QLineEdit(self)
         self.replaceBox.setFont(boxFont)
         self.replaceBox.setPlaceholderText("Replace")
         self.replaceBox.returnPressed.connect(self._doSearch)
@@ -1559,6 +1577,19 @@ class GuiDocEditSearch(QFrame):
         self.docEditor.setFocus()
 
         return
+
+    def cycleFocus(self, toNext):
+        """The tab key just alternates focus between the two input
+        boxes, if the replace box is visible.
+        """
+        if self.replaceBox.isVisible():
+            if self.searchBox.hasFocus():
+                self.replaceBox.setFocus(True)
+                return True
+            elif self.replaceBox.hasFocus():
+                self.searchBox.setFocus(True)
+                return True
+        return False
 
     ##
     #  Get and Set Functions
