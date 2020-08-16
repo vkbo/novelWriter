@@ -1,6 +1,10 @@
 # novelWriter ChangeLog
 
-## Version 1.0 Beta 1 [2020-08-23] - Not Yet Released
+## Version 0.12.1 [2020-08-16]
+
+**Bugfixes**
+
+* Some of the insert menu functions were broken due to a left-over comma in the insert source code converting the insert text from a string to a tuple. This is a quirk of the Python language and unfortunately not caught as a syntax error. Issue #409, PR #410.
 
 **Feature Improvements**
 
