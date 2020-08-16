@@ -42,6 +42,11 @@ def formatHtmlErrMsg(exType, exValue, exTrace):
                 nIndent = len(trLine) - len(stripLine)
                 fmtTrace += "&nbsp;"*nIndent + stripLine + "<br>"
 
+        try:
+            kernelVersion = QSysInfo.kernelVersion()
+        except Exception:
+            kernelVersion = "Unknown"
+
         theMessage = (
             "<p>Please report this error by submitting an issue report on "
             "GitHub, providing a description and this error message. "
@@ -53,7 +58,7 @@ def formatHtmlErrMsg(exType, exValue, exTrace):
         ).format(
             nwVersion = __version__,
             osType    = sys.platform,
-            osKernel  = QSysInfo.kernelVersion(),
+            osKernel  = kernelVersion,
             pyVersion = sys.version.split()[0],
             pyHexVer  = sys.hexversion,
             qtVers    = QT_VERSION_STR,
