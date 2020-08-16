@@ -245,12 +245,10 @@ class NWTree():
         if tItem is not None:
             for i in range(200):
                 if tItem.parHandle is None:
-                    return tHandle
+                    return tItem
                 else:
                     tHandle = tItem.parHandle
-                    tItem   = self.__getitem__(tHandle)
-                    if tItem is None:
-                        return tHandle
+                    tItem = self.__getitem__(tHandle)
         return None
 
     def getItemPath(self, tHandle):

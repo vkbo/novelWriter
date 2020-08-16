@@ -201,7 +201,17 @@ class GuiProjectTree(QTreeWidget):
 
             if pHandle == self.theProject.projTree.trashRoot():
                 self.makeAlert(
-                    "Cannot add new files or folders to the trash folder.", nwAlert.ERROR
+                    "Cannot add new files or folders to the %s folder." % (
+                        nwLabels.CLASS_NAME[nwItemClass.TRASH]
+                    ), nwAlert.ERROR
+                )
+                return False
+
+            if pItem.itemClass == nwItemClass.ARCHIVE:
+                self.makeAlert(
+                    "Cannot add new files or folders to the %s folder." % (
+                        nwLabels.CLASS_NAME[nwItemClass.ARCHIVE]
+                    ), nwAlert.ERROR
                 )
                 return False
 
@@ -671,6 +681,7 @@ class GuiProjectTree(QTreeWidget):
         isRoot = snItem.itemType == nwItemType.ROOT
         onFree = dnItem.itemClass == nwItemClass.ARCHIVE
         onFree |= dnItem.itemClass == nwItemClass.TRASH
+        onFree &= snItem.itemType == nwItemType.FILE
         isOnTop = self.dropIndicatorPosition() == QAbstractItemView.OnItem
         if (isSame or isNone or isNote or onFree) and not (onFile and isOnTop) and not isRoot:
             logger.debug("Drag'n'drop of item %s accepted" % sHandle)
@@ -944,14 +955,15 @@ class GuiProjectTreeMenu(QMenu):
         inTrash = theItem.parHandle == trashHandle
         isTrash = theItem.itemHandle == trashHandle
         isFile  = theItem.itemType == nwItemType.FILE
+        isArch  = theItem.itemClass == nwItemClass.ARCHIVE
         isOrph  = isFile and theItem.parHandle is None
 
         showOpen      = isFile
         showView      = isFile
         showEdit      = not isTrash and not isOrph
         showExport    = isFile and not inTrash and not isOrph
-        showNewFile   = not isTrash and not inTrash and not isOrph
-        showNewFolder = not isTrash and not inTrash and not isOrph
+        showNewFile   = not isTrash and not inTrash and not isOrph and not isArch
+        showNewFolder = not isTrash and not inTrash and not isOrph and not isArch
         showDelete    = not isTrash
         showEmpty     = isTrash
 

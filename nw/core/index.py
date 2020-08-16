@@ -267,13 +267,24 @@ class NWIndex():
         files before we save them, unless we're rebuilding the index.
         """
         theItem = self.theProject.projTree[tHandle]
+        theRoot = self.theProject.projTree.getRootItem(tHandle)
         if theItem is None:
+            logger.error("Not indexing unknown item %s" % tHandle)
             return False
         if theItem.itemType != nwItemType.FILE:
+            logger.error("Not indexing non-file item %s" % tHandle)
             return False
         if theItem.parHandle == self.theProject.projTree.trashRoot():
+            logger.error("Not indexing trash item %s" % tHandle)
             return False
         if theItem.itemLayout == nwItemLayout.NO_LAYOUT:
+            logger.error("Not indexing no-layout item %s" % tHandle)
+            return False
+        if theRoot is None:
+            logger.error("Not indexing homeless item %s" % tHandle)
+            return False
+        if theRoot.itemClass == nwItemClass.ARCHIVE:
+            logger.error("Not indexing archived item %s" % tHandle)
             return False
 
         itemClass  = theItem.itemClass
