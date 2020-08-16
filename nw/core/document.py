@@ -33,7 +33,7 @@ from os import path, rename, unlink
 from nw.core.item import NWItem
 from nw.constants import nwAlert
 from nw.common import isHandle
-from nw.constants import nwItemLayout, nwItemClass
+from nw.constants import nwItemLayout, nwItemClass, nwConst
 
 logger = logging.getLogger(__name__)
 
@@ -213,7 +213,7 @@ class NWDoc():
 
         # Scan for handles
         thePath = []
-        for n in range(200):
+        for n in range(nwConst.maxDepth + 5):
             if len(theMeta) < 14:
                 break
             if theMeta[13] == ":":

@@ -38,7 +38,7 @@ from PyQt5.QtWidgets import (
 
 from nw.core import NWDoc
 from nw.constants import (
-    nwLabels, nwItemType, nwItemClass, nwItemLayout, nwAlert
+    nwLabels, nwItemType, nwItemClass, nwItemLayout, nwAlert, nwConst
 )
 
 logger = logging.getLogger(__name__)
@@ -59,6 +59,7 @@ class GuiProjectTree(QTreeWidget):
         self.theParent  = theParent
         self.theTheme   = theParent.theTheme
         self.theProject = theParent.theProject
+        self.theIndex   = theParent.theIndex
 
         # Tree Settings
         self.theMap      = None
@@ -145,6 +146,9 @@ class GuiProjectTree(QTreeWidget):
         if not self.theParent.hasProject:
             return False
 
+        # The item needs to be assigned an item class, so one must be
+        # provided, or it must be possible to extract it from the parent
+        # item of the new item.
         if itemClass is None and pHandle is not None:
             pItem = self.theProject.projTree[pHandle]
             if pItem is not None:
@@ -167,6 +171,7 @@ class GuiProjectTree(QTreeWidget):
             self.makeAlert("Failed to add new item.", nwAlert.BUG)
             return False
 
+        # Everything is fine, we have what we need, so we proceed
         logger.verbose("Adding new item of type %s and class %s to handle %s" % (
             itemType.name, itemClass.name, str(pHandle))
         )
@@ -182,7 +187,9 @@ class GuiProjectTree(QTreeWidget):
 
             # If still nothing, give up
             if pHandle is None:
-                logger.error("Did not find anywhere to add the item!")
+                self.makeAlert(
+                    "Did not find anywhere to add the file or folder!", nwAlert.ERROR
+                )
                 return False
 
             # Now check if the selected item is a file, in which case
@@ -207,19 +214,23 @@ class GuiProjectTree(QTreeWidget):
                 )
                 return False
 
-            if pItem.itemClass == nwItemClass.ARCHIVE:
-                self.makeAlert(
-                    "Cannot add new files or folders to the %s folder." % (
-                        nwLabels.CLASS_NAME[nwItemClass.ARCHIVE]
-                    ), nwAlert.ERROR
-                )
-                return False
+            parTree = self.theProject.projTree.getItemPath(pHandle)
 
             # If we're still here, add the file or folder
             if itemType == nwItemType.FILE:
                 tHandle = self.theProject.newFile("New File", itemClass, pHandle)
+
             elif itemType == nwItemType.FOLDER:
+                if len(parTree) >= nwConst.maxDepth - 1:
+                    # Folders cannot be deeper than maxDepth - 1, leaving room
+                    # for one more level of files.
+                    self.makeAlert((
+                        "Cannot add new folder to this item. "
+                        "Maximum folder depth has been reached."
+                    ), nwAlert.ERROR)
+                    return False
                 tHandle = self.theProject.newFolder("New Folder", itemClass, pHandle)
+
             else:
                 logger.error("Failed to add new item")
                 return False
@@ -332,7 +343,9 @@ class GuiProjectTree(QTreeWidget):
 
         logger.debug("Emptying Trash folder")
         if trashHandle is None:
-            self.makeAlert("There is no Trash folder.", nwAlert.INFO)
+            self.makeAlert(
+                "There is currently no Trash folder in this project.", nwAlert.INFO
+            )
             return False
 
         theTrash = self.getTreeFromHandle(trashHandle)
@@ -341,13 +354,13 @@ class GuiProjectTree(QTreeWidget):
 
         nTrash = len(theTrash)
         if nTrash == 0:
-            self.makeAlert("The Trash folder is empty.", nwAlert.INFO)
+            self.makeAlert("The Trash folder is already empty.", nwAlert.INFO)
             return False
 
         msgBox = QMessageBox()
         msgRes = msgBox.question(
             self, "Empty Trash", "Permanently delete %d file%s from Trash?" % (
-                nTrash, "s"*int(nTrash > 1)
+                nTrash, "s" if nTrash > 1 else ""
             )
         )
         if msgRes != QMessageBox.Yes:
@@ -420,7 +433,7 @@ class GuiProjectTree(QTreeWidget):
                     theDoc = NWDoc(self.theProject, self.theParent)
                     theDoc.deleteDocument(tHandle)
                     del self.theProject.projTree[tHandle]
-                    self.theParent.theIndex.deleteHandle(tHandle)
+                    self.theIndex.deleteHandle(tHandle)
 
             else:
                 # The file is not already in the trash folder, so we
@@ -448,7 +461,7 @@ class GuiProjectTree(QTreeWidget):
                     self.propagateCount(tHandle, wCount)
 
                     self._setTreeChanged(True)
-                    self.theParent.theIndex.deleteHandle(tHandle)
+                    self.theIndex.deleteHandle(tHandle)
 
         elif nwItemS.itemType == nwItemType.FOLDER:
             logger.debug("User requested folder %s deleted" % tHandle)
@@ -461,7 +474,11 @@ class GuiProjectTree(QTreeWidget):
                 trItemP.takeChild(tIndex)
                 del self.theProject.projTree[tHandle]
             else:
-                self.makeAlert("Cannot delete folder. It is not empty.", nwAlert.ERROR)
+                self.makeAlert((
+                    "Cannot delete folder. It is not empty. "
+                    "Recursive deletion is not supported. "
+                    "Please delete the content first."
+                ), nwAlert.ERROR)
                 return False
 
         elif nwItemS.itemType == nwItemType.ROOT:
@@ -473,7 +490,11 @@ class GuiProjectTree(QTreeWidget):
                 self.theParent.mainMenu.setAvailableRoot()
                 self._setTreeChanged(True)
             else:
-                self.makeAlert("Cannot delete root folder. It is not empty.", nwAlert.ERROR)
+                self.makeAlert((
+                    "Cannot delete root folder. It is not empty. "
+                    "Recursive deletion is not supported. "
+                    "Please delete the content first."
+                ), nwAlert.ERROR)
                 return False
 
         return True
@@ -532,7 +553,7 @@ class GuiProjectTree(QTreeWidget):
                     pCount += int(pItem.child(i).text(self.C_COUNT))
                     pHandle = pItem.data(self.C_NAME, Qt.UserRole)
 
-                if not nDepth > 200 and pHandle != "":
+                if not nDepth > nwConst.maxDepth + 1 and pHandle != "":
                     self.propagateCount(pHandle, pCount, nDepth+1)
 
         return
@@ -710,11 +731,12 @@ class GuiProjectTree(QTreeWidget):
             self.propagateCount(sHandle, wCount)
 
             # The items dropped into archive or trash should be removed
-            # from the project index
+            # from the project index, for all other items, we rescan the
+            # file to ensure the index is up to date.
             if onFree:
-                self.theParent.theIndex.deleteHandle(sHandle)
+                self.theIndex.deleteHandle(sHandle)
             else:
-                self.theParent.theIndex.reIndexHandle(sHandle)
+                self.theIndex.reIndexHandle(sHandle)
 
         else:
             logger.debug("Drag'n'drop of item %s not accepted" % sHandle)
@@ -964,7 +986,7 @@ class GuiProjectTreeMenu(QMenu):
         showEdit      = not isTrash and not isOrph
         showExport    = isFile and not inTrash and not isOrph
         showNewFile   = not isTrash and not inTrash and not isOrph and not isArch
-        showNewFolder = not isTrash and not inTrash and not isOrph and not isArch
+        showNewFolder = not isTrash and not inTrash and not isOrph
         showDelete    = not isTrash
         showEmpty     = isTrash
 

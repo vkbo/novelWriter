@@ -90,10 +90,8 @@ trash folder can then be deleted permanently, either individually, or by emptyin
 menu. Files in this folder are removed from the project index and cannot be referenced.
 
 Folders and root folders can only be deleted when they are empty. Recursive deletion is not
-supported.
-
-A document file or a folder can be deleted from the :guilabel:`project` menu, or by pressing
-:kbd:`Ctrl`:kbd:`Del`.
+supported. A document file or a folder can be deleted from the :guilabel:`project` menu, or by
+pressing :kbd:`Ctrl`:kbd:`Del`.
 
 
 .. _a_proj_roots_out:
@@ -103,13 +101,13 @@ Archived Documents (Outtakes)
 
 If you don't want to delete a file, or put it in the :guilabel:`Trash` folder where it may be
 deleted, but still want it out of your main project tree, you can create an :guilabel:`Outtakes`
-root folder from the :guilabel:`project` menu. This folder is similar to the :guilabel:`Trash`
-folder in that it doesn't allow subfolders and creating new files.
+root folder from the :guilabel:`Project` menu. You are not allowed to move folders to this root
+folder, only files. If you need folders in it to organise your files, you can of course create new
+ones there.
 
 You can drag any file to this folder and preserve its settings. The file will always be excluded
-from the :guilabel:`Build Novel Project` builds, even with the setting to ignore the excluded files
-option. The file is also removed from the project index, so the tags and references defined in it
-will not show up anywhere else.
+from the :guilabel:`Build Novel Project` builds. The file is also removed from the project index, so
+the tags and references defined in it will not show up anywhere else.
 
 
 .. _a_proj_roots_orph:

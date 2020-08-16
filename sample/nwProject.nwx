@@ -1,13 +1,13 @@
 <?xml version='1.0' encoding='utf-8'?>
-<novelWriterXML appVersion="0.12.1" hexVersion="0x001201f0" fileVersion="1.2" timeStamp="2020-08-16 17:50:53">
+<novelWriterXML appVersion="0.12.1" hexVersion="0x001201f0" fileVersion="1.2" timeStamp="2020-08-16 21:12:32">
   <project>
     <name>Sample Project</name>
     <title>Sample Project</title>
     <author>Jane Smith</author>
     <author>Jay Doh</author>
-    <saveCount>713</saveCount>
-    <autoCount>138</autoCount>
-    <editTime>35134</editTime>
+    <saveCount>723</saveCount>
+    <autoCount>140</autoCount>
+    <editTime>35485</editTime>
   </project>
   <settings>
     <doBackup>False</doBackup>
@@ -15,8 +15,8 @@
     <autoOutline>True</autoOutline>
     <lastEdited>636b6aa9b697b</lastEdited>
     <lastViewed>636b6aa9b697b</lastViewed>
-    <lastWordCount>1071</lastWordCount>
-    <novelWordCount>695</novelWordCount>
+    <lastWordCount>1077</lastWordCount>
+    <novelWordCount>701</novelWordCount>
     <notesWordCount>376</notesWordCount>
     <autoReplace>
       <entry key="A">B</entry>
@@ -46,7 +46,7 @@
       <entry blue="175" green="0" red="117">Main</entry>
     </importance>
   </settings>
-  <content count="24">
+  <content count="25">
     <item handle="7031beac91f75" order="0" parent="None">
       <name>Novel</name>
       <type>ROOT</type>
@@ -269,7 +269,14 @@
       <status>None</status>
       <expanded>True</expanded>
     </item>
-    <item handle="8a5deb88c0e97" order="0" parent="6827118336ac1">
+    <item handle="ae9bf3c3ea159" order="0" parent="6827118336ac1">
+      <name>Scenes</name>
+      <type>FOLDER</type>
+      <class>ARCHIVE</class>
+      <status>None</status>
+      <expanded>True</expanded>
+    </item>
+    <item handle="8a5deb88c0e97" order="0" parent="ae9bf3c3ea159">
       <name>Old File</name>
       <type>FILE</type>
       <class>NOVEL</class>
@@ -295,9 +302,9 @@
       <status>New</status>
       <exported>True</exported>
       <layout>SCENE</layout>
-      <charCount>0</charCount>
-      <wordCount>0</wordCount>
-      <paraCount>0</paraCount>
+      <charCount>30</charCount>
+      <wordCount>6</wordCount>
+      <paraCount>1</paraCount>
       <cursorPos>36</cursorPos>
     </item>
   </content>

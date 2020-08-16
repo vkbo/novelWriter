@@ -35,7 +35,7 @@ from time import time
 
 from nw.core.item import NWItem
 from nw.common import checkString
-from nw.constants import nwFiles, nwItemType, nwItemClass, nwItemLayout
+from nw.constants import nwFiles, nwItemType, nwItemClass, nwItemLayout, nwConst
 
 logger = logging.getLogger(__name__)
 
@@ -251,11 +251,11 @@ class NWTree():
     def getRootItem(self, tHandle):
         """Iterate upwards in the tree until we find the item with
         parent None, the root item. We do this with a for loop with a
-        maximum depth of 200 to make infinite loops impossible.
+        maximum depth to make infinite loops impossible.
         """
         tItem = self.__getitem__(tHandle)
         if tItem is not None:
-            for i in range(200):
+            for i in range(nwConst.maxDepth + 1):
                 if tItem.parHandle is None:
                     return tItem
                 else:
@@ -266,14 +266,14 @@ class NWTree():
     def getItemPath(self, tHandle):
         """Iterate upwards in the tree until we find the item with
         parent None, the root item, and return the list of handles.
-        We do this with a for loop with a maximum depth of 200 to make
+        We do this with a for loop with a maximum depth to make
         infinite loops impossible.
         """
         tTree = []
         tItem = self.__getitem__(tHandle)
         if tItem is not None:
             tTree.append(tHandle)
-            for i in range(200):
+            for i in range(nwConst.maxDepth + 1):
                 if tItem.parHandle is None:
                     return tTree
                 else:
