@@ -663,14 +663,16 @@ class GuiProjectTree(QTreeWidget):
             self.makeAlert("The item cannot be moved to that location.", nwAlert.ERROR)
             return
 
-        wCount = int(sItem.text(self.C_COUNT))
-        isSame = snItem.itemClass == dnItem.itemClass
-        isNone = snItem.itemClass == nwItemClass.NO_CLASS
-        isNote = snItem.itemLayout == nwItemLayout.NOTE
-        onFile = dnItem.itemType == nwItemType.FILE
-        isRoot = snItem.itemType == nwItemType.ROOT
+        wCount  = int(sItem.text(self.C_COUNT))
+        isSame  = snItem.itemClass == dnItem.itemClass
+        isNone  = snItem.itemClass == nwItemClass.NO_CLASS
+        isNote  = snItem.itemLayout == nwItemLayout.NOTE
+        onFile  = dnItem.itemType == nwItemType.FILE
+        isRoot  = snItem.itemType == nwItemType.ROOT
+        isArch  = snItem.itemClass == nwItemClass.ARCHIVE
+        isArch |= dnItem.itemClass == nwItemClass.ARCHIVE
         isOnTop = self.dropIndicatorPosition() == QAbstractItemView.OnItem
-        if (isSame or isNone or isNote) and not (onFile and isOnTop) and not isRoot:
+        if (isSame or isNone or isNote or isArch) and not (onFile and isOnTop) and not isRoot:
             logger.debug("Drag'n'drop of item %s accepted" % sHandle)
             self.propagateCount(sHandle, 0)
             QTreeWidget.dropEvent(self, theEvent)
@@ -679,7 +681,7 @@ class GuiProjectTree(QTreeWidget):
                 self._cleanOrphanedRoot()
             else:
                 self._updateItemParent(sHandle)
-            if not isSame:
+            if not isSame and not isArch:
                 logger.debug("Item %s class has been changed from %s to %s" % (
                     sHandle,
                     snItem.itemClass.name,
