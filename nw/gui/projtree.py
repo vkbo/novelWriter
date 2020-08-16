@@ -119,6 +119,7 @@ class GuiProjectTree(QTreeWidget):
 
         # Internal Mapping
         self.makeAlert = self.theParent.makeAlert
+        self.theParent.editItem()
 
         return
 
