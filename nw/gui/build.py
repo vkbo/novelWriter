@@ -540,7 +540,6 @@ class GuiBuildNovel(QDialog):
         * Items that appear in the TRASH folder or have parent set to
           None (orphaned files).
         """
-
         if theItem is None:
             return False
 
