@@ -593,21 +593,21 @@ class GuiDocEditor(QTextEdit):
             theText = theInsert
         elif theInsert in nwDocInsert:
             if theInsert == nwDocInsert.NO_INSERT:
-                theText = "",
+                theText = ""
             elif theInsert == nwDocInsert.HARD_BREAK:
-                theText = "  \n",
+                theText = "  \n"
             elif theInsert == nwDocInsert.NB_SPACE:
-                theText = nwUnicode.U_NBSP,
+                theText = nwUnicode.U_NBSP
             elif theInsert == nwDocInsert.THIN_SPACE:
-                theText = nwUnicode.U_THNSP,
+                theText = nwUnicode.U_THNSP
             elif theInsert == nwDocInsert.THIN_NB_SPACE:
-                theText = nwUnicode.U_THNBSP,
+                theText = nwUnicode.U_THNBSP
             elif theInsert == nwDocInsert.SHORT_DASH:
-                theText = nwUnicode.U_ENDASH,
+                theText = nwUnicode.U_ENDASH
             elif theInsert == nwDocInsert.LONG_DASH:
-                theText = nwUnicode.U_EMDASH,
+                theText = nwUnicode.U_EMDASH
             elif theInsert == nwDocInsert.ELLIPSIS:
-                theText = nwUnicode.U_HELLIP,
+                theText = nwUnicode.U_HELLIP
             elif theInsert == nwDocInsert.QUOTE_LS:
                 theText = self.typSQOpen
             elif theInsert == nwDocInsert.QUOTE_RS:
@@ -620,10 +620,12 @@ class GuiDocEditor(QTextEdit):
                 return False
         else:
             return False
+
         theCursor = self.textCursor()
         theCursor.beginEditBlock()
         theCursor.insertText(theText)
         theCursor.endEditBlock()
+
         return True
 
     def closeSearch(self):
