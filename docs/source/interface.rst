@@ -350,6 +350,7 @@ Most features are available as keyboard shortcuts. These are as follows:
    ":kbd:`Ctrl`:kbd:`Shift`:kbd:`R`",    "Close the document viewer."
    ":kbd:`Ctrl`:kbd:`Shift`:kbd:`S`",    "Save the current project."
    ":kbd:`Ctrl`:kbd:`Shift`:kbd:`W`",    "Close the current project."
+   ":kbd:`Ctrl`:kbd:`Shift`:kbd:`Z`",    "Alternative sequence for redo last undo."
    ":kbd:`Ctrl`:kbd:`Shift`:kbd:`Up`",   "Move item one step up in the project tree."
    ":kbd:`Ctrl`:kbd:`Shift`:kbd:`Down`", "Move item one step down in the project tree."
    ":kbd:`F1`",                          "Open the documentation. This will either open the Qt Assistant, if available, or send you to the documentation website."
