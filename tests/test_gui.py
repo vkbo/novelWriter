@@ -9,12 +9,13 @@ from nwtools import cmpFiles
 
 from os import path
 from PyQt5.QtCore import Qt
+from PyQt5.QtWidgets import QAction
 
 from nw.gui import (
     GuiProjectSettings, GuiItemEditor, GuiAbout, GuiBuildNovel,
     GuiDocMerge, GuiDocSplit, GuiWritingStats, GuiProjectWizard
 )
-from nw.constants import nwItemType, nwItemLayout, nwItemClass, nwDocAction
+from nw.constants import nwItemType, nwItemLayout, nwItemClass, nwDocAction, nwUnicode
 
 keyDelay = 2
 stepDelay = 20
@@ -986,6 +987,80 @@ def testDocAction(qtbot, nwTempGUI, nwLipsum, nwRef, nwTemp):
     assert nwGUI.passDocumentAction(nwDocAction.REDO)
     assert nwGUI.docEditor.getText()[27:74] == cleanText
     qtbot.wait(stepDelay)
+
+    # qtbot.stopForInteraction()
+    nwGUI.closeMain()
+
+@pytest.mark.gui
+def testInsertMenu(qtbot, nwTempGUI, nwFuncTemp, nwTemp):
+    nwGUI = nw.main(["--testmode", "--config=%s" % nwTempGUI, "--data=%s" % nwTemp])
+    qtbot.addWidget(nwGUI)
+    nwGUI.show()
+    qtbot.waitForWindowShown(nwGUI)
+    qtbot.wait(stepDelay)
+
+    nwGUI.theProject.projTree.setSeed(42)
+    assert nwGUI.newProject({"projPath": nwFuncTemp}, True)
+
+    assert nwGUI.treeView._getTreeItem("31489056e0916") is not None
+
+    nwGUI.setFocus(1)
+    nwGUI.treeView.clearSelection()
+    nwGUI.treeView._getTreeItem("31489056e0916").setSelected(True)
+    nwGUI.treeView.newTreeItem(nwItemType.FILE, None)
+    assert nwGUI.openSelectedItem()
+
+    # qtbot.stopForInteraction()
+
+    nwGUI.mainMenu.aInsENDash.activate(QAction.Trigger)
+    assert nwGUI.docEditor.getText() == nwUnicode.U_ENDASH
+    nwGUI.docEditor.clear()
+
+    nwGUI.mainMenu.aInsEMDash.activate(QAction.Trigger)
+    assert nwGUI.docEditor.getText() == nwUnicode.U_EMDASH
+    nwGUI.docEditor.clear()
+
+    nwGUI.mainMenu.aInsEllipsis.activate(QAction.Trigger)
+    assert nwGUI.docEditor.getText() == nwUnicode.U_HELLIP
+    nwGUI.docEditor.clear()
+
+    nwGUI.mainMenu.aInsQuoteLS.activate(QAction.Trigger)
+    assert nwGUI.docEditor.getText() == nwGUI.mainConf.fmtSingleQuotes[0]
+    nwGUI.docEditor.clear()
+
+    nwGUI.mainMenu.aInsQuoteRS.activate(QAction.Trigger)
+    assert nwGUI.docEditor.getText() == nwGUI.mainConf.fmtSingleQuotes[1]
+    nwGUI.docEditor.clear()
+
+    nwGUI.mainMenu.aInsQuoteLD.activate(QAction.Trigger)
+    assert nwGUI.docEditor.getText() == nwGUI.mainConf.fmtDoubleQuotes[0]
+    nwGUI.docEditor.clear()
+
+    nwGUI.mainMenu.aInsQuoteRD.activate(QAction.Trigger)
+    assert nwGUI.docEditor.getText() == nwGUI.mainConf.fmtDoubleQuotes[1]
+    nwGUI.docEditor.clear()
+
+    nwGUI.mainMenu.aInsHardBreak.activate(QAction.Trigger)
+    assert nwGUI.docEditor.getText() == "  \n"
+    nwGUI.docEditor.clear()
+
+    nwGUI.mainMenu.aInsNBSpace.activate(QAction.Trigger)
+    if nwGUI.mainConf.verQtValue >= 50900:
+        assert nwGUI.docEditor.getText() == nwUnicode.U_NBSP
+    else:
+        assert nwGUI.docEditor.getText() == " "
+    nwGUI.docEditor.clear()
+
+    nwGUI.mainMenu.aInsThinSpace.activate(QAction.Trigger)
+    assert nwGUI.docEditor.getText() == nwUnicode.U_THNSP
+    nwGUI.docEditor.clear()
+
+    nwGUI.mainMenu.aInsThinNBSpace.activate(QAction.Trigger)
+    if nwGUI.mainConf.verQtValue >= 50900:
+        assert nwGUI.docEditor.getText() == nwUnicode.U_THNBSP
+    else:
+        assert nwGUI.docEditor.getText() == " "
+    nwGUI.docEditor.clear()
 
     # qtbot.stopForInteraction()
     nwGUI.closeMain()
