@@ -87,13 +87,29 @@ Deleted Documents
 
 Deleted document files will be moved into a special :guilabel:`Trash` root folder. Files in the
 trash folder can then be deleted permanently, either individually, or by emptying the trash from the
-menu.
+menu. Files in this folder are removed from the project index and cannot be referenced.
 
 Folders and root folders can only be deleted when they are empty. Recursive deletion is not
 supported.
 
 A document file or a folder can be deleted from the :guilabel:`project` menu, or by pressing
 :kbd:`Ctrl`:kbd:`Del`.
+
+
+.. _a_proj_roots_out:
+
+Archived Documents (Outtakes)
+-----------------------------
+
+If you don't want to delete a file, or put it in the :guilabel:`Trash` folder where it may be
+deleted, but still want it out of your main project tree, you can create an :guilabel:`Outtakes`
+root folder from the :guilabel:`project` menu. This folder is similar to the :guilabel:`Trash`
+folder in that it doesn't allow subfolders and creating new files.
+
+You can drag any file to this folder and preserve its settings. The file will always be excluded
+from the :guilabel:`Build Novel Project` builds, even with the setting to ignore the excluded files
+option. The file is also removed from the project index, so the tags and references defined in it
+will not show up anywhere else.
 
 
 .. _a_proj_roots_orph:

@@ -43,6 +43,27 @@ currently selected item. This panel also includes the latest paragraph and chara
 addition to the word count.
 
 
+.. _a_ui_tree_dnd:
+
+Project Tree Drag and Drop
+--------------------------
+
+The project tree allows dragging and drop to a certain extent, but it does not allow bulk actions.
+This is deliberate to avoid accidentally messing up your project. The project tree has no undo
+function.
+
+Document files and their folders can be rearranged freely within their root folders. Novel files
+cannot be moved out of the :guilabel:`Novel` folder, except to :guilabel:`Trash` and the
+:guilabel:`Outtakes` folder. Note files can be moved freely anywhere.
+
+Folders cannot be moved at all outside their root tree. Neither can a folder containing files be
+deleted. You must first delete the files.
+
+Root folders in the project tree cannot be dragged and dropped. However, if you want to reorder
+them, you can move them up or down with respect to eachother from the :guilabel:`Tools` menu, or by
+pressing :kbd:`Ctrl`:kbd:`Shift` and the :kbd:`Up` or :kbd:`Down` key.
+
+
 .. _a_ui_edit:
 
 Editing and Viewing Documents
