@@ -90,10 +90,8 @@ trash folder can then be deleted permanently, either individually, or by emptyin
 menu. Files in this folder are removed from the project index and cannot be referenced.
 
 Folders and root folders can only be deleted when they are empty. Recursive deletion is not
-supported.
-
-A document file or a folder can be deleted from the :guilabel:`project` menu, or by pressing
-:kbd:`Ctrl`:kbd:`Del`.
+supported. A document file or a folder can be deleted from the :guilabel:`project` menu, or by
+pressing :kbd:`Ctrl`:kbd:`Del`.
 
 
 .. _a_proj_roots_out:
