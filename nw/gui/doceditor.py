@@ -891,6 +891,10 @@ class GuiDocEditor(QTextEdit):
             else:
                 theCursor.insertText(self.typSQClose)
 
+        elif self.mainConf.doReplaceDash and theThree == "---":
+            theCursor.movePosition(QTextCursor.Left, QTextCursor.KeepAnchor, 3)
+            theCursor.insertText(nwUnicode.U_EMDASH)
+
         elif self.mainConf.doReplaceDash and theTwo == "--":
             theCursor.movePosition(QTextCursor.Left, QTextCursor.KeepAnchor, 2)
             theCursor.insertText(nwUnicode.U_ENDASH)
