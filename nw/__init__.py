@@ -280,45 +280,10 @@ def main(sysArgs=None):
         nwApp.setWindowIcon(QIcon(CONFIG.appIcon))
         nwApp.setOrganizationDomain(__domain__)
 
-        # We try to catch critical errors while setting up the main GUI
-        # by wrapping the main GUI in a try/except structure. This will
-        # not catch all exceptions for other parts of the application.
-        # For all other unhandled exceptions, we use a custom exception
-        # handler that pops a dialog box with the error message.
+        # Connect the exception handler before making the main GUI
         sys.excepthook = exceptionHandler
 
-        try:
-            nwGUI = GuiMain()
-            sys.exit(nwApp.exec_())
-
-        except Exception:
-
-            from traceback import print_tb
-            from nw.error import formatHtmlErrMsg
-
-            exType, exValue, exTrace = sys.exc_info()
-
-            logger.critical("%s: %s" % (exType.__name__, str(exValue)))
-            print_tb(exTrace)
-
-            try:
-                del nwApp
-
-                errApp = QApplication([])
-                errMsg = QErrorMessage()
-                errMsg.setWindowTitle("Critical Error")
-                errMsg.resize(800, 400)
-                errMsg.showMessage((
-                    "<h3>A critical error has been encountered</h3>"
-                    "%s"
-                    "<p>Shutting down ...</p>"
-                ) % formatHtmlErrMsg(exType, exValue, exTrace))
-                errApp.exec_()
-
-            except Exception as e:
-                logger.critical("Could not create error message dialog.")
-                logger.critical(str(e))
-
-            sys.exit(1)
+        nwGUI = GuiMain()
+        sys.exit(nwApp.exec_())
 
     return
