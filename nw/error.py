@@ -168,10 +168,11 @@ def exceptionHandler(exType, exValue, exTrace):
             # Try a controlled shudown
             nwGUI.closeProject(isYes=True)
             nwGUI.closeMain()
-            logger.critical("Emergency shutdown successful")
+            logger.info("Emergency shutdown successful")
+
         except Exception as e:
-            logger.error("Could not close the project before exiting.")
-            logger.error(str(e))
+            logger.critical("Could not close the project before exiting")
+            logger.critical(str(e))
 
         qApp.exit(1)
 
