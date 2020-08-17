@@ -156,7 +156,20 @@ class GuiDocViewer(QTextBrowser):
             self.setText("An error occurred while generating the preview.")
             return False
 
-        self.setHtml(aDoc.theResult)
+        # Refresh the tab stops
+        if self.mainConf.verQtValue >= 51000:
+            self.setTabStopDistance(self.mainConf.getTabWidth())
+        else:
+            self.setTabStopWidth(self.mainConf.getTabWidth())
+
+        self.setHtml(aDoc.theResult.replace("\t", "!!tab!!"))
+
+        # Loop through the text and put back in the tabs. Tabs are removed by
+        # the setHtml function, so the ToHtml class puts in a placeholder.
+        while self.find("!!tab!!"):
+            theCursor = self.textCursor()
+            theCursor.insertText("\t")
+
         if self.theHandle == tHandle:
             self.verticalScrollBar().setValue(sPos)
         self.theHandle = tHandle
@@ -167,17 +180,12 @@ class GuiDocViewer(QTextBrowser):
         # Make sure the main GUI knows we changed the content
         self.theParent.viewMeta.refreshReferences(tHandle)
 
-        # Loop through the text and put back in the tabs. Tabs are removed by
-        # the setHtml function, so the ToHtml class puts in a placeholder.
-        while self.find("!!tab!!"):
-            theCursor = self.textCursor()
-            theCursor.insertText("\t")
-
-        # Refresh the tab stops
-        if self.mainConf.verQtValue >= 51000:
-            self.setTabStopDistance(self.mainConf.getTabWidth())
-        else:
-            self.setTabStopWidth(self.mainConf.getTabWidth())
+        # This forces a repaint of the text, It's a hack to fix an occational
+        # issue where the find/replace above interfers with the rendering and
+        # leaves parts of the document blank.
+        textWidth = self.qDocument.textWidth()
+        self.qDocument.setTextWidth(textWidth - 5)
+        self.qDocument.setTextWidth(textWidth)
 
         return True
 
@@ -369,8 +377,6 @@ class GuiDocViewer(QTextBrowser):
             "}}\n"
             ".comment {{"
             "  color: rgb({cColR},{cColG},{cColB});"
-            "  margin-left: 1em;"
-            "  margin-right: 1em;"
             "}}\n"
             ".synopsis {{"
             "  color: rgb({mColR},{mColG},{mColB});"
