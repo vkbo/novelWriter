@@ -36,8 +36,7 @@ class NWErrorMessage(QDialog):
     def __init__(self, parent):
         QDialog.__init__(self, parent=parent)
 
-        self.mainBox = QGridLayout()
-
+        # Widgets
         self.msgIcon = QLabel()
         self.msgIcon.setPixmap(
             qApp.style().standardIcon(QStyle.SP_MessageBoxCritical).pixmap(64, 64)
@@ -52,6 +51,8 @@ class NWErrorMessage(QDialog):
         self.btnBox = QDialogButtonBox(QDialogButtonBox.Close)
         self.btnBox.rejected.connect(self._doClose)
 
+        # Assemble
+        self.mainBox = QGridLayout()
         self.mainBox.addWidget(self.msgIcon, 0, 0, 2, 1, Qt.AlignTop)
         self.mainBox.addWidget(self.msgHead, 0, 1, 1, 1, Qt.AlignTop)
         self.mainBox.addWidget(self.msgBody, 1, 1, 1, 1)
@@ -60,7 +61,6 @@ class NWErrorMessage(QDialog):
 
         self.setLayout(self.mainBox)
 
-        # self.setIcon(QMessageBox.Critical)
         self.setMinimumWidth(500)
         self.setMinimumHeight(300)
         self.setSizeGripEnabled(True)
