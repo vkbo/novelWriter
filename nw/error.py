@@ -25,56 +25,113 @@
  along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
 
-def formatHtmlErrMsg(exType, exValue, exTrace):
-    """Generates a HTML version of an exception.
-    """
-    try:
+from PyQt5.QtCore import Qt
+from PyQt5.QtWidgets import (
+    qApp, QDialog, QGridLayout, QStyle, QPlainTextEdit, QLabel,
+    QDialogButtonBox
+)
+
+class NWErrorMessage(QDialog):
+
+    def __init__(self, parent):
+        QDialog.__init__(self, parent=parent)
+
+        self.mainBox = QGridLayout()
+
+        self.msgIcon = QLabel()
+        self.msgIcon.setPixmap(
+            qApp.style().standardIcon(QStyle.SP_MessageBoxCritical).pixmap(64, 64)
+        )
+        self.msgHead = QLabel()
+        self.msgHead.setOpenExternalLinks(True)
+        self.msgHead.setWordWrap(True)
+
+        self.msgBody = QPlainTextEdit()
+        self.msgBody.setReadOnly(True)
+
+        self.btnBox = QDialogButtonBox(QDialogButtonBox.Close)
+        self.btnBox.rejected.connect(self._doClose)
+
+        self.mainBox.addWidget(self.msgIcon, 0, 0, 2, 1, Qt.AlignTop)
+        self.mainBox.addWidget(self.msgHead, 0, 1, 1, 1, Qt.AlignTop)
+        self.mainBox.addWidget(self.msgBody, 1, 1, 1, 1)
+        self.mainBox.addWidget(self.btnBox,  2, 0, 1, 2)
+        self.mainBox.setSpacing(16)
+
+        self.setLayout(self.mainBox)
+
+        # self.setIcon(QMessageBox.Critical)
+        self.setMinimumWidth(500)
+        self.setMinimumHeight(300)
+        self.setSizeGripEnabled(True)
+        self.resize(800, 400)
+
+        return
+
+    def setMessage(self, exType, exValue, exTrace):
+        """Generate a message and append session data, error info and
+        error traceback.
+        """
         import sys
         from traceback import format_tb
         from nw import __issuesurl__, __version__
         from PyQt5.Qt import PYQT_VERSION_STR
         from PyQt5.QtCore import QT_VERSION_STR, QSysInfo
 
-        fmtTrace = ""
-        for trEntry in format_tb(exTrace):
-            for trLine in trEntry.split("\n"):
-                stripLine = trLine.lstrip(" ")
-                nIndent = len(trLine) - len(stripLine)
-                fmtTrace += "&nbsp;"*nIndent + stripLine + "<br>"
+        self.msgHead.setText((
+            "<p>An unhandled error has been encountered.</p>"
+            "<p>Please report this error by submitting an issue report on "
+            "GitHub, providing a description and including the error "
+            "message and traceback shown below.</p>"
+            "<p>URL: <a href='{issueUrl}'>{issueUrl}</a></p>"
+        ).format(
+            issueUrl = __issuesurl__,
+        ))
 
         try:
             kernelVersion = QSysInfo.kernelVersion()
         except Exception:
             kernelVersion = "Unknown"
 
-        theMessage = (
-            "<p>Please report this error by submitting an issue report on "
-            "GitHub, providing a description and this error message. "
-            "URL: &lt;{issueUrl}&gt;.</p>"
-            "<p><b>Environment</b><br>Version: {nwVersion}, OS: {osType} ({osKernel}), "
-            "Python: {pyVersion} ({pyHexVer:#x}), Qt: {qtVers}, PyQt: {pyqtVers}</p>"
-            "<p><b>Error Type</b><br>{exType}: {exMessage}</p>"
-            "<p><b>Traceback</b><br>{exTrace}</p>"
-        ).format(
-            nwVersion = __version__,
-            osType    = sys.platform,
-            osKernel  = kernelVersion,
-            pyVersion = sys.version.split()[0],
-            pyHexVer  = sys.hexversion,
-            qtVers    = QT_VERSION_STR,
-            pyqtVers  = PYQT_VERSION_STR,
-            issueUrl  = __issuesurl__,
-            exType    = exType.__name__,
-            exMessage = str(exValue),
-            exTrace   = fmtTrace
-        )
+        try:
+            self.msgBody.setPlainText((
+                "Environment:\n"
+                "novelWriter Version: {nwVersion}\n"
+                "Host OS: {osType} ({osKernel})\n"
+                "Python: {pyVersion} ({pyHexVer:#x})\n"
+                "Qt: {qtVers}, PyQt: {pyqtVers}\n"
+                "\n"
+                "{exType}:\n{exMessage}\n"
+                "\n"
+                "Traceback:\n{exTrace}\n"
+            ).format(
+                nwVersion = __version__,
+                osType    = sys.platform,
+                osKernel  = kernelVersion,
+                pyVersion = sys.version.split()[0],
+                pyHexVer  = sys.hexversion,
+                qtVers    = QT_VERSION_STR,
+                pyqtVers  = PYQT_VERSION_STR,
+                exType    = exType.__name__,
+                exMessage = str(exValue),
+                exTrace   = "\n".join(format_tb(exTrace)),
+            ))
+        except Exception:
+            self.msgBody.setPlainText("Failed to generate error report ...")
 
-        return theMessage
+        return
 
-    except Exception as e:
-        return "Could not generate error message.<br>%s" % str(e)
+    ##
+    #  Slots
+    ##
 
-    return "Could not generate error message."
+    def _doClose(self):
+        """Close the dialog.
+        """
+        self.close()
+        return
+
+# END Class NWErrorMessage
 
 
 def exceptionHandler(exType, exValue, exTrace):
@@ -83,10 +140,10 @@ def exceptionHandler(exType, exValue, exTrace):
     import logging
     from traceback import print_tb
     from nw import CONFIG
-    from PyQt5.QtWidgets import qApp, QErrorMessage
+    from PyQt5.QtWidgets import qApp
 
     logger = logging.getLogger(__name__)
-    logger.error("%s: %s" % (exType.__name__, str(exValue)))
+    logger.critical("%s: %s" % (exType.__name__, str(exValue)))
     print_tb(exTrace)
 
     if not CONFIG.showGUI:
@@ -103,14 +160,22 @@ def exceptionHandler(exType, exValue, exTrace):
             logger.warning("Could not find main GUI window so cannot open error dialog")
             return
 
-        errMsg = QErrorMessage(nwGUI)
-        errMsg.setWindowTitle("Unhandled Error")
-        errMsg.resize(800, 400)
-        errMsg.showMessage((
-            "<h3>An unhandled error has been encountered</h3>%s"
-        ) % formatHtmlErrMsg(exType, exValue, exTrace))
+        errMsg = NWErrorMessage(nwGUI)
+        errMsg.setMessage(exType, exValue, exTrace)
+        errMsg.exec_()
+
+        try:
+            # Try a controlled shudown
+            nwGUI.closeProject(isYes=True)
+            nwGUI.closeMain()
+            logger.critical("Emergency shutdown successful")
+        except Exception as e:
+            logger.error("Could not close the project before exiting.")
+            logger.error(str(e))
+
+        qApp.exit(1)
 
     except Exception as e:
-        logger.error(str(e))
+        logger.critical(str(e))
 
     return
