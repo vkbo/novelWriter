@@ -167,6 +167,18 @@ class GuiDocViewer(QTextBrowser):
         # Make sure the main GUI knows we changed the content
         self.theParent.viewMeta.refreshReferences(tHandle)
 
+        # Loop through the text and put back in the tabs. Tabs are removed by
+        # the setHtml function, so the ToHtml class puts in a placeholder.
+        while self.find("!!tab!!"):
+            theCursor = self.textCursor()
+            theCursor.insertText("\t")
+
+        # Refresh the tab stops
+        if self.mainConf.verQtValue >= 51000:
+            self.setTabStopDistance(self.mainConf.getTabWidth())
+        else:
+            self.setTabStopWidth(self.mainConf.getTabWidth())
+
         return True
 
     def reloadText(self):

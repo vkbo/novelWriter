@@ -77,7 +77,7 @@ class ToHtml(Tokenizer):
             self.doKeywords = True
             self.doComments = doComments
             self.doSynopsis = doSynopsis
-            self.repDict["\t"] = "&nbsp;"*8
+            self.repDict["\t"] = r"!!tab!!" # The viewer replaces these
             self._buildRegEx()
         return
 
