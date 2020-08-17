@@ -1040,9 +1040,7 @@ class GuiBuildNovelDocView(QTextBrowser):
         # This forces a repaint of the text, It's a hack to fix an occational
         # issue where the find/replace above interfers with the rendering and
         # leaves parts of the document blank.
-        textWidth = self.qDocument.textWidth()
-        self.qDocument.setTextWidth(textWidth - 5)
-        self.qDocument.setTextWidth(textWidth)
+        self.qDocument.setTextWidth(self.qDocument.textWidth())
 
         return
 
