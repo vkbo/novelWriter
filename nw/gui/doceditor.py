@@ -206,8 +206,6 @@ class GuiDocEditor(QTextEdit):
         # Also set the document text options for the document text flow
         theOpt = QTextOption()
 
-        if self.mainConf.verQtValue >= 51000:
-            theOpt.setTabStopDistance(self.mainConf.getTabWidth())
         if self.mainConf.doJustify:
             theOpt.setAlignment(Qt.AlignJustify)
         if self.mainConf.showTabsNSpaces:
@@ -287,6 +285,12 @@ class GuiDocEditor(QTextEdit):
         self.updateDocMargins()
         self.hLight.spellCheck = spTemp
         qApp.restoreOverrideCursor()
+
+        # Refresh the tab stops
+        if self.mainConf.verQtValue >= 51000:
+            self.setTabStopDistance(self.mainConf.getTabWidth())
+        else:
+            self.setTabStopWidth(self.mainConf.getTabWidth())
 
         return True
 
