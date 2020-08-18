@@ -1037,10 +1037,9 @@ class GuiBuildNovelDocView(QTextBrowser):
         self.verticalScrollBar().setValue(sPos)
         self._updateBuildAge()
 
-        # This forces a repaint of the text, It's a hack to fix an occational
-        # issue where the find/replace above interfers with the rendering and
-        # leaves parts of the document blank.
-        self.qDocument.setTextWidth(self.qDocument.textWidth())
+        # Since we change the content while it may still be rendering, we mark
+        # the document dirty again to make sure it's re-rendered properly.
+        self.qDocument.markContentsDirty(0, self.qDocument.characterCount())
 
         return
 
