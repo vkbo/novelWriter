@@ -1936,6 +1936,7 @@ class GuiDocEditFooter(QWidget):
         self.theTheme   = docEditor.theTheme
         self.optState   = docEditor.theProject.optState
         self.theHandle  = None
+        self.theItem    = None
 
         # Make a QPalette that matches the Syntax Theme
         self.thePalette = QPalette()
@@ -2009,27 +2010,33 @@ class GuiDocEditFooter(QWidget):
         """Set the handle that will populate the footer's data.
         """
         self.theHandle = tHandle
+        if self.theHandle is None:
+            logger.verbose("No handle set, so clearing the editor footer")
+            self.theItem = None
+        else:
+            self.theItem = self.theProject.projTree[self.theHandle]
+
         self.updateInfo()
         self.updateCounts()
+
         return
 
     def updateInfo(self):
         """Update the content of text labels.
         """
-        nwItem = self.theProject.projTree[self.theHandle]
-        if nwItem is None:
-            sIcon  = QPixmap()
-            sText  = ""
+        if self.theItem is None:
+            sIcon = QPixmap()
+            sText = ""
         else:
-            iStatus = nwItem.itemStatus
-            if nwItem.itemClass == nwItemClass.NOVEL:
+            iStatus = self.theItem.itemStatus
+            if self.theItem.itemClass == nwItemClass.NOVEL:
                 iStatus = self.theProject.statusItems.checkEntry(iStatus)
                 theIcon = self.theParent.statusIcons[iStatus]
             else:
                 iStatus = self.theProject.importItems.checkEntry(iStatus)
                 theIcon = self.theParent.importIcons[iStatus]
             sIcon = theIcon.pixmap(self.sPx, self.sPx)
-            sText = nwItem.itemStatus
+            sText = self.theItem.itemStatus
 
         self.statusIcon.setPixmap(sIcon)
         self.statusText.setText(sText)
@@ -2039,13 +2046,12 @@ class GuiDocEditFooter(QWidget):
     def updateCounts(self):
         """Update the word counts.
         """
-        nwItem = self.theProject.projTree[self.theHandle]
-        if nwItem is None:
+        if self.theItem is None:
             wCount = 0
             wDiff  = 0
         else:
-            wCount = nwItem.wordCount
-            wDiff  = wCount - nwItem.initCount
+            wCount = self.theItem.wordCount
+            wDiff  = wCount - self.theItem.initCount
 
         self.wordsText.setText("Words: {:n} ({:+n})".format(wCount, wDiff))
 
