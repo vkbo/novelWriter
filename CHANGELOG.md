@@ -1,5 +1,29 @@
 # novelWriter ChangeLog
 
+## Version 1.0 Beta 1 [2020-08-23]
+
+**Bugfixes**
+
+* Not technically a bug, but the clearing of the document editor footer bar, both during start-up and when a document was closed, would print two ERROR messages to the terminal window. These were benign, but are now prevented from occurring by a slight change in the logic. Issue #418, PR #420.
+
+**New Features**
+
+* A new root folder has been added. It is named "Outtakes" by default, and functions as an archive folder for any file that the user wants to take out of the main project tree. The file retains its meta data, is editable, and is always excluded from builds. It is not possible to create files in this folder, but you can create subfolders for organising them. PRs #415, #416 and #419.
+
+**Feature Improvements**
+
+* The way the enter and tab keys work in the document editor have been improved. If the search or replace text box has focus, the tab key switches between them, and the enter key always triggers the button that is to the right of the box with focus. If the editor has focus, the tab and enter keys work as expected for a text editor. PRs #412 and #413.
+* The keyboard sequence `Ctrl+Shift+Z` is now again an alternative to `Ctrl+Y` for the redo functionality. PR #413.
+* It is now possible to drag and drop files into the Trash folder. PR #415.
+* Files moved to Outtakes or Trash are now cleared from the index, except their word counts. All tags and references are thus out of the project. They are automatically put back in when the file is dragged into the main project tree again. PR #416.
+* Tabs and tab stops are now rendered properly in the document viewer. Since the `setHtml` function of the Qt widget used here strips tabs, they were previously just converted to eight spaces. This prevented the tabs from aligning vertically like they do in the editor. The stripping of tabs is now bypassed by replacing them with a placeholder text, and reverting the replacement after the document content has been set. This change also applies to the preview in the Build Novel Project tool, and therefore also the print and print to PDF functions. PR #419.
+
+**Other Changes**
+
+* A hard maximum project tree folder depth of 30 has been added. Level 28 is the last level where a folder can be created, to allow for one more level of files. There is no particular reason for the number 30, it was mostly a matter of picking a number. 30 is assumed to be excessive. It is hard to navigate a project tree with that many folders. The value was set because many places in the code there was a soft limit of 200. If you created more, various parts of the code would stop working. PR #416.
+* The dialog for reporting unhandled errors has been changed and a new custom Qt subclass written. It does essentially the same thing as the standard QErrorMessage box did, but adds the feature of a clickable link to the issues tracker on GitHub, and a monospace formatted traceback for the issues ticket. In addition, a crash that pops this dialog will now trigger an attempted controlled shutdown of novelWriter. Before, it would try to keep running, but often leave novelWriter in a half defunct state. PR #417.
+
+
 ## Version 0.12.1 [2020-08-16]
 
 **Bugfixes**
