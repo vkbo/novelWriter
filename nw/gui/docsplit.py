@@ -34,7 +34,7 @@ from PyQt5.QtWidgets import (
     QListWidgetItem, QDialogButtonBox, QLabel
 )
 
-from nw.constants import nwAlert, nwItemType, nwItemClass, nwItemLayout
+from nw.constants import nwAlert, nwItemType, nwItemClass, nwItemLayout, nwConst
 from nw.gui.custom import QHelpLabel
 from nw.core import NWDoc
 
@@ -149,12 +149,24 @@ class GuiDocSplit(QDialog):
             ), nwAlert.ERROR)
             return
 
+        # Check that another folder can be created
+        parTree = self.theProject.projTree.getItemPath(srcItem.parHandle)
+        if len(parTree) >= nwConst.maxDepth - 1:
+            self.theParent.makeAlert((
+                "Cannot add new folder for the document split. "
+                "Maximum folder depth has been reached. "
+                "Please move the file to another level in the project tree."
+            ), nwAlert.ERROR)
+            return
+
+        # Create the folder
         fHandle = self.theProject.newFolder(
             srcItem.itemName, srcItem.itemClass, srcItem.parHandle
         )
         self.theParent.treeView.revealTreeItem(fHandle)
         logger.verbose("Creating folder %s" % fHandle)
 
+        # Loop through, and create the files
         for wTitle, iStart, iEnd in finalOrder:
 
             itemLayout = nwItemLayout.NOTE
