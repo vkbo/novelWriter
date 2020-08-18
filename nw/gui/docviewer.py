@@ -205,7 +205,7 @@ class GuiDocViewer(QTextBrowser):
                 "exist, or the index is out of date. The index can be updated "
                 "from the Tools menu, or by pressing F9."
             ) % theTag, nwAlert.ERROR)
-            return
+            return False
         else:
             # Let the parent handle the opening as it also ensures that
             # the doc view panel is visible in case this request comes
