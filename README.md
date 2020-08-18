@@ -9,10 +9,10 @@
 
 <img align="left" style="margin: 0 16px 4px 0;" src="https://raw.githubusercontent.com/vkbo/novelWriter/main/assets/icons/96x96/novelwriter.png">
 
-novelWriter is a markdown-like text editor designed for writing novels and larger projects of many
-smaller plain text documents. It uses its own flavour of markdown that supports a meta data syntax
+novelWriter is a Markdown-like text editor designed for writing novels and larger projects of many
+smaller plain text documents. It uses its own flavour of Markdown that supports a meta data syntax
 for comments, synopsis and cross-referencing between files. It's designed to be a simple text editor
-which allows for easy organisation of text files and notes, built on plain text files for
+that allows for easy organisation of text files and notes, built on plain text files for
 robustness.
 
 The plain text storage is suitable for version control software, and also well suited for file
@@ -29,7 +29,7 @@ The contributing guide is available in [CONTRIBUTING](CONTRIBUTING.md).
 The default branch on this repository switched to `main` on 6. August 2020. If you are running
 novelWriter from a git clone, you need to clone the repository again.
 
-Alternatively, you can run the following to get back on the main branch:
+Alternatively, you can run the following to get back on the new default branch:
 
 ```bash
 git remote update
@@ -48,8 +48,8 @@ novelWriter is in a _beta_ state. Please report any issues you may encounter in 
 tracker.
 
 You should be able to use novelWriter for real projects, but as with all software, please make
-regular backups. There is a built in backup feature that can pack the entire project into a zip file
-on close. Please check the documentation for further details.
+regular backups of your data. There is a built in backup feature that can pack the entire project
+into a zip file on close. Please check the documentation for further details.
 
 
 ## License
@@ -80,7 +80,7 @@ novelWriter is _not_ a full-feature Markdown editor. It allows for a minimal set
 needed for writing text documents for novels. These are currently limited to:
 
 * Headings level 1 to 4 using the `#` syntax only.
-* Emphasised, strong text. These are rendered as italicised and bold.
+* Emphasised and strong text. These are rendered as italicised and bold.
 * Strikethrough text.
 * Hard line breaks using two or more spaces at the end of a line.
 
@@ -98,21 +98,24 @@ In addition, novelWriter adds the following, which is otherwise not supported by
   version, non-breaking spaces are converted to normal spaces when saving the document. This is done
   by the Qt library.
 * Thin spaces are also supported, as well as non-breaking thin spaces.
-* Tabs may be rendered, depending on export format. With Qt 5.10 or higher, the width of a tab in
-  pixels can be changed in Preferences.
+* Tabs can be used in the text, and should be properly aligned. The width of a tab in pixels can be
+  changed in Preferences. Note that tabs are exported as-is, also to HTML format. However, most
+  browsers will treat a tab as a space, so it may not show up like expected if you view the exported
+  HTML file.
 
 The core export format of novelWriter is HTML5. You can also export the entire project as a single
-novelWriter flavour document. In addition, other exports to Open Document, PDF, and plain text is
-offered through the Qt library, although with limitations to formatting.
+novelWriter Markdown-flavour document. In addition, other exports to Open Document, PDF, and plain
+text is offered through the Qt library, although with limitations to formatting.
 
 
 ## Implementation
 
 The application is written in Python3 using Qt5 via PyQt5. It is developed on Linux, but it should
-in principle work fine on other operating systems as well as long as dependencies are met. It is
+in principle work fine on other operating systems as well, as long as dependencies are met. It is
 regularly tested on Windows 10.
 
-The application can be started from the source folder with one of the commands:
+The application can be started from the source folder with one of the commands, depending on your
+Python configuration:
 ```
 ./novelWriter.py
 python novelWriter.py
@@ -158,7 +161,7 @@ pip install pyenchant
 ```
 
 PyQt/Qt should be at least 5.3, but ideally 5.10 or higher for nearly all features to work.
-Exporting to markdown requires PyQt/Qt 5.14. There are no known minimum for `lxml`, but the code
+Exporting to Markdown requires PyQt/Qt 5.14. There are no known minimum for `lxml`, but the code
 was originally written with 4.2. The optional spell check library must be at least 3.0.0 to work
 with Windows 64 bit systems. On Linux, 2.0.0 also works fine.
 
@@ -237,7 +240,7 @@ clickable in the document view pane, and control-clickable in the editor. They m
 quickly navigate between the documents while editing.
 
 
-## Contribution
+## Contributing
 
 If you want to contribute to novelWriter, please follow the coding convention laid out in the
 [Style Guide](markdown/style.md). They broadly follow Python PEP8, but there are a few

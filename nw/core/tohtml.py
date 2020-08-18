@@ -45,10 +45,9 @@ class ToHtml(Tokenizer):
         self.cssStyles = True
 
         self.repDict = {
-            "<"  : "&lt;",
-            ">"  : "&gt;",
-            "&"  : "&amp;",
-            "\t" : "&emsp;"*2,
+            "<" : "&lt;",
+            ">" : "&gt;",
+            "&" : "&amp;",
             nwUnicode.U_ENDASH : nwUnicode.H_ENDASH,
             nwUnicode.U_EMDASH : nwUnicode.H_EMDASH,
             nwUnicode.U_HELLIP : nwUnicode.H_HELLIP,
@@ -77,7 +76,6 @@ class ToHtml(Tokenizer):
             self.doKeywords = True
             self.doComments = doComments
             self.doSynopsis = doSynopsis
-            self.repDict["\t"] = "&nbsp;"*8
             self._buildRegEx()
         return
 

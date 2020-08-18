@@ -551,7 +551,6 @@ class GuiBuildNovel(QDialog):
         isNone |= theItem.itemClass == nwItemClass.NO_CLASS
         isNone |= theItem.itemClass == nwItemClass.TRASH
         isNone |= theItem.parHandle == self.theProject.projTree.trashRoot()
-        isNone |= theItem.parHandle == self.theProject.projTree.archiveRoot()
         isNone |= theItem.parHandle is None
         isNote  = theItem.itemLayout == nwItemLayout.NOTE
         isNovel = not isNone and not isNote
@@ -561,6 +560,10 @@ class GuiBuildNovel(QDialog):
         if isNote and not noteFiles:
             return False
         if isNovel and not novelFiles:
+            return False
+
+        rootItem = self.theProject.projTree.getRootItem(theItem.itemHandle)
+        if rootItem.itemClass == nwItemClass.ARCHIVE:
             return False
 
         return True
@@ -1014,12 +1017,29 @@ class GuiBuildNovelDocView(QTextBrowser):
             theText = "".join(theText)
 
         self.buildTime = timeStamp
+        sPos = self.verticalScrollBar().value()
 
-        theText = theText.replace("&emsp;", "&nbsp;"*4)
+        # Refresh the tab stops
+        if self.mainConf.verQtValue >= 51000:
+            self.setTabStopDistance(self.mainConf.getTabWidth())
+        else:
+            self.setTabStopWidth(self.mainConf.getTabWidth())
+
+        theText = theText.replace("\t", "!!tab!!")
         theText = theText.replace("<del>", "<span style='text-decoration: line-through;'>")
         theText = theText.replace("</del>", "</span>")
         self.setHtml(theText)
+
+        while self.find("!!tab!!"):
+            theCursor = self.textCursor()
+            theCursor.insertText("\t")
+
+        self.verticalScrollBar().setValue(sPos)
         self._updateBuildAge()
+
+        # Since we change the content while it may still be rendering, we mark
+        # the document dirty again to make sure it's re-rendered properly.
+        self.qDocument.markContentsDirty(0, self.qDocument.characterCount())
 
         return
 
