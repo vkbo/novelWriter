@@ -1168,6 +1168,7 @@ def testOutline(qtbot, nwTempBuild, nwLipsum, nwTemp):
 
     # Click POV Link
     qtbot.mouseClick(nwGUI.projMeta.povKeyValue, Qt.LeftButton)
+    qtbot.wait(500)
     assert nwGUI.docViewer.theHandle == "4c4f28287af27"
 
     # qtbot.stopForInteraction()
