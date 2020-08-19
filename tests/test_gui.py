@@ -9,13 +9,16 @@ from nwtools import cmpFiles
 
 from os import path
 from PyQt5.QtCore import Qt
-from PyQt5.QtWidgets import QAction
+from PyQt5.QtWidgets import QAction, QDialogButtonBox
 
 from nw.gui import (
     GuiProjectSettings, GuiItemEditor, GuiAbout, GuiBuildNovel,
-    GuiDocMerge, GuiDocSplit, GuiWritingStats, GuiProjectWizard
+    GuiDocMerge, GuiDocSplit, GuiWritingStats, GuiProjectWizard,
+    GuiProjectLoad
 )
-from nw.constants import nwItemType, nwItemLayout, nwItemClass, nwDocAction, nwUnicode
+from nw.constants import (
+    nwItemType, nwItemLayout, nwItemClass, nwDocAction, nwUnicode
+)
 
 keyDelay = 2
 stepDelay = 20
@@ -1061,6 +1064,52 @@ def testInsertMenu(qtbot, nwTempGUI, nwFuncTemp, nwTemp):
     else:
         assert nwGUI.docEditor.getText() == " "
     nwGUI.docEditor.clear()
+
+    # qtbot.stopForInteraction()
+    nwGUI.closeMain()
+
+@pytest.mark.gui
+def testLoadProject(qtbot, nwTempGUI, nwTemp):
+    nwGUI = nw.main(["--testmode", "--config=%s" % nwTempGUI, "--data=%s" % nwTemp])
+    qtbot.addWidget(nwGUI)
+    nwGUI.show()
+    qtbot.waitForWindowShown(nwGUI)
+    qtbot.wait(stepDelay)
+
+    nwLoad = GuiProjectLoad(nwGUI)
+    nwLoad.show()
+
+    recentCount = nwLoad.listBox.topLevelItemCount()
+    assert recentCount > 1
+
+    selItem = nwLoad.listBox.topLevelItem(1)
+    selPath = selItem.data(nwLoad.C_NAME, Qt.UserRole)
+
+    nwLoad.selPath.setText("")
+    nwLoad.listBox.setCurrentItem(selItem)
+    assert nwLoad.selPath.text() == selPath
+
+    qtbot.mouseClick(nwLoad.buttonBox.button(QDialogButtonBox.Open), Qt.LeftButton)
+    assert nwLoad.openPath == selPath
+    assert nwLoad.openState == nwLoad.OPEN_STATE
+
+    del nwLoad
+    nwLoad = GuiProjectLoad(nwGUI)
+    nwLoad.show()
+
+    qtbot.mouseClick(nwLoad.buttonBox.button(QDialogButtonBox.Cancel), Qt.LeftButton)
+    assert nwLoad.openPath is None
+    assert nwLoad.openState == nwLoad.NONE_STATE
+
+    nwLoad.show()
+    qtbot.mouseClick(nwLoad.newButton, Qt.LeftButton)
+    assert nwLoad.openPath is None
+    assert nwLoad.openState == nwLoad.NEW_STATE
+
+    nwLoad.show()
+    nwLoad._keyPressDelete()
+    assert nwLoad.listBox.topLevelItemCount() == recentCount - 1
+    del nwLoad
 
     # qtbot.stopForInteraction()
     nwGUI.closeMain()
