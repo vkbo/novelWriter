@@ -8,8 +8,8 @@ import json
 from nwtools import cmpFiles
 
 from os import path
-from PyQt5.QtCore import Qt
-from PyQt5.QtWidgets import QAction, QDialogButtonBox
+from PyQt5.QtCore import Qt, QPoint
+from PyQt5.QtWidgets import QAction, QDialogButtonBox, QTreeWidgetItem
 
 from nw.gui import (
     GuiProjectSettings, GuiItemEditor, GuiAbout, GuiBuildNovel,
@@ -17,7 +17,7 @@ from nw.gui import (
     GuiProjectLoad
 )
 from nw.constants import (
-    nwItemType, nwItemLayout, nwItemClass, nwDocAction, nwUnicode
+    nwItemType, nwItemLayout, nwItemClass, nwDocAction, nwUnicode, nwOutline
 )
 
 keyDelay = 2
@@ -1109,7 +1109,66 @@ def testLoadProject(qtbot, nwTempGUI, nwTemp):
     nwLoad.show()
     nwLoad._keyPressDelete()
     assert nwLoad.listBox.topLevelItemCount() == recentCount - 1
-    del nwLoad
+
+    nwLoad.close()
+    # qtbot.stopForInteraction()
+    nwGUI.closeMain()
+
+@pytest.mark.gui
+def testOutline(qtbot, nwTempBuild, nwLipsum, nwTemp):
+
+    nwGUI = nw.main(["--testmode", "--config=%s" % nwTempBuild, "--data=%s" % nwTemp])
+    qtbot.addWidget(nwGUI)
+    nwGUI.show()
+    qtbot.waitForWindowShown(nwGUI)
+    qtbot.wait(stepDelay)
+
+    assert nwGUI.openProject(nwLipsum)
+    nwGUI.mainConf.lastPath = nwTempBuild
+
+    nwGUI.rebuildIndex()
+    nwGUI.tabWidget.setCurrentIndex(nwGUI.idxTabProj)
+
+    assert nwGUI.projView.topLevelItemCount() > 0
+
+    # Context Menu
+    nwGUI.projView._headerRightClick(QPoint(1, 1))
+    nwGUI.projView.headerMenu.actionMap[nwOutline.CCOUNT].activate(QAction.Trigger)
+    nwGUI.projView.headerMenu.close()
+    qtbot.mouseClick(nwGUI.projView, Qt.LeftButton)
+
+    nwGUI.projView._loadHeaderState()
+    assert not nwGUI.projView.colHidden[nwOutline.CCOUNT]
+
+    # First Item
+    nwGUI.rebuildOutline()
+    selItem = nwGUI.projView.topLevelItem(0)
+    assert isinstance(selItem, QTreeWidgetItem)
+
+    nwGUI.projView.setCurrentItem(selItem)
+    assert nwGUI.projMeta.titleLabel.text() == "<b>Title</b>"
+    assert nwGUI.projMeta.titleValue.text() == "Lorem Ipsum"
+    assert nwGUI.projMeta.fileValue.text() == "Lorem Ipsum"
+    assert nwGUI.projMeta.itemValue.text() == "Finished"
+
+    assert nwGUI.projMeta.cCValue.text() == "122"
+    assert nwGUI.projMeta.wCValue.text() == "18"
+    assert nwGUI.projMeta.pCValue.text() == "2"
+
+    # Scene One
+    actItem = nwGUI.projView.topLevelItem(1)
+    chpItem = actItem.child(0)
+    selItem = chpItem.child(0)
+
+    nwGUI.projView.setCurrentItem(selItem)
+    assert nwGUI.projMeta.titleLabel.text() == "<b>Scene</b>"
+    assert nwGUI.projMeta.titleValue.text() == "Scene One"
+    assert nwGUI.projMeta.fileValue.text() == "Scene One"
+    assert nwGUI.projMeta.itemValue.text() == "Finished"
+
+    # Click POV Link
+    qtbot.mouseClick(nwGUI.projMeta.povKeyValue, Qt.LeftButton)
+    assert nwGUI.docViewer.theHandle == "4c4f28287af27"
 
     # qtbot.stopForInteraction()
     nwGUI.closeMain()
