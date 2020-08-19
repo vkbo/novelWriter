@@ -1167,8 +1167,8 @@ def testOutline(qtbot, nwTempBuild, nwLipsum, nwTemp):
     assert nwGUI.projMeta.itemValue.text() == "Finished"
 
     # Click POV Link
-    qtbot.mouseClick(nwGUI.projMeta.povKeyValue, Qt.LeftButton)
-    qtbot.wait(500)
+    assert nwGUI.projMeta.povKeyValue.text() == "<a href='#pov=Bod'>Bod</a>"
+    nwGUI.projMeta._tagClicked("#pov=Bod")
     assert nwGUI.docViewer.theHandle == "4c4f28287af27"
 
     # qtbot.stopForInteraction()
