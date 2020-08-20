@@ -1,4 +1,4 @@
-name: Flake8
+name: flake8
 
 on:
   push:
