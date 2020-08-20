@@ -20,8 +20,13 @@
 
 **Other Changes**
 
-* A hard maximum project tree folder depth of 30 has been added. Level 28 is the last level where a folder can be created, to allow for one more level of files. There is no particular reason for the number 30, it was mostly a matter of picking a number. 30 is assumed to be excessive. It is hard to navigate a project tree with that many folders. The value was set because many places in the code there was a soft limit of 200. If you created more, various parts of the code would stop working. PR #416.
+* A hard maximum project tree folder depth of 30 has been added. Level 28 is the last level where a folder can be created, to allow for one more level of files. There is no particular reason for the number 30, it was mostly a matter of picking a number. 30 is assumed to be excessive. It is hard to navigate a project tree with that many folders. The value was set because many places in the code there was a soft limit of 200. If you created more, various parts of the code would stop working. PRs #416 and #421.
 * The dialog for reporting unhandled errors has been changed and a new custom Qt subclass written. It does essentially the same thing as the standard QErrorMessage box did, but adds the feature of a clickable link to the issues tracker on GitHub, and a monospace formatted traceback for the issues ticket. In addition, a crash that pops this dialog will now trigger an attempted controlled shutdown of novelWriter. Before, it would try to keep running, but often leave novelWriter in a half defunct state. PR #417.
+
+**Test Suite**
+
+* Added better test coverage of the Project Load dialog and the Project Outline tool. PR #423.
+* Switched from Travis-CI to GitHub actions for running Python tests. PRs #424, #425 and #426.
 
 
 ## Version 0.12.1 [2020-08-16]
