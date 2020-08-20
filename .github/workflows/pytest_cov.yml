@@ -6,7 +6,6 @@ on:
 
 jobs:
   pyTestCov:
-    needs: checkSyntax
     runs-on: ubuntu-latest
     steps:
       - name: Python Setup
