@@ -1,4 +1,4 @@
-name: PyTest + Coverage
+name: PyTest
 
 on:
   pull_request:
