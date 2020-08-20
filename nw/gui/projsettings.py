@@ -617,7 +617,7 @@ class GuiProjectEditReplace(QWidget):
         saveKey = "<keyword%d>" % (self.listBox.topLevelItemCount() + 1)
         newVal  = ""
         newItem = QTreeWidgetItem([saveKey, newVal])
-        self.listBox.insertTopLevelItem(0, newItem)
+        self.listBox.addTopLevelItem(newItem)
         return True
 
     def _delEntry(self):
