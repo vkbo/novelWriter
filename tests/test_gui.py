@@ -297,6 +297,7 @@ def testProjectEditor(qtbot, nwTempGUI, nwRef, nwTemp):
     projEdit.show()
     qtbot.addWidget(projEdit)
 
+    qtbot.wait(stepDelay)
     projEdit.tabMain.editName.setText("")
     for c in "Project Name":
         qtbot.keyClick(projEdit.tabMain.editName, c, delay=keyDelay)
@@ -309,6 +310,7 @@ def testProjectEditor(qtbot, nwTempGUI, nwRef, nwTemp):
         qtbot.keyClick(projEdit.tabMain.editAuthors, c, delay=keyDelay)
 
     # Test Status Tab
+    qtbot.wait(stepDelay)
     projEdit._tabBox.setCurrentWidget(projEdit.tabStatus)
     projEdit.tabStatus.listBox.item(2).setSelected(True)
     qtbot.mouseClick(projEdit.tabStatus.delButton, Qt.LeftButton)
@@ -321,6 +323,7 @@ def testProjectEditor(qtbot, nwTempGUI, nwRef, nwTemp):
     qtbot.mouseClick(projEdit.tabStatus.saveButton, Qt.LeftButton)
 
     # Auto-Replace Tab
+    qtbot.wait(stepDelay)
     projEdit._tabBox.setCurrentWidget(projEdit.tabReplace)
 
     qtbot.mouseClick(projEdit.tabReplace.addButton, Qt.LeftButton)
@@ -331,6 +334,7 @@ def testProjectEditor(qtbot, nwTempGUI, nwRef, nwTemp):
         qtbot.keyClick(projEdit.tabReplace.editValue, c, delay=keyDelay)
     qtbot.mouseClick(projEdit.tabReplace.saveButton, Qt.LeftButton)
 
+    qtbot.wait(stepDelay)
     projEdit.tabReplace.listBox.clearSelection()
     qtbot.mouseClick(projEdit.tabReplace.addButton, Qt.LeftButton)
     projEdit.tabReplace.listBox.topLevelItem(0).setSelected(True)
@@ -340,10 +344,12 @@ def testProjectEditor(qtbot, nwTempGUI, nwRef, nwTemp):
         qtbot.keyClick(projEdit.tabReplace.editValue, c, delay=keyDelay)
     qtbot.mouseClick(projEdit.tabReplace.saveButton, Qt.LeftButton)
 
+    qtbot.wait(stepDelay)
     projEdit.tabReplace.listBox.clearSelection()
     projEdit.tabReplace.listBox.topLevelItem(0).setSelected(True)
     qtbot.mouseClick(projEdit.tabReplace.delButton, Qt.LeftButton)
 
+    qtbot.wait(stepDelay)
     projEdit._doSave()
 
     # Open again, and check project settings
