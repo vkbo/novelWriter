@@ -20,6 +20,10 @@ jobs:
       - name: Install flake8
         run: pip install flake8
       - name: Syntax Error Check
-        run: flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
+        run: |
+          flake8 nw --count --select=E9,F63,F7,F82 --show-source --statistics
+          flake8 tests --count --select=E9,F63,F7,F82 --show-source --statistics
       - name: Coding Style Violations
-        run: flake8 . --count --max-line-length=99 --ignore E203,E221,E226,E241,E251,E261,E266,E302,E305 --show-source --statistics
+        run: | 
+          flake8 nw --count --max-line-length=99 --ignore E203,E221,E226,E241,E251,E261,E266,E302,E305 --show-source --statistics
+          flake8 tests --count --max-line-length=99 --ignore E203,E221,E226,E241,E251,E261,E266,E302,E305 --show-source --statistics
