@@ -1,8 +1,6 @@
 name: PyTest + Coverage
 
 on:
-  push:
-    branches: [ main, dev ]
   pull_request:
     branches: [ main, dev ]
 
@@ -16,7 +14,7 @@ jobs:
           python-version: 3.8
           architecture: x64
       - name: Install Packages
-        run: sudo apt install xvfb libenchant-dev qt5-default # python3-pyqt5 python3-pyqt5.qtsvg python3-lxml
+        run: sudo apt install xvfb libenchant-dev qt5-default
       - name: Checkout Source
         uses: actions/checkout@v2
       - name: Install Dependencies
@@ -30,3 +28,5 @@ jobs:
           pip install codecov
       - name: Run Tests
         run: xvfb-run pytest -v --cov=nw
+      - name: Upload to Codecov
+        uses: codecov/codecov-action@v1
