@@ -2,11 +2,11 @@
 novelWriter |release|
 #####################
 
-.. image:: https://travis-ci.com/vkbo/novelWriter.svg?branch=master
-   :target: https://travis-ci.com/vkbo/novelWriter
-   :alt: Build Status
+.. image:: https://github.com/vkbo/novelWriter/workflows/pytest/badge.svg
+   :target: https://github.com/vkbo/novelWriter/actions
+   :alt: Python Tests
 
-.. image:: https://codecov.io/gh/vkbo/novelWriter/branch/master/graph/badge.svg
+.. image:: https://codecov.io/gh/vkbo/novelWriter/branch/main/graph/badge.svg
    :target: https://codecov.io/gh/vkbo/novelWriter
    :alt: Code Coverage
 
