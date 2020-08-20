@@ -249,8 +249,8 @@ class GuiOutlineDetails(QScrollArea):
         self.itemValue.setText(nwItem.itemStatus)
 
         self.cCValue.setText("{:n}".format(checkInt(novIdx["cCount"], 0)))
-        self.wCValue.setText("{:n}".format(checkInt(novIdx["pCount"], 0)))
-        self.pCValue.setText("{:n}".format(checkInt(novIdx["wCount"], 0)))
+        self.wCValue.setText("{:n}".format(checkInt(novIdx["wCount"], 0)))
+        self.pCValue.setText("{:n}".format(checkInt(novIdx["pCount"], 0)))
 
         self.synopValue.setText(novIdx["synopsis"])
 

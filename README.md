@@ -1,6 +1,6 @@
 # novelWriter
 
-[![Build Status](https://travis-ci.com/vkbo/novelWriter.svg?branch=main)](https://travis-ci.com/vkbo/novelWriter)
+[![PyTest + Coverage](https://github.com/vkbo/novelWriter/workflows/PyTest%20+%20Coverage/badge.svg?branch=main)](https://github.com/vkbo/novelWriter/actions)
 [![codecov](https://codecov.io/gh/vkbo/novelWriter/branch/main/graph/badge.svg)](https://codecov.io/gh/vkbo/novelWriter)
 [![Documentation Status](https://readthedocs.org/projects/novelwriter/badge/?version=latest)](https://novelwriter.readthedocs.io/en/latest/?badge=latest)
 [![Flake8 Checks](https://github.com/vkbo/novelWriter/workflows/Flake8%20Checks/badge.svg)](https://github.com/vkbo/novelWriter/actions)

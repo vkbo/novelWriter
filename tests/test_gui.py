@@ -8,14 +8,17 @@ import json
 from nwtools import cmpFiles
 
 from os import path
-from PyQt5.QtCore import Qt
-from PyQt5.QtWidgets import QAction
+from PyQt5.QtCore import Qt, QPoint
+from PyQt5.QtWidgets import QAction, QDialogButtonBox, QTreeWidgetItem
 
 from nw.gui import (
     GuiProjectSettings, GuiItemEditor, GuiAbout, GuiBuildNovel,
-    GuiDocMerge, GuiDocSplit, GuiWritingStats, GuiProjectWizard
+    GuiDocMerge, GuiDocSplit, GuiWritingStats, GuiProjectWizard,
+    GuiProjectLoad
 )
-from nw.constants import nwItemType, nwItemLayout, nwItemClass, nwDocAction, nwUnicode
+from nw.constants import (
+    nwItemType, nwItemLayout, nwItemClass, nwDocAction, nwUnicode, nwOutline
+)
 
 keyDelay = 2
 stepDelay = 20
@@ -294,6 +297,7 @@ def testProjectEditor(qtbot, nwTempGUI, nwRef, nwTemp):
     projEdit.show()
     qtbot.addWidget(projEdit)
 
+    qtbot.wait(stepDelay)
     projEdit.tabMain.editName.setText("")
     for c in "Project Name":
         qtbot.keyClick(projEdit.tabMain.editName, c, delay=keyDelay)
@@ -306,6 +310,7 @@ def testProjectEditor(qtbot, nwTempGUI, nwRef, nwTemp):
         qtbot.keyClick(projEdit.tabMain.editAuthors, c, delay=keyDelay)
 
     # Test Status Tab
+    qtbot.wait(stepDelay)
     projEdit._tabBox.setCurrentWidget(projEdit.tabStatus)
     projEdit.tabStatus.listBox.item(2).setSelected(True)
     qtbot.mouseClick(projEdit.tabStatus.delButton, Qt.LeftButton)
@@ -318,6 +323,7 @@ def testProjectEditor(qtbot, nwTempGUI, nwRef, nwTemp):
     qtbot.mouseClick(projEdit.tabStatus.saveButton, Qt.LeftButton)
 
     # Auto-Replace Tab
+    qtbot.wait(stepDelay)
     projEdit._tabBox.setCurrentWidget(projEdit.tabReplace)
 
     qtbot.mouseClick(projEdit.tabReplace.addButton, Qt.LeftButton)
@@ -328,19 +334,22 @@ def testProjectEditor(qtbot, nwTempGUI, nwRef, nwTemp):
         qtbot.keyClick(projEdit.tabReplace.editValue, c, delay=keyDelay)
     qtbot.mouseClick(projEdit.tabReplace.saveButton, Qt.LeftButton)
 
+    qtbot.wait(stepDelay)
     projEdit.tabReplace.listBox.clearSelection()
     qtbot.mouseClick(projEdit.tabReplace.addButton, Qt.LeftButton)
-    projEdit.tabReplace.listBox.topLevelItem(0).setSelected(True)
-    for c in "Delete":
-        qtbot.keyClick(projEdit.tabReplace.editKey, c, delay=keyDelay)
-    for c in "This Stuff":
-        qtbot.keyClick(projEdit.tabReplace.editValue, c, delay=keyDelay)
-    qtbot.mouseClick(projEdit.tabReplace.saveButton, Qt.LeftButton)
 
-    projEdit.tabReplace.listBox.clearSelection()
-    projEdit.tabReplace.listBox.topLevelItem(0).setSelected(True)
+    newIdx = -1
+    for i in range(projEdit.tabReplace.listBox.topLevelItemCount()):
+        if projEdit.tabReplace.listBox.topLevelItem(i).text(0) == "<keyword2>":
+            newIdx = i
+            break
+
+    assert newIdx >= 0
+    newItem = projEdit.tabReplace.listBox.topLevelItem(newIdx)
+    projEdit.tabReplace.listBox.setCurrentItem(newItem)
     qtbot.mouseClick(projEdit.tabReplace.delButton, Qt.LeftButton)
 
+    qtbot.wait(stepDelay)
     projEdit._doSave()
 
     # Open again, and check project settings
@@ -363,8 +372,8 @@ def testProjectEditor(qtbot, nwTempGUI, nwRef, nwTemp):
     projFile = path.join(nwTempGUI, "nwProject.nwx")
     assert cmpFiles(projFile, path.join(nwRef, "gui", "2_nwProject.nwx"), [2, 8, 9, 10])
 
-    nwGUI.closeMain()
     # qtbot.stopForInteraction()
+    nwGUI.closeMain()
 
 @pytest.mark.gui
 def testItemEditor(qtbot, nwTempGUI, nwRef, nwTemp):
@@ -1061,6 +1070,112 @@ def testInsertMenu(qtbot, nwTempGUI, nwFuncTemp, nwTemp):
     else:
         assert nwGUI.docEditor.getText() == " "
     nwGUI.docEditor.clear()
+
+    # qtbot.stopForInteraction()
+    nwGUI.closeMain()
+
+@pytest.mark.gui
+def testLoadProject(qtbot, nwTempGUI, nwTemp):
+    nwGUI = nw.main(["--testmode", "--config=%s" % nwTempGUI, "--data=%s" % nwTemp])
+    qtbot.addWidget(nwGUI)
+    nwGUI.show()
+    qtbot.waitForWindowShown(nwGUI)
+    qtbot.wait(stepDelay)
+
+    nwLoad = GuiProjectLoad(nwGUI)
+    nwLoad.show()
+
+    recentCount = nwLoad.listBox.topLevelItemCount()
+    assert recentCount > 1
+
+    selItem = nwLoad.listBox.topLevelItem(1)
+    selPath = selItem.data(nwLoad.C_NAME, Qt.UserRole)
+
+    nwLoad.selPath.setText("")
+    nwLoad.listBox.setCurrentItem(selItem)
+    assert nwLoad.selPath.text() == selPath
+
+    qtbot.mouseClick(nwLoad.buttonBox.button(QDialogButtonBox.Open), Qt.LeftButton)
+    assert nwLoad.openPath == selPath
+    assert nwLoad.openState == nwLoad.OPEN_STATE
+
+    del nwLoad
+    nwLoad = GuiProjectLoad(nwGUI)
+    nwLoad.show()
+
+    qtbot.mouseClick(nwLoad.buttonBox.button(QDialogButtonBox.Cancel), Qt.LeftButton)
+    assert nwLoad.openPath is None
+    assert nwLoad.openState == nwLoad.NONE_STATE
+
+    nwLoad.show()
+    qtbot.mouseClick(nwLoad.newButton, Qt.LeftButton)
+    assert nwLoad.openPath is None
+    assert nwLoad.openState == nwLoad.NEW_STATE
+
+    nwLoad.show()
+    nwLoad._keyPressDelete()
+    assert nwLoad.listBox.topLevelItemCount() == recentCount - 1
+
+    nwLoad.close()
+    # qtbot.stopForInteraction()
+    nwGUI.closeMain()
+
+@pytest.mark.gui
+def testOutline(qtbot, nwTempBuild, nwLipsum, nwTemp):
+
+    nwGUI = nw.main(["--testmode", "--config=%s" % nwTempBuild, "--data=%s" % nwTemp])
+    qtbot.addWidget(nwGUI)
+    nwGUI.show()
+    qtbot.waitForWindowShown(nwGUI)
+    qtbot.wait(stepDelay)
+
+    assert nwGUI.openProject(nwLipsum)
+    nwGUI.mainConf.lastPath = nwTempBuild
+
+    nwGUI.rebuildIndex()
+    nwGUI.tabWidget.setCurrentIndex(nwGUI.idxTabProj)
+
+    assert nwGUI.projView.topLevelItemCount() > 0
+
+    # Context Menu
+    nwGUI.projView._headerRightClick(QPoint(1, 1))
+    nwGUI.projView.headerMenu.actionMap[nwOutline.CCOUNT].activate(QAction.Trigger)
+    nwGUI.projView.headerMenu.close()
+    qtbot.mouseClick(nwGUI.projView, Qt.LeftButton)
+
+    nwGUI.projView._loadHeaderState()
+    assert not nwGUI.projView.colHidden[nwOutline.CCOUNT]
+
+    # First Item
+    nwGUI.rebuildOutline()
+    selItem = nwGUI.projView.topLevelItem(0)
+    assert isinstance(selItem, QTreeWidgetItem)
+
+    nwGUI.projView.setCurrentItem(selItem)
+    assert nwGUI.projMeta.titleLabel.text() == "<b>Title</b>"
+    assert nwGUI.projMeta.titleValue.text() == "Lorem Ipsum"
+    assert nwGUI.projMeta.fileValue.text() == "Lorem Ipsum"
+    assert nwGUI.projMeta.itemValue.text() == "Finished"
+
+    assert nwGUI.projMeta.cCValue.text() == "122"
+    assert nwGUI.projMeta.wCValue.text() == "18"
+    assert nwGUI.projMeta.pCValue.text() == "2"
+
+    # Scene One
+    actItem = nwGUI.projView.topLevelItem(1)
+    chpItem = actItem.child(0)
+    selItem = chpItem.child(0)
+
+    nwGUI.projView.setCurrentItem(selItem)
+    assert nwGUI.projMeta.titleLabel.text() == "<b>Scene</b>"
+    assert nwGUI.projMeta.titleValue.text() == "Scene One"
+    assert nwGUI.projMeta.fileValue.text() == "Scene One"
+    assert nwGUI.projMeta.itemValue.text() == "Finished"
+
+    # Click POV Link
+    assert nwGUI.projMeta.povKeyValue.text() == "<a href='#pov=Bod'>Bod</a>"
+    nwGUI.projMeta._tagClicked("#pov=Bod")
+    assert nwGUI.docViewer.theHandle == "4c4f28287af27"
 
     # qtbot.stopForInteraction()
     nwGUI.closeMain()
