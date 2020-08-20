@@ -336,8 +336,7 @@ def testProjectEditor(qtbot, nwTempGUI, nwRef, nwTemp):
 
     qtbot.wait(stepDelay)
     projEdit.tabReplace.listBox.clearSelection()
-    # qtbot.mouseClick(projEdit.tabReplace.addButton, Qt.LeftButton)
-    projEdit.tabReplace._addEntry()
+    qtbot.mouseClick(projEdit.tabReplace.addButton, Qt.LeftButton)
 
     newIdx = -1
     for i in range(projEdit.tabReplace.listBox.topLevelItemCount()):
@@ -346,16 +345,8 @@ def testProjectEditor(qtbot, nwTempGUI, nwRef, nwTemp):
             break
 
     assert newIdx >= 0
-    projEdit.tabReplace.listBox.topLevelItem(newIdx).setSelected(True)
-    for c in "Delete":
-        qtbot.keyClick(projEdit.tabReplace.editKey, c, delay=keyDelay)
-    for c in "This Stuff":
-        qtbot.keyClick(projEdit.tabReplace.editValue, c, delay=keyDelay)
-    qtbot.mouseClick(projEdit.tabReplace.saveButton, Qt.LeftButton)
-
-    qtbot.wait(stepDelay)
-    projEdit.tabReplace.listBox.clearSelection()
-    projEdit.tabReplace.listBox.topLevelItem(newIdx).setSelected(True)
+    newItem = projEdit.tabReplace.listBox.topLevelItem(newIdx)
+    projEdit.tabReplace.listBox.setCurrentItem(newItem)
     qtbot.mouseClick(projEdit.tabReplace.delButton, Qt.LeftButton)
 
     qtbot.wait(stepDelay)
