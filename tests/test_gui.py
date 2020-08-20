@@ -336,7 +336,8 @@ def testProjectEditor(qtbot, nwTempGUI, nwRef, nwTemp):
 
     qtbot.wait(stepDelay)
     projEdit.tabReplace.listBox.clearSelection()
-    qtbot.mouseClick(projEdit.tabReplace.addButton, Qt.LeftButton)
+    # qtbot.mouseClick(projEdit.tabReplace.addButton, Qt.LeftButton)
+    projEdit.tabReplace._addEntry()
 
     newIdx = -1
     for i in range(projEdit.tabReplace.listBox.topLevelItemCount()):
