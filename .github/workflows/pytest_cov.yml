@@ -1,0 +1,31 @@
+name: PyTest + Coverage
+
+on:
+  push:
+    branches: [ main, dev ]
+  pull_request:
+    branches: [ main, dev ]
+
+jobs:
+  pyTest:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Python Setup
+        uses: actions/setup-python@v1
+        with:
+          python-version: 3.8
+          architecture: x64
+      - name: Install Packages
+        - run: sudo apt-get install xvfb
+      - name: Checkout Source
+        uses: actions/checkout@v2
+      - name: Install Dependencies
+        run: |
+          pip install -r requirements.txt
+          pip install PyVirtualDisplay
+          pip install pytest-cov
+          pip install pytest-xvfb
+          pip install pytest-qt
+          pip install codecov
+      - name: Run Tests
+        run: xvfb-run pytest -v --cov=nw
