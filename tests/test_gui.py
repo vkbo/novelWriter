@@ -372,8 +372,8 @@ def testProjectEditor(qtbot, nwTempGUI, nwRef, nwTemp):
     projFile = path.join(nwTempGUI, "nwProject.nwx")
     assert cmpFiles(projFile, path.join(nwRef, "gui", "2_nwProject.nwx"), [2, 8, 9, 10])
 
-    nwGUI.closeMain()
     # qtbot.stopForInteraction()
+    nwGUI.closeMain()
 
 @pytest.mark.gui
 def testItemEditor(qtbot, nwTempGUI, nwRef, nwTemp):
