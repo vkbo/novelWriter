@@ -16,7 +16,7 @@ jobs:
           python-version: 3.8
           architecture: x64
       - name: Install Packages
-        - run: sudo apt-get install xvfb
+        run: sudo apt-get install xvfb
       - name: Checkout Source
         uses: actions/checkout@v2
       - name: Install Dependencies
