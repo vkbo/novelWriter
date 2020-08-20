@@ -341,7 +341,7 @@ def testProjectEditor(qtbot, nwTempGUI, nwRef, nwTemp):
 
     newIdx = -1
     for i in range(projEdit.tabReplace.listBox.topLevelItemCount()):
-        if projEdit.tabReplace.listBox.topLevelItem(0).text(0) == "<keyword2>":
+        if projEdit.tabReplace.listBox.topLevelItem(i).text(0) == "<keyword2>":
             newIdx = i
             break
 
