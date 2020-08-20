@@ -1,4 +1,4 @@
-name: PyTest (3.8) + Coverage
+name: PyTest + Coverage
 
 on:
   pull_request:
@@ -6,6 +6,7 @@ on:
 
 jobs:
   pyTestCov:
+    needs: checkSyntax
     runs-on: ubuntu-latest
     steps:
       - name: Python Setup
@@ -30,10 +31,12 @@ jobs:
         run: xvfb-run pytest -v --cov=nw
       - name: Upload to Codecov
         uses: codecov/codecov-action@v1
+
   pyTest:
+    needs: pyTestCov
     strategy:
       matrix:
-        python-version: [3.5, 3.6, 3.7]
+        python-version: [3.6, 3.7]
     runs-on: ubuntu-latest
     steps:
       - name: Python Setup

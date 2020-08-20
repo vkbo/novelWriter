@@ -23,6 +23,20 @@ jobs:
         run: |
           flake8 nw --count --select=E9,F63,F7,F82 --show-source --statistics
           flake8 tests --count --select=E9,F63,F7,F82 --show-source --statistics
+
+  checkStyle:
+    needs: checkSyntax
+    runs-on: ubuntu-latest
+    steps:
+      - name: Python Setup
+        uses: actions/setup-python@v1
+        with:
+          python-version: 3.7
+          architecture: x64
+      - name: Checkout Source
+        uses: actions/checkout@v2
+      - name: Install flake8
+        run: pip install flake8
       - name: Coding Style Violations
         run: | 
           flake8 nw --count --max-line-length=99 --ignore E203,E221,E226,E241,E251,E261,E266,E302,E305 --show-source --statistics
