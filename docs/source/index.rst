@@ -57,26 +57,27 @@ already familiar with how to run Python applications on your platform.
    :maxdepth: 2
    :caption: First Steps
 
-   introduction
-   started
-   interface
+   int_introduction
+   int_started
+   int_interface
+   int_typography
 
 
 .. toctree::
    :maxdepth: 2
    :caption: Writing Novels
 
-   projects
-   structure
-   notes
-   export
+   write_projects
+   write_structure
+   write_notes
+   write_export
 
 
 .. toctree::
    :maxdepth: 2
    :caption: Under the Hood
 
-   technical
+   tech_technical
 
 
 Indices and Tables

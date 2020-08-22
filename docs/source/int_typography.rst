@@ -1,0 +1,93 @@
+.. _a_typ:
+
+*******************
+Typographical Notes
+*******************
+
+novelWriter has some support for typographical symbols that are not usually easily available in many
+text editors. This includes for instance the proper unicode quotation marks, dashes, ellipsis, thin
+spaces, etc. All these symbols are available from the :guilabel:`Insert` menu, and via keyboard
+shortcuts. See :ref:`a_ui_shortcuts_ins`.
+
+This chapter provides some additional information on how novelWriter handles these symbols.
+
+
+.. _a_typ_notes:
+
+Special Notes on Symbols
+========================
+
+Some additional notes on these symbols.
+
+
+Dashes and Ellipsis
+-------------------
+
+With the auto-replace feature enabled (see :ref:`a_ui_edit_auto`), multiple hyphens are converted
+automatically to short and long dashes, and three dots to ellipsis. The last auto-replace can always
+be reverted with the undo command :kbd:`Ctrl`:kbd:`Z`, reverting the text to what you typed before
+the automatic replacement occurred.
+
+
+Single and Double Quotes
+------------------------
+
+All the different quotation marks listed on the `Quotation Mark`_ Wikipedia page are available, and
+can be selected as auto-replaced symbols for straight single and double quote key strokes. The
+settings can be found in the :guilabel:`Preferences`.
+
+Ordinarily, text wrapped in quotes are highlighted by the editor. This is meant as a convenience for
+highlighting dialogue between characters. This feature can be disabled in the
+:guilabel:`Preferences` if this feature isn't wanted.
+
+The editor distinguishes between text wrapped in straight quotes and with the user-selected double
+quote symbols. This is to help the writer recognise which parts of the text are not using the chosen
+quote symbols. Two convenience functions in the :guilabel:`Format` menu can be used to re-format a
+selected section of text with the correct quote symbols.
+
+.. _Quotation Mark: https://en.wikipedia.org/wiki/Quotation_mark
+
+
+Modifier Letter Apostrophes
+---------------------------
+
+The auto-replace feature will consider any right-facing single straight quote as a quote symbol,
+even if it's intended as an apostrophe. This also includes the syntax highlighter, which may decide
+to use an apostrophe as the closing symbol of a single quoted string.
+
+Alternative apostrophes, both single and double, are available. They are special Unicode characters
+that are not categorised as punctuation, but modifiers. They are usually renderred the same way as
+right single and double quotation marks, but not always, depending on the font.
+
+There is a Wikipedia article for both the single_ and double_ version of this symbol, explaining
+what they're for.
+
+You can use these symbols if you want, and especially if you have an apostrophe within a single
+quoted piece of text.
+
+.. note::
+   On export with the :guilabel:`Build Novel Project` tool, these apostrophes will be replaced
+   automatically with the corresponding right hand quote symbols. In that respect, it doesn't matter
+   if you mix them.
+
+.. _single: https://en.wikipedia.org/wiki/Modifier_letter_apostrophe
+.. _double: https://en.wikipedia.org/wiki/Modifier_letter_double_apostrophe
+
+
+Special Space Symbols
+---------------------
+
+A few variations of the regular space character is supported. The correct typographical way to
+separate a number from its unit is with a `thin space`_. It is usually 2/3 the width of a regular
+space. For numbers and units, this should in addition be a non-breaking space, that is, the text
+wrapping should not add a line break on this particular space.
+
+A regular space can also be made into a non-breaking space.
+
+All non-breaking spaces are highlighted with a differently coloured packground. The colour will
+depend on the selected colour theme.
+
+The thin and non-breaking spaces are converted to their corresponding HTML codes on export to HTML
+format. For plain text, they are exported as regular spaces.
+
+.. _thin space: https://en.wikipedia.org/wiki/Thin_space
