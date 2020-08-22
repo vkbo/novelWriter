@@ -60,6 +60,7 @@ already familiar with how to run Python applications on your platform.
    introduction
    started
    interface
+   typography
 
 
 .. toctree::

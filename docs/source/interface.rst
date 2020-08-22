@@ -1,8 +1,8 @@
 .. _a_ui:
 
-***************
+**************
 User Interface
-***************
+**************
 
 The user interface is kept as simple as possible to avoid distractions when writing. This page lists
 all the main GUI elements, and explains what they do.
@@ -341,11 +341,12 @@ Most features are available as keyboard shortcuts. These are as follows:
    ":kbd:`Ctrl`:kbd:`B`",                "Format selected text, or word under cursor, with strong emphasis (bold)."
    ":kbd:`Ctrl`:kbd:`C`",                "Copy selected text to clipboard."
    ":kbd:`Ctrl`:kbd:`D`",                "Wrap selected text, or word under cursor, in double quotes."
-   ":kbd:`Ctrl`:kbd:`E`",                "If in the project tree, edit a document or folder settings. (Same as :kbd:`F2`)"
+   ":kbd:`Ctrl`:kbd:`E`",                "If in the project tree, edit a document or folder settings. (Same as :kbd:`F2`.)"
    ":kbd:`Ctrl`:kbd:`F`",                "Open the search bar and search for the selected word, if any is selected."
-   ":kbd:`Ctrl`:kbd:`G`",                "Find next occurrence of search word in current document. (Same as :kbd:`F3`)"
-   ":kbd:`Ctrl`:kbd:`H`",                "Open the search and replace bar and search for the selected word, if any is selected. (On Mac, this is :kbd:`Cmd`:kbd:`=`)"
+   ":kbd:`Ctrl`:kbd:`G`",                "Find next occurrence of search word in current document. (Same as :kbd:`F3`.)"
+   ":kbd:`Ctrl`:kbd:`H`",                "Open the search and replace bar and search for the selected word, if any is selected. (On Mac, this is :kbd:`Cmd`:kbd:`=`.)"
    ":kbd:`Ctrl`:kbd:`I`",                "Format selected text, or word under cursor, with emphasis (italic)."
+   ":kbd:`Ctrl`:kbd:`K`",                "Activate the insert commands. The commands are listed in :ref:`a_ui_shortcuts_ins`."
    ":kbd:`Ctrl`:kbd:`N`",                "Create new document."
    ":kbd:`Ctrl`:kbd:`O`",                "Open selected document."
    ":kbd:`Ctrl`:kbd:`Q`",                "Exit novelWriter."
@@ -365,7 +366,7 @@ Most features are available as keyboard shortcuts. These are as follows:
    ":kbd:`Ctrl`:kbd:`Shift`:kbd:`1`",    "Replace occurrence of search word in current document, and search for next occurrence."
    ":kbd:`Ctrl`:kbd:`Shift`:kbd:`A`",    "Select all text in current paragraph."
    ":kbd:`Ctrl`:kbd:`Shift`:kbd:`D`",    "Wrap selected text, or word under cursor, in single quotes."
-   ":kbd:`Ctrl`:kbd:`Shift`:kbd:`G`",    "Find previous occurrence of search word in current document. (Same as :kbd:`Shift`:kbd:`F3`)"
+   ":kbd:`Ctrl`:kbd:`Shift`:kbd:`G`",    "Find previous occurrence of search word in current document. (Same as :kbd:`Shift`:kbd:`F3`.)"
    ":kbd:`Ctrl`:kbd:`Shift`:kbd:`I`",    "Import text to the current document from a text file."
    ":kbd:`Ctrl`:kbd:`Shift`:kbd:`N`",    "Create new folder."
    ":kbd:`Ctrl`:kbd:`Shift`:kbd:`O`",    "Open a project."
@@ -386,7 +387,7 @@ Most features are available as keyboard shortcuts. These are as follows:
    ":kbd:`F10`",                         "Re-build the project outline."
    ":kbd:`F11`",                         "Activate full screen mode."
    ":kbd:`Shift`:kbd:`F1`",              "Open the online documentation in the system default browser."
-   ":kbd:`Shift`:kbd:`F3`",              "Find previous occurrence of search word in current document. (Same as :kbd:`Ctrl`:kbd:`Shift`:kbd:`G`)"
+   ":kbd:`Shift`:kbd:`F3`",              "Find previous occurrence of search word in current document. (Same as :kbd:`Ctrl`:kbd:`Shift`:kbd:`G`.)"
    ":kbd:`Return`",                      "If in the project tree, open a document for editing."
 
 .. note::
@@ -409,11 +410,13 @@ combination for the inserted character or punctuation.
 
    ":kbd:`Ctrl`:kbd:`K`, :kbd:`-`",                 "Insert a short dash (en dash)."
    ":kbd:`Ctrl`:kbd:`K`, :kbd:`_`",                 "Insert a long dash (em dash)."
-   ":kbd:`Ctrl`:kbd:`K`, :kbd:`.`",                 "Insert ellipsis."
-   ":kbd:`Ctrl`:kbd:`K`, :kbd:`1`",                 "Insert left single quote."
-   ":kbd:`Ctrl`:kbd:`K`, :kbd:`2`",                 "Insert right single quote."
-   ":kbd:`Ctrl`:kbd:`K`, :kbd:`3`",                 "Insert left double quote."
-   ":kbd:`Ctrl`:kbd:`K`, :kbd:`4`",                 "Insert right double quote."
+   ":kbd:`Ctrl`:kbd:`K`, :kbd:`.`",                 "Insert an ellipsis."
+   ":kbd:`Ctrl`:kbd:`K`, :kbd:`1`",                 "Insert a left single quote."
+   ":kbd:`Ctrl`:kbd:`K`, :kbd:`2`",                 "Insert a right single quote."
+   ":kbd:`Ctrl`:kbd:`K`, :kbd:`3`",                 "Insert a left double quote."
+   ":kbd:`Ctrl`:kbd:`K`, :kbd:`4`",                 "Insert a right double quote."
+   ":kbd:`Ctrl`:kbd:`K`, :kbd:`'`",                 "Insert a modifier single apostrophe."
+   ":kbd:`Ctrl`:kbd:`K`, :kbd:`""`",                "Insert a modifier double apostrophe."
    ":kbd:`Ctrl`:kbd:`K`, :kbd:`Return`",            "Insert a hard line break."
    ":kbd:`Ctrl`:kbd:`K`, :kbd:`Space`",             "Insert a non-breaking space."
    ":kbd:`Ctrl`:kbd:`K`, :kbd:`Shift`:kbd:`Space`", "Insert a thin space."
