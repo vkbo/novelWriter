@@ -612,6 +612,10 @@ class GuiDocEditor(QTextEdit):
                 theText = nwUnicode.U_EMDASH
             elif theInsert == nwDocInsert.ELLIPSIS:
                 theText = nwUnicode.U_HELLIP
+            elif theInsert == nwDocInsert.MODAPOS_S:
+                theText = nwUnicode.U_MAPOSS
+            elif theInsert == nwDocInsert.MODAPOS_D:
+                theText = nwUnicode.U_MAPOSD
             elif theInsert == nwDocInsert.QUOTE_LS:
                 theText = self.typSQOpen
             elif theInsert == nwDocInsert.QUOTE_RS:

@@ -554,6 +554,24 @@ class GuiMainMenu(QMenuBar):
         # Insert > Separator
         self.insertMenu.addSeparator()
 
+        # Insert > Modifier Single Apostrophe
+        self.aInsMSApos = QAction("Modifier Single Apostrophe", self)
+        self.aInsMSApos.setStatusTip("Insert unicode modifier letter single apostrophe")
+        self.aInsMSApos.setShortcut("Ctrl+K, '")
+        self.aInsMSApos.triggered.connect(lambda: self._docInsert(nwDocInsert.MODAPOS_S))
+        self.insertMenu.addAction(self.aInsMSApos)
+
+        # Insert > Modifier Double Apostrophe
+        self.aInsMDApos = QAction("Modifier Double Apostrophe", self)
+        self.aInsMDApos.setStatusTip("Insert unicode modifier letter double apostrophe")
+        self.aInsMDApos.setShortcut("Ctrl+K, \"")
+        self.aInsMDApos.triggered.connect(lambda: self._docInsert(nwDocInsert.MODAPOS_D))
+        self.insertMenu.addAction(self.aInsMDApos)
+
+        # Insert > Separator
+        self.insertMenu.addSeparator()
+
+        # Insert > Hard Line Break
         # Insert > Hard Line Break
         self.aInsHardBreak = QAction("Hard Line Break", self)
         self.aInsHardBreak.setStatusTip("Insert a hard line break")
