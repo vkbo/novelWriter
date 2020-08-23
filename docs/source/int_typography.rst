@@ -52,26 +52,20 @@ Modifier Letter Apostrophes
 ---------------------------
 
 The auto-replace feature will consider any right-facing single straight quote as a quote symbol,
-even if it's intended as an apostrophe. This also includes the syntax highlighter, which may decide
-to use an apostrophe as the closing symbol of a single quoted string.
+even if it's intended as an apostrophe. This also includes the syntax highlighter, which may assume
+the first following apostrophe is the closing symbol of a single quoted region of text.
 
-Alternative apostrophes, both single and double, are available. They are special Unicode characters
-that are not categorised as punctuation, but modifiers. They are usually renderred the same way as
-right single and double quotation marks, but not always, depending on the font.
-
-There is a Wikipedia article for both the single_ and double_ version of this symbol, explaining
-what they're for.
-
-You can use these symbols if you want, and especially if you have an apostrophe within a single
-quoted piece of text.
+To get around this, an alternative apostrophe is available. It is a special Unicode character that
+is not categorised as punctuation, but as a modifier. It is usually renderred the same way as right
+single quotation marks, but not always, depending on the font. There is a Wikipedia article for the
+`Modifier letter apostrophe`_ with more details.
 
 .. note::
    On export with the :guilabel:`Build Novel Project` tool, these apostrophes will be replaced
-   automatically with the corresponding right hand quote symbols. In that respect, it doesn't matter
-   if you mix them.
+   automatically with the corresponding right hand quote symbols as is generally recommended.
+   Therefore it doesn't really matter if you only use them to correct highlighting.
 
-.. _single: https://en.wikipedia.org/wiki/Modifier_letter_apostrophe
-.. _double: https://en.wikipedia.org/wiki/Modifier_letter_double_apostrophe
+.. _Modifier letter apostrophe: https://en.wikipedia.org/wiki/Modifier_letter_apostrophe
 
 
 Special Space Symbols

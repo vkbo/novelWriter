@@ -1053,10 +1053,6 @@ def testInsertMenu(qtbot, nwTempGUI, nwFuncTemp, nwTemp):
     assert nwGUI.docEditor.getText() == nwUnicode.U_MAPOSS
     nwGUI.docEditor.clear()
 
-    nwGUI.mainMenu.aInsMDApos.activate(QAction.Trigger)
-    assert nwGUI.docEditor.getText() == nwUnicode.U_MAPOSD
-    nwGUI.docEditor.clear()
-
     nwGUI.mainMenu.aInsHardBreak.activate(QAction.Trigger)
     assert nwGUI.docEditor.getText() == "  \n"
     nwGUI.docEditor.clear()
