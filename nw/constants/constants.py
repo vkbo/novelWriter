@@ -234,7 +234,6 @@ class nwUnicode:
     U_EMDASH = "\u2014" # Long dash
     U_HELLIP = "\u2026" # Ellipsis
     U_MAPOSS = "\u02bc" # Modifier letter single apostrophe
-    U_MAPOSD = "\u02ee" # Modifier letter double apostrophe
 
     ## Spaces and Lines
     U_NBSP   = "\u00a0" # Non-breaking space
@@ -286,7 +285,6 @@ class nwUnicode:
     H_EMDASH = "&mdash;"
     H_HELLIP = "&hellip;"
     H_MAPOSS = "&#700;"
-    H_MAPOSD = "&#750;"
 
     ## Spaces
     H_NBSP   = "&nbsp;"

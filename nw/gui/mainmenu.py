@@ -554,19 +554,12 @@ class GuiMainMenu(QMenuBar):
         # Insert > Separator
         self.insertMenu.addSeparator()
 
-        # Insert > Alt. Single Apostrophe
-        self.aInsMSApos = QAction("Alt. Single Apostrophe", self)
+        # Insert > Alternative Apostrophe
+        self.aInsMSApos = QAction("Alternative Apostrophe", self)
         self.aInsMSApos.setStatusTip("Insert unicode modifier letter single apostrophe")
         self.aInsMSApos.setShortcut("Ctrl+K, '")
         self.aInsMSApos.triggered.connect(lambda: self._docInsert(nwDocInsert.MODAPOS_S))
         self.insertMenu.addAction(self.aInsMSApos)
-
-        # Insert > Alt. Double Apostrophe
-        self.aInsMDApos = QAction("Alt. Double Apostrophe", self)
-        self.aInsMDApos.setStatusTip("Insert unicode modifier letter double apostrophe")
-        self.aInsMDApos.setShortcut("Ctrl+K, \"")
-        self.aInsMDApos.triggered.connect(lambda: self._docInsert(nwDocInsert.MODAPOS_D))
-        self.insertMenu.addAction(self.aInsMDApos)
 
         # Insert > Separator
         self.insertMenu.addSeparator()
