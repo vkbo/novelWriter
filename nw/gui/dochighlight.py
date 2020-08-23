@@ -143,17 +143,17 @@ class GuiDocHighlighter(QSyntaxHighlighter):
         # Quoted Strings
         if self.mainConf.highlightQuotes:
             self.hRules.append((
-                "{:s}(.+?){:s}".format('"', '"'), {
+                "\\B{:s}(.*?){:s}\\B".format('"', '"'), {
                     0 : self.hStyles["dialogue1"],
                 }
             ))
             self.hRules.append((
-                "{:s}(.+?){:s}".format(*self.mainConf.fmtDoubleQuotes), {
+                "\\B{:s}(.*?){:s}\\B".format(*self.mainConf.fmtDoubleQuotes), {
                     0 : self.hStyles["dialogue2"],
                 }
             ))
             self.hRules.append((
-                "{:s}(.+?){:s}".format(*self.mainConf.fmtSingleQuotes), {
+                "\\B{:s}(.*?){:s}\\B".format(*self.mainConf.fmtSingleQuotes), {
                     0 : self.hStyles["dialogue3"],
                 }
             ))
