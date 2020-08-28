@@ -100,12 +100,11 @@ def nwMinimal(nwTemp):
         shutil.rmtree(minimalDir)
     return
 
-@pytest.fixture(scope="session")
-def nwLipsum():
+@pytest.fixture(scope="function")
+def nwLipsum(nwTemp):
     testDir = path.dirname(__file__)
-    tempDir = path.join(testDir, "temp")
     lipsumStore = path.join(testDir, "lipsum")
-    lipsumDir = path.join(tempDir, "lipsum")
+    lipsumDir = path.join(nwTemp, "lipsum")
     if path.isdir(lipsumDir):
         shutil.rmtree(lipsumDir)
     shutil.copytree(lipsumStore, lipsumDir)
@@ -115,4 +114,7 @@ def nwLipsum():
     metaDir = path.join(lipsumDir, "meta")
     if path.isdir(metaDir):
         shutil.rmtree(metaDir)
-    return lipsumDir
+    yield lipsumDir
+    if path.isdir(lipsumDir):
+        shutil.rmtree(lipsumDir)
+    return
