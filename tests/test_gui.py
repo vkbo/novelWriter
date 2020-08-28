@@ -5,6 +5,7 @@
 import nw
 import pytest
 import json
+from shutil import copyfile
 from nwtools import cmpFiles
 
 from os import path
@@ -24,8 +25,9 @@ keyDelay = 2
 stepDelay = 20
 
 @pytest.mark.gui
-def testMainWindows(qtbot, nwTempGUI, nwRef, nwTemp):
-    nwGUI = nw.main(["--testmode", "--config=%s" % nwTempGUI, "--data=%s" % nwTemp])
+def testMainWindows(qtbot, nwFuncTemp, nwTempGUI, nwRef, nwTemp):
+
+    nwGUI = nw.main(["--testmode", "--config=%s" % nwFuncTemp, "--data=%s" % nwTemp])
     qtbot.addWidget(nwGUI)
     nwGUI.show()
     qtbot.waitForWindowShown(nwGUI)
@@ -33,7 +35,7 @@ def testMainWindows(qtbot, nwTempGUI, nwRef, nwTemp):
 
     # Create new, save, close project
     nwGUI.theProject.projTree.setSeed(42)
-    assert nwGUI.newProject({"projPath": nwTempGUI}, True)
+    assert nwGUI.newProject({"projPath": nwFuncTemp}, True)
     assert nwGUI.saveProject()
     assert nwGUI.closeProject()
 
@@ -50,14 +52,17 @@ def testMainWindows(qtbot, nwTempGUI, nwRef, nwTemp):
     assert not nwGUI.theProject.spellCheck
 
     # Check the files
-    projFile = path.join(nwTempGUI, "nwProject.nwx")
-    assert cmpFiles(projFile, path.join(nwRef, "gui", "0_nwProject.nwx"), [2, 6, 7, 8])
+    projFile = path.join(nwFuncTemp, "nwProject.nwx")
+    testFile = path.join(nwTempGUI, "0_nwProject.nwx")
+    refFile  = path.join(nwRef, "gui", "0_nwProject.nwx")
+    copyfile(projFile, testFile)
+    assert cmpFiles(testFile, refFile, [2, 6, 7, 8])
     qtbot.wait(stepDelay)
 
     # qtbot.stopForInteraction()
 
     # Re-open project
-    assert nwGUI.openProject(nwTempGUI)
+    assert nwGUI.openProject(nwFuncTemp)
     qtbot.wait(stepDelay)
 
     # Check that we loaded the data
@@ -65,8 +70,8 @@ def testMainWindows(qtbot, nwTempGUI, nwRef, nwTemp):
     assert len(nwGUI.theProject.projTree._treeOrder) == 8
     assert len(nwGUI.theProject.projTree._treeRoots) == 4
     assert nwGUI.theProject.projTree.trashRoot() is None
-    assert nwGUI.theProject.projPath == nwTempGUI
-    assert nwGUI.theProject.projMeta == path.join(nwTempGUI, "meta")
+    assert nwGUI.theProject.projPath == nwFuncTemp
+    assert nwGUI.theProject.projMeta == path.join(nwFuncTemp, "meta")
     assert nwGUI.theProject.projFile == "nwProject.nwx"
     assert nwGUI.theProject.projName == "New Project"
     assert nwGUI.theProject.bookTitle == ""
@@ -266,23 +271,42 @@ def testMainWindows(qtbot, nwTempGUI, nwRef, nwTemp):
     assert nwGUI.saveProject()
 
     # Check the files
-    refFile = path.join(nwTempGUI, "nwProject.nwx")
-    assert cmpFiles(refFile, path.join(nwRef, "gui", "1_nwProject.nwx"), [2, 6, 7, 8])
-    refFile = path.join(nwTempGUI, "content", "031b4af5197ec.nwd")
-    assert cmpFiles(refFile, path.join(nwRef, "gui", "1_031b4af5197ec.nwd"))
-    refFile = path.join(nwTempGUI, "content", "1a6562590ef19.nwd")
-    assert cmpFiles(refFile, path.join(nwRef, "gui", "1_1a6562590ef19.nwd"))
-    refFile = path.join(nwTempGUI, "content", "0e17daca5f3e1.nwd")
-    assert cmpFiles(refFile, path.join(nwRef, "gui", "1_0e17daca5f3e1.nwd"))
-    refFile = path.join(nwTempGUI, "content", "41cfc0d1f2d12.nwd")
-    assert cmpFiles(refFile, path.join(nwRef, "gui", "1_41cfc0d1f2d12.nwd"))
+    projFile = path.join(nwFuncTemp, "nwProject.nwx")
+    testFile = path.join(nwTempGUI, "1_nwProject.nwx")
+    refFile  = path.join(nwRef, "gui", "1_nwProject.nwx")
+    copyfile(projFile, testFile)
+    assert cmpFiles(testFile, refFile, [2, 6, 7, 8])
+
+    projFile = path.join(nwFuncTemp, "content", "031b4af5197ec.nwd")
+    testFile = path.join(nwTempGUI, "1_031b4af5197ec.nwd")
+    refFile  = path.join(nwRef, "gui", "1_031b4af5197ec.nwd")
+    copyfile(projFile, testFile)
+    assert cmpFiles(testFile, refFile)
+
+    projFile = path.join(nwFuncTemp, "content", "1a6562590ef19.nwd")
+    testFile = path.join(nwTempGUI, "1_1a6562590ef19.nwd")
+    refFile  = path.join(nwRef, "gui", "1_1a6562590ef19.nwd")
+    copyfile(projFile, testFile)
+    assert cmpFiles(testFile, refFile)
+
+    projFile = path.join(nwFuncTemp, "content", "0e17daca5f3e1.nwd")
+    testFile = path.join(nwTempGUI, "1_0e17daca5f3e1.nwd")
+    refFile  = path.join(nwRef, "gui", "1_0e17daca5f3e1.nwd")
+    copyfile(projFile, testFile)
+    assert cmpFiles(testFile, refFile)
+
+    projFile = path.join(nwFuncTemp, "content", "41cfc0d1f2d12.nwd")
+    testFile = path.join(nwTempGUI, "1_41cfc0d1f2d12.nwd")
+    refFile  = path.join(nwRef, "gui", "1_41cfc0d1f2d12.nwd")
+    copyfile(projFile, testFile)
+    assert cmpFiles(testFile, refFile)
 
     nwGUI.closeMain()
     # qtbot.stopForInteraction()
 
 @pytest.mark.gui
-def testProjectEditor(qtbot, nwTempGUI, nwRef, nwTemp):
-    nwGUI = nw.main(["--testmode", "--config=%s" % nwTempGUI, "--data=%s" % nwTemp])
+def testProjectEditor(qtbot, nwFuncTemp, nwTempGUI, nwRef, nwTemp):
+    nwGUI = nw.main(["--testmode", "--config=%s" % nwFuncTemp, "--data=%s" % nwTemp])
     qtbot.addWidget(nwGUI)
     nwGUI.show()
     qtbot.waitForWindowShown(nwGUI)
@@ -290,8 +314,8 @@ def testProjectEditor(qtbot, nwTempGUI, nwRef, nwTemp):
 
     # Create new, save, open project
     nwGUI.theProject.projTree.setSeed(42)
-    assert nwGUI.newProject({"projPath": nwTempGUI}, True)
-    nwGUI.mainConf.backupPath = nwTempGUI
+    assert nwGUI.newProject({"projPath": nwFuncTemp}, True)
+    nwGUI.mainConf.backupPath = nwFuncTemp
 
     projEdit = GuiProjectSettings(nwGUI, nwGUI.theProject)
     projEdit.show()
@@ -369,15 +393,18 @@ def testProjectEditor(qtbot, nwTempGUI, nwRef, nwTemp):
     qtbot.wait(stepDelay)
 
     # Check the files
-    projFile = path.join(nwTempGUI, "nwProject.nwx")
-    assert cmpFiles(projFile, path.join(nwRef, "gui", "2_nwProject.nwx"), [2, 8, 9, 10])
+    projFile = path.join(nwFuncTemp, "nwProject.nwx")
+    testFile = path.join(nwTempGUI, "2_nwProject.nwx")
+    refFile  = path.join(nwRef, "gui", "2_nwProject.nwx")
+    copyfile(projFile, testFile)
+    assert cmpFiles(testFile, refFile, [2, 6, 7, 8])
 
     # qtbot.stopForInteraction()
     nwGUI.closeMain()
 
 @pytest.mark.gui
-def testItemEditor(qtbot, nwTempGUI, nwRef, nwTemp):
-    nwGUI = nw.main(["--testmode", "--config=%s" % nwTempGUI, "--data=%s" % nwTemp])
+def testItemEditor(qtbot, nwFuncTemp, nwTempGUI, nwRef, nwTemp):
+    nwGUI = nw.main(["--testmode", "--config=%s" % nwFuncTemp, "--data=%s" % nwTemp])
     qtbot.addWidget(nwGUI)
     nwGUI.show()
     qtbot.waitForWindowShown(nwGUI)
@@ -385,7 +412,7 @@ def testItemEditor(qtbot, nwTempGUI, nwRef, nwTemp):
 
     # Create new, save, open project
     nwGUI.theProject.projTree.setSeed(42)
-    assert nwGUI.newProject({"projPath": nwTempGUI}, True)
+    assert nwGUI.newProject({"projPath": nwFuncTemp}, True)
     assert nwGUI.openDocument("0e17daca5f3e1")
 
     itemEdit = GuiItemEditor(nwGUI, nwGUI.theProject, "0e17daca5f3e1")
@@ -425,24 +452,70 @@ def testItemEditor(qtbot, nwTempGUI, nwRef, nwTemp):
     qtbot.wait(stepDelay)
 
     # Check the files
-    projFile = path.join(nwTempGUI, "nwProject.nwx")
-    assert cmpFiles(projFile, path.join(nwRef, "gui", "3_nwProject.nwx"), [2, 6, 7, 8])
+    projFile = path.join(nwFuncTemp, "nwProject.nwx")
+    testFile = path.join(nwTempGUI, "3_nwProject.nwx")
+    refFile  = path.join(nwRef, "gui", "3_nwProject.nwx")
+    copyfile(projFile, testFile)
+    assert cmpFiles(testFile, refFile, [2, 6, 7, 8])
 
     nwGUI.closeMain()
     # qtbot.stopForInteraction()
 
 @pytest.mark.gui
-def testWritingStatsExport(qtbot, nwTempGUI, nwRef, nwTemp):
-    nwGUI = nw.main(["--testmode", "--config=%s" % nwTempGUI, "--data=%s" % nwTemp])
+def testWritingStatsExport(qtbot, nwFuncTemp, nwTemp):
+    nwGUI = nw.main(["--testmode", "--config=%s" % nwFuncTemp, "--data=%s" % nwTemp])
     qtbot.addWidget(nwGUI)
     nwGUI.show()
     qtbot.waitForWindowShown(nwGUI)
     qtbot.wait(stepDelay)
 
-    assert nwGUI.openProject(nwTempGUI)
+    # Create new, save, close project
+    nwGUI.theProject.projTree.setSeed(42)
+    assert nwGUI.newProject({"projPath": nwFuncTemp}, True)
+    assert nwGUI.saveProject()
+    assert nwGUI.closeProject()
     qtbot.wait(stepDelay)
 
-    nwGUI.mainConf.lastPath = nwTempGUI
+    assert nwGUI.openProject(nwFuncTemp)
+    qtbot.wait(stepDelay)
+
+    # Add some text to the scene file
+    assert nwGUI.openDocument("0e17daca5f3e1")
+    assert nwGUI.docEditor.insertText(
+        "# Scene One\n\n"
+        "It was the best of times, it was the worst of times, it was the age of wisdom, it was "
+        "the age of foolishness, it was the epoch of belief, it was the epoch of incredulity, it "
+        "was the season of Light, it was the season of Darkness, it was the spring of hope, it "
+        "was the winter of despair, we had everything before us, we had nothing before us, we "
+        "were all going direct to Heaven, we were all going direct the other way – in short, the "
+        "period was so far like the present period, that some of its noisiest authorities "
+        "insisted on its being received, for good or for evil, in the superlative degree of "
+        "comparison only.\n\n"
+    )
+    assert nwGUI.saveDocument()
+
+    # Add a note file with some text
+    nwGUI.setFocus(1)
+    nwGUI.treeView.clearSelection()
+    nwGUI.treeView._getTreeItem("71ee45a3c0db9").setSelected(True)
+    nwGUI.treeView.newTreeItem(nwItemType.FILE, None)
+    assert nwGUI.openSelectedItem()
+    assert nwGUI.docEditor.insertText(
+        "# Jane Doe\n\n"
+        "All about Jane.\n\n"
+    )
+    assert nwGUI.saveDocument()
+    qtbot.wait(500) # Ensures that the session length is > 0
+
+    assert nwGUI.saveProject()
+    assert nwGUI.closeProject()
+    qtbot.wait(stepDelay)
+
+    # Open again, and check the stats
+    assert nwGUI.openProject(nwFuncTemp)
+    qtbot.wait(stepDelay)
+
+    nwGUI.mainConf.lastPath = nwFuncTemp
     sessLog = GuiWritingStats(nwGUI, nwGUI.theProject)
     sessLog.show()
     qtbot.wait(stepDelay)
@@ -452,15 +525,15 @@ def testWritingStatsExport(qtbot, nwTempGUI, nwRef, nwTemp):
     assert sessLog._saveData(sessLog.FMT_JSON)
     qtbot.wait(stepDelay)
 
-    jsonStats = path.join(nwTempGUI, "sessionStats.json")
+    jsonStats = path.join(nwFuncTemp, "sessionStats.json")
     with open(jsonStats, mode="r", encoding="utf-8") as inFile:
         jsonData = json.loads(inFile.read())
 
-    assert len(jsonData) == 3
-    assert jsonData[1]["length"] > 0
-    assert jsonData[1]["newWords"] == 84
-    assert jsonData[1]["novelWords"] == 63
-    assert jsonData[1]["noteWords"] == 27
+    assert len(jsonData) == 2
+    assert jsonData[1]["length"] >= 0
+    assert jsonData[1]["newWords"] == 126
+    assert jsonData[1]["novelWords"] == 127
+    assert jsonData[1]["noteWords"] == 5
 
     # No Novel Files
     qtbot.mouseClick(sessLog.incNovel, Qt.LeftButton)
@@ -468,15 +541,15 @@ def testWritingStatsExport(qtbot, nwTempGUI, nwRef, nwTemp):
     assert sessLog._saveData(sessLog.FMT_JSON)
     qtbot.wait(stepDelay)
 
-    jsonStats = path.join(nwTempGUI, "sessionStats.json")
+    jsonStats = path.join(nwFuncTemp, "sessionStats.json")
     with open(jsonStats, mode="r", encoding="utf-8") as inFile:
         jsonData = json.loads(inFile.read())
 
-    assert len(jsonData) == 2
-    assert jsonData[0]["length"] > 0
-    assert jsonData[0]["newWords"] == 27
-    assert jsonData[0]["novelWords"] == 63
-    assert jsonData[0]["noteWords"] == 27
+    assert len(jsonData) == 1
+    assert jsonData[0]["length"] >= 0
+    assert jsonData[0]["newWords"] == 5
+    assert jsonData[0]["novelWords"] == 127
+    assert jsonData[0]["noteWords"] == 5
 
     # No Note Files
     qtbot.mouseClick(sessLog.incNovel, Qt.LeftButton)
@@ -485,15 +558,15 @@ def testWritingStatsExport(qtbot, nwTempGUI, nwRef, nwTemp):
     assert sessLog._saveData(sessLog.FMT_JSON)
     qtbot.wait(stepDelay)
 
-    jsonStats = path.join(nwTempGUI, "sessionStats.json")
+    jsonStats = path.join(nwFuncTemp, "sessionStats.json")
     with open(jsonStats, mode="r", encoding="utf-8") as inFile:
         jsonData = json.loads(inFile.read())
 
-    assert len(jsonData) == 3
-    assert jsonData[1]["length"] > 0
-    assert jsonData[1]["newWords"] == 57
-    assert jsonData[1]["novelWords"] == 63
-    assert jsonData[1]["noteWords"] == 27
+    assert len(jsonData) == 2
+    assert jsonData[1]["length"] >= 0
+    assert jsonData[1]["newWords"] == 121
+    assert jsonData[1]["novelWords"] == 127
+    assert jsonData[1]["noteWords"] == 5
 
     # No Negative Entries
     qtbot.mouseClick(sessLog.incNotes, Qt.LeftButton)
@@ -502,7 +575,7 @@ def testWritingStatsExport(qtbot, nwTempGUI, nwRef, nwTemp):
     assert sessLog._saveData(sessLog.FMT_JSON)
     qtbot.wait(stepDelay)
 
-    jsonStats = path.join(nwTempGUI, "sessionStats.json")
+    jsonStats = path.join(nwFuncTemp, "sessionStats.json")
     with open(jsonStats, mode="r", encoding="utf-8") as inFile:
         jsonData = json.loads(inFile.read())
 
@@ -515,11 +588,11 @@ def testWritingStatsExport(qtbot, nwTempGUI, nwRef, nwTemp):
     assert sessLog._saveData(sessLog.FMT_JSON)
     qtbot.wait(stepDelay)
 
-    jsonStats = path.join(nwTempGUI, "sessionStats.json")
+    jsonStats = path.join(nwFuncTemp, "sessionStats.json")
     with open(jsonStats, mode="r", encoding="utf-8") as inFile:
         jsonData = json.loads(inFile.read())
 
-    assert len(jsonData) == 4
+    assert len(jsonData) == 2
 
     # Group by Day
     qtbot.mouseClick(sessLog.groupByDay, Qt.LeftButton)
@@ -527,7 +600,7 @@ def testWritingStatsExport(qtbot, nwTempGUI, nwRef, nwTemp):
     assert sessLog._saveData(sessLog.FMT_JSON)
     qtbot.wait(stepDelay)
 
-    jsonStats = path.join(nwTempGUI, "sessionStats.json")
+    jsonStats = path.join(nwFuncTemp, "sessionStats.json")
     with open(jsonStats, mode="r", encoding="utf-8") as inFile:
         jsonData = json.loads(inFile.read())
 
@@ -541,8 +614,8 @@ def testWritingStatsExport(qtbot, nwTempGUI, nwRef, nwTemp):
     nwGUI.closeMain()
 
 @pytest.mark.gui
-def testAboutBox(qtbot, nwTempGUI, nwRef, nwTemp):
-    nwGUI = nw.main(["--testmode", "--config=%s" % nwTempGUI, "--data=%s" % nwTemp])
+def testAboutBox(qtbot, nwFuncTemp, nwTemp):
+    nwGUI = nw.main(["--testmode", "--config=%s" % nwFuncTemp, "--data=%s" % nwTemp])
     qtbot.addWidget(nwGUI)
     nwGUI.show()
     qtbot.waitForWindowShown(nwGUI)
@@ -553,14 +626,13 @@ def testAboutBox(qtbot, nwTempGUI, nwRef, nwTemp):
     assert msgAbout.pageLicense.document().characterCount() > 100
 
     # qtbot.stopForInteraction()
-
     msgAbout._doClose()
     nwGUI.closeMain()
 
 @pytest.mark.gui
 def testBuildTool(qtbot, nwTempBuild, nwLipsum, nwRef, nwTemp):
 
-    nwGUI = nw.main(["--testmode", "--config=%s" % nwTempBuild, "--data=%s" % nwTemp])
+    nwGUI = nw.main(["--testmode", "--config=%s" % nwLipsum, "--data=%s" % nwTemp])
     qtbot.addWidget(nwGUI)
     nwGUI.show()
     qtbot.waitForWindowShown(nwGUI)
@@ -568,7 +640,7 @@ def testBuildTool(qtbot, nwTempBuild, nwLipsum, nwRef, nwTemp):
 
     assert nwGUI.openProject(nwLipsum)
 
-    nwGUI.mainConf.lastPath = nwTempBuild
+    nwGUI.mainConf.lastPath = nwLipsum
 
     nwBuild = GuiBuildNovel(nwGUI, nwGUI.theProject)
 
@@ -578,10 +650,17 @@ def testBuildTool(qtbot, nwTempBuild, nwLipsum, nwRef, nwTemp):
     assert nwBuild._saveDocument(nwBuild.FMT_NWD)
     assert nwBuild._saveDocument(nwBuild.FMT_HTM)
 
-    refFile = path.join(nwTempBuild, "Lorem Ipsum.nwd")
-    assert cmpFiles(refFile, path.join(nwRef, "build", "1_LoremIpsum.nwd"), [])
-    refFile = path.join(nwTempBuild, "Lorem Ipsum.htm")
-    assert cmpFiles(refFile, path.join(nwRef, "build", "1_LoremIpsum.htm"), [])
+    projFile = path.join(nwLipsum, "Lorem Ipsum.nwd")
+    testFile = path.join(nwTempBuild, "1_LoremIpsum.nwd")
+    refFile  = path.join(nwRef, "build", "1_LoremIpsum.nwd")
+    copyfile(projFile, testFile)
+    assert cmpFiles(testFile, refFile)
+
+    projFile = path.join(nwLipsum, "Lorem Ipsum.htm")
+    testFile = path.join(nwTempBuild, "1_LoremIpsum.htm")
+    refFile  = path.join(nwRef, "build", "1_LoremIpsum.htm")
+    copyfile(projFile, testFile)
+    assert cmpFiles(testFile, refFile)
 
     # Change Title Formats and Flip Switches
     nwBuild.fmtChapter.setText(r"Chapter %chw%: %title%")
@@ -610,10 +689,17 @@ def testBuildTool(qtbot, nwTempBuild, nwLipsum, nwRef, nwTemp):
     assert nwBuild._saveDocument(nwBuild.FMT_NWD)
     assert nwBuild._saveDocument(nwBuild.FMT_HTM)
 
-    refFile = path.join(nwTempBuild, "Lorem Ipsum.nwd")
-    assert cmpFiles(refFile, path.join(nwRef, "build", "2_LoremIpsum.nwd"), [])
-    refFile = path.join(nwTempBuild, "Lorem Ipsum.htm")
-    assert cmpFiles(refFile, path.join(nwRef, "build", "2_LoremIpsum.htm"), [])
+    projFile = path.join(nwLipsum, "Lorem Ipsum.nwd")
+    testFile = path.join(nwTempBuild, "2_LoremIpsum.nwd")
+    refFile  = path.join(nwRef, "build", "2_LoremIpsum.nwd")
+    copyfile(projFile, testFile)
+    assert cmpFiles(testFile, refFile)
+
+    projFile = path.join(nwLipsum, "Lorem Ipsum.htm")
+    testFile = path.join(nwTempBuild, "2_LoremIpsum.htm")
+    refFile  = path.join(nwRef, "build", "2_LoremIpsum.htm")
+    copyfile(projFile, testFile)
+    assert cmpFiles(testFile, refFile)
 
     # Putline Mode
     nwBuild.fmtChapter.setText(r"Chapter %chw%: %title%")
@@ -637,19 +723,26 @@ def testBuildTool(qtbot, nwTempBuild, nwLipsum, nwRef, nwTemp):
     assert nwBuild._saveDocument(nwBuild.FMT_NWD)
     assert nwBuild._saveDocument(nwBuild.FMT_HTM)
 
-    refFile = path.join(nwTempBuild, "Lorem Ipsum.nwd")
-    assert cmpFiles(refFile, path.join(nwRef, "build", "3_LoremIpsum.nwd"), [])
-    refFile = path.join(nwTempBuild, "Lorem Ipsum.htm")
-    assert cmpFiles(refFile, path.join(nwRef, "build", "3_LoremIpsum.htm"), [])
+    projFile = path.join(nwLipsum, "Lorem Ipsum.nwd")
+    testFile = path.join(nwTempBuild, "3_LoremIpsum.nwd")
+    refFile  = path.join(nwRef, "build", "3_LoremIpsum.nwd")
+    copyfile(projFile, testFile)
+    assert cmpFiles(testFile, refFile)
+
+    projFile = path.join(nwLipsum, "Lorem Ipsum.htm")
+    testFile = path.join(nwTempBuild, "3_LoremIpsum.htm")
+    refFile  = path.join(nwRef, "build", "3_LoremIpsum.htm")
+    copyfile(projFile, testFile)
+    assert cmpFiles(testFile, refFile)
 
     # qtbot.stopForInteraction()
     nwBuild._doClose()
     nwGUI.closeMain()
 
 @pytest.mark.gui
-def testMergeTool(qtbot, nwTempGUI, nwLipsum, nwRef, nwTemp):
+def testMergeSplitTools(qtbot, nwTempGUI, nwLipsum, nwRef, nwTemp):
 
-    nwGUI = nw.main(["--testmode", "--config=%s" % nwTempGUI, "--data=%s" % nwTemp])
+    nwGUI = nw.main(["--testmode", "--config=%s" % nwLipsum, "--data=%s" % nwTemp])
     qtbot.addWidget(nwGUI)
     nwGUI.show()
     qtbot.waitForWindowShown(nwGUI)
@@ -670,24 +763,11 @@ def testMergeTool(qtbot, nwTempGUI, nwLipsum, nwRef, nwTemp):
 
     assert nwGUI.theProject.projTree["73475cb40a568"] is not None
 
-    refFile = path.join(nwLipsum, "content", "73475cb40a568.nwd")
-    assert cmpFiles(refFile, path.join(nwRef, "gui", "4_73475cb40a568.nwd"))
-
-    # qtbot.stopForInteraction()
-    nwGUI.closeMain()
-
-@pytest.mark.gui
-def testSplitTool(qtbot, nwTempGUI, nwLipsum, nwRef, nwTemp):
-
-    nwGUI = nw.main(["--testmode", "--config=%s" % nwTempGUI, "--data=%s" % nwTemp])
-    qtbot.addWidget(nwGUI)
-    nwGUI.show()
-    qtbot.waitForWindowShown(nwGUI)
-    qtbot.wait(stepDelay)
-
-    nwGUI.theProject.projTree.setSeed(42)
-    assert nwGUI.openProject(nwLipsum)
-    qtbot.wait(stepDelay)
+    projFile = path.join(nwLipsum, "content", "73475cb40a568.nwd")
+    testFile = path.join(nwTempGUI, "4_73475cb40a568.nwd")
+    refFile  = path.join(nwRef, "gui", "4_73475cb40a568.nwd")
+    copyfile(projFile, testFile)
+    assert cmpFiles(testFile, refFile)
 
     # Split By Chapter
     assert nwGUI.treeView.setSelectedHandle("73475cb40a568")
@@ -701,8 +781,11 @@ def testSplitTool(qtbot, nwTempGUI, nwLipsum, nwRef, nwTemp):
     assert nwGUI.theProject.projTree["71ee45a3c0db9"] is not None
 
     # This should give us back the file as it was before
-    refFile = path.join(nwLipsum, "content", "71ee45a3c0db9.nwd")
-    assert cmpFiles(refFile, path.join(nwRef, "gui", "4_73475cb40a568.nwd"), [1])
+    projFile = path.join(nwLipsum, "content", "71ee45a3c0db9.nwd")
+    testFile = path.join(nwTempGUI, "4_71ee45a3c0db9.nwd")
+    refFile  = path.join(nwRef, "gui", "4_73475cb40a568.nwd")
+    copyfile(projFile, testFile)
+    assert cmpFiles(testFile, refFile, [1])
 
     # Split By Scene
     assert nwGUI.treeView.setSelectedHandle("73475cb40a568")
@@ -718,12 +801,23 @@ def testSplitTool(qtbot, nwTempGUI, nwLipsum, nwRef, nwTemp):
     assert nwGUI.theProject.projTree["31489056e0916"] is not None
     assert nwGUI.theProject.projTree["98010bd9270f9"] is not None
 
-    refFile = path.join(nwLipsum, "content", "25fc0e7096fc6.nwd")
-    assert cmpFiles(refFile, path.join(nwRef, "gui", "5_25fc0e7096fc6.nwd"))
-    refFile = path.join(nwLipsum, "content", "31489056e0916.nwd")
-    assert cmpFiles(refFile, path.join(nwRef, "gui", "5_31489056e0916.nwd"))
-    refFile = path.join(nwLipsum, "content", "98010bd9270f9.nwd")
-    assert cmpFiles(refFile, path.join(nwRef, "gui", "5_98010bd9270f9.nwd"))
+    projFile = path.join(nwLipsum, "content", "25fc0e7096fc6.nwd")
+    testFile = path.join(nwTempGUI, "5_25fc0e7096fc6.nwd")
+    refFile  = path.join(nwRef, "gui", "5_25fc0e7096fc6.nwd")
+    copyfile(projFile, testFile)
+    assert cmpFiles(testFile, refFile)
+
+    projFile = path.join(nwLipsum, "content", "31489056e0916.nwd")
+    testFile = path.join(nwTempGUI, "5_31489056e0916.nwd")
+    refFile  = path.join(nwRef, "gui", "5_31489056e0916.nwd")
+    copyfile(projFile, testFile)
+    assert cmpFiles(testFile, refFile)
+
+    projFile = path.join(nwLipsum, "content", "98010bd9270f9.nwd")
+    testFile = path.join(nwTempGUI, "5_98010bd9270f9.nwd")
+    refFile  = path.join(nwRef, "gui", "5_98010bd9270f9.nwd")
+    copyfile(projFile, testFile)
+    assert cmpFiles(testFile, refFile)
 
     # Split By Section
     assert nwGUI.treeView.setSelectedHandle("73475cb40a568")
@@ -741,22 +835,41 @@ def testSplitTool(qtbot, nwTempGUI, nwLipsum, nwRef, nwTemp):
     assert nwGUI.theProject.projTree["2858dcd1057d3"] is not None
     assert nwGUI.theProject.projTree["2fca346db6561"] is not None
 
-    refFile = path.join(nwLipsum, "content", "1a6562590ef19.nwd")
-    assert cmpFiles(refFile, path.join(nwRef, "gui", "5_25fc0e7096fc6.nwd"), [1])
-    refFile = path.join(nwLipsum, "content", "031b4af5197ec.nwd")
-    assert cmpFiles(refFile, path.join(nwRef, "gui", "5_031b4af5197ec.nwd"))
-    refFile = path.join(nwLipsum, "content", "41cfc0d1f2d12.nwd")
-    assert cmpFiles(refFile, path.join(nwRef, "gui", "5_41cfc0d1f2d12.nwd"))
-    refFile = path.join(nwLipsum, "content", "2858dcd1057d3.nwd")
-    assert cmpFiles(refFile, path.join(nwRef, "gui", "5_2858dcd1057d3.nwd"))
-    refFile = path.join(nwLipsum, "content", "2fca346db6561.nwd")
-    assert cmpFiles(refFile, path.join(nwRef, "gui", "5_2fca346db6561.nwd"))
+    projFile = path.join(nwLipsum, "content", "1a6562590ef19.nwd")
+    testFile = path.join(nwTempGUI, "5_25fc0e7096fc6.nwd")
+    refFile  = path.join(nwRef, "gui", "5_25fc0e7096fc6.nwd")
+    copyfile(projFile, testFile)
+    assert cmpFiles(testFile, refFile, [1])
+
+    projFile = path.join(nwLipsum, "content", "031b4af5197ec.nwd")
+    testFile = path.join(nwTempGUI, "5_031b4af5197ec.nwd")
+    refFile  = path.join(nwRef, "gui", "5_031b4af5197ec.nwd")
+    copyfile(projFile, testFile)
+    assert cmpFiles(testFile, refFile)
+
+    projFile = path.join(nwLipsum, "content", "41cfc0d1f2d12.nwd")
+    testFile = path.join(nwTempGUI, "5_41cfc0d1f2d12.nwd")
+    refFile  = path.join(nwRef, "gui", "5_41cfc0d1f2d12.nwd")
+    copyfile(projFile, testFile)
+    assert cmpFiles(testFile, refFile)
+
+    projFile = path.join(nwLipsum, "content", "2858dcd1057d3.nwd")
+    testFile = path.join(nwTempGUI, "5_2858dcd1057d3.nwd")
+    refFile  = path.join(nwRef, "gui", "5_2858dcd1057d3.nwd")
+    copyfile(projFile, testFile)
+    assert cmpFiles(testFile, refFile)
+
+    projFile = path.join(nwLipsum, "content", "2fca346db6561.nwd")
+    testFile = path.join(nwTempGUI, "5_2fca346db6561.nwd")
+    refFile  = path.join(nwRef, "gui", "5_2fca346db6561.nwd")
+    copyfile(projFile, testFile)
+    assert cmpFiles(testFile, refFile)
 
     # qtbot.stopForInteraction()
     nwGUI.closeMain()
 
 @pytest.mark.gui
-def testNewProjectWizard(qtbot, nwTempGUI, nwLipsum, nwRef, nwTemp):
+def testNewProjectWizard(qtbot, nwLipsum, nwTemp):
 
     from PyQt5.QtWidgets import QWizard
     from nw.gui.projwizard import (
@@ -764,7 +877,7 @@ def testNewProjectWizard(qtbot, nwTempGUI, nwLipsum, nwRef, nwTemp):
         ProjWizardCustomPage, ProjWizardFinalPage
     )
 
-    nwGUI = nw.main(["--testmode", "--config=%s" % nwTempGUI, "--data=%s" % nwTemp])
+    nwGUI = nw.main(["--testmode", "--config=%s" % nwLipsum, "--data=%s" % nwTemp])
     qtbot.addWidget(nwGUI)
     nwGUI.show()
     qtbot.waitForWindowShown(nwGUI)
@@ -885,9 +998,9 @@ def testNewProjectWizard(qtbot, nwTempGUI, nwLipsum, nwRef, nwTemp):
     nwGUI.closeMain()
 
 @pytest.mark.gui
-def testDocAction(qtbot, nwTempGUI, nwLipsum, nwRef, nwTemp):
+def testDocAction(qtbot, nwLipsum, nwTemp):
 
-    nwGUI = nw.main(["--testmode", "--config=%s" % nwTempGUI, "--data=%s" % nwTemp])
+    nwGUI = nw.main(["--testmode", "--config=%s" % nwLipsum, "--data=%s" % nwTemp])
     qtbot.addWidget(nwGUI)
     nwGUI.show()
     qtbot.waitForWindowShown(nwGUI)
@@ -1001,8 +1114,8 @@ def testDocAction(qtbot, nwTempGUI, nwLipsum, nwRef, nwTemp):
     nwGUI.closeMain()
 
 @pytest.mark.gui
-def testInsertMenu(qtbot, nwTempGUI, nwFuncTemp, nwTemp):
-    nwGUI = nw.main(["--testmode", "--config=%s" % nwTempGUI, "--data=%s" % nwTemp])
+def testInsertMenu(qtbot, nwFuncTemp, nwTemp):
+    nwGUI = nw.main(["--testmode", "--config=%s" % nwFuncTemp, "--data=%s" % nwTemp])
     qtbot.addWidget(nwGUI)
     nwGUI.show()
     qtbot.waitForWindowShown(nwGUI)
@@ -1079,24 +1192,29 @@ def testInsertMenu(qtbot, nwTempGUI, nwFuncTemp, nwTemp):
     nwGUI.closeMain()
 
 @pytest.mark.gui
-def testLoadProject(qtbot, nwTempGUI, nwTemp):
-    nwGUI = nw.main(["--testmode", "--config=%s" % nwTempGUI, "--data=%s" % nwTemp])
+def testLoadProject(qtbot, nwMinimal, nwTemp):
+    nwGUI = nw.main(["--testmode", "--config=%s" % nwMinimal, "--data=%s" % nwTemp])
     qtbot.addWidget(nwGUI)
     nwGUI.show()
     qtbot.waitForWindowShown(nwGUI)
     qtbot.wait(stepDelay)
 
+    assert nwGUI.openProject(nwMinimal)
+    assert nwGUI.closeProject()
+
     nwLoad = GuiProjectLoad(nwGUI)
     nwLoad.show()
 
     recentCount = nwLoad.listBox.topLevelItemCount()
-    assert recentCount > 1
+    assert recentCount > 0
 
-    selItem = nwLoad.listBox.topLevelItem(1)
+    selItem = nwLoad.listBox.topLevelItem(0)
     selPath = selItem.data(nwLoad.C_NAME, Qt.UserRole)
+    assert isinstance(selItem, QTreeWidgetItem)
 
     nwLoad.selPath.setText("")
     nwLoad.listBox.setCurrentItem(selItem)
+    nwLoad._doSelectRecent()
     assert nwLoad.selPath.text() == selPath
 
     qtbot.mouseClick(nwLoad.buttonBox.button(QDialogButtonBox.Open), Qt.LeftButton)
@@ -1125,16 +1243,16 @@ def testLoadProject(qtbot, nwTempGUI, nwTemp):
     nwGUI.closeMain()
 
 @pytest.mark.gui
-def testOutline(qtbot, nwTempBuild, nwLipsum, nwTemp):
+def testOutline(qtbot, nwLipsum, nwTemp):
 
-    nwGUI = nw.main(["--testmode", "--config=%s" % nwTempBuild, "--data=%s" % nwTemp])
+    nwGUI = nw.main(["--testmode", "--config=%s" % nwLipsum, "--data=%s" % nwTemp])
     qtbot.addWidget(nwGUI)
     nwGUI.show()
     qtbot.waitForWindowShown(nwGUI)
     qtbot.wait(stepDelay)
 
     assert nwGUI.openProject(nwLipsum)
-    nwGUI.mainConf.lastPath = nwTempBuild
+    nwGUI.mainConf.lastPath = nwLipsum
 
     nwGUI.rebuildIndex()
     nwGUI.tabWidget.setCurrentIndex(nwGUI.idxTabProj)

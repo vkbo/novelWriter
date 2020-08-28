@@ -9,7 +9,7 @@
  content/441420a886d82.nwd  NOVEL      Chapter Two
  content/47666c91c7ccf.nwd  NOVEL      Scene Five
  content/4c4f28287af27.nwd  CHARACTER  Mr. Nobody
- content/7a992350f3eb6.nwd  NOVEL      Lorem Ipusm
+ content/7a992350f3eb6.nwd  NOVEL      Lorem Ipsum
  content/846352075de7d.nwd  NOVEL      Interlude
  content/88243afbe5ed8.nwd  NOVEL      Scene One
  content/88d59a277361b.nwd  NOVEL      Prologue

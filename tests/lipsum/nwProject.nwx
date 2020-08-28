@@ -1,23 +1,25 @@
 <?xml version='1.0' encoding='utf-8'?>
-<novelWriterXML appVersion="0.9.0rc1" hexVersion="0x000900c1" fileVersion="1.1" timeStamp="2020-06-13 00:37:49">
+<novelWriterXML appVersion="0.12.1" hexVersion="0x001201f0" fileVersion="1.2" timeStamp="2020-08-28 15:49:43">
   <project>
     <name>Lorem Ipsum</name>
     <title>Lorem Ipsum</title>
     <author>lipsum.com</author>
-    <saveCount>7</saveCount>
+    <saveCount>8</saveCount>
     <autoCount>21</autoCount>
-    <editTime>1459</editTime>
+    <editTime>1472</editTime>
   </project>
   <settings>
     <doBackup>False</doBackup>
     <spellCheck>False</spellCheck>
     <autoOutline>True</autoOutline>
-    <lastEdited>04468803b92e1</lastEdited>
+    <lastEdited>fb609cd8319dc</lastEdited>
     <lastViewed>None</lastViewed>
     <lastWordCount>3847</lastWordCount>
+    <novelWordCount>3109</novelWordCount>
+    <notesWordCount>738</notesWordCount>
     <autoReplace>
-      <Rep1>Replace Text 1</Rep1>
-      <Rep2>Replace Text 2</Rep2>
+      <entry key="Rep1">Replace Text 1</entry>
+      <entry key="Rep2">Replace Text 2</entry>
     </autoReplace>
     <titleFormat>
       <title>%title%</title>

@@ -5,22 +5,15 @@
 import pytest
 
 from lxml import etree
-from nwdummy import DummyMain
 
-from nw.config import Config
 from nw.core.project import NWProject, NWItem
 from nw.constants import nwItemClass, nwItemType, nwItemLayout
 
-theConf = Config()
-theMain = DummyMain()
-theMain.mainConf = theConf
-
-theProject = NWProject(theMain)
-theItem = NWItem(theProject)
-nwXML = etree.Element("novelWriterXML")
-
 @pytest.mark.project
-def testItemSettersSimple():
+def testItemSettersSimple(nwDummy):
+
+    theProject = NWProject(nwDummy)
+    theItem = NWItem(theProject)
 
     # Name
     theItem.setName("A Name")
@@ -113,7 +106,10 @@ def testItemSettersSimple():
     assert theItem.cursorPos == 1
 
 @pytest.mark.project
-def testItemClassSetter():
+def testItemClassSetter(nwDummy):
+
+    theProject = NWProject(nwDummy)
+    theItem = NWItem(theProject)
 
     # Class
     theItem.setClass(None)
@@ -138,13 +134,18 @@ def testItemClassSetter():
     assert theItem.itemClass == nwItemClass.ENTITY
     theItem.setClass("CUSTOM")
     assert theItem.itemClass == nwItemClass.CUSTOM
+    theItem.setClass("ARCHIVE")
+    assert theItem.itemClass == nwItemClass.ARCHIVE
     theItem.setClass("TRASH")
     assert theItem.itemClass == nwItemClass.TRASH
 
 @pytest.mark.project
-def testItemTypeSetter():
+def testItemTypeSetter(nwDummy):
 
-    # Class
+    theProject = NWProject(nwDummy)
+    theItem = NWItem(theProject)
+
+    # Type
     theItem.setType(None)
     assert theItem.itemType == nwItemType.NO_TYPE
     theItem.setType("NONSENSE")
@@ -161,9 +162,12 @@ def testItemTypeSetter():
     assert theItem.itemType == nwItemType.TRASH
 
 @pytest.mark.project
-def testItemLayoutSetter():
+def testItemLayoutSetter(nwDummy):
 
-    # Class
+    theProject = NWProject(nwDummy)
+    theItem = NWItem(theProject)
+
+    # Layout
     theItem.setLayout(None)
     assert theItem.itemLayout == nwItemLayout.NO_LAYOUT
     theItem.setLayout("NONSENSE")
@@ -188,7 +192,25 @@ def testItemLayoutSetter():
     assert theItem.itemLayout == nwItemLayout.NOTE
 
 @pytest.mark.project
-def testItemXMLPackUnpack():
+def testItemXMLPackUnpack(nwDummy):
+
+    theProject = NWProject(nwDummy)
+    theItem = NWItem(theProject)
+    nwXML = etree.Element("novelWriterXML")
+
+    theItem.setHandle("0123456789abc")
+    theItem.setParent("0123456789abc")
+    theItem.setOrder(1)
+    theItem.setName("A Name")
+    theItem.setClass("NOVEL")
+    theItem.setType("FILE")
+    theItem.setStatus("Main")
+    theItem.setLayout("NOTE")
+    theItem.setExpanded(True)
+    theItem.setParaCount(3)
+    theItem.setWordCount(5)
+    theItem.setCharCount(7)
+    theItem.setCursorPos(11)
 
     # Pack
     xContent = etree.SubElement(nwXML, "content")
@@ -196,9 +218,9 @@ def testItemXMLPackUnpack():
     assert etree.tostring(xContent, pretty_print=False, encoding="utf-8") == (
         b"<content>"
         b"<item handle=\"0123456789abc\" order=\"1\" parent=\"0123456789abc\">"
-        b"<name>A Name</name><type>TRASH</type><class>TRASH</class>"
-        b"<status>Main</status><expanded>True</expanded>"
-        b"</item>"
+        b"<name>A Name</name><type>FILE</type><class>NOVEL</class><status>New</status>"
+        b"<exported>True</exported><layout>NOTE</layout><charCount>7</charCount>"
+        b"<wordCount>5</wordCount><paraCount>3</paraCount><cursorPos>11</cursorPos></item>"
         b"</content>"
     )
 
@@ -208,10 +230,10 @@ def testItemXMLPackUnpack():
     assert theItem.parHandle == "0123456789abc"
     assert theItem.itemOrder == 1
     assert theItem.isExpanded
-    assert theItem.charCount == 1
-    assert theItem.wordCount == 1
-    assert theItem.paraCount == 1
-    assert theItem.cursorPos == 1
-    assert theItem.itemClass == nwItemClass.TRASH
-    assert theItem.itemType == nwItemType.TRASH
+    assert theItem.paraCount == 3
+    assert theItem.wordCount == 5
+    assert theItem.charCount == 7
+    assert theItem.cursorPos == 11
+    assert theItem.itemClass == nwItemClass.NOVEL
+    assert theItem.itemType == nwItemType.FILE
     assert theItem.itemLayout == nwItemLayout.NOTE
