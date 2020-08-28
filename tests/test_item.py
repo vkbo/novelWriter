@@ -5,19 +5,9 @@
 import pytest
 
 from lxml import etree
-from nwdummy import DummyMain
 
-from nw.config import Config
 from nw.core.project import NWProject, NWItem
 from nw.constants import nwItemClass, nwItemType, nwItemLayout
-
-# theConf = Config()
-# theMain = DummyMain()
-# theMain.mainConf = theConf
-
-# theProject = NWProject(theMain)
-# theItem = NWItem(theProject)
-# nwXML = etree.Element("novelWriterXML")
 
 @pytest.mark.project
 def testItemSettersSimple(nwDummy):
