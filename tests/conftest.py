@@ -36,6 +36,13 @@ def nwConf(nwRef, nwTemp):
     return theConf
 
 @pytest.fixture(scope="session")
+def tmpConf(nwRef, nwTemp):
+    theConf = Config()
+    theConf.initConfig(nwTemp, nwTemp)
+    theConf.setLastPath("")
+    return theConf
+
+@pytest.fixture(scope="session")
 def nwDummy(nwRef, nwTemp, nwConf):
     theDummy = DummyMain()
     theDummy.mainConf = nwConf

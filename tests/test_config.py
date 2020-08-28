@@ -5,112 +5,110 @@
 import pytest
 from nwtools import cmpFiles
 from os import path
-from nw.config import Config
-
-theConf = Config()
 
 @pytest.mark.core
-def testConfigInit(nwTemp, nwRef):
-    tmpConf = path.join(nwTemp, "novelwriter.conf")
+def testConfigCore(tmpConf, nwTemp, nwRef):
     refConf = path.join(nwRef, "novelwriter.conf")
-    assert theConf.initConfig(nwTemp, nwTemp)
-    assert theConf.setLastPath("")
-    assert theConf.saveConfig()
-    assert cmpFiles(tmpConf, refConf, [2])
-    assert not theConf.confChanged
+    testConf = path.join(tmpConf.confPath, "novelwriter.conf")
+
+    assert tmpConf.confPath == nwTemp
+    assert tmpConf.saveConfig()
+    assert cmpFiles(testConf, refConf, [2])
+    assert not tmpConf.confChanged
+
+    assert tmpConf.loadConfig()
+    assert not tmpConf.confChanged
 
 @pytest.mark.core
-def testConfigSave(nwTemp, nwRef):
-    tmpConf = path.join(nwTemp, "novelwriter.conf")
+def testConfigSetConfPath(tmpConf, nwTemp):
+    assert tmpConf.setConfPath(None)
+    assert not tmpConf.setConfPath(path.join("somewhere", "over", "the", "rainbow"))
+    assert tmpConf.setConfPath(path.join(nwTemp, "novelwriter.conf"))
+    assert tmpConf.confPath == nwTemp
+    assert tmpConf.confFile == "novelwriter.conf"
+    assert not tmpConf.confChanged
+
+@pytest.mark.core
+def testConfigSetDataPath(tmpConf, nwTemp):
+    assert tmpConf.setDataPath(None)
+    assert not tmpConf.setDataPath(path.join("somewhere", "over", "the", "rainbow"))
+    assert tmpConf.setDataPath(nwTemp)
+    assert tmpConf.dataPath == nwTemp
+    assert not tmpConf.confChanged
+
+@pytest.mark.core
+def testConfigSetWinSize(tmpConf, nwTemp, nwRef):
     refConf = path.join(nwRef, "novelwriter.conf")
-    assert theConf.confPath == nwTemp
-    assert theConf.saveConfig()
-    assert cmpFiles(tmpConf, refConf, [2])
-    assert not theConf.confChanged
+    testConf = path.join(tmpConf.confPath, "novelwriter.conf")
+
+    assert tmpConf.confPath == nwTemp
+    assert tmpConf.setWinSize(1105, 655)
+    assert not tmpConf.confChanged
+    assert tmpConf.setWinSize(70, 70)
+    assert tmpConf.confChanged
+    assert tmpConf.setWinSize(1100, 650)
+    assert tmpConf.saveConfig()
+
+    assert cmpFiles(testConf, refConf, [2])
+    assert not tmpConf.confChanged
 
 @pytest.mark.core
-def testConfigSetConfPath(nwTemp):
-    assert theConf.setConfPath(None)
-    assert not theConf.setConfPath(path.join("somewhere", "over", "the", "rainbow"))
-    assert theConf.setConfPath(path.join(nwTemp, "novelwriter.conf"))
-    assert theConf.confPath == nwTemp
-    assert theConf.confFile == "novelwriter.conf"
-    assert not theConf.confChanged
-
-@pytest.mark.core
-def testConfigSetDataPath(nwTemp):
-    assert theConf.setDataPath(None)
-    assert not theConf.setDataPath(path.join("somewhere", "over", "the", "rainbow"))
-    assert theConf.setDataPath(nwTemp)
-    assert theConf.dataPath == nwTemp
-    assert not theConf.confChanged
-
-@pytest.mark.core
-def testConfigLoad():
-    assert theConf.loadConfig()
-    assert not theConf.confChanged
-
-@pytest.mark.core
-def testConfigSetWinSize(nwTemp, nwRef):
-    tmpConf = path.join(nwTemp, "novelwriter.conf")
+def testConfigSetTreeColWidths(tmpConf, nwTemp, nwRef):
     refConf = path.join(nwRef, "novelwriter.conf")
-    assert theConf.setWinSize(1105, 655)
-    assert not theConf.confChanged
-    assert theConf.setWinSize(70, 70)
-    assert theConf.confChanged
-    assert theConf.setWinSize(1100, 650)
-    assert theConf.saveConfig()
-    assert cmpFiles(tmpConf, refConf, [2])
-    assert not theConf.confChanged
+    testConf = path.join(tmpConf.confPath, "novelwriter.conf")
+
+    assert tmpConf.confPath == nwTemp
+    assert tmpConf.setTreeColWidths([0, 0, 0])
+    assert tmpConf.confChanged
+    assert tmpConf.setTreeColWidths([120, 30, 50])
+    assert tmpConf.setProjColWidths([140, 55, 140])
+    assert tmpConf.saveConfig()
+
+    assert cmpFiles(testConf, refConf, [2])
+    assert not tmpConf.confChanged
 
 @pytest.mark.core
-def testConfigSetTreeColWidths(nwTemp, nwRef):
-    tmpConf = path.join(nwTemp, "novelwriter.conf")
+def testConfigSetPanePos(tmpConf, nwTemp, nwRef):
     refConf = path.join(nwRef, "novelwriter.conf")
-    assert theConf.setTreeColWidths([0, 0, 0])
-    assert theConf.confChanged
-    assert theConf.setTreeColWidths([120, 30, 50])
-    assert theConf.setProjColWidths([140, 55, 140])
-    assert theConf.saveConfig()
-    assert cmpFiles(tmpConf, refConf, [2])
-    assert not theConf.confChanged
+    testConf = path.join(tmpConf.confPath, "novelwriter.conf")
+
+    assert tmpConf.confPath == nwTemp
+    assert tmpConf.setMainPanePos([0, 0])
+    assert tmpConf.confChanged
+    assert tmpConf.setMainPanePos([300, 800])
+    assert tmpConf.setDocPanePos([400, 400])
+    assert tmpConf.setViewPanePos([500, 150])
+    assert tmpConf.setOutlinePanePos([500, 150])
+    assert tmpConf.saveConfig()
+
+    assert cmpFiles(testConf, refConf, [2])
+    assert not tmpConf.confChanged
 
 @pytest.mark.core
-def testConfigSetPanePos(nwTemp, nwRef):
-    tmpConf = path.join(nwTemp, "novelwriter.conf")
+def testConfigFlags(tmpConf, nwTemp, nwRef):
     refConf = path.join(nwRef, "novelwriter.conf")
-    assert theConf.setMainPanePos([0, 0])
-    assert theConf.confChanged
-    assert theConf.setMainPanePos([300, 800])
-    assert theConf.setDocPanePos([400, 400])
-    assert theConf.setViewPanePos([500, 150])
-    assert theConf.setOutlinePanePos([500, 150])
-    assert theConf.saveConfig()
-    assert cmpFiles(tmpConf, refConf, [2])
-    assert not theConf.confChanged
+    testConf = path.join(tmpConf.confPath, "novelwriter.conf")
+
+    assert tmpConf.confPath == nwTemp
+    assert not tmpConf.setShowRefPanel(False)
+    assert tmpConf.setShowRefPanel(True)
+    assert tmpConf.confChanged
+    assert tmpConf.saveConfig()
+
+    assert cmpFiles(testConf, refConf, [2])
+    assert not tmpConf.confChanged
 
 @pytest.mark.core
-def testConfigFlags(nwTemp, nwRef):
-    tmpConf = path.join(nwTemp, "novelwriter.conf")
-    refConf = path.join(nwRef, "novelwriter.conf")
-    assert not theConf.setShowRefPanel(False)
-    assert theConf.setShowRefPanel(True)
-    assert theConf.confChanged
-    assert theConf.saveConfig()
-    assert cmpFiles(tmpConf, refConf, [2])
-    assert not theConf.confChanged
-
-@pytest.mark.core
-def testConfigErrors(nwTemp):
+def testConfigErrors(tmpConf):
     nonPath = path.join("somewhere", "over", "the", "rainbow")
-    assert theConf.initConfig(nonPath, nonPath)
-    assert theConf.hasError
-    assert not theConf.loadConfig()
-    assert not theConf.saveConfig()
-    assert not theConf.loadRecentCache()
-    assert len(theConf.getErrData()) > 0
+    assert tmpConf.initConfig(nonPath, nonPath)
+    assert tmpConf.hasError
+    assert not tmpConf.loadConfig()
+    assert not tmpConf.saveConfig()
+    assert not tmpConf.loadRecentCache()
+    assert len(tmpConf.getErrData()) > 0
 
 @pytest.mark.core
-def testConfigInternals():
-    assert theConf._checkNone(None) is None
-    assert theConf._checkNone("None") is None
+def testConfigInternals(tmpConf):
+    assert tmpConf._checkNone(None) is None
+    assert tmpConf._checkNone("None") is None
