@@ -4,63 +4,66 @@
 
 import pytest
 from os import path
+from shutil import copyfile
 
 from nwtools import cmpFiles
-from nwdummy import DummyMain
 
-from nw.config import Config
 from nw.core.project import NWProject
 from nw.core.index import NWIndex
 from nw.constants import nwItemClass
 
-theConf = Config()
-theMain = DummyMain()
-theMain.mainConf = theConf
-
-theProject = NWProject(theMain)
-theProject.projTree.setSeed(42)
-
 @pytest.mark.project
-def testProjectNewMinimal(nwTempProj, nwRef, nwTemp):
-    projFile = path.join(nwTempProj, "nwProject.nwx")
+def testProjectNewOpenSave(nwFuncTemp, nwTempProj, nwRef, nwTemp, nwDummy):
+    projFile = path.join(nwFuncTemp, "nwProject.nwx")
+    testFile = path.join(nwTempProj, "1_nwProject.nwx")
     refFile  = path.join(nwRef, "proj", "1_nwProject.nwx")
-    assert theConf.initConfig(nwRef, nwTemp)
-    assert theProject.newProject({"projPath": nwTempProj})
-    assert theProject.setProjectPath(nwTempProj)
+
+    theProject = NWProject(nwDummy)
+    theProject.projTree.setSeed(42)
+
+    assert theProject.newProject({"projPath": nwFuncTemp})
+    assert theProject.setProjectPath(nwFuncTemp)
     assert theProject.saveProject()
     assert theProject.closeProject()
-    assert cmpFiles(projFile, refFile, [2, 6, 7, 8])
 
-@pytest.mark.project
-def testProjectOpen(nwTempProj):
-    projFile = path.join(nwTempProj, "nwProject.nwx")
+    # Check the new project
+    copyfile(projFile, testFile)
+    assert cmpFiles(testFile, refFile, [2, 6, 7, 8])
+
+    # Open again
     assert theProject.openProject(projFile)
 
-@pytest.mark.project
-def testProjectSave(nwTempProj, nwRef):
-    projFile = path.join(nwTempProj, "nwProject.nwx")
-    refFile  = path.join(nwRef, "proj", "1_nwProject.nwx")
+    # Save and close
     assert theProject.saveProject()
     assert theProject.closeProject()
-    assert cmpFiles(projFile, refFile, [2, 6, 7, 8])
+    copyfile(projFile, testFile)
+    assert cmpFiles(testFile, refFile, [2, 6, 7, 8])
     assert not theProject.projChanged
 
-@pytest.mark.project
-def testProjectOpenTwice(nwTempProj, nwRef):
-    projFile = path.join(nwTempProj, "nwProject.nwx")
-    refFile  = path.join(nwRef, "proj", "1_nwProject.nwx")
+    # Open a second time
     assert theProject.openProject(projFile)
     assert not theProject.openProject(projFile)
     assert theProject.openProject(projFile, overrideLock=True)
     assert theProject.saveProject()
     assert theProject.closeProject()
-    assert cmpFiles(projFile, refFile, [2, 6, 7, 8])
+    copyfile(projFile, testFile)
+    assert cmpFiles(testFile, refFile, [2, 6, 7, 8])
 
 @pytest.mark.project
-def testProjectNewRoot(nwTempProj, nwRef):
-    projFile = path.join(nwTempProj, "nwProject.nwx")
+def testProjectNewRoot(nwFuncTemp, nwTempProj, nwRef, nwDummy):
+    projFile = path.join(nwFuncTemp, "nwProject.nwx")
+    testFile = path.join(nwTempProj, "2_nwProject.nwx")
     refFile  = path.join(nwRef, "proj", "2_nwProject.nwx")
+
+    theProject = NWProject(nwDummy)
+    theProject.projTree.setSeed(42)
+
+    assert theProject.newProject({"projPath": nwFuncTemp})
+    assert theProject.setProjectPath(nwFuncTemp)
+    assert theProject.saveProject()
+    assert theProject.closeProject()
     assert theProject.openProject(projFile)
+
     assert isinstance(theProject.newRoot("Novel",     nwItemClass.NOVEL),     type(None))
     assert isinstance(theProject.newRoot("Plot",      nwItemClass.PLOT),      type(None))
     assert isinstance(theProject.newRoot("Character", nwItemClass.CHARACTER), type(None))
@@ -69,31 +72,48 @@ def testProjectNewRoot(nwTempProj, nwRef):
     assert isinstance(theProject.newRoot("Object",    nwItemClass.OBJECT),    str)
     assert isinstance(theProject.newRoot("Custom1",   nwItemClass.CUSTOM),    str)
     assert isinstance(theProject.newRoot("Custom2",   nwItemClass.CUSTOM),    str)
+
     assert theProject.projChanged
     assert theProject.saveProject()
     assert theProject.closeProject()
-    assert cmpFiles(projFile, refFile, [2, 6, 7, 8])
+
+    copyfile(projFile, testFile)
+    assert cmpFiles(testFile, refFile, [2, 6, 7, 8])
     assert not theProject.projChanged
 
 @pytest.mark.project
-def testProjectNewFile(nwTempProj, nwRef):
-    projFile = path.join(nwTempProj, "nwProject.nwx")
+def testProjectNewFile(nwFuncTemp, nwTempProj, nwRef, nwDummy):
+    projFile = path.join(nwFuncTemp, "nwProject.nwx")
+    testFile = path.join(nwTempProj, "3_nwProject.nwx")
     refFile  = path.join(nwRef, "proj", "3_nwProject.nwx")
+
+    theProject = NWProject(nwDummy)
+    theProject.projTree.setSeed(42)
+
+    assert theProject.newProject({"projPath": nwFuncTemp})
+    assert theProject.setProjectPath(nwFuncTemp)
+    assert theProject.saveProject()
+    assert theProject.closeProject()
     assert theProject.openProject(projFile)
-    assert isinstance(theProject.newFile("Hello", nwItemClass.NOVEL,     "73475cb40a568"), str)
+
+    assert isinstance(theProject.newFile("Hello", nwItemClass.NOVEL,     "31489056e0916"), str)
     assert isinstance(theProject.newFile("Jane",  nwItemClass.CHARACTER, "71ee45a3c0db9"), str)
     assert theProject.projChanged
     assert theProject.saveProject()
     assert theProject.closeProject()
-    assert cmpFiles(projFile, refFile, [2, 6, 7, 8])
+
+    copyfile(projFile, testFile)
+    assert cmpFiles(testFile, refFile, [2, 6, 7, 8])
     assert not theProject.projChanged
 
 @pytest.mark.project
-def testIndexScanThis(nwTempProj):
-    projFile = path.join(nwTempProj, "nwProject.nwx")
-    assert theProject.openProject(projFile)
+def testIndexScanThis(nwMinimal, nwDummy):
 
-    theIndex = NWIndex(theProject, theMain)
+    theProject = NWProject(nwDummy)
+    theProject.projTree.setSeed(42)
+    assert theProject.openProject(nwMinimal)
+
+    theIndex = NWIndex(theProject, nwDummy)
 
     isValid, theBits, thePos = theIndex.scanThis("tag: this, and this")
     assert not isValid
@@ -135,15 +155,17 @@ def testIndexScanThis(nwTempProj):
     assert theProject.closeProject()
 
 @pytest.mark.project
-def testIndexCheckThese(nwTempProj):
-    projFile = path.join(nwTempProj, "nwProject.nwx")
-    assert theProject.openProject(projFile)
+def testIndexCheckThese(nwMinimal, nwDummy):
 
-    theIndex = NWIndex(theProject, theMain)
-    nHandle  = "0e17daca5f3e1"
-    nItem    = theProject.projTree[nHandle]
-    cHandle  = "02d20bbd7e394"
-    cItem    = theProject.projTree[cHandle]
+    theProject = NWProject(nwDummy)
+    theProject.projTree.setSeed(42)
+    assert theProject.openProject(nwMinimal)
+
+    theIndex = NWIndex(theProject, nwDummy)
+    nHandle = theProject.newFile("Hello", nwItemClass.NOVEL,     "a508bb932959c")
+    cHandle = theProject.newFile("Jane",  nwItemClass.CHARACTER, "afb3043c7b2b3")
+    nItem = theProject.projTree[nHandle]
+    cItem = theProject.projTree[cHandle]
 
     assert theIndex.scanText(cHandle, (
         "# Jane Smith\n"
@@ -153,7 +175,7 @@ def testIndexCheckThese(nwTempProj):
         "# Hello World!\n"
         "@pov: Jane"
     ))
-    assert str(theIndex.tagIndex) == "{'Jane': [2, '02d20bbd7e394', 'CHARACTER', 'T000001']}"
+    assert str(theIndex.tagIndex) == "{'Jane': [2, '%s', 'CHARACTER', 'T000001']}" % cHandle
     assert theIndex.novelIndex[nHandle]["T000001"]["title"] == "Hello World!"
 
     assert str(theIndex.checkThese(["@tag",  "Jane"], cItem)) == "[True, True]"
@@ -168,13 +190,15 @@ def testIndexCheckThese(nwTempProj):
     assert theProject.closeProject()
 
 @pytest.mark.project
-def testIndexMeta(nwTempProj):
-    projFile = path.join(nwTempProj, "nwProject.nwx")
-    assert theProject.openProject(projFile)
+def testIndexMeta(nwMinimal, nwDummy):
 
-    theIndex = NWIndex(theProject, theMain)
-    nHandle  = "0e17daca5f3e1"
-    cHandle  = "02d20bbd7e394"
+    theProject = NWProject(nwDummy)
+    theProject.projTree.setSeed(42)
+    assert theProject.openProject(nwMinimal)
+
+    theIndex = NWIndex(theProject, nwDummy)
+    nHandle = theProject.newFile("Hello", nwItemClass.NOVEL,     "a508bb932959c")
+    cHandle = theProject.newFile("Jane",  nwItemClass.CHARACTER, "afb3043c7b2b3")
 
     assert theIndex.scanText(cHandle, (
         "# Jane Smith\n"
@@ -191,11 +215,11 @@ def testIndexMeta(nwTempProj):
         "\n"
         "Well, not really.\n"
     ))
-    assert str(theIndex.tagIndex) == "{'Jane': [2, '02d20bbd7e394', 'CHARACTER', 'T000001']}"
+    assert str(theIndex.tagIndex) == "{'Jane': [2, '%s', 'CHARACTER', 'T000001']}" % cHandle
     assert theIndex.novelIndex[nHandle]["T000001"]["title"] == "Hello World!"
 
     # The novel structure should contain the pointer to the novel file header
-    assert str(theIndex.getNovelStructure()) == "['0e17daca5f3e1:T000001']"
+    assert str(theIndex.getNovelStructure()) == "['%s:T000001']" % nHandle
 
     # The novel file should have the correct counts
     cC, wC, pC = theIndex.getCounts(nHandle)
@@ -210,21 +234,22 @@ def testIndexMeta(nwTempProj):
 
     # The character file should have a record of the reference from the novel file
     theRefs = theIndex.getBackReferenceList(cHandle)
-    assert str(theRefs) == "{'0e17daca5f3e1': 'T000001'}"
+    assert str(theRefs) == "{'%s': 'T000001'}" % nHandle
 
     assert theProject.closeProject()
 
-# The two following tests must be at the end as they mess up the config object
-# and the handle seed. They go into their own folders, but use the same project
-# object as the test above.
-
 @pytest.mark.project
-def testProjectNewCustom(nwTempCustom, nwRef, nwTemp):
+def testProjectNewCustom(nwFuncTemp, nwTempProj, nwRef, nwDummy):
+
+    projFile = path.join(nwFuncTemp, "nwProject.nwx")
+    testFile = path.join(nwTempProj, "4_nwProject.nwx")
+    refFile  = path.join(nwRef, "proj", "4_nwProject.nwx")
+
     projData = {
         "projName": "Test Custom",
         "projTitle": "Test Novel",
         "projAuthors": "Jane Doe\nJohn Doh\n",
-        "projPath": nwTempCustom,
+        "projPath": nwFuncTemp,
         "popSample": False,
         "popMinimal": False,
         "popCustom": True,
@@ -240,29 +265,33 @@ def testProjectNewCustom(nwTempCustom, nwRef, nwTemp):
         "numScenes": 3,
         "chFolders": True,
     }
-    theProject.mainConf = theConf
+    theProject = NWProject(nwDummy)
     theProject.projTree.setSeed(42)
+
     assert theProject.newProject(projData)
     assert theProject.saveProject()
     assert theProject.closeProject()
-    projFile = path.join(nwTempCustom, "nwProject.nwx")
-    refFile  = path.join(nwRef, "proj", "4_nwProject.nwx")
-    assert cmpFiles(projFile, refFile, [2, 6, 7, 8])
+
+    copyfile(projFile, testFile)
+    assert cmpFiles(testFile, refFile, [2, 6, 7, 8])
 
 @pytest.mark.project
-def testProjectNewSample(nwTempSample, nwLipsum, nwRef, nwTemp):
+def testProjectNewSample(nwFuncTemp, nwRef, nwConf, nwDummy):
     projData = {
         "projName": "Test Sample",
         "projTitle": "Test Novel",
         "projAuthors": "Jane Doe\nJohn Doh\n",
-        "projPath": nwTempSample,
+        "projPath": nwFuncTemp,
         "popSample": True,
         "popMinimal": False,
         "popCustom": False,
     }
-    theProject.mainConf = theConf
+    theProject = NWProject(nwDummy)
+    theProject.projTree.setSeed(42)
+    theProject.mainConf = nwConf
+
     assert theProject.newProject(projData)
-    assert theProject.openProject(nwTempSample)
+    assert theProject.openProject(nwFuncTemp)
     assert theProject.projName == "Sample Project"
     assert theProject.saveProject()
     assert theProject.closeProject()

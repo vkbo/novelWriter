@@ -1039,6 +1039,7 @@ class GuiMain(QMainWindow):
         self.addAction(self.mainMenu.aInsQuoteRS)
         self.addAction(self.mainMenu.aInsQuoteLD)
         self.addAction(self.mainMenu.aInsQuoteRD)
+        self.addAction(self.mainMenu.aInsMSApos)
         self.addAction(self.mainMenu.aInsHardBreak)
         self.addAction(self.mainMenu.aInsNBSpace)
         self.addAction(self.mainMenu.aInsThinSpace)

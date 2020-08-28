@@ -112,6 +112,7 @@ class nwDocInsert(Enum):
     QUOTE_RS      = 9
     QUOTE_LD      = 10
     QUOTE_RD      = 11
+    MODAPOS_S     = 12
 
 # END Enum nwDocInsert
 

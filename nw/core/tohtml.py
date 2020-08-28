@@ -54,6 +54,7 @@ class ToHtml(Tokenizer):
             nwUnicode.U_NBSP   : nwUnicode.H_NBSP,
             nwUnicode.U_THNSP  : nwUnicode.H_THNSP,
             nwUnicode.U_THNBSP : nwUnicode.H_THNBSP,
+            nwUnicode.U_MAPOSS : nwUnicode.H_RSQUO,
         }
         self.revDict = {}
         self.reReplace = []

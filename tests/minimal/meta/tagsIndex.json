@@ -1,0 +1,91 @@
+{
+  "tagIndex": {},
+  "refIndex": {
+    "a35baf2e93843": {
+      "T000000": {
+        "tags": [],
+        "updated": 1598607396
+      },
+      "T000001": {
+        "tags": [],
+        "updated": 1598607396
+      }
+    },
+    "f5ab3e30151e1": {
+      "T000000": {
+        "tags": [],
+        "updated": 1598607396
+      },
+      "T000001": {
+        "tags": [],
+        "updated": 1598607396
+      }
+    },
+    "8c659a11cd429": {
+      "T000000": {
+        "tags": [],
+        "updated": 1598607396
+      },
+      "T000001": {
+        "tags": [],
+        "updated": 1598607396
+      }
+    }
+  },
+  "novelIndex": {
+    "a35baf2e93843": {
+      "T000001": {
+        "level": "H1",
+        "title": "Minimal",
+        "layout": "TITLE",
+        "synopsis": "",
+        "cCount": 7,
+        "wCount": 1,
+        "pCount": 0,
+        "updated": 1598607396
+      }
+    },
+    "f5ab3e30151e1": {
+      "T000001": {
+        "level": "H2",
+        "title": "New Chapter",
+        "layout": "CHAPTER",
+        "synopsis": "",
+        "cCount": 11,
+        "wCount": 2,
+        "pCount": 0,
+        "updated": 1598607396
+      }
+    },
+    "8c659a11cd429": {
+      "T000001": {
+        "level": "H3",
+        "title": "New Scene",
+        "layout": "SCENE",
+        "synopsis": "",
+        "cCount": 9,
+        "wCount": 2,
+        "pCount": 0,
+        "updated": 1598607396
+      }
+    }
+  },
+  "noteIndex": {},
+  "textCounts": {
+    "a35baf2e93843": [
+      28,
+      6,
+      1
+    ],
+    "f5ab3e30151e1": [
+      11,
+      2,
+      0
+    ],
+    "8c659a11cd429": [
+      9,
+      2,
+      0
+    ]
+  }
+}

@@ -5,9 +5,13 @@
 import sys
 import pytest
 import shutil
+
 from os import path, mkdir
+from nwdummy import DummyMain
 
 sys.path.insert(1, path.abspath(path.join(path.dirname(__file__), path.pardir)))
+
+from nw.config import Config # noqa: E402
 
 @pytest.fixture(scope="session")
 def nwTemp():
@@ -18,6 +22,31 @@ def nwTemp():
     if not path.isdir(tempDir):
         mkdir(tempDir)
     return tempDir
+
+@pytest.fixture(scope="session")
+def nwRef():
+    testDir = path.dirname(__file__)
+    refDir = path.join(testDir, "reference")
+    return refDir
+
+@pytest.fixture(scope="session")
+def nwConf(nwRef, nwTemp):
+    theConf = Config()
+    theConf.initConfig(nwRef, nwTemp)
+    return theConf
+
+@pytest.fixture(scope="session")
+def tmpConf(nwRef, nwTemp):
+    theConf = Config()
+    theConf.initConfig(nwTemp, nwTemp)
+    theConf.setLastPath("")
+    return theConf
+
+@pytest.fixture(scope="session")
+def nwDummy(nwRef, nwTemp, nwConf):
+    theDummy = DummyMain()
+    theDummy.mainConf = nwConf
+    return theDummy
 
 @pytest.fixture(scope="session")
 def nwTempProj(nwTemp):
@@ -40,20 +69,6 @@ def nwTempBuild(nwTemp):
         mkdir(buildDir)
     return buildDir
 
-@pytest.fixture(scope="session")
-def nwTempCustom(nwTemp):
-    customDir = path.join(nwTemp, "custom")
-    if not path.isdir(customDir):
-        mkdir(customDir)
-    return customDir
-
-@pytest.fixture(scope="session")
-def nwTempSample(nwTemp):
-    sampleDir = path.join(nwTemp, "sample")
-    if not path.isdir(sampleDir):
-        mkdir(sampleDir)
-    return sampleDir
-
 @pytest.fixture(scope="function")
 def nwFuncTemp(nwTemp):
     funcDir = path.join(nwTemp, "ftemp")
@@ -66,18 +81,30 @@ def nwFuncTemp(nwTemp):
         shutil.rmtree(funcDir)
     return
 
-@pytest.fixture(scope="session")
-def nwRef():
+@pytest.fixture(scope="function")
+def nwMinimal(nwTemp):
     testDir = path.dirname(__file__)
-    refDir = path.join(testDir, "reference")
-    return refDir
+    minimalStore = path.join(testDir, "minimal")
+    minimalDir = path.join(nwTemp, "minimal")
+    if path.isdir(minimalDir):
+        shutil.rmtree(minimalDir)
+    shutil.copytree(minimalStore, minimalDir)
+    cacheDir = path.join(minimalDir, "cache")
+    if path.isdir(cacheDir):
+        shutil.rmtree(cacheDir)
+    metaDir = path.join(minimalDir, "meta")
+    if path.isdir(metaDir):
+        shutil.rmtree(metaDir)
+    yield minimalDir
+    if path.isdir(minimalDir):
+        shutil.rmtree(minimalDir)
+    return
 
-@pytest.fixture(scope="session")
-def nwLipsum():
+@pytest.fixture(scope="function")
+def nwLipsum(nwTemp):
     testDir = path.dirname(__file__)
-    tempDir = path.join(testDir, "temp")
     lipsumStore = path.join(testDir, "lipsum")
-    lipsumDir = path.join(tempDir, "lipsum")
+    lipsumDir = path.join(nwTemp, "lipsum")
     if path.isdir(lipsumDir):
         shutil.rmtree(lipsumDir)
     shutil.copytree(lipsumStore, lipsumDir)
@@ -87,4 +114,7 @@ def nwLipsum():
     metaDir = path.join(lipsumDir, "meta")
     if path.isdir(metaDir):
         shutil.rmtree(metaDir)
-    return lipsumDir
+    yield lipsumDir
+    if path.isdir(lipsumDir):
+        shutil.rmtree(lipsumDir)
+    return
