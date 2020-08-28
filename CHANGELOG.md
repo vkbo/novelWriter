@@ -5,10 +5,12 @@
 **Bugfixes**
 
 * Not technically a bug, but the clearing of the document editor footer bar, both during start-up and when a document was closed, would print two ERROR messages to the terminal window. These were benign, but are now prevented from occurring by a slight change in the logic. Issue #418, PR #420.
+* Fixed spell check highlighting for words separated by a forward slash, which was treated as a single word. Issue #427, PR #428.
 
 **New Features**
 
 * A new root folder has been added. It is named "Outtakes" by default, and functions as an archive folder for any file that the user wants to take out of the main project tree. The file retains its meta data, is editable, and is always excluded from builds. It is not possible to create files in this folder, but you can create subfolders for organising them. PRs #415, #416 and #419.
+* Support an alternative apostrophe. There is a unicode character defined for this, but the regular right hand single quote symbol is the recommended character. However, sometimes this confuses the syntax highlighter. The alternative character bypasses this, and may also be useful for languages that don't use the same type of symbol for these. PRs #429 and #430.
 
 **Feature Improvements**
 
@@ -17,6 +19,7 @@
 * It is now possible to drag and drop files into the Trash folder. PR #415.
 * Files moved to Outtakes or Trash are now cleared from the index, except their word counts. All tags and references are thus out of the project. They are automatically put back in when the file is dragged into the main project tree again. PR #416.
 * Tabs and tab stops are now rendered properly in the document viewer. Since the `setHtml` function of the Qt widget used here strips tabs, they were previously just converted to eight spaces. This prevented the tabs from aligning vertically like they do in the editor. The stripping of tabs is now bypassed by replacing them with a placeholder text, and reverting the replacement after the document content has been set. This change also applies to the preview in the Build Novel Project tool, and therefore also the print and print to PDF functions. PR #419.
+* The syntax highlighter is now better at detecting what is a single quoted string and what is an apostrophe in a word. PR #430.
 
 **Other Changes**
 
@@ -27,6 +30,7 @@
 
 * Added better test coverage of the Project Load dialog and the Project Outline tool. PR #423.
 * Switched from Travis-CI to GitHub actions for running Python tests. PRs #424, #425 and #426.
+* All tests can now be run independently of other tests on a function level. Before, this was only possible on a test file level. Issue #431, PR #432.
 
 
 ## Version 0.12.1 [2020-08-16]
