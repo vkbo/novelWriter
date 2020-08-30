@@ -1,6 +1,6 @@
 # novelWriter ChangeLog
 
-## Version 1.0 Beta 1 [2020-08-23]
+## Version 1.0 Beta 1 [2020-08-30]
 
 **Bugfixes**
 
