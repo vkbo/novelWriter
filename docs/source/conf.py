@@ -26,9 +26,9 @@ copyright = "2018-2020, Veronica Berglyd Olsen"
 author = "Veronica Berglyd Olsen"
 
 # The short X.Y version
-version = "0.12.1"
+version = "1.0"
 # The full version, including alpha/beta/rc tags
-release = "0.12.1"
+release = "1.0-beta1"
 
 
 # -- General configuration ---------------------------------------------------
@@ -43,7 +43,7 @@ extensions = [
 templates_path = ["_templates"]
 source_suffix = ".rst"
 master_doc = "index"
-today_fmt = "%A, %B %d %Y at %H:%M"
+today_fmt = "%A, %d %B %Y at %H:%M"
 language = None
 exclude_patterns = []
 pygments_style = None
