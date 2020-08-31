@@ -255,12 +255,18 @@ class GuiDocViewer(QTextBrowser):
         else:
             sW = 0
 
+        hBar = self.horizontalScrollBar()
+        if hBar.isVisible():
+            sH = hBar.height()
+        else:
+            sH = 0
+
         cM = self.mainConf.getTextMargin()
         tB = self.frameWidth()
         tW = self.width() - 2*tB - sW
         tH = self.docHeader.height()
         fH = self.docFooter.height()
-        fY = self.height() - fH - tB
+        fY = self.height() - fH - tB - sH
 
         self.docHeader.setGeometry(tB, tB, tW, tH)
         self.docFooter.setGeometry(tB, fY, tW, fH)
