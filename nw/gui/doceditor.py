@@ -334,16 +334,10 @@ class GuiDocEditor(QTextEdit):
         cM = self.mainConf.getTextMargin()
 
         vBar = self.verticalScrollBar()
-        if vBar.isVisible():
-            sW = vBar.width()
-        else:
-            sW = 0
+        sW = vBar.width() if vBar.isVisible() else 0
 
         hBar = self.horizontalScrollBar()
-        if hBar.isVisible():
-            sH = hBar.height()
-        else:
-            sH = 0
+        sH = hBar.height() if hBar.isVisible() else 0
 
         if self.mainConf.textFixedW or self.theParent.isFocusMode:
             if self.theParent.isFocusMode:

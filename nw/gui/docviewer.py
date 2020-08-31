@@ -250,16 +250,10 @@ class GuiDocViewer(QTextBrowser):
         just ensure the margins are set correctly.
         """
         vBar = self.verticalScrollBar()
-        if vBar.isVisible():
-            sW = vBar.width()
-        else:
-            sW = 0
+        sW = vBar.width() if vBar.isVisible() else 0
 
         hBar = self.horizontalScrollBar()
-        if hBar.isVisible():
-            sH = hBar.height()
-        else:
-            sH = 0
+        sH = hBar.height() if hBar.isVisible() else 0
 
         cM = self.mainConf.getTextMargin()
         tB = self.frameWidth()
