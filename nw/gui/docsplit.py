@@ -31,7 +31,7 @@ import nw
 from PyQt5.QtCore import Qt
 from PyQt5.QtWidgets import (
     QDialog, QVBoxLayout, QComboBox, QListWidget, QAbstractItemView,
-    QListWidgetItem, QDialogButtonBox, QLabel
+    QListWidgetItem, QDialogButtonBox, QLabel, QMessageBox
 )
 
 from nw.constants import nwAlert, nwItemType, nwItemClass, nwItemLayout, nwConst
@@ -107,7 +107,7 @@ class GuiDocSplit(QDialog):
     def _doSplit(self):
         """Perform the split of the file, create a new folder in the
         same parent folder, and multiple files depending on split level
-        settings. The old file is not removed in the merge process, and
+        settings. The old file is not removed in the split process, and
         must be deleted manually.
         """
         logger.verbose("GuiDocSplit split button clicked")
@@ -143,7 +143,8 @@ class GuiDocSplit(QDialog):
             if i > 0:
                 finalOrder[i-1][2] = lineNo
 
-        if len(finalOrder) == 0:
+        nFiles = len(finalOrder)
+        if nFiles == 0:
             self.theParent.makeAlert((
                 "No headers found. Nothing to do."
             ), nwAlert.ERROR)
@@ -158,6 +159,18 @@ class GuiDocSplit(QDialog):
                 "Please move the file to another level in the project tree."
             ), nwAlert.ERROR)
             return
+
+        if self.mainConf.showGUI:
+            msgBox = QMessageBox()
+            msgRes = msgBox.question(
+                self, "Split Document", (
+                    "The document will be split into %d file(s) in a new folder. "
+                    "The original document will remain intact.<br><br>"
+                    "Continue with the splitting process?"
+                ) % nFiles
+            )
+            if msgRes != QMessageBox.Yes:
+                return
 
         # Create the folder
         fHandle = self.theProject.newFolder(
@@ -186,6 +199,7 @@ class GuiDocSplit(QDialog):
             nHandle = self.theProject.newFile(wTitle, srcItem.itemClass, fHandle)
             newItem = self.theProject.projTree[nHandle]
             newItem.setLayout(itemLayout)
+            newItem.setStatus(srcItem.itemStatus)
             logger.verbose(
                 "Creating new document %s with text from line %d to %d" % (
                     nHandle, iStart, iEnd-1
