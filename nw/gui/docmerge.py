@@ -109,15 +109,24 @@ class GuiDocMerge(QDialog):
 
         if self.sourceItem is None:
             self.theParent.makeAlert((
-                "Cannot parse source item."
+                "No source document selected. Nothing to do."
             ), nwAlert.ERROR)
             return
 
         srcItem = self.theProject.projTree[self.sourceItem]
+        if srcItem is None:
+            self.theParent.makeAlert((
+                "Could not parse source document."
+            ), nwAlert.ERROR)
+            return
+
         nHandle = self.theProject.newFile(srcItem.itemName, srcItem.itemClass, srcItem.parHandle)
-        self.theParent.treeView.revealTreeItem(nHandle)
+        newItem = self.theProject.projTree[nHandle]
+        newItem.setStatus(srcItem.itemStatus)
+
         theDoc.openDocument(nHandle, False)
         theDoc.saveDocument(theText)
+        self.theParent.treeView.revealTreeItem(nHandle)
         self.theParent.openDocument(nHandle, doScroll=True)
 
         self.close()
