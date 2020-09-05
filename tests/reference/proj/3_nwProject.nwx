@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='utf-8'?>
-<novelWriterXML appVersion="0.12.1" hexVersion="0x001201f0" fileVersion="1.2" timeStamp="2020-08-28 11:58:47">
+<novelWriterXML appVersion="1.0b1" hexVersion="0x010000b1" fileVersion="1.2" timeStamp="2020-09-05 17:31:43">
   <project>
     <name>New Project</name>
     <title></title>
@@ -10,6 +10,7 @@
   <settings>
     <doBackup>True</doBackup>
     <spellCheck>False</spellCheck>
+    <spellLang>None</spellLang>
     <autoOutline>True</autoOutline>
     <lastEdited>None</lastEdited>
     <lastViewed>None</lastViewed>

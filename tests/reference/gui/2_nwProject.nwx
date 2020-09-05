@@ -1,17 +1,18 @@
 <?xml version='1.0' encoding='utf-8'?>
-<novelWriterXML appVersion="0.11.1" hexVersion="0x001101f0" fileVersion="1.2" timeStamp="2020-08-10 22:01:52">
+<novelWriterXML appVersion="1.0b1" hexVersion="0x010000b1" fileVersion="1.2" timeStamp="2020-09-05 17:31:40">
   <project>
     <name>Project Name</name>
     <title>Project Title</title>
     <author>Jane Doe</author>
     <author>John Doh</author>
-    <saveCount>2</saveCount>
+    <saveCount>1</saveCount>
     <autoCount>1</autoCount>
     <editTime>0</editTime>
   </project>
   <settings>
     <doBackup>True</doBackup>
     <spellCheck>False</spellCheck>
+    <spellLang>None</spellLang>
     <autoOutline>True</autoOutline>
     <lastEdited>None</lastEdited>
     <lastViewed>None</lastViewed>

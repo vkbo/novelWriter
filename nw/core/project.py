@@ -76,6 +76,7 @@ class NWProject():
         self.projCache   = None # The full path to the project's cache folder
         self.projContent = None # The full path to the project's content folder
         self.projDict    = None # The spell check dictionary
+        self.projLang    = None # The spell check language, if different than default
         self.projFile    = None # The file name of the project main XML file
 
         # Project Meta
@@ -190,6 +191,7 @@ class NWProject():
         self.projCache   = None
         self.projContent = None
         self.projDict    = None
+        self.projLang    = None
         self.projFile    = nwFiles.PROJ_FILE
         self.projName    = ""
         self.bookTitle   = ""
@@ -561,6 +563,8 @@ class NWProject():
                         self.doBackup = checkBool(xItem.text, False)
                     elif xItem.tag == "spellCheck":
                         self.spellCheck = checkBool(xItem.text, False)
+                    elif xItem.tag == "spellLang":
+                        self.projLang = checkString(xItem.text, None, True)
                     elif xItem.tag == "autoOutline":
                         self.autoOutline = checkBool(xItem.text, True)
                     elif xItem.tag == "lastEdited":
@@ -654,8 +658,8 @@ class NWProject():
 
         # Save Project Meta
         xProject = etree.SubElement(nwXML, "project")
-        self._packProjectValue(xProject, "name", self.projName,  True)
-        self._packProjectValue(xProject, "title", self.bookTitle, True)
+        self._packProjectValue(xProject, "name", self.projName)
+        self._packProjectValue(xProject, "title", self.bookTitle)
         self._packProjectValue(xProject, "author", self.bookAuthors)
         self._packProjectValue(xProject, "saveCount", str(self.saveCount))
         self._packProjectValue(xProject, "autoCount", str(self.autoCount))
@@ -665,6 +669,7 @@ class NWProject():
         xSettings = etree.SubElement(nwXML, "settings")
         self._packProjectValue(xSettings, "doBackup", self.doBackup)
         self._packProjectValue(xSettings, "spellCheck", self.spellCheck)
+        self._packProjectValue(xSettings, "spellLang", self.projLang)
         self._packProjectValue(xSettings, "autoOutline", self.autoOutline)
         self._packProjectValue(xSettings, "lastEdited", self.lastEdited)
         self._packProjectValue(xSettings, "lastViewed", self.lastViewed)
@@ -990,6 +995,12 @@ class NWProject():
             self.setProjectChanged(True)
         return True
 
+    def setSpellLang(self, theLang):
+        """Set the project-specific spell check language.
+        """
+        self.projLang = checkString(theLang, None, True)
+        return True
+
     def setAutoOutline(self, theMode):
         """Enable/disable automatic update of project outline.
         """
@@ -1240,12 +1251,10 @@ class NWProject():
         if not isinstance(theValue, list):
             theValue = [theValue]
         for aValue in theValue:
-            if not isinstance(aValue, str):
-                aValue = str(aValue)
-            if aValue == "" and not allowNone:
+            if (aValue == "" or aValue is None) and not allowNone:
                 continue
             xItem = etree.SubElement(xParent, theName)
-            xItem.text = aValue
+            xItem.text = str(aValue)
         return
 
     def _packProjectKeyValue(self, xParent, theName, theDict):

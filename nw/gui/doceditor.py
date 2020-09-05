@@ -48,7 +48,7 @@ from PyQt5.QtWidgets import (
     QFrame
 )
 
-from nw.core import NWDoc, NWSpellSimple, countWords
+from nw.core import NWDoc, NWSpellCheck, NWSpellSimple, countWords
 from nw.gui.dochighlight import GuiDocHighlighter
 from nw.common import transferCase
 from nw.constants import (
@@ -73,6 +73,7 @@ class GuiDocEditor(QTextEdit):
         self.spellCheck = False
         self.nwDocument = NWDoc(self.theProject, self.theParent)
         self.theHandle  = None
+        self.theDict    = None
 
         # Document Variables
         self.charCount = 0
@@ -447,8 +448,17 @@ class GuiDocEditor(QTextEdit):
         status bar to show the one actually loaded by the spell checker
         class.
         """
-        self.theDict.setLanguage(self.mainConf.spellLanguage, self.theProject.projDict)
+        if self.theProject.projLang is None:
+            theLang = self.mainConf.spellLanguage
+        else:
+            theLang = self.theProject.projLang
+
+        self.theDict.setLanguage(theLang, self.theProject.projDict)
         self.theParent.statusBar.setLanguage(self.theDict.spellLanguage)
+
+        if not self.bigDoc:
+            self.spellCheckDocument()
+
         return True
 
     def setSpellCheck(self, theMode):
@@ -493,6 +503,8 @@ class GuiDocEditor(QTextEdit):
             logger.debug(
                 "Document re-highlighted in %.3f milliseconds" % (1000*(afTime-bfTime))
             )
+
+            self.theParent.statusBar.showMessage("Spell check complete")
 
         return True
 
@@ -1334,7 +1346,7 @@ class GuiDocEditor(QTextEdit):
         """Create the spell checking object based on the spellTool
         setting in config.
         """
-        if self.mainConf.spellTool == "enchant":
+        if self.mainConf.spellTool == NWSpellCheck.SP_ENCHANT:
             from nw.core.spellcheck import NWSpellEnchant
             self.theDict = NWSpellEnchant()
         else:
