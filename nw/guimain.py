@@ -803,6 +803,7 @@ class GuiMain(QMainWindow):
         if self.hasProject:
             dlgProj = GuiProjectSettings(self, self.theProject)
             dlgProj.exec_()
+            self.docEditor.setDictionaries()
             self._setWindowTitle(self.theProject.projName)
         return True
 

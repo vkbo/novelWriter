@@ -448,8 +448,17 @@ class GuiDocEditor(QTextEdit):
         status bar to show the one actually loaded by the spell checker
         class.
         """
-        self.theDict.setLanguage(self.mainConf.spellLanguage, self.theProject.projDict)
+        if self.theProject.projLang is None:
+            theLang = self.mainConf.spellLanguage
+        else:
+            theLang = self.theProject.projLang
+
+        self.theDict.setLanguage(theLang, self.theProject.projDict)
         self.theParent.statusBar.setLanguage(self.theDict.spellLanguage)
+
+        if not self.bigDoc:
+            self.spellCheckDocument()
+
         return True
 
     def setSpellCheck(self, theMode):
@@ -494,6 +503,8 @@ class GuiDocEditor(QTextEdit):
             logger.debug(
                 "Document re-highlighted in %.3f milliseconds" % (1000*(afTime-bfTime))
             )
+
+            self.theParent.statusBar.showMessage("Spell check complete")
 
         return True
 
