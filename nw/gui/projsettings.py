@@ -33,7 +33,7 @@ from PyQt5.QtGui import QIcon, QPixmap, QColor, QBrush
 from PyQt5.QtWidgets import (
     QHBoxLayout, QVBoxLayout, QGridLayout, QLineEdit, QPlainTextEdit, QLabel,
     QWidget, QDialogButtonBox, QListWidget, QPushButton, QListWidgetItem,
-    QColorDialog, QAbstractItemView, QTreeWidget, QTreeWidgetItem
+    QColorDialog, QAbstractItemView, QTreeWidget, QTreeWidgetItem, QComboBox
 )
 
 from nw.constants import nwAlert
@@ -55,12 +55,15 @@ class GuiProjectSettings(PagedDialog):
 
         self.theProject.countStatus()
         self.setWindowTitle("Project Settings")
-        self.setMinimumWidth(self.mainConf.pxInt(570))
-        self.setMinimumHeight(self.mainConf.pxInt(355))
 
+        wW = self.mainConf.pxInt(570)
+        wH = self.mainConf.pxInt(375)
+
+        self.setMinimumWidth(wW)
+        self.setMinimumHeight(wH)
         self.resize(
-            self.mainConf.pxInt(self.optState.getInt("GuiProjectSettings", "winWidth",  570)),
-            self.mainConf.pxInt(self.optState.getInt("GuiProjectSettings", "winHeight", 355))
+            self.mainConf.pxInt(self.optState.getInt("GuiProjectSettings", "winWidth",  wW)),
+            self.mainConf.pxInt(self.optState.getInt("GuiProjectSettings", "winHeight", wH))
         )
 
         self.tabMain    = GuiProjectEditMain(self.theParent, self.theProject)
@@ -96,11 +99,13 @@ class GuiProjectSettings(PagedDialog):
         projName    = self.tabMain.editName.text()
         bookTitle   = self.tabMain.editTitle.text()
         bookAuthors = self.tabMain.editAuthors.toPlainText()
+        spellLang   = self.tabMain.spellLang.currentData()
         doBackup    = not self.tabMain.doBackup.isChecked()
 
         self.theProject.setProjectName(projName)
         self.theProject.setBookTitle(bookTitle)
         self.theProject.setBookAuthors(bookAuthors)
+        self.theProject.setSpellLang(spellLang)
         self.theProject.setProjBackup(doBackup)
 
         if self.tabStatus.colChanged:
@@ -190,6 +195,26 @@ class GuiProjectEditMain(QWidget):
             self.editAuthors,
             "One name per line."
         )
+
+        self.spellLang = QComboBox(self)
+        theDict = self.theParent.docEditor.theDict
+        self.spellLang.addItem("Default", "None")
+        if theDict is not None:
+            for spTag, spName in theDict.listDictionaries():
+                self.spellLang.addItem(spName, spTag)
+
+        self.mainForm.addRow(
+            "Spell check language",
+            self.spellLang,
+            "Overrides main preferences."
+        )
+
+        if self.theProject.projLang is None:
+            spellIdx = 0
+        else:
+            spellIdx = self.spellLang.findData(self.theProject.projLang)
+        if spellIdx != -1:
+            self.spellLang.setCurrentIndex(spellIdx)
 
         self.doBackup = QSwitch(self)
         self.doBackup.setChecked(not self.theProject.doBackup)
