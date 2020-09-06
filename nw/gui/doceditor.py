@@ -735,38 +735,57 @@ class GuiDocEditor(QTextEdit):
         if not self.spellCheck:
             return
 
-        theCursor = self.cursorForPosition(thePos)
-        theCursor.select(QTextCursor.WordUnderCursor)
+        userCursor = self.textCursor()
+        userSelection = userCursor.hasSelection()
 
-        theWord = theCursor.selectedText().strip().strip(self.nonWord)
-        if theWord == "":
-            return
+        mnuContext = QMenu()
 
-        logger.verbose("Looking up '%s' in the dictionary" % theWord)
-        if self.theDict.checkWord(theWord):
-            return
+        if userSelection:
+            mnuCut = QAction("Cut", mnuContext)
+            mnuCut.triggered.connect(lambda: self.docAction(nwDocAction.CUT))
+            mnuContext.addAction(mnuCut)
 
-        mnuSuggest = QMenu()
-        mnuHead = QAction("Spelling Suggestion(s)", mnuSuggest)
-        mnuSuggest.addAction(mnuHead)
-        mnuSuggest.addSeparator()
-        theSuggest = self.theDict.suggestWords(theWord)
-        if len(theSuggest) > 0:
-            for aWord in theSuggest:
-                mnuWord = QAction(aWord, mnuSuggest)
-                mnuWord.triggered.connect(
-                    lambda thePos, aWord=aWord : self._correctWord(theCursor, aWord)
-                )
-                mnuSuggest.addAction(mnuWord)
-            mnuSuggest.addSeparator()
-            mnuAdd = QAction("Add Word to Dictionary", mnuSuggest)
-            mnuAdd.triggered.connect(lambda thePos : self._addWord(theCursor))
-            mnuSuggest.addAction(mnuAdd)
-        else:
-            mnuHead = QAction("No Suggestions", mnuSuggest)
-            mnuSuggest.addAction(mnuHead)
+            mnuCopy = QAction("Copy", mnuContext)
+            mnuCopy.triggered.connect(lambda: self.docAction(nwDocAction.COPY))
+            mnuContext.addAction(mnuCopy)
 
-        mnuSuggest.exec_(self.viewport().mapToGlobal(thePos))
+        mnuPaste = QAction("Paste", mnuContext)
+        mnuPaste.triggered.connect(lambda: self.docAction(nwDocAction.PASTE))
+        mnuContext.addAction(mnuPaste)
+
+        # Check if we should look up the spelling
+        posCursor = self.cursorForPosition(thePos)
+        posCursor.select(QTextCursor.WordUnderCursor)
+        theWord = posCursor.selectedText().strip().strip(self.nonWord)
+        spellCheck = theWord != ""
+
+        if spellCheck:
+            logger.verbose("Looking up '%s' in the dictionary" % theWord)
+            spellCheck &= not self.theDict.checkWord(theWord)
+
+        if spellCheck:
+            mnuContext.addSeparator()
+            mnuHead = QAction("Spelling Suggestion(s)", mnuContext)
+            mnuContext.addAction(mnuHead)
+
+            theSuggest = self.theDict.suggestWords(theWord)
+            if len(theSuggest) > 0:
+                for aWord in theSuggest:
+                    mnuWord = QAction(aWord, mnuContext)
+                    mnuWord.triggered.connect(
+                        lambda thePos, aWord=aWord : self._correctWord(posCursor, aWord)
+                    )
+                    mnuContext.addAction(mnuWord)
+                mnuContext.addSeparator()
+                mnuAdd = QAction("Add Word to Dictionary", mnuContext)
+                mnuAdd.triggered.connect(lambda thePos : self._addWord(posCursor))
+                mnuContext.addAction(mnuAdd)
+
+            else:
+                mnuHead = QAction("No Suggestions", mnuContext)
+                mnuContext.addAction(mnuHead)
+
+        mnuContext.exec_(self.viewport().mapToGlobal(thePos))
 
         return
 
