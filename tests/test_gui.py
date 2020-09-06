@@ -10,6 +10,7 @@ from nwtools import cmpFiles
 
 from os import path
 from PyQt5.QtCore import Qt, QPoint
+from PyQt5.QtGui import QTextCursor
 from PyQt5.QtWidgets import QAction, QDialogButtonBox, QTreeWidgetItem
 
 from nw.gui import (
@@ -397,7 +398,7 @@ def testProjectEditor(qtbot, nwFuncTemp, nwTempGUI, nwRef, nwTemp):
     testFile = path.join(nwTempGUI, "2_nwProject.nwx")
     refFile  = path.join(nwRef, "gui", "2_nwProject.nwx")
     copyfile(projFile, testFile)
-    assert cmpFiles(testFile, refFile, [2, 6, 7, 8])
+    assert cmpFiles(testFile, refFile, [2, 8, 9, 10])
 
     # qtbot.stopForInteraction()
     nwGUI.closeMain()
@@ -1109,6 +1110,58 @@ def testDocAction(qtbot, nwLipsum, nwTemp):
     assert nwGUI.passDocumentAction(nwDocAction.REDO)
     assert nwGUI.docEditor.getText()[27:74] == cleanText
     qtbot.wait(stepDelay)
+
+    # Editor Context Menu
+    theCursor = nwGUI.docEditor.textCursor()
+    theCursor.setPosition(100)
+    nwGUI.docEditor.setTextCursor(theCursor)
+    theRect = nwGUI.docEditor.cursorRect()
+
+    nwGUI.docEditor._openContextMenu(theRect.bottomRight())
+    qtbot.mouseClick(nwGUI.docEditor, Qt.LeftButton, pos=theRect.topLeft())
+
+    nwGUI.docEditor._makePosSelection(QTextCursor.WordUnderCursor, theRect.center())
+    theCursor = nwGUI.docEditor.textCursor()
+    assert theCursor.selectedText() == "imperdiet"
+
+    nwGUI.docEditor._makePosSelection(QTextCursor.BlockUnderCursor, theRect.center())
+    theCursor = nwGUI.docEditor.textCursor()
+    assert theCursor.selectedText() == (
+        "Pellentesque nec erat ut nulla posuere commodo. Curabitur nisi augue, imperdiet et porta "
+        "imperdiet, efficitur id leo. Cras finibus arcu at nibh commodo congue. Proin suscipit "
+        "placerat condimentum. Aenean ante enim, cursus id lorem a, blandit venenatis nibh. "
+        "Maecenas suscipit porta elit, sit amet porta felis porttitor eu. Sed a dui nibh. "
+        "Phasellus sed faucibus dui. Pellentesque felis nulla, ultrices non efficitur quis, "
+        "rutrum id mi. Mauris tempus auctor nisl, in bibendum enim pellentesque sit amet. Proin "
+        "nunc lacus, imperdiet nec posuere ac, interdum non lectus."
+    )
+
+    # Viewer Context Menu
+    assert nwGUI.viewDocument("4c4f28287af27")
+
+    theCursor = nwGUI.docViewer.textCursor()
+    theCursor.setPosition(100)
+    nwGUI.docViewer.setTextCursor(theCursor)
+    theRect = nwGUI.docViewer.cursorRect()
+
+    nwGUI.docViewer._openContextMenu(theRect.bottomRight())
+    qtbot.mouseClick(nwGUI.docViewer, Qt.LeftButton, pos=theRect.topLeft())
+
+    nwGUI.docViewer._makePosSelection(QTextCursor.WordUnderCursor, theRect.center())
+    theCursor = nwGUI.docViewer.textCursor()
+    assert theCursor.selectedText() == "imperdiet"
+
+    nwGUI.docEditor._makePosSelection(QTextCursor.BlockUnderCursor, theRect.center())
+    theCursor = nwGUI.docEditor.textCursor()
+    assert theCursor.selectedText() == (
+        "Pellentesque nec erat ut nulla posuere commodo. Curabitur nisi augue, imperdiet et porta "
+        "imperdiet, efficitur id leo. Cras finibus arcu at nibh commodo congue. Proin suscipit "
+        "placerat condimentum. Aenean ante enim, cursus id lorem a, blandit venenatis nibh. "
+        "Maecenas suscipit porta elit, sit amet porta felis porttitor eu. Sed a dui nibh. "
+        "Phasellus sed faucibus dui. Pellentesque felis nulla, ultrices non efficitur quis, "
+        "rutrum id mi. Mauris tempus auctor nisl, in bibendum enim pellentesque sit amet. Proin "
+        "nunc lacus, imperdiet nec posuere ac, interdum non lectus."
+    )
 
     # qtbot.stopForInteraction()
     nwGUI.closeMain()
