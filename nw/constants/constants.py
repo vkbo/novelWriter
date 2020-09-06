@@ -245,6 +245,7 @@ class nwUnicode:
     ## Symbols
     U_CHECK  = "\u2714" # Heavy check mark
     U_MULT   = "\u2715" # Multiplication x
+    U_BULL   = "\u2022" # List bullet
 
     ## Arrows
     U_UTRI   = "\u25b2" # Up-pointing triangle
@@ -294,6 +295,7 @@ class nwUnicode:
     ## Symbols
     H_CHECK  = "&#10004;"
     H_MULT   = "&#10005;"
+    H_BULL   = "&bull;"
 
     ## Arrows
     H_UTRI   = "&#9650;"

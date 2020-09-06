@@ -732,13 +732,13 @@ class GuiDocEditor(QTextEdit):
         """Triggered by right click to open the context menu. Also
         triggered by the Ctrl+. shortcut.
         """
-        if not self.spellCheck:
-            return
-
         userCursor = self.textCursor()
         userSelection = userCursor.hasSelection()
 
         mnuContext = QMenu()
+
+        # Cut, Copy and Paste
+        # ===================
 
         if userSelection:
             mnuCut = QAction("Cut", mnuContext)
@@ -753,11 +753,37 @@ class GuiDocEditor(QTextEdit):
         mnuPaste.triggered.connect(lambda: self.docAction(nwDocAction.PASTE))
         mnuContext.addAction(mnuPaste)
 
-        # Check if we should look up the spelling
-        posCursor = self.cursorForPosition(thePos)
-        posCursor.select(QTextCursor.WordUnderCursor)
-        theWord = posCursor.selectedText().strip().strip(self.nonWord)
-        spellCheck = theWord != ""
+        mnuContext.addSeparator()
+
+        # Selections
+        # ==========
+
+        mnuSelAll = QAction("Select All", mnuContext)
+        mnuSelAll.triggered.connect(lambda: self.docAction(nwDocAction.SEL_ALL))
+        mnuContext.addAction(mnuSelAll)
+
+        mnuSelWord = QAction("Select Word", mnuContext)
+        mnuSelWord.triggered.connect(
+            lambda: self._makePosSelection(QTextCursor.WordUnderCursor, thePos)
+        )
+        mnuContext.addAction(mnuSelWord)
+
+        mnuSelPara = QAction("Select Paragraph", mnuContext)
+        mnuSelPara.triggered.connect(
+            lambda: self._makePosSelection(QTextCursor.BlockUnderCursor, thePos)
+        )
+        mnuContext.addAction(mnuSelPara)
+
+        # Spell Checking
+        # ==============
+
+        spellCheck = self.spellCheck
+
+        if spellCheck:
+            posCursor = self.cursorForPosition(thePos)
+            posCursor.select(QTextCursor.WordUnderCursor)
+            theWord = posCursor.selectedText().strip().strip(self.nonWord)
+            spellCheck &= theWord != ""
 
         if spellCheck:
             logger.verbose("Looking up '%s' in the dictionary" % theWord)
@@ -771,7 +797,7 @@ class GuiDocEditor(QTextEdit):
             theSuggest = self.theDict.suggestWords(theWord)
             if len(theSuggest) > 0:
                 for aWord in theSuggest:
-                    mnuWord = QAction(aWord, mnuContext)
+                    mnuWord = QAction("%s %s" % (nwUnicode.U_ENDASH, aWord), mnuContext)
                     mnuWord.triggered.connect(
                         lambda thePos, aWord=aWord : self._correctWord(posCursor, aWord)
                     )
@@ -785,6 +811,7 @@ class GuiDocEditor(QTextEdit):
                 mnuHead = QAction("No Suggestions", mnuContext)
                 mnuContext.addAction(mnuHead)
 
+        # Open the context menu
         mnuContext.exec_(self.viewport().mapToGlobal(thePos))
 
         return
@@ -1215,7 +1242,7 @@ class GuiDocEditor(QTextEdit):
         return
 
     def _makeSelection(self, selMode):
-        """Wrapper function to select a word based on a selection mode.
+        """Wrapper function to select text based on a selection mode.
         """
         theCursor = self.textCursor()
         theCursor.clearSelection()
@@ -1233,6 +1260,15 @@ class GuiDocEditor(QTextEdit):
 
         self.setTextCursor(theCursor)
 
+        return
+
+    def _makePosSelection(self, selMode, thePos):
+        """Wrapper function to select text based on selection mode, but
+        first move cursor to given position.
+        """
+        theCursor = self.cursorForPosition(thePos)
+        self.setTextCursor(theCursor)
+        self._makeSelection(selMode)
         return
 
     def _beginSearch(self):
