@@ -398,7 +398,7 @@ def testProjectEditor(qtbot, nwFuncTemp, nwTempGUI, nwRef, nwTemp):
     testFile = path.join(nwTempGUI, "2_nwProject.nwx")
     refFile  = path.join(nwRef, "gui", "2_nwProject.nwx")
     copyfile(projFile, testFile)
-    assert cmpFiles(testFile, refFile, [2, 6, 7, 8])
+    assert cmpFiles(testFile, refFile, [2, 8, 9, 10])
 
     # qtbot.stopForInteraction()
     nwGUI.closeMain()
