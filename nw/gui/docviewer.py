@@ -31,12 +31,13 @@
 import logging
 import nw
 
-from PyQt5.QtCore import Qt, QUrl, QSize
+from PyQt5.QtCore import Qt, QUrl, QSize, pyqtSlot
 from PyQt5.QtGui import (
     QTextOption, QFont, QPalette, QColor, QTextCursor, QIcon
 )
 from PyQt5.QtWidgets import (
-    QTextBrowser, QWidget, QScrollArea, QLabel, QHBoxLayout, QToolButton
+    QTextBrowser, QWidget, QScrollArea, QLabel, QHBoxLayout, QToolButton,
+    QAction, QMenu
 )
 
 from nw.core import ToHtml
@@ -76,6 +77,10 @@ class GuiDocViewer(QTextBrowser):
 
         self.anchorClicked.connect(self._linkClicked)
         self.setFocusPolicy(Qt.StrongFocus)
+
+        # Context Menu
+        self.setContextMenuPolicy(Qt.CustomContextMenu)
+        self.customContextMenuRequested.connect(self._openContextMenu)
 
         logger.debug("GuiDocViewer initialisation complete")
 
@@ -308,6 +313,7 @@ class GuiDocViewer(QTextBrowser):
     #  Slots
     ##
 
+    @pyqtSlot("QUrl")
     def _linkClicked(self, theURL):
         """Slot for a link in the document being clicked.
         """
@@ -317,6 +323,49 @@ class GuiDocViewer(QTextBrowser):
             theBits = theLink.split("=")
             if len(theBits) == 2:
                 self.loadFromTag(theBits[1])
+        return
+
+    @pyqtSlot("QPoint")
+    def _openContextMenu(self, thePos):
+        """Triggered by right click to open the context menu.
+        """
+        userCursor = self.textCursor()
+        userSelection = userCursor.hasSelection()
+
+        mnuContext = QMenu()
+
+        # Cut, Copy and Paste
+        # ===================
+
+        if userSelection:
+            mnuCopy = QAction("Copy", mnuContext)
+            mnuCopy.triggered.connect(lambda: self.docAction(nwDocAction.COPY))
+            mnuContext.addAction(mnuCopy)
+
+            mnuContext.addSeparator()
+
+        # Selections
+        # ==========
+
+        mnuSelAll = QAction("Select All", mnuContext)
+        mnuSelAll.triggered.connect(lambda: self.docAction(nwDocAction.SEL_ALL))
+        mnuContext.addAction(mnuSelAll)
+
+        mnuSelWord = QAction("Select Word", mnuContext)
+        mnuSelWord.triggered.connect(
+            lambda: self._makePosSelection(QTextCursor.WordUnderCursor, thePos)
+        )
+        mnuContext.addAction(mnuSelWord)
+
+        mnuSelPara = QAction("Select Paragraph", mnuContext)
+        mnuSelPara.triggered.connect(
+            lambda: self._makePosSelection(QTextCursor.BlockUnderCursor, thePos)
+        )
+        mnuContext.addAction(mnuSelPara)
+
+        # Open the context menu
+        mnuContext.exec_(self.viewport().mapToGlobal(thePos))
+
         return
 
     ##
@@ -335,13 +384,33 @@ class GuiDocViewer(QTextBrowser):
     ##
 
     def _makeSelection(self, selMode):
-        """Wrapper function for making a selection based on a specific
-        selection mode.
+        """Wrapper function to select text based on a selection mode.
         """
         theCursor = self.textCursor()
         theCursor.clearSelection()
         theCursor.select(selMode)
+
+        if selMode == QTextCursor.BlockUnderCursor:
+            # This selection mode also selects the preceding oaragraph
+            # separator, which we want to avoid.
+            posS = theCursor.selectionStart()
+            posE = theCursor.selectionEnd()
+            selTxt = theCursor.selectedText()
+            if selTxt.startswith(nwUnicode.U_PSEP):
+                theCursor.setPosition(posS+1, QTextCursor.MoveAnchor)
+                theCursor.setPosition(posE, QTextCursor.KeepAnchor)
+
         self.setTextCursor(theCursor)
+
+        return
+
+    def _makePosSelection(self, selMode, thePos):
+        """Wrapper function to select text based on selection mode, but
+        first move cursor to given position.
+        """
+        theCursor = self.cursorForPosition(thePos)
+        self.setTextCursor(theCursor)
+        self._makeSelection(selMode)
         return
 
     def _makeStyleSheet(self):
