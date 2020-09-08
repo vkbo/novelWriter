@@ -11,6 +11,8 @@
 * It is now possible to set a different spell check language for a project than the one set in the main Preferences. It is only possible to select a different language, not a different spell check tool. The setting is managed in the first tab of the Project Settings dialog. Issue #368, PR #437.
 * The document editor now has the Cut/Copy/Paste options in the main context menu. In addition, Select All, Select Word, and Select Paragraph has been added to the menu. The latter two will select the word or paragraph under the mouse pointer, not the cursor as the main menu entries do. Issue #438, PR #439.
 * The document viewer has a new custom context menu with Copy, Select All, Select Word and Select Paragraph with identical functionality and look to the context menu entries in the document editor. PR #439.
+* The document view panel now has a back navigation and forward navigation history of 20 documents. The navigation is activated by two buttons in the header, menu entries and keyboard shortcuts in the `View` menu, and by navigation buttons on the mouse. Issue #441, PR #442.
+* Clicking on a document in the project tree with the middle mouse button will now open the document in the document viewer. PR #443.
 
 **Feature Improvements**
 
