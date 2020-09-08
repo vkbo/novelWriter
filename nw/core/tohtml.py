@@ -189,7 +189,7 @@ class ToHtml(Tokenizer):
                 hStyle = ""
 
             if self.linkHeaders:
-                aNm = "<a name='head_%s:T%06d'></a>" % (self.theHandle, tLine)
+                aNm = "<a name='T%06d'></a>" % tLine
             else:
                 aNm = ""
 
