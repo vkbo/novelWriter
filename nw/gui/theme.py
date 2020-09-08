@@ -554,6 +554,8 @@ class GuiIcons:
         "minimise"       : (None, None),
         "refresh"        : (None, None),
         "reference"      : (None, None),
+        "backward"       : (None, None),
+        "forward"        : (None, None),
 
         ## Switches
         "sticky-on"  : (None, None),

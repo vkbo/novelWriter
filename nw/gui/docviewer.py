@@ -577,6 +577,7 @@ class GuiDocViewHistory():
         self._prevPos = self._currPos
         self._currPos = len(self._navHistory) - 1
         self._updateScrollBar()
+        self._updateNavButtons()
 
         self._dumpHistory()
 
@@ -596,6 +597,7 @@ class GuiDocViewHistory():
             self.docViewer.loadText(self._navHistory[newPos], updateHistory=False)
             self.docViewer.setScrollPosition(self._posHistory[newPos])
             self._currPos = newPos
+            self._updateNavButtons()
 
             self._dumpHistory()
 
@@ -613,6 +615,7 @@ class GuiDocViewHistory():
             self.docViewer.loadText(self._navHistory[newPos], updateHistory=False)
             self.docViewer.setScrollPosition(self._posHistory[newPos])
             self._currPos = newPos
+            self._updateNavButtons()
 
             self._dumpHistory()
 
@@ -629,10 +632,16 @@ class GuiDocViewHistory():
             self._posHistory[self._prevPos] = self.docViewer.getScrollPosition()
         return
 
+    def _updateNavButtons(self):
+        """Update the navigation buttons in the document header.
+        """
+        self.docViewer.docHeader.updateNavButtons(0, len(self._navHistory) - 1, self._currPos)
+        return
+
     def _truncateHistory(self, atPos):
         """Truncate the navigation history to the given position.
         """
-        nSkip = 1 if atPos > 49 else 0
+        nSkip = 1 if atPos > 19 else 0
 
         self._navHistory = self._navHistory[nSkip:atPos + 1]
         self._posHistory = self._posHistory[nSkip:atPos + 1]
@@ -643,8 +652,15 @@ class GuiDocViewHistory():
         return
 
     def _dumpHistory(self):
-        for i, (h, p) in enumerate(zip(self._navHistory, self._posHistory)):
-            print("%s %3d %13s %6d" % (">" if i == self._currPos else " ", i, h, p))
+        """Debug function to dump history. Since it is a for loop, it is
+        skipped entirely if log level isn't VERBOSE.
+        """
+        if logger.getEffectiveLevel() < logging.DEBUG:
+            for i, (h, p) in enumerate(zip(self._navHistory, self._posHistory)):
+                logger.verbose(
+                    "History: %s %2d %13s %5d" % (">" if i == self._currPos else " ", i, h, p)
+                )
+        return
 
 # END Class GuiDocViewHistory
 
@@ -674,10 +690,8 @@ class GuiDocViewHeader(QWidget):
 
         fPx = int(0.9*self.theTheme.fontPixelSize)
         hSp = self.mainConf.pxInt(6)
-        self.buttonSize = fPx + hSp
 
         # Main Widget Settings
-        self.setContentsMargins(2*self.buttonSize, 0, 0, 0)
         self.setAutoFillBackground(True)
         self.setPalette(self.thePalette)
 
@@ -702,6 +716,28 @@ class GuiDocViewHeader(QWidget):
         ).format(*self.theTheme.colText)
 
         # Buttons
+        self.backButton = QToolButton(self)
+        self.backButton.setIcon(self.theTheme.getIcon("backward"))
+        self.backButton.setContentsMargins(0, 0, 0, 0)
+        self.backButton.setIconSize(QSize(fPx, fPx))
+        self.backButton.setFixedSize(fPx, fPx)
+        self.backButton.setStyleSheet(buttonStyle)
+        self.backButton.setToolButtonStyle(Qt.ToolButtonIconOnly)
+        self.backButton.setVisible(False)
+        self.backButton.setToolTip("Go backward")
+        self.backButton.clicked.connect(self.docViewer.navBackward)
+
+        self.forwardButton = QToolButton(self)
+        self.forwardButton.setIcon(self.theTheme.getIcon("forward"))
+        self.forwardButton.setContentsMargins(0, 0, 0, 0)
+        self.forwardButton.setIconSize(QSize(fPx, fPx))
+        self.forwardButton.setFixedSize(fPx, fPx)
+        self.forwardButton.setStyleSheet(buttonStyle)
+        self.forwardButton.setToolButtonStyle(Qt.ToolButtonIconOnly)
+        self.forwardButton.setVisible(False)
+        self.forwardButton.setToolTip("Go forward")
+        self.forwardButton.clicked.connect(self.docViewer.navForward)
+
         self.refreshButton = QToolButton(self)
         self.refreshButton.setIcon(self.theTheme.getIcon("refresh"))
         self.refreshButton.setContentsMargins(0, 0, 0, 0)
@@ -727,6 +763,8 @@ class GuiDocViewHeader(QWidget):
         # Assemble Layout
         self.outerBox = QHBoxLayout()
         self.outerBox.setSpacing(hSp)
+        self.outerBox.addWidget(self.backButton, 0)
+        self.outerBox.addWidget(self.forwardButton, 0)
         self.outerBox.addWidget(self.theTitle, 1)
         self.outerBox.addWidget(self.refreshButton, 0)
         self.outerBox.addWidget(self.closeButton, 0)
@@ -747,6 +785,8 @@ class GuiDocViewHeader(QWidget):
         self.theHandle = tHandle
         if tHandle is None:
             self.theTitle.setText("")
+            self.backButton.setVisible(False)
+            self.forwardButton.setVisible(False)
             self.closeButton.setVisible(False)
             self.refreshButton.setVisible(False)
             return True
@@ -766,10 +806,19 @@ class GuiDocViewHeader(QWidget):
                 return False
             self.theTitle.setText(nwItem.itemName)
 
+        self.backButton.setVisible(True)
+        self.forwardButton.setVisible(True)
         self.closeButton.setVisible(True)
         self.refreshButton.setVisible(True)
 
         return True
+
+    def updateNavButtons(self, firstIdx, lastIdx, currIdx):
+        """Enable and disable nav buttons based on index in history.
+        """
+        self.backButton.setEnabled(currIdx > firstIdx)
+        self.forwardButton.setEnabled(currIdx < lastIdx)
+        return
 
     ##
     #  Slots
