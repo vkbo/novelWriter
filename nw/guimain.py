@@ -346,6 +346,7 @@ class GuiMain(QMainWindow):
 
         if saveOK:
             self.closeDocument()
+            self.docViewer.clearNavHistory()
             self.projView.closeOutline()
             self.theProject.closeProject()
             self.theIndex.clearIndex()

@@ -10,6 +10,7 @@
  Created: 2019-10-31 [0.3.2] GuiDocViewDetails
  Created: 2020-04-25 [0.4.5] GuiDocViewHeader
  Created: 2020-06-09 [0.8.0] GuiDocViewFooter
+ Created: 2020-09-08 [1.0b1] GuiDocViewHistory
 
  This file is a part of novelWriter
  Copyright 2020, Veronica Berglyd Olsen
@@ -131,7 +132,7 @@ class GuiDocViewer(QTextBrowser):
 
         return True
 
-    def loadText(self, tHandle):
+    def loadText(self, tHandle, updateHistory=True):
         """Load text into the viewer from an item handle.
         """
         tItem = self.theProject.projTree[tHandle]
@@ -169,9 +170,12 @@ class GuiDocViewer(QTextBrowser):
         else:
             self.setTabStopWidth(self.mainConf.getTabWidth())
 
+        # Must be before setHtml
+        if updateHistory:
+            self.docHistory.append(tHandle)
+
         self.setHtml(aDoc.theResult.replace("\t", "!!tab!!"))
         self.setDocumentTitle(tHandle)
-        self.docHistory.append(tHandle)
 
         # Loop through the text and put back in the tabs. Tabs are removed by
         # the setHtml function, so the ToHtml class puts in a placeholder.
@@ -266,6 +270,12 @@ class GuiDocViewer(QTextBrowser):
         self.docHistory.forward()
         return
 
+    def clearNavHistory(self):
+        """Clear the navigation history.
+        """
+        self.docHistory.clear()
+        return
+
     def updateDocMargins(self):
         """Automatically adjust the margins so the text is centred if
         Config.textFixedW is enabled or we're in Focus Mode. Otherwise,
@@ -325,6 +335,26 @@ class GuiDocViewer(QTextBrowser):
                 self.setCursorPosition(theBlock.position())
                 logger.verbose("Cursor moved to line %d" % theLine)
         return True
+
+    def setScrollPosition(self, thePos):
+        """Set the scrollbar position.
+        """
+        vBar = self.verticalScrollBar()
+        if vBar.isVisible():
+            vBar.setValue(thePos)
+        return
+
+    ##
+    #  Getters
+    ##
+
+    def getScrollPosition(self):
+        """Get the scrollbar position. Returns 0 if no scrollbar.
+        """
+        vBar = self.verticalScrollBar()
+        if vBar.isVisible():
+            return vBar.value()
+        return 0
 
     ##
     #  Slots
@@ -403,6 +433,8 @@ class GuiDocViewer(QTextBrowser):
             self.navBackward()
         elif theEvent.button() == Qt.ForwardButton:
             self.navForward()
+        else:
+            QTextBrowser.mouseReleaseEvent(self, theEvent)
         return
 
     ##
@@ -511,34 +543,108 @@ class GuiDocViewHistory():
         self.docViewer = docViewer
 
         self._navHistory = []
-        self._navPosition = -1
+        self._posHistory = []
+        self._currPos = -1
+        self._prevPos = -1
 
         return
 
     def clear(self):
-        logger.verbose("Clear view history")
+        """Clear the view history.
+        """
+        logger.verbose("View history cleared")
         self._navHistory = []
-        self._navPosition = -1
+        self._posHistory = []
+        self._currPos = -1
+        self._prevPos = -1
         return
 
     def append(self, tHandle):
+        """Append a document handle and its scroll bar position to the
+        history, but only if the document is different than the current
+        active entry. Any further entries are truncated.
+        """
+        if self._currPos >= 0 and self._currPos < len(self._navHistory):
+            if tHandle == self._navHistory[self._currPos]:
+                logger.verbose("Not updating view hsitory")
+                return False
+
+        self._truncateHistory(self._currPos)
+
+        self._navHistory.append(tHandle)
+        self._posHistory.append(0)
+
+        self._prevPos = self._currPos
+        self._currPos = len(self._navHistory) - 1
+        self._updateScrollBar()
+
+        self._dumpHistory()
+
         logger.verbose("Added %s to view history" % tHandle)
-        return
+
+        return True
 
     def forward(self):
-        logger.verbose("Move forwards in view history")
-        return True
+        """Navigate to the next entry in the view history.
+        """
+        newPos = self._currPos + 1
+        if newPos < len(self._navHistory):
+            logger.verbose("Move forward in view history")
+            self._prevPos = self._currPos
+            self._updateScrollBar()
+
+            self.docViewer.loadText(self._navHistory[newPos], updateHistory=False)
+            self.docViewer.setScrollPosition(self._posHistory[newPos])
+            self._currPos = newPos
+
+            self._dumpHistory()
+
+        return
 
     def backward(self):
-        logger.verbose("Move backwards in view history")
-        return True
+        """Navigate to the previous entry in the view history.
+        """
+        newPos = self._currPos - 1
+        if newPos >= 0:
+            logger.verbose("Move backward in view history")
+            self._prevPos = self._currPos
+            self._updateScrollBar()
+
+            self.docViewer.loadText(self._navHistory[newPos], updateHistory=False)
+            self.docViewer.setScrollPosition(self._posHistory[newPos])
+            self._currPos = newPos
+
+            self._dumpHistory()
+
+        return
 
     ##
     #  Internal Functions
     ##
 
-    def _truncateHistory(self, atPos):
+    def _updateScrollBar(self):
+        """Update the scrollbar position of the previous entry.
+        """
+        if self._prevPos >= 0 and self._prevPos < len(self._posHistory):
+            self._posHistory[self._prevPos] = self.docViewer.getScrollPosition()
         return
+
+    def _truncateHistory(self, atPos):
+        """Truncate the navigation history to the given position.
+        """
+        nSkip = 1 if atPos > 49 else 0
+
+        self._navHistory = self._navHistory[nSkip:atPos + 1]
+        self._posHistory = self._posHistory[nSkip:atPos + 1]
+
+        self._currPos -= nSkip
+        self._prevPos -= nSkip
+
+        return
+
+    def _dumpHistory(self):
+        for i, (h, p) in enumerate(zip(self._navHistory, self._posHistory)):
+            print("%s %3d %13s %6d" % (">" if i == self._currPos else " ", i, h, p))
 
 # END Class GuiDocViewHistory
 
