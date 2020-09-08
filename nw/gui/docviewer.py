@@ -168,6 +168,7 @@ class GuiDocViewer(QTextBrowser):
             self.setTabStopWidth(self.mainConf.getTabWidth())
 
         self.setHtml(aDoc.theResult.replace("\t", "!!tab!!"))
+        self.setDocumentTitle(tHandle)
 
         # Loop through the text and put back in the tabs. Tabs are removed by
         # the setHtml function, so the ToHtml class puts in a placeholder.
@@ -203,7 +204,7 @@ class GuiDocViewer(QTextBrowser):
         index being up to date.
         """
         logger.debug("Loading document from tag '%s'" % theTag)
-        tHandle, onLine, sTitle = self.theParent.theIndex.getTagSource(theTag)
+        tHandle, _, sTitle = self.theParent.theIndex.getTagSource(theTag)
         if tHandle is None:
             self.theParent.makeAlert((
                 "Could not find the reference for tag '%s'. It either doesn't "
@@ -215,8 +216,9 @@ class GuiDocViewer(QTextBrowser):
             # Let the parent handle the opening as it also ensures that
             # the doc view panel is visible in case this request comes
             # from outside this class.
+            logger.verbose("Tag points to %s#%s" % (tHandle, sTitle))
             self.theParent.viewDocument(tHandle)
-            self.navigateTo("#head_%s:%s" % (tHandle, sTitle))
+            self.navigateTo("#%s" % sTitle)
         return True
 
     def docAction(self, theAction):
@@ -240,13 +242,14 @@ class GuiDocViewer(QTextBrowser):
             return False
         return True
 
-    def navigateTo(self, navLink):
+    def navigateTo(self, tAnchor):
         """Go to a specific #link in the document.
         """
-        if not isinstance(navLink, str):
+        if not isinstance(tAnchor, str):
             return False
-        if navLink.startswith("#"):
-            self.setSource(QUrl(navLink))
+        if tAnchor.startswith("#"):
+            logger.verbose("Moving to anchor %s" % tAnchor)
+            self.setSource(QUrl(tAnchor))
         return True
 
     def updateDocMargins(self):
@@ -818,7 +821,7 @@ class GuiDocViewDetails(QScrollArea):
         for tHandle in theRefs:
             tItem = self.theProject.projTree[tHandle]
             if tItem is not None:
-                theList.append("<a href='#head_%s:%s' %s>%s</a>" % (
+                theList.append("<a href='%s#%s' %s>%s</a>" % (
                     tHandle, theRefs[tHandle], self.linkStyle, tItem.itemName
                 ))
 
@@ -835,9 +838,10 @@ class GuiDocViewDetails(QScrollArea):
         class for handling.
         """
         logger.verbose("Clicked link: '%s'" % theLink)
-        if len(theLink) == 27:
-            tHandle = theLink[6:19]
-            self.theParent.viewDocument(tHandle, theLink)
+        if len(theLink) == 21:
+            tHandle = theLink[:13]
+            tAnchor = theLink[13:]
+            self.theParent.viewDocument(tHandle, tAnchor)
         return
 
 # END Class GuiDocViewDetails
