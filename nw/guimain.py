@@ -346,6 +346,7 @@ class GuiMain(QMainWindow):
 
         if saveOK:
             self.closeDocument()
+            self.docViewer.clearNavHistory()
             self.projView.closeOutline()
             self.theProject.closeProject()
             self.theIndex.clearIndex()
@@ -525,7 +526,7 @@ class GuiMain(QMainWindow):
             self.docEditor.saveText()
         return True
 
-    def viewDocument(self, tHandle=None, navLink=None):
+    def viewDocument(self, tHandle=None, tAnchor=None):
         """Load a document for viewing in the view panel.
         """
         if tHandle is None:
@@ -562,7 +563,7 @@ class GuiMain(QMainWindow):
                 vPos[1] = bPos[1] - vPos[0]
                 self.splitDocs.setSizes(vPos)
                 self.viewMeta.setVisible(self.mainConf.showRefPanel)
-            self.docViewer.navigateTo(navLink)
+            self.docViewer.navigateTo(tAnchor)
 
         return True
 

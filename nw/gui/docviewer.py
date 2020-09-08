@@ -10,6 +10,7 @@
  Created: 2019-10-31 [0.3.2] GuiDocViewDetails
  Created: 2020-04-25 [0.4.5] GuiDocViewHeader
  Created: 2020-06-09 [0.8.0] GuiDocViewFooter
+ Created: 2020-09-08 [1.0b1] GuiDocViewHistory
 
  This file is a part of novelWriter
  Copyright 2020, Veronica Berglyd Olsen
@@ -63,20 +64,22 @@ class GuiDocViewer(QTextBrowser):
         self.setMinimumWidth(self.mainConf.pxInt(300))
         self.setAutoFillBackground(True)
         self.setOpenExternalLinks(False)
+        self.setFocusPolicy(Qt.StrongFocus)
         self.initViewer()
 
         # Document Header and Footer
-        self.docHeader = GuiDocViewHeader(self)
-        self.docFooter = GuiDocViewFooter(self)
-        self.stickyRef = False
+        self.docHeader  = GuiDocViewHeader(self)
+        self.docFooter  = GuiDocViewFooter(self)
+        self.docHistory = GuiDocViewHistory(self)
+        self.stickyRef  = False
 
         theOpt = QTextOption()
         if self.mainConf.doJustify:
             theOpt.setAlignment(Qt.AlignJustify)
         self.qDocument.setDefaultTextOption(theOpt)
 
+        # Signals
         self.anchorClicked.connect(self._linkClicked)
-        self.setFocusPolicy(Qt.StrongFocus)
 
         # Context Menu
         self.setContextMenuPolicy(Qt.CustomContextMenu)
@@ -129,7 +132,7 @@ class GuiDocViewer(QTextBrowser):
 
         return True
 
-    def loadText(self, tHandle):
+    def loadText(self, tHandle, updateHistory=True):
         """Load text into the viewer from an item handle.
         """
         tItem = self.theProject.projTree[tHandle]
@@ -167,7 +170,12 @@ class GuiDocViewer(QTextBrowser):
         else:
             self.setTabStopWidth(self.mainConf.getTabWidth())
 
+        # Must be before setHtml
+        if updateHistory:
+            self.docHistory.append(tHandle)
+
         self.setHtml(aDoc.theResult.replace("\t", "!!tab!!"))
+        self.setDocumentTitle(tHandle)
 
         # Loop through the text and put back in the tabs. Tabs are removed by
         # the setHtml function, so the ToHtml class puts in a placeholder.
@@ -203,7 +211,7 @@ class GuiDocViewer(QTextBrowser):
         index being up to date.
         """
         logger.debug("Loading document from tag '%s'" % theTag)
-        tHandle, onLine, sTitle = self.theParent.theIndex.getTagSource(theTag)
+        tHandle, _, sTitle = self.theParent.theIndex.getTagSource(theTag)
         if tHandle is None:
             self.theParent.makeAlert((
                 "Could not find the reference for tag '%s'. It either doesn't "
@@ -215,8 +223,8 @@ class GuiDocViewer(QTextBrowser):
             # Let the parent handle the opening as it also ensures that
             # the doc view panel is visible in case this request comes
             # from outside this class.
-            self.theParent.viewDocument(tHandle)
-            self.navigateTo("#head_%s:%s" % (tHandle, sTitle))
+            logger.verbose("Tag points to %s#%s" % (tHandle, sTitle))
+            self.theParent.viewDocument(tHandle, "#%s" % sTitle)
         return True
 
     def docAction(self, theAction):
@@ -240,14 +248,33 @@ class GuiDocViewer(QTextBrowser):
             return False
         return True
 
-    def navigateTo(self, navLink):
+    def navigateTo(self, tAnchor):
         """Go to a specific #link in the document.
         """
-        if not isinstance(navLink, str):
+        if not isinstance(tAnchor, str):
             return False
-        if navLink.startswith("#"):
-            self.setSource(QUrl(navLink))
+        if tAnchor.startswith("#"):
+            logger.verbose("Moving to anchor %s" % tAnchor)
+            self.setSource(QUrl(tAnchor))
         return True
+
+    def navBackward(self):
+        """Navigate backwards in the document view history.
+        """
+        self.docHistory.backward()
+        return
+
+    def navForward(self):
+        """Navigate forwards in the document view history.
+        """
+        self.docHistory.forward()
+        return
+
+    def clearNavHistory(self):
+        """Clear the navigation history.
+        """
+        self.docHistory.clear()
+        return
 
     def updateDocMargins(self):
         """Automatically adjust the margins so the text is centred if
@@ -308,6 +335,26 @@ class GuiDocViewer(QTextBrowser):
                 self.setCursorPosition(theBlock.position())
                 logger.verbose("Cursor moved to line %d" % theLine)
         return True
+
+    def setScrollPosition(self, thePos):
+        """Set the scrollbar position.
+        """
+        vBar = self.verticalScrollBar()
+        if vBar.isVisible():
+            vBar.setValue(thePos)
+        return
+
+    ##
+    #  Getters
+    ##
+
+    def getScrollPosition(self):
+        """Get the scrollbar position. Returns 0 if no scrollbar.
+        """
+        vBar = self.verticalScrollBar()
+        if vBar.isVisible():
+            return vBar.value()
+        return 0
 
     ##
     #  Slots
@@ -377,6 +424,17 @@ class GuiDocViewer(QTextBrowser):
         """
         QTextBrowser.resizeEvent(self, theEvent)
         self.updateDocMargins()
+        return
+
+    def mouseReleaseEvent(self, theEvent):
+        """Capture mouse click events on the document.
+        """
+        if theEvent.button() == Qt.BackButton:
+            self.navBackward()
+        elif theEvent.button() == Qt.ForwardButton:
+            self.navForward()
+        else:
+            QTextBrowser.mouseReleaseEvent(self, theEvent)
         return
 
     ##
@@ -478,6 +536,134 @@ class GuiDocViewer(QTextBrowser):
 
 # END Class GuiDocViewer
 
+class GuiDocViewHistory():
+
+    def __init__(self, docViewer):
+
+        self.docViewer = docViewer
+
+        self._navHistory = []
+        self._posHistory = []
+        self._currPos = -1
+        self._prevPos = -1
+
+        return
+
+    def clear(self):
+        """Clear the view history.
+        """
+        logger.verbose("View history cleared")
+        self._navHistory = []
+        self._posHistory = []
+        self._currPos = -1
+        self._prevPos = -1
+        return
+
+    def append(self, tHandle):
+        """Append a document handle and its scroll bar position to the
+        history, but only if the document is different than the current
+        active entry. Any further entries are truncated.
+        """
+        if self._currPos >= 0 and self._currPos < len(self._navHistory):
+            if tHandle == self._navHistory[self._currPos]:
+                logger.verbose("Not updating view hsitory")
+                return False
+
+        self._truncateHistory(self._currPos)
+
+        self._navHistory.append(tHandle)
+        self._posHistory.append(0)
+
+        self._prevPos = self._currPos
+        self._currPos = len(self._navHistory) - 1
+        self._updateScrollBar()
+        self._updateNavButtons()
+
+        self._dumpHistory()
+
+        logger.verbose("Added %s to view history" % tHandle)
+
+        return True
+
+    def forward(self):
+        """Navigate to the next entry in the view history.
+        """
+        newPos = self._currPos + 1
+        if newPos < len(self._navHistory):
+            logger.verbose("Move forward in view history")
+            self._prevPos = self._currPos
+            self._updateScrollBar()
+
+            self.docViewer.loadText(self._navHistory[newPos], updateHistory=False)
+            self.docViewer.setScrollPosition(self._posHistory[newPos])
+            self._currPos = newPos
+            self._updateNavButtons()
+
+            self._dumpHistory()
+
+        return
+
+    def backward(self):
+        """Navigate to the previous entry in the view history.
+        """
+        newPos = self._currPos - 1
+        if newPos >= 0:
+            logger.verbose("Move backward in view history")
+            self._prevPos = self._currPos
+            self._updateScrollBar()
+
+            self.docViewer.loadText(self._navHistory[newPos], updateHistory=False)
+            self.docViewer.setScrollPosition(self._posHistory[newPos])
+            self._currPos = newPos
+            self._updateNavButtons()
+
+            self._dumpHistory()
+
+        return
+
+    ##
+    #  Internal Functions
+    ##
+
+    def _updateScrollBar(self):
+        """Update the scrollbar position of the previous entry.
+        """
+        if self._prevPos >= 0 and self._prevPos < len(self._posHistory):
+            self._posHistory[self._prevPos] = self.docViewer.getScrollPosition()
+        return
+
+    def _updateNavButtons(self):
+        """Update the navigation buttons in the document header.
+        """
+        self.docViewer.docHeader.updateNavButtons(0, len(self._navHistory) - 1, self._currPos)
+        return
+
+    def _truncateHistory(self, atPos):
+        """Truncate the navigation history to the given position.
+        """
+        nSkip = 1 if atPos > 19 else 0
+
+        self._navHistory = self._navHistory[nSkip:atPos + 1]
+        self._posHistory = self._posHistory[nSkip:atPos + 1]
+
+        self._currPos -= nSkip
+        self._prevPos -= nSkip
+
+        return
+
+    def _dumpHistory(self):
+        """Debug function to dump history. Since it is a for loop, it is
+        skipped entirely if log level isn't VERBOSE.
+        """
+        if logger.getEffectiveLevel() < logging.DEBUG:
+            for i, (h, p) in enumerate(zip(self._navHistory, self._posHistory)):
+                logger.verbose(
+                    "History: %s %2d %13s %5d" % (">" if i == self._currPos else " ", i, h, p)
+                )
+        return
+
+# END Class GuiDocViewHistory
+
 # =============================================================================================== #
 #  The Embedded Document Header
 #  Only used by DocViewer, and is at a fixed position in the QTextBrowser's viewport
@@ -504,10 +690,8 @@ class GuiDocViewHeader(QWidget):
 
         fPx = int(0.9*self.theTheme.fontPixelSize)
         hSp = self.mainConf.pxInt(6)
-        self.buttonSize = fPx + hSp
 
         # Main Widget Settings
-        self.setContentsMargins(2*self.buttonSize, 0, 0, 0)
         self.setAutoFillBackground(True)
         self.setPalette(self.thePalette)
 
@@ -532,6 +716,28 @@ class GuiDocViewHeader(QWidget):
         ).format(*self.theTheme.colText)
 
         # Buttons
+        self.backButton = QToolButton(self)
+        self.backButton.setIcon(self.theTheme.getIcon("backward"))
+        self.backButton.setContentsMargins(0, 0, 0, 0)
+        self.backButton.setIconSize(QSize(fPx, fPx))
+        self.backButton.setFixedSize(fPx, fPx)
+        self.backButton.setStyleSheet(buttonStyle)
+        self.backButton.setToolButtonStyle(Qt.ToolButtonIconOnly)
+        self.backButton.setVisible(False)
+        self.backButton.setToolTip("Go backward")
+        self.backButton.clicked.connect(self.docViewer.navBackward)
+
+        self.forwardButton = QToolButton(self)
+        self.forwardButton.setIcon(self.theTheme.getIcon("forward"))
+        self.forwardButton.setContentsMargins(0, 0, 0, 0)
+        self.forwardButton.setIconSize(QSize(fPx, fPx))
+        self.forwardButton.setFixedSize(fPx, fPx)
+        self.forwardButton.setStyleSheet(buttonStyle)
+        self.forwardButton.setToolButtonStyle(Qt.ToolButtonIconOnly)
+        self.forwardButton.setVisible(False)
+        self.forwardButton.setToolTip("Go forward")
+        self.forwardButton.clicked.connect(self.docViewer.navForward)
+
         self.refreshButton = QToolButton(self)
         self.refreshButton.setIcon(self.theTheme.getIcon("refresh"))
         self.refreshButton.setContentsMargins(0, 0, 0, 0)
@@ -557,6 +763,8 @@ class GuiDocViewHeader(QWidget):
         # Assemble Layout
         self.outerBox = QHBoxLayout()
         self.outerBox.setSpacing(hSp)
+        self.outerBox.addWidget(self.backButton, 0)
+        self.outerBox.addWidget(self.forwardButton, 0)
         self.outerBox.addWidget(self.theTitle, 1)
         self.outerBox.addWidget(self.refreshButton, 0)
         self.outerBox.addWidget(self.closeButton, 0)
@@ -577,6 +785,8 @@ class GuiDocViewHeader(QWidget):
         self.theHandle = tHandle
         if tHandle is None:
             self.theTitle.setText("")
+            self.backButton.setVisible(False)
+            self.forwardButton.setVisible(False)
             self.closeButton.setVisible(False)
             self.refreshButton.setVisible(False)
             return True
@@ -596,10 +806,19 @@ class GuiDocViewHeader(QWidget):
                 return False
             self.theTitle.setText(nwItem.itemName)
 
+        self.backButton.setVisible(True)
+        self.forwardButton.setVisible(True)
         self.closeButton.setVisible(True)
         self.refreshButton.setVisible(True)
 
         return True
+
+    def updateNavButtons(self, firstIdx, lastIdx, currIdx):
+        """Enable and disable nav buttons based on index in history.
+        """
+        self.backButton.setEnabled(currIdx > firstIdx)
+        self.forwardButton.setEnabled(currIdx < lastIdx)
+        return
 
     ##
     #  Slots
@@ -818,7 +1037,7 @@ class GuiDocViewDetails(QScrollArea):
         for tHandle in theRefs:
             tItem = self.theProject.projTree[tHandle]
             if tItem is not None:
-                theList.append("<a href='#head_%s:%s' %s>%s</a>" % (
+                theList.append("<a href='%s#%s' %s>%s</a>" % (
                     tHandle, theRefs[tHandle], self.linkStyle, tItem.itemName
                 ))
 
@@ -835,9 +1054,10 @@ class GuiDocViewDetails(QScrollArea):
         class for handling.
         """
         logger.verbose("Clicked link: '%s'" % theLink)
-        if len(theLink) == 27:
-            tHandle = theLink[6:19]
-            self.theParent.viewDocument(tHandle, theLink)
+        if len(theLink) == 21:
+            tHandle = theLink[:13]
+            tAnchor = theLink[13:]
+            self.theParent.viewDocument(tHandle, tAnchor)
         return
 
 # END Class GuiDocViewDetails

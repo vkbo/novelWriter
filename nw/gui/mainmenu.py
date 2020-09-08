@@ -475,6 +475,23 @@ class GuiMainMenu(QMenuBar):
         # View > Separator
         self.viewMenu.addSeparator()
 
+        # View > Go Backward
+        self.aViewPrev = QAction("Go Backward", self)
+        self.aViewPrev.setStatusTip("Move backward in the view history of the right pane")
+        self.aViewPrev.setShortcut("Alt+Left")
+        self.aViewPrev.triggered.connect(self.theParent.docViewer.navBackward)
+        self.viewMenu.addAction(self.aViewPrev)
+
+        # View > Go Forward
+        self.aViewNext = QAction("Go Forward", self)
+        self.aViewNext.setStatusTip("Move forward in the view history of the right pane")
+        self.aViewNext.setShortcut("Alt+Right")
+        self.aViewNext.triggered.connect(self.theParent.docViewer.navForward)
+        self.viewMenu.addAction(self.aViewNext)
+
+        # View > Separator
+        self.viewMenu.addSeparator()
+
         # View > Toggle Distraction Free Mode
         self.aFocusMode = QAction("Distraction Free Mode", self)
         self.aFocusMode.setStatusTip("Toggles distraction free mode, only showing text editor")
