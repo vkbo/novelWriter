@@ -63,20 +63,22 @@ class GuiDocViewer(QTextBrowser):
         self.setMinimumWidth(self.mainConf.pxInt(300))
         self.setAutoFillBackground(True)
         self.setOpenExternalLinks(False)
+        self.setFocusPolicy(Qt.StrongFocus)
         self.initViewer()
 
         # Document Header and Footer
-        self.docHeader = GuiDocViewHeader(self)
-        self.docFooter = GuiDocViewFooter(self)
-        self.stickyRef = False
+        self.docHeader  = GuiDocViewHeader(self)
+        self.docFooter  = GuiDocViewFooter(self)
+        self.docHistory = GuiDocViewHistory(self)
+        self.stickyRef  = False
 
         theOpt = QTextOption()
         if self.mainConf.doJustify:
             theOpt.setAlignment(Qt.AlignJustify)
         self.qDocument.setDefaultTextOption(theOpt)
 
+        # Signals
         self.anchorClicked.connect(self._linkClicked)
-        self.setFocusPolicy(Qt.StrongFocus)
 
         # Context Menu
         self.setContextMenuPolicy(Qt.CustomContextMenu)
@@ -169,6 +171,7 @@ class GuiDocViewer(QTextBrowser):
 
         self.setHtml(aDoc.theResult.replace("\t", "!!tab!!"))
         self.setDocumentTitle(tHandle)
+        self.docHistory.append(tHandle)
 
         # Loop through the text and put back in the tabs. Tabs are removed by
         # the setHtml function, so the ToHtml class puts in a placeholder.
@@ -217,8 +220,7 @@ class GuiDocViewer(QTextBrowser):
             # the doc view panel is visible in case this request comes
             # from outside this class.
             logger.verbose("Tag points to %s#%s" % (tHandle, sTitle))
-            self.theParent.viewDocument(tHandle)
-            self.navigateTo("#%s" % sTitle)
+            self.theParent.viewDocument(tHandle, "#%s" % sTitle)
         return True
 
     def docAction(self, theAction):
@@ -251,6 +253,18 @@ class GuiDocViewer(QTextBrowser):
             logger.verbose("Moving to anchor %s" % tAnchor)
             self.setSource(QUrl(tAnchor))
         return True
+
+    def navBackward(self):
+        """Navigate backwards in the document view history.
+        """
+        self.docHistory.backward()
+        return
+
+    def navForward(self):
+        """Navigate forwards in the document view history.
+        """
+        self.docHistory.forward()
+        return
 
     def updateDocMargins(self):
         """Automatically adjust the margins so the text is centred if
@@ -382,6 +396,15 @@ class GuiDocViewer(QTextBrowser):
         self.updateDocMargins()
         return
 
+    def mouseReleaseEvent(self, theEvent):
+        """Capture mouse click events on the document.
+        """
+        if theEvent.button() == Qt.BackButton:
+            self.navBackward()
+        elif theEvent.button() == Qt.ForwardButton:
+            self.navForward()
+        return
+
     ##
     #  Internal Functions
     ##
@@ -480,6 +503,44 @@ class GuiDocViewer(QTextBrowser):
         return True
 
 # END Class GuiDocViewer
+
+class GuiDocViewHistory():
+
+    def __init__(self, docViewer):
+
+        self.docViewer = docViewer
+
+        self._navHistory = []
+        self._navPosition = -1
+
+        return
+
+    def clear(self):
+        logger.verbose("Clear view history")
+        self._navHistory = []
+        self._navPosition = -1
+        return
+
+    def append(self, tHandle):
+        logger.verbose("Added %s to view history" % tHandle)
+        return
+
+    def forward(self):
+        logger.verbose("Move forwards in view history")
+        return True
+
+    def backward(self):
+        logger.verbose("Move backwards in view history")
+        return True
+
+    ##
+    #  Internal Functions
+    ##
+
+    def _truncateHistory(self, atPos):
+        return
+
+# END Class GuiDocViewHistory
 
 # =============================================================================================== #
 #  The Embedded Document Header
