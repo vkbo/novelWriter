@@ -70,7 +70,7 @@ The ignored errors are all `pycodestyle` errors, and they are documented
 [here](https://pycodestyle.pycqa.org/en/latest/intro.html#error-codes).
 
 **E203:** whitespace before ‘:’  
-**Reason:** Column alignment. It is natural to align dictionary columns along the `:` character,
+**Reason:** Column alignment. It is natural to align dictionary columns along the `:` character.
 
 **E221:** multiple spaces before operator  
 **Reason:** Column alignment.
@@ -88,15 +88,15 @@ dropped. Don't use the `+` operator for appending multiple strings. Use formatti
 **Reason:** Column alignment.
 
 **E261:** at least two spaces before inline comment  
-**Reason:** With syntax highlighting, this one is meaningless and wastes an extra space.
+**Reason:** With syntax highlighting, this one doesn't make much sense.
 
 **E266:** too many leading ‘#’ for block comment  
-**Reason:** In the source multiple `#`s to indicate importance levels is sometimes used, like
-markdown headers.
+**Reason:** In the source multiple `#`s is sometimes used to indicate importance or heading level,
+like markdown headers.
 
 **E302:** expected 2 blank lines, found 0  
 **Reason:** Applies to classes. Instead, end classes with a comment like `# END Class ClassName` to
-make it easier to se which class just ended. The double line break is then redundant.
+make it easier to see which class just ended. The double line break is then redundant.
 
 **E305:** expected 2 blank lines after end of function or class  
 **Reason:** Instead, _always_ end a function with a `return`, preferrably indented at function
