@@ -560,6 +560,8 @@ class GuiIcons:
         ## Switches
         "sticky-on"  : (None, None),
         "sticky-off" : (None, None),
+        "bullet-on"  : (None, None),
+        "bullet-off" : (None, None),
     }
 
     DECO_MAP = {
