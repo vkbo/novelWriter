@@ -202,7 +202,7 @@ class GuiDocViewer(QTextBrowser):
     def reloadText(self):
         """Reload the text in the current document.
         """
-        self.loadText(self.theHandle)
+        self.loadText(self.theHandle, updateHistory=False)
         return
 
     def loadFromTag(self, theTag):
@@ -1040,14 +1040,14 @@ class GuiDocViewFooter(QWidget):
     def _doToggleComments(self, theState):
         """Toggle the view comment button and reload the document.
         """
-        self.mainConf.setViewComments(not self.mainConf.viewComments)
+        self.mainConf.setViewComments(theState)
         self.docViewer.reloadText()
         return
 
     def _doToggleSynopsis(self, theState):
         """Toggle the view synopsis button and reload the document.
         """
-        self.mainConf.setViewSynopsis(not self.mainConf.viewSynopsis)
+        self.mainConf.setViewSynopsis(theState)
         self.docViewer.reloadText()
         return
 
