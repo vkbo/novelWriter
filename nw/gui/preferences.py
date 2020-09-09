@@ -490,9 +490,8 @@ class GuiConfigEditLayoutTab(QWidget):
         self.tabWidth.setSingleStep(1)
         self.tabWidth.setValue(self.mainConf.tabWidth)
         self.mainForm.addRow(
-            "Editor tab width",
+            "Document tab width",
             self.tabWidth,
-            "This feature requires Qt 5.9 or later.",
             theUnit="px"
         )
 
