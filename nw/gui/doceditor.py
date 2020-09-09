@@ -1862,7 +1862,6 @@ class GuiDocEditHeader(QWidget):
         self.buttonSize = fPx + hSp
 
         # Main Widget Settings
-        # self.setContentsMargins(2*self.buttonSize, 0, 0, 0)
         self.setAutoFillBackground(True)
         self.setPalette(self.thePalette)
 
