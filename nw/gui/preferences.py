@@ -496,26 +496,6 @@ class GuiConfigEditLayoutTab(QWidget):
             theUnit="px"
         )
 
-        # Render Options
-        # ==============
-        self.mainForm.addGroupLabel("Render Text")
-
-        ## Render Comments
-        self.viewComments = QSwitch()
-        self.viewComments.setChecked(self.mainConf.viewComments)
-        self.mainForm.addRow(
-            "Render comments in document view panel",
-            self.viewComments
-        )
-
-        ## Render Synopsis
-        self.viewSynopsis = QSwitch()
-        self.viewSynopsis.setChecked(self.mainConf.viewSynopsis)
-        self.mainForm.addRow(
-            "Render synopsis in document view panel",
-            self.viewSynopsis
-        )
-
         return
 
     def saveValues(self):
@@ -533,8 +513,6 @@ class GuiConfigEditLayoutTab(QWidget):
         doJustify       = self.textJustify.isChecked()
         textMargin      = self.textMargin.value()
         tabWidth        = self.tabWidth.value()
-        viewComments    = self.viewComments.isChecked()
-        viewSynopsis    = self.viewSynopsis.isChecked()
 
         self.mainConf.textFont        = textFont
         self.mainConf.textSize        = textSize
@@ -545,8 +523,6 @@ class GuiConfigEditLayoutTab(QWidget):
         self.mainConf.doJustify       = doJustify
         self.mainConf.textMargin      = textMargin
         self.mainConf.tabWidth        = tabWidth
-        self.mainConf.viewComments    = viewComments
-        self.mainConf.viewSynopsis    = viewSynopsis
 
         self.mainConf.confChanged = True
 
