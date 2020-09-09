@@ -652,6 +652,15 @@ class GuiDocEditor(QTextEdit):
         self.docSearch.closeSearch()
         return self.docSearch.isVisible()
 
+    def toggleSearch(self):
+        """Toggle the visibility of the search box.
+        """
+        if self.docSearch.isVisible():
+            self.docSearch.closeSearch()
+        else:
+            self._beginSearch()
+        return
+
     ##
     #  Document Events and Maintenance
     ##
@@ -1853,7 +1862,7 @@ class GuiDocEditHeader(QWidget):
         self.buttonSize = fPx + hSp
 
         # Main Widget Settings
-        self.setContentsMargins(2*self.buttonSize, 0, 0, 0)
+        # self.setContentsMargins(2*self.buttonSize, 0, 0, 0)
         self.setAutoFillBackground(True)
         self.setPalette(self.thePalette)
 
@@ -1878,6 +1887,28 @@ class GuiDocEditHeader(QWidget):
         ).format(*self.theTheme.colText)
 
         # Buttons
+        self.editButton = QToolButton(self)
+        self.editButton.setIcon(self.theTheme.getIcon("edit"))
+        self.editButton.setContentsMargins(0, 0, 0, 0)
+        self.editButton.setIconSize(QSize(fPx, fPx))
+        self.editButton.setFixedSize(fPx, fPx)
+        self.editButton.setStyleSheet(buttonStyle)
+        self.editButton.setToolButtonStyle(Qt.ToolButtonIconOnly)
+        self.editButton.setVisible(False)
+        self.editButton.setToolTip("Edit document meta")
+        self.editButton.clicked.connect(self._editDocument)
+
+        self.searchButton = QToolButton(self)
+        self.searchButton.setIcon(self.theTheme.getIcon("search"))
+        self.searchButton.setContentsMargins(0, 0, 0, 0)
+        self.searchButton.setIconSize(QSize(fPx, fPx))
+        self.searchButton.setFixedSize(fPx, fPx)
+        self.searchButton.setStyleSheet(buttonStyle)
+        self.searchButton.setToolButtonStyle(Qt.ToolButtonIconOnly)
+        self.searchButton.setVisible(False)
+        self.searchButton.setToolTip("Search document")
+        self.searchButton.clicked.connect(self._searchDocument)
+
         self.minmaxButton = QToolButton(self)
         self.minmaxButton.setIcon(self.theTheme.getIcon("maximise"))
         self.minmaxButton.setContentsMargins(0, 0, 0, 0)
@@ -1903,6 +1934,8 @@ class GuiDocEditHeader(QWidget):
         # Assemble Layout
         self.outerBox = QHBoxLayout()
         self.outerBox.setSpacing(hSp)
+        self.outerBox.addWidget(self.editButton, 0)
+        self.outerBox.addWidget(self.searchButton, 0)
         self.outerBox.addWidget(self.theTitle, 1)
         self.outerBox.addWidget(self.minmaxButton, 0)
         self.outerBox.addWidget(self.closeButton, 0)
@@ -1923,6 +1956,8 @@ class GuiDocEditHeader(QWidget):
         self.theHandle = tHandle
         if tHandle is None:
             self.theTitle.setText("")
+            self.editButton.setVisible(False)
+            self.searchButton.setVisible(False)
             self.closeButton.setVisible(False)
             self.minmaxButton.setVisible(False)
             return True
@@ -1942,6 +1977,8 @@ class GuiDocEditHeader(QWidget):
                 return False
             self.theTitle.setText(nwItem.itemName)
 
+        self.editButton.setVisible(True)
+        self.searchButton.setVisible(True)
         self.closeButton.setVisible(True)
         self.minmaxButton.setVisible(True)
 
@@ -1951,10 +1988,24 @@ class GuiDocEditHeader(QWidget):
     #  Slots
     ##
 
+    def _editDocument(self):
+        """Open the edit item dialog from the main GUI.
+        """
+        self.theParent.editItem(self.theHandle)
+        return
+
+    def _searchDocument(self):
+        """Toggle the visibility of the search box.
+        """
+        self.docEditor.toggleSearch()
+        return
+
     def _closeDocument(self):
-        """Trigger the close editor/viewer on the main window.
+        """Trigger the close editor on the main window.
         """
         self.theParent.closeDocEditor()
+        self.editButton.setVisible(False)
+        self.searchButton.setVisible(False)
         self.closeButton.setVisible(False)
         self.minmaxButton.setVisible(False)
         return
@@ -1966,10 +2017,14 @@ class GuiDocEditHeader(QWidget):
         if self.theParent.isFocusMode:
             self.minmaxButton.setIcon(self.theTheme.getIcon("minimise"))
             self.setContentsMargins(self.buttonSize, 0, 0, 0)
+            self.editButton.setVisible(False)
+            self.searchButton.setVisible(False)
             self.closeButton.setVisible(False)
         else:
             self.minmaxButton.setIcon(self.theTheme.getIcon("maximise"))
-            self.setContentsMargins(2*self.buttonSize, 0, 0, 0)
+            self.setContentsMargins(0, 0, 0, 0)
+            self.editButton.setVisible(True)
+            self.searchButton.setVisible(True)
             self.closeButton.setVisible(True)
         return
 
