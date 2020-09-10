@@ -240,13 +240,6 @@ clickable in the document view pane, and control-clickable in the editor. They m
 quickly navigate between the documents while editing.
 
 
-## Contributing
-
-If you want to contribute to novelWriter, please follow the coding convention laid out in the
-[Style Guide](markdown/style.md). They broadly follow Python PEP8, but there are a few
-modifications.
-
-
 ## Screenshot
 
 **novelWriter with default system theme:**

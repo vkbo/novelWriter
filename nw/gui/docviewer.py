@@ -202,7 +202,7 @@ class GuiDocViewer(QTextBrowser):
     def reloadText(self):
         """Reload the text in the current document.
         """
-        self.loadText(self.theHandle)
+        self.loadText(self.theHandle, updateHistory=False)
         return
 
     def loadFromTag(self, theTag):
@@ -879,6 +879,19 @@ class GuiDocViewFooter(QWidget):
         bSp = self.mainConf.pxInt(2)
         hSp = self.mainConf.pxInt(8)
 
+        # Icons
+        stickyOn  = self.theTheme.getPixmap("sticky-on", (fPx, fPx))
+        stickyOff = self.theTheme.getPixmap("sticky-off", (fPx, fPx))
+        stickyIcon = QIcon()
+        stickyIcon.addPixmap(stickyOn, QIcon.Normal, QIcon.On)
+        stickyIcon.addPixmap(stickyOff, QIcon.Normal, QIcon.Off)
+
+        bulletOn  = self.theTheme.getPixmap("bullet-on", (fPx, fPx))
+        bulletOff = self.theTheme.getPixmap("bullet-off", (fPx, fPx))
+        bulletIcon = QIcon()
+        bulletIcon.addPixmap(bulletOn, QIcon.Normal, QIcon.On)
+        bulletIcon.addPixmap(bulletOff, QIcon.Normal, QIcon.Off)
+
         # Main Widget Settings
         self.setContentsMargins(0, 0, 0, 0)
         self.setAutoFillBackground(True)
@@ -900,11 +913,6 @@ class GuiDocViewFooter(QWidget):
         self.showHide.setToolTip("Show/hide the references panel")
 
         # Sticky Button
-        stickyOn  = self.theTheme.getPixmap("sticky-on", (fPx, fPx))
-        stickyOff = self.theTheme.getPixmap("sticky-off", (fPx, fPx))
-        stickyIcon = QIcon()
-        stickyIcon.addPixmap(stickyOn, QIcon.Normal, QIcon.On)
-        stickyIcon.addPixmap(stickyOff, QIcon.Normal, QIcon.Off)
         self.stickyRefs = QToolButton(self)
         self.stickyRefs.setCheckable(True)
         self.stickyRefs.setToolButtonStyle(Qt.ToolButtonIconOnly)
@@ -916,6 +924,30 @@ class GuiDocViewFooter(QWidget):
         self.stickyRefs.setToolTip(
             "Activate to freeze the content of the references panel when changing document"
         )
+
+        # Show Comments
+        self.showComments = QToolButton(self)
+        self.showComments.setCheckable(True)
+        self.showComments.setChecked(self.mainConf.viewComments)
+        self.showComments.setToolButtonStyle(Qt.ToolButtonIconOnly)
+        self.showComments.setStyleSheet(buttonStyle)
+        self.showComments.setIcon(bulletIcon)
+        self.showComments.setIconSize(QSize(fPx, fPx))
+        self.showComments.setFixedSize(QSize(fPx, fPx))
+        self.showComments.toggled.connect(self._doToggleComments)
+        self.showComments.setToolTip("Show comments")
+
+        # Show Synopsis
+        self.showSynopsis = QToolButton(self)
+        self.showSynopsis.setCheckable(True)
+        self.showSynopsis.setChecked(self.mainConf.viewSynopsis)
+        self.showSynopsis.setToolButtonStyle(Qt.ToolButtonIconOnly)
+        self.showSynopsis.setStyleSheet(buttonStyle)
+        self.showSynopsis.setIcon(bulletIcon)
+        self.showSynopsis.setIconSize(QSize(fPx, fPx))
+        self.showSynopsis.setFixedSize(QSize(fPx, fPx))
+        self.showSynopsis.toggled.connect(self._doToggleSynopsis)
+        self.showSynopsis.setToolTip("Show synopsis comments")
 
         # Labels
         self.lblRefs = QLabel("References")
@@ -938,10 +970,32 @@ class GuiDocViewFooter(QWidget):
         self.lblSticky.setAlignment(Qt.AlignLeft | Qt.AlignTop)
         self.lblSticky.setPalette(self.thePalette)
 
+        self.lblComments = QLabel("Comments")
+        self.lblComments.setBuddy(self.showComments)
+        self.lblComments.setIndent(0)
+        self.lblComments.setMargin(0)
+        self.lblComments.setContentsMargins(0, 0, 0, 0)
+        self.lblComments.setAutoFillBackground(True)
+        self.lblComments.setFixedHeight(fPx)
+        self.lblComments.setAlignment(Qt.AlignLeft | Qt.AlignTop)
+        self.lblComments.setPalette(self.thePalette)
+
+        self.lblSynopsis = QLabel("Synopsis")
+        self.lblSynopsis.setBuddy(self.showSynopsis)
+        self.lblSynopsis.setIndent(0)
+        self.lblSynopsis.setMargin(0)
+        self.lblSynopsis.setContentsMargins(0, 0, 0, 0)
+        self.lblSynopsis.setAutoFillBackground(True)
+        self.lblSynopsis.setFixedHeight(fPx)
+        self.lblSynopsis.setAlignment(Qt.AlignLeft | Qt.AlignTop)
+        self.lblSynopsis.setPalette(self.thePalette)
+
         lblFont = self.font()
         lblFont.setPointSizeF(0.9*self.theTheme.fontPointSize)
         self.lblRefs.setFont(lblFont)
         self.lblSticky.setFont(lblFont)
+        self.lblComments.setFont(lblFont)
+        self.lblSynopsis.setFont(lblFont)
 
         # Assemble Layout
         self.outerBox = QHBoxLayout()
@@ -952,6 +1006,11 @@ class GuiDocViewFooter(QWidget):
         self.outerBox.addWidget(self.stickyRefs, 0)
         self.outerBox.addWidget(self.lblSticky, 0)
         self.outerBox.addStretch(1)
+        self.outerBox.addWidget(self.showComments, 0)
+        self.outerBox.addWidget(self.lblComments, 0)
+        self.outerBox.addSpacing(hSp)
+        self.outerBox.addWidget(self.showSynopsis, 0)
+        self.outerBox.addWidget(self.lblSynopsis, 0)
         self.setLayout(self.outerBox)
 
         logger.debug("GuiDocViewFooter initialisation complete")
@@ -976,6 +1035,20 @@ class GuiDocViewFooter(QWidget):
         self.docViewer.stickyRef = theState
         if not theState and self.docViewer.theHandle is not None:
             self.viewMeta.refreshReferences(self.docViewer.theHandle)
+        return
+
+    def _doToggleComments(self, theState):
+        """Toggle the view comment button and reload the document.
+        """
+        self.mainConf.setViewComments(theState)
+        self.docViewer.reloadText()
+        return
+
+    def _doToggleSynopsis(self, theState):
+        """Toggle the view synopsis button and reload the document.
+        """
+        self.mainConf.setViewSynopsis(theState)
+        self.docViewer.reloadText()
         return
 
 # END Class GuiDocViewFooter

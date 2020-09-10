@@ -674,10 +674,11 @@ class GuiMain(QMainWindow):
 
         return True
 
-    def editItem(self):
+    def editItem(self, tHandle=None):
         """Open the edit item dialog.
         """
-        tHandle = self.treeView.getSelectedHandle()
+        if tHandle is None:
+            tHandle = self.treeView.getSelectedHandle()
         if tHandle is None:
             logger.warning("No item selected")
             return

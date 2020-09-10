@@ -237,7 +237,7 @@ class GuiProjectTree(QTreeWidget):
 
         # Add the new item to the tree
         self.revealTreeItem(tHandle, nHandle)
-        self.theParent.editItem()
+        self.theParent.editItem(tHandle)
 
         return True
 

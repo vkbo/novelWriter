@@ -812,6 +812,16 @@ class Config:
         self.errData = []
         return errMessage
 
+    def setViewComments(self, viewState):
+        self.viewComments = viewState
+        self.confChanged  = True
+        return self.viewComments
+
+    def setViewSynopsis(self, viewState):
+        self.viewSynopsis = viewState
+        self.confChanged  = True
+        return self.viewSynopsis
+
     ##
     #  Getters
     ##
