@@ -9,8 +9,10 @@ from shutil import copyfile
 from nwtools import cmpFiles
 
 from nw.core.project import NWProject
+from nw.core.document import NWDoc
 from nw.core.index import NWIndex
-from nw.constants import nwItemClass
+from nw.core.spellcheck import NWSpellEnchant, NWSpellSimple
+from nw.constants import nwItemClass, nwItemLayout
 
 @pytest.mark.project
 def testProjectNewOpenSave(nwFuncTemp, nwTempProj, nwRef, nwTemp, nwDummy):
@@ -295,3 +297,78 @@ def testProjectNewSample(nwFuncTemp, nwRef, nwConf, nwDummy):
     assert theProject.projName == "Sample Project"
     assert theProject.saveProject()
     assert theProject.closeProject()
+
+@pytest.mark.project
+def testDocMeta(nwDummy, nwLipsum):
+    theProject = NWProject(nwDummy)
+    theProject.projTree.setSeed(42)
+    assert theProject.openProject(nwLipsum)
+
+    aDoc = NWDoc(theProject, nwDummy)
+    assert aDoc.openDocument("47666c91c7ccf")
+    theMeta, thePath, theClass, theLayout = aDoc.getMeta()
+
+    assert theMeta == "Scene Five"
+    assert len(thePath) == 3
+    assert thePath[0] == "47666c91c7ccf"
+    assert thePath[1] == "6bd935d2490cd"
+    assert thePath[2] == "b3643d0f92e32"
+    assert theClass == nwItemClass.NOVEL
+    assert theLayout == nwItemLayout.SCENE
+
+    aDoc.docMeta = "too_short"
+    theMeta, thePath, theClass, theLayout = aDoc.getMeta()
+    assert theMeta == ""
+    assert thePath == []
+    assert theClass is None
+    assert theLayout is None
+
+@pytest.mark.project
+def testSpellEnchant(nwTemp, nwConf):
+    wList = path.join(nwTemp, "wordlist.txt")
+    with open(wList, mode="w") as wFile:
+        wFile.write("a_word\nb_word\nc_word\n")
+
+    spChk = NWSpellEnchant()
+    spChk.mainConf = nwConf
+    spChk.setLanguage("en", wList)
+
+    assert spChk.checkWord("a_word")
+    assert spChk.checkWord("b_word")
+    assert spChk.checkWord("c_word")
+    assert not spChk.checkWord("d_word")
+
+    spChk.addWord("d_word")
+    assert spChk.checkWord("d_word")
+
+    wSuggest = spChk.suggestWords("wrod")
+    assert len(wSuggest) > 0
+    assert "word" in wSuggest
+
+    dList = spChk.listDictionaries()
+    assert len(dList) > 0
+
+@pytest.mark.project
+def testSpellSimple(nwTemp, nwConf):
+    wList = path.join(nwTemp, "wordlist.txt")
+    with open(wList, mode="w") as wFile:
+        wFile.write("a_word\nb_word\nc_word\n")
+
+    spChk = NWSpellSimple()
+    spChk.mainConf = nwConf
+    spChk.setLanguage("en", wList)
+
+    assert spChk.checkWord("a_word")
+    assert spChk.checkWord("b_word")
+    assert spChk.checkWord("c_word")
+    assert not spChk.checkWord("d_word")
+
+    spChk.addWord("d_word")
+    assert spChk.checkWord("d_word")
+
+    wSuggest = spChk.suggestWords("wrod")
+    assert len(wSuggest) > 0
+    assert "word" in wSuggest
+
+    dList = spChk.listDictionaries()
+    assert len(dList) > 0
