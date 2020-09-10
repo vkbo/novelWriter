@@ -9,8 +9,9 @@ from shutil import copyfile
 from nwtools import cmpFiles
 
 from nw.core.project import NWProject
+from nw.core.document import NWDoc
 from nw.core.index import NWIndex
-from nw.constants import nwItemClass
+from nw.constants import nwItemClass, nwItemLayout
 
 @pytest.mark.project
 def testProjectNewOpenSave(nwFuncTemp, nwTempProj, nwRef, nwTemp, nwDummy):
@@ -295,3 +296,21 @@ def testProjectNewSample(nwFuncTemp, nwRef, nwConf, nwDummy):
     assert theProject.projName == "Sample Project"
     assert theProject.saveProject()
     assert theProject.closeProject()
+
+@pytest.mark.project
+def testDocMeta(nwDummy, nwLipsum):
+    theProject = NWProject(nwDummy)
+    theProject.projTree.setSeed(42)
+    assert theProject.openProject(nwLipsum)
+
+    aDoc = NWDoc(theProject, nwDummy)
+    assert aDoc.openDocument("47666c91c7ccf")
+    theMeta, thePath, theClass, theLayout = aDoc.getMeta()
+
+    assert theMeta == "Scene Five"
+    assert len(thePath) == 3
+    assert thePath[0] == "47666c91c7ccf"
+    assert thePath[1] == "6bd935d2490cd"
+    assert thePath[2] == "b3643d0f92e32"
+    assert theClass == nwItemClass.NOVEL
+    assert theLayout == nwItemLayout.SCENE
