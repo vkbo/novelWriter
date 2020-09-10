@@ -314,3 +314,10 @@ def testDocMeta(nwDummy, nwLipsum):
     assert thePath[2] == "b3643d0f92e32"
     assert theClass == nwItemClass.NOVEL
     assert theLayout == nwItemLayout.SCENE
+
+    aDoc.docMeta = "too_short"
+    theMeta, thePath, theClass, theLayout = aDoc.getMeta()
+    assert theMeta == ""
+    assert thePath == []
+    assert theClass is None
+    assert theLayout is None
