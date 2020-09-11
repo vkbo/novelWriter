@@ -224,9 +224,9 @@ def fuzzyTime(secDiff):
         return "%d weeks ago" % int(round(secDiff/604800))
     elif secDiff < 3888000: # 45 days
         return "a month ago"
-    elif secDiff < 31104000: # 360 days
+    elif secDiff < 29808000: # 345 days
         return "%d months ago" % int(round(secDiff/2592000))
-    elif secDiff < 47304000: # 1.5 years
+    elif secDiff < 47336400: # 1.5 years
         return "a year ago"
     else:
         return "%d years ago" % int(round(secDiff/31557600))

@@ -230,13 +230,13 @@ class NWDoc():
         for aClass in nwItemClass:
             if theMeta.startswith(aClass.name):
                 theClass = aClass
-                theMeta = theMeta.lstrip(aClass.name+":")
+                theMeta = theMeta[len(aClass.name)+1:]
 
         theLayout = nwItemLayout.NO_LAYOUT
         for aLayout in nwItemLayout:
             if theMeta.startswith(aLayout.name):
                 theLayout = aLayout
-                theMeta = theMeta.lstrip(aLayout.name+":")
+                theMeta = theMeta[len(aLayout.name)+1:]
 
         return theMeta, thePath, theClass, theLayout
 
