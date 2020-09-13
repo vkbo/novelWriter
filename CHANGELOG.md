@@ -1,5 +1,31 @@
 # novelWriter ChangeLog
 
+## Version 1.0 Beta 2 [2020-09-13]
+
+**Bugfixes**
+
+* If the horizontal scroll bar appeared at the bottom of the document editor or viewer, for instance if a long, un-wrapable line was entered, the scroll bar would sit on top of the document footer. The footer bar now properly moves out of the way when the horizontal scroll bar appears. Issue #433, PR #434.
+
+**New Features**
+
+* It is now possible to set a different spell check language for a project than the one set in the main Preferences. It is only possible to select a different language, not a different spell check tool. The setting is managed in the first tab of the Project Settings dialog. Issue #368, PR #437.
+* The document editor now has the Cut/Copy/Paste options in the main context menu. In addition, Select All, Select Word, and Select Paragraph has been added to the menu. The latter two will select the word or paragraph under the mouse pointer, not the cursor as the main menu entries do. Issue #438, PR #439.
+* The document viewer has a new custom context menu with Copy, Select All, Select Word and Select Paragraph with identical functionality and look to the context menu entries in the document editor. PR #439.
+* The document view panel now has a back navigation and forward navigation history of 20 documents. The navigation is activated by two buttons in the header, menu entries and keyboard shortcuts in the `View` menu, and by navigation buttons on the mouse. Issue #441, PR #442.
+* Clicking on a document in the project tree with the middle mouse button will now open the document in the document viewer. PR #443.
+* Added an edit and a search button to the top left corner of the document editor, in the header. The edit button opens the edit item dialog for the open document, and the search button toggles the search box for the document. PR #445.
+* Added show/hide comment and synopsis buttons to the bottom right corner of the document viewer, in the footer. These toggle on and off the rendering of these elements in the viewed document. The corresponding settings in Preferences have been removed. PR #445.
+
+**Feature Improvements**
+
+* The document split tool now asks for permission before generating the documents. This adds a final confirmation before generating a lot of new documents that it can be tedious to clean up if the action was activated by mistake. PR #436.
+* Both split and merge tools now preserve the document status or importance value from the source item. Previously, it would be reset to the default value. PR #436.
+
+**Test Suite**
+
+* Improved test coverage. PR #446.
+
+
 ## Version 1.0 Beta 1 [2020-08-30]
 
 **Bugfixes**
