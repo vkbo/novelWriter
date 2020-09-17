@@ -115,7 +115,7 @@ class NWStatus():
             self.theCounts[theIndex] += 1
         return
 
-    def packEntries(self, xParent):
+    def packXML(self, xParent):
         """Pack the status entries into an XML object for saving to the
         main project file.
         """
@@ -128,7 +128,7 @@ class NWStatus():
             xSub.text = self.theLabels[n]
         return True
 
-    def unpackEntries(self, xParent):
+    def unpackXML(self, xParent):
         """Unpack an XML tree and set the class values.
         """
         theLabels  = []

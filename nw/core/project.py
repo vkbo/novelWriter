@@ -481,7 +481,7 @@ class NWProject():
 
         # Changes:
         # 1.0 : Original file format.
-        # 1.1 : Changes the way documents are structure in the project
+        # 1.1 : Changes the way documents are structured in the project
         #       folder from data_X, where X is the first hex value of
         #       the handle, to a single content folder.
         # 1.2 : Changes the way autoReplace entries are stored. The 1.1
@@ -518,15 +518,16 @@ class NWProject():
             msgRes = msgBox.question(self.theParent, "Version Conflict", (
                 "This project was saved by a newer version of novelWriter, version %s. "
                 "This is version %s. If you continue to open the project, some attributes "
-                "and settings may not be preserved. Continue opening the project?"
+                "and settings may not be preserved, but the overall project should be fine. "
+                "Continue opening the project?"
             ) % (
                 appVersion, nw.__version__
             ))
             if msgRes != QMessageBox.Yes:
                 return False
 
-        # Start Parsing XML
-        # =================
+        # Start Parsing the XML
+        # =====================
 
         for xChild in xRoot:
             if xChild.tag == "project":
@@ -578,9 +579,9 @@ class NWProject():
                     elif xItem.tag == "notesWordCount":
                         self.notesWCount = checkInt(xItem.text, 0, False)
                     elif xItem.tag == "status":
-                        self.statusItems.unpackEntries(xItem)
+                        self.statusItems.unpackXML(xItem)
                     elif xItem.tag == "importance":
-                        self.importItems.unpackEntries(xItem)
+                        self.importItems.unpackXML(xItem)
                     elif xItem.tag == "autoReplace":
                         for xEntry in xItem:
                             if xEntry.tag == "entry":
@@ -684,9 +685,9 @@ class NWProject():
                 self._packProjectValue(xTitleFmt, aKey, aValue)
 
         xStatus = etree.SubElement(xSettings, "status")
-        self.statusItems.packEntries(xStatus)
+        self.statusItems.packXML(xStatus)
         xStatus = etree.SubElement(xSettings, "importance")
-        self.importItems.packEntries(xStatus)
+        self.importItems.packXML(xStatus)
 
         # Save Tree Content
         logger.debug("Writing project content")
