@@ -12,7 +12,7 @@ from nw.core.project import NWProject
 from nw.core.document import NWDoc
 from nw.core.index import NWIndex
 from nw.core.spellcheck import NWSpellEnchant, NWSpellSimple
-from nw.constants import nwItemClass, nwItemLayout
+from nw.constants import nwItemClass, nwItemLayout, nwFiles
 
 @pytest.mark.project
 def testProjectNewOpenSave(nwFuncTemp, nwTempProj, nwRef, nwTemp, nwDummy):
@@ -316,7 +316,7 @@ def testDocMeta(nwDummy, nwLipsum):
     assert theClass == nwItemClass.NOVEL
     assert theLayout == nwItemLayout.SCENE
 
-    aDoc.docMeta = "too_short"
+    aDoc._docMeta = "too_short"
     theMeta, thePath, theClass, theLayout = aDoc.getMeta()
     assert theMeta == ""
     assert thePath == []
@@ -372,3 +372,62 @@ def testSpellSimple(nwTemp, nwConf):
 
     dList = spChk.listDictionaries()
     assert len(dList) > 0
+
+@pytest.mark.project
+def testProjectOptions(nwDummy, nwLipsum):
+    theProject = NWProject(nwDummy)
+    assert theProject.projMeta is None
+
+    theOpts = theProject.optState
+    assert not theOpts.loadSettings()
+    assert not theOpts.saveSettings()
+
+    # No Settings
+    assert theProject.openProject(nwLipsum)
+    assert theOpts.loadSettings()
+    assert theOpts.saveSettings()
+    assert str(theOpts.theState) == r"{}"
+
+    # Read Invalid Settings and Filter
+    stateFile = path.join(theProject.projMeta, nwFiles.OPTS_FILE)
+    with open(stateFile, mode="w", encoding="utf8") as outFile:
+        outFile.write(
+            r'{"GuiProjectSettings": {"winWidth": 100, "winHeight": 50}, "NoGroup": {"NoName": 0}}'
+        )
+    assert theOpts.loadSettings()
+    assert str(theOpts.theState) == r"{'GuiProjectSettings': {'winWidth': 100, 'winHeight': 50}}"
+
+    # Set New Settings
+    assert not theOpts.setValue("NoGroup", "NoName", None)
+    assert not theOpts.setValue("GuiProjectSettings", "NoName", None)
+    assert theOpts.setValue("GuiProjectSettings", "winWidth", 200)
+    assert theOpts.setValue("GuiProjectSettings", "winHeight", 80)
+    assert str(theOpts.theState) == r"{'GuiProjectSettings': {'winWidth': 200, 'winHeight': 80}}"
+
+    # Check Read/Write Types
+
+    ## String
+    assert theOpts.setValue("GuiWritingStats", "winWidth", "123")
+    assert isinstance(theOpts.getString("GuiWritingStats", "winWidth", "456"), str)
+    assert theOpts.getString("GuiWritingStats", "NoName", "456") == "456"
+
+    ## Int
+    assert theOpts.setValue("GuiWritingStats", "winWidth", "123")
+    assert isinstance(theOpts.getInt("GuiWritingStats", "winWidth", 456), int)
+    assert theOpts.getInt("GuiWritingStats", "NoName", 456) == 456
+    assert theOpts.setValue("GuiWritingStats", "winWidth", "True")
+    assert theOpts.getInt("GuiWritingStats", "NoName", 456) == 456
+
+    ## Float
+    assert theOpts.setValue("GuiWritingStats", "winWidth", "123")
+    assert isinstance(theOpts.getFloat("GuiWritingStats", "winWidth", 456.0), float)
+    assert theOpts.getFloat("GuiWritingStats", "NoName", 456.0) == 456.0
+    assert theOpts.setValue("GuiWritingStats", "winWidth", "True")
+    assert theOpts.getFloat("GuiWritingStats", "winWidth", 456.0) == 456.0
+
+    ## Bool
+    assert theOpts.setValue("GuiWritingStats", "winWidth", True)
+    assert isinstance(theOpts.getBool("GuiWritingStats", "winWidth", False), bool)
+    assert theOpts.getFloat("GuiWritingStats", "NoName", False) is False
+    assert theOpts.setValue("GuiWritingStats", "winWidth", "True")
+    assert theOpts.getFloat("GuiWritingStats", "winWidth", False) is False

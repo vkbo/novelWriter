@@ -481,7 +481,7 @@ class NWProject():
 
         # Changes:
         # 1.0 : Original file format.
-        # 1.1 : Changes the way documents are structure in the project
+        # 1.1 : Changes the way documents are structured in the project
         #       folder from data_X, where X is the first hex value of
         #       the handle, to a single content folder.
         # 1.2 : Changes the way autoReplace entries are stored. The 1.1
@@ -518,15 +518,16 @@ class NWProject():
             msgRes = msgBox.question(self.theParent, "Version Conflict", (
                 "This project was saved by a newer version of novelWriter, version %s. "
                 "This is version %s. If you continue to open the project, some attributes "
-                "and settings may not be preserved. Continue opening the project?"
+                "and settings may not be preserved, but the overall project should be fine. "
+                "Continue opening the project?"
             ) % (
                 appVersion, nw.__version__
             ))
             if msgRes != QMessageBox.Yes:
                 return False
 
-        # Start Parsing XML
-        # =================
+        # Start Parsing the XML
+        # =====================
 
         for xChild in xRoot:
             if xChild.tag == "project":
@@ -578,9 +579,9 @@ class NWProject():
                     elif xItem.tag == "notesWordCount":
                         self.notesWCount = checkInt(xItem.text, 0, False)
                     elif xItem.tag == "status":
-                        self.statusItems.unpackEntries(xItem)
+                        self.statusItems.unpackXML(xItem)
                     elif xItem.tag == "importance":
-                        self.importItems.unpackEntries(xItem)
+                        self.importItems.unpackXML(xItem)
                     elif xItem.tag == "autoReplace":
                         for xEntry in xItem:
                             if xEntry.tag == "entry":
@@ -684,9 +685,9 @@ class NWProject():
                 self._packProjectValue(xTitleFmt, aKey, aValue)
 
         xStatus = etree.SubElement(xSettings, "status")
-        self.statusItems.packEntries(xStatus)
+        self.statusItems.packXML(xStatus)
         xStatus = etree.SubElement(xSettings, "importance")
-        self.importItems.packEntries(xStatus)
+        self.importItems.packXML(xStatus)
 
         # Save Tree Content
         logger.debug("Writing project content")
@@ -1440,23 +1441,24 @@ class NWProject():
     def _deprecatedFiles(self):
         """Delete files that are no longer used by novelWriter.
         """
-        rmList = []
-        rmList.append(path.join(self.projCache, "nwProject.nwx.0"))
-        rmList.append(path.join(self.projCache, "nwProject.nwx.1"))
-        rmList.append(path.join(self.projCache, "nwProject.nwx.2"))
-        rmList.append(path.join(self.projCache, "nwProject.nwx.3"))
-        rmList.append(path.join(self.projCache, "nwProject.nwx.4"))
-        rmList.append(path.join(self.projCache, "nwProject.nwx.5"))
-        rmList.append(path.join(self.projCache, "nwProject.nwx.6"))
-        rmList.append(path.join(self.projCache, "nwProject.nwx.7"))
-        rmList.append(path.join(self.projCache, "nwProject.nwx.8"))
-        rmList.append(path.join(self.projCache, "nwProject.nwx.9"))
-        rmList.append(path.join(self.projMeta,  "mainOptions.json"))
-        rmList.append(path.join(self.projMeta,  "exportOptions.json"))
-        rmList.append(path.join(self.projMeta,  "outlineOptions.json"))
-        rmList.append(path.join(self.projMeta,  "timelineOptions.json"))
-        rmList.append(path.join(self.projMeta,  "docMergeOptions.json"))
-        rmList.append(path.join(self.projMeta,  "sessionLogOptions.json"))
+        rmList = [
+            path.join(self.projCache, "nwProject.nwx.0"),
+            path.join(self.projCache, "nwProject.nwx.1"),
+            path.join(self.projCache, "nwProject.nwx.2"),
+            path.join(self.projCache, "nwProject.nwx.3"),
+            path.join(self.projCache, "nwProject.nwx.4"),
+            path.join(self.projCache, "nwProject.nwx.5"),
+            path.join(self.projCache, "nwProject.nwx.6"),
+            path.join(self.projCache, "nwProject.nwx.7"),
+            path.join(self.projCache, "nwProject.nwx.8"),
+            path.join(self.projCache, "nwProject.nwx.9"),
+            path.join(self.projMeta,  "mainOptions.json"),
+            path.join(self.projMeta,  "exportOptions.json"),
+            path.join(self.projMeta,  "outlineOptions.json"),
+            path.join(self.projMeta,  "timelineOptions.json"),
+            path.join(self.projMeta,  "docMergeOptions.json"),
+            path.join(self.projMeta,  "sessionLogOptions.json"),
+        ]
 
         for rmFile in rmList:
             if path.isfile(rmFile):

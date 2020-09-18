@@ -378,11 +378,11 @@ class GuiProjectTree(QTreeWidget):
         return True
 
     def deleteItem(self, tHandle=None, alreadyAsked=False, askForTrash=False):
-        """Delete items from the tree. Note that this does not delete
-        the item from the item tree in the project object. However,
-        since this is only meta data, there isn't really a need to do
-        that to save memory. Items not in the tree are not saved to the
-        project file, so a loaded project will be clean anyway.
+        """Delete an item from the project tree. As a first step, files are
+        moved to the Trash folder. Permanent deletion is a second step. This
+        second step also deletes the item from the project object as well as
+        delete the files on disk. Folders are deleted if they're empty only,
+        and the deletion is always permanent.
         """
         if tHandle is None:
             tHandle = self.getSelectedHandle()
@@ -584,7 +584,7 @@ class GuiProjectTree(QTreeWidget):
         always make sure items with a parent have had their parent item
         sent first.
         """
-        logger.debug("Building project tree ...")
+        logger.debug("Building the project tree ...")
         self.clear()
         iCount = 0
 
@@ -592,7 +592,7 @@ class GuiProjectTree(QTreeWidget):
             iCount += 1
             self._addTreeItem(nwItem)
 
-        logger.debug("%d items added to project tree" % iCount)
+        logger.debug("%d items added to the project tree" % iCount)
         return True
 
     def getSelectedHandle(self):

@@ -89,13 +89,10 @@ class NWSpellCheck():
 
     @staticmethod
     def expandLanguage(spTag):
-        """Translate a language tag to something more suer friendly.
+        """Translate a language tag to something more user friendly.
         """
         spBits = spTag.split("_")
-        if spBits[0] in isoLanguage.ISO_639_1:
-            spLang = isoLanguage.ISO_639_1[spBits[0]]
-        else:
-            spLang = spBits[0]
+        spLang = isoLanguage.ISO_639_1.get(spBits[0], spBits[0])
         if len(spBits) > 1:
             spLang += " (%s)" % spBits[1]
         return spLang

@@ -82,6 +82,18 @@ def checkBool(checkValue, defaultValue, allowNone=False):
             return defaultValue
     return defaultValue
 
+def checkHandle(checkValue, defaultValue, allowNone=False):
+    """Check if a value is a handle.
+    """
+    if allowNone:
+        if checkValue is None:
+            return None
+        if checkValue == "None":
+            return None
+    if isHandle(checkValue):
+        return str(checkValue)
+    return defaultValue
+
 def isHandle(theString):
     """Check if a string is a valid novelWriter handle.
     Note: This is case sensitive. Must be lower case!

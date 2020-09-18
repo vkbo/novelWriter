@@ -34,7 +34,7 @@ from hashlib import sha256
 from time import time
 
 from nw.core.item import NWItem
-from nw.common import checkString
+from nw.common import checkHandle
 from nw.constants import nwFiles, nwItemType, nwItemClass, nwItemLayout, nwConst
 
 logger = logging.getLogger(__name__)
@@ -49,7 +49,6 @@ class NWTree():
         self._treeOrder   = []    # The order of the tree items on the tree view
         self._treeRoots   = []    # The root items of the tree
         self._trashRoot   = None  # The handle of the trash root folder
-        self._theLength   = 0     # Always the length of _treeOrder
         self._theIndex    = 0     # The current iterator index
         self._treeChanged = False # True if tree structure has changed
         self._handleSeed  = None  # Used for generating handles for testing
@@ -68,7 +67,6 @@ class NWTree():
         self._treeRoots = []
         self._trashRoot = None
         self._archRoot  = None
-        self._theLength = 0
         self._theIndex  = 0
         self._treeChanged = False
         return
@@ -81,12 +79,12 @@ class NWTree():
     def append(self, tHandle, pHandle, nwItem):
         """Add a new item to the end of the tree.
         """
-        tHandle = checkString(tHandle, None, True)
-        pHandle = checkString(pHandle, None, True)
+        tHandle = checkHandle(tHandle, None, True)
+        pHandle = checkHandle(pHandle, None, True)
         if tHandle is None:
             tHandle = self._makeHandle()
 
-        logger.verbose("Adding entry %s with parent %s" % (str(tHandle), str(pHandle)))
+        logger.verbose("Adding item %s with parent %s" % (str(tHandle), str(pHandle)))
 
         nwItem.setHandle(tHandle)
         nwItem.setParent(pHandle)
@@ -95,29 +93,29 @@ class NWTree():
         self._treeOrder.append(tHandle)
 
         if nwItem.itemType == nwItemType.ROOT:
-            logger.verbose("Entry %s is a root item" % str(tHandle))
+            logger.verbose("Item %s is a root item" % str(tHandle))
             self._treeRoots.append(tHandle)
             if nwItem.itemClass == nwItemClass.ARCHIVE:
-                logger.verbose("Entry %s is the archive folder" % str(tHandle))
+                logger.verbose("Item %s is the archive folder" % str(tHandle))
                 self._archRoot = tHandle
 
         if nwItem.itemType == nwItemType.TRASH:
             if self._trashRoot is None:
-                logger.verbose("Entry %s is the trash folder" % str(tHandle))
+                logger.verbose("Item %s is the trash folder" % str(tHandle))
                 self._trashRoot = tHandle
             else:
                 logger.error("Only one trash folder allowed")
 
-        self._theLength = len(self._treeOrder)
         self._setTreeChanged(True)
 
         return
 
     def packXML(self, xParent):
-        """Pack the content of the tree into an XML object.
+        """Pack the content of the tree into the provided XML object. In
+        the order defined by the _treeOrder list.
         """
         xContent = etree.SubElement(xParent, "content", attrib={
-            "count": str(self._theLength)}
+            "count": str(len(self._treeOrder))}
         )
         for tHandle in self._treeOrder:
             tItem = self.__getitem__(tHandle)
@@ -309,7 +307,6 @@ class NWTree():
 
         # Save the temp list
         self._treeOrder = tmpOrder
-        self._theLength = len(self._treeOrder)
         self._setTreeChanged(True)
         logger.verbose("Project tree order updated")
 
@@ -330,7 +327,7 @@ class NWTree():
         if tItem is None:
             return False
         if tItem.itemType != nwItemType.FILE:
-            logger.error("Item '%s' is not a file" % tHandle)
+            logger.error("Item %s is not a file" % tHandle)
             return False
         if not isinstance(itemLayout, nwItemLayout):
             return False
@@ -370,12 +367,12 @@ class NWTree():
     def __len__(self):
         """Return the length counter. Does not check that it is correct!
         """
-        return self._theLength
+        return len(self._treeOrder)
 
     def __bool__(self):
         """Returns True if the tree has any entries.
         """
-        return self._theLength > 0
+        return len(self._treeOrder) > 0
 
     ##
     #  Item Access Methods
@@ -391,19 +388,21 @@ class NWTree():
         return None
 
     def __delitem__(self, tHandle):
-        """This only removes the item from the order list, but not from
-        the project tree.
+        """Remove an item from the internal lists and dictionaries.
         """
-        if tHandle not in self._treeOrder:
-            logger.warning(
-                "Could not remove item %s from project tree as it does not exist" % tHandle
-            )
+        if tHandle in self._treeOrder and tHandle in self._projTree:
+            self._treeOrder.remove(tHandle)
+            del self._projTree[tHandle]
+        else:
+            logger.warning("Failed to delete item %s: item not found" % tHandle)
             return False
-        self._treeOrder.remove(tHandle)
-        self._theLength = len(self._treeOrder)
 
         if tHandle in self._treeRoots:
             self._treeRoots.remove(tHandle)
+        if tHandle == self._trashRoot:
+            self._trashRoot = None
+        if tHandle == self._archRoot:
+            self._archRoot = None
 
         self._setTreeChanged(True)
 
@@ -427,7 +426,7 @@ class NWTree():
     def __next__(self):
         """Returns the item from the next entry in the _treeOrder list.
         """
-        if self._theIndex < self._theLength:
+        if self._theIndex < len(self._treeOrder):
             theItem = self.__getitem__(self._treeOrder[self._theIndex])
             self._theIndex += 1
             return theItem

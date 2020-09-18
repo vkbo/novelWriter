@@ -27,6 +27,7 @@
 
 import logging
 import json
+import nw
 
 from os import path
 from time import time
@@ -66,9 +67,9 @@ class NWIndex():
     def __init__(self, theProject, theParent):
 
         # Internal
+        self.mainConf    = nw.CONFIG
         self.theProject  = theProject
         self.theParent   = theParent
-        self.mainConf    = self.theParent.mainConf
         self.indexBroken = False
 
         # Indices

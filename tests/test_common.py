@@ -5,7 +5,7 @@
 import pytest
 from nw.common import (
     checkString, checkBool, checkInt, colRange, formatInt, transferCase,
-    fuzzyTime
+    fuzzyTime, checkHandle
 )
 from nwtools import cmpList
 
@@ -41,6 +41,15 @@ def testCheckBool():
     assert checkBool(0.0, None, False) is None
     assert checkBool(1.0, None, False) is None
     assert checkBool(2.0, None, False) is None
+
+@pytest.mark.core
+def testCheckHandle():
+    assert checkHandle("None", 1, True) is None
+    assert checkHandle("None", 1, False) == 1
+    assert checkHandle(None, 1, True) is None
+    assert checkHandle(None, 1, False) == 1
+    assert checkHandle("47666c91c7ccf", None, False) == "47666c91c7ccf"
+    assert checkHandle("h7666c91c7ccf", None, False) is None
 
 @pytest.mark.core
 def testColRange():
