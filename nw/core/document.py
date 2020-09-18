@@ -26,11 +26,9 @@
 """
 
 import logging
-import nw
 
 from os import path, rename, unlink
 
-from nw.core.item import NWItem
 from nw.constants import nwAlert
 from nw.common import isHandle
 from nw.constants import nwItemLayout, nwItemClass, nwConst
@@ -41,14 +39,14 @@ class NWDoc():
 
     def __init__(self, theProject, theParent):
 
-        self.mainConf   = nw.CONFIG
         self.theProject = theProject
         self.theParent  = theParent
 
-        self.theItem   = None
-        self.docHandle = None
-        self.fileLoc   = None
-        self.docMeta   = ""
+        # Internal Variables
+        self._theItem   = None # The currently open item
+        self._docHandle = None # The handle of the currently open item
+        self._fileLoc   = None # The file location of the currently open item
+        self._docMeta   = ""   # The meta string of the currently open item
 
         # Internal Mapping
         self.makeAlert = self.theParent.makeAlert
@@ -62,10 +60,10 @@ class NWDoc():
     def clearDocument(self):
         """Clear the document contents.
         """
-        self.theItem   = None
-        self.docHandle = None
-        self.fileLoc   = None
-        self.docMeta   = ""
+        self._theItem   = None
+        self._docHandle = None
+        self._fileLoc   = None
+        self._docMeta   = ""
         return
 
     def openDocument(self, tHandle, showStatus=True, isOrphan=False):
@@ -78,31 +76,31 @@ class NWDoc():
         # Always clear first, since the object will often be reused.
         self.clearDocument()
 
-        self.docHandle = tHandle
+        self._docHandle = tHandle
         if not isOrphan:
-            self.theItem = self.theProject.projTree[tHandle]
+            self._theItem = self.theProject.projTree[tHandle]
         else:
-            self.theItem = None
+            self._theItem = None
 
-        if self.theItem is None and not isOrphan:
+        if self._theItem is None and not isOrphan:
             self.clearDocument()
             return None
 
-        docFile = self.docHandle+".nwd"
+        docFile = self._docHandle+".nwd"
         logger.debug("Opening document %s" % docFile)
 
         docPath = path.join(self.theProject.projContent, docFile)
-        self.fileLoc = docPath
+        self._fileLoc = docPath
 
         theText = ""
-        self.docMeta = ""
+        self._docMeta = ""
         if path.isfile(docPath):
             try:
                 with open(docPath, mode="r", encoding="utf8") as inFile:
                     fstLine = inFile.readline()
                     if fstLine.startswith("%%~ "):
                         # This is the meta line
-                        self.docMeta = fstLine[4:].strip()
+                        self._docMeta = fstLine[4:].strip()
                     else:
                         theText = fstLine
                     theText += inFile.read()
@@ -120,10 +118,10 @@ class NWDoc():
             logger.debug("The requested document does not exist.")
             return ""
 
-        logger.verbose("DocMeta: '%s'" % self.docMeta)
+        logger.verbose("DocMeta: '%s'" % self._docMeta)
 
         if showStatus and not isOrphan:
-            self.theParent.statusBar.setStatus("Opened Document: %s" % self.theItem.itemName)
+            self.theParent.statusBar.setStatus("Opened Document: %s" % self._theItem.itemName)
 
         return theText
 
@@ -131,29 +129,29 @@ class NWDoc():
         """Save the document via temp file in case of save failure, and
         in any case keep a backup of the file.
         """
-        if self.docHandle is None:
+        if self._docHandle is None:
             return False
 
         self.theProject.ensureFolderStructure()
 
-        docFile = self.docHandle+".nwd"
+        docFile = self._docHandle+".nwd"
         logger.debug("Saving document %s" % docFile)
 
         docPath = path.join(self.theProject.projContent, docFile)
         docTemp = path.join(self.theProject.projContent, docFile+"~")
 
-        if isinstance(self.theItem, NWItem):
-            itemPath = self.theProject.projTree.getItemPath(self.docHandle)
+        if self._theItem is None:
+            docMeta = ""
+        else:
+            itemPath = self.theProject.projTree.getItemPath(self._docHandle)
             docMeta = (
                 "%%~ {handlepath:s}:{itemclass:s}:{itemlayout:s}:{itemname:s}\n"
             ).format(
                 handlepath = ":".join(itemPath),
-                itemclass  = self.theItem.itemClass.name,
-                itemlayout = self.theItem.itemLayout.name,
-                itemname   = self.theItem.itemName,
+                itemclass  = self._theItem.itemClass.name,
+                itemlayout = self._theItem.itemLayout.name,
+                itemname   = self._theItem.itemName,
             )
-        else:
-            docMeta = ""
 
         try:
             with open(docTemp, mode="w", encoding="utf8") as outFile:
@@ -169,7 +167,7 @@ class NWDoc():
             unlink(docPath)
         rename(docTemp, docPath)
 
-        self.theParent.statusBar.setStatus("Saved Document: %s" % self.theItem.itemName)
+        self.theParent.statusBar.setStatus("Saved Document: %s" % self._theItem.itemName)
 
         return True
 
@@ -201,15 +199,25 @@ class NWDoc():
     #  Getters
     ##
 
+    def getFileLocation(self):
+        """Return the file location of the current file.
+        """
+        return self._fileLoc
+
+    def getCurrentItem(self):
+        """Return a pointer to the currently open item.
+        """
+        return self._theItem
+
     def getMeta(self):
         """Parses the document meta tag and returns the path and name as
         a list and a string.
         """
-        if len(self.docMeta) < 14:
+        if len(self._docMeta) < 14:
             # Not enough information
             return "", [], None, None
 
-        theMeta = self.docMeta
+        theMeta = self._docMeta
 
         # Scan for handles
         thePath = []

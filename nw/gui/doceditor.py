@@ -270,10 +270,12 @@ class GuiDocEditor(QTextEdit):
         afTime = time()
         logger.debug("Document highlighted in %.3f milliseconds" % (1000*(afTime-bfTime)))
 
-        if tLine is None:
-            self.setCursorPosition(self.nwDocument.theItem.cursorPos)
+        theItem = self.nwDocument.getCurrentItem()
+        if tLine is None and theItem is not None:
+            self.setCursorPosition(theItem.cursorPos)
         else:
             self.setCursorLine(tLine)
+
         self.lastEdit = time()
         self._runCounter()
         self.wcTimer.start()
@@ -308,21 +310,20 @@ class GuiDocEditor(QTextEdit):
         """Save the text currently in the editor to the NWDoc object,
         and update the NWItem meta data.
         """
-        if self.nwDocument.theItem is None:
+        theItem = self.nwDocument.getCurrentItem()
+        if theItem is None:
             return False
 
         docText = self.getText()
         cursPos = self.getCursorPosition()
-        self.nwDocument.theItem.setCharCount(self.charCount)
-        self.nwDocument.theItem.setWordCount(self.wordCount)
-        self.nwDocument.theItem.setParaCount(self.paraCount)
-        self.nwDocument.theItem.setCursorPos(cursPos)
+        theItem.setCharCount(self.charCount)
+        theItem.setWordCount(self.wordCount)
+        theItem.setParaCount(self.paraCount)
+        theItem.setCursorPos(cursPos)
         self.nwDocument.saveDocument(docText)
         self.setDocumentChanged(False)
 
-        self.theParent.theIndex.scanText(
-            self.nwDocument.theItem.itemHandle, docText
-        )
+        self.theParent.theIndex.scanText(theItem.itemHandle, docText)
 
         return True
 
@@ -598,7 +599,7 @@ class GuiDocEditor(QTextEdit):
                 "Location: {fileLoc:s}"
             ).format(
                 handle  = self.theHandle,
-                fileLoc = str(self.nwDocument.fileLoc)
+                fileLoc = str(self.nwDocument.getFileLocation())
             ))
         return
 
@@ -873,7 +874,8 @@ class GuiDocEditor(QTextEdit):
     def _updateCounts(self):
         """Slot for the word counter's finished signal
         """
-        if self.theHandle is None or self.nwDocument.theItem is None:
+        theItem = self.nwDocument.getCurrentItem()
+        if self.theHandle is None or theItem is None:
             return
 
         logger.verbose("Updating word count")
@@ -881,9 +883,9 @@ class GuiDocEditor(QTextEdit):
         self.charCount = self.wCounter.charCount
         self.wordCount = self.wCounter.wordCount
         self.paraCount = self.wCounter.paraCount
-        self.nwDocument.theItem.setCharCount(self.charCount)
-        self.nwDocument.theItem.setWordCount(self.wordCount)
-        self.nwDocument.theItem.setParaCount(self.paraCount)
+        theItem.setCharCount(self.charCount)
+        theItem.setWordCount(self.wordCount)
+        theItem.setParaCount(self.paraCount)
 
         self.theParent.treeView.propagateCount(self.theHandle, self.wordCount)
         self.theParent.treeView.projectWordCount()
