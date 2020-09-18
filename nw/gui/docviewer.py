@@ -639,7 +639,8 @@ class GuiDocViewHistory():
         return
 
     def _truncateHistory(self, atPos):
-        """Truncate the navigation history to the given position.
+        """Truncate the navigation history to the given position. Also
+        enforces a maximum length of the navigation history to 20.
         """
         nSkip = 1 if atPos > 19 else 0
 
@@ -652,13 +653,15 @@ class GuiDocViewHistory():
         return
 
     def _dumpHistory(self):
-        """Debug function to dump history. Since it is a for loop, it is
-        skipped entirely if log level isn't VERBOSE.
+        """Debug function to dump history to the logger. Since it is a
+        for loop, it is skipped entirely if log level isn't VERBOSE.
         """
         if logger.getEffectiveLevel() < logging.DEBUG:
             for i, (h, p) in enumerate(zip(self._navHistory, self._posHistory)):
                 logger.verbose(
-                    "History: %s %2d %13s %5d" % (">" if i == self._currPos else " ", i, h, p)
+                    "History %02d: %s %13s [x:%d]" % (
+                        i + 1, ">" if i == self._currPos else " ", h, p
+                    )
                 )
         return
 

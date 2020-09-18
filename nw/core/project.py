@@ -1441,23 +1441,24 @@ class NWProject():
     def _deprecatedFiles(self):
         """Delete files that are no longer used by novelWriter.
         """
-        rmList = []
-        rmList.append(path.join(self.projCache, "nwProject.nwx.0"))
-        rmList.append(path.join(self.projCache, "nwProject.nwx.1"))
-        rmList.append(path.join(self.projCache, "nwProject.nwx.2"))
-        rmList.append(path.join(self.projCache, "nwProject.nwx.3"))
-        rmList.append(path.join(self.projCache, "nwProject.nwx.4"))
-        rmList.append(path.join(self.projCache, "nwProject.nwx.5"))
-        rmList.append(path.join(self.projCache, "nwProject.nwx.6"))
-        rmList.append(path.join(self.projCache, "nwProject.nwx.7"))
-        rmList.append(path.join(self.projCache, "nwProject.nwx.8"))
-        rmList.append(path.join(self.projCache, "nwProject.nwx.9"))
-        rmList.append(path.join(self.projMeta,  "mainOptions.json"))
-        rmList.append(path.join(self.projMeta,  "exportOptions.json"))
-        rmList.append(path.join(self.projMeta,  "outlineOptions.json"))
-        rmList.append(path.join(self.projMeta,  "timelineOptions.json"))
-        rmList.append(path.join(self.projMeta,  "docMergeOptions.json"))
-        rmList.append(path.join(self.projMeta,  "sessionLogOptions.json"))
+        rmList = [
+            path.join(self.projCache, "nwProject.nwx.0"),
+            path.join(self.projCache, "nwProject.nwx.1"),
+            path.join(self.projCache, "nwProject.nwx.2"),
+            path.join(self.projCache, "nwProject.nwx.3"),
+            path.join(self.projCache, "nwProject.nwx.4"),
+            path.join(self.projCache, "nwProject.nwx.5"),
+            path.join(self.projCache, "nwProject.nwx.6"),
+            path.join(self.projCache, "nwProject.nwx.7"),
+            path.join(self.projCache, "nwProject.nwx.8"),
+            path.join(self.projCache, "nwProject.nwx.9"),
+            path.join(self.projMeta,  "mainOptions.json"),
+            path.join(self.projMeta,  "exportOptions.json"),
+            path.join(self.projMeta,  "outlineOptions.json"),
+            path.join(self.projMeta,  "timelineOptions.json"),
+            path.join(self.projMeta,  "docMergeOptions.json"),
+            path.join(self.projMeta,  "sessionLogOptions.json"),
+        ]
 
         for rmFile in rmList:
             if path.isfile(rmFile):

@@ -84,7 +84,7 @@ class NWTree():
         if tHandle is None:
             tHandle = self._makeHandle()
 
-        logger.verbose("Adding entry %s with parent %s" % (str(tHandle), str(pHandle)))
+        logger.verbose("Adding item %s with parent %s" % (str(tHandle), str(pHandle)))
 
         nwItem.setHandle(tHandle)
         nwItem.setParent(pHandle)
@@ -93,15 +93,15 @@ class NWTree():
         self._treeOrder.append(tHandle)
 
         if nwItem.itemType == nwItemType.ROOT:
-            logger.verbose("Entry %s is a root item" % str(tHandle))
+            logger.verbose("Item %s is a root item" % str(tHandle))
             self._treeRoots.append(tHandle)
             if nwItem.itemClass == nwItemClass.ARCHIVE:
-                logger.verbose("Entry %s is the archive folder" % str(tHandle))
+                logger.verbose("Item %s is the archive folder" % str(tHandle))
                 self._archRoot = tHandle
 
         if nwItem.itemType == nwItemType.TRASH:
             if self._trashRoot is None:
-                logger.verbose("Entry %s is the trash folder" % str(tHandle))
+                logger.verbose("Item %s is the trash folder" % str(tHandle))
                 self._trashRoot = tHandle
             else:
                 logger.error("Only one trash folder allowed")
