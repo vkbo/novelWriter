@@ -27,7 +27,6 @@
 
 import logging
 import re
-import nw
 
 from operator import itemgetter
 from PyQt5.QtCore import QRegularExpression
@@ -74,9 +73,8 @@ class Tokenizer():
 
     def __init__(self, theProject, theParent):
 
-        self.mainConf    = nw.CONFIG
-        self.theProject  = theProject
-        self.theParent   = theParent
+        self.theProject = theProject
+        self.theParent  = theParent
 
         # Data Variables
         self.theText     = None # The raw text to be tokenized
