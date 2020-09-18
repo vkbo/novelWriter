@@ -28,7 +28,6 @@
 
 import logging
 import json
-import nw
 
 from os import path
 
@@ -40,9 +39,7 @@ class OptionState():
 
     def __init__(self, theProject):
 
-        self.mainConf   = nw.CONFIG
         self.theProject = theProject
-
         self.theState = {}
         self.validMap = {
             "GuiWritingStats": {
