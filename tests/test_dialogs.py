@@ -17,9 +17,7 @@ from nw.gui import (
     GuiDocMerge, GuiDocSplit, GuiWritingStats, GuiProjectWizard,
     GuiProjectLoad
 )
-from nw.constants import (
-    nwItemType, nwItemLayout, nwItemClass
-)
+from nw.constants import nwItemType, nwItemLayout, nwItemClass
 
 keyDelay = 2
 stepDelay = 20

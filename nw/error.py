@@ -138,6 +138,7 @@ class NWErrorMessage(QDialog):
 def exceptionHandler(exType, exValue, exTrace):
     """Function to catch unhandled global exceptions.
     """
+    import nw
     import logging
     from traceback import print_tb
     from PyQt5.QtWidgets import qApp
@@ -158,9 +159,9 @@ def exceptionHandler(exType, exValue, exTrace):
             return
 
         errMsg = NWErrorMessage(nwGUI)
-        nwGUI.activeDialog = errMsg
         errMsg.setMessage(exType, exValue, exTrace)
-        errMsg.exec_()
+        if nw.CONFIG.showGUI:
+            errMsg.exec_()
 
         try:
             # Try a controlled shudown

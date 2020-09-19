@@ -6,21 +6,20 @@ import nw
 import sys
 import pytest
 
-from nwtools import getGuiItem
+from PyQt5.QtWidgets import qApp
 
-from PyQt5.QtCore import Qt, QTimer
-from PyQt5.QtWidgets import qApp, QDialogButtonBox
-
-from nw.error import NWErrorMessage, exceptionHandler
+from nw.error import NWErrorMessage
 
 @pytest.mark.error
 def testErrorDialog(qtbot, nwFuncTemp, nwTemp):
+    qApp.closeAllWindows()
     nwGUI = nw.main(["--testmode", "--config=%s" % nwFuncTemp, "--data=%s" % nwTemp])
     qtbot.addWidget(nwGUI)
     nwGUI.show()
     qtbot.waitForWindowShown(nwGUI)
 
     nwErr = NWErrorMessage(nwGUI)
+    qtbot.addWidget(nwErr)
     nwErr.show()
 
     # Invalid Error
@@ -35,23 +34,6 @@ def testErrorDialog(qtbot, nwFuncTemp, nwTemp):
     assert "Exception" in theMessage
     nwErr._doClose()
     nwErr.close()
-    del nwErr
-
-    # Exception Handler
-    def handleDialog():
-        while not isinstance(nwGUI.activeDialog, NWErrorMessage):
-            qApp.processEvents()
-
-        nwErr = nwGUI.activeDialog
-        theMessage = nwErr.msgBody.toPlainText()
-        assert theMessage
-        assert "Second Error" in theMessage
-        assert "Exception" in theMessage
-        btnClose = nwErr.btnBox.button(QDialogButtonBox.Close)
-        qtbot.mouseClick(btnClose, Qt.LeftButton, delay=1)
-
-    QTimer.singleShot(0, handleDialog)
-    exceptionHandler(Exception, "Second Error", sys.last_traceback)
 
     nwGUI.closeMain()
 
