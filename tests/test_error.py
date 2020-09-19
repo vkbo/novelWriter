@@ -8,7 +8,7 @@ import pytest
 
 from PyQt5.QtWidgets import qApp
 
-from nw.error import NWErrorMessage
+from nw.error import NWErrorMessage, exceptionHandler
 
 @pytest.mark.error
 def testErrorDialog(qtbot, nwFuncTemp, nwTemp):
@@ -34,6 +34,11 @@ def testErrorDialog(qtbot, nwFuncTemp, nwTemp):
     assert "Exception" in theMessage
     nwErr._doClose()
     nwErr.close()
+
+    theMessage = exceptionHandler(Exception, "Second Error", sys.last_traceback, testMode=True)
+    assert theMessage
+    assert "Second Error" in theMessage
+    assert "Exception" in theMessage
 
     nwGUI.closeMain()
 

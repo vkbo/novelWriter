@@ -135,7 +135,7 @@ class NWErrorMessage(QDialog):
 # END Class NWErrorMessage
 
 
-def exceptionHandler(exType, exValue, exTrace):
+def exceptionHandler(exType, exValue, exTrace, testMode=False):
     """Function to catch unhandled global exceptions.
     """
     import nw
@@ -173,7 +173,10 @@ def exceptionHandler(exType, exValue, exTrace):
             logger.critical("Could not close the project before exiting")
             logger.critical(str(e))
 
-        qApp.exit(1)
+        if testMode:
+            return errMsg.msgBody.toPlainText()
+        else:
+            qApp.exit(1)
 
     except Exception as e:
         logger.critical(str(e))
