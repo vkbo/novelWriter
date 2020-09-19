@@ -101,6 +101,12 @@ class GuiDocMerge(QDialog):
         for i in range(self.listBox.count()):
             finalOrder.append(self.listBox.item(i).data(Qt.UserRole))
 
+        if len(finalOrder) == 0:
+            self.theParent.makeAlert((
+                "No source documents found. Nothing to do."
+            ), nwAlert.ERROR)
+            return
+
         theDoc = NWDoc(self.theProject, self.theParent)
         theText = ""
         for tHandle in finalOrder:
