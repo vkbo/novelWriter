@@ -3,7 +3,6 @@
 """
 
 import nw
-import sys
 import pytest
 
 from PyQt5.QtWidgets import qApp
@@ -27,7 +26,7 @@ def testErrorDialog(qtbot, nwFuncTemp, nwTemp):
     assert nwErr.msgBody.toPlainText() == "Failed to generate error report ..."
 
     # Valid Error
-    nwErr.setMessage(Exception, "First Error", sys.last_traceback)
+    nwErr.setMessage(Exception, "First Error", None)
     theMessage = nwErr.msgBody.toPlainText()
     assert theMessage
     assert "First Error" in theMessage
@@ -35,7 +34,7 @@ def testErrorDialog(qtbot, nwFuncTemp, nwTemp):
     nwErr._doClose()
     nwErr.close()
 
-    theMessage = exceptionHandler(Exception, "Second Error", sys.last_traceback, testMode=True)
+    theMessage = exceptionHandler(Exception, "Second Error", None, testMode=True)
     assert theMessage
     assert "Second Error" in theMessage
     assert "Exception" in theMessage
