@@ -36,7 +36,7 @@ def nwConf(nwRef, nwTemp):
     return theConf
 
 @pytest.fixture(scope="session")
-def tmpConf(nwRef, nwTemp):
+def tmpConf(nwTemp):
     theConf = Config()
     theConf.initConfig(nwTemp, nwTemp)
     theConf.setLastPath("")

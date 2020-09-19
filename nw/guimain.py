@@ -855,24 +855,32 @@ class GuiMain(QMainWindow):
             popMsg = theMessage
             logMsg = [theMessage]
 
-        msgBox = QMessageBox()
+        # Write to Log
         if theLevel == nwAlert.INFO:
             for msgLine in logMsg:
                 logger.info(msgLine)
-            msgBox.information(self, "Information", popMsg)
         elif theLevel == nwAlert.WARN:
             for msgLine in logMsg:
                 logger.warning(msgLine)
-            msgBox.warning(self, "Warning", popMsg)
         elif theLevel == nwAlert.ERROR:
             for msgLine in logMsg:
                 logger.error(msgLine)
-            msgBox.critical(self, "Error", popMsg)
         elif theLevel == nwAlert.BUG:
             for msgLine in logMsg:
                 logger.error(msgLine)
-            popMsg += "<br>This is a bug!"
-            msgBox.critical(self, "Internal Error", popMsg)
+
+        # Popup
+        if self.mainConf.showGUI:
+            msgBox = QMessageBox()
+            if theLevel == nwAlert.INFO:
+                msgBox.information(self, "Information", popMsg)
+            elif theLevel == nwAlert.WARN:
+                msgBox.warning(self, "Warning", popMsg)
+            elif theLevel == nwAlert.ERROR:
+                msgBox.critical(self, "Error", popMsg)
+            elif theLevel == nwAlert.BUG:
+                popMsg += "<br>This is a bug!"
+                msgBox.critical(self, "Internal Error", popMsg)
 
         return
 

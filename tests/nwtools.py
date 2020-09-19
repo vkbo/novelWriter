@@ -67,3 +67,4 @@ def getGuiItem(theName):
     for qWidget in qApp.topLevelWidgets():
         if qWidget.objectName() == theName:
             return qWidget
+    return None

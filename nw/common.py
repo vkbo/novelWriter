@@ -243,8 +243,6 @@ def fuzzyTime(secDiff):
     else:
         return "%d years ago" % int(round(secDiff/31557600))
 
-    return "beyond time and space"
-
 def makeFileNameSafe(theText):
     """Returns a filename safe version of the text.
     """

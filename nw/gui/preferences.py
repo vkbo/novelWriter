@@ -39,7 +39,6 @@ from PyQt5.QtWidgets import (
 
 from nw.gui.custom import QSwitch, QConfigLayout, PagedDialog, QuotesDialog
 from nw.core import NWSpellCheck, NWSpellSimple, NWSpellEnchant
-from nw.constants import nwQuotes
 
 logger = logging.getLogger(__name__)
 
@@ -104,7 +103,7 @@ class GuiPreferences(PagedDialog):
         validEntries &= retA
         needsRestart |= retB
 
-        if needsRestart:
+        if needsRestart and self.mainConf.showGUI:
             msgBox = QMessageBox()
             msgBox.information(
                 self, "Preferences",
@@ -817,69 +816,70 @@ class GuiConfigEditAutoReplaceTab(QWidget):
 
         qWidth = self.mainConf.pxInt(40)
         bWidth = int(2.5*self.theTheme.getTextWidth("..."))
+        self.quoteSym = {}
 
         ## Single Quote Style
-        self.quoteSingleStyleO = QLineEdit()
-        self.quoteSingleStyleO.setMaxLength(1)
-        self.quoteSingleStyleO.setReadOnly(True)
-        self.quoteSingleStyleO.setFixedWidth(qWidth)
-        self.quoteSingleStyleO.setAlignment(Qt.AlignCenter)
-        self.quoteSingleStyleO.setText(self.mainConf.fmtSingleQuotes[0])
+        self.quoteSym["SO"] = QLineEdit()
+        self.quoteSym["SO"].setMaxLength(1)
+        self.quoteSym["SO"].setReadOnly(True)
+        self.quoteSym["SO"].setFixedWidth(qWidth)
+        self.quoteSym["SO"].setAlignment(Qt.AlignCenter)
+        self.quoteSym["SO"].setText(self.mainConf.fmtSingleQuotes[0])
         self.btnSingleStyleO = QPushButton("...")
         self.btnSingleStyleO.setMaximumWidth(bWidth)
-        self.btnSingleStyleO.clicked.connect(self._getSingleOpen)
+        self.btnSingleStyleO.clicked.connect(lambda: self._getQuote("SO"))
         self.mainForm.addRow(
             "Single quote open style",
-            self.quoteSingleStyleO,
+            self.quoteSym["SO"],
             "Auto-replaces apostrophe before words.",
             theButton=self.btnSingleStyleO
         )
 
-        self.quoteSingleStyleC = QLineEdit()
-        self.quoteSingleStyleC.setMaxLength(1)
-        self.quoteSingleStyleC.setReadOnly(True)
-        self.quoteSingleStyleC.setFixedWidth(qWidth)
-        self.quoteSingleStyleC.setAlignment(Qt.AlignCenter)
-        self.quoteSingleStyleC.setText(self.mainConf.fmtSingleQuotes[1])
+        self.quoteSym["SC"] = QLineEdit()
+        self.quoteSym["SC"].setMaxLength(1)
+        self.quoteSym["SC"].setReadOnly(True)
+        self.quoteSym["SC"].setFixedWidth(qWidth)
+        self.quoteSym["SC"].setAlignment(Qt.AlignCenter)
+        self.quoteSym["SC"].setText(self.mainConf.fmtSingleQuotes[1])
         self.btnSingleStyleC = QPushButton("...")
         self.btnSingleStyleC.setMaximumWidth(bWidth)
-        self.btnSingleStyleC.clicked.connect(self._getSingleClose)
+        self.btnSingleStyleC.clicked.connect(lambda: self._getQuote("SC"))
         self.mainForm.addRow(
             "Single quote close style",
-            self.quoteSingleStyleC,
+            self.quoteSym["SC"],
             "Auto-replaces apostrophe after words.",
             theButton=self.btnSingleStyleC
         )
 
         ## Double Quote Style
-        self.quoteDoubleStyleO = QLineEdit()
-        self.quoteDoubleStyleO.setMaxLength(1)
-        self.quoteDoubleStyleO.setReadOnly(True)
-        self.quoteDoubleStyleO.setFixedWidth(qWidth)
-        self.quoteDoubleStyleO.setAlignment(Qt.AlignCenter)
-        self.quoteDoubleStyleO.setText(self.mainConf.fmtDoubleQuotes[0])
+        self.quoteSym["DO"] = QLineEdit()
+        self.quoteSym["DO"].setMaxLength(1)
+        self.quoteSym["DO"].setReadOnly(True)
+        self.quoteSym["DO"].setFixedWidth(qWidth)
+        self.quoteSym["DO"].setAlignment(Qt.AlignCenter)
+        self.quoteSym["DO"].setText(self.mainConf.fmtDoubleQuotes[0])
         self.btnDoubleStyleO = QPushButton("...")
         self.btnDoubleStyleO.setMaximumWidth(bWidth)
-        self.btnDoubleStyleO.clicked.connect(self._getDoubleOpen)
+        self.btnDoubleStyleO.clicked.connect(lambda: self._getQuote("DO"))
         self.mainForm.addRow(
             "Double quote open style",
-            self.quoteDoubleStyleO,
+            self.quoteSym["DO"],
             "Auto-replaces straight quotes before words.",
             theButton=self.btnDoubleStyleO
         )
 
-        self.quoteDoubleStyleC = QLineEdit()
-        self.quoteDoubleStyleC.setMaxLength(1)
-        self.quoteDoubleStyleC.setReadOnly(True)
-        self.quoteDoubleStyleC.setFixedWidth(qWidth)
-        self.quoteDoubleStyleC.setAlignment(Qt.AlignCenter)
-        self.quoteDoubleStyleC.setText(self.mainConf.fmtDoubleQuotes[1])
+        self.quoteSym["DC"] = QLineEdit()
+        self.quoteSym["DC"].setMaxLength(1)
+        self.quoteSym["DC"].setReadOnly(True)
+        self.quoteSym["DC"].setFixedWidth(qWidth)
+        self.quoteSym["DC"].setAlignment(Qt.AlignCenter)
+        self.quoteSym["DC"].setText(self.mainConf.fmtDoubleQuotes[1])
         self.btnDoubleStyleC = QPushButton("...")
         self.btnDoubleStyleC.setMaximumWidth(bWidth)
-        self.btnDoubleStyleC.clicked.connect(self._getDoubleClose)
+        self.btnDoubleStyleC.clicked.connect(lambda: self._getQuote("DC"))
         self.mainForm.addRow(
             "Double quote close style",
-            self.quoteDoubleStyleC,
+            self.quoteSym["DC"],
             "Auto-replaces straight quotes after words.",
             theButton=self.btnDoubleStyleC
         )
@@ -906,10 +906,10 @@ class GuiConfigEditAutoReplaceTab(QWidget):
         self.mainConf.doReplaceDash   = doReplaceDash
         self.mainConf.doReplaceDots   = doReplaceDots
 
-        fmtSingleQuotesO = self.quoteSingleStyleO.text()
-        fmtSingleQuotesC = self.quoteSingleStyleC.text()
-        fmtDoubleQuotesO = self.quoteDoubleStyleO.text()
-        fmtDoubleQuotesC = self.quoteDoubleStyleC.text()
+        fmtSingleQuotesO = self.quoteSym["SO"].text()
+        fmtSingleQuotesC = self.quoteSym["SC"].text()
+        fmtDoubleQuotesO = self.quoteSym["DO"].text()
+        fmtDoubleQuotesC = self.quoteSym["DC"].text()
 
         self.mainConf.fmtSingleQuotes[0] = fmtSingleQuotesO
         self.mainConf.fmtSingleQuotes[1] = fmtSingleQuotesC
@@ -934,50 +934,12 @@ class GuiConfigEditAutoReplaceTab(QWidget):
         self.autoReplaceDots.setEnabled(theState)
         return
 
-    def _getSingleOpen(self):
+    def _getQuote(self, qType):
         """Dialog for single quote open.
         """
-        qtBox = QuotesDialog(self, currentQuote=self.quoteSingleStyleO.text())
+        qtBox = QuotesDialog(self, currentQuote=self.quoteSym[qType].text())
         if qtBox.exec_() == QDialog.Accepted:
-            self.quoteSingleStyleO.setText(qtBox.selectedQuote)
+            self.quoteSym[qType].setText(qtBox.selectedQuote)
         return
-
-    def _getSingleClose(self):
-        """Dialog for single quote close.
-        """
-        qtBox = QuotesDialog(self, currentQuote=self.quoteSingleStyleC.text())
-        if qtBox.exec_() == QDialog.Accepted:
-            self.quoteSingleStyleC.setText(qtBox.selectedQuote)
-        return
-
-    def _getDoubleOpen(self):
-        """Dialog for double quote open.
-        """
-        qtBox = QuotesDialog(self, currentQuote=self.quoteDoubleStyleO.text())
-        if qtBox.exec_() == QDialog.Accepted:
-            self.quoteDoubleStyleO.setText(qtBox.selectedQuote)
-        return
-
-    def _getDoubleClose(self):
-        """Dialog for double quote close.
-        """
-        qtBox = QuotesDialog(self, currentQuote=self.quoteDoubleStyleC.text())
-        if qtBox.exec_() == QDialog.Accepted:
-            self.quoteDoubleStyleC.setText(qtBox.selectedQuote)
-        return
-
-    ##
-    #  Internal Functions
-    ##
-
-    def _checkQuoteSymbol(self, toCheck):
-        """Check that the quote symbols entered are in nwQuotes and is
-        therefore a valid quote symbol for this app.
-        """
-        if len(toCheck) != 1:
-            return False
-        if toCheck in nwQuotes.SYMBOLS:
-            return True
-        return False
 
 # END Class GuiConfigEditAutoReplaceTab

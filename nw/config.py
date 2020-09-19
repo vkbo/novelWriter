@@ -54,9 +54,11 @@ class Config:
         # Set Application Variables
         self.appName   = "novelWriter"
         self.appHandle = self.appName.lower()
+        self.cmdOpen   = None
+
+        # Debug Settings
         self.showGUI   = True
         self.debugInfo = False
-        self.cmdOpen   = None
 
         # Config Error Handling
         self.hasError  = False

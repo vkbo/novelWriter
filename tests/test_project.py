@@ -12,7 +12,7 @@ from nw.core.project import NWProject
 from nw.core.document import NWDoc
 from nw.core.index import NWIndex
 from nw.core.spellcheck import NWSpellEnchant, NWSpellSimple
-from nw.constants import nwItemClass, nwItemLayout, nwFiles
+from nw.constants import nwItemClass, nwItemType, nwItemLayout, nwFiles
 
 @pytest.mark.project
 def testProjectNewOpenSave(nwFuncTemp, nwTempProj, nwRef, nwTemp, nwDummy):
@@ -431,3 +431,64 @@ def testProjectOptions(nwDummy, nwLipsum):
     assert theOpts.getFloat("GuiWritingStats", "NoName", False) is False
     assert theOpts.setValue("GuiWritingStats", "winWidth", "True")
     assert theOpts.getFloat("GuiWritingStats", "winWidth", False) is False
+
+@pytest.mark.project
+def testOrphanedFiles(nwDummy, nwLipsum):
+    theProject = NWProject(nwDummy)
+    assert theProject.openProject(nwLipsum)
+    assert theProject.projTree["636b6aa9b697b"] is None
+    assert theProject.closeProject()
+
+    # First Item with Meta Data
+    orphPath = path.join(nwLipsum, "content", "636b6aa9b697b.nwd")
+    with open(orphPath, mode="w", encoding="utf8") as outFile:
+        outFile.write(r"%%~ 5eaea4e8cdee8:15c4492bd5107:WORLD:NOTE:Mars")
+        outFile.write("\n")
+
+    # Second Item without Meta Data
+    orphPath = path.join(nwLipsum, "content", "736b6aa9b697b.nwd")
+    with open(orphPath, mode="w", encoding="utf8") as outFile:
+        outFile.write("\n")
+
+    # Invalid File Name
+    dummyPath = path.join(nwLipsum, "content", "636b6aa9b697b.txt")
+    with open(dummyPath, mode="w", encoding="utf8") as outFile:
+        outFile.write("\n")
+
+    # Invalid File Name
+    dummyPath = path.join(nwLipsum, "content", "636b6aa9b697bb.nwd")
+    with open(dummyPath, mode="w", encoding="utf8") as outFile:
+        outFile.write("\n")
+
+    # Invalid File Name
+    dummyPath = path.join(nwLipsum, "content", "abcdefghijklm.nwd")
+    with open(dummyPath, mode="w", encoding="utf8") as outFile:
+        outFile.write("\n")
+
+    assert theProject.openProject(nwLipsum)
+    assert theProject.projPath is not None
+    assert theProject.projTree["636b6aa9b697bb"] is None
+    assert theProject.projTree["abcdefghijklm"] is None
+
+    # First Item with Meta Data
+    oItem = theProject.projTree["636b6aa9b697b"]
+    assert oItem is not None
+    assert oItem.itemName == "Mars"
+    assert oItem.itemHandle == "636b6aa9b697b"
+    assert oItem.parHandle is None
+    assert oItem.itemClass == nwItemClass.WORLD
+    assert oItem.itemType == nwItemType.FILE
+    assert oItem.itemLayout == nwItemLayout.NOTE
+
+    # Second Item without Meta Data
+    oItem = theProject.projTree["736b6aa9b697b"]
+    assert oItem is not None
+    assert oItem.itemName == "Orphaned File 1"
+    assert oItem.itemHandle == "736b6aa9b697b"
+    assert oItem.parHandle is None
+    assert oItem.itemClass == nwItemClass.NO_CLASS
+    assert oItem.itemType == nwItemType.FILE
+    assert oItem.itemLayout == nwItemLayout.NO_LAYOUT
+
+    assert theProject.saveProject(nwLipsum)
+    assert theProject.closeProject()

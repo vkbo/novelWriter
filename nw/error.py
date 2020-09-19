@@ -35,6 +35,7 @@ class NWErrorMessage(QDialog):
 
     def __init__(self, parent):
         QDialog.__init__(self, parent=parent)
+        self.setObjectName("NWErrorMessage")
 
         # Widgets
         self.msgIcon = QLabel()
@@ -134,20 +135,17 @@ class NWErrorMessage(QDialog):
 # END Class NWErrorMessage
 
 
-def exceptionHandler(exType, exValue, exTrace):
+def exceptionHandler(exType, exValue, exTrace, testMode=False):
     """Function to catch unhandled global exceptions.
     """
+    import nw
     import logging
     from traceback import print_tb
-    from nw import CONFIG
     from PyQt5.QtWidgets import qApp
 
     logger = logging.getLogger(__name__)
     logger.critical("%s: %s" % (exType.__name__, str(exValue)))
     print_tb(exTrace)
-
-    if not CONFIG.showGUI:
-        return
 
     try:
         nwGUI = None
@@ -162,7 +160,8 @@ def exceptionHandler(exType, exValue, exTrace):
 
         errMsg = NWErrorMessage(nwGUI)
         errMsg.setMessage(exType, exValue, exTrace)
-        errMsg.exec_()
+        if nw.CONFIG.showGUI:
+            errMsg.exec_()
 
         try:
             # Try a controlled shudown
@@ -174,7 +173,10 @@ def exceptionHandler(exType, exValue, exTrace):
             logger.critical("Could not close the project before exiting")
             logger.critical(str(e))
 
-        qApp.exit(1)
+        if testMode:
+            return errMsg.msgBody.toPlainText()
+        else:
+            qApp.exit(1)
 
     except Exception as e:
         logger.critical(str(e))

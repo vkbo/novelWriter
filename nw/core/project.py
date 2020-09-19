@@ -41,7 +41,7 @@ from nw.core.document import NWDoc
 from nw.core.status import NWStatus
 from nw.core.options import OptionState
 from nw.common import (
-    checkString, checkBool, checkInt, formatTimeStamp, makeFileNameSafe
+    checkString, checkBool, checkInt, isHandle, formatTimeStamp, makeFileNameSafe
 )
 from nw.constants import (
     nwFiles, nwItemType, nwItemClass, nwItemLayout, nwLabels, nwAlert
@@ -1288,10 +1288,13 @@ class NWProject():
                 logger.warning("Skipping file %s" % fileItem)
                 continue
             fHandle = fileItem[:13]
+            if not isHandle(fHandle):
+                logger.warning("Skipping file %s" % fileItem)
+                continue
             if fHandle in self.projTree:
                 logger.debug("Checking file %s, handle %s: OK" % (fileItem, fHandle))
             else:
-                logger.debug("Checking file %s, handle %s: Orphaned" % (fileItem, fHandle))
+                logger.warning("Checking file %s, handle %s: Orphaned" % (fileItem, fHandle))
                 orphanFiles.append(fHandle)
 
         # Report status
