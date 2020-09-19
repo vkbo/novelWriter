@@ -1,5 +1,23 @@
 # novelWriter ChangeLog
 
+## Version 1.0 Beta 3 [2020-09-20]
+
+**Bugfixes**
+
+* After recent changes, the `Edit Project Item` entry (or shortcut `F2`) in the menu would cause an error. Other means of triggering the edit dialog for a selected item were working fine. The error was caused by a dummy variable being sent by the menu QAction element that was caught by a new optional variable in the dialog function. All other menu actions have been wrapped in lambda functions to prevent this from happening again. PR #448.
+* The Merge Tool was permitting a merge on an empty list of files to be merged. This would result in a new, empty file. The Merge Tool will now stop if the list of files is empty. PR #448.
+* The orphaned file handling function would cause an error if the orphaned file was empty. This would trigger a secondary issue with uninitialised variables, which have also been fixed. PR #448.
+
+**Code Improvements**
+
+* Minor improvemenmts have been made to the core project classes to improve encapsulation and better ensure consistency between the different data structures that store the novel project in memory. PR #447.
+* Some unused or redundant code has been removed, and in some places, functions have been merged to reduce code repetition. PR #449.
+
+**Test Suite**
+
+* A lot more tests have been added and test coverage improved. PR #449.
+
+
 ## Version 1.0 Beta 2 [2020-09-13]
 
 **Bugfixes**
