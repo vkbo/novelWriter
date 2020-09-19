@@ -35,6 +35,7 @@ class NWErrorMessage(QDialog):
 
     def __init__(self, parent):
         QDialog.__init__(self, parent=parent)
+        self.setObjectName("NWErrorMessage")
 
         # Widgets
         self.msgIcon = QLabel()
@@ -146,9 +147,6 @@ def exceptionHandler(exType, exValue, exTrace):
     logger.critical("%s: %s" % (exType.__name__, str(exValue)))
     print_tb(exTrace)
 
-    if not CONFIG.showGUI:
-        return
-
     try:
         nwGUI = None
         for qWin in qApp.topLevelWidgets():
@@ -161,6 +159,7 @@ def exceptionHandler(exType, exValue, exTrace):
             return
 
         errMsg = NWErrorMessage(nwGUI)
+        nwGUI.activeDialog = errMsg
         errMsg.setMessage(exType, exValue, exTrace)
         errMsg.exec_()
 

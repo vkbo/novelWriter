@@ -74,6 +74,9 @@ class GuiMain(QMainWindow):
             self.mainConf.verPyString, self.mainConf.verPyHexVal)
         )
 
+        # Debug Tools
+        self.activeDialog = None
+
         # Core Classes and settings
         self.theTheme    = GuiTheme(self)
         self.theProject  = NWProject(self)
