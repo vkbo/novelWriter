@@ -23,6 +23,7 @@ __pycache__
 
 # PyTest
 /prof/
+/htmlcov/
 /tests/temp
 /tests/lipsum/cache
 /tests/lipsum/meta
