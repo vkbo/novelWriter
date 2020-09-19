@@ -15,7 +15,7 @@ from PyQt5.QtWidgets import QDialogButtonBox, QTreeWidgetItem
 from nw.gui import (
     GuiProjectSettings, GuiItemEditor, GuiAbout, GuiBuildNovel,
     GuiDocMerge, GuiDocSplit, GuiWritingStats, GuiProjectWizard,
-    GuiProjectLoad
+    GuiProjectLoad, GuiPreferences
 )
 from nw.constants import nwItemType, nwItemLayout, nwItemClass
 
@@ -765,3 +765,151 @@ def testLoadProject(qtbot, nwMinimal, nwTemp):
     nwLoad.close()
     # qtbot.stopForInteraction()
     nwGUI.closeMain()
+
+@pytest.mark.gui
+def testPreferences(qtbot, nwMinimal, nwTemp, nwRef, tmpConf):
+    nwGUI = nw.main(["--testmode", "--config=%s" % nwMinimal, "--data=%s" % nwTemp])
+    qtbot.addWidget(nwGUI)
+    nwGUI.show()
+    qtbot.waitForWindowShown(nwGUI)
+    qtbot.wait(stepDelay)
+
+    assert nwGUI.openProject(nwMinimal)
+    nwPrefs = GuiPreferences(nwGUI, nwGUI.theProject)
+    nwPrefs.show()
+
+    # Override Config
+    tmpConf.showGUI = False
+    tmpConf.confPath = nwMinimal
+    nwGUI.mainConf = tmpConf
+    nwPrefs.mainConf = tmpConf
+    nwPrefs.tabGeneral.mainConf = tmpConf
+    nwPrefs.tabLayout.mainConf = tmpConf
+    nwPrefs.tabEditing.mainConf = tmpConf
+    nwPrefs.tabAutoRep.mainConf = tmpConf
+
+    # General Settings
+    qtbot.wait(keyDelay)
+    tabGeneral = nwPrefs.tabGeneral
+    nwPrefs._tabBox.setCurrentWidget(tabGeneral)
+    tabGeneral.backupPath = nwTemp
+
+    qtbot.wait(keyDelay)
+    assert not tabGeneral.preferDarkIcons.isChecked()
+    qtbot.mouseClick(tabGeneral.preferDarkIcons, Qt.LeftButton)
+    assert tabGeneral.preferDarkIcons.isChecked()
+
+    qtbot.wait(keyDelay)
+    assert tabGeneral.showFullPath.isChecked()
+    qtbot.mouseClick(tabGeneral.showFullPath, Qt.LeftButton)
+    assert not tabGeneral.showFullPath.isChecked()
+
+    qtbot.wait(keyDelay)
+    assert not tabGeneral.backupOnClose.isChecked()
+    qtbot.mouseClick(tabGeneral.backupOnClose, Qt.LeftButton)
+    assert tabGeneral.backupOnClose.isChecked()
+
+    qtbot.wait(keyDelay)
+    tabGeneral.guiFontSize.setValue(12)
+    tabGeneral.autoSaveDoc.setValue(20)
+    tabGeneral.autoSaveProj.setValue(40)
+
+    # Text Layour Settings
+    qtbot.wait(keyDelay)
+    tabLayout = nwPrefs.tabLayout
+    nwPrefs._tabBox.setCurrentWidget(tabLayout)
+
+    qtbot.wait(keyDelay)
+    tabLayout.textStyleSize.setValue(13)
+    tabLayout.textFlowMax.setValue(700)
+    tabLayout.focusDocWidth.setValue(900)
+    tabLayout.textMargin.setValue(45)
+    tabLayout.tabWidth.setValue(45)
+
+    qtbot.wait(keyDelay)
+    assert not tabLayout.textFlowFixed.isChecked()
+    qtbot.mouseClick(tabLayout.textFlowFixed, Qt.LeftButton)
+    assert tabLayout.textFlowFixed.isChecked()
+
+    qtbot.wait(keyDelay)
+    assert not tabLayout.hideFocusFooter.isChecked()
+    qtbot.mouseClick(tabLayout.hideFocusFooter, Qt.LeftButton)
+    assert tabLayout.hideFocusFooter.isChecked()
+
+    qtbot.wait(keyDelay)
+    assert tabLayout.textJustify.isChecked()
+    qtbot.mouseClick(tabLayout.textJustify, Qt.LeftButton)
+    assert not tabLayout.textJustify.isChecked()
+
+    # Editor Settings
+    qtbot.wait(keyDelay)
+    tabEditing = nwPrefs.tabEditing
+    nwPrefs._tabBox.setCurrentWidget(tabEditing)
+
+    qtbot.wait(keyDelay)
+    assert tabEditing.highlightQuotes.isChecked()
+    qtbot.mouseClick(tabEditing.highlightQuotes, Qt.LeftButton)
+    assert not tabEditing.highlightQuotes.isChecked()
+
+    qtbot.wait(keyDelay)
+    assert tabEditing.highlightEmph.isChecked()
+    qtbot.mouseClick(tabEditing.highlightEmph, Qt.LeftButton)
+    assert not tabEditing.highlightEmph.isChecked()
+
+    qtbot.wait(keyDelay)
+    assert not tabEditing.showTabsNSpaces.isChecked()
+    qtbot.mouseClick(tabEditing.showTabsNSpaces, Qt.LeftButton)
+    assert tabEditing.showTabsNSpaces.isChecked()
+
+    qtbot.wait(keyDelay)
+    assert not tabEditing.showLineEndings.isChecked()
+    qtbot.mouseClick(tabEditing.showLineEndings, Qt.LeftButton)
+    assert tabEditing.showLineEndings.isChecked()
+
+    qtbot.wait(keyDelay)
+    tabEditing.bigDocLimit.setValue(500)
+
+    # Auto-Replace Settings
+    qtbot.wait(keyDelay)
+    tabAutoRep = nwPrefs.tabAutoRep
+    nwPrefs._tabBox.setCurrentWidget(tabAutoRep)
+
+    qtbot.wait(keyDelay)
+    assert tabAutoRep.autoSelect.isChecked()
+    qtbot.mouseClick(tabAutoRep.autoSelect, Qt.LeftButton)
+    assert not tabAutoRep.autoSelect.isChecked()
+
+    qtbot.wait(keyDelay)
+    assert tabAutoRep.autoReplaceMain.isChecked()
+    qtbot.mouseClick(tabAutoRep.autoReplaceMain, Qt.LeftButton)
+    assert not tabAutoRep.autoReplaceMain.isChecked()
+
+    qtbot.wait(keyDelay)
+    assert not tabAutoRep.autoReplaceSQ.isEnabled()
+    assert not tabAutoRep.autoReplaceDQ.isEnabled()
+    assert not tabAutoRep.autoReplaceDash.isEnabled()
+    assert not tabAutoRep.autoReplaceDots.isEnabled()
+
+    # Save and Check Config
+    # qtbot.stopForInteraction()
+    qtbot.mouseClick(nwPrefs.buttonBox.button(QDialogButtonBox.Ok), Qt.LeftButton)
+
+    assert tmpConf.confChanged
+    assert tmpConf.backupPath == nwTemp
+    tmpConf.backupPath = ""
+    tmpConf.lastPath = ""
+
+    assert nwGUI.mainConf.saveConfig()
+
+    nwGUI.closeMain()
+
+    refConf = path.join(nwRef, "prefs_novelwriter.conf")
+    projConf = path.join(nwGUI.mainConf.confPath, "novelwriter.conf")
+    testConf = path.join(nwTemp, "prefs_novelwriter.conf")
+    copyfile(projConf, testConf)
+    ignoreLines = [
+        2,                          # Timestamp
+        11, 12, 13, 14, 15, 16, 17, # Window sizes
+        7, 25,                      # Fonts (depends in system default)
+    ]
+    assert cmpFiles(testConf, refConf, ignoreLines)
