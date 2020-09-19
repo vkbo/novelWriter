@@ -39,7 +39,6 @@ from PyQt5.QtWidgets import (
 
 from nw.gui.custom import QSwitch, QConfigLayout, PagedDialog, QuotesDialog
 from nw.core import NWSpellCheck, NWSpellSimple, NWSpellEnchant
-from nw.constants import nwQuotes
 
 logger = logging.getLogger(__name__)
 
