@@ -130,13 +130,7 @@ class GuiMainMenu(QMenuBar):
     #  Menu Action
     ##
 
-    def _menuExit(self):
-        """Exit novelWriter.
-        """
-        self.theParent.closeMain()
-        return
-
-    def _toggleSpellCheck(self):
+    def _toggleSpellCheck(self, isChecked=False):
         """Toggle spell checking. The active status of the spell check
         flag is handled by the document editor class, so we make no
         decision, just pass a None to the function and let it decide.
@@ -150,7 +144,7 @@ class GuiMainMenu(QMenuBar):
         self.theProject.setAutoOutline(theMode)
         return True
 
-    def _openAssistant(self):
+    def _openAssistant(self, isChecked=False):
         """Open the documentation in Qt Assistant.
         """
         if not self.mainConf.hasHelp:
@@ -178,18 +172,6 @@ class GuiMainMenu(QMenuBar):
         QDesktopServices.openUrl(QUrl(nw.__issuesurl__))
         return True
 
-    def _showDocumentLocation(self):
-        """Open the dialog showing the location of the editor document.
-        """
-        self.theParent.docEditor.revealLocation()
-        return True
-
-    def _doBackup(self):
-        """Call the backup function for the project.
-        """
-        self.theProject.zipIt(True)
-        return True
-
     ##
     #  Menu Builders
     ##
@@ -203,35 +185,35 @@ class GuiMainMenu(QMenuBar):
         # Project > New Project
         self.aNewProject = QAction("New Project", self)
         self.aNewProject.setStatusTip("Create new project")
-        self.aNewProject.triggered.connect(lambda : self.theParent.newProject(None))
+        self.aNewProject.triggered.connect(lambda: self.theParent.newProject(None))
         self.projMenu.addAction(self.aNewProject)
 
         # Project > Open Project
         self.aOpenProject = QAction("Open Project", self)
         self.aOpenProject.setStatusTip("Open project")
         self.aOpenProject.setShortcut("Ctrl+Shift+O")
-        self.aOpenProject.triggered.connect(self.theParent.manageProjects)
+        self.aOpenProject.triggered.connect(lambda: self.theParent.manageProjects())
         self.projMenu.addAction(self.aOpenProject)
 
         # Project > Save Project
         self.aSaveProject = QAction("Save Project", self)
         self.aSaveProject.setStatusTip("Save project")
         self.aSaveProject.setShortcut("Ctrl+Shift+S")
-        self.aSaveProject.triggered.connect(self.theParent.saveProject)
+        self.aSaveProject.triggered.connect(lambda: self.theParent.saveProject())
         self.projMenu.addAction(self.aSaveProject)
 
         # Project > Close Project
         self.aCloseProject = QAction("Close Project", self)
         self.aCloseProject.setStatusTip("Close project")
         self.aCloseProject.setShortcut("Ctrl+Shift+W")
-        self.aCloseProject.triggered.connect(lambda : self.theParent.closeProject(False))
+        self.aCloseProject.triggered.connect(lambda: self.theParent.closeProject(False))
         self.projMenu.addAction(self.aCloseProject)
 
         # Project > Project Settings
         self.aProjectSettings = QAction("Project Settings", self)
         self.aProjectSettings.setStatusTip("Project settings")
         self.aProjectSettings.setShortcut("Ctrl+Shift+,")
-        self.aProjectSettings.triggered.connect(self.theParent.editProjectDialog)
+        self.aProjectSettings.triggered.connect(lambda: self.theParent.editProjectDialog())
         self.projMenu.addAction(self.aProjectSettings)
 
         # Project > Separator
@@ -253,7 +235,7 @@ class GuiMainMenu(QMenuBar):
         for itemClass in self.rootItems.keys():
             nCount += 1 # This forces the lambdas to be unique
             self.rootItems[itemClass].triggered.connect(
-                lambda nCount, itemClass=itemClass : self._newTreeItem(nwItemType.ROOT, itemClass)
+                lambda nCount, itemClass=itemClass: self._newTreeItem(nwItemType.ROOT, itemClass)
             )
             self.rootMenu.addAction(self.rootItems[itemClass])
 
@@ -261,7 +243,7 @@ class GuiMainMenu(QMenuBar):
         self.aCreateFolder = QAction("Create Folder", self)
         self.aCreateFolder.setStatusTip("Create folder")
         self.aCreateFolder.setShortcut("Ctrl+Shift+N")
-        self.aCreateFolder.triggered.connect(lambda : self._newTreeItem(nwItemType.FOLDER, None))
+        self.aCreateFolder.triggered.connect(lambda: self._newTreeItem(nwItemType.FOLDER, None))
         self.projMenu.addAction(self.aCreateFolder)
 
         # Project > Separator
@@ -271,20 +253,20 @@ class GuiMainMenu(QMenuBar):
         self.aEditItem = QAction("Edit Project Item", self)
         self.aEditItem.setStatusTip("Change item settings")
         self.aEditItem.setShortcuts(["Ctrl+E", "F2"])
-        self.aEditItem.triggered.connect(self.theParent.editItem)
+        self.aEditItem.triggered.connect(lambda: self.theParent.editItem(None))
         self.projMenu.addAction(self.aEditItem)
 
         # Project > Delete
         self.aDeleteItem = QAction("Delete Project Item", self)
         self.aDeleteItem.setStatusTip("Delete selected item")
         self.aDeleteItem.setShortcut("Ctrl+Del")
-        self.aDeleteItem.triggered.connect(lambda : self.theParent.treeView.deleteItem(None))
+        self.aDeleteItem.triggered.connect(lambda: self.theParent.treeView.deleteItem(None))
         self.projMenu.addAction(self.aDeleteItem)
 
         # Project > Empty Trash
         self.aEmptyTrash = QAction("Empty Trash", self)
         self.aEmptyTrash.setStatusTip("Permanently delete all files in the Trash folder")
-        self.aEmptyTrash.triggered.connect(self.theParent.treeView.emptyTrash)
+        self.aEmptyTrash.triggered.connect(lambda: self.theParent.treeView.emptyTrash())
         self.projMenu.addAction(self.aEmptyTrash)
 
         # Project > Separator
@@ -294,7 +276,7 @@ class GuiMainMenu(QMenuBar):
         self.aExitNW = QAction("Exit", self)
         self.aExitNW.setStatusTip("Exit %s" % self.mainConf.appName)
         self.aExitNW.setShortcut("Ctrl+Q")
-        self.aExitNW.triggered.connect(self._menuExit)
+        self.aExitNW.triggered.connect(lambda: self.theParent.closeMain())
         self.projMenu.addAction(self.aExitNW)
 
         return
@@ -309,28 +291,28 @@ class GuiMainMenu(QMenuBar):
         self.aNewDoc = QAction("New Document", self)
         self.aNewDoc.setStatusTip("Create new document")
         self.aNewDoc.setShortcut("Ctrl+N")
-        self.aNewDoc.triggered.connect(lambda : self._newTreeItem(nwItemType.FILE, None))
+        self.aNewDoc.triggered.connect(lambda: self._newTreeItem(nwItemType.FILE, None))
         self.docuMenu.addAction(self.aNewDoc)
 
         # Document > Open
         self.aOpenDoc = QAction("Open Document", self)
         self.aOpenDoc.setStatusTip("Open selected document")
         self.aOpenDoc.setShortcut("Ctrl+O")
-        self.aOpenDoc.triggered.connect(self.theParent.openSelectedItem)
+        self.aOpenDoc.triggered.connect(lambda: self.theParent.openSelectedItem())
         self.docuMenu.addAction(self.aOpenDoc)
 
         # Document > Save
         self.aSaveDoc = QAction("Save Document", self)
         self.aSaveDoc.setStatusTip("Save current document")
         self.aSaveDoc.setShortcut("Ctrl+S")
-        self.aSaveDoc.triggered.connect(self.theParent.saveDocument)
+        self.aSaveDoc.triggered.connect(lambda: self.theParent.saveDocument())
         self.docuMenu.addAction(self.aSaveDoc)
 
         # Document > Close
         self.aCloseDoc = QAction("Close Document", self)
         self.aCloseDoc.setStatusTip("Close current document")
         self.aCloseDoc.setShortcut("Ctrl+W")
-        self.aCloseDoc.triggered.connect(self.theParent.closeDocEditor)
+        self.aCloseDoc.triggered.connect(lambda: self.theParent.closeDocEditor())
         self.docuMenu.addAction(self.aCloseDoc)
 
         # Document > Separator
@@ -340,14 +322,14 @@ class GuiMainMenu(QMenuBar):
         self.aViewDoc = QAction("View Document", self)
         self.aViewDoc.setStatusTip("View document as HTML")
         self.aViewDoc.setShortcut("Ctrl+R")
-        self.aViewDoc.triggered.connect(lambda : self.theParent.viewDocument(None))
+        self.aViewDoc.triggered.connect(lambda: self.theParent.viewDocument(None))
         self.docuMenu.addAction(self.aViewDoc)
 
         # Document > Close Preview
         self.aCloseView = QAction("Close Document View", self)
         self.aCloseView.setStatusTip("Close document view pane")
         self.aCloseView.setShortcut("Ctrl+Shift+R")
-        self.aCloseView.triggered.connect(self.theParent.closeDocViewer)
+        self.aCloseView.triggered.connect(lambda: self.theParent.closeDocViewer())
         self.docuMenu.addAction(self.aCloseView)
 
         # Document > Separator
@@ -358,26 +340,26 @@ class GuiMainMenu(QMenuBar):
         self.aFileDetails.setStatusTip(
             "Shows a message box with the document location in the project folder"
         )
-        self.aFileDetails.triggered.connect(self._showDocumentLocation)
+        self.aFileDetails.triggered.connect(lambda: self.theParent.docEditor.revealLocation())
         self.docuMenu.addAction(self.aFileDetails)
 
         # Document > Import From File
         self.aImportFile = QAction("Import from File", self)
         self.aImportFile.setStatusTip("Import document from a text or markdown file")
         self.aImportFile.setShortcut("Ctrl+Shift+I")
-        self.aImportFile.triggered.connect(self.theParent.importDocument)
+        self.aImportFile.triggered.connect(lambda: self.theParent.importDocument())
         self.docuMenu.addAction(self.aImportFile)
 
         # Document > Merge Documents
         self.aMergeDocs = QAction("Merge Folder to Document", self)
         self.aMergeDocs.setStatusTip("Merge a folder of documents to a single document")
-        self.aMergeDocs.triggered.connect(self.theParent.mergeDocuments)
+        self.aMergeDocs.triggered.connect(lambda: self.theParent.mergeDocuments())
         self.docuMenu.addAction(self.aMergeDocs)
 
         # Document > Split Document
         self.aSplitDoc = QAction("Split Document to Folder", self)
         self.aSplitDoc.setStatusTip("Split a document into a folder of multiple documents")
-        self.aSplitDoc.triggered.connect(self.theParent.splitDocument)
+        self.aSplitDoc.triggered.connect(lambda: self.theParent.splitDocument())
         self.docuMenu.addAction(self.aSplitDoc)
 
         return
@@ -455,21 +437,21 @@ class GuiMainMenu(QMenuBar):
         self.aFocusTree = QAction("Focus Project Tree", self)
         self.aFocusTree.setStatusTip("Move focus to project tree")
         self.aFocusTree.setShortcut("Alt+1")
-        self.aFocusTree.triggered.connect(lambda : self.theParent.setFocus(1))
+        self.aFocusTree.triggered.connect(lambda: self.theParent.setFocus(1))
         self.viewMenu.addAction(self.aFocusTree)
 
         # View > Document Pane 1
         self.aFocusEditor = QAction("Focus Document Editor", self)
         self.aFocusEditor.setStatusTip("Move focus to left document pane")
         self.aFocusEditor.setShortcut("Alt+2")
-        self.aFocusEditor.triggered.connect(lambda : self.theParent.setFocus(2))
+        self.aFocusEditor.triggered.connect(lambda: self.theParent.setFocus(2))
         self.viewMenu.addAction(self.aFocusEditor)
 
         # View > Document Pane 2
         self.aFocusView = QAction("Focus Document Viewer", self)
         self.aFocusView.setStatusTip("Move focus to right document pane")
         self.aFocusView.setShortcut("Alt+3")
-        self.aFocusView.triggered.connect(lambda : self.theParent.setFocus(3))
+        self.aFocusView.triggered.connect(lambda: self.theParent.setFocus(3))
         self.viewMenu.addAction(self.aFocusView)
 
         # View > Separator
@@ -479,14 +461,14 @@ class GuiMainMenu(QMenuBar):
         self.aViewPrev = QAction("Go Backward", self)
         self.aViewPrev.setStatusTip("Move backward in the view history of the right pane")
         self.aViewPrev.setShortcut("Alt+Left")
-        self.aViewPrev.triggered.connect(self.theParent.docViewer.navBackward)
+        self.aViewPrev.triggered.connect(lambda: self.theParent.docViewer.navBackward())
         self.viewMenu.addAction(self.aViewPrev)
 
         # View > Go Forward
         self.aViewNext = QAction("Go Forward", self)
         self.aViewNext.setStatusTip("Move forward in the view history of the right pane")
         self.aViewNext.setShortcut("Alt+Right")
-        self.aViewNext.triggered.connect(self.theParent.docViewer.navForward)
+        self.aViewNext.triggered.connect(lambda: self.theParent.docViewer.navForward())
         self.viewMenu.addAction(self.aViewNext)
 
         # View > Separator
@@ -505,7 +487,7 @@ class GuiMainMenu(QMenuBar):
         self.aFullScreen = QAction("Full Screen Mode", self)
         self.aFullScreen.setStatusTip("Maximises the main window")
         self.aFullScreen.setShortcut("F11")
-        self.aFullScreen.triggered.connect(self.theParent.toggleFullScreenMode)
+        self.aFullScreen.triggered.connect(lambda: self.theParent.toggleFullScreenMode())
         self.viewMenu.addAction(self.aFullScreen)
 
         return
@@ -779,14 +761,14 @@ class GuiMainMenu(QMenuBar):
         self.aMoveUp = QAction("Move Tree Item Up", self)
         self.aMoveUp.setStatusTip("Move item up")
         self.aMoveUp.setShortcut("Ctrl+Shift+Up")
-        self.aMoveUp.triggered.connect(lambda : self._moveTreeItem(-1))
+        self.aMoveUp.triggered.connect(lambda: self._moveTreeItem(-1))
         self.toolsMenu.addAction(self.aMoveUp)
 
         # Tools > Move Down
         self.aMoveDown = QAction("Move Tree Item Down", self)
         self.aMoveDown.setStatusTip("Move item down")
         self.aMoveDown.setShortcut("Ctrl+Shift+Down")
-        self.aMoveDown.triggered.connect(lambda : self._moveTreeItem(1))
+        self.aMoveDown.triggered.connect(lambda: self._moveTreeItem(1))
         self.toolsMenu.addAction(self.aMoveDown)
 
         # Tools > Separator
@@ -806,7 +788,7 @@ class GuiMainMenu(QMenuBar):
         self.aReRunSpell = QAction("Re-Run Spell Check", self)
         self.aReRunSpell.setStatusTip("Run the spell checker on current document")
         self.aReRunSpell.setShortcut("F7")
-        self.aReRunSpell.triggered.connect(self.theParent.docEditor.spellCheckDocument)
+        self.aReRunSpell.triggered.connect(lambda: self.theParent.docEditor.spellCheckDocument())
         self.toolsMenu.addAction(self.aReRunSpell)
 
         # Tools > Separator
@@ -816,14 +798,14 @@ class GuiMainMenu(QMenuBar):
         self.aRebuildIndex = QAction("Rebuild Index", self)
         self.aRebuildIndex.setStatusTip("Rebuild the tag indices and word counts")
         self.aRebuildIndex.setShortcut("F9")
-        self.aRebuildIndex.triggered.connect(self.theParent.rebuildIndex)
+        self.aRebuildIndex.triggered.connect(lambda: self.theParent.rebuildIndex())
         self.toolsMenu.addAction(self.aRebuildIndex)
 
         # Tools > Rebuild Outline
         self.aRebuildOutline = QAction("Rebuild Outline", self)
         self.aRebuildOutline.setStatusTip("Rebuild the novel outline tree")
         self.aRebuildOutline.setShortcut("F10")
-        self.aRebuildOutline.triggered.connect(self.theParent.rebuildOutline)
+        self.aRebuildOutline.triggered.connect(lambda: self.theParent.rebuildOutline())
         self.toolsMenu.addAction(self.aRebuildOutline)
 
         # Tools > Toggle Auto Build Outline
@@ -840,28 +822,28 @@ class GuiMainMenu(QMenuBar):
         # Tools > Backup
         self.aBackupProject = QAction("Backup Project Folder", self)
         self.aBackupProject.setStatusTip("Backup Project")
-        self.aBackupProject.triggered.connect(self._doBackup)
+        self.aBackupProject.triggered.connect(lambda: self.theProject.zipIt(True))
         self.toolsMenu.addAction(self.aBackupProject)
 
         # Tools > Export Project
         self.aBuildProject = QAction("Build Novel Project", self)
         self.aBuildProject.setStatusTip("Launch the Build novel project tool")
         self.aBuildProject.setShortcut("F5")
-        self.aBuildProject.triggered.connect(self.theParent.buildProjectDialog)
+        self.aBuildProject.triggered.connect(lambda: self.theParent.buildProjectDialog())
         self.toolsMenu.addAction(self.aBuildProject)
 
         # Tools > Writing Stats
         self.aWritingStats = QAction("Writing Statistics", self)
         self.aWritingStats.setStatusTip("Show the writing statistics dialog")
         self.aWritingStats.setShortcut("F6")
-        self.aWritingStats.triggered.connect(self.theParent.showWritingStatsDialog)
+        self.aWritingStats.triggered.connect(lambda: self.theParent.showWritingStatsDialog())
         self.toolsMenu.addAction(self.aWritingStats)
 
         # Tools > Settings
         self.aPreferences = QAction("Preferences", self)
         self.aPreferences.setStatusTip("Preferences")
         self.aPreferences.setShortcut("Ctrl+,")
-        self.aPreferences.triggered.connect(self.theParent.editConfigDialog)
+        self.aPreferences.triggered.connect(lambda: self.theParent.editConfigDialog())
         self.toolsMenu.addAction(self.aPreferences)
 
         return
@@ -875,13 +857,13 @@ class GuiMainMenu(QMenuBar):
         # Help > About
         self.aAboutNW = QAction("About %s" % self.mainConf.appName, self)
         self.aAboutNW.setStatusTip("About %s" % self.mainConf.appName)
-        self.aAboutNW.triggered.connect(self.theParent.showAboutNWDialog)
+        self.aAboutNW.triggered.connect(lambda: self.theParent.showAboutNWDialog())
         self.helpMenu.addAction(self.aAboutNW)
 
         # Help > About Qt5
         self.aAboutQt = QAction("About Qt5", self)
         self.aAboutQt.setStatusTip("About Qt5")
-        self.aAboutQt.triggered.connect(self.theParent.showAboutQtDialog)
+        self.aAboutQt.triggered.connect(lambda: self.theParent.showAboutQtDialog())
         self.helpMenu.addAction(self.aAboutQt)
 
         # Help > Separator
