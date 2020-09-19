@@ -140,7 +140,6 @@ def exceptionHandler(exType, exValue, exTrace):
     """
     import logging
     from traceback import print_tb
-    from nw import CONFIG
     from PyQt5.QtWidgets import qApp
 
     logger = logging.getLogger(__name__)

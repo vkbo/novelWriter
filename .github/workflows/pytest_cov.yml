@@ -32,7 +32,7 @@ jobs:
           pip install pytest-qt
           pip install codecov
       - name: Run Tests
-        run: xvfb-run pytest -v --cov=nw --timeout=90
+        run: xvfb-run pytest -v --cov=nw --timeout=60
       - name: Upload to Codecov
         uses: codecov/codecov-action@v1
 
@@ -63,4 +63,4 @@ jobs:
           pip install pytest-xvfb
           pip install pytest-qt
       - name: Run Tests
-        run: xvfb-run pytest -v --timeout=90
+        run: xvfb-run pytest -v --timeout=60
