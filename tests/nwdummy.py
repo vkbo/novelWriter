@@ -10,6 +10,7 @@ class DummyMain():
         return
 
     def makeAlert(self, theMessage, theLevel):
+        print("%s: %s" % (str(theLevel), theMessage))
         return
 
     def setStatus(self, theMessage):
