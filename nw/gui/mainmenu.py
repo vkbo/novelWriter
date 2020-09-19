@@ -203,7 +203,7 @@ class GuiMainMenu(QMenuBar):
         # Project > New Project
         self.aNewProject = QAction("New Project", self)
         self.aNewProject.setStatusTip("Create new project")
-        self.aNewProject.triggered.connect(lambda : self.theParent.newProject(None))
+        self.aNewProject.triggered.connect(lambda: self.theParent.newProject(None))
         self.projMenu.addAction(self.aNewProject)
 
         # Project > Open Project
@@ -224,7 +224,7 @@ class GuiMainMenu(QMenuBar):
         self.aCloseProject = QAction("Close Project", self)
         self.aCloseProject.setStatusTip("Close project")
         self.aCloseProject.setShortcut("Ctrl+Shift+W")
-        self.aCloseProject.triggered.connect(lambda : self.theParent.closeProject(False))
+        self.aCloseProject.triggered.connect(lambda: self.theParent.closeProject(False))
         self.projMenu.addAction(self.aCloseProject)
 
         # Project > Project Settings
@@ -253,7 +253,7 @@ class GuiMainMenu(QMenuBar):
         for itemClass in self.rootItems.keys():
             nCount += 1 # This forces the lambdas to be unique
             self.rootItems[itemClass].triggered.connect(
-                lambda nCount, itemClass=itemClass : self._newTreeItem(nwItemType.ROOT, itemClass)
+                lambda nCount, itemClass=itemClass: self._newTreeItem(nwItemType.ROOT, itemClass)
             )
             self.rootMenu.addAction(self.rootItems[itemClass])
 
@@ -261,7 +261,7 @@ class GuiMainMenu(QMenuBar):
         self.aCreateFolder = QAction("Create Folder", self)
         self.aCreateFolder.setStatusTip("Create folder")
         self.aCreateFolder.setShortcut("Ctrl+Shift+N")
-        self.aCreateFolder.triggered.connect(lambda : self._newTreeItem(nwItemType.FOLDER, None))
+        self.aCreateFolder.triggered.connect(lambda: self._newTreeItem(nwItemType.FOLDER, None))
         self.projMenu.addAction(self.aCreateFolder)
 
         # Project > Separator
@@ -278,7 +278,7 @@ class GuiMainMenu(QMenuBar):
         self.aDeleteItem = QAction("Delete Project Item", self)
         self.aDeleteItem.setStatusTip("Delete selected item")
         self.aDeleteItem.setShortcut("Ctrl+Del")
-        self.aDeleteItem.triggered.connect(lambda : self.theParent.treeView.deleteItem(None))
+        self.aDeleteItem.triggered.connect(lambda: self.theParent.treeView.deleteItem(None))
         self.projMenu.addAction(self.aDeleteItem)
 
         # Project > Empty Trash
@@ -309,7 +309,7 @@ class GuiMainMenu(QMenuBar):
         self.aNewDoc = QAction("New Document", self)
         self.aNewDoc.setStatusTip("Create new document")
         self.aNewDoc.setShortcut("Ctrl+N")
-        self.aNewDoc.triggered.connect(lambda : self._newTreeItem(nwItemType.FILE, None))
+        self.aNewDoc.triggered.connect(lambda: self._newTreeItem(nwItemType.FILE, None))
         self.docuMenu.addAction(self.aNewDoc)
 
         # Document > Open
@@ -340,7 +340,7 @@ class GuiMainMenu(QMenuBar):
         self.aViewDoc = QAction("View Document", self)
         self.aViewDoc.setStatusTip("View document as HTML")
         self.aViewDoc.setShortcut("Ctrl+R")
-        self.aViewDoc.triggered.connect(lambda : self.theParent.viewDocument(None))
+        self.aViewDoc.triggered.connect(lambda: self.theParent.viewDocument(None))
         self.docuMenu.addAction(self.aViewDoc)
 
         # Document > Close Preview
@@ -455,21 +455,21 @@ class GuiMainMenu(QMenuBar):
         self.aFocusTree = QAction("Focus Project Tree", self)
         self.aFocusTree.setStatusTip("Move focus to project tree")
         self.aFocusTree.setShortcut("Alt+1")
-        self.aFocusTree.triggered.connect(lambda : self.theParent.setFocus(1))
+        self.aFocusTree.triggered.connect(lambda: self.theParent.setFocus(1))
         self.viewMenu.addAction(self.aFocusTree)
 
         # View > Document Pane 1
         self.aFocusEditor = QAction("Focus Document Editor", self)
         self.aFocusEditor.setStatusTip("Move focus to left document pane")
         self.aFocusEditor.setShortcut("Alt+2")
-        self.aFocusEditor.triggered.connect(lambda : self.theParent.setFocus(2))
+        self.aFocusEditor.triggered.connect(lambda: self.theParent.setFocus(2))
         self.viewMenu.addAction(self.aFocusEditor)
 
         # View > Document Pane 2
         self.aFocusView = QAction("Focus Document Viewer", self)
         self.aFocusView.setStatusTip("Move focus to right document pane")
         self.aFocusView.setShortcut("Alt+3")
-        self.aFocusView.triggered.connect(lambda : self.theParent.setFocus(3))
+        self.aFocusView.triggered.connect(lambda: self.theParent.setFocus(3))
         self.viewMenu.addAction(self.aFocusView)
 
         # View > Separator
@@ -779,14 +779,14 @@ class GuiMainMenu(QMenuBar):
         self.aMoveUp = QAction("Move Tree Item Up", self)
         self.aMoveUp.setStatusTip("Move item up")
         self.aMoveUp.setShortcut("Ctrl+Shift+Up")
-        self.aMoveUp.triggered.connect(lambda : self._moveTreeItem(-1))
+        self.aMoveUp.triggered.connect(lambda: self._moveTreeItem(-1))
         self.toolsMenu.addAction(self.aMoveUp)
 
         # Tools > Move Down
         self.aMoveDown = QAction("Move Tree Item Down", self)
         self.aMoveDown.setStatusTip("Move item down")
         self.aMoveDown.setShortcut("Ctrl+Shift+Down")
-        self.aMoveDown.triggered.connect(lambda : self._moveTreeItem(1))
+        self.aMoveDown.triggered.connect(lambda: self._moveTreeItem(1))
         self.toolsMenu.addAction(self.aMoveDown)
 
         # Tools > Separator
