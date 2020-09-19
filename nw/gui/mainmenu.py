@@ -271,7 +271,7 @@ class GuiMainMenu(QMenuBar):
         self.aEditItem = QAction("Edit Project Item", self)
         self.aEditItem.setStatusTip("Change item settings")
         self.aEditItem.setShortcuts(["Ctrl+E", "F2"])
-        self.aEditItem.triggered.connect(self.theParent.editItem)
+        self.aEditItem.triggered.connect(lambda: self.theParent.editItem(None))
         self.projMenu.addAction(self.aEditItem)
 
         # Project > Delete
