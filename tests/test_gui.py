@@ -18,7 +18,7 @@ keyDelay = 2
 stepDelay = 20
 
 @pytest.mark.gui
-def testMainWindows(qtbot, nwFuncTemp, nwTempGUI, nwRef, nwTemp):
+def testMainWindow(qtbot, nwFuncTemp, nwTempGUI, nwRef, nwTemp):
 
     nwGUI = nw.main(["--testmode", "--config=%s" % nwFuncTemp, "--data=%s" % nwTemp])
     qtbot.addWidget(nwGUI)

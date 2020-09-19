@@ -237,3 +237,34 @@ def testItemXMLPackUnpack(nwDummy):
     assert theItem.itemClass == nwItemClass.NOVEL
     assert theItem.itemType == nwItemType.FILE
     assert theItem.itemLayout == nwItemLayout.NOTE
+
+    # Errors
+
+    ## Not an Item
+    xDummy = etree.SubElement(nwXML, "stuff")
+    assert not theItem.unpackXML(xDummy)
+
+    ## Item without Handle
+    xDummy = etree.SubElement(nwXML, "item", attrib={"stuff": "nah"})
+    assert not theItem.unpackXML(xDummy)
+
+    ## Item with Invalid SubElement
+    xDummy = etree.SubElement(nwXML, "item", attrib={"handle": "0123456789abc"})
+    xParam = etree.SubElement(xDummy, "invalid")
+    xParam.text = "stuff"
+    assert theItem.unpackXML(xDummy) # Passes, but not saved
+
+    # Pack Valid Item
+    xDummy = etree.SubElement(nwXML, "group")
+    theItem._subPack(xDummy, "subGroup", {"one": "two"}, "value", False)
+    assert etree.tostring(xDummy, pretty_print=False, encoding="utf-8") == (
+        b"<group><subGroup one=\"two\">value</subGroup></group>"
+    )
+
+    # Pack Not Allowed None
+    xDummy = etree.SubElement(nwXML, "group")
+    assert theItem._subPack(xDummy, "subGroup", {}, None, False) is None
+    assert theItem._subPack(xDummy, "subGroup", {}, "None", False) is None
+    assert etree.tostring(xDummy, pretty_print=False, encoding="utf-8") == (
+        b"<group/>"
+    )

@@ -2,10 +2,12 @@
 """novelWriter Common Class Tester
 """
 
+import time
 import pytest
+
 from nw.common import (
     checkString, checkBool, checkInt, colRange, formatInt, transferCase,
-    fuzzyTime, checkHandle
+    fuzzyTime, checkHandle, formatTimeStamp
 )
 from nwtools import cmpList
 
@@ -74,6 +76,12 @@ def testColRange():
         colRange([200, 50, 0], [50, 200, 0], 5),
         [[200, 50, 0], [162, 87, 0], [124, 124, 0], [86, 161, 0], [50, 200, 0]]
     )
+
+@pytest.mark.core
+def testFormatTime():
+    tTime = time.mktime(time.gmtime(0))
+    assert formatTimeStamp(tTime, False) == "1970-01-01 00:00:00"
+    assert formatTimeStamp(tTime, True) == "1970-01-01 00.00.00"
 
 @pytest.mark.core
 def testFormatInt():
