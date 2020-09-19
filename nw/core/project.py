@@ -1311,8 +1311,10 @@ class NWProject():
 
             # Look for meta data
             oName = ""
-            if aDoc.openDocument(oHandle, showStatus=False, isOrphan=True):
-                oName, oPath, oClass, oLayout = aDoc.getMeta()
+            oClass = None
+            oLayout = None
+            if aDoc.openDocument(oHandle, showStatus=False, isOrphan=True) is not None:
+                oName, _, oClass, oLayout = aDoc.getMeta()
 
             if oName == "":
                 nOrph += 1
