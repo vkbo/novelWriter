@@ -903,9 +903,9 @@ def testPreferences(qtbot, nwMinimal, nwTemp, nwRef, tmpConf):
 
     nwGUI.closeMain()
 
-    refConf = path.join(nwRef, "prefs_novelwriter.conf")
+    refConf = path.join(nwRef, "novelwriter_prefs.conf")
     projConf = path.join(nwGUI.mainConf.confPath, "novelwriter.conf")
-    testConf = path.join(nwTemp, "prefs_novelwriter.conf")
+    testConf = path.join(nwTemp, "novelwriter_prefs.conf")
     copyfile(projConf, testConf)
     ignoreLines = [
         2,                          # Timestamp
