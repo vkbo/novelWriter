@@ -33,7 +33,7 @@ from os import path
 from datetime import datetime
 
 from PyQt5.QtCore import Qt
-from PyQt5.QtGui import QFont, QPixmap
+from PyQt5.QtGui import QPixmap
 from PyQt5.QtWidgets import (
     qApp, QDialog, QTreeWidget, QTreeWidgetItem, QDialogButtonBox, QGridLayout,
     QLabel, QGroupBox, QMenu, QAction, QFileDialog, QSpinBox, QHBoxLayout
@@ -100,10 +100,6 @@ class GuiWritingStats(QDialog):
         hHeader.setTextAlignment(self.C_LENGTH, Qt.AlignRight)
         hHeader.setTextAlignment(self.C_COUNT, Qt.AlignRight)
 
-        self.monoFont = QFont()
-        self.monoFont.setPointSizeF(0.9*self.theTheme.fontPointSize)
-        self.monoFont.setFamily(self.theTheme.guiFontFixed.family())
-
         sortValid = (Qt.AscendingOrder, Qt.DescendingOrder)
         sortCol = self.optState.validIntRange(
             self.optState.getInt("GuiWritingStats", "sortCol", 0), 0, 2, 0
@@ -127,23 +123,23 @@ class GuiWritingStats(QDialog):
         self.infoBox.setLayout(self.infoForm)
 
         self.labelTotal = QLabel(self._formatTime(0))
-        self.labelTotal.setFont(self.monoFont)
+        self.labelTotal.setFont(self.theTheme.guiFontFixed)
         self.labelTotal.setAlignment(Qt.AlignVCenter | Qt.AlignRight)
 
         self.labelFilter = QLabel(self._formatTime(0))
-        self.labelFilter.setFont(self.monoFont)
+        self.labelFilter.setFont(self.theTheme.guiFontFixed)
         self.labelFilter.setAlignment(Qt.AlignVCenter | Qt.AlignRight)
 
         self.novelWords = QLabel("0")
-        self.novelWords.setFont(self.monoFont)
+        self.novelWords.setFont(self.theTheme.guiFontFixed)
         self.novelWords.setAlignment(Qt.AlignVCenter | Qt.AlignRight)
 
         self.notesWords = QLabel("0")
-        self.notesWords.setFont(self.monoFont)
+        self.notesWords.setFont(self.theTheme.guiFontFixed)
         self.notesWords.setAlignment(Qt.AlignVCenter | Qt.AlignRight)
 
         self.totalWords = QLabel("0")
-        self.totalWords.setFont(self.monoFont)
+        self.totalWords.setFont(self.theTheme.guiFontFixed)
         self.totalWords.setAlignment(Qt.AlignVCenter | Qt.AlignRight)
 
         self.infoForm.addWidget(QLabel("Total Time:"),       0, 0)
@@ -559,9 +555,9 @@ class GuiWritingStats(QDialog):
             newItem.setTextAlignment(self.C_COUNT, Qt.AlignRight)
             newItem.setTextAlignment(self.C_BAR, Qt.AlignLeft | Qt.AlignVCenter)
 
-            newItem.setFont(self.C_TIME, self.monoFont)
-            newItem.setFont(self.C_LENGTH, self.monoFont)
-            newItem.setFont(self.C_COUNT, self.monoFont)
+            newItem.setFont(self.C_TIME, self.theTheme.guiFontFixed)
+            newItem.setFont(self.C_LENGTH, self.theTheme.guiFontFixed)
+            newItem.setFont(self.C_COUNT, self.theTheme.guiFontFixed)
 
             self.listBox.addTopLevelItem(newItem)
             self.timeFilter += sDiff

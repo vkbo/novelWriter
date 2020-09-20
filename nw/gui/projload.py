@@ -282,6 +282,7 @@ class GuiProjectLoad(QDialog):
             newItem.setTextAlignment(self.C_NAME,  Qt.AlignLeft  | Qt.AlignVCenter)
             newItem.setTextAlignment(self.C_COUNT, Qt.AlignRight | Qt.AlignVCenter)
             newItem.setTextAlignment(self.C_TIME,  Qt.AlignRight | Qt.AlignVCenter)
+            newItem.setFont(self.C_TIME, self.theTheme.guiFontFixed)
             self.listBox.addTopLevelItem(newItem)
             if not hasSelection:
                 newItem.setSelected(True)
