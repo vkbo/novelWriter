@@ -138,8 +138,8 @@ class GuiTheme:
         logger.verbose("GUI DPI: %.1f" % self.guiDPI)
         logger.verbose("GUI Scale: %.2f" % self.guiScale)
 
+        # Fonts
         self.guiFont = qApp.font()
-        self.guiFontFixed = QFontDatabase.systemFont(QFontDatabase.FixedFont)
 
         qMetric = QFontMetrics(self.guiFont)
         self.fontPointSize = self.guiFont.pointSizeF()
@@ -147,6 +147,11 @@ class GuiTheme:
         self.baseIconSize = int(round(qMetric.ascent()))
         self.textNHeight = qMetric.boundingRect("N").height()
         self.textNWidth = qMetric.boundingRect("N").width()
+
+        # Monospace Font
+        self.guiFontFixed = QFont()
+        self.guiFontFixed.setPointSizeF(0.95*self.fontPointSize)
+        self.guiFontFixed.setFamily(QFontDatabase.systemFont(QFontDatabase.FixedFont).family())
 
         logger.verbose("GUI Font Family: %s" % self.guiFont.family())
         logger.verbose("GUI Font Point Size: %.2f" % self.fontPointSize)

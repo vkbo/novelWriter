@@ -86,13 +86,13 @@ def testFormatTime():
 @pytest.mark.core
 def testFormatInt():
     assert formatInt(1000) == "1000"
-    assert formatInt(1234) == "1.23k"
-    assert formatInt(12345) == "12.3k"
-    assert formatInt(123456) == "123k"
-    assert formatInt(1234567) == "1.23M"
-    assert formatInt(12345678) == "12.3M"
-    assert formatInt(123456789) == "123M"
-    assert formatInt(1234567890) == "1.23G"
+    assert formatInt(1234) == "1.23\u2009k"
+    assert formatInt(12345) == "12.3\u2009k"
+    assert formatInt(123456) == "123\u2009k"
+    assert formatInt(1234567) == "1.23\u2009M"
+    assert formatInt(12345678) == "12.3\u2009M"
+    assert formatInt(123456789) == "123\u2009M"
+    assert formatInt(1234567890) == "1.23\u2009G"
 
 @pytest.mark.core
 def testTransferCase():
