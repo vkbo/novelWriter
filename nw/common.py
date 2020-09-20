@@ -29,7 +29,7 @@ import logging
 
 from datetime import datetime
 
-from nw.constants import nwConst
+from nw.constants import nwConst, nwUnicode
 
 logger = logging.getLogger(__name__)
 
@@ -150,11 +150,11 @@ def formatInt(theInt):
             theVal /= 1000.0
             if theVal < 1000.0:
                 if theVal < 10.0:
-                    return "%4.2f%s" % (theVal, pF)
+                    return "%4.2f%s%s" % (theVal, nwUnicode.U_THNSP, pF)
                 elif theVal < 100.0:
-                    return "%4.1f%s" % (theVal, pF)
+                    return "%4.1f%s%s" % (theVal, nwUnicode.U_THNSP, pF)
                 else:
-                    return "%3.0f%s" % (theVal, pF)
+                    return "%3.0f%s%s" % (theVal, nwUnicode.U_THNSP, pF)
 
     return "%d" % theInt
 
