@@ -6,7 +6,7 @@
 
 * After recent changes, the `Edit Project Item` entry (or shortcut `F2`) in the menu would cause an error. Other means of triggering the edit dialog for a selected item were working fine. The error was caused by a dummy variable being sent by the menu QAction element that was caught by a new optional variable in the dialog function. All other menu actions have been wrapped in lambda functions to prevent this from happening again. PR #448.
 * The Merge Tool was permitting a merge on an empty list of files to be merged. This would result in a new, empty file. The Merge Tool will now stop if the list of files is empty. PR #448.
-* The orphaned file handling function would cause an error if the orphaned file was empty. This would trigger a secondary issue with uninitialised variables, which have also been fixed. PR #448.
+* The orphaned file handling function would cause an error if the orphaned file was empty. This would trigger a secondary issue with uninitialised variables, which has also been fixed. PR #448.
 * The context menu on the Project Tree would not show the `New File` and `New Folder` options on root folders if there were no Trash folder present. This weird bug was caused by the filter getting a `None` Trash handle and therefore assuming all root folders were Trash folders as they too have parent handle `None`. PR #452.
 
 **User Interface**
@@ -32,7 +32,7 @@
 **New Features**
 
 * It is now possible to set a different spell check language for a project than the one set in the main Preferences. It is only possible to select a different language, not a different spell check tool. The setting is managed in the first tab of the Project Settings dialog. Issue #368, PR #437.
-* The document editor now has the Cut/Copy/Paste options in the main context menu. In addition, Select All, Select Word, and Select Paragraph has been added to the menu. The latter two will select the word or paragraph under the mouse pointer, not the cursor as the main menu entries do. Issue #438, PR #439.
+* The document editor now has the Cut/Copy/Paste options in the main context menu. In addition, Select All, Select Word, and Select Paragraph have been added to the menu. The latter two will select the word or paragraph under the mouse pointer, not the cursor as the main menu entries do. Issue #438, PR #439.
 * The document viewer has a new custom context menu with Copy, Select All, Select Word and Select Paragraph with identical functionality and look to the context menu entries in the document editor. PR #439.
 * The document view panel now has a back navigation and forward navigation history of 20 documents. The navigation is activated by two buttons in the header, menu entries and keyboard shortcuts in the `View` menu, and by navigation buttons on the mouse. Issue #441, PR #442.
 * Clicking on a document in the project tree with the middle mouse button will now open the document in the document viewer. PR #443.
