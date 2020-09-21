@@ -608,10 +608,8 @@ class GuiDocEditor(QTextEdit):
         """
         if isinstance(theInsert, str):
             theText = theInsert
-        elif theInsert in nwDocInsert:
-            if theInsert == nwDocInsert.NO_INSERT:
-                theText = ""
-            elif theInsert == nwDocInsert.HARD_BREAK:
+        elif isinstance(theInsert, nwDocInsert):
+            if theInsert == nwDocInsert.HARD_BREAK:
                 theText = "  \n"
             elif theInsert == nwDocInsert.NB_SPACE:
                 theText = nwUnicode.U_NBSP
@@ -1177,17 +1175,17 @@ class GuiDocEditor(QTextEdit):
         theBlock = theCursor.block()
         if not theBlock.isValid():
             logger.debug("Invalid block selected for action %s" % str(docAction))
-            return
+            return False
 
         theText = theBlock.text()
         if len(theText.strip()) == 0:
             logger.debug("Empty block selected for action %s" % str(docAction))
-            return
+            return False
 
         # Remove existing format first, if any
         if theText.startswith("@"):
             logger.error("Cannot apply block format to keyword/value line")
-            return
+            return False
         elif theText.startswith("% "):
             newText = theText[2:]
             cOffset = 2
@@ -1233,7 +1231,7 @@ class GuiDocEditor(QTextEdit):
             logger.error(
                 "Unknown or unsupported block format requested: %s" % str(docAction)
             )
-            return
+            return False
 
         # Replace the block text
         theCursor.beginEditBlock()
@@ -1250,7 +1248,7 @@ class GuiDocEditor(QTextEdit):
         theCursor.endEditBlock()
         self.setTextCursor(theCursor)
 
-        return
+        return True
 
     def _makeSelection(self, selMode):
         """Wrapper function to select text based on a selection mode.
