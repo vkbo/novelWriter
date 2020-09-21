@@ -32,10 +32,7 @@ jobs:
           pip install pytest-qt
           pip install codecov
       - name: Run Tests
-        run: |
-          export DISPLAY=':99.0'
-          Xvfb :99 -screen 0 1024x768x24 > /dev/null 2>&1 &
-          xvfb-run pytest -v --cov=nw --timeout=60
+        run: xvfb-run pytest -v --cov=nw --timeout=60
       - name: Upload to Codecov
         uses: codecov/codecov-action@v1
 

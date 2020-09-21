@@ -847,12 +847,41 @@ def testTextSearch(qtbot, nwLipsum, nwTemp):
     assert not nwGUI.docEditor.docSearch.toggleRegEx.isChecked()
     assert not nwGUI.docEditor.docSearch.isRegEx
 
-    # assert nwGUI.docEditor.setCursorPosition(0)
-    nwGUI.docEditor.docSearch.searchBox.setFocus(True)
-    assert nwGUI.docEditor.docSearch.cycleFocus(True)
-    assert nwGUI.docEditor.docSearch.replaceBox.hasFocus()
-    assert nwGUI.docEditor.docSearch.cycleFocus(True)
-    assert nwGUI.docEditor.docSearch.searchBox.hasFocus()
+    # Close Search and Select "est" Again
+    nwGUI.docEditor.docSearch.cancelSearch.activate(QAction.Trigger)
+    assert nwGUI.docEditor.setCursorPosition(618)
+    nwGUI.docEditor._makeSelection(QTextCursor.WordUnderCursor)
+    theCursor = nwGUI.docEditor.textCursor()
+    assert theCursor.selectedText() == "est"
+
+    # Activate Search Again
+    nwGUI.mainMenu.aFind.activate(QAction.Trigger)
+    assert nwGUI.docEditor.docSearch.isVisible()
+    assert nwGUI.docEditor.docSearch.getSearchText() == "est"
+
+    # Enable Full Word Search
+    nwGUI.docEditor.docSearch.toggleWord.activate(QAction.Trigger)
+    assert nwGUI.docEditor.docSearch.toggleWord.isChecked()
+    assert nwGUI.docEditor.docSearch.isWholeWord
+
+    # Only One Match
+    nwGUI.mainMenu.aFindNext.activate(QAction.Trigger)
+    assert abs(nwGUI.docEditor.getCursorPosition() - 620) < 3
+    nwGUI.mainMenu.aFindNext.activate(QAction.Trigger)
+    assert abs(nwGUI.docEditor.getCursorPosition() - 620) < 3
+
+    # Enable Next Doc Search
+    nwGUI.docEditor.docSearch.toggleProject.activate(QAction.Trigger)
+    assert nwGUI.docEditor.docSearch.toggleProject.isChecked()
+    assert nwGUI.docEditor.docSearch.doNextFile
+
+    # Next Match
+    nwGUI.mainMenu.aFindNext.activate(QAction.Trigger)
+    assert nwGUI.docEditor.theHandle == "2426c6f0ca922" # Next document
+    nwGUI.mainMenu.aFindNext.activate(QAction.Trigger)
+    assert abs(nwGUI.docEditor.getCursorPosition() - 620) < 3
+    nwGUI.mainMenu.aFindNext.activate(QAction.Trigger)
+    assert abs(nwGUI.docEditor.getCursorPosition() - 1127) < 3
 
     # qtbot.stopForInteraction()
     nwGUI.closeMain()
