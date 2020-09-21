@@ -423,10 +423,10 @@ class GuiDocEditor(QTextEdit):
         return True
 
     def getCursorPosition(self):
-        """Find the cursor position in the document.
+        """Find the cursor position in the document. If the editor has a
+        selection, return the position of the end of the selection.
         """
-        theCursor = self.textCursor()
-        return theCursor.position()
+        return self.textCursor().selectionEnd()
 
     def setCursorLine(self, theLine):
         """Move the cursor to a given line in the document.
