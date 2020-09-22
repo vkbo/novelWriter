@@ -5,10 +5,12 @@
 import nw
 import pytest
 import json
+
 from shutil import copyfile
 from nwtools import cmpFiles
 
 from os import path
+
 from PyQt5.QtCore import Qt
 from PyQt5.QtWidgets import QDialogButtonBox, QTreeWidgetItem
 
@@ -891,7 +893,6 @@ def testPreferences(qtbot, nwMinimal, nwTemp, nwRef, tmpConf):
     assert not tabAutoRep.autoReplaceDots.isEnabled()
 
     # Save and Check Config
-    # qtbot.stopForInteraction()
     qtbot.mouseClick(nwPrefs.buttonBox.button(QDialogButtonBox.Ok), Qt.LeftButton)
 
     assert tmpConf.confChanged
@@ -901,6 +902,7 @@ def testPreferences(qtbot, nwMinimal, nwTemp, nwRef, tmpConf):
 
     assert nwGUI.mainConf.saveConfig()
 
+    # qtbot.stopForInteraction()
     nwGUI.closeMain()
 
     refConf = path.join(nwRef, "novelwriter_prefs.conf")

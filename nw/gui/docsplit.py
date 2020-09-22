@@ -46,6 +46,7 @@ class GuiDocSplit(QDialog):
         QDialog.__init__(self, theParent)
 
         logger.debug("Initialising GuiDocSplit ...")
+        self.setObjectName("GuiDocSplit")
 
         self.mainConf   = nw.CONFIG
         self.theParent  = theParent

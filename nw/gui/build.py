@@ -68,6 +68,7 @@ class GuiBuildNovel(QDialog):
         QDialog.__init__(self, theParent)
 
         logger.debug("Initialising GuiBuildNovel ...")
+        self.setObjectName("GuiBuildNovel")
 
         self.mainConf   = nw.CONFIG
         self.theProject = theProject

@@ -58,6 +58,7 @@ class GuiWritingStats(QDialog):
         QDialog.__init__(self, theParent)
 
         logger.debug("Initialising GuiWritingStats ...")
+        self.setObjectName("GuiWritingStats")
 
         self.mainConf   = nw.CONFIG
         self.theParent  = theParent

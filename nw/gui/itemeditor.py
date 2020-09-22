@@ -44,6 +44,7 @@ class GuiItemEditor(QDialog):
         QDialog.__init__(self, theParent)
 
         logger.debug("Initialising GuiItemEditor ...")
+        self.setObjectName("GuiItemEditor")
 
         self.mainConf   = nw.CONFIG
         self.theProject = theProject

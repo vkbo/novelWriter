@@ -48,6 +48,7 @@ class GuiPreferences(PagedDialog):
         PagedDialog.__init__(self, theParent)
 
         logger.debug("Initialising GuiPreferences ...")
+        self.setObjectName("GuiPreferences")
 
         self.mainConf   = nw.CONFIG
         self.theParent  = theParent

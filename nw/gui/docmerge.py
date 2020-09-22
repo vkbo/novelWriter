@@ -46,6 +46,7 @@ class GuiDocMerge(QDialog):
         QDialog.__init__(self, theParent)
 
         logger.debug("Initialising GuiDocMerge ...")
+        self.setObjectName("GuiDocMerge")
 
         self.mainConf   = nw.CONFIG
         self.theParent  = theParent

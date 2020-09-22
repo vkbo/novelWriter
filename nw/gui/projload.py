@@ -58,6 +58,7 @@ class GuiProjectLoad(QDialog):
         QDialog.__init__(self, theParent)
 
         logger.debug("Initialising GuiProjectLoad ...")
+        self.setObjectName("GuiProjectLoad")
 
         self.mainConf  = nw.CONFIG
         self.theParent = theParent

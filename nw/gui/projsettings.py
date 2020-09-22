@@ -47,6 +47,7 @@ class GuiProjectSettings(PagedDialog):
         PagedDialog.__init__(self, theParent)
 
         logger.debug("Initialising GuiProjectSettings ...")
+        self.setObjectName("GuiProjectSettings")
 
         self.mainConf   = nw.CONFIG
         self.theParent  = theParent

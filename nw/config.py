@@ -54,7 +54,6 @@ class Config:
         # Set Application Variables
         self.appName   = "novelWriter"
         self.appHandle = self.appName.lower()
-        self.cmdOpen   = None
 
         # Debug Settings
         self.blockGUI  = True   # Allow blocking the GUI (disabled for testing)
@@ -65,6 +64,7 @@ class Config:
         self.errData   = []     # List of error messages
 
         # Set Paths
+        self.cmdOpen   = None   # Path from command line for project to be opened on launch
         self.confPath  = None   # Folder where the config is saved
         self.confFile  = None   # The config file name
         self.dataPath  = None   # Folder where app data is stored
@@ -87,11 +87,11 @@ class Config:
         self.guiTheme    = "default"
         self.guiSyntax   = "default_light"
         self.guiIcons    = "typicons_colour_light"
-        self.guiDark     = False
-        self.guiLang     = "en" # Hardcoded for now since the GUI is only in English
-        self.guiFont     = ""
+        self.guiDark     = False # Load icons for dark backgrounds, if available
+        self.guiLang     = "en"  # Hardcoded for now since the GUI is only in English
+        self.guiFont     = ""    # Defaults to system defualt font
         self.guiFontSize = 11
-        self.guiScale    = 1.0 # Set automatically by Theme class
+        self.guiScale    = 1.0   # Set automatically by Theme class
 
         ## Sizes
         self.winGeometry  = [1100, 650]

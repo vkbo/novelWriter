@@ -45,6 +45,7 @@ class GuiAbout(QDialog):
         QDialog.__init__(self, theParent)
 
         logger.debug("Initialising GuiAbout ...")
+        self.setObjectName("GuiAbout")
 
         self.mainConf  = nw.CONFIG
         self.theParent = theParent
