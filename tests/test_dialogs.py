@@ -779,7 +779,7 @@ def testPreferences(qtbot, nwMinimal, nwTemp, nwRef, tmpConf):
     nwPrefs.show()
 
     # Override Config
-    tmpConf.showGUI = False
+    tmpConf.blockGUI = False
     tmpConf.confPath = nwMinimal
     nwGUI.mainConf = tmpConf
     nwPrefs.mainConf = tmpConf

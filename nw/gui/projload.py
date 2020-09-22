@@ -177,7 +177,7 @@ class GuiProjectLoad(QDialog):
         """Browse for a folder path.
         """
         logger.verbose("GuiProjectLoad browse button clicked")
-        if self.mainConf.showGUI:
+        if self.mainConf.blockGUI:
             dlgOpt  = QFileDialog.Options()
             dlgOpt |= QFileDialog.DontUseNativeDialog
             projFile, _ = QFileDialog.getOpenFileName(
@@ -218,7 +218,7 @@ class GuiProjectLoad(QDialog):
         selList = self.listBox.selectedItems()
         if selList:
             doRemove = False
-            if self.mainConf.showGUI:
+            if self.mainConf.blockGUI:
                 msgBox = QMessageBox()
                 msgRes = msgBox.question(
                     self, "Remove Entry",

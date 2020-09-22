@@ -410,7 +410,7 @@ class GuiProjectTree(QTreeWidget):
                 # If the file is in the trash folder already, as the
                 # user if they want to permanently delete the file.
                 doPermanent = False
-                if self.mainConf.showGUI and not alreadyAsked:
+                if self.mainConf.blockGUI and not alreadyAsked:
                     msgBox = QMessageBox()
                     msgRes = msgBox.question(
                         self, "Delete File", "Permanently delete file '%s'?" % nwItemS.itemName
@@ -439,7 +439,7 @@ class GuiProjectTree(QTreeWidget):
                 # The file is not already in the trash folder, so we
                 # move it there.
                 doTrash = False
-                if self.mainConf.showGUI and askForTrash:
+                if self.mainConf.blockGUI and askForTrash:
                     msgBox = QMessageBox()
                     msgRes = msgBox.question(
                         self, "Delete File", "Move file '%s' to Trash?" % nwItemS.itemName

@@ -103,7 +103,7 @@ class GuiPreferences(PagedDialog):
         validEntries &= retA
         needsRestart |= retB
 
-        if needsRestart and self.mainConf.showGUI:
+        if needsRestart and self.mainConf.blockGUI:
             msgBox = QMessageBox()
             msgBox.information(
                 self, "Preferences",

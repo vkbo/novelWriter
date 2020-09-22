@@ -513,7 +513,7 @@ class NWProject():
         # Check novelWriter Version
         # =========================
 
-        if int(hexVersion, 16) > int(nw.__hexversion__, 16) and self.mainConf.showGUI:
+        if int(hexVersion, 16) > int(nw.__hexversion__, 16) and self.mainConf.blockGUI:
             msgBox = QMessageBox()
             msgRes = msgBox.question(self.theParent, "Version Conflict", (
                 "This project was saved by a newer version of novelWriter, version %s. "
@@ -926,7 +926,7 @@ class NWProject():
                     return False
 
             if path.isdir(projPath):
-                if self.mainConf.showGUI and listdir(self.projPath):
+                if self.mainConf.blockGUI and listdir(self.projPath):
                     self.theParent.makeAlert((
                         "New project folder is not empty. "
                         "Each project requires a dedicated project folder."

@@ -195,7 +195,7 @@ def main(sysArgs=None):
             testMode = True
 
     # Set Config Options
-    CONFIG.showGUI   = not testMode
+    CONFIG.blockGUI  = not testMode
     CONFIG.debugInfo = debugLevel < logging.INFO
     CONFIG.cmdOpen   = cmdOpen
 

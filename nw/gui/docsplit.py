@@ -160,7 +160,7 @@ class GuiDocSplit(QDialog):
             ), nwAlert.ERROR)
             return
 
-        if self.mainConf.showGUI:
+        if self.mainConf.blockGUI:
             msgBox = QMessageBox()
             msgRes = msgBox.question(
                 self, "Split Document", (

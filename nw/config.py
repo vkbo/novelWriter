@@ -57,32 +57,31 @@ class Config:
         self.cmdOpen   = None
 
         # Debug Settings
-        self.showGUI   = True
-        self.debugInfo = False
+        self.blockGUI  = True   # Allow blocking the GUI (disabled for testing)
+        self.debugInfo = False  # True if log level is DEBUG or VERBOSE
 
         # Config Error Handling
-        self.hasError  = False
-        self.errData   = []
+        self.hasError  = False  # True if the config class encountered an error
+        self.errData   = []     # List of error messages
 
         # Set Paths
-        self.confPath  = None
-        self.confFile  = None
-        self.dataPath  = None
-        self.homePath  = None
-        self.lastPath  = None
-        self.appPath   = None
-        self.appRoot   = None
-        self.appIcon   = None
-        self.assetPath = None
-        self.themeRoot = None
-        self.graphPath = None
-        self.dictPath  = None
-        self.iconPath  = None
-        self.helpPath  = None
+        self.confPath  = None   # Folder where the config is saved
+        self.confFile  = None   # The config file name
+        self.dataPath  = None   # Folder where app data is stored
+        self.homePath  = None   # The user's home folder
+        self.lastPath  = None   # The last user-selected folder (browse dialogs)
+        self.appPath   = None   # The full path to the novelwriter package folder
+        self.appRoot   = None   # The full path to the novelwriter root folder
+        self.appIcon   = None   # The full path to the novelwriter icon file
+        self.assetPath = None   # The full path to the nw/assets folder
+        self.themeRoot = None   # The full path to the nw/assets/themes folder
+        self.dictPath  = None   # The full path to the nw/assets/dict folder
+        self.iconPath  = None   # The full path to the nw/assets/icons folder
+        self.helpPath  = None   # The full path to the novelwriter .qhc help file
 
         # Runtime Settings and Variables
-        self.confChanged = False
-        self.hasHelp     = False
+        self.confChanged = False # True whenever the config has chenged, false after save
+        self.hasHelp     = False # True if the Qt help files are present in the assets folder
 
         ## General
         self.guiTheme    = "default"
@@ -264,7 +263,6 @@ class Config:
         self.appRoot   = path.join(self.appPath, path.pardir)
         self.assetPath = path.join(self.appPath, "assets")
         self.themeRoot = path.join(self.assetPath, "themes")
-        self.graphPath = path.join(self.assetPath, "graphics")
         self.dictPath  = path.join(self.assetPath, "dict")
         self.iconPath  = path.join(self.assetPath, "icons")
         self.appIcon   = path.join(self.iconPath, "novelwriter.svg")

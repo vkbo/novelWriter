@@ -195,7 +195,7 @@ class GuiMain(QMainWindow):
         self.setStatus = self.statusBar.setStatus
         self.setProjectStatus = self.statusBar.setProjectStatus
 
-        if self.mainConf.showGUI:
+        if self.mainConf.blockGUI:
             self.show()
 
         # Check that config loaded fine
@@ -250,7 +250,7 @@ class GuiMain(QMainWindow):
         projects from a cache of recently opened projects, or provide a
         browse button for projects not yet cached.
         """
-        if not self.mainConf.showGUI:
+        if not self.mainConf.blockGUI:
             return False
 
         dlgProj = GuiProjectLoad(self)
@@ -275,7 +275,7 @@ class GuiMain(QMainWindow):
             )
             return False
 
-        if projData is None and self.mainConf.showGUI:
+        if projData is None and self.mainConf.blockGUI:
             projData = self.newProjectDialog()
 
         if projData is None:
@@ -316,7 +316,7 @@ class GuiMain(QMainWindow):
             # There is no project loaded, everything OK
             return True
 
-        if self.mainConf.showGUI and not isYes:
+        if self.mainConf.blockGUI and not isYes:
             msgBox = QMessageBox()
             msgRes = msgBox.question(
                 self, "Close Project", "Save changes and close current project?"
@@ -332,7 +332,7 @@ class GuiMain(QMainWindow):
             doBackup = False
             if self.theProject.doBackup and self.mainConf.backupOnClose:
                 doBackup = True
-                if self.mainConf.showGUI and self.mainConf.askBeforeBackup:
+                if self.mainConf.blockGUI and self.mainConf.askBeforeBackup:
                     msgBox = QMessageBox()
                     msgRes = msgBox.question(
                         self, "Backup Project", "Backup current project?"
@@ -379,7 +379,7 @@ class GuiMain(QMainWindow):
                 # reason handled by the project class.
                 return False
 
-            if self.mainConf.showGUI:
+            if self.mainConf.blockGUI:
                 try:
                     lockDetails = (
                         "<br><br>The project was locked by the computer "
@@ -611,7 +611,7 @@ class GuiMain(QMainWindow):
             return False
 
         if not self.docEditor.isEmpty():
-            if self.mainConf.showGUI:
+            if self.mainConf.blockGUI:
                 msgBox = QMessageBox()
                 msgRes = msgBox.question(self, "Import Document", (
                     "Importing the file will overwrite the current content of the document. "
@@ -629,7 +629,7 @@ class GuiMain(QMainWindow):
     def mergeDocuments(self):
         """Merge multiple documents to one single new document.
         """
-        if self.mainConf.showGUI:
+        if self.mainConf.blockGUI:
             dlgMerge = GuiDocMerge(self, self.theProject)
             dlgMerge.exec_()
         return True
@@ -637,7 +637,7 @@ class GuiMain(QMainWindow):
     def splitDocument(self):
         """Split a single document into multiple documents.
         """
-        if self.mainConf.showGUI:
+        if self.mainConf.blockGUI:
             dlgSplit = GuiDocSplit(self, self.theProject)
             dlgSplit.exec_()
         return True
@@ -684,7 +684,7 @@ class GuiMain(QMainWindow):
             return
 
         logger.verbose("Requesting change to item %s" % tHandle)
-        if self.mainConf.showGUI:
+        if self.mainConf.blockGUI:
             dlgProj = GuiItemEditor(self, self.theProject, tHandle)
             if dlgProj.exec_():
                 self.treeView.setTreeItemValues(tHandle)
@@ -745,7 +745,7 @@ class GuiMain(QMainWindow):
 
         qApp.restoreOverrideCursor()
 
-        if self.mainConf.showGUI and not beQuiet:
+        if self.mainConf.blockGUI and not beQuiet:
             self.makeAlert("The project index has been successfully rebuilt.", nwAlert.INFO)
 
         return True
@@ -830,7 +830,7 @@ class GuiMain(QMainWindow):
     def showAboutNWDialog(self):
         """Show the about dialog for novelWriter.
         """
-        if self.mainConf.showGUI:
+        if self.mainConf.blockGUI:
             dlgAbout = GuiAbout(self)
             dlgAbout.exec_()
         return True
@@ -838,7 +838,7 @@ class GuiMain(QMainWindow):
     def showAboutQtDialog(self):
         """Show the about dialog for Qt.
         """
-        if self.mainConf.showGUI:
+        if self.mainConf.blockGUI:
             msgBox = QMessageBox()
             msgBox.aboutQt(self, "About Qt")
         return True
@@ -870,7 +870,7 @@ class GuiMain(QMainWindow):
                 logger.error(msgLine)
 
         # Popup
-        if self.mainConf.showGUI:
+        if self.mainConf.blockGUI:
             msgBox = QMessageBox()
             if theLevel == nwAlert.INFO:
                 msgBox.information(self, "Information", popMsg)
@@ -901,7 +901,7 @@ class GuiMain(QMainWindow):
     def closeMain(self):
         """Save everything, and close novelWriter.
         """
-        if self.mainConf.showGUI and self.hasProject:
+        if self.mainConf.blockGUI and self.hasProject:
             msgBox = QMessageBox()
             msgRes = msgBox.question(
                 self, "Exit", "Do you want to save changes and exit?"
