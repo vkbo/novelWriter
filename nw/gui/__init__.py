@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 from nw.gui.about import GuiAbout
-from nw.gui.build import GuiBuildNovel
+from nw.gui.buildnovel import GuiBuildNovel
 from nw.gui.doceditor import GuiDocEditor
 from nw.gui.docmerge import GuiDocMerge
 from nw.gui.docsplit import GuiDocSplit

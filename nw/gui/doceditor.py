@@ -14,7 +14,7 @@
  Created:   2020-06-27 [0.10.0] GuiDocEditFooter
 
  This file is a part of novelWriter
- Copyright 2020, Veronica Berglyd Olsen
+ Copyright 2018–2020, Veronica Berglyd Olsen
 
  This program is free software: you can redistribute it and/or modify
  it under the terms of the GNU General Public License as published by

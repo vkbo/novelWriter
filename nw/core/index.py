@@ -9,7 +9,7 @@
  Created: 2019-05-27 [0.1.4]
 
  This file is a part of novelWriter
- Copyright 2020, Veronica Berglyd Olsen
+ Copyright 2018–2020, Veronica Berglyd Olsen
 
  This program is free software: you can redistribute it and/or modify
  it under the terms of the GNU General Public License as published by
