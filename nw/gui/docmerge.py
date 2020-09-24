@@ -136,14 +136,13 @@ class GuiDocMerge(QDialog):
         self.theParent.treeView.revealTreeItem(nHandle)
         self.theParent.openDocument(nHandle, doScroll=True)
 
-        self.close()
+        self._doClose()
 
         return
 
     def _doClose(self):
         """Close the dialog window without doing anything.
         """
-        logger.verbose("GuiDocMerge close button clicked")
         self.close()
         return
 

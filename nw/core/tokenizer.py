@@ -122,32 +122,6 @@ class Tokenizer():
 
         return
 
-    def clearData(self):
-        """Clear the data arrays and variables, but not settings, so the class
-        can be reused for multiple documents.
-        """
-        self.theText     = None
-        self.theHandle   = None
-        self.theItem     = None
-        self.theTokens   = None
-        self.theResult   = None
-        self.theMarkdown = None
-        self.numChapter  = 0
-        self.firstScene  = False
-
-        self.isNone  = False
-        self.isTitle = False
-        self.isBook  = False
-        self.isPage  = False
-        self.isPart  = False
-        self.isUnNum = False
-        self.isChap  = False
-        self.isScene = False
-        self.isNote  = False
-        self.isNovel = False
-
-        return
-
     ##
     #  Setters
     ##

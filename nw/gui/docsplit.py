@@ -214,14 +214,13 @@ class GuiDocSplit(QDialog):
             theDoc.clearDocument()
             self.theParent.treeView.revealTreeItem(nHandle)
 
-        self.close()
+        self._doClose()
 
         return
 
     def _doClose(self):
         """Close the dialog window without doing anything.
         """
-        logger.verbose("GuiDocSplit close button clicked")
         self.optState.saveSettings()
         self.close()
         return
