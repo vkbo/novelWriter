@@ -8,7 +8,7 @@ from shutil import copyfile
 from nwtools import cmpFiles
 
 from os import path
-from PyQt5.QtCore import Qt, QPoint
+from PyQt5.QtCore import Qt, QUrl, QPoint
 from PyQt5.QtGui import QTextCursor
 from PyQt5.QtWidgets import qApp, QAction, QTreeWidgetItem
 
@@ -410,7 +410,8 @@ def testDocViewer(qtbot, nwLipsum, nwTemp):
     assert nwGUI.docViewer.setCursorPosition(27)
     nwGUI.docViewer._makeSelection(QTextCursor.WordUnderCursor)
     theRect = nwGUI.docViewer.cursorRect()
-    qtbot.mouseClick(nwGUI.docViewer.viewport(), Qt.LeftButton, pos=theRect.center(), delay=100)
+    # qtbot.mouseClick(nwGUI.docViewer.viewport(), Qt.LeftButton, pos=theRect.center(), delay=100)
+    nwGUI.docViewer._linkClicked(QUrl("#char=Bod"))
     assert nwGUI.docViewer.theHandle == "4c4f28287af27"
 
     # Click mouse nav buttons
