@@ -10,7 +10,7 @@ from nwtools import cmpFiles
 from os import path
 from PyQt5.QtCore import Qt, QPoint
 from PyQt5.QtGui import QTextCursor
-from PyQt5.QtWidgets import QAction, QTreeWidgetItem
+from PyQt5.QtWidgets import qApp, QAction, QTreeWidgetItem
 
 from nw.constants import nwItemType, nwUnicode, nwOutline, nwDocAction, nwDocInsert
 
@@ -18,7 +18,7 @@ keyDelay = 2
 stepDelay = 20
 
 @pytest.mark.gui
-def testMainWindow(qtbot, nwFuncTemp, nwTempGUI, nwRef, nwTemp):
+def testDocEditor(qtbot, nwFuncTemp, nwTempGUI, nwRef, nwTemp):
 
     nwGUI = nw.main(["--testmode", "--config=%s" % nwFuncTemp, "--data=%s" % nwTemp])
     qtbot.addWidget(nwGUI)
@@ -313,8 +313,158 @@ def testMainWindow(qtbot, nwFuncTemp, nwTempGUI, nwRef, nwTemp):
     copyfile(projFile, testFile)
     assert cmpFiles(testFile, refFile)
 
-    nwGUI.closeMain()
     # qtbot.stopForInteraction()
+    nwGUI.closeMain()
+
+@pytest.mark.gui
+def testDocViewer(qtbot, nwLipsum, nwTemp):
+
+    nwGUI = nw.main(["--testmode", "--config=%s" % nwLipsum, "--data=%s" % nwTemp])
+    qtbot.addWidget(nwGUI)
+    nwGUI.show()
+    qtbot.waitForWindowShown(nwGUI)
+    qtbot.wait(stepDelay)
+
+    # Open project
+    nwGUI.theProject.projTree.setSeed(42)
+    assert nwGUI.openProject(nwLipsum)
+
+    # Rebuild the index as it isn't automatically copied
+    assert nwGUI.theIndex.tagIndex == {}
+    assert nwGUI.theIndex.refIndex == {}
+    nwGUI.mainMenu.aRebuildIndex.activate(QAction.Trigger)
+    assert nwGUI.theIndex.tagIndex != {}
+    assert nwGUI.theIndex.refIndex != {}
+
+    # Select a document in the project tree
+    assert nwGUI.treeView.setSelectedHandle("88243afbe5ed8")
+
+    # Middle-click the selected item
+    theItem = nwGUI.treeView._getTreeItem("88243afbe5ed8")
+    theRect = nwGUI.treeView.visualItemRect(theItem)
+    qtbot.mouseClick(nwGUI.treeView.viewport(), Qt.MidButton, pos=theRect.center())
+    assert nwGUI.docViewer.theHandle == "88243afbe5ed8"
+
+    # Reload the text
+    origText = nwGUI.docViewer.toPlainText()
+    nwGUI.docViewer.setPlainText("Oops, all gone!")
+    nwGUI.docViewer.docHeader._refreshDocument()
+    assert nwGUI.docViewer.toPlainText() == origText
+
+    # Cursor line
+    assert not nwGUI.docViewer.setCursorLine("not a number")
+    assert nwGUI.docViewer.setCursorLine(3)
+    theCursor = nwGUI.docViewer.textCursor()
+    assert theCursor.position() == 40
+
+    # Cursor position
+    assert not nwGUI.docViewer.setCursorPosition("not a number")
+    assert nwGUI.docViewer.setCursorPosition(100)
+
+    # Select word
+    nwGUI.docViewer._makeSelection(QTextCursor.WordUnderCursor)
+
+    qClip = qApp.clipboard()
+    qClip.clear()
+
+    # Cut
+    assert nwGUI.docViewer.docAction(nwDocAction.CUT)
+    assert qClip.text() == "laoreet"
+    qClip.clear()
+
+    # Copy
+    assert nwGUI.docViewer.docAction(nwDocAction.COPY)
+    assert qClip.text() == "laoreet"
+    qClip.clear()
+
+    # Select Paragraph
+    assert nwGUI.docViewer.docAction(nwDocAction.SEL_PARA)
+    theCursor = nwGUI.docViewer.textCursor()
+    assert theCursor.selectedText() == (
+        "Synopsis: Aenean ut placerat velit. Etiam laoreet ullamcorper risus, "
+        "eget lobortis enim scelerisque non. Suspendisse id maximus nunc, et "
+        "mollis sapien. Curabitur vel semper sapien, non pulvinar dolor. "
+        "Etiam finibus nisi vel mi molestie consectetur."
+    )
+
+    # Select All
+    assert nwGUI.docViewer.docAction(nwDocAction.SEL_ALL)
+    theCursor = nwGUI.docViewer.textCursor()
+    assert len(theCursor.selectedText()) == 3061
+
+    # Other actions
+    assert not nwGUI.docViewer.docAction(nwDocAction.NO_ACTION)
+
+    # Close document
+    nwGUI.docViewer.docHeader._closeDocument()
+    assert nwGUI.docViewer.theHandle is None
+
+    # Action on no document
+    assert not nwGUI.docViewer.docAction(nwDocAction.COPY)
+
+    # Open again via menu
+    assert nwGUI.treeView.setSelectedHandle("88243afbe5ed8")
+    nwGUI.mainMenu.aViewDoc.activate(QAction.Trigger)
+
+    # Select "Bod" link
+    assert nwGUI.docViewer.setCursorPosition(27)
+    nwGUI.docViewer._makeSelection(QTextCursor.WordUnderCursor)
+    theRect = nwGUI.docViewer.cursorRect()
+    qtbot.mouseClick(nwGUI.docViewer.viewport(), Qt.LeftButton, pos=theRect.center())
+    assert nwGUI.docViewer.theHandle == "4c4f28287af27"
+
+    # Click mouse nav buttons
+    qtbot.mouseClick(nwGUI.docViewer.viewport(), Qt.BackButton, pos=theRect.center())
+    assert nwGUI.docViewer.theHandle == "88243afbe5ed8"
+    qtbot.mouseClick(nwGUI.docViewer.viewport(), Qt.ForwardButton, pos=theRect.center())
+    assert nwGUI.docViewer.theHandle == "4c4f28287af27"
+
+    # Scroll bar default on empty document
+    nwGUI.docViewer.clear()
+    assert nwGUI.docViewer.getScrollPosition() == 0
+    nwGUI.docViewer.reloadText()
+
+    # Change document title
+    nwItem = nwGUI.theProject.projTree["4c4f28287af27"]
+    nwItem.setName("Test Title")
+    assert nwItem.itemName == "Test Title"
+    nwGUI.docViewer.updateDocInfo("4c4f28287af27")
+    assert nwGUI.docViewer.docHeader.theTitle.text() == "Characters  ›  Test Title"
+
+    # Ttile without full path
+    nwGUI.mainConf.showFullPath = False
+    nwGUI.docViewer.updateDocInfo("4c4f28287af27")
+    assert nwGUI.docViewer.docHeader.theTitle.text() == "Test Title"
+    nwGUI.mainConf.showFullPath = True
+
+    # Document footer show/hide references
+    viewState = nwGUI.viewMeta.isVisible()
+    nwGUI.docViewer.docFooter._doShowHide()
+    assert nwGUI.viewMeta.isVisible() is not viewState
+    nwGUI.docViewer.docFooter._doShowHide()
+    assert nwGUI.viewMeta.isVisible() is viewState
+
+    # Document footer sticky
+    viewState = nwGUI.docViewer.stickyRef
+    nwGUI.docViewer.docFooter._doToggleSticky(not viewState)
+    assert nwGUI.docViewer.stickyRef is not viewState
+    nwGUI.docViewer.docFooter._doToggleSticky(viewState)
+    assert nwGUI.docViewer.stickyRef is viewState
+
+    # Document footer show/hide synopsis
+    assert nwGUI.viewDocument("f96ec11c6a3da")
+    assert len(nwGUI.docViewer.toPlainText()) == 4315
+    nwGUI.docViewer.docFooter._doToggleSynopsis(False)
+    assert len(nwGUI.docViewer.toPlainText()) == 4099
+
+    # Document footer show/hide comments
+    assert nwGUI.viewDocument("846352075de7d")
+    assert len(nwGUI.docViewer.toPlainText()) == 672
+    nwGUI.docViewer.docFooter._doToggleComments(False)
+    assert len(nwGUI.docViewer.toPlainText()) == 632
+
+    # qtbot.stopForInteraction()
+    nwGUI.closeMain()
 
 @pytest.mark.gui
 def testEditFormatMenu(qtbot, nwLipsum, nwTemp):
