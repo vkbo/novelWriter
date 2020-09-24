@@ -229,6 +229,11 @@ def testIndexMeta(nwMinimal, nwDummy):
     assert wC == 12 # Words in text and title only
     assert pC == 2  # Paragraphs in text only
 
+    # Look up an ivalid handle
+    theRefs = theIndex.getReferences("Not a handle")
+    assert theRefs["@pov"] == []
+    assert theRefs["@char"] == []
+
     # The novel file should now refer to Jane as @pov and @char
     theRefs = theIndex.getReferences(nHandle)
     assert str(theRefs["@pov"]) == "['Jane']"
@@ -237,6 +242,86 @@ def testIndexMeta(nwMinimal, nwDummy):
     # The character file should have a record of the reference from the novel file
     theRefs = theIndex.getBackReferenceList(cHandle)
     assert str(theRefs) == "{'%s': 'T000001'}" % nHandle
+
+    # Get section counts for a novel file
+    assert theIndex.scanText(nHandle, (
+        "# Hello World!\n"
+        "@pov: Jane\n"
+        "@char: Jane\n"
+        "\n"
+        "% this is a comment\n"
+        "\n"
+        "This is a story about Jane Smith.\n"
+        "\n"
+        "Well, not really.\n"
+        "\n"
+        "# Hello World!\n"
+        "@pov: Jane\n"
+        "@char: Jane\n"
+        "\n"
+        "% this is a comment\n"
+        "\n"
+        "This is a story about Jane Smith.\n"
+        "\n"
+        "Well, not really.\n"
+    ))
+    # Whole document
+    cC, wC, pC = theIndex.getCounts(nHandle)
+    assert cC == 124
+    assert wC == 24
+    assert pC == 4
+
+    # First part
+    cC, wC, pC = theIndex.getCounts(nHandle, "T000001")
+    assert cC == 62
+    assert wC == 12
+    assert pC == 2
+
+    # First part
+    cC, wC, pC = theIndex.getCounts(nHandle, "T000011")
+    assert cC == 62
+    assert wC == 12
+    assert pC == 2
+
+    # Get section counts for a note file
+    assert theIndex.scanText(cHandle, (
+        "# Hello World!\n"
+        "@pov: Jane\n"
+        "@char: Jane\n"
+        "\n"
+        "% this is a comment\n"
+        "\n"
+        "This is a story about Jane Smith.\n"
+        "\n"
+        "Well, not really.\n"
+        "\n"
+        "# Hello World!\n"
+        "@pov: Jane\n"
+        "@char: Jane\n"
+        "\n"
+        "% this is a comment\n"
+        "\n"
+        "This is a story about Jane Smith.\n"
+        "\n"
+        "Well, not really.\n"
+    ))
+    # Whole document
+    cC, wC, pC = theIndex.getCounts(cHandle)
+    assert cC == 124
+    assert wC == 24
+    assert pC == 4
+
+    # First part
+    cC, wC, pC = theIndex.getCounts(cHandle, "T000001")
+    assert cC == 62
+    assert wC == 12
+    assert pC == 2
+
+    # First part
+    cC, wC, pC = theIndex.getCounts(cHandle, "T000011")
+    assert cC == 62
+    assert wC == 12
+    assert pC == 2
 
     assert theProject.closeProject()
 
