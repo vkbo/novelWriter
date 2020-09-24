@@ -410,13 +410,13 @@ def testDocViewer(qtbot, nwLipsum, nwTemp):
     assert nwGUI.docViewer.setCursorPosition(27)
     nwGUI.docViewer._makeSelection(QTextCursor.WordUnderCursor)
     theRect = nwGUI.docViewer.cursorRect()
-    qtbot.mouseClick(nwGUI.docViewer.viewport(), Qt.LeftButton, pos=theRect.center())
+    qtbot.mouseClick(nwGUI.docViewer.viewport(), Qt.LeftButton, pos=theRect.center(), delay=100)
     assert nwGUI.docViewer.theHandle == "4c4f28287af27"
 
     # Click mouse nav buttons
-    qtbot.mouseClick(nwGUI.docViewer.viewport(), Qt.BackButton, pos=theRect.center())
+    qtbot.mouseClick(nwGUI.docViewer.viewport(), Qt.BackButton, pos=theRect.center(), delay=100)
     assert nwGUI.docViewer.theHandle == "88243afbe5ed8"
-    qtbot.mouseClick(nwGUI.docViewer.viewport(), Qt.ForwardButton, pos=theRect.center())
+    qtbot.mouseClick(nwGUI.docViewer.viewport(), Qt.ForwardButton, pos=theRect.center(), delay=100)
     assert nwGUI.docViewer.theHandle == "4c4f28287af27"
 
     # Scroll bar default on empty document
