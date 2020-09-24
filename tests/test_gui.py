@@ -1074,9 +1074,9 @@ def testOutline(qtbot, nwLipsum, nwTemp):
     assert nwGUI.projMeta.fileValue.text() == "Lorem Ipsum"
     assert nwGUI.projMeta.itemValue.text() == "Finished"
 
-    assert nwGUI.projMeta.cCValue.text() == "122"
-    assert nwGUI.projMeta.wCValue.text() == "18"
-    assert nwGUI.projMeta.pCValue.text() == "2"
+    assert nwGUI.projMeta.cCValue.text() == "230"
+    assert nwGUI.projMeta.wCValue.text() == "40"
+    assert nwGUI.projMeta.pCValue.text() == "3"
 
     # Scene One
     actItem = nwGUI.projView.topLevelItem(1)

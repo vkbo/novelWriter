@@ -356,7 +356,7 @@ class NWIndex():
 
         # Count words for remaining text after last heading
         if nTitle > 0:
-            lastText = "\n".join(theLines[nTitle-1:nLine-1])
+            lastText = "\n".join(theLines[nTitle-1:])
             self._indexWordCounts(tHandle, isNovel, lastText, nTitle)
 
         # Update timestamps for index changes
