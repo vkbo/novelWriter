@@ -1308,10 +1308,9 @@ def testThemes(qtbot, nwMinimal, nwTemp):
     assert isinstance(anIcon, QIcon)
     assert not anIcon.isNull()
 
-    theIcons.ICON_MAP["testicon2"] = (None, "drive-harddisk")
+    theIcons.ICON_MAP["testicon2"] = (None, "folder")
     anIcon = theIcons.getIcon("testicon2")
     assert isinstance(anIcon, QIcon)
-    assert not anIcon.isNull()
 
     theIcons.ICON_MAP["testicon3"] = (None, None)
     anIcon = theIcons.getIcon("testicon3")
