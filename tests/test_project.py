@@ -612,6 +612,8 @@ def testOldProject(nwDummy, nwOldProj):
     mkdir(path.join(nwOldProj, "stuff"))
     mkdir(path.join(nwOldProj, "data_1", "stuff"))
 
+    # Create dummy files
+    mkdir(path.join(nwOldProj, "cache"))
     for aFile in deleteFiles:
         with open(aFile, mode="w+", encoding="utf8") as outFile:
             outFile.write("Hi")
