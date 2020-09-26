@@ -34,7 +34,6 @@ from os import path, listdir
 from math import ceil
 
 from PyQt5.QtCore import Qt
-from PyQt5.QtSvg import QSvgWidget
 from PyQt5.QtWidgets import QStyle, qApp
 from PyQt5.QtGui import (
     QPalette, QColor, QIcon, QFont, QFontMetrics, QFontDatabase, QPixmap
@@ -670,7 +669,7 @@ class GuiIcons:
         """
         if decoKey not in self.DECO_MAP:
             logger.error("Decoration with name '%s' does not exist" % decoKey)
-            return QSvgWidget()
+            return QPixmap()
 
         imgPath = path.join(
             self.mainConf.assetPath, "images", self.DECO_MAP[decoKey]

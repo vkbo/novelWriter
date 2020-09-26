@@ -11,8 +11,8 @@ from nwtools import cmpFiles
 
 from os import path
 from PyQt5.QtCore import Qt, QUrl, QPoint
-from PyQt5.QtGui import QTextCursor
-from PyQt5.QtWidgets import qApp, QAction, QTreeWidgetItem
+from PyQt5.QtGui import QTextCursor, QColor, QPixmap, QIcon
+from PyQt5.QtWidgets import qApp, QAction, QTreeWidgetItem, QStyle
 
 from nw.constants import nwItemType, nwUnicode, nwOutline, nwDocAction, nwDocInsert
 
@@ -28,24 +28,28 @@ def testLaunch(qtbot, nwFuncTemp, nwTemp):
     )
     assert nw.logger.getEffectiveLevel() == logging.WARNING
     nwGUI.closeMain()
+    nwGUI.close()
 
     nwGUI = nw.main(
         ["--testmode", "--info", "--quiet", "--config=%s" % nwFuncTemp, "--data=%s" % nwTemp]
     )
     assert nw.logger.getEffectiveLevel() == logging.INFO
     nwGUI.closeMain()
+    nwGUI.close()
 
     nwGUI = nw.main(
         ["--testmode", "--debug", "--quiet", "--config=%s" % nwFuncTemp, "--data=%s" % nwTemp]
     )
     assert nw.logger.getEffectiveLevel() == logging.DEBUG
     nwGUI.closeMain()
+    nwGUI.close()
 
     nwGUI = nw.main(
         ["--testmode", "--verbose", "--quiet", "--config=%s" % nwFuncTemp, "--data=%s" % nwTemp]
     )
     assert nw.logger.getEffectiveLevel() == 5
     nwGUI.closeMain()
+    nwGUI.close()
 
     # Log file
     logFile = path.join(nwTemp, "logFile.log")
@@ -62,17 +66,22 @@ def testLaunch(qtbot, nwFuncTemp, nwTemp):
     assert path.isfile(bakFile)
     assert path.isfile(logFile)
     nwGUI.closeMain()
+    nwGUI.close()
 
     # Other options
     with pytest.raises(SystemExit):
         nwGUI = nw.main(
             ["--testmode", "--help", "--config=%s" % nwFuncTemp, "--data=%s" % nwTemp]
         )
+    nwGUI.closeMain()
+    nwGUI.close()
 
     with pytest.raises(SystemExit):
         nwGUI = nw.main(
             ["--testmode", "--invalid", "--config=%s" % nwFuncTemp, "--data=%s" % nwTemp]
         )
+    nwGUI.closeMain()
+    nwGUI.close()
 
 @pytest.mark.gui
 def testDocEditor(qtbot, nwFuncTemp, nwTempGUI, nwRef, nwTemp):
@@ -372,6 +381,7 @@ def testDocEditor(qtbot, nwFuncTemp, nwTempGUI, nwRef, nwTemp):
 
     # qtbot.stopForInteraction()
     nwGUI.closeMain()
+    nwGUI.close()
 
 @pytest.mark.gui
 def testDocViewer(qtbot, nwLipsum, nwTemp):
@@ -523,6 +533,7 @@ def testDocViewer(qtbot, nwLipsum, nwTemp):
 
     # qtbot.stopForInteraction()
     nwGUI.closeMain()
+    nwGUI.close()
 
 @pytest.mark.gui
 def testEditFormatMenu(qtbot, nwLipsum, nwTemp):
@@ -759,6 +770,7 @@ def testEditFormatMenu(qtbot, nwLipsum, nwTemp):
 
     # qtbot.stopForInteraction()
     nwGUI.closeMain()
+    nwGUI.close()
 
 @pytest.mark.gui
 def testContextMenu(qtbot, nwLipsum, nwTemp):
@@ -844,6 +856,7 @@ def testContextMenu(qtbot, nwLipsum, nwTemp):
 
     # qtbot.stopForInteraction()
     nwGUI.closeMain()
+    nwGUI.close()
 
 @pytest.mark.gui
 def testInsertMenu(qtbot, nwFuncTemp, nwTemp):
@@ -934,6 +947,7 @@ def testInsertMenu(qtbot, nwFuncTemp, nwTemp):
 
     # qtbot.stopForInteraction()
     nwGUI.closeMain()
+    nwGUI.close()
 
 @pytest.mark.gui
 def testTextSearch(qtbot, nwLipsum, nwTemp):
@@ -1093,6 +1107,7 @@ def testTextSearch(qtbot, nwLipsum, nwTemp):
 
     # qtbot.stopForInteraction()
     nwGUI.closeMain()
+    nwGUI.close()
 
 @pytest.mark.gui
 def testOutline(qtbot, nwLipsum, nwTemp):
@@ -1153,3 +1168,156 @@ def testOutline(qtbot, nwLipsum, nwTemp):
 
     # qtbot.stopForInteraction()
     nwGUI.closeMain()
+    nwGUI.close()
+
+@pytest.mark.gui
+def testThemes(qtbot, nwMinimal, nwTemp):
+
+    nwGUI = nw.main(["--testmode", "--config=%s" % nwMinimal, "--data=%s" % nwTemp, nwMinimal])
+    qtbot.addWidget(nwGUI)
+    nwGUI.show()
+    qtbot.waitForWindowShown(nwGUI)
+    qtbot.wait(500)
+
+    # Change Settings
+    assert nw.CONFIG.confPath == nwMinimal
+    nw.CONFIG.guiTheme = "default_dark"
+    nw.CONFIG.guiSyntax = "tomorrow_night_eighties"
+    nw.CONFIG.guiIcons = "typicons_colour_dark"
+    nw.CONFIG.guiDark = True
+    nw.CONFIG.guiFont = "Cantarell"
+    nw.CONFIG.guiFontSize = 11
+    nw.CONFIG.confChanged = True
+    assert nw.CONFIG.saveConfig()
+
+    nwGUI.closeMain()
+    nwGUI.close()
+    del nwGUI
+
+    # Re-open
+    assert nw.CONFIG.confPath == nwMinimal
+    nwGUI = nw.main(["--testmode", "--config=%s" % nwMinimal, "--data=%s" % nwTemp, nwMinimal])
+    assert nwGUI.mainConf.confPath == nwMinimal
+    qtbot.addWidget(nwGUI)
+    nwGUI.show()
+    qtbot.waitForWindowShown(nwGUI)
+    qtbot.wait(500)
+
+    assert nw.CONFIG.guiTheme == "default_dark"
+    assert nw.CONFIG.guiSyntax == "tomorrow_night_eighties"
+    assert nw.CONFIG.guiIcons == "typicons_colour_dark"
+    assert nw.CONFIG.guiDark is True
+    assert nw.CONFIG.guiFont == "Cantarell"
+    assert nw.CONFIG.guiFontSize == 11
+
+    # Check GUI Colours
+    thePalette = nwGUI.palette()
+    assert thePalette.window().color()          == QColor(54, 54, 54)
+    assert thePalette.windowText().color()      == QColor(174, 174, 174)
+    assert thePalette.base().color()            == QColor(62, 62, 62)
+    assert thePalette.alternateBase().color()   == QColor(67, 67, 67)
+    assert thePalette.text().color()            == QColor(174, 174, 174)
+    assert thePalette.toolTipBase().color()     == QColor(255, 255, 192)
+    assert thePalette.toolTipText().color()     == QColor(21, 21, 13)
+    assert thePalette.button().color()          == QColor(62, 62, 62)
+    assert thePalette.buttonText().color()      == QColor(174, 174, 174)
+    assert thePalette.brightText().color()      == QColor(174, 174, 174)
+    assert thePalette.highlight().color()       == QColor(44, 152, 247)
+    assert thePalette.highlightedText().color() == QColor(255, 255, 255)
+    assert thePalette.link().color()            == QColor(44, 152, 247)
+    assert thePalette.linkVisited().color()     == QColor(44, 152, 247)
+
+    assert nwGUI.theTheme.treeWCount  == [197, 200, 198]
+    assert nwGUI.theTheme.statNone    == [150, 152, 150]
+    assert nwGUI.theTheme.statSaved   == [39, 135, 78]
+    assert nwGUI.theTheme.statUnsaved == [138, 32, 32]
+
+    # Check Syntax Colours
+    assert nwGUI.theTheme.colBack   == [45, 45, 45]
+    assert nwGUI.theTheme.colText   == [204, 204, 204]
+    assert nwGUI.theTheme.colLink   == [102, 153, 204]
+    assert nwGUI.theTheme.colHead   == [102, 153, 204]
+    assert nwGUI.theTheme.colHeadH  == [102, 153, 204]
+    assert nwGUI.theTheme.colEmph   == [249, 145, 57]
+    assert nwGUI.theTheme.colDialN  == [242, 119, 122]
+    assert nwGUI.theTheme.colDialD  == [153, 204, 153]
+    assert nwGUI.theTheme.colDialS  == [255, 204, 102]
+    assert nwGUI.theTheme.colComm   == [153, 153, 153]
+    assert nwGUI.theTheme.colKey    == [242, 119, 122]
+    assert nwGUI.theTheme.colVal    == [204, 153, 204]
+    assert nwGUI.theTheme.colSpell  == [242, 119, 122]
+    assert nwGUI.theTheme.colTagErr == [153, 204, 153]
+    assert nwGUI.theTheme.colRepTag == [102, 204, 204]
+    assert nwGUI.theTheme.colMod    == [249, 145, 57]
+
+    # Test Icon class
+    theIcons = nwGUI.theTheme.theIcons
+    nw.CONFIG.guiIcons = "invalid"
+    assert not theIcons.updateTheme()
+    nw.CONFIG.guiIcons = "typicons_colour_dark"
+    assert theIcons.updateTheme()
+
+    # Ask for a non-existent key
+    anImg = theIcons.loadDecoration("nonsense", 20, 20)
+    assert isinstance(anImg, QPixmap)
+    assert anImg.isNull()
+
+    # Add a non-existent file and request it
+    theIcons.DECO_MAP["nonsense"] = "nofile.jpg"
+    anImg = theIcons.loadDecoration("nonsense", 20, 20)
+    assert isinstance(anImg, QPixmap)
+    assert anImg.isNull()
+
+    # Get a real image, with different size parameters
+    anImg = theIcons.loadDecoration("wiz-back", 20, None)
+    assert isinstance(anImg, QPixmap)
+    assert not anImg.isNull()
+    assert anImg.width() == 20
+    assert anImg.height() >= 56
+
+    anImg = theIcons.loadDecoration("wiz-back", None, 70)
+    assert isinstance(anImg, QPixmap)
+    assert not anImg.isNull()
+    assert anImg.height() == 70
+    assert anImg.width() >= 24
+
+    anImg = theIcons.loadDecoration("wiz-back", 30, 70)
+    assert isinstance(anImg, QPixmap)
+    assert not anImg.isNull()
+    assert anImg.height() == 70
+    assert anImg.width() == 30
+
+    anImg = theIcons.loadDecoration("wiz-back", None, None)
+    assert isinstance(anImg, QPixmap)
+    assert not anImg.isNull()
+    assert anImg.height() >= 1500
+    assert anImg.width() >= 500
+
+    # Load icons
+    anIcon = theIcons.getIcon("nonsense")
+    assert isinstance(anIcon, QIcon)
+    assert anIcon.isNull()
+
+    anIcon = theIcons.getIcon("novelwriter")
+    assert isinstance(anIcon, QIcon)
+    assert not anIcon.isNull()
+
+    # Add dummy icons and test alternative load paths
+    theIcons.ICON_MAP["testicon1"] = (QStyle.SP_DriveHDIcon, None)
+    anIcon = theIcons.getIcon("testicon1")
+    assert isinstance(anIcon, QIcon)
+    assert not anIcon.isNull()
+
+    theIcons.ICON_MAP["testicon2"] = (None, "drive-harddisk")
+    anIcon = theIcons.getIcon("testicon2")
+    assert isinstance(anIcon, QIcon)
+    assert not anIcon.isNull()
+
+    theIcons.ICON_MAP["testicon3"] = (None, None)
+    anIcon = theIcons.getIcon("testicon3")
+    assert isinstance(anIcon, QIcon)
+    assert anIcon.isNull()
+
+    # qtbot.stopForInteraction()
+    nwGUI.closeMain()
+    nwGUI.close()
