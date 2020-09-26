@@ -440,23 +440,66 @@ def testBuildTool(qtbot, nwTempBuild, nwLipsum, nwRef, nwTemp):
 
     qtbot.mouseClick(nwBuild.buildNovel, Qt.LeftButton)
 
+    # Save files that can be compared
     assert nwBuild._saveDocument(nwBuild.FMT_NWD)
-    assert nwBuild._saveDocument(nwBuild.FMT_HTM)
-
     projFile = path.join(nwLipsum, "Lorem Ipsum.nwd")
     testFile = path.join(nwTempBuild, "3_LoremIpsum.nwd")
     refFile  = path.join(nwRef, "build", "3_LoremIpsum.nwd")
     copyfile(projFile, testFile)
     assert cmpFiles(testFile, refFile)
 
+    assert nwBuild._saveDocument(nwBuild.FMT_HTM)
     projFile = path.join(nwLipsum, "Lorem Ipsum.htm")
     testFile = path.join(nwTempBuild, "3_LoremIpsum.htm")
     refFile  = path.join(nwRef, "build", "3_LoremIpsum.htm")
     copyfile(projFile, testFile)
     assert cmpFiles(testFile, refFile)
 
-    # qtbot.stopForInteraction()
+    # Check the JSON files too at this stage
+    assert nwBuild._saveDocument(nwBuild.FMT_JSON_H)
+    projFile = path.join(nwLipsum, "Lorem Ipsum.json")
+    testFile = path.join(nwTempBuild, "3H_LoremIpsum.json")
+    refFile  = path.join(nwRef, "build", "3H_LoremIpsum.json")
+    copyfile(projFile, testFile)
+    assert cmpFiles(testFile, refFile, [8])
+
+    assert nwBuild._saveDocument(nwBuild.FMT_JSON_M)
+    projFile = path.join(nwLipsum, "Lorem Ipsum.json")
+    testFile = path.join(nwTempBuild, "3M_LoremIpsum.json")
+    refFile  = path.join(nwRef, "build", "3M_LoremIpsum.json")
+    copyfile(projFile, testFile)
+    assert cmpFiles(testFile, refFile, [8])
+
+    # Save other file types handled by Qt
+    # We assume the export itself by the Qt library works, so we just
+    # check that novelWriter successfully writes the files.
+    assert nwBuild._saveDocument(nwBuild.FMT_ODT)
+    assert nwBuild._saveDocument(nwBuild.FMT_PDF)
+    assert nwBuild._saveDocument(nwBuild.FMT_MD)
+    assert nwBuild._saveDocument(nwBuild.FMT_TXT)
+    assert path.isfile(path.join(nwLipsum, "Lorem Ipsum.odt"))
+    assert path.isfile(path.join(nwLipsum, "Lorem Ipsum.pdf"))
+    assert path.isfile(path.join(nwLipsum, "Lorem Ipsum.md"))
+    assert path.isfile(path.join(nwLipsum, "Lorem Ipsum.txt"))
+
+    # Close the build tool
+    htmlText  = nwBuild.htmlText
+    htmlStyle = nwBuild.htmlStyle
+    nwdText   = nwBuild.nwdText
+    buildTime = nwBuild.buildTime
     nwBuild._doClose()
+
+    # Re-open build dialog from cahce
+    nwBuild = GuiBuildNovel(nwGUI, nwGUI.theProject)
+
+    assert nwBuild.htmlText  == htmlText
+    assert nwBuild.htmlStyle == htmlStyle
+    assert nwBuild.nwdText   == nwdText
+    assert nwBuild.buildTime == buildTime
+
+    nwBuild._doClose()
+
+    # qtbot.stopForInteraction()
     nwGUI.closeMain()
 
 @pytest.mark.gui

@@ -468,7 +468,7 @@ class GuiBuildNovel(QDialog):
         self.buildProgress.setMaximum(len(self.theProject.projTree))
         self.buildProgress.setValue(0)
 
-        tStart = time()
+        tStart = int(time())
 
         self.htmlText = []
         self.htmlStyle = []
@@ -511,7 +511,7 @@ class GuiBuildNovel(QDialog):
             # Update progress bar, also for skipped items
             self.buildProgress.setValue(nItt+1)
 
-        tEnd = time()
+        tEnd = int(time())
         logger.debug("Built project in %.3f ms" % (1000*(tEnd-tStart)))
         self.htmlStyle = makeHtml.getStyleSheet()
         self.buildTime = tEnd
