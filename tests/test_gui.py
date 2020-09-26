@@ -4,6 +4,8 @@
 
 import nw
 import pytest
+import logging
+
 from shutil import copyfile
 from nwtools import cmpFiles
 
@@ -16,6 +18,61 @@ from nw.constants import nwItemType, nwUnicode, nwOutline, nwDocAction, nwDocIns
 
 keyDelay = 2
 stepDelay = 20
+
+@pytest.mark.gui
+def testLaunch(qtbot, nwFuncTemp, nwTemp):
+
+    # Log Levels
+    nwGUI = nw.main(
+        ["--testmode", "--config=%s" % nwFuncTemp, "--data=%s" % nwTemp]
+    )
+    assert nw.logger.getEffectiveLevel() == logging.WARNING
+    nwGUI.closeMain()
+
+    nwGUI = nw.main(
+        ["--testmode", "--info", "--quiet", "--config=%s" % nwFuncTemp, "--data=%s" % nwTemp]
+    )
+    assert nw.logger.getEffectiveLevel() == logging.INFO
+    nwGUI.closeMain()
+
+    nwGUI = nw.main(
+        ["--testmode", "--debug", "--quiet", "--config=%s" % nwFuncTemp, "--data=%s" % nwTemp]
+    )
+    assert nw.logger.getEffectiveLevel() == logging.DEBUG
+    nwGUI.closeMain()
+
+    nwGUI = nw.main(
+        ["--testmode", "--verbose", "--quiet", "--config=%s" % nwFuncTemp, "--data=%s" % nwTemp]
+    )
+    assert nw.logger.getEffectiveLevel() == 5
+    nwGUI.closeMain()
+
+    # Log file
+    logFile = path.join(nwTemp, "logFile.log")
+    bakFile = path.join(nwTemp, "logFile.log.bak")
+
+    nwGUI = nw.main(
+        ["--testmode", "--logfile=%s" % logFile, "--config=%s" % nwFuncTemp, "--data=%s" % nwTemp]
+    )
+    assert path.isfile(logFile)
+
+    nwGUI = nw.main(
+        ["--testmode", "--logfile=%s" % logFile, "--config=%s" % nwFuncTemp, "--data=%s" % nwTemp]
+    )
+    assert path.isfile(bakFile)
+    assert path.isfile(logFile)
+    nwGUI.closeMain()
+
+    # Other options
+    with pytest.raises(SystemExit):
+        nwGUI = nw.main(
+            ["--testmode", "--help", "--config=%s" % nwFuncTemp, "--data=%s" % nwTemp]
+        )
+
+    with pytest.raises(SystemExit):
+        nwGUI = nw.main(
+            ["--testmode", "--invalid", "--config=%s" % nwFuncTemp, "--data=%s" % nwTemp]
+        )
 
 @pytest.mark.gui
 def testDocEditor(qtbot, nwFuncTemp, nwTempGUI, nwRef, nwTemp):
