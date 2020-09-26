@@ -11,14 +11,17 @@ from nwtools import cmpFiles
 
 from os import path
 
-from PyQt5.QtCore import Qt
-from PyQt5.QtWidgets import QDialogButtonBox, QTreeWidgetItem
+from PyQt5.QtCore import Qt, QItemSelectionModel
+from PyQt5.QtWidgets import (
+    QDialogButtonBox, QTreeWidgetItem, QListWidgetItem, QDialog
+)
 
 from nw.gui import (
     GuiProjectSettings, GuiItemEditor, GuiAbout, GuiBuildNovel,
     GuiDocMerge, GuiDocSplit, GuiWritingStats, GuiProjectWizard,
     GuiProjectLoad, GuiPreferences
 )
+from nw.gui.custom import QuotesDialog
 from nw.constants import nwItemType, nwItemLayout, nwItemClass
 
 keyDelay = 2
@@ -958,3 +961,33 @@ def testPreferences(qtbot, nwMinimal, nwTemp, nwRef, tmpConf):
         7, 25,                      # Fonts (depends in system default)
     ]
     assert cmpFiles(testConf, refConf, ignoreLines)
+
+@pytest.mark.gui
+def testQuotesDialog(qtbot, nwMinimal, nwTemp):
+    nwGUI = nw.main(["--testmode", "--config=%s" % nwMinimal, "--data=%s" % nwTemp, nwMinimal])
+    qtbot.addWidget(nwGUI)
+    nwGUI.show()
+    qtbot.waitForWindowShown(nwGUI)
+    qtbot.wait(stepDelay)
+
+    nwQuot = QuotesDialog(nwGUI)
+    nwQuot.show()
+
+    lastItem = ""
+    for i in range(nwQuot.listBox.count()):
+        anItem = nwQuot.listBox.item(i)
+        assert isinstance(anItem, QListWidgetItem)
+        nwQuot.listBox.clearSelection()
+        nwQuot.listBox.setCurrentItem(anItem, QItemSelectionModel.Select)
+        lastItem = anItem.text()[2]
+        assert nwQuot.previewLabel.text() == lastItem
+
+    nwQuot._doAccept()
+    assert nwQuot.result() == QDialog.Accepted
+    assert nwQuot.selectedQuote == lastItem
+
+    # qtbot.stopForInteraction()
+    nwQuot._doReject()
+    nwQuot.close()
+    nwGUI.closeMain()
+    nwGUI.close()
