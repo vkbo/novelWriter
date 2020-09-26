@@ -178,6 +178,9 @@ class GuiProjectTree(QTreeWidget):
 
         if itemType == nwItemType.ROOT:
             tHandle = self.theProject.newRoot(nwLabels.CLASS_NAME[itemClass], itemClass)
+            if tHandle is None:
+                logger.error("No root item added")
+                return False
 
         else:
             # If no parent has been selected, make the new file under
@@ -236,8 +239,9 @@ class GuiProjectTree(QTreeWidget):
                 return False
 
         # Add the new item to the tree
-        self.revealTreeItem(tHandle, nHandle)
-        self.theParent.editItem(tHandle)
+        if tHandle is not None:
+            self.revealTreeItem(tHandle, nHandle)
+            self.theParent.editItem(tHandle)
 
         return True
 
@@ -257,7 +261,8 @@ class GuiProjectTree(QTreeWidget):
         """Move an item up or down in the tree, but only if the treeView
         has focus. This also applies when the menu is used.
         """
-        if qApp.focusWidget() == self and self.theParent.hasProject:
+        hasFocus = qApp.focusWidget() == self or not self.mainConf.blockGUI
+        if hasFocus and self.theParent.hasProject:
 
             tHandle = self.getSelectedHandle()
             tItem = self._getTreeItem(tHandle)
@@ -357,14 +362,15 @@ class GuiProjectTree(QTreeWidget):
             self.makeAlert("The Trash folder is already empty.", nwAlert.INFO)
             return False
 
-        msgBox = QMessageBox()
-        msgRes = msgBox.question(
-            self, "Empty Trash", "Permanently delete %d file%s from Trash?" % (
-                nTrash, "s" if nTrash > 1 else ""
+        if self.mainConf.blockGUI:
+            msgBox = QMessageBox()
+            msgRes = msgBox.question(
+                self, "Empty Trash", "Permanently delete %d file%s from Trash?" % (
+                    nTrash, "s" if nTrash > 1 else ""
+                )
             )
-        )
-        if msgRes != QMessageBox.Yes:
-            return False
+            if msgRes != QMessageBox.Yes:
+                return False
 
         logger.verbose("Deleting %d files from Trash" % nTrash)
         for tHandle in self.getTreeFromHandle(trashHandle):
@@ -754,6 +760,7 @@ class GuiProjectTree(QTreeWidget):
                 self.theIndex.reIndexHandle(sHandle)
 
         else:
+            theEvent.ignore()
             logger.debug("Drag'n'drop of item %s not accepted" % sHandle)
             self.makeAlert("The item cannot be moved to that location.", nwAlert.ERROR)
 
@@ -920,14 +927,14 @@ class GuiProjectTree(QTreeWidget):
         nwItemS.setClass(nwItemD.itemClass)
         if trItemP is None:
             logger.error("Failed to find new parent item of %s" % tHandle)
-            return
+            return False
 
         pHandle = trItemP.data(self.C_NAME, Qt.UserRole)
         nwItemS.setParent(pHandle)
         self.setTreeItemValues(tHandle)
         self._setTreeChanged(True)
 
-        return
+        return True
 
     def _setTreeChanged(self, theState):
         """Set the tree change flag, and propagate to the project.
