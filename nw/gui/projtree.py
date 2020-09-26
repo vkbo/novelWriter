@@ -26,8 +26,8 @@
  along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
 
-import logging
 import nw
+import logging
 
 from PyQt5.QtCore import Qt, QSize
 from PyQt5.QtGui import QIcon

@@ -26,9 +26,9 @@
  along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
 
+import nw
 import logging
 import configparser
-import nw
 
 from os import path, listdir
 from math import ceil

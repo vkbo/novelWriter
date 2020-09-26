@@ -25,9 +25,9 @@
  along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
 
+import nw
 import logging
 import json
-import nw
 
 from os import path
 from datetime import datetime

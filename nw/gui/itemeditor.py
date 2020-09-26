@@ -25,8 +25,8 @@
  along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
 
-import logging
 import nw
+import logging
 
 from PyQt5.QtWidgets import (
     QDialog, QVBoxLayout, QGridLayout, QLineEdit, QComboBox, QLabel,

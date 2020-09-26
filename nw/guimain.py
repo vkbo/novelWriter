@@ -25,8 +25,8 @@
  along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
 
-import logging
 import nw
+import logging
 
 from os import path
 from datetime import datetime
@@ -40,11 +40,11 @@ from PyQt5.QtWidgets import (
 )
 
 from nw.gui import (
-    GuiBuildNovel, GuiDocEditor, GuiDocMerge, GuiDocSplit, GuiDocViewDetails,
-    GuiDocViewer, GuiItemDetails, GuiItemEditor, GuiMainMenu, GuiMainStatus,
-    GuiOutline, GuiOutlineDetails, GuiPreferences, GuiProjectLoad, GuiTheme,
-    GuiProjectSettings, GuiProjectTree, GuiWritingStats, GuiProjectWizard,
-    GuiAbout
+    GuiAbout, GuiBuildNovel, GuiDocEditor, GuiDocMerge, GuiDocSplit,
+    GuiDocViewDetails, GuiDocViewer, GuiItemDetails, GuiItemEditor,
+    GuiMainMenu, GuiMainStatus, GuiOutline, GuiOutlineDetails, GuiPreferences,
+    GuiProjectLoad, GuiProjectSettings, GuiProjectTree, GuiProjectWizard,
+    GuiTheme, GuiWritingStats
 )
 from nw.core import NWProject, NWDoc, NWIndex
 from nw.constants import nwItemType, nwItemClass, nwAlert

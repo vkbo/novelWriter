@@ -25,8 +25,8 @@
  along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
 
-import logging
 import nw
+import logging
 
 from PyQt5.QtCore import Qt
 from PyQt5.QtWidgets import (
@@ -34,9 +34,11 @@ from PyQt5.QtWidgets import (
     QListWidgetItem, QDialogButtonBox, QLabel, QMessageBox
 )
 
-from nw.constants import nwAlert, nwItemType, nwItemClass, nwItemLayout, nwConst
-from nw.gui.custom import QHelpLabel
 from nw.core import NWDoc
+from nw.gui.custom import QHelpLabel
+from nw.constants import (
+    nwAlert, nwItemType, nwItemClass, nwItemLayout, nwConst
+)
 
 logger = logging.getLogger(__name__)
 

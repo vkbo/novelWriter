@@ -25,8 +25,8 @@
  along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
 
-import logging
 import nw
+import logging
 
 from os import path, mkdir, listdir, unlink, rename, rmdir
 from lxml import etree
@@ -41,7 +41,8 @@ from nw.core.document import NWDoc
 from nw.core.status import NWStatus
 from nw.core.options import OptionState
 from nw.common import (
-    checkString, checkBool, checkInt, isHandle, formatTimeStamp, makeFileNameSafe
+    checkString, checkBool, checkInt, isHandle, formatTimeStamp,
+    makeFileNameSafe
 )
 from nw.constants import (
     nwFiles, nwItemType, nwItemClass, nwItemLayout, nwLabels, nwAlert
