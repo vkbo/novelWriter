@@ -118,3 +118,16 @@ def nwLipsum(nwTemp):
     if path.isdir(lipsumDir):
         shutil.rmtree(lipsumDir)
     return
+
+@pytest.fixture(scope="function")
+def nwOldProj(nwTemp):
+    testDir = path.dirname(__file__)
+    oldProjStore = path.join(testDir, "oldproj")
+    oldProjDir = path.join(nwTemp, "oldproj")
+    if path.isdir(oldProjDir):
+        shutil.rmtree(oldProjDir)
+    shutil.copytree(oldProjStore, oldProjDir)
+    yield oldProjDir
+    if path.isdir(oldProjDir):
+        shutil.rmtree(oldProjDir)
+    return

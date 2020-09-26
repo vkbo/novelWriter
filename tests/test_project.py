@@ -3,7 +3,7 @@
 """
 
 import pytest
-from os import path
+from os import path, mkdir
 from shutil import copyfile
 
 from nwtools import cmpFiles
@@ -577,3 +577,87 @@ def testOrphanedFiles(nwDummy, nwLipsum):
 
     assert theProject.saveProject(nwLipsum)
     assert theProject.closeProject()
+
+@pytest.mark.project
+def testOldProject(nwDummy, nwOldProj):
+    theProject = NWProject(nwDummy)
+    theProject.mainConf.blockGUI = False
+
+    # Create dummy files for known legacy files
+    deleteFiles = [
+        path.join(nwOldProj, "cache", "nwProject.nwx.0"),
+        path.join(nwOldProj, "cache", "nwProject.nwx.1"),
+        path.join(nwOldProj, "cache", "nwProject.nwx.2"),
+        path.join(nwOldProj, "cache", "nwProject.nwx.3"),
+        path.join(nwOldProj, "cache", "nwProject.nwx.4"),
+        path.join(nwOldProj, "cache", "nwProject.nwx.5"),
+        path.join(nwOldProj, "cache", "nwProject.nwx.6"),
+        path.join(nwOldProj, "cache", "nwProject.nwx.7"),
+        path.join(nwOldProj, "cache", "nwProject.nwx.8"),
+        path.join(nwOldProj, "cache", "nwProject.nwx.9"),
+        path.join(nwOldProj, "meta",  "mainOptions.json"),
+        path.join(nwOldProj, "meta",  "exportOptions.json"),
+        path.join(nwOldProj, "meta",  "outlineOptions.json"),
+        path.join(nwOldProj, "meta",  "timelineOptions.json"),
+        path.join(nwOldProj, "meta",  "docMergeOptions.json"),
+        path.join(nwOldProj, "meta",  "sessionLogOptions.json"),
+    ]
+
+    # Add some files that shouldn't be there
+    deleteFiles.append(path.join(nwOldProj, "data_f", "whatnow.nwd"))
+    deleteFiles.append(path.join(nwOldProj, "data_f", "whatnow.txt"))
+
+    # Add some folders that shouldn't be there
+    mkdir(path.join(nwOldProj, "stuff"))
+    mkdir(path.join(nwOldProj, "data_1", "stuff"))
+
+    for aFile in deleteFiles:
+        with open(aFile, mode="w+", encoding="utf8") as outFile:
+            outFile.write("Hi")
+    for aFile in deleteFiles:
+        assert path.isfile(aFile)
+
+    # Open project and check that files that are not supposed to be
+    # there have been removed
+    assert theProject.openProject(nwOldProj)
+    for aFile in deleteFiles:
+        assert not path.isfile(aFile)
+
+    assert not path.isdir(path.join(nwOldProj, "data_1", "stuff"))
+    assert not path.isdir(path.join(nwOldProj, "data_1"))
+    assert not path.isdir(path.join(nwOldProj, "data_7"))
+    assert not path.isdir(path.join(nwOldProj, "data_8"))
+    assert not path.isdir(path.join(nwOldProj, "data_9"))
+    assert not path.isdir(path.join(nwOldProj, "data_a"))
+    assert not path.isdir(path.join(nwOldProj, "data_f"))
+
+    # Check stuff that has been moved
+    assert path.isdir(path.join(nwOldProj, "junk"))
+    assert path.isdir(path.join(nwOldProj, "junk", "stuff"))
+    assert path.isfile(path.join(nwOldProj, "junk", "whatnow.nwd"))
+    assert path.isfile(path.join(nwOldProj, "junk", "whatnow.txt"))
+
+    # Check that files we want to keep are in the right place
+    assert path.isdir(path.join(nwOldProj, "cache"))
+    assert path.isdir(path.join(nwOldProj, "content"))
+    assert path.isdir(path.join(nwOldProj, "meta"))
+
+    assert path.isfile(path.join(nwOldProj, "content", "f528d831f5b24.nwd"))
+    assert path.isfile(path.join(nwOldProj, "content", "88124a4292d8b.nwd"))
+    assert path.isfile(path.join(nwOldProj, "content", "91239bf2f8b69.nwd"))
+    assert path.isfile(path.join(nwOldProj, "content", "19752e7f9d8af.nwd"))
+    assert path.isfile(path.join(nwOldProj, "content", "a764d5acf5a21.nwd"))
+    assert path.isfile(path.join(nwOldProj, "content", "9058ae29f0dfd.nwd"))
+    assert path.isfile(path.join(nwOldProj, "content", "7ff63b8afc4cd.nwd"))
+
+    assert path.isfile(path.join(nwOldProj, "meta", "tagsIndex.json"))
+    assert path.isfile(path.join(nwOldProj, "meta", "sessionInfo.log"))
+
+    # Close the project
+    theProject.closeProject()
+
+    # Check that new files have been created
+    assert path.isfile(path.join(nwOldProj, "meta", "guiOptions.json"))
+    assert path.isfile(path.join(nwOldProj, "meta", "sessionStats.log"))
+    assert path.isfile(path.join(nwOldProj, "ToC.json"))
+    assert path.isfile(path.join(nwOldProj, "ToC.txt"))

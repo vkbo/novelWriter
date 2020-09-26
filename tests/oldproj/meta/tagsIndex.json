@@ -1,0 +1,72 @@
+{
+  "tagIndex": {},
+  "refIndex": {
+    "f528d831f5b24": [],
+    "88124a4292d8b": [],
+    "91239bf2f8b69": [],
+    "19752e7f9d8af": [],
+    "a764d5acf5a21": [],
+    "9058ae29f0dfd": [],
+    "7ff63b8afc4cd": []
+  },
+  "novelIndex": {
+    "f528d831f5b24": [
+      [
+        1,
+        3,
+        "Scene One",
+        "SCENE"
+      ]
+    ],
+    "88124a4292d8b": [
+      [
+        1,
+        3,
+        "Scene Two",
+        "SCENE"
+      ]
+    ],
+    "91239bf2f8b69": [
+      [
+        1,
+        3,
+        "Scene Three",
+        "SCENE"
+      ]
+    ],
+    "19752e7f9d8af": [
+      [
+        1,
+        3,
+        "Scene Four",
+        "SCENE"
+      ]
+    ],
+    "a764d5acf5a21": [
+      [
+        1,
+        3,
+        "Scene Five",
+        "SCENE"
+      ]
+    ]
+  },
+  "noteIndex": {
+    "9058ae29f0dfd": [
+      [
+        1,
+        1,
+        "Protagonist",
+        "NOTE"
+      ]
+    ],
+    "7ff63b8afc4cd": [
+      [
+        1,
+        1,
+        "Antagonist",
+        "NOTE"
+      ]
+    ]
+  }
+}

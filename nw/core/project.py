@@ -489,7 +489,7 @@ class NWProject():
         #       parser will lose the autoReplace settings if allowed to
         #       read the file. Introduced in version 0.10.
 
-        if fileVersion == "1.0":
+        if fileVersion == "1.0" and self.mainConf.blockGUI:
             msgBox = QMessageBox()
             msgRes = msgBox.question(self.theParent, "Old Project Version", (
                 "The project file and data is created by a novelWriter version "
@@ -501,7 +501,7 @@ class NWProject():
             if msgRes != QMessageBox.Yes:
                 return False
 
-        elif fileVersion != "1.1" and fileVersion != "1.2":
+        elif fileVersion != "1.1" and fileVersion != "1.2" and self.mainConf.blockGUI:
             self.makeAlert((
                 "Unknown or unsupported novelWriter project file format. "
                 "The project cannot be opened by this version of novelWriter. "
