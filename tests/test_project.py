@@ -3,8 +3,9 @@
 """
 
 import pytest
-from os import path, mkdir
+from os import path, mkdir, listdir
 from shutil import copyfile
+from zipfile import ZipFile
 
 from nwtools import cmpFiles
 
@@ -661,3 +662,47 @@ def testOldProject(nwDummy, nwOldProj):
     assert path.isfile(path.join(nwOldProj, "meta", "sessionStats.log"))
     assert path.isfile(path.join(nwOldProj, "ToC.json"))
     assert path.isfile(path.join(nwOldProj, "ToC.txt"))
+
+@pytest.mark.project
+def testBackupProject(nwDummy, nwMinimal, nwTemp):
+    theProject = NWProject(nwDummy)
+    assert theProject.openProject(nwMinimal)
+
+    # Test faulty settings
+    # Invalid path
+    theProject.mainConf.backupPath = None
+    assert not theProject.zipIt(doNotify=False)
+
+    # Missing project name
+    theProject.mainConf.backupPath = nwTemp
+    theProject.projName = ""
+    assert not theProject.zipIt(doNotify=False)
+
+    # Non-existent folder
+    theProject.mainConf.backupPath = path.join(nwTemp, "nonexistent")
+    theProject.projName = "Test Minimal"
+    assert not theProject.zipIt(doNotify=False)
+
+    # Same folder as project (causes infinite loop in zipping)
+    theProject.mainConf.backupPath = nwMinimal
+    assert not theProject.zipIt(doNotify=False)
+
+    # Test correct settings
+    theProject.mainConf.backupPath = nwTemp
+    assert theProject.zipIt(doNotify=False)
+
+    theFiles = listdir(path.join(nwTemp, "Test Minimal"))
+    assert len(theFiles) == 1
+
+    theZip = theFiles[0]
+    assert theZip[:12] == "Backup from "
+    assert theZip[-4:] == ".zip"
+
+    # Extract the archive
+    with ZipFile(path.join(nwTemp, "Test Minimal", theZip), "r") as inZip:
+        inZip.extractall(path.join(nwTemp, "extract"))
+
+    # Check that the main project file was restored
+    assert cmpFiles(
+        path.join(nwMinimal, "nwProject.nwx"), path.join(nwTemp, "extract", "nwProject.nwx")
+    )
