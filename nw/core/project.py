@@ -390,16 +390,11 @@ class NWProject():
         # Check for Old Legacy Data
         # =========================
 
-        errList = []
+        legacyList = [] # Cleanup is done later
         for projItem in listdir(self.projPath):
             logger.verbose("Project contains: %s" % projItem)
             if projItem.startswith("data_"):
-                errList = self._legacyDataFolder(projItem, errList)
-
-        if errList:
-            self.makeAlert(errList, nwAlert.ERROR)
-
-        self._deprecatedFiles()
+                legacyList.append(projItem)
 
         # Project Lock
         # ============
@@ -610,6 +605,17 @@ class NWProject():
                 self.projTree.unpackXML(xChild)
 
         self.optState.loadSettings()
+
+        # Sort out old file locations
+        if legacyList:
+            errList = []
+            for projItem in legacyList:
+                errList = self._legacyDataFolder(projItem, errList)
+            if errList:
+                self.makeAlert(errList, nwAlert.ERROR)
+
+        # Clean up old files
+        self._deprecatedFiles()
 
         # Update recent projects
         self.mainConf.updateRecentCache(self.projPath, self.projName, self.lastWCount, time())
