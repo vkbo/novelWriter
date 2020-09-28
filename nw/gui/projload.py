@@ -178,20 +178,19 @@ class GuiProjectLoad(QDialog):
         """Browse for a folder path.
         """
         logger.verbose("GuiProjectLoad browse button clicked")
-        if self.mainConf.showGUI:
-            dlgOpt  = QFileDialog.Options()
-            dlgOpt |= QFileDialog.DontUseNativeDialog
-            projFile, _ = QFileDialog.getOpenFileName(
-                self, "Open novelWriter Project", "",
-                "novelWriter Project File (%s);;All Files (*)" % nwFiles.PROJ_FILE,
-                options=dlgOpt
-            )
-            if projFile:
-                thePath = path.abspath(path.dirname(projFile))
-                self.selPath.setText(thePath)
-                self.openPath = thePath
-                self.openState = self.OPEN_STATE
-                self.accept()
+        dlgOpt  = QFileDialog.Options()
+        dlgOpt |= QFileDialog.DontUseNativeDialog
+        projFile, _ = QFileDialog.getOpenFileName(
+            self, "Open novelWriter Project", "",
+            "novelWriter Project File (%s);;All Files (*)" % nwFiles.PROJ_FILE,
+            options=dlgOpt
+        )
+        if projFile:
+            thePath = path.abspath(path.dirname(projFile))
+            self.selPath.setText(thePath)
+            self.openPath = thePath
+            self.openState = self.OPEN_STATE
+            self.accept()
 
         return
 

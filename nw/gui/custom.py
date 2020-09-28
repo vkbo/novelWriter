@@ -443,6 +443,8 @@ class VerticalTabBar(QTabBar):
 
 class QuotesDialog(QDialog):
 
+    selectedQuote = ""
+
     def __init__(self, theParent=None, currentQuote="\""):
         QDialog.__init__(self, parent=theParent)
 

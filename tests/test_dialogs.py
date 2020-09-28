@@ -14,7 +14,7 @@ from os import path
 from PyQt5.QtCore import Qt, QItemSelectionModel
 from PyQt5.QtWidgets import (
     QDialogButtonBox, QTreeWidgetItem, QListWidgetItem, QDialog, QAction,
-    QMessageBox, QFileDialog
+    QMessageBox, QFileDialog, QFontDialog
 )
 
 from nw.gui import (
@@ -198,7 +198,7 @@ def testItemEditor(qtbot, yesToAll, nwFuncTemp, nwTempGUI, nwRef, nwTemp):
     # qtbot.stopForInteraction()
 
 @pytest.mark.gui
-def testWritingStatsExport(qtbot, yesToAll, nwFuncTemp, nwTemp):
+def testWritingStatsExport(qtbot, monkeypatch, yesToAll, nwFuncTemp, nwTemp):
     nwGUI = nw.main(["--testmode", "--config=%s" % nwFuncTemp, "--data=%s" % nwTemp])
     qtbot.addWidget(nwGUI)
     nwGUI.show()
@@ -263,6 +263,10 @@ def testWritingStatsExport(qtbot, yesToAll, nwFuncTemp, nwTemp):
     assert isinstance(sessLog, GuiWritingStats)
     qtbot.wait(stepDelay)
 
+    monkeypatch.setattr(QFileDialog, "getSaveFileName", lambda *args, **kwargs: [])
+    assert not sessLog._saveData(sessLog.FMT_CSV)
+
+    monkeypatch.setattr(QFileDialog, "getSaveFileName", lambda ss, tt, pp, options: [pp])
     assert sessLog._saveData(sessLog.FMT_CSV)
     qtbot.wait(stepDelay)
     assert sessLog._saveData(sessLog.FMT_JSON)
@@ -913,9 +917,16 @@ def testLoadProject(qtbot, monkeypatch, yesToAll, nwMinimal, nwTemp):
     nwLoad._keyPressDelete()
     assert nwLoad.listBox.topLevelItemCount() == recentCount - 1
 
-    nwLoad.close()
+    getFile = path.join(nwMinimal, "nwProject.nwx")
+    monkeypatch.setattr(QFileDialog, "getOpenFileName", lambda *args, **kwargs: (getFile, None))
+    qtbot.mouseClick(nwLoad.browseButton, Qt.LeftButton)
+    assert nwLoad.openPath == nwMinimal
+    assert nwLoad.openState == nwLoad.OPEN_STATE
     # qtbot.stopForInteraction()
+
+    nwLoad.close()
     nwGUI.closeMain()
+    nwGUI.close()
 
 @pytest.mark.gui
 def testPreferences(qtbot, monkeypatch, yesToAll, nwMinimal, nwTemp, nwRef, tmpConf):
@@ -926,8 +937,6 @@ def testPreferences(qtbot, monkeypatch, yesToAll, nwMinimal, nwTemp, nwRef, tmpC
     qtbot.wait(stepDelay)
 
     assert nwGUI.openProject(nwMinimal)
-
-    monkeypatch.setattr(QMessageBox, "information", lambda *args, **kwargs: None)
 
     monkeypatch.setattr(GuiPreferences, "exec_", lambda *args: None)
     monkeypatch.setattr(GuiPreferences, "result", lambda *args: QDialog.Accepted)
@@ -952,7 +961,7 @@ def testPreferences(qtbot, monkeypatch, yesToAll, nwMinimal, nwTemp, nwRef, tmpC
     qtbot.wait(keyDelay)
     tabGeneral = nwPrefs.tabGeneral
     nwPrefs._tabBox.setCurrentWidget(tabGeneral)
-    tabGeneral.backupPath = nwTemp
+    tabGeneral.backupPath = "no/where"
 
     qtbot.wait(keyDelay)
     assert not tabGeneral.preferDarkIcons.isChecked()
@@ -963,6 +972,16 @@ def testPreferences(qtbot, monkeypatch, yesToAll, nwMinimal, nwTemp, nwRef, tmpC
     assert tabGeneral.showFullPath.isChecked()
     qtbot.mouseClick(tabGeneral.showFullPath, Qt.LeftButton)
     assert not tabGeneral.showFullPath.isChecked()
+
+    # Check Browse button
+    monkeypatch.setattr(QFileDialog, "getExistingDirectory", lambda *args, **kwargs: "")
+    assert not tabGeneral._backupFolder()
+    monkeypatch.setattr(QFileDialog, "getExistingDirectory", lambda *args, **kwargs: "some/dir")
+    qtbot.mouseClick(tabGeneral.backupGetPath, Qt.LeftButton)
+
+    # Check font button
+    monkeypatch.setattr(QFontDialog, "getFont", lambda font, obj: (font, True))
+    qtbot.mouseClick(tabGeneral.fontButton, Qt.LeftButton)
 
     qtbot.wait(keyDelay)
     assert not tabGeneral.backupOnClose.isChecked()
@@ -978,6 +997,9 @@ def testPreferences(qtbot, monkeypatch, yesToAll, nwMinimal, nwTemp, nwRef, tmpC
     qtbot.wait(keyDelay)
     tabLayout = nwPrefs.tabLayout
     nwPrefs._tabBox.setCurrentWidget(tabLayout)
+
+    qtbot.wait(keyDelay)
+    qtbot.mouseClick(tabLayout.fontButton, Qt.LeftButton)
 
     qtbot.wait(keyDelay)
     tabLayout.textStyleSize.setValue(13)
@@ -1050,12 +1072,14 @@ def testPreferences(qtbot, monkeypatch, yesToAll, nwMinimal, nwTemp, nwRef, tmpC
     assert not tabAutoRep.autoReplaceDash.isEnabled()
     assert not tabAutoRep.autoReplaceDots.isEnabled()
 
+    monkeypatch.setattr(QuotesDialog, "selectedQuote", "'")
+    monkeypatch.setattr(QuotesDialog, "exec_", lambda *args: QDialog.Accepted)
+    qtbot.mouseClick(tabAutoRep.btnDoubleStyleC, Qt.LeftButton)
+
     # Save and Check Config
     qtbot.mouseClick(nwPrefs.buttonBox.button(QDialogButtonBox.Ok), Qt.LeftButton)
 
     assert tmpConf.confChanged
-    assert tmpConf.backupPath == nwTemp
-    tmpConf.backupPath = ""
     tmpConf.lastPath = ""
 
     assert nwGUI.mainConf.saveConfig()
@@ -1070,7 +1094,7 @@ def testPreferences(qtbot, monkeypatch, yesToAll, nwMinimal, nwTemp, nwRef, tmpC
     ignoreLines = [
         2,                          # Timestamp
         11, 12, 13, 14, 15, 16, 17, # Window sizes
-        7, 25,                      # Fonts (depends in system default)
+        7, 25,                      # Fonts (depends on system default)
     ]
     assert cmpFiles(testConf, refConf, ignoreLines)
 

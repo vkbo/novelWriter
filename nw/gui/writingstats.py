@@ -326,16 +326,15 @@ class GuiWritingStats(QDialog):
             if not path.isdir(saveDir):
                 saveDir = self.mainConf.homePath
 
-            if self.mainConf.showGUI:
-                dlgOpt  = QFileDialog.Options()
-                dlgOpt |= QFileDialog.DontUseNativeDialog
-                saveTo  = QFileDialog.getSaveFileName(
-                    self, "Save Document As", savePath, options=dlgOpt
-                )
-                if saveTo[0]:
-                    savePath = saveTo[0]
-                else:
-                    return False
+            dlgOpt  = QFileDialog.Options()
+            dlgOpt |= QFileDialog.DontUseNativeDialog
+            saveTo  = QFileDialog.getSaveFileName(
+                self, "Save Document As", savePath, options=dlgOpt
+            )
+            if saveTo:
+                savePath = saveTo[0]
+            else:
+                return False
 
             self.mainConf.setLastPath(savePath)
 
