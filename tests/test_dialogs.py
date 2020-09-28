@@ -14,7 +14,7 @@ from os import path
 from PyQt5.QtCore import Qt, QItemSelectionModel
 from PyQt5.QtWidgets import (
     QDialogButtonBox, QTreeWidgetItem, QListWidgetItem, QDialog, QAction,
-    QMessageBox
+    QMessageBox, QFileDialog
 )
 
 from nw.gui import (
@@ -547,7 +547,7 @@ def testBuildTool(qtbot, nwTempBuild, nwLipsum, nwRef, nwTemp):
     nwGUI.closeMain()
 
 @pytest.mark.gui
-def testMergeSplitTools(qtbot, nwTempGUI, nwLipsum, nwRef, nwTemp):
+def testMergeSplitTools(qtbot, monkeypatch, nwTempGUI, nwLipsum, nwRef, nwTemp):
 
     nwGUI = nw.main(["--testmode", "--config=%s" % nwLipsum, "--data=%s" % nwTemp])
     qtbot.addWidget(nwGUI)
@@ -562,7 +562,13 @@ def testMergeSplitTools(qtbot, nwTempGUI, nwLipsum, nwRef, nwTemp):
     assert nwGUI.treeView.setSelectedHandle("45e6b01ca35c1")
     qtbot.wait(stepDelay)
 
-    nwMerge = GuiDocMerge(nwGUI, nwGUI.theProject)
+    monkeypatch.setattr(GuiDocMerge, "exec_", lambda *args: None)
+    nwGUI.mainMenu.aMergeDocs.activate(QAction.Trigger)
+    qtbot.waitUntil(lambda: getGuiItem("GuiDocMerge") is not None, timeout=1000)
+
+    nwMerge = getGuiItem("GuiDocMerge")
+    assert isinstance(nwMerge, GuiDocMerge)
+    nwMerge.show()
     qtbot.wait(stepDelay)
 
     nwMerge._doMerge()
@@ -579,8 +585,16 @@ def testMergeSplitTools(qtbot, nwTempGUI, nwLipsum, nwRef, nwTemp):
     # Split By Chapter
     assert nwGUI.treeView.setSelectedHandle("73475cb40a568")
     qtbot.wait(stepDelay)
-    nwSplit = GuiDocSplit(nwGUI, nwGUI.theProject)
+
+    monkeypatch.setattr(GuiDocSplit, "exec_", lambda *args: None)
+    nwGUI.mainMenu.aSplitDoc.activate(QAction.Trigger)
+    qtbot.waitUntil(lambda: getGuiItem("GuiDocSplit") is not None, timeout=1000)
+
+    nwSplit = getGuiItem("GuiDocSplit")
+    assert isinstance(nwSplit, GuiDocSplit)
+    nwSplit.show()
     qtbot.wait(stepDelay)
+
     nwSplit.splitLevel.setCurrentIndex(1)
     qtbot.wait(stepDelay)
 
@@ -863,7 +877,7 @@ def testLoadProject(qtbot, monkeypatch, nwMinimal, nwTemp):
     nwGUI.closeMain()
 
 @pytest.mark.gui
-def testPreferences(qtbot, monkeypatch, mnkQtDialogs, nwMinimal, nwTemp, nwRef, tmpConf):
+def testPreferences(qtbot, monkeypatch, nwMinimal, nwTemp, nwRef, tmpConf):
     nwGUI = nw.main(["--testmode", "--config=%s" % nwMinimal, "--data=%s" % nwTemp])
     qtbot.addWidget(nwGUI)
     nwGUI.show()
@@ -871,6 +885,8 @@ def testPreferences(qtbot, monkeypatch, mnkQtDialogs, nwMinimal, nwTemp, nwRef, 
     qtbot.wait(stepDelay)
 
     assert nwGUI.openProject(nwMinimal)
+
+    monkeypatch.setattr(QMessageBox, "information", lambda *args, **kwargs: None)
 
     monkeypatch.setattr(GuiPreferences, "exec_", lambda *args: None)
     monkeypatch.setattr(GuiPreferences, "result", lambda *args: QDialog.Accepted)
@@ -883,6 +899,7 @@ def testPreferences(qtbot, monkeypatch, mnkQtDialogs, nwMinimal, nwTemp, nwRef, 
 
     # Override Config
     tmpConf.confPath = nwMinimal
+    tmpConf.showGUI = False
     nwGUI.mainConf = tmpConf
     nwPrefs.mainConf = tmpConf
     nwPrefs.tabGeneral.mainConf = tmpConf
@@ -1047,13 +1064,14 @@ def testQuotesDialog(qtbot, nwMinimal, nwTemp):
     nwGUI.close()
 
 @pytest.mark.gui
-def testDialogsOpenClose(qtbot, mnkQtDialogs, nwMinimal, nwTemp):
+def testDialogsOpenClose(qtbot, monkeypatch, nwMinimal, nwTemp):
     nwGUI = nw.main(["--testmode", "--config=%s" % nwMinimal, "--data=%s" % nwTemp, nwMinimal])
     qtbot.addWidget(nwGUI)
     nwGUI.show()
     qtbot.waitForWindowShown(nwGUI)
     qtbot.wait(stepDelay)
 
+    monkeypatch.setattr(QFileDialog, "getExistingDirectory", lambda *args, **kwargs: nwTemp)
     assert nwGUI.selectProjectPath() == nwTemp
 
     # qtbot.stopForInteraction()

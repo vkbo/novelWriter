@@ -12,7 +12,9 @@ from nwtools import cmpFiles
 from os import path
 from PyQt5.QtCore import Qt, QUrl, QPoint, QItemSelectionModel
 from PyQt5.QtGui import QTextCursor, QColor, QPixmap, QIcon
-from PyQt5.QtWidgets import qApp, QAction, QTreeWidgetItem, QStyle
+from PyQt5.QtWidgets import (
+    qApp, QAction, QTreeWidgetItem, QStyle, QFileDialog, QMessageBox
+)
 
 from nw.constants import (
     nwItemType, nwItemClass, nwUnicode, nwOutline, nwDocAction, nwDocInsert
@@ -999,7 +1001,7 @@ def testContextMenu(qtbot, nwLipsum, nwTemp):
     nwGUI.close()
 
 @pytest.mark.gui
-def testInsertMenu(qtbot, nwFuncTemp, nwTemp):
+def testInsertMenu(qtbot, monkeypatch, nwFuncTemp, nwTemp):
     nwGUI = nw.main(["--testmode", "--config=%s" % nwFuncTemp, "--data=%s" % nwTemp])
     qtbot.addWidget(nwGUI)
     nwGUI.show()
@@ -1084,6 +1086,42 @@ def testInsertMenu(qtbot, nwFuncTemp, nwTemp):
     else:
         assert nwGUI.docEditor.getText() == " "
     nwGUI.docEditor.clear()
+
+    # Insert text from file
+    nwGUI.closeDocument()
+
+    # First, with no path
+    monkeypatch.setattr(QFileDialog, "getOpenFileName", lambda *args, **kwards: [])
+    assert not nwGUI.importDocument()
+
+    # Then with a path, but an invalid one
+    monkeypatch.setattr(QFileDialog, "getOpenFileName", lambda *args, **kwards: [" "])
+    assert not nwGUI.importDocument()
+
+    # Then a valid path, but bot a file that exists
+    theFile = path.join(nwTemp, "import.txt")
+    monkeypatch.setattr(QFileDialog, "getOpenFileName", lambda *args, **kwards: [theFile])
+    assert not nwGUI.importDocument()
+
+    # Create the file and try again, but with no target document open
+    with open(theFile, mode="w+", encoding="utf8") as outFile:
+        outFile.write("Foo")
+    assert not nwGUI.importDocument()
+
+    # Open the document from before, and add some text to it
+    nwGUI.openDocument("0e17daca5f3e1")
+    nwGUI.docEditor.setText("Bar")
+    assert nwGUI.docEditor.getText() == "Bar"
+
+    # The document isn't empty, so the message box should pop
+    monkeypatch.setattr(QMessageBox, "question", lambda *args, **kwargs: QMessageBox.No)
+    assert not nwGUI.importDocument()
+    assert nwGUI.docEditor.getText() == "Bar"
+
+    # Finally, accept the replaced text, this time we use the menu entry to trigger it
+    monkeypatch.setattr(QMessageBox, "question", lambda *args, **kwargs: QMessageBox.Yes)
+    nwGUI.mainMenu.aImportFile.activate(QAction.Trigger)
+    assert nwGUI.docEditor.getText() == "Foo"
 
     # qtbot.stopForInteraction()
     nwGUI.closeMain()

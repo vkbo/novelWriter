@@ -580,7 +580,7 @@ def testOrphanedFiles(nwDummy, nwLipsum):
     assert theProject.closeProject()
 
 @pytest.mark.project
-def testOldProject(nwDummy, nwOldProj, mnkQtDialogs):
+def testOldProject(nwDummy, nwOldProj):
     theProject = NWProject(nwDummy)
     theProject.mainConf.showGUI = False
 

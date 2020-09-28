@@ -178,30 +178,3 @@ def nwOldProj(nwTemp):
     if path.isdir(oldProjDir):
         shutil.rmtree(oldProjDir)
     return
-
-##
-#  Monkey Patch Dialogs
-##
-
-@pytest.fixture(scope="function")
-def mnkQtDialogs(monkeypatch, nwTemp):
-    """Mock Qt dialog functions to prevent GUI blocking while testing.
-    """
-    monkeypatch.setattr(
-        QFileDialog, "getExistingDirectory", lambda *args, **kwargs: nwTemp
-    )
-
-    monkeypatch.setattr(
-        QMessageBox, "question", lambda *args, **kwargs: QMessageBox.Yes
-    )
-    monkeypatch.setattr(
-        QMessageBox, "information", lambda *args, **kwargs: None
-    )
-    monkeypatch.setattr(
-        QMessageBox, "warning", lambda *args, **kwargs: None
-    )
-    monkeypatch.setattr(
-        QMessageBox, "critical", lambda *args, **kwargs: None
-    )
-
-    return

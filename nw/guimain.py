@@ -594,15 +594,12 @@ class GuiMain(QMainWindow):
             return False
 
         if not self.docEditor.isEmpty():
-            if self.mainConf.showGUI:
-                msgBox = QMessageBox()
-                msgRes = msgBox.question(self, "Import Document", (
-                    "Importing the file will overwrite the current content of the document. "
-                    "Do you want to proceed?"
-                ))
-                if msgRes != QMessageBox.Yes:
-                    return False
-            else:
+            msgBox = QMessageBox()
+            msgRes = msgBox.question(self, "Import Document", (
+                "Importing the file will overwrite the current content of the document. "
+                "Do you want to proceed?"
+            ))
+            if msgRes != QMessageBox.Yes:
                 return False
 
         self.docEditor.replaceText(theText)
@@ -612,18 +609,16 @@ class GuiMain(QMainWindow):
     def mergeDocuments(self):
         """Merge multiple documents to one single new document.
         """
-        if self.mainConf.showGUI:
-            dlgMerge = GuiDocMerge(self, self.theProject)
-            dlgMerge.exec_()
-        return True
+        dlgMerge = GuiDocMerge(self, self.theProject)
+        dlgMerge.exec_()
+        return
 
     def splitDocument(self):
         """Split a single document into multiple documents.
         """
-        if self.mainConf.showGUI:
-            dlgSplit = GuiDocSplit(self, self.theProject)
-            dlgSplit.exec_()
-        return True
+        dlgSplit = GuiDocSplit(self, self.theProject)
+        dlgSplit.exec_()
+        return
 
     def passDocumentAction(self, theAction):
         """Pass on document action theAction to the document viewer if
