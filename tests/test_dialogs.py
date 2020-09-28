@@ -7,13 +7,14 @@ import pytest
 import json
 
 from shutil import copyfile
-from nwtools import cmpFiles
+from nwtools import cmpFiles, getGuiItem
 
 from os import path
 
 from PyQt5.QtCore import Qt, QItemSelectionModel
 from PyQt5.QtWidgets import (
-    QDialogButtonBox, QTreeWidgetItem, QListWidgetItem, QDialog
+    QDialogButtonBox, QTreeWidgetItem, QListWidgetItem, QDialog, QAction,
+    QMessageBox
 )
 
 from nw.gui import (
@@ -28,22 +29,34 @@ keyDelay = 2
 stepDelay = 20
 
 @pytest.mark.gui
-def testProjectEditor(qtbot, nwFuncTemp, nwTempGUI, nwRef, nwTemp):
+def testProjectSettings(qtbot, monkeypatch, nwFuncTemp, nwTempGUI, nwRef, nwTemp):
     nwGUI = nw.main(["--testmode", "--config=%s" % nwFuncTemp, "--data=%s" % nwTemp])
     qtbot.addWidget(nwGUI)
     nwGUI.show()
     qtbot.waitForWindowShown(nwGUI)
     qtbot.wait(stepDelay)
 
-    # Create new, save, open project
+    # Check that we cannot open when there is no project
+    nwGUI.mainMenu.aProjectSettings.activate(QAction.Trigger)
+    assert getGuiItem("GuiProjectSettings") is None
+
+    # Create new project
     nwGUI.theProject.projTree.setSeed(42)
     assert nwGUI.newProject({"projPath": nwFuncTemp}, True)
     nwGUI.mainConf.backupPath = nwFuncTemp
 
-    projEdit = GuiProjectSettings(nwGUI, nwGUI.theProject)
+    # Get the dialog object
+    monkeypatch.setattr(GuiProjectSettings, "exec_", lambda *args: None)
+    monkeypatch.setattr(GuiProjectSettings, "result", lambda *args: QDialog.Accepted)
+    nwGUI.mainMenu.aProjectSettings.activate(QAction.Trigger)
+    qtbot.waitUntil(lambda: getGuiItem("GuiProjectSettings") is not None, timeout=1000)
+
+    projEdit = getGuiItem("GuiProjectSettings")
+    assert isinstance(projEdit, GuiProjectSettings)
     projEdit.show()
     qtbot.addWidget(projEdit)
 
+    # Main settings
     qtbot.wait(stepDelay)
     projEdit.tabMain.editName.setText("")
     for c in "Project Name":
@@ -199,6 +212,10 @@ def testWritingStatsExport(qtbot, nwFuncTemp, nwTemp):
     assert nwGUI.closeProject()
     qtbot.wait(stepDelay)
 
+    # Check that we cannot open when there is no project
+    nwGUI.mainMenu.aWritingStats.activate(QAction.Trigger)
+    assert getGuiItem("GuiWritingStats") is None
+
     assert nwGUI.openProject(nwFuncTemp)
     qtbot.wait(stepDelay)
 
@@ -239,8 +256,11 @@ def testWritingStatsExport(qtbot, nwFuncTemp, nwTemp):
     qtbot.wait(stepDelay)
 
     nwGUI.mainConf.lastPath = nwFuncTemp
-    sessLog = GuiWritingStats(nwGUI, nwGUI.theProject)
-    sessLog.show()
+    nwGUI.mainMenu.aWritingStats.activate(QAction.Trigger)
+    qtbot.waitUntil(lambda: getGuiItem("GuiWritingStats") is not None, timeout=1000)
+
+    sessLog = getGuiItem("GuiWritingStats")
+    assert isinstance(sessLog, GuiWritingStats)
     qtbot.wait(stepDelay)
 
     assert sessLog._saveData(sessLog.FMT_CSV)
@@ -337,16 +357,28 @@ def testWritingStatsExport(qtbot, nwFuncTemp, nwTemp):
     nwGUI.closeMain()
 
 @pytest.mark.gui
-def testAboutBox(qtbot, nwFuncTemp, nwTemp):
+def testAboutBox(qtbot, monkeypatch, nwFuncTemp, nwTemp):
     nwGUI = nw.main(["--testmode", "--config=%s" % nwFuncTemp, "--data=%s" % nwTemp])
     qtbot.addWidget(nwGUI)
     nwGUI.show()
     qtbot.waitForWindowShown(nwGUI)
     qtbot.wait(stepDelay)
 
-    msgAbout = GuiAbout(nwGUI)
+    # NW About
+    monkeypatch.setattr(GuiAbout, "exec_", lambda *args: None)
+    nwGUI.mainMenu.aAboutNW.activate(QAction.Trigger)
+    qtbot.waitUntil(lambda: getGuiItem("GuiAbout") is not None, timeout=1000)
+
+    msgAbout = getGuiItem("GuiAbout")
+    assert isinstance(msgAbout, GuiAbout)
+    msgAbout.show()
+
     assert msgAbout.pageAbout.document().characterCount() > 100
     assert msgAbout.pageLicense.document().characterCount() > 100
+
+    # Qt About
+    monkeypatch.setattr(QMessageBox, "aboutQt", lambda *args, **kwargs: None)
+    nwGUI.mainMenu.aAboutQt.activate(QAction.Trigger)
 
     # qtbot.stopForInteraction()
     msgAbout._doClose()
@@ -361,11 +393,20 @@ def testBuildTool(qtbot, nwTempBuild, nwLipsum, nwRef, nwTemp):
     qtbot.waitForWindowShown(nwGUI)
     qtbot.wait(stepDelay)
 
-    assert nwGUI.openProject(nwLipsum)
+    # Check that we cannot open when there is no project
+    nwGUI.mainMenu.aBuildProject.activate(QAction.Trigger)
+    assert getGuiItem("GuiBuildNovel") is None
 
+    # Open a project
+    assert nwGUI.openProject(nwLipsum)
     nwGUI.mainConf.lastPath = nwLipsum
 
-    nwBuild = GuiBuildNovel(nwGUI, nwGUI.theProject)
+    # Open the tool
+    nwGUI.mainMenu.aBuildProject.activate(QAction.Trigger)
+    qtbot.waitUntil(lambda: getGuiItem("GuiBuildNovel") is not None, timeout=1000)
+
+    nwBuild = getGuiItem("GuiBuildNovel")
+    assert isinstance(nwBuild, GuiBuildNovel)
 
     # Default Settings
     qtbot.mouseClick(nwBuild.buildNovel, Qt.LeftButton)
@@ -764,7 +805,7 @@ def testNewProjectWizard(qtbot, nwLipsum, nwTemp):
     nwGUI.closeMain()
 
 @pytest.mark.gui
-def testLoadProject(qtbot, nwMinimal, nwTemp):
+def testLoadProject(qtbot, monkeypatch, nwMinimal, nwTemp):
     nwGUI = nw.main(["--testmode", "--config=%s" % nwMinimal, "--data=%s" % nwTemp])
     qtbot.addWidget(nwGUI)
     nwGUI.show()
@@ -774,7 +815,13 @@ def testLoadProject(qtbot, nwMinimal, nwTemp):
     assert nwGUI.openProject(nwMinimal)
     assert nwGUI.closeProject()
 
-    nwLoad = GuiProjectLoad(nwGUI)
+    monkeypatch.setattr(GuiProjectLoad, "exec_", lambda *args: None)
+    monkeypatch.setattr(GuiProjectLoad, "result", lambda *args: QDialog.Accepted)
+    nwGUI.mainMenu.aOpenProject.activate(QAction.Trigger)
+    qtbot.waitUntil(lambda: getGuiItem("GuiProjectLoad") is not None, timeout=1000)
+
+    nwLoad = getGuiItem("GuiProjectLoad")
+    assert isinstance(nwLoad, GuiProjectLoad)
     nwLoad.show()
 
     recentCount = nwLoad.listBox.topLevelItemCount()
@@ -793,6 +840,7 @@ def testLoadProject(qtbot, nwMinimal, nwTemp):
     assert nwLoad.openPath == selPath
     assert nwLoad.openState == nwLoad.OPEN_STATE
 
+    # Just create a new project load from scratch for the rest of the test
     del nwLoad
     nwLoad = GuiProjectLoad(nwGUI)
     nwLoad.show()
@@ -815,7 +863,7 @@ def testLoadProject(qtbot, nwMinimal, nwTemp):
     nwGUI.closeMain()
 
 @pytest.mark.gui
-def testPreferences(qtbot, nwMinimal, nwTemp, nwRef, tmpConf):
+def testPreferences(qtbot, monkeypatch, mnkQtDialogs, nwMinimal, nwTemp, nwRef, tmpConf):
     nwGUI = nw.main(["--testmode", "--config=%s" % nwMinimal, "--data=%s" % nwTemp])
     qtbot.addWidget(nwGUI)
     nwGUI.show()
@@ -823,11 +871,17 @@ def testPreferences(qtbot, nwMinimal, nwTemp, nwRef, tmpConf):
     qtbot.wait(stepDelay)
 
     assert nwGUI.openProject(nwMinimal)
-    nwPrefs = GuiPreferences(nwGUI, nwGUI.theProject)
+
+    monkeypatch.setattr(GuiPreferences, "exec_", lambda *args: None)
+    monkeypatch.setattr(GuiPreferences, "result", lambda *args: QDialog.Accepted)
+    nwGUI.mainMenu.aPreferences.activate(QAction.Trigger)
+    qtbot.waitUntil(lambda: getGuiItem("GuiPreferences") is not None, timeout=1000)
+
+    nwPrefs = getGuiItem("GuiPreferences")
+    assert isinstance(nwPrefs, GuiPreferences)
     nwPrefs.show()
 
     # Override Config
-    tmpConf.blockGUI = False
     tmpConf.confPath = nwMinimal
     nwGUI.mainConf = tmpConf
     nwPrefs.mainConf = tmpConf
@@ -989,5 +1043,19 @@ def testQuotesDialog(qtbot, nwMinimal, nwTemp):
     # qtbot.stopForInteraction()
     nwQuot._doReject()
     nwQuot.close()
+    nwGUI.closeMain()
+    nwGUI.close()
+
+@pytest.mark.gui
+def testDialogsOpenClose(qtbot, mnkQtDialogs, nwMinimal, nwTemp):
+    nwGUI = nw.main(["--testmode", "--config=%s" % nwMinimal, "--data=%s" % nwTemp, nwMinimal])
+    qtbot.addWidget(nwGUI)
+    nwGUI.show()
+    qtbot.waitForWindowShown(nwGUI)
+    qtbot.wait(stepDelay)
+
+    assert nwGUI.selectProjectPath() == nwTemp
+
+    # qtbot.stopForInteraction()
     nwGUI.closeMain()
     nwGUI.close()

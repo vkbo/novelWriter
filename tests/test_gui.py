@@ -223,6 +223,10 @@ def testDocEditor(qtbot, nwFuncTemp, nwTempGUI, nwRef, nwTemp):
         qtbot.keyClick(nwGUI.docEditor, c, delay=keyDelay)
     qtbot.keyClick(nwGUI.docEditor, Qt.Key_Return, delay=keyDelay)
 
+    # Trigger autosaves before making more changes
+    nwGUI._autoSaveDocument()
+    nwGUI._autoSaveProject()
+
     # Select the 'New Scene' file
     nwGUI.setFocus(1)
     nwGUI.treeView.clearSelection()

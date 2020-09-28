@@ -580,9 +580,9 @@ def testOrphanedFiles(nwDummy, nwLipsum):
     assert theProject.closeProject()
 
 @pytest.mark.project
-def testOldProject(nwDummy, nwOldProj):
+def testOldProject(nwDummy, nwOldProj, mnkQtDialogs):
     theProject = NWProject(nwDummy)
-    theProject.mainConf.blockGUI = False
+    theProject.mainConf.showGUI = False
 
     # Create dummy files for known legacy files
     deleteFiles = [

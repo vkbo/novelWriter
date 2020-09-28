@@ -326,7 +326,7 @@ class GuiWritingStats(QDialog):
             if not path.isdir(saveDir):
                 saveDir = self.mainConf.homePath
 
-            if self.mainConf.blockGUI:
+            if self.mainConf.showGUI:
                 dlgOpt  = QFileDialog.Options()
                 dlgOpt |= QFileDialog.DontUseNativeDialog
                 saveTo  = QFileDialog.getSaveFileName(
@@ -380,7 +380,7 @@ class GuiWritingStats(QDialog):
             errMsg = str(e)
 
         # Report to user
-        if self.mainConf.blockGUI:
+        if self.mainConf.showGUI:
             if wSuccess:
                 self.theParent.makeAlert(
                     "%s file successfully written to:<br> %s" % (

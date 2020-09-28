@@ -104,7 +104,7 @@ class GuiPreferences(PagedDialog):
         validEntries &= retA
         needsRestart |= retB
 
-        if needsRestart and self.mainConf.blockGUI:
+        if needsRestart:
             msgBox = QMessageBox()
             msgBox.information(
                 self, "Preferences",
@@ -120,7 +120,7 @@ class GuiPreferences(PagedDialog):
         """Close the preferences without saving the changes.
         """
         logger.verbose("ConfigEditor close button clicked")
-        self.close()
+        self.reject()
         return
 
 # END Class GuiPreferences

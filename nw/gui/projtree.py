@@ -261,7 +261,7 @@ class GuiProjectTree(QTreeWidget):
         """Move an item up or down in the tree, but only if the treeView
         has focus. This also applies when the menu is used.
         """
-        hasFocus = qApp.focusWidget() == self or not self.mainConf.blockGUI
+        hasFocus = qApp.focusWidget() == self or not self.mainConf.showGUI
         if hasFocus and self.theParent.hasProject:
 
             tHandle = self.getSelectedHandle()
@@ -362,7 +362,7 @@ class GuiProjectTree(QTreeWidget):
             self.makeAlert("The Trash folder is already empty.", nwAlert.INFO)
             return False
 
-        if self.mainConf.blockGUI:
+        if self.mainConf.showGUI:
             msgBox = QMessageBox()
             msgRes = msgBox.question(
                 self, "Empty Trash", "Permanently delete %d file%s from Trash?" % (
@@ -416,7 +416,7 @@ class GuiProjectTree(QTreeWidget):
                 # If the file is in the trash folder already, as the
                 # user if they want to permanently delete the file.
                 doPermanent = False
-                if self.mainConf.blockGUI and not alreadyAsked:
+                if self.mainConf.showGUI and not alreadyAsked:
                     msgBox = QMessageBox()
                     msgRes = msgBox.question(
                         self, "Delete File", "Permanently delete file '%s'?" % nwItemS.itemName
@@ -445,7 +445,7 @@ class GuiProjectTree(QTreeWidget):
                 # The file is not already in the trash folder, so we
                 # move it there.
                 doTrash = False
-                if self.mainConf.blockGUI and askForTrash:
+                if self.mainConf.showGUI and askForTrash:
                     msgBox = QMessageBox()
                     msgRes = msgBox.question(
                         self, "Delete File", "Move file '%s' to Trash?" % nwItemS.itemName

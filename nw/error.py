@@ -160,7 +160,7 @@ def exceptionHandler(exType, exValue, exTrace, testMode=False):
 
         errMsg = NWErrorMessage(nwGUI)
         errMsg.setMessage(exType, exValue, exTrace)
-        if nw.CONFIG.blockGUI:
+        if nw.CONFIG.showGUI:
             errMsg.exec_()
 
         try:

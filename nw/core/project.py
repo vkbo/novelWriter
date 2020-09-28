@@ -382,6 +382,7 @@ class NWProject():
         # ==========================
 
         if not self.ensureFolderStructure():
+            self.clearProject()
             return False
 
         self.projDict = path.join(self.projMeta, nwFiles.PROJ_DICT)
@@ -475,6 +476,7 @@ class NWProject():
                 "Project file does not appear to be a novelWriterXML file.",
                 nwAlert.ERROR
             )
+            self.clearProject()
             return False
 
         # Check Project Storage Version
@@ -489,7 +491,7 @@ class NWProject():
         #       parser will lose the autoReplace settings if allowed to
         #       read the file. Introduced in version 0.10.
 
-        if fileVersion == "1.0" and self.mainConf.blockGUI:
+        if fileVersion == "1.0" and self.mainConf.showGUI:
             msgBox = QMessageBox()
             msgRes = msgBox.question(self.theParent, "Old Project Version", (
                 "The project file and data is created by a novelWriter version "
@@ -499,9 +501,10 @@ class NWProject():
                 "any more, so make sure you have a recent backup."
             ))
             if msgRes != QMessageBox.Yes:
+                self.clearProject()
                 return False
 
-        elif fileVersion != "1.1" and fileVersion != "1.2" and self.mainConf.blockGUI:
+        elif fileVersion != "1.1" and fileVersion != "1.2" and self.mainConf.showGUI:
             self.makeAlert((
                 "Unknown or unsupported novelWriter project file format. "
                 "The project cannot be opened by this version of novelWriter. "
@@ -509,12 +512,13 @@ class NWProject():
             ).format(
                 vers = appVersion,
             ), nwAlert.ERROR)
+            self.clearProject()
             return False
 
         # Check novelWriter Version
         # =========================
 
-        if int(hexVersion, 16) > int(nw.__hexversion__, 16) and self.mainConf.blockGUI:
+        if int(hexVersion, 16) > int(nw.__hexversion__, 16) and self.mainConf.showGUI:
             msgBox = QMessageBox()
             msgRes = msgBox.question(self.theParent, "Version Conflict", (
                 "This project was saved by a newer version of novelWriter, version %s. "
@@ -525,6 +529,7 @@ class NWProject():
                 appVersion, nw.__version__
             ))
             if msgRes != QMessageBox.Yes:
+                self.clearProject()
                 return False
 
         # Start Parsing the XML
@@ -927,7 +932,7 @@ class NWProject():
                     return False
 
             if path.isdir(projPath):
-                if self.mainConf.blockGUI and listdir(self.projPath):
+                if self.mainConf.showGUI and listdir(self.projPath):
                     self.theParent.makeAlert((
                         "New project folder is not empty. "
                         "Each project requires a dedicated project folder."

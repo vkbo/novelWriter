@@ -124,12 +124,24 @@ class GuiProjectSettings(PagedDialog):
             newList = self.tabReplace.getNewList()
             self.theProject.setAutoReplace(newList)
 
-        self._doClose()
+        self._saveGuiSettings()
+        self.accept()
 
         return
 
     def _doClose(self):
         """Save settings and close the dialog.
+        """
+        self._saveGuiSettings()
+        self.reject()
+        return
+
+    ##
+    #  Internal Functions
+    ##
+
+    def _saveGuiSettings(self):
+        """Save GUI settings.
         """
         winWidth    = self.mainConf.rpxInt(self.width())
         winHeight   = self.mainConf.rpxInt(self.height())
@@ -138,8 +150,6 @@ class GuiProjectSettings(PagedDialog):
         self.optState.setValue("GuiProjectSettings", "winWidth",    winWidth)
         self.optState.setValue("GuiProjectSettings", "winHeight",   winHeight)
         self.optState.setValue("GuiProjectSettings", "replaceColW", replaceColW)
-
-        self.close()
 
         return
 

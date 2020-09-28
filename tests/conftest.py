@@ -9,12 +9,22 @@ import shutil
 from os import path, mkdir
 from nwdummy import DummyMain
 
+from PyQt5.QtWidgets import QFileDialog, QMessageBox
+
 sys.path.insert(1, path.abspath(path.join(path.dirname(__file__), path.pardir)))
 
 from nw.config import Config # noqa: E402
 
+##
+#  Core Test Folders
+##
+
 @pytest.fixture(scope="session")
 def nwTemp():
+    """A temporary folder for the test session. This folder is
+    presistent after the test so that the status of generated files can
+    be checked. The folder is instead cleared before a new test session.
+    """
     testDir = path.dirname(__file__)
     tempDir = path.join(testDir, "temp")
     if path.isdir(tempDir):
@@ -25,31 +35,51 @@ def nwTemp():
 
 @pytest.fixture(scope="session")
 def nwRef():
+    """The folder where all the reference files are stored for verifying
+    the results of tests.
+    """
     testDir = path.dirname(__file__)
     refDir = path.join(testDir, "reference")
     return refDir
 
-@pytest.fixture(scope="session")
-def nwConf(nwRef, nwTemp):
-    theConf = Config()
-    theConf.initConfig(nwRef, nwTemp)
-    return theConf
+##
+#  novelWriter Objects
+##
 
 @pytest.fixture(scope="session")
 def tmpConf(nwTemp):
+    """Create a temporary novelWriter configuration object.
+    """
     theConf = Config()
     theConf.initConfig(nwTemp, nwTemp)
     theConf.setLastPath("")
     return theConf
 
 @pytest.fixture(scope="session")
+def nwConf(nwRef, nwTemp):
+    """Temporary novelWriter configuration used for the dummy instance
+    of novelWriter's main GUI.
+    """
+    theConf = Config()
+    theConf.initConfig(nwRef, nwTemp)
+    return theConf
+
+@pytest.fixture(scope="session")
 def nwDummy(nwRef, nwTemp, nwConf):
+    """Create a dummy instance of novelWriter's main GUI class.
+    """
     theDummy = DummyMain()
     theDummy.mainConf = nwConf
     return theDummy
 
+##
+#  Temporary Test Folders
+##
+
 @pytest.fixture(scope="session")
 def nwTempProj(nwTemp):
+    """A temporary folder for project tests.
+    """
     projDir = path.join(nwTemp, "proj")
     if not path.isdir(projDir):
         mkdir(projDir)
@@ -57,6 +87,8 @@ def nwTempProj(nwTemp):
 
 @pytest.fixture(scope="session")
 def nwTempGUI(nwTemp):
+    """A temporary folder for GUI tests.
+    """
     guiDir = path.join(nwTemp, "gui")
     if not path.isdir(guiDir):
         mkdir(guiDir)
@@ -64,6 +96,8 @@ def nwTempGUI(nwTemp):
 
 @pytest.fixture(scope="session")
 def nwTempBuild(nwTemp):
+    """A temporary folder for build tests.
+    """
     buildDir = path.join(nwTemp, "build")
     if not path.isdir(buildDir):
         mkdir(buildDir)
@@ -71,6 +105,8 @@ def nwTempBuild(nwTemp):
 
 @pytest.fixture(scope="function")
 def nwFuncTemp(nwTemp):
+    """A temporary folder for a single test function.
+    """
     funcDir = path.join(nwTemp, "ftemp")
     if path.isdir(funcDir):
         shutil.rmtree(funcDir)
@@ -81,8 +117,14 @@ def nwFuncTemp(nwTemp):
         shutil.rmtree(funcDir)
     return
 
+##
+#  Temp Folders for Projects
+##
+
 @pytest.fixture(scope="function")
 def nwMinimal(nwTemp):
+    """A minimal novelWriter example project.
+    """
     testDir = path.dirname(__file__)
     minimalStore = path.join(testDir, "minimal")
     minimalDir = path.join(nwTemp, "minimal")
@@ -102,6 +144,9 @@ def nwMinimal(nwTemp):
 
 @pytest.fixture(scope="function")
 def nwLipsum(nwTemp):
+    """A medium sized novelWriter example project with a lot of Lorem
+    Ipsum dummy text.
+    """
     testDir = path.dirname(__file__)
     lipsumStore = path.join(testDir, "lipsum")
     lipsumDir = path.join(nwTemp, "lipsum")
@@ -121,6 +166,8 @@ def nwLipsum(nwTemp):
 
 @pytest.fixture(scope="function")
 def nwOldProj(nwTemp):
+    """A minimal movelWriter project using the old folder structure.
+    """
     testDir = path.dirname(__file__)
     oldProjStore = path.join(testDir, "oldproj")
     oldProjDir = path.join(nwTemp, "oldproj")
@@ -130,4 +177,31 @@ def nwOldProj(nwTemp):
     yield oldProjDir
     if path.isdir(oldProjDir):
         shutil.rmtree(oldProjDir)
+    return
+
+##
+#  Monkey Patch Dialogs
+##
+
+@pytest.fixture(scope="function")
+def mnkQtDialogs(monkeypatch, nwTemp):
+    """Mock Qt dialog functions to prevent GUI blocking while testing.
+    """
+    monkeypatch.setattr(
+        QFileDialog, "getExistingDirectory", lambda *args, **kwargs: nwTemp
+    )
+
+    monkeypatch.setattr(
+        QMessageBox, "question", lambda *args, **kwargs: QMessageBox.Yes
+    )
+    monkeypatch.setattr(
+        QMessageBox, "information", lambda *args, **kwargs: None
+    )
+    monkeypatch.setattr(
+        QMessageBox, "warning", lambda *args, **kwargs: None
+    )
+    monkeypatch.setattr(
+        QMessageBox, "critical", lambda *args, **kwargs: None
+    )
+
     return
