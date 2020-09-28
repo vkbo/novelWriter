@@ -362,15 +362,14 @@ class GuiProjectTree(QTreeWidget):
             self.makeAlert("The Trash folder is already empty.", nwAlert.INFO)
             return False
 
-        if self.mainConf.showGUI:
-            msgBox = QMessageBox()
-            msgRes = msgBox.question(
-                self, "Empty Trash", "Permanently delete %d file%s from Trash?" % (
-                    nTrash, "s" if nTrash > 1 else ""
-                )
+        msgBox = QMessageBox()
+        msgRes = msgBox.question(
+            self, "Empty Trash", "Permanently delete %d file%s from Trash?" % (
+                nTrash, "s" if nTrash > 1 else ""
             )
-            if msgRes != QMessageBox.Yes:
-                return False
+        )
+        if msgRes != QMessageBox.Yes:
+            return False
 
         logger.verbose("Deleting %d files from Trash" % nTrash)
         for tHandle in self.getTreeFromHandle(trashHandle):
@@ -416,7 +415,7 @@ class GuiProjectTree(QTreeWidget):
                 # If the file is in the trash folder already, as the
                 # user if they want to permanently delete the file.
                 doPermanent = False
-                if self.mainConf.showGUI and not alreadyAsked:
+                if not alreadyAsked:
                     msgBox = QMessageBox()
                     msgRes = msgBox.question(
                         self, "Delete File", "Permanently delete file '%s'?" % nwItemS.itemName
@@ -445,7 +444,7 @@ class GuiProjectTree(QTreeWidget):
                 # The file is not already in the trash folder, so we
                 # move it there.
                 doTrash = False
-                if self.mainConf.showGUI and askForTrash:
+                if askForTrash:
                     msgBox = QMessageBox()
                     msgRes = msgBox.question(
                         self, "Delete File", "Move file '%s' to Trash?" % nwItemS.itemName

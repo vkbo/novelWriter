@@ -380,19 +380,18 @@ class GuiWritingStats(QDialog):
             errMsg = str(e)
 
         # Report to user
-        if self.mainConf.showGUI:
-            if wSuccess:
-                self.theParent.makeAlert(
-                    "%s file successfully written to:<br> %s" % (
-                        textFmt, savePath
-                    ), nwAlert.INFO
-                )
-            else:
-                self.theParent.makeAlert(
-                    "Failed to write %s file. %s" % (
-                        textFmt, errMsg
-                    ), nwAlert.ERROR
-                )
+        if wSuccess:
+            self.theParent.makeAlert(
+                "%s file successfully written to:<br> %s" % (
+                    textFmt, savePath
+                ), nwAlert.INFO
+            )
+        else:
+            self.theParent.makeAlert(
+                "Failed to write %s file. %s" % (
+                    textFmt, errMsg
+                ), nwAlert.ERROR
+            )
 
         return True
 

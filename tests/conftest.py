@@ -9,7 +9,7 @@ import shutil
 from os import path, mkdir
 from nwdummy import DummyMain
 
-from PyQt5.QtWidgets import QFileDialog, QMessageBox
+from PyQt5.QtWidgets import QMessageBox
 
 sys.path.insert(1, path.abspath(path.join(path.dirname(__file__), path.pardir)))
 
@@ -177,4 +177,26 @@ def nwOldProj(nwTemp):
     yield oldProjDir
     if path.isdir(oldProjDir):
         shutil.rmtree(oldProjDir)
+    return
+
+##
+#  Monkey Patch Dialogs
+##
+
+@pytest.fixture(scope="function")
+def yesToAll(monkeypatch):
+    """Make the message boxes/questions always say yes to the dress!
+    """
+    monkeypatch.setattr(
+        QMessageBox, "question", lambda *args, **kwargs: QMessageBox.Yes
+    )
+    monkeypatch.setattr(
+        QMessageBox, "information", lambda *args, **kwargs: QMessageBox.Yes
+    )
+    monkeypatch.setattr(
+        QMessageBox, "warning", lambda *args, **kwargs: QMessageBox.Yes
+    )
+    monkeypatch.setattr(
+        QMessageBox, "critical", lambda *args, **kwargs: QMessageBox.Yes
+    )
     return

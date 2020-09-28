@@ -88,7 +88,7 @@ def testLaunch(qtbot, nwFuncTemp, nwTemp):
     nwGUI.close()
 
 @pytest.mark.gui
-def testDocEditor(qtbot, nwFuncTemp, nwTempGUI, nwRef, nwTemp):
+def testDocEditor(qtbot, yesToAll, nwFuncTemp, nwTempGUI, nwRef, nwTemp):
 
     nwGUI = nw.main(["--testmode", "--config=%s" % nwFuncTemp, "--data=%s" % nwTemp])
     qtbot.addWidget(nwGUI)
@@ -392,7 +392,7 @@ def testDocEditor(qtbot, nwFuncTemp, nwTempGUI, nwRef, nwTemp):
     nwGUI.close()
 
 @pytest.mark.gui
-def testDocViewer(qtbot, nwLipsum, nwTemp):
+def testDocViewer(qtbot, yesToAll, nwLipsum, nwTemp):
 
     nwGUI = nw.main(["--testmode", "--config=%s" % nwLipsum, "--data=%s" % nwTemp])
     qtbot.addWidget(nwGUI)
@@ -544,7 +544,7 @@ def testDocViewer(qtbot, nwLipsum, nwTemp):
     nwGUI.close()
 
 @pytest.mark.gui
-def testProjectTree(qtbot, nwMinimal, nwTemp):
+def testProjectTree(qtbot, yesToAll, nwMinimal, nwTemp):
 
     nwGUI = nw.main(["--testmode", "--config=%s" % nwMinimal, "--data=%s" % nwTemp, nwMinimal])
     qtbot.addWidget(nwGUI)
@@ -678,7 +678,7 @@ def testProjectTree(qtbot, nwMinimal, nwTemp):
     nwGUI.close()
 
 @pytest.mark.gui
-def testEditFormatMenu(qtbot, nwLipsum, nwTemp):
+def testEditFormatMenu(qtbot, yesToAll, nwLipsum, nwTemp):
 
     nwGUI = nw.main(["--testmode", "--config=%s" % nwLipsum, "--data=%s" % nwTemp])
     qtbot.addWidget(nwGUI)
@@ -915,7 +915,7 @@ def testEditFormatMenu(qtbot, nwLipsum, nwTemp):
     nwGUI.close()
 
 @pytest.mark.gui
-def testContextMenu(qtbot, nwLipsum, nwTemp):
+def testContextMenu(qtbot, yesToAll, nwLipsum, nwTemp):
 
     nwGUI = nw.main(["--testmode", "--config=%s" % nwLipsum, "--data=%s" % nwTemp])
     qtbot.addWidget(nwGUI)
@@ -1087,7 +1087,9 @@ def testInsertMenu(qtbot, monkeypatch, nwFuncTemp, nwTemp):
         assert nwGUI.docEditor.getText() == " "
     nwGUI.docEditor.clear()
 
-    # Insert text from file
+    ##
+    #  Insert text from file
+    ##
     nwGUI.closeDocument()
 
     # First, with no path
@@ -1123,12 +1125,33 @@ def testInsertMenu(qtbot, monkeypatch, nwFuncTemp, nwTemp):
     nwGUI.mainMenu.aImportFile.activate(QAction.Trigger)
     assert nwGUI.docEditor.getText() == "Foo"
 
+    ##
+    #  Reveal file location
+    ##
+
+    theMessage = ""
+
+    def recordMsg(*args):
+        nonlocal theMessage
+        theMessage = args[3]
+        return None
+
+    assert not theMessage
+    monkeypatch.setattr(QMessageBox, "information", recordMsg)
+    nwGUI.mainMenu.aFileDetails.activate(QAction.Trigger)
+
+    theBits = theMessage.split("<br>")
+    assert len(theBits) == 3
+    assert theBits[0] == "File details for the currently open file"
+    assert theBits[1] == "Handle: 0e17daca5f3e1"
+    assert theBits[2] == "Location: %s" % path.join(nwFuncTemp, "content", "0e17daca5f3e1.nwd")
+
     # qtbot.stopForInteraction()
     nwGUI.closeMain()
     nwGUI.close()
 
 @pytest.mark.gui
-def testTextSearch(qtbot, nwLipsum, nwTemp):
+def testTextSearch(qtbot, monkeypatch, yesToAll, nwLipsum, nwTemp):
 
     nwGUI = nw.main(["--testmode", "--config=%s" % nwLipsum, "--data=%s" % nwTemp])
     qtbot.addWidget(nwGUI)
@@ -1153,8 +1176,9 @@ def testTextSearch(qtbot, nwLipsum, nwTemp):
     assert nwGUI.docEditor.docSearch.isVisible()
     assert nwGUI.docEditor.docSearch.getSearchText() == "est"
 
-    # Find Next by Menu
-    nwGUI.mainMenu.aFindNext.activate(QAction.Trigger)
+    # Find Next by Enter
+    monkeypatch.setattr(nwGUI.docEditor.docSearch.searchBox, "hasFocus", lambda: True)
+    qtbot.keyClick(nwGUI.docEditor.docSearch.searchBox, Qt.Key_Return, delay=keyDelay)
     assert abs(nwGUI.docEditor.getCursorPosition() - 1272) < 3
 
     # Find Next by Button
@@ -1283,12 +1307,31 @@ def testTextSearch(qtbot, nwLipsum, nwTemp):
     nwGUI.mainMenu.aFindNext.activate(QAction.Trigger)
     assert abs(nwGUI.docEditor.getCursorPosition() - 1127) < 3
 
+    # Toggle Replace
+    nwGUI.docEditor._beginReplace()
+
+    # MonkeyPatch the focus cycle. We can't really test this very well, other than
+    # check that the tabs aren't captured when the main editor has focus
+    monkeypatch.setattr(nwGUI.docEditor, "hasFocus", lambda: True)
+    monkeypatch.setattr(nwGUI.docEditor.docSearch.searchBox, "hasFocus", lambda: False)
+    monkeypatch.setattr(nwGUI.docEditor.docSearch.replaceBox, "hasFocus", lambda: False)
+    assert not nwGUI.docEditor.focusNextPrevChild(True)
+
+    monkeypatch.setattr(nwGUI.docEditor, "hasFocus", lambda: False)
+    monkeypatch.setattr(nwGUI.docEditor.docSearch.searchBox, "hasFocus", lambda: True)
+    monkeypatch.setattr(nwGUI.docEditor.docSearch.replaceBox, "hasFocus", lambda: False)
+    assert nwGUI.docEditor.focusNextPrevChild(True)
+
+    monkeypatch.setattr(nwGUI.docEditor.docSearch.searchBox, "hasFocus", lambda: False)
+    monkeypatch.setattr(nwGUI.docEditor.docSearch.replaceBox, "hasFocus", lambda: True)
+    assert nwGUI.docEditor.focusNextPrevChild(True)
+
     # qtbot.stopForInteraction()
     nwGUI.closeMain()
     nwGUI.close()
 
 @pytest.mark.gui
-def testOutline(qtbot, nwLipsum, nwTemp):
+def testOutline(qtbot, yesToAll, nwLipsum, nwTemp):
 
     nwGUI = nw.main(["--testmode", "--config=%s" % nwLipsum, "--data=%s" % nwTemp])
     qtbot.addWidget(nwGUI)
@@ -1349,7 +1392,7 @@ def testOutline(qtbot, nwLipsum, nwTemp):
     nwGUI.close()
 
 @pytest.mark.gui
-def testThemes(qtbot, nwMinimal, nwTemp):
+def testThemes(qtbot, yesToAll, nwMinimal, nwTemp):
 
     nwGUI = nw.main(["--testmode", "--config=%s" % nwMinimal, "--data=%s" % nwTemp, nwMinimal])
     qtbot.addWidget(nwGUI)

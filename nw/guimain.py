@@ -251,14 +251,13 @@ class GuiMain(QMainWindow):
         The variable forceNew is used for testing.
         """
         if self.hasProject:
-            msgBox = QMessageBox()
-            msgBox.warning(
-                self, "New Project",
-                "Please close the current project before making a new one."
+            self.makeAlert(
+                "Please close the current project before making a new one.",
+                nwAlert.ERROR
             )
             return False
 
-        if projData is None and self.mainConf.showGUI:
+        if projData is None:
             projData = self.showNewProjectDialog()
 
         if projData is None:
@@ -270,10 +269,9 @@ class GuiMain(QMainWindow):
             return False
 
         if path.isfile(path.join(projPath, self.theProject.projFile)) and not forceNew:
-            msgBox = QMessageBox()
-            msgBox.critical(
-                self, "New Project",
-                "A project already exists in that location. Please choose another folder."
+            self.makeAlert(
+                "A project already exists in that location. Please choose another folder.",
+                nwAlert.ERROR
             )
             return False
 
@@ -299,7 +297,7 @@ class GuiMain(QMainWindow):
             # There is no project loaded, everything OK
             return True
 
-        if self.mainConf.showGUI and not isYes:
+        if not isYes:
             msgBox = QMessageBox()
             msgRes = msgBox.question(
                 self, "Close Project", "Save changes and close current project?"
@@ -315,7 +313,7 @@ class GuiMain(QMainWindow):
             doBackup = False
             if self.theProject.doBackup and self.mainConf.backupOnClose:
                 doBackup = True
-                if self.mainConf.showGUI and self.mainConf.askBeforeBackup:
+                if self.mainConf.askBeforeBackup:
                     msgBox = QMessageBox()
                     msgRes = msgBox.question(
                         self, "Backup Project", "Backup current project?"
@@ -362,39 +360,38 @@ class GuiMain(QMainWindow):
                 # reason handled by the project class.
                 return False
 
-            if self.mainConf.showGUI:
-                try:
-                    lockDetails = (
-                        "<br><br>The project was locked by the computer "
-                        "'%s' (%s %s), last active on %s"
-                    ) % (
-                        self.theProject.lockedBy[0],
-                        self.theProject.lockedBy[1],
-                        self.theProject.lockedBy[2],
-                        datetime.fromtimestamp(
-                            int(self.theProject.lockedBy[3])
-                        ).strftime("%x %X")
-                    )
-                except Exception:
-                    lockDetails = ""
-
-                msgBox = QMessageBox()
-                msgRes = msgBox.warning(
-                    self, "Project Locked", (
-                        "The project is already open by another instance of novelWriter, and "
-                        "is therefore locked. Override lock and continue anyway?<br><br>"
-                        "Note: If the program or the computer previously crashed, the lock "
-                        "can safely be overridden. If, however, another instance of "
-                        "novelWriter has the project open, overriding the lock may corrupt "
-                        "the project, and is not recommended.%s"
-                    ) % lockDetails,
-                    QMessageBox.Yes | QMessageBox.No, QMessageBox.No
+            try:
+                lockDetails = (
+                    "<br><br>The project was locked by the computer "
+                    "'%s' (%s %s), last active on %s"
+                ) % (
+                    self.theProject.lockedBy[0],
+                    self.theProject.lockedBy[1],
+                    self.theProject.lockedBy[2],
+                    datetime.fromtimestamp(
+                        int(self.theProject.lockedBy[3])
+                    ).strftime("%x %X")
                 )
-                if msgRes == QMessageBox.Yes:
-                    if not self.theProject.openProject(projFile, overrideLock=True):
-                        return False
-                else:
+            except Exception:
+                lockDetails = ""
+
+            msgBox = QMessageBox()
+            msgRes = msgBox.warning(
+                self, "Project Locked", (
+                    "The project is already open by another instance of novelWriter, and "
+                    "is therefore locked. Override lock and continue anyway?<br><br>"
+                    "Note: If the program or the computer previously crashed, the lock "
+                    "can safely be overridden. If, however, another instance of "
+                    "novelWriter has the project open, overriding the lock may corrupt "
+                    "the project, and is not recommended.%s"
+                ) % lockDetails,
+                QMessageBox.Yes | QMessageBox.No, QMessageBox.No
+            )
+            if msgRes == QMessageBox.Yes:
+                if not self.theProject.openProject(projFile, overrideLock=True):
                     return False
+            else:
+                return False
 
         # Project is loaded
         self.hasProject = True
@@ -724,7 +721,7 @@ class GuiMain(QMainWindow):
 
         qApp.restoreOverrideCursor()
 
-        if self.mainConf.showGUI and not beQuiet:
+        if not beQuiet:
             self.makeAlert("The project index has been successfully rebuilt.", nwAlert.INFO)
 
         return True
@@ -909,7 +906,7 @@ class GuiMain(QMainWindow):
     def closeMain(self):
         """Save everything, and close novelWriter.
         """
-        if self.mainConf.showGUI and self.hasProject:
+        if self.hasProject:
             msgBox = QMessageBox()
             msgRes = msgBox.question(
                 self, "Exit", "Do you want to save changes and exit?"

@@ -29,7 +29,7 @@ keyDelay = 2
 stepDelay = 20
 
 @pytest.mark.gui
-def testProjectSettings(qtbot, monkeypatch, nwFuncTemp, nwTempGUI, nwRef, nwTemp):
+def testProjectSettings(qtbot, monkeypatch, yesToAll, nwFuncTemp, nwTempGUI, nwRef, nwTemp):
     nwGUI = nw.main(["--testmode", "--config=%s" % nwFuncTemp, "--data=%s" % nwTemp])
     qtbot.addWidget(nwGUI)
     nwGUI.show()
@@ -139,7 +139,7 @@ def testProjectSettings(qtbot, monkeypatch, nwFuncTemp, nwTempGUI, nwRef, nwTemp
     nwGUI.closeMain()
 
 @pytest.mark.gui
-def testItemEditor(qtbot, nwFuncTemp, nwTempGUI, nwRef, nwTemp):
+def testItemEditor(qtbot, yesToAll, nwFuncTemp, nwTempGUI, nwRef, nwTemp):
     nwGUI = nw.main(["--testmode", "--config=%s" % nwFuncTemp, "--data=%s" % nwTemp])
     qtbot.addWidget(nwGUI)
     nwGUI.show()
@@ -198,7 +198,7 @@ def testItemEditor(qtbot, nwFuncTemp, nwTempGUI, nwRef, nwTemp):
     # qtbot.stopForInteraction()
 
 @pytest.mark.gui
-def testWritingStatsExport(qtbot, nwFuncTemp, nwTemp):
+def testWritingStatsExport(qtbot, yesToAll, nwFuncTemp, nwTemp):
     nwGUI = nw.main(["--testmode", "--config=%s" % nwFuncTemp, "--data=%s" % nwTemp])
     qtbot.addWidget(nwGUI)
     nwGUI.show()
@@ -385,7 +385,7 @@ def testAboutBox(qtbot, monkeypatch, nwFuncTemp, nwTemp):
     nwGUI.closeMain()
 
 @pytest.mark.gui
-def testBuildTool(qtbot, nwTempBuild, nwLipsum, nwRef, nwTemp):
+def testBuildTool(qtbot, yesToAll, nwTempBuild, nwLipsum, nwRef, nwTemp):
 
     nwGUI = nw.main(["--testmode", "--config=%s" % nwLipsum, "--data=%s" % nwTemp])
     qtbot.addWidget(nwGUI)
@@ -547,7 +547,7 @@ def testBuildTool(qtbot, nwTempBuild, nwLipsum, nwRef, nwTemp):
     nwGUI.closeMain()
 
 @pytest.mark.gui
-def testMergeSplitTools(qtbot, monkeypatch, nwTempGUI, nwLipsum, nwRef, nwTemp):
+def testMergeSplitTools(qtbot, monkeypatch, yesToAll, nwTempGUI, nwLipsum, nwRef, nwTemp):
 
     nwGUI = nw.main(["--testmode", "--config=%s" % nwLipsum, "--data=%s" % nwTemp])
     qtbot.addWidget(nwGUI)
@@ -690,7 +690,7 @@ def testMergeSplitTools(qtbot, monkeypatch, nwTempGUI, nwLipsum, nwRef, nwTemp):
     nwGUI.closeMain()
 
 @pytest.mark.gui
-def testNewProjectWizard(qtbot, nwLipsum, nwTemp):
+def testNewProjectWizard(qtbot, monkeypatch, yesToAll, nwMinimal, nwTemp):
 
     from PyQt5.QtWidgets import QWizard
     from nw.gui.projwizard import (
@@ -698,7 +698,47 @@ def testNewProjectWizard(qtbot, nwLipsum, nwTemp):
         ProjWizardCustomPage, ProjWizardFinalPage
     )
 
-    nwGUI = nw.main(["--testmode", "--config=%s" % nwLipsum, "--data=%s" % nwTemp])
+    nwGUI = nw.main(["--testmode", "--config=%s" % nwMinimal, "--data=%s" % nwTemp])
+    qtbot.addWidget(nwGUI)
+    nwGUI.show()
+    qtbot.waitForWindowShown(nwGUI)
+    qtbot.wait(stepDelay)
+
+    ##
+    #  Test New Project Function
+    ##
+
+    # New with a project open should cause an error
+    assert nwGUI.openProject(nwMinimal)
+    assert not nwGUI.newProject()
+
+    # Close project, but call with invalid path
+    assert nwGUI.closeProject()
+    monkeypatch.setattr(nwGUI, "showNewProjectDialog", lambda *args: None)
+    assert not nwGUI.newProject()
+
+    # Now, with an empty dictionary
+    monkeypatch.setattr(nwGUI, "showNewProjectDialog", lambda *args: {})
+    assert not nwGUI.newProject()
+
+    # Now, with a non-empty folder
+    monkeypatch.setattr(nwGUI, "showNewProjectDialog", lambda *args: {"projPath": nwMinimal})
+    assert not nwGUI.newProject()
+
+    # Force overwrite
+    monkeypatch.setattr(nwGUI, "showNewProjectDialog", lambda *args: {"projPath": nwMinimal})
+    assert nwGUI.newProject(forceNew=True)
+
+    nwGUI.closeMain()
+    nwGUI.close()
+
+    # qtbot.stopForInteraction()
+
+    ##
+    #  Test the Wizard
+    ##
+
+    nwGUI = nw.main(["--testmode", "--config=%s" % nwMinimal, "--data=%s" % nwTemp])
     qtbot.addWidget(nwGUI)
     nwGUI.show()
     qtbot.waitForWindowShown(nwGUI)
@@ -817,9 +857,10 @@ def testNewProjectWizard(qtbot, nwLipsum, nwTemp):
 
     # qtbot.stopForInteraction()
     nwGUI.closeMain()
+    nwGUI.close()
 
 @pytest.mark.gui
-def testLoadProject(qtbot, monkeypatch, nwMinimal, nwTemp):
+def testLoadProject(qtbot, monkeypatch, yesToAll, nwMinimal, nwTemp):
     nwGUI = nw.main(["--testmode", "--config=%s" % nwMinimal, "--data=%s" % nwTemp])
     qtbot.addWidget(nwGUI)
     nwGUI.show()
@@ -877,7 +918,7 @@ def testLoadProject(qtbot, monkeypatch, nwMinimal, nwTemp):
     nwGUI.closeMain()
 
 @pytest.mark.gui
-def testPreferences(qtbot, monkeypatch, nwMinimal, nwTemp, nwRef, tmpConf):
+def testPreferences(qtbot, monkeypatch, yesToAll, nwMinimal, nwTemp, nwRef, tmpConf):
     nwGUI = nw.main(["--testmode", "--config=%s" % nwMinimal, "--data=%s" % nwTemp])
     qtbot.addWidget(nwGUI)
     nwGUI.show()
@@ -1034,7 +1075,7 @@ def testPreferences(qtbot, monkeypatch, nwMinimal, nwTemp, nwRef, tmpConf):
     assert cmpFiles(testConf, refConf, ignoreLines)
 
 @pytest.mark.gui
-def testQuotesDialog(qtbot, nwMinimal, nwTemp):
+def testQuotesDialog(qtbot, yesToAll, nwMinimal, nwTemp):
     nwGUI = nw.main(["--testmode", "--config=%s" % nwMinimal, "--data=%s" % nwTemp, nwMinimal])
     qtbot.addWidget(nwGUI)
     nwGUI.show()
@@ -1064,7 +1105,7 @@ def testQuotesDialog(qtbot, nwMinimal, nwTemp):
     nwGUI.close()
 
 @pytest.mark.gui
-def testDialogsOpenClose(qtbot, monkeypatch, nwMinimal, nwTemp):
+def testDialogsOpenClose(qtbot, monkeypatch, yesToAll, nwMinimal, nwTemp):
     nwGUI = nw.main(["--testmode", "--config=%s" % nwMinimal, "--data=%s" % nwTemp, nwMinimal])
     qtbot.addWidget(nwGUI)
     nwGUI.show()

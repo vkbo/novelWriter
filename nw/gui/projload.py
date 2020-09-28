@@ -218,18 +218,12 @@ class GuiProjectLoad(QDialog):
         """
         selList = self.listBox.selectedItems()
         if selList:
-            doRemove = False
-            if self.mainConf.showGUI:
-                msgBox = QMessageBox()
-                msgRes = msgBox.question(
-                    self, "Remove Entry",
-                    "Remove the selected entry from the recent projects list?"
-                )
-                doRemove = (msgRes == QMessageBox.Yes)
-            else:
-                doRemove = True
-
-            if doRemove:
+            msgBox = QMessageBox()
+            msgRes = msgBox.question(
+                self, "Remove Entry",
+                "Remove the selected entry from the recent projects list?"
+            )
+            if msgRes == QMessageBox.Yes:
                 self.mainConf.removeFromRecentCache(
                     selList[0].data(self.C_NAME, Qt.UserRole)
                 )

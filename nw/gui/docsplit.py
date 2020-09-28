@@ -163,17 +163,16 @@ class GuiDocSplit(QDialog):
             ), nwAlert.ERROR)
             return
 
-        if self.mainConf.showGUI:
-            msgBox = QMessageBox()
-            msgRes = msgBox.question(
-                self, "Split Document", (
-                    "The document will be split into %d file(s) in a new folder. "
-                    "The original document will remain intact.<br><br>"
-                    "Continue with the splitting process?"
-                ) % nFiles
-            )
-            if msgRes != QMessageBox.Yes:
-                return
+        msgBox = QMessageBox()
+        msgRes = msgBox.question(
+            self, "Split Document", (
+                "The document will be split into %d file(s) in a new folder. "
+                "The original document will remain intact.<br><br>"
+                "Continue with the splitting process?"
+            ) % nFiles
+        )
+        if msgRes != QMessageBox.Yes:
+            return
 
         # Create the folder
         fHandle = self.theProject.newFolder(
