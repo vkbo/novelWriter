@@ -16,6 +16,8 @@ from nw.constants import nwItemClass, nwItemType, nwItemLayout, nwFiles
 
 @pytest.mark.project
 def testProjectNewOpenSave(nwFuncTemp, nwTempProj, nwRef, nwTemp, nwDummy):
+    """Test that a basic project can be created, and opened and saved.
+    """
     projFile = path.join(nwFuncTemp, "nwProject.nwx")
     testFile = path.join(nwTempProj, "1_nwProject.nwx")
     refFile  = path.join(nwRef, "proj", "1_nwProject.nwx")
@@ -23,10 +25,17 @@ def testProjectNewOpenSave(nwFuncTemp, nwTempProj, nwRef, nwTemp, nwDummy):
     theProject = NWProject(nwDummy)
     theProject.projTree.setSeed(42)
 
+    # Setting no data should fail
+    assert not theProject.newProject({})
+
+    # Try again with a proper path
     assert theProject.newProject({"projPath": nwFuncTemp})
     assert theProject.setProjectPath(nwFuncTemp)
     assert theProject.saveProject()
     assert theProject.closeProject()
+
+    # Creating the project once more should fail
+    assert not theProject.newProject({"projPath": nwFuncTemp})
 
     # Check the new project
     copyfile(projFile, testFile)
@@ -53,6 +62,8 @@ def testProjectNewOpenSave(nwFuncTemp, nwTempProj, nwRef, nwTemp, nwDummy):
 
 @pytest.mark.project
 def testProjectNewRoot(nwFuncTemp, nwTempProj, nwRef, nwDummy):
+    """Check that new root folders can be added to the project.
+    """
     projFile = path.join(nwFuncTemp, "nwProject.nwx")
     testFile = path.join(nwTempProj, "2_nwProject.nwx")
     refFile  = path.join(nwRef, "proj", "2_nwProject.nwx")
@@ -85,6 +96,8 @@ def testProjectNewRoot(nwFuncTemp, nwTempProj, nwRef, nwDummy):
 
 @pytest.mark.project
 def testProjectNewFile(nwFuncTemp, nwTempProj, nwRef, nwDummy):
+    """Check that new files can be added to the project.
+    """
     projFile = path.join(nwFuncTemp, "nwProject.nwx")
     testFile = path.join(nwTempProj, "3_nwProject.nwx")
     refFile  = path.join(nwRef, "proj", "3_nwProject.nwx")
@@ -109,8 +122,10 @@ def testProjectNewFile(nwFuncTemp, nwTempProj, nwRef, nwDummy):
     assert not theProject.projChanged
 
 @pytest.mark.project
-def testProjectNewCustom(nwFuncTemp, nwTempProj, nwRef, nwDummy):
-
+def testProjectNewCustomA(nwFuncTemp, nwTempProj, nwRef, nwDummy):
+    """Create a new project from a project wizard dictionary.
+    Custom type with chapters and scenes.
+    """
     projFile = path.join(nwFuncTemp, "nwProject.nwx")
     testFile = path.join(nwTempProj, "4_nwProject.nwx")
     refFile  = path.join(nwRef, "proj", "4_nwProject.nwx")
@@ -146,7 +161,49 @@ def testProjectNewCustom(nwFuncTemp, nwTempProj, nwRef, nwDummy):
     assert cmpFiles(testFile, refFile, [2, 6, 7, 8])
 
 @pytest.mark.project
+def testProjectNewCustomB(nwFuncTemp, nwTempProj, nwRef, nwDummy):
+    """Create a new project from a project wizard dictionary.
+    Custom type without chapters, but with scenes.
+    """
+    projFile = path.join(nwFuncTemp, "nwProject.nwx")
+    testFile = path.join(nwTempProj, "5_nwProject.nwx")
+    refFile  = path.join(nwRef, "proj", "5_nwProject.nwx")
+
+    projData = {
+        "projName": "Test Custom",
+        "projTitle": "Test Novel",
+        "projAuthors": "Jane Doe\nJohn Doh\n",
+        "projPath": nwFuncTemp,
+        "popSample": False,
+        "popMinimal": False,
+        "popCustom": True,
+        "addRoots": [
+            nwItemClass.PLOT,
+            nwItemClass.CHARACTER,
+            nwItemClass.WORLD,
+            nwItemClass.TIMELINE,
+            nwItemClass.OBJECT,
+            nwItemClass.ENTITY,
+        ],
+        "numChapters": 0,
+        "numScenes": 6,
+        "chFolders": True,
+    }
+    theProject = NWProject(nwDummy)
+    theProject.projTree.setSeed(42)
+
+    assert theProject.newProject(projData)
+    assert theProject.saveProject()
+    assert theProject.closeProject()
+
+    copyfile(projFile, testFile)
+    assert cmpFiles(testFile, refFile, [2, 6, 7, 8])
+
+@pytest.mark.project
 def testProjectNewSample(nwFuncTemp, nwRef, nwConf, nwDummy):
+    """Check that we can create a new project can be created from the
+    provided sample project.
+    """
     projData = {
         "projName": "Test Sample",
         "projTitle": "Test Novel",
@@ -168,6 +225,8 @@ def testProjectNewSample(nwFuncTemp, nwRef, nwConf, nwDummy):
 
 @pytest.mark.project
 def testDocMeta(nwDummy, nwLipsum):
+    """Check that the document meta data string is parsed correctly.
+    """
     theProject = NWProject(nwDummy)
     theProject.projTree.setSeed(42)
     assert theProject.openProject(nwLipsum)
@@ -243,6 +302,10 @@ def testSpellSimple(nwTemp, nwConf):
 
 @pytest.mark.project
 def testProjectOptions(nwDummy, nwLipsum):
+    """Test the class that holds all the GUI state user options that are
+    tied to the current open project. Non-project related GUI options
+    are handled by the Config class.
+    """
     theProject = NWProject(nwDummy)
     assert theProject.projMeta is None
 
@@ -301,7 +364,12 @@ def testProjectOptions(nwDummy, nwLipsum):
     assert theOpts.getFloat("GuiWritingStats", "winWidth", False) is False
 
 @pytest.mark.project
-def testOrphanedFiles(nwDummy, nwLipsum):
+def testProjectOrphanedFiles(nwDummy, nwLipsum):
+    """Check that files in the content folder that are not tracked in
+    the project XML file are handled correctly by the orphaned files
+    function. It should also restore as much meta data as possible from
+    the meta line at the top of the document file.
+    """
     theProject = NWProject(nwDummy)
     assert theProject.openProject(nwLipsum)
     assert theProject.projTree["636b6aa9b697b"] is None
@@ -362,7 +430,12 @@ def testOrphanedFiles(nwDummy, nwLipsum):
     assert theProject.closeProject()
 
 @pytest.mark.project
-def testOldProject(nwDummy, nwOldProj):
+def testProjectOldFormat(nwDummy, nwOldProj):
+    """Test that a project folder structure of version 1.0 can be
+    converted to the latest folder structure. Version 1.0 split the
+    documents into 'data_0' ... 'data_f' folders, which are now all
+    contained in a single 'content' folder.
+    """
     theProject = NWProject(nwDummy)
     theProject.mainConf.showGUI = False
 
@@ -448,7 +521,12 @@ def testOldProject(nwDummy, nwOldProj):
     assert path.isfile(path.join(nwOldProj, "ToC.txt"))
 
 @pytest.mark.project
-def testBackupProject(nwDummy, nwMinimal, nwTemp):
+def testProjectBackup(nwDummy, nwMinimal, nwTemp):
+    """Test the automated backup feature of the project class. The test
+    creates a backup of the Minimal test project, and then unzips the
+    backupd file and checks that the project XML file is identical to
+    the original file.
+    """
     theProject = NWProject(nwDummy)
     assert theProject.openProject(nwMinimal)
 

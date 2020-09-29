@@ -91,7 +91,7 @@ def testLaunch(qtbot, nwFuncTemp, nwTemp):
 @pytest.mark.gui
 def testDocEditor(qtbot, yesToAll, nwFuncTemp, nwTempGUI, nwRef, nwTemp):
 
-    nwGUI = nw.main(["--testmode", "--config=%s" % nwFuncTemp, "--data=%s" % nwTemp])
+    nwGUI = nw.main(["--testmode", "--config=%s" % nwTemp, "--data=%s" % nwTemp])
     qtbot.addWidget(nwGUI)
     nwGUI.show()
     qtbot.waitForWindowShown(nwGUI)
@@ -99,7 +99,7 @@ def testDocEditor(qtbot, yesToAll, nwFuncTemp, nwTempGUI, nwRef, nwTemp):
 
     # Create new, save, close project
     nwGUI.theProject.projTree.setSeed(42)
-    assert nwGUI.newProject({"projPath": nwFuncTemp}, True)
+    assert nwGUI.newProject({"projPath": nwFuncTemp})
     assert nwGUI.saveProject()
     assert nwGUI.closeProject()
 
@@ -1003,14 +1003,14 @@ def testContextMenu(qtbot, yesToAll, nwLipsum, nwTemp):
 
 @pytest.mark.gui
 def testInsertMenu(qtbot, monkeypatch, nwFuncTemp, nwTemp):
-    nwGUI = nw.main(["--testmode", "--config=%s" % nwFuncTemp, "--data=%s" % nwTemp])
+    nwGUI = nw.main(["--testmode", "--config=%s" % nwTemp, "--data=%s" % nwTemp])
     qtbot.addWidget(nwGUI)
     nwGUI.show()
     qtbot.waitForWindowShown(nwGUI)
     qtbot.wait(stepDelay)
 
     nwGUI.theProject.projTree.setSeed(42)
-    assert nwGUI.newProject({"projPath": nwFuncTemp}, True)
+    assert nwGUI.newProject({"projPath": nwFuncTemp})
 
     assert nwGUI.treeView._getTreeItem("0e17daca5f3e1") is not None
 

@@ -246,7 +246,7 @@ class GuiMain(QMainWindow):
     #  Project Actions
     ##
 
-    def newProject(self, projData=None, forceNew=False):
+    def newProject(self, projData=None):
         """Create new project with a few default files and folders.
         The variable forceNew is used for testing.
         """
@@ -268,7 +268,7 @@ class GuiMain(QMainWindow):
             logger.error("No projData or projPath set")
             return False
 
-        if path.isfile(path.join(projPath, self.theProject.projFile)) and not forceNew:
+        if path.isfile(path.join(projPath, self.theProject.projFile)):
             self.makeAlert(
                 "A project already exists in that location. Please choose another folder.",
                 nwAlert.ERROR

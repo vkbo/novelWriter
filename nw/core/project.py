@@ -938,7 +938,7 @@ class NWProject():
                     return False
 
             if path.isdir(projPath):
-                if self.mainConf.showGUI and listdir(self.projPath):
+                if listdir(self.projPath):
                     self.theParent.makeAlert((
                         "New project folder is not empty. "
                         "Each project requires a dedicated project folder."
