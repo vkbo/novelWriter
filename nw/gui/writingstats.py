@@ -28,8 +28,8 @@
 import nw
 import logging
 import json
+import os
 
-from os import path
 from datetime import datetime
 
 from PyQt5.QtCore import Qt
@@ -322,8 +322,8 @@ class GuiWritingStats(QDialog):
         if fileExt:
             fileName  = "sessionStats.%s" % fileExt
             saveDir   = self.mainConf.lastPath
-            savePath  = path.join(saveDir, fileName)
-            if not path.isdir(saveDir):
+            savePath  = os.path.join(saveDir, fileName)
+            if not os.path.isdir(saveDir):
                 saveDir = self.mainConf.homePath
 
             dlgOpt  = QFileDialog.Options()
@@ -410,7 +410,7 @@ class GuiWritingStats(QDialog):
         ttTime  = 0
 
         try:
-            logFile = path.join(self.theProject.projMeta, nwFiles.SESS_STATS)
+            logFile = os.path.join(self.theProject.projMeta, nwFiles.SESS_STATS)
             with open(logFile, mode="r", encoding="utf8") as inFile:
                 for inLine in inFile:
                     if inLine.startswith("#"):

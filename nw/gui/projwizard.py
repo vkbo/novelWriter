@@ -27,8 +27,7 @@
 
 import nw
 import logging
-
-from os import path
+import os
 
 from PyQt5.QtCore import Qt
 from PyQt5.QtWidgets import (
@@ -208,7 +207,7 @@ class ProjWizardFolderPage(QWizardPage):
         """Select a project folder.
         """
         lastPath = self.mainConf.lastPath
-        if not path.isdir(lastPath):
+        if not os.path.isdir(lastPath):
             lastPath = ""
 
         dlgOpt  = QFileDialog.Options()
@@ -220,7 +219,7 @@ class ProjWizardFolderPage(QWizardPage):
         if projDir:
             projName = self.field("projName")
             if projName is not None:
-                fullDir = path.join(path.abspath(projDir), makeFileNameSafe(projName))
+                fullDir = os.path.join(os.path.abspath(projDir), makeFileNameSafe(projName))
                 self.projPath.setText(fullDir)
         else:
             self.projPath.setText("")

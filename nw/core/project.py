@@ -27,8 +27,8 @@
 
 import nw
 import logging
+import os
 
-from os import path, mkdir, listdir, unlink, rename, rmdir
 from lxml import etree
 from time import time
 from shutil import make_archive, unpack_archive, copyfile
@@ -351,14 +351,11 @@ class NWProject():
                     aDoc.saveDocument("### %s\n\n" % scTitle)
                     aDoc.clearDocument()
 
-        else:
-            # Fallback just in case. We shouldn't reach here.
-            self.newRoot("Novel", nwItemClass.NOVEL)
-
         # Finalise
-        self.projOpened = time()
-        self.setProjectChanged(True)
-        self.saveProject(autoSave=True)
+        if popCustom or popMinimal:
+            self.projOpened = time()
+            self.setProjectChanged(True)
+            self.saveProject(autoSave=True)
 
         return True
 
@@ -368,14 +365,14 @@ class NWProject():
         parse the XML of the file and populate the project variables and
         build the tree of project items.
         """
-        if not path.isfile(fileName):
-            fileName = path.join(fileName, nwFiles.PROJ_FILE)
-            if not path.isfile(fileName):
+        if not os.path.isfile(fileName):
+            fileName = os.path.join(fileName, nwFiles.PROJ_FILE)
+            if not os.path.isfile(fileName):
                 self.makeAlert("File not found: %s" % fileName, nwAlert.ERROR)
                 return False
 
         self.clearProject()
-        self.projPath = path.abspath(path.dirname(fileName))
+        self.projPath = os.path.abspath(os.path.dirname(fileName))
         logger.debug("Opening project: %s" % self.projPath)
 
         # Standard Folders and Files
@@ -385,13 +382,13 @@ class NWProject():
             self.clearProject()
             return False
 
-        self.projDict = path.join(self.projMeta, nwFiles.PROJ_DICT)
+        self.projDict = os.path.join(self.projMeta, nwFiles.PROJ_DICT)
 
         # Check for Old Legacy Data
         # =========================
 
         legacyList = [] # Cleanup is done later
-        for projItem in listdir(self.projPath):
+        for projItem in os.listdir(self.projPath):
             logger.verbose("Project contains: %s" % projItem)
             if projItem.startswith("data_"):
                 legacyList.append(projItem)
@@ -424,7 +421,7 @@ class NWProject():
 
             # Trying to open backup file instead
             backFile = fileName[:-3]+"bak"
-            if path.isfile(backFile):
+            if os.path.isfile(backFile):
                 self.makeAlert("Attempting to open backup project file instead.", nwAlert.INFO)
                 try:
                     nwXML = etree.parse(backFile)
@@ -706,9 +703,9 @@ class NWProject():
         self.projTree.packXML(nwXML)
 
         # Write the xml tree to file
-        tempFile = path.join(self.projPath, self.projFile+"~")
-        saveFile = path.join(self.projPath, self.projFile)
-        backFile = path.join(self.projPath, self.projFile[:-3]+"bak")
+        tempFile = os.path.join(self.projPath, self.projFile+"~")
+        saveFile = os.path.join(self.projPath, self.projFile)
+        backFile = os.path.join(self.projPath, self.projFile[:-3]+"bak")
         try:
             with open(tempFile, mode="wb") as outFile:
                 outFile.write(etree.tostring(
@@ -723,11 +720,11 @@ class NWProject():
 
         # If we're here, the file was successfully saved,
         # so let's sort out the temps and backups
-        if path.isfile(backFile):
-            unlink(backFile)
-        if path.isfile(saveFile):
-            rename(saveFile, backFile)
-        rename(tempFile, saveFile)
+        if os.path.isfile(backFile):
+            os.unlink(backFile)
+        if os.path.isfile(saveFile):
+            os.rename(saveFile, backFile)
+        os.rename(tempFile, saveFile)
 
         # Save project GUI options
         self.optState.saveSettings()
@@ -760,9 +757,9 @@ class NWProject():
         if self.projPath is None or self.projPath == "":
             return False
 
-        self.projMeta    = path.join(self.projPath, "meta")
-        self.projCache   = path.join(self.projPath, "cache")
-        self.projContent = path.join(self.projPath, "content")
+        self.projMeta    = os.path.join(self.projPath, "meta")
+        self.projCache   = os.path.join(self.projPath, "cache")
+        self.projContent = os.path.join(self.projPath, "content")
 
         if not self._checkFolder(self.projMeta):
             return False
@@ -797,7 +794,7 @@ class NWProject():
             ), nwAlert.ERROR)
             return False
 
-        if not path.isdir(self.mainConf.backupPath):
+        if not os.path.isdir(self.mainConf.backupPath):
             self.theParent.makeAlert((
                 "Cannot backup project because the backup path does not exist. "
                 "Please set a valid backup location in Tools > Preferences."
@@ -805,10 +802,10 @@ class NWProject():
             return False
 
         cleanName = makeFileNameSafe(self.projName)
-        baseDir = path.abspath(path.join(self.mainConf.backupPath, cleanName))
-        if not path.isdir(baseDir):
+        baseDir = os.path.abspath(os.path.join(self.mainConf.backupPath, cleanName))
+        if not os.path.isdir(baseDir):
             try:
-                mkdir(baseDir)
+                os.mkdir(baseDir)
                 logger.debug("Created folder %s" % baseDir)
             except Exception as e:
                 self.theParent.makeAlert(
@@ -817,7 +814,7 @@ class NWProject():
                 )
                 return False
 
-        if path.commonpath([self.projPath, baseDir]) == self.projPath:
+        if os.path.commonpath([self.projPath, baseDir]) == self.projPath:
             self.theParent.makeAlert((
                 "Cannot backup project because the backup path is within the "
                 "project folder to be backed up. Please choose a different "
@@ -826,7 +823,7 @@ class NWProject():
             return False
 
         archName = "Backup from %s" % formatTimeStamp(time(), fileSafe=True)
-        baseName = path.join(baseDir, archName)
+        baseName = os.path.join(baseDir, archName)
 
         try:
             self._clearLockFile()
@@ -834,7 +831,7 @@ class NWProject():
             self._writeLockFile()
             if doNotify:
                 self.theParent.makeAlert(
-                    "Backup archive file written to: %s.zip" % path.join(cleanName, archName),
+                    "Backup archive file written to: %s.zip" % os.path.join(cleanName, archName),
                     nwAlert.INFO
                 )
             else:
@@ -861,11 +858,11 @@ class NWProject():
             logger.error("No project path set for the example project")
             return False
 
-        srcSample = path.abspath(path.join(self.mainConf.appRoot, "sample"))
-        pkgSample = path.join(self.mainConf.assetPath, "sample.zip")
+        srcSample = os.path.abspath(os.path.join(self.mainConf.appRoot, "sample"))
+        pkgSample = os.path.join(self.mainConf.assetPath, "sample.zip")
 
         isSuccess = False
-        if path.isfile(pkgSample):
+        if os.path.isfile(pkgSample):
 
             self.setProjectPath(projPath, newProject=True)
             try:
@@ -876,19 +873,19 @@ class NWProject():
                     ["Failed to create a new example project.", str(e)], nwAlert.ERROR
                 )
 
-        elif path.isdir(srcSample):
+        elif os.path.isdir(srcSample):
 
             self.setProjectPath(projPath, newProject=True)
             try:
-                srcProj = path.join(srcSample, nwFiles.PROJ_FILE)
-                dstProj = path.join(projPath, nwFiles.PROJ_FILE)
+                srcProj = os.path.join(srcSample, nwFiles.PROJ_FILE)
+                dstProj = os.path.join(projPath, nwFiles.PROJ_FILE)
                 copyfile(srcProj, dstProj)
 
-                srcContent = path.join(srcSample, "content")
-                dstContent = path.join(projPath, "content")
-                for srcFile in listdir(srcContent):
-                    srcDoc = path.join(srcContent, srcFile)
-                    dstDoc = path.join(dstContent, srcFile)
+                srcContent = os.path.join(srcSample, "content")
+                dstContent = os.path.join(projPath, "content")
+                for srcFile in os.listdir(srcContent):
+                    srcDoc = os.path.join(srcContent, srcFile)
+                    dstDoc = os.path.join(dstContent, srcFile)
                     copyfile(srcDoc, dstDoc)
 
                 isSuccess = True
@@ -923,13 +920,13 @@ class NWProject():
             self.projPath = None
         else:
             if projPath.startswith("~"):
-                projPath = path.expanduser(projPath)
-            self.projPath = path.abspath(projPath)
+                projPath = os.path.expanduser(projPath)
+            self.projPath = os.path.abspath(projPath)
 
         if newProject:
-            if not path.isdir(projPath):
+            if not os.path.isdir(projPath):
                 try:
-                    mkdir(projPath)
+                    os.mkdir(projPath)
                     logger.debug("Created folder %s" % projPath)
                 except Exception as e:
                     self.theParent.makeAlert((
@@ -937,8 +934,8 @@ class NWProject():
                     ), nwAlert.ERROR)
                     return False
 
-            if path.isdir(projPath):
-                if listdir(self.projPath):
+            if os.path.isdir(projPath):
+                if os.listdir(self.projPath):
                     self.theParent.makeAlert((
                         "New project folder is not empty. "
                         "Each project requires a dedicated project folder."
@@ -988,7 +985,7 @@ class NWProject():
         """
         self.doBackup = doBackup
         if doBackup:
-            if not path.isdir(self.mainConf.backupPath):
+            if not os.path.isdir(self.mainConf.backupPath):
                 self.theParent.makeAlert((
                     "You must set a valid backup path in preferences to use "
                     "the automatic project backup feature."
@@ -1187,8 +1184,8 @@ class NWProject():
         if self.projPath is None:
             return ["ERROR"]
 
-        lockFile = path.join(self.projPath, nwFiles.PROJ_LOCK)
-        if not path.isfile(lockFile):
+        lockFile = os.path.join(self.projPath, nwFiles.PROJ_LOCK)
+        if not os.path.isfile(lockFile):
             return []
 
         try:
@@ -1213,7 +1210,7 @@ class NWProject():
         if self.projPath is None:
             return False
 
-        lockFile = path.join(self.projPath, nwFiles.PROJ_LOCK)
+        lockFile = os.path.join(self.projPath, nwFiles.PROJ_LOCK)
         try:
             with open(lockFile, mode="w+", encoding="utf8") as outFile:
                 outFile.write("%s\n" % self.mainConf.hostName)
@@ -1234,10 +1231,10 @@ class NWProject():
         if self.projPath is None:
             return False
 
-        lockFile = path.join(self.projPath, nwFiles.PROJ_LOCK)
-        if path.isfile(lockFile):
+        lockFile = os.path.join(self.projPath, nwFiles.PROJ_LOCK)
+        if os.path.isfile(lockFile):
             try:
-                unlink(lockFile)
+                os.unlink(lockFile)
                 return True
             except Exception as e:
                 logger.error("Failed to remove project lockfile")
@@ -1249,9 +1246,9 @@ class NWProject():
     def _checkFolder(self, thePath):
         """Check if a folder exists, and if it doesn't, create it.
         """
-        if not path.isdir(thePath):
+        if not os.path.isdir(thePath):
             try:
-                mkdir(thePath)
+                os.mkdir(thePath)
                 logger.debug("Created folder %s" % thePath)
             except Exception as e:
                 self.makeAlert(["Could not create folder.", str(e)], nwAlert.ERROR)
@@ -1292,7 +1289,7 @@ class NWProject():
         # Then check the files in the data folder
         logger.debug("Checking files in project content folder")
         orphanFiles = []
-        for fileItem in listdir(self.projContent):
+        for fileItem in os.listdir(self.projContent):
             if not fileItem.endswith(".nwd"):
                 logger.warning("Skipping file %s" % fileItem)
                 continue
@@ -1355,8 +1352,8 @@ class NWProject():
         if not self.ensureFolderStructure():
             return False
 
-        sessionFile = path.join(self.projMeta, nwFiles.SESS_STATS)
-        isFile = path.isfile(sessionFile)
+        sessionFile = os.path.join(self.projMeta, nwFiles.SESS_STATS)
+        isFile = os.path.isfile(sessionFile)
 
         with open(sessionFile, mode="a+", encoding="utf8") as outFile:
             if not isFile:
@@ -1383,8 +1380,8 @@ class NWProject():
     def _legacyDataFolder(self, theFolder, errList):
         """Clean up legacy data folders.
         """
-        theData = path.join(self.projPath, theFolder)
-        if not path.isdir(theData):
+        theData = os.path.join(self.projPath, theFolder)
+        if not os.path.isdir(theData):
             errList.append("Not a folder: %s" % theData)
             return errList
 
@@ -1392,9 +1389,9 @@ class NWProject():
 
         # Move Documents to Content
         # =========================
-        for dataItem in listdir(theData):
-            theFile = path.join(theData, dataItem)
-            if not path.isfile(theFile):
+        for dataItem in os.listdir(theData):
+            theFile = os.path.join(theData, dataItem)
+            if not os.path.isfile(theFile):
                 theErr = self._moveUnknownItem(theData, dataItem)
                 if theErr:
                     errList.append(theErr)
@@ -1402,9 +1399,9 @@ class NWProject():
 
             if len(dataItem) == 21 and dataItem.endswith("_main.nwd"):
                 tHandle = theFolder[-1]+dataItem[:12]
-                newPath = path.join(self.projContent, tHandle+".nwd")
+                newPath = os.path.join(self.projContent, tHandle+".nwd")
                 try:
-                    rename(theFile, newPath)
+                    os.rename(theFile, newPath)
                     logger.info("Moved file: %s" % theFile)
                     logger.info("New location: %s" % newPath)
                 except Exception as e:
@@ -1413,7 +1410,7 @@ class NWProject():
 
             elif len(dataItem) == 21 and dataItem.endswith("_main.bak"):
                 try:
-                    unlink(theFile)
+                    os.unlink(theFile)
                     logger.info("Deleted file: %s" % theFile)
                 except Exception as e:
                     logger.error(str(e))
@@ -1427,7 +1424,7 @@ class NWProject():
         # Remove Data Folder
         # ==================
         try:
-            rmdir(theData)
+            os.rmdir(theData)
             logger.info("Removed folder: %s" % theFolder)
         except Exception as e:
             logger.error(str(e))
@@ -1439,15 +1436,15 @@ class NWProject():
         """Move an item that doesn't belong in the project folder to
         a junk folder.
         """
-        theJunk = path.join(self.projPath, "junk")
+        theJunk = os.path.join(self.projPath, "junk")
         if not self._checkFolder(theJunk):
             return "Could not make folder: %s" % theJunk
 
-        theSrc = path.join(theDir, theItem)
-        theDst = path.join(theJunk, theItem)
+        theSrc = os.path.join(theDir, theItem)
+        theDst = os.path.join(theJunk, theItem)
 
         try:
-            rename(theSrc, theDst)
+            os.rename(theSrc, theDst)
             logger.info("Moved to junk: %s" % theSrc)
         except Exception as e:
             logger.error(str(e))
@@ -1459,29 +1456,29 @@ class NWProject():
         """Delete files that are no longer used by novelWriter.
         """
         rmList = [
-            path.join(self.projCache, "nwProject.nwx.0"),
-            path.join(self.projCache, "nwProject.nwx.1"),
-            path.join(self.projCache, "nwProject.nwx.2"),
-            path.join(self.projCache, "nwProject.nwx.3"),
-            path.join(self.projCache, "nwProject.nwx.4"),
-            path.join(self.projCache, "nwProject.nwx.5"),
-            path.join(self.projCache, "nwProject.nwx.6"),
-            path.join(self.projCache, "nwProject.nwx.7"),
-            path.join(self.projCache, "nwProject.nwx.8"),
-            path.join(self.projCache, "nwProject.nwx.9"),
-            path.join(self.projMeta,  "mainOptions.json"),
-            path.join(self.projMeta,  "exportOptions.json"),
-            path.join(self.projMeta,  "outlineOptions.json"),
-            path.join(self.projMeta,  "timelineOptions.json"),
-            path.join(self.projMeta,  "docMergeOptions.json"),
-            path.join(self.projMeta,  "sessionLogOptions.json"),
+            os.path.join(self.projCache, "nwProject.nwx.0"),
+            os.path.join(self.projCache, "nwProject.nwx.1"),
+            os.path.join(self.projCache, "nwProject.nwx.2"),
+            os.path.join(self.projCache, "nwProject.nwx.3"),
+            os.path.join(self.projCache, "nwProject.nwx.4"),
+            os.path.join(self.projCache, "nwProject.nwx.5"),
+            os.path.join(self.projCache, "nwProject.nwx.6"),
+            os.path.join(self.projCache, "nwProject.nwx.7"),
+            os.path.join(self.projCache, "nwProject.nwx.8"),
+            os.path.join(self.projCache, "nwProject.nwx.9"),
+            os.path.join(self.projMeta,  "mainOptions.json"),
+            os.path.join(self.projMeta,  "exportOptions.json"),
+            os.path.join(self.projMeta,  "outlineOptions.json"),
+            os.path.join(self.projMeta,  "timelineOptions.json"),
+            os.path.join(self.projMeta,  "docMergeOptions.json"),
+            os.path.join(self.projMeta,  "sessionLogOptions.json"),
         ]
 
         for rmFile in rmList:
-            if path.isfile(rmFile):
+            if os.path.isfile(rmFile):
                 logger.info("Deleting: %s" % rmFile)
                 try:
-                    unlink(rmFile)
+                    os.unlink(rmFile)
                 except Exception as e:
                     logger.error(str(e))
 

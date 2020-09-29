@@ -27,8 +27,8 @@
 
 import nw
 import logging
+import os
 
-from os import path
 from datetime import datetime
 
 from PyQt5.QtCore import Qt
@@ -197,8 +197,8 @@ class GuiAbout(QDialog):
         """Load the content for the License page.
         """
         docName = "gplv3_%s.htm" % self.mainConf.guiLang
-        docPath = path.join(self.mainConf.assetPath, "text", docName)
-        if path.isfile(docPath):
+        docPath = os.path.join(self.mainConf.assetPath, "text", docName)
+        if os.path.isfile(docPath):
             with open(docPath, mode="r", encoding="utf8") as inFile:
                 helpText = inFile.read()
             self.pageLicense.setHtml(helpText)

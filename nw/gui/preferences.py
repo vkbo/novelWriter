@@ -27,8 +27,7 @@
 
 import nw
 import logging
-
-from os import path
+import os
 
 from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QFont
@@ -335,7 +334,7 @@ class GuiConfigEditGeneralTab(QWidget):
         """Open a dialog to select the backup folder.
         """
         currDir = self.backupPath
-        if not path.isdir(currDir):
+        if not os.path.isdir(currDir):
             currDir = ""
 
         dlgOpt  = QFileDialog.Options()

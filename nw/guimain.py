@@ -27,8 +27,8 @@
 
 import nw
 import logging
+import os
 
-from os import path
 from datetime import datetime
 from time import time
 
@@ -268,7 +268,7 @@ class GuiMain(QMainWindow):
             logger.error("No projData or projPath set")
             return False
 
-        if path.isfile(path.join(projPath, self.theProject.projFile)):
+        if os.path.isfile(os.path.join(projPath, self.theProject.projFile)):
             self.makeAlert(
                 "A project already exists in that location. Please choose another folder.",
                 nwAlert.ERROR

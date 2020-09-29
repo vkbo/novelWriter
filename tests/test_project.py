@@ -3,7 +3,8 @@
 """
 
 import pytest
-from os import path, mkdir, listdir
+import os
+
 from shutil import copyfile
 from zipfile import ZipFile
 
@@ -18,9 +19,9 @@ from nw.constants import nwItemClass, nwItemType, nwItemLayout, nwFiles
 def testProjectNewOpenSave(nwFuncTemp, nwTempProj, nwRef, nwTemp, nwDummy):
     """Test that a basic project can be created, and opened and saved.
     """
-    projFile = path.join(nwFuncTemp, "nwProject.nwx")
-    testFile = path.join(nwTempProj, "1_nwProject.nwx")
-    refFile  = path.join(nwRef, "proj", "1_nwProject.nwx")
+    projFile = os.path.join(nwFuncTemp, "nwProject.nwx")
+    testFile = os.path.join(nwTempProj, "1_nwProject.nwx")
+    refFile  = os.path.join(nwRef, "proj", "1_nwProject.nwx")
 
     theProject = NWProject(nwDummy)
     theProject.projTree.setSeed(42)
@@ -64,9 +65,9 @@ def testProjectNewOpenSave(nwFuncTemp, nwTempProj, nwRef, nwTemp, nwDummy):
 def testProjectNewRoot(nwFuncTemp, nwTempProj, nwRef, nwDummy):
     """Check that new root folders can be added to the project.
     """
-    projFile = path.join(nwFuncTemp, "nwProject.nwx")
-    testFile = path.join(nwTempProj, "2_nwProject.nwx")
-    refFile  = path.join(nwRef, "proj", "2_nwProject.nwx")
+    projFile = os.path.join(nwFuncTemp, "nwProject.nwx")
+    testFile = os.path.join(nwTempProj, "2_nwProject.nwx")
+    refFile  = os.path.join(nwRef, "proj", "2_nwProject.nwx")
 
     theProject = NWProject(nwDummy)
     theProject.projTree.setSeed(42)
@@ -98,9 +99,9 @@ def testProjectNewRoot(nwFuncTemp, nwTempProj, nwRef, nwDummy):
 def testProjectNewFile(nwFuncTemp, nwTempProj, nwRef, nwDummy):
     """Check that new files can be added to the project.
     """
-    projFile = path.join(nwFuncTemp, "nwProject.nwx")
-    testFile = path.join(nwTempProj, "3_nwProject.nwx")
-    refFile  = path.join(nwRef, "proj", "3_nwProject.nwx")
+    projFile = os.path.join(nwFuncTemp, "nwProject.nwx")
+    testFile = os.path.join(nwTempProj, "3_nwProject.nwx")
+    refFile  = os.path.join(nwRef, "proj", "3_nwProject.nwx")
 
     theProject = NWProject(nwDummy)
     theProject.projTree.setSeed(42)
@@ -126,9 +127,9 @@ def testProjectNewCustomA(nwFuncTemp, nwTempProj, nwRef, nwDummy):
     """Create a new project from a project wizard dictionary.
     Custom type with chapters and scenes.
     """
-    projFile = path.join(nwFuncTemp, "nwProject.nwx")
-    testFile = path.join(nwTempProj, "4_nwProject.nwx")
-    refFile  = path.join(nwRef, "proj", "4_nwProject.nwx")
+    projFile = os.path.join(nwFuncTemp, "nwProject.nwx")
+    testFile = os.path.join(nwTempProj, "4_nwProject.nwx")
+    refFile  = os.path.join(nwRef, "proj", "4_nwProject.nwx")
 
     projData = {
         "projName": "Test Custom",
@@ -165,9 +166,9 @@ def testProjectNewCustomB(nwFuncTemp, nwTempProj, nwRef, nwDummy):
     """Create a new project from a project wizard dictionary.
     Custom type without chapters, but with scenes.
     """
-    projFile = path.join(nwFuncTemp, "nwProject.nwx")
-    testFile = path.join(nwTempProj, "5_nwProject.nwx")
-    refFile  = path.join(nwRef, "proj", "5_nwProject.nwx")
+    projFile = os.path.join(nwFuncTemp, "nwProject.nwx")
+    testFile = os.path.join(nwTempProj, "5_nwProject.nwx")
+    refFile  = os.path.join(nwRef, "proj", "5_nwProject.nwx")
 
     projData = {
         "projName": "Test Custom",
@@ -200,9 +201,9 @@ def testProjectNewCustomB(nwFuncTemp, nwTempProj, nwRef, nwDummy):
     assert cmpFiles(testFile, refFile, [2, 6, 7, 8])
 
 @pytest.mark.project
-def testProjectNewSample(nwFuncTemp, nwRef, nwConf, nwDummy):
+def testProjectNewSampleA(nwFuncTemp, nwConf, nwDummy, nwTemp):
     """Check that we can create a new project can be created from the
-    provided sample project.
+    provided sample project via a zip file.
     """
     projData = {
         "projName": "Test Sample",
@@ -217,11 +218,99 @@ def testProjectNewSample(nwFuncTemp, nwRef, nwConf, nwDummy):
     theProject.projTree.setSeed(42)
     theProject.mainConf = nwConf
 
+    # Sample set, but no path
+    assert not theProject.newProject({"popSample": True})
+
+    # Force the lookup path for assets to our temp folder
+    srcSample = os.path.abspath(os.path.join(nwConf.appRoot, "sample"))
+    dstSample = os.path.join(nwTemp, "sample.zip")
+    nwConf.assetPath = nwTemp
+
+    # Create and open a defective zip file
+    with open(dstSample, mode="w+") as outFile:
+        outFile.write("foo")
+
+    assert not theProject.newProject(projData)
+    os.unlink(dstSample)
+
+    # Create a real zip file, and unpack it
+    with ZipFile(dstSample, "w") as zipObj:
+        zipObj.write(os.path.join(srcSample, "nwProject.nwx"), "nwProject.nwx")
+        for docFile in os.listdir(os.path.join(srcSample, "content")):
+            srcDoc = os.path.join(srcSample, "content", docFile)
+            zipObj.write(srcDoc, "content/"+docFile)
+
     assert theProject.newProject(projData)
     assert theProject.openProject(nwFuncTemp)
     assert theProject.projName == "Sample Project"
     assert theProject.saveProject()
     assert theProject.closeProject()
+    os.unlink(dstSample)
+
+@pytest.mark.project
+def testProjectNewSampleB(monkeypatch, nwFuncTemp, nwConf, nwDummy, nwTemp):
+    """Check that we can create a new project can be created from the
+    provided sample project folder.
+    """
+    projData = {
+        "projName": "Test Sample",
+        "projTitle": "Test Novel",
+        "projAuthors": "Jane Doe\nJohn Doh\n",
+        "projPath": nwFuncTemp,
+        "popSample": True,
+        "popMinimal": False,
+        "popCustom": False,
+    }
+    theProject = NWProject(nwDummy)
+    theProject.projTree.setSeed(42)
+    theProject.mainConf = nwConf
+
+    # Make sure we do not pick up the nw/assets/sample.zip file
+    nwConf.assetPath = nwTemp
+
+    # Set a fake project file name
+    monkeypatch.setattr(nwFiles, "PROJ_FILE", "nothing.nwx")
+    assert not theProject.newProject(projData)
+
+    monkeypatch.setattr(nwFiles, "PROJ_FILE", "nwProject.nwx")
+    assert theProject.newProject(projData)
+    assert theProject.openProject(nwFuncTemp)
+    assert theProject.projName == "Sample Project"
+    assert theProject.saveProject()
+    assert theProject.closeProject()
+
+    # Misdirect the appRoot path so neither is possible
+    nwConf.appRoot = nwTemp
+    assert not theProject.newProject(projData)
+
+@pytest.mark.project
+def testProjectMethods(monkeypatch, nwMinimal, nwDummy):
+    """Test other project class methods and functions.
+    """
+    theProject = NWProject(nwDummy)
+    theProject.projTree.setSeed(42)
+    assert theProject.openProject(nwMinimal)
+    assert theProject.projPath == nwMinimal
+
+    # Setting project path
+    assert theProject.setProjectPath(None)
+    assert theProject.projPath is None
+    assert theProject.setProjectPath("")
+    assert theProject.projPath is None
+    assert theProject.setProjectPath("~")
+    assert theProject.projPath == os.path.expanduser("~")
+
+    # Create a new folder and populate it
+    projPath = os.path.join(nwMinimal, "dummy1")
+    assert theProject.setProjectPath(projPath, newProject=True)
+
+    # Make the os.mkdir fail
+    def altMkdir(*args):
+        raise Exception("Oops!")
+
+    monkeypatch.setattr("os.mkdir", altMkdir)
+    projPath = os.path.join(nwMinimal, "dummy2")
+    assert not theProject.setProjectPath(projPath, newProject=True)
 
 @pytest.mark.project
 def testDocMeta(nwDummy, nwLipsum):
@@ -252,7 +341,7 @@ def testDocMeta(nwDummy, nwLipsum):
 
 @pytest.mark.project
 def testSpellEnchant(nwTemp, nwConf):
-    wList = path.join(nwTemp, "wordlist.txt")
+    wList = os.path.join(nwTemp, "wordlist.txt")
     with open(wList, mode="w") as wFile:
         wFile.write("a_word\nb_word\nc_word\n")
 
@@ -277,7 +366,7 @@ def testSpellEnchant(nwTemp, nwConf):
 
 @pytest.mark.project
 def testSpellSimple(nwTemp, nwConf):
-    wList = path.join(nwTemp, "wordlist.txt")
+    wList = os.path.join(nwTemp, "wordlist.txt")
     with open(wList, mode="w") as wFile:
         wFile.write("a_word\nb_word\nc_word\n")
 
@@ -320,7 +409,7 @@ def testProjectOptions(nwDummy, nwLipsum):
     assert str(theOpts.theState) == r"{}"
 
     # Read Invalid Settings and Filter
-    stateFile = path.join(theProject.projMeta, nwFiles.OPTS_FILE)
+    stateFile = os.path.join(theProject.projMeta, nwFiles.OPTS_FILE)
     with open(stateFile, mode="w", encoding="utf8") as outFile:
         outFile.write(
             r'{"GuiProjectSettings": {"winWidth": 100, "winHeight": 50}, "NoGroup": {"NoName": 0}}'
@@ -376,28 +465,28 @@ def testProjectOrphanedFiles(nwDummy, nwLipsum):
     assert theProject.closeProject()
 
     # First Item with Meta Data
-    orphPath = path.join(nwLipsum, "content", "636b6aa9b697b.nwd")
+    orphPath = os.path.join(nwLipsum, "content", "636b6aa9b697b.nwd")
     with open(orphPath, mode="w", encoding="utf8") as outFile:
         outFile.write(r"%%~ 5eaea4e8cdee8:15c4492bd5107:WORLD:NOTE:Mars")
         outFile.write("\n")
 
     # Second Item without Meta Data
-    orphPath = path.join(nwLipsum, "content", "736b6aa9b697b.nwd")
+    orphPath = os.path.join(nwLipsum, "content", "736b6aa9b697b.nwd")
     with open(orphPath, mode="w", encoding="utf8") as outFile:
         outFile.write("\n")
 
     # Invalid File Name
-    dummyPath = path.join(nwLipsum, "content", "636b6aa9b697b.txt")
+    dummyPath = os.path.join(nwLipsum, "content", "636b6aa9b697b.txt")
     with open(dummyPath, mode="w", encoding="utf8") as outFile:
         outFile.write("\n")
 
     # Invalid File Name
-    dummyPath = path.join(nwLipsum, "content", "636b6aa9b697bb.nwd")
+    dummyPath = os.path.join(nwLipsum, "content", "636b6aa9b697bb.nwd")
     with open(dummyPath, mode="w", encoding="utf8") as outFile:
         outFile.write("\n")
 
     # Invalid File Name
-    dummyPath = path.join(nwLipsum, "content", "abcdefghijklm.nwd")
+    dummyPath = os.path.join(nwLipsum, "content", "abcdefghijklm.nwd")
     with open(dummyPath, mode="w", encoding="utf8") as outFile:
         outFile.write("\n")
 
@@ -441,84 +530,84 @@ def testProjectOldFormat(nwDummy, nwOldProj):
 
     # Create dummy files for known legacy files
     deleteFiles = [
-        path.join(nwOldProj, "cache", "nwProject.nwx.0"),
-        path.join(nwOldProj, "cache", "nwProject.nwx.1"),
-        path.join(nwOldProj, "cache", "nwProject.nwx.2"),
-        path.join(nwOldProj, "cache", "nwProject.nwx.3"),
-        path.join(nwOldProj, "cache", "nwProject.nwx.4"),
-        path.join(nwOldProj, "cache", "nwProject.nwx.5"),
-        path.join(nwOldProj, "cache", "nwProject.nwx.6"),
-        path.join(nwOldProj, "cache", "nwProject.nwx.7"),
-        path.join(nwOldProj, "cache", "nwProject.nwx.8"),
-        path.join(nwOldProj, "cache", "nwProject.nwx.9"),
-        path.join(nwOldProj, "meta",  "mainOptions.json"),
-        path.join(nwOldProj, "meta",  "exportOptions.json"),
-        path.join(nwOldProj, "meta",  "outlineOptions.json"),
-        path.join(nwOldProj, "meta",  "timelineOptions.json"),
-        path.join(nwOldProj, "meta",  "docMergeOptions.json"),
-        path.join(nwOldProj, "meta",  "sessionLogOptions.json"),
+        os.path.join(nwOldProj, "cache", "nwProject.nwx.0"),
+        os.path.join(nwOldProj, "cache", "nwProject.nwx.1"),
+        os.path.join(nwOldProj, "cache", "nwProject.nwx.2"),
+        os.path.join(nwOldProj, "cache", "nwProject.nwx.3"),
+        os.path.join(nwOldProj, "cache", "nwProject.nwx.4"),
+        os.path.join(nwOldProj, "cache", "nwProject.nwx.5"),
+        os.path.join(nwOldProj, "cache", "nwProject.nwx.6"),
+        os.path.join(nwOldProj, "cache", "nwProject.nwx.7"),
+        os.path.join(nwOldProj, "cache", "nwProject.nwx.8"),
+        os.path.join(nwOldProj, "cache", "nwProject.nwx.9"),
+        os.path.join(nwOldProj, "meta",  "mainOptions.json"),
+        os.path.join(nwOldProj, "meta",  "exportOptions.json"),
+        os.path.join(nwOldProj, "meta",  "outlineOptions.json"),
+        os.path.join(nwOldProj, "meta",  "timelineOptions.json"),
+        os.path.join(nwOldProj, "meta",  "docMergeOptions.json"),
+        os.path.join(nwOldProj, "meta",  "sessionLogOptions.json"),
     ]
 
     # Add some files that shouldn't be there
-    deleteFiles.append(path.join(nwOldProj, "data_f", "whatnow.nwd"))
-    deleteFiles.append(path.join(nwOldProj, "data_f", "whatnow.txt"))
+    deleteFiles.append(os.path.join(nwOldProj, "data_f", "whatnow.nwd"))
+    deleteFiles.append(os.path.join(nwOldProj, "data_f", "whatnow.txt"))
 
     # Add some folders that shouldn't be there
-    mkdir(path.join(nwOldProj, "stuff"))
-    mkdir(path.join(nwOldProj, "data_1", "stuff"))
+    os.mkdir(os.path.join(nwOldProj, "stuff"))
+    os.mkdir(os.path.join(nwOldProj, "data_1", "stuff"))
 
     # Create dummy files
-    mkdir(path.join(nwOldProj, "cache"))
+    os.mkdir(os.path.join(nwOldProj, "cache"))
     for aFile in deleteFiles:
         with open(aFile, mode="w+", encoding="utf8") as outFile:
             outFile.write("Hi")
     for aFile in deleteFiles:
-        assert path.isfile(aFile)
+        assert os.path.isfile(aFile)
 
     # Open project and check that files that are not supposed to be
     # there have been removed
     assert theProject.openProject(nwOldProj)
     for aFile in deleteFiles:
-        assert not path.isfile(aFile)
+        assert not os.path.isfile(aFile)
 
-    assert not path.isdir(path.join(nwOldProj, "data_1", "stuff"))
-    assert not path.isdir(path.join(nwOldProj, "data_1"))
-    assert not path.isdir(path.join(nwOldProj, "data_7"))
-    assert not path.isdir(path.join(nwOldProj, "data_8"))
-    assert not path.isdir(path.join(nwOldProj, "data_9"))
-    assert not path.isdir(path.join(nwOldProj, "data_a"))
-    assert not path.isdir(path.join(nwOldProj, "data_f"))
+    assert not os.path.isdir(os.path.join(nwOldProj, "data_1", "stuff"))
+    assert not os.path.isdir(os.path.join(nwOldProj, "data_1"))
+    assert not os.path.isdir(os.path.join(nwOldProj, "data_7"))
+    assert not os.path.isdir(os.path.join(nwOldProj, "data_8"))
+    assert not os.path.isdir(os.path.join(nwOldProj, "data_9"))
+    assert not os.path.isdir(os.path.join(nwOldProj, "data_a"))
+    assert not os.path.isdir(os.path.join(nwOldProj, "data_f"))
 
     # Check stuff that has been moved
-    assert path.isdir(path.join(nwOldProj, "junk"))
-    assert path.isdir(path.join(nwOldProj, "junk", "stuff"))
-    assert path.isfile(path.join(nwOldProj, "junk", "whatnow.nwd"))
-    assert path.isfile(path.join(nwOldProj, "junk", "whatnow.txt"))
+    assert os.path.isdir(os.path.join(nwOldProj, "junk"))
+    assert os.path.isdir(os.path.join(nwOldProj, "junk", "stuff"))
+    assert os.path.isfile(os.path.join(nwOldProj, "junk", "whatnow.nwd"))
+    assert os.path.isfile(os.path.join(nwOldProj, "junk", "whatnow.txt"))
 
     # Check that files we want to keep are in the right place
-    assert path.isdir(path.join(nwOldProj, "cache"))
-    assert path.isdir(path.join(nwOldProj, "content"))
-    assert path.isdir(path.join(nwOldProj, "meta"))
+    assert os.path.isdir(os.path.join(nwOldProj, "cache"))
+    assert os.path.isdir(os.path.join(nwOldProj, "content"))
+    assert os.path.isdir(os.path.join(nwOldProj, "meta"))
 
-    assert path.isfile(path.join(nwOldProj, "content", "f528d831f5b24.nwd"))
-    assert path.isfile(path.join(nwOldProj, "content", "88124a4292d8b.nwd"))
-    assert path.isfile(path.join(nwOldProj, "content", "91239bf2f8b69.nwd"))
-    assert path.isfile(path.join(nwOldProj, "content", "19752e7f9d8af.nwd"))
-    assert path.isfile(path.join(nwOldProj, "content", "a764d5acf5a21.nwd"))
-    assert path.isfile(path.join(nwOldProj, "content", "9058ae29f0dfd.nwd"))
-    assert path.isfile(path.join(nwOldProj, "content", "7ff63b8afc4cd.nwd"))
+    assert os.path.isfile(os.path.join(nwOldProj, "content", "f528d831f5b24.nwd"))
+    assert os.path.isfile(os.path.join(nwOldProj, "content", "88124a4292d8b.nwd"))
+    assert os.path.isfile(os.path.join(nwOldProj, "content", "91239bf2f8b69.nwd"))
+    assert os.path.isfile(os.path.join(nwOldProj, "content", "19752e7f9d8af.nwd"))
+    assert os.path.isfile(os.path.join(nwOldProj, "content", "a764d5acf5a21.nwd"))
+    assert os.path.isfile(os.path.join(nwOldProj, "content", "9058ae29f0dfd.nwd"))
+    assert os.path.isfile(os.path.join(nwOldProj, "content", "7ff63b8afc4cd.nwd"))
 
-    assert path.isfile(path.join(nwOldProj, "meta", "tagsIndex.json"))
-    assert path.isfile(path.join(nwOldProj, "meta", "sessionInfo.log"))
+    assert os.path.isfile(os.path.join(nwOldProj, "meta", "tagsIndex.json"))
+    assert os.path.isfile(os.path.join(nwOldProj, "meta", "sessionInfo.log"))
 
     # Close the project
     theProject.closeProject()
 
     # Check that new files have been created
-    assert path.isfile(path.join(nwOldProj, "meta", "guiOptions.json"))
-    assert path.isfile(path.join(nwOldProj, "meta", "sessionStats.log"))
-    assert path.isfile(path.join(nwOldProj, "ToC.json"))
-    assert path.isfile(path.join(nwOldProj, "ToC.txt"))
+    assert os.path.isfile(os.path.join(nwOldProj, "meta", "guiOptions.json"))
+    assert os.path.isfile(os.path.join(nwOldProj, "meta", "sessionStats.log"))
+    assert os.path.isfile(os.path.join(nwOldProj, "ToC.json"))
+    assert os.path.isfile(os.path.join(nwOldProj, "ToC.txt"))
 
 @pytest.mark.project
 def testProjectBackup(nwDummy, nwMinimal, nwTemp):
@@ -541,7 +630,7 @@ def testProjectBackup(nwDummy, nwMinimal, nwTemp):
     assert not theProject.zipIt(doNotify=False)
 
     # Non-existent folder
-    theProject.mainConf.backupPath = path.join(nwTemp, "nonexistent")
+    theProject.mainConf.backupPath = os.path.join(nwTemp, "nonexistent")
     theProject.projName = "Test Minimal"
     assert not theProject.zipIt(doNotify=False)
 
@@ -553,7 +642,7 @@ def testProjectBackup(nwDummy, nwMinimal, nwTemp):
     theProject.mainConf.backupPath = nwTemp
     assert theProject.zipIt(doNotify=False)
 
-    theFiles = listdir(path.join(nwTemp, "Test Minimal"))
+    theFiles = os.listdir(os.path.join(nwTemp, "Test Minimal"))
     assert len(theFiles) == 1
 
     theZip = theFiles[0]
@@ -561,10 +650,10 @@ def testProjectBackup(nwDummy, nwMinimal, nwTemp):
     assert theZip[-4:] == ".zip"
 
     # Extract the archive
-    with ZipFile(path.join(nwTemp, "Test Minimal", theZip), "r") as inZip:
-        inZip.extractall(path.join(nwTemp, "extract"))
+    with ZipFile(os.path.join(nwTemp, "Test Minimal", theZip), "r") as inZip:
+        inZip.extractall(os.path.join(nwTemp, "extract"))
 
     # Check that the main project file was restored
     assert cmpFiles(
-        path.join(nwMinimal, "nwProject.nwx"), path.join(nwTemp, "extract", "nwProject.nwx")
+        os.path.join(nwMinimal, "nwProject.nwx"), os.path.join(nwTemp, "extract", "nwProject.nwx")
     )

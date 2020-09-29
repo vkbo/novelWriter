@@ -27,8 +27,8 @@
 
 import nw
 import logging
+import os
 
-from os import path
 from datetime import datetime
 
 from PyQt5.QtCore import Qt, QSize
@@ -186,7 +186,7 @@ class GuiProjectLoad(QDialog):
             options=dlgOpt
         )
         if projFile:
-            thePath = path.abspath(path.dirname(projFile))
+            thePath = os.path.abspath(os.path.dirname(projFile))
             self.selPath.setText(thePath)
             self.openPath = thePath
             self.openState = self.OPEN_STATE

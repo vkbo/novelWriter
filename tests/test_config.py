@@ -3,13 +3,14 @@
 """
 
 import pytest
+import os
+
 from nwtools import cmpFiles
-from os import path
 
 @pytest.mark.core
 def testConfigCore(tmpConf, nwTemp, nwRef):
-    refConf = path.join(nwRef, "novelwriter.conf")
-    testConf = path.join(tmpConf.confPath, "novelwriter.conf")
+    refConf = os.path.join(nwRef, "novelwriter.conf")
+    testConf = os.path.join(tmpConf.confPath, "novelwriter.conf")
 
     assert tmpConf.confPath == nwTemp
     assert tmpConf.saveConfig()
@@ -22,8 +23,8 @@ def testConfigCore(tmpConf, nwTemp, nwRef):
 @pytest.mark.core
 def testConfigSetConfPath(tmpConf, nwTemp):
     assert tmpConf.setConfPath(None)
-    assert not tmpConf.setConfPath(path.join("somewhere", "over", "the", "rainbow"))
-    assert tmpConf.setConfPath(path.join(nwTemp, "novelwriter.conf"))
+    assert not tmpConf.setConfPath(os.path.join("somewhere", "over", "the", "rainbow"))
+    assert tmpConf.setConfPath(os.path.join(nwTemp, "novelwriter.conf"))
     assert tmpConf.confPath == nwTemp
     assert tmpConf.confFile == "novelwriter.conf"
     assert not tmpConf.confChanged
@@ -31,15 +32,15 @@ def testConfigSetConfPath(tmpConf, nwTemp):
 @pytest.mark.core
 def testConfigSetDataPath(tmpConf, nwTemp):
     assert tmpConf.setDataPath(None)
-    assert not tmpConf.setDataPath(path.join("somewhere", "over", "the", "rainbow"))
+    assert not tmpConf.setDataPath(os.path.join("somewhere", "over", "the", "rainbow"))
     assert tmpConf.setDataPath(nwTemp)
     assert tmpConf.dataPath == nwTemp
     assert not tmpConf.confChanged
 
 @pytest.mark.core
 def testConfigSetWinSize(tmpConf, nwTemp, nwRef):
-    refConf = path.join(nwRef, "novelwriter.conf")
-    testConf = path.join(tmpConf.confPath, "novelwriter.conf")
+    refConf = os.path.join(nwRef, "novelwriter.conf")
+    testConf = os.path.join(tmpConf.confPath, "novelwriter.conf")
     tmpConf.guiScale = 1.0
 
     assert tmpConf.confPath == nwTemp
@@ -55,8 +56,8 @@ def testConfigSetWinSize(tmpConf, nwTemp, nwRef):
 
 @pytest.mark.core
 def testConfigSetTreeColWidths(tmpConf, nwTemp, nwRef):
-    refConf = path.join(nwRef, "novelwriter.conf")
-    testConf = path.join(tmpConf.confPath, "novelwriter.conf")
+    refConf = os.path.join(nwRef, "novelwriter.conf")
+    testConf = os.path.join(tmpConf.confPath, "novelwriter.conf")
 
     assert tmpConf.confPath == nwTemp
     tmpConf.guiScale = 1.0
@@ -77,8 +78,8 @@ def testConfigSetTreeColWidths(tmpConf, nwTemp, nwRef):
 
 @pytest.mark.core
 def testConfigSetPanePos(tmpConf, nwTemp, nwRef):
-    refConf = path.join(nwRef, "novelwriter.conf")
-    testConf = path.join(tmpConf.confPath, "novelwriter.conf")
+    refConf = os.path.join(nwRef, "novelwriter.conf")
+    testConf = os.path.join(tmpConf.confPath, "novelwriter.conf")
 
     assert tmpConf.confPath == nwTemp
 
@@ -113,8 +114,8 @@ def testConfigSetPanePos(tmpConf, nwTemp, nwRef):
 
 @pytest.mark.core
 def testConfigFlags(tmpConf, nwTemp, nwRef):
-    refConf = path.join(nwRef, "novelwriter.conf")
-    testConf = path.join(tmpConf.confPath, "novelwriter.conf")
+    refConf = os.path.join(nwRef, "novelwriter.conf")
+    testConf = os.path.join(tmpConf.confPath, "novelwriter.conf")
 
     assert tmpConf.confPath == nwTemp
 
@@ -150,7 +151,7 @@ def testTextSizes(tmpConf, nwTemp, nwRef):
 
 @pytest.mark.core
 def testConfigErrors(tmpConf):
-    nonPath = path.join("somewhere", "over", "the", "rainbow")
+    nonPath = os.path.join("somewhere", "over", "the", "rainbow")
     assert tmpConf.initConfig(nonPath, nonPath)
     assert tmpConf.hasError
     assert not tmpConf.loadConfig()

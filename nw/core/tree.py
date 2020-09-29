@@ -27,8 +27,8 @@
 
 import logging
 import json
+import os
 
-from os import path
 from lxml import etree
 from hashlib import sha256
 from time import time
@@ -144,8 +144,8 @@ class NWTree():
         the project directory. These files are there to assist the user
         if they wish to browse the stored files.
         """
-        tocText = path.join(self.theProject.projPath, nwFiles.TOC_TXT)
-        tocJson = path.join(self.theProject.projPath, nwFiles.TOC_JSON)
+        tocText = os.path.join(self.theProject.projPath, nwFiles.TOC_TXT)
+        tocJson = os.path.join(self.theProject.projPath, nwFiles.TOC_JSON)
 
         jsonData = []
         try:
@@ -162,14 +162,14 @@ class NWTree():
                     if tItem is None:
                         continue
                     tFile = tHandle+".nwd"
-                    if path.isfile(path.join(self.theProject.projContent, tFile)):
+                    if os.path.isfile(os.path.join(self.theProject.projContent, tFile)):
                         outFile.write(" %-25s  %-9s  %s\n" % (
-                            path.join("content", tFile),
+                            os.path.join("content", tFile),
                             tItem.itemClass.name,
                             tItem.itemName,
                         ))
                         jsonData.append([
-                            path.join("content", tFile),
+                            os.path.join("content", tFile),
                             tItem.itemClass.name,
                             tItem.itemName,
                         ])

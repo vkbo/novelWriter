@@ -28,8 +28,8 @@
 import nw
 import logging
 import json
+import os
 
-from os import path
 from time import time
 from datetime import datetime
 
@@ -630,8 +630,8 @@ class GuiBuildNovel(QDialog):
             cleanName = makeFileNameSafe(self.theProject.projName)
             fileName  = "%s.%s" % (cleanName, fileExt)
             saveDir   = self.mainConf.lastPath
-            savePath  = path.join(saveDir, fileName)
-            if not path.isdir(saveDir):
+            savePath  = os.path.join(saveDir, fileName)
+            if not os.path.isdir(saveDir):
                 saveDir = self.mainConf.homePath
 
             if self.mainConf.showGUI:
@@ -792,9 +792,9 @@ class GuiBuildNovel(QDialog):
     def _loadCache(self):
         """Save the current data to cache.
         """
-        buildCache = path.join(self.theProject.projCache, nwFiles.BUILD_CACHE)
+        buildCache = os.path.join(self.theProject.projCache, nwFiles.BUILD_CACHE)
         dataCount = 0
-        if path.isfile(buildCache):
+        if os.path.isfile(buildCache):
 
             logger.debug("Loading build cache")
             try:
@@ -823,7 +823,7 @@ class GuiBuildNovel(QDialog):
     def _saveCache(self):
         """Save the current data to cache.
         """
-        buildCache = path.join(self.theProject.projCache, nwFiles.BUILD_CACHE)
+        buildCache = os.path.join(self.theProject.projCache, nwFiles.BUILD_CACHE)
 
         if self.mainConf.debugInfo:
             nIndent = 2

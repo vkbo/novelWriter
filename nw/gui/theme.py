@@ -29,8 +29,8 @@
 import nw
 import logging
 import configparser
+import os
 
-from os import path, listdir
 from math import ceil
 
 from PyQt5.QtCore import Qt
@@ -182,21 +182,21 @@ class GuiTheme:
         """Add the fonts in the assets fonts folder to the app.
         """
         ttfList = []
-        fontAssets = path.join(self.mainConf.assetPath, self.fontPath)
-        for fontFam in listdir(fontAssets):
-            fontDir = path.join(fontAssets, fontFam)
-            if path.isdir(fontDir):
+        fontAssets = os.path.join(self.mainConf.assetPath, self.fontPath)
+        for fontFam in os.listdir(fontAssets):
+            fontDir = os.path.join(fontAssets, fontFam)
+            if os.path.isdir(fontDir):
                 if fontFam not in self.guiFontDB.families():
-                    for fontFile in listdir(fontDir):
-                        ttfFile = path.join(fontDir, fontFile)
-                        if path.isfile(ttfFile) and fontFile.endswith(".ttf"):
+                    for fontFile in os.listdir(fontDir):
+                        ttfFile = os.path.join(fontDir, fontFile)
+                        if os.path.isfile(ttfFile) and fontFile.endswith(".ttf"):
                             ttfList.append(ttfFile)
 
         for ttfFile in ttfList:
-            logger.verbose("Font asset: %s" % path.relpath(ttfFile))
+            logger.verbose("Font asset: %s" % os.path.relpath(ttfFile))
             fontID = self.guiFontDB.addApplicationFont(ttfFile)
             if fontID < 0:
-                logger.error("Failed to add font: %s" % path.relpath(ttfFile))
+                logger.error("Failed to add font: %s" % os.path.relpath(ttfFile))
 
         return
 
@@ -227,10 +227,10 @@ class GuiTheme:
         self.guiTheme   = self.mainConf.guiTheme
         self.guiSyntax  = self.mainConf.guiSyntax
         self.themeRoot  = self.mainConf.themeRoot
-        self.themePath  = path.join(self.mainConf.themeRoot, self.guiPath, self.guiTheme)
-        self.syntaxFile = path.join(self.themeRoot, self.syntaxPath, self.guiSyntax+".conf")
-        self.confFile   = path.join(self.themePath, self.confName)
-        self.cssFile    = path.join(self.themePath, self.cssName)
+        self.themePath  = os.path.join(self.mainConf.themeRoot, self.guiPath, self.guiTheme)
+        self.syntaxFile = os.path.join(self.themeRoot, self.syntaxPath, self.guiSyntax+".conf")
+        self.confFile   = os.path.join(self.themePath, self.confName)
+        self.cssFile    = os.path.join(self.themePath, self.cssName)
 
         self.loadTheme()
         self.loadSyntax()
@@ -259,7 +259,7 @@ class GuiTheme:
         # CSS File
         cssData = ""
         try:
-            if path.isfile(self.cssFile):
+            if os.path.isfile(self.cssFile):
                 with open(self.cssFile, mode="r", encoding="utf8") as inFile:
                     cssData = inFile.read()
         except Exception as e:
@@ -375,8 +375,8 @@ class GuiTheme:
             return self.themeList
 
         confParser = configparser.ConfigParser()
-        for themeDir in listdir(path.join(self.mainConf.themeRoot, self.guiPath)):
-            themeConf = path.join(self.mainConf.themeRoot, self.guiPath, themeDir, self.confName)
+        for themeDir in os.listdir(os.path.join(self.mainConf.themeRoot, self.guiPath)):
+            themeConf = os.path.join(self.mainConf.themeRoot, self.guiPath, themeDir, self.confName)
             logger.verbose("Checking theme config for '%s'" % themeDir)
             try:
                 with open(themeConf, mode="r", encoding="utf8") as inFile:
@@ -405,10 +405,10 @@ class GuiTheme:
             return self.syntaxList
 
         confParser = configparser.ConfigParser()
-        syntaxDir  = path.join(self.mainConf.themeRoot, self.syntaxPath)
-        for syntaxFile in listdir(syntaxDir):
-            syntaxPath = path.join(syntaxDir, syntaxFile)
-            if not path.isfile(syntaxPath):
+        syntaxDir  = os.path.join(self.mainConf.themeRoot, self.syntaxPath)
+        for syntaxFile in os.listdir(syntaxDir):
+            syntaxPath = os.path.join(syntaxDir, syntaxFile)
+            if not os.path.isfile(syntaxPath):
                 continue
             logger.verbose("Checking theme syntax for '%s'" % syntaxFile)
             try:
@@ -612,11 +612,11 @@ class GuiIcons:
         logger.debug("Loading icon theme files")
 
         self.themeMap = {}
-        checkPath = path.join(self.mainConf.iconPath, self.mainConf.guiIcons)
-        if path.isdir(checkPath):
+        checkPath = os.path.join(self.mainConf.iconPath, self.mainConf.guiIcons)
+        if os.path.isdir(checkPath):
             logger.debug("Loading icon theme '%s'" % self.mainConf.guiIcons)
             self.iconPath = checkPath
-            self.confFile = path.join(checkPath, self.confName)
+            self.confFile = os.path.join(checkPath, self.confName)
         else:
             return False
 
@@ -648,8 +648,8 @@ class GuiIcons:
                 if iconName not in self.ICON_MAP:
                     logger.error("Unknown icon name '%s' in config file" % iconName)
                 else:
-                    iconPath = path.join(self.iconPath, iconFile)
-                    if path.isfile(iconPath):
+                    iconPath = os.path.join(self.iconPath, iconFile)
+                    if os.path.isfile(iconPath):
                         self.themeMap[iconName] = iconPath
                         logger.verbose("Icon slot '%s' using file '%s'" % (iconName, iconFile))
                     else:
@@ -671,10 +671,10 @@ class GuiIcons:
             logger.error("Decoration with name '%s' does not exist" % decoKey)
             return QPixmap()
 
-        imgPath = path.join(
+        imgPath = os.path.join(
             self.mainConf.assetPath, "images", self.DECO_MAP[decoKey]
         )
-        if not path.isfile(imgPath):
+        if not os.path.isfile(imgPath):
             logger.error("Decoration file '%s' not in assets folder" % self.DECO_MAP[decoKey])
             return QPixmap()
 
@@ -714,11 +714,11 @@ class GuiIcons:
             return self.themeList
 
         confParser = configparser.ConfigParser()
-        for themeDir in listdir(self.mainConf.iconPath):
-            themePath = path.join(self.mainConf.iconPath, themeDir)
-            if not path.isdir(themePath) or themeDir == self.fbackName:
+        for themeDir in os.listdir(self.mainConf.iconPath):
+            themePath = os.path.join(self.mainConf.iconPath, themeDir)
+            if not os.path.isdir(themePath) or themeDir == self.fbackName:
                 continue
-            themeConf = path.join(themePath, self.confName)
+            themeConf = os.path.join(themePath, self.confName)
             logger.verbose("Checking icon theme config for '%s'" % themeDir)
             try:
                 with open(themeConf, mode="r", encoding="utf8") as inFile:
@@ -756,12 +756,12 @@ class GuiIcons:
 
         # If we just want the app icon, return it right away
         if iconKey == "novelwriter":
-            return QIcon(path.join(self.mainConf.iconPath, "novelwriter.svg"))
+            return QIcon(os.path.join(self.mainConf.iconPath, "novelwriter.svg"))
 
         # Otherwise, we start looking for it
         # First in the theme folder
         if iconKey in self.themeMap:
-            logger.verbose("Loading: %s" % path.relpath(self.themeMap[iconKey]))
+            logger.verbose("Loading: %s" % os.path.relpath(self.themeMap[iconKey]))
             return QIcon(self.themeMap[iconKey])
 
         # Next, we try to load the Qt style icons
@@ -777,14 +777,14 @@ class GuiIcons:
 
         # Finally. we check if we have a fallback icon
         if self.mainConf.guiDark:
-            fbackIcon = path.join(
+            fbackIcon = os.path.join(
                 self.mainConf.iconPath, self.fbackName, "%s-dark.svg" % iconKey
             )
-            if path.isfile(fbackIcon):
+            if os.path.isfile(fbackIcon):
                 logger.verbose("Loading icon '%s' from fallback theme (dark mode)" % iconKey)
                 return QIcon(fbackIcon)
-        fbackIcon = path.join(self.mainConf.iconPath, self.fbackName, "%s.svg" % iconKey)
-        if path.isfile(fbackIcon):
+        fbackIcon = os.path.join(self.mainConf.iconPath, self.fbackName, "%s.svg" % iconKey)
+        if os.path.isfile(fbackIcon):
             logger.verbose("Loading icon '%s' from fallback theme (light mode)" % iconKey)
             return QIcon(fbackIcon)
 

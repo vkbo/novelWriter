@@ -26,8 +26,7 @@
 """
 
 import logging
-
-from os import path, rename, unlink
+import os
 
 from nw.constants import nwAlert
 from nw.common import isHandle
@@ -89,12 +88,12 @@ class NWDoc():
         docFile = self._docHandle+".nwd"
         logger.debug("Opening document %s" % docFile)
 
-        docPath = path.join(self.theProject.projContent, docFile)
+        docPath = os.path.join(self.theProject.projContent, docFile)
         self._fileLoc = docPath
 
         theText = ""
         self._docMeta = ""
-        if path.isfile(docPath):
+        if os.path.isfile(docPath):
             try:
                 with open(docPath, mode="r", encoding="utf8") as inFile:
                     fstLine = inFile.readline()
@@ -137,8 +136,8 @@ class NWDoc():
         docFile = self._docHandle+".nwd"
         logger.debug("Saving document %s" % docFile)
 
-        docPath = path.join(self.theProject.projContent, docFile)
-        docTemp = path.join(self.theProject.projContent, docFile+"~")
+        docPath = os.path.join(self.theProject.projContent, docFile)
+        docTemp = os.path.join(self.theProject.projContent, docFile+"~")
 
         if self._theItem is None:
             docMeta = ""
@@ -163,9 +162,9 @@ class NWDoc():
 
         # If we're here, the file was successfully saved, so we can
         # replace the temp file with the actual file
-        if path.isfile(docPath):
-            unlink(docPath)
-        rename(docTemp, docPath)
+        if os.path.isfile(docPath):
+            os.unlink(docPath)
+        os.rename(docTemp, docPath)
 
         self.theParent.statusBar.setStatus("Saved Document: %s" % self._theItem.itemName)
 
@@ -181,13 +180,13 @@ class NWDoc():
         docFile = tHandle+".nwd"
 
         chkList = []
-        chkList.append(path.join(self.theProject.projContent, docFile))
-        chkList.append(path.join(self.theProject.projContent, docFile+"~"))
+        chkList.append(os.path.join(self.theProject.projContent, docFile))
+        chkList.append(os.path.join(self.theProject.projContent, docFile+"~"))
 
         for chkFile in chkList:
-            if path.isfile(chkFile):
+            if os.path.isfile(chkFile):
                 try:
-                    unlink(chkFile)
+                    os.unlink(chkFile)
                     logger.debug("Deleted: %s" % chkFile)
                 except Exception as e:
                     self.makeAlert(["Could not delete document file.", str(e)], nwAlert.ERROR)

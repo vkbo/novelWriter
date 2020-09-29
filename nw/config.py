@@ -29,8 +29,8 @@ import logging
 import configparser
 import json
 import sys
+import os
 
-from os import path, mkdir, unlink, rename
 from time import time
 from shutil import which
 
@@ -238,7 +238,7 @@ class Config:
         logger.debug("Initialising Config ...")
         if confPath is None:
             confRoot = QStandardPaths.writableLocation(QStandardPaths.ConfigLocation)
-            self.confPath = path.join(path.abspath(confRoot), self.appHandle)
+            self.confPath = os.path.join(os.path.abspath(confRoot), self.appHandle)
         else:
             logger.info("Setting config from alternative path: %s" % confPath)
             self.confPath = confPath
@@ -248,7 +248,7 @@ class Config:
                 dataRoot = QStandardPaths.writableLocation(QStandardPaths.AppDataLocation)
             else:
                 dataRoot = QStandardPaths.writableLocation(QStandardPaths.DataLocation)
-            self.dataPath = path.join(path.abspath(dataRoot), self.appHandle)
+            self.dataPath = os.path.join(os.path.abspath(dataRoot), self.appHandle)
         else:
             logger.info("Setting data path from alternative path: %s" % dataPath)
             self.dataPath = dataPath
@@ -257,24 +257,24 @@ class Config:
         logger.verbose("Data path: %s" % self.dataPath)
 
         self.confFile  = self.appHandle+".conf"
-        self.homePath  = path.expanduser("~")
+        self.homePath  = os.path.expanduser("~")
         self.lastPath  = self.homePath
-        self.appPath   = getattr(sys, "_MEIPASS", path.abspath(path.dirname(__file__)))
-        self.appRoot   = path.join(self.appPath, path.pardir)
-        self.assetPath = path.join(self.appPath, "assets")
-        self.themeRoot = path.join(self.assetPath, "themes")
-        self.dictPath  = path.join(self.assetPath, "dict")
-        self.iconPath  = path.join(self.assetPath, "icons")
-        self.appIcon   = path.join(self.iconPath, "novelwriter.svg")
+        self.appPath   = getattr(sys, "_MEIPASS", os.path.abspath(os.path.dirname(__file__)))
+        self.appRoot   = os.path.join(self.appPath, os.path.pardir)
+        self.assetPath = os.path.join(self.appPath, "assets")
+        self.themeRoot = os.path.join(self.assetPath, "themes")
+        self.dictPath  = os.path.join(self.assetPath, "dict")
+        self.iconPath  = os.path.join(self.assetPath, "icons")
+        self.appIcon   = os.path.join(self.iconPath, "novelwriter.svg")
 
         logger.verbose("App path: %s" % self.appPath)
         logger.verbose("Home path: %s" % self.homePath)
 
         # If config folder does not exist, make it.
         # This assumes that the os config folder itself exists.
-        if not path.isdir(self.confPath):
+        if not os.path.isdir(self.confPath):
             try:
-                mkdir(self.confPath)
+                os.mkdir(self.confPath)
             except Exception as e:
                 logger.error("Could not create folder: %s" % self.confPath)
                 logger.error(str(e))
@@ -285,7 +285,7 @@ class Config:
 
         # Check if config file exists
         if self.confPath is not None:
-            if path.isfile(path.join(self.confPath, self.confFile)):
+            if os.path.isfile(os.path.join(self.confPath, self.confFile)):
                 # If it exists, load it
                 self.loadConfig()
             else:
@@ -295,9 +295,9 @@ class Config:
         # If data folder does not exist, make it.
         # This assumes that the os data folder itself exists.
         if self.dataPath is not None:
-            if not path.isdir(self.dataPath):
+            if not os.path.isdir(self.dataPath):
                 try:
-                    mkdir(self.dataPath)
+                    os.mkdir(self.dataPath)
                 except Exception as e:
                     logger.error("Could not create folder: %s" % self.dataPath)
                     logger.error(str(e))
@@ -318,9 +318,9 @@ class Config:
             self.spellLanguage = "en"
 
         # Check if local help files exist
-        self.helpPath = path.join(self.assetPath, "help", "novelWriter.qhc")
-        self.hasHelp  = path.isfile(self.helpPath)
-        self.hasHelp &= path.isfile(path.join(self.assetPath, "help", "novelWriter.qch"))
+        self.helpPath = os.path.join(self.assetPath, "help", "novelWriter.qhc")
+        self.hasHelp  = os.path.isfile(self.helpPath)
+        self.hasHelp &= os.path.isfile(os.path.join(self.assetPath, "help", "novelWriter.qch"))
 
         logger.debug("Config initialisation complete")
 
@@ -334,7 +334,7 @@ class Config:
             return False
 
         cnfParse = configparser.ConfigParser()
-        cnfPath  = path.join(self.confPath, self.confFile)
+        cnfPath  = os.path.join(self.confPath, self.confFile)
         try:
             with open(cnfPath, mode="r", encoding="utf8") as inFile:
                 cnfParse.read_file(inFile)
@@ -629,7 +629,7 @@ class Config:
         cnfParse.set(cnfSec, "lastpath", str(self.lastPath))
 
         # Write config file
-        cnfPath = path.join(self.confPath, self.confFile)
+        cnfPath = os.path.join(self.confPath, self.confFile)
         try:
             with open(cnfPath, mode="w", encoding="utf8") as outFile:
                 cnfParse.write(outFile)
@@ -650,10 +650,10 @@ class Config:
         if self.dataPath is None:
             return False
 
-        cacheFile = path.join(self.dataPath, nwFiles.RECENT_FILE)
+        cacheFile = os.path.join(self.dataPath, nwFiles.RECENT_FILE)
         self.recentProj = {}
 
-        if path.isfile(cacheFile):
+        if os.path.isfile(cacheFile):
             try:
                 with open(cacheFile, mode="r", encoding="utf8") as inFile:
                     theJson = inFile.read()
@@ -690,8 +690,8 @@ class Config:
         if self.dataPath is None:
             return False
 
-        cacheFile = path.join(self.dataPath, nwFiles.RECENT_FILE)
-        cacheTemp = path.join(self.dataPath, nwFiles.RECENT_FILE+"~")
+        cacheFile = os.path.join(self.dataPath, nwFiles.RECENT_FILE)
+        cacheTemp = os.path.join(self.dataPath, nwFiles.RECENT_FILE+"~")
 
         try:
             with open(cacheTemp, mode="w+", encoding="utf8") as outFile:
@@ -702,16 +702,16 @@ class Config:
             self.errData.append(str(e))
             return False
 
-        if path.isfile(cacheFile):
-            unlink(cacheFile)
-        rename(cacheTemp, cacheFile)
+        if os.path.isfile(cacheFile):
+            os.unlink(cacheFile)
+        os.rename(cacheTemp, cacheFile)
 
         return True
 
     def updateRecentCache(self, projPath, projTitle, wordCount, saveTime):
         """Add or update recent cache information o9n a given project.
         """
-        self.recentProj[path.abspath(projPath)] = {
+        self.recentProj[os.path.abspath(projPath)] = {
             "title" : projTitle,
             "time"  : int(saveTime),
             "words" : int(wordCount),
@@ -737,27 +737,27 @@ class Config:
     def setConfPath(self, newPath):
         if newPath is None:
             return True
-        if not path.isfile(newPath):
+        if not os.path.isfile(newPath):
             logger.error("File not found, using default config path instead")
             return False
-        self.confPath = path.dirname(newPath)
-        self.confFile = path.basename(newPath)
+        self.confPath = os.path.dirname(newPath)
+        self.confFile = os.path.basename(newPath)
         return True
 
     def setDataPath(self, newPath):
         if newPath is None:
             return True
-        if not path.isdir(newPath):
+        if not os.path.isdir(newPath):
             logger.error("Path not found, using default data path instead")
             return False
-        self.dataPath = path.abspath(newPath)
+        self.dataPath = os.path.abspath(newPath)
         return True
 
     def setLastPath(self, lastPath):
         if lastPath is None or lastPath == "":
             self.lastPath = ""
         else:
-            self.lastPath = path.dirname(lastPath)
+            self.lastPath = os.path.dirname(lastPath)
         return True
 
     def setWinSize(self, newWidth, newHeight):

@@ -28,8 +28,7 @@
 import sys
 import getopt
 import logging
-
-from os import path, remove, rename
+import os
 
 from PyQt5.QtGui import QIcon
 from PyQt5.QtWidgets import QApplication, QErrorMessage
@@ -203,10 +202,10 @@ def main(sysArgs=None):
     logFmt = logging.Formatter(fmt=logFormat, style="{")
 
     if not logFile == "" and toFile:
-        if path.isfile(logFile+".bak"):
-            remove(logFile+".bak")
-        if path.isfile(logFile):
-            rename(logFile, logFile+".bak")
+        if os.path.isfile(logFile+".bak"):
+            os.remove(logFile+".bak")
+        if os.path.isfile(logFile):
+            os.rename(logFile, logFile+".bak")
 
         fHandle = logging.FileHandler(logFile)
         fHandle.setLevel(debugLevel)

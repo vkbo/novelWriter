@@ -28,8 +28,8 @@
 import nw
 import logging
 import json
+import os
 
-from os import path
 from time import time
 
 from nw.constants import (
@@ -153,9 +153,9 @@ class NWIndex():
         """Load index from last session from the project meta folder.
         """
         theData   = {}
-        indexFile = path.join(self.theProject.projMeta, nwFiles.INDEX_FILE)
+        indexFile = os.path.join(self.theProject.projMeta, nwFiles.INDEX_FILE)
 
-        if path.isfile(indexFile):
+        if os.path.isfile(indexFile):
             logger.debug("Loading index file")
             try:
                 with open(indexFile, mode="r", encoding="utf8") as inFile:
@@ -190,7 +190,7 @@ class NWIndex():
         """Save the current index as a json file in the project meta
         data folder.
         """
-        indexFile = path.join(self.theProject.projMeta, nwFiles.INDEX_FILE)
+        indexFile = os.path.join(self.theProject.projMeta, nwFiles.INDEX_FILE)
 
         logger.debug("Saving index file")
         if self.mainConf.debugInfo:

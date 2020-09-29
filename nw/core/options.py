@@ -28,8 +28,7 @@
 
 import logging
 import json
-
-from os import path
+import os
 
 from nw.constants import nwFiles
 
@@ -100,10 +99,10 @@ class OptionState():
         if self.theProject.projMeta is None:
             return False
 
-        stateFile = path.join(self.theProject.projMeta, nwFiles.OPTS_FILE)
+        stateFile = os.path.join(self.theProject.projMeta, nwFiles.OPTS_FILE)
         theState  = {}
 
-        if path.isfile(stateFile):
+        if os.path.isfile(stateFile):
             logger.debug("Loading GUI options file")
             try:
                 with open(stateFile, mode="r", encoding="utf8") as inFile:
@@ -130,7 +129,7 @@ class OptionState():
         if self.theProject.projMeta is None:
             return False
 
-        stateFile = path.join(self.theProject.projMeta, nwFiles.OPTS_FILE)
+        stateFile = os.path.join(self.theProject.projMeta, nwFiles.OPTS_FILE)
         logger.debug("Saving GUI options file")
 
         try:
