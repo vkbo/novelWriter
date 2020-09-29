@@ -8,6 +8,8 @@ from nw.core.tools import countWords, numberToRoman, numberToWord
 
 @pytest.mark.core
 def testCountWords():
+    """Test the word counter and the exclusion filers.
+    """
     testText = (
         "# Heading One\n"
         "## Heading Two\n"
@@ -33,6 +35,8 @@ def testCountWords():
 
 @pytest.mark.core
 def testNumberWords():
+    """Test the conversion of integer to English words.
+    """
     assert numberToWord(0, "en") == "Zero"
     assert numberToWord(1, "en") == "One"
     assert numberToWord(2, "en") == "Two"
@@ -60,8 +64,15 @@ def testNumberWords():
     assert numberToWord(142, "en") == "One Hundred Forty-Two"
     assert numberToWord(999, "en") == "Nine Hundred Ninety-Nine"
 
+    # Check a few with a nonsense language setting
+    assert numberToWord(1, "foo") == "One"
+    assert numberToWord(2, "foo") == "Two"
+    assert numberToWord(3, "foo") == "Three"
+
 @pytest.mark.core
 def testRomanNumbers():
+    """Test conversion of integers to Roman numbers.
+    """
     assert numberToRoman(None, False) == "NAN"
     assert numberToRoman(0, False) == "OOR"
     assert numberToRoman(1, False) == "I"

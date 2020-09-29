@@ -304,13 +304,26 @@ def testProjectMethods(monkeypatch, nwMinimal, nwDummy):
     projPath = os.path.join(nwMinimal, "dummy1")
     assert theProject.setProjectPath(projPath, newProject=True)
 
-    # Make the os.mkdir fail
+    # Make os.mkdir fail
     def altMkdir(*args):
         raise Exception("Oops!")
 
     monkeypatch.setattr("os.mkdir", altMkdir)
     projPath = os.path.join(nwMinimal, "dummy2")
     assert not theProject.setProjectPath(projPath, newProject=True)
+
+    # Project Name
+    assert theProject.setProjectName("  A Name ")
+    assert theProject.projName == "A Name"
+
+    # Project Title
+    assert theProject.setBookTitle("  A Title ")
+    assert theProject.bookTitle == "A Title"
+
+    # Project Authors
+    assert not theProject.setBookAuthors([])
+    assert theProject.setBookAuthors(" Jane Doe \n John Doh \n ")
+    assert theProject.bookAuthors == ["Jane Doe", "John Doh"]
 
 @pytest.mark.project
 def testDocMeta(nwDummy, nwLipsum):

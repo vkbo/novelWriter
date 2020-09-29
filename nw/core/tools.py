@@ -121,7 +121,6 @@ def numberToWord(numVal, theLanguage):
         numWord = _numberToWordEN(numVal)
     else:
         numWord = _numberToWordEN(numVal)
-    # print("%4d : %s" % (numVal, numWord))
     return numWord
 
 def _numberToWordEN(numVal):

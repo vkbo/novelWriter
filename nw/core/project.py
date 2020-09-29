@@ -981,7 +981,7 @@ class NWProject():
 
     def setProjBackup(self, doBackup):
         """Set whether projects should be backed up or not. The user
-        will notified in case dependant settings are missing.
+        will be notified in case required settings are missing.
         """
         self.doBackup = doBackup
         if doBackup:
