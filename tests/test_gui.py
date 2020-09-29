@@ -21,6 +21,7 @@ from nw.constants import (
 )
 
 keyDelay = 2
+typeDelay = 1
 stepDelay = 20
 
 @pytest.mark.gui
@@ -165,15 +166,15 @@ def testDocEditor(qtbot, yesToAll, nwFuncTemp, nwTempGUI, nwRef, nwTemp):
     nwGUI.setFocus(2)
     qtbot.keyClick(nwGUI.docEditor, "a", modifier=Qt.ControlModifier, delay=keyDelay)
     for c in "# Jane Doe":
-        qtbot.keyClick(nwGUI.docEditor, c, delay=keyDelay)
+        qtbot.keyClick(nwGUI.docEditor, c, delay=typeDelay)
     qtbot.keyClick(nwGUI.docEditor, Qt.Key_Return, delay=keyDelay)
     qtbot.keyClick(nwGUI.docEditor, Qt.Key_Return, delay=keyDelay)
     for c in "@tag: Jane":
-        qtbot.keyClick(nwGUI.docEditor, c, delay=keyDelay)
+        qtbot.keyClick(nwGUI.docEditor, c, delay=typeDelay)
     qtbot.keyClick(nwGUI.docEditor, Qt.Key_Return, delay=keyDelay)
     qtbot.keyClick(nwGUI.docEditor, Qt.Key_Return, delay=keyDelay)
     for c in "This is a file about Jane.":
-        qtbot.keyClick(nwGUI.docEditor, c, delay=keyDelay)
+        qtbot.keyClick(nwGUI.docEditor, c, delay=typeDelay)
     qtbot.keyClick(nwGUI.docEditor, Qt.Key_Return, delay=keyDelay)
 
     # Add a Plot File
@@ -187,15 +188,15 @@ def testDocEditor(qtbot, yesToAll, nwFuncTemp, nwTempGUI, nwRef, nwTemp):
     nwGUI.setFocus(2)
     qtbot.keyClick(nwGUI.docEditor, "a", modifier=Qt.ControlModifier, delay=keyDelay)
     for c in "# Main Plot":
-        qtbot.keyClick(nwGUI.docEditor, c, delay=keyDelay)
+        qtbot.keyClick(nwGUI.docEditor, c, delay=typeDelay)
     qtbot.keyClick(nwGUI.docEditor, Qt.Key_Return, delay=keyDelay)
     qtbot.keyClick(nwGUI.docEditor, Qt.Key_Return, delay=keyDelay)
     for c in "@tag: MainPlot":
-        qtbot.keyClick(nwGUI.docEditor, c, delay=keyDelay)
+        qtbot.keyClick(nwGUI.docEditor, c, delay=typeDelay)
     qtbot.keyClick(nwGUI.docEditor, Qt.Key_Return, delay=keyDelay)
     qtbot.keyClick(nwGUI.docEditor, Qt.Key_Return, delay=keyDelay)
     for c in "This is a file detailing the main plot.":
-        qtbot.keyClick(nwGUI.docEditor, c, delay=keyDelay)
+        qtbot.keyClick(nwGUI.docEditor, c, delay=typeDelay)
     qtbot.keyClick(nwGUI.docEditor, Qt.Key_Return, delay=keyDelay)
 
     # Add a World File
@@ -214,15 +215,15 @@ def testDocEditor(qtbot, yesToAll, nwFuncTemp, nwTempGUI, nwRef, nwTemp):
     nwGUI.setFocus(2)
     qtbot.keyClick(nwGUI.docEditor, "a", modifier=Qt.ControlModifier, delay=keyDelay)
     for c in "# Main Location":
-        qtbot.keyClick(nwGUI.docEditor, c, delay=keyDelay)
+        qtbot.keyClick(nwGUI.docEditor, c, delay=typeDelay)
     qtbot.keyClick(nwGUI.docEditor, Qt.Key_Return, delay=keyDelay)
     qtbot.keyClick(nwGUI.docEditor, Qt.Key_Return, delay=keyDelay)
     for c in "@tag: Home":
-        qtbot.keyClick(nwGUI.docEditor, c, delay=keyDelay)
+        qtbot.keyClick(nwGUI.docEditor, c, delay=typeDelay)
     qtbot.keyClick(nwGUI.docEditor, Qt.Key_Return, delay=keyDelay)
     qtbot.keyClick(nwGUI.docEditor, Qt.Key_Return, delay=keyDelay)
     for c in "This is a file describing Jane's home.":
-        qtbot.keyClick(nwGUI.docEditor, c, delay=keyDelay)
+        qtbot.keyClick(nwGUI.docEditor, c, delay=typeDelay)
     qtbot.keyClick(nwGUI.docEditor, Qt.Key_Return, delay=keyDelay)
 
     # Trigger autosaves before making more changes
@@ -241,54 +242,54 @@ def testDocEditor(qtbot, yesToAll, nwFuncTemp, nwTempGUI, nwRef, nwTemp):
     nwGUI.setFocus(2)
     qtbot.keyClick(nwGUI.docEditor, "a", modifier=Qt.ControlModifier, delay=keyDelay)
     for c in "# Novel":
-        qtbot.keyClick(nwGUI.docEditor, c, delay=keyDelay)
+        qtbot.keyClick(nwGUI.docEditor, c, delay=typeDelay)
     qtbot.keyClick(nwGUI.docEditor, Qt.Key_Return, delay=keyDelay)
     qtbot.keyClick(nwGUI.docEditor, Qt.Key_Return, delay=keyDelay)
 
     for c in "## Chapter":
-        qtbot.keyClick(nwGUI.docEditor, c, delay=keyDelay)
+        qtbot.keyClick(nwGUI.docEditor, c, delay=typeDelay)
     qtbot.keyClick(nwGUI.docEditor, Qt.Key_Return, delay=keyDelay)
     qtbot.keyClick(nwGUI.docEditor, Qt.Key_Return, delay=keyDelay)
 
     for c in "@pov: Jane":
-        qtbot.keyClick(nwGUI.docEditor, c, delay=keyDelay)
+        qtbot.keyClick(nwGUI.docEditor, c, delay=typeDelay)
     qtbot.keyClick(nwGUI.docEditor, Qt.Key_Return, delay=keyDelay)
     for c in "@plot: MainPlot":
-        qtbot.keyClick(nwGUI.docEditor, c, delay=keyDelay)
+        qtbot.keyClick(nwGUI.docEditor, c, delay=typeDelay)
     qtbot.keyClick(nwGUI.docEditor, Qt.Key_Return, delay=keyDelay)
     qtbot.keyClick(nwGUI.docEditor, Qt.Key_Return, delay=keyDelay)
 
     for c in "### Scene":
-        qtbot.keyClick(nwGUI.docEditor, c, delay=keyDelay)
+        qtbot.keyClick(nwGUI.docEditor, c, delay=typeDelay)
     qtbot.keyClick(nwGUI.docEditor, Qt.Key_Return, delay=keyDelay)
     qtbot.keyClick(nwGUI.docEditor, Qt.Key_Return, delay=keyDelay)
 
     for c in "% How about a comment?":
-        qtbot.keyClick(nwGUI.docEditor, c, delay=keyDelay)
+        qtbot.keyClick(nwGUI.docEditor, c, delay=typeDelay)
     qtbot.keyClick(nwGUI.docEditor, Qt.Key_Return, delay=keyDelay)
     for c in "@pov: Jane":
-        qtbot.keyClick(nwGUI.docEditor, c, delay=keyDelay)
+        qtbot.keyClick(nwGUI.docEditor, c, delay=typeDelay)
     qtbot.keyClick(nwGUI.docEditor, Qt.Key_Return, delay=keyDelay)
     for c in "@plot: MainPlot":
-        qtbot.keyClick(nwGUI.docEditor, c, delay=keyDelay)
+        qtbot.keyClick(nwGUI.docEditor, c, delay=typeDelay)
     qtbot.keyClick(nwGUI.docEditor, Qt.Key_Return, delay=keyDelay)
     for c in "@location: Home":
-        qtbot.keyClick(nwGUI.docEditor, c, delay=keyDelay)
+        qtbot.keyClick(nwGUI.docEditor, c, delay=typeDelay)
     qtbot.keyClick(nwGUI.docEditor, Qt.Key_Return, delay=keyDelay)
     qtbot.keyClick(nwGUI.docEditor, Qt.Key_Return, delay=keyDelay)
 
     for c in "#### Some Section":
-        qtbot.keyClick(nwGUI.docEditor, c, delay=keyDelay)
+        qtbot.keyClick(nwGUI.docEditor, c, delay=typeDelay)
     qtbot.keyClick(nwGUI.docEditor, Qt.Key_Return, delay=keyDelay)
     qtbot.keyClick(nwGUI.docEditor, Qt.Key_Return, delay=keyDelay)
 
     for c in "@char: Jane":
-        qtbot.keyClick(nwGUI.docEditor, c, delay=keyDelay)
+        qtbot.keyClick(nwGUI.docEditor, c, delay=typeDelay)
     qtbot.keyClick(nwGUI.docEditor, Qt.Key_Return, delay=keyDelay)
     qtbot.keyClick(nwGUI.docEditor, Qt.Key_Return, delay=keyDelay)
 
     for c in "This is a paragraph of dummy text.":
-        qtbot.keyClick(nwGUI.docEditor, c, delay=keyDelay)
+        qtbot.keyClick(nwGUI.docEditor, c, delay=typeDelay)
     qtbot.keyClick(nwGUI.docEditor, Qt.Key_Return, delay=keyDelay)
     qtbot.keyClick(nwGUI.docEditor, Qt.Key_Return, delay=keyDelay)
 
@@ -296,32 +297,32 @@ def testDocEditor(qtbot, yesToAll, nwFuncTemp, nwTempGUI, nwRef, nwTemp):
         "This is another paragraph of much longer dummy text. "
         "It is in fact very very dumb dummy text! "
     ):
-        qtbot.keyClick(nwGUI.docEditor, c, delay=keyDelay)
+        qtbot.keyClick(nwGUI.docEditor, c, delay=typeDelay)
     for c in "We can also try replacing \"quotes\", even single 'quotes' are replaced. ":
-        qtbot.keyClick(nwGUI.docEditor, c, delay=keyDelay)
+        qtbot.keyClick(nwGUI.docEditor, c, delay=typeDelay)
     for c in "Isn't that nice? ":
-        qtbot.keyClick(nwGUI.docEditor, c, delay=keyDelay)
+        qtbot.keyClick(nwGUI.docEditor, c, delay=typeDelay)
     for c in "We can hyphen-ate, make dashes -- and even longer dashes --- if we want. ":
-        qtbot.keyClick(nwGUI.docEditor, c, delay=keyDelay)
+        qtbot.keyClick(nwGUI.docEditor, c, delay=typeDelay)
     for c in "Ellipsis? Not a problem either ... ":
-        qtbot.keyClick(nwGUI.docEditor, c, delay=keyDelay)
+        qtbot.keyClick(nwGUI.docEditor, c, delay=typeDelay)
     for c in "How about three hyphens - -":
-        qtbot.keyClick(nwGUI.docEditor, c, delay=keyDelay)
+        qtbot.keyClick(nwGUI.docEditor, c, delay=typeDelay)
     qtbot.keyClick(nwGUI.docEditor, Qt.Key_Left, delay=keyDelay)
     qtbot.keyClick(nwGUI.docEditor, Qt.Key_Backspace, delay=keyDelay)
     qtbot.keyClick(nwGUI.docEditor, Qt.Key_Right, delay=keyDelay)
     for c in "- for long dash? It works too.":
-        qtbot.keyClick(nwGUI.docEditor, c, delay=keyDelay)
+        qtbot.keyClick(nwGUI.docEditor, c, delay=typeDelay)
     qtbot.keyClick(nwGUI.docEditor, Qt.Key_Return, delay=keyDelay)
     qtbot.keyClick(nwGUI.docEditor, Qt.Key_Return, delay=keyDelay)
 
     for c in "\"Full line double quoted text.\"":
-        qtbot.keyClick(nwGUI.docEditor, c, delay=keyDelay)
+        qtbot.keyClick(nwGUI.docEditor, c, delay=typeDelay)
     qtbot.keyClick(nwGUI.docEditor, Qt.Key_Return, delay=keyDelay)
     qtbot.keyClick(nwGUI.docEditor, Qt.Key_Return, delay=keyDelay)
 
     for c in "'Full line single quoted text.'":
-        qtbot.keyClick(nwGUI.docEditor, c, delay=keyDelay)
+        qtbot.keyClick(nwGUI.docEditor, c, delay=typeDelay)
     qtbot.keyClick(nwGUI.docEditor, Qt.Key_Return, delay=keyDelay)
     qtbot.keyClick(nwGUI.docEditor, Qt.Key_Return, delay=keyDelay)
 

@@ -185,7 +185,7 @@ def nwOldProj(nwTemp):
 
 @pytest.fixture(scope="function")
 def yesToAll(monkeypatch):
-    """Make the message boxes/questions always say yes to the dress!
+    """Make the message boxes/questions always say yes.
     """
     monkeypatch.setattr(
         QMessageBox, "question", lambda *args, **kwargs: QMessageBox.Yes

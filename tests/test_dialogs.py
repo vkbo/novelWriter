@@ -26,6 +26,7 @@ from nw.gui.custom import QuotesDialog
 from nw.constants import nwItemType, nwItemLayout, nwItemClass
 
 keyDelay = 2
+typeDelay = 1
 stepDelay = 20
 
 @pytest.mark.gui
@@ -60,14 +61,14 @@ def testProjectSettings(qtbot, monkeypatch, yesToAll, nwFuncTemp, nwTempGUI, nwR
     qtbot.wait(stepDelay)
     projEdit.tabMain.editName.setText("")
     for c in "Project Name":
-        qtbot.keyClick(projEdit.tabMain.editName, c, delay=keyDelay)
+        qtbot.keyClick(projEdit.tabMain.editName, c, delay=typeDelay)
     for c in "Project Title":
-        qtbot.keyClick(projEdit.tabMain.editTitle, c, delay=keyDelay)
+        qtbot.keyClick(projEdit.tabMain.editTitle, c, delay=typeDelay)
     for c in "Jane Doe":
-        qtbot.keyClick(projEdit.tabMain.editAuthors, c, delay=keyDelay)
+        qtbot.keyClick(projEdit.tabMain.editAuthors, c, delay=typeDelay)
     qtbot.keyClick(projEdit.tabMain.editAuthors, Qt.Key_Return, delay=keyDelay)
     for c in "John Doh":
-        qtbot.keyClick(projEdit.tabMain.editAuthors, c, delay=keyDelay)
+        qtbot.keyClick(projEdit.tabMain.editAuthors, c, delay=typeDelay)
 
     # Test Status Tab
     qtbot.wait(stepDelay)
@@ -77,9 +78,9 @@ def testProjectSettings(qtbot, monkeypatch, yesToAll, nwFuncTemp, nwTempGUI, nwR
     qtbot.mouseClick(projEdit.tabStatus.newButton, Qt.LeftButton)
     projEdit.tabStatus.listBox.item(3).setSelected(True)
     for n in range(8):
-        qtbot.keyClick(projEdit.tabStatus.editName, Qt.Key_Backspace, delay=keyDelay)
+        qtbot.keyClick(projEdit.tabStatus.editName, Qt.Key_Backspace, delay=typeDelay)
     for c in "Final":
-        qtbot.keyClick(projEdit.tabStatus.editName, c, delay=keyDelay)
+        qtbot.keyClick(projEdit.tabStatus.editName, c, delay=typeDelay)
     qtbot.mouseClick(projEdit.tabStatus.saveButton, Qt.LeftButton)
 
     # Auto-Replace Tab
@@ -89,9 +90,9 @@ def testProjectSettings(qtbot, monkeypatch, yesToAll, nwFuncTemp, nwTempGUI, nwR
     qtbot.mouseClick(projEdit.tabReplace.addButton, Qt.LeftButton)
     projEdit.tabReplace.listBox.topLevelItem(0).setSelected(True)
     for c in "Th is ":
-        qtbot.keyClick(projEdit.tabReplace.editKey, c, delay=keyDelay)
+        qtbot.keyClick(projEdit.tabReplace.editKey, c, delay=typeDelay)
     for c in "With This Stuff ":
-        qtbot.keyClick(projEdit.tabReplace.editValue, c, delay=keyDelay)
+        qtbot.keyClick(projEdit.tabReplace.editValue, c, delay=typeDelay)
     qtbot.mouseClick(projEdit.tabReplace.saveButton, Qt.LeftButton)
 
     qtbot.wait(stepDelay)
@@ -159,7 +160,7 @@ def testItemEditor(qtbot, yesToAll, nwFuncTemp, nwTempGUI, nwRef, nwTemp):
     assert itemEdit.editLayout.currentData() == nwItemLayout.SCENE
 
     for c in "Just a Page":
-        qtbot.keyClick(itemEdit.editName, c, delay=keyDelay)
+        qtbot.keyClick(itemEdit.editName, c, delay=typeDelay)
     itemEdit.editStatus.setCurrentIndex(1)
     layoutIdx = itemEdit.editLayout.findData(nwItemLayout.PAGE)
     itemEdit.editLayout.setCurrentIndex(layoutIdx)
@@ -747,8 +748,11 @@ def testNewProjectWizard(qtbot, monkeypatch, yesToAll, nwMinimal, nwTemp):
     nwGUI.show()
     qtbot.waitForWindowShown(nwGUI)
     qtbot.wait(stepDelay)
+    nwGUI.mainConf.lastPath = " "
 
-    for wStep in range(3):
+    for wStep in range(4):
+        # This does not actually create the project, it just generates the
+        # dictionary that defines it.
 
         # The Wizard
         nwWiz = GuiProjectWizard(nwGUI)
@@ -762,15 +766,15 @@ def testNewProjectWizard(qtbot, monkeypatch, yesToAll, nwMinimal, nwTemp):
 
         qtbot.wait(stepDelay)
         for c in "Test Minimal":
-            qtbot.keyClick(introPage.projName, c, delay=keyDelay)
+            qtbot.keyClick(introPage.projName, c, delay=typeDelay)
 
         qtbot.wait(stepDelay)
         for c in "Minimal Novel":
-            qtbot.keyClick(introPage.projTitle, c, delay=keyDelay)
+            qtbot.keyClick(introPage.projTitle, c, delay=typeDelay)
 
         qtbot.wait(stepDelay)
         for c in "Jane Doe":
-            qtbot.keyClick(introPage.projAuthors, c, delay=keyDelay)
+            qtbot.keyClick(introPage.projAuthors, c, delay=typeDelay)
 
         # Setting projName should activate the button
         assert nwWiz.button(QWizard.NextButton).isEnabled()
@@ -783,10 +787,20 @@ def testNewProjectWizard(qtbot, monkeypatch, yesToAll, nwMinimal, nwTemp):
         assert isinstance(storagePage, ProjWizardFolderPage)
         assert not nwWiz.button(QWizard.NextButton).isEnabled()
 
+        if wStep == 0:
+            # Check invalid path first, the first time we reach here
+            monkeypatch.setattr(QFileDialog, "getExistingDirectory", lambda *a, **kw: "")
+            qtbot.wait(stepDelay)
+            qtbot.mouseClick(storagePage.browseButton, Qt.LeftButton, delay=100)
+            assert storagePage.projPath.text() == ""
+
+            # Then, we always return nwMinimal as path
+            monkeypatch.setattr(QFileDialog, "getExistingDirectory", lambda *a, **kw: nwMinimal)
+
         qtbot.wait(stepDelay)
-        projPath = path.join(nwTemp, "dummy")
-        for c in projPath:
-            qtbot.keyClick(storagePage.projPath, c, delay=keyDelay)
+        qtbot.mouseClick(storagePage.browseButton, Qt.LeftButton, delay=100)
+        projPath = path.join(nwMinimal, "Test Minimal")
+        assert storagePage.projPath.text() == projPath
 
         # Setting projPath should activate the button
         assert nwWiz.button(QWizard.NextButton).isEnabled()
@@ -805,13 +819,15 @@ def testNewProjectWizard(qtbot, monkeypatch, yesToAll, nwMinimal, nwTemp):
         elif wStep == 1:
             popPage.popCustom.setChecked(True)
         elif wStep == 2:
+            popPage.popCustom.setChecked(True)
+        elif wStep == 3:
             popPage.popSample.setChecked(True)
 
         qtbot.wait(stepDelay)
         qtbot.mouseClick(nwWiz.button(QWizard.NextButton), Qt.LeftButton)
 
         # Custom Page
-        if wStep == 1:
+        if wStep == 1 or wStep == 2:
             customPage = nwWiz.currentPage()
             assert isinstance(customPage, ProjWizardCustomPage)
             assert nwWiz.button(QWizard.NextButton).isEnabled()
@@ -822,6 +838,11 @@ def testNewProjectWizard(qtbot, monkeypatch, yesToAll, nwMinimal, nwTemp):
             customPage.addTime.setChecked(True)
             customPage.addObject.setChecked(True)
             customPage.addEntity.setChecked(True)
+
+            if wStep == 2:
+                customPage.numChapters.setValue(0)
+                customPage.numScenes.setValue(10)
+                customPage.chFolders.setChecked(False)
 
             qtbot.wait(stepDelay)
             qtbot.mouseClick(nwWiz.button(QWizard.NextButton), Qt.LeftButton)
@@ -839,9 +860,9 @@ def testNewProjectWizard(qtbot, monkeypatch, yesToAll, nwMinimal, nwTemp):
         assert projData["projAuthors"] == "Jane Doe"
         assert projData["projPath"]    == projPath
         assert projData["popMinimal"]  == (wStep == 0)
-        assert projData["popCustom"]   == (wStep == 1)
-        assert projData["popSample"]   == (wStep == 2)
-        if wStep == 1:
+        assert projData["popCustom"]   == (wStep == 1 or wStep == 2)
+        assert projData["popSample"]   == (wStep == 3)
+        if wStep == 1 or wStep == 2:
             assert projData["addRoots"] == [
                 nwItemClass.PLOT,
                 nwItemClass.CHARACTER,
@@ -850,9 +871,14 @@ def testNewProjectWizard(qtbot, monkeypatch, yesToAll, nwMinimal, nwTemp):
                 nwItemClass.OBJECT,
                 nwItemClass.ENTITY,
             ]
-            assert projData["numChapters"] == 5
-            assert projData["numScenes"] == 5
-            assert projData["chFolders"]
+            if wStep == 1:
+                assert projData["numChapters"] == 5
+                assert projData["numScenes"] == 5
+                assert projData["chFolders"]
+            else:
+                assert projData["numChapters"] == 0
+                assert projData["numScenes"] == 10
+                assert not projData["chFolders"]
         else:
             assert projData["addRoots"] == []
             assert projData["numChapters"] == 0

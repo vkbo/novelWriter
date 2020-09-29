@@ -8,11 +8,12 @@
 
 # Documentation
 /docs/build/
-novelWriter.qch
-novelWriter.qhc
+*.qch
+*.qhc
 
 # Python Temp
 __pycache__
+*.pyc
 
 # Sample Project
 /nw/assets/sample.zip
@@ -27,6 +28,9 @@ __pycache__
 /tests/temp
 /tests/lipsum/cache
 /tests/lipsum/meta
+/tests/minimal/cache
+/tests/minimal/meta
+/tests/oldproj/cache
 /.pytest_cache
 /pytestdebug.log
 
