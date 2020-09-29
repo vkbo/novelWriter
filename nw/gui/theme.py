@@ -376,7 +376,9 @@ class GuiTheme:
 
         confParser = configparser.ConfigParser()
         for themeDir in os.listdir(os.path.join(self.mainConf.themeRoot, self.guiPath)):
-            themeConf = os.path.join(self.mainConf.themeRoot, self.guiPath, themeDir, self.confName)
+            themeConf = os.path.join(
+                self.mainConf.themeRoot, self.guiPath, themeDir, self.confName
+            )
             logger.verbose("Checking theme config for '%s'" % themeDir)
             try:
                 with open(themeConf, mode="r", encoding="utf8") as inFile:
