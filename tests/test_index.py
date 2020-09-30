@@ -3,7 +3,6 @@
 """
 
 import pytest
-import time
 import os
 import json
 
@@ -29,7 +28,7 @@ def testIndexBuildCheck(monkeypatch, nwLipsum, nwDummy, nwTempProj, nwRef):
     assert theProject.openProject(nwLipsum)
 
     theProject.mainConf.debugInfo = True
-    monkeypatch.setattr(time, "time", lambda: 123.4)
+    monkeypatch.setattr("nw.core.index.time", lambda: 123.4)
 
     theIndex = NWIndex(theProject, nwDummy)
     notIndexable = {

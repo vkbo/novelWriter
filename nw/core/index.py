@@ -29,7 +29,8 @@ import nw
 import logging
 import json
 import os
-import time
+
+from time import time
 
 from nw.constants import (
     nwFiles, nwKeyWords, nwItemType, nwItemClass, nwItemLayout, nwAlert
@@ -176,7 +177,7 @@ class NWIndex():
             if "textCounts" in theData.keys():
                 self.textCounts = theData["textCounts"]
 
-            nowTime = round(time.time())
+            nowTime = round(time())
             self.timeNovel = nowTime
             self.timeNote  = nowTime
             self.timeIndex = nowTime
@@ -304,7 +305,7 @@ class NWIndex():
         self.refIndex[tHandle] = {}
         self.refIndex[tHandle]["T000000"] = {
             "tags"    : [],
-            "updated" : round(time.time()),
+            "updated" : round(time()),
         }
         if itemLayout == nwItemLayout.NOTE:
             self.noteIndex[tHandle] = {}
@@ -359,7 +360,7 @@ class NWIndex():
             self._indexWordCounts(tHandle, isNovel, lastText, nTitle)
 
         # Update timestamps for index changes
-        nowTime = round(time.time())
+        nowTime = round(time())
         self.timeIndex = nowTime
         if isNovel:
             self.timeNovel = nowTime
@@ -394,7 +395,7 @@ class NWIndex():
         sTitle = "T%06d" % nLine
         self.refIndex[tHandle][sTitle] = {
             "tags"    : [],
-            "updated" : round(time.time()),
+            "updated" : round(time()),
         }
         theData = {
             "level"    : hDepth,
@@ -404,7 +405,7 @@ class NWIndex():
             "cCount"   : 0,
             "wCount"   : 0,
             "pCount"   : 0,
-            "updated"  : round(time.time()),
+            "updated"  : round(time()),
         }
 
         if hText != "":
@@ -428,14 +429,14 @@ class NWIndex():
                     self.novelIndex[tHandle][sTitle]["cCount"] = cC
                     self.novelIndex[tHandle][sTitle]["wCount"] = wC
                     self.novelIndex[tHandle][sTitle]["pCount"] = pC
-                    self.novelIndex[tHandle][sTitle]["updated"] = round(time.time())
+                    self.novelIndex[tHandle][sTitle]["updated"] = round(time())
         else:
             if tHandle in self.noteIndex:
                 if sTitle in self.noteIndex[tHandle]:
                     self.noteIndex[tHandle][sTitle]["cCount"] = cC
                     self.noteIndex[tHandle][sTitle]["wCount"] = wC
                     self.noteIndex[tHandle][sTitle]["pCount"] = pC
-                    self.noteIndex[tHandle][sTitle]["updated"] = round(time.time())
+                    self.noteIndex[tHandle][sTitle]["updated"] = round(time())
         return
 
     def _indexSynopsis(self, tHandle, isNovel, theText, nTitle):
@@ -446,12 +447,12 @@ class NWIndex():
             if tHandle in self.novelIndex:
                 if sTitle in self.novelIndex[tHandle]:
                     self.novelIndex[tHandle][sTitle]["synopsis"] = theText
-                    self.novelIndex[tHandle][sTitle]["updated"] = round(time.time())
+                    self.novelIndex[tHandle][sTitle]["updated"] = round(time())
         else:
             if tHandle in self.noteIndex:
                 if sTitle in self.noteIndex[tHandle]:
                     self.noteIndex[tHandle][sTitle]["synopsis"] = theText
-                    self.noteIndex[tHandle][sTitle]["updated"] = round(time.time())
+                    self.noteIndex[tHandle][sTitle]["updated"] = round(time())
         return
 
     def _indexNoteRef(self, tHandle, aLine, nLine, nTitle):
