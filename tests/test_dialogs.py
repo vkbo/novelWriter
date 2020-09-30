@@ -380,6 +380,10 @@ def testAboutBox(qtbot, monkeypatch, nwFuncTemp, nwTemp):
     assert msgAbout.pageAbout.document().characterCount() > 100
     assert msgAbout.pageLicense.document().characterCount() > 100
 
+    msgAbout.mainConf.guiLang = "whatever"
+    msgAbout._fillLicensePage()
+    assert msgAbout.pageLicense.toPlainText() == "Error loading license text ..."
+
     # Qt About
     monkeypatch.setattr(QMessageBox, "aboutQt", lambda *args, **kwargs: None)
     nwGUI.mainMenu.aAboutQt.activate(QAction.Trigger)
