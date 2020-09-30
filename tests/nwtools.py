@@ -6,9 +6,12 @@ from itertools import chain
 
 from PyQt5.QtWidgets import qApp
 
-def cmpFiles(fileOne, fileTwo, ignoreLines=[]):
+def cmpFiles(fileOne, fileTwo, ignoreLines=None):
     """Compare two files, but optionally ignore lines given by a list.
     """
+    if ignoreLines is None:
+        ignoreLines = []
+
     try:
         foOne = open(fileOne, mode="r", encoding="utf8")
     except Exception as e:
