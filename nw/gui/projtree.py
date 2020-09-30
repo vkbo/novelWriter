@@ -209,7 +209,7 @@ class GuiProjectTree(QTreeWidget):
                 )
                 return False
 
-            if pHandle == self.theProject.projTree.trashRoot():
+            if self.theProject.projTree.isTrashRoot(pHandle):
                 self.makeAlert(
                     "Cannot add new files or folders to the %s folder." % (
                         nwLabels.CLASS_NAME[nwItemClass.TRASH]
@@ -411,7 +411,7 @@ class GuiProjectTree(QTreeWidget):
                 return False
 
             pHandle = nwItemS.parHandle
-            if pHandle is not None and pHandle == self.theProject.projTree.trashRoot():
+            if self.theProject.projTree.isTrashRoot(pHandle):
                 # If the file is in the trash folder already, as the
                 # user if they want to permanently delete the file.
                 doPermanent = False
