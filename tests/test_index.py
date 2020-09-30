@@ -3,10 +3,142 @@
 """
 
 import pytest
+import time
+import os
+import json
+
+from shutil import copyfile
+
+from nwtools import cmpFiles
 
 from nw.core.project import NWProject
 from nw.core.index import NWIndex
 from nw.constants import nwItemClass, nwItemLayout
+
+@pytest.mark.project
+def testIndexBuildCheck(monkeypatch, nwLipsum, nwDummy, nwTempProj, nwRef):
+    """Test core functionality of scaning, saving, loading and checking
+    the index cache file.
+    """
+    projFile = os.path.join(nwLipsum, "meta", "tagsIndex.json")
+    testFile = os.path.join(nwTempProj, "1_tagsIndex.json")
+    refFile  = os.path.join(nwRef, "proj", "1_tagsIndex.json")
+
+    theProject = NWProject(nwDummy)
+    theProject.projTree.setSeed(42)
+    assert theProject.openProject(nwLipsum)
+
+    theProject.mainConf.debugInfo = True
+    monkeypatch.setattr(time, "time", lambda: 123.4)
+
+    theIndex = NWIndex(theProject, nwDummy)
+    notIndexable = {
+        "b3643d0f92e32": False, # Novel ROOT
+        "45e6b01ca35c1": False, # Chapter One FOLDER
+        "6bd935d2490cd": False, # Chapter Two FOLDER
+        "67a8707f2f249": False, # Character ROOT
+        "6c6afb1247750": False, # Plot ROOT
+        "60bdf227455cc": False, # World ROOT
+    }
+    for tItem in theProject.projTree:
+        assert theIndex.reIndexHandle(tItem.itemHandle) is notIndexable.get(tItem.itemHandle, True)
+
+    assert not theIndex.reIndexHandle(None)
+
+    # Dummy exception function
+    def doPanic(*arg, **kwargs):
+        raise Exception
+
+    # Make the save fail
+    monkeypatch.setattr(json, "dumps", doPanic)
+    assert not theIndex.saveIndex()
+
+    # Make the save pass
+    monkeypatch.undo()
+    assert theIndex.saveIndex()
+
+    # Take a copy of the index
+    tagIndex = str(theIndex.tagIndex)
+    refIndex = str(theIndex.refIndex)
+    novelIndex = str(theIndex.novelIndex)
+    noteIndex = str(theIndex.noteIndex)
+    textCounts = str(theIndex.textCounts)
+
+    # Delete a handle
+    assert theIndex.tagIndex.get("Bod", None) is not None
+    assert theIndex.refIndex.get("4c4f28287af27", None) is not None
+    assert theIndex.noteIndex.get("4c4f28287af27", None) is not None
+    assert theIndex.textCounts.get("4c4f28287af27", None) is not None
+    theIndex.deleteHandle("4c4f28287af27")
+    assert theIndex.tagIndex.get("Bod", None) is None
+    assert theIndex.refIndex.get("4c4f28287af27", None) is None
+    assert theIndex.noteIndex.get("4c4f28287af27", None) is None
+    assert theIndex.textCounts.get("4c4f28287af27", None) is None
+
+    # Clear the index
+    theIndex.clearIndex()
+    assert not theIndex.tagIndex
+    assert not theIndex.refIndex
+    assert not theIndex.novelIndex
+    assert not theIndex.noteIndex
+    assert not theIndex.textCounts
+
+    # Make the load fail
+    monkeypatch.setattr(json, "loads", doPanic)
+    assert not theIndex.loadIndex()
+
+    # Make the load pass
+    monkeypatch.undo()
+    assert theIndex.loadIndex()
+
+    assert str(theIndex.tagIndex) == tagIndex
+    assert str(theIndex.refIndex) == refIndex
+    assert str(theIndex.novelIndex) == novelIndex
+    assert str(theIndex.noteIndex) == noteIndex
+    assert str(theIndex.textCounts) == textCounts
+
+    # Break the index and check that we notice
+    assert not theIndex.indexBroken
+    theIndex.tagIndex["Bod"].append("Stuff") # No longer len() == 4
+    theIndex.checkIndex()
+    assert theIndex.indexBroken
+
+    assert theIndex.loadIndex()
+    assert not theIndex.indexBroken
+    theIndex.refIndex["fb609cd8319dc"]["T000001"]["tags"].append("Stuff") # No longer len() == 3
+    theIndex.checkIndex()
+    assert theIndex.indexBroken
+
+    assert theIndex.loadIndex()
+    assert not theIndex.indexBroken
+    theIndex.novelIndex["7a992350f3eb6"]["T000001"]["Stuff"] = "" # No longer len(keys()) == 8
+    theIndex.checkIndex()
+    assert theIndex.indexBroken
+
+    assert theIndex.loadIndex()
+    assert not theIndex.indexBroken
+    theIndex.noteIndex["4c4f28287af27"]["T000001"]["Stuff"] = "" # No longer len(keys()) == 8
+    theIndex.checkIndex()
+    assert theIndex.indexBroken
+
+    assert theIndex.loadIndex()
+    assert not theIndex.indexBroken
+    theIndex.textCounts["7a992350f3eb6"].append("Stuff") # No longer len() == 3
+    theIndex.checkIndex()
+    assert theIndex.indexBroken
+
+    # Make the try/except trigger as well
+    assert theIndex.loadIndex()
+    assert not theIndex.indexBroken
+    theIndex.refIndex["fb609cd8319dc"]["T000001"] = {"tagssss": []} # Wrong key name
+    theIndex.checkIndex()
+    assert theIndex.indexBroken
+
+    # Finalise
+    assert theProject.closeProject()
+
+    copyfile(projFile, testFile)
+    assert cmpFiles(testFile, refFile)
 
 @pytest.mark.project
 def testIndexScanThis(nwMinimal, nwDummy):
