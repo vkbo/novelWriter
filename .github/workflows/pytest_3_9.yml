@@ -7,7 +7,7 @@ on:
     branches: [ main, dev ]
 
 jobs:
-  pyTest37:
+  pyTest39:
     runs-on: ubuntu-latest
     steps:
       - name: Python Setup
