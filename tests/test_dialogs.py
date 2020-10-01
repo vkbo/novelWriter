@@ -6,6 +6,7 @@ import nw
 import pytest
 import json
 import os
+import sys
 
 from shutil import copyfile
 from nwtools import cmpFiles, getGuiItem
@@ -717,6 +718,10 @@ def testMergeSplitTools(qtbot, monkeypatch, yesToAll, nwTempGUI, nwLipsum, nwRef
 
 @pytest.mark.gui
 def testNewProjectWizard(qtbot, monkeypatch, yesToAll, nwMinimal, nwTemp):
+
+    if sys.platform.startswith("darwin"):
+        # Disable for macOS because the test segfaults on QWizard.show()
+        return
 
     from PyQt5.QtWidgets import QWizard
     from nw.gui.projwizard import (
