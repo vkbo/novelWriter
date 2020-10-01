@@ -2,7 +2,7 @@
 novelWriter |release|
 #####################
 
-.. image:: https://github.com/vkbo/novelWriter/workflows/pytest/badge.svg
+.. image:: https://github.com/vkbo/novelWriter/workflows/python%203.8/badge.svg?branch=main
    :target: https://github.com/vkbo/novelWriter/actions
    :alt: Python Tests
 
