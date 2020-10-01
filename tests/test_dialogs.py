@@ -752,20 +752,10 @@ def testNewProjectWizard(qtbot, monkeypatch, yesToAll, nwMinimal, nwTemp):
     assert not nwGUI.newProject()
 
     monkeypatch.undo()
-    nwGUI.closeMain()
-    nwGUI.close()
-
-    # qtbot.stopForInteraction()
 
     ##
     #  Test the Wizard
     ##
-
-    nwGUI = nw.main(["--testmode", "--config=%s" % nwMinimal, "--data=%s" % nwTemp])
-    qtbot.addWidget(nwGUI)
-    nwGUI.show()
-    qtbot.waitForWindowShown(nwGUI)
-    qtbot.wait(stepDelay)
 
     monkeypatch.setattr(GuiProjectWizard, "exec_", lambda *args: None)
     nwGUI.mainConf.lastPath = " "
@@ -782,7 +772,8 @@ def testNewProjectWizard(qtbot, monkeypatch, yesToAll, nwMinimal, nwTemp):
         nwWiz = getGuiItem("GuiProjectWizard")
         assert isinstance(nwWiz, GuiProjectWizard)
         nwWiz.show()
-        qtbot.waitForWindowShown(nwWiz)
+        nwWiz.setObjectName("Dummy%d" % wStep) # Hack to prevent returning the same object twice
+        qtbot.wait(stepDelay)
 
         # Intro Page
         introPage = nwWiz.currentPage()
@@ -911,7 +902,6 @@ def testNewProjectWizard(qtbot, monkeypatch, yesToAll, nwMinimal, nwTemp):
 
         nwWiz.reject()
         nwWiz.close()
-        del nwWiz
 
     # qtbot.stopForInteraction()
     nwGUI.closeMain()
