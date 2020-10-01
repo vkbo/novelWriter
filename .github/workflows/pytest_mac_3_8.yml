@@ -15,6 +15,9 @@ jobs:
         with:
           python-version: 3.8
           architecture: x64
+      - name: Install Packages
+        run: |
+          brew install aspell
       - name: Checkout Source
         uses: actions/checkout@v2
       - name: Install Dependencies

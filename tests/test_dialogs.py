@@ -605,7 +605,7 @@ def testNewProjectWizard(qtbot, nwLipsum, nwTemp):
 
         # The Wizard
         nwWiz = GuiProjectWizard(nwGUI)
-        # nwWiz.show()
+        nwWiz.show()
         qtbot.waitForWindowShown(nwWiz)
 
         # Intro Page
@@ -711,6 +711,9 @@ def testNewProjectWizard(qtbot, nwLipsum, nwTemp):
             assert projData["numChapters"] == 0
             assert projData["numScenes"] == 0
             assert not projData["chFolders"]
+
+        nwWiz.close()
+        del nwWiz
 
     # qtbot.stopForInteraction()
     nwGUI.closeMain()
