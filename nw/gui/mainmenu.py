@@ -9,7 +9,7 @@
  Created: 2019-04-27 [0.0.1] (Split from winmain)
 
  This file is a part of novelWriter
- Copyright 2020, Veronica Berglyd Olsen
+ Copyright 2018–2020, Veronica Berglyd Olsen
 
  This program is free software: you can redistribute it and/or modify
  it under the terms of the GNU General Public License as published by
@@ -25,8 +25,8 @@
  along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
 
-import logging
 import nw
+import logging
 
 from PyQt5.QtCore import QUrl, QProcess
 from PyQt5.QtGui import QDesktopServices
@@ -192,7 +192,7 @@ class GuiMainMenu(QMenuBar):
         self.aOpenProject = QAction("Open Project", self)
         self.aOpenProject.setStatusTip("Open project")
         self.aOpenProject.setShortcut("Ctrl+Shift+O")
-        self.aOpenProject.triggered.connect(lambda: self.theParent.manageProjects())
+        self.aOpenProject.triggered.connect(lambda: self.theParent.showProjectLoadDialog())
         self.projMenu.addAction(self.aOpenProject)
 
         # Project > Save Project
@@ -213,7 +213,7 @@ class GuiMainMenu(QMenuBar):
         self.aProjectSettings = QAction("Project Settings", self)
         self.aProjectSettings.setStatusTip("Project settings")
         self.aProjectSettings.setShortcut("Ctrl+Shift+,")
-        self.aProjectSettings.triggered.connect(lambda: self.theParent.editProjectDialog())
+        self.aProjectSettings.triggered.connect(lambda: self.theParent.showProjectSettingsDialog())
         self.projMenu.addAction(self.aProjectSettings)
 
         # Project > Separator
@@ -829,7 +829,7 @@ class GuiMainMenu(QMenuBar):
         self.aBuildProject = QAction("Build Novel Project", self)
         self.aBuildProject.setStatusTip("Launch the Build novel project tool")
         self.aBuildProject.setShortcut("F5")
-        self.aBuildProject.triggered.connect(lambda: self.theParent.buildProjectDialog())
+        self.aBuildProject.triggered.connect(lambda: self.theParent.showBuildProjectDialog())
         self.toolsMenu.addAction(self.aBuildProject)
 
         # Tools > Writing Stats
@@ -843,7 +843,7 @@ class GuiMainMenu(QMenuBar):
         self.aPreferences = QAction("Preferences", self)
         self.aPreferences.setStatusTip("Preferences")
         self.aPreferences.setShortcut("Ctrl+,")
-        self.aPreferences.triggered.connect(lambda: self.theParent.editConfigDialog())
+        self.aPreferences.triggered.connect(lambda: self.theParent.showPreferencesDialog())
         self.toolsMenu.addAction(self.aPreferences)
 
         return

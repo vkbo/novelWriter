@@ -9,7 +9,7 @@
  Created: 2019-04-20 [0.0.1]
 
  This file is a part of novelWriter
- Copyright 2020, Veronica Berglyd Olsen
+ Copyright 2018–2020, Veronica Berglyd Olsen
 
  This program is free software: you can redistribute it and/or modify
  it under the terms of the GNU General Public License as published by
@@ -25,8 +25,8 @@
  along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
 
-import logging
 import nw
+import logging
 
 from time import time
 

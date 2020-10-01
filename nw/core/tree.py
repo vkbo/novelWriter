@@ -9,7 +9,7 @@
  Created: 2020-05-07 [0.4.5]
 
  This file is a part of novelWriter
- Copyright 2020, Veronica Berglyd Olsen
+ Copyright 2018–2020, Veronica Berglyd Olsen
 
  This program is free software: you can redistribute it and/or modify
  it under the terms of the GNU General Public License as published by
@@ -27,8 +27,8 @@
 
 import logging
 import json
+import os
 
-from os import path
 from lxml import etree
 from hashlib import sha256
 from time import time
@@ -144,8 +144,8 @@ class NWTree():
         the project directory. These files are there to assist the user
         if they wish to browse the stored files.
         """
-        tocText = path.join(self.theProject.projPath, nwFiles.TOC_TXT)
-        tocJson = path.join(self.theProject.projPath, nwFiles.TOC_JSON)
+        tocText = os.path.join(self.theProject.projPath, nwFiles.TOC_TXT)
+        tocJson = os.path.join(self.theProject.projPath, nwFiles.TOC_JSON)
 
         jsonData = []
         try:
@@ -162,14 +162,14 @@ class NWTree():
                     if tItem is None:
                         continue
                     tFile = tHandle+".nwd"
-                    if path.isfile(path.join(self.theProject.projContent, tFile)):
+                    if os.path.isfile(os.path.join(self.theProject.projContent, tFile)):
                         outFile.write(" %-25s  %-9s  %s\n" % (
-                            path.join("content", tFile),
+                            os.path.join("content", tFile),
                             tItem.itemClass.name,
                             tItem.itemName,
                         ))
                         jsonData.append([
-                            path.join("content", tFile),
+                            os.path.join("content", tFile),
                             tItem.itemClass.name,
                             tItem.itemName,
                         ])
@@ -212,6 +212,13 @@ class NWTree():
         if self._trashRoot:
             return self._trashRoot
         return None
+
+    def isTrashRoot(self, tHandle):
+        """Check if a handle is the trash folder.
+        """
+        if self._trashRoot is None:
+            return False
+        return tHandle == self._trashRoot
 
     def archiveRoot(self):
         """Returns the handle of the archive folder, or None if there

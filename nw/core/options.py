@@ -10,7 +10,7 @@
  Rewritten: 2020-02-19 [0.4.5]
 
  This file is a part of novelWriter
- Copyright 2020, Veronica Berglyd Olsen
+ Copyright 2018–2020, Veronica Berglyd Olsen
 
  This program is free software: you can redistribute it and/or modify
  it under the terms of the GNU General Public License as published by
@@ -28,8 +28,7 @@
 
 import logging
 import json
-
-from os import path
+import os
 
 from nw.constants import nwFiles
 
@@ -100,10 +99,10 @@ class OptionState():
         if self.theProject.projMeta is None:
             return False
 
-        stateFile = path.join(self.theProject.projMeta, nwFiles.OPTS_FILE)
+        stateFile = os.path.join(self.theProject.projMeta, nwFiles.OPTS_FILE)
         theState  = {}
 
-        if path.isfile(stateFile):
+        if os.path.isfile(stateFile):
             logger.debug("Loading GUI options file")
             try:
                 with open(stateFile, mode="r", encoding="utf8") as inFile:
@@ -130,7 +129,7 @@ class OptionState():
         if self.theProject.projMeta is None:
             return False
 
-        stateFile = path.join(self.theProject.projMeta, nwFiles.OPTS_FILE)
+        stateFile = os.path.join(self.theProject.projMeta, nwFiles.OPTS_FILE)
         logger.debug("Saving GUI options file")
 
         try:

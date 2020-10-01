@@ -9,7 +9,7 @@
  Created: 2019-10-20 [0.3]
 
  This file is a part of novelWriter
- Copyright 2020, Veronica Berglyd Olsen
+ Copyright 2018–2020, Veronica Berglyd Olsen
 
  This program is free software: you can redistribute it and/or modify
  it under the terms of the GNU General Public License as published by
@@ -25,11 +25,11 @@
  along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
 
+import nw
 import logging
 import json
-import nw
+import os
 
-from os import path
 from datetime import datetime
 
 from PyQt5.QtCore import Qt
@@ -58,6 +58,7 @@ class GuiWritingStats(QDialog):
         QDialog.__init__(self, theParent)
 
         logger.debug("Initialising GuiWritingStats ...")
+        self.setObjectName("GuiWritingStats")
 
         self.mainConf   = nw.CONFIG
         self.theParent  = theParent
@@ -321,20 +322,19 @@ class GuiWritingStats(QDialog):
         if fileExt:
             fileName  = "sessionStats.%s" % fileExt
             saveDir   = self.mainConf.lastPath
-            savePath  = path.join(saveDir, fileName)
-            if not path.isdir(saveDir):
+            savePath  = os.path.join(saveDir, fileName)
+            if not os.path.isdir(saveDir):
                 saveDir = self.mainConf.homePath
 
-            if self.mainConf.showGUI:
-                dlgOpt  = QFileDialog.Options()
-                dlgOpt |= QFileDialog.DontUseNativeDialog
-                saveTo  = QFileDialog.getSaveFileName(
-                    self, "Save Document As", savePath, options=dlgOpt
-                )
-                if saveTo[0]:
-                    savePath = saveTo[0]
-                else:
-                    return False
+            dlgOpt  = QFileDialog.Options()
+            dlgOpt |= QFileDialog.DontUseNativeDialog
+            saveTo  = QFileDialog.getSaveFileName(
+                self, "Save Document As", savePath, options=dlgOpt
+            )
+            if saveTo:
+                savePath = saveTo[0]
+            else:
+                return False
 
             self.mainConf.setLastPath(savePath)
 
@@ -379,19 +379,18 @@ class GuiWritingStats(QDialog):
             errMsg = str(e)
 
         # Report to user
-        if self.mainConf.showGUI:
-            if wSuccess:
-                self.theParent.makeAlert(
-                    "%s file successfully written to:<br> %s" % (
-                        textFmt, savePath
-                    ), nwAlert.INFO
-                )
-            else:
-                self.theParent.makeAlert(
-                    "Failed to write %s file. %s" % (
-                        textFmt, errMsg
-                    ), nwAlert.ERROR
-                )
+        if wSuccess:
+            self.theParent.makeAlert(
+                "%s file successfully written to:<br> %s" % (
+                    textFmt, savePath
+                ), nwAlert.INFO
+            )
+        else:
+            self.theParent.makeAlert(
+                "Failed to write %s file. %s" % (
+                    textFmt, errMsg
+                ), nwAlert.ERROR
+            )
 
         return True
 
@@ -411,7 +410,7 @@ class GuiWritingStats(QDialog):
         ttTime  = 0
 
         try:
-            logFile = path.join(self.theProject.projMeta, nwFiles.SESS_STATS)
+            logFile = os.path.join(self.theProject.projMeta, nwFiles.SESS_STATS)
             with open(logFile, mode="r", encoding="utf8") as inFile:
                 for inLine in inFile:
                     if inLine.startswith("#"):

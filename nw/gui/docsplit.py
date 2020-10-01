@@ -9,7 +9,7 @@
  Created: 2020-02-01 [0.4.3]
 
  This file is a part of novelWriter
- Copyright 2020, Veronica Berglyd Olsen
+ Copyright 2018–2020, Veronica Berglyd Olsen
 
  This program is free software: you can redistribute it and/or modify
  it under the terms of the GNU General Public License as published by
@@ -25,8 +25,8 @@
  along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
 
-import logging
 import nw
+import logging
 
 from PyQt5.QtCore import Qt
 from PyQt5.QtWidgets import (
@@ -34,9 +34,11 @@ from PyQt5.QtWidgets import (
     QListWidgetItem, QDialogButtonBox, QLabel, QMessageBox
 )
 
-from nw.constants import nwAlert, nwItemType, nwItemClass, nwItemLayout, nwConst
-from nw.gui.custom import QHelpLabel
 from nw.core import NWDoc
+from nw.gui.custom import QHelpLabel
+from nw.constants import (
+    nwAlert, nwItemType, nwItemClass, nwItemLayout, nwConst
+)
 
 logger = logging.getLogger(__name__)
 
@@ -46,6 +48,7 @@ class GuiDocSplit(QDialog):
         QDialog.__init__(self, theParent)
 
         logger.debug("Initialising GuiDocSplit ...")
+        self.setObjectName("GuiDocSplit")
 
         self.mainConf   = nw.CONFIG
         self.theParent  = theParent
@@ -160,23 +163,22 @@ class GuiDocSplit(QDialog):
             ), nwAlert.ERROR)
             return
 
-        if self.mainConf.showGUI:
-            msgBox = QMessageBox()
-            msgRes = msgBox.question(
-                self, "Split Document", (
-                    "The document will be split into %d file(s) in a new folder. "
-                    "The original document will remain intact.<br><br>"
-                    "Continue with the splitting process?"
-                ) % nFiles
-            )
-            if msgRes != QMessageBox.Yes:
-                return
+        msgBox = QMessageBox()
+        msgRes = msgBox.question(
+            self, "Split Document", (
+                "The document will be split into %d file(s) in a new folder. "
+                "The original document will remain intact.<br><br>"
+                "Continue with the splitting process?"
+            ) % nFiles
+        )
+        if msgRes != QMessageBox.Yes:
+            return
 
         # Create the folder
         fHandle = self.theProject.newFolder(
             srcItem.itemName, srcItem.itemClass, srcItem.parHandle
         )
-        self.theParent.treeView.revealTreeItem(fHandle)
+        self.theParent.treeView.revealNewTreeItem(fHandle)
         logger.verbose("Creating folder %s" % fHandle)
 
         # Loop through, and create the files
@@ -211,16 +213,15 @@ class GuiDocSplit(QDialog):
             theDoc.openDocument(nHandle, False)
             theDoc.saveDocument(theText)
             theDoc.clearDocument()
-            self.theParent.treeView.revealTreeItem(nHandle)
+            self.theParent.treeView.revealNewTreeItem(nHandle)
 
-        self.close()
+        self._doClose()
 
         return
 
     def _doClose(self):
         """Close the dialog window without doing anything.
         """
-        logger.verbose("GuiDocSplit close button clicked")
         self.optState.saveSettings()
         self.close()
         return

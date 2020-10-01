@@ -13,7 +13,7 @@
  Created: 2020-09-08 [1.0b1] GuiDocViewHistory
 
  This file is a part of novelWriter
- Copyright 2020, Veronica Berglyd Olsen
+ Copyright 2018–2020, Veronica Berglyd Olsen
 
  This program is free software: you can redistribute it and/or modify
  it under the terms of the GNU General Public License as published by
@@ -29,8 +29,8 @@
  along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
 
-import logging
 import nw
+import logging
 
 from PyQt5.QtCore import Qt, QUrl, QSize, pyqtSlot
 from PyQt5.QtGui import (

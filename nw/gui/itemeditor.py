@@ -9,7 +9,7 @@
  Created: 2019-04-27 [0.0.1]
 
  This file is a part of novelWriter
- Copyright 2020, Veronica Berglyd Olsen
+ Copyright 2018–2020, Veronica Berglyd Olsen
 
  This program is free software: you can redistribute it and/or modify
  it under the terms of the GNU General Public License as published by
@@ -25,8 +25,8 @@
  along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
 
-import logging
 import nw
+import logging
 
 from PyQt5.QtWidgets import (
     QDialog, QVBoxLayout, QGridLayout, QLineEdit, QComboBox, QLabel,
@@ -44,6 +44,7 @@ class GuiItemEditor(QDialog):
         QDialog.__init__(self, theParent)
 
         logger.debug("Initialising GuiItemEditor ...")
+        self.setObjectName("GuiItemEditor")
 
         self.mainConf   = nw.CONFIG
         self.theProject = theProject

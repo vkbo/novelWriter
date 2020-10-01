@@ -9,7 +9,7 @@
  Created: 2019-05-27 [0.1.4]
 
  This file is a part of novelWriter
- Copyright 2020, Veronica Berglyd Olsen
+ Copyright 2018–2020, Veronica Berglyd Olsen
 
  This program is free software: you can redistribute it and/or modify
  it under the terms of the GNU General Public License as published by
@@ -25,11 +25,11 @@
  along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
 
+import nw
 import logging
 import json
-import nw
+import os
 
-from os import path
 from time import time
 
 from nw.constants import (
@@ -153,9 +153,9 @@ class NWIndex():
         """Load index from last session from the project meta folder.
         """
         theData   = {}
-        indexFile = path.join(self.theProject.projMeta, nwFiles.INDEX_FILE)
+        indexFile = os.path.join(self.theProject.projMeta, nwFiles.INDEX_FILE)
 
-        if path.isfile(indexFile):
+        if os.path.isfile(indexFile):
             logger.debug("Loading index file")
             try:
                 with open(indexFile, mode="r", encoding="utf8") as inFile:
@@ -190,7 +190,7 @@ class NWIndex():
         """Save the current index as a json file in the project meta
         data folder.
         """
-        indexFile = path.join(self.theProject.projMeta, nwFiles.INDEX_FILE)
+        indexFile = os.path.join(self.theProject.projMeta, nwFiles.INDEX_FILE)
 
         logger.debug("Saving index file")
         if self.mainConf.debugInfo:
@@ -279,8 +279,8 @@ class NWIndex():
         if theItem.itemLayout == nwItemLayout.NO_LAYOUT:
             logger.error("Not indexing no-layout item %s" % tHandle)
             return False
-        if theRoot is None:
-            logger.error("Not indexing homeless item %s" % tHandle)
+        if theItem.parHandle is None:
+            logger.error("Not indexing orphaned item %s" % tHandle)
             return False
 
         # Run word counter for the whole text
@@ -288,7 +288,7 @@ class NWIndex():
         self.textCounts[tHandle] = [cC, wC, pC]
 
         # If the file is archived or trashed, we don't index the file itself
-        if theItem.parHandle == self.theProject.projTree.trashRoot():
+        if self.theProject.projTree.isTrashRoot(theItem.parHandle):
             logger.error("Not indexing trash item %s" % tHandle)
             return False
         if theRoot.itemClass == nwItemClass.ARCHIVE:
@@ -356,7 +356,7 @@ class NWIndex():
 
         # Count words for remaining text after last heading
         if nTitle > 0:
-            lastText = "\n".join(theLines[nTitle-1:nLine-1])
+            lastText = "\n".join(theLines[nTitle-1:])
             self._indexWordCounts(tHandle, isNovel, lastText, nTitle)
 
         # Update timestamps for index changes
@@ -459,16 +459,12 @@ class NWIndex():
         """Validate and save the information about a reference to a tag
         in another file.
         """
-        isValid, theBits, thePos = self.scanThis(aLine)
+        isValid, theBits, _ = self.scanThis(aLine)
         if not isValid or len(theBits) == 0:
             return False
 
         sTitle = "T%06d" % nTitle
-        if sTitle not in self.refIndex[tHandle]:
-            logger.error("Cannot save tags to file %s, no title %s" % (tHandle, sTitle))
-            return False
-
-        if theBits[0] != nwKeyWords.TAG_KEY:
+        if sTitle in self.refIndex[tHandle] and theBits[0] != nwKeyWords.TAG_KEY:
             for aVal in theBits[1:]:
                 self.refIndex[tHandle][sTitle]["tags"].append([nLine, theBits[0], aVal])
 
@@ -574,15 +570,14 @@ class NWIndex():
         """
         theStructure = []
         for tItem in self.theProject.projTree:
-            if tItem is None:
-                continue
-            if not tItem.isExported and skipExcluded:
-                continue
-            tHandle = tItem.itemHandle
-            if tHandle not in self.novelIndex:
-                continue
-            for sTitle in sorted(self.novelIndex[tHandle].keys()):
-                theStructure.append("%s:%s" % (tHandle, sTitle))
+            if tItem is not None:
+                if not tItem.isExported and skipExcluded:
+                    continue
+                tHandle = tItem.itemHandle
+                if tHandle not in self.novelIndex:
+                    continue
+                for sTitle in sorted(self.novelIndex[tHandle].keys()):
+                    theStructure.append("%s:%s" % (tHandle, sTitle))
 
         return theStructure
 
@@ -624,14 +619,11 @@ class NWIndex():
         if tHandle not in self.refIndex:
             return theRefs
 
-        try:
-            for refTitle in self.refIndex[tHandle]:
-                for nLine, tKey, tTag in self.refIndex[tHandle][refTitle]["tags"]:
-                    if sTitle is None or sTitle == refTitle:
-                        theRefs[tKey].append(tTag)
-        except Exception as e:
-            logger.error("Failed to generate reference list")
-            logger.error(str(e))
+        for refTitle in self.refIndex[tHandle]:
+            theTags = self.refIndex[tHandle][refTitle].get("tags", None)
+            for aTag in theTags:
+                if len(aTag) == 3 and (sTitle is None or sTitle == refTitle):
+                    theRefs[aTag[1]].append(aTag[2])
 
         return theRefs
 

@@ -8,6 +8,9 @@ from nw.core.tohtml import ToHtml
 from nw.core.tools import countWords, numberToRoman, numberToWord
 
 __all__ = [
+    "countWords",
+    "numberToRoman",
+    "numberToWord",
     "NWDoc",
     "NWIndex",
     "NWProject",
@@ -15,7 +18,4 @@ __all__ = [
     "NWSpellEnchant",
     "NWSpellSimple",
     "ToHtml",
-    "countWords",
-    "numberToRoman",
-    "numberToWord",
 ]

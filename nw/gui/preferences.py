@@ -9,7 +9,7 @@
  Created: 2019-06-10 [0.1.5]
 
  This file is a part of novelWriter
- Copyright 2020, Veronica Berglyd Olsen
+ Copyright 2018–2020, Veronica Berglyd Olsen
 
  This program is free software: you can redistribute it and/or modify
  it under the terms of the GNU General Public License as published by
@@ -25,10 +25,9 @@
  along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
 
-import logging
 import nw
-
-from os import path
+import logging
+import os
 
 from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QFont
@@ -48,6 +47,7 @@ class GuiPreferences(PagedDialog):
         PagedDialog.__init__(self, theParent)
 
         logger.debug("Initialising GuiPreferences ...")
+        self.setObjectName("GuiPreferences")
 
         self.mainConf   = nw.CONFIG
         self.theParent  = theParent
@@ -103,7 +103,7 @@ class GuiPreferences(PagedDialog):
         validEntries &= retA
         needsRestart |= retB
 
-        if needsRestart and self.mainConf.showGUI:
+        if needsRestart:
             msgBox = QMessageBox()
             msgBox.information(
                 self, "Preferences",
@@ -119,7 +119,7 @@ class GuiPreferences(PagedDialog):
         """Close the preferences without saving the changes.
         """
         logger.verbose("ConfigEditor close button clicked")
-        self.close()
+        self.reject()
         return
 
 # END Class GuiPreferences
@@ -334,7 +334,7 @@ class GuiConfigEditGeneralTab(QWidget):
         """Open a dialog to select the backup folder.
         """
         currDir = self.backupPath
-        if not path.isdir(currDir):
+        if not os.path.isdir(currDir):
             currDir = ""
 
         dlgOpt  = QFileDialog.Options()

@@ -9,7 +9,7 @@
  Created: 2019-06-11 [0.1.5]
 
  This file is a part of novelWriter
- Copyright 2020, Veronica Berglyd Olsen
+ Copyright 2018–2020, Veronica Berglyd Olsen
 
  This program is free software: you can redistribute it and/or modify
  it under the terms of the GNU General Public License as published by
@@ -25,10 +25,10 @@
  along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
 
-import logging
 import nw
+import logging
+import os
 
-from os import path, listdir
 from difflib import get_close_matches
 
 from nw.constants import isoLanguage
@@ -108,7 +108,7 @@ class NWSpellCheck():
         self.PROJW = []
         if projectDict is not None:
             self.projectDict = projectDict
-            if not path.isfile(projectDict):
+            if not os.path.isfile(projectDict):
                 return
             try:
                 logger.debug("Loading project word list")
@@ -228,7 +228,7 @@ class NWSpellSimple(NWSpellCheck):
         """Load a dictionary as a list from the app assets folder.
         """
         self.WORDS = []
-        dictFile = path.join(self.mainConf.dictPath, theLang+".dict")
+        dictFile = os.path.join(self.mainConf.dictPath, theLang+".dict")
         try:
             with open(dictFile, mode="r", encoding="utf-8") as wordsFile:
                 for theLine in wordsFile:
@@ -297,9 +297,9 @@ class NWSpellSimple(NWSpellCheck):
         """Lists the dictionary files in the app assets folder.
         """
         retList = []
-        for dictFile in listdir(self.mainConf.dictPath):
+        for dictFile in os.listdir(self.mainConf.dictPath):
 
-            theBits = path.splitext(dictFile)
+            theBits = os.path.splitext(dictFile)
             if len(theBits) != 2:
                 continue
             if theBits[1] != ".dict":

@@ -9,7 +9,7 @@
  Created: 2020-05-09 [0.5]
 
  This file is a part of novelWriter
- Copyright 2020, Veronica Berglyd Olsen
+ Copyright 2018–2020, Veronica Berglyd Olsen
 
  This program is free software: you can redistribute it and/or modify
  it under the terms of the GNU General Public License as published by
@@ -25,11 +25,11 @@
  along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
 
+import nw
 import logging
 import json
-import nw
+import os
 
-from os import path
 from time import time
 from datetime import datetime
 
@@ -68,6 +68,7 @@ class GuiBuildNovel(QDialog):
         QDialog.__init__(self, theParent)
 
         logger.debug("Initialising GuiBuildNovel ...")
+        self.setObjectName("GuiBuildNovel")
 
         self.mainConf   = nw.CONFIG
         self.theProject = theProject
@@ -467,7 +468,7 @@ class GuiBuildNovel(QDialog):
         self.buildProgress.setMaximum(len(self.theProject.projTree))
         self.buildProgress.setValue(0)
 
-        tStart = time()
+        tStart = int(time())
 
         self.htmlText = []
         self.htmlStyle = []
@@ -510,7 +511,7 @@ class GuiBuildNovel(QDialog):
             # Update progress bar, also for skipped items
             self.buildProgress.setValue(nItt+1)
 
-        tEnd = time()
+        tEnd = int(time())
         logger.debug("Built project in %.3f ms" % (1000*(tEnd-tStart)))
         self.htmlStyle = makeHtml.getStyleSheet()
         self.buildTime = tEnd
@@ -629,8 +630,8 @@ class GuiBuildNovel(QDialog):
             cleanName = makeFileNameSafe(self.theProject.projName)
             fileName  = "%s.%s" % (cleanName, fileExt)
             saveDir   = self.mainConf.lastPath
-            savePath  = path.join(saveDir, fileName)
-            if not path.isdir(saveDir):
+            savePath  = os.path.join(saveDir, fileName)
+            if not os.path.isdir(saveDir):
                 saveDir = self.mainConf.homePath
 
             if self.mainConf.showGUI:
@@ -791,9 +792,9 @@ class GuiBuildNovel(QDialog):
     def _loadCache(self):
         """Save the current data to cache.
         """
-        buildCache = path.join(self.theProject.projCache, nwFiles.BUILD_CACHE)
+        buildCache = os.path.join(self.theProject.projCache, nwFiles.BUILD_CACHE)
         dataCount = 0
-        if path.isfile(buildCache):
+        if os.path.isfile(buildCache):
 
             logger.debug("Loading build cache")
             try:
@@ -822,7 +823,7 @@ class GuiBuildNovel(QDialog):
     def _saveCache(self):
         """Save the current data to cache.
         """
-        buildCache = path.join(self.theProject.projCache, nwFiles.BUILD_CACHE)
+        buildCache = os.path.join(self.theProject.projCache, nwFiles.BUILD_CACHE)
 
         if self.mainConf.debugInfo:
             nIndent = 2

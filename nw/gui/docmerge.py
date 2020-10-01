@@ -9,7 +9,7 @@
  Created: 2020-01-23 [0.4.3]
 
  This file is a part of novelWriter
- Copyright 2020, Veronica Berglyd Olsen
+ Copyright 2018–2020, Veronica Berglyd Olsen
 
  This program is free software: you can redistribute it and/or modify
  it under the terms of the GNU General Public License as published by
@@ -25,8 +25,8 @@
  along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
 
-import logging
 import nw
+import logging
 
 from PyQt5.QtCore import Qt
 from PyQt5.QtWidgets import (
@@ -46,6 +46,7 @@ class GuiDocMerge(QDialog):
         QDialog.__init__(self, theParent)
 
         logger.debug("Initialising GuiDocMerge ...")
+        self.setObjectName("GuiDocMerge")
 
         self.mainConf   = nw.CONFIG
         self.theParent  = theParent
@@ -132,17 +133,16 @@ class GuiDocMerge(QDialog):
 
         theDoc.openDocument(nHandle, False)
         theDoc.saveDocument(theText)
-        self.theParent.treeView.revealTreeItem(nHandle)
+        self.theParent.treeView.revealNewTreeItem(nHandle)
         self.theParent.openDocument(nHandle, doScroll=True)
 
-        self.close()
+        self._doClose()
 
         return
 
     def _doClose(self):
         """Close the dialog window without doing anything.
         """
-        logger.verbose("GuiDocMerge close button clicked")
         self.close()
         return
 

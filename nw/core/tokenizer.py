@@ -9,7 +9,7 @@
  Created: 2019-05-05 [0.0.1]
 
  This file is a part of novelWriter
- Copyright 2020, Veronica Berglyd Olsen
+ Copyright 2018–2020, Veronica Berglyd Olsen
 
  This program is free software: you can redistribute it and/or modify
  it under the terms of the GNU General Public License as published by
@@ -109,32 +109,6 @@ class Tokenizer():
         self.firstScene  = False # Flag to indicate that the first scene of the chapter
 
         # This File
-        self.isNone  = False
-        self.isTitle = False
-        self.isBook  = False
-        self.isPage  = False
-        self.isPart  = False
-        self.isUnNum = False
-        self.isChap  = False
-        self.isScene = False
-        self.isNote  = False
-        self.isNovel = False
-
-        return
-
-    def clearData(self):
-        """Clear the data arrays and variables, but not settings, so the class
-        can be reused for multiple documents.
-        """
-        self.theText     = None
-        self.theHandle   = None
-        self.theItem     = None
-        self.theTokens   = None
-        self.theResult   = None
-        self.theMarkdown = None
-        self.numChapter  = 0
-        self.firstScene  = False
-
         self.isNone  = False
         self.isTitle = False
         self.isBook  = False

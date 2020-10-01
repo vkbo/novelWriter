@@ -11,7 +11,7 @@
  Merged:  2020-05-08 [0.4.5] All of the above into this file
 
  This file is a part of novelWriter
- Copyright 2020, Veronica Berglyd Olsen
+ Copyright 2018–2020, Veronica Berglyd Olsen
 
  This program is free software: you can redistribute it and/or modify
  it under the terms of the GNU General Public License as published by
@@ -121,7 +121,6 @@ def numberToWord(numVal, theLanguage):
         numWord = _numberToWordEN(numVal)
     else:
         numWord = _numberToWordEN(numVal)
-    # print("%4d : %s" % (numVal, numWord))
     return numWord
 
 def _numberToWordEN(numVal):

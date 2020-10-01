@@ -11,7 +11,7 @@
  Created: 2020-05-17 [0.5.1] PagedDialog
 
  This file is a part of novelWriter
- Copyright 2020, Veronica Berglyd Olsen
+ Copyright 2018–2020, Veronica Berglyd Olsen
 
  This program is free software: you can redistribute it and/or modify
  it under the terms of the GNU General Public License as published by
@@ -27,8 +27,8 @@
  along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
 
-import logging
 import nw
+import logging
 
 from PyQt5.QtGui import QColor, QPalette, QPainter, QFontMetrics
 from PyQt5.QtCore import (
@@ -442,6 +442,8 @@ class VerticalTabBar(QTabBar):
 # =============================================================================================== #
 
 class QuotesDialog(QDialog):
+
+    selectedQuote = ""
 
     def __init__(self, theParent=None, currentQuote="\""):
         QDialog.__init__(self, parent=theParent)

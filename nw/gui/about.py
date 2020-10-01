@@ -9,7 +9,7 @@
  Created: 2020-05-21 [0.5.2]
 
  This file is a part of novelWriter
- Copyright 2020, Veronica Berglyd Olsen
+ Copyright 2018–2020, Veronica Berglyd Olsen
 
  This program is free software: you can redistribute it and/or modify
  it under the terms of the GNU General Public License as published by
@@ -25,10 +25,10 @@
  along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
 
-import logging
 import nw
+import logging
+import os
 
-from os import path
 from datetime import datetime
 
 from PyQt5.QtCore import Qt
@@ -45,6 +45,7 @@ class GuiAbout(QDialog):
         QDialog.__init__(self, theParent)
 
         logger.debug("Initialising GuiAbout ...")
+        self.setObjectName("GuiAbout")
 
         self.mainConf  = nw.CONFIG
         self.theParent = theParent
@@ -196,8 +197,8 @@ class GuiAbout(QDialog):
         """Load the content for the License page.
         """
         docName = "gplv3_%s.htm" % self.mainConf.guiLang
-        docPath = path.join(self.mainConf.assetPath, "text", docName)
-        if path.isfile(docPath):
+        docPath = os.path.join(self.mainConf.assetPath, "text", docName)
+        if os.path.isfile(docPath):
             with open(docPath, mode="r", encoding="utf8") as inFile:
                 helpText = inFile.read()
             self.pageLicense.setHtml(helpText)

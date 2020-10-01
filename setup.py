@@ -1,7 +1,6 @@
 #!/usr/bin/env python3
 import os
 import sys
-import shutil
 import subprocess
 import setuptools
 
@@ -42,7 +41,7 @@ if buildDocs:
 
     buildFail = False
     try:
-        subprocess.call(["make","-C", "docs", "qthelp"])
+        subprocess.call(["make", "-C", "docs", "qthelp"])
     except Exception as e:
         print("Failed with error:")
         print(str(e))
@@ -98,7 +97,7 @@ if buildSample:
         from zipfile import ZipFile
 
         with ZipFile(dstSample, "w") as zipObj:
-            zipObj.write(os.path.join("sample", "nwProject.nwx"), "nwProject.nwx")
+            zipObj.write(os.path.join(srcSample, "nwProject.nwx"), "nwProject.nwx")
             for docFile in os.listdir(os.path.join(srcSample, "content")):
                 srcDoc = os.path.join(srcSample, "content", docFile)
                 zipObj.write(srcDoc, "content/"+docFile)

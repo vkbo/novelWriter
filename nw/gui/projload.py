@@ -9,7 +9,7 @@
  Created: 2020-02-26 [0.4.5]
 
  This file is a part of novelWriter
- Copyright 2020, Veronica Berglyd Olsen
+ Copyright 2018–2020, Veronica Berglyd Olsen
 
  This program is free software: you can redistribute it and/or modify
  it under the terms of the GNU General Public License as published by
@@ -25,10 +25,10 @@
  along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
 
-import logging
 import nw
+import logging
+import os
 
-from os import path
 from datetime import datetime
 
 from PyQt5.QtCore import Qt, QSize
@@ -58,6 +58,7 @@ class GuiProjectLoad(QDialog):
         QDialog.__init__(self, theParent)
 
         logger.debug("Initialising GuiProjectLoad ...")
+        self.setObjectName("GuiProjectLoad")
 
         self.mainConf  = nw.CONFIG
         self.theParent = theParent
@@ -177,20 +178,19 @@ class GuiProjectLoad(QDialog):
         """Browse for a folder path.
         """
         logger.verbose("GuiProjectLoad browse button clicked")
-        if self.mainConf.showGUI:
-            dlgOpt  = QFileDialog.Options()
-            dlgOpt |= QFileDialog.DontUseNativeDialog
-            projFile, _ = QFileDialog.getOpenFileName(
-                self, "Open novelWriter Project", "",
-                "novelWriter Project File (%s);;All Files (*)" % nwFiles.PROJ_FILE,
-                options=dlgOpt
-            )
-            if projFile:
-                thePath = path.abspath(path.dirname(projFile))
-                self.selPath.setText(thePath)
-                self.openPath = thePath
-                self.openState = self.OPEN_STATE
-                self.accept()
+        dlgOpt  = QFileDialog.Options()
+        dlgOpt |= QFileDialog.DontUseNativeDialog
+        projFile, _ = QFileDialog.getOpenFileName(
+            self, "Open novelWriter Project", "",
+            "novelWriter Project File (%s);;All Files (*)" % nwFiles.PROJ_FILE,
+            options=dlgOpt
+        )
+        if projFile:
+            thePath = os.path.abspath(os.path.dirname(projFile))
+            self.selPath.setText(thePath)
+            self.openPath = thePath
+            self.openState = self.OPEN_STATE
+            self.accept()
 
         return
 
@@ -217,18 +217,12 @@ class GuiProjectLoad(QDialog):
         """
         selList = self.listBox.selectedItems()
         if selList:
-            doRemove = False
-            if self.mainConf.showGUI:
-                msgBox = QMessageBox()
-                msgRes = msgBox.question(
-                    self, "Remove Entry",
-                    "Remove the selected entry from the recent projects list?"
-                )
-                doRemove = (msgRes == QMessageBox.Yes)
-            else:
-                doRemove = True
-
-            if doRemove:
+            msgBox = QMessageBox()
+            msgRes = msgBox.question(
+                self, "Remove Entry",
+                "Remove the selected entry from the recent projects list?"
+            )
+            if msgRes == QMessageBox.Yes:
                 self.mainConf.removeFromRecentCache(
                     selList[0].data(self.C_NAME, Qt.UserRole)
                 )

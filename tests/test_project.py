@@ -3,30 +3,40 @@
 """
 
 import pytest
-from os import path
+import os
+
 from shutil import copyfile
+from zipfile import ZipFile
 
 from nwtools import cmpFiles
 
 from nw.core.project import NWProject
 from nw.core.document import NWDoc
-from nw.core.index import NWIndex
 from nw.core.spellcheck import NWSpellEnchant, NWSpellSimple
 from nw.constants import nwItemClass, nwItemType, nwItemLayout, nwFiles
 
 @pytest.mark.project
 def testProjectNewOpenSave(nwFuncTemp, nwTempProj, nwRef, nwTemp, nwDummy):
-    projFile = path.join(nwFuncTemp, "nwProject.nwx")
-    testFile = path.join(nwTempProj, "1_nwProject.nwx")
-    refFile  = path.join(nwRef, "proj", "1_nwProject.nwx")
+    """Test that a basic project can be created, and opened and saved.
+    """
+    projFile = os.path.join(nwFuncTemp, "nwProject.nwx")
+    testFile = os.path.join(nwTempProj, "1_nwProject.nwx")
+    refFile  = os.path.join(nwRef, "proj", "1_nwProject.nwx")
 
     theProject = NWProject(nwDummy)
     theProject.projTree.setSeed(42)
 
+    # Setting no data should fail
+    assert not theProject.newProject({})
+
+    # Try again with a proper path
     assert theProject.newProject({"projPath": nwFuncTemp})
     assert theProject.setProjectPath(nwFuncTemp)
     assert theProject.saveProject()
     assert theProject.closeProject()
+
+    # Creating the project once more should fail
+    assert not theProject.newProject({"projPath": nwFuncTemp})
 
     # Check the new project
     copyfile(projFile, testFile)
@@ -53,9 +63,11 @@ def testProjectNewOpenSave(nwFuncTemp, nwTempProj, nwRef, nwTemp, nwDummy):
 
 @pytest.mark.project
 def testProjectNewRoot(nwFuncTemp, nwTempProj, nwRef, nwDummy):
-    projFile = path.join(nwFuncTemp, "nwProject.nwx")
-    testFile = path.join(nwTempProj, "2_nwProject.nwx")
-    refFile  = path.join(nwRef, "proj", "2_nwProject.nwx")
+    """Check that new root folders can be added to the project.
+    """
+    projFile = os.path.join(nwFuncTemp, "nwProject.nwx")
+    testFile = os.path.join(nwTempProj, "2_nwProject.nwx")
+    refFile  = os.path.join(nwRef, "proj", "2_nwProject.nwx")
 
     theProject = NWProject(nwDummy)
     theProject.projTree.setSeed(42)
@@ -85,9 +97,11 @@ def testProjectNewRoot(nwFuncTemp, nwTempProj, nwRef, nwDummy):
 
 @pytest.mark.project
 def testProjectNewFile(nwFuncTemp, nwTempProj, nwRef, nwDummy):
-    projFile = path.join(nwFuncTemp, "nwProject.nwx")
-    testFile = path.join(nwTempProj, "3_nwProject.nwx")
-    refFile  = path.join(nwRef, "proj", "3_nwProject.nwx")
+    """Check that new files can be added to the project.
+    """
+    projFile = os.path.join(nwFuncTemp, "nwProject.nwx")
+    testFile = os.path.join(nwTempProj, "3_nwProject.nwx")
+    refFile  = os.path.join(nwRef, "proj", "3_nwProject.nwx")
 
     theProject = NWProject(nwDummy)
     theProject.projTree.setSeed(42)
@@ -109,143 +123,13 @@ def testProjectNewFile(nwFuncTemp, nwTempProj, nwRef, nwDummy):
     assert not theProject.projChanged
 
 @pytest.mark.project
-def testIndexScanThis(nwMinimal, nwDummy):
-
-    theProject = NWProject(nwDummy)
-    theProject.projTree.setSeed(42)
-    assert theProject.openProject(nwMinimal)
-
-    theIndex = NWIndex(theProject, nwDummy)
-
-    isValid, theBits, thePos = theIndex.scanThis("tag: this, and this")
-    assert not isValid
-
-    isValid, theBits, thePos = theIndex.scanThis("@")
-    assert not isValid
-
-    isValid, theBits, thePos = theIndex.scanThis("@:")
-    assert not isValid
-
-    isValid, theBits, thePos = theIndex.scanThis(" @a: b")
-    assert not isValid
-
-    isValid, theBits, thePos = theIndex.scanThis("@a:")
-    assert isValid
-    assert str(theBits) == "['@a']"
-    assert str(thePos)  == "[0]"
-
-    isValid, theBits, thePos = theIndex.scanThis("@a:b")
-    assert isValid
-    assert str(theBits) == "['@a', 'b']"
-    assert str(thePos)  == "[0, 3]"
-
-    isValid, theBits, thePos = theIndex.scanThis("@a:b,c,d")
-    assert isValid
-    assert str(theBits) == "['@a', 'b', 'c', 'd']"
-    assert str(thePos)  == "[0, 3, 5, 7]"
-
-    isValid, theBits, thePos = theIndex.scanThis("@a : b , c , d")
-    assert isValid
-    assert str(theBits) == "['@a', 'b', 'c', 'd']"
-    assert str(thePos)  == "[0, 5, 9, 13]"
-
-    isValid, theBits, thePos = theIndex.scanThis("@tag: this, and this")
-    assert isValid
-    assert str(theBits) == "['@tag', 'this', 'and this']"
-    assert str(thePos)  == "[0, 6, 12]"
-
-    assert theProject.closeProject()
-
-@pytest.mark.project
-def testIndexCheckThese(nwMinimal, nwDummy):
-
-    theProject = NWProject(nwDummy)
-    theProject.projTree.setSeed(42)
-    assert theProject.openProject(nwMinimal)
-
-    theIndex = NWIndex(theProject, nwDummy)
-    nHandle = theProject.newFile("Hello", nwItemClass.NOVEL,     "a508bb932959c")
-    cHandle = theProject.newFile("Jane",  nwItemClass.CHARACTER, "afb3043c7b2b3")
-    nItem = theProject.projTree[nHandle]
-    cItem = theProject.projTree[cHandle]
-
-    assert theIndex.scanText(cHandle, (
-        "# Jane Smith\n"
-        "@tag: Jane"
-    ))
-    assert theIndex.scanText(nHandle, (
-        "# Hello World!\n"
-        "@pov: Jane"
-    ))
-    assert str(theIndex.tagIndex) == "{'Jane': [2, '%s', 'CHARACTER', 'T000001']}" % cHandle
-    assert theIndex.novelIndex[nHandle]["T000001"]["title"] == "Hello World!"
-
-    assert str(theIndex.checkThese(["@tag",  "Jane"], cItem)) == "[True, True]"
-    assert str(theIndex.checkThese(["@tag",  "John"], cItem)) == "[True, True]"
-    assert str(theIndex.checkThese(["@tag",  "Jane"], nItem)) == "[True, False]"
-    assert str(theIndex.checkThese(["@tag",  "John"], nItem)) == "[True, True]"
-    assert str(theIndex.checkThese(["@pov",  "John"], nItem)) == "[True, False]"
-    assert str(theIndex.checkThese(["@pov",  "Jane"], nItem)) == "[True, True]"
-    assert str(theIndex.checkThese(["@ pov", "Jane"], nItem)) == "[False, False]"
-    assert str(theIndex.checkThese(["@what", "Jane"], nItem)) == "[False, False]"
-
-    assert theProject.closeProject()
-
-@pytest.mark.project
-def testIndexMeta(nwMinimal, nwDummy):
-
-    theProject = NWProject(nwDummy)
-    theProject.projTree.setSeed(42)
-    assert theProject.openProject(nwMinimal)
-
-    theIndex = NWIndex(theProject, nwDummy)
-    nHandle = theProject.newFile("Hello", nwItemClass.NOVEL,     "a508bb932959c")
-    cHandle = theProject.newFile("Jane",  nwItemClass.CHARACTER, "afb3043c7b2b3")
-
-    assert theIndex.scanText(cHandle, (
-        "# Jane Smith\n"
-        "@tag: Jane\n"
-    ))
-    assert theIndex.scanText(nHandle, (
-        "# Hello World!\n"
-        "@pov: Jane\n"
-        "@char: Jane\n"
-        "\n"
-        "% this is a comment\n"
-        "\n"
-        "This is a story about Jane Smith.\n"
-        "\n"
-        "Well, not really.\n"
-    ))
-    assert str(theIndex.tagIndex) == "{'Jane': [2, '%s', 'CHARACTER', 'T000001']}" % cHandle
-    assert theIndex.novelIndex[nHandle]["T000001"]["title"] == "Hello World!"
-
-    # The novel structure should contain the pointer to the novel file header
-    assert str(theIndex.getNovelStructure()) == "['%s:T000001']" % nHandle
-
-    # The novel file should have the correct counts
-    cC, wC, pC = theIndex.getCounts(nHandle)
-    assert cC == 62 # Characters in text and title only
-    assert wC == 12 # Words in text and title only
-    assert pC == 2  # Paragraphs in text only
-
-    # The novel file should now refer to Jane as @pov and @char
-    theRefs = theIndex.getReferences(nHandle)
-    assert str(theRefs["@pov"]) == "['Jane']"
-    assert str(theRefs["@char"]) == "['Jane']"
-
-    # The character file should have a record of the reference from the novel file
-    theRefs = theIndex.getBackReferenceList(cHandle)
-    assert str(theRefs) == "{'%s': 'T000001'}" % nHandle
-
-    assert theProject.closeProject()
-
-@pytest.mark.project
-def testProjectNewCustom(nwFuncTemp, nwTempProj, nwRef, nwDummy):
-
-    projFile = path.join(nwFuncTemp, "nwProject.nwx")
-    testFile = path.join(nwTempProj, "4_nwProject.nwx")
-    refFile  = path.join(nwRef, "proj", "4_nwProject.nwx")
+def testProjectNewCustomA(nwFuncTemp, nwTempProj, nwRef, nwDummy):
+    """Create a new project from a project wizard dictionary.
+    Custom type with chapters and scenes.
+    """
+    projFile = os.path.join(nwFuncTemp, "nwProject.nwx")
+    testFile = os.path.join(nwTempProj, "4_nwProject.nwx")
+    refFile  = os.path.join(nwRef, "proj", "4_nwProject.nwx")
 
     projData = {
         "projName": "Test Custom",
@@ -278,7 +162,49 @@ def testProjectNewCustom(nwFuncTemp, nwTempProj, nwRef, nwDummy):
     assert cmpFiles(testFile, refFile, [2, 6, 7, 8])
 
 @pytest.mark.project
-def testProjectNewSample(nwFuncTemp, nwRef, nwConf, nwDummy):
+def testProjectNewCustomB(nwFuncTemp, nwTempProj, nwRef, nwDummy):
+    """Create a new project from a project wizard dictionary.
+    Custom type without chapters, but with scenes.
+    """
+    projFile = os.path.join(nwFuncTemp, "nwProject.nwx")
+    testFile = os.path.join(nwTempProj, "5_nwProject.nwx")
+    refFile  = os.path.join(nwRef, "proj", "5_nwProject.nwx")
+
+    projData = {
+        "projName": "Test Custom",
+        "projTitle": "Test Novel",
+        "projAuthors": "Jane Doe\nJohn Doh\n",
+        "projPath": nwFuncTemp,
+        "popSample": False,
+        "popMinimal": False,
+        "popCustom": True,
+        "addRoots": [
+            nwItemClass.PLOT,
+            nwItemClass.CHARACTER,
+            nwItemClass.WORLD,
+            nwItemClass.TIMELINE,
+            nwItemClass.OBJECT,
+            nwItemClass.ENTITY,
+        ],
+        "numChapters": 0,
+        "numScenes": 6,
+        "chFolders": True,
+    }
+    theProject = NWProject(nwDummy)
+    theProject.projTree.setSeed(42)
+
+    assert theProject.newProject(projData)
+    assert theProject.saveProject()
+    assert theProject.closeProject()
+
+    copyfile(projFile, testFile)
+    assert cmpFiles(testFile, refFile, [2, 6, 7, 8])
+
+@pytest.mark.project
+def testProjectNewSampleA(nwFuncTemp, nwConf, nwDummy, nwTemp):
+    """Check that we can create a new project can be created from the
+    provided sample project via a zip file.
+    """
     projData = {
         "projName": "Test Sample",
         "projTitle": "Test Novel",
@@ -292,14 +218,117 @@ def testProjectNewSample(nwFuncTemp, nwRef, nwConf, nwDummy):
     theProject.projTree.setSeed(42)
     theProject.mainConf = nwConf
 
+    # Sample set, but no path
+    assert not theProject.newProject({"popSample": True})
+
+    # Force the lookup path for assets to our temp folder
+    srcSample = os.path.abspath(os.path.join(nwConf.appRoot, "sample"))
+    dstSample = os.path.join(nwTemp, "sample.zip")
+    nwConf.assetPath = nwTemp
+
+    # Create and open a defective zip file
+    with open(dstSample, mode="w+") as outFile:
+        outFile.write("foo")
+
+    assert not theProject.newProject(projData)
+    os.unlink(dstSample)
+
+    # Create a real zip file, and unpack it
+    with ZipFile(dstSample, "w") as zipObj:
+        zipObj.write(os.path.join(srcSample, "nwProject.nwx"), "nwProject.nwx")
+        for docFile in os.listdir(os.path.join(srcSample, "content")):
+            srcDoc = os.path.join(srcSample, "content", docFile)
+            zipObj.write(srcDoc, "content/"+docFile)
+
+    assert theProject.newProject(projData)
+    assert theProject.openProject(nwFuncTemp)
+    assert theProject.projName == "Sample Project"
+    assert theProject.saveProject()
+    assert theProject.closeProject()
+    os.unlink(dstSample)
+
+@pytest.mark.project
+def testProjectNewSampleB(monkeypatch, nwFuncTemp, nwConf, nwDummy, nwTemp):
+    """Check that we can create a new project can be created from the
+    provided sample project folder.
+    """
+    projData = {
+        "projName": "Test Sample",
+        "projTitle": "Test Novel",
+        "projAuthors": "Jane Doe\nJohn Doh\n",
+        "projPath": nwFuncTemp,
+        "popSample": True,
+        "popMinimal": False,
+        "popCustom": False,
+    }
+    theProject = NWProject(nwDummy)
+    theProject.projTree.setSeed(42)
+    theProject.mainConf = nwConf
+
+    # Make sure we do not pick up the nw/assets/sample.zip file
+    nwConf.assetPath = nwTemp
+
+    # Set a fake project file name
+    monkeypatch.setattr(nwFiles, "PROJ_FILE", "nothing.nwx")
+    assert not theProject.newProject(projData)
+
+    monkeypatch.setattr(nwFiles, "PROJ_FILE", "nwProject.nwx")
     assert theProject.newProject(projData)
     assert theProject.openProject(nwFuncTemp)
     assert theProject.projName == "Sample Project"
     assert theProject.saveProject()
     assert theProject.closeProject()
 
+    # Misdirect the appRoot path so neither is possible
+    nwConf.appRoot = nwTemp
+    assert not theProject.newProject(projData)
+
+@pytest.mark.project
+def testProjectMethods(monkeypatch, nwMinimal, nwDummy):
+    """Test other project class methods and functions.
+    """
+    theProject = NWProject(nwDummy)
+    theProject.projTree.setSeed(42)
+    assert theProject.openProject(nwMinimal)
+    assert theProject.projPath == nwMinimal
+
+    # Setting project path
+    assert theProject.setProjectPath(None)
+    assert theProject.projPath is None
+    assert theProject.setProjectPath("")
+    assert theProject.projPath is None
+    assert theProject.setProjectPath("~")
+    assert theProject.projPath == os.path.expanduser("~")
+
+    # Create a new folder and populate it
+    projPath = os.path.join(nwMinimal, "dummy1")
+    assert theProject.setProjectPath(projPath, newProject=True)
+
+    # Make os.mkdir fail
+    def altMkdir(*args):
+        raise Exception("Oops!")
+
+    monkeypatch.setattr("os.mkdir", altMkdir)
+    projPath = os.path.join(nwMinimal, "dummy2")
+    assert not theProject.setProjectPath(projPath, newProject=True)
+
+    # Project Name
+    assert theProject.setProjectName("  A Name ")
+    assert theProject.projName == "A Name"
+
+    # Project Title
+    assert theProject.setBookTitle("  A Title ")
+    assert theProject.bookTitle == "A Title"
+
+    # Project Authors
+    assert not theProject.setBookAuthors([])
+    assert theProject.setBookAuthors(" Jane Doe \n John Doh \n ")
+    assert theProject.bookAuthors == ["Jane Doe", "John Doh"]
+
 @pytest.mark.project
 def testDocMeta(nwDummy, nwLipsum):
+    """Check that the document meta data string is parsed correctly.
+    """
     theProject = NWProject(nwDummy)
     theProject.projTree.setSeed(42)
     assert theProject.openProject(nwLipsum)
@@ -325,7 +354,7 @@ def testDocMeta(nwDummy, nwLipsum):
 
 @pytest.mark.project
 def testSpellEnchant(nwTemp, nwConf):
-    wList = path.join(nwTemp, "wordlist.txt")
+    wList = os.path.join(nwTemp, "wordlist.txt")
     with open(wList, mode="w") as wFile:
         wFile.write("a_word\nb_word\nc_word\n")
 
@@ -350,7 +379,7 @@ def testSpellEnchant(nwTemp, nwConf):
 
 @pytest.mark.project
 def testSpellSimple(nwTemp, nwConf):
-    wList = path.join(nwTemp, "wordlist.txt")
+    wList = os.path.join(nwTemp, "wordlist.txt")
     with open(wList, mode="w") as wFile:
         wFile.write("a_word\nb_word\nc_word\n")
 
@@ -375,6 +404,10 @@ def testSpellSimple(nwTemp, nwConf):
 
 @pytest.mark.project
 def testProjectOptions(nwDummy, nwLipsum):
+    """Test the class that holds all the GUI state user options that are
+    tied to the current open project. Non-project related GUI options
+    are handled by the Config class.
+    """
     theProject = NWProject(nwDummy)
     assert theProject.projMeta is None
 
@@ -389,7 +422,7 @@ def testProjectOptions(nwDummy, nwLipsum):
     assert str(theOpts.theState) == r"{}"
 
     # Read Invalid Settings and Filter
-    stateFile = path.join(theProject.projMeta, nwFiles.OPTS_FILE)
+    stateFile = os.path.join(theProject.projMeta, nwFiles.OPTS_FILE)
     with open(stateFile, mode="w", encoding="utf8") as outFile:
         outFile.write(
             r'{"GuiProjectSettings": {"winWidth": 100, "winHeight": 50}, "NoGroup": {"NoName": 0}}'
@@ -433,35 +466,40 @@ def testProjectOptions(nwDummy, nwLipsum):
     assert theOpts.getFloat("GuiWritingStats", "winWidth", False) is False
 
 @pytest.mark.project
-def testOrphanedFiles(nwDummy, nwLipsum):
+def testProjectOrphanedFiles(nwDummy, nwLipsum):
+    """Check that files in the content folder that are not tracked in
+    the project XML file are handled correctly by the orphaned files
+    function. It should also restore as much meta data as possible from
+    the meta line at the top of the document file.
+    """
     theProject = NWProject(nwDummy)
     assert theProject.openProject(nwLipsum)
     assert theProject.projTree["636b6aa9b697b"] is None
     assert theProject.closeProject()
 
     # First Item with Meta Data
-    orphPath = path.join(nwLipsum, "content", "636b6aa9b697b.nwd")
+    orphPath = os.path.join(nwLipsum, "content", "636b6aa9b697b.nwd")
     with open(orphPath, mode="w", encoding="utf8") as outFile:
         outFile.write(r"%%~ 5eaea4e8cdee8:15c4492bd5107:WORLD:NOTE:Mars")
         outFile.write("\n")
 
     # Second Item without Meta Data
-    orphPath = path.join(nwLipsum, "content", "736b6aa9b697b.nwd")
+    orphPath = os.path.join(nwLipsum, "content", "736b6aa9b697b.nwd")
     with open(orphPath, mode="w", encoding="utf8") as outFile:
         outFile.write("\n")
 
     # Invalid File Name
-    dummyPath = path.join(nwLipsum, "content", "636b6aa9b697b.txt")
+    dummyPath = os.path.join(nwLipsum, "content", "636b6aa9b697b.txt")
     with open(dummyPath, mode="w", encoding="utf8") as outFile:
         outFile.write("\n")
 
     # Invalid File Name
-    dummyPath = path.join(nwLipsum, "content", "636b6aa9b697bb.nwd")
+    dummyPath = os.path.join(nwLipsum, "content", "636b6aa9b697bb.nwd")
     with open(dummyPath, mode="w", encoding="utf8") as outFile:
         outFile.write("\n")
 
     # Invalid File Name
-    dummyPath = path.join(nwLipsum, "content", "abcdefghijklm.nwd")
+    dummyPath = os.path.join(nwLipsum, "content", "abcdefghijklm.nwd")
     with open(dummyPath, mode="w", encoding="utf8") as outFile:
         outFile.write("\n")
 
@@ -492,3 +530,143 @@ def testOrphanedFiles(nwDummy, nwLipsum):
 
     assert theProject.saveProject(nwLipsum)
     assert theProject.closeProject()
+
+@pytest.mark.project
+def testProjectOldFormat(nwDummy, nwOldProj):
+    """Test that a project folder structure of version 1.0 can be
+    converted to the latest folder structure. Version 1.0 split the
+    documents into 'data_0' ... 'data_f' folders, which are now all
+    contained in a single 'content' folder.
+    """
+    theProject = NWProject(nwDummy)
+    theProject.mainConf.showGUI = False
+
+    # Create dummy files for known legacy files
+    deleteFiles = [
+        os.path.join(nwOldProj, "cache", "nwProject.nwx.0"),
+        os.path.join(nwOldProj, "cache", "nwProject.nwx.1"),
+        os.path.join(nwOldProj, "cache", "nwProject.nwx.2"),
+        os.path.join(nwOldProj, "cache", "nwProject.nwx.3"),
+        os.path.join(nwOldProj, "cache", "nwProject.nwx.4"),
+        os.path.join(nwOldProj, "cache", "nwProject.nwx.5"),
+        os.path.join(nwOldProj, "cache", "nwProject.nwx.6"),
+        os.path.join(nwOldProj, "cache", "nwProject.nwx.7"),
+        os.path.join(nwOldProj, "cache", "nwProject.nwx.8"),
+        os.path.join(nwOldProj, "cache", "nwProject.nwx.9"),
+        os.path.join(nwOldProj, "meta",  "mainOptions.json"),
+        os.path.join(nwOldProj, "meta",  "exportOptions.json"),
+        os.path.join(nwOldProj, "meta",  "outlineOptions.json"),
+        os.path.join(nwOldProj, "meta",  "timelineOptions.json"),
+        os.path.join(nwOldProj, "meta",  "docMergeOptions.json"),
+        os.path.join(nwOldProj, "meta",  "sessionLogOptions.json"),
+    ]
+
+    # Add some files that shouldn't be there
+    deleteFiles.append(os.path.join(nwOldProj, "data_f", "whatnow.nwd"))
+    deleteFiles.append(os.path.join(nwOldProj, "data_f", "whatnow.txt"))
+
+    # Add some folders that shouldn't be there
+    os.mkdir(os.path.join(nwOldProj, "stuff"))
+    os.mkdir(os.path.join(nwOldProj, "data_1", "stuff"))
+
+    # Create dummy files
+    os.mkdir(os.path.join(nwOldProj, "cache"))
+    for aFile in deleteFiles:
+        with open(aFile, mode="w+", encoding="utf8") as outFile:
+            outFile.write("Hi")
+    for aFile in deleteFiles:
+        assert os.path.isfile(aFile)
+
+    # Open project and check that files that are not supposed to be
+    # there have been removed
+    assert theProject.openProject(nwOldProj)
+    for aFile in deleteFiles:
+        assert not os.path.isfile(aFile)
+
+    assert not os.path.isdir(os.path.join(nwOldProj, "data_1", "stuff"))
+    assert not os.path.isdir(os.path.join(nwOldProj, "data_1"))
+    assert not os.path.isdir(os.path.join(nwOldProj, "data_7"))
+    assert not os.path.isdir(os.path.join(nwOldProj, "data_8"))
+    assert not os.path.isdir(os.path.join(nwOldProj, "data_9"))
+    assert not os.path.isdir(os.path.join(nwOldProj, "data_a"))
+    assert not os.path.isdir(os.path.join(nwOldProj, "data_f"))
+
+    # Check stuff that has been moved
+    assert os.path.isdir(os.path.join(nwOldProj, "junk"))
+    assert os.path.isdir(os.path.join(nwOldProj, "junk", "stuff"))
+    assert os.path.isfile(os.path.join(nwOldProj, "junk", "whatnow.nwd"))
+    assert os.path.isfile(os.path.join(nwOldProj, "junk", "whatnow.txt"))
+
+    # Check that files we want to keep are in the right place
+    assert os.path.isdir(os.path.join(nwOldProj, "cache"))
+    assert os.path.isdir(os.path.join(nwOldProj, "content"))
+    assert os.path.isdir(os.path.join(nwOldProj, "meta"))
+
+    assert os.path.isfile(os.path.join(nwOldProj, "content", "f528d831f5b24.nwd"))
+    assert os.path.isfile(os.path.join(nwOldProj, "content", "88124a4292d8b.nwd"))
+    assert os.path.isfile(os.path.join(nwOldProj, "content", "91239bf2f8b69.nwd"))
+    assert os.path.isfile(os.path.join(nwOldProj, "content", "19752e7f9d8af.nwd"))
+    assert os.path.isfile(os.path.join(nwOldProj, "content", "a764d5acf5a21.nwd"))
+    assert os.path.isfile(os.path.join(nwOldProj, "content", "9058ae29f0dfd.nwd"))
+    assert os.path.isfile(os.path.join(nwOldProj, "content", "7ff63b8afc4cd.nwd"))
+
+    assert os.path.isfile(os.path.join(nwOldProj, "meta", "tagsIndex.json"))
+    assert os.path.isfile(os.path.join(nwOldProj, "meta", "sessionInfo.log"))
+
+    # Close the project
+    theProject.closeProject()
+
+    # Check that new files have been created
+    assert os.path.isfile(os.path.join(nwOldProj, "meta", "guiOptions.json"))
+    assert os.path.isfile(os.path.join(nwOldProj, "meta", "sessionStats.log"))
+    assert os.path.isfile(os.path.join(nwOldProj, "ToC.json"))
+    assert os.path.isfile(os.path.join(nwOldProj, "ToC.txt"))
+
+@pytest.mark.project
+def testProjectBackup(nwDummy, nwMinimal, nwTemp):
+    """Test the automated backup feature of the project class. The test
+    creates a backup of the Minimal test project, and then unzips the
+    backupd file and checks that the project XML file is identical to
+    the original file.
+    """
+    theProject = NWProject(nwDummy)
+    assert theProject.openProject(nwMinimal)
+
+    # Test faulty settings
+    # Invalid path
+    theProject.mainConf.backupPath = None
+    assert not theProject.zipIt(doNotify=False)
+
+    # Missing project name
+    theProject.mainConf.backupPath = nwTemp
+    theProject.projName = ""
+    assert not theProject.zipIt(doNotify=False)
+
+    # Non-existent folder
+    theProject.mainConf.backupPath = os.path.join(nwTemp, "nonexistent")
+    theProject.projName = "Test Minimal"
+    assert not theProject.zipIt(doNotify=False)
+
+    # Same folder as project (causes infinite loop in zipping)
+    theProject.mainConf.backupPath = nwMinimal
+    assert not theProject.zipIt(doNotify=False)
+
+    # Test correct settings
+    theProject.mainConf.backupPath = nwTemp
+    assert theProject.zipIt(doNotify=False)
+
+    theFiles = os.listdir(os.path.join(nwTemp, "Test Minimal"))
+    assert len(theFiles) == 1
+
+    theZip = theFiles[0]
+    assert theZip[:12] == "Backup from "
+    assert theZip[-4:] == ".zip"
+
+    # Extract the archive
+    with ZipFile(os.path.join(nwTemp, "Test Minimal", theZip), "r") as inZip:
+        inZip.extractall(os.path.join(nwTemp, "extract"))
+
+    # Check that the main project file was restored
+    assert cmpFiles(
+        os.path.join(nwMinimal, "nwProject.nwx"), os.path.join(nwTemp, "extract", "nwProject.nwx")
+    )

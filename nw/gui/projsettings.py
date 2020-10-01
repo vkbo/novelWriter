@@ -9,7 +9,7 @@
  Created: 2018-09-29 [0.0.1]
 
  This file is a part of novelWriter
- Copyright 2020, Veronica Berglyd Olsen
+ Copyright 2018–2020, Veronica Berglyd Olsen
 
  This program is free software: you can redistribute it and/or modify
  it under the terms of the GNU General Public License as published by
@@ -25,8 +25,8 @@
  along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
 
-import logging
 import nw
+import logging
 
 from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QIcon, QPixmap, QColor, QBrush
@@ -47,6 +47,7 @@ class GuiProjectSettings(PagedDialog):
         PagedDialog.__init__(self, theParent)
 
         logger.debug("Initialising GuiProjectSettings ...")
+        self.setObjectName("GuiProjectSettings")
 
         self.mainConf   = nw.CONFIG
         self.theParent  = theParent
@@ -123,12 +124,24 @@ class GuiProjectSettings(PagedDialog):
             newList = self.tabReplace.getNewList()
             self.theProject.setAutoReplace(newList)
 
-        self._doClose()
+        self._saveGuiSettings()
+        self.accept()
 
         return
 
     def _doClose(self):
         """Save settings and close the dialog.
+        """
+        self._saveGuiSettings()
+        self.reject()
+        return
+
+    ##
+    #  Internal Functions
+    ##
+
+    def _saveGuiSettings(self):
+        """Save GUI settings.
         """
         winWidth    = self.mainConf.rpxInt(self.width())
         winHeight   = self.mainConf.rpxInt(self.height())
@@ -137,8 +150,6 @@ class GuiProjectSettings(PagedDialog):
         self.optState.setValue("GuiProjectSettings", "winWidth",    winWidth)
         self.optState.setValue("GuiProjectSettings", "winHeight",   winHeight)
         self.optState.setValue("GuiProjectSettings", "replaceColW", replaceColW)
-
-        self.close()
 
         return
 

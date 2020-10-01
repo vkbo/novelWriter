@@ -9,7 +9,7 @@
  Created: 2020-07-11 [0.10.1]
 
  This file is a part of novelWriter
- Copyright 2020, Veronica Berglyd Olsen
+ Copyright 2018–2020, Veronica Berglyd Olsen
 
  This program is free software: you can redistribute it and/or modify
  it under the terms of the GNU General Public License as published by
@@ -25,10 +25,9 @@
  along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
 
-import logging
 import nw
-
-from os import path
+import logging
+import os
 
 from PyQt5.QtCore import Qt
 from PyQt5.QtWidgets import (
@@ -55,6 +54,7 @@ class GuiProjectWizard(QWizard):
         QWizard.__init__(self, theParent)
 
         logger.debug("Initialising GuiProjectWizard ...")
+        self.setObjectName("GuiProjectWizard")
 
         self.mainConf  = nw.CONFIG
         self.theParent = theParent
@@ -207,7 +207,7 @@ class ProjWizardFolderPage(QWizardPage):
         """Select a project folder.
         """
         lastPath = self.mainConf.lastPath
-        if not path.isdir(lastPath):
+        if not os.path.isdir(lastPath):
             lastPath = ""
 
         dlgOpt  = QFileDialog.Options()
@@ -219,7 +219,7 @@ class ProjWizardFolderPage(QWizardPage):
         if projDir:
             projName = self.field("projName")
             if projName is not None:
-                fullDir = path.join(path.abspath(projDir), makeFileNameSafe(projName))
+                fullDir = os.path.join(os.path.abspath(projDir), makeFileNameSafe(projName))
                 self.projPath.setText(fullDir)
         else:
             self.projPath.setText("")

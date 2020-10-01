@@ -9,7 +9,7 @@
  Created: 2018-09-22 [0.0.1]
 
  This file is a part of novelWriter
- Copyright 2020, Veronica Berglyd Olsen
+ Copyright 2018–2020, Veronica Berglyd Olsen
 
  This program is free software: you can redistribute it and/or modify
  it under the terms of the GNU General Public License as published by
@@ -25,10 +25,10 @@
  along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
 
-import logging
 import nw
+import logging
+import os
 
-from os import path
 from datetime import datetime
 from time import time
 
@@ -40,11 +40,11 @@ from PyQt5.QtWidgets import (
 )
 
 from nw.gui import (
-    GuiBuildNovel, GuiDocEditor, GuiDocMerge, GuiDocSplit, GuiDocViewDetails,
-    GuiDocViewer, GuiItemDetails, GuiItemEditor, GuiMainMenu, GuiMainStatus,
-    GuiOutline, GuiOutlineDetails, GuiPreferences, GuiProjectLoad, GuiTheme,
-    GuiProjectSettings, GuiProjectTree, GuiWritingStats, GuiProjectWizard,
-    GuiAbout
+    GuiAbout, GuiBuildNovel, GuiDocEditor, GuiDocMerge, GuiDocSplit,
+    GuiDocViewDetails, GuiDocViewer, GuiItemDetails, GuiItemEditor,
+    GuiMainMenu, GuiMainStatus, GuiOutline, GuiOutlineDetails, GuiPreferences,
+    GuiProjectLoad, GuiProjectSettings, GuiProjectTree, GuiProjectWizard,
+    GuiTheme, GuiWritingStats
 )
 from nw.core import NWProject, NWDoc, NWIndex
 from nw.constants import nwItemType, nwItemClass, nwAlert
@@ -195,8 +195,8 @@ class GuiMain(QMainWindow):
         self.setStatus = self.statusBar.setStatus
         self.setProjectStatus = self.statusBar.setProjectStatus
 
-        if self.mainConf.showGUI:
-            self.show()
+        # Force a show of the GUI
+        self.show()
 
         # Check that config loaded fine
         self.reportConfErr()
@@ -218,7 +218,8 @@ class GuiMain(QMainWindow):
             logger.debug("Opening project from additional command line option")
             self.openProject(self.mainConf.cmdOpen)
         else:
-            self.manageProjects()
+            if self.mainConf.showGUI:
+                self.showProjectLoadDialog()
 
         logger.debug("novelWriter is ready ...")
         self.statusBar.setStatus("novelWriter is ready ...")
@@ -245,38 +246,19 @@ class GuiMain(QMainWindow):
     #  Project Actions
     ##
 
-    def manageProjects(self):
-        """Opens the projects dialog for selecting either existing
-        projects from a cache of recently opened projects, or provide a
-        browse button for projects not yet cached.
-        """
-        if not self.mainConf.showGUI:
-            return False
-
-        dlgProj = GuiProjectLoad(self)
-        dlgProj.exec_()
-        if dlgProj.result() == QDialog.Accepted:
-            if dlgProj.openState == GuiProjectLoad.OPEN_STATE:
-                self.openProject(dlgProj.openPath)
-            elif dlgProj.openState == GuiProjectLoad.NEW_STATE:
-                self.newProject()
-
-        return True
-
-    def newProject(self, projData=None, forceNew=False):
+    def newProject(self, projData=None):
         """Create new project with a few default files and folders.
         The variable forceNew is used for testing.
         """
         if self.hasProject:
-            msgBox = QMessageBox()
-            msgBox.warning(
-                self, "New Project",
-                "Please close the current project before making a new one."
+            self.makeAlert(
+                "Please close the current project before making a new one.",
+                nwAlert.ERROR
             )
             return False
 
-        if projData is None and self.mainConf.showGUI:
-            projData = self.newProjectDialog()
+        if projData is None:
+            projData = self.showNewProjectDialog()
 
         if projData is None:
             return False
@@ -286,11 +268,10 @@ class GuiMain(QMainWindow):
             logger.error("No projData or projPath set")
             return False
 
-        if path.isfile(path.join(projPath, self.theProject.projFile)) and not forceNew:
-            msgBox = QMessageBox()
-            msgBox.critical(
-                self, "New Project",
-                "A project already exists in that location. Please choose another folder."
+        if os.path.isfile(os.path.join(projPath, self.theProject.projFile)):
+            self.makeAlert(
+                "A project already exists in that location. Please choose another folder.",
+                nwAlert.ERROR
             )
             return False
 
@@ -316,7 +297,7 @@ class GuiMain(QMainWindow):
             # There is no project loaded, everything OK
             return True
 
-        if self.mainConf.showGUI and not isYes:
+        if not isYes:
             msgBox = QMessageBox()
             msgRes = msgBox.question(
                 self, "Close Project", "Save changes and close current project?"
@@ -332,7 +313,7 @@ class GuiMain(QMainWindow):
             doBackup = False
             if self.theProject.doBackup and self.mainConf.backupOnClose:
                 doBackup = True
-                if self.mainConf.showGUI and self.mainConf.askBeforeBackup:
+                if self.mainConf.askBeforeBackup:
                     msgBox = QMessageBox()
                     msgRes = msgBox.question(
                         self, "Backup Project", "Backup current project?"
@@ -379,39 +360,38 @@ class GuiMain(QMainWindow):
                 # reason handled by the project class.
                 return False
 
-            if self.mainConf.showGUI:
-                try:
-                    lockDetails = (
-                        "<br><br>The project was locked by the computer "
-                        "'%s' (%s %s), last active on %s"
-                    ) % (
-                        self.theProject.lockedBy[0],
-                        self.theProject.lockedBy[1],
-                        self.theProject.lockedBy[2],
-                        datetime.fromtimestamp(
-                            int(self.theProject.lockedBy[3])
-                        ).strftime("%x %X")
-                    )
-                except Exception:
-                    lockDetails = ""
-
-                msgBox = QMessageBox()
-                msgRes = msgBox.warning(
-                    self, "Project Locked", (
-                        "The project is already open by another instance of novelWriter, and "
-                        "is therefore locked. Override lock and continue anyway?<br><br>"
-                        "Note: If the program or the computer previously crashed, the lock "
-                        "can safely be overridden. If, however, another instance of "
-                        "novelWriter has the project open, overriding the lock may corrupt "
-                        "the project, and is not recommended.%s"
-                    ) % lockDetails,
-                    QMessageBox.Yes | QMessageBox.No, QMessageBox.No
+            try:
+                lockDetails = (
+                    "<br><br>The project was locked by the computer "
+                    "'%s' (%s %s), last active on %s"
+                ) % (
+                    self.theProject.lockedBy[0],
+                    self.theProject.lockedBy[1],
+                    self.theProject.lockedBy[2],
+                    datetime.fromtimestamp(
+                        int(self.theProject.lockedBy[3])
+                    ).strftime("%x %X")
                 )
-                if msgRes == QMessageBox.Yes:
-                    if not self.theProject.openProject(projFile, overrideLock=True):
-                        return False
-                else:
+            except Exception:
+                lockDetails = ""
+
+            msgBox = QMessageBox()
+            msgRes = msgBox.warning(
+                self, "Project Locked", (
+                    "The project is already open by another instance of novelWriter, and "
+                    "is therefore locked. Override lock and continue anyway?<br><br>"
+                    "Note: If the program or the computer previously crashed, the lock "
+                    "can safely be overridden. If, however, another instance of "
+                    "novelWriter has the project open, overriding the lock may corrupt "
+                    "the project, and is not recommended.%s"
+                ) % lockDetails,
+                QMessageBox.Yes | QMessageBox.No, QMessageBox.No
+            )
+            if msgRes == QMessageBox.Yes:
+                if not self.theProject.openProject(projFile, overrideLock=True):
                     return False
+            else:
+                return False
 
         # Project is loaded
         self.hasProject = True
@@ -449,7 +429,7 @@ class GuiMain(QMainWindow):
 
         # If the project is new, it may not have a path, so we need one
         if self.theProject.projPath is None:
-            projPath = self.saveProjectDialog()
+            projPath = self.selectProjectPath()
             self.theProject.setProjectPath(projPath)
         if self.theProject.projPath is None:
             return False
@@ -611,15 +591,12 @@ class GuiMain(QMainWindow):
             return False
 
         if not self.docEditor.isEmpty():
-            if self.mainConf.showGUI:
-                msgBox = QMessageBox()
-                msgRes = msgBox.question(self, "Import Document", (
-                    "Importing the file will overwrite the current content of the document. "
-                    "Do you want to proceed?"
-                ))
-                if msgRes != QMessageBox.Yes:
-                    return False
-            else:
+            msgBox = QMessageBox()
+            msgRes = msgBox.question(self, "Import Document", (
+                "Importing the file will overwrite the current content of the document. "
+                "Do you want to proceed?"
+            ))
+            if msgRes != QMessageBox.Yes:
                 return False
 
         self.docEditor.replaceText(theText)
@@ -629,18 +606,16 @@ class GuiMain(QMainWindow):
     def mergeDocuments(self):
         """Merge multiple documents to one single new document.
         """
-        if self.mainConf.showGUI:
-            dlgMerge = GuiDocMerge(self, self.theProject)
-            dlgMerge.exec_()
-        return True
+        dlgMerge = GuiDocMerge(self, self.theProject)
+        dlgMerge.exec_()
+        return
 
     def splitDocument(self):
         """Split a single document into multiple documents.
         """
-        if self.mainConf.showGUI:
-            dlgSplit = GuiDocSplit(self, self.theProject)
-            dlgSplit.exec_()
-        return True
+        dlgSplit = GuiDocSplit(self, self.theProject)
+        dlgSplit.exec_()
+        return
 
     def passDocumentAction(self, theAction):
         """Pass on document action theAction to the document viewer if
@@ -684,13 +659,13 @@ class GuiMain(QMainWindow):
             return
 
         logger.verbose("Requesting change to item %s" % tHandle)
-        if self.mainConf.showGUI:
-            dlgProj = GuiItemEditor(self, self.theProject, tHandle)
-            if dlgProj.exec_():
-                self.treeView.setTreeItemValues(tHandle)
-                self.treeMeta.updateViewBox(tHandle)
-                self.docEditor.updateDocInfo(tHandle)
-                self.docViewer.updateDocInfo(tHandle)
+        dlgProj = GuiItemEditor(self, self.theProject, tHandle)
+        dlgProj.exec_()
+        if dlgProj.result() == QDialog.Accepted:
+            self.treeView.setTreeItemValues(tHandle)
+            self.treeMeta.updateViewBox(tHandle)
+            self.docEditor.updateDocInfo(tHandle)
+            self.docViewer.updateDocInfo(tHandle)
 
         return
 
@@ -745,7 +720,7 @@ class GuiMain(QMainWindow):
 
         qApp.restoreOverrideCursor()
 
-        if self.mainConf.showGUI and not beQuiet:
+        if not beQuiet:
             self.makeAlert("The project index has been successfully rebuilt.", nwAlert.INFO)
 
         return True
@@ -762,7 +737,7 @@ class GuiMain(QMainWindow):
     #  Main Dialogs
     ##
 
-    def saveProjectDialog(self):
+    def selectProjectPath(self):
         """Select where to save project.
         """
         dlgOpt  = QFileDialog.Options()
@@ -775,7 +750,22 @@ class GuiMain(QMainWindow):
             return projPath
         return None
 
-    def newProjectDialog(self):
+    def showProjectLoadDialog(self):
+        """Opens the projects dialog for selecting either existing
+        projects from a cache of recently opened projects, or provide a
+        browse button for projects not yet cached.
+        """
+        dlgProj = GuiProjectLoad(self)
+        dlgProj.exec_()
+        if dlgProj.result() == QDialog.Accepted:
+            if dlgProj.openState == GuiProjectLoad.OPEN_STATE:
+                self.openProject(dlgProj.openPath)
+            elif dlgProj.openState == GuiProjectLoad.NEW_STATE:
+                self.newProject()
+
+        return True
+
+    def showNewProjectDialog(self):
         """Open the wizard and assemble the project options dict.
         """
         newProj = GuiProjectWizard(self)
@@ -786,62 +776,76 @@ class GuiMain(QMainWindow):
 
         return None
 
-    def editConfigDialog(self):
+    def showPreferencesDialog(self):
         """Open the preferences dialog.
         """
         dlgConf = GuiPreferences(self, self.theProject)
-        if dlgConf.exec_() == QDialog.Accepted:
+        dlgConf.exec_()
+
+        if dlgConf.result() == QDialog.Accepted:
             logger.debug("Applying new preferences")
             self.initMain()
             self.theTheme.updateTheme()
             self.saveDocument()
             self.docEditor.initEditor()
             self.docViewer.initViewer()
-        return True
 
-    def editProjectDialog(self):
+        return
+
+    def showProjectSettingsDialog(self):
         """Open the project settings dialog.
         """
-        if self.hasProject:
-            dlgProj = GuiProjectSettings(self, self.theProject)
-            dlgProj.exec_()
+        if not self.hasProject:
+            logger.error("No project open")
+            return
+
+        dlgProj = GuiProjectSettings(self, self.theProject)
+        dlgProj.exec_()
+
+        if dlgProj.result() == QDialog.Accepted:
+            logger.debug("Applying new project settings")
             self.docEditor.setDictionaries()
             self._setWindowTitle(self.theProject.projName)
-        return True
 
-    def buildProjectDialog(self):
+        return
+
+    def showBuildProjectDialog(self):
         """Open the build project dialog.
         """
-        if self.hasProject:
-            dlgBuild = GuiBuildNovel(self, self.theProject)
-            dlgBuild.setModal(False)
-            dlgBuild.show()
-        return True
+        if not self.hasProject:
+            logger.error("No project open")
+            return
+
+        dlgBuild = GuiBuildNovel(self, self.theProject)
+        dlgBuild.setModal(False)
+        dlgBuild.show()
+        return
 
     def showWritingStatsDialog(self):
         """Open the session log dialog.
         """
-        if self.hasProject:
-            dlgStats = GuiWritingStats(self, self.theProject)
-            dlgStats.setModal(False)
-            dlgStats.show()
-        return True
+        if not self.hasProject:
+            logger.error("No project open")
+            return
+
+        dlgStats = GuiWritingStats(self, self.theProject)
+        dlgStats.setModal(False)
+        dlgStats.show()
+        return
 
     def showAboutNWDialog(self):
         """Show the about dialog for novelWriter.
         """
-        if self.mainConf.showGUI:
-            dlgAbout = GuiAbout(self)
-            dlgAbout.exec_()
-        return True
+        dlgAbout = GuiAbout(self)
+        dlgAbout.exec_()
+        return
 
     def showAboutQtDialog(self):
         """Show the about dialog for Qt.
         """
-        if self.mainConf.showGUI:
-            msgBox = QMessageBox()
-            msgBox.aboutQt(self, "About Qt")
-        return True
+        msgBox = QMessageBox()
+        msgBox.aboutQt(self, "About Qt")
+        return
 
     def makeAlert(self, theMessage, theLevel=nwAlert.INFO):
         """Alert both the user and the logger at the same time. Message
@@ -901,7 +905,7 @@ class GuiMain(QMainWindow):
     def closeMain(self):
         """Save everything, and close novelWriter.
         """
-        if self.mainConf.showGUI and self.hasProject:
+        if self.hasProject:
             msgBox = QMessageBox()
             msgRes = msgBox.question(
                 self, "Exit", "Do you want to save changes and exit?"

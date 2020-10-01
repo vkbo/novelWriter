@@ -1,11 +1,11 @@
 <?xml version='1.0' encoding='utf-8'?>
-<novelWriterXML appVersion="1.0b1" hexVersion="0x010000b1" fileVersion="1.2" timeStamp="2020-09-05 17:34:07">
+<novelWriterXML appVersion="1.0b3" hexVersion="0x010000b3" fileVersion="1.2" timeStamp="2020-09-21 19:58:53">
   <project>
     <name>New Project</name>
     <title></title>
     <saveCount>4</saveCount>
     <autoCount>1</autoCount>
-    <editTime>8</editTime>
+    <editTime>11</editTime>
   </project>
   <settings>
     <doBackup>True</doBackup>
@@ -14,8 +14,8 @@
     <autoOutline>True</autoOutline>
     <lastEdited>0e17daca5f3e1</lastEdited>
     <lastViewed>None</lastViewed>
-    <lastWordCount>90</lastWordCount>
-    <novelWordCount>63</novelWordCount>
+    <lastWordCount>113</lastWordCount>
+    <novelWordCount>86</novelWordCount>
     <notesWordCount>27</notesWordCount>
     <autoReplace/>
     <titleFormat>
@@ -84,10 +84,10 @@
       <status>New</status>
       <exported>True</exported>
       <layout>SCENE</layout>
-      <charCount>331</charCount>
-      <wordCount>59</wordCount>
-      <paraCount>2</paraCount>
-      <cursorPos>465</cursorPos>
+      <charCount>464</charCount>
+      <wordCount>82</wordCount>
+      <paraCount>4</paraCount>
+      <cursorPos>602</cursorPos>
     </item>
     <item handle="44cb730c42048" order="1" parent="None">
       <name>Plot</name>

@@ -10,7 +10,7 @@
  Created: 2020-06-04 [0.7.0] GuiProjectTreeMenu
 
  This file is a part of novelWriter
- Copyright 2020, Veronica Berglyd Olsen
+ Copyright 2018–2020, Veronica Berglyd Olsen
 
  This program is free software: you can redistribute it and/or modify
  it under the terms of the GNU General Public License as published by
@@ -26,8 +26,8 @@
  along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
 
-import logging
 import nw
+import logging
 
 from PyQt5.QtCore import Qt, QSize
 from PyQt5.QtGui import QIcon
@@ -178,6 +178,9 @@ class GuiProjectTree(QTreeWidget):
 
         if itemType == nwItemType.ROOT:
             tHandle = self.theProject.newRoot(nwLabels.CLASS_NAME[itemClass], itemClass)
+            if tHandle is None:
+                logger.error("No root item added")
+                return False
 
         else:
             # If no parent has been selected, make the new file under
@@ -206,7 +209,7 @@ class GuiProjectTree(QTreeWidget):
                 )
                 return False
 
-            if pHandle == self.theProject.projTree.trashRoot():
+            if self.theProject.projTree.isTrashRoot(pHandle):
                 self.makeAlert(
                     "Cannot add new files or folders to the %s folder." % (
                         nwLabels.CLASS_NAME[nwItemClass.TRASH]
@@ -236,12 +239,13 @@ class GuiProjectTree(QTreeWidget):
                 return False
 
         # Add the new item to the tree
-        self.revealTreeItem(tHandle, nHandle)
-        self.theParent.editItem(tHandle)
+        if tHandle is not None:
+            self.revealNewTreeItem(tHandle, nHandle)
+            self.theParent.editItem(tHandle)
 
         return True
 
-    def revealTreeItem(self, tHandle, nHandle=None):
+    def revealNewTreeItem(self, tHandle, nHandle=None):
         """Reveal a newly added project item in the project tree.
         """
         nwItem = self.theProject.projTree[tHandle]
@@ -257,7 +261,8 @@ class GuiProjectTree(QTreeWidget):
         """Move an item up or down in the tree, but only if the treeView
         has focus. This also applies when the menu is used.
         """
-        if qApp.focusWidget() == self and self.theParent.hasProject:
+        hasFocus = qApp.focusWidget() == self or not self.mainConf.showGUI
+        if hasFocus and self.theParent.hasProject:
 
             tHandle = self.getSelectedHandle()
             tItem = self._getTreeItem(tHandle)
@@ -406,11 +411,11 @@ class GuiProjectTree(QTreeWidget):
                 return False
 
             pHandle = nwItemS.parHandle
-            if pHandle is not None and pHandle == self.theProject.projTree.trashRoot():
+            if self.theProject.projTree.isTrashRoot(pHandle):
                 # If the file is in the trash folder already, as the
                 # user if they want to permanently delete the file.
                 doPermanent = False
-                if self.mainConf.showGUI and not alreadyAsked:
+                if not alreadyAsked:
                     msgBox = QMessageBox()
                     msgRes = msgBox.question(
                         self, "Delete File", "Permanently delete file '%s'?" % nwItemS.itemName
@@ -439,7 +444,7 @@ class GuiProjectTree(QTreeWidget):
                 # The file is not already in the trash folder, so we
                 # move it there.
                 doTrash = False
-                if self.mainConf.showGUI and askForTrash:
+                if askForTrash:
                     msgBox = QMessageBox()
                     msgRes = msgBox.question(
                         self, "Delete File", "Move file '%s' to Trash?" % nwItemS.itemName
@@ -754,6 +759,7 @@ class GuiProjectTree(QTreeWidget):
                 self.theIndex.reIndexHandle(sHandle)
 
         else:
+            theEvent.ignore()
             logger.debug("Drag'n'drop of item %s not accepted" % sHandle)
             self.makeAlert("The item cannot be moved to that location.", nwAlert.ERROR)
 
@@ -920,14 +926,14 @@ class GuiProjectTree(QTreeWidget):
         nwItemS.setClass(nwItemD.itemClass)
         if trItemP is None:
             logger.error("Failed to find new parent item of %s" % tHandle)
-            return
+            return False
 
         pHandle = trItemP.data(self.C_NAME, Qt.UserRole)
         nwItemS.setParent(pHandle)
         self.setTreeItemValues(tHandle)
         self._setTreeChanged(True)
 
-        return
+        return True
 
     def _setTreeChanged(self, theState):
         """Set the tree change flag, and propagate to the project.

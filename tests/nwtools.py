@@ -2,17 +2,15 @@
 """novelWriter Test Tools
 """
 
-from os import path, mkdir
 from itertools import chain
 
 from PyQt5.QtWidgets import qApp
 
-def ensureDir(theDir):
-    if not path.isdir(theDir):
-        mkdir(theDir)
-    return
-
-def cmpFiles(fileOne, fileTwo, ignoreLines=[]):
+def cmpFiles(fileOne, fileTwo, ignoreLines=None):
+    """Compare two files, but optionally ignore lines given by a list.
+    """
+    if ignoreLines is None:
+        ignoreLines = []
 
     try:
         foOne = open(fileOne, mode="r", encoding="utf8")
@@ -54,6 +52,8 @@ def cmpFiles(fileOne, fileTwo, ignoreLines=[]):
     return not diffFound
 
 def cmpList(listOne, listTwo):
+    """Compare two iterable objects.
+    """
     flatOne = list(chain.from_iterable([listOne]))
     flatTwo = list(chain.from_iterable([listTwo]))
     if len(flatOne) != len(flatTwo):
@@ -64,6 +64,8 @@ def cmpList(listOne, listTwo):
     return True
 
 def getGuiItem(theName):
+    """Returns a QtWidget based on its objectName.
+    """
     for qWidget in qApp.topLevelWidgets():
         if qWidget.objectName() == theName:
             return qWidget
