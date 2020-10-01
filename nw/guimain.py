@@ -659,14 +659,13 @@ class GuiMain(QMainWindow):
             return
 
         logger.verbose("Requesting change to item %s" % tHandle)
-        if self.mainConf.showGUI:
-            dlgProj = GuiItemEditor(self, self.theProject, tHandle)
-            dlgProj.exec_()
-            if dlgProj.result() == QDialog.Accepted:
-                self.treeView.setTreeItemValues(tHandle)
-                self.treeMeta.updateViewBox(tHandle)
-                self.docEditor.updateDocInfo(tHandle)
-                self.docViewer.updateDocInfo(tHandle)
+        dlgProj = GuiItemEditor(self, self.theProject, tHandle)
+        dlgProj.exec_()
+        if dlgProj.result() == QDialog.Accepted:
+            self.treeView.setTreeItemValues(tHandle)
+            self.treeMeta.updateViewBox(tHandle)
+            self.docEditor.updateDocInfo(tHandle)
+            self.docViewer.updateDocInfo(tHandle)
 
         return
 

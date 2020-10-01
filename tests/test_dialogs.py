@@ -139,7 +139,7 @@ def testProjectSettings(qtbot, monkeypatch, yesToAll, nwFuncTemp, nwTempGUI, nwR
     nwGUI.closeMain()
 
 @pytest.mark.gui
-def testItemEditor(qtbot, yesToAll, nwFuncTemp, nwTempGUI, nwRef, nwTemp):
+def testItemEditor(qtbot, yesToAll, monkeypatch, nwFuncTemp, nwTempGUI, nwRef, nwTemp):
     nwGUI = nw.main(["--testmode", "--config=%s" % nwTemp, "--data=%s" % nwTemp])
     qtbot.addWidget(nwGUI)
     nwGUI.show()
@@ -150,8 +150,16 @@ def testItemEditor(qtbot, yesToAll, nwFuncTemp, nwTempGUI, nwRef, nwTemp):
     nwGUI.theProject.projTree.setSeed(42)
     assert nwGUI.newProject({"projPath": nwFuncTemp})
     assert nwGUI.openDocument("0e17daca5f3e1")
+    assert nwGUI.treeView.setSelectedHandle("0e17daca5f3e1", doScroll=True)
 
-    itemEdit = GuiItemEditor(nwGUI, nwGUI.theProject, "0e17daca5f3e1")
+    monkeypatch.setattr(GuiItemEditor, "exec_", lambda *args: None)
+    nwGUI.mainMenu.aEditItem.activate(QAction.Trigger)
+    qtbot.waitUntil(lambda: getGuiItem("GuiItemEditor") is not None, timeout=1000)
+
+    itemEdit = getGuiItem("GuiItemEditor")
+    assert isinstance(itemEdit, GuiItemEditor)
+    itemEdit.show()
+
     qtbot.addWidget(itemEdit)
 
     assert itemEdit.editName.text()          == "New Scene"
@@ -168,7 +176,13 @@ def testItemEditor(qtbot, yesToAll, nwFuncTemp, nwTempGUI, nwRef, nwTemp):
     assert not itemEdit.editExport.isChecked()
     itemEdit._doSave()
 
-    itemEdit = GuiItemEditor(nwGUI, nwGUI.theProject, "0e17daca5f3e1")
+    nwGUI.mainMenu.aEditItem.activate(QAction.Trigger)
+    qtbot.waitUntil(lambda: getGuiItem("GuiItemEditor") is not None, timeout=1000)
+
+    itemEdit = getGuiItem("GuiItemEditor")
+    assert isinstance(itemEdit, GuiItemEditor)
+    itemEdit.show()
+
     qtbot.addWidget(itemEdit)
     assert itemEdit.editName.text()          == "Just a Page"
     assert itemEdit.editStatus.currentData() == "Note"
@@ -194,8 +208,8 @@ def testItemEditor(qtbot, yesToAll, nwFuncTemp, nwTempGUI, nwRef, nwTemp):
     copyfile(projFile, testFile)
     assert cmpFiles(testFile, refFile, [2, 6, 7, 8])
 
-    nwGUI.closeMain()
     # qtbot.stopForInteraction()
+    nwGUI.closeMain()
 
 @pytest.mark.gui
 def testWritingStatsExport(qtbot, monkeypatch, yesToAll, nwFuncTemp, nwTemp):
@@ -857,7 +871,7 @@ def testNewProjectWizard(qtbot, monkeypatch, yesToAll, nwMinimal, nwTemp):
         # Final Page
         finalPage = nwWiz.currentPage()
         assert isinstance(finalPage, ProjWizardFinalPage)
-        assert nwWiz.button(QWizard.FinishButton).isEnabled()
+        assert nwWiz.button(QWizard.FinishButton).isEnabled() # But we don't click it
 
         # Check Data
         projData = nwGUI._assembleProjectWizardData(nwWiz)

@@ -1,4 +1,4 @@
-name: python 3.6
+name: macOS (3.8)
 
 on:
   push:
@@ -7,27 +7,30 @@ on:
     branches: [ main, dev ]
 
 jobs:
-  pyTest36:
-    runs-on: ubuntu-latest
+  testMac38:
+    runs-on: macos-latest
     steps:
       - name: Python Setup
         uses: actions/setup-python@v1
         with:
-          python-version: 3.6
+          python-version: 3.8
           architecture: x64
       - name: Install Packages
         run: |
-          sudo apt update
-          sudo apt install xvfb libenchant-dev qt5-default
+          brew install enchant
       - name: Checkout Source
         uses: actions/checkout@v2
       - name: Install Dependencies
         run: |
           pip install --upgrade pip
           pip install -r requirements.txt
-          pip install PyVirtualDisplay
           pip install pytest-timeout
-          pip install pytest-xvfb
+          pip install pytest-cov
           pip install pytest-qt
+          pip install codecov
       - name: Run Tests
-        run: xvfb-run pytest -v --timeout=60
+        run: |
+          export QT_QPA_PLATFORM=offscreen
+          pytest -v --timeout=60
+      - name: Upload to Codecov
+        uses: codecov/codecov-action@v1

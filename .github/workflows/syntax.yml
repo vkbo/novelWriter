@@ -13,7 +13,7 @@ jobs:
       - name: Python Setup
         uses: actions/setup-python@v1
         with:
-          python-version: 3.7
+          python-version: 3
           architecture: x64
       - name: Checkout Source
         uses: actions/checkout@v2

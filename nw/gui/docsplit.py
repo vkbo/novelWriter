@@ -178,7 +178,7 @@ class GuiDocSplit(QDialog):
         fHandle = self.theProject.newFolder(
             srcItem.itemName, srcItem.itemClass, srcItem.parHandle
         )
-        self.theParent.treeView.revealTreeItem(fHandle)
+        self.theParent.treeView.revealNewTreeItem(fHandle)
         logger.verbose("Creating folder %s" % fHandle)
 
         # Loop through, and create the files
@@ -213,7 +213,7 @@ class GuiDocSplit(QDialog):
             theDoc.openDocument(nHandle, False)
             theDoc.saveDocument(theText)
             theDoc.clearDocument()
-            self.theParent.treeView.revealTreeItem(nHandle)
+            self.theParent.treeView.revealNewTreeItem(nHandle)
 
         self._doClose()
 

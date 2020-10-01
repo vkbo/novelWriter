@@ -64,6 +64,8 @@ def testLaunch(qtbot, nwFuncTemp, nwTemp):
         ["--testmode", "--logfile=%s" % logFile, "--config=%s" % nwFuncTemp, "--data=%s" % nwTemp]
     )
     assert os.path.isfile(logFile)
+    nwGUI.closeMain()
+    nwGUI.close()
 
     nwGUI = nw.main(
         ["--testmode", "--logfile=%s" % logFile, "--config=%s" % nwFuncTemp, "--data=%s" % nwTemp]

@@ -240,12 +240,12 @@ class GuiProjectTree(QTreeWidget):
 
         # Add the new item to the tree
         if tHandle is not None:
-            self.revealTreeItem(tHandle, nHandle)
+            self.revealNewTreeItem(tHandle, nHandle)
             self.theParent.editItem(tHandle)
 
         return True
 
-    def revealTreeItem(self, tHandle, nHandle=None):
+    def revealNewTreeItem(self, tHandle, nHandle=None):
         """Reveal a newly added project item in the project tree.
         """
         nwItem = self.theProject.projTree[tHandle]
