@@ -28,7 +28,6 @@
 import sys
 import getopt
 import logging
-import os
 
 from PyQt5.QtGui import QIcon
 from PyQt5.QtWidgets import QApplication, QErrorMessage
@@ -158,12 +157,12 @@ def main(sysArgs=None):
     for inOpt, inArg in inOpts:
         if inOpt in ("-h", "--help"):
             print(helpMsg)
-            sys.exit()
+            sys.exit(0)
         elif inOpt in ("-v", "--version"):
             print("novelWriter %s Version %s [%s]" % (
                 __status__, __version__, __date__)
             )
-            sys.exit()
+            sys.exit(0)
         elif inOpt == "--info":
             debugLevel = logging.INFO
         elif inOpt == "--debug":
@@ -224,19 +223,20 @@ def main(sysArgs=None):
         errorData.append("Python module 'lxml' is missing.")
 
     if errorData:
-        errApp = QApplication([])
-        errMsg = QErrorMessage()
-        errMsg.resize(500, 300)
-        errMsg.showMessage((
-            "<h3>A critical error has been encountered</h3>"
-            "<p>novelWriter cannot start due to the following issues:<p>"
-            "<p>&nbsp;-&nbsp;%s</p>"
-            "<p>Shutting down ...</p>"
-        ) % (
-            "<br>&nbsp;-&nbsp;".join(errorData)
-        ))
-        errApp.exec_()
-        sys.exit(1)
+        if not testMode:
+            errApp = QApplication([])
+            errMsg = QErrorMessage()
+            errMsg.resize(500, 300)
+            errMsg.showMessage((
+                "<h3>A critical error has been encountered</h3>"
+                "<p>novelWriter cannot start due to the following issues:<p>"
+                "<p>&nbsp;-&nbsp;%s</p>"
+                "<p>Shutting down ...</p>"
+            ) % (
+                "<br>&nbsp;-&nbsp;".join(errorData)
+            ))
+            errApp.exec_()
+        sys.exit(10 + len(errorData))
 
     # Finish initialising config
     CONFIG.initConfig(confPath, dataPath)

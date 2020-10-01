@@ -6,6 +6,7 @@ import nw
 import pytest
 import logging
 import os
+import sys
 
 from shutil import copyfile
 from nwtools import cmpFiles
@@ -25,16 +26,17 @@ typeDelay = 1
 stepDelay = 20
 
 @pytest.mark.gui
-def testLaunch(qtbot, nwFuncTemp, nwTemp):
+def testLaunch(qtbot, monkeypatch, nwFuncTemp, nwTemp):
 
-    # Log Levels
+    # Defaults
     nwGUI = nw.main(
-        ["--testmode", "--config=%s" % nwFuncTemp, "--data=%s" % nwTemp]
+        ["--testmode", "--config=%s" % nwFuncTemp, "--data=%s" % nwTemp, "--style=Fusion"]
     )
     assert nw.logger.getEffectiveLevel() == logging.WARNING
     nwGUI.closeMain()
     nwGUI.close()
 
+    # Log Levels
     nwGUI = nw.main(
         ["--testmode", "--info", "--config=%s" % nwFuncTemp, "--data=%s" % nwTemp]
     )
@@ -56,20 +58,46 @@ def testLaunch(qtbot, nwFuncTemp, nwTemp):
     nwGUI.closeMain()
     nwGUI.close()
 
-    # Other options
-    with pytest.raises(SystemExit):
+    # Help and Version
+    with pytest.raises(SystemExit) as ex:
         nwGUI = nw.main(
             ["--testmode", "--help", "--config=%s" % nwFuncTemp, "--data=%s" % nwTemp]
         )
     nwGUI.closeMain()
     nwGUI.close()
+    assert ex.value.code == 0
 
-    with pytest.raises(SystemExit):
+    with pytest.raises(SystemExit) as ex:
+        nwGUI = nw.main(
+            ["--testmode", "--version", "--config=%s" % nwFuncTemp, "--data=%s" % nwTemp]
+        )
+    nwGUI.closeMain()
+    nwGUI.close()
+    assert ex.value.code == 0
+
+    # Invalid options
+    with pytest.raises(SystemExit) as ex:
         nwGUI = nw.main(
             ["--testmode", "--invalid", "--config=%s" % nwFuncTemp, "--data=%s" % nwTemp]
         )
     nwGUI.closeMain()
     nwGUI.close()
+    assert ex.value.code == 2
+
+    # Simulate import error
+    monkeypatch.setitem(sys.modules, "PyQt5.QtSvg", None)
+    monkeypatch.setitem(sys.modules, "lxml", None)
+    monkeypatch.setattr("sys.hexversion", 0x0)
+    monkeypatch.setattr("nw.CONFIG.verQtValue", 50000)
+    monkeypatch.setattr("nw.CONFIG.verPyQtValue", 50000)
+    with pytest.raises(SystemExit) as ex:
+        nwGUI = nw.main(
+            ["--testmode", "--config=%s" % nwFuncTemp, "--data=%s" % nwTemp]
+        )
+    nwGUI.closeMain()
+    nwGUI.close()
+    assert ex.value.code == 15
+    monkeypatch.undo()
 
 @pytest.mark.gui
 def testDocEditor(qtbot, yesToAll, nwFuncTemp, nwTempGUI, nwRef, nwTemp):

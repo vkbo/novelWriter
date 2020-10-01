@@ -27,6 +27,6 @@ jobs:
           pip install codecov
       - name: Run Tests
         run: |
-          pytest -v --timeout=60
+          pytest -v --cov-nw --timeout=60
       - name: Upload to Codecov
         uses: codecov/codecov-action@v1
