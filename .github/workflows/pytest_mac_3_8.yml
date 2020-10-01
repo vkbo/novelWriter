@@ -19,7 +19,7 @@ jobs:
         uses: actions/checkout@v2
       - name: Install Packages
         run: |
-          brew cask install xquartz
+          sudo brew cask install xquartz
       - name: Install Dependencies
         run: |
           pip install --upgrade pip
