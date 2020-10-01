@@ -36,42 +36,23 @@ def testLaunch(qtbot, nwFuncTemp, nwTemp):
     nwGUI.close()
 
     nwGUI = nw.main(
-        ["--testmode", "--info", "--quiet", "--config=%s" % nwFuncTemp, "--data=%s" % nwTemp]
+        ["--testmode", "--info", "--config=%s" % nwFuncTemp, "--data=%s" % nwTemp]
     )
     assert nw.logger.getEffectiveLevel() == logging.INFO
     nwGUI.closeMain()
     nwGUI.close()
 
     nwGUI = nw.main(
-        ["--testmode", "--debug", "--quiet", "--config=%s" % nwFuncTemp, "--data=%s" % nwTemp]
+        ["--testmode", "--debug", "--config=%s" % nwFuncTemp, "--data=%s" % nwTemp]
     )
     assert nw.logger.getEffectiveLevel() == logging.DEBUG
     nwGUI.closeMain()
     nwGUI.close()
 
     nwGUI = nw.main(
-        ["--testmode", "--verbose", "--quiet", "--config=%s" % nwFuncTemp, "--data=%s" % nwTemp]
+        ["--testmode", "--verbose", "--config=%s" % nwFuncTemp, "--data=%s" % nwTemp]
     )
     assert nw.logger.getEffectiveLevel() == 5
-    nwGUI.closeMain()
-    nwGUI.close()
-
-    # Log file
-    logFile = os.path.join(nwTemp, "logFile.log")
-    bakFile = os.path.join(nwTemp, "logFile.log.bak")
-
-    nwGUI = nw.main(
-        ["--testmode", "--logfile=%s" % logFile, "--config=%s" % nwFuncTemp, "--data=%s" % nwTemp]
-    )
-    assert os.path.isfile(logFile)
-    nwGUI.closeMain()
-    nwGUI.close()
-
-    nwGUI = nw.main(
-        ["--testmode", "--logfile=%s" % logFile, "--config=%s" % nwFuncTemp, "--data=%s" % nwTemp]
-    )
-    assert os.path.isfile(bakFile)
-    assert os.path.isfile(logFile)
     nwGUI.closeMain()
     nwGUI.close()
 

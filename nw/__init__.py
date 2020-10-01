@@ -96,15 +96,13 @@ def main(sysArgs=None):
         sysArgs = sys.argv[1:]
 
     # Valid Input Options
-    shortOpt = "hvq"
+    shortOpt = "hv"
     longOpt  = [
         "help",
         "version",
         "info",
         "debug",
         "verbose",
-        "quiet",
-        "logfile=",
         "style=",
         "config=",
         "data=",
@@ -126,8 +124,6 @@ def main(sysArgs=None):
         "     --info      Print additional runtime information.\n"
         "     --debug     Print debug output. Includes --info.\n"
         "     --verbose   Increase verbosity of debug output. Includes --debug.\n"
-        " -q, --quiet     Disable output to command line. Does not affect log file.\n"
-        "     --logfile=  Specify log file.\n"
         "     --style=    Sets Qt5 style flag. Defaults to 'Fusion'.\n"
         "     --config=   Alternative config file.\n"
         "     --data=     Alternative user data path.\n"
@@ -142,9 +138,6 @@ def main(sysArgs=None):
     # Defaults
     debugLevel = logging.WARN
     logFormat  = "{levelname:8}  {message:}"
-    logFile    = ""
-    toFile     = False
-    toStd      = True
     confPath   = None
     dataPath   = None
     testMode   = False
@@ -176,11 +169,6 @@ def main(sysArgs=None):
         elif inOpt == "--debug":
             debugLevel = logging.DEBUG
             logFormat  = "[{asctime:}] {name:>22}:{lineno:<4d}  {levelname:8}  {message:}"
-        elif inOpt == "--logfile":
-            logFile = inArg
-            toFile  = True
-        elif inOpt in ("-q", "--quiet"):
-            toStd = False
         elif inOpt == "--verbose":
             debugLevel = VERBOSE
             logFormat  = "[{asctime:}] {name:>22}:{lineno:<4d}  {levelname:8}  {message:}"
@@ -200,23 +188,10 @@ def main(sysArgs=None):
 
     # Set Logging
     logFmt = logging.Formatter(fmt=logFormat, style="{")
-
-    if not logFile == "" and toFile:
-        if os.path.isfile(logFile+".bak"):
-            os.unlink(logFile+".bak")
-        if os.path.isfile(logFile):
-            os.rename(logFile, logFile+".bak")
-
-        fHandle = logging.FileHandler(logFile)
-        fHandle.setLevel(debugLevel)
-        fHandle.setFormatter(logFmt)
-        logger.addHandler(fHandle)
-
-    if toStd:
-        cHandle = logging.StreamHandler()
-        cHandle.setLevel(debugLevel)
-        cHandle.setFormatter(logFmt)
-        logger.addHandler(cHandle)
+    cHandle = logging.StreamHandler()
+    cHandle.setLevel(debugLevel)
+    cHandle.setFormatter(logFmt)
+    logger.addHandler(cHandle)
 
     logger.setLevel(debugLevel)
     logger.info("Starting novelWriter %s (%s) %s" % (
