@@ -1,0 +1,32 @@
+name: macOS (3.8)
+
+on:
+  push:
+    branches: [ main, dev ]
+  pull_request:
+    branches: [ main, dev ]
+
+jobs:
+  pyTestMac38:
+    runs-on: macos-latest
+    steps:
+      - name: Python Setup
+        uses: actions/setup-python@v1
+        with:
+          python-version: 3.8
+          architecture: x64
+      - name: Install Packages
+        run: |
+          brew install enchant
+      - name: Checkout Source
+        uses: actions/checkout@v2
+      - name: Install Dependencies
+        run: |
+          pip install --upgrade pip
+          pip install -r requirements.txt
+          pip install pytest-timeout
+          pip install pytest-qt
+      - name: Run Tests
+        run: |
+          export QT_QPA_PLATFORM=offscreen
+          pytest -v --timeout=60
