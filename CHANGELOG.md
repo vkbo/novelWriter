@@ -1,5 +1,28 @@
 # novelWriter ChangeLog
 
+## Version 1.0 Beta 4 [2020-10-11]
+
+**Bugfixes**
+
+* When the Trash folder doesn't exist because nothing has yet been deleted, the lookup function for the Trash folder's handle returns `None`. That meant that any item with a parent handle `None` would be treated as a Trash folder in many parts of the code before an actual Trash folder existed. This caused a few decision branches to make non-critical mistakes. This issue is now fixed with a new check function that takes this into account. PRs #452 and #453.
+* If an older project was opened, one with a different project file layout than the more recent versions, a dialog asks whether the user wants the project updated or not. However, the function that moves files to the new location actually starts working before the dialog asks for permission. Instead, it just checks that it is allowed to change the project XML file only. The check is still run before the dialog, but the action of moving files around are now postponed to after the permission has been given and the project XML file parsed. PR #453.
+* If there were multiple headings in a file, and the last paragraph did not end in a line break, the word counter for the individual sections would miss the last paragraph of the last section due to an index error. This has now been fixed. PR #453.
+
+**User Interface**
+
+* Minor changes to the text formatting on the Recent Projects dialog. PR #452.
+
+**Other Changes**
+
+* The command line switches `--quiet` and `--logfile=` have been removed. They were intended for testing, but have never been used. The default mode of only printing warnings and errors is quiet enough, and logging to file shouldn't be necessary for a GUI application. PR #453.
+* A number of if statements and conditions in the code that were intended to alter behaviour when running tests, mostly to stop modal dialogs from blocking the main thread, have been removed. The changes to the program flow when running tests have now been reduced to a minimum, and modifications instead handled with pytest monkeypatches. PR #453.
+
+**Test Suite**
+
+* Major additions to the test suite taking the test coverage to 91%. PR #453.
+* Test coverage for Linux (Ubuntu) for Python versions 3.6, 3.7, and 3.8 are now separate jobs. In addition, Windows with Python 3.8 and macOS with Python 3.8 is also tested. All OSes are piped into test coverage, and they all have status badges. PRs #453 and #454.
+
+
 ## Version 1.0 Beta 3 [2020-09-20]
 
 **Bugfixes**
