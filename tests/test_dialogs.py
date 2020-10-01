@@ -540,12 +540,16 @@ def testBuildTool(qtbot, yesToAll, nwTempBuild, nwLipsum, nwRef, nwTemp):
     # We assume the export itself by the Qt library works, so we just
     # check that novelWriter successfully writes the files.
     assert nwBuild._saveDocument(nwBuild.FMT_ODT)
-    assert nwBuild._saveDocument(nwBuild.FMT_PDF)
-    assert nwBuild._saveDocument(nwBuild.FMT_MD)
-    assert nwBuild._saveDocument(nwBuild.FMT_TXT)
     assert os.path.isfile(os.path.join(nwLipsum, "Lorem Ipsum.odt"))
-    assert os.path.isfile(os.path.join(nwLipsum, "Lorem Ipsum.pdf"))
+
+    if not nwGUI.mainConf.osDarwin:
+        assert nwBuild._saveDocument(nwBuild.FMT_PDF)
+        assert os.path.isfile(os.path.join(nwLipsum, "Lorem Ipsum.pdf"))
+
+    assert nwBuild._saveDocument(nwBuild.FMT_MD)
     assert os.path.isfile(os.path.join(nwLipsum, "Lorem Ipsum.md"))
+
+    assert nwBuild._saveDocument(nwBuild.FMT_TXT)
     assert os.path.isfile(os.path.join(nwLipsum, "Lorem Ipsum.txt"))
 
     # Close the build tool

@@ -203,7 +203,7 @@ def main(sysArgs=None):
 
     if not logFile == "" and toFile:
         if os.path.isfile(logFile+".bak"):
-            os.remove(logFile+".bak")
+            os.unlink(logFile+".bak")
         if os.path.isfile(logFile):
             os.rename(logFile, logFile+".bak")
 
