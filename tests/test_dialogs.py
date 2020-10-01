@@ -760,20 +760,18 @@ def testNewProjectWizard(qtbot, monkeypatch, yesToAll, nwMinimal, nwTemp):
     monkeypatch.setattr(GuiProjectWizard, "exec_", lambda *args: None)
     nwGUI.mainConf.lastPath = " "
 
+    nwGUI.closeProject()
+    nwGUI.showNewProjectDialog()
+    qtbot.waitUntil(lambda: getGuiItem("GuiProjectWizard") is not None, timeout=1000)
+
+    nwWiz = getGuiItem("GuiProjectWizard")
+    assert isinstance(nwWiz, GuiProjectWizard)
+    nwWiz.show()
+    qtbot.wait(stepDelay)
+
     for wStep in range(4):
         # This does not actually create the project, it just generates the
         # dictionary that defines it.
-
-        # The Wizard
-        nwGUI.closeProject()
-        nwGUI.showNewProjectDialog()
-        qtbot.waitUntil(lambda: getGuiItem("GuiProjectWizard") is not None, timeout=1000)
-
-        nwWiz = getGuiItem("GuiProjectWizard")
-        assert isinstance(nwWiz, GuiProjectWizard)
-        nwWiz.show()
-        nwWiz.setObjectName("Dummy%d" % wStep) # Hack to prevent returning the same object twice
-        qtbot.wait(stepDelay)
 
         # Intro Page
         introPage = nwWiz.currentPage()
@@ -900,8 +898,11 @@ def testNewProjectWizard(qtbot, monkeypatch, yesToAll, nwMinimal, nwTemp):
             assert projData["numScenes"] == 0
             assert not projData["chFolders"]
 
-        nwWiz.reject()
-        nwWiz.close()
+        # Restart the wizard for next iteration
+        nwWiz.restart()
+
+    nwWiz.reject()
+    nwWiz.close()
 
     # qtbot.stopForInteraction()
     nwGUI.closeMain()
