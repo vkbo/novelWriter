@@ -26,7 +26,6 @@ jobs:
           pip install -r requirements.txt
           pip install PyVirtualDisplay
           pip install pytest-timeout
-          pip install pytest-xvfb
           pip install pytest-qt
       - name: Run Tests
         run: |

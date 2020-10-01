@@ -601,19 +601,18 @@ def testNewProjectWizard(qtbot, nwLipsum, nwTemp):
     qtbot.waitForWindowShown(nwGUI)
     qtbot.wait(stepDelay)
 
-    nwWiz = []
-
     for wStep in range(3):
 
         # The Wizard
-        nwWiz.append(GuiProjectWizard(nwGUI))
-        nwWiz[wStep].show()
-        qtbot.waitForWindowShown(nwWiz[wStep])
+        nwWiz = GuiProjectWizard(nwGUI)
+        qtbot.addWidget(nwWiz)
+        nwWiz.show()
+        qtbot.waitForWindowShown(nwWiz)
 
         # Intro Page
-        introPage = nwWiz[wStep].currentPage()
+        introPage = nwWiz.currentPage()
         assert isinstance(introPage, ProjWizardIntroPage)
-        assert not nwWiz[wStep].button(QWizard.NextButton).isEnabled()
+        assert not nwWiz.button(QWizard.NextButton).isEnabled()
 
         qtbot.wait(stepDelay)
         for c in "Test Minimal":
@@ -628,15 +627,15 @@ def testNewProjectWizard(qtbot, nwLipsum, nwTemp):
             qtbot.keyClick(introPage.projAuthors, c, delay=keyDelay)
 
         # Setting projName should activate the button
-        assert nwWiz[wStep].button(QWizard.NextButton).isEnabled()
+        assert nwWiz.button(QWizard.NextButton).isEnabled()
 
         qtbot.wait(stepDelay)
-        qtbot.mouseClick(nwWiz[wStep].button(QWizard.NextButton), Qt.LeftButton)
+        qtbot.mouseClick(nwWiz.button(QWizard.NextButton), Qt.LeftButton)
 
         # Folder Page
-        storagePage = nwWiz[wStep].currentPage()
+        storagePage = nwWiz.currentPage()
         assert isinstance(storagePage, ProjWizardFolderPage)
-        assert not nwWiz[wStep].button(QWizard.NextButton).isEnabled()
+        assert not nwWiz.button(QWizard.NextButton).isEnabled()
 
         qtbot.wait(stepDelay)
         projPath = path.join(nwTemp, "dummy")
@@ -644,15 +643,15 @@ def testNewProjectWizard(qtbot, nwLipsum, nwTemp):
             qtbot.keyClick(storagePage.projPath, c, delay=keyDelay)
 
         # Setting projPath should activate the button
-        assert nwWiz[wStep].button(QWizard.NextButton).isEnabled()
+        assert nwWiz.button(QWizard.NextButton).isEnabled()
 
         qtbot.wait(stepDelay)
-        qtbot.mouseClick(nwWiz[wStep].button(QWizard.NextButton), Qt.LeftButton)
+        qtbot.mouseClick(nwWiz.button(QWizard.NextButton), Qt.LeftButton)
 
         # Populate Page
-        popPage = nwWiz[wStep].currentPage()
+        popPage = nwWiz.currentPage()
         assert isinstance(popPage, ProjWizardPopulatePage)
-        assert nwWiz[wStep].button(QWizard.NextButton).isEnabled()
+        assert nwWiz.button(QWizard.NextButton).isEnabled()
 
         qtbot.wait(stepDelay)
         if wStep == 0:
@@ -663,13 +662,13 @@ def testNewProjectWizard(qtbot, nwLipsum, nwTemp):
             popPage.popSample.setChecked(True)
 
         qtbot.wait(stepDelay)
-        qtbot.mouseClick(nwWiz[wStep].button(QWizard.NextButton), Qt.LeftButton)
+        qtbot.mouseClick(nwWiz.button(QWizard.NextButton), Qt.LeftButton)
 
         # Custom Page
         if wStep == 1:
-            customPage = nwWiz[wStep].currentPage()
+            customPage = nwWiz.currentPage()
             assert isinstance(customPage, ProjWizardCustomPage)
-            assert nwWiz[wStep].button(QWizard.NextButton).isEnabled()
+            assert nwWiz.button(QWizard.NextButton).isEnabled()
 
             customPage.addPlot.setChecked(True)
             customPage.addChar.setChecked(True)
@@ -679,16 +678,16 @@ def testNewProjectWizard(qtbot, nwLipsum, nwTemp):
             customPage.addEntity.setChecked(True)
 
             qtbot.wait(stepDelay)
-            qtbot.mouseClick(nwWiz[wStep].button(QWizard.NextButton), Qt.LeftButton)
+            qtbot.mouseClick(nwWiz.button(QWizard.NextButton), Qt.LeftButton)
 
         # Final Page
-        finalPage = nwWiz[wStep].currentPage()
+        finalPage = nwWiz.currentPage()
         assert isinstance(finalPage, ProjWizardFinalPage)
-        assert nwWiz[wStep].button(QWizard.FinishButton).isEnabled()
-        qtbot.mouseClick(nwWiz[wStep].button(QWizard.FinishButton), Qt.LeftButton)
+        assert nwWiz.button(QWizard.FinishButton).isEnabled()
+        qtbot.mouseClick(nwWiz.button(QWizard.FinishButton), Qt.LeftButton)
 
         # Check Data
-        projData = nwGUI._assembleProjectWizardData(nwWiz[wStep])
+        projData = nwGUI._assembleProjectWizardData(nwWiz)
         assert projData["projName"]    == "Test Minimal"
         assert projData["projTitle"]   == "Minimal Novel"
         assert projData["projAuthors"] == "Jane Doe"
