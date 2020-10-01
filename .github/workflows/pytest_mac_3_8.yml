@@ -1,4 +1,4 @@
-name: Windows (3.8)
+name: macOS (3.8)
 
 on:
   push:
@@ -8,7 +8,7 @@ on:
 
 jobs:
   pyTest36:
-    runs-on: windows-latest
+    runs-on: macos-latest
     steps:
       - name: Python Setup
         uses: actions/setup-python@v1

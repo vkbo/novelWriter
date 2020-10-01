@@ -1,4 +1,4 @@
-name: python 3.6
+name: Linux (3.6)
 
 on:
   push:
