@@ -1,9 +1,11 @@
 # novelWriter
 
-[![pytest](https://github.com/vkbo/novelWriter/workflows/pytest/badge.svg)](https://github.com/vkbo/novelWriter/actions)
-[![codecov](https://codecov.io/gh/vkbo/novelWriter/branch/main/graph/badge.svg)](https://codecov.io/gh/vkbo/novelWriter)
-[![docs](https://readthedocs.org/projects/novelwriter/badge/?version=latest)](https://novelwriter.readthedocs.io/en/latest/?badge=latest)
+[![python 3.6](https://github.com/vkbo/novelWriter/workflows/python%203.6/badge.svg?branch=main)](https://github.com/vkbo/novelWriter/actions)
+[![python 3.7](https://github.com/vkbo/novelWriter/workflows/python%203.7/badge.svg?branch=main)](https://github.com/vkbo/novelWriter/actions)
+[![python 3.8](https://github.com/vkbo/novelWriter/workflows/python%203.8/badge.svg?branch=main)](https://github.com/vkbo/novelWriter/actions)
 [![flake8](https://github.com/vkbo/novelWriter/workflows/flake8/badge.svg)](https://github.com/vkbo/novelWriter/actions)
+[![codecov](https://codecov.io/gh/vkbo/novelWriter/branch/main/graph/badge.svg)](https://codecov.io/gh/vkbo/novelWriter)
+[![docs](https://readthedocs.org/projects/novelwriter/badge/?version=latest)](https://novelwriter.readthedocs.io/en/latest/?badge=latest)  
 [![pypi](https://img.shields.io/pypi/v/novelwriter)](https://pypi.org/project/novelWriter/)
 [![python](https://img.shields.io/pypi/pyversions/novelwriter)](https://pypi.org/project/novelWriter/)
 
