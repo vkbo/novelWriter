@@ -25,13 +25,13 @@ jobs:
         run: |
           pip install --upgrade pip
           pip install -r requirements.txt
-          pip install PyVirtualDisplay
           pip install pytest-timeout
           pip install pytest-cov
-          pip install pytest-xvfb
           pip install pytest-qt
           pip install codecov
       - name: Run Tests
-        run: xvfb-run pytest -v --cov=nw --timeout=60
+        run: |
+          export QT_QPA_PLATFORM=offscreen
+          pytest -v --timeout=60
       - name: Upload to Codecov
         uses: codecov/codecov-action@v1

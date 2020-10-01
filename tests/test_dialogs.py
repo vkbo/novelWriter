@@ -605,7 +605,7 @@ def testNewProjectWizard(qtbot, nwLipsum, nwTemp):
 
         # The Wizard
         nwWiz = GuiProjectWizard(nwGUI)
-        nwWiz.show()
+        # nwWiz.show()
         qtbot.waitForWindowShown(nwWiz)
 
         # Intro Page
