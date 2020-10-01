@@ -733,6 +733,7 @@ def testNewProjectWizard(qtbot, monkeypatch, yesToAll, nwMinimal, nwTemp):
     monkeypatch.setattr(nwGUI, "showNewProjectDialog", lambda *args: {"projPath": nwMinimal})
     assert not nwGUI.newProject()
 
+    monkeypatch.undo()
     nwGUI.closeMain()
     nwGUI.close()
 
@@ -747,6 +748,8 @@ def testNewProjectWizard(qtbot, monkeypatch, yesToAll, nwMinimal, nwTemp):
     nwGUI.show()
     qtbot.waitForWindowShown(nwGUI)
     qtbot.wait(stepDelay)
+
+    monkeypatch.setattr(GuiProjectWizard, "exec_", lambda *args: None)
     nwGUI.mainConf.lastPath = " "
 
     for wStep in range(4):
@@ -754,7 +757,12 @@ def testNewProjectWizard(qtbot, monkeypatch, yesToAll, nwMinimal, nwTemp):
         # dictionary that defines it.
 
         # The Wizard
-        nwWiz = GuiProjectWizard(nwGUI)
+        nwGUI.closeProject()
+        nwGUI.showNewProjectDialog()
+        qtbot.waitUntil(lambda: getGuiItem("GuiProjectWizard") is not None, timeout=1000)
+
+        nwWiz = getGuiItem("GuiProjectWizard")
+        assert isinstance(nwWiz, GuiProjectWizard)
         nwWiz.show()
         qtbot.waitForWindowShown(nwWiz)
 
@@ -764,7 +772,7 @@ def testNewProjectWizard(qtbot, monkeypatch, yesToAll, nwMinimal, nwTemp):
         assert not nwWiz.button(QWizard.NextButton).isEnabled()
 
         qtbot.wait(stepDelay)
-        for c in "Test Minimal":
+        for c in ("Test Minimal %d" % wStep):
             qtbot.keyClick(introPage.projName, c, delay=typeDelay)
 
         qtbot.wait(stepDelay)
@@ -798,7 +806,7 @@ def testNewProjectWizard(qtbot, monkeypatch, yesToAll, nwMinimal, nwTemp):
 
         qtbot.wait(stepDelay)
         qtbot.mouseClick(storagePage.browseButton, Qt.LeftButton, delay=100)
-        projPath = os.path.join(nwMinimal, "Test Minimal")
+        projPath = os.path.join(nwMinimal, "Test Minimal %d" % wStep)
         assert storagePage.projPath.text() == projPath
 
         # Setting projPath should activate the button
@@ -850,11 +858,10 @@ def testNewProjectWizard(qtbot, monkeypatch, yesToAll, nwMinimal, nwTemp):
         finalPage = nwWiz.currentPage()
         assert isinstance(finalPage, ProjWizardFinalPage)
         assert nwWiz.button(QWizard.FinishButton).isEnabled()
-        qtbot.mouseClick(nwWiz.button(QWizard.FinishButton), Qt.LeftButton)
 
         # Check Data
         projData = nwGUI._assembleProjectWizardData(nwWiz)
-        assert projData["projName"]    == "Test Minimal"
+        assert projData["projName"]    == "Test Minimal %d" % wStep
         assert projData["projTitle"]   == "Minimal Novel"
         assert projData["projAuthors"] == "Jane Doe"
         assert projData["projPath"]    == projPath
@@ -883,6 +890,10 @@ def testNewProjectWizard(qtbot, monkeypatch, yesToAll, nwMinimal, nwTemp):
             assert projData["numChapters"] == 0
             assert projData["numScenes"] == 0
             assert not projData["chFolders"]
+
+        nwWiz.reject()
+        nwWiz.close()
+        del nwWiz
 
     # qtbot.stopForInteraction()
     nwGUI.closeMain()
