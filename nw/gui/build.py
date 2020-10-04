@@ -41,7 +41,8 @@ from PyQt5.QtGui import (
 from PyQt5.QtWidgets import (
     QDialog, QVBoxLayout, QHBoxLayout, QTextBrowser, QPushButton, QLabel,
     QLineEdit, QGroupBox, QGridLayout, QProgressBar, QMenu, QAction,
-    QFileDialog, QFontDialog, QSpinBox
+    QFileDialog, QFontDialog, QSpinBox, QScrollArea, QSplitter, QWidget,
+    QSizePolicy
 )
 
 from nw.common import fuzzyTime, makeFileNameSafe
@@ -82,21 +83,19 @@ class GuiBuildNovel(QDialog):
         self.buildTime = 0  # The timestamp of the last build
 
         self.setWindowTitle("Build Novel Project")
-        self.setMinimumWidth(self.mainConf.pxInt(900))
-        self.setMinimumHeight(self.mainConf.pxInt(800))
+        self.setMinimumWidth(self.mainConf.pxInt(700))
+        self.setMinimumHeight(self.mainConf.pxInt(600))
 
         self.resize(
             self.mainConf.pxInt(self.optState.getInt("GuiBuildNovel", "winWidth",  900)),
             self.mainConf.pxInt(self.optState.getInt("GuiBuildNovel", "winHeight", 800))
         )
 
-        self.outerBox = QHBoxLayout()
-        self.toolsBox = QVBoxLayout()
-
         self.docView = GuiBuildNovelDocView(self, self.theProject)
 
         # Title Formats
         # =============
+
         self.titleGroup = QGroupBox("Title Formats for Novel Files", self)
         self.titleForm  = QGridLayout(self)
         self.titleGroup.setLayout(self.titleForm)
@@ -118,11 +117,11 @@ class GuiBuildNovel(QDialog):
             r"be centred automatically and only appear between sections of "
             r"the same type."
         )
-        xFmt = self.mainConf.pxInt(220)
+        xFmt = self.mainConf.pxInt(100)
 
         self.fmtTitle = QLineEdit()
         self.fmtTitle.setMaxLength(200)
-        self.fmtTitle.setFixedWidth(xFmt)
+        self.fmtTitle.setMinimumWidth(xFmt)
         self.fmtTitle.setToolTip(fmtHelp)
         self.fmtTitle.setText(
             self._reFmtCodes(self.theProject.titleFormat["title"])
@@ -130,7 +129,7 @@ class GuiBuildNovel(QDialog):
 
         self.fmtChapter = QLineEdit()
         self.fmtChapter.setMaxLength(200)
-        self.fmtChapter.setFixedWidth(xFmt)
+        self.fmtChapter.setMinimumWidth(xFmt)
         self.fmtChapter.setToolTip(fmtHelp)
         self.fmtChapter.setText(
             self._reFmtCodes(self.theProject.titleFormat["chapter"])
@@ -138,7 +137,7 @@ class GuiBuildNovel(QDialog):
 
         self.fmtUnnumbered = QLineEdit()
         self.fmtUnnumbered.setMaxLength(200)
-        self.fmtUnnumbered.setFixedWidth(xFmt)
+        self.fmtUnnumbered.setMinimumWidth(xFmt)
         self.fmtUnnumbered.setToolTip(fmtHelp)
         self.fmtUnnumbered.setText(
             self._reFmtCodes(self.theProject.titleFormat["unnumbered"])
@@ -146,7 +145,7 @@ class GuiBuildNovel(QDialog):
 
         self.fmtScene = QLineEdit()
         self.fmtScene.setMaxLength(200)
-        self.fmtScene.setFixedWidth(xFmt)
+        self.fmtScene.setMinimumWidth(xFmt)
         self.fmtScene.setToolTip(fmtHelp + fmtScHelp)
         self.fmtScene.setText(
             self._reFmtCodes(self.theProject.titleFormat["scene"])
@@ -154,28 +153,41 @@ class GuiBuildNovel(QDialog):
 
         self.fmtSection = QLineEdit()
         self.fmtSection.setMaxLength(200)
-        self.fmtSection.setFixedWidth(xFmt)
+        self.fmtSection.setMinimumWidth(xFmt)
         self.fmtSection.setToolTip(fmtHelp + fmtScHelp)
         self.fmtSection.setText(
             self._reFmtCodes(self.theProject.titleFormat["section"])
         )
 
-        self.titleForm.addWidget(QLabel("Title"),      0, 0, 1, 1, Qt.AlignLeft)
-        self.titleForm.addWidget(self.fmtTitle,        0, 1, 1, 1, Qt.AlignRight)
-        self.titleForm.addWidget(QLabel("Chapter"),    1, 0, 1, 1, Qt.AlignLeft)
-        self.titleForm.addWidget(self.fmtChapter,      1, 1, 1, 1, Qt.AlignRight)
-        self.titleForm.addWidget(QLabel("Unnumbered"), 2, 0, 1, 1, Qt.AlignLeft)
-        self.titleForm.addWidget(self.fmtUnnumbered,   2, 1, 1, 1, Qt.AlignRight)
-        self.titleForm.addWidget(QLabel("Scene"),      3, 0, 1, 1, Qt.AlignLeft)
-        self.titleForm.addWidget(self.fmtScene,        3, 1, 1, 1, Qt.AlignRight)
-        self.titleForm.addWidget(QLabel("Section"),    4, 0, 1, 1, Qt.AlignLeft)
-        self.titleForm.addWidget(self.fmtSection,      4, 1, 1, 1, Qt.AlignRight)
+        # Dummy boxes due to QGridView and QLineEdit expand bug
+        self.boxTitle = QHBoxLayout()
+        self.boxTitle.addWidget(self.fmtTitle)
+        self.boxChapter = QHBoxLayout()
+        self.boxChapter.addWidget(self.fmtChapter)
+        self.boxUnnumbered = QHBoxLayout()
+        self.boxUnnumbered.addWidget(self.fmtUnnumbered)
+        self.boxScene = QHBoxLayout()
+        self.boxScene.addWidget(self.fmtScene)
+        self.boxSection = QHBoxLayout()
+        self.boxSection.addWidget(self.fmtSection)
 
-        self.titleForm.setColumnStretch(0, 1)
-        self.titleForm.setColumnStretch(1, 0)
+        self.titleForm.addWidget(QLabel("Title"),      0, 0, 1, 1, Qt.AlignLeft)
+        self.titleForm.addLayout(self.boxTitle,        0, 1, 1, 1, Qt.AlignRight)
+        self.titleForm.addWidget(QLabel("Chapter"),    1, 0, 1, 1, Qt.AlignLeft)
+        self.titleForm.addLayout(self.boxChapter,      1, 1, 1, 1, Qt.AlignRight)
+        self.titleForm.addWidget(QLabel("Unnumbered"), 2, 0, 1, 1, Qt.AlignLeft)
+        self.titleForm.addLayout(self.boxUnnumbered,   2, 1, 1, 1, Qt.AlignRight)
+        self.titleForm.addWidget(QLabel("Scene"),      3, 0, 1, 1, Qt.AlignLeft)
+        self.titleForm.addLayout(self.boxScene,        3, 1, 1, 1, Qt.AlignRight)
+        self.titleForm.addWidget(QLabel("Section"),    4, 0, 1, 1, Qt.AlignLeft)
+        self.titleForm.addLayout(self.boxSection,      4, 1, 1, 1, Qt.AlignRight)
+
+        self.titleForm.setColumnStretch(0, 0)
+        self.titleForm.setColumnStretch(1, 1)
 
         # Text Options
         # =============
+
         self.formatGroup = QGroupBox("Formatting Options", self)
         self.formatForm  = QGridLayout(self)
         self.formatGroup.setLayout(self.formatForm)
@@ -183,7 +195,7 @@ class GuiBuildNovel(QDialog):
         ## Font Family
         self.textFont = QLineEdit()
         self.textFont.setReadOnly(True)
-        self.textFont.setFixedWidth(self.mainConf.pxInt(182))
+        self.textFont.setMinimumWidth(xFmt)
         self.textFont.setText(
             self.optState.getString("GuiBuildNovel", "textFont", self.mainConf.textFont)
         )
@@ -219,8 +231,12 @@ class GuiBuildNovel(QDialog):
             self.optState.getBool("GuiBuildNovel", "noStyling", False)
         )
 
+        # Dummy box due to QGridView and QLineEdit expand bug
+        self.boxFont = QHBoxLayout()
+        self.boxFont.addWidget(self.textFont)
+
         self.formatForm.addWidget(QLabel("Font family"),     0, 0, 1, 1, Qt.AlignLeft)
-        self.formatForm.addWidget(self.textFont,             0, 1, 1, 1, Qt.AlignRight)
+        self.formatForm.addLayout(self.boxFont,              0, 1, 1, 1, Qt.AlignRight)
         self.formatForm.addWidget(self.fontButton,           0, 2, 1, 1, Qt.AlignRight)
         self.formatForm.addWidget(QLabel("Font size"),       1, 0, 1, 1, Qt.AlignLeft)
         self.formatForm.addWidget(self.textSize,             1, 1, 1, 2, Qt.AlignRight)
@@ -229,12 +245,13 @@ class GuiBuildNovel(QDialog):
         self.formatForm.addWidget(QLabel("Disable styling"), 3, 0, 1, 1, Qt.AlignLeft)
         self.formatForm.addWidget(self.noStyling,            3, 1, 1, 2, Qt.AlignRight)
 
-        self.formatForm.setColumnStretch(0, 1)
-        self.formatForm.setColumnStretch(1, 0)
+        self.formatForm.setColumnStretch(0, 0)
+        self.formatForm.setColumnStretch(1, 1)
         self.formatForm.setColumnStretch(2, 0)
 
         # Include Switches
         # ================
+
         self.textGroup = QGroupBox("Text Options", self)
         self.textForm  = QGridLayout(self)
         self.textGroup.setLayout(self.textForm)
@@ -283,9 +300,10 @@ class GuiBuildNovel(QDialog):
         self.textForm.setColumnStretch(0, 1)
         self.textForm.setColumnStretch(1, 0)
 
-        # Additional Options
-        # ==================
-        self.fileGroup = QGroupBox("File Options", self)
+        # File Filter Options
+        # ===================
+
+        self.fileGroup = QGroupBox("File Filter Options", self)
         self.fileForm  = QGridLayout(self)
         self.fileGroup.setLayout(self.fileForm)
 
@@ -323,8 +341,31 @@ class GuiBuildNovel(QDialog):
         self.fileForm.setColumnStretch(0, 1)
         self.fileForm.setColumnStretch(1, 0)
 
+        # Export Options
+        # ==============
+
+        self.exportGroup = QGroupBox("Export Options", self)
+        self.exportForm  = QGridLayout(self)
+        self.exportGroup.setLayout(self.exportForm)
+
+        self.replaceTabs = QSwitch()
+        self.replaceTabs.setToolTip(
+            "Replace all tabs with eight spaces."
+        )
+        self.replaceTabs.setChecked(
+            self.optState.getBool("GuiBuildNovel", "replaceTabs", False)
+        )
+
+        self.exportForm.addWidget(QLabel("Replace tabs with spaces"), 0, 0, 1, 1, Qt.AlignLeft)
+        self.exportForm.addWidget(self.replaceTabs,                   0, 1, 1, 1, Qt.AlignRight)
+
+        self.exportForm.setColumnStretch(0, 1)
+        self.exportForm.setColumnStretch(1, 0)
+
         # Build Button
         # ============
+
+        self.buildProgress = QProgressBar()
         self.buildProgress = QProgressBar()
 
         self.buildNovel = QPushButton("Build Project")
@@ -332,6 +373,7 @@ class GuiBuildNovel(QDialog):
 
         # Action Buttons
         # ==============
+
         self.buttonBox = QHBoxLayout()
 
         self.btnPrint = QPushButton("Print")
@@ -349,28 +391,28 @@ class GuiBuildNovel(QDialog):
         self.savePDF.triggered.connect(lambda: self._saveDocument(self.FMT_PDF))
         self.saveMenu.addAction(self.savePDF)
 
-        self.saveHTM = QAction("%s HTML (.htm)" % nw.__package__, self)
+        self.saveHTM = QAction("%s HTML (.htm)" % self.mainConf.appName, self)
         self.saveHTM.triggered.connect(lambda: self._saveDocument(self.FMT_HTM))
         self.saveMenu.addAction(self.saveHTM)
+
+        self.saveNWD = QAction("%s Markdown (.nwd)" % self.mainConf.appName, self)
+        self.saveNWD.triggered.connect(lambda: self._saveDocument(self.FMT_NWD))
+        self.saveMenu.addAction(self.saveNWD)
 
         if self.mainConf.verQtValue >= 51400:
             self.saveMD = QAction("Markdown (.md)", self)
             self.saveMD.triggered.connect(lambda: self._saveDocument(self.FMT_MD))
             self.saveMenu.addAction(self.saveMD)
 
-        self.saveNWD = QAction("%s Markdown (.nwd)" % nw.__package__, self)
-        self.saveNWD.triggered.connect(lambda: self._saveDocument(self.FMT_NWD))
-        self.saveMenu.addAction(self.saveNWD)
-
         self.saveTXT = QAction("Plain Text (.txt)", self)
         self.saveTXT.triggered.connect(lambda: self._saveDocument(self.FMT_TXT))
         self.saveMenu.addAction(self.saveTXT)
 
-        self.saveJsonH = QAction("JSON + %s HTML (.json)" % nw.__package__, self)
+        self.saveJsonH = QAction("JSON + %s HTML (.json)" % self.mainConf.appName, self)
         self.saveJsonH.triggered.connect(lambda: self._saveDocument(self.FMT_JSON_H))
         self.saveMenu.addAction(self.saveJsonH)
 
-        self.saveJsonM = QAction("JSON + %s Markdown (.json)" % nw.__package__, self)
+        self.saveJsonM = QAction("JSON + %s Markdown (.json)" % self.mainConf.appName, self)
         self.saveJsonM.triggered.connect(lambda: self._saveDocument(self.FMT_JSON_M))
         self.saveMenu.addAction(self.saveJsonM)
 
@@ -384,20 +426,57 @@ class GuiBuildNovel(QDialog):
 
         # Assemble GUI
         # ============
+
+        # Splitter Position
+        boxWidth = self.mainConf.pxInt(350)
+        boxWidth = self.optState.getInt("GuiBuildNovel", "boxWidth", boxWidth)
+        docWidth = max(self.width() - boxWidth, 100)
+        docWidth = self.optState.getInt("GuiBuildNovel", "docWidth", docWidth)
+
+        # The Tool Box
+        self.toolsBox = QVBoxLayout()
         self.toolsBox.addWidget(self.titleGroup)
         self.toolsBox.addWidget(self.formatGroup)
         self.toolsBox.addWidget(self.textGroup)
         self.toolsBox.addWidget(self.fileGroup)
+        self.toolsBox.addWidget(self.exportGroup)
         self.toolsBox.addStretch(1)
-        self.toolsBox.addWidget(self.buildProgress)
-        self.toolsBox.addWidget(self.buildNovel)
-        self.toolsBox.addSpacing(8)
-        self.toolsBox.addLayout(self.buttonBox)
 
-        self.outerBox.addLayout(self.toolsBox)
-        self.outerBox.addWidget(self.docView)
-        self.outerBox.setStretch(0, 0)
-        self.outerBox.setStretch(1, 1)
+        # Tool Box Wrapper Widget
+        self.toolsWidget = QWidget()
+        self.toolsWidget.setSizePolicy(QSizePolicy.MinimumExpanding, QSizePolicy.Minimum)
+        self.toolsWidget.setLayout(self.toolsBox)
+
+        # Tool Box Scroll Area
+        self.toolsArea = QScrollArea()
+        self.toolsArea.setMinimumWidth(self.mainConf.pxInt(250))
+        self.toolsArea.setHorizontalScrollBarPolicy(Qt.ScrollBarAsNeeded)
+        self.toolsArea.setVerticalScrollBarPolicy(Qt.ScrollBarAsNeeded)
+        self.toolsArea.setWidgetResizable(True)
+        self.toolsArea.setWidget(self.toolsWidget)
+
+        # Tools and Buttons Layout
+        self.innerBox = QVBoxLayout()
+        self.innerBox.addWidget(self.toolsArea)
+        self.innerBox.addSpacing(8)
+        self.innerBox.addWidget(self.buildProgress)
+        self.innerBox.addWidget(self.buildNovel)
+        self.innerBox.addSpacing(8)
+        self.innerBox.addLayout(self.buttonBox)
+
+        # Tools and Buttons Wrapper Widget
+        self.innerWidget = QWidget()
+        self.innerWidget.setLayout(self.innerBox)
+
+        # Main Dialog Splitter
+        self.mainSplit = QSplitter(Qt.Horizontal)
+        self.mainSplit.addWidget(self.innerWidget)
+        self.mainSplit.addWidget(self.docView)
+        self.mainSplit.setSizes([boxWidth, docWidth])
+
+        # Outer Layout
+        self.outerBox = QHBoxLayout()
+        self.outerBox.addWidget(self.mainSplit)
 
         self.setLayout(self.outerBox)
         self.buildNovel.setFocus()
@@ -448,6 +527,7 @@ class GuiBuildNovel(QDialog):
         noteFiles     = self.noteFiles.isChecked()
         ignoreFlag    = self.ignoreFlag.isChecked()
         includeBody   = self.includeBody.isChecked()
+        replaceTabs   = self.replaceTabs.isChecked()
 
         makeHtml = ToHtml(self.theProject, self.theParent)
         makeHtml.setTitleFormat(fmtTitle)
@@ -510,6 +590,18 @@ class GuiBuildNovel(QDialog):
 
             # Update progress bar, also for skipped items
             self.buildProgress.setValue(nItt+1)
+
+        if replaceTabs:
+            htmlText = []
+            eightSpace = "&nbsp;"*8
+            for aLine in self.htmlText:
+                htmlText.append(aLine.replace("\t", eightSpace))
+            self.htmlText = htmlText
+
+            nwdText = []
+            for aLine in self.nwdText:
+                nwdText.append(aLine.replace("\t", "        "))
+            self.nwdText = nwdText
 
         tEnd = int(time())
         logger.debug("Built project in %.3f ms" % (1000*(tEnd-tStart)))
@@ -666,6 +758,9 @@ class GuiBuildNovel(QDialog):
                         # Write novelWriter HTML data
                         theStyle = self.htmlStyle.copy()
                         theStyle.append(r"article {width: 800px; margin: 40px auto;}")
+                        bodyText = "".join(self.htmlText)
+                        bodyText = bodyText.replace("\t", "&#09;")
+
                         theHtml = (
                             "<!DOCTYPE html>\n"
                             "<html>\n"
@@ -685,7 +780,7 @@ class GuiBuildNovel(QDialog):
                         ).format(
                             projTitle = self.theProject.projName,
                             htmlStyle = "\n".join(theStyle),
-                            bodyText = "".join(self.htmlText),
+                            bodyText = bodyText,
                         )
                         outFile.write(theHtml)
 
@@ -894,10 +989,21 @@ class GuiBuildNovel(QDialog):
         incComments = self.includeComments.isChecked()
         incKeywords = self.includeKeywords.isChecked()
         incBodyText = self.includeBody.isChecked()
+        replaceTabs = self.replaceTabs.isChecked()
+
+        mainSplit = self.mainSplit.sizes()
+        if len(mainSplit) == 2:
+            boxWidth = self.mainConf.rpxInt(mainSplit[0])
+            docWidth = self.mainConf.rpxInt(mainSplit[1])
+        else:
+            boxWidth = 100
+            docWidth = 100
 
         # GUI Settings
         self.optState.setValue("GuiBuildNovel", "winWidth",    winWidth)
         self.optState.setValue("GuiBuildNovel", "winHeight",   winHeight)
+        self.optState.setValue("GuiBuildNovel", "boxWidth",    boxWidth)
+        self.optState.setValue("GuiBuildNovel", "docWidth",    docWidth)
         self.optState.setValue("GuiBuildNovel", "justifyText", justifyText)
         self.optState.setValue("GuiBuildNovel", "noStyling",   noStyling)
         self.optState.setValue("GuiBuildNovel", "textFont",    textFont)
@@ -909,6 +1015,7 @@ class GuiBuildNovel(QDialog):
         self.optState.setValue("GuiBuildNovel", "incComments", incComments)
         self.optState.setValue("GuiBuildNovel", "incKeywords", incKeywords)
         self.optState.setValue("GuiBuildNovel", "incBodyText", incBodyText)
+        self.optState.setValue("GuiBuildNovel", "replaceTabs", replaceTabs)
         self.optState.saveSettings()
 
         return

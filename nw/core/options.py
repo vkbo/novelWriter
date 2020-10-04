@@ -62,6 +62,8 @@ class OptionState():
             "GuiBuildNovel": {
                 "winWidth",
                 "winHeight",
+                "boxWidth",
+                "docWidth",
                 "addNovel",
                 "addNotes",
                 "ignoreFlag",
@@ -74,6 +76,7 @@ class OptionState():
                 "incComments",
                 "incKeywords",
                 "incBodyText",
+                "replaceTabs",
             },
             "GuiOutline": {
                 "headerOrder",

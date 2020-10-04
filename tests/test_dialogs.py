@@ -488,6 +488,27 @@ def testBuildTool(qtbot, yesToAll, nwTempBuild, nwLipsum, nwRef, nwTemp):
     copyfile(projFile, testFile)
     assert cmpFiles(testFile, refFile)
 
+    # Replace Tabs with Spaces
+    qtbot.mouseClick(nwBuild.replaceTabs, Qt.LeftButton)
+    qtbot.wait(stepDelay)
+
+    qtbot.mouseClick(nwBuild.buildNovel, Qt.LeftButton)
+
+    # Save files that can be compared
+    assert nwBuild._saveDocument(nwBuild.FMT_NWD)
+    projFile = os.path.join(nwLipsum, "Lorem Ipsum.nwd")
+    testFile = os.path.join(nwTempBuild, "3_LoremIpsum.nwd")
+    refFile  = os.path.join(nwRef, "build", "3_LoremIpsum.nwd")
+    copyfile(projFile, testFile)
+    assert cmpFiles(testFile, refFile)
+
+    assert nwBuild._saveDocument(nwBuild.FMT_HTM)
+    projFile = os.path.join(nwLipsum, "Lorem Ipsum.htm")
+    testFile = os.path.join(nwTempBuild, "3_LoremIpsum.htm")
+    refFile  = os.path.join(nwRef, "build", "3_LoremIpsum.htm")
+    copyfile(projFile, testFile)
+    assert cmpFiles(testFile, refFile)
+
     # Putline Mode
     nwBuild.fmtChapter.setText(r"Chapter %chw%: %title%")
     qtbot.wait(stepDelay)
@@ -510,30 +531,30 @@ def testBuildTool(qtbot, yesToAll, nwTempBuild, nwLipsum, nwRef, nwTemp):
     # Save files that can be compared
     assert nwBuild._saveDocument(nwBuild.FMT_NWD)
     projFile = os.path.join(nwLipsum, "Lorem Ipsum.nwd")
-    testFile = os.path.join(nwTempBuild, "3_LoremIpsum.nwd")
-    refFile  = os.path.join(nwRef, "build", "3_LoremIpsum.nwd")
+    testFile = os.path.join(nwTempBuild, "4_LoremIpsum.nwd")
+    refFile  = os.path.join(nwRef, "build", "4_LoremIpsum.nwd")
     copyfile(projFile, testFile)
     assert cmpFiles(testFile, refFile)
 
     assert nwBuild._saveDocument(nwBuild.FMT_HTM)
     projFile = os.path.join(nwLipsum, "Lorem Ipsum.htm")
-    testFile = os.path.join(nwTempBuild, "3_LoremIpsum.htm")
-    refFile  = os.path.join(nwRef, "build", "3_LoremIpsum.htm")
+    testFile = os.path.join(nwTempBuild, "4_LoremIpsum.htm")
+    refFile  = os.path.join(nwRef, "build", "4_LoremIpsum.htm")
     copyfile(projFile, testFile)
     assert cmpFiles(testFile, refFile)
 
     # Check the JSON files too at this stage
     assert nwBuild._saveDocument(nwBuild.FMT_JSON_H)
     projFile = os.path.join(nwLipsum, "Lorem Ipsum.json")
-    testFile = os.path.join(nwTempBuild, "3H_LoremIpsum.json")
-    refFile  = os.path.join(nwRef, "build", "3H_LoremIpsum.json")
+    testFile = os.path.join(nwTempBuild, "4H_LoremIpsum.json")
+    refFile  = os.path.join(nwRef, "build", "4H_LoremIpsum.json")
     copyfile(projFile, testFile)
     assert cmpFiles(testFile, refFile, [8])
 
     assert nwBuild._saveDocument(nwBuild.FMT_JSON_M)
     projFile = os.path.join(nwLipsum, "Lorem Ipsum.json")
-    testFile = os.path.join(nwTempBuild, "3M_LoremIpsum.json")
-    refFile  = os.path.join(nwRef, "build", "3M_LoremIpsum.json")
+    testFile = os.path.join(nwTempBuild, "4M_LoremIpsum.json")
+    refFile  = os.path.join(nwRef, "build", "4M_LoremIpsum.json")
     copyfile(projFile, testFile)
     assert cmpFiles(testFile, refFile, [8])
 
