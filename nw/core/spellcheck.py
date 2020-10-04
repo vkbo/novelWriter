@@ -87,6 +87,11 @@ class NWSpellCheck():
         """
         return []
 
+    def describeDict(self):
+        """Dummy function.
+        """
+        return "", ""
+
     @staticmethod
     def expandLanguage(spTag):
         """Translate a language tag to something more user friendly.
@@ -187,6 +192,21 @@ class NWSpellEnchant(NWSpellCheck):
             logger.error("Failed to list languages for enchant spell checking")
         return retList
 
+    def describeDict(self):
+        """Return the tag and provider of the currently loaded
+        dictionary.
+        """
+        try:
+            spTag = self.theDict.tag
+            spName = self.theDict.provider.name
+        except Exception as e:
+            logger.error("Failed to extract information about the dictionary")
+            logger.error(str(e))
+            spTag = ""
+            spName = ""
+
+        return spTag, spName
+
 # END Class NWSpellEnchant
 
 class NWSpellEnchantDummy:
@@ -221,12 +241,14 @@ class NWSpellSimple(NWSpellCheck):
 
     def __init__(self):
         NWSpellCheck.__init__(self)
+        self.theLang = ""
         logger.debug("Simple spell checking activated")
         return
 
     def setLanguage(self, theLang, projectDict=None):
         """Load a dictionary as a list from the app assets folder.
         """
+        self.theLang = theLang
         self.WORDS = []
         dictFile = os.path.join(self.mainConf.dictPath, theLang+".dict")
         try:
@@ -305,9 +327,15 @@ class NWSpellSimple(NWSpellCheck):
             if theBits[1] != ".dict":
                 continue
 
-            spName = "%s [Internal]" % self.expandLanguage(theBits[0])
+            spName = "%s [internal]" % self.expandLanguage(theBits[0])
             retList.append((theBits[0], spName))
 
         return retList
+
+    def describeDict(self):
+        """Return the tag and provider of the currently loaded
+        dictionary.
+        """
+        return self.theLang, "internal"
 
 # END Class NWSpellSimple
