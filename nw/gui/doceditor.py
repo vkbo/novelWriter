@@ -455,7 +455,11 @@ class GuiDocEditor(QTextEdit):
             theLang = self.theProject.projLang
 
         self.theDict.setLanguage(theLang, self.theProject.projDict)
-        self.theParent.statusBar.setLanguage(self.theDict.spellLanguage)
+
+        aLang, aName = self.theDict.describeDict()
+        self.theParent.statusBar.setLanguage(
+            aLang, "%s/%s" % (self.mainConf.spellTool, aName)
+        )
 
         if not self.bigDoc:
             self.spellCheckDocument()
@@ -802,7 +806,7 @@ class GuiDocEditor(QTextEdit):
             mnuHead = QAction("Spelling Suggestion(s)", mnuContext)
             mnuContext.addAction(mnuHead)
 
-            theSuggest = self.theDict.suggestWords(theWord)
+            theSuggest = self.theDict.suggestWords(theWord)[:15]
             if len(theSuggest) > 0:
                 for aWord in theSuggest:
                     mnuWord = QAction("%s %s" % (nwUnicode.U_ENDASH, aWord), mnuContext)
