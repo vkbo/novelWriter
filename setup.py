@@ -135,7 +135,7 @@ setuptools.setup(
         "console_scripts" : ["novelWriter-cli=nw:main"],
         "gui_scripts" :     ["novelWriter=nw:main"],
     },
-    packages = setuptools.find_packages(exclude=["docs","tests","sample"]),
+    packages = setuptools.find_packages(exclude=["docs", "tests", "sample"]),
     include_package_data = True,
     package_data = {"": ["*.conf"]},
     project_urls = {
