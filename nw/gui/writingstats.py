@@ -320,11 +320,12 @@ class GuiWritingStats(QDialog):
 
         # Generate the file name
         if fileExt:
-            fileName  = "sessionStats.%s" % fileExt
-            saveDir   = self.mainConf.lastPath
-            savePath  = os.path.join(saveDir, fileName)
+            saveDir = self.mainConf.lastPath
             if not os.path.isdir(saveDir):
-                saveDir = self.mainConf.homePath
+                saveDir = os.path.expanduser("~")
+
+            fileName = "sessionStats.%s" % fileExt
+            savePath = os.path.join(saveDir, fileName)
 
             dlgOpt  = QFileDialog.Options()
             dlgOpt |= QFileDialog.DontUseNativeDialog

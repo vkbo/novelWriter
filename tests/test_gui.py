@@ -85,7 +85,6 @@ def testLaunch(qtbot, monkeypatch, nwFuncTemp, nwTemp):
     assert ex.value.code == 2
 
     # Simulate import error
-    monkeypatch.setitem(sys.modules, "PyQt5.QtSvg", None)
     monkeypatch.setitem(sys.modules, "lxml", None)
     monkeypatch.setattr("sys.hexversion", 0x0)
     monkeypatch.setattr("nw.CONFIG.verQtValue", 50000)
@@ -96,7 +95,10 @@ def testLaunch(qtbot, monkeypatch, nwFuncTemp, nwTemp):
         )
     nwGUI.closeMain()
     nwGUI.close()
-    assert ex.value.code == 15
+    assert ex.value.code & 4 == 4   # Python version not satisfied
+    assert ex.value.code & 8 == 8   # Qt version not satisfied
+    assert ex.value.code & 16 == 16 # PyQt version not satisfied
+    assert ex.value.code & 32 == 32 # lxml package missing
     monkeypatch.undo()
 
 @pytest.mark.gui

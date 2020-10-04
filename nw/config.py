@@ -68,7 +68,6 @@ class Config:
         self.confPath  = None   # Folder where the config is saved
         self.confFile  = None   # The config file name
         self.dataPath  = None   # Folder where app data is stored
-        self.homePath  = None   # The user's home folder
         self.lastPath  = None   # The last user-selected folder (browse dialogs)
         self.appPath   = None   # The full path to the novelwriter package folder
         self.appRoot   = None   # The full path to the novelwriter root folder
@@ -257,8 +256,7 @@ class Config:
         logger.verbose("Data path: %s" % self.dataPath)
 
         self.confFile  = self.appHandle+".conf"
-        self.homePath  = os.path.expanduser("~")
-        self.lastPath  = self.homePath
+        self.lastPath  = os.path.expanduser("~")
         self.appPath   = getattr(sys, "_MEIPASS", os.path.abspath(os.path.dirname(__file__)))
         self.appRoot   = os.path.join(self.appPath, os.path.pardir)
         self.assetPath = os.path.join(self.appPath, "assets")
@@ -268,7 +266,7 @@ class Config:
         self.appIcon   = os.path.join(self.iconPath, "novelwriter.svg")
 
         logger.verbose("App path: %s" % self.appPath)
-        logger.verbose("Home path: %s" % self.homePath)
+        logger.verbose("Last path: %s" % self.lastPath)
 
         # If config folder does not exist, make it.
         # This assumes that the os config folder itself exists.
