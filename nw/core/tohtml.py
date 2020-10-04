@@ -77,7 +77,6 @@ class ToHtml(Tokenizer):
             self.doKeywords = True
             self.doComments = doComments
             self.doSynopsis = doSynopsis
-            self._buildRegEx()
         return
 
     def setStyles(self, cssStyles):
@@ -316,7 +315,7 @@ class ToHtml(Tokenizer):
         retText = ""
         refTags = []
         if theBits[0] in nwLabels.KEY_NAME:
-            retText += "<span class='tags'>%s:</span>&nbsp;" % nwLabels.KEY_NAME[theBits[0]]
+            retText += "<span class='tags'>%s:</span> " % nwLabels.KEY_NAME[theBits[0]]
             if len(theBits) > 1:
                 if theBits[0] == nwKeyWords.TAG_KEY:
                     retText += "<a name='tag_%s'>%s</a>" % (
