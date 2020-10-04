@@ -198,7 +198,7 @@ class GuiDocHighlighter(QSyntaxHighlighter):
         # Build a QRegExp for spell checker
         # Include additional characters that the highlighter should
         # consider to be word separators
-        wordSep  = r"_\+/"
+        wordSep  = r"-_\+/"
         wordSep += nwUnicode.U_ENDASH
         wordSep += nwUnicode.U_EMDASH
         self.spellRx = QRegularExpression(r"\b[^\s"+wordSep+r"]+\b")
@@ -314,7 +314,7 @@ class GuiDocHighlighter(QSyntaxHighlighter):
         while rxSpell.hasNext():
             rxMatch = rxSpell.next()
             if not self.theDict.checkWord(rxMatch.captured(0)):
-                if rxMatch.captured(0) == rxMatch.captured(0).upper():
+                if rxMatch.captured(0).isupper():
                     continue
                 xPos = rxMatch.capturedStart(0)
                 xLen = rxMatch.capturedLength(0)
