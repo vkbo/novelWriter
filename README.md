@@ -121,7 +121,7 @@ regularly tested on Windows 10.
 
 The application can be started from the source folder with one of the commands, depending on your
 Python configuration:
-```
+```bash
 ./novelWriter.py
 python novelWriter.py
 python3 novelWriter.py
@@ -141,10 +141,9 @@ It is recommended that novelWriter runs with Qt 5.10 or later, and Python 3.6 or
 Qt as low as 5.2.1 and Python 3.4.3 has been tested, and worked in the past, but there are no
 guarantees that this will keep working as these are not a part of the test builds.
 
-For the apt package manager on Debian systems, the following Python3 packages are needed:
+For the apt package manager on Debian/Ubuntu systems, the following Python3 packages are needed:
 
 * `python3-pyqt5` for the GUI
-* `python3-pyqt5.qtsvg` may need to be installed separately
 * `python3-lxml` for writing project files
 
 These are optional, but recommended:
