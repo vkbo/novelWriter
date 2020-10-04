@@ -549,9 +549,9 @@ def testDocViewer(qtbot, yesToAll, nwLipsum, nwTemp):
 
     # Document footer show/hide comments
     assert nwGUI.viewDocument("846352075de7d")
-    assert len(nwGUI.docViewer.toPlainText()) == 672
+    assert len(nwGUI.docViewer.toPlainText()) == 675
     nwGUI.docViewer.docFooter._doToggleComments(False)
-    assert len(nwGUI.docViewer.toPlainText()) == 632
+    assert len(nwGUI.docViewer.toPlainText()) == 635
 
     # qtbot.stopForInteraction()
     nwGUI.closeMain()

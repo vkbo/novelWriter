@@ -600,7 +600,7 @@ class GuiBuildNovel(QDialog):
 
             nwdText = []
             for aLine in self.nwdText:
-                htmlText.append(aLine.replace("\t", "        "))
+                nwdText.append(aLine.replace("\t", "        "))
             self.nwdText = nwdText
 
         tEnd = int(time())
