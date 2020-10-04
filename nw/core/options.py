@@ -76,6 +76,7 @@ class OptionState():
                 "incComments",
                 "incKeywords",
                 "incBodyText",
+                "replaceTabs",
             },
             "GuiOutline": {
                 "headerOrder",

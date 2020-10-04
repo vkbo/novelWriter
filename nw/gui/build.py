@@ -95,6 +95,7 @@ class GuiBuildNovel(QDialog):
 
         # Title Formats
         # =============
+
         self.titleGroup = QGroupBox("Title Formats for Novel Files", self)
         self.titleForm  = QGridLayout(self)
         self.titleGroup.setLayout(self.titleForm)
@@ -186,6 +187,7 @@ class GuiBuildNovel(QDialog):
 
         # Text Options
         # =============
+
         self.formatGroup = QGroupBox("Formatting Options", self)
         self.formatForm  = QGridLayout(self)
         self.formatGroup.setLayout(self.formatForm)
@@ -249,6 +251,7 @@ class GuiBuildNovel(QDialog):
 
         # Include Switches
         # ================
+
         self.textGroup = QGroupBox("Text Options", self)
         self.textForm  = QGridLayout(self)
         self.textGroup.setLayout(self.textForm)
@@ -297,9 +300,10 @@ class GuiBuildNovel(QDialog):
         self.textForm.setColumnStretch(0, 1)
         self.textForm.setColumnStretch(1, 0)
 
-        # Additional Options
-        # ==================
-        self.fileGroup = QGroupBox("File Options", self)
+        # File Filter Options
+        # ===================
+
+        self.fileGroup = QGroupBox("File Filter Options", self)
         self.fileForm  = QGridLayout(self)
         self.fileGroup.setLayout(self.fileForm)
 
@@ -337,8 +341,31 @@ class GuiBuildNovel(QDialog):
         self.fileForm.setColumnStretch(0, 1)
         self.fileForm.setColumnStretch(1, 0)
 
+        # Export Options
+        # ==============
+
+        self.exportGroup = QGroupBox("Export Options", self)
+        self.exportForm  = QGridLayout(self)
+        self.exportGroup.setLayout(self.exportForm)
+
+        self.replaceTabs = QSwitch()
+        self.replaceTabs.setToolTip(
+            "Replace all tabs with eight spaces."
+        )
+        self.replaceTabs.setChecked(
+            self.optState.getBool("GuiBuildNovel", "replaceTabs", False)
+        )
+
+        self.exportForm.addWidget(QLabel("Replace tabs with spaces"), 0, 0, 1, 1, Qt.AlignLeft)
+        self.exportForm.addWidget(self.replaceTabs,                   0, 1, 1, 1, Qt.AlignRight)
+
+        self.exportForm.setColumnStretch(0, 1)
+        self.exportForm.setColumnStretch(1, 0)
+
         # Build Button
         # ============
+
+        self.buildProgress = QProgressBar()
         self.buildProgress = QProgressBar()
 
         self.buildNovel = QPushButton("Build Project")
@@ -346,6 +373,7 @@ class GuiBuildNovel(QDialog):
 
         # Action Buttons
         # ==============
+
         self.buttonBox = QHBoxLayout()
 
         self.btnPrint = QPushButton("Print")
@@ -411,6 +439,7 @@ class GuiBuildNovel(QDialog):
         self.toolsBox.addWidget(self.formatGroup)
         self.toolsBox.addWidget(self.textGroup)
         self.toolsBox.addWidget(self.fileGroup)
+        self.toolsBox.addWidget(self.exportGroup)
         self.toolsBox.addStretch(1)
 
         # Tool Box Wrapper Widget
@@ -498,6 +527,7 @@ class GuiBuildNovel(QDialog):
         noteFiles     = self.noteFiles.isChecked()
         ignoreFlag    = self.ignoreFlag.isChecked()
         includeBody   = self.includeBody.isChecked()
+        replaceTabs   = self.replaceTabs.isChecked()
 
         makeHtml = ToHtml(self.theProject, self.theParent)
         makeHtml.setTitleFormat(fmtTitle)
@@ -560,6 +590,18 @@ class GuiBuildNovel(QDialog):
 
             # Update progress bar, also for skipped items
             self.buildProgress.setValue(nItt+1)
+
+        if replaceTabs:
+            htmlText = []
+            eightSpace = "&nbsp;"*8
+            for aLine in self.htmlText:
+                htmlText.append(aLine.replace("\t", eightSpace))
+            self.htmlText = htmlText
+
+            nwdText = []
+            for aLine in self.nwdText:
+                htmlText.append(aLine.replace("\t", "        "))
+            self.nwdText = nwdText
 
         tEnd = int(time())
         logger.debug("Built project in %.3f ms" % (1000*(tEnd-tStart)))
@@ -718,6 +760,7 @@ class GuiBuildNovel(QDialog):
                         theStyle.append(r"article {width: 800px; margin: 40px auto;}")
                         bodyText = "".join(self.htmlText)
                         bodyText = bodyText.replace("\t", "&#09;")
+
                         theHtml = (
                             "<!DOCTYPE html>\n"
                             "<html>\n"
@@ -946,6 +989,7 @@ class GuiBuildNovel(QDialog):
         incComments = self.includeComments.isChecked()
         incKeywords = self.includeKeywords.isChecked()
         incBodyText = self.includeBody.isChecked()
+        replaceTabs = self.replaceTabs.isChecked()
 
         mainSplit = self.mainSplit.sizes()
         if len(mainSplit) == 2:
@@ -971,6 +1015,7 @@ class GuiBuildNovel(QDialog):
         self.optState.setValue("GuiBuildNovel", "incComments", incComments)
         self.optState.setValue("GuiBuildNovel", "incKeywords", incKeywords)
         self.optState.setValue("GuiBuildNovel", "incBodyText", incBodyText)
+        self.optState.setValue("GuiBuildNovel", "replaceTabs", replaceTabs)
         self.optState.saveSettings()
 
         return
