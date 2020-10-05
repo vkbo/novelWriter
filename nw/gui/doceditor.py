@@ -288,13 +288,10 @@ class GuiDocEditor(QTextEdit):
 
         return True
 
-    def reHighLightText(self, forceBigDoc=False):
-        """Run the syntax highlighter again.
+    def updateTagHighLighting(self, forceBigDoc=False):
+        """Rerun the syntax highlighter on all meta data lines.
         """
-        if not self.bigDoc or forceBigDoc:
-            qApp.setOverrideCursor(QCursor(Qt.WaitCursor))
-            self.hLight.rehighlight()
-            qApp.restoreOverrideCursor()
+        self.hLight.rehighlightByType(GuiDocHighlighter.BLOCK_META)
         return
 
     def redrawText(self):
