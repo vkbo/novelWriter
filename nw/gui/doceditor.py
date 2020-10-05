@@ -446,7 +446,7 @@ class GuiDocEditor(QTextEdit):
         return self.textCursor().selectionEnd()
 
     def saveCursorPosition(self):
-        """Save the cursor position to the current project otem.
+        """Save the cursor position to the current project item object.
         """
         theItem = self.nwDocument.getCurrentItem()
         if theItem is not None:
