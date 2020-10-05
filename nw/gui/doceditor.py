@@ -223,20 +223,11 @@ class GuiDocEditor(QTextEdit):
         # font changed, otherwise we just clear the editor entirely,
         # which makes it read only.
         if self.theHandle is not None:
-            self.reloadText()
+            self.redrawText()
         else:
             self.clearEditor()
 
         return True
-
-    def reloadText(self):
-        """Reloads the document currently being edited.
-        """
-        if self.theHandle is not None:
-            tHandle = self.theHandle
-            self.clearEditor()
-            self.loadText(tHandle, showStatus=False)
-        return
 
     def loadText(self, tHandle, tLine=None, showStatus=True):
         """Load text from a document into the editor. If we have an io
@@ -296,6 +287,21 @@ class GuiDocEditor(QTextEdit):
             self.setTabStopWidth(self.mainConf.getTabWidth())
 
         return True
+
+    def reHighLightText(self, forceBigDoc=False):
+        """Run the syntax highlighter again.
+        """
+        if not self.bigDoc or forceBigDoc:
+            qApp.setOverrideCursor(QCursor(Qt.WaitCursor))
+            self.hLight.rehighlight()
+            qApp.restoreOverrideCursor()
+        return
+
+    def redrawText(self):
+        """Redraw the text by marking the document content as "dirty".
+        """
+        self.qDocument.markContentsDirty(0, self.qDocument.characterCount())
+        return
 
     def replaceText(self, theText):
         """Replaces the text of the current document with the provided

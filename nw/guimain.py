@@ -716,12 +716,12 @@ class GuiMain(QMainWindow):
 
         tEnd = time()
         self.statusBar.setStatus("Indexing completed in %.1f ms" % ((tEnd - tStart)*1000.0))
-        self.docEditor.reloadText()
-
         qApp.restoreOverrideCursor()
 
         if not beQuiet:
             self.makeAlert("The project index has been successfully rebuilt.", nwAlert.INFO)
+
+        self.docEditor.reHighLightText()
 
         return True
 
