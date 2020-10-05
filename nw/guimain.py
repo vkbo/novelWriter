@@ -448,6 +448,7 @@ class GuiMain(QMainWindow):
         """Close the document and clear the editor and title field.
         """
         if self.hasProject:
+            self.docEditor.saveCursorPosition()
             if self.docEditor.docChanged:
                 self.saveDocument()
             self.docEditor.clearEditor()
