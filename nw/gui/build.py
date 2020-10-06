@@ -36,10 +36,10 @@ from datetime import datetime
 from PyQt5.QtCore import Qt, QByteArray, QTimer
 from PyQt5.QtPrintSupport import QPrinter, QPrintPreviewDialog
 from PyQt5.QtGui import (
-    QPalette, QColor, QTextDocumentWriter, QFont
+    QPalette, QColor, QTextDocumentWriter, QFont, QCursor
 )
 from PyQt5.QtWidgets import (
-    QDialog, QVBoxLayout, QHBoxLayout, QTextBrowser, QPushButton, QLabel,
+    qApp, QDialog, QVBoxLayout, QHBoxLayout, QTextBrowser, QPushButton, QLabel,
     QLineEdit, QGroupBox, QGridLayout, QProgressBar, QMenu, QAction,
     QFileDialog, QFontDialog, QSpinBox, QScrollArea, QSplitter, QWidget,
     QSizePolicy
@@ -483,7 +483,11 @@ class GuiBuildNovel(QDialog):
 
         logger.debug("GuiBuildNovel initialisation complete")
 
-        # Load from Cache
+        return
+
+    def viewCachedDoc(self):
+        """Load the previously generated document from cache.
+        """
         if self._loadCache():
             textFont    = self.textFont.text()
             textSize    = self.textSize.value()
@@ -497,19 +501,22 @@ class GuiBuildNovel(QDialog):
 
             htmlSize = sum([len(x) for x in self.htmlText])
             if htmlSize < nwConst.maxBuildSize:
+                qApp.processEvents()
                 self.docView.setContent(self.htmlText, self.buildTime)
             else:
                 self.docView.setText(
                     "Failed to generate preview. The result is too big."
                 )
                 self._enableQtSave(False)
+
         else:
             self.htmlText = []
             self.htmlStyle = []
             self.nwdText = []
             self.buildTime = 0
+            return False
 
-        return
+        return True
 
     ##
     #  Slots
@@ -578,6 +585,7 @@ class GuiBuildNovel(QDialog):
                     makeHtml.doConvert()
                     self.htmlText.append(makeHtml.getResult())
                     self.nwdText.append(makeHtml.getFilteredMarkdown())
+                    htmlSize += makeHtml.getResultSize()
 
                 elif self._checkInclude(tItem, noteFiles, novelFiles, ignoreFlag):
                     makeHtml.setText(tItem.itemHandle)
@@ -640,7 +648,6 @@ class GuiBuildNovel(QDialog):
             self.docView.setText(
                 "Failed to generate preview. The result is too big."
             )
-            allowQtSave = False
             self._enableQtSave(False)
 
         self._saveCache()
@@ -981,7 +988,8 @@ class GuiBuildNovel(QDialog):
         """Capture the user closing the window so we can save settings.
         """
         self._saveSettings()
-        QDialog.closeEvent(self, theEvent)
+        self.docView.clear()
+        theEvent.accept()
         return
 
     ##
@@ -1099,6 +1107,12 @@ class GuiBuildNovelDocView(QTextBrowser):
         theFont.setPointSize(self.mainConf.textSize)
         self.setFont(theFont)
 
+        # Set the tab stops
+        if self.mainConf.verQtValue >= 51000:
+            self.setTabStopDistance(self.mainConf.getTabWidth())
+        else:
+            self.setTabStopWidth(self.mainConf.getTabWidth())
+
         docPalette = self.palette()
         docPalette.setColor(QPalette.Base, QColor(255, 255, 255))
         docPalette.setColor(QPalette.Text, QColor(0, 0, 0))
@@ -1162,17 +1176,13 @@ class GuiBuildNovelDocView(QTextBrowser):
 
         self.buildTime = timeStamp
         sPos = self.verticalScrollBar().value()
-
-        # Refresh the tab stops
-        if self.mainConf.verQtValue >= 51000:
-            self.setTabStopDistance(self.mainConf.getTabWidth())
-        else:
-            self.setTabStopWidth(self.mainConf.getTabWidth())
+        qApp.setOverrideCursor(QCursor(Qt.WaitCursor))
 
         theText = theText.replace("\t", "!!tab!!")
         theText = theText.replace("<del>", "<span style='text-decoration: line-through;'>")
         theText = theText.replace("</del>", "</span>")
         self.setHtml(theText)
+        qApp.processEvents()
 
         while self.find("!!tab!!"):
             theCursor = self.textCursor()
@@ -1184,6 +1194,7 @@ class GuiBuildNovelDocView(QTextBrowser):
         # Since we change the content while it may still be rendering, we mark
         # the document dirty again to make sure it's re-rendered properly.
         self.qDocument.markContentsDirty(0, self.qDocument.characterCount())
+        qApp.restoreOverrideCursor()
 
         return
 
