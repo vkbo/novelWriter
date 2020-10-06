@@ -125,7 +125,7 @@ class GuiProjectLoad(QDialog):
 
         self.buttonBox = QDialogButtonBox(QDialogButtonBox.Open | QDialogButtonBox.Cancel)
         self.buttonBox.accepted.connect(self._doOpenRecent)
-        self.buttonBox.rejected.connect(self._doClose)
+        self.buttonBox.rejected.connect(self._doCancel)
 
         self.newButton = self.buttonBox.addButton("New", QDialogButtonBox.ActionRole)
         self.newButton.clicked.connect(self._doNewProject)
@@ -153,7 +153,7 @@ class GuiProjectLoad(QDialog):
         """Close the dialog window with a recent project selected.
         """
         logger.verbose("GuiProjectLoad open button clicked")
-        self._saveDialogState()
+        self._saveSettings()
 
         selItems = self.listBox.selectedItems()
         if selItems:
@@ -194,11 +194,12 @@ class GuiProjectLoad(QDialog):
 
         return
 
-    def _doClose(self):
+    def _doCancel(self):
         """Close the dialog window without doing anything.
         """
         logger.verbose("GuiProjectLoad close button clicked")
-        self._saveDialogState()
+        self.openPath = None
+        self.openState = self.NONE_STATE
         self.close()
         return
 
@@ -206,7 +207,7 @@ class GuiProjectLoad(QDialog):
         """Create a new project.
         """
         logger.verbose("GuiProjectLoad new project button clicked")
-        self._saveDialogState()
+        self._saveSettings()
         self.openPath = None
         self.openState = self.NEW_STATE
         self.accept()
@@ -231,10 +232,21 @@ class GuiProjectLoad(QDialog):
         return
 
     ##
+    #  Events
+    ##
+
+    def closeEvent(self, theEvent):
+        """Capture the user closing the dialog so we can save settings.
+        """
+        self._saveSettings()
+        theEvent.accept()
+        return
+
+    ##
     #  Internal Functions
     ##
 
-    def _saveDialogState(self):
+    def _saveSettings(self):
         """Save the changes made to the dialog.
         """
         colWidths = [0, 0, 0]
