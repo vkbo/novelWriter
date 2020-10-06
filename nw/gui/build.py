@@ -49,7 +49,7 @@ from nw.common import fuzzyTime, makeFileNameSafe
 from nw.gui.custom import QSwitch
 from nw.core import ToHtml
 from nw.constants import (
-    nwAlert, nwFiles, nwItemType, nwItemLayout, nwItemClass
+    nwConst, nwAlert, nwFiles, nwItemType, nwItemLayout, nwItemClass
 )
 
 logger = logging.getLogger(__name__)
@@ -77,7 +77,7 @@ class GuiBuildNovel(QDialog):
         self.theTheme   = theParent.theTheme
         self.optState   = self.theProject.optState
 
-        self.htmlText  = [] # List of html document
+        self.htmlText  = [] # List of html documents
         self.htmlStyle = [] # List of html styles
         self.nwdText   = [] # List of markdown documents
         self.buildTime = 0  # The timestamp of the last build
@@ -494,7 +494,15 @@ class GuiBuildNovel(QDialog):
                 self.docView.clearStyleSheet()
             else:
                 self.docView.setStyleSheet(self.htmlStyle)
-            self.docView.setContent(self.htmlText, self.buildTime)
+
+            htmlSize = sum([len(x) for x in self.htmlText])
+            if htmlSize < nwConst.maxBuildSize:
+                self.docView.setContent(self.htmlText, self.buildTime)
+            else:
+                self.docView.setText(
+                    "Failed to generate preview. The result is too big."
+                )
+                self._enableQtSave(False)
         else:
             self.htmlText = []
             self.htmlStyle = []
@@ -554,6 +562,8 @@ class GuiBuildNovel(QDialog):
         self.htmlStyle = []
         self.nwdText = []
 
+        htmlSize = 0
+
         for nItt, tItem in enumerate(self.theProject.projTree):
 
             noteRoot  = noteFiles
@@ -578,6 +588,7 @@ class GuiBuildNovel(QDialog):
                     makeHtml.doPostProcessing()
                     self.htmlText.append(makeHtml.getResult())
                     self.nwdText.append(makeHtml.getFilteredMarkdown())
+                    htmlSize += makeHtml.getResultSize()
 
             except Exception as e:
                 logger.error("Failed to generate html of document '%s'" % tItem.itemHandle)
@@ -590,6 +601,12 @@ class GuiBuildNovel(QDialog):
 
             # Update progress bar, also for skipped items
             self.buildProgress.setValue(nItt+1)
+
+        if makeHtml.errData:
+            self.theParent.makeAlert((
+                "There were problems when building the project:"
+                "<br>-&nbsp;%s"
+            ) % "<br>-&nbsp;".join(makeHtml.errData), nwAlert.ERROR)
 
         if replaceTabs:
             htmlText = []
@@ -615,7 +632,16 @@ class GuiBuildNovel(QDialog):
             self.docView.clearStyleSheet()
         else:
             self.docView.setStyleSheet(self.htmlStyle)
-        self.docView.setContent(self.htmlText, self.buildTime)
+
+        if htmlSize < nwConst.maxBuildSize:
+            self.docView.setContent(self.htmlText, self.buildTime)
+            self._enableQtSave(True)
+        else:
+            self.docView.setText(
+                "Failed to generate preview. The result is too big."
+            )
+            allowQtSave = False
+            self._enableQtSave(False)
 
         self._saveCache()
 
@@ -961,6 +987,16 @@ class GuiBuildNovel(QDialog):
     ##
     #  Internal Functions
     ##
+
+    def _enableQtSave(self, theState):
+        """Set the enabled status of Save menu entries that depend on
+        the QTextDocument.
+        """
+        self.saveODT.setEnabled(theState)
+        self.savePDF.setEnabled(theState)
+        self.saveMD.setEnabled(theState)
+        self.saveTXT.setEnabled(theState)
+        return
 
     def _saveSettings(self):
         """Save the various user settings.
