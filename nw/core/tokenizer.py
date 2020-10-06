@@ -33,7 +33,7 @@ from PyQt5.QtCore import QRegularExpression
 
 from nw.core.document import NWDoc
 from nw.core.tools import numberToWord, numberToRoman
-from nw.constants import nwItemLayout, nwItemType, nwRegEx
+from nw.constants import nwConst, nwItemLayout, nwItemType, nwRegEx
 
 logger = logging.getLogger(__name__)
 
@@ -119,6 +119,9 @@ class Tokenizer():
         self.isScene = False
         self.isNote  = False
         self.isNovel = False
+
+        # Error Handling
+        self.errData = []
 
         return
 
@@ -212,6 +215,14 @@ class Tokenizer():
             theDocument  = NWDoc(self.theProject, self.theParent)
             self.theText = theDocument.openDocument(theHandle)
 
+        docSize = len(self.theText)
+        if docSize > nwConst.maxDocSize:
+            errVal = "Document '%s' is too big (%.2f MB). Skipping." % (
+                self.theItem.itemName, docSize/1.0e6
+            )
+            self.theText = "# ERROR\n\n%s\n\n" % errVal
+            self.errData.append(errVal)
+
         self.isNone  = self.theItem.itemLayout == nwItemLayout.NO_LAYOUT
         self.isTitle = self.theItem.itemLayout == nwItemLayout.TITLE
         self.isBook  = self.theItem.itemLayout == nwItemLayout.BOOK
@@ -229,6 +240,11 @@ class Tokenizer():
         """Return the result from the conversion.
         """
         return self.theResult
+
+    def getResultSize(self):
+        """Return the size of the result from the conversion.
+        """
+        return len(self.theResult)
 
     def getFilteredMarkdown(self):
         """Return the novelWriter markdown after the filters have been applied.

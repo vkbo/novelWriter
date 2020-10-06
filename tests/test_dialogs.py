@@ -114,7 +114,12 @@ def testProjectSettings(qtbot, monkeypatch, yesToAll, nwFuncTemp, nwTempGUI, nwR
     projEdit._doSave()
 
     # Open again, and check project settings
-    projEdit = GuiProjectSettings(nwGUI, nwGUI.theProject)
+    nwGUI.mainMenu.aProjectSettings.activate(QAction.Trigger)
+    qtbot.waitUntil(lambda: getGuiItem("GuiProjectSettings") is not None, timeout=1000)
+
+    projEdit = getGuiItem("GuiProjectSettings")
+    assert isinstance(projEdit, GuiProjectSettings)
+
     qtbot.addWidget(projEdit)
     assert projEdit.tabMain.editName.text()  == "Project Name"
     assert projEdit.tabMain.editTitle.text() == "Project Title"
@@ -582,8 +587,13 @@ def testBuildTool(qtbot, yesToAll, nwTempBuild, nwLipsum, nwRef, nwTemp):
     nwBuild._doClose()
 
     # Re-open build dialog from cahce
-    nwBuild = GuiBuildNovel(nwGUI, nwGUI.theProject)
+    nwGUI.mainMenu.aBuildProject.activate(QAction.Trigger)
+    qtbot.waitUntil(lambda: getGuiItem("GuiBuildNovel") is not None, timeout=1000)
 
+    nwBuild = getGuiItem("GuiBuildNovel")
+    assert isinstance(nwBuild, GuiBuildNovel)
+
+    assert nwBuild.viewCachedDoc()
     assert nwBuild.htmlText  == htmlText
     assert nwBuild.htmlStyle == htmlStyle
     assert nwBuild.nwdText   == nwdText
@@ -659,7 +669,11 @@ def testMergeSplitTools(qtbot, monkeypatch, yesToAll, nwTempGUI, nwLipsum, nwRef
     # Split By Scene
     assert nwGUI.treeView.setSelectedHandle("73475cb40a568")
     qtbot.wait(stepDelay)
-    nwSplit = GuiDocSplit(nwGUI, nwGUI.theProject)
+    nwGUI.mainMenu.aSplitDoc.activate(QAction.Trigger)
+    qtbot.waitUntil(lambda: getGuiItem("GuiDocSplit") is not None, timeout=1000)
+
+    nwSplit = getGuiItem("GuiDocSplit")
+    assert isinstance(nwSplit, GuiDocSplit)
     qtbot.wait(stepDelay)
     nwSplit.splitLevel.setCurrentIndex(2)
     qtbot.wait(stepDelay)
@@ -691,7 +705,11 @@ def testMergeSplitTools(qtbot, monkeypatch, yesToAll, nwTempGUI, nwLipsum, nwRef
     # Split By Section
     assert nwGUI.treeView.setSelectedHandle("73475cb40a568")
     qtbot.wait(stepDelay)
-    nwSplit = GuiDocSplit(nwGUI, nwGUI.theProject)
+    nwGUI.mainMenu.aSplitDoc.activate(QAction.Trigger)
+    qtbot.waitUntil(lambda: getGuiItem("GuiDocSplit") is not None, timeout=1000)
+
+    nwSplit = getGuiItem("GuiDocSplit")
+    assert isinstance(nwSplit, GuiDocSplit)
     qtbot.wait(stepDelay)
     nwSplit.splitLevel.setCurrentIndex(3)
     qtbot.wait(stepDelay)
@@ -945,6 +963,7 @@ def testLoadProject(qtbot, monkeypatch, yesToAll, nwMinimal, nwTemp):
     assert nwGUI.openProject(nwMinimal)
     assert nwGUI.closeProject()
 
+    qtbot.wait(stepDelay)
     monkeypatch.setattr(GuiProjectLoad, "exec_", lambda *args: None)
     monkeypatch.setattr(GuiProjectLoad, "result", lambda *args: QDialog.Accepted)
     nwGUI.mainMenu.aOpenProject.activate(QAction.Trigger)
@@ -954,36 +973,50 @@ def testLoadProject(qtbot, monkeypatch, yesToAll, nwMinimal, nwTemp):
     assert isinstance(nwLoad, GuiProjectLoad)
     nwLoad.show()
 
+    qtbot.wait(stepDelay)
     recentCount = nwLoad.listBox.topLevelItemCount()
     assert recentCount > 0
 
+    qtbot.wait(stepDelay)
     selItem = nwLoad.listBox.topLevelItem(0)
     selPath = selItem.data(nwLoad.C_NAME, Qt.UserRole)
     assert isinstance(selItem, QTreeWidgetItem)
 
+    qtbot.wait(stepDelay)
     nwLoad.selPath.setText("")
     nwLoad.listBox.setCurrentItem(selItem)
     nwLoad._doSelectRecent()
     assert nwLoad.selPath.text() == selPath
 
+    qtbot.wait(stepDelay)
     qtbot.mouseClick(nwLoad.buttonBox.button(QDialogButtonBox.Open), Qt.LeftButton)
     assert nwLoad.openPath == selPath
     assert nwLoad.openState == nwLoad.OPEN_STATE
 
     # Just create a new project load from scratch for the rest of the test
     del nwLoad
-    nwLoad = GuiProjectLoad(nwGUI)
+
+    qtbot.wait(stepDelay)
+    nwGUI.mainMenu.aOpenProject.activate(QAction.Trigger)
+    qtbot.waitUntil(lambda: getGuiItem("GuiProjectLoad") is not None, timeout=1000)
+
+    qtbot.wait(stepDelay)
+    nwLoad = getGuiItem("GuiProjectLoad")
+    assert isinstance(nwLoad, GuiProjectLoad)
     nwLoad.show()
 
+    qtbot.wait(stepDelay)
     qtbot.mouseClick(nwLoad.buttonBox.button(QDialogButtonBox.Cancel), Qt.LeftButton)
     assert nwLoad.openPath is None
     assert nwLoad.openState == nwLoad.NONE_STATE
 
+    qtbot.wait(stepDelay)
     nwLoad.show()
     qtbot.mouseClick(nwLoad.newButton, Qt.LeftButton)
     assert nwLoad.openPath is None
     assert nwLoad.openState == nwLoad.NEW_STATE
 
+    qtbot.wait(stepDelay)
     nwLoad.show()
     nwLoad._keyPressDelete()
     assert nwLoad.listBox.topLevelItemCount() == recentCount - 1

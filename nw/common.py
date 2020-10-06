@@ -29,6 +29,8 @@ import logging
 
 from datetime import datetime
 
+from PyQt5.QtWidgets import qApp
+
 from nw.constants import nwConst, nwUnicode
 
 logger = logging.getLogger(__name__)
@@ -251,3 +253,11 @@ def makeFileNameSafe(theText):
         if c.isalpha() or c.isdigit() or c == " ":
             cleanName += c
     return cleanName
+
+def getGuiItem(theName):
+    """Returns a QtWidget based on its objectName.
+    """
+    for qWidget in qApp.topLevelWidgets():
+        if qWidget.objectName() == theName:
+            return qWidget
+    return None

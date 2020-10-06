@@ -29,6 +29,8 @@
 
 import logging
 
+from nw.constants import nwUnicode
+
 logger = logging.getLogger(__name__)
 
 # =============================================================================================== #
@@ -43,6 +45,15 @@ def countWords(theText):
     wordCount = 0
     paraCount = 0
     prevEmpty = True
+
+    # We need to treat dashes as word separators for counting words.
+    # The check+replace apprach is much faster that direct replace for
+    # large texts, and a bit slower for small texts, but in the latter
+    # case it doesn't matter.
+    if nwUnicode.U_ENDASH in theText:
+        theText = theText.replace(nwUnicode.U_ENDASH, " ")
+    if nwUnicode.U_EMDASH in theText:
+        theText = theText.replace(nwUnicode.U_EMDASH, " ")
 
     for aLine in theText.splitlines():
 
@@ -72,8 +83,7 @@ def countWords(theText):
             charCount -= 2
             countPara = False
 
-        theBuff = aLine.replace("–", " ").replace("—", " ")
-        wordCount += len(theBuff.split())
+        wordCount += len(aLine.split())
         charCount += theLen
         if countPara and prevEmpty:
             paraCount += 1

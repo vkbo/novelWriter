@@ -33,7 +33,9 @@ class nwConst():
     fStampFmt = "%Y-%m-%d %H.%M.%S" # FileName safe format
     dStampFmt = "%Y-%m-%d"          # Date only format
 
-    maxDepth = 30 # Maximum folder depth of a project
+    maxDepth     = 30       # Maximum folder depth of a project
+    maxDocSize   = 5000000  # Maxium size of a single document
+    maxBuildSize = 10000000 # Maxium size of a project build
 
 # END Class nwConst
 
