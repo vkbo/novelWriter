@@ -52,7 +52,7 @@ from nw.core import NWDoc, NWSpellCheck, NWSpellSimple, countWords
 from nw.gui.dochighlight import GuiDocHighlighter
 from nw.common import transferCase
 from nw.constants import (
-    nwAlert, nwUnicode, nwDocAction, nwDocInsert, nwItemClass
+    nwConst, nwAlert, nwUnicode, nwDocAction, nwDocInsert, nwItemClass
 )
 
 logger = logging.getLogger(__name__)
@@ -255,12 +255,21 @@ class GuiDocEditor(QTextEdit):
             self.clearEditor()
             return False
 
+        docSize = len(theDoc)
+        if docSize > nwConst.maxDocSize:
+            self.theParent.makeAlert((
+                "The document you are trying to open is too big. "
+                "The document size is %.2f\u202fMB. "
+                "The maximum size allowed is %.2f\u202fMB."
+            ) % (docSize/1.0e6, nwConst.maxDocSize/1.0e6), nwAlert.ERROR)
+            self.clearEditor()
+            return False
+
         qApp.setOverrideCursor(QCursor(Qt.WaitCursor))
         self.hLight.setHandle(tHandle)
 
         # Check that the document is not too big for full, initial spell
         # checking. If it is too big, we switch to only check as we type
-        docSize = len(theDoc)
         self._checkDocSize(docSize)
         spTemp = self.hLight.spellCheck
         if self.bigDoc:
@@ -286,7 +295,6 @@ class GuiDocEditor(QTextEdit):
         self.docFooter.setHandle(self.theHandle)
         self.updateDocMargins()
         self.hLight.spellCheck = spTemp
-        qApp.restoreOverrideCursor()
 
         theItem = self.nwDocument.getCurrentItem()
         if tLine is None and theItem is not None:
@@ -300,6 +308,8 @@ class GuiDocEditor(QTextEdit):
                 self.setCursorPosition(theItem.cursorPos)
         else:
             self.setCursorLine(tLine)
+
+        qApp.restoreOverrideCursor()
 
         return True
 
@@ -319,10 +329,20 @@ class GuiDocEditor(QTextEdit):
         """Replaces the text of the current document with the provided
         text. This also clears undo history.
         """
+        docSize = len(theText)
+        if docSize > nwConst.maxDocSize:
+            self.theParent.makeAlert((
+                "The text you are trying to add is too big. "
+                "The text size is %.2f\u202fMB. "
+                "The maximum size allowed is %.2f\u202fMB."
+            ) % (docSize/1.0e6, nwConst.maxDocSize/1.0e6), nwAlert.ERROR)
+            return False
+
         self.setPlainText(theText)
         self.setDocumentChanged(True)
         self.updateDocMargins()
-        return
+
+        return True
 
     def saveText(self):
         """Save the text currently in the editor to the NWDoc object,
@@ -753,6 +773,13 @@ class GuiDocEditor(QTextEdit):
         """
         self.lastEdit = time()
         self.lastFind = None
+        if self.qDocument.characterCount() > nwConst.maxDocSize:
+            self.theParent.makeAlert((
+                "The document has grown too big and you cannot add more text to it. "
+                "The maximum size of a single novelWriter document is %.2f\u202fMB."
+            ) % (nwConst.maxDocSize/1.0e6), nwAlert.ERROR)
+            self.undo()
+            return
         if not self.docChanged:
             self.setDocumentChanged(True)
         if not self.wcTimer.isActive():
@@ -1099,15 +1126,24 @@ class GuiDocEditor(QTextEdit):
         """Check if document size crosses the big document limit set in
         config. If so, we will set the big document flag to True.
         """
-        if theSize > self.mainConf.bigDocLimit*1000:
-            logger.info(
-                "The document size is %d > %d, big doc mode is enabled" % (
-                    theSize, self.mainConf.bigDocLimit*1000
+        newState = theSize > self.mainConf.bigDocLimit*1000
+
+        if newState != self.bigDoc:
+            if newState:
+                logger.info(
+                    "The document size is {:n} > {:n}, big doc mode has been enabled".format(
+                        theSize, self.mainConf.bigDocLimit*1000
+                    )
                 )
-            )
-            self.bigDoc = True
-        else:
-            self.bigDoc = False
+            else:
+                logger.info(
+                    "The document size is {:n} <= {:n}, big doc mode has been disabled".format(
+                        theSize, self.mainConf.bigDocLimit*1000
+                    )
+                )
+
+        self.bigDoc = newState
+
         return
 
     def _wrapSelection(self, tBefore, tAfter=None):
@@ -2226,6 +2262,9 @@ class GuiDocEditFooter(QWidget):
             wDiff  = wCount - self.theItem.initCount
 
         self.wordsText.setText("Words: {:n} ({:+n})".format(wCount, wDiff))
+
+        byteSize = self.docEditor.qDocument.characterCount()
+        self.wordsText.setToolTip("Document size is {:n} bytes".format(byteSize))
 
         return
 
