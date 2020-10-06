@@ -33,7 +33,7 @@ import os
 from datetime import datetime
 
 from PyQt5.QtCore import Qt
-from PyQt5.QtGui import QPixmap
+from PyQt5.QtGui import QPixmap, QCursor
 from PyQt5.QtWidgets import (
     qApp, QDialog, QTreeWidget, QTreeWidgetItem, QDialogButtonBox, QGridLayout,
     QLabel, QGroupBox, QMenu, QAction, QFileDialog, QSpinBox, QHBoxLayout
@@ -253,10 +253,15 @@ class GuiWritingStats(QDialog):
 
         logger.debug("GuiWritingStats initialisation complete")
 
-        qApp.processEvents()
+        return
+
+    def populateGUI(self):
+        """Populate list box with data from the log file.
+        """
+        qApp.setOverrideCursor(QCursor(Qt.WaitCursor))
         self._loadLogFile()
         self._updateListBox()
-
+        qApp.restoreOverrideCursor()
         return
 
     ##

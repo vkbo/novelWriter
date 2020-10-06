@@ -271,16 +271,16 @@ class NWIndex():
         theRoot = self.theProject.projTree.getRootItem(tHandle)
 
         if theItem is None:
-            logger.error("Not indexing unknown item %s" % tHandle)
+            logger.info("Not indexing unknown item %s" % tHandle)
             return False
         if theItem.itemType != nwItemType.FILE:
-            logger.error("Not indexing non-file item %s" % tHandle)
+            logger.info("Not indexing non-file item %s" % tHandle)
             return False
         if theItem.itemLayout == nwItemLayout.NO_LAYOUT:
-            logger.error("Not indexing no-layout item %s" % tHandle)
+            logger.info("Not indexing no-layout item %s" % tHandle)
             return False
         if theItem.parHandle is None:
-            logger.error("Not indexing orphaned item %s" % tHandle)
+            logger.info("Not indexing orphaned item %s" % tHandle)
             return False
 
         # Run word counter for the whole text
@@ -289,10 +289,10 @@ class NWIndex():
 
         # If the file is archived or trashed, we don't index the file itself
         if self.theProject.projTree.isTrashRoot(theItem.parHandle):
-            logger.error("Not indexing trash item %s" % tHandle)
+            logger.info("Not indexing trash item %s" % tHandle)
             return False
         if theRoot.itemClass == nwItemClass.ARCHIVE:
-            logger.error("Not indexing archived item %s" % tHandle)
+            logger.info("Not indexing archived item %s" % tHandle)
             return False
 
         itemClass  = theItem.itemClass

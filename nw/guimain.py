@@ -48,6 +48,7 @@ from nw.gui import (
 )
 from nw.core import NWProject, NWDoc, NWIndex
 from nw.constants import nwItemType, nwItemClass, nwAlert
+from nw.common import getGuiItem
 
 logger = logging.getLogger(__name__)
 
@@ -448,6 +449,7 @@ class GuiMain(QMainWindow):
         """Close the document and clear the editor and title field.
         """
         if self.hasProject:
+            self.docEditor.saveCursorPosition()
             if self.docEditor.docChanged:
                 self.saveDocument()
             self.docEditor.clearEditor()
@@ -716,8 +718,7 @@ class GuiMain(QMainWindow):
 
         tEnd = time()
         self.statusBar.setStatus("Indexing completed in %.1f ms" % ((tEnd - tStart)*1000.0))
-        self.docEditor.reloadText()
-
+        self.docEditor.updateTagHighLighting()
         qApp.restoreOverrideCursor()
 
         if not beQuiet:
@@ -816,9 +817,15 @@ class GuiMain(QMainWindow):
             logger.error("No project open")
             return
 
-        dlgBuild = GuiBuildNovel(self, self.theProject)
+        dlgBuild = getGuiItem("GuiBuildNovel")
+        if dlgBuild is None:
+            dlgBuild = GuiBuildNovel(self, self.theProject)
+
         dlgBuild.setModal(False)
         dlgBuild.show()
+        qApp.processEvents()
+        dlgBuild.viewCachedDoc()
+
         return
 
     def showWritingStatsDialog(self):
@@ -828,9 +835,15 @@ class GuiMain(QMainWindow):
             logger.error("No project open")
             return
 
-        dlgStats = GuiWritingStats(self, self.theProject)
+        dlgStats = getGuiItem("GuiWritingStats")
+        if dlgStats is None:
+            dlgStats = GuiWritingStats(self, self.theProject)
+
         dlgStats.setModal(False)
         dlgStats.show()
+        qApp.processEvents()
+        dlgStats.populateGUI()
+
         return
 
     def showAboutNWDialog(self):

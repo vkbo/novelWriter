@@ -39,6 +39,11 @@ logger = logging.getLogger(__name__)
 
 class GuiDocHighlighter(QSyntaxHighlighter):
 
+    BLOCK_NONE  = 0
+    BLOCK_TEXT  = 1
+    BLOCK_META  = 2
+    BLOCK_TITLE = 4
+
     def __init__(self, theDoc, theParent):
         QSyntaxHighlighter.__init__(self, theDoc)
 
@@ -230,6 +235,22 @@ class GuiDocHighlighter(QSyntaxHighlighter):
         return True
 
     ##
+    #  Methods
+    ##
+
+    def rehighlightByType(self, theType):
+        """Loop through all blocks and rehighlight those of a given
+        content type.
+        """
+        qDocument = self.document()
+        nBlocks = qDocument.blockCount()
+        for i in range(nBlocks):
+            theBlock = qDocument.findBlockByNumber(i)
+            if theBlock.userState() & theType == theType:
+                self.rehighlightBlock(theBlock)
+        return
+
+    ##
     #  Highlight Block
     ##
 
@@ -239,10 +260,12 @@ class GuiDocHighlighter(QSyntaxHighlighter):
         is significantly faster than running the regex checks used for
         text paragraphs.
         """
+        self.setCurrentBlockState(self.BLOCK_NONE)
         if self.theHandle is None or not theText:
             return
 
         if theText.startswith("@"): # Keywords and commands
+            self.setCurrentBlockState(self.BLOCK_META)
             tItem = self.theParent.theProject.projTree[self.theHandle]
             isValid, theBits, thePos = self.theIndex.scanThis(theText)
             isGood = self.theIndex.checkThese(theBits, tItem)
@@ -266,22 +289,27 @@ class GuiDocHighlighter(QSyntaxHighlighter):
             return
 
         elif theText.startswith("# "): # Header 1
+            self.setCurrentBlockState(self.BLOCK_TITLE)
             self.setFormat(0, 1, self.hStyles["header1h"])
             self.setFormat(1, len(theText), self.hStyles["header1"])
 
         elif theText.startswith("## "): # Header 2
+            self.setCurrentBlockState(self.BLOCK_TITLE)
             self.setFormat(0, 2, self.hStyles["header2h"])
             self.setFormat(2, len(theText), self.hStyles["header2"])
 
         elif theText.startswith("### "): # Header 3
+            self.setCurrentBlockState(self.BLOCK_TITLE)
             self.setFormat(0, 3, self.hStyles["header3h"])
             self.setFormat(3, len(theText), self.hStyles["header3"])
 
         elif theText.startswith("#### "): # Header 4
+            self.setCurrentBlockState(self.BLOCK_TITLE)
             self.setFormat(0, 4, self.hStyles["header4h"])
             self.setFormat(4, len(theText), self.hStyles["header4"])
 
         elif theText.startswith("%"): # Comments
+            self.setCurrentBlockState(self.BLOCK_TEXT)
             toCheck = theText[1:].lstrip()
             synTag  = toCheck[:9].lower()
             tLen = len(theText)
@@ -294,6 +322,7 @@ class GuiDocHighlighter(QSyntaxHighlighter):
                 self.setFormat(0, tLen, self.hStyles["hidden"])
 
         else: # Text Paragraph
+            self.setCurrentBlockState(self.BLOCK_TEXT)
             for rX, xFmt in self.rxRules:
                 rxItt = rX.globalMatch(theText, 0)
                 while rxItt.hasNext():
