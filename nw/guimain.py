@@ -562,12 +562,10 @@ class GuiMain(QMainWindow):
         ]
         dlgOpt  = QFileDialog.Options()
         dlgOpt |= QFileDialog.DontUseNativeDialog
-        inPath  = QFileDialog.getOpenFileName(
+        loadFile, _ = QFileDialog.getOpenFileName(
             self, "Import File", lastPath, options=dlgOpt, filter=";;".join(extFilter)
         )
-        if inPath:
-            loadFile = inPath[0]
-        else:
+        if not loadFile:
             return False
 
         if loadFile.strip() == "":

@@ -1107,16 +1107,16 @@ def testInsertMenu(qtbot, monkeypatch, nwFuncTemp, nwTemp):
     nwGUI.closeDocument()
 
     # First, with no path
-    monkeypatch.setattr(QFileDialog, "getOpenFileName", lambda *args, **kwards: [])
+    monkeypatch.setattr(QFileDialog, "getOpenFileName", lambda *args, **kwards: ("", ""))
     assert not nwGUI.importDocument()
 
     # Then with a path, but an invalid one
-    monkeypatch.setattr(QFileDialog, "getOpenFileName", lambda *args, **kwards: [" "])
+    monkeypatch.setattr(QFileDialog, "getOpenFileName", lambda *args, **kwards: (" ", ""))
     assert not nwGUI.importDocument()
 
     # Then a valid path, but bot a file that exists
     theFile = os.path.join(nwTemp, "import.txt")
-    monkeypatch.setattr(QFileDialog, "getOpenFileName", lambda *args, **kwards: [theFile])
+    monkeypatch.setattr(QFileDialog, "getOpenFileName", lambda *args, **kwards: (theFile, ""))
     assert not nwGUI.importDocument()
 
     # Create the file and try again, but with no target document open

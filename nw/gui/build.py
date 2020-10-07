@@ -762,12 +762,10 @@ class GuiBuildNovel(QDialog):
             if self.mainConf.showGUI:
                 dlgOpt  = QFileDialog.Options()
                 dlgOpt |= QFileDialog.DontUseNativeDialog
-                saveTo  = QFileDialog.getSaveFileName(
+                savePath, _ = QFileDialog.getSaveFileName(
                     self, "Save Document As", savePath, options=dlgOpt
                 )
-                if saveTo[0]:
-                    savePath = saveTo[0]
-                else:
+                if not savePath:
                     return False
 
             self.mainConf.setLastPath(savePath)
