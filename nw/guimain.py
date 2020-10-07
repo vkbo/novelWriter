@@ -558,6 +558,7 @@ class GuiMain(QMainWindow):
         extFilter = [
             "Text files (*.txt)",
             "Markdown files (*.md)",
+            "novelWriter files (*.nwd)",
             "All files (*.*)",
         ]
         dlgOpt  = QFileDialog.Options()
