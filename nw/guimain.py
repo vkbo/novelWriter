@@ -559,16 +559,15 @@ class GuiMain(QMainWindow):
         extFilter = [
             "Text files (*.txt)",
             "Markdown files (*.md)",
+            "novelWriter files (*.nwd)",
             "All files (*.*)",
         ]
         dlgOpt  = QFileDialog.Options()
         dlgOpt |= QFileDialog.DontUseNativeDialog
-        inPath  = QFileDialog.getOpenFileName(
+        loadFile, _ = QFileDialog.getOpenFileName(
             self, "Import File", lastPath, options=dlgOpt, filter=";;".join(extFilter)
         )
-        if inPath:
-            loadFile = inPath[0]
-        else:
+        if not loadFile:
             return False
 
         if loadFile.strip() == "":

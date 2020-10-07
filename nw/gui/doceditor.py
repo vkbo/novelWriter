@@ -341,9 +341,11 @@ class GuiDocEditor(QTextEdit):
             ) % (docSize/1.0e6, nwConst.maxDocSize/1.0e6), nwAlert.ERROR)
             return False
 
+        qApp.setOverrideCursor(QCursor(Qt.WaitCursor))
         self.setPlainText(theText)
         self.setDocumentChanged(True)
         self.updateDocMargins()
+        qApp.restoreOverrideCursor()
 
         return True
 

@@ -762,12 +762,10 @@ class GuiBuildNovel(QDialog):
             if self.mainConf.showGUI:
                 dlgOpt  = QFileDialog.Options()
                 dlgOpt |= QFileDialog.DontUseNativeDialog
-                saveTo  = QFileDialog.getSaveFileName(
+                savePath, _ = QFileDialog.getSaveFileName(
                     self, "Save Document As", savePath, options=dlgOpt
                 )
-                if saveTo[0]:
-                    savePath = saveTo[0]
-                else:
+                if not savePath:
                     return False
 
             self.mainConf.setLastPath(savePath)
@@ -915,6 +913,9 @@ class GuiBuildNovel(QDialog):
         if theStatus:
             self.textFont.setText(theFont.family())
             self.textSize.setValue(theFont.pointSize())
+
+        self.raise_() # Move the dialog to front (fixes a bug on macOS)
+
         return
 
     def _loadCache(self):
