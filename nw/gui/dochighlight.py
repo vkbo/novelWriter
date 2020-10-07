@@ -28,6 +28,8 @@
 import nw
 import logging
 
+from time import time
+
 from PyQt5.QtCore import Qt, QRegularExpression
 from PyQt5.QtGui import (
     QColor, QTextCharFormat, QFont, QSyntaxHighlighter, QBrush
@@ -38,6 +40,11 @@ from nw.constants import nwUnicode, nwRegEx
 logger = logging.getLogger(__name__)
 
 class GuiDocHighlighter(QSyntaxHighlighter):
+
+    BLOCK_NONE  = 0
+    BLOCK_TEXT  = 1
+    BLOCK_META  = 2
+    BLOCK_TITLE = 4
 
     def __init__(self, theDoc, theParent):
         QSyntaxHighlighter.__init__(self, theDoc)
@@ -198,7 +205,7 @@ class GuiDocHighlighter(QSyntaxHighlighter):
         # Build a QRegExp for spell checker
         # Include additional characters that the highlighter should
         # consider to be word separators
-        wordSep  = r"_\+/"
+        wordSep  = r"\-_\+/"
         wordSep += nwUnicode.U_ENDASH
         wordSep += nwUnicode.U_EMDASH
         self.spellRx = QRegularExpression(r"\b[^\s"+wordSep+r"]+\b")
@@ -230,6 +237,27 @@ class GuiDocHighlighter(QSyntaxHighlighter):
         return True
 
     ##
+    #  Methods
+    ##
+
+    def rehighlightByType(self, theType):
+        """Loop through all blocks and rehighlight those of a given
+        content type.
+        """
+        qDocument = self.document()
+        nBlocks = qDocument.blockCount()
+        bfTime = time()
+        for i in range(nBlocks):
+            theBlock = qDocument.findBlockByNumber(i)
+            if theBlock.userState() & theType > 0:
+                self.rehighlightBlock(theBlock)
+        afTime = time()
+        logger.debug(
+            "Document highlighted in %.3f ms" % (1000*(afTime-bfTime))
+        )
+        return
+
+    ##
     #  Highlight Block
     ##
 
@@ -239,10 +267,12 @@ class GuiDocHighlighter(QSyntaxHighlighter):
         is significantly faster than running the regex checks used for
         text paragraphs.
         """
+        self.setCurrentBlockState(self.BLOCK_NONE)
         if self.theHandle is None or not theText:
             return
 
         if theText.startswith("@"): # Keywords and commands
+            self.setCurrentBlockState(self.BLOCK_META)
             tItem = self.theParent.theProject.projTree[self.theHandle]
             isValid, theBits, thePos = self.theIndex.scanThis(theText)
             isGood = self.theIndex.checkThese(theBits, tItem)
@@ -266,22 +296,27 @@ class GuiDocHighlighter(QSyntaxHighlighter):
             return
 
         elif theText.startswith("# "): # Header 1
+            self.setCurrentBlockState(self.BLOCK_TITLE)
             self.setFormat(0, 1, self.hStyles["header1h"])
             self.setFormat(1, len(theText), self.hStyles["header1"])
 
         elif theText.startswith("## "): # Header 2
+            self.setCurrentBlockState(self.BLOCK_TITLE)
             self.setFormat(0, 2, self.hStyles["header2h"])
             self.setFormat(2, len(theText), self.hStyles["header2"])
 
         elif theText.startswith("### "): # Header 3
+            self.setCurrentBlockState(self.BLOCK_TITLE)
             self.setFormat(0, 3, self.hStyles["header3h"])
             self.setFormat(3, len(theText), self.hStyles["header3"])
 
         elif theText.startswith("#### "): # Header 4
+            self.setCurrentBlockState(self.BLOCK_TITLE)
             self.setFormat(0, 4, self.hStyles["header4h"])
             self.setFormat(4, len(theText), self.hStyles["header4"])
 
         elif theText.startswith("%"): # Comments
+            self.setCurrentBlockState(self.BLOCK_TEXT)
             toCheck = theText[1:].lstrip()
             synTag  = toCheck[:9].lower()
             tLen = len(theText)
@@ -294,6 +329,7 @@ class GuiDocHighlighter(QSyntaxHighlighter):
                 self.setFormat(0, tLen, self.hStyles["hidden"])
 
         else: # Text Paragraph
+            self.setCurrentBlockState(self.BLOCK_TEXT)
             for rX, xFmt in self.rxRules:
                 rxItt = rX.globalMatch(theText, 0)
                 while rxItt.hasNext():
@@ -314,7 +350,7 @@ class GuiDocHighlighter(QSyntaxHighlighter):
         while rxSpell.hasNext():
             rxMatch = rxSpell.next()
             if not self.theDict.checkWord(rxMatch.captured(0)):
-                if rxMatch.captured(0) == rxMatch.captured(0).upper():
+                if rxMatch.captured(0).isupper() or rxMatch.captured(0).isnumeric():
                     continue
                 xPos = rxMatch.capturedStart(0)
                 xLen = rxMatch.capturedLength(0)

@@ -1,18 +1,19 @@
 <?xml version='1.0' encoding='utf-8'?>
-<novelWriterXML appVersion="0.12.1" hexVersion="0x001201f0" fileVersion="1.2" timeStamp="2020-08-28 15:49:43">
+<novelWriterXML appVersion="1.0b3" hexVersion="0x010000b3" fileVersion="1.2" timeStamp="2020-10-04 19:00:34">
   <project>
     <name>Lorem Ipsum</name>
     <title>Lorem Ipsum</title>
     <author>lipsum.com</author>
-    <saveCount>8</saveCount>
-    <autoCount>21</autoCount>
-    <editTime>1472</editTime>
+    <saveCount>9</saveCount>
+    <autoCount>22</autoCount>
+    <editTime>1552</editTime>
   </project>
   <settings>
     <doBackup>False</doBackup>
     <spellCheck>False</spellCheck>
+    <spellLang>None</spellLang>
     <autoOutline>True</autoOutline>
-    <lastEdited>fb609cd8319dc</lastEdited>
+    <lastEdited>846352075de7d</lastEdited>
     <lastViewed>None</lastViewed>
     <lastWordCount>3847</lastWordCount>
     <novelWordCount>3109</novelWordCount>
@@ -147,10 +148,10 @@
       <status>New</status>
       <exported>False</exported>
       <layout>BOOK</layout>
-      <charCount>630</charCount>
+      <charCount>631</charCount>
       <wordCount>109</wordCount>
-      <paraCount>1</paraCount>
-      <cursorPos>64</cursorPos>
+      <paraCount>3</paraCount>
+      <cursorPos>376</cursorPos>
     </item>
     <item handle="6bd935d2490cd" order="6" parent="b3643d0f92e32">
       <name>Chapter Two</name>
@@ -205,7 +206,7 @@
       <charCount>3644</charCount>
       <wordCount>543</wordCount>
       <paraCount>5</paraCount>
-      <cursorPos>56</cursorPos>
+      <cursorPos>351</cursorPos>
     </item>
     <item handle="67a8707f2f249" order="1" parent="None">
       <name>Characters</name>

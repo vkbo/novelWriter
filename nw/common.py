@@ -29,6 +29,8 @@ import logging
 
 from datetime import datetime
 
+from PyQt5.QtWidgets import qApp
+
 from nw.constants import nwConst, nwUnicode
 
 logger = logging.getLogger(__name__)
@@ -201,12 +203,12 @@ def transferCase(theSource, theTarget):
     if len(theTarget) < 1 or len(theSource) < 1:
         return theResult
 
-    if theSource[0] == theSource[0].upper():
-        theResult = theTarget[0].upper() + theTarget[1:]
+    if theSource.istitle():
+        theResult = theTarget.title()
 
-    if theSource == theSource.upper():
+    if theSource.isupper():
         theResult = theTarget.upper()
-    elif theSource == theSource.lower():
+    elif theSource.islower():
         theResult = theTarget.lower()
 
     return theResult
@@ -251,3 +253,11 @@ def makeFileNameSafe(theText):
         if c.isalpha() or c.isdigit() or c == " ":
             cleanName += c
     return cleanName
+
+def getGuiItem(theName):
+    """Returns a QtWidget based on its objectName.
+    """
+    for qWidget in qApp.topLevelWidgets():
+        if qWidget.objectName() == theName:
+            return qWidget
+    return None

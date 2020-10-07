@@ -66,10 +66,6 @@ The following Python packages are required to run novelWriter:
 
 You can of course also install these packages from your operating system's package repository.
 
-.. note::
-   Sometimes the SVG graphics package for PyQt5 must be installed separately. It is usually called
-   something like ``python3-pyqt5.qtsvg``.
-
 PyQt/Qt should be at least 5.2.1, but ideally 5.10 or higher for nearly all features to work.
 Exporting to standard Markdown, for instance, requires PyQt/Qt 5.14. Searching using regular
 expressions requires 5.3, and for full Unicode support, 5.13.

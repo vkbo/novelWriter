@@ -33,7 +33,7 @@ import os
 from datetime import datetime
 
 from PyQt5.QtCore import Qt
-from PyQt5.QtGui import QPixmap
+from PyQt5.QtGui import QPixmap, QCursor
 from PyQt5.QtWidgets import (
     qApp, QDialog, QTreeWidget, QTreeWidgetItem, QDialogButtonBox, QGridLayout,
     QLabel, QGroupBox, QMenu, QAction, QFileDialog, QSpinBox, QHBoxLayout
@@ -253,10 +253,15 @@ class GuiWritingStats(QDialog):
 
         logger.debug("GuiWritingStats initialisation complete")
 
-        qApp.processEvents()
+        return
+
+    def populateGUI(self):
+        """Populate list box with data from the log file.
+        """
+        qApp.setOverrideCursor(QCursor(Qt.WaitCursor))
         self._loadLogFile()
         self._updateListBox()
-
+        qApp.restoreOverrideCursor()
         return
 
     ##
@@ -320,20 +325,20 @@ class GuiWritingStats(QDialog):
 
         # Generate the file name
         if fileExt:
-            fileName  = "sessionStats.%s" % fileExt
-            saveDir   = self.mainConf.lastPath
-            savePath  = os.path.join(saveDir, fileName)
+            saveDir = self.mainConf.lastPath
             if not os.path.isdir(saveDir):
-                saveDir = self.mainConf.homePath
+                saveDir = os.path.expanduser("~")
+
+            fileName = "sessionStats.%s" % fileExt
+            savePath = os.path.join(saveDir, fileName)
 
             dlgOpt  = QFileDialog.Options()
             dlgOpt |= QFileDialog.DontUseNativeDialog
-            saveTo  = QFileDialog.getSaveFileName(
+            savePath, _ = QFileDialog.getSaveFileName(
                 self, "Save Document As", savePath, options=dlgOpt
             )
-            if saveTo:
-                savePath = saveTo[0]
-            else:
+
+            if not savePath:
                 return False
 
             self.mainConf.setLastPath(savePath)
@@ -449,10 +454,11 @@ class GuiWritingStats(QDialog):
             )
             return False
 
+        ttWords = ttNovel + ttNotes
         self.labelTotal.setText(self._formatTime(ttTime))
-        self.novelWords.setText("{:n}".format(ttNovel))
-        self.notesWords.setText("{:n}".format(ttNotes))
-        self.totalWords.setText("{:n}".format(ttNovel + ttNotes))
+        self.novelWords.setText(f"{ttNovel:n}")
+        self.notesWords.setText(f"{ttNotes:n}")
+        self.totalWords.setText(f"{ttWords:n}")
 
         return True
 
@@ -539,7 +545,7 @@ class GuiWritingStats(QDialog):
             newItem = QTreeWidgetItem()
             newItem.setText(self.C_TIME, sStart)
             newItem.setText(self.C_LENGTH, self._formatTime(sDiff))
-            newItem.setText(self.C_COUNT, "{:n}".format(nWords))
+            newItem.setText(self.C_COUNT, f"{nWords:n}")
 
             if nWords > 0 and listMax > 0:
                 theBar = self.barImage.scaled(

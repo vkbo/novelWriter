@@ -85,7 +85,6 @@ def testLaunch(qtbot, monkeypatch, nwFuncTemp, nwTemp):
     assert ex.value.code == 2
 
     # Simulate import error
-    monkeypatch.setitem(sys.modules, "PyQt5.QtSvg", None)
     monkeypatch.setitem(sys.modules, "lxml", None)
     monkeypatch.setattr("sys.hexversion", 0x0)
     monkeypatch.setattr("nw.CONFIG.verQtValue", 50000)
@@ -96,7 +95,10 @@ def testLaunch(qtbot, monkeypatch, nwFuncTemp, nwTemp):
         )
     nwGUI.closeMain()
     nwGUI.close()
-    assert ex.value.code == 15
+    assert ex.value.code & 4 == 4   # Python version not satisfied
+    assert ex.value.code & 8 == 8   # Qt version not satisfied
+    assert ex.value.code & 16 == 16 # PyQt version not satisfied
+    assert ex.value.code & 32 == 32 # lxml package missing
     monkeypatch.undo()
 
 @pytest.mark.gui
@@ -547,9 +549,9 @@ def testDocViewer(qtbot, yesToAll, nwLipsum, nwTemp):
 
     # Document footer show/hide comments
     assert nwGUI.viewDocument("846352075de7d")
-    assert len(nwGUI.docViewer.toPlainText()) == 672
+    assert len(nwGUI.docViewer.toPlainText()) == 675
     nwGUI.docViewer.docFooter._doToggleComments(False)
-    assert len(nwGUI.docViewer.toPlainText()) == 632
+    assert len(nwGUI.docViewer.toPlainText()) == 635
 
     # qtbot.stopForInteraction()
     nwGUI.closeMain()
@@ -1105,16 +1107,16 @@ def testInsertMenu(qtbot, monkeypatch, nwFuncTemp, nwTemp):
     nwGUI.closeDocument()
 
     # First, with no path
-    monkeypatch.setattr(QFileDialog, "getOpenFileName", lambda *args, **kwards: [])
+    monkeypatch.setattr(QFileDialog, "getOpenFileName", lambda *args, **kwards: ("", ""))
     assert not nwGUI.importDocument()
 
     # Then with a path, but an invalid one
-    monkeypatch.setattr(QFileDialog, "getOpenFileName", lambda *args, **kwards: [" "])
+    monkeypatch.setattr(QFileDialog, "getOpenFileName", lambda *args, **kwards: (" ", ""))
     assert not nwGUI.importDocument()
 
     # Then a valid path, but bot a file that exists
     theFile = os.path.join(nwTemp, "import.txt")
-    monkeypatch.setattr(QFileDialog, "getOpenFileName", lambda *args, **kwards: [theFile])
+    monkeypatch.setattr(QFileDialog, "getOpenFileName", lambda *args, **kwards: (theFile, ""))
     assert not nwGUI.importDocument()
 
     # Create the file and try again, but with no target document open

@@ -401,7 +401,7 @@ class GuiProjectTree(QTreeWidget):
         if nwItemS is None:
             return False
 
-        wCount = int(trItemS.text(self.C_COUNT))
+        wCount = int(trItemS.data(self.C_COUNT, Qt.UserRole))
         if nwItemS.itemType == nwItemType.FILE:
             logger.debug("User requested file %s moved to trash" % tHandle)
             trItemP = trItemS.parent()
@@ -550,12 +550,13 @@ class GuiProjectTree(QTreeWidget):
         """
         tItem = self._getTreeItem(tHandle)
         if tItem is not None:
-            tItem.setText(self.C_COUNT, str(theCount))
+            tItem.setText(self.C_COUNT, f"{theCount:n}")
+            tItem.setData(self.C_COUNT, Qt.UserRole, int(theCount))
             pItem = tItem.parent()
             if pItem is not None:
                 pCount = 0
                 for i in range(pItem.childCount()):
-                    pCount += int(pItem.child(i).text(self.C_COUNT))
+                    pCount += int(pItem.child(i).data(self.C_COUNT, Qt.UserRole))
                     pHandle = pItem.data(self.C_NAME, Qt.UserRole)
 
                 if not nDepth > nwConst.maxDepth + 1 and pHandle != "":
@@ -575,7 +576,7 @@ class GuiProjectTree(QTreeWidget):
             tItem = self.topLevelItem(n)
             if tItem == self.orphRoot:
                 continue
-            nWords += int(tItem.text(self.C_COUNT))
+            nWords += int(tItem.data(self.C_COUNT, Qt.UserRole))
 
         self.theProject.setProjectWordCount(nWords)
         sWords = self.theProject.getSessionWordCount()
@@ -715,7 +716,7 @@ class GuiProjectTree(QTreeWidget):
             self.makeAlert("The item cannot be moved to that location.", nwAlert.ERROR)
             return
 
-        wCount = int(sItem.text(self.C_COUNT))
+        wCount = int(sItem.data(self.C_COUNT, Qt.UserRole))
         isSame = snItem.itemClass == dnItem.itemClass
         isNone = snItem.itemClass == nwItemClass.NO_CLASS
         isNote = snItem.itemLayout == nwItemLayout.NOTE
@@ -809,6 +810,7 @@ class GuiProjectTree(QTreeWidget):
         newItem.setTextAlignment(self.C_FLAGS,  Qt.AlignLeft  | Qt.AlignVCenter)
 
         newItem.setData(self.C_NAME, Qt.UserRole, tHandle)
+        newItem.setData(self.C_COUNT, Qt.UserRole, 0)
 
         self.theMap[tHandle] = newItem
         if pHandle is None:
@@ -881,6 +883,7 @@ class GuiProjectTree(QTreeWidget):
             self.orphRoot = newItem
             newItem.setExpanded(True)
             newItem.setData(self.C_NAME, Qt.UserRole, "")
+            newItem.setData(self.C_COUNT, Qt.UserRole, 0)
             newItem.setIcon(self.C_NAME, self.theTheme.getIcon("proj_orphan"))
 
         return

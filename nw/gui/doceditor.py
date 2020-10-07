@@ -12,6 +12,7 @@
  Created:   2020-04-25 [0.4.5]  GuiDocEditHeader
  Rewritten: 2020-06-15 [0.9.0]  GuiDocEditSearch
  Created:   2020-06-27 [0.10.0] GuiDocEditFooter
+ Rewritten: 2020-10-07 [1.0b3]  BackgroundWordCounter
 
  This file is a part of novelWriter
  Copyright 2018–2020, Veronica Berglyd Olsen
@@ -36,7 +37,8 @@ import logging
 from time import time
 
 from PyQt5.QtCore import (
-    Qt, QSize, QThread, QTimer, pyqtSlot, QRegExp, QRegularExpression
+    Qt, QSize, QTimer, pyqtSlot, pyqtSignal, QRegExp, QRegularExpression,
+    QPointF, QObject, QRunnable
 )
 from PyQt5.QtGui import (
     QTextCursor, QTextOption, QKeySequence, QFont, QColor, QPalette,
@@ -52,7 +54,7 @@ from nw.core import NWDoc, NWSpellCheck, NWSpellSimple, countWords
 from nw.gui.dochighlight import GuiDocHighlighter
 from nw.common import transferCase
 from nw.constants import (
-    nwAlert, nwUnicode, nwDocAction, nwDocInsert, nwItemClass
+    nwConst, nwAlert, nwUnicode, nwDocAction, nwDocInsert, nwItemClass
 )
 
 logger = logging.getLogger(__name__)
@@ -69,21 +71,23 @@ class GuiDocEditor(QTextEdit):
         self.theParent  = theParent
         self.theTheme   = theParent.theTheme
         self.theProject = theParent.theProject
-        self.docChanged = False
-        self.spellCheck = False
         self.nwDocument = NWDoc(self.theProject, self.theParent)
-        self.theHandle  = None
-        self.theDict    = None
+
+        self.docChanged = False # Flag for changed status of document
+        self.spellCheck = False # Flag for spell checking enabled
+        self.theHandle  = None  # The handle of the open file
+        self.theDict    = None  # The current spell check dictionary
+        self.nonWord    = "\"'" # Characters to not include in spell checking
 
         # Document Variables
-        self.charCount = 0
-        self.wordCount = 0
-        self.paraCount = 0
-        self.lastEdit  = 0
-        self.lastFind  = None
-        self.bigDoc    = False
-        self.doReplace = False
-        self.nonWord   = "\"'"
+        self.charCount  = 0     # Character count
+        self.wordCount  = 0     # Word count
+        self.paraCount  = 0     # Paragraph count
+        self.lastEdit   = 0     # Time stamp of last edit
+        self.lastFind   = None  # Position of the last found search word
+        self.bigDoc     = False # Flag for very large document size
+        self.doReplace  = False # Switch to temporarily disable auto-replace
+        self.queuePos   = None  # Used for delayed change of cursor position
 
         # Typography
         self.typDQOpen  = self.mainConf.fmtDoubleQuotes[0]
@@ -94,6 +98,7 @@ class GuiDocEditor(QTextEdit):
         # Core Elements and Signals
         self.qDocument = self.document()
         self.qDocument.contentsChange.connect(self._docChange)
+        self.qDocument.documentLayout().documentSizeChanged.connect(self._docSizeChanged)
 
         # Document Title
         self.docHeader = GuiDocEditHeader(self)
@@ -132,14 +137,15 @@ class GuiDocEditor(QTextEdit):
             activated=self._followTag
         )
 
-        # Set Up Word Count Thread and Timer
+        # Set Up Word Counter
         self.wcInterval = self.mainConf.wordCountTimer
         self.wcTimer = QTimer()
         self.wcTimer.setInterval(int(self.wcInterval*1000))
         self.wcTimer.timeout.connect(self._runCounter)
 
         self.wCounter = BackgroundWordCounter(self)
-        self.wCounter.finished.connect(self._updateCounts)
+        self.wCounter.setAutoDelete(False)
+        self.wCounter.signals.countsReady.connect(self._updateCounts)
 
         self.initEditor()
 
@@ -161,8 +167,10 @@ class GuiDocEditor(QTextEdit):
         self.wordCount = 0
         self.paraCount = 0
         self.lastEdit  = 0
+        self.lastFind  = None
         self.bigDoc    = False
         self.doReplace = False
+        self.queuePos  = None
 
         self.setDocumentChanged(False)
         self.docHeader.setTitleFromHandle(self.theHandle)
@@ -216,6 +224,12 @@ class GuiDocEditor(QTextEdit):
 
         self.qDocument.setDefaultTextOption(theOpt)
 
+        # Refresh the tab stops
+        if self.mainConf.verQtValue >= 51000:
+            self.setTabStopDistance(self.mainConf.getTabWidth())
+        else:
+            self.setTabStopWidth(self.mainConf.getTabWidth())
+
         # Initialise the syntax highlighter
         self.hLight.initHighlighter()
 
@@ -223,20 +237,11 @@ class GuiDocEditor(QTextEdit):
         # font changed, otherwise we just clear the editor entirely,
         # which makes it read only.
         if self.theHandle is not None:
-            self.reloadText()
+            self.redrawText()
         else:
             self.clearEditor()
 
         return True
-
-    def reloadText(self):
-        """Reloads the document currently being edited.
-        """
-        if self.theHandle is not None:
-            tHandle = self.theHandle
-            self.clearEditor()
-            self.loadText(tHandle, showStatus=False)
-        return
 
     def loadText(self, tHandle, tLine=None, showStatus=True):
         """Load text from a document into the editor. If we have an io
@@ -253,12 +258,22 @@ class GuiDocEditor(QTextEdit):
             self.clearEditor()
             return False
 
+        docSize = len(theDoc)
+        if docSize > nwConst.maxDocSize:
+            self.theParent.makeAlert((
+                "The document you are trying to open is too big. "
+                "The document size is %.2f\u202fMB. "
+                "The maximum size allowed is %.2f\u202fMB."
+            ) % (docSize/1.0e6, nwConst.maxDocSize/1.0e6), nwAlert.ERROR)
+            self.clearEditor()
+            return False
+
         qApp.setOverrideCursor(QCursor(Qt.WaitCursor))
         self.hLight.setHandle(tHandle)
 
         # Check that the document is not too big for full, initial spell
         # checking. If it is too big, we switch to only check as we type
-        self._checkDocSize(len(theDoc))
+        self._checkDocSize(docSize)
         spTemp = self.hLight.spellCheck
         if self.bigDoc:
             self.hLight.spellCheck = False
@@ -266,15 +281,11 @@ class GuiDocEditor(QTextEdit):
         bfTime = time()
         self._allowAutoReplace(False)
         self.setPlainText(theDoc)
+        qApp.processEvents()
+
         self._allowAutoReplace(True)
         afTime = time()
-        logger.debug("Document highlighted in %.3f milliseconds" % (1000*(afTime-bfTime)))
-
-        theItem = self.nwDocument.getCurrentItem()
-        if tLine is None and theItem is not None:
-            self.setCursorPosition(theItem.cursorPos)
-        else:
-            self.setCursorLine(tLine)
+        logger.debug("Document highlighted in %.3f ms" % (1000*(afTime-bfTime)))
 
         self.lastEdit = time()
         self._runCounter()
@@ -287,24 +298,56 @@ class GuiDocEditor(QTextEdit):
         self.docFooter.setHandle(self.theHandle)
         self.updateDocMargins()
         self.hLight.spellCheck = spTemp
+
+        theItem = self.nwDocument.getCurrentItem()
+        if tLine is None and theItem is not None:
+            # For large documents we queue the repositioning until the
+            # document layout has grown past the point we want to move
+            # the cursor to. This makes the loading significantly
+            # faster.
+            if docSize > 50000:
+                self.queuePos = theItem.cursorPos
+            else:
+                self.setCursorPosition(theItem.cursorPos)
+        else:
+            self.setCursorLine(tLine)
+
         qApp.restoreOverrideCursor()
 
-        # Refresh the tab stops
-        if self.mainConf.verQtValue >= 51000:
-            self.setTabStopDistance(self.mainConf.getTabWidth())
-        else:
-            self.setTabStopWidth(self.mainConf.getTabWidth())
-
         return True
+
+    def updateTagHighLighting(self, forceBigDoc=False):
+        """Rerun the syntax highlighter on all meta data lines.
+        """
+        self.hLight.rehighlightByType(GuiDocHighlighter.BLOCK_META)
+        return
+
+    def redrawText(self):
+        """Redraw the text by marking the document content as "dirty".
+        """
+        self.qDocument.markContentsDirty(0, self.qDocument.characterCount())
+        return
 
     def replaceText(self, theText):
         """Replaces the text of the current document with the provided
         text. This also clears undo history.
         """
+        docSize = len(theText)
+        if docSize > nwConst.maxDocSize:
+            self.theParent.makeAlert((
+                "The text you are trying to add is too big. "
+                "The text size is %.2f\u202fMB. "
+                "The maximum size allowed is %.2f\u202fMB."
+            ) % (docSize/1.0e6, nwConst.maxDocSize/1.0e6), nwAlert.ERROR)
+            return False
+
+        qApp.setOverrideCursor(QCursor(Qt.WaitCursor))
         self.setPlainText(theText)
         self.setDocumentChanged(True)
         self.updateDocMargins()
-        return
+        qApp.restoreOverrideCursor()
+
+        return True
 
     def saveText(self):
         """Save the text currently in the editor to the NWDoc object,
@@ -315,11 +358,10 @@ class GuiDocEditor(QTextEdit):
             return False
 
         docText = self.getText()
-        cursPos = self.getCursorPosition()
         theItem.setCharCount(self.charCount)
         theItem.setWordCount(self.wordCount)
         theItem.setParaCount(self.paraCount)
-        theItem.setCursorPos(cursPos)
+        self.saveCursorPosition()
         self.nwDocument.saveDocument(docText)
         self.setDocumentChanged(False)
 
@@ -428,6 +470,15 @@ class GuiDocEditor(QTextEdit):
         """
         return self.textCursor().selectionEnd()
 
+    def saveCursorPosition(self):
+        """Save the cursor position to the current project item object.
+        """
+        theItem = self.nwDocument.getCurrentItem()
+        if theItem is not None:
+            cursPos = self.getCursorPosition()
+            theItem.setCursorPos(cursPos)
+        return
+
     def setCursorLine(self, theLine):
         """Move the cursor to a given line in the document.
         """
@@ -455,7 +506,11 @@ class GuiDocEditor(QTextEdit):
             theLang = self.theProject.projLang
 
         self.theDict.setLanguage(theLang, self.theProject.projDict)
-        self.theParent.statusBar.setLanguage(self.theDict.spellLanguage)
+
+        aLang, aName = self.theDict.describeDict()
+        self.theParent.statusBar.setLanguage(
+            aLang, "%s [%s]" % (self.mainConf.spellTool.title(), aName.title())
+        )
 
         if not self.bigDoc:
             self.spellCheckDocument()
@@ -502,9 +557,8 @@ class GuiDocEditor(QTextEdit):
             qApp.restoreOverrideCursor()
             afTime = time()
             logger.debug(
-                "Document re-highlighted in %.3f milliseconds" % (1000*(afTime-bfTime))
+                "Document highlighted in %.3f ms" % (1000*(afTime-bfTime))
             )
-
             self.theParent.statusBar.showMessage("Spell check complete")
 
         return True
@@ -727,6 +781,13 @@ class GuiDocEditor(QTextEdit):
         """
         self.lastEdit = time()
         self.lastFind = None
+        if self.qDocument.characterCount() > nwConst.maxDocSize:
+            self.theParent.makeAlert((
+                "The document has grown too big and you cannot add more text to it. "
+                "The maximum size of a single novelWriter document is %.2f\u202fMB."
+            ) % (nwConst.maxDocSize/1.0e6), nwAlert.ERROR)
+            self.undo()
+            return
         if not self.docChanged:
             self.setDocumentChanged(True)
         if not self.wcTimer.isActive():
@@ -802,7 +863,7 @@ class GuiDocEditor(QTextEdit):
             mnuHead = QAction("Spelling Suggestion(s)", mnuContext)
             mnuContext.addAction(mnuHead)
 
-            theSuggest = self.theDict.suggestWords(theWord)
+            theSuggest = self.theDict.suggestWords(theWord)[:15]
             if len(theSuggest) > 0:
                 for aWord in theSuggest:
                     mnuWord = QAction("%s %s" % (nwUnicode.U_ENDASH, aWord), mnuContext)
@@ -855,21 +916,18 @@ class GuiDocEditor(QTextEdit):
         """Decide whether to run the word counter, or stop the timer due
         to inactivity.
         """
-        sinceActive = time()-self.lastEdit
-        if sinceActive > 5*self.wcInterval:
-            logger.debug(
-                "Stopping word count timer: no activity last %.1f seconds" % sinceActive
-            )
-            self.wcTimer.stop()
-        elif self.wCounter.isRunning():
-            logger.verbose("Word counter thread is busy")
-        else:
-            logger.verbose("Starting word counter")
-            self.wCounter.start()
+        if self.wCounter.isRunning():
+            logger.verbose("Word counter is busy")
+            return
+
+        if time() - self.lastEdit < 5*self.wcInterval:
+            logger.verbose("Running word counter")
+            self.theParent.threadPool.start(self.wCounter)
+
         return
 
-    @pyqtSlot()
-    def _updateCounts(self):
+    @pyqtSlot(int, int, int)
+    def _updateCounts(self, cCount, wCount, pCount):
         """Slot for the word counter's finished signal
         """
         theItem = self.nwDocument.getCurrentItem()
@@ -878,21 +936,42 @@ class GuiDocEditor(QTextEdit):
 
         logger.verbose("Updating word count")
 
-        self.charCount = self.wCounter.charCount
-        self.wordCount = self.wCounter.wordCount
-        self.paraCount = self.wCounter.paraCount
-        theItem.setCharCount(self.charCount)
-        theItem.setWordCount(self.wordCount)
-        theItem.setParaCount(self.paraCount)
+        self.charCount = cCount
+        self.wordCount = wCount
+        self.paraCount = pCount
+        theItem.setCharCount(cCount)
+        theItem.setWordCount(wCount)
+        theItem.setParaCount(pCount)
 
-        self.theParent.treeView.propagateCount(self.theHandle, self.wordCount)
+        self.theParent.treeView.propagateCount(self.theHandle, wCount)
         self.theParent.treeView.projectWordCount()
-        self.theParent.treeMeta.updateCounts(
-            self.theHandle, self.charCount, self.wordCount, self.paraCount
-        )
-        self._checkDocSize(self.charCount)
+        self.theParent.treeMeta.updateCounts(self.theHandle, cCount, wCount, pCount)
+        self._checkDocSize(self.qDocument.characterCount())
         self.docFooter.updateCounts()
 
+        return
+
+    @pyqtSlot("QSizeF")
+    def _docSizeChanged(self, theSize):
+        """Called whenever the underlying document layout size changes.
+        This is used to queue the repositioning of the cursor for very
+        large documents to ensure the region where the cursor is being
+        moved to has been drawn before the move is made.
+        """
+        if self.queuePos is not None:
+            thePos = self.qDocument.documentLayout().hitTest(
+                QPointF(theSize.width(), theSize.height()), Qt.FuzzyHit
+            )
+            if self.queuePos <= thePos:
+                logger.verbose(
+                    "Allowed cursor move to %d <= %d" % (self.queuePos, thePos)
+                )
+                self.setCursorPosition(self.queuePos)
+                self.queuePos = None
+            else:
+                logger.verbose(
+                    "Denied cursor move to %d > %d" % (self.queuePos, thePos)
+                )
         return
 
     ##
@@ -1050,15 +1129,24 @@ class GuiDocEditor(QTextEdit):
         """Check if document size crosses the big document limit set in
         config. If so, we will set the big document flag to True.
         """
-        if theSize > self.mainConf.bigDocLimit*1000:
-            logger.info(
-                "The document size is %d > %d, big doc mode is enabled" % (
-                    theSize, self.mainConf.bigDocLimit*1000
+        newState = theSize > self.mainConf.bigDocLimit*1000
+
+        if newState != self.bigDoc:
+            if newState:
+                logger.info(
+                    "The document size is {:n} > {:n}, big doc mode has been enabled".format(
+                        theSize, self.mainConf.bigDocLimit*1000
+                    )
                 )
-            )
-            self.bigDoc = True
-        else:
-            self.bigDoc = False
+            else:
+                logger.info(
+                    "The document size is {:n} <= {:n}, big doc mode has been disabled".format(
+                        theSize, self.mainConf.bigDocLimit*1000
+                    )
+                )
+
+        self.bigDoc = newState
+
         return
 
     def _wrapSelection(self, tBefore, tAfter=None):
@@ -1432,32 +1520,41 @@ class GuiDocEditor(QTextEdit):
 # END Class GuiDocEditor
 
 # =============================================================================================== #
-#  The Off GUI Thread Word Counter
-#  Runs the word counter in the background for the DocEditor
+#  The Off-GUI Thread Word Counter
+#  A runnable for the word counter to be run in the thread pool off the main GUI thread.
 # =============================================================================================== #
 
-class BackgroundWordCounter(QThread):
+class BackgroundWordCounter(QRunnable):
 
     def __init__(self, docEditor):
-        QThread.__init__(self, docEditor)
+        QRunnable.__init__(self)
         self.docEditor = docEditor
-        self.charCount = 0
-        self.wordCount = 0
-        self.paraCount = 0
+        self.signals = BackgroundWordCounterSignals()
+        self._isRunning = False
         return
 
+    def isRunning(self):
+        return self._isRunning
+
+    @pyqtSlot()
     def run(self):
         """Overloaded run function for the word counter, forwarding the
         call to the function that does the actual counting.
         """
+        self._isRunning = True
         theText = self.docEditor.getText()
         cC, wC, pC = countWords(theText)
-        self.charCount = cC
-        self.wordCount = wC
-        self.paraCount = pC
+        self.signals.countsReady.emit(cC, wC, pC)
+        self._isRunning = False
         return
 
 ## END Class BackgroundWordCounter
+
+class BackgroundWordCounterSignals(QObject):
+
+    countsReady = pyqtSignal(int, int, int)
+
+# END Class BackgroundWordCounterSignals
 
 # =============================================================================================== #
 #  The Embedded Document Search/Replace Feature
@@ -2176,7 +2273,10 @@ class GuiDocEditFooter(QWidget):
             wCount = self.theItem.wordCount
             wDiff  = wCount - self.theItem.initCount
 
-        self.wordsText.setText("Words: {:n} ({:+n})".format(wCount, wDiff))
+        self.wordsText.setText(f"Words: {wCount:n} ({wDiff:+n})")
+
+        byteSize = self.docEditor.qDocument.characterCount()
+        self.wordsText.setToolTip(f"Document size is {byteSize:n} bytes")
 
         return
 

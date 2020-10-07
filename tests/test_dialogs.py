@@ -114,7 +114,12 @@ def testProjectSettings(qtbot, monkeypatch, yesToAll, nwFuncTemp, nwTempGUI, nwR
     projEdit._doSave()
 
     # Open again, and check project settings
-    projEdit = GuiProjectSettings(nwGUI, nwGUI.theProject)
+    nwGUI.mainMenu.aProjectSettings.activate(QAction.Trigger)
+    qtbot.waitUntil(lambda: getGuiItem("GuiProjectSettings") is not None, timeout=1000)
+
+    projEdit = getGuiItem("GuiProjectSettings")
+    assert isinstance(projEdit, GuiProjectSettings)
+
     qtbot.addWidget(projEdit)
     assert projEdit.tabMain.editName.text()  == "Project Name"
     assert projEdit.tabMain.editTitle.text() == "Project Title"
@@ -278,10 +283,10 @@ def testWritingStatsExport(qtbot, monkeypatch, yesToAll, nwFuncTemp, nwTemp):
     assert isinstance(sessLog, GuiWritingStats)
     qtbot.wait(stepDelay)
 
-    monkeypatch.setattr(QFileDialog, "getSaveFileName", lambda *args, **kwargs: [])
+    monkeypatch.setattr(QFileDialog, "getSaveFileName", lambda *args, **kwargs: ("", ""))
     assert not sessLog._saveData(sessLog.FMT_CSV)
 
-    monkeypatch.setattr(QFileDialog, "getSaveFileName", lambda ss, tt, pp, options: [pp])
+    monkeypatch.setattr(QFileDialog, "getSaveFileName", lambda ss, tt, pp, options: (pp, ""))
     assert sessLog._saveData(sessLog.FMT_CSV)
     qtbot.wait(stepDelay)
     assert sessLog._saveData(sessLog.FMT_JSON)
@@ -488,6 +493,27 @@ def testBuildTool(qtbot, yesToAll, nwTempBuild, nwLipsum, nwRef, nwTemp):
     copyfile(projFile, testFile)
     assert cmpFiles(testFile, refFile)
 
+    # Replace Tabs with Spaces
+    qtbot.mouseClick(nwBuild.replaceTabs, Qt.LeftButton)
+    qtbot.wait(stepDelay)
+
+    qtbot.mouseClick(nwBuild.buildNovel, Qt.LeftButton)
+
+    # Save files that can be compared
+    assert nwBuild._saveDocument(nwBuild.FMT_NWD)
+    projFile = os.path.join(nwLipsum, "Lorem Ipsum.nwd")
+    testFile = os.path.join(nwTempBuild, "3_LoremIpsum.nwd")
+    refFile  = os.path.join(nwRef, "build", "3_LoremIpsum.nwd")
+    copyfile(projFile, testFile)
+    assert cmpFiles(testFile, refFile)
+
+    assert nwBuild._saveDocument(nwBuild.FMT_HTM)
+    projFile = os.path.join(nwLipsum, "Lorem Ipsum.htm")
+    testFile = os.path.join(nwTempBuild, "3_LoremIpsum.htm")
+    refFile  = os.path.join(nwRef, "build", "3_LoremIpsum.htm")
+    copyfile(projFile, testFile)
+    assert cmpFiles(testFile, refFile)
+
     # Putline Mode
     nwBuild.fmtChapter.setText(r"Chapter %chw%: %title%")
     qtbot.wait(stepDelay)
@@ -510,30 +536,30 @@ def testBuildTool(qtbot, yesToAll, nwTempBuild, nwLipsum, nwRef, nwTemp):
     # Save files that can be compared
     assert nwBuild._saveDocument(nwBuild.FMT_NWD)
     projFile = os.path.join(nwLipsum, "Lorem Ipsum.nwd")
-    testFile = os.path.join(nwTempBuild, "3_LoremIpsum.nwd")
-    refFile  = os.path.join(nwRef, "build", "3_LoremIpsum.nwd")
+    testFile = os.path.join(nwTempBuild, "4_LoremIpsum.nwd")
+    refFile  = os.path.join(nwRef, "build", "4_LoremIpsum.nwd")
     copyfile(projFile, testFile)
     assert cmpFiles(testFile, refFile)
 
     assert nwBuild._saveDocument(nwBuild.FMT_HTM)
     projFile = os.path.join(nwLipsum, "Lorem Ipsum.htm")
-    testFile = os.path.join(nwTempBuild, "3_LoremIpsum.htm")
-    refFile  = os.path.join(nwRef, "build", "3_LoremIpsum.htm")
+    testFile = os.path.join(nwTempBuild, "4_LoremIpsum.htm")
+    refFile  = os.path.join(nwRef, "build", "4_LoremIpsum.htm")
     copyfile(projFile, testFile)
     assert cmpFiles(testFile, refFile)
 
     # Check the JSON files too at this stage
     assert nwBuild._saveDocument(nwBuild.FMT_JSON_H)
     projFile = os.path.join(nwLipsum, "Lorem Ipsum.json")
-    testFile = os.path.join(nwTempBuild, "3H_LoremIpsum.json")
-    refFile  = os.path.join(nwRef, "build", "3H_LoremIpsum.json")
+    testFile = os.path.join(nwTempBuild, "4H_LoremIpsum.json")
+    refFile  = os.path.join(nwRef, "build", "4H_LoremIpsum.json")
     copyfile(projFile, testFile)
     assert cmpFiles(testFile, refFile, [8])
 
     assert nwBuild._saveDocument(nwBuild.FMT_JSON_M)
     projFile = os.path.join(nwLipsum, "Lorem Ipsum.json")
-    testFile = os.path.join(nwTempBuild, "3M_LoremIpsum.json")
-    refFile  = os.path.join(nwRef, "build", "3M_LoremIpsum.json")
+    testFile = os.path.join(nwTempBuild, "4M_LoremIpsum.json")
+    refFile  = os.path.join(nwRef, "build", "4M_LoremIpsum.json")
     copyfile(projFile, testFile)
     assert cmpFiles(testFile, refFile, [8])
 
@@ -561,8 +587,13 @@ def testBuildTool(qtbot, yesToAll, nwTempBuild, nwLipsum, nwRef, nwTemp):
     nwBuild._doClose()
 
     # Re-open build dialog from cahce
-    nwBuild = GuiBuildNovel(nwGUI, nwGUI.theProject)
+    nwGUI.mainMenu.aBuildProject.activate(QAction.Trigger)
+    qtbot.waitUntil(lambda: getGuiItem("GuiBuildNovel") is not None, timeout=1000)
 
+    nwBuild = getGuiItem("GuiBuildNovel")
+    assert isinstance(nwBuild, GuiBuildNovel)
+
+    assert nwBuild.viewCachedDoc()
     assert nwBuild.htmlText  == htmlText
     assert nwBuild.htmlStyle == htmlStyle
     assert nwBuild.nwdText   == nwdText
@@ -638,7 +669,11 @@ def testMergeSplitTools(qtbot, monkeypatch, yesToAll, nwTempGUI, nwLipsum, nwRef
     # Split By Scene
     assert nwGUI.treeView.setSelectedHandle("73475cb40a568")
     qtbot.wait(stepDelay)
-    nwSplit = GuiDocSplit(nwGUI, nwGUI.theProject)
+    nwGUI.mainMenu.aSplitDoc.activate(QAction.Trigger)
+    qtbot.waitUntil(lambda: getGuiItem("GuiDocSplit") is not None, timeout=1000)
+
+    nwSplit = getGuiItem("GuiDocSplit")
+    assert isinstance(nwSplit, GuiDocSplit)
     qtbot.wait(stepDelay)
     nwSplit.splitLevel.setCurrentIndex(2)
     qtbot.wait(stepDelay)
@@ -670,7 +705,11 @@ def testMergeSplitTools(qtbot, monkeypatch, yesToAll, nwTempGUI, nwLipsum, nwRef
     # Split By Section
     assert nwGUI.treeView.setSelectedHandle("73475cb40a568")
     qtbot.wait(stepDelay)
-    nwSplit = GuiDocSplit(nwGUI, nwGUI.theProject)
+    nwGUI.mainMenu.aSplitDoc.activate(QAction.Trigger)
+    qtbot.waitUntil(lambda: getGuiItem("GuiDocSplit") is not None, timeout=1000)
+
+    nwSplit = getGuiItem("GuiDocSplit")
+    assert isinstance(nwSplit, GuiDocSplit)
     qtbot.wait(stepDelay)
     nwSplit.splitLevel.setCurrentIndex(3)
     qtbot.wait(stepDelay)
@@ -924,6 +963,7 @@ def testLoadProject(qtbot, monkeypatch, yesToAll, nwMinimal, nwTemp):
     assert nwGUI.openProject(nwMinimal)
     assert nwGUI.closeProject()
 
+    qtbot.wait(stepDelay)
     monkeypatch.setattr(GuiProjectLoad, "exec_", lambda *args: None)
     monkeypatch.setattr(GuiProjectLoad, "result", lambda *args: QDialog.Accepted)
     nwGUI.mainMenu.aOpenProject.activate(QAction.Trigger)
@@ -933,36 +973,50 @@ def testLoadProject(qtbot, monkeypatch, yesToAll, nwMinimal, nwTemp):
     assert isinstance(nwLoad, GuiProjectLoad)
     nwLoad.show()
 
+    qtbot.wait(stepDelay)
     recentCount = nwLoad.listBox.topLevelItemCount()
     assert recentCount > 0
 
+    qtbot.wait(stepDelay)
     selItem = nwLoad.listBox.topLevelItem(0)
     selPath = selItem.data(nwLoad.C_NAME, Qt.UserRole)
     assert isinstance(selItem, QTreeWidgetItem)
 
+    qtbot.wait(stepDelay)
     nwLoad.selPath.setText("")
     nwLoad.listBox.setCurrentItem(selItem)
     nwLoad._doSelectRecent()
     assert nwLoad.selPath.text() == selPath
 
+    qtbot.wait(stepDelay)
     qtbot.mouseClick(nwLoad.buttonBox.button(QDialogButtonBox.Open), Qt.LeftButton)
     assert nwLoad.openPath == selPath
     assert nwLoad.openState == nwLoad.OPEN_STATE
 
     # Just create a new project load from scratch for the rest of the test
     del nwLoad
-    nwLoad = GuiProjectLoad(nwGUI)
+
+    qtbot.wait(stepDelay)
+    nwGUI.mainMenu.aOpenProject.activate(QAction.Trigger)
+    qtbot.waitUntil(lambda: getGuiItem("GuiProjectLoad") is not None, timeout=1000)
+
+    qtbot.wait(stepDelay)
+    nwLoad = getGuiItem("GuiProjectLoad")
+    assert isinstance(nwLoad, GuiProjectLoad)
     nwLoad.show()
 
+    qtbot.wait(stepDelay)
     qtbot.mouseClick(nwLoad.buttonBox.button(QDialogButtonBox.Cancel), Qt.LeftButton)
     assert nwLoad.openPath is None
     assert nwLoad.openState == nwLoad.NONE_STATE
 
+    qtbot.wait(stepDelay)
     nwLoad.show()
     qtbot.mouseClick(nwLoad.newButton, Qt.LeftButton)
     assert nwLoad.openPath is None
     assert nwLoad.openState == nwLoad.NEW_STATE
 
+    qtbot.wait(stepDelay)
     nwLoad.show()
     nwLoad._keyPressDelete()
     assert nwLoad.listBox.topLevelItemCount() == recentCount - 1

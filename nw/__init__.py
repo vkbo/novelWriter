@@ -199,28 +199,28 @@ def main(sysArgs=None):
 
     # Check Packages and Versions
     errorData = []
+    errorCode = 0
     if sys.hexversion < 0x030403f0:
         errorData.append(
             "At least Python 3.4.3 is required, but 3.6 is highly recommended."
         )
+        errorCode |= 4
     if CONFIG.verQtValue < 50200:
         errorData.append(
             "At least Qt5 version 5.2 is required, found %s." % CONFIG.verQtString
         )
+        errorCode |= 8
     if CONFIG.verPyQtValue < 50200:
         errorData.append(
             "At least PyQt5 version 5.2 is required, found %s." % CONFIG.verPyQtString
         )
-
-    try:
-        import PyQt5.QtSvg # noqa: F401
-    except ImportError:
-        errorData.append("Python module 'PyQt5.QtSvg' is missing.")
+        errorCode |= 16
 
     try:
         import lxml # noqa: F401
     except ImportError:
         errorData.append("Python module 'lxml' is missing.")
+        errorCode |= 32
 
     if errorData:
         if not testMode:
@@ -236,10 +236,20 @@ def main(sysArgs=None):
                 "<br>&nbsp;-&nbsp;".join(errorData)
             ))
             errApp.exec_()
-        sys.exit(10 + len(errorData))
+        sys.exit(errorCode)
 
     # Finish initialising config
     CONFIG.initConfig(confPath, dataPath)
+
+    if CONFIG.osDarwin:
+        try:
+            from Foundation import NSBundle
+            bundle = NSBundle.mainBundle()
+            info = bundle.localizedInfoDictionary() or bundle.infoDictionary()
+            info["CFBundleName"] = "novelWriter"
+        except ImportError as e:
+            logger.error("Failed to set application name")
+            logger.error(str(e))
 
     # Import GUI (after dependency checks), and launch
     from nw.guimain import GuiMain

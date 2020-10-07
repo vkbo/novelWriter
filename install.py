@@ -27,13 +27,13 @@ helpMsg = (
 )
 
 try:
-    inOpts, inArgs = getopt.getopt(sys.argv[1:],shortOpt,longOpt)
+    inOpts, inArgs = getopt.getopt(sys.argv[1:], shortOpt, longOpt)
 except getopt.GetoptError:
     print(helpMsg)
     sys.exit(2)
 
 for inOpt, inArg in inOpts:
-    if inOpt in ("-h","--help"):
+    if inOpt in ("-h", "--help"):
         print(helpMsg)
         sys.exit()
     elif inOpt in ("-d", "--debug"):
@@ -41,7 +41,7 @@ for inOpt, inArg in inOpts:
 
 # Run pip
 packList = ["pyinstaller"]
-with open("requirements.txt",mode="r") as reqFile:
+with open("requirements.txt", mode="r") as reqFile:
     for reqPack in reqFile:
         if len(reqPack.strip()) > 0:
             packList.append(reqPack)
@@ -72,7 +72,7 @@ if buildWindowed:
 
 instOpt.append("novelWriter.py")
 
-import PyInstaller.__main__
+import PyInstaller.__main__ # noqa: F401
 PyInstaller.__main__.run(instOpt)
 
 print("")
@@ -82,4 +82,3 @@ print("##################")
 print("")
 print("If everything went well, the novelWriter executable should be in the folder named 'dist'")
 print("")
-

@@ -152,13 +152,17 @@ class GuiMainStatus(QStatusBar):
         qApp.processEvents()
         return
 
-    def setLanguage(self, theLanguage):
+    def setLanguage(self, theLanguage, theProvider=""):
         """Set the language code for the spell checker.
         """
         if theLanguage is None:
             self.langText.setText("None")
+            self.langText.setToolTip("")
         else:
             self.langText.setText(NWSpellCheck.expandLanguage(theLanguage))
+            self.langText.setToolTip(
+                "Provider: %s" % (theProvider if theProvider else "unknown")
+            )
         return
 
     def setProjectStatus(self, isChanged):

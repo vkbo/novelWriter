@@ -340,7 +340,7 @@ class GuiConfigEditGeneralTab(QWidget):
         dlgOpt  = QFileDialog.Options()
         dlgOpt |= QFileDialog.ShowDirsOnly
         dlgOpt |= QFileDialog.DontUseNativeDialog
-        newDir = QFileDialog.getExistingDirectory(
+        newDir  = QFileDialog.getExistingDirectory(
             self, "Backup Directory", currDir, options=dlgOpt
         )
         if newDir:

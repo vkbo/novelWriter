@@ -757,6 +757,10 @@ class NWProject():
         if self.projPath is None or self.projPath == "":
             return False
 
+        if self.projPath == os.path.expanduser("~"):
+            # Don't make a mess in the user's home folder
+            return False
+
         self.projMeta    = os.path.join(self.projPath, "meta")
         self.projCache   = os.path.join(self.projPath, "cache")
         self.projContent = os.path.join(self.projPath, "content")
