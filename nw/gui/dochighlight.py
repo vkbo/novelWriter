@@ -28,6 +28,8 @@
 import nw
 import logging
 
+from time import time
+
 from PyQt5.QtCore import Qt, QRegularExpression
 from PyQt5.QtGui import (
     QColor, QTextCharFormat, QFont, QSyntaxHighlighter, QBrush
@@ -244,10 +246,15 @@ class GuiDocHighlighter(QSyntaxHighlighter):
         """
         qDocument = self.document()
         nBlocks = qDocument.blockCount()
+        bfTime = time()
         for i in range(nBlocks):
             theBlock = qDocument.findBlockByNumber(i)
-            if theBlock.userState() & theType == theType:
+            if theBlock.userState() & theType > 0:
                 self.rehighlightBlock(theBlock)
+        afTime = time()
+        logger.debug(
+            "Document highlighted in %.3f ms" % (1000*(afTime-bfTime))
+        )
         return
 
     ##

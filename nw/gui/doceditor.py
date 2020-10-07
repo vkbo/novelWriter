@@ -285,7 +285,7 @@ class GuiDocEditor(QTextEdit):
 
         self._allowAutoReplace(True)
         afTime = time()
-        logger.debug("Document highlighted in %.3f milliseconds" % (1000*(afTime-bfTime)))
+        logger.debug("Document highlighted in %.3f ms" % (1000*(afTime-bfTime)))
 
         self.lastEdit = time()
         self._runCounter()
@@ -557,9 +557,8 @@ class GuiDocEditor(QTextEdit):
             qApp.restoreOverrideCursor()
             afTime = time()
             logger.debug(
-                "Document re-highlighted in %.3f milliseconds" % (1000*(afTime-bfTime))
+                "Document highlighted in %.3f ms" % (1000*(afTime-bfTime))
             )
-
             self.theParent.statusBar.showMessage("Spell check complete")
 
         return True
