@@ -241,6 +241,16 @@ def main(sysArgs=None):
     # Finish initialising config
     CONFIG.initConfig(confPath, dataPath)
 
+    if CONFIG.osDarwin:
+        try:
+            from Foundation import NSBundle
+            bundle = NSBundle.mainBundle()
+            info = bundle.localizedInfoDictionary() or bundle.infoDictionary()
+            info["CFBundleName"] = "novelWriter"
+        except ImportError as e:
+            logger.error("Failed to set application name")
+            logger.error(str(e))
+
     # Import GUI (after dependency checks), and launch
     from nw.guimain import GuiMain
     if testMode:

@@ -283,10 +283,10 @@ def testWritingStatsExport(qtbot, monkeypatch, yesToAll, nwFuncTemp, nwTemp):
     assert isinstance(sessLog, GuiWritingStats)
     qtbot.wait(stepDelay)
 
-    monkeypatch.setattr(QFileDialog, "getSaveFileName", lambda *args, **kwargs: [])
+    monkeypatch.setattr(QFileDialog, "getSaveFileName", lambda *args, **kwargs: ("", ""))
     assert not sessLog._saveData(sessLog.FMT_CSV)
 
-    monkeypatch.setattr(QFileDialog, "getSaveFileName", lambda ss, tt, pp, options: [pp])
+    monkeypatch.setattr(QFileDialog, "getSaveFileName", lambda ss, tt, pp, options: (pp, ""))
     assert sessLog._saveData(sessLog.FMT_CSV)
     qtbot.wait(stepDelay)
     assert sessLog._saveData(sessLog.FMT_JSON)
