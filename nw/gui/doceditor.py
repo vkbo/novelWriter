@@ -509,7 +509,7 @@ class GuiDocEditor(QTextEdit):
 
         aLang, aName = self.theDict.describeDict()
         self.theParent.statusBar.setLanguage(
-            aLang, "%s/%s" % (self.mainConf.spellTool, aName)
+            aLang, "%s [%s]" % (self.mainConf.spellTool.title(), aName.title())
         )
 
         if not self.bigDoc:

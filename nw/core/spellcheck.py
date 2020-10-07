@@ -291,15 +291,12 @@ class NWSpellSimple(NWSpellCheck):
         if len(theWord) == 0:
             return []
 
-        firstUp = theWord[0] == theWord[0].upper()
-        theWord = theWord.lower()
-
-        theMatches = get_close_matches(theWord, self.WORDS, n=10, cutoff=0.75)
+        theMatches = get_close_matches(theWord.lower(), self.WORDS, n=10, cutoff=0.75)
         theOptions = []
         for aWord in theMatches:
             if len(aWord) == 0:
                 continue
-            if firstUp:
+            if theWord[0].isupper():
                 aWord = aWord[0].upper() + aWord[1:]
             aWord = aWord.replace("'", self.mainConf.fmtApostrophe)
             theOptions.append(aWord)

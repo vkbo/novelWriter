@@ -203,12 +203,12 @@ def transferCase(theSource, theTarget):
     if len(theTarget) < 1 or len(theSource) < 1:
         return theResult
 
-    if theSource[0] == theSource[0].upper():
-        theResult = theTarget[0].upper() + theTarget[1:]
+    if theSource.istitle():
+        theResult = theTarget.title()
 
-    if theSource == theSource.upper():
+    if theSource.isupper():
         theResult = theTarget.upper()
-    elif theSource == theSource.lower():
+    elif theSource.islower():
         theResult = theTarget.lower()
 
     return theResult
