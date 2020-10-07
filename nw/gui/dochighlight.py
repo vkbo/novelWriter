@@ -28,6 +28,8 @@
 import nw
 import logging
 
+from time import time
+
 from PyQt5.QtCore import Qt, QRegularExpression
 from PyQt5.QtGui import (
     QColor, QTextCharFormat, QFont, QSyntaxHighlighter, QBrush
@@ -203,7 +205,7 @@ class GuiDocHighlighter(QSyntaxHighlighter):
         # Build a QRegExp for spell checker
         # Include additional characters that the highlighter should
         # consider to be word separators
-        wordSep  = r"_\+/"
+        wordSep  = r"\-_\+/"
         wordSep += nwUnicode.U_ENDASH
         wordSep += nwUnicode.U_EMDASH
         self.spellRx = QRegularExpression(r"\b[^\s"+wordSep+r"]+\b")
@@ -244,10 +246,15 @@ class GuiDocHighlighter(QSyntaxHighlighter):
         """
         qDocument = self.document()
         nBlocks = qDocument.blockCount()
+        bfTime = time()
         for i in range(nBlocks):
             theBlock = qDocument.findBlockByNumber(i)
-            if theBlock.userState() & theType == theType:
+            if theBlock.userState() & theType > 0:
                 self.rehighlightBlock(theBlock)
+        afTime = time()
+        logger.debug(
+            "Document highlighted in %.3f ms" % (1000*(afTime-bfTime))
+        )
         return
 
     ##
@@ -343,7 +350,7 @@ class GuiDocHighlighter(QSyntaxHighlighter):
         while rxSpell.hasNext():
             rxMatch = rxSpell.next()
             if not self.theDict.checkWord(rxMatch.captured(0)):
-                if rxMatch.captured(0) == rxMatch.captured(0).upper():
+                if rxMatch.captured(0).isupper() or rxMatch.captured(0).isnumeric():
                     continue
                 xPos = rxMatch.capturedStart(0)
                 xLen = rxMatch.capturedLength(0)

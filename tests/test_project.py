@@ -377,6 +377,10 @@ def testSpellEnchant(nwTemp, nwConf):
     dList = spChk.listDictionaries()
     assert len(dList) > 0
 
+    aTag, aName = spChk.describeDict()
+    assert aTag == "en"
+    assert aName != ""
+
 @pytest.mark.project
 def testSpellSimple(nwTemp, nwConf):
     wList = os.path.join(nwTemp, "wordlist.txt")
@@ -401,6 +405,10 @@ def testSpellSimple(nwTemp, nwConf):
 
     dList = spChk.listDictionaries()
     assert len(dList) > 0
+
+    aTag, aName = spChk.describeDict()
+    assert aTag == "en"
+    assert aName == "internal"
 
 @pytest.mark.project
 def testProjectOptions(nwDummy, nwLipsum):

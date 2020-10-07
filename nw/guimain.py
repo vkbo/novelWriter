@@ -32,7 +32,7 @@ import os
 from datetime import datetime
 from time import time
 
-from PyQt5.QtCore import Qt, QTimer
+from PyQt5.QtCore import Qt, QTimer, QThreadPool
 from PyQt5.QtGui import QIcon, QPixmap, QColor, QKeySequence, QCursor
 from PyQt5.QtWidgets import (
     qApp, QMainWindow, QVBoxLayout, QWidget, QSplitter, QFileDialog, QShortcut,
@@ -60,6 +60,7 @@ class GuiMain(QMainWindow):
         logger.debug("Initialising GUI ...")
         self.setObjectName("GuiMain")
         self.mainConf = nw.CONFIG
+        self.threadPool = QThreadPool()
 
         # Some runtime info useful for debugging
         logger.info("OS: %s" % self.mainConf.osType)

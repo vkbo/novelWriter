@@ -12,6 +12,7 @@
  Created:   2020-04-25 [0.4.5]  GuiDocEditHeader
  Rewritten: 2020-06-15 [0.9.0]  GuiDocEditSearch
  Created:   2020-06-27 [0.10.0] GuiDocEditFooter
+ Rewritten: 2020-10-07 [1.0b3]  BackgroundWordCounter
 
  This file is a part of novelWriter
  Copyright 2018–2020, Veronica Berglyd Olsen
@@ -36,7 +37,8 @@ import logging
 from time import time
 
 from PyQt5.QtCore import (
-    Qt, QSize, QThread, QTimer, pyqtSlot, QRegExp, QRegularExpression, QPointF
+    Qt, QSize, QTimer, pyqtSlot, pyqtSignal, QRegExp, QRegularExpression,
+    QPointF, QObject, QRunnable
 )
 from PyQt5.QtGui import (
     QTextCursor, QTextOption, QKeySequence, QFont, QColor, QPalette,
@@ -135,14 +137,15 @@ class GuiDocEditor(QTextEdit):
             activated=self._followTag
         )
 
-        # Set Up Word Count Thread and Timer
+        # Set Up Word Counter
         self.wcInterval = self.mainConf.wordCountTimer
         self.wcTimer = QTimer()
         self.wcTimer.setInterval(int(self.wcInterval*1000))
         self.wcTimer.timeout.connect(self._runCounter)
 
         self.wCounter = BackgroundWordCounter(self)
-        self.wCounter.finished.connect(self._updateCounts)
+        self.wCounter.setAutoDelete(False)
+        self.wCounter.signals.countsReady.connect(self._updateCounts)
 
         self.initEditor()
 
@@ -282,7 +285,7 @@ class GuiDocEditor(QTextEdit):
 
         self._allowAutoReplace(True)
         afTime = time()
-        logger.debug("Document highlighted in %.3f milliseconds" % (1000*(afTime-bfTime)))
+        logger.debug("Document highlighted in %.3f ms" % (1000*(afTime-bfTime)))
 
         self.lastEdit = time()
         self._runCounter()
@@ -503,7 +506,11 @@ class GuiDocEditor(QTextEdit):
             theLang = self.theProject.projLang
 
         self.theDict.setLanguage(theLang, self.theProject.projDict)
-        self.theParent.statusBar.setLanguage(self.theDict.spellLanguage)
+
+        aLang, aName = self.theDict.describeDict()
+        self.theParent.statusBar.setLanguage(
+            aLang, "%s [%s]" % (self.mainConf.spellTool.title(), aName.title())
+        )
 
         if not self.bigDoc:
             self.spellCheckDocument()
@@ -550,9 +557,8 @@ class GuiDocEditor(QTextEdit):
             qApp.restoreOverrideCursor()
             afTime = time()
             logger.debug(
-                "Document re-highlighted in %.3f milliseconds" % (1000*(afTime-bfTime))
+                "Document highlighted in %.3f ms" % (1000*(afTime-bfTime))
             )
-
             self.theParent.statusBar.showMessage("Spell check complete")
 
         return True
@@ -857,7 +863,7 @@ class GuiDocEditor(QTextEdit):
             mnuHead = QAction("Spelling Suggestion(s)", mnuContext)
             mnuContext.addAction(mnuHead)
 
-            theSuggest = self.theDict.suggestWords(theWord)
+            theSuggest = self.theDict.suggestWords(theWord)[:15]
             if len(theSuggest) > 0:
                 for aWord in theSuggest:
                     mnuWord = QAction("%s %s" % (nwUnicode.U_ENDASH, aWord), mnuContext)
@@ -910,21 +916,18 @@ class GuiDocEditor(QTextEdit):
         """Decide whether to run the word counter, or stop the timer due
         to inactivity.
         """
-        sinceActive = time()-self.lastEdit
-        if sinceActive > 5*self.wcInterval:
-            logger.debug(
-                "Stopping word count timer: no activity last %.1f seconds" % sinceActive
-            )
-            self.wcTimer.stop()
-        elif self.wCounter.isRunning():
-            logger.verbose("Word counter thread is busy")
-        else:
-            logger.verbose("Starting word counter")
-            self.wCounter.start()
+        if self.wCounter.isRunning():
+            logger.verbose("Word counter is busy")
+            return
+
+        if time() - self.lastEdit < 5*self.wcInterval:
+            logger.verbose("Running word counter")
+            self.theParent.threadPool.start(self.wCounter)
+
         return
 
-    @pyqtSlot()
-    def _updateCounts(self):
+    @pyqtSlot(int, int, int)
+    def _updateCounts(self, cCount, wCount, pCount):
         """Slot for the word counter's finished signal
         """
         theItem = self.nwDocument.getCurrentItem()
@@ -933,19 +936,17 @@ class GuiDocEditor(QTextEdit):
 
         logger.verbose("Updating word count")
 
-        self.charCount = self.wCounter.charCount
-        self.wordCount = self.wCounter.wordCount
-        self.paraCount = self.wCounter.paraCount
-        theItem.setCharCount(self.charCount)
-        theItem.setWordCount(self.wordCount)
-        theItem.setParaCount(self.paraCount)
+        self.charCount = cCount
+        self.wordCount = wCount
+        self.paraCount = pCount
+        theItem.setCharCount(cCount)
+        theItem.setWordCount(wCount)
+        theItem.setParaCount(pCount)
 
-        self.theParent.treeView.propagateCount(self.theHandle, self.wordCount)
+        self.theParent.treeView.propagateCount(self.theHandle, wCount)
         self.theParent.treeView.projectWordCount()
-        self.theParent.treeMeta.updateCounts(
-            self.theHandle, self.charCount, self.wordCount, self.paraCount
-        )
-        self._checkDocSize(self.charCount)
+        self.theParent.treeMeta.updateCounts(self.theHandle, cCount, wCount, pCount)
+        self._checkDocSize(self.qDocument.characterCount())
         self.docFooter.updateCounts()
 
         return
@@ -1519,32 +1520,41 @@ class GuiDocEditor(QTextEdit):
 # END Class GuiDocEditor
 
 # =============================================================================================== #
-#  The Off GUI Thread Word Counter
-#  Runs the word counter in the background for the DocEditor
+#  The Off-GUI Thread Word Counter
+#  A runnable for the word counter to be run in the thread pool off the main GUI thread.
 # =============================================================================================== #
 
-class BackgroundWordCounter(QThread):
+class BackgroundWordCounter(QRunnable):
 
     def __init__(self, docEditor):
-        QThread.__init__(self, docEditor)
+        QRunnable.__init__(self)
         self.docEditor = docEditor
-        self.charCount = 0
-        self.wordCount = 0
-        self.paraCount = 0
+        self.signals = BackgroundWordCounterSignals()
+        self._isRunning = False
         return
 
+    def isRunning(self):
+        return self._isRunning
+
+    @pyqtSlot()
     def run(self):
         """Overloaded run function for the word counter, forwarding the
         call to the function that does the actual counting.
         """
+        self._isRunning = True
         theText = self.docEditor.getText()
         cC, wC, pC = countWords(theText)
-        self.charCount = cC
-        self.wordCount = wC
-        self.paraCount = pC
+        self.signals.countsReady.emit(cC, wC, pC)
+        self._isRunning = False
         return
 
 ## END Class BackgroundWordCounter
+
+class BackgroundWordCounterSignals(QObject):
+
+    countsReady = pyqtSignal(int, int, int)
+
+# END Class BackgroundWordCounterSignals
 
 # =============================================================================================== #
 #  The Embedded Document Search/Replace Feature
