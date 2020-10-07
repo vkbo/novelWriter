@@ -337,7 +337,7 @@ class GuiWritingStats(QDialog):
             saveTo  = QFileDialog.getSaveFileName(
                 self, "Save Document As", savePath, options=dlgOpt
             )
-            if saveTo:
+            if saveTo[0]:
                 savePath = saveTo[0]
             else:
                 return False

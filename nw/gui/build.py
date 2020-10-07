@@ -915,6 +915,9 @@ class GuiBuildNovel(QDialog):
         if theStatus:
             self.textFont.setText(theFont.family())
             self.textSize.setValue(theFont.pointSize())
+
+        self.raise_() # Move the dialog to front (fixes a bug on macOS)
+
         return
 
     def _loadCache(self):
