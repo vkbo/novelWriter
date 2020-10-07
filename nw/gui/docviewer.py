@@ -34,10 +34,10 @@ import logging
 
 from PyQt5.QtCore import Qt, QUrl, QSize, pyqtSlot
 from PyQt5.QtGui import (
-    QTextOption, QFont, QPalette, QColor, QTextCursor, QIcon
+    QTextOption, QFont, QPalette, QColor, QTextCursor, QIcon, QCursor
 )
 from PyQt5.QtWidgets import (
-    QTextBrowser, QWidget, QScrollArea, QLabel, QHBoxLayout, QToolButton,
+    qApp, QTextBrowser, QWidget, QScrollArea, QLabel, QHBoxLayout, QToolButton,
     QAction, QMenu
 )
 
@@ -124,11 +124,15 @@ class GuiDocViewer(QTextBrowser):
             theOpt.setAlignment(Qt.AlignJustify)
         self.qDocument.setDefaultTextOption(theOpt)
 
+        # Refresh the tab stops
+        if self.mainConf.verQtValue >= 51000:
+            self.setTabStopDistance(self.mainConf.getTabWidth())
+        else:
+            self.setTabStopWidth(self.mainConf.getTabWidth())
+
         # If we have a document open, we should reload it in case the font changed
         if self.theHandle is not None:
-            tHandle = self.theHandle
-            self.clearViewer()
-            self.loadText(tHandle)
+            self.redrawText()
 
         return True
 
@@ -144,6 +148,8 @@ class GuiDocViewer(QTextBrowser):
             return False
 
         logger.debug("Generating preview for item %s" % tHandle)
+        qApp.setOverrideCursor(QCursor(Qt.WaitCursor))
+
         sPos = self.verticalScrollBar().value()
         aDoc = ToHtml(self.theProject, self.theParent)
         aDoc.setPreview(True, self.mainConf.viewComments, self.mainConf.viewSynopsis)
@@ -195,7 +201,8 @@ class GuiDocViewer(QTextBrowser):
 
         # Since we change the content while it may still be rendering, we mark
         # the document dirty again to make sure it's re-rendered properly.
-        self.qDocument.markContentsDirty(0, self.qDocument.characterCount())
+        self.redrawText()
+        qApp.restoreOverrideCursor()
 
         return True
 
@@ -203,6 +210,12 @@ class GuiDocViewer(QTextBrowser):
         """Reload the text in the current document.
         """
         self.loadText(self.theHandle, updateHistory=False)
+        return
+
+    def redrawText(self):
+        """Redraw the text by marking the document content as "dirty".
+        """
+        self.qDocument.markContentsDirty(0, self.qDocument.characterCount())
         return
 
     def loadFromTag(self, theTag):
