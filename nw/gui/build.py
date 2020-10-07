@@ -899,8 +899,10 @@ class GuiBuildNovel(QDialog):
     def _doPrintPreview(self, thePrinter):
         """Connect the print preview painter to the document viewer.
         """
+        qApp.setOverrideCursor(QCursor(Qt.WaitCursor))
         thePrinter.setOrientation(QPrinter.Portrait)
         self.docView.qDocument.print(thePrinter)
+        qApp.restoreOverrideCursor()
         return
 
     def _selectFont(self):
