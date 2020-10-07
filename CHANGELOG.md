@@ -7,15 +7,41 @@
 * When the Trash folder doesn't exist because nothing has yet been deleted, the lookup function for the Trash folder's handle returns `None`. That meant that any item with a parent handle `None` would be treated as a Trash folder in many parts of the code before an actual Trash folder existed. This caused a few decision branches to make non-critical mistakes. This issue is now fixed with a new check function that takes this into account. PRs #452 and #453.
 * If an older project was opened, one with a different project file layout than the more recent versions, a dialog asks whether the user wants the project updated or not. However, the function that moves files to the new location actually starts working before the dialog asks for permission. Instead, it just checks that it is allowed to change the project XML file only. The check is still run before the dialog, but the action of moving files around are now postponed to after the permission has been given and the project XML file parsed. PR #453.
 * If there were multiple headings in a file, and the last paragraph did not end in a line break, the word counter for the individual sections would miss the last paragraph of the last section due to an index error. This has now been fixed. PR #453.
+* The cursor position of a document in the editor would only be saved if the document had been altered. It is now also saved in the cases where the user makes no changes. PR #460.
+* When using an aspell dictionary for spell checking, words containing a hyphen would be highlighted as misspelled. This is not the case for hunspell dictionaries. The hyphen is now taken into account when splitting sentences into words for spell check highlighting. PR #462.
+* Some of the file dialogs would fail with a non-critical error when the cancel button was clicked. The cancel is now captured consistently in all instances where such a dialog is used, and the calling function exited properly. PR #463.
 
 **User Interface**
 
 * Minor changes to the text formatting on the Recent Projects dialog. PR #452.
+* The Build Novel Project tool has been improved. The settings side panel is now scrollable, and the document and settings panel now have a movable splitter between them. This gives more flexibility to the sizes of the various parts. PR #459.
+* A new option to replace tabs with spaces has been added to the Build Novel Project tool. Previously, they were always replaces for HTML output, but converting them to the HTML code for tab is actually convenient for later import into for instance Libre Office, which converts them back to regular tabs. Issue #458, PR #459.
+* Non-breaking spaces have been removed from the HTML conversion of keywords and tags. Issue #458, PR #459.
+* An upper limit of how large a document the Build Novel Project tool can view has been set. It is 10 megabytes of generated HTML. The tool will still build larger documents, but they aren't displayed. This also limits which options are available in the "Save As" list for such large documents. Only native novelWriter exports are supported for such documents. The limit is an order of magnitude larger than a typical long novel. PR #460.
+* The language indicator in the status bar now has a tooltip stating what tool and spell check dictionary provider is being used. PR #462.
+* All representations of integers, mostly word counts, are now presented in the same way. They should all use a thousand separator representation defined by the localised settings. PR #464.
+* Many parts of the GUI have had a spin/wait cursor added for processes that may take a while and will block the GUI in the meantime. PRs #460, #463 and #464.
+
+**Improvements for macOS**
+
+* The native macOS menu bar now pulls the correct menu entries into the first menu column. PR #463.
+* The application name in the main menu would state Python instead of novelWriter. As long as the `pyobjc` package is installed, the label will now correctly state novelWriter. PR #463.
+* Install and run instructions for macOS have been added to the main README. PR #463.
+
+**Editor Performance**
+
+* The syntax highlighter now remembers what type of line every line in the document is. This means that certain types of lines can be re-highlighted without having to process the entire document again. This is particularly useful for refreshing the highlighting of keywords and tags after the index has been rebuilt. PR #460.
+* On a few occasions, the entire document in the editor would be reloaded in order to update the layout and formatting. This is not only slow for big documents, it also resets the undo stack. Instead, the entire document is "marked as dirty" to force the Qt library to update the layout, which is much faster. PR #460.
+* For very large documents (in the megabyte range), the repositioning of the cursor when the document was opened would sometimes interfere with the rendering of the document. This could potentially cause the editor to hang for up to a couple of minutes. Instead, the repositioning of the cursor is now postponed until the document layout size has reached a point past the character where the cursor is to be moved. This mode is only used for documents larger than 50 kilobytes. PR #460.
+* The document editor will no longer accept single documents larger than 5 megabytes. This restriction has also been applied to the Build Novel Project tool. For reference, a typical long novel is less than 1 megabyte in size. PR #460.
 
 **Other Changes**
 
 * The command line switches `--quiet` and `--logfile=` have been removed. They were intended for testing, but have never been used. The default mode of only printing warnings and errors is quiet enough, and logging to file shouldn't be necessary for a GUI application. PR #453.
 * A number of if statements and conditions in the code that were intended to alter behaviour when running tests, mostly to stop modal dialogs from blocking the main thread, have been removed. The changes to the program flow when running tests have now been reduced to a minimum, and modifications instead handled with pytest monkeypatches. PR #453.
+* The `QtSvg` package is no longer in use by novelWriter. The internal dependency check has been dropped. PR #457.
+* It is no longer possible to set the user's home folder as the root directory of a project. The home folder is the default lookup folder in many cases, so it's easy to do by mistake. PR #457.
+* The background word counter has been rewritten to run on an application wide thread pool. This is a more appropriate way of running background tasks. PR #462.
 
 **Test Suite**
 
