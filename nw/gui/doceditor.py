@@ -2273,10 +2273,10 @@ class GuiDocEditFooter(QWidget):
             wCount = self.theItem.wordCount
             wDiff  = wCount - self.theItem.initCount
 
-        self.wordsText.setText("Words: {:n} ({:+n})".format(wCount, wDiff))
+        self.wordsText.setText(f"Words: {wCount:n} ({wDiff:+n})")
 
         byteSize = self.docEditor.qDocument.characterCount()
-        self.wordsText.setToolTip("Document size is {:n} bytes".format(byteSize))
+        self.wordsText.setToolTip(f"Document size is {byteSize:n} bytes")
 
         return
 

@@ -454,10 +454,11 @@ class GuiWritingStats(QDialog):
             )
             return False
 
+        ttWords = ttNovel + ttNotes
         self.labelTotal.setText(self._formatTime(ttTime))
-        self.novelWords.setText("{:n}".format(ttNovel))
-        self.notesWords.setText("{:n}".format(ttNotes))
-        self.totalWords.setText("{:n}".format(ttNovel + ttNotes))
+        self.novelWords.setText(f"{ttNovel:n}")
+        self.notesWords.setText(f"{ttNotes:n}")
+        self.totalWords.setText(f"{ttWords:n}")
 
         return True
 
@@ -544,7 +545,7 @@ class GuiWritingStats(QDialog):
             newItem = QTreeWidgetItem()
             newItem.setText(self.C_TIME, sStart)
             newItem.setText(self.C_LENGTH, self._formatTime(sDiff))
-            newItem.setText(self.C_COUNT, "{:n}".format(nWords))
+            newItem.setText(self.C_COUNT, f"{nWords:n}")
 
             if nWords > 0 and listMax > 0:
                 theBar = self.barImage.scaled(
