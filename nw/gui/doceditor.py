@@ -740,8 +740,9 @@ class GuiDocEditor(QTextEdit):
         elif keyEvent == QKeySequence.Undo:
             self.docAction(nwDocAction.UNDO)
         else:
-            self.docFooter.updateLineCount()
             QTextEdit.keyPressEvent(self, keyEvent)
+            self.docFooter.updateLineCount()
+
         return
 
     def focusNextPrevChild(self, toNext):
@@ -764,8 +765,10 @@ class GuiDocEditor(QTextEdit):
         if qApp.keyboardModifiers() == Qt.ControlModifier:
             theCursor = self.cursorForPosition(mEvent.pos())
             self._followTag(theCursor)
-        self.docFooter.updateLineCount()
+
         QTextEdit.mouseReleaseEvent(self, mEvent)
+        self.docFooter.updateLineCount()
+
         return
 
     def resizeEvent(self, theEvent):
@@ -2205,7 +2208,7 @@ class GuiDocEditFooter(QWidget):
         self.linesIcon.setFixedHeight(self.sPx)
         self.linesIcon.setAlignment(Qt.AlignLeft | Qt.AlignTop)
 
-        self.linesText = QLabel("Line: 0 of 0")
+        self.linesText = QLabel("Line: 0")
         self.linesText.setIndent(0)
         self.linesText.setMargin(0)
         self.linesText.setContentsMargins(0, 0, 0, 0)
@@ -2295,13 +2298,11 @@ class GuiDocEditFooter(QWidget):
         """
         if self.theItem is None:
             iLine = 0
-            nLine = 0
         else:
             theCursor = self.docEditor.textCursor()
             iLine = theCursor.blockNumber() + 1
-            nLine = self.docEditor.qDocument.blockCount()
 
-        self.linesText.setText("Line: %d of %d" % (iLine, nLine))
+        self.linesText.setText(f"Line: {iLine:n}")
 
         return
 
