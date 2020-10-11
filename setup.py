@@ -77,6 +77,7 @@ if buildDocs:
     print("")
     if buildFail:
         print("Documentation build: FAILED")
+        sys.exit(1)
     else:
         print("Documentation build: OK")
     print("")
