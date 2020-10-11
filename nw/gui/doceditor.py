@@ -775,9 +775,9 @@ class GuiDocEditor(QTextEdit):
             kMod = keyEvent.modifiers()
             if kMod == Qt.NoModifier or kMod == Qt.ShiftModifier:
                 cPos = self.cursorRect().center().y()
-                mPos = self.mainConf.scollFromPoint*self.height()*0.01
+                mPos = self.mainConf.scollToPoint * self.viewport().height()
                 vBar = self.verticalScrollBar()
-                vBar.setValue(vBar.value() + cPos - round(mPos))
+                vBar.setValue(vBar.value() + cPos - round(mPos * 0.01))
                 self.ensureCursorVisible()
 
         return

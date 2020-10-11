@@ -128,7 +128,7 @@ class Config:
         self.doReplaceDots   = True
         self.scrollPastEnd   = True
         self.scollWithCursor = False
-        self.scollFromPoint  = 40
+        self.scollToPoint    = 40
 
         self.wordCountTimer  = 5.0
         self.showTabsNSpaces = False
@@ -468,8 +468,8 @@ class Config:
         self.scollWithCursor = self._parseLine(
             cnfParse, cnfSec, "scollwithcursor", self.CNF_BOOL, self.scollWithCursor
         )
-        self.scollFromPoint = self._parseLine(
-            cnfParse, cnfSec, "scollfrompoint", self.CNF_INT, self.scollFromPoint
+        self.scollToPoint = self._parseLine(
+            cnfParse, cnfSec, "scolltopoint", self.CNF_INT, self.scollToPoint
         )
         self.fmtSingleQuotes = self._parseLine(
             cnfParse, cnfSec, "fmtsinglequote", self.CNF_LIST, self.fmtSingleQuotes
@@ -617,7 +617,7 @@ class Config:
         cnfParse.set(cnfSec, "repdots",         str(self.doReplaceDots))
         cnfParse.set(cnfSec, "scrollpastend",   str(self.scrollPastEnd))
         cnfParse.set(cnfSec, "scollwithcursor", str(self.scollWithCursor))
-        cnfParse.set(cnfSec, "scollfrompoint",  str(self.scollFromPoint))
+        cnfParse.set(cnfSec, "scolltopoint",    str(self.scollToPoint))
         cnfParse.set(cnfSec, "fmtsinglequote",  self._packList(self.fmtSingleQuotes))
         cnfParse.set(cnfSec, "fmtdoublequote",  self._packList(self.fmtDoubleQuotes))
         cnfParse.set(cnfSec, "spelltool",       str(self.spellTool))

@@ -578,14 +578,14 @@ class GuiConfigEditLayoutTab(QWidget):
         )
 
         ## Font Size
-        self.scollFromPoint = QSpinBox(self)
-        self.scollFromPoint.setMinimum(10)
-        self.scollFromPoint.setMaximum(90)
-        self.scollFromPoint.setSingleStep(1)
-        self.scollFromPoint.setValue(self.mainConf.scollFromPoint)
+        self.scollToPoint = QSpinBox(self)
+        self.scollToPoint.setMinimum(10)
+        self.scollToPoint.setMaximum(90)
+        self.scollToPoint.setSingleStep(1)
+        self.scollToPoint.setValue(self.mainConf.scollToPoint)
         self.mainForm.addRow(
             "Position in the editor to keep the cursor",
-            self.scollFromPoint,
+            self.scollToPoint,
             "In units of percentage of the editor height.",
             theUnit = "%"
         )
@@ -609,7 +609,7 @@ class GuiConfigEditLayoutTab(QWidget):
         tabWidth        = self.tabWidth.value()
         scrollPastEnd   = self.scrollPastEnd.isChecked()
         scollWithCursor = self.scollWithCursor.isChecked()
-        scollFromPoint  = self.scollFromPoint.value()
+        scollToPoint    = self.scollToPoint.value()
 
         self.mainConf.textFont        = textFont
         self.mainConf.textSize        = textSize
@@ -622,7 +622,7 @@ class GuiConfigEditLayoutTab(QWidget):
         self.mainConf.tabWidth        = tabWidth
         self.mainConf.scrollPastEnd   = scrollPastEnd
         self.mainConf.scollWithCursor = scollWithCursor
-        self.mainConf.scollFromPoint  = scollFromPoint
+        self.mainConf.scollToPoint    = scollToPoint
 
         self.mainConf.confChanged = True
 
