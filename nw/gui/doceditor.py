@@ -376,9 +376,14 @@ class GuiDocEditor(QTextEdit):
             return False
 
         docText = self.getText()
+
+        cC, wC, pC = countWords(docText)
+        self._updateCounts(cC, wC, pC)
+
         theItem.setCharCount(self.charCount)
         theItem.setWordCount(self.wordCount)
         theItem.setParaCount(self.paraCount)
+
         self.saveCursorPosition()
         self.nwDocument.saveDocument(docText)
         self.setDocumentChanged(False)
