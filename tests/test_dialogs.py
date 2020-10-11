@@ -23,7 +23,7 @@ from nw.gui import (
     GuiProjectLoad, GuiPreferences
 )
 from nw.gui.custom import QuotesDialog
-from nw.constants import nwItemType, nwItemLayout, nwItemClass
+from nw.constants import nwItemType, nwItemLayout, nwItemClass, nwFiles
 
 keyDelay = 2
 typeDelay = 1
@@ -233,54 +233,15 @@ def testWritingStatsExport(qtbot, monkeypatch, yesToAll, nwFuncTemp, nwTemp):
     assert nwGUI.closeProject()
     qtbot.wait(stepDelay)
 
-    # Check that we cannot open when there is no project
-    nwGUI.mainMenu.aWritingStats.activate(QAction.Trigger)
-    assert getGuiItem("GuiWritingStats") is None
-
-    # Add some text to the scene file
-    assert nwGUI.openProject(nwFuncTemp)
-    qtbot.wait(stepDelay)
-
-    assert nwGUI.openDocument("0e17daca5f3e1")
-    nwGUI.docEditor.clear()
-    assert nwGUI.docEditor.insertText(
-        "# Scene One\n\n"
-        "It was the best of times, it was the worst of times, it was the age of wisdom, it was "
-        "the age of foolishness, it was the epoch of belief, it was the epoch of incredulity, it "
-        "was the season of Light, it was the season of Darkness, it was the spring of hope, it "
-        "was the winter of despair, we had everything before us, we had nothing before us, we "
-        "were all going direct to Heaven, we were all going direct the other way – in short, the "
-        "period was so far like the present period, that some of its noisiest authorities "
-        "insisted on its being received, for good or for evil, in the superlative degree of "
-        "comparison only.\n\n"
-    )
-    qtbot.wait(stepDelay)
-    assert nwGUI.saveDocument()
-    qtbot.wait(200) # Ensures that the session length is > 0
-
-    assert nwGUI.saveProject()
-    assert nwGUI.closeProject()
-    qtbot.wait(stepDelay)
-
-    # Add a note file with some text
-    assert nwGUI.openProject(nwFuncTemp)
-    qtbot.wait(stepDelay)
-
-    nwGUI.treeView.clearSelection()
-    nwGUI.treeView._getTreeItem("71ee45a3c0db9").setSelected(True)
-    nwGUI.treeView.newTreeItem(nwItemType.FILE, None)
-    assert nwGUI.openSelectedItem()
-    assert nwGUI.docEditor.insertText(
-        "# Jane Doe\n\n"
-        "All about Jane.\n\n"
-    )
-    qtbot.wait(stepDelay)
-    assert nwGUI.saveDocument()
-    qtbot.wait(200) # Ensures that the session length is > 0
-
-    assert nwGUI.saveProject()
-    assert nwGUI.closeProject()
-    qtbot.wait(stepDelay)
+    sessFile = os.path.join(nwFuncTemp, "meta", nwFiles.SESS_STATS)
+    with open(sessFile, mode="w+", encoding="utf-8") as outFile:
+        outFile.write(
+            "# Start Time         End Time                Novel     Notes\n"
+            "2020-01-01 21:00:00  2020-01-01 21:00:05         6         0\n"
+            "2020-01-03 21:00:00  2020-01-03 21:00:15       125         0\n"
+            "2020-01-03 21:30:00  2020-01-03 21:30:15       125         5\n"
+            "2020-01-06 21:00:00  2020-01-06 21:00:10       125         5\n"
+        )
 
     # Open again, and check the stats
     assert nwGUI.openProject(nwFuncTemp)
@@ -299,17 +260,18 @@ def testWritingStatsExport(qtbot, monkeypatch, yesToAll, nwFuncTemp, nwTemp):
 
     monkeypatch.setattr(QFileDialog, "getSaveFileName", lambda ss, tt, pp, options: (pp, ""))
     assert sessLog._saveData(sessLog.FMT_CSV)
-    qtbot.wait(stepDelay)
+    qtbot.wait(100)
     assert sessLog._saveData(sessLog.FMT_JSON)
-    qtbot.wait(stepDelay)
+    qtbot.wait(100)
 
     jsonStats = os.path.join(nwFuncTemp, "sessionStats.json")
     with open(jsonStats, mode="r", encoding="utf-8") as inFile:
         jsonData = json.loads(inFile.read())
 
     qtbot.wait(stepDelay)
+
     assert len(jsonData) == 3
-    assert jsonData[1]["length"] >= 0
+    assert jsonData[1]["length"] >= 14.0
     assert jsonData[1]["newWords"] == 119
     assert jsonData[1]["novelWords"] == 125
     assert jsonData[1]["noteWords"] == 0
@@ -325,7 +287,7 @@ def testWritingStatsExport(qtbot, monkeypatch, yesToAll, nwFuncTemp, nwTemp):
         jsonData = json.loads(inFile.read())
 
     assert len(jsonData) == 1
-    assert jsonData[0]["length"] >= 0
+    assert jsonData[0]["length"] >= 14.0
     assert jsonData[0]["newWords"] == 5
     assert jsonData[0]["novelWords"] == 125
     assert jsonData[0]["noteWords"] == 5
@@ -342,7 +304,7 @@ def testWritingStatsExport(qtbot, monkeypatch, yesToAll, nwFuncTemp, nwTemp):
         jsonData = json.loads(inFile.read())
 
     assert len(jsonData) == 2
-    assert jsonData[1]["length"] >= 0
+    assert jsonData[1]["length"] >= 14.0
     assert jsonData[1]["newWords"] == 119
     assert jsonData[1]["novelWords"] == 125
     assert jsonData[1]["noteWords"] == 0
@@ -371,7 +333,7 @@ def testWritingStatsExport(qtbot, monkeypatch, yesToAll, nwFuncTemp, nwTemp):
     with open(jsonStats, mode="r", encoding="utf-8") as inFile:
         jsonData = json.loads(inFile.read())
 
-    assert len(jsonData) == 3
+    assert len(jsonData) == 4
 
     # Group by Day
     qtbot.mouseClick(sessLog.groupByDay, Qt.LeftButton)
@@ -385,11 +347,13 @@ def testWritingStatsExport(qtbot, monkeypatch, yesToAll, nwFuncTemp, nwTemp):
 
     # Check against both 1 and 2 as this can be 2 if test was started just before midnight.
     # A failed test should in any case produce a 4
-    assert len(jsonData) in (1, 2)
+    assert len(jsonData) == 3
 
     # qtbot.stopForInteraction()
 
     sessLog._doClose()
+    assert nwGUI.closeProject()
+    qtbot.wait(stepDelay)
     nwGUI.closeMain()
 
 @pytest.mark.gui
