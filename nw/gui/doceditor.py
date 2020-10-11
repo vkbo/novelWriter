@@ -224,6 +224,12 @@ class GuiDocEditor(QTextEdit):
 
         self.qDocument.setDefaultTextOption(theOpt)
 
+        # Scroll bars
+        if self.mainConf.hideVScroll:
+            self.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
+        if self.mainConf.hideHScroll:
+            self.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
+
         # Refresh the tab stops
         if self.mainConf.verQtValue >= 51000:
             self.setTabStopDistance(self.mainConf.getTabWidth())

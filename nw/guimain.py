@@ -790,6 +790,9 @@ class GuiMain(QMainWindow):
             self.saveDocument()
             self.docEditor.initEditor()
             self.docViewer.initViewer()
+            self.treeView.initTree()
+            self.projView.initOutline()
+            self.projMeta.initDetails()
 
         return
 

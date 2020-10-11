@@ -115,10 +115,24 @@ class GuiProjectTree(QTreeWidget):
         # The last column should just auto-scale
         self.resizeColumnToContents(self.C_FLAGS)
 
+        # Set custom settings
+        self.initTree()
+
         logger.debug("GuiProjectTree initialisation complete")
 
         # Internal Mapping
         self.makeAlert = self.theParent.makeAlert
+
+        return
+
+    def initTree(self):
+        """Set or update tree widget settings.
+        """
+        # Scroll bars
+        if self.mainConf.hideVScroll:
+            self.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
+        if self.mainConf.hideHScroll:
+            self.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
 
         return
 

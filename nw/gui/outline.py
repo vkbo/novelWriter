@@ -118,10 +118,22 @@ class GuiOutline(QTreeWidget):
         self.colIndex  = {}
         self.treeNCols = 0
 
+        self.initOutline()
         self.clearOutline()
         self.headerMenu.setHiddenState(self.colHidden)
 
         logger.debug("GuiOutline initialisation complete")
+
+        return
+
+    def initOutline(self):
+        """Set or update outline settings.
+        """
+        # Scroll bars
+        if self.mainConf.hideVScroll:
+            self.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
+        if self.mainConf.hideHScroll:
+            self.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
 
         return
 

@@ -102,6 +102,10 @@ class Config:
         self.outlnPanePos = [500, 150]
         self.isFullScreen = False
 
+        ## Features
+        self.hideVScroll = False # Hide vertical scroll bars on main widgets
+        self.hideHScroll = False # Hide horizontal scroll bars on main widgets
+
         ## Project
         self.autoSaveProj = 60
         self.autoSaveDoc  = 30

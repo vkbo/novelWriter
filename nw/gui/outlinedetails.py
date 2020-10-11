@@ -224,7 +224,20 @@ class GuiOutlineDetails(QScrollArea):
         self.setVerticalScrollBarPolicy(Qt.ScrollBarAsNeeded)
         self.setWidgetResizable(True)
 
+        self.initDetails()
+
         logger.debug("GuiOutlineDetails initialisation complete")
+
+        return
+
+    def initDetails(self):
+        """Set or update outline settings.
+        """
+        # Scroll bars
+        if self.mainConf.hideVScroll:
+            self.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
+        if self.mainConf.hideHScroll:
+            self.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
 
         return
 
