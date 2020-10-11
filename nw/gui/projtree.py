@@ -241,7 +241,8 @@ class GuiProjectTree(QTreeWidget):
         # Add the new item to the tree
         if tHandle is not None:
             self.revealNewTreeItem(tHandle, nHandle)
-            self.theParent.editItem(tHandle)
+            if self.mainConf.showGUI:
+                self.theParent.editItem(tHandle)
 
         return True
 
