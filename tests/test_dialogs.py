@@ -1198,7 +1198,7 @@ def testPreferences(qtbot, monkeypatch, yesToAll, nwMinimal, nwTemp, nwRef, tmpC
     ignoreLines = [
         2,                          # Timestamp
         11, 12, 13, 14, 15, 16, 17, # Window sizes
-        7, 25,                      # Fonts (depends on system default)
+        7, 27,                      # Fonts (depends on system default)
     ]
     assert cmpFiles(testConf, refConf, ignoreLines)
 
