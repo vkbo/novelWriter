@@ -312,6 +312,8 @@ class GuiDocEditor(QTextEdit):
         else:
             self.setCursorLine(tLine)
 
+        self.docFooter.updateLineCount()
+
         qApp.restoreOverrideCursor()
 
         return True
@@ -462,6 +464,7 @@ class GuiDocEditor(QTextEdit):
             theCursor = self.textCursor()
             theCursor.setPosition(thePosition)
             self.setTextCursor(theCursor)
+            self.docFooter.updateLineCount()
         return True
 
     def getCursorPosition(self):
@@ -488,6 +491,7 @@ class GuiDocEditor(QTextEdit):
             theBlock = self.qDocument.findBlockByLineNumber(theLine)
             if theBlock:
                 self.setCursorPosition(theBlock.position())
+                self.docFooter.updateLineCount()
                 logger.verbose("Cursor moved to line %d" % theLine)
         return True
 
@@ -737,6 +741,8 @@ class GuiDocEditor(QTextEdit):
             self.docAction(nwDocAction.UNDO)
         else:
             QTextEdit.keyPressEvent(self, keyEvent)
+            self.docFooter.updateLineCount()
+
         return
 
     def focusNextPrevChild(self, toNext):
@@ -759,7 +765,10 @@ class GuiDocEditor(QTextEdit):
         if qApp.keyboardModifiers() == Qt.ControlModifier:
             theCursor = self.cursorForPosition(mEvent.pos())
             self._followTag(theCursor)
+
         QTextEdit.mouseReleaseEvent(self, mEvent)
+        self.docFooter.updateLineCount()
+
         return
 
     def resizeEvent(self, theEvent):
@@ -2166,6 +2175,7 @@ class GuiDocEditFooter(QWidget):
         self.sPx = int(round(0.9*self.theTheme.baseIconSize))
         fPx = int(0.9*self.theTheme.fontPixelSize)
         bSp = self.mainConf.pxInt(4)
+        hSp = self.mainConf.pxInt(6)
 
         lblFont = self.font()
         lblFont.setPointSizeF(0.9*self.theTheme.fontPointSize)
@@ -2191,6 +2201,23 @@ class GuiDocEditFooter(QWidget):
         self.statusText.setPalette(self.thePalette)
         self.statusText.setFont(lblFont)
 
+        # Lines
+        self.linesIcon = QLabel("")
+        self.linesIcon.setPixmap(self.theTheme.getPixmap("status_lines", (self.sPx, self.sPx)))
+        self.linesIcon.setContentsMargins(0, 0, 0, 0)
+        self.linesIcon.setFixedHeight(self.sPx)
+        self.linesIcon.setAlignment(Qt.AlignLeft | Qt.AlignTop)
+
+        self.linesText = QLabel("Line: 0")
+        self.linesText.setIndent(0)
+        self.linesText.setMargin(0)
+        self.linesText.setContentsMargins(0, 0, 0, 0)
+        self.linesText.setAutoFillBackground(True)
+        self.linesText.setFixedHeight(fPx)
+        self.linesText.setAlignment(Qt.AlignLeft | Qt.AlignTop)
+        self.linesText.setPalette(self.thePalette)
+        self.linesText.setFont(lblFont)
+
         # Words
         self.wordsIcon = QLabel("")
         self.wordsIcon.setPixmap(self.theTheme.getPixmap("status_stats", (self.sPx, self.sPx)))
@@ -2214,6 +2241,9 @@ class GuiDocEditFooter(QWidget):
         self.outerBox.addWidget(self.statusIcon)
         self.outerBox.addWidget(self.statusText)
         self.outerBox.addStretch(1)
+        self.outerBox.addWidget(self.linesIcon)
+        self.outerBox.addWidget(self.linesText)
+        self.outerBox.addSpacing(hSp)
         self.outerBox.addWidget(self.wordsIcon)
         self.outerBox.addWidget(self.wordsText)
         self.setLayout(self.outerBox)
@@ -2263,8 +2293,21 @@ class GuiDocEditFooter(QWidget):
 
         return
 
+    def updateLineCount(self):
+        """Update the word count.
+        """
+        if self.theItem is None:
+            iLine = 0
+        else:
+            theCursor = self.docEditor.textCursor()
+            iLine = theCursor.blockNumber() + 1
+
+        self.linesText.setText(f"Line: {iLine:n}")
+
+        return
+
     def updateCounts(self):
-        """Update the word counts.
+        """Update the word count.
         """
         if self.theItem is None:
             wCount = 0
