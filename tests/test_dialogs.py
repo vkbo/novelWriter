@@ -228,6 +228,7 @@ def testWritingStatsExport(qtbot, monkeypatch, yesToAll, nwFuncTemp, nwTemp):
     # Create new, save, close project
     nwGUI.theProject.projTree.setSeed(42)
     assert nwGUI.newProject({"projPath": nwFuncTemp})
+    qtbot.wait(200)
     assert nwGUI.saveProject()
     assert nwGUI.closeProject()
     qtbot.wait(stepDelay)
@@ -236,11 +237,12 @@ def testWritingStatsExport(qtbot, monkeypatch, yesToAll, nwFuncTemp, nwTemp):
     nwGUI.mainMenu.aWritingStats.activate(QAction.Trigger)
     assert getGuiItem("GuiWritingStats") is None
 
+    # Add some text to the scene file
     assert nwGUI.openProject(nwFuncTemp)
     qtbot.wait(stepDelay)
 
-    # Add some text to the scene file
     assert nwGUI.openDocument("0e17daca5f3e1")
+    nwGUI.docEditor.clear()
     assert nwGUI.docEditor.insertText(
         "# Scene One\n\n"
         "It was the best of times, it was the worst of times, it was the age of wisdom, it was "
@@ -252,10 +254,18 @@ def testWritingStatsExport(qtbot, monkeypatch, yesToAll, nwFuncTemp, nwTemp):
         "insisted on its being received, for good or for evil, in the superlative degree of "
         "comparison only.\n\n"
     )
+    qtbot.wait(stepDelay)
     assert nwGUI.saveDocument()
+    qtbot.wait(200) # Ensures that the session length is > 0
+
+    assert nwGUI.saveProject()
+    assert nwGUI.closeProject()
+    qtbot.wait(stepDelay)
 
     # Add a note file with some text
-    nwGUI.setFocus(1)
+    assert nwGUI.openProject(nwFuncTemp)
+    qtbot.wait(stepDelay)
+
     nwGUI.treeView.clearSelection()
     nwGUI.treeView._getTreeItem("71ee45a3c0db9").setSelected(True)
     nwGUI.treeView.newTreeItem(nwItemType.FILE, None)
@@ -264,8 +274,9 @@ def testWritingStatsExport(qtbot, monkeypatch, yesToAll, nwFuncTemp, nwTemp):
         "# Jane Doe\n\n"
         "All about Jane.\n\n"
     )
+    qtbot.wait(stepDelay)
     assert nwGUI.saveDocument()
-    qtbot.wait(500) # Ensures that the session length is > 0
+    qtbot.wait(200) # Ensures that the session length is > 0
 
     assert nwGUI.saveProject()
     assert nwGUI.closeProject()
@@ -296,11 +307,12 @@ def testWritingStatsExport(qtbot, monkeypatch, yesToAll, nwFuncTemp, nwTemp):
     with open(jsonStats, mode="r", encoding="utf-8") as inFile:
         jsonData = json.loads(inFile.read())
 
-    assert len(jsonData) == 2
+    qtbot.wait(stepDelay)
+    assert len(jsonData) == 3
     assert jsonData[1]["length"] >= 0
-    assert jsonData[1]["newWords"] == 126
-    assert jsonData[1]["novelWords"] == 127
-    assert jsonData[1]["noteWords"] == 5
+    assert jsonData[1]["newWords"] == 119
+    assert jsonData[1]["novelWords"] == 125
+    assert jsonData[1]["noteWords"] == 0
 
     # No Novel Files
     qtbot.mouseClick(sessLog.incNovel, Qt.LeftButton)
@@ -315,7 +327,7 @@ def testWritingStatsExport(qtbot, monkeypatch, yesToAll, nwFuncTemp, nwTemp):
     assert len(jsonData) == 1
     assert jsonData[0]["length"] >= 0
     assert jsonData[0]["newWords"] == 5
-    assert jsonData[0]["novelWords"] == 127
+    assert jsonData[0]["novelWords"] == 125
     assert jsonData[0]["noteWords"] == 5
 
     # No Note Files
@@ -331,9 +343,9 @@ def testWritingStatsExport(qtbot, monkeypatch, yesToAll, nwFuncTemp, nwTemp):
 
     assert len(jsonData) == 2
     assert jsonData[1]["length"] >= 0
-    assert jsonData[1]["newWords"] == 121
-    assert jsonData[1]["novelWords"] == 127
-    assert jsonData[1]["noteWords"] == 5
+    assert jsonData[1]["newWords"] == 119
+    assert jsonData[1]["novelWords"] == 125
+    assert jsonData[1]["noteWords"] == 0
 
     # No Negative Entries
     qtbot.mouseClick(sessLog.incNotes, Qt.LeftButton)
@@ -346,7 +358,7 @@ def testWritingStatsExport(qtbot, monkeypatch, yesToAll, nwFuncTemp, nwTemp):
     with open(jsonStats, mode="r", encoding="utf-8") as inFile:
         jsonData = json.loads(inFile.read())
 
-    assert len(jsonData) == 2
+    assert len(jsonData) == 3
 
     # Un-hide Zero Entries
     qtbot.mouseClick(sessLog.hideNegative, Qt.LeftButton)
@@ -359,7 +371,7 @@ def testWritingStatsExport(qtbot, monkeypatch, yesToAll, nwFuncTemp, nwTemp):
     with open(jsonStats, mode="r", encoding="utf-8") as inFile:
         jsonData = json.loads(inFile.read())
 
-    assert len(jsonData) == 2
+    assert len(jsonData) == 3
 
     # Group by Day
     qtbot.mouseClick(sessLog.groupByDay, Qt.LeftButton)
