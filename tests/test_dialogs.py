@@ -1077,6 +1077,16 @@ def testPreferences(qtbot, monkeypatch, yesToAll, nwMinimal, nwTemp, nwRef, tmpC
     qtbot.mouseClick(tabGeneral.showFullPath, Qt.LeftButton)
     assert not tabGeneral.showFullPath.isChecked()
 
+    qtbot.wait(keyDelay)
+    assert not tabGeneral.hideVScroll.isChecked()
+    qtbot.mouseClick(tabGeneral.hideVScroll, Qt.LeftButton)
+    assert tabGeneral.hideVScroll.isChecked()
+
+    qtbot.wait(keyDelay)
+    assert not tabGeneral.hideHScroll.isChecked()
+    qtbot.mouseClick(tabGeneral.hideHScroll, Qt.LeftButton)
+    assert tabGeneral.hideHScroll.isChecked()
+
     # Check font button
     monkeypatch.setattr(QFontDialog, "getFont", lambda font, obj: (font, True))
     qtbot.mouseClick(tabGeneral.fontButton, Qt.LeftButton)
@@ -1134,6 +1144,16 @@ def testPreferences(qtbot, monkeypatch, yesToAll, nwMinimal, nwTemp, nwRef, tmpC
     assert tabLayout.textJustify.isChecked()
     qtbot.mouseClick(tabLayout.textJustify, Qt.LeftButton)
     assert not tabLayout.textJustify.isChecked()
+
+    qtbot.wait(keyDelay)
+    assert tabLayout.scrollPastEnd.isChecked()
+    qtbot.mouseClick(tabLayout.scrollPastEnd, Qt.LeftButton)
+    assert not tabLayout.scrollPastEnd.isChecked()
+
+    qtbot.wait(keyDelay)
+    assert not tabLayout.scollWithCursor.isChecked()
+    qtbot.mouseClick(tabLayout.scollWithCursor, Qt.LeftButton)
+    assert tabLayout.scollWithCursor.isChecked()
 
     # Editor Settings
     qtbot.wait(keyDelay)
