@@ -122,6 +122,8 @@ class Config:
         self.doReplaceDQuote = True
         self.doReplaceDash   = True
         self.doReplaceDots   = True
+        self.extendScroll    = True
+
         self.wordCountTimer  = 5.0
         self.showTabsNSpaces = False
         self.showLineEndings = False

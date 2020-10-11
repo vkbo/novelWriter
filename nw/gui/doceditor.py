@@ -377,6 +377,7 @@ class GuiDocEditor(QTextEdit):
         just ensure the margins are set correctly.
         """
         wW = self.width()
+        wH = self.height()
         cM = self.mainConf.getTextMargin()
 
         vBar = self.verticalScrollBar()
@@ -400,7 +401,7 @@ class GuiDocEditor(QTextEdit):
         tW = wW - 2*tB - sW
         tH = self.docHeader.height()
         fH = self.docFooter.height()
-        fY = self.height() - fH - tB - sH
+        fY = wH - fH - tB - sH
         self.docHeader.setGeometry(tB, tB, tW, tH)
         self.docFooter.setGeometry(tB, fY, tW, fH)
 
@@ -412,7 +413,14 @@ class GuiDocEditor(QTextEdit):
         else:
             rH = 0
 
-        self.setViewportMargins(tM, max(cM, tH, rH), tM, max(cM, fH))
+        uM = max(cM, tH, rH)
+        lM = max(cM, fH)
+        self.setViewportMargins(tM, uM, tM, lM)
+
+        if self.mainConf.extendScroll:
+            docFrame = self.qDocument.rootFrame().frameFormat()
+            docFrame.setBottomMargin(wH - uM - lM - self.theTheme.fontPixelSize)
+            self.qDocument.rootFrame().setFrameFormat(docFrame)
 
         return
 
