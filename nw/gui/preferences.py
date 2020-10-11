@@ -225,7 +225,24 @@ class GuiConfigEditGeneralTab(QWidget):
         self.showFullPath.setChecked(self.mainConf.showFullPath)
         self.mainForm.addRow(
             "Show full path in document header",
-            self.showFullPath
+            self.showFullPath,
+            "Shows the document title and parent folder names."
+        )
+
+        self.hideVScroll = QSwitch()
+        self.hideVScroll.setChecked(self.mainConf.hideVScroll)
+        self.mainForm.addRow(
+            "Hide vertical scroll bars in main windows",
+            self.hideVScroll,
+            "Scrolling with mouse wheel and keys only."
+        )
+
+        self.hideHScroll = QSwitch()
+        self.hideHScroll.setChecked(self.mainConf.hideHScroll)
+        self.mainForm.addRow(
+            "Hide horizontal scroll bars in main windows",
+            self.hideHScroll,
+            "Scrolling with mouse wheel and keys only."
         )
 
         return
@@ -242,6 +259,8 @@ class GuiConfigEditGeneralTab(QWidget):
         guiFont      = self.guiFont.text()
         guiFontSize  = self.guiFontSize.value()
         showFullPath = self.showFullPath.isChecked()
+        hideVScroll  = self.hideVScroll.isChecked()
+        hideHScroll  = self.hideHScroll.isChecked()
 
         # Check if restart is needed
         needsRestart |= self.mainConf.guiTheme != guiTheme
@@ -255,6 +274,8 @@ class GuiConfigEditGeneralTab(QWidget):
         self.mainConf.guiFont      = guiFont
         self.mainConf.guiFontSize  = guiFontSize
         self.mainConf.showFullPath = showFullPath
+        self.mainConf.hideVScroll  = hideVScroll
+        self.mainConf.hideHScroll  = hideHScroll
 
         self.mainConf.confChanged = True
 
@@ -534,6 +555,24 @@ class GuiConfigEditLayoutTab(QWidget):
             theUnit="px"
         )
 
+        ## Scroll Past End
+        self.scrollPastEnd = QSwitch()
+        self.scrollPastEnd.setChecked(self.mainConf.scrollPastEnd)
+        self.mainForm.addRow(
+            "Scroll past end of the document",
+            self.scrollPastEnd,
+            "Allows scrolling until last line is at the top."
+        )
+
+        ## Typewriter Scrolling
+        self.scollWithCursor = QSwitch()
+        self.scollWithCursor.setChecked(self.mainConf.scollWithCursor)
+        self.mainForm.addRow(
+            "Typewriter style scrolling",
+            self.scollWithCursor,
+            "Scrolls up when the cursor moves to a new line."
+        )
+
         return
 
     def saveValues(self):
@@ -551,6 +590,8 @@ class GuiConfigEditLayoutTab(QWidget):
         doJustify       = self.textJustify.isChecked()
         textMargin      = self.textMargin.value()
         tabWidth        = self.tabWidth.value()
+        scrollPastEnd   = self.scrollPastEnd.isChecked()
+        scollWithCursor = self.scollWithCursor.isChecked()
 
         self.mainConf.textFont        = textFont
         self.mainConf.textSize        = textSize
@@ -561,6 +602,8 @@ class GuiConfigEditLayoutTab(QWidget):
         self.mainConf.doJustify       = doJustify
         self.mainConf.textMargin      = textMargin
         self.mainConf.tabWidth        = tabWidth
+        self.mainConf.scrollPastEnd   = scrollPastEnd
+        self.mainConf.scollWithCursor = scollWithCursor
 
         self.mainConf.confChanged = True
 

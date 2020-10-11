@@ -47,7 +47,7 @@ from PyQt5.QtGui import (
 from PyQt5.QtWidgets import (
     qApp, QTextEdit, QAction, QMenu, QShortcut, QMessageBox, QWidget, QLabel,
     QToolBar, QToolButton, QHBoxLayout, QGridLayout, QLineEdit, QPushButton,
-    QFrame, QAbstractSlider
+    QFrame
 )
 
 from nw.core import NWDoc, NWSpellCheck, NWSpellSimple, countWords
@@ -231,8 +231,13 @@ class GuiDocEditor(QTextEdit):
         # Scroll bars
         if self.mainConf.hideVScroll:
             self.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
+        else:
+            self.setVerticalScrollBarPolicy(Qt.ScrollBarAsNeeded)
+
         if self.mainConf.hideHScroll:
             self.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
+        else:
+            self.setHorizontalScrollBarPolicy(Qt.ScrollBarAsNeeded)
 
         # Refresh the tab stops
         if self.mainConf.verQtValue >= 51000:
@@ -479,11 +484,14 @@ class GuiDocEditor(QTextEdit):
         """
         if not isinstance(thePosition, int):
             return False
+
         if thePosition >= 0:
             theCursor = self.textCursor()
             theCursor.setPosition(thePosition)
             self.setTextCursor(theCursor)
             self.docFooter.updateLineCount()
+            self.cursorLast = self.cursorRect().center().y()
+
         return True
 
     def getCursorPosition(self):
