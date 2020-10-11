@@ -47,7 +47,7 @@ from PyQt5.QtGui import (
 from PyQt5.QtWidgets import (
     qApp, QTextEdit, QAction, QMenu, QShortcut, QMessageBox, QWidget, QLabel,
     QToolBar, QToolButton, QHBoxLayout, QGridLayout, QLineEdit, QPushButton,
-    QFrame
+    QFrame, QAbstractSlider
 )
 
 from nw.core import NWDoc, NWSpellCheck, NWSpellSimple, countWords
@@ -88,6 +88,8 @@ class GuiDocEditor(QTextEdit):
         self.bigDoc     = False # Flag for very large document size
         self.doReplace  = False # Switch to temporarily disable auto-replace
         self.queuePos   = None  # Used for delayed change of cursor position
+        self.cursorLast = 0     # The last known vertical position of the cursor
+        self.lengthLast = 0
 
         # Typography
         self.typDQOpen  = self.mainConf.fmtDoubleQuotes[0]
@@ -99,6 +101,8 @@ class GuiDocEditor(QTextEdit):
         self.qDocument = self.document()
         self.qDocument.contentsChange.connect(self._docChange)
         self.qDocument.documentLayout().documentSizeChanged.connect(self._docSizeChanged)
+
+        self.verticalScrollBar().sliderMoved.connect(self._doVerticalScroll)
 
         # Document Title
         self.docHeader = GuiDocEditHeader(self)
@@ -319,6 +323,7 @@ class GuiDocEditor(QTextEdit):
             self.setCursorLine(tLine)
 
         self.docFooter.updateLineCount()
+        self.lengthLast = self.qDocument.characterCount()
 
         qApp.restoreOverrideCursor()
 
@@ -423,7 +428,7 @@ class GuiDocEditor(QTextEdit):
         lM = max(cM, fH)
         self.setViewportMargins(tM, uM, tM, lM)
 
-        if self.mainConf.extendScroll:
+        if self.mainConf.scrollPastEnd:
             docFrame = self.qDocument.rootFrame().frameFormat()
             docFrame.setBottomMargin(wH - uM - lM - self.theTheme.fontPixelSize)
             self.qDocument.rootFrame().setFrameFormat(docFrame)
@@ -757,6 +762,22 @@ class GuiDocEditor(QTextEdit):
             QTextEdit.keyPressEvent(self, keyEvent)
             self.docFooter.updateLineCount()
 
+        if self.mainConf.scollWithCursor:
+            docLen = self.qDocument.characterCount()
+            if docLen == self.lengthLast:
+                # No change, so just update last position
+                self.cursorLast = self.cursorRect().center().y()
+            else:
+                # The user typed something, so check if we need to
+                # scroll, and move the scroll bar the same distance
+                self.lengthLast = docLen
+                self.ensureCursorVisible()
+                cPos = self.cursorRect().center().y()
+                if cPos != self.cursorLast:
+                    vBar = self.verticalScrollBar()
+                    vBar.setValue(vBar.value() + cPos - self.cursorLast)
+                    self.cursorLast = self.cursorRect().center().y()
+
         return
 
     def focusNextPrevChild(self, toNext):
@@ -782,7 +803,16 @@ class GuiDocEditor(QTextEdit):
 
         QTextEdit.mouseReleaseEvent(self, mEvent)
         self.docFooter.updateLineCount()
+        self.cursorLast = self.cursorRect().center().y()
 
+        return
+
+    def wheelEvent(self, theEvent):
+        """Briefly capture the mouse wheel event to capture the cursor
+        position.
+        """
+        QTextEdit.wheelEvent(self, theEvent)
+        self.cursorLast = self.cursorRect().center().y()
         return
 
     def resizeEvent(self, theEvent):
@@ -817,6 +847,13 @@ class GuiDocEditor(QTextEdit):
             self.wcTimer.start()
         if self.doReplace and charsAdded == 1:
             self._docAutoReplace(self.qDocument.findBlock(thePos))
+        return
+
+    @pyqtSlot(int)
+    def _doVerticalScroll(self, theChange):
+        """Update the cursor position on vertical scrolling.
+        """
+        self.cursorLast = self.cursorRect().center().y()
         return
 
     @pyqtSlot("QPoint")
