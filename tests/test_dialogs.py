@@ -23,7 +23,7 @@ from nw.gui import (
     GuiProjectLoad, GuiPreferences
 )
 from nw.gui.custom import QuotesDialog
-from nw.constants import nwItemType, nwItemLayout, nwItemClass, nwFiles
+from nw.constants import nwItemLayout, nwItemClass, nwFiles
 
 keyDelay = 2
 typeDelay = 1
