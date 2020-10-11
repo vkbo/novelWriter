@@ -590,7 +590,6 @@ class GuiConfigEditLayoutTab(QWidget):
             theUnit = "%"
         )
 
-
         return
 
     def saveValues(self):
