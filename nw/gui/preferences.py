@@ -555,6 +555,10 @@ class GuiConfigEditLayoutTab(QWidget):
             theUnit="px"
         )
 
+        # Scroll Behaviour
+        # ================
+        self.mainForm.addGroupLabel("Scroll Behaviour")
+
         ## Scroll Past End
         self.scrollPastEnd = QSwitch()
         self.scrollPastEnd.setChecked(self.mainConf.scrollPastEnd)
@@ -568,10 +572,24 @@ class GuiConfigEditLayoutTab(QWidget):
         self.scollWithCursor = QSwitch()
         self.scollWithCursor.setChecked(self.mainConf.scollWithCursor)
         self.mainForm.addRow(
-            "Typewriter style scrolling",
+            "Typewriter style scrolling when you type",
             self.scollWithCursor,
-            "Scrolls up when the cursor moves to a new line."
+            "Tries to keep the cursor at a fixed vertical position."
         )
+
+        ## Font Size
+        self.scollFromPoint = QSpinBox(self)
+        self.scollFromPoint.setMinimum(10)
+        self.scollFromPoint.setMaximum(90)
+        self.scollFromPoint.setSingleStep(1)
+        self.scollFromPoint.setValue(self.mainConf.scollFromPoint)
+        self.mainForm.addRow(
+            "Position in the editor to keep the cursor",
+            self.scollFromPoint,
+            "In units of percentage of the editor height.",
+            theUnit = "%"
+        )
+
 
         return
 
@@ -592,6 +610,7 @@ class GuiConfigEditLayoutTab(QWidget):
         tabWidth        = self.tabWidth.value()
         scrollPastEnd   = self.scrollPastEnd.isChecked()
         scollWithCursor = self.scollWithCursor.isChecked()
+        scollFromPoint  = self.scollFromPoint.value()
 
         self.mainConf.textFont        = textFont
         self.mainConf.textSize        = textSize
@@ -604,6 +623,7 @@ class GuiConfigEditLayoutTab(QWidget):
         self.mainConf.tabWidth        = tabWidth
         self.mainConf.scrollPastEnd   = scrollPastEnd
         self.mainConf.scollWithCursor = scollWithCursor
+        self.mainConf.scollFromPoint  = scollFromPoint
 
         self.mainConf.confChanged = True
 
