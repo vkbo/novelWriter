@@ -1124,17 +1124,6 @@ class GuiBuildNovelDocView(QTextBrowser):
         else:
             self.setTabStopWidth(self.mainConf.getTabWidth())
 
-        # Scroll bars
-        if self.mainConf.hideVScroll:
-            self.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
-        else:
-            self.setVerticalScrollBarPolicy(Qt.ScrollBarAsNeeded)
-
-        if self.mainConf.hideHScroll:
-            self.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
-        else:
-            self.setHorizontalScrollBarPolicy(Qt.ScrollBarAsNeeded)
-
         docPalette = self.palette()
         docPalette.setColor(QPalette.Base, QColor(255, 255, 255))
         docPalette.setColor(QPalette.Text, QColor(0, 0, 0))
