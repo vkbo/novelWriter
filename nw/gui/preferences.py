@@ -55,15 +55,17 @@ class GuiPreferences(PagedDialog):
 
         self.setWindowTitle("Preferences")
 
-        self.tabGeneral = GuiConfigEditGeneralTab(self.theParent)
-        self.tabLayout  = GuiConfigEditLayoutTab(self.theParent)
-        self.tabEditing = GuiConfigEditEditingTab(self.theParent)
-        self.tabAutoRep = GuiConfigEditAutoReplaceTab(self.theParent)
+        self.tabGeneral  = GuiConfigEditGeneralTab(self.theParent)
+        self.tabProjects = GuiConfigEditProjectsTab(self.theParent)
+        self.tabLayout   = GuiConfigEditLayoutTab(self.theParent)
+        self.tabEditing  = GuiConfigEditEditingTab(self.theParent)
+        self.tabAutoRep  = GuiConfigEditAutoReplaceTab(self.theParent)
 
-        self.addTab(self.tabGeneral, "General")
-        self.addTab(self.tabLayout,  "Text Layout")
-        self.addTab(self.tabEditing, "Editor")
-        self.addTab(self.tabAutoRep, "Auto-Replace")
+        self.addTab(self.tabGeneral,  "General")
+        self.addTab(self.tabProjects, "Projects")
+        self.addTab(self.tabLayout,   "Text Layout")
+        self.addTab(self.tabEditing,  "Editor")
+        self.addTab(self.tabAutoRep,  "Auto-Replace")
 
         self.buttonBox = QDialogButtonBox(QDialogButtonBox.Ok | QDialogButtonBox.Cancel)
         self.buttonBox.accepted.connect(self._doSave)
@@ -88,6 +90,10 @@ class GuiPreferences(PagedDialog):
         needsRestart = False
 
         retA, retB = self.tabGeneral.saveValues()
+        validEntries &= retA
+        needsRestart |= retB
+
+        retA, retB = self.tabProjects.saveValues()
         validEntries &= retA
         needsRestart |= retB
 
@@ -222,6 +228,70 @@ class GuiConfigEditGeneralTab(QWidget):
             self.showFullPath
         )
 
+        return
+
+    def saveValues(self):
+        """Save the values set for this tab.
+        """
+        validEntries = True
+        needsRestart = False
+
+        guiTheme     = self.selectTheme.currentData()
+        guiIcons     = self.selectIcons.currentData()
+        guiDark      = self.preferDarkIcons.isChecked()
+        guiFont      = self.guiFont.text()
+        guiFontSize  = self.guiFontSize.value()
+        showFullPath = self.showFullPath.isChecked()
+
+        # Check if restart is needed
+        needsRestart |= self.mainConf.guiTheme != guiTheme
+        needsRestart |= self.mainConf.guiIcons != guiIcons
+        needsRestart |= self.mainConf.guiFont != guiFont
+        needsRestart |= self.mainConf.guiFontSize != guiFontSize
+
+        self.mainConf.guiTheme     = guiTheme
+        self.mainConf.guiIcons     = guiIcons
+        self.mainConf.guiDark      = guiDark
+        self.mainConf.guiFont      = guiFont
+        self.mainConf.guiFontSize  = guiFontSize
+        self.mainConf.showFullPath = showFullPath
+
+        self.mainConf.confChanged = True
+
+        return validEntries, needsRestart
+
+    ##
+    #  Slots
+    ##
+
+    def _selectFont(self):
+        """Open the QFontDialog and set a font for the font style.
+        """
+        currFont = QFont()
+        currFont.setFamily(self.mainConf.guiFont)
+        currFont.setPointSize(self.mainConf.guiFontSize)
+        theFont, theStatus = QFontDialog.getFont(currFont, self)
+        if theStatus:
+            self.guiFont.setText(theFont.family())
+            self.guiFontSize.setValue(theFont.pointSize())
+        return
+
+# END Class GuiConfigEditGeneralTab
+
+class GuiConfigEditProjectsTab(QWidget):
+
+    def __init__(self, theParent):
+        QWidget.__init__(self, theParent)
+
+        self.mainConf  = nw.CONFIG
+        self.theParent = theParent
+        self.theTheme  = theParent.theTheme
+
+        # The Form
+        self.mainForm = QConfigLayout()
+        self.mainForm.setHelpTextStyle(self.theTheme.helpText)
+        self.setLayout(self.mainForm)
+
         # AutoSave Settings
         # =================
         self.mainForm.addGroupLabel("Automatic Save")
@@ -292,30 +362,12 @@ class GuiConfigEditGeneralTab(QWidget):
         validEntries = True
         needsRestart = False
 
-        guiTheme        = self.selectTheme.currentData()
-        guiIcons        = self.selectIcons.currentData()
-        guiDark         = self.preferDarkIcons.isChecked()
-        guiFont         = self.guiFont.text()
-        guiFontSize     = self.guiFontSize.value()
-        showFullPath    = self.showFullPath.isChecked()
         autoSaveDoc     = self.autoSaveDoc.value()
         autoSaveProj    = self.autoSaveProj.value()
         backupPath      = self.backupPath
         backupOnClose   = self.backupOnClose.isChecked()
         askBeforeBackup = self.askBeforeBackup.isChecked()
 
-        # Check if restart is needed
-        needsRestart |= self.mainConf.guiTheme != guiTheme
-        needsRestart |= self.mainConf.guiIcons != guiIcons
-        needsRestart |= self.mainConf.guiFont != guiFont
-        needsRestart |= self.mainConf.guiFontSize != guiFontSize
-
-        self.mainConf.guiTheme        = guiTheme
-        self.mainConf.guiIcons        = guiIcons
-        self.mainConf.guiDark         = guiDark
-        self.mainConf.guiFont         = guiFont
-        self.mainConf.guiFontSize     = guiFontSize
-        self.mainConf.showFullPath    = showFullPath
         self.mainConf.autoSaveDoc     = autoSaveDoc
         self.mainConf.autoSaveProj    = autoSaveProj
         self.mainConf.backupPath      = backupPath
@@ -357,19 +409,7 @@ class GuiConfigEditGeneralTab(QWidget):
         self.askBeforeBackup.setEnabled(theState)
         return
 
-    def _selectFont(self):
-        """Open the QFontDialog and set a font for the font style.
-        """
-        currFont = QFont()
-        currFont.setFamily(self.mainConf.guiFont)
-        currFont.setPointSize(self.mainConf.guiFontSize)
-        theFont, theStatus = QFontDialog.getFont(currFont, self)
-        if theStatus:
-            self.guiFont.setText(theFont.family())
-            self.guiFontSize.setValue(theFont.pointSize())
-        return
-
-# END Class GuiConfigEditGeneralTab
+# END Class GuiConfigEditProjectsTab
 
 class GuiConfigEditLayoutTab(QWidget):
 

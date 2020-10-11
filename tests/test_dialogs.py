@@ -1057,6 +1057,7 @@ def testPreferences(qtbot, monkeypatch, yesToAll, nwMinimal, nwTemp, nwRef, tmpC
     nwGUI.mainConf = tmpConf
     nwPrefs.mainConf = tmpConf
     nwPrefs.tabGeneral.mainConf = tmpConf
+    nwPrefs.tabProjects.mainConf = tmpConf
     nwPrefs.tabLayout.mainConf = tmpConf
     nwPrefs.tabEditing.mainConf = tmpConf
     nwPrefs.tabAutoRep.mainConf = tmpConf
@@ -1065,7 +1066,6 @@ def testPreferences(qtbot, monkeypatch, yesToAll, nwMinimal, nwTemp, nwRef, tmpC
     qtbot.wait(keyDelay)
     tabGeneral = nwPrefs.tabGeneral
     nwPrefs._tabBox.setCurrentWidget(tabGeneral)
-    tabGeneral.backupPath = "no/where"
 
     qtbot.wait(keyDelay)
     assert not tabGeneral.preferDarkIcons.isChecked()
@@ -1077,27 +1077,35 @@ def testPreferences(qtbot, monkeypatch, yesToAll, nwMinimal, nwTemp, nwRef, tmpC
     qtbot.mouseClick(tabGeneral.showFullPath, Qt.LeftButton)
     assert not tabGeneral.showFullPath.isChecked()
 
-    # Check Browse button
-    monkeypatch.setattr(QFileDialog, "getExistingDirectory", lambda *args, **kwargs: "")
-    assert not tabGeneral._backupFolder()
-    monkeypatch.setattr(QFileDialog, "getExistingDirectory", lambda *args, **kwargs: "some/dir")
-    qtbot.mouseClick(tabGeneral.backupGetPath, Qt.LeftButton)
-
     # Check font button
     monkeypatch.setattr(QFontDialog, "getFont", lambda font, obj: (font, True))
     qtbot.mouseClick(tabGeneral.fontButton, Qt.LeftButton)
 
     qtbot.wait(keyDelay)
-    assert not tabGeneral.backupOnClose.isChecked()
-    qtbot.mouseClick(tabGeneral.backupOnClose, Qt.LeftButton)
-    assert tabGeneral.backupOnClose.isChecked()
+    tabGeneral.guiFontSize.setValue(12)
+
+    # Projects Settings
+    qtbot.wait(keyDelay)
+    tabProjects = nwPrefs.tabProjects
+    nwPrefs._tabBox.setCurrentWidget(tabProjects)
+    tabProjects.backupPath = "no/where"
 
     qtbot.wait(keyDelay)
-    tabGeneral.guiFontSize.setValue(12)
-    tabGeneral.autoSaveDoc.setValue(20)
-    tabGeneral.autoSaveProj.setValue(40)
+    assert not tabProjects.backupOnClose.isChecked()
+    qtbot.mouseClick(tabProjects.backupOnClose, Qt.LeftButton)
+    assert tabProjects.backupOnClose.isChecked()
 
-    # Text Layour Settings
+    # Check Browse button
+    monkeypatch.setattr(QFileDialog, "getExistingDirectory", lambda *args, **kwargs: "")
+    assert not tabProjects._backupFolder()
+    monkeypatch.setattr(QFileDialog, "getExistingDirectory", lambda *args, **kwargs: "some/dir")
+    qtbot.mouseClick(tabProjects.backupGetPath, Qt.LeftButton)
+
+    qtbot.wait(keyDelay)
+    tabProjects.autoSaveDoc.setValue(20)
+    tabProjects.autoSaveProj.setValue(40)
+
+    # Text Layout Settings
     qtbot.wait(keyDelay)
     tabLayout = nwPrefs.tabLayout
     nwPrefs._tabBox.setCurrentWidget(tabLayout)
