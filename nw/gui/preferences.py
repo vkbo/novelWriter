@@ -55,15 +55,17 @@ class GuiPreferences(PagedDialog):
 
         self.setWindowTitle("Preferences")
 
-        self.tabGeneral = GuiConfigEditGeneralTab(self.theParent)
-        self.tabLayout  = GuiConfigEditLayoutTab(self.theParent)
-        self.tabEditing = GuiConfigEditEditingTab(self.theParent)
-        self.tabAutoRep = GuiConfigEditAutoReplaceTab(self.theParent)
+        self.tabGeneral  = GuiConfigEditGeneralTab(self.theParent)
+        self.tabProjects = GuiConfigEditProjectsTab(self.theParent)
+        self.tabLayout   = GuiConfigEditLayoutTab(self.theParent)
+        self.tabEditing  = GuiConfigEditEditingTab(self.theParent)
+        self.tabAutoRep  = GuiConfigEditAutoReplaceTab(self.theParent)
 
-        self.addTab(self.tabGeneral, "General")
-        self.addTab(self.tabLayout,  "Text Layout")
-        self.addTab(self.tabEditing, "Editor")
-        self.addTab(self.tabAutoRep, "Auto-Replace")
+        self.addTab(self.tabGeneral,  "General")
+        self.addTab(self.tabProjects, "Projects")
+        self.addTab(self.tabLayout,   "Text Layout")
+        self.addTab(self.tabEditing,  "Editor")
+        self.addTab(self.tabAutoRep,  "Auto-Replace")
 
         self.buttonBox = QDialogButtonBox(QDialogButtonBox.Ok | QDialogButtonBox.Cancel)
         self.buttonBox.accepted.connect(self._doSave)
@@ -88,6 +90,10 @@ class GuiPreferences(PagedDialog):
         needsRestart = False
 
         retA, retB = self.tabGeneral.saveValues()
+        validEntries &= retA
+        needsRestart |= retB
+
+        retA, retB = self.tabProjects.saveValues()
         validEntries &= retA
         needsRestart |= retB
 
@@ -219,8 +225,93 @@ class GuiConfigEditGeneralTab(QWidget):
         self.showFullPath.setChecked(self.mainConf.showFullPath)
         self.mainForm.addRow(
             "Show full path in document header",
-            self.showFullPath
+            self.showFullPath,
+            "Shows the document title and parent folder names."
         )
+
+        self.hideVScroll = QSwitch()
+        self.hideVScroll.setChecked(self.mainConf.hideVScroll)
+        self.mainForm.addRow(
+            "Hide vertical scroll bars in main windows",
+            self.hideVScroll,
+            "Scrolling with mouse wheel and keys only."
+        )
+
+        self.hideHScroll = QSwitch()
+        self.hideHScroll.setChecked(self.mainConf.hideHScroll)
+        self.mainForm.addRow(
+            "Hide horizontal scroll bars in main windows",
+            self.hideHScroll,
+            "Scrolling with mouse wheel and keys only."
+        )
+
+        return
+
+    def saveValues(self):
+        """Save the values set for this tab.
+        """
+        validEntries = True
+        needsRestart = False
+
+        guiTheme     = self.selectTheme.currentData()
+        guiIcons     = self.selectIcons.currentData()
+        guiDark      = self.preferDarkIcons.isChecked()
+        guiFont      = self.guiFont.text()
+        guiFontSize  = self.guiFontSize.value()
+        showFullPath = self.showFullPath.isChecked()
+        hideVScroll  = self.hideVScroll.isChecked()
+        hideHScroll  = self.hideHScroll.isChecked()
+
+        # Check if restart is needed
+        needsRestart |= self.mainConf.guiTheme != guiTheme
+        needsRestart |= self.mainConf.guiIcons != guiIcons
+        needsRestart |= self.mainConf.guiFont != guiFont
+        needsRestart |= self.mainConf.guiFontSize != guiFontSize
+
+        self.mainConf.guiTheme     = guiTheme
+        self.mainConf.guiIcons     = guiIcons
+        self.mainConf.guiDark      = guiDark
+        self.mainConf.guiFont      = guiFont
+        self.mainConf.guiFontSize  = guiFontSize
+        self.mainConf.showFullPath = showFullPath
+        self.mainConf.hideVScroll  = hideVScroll
+        self.mainConf.hideHScroll  = hideHScroll
+
+        self.mainConf.confChanged = True
+
+        return validEntries, needsRestart
+
+    ##
+    #  Slots
+    ##
+
+    def _selectFont(self):
+        """Open the QFontDialog and set a font for the font style.
+        """
+        currFont = QFont()
+        currFont.setFamily(self.mainConf.guiFont)
+        currFont.setPointSize(self.mainConf.guiFontSize)
+        theFont, theStatus = QFontDialog.getFont(currFont, self)
+        if theStatus:
+            self.guiFont.setText(theFont.family())
+            self.guiFontSize.setValue(theFont.pointSize())
+        return
+
+# END Class GuiConfigEditGeneralTab
+
+class GuiConfigEditProjectsTab(QWidget):
+
+    def __init__(self, theParent):
+        QWidget.__init__(self, theParent)
+
+        self.mainConf  = nw.CONFIG
+        self.theParent = theParent
+        self.theTheme  = theParent.theTheme
+
+        # The Form
+        self.mainForm = QConfigLayout()
+        self.mainForm.setHelpTextStyle(self.theTheme.helpText)
+        self.setLayout(self.mainForm)
 
         # AutoSave Settings
         # =================
@@ -292,30 +383,12 @@ class GuiConfigEditGeneralTab(QWidget):
         validEntries = True
         needsRestart = False
 
-        guiTheme        = self.selectTheme.currentData()
-        guiIcons        = self.selectIcons.currentData()
-        guiDark         = self.preferDarkIcons.isChecked()
-        guiFont         = self.guiFont.text()
-        guiFontSize     = self.guiFontSize.value()
-        showFullPath    = self.showFullPath.isChecked()
         autoSaveDoc     = self.autoSaveDoc.value()
         autoSaveProj    = self.autoSaveProj.value()
         backupPath      = self.backupPath
         backupOnClose   = self.backupOnClose.isChecked()
         askBeforeBackup = self.askBeforeBackup.isChecked()
 
-        # Check if restart is needed
-        needsRestart |= self.mainConf.guiTheme != guiTheme
-        needsRestart |= self.mainConf.guiIcons != guiIcons
-        needsRestart |= self.mainConf.guiFont != guiFont
-        needsRestart |= self.mainConf.guiFontSize != guiFontSize
-
-        self.mainConf.guiTheme        = guiTheme
-        self.mainConf.guiIcons        = guiIcons
-        self.mainConf.guiDark         = guiDark
-        self.mainConf.guiFont         = guiFont
-        self.mainConf.guiFontSize     = guiFontSize
-        self.mainConf.showFullPath    = showFullPath
         self.mainConf.autoSaveDoc     = autoSaveDoc
         self.mainConf.autoSaveProj    = autoSaveProj
         self.mainConf.backupPath      = backupPath
@@ -357,19 +430,7 @@ class GuiConfigEditGeneralTab(QWidget):
         self.askBeforeBackup.setEnabled(theState)
         return
 
-    def _selectFont(self):
-        """Open the QFontDialog and set a font for the font style.
-        """
-        currFont = QFont()
-        currFont.setFamily(self.mainConf.guiFont)
-        currFont.setPointSize(self.mainConf.guiFontSize)
-        theFont, theStatus = QFontDialog.getFont(currFont, self)
-        if theStatus:
-            self.guiFont.setText(theFont.family())
-            self.guiFontSize.setValue(theFont.pointSize())
-        return
-
-# END Class GuiConfigEditGeneralTab
+# END Class GuiConfigEditProjectsTab
 
 class GuiConfigEditLayoutTab(QWidget):
 
@@ -494,6 +555,24 @@ class GuiConfigEditLayoutTab(QWidget):
             theUnit="px"
         )
 
+        ## Scroll Past End
+        self.scrollPastEnd = QSwitch()
+        self.scrollPastEnd.setChecked(self.mainConf.scrollPastEnd)
+        self.mainForm.addRow(
+            "Scroll past end of the document",
+            self.scrollPastEnd,
+            "Allows scrolling until last line is at the top."
+        )
+
+        ## Typewriter Scrolling
+        self.scollWithCursor = QSwitch()
+        self.scollWithCursor.setChecked(self.mainConf.scollWithCursor)
+        self.mainForm.addRow(
+            "Typewriter style scrolling",
+            self.scollWithCursor,
+            "Scrolls up when the cursor moves to a new line."
+        )
+
         return
 
     def saveValues(self):
@@ -511,6 +590,8 @@ class GuiConfigEditLayoutTab(QWidget):
         doJustify       = self.textJustify.isChecked()
         textMargin      = self.textMargin.value()
         tabWidth        = self.tabWidth.value()
+        scrollPastEnd   = self.scrollPastEnd.isChecked()
+        scollWithCursor = self.scollWithCursor.isChecked()
 
         self.mainConf.textFont        = textFont
         self.mainConf.textSize        = textSize
@@ -521,6 +602,8 @@ class GuiConfigEditLayoutTab(QWidget):
         self.mainConf.doJustify       = doJustify
         self.mainConf.textMargin      = textMargin
         self.mainConf.tabWidth        = tabWidth
+        self.mainConf.scrollPastEnd   = scrollPastEnd
+        self.mainConf.scollWithCursor = scollWithCursor
 
         self.mainConf.confChanged = True
 

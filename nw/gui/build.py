@@ -450,10 +450,18 @@ class GuiBuildNovel(QDialog):
         # Tool Box Scroll Area
         self.toolsArea = QScrollArea()
         self.toolsArea.setMinimumWidth(self.mainConf.pxInt(250))
-        self.toolsArea.setHorizontalScrollBarPolicy(Qt.ScrollBarAsNeeded)
-        self.toolsArea.setVerticalScrollBarPolicy(Qt.ScrollBarAsNeeded)
         self.toolsArea.setWidgetResizable(True)
         self.toolsArea.setWidget(self.toolsWidget)
+
+        if self.mainConf.hideVScroll:
+            self.toolsArea.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
+        else:
+            self.toolsArea.setVerticalScrollBarPolicy(Qt.ScrollBarAsNeeded)
+
+        if self.mainConf.hideHScroll:
+            self.toolsArea.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
+        else:
+            self.toolsArea.setHorizontalScrollBarPolicy(Qt.ScrollBarAsNeeded)
 
         # Tools and Buttons Layout
         self.innerBox = QVBoxLayout()
@@ -1115,6 +1123,17 @@ class GuiBuildNovelDocView(QTextBrowser):
             self.setTabStopDistance(self.mainConf.getTabWidth())
         else:
             self.setTabStopWidth(self.mainConf.getTabWidth())
+
+        # Scroll bars
+        if self.mainConf.hideVScroll:
+            self.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
+        else:
+            self.setVerticalScrollBarPolicy(Qt.ScrollBarAsNeeded)
+
+        if self.mainConf.hideHScroll:
+            self.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
+        else:
+            self.setHorizontalScrollBarPolicy(Qt.ScrollBarAsNeeded)
 
         docPalette = self.palette()
         docPalette.setColor(QPalette.Base, QColor(255, 255, 255))

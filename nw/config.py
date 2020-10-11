@@ -102,6 +102,10 @@ class Config:
         self.outlnPanePos = [500, 150]
         self.isFullScreen = False
 
+        ## Features
+        self.hideVScroll = False # Hide vertical scroll bars on main widgets
+        self.hideHScroll = False # Hide horizontal scroll bars on main widgets
+
         ## Project
         self.autoSaveProj = 60
         self.autoSaveDoc  = 30
@@ -122,6 +126,9 @@ class Config:
         self.doReplaceDQuote = True
         self.doReplaceDash   = True
         self.doReplaceDots   = True
+        self.scrollPastEnd   = True
+        self.scollWithCursor = False
+
         self.wordCountTimer  = 5.0
         self.showTabsNSpaces = False
         self.showLineEndings = False
@@ -391,6 +398,12 @@ class Config:
         self.isFullScreen = self._parseLine(
             cnfParse, cnfSec, "fullscreen", self.CNF_BOOL, self.isFullScreen
         )
+        self.hideVScroll = self._parseLine(
+            cnfParse, cnfSec, "hidevscroll", self.CNF_BOOL, self.hideVScroll
+        )
+        self.hideHScroll = self._parseLine(
+            cnfParse, cnfSec, "hidehscroll", self.CNF_BOOL, self.hideHScroll
+        )
 
         ## Project
         cnfSec = "Project"
@@ -447,6 +460,12 @@ class Config:
         )
         self.doReplaceDots = self._parseLine(
             cnfParse, cnfSec, "repdots", self.CNF_BOOL, self.doReplaceDots
+        )
+        self.scrollPastEnd = self._parseLine(
+            cnfParse, cnfSec, "scrollpastend", self.CNF_BOOL, self.scrollPastEnd
+        )
+        self.scollWithCursor = self._parseLine(
+            cnfParse, cnfSec, "scollwithcursor", self.CNF_BOOL, self.scollWithCursor
         )
         self.fmtSingleQuotes = self._parseLine(
             cnfParse, cnfSec, "fmtsinglequote", self.CNF_LIST, self.fmtSingleQuotes
@@ -565,6 +584,8 @@ class Config:
         cnfParse.set(cnfSec, "viewpane",    self._packList(self.viewPanePos))
         cnfParse.set(cnfSec, "outlinepane", self._packList(self.outlnPanePos))
         cnfParse.set(cnfSec, "fullscreen",  str(self.isFullScreen))
+        cnfParse.set(cnfSec, "hidevscroll", str(self.hideVScroll))
+        cnfParse.set(cnfSec, "hidehscroll", str(self.hideHScroll))
 
         ## Project
         cnfSec = "Project"
@@ -590,6 +611,8 @@ class Config:
         cnfParse.set(cnfSec, "repdquotes",      str(self.doReplaceDQuote))
         cnfParse.set(cnfSec, "repdash",         str(self.doReplaceDash))
         cnfParse.set(cnfSec, "repdots",         str(self.doReplaceDots))
+        cnfParse.set(cnfSec, "scrollpastend",   str(self.scrollPastEnd))
+        cnfParse.set(cnfSec, "scollwithcursor", str(self.scollWithCursor))
         cnfParse.set(cnfSec, "fmtsinglequote",  self._packList(self.fmtSingleQuotes))
         cnfParse.set(cnfSec, "fmtdoublequote",  self._packList(self.fmtDoubleQuotes))
         cnfParse.set(cnfSec, "spelltool",       str(self.spellTool))
