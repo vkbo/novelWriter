@@ -21,6 +21,7 @@
 * The language indicator in the status bar now has a tooltip stating what tool and spell check dictionary provider is being used. PR #462.
 * All representations of integers, mostly word counts, are now presented in the same way. They should all use a thousand separator representation defined by the localised settings. PR #464.
 * Many parts of the GUI have had a spin/wait cursor added for processes that may take a while and will block the GUI in the meantime. PRs #460, #463 and #464.
+* A line counter has been added to the footer of the document editor next to the word counter. It makes it easier to compare the position in the document when also accessing it in an external editor. PR #466.
 
 **Improvements for macOS**
 
