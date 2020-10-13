@@ -46,7 +46,7 @@ than the document editor itself are hidden away.
 The colour scheme of the user interface defaults to that of the host operating system. In addition,
 a dark theme is provided, and can be enabled in :guilabel:`Preferences` from the :guilabel:`Tools`
 menu. A number of syntax highlighting themes are also available in :guilabel:`Preferences`. A set of
-icon themes in colour and greyscale are also offered. The icons are based on the Typicon_ icon set
+icon themes in colour and greyscale are also offered. The icons are based on the Typicons_ icon set
 designed by Stephen Hutchings.
 
 The main window is split in two, or optionally three, panels. The left-most contains the project
@@ -58,7 +58,7 @@ entire novel structure can be displayed, with all the tags and references listed
 you structure your novel project files, this outline can be quite different than your project tree.
 Your project tree lists files, your Outline tree lists the structure of the novel itself.
 
-.. _Typicon: https://github.com/stephenhutchings/typicons.font
+.. _Typicons: https://github.com/stephenhutchings/typicons.font
 
 
 .. _a_intro_project:

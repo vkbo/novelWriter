@@ -89,9 +89,8 @@ to make those. Feel free to submit more if you are able to make them.
 
 ## Package Dependencies
 
-It is recommended that novelWriter runs with Qt 5.10 or later, and Python 3.6 or later. Running with
-Qt as low as 5.2.1 and Python 3.4.3 has been tested, and worked in the past, but there are no
-guarantees that this will keep working as these are not a part of the test builds.
+It is recommended that novelWriter runs with Qt 5.10 or later, and requires Python 3.6 or later.
+Minimum version of Qt is 5.2.
 
 
 ### Linux
@@ -146,7 +145,6 @@ C:\...\AppData\Local\Programs\Python\Python38\python.exe novelWriter.py
 
 ### Package Versions
 
-PyQt/Qt should be at least 5.3, but ideally 5.10 or higher for nearly all features to work.
 Exporting to Markdown requires PyQt/Qt 5.14. There are no known minimum for `lxml`, but the code
 was originally written with 4.2. The optional spell check library must be at least 3.0.0 to work
 with Windows 64 bit systems. On Linux, 2.0.0 also works fine.
