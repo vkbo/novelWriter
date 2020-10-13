@@ -24,7 +24,7 @@ jobs:
       - name: Install Dependencies
         run: |
           pip install --upgrade pip
-          pip install PyQt5==5.9
+          pip install PyQt5==5.9.2
           pip install -r requirements.txt
           pip install pytest-timeout
           pip install pytest-cov
