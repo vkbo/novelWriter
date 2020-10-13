@@ -399,7 +399,7 @@ class GuiBuildNovel(QDialog):
         self.saveNWD.triggered.connect(lambda: self._saveDocument(self.FMT_NWD))
         self.saveMenu.addAction(self.saveNWD)
 
-        if self.mainConf.verQtValue >= 51400:
+        if self.mainConf.verQtMin >= 51400:
             self.saveMD = QAction("Markdown (.md)", self)
             self.saveMD.triggered.connect(lambda: self._saveDocument(self.FMT_MD))
             self.saveMenu.addAction(self.saveMD)
@@ -1014,7 +1014,7 @@ class GuiBuildNovel(QDialog):
         self.saveODT.setEnabled(theState)
         self.savePDF.setEnabled(theState)
         self.saveTXT.setEnabled(theState)
-        if self.mainConf.verQtValue >= 51400:
+        if self.mainConf.verQtMin >= 51400:
             self.saveMD.setEnabled(theState)
         return
 
@@ -1120,7 +1120,7 @@ class GuiBuildNovelDocView(QTextBrowser):
         self.setFont(theFont)
 
         # Set the tab stops
-        if self.mainConf.verQtValue >= 51000:
+        if self.mainConf.verQtMin >= 51000:
             self.setTabStopDistance(self.mainConf.getTabWidth())
         else:
             self.setTabStopWidth(self.mainConf.getTabWidth())

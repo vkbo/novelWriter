@@ -236,7 +236,7 @@ class GuiDocEditor(QTextEdit):
             self.setHorizontalScrollBarPolicy(Qt.ScrollBarAsNeeded)
 
         # Refresh the tab stops
-        if self.mainConf.verQtValue >= 51000:
+        if self.mainConf.verQtMin >= 51000:
             self.setTabStopDistance(self.mainConf.getTabWidth())
         else:
             self.setTabStopWidth(self.mainConf.getTabWidth())
@@ -473,7 +473,7 @@ class GuiDocEditor(QTextEdit):
         We still want to get rid of page and line separators though.
         See: https://doc.qt.io/qt-5/qtextdocument.html#toPlainText
         """
-        if self.mainConf.verQtValue >= 50900:
+        if self.mainConf.verQtMin >= 50900:
             theText = self.qDocument.toRawText()
             theText = theText.replace(nwUnicode.U_LSEP, "\n") # Line separators
             theText = theText.replace(nwUnicode.U_PSEP, "\n") # Paragraph separators
@@ -1856,7 +1856,7 @@ class GuiDocEditSearch(QFrame):
             # Using the Unicode-capable QRegularExpression class was
             # only added in Qt 5.13. Otherwise, 5.3 and up supports
             # only the QRegExp class.
-            if self.mainConf.verQtValue >= 51300:
+            if self.mainConf.verQtMin >= 51300:
                 rxOpt = QRegularExpression.UseUnicodePropertiesOption
                 if not self.isCaseSense:
                     rxOpt |= QRegularExpression.CaseInsensitiveOption
@@ -1864,7 +1864,7 @@ class GuiDocEditSearch(QFrame):
                 self._alertSearchValid(theRegEx.isValid())
                 return theRegEx
 
-            elif self.mainConf.verQtValue >= 50300:
+            elif self.mainConf.verQtMin >= 50300:
                 if self.isCaseSense:
                     rxOpt = Qt.CaseSensitive
                 else:

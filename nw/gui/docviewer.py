@@ -136,7 +136,7 @@ class GuiDocViewer(QTextBrowser):
             self.setHorizontalScrollBarPolicy(Qt.ScrollBarAsNeeded)
 
         # Refresh the tab stops
-        if self.mainConf.verQtValue >= 51000:
+        if self.mainConf.verQtMin >= 51000:
             self.setTabStopDistance(self.mainConf.getTabWidth())
         else:
             self.setTabStopWidth(self.mainConf.getTabWidth())
@@ -182,7 +182,7 @@ class GuiDocViewer(QTextBrowser):
             return False
 
         # Refresh the tab stops
-        if self.mainConf.verQtValue >= 51000:
+        if self.mainConf.verQtMin >= 51000:
             self.setTabStopDistance(self.mainConf.getTabWidth())
         else:
             self.setTabStopWidth(self.mainConf.getTabWidth())

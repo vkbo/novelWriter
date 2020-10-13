@@ -177,6 +177,8 @@ class Config:
         self.verPyQtPatch  = verQt[2]
         self.verPyQtValue  = verQt[3]
 
+        self.verQtMin = min(self.verQtValue, self.verPyQtValue)
+
         # Check Python Version
         self.verPyString = sys.version.split()[0]
         self.verPyMajor  = sys.version_info[0]
@@ -202,7 +204,7 @@ class Config:
             self.osUnknown = True
 
         # Other System Info
-        if self.verQtValue >= 50600:
+        if self.verQtMin >= 50600:
             self.hostName  = QSysInfo.machineHostName()
             self.kernelVer = QSysInfo.kernelVersion()
         else:
@@ -251,7 +253,7 @@ class Config:
             self.confPath = confPath
 
         if dataPath is None:
-            if self.verQtValue >= 50400:
+            if self.verQtMin >= 50400:
                 dataRoot = QStandardPaths.writableLocation(QStandardPaths.AppDataLocation)
             else:
                 dataRoot = QStandardPaths.writableLocation(QStandardPaths.DataLocation)
