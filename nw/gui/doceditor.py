@@ -782,7 +782,7 @@ class GuiDocEditor(QTextEdit):
                 # Compute the needed scroll and duration
                 pOld = vBar.value()
                 pNew = pOld + cPos - round(mPos*0.01)
-                aDur = 150 + round(abs(pNew - pOld)/hWid*500)
+                aDur = 150 + round(min(abs(pNew - pOld)/hWid, 1.0)*500)
 
                 if pNew >= 0:
                     doAnim = QPropertyAnimation(vBar, b"value", self)
@@ -2346,11 +2346,13 @@ class GuiDocEditFooter(QWidget):
         """
         if self.theItem is None:
             iLine = 0
+            iDist = 0
         else:
             theCursor = self.docEditor.textCursor()
             iLine = theCursor.blockNumber() + 1
+            iDist = 100*iLine/self.docEditor.qDocument.blockCount()
 
-        self.linesText.setText(f"Line: {iLine:n}")
+        self.linesText.setText(f"Line: {iLine:n} ({iDist:.0f}\u202f%)")
 
         return
 
