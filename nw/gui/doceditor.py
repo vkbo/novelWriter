@@ -38,7 +38,7 @@ from time import time
 
 from PyQt5.QtCore import (
     Qt, QSize, QTimer, pyqtSlot, pyqtSignal, QRegExp, QRegularExpression,
-    QPointF, QObject, QRunnable
+    QPointF, QObject, QRunnable, QPropertyAnimation
 )
 from PyQt5.QtGui import (
     QTextCursor, QTextOption, QKeySequence, QFont, QColor, QPalette,
@@ -774,11 +774,22 @@ class GuiDocEditor(QTextEdit):
         if self.mainConf.scollWithCursor:
             kMod = keyEvent.modifiers()
             if kMod == Qt.NoModifier or kMod == Qt.ShiftModifier:
+                hWid = self.viewport().height()
                 cPos = self.cursorRect().center().y()
-                mPos = self.mainConf.scollToPoint * self.viewport().height()
+                mPos = self.mainConf.scollToPoint * hWid
                 vBar = self.verticalScrollBar()
-                vBar.setValue(vBar.value() + cPos - round(mPos * 0.01))
-                self.ensureCursorVisible()
+
+                # Compute the needed scroll and duration
+                pOld = vBar.value()
+                pNew = pOld + cPos - round(mPos*0.01)
+                aDur = 150 + round(min(abs(pNew - pOld)/hWid, 1.0)*500)
+
+                if pNew >= 0:
+                    doAnim = QPropertyAnimation(vBar, b"value", self)
+                    doAnim.setDuration(aDur)
+                    doAnim.setStartValue(pOld)
+                    doAnim.setEndValue(pNew)
+                    doAnim.start()
 
         return
 
@@ -849,11 +860,18 @@ class GuiDocEditor(QTextEdit):
         """
         userCursor = self.textCursor()
         userSelection = userCursor.hasSelection()
+        posCursor = self.cursorForPosition(thePos)
 
         mnuContext = QMenu()
 
-        # Cut, Copy and Paste
-        # ===================
+        # Follow, Cut, Copy and Paste
+        # ===========================
+
+        if self._followTag(theCursor=posCursor, loadTag=False):
+            mnuTag = QAction("Follow Tag", mnuContext)
+            mnuTag.triggered.connect(lambda: self._followTag(theCursor=posCursor))
+            mnuContext.addAction(mnuTag)
+            mnuContext.addSeparator()
 
         if userSelection:
             mnuCut = QAction("Cut", mnuContext)
@@ -892,10 +910,13 @@ class GuiDocEditor(QTextEdit):
         # Spell Checking
         # ==============
 
+        posCursor  = self.cursorForPosition(thePos)
         spellCheck = self.spellCheck
 
+        if posCursor.block().text().startswith("@"):
+            spellCheck = False
+
         if spellCheck:
-            posCursor = self.cursorForPosition(thePos)
             posCursor.select(QTextCursor.WordUnderCursor)
             theWord = posCursor.selectedText().strip().strip(self.nonWord)
             spellCheck &= theWord != ""
@@ -959,8 +980,8 @@ class GuiDocEditor(QTextEdit):
 
     @pyqtSlot()
     def _runCounter(self):
-        """Decide whether to run the word counter, or stop the timer due
-        to inactivity.
+        """Decide whether to run the word counter, or not due to
+        inactivity.
         """
         if self.wCounter.isRunning():
             logger.verbose("Word counter is busy")
@@ -1024,7 +1045,7 @@ class GuiDocEditor(QTextEdit):
     #  Internal Functions
     ##
 
-    def _followTag(self, theCursor=None):
+    def _followTag(self, theCursor=None, loadTag=True):
         """Activated by Ctrl+Enter. Checks that we're in a block
         starting with '@'. We then find the word under the cursor and
         check that it is after the ':'. If all this is fine, we have a
@@ -1049,10 +1070,15 @@ class GuiDocEditor(QTextEdit):
             if wPos <= cPos:
                 return False
 
-            logger.verbose("Attempting to follow tag '%s'" % theWord)
-            self.theParent.docViewer.loadFromTag(theWord)
+            if loadTag:
+                logger.verbose("Attempting to follow tag '%s'" % theWord)
+                self.theParent.docViewer.loadFromTag(theWord)
+            else:
+                logger.verbose("Potential tag '%s'" % theWord)
 
-        return True
+            return True
+
+        return False
 
     def _openSpellContext(self):
         """Opens the spell check context menu at the current point of
@@ -2335,11 +2361,13 @@ class GuiDocEditFooter(QWidget):
         """
         if self.theItem is None:
             iLine = 0
+            iDist = 0
         else:
             theCursor = self.docEditor.textCursor()
             iLine = theCursor.blockNumber() + 1
+            iDist = 100*iLine/self.docEditor.qDocument.blockCount()
 
-        self.linesText.setText(f"Line: {iLine:n}")
+        self.linesText.setText(f"Line: {iLine:n} ({iDist:.0f}\u202f%)")
 
         return
 
