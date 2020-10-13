@@ -326,7 +326,7 @@ class QSwitch(QAbstractButton):
         """
         super().mouseReleaseEvent(event)
         if event.button() == Qt.LeftButton:
-            doAnim = QPropertyAnimation(self, b'offset', self)
+            doAnim = QPropertyAnimation(self, b"offset", self)
             doAnim.setDuration(120)
             doAnim.setStartValue(self.offset)
             if self.isChecked():

@@ -38,7 +38,7 @@ from time import time
 
 from PyQt5.QtCore import (
     Qt, QSize, QTimer, pyqtSlot, pyqtSignal, QRegExp, QRegularExpression,
-    QPointF, QObject, QRunnable
+    QPointF, QObject, QRunnable, QPropertyAnimation
 )
 from PyQt5.QtGui import (
     QTextCursor, QTextOption, QKeySequence, QFont, QColor, QPalette,
@@ -774,11 +774,22 @@ class GuiDocEditor(QTextEdit):
         if self.mainConf.scollWithCursor:
             kMod = keyEvent.modifiers()
             if kMod == Qt.NoModifier or kMod == Qt.ShiftModifier:
+                hWid = self.viewport().height()
                 cPos = self.cursorRect().center().y()
-                mPos = self.mainConf.scollToPoint * self.viewport().height()
+                mPos = self.mainConf.scollToPoint * hWid
                 vBar = self.verticalScrollBar()
-                vBar.setValue(vBar.value() + cPos - round(mPos * 0.01))
-                self.ensureCursorVisible()
+
+                # Compute the needed scroll and duration
+                pOld = vBar.value()
+                pNew = pOld + cPos - round(mPos*0.01)
+                aDur = 150 + round(abs(pNew - pOld)/hWid*500)
+
+                if pNew >= 0:
+                    doAnim = QPropertyAnimation(vBar, b"value", self)
+                    doAnim.setDuration(aDur)
+                    doAnim.setStartValue(pOld)
+                    doAnim.setEndValue(pNew)
+                    doAnim.start()
 
         return
 
