@@ -168,6 +168,13 @@ def testDocEditor(qtbot, yesToAll, nwFuncTemp, nwTempGUI, nwRef, nwTemp):
     nwGUI.mainMenu.aSpellCheck.setChecked(True)
     assert nwGUI.mainMenu._toggleSpellCheck()
 
+    # Change some settings
+    nwGUI.mainConf.hideHScroll = True
+    nwGUI.mainConf.hideVScroll = True
+    nwGUI.mainConf.scrollPastEnd = True
+    nwGUI.mainConf.scollToPoint = 80
+    nwGUI.mainConf.scollWithCursor = True
+
     # Add a Character File
     nwGUI.setFocus(1)
     nwGUI.treeView.clearSelection()
