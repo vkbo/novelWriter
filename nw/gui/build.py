@@ -1013,8 +1013,9 @@ class GuiBuildNovel(QDialog):
         """
         self.saveODT.setEnabled(theState)
         self.savePDF.setEnabled(theState)
-        self.saveMD.setEnabled(theState)
         self.saveTXT.setEnabled(theState)
+        if self.mainConf.verQtValue >= 51400:
+            self.saveMD.setEnabled(theState)
         return
 
     def _saveSettings(self):
