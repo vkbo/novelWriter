@@ -860,11 +860,18 @@ class GuiDocEditor(QTextEdit):
         """
         userCursor = self.textCursor()
         userSelection = userCursor.hasSelection()
+        posCursor = self.cursorForPosition(thePos)
 
         mnuContext = QMenu()
 
-        # Cut, Copy and Paste
-        # ===================
+        # Follow, Cut, Copy and Paste
+        # ===========================
+
+        if self._followTag(theCursor=posCursor, loadTag=False):
+            mnuTag = QAction("Follow Tag", mnuContext)
+            mnuTag.triggered.connect(lambda: self._followTag(theCursor=posCursor))
+            mnuContext.addAction(mnuTag)
+            mnuContext.addSeparator()
 
         if userSelection:
             mnuCut = QAction("Cut", mnuContext)
@@ -903,10 +910,13 @@ class GuiDocEditor(QTextEdit):
         # Spell Checking
         # ==============
 
+        posCursor  = self.cursorForPosition(thePos)
         spellCheck = self.spellCheck
 
+        if posCursor.block().text().startswith("@"):
+            spellCheck = False
+
         if spellCheck:
-            posCursor = self.cursorForPosition(thePos)
             posCursor.select(QTextCursor.WordUnderCursor)
             theWord = posCursor.selectedText().strip().strip(self.nonWord)
             spellCheck &= theWord != ""
@@ -970,8 +980,8 @@ class GuiDocEditor(QTextEdit):
 
     @pyqtSlot()
     def _runCounter(self):
-        """Decide whether to run the word counter, or stop the timer due
-        to inactivity.
+        """Decide whether to run the word counter, or not due to
+        inactivity.
         """
         if self.wCounter.isRunning():
             logger.verbose("Word counter is busy")
@@ -1035,7 +1045,7 @@ class GuiDocEditor(QTextEdit):
     #  Internal Functions
     ##
 
-    def _followTag(self, theCursor=None):
+    def _followTag(self, theCursor=None, loadTag=True):
         """Activated by Ctrl+Enter. Checks that we're in a block
         starting with '@'. We then find the word under the cursor and
         check that it is after the ':'. If all this is fine, we have a
@@ -1060,10 +1070,15 @@ class GuiDocEditor(QTextEdit):
             if wPos <= cPos:
                 return False
 
-            logger.verbose("Attempting to follow tag '%s'" % theWord)
-            self.theParent.docViewer.loadFromTag(theWord)
+            if loadTag:
+                logger.verbose("Attempting to follow tag '%s'" % theWord)
+                self.theParent.docViewer.loadFromTag(theWord)
+            else:
+                logger.verbose("Potential tag '%s'" % theWord)
 
-        return True
+            return True
+
+        return False
 
     def _openSpellContext(self):
         """Opens the spell check context menu at the current point of
