@@ -4,8 +4,6 @@ import sys
 import subprocess
 import setuptools
 
-from nw import __version__, __url__, __docurl__, __issuesurl__, __sourceurl__
-
 ##
 #  Build the Package
 ##
@@ -119,19 +117,16 @@ if len(sys.argv) == 1:
 with open("README.md", "r") as inFile:
     longDescription = inFile.read()
 
-with open("requirements.txt", "r") as inFile:
-    pkgRequirements = inFile.read().strip().splitlines()
-
 setuptools.setup(
     name = "novelWriter",
-    version = __version__,
+    # version = __version__, # Set in setup.cfg
     author = "Veronica Berglyd Olsen",
     author_email = "code@vkbo.net",
     description = "A markdown-like document editor for writing novels",
     long_description = longDescription,
     long_description_content_type = "text/markdown",
     license = "GNU General Public License v3",
-    url = __url__,
+    url = "https://novelwriter.io",
     entry_points = {
         "console_scripts" : ["novelWriter-cli=nw:main"],
         "gui_scripts" :     ["novelWriter=nw:main"],
@@ -140,9 +135,9 @@ setuptools.setup(
     include_package_data = True,
     package_data = {"": ["*.conf"]},
     project_urls = {
-        "Bug Tracker": __issuesurl__,
-        "Documentation": __docurl__,
-        "Source Code": __sourceurl__,
+        "Bug Tracker": "https://github.com/vkbo/novelWriter/issues",
+        "Documentation": "https://github.com/vkbo/novelWriter/issues",
+        "Source Code": "https://github.com/vkbo/novelWriter",
     },
     classifiers = [
         "Programming Language :: Python :: 3 :: Only",
@@ -159,5 +154,9 @@ setuptools.setup(
         "Topic :: Text Editors",
     ],
     python_requires = ">=3.6",
-    install_requires = pkgRequirements,
+    install_requires = [
+        "pyqt5>=5.2.1",
+        "lxml>=4.2.0",
+        "pyenchant>=3.0.0",
+    ],
 )

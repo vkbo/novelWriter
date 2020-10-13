@@ -35,7 +35,7 @@ except getopt.GetoptError:
 for inOpt, inArg in inOpts:
     if inOpt in ("-h", "--help"):
         print(helpMsg)
-        sys.exit()
+        sys.exit(0)
     elif inOpt in ("-d", "--debug"):
         buildWindowed = False
 
@@ -72,7 +72,7 @@ if buildWindowed:
 
 instOpt.append("novelWriter.py")
 
-import PyInstaller.__main__ # noqa: F401
+import PyInstaller.__main__ # noqa: E402
 PyInstaller.__main__.run(instOpt)
 
 print("")
