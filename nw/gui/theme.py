@@ -103,7 +103,7 @@ class GuiTheme:
         self.colDialN  = [0, 0, 0]
         self.colDialD  = [0, 0, 0]
         self.colDialS  = [0, 0, 0]
-        self.colComm   = [0, 0, 0]
+        self.colHidden = [0, 0, 0]
         self.colKey    = [0, 0, 0]
         self.colVal    = [0, 0, 0]
         self.colSpell  = [0, 0, 0]
@@ -356,7 +356,7 @@ class GuiTheme:
             self.colDialN  = self._loadColour(confParser, cnfSec, "straightquotes")
             self.colDialD  = self._loadColour(confParser, cnfSec, "doublequotes")
             self.colDialS  = self._loadColour(confParser, cnfSec, "singlequotes")
-            self.colComm   = self._loadColour(confParser, cnfSec, "hidden")
+            self.colHidden = self._loadColour(confParser, cnfSec, "hidden")
             self.colKey    = self._loadColour(confParser, cnfSec, "keyword")
             self.colVal    = self._loadColour(confParser, cnfSec, "value")
             self.colSpell  = self._loadColour(confParser, cnfSec, "spellcheckline")
