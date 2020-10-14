@@ -756,8 +756,8 @@ class GuiDocEditor(QTextEdit):
           * The return and enter key redirects here even if the search
             box has focus. Since we need these keys to continue search,
             we block any further interaction here while it's in focus.
-          * The undo/redo sequences bypasses the doAction pathway from
-            the menu, so we redirect them back from here.
+          * The undo/redo/select all sequences bypasses the docAction
+            pathway from the menu, so we redirect them back from here.
         """
         isReturn  = keyEvent.key() == Qt.Key_Return
         isReturn |= keyEvent.key() == Qt.Key_Enter
@@ -767,6 +767,8 @@ class GuiDocEditor(QTextEdit):
             self.docAction(nwDocAction.REDO)
         elif keyEvent == QKeySequence.Undo:
             self.docAction(nwDocAction.UNDO)
+        elif keyEvent == QKeySequence.SelectAll:
+            self.docAction(nwDocAction.SEL_ALL)
         else:
             QTextEdit.keyPressEvent(self, keyEvent)
             self.docFooter.updateLineCount()
@@ -1292,10 +1294,11 @@ class GuiDocEditor(QTextEdit):
                 reSelect = True
             if reSelect:
                 theCursor.clearSelection()
-                theCursor.setPosition(posE-1)
-                theCursor.movePosition(QTextCursor.Left, QTextCursor.KeepAnchor, posE-posS-1)
+                theCursor.setPosition(posS, QTextCursor.MoveAnchor)
+                theCursor.setPosition(posE-1, QTextCursor.KeepAnchor)
 
             self.setTextCursor(theCursor)
+
         return theCursor
 
     def _toggleFormat(self, fLen, fChar):
@@ -1429,7 +1432,10 @@ class GuiDocEditor(QTextEdit):
         theCursor.clearSelection()
         theCursor.select(selMode)
 
-        if selMode == QTextCursor.BlockUnderCursor:
+        if selMode == QTextCursor.WordUnderCursor:
+            theCursor = self._autoSelect()
+
+        elif selMode == QTextCursor.BlockUnderCursor:
             # This selection mode also selects the preceding oaragraph
             # separator, which we want to avoid.
             posS = theCursor.selectionStart()
