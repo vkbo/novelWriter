@@ -68,7 +68,7 @@ class GuiDocHighlighter(QSyntaxHighlighter):
         self.colDialN  = QColor(0, 0, 0)
         self.colDialD  = QColor(0, 0, 0)
         self.colDialS  = QColor(0, 0, 0)
-        self.colComm   = QColor(0, 0, 0)
+        self.colHidden = QColor(0, 0, 0)
         self.colKey    = QColor(0, 0, 0)
         self.colVal    = QColor(0, 0, 0)
         self.colSpell  = QColor(0, 0, 0)
@@ -92,7 +92,7 @@ class GuiDocHighlighter(QSyntaxHighlighter):
         self.colDialN  = QColor(*self.theTheme.colDialN)
         self.colDialD  = QColor(*self.theTheme.colDialD)
         self.colDialS  = QColor(*self.theTheme.colDialS)
-        self.colComm   = QColor(*self.theTheme.colComm)
+        self.colHidden = QColor(*self.theTheme.colHidden)
         self.colKey    = QColor(*self.theTheme.colKey)
         self.colVal    = QColor(*self.theTheme.colVal)
         self.colSpell  = QColor(*self.theTheme.colSpell)
@@ -118,14 +118,14 @@ class GuiDocHighlighter(QSyntaxHighlighter):
             "header4h"   : self._makeFormat(self.colHeadH, "bold", 1.2),
             "bold"       : self._makeFormat(self.colEmph, "bold"),
             "italic"     : self._makeFormat(self.colEmph, "italic"),
-            "strike"     : self._makeFormat(self.colEmph, "strike"),
+            "strike"     : self._makeFormat(self.colHidden, "strike"),
             "trailing"   : self._makeFormat(self.colTrail, "background"),
             "nobreak"    : self._makeFormat(self.colTrail, "background"),
             "dialogue1"  : self._makeFormat(self.colDialN),
             "dialogue2"  : self._makeFormat(self.colDialD),
             "dialogue3"  : self._makeFormat(self.colDialS),
             "replace"    : self._makeFormat(self.colRepTag),
-            "hidden"     : self._makeFormat(self.colComm),
+            "hidden"     : self._makeFormat(self.colHidden),
             "keyword"    : self._makeFormat(self.colKey),
             "modifier"   : self._makeFormat(self.colMod),
             "value"      : self._makeFormat(self.colVal, "underline"),

@@ -1484,7 +1484,7 @@ def testThemes(qtbot, yesToAll, nwMinimal, nwTemp):
     assert nwGUI.theTheme.colDialN  == [242, 119, 122]
     assert nwGUI.theTheme.colDialD  == [153, 204, 153]
     assert nwGUI.theTheme.colDialS  == [255, 204, 102]
-    assert nwGUI.theTheme.colComm   == [153, 153, 153]
+    assert nwGUI.theTheme.colHidden == [153, 153, 153]
     assert nwGUI.theTheme.colKey    == [242, 119, 122]
     assert nwGUI.theTheme.colVal    == [204, 153, 204]
     assert nwGUI.theTheme.colSpell  == [242, 119, 122]
