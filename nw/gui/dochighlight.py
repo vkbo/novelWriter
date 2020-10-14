@@ -167,14 +167,14 @@ class GuiDocHighlighter(QSyntaxHighlighter):
 
         # Markdown
         self.hRules.append((
-            nwRegEx.FMT_I, {
+            nwRegEx.FMT_EI, {
                 1 : self.hStyles["hidden"],
                 2 : self.hStyles["italic"],
                 3 : self.hStyles["hidden"],
             }
         ))
         self.hRules.append((
-            nwRegEx.FMT_B, {
+            nwRegEx.FMT_EB, {
                 1 : self.hStyles["hidden"],
                 2 : self.hStyles["bold"],
                 3 : self.hStyles["hidden"],

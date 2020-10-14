@@ -297,8 +297,8 @@ class Tokenizer():
         """
         # RegExes for adding formatting tags within text lines
         rxFormats = [
-            (QRegularExpression(nwRegEx.FMT_I),  [None, self.FMT_I_B, None, self.FMT_I_E]),
-            (QRegularExpression(nwRegEx.FMT_B),  [None, self.FMT_B_B, None, self.FMT_B_E]),
+            (QRegularExpression(nwRegEx.FMT_EI), [None, self.FMT_I_B, None, self.FMT_I_E]),
+            (QRegularExpression(nwRegEx.FMT_EB), [None, self.FMT_B_B, None, self.FMT_B_E]),
             (QRegularExpression(nwRegEx.FMT_ST), [None, self.FMT_D_B, None, self.FMT_D_E]),
         ]
 
