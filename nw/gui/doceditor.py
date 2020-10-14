@@ -1237,6 +1237,11 @@ class GuiDocEditor(QTextEdit):
             posS = theCursor.selectionStart()
             posE = theCursor.selectionEnd()
 
+            blockS = self.qDocument.findBlock(posS)
+            blockE = self.qDocument.findBlock(posE)
+            if blockS != blockE:
+                posE = blockS.position() + blockS.length() - 1
+
             theCursor.clearSelection()
             theCursor.beginEditBlock()
             theCursor.setPosition(posE)
@@ -1245,8 +1250,8 @@ class GuiDocEditor(QTextEdit):
             theCursor.insertText(tBefore)
             theCursor.endEditBlock()
 
-            theCursor.setPosition(posE + len(tBefore))
-            theCursor.movePosition(QTextCursor.Left, QTextCursor.KeepAnchor, posE-posS)
+            theCursor.setPosition(posE + len(tBefore), QTextCursor.MoveAnchor)
+            theCursor.setPosition(posS + len(tBefore), QTextCursor.KeepAnchor)
             self.setTextCursor(theCursor)
 
         else:
