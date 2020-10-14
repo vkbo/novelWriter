@@ -1299,12 +1299,24 @@ class GuiDocEditor(QTextEdit):
         return theCursor
 
     def _toggleFormat(self, fLen, fChar):
-        """Toggle strikethrough text.
+        """Toggle the formatting of a specific type for a piece of text.
+        If more than one block is selected, the formatting is applied to
+        the first block.
         """
         theCursor = self._autoSelect()
         if theCursor.hasSelection():
             posS = theCursor.selectionStart()
             posE = theCursor.selectionEnd()
+
+            blockS = self.qDocument.findBlock(posS)
+            blockE = self.qDocument.findBlock(posE)
+
+            if blockS != blockE:
+                posE = blockS.position() + blockS.length() - 1
+                theCursor.clearSelection()
+                theCursor.setPosition(posS, QTextCursor.MoveAnchor)
+                theCursor.setPosition(posE, QTextCursor.KeepAnchor)
+                self.setTextCursor(theCursor)
 
             numB = 0
             for n in range(fLen):
