@@ -127,7 +127,7 @@ class GuiDocMerge(QDialog):
             ), nwAlert.ERROR)
             return
 
-        nHandle = self.theProject.newFile(srcItem.itemName, srcItem.itemClass, srcItem.parHandle)
+        nHandle = self.theProject.newFile(srcItem.itemName, srcItem.itemClass, srcItem.itemParent)
         newItem = self.theProject.projTree[nHandle]
         newItem.setStatus(srcItem.itemStatus)
 

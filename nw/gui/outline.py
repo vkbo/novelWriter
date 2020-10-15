@@ -439,6 +439,10 @@ class GuiOutline(QTreeWidget):
         newItem = QTreeWidgetItem()
         hIcon   = "doc_%s" % tLevel.lower()
 
+        cC = int(novIdx["cCount"])
+        wC = int(novIdx["wCount"])
+        pC = int(novIdx["pCount"])
+
         newItem.setText(self.colIndex[nwOutline.TITLE],  novIdx["title"])
         newItem.setData(self.colIndex[nwOutline.TITLE],  Qt.UserRole, tHandle)
         newItem.setIcon(self.colIndex[nwOutline.TITLE],  self.theTheme.getIcon(hIcon))
@@ -448,9 +452,9 @@ class GuiOutline(QTreeWidget):
         newItem.setText(self.colIndex[nwOutline.LINE],   sTitle[1:].lstrip("0"))
         newItem.setData(self.colIndex[nwOutline.LINE],   Qt.UserRole, sTitle)
         newItem.setText(self.colIndex[nwOutline.SYNOP],  novIdx["synopsis"])
-        newItem.setText(self.colIndex[nwOutline.CCOUNT], "{:n}".format(novIdx["cCount"]))
-        newItem.setText(self.colIndex[nwOutline.WCOUNT], "{:n}".format(novIdx["wCount"]))
-        newItem.setText(self.colIndex[nwOutline.PCOUNT], "{:n}".format(novIdx["pCount"]))
+        newItem.setText(self.colIndex[nwOutline.CCOUNT], f"{cC:n}")
+        newItem.setText(self.colIndex[nwOutline.WCOUNT], f"{wC:n}")
+        newItem.setText(self.colIndex[nwOutline.PCOUNT], f"{pC:n}")
         newItem.setTextAlignment(self.colIndex[nwOutline.CCOUNT], Qt.AlignRight)
         newItem.setTextAlignment(self.colIndex[nwOutline.WCOUNT], Qt.AlignRight)
         newItem.setTextAlignment(self.colIndex[nwOutline.PCOUNT], Qt.AlignRight)

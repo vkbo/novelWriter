@@ -222,7 +222,6 @@ class GuiAbout(QDialog):
             hColB = self.theParent.theTheme.colHead[2],
         )
         self.pageAbout.document().setDefaultStyleSheet(styleSheet)
-        # self.pageCredit.document().setDefaultStyleSheet(styleSheet)
         self.pageLicense.document().setDefaultStyleSheet(styleSheet)
 
         return

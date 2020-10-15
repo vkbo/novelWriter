@@ -136,7 +136,6 @@ def numberToWord(numVal, theLanguage):
 def _numberToWordEN(numVal):
     """Convert numbers to English words.
     """
-    numWord = ""
     oneWord = ""
     tenWord = ""
     hunWord = ""
@@ -145,8 +144,8 @@ def _numberToWordEN(numVal):
         return "Zero"
 
     oneVal = numVal % 10
-    tenVal = (numVal-oneVal) % 100
-    hunVal = (numVal-tenVal-oneVal) % 1000
+    tenVal = (numVal - oneVal) % 100
+    hunVal = (numVal - tenVal - oneVal) % 1000
 
     theHundreds = {
         100: "One Hundred",   200: "Two Hundred",   300: "Three Hundred",
@@ -167,18 +166,18 @@ def _numberToWordEN(numVal):
     }
 
     hunWord = theHundreds.get(hunVal, "")
-    tenWord = theTens.get(tenVal, "")
     if tenVal == 10:
         oneWord = theTeens.get(oneVal, "")
-        numWord = ("%s %s" % (hunWord, oneWord)).strip()
+        return f"{hunWord} {oneWord}".strip()
     else:
         oneWord = theOnes.get(oneVal, "")
         if tenVal == 0:
-            numWord = ("%s %s" % (hunWord, oneWord)).strip()
+            return f"{hunWord} {oneWord}".strip()
         else:
+            tenWord = theTens.get(tenVal, "")
             if oneVal == 0:
-                numWord = ("%s %s" % (hunWord, tenWord)).strip()
+                return f"{hunWord} {tenWord}".strip()
             else:
-                numWord = ("%s %s-%s" % (hunWord, tenWord, oneWord)).strip()
+                return f"{hunWord} {tenWord}-{oneWord}".strip()
 
-    return numWord
+    return ""
