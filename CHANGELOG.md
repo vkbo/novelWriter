@@ -1,6 +1,27 @@
 # novelWriter ChangeLog
 
-## Version 1.0 Release Candidate 4 [2020-10-25]
+## Version 1.0 Release Candidate 1 [2020-10-25]
+
+**Important Notes**
+
+* The minimal supported Python version is now 3.6. While novelWriter has worked fine in the post with versions as low as 3.4, neither 3.4 nor 3.5 is tested. They have also both reached end of life. There are a couple of good reasons to drop support for older versions. PR #470.
+  1. Python 3.6 introduces ordered dictionaries as the standard.
+  2. The format string attribute was added in 3.6, and is much less clunky in many parts of the code than the full `"".format()` syntax.
+  3. Especially 3.4 has limited support for `*var` expansion of iterables. These are used several places in the code.
+
+**Bugfixes**
+
+* Fixed a bug in the Build Novel Project tool where novelWriter would crash when trying to build the preview when running a version of the Qt library lower than 5.14. Issue #471, PR #472.
+
+**User Interface**
+
+* An option has been added in Preferences to hide horizontal or vertical scroll bars on the main GUI. These optons will hide scroll bars on the Project Tree, Document Editor, Document Viewer, Outline Tab and on the controls of the Build Novel Project tool. Scroll bars take up space, and as long as the project doesn't contain very long documents, scrolling with the mouse wheel is enough. The feature is of course entirely optional. PRs #468 and #469.
+* It is no possible to enable scrolling past the end of the document with a new option in Preferences. Previously, the editor would just allow scrolling to the bottom of the document. The new option adds a margin to the bottom of the document itself that allows for scrolling past this point. This avoids having to type text at the bottom of the editor window. PRs #468 and #469.
+* A new feature called "Typewriter Scrolling" has been added. It basically means that the editor window will try to keep the cursor at a given vertical position and instead scroll the document when the cursor moves to a new line, either by arrow keys or while typing. The position can also be defined in Preferences. The scroll bar uses an animation effect to perform the scrolling to avoid abrupt jumps in the editor window. PRs #468 and #474.
+* The line counter in the Document Editor footer now shows the location in the document in terms of percentage. This is convenient for very large documents. PR #474.
+* A "Follow Tag" option has been added to the Document Editor context menu. This option appears when right-clicking a tag value on a meta data line. PR #474.
+* When applying a format from the format menu to a selection of multiple paragraphs (or lines), only the first paragraph (or line) receives the formatting. The editor doesn't allow markdown formatting to span multiple lines. Issue #451, PR #475.
+* The syntax highlighter no longer uses the same colour to highlight strikethrough text as for emphasised text. The colour is intended to stand out, which makes little sense for such text. Instead, the highlighter uses the same colour as for comments. PR #476.
 
 
 ## Version 1.0 Beta 4 [2020-10-11]
