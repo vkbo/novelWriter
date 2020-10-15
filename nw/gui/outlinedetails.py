@@ -266,9 +266,13 @@ class GuiOutlineDetails(QScrollArea):
         self.fileValue.setText(nwItem.itemName)
         self.itemValue.setText(nwItem.itemStatus)
 
-        self.cCValue.setText("{:n}".format(checkInt(novIdx["cCount"], 0)))
-        self.wCValue.setText("{:n}".format(checkInt(novIdx["wCount"], 0)))
-        self.pCValue.setText("{:n}".format(checkInt(novIdx["pCount"], 0)))
+        cC = checkInt(novIdx["cCount"], 0)
+        wC = checkInt(novIdx["wCount"], 0)
+        pC = checkInt(novIdx["pCount"], 0)
+
+        self.cCValue.setText(f"{cC:n}")
+        self.wCValue.setText(f"{wC:n}")
+        self.pCValue.setText(f"{pC:n}")
 
         self.synopValue.setText(novIdx["synopsis"])
 

@@ -196,10 +196,7 @@ class GuiMainStatus(QStatusBar):
             "Project word count (session change)"
         )
         self.statsText.setText((
-            "Words: {pWC:n} ({sWC:+n})"
-        ).format(
-            pWC = self.projWords,
-            sWC = self.sessWords,
+            f"Words: {self.projWords:n} ({self.sessWords:+n})"
         ))
         return
 
@@ -207,16 +204,16 @@ class GuiMainStatus(QStatusBar):
         """Update the session clock.
         """
         if self.refTime is None:
-            theTime = "00:00:00"
+            self.timeText.setText("00:00:00")
         else:
             # This is much faster than using datetime format
             tS = int(time() - self.refTime)
-            tM = int(tS/60)
-            tH = int(tM/60)
-            tM = tM - tH*60
-            tS = tS - tM*60 - tH*3600
-            theTime = "%02d:%02d:%02d" % (tH, tM, tS)
-        self.timeText.setText(theTime)
+            tM = tS//60
+            tH = tM//60
+            tM %= 60
+            tS %= 60
+            self.timeText.setText(f"{tH:02d}:{tM:02d}:{tS:02d}")
+
         return
 
 # END Class GuiMainStatus
@@ -237,7 +234,7 @@ class StatusLED(QAbstractButton):
         return
 
     ##
-    #  Getters and Setters
+    #  Setters
     ##
 
     def setState(self, theState):
