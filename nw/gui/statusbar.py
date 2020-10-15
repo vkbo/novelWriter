@@ -207,7 +207,9 @@ class GuiMainStatus(QStatusBar):
             self.timeText.setText("00:00:00")
         else:
             tS = int(time() - self.refTime)
-            self.timeText.setText(f"{tS//3600:02d}:{(tS//60)%60:02d}:{tS%60:02d}")
+            self.timeText.setText(
+                f"{tS//3600:02d}:{tS%3600//60:02d}:{tS%60:02d}"
+            )
         return
 
 # END Class GuiMainStatus

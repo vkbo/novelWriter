@@ -61,6 +61,7 @@ def testNumberWords():
     assert numberToWord(21, "en") == "Twenty-One"
     assert numberToWord(29, "en") == "Twenty-Nine"
     assert numberToWord(42, "en") == "Forty-Two"
+    assert numberToWord(114, "en") == "One Hundred Fourteen"
     assert numberToWord(142, "en") == "One Hundred Forty-Two"
     assert numberToWord(999, "en") == "Nine Hundred Ninety-Nine"
 
