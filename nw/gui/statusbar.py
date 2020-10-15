@@ -195,9 +195,9 @@ class GuiMainStatus(QStatusBar):
         self.statsText.setToolTip(
             "Project word count (session change)"
         )
-        self.statsText.setText((
+        self.statsText.setText(
             f"Words: {self.projWords:n} ({self.sessWords:+n})"
-        ))
+        )
         return
 
     def _updateTime(self):
