@@ -120,7 +120,7 @@ class NWDoc():
         logger.verbose("DocMeta: '%s'" % self._docMeta)
 
         if showStatus and not isOrphan:
-            self.theParent.statusBar.setStatus("Opened Document: %s" % self._theItem.itemName)
+            self.theParent.setStatus("Opened Document: %s" % self._theItem.itemName)
 
         return theText
 
@@ -166,7 +166,7 @@ class NWDoc():
             os.unlink(docPath)
         os.rename(docTemp, docPath)
 
-        self.theParent.statusBar.setStatus("Saved Document: %s" % self._theItem.itemName)
+        self.theParent.setStatus("Saved Document: %s" % self._theItem.itemName)
 
         return True
 

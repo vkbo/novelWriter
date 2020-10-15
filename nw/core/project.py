@@ -782,7 +782,7 @@ class NWProject():
         """Create a zip file of the entire project.
         """
         logger.info("Backing up project")
-        self.theParent.statusBar.setStatus("Backing up project ...")
+        self.theParent.setStatus("Backing up project ...")
 
         if self.mainConf.backupPath is None or self.mainConf.backupPath == "":
             self.theParent.makeAlert((
@@ -847,7 +847,7 @@ class NWProject():
             )
             return False
 
-        self.theParent.statusBar.setStatus("Project backed up to '%s.zip'" % baseName)
+        self.theParent.setStatus("Project backed up to '%s.zip'" % baseName)
 
         return True
 
