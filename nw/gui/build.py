@@ -684,8 +684,8 @@ class GuiBuildNovel(QDialog):
         isNone |= theItem.itemLayout == nwItemLayout.NO_LAYOUT
         isNone |= theItem.itemClass == nwItemClass.NO_CLASS
         isNone |= theItem.itemClass == nwItemClass.TRASH
-        isNone |= theItem.parHandle == self.theProject.projTree.trashRoot()
-        isNone |= theItem.parHandle is None
+        isNone |= theItem.itemParent == self.theProject.projTree.trashRoot()
+        isNone |= theItem.itemParent is None
         isNote  = theItem.itemLayout == nwItemLayout.NOTE
         isNovel = not isNone and not isNote
 

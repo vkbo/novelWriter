@@ -1139,16 +1139,16 @@ class NWProject():
                 # Technically a bug since treeOrder is built from the
                 # same data as projTree
                 continue
-            elif tItem.parHandle is None:
+            elif tItem.itemParent is None:
                 # Item is a root, or already been identified as an
                 # orphaned item
                 sentItems.append(tHandle)
                 yield tItem
-            elif tItem.parHandle in sentItems:
+            elif tItem.itemParent in sentItems:
                 # Item's parent has been sent, so all is fine
                 sentItems.append(tHandle)
                 yield tItem
-            elif tItem.parHandle in iterItems:
+            elif tItem.itemParent in iterItems:
                 # Item's parent exists, but hasn't been sent yet, so add
                 # it again to the end
                 logger.warning("Item %s found before its parent" % tHandle)

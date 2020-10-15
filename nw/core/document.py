@@ -67,7 +67,9 @@ class NWDoc():
 
     def openDocument(self, tHandle, showStatus=True, isOrphan=False):
         """Open a document from handle, capturing potential file system
-        errors and parse meta data.
+        errors and parse meta data. If the document doesn't exist on
+        disk, return an empty string. If something went wrong, return
+        None.
         """
         if not isHandle(tHandle):
             return None
@@ -125,8 +127,8 @@ class NWDoc():
         return theText
 
     def saveDocument(self, docText):
-        """Save the document via temp file in case of save failure, and
-        in any case keep a backup of the file.
+        """Save the document. The file is saved via a temp file in case
+        of save failure. Returns True if successful, False if not.
         """
         if self._docHandle is None:
             return False
@@ -139,6 +141,7 @@ class NWDoc():
         docPath = os.path.join(self.theProject.projContent, docFile)
         docTemp = os.path.join(self.theProject.projContent, docFile+"~")
 
+        # DocMeta line
         if self._theItem is None:
             docMeta = ""
         else:
@@ -171,7 +174,7 @@ class NWDoc():
         return True
 
     def deleteDocument(self, tHandle):
-        """Permanently delete a document source file and its backups
+        """Permanently delete a document source file and related files
         from the project data folder.
         """
         if not isHandle(tHandle):

@@ -521,7 +521,7 @@ def testProjectOrphanedFiles(nwDummy, nwLipsum):
     assert oItem is not None
     assert oItem.itemName == "Mars"
     assert oItem.itemHandle == "636b6aa9b697b"
-    assert oItem.parHandle is None
+    assert oItem.itemParent is None
     assert oItem.itemClass == nwItemClass.WORLD
     assert oItem.itemType == nwItemType.FILE
     assert oItem.itemLayout == nwItemLayout.NOTE
@@ -531,7 +531,7 @@ def testProjectOrphanedFiles(nwDummy, nwLipsum):
     assert oItem is not None
     assert oItem.itemName == "Orphaned File 1"
     assert oItem.itemHandle == "736b6aa9b697b"
-    assert oItem.parHandle is None
+    assert oItem.itemParent is None
     assert oItem.itemClass == nwItemClass.NO_CLASS
     assert oItem.itemType == nwItemType.FILE
     assert oItem.itemLayout == nwItemLayout.NO_LAYOUT

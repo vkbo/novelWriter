@@ -219,7 +219,7 @@ class GuiProjectTree(QTreeWidget):
             pItem = self.theProject.projTree[pHandle]
             if pItem.itemType == nwItemType.FILE:
                 nHandle = pHandle
-                pHandle = pItem.parHandle
+                pHandle = pItem.itemParent
 
             # If we again have no home, give up
             if pHandle is None:
@@ -270,7 +270,7 @@ class GuiProjectTree(QTreeWidget):
         """
         nwItem = self.theProject.projTree[tHandle]
         trItem = self._addTreeItem(nwItem, nHandle)
-        pHandle = nwItem.parHandle
+        pHandle = nwItem.itemParent
         if pHandle is not None and pHandle in self.theMap:
             self.theMap[pHandle].setExpanded(True)
         self.clearSelection()
@@ -430,7 +430,7 @@ class GuiProjectTree(QTreeWidget):
                 logger.error("Could not delete item")
                 return False
 
-            pHandle = nwItemS.parHandle
+            pHandle = nwItemS.itemParent
             if self.theProject.projTree.isTrashRoot(pHandle):
                 # If the file is in the trash folder already, as the
                 # user if they want to permanently delete the file.
@@ -815,7 +815,7 @@ class GuiProjectTree(QTreeWidget):
         project tree.
         """
         tHandle = nwItem.itemHandle
-        pHandle = nwItem.parHandle
+        pHandle = nwItem.itemParent
         tClass  = nwItem.itemClass
         newItem = QTreeWidgetItem([""]*4)
 
@@ -1022,11 +1022,11 @@ class GuiProjectTreeMenu(QMenu):
 
         trashHandle = self.theTree.theProject.projTree.trashRoot()
 
-        inTrash = theItem.parHandle == trashHandle and trashHandle is not None
+        inTrash = theItem.itemParent == trashHandle and trashHandle is not None
         isTrash = theItem.itemHandle == trashHandle and trashHandle is not None
         isFile  = theItem.itemType == nwItemType.FILE
         isArch  = theRoot.itemClass == nwItemClass.ARCHIVE
-        isOrph  = isFile and theItem.parHandle is None
+        isOrph  = isFile and theItem.itemParent is None
 
         showOpen      = isFile
         showView      = isFile
