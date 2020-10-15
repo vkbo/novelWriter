@@ -206,14 +206,8 @@ class GuiMainStatus(QStatusBar):
         if self.refTime is None:
             self.timeText.setText("00:00:00")
         else:
-            # This is much faster than using datetime format
             tS = int(time() - self.refTime)
-            tM = tS//60
-            tH = tM//60
-            tM %= 60
-            tS %= 60
-            self.timeText.setText(f"{tH:02d}:{tM:02d}:{tS:02d}")
-
+            self.timeText.setText(f"{tS//3600:02d}:{(tS//60)%60:02d}:{tS%60:02d}")
         return
 
 # END Class GuiMainStatus
