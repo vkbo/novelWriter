@@ -19,6 +19,10 @@ import sys
 import getopt
 import subprocess
 
+if not sys.platform.startswith("win32"):
+    print("ERROR: This script is intended for Windows only.")
+    sys.exit(1)
+
 # Defaults
 buildWindowed = True
 runPip = False
@@ -133,6 +137,15 @@ else:
     instOpt.append("--onedir")
 
 instOpt.append("novelWriter.py")
+
+# Make sample.zip first
+print("Building sample.zip")
+try:
+    subprocess.call([sys.executable, "setup.py" "sample"])
+except Exception as e:
+    print("Failed with error:")
+    print(str(e))
+    sys.exit(1)
 
 import PyInstaller.__main__ # noqa: E402
 PyInstaller.__main__.run(instOpt)
