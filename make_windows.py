@@ -14,7 +14,6 @@ install all dependencies needed for runing the build, and for running
 novelWriter itself.
 """
 
-import nw
 import os
 import sys
 import getopt
@@ -177,6 +176,7 @@ if makeSetup:
     with open(os.path.join("setup", "win_setup.iss"), mode="r") as inFile:
         issData = inFile.read()
 
+    import nw # noqa: E402
     issData = issData.replace(r"%%version%%", nw.__version__)
     issData = issData.replace(r"%%dir%%", os.getcwd())
 
