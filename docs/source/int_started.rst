@@ -140,7 +140,7 @@ encountered. To list all options, run:
 
    python novelWriter.py --help
 
-There are also a couple of install scripts in the assets folder which will assist in setting up a
+There are also a couple of install scripts in the setup folder which will assist in setting up a
 launch icon and the novelWriter project file mimetype for Gnome desktops on Linux. Currently,
 there's one script for Debian and one for Ubuntu.
 
