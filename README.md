@@ -12,7 +12,7 @@
 [![pypi](https://img.shields.io/pypi/v/novelwriter)](https://pypi.org/project/novelWriter)
 [![python](https://img.shields.io/pypi/pyversions/novelwriter)](https://pypi.org/project/novelWriter)
 
-<img align="left" style="margin: 0 16px 4px 0;" src="https://raw.githubusercontent.com/vkbo/novelWriter/main/assets/icons/96x96/novelwriter.png">
+<img align="left" style="margin: 0 16px 4px 0;" src="https://raw.githubusercontent.com/vkbo/novelWriter/main/setup/icons/96x96/novelwriter.png">
 
 novelWriter is a Markdown-like text editor designed for writing novels and larger projects of many
 smaller plain text documents. It uses its own flavour of Markdown that supports a meta data syntax
@@ -81,7 +81,7 @@ You can also provide a path to a folder containing a novelWriter project as the 
 
 ### Launcher and Icons
 
-In the root assets folder there are icons and scripts and a template for setting up a launcher on
+In the root setup folder there are icons and scripts and a template for setting up a launcher on
 Gnome desktops. You may need to modify those scripts slightly, but as they are, they work on Debian
 and Ubuntu. For other operating systems, please consult your operating system documentation for how
 to make those. Feel free to submit more if you are able to make them.
