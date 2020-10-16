@@ -141,7 +141,7 @@ instOpt.append("novelWriter.py")
 # Make sample.zip first
 print("Building sample.zip")
 try:
-    subprocess.call([sys.executable, "setup.py" "sample"])
+    subprocess.call([sys.executable, "setup.py", "sample"])
 except Exception as e:
     print("Failed with error:")
     print(str(e))
