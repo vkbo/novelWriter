@@ -5,6 +5,7 @@
 /deploy/
 *.spec
 *.egg-info
+setup.iss
 
 # Documentation
 /docs/build/

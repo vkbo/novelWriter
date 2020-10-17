@@ -52,63 +52,65 @@ in principle work fine on other operating systems as well as long as dependencie
 tests are run on the latest versions of Ubuntu Linux, Windows Server and macOS.
 
 
-## Installing and Running
+# Installing and Running
 
-You can runt novelWriter either from a downloaded copy of the source code, or by running:
+novelWriter is available on [pypi.org](https://pypi.org/project/novelWriter/), and can be installed with:
 ```bash
 pip install novelwriter
 ```
-**Note:** On some systems you must use `pip3` instead for the Python 3 version.
 
-You can update novelWriter to the latest version by running:
+To upgrade an existing installation, use:
 ```bash
 pip install --upgrade novelwriter
 ```
 
-The application can then be started with one of the commands, depending on your Python configuration:
+Dependencies are installed automatically, but can generally be installed with:
+```bash
+pip install -r requirements.txt
+```
+
+Below are some brief instructions on how to get started on different operating systems.
+
+
+## Linux
+
+Either download the source, or install with pip.
+
+If you run from source, install the dependencies via pip, or directly from the OS repo.
+There are very few dependencies, and they should be available in the standard repo.
+The Python packages needed are `pyqt5`, `lxml` and `pyenchant`.
+
+### Installing from Source
+
+You can also install novelWriter from source with:
+```bash
+python3 setup.py sample
+sudo python3 setup.py install
+sudo python3 setup.py launcher
+```
+
+The last line will install the application icons and set up a launcher for novelWriter.
+The method uses hardcoded paths, so it may or may not work for your Linux distro.
+If you have any issues, please submit a ticket so the script can be tuned.
+
+The script may prompt you to choose which executable to configure if it finds more than one.
+
+### Running from Source
+
+If you want to run directly from the source, the application can be started with:
 ```bash
 ./novelWriter.py
-python novelWriter.py
-python3 novelWriter.py
 ```
 
-It also takes a few parameters for debugging and such, which can be listed with the switch `--help`.
-The `--info`, `--debug` or `--verbose` flags are particularly useful for increasing logging output
-for debugging.
-
-You can also provide a path to a folder containing a novelWriter project as the last parameter.
-
-
-### Launcher and Icons
-
-In the root setup folder there are icons and scripts and a template for setting up a launcher on
-Gnome desktops. You may need to modify those scripts slightly, but as they are, they work on Debian
-and Ubuntu. For other operating systems, please consult your operating system documentation for how
-to make those. Feel free to submit more if you are able to make them.
-
-
-## Package Dependencies
-
-It is recommended that novelWriter runs with Qt 5.10 or later, and requires Python 3.6 or later.
-Minimum version of Qt is 5.2.
-
-
-### Linux
-
-Generally, dependencies can be installed via `pip` with:
+You can also create a launcher for running directly from source with:
 ```bash
-pip3 install -r requirements.txt
+sudo python3 setup.py launcher
 ```
 
-You can also install the packages from the distro's own package manager.
-For the apt package manager on Debian/Ubuntu systems, the following Python3 packages are needed:
-
-* `python3-pyqt5` for the GUI
-* `python3-lxml` for writing project files
-* `python3-enchant` for better spell checking (optional)
+For more install options, see [Build and Install novelWriter](setup/BUILD.md).
 
 
-### macOS
+## macOS
 
 These instructions assume you're using brew, and have Python and pip set up.
 If not, see the [brew docs](https://docs.brew.sh/Homebrew-and-Python) for help.
@@ -126,11 +128,16 @@ It comes with a lot of default dictionaries.
 brew install enchant
 ```
 
-
 ### Windows
 
-On Windows, the `pip install` command is generally sufficient to install everything you need.
-That should also install the Qt libraries and the spell check dictionary dependencies.
+On Windows, you may first need to install Python.
+See the [python.org](https://www.python.org/) website for download packages.
+It is recommended that you install the latest version of Python 3.8.
+
+To install dependencies, run:
+```bash
+pip install --user -r requirements.txt
+```
 
 **Note:** On Windows, make sure Python3 is in your PATH if you want to launch novelWriter from
 command line. You can also right click the `novelWriter.py` file, create a shortcut, then right
@@ -142,8 +149,11 @@ It should look something like this:
 C:\...\AppData\Local\Programs\Python\Python38\python.exe novelWriter.py
 ```
 
+You can also run the `make.py` script to generate a single executable, or an installer.
+See [Build and Install novelWriter](setup/BUILD.md) for more details.
 
-### Package Versions
+
+## Package Versions
 
 Exporting to Markdown requires PyQt/Qt 5.14. There are no known minimum for `lxml`, but the code
 was originally written with 4.2. The optional spell check library must be at least 3.0.0 to work
@@ -155,8 +165,15 @@ checker, but more can be added to the `nw/assets/dict` folder. See the [README](
 file in that folder for how to generate more dictionaries. Note that the difflib-based option is
 both slow and limited.
 
+## Debugging
 
-## Key Features
+If you need to debug novelWriter, you must run it from command line.
+It takes a few parameters, which can be listed with the switch `--help`.
+The `--info`, `--debug` or `--verbose` flags are particularly useful for increasing logging output
+for debugging.
+
+
+# Key Features
 
 Some features of novelWriter are listed below. Consult the documentation for more information.
 
