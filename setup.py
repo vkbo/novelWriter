@@ -4,27 +4,22 @@ import sys
 import subprocess
 import setuptools
 
-##
-#  Build the Package
-##
+# =========================================================================== #
+#  Qt Assistant Documentation Builder
+# =========================================================================== #
 
-buildDocs = False
-buildSample = False
+def buildQtDocs():
+    """This function will build the documentation as a Qt help file. The
+    file is then copied into the nw/assets/help directory and can be
+    included in builds.
 
-if "qthelp" in sys.argv:
-    buildDocs = True
-    sys.argv.remove("qthelp")
+    Depends on packages:
+     * pip install sphinx
+     * pip install sphinx-rtd-theme
+     * pip install sphinxcontrib-qthelp
 
-if "sample" in sys.argv:
-    buildSample = True
-    sys.argv.remove("sample")
-
-##
-#  Qt Assistant Documentation
-##
-
-if buildDocs:
-
+    It also requires the qhelpgenerator to be available on the system.
+    """
     buildDir = os.path.join("docs", "build", "qthelp")
     helpDir  = os.path.join("nw", "assets", "help")
 
@@ -41,14 +36,14 @@ if buildDocs:
     try:
         subprocess.call(["make", "-C", "docs", "qthelp"])
     except Exception as e:
-        print("Failed with error:")
+        print("QtHelp Build Error:")
         print(str(e))
         buildFail = True
 
     try:
         subprocess.call(["qhelpgenerator", os.path.join(buildDir, inFile)])
     except Exception as e:
-        print("Failed with error:")
+        print("QtHelp Build Error:")
         print(str(e))
         buildFail = True
 
@@ -56,7 +51,7 @@ if buildDocs:
         try:
             os.mkdir(helpDir)
         except Exception as e:
-            print("Failed with error:")
+            print("QtHelp Build Error:")
             print(str(e))
             buildFail = True
 
@@ -68,7 +63,7 @@ if buildDocs:
         os.rename(os.path.join(buildDir, outFile), os.path.join(helpDir, outFile))
         os.rename(os.path.join(buildDir, datFile), os.path.join(helpDir, datFile))
     except Exception as e:
-        print("Failed with error:")
+        print("QtHelp Build Error:")
         print(str(e))
         buildFail = True
 
@@ -80,11 +75,20 @@ if buildDocs:
         print("Documentation build: OK")
     print("")
 
-##
-#  Sample Project ZIP file
-##
+    return
 
-if buildSample:
+# =========================================================================== #
+#  Sample Project ZIP File Builder
+# =========================================================================== #
+
+def buildSampleZip():
+    """Bundle the sample project into a single zip file to be saved into
+    the nw/assets folder for further bundling into builds.
+    """
+    print("")
+    print("Building Sample ZIP File")
+    print("========================")
+    print("")
 
     srcSample = "sample"
     dstSample = os.path.join("nw", "assets", "sample.zip")
@@ -96,8 +100,10 @@ if buildSample:
         from zipfile import ZipFile
 
         with ZipFile(dstSample, "w") as zipObj:
+            print("Compressing: nwProject.nwx")
             zipObj.write(os.path.join(srcSample, "nwProject.nwx"), "nwProject.nwx")
             for docFile in os.listdir(os.path.join(srcSample, "content")):
+                print("Compressing: content/%s" % docFile)
                 srcDoc = os.path.join(srcSample, "content", docFile)
                 zipObj.write(srcDoc, "content/"+docFile)
 
@@ -105,12 +111,33 @@ if buildSample:
         print("Error: Could not find sample project source directory.")
         sys.exit(1)
 
-if len(sys.argv) == 1:
-    # Nothing more to do
-    sys.exit(0)
+    print("")
+    print("Built file: %s" % dstSample)
+    print("")
 
-##
-#  Build the Package
-##
+    return
 
-setuptools.setup()
+# =========================================================================== #
+#  Process Jobs
+# =========================================================================== #
+
+if __name__ == "__main__":
+
+    # Process non-standard jobs
+
+    if "qthelp" in sys.argv:
+        sys.argv.remove("qthelp")
+        buildQtDocs()
+
+    if "sample" in sys.argv:
+        sys.argv.remove("sample")
+        buildSampleZip()
+
+    if len(sys.argv) == 1:
+        # Nothing more to do
+        sys.exit(0)
+
+    # Run the standard setup
+    setuptools.setup()
+
+# END Main
