@@ -78,6 +78,8 @@ for debugging.
 
 You can also provide a path to a folder containing a novelWriter project as the last parameter.
 
+For more install options, see [Build and Install novelWriter](setup/BUILD.md).
+
 
 ### Launcher and Icons
 

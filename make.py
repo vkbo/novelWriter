@@ -28,28 +28,29 @@ OS_DARWIN = 3
 #  Package Installer
 # =============================================================================================== #
 
-def installPackages():
+def installPackages(hostOS):
+    """Install package dependencies both for this script and for running
+    novelWriter itself.
+    """
     print("")
     print("Installing Dependencies")
     print("#######################")
     print("")
-    try:
-        subprocess.call([
-            sys.executable, "-m",
-            "pip", "install", "--user", "--upgrade", "pip"
-        ])
-        subprocess.call([
-            sys.executable, "-m",
-            "pip", "install", "--user", "--upgrade", "pyinstaller"
-        ])
-        subprocess.call([
-            sys.executable, "-m",
-            "pip", "install", "--user", "--upgrade", "-r", "requirements.txt"
-        ])
-    except Exception as e:
-        print("Failed with error:")
-        print(str(e))
-        sys.exit(1)
+
+    installQueue = ["pip", "pyinstaller", "-r requirements.txt"]
+    if hostOS == OS_DARWIN:
+        installQueue.append("pyobjc")
+
+    pyCmd = [sys.executable, "-m"]
+    pipCmd = ["pip", "install", "--user", "--upgrade"]
+    for stepCmd in installQueue:
+        pkgCmd = stepCmd.split(" ")
+        try:
+            subprocess.call(pyCmd + pipCmd + pkgCmd)
+        except Exception as e:
+            print("Failed with error:")
+            print(str(e))
+            sys.exit(1)
 
     return
 
@@ -73,6 +74,7 @@ def freezePackage(buildWindowed, oneFile, makeSetup, hostOS):
     else:
         dotDot = ":"
 
+    sys.modules["FixTk"] = None
     instOpt = [
         "--name=novelWriter",
         "--clean",
@@ -92,6 +94,12 @@ def freezePackage(buildWindowed, oneFile, makeSetup, hostOS):
         "--exclude-module=PyQt5.QtSensors",
         "--exclude-module=PyQt5.QtSerialPort",
         "--exclude-module=PyQt5.QtSql",
+        "--exclude-module=FixTk",
+        "--exclude-module=tcl",
+        "--exclude-module=tk",
+        "--exclude-module=_tkinter",
+        "--exclude-module=tkinter",
+        "--exclude-module=Tkinter",
     ]
 
     if buildWindowed:
@@ -263,8 +271,9 @@ if __name__ == "__main__":
         "This tool provides build commands for distibuting novelWriter as a\n"
         "package. The available options are as follows:\n"
         "\n"
+        "help     Print the help message.\n"
         "freeze   Freeze the package and produces a folder of all\n"
-        "         dependecies using pyinstaller.\n"
+        "         dependencies using pyinstaller.\n"
         "onefile  Build a standalone executable with all dependencies\n"
         "         bundled. Implies 'freeze', cannot be used with 'setup'.\n"
         "pip      Run pip to install all package dependencies for\n"
@@ -290,11 +299,10 @@ if __name__ == "__main__":
     if "clean" in sys.argv:
         sys.argv.remove("clean")
         cleanInstall()
-        sys.exit(0)
 
     if "pip" in sys.argv:
         sys.argv.remove("pip")
-        installPackages()
+        installPackages(hostOS)
 
     if "freeze" in sys.argv:
         sys.argv.remove("freeze")
