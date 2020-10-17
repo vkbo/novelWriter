@@ -1,4 +1,22 @@
 #!/usr/bin/env python3
+"""
+The main setup script for novelWeiter.
+
+It runs the standard setuptool.setup() with all options taken from the
+setup.cfg file.
+
+In addtion, a few speicalised commands are available:
+
+ * sample: Will build a sample.zip file, which is the way the sample project is
+   included into distributable packages.
+ * qthelp: Will build a QtAssistant readable version of the novelWriter
+   documentation. This should also be a part of distributed packages. It allows
+   for reading the help offline. Otherwise, the F1 button redirects to the
+   online documentation only.
+ * launcher: Will attempt to install novelWriter icons, mime type and create a
+   launcher for the application.
+
+"""
 import os
 import sys
 import shutil
@@ -276,7 +294,7 @@ if __name__ == "__main__":
         "This tool provides some additional setup commands for novelWriter.\n"
         "\n"
         "help      Print the help message.\n"
-        "gthelp    Build the help documentation for use with the QtAssistant.\n"
+        "qthelp    Build the help documentation for use with the QtAssistant.\n"
         "sample    Build the sample project as a zip file.\n"
         "launcher  Install launcher icons for freedesktop systems.\n"
     )

@@ -1,15 +1,17 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-This script will either build:
- * A single file executable named dist/novelWriter.exe. This is a quite
-   slow option, and the file is fairly big. Option --onefile
- * A single directory named dist/novelWriter with a novelWriter.exe, and
-   all dependecies included. This is the default.
- * The latter can be combined with a build stage of a setup.exe file
-   named setup-novelwriter-<version>.exe. Option --setup.
+This make script is intended for building distributable packages of
+novelWriter. These are either:
 
-In addition, providing the --pip flag will cause the script to try to
+ * A single file executable named dist/novelWriter(.exe). This is a
+   quite slow option, and the file is fairly big.
+ * A single directory named dist/novelWriter with a novelWriter(.exe),
+   and all dependecies included.
+ * The latter can be combined with a build stage of a setup.exe file if
+   on Windows. This requires Inno Setup to be installed and in path.
+
+In addition, providing the pip otion will cause the script to try to
 install all dependencies needed for runing the build, and for running
 novelWriter itself.
 """
