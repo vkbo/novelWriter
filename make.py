@@ -164,20 +164,13 @@ def freezePackage(buildWindowed, oneFile, makeSetup, hostOS):
 #  Inno Setup Builder
 # =============================================================================================== #
 
-def innoSetup(innoExec):
+def innoSetup():
     """Run the Inno Setup tool to build a setup.exe file for Windows.
     """
     print("")
     print("Running Inno Setup")
     print("##################")
     print("")
-    if innoExec is None:
-        innoExec = "C:\\Program Files (x86)\\Inno Setup 6\\ISCC.exe"
-    if not os.path.isfile(innoExec):
-        print("ERROR: Cannot fine Inno Setup's ISCC.exe file.")
-        print("       Looked in: %s" % innoExec)
-        print("       Please provide a path with the --inno= option.")
-        sys.exit(1)
 
     # Read the iss template
     issData = ""
@@ -192,9 +185,9 @@ def innoSetup(innoExec):
         outFile.write(issData)
 
     try:
-        subprocess.call([innoExec, "setup.iss"])
+        subprocess.call(["iscc", "setup.iss"])
     except Exception as e:
-        print("Failed with error:")
+        print("Inno Setup failed with error:")
         print(str(e))
         sys.exit(1)
 
@@ -261,7 +254,6 @@ if __name__ == "__main__":
     buildWindowed = True
     oneFile = False
     makeSetup = False
-    innoExec = None
 
     if "help" in sys.argv:
         print(
@@ -271,10 +263,10 @@ if __name__ == "__main__":
             "This tool provides build commands for distibuting novelWriter as\n"
             "a package. The available options are as follows:\n"
             "\n"
-            "pip      Run pip to install all package dependencies for\n"
-            "         novelWriter and this build tool.\n"
             "onefile  Build a standalone executable with all dependencies\n"
             "         bundled. This does not produce a setup.exe on Windows.\n"
+            "pip      Run pip to install all package dependencies for\n"
+            "         novelWriter and this build tool.\n"
             "setup    Build a setup.exe installer for Windows. This option\n"
             "         automaticall disables the 'onefile' option.\n"
             "clean    This will attempt to delete the 'build' and 'dist'\n"
@@ -315,6 +307,6 @@ if __name__ == "__main__":
     freezePackage(buildWindowed, oneFile, makeSetup, hostOS)
 
     if makeSetup:
-        innoSetup(innoExec)
+        innoSetup()
 
 # END Main
