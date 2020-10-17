@@ -107,7 +107,7 @@ You can also create a launcher for running directly from source with:
 sudo python3 setup.py launcher
 ```
 
-For more install options, see [Build and Install novelWriter](setup/BUILD.md).
+For more install options, see [Build and Install novelWriter](setup/README.md).
 
 
 ## macOS
@@ -150,7 +150,7 @@ C:\...\AppData\Local\Programs\Python\Python38\python.exe novelWriter.py
 ```
 
 You can also run the `make.py` script to generate a single executable, or an installer.
-See [Build and Install novelWriter](setup/BUILD.md) for more details.
+See [Build and Install novelWriter](setup/README.md) for more details.
 
 
 ## Package Versions
