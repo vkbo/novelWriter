@@ -128,7 +128,7 @@ It comes with a lot of default dictionaries.
 brew install enchant
 ```
 
-### Windows
+## Windows
 
 On Windows, you may first need to install Python.
 See the [python.org](https://www.python.org/) website for download packages.
