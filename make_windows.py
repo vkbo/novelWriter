@@ -16,72 +16,22 @@ novelWriter itself.
 
 import os
 import sys
-import getopt
+import shutil
 import subprocess
 
-if not sys.platform.startswith("win32"):
-    print("ERROR: This script is intended for Windows only.")
-    sys.exit(1)
+OS_NONE   = 0
+OS_LINUX  = 1
+OS_WIN    = 2
+OS_DARWIN = 3
 
-# Defaults
-buildWindowed = True
-runPip = False
-oneFile = False
-makeSetup = False
-innoSetup = None
+# =============================================================================================== #
+#  Package Installer
+# =============================================================================================== #
 
-# Parse Options
-shortOpt = "hd"
-longOpt  = [
-    "help",
-    "debug",
-    "pip",
-    "onefile",
-    "setup",
-    "inno=",
-]
-helpMsg = (
-    "\n"
-    "novelWriter Install Script for Windows\n"
-    "\n"
-    "Usage:\n"
-    " -h, --help     Print this message.\n"
-    "     --pip      Install dependecies first.\n"
-    "     --onefile  Create a single executable file.\n"
-    "     --setup    Make Inno Setup file.\n"
-    "     --inno=    Path to the Inno Setup exec.\n"
-    " -d, --debug    Build novelWriter for debugging. To debug novelwriter after build,\n"
-    "                run it from command line with the debug options. Please check the\n"
-    "                novelWriter --help output for details.\n"
-)
-
-try:
-    inOpts, inArgs = getopt.getopt(sys.argv[1:], shortOpt, longOpt)
-except getopt.GetoptError:
-    print(helpMsg)
-    sys.exit(1)
-
-for inOpt, inArg in inOpts:
-    if inOpt in ("-h", "--help"):
-        print(helpMsg)
-        sys.exit(0)
-    elif inOpt in ("-d", "--debug"):
-        buildWindowed = False
-    elif inOpt == "--pip":
-        runPip = True
-    elif inOpt == "--onefile":
-        oneFile = True
-    elif inOpt == "--setup":
-        makeSetup = True
-    elif inOpt == "--inno":
-        innoSetup = inArg
-
-# Run pip
-if runPip:
+def installPackages():
     print("")
-    print("###########################")
-    print("  Installing Dependencies")
-    print("###########################")
+    print("Installing Dependencies")
+    print("#######################")
     print("")
     try:
         subprocess.call([
@@ -101,86 +51,131 @@ if runPip:
         print(str(e))
         sys.exit(1)
 
-# Run pyinstaller
-print("")
-print("#######################")
-print("  Running PyInstaller")
-print("#######################")
-print("")
-instOpt = [
-    "--name=novelWriter",
-    "--clean",
-    "--add-data=%s;%s" % (os.path.join("nw", "assets"), "assets"),
-    "--icon=%s" % os.path.join("nw", "assets", "icons", "novelwriter.ico"),
-    "--exclude-module=PyQt5.QtQml",
-    "--exclude-module=PyQt5.QtBluetooth",
-    "--exclude-module=PyQt5.QtDBus",
-    "--exclude-module=PyQt5.QtMultimedia",
-    "--exclude-module=PyQt5.QtMultimediaWidgets",
-    "--exclude-module=PyQt5.QtNetwork",
-    "--exclude-module=PyQt5.QtNetworkAuth",
-    "--exclude-module=PyQt5.QtNfc",
-    "--exclude-module=PyQt5.QtQuick",
-    "--exclude-module=PyQt5.QtQuickWidgets",
-    "--exclude-module=PyQt5.QtRemoteObjects",
-    "--exclude-module=PyQt5.QtSensors",
-    "--exclude-module=PyQt5.QtSerialPort",
-    "--exclude-module=PyQt5.QtSql",
-]
+    return
 
-if buildWindowed:
-    instOpt.append("--windowed")
+# =============================================================================================== #
+#  Run PyInstaller on Package
+# =============================================================================================== #
 
-if oneFile and not makeSetup:
-    instOpt.append("--onefile")
-else:
-    instOpt.append("--onedir")
+def freezePackage(buildWindowed, oneFile, makeSetup, hostOS):
+    """Run PyInstaller to freeze the packages. This assumes all
+    dependencies are already in place.
+    """
+    import PyInstaller.__main__ # noqa: E402
 
-instOpt.append("novelWriter.py")
+    print("")
+    print("Running PyInstaller")
+    print("###################")
+    print("")
 
-# Make sample.zip first
-print("Building sample.zip")
-try:
-    subprocess.call([sys.executable, "setup.py", "sample"])
-except Exception as e:
-    print("Failed with error:")
-    print(str(e))
-    sys.exit(1)
+    if hostOS == OS_WIN:
+        dotDot = ";"
+    else:
+        dotDot = ":"
 
-import PyInstaller.__main__ # noqa: E402
-PyInstaller.__main__.run(instOpt)
-
-if not oneFile:
-    # These dll files are not nee3ded, and take up a fair bit of space.
-    delIfExists = [
-        "Qt5DBus.dll", "Qt5Network.dll", "Qt5Qml.dll", "Qt5QmlModels.dll", "Qt5Quick.dll",
-        "Qt5Quick3D.dll", "Qt5Quick3DAssetImport.dll", "Qt5Quick3DRender.dll",
-        "Qt5Quick3DRuntimeRender.dll", "Qt5Quick3DUtils.dll", "Qt5Sql.dll"
+    instOpt = [
+        "--name=novelWriter",
+        "--clean",
+        "--add-data=%s%s%s" % (os.path.join("nw", "assets"), dotDot, "assets"),
+        "--icon=%s" % os.path.join("nw", "assets", "icons", "novelwriter.ico"),
+        "--exclude-module=PyQt5.QtQml",
+        "--exclude-module=PyQt5.QtBluetooth",
+        "--exclude-module=PyQt5.QtDBus",
+        "--exclude-module=PyQt5.QtMultimedia",
+        "--exclude-module=PyQt5.QtMultimediaWidgets",
+        "--exclude-module=PyQt5.QtNetwork",
+        "--exclude-module=PyQt5.QtNetworkAuth",
+        "--exclude-module=PyQt5.QtNfc",
+        "--exclude-module=PyQt5.QtQuick",
+        "--exclude-module=PyQt5.QtQuickWidgets",
+        "--exclude-module=PyQt5.QtRemoteObjects",
+        "--exclude-module=PyQt5.QtSensors",
+        "--exclude-module=PyQt5.QtSerialPort",
+        "--exclude-module=PyQt5.QtSql",
     ]
-    distDir = os.path.join(os.getcwd(), "dist", "novelWriter")
-    for delFile in delIfExists:
-        delPath = os.path.join(distDir, delFile)
-        if os.path.isfile(delPath):
-            print("Deleting file: %s" % delPath)
-            os.unlink(delPath)
 
-print("")
-print("Build Finished")
-print("")
-print("If everything went well, the novelWriter executable should be in the folder named 'dist'")
-print("")
+    if buildWindowed:
+        instOpt.append("--windowed")
 
-if makeSetup:
+    if oneFile and not makeSetup:
+        instOpt.append("--onefile")
+    else:
+        instOpt.append("--onedir")
+
+    instOpt.append("novelWriter.py")
+
+    # Make sample.zip first
+    try:
+        subprocess.call([sys.executable, "setup.py", "sample"])
+    except Exception as e:
+        print("Failed with error:")
+        print(str(e))
+        sys.exit(1)
+
+    PyInstaller.__main__.run(instOpt)
+
+    if not oneFile:
+        # These files are not needed, and take up a fair bit of space.
+        delFiles = []
+        if hostOS == OS_WIN:
+            delFiles = [
+                "Qt5DBus.dll",
+                "Qt5Network.dll",
+                "Qt5Qml.dll",
+                "Qt5QmlModels.dll",
+                "Qt5Quick.dll",
+                "Qt5Quick3D.dll",
+                "Qt5Quick3DAssetImport.dll",
+                "Qt5Quick3DRender.dll",
+                "Qt5Quick3DRuntimeRender.dll",
+                "Qt5Quick3DUtils.dll",
+                "Qt5Sql.dll"
+            ]
+        elif hostOS == OS_LINUX:
+            delFiles = [
+                "libQt5DBus.so.5",
+                "libQt5Network.so.5",
+                "libQt5Qml.so.5",
+                "libQt5QmlModels.so.5",
+                "libQt5Quick.so.5",
+                "libQt5Quick3D.so.5",
+                "libQt5Quick3DAssetImport.so.5",
+                "libQt5Quick3DRender.so.5",
+                "libQt5Quick3DRuntimeRender.so.5",
+                "libQt5Quick3DUtils.so.5",
+                "libQt5Sql.so.5"
+            ]
+        distDir = os.path.join(os.getcwd(), "dist", "novelWriter")
+        for delFile in delFiles:
+            delPath = os.path.join(distDir, delFile)
+            if os.path.isfile(delPath):
+                print("Deleting file: %s" % delPath)
+                os.unlink(delPath)
+
     print("")
-    print("######################")
-    print("  Running Inno Setup")
-    print("######################")
+    print("Build Finished")
     print("")
-    if innoSetup is None:
-        innoSetup = "C:\\Program Files (x86)\\Inno Setup 6\\ISCC.exe"
-    if not os.path.isfile(innoSetup):
+    print("The novelWriter executable should be in the folder named 'dist'")
+    print("")
+
+    return
+
+# =============================================================================================== #
+#  Inno Setup Builder
+# =============================================================================================== #
+
+def innoSetup(innoExec):
+    """Run the Inno Setup tool to build a setup.exe file for Windows.
+    """
+    print("")
+    print("Running Inno Setup")
+    print("##################")
+    print("")
+    if innoExec is None:
+        innoExec = "C:\\Program Files (x86)\\Inno Setup 6\\ISCC.exe"
+    if not os.path.isfile(innoExec):
         print("ERROR: Cannot fine Inno Setup's ISCC.exe file.")
-        print("       Looked in: %s" % innoSetup)
+        print("       Looked in: %s" % innoExec)
         print("       Please provide a path with the --inno= option.")
         sys.exit(1)
 
@@ -197,8 +192,129 @@ if makeSetup:
         outFile.write(issData)
 
     try:
-        subprocess.call([innoSetup, "setup.iss"])
+        subprocess.call([innoExec, "setup.iss"])
     except Exception as e:
         print("Failed with error:")
         print(str(e))
         sys.exit(1)
+
+    return
+
+# =============================================================================================== #
+#  Clean Build and Dist Folders
+# =============================================================================================== #
+
+def cleanInstall():
+    """Recursively delete the 'build' and 'dist' folders.
+    """
+    print("")
+    print("Cleaning up build environment ...")
+
+    buildDir = os.path.join(os.getcwd(), "build")
+    if os.path.isdir(buildDir):
+        try:
+            shutil.rmtree(buildDir)
+            print("Deleted folder 'build'")
+        except Exception as e:
+            print("Error: Cannot delete 'build' folder.")
+            print(str(e))
+            sys.exit(1)
+    else:
+        print("Folder 'build' not found")
+
+    distDir = os.path.join(os.getcwd(), "dist")
+    if os.path.isdir(distDir):
+        try:
+            shutil.rmtree(distDir)
+            print("Deleted folder 'dist'")
+        except Exception as e:
+            print("Error: Cannot delete 'dist' folder.")
+            print(str(e))
+            sys.exit(1)
+    else:
+        print("Folder 'dist' not found")
+
+    print("")
+
+    return
+
+# =============================================================================================== #
+#  Process Build Steps
+# =============================================================================================== #
+
+if __name__ == "__main__":
+    """Parse command line options and run the commands.
+    """
+    # Detect OS
+    if sys.platform.startswith("linux"):
+        hostOS = OS_LINUX
+    elif sys.platform.startswith("darwin"):
+        hostOS = OS_DARWIN
+    elif sys.platform.startswith("win32"):
+        hostOS = OS_WIN
+    elif sys.platform.startswith("cygwin"):
+        hostOS = OS_WIN
+    else:
+        hostOS = OS_NONE
+
+    # Flags and Variables
+    buildWindowed = True
+    oneFile = False
+    makeSetup = False
+    innoExec = None
+
+    if "help" in sys.argv:
+        print(
+            "\n"
+            "novelWriter Make Tool\n"
+            "=====================\n"
+            "This tool provides build commands for distibuting novelWriter as\n"
+            "a package. The available options are as follows:\n"
+            "\n"
+            "pip      Run pip to install all package dependencies for\n"
+            "         novelWriter and this build tool.\n"
+            "onefile  Build a standalone executable with all dependencies\n"
+            "         bundled. This does not produce a setup.exe on Windows.\n"
+            "setup    Build a setup.exe installer for Windows. This option\n"
+            "         automaticall disables the 'onefile' option.\n"
+            "clean    This will attempt to delete the 'build' and 'dist'\n"
+            "         folders in the current folder.\n"
+        )
+        sys.exit(0)
+
+    if not os.path.isfile(os.path.join(os.getcwd(), "novelWriter.py")):
+        print("Error: This script must be run in the root folder of novelWriter.")
+        sys.exit(1)
+
+    if not os.path.isdir(os.path.join(os.getcwd(), "nw")):
+        print("Error: This script must be run in the root folder of novelWriter.")
+        sys.exit(1)
+
+    if "clean" in sys.argv:
+        sys.argv.remove("clean")
+        cleanInstall()
+        sys.exit(0)
+
+    if "pip" in sys.argv:
+        sys.argv.remove("pip")
+        installPackages()
+
+    if "onefile" in sys.argv:
+        sys.argv.remove("onefile")
+        oneFile = True
+
+    if "setup" in sys.argv:
+        sys.argv.remove("setup")
+        if hostOS == OS_WIN:
+            oneFile = False
+            makeSetup = True
+        else:
+            print("Error: Argument 'setup' for Inno Setup is Windows only.")
+            sys.exit(1)
+
+    freezePackage(buildWindowed, oneFile, makeSetup, hostOS)
+
+    if makeSetup:
+        innoSetup(innoExec)
+
+# END Main
