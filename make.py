@@ -254,24 +254,29 @@ if __name__ == "__main__":
     buildWindowed = True
     oneFile = False
     makeSetup = False
+    doFreeze = False
 
-    if "help" in sys.argv:
-        print(
-            "\n"
-            "novelWriter Make Tool\n"
-            "=====================\n"
-            "This tool provides build commands for distibuting novelWriter as\n"
-            "a package. The available options are as follows:\n"
-            "\n"
-            "onefile  Build a standalone executable with all dependencies\n"
-            "         bundled. This does not produce a setup.exe on Windows.\n"
-            "pip      Run pip to install all package dependencies for\n"
-            "         novelWriter and this build tool.\n"
-            "setup    Build a setup.exe installer for Windows. This option\n"
-            "         automaticall disables the 'onefile' option.\n"
-            "clean    This will attempt to delete the 'build' and 'dist'\n"
-            "         folders in the current folder.\n"
-        )
+    helpMsg = (
+        "\n"
+        "novelWriter Make Tool\n"
+        "=====================\n"
+        "This tool provides build commands for distibuting novelWriter as a\n"
+        "package. The available options are as follows:\n"
+        "\n"
+        "freeze   Freeze the package and produces a folder of all\n"
+        "         dependecies using pyinstaller.\n"
+        "onefile  Build a standalone executable with all dependencies\n"
+        "         bundled. Implies 'freeze', cannot be used with 'setup'.\n"
+        "pip      Run pip to install all package dependencies for\n"
+        "         novelWriter and this build tool.\n"
+        "setup    Build a setup.exe installer for Windows. This option\n"
+        "         automaticall disables the 'onefile' option.\n"
+        "clean    This will attempt to delete the 'build' and 'dist'\n"
+        "         folders in the current folder.\n"
+    )
+
+    if "help" in sys.argv or len(sys.argv) <= 1:
+        print(helpMsg)
         sys.exit(0)
 
     if not os.path.isfile(os.path.join(os.getcwd(), "novelWriter.py")):
@@ -291,8 +296,13 @@ if __name__ == "__main__":
         sys.argv.remove("pip")
         installPackages()
 
+    if "freeze" in sys.argv:
+        sys.argv.remove("freeze")
+        doFreeze = True
+
     if "onefile" in sys.argv:
         sys.argv.remove("onefile")
+        doFreeze = True
         oneFile = True
 
     if "setup" in sys.argv:
@@ -304,7 +314,8 @@ if __name__ == "__main__":
             print("Error: Argument 'setup' for Inno Setup is Windows only.")
             sys.exit(1)
 
-    freezePackage(buildWindowed, oneFile, makeSetup, hostOS)
+    if doFreeze:
+        freezePackage(buildWindowed, oneFile, makeSetup, hostOS)
 
     if makeSetup:
         innoSetup()

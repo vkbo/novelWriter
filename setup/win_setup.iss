@@ -27,10 +27,11 @@ UsedUserAreasWarning=no
 ;PrivilegesRequired=lowest
 PrivilegesRequiredOverridesAllowed=dialog
 OutputDir={#nwAppDir}
-OutputBaseFilename=novelwriter_{#nwAppVersion}_win10_full_setup
+OutputBaseFilename=novelwriter_{#nwAppVersion}_win_amd64_setup
 Compression=lzma
 SolidCompression=yes
 WizardStyle=modern
+ArchitecturesInstallIn64BitMode=x64
 
 [Languages]
 Name: "english"; MessagesFile: "compiler:Default.isl"
