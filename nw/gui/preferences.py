@@ -1,9 +1,9 @@
 # -*- coding: utf-8 -*-
-"""novelWriter GUI Config Editor
+"""novelWriter GUI Preferences
 
- novelWriter – GUI Config Editor
-=================================
- Class holding the config dialog
+ novelWriter – GUI Preferences
+===============================
+ Class holding the preferences dialog
 
  File History:
  Created: 2019-06-10 [0.1.5]

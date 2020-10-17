@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
-"""novelWriter Spell Check Wrapper
+"""novelWriter Spell Check Classes
 
- novelWriter – Spell Check Wrapper
+ novelWriter – Spell Check Classes
 ===================================
  Wrapper class for spell checking
 

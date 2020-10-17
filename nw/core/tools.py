@@ -1,14 +1,15 @@
 # -*- coding: utf-8 -*-
-"""novelWriter Word Counter
+"""novelWriter Various Tools
 
- novelWriter – Word Counter
-============================
- Simple word counter
+ novelWriter – Various Tools
+=============================
+ Various core tool functions
 
  File History:
- Created: 2019-04-22 [0.0.1] countWords
- Created: 2019-10-13 [0.2.3] numberToWord, _numberToWordEN
- Merged:  2020-05-08 [0.4.5] All of the above into this file
+ Created: 2019-04-22 [0.0.1]  countWords
+ Created: 2019-10-13 [0.2.3]  numberToWord, _numberToWordEN
+ Merged:  2020-05-08 [0.4.5]  All of the above into this file
+ Created: 2020-07-05 [0.10.0] numberToRoman
 
  This file is a part of novelWriter
  Copyright 2018–2020, Veronica Berglyd Olsen

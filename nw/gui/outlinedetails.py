@@ -1,9 +1,9 @@
 # -*- coding: utf-8 -*-
-"""novelWriter GUI Project Outline
+"""novelWriter GUI Project Outline Details
 
- novelWriter – GUI Project Outline
-===================================
- Class holding the project outline view
+ novelWriter – GUI Project Outline Details
+===========================================
+ Class holding the project outline details view
 
  File History:
  Created: 2020-06-02 [0.7.0]

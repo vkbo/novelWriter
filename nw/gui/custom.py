@@ -1,9 +1,9 @@
 # -*- coding: utf-8 -*-
-"""novelWriter Addition QConfigLayout
+"""novelWriter Custom Widgets and Layouts
 
- novelWriter – Addition QConfigLayout
-======================================
- A custom Qt grid layout for config forms similar to QFormLayout
+ novelWriter – Custom Widgets and Layouts
+==========================================
+ Various custom widget and layout classes
 
  File History:
  Created: 2020-05-03 [0.4.5] QConfigLayout

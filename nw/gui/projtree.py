@@ -1,9 +1,9 @@
 # -*- coding: utf-8 -*-
-"""novelWriter GUI Document Tree
+"""novelWriter GUI Project Tree
 
- novelWriter – GUI Document Tree
-=================================
- Class holding the left side document tree view
+ novelWriter – GUI project Tree
+================================
+ Class holding the left side project tree view
 
  File History:
  Created: 2018-09-29 [0.0.1] GuiProjectTree
