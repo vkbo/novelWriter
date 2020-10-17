@@ -1,12 +1,13 @@
 #!/usr/bin/env python3
 import os
 import sys
+import shutil
 import subprocess
 import setuptools
 
-# =========================================================================== #
+# =============================================================================================== #
 #  Qt Assistant Documentation Builder
-# =========================================================================== #
+# =============================================================================================== #
 
 def buildQtDocs():
     """This function will build the documentation as a Qt help file. The
@@ -77,9 +78,9 @@ def buildQtDocs():
 
     return
 
-# =========================================================================== #
+# =============================================================================================== #
 #  Sample Project ZIP File Builder
-# =========================================================================== #
+# =============================================================================================== #
 
 def buildSampleZip():
     """Bundle the sample project into a single zip file to be saved into
@@ -117,13 +118,173 @@ def buildSampleZip():
 
     return
 
-# =========================================================================== #
+# =============================================================================================== #
+#  Create Launcher
+# =============================================================================================== #
+
+def makeLauncherLinux():
+    """Will attempt to install icons and make a launcher.
+    """
+    print("")
+    print("Creating Launcher")
+    print("=================")
+    print("")
+
+    exOpts = []
+
+    testExec = shutil.which("novelWriter")
+    if testExec is not None:
+        exOpts.append(testExec)
+
+    testExec = shutil.which("novelwriter")
+    if testExec is not None:
+        exOpts.append(testExec)
+
+    testExec = os.path.join(os.getcwd(), "novelWriter.py")
+    if os.path.isfile(testExec):
+        exOpts.append(testExec)
+
+    useExec = ""
+    nOpts = len(exOpts)
+    if nOpts == 0:
+        print("Error: No executables for novelWriter found.")
+        sys.exit(1)
+    elif nOpts == 1:
+        useExec = exOpts[0]
+    else:
+        print("Found multiple novelWriter executables:")
+        print("")
+        for iExec, anExec in enumerate(exOpts):
+            print(" [%d] %s" % (iExec, anExec))
+        print("")
+        intVal = int(input("Please select which novelWriter executable to use: "))
+        print("")
+
+        if intVal >= 0 and intVal < nOpts:
+            useExec = exOpts[intVal]
+        else:
+            print("Error: Invalid selection.")
+            sys.exit(1)
+
+    print("Using executable: %s " % useExec)
+
+    # Read the Template
+    desktopData = ""
+    with open(os.path.join("setup", "novelwriter.desktop"), mode="r") as inFile:
+        desktopData = inFile.read()
+
+    desktopData = desktopData.replace(r"%%exec%%", useExec)
+
+    desktopFile = "/usr/share/applications/novelwriter.desktop"
+    try:
+        with open(desktopFile, mode="w+") as outFile:
+            outFile.write(desktopData)
+            print("Wrote file: %s" % desktopFile)
+    except Exception as e:
+        print("Error: Could not write novelwriter.desktop file.")
+        print(str(e))
+        sys.exit(1)
+
+    print("")
+
+    # Copy Icons
+
+    iconDirs = [
+        "/usr/share/icons/hicolor/24x24/apps",
+        "/usr/share/icons/hicolor/48x48/apps",
+        "/usr/share/icons/hicolor/96x96/apps",
+        "/usr/share/icons/hicolor/256x256/apps",
+        "/usr/share/icons/hicolor/512x512/apps",
+        "/usr/share/icons/hicolor/scalable/apps",
+        "/usr/share/icons/hicolor/scalable/mimetypes",
+    ]
+    for iconDir in iconDirs:
+        if not os.path.isdir:
+            try:
+                os.mkdir(iconDir)
+                print("Created folder: %s" % iconDir)
+            except Exception as e:
+                print("Error: Could not make folder: %s" % iconDir)
+                print(str(e))
+
+    copyList = [(
+        "setup/icons/24x24/novelwriter.png",
+        "/usr/share/icons/hicolor/24x24/apps/novelwriter.png"
+    ), (
+        "setup/icons/48x48/novelwriter.png",
+        "/usr/share/icons/hicolor/48x48/apps/novelwriter.png"
+    ), (
+        "setup/icons/96x96/novelwriter.png",
+        "/usr/share/icons/hicolor/96x96/apps/novelwriter.png"
+    ), (
+        "setup/icons/256x256/novelwriter.png",
+        "/usr/share/icons/hicolor/256x256/apps/novelwriter.png"
+    ), (
+        "setup/icons/512x512/novelwriter.png",
+        "/usr/share/icons/hicolor/512x512/apps/novelwriter.png"
+    ), (
+        "setup/icons/novelwriter.svg",
+        "/usr/share/icons/hicolor/scalable/apps/novelwriter.svg"
+    ), (
+        "setup/icons/x-novelwriter-project.svg",
+        "/usr/share/icons/hicolor/scalable/mimetypes/application-x-novelwriter-project.svg"
+    ), (
+        "setup/mime/x-novelwriter-project.xml",
+        "/usr/share/mime/packages/x-novelwriter-project.xml"
+    )]
+    for srcFile, dstFile in copyList:
+        try:
+            shutil.copyfile(srcFile, dstFile)
+            print("Copied file to: %s" % dstFile)
+        except Exception as e:
+            print("Error: Could not copy file: %s" % srcFile)
+            print(str(e))
+
+    print("")
+
+    # Update System
+    try:
+        subprocess.call(["update-mime-database", "/usr/share/mime/"])
+        print("Updated mime database.")
+    except Exception as e:
+        print("Error: Filed to update mime database.")
+        print(str(e))
+
+    try:
+        subprocess.call(["update-icon-caches", "/usr/share/icons/*"])
+        print("Updated icon cache.")
+    except Exception as e:
+        print("Error: Filed to update icon cache.")
+        print(str(e))
+
+    print("")
+    print("Done!")
+    print("")
+
+    return
+
+# =============================================================================================== #
 #  Process Jobs
-# =========================================================================== #
+# =============================================================================================== #
 
 if __name__ == "__main__":
 
-    # Process non-standard jobs
+    helpMsg = (
+        "\n"
+        "novelWriter Setup Tool\n"
+        "======================\n"
+        "This tool provides some additional setup commands for novelWriter.\n"
+        "\n"
+        "help      Print the help message.\n"
+        "gthelp    Build the help documentation for use with the QtAssistant.\n"
+        "sample    Build the sample project as a zip file.\n"
+        "launcher  Install launcher icons for freedesktop systems.\n"
+    )
+
+    if "help" in sys.argv:
+        sys.argv.remove("help")
+        print(helpMsg)
+        sys.exit(0)
 
     if "qthelp" in sys.argv:
         sys.argv.remove("qthelp")
@@ -133,7 +294,11 @@ if __name__ == "__main__":
         sys.argv.remove("sample")
         buildSampleZip()
 
-    if len(sys.argv) == 1:
+    if "launcher" in sys.argv:
+        sys.argv.remove("launcher")
+        makeLauncherLinux()
+
+    if len(sys.argv) <= 1:
         # Nothing more to do
         sys.exit(0)
 

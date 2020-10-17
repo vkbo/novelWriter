@@ -65,28 +65,40 @@ You can update novelWriter to the latest version by running:
 pip install --upgrade novelwriter
 ```
 
-The application can then be started with one of the commands, depending on your Python configuration:
-```bash
-./novelWriter.py
-python novelWriter.py
-python3 novelWriter.py
-```
-
 It also takes a few parameters for debugging and such, which can be listed with the switch `--help`.
 The `--info`, `--debug` or `--verbose` flags are particularly useful for increasing logging output
 for debugging.
 
 You can also provide a path to a folder containing a novelWriter project as the last parameter.
 
+## Installing from Source (Linux)
+
+You can then install novelWriter from the source directly with:
+```bash
+python3 setup.py sample
+sudo python3 setup.py install
+sudo python3 setup.py launcher
+```
+
+The last line will install the application icons and set up a launcher for novelWriter.
+The method uses hardcoded paths, so it may or may not work for your Linux distro.
+
+It may prompt you to choose which executable to configure.
+You can also use this to configure it to run from source.
+
+## Running from Source (Linux)
+
+If you want to run directly from the source, the application can be started with:
+```bash
+./novelWriter.py
+```
+
+You can also create a launcher for the source with:
+```bash
+sudo python3 setup.py launcher
+```
+
 For more install options, see [Build and Install novelWriter](setup/BUILD.md).
-
-
-### Launcher and Icons
-
-In the root setup folder there are icons and scripts and a template for setting up a launcher on
-Gnome desktops. You may need to modify those scripts slightly, but as they are, they work on Debian
-and Ubuntu. For other operating systems, please consult your operating system documentation for how
-to make those. Feel free to submit more if you are able to make them.
 
 
 ## Package Dependencies
@@ -99,7 +111,7 @@ Minimum version of Qt is 5.2.
 
 Generally, dependencies can be installed via `pip` with:
 ```bash
-pip3 install -r requirements.txt
+pip install -r requirements.txt
 ```
 
 You can also install the packages from the distro's own package manager.
@@ -143,6 +155,9 @@ It should look something like this:
 ```
 C:\...\AppData\Local\Programs\Python\Python38\python.exe novelWriter.py
 ```
+
+You can also run the `make.py` script to generate an installer.
+See [Build and Install novelWriter](setup/BUILD.md) for more details.
 
 
 ### Package Versions
