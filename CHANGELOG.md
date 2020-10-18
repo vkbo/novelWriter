@@ -23,6 +23,11 @@
 * When applying a format from the format menu to a selection of multiple paragraphs (or lines), only the first paragraph (or line) receives the formatting. The editor doesn't allow markdown formatting to span multiple lines. Issue #451, PR #475.
 * The syntax highlighter no longer uses the same colour to highlight strikethrough text as for emphasised text. The colour is intended to stand out, which makes little sense for such text. Instead, the highlighter uses the same colour as for comments. PR #476.
 
+**Other Changes**
+
+* Since support for Python < 3.6 has been dropped, it is now possible to use `f""` formatted strings in many more places in the source code where this is convenient. This has been implemented many places, but the code is still a mix of all three styles of formatting text. PR #478.
+* Extensive changes have been made to the build and distribute tools. The `install.py` file has been dropped, and the features in it merged into a new file named `make.py`. The make file can now also build a setup installer for Windows. The `setup.py` file has been rewritten to a more standardised source layout, and all the setup configuration moved to the `setup.cfg` file. PRs #479 and #480.
+
 
 ## Version 1.0 Beta 4 [2020-10-11]
 
