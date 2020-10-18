@@ -1,12 +1,12 @@
 # novelWriter ChangeLog
 
-## Version 1.0 Release Candidate 1 [2020-10-25]
+## Version 1.0 Release Beta 5 [2020-10-18]
 
 **Important Notes**
 
 * The minimal supported Python version is now 3.6. While novelWriter has worked fine in the post with versions as low as 3.4, neither 3.4 nor 3.5 is tested. They have also both reached end of life. There are a couple of good reasons to drop support for older versions. PR #470.
   1. Python 3.6 introduces ordered dictionaries as the standard.
-  2. The format string attribute was added in 3.6, and is much less clunky in many parts of the code than the full `"".format()` syntax.
+  2. The format string decorator (`f""`) was added in 3.6, and is much less clunky in many parts of the code than the full `"".format()` syntax.
   3. Especially 3.4 has limited support for `*var` expansion of iterables. These are used several places in the code.
 
 **Bugfixes**
