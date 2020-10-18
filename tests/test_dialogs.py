@@ -1127,9 +1127,9 @@ def testPreferences(qtbot, monkeypatch, yesToAll, nwMinimal, nwTemp, nwRef, tmpC
     assert not tabLayout.scrollPastEnd.isChecked()
 
     qtbot.wait(keyDelay)
-    assert not tabLayout.scollWithCursor.isChecked()
-    qtbot.mouseClick(tabLayout.scollWithCursor, Qt.LeftButton)
-    assert tabLayout.scollWithCursor.isChecked()
+    assert not tabLayout.autoScroll.isChecked()
+    qtbot.mouseClick(tabLayout.autoScroll, Qt.LeftButton)
+    assert tabLayout.autoScroll.isChecked()
 
     # Editor Settings
     qtbot.wait(keyDelay)

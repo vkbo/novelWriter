@@ -61,6 +61,11 @@ logger = logging.getLogger(__name__)
 
 class GuiDocEditor(QTextEdit):
 
+    MOVE_KEYS = (
+        Qt.Key_Left, Qt.Key_Right, Qt.Key_Up, Qt.Key_Down,
+        Qt.Key_PageUp, Qt.Key_PageDown
+    )
+
     def __init__(self, theParent):
         QTextEdit.__init__(self, theParent)
 
@@ -436,8 +441,7 @@ class GuiDocEditor(QTextEdit):
 
         if self.mainConf.scrollPastEnd:
             docFrame = self.qDocument.rootFrame().frameFormat()
-            docMargin = wH - uM - lM - 4*tB - 5*self.theTheme.fontPixelSize
-            docFrame.setBottomMargin(max(0, docMargin))
+            docFrame.setBottomMargin(max(0, 0.6*(wH - uM - lM - 4*tB)))
             self.qDocument.rootFrame().setFrameFormat(docFrame)
 
         return
@@ -765,33 +769,39 @@ class GuiDocEditor(QTextEdit):
             return
         elif keyEvent == QKeySequence.Redo:
             self.docAction(nwDocAction.REDO)
+            return
         elif keyEvent == QKeySequence.Undo:
             self.docAction(nwDocAction.UNDO)
+            return
         elif keyEvent == QKeySequence.SelectAll:
             self.docAction(nwDocAction.SEL_ALL)
+            return
+
+        if self.mainConf.autoScroll:
+
+            cOld = self.cursorRect().center().y()
+            QTextEdit.keyPressEvent(self, keyEvent)
+
+            kMod = keyEvent.modifiers()
+            okMod = kMod == Qt.NoModifier or kMod == Qt.ShiftModifier
+            okKey = keyEvent.key() not in self.MOVE_KEYS
+            if okMod and okKey:
+                cNew = self.cursorRect().center().y()
+                cMov = cNew - cOld
+                mPos = self.mainConf.autoScrollPos * self.viewport().height() * 0.01
+                if abs(cMov) > 0 and cOld > mPos:
+                    # Move the scroll bar
+                    vBar = self.verticalScrollBar()
+                    doAnim = QPropertyAnimation(vBar, b"value", self)
+                    doAnim.setDuration(120)
+                    doAnim.setStartValue(vBar.value())
+                    doAnim.setEndValue(vBar.value() + cMov)
+                    doAnim.start()
+
         else:
             QTextEdit.keyPressEvent(self, keyEvent)
-            self.docFooter.updateLineCount()
 
-        if self.mainConf.scollWithCursor:
-            kMod = keyEvent.modifiers()
-            if kMod == Qt.NoModifier or kMod == Qt.ShiftModifier:
-                hWid = self.viewport().height()
-                cPos = self.cursorRect().center().y()
-                mPos = self.mainConf.scollToPoint * hWid
-                vBar = self.verticalScrollBar()
-
-                # Compute the needed scroll and duration
-                pOld = vBar.value()
-                pNew = pOld + cPos - round(mPos*0.01)
-                aDur = 150 + round(min(abs(pNew - pOld)/hWid, 1.0)*500)
-
-                if pNew >= 0:
-                    doAnim = QPropertyAnimation(vBar, b"value", self)
-                    doAnim.setDuration(aDur)
-                    doAnim.setStartValue(pOld)
-                    doAnim.setEndValue(pNew)
-                    doAnim.start()
+        self.docFooter.updateLineCount()
 
         return
 

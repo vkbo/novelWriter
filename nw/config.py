@@ -107,44 +107,52 @@ class Config:
         self.hideHScroll = False # Hide horizontal scroll bars on main widgets
 
         ## Project
-        self.autoSaveProj = 60
-        self.autoSaveDoc  = 30
+        self.autoSaveProj = 60 # Interval for auto-saving project in seconds
+        self.autoSaveDoc  = 30 # Interval for auto-saving document in seconds
 
         ## Text Editor
-        self.textFont        = None
-        self.textSize        = 12
-        self.textFixedW      = True
-        self.textWidth       = 600
-        self.textMargin      = 40
-        self.tabWidth        = 40
-        self.focusWidth      = 800
-        self.hideFocusFooter = False
-        self.doJustify       = False
-        self.autoSelect      = True
-        self.doReplace       = True
-        self.doReplaceSQuote = True
-        self.doReplaceDQuote = True
-        self.doReplaceDash   = True
-        self.doReplaceDots   = True
-        self.scrollPastEnd   = True
-        self.scollWithCursor = False
-        self.scollToPoint    = 40
+        self.textFont        = None  # Editor font
+        self.textSize        = 12    # Editor font size
+        self.textFixedW      = True  # Keep editor text fixed width
+        self.textWidth       = 600   # Editor text width
+        self.textMargin      = 40    # Editor/viewer text margin
+        self.tabWidth        = 40    # Editor tabulator width
 
-        self.wordCountTimer  = 5.0
-        self.showTabsNSpaces = False
-        self.showLineEndings = False
-        self.bigDocLimit     = 800
-        self.showFullPath    = True
-        self.highlightQuotes = True
-        self.highlightEmph   = True
+        self.focusWidth      = 800   # Focus Mode text width
+        self.hideFocusFooter = False # Hide document footer in Focus Mode
+        self.showFullPath    = True  # Show full document path in editor header
+        self.autoSelect      = True  # Auto-select word when applying format with no selection
 
+        self.doJustify       = False # Justify text
+        self.showTabsNSpaces = False # Show tabs and spaces in edior
+        self.showLineEndings = False # Show line endings in editor
+
+        self.doReplace       = True  # Enable auto-replace as you type
+        self.doReplaceSQuote = True  # Smart single quotes
+        self.doReplaceDQuote = True  # Smart double quotes
+        self.doReplaceDash   = True  # Replace multiple hyphens with dashes
+        self.doReplaceDots   = True  # Replace three dots with ellipsis
+
+        self.scrollPastEnd   = True  # Allow scrolling past end of document
+        self.autoScroll      = False # Typewriter-like scrolling
+        self.autoScrollPos   = 30    # Start point for typewriter-like scrolling
+
+        self.wordCountTimer  = 5.0   # Interval for word count update in seconds
+        self.bigDocLimit     = 800   # Size threshold for heavy editor features in kilobytes
+
+        self.highlightQuotes = True  # Highlight text in quotes
+        self.highlightEmph   = True  # Add colour to text emphasis
+
+        ## User-Selected Symbols
         self.fmtApostrophe   = nwUnicode.U_RSQUO
         self.fmtSingleQuotes = [nwUnicode.U_LSQUO, nwUnicode.U_RSQUO]
         self.fmtDoubleQuotes = [nwUnicode.U_LDQUO, nwUnicode.U_RDQUO]
 
+        ## Spell Checking
         self.spellTool     = None
         self.spellLanguage = None
 
+        ## Search Bar Switches
         self.searchCase     = False
         self.searchWord     = False
         self.searchRegEx    = False
@@ -465,11 +473,11 @@ class Config:
         self.scrollPastEnd = self._parseLine(
             cnfParse, cnfSec, "scrollpastend", self.CNF_BOOL, self.scrollPastEnd
         )
-        self.scollWithCursor = self._parseLine(
-            cnfParse, cnfSec, "scollwithcursor", self.CNF_BOOL, self.scollWithCursor
+        self.autoScroll = self._parseLine(
+            cnfParse, cnfSec, "autoscroll", self.CNF_BOOL, self.autoScroll
         )
-        self.scollToPoint = self._parseLine(
-            cnfParse, cnfSec, "scolltopoint", self.CNF_INT, self.scollToPoint
+        self.autoScrollPos = self._parseLine(
+            cnfParse, cnfSec, "autoscrollpos", self.CNF_INT, self.autoScrollPos
         )
         self.fmtSingleQuotes = self._parseLine(
             cnfParse, cnfSec, "fmtsinglequote", self.CNF_LIST, self.fmtSingleQuotes
@@ -616,8 +624,8 @@ class Config:
         cnfParse.set(cnfSec, "repdash",         str(self.doReplaceDash))
         cnfParse.set(cnfSec, "repdots",         str(self.doReplaceDots))
         cnfParse.set(cnfSec, "scrollpastend",   str(self.scrollPastEnd))
-        cnfParse.set(cnfSec, "scollwithcursor", str(self.scollWithCursor))
-        cnfParse.set(cnfSec, "scolltopoint",    str(self.scollToPoint))
+        cnfParse.set(cnfSec, "autoscroll",      str(self.autoScroll))
+        cnfParse.set(cnfSec, "autoscrollpos",   str(self.autoScrollPos))
         cnfParse.set(cnfSec, "fmtsinglequote",  self._packList(self.fmtSingleQuotes))
         cnfParse.set(cnfSec, "fmtdoublequote",  self._packList(self.fmtDoubleQuotes))
         cnfParse.set(cnfSec, "spelltool",       str(self.spellTool))
@@ -911,16 +919,21 @@ class Config:
         """
         if cnfParse.has_section(cnfSec):
             if cnfParse.has_option(cnfSec, cnfName):
-                if cnfType == self.CNF_STR:
-                    return cnfParse.get(cnfSec, cnfName)
-                elif cnfType == self.CNF_INT:
-                    return cnfParse.getint(cnfSec, cnfName)
-                elif cnfType == self.CNF_BOOL:
-                    return cnfParse.getboolean(cnfSec, cnfName)
-                elif cnfType == self.CNF_LIST:
-                    return self._unpackList(
-                        cnfParse.get(cnfSec, cnfName), len(cnfDefault), cnfDefault
-                    )
+                try:
+                    if cnfType == self.CNF_STR:
+                        return cnfParse.get(cnfSec, cnfName)
+                    elif cnfType == self.CNF_INT:
+                        return cnfParse.getint(cnfSec, cnfName)
+                    elif cnfType == self.CNF_BOOL:
+                        return cnfParse.getboolean(cnfSec, cnfName)
+                    elif cnfType == self.CNF_LIST:
+                        return self._unpackList(
+                            cnfParse.get(cnfSec, cnfName), len(cnfDefault), cnfDefault
+                        )
+                except ValueError as e:
+                    logger.error("Failed to load value from config file.")
+                    logger.error(str(e))
+
         return cnfDefault
 
     def _checkNone(self, checkVal):

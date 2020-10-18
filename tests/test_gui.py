@@ -172,8 +172,8 @@ def testDocEditor(qtbot, yesToAll, nwFuncTemp, nwTempGUI, nwRef, nwTemp):
     nwGUI.mainConf.hideHScroll = True
     nwGUI.mainConf.hideVScroll = True
     nwGUI.mainConf.scrollPastEnd = True
-    nwGUI.mainConf.scollToPoint = 80
-    nwGUI.mainConf.scollWithCursor = True
+    nwGUI.mainConf.autoScrollPos = 80
+    nwGUI.mainConf.autoScroll = True
 
     # Add a Character File
     nwGUI.setFocus(1)
