@@ -441,8 +441,7 @@ class GuiDocEditor(QTextEdit):
 
         if self.mainConf.scrollPastEnd:
             docFrame = self.qDocument.rootFrame().frameFormat()
-            docMargin = wH - uM - lM - 4*tB - 5*self.theTheme.fontPixelSize
-            docFrame.setBottomMargin(max(0, docMargin))
+            docFrame.setBottomMargin(max(0, 0.6*(wH - uM - lM - 4*tB)))
             self.qDocument.rootFrame().setFrameFormat(docFrame)
 
         return
@@ -794,7 +793,7 @@ class GuiDocEditor(QTextEdit):
                     # Move the scroll bar
                     vBar = self.verticalScrollBar()
                     doAnim = QPropertyAnimation(vBar, b"value", self)
-                    doAnim.setDuration(150)
+                    doAnim.setDuration(120)
                     doAnim.setStartValue(vBar.value())
                     doAnim.setEndValue(vBar.value() + cMov)
                     doAnim.start()
