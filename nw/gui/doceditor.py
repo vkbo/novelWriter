@@ -778,7 +778,7 @@ class GuiDocEditor(QTextEdit):
             self.docAction(nwDocAction.SEL_ALL)
             return
 
-        if self.mainConf.scollWithCursor:
+        if self.mainConf.autoScroll:
 
             cOld = self.cursorRect().center().y()
             QTextEdit.keyPressEvent(self, keyEvent)
@@ -789,7 +789,7 @@ class GuiDocEditor(QTextEdit):
             if okMod and okKey:
                 cNew = self.cursorRect().center().y()
                 cMov = cNew - cOld
-                mPos = self.mainConf.scollToPoint * self.viewport().height() * 0.01
+                mPos = self.mainConf.autoScrollPos * self.viewport().height() * 0.01
                 if abs(cMov) > 0 and cOld > mPos:
                     # Move the scroll bar
                     vBar = self.verticalScrollBar()

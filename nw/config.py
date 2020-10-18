@@ -127,8 +127,8 @@ class Config:
         self.doReplaceDash   = True
         self.doReplaceDots   = True
         self.scrollPastEnd   = True
-        self.scollWithCursor = False
-        self.scollToPoint    = 40
+        self.autoScroll      = False
+        self.autoScrollPos   = 30
 
         self.wordCountTimer  = 5.0
         self.showTabsNSpaces = False
@@ -465,11 +465,11 @@ class Config:
         self.scrollPastEnd = self._parseLine(
             cnfParse, cnfSec, "scrollpastend", self.CNF_BOOL, self.scrollPastEnd
         )
-        self.scollWithCursor = self._parseLine(
-            cnfParse, cnfSec, "scollwithcursor", self.CNF_BOOL, self.scollWithCursor
+        self.autoScroll = self._parseLine(
+            cnfParse, cnfSec, "autoscroll", self.CNF_BOOL, self.autoScroll
         )
-        self.scollToPoint = self._parseLine(
-            cnfParse, cnfSec, "scolltopoint", self.CNF_INT, self.scollToPoint
+        self.autoScrollPos = self._parseLine(
+            cnfParse, cnfSec, "autoscrollpos", self.CNF_INT, self.autoScrollPos
         )
         self.fmtSingleQuotes = self._parseLine(
             cnfParse, cnfSec, "fmtsinglequote", self.CNF_LIST, self.fmtSingleQuotes
@@ -616,8 +616,8 @@ class Config:
         cnfParse.set(cnfSec, "repdash",         str(self.doReplaceDash))
         cnfParse.set(cnfSec, "repdots",         str(self.doReplaceDots))
         cnfParse.set(cnfSec, "scrollpastend",   str(self.scrollPastEnd))
-        cnfParse.set(cnfSec, "scollwithcursor", str(self.scollWithCursor))
-        cnfParse.set(cnfSec, "scolltopoint",    str(self.scollToPoint))
+        cnfParse.set(cnfSec, "autoscroll",      str(self.autoScroll))
+        cnfParse.set(cnfSec, "autoscrollpos",   str(self.autoScrollPos))
         cnfParse.set(cnfSec, "fmtsinglequote",  self._packList(self.fmtSingleQuotes))
         cnfParse.set(cnfSec, "fmtdoublequote",  self._packList(self.fmtDoubleQuotes))
         cnfParse.set(cnfSec, "spelltool",       str(self.spellTool))
@@ -911,16 +911,21 @@ class Config:
         """
         if cnfParse.has_section(cnfSec):
             if cnfParse.has_option(cnfSec, cnfName):
-                if cnfType == self.CNF_STR:
-                    return cnfParse.get(cnfSec, cnfName)
-                elif cnfType == self.CNF_INT:
-                    return cnfParse.getint(cnfSec, cnfName)
-                elif cnfType == self.CNF_BOOL:
-                    return cnfParse.getboolean(cnfSec, cnfName)
-                elif cnfType == self.CNF_LIST:
-                    return self._unpackList(
-                        cnfParse.get(cnfSec, cnfName), len(cnfDefault), cnfDefault
-                    )
+                try:
+                    if cnfType == self.CNF_STR:
+                        return cnfParse.get(cnfSec, cnfName)
+                    elif cnfType == self.CNF_INT:
+                        return cnfParse.getint(cnfSec, cnfName)
+                    elif cnfType == self.CNF_BOOL:
+                        return cnfParse.getboolean(cnfSec, cnfName)
+                    elif cnfType == self.CNF_LIST:
+                        return self._unpackList(
+                            cnfParse.get(cnfSec, cnfName), len(cnfDefault), cnfDefault
+                        )
+                except ValueError as e:
+                    logger.error("Failed to load value from config file.")
+                    logger.error(str(e))
+
         return cnfDefault
 
     def _checkNone(self, checkVal):

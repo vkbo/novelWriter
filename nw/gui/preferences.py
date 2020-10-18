@@ -569,23 +569,23 @@ class GuiConfigEditLayoutTab(QWidget):
         )
 
         ## Typewriter Scrolling
-        self.scollWithCursor = QSwitch()
-        self.scollWithCursor.setChecked(self.mainConf.scollWithCursor)
+        self.autoScroll = QSwitch()
+        self.autoScroll.setChecked(self.mainConf.autoScroll)
         self.mainForm.addRow(
             "Typewriter style scrolling when you type",
-            self.scollWithCursor,
+            self.autoScroll,
             "Tries to keep the cursor at a fixed vertical position."
         )
 
         ## Font Size
-        self.scollToPoint = QSpinBox(self)
-        self.scollToPoint.setMinimum(10)
-        self.scollToPoint.setMaximum(90)
-        self.scollToPoint.setSingleStep(1)
-        self.scollToPoint.setValue(self.mainConf.scollToPoint)
+        self.autoScrollPos = QSpinBox(self)
+        self.autoScrollPos.setMinimum(10)
+        self.autoScrollPos.setMaximum(90)
+        self.autoScrollPos.setSingleStep(1)
+        self.autoScrollPos.setValue(int(self.mainConf.autoScrollPos))
         self.mainForm.addRow(
-            "Position in the editor to keep the cursor",
-            self.scollToPoint,
+            "Minimum position for Typewriter scrolling",
+            self.autoScrollPos,
             "In units of percentage of the editor height.",
             theUnit = "%"
         )
@@ -608,8 +608,8 @@ class GuiConfigEditLayoutTab(QWidget):
         textMargin      = self.textMargin.value()
         tabWidth        = self.tabWidth.value()
         scrollPastEnd   = self.scrollPastEnd.isChecked()
-        scollWithCursor = self.scollWithCursor.isChecked()
-        scollToPoint    = self.scollToPoint.value()
+        autoScroll      = self.autoScroll.isChecked()
+        autoScrollPos   = self.autoScrollPos.value()
 
         self.mainConf.textFont        = textFont
         self.mainConf.textSize        = textSize
@@ -621,8 +621,8 @@ class GuiConfigEditLayoutTab(QWidget):
         self.mainConf.textMargin      = textMargin
         self.mainConf.tabWidth        = tabWidth
         self.mainConf.scrollPastEnd   = scrollPastEnd
-        self.mainConf.scollWithCursor = scollWithCursor
-        self.mainConf.scollToPoint    = scollToPoint
+        self.mainConf.autoScroll      = autoScroll
+        self.mainConf.autoScrollPos   = autoScrollPos
 
         self.mainConf.confChanged = True
 
