@@ -1,25 +1,54 @@
 # novelWriter ChangeLog
 
+## Version 1.0 Release Beta 5 [2020-10-18]
+
+**Important Notes**
+
+* The minimal supported Python version is now 3.6. While novelWriter has worked fine in the post with versions as low as 3.4, neither 3.4 nor 3.5 is tested. They have also both reached end of life. There are a couple of good reasons to drop support for older versions. PR #470.
+  1. Python 3.6 introduces ordered dictionaries as the standard.
+  2. The format string decorator (`f""`) was added in 3.6, and is much less clunky in many parts of the code than the full `"".format()` syntax.
+  3. Especially 3.4 has limited support for `*var` expansion of iterables. These are used several places in the code.
+
+**Bugfixes**
+
+* Fixed a bug in the Build Novel Project tool where novelWriter would crash when trying to build the preview when running a version of the Qt library lower than 5.14. Issue #471, PR #472.
+
+**User Interface**
+
+* An option has been added in Preferences to hide horizontal or vertical scroll bars on the main GUI. These optons will hide scroll bars on the Project Tree, Document Editor, Document Viewer, Outline Tab and on the controls of the Build Novel Project tool. Scroll bars take up space, and as long as the project doesn't contain very long documents, scrolling with the mouse wheel is enough. The feature is of course entirely optional. PRs #468 and #469.
+* It is no possible to enable scrolling past the end of the document with a new option in Preferences. Previously, the editor would just allow scrolling to the bottom of the document. The new option adds a margin to the bottom of the document itself that allows for scrolling past this point. This avoids having to type text at the bottom of the editor window. PRs #468 and #469.
+* A new feature called "Typewriter Scrolling" has been added. It basically means that the editor window will try to keep the cursor at a given vertical position and instead scroll the document when the cursor moves to a new line, either by arrow keys or while typing. The position can also be defined in Preferences. The scroll bar uses an animation effect to perform the scrolling to avoid abrupt jumps in the editor window. PRs #468 and #474.
+* The line counter in the Document Editor footer now shows the location in the document in terms of percentage. This is convenient for very large documents. PR #474.
+* A "Follow Tag" option has been added to the Document Editor context menu. This option appears when right-clicking a tag value on a meta data line. PR #474.
+* When applying a format from the format menu to a selection of multiple paragraphs (or lines), only the first paragraph (or line) receives the formatting. The editor doesn't allow markdown formatting to span multiple lines. Issue #451, PR #475.
+* The syntax highlighter no longer uses the same colour to highlight strikethrough text as for emphasised text. The colour is intended to stand out, which makes little sense for such text. Instead, the highlighter uses the same colour as for comments. PR #476.
+
+**Other Changes**
+
+* Since support for Python < 3.6 has been dropped, it is now possible to use `f""` formatted strings in many more places in the source code where this is convenient. This has been implemented many places, but the code is still a mix of all three styles of formatting text. PR #478.
+* Extensive changes have been made to the build and distribute tools. The `install.py` file has been dropped, and the features in it merged into a new file named `make.py`. The make file can now also build a setup installer for Windows. The `setup.py` file has been rewritten to a more standardised source layout, and all the setup configuration moved to the `setup.cfg` file. PRs #479 and #480.
+
+
 ## Version 1.0 Beta 4 [2020-10-11]
 
 **Bugfixes**
 
-* When the Trash folder doesn't exist because nothing has yet been deleted, the lookup function for the Trash folder's handle returns `None`. That meant that any item with a parent handle `None` would be treated as a Trash folder in many parts of the code before an actual Trash folder existed. This caused a few decision branches to make non-critical mistakes. This issue is now fixed with a new check function that takes this into account. PRs #452 and #453.
-* If an older project was opened, one with a different project file layout than the more recent versions, a dialog asks whether the user wants the project updated or not. However, the function that moves files to the new location actually starts working before the dialog asks for permission. Instead, it just checks that it is allowed to change the project XML file only. The check is still run before the dialog, but the action of moving files around are now postponed to after the permission has been given and the project XML file parsed. PR #453.
-* If there were multiple headings in a file, and the last paragraph did not end in a line break, the word counter for the individual sections would miss the last paragraph of the last section due to an index error. This has now been fixed. PR #453.
-* The cursor position of a document in the editor would only be saved if the document had been altered. It is now also saved in the cases where the user makes no changes. PR #460.
+* When the Trash folder didn't exist because nothing had been deleted yet, the lookup function for the Trash folder's handle returned `None`. That meant that any item with a parent handle `None` would be treated as a Trash folder in many parts of the code before the Trash folder was first used. This caused a few decision branches to make non-critical mistakes. In particular the project tree context menu. This issue has now been fixed with a new check function that takes this into account. PRs #452 and #453.
+* If an older project was opened, one with a different project file layout than the more recent versions, a dialog asked whether the user wants the project updated or not. However, the function that moves files to their new location would actually start working before the dialog asked for permission. The permission would only be applied to the project XML file. Now, the check is still run before the dialog, but the action of moving files around are postponed to after the permission has been given and the project XML file parsed. PR #453.
+* If there were multiple headings in a file, and the last paragraph did not end in a line break, the word counter for the individual sections would miss the last paragraph of the last section due to an indexing error. This has now been fixed. PR #453.
+* The last cursor position of a document in the editor would only be saved if the document had been altered. It is now also saved in the cases where the user makes no changes. PR #460.
 * When using an aspell dictionary for spell checking, words containing a hyphen would be highlighted as misspelled. This is not the case for hunspell dictionaries. The hyphen is now taken into account when splitting sentences into words for spell check highlighting. PR #462.
 * Some of the file dialogs would fail with a non-critical error when the cancel button was clicked. The cancel is now captured consistently in all instances where such a dialog is used, and the calling function exited properly. PR #463.
 
 **User Interface**
 
-* Minor changes to the text formatting on the Recent Projects dialog. PR #452.
+* Some minor changes to the text formatting on the Recent Projects dialog. PR #452.
 * The Build Novel Project tool has been improved. The settings side panel is now scrollable, and the document and settings panel now have a movable splitter between them. This gives more flexibility to the sizes of the various parts. PR #459.
-* A new option to replace tabs with spaces has been added to the Build Novel Project tool. Previously, they were always replaces for HTML output, but converting them to the HTML code for tab is actually convenient for later import into for instance Libre Office, which converts them back to regular tabs. Issue #458, PR #459.
+* A new option to replace tabs with spaces has been added to the Build Novel Project tool. Previously, they were always replaces for HTML output. However, converting them to the HTML code for a tab is actually convenient for later import into for instance Libre Office, which then converts them back to regular tabs. Issue #458, PR #459.
 * Non-breaking spaces have been removed from the HTML conversion of keywords and tags. Issue #458, PR #459.
-* An upper limit of how large a document the Build Novel Project tool can view has been set. It is 10 megabytes of generated HTML. The tool will still build larger documents, but they aren't displayed. This also limits which options are available in the "Save As" list for such large documents. Only native novelWriter exports are supported for such documents. The limit is an order of magnitude larger than a typical long novel. PR #460.
+* An upper limit of how large a document the Build Novel Project tool can view has been set. It is 10 megabytes of generated HTML. The tool will still build larger documents, but they aren't displayed. This also limits which options are available in the "Save As" list for such large documents. Only native novelWriter exports are supported in such cases. The limit is an order of magnitude larger than a typical long novel. PR #460.
 * The language indicator in the status bar now has a tooltip stating what tool and spell check dictionary provider is being used. PR #462.
-* All representations of integers, mostly word counts, are now presented in the same way. They should all use a thousand separator representation defined by the localised settings. PR #464.
+* All representations of integers, mostly word counts, are now presented in the same way. They should all use a thousand separator representation defined by the local language settings. PR #464.
 * Many parts of the GUI have had a spin/wait cursor added for processes that may take a while and will block the GUI in the meantime. PRs #460, #463 and #464.
 * A line counter has been added to the footer of the document editor next to the word counter. It makes it easier to compare the position in the document when also accessing it in an external editor. PR #466.
 
@@ -33,20 +62,20 @@
 
 * The syntax highlighter now remembers what type of line every line in the document is. This means that certain types of lines can be re-highlighted without having to process the entire document again. This is particularly useful for refreshing the highlighting of keywords and tags after the index has been rebuilt. PR #460.
 * On a few occasions, the entire document in the editor would be reloaded in order to update the layout and formatting. This is not only slow for big documents, it also resets the undo stack. Instead, the entire document is "marked as dirty" to force the Qt library to update the layout, which is much faster. PR #460.
-* For very large documents (in the megabyte range), the repositioning of the cursor when the document was opened would sometimes interfere with the rendering of the document. This could potentially cause the editor to hang for up to a couple of minutes. Instead, the repositioning of the cursor is now postponed until the document layout size has reached a point past the character where the cursor is to be moved. This mode is only used for documents larger than 50 kilobytes. PR #460.
+* For very large documents (in the megabyte range), the repositioning of the cursor when the document was opened would sometimes interfere with the rendering of the document itself. This could potentially cause the editor to hang for up to a couple of minutes. Instead, the repositioning of the cursor is now postponed until the document layout size has reached past the character where the cursor is to be moved. This mode is only used for documents larger than 50 kilobytes. PR #460.
 * The document editor will no longer accept single documents larger than 5 megabytes. This restriction has also been applied to the Build Novel Project tool. For reference, a typical long novel is less than 1 megabyte in size. PR #460.
 
 **Other Changes**
 
 * The command line switches `--quiet` and `--logfile=` have been removed. They were intended for testing, but have never been used. The default mode of only printing warnings and errors is quiet enough, and logging to file shouldn't be necessary for a GUI application. PR #453.
-* A number of if statements and conditions in the code that were intended to alter behaviour when running tests, mostly to stop modal dialogs from blocking the main thread, have been removed. The changes to the program flow when running tests have now been reduced to a minimum, and modifications instead handled with pytest monkeypatches. PR #453.
-* The `QtSvg` package is no longer in use by novelWriter. The internal dependency check has been dropped. PR #457.
+* A number of if-statements and conditions in the code that were intended to alter behaviour when running tests, mostly to stop modal dialogs from blocking the main thread, have been removed. These types of changes to the program flow when running tests have now been reduced to a minimum, and modifications instead handled with pytest monkeypatches. PR #453.
+* The `QtSvg` package is no longer in use by novelWriter. The internal dependency check has been removed. PR #457.
 * It is no longer possible to set the user's home folder as the root directory of a project. The home folder is the default lookup folder in many cases, so it's easy to do by mistake. PR #457.
 * The background word counter has been rewritten to run on an application wide thread pool. This is a more appropriate way of running background tasks. PR #462.
 
 **Test Suite**
 
-* Major additions to the test suite taking the test coverage to 91%. PR #453.
+* Major additions to the test suite, taking the test coverage to 91%. PR #453.
 * Test coverage for Linux (Ubuntu) for Python versions 3.6, 3.7, and 3.8 are now separate jobs. In addition, Windows with Python 3.8 and macOS with Python 3.8 is also tested. All OSes are piped into test coverage, and they all have status badges. PRs #453 and #454.
 
 
