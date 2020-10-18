@@ -41,6 +41,7 @@ class ToHtml(Tokenizer):
 
     def __init__(self, theProject, theParent):
         Tokenizer.__init__(self, theProject, theParent)
+
         self.genMode = self.M_EXPORT
         self.cssStyles = True
 

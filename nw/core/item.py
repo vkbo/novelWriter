@@ -42,7 +42,7 @@ class NWItem():
 
         self.itemName   = ""
         self.itemHandle = None
-        self.parHandle  = None
+        self.itemParent = None
         self.itemOrder  = None
         self.itemType   = nwItemType.NO_TYPE
         self.itemClass  = nwItemClass.NO_CLASS
@@ -70,7 +70,7 @@ class NWItem():
         xPack = etree.SubElement(xParent, "item", attrib={
             "handle" : str(self.itemHandle),
             "order"  : str(self.itemOrder),
-            "parent" : str(self.parHandle),
+            "parent" : str(self.itemParent),
         })
         self._subPack(xPack, "name",   text=str(self.itemName))
         self._subPack(xPack, "type",   text=str(self.itemType.name))
@@ -85,6 +85,7 @@ class NWItem():
             self._subPack(xPack, "cursorPos", text=str(self.cursorPos), none=False)
         else:
             self._subPack(xPack, "expanded", text=str(self.isExpanded))
+
         return
 
     def unpackXML(self, xItem):
@@ -101,7 +102,7 @@ class NWItem():
             return False
 
         if "parent" in xItem.attrib:
-            self.parHandle = xItem.attrib["parent"]
+            self.itemParent = xItem.attrib["parent"]
 
         setMap = {
             "name"      : self.setName,
@@ -131,9 +132,11 @@ class NWItem():
         """
         if not none and (text is None or text == "None"):
             return None
-        xSub = etree.SubElement(xParent, name, attrib=attrib)
+        xAttr = {} if attrib is None else attrib
+        xSub = etree.SubElement(xParent, name, attrib=xAttr)
         if text is not None:
             xSub.text = text
+
         return
 
     ##
@@ -162,14 +165,14 @@ class NWItem():
         """Set the parent handle, and ensure that it is valid.
         """
         if theParent is None:
-            self.parHandle = None
+            self.itemParent = None
         elif isinstance(theParent, str):
             if len(theParent) == 13:
-                self.parHandle = theParent
+                self.itemParent = theParent
             else:
-                self.parHandle = None
+                self.itemParent = None
         else:
-            self.parHandle = None
+            self.itemParent = None
         return
 
     def setOrder(self, theOrder):

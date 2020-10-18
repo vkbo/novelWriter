@@ -62,7 +62,9 @@ class GuiMain(QMainWindow):
         self.mainConf = nw.CONFIG
         self.threadPool = QThreadPool()
 
-        # Some runtime info useful for debugging
+        # System Info
+        # ===========
+
         logger.info("OS: %s" % self.mainConf.osType)
         logger.info("Kernel: %s" % self.mainConf.kernelVer)
         logger.info("Host: %s" % self.mainConf.hostName)
@@ -75,6 +77,9 @@ class GuiMain(QMainWindow):
         logger.info("Python Version: %s (0x%x)" % (
             self.mainConf.verPyString, self.mainConf.verPyHexVal)
         )
+
+        # Core Classes
+        # ============
 
         # Core Classes and settings
         self.theTheme    = GuiTheme(self)
@@ -89,7 +94,7 @@ class GuiMain(QMainWindow):
         self.setWindowIcon(QIcon(self.mainConf.appIcon))
 
         # Build the GUI
-        ################
+        # =============
 
         # Main GUI Elements
         self.statusBar = GuiMainStatus(self)
@@ -106,7 +111,7 @@ class GuiMain(QMainWindow):
         self.statusIcons = []
         self.importIcons = []
 
-        # Assemble Main Window
+        # Project Tree View
         self.treePane = QWidget()
         self.treeBox = QVBoxLayout()
         self.treeBox.setContentsMargins(0, 0, 0, 0)
@@ -114,20 +119,24 @@ class GuiMain(QMainWindow):
         self.treeBox.addWidget(self.treeMeta)
         self.treePane.setLayout(self.treeBox)
 
+        # Splitter : Document Viewer / Document Meta
         self.splitView = QSplitter(Qt.Vertical)
         self.splitView.addWidget(self.docViewer)
         self.splitView.addWidget(self.viewMeta)
         self.splitView.setSizes(self.mainConf.getViewPanePos())
 
+        # Splitter : Document Editor / Document Viewer
         self.splitDocs = QSplitter(Qt.Horizontal)
         self.splitDocs.addWidget(self.docEditor)
         self.splitDocs.addWidget(self.splitView)
 
+        # Splitter : Project Outlie / Outline Details
         self.splitOutline = QSplitter(Qt.Vertical)
         self.splitOutline.addWidget(self.projView)
         self.splitOutline.addWidget(self.projMeta)
         self.splitOutline.setSizes(self.mainConf.getOutlinePanePos())
 
+        # Main Tabs : Edirot / Outline
         self.tabWidget = QTabWidget()
         self.tabWidget.setTabPosition(QTabWidget.East)
         self.tabWidget.setStyleSheet("QTabWidget::pane {border: 0;}")
@@ -135,6 +144,7 @@ class GuiMain(QMainWindow):
         self.tabWidget.addTab(self.splitOutline, "Outline")
         self.tabWidget.currentChanged.connect(self._mainTabChanged)
 
+        # Splitter : Project Tree / Main Tabs
         xCM = self.mainConf.pxInt(4)
         self.splitMain = QSplitter(Qt.Horizontal)
         self.splitMain.setContentsMargins(xCM, xCM, xCM, xCM)
@@ -142,6 +152,7 @@ class GuiMain(QMainWindow):
         self.splitMain.addWidget(self.tabWidget)
         self.splitMain.setSizes(self.mainConf.getMainPanePos())
 
+        # Indices of All Splitter Widgets
         self.idxTree     = self.splitMain.indexOf(self.treePane)
         self.idxMain     = self.splitMain.indexOf(self.tabWidget)
         self.idxEditor   = self.splitDocs.indexOf(self.docEditor)
@@ -151,6 +162,7 @@ class GuiMain(QMainWindow):
         self.idxTabEdit  = self.tabWidget.indexOf(self.splitDocs)
         self.idxTabProj  = self.tabWidget.indexOf(self.splitOutline)
 
+        # Splitter Behaviour
         self.splitMain.setCollapsible(self.idxTree, False)
         self.splitMain.setCollapsible(self.idxMain, False)
         self.splitDocs.setCollapsible(self.idxEditor, False)
@@ -158,10 +170,11 @@ class GuiMain(QMainWindow):
         self.splitView.setCollapsible(self.idxViewDoc, False)
         self.splitView.setCollapsible(self.idxViewMeta, False)
 
+        # Editor / Viewer Default State
         self.splitView.setVisible(False)
         self.docEditor.closeSearch()
 
-        # Build the Tree View
+        # Initialise the Project Tree
         self.treeView.itemSelectionChanged.connect(self._treeSingleClick)
         self.treeView.itemDoubleClicked.connect(self._treeDoubleClick)
         self.rebuildTree()
@@ -172,13 +185,13 @@ class GuiMain(QMainWindow):
         self.setStatusBar(self.statusBar)
 
         # Finalise Initialisation
-        ##########################
+        # =======================
 
-        # Set Up Autosaving Project Timer
+        # Set Up Auto-Save Project Timer
         self.asProjTimer = QTimer()
         self.asProjTimer.timeout.connect(self._autoSaveProject)
 
-        # Set Up Autosaving Document Timer
+        # Set Up Auto-Save Document Timer
         self.asDocTimer = QTimer()
         self.asDocTimer.timeout.connect(self._autoSaveDocument)
 
@@ -203,11 +216,13 @@ class GuiMain(QMainWindow):
         # Check that config loaded fine
         self.reportConfErr()
 
+        # Initialise Main GUI
         self.initMain()
         self.asProjTimer.start()
         self.asDocTimer.start()
         self.statusBar.clearStatus()
 
+        # Handle Windows Mode
         self.showNormal()
         if self.mainConf.isFullScreen:
             self.toggleFullScreenMode()
@@ -224,7 +239,7 @@ class GuiMain(QMainWindow):
                 self.showProjectLoadDialog()
 
         logger.debug("novelWriter is ready ...")
-        self.statusBar.setStatus("novelWriter is ready ...")
+        self.setStatus("novelWriter is ready ...")
 
         return
 
@@ -249,8 +264,7 @@ class GuiMain(QMainWindow):
     ##
 
     def newProject(self, projData=None):
-        """Create new project with a few default files and folders.
-        The variable forceNew is used for testing.
+        """Create new project via the new project wizard.
         """
         if self.hasProject:
             self.makeAlert(
@@ -293,7 +307,7 @@ class GuiMain(QMainWindow):
     def closeProject(self, isYes=False):
         """Closes the project if one is open. isYes is passed on from
         the close application event so the user doesn't get prompted
-        twice.
+        twice to confirm.
         """
         if not self.hasProject:
             # There is no project loaded, everything OK
@@ -302,7 +316,7 @@ class GuiMain(QMainWindow):
         if not isYes:
             msgBox = QMessageBox()
             msgRes = msgBox.question(
-                self, "Close Project", "Save changes and close current project?"
+                self, "Close Project", "Save changes and close the current project?"
             )
             if msgRes != QMessageBox.Yes:
                 return False
@@ -318,7 +332,7 @@ class GuiMain(QMainWindow):
                 if self.mainConf.askBeforeBackup:
                     msgBox = QMessageBox()
                     msgRes = msgBox.question(
-                        self, "Backup Project", "Backup current project?"
+                        self, "Backup Project", "Backup the current project?"
                     )
                     if msgRes != QMessageBox.Yes:
                         doBackup = False
@@ -433,6 +447,7 @@ class GuiMain(QMainWindow):
         if self.theProject.projPath is None:
             projPath = self.selectProjectPath()
             self.theProject.setProjectPath(projPath)
+
         if self.theProject.projPath is None:
             return False
 
@@ -454,6 +469,7 @@ class GuiMain(QMainWindow):
             if self.docEditor.docChanged:
                 self.saveDocument()
             self.docEditor.clearEditor()
+
         return True
 
     def openDocument(self, tHandle, tLine=None, changeFocus=True, doScroll=False):
@@ -469,6 +485,7 @@ class GuiMain(QMainWindow):
                 self.treeView.setSelectedHandle(tHandle, doScroll=doScroll)
             else:
                 return False
+
         return True
 
     def openNextDocument(self, tHandle, wrapAround=False):
@@ -546,6 +563,7 @@ class GuiMain(QMainWindow):
                 vPos[1] = bPos[1] - vPos[0]
                 self.splitDocs.setSizes(vPos)
                 self.viewMeta.setVisible(self.mainConf.showRefPanel)
+
             self.docViewer.navigateTo(tAnchor)
 
         return True
@@ -697,9 +715,9 @@ class GuiMain(QMainWindow):
         for nDone, tItem in enumerate(self.theProject.projTree):
 
             if tItem is not None:
-                self.statusBar.setStatus("Indexing: '%s'" % tItem.itemName)
+                self.setStatus("Indexing: '%s'" % tItem.itemName)
             else:
-                self.statusBar.setStatus("Indexing: Unknown item")
+                self.setStatus("Indexing: Unknown item")
 
             if tItem is not None and tItem.itemType == nwItemType.FILE:
                 logger.verbose("Scanning: %s" % tItem.itemName)
@@ -717,7 +735,7 @@ class GuiMain(QMainWindow):
                 self.treeView.projectWordCount()
 
         tEnd = time()
-        self.statusBar.setStatus("Indexing completed in %.1f ms" % ((tEnd - tStart)*1000.0))
+        self.setStatus("Indexing completed in %.1f ms" % ((tEnd - tStart)*1000.0))
         self.docEditor.updateTagHighLighting()
         qApp.restoreOverrideCursor()
 
@@ -754,7 +772,8 @@ class GuiMain(QMainWindow):
     def showProjectLoadDialog(self):
         """Opens the projects dialog for selecting either existing
         projects from a cache of recently opened projects, or provide a
-        browse button for projects not yet cached.
+        browse button for projects not yet cached. Selecting to create a
+        new project is forwarded to the new project wizard.
         """
         dlgProj = GuiProjectLoad(self)
         dlgProj.exec_()
@@ -767,7 +786,7 @@ class GuiMain(QMainWindow):
         return True
 
     def showNewProjectDialog(self):
-        """Open the wizard and assemble the project options dict.
+        """Open the wizard and assemble a project options dict.
         """
         newProj = GuiProjectWizard(self)
         newProj.exec_()
@@ -865,8 +884,7 @@ class GuiMain(QMainWindow):
 
     def makeAlert(self, theMessage, theLevel=nwAlert.INFO):
         """Alert both the user and the logger at the same time. Message
-        can be either a string or an array of strings. Severity level is
-        0 = info, 1 = warning, and 2 = error.
+        can be either a string or an array of strings.
         """
         if isinstance(theMessage, list):
             popMsg = "<br>".join(theMessage)
@@ -955,7 +973,7 @@ class GuiMain(QMainWindow):
         return True
 
     def setFocus(self, paneNo):
-        """Switch focus to one of the three main gUi panes.
+        """Switch focus to one of the three main GUI panes.
         """
         if paneNo == 1:
             self.treeView.setFocus()
@@ -1236,9 +1254,9 @@ class GuiMain(QMainWindow):
         return
 
     def _treeKeyPressReturn(self):
-        """The user pressed return an item in the tree. If it is a file,
-        we open it. Otherwise, we do nothing. Pressing return does not
-        change focus to the editor as double click does.
+        """The user pressed return on an item in the tree. If it is a
+        file, we open it. Otherwise, we do nothing. Pressing return does
+        not change focus to the editor as double click does.
         """
         tHandle = self.treeView.getSelectedHandle()
         logger.verbose("User pressed return on tree item with handle %s" % tHandle)
@@ -1257,7 +1275,6 @@ class GuiMain(QMainWindow):
         """
         if self.docEditor.docSearch.isVisible():
             self.docEditor.closeSearch()
-            return
         elif self.isFocusMode:
             self.toggleFocusMode()
         return

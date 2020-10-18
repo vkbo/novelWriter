@@ -279,7 +279,7 @@ class NWIndex():
         if theItem.itemLayout == nwItemLayout.NO_LAYOUT:
             logger.info("Not indexing no-layout item %s" % tHandle)
             return False
-        if theItem.parHandle is None:
+        if theItem.itemParent is None:
             logger.info("Not indexing orphaned item %s" % tHandle)
             return False
 
@@ -288,7 +288,7 @@ class NWIndex():
         self.textCounts[tHandle] = [cC, wC, pC]
 
         # If the file is archived or trashed, we don't index the file itself
-        if self.theProject.projTree.isTrashRoot(theItem.parHandle):
+        if self.theProject.projTree.isTrashRoot(theItem.itemParent):
             logger.info("Not indexing trash item %s" % tHandle)
             return False
         if theRoot.itemClass == nwItemClass.ARCHIVE:
@@ -583,7 +583,7 @@ class NWIndex():
 
     def getCounts(self, tHandle, sTitle=None):
         """Returns the counts for a file, or a section of a file
-        starting at title nTitle.
+        starting at title sTitle if it is provided.
         """
         cC = 0
         wC = 0

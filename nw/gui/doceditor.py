@@ -807,16 +807,16 @@ class GuiDocEditor(QTextEdit):
             return self.docSearch.cycleFocus(toNext)
         return True
 
-    def mouseReleaseEvent(self, mEvent):
+    def mouseReleaseEvent(self, theEvent):
         """If the mouse button is released and the control key is
         pressed, check if we're clicking on a tag, and trigger the
         follow tag function.
         """
         if qApp.keyboardModifiers() == Qt.ControlModifier:
-            theCursor = self.cursorForPosition(mEvent.pos())
+            theCursor = self.cursorForPosition(theEvent.pos())
             self._followTag(theCursor)
 
-        QTextEdit.mouseReleaseEvent(self, mEvent)
+        QTextEdit.mouseReleaseEvent(self, theEvent)
         self.docFooter.updateLineCount()
 
         return
@@ -1203,20 +1203,19 @@ class GuiDocEditor(QTextEdit):
         """Check if document size crosses the big document limit set in
         config. If so, we will set the big document flag to True.
         """
-        newState = theSize > self.mainConf.bigDocLimit*1000
+        bigLim = self.mainConf.bigDocLimit*1000
+        newState = theSize > bigLim
 
         if newState != self.bigDoc:
             if newState:
                 logger.info(
-                    "The document size is {:n} > {:n}, big doc mode has been enabled".format(
-                        theSize, self.mainConf.bigDocLimit*1000
-                    )
+                    f"The document size is {theSize:n} > {bigLim:n}, "
+                    f"big doc mode has been enabled"
                 )
             else:
                 logger.info(
-                    "The document size is {:n} <= {:n}, big doc mode has been disabled".format(
-                        theSize, self.mainConf.bigDocLimit*1000
-                    )
+                    f"The document size is {theSize:n} <= {bigLim:n}, "
+                    f"big doc mode has been disabled"
                 )
 
         self.bigDoc = newState

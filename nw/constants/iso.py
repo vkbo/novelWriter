@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
-"""novelWriter Language Codes
+"""novelWriter ISO Codes
 
- novelWriter – Language Codes
-==============================
+ novelWriter – ISO Codes
+=========================
  Handles translating language codes to language names
 
  File History:

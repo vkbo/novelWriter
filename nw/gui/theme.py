@@ -1,9 +1,9 @@
 # -*- coding: utf-8 -*-
-"""novelWriter Theme Class
+"""novelWriter Theme and Icons Classes
 
- novelWriter – Theme Class
-===========================
- This class reads and store the main theme
+ novelWriter – Theme and Icons Classs
+======================================
+ This class reads and stores the themes and the icons
 
  File History:
  Created: 2019-05-18 [0.1.3] GuiTheme

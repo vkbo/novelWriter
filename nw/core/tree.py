@@ -134,7 +134,7 @@ class NWTree():
         for xItem in xContent:
             nwItem = NWItem(self.theProject)
             if nwItem.unpackXML(xItem):
-                self.append(nwItem.itemHandle, nwItem.parHandle, nwItem)
+                self.append(nwItem.itemHandle, nwItem.itemParent, nwItem)
                 nwItem.saveInitialCount()
 
         return True
@@ -261,10 +261,10 @@ class NWTree():
         tItem = self.__getitem__(tHandle)
         if tItem is not None:
             for i in range(nwConst.maxDepth + 1):
-                if tItem.parHandle is None:
+                if tItem.itemParent is None:
                     return tItem
                 else:
-                    tHandle = tItem.parHandle
+                    tHandle = tItem.itemParent
                     tItem = self.__getitem__(tHandle)
         return None
 
@@ -279,10 +279,10 @@ class NWTree():
         if tItem is not None:
             tTree.append(tHandle)
             for i in range(nwConst.maxDepth + 1):
-                if tItem.parHandle is None:
+                if tItem.itemParent is None:
                     return tTree
                 else:
-                    tHandle = tItem.parHandle
+                    tHandle = tItem.itemParent
                     tItem   = self.__getitem__(tHandle)
                     if tItem is None:
                         return tTree
