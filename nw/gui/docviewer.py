@@ -501,49 +501,45 @@ class GuiDocViewer(QTextBrowser):
         """
         styleSheet = (
             "body {{"
-            "  color: rgb({tColR},{tColG},{tColB});"
-            "  font-size: {textSize:.1f}pt;"
+            "  color: rgb({tColR}, {tColG}, {tColB});"
             "}}\n"
             "h1, h2, h3, h4 {{"
-            "  color: rgb({hColR},{hColG},{hColB});"
+            "  color: rgb({hColR}, {hColG}, {hColB});"
             "}}\n"
             "a {{"
-            "  color: rgb({aColR},{aColG},{aColB});"
+            "  color: rgb({aColR}, {aColG}, {aColB});"
             "}}\n"
             "mark {{"
-            "  color: rgb({eColR},{eColG},{eColB});"
+            "  color: rgb({eColR}, {eColG}, {eColB});"
             "}}\n"
             ".tags {{"
-            "  color: rgb({kColR},{kColG},{kColB});"
-            "  font-wright: bold;"
+            "  color: rgb({kColR}, {kColG}, {kColB});"
             "}}\n"
             ".comment {{"
-            "  color: rgb({cColR},{cColG},{cColB});"
+            "  color: rgb({cColR}, {cColG}, {cColB});"
             "}}\n"
             ".synopsis {{"
-            "  color: rgb({mColR},{mColG},{mColB});"
-            "  font-wright: bold;"
+            "  color: rgb({mColR}, {mColG}, {mColB});"
             "}}\n"
         ).format(
-            textSize = self.mainConf.textSize,
             tColR = self.theTheme.colText[0],
             tColG = self.theTheme.colText[1],
             tColB = self.theTheme.colText[2],
             hColR = self.theTheme.colHead[0],
             hColG = self.theTheme.colHead[1],
             hColB = self.theTheme.colHead[2],
-            cColR = self.theTheme.colHidden[0],
-            cColG = self.theTheme.colHidden[1],
-            cColB = self.theTheme.colHidden[2],
-            eColR = self.theTheme.colEmph[0],
-            eColG = self.theTheme.colEmph[1],
-            eColB = self.theTheme.colEmph[2],
             aColR = self.theTheme.colVal[0],
             aColG = self.theTheme.colVal[1],
             aColB = self.theTheme.colVal[2],
+            eColR = self.theTheme.colEmph[0],
+            eColG = self.theTheme.colEmph[1],
+            eColB = self.theTheme.colEmph[2],
             kColR = self.theTheme.colKey[0],
             kColG = self.theTheme.colKey[1],
             kColB = self.theTheme.colKey[2],
+            cColR = self.theTheme.colHidden[0],
+            cColG = self.theTheme.colHidden[1],
+            cColB = self.theTheme.colHidden[2],
             mColR = self.theTheme.colMod[0],
             mColG = self.theTheme.colMod[1],
             mColB = self.theTheme.colMod[2],
