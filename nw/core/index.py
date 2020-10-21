@@ -159,8 +159,7 @@ class NWIndex():
             logger.debug("Loading index file")
             try:
                 with open(indexFile, mode="r", encoding="utf8") as inFile:
-                    theJson = inFile.read()
-                theData = json.loads(theJson)
+                    theData = json.load(inFile)
             except Exception as e:
                 logger.error("Failed to load index file")
                 logger.error(str(e))
@@ -190,23 +189,18 @@ class NWIndex():
         """Save the current index as a json file in the project meta
         data folder.
         """
-        indexFile = os.path.join(self.theProject.projMeta, nwFiles.INDEX_FILE)
-
         logger.debug("Saving index file")
-        if self.mainConf.debugInfo:
-            nIndent = 2
-        else:
-            nIndent = None
+        indexFile = os.path.join(self.theProject.projMeta, nwFiles.INDEX_FILE)
 
         try:
             with open(indexFile, mode="w+", encoding="utf8") as outFile:
-                outFile.write(json.dumps({
+                json.dump({
                     "tagIndex"   : self.tagIndex,
                     "refIndex"   : self.refIndex,
                     "novelIndex" : self.novelIndex,
                     "noteIndex"  : self.noteIndex,
                     "textCounts" : self.textCounts,
-                }, indent=nIndent))
+                }, outFile, indent=2)
         except Exception as e:
             logger.error("Failed to save index file")
             logger.error(str(e))
@@ -218,6 +212,7 @@ class NWIndex():
         """Check that the entries in the index are valid and contain the
         elements it should.
         """
+        logger.debug("Checking index")
         self.indexBroken = False
 
         try:

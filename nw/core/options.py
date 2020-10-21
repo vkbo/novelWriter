@@ -109,8 +109,7 @@ class OptionState():
             logger.debug("Loading GUI options file")
             try:
                 with open(stateFile, mode="r", encoding="utf8") as inFile:
-                    theJson = inFile.read()
-                theState = json.loads(theJson)
+                    theState = json.load(inFile)
             except Exception as e:
                 logger.error("Failed to load GUI options file")
                 logger.error(str(e))
@@ -137,7 +136,7 @@ class OptionState():
 
         try:
             with open(stateFile, mode="w+", encoding="utf8") as outFile:
-                outFile.write(json.dumps(self.theState, indent=2))
+                json.dump(self.theState, outFile, indent=2)
         except Exception as e:
             logger.error("Failed to save GUI options file")
             logger.error(str(e))
