@@ -27,7 +27,6 @@ def testIndexBuildCheck(monkeypatch, nwLipsum, nwDummy, nwTempProj, nwRef):
     theProject.projTree.setSeed(42)
     assert theProject.openProject(nwLipsum)
 
-    theProject.mainConf.debugInfo = True
     monkeypatch.setattr("nw.core.index.time", lambda: 123.4)
 
     theIndex = NWIndex(theProject, nwDummy)
@@ -49,7 +48,7 @@ def testIndexBuildCheck(monkeypatch, nwLipsum, nwDummy, nwTempProj, nwRef):
         raise Exception
 
     # Make the save fail
-    monkeypatch.setattr(json, "dumps", doPanic)
+    monkeypatch.setattr(json, "dump", doPanic)
     assert not theIndex.saveIndex()
 
     # Make the save pass
@@ -83,7 +82,7 @@ def testIndexBuildCheck(monkeypatch, nwLipsum, nwDummy, nwTempProj, nwRef):
     assert not theIndex.textCounts
 
     # Make the load fail
-    monkeypatch.setattr(json, "loads", doPanic)
+    monkeypatch.setattr(json, "load", doPanic)
     assert not theIndex.loadIndex()
 
     # Make the load pass
