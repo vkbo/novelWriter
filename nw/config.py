@@ -690,8 +690,7 @@ class Config:
         if os.path.isfile(cacheFile):
             try:
                 with open(cacheFile, mode="r", encoding="utf8") as inFile:
-                    theJson = inFile.read()
-                theData = json.loads(theJson)
+                    theData = json.load(inFile)
 
                 for projPath in theData.keys():
                     theEntry  = theData[projPath]
@@ -729,7 +728,7 @@ class Config:
 
         try:
             with open(cacheTemp, mode="w+", encoding="utf8") as outFile:
-                outFile.write(json.dumps(self.recentProj, indent=2))
+                json.dump(self.recentProj, outFile, indent=2)
         except Exception as e:
             self.hasError = True
             self.errData.append("Could not save recent project cache")

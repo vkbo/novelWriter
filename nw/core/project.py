@@ -1024,7 +1024,7 @@ class NWProject():
         return True
 
     def setTreeOrder(self, newOrder):
-        """A list representing the liner/flattened order of project
+        """A list representing the linear/flattened order of project
         items in the GUI project tree. The user can rearrange the order
         by drag-and-drop. Forwarded to the NWTree class.
         """

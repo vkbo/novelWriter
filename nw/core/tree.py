@@ -177,7 +177,7 @@ class NWTree():
 
             # Dump the JSON
             with open(tocJson, mode="w+", encoding="utf8") as outFile:
-                outFile.write(json.dumps(jsonData, indent=2))
+                json.dump(jsonData, outFile, indent=2)
 
         except Exception as e:
             logger.error(str(e))

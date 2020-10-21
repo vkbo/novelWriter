@@ -362,7 +362,7 @@ class GuiWritingStats(QDialog):
                             "novelWords": wA,
                             "noteWords": wB,
                         })
-                    outFile.write(json.dumps(jsonData, indent=2))
+                    json.dump(jsonData, outFile, indent=2)
                     wSuccess = True
 
                 elif dataFmt == self.FMT_CSV:

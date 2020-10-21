@@ -266,7 +266,7 @@ def testWritingStatsExport(qtbot, monkeypatch, yesToAll, nwFuncTemp, nwTemp):
 
     jsonStats = os.path.join(nwFuncTemp, "sessionStats.json")
     with open(jsonStats, mode="r", encoding="utf-8") as inFile:
-        jsonData = json.loads(inFile.read())
+        jsonData = json.load(inFile)
 
     qtbot.wait(stepDelay)
 
@@ -301,7 +301,7 @@ def testWritingStatsExport(qtbot, monkeypatch, yesToAll, nwFuncTemp, nwTemp):
 
     jsonStats = os.path.join(nwFuncTemp, "sessionStats.json")
     with open(jsonStats, mode="r", encoding="utf-8") as inFile:
-        jsonData = json.loads(inFile.read())
+        jsonData = json.load(inFile)
 
     assert len(jsonData) == 2
     assert jsonData[1]["length"] >= 14.0
@@ -318,7 +318,7 @@ def testWritingStatsExport(qtbot, monkeypatch, yesToAll, nwFuncTemp, nwTemp):
 
     jsonStats = os.path.join(nwFuncTemp, "sessionStats.json")
     with open(jsonStats, mode="r", encoding="utf-8") as inFile:
-        jsonData = json.loads(inFile.read())
+        jsonData = json.load(inFile)
 
     assert len(jsonData) == 3
 
@@ -331,7 +331,7 @@ def testWritingStatsExport(qtbot, monkeypatch, yesToAll, nwFuncTemp, nwTemp):
 
     jsonStats = os.path.join(nwFuncTemp, "sessionStats.json")
     with open(jsonStats, mode="r", encoding="utf-8") as inFile:
-        jsonData = json.loads(inFile.read())
+        jsonData = json.load(inFile)
 
     assert len(jsonData) == 4
 
@@ -343,7 +343,7 @@ def testWritingStatsExport(qtbot, monkeypatch, yesToAll, nwFuncTemp, nwTemp):
 
     jsonStats = os.path.join(nwFuncTemp, "sessionStats.json")
     with open(jsonStats, mode="r", encoding="utf-8") as inFile:
-        jsonData = json.loads(inFile.read())
+        jsonData = json.load(inFile)
 
     # Check against both 1 and 2 as this can be 2 if test was started just before midnight.
     # A failed test should in any case produce a 4
