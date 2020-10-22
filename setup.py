@@ -193,13 +193,11 @@ def xdgInstall():
     # ===========================
 
     desktopData = ""
-    with open(os.path.join("setup", "novelwriter.desktop"), mode="r") as inFile:
+    with open("./setup/novelwriter.desktop", mode="r") as inFile:
         desktopData = inFile.read()
 
     desktopData = desktopData.replace(r"%%exec%%", useExec)
-
-    desktopFile = os.path.join(os.getcwd(), "novelwriter.desktop")
-    with open(desktopFile, mode="w+") as outFile:
+    with open("./novelwriter.desktop", mode="w+") as outFile:
         outFile.write(desktopData)
 
     exCode = subprocess.call(
@@ -225,7 +223,7 @@ def xdgInstall():
 
     exCode = subprocess.call([
         "xdg-mime", "install",
-        "setup/mime/x-novelwriter-project.xml"
+        "./setup/mime/x-novelwriter-project.xml"
     ])
     if exCode == 0:
         print("Installed mimetype")
@@ -237,7 +235,7 @@ def xdgInstall():
     # Install Icons
     # =============
 
-    sizeArr = ["16", "22", "24", "32", "48", "96", "128", "256", "512"]
+    sizeArr = ["16", "22", "24", "32", "48", "64", "96", "128", "256", "512"]
 
     # App Icon
     for aSize in sizeArr:
@@ -246,7 +244,7 @@ def xdgInstall():
             "--novendor", "--noupdate",
             "--context", "apps",
             "--size", aSize,
-            f"setup/icons/scaled/icon-novelwriter-{aSize}.png",
+            f"./setup/icons/scaled/icon-novelwriter-{aSize}.png",
             "novelwriter"
         ])
         if exCode == 0:
@@ -261,7 +259,7 @@ def xdgInstall():
             "--noupdate",
             "--context", "mimetypes",
             "--size", aSize,
-            f"setup/icons/scaled/mime-novelwriter-{aSize}.png",
+            f"./setup/icons/scaled/mime-novelwriter-{aSize}.png",
             "application-x-novelwriter-project"
         ])
         if exCode == 0:
@@ -274,7 +272,7 @@ def xdgInstall():
     if exCode == 0:
         print("Updated icon cache")
     else:
-        print("Error {exCode}: Could not update icon cache")
+        print(f"Error {exCode}: Could not update icon cache")
 
     print("")
     print("Done!")

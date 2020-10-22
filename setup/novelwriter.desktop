@@ -2,7 +2,7 @@
 Type=Application
 Encoding=UTF-8
 Name=novelWriter
-Comment=Multi-document markdown editor for novels
+Comment=Multi-document markdown-like editor for novels
 Exec=%%exec%% %f
 Icon=novelwriter
 Categories=Qt;Office;WordProcessor;
