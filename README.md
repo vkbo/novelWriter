@@ -104,8 +104,10 @@ If you want to run directly from the source, the application can be started with
 
 You can also create a launcher for running directly from source with:
 ```bash
-sudo python3 setup.py launcher
+python3 setup.py xdg-install
 ```
+This will install the launcher and icons for the current user.
+To install them system-wide, run the above command with `sudo` or as root.
 
 For more install options, see [Build and Install novelWriter](setup/README.md).
 
