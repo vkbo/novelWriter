@@ -140,13 +140,16 @@ def buildSampleZip():
 #  Create Launcher
 # =============================================================================================== #
 
-def makeLauncherLinux():
+def xdgInstall():
     """Will attempt to install icons and make a launcher.
     """
     print("")
-    print("Creating Launcher")
-    print("=================")
+    print("XDG Install")
+    print("===========")
     print("")
+
+    # Find Executable(s)
+    # ==================
 
     exOpts = []
 
@@ -185,95 +188,94 @@ def makeLauncherLinux():
             sys.exit(1)
 
     print("Using executable: %s " % useExec)
+    print("")
 
-    # Read the Template
+    # Create and Install Launcher
+    # ===========================
+
     desktopData = ""
     with open(os.path.join("setup", "novelwriter.desktop"), mode="r") as inFile:
         desktopData = inFile.read()
 
     desktopData = desktopData.replace(r"%%exec%%", useExec)
 
-    desktopFile = "/usr/share/applications/novelwriter.desktop"
-    try:
-        with open(desktopFile, mode="w+") as outFile:
-            outFile.write(desktopData)
-            print("Wrote file: %s" % desktopFile)
-    except Exception as e:
-        print("Error: Could not write novelwriter.desktop file.")
-        print(str(e))
-        sys.exit(1)
+    desktopFile = os.path.join(os.getcwd(), "novelwriter.desktop")
+    with open(desktopFile, mode="w+") as outFile:
+        outFile.write(desktopData)
+
+    exCode = subprocess.call(
+        ["xdg-desktop-menu", "install", "--novendor", "./novelwriter.desktop"]
+    )
+    if exCode == 0:
+        print("Installed menu desktop file")
+    else:
+        print(f"Error {exCode}: Could not install menu desktop file")
+
+    exCode = subprocess.call(
+        ["xdg-desktop-icon", "install", "--novendor", "./novelwriter.desktop"]
+    )
+    if exCode == 0:
+        print("Installed icon desktop file")
+    else:
+        print(f"Error {exCode}: Could not install icon desktop file")
 
     print("")
 
-    # Copy Icons
+    # Install MimeType
+    # ================
 
-    iconDirs = [
-        "/usr/share/icons/hicolor/24x24/apps",
-        "/usr/share/icons/hicolor/48x48/apps",
-        "/usr/share/icons/hicolor/96x96/apps",
-        "/usr/share/icons/hicolor/256x256/apps",
-        "/usr/share/icons/hicolor/512x512/apps",
-        "/usr/share/icons/hicolor/scalable/apps",
-        "/usr/share/icons/hicolor/scalable/mimetypes",
-    ]
-    for iconDir in iconDirs:
-        if not os.path.isdir:
-            try:
-                os.mkdir(iconDir)
-                print("Created folder: %s" % iconDir)
-            except Exception as e:
-                print("Error: Could not make folder: %s" % iconDir)
-                print(str(e))
-
-    copyList = [(
-        "setup/icons/24x24/novelwriter.png",
-        "/usr/share/icons/hicolor/24x24/apps/novelwriter.png"
-    ), (
-        "setup/icons/48x48/novelwriter.png",
-        "/usr/share/icons/hicolor/48x48/apps/novelwriter.png"
-    ), (
-        "setup/icons/96x96/novelwriter.png",
-        "/usr/share/icons/hicolor/96x96/apps/novelwriter.png"
-    ), (
-        "setup/icons/256x256/novelwriter.png",
-        "/usr/share/icons/hicolor/256x256/apps/novelwriter.png"
-    ), (
-        "setup/icons/512x512/novelwriter.png",
-        "/usr/share/icons/hicolor/512x512/apps/novelwriter.png"
-    ), (
-        "setup/icons/novelwriter.svg",
-        "/usr/share/icons/hicolor/scalable/apps/novelwriter.svg"
-    ), (
-        "setup/icons/x-novelwriter-project.svg",
-        "/usr/share/icons/hicolor/scalable/mimetypes/application-x-novelwriter-project.svg"
-    ), (
-        "setup/mime/x-novelwriter-project.xml",
-        "/usr/share/mime/packages/x-novelwriter-project.xml"
-    )]
-    for srcFile, dstFile in copyList:
-        try:
-            shutil.copyfile(srcFile, dstFile)
-            print("Copied file to: %s" % dstFile)
-        except Exception as e:
-            print("Error: Could not copy file: %s" % srcFile)
-            print(str(e))
+    exCode = subprocess.call([
+        "xdg-mime", "install",
+        "setup/mime/x-novelwriter-project.xml"
+    ])
+    if exCode == 0:
+        print("Installed mimetype")
+    else:
+        print(f"Error {exCode}: Could not install mimetype")
 
     print("")
 
-    # Update System
-    try:
-        subprocess.call(["update-mime-database", "/usr/share/mime/"])
-        print("Updated mime database.")
-    except Exception as e:
-        print("Error: Filed to update mime database.")
-        print(str(e))
+    # Install Icons
+    # =============
 
-    try:
-        subprocess.call(["update-icon-caches", "/usr/share/icons/*"])
-        print("Updated icon cache.")
-    except Exception as e:
-        print("Error: Filed to update icon cache.")
-        print(str(e))
+    sizeArr = ["16", "22", "24", "32", "48", "96", "128", "256", "512"]
+
+    # App Icon
+    for aSize in sizeArr:
+        exCode = subprocess.call([
+            "xdg-icon-resource", "install",
+            "--novendor", "--noupdate",
+            "--context", "apps",
+            "--size", aSize,
+            f"setup/icons/scaled/icon-novelwriter-{aSize}.png",
+            "novelwriter"
+        ])
+        if exCode == 0:
+            print(f"Installed app icon size {aSize}")
+        else:
+            print(f"Error {exCode}: Could not install app icon size {aSize}")
+
+    # Mimetype
+    for aSize in sizeArr:
+        exCode = subprocess.call([
+            "xdg-icon-resource", "install",
+            "--noupdate",
+            "--context", "mimetypes",
+            "--size", aSize,
+            f"setup/icons/scaled/mime-novelwriter-{aSize}.png",
+            "application-x-novelwriter-project"
+        ])
+        if exCode == 0:
+            print(f"Installed mime icon size {aSize}")
+        else:
+            print(f"Error {exCode}: Could not install mime icon size {aSize}")
+
+    # Update Cache
+    exCode = subprocess.call(["xdg-icon-resource", "forceupdate"])
+    if exCode == 0:
+        print("Updated icon cache")
+    else:
+        print("Error {exCode}: Could not update icon cache")
 
     print("")
     print("Done!")
@@ -293,10 +295,10 @@ if __name__ == "__main__":
         "======================\n"
         "This tool provides some additional setup commands for novelWriter.\n"
         "\n"
-        "help      Print the help message.\n"
-        "qthelp    Build the help documentation for use with the QtAssistant.\n"
-        "sample    Build the sample project as a zip file.\n"
-        "launcher  Install launcher icons for freedesktop systems.\n"
+        "help         Print the help message.\n"
+        "qthelp       Build the help documentation for use with the QtAssistant.\n"
+        "sample       Build the sample project as a zip file.\n"
+        "xdg-install  Install launcher and icons for freedesktop systems.\n"
     )
 
     if "help" in sys.argv:
@@ -312,9 +314,13 @@ if __name__ == "__main__":
         sys.argv.remove("sample")
         buildSampleZip()
 
-    if "launcher" in sys.argv:
-        sys.argv.remove("launcher")
-        makeLauncherLinux()
+    if "xdg-install" in sys.argv:
+        sys.argv.remove("xdg-install")
+        if not sys.platform.startswith("win32"):
+            xdgInstall()
+        else:
+            print("ERROR: xdg-install cannot be used on Windows")
+            sys.exit(1)
 
     if len(sys.argv) <= 1:
         # Nothing more to do
