@@ -21,7 +21,6 @@ import os
 import sys
 import shutil
 import subprocess
-import setuptools
 
 # =============================================================================================== #
 #  Qt Assistant Documentation Builder
@@ -327,6 +326,7 @@ if __name__ == "__main__":
         sys.exit(0)
 
     # Run the standard setup
+    import setuptools
     setuptools.setup()
 
 # END Main
