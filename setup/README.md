@@ -13,8 +13,9 @@ The `setup.py` is a standard Python setup script with a couple of additional opt
 * `sample`: Will create a `sample.zip` file in the `nw/assets` folder.
   This is the file the New Project Wizard uses to generate an example project.
   If novelWriter is run from source, this file is not needed.
-* `launcher`: Will try to copy the novelWriter icons and create a novelWriter.desktop file to launch
+* `xdg-install`: Will install novelWriter icons, mimetype, and desktop and menu launcher on Linux desktops.
   the application. This should work on standard Linux desktops.
+  By default, this is installed for the current user. Run with `sudo` to install system-wide.
 
 To install novelWriter as a local Python package, run:
 ```bash

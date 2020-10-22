@@ -6,6 +6,7 @@
 *.spec
 *.egg-info
 setup.iss
+novelwriter.desktop
 
 # Documentation
 /docs/build/
