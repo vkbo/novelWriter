@@ -3,7 +3,7 @@
 
  novelWriter – GUI Writing Statistics
 ======================================
- Class showing the word count and session statistics
+ Class holding the word count and session statistics dialog
 
  File History:
  Created: 2019-10-20 [0.3]

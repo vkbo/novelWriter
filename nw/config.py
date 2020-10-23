@@ -3,7 +3,7 @@
 
  novelWriter – Config Class
 ============================
- This class reads and store the main preferences of the application
+ Class reading and holding the preferences of the application
 
  File History:
  Created: 2018-09-22 [0.0.1]

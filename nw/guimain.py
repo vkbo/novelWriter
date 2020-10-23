@@ -3,7 +3,7 @@
 
  novelWriter – GUI Main Window
 ===============================
- Class holding the main window
+ Class holding the main application window
 
  File History:
  Created: 2018-09-22 [0.0.1]

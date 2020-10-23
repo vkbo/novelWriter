@@ -3,7 +3,7 @@
 
  novelWriter – GUI Document Highlighter
 ========================================
- Syntax highlighting for MarkDown
+ Subclass for the main editor syntax highlighting
 
  File History:
  Created: 2019-04-06 [0.0.1]

@@ -3,10 +3,10 @@
 
  novelWriter – GUI Main Menu
 =============================
- Class holding the main window
+ Class holding the main window menu
 
  File History:
- Created: 2019-04-27 [0.0.1] (Split from winmain)
+ Created: 2019-04-27 [0.0.1]
 
  This file is a part of novelWriter
  Copyright 2018–2020, Veronica Berglyd Olsen

@@ -3,7 +3,7 @@
 
  novelWriter – GUI Document Editor
 ===================================
- Class holding the document editor
+ Class holding the main document editor
 
  File History:
  Created:   2018-09-29 [0.0.1]  GuiDocEditor

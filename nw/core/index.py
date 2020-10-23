@@ -3,7 +3,7 @@
 
  novelWriter – Project Index
 =============================
- Class holding the index of tags
+ Class holding the project index of tags, headers and references
 
  File History:
  Created: 2019-05-27 [0.1.4]

@@ -3,7 +3,7 @@
 
  novelWriter – GUI Project Outline Details
 ===========================================
- Class holding the project outline details view
+ Class holding the project outline details panel
 
  File History:
  Created: 2020-06-02 [0.7.0]

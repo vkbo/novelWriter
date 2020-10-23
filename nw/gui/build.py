@@ -1,9 +1,9 @@
 # -*- coding: utf-8 -*-
-"""novelWriter GUI Build Novel
+"""novelWriter GUI Build Novel Project
 
- novelWriter – GUI Build Novel
-===============================
- Class holding the build novel window
+ novelWriter – GUI Build Novel Project
+=======================================
+ Class holding the build novel project dialog
 
  File History:
  Created: 2020-05-09 [0.5]
