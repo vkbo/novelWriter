@@ -274,7 +274,7 @@ class GuiMainMenu(QMenuBar):
 
         # Project > Exit
         self.aExitNW = QAction("Exit", self)
-        self.aExitNW.setStatusTip("Exit %s" % self.mainConf.appName)
+        self.aExitNW.setStatusTip("Exit novelWriter")
         self.aExitNW.setShortcut("Ctrl+Q")
         self.aExitNW.setMenuRole(QAction.QuitRole)
         self.aExitNW.triggered.connect(lambda: self.theParent.closeMain())
@@ -857,8 +857,8 @@ class GuiMainMenu(QMenuBar):
         self.helpMenu = self.addMenu("&Help")
 
         # Help > About
-        self.aAboutNW = QAction("About %s" % self.mainConf.appName, self)
-        self.aAboutNW.setStatusTip("About %s" % self.mainConf.appName)
+        self.aAboutNW = QAction("About novelWriter", self)
+        self.aAboutNW.setStatusTip("About novelWriter")
         self.aAboutNW.setMenuRole(QAction.AboutRole)
         self.aAboutNW.triggered.connect(lambda: self.theParent.showAboutNWDialog())
         self.helpMenu.addAction(self.aAboutNW)
