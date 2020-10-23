@@ -169,6 +169,16 @@ def formatTimeStamp(theTime, fileSafe=False):
     else:
         return datetime.fromtimestamp(theTime).strftime(nwConst.tStampFmt)
 
+def formatTime(tS):
+    """Format the time spent in 00:00:00 format.
+    """
+    if isinstance(tS, int):
+        if tS >= 86400:
+            return f"{tS//86400:d}-{tS//3600%24:02d}:{tS%3600//60:02d}:{tS%60:02d}"
+        else:
+            return f"{tS//3600:02d}:{tS%3600//60:02d}:{tS%60:02d}"
+    return "ERROR"
+
 def splitVersionNumber(vString):
     """ Splits a version string on the form aa.bb.cc into major, minor
     and patch, and computes an integer value aabbcc.
