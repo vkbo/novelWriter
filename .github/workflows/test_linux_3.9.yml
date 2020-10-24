@@ -19,7 +19,6 @@ jobs:
         run: |
           sudo apt update
           sudo apt install libenchant-dev qt5-default
-          sudo apt install libxml2-dev libxslt-dev python-dev
       - name: Checkout Source
         uses: actions/checkout@v2
       - name: Install Dependencies
