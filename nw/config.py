@@ -911,7 +911,7 @@ class Config:
     def _packList(self, inData):
         """Pack a list of items into a comma separated string.
         """
-        return ", ".join(str(inVal) for inVal in inData)
+        return ", ".join([str(inVal) for inVal in inData])
 
     def _parseLine(self, cnfParse, cnfSec, cnfName, cnfType, cnfDefault):
         """Parse a line and return the correct datatype.
