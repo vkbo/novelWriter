@@ -1,4 +1,4 @@
-name: Linux (3.8)
+name: Linux (3.9)
 
 on:
   push:
@@ -7,13 +7,13 @@ on:
     branches: [ main, dev ]
 
 jobs:
-  testLinux38:
+  testLinux39:
     runs-on: ubuntu-latest
     steps:
       - name: Python Setup
         uses: actions/setup-python@v2
         with:
-          python-version: 3.8
+          python-version: 3.9
           architecture: x64
       - name: Install Packages
         run: |
