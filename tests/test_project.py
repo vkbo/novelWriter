@@ -488,6 +488,7 @@ def testProjectOrphanedFiles(nwDummy, nwLipsum):
         outFile.write("%%~name:Mars\n")
         outFile.write("%%~path:5eaea4e8cdee8/636b6aa9b697b\n")
         outFile.write("%%~kind:WORLD/NOTE\n")
+        outFile.write("%%~invalid\n")
         outFile.write("\n")
 
     # Second Item without Meta Data
