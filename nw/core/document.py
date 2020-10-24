@@ -250,7 +250,9 @@ class NWDoc():
                 if metaBits[1] in nwItemLayout.__members__:
                     self._docMeta["layout"] = nwItemLayout[metaBits[1]]
 
-        # print(self._docMeta)
+        else:
+            logger.debug("Ignoring meta data: '%s'" % metaLine)
+
         return
 
 # END Class NWDoc
