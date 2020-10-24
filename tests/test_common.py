@@ -7,7 +7,7 @@ import pytest
 
 from nw.common import (
     checkString, checkBool, checkInt, colRange, formatInt, transferCase,
-    fuzzyTime, checkHandle, formatTimeStamp
+    fuzzyTime, checkHandle, formatTimeStamp, formatTime
 )
 from nwtools import cmpList
 
@@ -78,10 +78,28 @@ def testColRange():
     )
 
 @pytest.mark.core
-def testFormatTime():
+def testFormatTimeStamp():
     tTime = time.mktime(time.gmtime(0))
     assert formatTimeStamp(tTime, False) == "1970-01-01 00:00:00"
     assert formatTimeStamp(tTime, True) == "1970-01-01 00.00.00"
+
+@pytest.mark.core
+def testFormatTime():
+    assert formatTime("1") == "ERROR"
+    assert formatTime(1.0) == "ERROR"
+    assert formatTime(1) == "00:00:01"
+    assert formatTime(59) == "00:00:59"
+    assert formatTime(60) == "00:01:00"
+    assert formatTime(180) == "00:03:00"
+    assert formatTime(194) == "00:03:14"
+    assert formatTime(3540) == "00:59:00"
+    assert formatTime(3599) == "00:59:59"
+    assert formatTime(3600) == "01:00:00"
+    assert formatTime(11640) == "03:14:00"
+    assert formatTime(11655) == "03:14:15"
+    assert formatTime(86399) == "23:59:59"
+    assert formatTime(86400) == "1-00:00:00"
+    assert formatTime(360000) == "4-04:00:00"
 
 @pytest.mark.core
 def testFormatInt():

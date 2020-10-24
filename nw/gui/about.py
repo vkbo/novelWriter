@@ -55,14 +55,14 @@ class GuiAbout(QDialog):
         self.innerBox = QHBoxLayout()
         self.innerBox.setSpacing(self.mainConf.pxInt(16))
 
-        self.setWindowTitle("About %s" % self.mainConf.appName)
+        self.setWindowTitle("About novelWriter")
         self.setMinimumWidth(self.mainConf.pxInt(650))
         self.setMinimumHeight(self.mainConf.pxInt(600))
 
         nPx = self.mainConf.pxInt(96)
         self.nwIcon = QLabel()
         self.nwIcon.setPixmap(self.theParent.theTheme.getPixmap("novelwriter", (nPx, nPx)))
-        self.lblName = QLabel("<b>%s</b>" % self.mainConf.appName)
+        self.lblName = QLabel("<b>novelWriter</b>")
         self.lblVers = QLabel("v%s" % nw.__version__)
         self.lblDate = QLabel(datetime.strptime(nw.__date__, "%Y-%m-%d").strftime("%x"))
 
@@ -115,17 +115,17 @@ class GuiAbout(QDialog):
         """
         listPrefix = "&nbsp;&nbsp;&bull;&nbsp;&nbsp;"
         aboutMsg   = (
-            "<h2>About {name:s}</h2>"
+            "<h2>About novelWriter</h2>"
             "<p>{copyright:s}.</p>"
             "<p>Website: <a href='{website:s}'>{domain:s}</a></p>"
-            "<p>{name:s} is a markdown-like text editor designed for "
+            "<p>novelWriter is a markdown-like text editor designed for "
             "organising and writing novels. It is written in Python 3 with a "
             "Qt5 GUI, using PyQt5.</p>"
-            "<p>{name:s} is free software: you can redistribute it and/or "
+            "<p>novelWriter is free software: you can redistribute it and/or "
             "modify it under the terms of the GNU General Public License as "
             "published by the Free Software Foundation, either version 3 of "
             "the License, or (at your option) any later version.</p>"
-            "<p>{name:s} is distributed in the hope that it will be useful, "
+            "<p>novelWriter is distributed in the hope that it will be useful, "
             "but WITHOUT ANY WARRANTY; without even the implied warranty of "
             "MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.</p>"
             "<p>See the License tab for the full text, or visit  the GNU website "
@@ -134,7 +134,6 @@ class GuiAbout(QDialog):
             "<h3>Credits</h3>"
             "<p>{credits:s}</p>"
         ).format(
-            name      = self.mainConf.appName,
             copyright = nw.__copyright__,
             website   = nw.__url__,
             domain    = nw.__domain__,
@@ -222,7 +221,6 @@ class GuiAbout(QDialog):
             hColB = self.theParent.theTheme.colHead[2],
         )
         self.pageAbout.document().setDefaultStyleSheet(styleSheet)
-        # self.pageCredit.document().setDefaultStyleSheet(styleSheet)
         self.pageLicense.document().setDefaultStyleSheet(styleSheet)
 
         return

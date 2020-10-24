@@ -168,6 +168,13 @@ def testDocEditor(qtbot, yesToAll, nwFuncTemp, nwTempGUI, nwRef, nwTemp):
     nwGUI.mainMenu.aSpellCheck.setChecked(True)
     assert nwGUI.mainMenu._toggleSpellCheck()
 
+    # Change some settings
+    nwGUI.mainConf.hideHScroll = True
+    nwGUI.mainConf.hideVScroll = True
+    nwGUI.mainConf.scrollPastEnd = True
+    nwGUI.mainConf.autoScrollPos = 80
+    nwGUI.mainConf.autoScroll = True
+
     # Add a Character File
     nwGUI.setFocus(1)
     nwGUI.treeView.clearSelection()
@@ -677,16 +684,6 @@ def testProjectTree(qtbot, yesToAll, nwMinimal, nwTemp):
     orItem = nwTree._getTreeItem("1234567890abc")
     assert orItem.text(nwTree.C_NAME) == "Orphaned File 1"
 
-    # Move it to the Plot folder
-    # plItem = nwTree._getTreeItem("7695ce551d265")
-    # orRect = nwTree.visualItemRect(orItem)
-    # plRect = nwTree.visualItemRect(plItem)
-
-    # qtbot.mouseMove(nwTree.viewport(), pos=orRect.center(), delay=1000)
-    # qtbot.mousePress(nwTree.viewport(), Qt.LeftButton, pos=orRect.center(), delay=1000)
-    # qtbot.mouseMove(nwTree.viewport(), pos=plRect.center(), delay=1000)
-    # qtbot.mouseRelease(nwTree.viewport(), Qt.LeftButton, pos=plRect.center(), delay=1000)
-
     # qtbot.stopForInteraction()
     nwGUI.closeMain()
     nwGUI.close()
@@ -1107,16 +1104,16 @@ def testInsertMenu(qtbot, monkeypatch, nwFuncTemp, nwTemp):
     nwGUI.closeDocument()
 
     # First, with no path
-    monkeypatch.setattr(QFileDialog, "getOpenFileName", lambda *args, **kwards: [])
+    monkeypatch.setattr(QFileDialog, "getOpenFileName", lambda *args, **kwards: ("", ""))
     assert not nwGUI.importDocument()
 
     # Then with a path, but an invalid one
-    monkeypatch.setattr(QFileDialog, "getOpenFileName", lambda *args, **kwards: [" "])
+    monkeypatch.setattr(QFileDialog, "getOpenFileName", lambda *args, **kwards: (" ", ""))
     assert not nwGUI.importDocument()
 
     # Then a valid path, but bot a file that exists
     theFile = os.path.join(nwTemp, "import.txt")
-    monkeypatch.setattr(QFileDialog, "getOpenFileName", lambda *args, **kwards: [theFile])
+    monkeypatch.setattr(QFileDialog, "getOpenFileName", lambda *args, **kwards: (theFile, ""))
     assert not nwGUI.importDocument()
 
     # Create the file and try again, but with no target document open
@@ -1477,7 +1474,7 @@ def testThemes(qtbot, yesToAll, nwMinimal, nwTemp):
     assert nwGUI.theTheme.colDialN  == [242, 119, 122]
     assert nwGUI.theTheme.colDialD  == [153, 204, 153]
     assert nwGUI.theTheme.colDialS  == [255, 204, 102]
-    assert nwGUI.theTheme.colComm   == [153, 153, 153]
+    assert nwGUI.theTheme.colHidden == [153, 153, 153]
     assert nwGUI.theTheme.colKey    == [242, 119, 122]
     assert nwGUI.theTheme.colVal    == [204, 153, 204]
     assert nwGUI.theTheme.colSpell  == [242, 119, 122]

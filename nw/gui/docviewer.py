@@ -3,7 +3,7 @@
 
  novelWriter – GUI Document Viewer
 ===================================
- Class holding the document html viewer
+ Class holding the main document viewer
 
  File History:
  Created: 2019-05-10 [0.0.1] GuiDocViewer
@@ -34,10 +34,10 @@ import logging
 
 from PyQt5.QtCore import Qt, QUrl, QSize, pyqtSlot
 from PyQt5.QtGui import (
-    QTextOption, QFont, QPalette, QColor, QTextCursor, QIcon
+    QTextOption, QFont, QPalette, QColor, QTextCursor, QIcon, QCursor
 )
 from PyQt5.QtWidgets import (
-    QTextBrowser, QWidget, QScrollArea, QLabel, QHBoxLayout, QToolButton,
+    qApp, QTextBrowser, QWidget, QScrollArea, QLabel, QHBoxLayout, QToolButton,
     QAction, QMenu
 )
 
@@ -124,11 +124,26 @@ class GuiDocViewer(QTextBrowser):
             theOpt.setAlignment(Qt.AlignJustify)
         self.qDocument.setDefaultTextOption(theOpt)
 
+        # Scroll bars
+        if self.mainConf.hideVScroll:
+            self.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
+        else:
+            self.setVerticalScrollBarPolicy(Qt.ScrollBarAsNeeded)
+
+        if self.mainConf.hideHScroll:
+            self.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
+        else:
+            self.setHorizontalScrollBarPolicy(Qt.ScrollBarAsNeeded)
+
+        # Refresh the tab stops
+        if self.mainConf.verQtValue >= 51000:
+            self.setTabStopDistance(self.mainConf.getTabWidth())
+        else:
+            self.setTabStopWidth(self.mainConf.getTabWidth())
+
         # If we have a document open, we should reload it in case the font changed
         if self.theHandle is not None:
-            tHandle = self.theHandle
-            self.clearViewer()
-            self.loadText(tHandle)
+            self.redrawText()
 
         return True
 
@@ -144,6 +159,8 @@ class GuiDocViewer(QTextBrowser):
             return False
 
         logger.debug("Generating preview for item %s" % tHandle)
+        qApp.setOverrideCursor(QCursor(Qt.WaitCursor))
+
         sPos = self.verticalScrollBar().value()
         aDoc = ToHtml(self.theProject, self.theParent)
         aDoc.setPreview(True, self.mainConf.viewComments, self.mainConf.viewSynopsis)
@@ -195,7 +212,8 @@ class GuiDocViewer(QTextBrowser):
 
         # Since we change the content while it may still be rendering, we mark
         # the document dirty again to make sure it's re-rendered properly.
-        self.qDocument.markContentsDirty(0, self.qDocument.characterCount())
+        self.redrawText()
+        qApp.restoreOverrideCursor()
 
         return True
 
@@ -203,6 +221,12 @@ class GuiDocViewer(QTextBrowser):
         """Reload the text in the current document.
         """
         self.loadText(self.theHandle, updateHistory=False)
+        return
+
+    def redrawText(self):
+        """Redraw the text by marking the document content as "dirty".
+        """
+        self.qDocument.markContentsDirty(0, self.qDocument.characterCount())
         return
 
     def loadFromTag(self, theTag):
@@ -477,55 +501,45 @@ class GuiDocViewer(QTextBrowser):
         """
         styleSheet = (
             "body {{"
-            "  color: rgb({tColR},{tColG},{tColB});"
-            "  font-size: {textSize:.1f}pt;"
+            "  color: rgb({tColR}, {tColG}, {tColB});"
             "}}\n"
             "h1, h2, h3, h4 {{"
-            "  color: rgb({hColR},{hColG},{hColB});"
+            "  color: rgb({hColR}, {hColG}, {hColB});"
             "}}\n"
             "a {{"
-            "  color: rgb({aColR},{aColG},{aColB});"
+            "  color: rgb({aColR}, {aColG}, {aColB});"
             "}}\n"
             "mark {{"
-            "  color: rgb({eColR},{eColG},{eColB});"
-            "}}\n"
-            "table {{"
-            "  margin: 10px 0px;"
-            "}}\n"
-            "td {{"
-            "  padding: 0px 4px;"
+            "  color: rgb({eColR}, {eColG}, {eColB});"
             "}}\n"
             ".tags {{"
-            "  color: rgb({kColR},{kColG},{kColB});"
-            "  font-wright: bold;"
+            "  color: rgb({kColR}, {kColG}, {kColB});"
             "}}\n"
             ".comment {{"
-            "  color: rgb({cColR},{cColG},{cColB});"
+            "  color: rgb({cColR}, {cColG}, {cColB});"
             "}}\n"
             ".synopsis {{"
-            "  color: rgb({mColR},{mColG},{mColB});"
-            "  font-wright: bold;"
+            "  color: rgb({mColR}, {mColG}, {mColB});"
             "}}\n"
         ).format(
-            textSize = self.mainConf.textSize,
             tColR = self.theTheme.colText[0],
             tColG = self.theTheme.colText[1],
             tColB = self.theTheme.colText[2],
             hColR = self.theTheme.colHead[0],
             hColG = self.theTheme.colHead[1],
             hColB = self.theTheme.colHead[2],
-            cColR = self.theTheme.colComm[0],
-            cColG = self.theTheme.colComm[1],
-            cColB = self.theTheme.colComm[2],
-            eColR = self.theTheme.colEmph[0],
-            eColG = self.theTheme.colEmph[1],
-            eColB = self.theTheme.colEmph[2],
             aColR = self.theTheme.colVal[0],
             aColG = self.theTheme.colVal[1],
             aColB = self.theTheme.colVal[2],
+            eColR = self.theTheme.colEmph[0],
+            eColG = self.theTheme.colEmph[1],
+            eColB = self.theTheme.colEmph[2],
             kColR = self.theTheme.colKey[0],
             kColG = self.theTheme.colKey[1],
             kColB = self.theTheme.colKey[2],
+            cColR = self.theTheme.colHidden[0],
+            cColG = self.theTheme.colHidden[1],
+            cColB = self.theTheme.colHidden[2],
             mColR = self.theTheme.colMod[0],
             mColG = self.theTheme.colMod[1],
             mColB = self.theTheme.colMod[2],

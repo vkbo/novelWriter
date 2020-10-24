@@ -3,7 +3,7 @@
 
  novelWriter – GUI Open Project
 ================================
- New and open project dialog
+ Class holding the load/browse/new project dialog
 
  File History:
  Created: 2020-02-26 [0.4.5]

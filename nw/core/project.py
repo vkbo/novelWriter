@@ -782,7 +782,7 @@ class NWProject():
         """Create a zip file of the entire project.
         """
         logger.info("Backing up project")
-        self.theParent.statusBar.setStatus("Backing up project ...")
+        self.theParent.setStatus("Backing up project ...")
 
         if self.mainConf.backupPath is None or self.mainConf.backupPath == "":
             self.theParent.makeAlert((
@@ -847,7 +847,7 @@ class NWProject():
             )
             return False
 
-        self.theParent.statusBar.setStatus("Project backed up to '%s.zip'" % baseName)
+        self.theParent.setStatus("Project backed up to '%s.zip'" % baseName)
 
         return True
 
@@ -1024,7 +1024,7 @@ class NWProject():
         return True
 
     def setTreeOrder(self, newOrder):
-        """A list representing the liner/flattened order of project
+        """A list representing the linear/flattened order of project
         items in the GUI project tree. The user can rearrange the order
         by drag-and-drop. Forwarded to the NWTree class.
         """
@@ -1139,16 +1139,16 @@ class NWProject():
                 # Technically a bug since treeOrder is built from the
                 # same data as projTree
                 continue
-            elif tItem.parHandle is None:
+            elif tItem.itemParent is None:
                 # Item is a root, or already been identified as an
                 # orphaned item
                 sentItems.append(tHandle)
                 yield tItem
-            elif tItem.parHandle in sentItems:
+            elif tItem.itemParent in sentItems:
                 # Item's parent has been sent, so all is fine
                 sentItems.append(tHandle)
                 yield tItem
-            elif tItem.parHandle in iterItems:
+            elif tItem.itemParent in iterItems:
                 # Item's parent exists, but hasn't been sent yet, so add
                 # it again to the end
                 logger.warning("Item %s found before its parent" % tHandle)

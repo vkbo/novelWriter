@@ -29,7 +29,7 @@ import logging
 
 from lxml import etree
 
-from nw.common import checkInt
+from nw.common import checkInt, isHandle
 from nw.constants import nwItemType, nwItemClass, nwItemLayout
 
 logger = logging.getLogger(__name__)
@@ -42,7 +42,7 @@ class NWItem():
 
         self.itemName   = ""
         self.itemHandle = None
-        self.parHandle  = None
+        self.itemParent = None
         self.itemOrder  = None
         self.itemType   = nwItemType.NO_TYPE
         self.itemClass  = nwItemClass.NO_CLASS
@@ -70,7 +70,7 @@ class NWItem():
         xPack = etree.SubElement(xParent, "item", attrib={
             "handle" : str(self.itemHandle),
             "order"  : str(self.itemOrder),
-            "parent" : str(self.parHandle),
+            "parent" : str(self.itemParent),
         })
         self._subPack(xPack, "name",   text=str(self.itemName))
         self._subPack(xPack, "type",   text=str(self.itemType.name))
@@ -85,6 +85,7 @@ class NWItem():
             self._subPack(xPack, "cursorPos", text=str(self.cursorPos), none=False)
         else:
             self._subPack(xPack, "expanded", text=str(self.isExpanded))
+
         return
 
     def unpackXML(self, xItem):
@@ -101,29 +102,39 @@ class NWItem():
             return False
 
         if "parent" in xItem.attrib:
-            self.parHandle = xItem.attrib["parent"]
+            self.itemParent = xItem.attrib["parent"]
 
-        setMap = {
-            "name"      : self.setName,
-            "order"     : self.setOrder,
-            "type"      : self.setType,
-            "class"     : self.setClass,
-            "layout"    : self.setLayout,
-            "status"    : self.setStatus,
-            "expanded"  : self.setExpanded,
-            "exported"  : self.setExported,
-            "charCount" : self.setCharCount,
-            "wordCount" : self.setWordCount,
-            "paraCount" : self.setParaCount,
-            "cursorPos" : self.setCursorPos,
-        }
+        retStatus = True
         for xValue in xItem:
-            if xValue.tag in setMap:
-                setMap[xValue.tag](xValue.text)
+            if xValue.tag == "name":
+                self.setName(xValue.text)
+            elif xValue.tag == "order":
+                self.setOrder(xValue.text)
+            elif xValue.tag == "type":
+                self.setType(xValue.text)
+            elif xValue.tag == "class":
+                self.setClass(xValue.text)
+            elif xValue.tag == "layout":
+                self.setLayout(xValue.text)
+            elif xValue.tag == "status":
+                self.setStatus(xValue.text)
+            elif xValue.tag == "expanded":
+                self.setExpanded(xValue.text)
+            elif xValue.tag == "exported":
+                self.setExported(xValue.text)
+            elif xValue.tag == "charCount":
+                self.setCharCount(xValue.text)
+            elif xValue.tag == "wordCount":
+                self.setWordCount(xValue.text)
+            elif xValue.tag == "paraCount":
+                self.setParaCount(xValue.text)
+            elif xValue.tag == "cursorPos":
+                self.setCursorPos(xValue.text)
             else:
                 logger.error("Unknown tag '%s'" % xValue.tag)
+                retStatus = False
 
-        return True
+        return retStatus
 
     @staticmethod
     def _subPack(xParent, name, attrib=None, text=None, none=True):
@@ -131,9 +142,11 @@ class NWItem():
         """
         if not none and (text is None or text == "None"):
             return None
-        xSub = etree.SubElement(xParent, name, attrib=attrib)
+        xAttr = {} if attrib is None else attrib
+        xSub = etree.SubElement(xParent, name, attrib=xAttr)
         if text is not None:
             xSub.text = text
+
         return
 
     ##
@@ -150,7 +163,7 @@ class NWItem():
         """Set the item handle, and ensure it is valid.
         """
         if isinstance(theHandle, str):
-            if len(theHandle) == 13:
+            if isHandle(theHandle):
                 self.itemHandle = theHandle
             else:
                 self.itemHandle = None
@@ -162,14 +175,14 @@ class NWItem():
         """Set the parent handle, and ensure that it is valid.
         """
         if theParent is None:
-            self.parHandle = None
+            self.itemParent = None
         elif isinstance(theParent, str):
-            if len(theParent) == 13:
-                self.parHandle = theParent
+            if isHandle(theParent):
+                self.itemParent = theParent
             else:
-                self.parHandle = None
+                self.itemParent = None
         else:
-            self.parHandle = None
+            self.itemParent = None
         return
 
     def setOrder(self, theOrder):

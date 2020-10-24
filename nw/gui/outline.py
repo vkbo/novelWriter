@@ -118,10 +118,27 @@ class GuiOutline(QTreeWidget):
         self.colIndex  = {}
         self.treeNCols = 0
 
+        self.initOutline()
         self.clearOutline()
         self.headerMenu.setHiddenState(self.colHidden)
 
         logger.debug("GuiOutline initialisation complete")
+
+        return
+
+    def initOutline(self):
+        """Set or update outline settings.
+        """
+        # Scroll bars
+        if self.mainConf.hideVScroll:
+            self.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
+        else:
+            self.setVerticalScrollBarPolicy(Qt.ScrollBarAsNeeded)
+
+        if self.mainConf.hideHScroll:
+            self.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
+        else:
+            self.setHorizontalScrollBarPolicy(Qt.ScrollBarAsNeeded)
 
         return
 
@@ -422,6 +439,10 @@ class GuiOutline(QTreeWidget):
         newItem = QTreeWidgetItem()
         hIcon   = "doc_%s" % tLevel.lower()
 
+        cC = int(novIdx["cCount"])
+        wC = int(novIdx["wCount"])
+        pC = int(novIdx["pCount"])
+
         newItem.setText(self.colIndex[nwOutline.TITLE],  novIdx["title"])
         newItem.setData(self.colIndex[nwOutline.TITLE],  Qt.UserRole, tHandle)
         newItem.setIcon(self.colIndex[nwOutline.TITLE],  self.theTheme.getIcon(hIcon))
@@ -431,9 +452,9 @@ class GuiOutline(QTreeWidget):
         newItem.setText(self.colIndex[nwOutline.LINE],   sTitle[1:].lstrip("0"))
         newItem.setData(self.colIndex[nwOutline.LINE],   Qt.UserRole, sTitle)
         newItem.setText(self.colIndex[nwOutline.SYNOP],  novIdx["synopsis"])
-        newItem.setText(self.colIndex[nwOutline.CCOUNT], str(novIdx["cCount"]))
-        newItem.setText(self.colIndex[nwOutline.WCOUNT], str(novIdx["wCount"]))
-        newItem.setText(self.colIndex[nwOutline.PCOUNT], str(novIdx["pCount"]))
+        newItem.setText(self.colIndex[nwOutline.CCOUNT], f"{cC:n}")
+        newItem.setText(self.colIndex[nwOutline.WCOUNT], f"{wC:n}")
+        newItem.setText(self.colIndex[nwOutline.PCOUNT], f"{pC:n}")
         newItem.setTextAlignment(self.colIndex[nwOutline.CCOUNT], Qt.AlignRight)
         newItem.setTextAlignment(self.colIndex[nwOutline.WCOUNT], Qt.AlignRight)
         newItem.setTextAlignment(self.colIndex[nwOutline.PCOUNT], Qt.AlignRight)

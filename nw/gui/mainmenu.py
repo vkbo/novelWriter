@@ -3,10 +3,10 @@
 
  novelWriter – GUI Main Menu
 =============================
- Class holding the main window
+ Class holding the main window menu
 
  File History:
- Created: 2019-04-27 [0.0.1] (Split from winmain)
+ Created: 2019-04-27 [0.0.1]
 
  This file is a part of novelWriter
  Copyright 2018–2020, Veronica Berglyd Olsen
@@ -274,8 +274,9 @@ class GuiMainMenu(QMenuBar):
 
         # Project > Exit
         self.aExitNW = QAction("Exit", self)
-        self.aExitNW.setStatusTip("Exit %s" % self.mainConf.appName)
+        self.aExitNW.setStatusTip("Exit novelWriter")
         self.aExitNW.setShortcut("Ctrl+Q")
+        self.aExitNW.setMenuRole(QAction.QuitRole)
         self.aExitNW.triggered.connect(lambda: self.theParent.closeMain())
         self.projMenu.addAction(self.aExitNW)
 
@@ -843,6 +844,7 @@ class GuiMainMenu(QMenuBar):
         self.aPreferences = QAction("Preferences", self)
         self.aPreferences.setStatusTip("Preferences")
         self.aPreferences.setShortcut("Ctrl+,")
+        self.aPreferences.setMenuRole(QAction.PreferencesRole)
         self.aPreferences.triggered.connect(lambda: self.theParent.showPreferencesDialog())
         self.toolsMenu.addAction(self.aPreferences)
 
@@ -855,14 +857,16 @@ class GuiMainMenu(QMenuBar):
         self.helpMenu = self.addMenu("&Help")
 
         # Help > About
-        self.aAboutNW = QAction("About %s" % self.mainConf.appName, self)
-        self.aAboutNW.setStatusTip("About %s" % self.mainConf.appName)
+        self.aAboutNW = QAction("About novelWriter", self)
+        self.aAboutNW.setStatusTip("About novelWriter")
+        self.aAboutNW.setMenuRole(QAction.AboutRole)
         self.aAboutNW.triggered.connect(lambda: self.theParent.showAboutNWDialog())
         self.helpMenu.addAction(self.aAboutNW)
 
         # Help > About Qt5
         self.aAboutQt = QAction("About Qt5", self)
         self.aAboutQt.setStatusTip("About Qt5")
+        self.aAboutQt.setMenuRole(QAction.AboutQtRole)
         self.aAboutQt.triggered.connect(lambda: self.theParent.showAboutQtDialog())
         self.helpMenu.addAction(self.aAboutQt)
 

@@ -1,9 +1,9 @@
 # -*- coding: utf-8 -*-
-"""novelWriter Theme Class
+"""novelWriter Theme and Icons Classes
 
- novelWriter – Theme Class
-===========================
- This class reads and store the main theme
+ novelWriter – Theme and Icons Classs
+======================================
+ Class managing and caching themes and icons
 
  File History:
  Created: 2019-05-18 [0.1.3] GuiTheme
@@ -103,7 +103,7 @@ class GuiTheme:
         self.colDialN  = [0, 0, 0]
         self.colDialD  = [0, 0, 0]
         self.colDialS  = [0, 0, 0]
-        self.colComm   = [0, 0, 0]
+        self.colHidden = [0, 0, 0]
         self.colKey    = [0, 0, 0]
         self.colVal    = [0, 0, 0]
         self.colSpell  = [0, 0, 0]
@@ -356,7 +356,7 @@ class GuiTheme:
             self.colDialN  = self._loadColour(confParser, cnfSec, "straightquotes")
             self.colDialD  = self._loadColour(confParser, cnfSec, "doublequotes")
             self.colDialS  = self._loadColour(confParser, cnfSec, "singlequotes")
-            self.colComm   = self._loadColour(confParser, cnfSec, "hidden")
+            self.colHidden = self._loadColour(confParser, cnfSec, "hidden")
             self.colKey    = self._loadColour(confParser, cnfSec, "keyword")
             self.colVal    = self._loadColour(confParser, cnfSec, "value")
             self.colSpell  = self._loadColour(confParser, cnfSec, "spellcheckline")
@@ -529,6 +529,7 @@ class GuiIcons:
         "status_lang"     : (None, None),
         "status_time"     : (None, None),
         "status_stats"    : (None, None),
+        "status_lines"    : (None, None),
         "doc_h1"          : (QStyle.SP_FileIcon, "x-office-document"),
         "doc_h2"          : (QStyle.SP_FileIcon, "x-office-document"),
         "doc_h3"          : (QStyle.SP_FileIcon, "x-office-document"),

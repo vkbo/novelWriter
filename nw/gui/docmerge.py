@@ -3,7 +3,7 @@
 
  novelWriter – GUI Doc Merge
 =============================
- Tool for merging multiple documents to one
+ Tool for merging multiple documents to one document
 
  File History:
  Created: 2020-01-23 [0.4.3]
@@ -127,7 +127,7 @@ class GuiDocMerge(QDialog):
             ), nwAlert.ERROR)
             return
 
-        nHandle = self.theProject.newFile(srcItem.itemName, srcItem.itemClass, srcItem.parHandle)
+        nHandle = self.theProject.newFile(srcItem.itemName, srcItem.itemClass, srcItem.itemParent)
         newItem = self.theProject.projTree[nHandle]
         newItem.setStatus(srcItem.itemStatus)
 

@@ -3,7 +3,7 @@
 
  novelWriter – GUI Document Details
 ====================================
- Class holding the left side document details panel
+ Class holding the project tree item details panel
 
  File History:
  Created: 2019-04-24 [0.0.1]
@@ -195,9 +195,9 @@ class GuiItemDetails(QWidget):
         we're already showing.
         """
         if tHandle == self.theHandle:
-            self.cCountData.setText("{:n}".format(cC))
-            self.wCountData.setText("{:n}".format(wC))
-            self.pCountData.setText("{:n}".format(pC))
+            self.cCountData.setText(f"{cC:n}")
+            self.wCountData.setText(f"{wC:n}")
+            self.pCountData.setText(f"{pC:n}")
         return
 
     def updateViewBox(self, tHandle):
@@ -252,9 +252,9 @@ class GuiItemDetails(QWidget):
             self.layoutData.setText(nwLabels.LAYOUT_NAME[nwItem.itemLayout])
 
             if nwItem.itemType == nwItemType.FILE:
-                self.cCountData.setText("{:n}".format(nwItem.charCount))
-                self.wCountData.setText("{:n}".format(nwItem.wordCount))
-                self.pCountData.setText("{:n}".format(nwItem.paraCount))
+                self.cCountData.setText(f"{nwItem.charCount:n}")
+                self.wCountData.setText(f"{nwItem.wordCount:n}")
+                self.pCountData.setText(f"{nwItem.paraCount:n}")
             else:
                 self.cCountData.setText("–")
                 self.wCountData.setText("–")

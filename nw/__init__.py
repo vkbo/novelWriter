@@ -35,13 +35,35 @@ from PyQt5.QtWidgets import QApplication, QErrorMessage
 from nw.error import exceptionHandler
 from nw.config import Config
 
+#
+#  Version Scheme
+# ================
+#  Generally follows PEP 440
+#  Hex Version:
+#  - Digit 1,2 : Major Version (01, 02, 03)
+#  = Digit 3,4 : Minor Version (01, 09, 10, 99)
+#  - Digit 5,6 : Patch Version (01, 09, 10, 99)
+#  = Digit 7   : Release Type (a: aplha, b: beta, c: candidate, f: final)
+#  - Digit 8   : Release Number (0-9)
+#
+#  Example    : Full        Short      Description
+# -------------------------------------------------------------------------
+#  0x010200a0 : 1.2-alpha0  1.2a0      Can be used for the dev branch
+#  0x010200a1 : 1.2-alpha1  1.2a1      First alpha release
+#  0x010200b1 : 1.2-beta1   1.2b1      First beta release
+#  0x010200c1 : 1.2-rc1     1.2rc1     First release candidate
+#  0x010200f0 : 1.2         1.2        Final release
+#  0x010200f1 : 1.2-post1   1.2.post1  Post release, but not a code patch!
+#  0x010201f0 : 1.2.1       1.2.1      Patch release
+#
+
 __package__    = "nw"
 __author__     = "Veronica Berglyd Olsen"
 __copyright__  = "Copyright 2018–2020, Veronica Berglyd Olsen"
 __license__    = "GPLv3"
-__version__    = "1.0b3"
-__hexversion__ = "0x010000b3"
-__date__       = "2020-09-20"
+__version__    = "1.0b5"
+__hexversion__ = "0x010000b5"
+__date__       = "2020-10-18"
 __maintainer__ = "Veronica Berglyd Olsen"
 __email__      = "code@vkbo.net"
 __status__     = "Beta"
@@ -200,9 +222,9 @@ def main(sysArgs=None):
     # Check Packages and Versions
     errorData = []
     errorCode = 0
-    if sys.hexversion < 0x030403f0:
+    if sys.hexversion < 0x030600f0:
         errorData.append(
-            "At least Python 3.4.3 is required, but 3.6 is highly recommended."
+            "At least Python 3.6.0 is required, found %s." % CONFIG.verPyString
         )
         errorCode |= 4
     if CONFIG.verQtValue < 50200:
@@ -240,6 +262,16 @@ def main(sysArgs=None):
 
     # Finish initialising config
     CONFIG.initConfig(confPath, dataPath)
+
+    if CONFIG.osDarwin:
+        try:
+            from Foundation import NSBundle
+            bundle = NSBundle.mainBundle()
+            info = bundle.localizedInfoDictionary() or bundle.infoDictionary()
+            info["CFBundleName"] = "novelWriter"
+        except ImportError as e:
+            logger.error("Failed to set application name")
+            logger.error(str(e))
 
     # Import GUI (after dependency checks), and launch
     from nw.guimain import GuiMain

@@ -3,7 +3,7 @@
 
  novelWriter – GUI Document Highlighter
 ========================================
- Syntax highlighting for MarkDown
+ Subclass for the main editor syntax highlighting
 
  File History:
  Created: 2019-04-06 [0.0.1]
@@ -27,6 +27,8 @@
 
 import nw
 import logging
+
+from time import time
 
 from PyQt5.QtCore import Qt, QRegularExpression
 from PyQt5.QtGui import (
@@ -66,7 +68,7 @@ class GuiDocHighlighter(QSyntaxHighlighter):
         self.colDialN  = QColor(0, 0, 0)
         self.colDialD  = QColor(0, 0, 0)
         self.colDialS  = QColor(0, 0, 0)
-        self.colComm   = QColor(0, 0, 0)
+        self.colHidden = QColor(0, 0, 0)
         self.colKey    = QColor(0, 0, 0)
         self.colVal    = QColor(0, 0, 0)
         self.colSpell  = QColor(0, 0, 0)
@@ -90,7 +92,7 @@ class GuiDocHighlighter(QSyntaxHighlighter):
         self.colDialN  = QColor(*self.theTheme.colDialN)
         self.colDialD  = QColor(*self.theTheme.colDialD)
         self.colDialS  = QColor(*self.theTheme.colDialS)
-        self.colComm   = QColor(*self.theTheme.colComm)
+        self.colHidden = QColor(*self.theTheme.colHidden)
         self.colKey    = QColor(*self.theTheme.colKey)
         self.colVal    = QColor(*self.theTheme.colVal)
         self.colSpell  = QColor(*self.theTheme.colSpell)
@@ -116,14 +118,14 @@ class GuiDocHighlighter(QSyntaxHighlighter):
             "header4h"   : self._makeFormat(self.colHeadH, "bold", 1.2),
             "bold"       : self._makeFormat(self.colEmph, "bold"),
             "italic"     : self._makeFormat(self.colEmph, "italic"),
-            "strike"     : self._makeFormat(self.colEmph, "strike"),
+            "strike"     : self._makeFormat(self.colHidden, "strike"),
             "trailing"   : self._makeFormat(self.colTrail, "background"),
             "nobreak"    : self._makeFormat(self.colTrail, "background"),
             "dialogue1"  : self._makeFormat(self.colDialN),
             "dialogue2"  : self._makeFormat(self.colDialD),
             "dialogue3"  : self._makeFormat(self.colDialS),
             "replace"    : self._makeFormat(self.colRepTag),
-            "hidden"     : self._makeFormat(self.colComm),
+            "hidden"     : self._makeFormat(self.colHidden),
             "keyword"    : self._makeFormat(self.colKey),
             "modifier"   : self._makeFormat(self.colMod),
             "value"      : self._makeFormat(self.colVal, "underline"),
@@ -147,32 +149,36 @@ class GuiDocHighlighter(QSyntaxHighlighter):
 
         # Quoted Strings
         if self.mainConf.highlightQuotes:
+            fmtDO = self.mainConf.fmtDoubleQuotes[0]
+            fmtDC = self.mainConf.fmtDoubleQuotes[1]
+            fmtSO = self.mainConf.fmtSingleQuotes[0]
+            fmtSC = self.mainConf.fmtSingleQuotes[1]
             self.hRules.append((
-                "\\B{:s}(.*?){:s}\\B".format('"', '"'), {
+                "\\B\"(.*?)\"\\B", {
                     0 : self.hStyles["dialogue1"],
                 }
             ))
             self.hRules.append((
-                "\\B{:s}(.*?){:s}\\B".format(*self.mainConf.fmtDoubleQuotes), {
+                f"\\B{fmtDO:s}(.*?){fmtDC:s}\\B", {
                     0 : self.hStyles["dialogue2"],
                 }
             ))
             self.hRules.append((
-                "\\B{:s}(.*?){:s}\\B".format(*self.mainConf.fmtSingleQuotes), {
+                f"\\B{fmtSO:s}(.*?){fmtSC:s}\\B", {
                     0 : self.hStyles["dialogue3"],
                 }
             ))
 
         # Markdown
         self.hRules.append((
-            nwRegEx.FMT_I, {
+            nwRegEx.FMT_EI, {
                 1 : self.hStyles["hidden"],
                 2 : self.hStyles["italic"],
                 3 : self.hStyles["hidden"],
             }
         ))
         self.hRules.append((
-            nwRegEx.FMT_B, {
+            nwRegEx.FMT_EB, {
                 1 : self.hStyles["hidden"],
                 2 : self.hStyles["bold"],
                 3 : self.hStyles["hidden"],
@@ -203,7 +209,7 @@ class GuiDocHighlighter(QSyntaxHighlighter):
         # Build a QRegExp for spell checker
         # Include additional characters that the highlighter should
         # consider to be word separators
-        wordSep  = r"_\+/"
+        wordSep  = r"\-_\+/"
         wordSep += nwUnicode.U_ENDASH
         wordSep += nwUnicode.U_EMDASH
         self.spellRx = QRegularExpression(r"\b[^\s"+wordSep+r"]+\b")
@@ -244,10 +250,15 @@ class GuiDocHighlighter(QSyntaxHighlighter):
         """
         qDocument = self.document()
         nBlocks = qDocument.blockCount()
+        bfTime = time()
         for i in range(nBlocks):
             theBlock = qDocument.findBlockByNumber(i)
-            if theBlock.userState() & theType == theType:
+            if theBlock.userState() & theType > 0:
                 self.rehighlightBlock(theBlock)
+        afTime = time()
+        logger.debug(
+            "Document highlighted in %.3f ms" % (1000*(afTime-bfTime))
+        )
         return
 
     ##
@@ -343,7 +354,7 @@ class GuiDocHighlighter(QSyntaxHighlighter):
         while rxSpell.hasNext():
             rxMatch = rxSpell.next()
             if not self.theDict.checkWord(rxMatch.captured(0)):
-                if rxMatch.captured(0) == rxMatch.captured(0).upper():
+                if rxMatch.captured(0).isupper() or rxMatch.captured(0).isnumeric():
                     continue
                 xPos = rxMatch.capturedStart(0)
                 xLen = rxMatch.capturedLength(0)

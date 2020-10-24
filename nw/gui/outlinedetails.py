@@ -1,9 +1,9 @@
 # -*- coding: utf-8 -*-
-"""novelWriter GUI Project Outline
+"""novelWriter GUI Project Outline Details
 
- novelWriter – GUI Project Outline
-===================================
- Class holding the project outline view
+ novelWriter – GUI Project Outline Details
+===========================================
+ Class holding the project outline details panel
 
  File History:
  Created: 2020-06-02 [0.7.0]
@@ -224,7 +224,25 @@ class GuiOutlineDetails(QScrollArea):
         self.setVerticalScrollBarPolicy(Qt.ScrollBarAsNeeded)
         self.setWidgetResizable(True)
 
+        self.initDetails()
+
         logger.debug("GuiOutlineDetails initialisation complete")
+
+        return
+
+    def initDetails(self):
+        """Set or update outline settings.
+        """
+        # Scroll bars
+        if self.mainConf.hideVScroll:
+            self.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
+        else:
+            self.setVerticalScrollBarPolicy(Qt.ScrollBarAsNeeded)
+
+        if self.mainConf.hideHScroll:
+            self.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
+        else:
+            self.setHorizontalScrollBarPolicy(Qt.ScrollBarAsNeeded)
 
         return
 
@@ -248,9 +266,13 @@ class GuiOutlineDetails(QScrollArea):
         self.fileValue.setText(nwItem.itemName)
         self.itemValue.setText(nwItem.itemStatus)
 
-        self.cCValue.setText("{:n}".format(checkInt(novIdx["cCount"], 0)))
-        self.wCValue.setText("{:n}".format(checkInt(novIdx["wCount"], 0)))
-        self.pCValue.setText("{:n}".format(checkInt(novIdx["pCount"], 0)))
+        cC = checkInt(novIdx["cCount"], 0)
+        wC = checkInt(novIdx["wCount"], 0)
+        pC = checkInt(novIdx["pCount"], 0)
+
+        self.cCValue.setText(f"{cC:n}")
+        self.wCValue.setText(f"{wC:n}")
+        self.pCValue.setText(f"{pC:n}")
 
         self.synopValue.setText(novIdx["synopsis"])
 

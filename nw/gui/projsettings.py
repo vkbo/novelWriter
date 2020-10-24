@@ -270,11 +270,12 @@ class GuiProjectEditMeta(QWidget):
 
         self.revLabel = QLabel("Revision count:")
         self.revLabel.setIndent(xInd)
-        self.revValue = QLabel("{:n}".format(self.theProject.saveCount))
+        self.revValue = QLabel(f"{self.theProject.saveCount:n}")
 
+        editHours = self.theProject.editTime/3600
         self.editLabel = QLabel("Edit time:")
         self.editLabel.setIndent(xInd)
-        self.editValue = QLabel("{:.2f} hours".format(self.theProject.editTime/3600))
+        self.editValue = QLabel(f"{editHours:.2f} hours")
 
         self.statsLabel = QLabel("<b>Project Stats</b>")
 
@@ -282,19 +283,19 @@ class GuiProjectEditMeta(QWidget):
 
         self.nRootLabel = QLabel("Root folders:")
         self.nRootLabel.setIndent(xInd)
-        self.nRootValue = QLabel("{:n}".format(nR))
+        self.nRootValue = QLabel(f"{nR:n}")
 
         self.nDirLabel = QLabel("Folders:")
         self.nDirLabel.setIndent(xInd)
-        self.nDirValue = QLabel("{:n}".format(nD))
+        self.nDirValue = QLabel(f"{nD:n}")
 
         self.nFileLabel = QLabel("Documents:")
         self.nFileLabel.setIndent(xInd)
-        self.nFileValue = QLabel("{:n}".format(nF))
+        self.nFileValue = QLabel(f"{nF:n}")
 
         self.wordsLabel = QLabel("Word count:")
         self.wordsLabel.setIndent(xInd)
-        self.wordsValue = QLabel("{:n}".format(self.theProject.currWCount))
+        self.wordsValue = QLabel(f"{self.theProject.currWCount:n}")
 
         self.mainForm.addWidget(self.headLabel,  0, 0, 1, 2, Qt.AlignTop)
         self.mainForm.addWidget(self.nameLabel,  1, 0, 1, 1, Qt.AlignTop)

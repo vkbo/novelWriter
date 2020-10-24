@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-"""novelWriter Init
+"""novelWriter Exception Handling
 
  novelWriter – Exception Handling
 ==================================

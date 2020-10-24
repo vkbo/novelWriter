@@ -35,6 +35,7 @@ from PyQt5.QtGui import QColor, QPainter
 from PyQt5.QtWidgets import qApp, QStatusBar, QLabel, QAbstractButton
 
 from nw.core import NWSpellCheck
+from nw.common import formatTime
 
 logger = logging.getLogger(__name__)
 
@@ -152,13 +153,17 @@ class GuiMainStatus(QStatusBar):
         qApp.processEvents()
         return
 
-    def setLanguage(self, theLanguage):
+    def setLanguage(self, theLanguage, theProvider=""):
         """Set the language code for the spell checker.
         """
         if theLanguage is None:
             self.langText.setText("None")
+            self.langText.setToolTip("")
         else:
             self.langText.setText(NWSpellCheck.expandLanguage(theLanguage))
+            self.langText.setToolTip(
+                "Provider: %s" % (theProvider if theProvider else "unknown")
+            )
         return
 
     def setProjectStatus(self, isChanged):
@@ -191,28 +196,18 @@ class GuiMainStatus(QStatusBar):
         self.statsText.setToolTip(
             "Project word count (session change)"
         )
-        self.statsText.setText((
-            "Words: {pWC:n} ({sWC:+n})"
-        ).format(
-            pWC = self.projWords,
-            sWC = self.sessWords,
-        ))
+        self.statsText.setText(
+            f"Words: {self.projWords:n} ({self.sessWords:+n})"
+        )
         return
 
     def _updateTime(self):
         """Update the session clock.
         """
         if self.refTime is None:
-            theTime = "00:00:00"
+            self.timeText.setText("00:00:00")
         else:
-            # This is much faster than using datetime format
-            tS = int(time() - self.refTime)
-            tM = int(tS/60)
-            tH = int(tM/60)
-            tM = tM - tH*60
-            tS = tS - tM*60 - tH*3600
-            theTime = "%02d:%02d:%02d" % (tH, tM, tS)
-        self.timeText.setText(theTime)
+            self.timeText.setText(formatTime(round(time() - self.refTime)))
         return
 
 # END Class GuiMainStatus
@@ -233,7 +228,7 @@ class StatusLED(QAbstractButton):
         return
 
     ##
-    #  Getters and Setters
+    #  Setters
     ##
 
     def setState(self, theState):

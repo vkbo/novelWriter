@@ -3,7 +3,7 @@
 
  novelWriter – GUI Writing Statistics
 ======================================
- Class showing the word count and session statistics
+ Class holding the word count and session statistics dialog
 
  File History:
  Created: 2019-10-20 [0.3]
@@ -39,6 +39,7 @@ from PyQt5.QtWidgets import (
     QLabel, QGroupBox, QMenu, QAction, QFileDialog, QSpinBox, QHBoxLayout
 )
 
+from nw.common import formatTime
 from nw.constants import nwConst, nwFiles, nwAlert
 from nw.gui.custom import QSwitch
 
@@ -123,11 +124,11 @@ class GuiWritingStats(QDialog):
         self.infoForm = QGridLayout(self)
         self.infoBox.setLayout(self.infoForm)
 
-        self.labelTotal = QLabel(self._formatTime(0))
+        self.labelTotal = QLabel(formatTime(0))
         self.labelTotal.setFont(self.theTheme.guiFontFixed)
         self.labelTotal.setAlignment(Qt.AlignVCenter | Qt.AlignRight)
 
-        self.labelFilter = QLabel(self._formatTime(0))
+        self.labelFilter = QLabel(formatTime(0))
         self.labelFilter.setFont(self.theTheme.guiFontFixed)
         self.labelFilter.setAlignment(Qt.AlignVCenter | Qt.AlignRight)
 
@@ -334,12 +335,11 @@ class GuiWritingStats(QDialog):
 
             dlgOpt  = QFileDialog.Options()
             dlgOpt |= QFileDialog.DontUseNativeDialog
-            saveTo  = QFileDialog.getSaveFileName(
+            savePath, _ = QFileDialog.getSaveFileName(
                 self, "Save Document As", savePath, options=dlgOpt
             )
-            if saveTo:
-                savePath = saveTo[0]
-            else:
+
+            if not savePath:
                 return False
 
             self.mainConf.setLastPath(savePath)
@@ -363,37 +363,33 @@ class GuiWritingStats(QDialog):
                             "novelWords": wA,
                             "noteWords": wB,
                         })
-                    outFile.write(json.dumps(jsonData, indent=2))
+                    json.dump(jsonData, outFile, indent=2)
                     wSuccess = True
 
                 elif dataFmt == self.FMT_CSV:
                     outFile.write(
-                        "\"%s\",\"%s\",\"%s\",\"%s\",\"%s\"\n" % (
-                            "Date", "Length (sec)", "Words Changed", "Novel Words", "Note Words"
-                        )
+                        '"Date","Length (sec)","Words Changed","Novel Words","Note Words"\n'
                     )
                     for _, sD, tT, wD, wA, wB in self.filterData:
-                        outFile.write(
-                            "\"%s\",%d,%d,%d,%d\n" % (sD, tT, wD, wA, wB)
-                        )
+                        outFile.write(f'"{sD}",{tT:.0f},{wD},{wA},{wB}\n')
                     wSuccess = True
 
                 else:
                     errMsg = "Unknown format"
 
         except Exception as e:
-            errMsg = str(e)
+            errMsg = str(e).replace("\n", "<br>")
 
         # Report to user
         if wSuccess:
             self.theParent.makeAlert(
-                "%s file successfully written to:<br> %s" % (
+                "%s file successfully written to:<br>%s" % (
                     textFmt, savePath
                 ), nwAlert.INFO
             )
         else:
             self.theParent.makeAlert(
-                "Failed to write %s file. %s" % (
+                "Failed to write %s file.<br>%s" % (
                     textFmt, errMsg
                 ), nwAlert.ERROR
             )
@@ -455,10 +451,11 @@ class GuiWritingStats(QDialog):
             )
             return False
 
-        self.labelTotal.setText(self._formatTime(ttTime))
-        self.novelWords.setText("{:n}".format(ttNovel))
-        self.notesWords.setText("{:n}".format(ttNotes))
-        self.totalWords.setText("{:n}".format(ttNovel + ttNotes))
+        ttWords = ttNovel + ttNotes
+        self.labelTotal.setText(formatTime(round(ttTime)))
+        self.novelWords.setText(f"{ttNovel:n}")
+        self.notesWords.setText(f"{ttNotes:n}")
+        self.totalWords.setText(f"{ttWords:n}")
 
         return True
 
@@ -544,8 +541,8 @@ class GuiWritingStats(QDialog):
 
             newItem = QTreeWidgetItem()
             newItem.setText(self.C_TIME, sStart)
-            newItem.setText(self.C_LENGTH, self._formatTime(sDiff))
-            newItem.setText(self.C_COUNT, "{:n}".format(nWords))
+            newItem.setText(self.C_LENGTH, formatTime(round(sDiff)))
+            newItem.setText(self.C_COUNT, f"{nWords:n}")
 
             if nWords > 0 and listMax > 0:
                 theBar = self.barImage.scaled(
@@ -567,17 +564,8 @@ class GuiWritingStats(QDialog):
             self.listBox.addTopLevelItem(newItem)
             self.timeFilter += sDiff
 
-        self.labelFilter.setText(self._formatTime(self.timeFilter))
+        self.labelFilter.setText(formatTime(round(self.timeFilter)))
 
         return True
-
-    def _formatTime(self, tS):
-        """Format the time spent in 00:00:00 format.
-        """
-        tM = int(tS/60)
-        tH = int(tM/60)
-        tM = tM - tH*60
-        tS = tS - tM*60 - tH*3600
-        return "%02d:%02d:%02d" % (tH, tM, tS)
 
 # END Class GuiWritingStats

@@ -154,7 +154,7 @@ class GuiDocSplit(QDialog):
             return
 
         # Check that another folder can be created
-        parTree = self.theProject.projTree.getItemPath(srcItem.parHandle)
+        parTree = self.theProject.projTree.getItemPath(srcItem.itemParent)
         if len(parTree) >= nwConst.maxDepth - 1:
             self.theParent.makeAlert((
                 "Cannot add new folder for the document split. "
@@ -176,7 +176,7 @@ class GuiDocSplit(QDialog):
 
         # Create the folder
         fHandle = self.theProject.newFolder(
-            srcItem.itemName, srcItem.itemClass, srcItem.parHandle
+            srcItem.itemName, srcItem.itemClass, srcItem.itemParent
         )
         self.theParent.treeView.revealNewTreeItem(fHandle)
         logger.verbose("Creating folder %s" % fHandle)

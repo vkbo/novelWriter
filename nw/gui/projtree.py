@@ -1,9 +1,9 @@
 # -*- coding: utf-8 -*-
-"""novelWriter GUI Document Tree
+"""novelWriter GUI Project Tree
 
- novelWriter – GUI Document Tree
-=================================
- Class holding the left side document tree view
+ novelWriter – GUI project Tree
+================================
+ Class holding the project tree view
 
  File History:
  Created: 2018-09-29 [0.0.1] GuiProjectTree
@@ -115,10 +115,29 @@ class GuiProjectTree(QTreeWidget):
         # The last column should just auto-scale
         self.resizeColumnToContents(self.C_FLAGS)
 
+        # Set custom settings
+        self.initTree()
+
         logger.debug("GuiProjectTree initialisation complete")
 
         # Internal Mapping
         self.makeAlert = self.theParent.makeAlert
+
+        return
+
+    def initTree(self):
+        """Set or update tree widget settings.
+        """
+        # Scroll bars
+        if self.mainConf.hideVScroll:
+            self.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
+        else:
+            self.setVerticalScrollBarPolicy(Qt.ScrollBarAsNeeded)
+
+        if self.mainConf.hideHScroll:
+            self.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
+        else:
+            self.setHorizontalScrollBarPolicy(Qt.ScrollBarAsNeeded)
 
         return
 
@@ -200,7 +219,7 @@ class GuiProjectTree(QTreeWidget):
             pItem = self.theProject.projTree[pHandle]
             if pItem.itemType == nwItemType.FILE:
                 nHandle = pHandle
-                pHandle = pItem.parHandle
+                pHandle = pItem.itemParent
 
             # If we again have no home, give up
             if pHandle is None:
@@ -241,7 +260,8 @@ class GuiProjectTree(QTreeWidget):
         # Add the new item to the tree
         if tHandle is not None:
             self.revealNewTreeItem(tHandle, nHandle)
-            self.theParent.editItem(tHandle)
+            if self.mainConf.showGUI:
+                self.theParent.editItem(tHandle)
 
         return True
 
@@ -250,7 +270,7 @@ class GuiProjectTree(QTreeWidget):
         """
         nwItem = self.theProject.projTree[tHandle]
         trItem = self._addTreeItem(nwItem, nHandle)
-        pHandle = nwItem.parHandle
+        pHandle = nwItem.itemParent
         if pHandle is not None and pHandle in self.theMap:
             self.theMap[pHandle].setExpanded(True)
         self.clearSelection()
@@ -401,7 +421,7 @@ class GuiProjectTree(QTreeWidget):
         if nwItemS is None:
             return False
 
-        wCount = int(trItemS.text(self.C_COUNT))
+        wCount = int(trItemS.data(self.C_COUNT, Qt.UserRole))
         if nwItemS.itemType == nwItemType.FILE:
             logger.debug("User requested file %s moved to trash" % tHandle)
             trItemP = trItemS.parent()
@@ -410,7 +430,7 @@ class GuiProjectTree(QTreeWidget):
                 logger.error("Could not delete item")
                 return False
 
-            pHandle = nwItemS.parHandle
+            pHandle = nwItemS.itemParent
             if self.theProject.projTree.isTrashRoot(pHandle):
                 # If the file is in the trash folder already, as the
                 # user if they want to permanently delete the file.
@@ -550,12 +570,13 @@ class GuiProjectTree(QTreeWidget):
         """
         tItem = self._getTreeItem(tHandle)
         if tItem is not None:
-            tItem.setText(self.C_COUNT, str(theCount))
+            tItem.setText(self.C_COUNT, f"{theCount:n}")
+            tItem.setData(self.C_COUNT, Qt.UserRole, int(theCount))
             pItem = tItem.parent()
             if pItem is not None:
                 pCount = 0
                 for i in range(pItem.childCount()):
-                    pCount += int(pItem.child(i).text(self.C_COUNT))
+                    pCount += int(pItem.child(i).data(self.C_COUNT, Qt.UserRole))
                     pHandle = pItem.data(self.C_NAME, Qt.UserRole)
 
                 if not nDepth > nwConst.maxDepth + 1 and pHandle != "":
@@ -575,7 +596,7 @@ class GuiProjectTree(QTreeWidget):
             tItem = self.topLevelItem(n)
             if tItem == self.orphRoot:
                 continue
-            nWords += int(tItem.text(self.C_COUNT))
+            nWords += int(tItem.data(self.C_COUNT, Qt.UserRole))
 
         self.theProject.setProjectWordCount(nWords)
         sWords = self.theProject.getSessionWordCount()
@@ -715,7 +736,7 @@ class GuiProjectTree(QTreeWidget):
             self.makeAlert("The item cannot be moved to that location.", nwAlert.ERROR)
             return
 
-        wCount = int(sItem.text(self.C_COUNT))
+        wCount = int(sItem.data(self.C_COUNT, Qt.UserRole))
         isSame = snItem.itemClass == dnItem.itemClass
         isNone = snItem.itemClass == nwItemClass.NO_CLASS
         isNote = snItem.itemLayout == nwItemLayout.NOTE
@@ -794,7 +815,7 @@ class GuiProjectTree(QTreeWidget):
         project tree.
         """
         tHandle = nwItem.itemHandle
-        pHandle = nwItem.parHandle
+        pHandle = nwItem.itemParent
         tClass  = nwItem.itemClass
         newItem = QTreeWidgetItem([""]*4)
 
@@ -809,6 +830,7 @@ class GuiProjectTree(QTreeWidget):
         newItem.setTextAlignment(self.C_FLAGS,  Qt.AlignLeft  | Qt.AlignVCenter)
 
         newItem.setData(self.C_NAME, Qt.UserRole, tHandle)
+        newItem.setData(self.C_COUNT, Qt.UserRole, 0)
 
         self.theMap[tHandle] = newItem
         if pHandle is None:
@@ -881,6 +903,7 @@ class GuiProjectTree(QTreeWidget):
             self.orphRoot = newItem
             newItem.setExpanded(True)
             newItem.setData(self.C_NAME, Qt.UserRole, "")
+            newItem.setData(self.C_COUNT, Qt.UserRole, 0)
             newItem.setIcon(self.C_NAME, self.theTheme.getIcon("proj_orphan"))
 
         return
@@ -999,11 +1022,11 @@ class GuiProjectTreeMenu(QMenu):
 
         trashHandle = self.theTree.theProject.projTree.trashRoot()
 
-        inTrash = theItem.parHandle == trashHandle and trashHandle is not None
+        inTrash = theItem.itemParent == trashHandle and trashHandle is not None
         isTrash = theItem.itemHandle == trashHandle and trashHandle is not None
         isFile  = theItem.itemType == nwItemType.FILE
         isArch  = theRoot.itemClass == nwItemClass.ARCHIVE
-        isOrph  = isFile and theItem.parHandle is None
+        isOrph  = isFile and theItem.itemParent is None
 
         showOpen      = isFile
         showView      = isFile

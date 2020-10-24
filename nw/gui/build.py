@@ -1,9 +1,9 @@
 # -*- coding: utf-8 -*-
-"""novelWriter GUI Build Novel
+"""novelWriter GUI Build Novel Project
 
- novelWriter – GUI Build Novel
-===============================
- Class holding the build novel window
+ novelWriter – GUI Build Novel Project
+=======================================
+ Class holding the build novel project dialog
 
  File History:
  Created: 2020-05-09 [0.5]
@@ -391,11 +391,11 @@ class GuiBuildNovel(QDialog):
         self.savePDF.triggered.connect(lambda: self._saveDocument(self.FMT_PDF))
         self.saveMenu.addAction(self.savePDF)
 
-        self.saveHTM = QAction("%s HTML (.htm)" % self.mainConf.appName, self)
+        self.saveHTM = QAction("novelWriter HTML (.htm)", self)
         self.saveHTM.triggered.connect(lambda: self._saveDocument(self.FMT_HTM))
         self.saveMenu.addAction(self.saveHTM)
 
-        self.saveNWD = QAction("%s Markdown (.nwd)" % self.mainConf.appName, self)
+        self.saveNWD = QAction("novelWriter Markdown (.nwd)", self)
         self.saveNWD.triggered.connect(lambda: self._saveDocument(self.FMT_NWD))
         self.saveMenu.addAction(self.saveNWD)
 
@@ -408,11 +408,11 @@ class GuiBuildNovel(QDialog):
         self.saveTXT.triggered.connect(lambda: self._saveDocument(self.FMT_TXT))
         self.saveMenu.addAction(self.saveTXT)
 
-        self.saveJsonH = QAction("JSON + %s HTML (.json)" % self.mainConf.appName, self)
+        self.saveJsonH = QAction("JSON + novelWriter HTML (.json)", self)
         self.saveJsonH.triggered.connect(lambda: self._saveDocument(self.FMT_JSON_H))
         self.saveMenu.addAction(self.saveJsonH)
 
-        self.saveJsonM = QAction("JSON + %s Markdown (.json)" % self.mainConf.appName, self)
+        self.saveJsonM = QAction("JSON + novelWriters Markdown (.json)", self)
         self.saveJsonM.triggered.connect(lambda: self._saveDocument(self.FMT_JSON_M))
         self.saveMenu.addAction(self.saveJsonM)
 
@@ -450,10 +450,18 @@ class GuiBuildNovel(QDialog):
         # Tool Box Scroll Area
         self.toolsArea = QScrollArea()
         self.toolsArea.setMinimumWidth(self.mainConf.pxInt(250))
-        self.toolsArea.setHorizontalScrollBarPolicy(Qt.ScrollBarAsNeeded)
-        self.toolsArea.setVerticalScrollBarPolicy(Qt.ScrollBarAsNeeded)
         self.toolsArea.setWidgetResizable(True)
         self.toolsArea.setWidget(self.toolsWidget)
+
+        if self.mainConf.hideVScroll:
+            self.toolsArea.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
+        else:
+            self.toolsArea.setVerticalScrollBarPolicy(Qt.ScrollBarAsNeeded)
+
+        if self.mainConf.hideHScroll:
+            self.toolsArea.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
+        else:
+            self.toolsArea.setHorizontalScrollBarPolicy(Qt.ScrollBarAsNeeded)
 
         # Tools and Buttons Layout
         self.innerBox = QVBoxLayout()
@@ -676,8 +684,8 @@ class GuiBuildNovel(QDialog):
         isNone |= theItem.itemLayout == nwItemLayout.NO_LAYOUT
         isNone |= theItem.itemClass == nwItemClass.NO_CLASS
         isNone |= theItem.itemClass == nwItemClass.TRASH
-        isNone |= theItem.parHandle == self.theProject.projTree.trashRoot()
-        isNone |= theItem.parHandle is None
+        isNone |= theItem.itemParent == self.theProject.projTree.trashRoot()
+        isNone |= theItem.itemParent is None
         isNote  = theItem.itemLayout == nwItemLayout.NOTE
         isNovel = not isNone and not isNote
 
@@ -762,12 +770,10 @@ class GuiBuildNovel(QDialog):
             if self.mainConf.showGUI:
                 dlgOpt  = QFileDialog.Options()
                 dlgOpt |= QFileDialog.DontUseNativeDialog
-                saveTo  = QFileDialog.getSaveFileName(
+                savePath, _ = QFileDialog.getSaveFileName(
                     self, "Save Document As", savePath, options=dlgOpt
                 )
-                if saveTo[0]:
-                    savePath = saveTo[0]
-                else:
+                if not savePath:
                     return False
 
             self.mainConf.setLastPath(savePath)
@@ -901,8 +907,10 @@ class GuiBuildNovel(QDialog):
     def _doPrintPreview(self, thePrinter):
         """Connect the print preview painter to the document viewer.
         """
+        qApp.setOverrideCursor(QCursor(Qt.WaitCursor))
         thePrinter.setOrientation(QPrinter.Portrait)
         self.docView.qDocument.print(thePrinter)
+        qApp.restoreOverrideCursor()
         return
 
     def _selectFont(self):
@@ -915,6 +923,9 @@ class GuiBuildNovel(QDialog):
         if theStatus:
             self.textFont.setText(theFont.family())
             self.textSize.setValue(theFont.pointSize())
+
+        self.raise_() # Move the dialog to front (fixes a bug on macOS)
+
         return
 
     def _loadCache(self):
@@ -1002,8 +1013,9 @@ class GuiBuildNovel(QDialog):
         """
         self.saveODT.setEnabled(theState)
         self.savePDF.setEnabled(theState)
-        self.saveMD.setEnabled(theState)
         self.saveTXT.setEnabled(theState)
+        if self.mainConf.verQtValue >= 51400:
+            self.saveMD.setEnabled(theState)
         return
 
     def _saveSettings(self):

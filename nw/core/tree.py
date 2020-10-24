@@ -3,7 +3,7 @@
 
  novelWriter – Project Tree Class
 ==================================
- Class holding the data of the project tree
+ Class holding the project's tree of project items
 
  File History:
  Created: 2020-05-07 [0.4.5]
@@ -134,7 +134,7 @@ class NWTree():
         for xItem in xContent:
             nwItem = NWItem(self.theProject)
             if nwItem.unpackXML(xItem):
-                self.append(nwItem.itemHandle, nwItem.parHandle, nwItem)
+                self.append(nwItem.itemHandle, nwItem.itemParent, nwItem)
                 nwItem.saveInitialCount()
 
         return True
@@ -177,7 +177,7 @@ class NWTree():
 
             # Dump the JSON
             with open(tocJson, mode="w+", encoding="utf8") as outFile:
-                outFile.write(json.dumps(jsonData, indent=2))
+                json.dump(jsonData, outFile, indent=2)
 
         except Exception as e:
             logger.error(str(e))
@@ -261,10 +261,10 @@ class NWTree():
         tItem = self.__getitem__(tHandle)
         if tItem is not None:
             for i in range(nwConst.maxDepth + 1):
-                if tItem.parHandle is None:
+                if tItem.itemParent is None:
                     return tItem
                 else:
-                    tHandle = tItem.parHandle
+                    tHandle = tItem.itemParent
                     tItem = self.__getitem__(tHandle)
         return None
 
@@ -279,10 +279,10 @@ class NWTree():
         if tItem is not None:
             tTree.append(tHandle)
             for i in range(nwConst.maxDepth + 1):
-                if tItem.parHandle is None:
+                if tItem.itemParent is None:
                     return tTree
                 else:
-                    tHandle = tItem.parHandle
+                    tHandle = tItem.itemParent
                     tItem   = self.__getitem__(tHandle)
                     if tItem is None:
                         return tTree

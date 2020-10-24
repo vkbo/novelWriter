@@ -31,13 +31,13 @@ def testItemSettersSimple(nwDummy):
 
     # Parent
     theItem.setParent(None)
-    assert theItem.parHandle is None
+    assert theItem.itemParent is None
     theItem.setParent(123)
-    assert theItem.parHandle is None
+    assert theItem.itemParent is None
     theItem.setParent("0123456789abcdef")
-    assert theItem.parHandle is None
+    assert theItem.itemParent is None
     theItem.setParent("0123456789abc")
-    assert theItem.parHandle == "0123456789abc"
+    assert theItem.itemParent == "0123456789abc"
 
     # Order
     theItem.setOrder(None)
@@ -227,7 +227,7 @@ def testItemXMLPackUnpack(nwDummy):
     # Unpack
     assert theItem.unpackXML(xContent[0])
     assert theItem.itemHandle == "0123456789abc"
-    assert theItem.parHandle == "0123456789abc"
+    assert theItem.itemParent == "0123456789abc"
     assert theItem.itemOrder == 1
     assert theItem.isExpanded
     assert theItem.paraCount == 3
@@ -252,7 +252,7 @@ def testItemXMLPackUnpack(nwDummy):
     xDummy = etree.SubElement(nwXML, "item", attrib={"handle": "0123456789abc"})
     xParam = etree.SubElement(xDummy, "invalid")
     xParam.text = "stuff"
-    assert theItem.unpackXML(xDummy) # Passes, but not saved
+    assert not theItem.unpackXML(xDummy)
 
     # Pack Valid Item
     xDummy = etree.SubElement(nwXML, "group")

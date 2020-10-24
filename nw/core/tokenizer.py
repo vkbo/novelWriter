@@ -3,7 +3,7 @@
 
  novelWriter – Text Tokenizer
 ==============================
- Splits a piece of nW markdown text into its elements
+ Splits a piece of novelWriter markdown text into its elements
 
  File History:
  Created: 2019-05-05 [0.0.1]
@@ -297,8 +297,8 @@ class Tokenizer():
         """
         # RegExes for adding formatting tags within text lines
         rxFormats = [
-            (QRegularExpression(nwRegEx.FMT_I),  [None, self.FMT_I_B, None, self.FMT_I_E]),
-            (QRegularExpression(nwRegEx.FMT_B),  [None, self.FMT_B_B, None, self.FMT_B_E]),
+            (QRegularExpression(nwRegEx.FMT_EI), [None, self.FMT_I_B, None, self.FMT_I_E]),
+            (QRegularExpression(nwRegEx.FMT_EB), [None, self.FMT_B_B, None, self.FMT_B_E]),
             (QRegularExpression(nwRegEx.FMT_ST), [None, self.FMT_D_B, None, self.FMT_D_E]),
         ]
 

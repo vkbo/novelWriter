@@ -23,7 +23,7 @@ from nw.gui import (
     GuiProjectLoad, GuiPreferences
 )
 from nw.gui.custom import QuotesDialog
-from nw.constants import nwItemType, nwItemLayout, nwItemClass
+from nw.constants import nwItemLayout, nwItemClass, nwFiles
 
 keyDelay = 2
 typeDelay = 1
@@ -228,48 +228,20 @@ def testWritingStatsExport(qtbot, monkeypatch, yesToAll, nwFuncTemp, nwTemp):
     # Create new, save, close project
     nwGUI.theProject.projTree.setSeed(42)
     assert nwGUI.newProject({"projPath": nwFuncTemp})
+    qtbot.wait(200)
     assert nwGUI.saveProject()
     assert nwGUI.closeProject()
     qtbot.wait(stepDelay)
 
-    # Check that we cannot open when there is no project
-    nwGUI.mainMenu.aWritingStats.activate(QAction.Trigger)
-    assert getGuiItem("GuiWritingStats") is None
-
-    assert nwGUI.openProject(nwFuncTemp)
-    qtbot.wait(stepDelay)
-
-    # Add some text to the scene file
-    assert nwGUI.openDocument("0e17daca5f3e1")
-    assert nwGUI.docEditor.insertText(
-        "# Scene One\n\n"
-        "It was the best of times, it was the worst of times, it was the age of wisdom, it was "
-        "the age of foolishness, it was the epoch of belief, it was the epoch of incredulity, it "
-        "was the season of Light, it was the season of Darkness, it was the spring of hope, it "
-        "was the winter of despair, we had everything before us, we had nothing before us, we "
-        "were all going direct to Heaven, we were all going direct the other way – in short, the "
-        "period was so far like the present period, that some of its noisiest authorities "
-        "insisted on its being received, for good or for evil, in the superlative degree of "
-        "comparison only.\n\n"
-    )
-    assert nwGUI.saveDocument()
-
-    # Add a note file with some text
-    nwGUI.setFocus(1)
-    nwGUI.treeView.clearSelection()
-    nwGUI.treeView._getTreeItem("71ee45a3c0db9").setSelected(True)
-    nwGUI.treeView.newTreeItem(nwItemType.FILE, None)
-    assert nwGUI.openSelectedItem()
-    assert nwGUI.docEditor.insertText(
-        "# Jane Doe\n\n"
-        "All about Jane.\n\n"
-    )
-    assert nwGUI.saveDocument()
-    qtbot.wait(500) # Ensures that the session length is > 0
-
-    assert nwGUI.saveProject()
-    assert nwGUI.closeProject()
-    qtbot.wait(stepDelay)
+    sessFile = os.path.join(nwFuncTemp, "meta", nwFiles.SESS_STATS)
+    with open(sessFile, mode="w+", encoding="utf-8") as outFile:
+        outFile.write(
+            "# Start Time         End Time                Novel     Notes\n"
+            "2020-01-01 21:00:00  2020-01-01 21:00:05         6         0\n"
+            "2020-01-03 21:00:00  2020-01-03 21:00:15       125         0\n"
+            "2020-01-03 21:30:00  2020-01-03 21:30:15       125         5\n"
+            "2020-01-06 21:00:00  2020-01-06 21:00:10       125         5\n"
+        )
 
     # Open again, and check the stats
     assert nwGUI.openProject(nwFuncTemp)
@@ -283,24 +255,26 @@ def testWritingStatsExport(qtbot, monkeypatch, yesToAll, nwFuncTemp, nwTemp):
     assert isinstance(sessLog, GuiWritingStats)
     qtbot.wait(stepDelay)
 
-    monkeypatch.setattr(QFileDialog, "getSaveFileName", lambda *args, **kwargs: [])
+    monkeypatch.setattr(QFileDialog, "getSaveFileName", lambda *args, **kwargs: ("", ""))
     assert not sessLog._saveData(sessLog.FMT_CSV)
 
-    monkeypatch.setattr(QFileDialog, "getSaveFileName", lambda ss, tt, pp, options: [pp])
+    monkeypatch.setattr(QFileDialog, "getSaveFileName", lambda ss, tt, pp, options: (pp, ""))
     assert sessLog._saveData(sessLog.FMT_CSV)
-    qtbot.wait(stepDelay)
+    qtbot.wait(100)
     assert sessLog._saveData(sessLog.FMT_JSON)
-    qtbot.wait(stepDelay)
+    qtbot.wait(100)
 
     jsonStats = os.path.join(nwFuncTemp, "sessionStats.json")
     with open(jsonStats, mode="r", encoding="utf-8") as inFile:
-        jsonData = json.loads(inFile.read())
+        jsonData = json.load(inFile)
 
-    assert len(jsonData) == 2
-    assert jsonData[1]["length"] >= 0
-    assert jsonData[1]["newWords"] == 126
-    assert jsonData[1]["novelWords"] == 127
-    assert jsonData[1]["noteWords"] == 5
+    qtbot.wait(stepDelay)
+
+    assert len(jsonData) == 3
+    assert jsonData[1]["length"] >= 14.0
+    assert jsonData[1]["newWords"] == 119
+    assert jsonData[1]["novelWords"] == 125
+    assert jsonData[1]["noteWords"] == 0
 
     # No Novel Files
     qtbot.mouseClick(sessLog.incNovel, Qt.LeftButton)
@@ -313,9 +287,9 @@ def testWritingStatsExport(qtbot, monkeypatch, yesToAll, nwFuncTemp, nwTemp):
         jsonData = json.loads(inFile.read())
 
     assert len(jsonData) == 1
-    assert jsonData[0]["length"] >= 0
+    assert jsonData[0]["length"] >= 14.0
     assert jsonData[0]["newWords"] == 5
-    assert jsonData[0]["novelWords"] == 127
+    assert jsonData[0]["novelWords"] == 125
     assert jsonData[0]["noteWords"] == 5
 
     # No Note Files
@@ -327,13 +301,13 @@ def testWritingStatsExport(qtbot, monkeypatch, yesToAll, nwFuncTemp, nwTemp):
 
     jsonStats = os.path.join(nwFuncTemp, "sessionStats.json")
     with open(jsonStats, mode="r", encoding="utf-8") as inFile:
-        jsonData = json.loads(inFile.read())
+        jsonData = json.load(inFile)
 
     assert len(jsonData) == 2
-    assert jsonData[1]["length"] >= 0
-    assert jsonData[1]["newWords"] == 121
-    assert jsonData[1]["novelWords"] == 127
-    assert jsonData[1]["noteWords"] == 5
+    assert jsonData[1]["length"] >= 14.0
+    assert jsonData[1]["newWords"] == 119
+    assert jsonData[1]["novelWords"] == 125
+    assert jsonData[1]["noteWords"] == 0
 
     # No Negative Entries
     qtbot.mouseClick(sessLog.incNotes, Qt.LeftButton)
@@ -344,9 +318,9 @@ def testWritingStatsExport(qtbot, monkeypatch, yesToAll, nwFuncTemp, nwTemp):
 
     jsonStats = os.path.join(nwFuncTemp, "sessionStats.json")
     with open(jsonStats, mode="r", encoding="utf-8") as inFile:
-        jsonData = json.loads(inFile.read())
+        jsonData = json.load(inFile)
 
-    assert len(jsonData) == 2
+    assert len(jsonData) == 3
 
     # Un-hide Zero Entries
     qtbot.mouseClick(sessLog.hideNegative, Qt.LeftButton)
@@ -357,9 +331,9 @@ def testWritingStatsExport(qtbot, monkeypatch, yesToAll, nwFuncTemp, nwTemp):
 
     jsonStats = os.path.join(nwFuncTemp, "sessionStats.json")
     with open(jsonStats, mode="r", encoding="utf-8") as inFile:
-        jsonData = json.loads(inFile.read())
+        jsonData = json.load(inFile)
 
-    assert len(jsonData) == 2
+    assert len(jsonData) == 4
 
     # Group by Day
     qtbot.mouseClick(sessLog.groupByDay, Qt.LeftButton)
@@ -369,15 +343,17 @@ def testWritingStatsExport(qtbot, monkeypatch, yesToAll, nwFuncTemp, nwTemp):
 
     jsonStats = os.path.join(nwFuncTemp, "sessionStats.json")
     with open(jsonStats, mode="r", encoding="utf-8") as inFile:
-        jsonData = json.loads(inFile.read())
+        jsonData = json.load(inFile)
 
     # Check against both 1 and 2 as this can be 2 if test was started just before midnight.
     # A failed test should in any case produce a 4
-    assert len(jsonData) in (1, 2)
+    assert len(jsonData) == 3
 
     # qtbot.stopForInteraction()
 
     sessLog._doClose()
+    assert nwGUI.closeProject()
+    qtbot.wait(stepDelay)
     nwGUI.closeMain()
 
 @pytest.mark.gui
@@ -664,7 +640,7 @@ def testMergeSplitTools(qtbot, monkeypatch, yesToAll, nwTempGUI, nwLipsum, nwRef
     testFile = os.path.join(nwTempGUI, "4_71ee45a3c0db9.nwd")
     refFile  = os.path.join(nwRef, "gui", "4_73475cb40a568.nwd")
     copyfile(projFile, testFile)
-    assert cmpFiles(testFile, refFile, [1])
+    assert cmpFiles(testFile, refFile, [1, 2, 3])
 
     # Split By Scene
     assert nwGUI.treeView.setSelectedHandle("73475cb40a568")
@@ -726,7 +702,7 @@ def testMergeSplitTools(qtbot, monkeypatch, yesToAll, nwTempGUI, nwLipsum, nwRef
     testFile = os.path.join(nwTempGUI, "5_25fc0e7096fc6.nwd")
     refFile  = os.path.join(nwRef, "gui", "5_25fc0e7096fc6.nwd")
     copyfile(projFile, testFile)
-    assert cmpFiles(testFile, refFile, [1])
+    assert cmpFiles(testFile, refFile, [1, 2, 3])
 
     projFile = os.path.join(nwLipsum, "content", "031b4af5197ec.nwd")
     testFile = os.path.join(nwTempGUI, "5_031b4af5197ec.nwd")
@@ -1057,6 +1033,7 @@ def testPreferences(qtbot, monkeypatch, yesToAll, nwMinimal, nwTemp, nwRef, tmpC
     nwGUI.mainConf = tmpConf
     nwPrefs.mainConf = tmpConf
     nwPrefs.tabGeneral.mainConf = tmpConf
+    nwPrefs.tabProjects.mainConf = tmpConf
     nwPrefs.tabLayout.mainConf = tmpConf
     nwPrefs.tabEditing.mainConf = tmpConf
     nwPrefs.tabAutoRep.mainConf = tmpConf
@@ -1065,7 +1042,6 @@ def testPreferences(qtbot, monkeypatch, yesToAll, nwMinimal, nwTemp, nwRef, tmpC
     qtbot.wait(keyDelay)
     tabGeneral = nwPrefs.tabGeneral
     nwPrefs._tabBox.setCurrentWidget(tabGeneral)
-    tabGeneral.backupPath = "no/where"
 
     qtbot.wait(keyDelay)
     assert not tabGeneral.preferDarkIcons.isChecked()
@@ -1077,27 +1053,45 @@ def testPreferences(qtbot, monkeypatch, yesToAll, nwMinimal, nwTemp, nwRef, tmpC
     qtbot.mouseClick(tabGeneral.showFullPath, Qt.LeftButton)
     assert not tabGeneral.showFullPath.isChecked()
 
-    # Check Browse button
-    monkeypatch.setattr(QFileDialog, "getExistingDirectory", lambda *args, **kwargs: "")
-    assert not tabGeneral._backupFolder()
-    monkeypatch.setattr(QFileDialog, "getExistingDirectory", lambda *args, **kwargs: "some/dir")
-    qtbot.mouseClick(tabGeneral.backupGetPath, Qt.LeftButton)
+    qtbot.wait(keyDelay)
+    assert not tabGeneral.hideVScroll.isChecked()
+    qtbot.mouseClick(tabGeneral.hideVScroll, Qt.LeftButton)
+    assert tabGeneral.hideVScroll.isChecked()
+
+    qtbot.wait(keyDelay)
+    assert not tabGeneral.hideHScroll.isChecked()
+    qtbot.mouseClick(tabGeneral.hideHScroll, Qt.LeftButton)
+    assert tabGeneral.hideHScroll.isChecked()
 
     # Check font button
     monkeypatch.setattr(QFontDialog, "getFont", lambda font, obj: (font, True))
     qtbot.mouseClick(tabGeneral.fontButton, Qt.LeftButton)
 
     qtbot.wait(keyDelay)
-    assert not tabGeneral.backupOnClose.isChecked()
-    qtbot.mouseClick(tabGeneral.backupOnClose, Qt.LeftButton)
-    assert tabGeneral.backupOnClose.isChecked()
+    tabGeneral.guiFontSize.setValue(12)
+
+    # Projects Settings
+    qtbot.wait(keyDelay)
+    tabProjects = nwPrefs.tabProjects
+    nwPrefs._tabBox.setCurrentWidget(tabProjects)
+    tabProjects.backupPath = "no/where"
 
     qtbot.wait(keyDelay)
-    tabGeneral.guiFontSize.setValue(12)
-    tabGeneral.autoSaveDoc.setValue(20)
-    tabGeneral.autoSaveProj.setValue(40)
+    assert not tabProjects.backupOnClose.isChecked()
+    qtbot.mouseClick(tabProjects.backupOnClose, Qt.LeftButton)
+    assert tabProjects.backupOnClose.isChecked()
 
-    # Text Layour Settings
+    # Check Browse button
+    monkeypatch.setattr(QFileDialog, "getExistingDirectory", lambda *args, **kwargs: "")
+    assert not tabProjects._backupFolder()
+    monkeypatch.setattr(QFileDialog, "getExistingDirectory", lambda *args, **kwargs: "some/dir")
+    qtbot.mouseClick(tabProjects.backupGetPath, Qt.LeftButton)
+
+    qtbot.wait(keyDelay)
+    tabProjects.autoSaveDoc.setValue(20)
+    tabProjects.autoSaveProj.setValue(40)
+
+    # Text Layout Settings
     qtbot.wait(keyDelay)
     tabLayout = nwPrefs.tabLayout
     nwPrefs._tabBox.setCurrentWidget(tabLayout)
@@ -1126,6 +1120,16 @@ def testPreferences(qtbot, monkeypatch, yesToAll, nwMinimal, nwTemp, nwRef, tmpC
     assert tabLayout.textJustify.isChecked()
     qtbot.mouseClick(tabLayout.textJustify, Qt.LeftButton)
     assert not tabLayout.textJustify.isChecked()
+
+    qtbot.wait(keyDelay)
+    assert tabLayout.scrollPastEnd.isChecked()
+    qtbot.mouseClick(tabLayout.scrollPastEnd, Qt.LeftButton)
+    assert not tabLayout.scrollPastEnd.isChecked()
+
+    qtbot.wait(keyDelay)
+    assert not tabLayout.autoScroll.isChecked()
+    qtbot.mouseClick(tabLayout.autoScroll, Qt.LeftButton)
+    assert tabLayout.autoScroll.isChecked()
 
     # Editor Settings
     qtbot.wait(keyDelay)
@@ -1198,7 +1202,7 @@ def testPreferences(qtbot, monkeypatch, yesToAll, nwMinimal, nwTemp, nwRef, tmpC
     ignoreLines = [
         2,                          # Timestamp
         11, 12, 13, 14, 15, 16, 17, # Window sizes
-        7, 25,                      # Fonts (depends on system default)
+        7, 27,                      # Fonts (depends on system default)
     ]
     assert cmpFiles(testConf, refConf, ignoreLines)
 

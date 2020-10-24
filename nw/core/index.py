@@ -3,7 +3,7 @@
 
  novelWriter – Project Index
 =============================
- Class holding the index of tags
+ Class holding the project index of tags, headers and references
 
  File History:
  Created: 2019-05-27 [0.1.4]
@@ -159,8 +159,7 @@ class NWIndex():
             logger.debug("Loading index file")
             try:
                 with open(indexFile, mode="r", encoding="utf8") as inFile:
-                    theJson = inFile.read()
-                theData = json.loads(theJson)
+                    theData = json.load(inFile)
             except Exception as e:
                 logger.error("Failed to load index file")
                 logger.error(str(e))
@@ -190,23 +189,18 @@ class NWIndex():
         """Save the current index as a json file in the project meta
         data folder.
         """
-        indexFile = os.path.join(self.theProject.projMeta, nwFiles.INDEX_FILE)
-
         logger.debug("Saving index file")
-        if self.mainConf.debugInfo:
-            nIndent = 2
-        else:
-            nIndent = None
+        indexFile = os.path.join(self.theProject.projMeta, nwFiles.INDEX_FILE)
 
         try:
             with open(indexFile, mode="w+", encoding="utf8") as outFile:
-                outFile.write(json.dumps({
+                json.dump({
                     "tagIndex"   : self.tagIndex,
                     "refIndex"   : self.refIndex,
                     "novelIndex" : self.novelIndex,
                     "noteIndex"  : self.noteIndex,
                     "textCounts" : self.textCounts,
-                }, indent=nIndent))
+                }, outFile, indent=2)
         except Exception as e:
             logger.error("Failed to save index file")
             logger.error(str(e))
@@ -218,6 +212,7 @@ class NWIndex():
         """Check that the entries in the index are valid and contain the
         elements it should.
         """
+        logger.debug("Checking index")
         self.indexBroken = False
 
         try:
@@ -279,7 +274,7 @@ class NWIndex():
         if theItem.itemLayout == nwItemLayout.NO_LAYOUT:
             logger.info("Not indexing no-layout item %s" % tHandle)
             return False
-        if theItem.parHandle is None:
+        if theItem.itemParent is None:
             logger.info("Not indexing orphaned item %s" % tHandle)
             return False
 
@@ -288,7 +283,7 @@ class NWIndex():
         self.textCounts[tHandle] = [cC, wC, pC]
 
         # If the file is archived or trashed, we don't index the file itself
-        if self.theProject.projTree.isTrashRoot(theItem.parHandle):
+        if self.theProject.projTree.isTrashRoot(theItem.itemParent):
             logger.info("Not indexing trash item %s" % tHandle)
             return False
         if theRoot.itemClass == nwItemClass.ARCHIVE:
@@ -583,7 +578,7 @@ class NWIndex():
 
     def getCounts(self, tHandle, sTitle=None):
         """Returns the counts for a file, or a section of a file
-        starting at title nTitle.
+        starting at title sTitle if it is provided.
         """
         cC = 0
         wC = 0
