@@ -3,7 +3,7 @@
 
  novelWriter – GUI Document Viewer
 ===================================
- Class holding the document html viewer
+ Class holding the main document viewer
 
  File History:
  Created: 2019-05-10 [0.0.1] GuiDocViewer

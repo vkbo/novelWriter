@@ -3,7 +3,7 @@
 
  novelWriter – GUI Document Details
 ====================================
- Class holding the left side document details panel
+ Class holding the project tree item details panel
 
  File History:
  Created: 2019-04-24 [0.0.1]

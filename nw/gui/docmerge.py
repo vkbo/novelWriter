@@ -3,7 +3,7 @@
 
  novelWriter – GUI Doc Merge
 =============================
- Tool for merging multiple documents to one
+ Tool for merging multiple documents to one document
 
  File History:
  Created: 2020-01-23 [0.4.3]

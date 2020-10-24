@@ -252,7 +252,7 @@ def testItemXMLPackUnpack(nwDummy):
     xDummy = etree.SubElement(nwXML, "item", attrib={"handle": "0123456789abc"})
     xParam = etree.SubElement(xDummy, "invalid")
     xParam.text = "stuff"
-    assert theItem.unpackXML(xDummy) # Passes, but not saved
+    assert not theItem.unpackXML(xDummy)
 
     # Pack Valid Item
     xDummy = etree.SubElement(nwXML, "group")

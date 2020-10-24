@@ -3,7 +3,7 @@
 
  novelWriter – Text Tokenizer
 ==============================
- Splits a piece of nW markdown text into its elements
+ Splits a piece of novelWriter markdown text into its elements
 
  File History:
  Created: 2019-05-05 [0.0.1]

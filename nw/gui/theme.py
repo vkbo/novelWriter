@@ -3,7 +3,7 @@
 
  novelWriter – Theme and Icons Classs
 ======================================
- This class reads and stores the themes and the icons
+ Class managing and caching themes and icons
 
  File History:
  Created: 2019-05-18 [0.1.3] GuiTheme

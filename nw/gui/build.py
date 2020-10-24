@@ -1,9 +1,9 @@
 # -*- coding: utf-8 -*-
-"""novelWriter GUI Build Novel
+"""novelWriter GUI Build Novel Project
 
- novelWriter – GUI Build Novel
-===============================
- Class holding the build novel window
+ novelWriter – GUI Build Novel Project
+=======================================
+ Class holding the build novel project dialog
 
  File History:
  Created: 2020-05-09 [0.5]
@@ -391,11 +391,11 @@ class GuiBuildNovel(QDialog):
         self.savePDF.triggered.connect(lambda: self._saveDocument(self.FMT_PDF))
         self.saveMenu.addAction(self.savePDF)
 
-        self.saveHTM = QAction("%s HTML (.htm)" % self.mainConf.appName, self)
+        self.saveHTM = QAction("novelWriter HTML (.htm)", self)
         self.saveHTM.triggered.connect(lambda: self._saveDocument(self.FMT_HTM))
         self.saveMenu.addAction(self.saveHTM)
 
-        self.saveNWD = QAction("%s Markdown (.nwd)" % self.mainConf.appName, self)
+        self.saveNWD = QAction("novelWriter Markdown (.nwd)", self)
         self.saveNWD.triggered.connect(lambda: self._saveDocument(self.FMT_NWD))
         self.saveMenu.addAction(self.saveNWD)
 
@@ -408,11 +408,11 @@ class GuiBuildNovel(QDialog):
         self.saveTXT.triggered.connect(lambda: self._saveDocument(self.FMT_TXT))
         self.saveMenu.addAction(self.saveTXT)
 
-        self.saveJsonH = QAction("JSON + %s HTML (.json)" % self.mainConf.appName, self)
+        self.saveJsonH = QAction("JSON + novelWriter HTML (.json)", self)
         self.saveJsonH.triggered.connect(lambda: self._saveDocument(self.FMT_JSON_H))
         self.saveMenu.addAction(self.saveJsonH)
 
-        self.saveJsonM = QAction("JSON + %s Markdown (.json)" % self.mainConf.appName, self)
+        self.saveJsonM = QAction("JSON + novelWriters Markdown (.json)", self)
         self.saveJsonM.triggered.connect(lambda: self._saveDocument(self.FMT_JSON_M))
         self.saveMenu.addAction(self.saveJsonM)
 

@@ -3,7 +3,7 @@
 
  novelWriter – Project Tree Class
 ==================================
- Class holding the data of the project tree
+ Class holding the project's tree of project items
 
  File History:
  Created: 2020-05-07 [0.4.5]

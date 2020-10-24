@@ -3,7 +3,7 @@
 
  novelWriter – Project Item Status Class
 =========================================
- Class holding the status elements of a project item
+ Class holding the status/importance elements of a project item
 
  File History:
  Created: 2019-05-19 [0.1.3]

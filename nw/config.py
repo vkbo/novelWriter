@@ -3,7 +3,7 @@
 
  novelWriter – Config Class
 ============================
- This class reads and store the main preferences of the application
+ Class reading and holding the preferences of the application
 
  File History:
  Created: 2018-09-22 [0.0.1]
@@ -911,7 +911,7 @@ class Config:
     def _packList(self, inData):
         """Pack a list of items into a comma separated string.
         """
-        return ", ".join(str(inVal) for inVal in inData)
+        return ", ".join([str(inVal) for inVal in inData])
 
     def _parseLine(self, cnfParse, cnfSec, cnfName, cnfType, cnfDefault):
         """Parse a line and return the correct datatype.
