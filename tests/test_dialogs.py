@@ -640,7 +640,7 @@ def testMergeSplitTools(qtbot, monkeypatch, yesToAll, nwTempGUI, nwLipsum, nwRef
     testFile = os.path.join(nwTempGUI, "4_71ee45a3c0db9.nwd")
     refFile  = os.path.join(nwRef, "gui", "4_73475cb40a568.nwd")
     copyfile(projFile, testFile)
-    assert cmpFiles(testFile, refFile, [1])
+    assert cmpFiles(testFile, refFile, [1, 2, 3])
 
     # Split By Scene
     assert nwGUI.treeView.setSelectedHandle("73475cb40a568")
@@ -702,7 +702,7 @@ def testMergeSplitTools(qtbot, monkeypatch, yesToAll, nwTempGUI, nwLipsum, nwRef
     testFile = os.path.join(nwTempGUI, "5_25fc0e7096fc6.nwd")
     refFile  = os.path.join(nwRef, "gui", "5_25fc0e7096fc6.nwd")
     copyfile(projFile, testFile)
-    assert cmpFiles(testFile, refFile, [1])
+    assert cmpFiles(testFile, refFile, [1, 2, 3])
 
     projFile = os.path.join(nwLipsum, "content", "031b4af5197ec.nwd")
     testFile = os.path.join(nwTempGUI, "5_031b4af5197ec.nwd")

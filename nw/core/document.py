@@ -230,10 +230,10 @@ class NWDoc():
         %%~ that may contain meta data.
         """
         if metaLine.startswith("%%~name:"):
-            self._docMeta["name"] = metaLine[9:].strip()
+            self._docMeta["name"] = metaLine[8:].strip()
 
         elif metaLine.startswith("%%~path:"):
-            metaVal = metaLine[9:].strip()
+            metaVal = metaLine[8:].strip()
             metaBits = metaVal.split("/")
             if len(metaBits) == 2:
                 if isHandle(metaBits[0]):
@@ -242,7 +242,7 @@ class NWDoc():
                     self._docMeta["handle"] = metaBits[1]
 
         elif metaLine.startswith("%%~kind:"):
-            metaVal = metaLine[9:].strip()
+            metaVal = metaLine[8:].strip()
             metaBits = metaVal.split("/")
             if len(metaBits) == 2:
                 if metaBits[0] in nwItemClass.__members__:

@@ -335,20 +335,17 @@ def testDocMeta(nwDummy, nwLipsum):
 
     aDoc = NWDoc(theProject, nwDummy)
     assert aDoc.openDocument("47666c91c7ccf")
-    theMeta, thePath, theClass, theLayout = aDoc.getMeta()
+    theName, theParent, theClass, theLayout = aDoc.getMeta()
 
-    assert theMeta == "Scene Five"
-    assert len(thePath) == 3
-    assert thePath[0] == "47666c91c7ccf"
-    assert thePath[1] == "6bd935d2490cd"
-    assert thePath[2] == "b3643d0f92e32"
+    assert theName == "Scene Five"
+    assert theParent == "6bd935d2490cd"
     assert theClass == nwItemClass.NOVEL
     assert theLayout == nwItemLayout.SCENE
 
-    aDoc._docMeta = "too_short"
-    theMeta, thePath, theClass, theLayout = aDoc.getMeta()
-    assert theMeta == ""
-    assert thePath == []
+    aDoc._docMeta = {"stuff": None}
+    theName, theParent, theClass, theLayout = aDoc.getMeta()
+    assert theName == ""
+    assert theParent is None
     assert theClass is None
     assert theLayout is None
 
@@ -488,7 +485,9 @@ def testProjectOrphanedFiles(nwDummy, nwLipsum):
     # First Item with Meta Data
     orphPath = os.path.join(nwLipsum, "content", "636b6aa9b697b.nwd")
     with open(orphPath, mode="w", encoding="utf8") as outFile:
-        outFile.write(r"%%~ 5eaea4e8cdee8:15c4492bd5107:WORLD:NOTE:Mars")
+        outFile.write("%%~name:Mars\n")
+        outFile.write("%%~path:5eaea4e8cdee8/636b6aa9b697b\n")
+        outFile.write("%%~kind:WORLD/NOTE\n")
         outFile.write("\n")
 
     # Second Item without Meta Data
