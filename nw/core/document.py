@@ -30,7 +30,7 @@ import os
 
 from nw.constants import nwAlert
 from nw.common import isHandle
-from nw.constants import nwItemLayout, nwItemClass, nwConst
+from nw.constants import nwItemLayout, nwItemClass
 
 logger = logging.getLogger(__name__)
 
@@ -45,7 +45,7 @@ class NWDoc():
         self._theItem   = None # The currently open item
         self._docHandle = None # The handle of the currently open item
         self._fileLoc   = None # The file location of the currently open item
-        self._docMeta   = ""   # The meta string of the currently open item
+        self._docMeta   = {}   # The meta data of the currently open item
 
         # Internal Mapping
         self.makeAlert = self.theParent.makeAlert
@@ -62,7 +62,7 @@ class NWDoc():
         self._theItem   = None
         self._docHandle = None
         self._fileLoc   = None
-        self._docMeta   = ""
+        self._docMeta   = {}
         return
 
     def openDocument(self, tHandle, showStatus=True, isOrphan=False):
@@ -94,16 +94,21 @@ class NWDoc():
         self._fileLoc = docPath
 
         theText = ""
-        self._docMeta = ""
+        self._docMeta = {}
         if os.path.isfile(docPath):
             try:
                 with open(docPath, mode="r", encoding="utf8") as inFile:
-                    fstLine = inFile.readline()
-                    if fstLine.startswith("%%~ "):
-                        # This is the meta line
-                        self._docMeta = fstLine[4:].strip()
-                    else:
-                        theText = fstLine
+
+                    # Check the first <= 10 lines for metadata
+                    for i in range(10):
+                        inLine = inFile.readline()
+                        if inLine.startswith(r"%%~"):
+                            self._parseMeta(inLine)
+                        else:
+                            theText = inLine
+                            break
+
+                    # Load the rest of the file
                     theText += inFile.read()
 
             except Exception as e:
@@ -118,8 +123,6 @@ class NWDoc():
             # document and initialise an empty text string.
             logger.debug("The requested document does not exist.")
             return ""
-
-        logger.verbose("DocMeta: '%s'" % self._docMeta)
 
         if showStatus and not isOrphan:
             self.theParent.setStatus("Opened Document: %s" % self._theItem.itemName)
@@ -145,14 +148,10 @@ class NWDoc():
         if self._theItem is None:
             docMeta = ""
         else:
-            itemPath = self.theProject.projTree.getItemPath(self._docHandle)
             docMeta = (
-                "%%~ {handlepath:s}:{itemclass:s}:{itemlayout:s}:{itemname:s}\n"
-            ).format(
-                handlepath = ":".join(itemPath),
-                itemclass  = self._theItem.itemClass.name,
-                itemlayout = self._theItem.itemLayout.name,
-                itemname   = self._theItem.itemName,
+                f"%%~name: {self._theItem.itemName:s}\n"
+                f"%%~path: {self._theItem.itemParent:s}/{self._theItem.itemHandle:s}\n"
+                f"%%~kind: {self._theItem.itemClass.name:s}/{self._theItem.itemLayout.name:s}\n"
             )
 
         try:
@@ -215,39 +214,45 @@ class NWDoc():
         """Parses the document meta tag and returns the path and name as
         a list and a string.
         """
-        if len(self._docMeta) < 14:
-            # Not enough information
-            return "", [], None, None
+        theName = self._docMeta.get("name", "")
+        theParent = self._docMeta.get("parent", None)
+        theClass = self._docMeta.get("class", None)
+        theLayout = self._docMeta.get("layout", None)
 
-        theMeta = self._docMeta
+        return theName, theParent, theClass, theLayout
 
-        # Scan for handles
-        thePath = []
-        for n in range(nwConst.maxDepth + 5):
-            if len(theMeta) < 14:
-                break
-            if theMeta[13] == ":":
-                theHandle = theMeta[:13]
-                if isHandle(theHandle):
-                    thePath.append(theHandle)
-                    theMeta = theMeta[14:]
-                else:
-                    break
-            else:
-                break
+    ##
+    #  Internal Functions
+    ##
 
-        theClass = nwItemClass.NO_CLASS
-        for aClass in nwItemClass:
-            if theMeta.startswith(aClass.name):
-                theClass = aClass
-                theMeta = theMeta[len(aClass.name)+1:]
+    def _parseMeta(self, metaLine):
+        """Parse a line from the document statting with the characters
+        %%~ that may contain meta data.
+        """
+        if metaLine.startswith("%%~name:"):
+            self._docMeta["name"] = metaLine[8:].strip()
 
-        theLayout = nwItemLayout.NO_LAYOUT
-        for aLayout in nwItemLayout:
-            if theMeta.startswith(aLayout.name):
-                theLayout = aLayout
-                theMeta = theMeta[len(aLayout.name)+1:]
+        elif metaLine.startswith("%%~path:"):
+            metaVal = metaLine[8:].strip()
+            metaBits = metaVal.split("/")
+            if len(metaBits) == 2:
+                if isHandle(metaBits[0]):
+                    self._docMeta["parent"] = metaBits[0]
+                if isHandle(metaBits[1]):
+                    self._docMeta["handle"] = metaBits[1]
 
-        return theMeta, thePath, theClass, theLayout
+        elif metaLine.startswith("%%~kind:"):
+            metaVal = metaLine[8:].strip()
+            metaBits = metaVal.split("/")
+            if len(metaBits) == 2:
+                if metaBits[0] in nwItemClass.__members__:
+                    self._docMeta["class"] = nwItemClass[metaBits[0]]
+                if metaBits[1] in nwItemLayout.__members__:
+                    self._docMeta["layout"] = nwItemLayout[metaBits[1]]
+
+        else:
+            logger.debug("Ignoring meta data: '%s'" % metaLine)
+
+        return
 
 # END Class NWDoc

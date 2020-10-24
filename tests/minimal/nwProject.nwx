@@ -1,17 +1,18 @@
 <?xml version='1.0' encoding='utf-8'?>
-<novelWriterXML appVersion="0.12.1" hexVersion="0x001201f0" fileVersion="1.2" timeStamp="2020-08-28 11:36:45">
+<novelWriterXML appVersion="1.0b5" hexVersion="0x010000b5" fileVersion="1.2" timeStamp="2020-10-24 18:55:14">
   <project>
     <name>Test Minimal</name>
     <title>Minimal</title>
     <author>Jane Doe</author>
     <author>John Doh</author>
-    <saveCount>1</saveCount>
+    <saveCount>3</saveCount>
     <autoCount>1</autoCount>
-    <editTime>8</editTime>
+    <editTime>33</editTime>
   </project>
   <settings>
     <doBackup>True</doBackup>
     <spellCheck>False</spellCheck>
+    <spellLang>None</spellLang>
     <autoOutline>True</autoOutline>
     <lastEdited>None</lastEdited>
     <lastViewed>None</lastViewed>
@@ -57,7 +58,7 @@
       <charCount>28</charCount>
       <wordCount>6</wordCount>
       <paraCount>1</paraCount>
-      <cursorPos>0</cursorPos>
+      <cursorPos>33</cursorPos>
     </item>
     <item handle="a6d311a93600a" order="1" parent="a508bb932959c">
       <name>New Chapter</name>
@@ -76,7 +77,7 @@
       <charCount>11</charCount>
       <wordCount>2</wordCount>
       <paraCount>0</paraCount>
-      <cursorPos>0</cursorPos>
+      <cursorPos>16</cursorPos>
     </item>
     <item handle="8c659a11cd429" order="1" parent="a6d311a93600a">
       <name>New Scene</name>
@@ -88,7 +89,7 @@
       <charCount>9</charCount>
       <wordCount>2</wordCount>
       <paraCount>0</paraCount>
-      <cursorPos>0</cursorPos>
+      <cursorPos>15</cursorPos>
     </item>
     <item handle="7695ce551d265" order="1" parent="None">
       <name>Plot</name>

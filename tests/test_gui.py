@@ -684,16 +684,6 @@ def testProjectTree(qtbot, yesToAll, nwMinimal, nwTemp):
     orItem = nwTree._getTreeItem("1234567890abc")
     assert orItem.text(nwTree.C_NAME) == "Orphaned File 1"
 
-    # Move it to the Plot folder
-    # plItem = nwTree._getTreeItem("7695ce551d265")
-    # orRect = nwTree.visualItemRect(orItem)
-    # plRect = nwTree.visualItemRect(plItem)
-
-    # qtbot.mouseMove(nwTree.viewport(), pos=orRect.center(), delay=1000)
-    # qtbot.mousePress(nwTree.viewport(), Qt.LeftButton, pos=orRect.center(), delay=1000)
-    # qtbot.mouseMove(nwTree.viewport(), pos=plRect.center(), delay=1000)
-    # qtbot.mouseRelease(nwTree.viewport(), Qt.LeftButton, pos=plRect.center(), delay=1000)
-
     # qtbot.stopForInteraction()
     nwGUI.closeMain()
     nwGUI.close()

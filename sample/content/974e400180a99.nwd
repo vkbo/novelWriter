@@ -1,4 +1,6 @@
-%%~ 974e400180a99:7031beac91f75:NOVEL:PAGE:Page
+%%~name: Page
+%%~path: 7031beac91f75/974e400180a99
+%%~kind: NOVEL/PAGE
 This is a plain page with some text on it.
 
 This file should receive no special formatting, but the text will always be left aligned and the content will always start on a fresh page when the project is exported.
