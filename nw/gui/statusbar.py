@@ -35,6 +35,7 @@ from PyQt5.QtGui import QColor, QPainter
 from PyQt5.QtWidgets import qApp, QStatusBar, QLabel, QAbstractButton
 
 from nw.core import NWSpellCheck
+from nw.common import formatTime
 
 logger = logging.getLogger(__name__)
 
@@ -206,10 +207,7 @@ class GuiMainStatus(QStatusBar):
         if self.refTime is None:
             self.timeText.setText("00:00:00")
         else:
-            tS = int(time() - self.refTime)
-            self.timeText.setText(
-                f"{tS//3600:02d}:{tS%3600//60:02d}:{tS%60:02d}"
-            )
+            self.timeText.setText(formatTime(round(time() - self.refTime)))
         return
 
 # END Class GuiMainStatus

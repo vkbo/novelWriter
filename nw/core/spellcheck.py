@@ -3,7 +3,7 @@
 
  novelWriter – Spell Check Classes
 ===================================
- Wrapper class for spell checking
+ Wrapper class for spell checking tools
 
  File History:
  Created: 2019-06-11 [0.1.5]

@@ -152,13 +152,13 @@ def formatInt(theInt):
             theVal /= 1000.0
             if theVal < 1000.0:
                 if theVal < 10.0:
-                    return "%4.2f%s%s" % (theVal, nwUnicode.U_THNSP, pF)
+                    return f"{theVal:4.2f}{nwUnicode.U_THNSP}{pF}"
                 elif theVal < 100.0:
-                    return "%4.1f%s%s" % (theVal, nwUnicode.U_THNSP, pF)
+                    return f"{theVal:4.1f}{nwUnicode.U_THNSP}{pF}"
                 else:
-                    return "%3.0f%s%s" % (theVal, nwUnicode.U_THNSP, pF)
+                    return f"{theVal:3.0f}{nwUnicode.U_THNSP}{pF}"
 
-    return "%d" % theInt
+    return str(theInt)
 
 def formatTimeStamp(theTime, fileSafe=False):
     """Take a number (on the format returned by time.time()) and convert
@@ -168,6 +168,17 @@ def formatTimeStamp(theTime, fileSafe=False):
         return datetime.fromtimestamp(theTime).strftime(nwConst.fStampFmt)
     else:
         return datetime.fromtimestamp(theTime).strftime(nwConst.tStampFmt)
+
+def formatTime(tS):
+    """Format a time in seconds in HH:MM:SS format or d-HH:MM:SS format
+    if a full day or longer.
+    """
+    if isinstance(tS, int):
+        if tS >= 86400:
+            return f"{tS//86400:d}-{tS%86400//3600:02d}:{tS%3600//60:02d}:{tS%60:02d}"
+        else:
+            return f"{tS//3600:02d}:{tS%3600//60:02d}:{tS%60:02d}"
+    return "ERROR"
 
 def splitVersionNumber(vString):
     """ Splits a version string on the form aa.bb.cc into major, minor

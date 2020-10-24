@@ -3,7 +3,7 @@
 
  novelWriter – GUI project Tree
 ================================
- Class holding the left side project tree view
+ Class holding the project tree view
 
  File History:
  Created: 2018-09-29 [0.0.1] GuiProjectTree

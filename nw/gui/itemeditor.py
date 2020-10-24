@@ -3,7 +3,7 @@
 
  novelWriter – GUI Item Editor
 ===============================
- Class holding the item editor
+ Class holding the item editor dialog
 
  File History:
  Created: 2019-04-27 [0.0.1]

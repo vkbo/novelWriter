@@ -3,7 +3,7 @@
 
  novelWriter – Project Document
 ================================
- Class holding a document
+ Class holding a single novelWriter document
 
  File History:
  Created: 2018-09-29 [0.0.1]
