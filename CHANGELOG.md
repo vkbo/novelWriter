@@ -2,6 +2,23 @@
 
 ## Version 1.0 Release Candidate 1 [2020-11-01]
 
+**Installation**
+
+* A new setup option `setup.py xdg-install` will install the desktop integration (icons, mime and launcher) using the OS' `xdg-utils`. This is a more standardised way of installing these elements, and replaces the previous `launcher` option. PR #484.
+
+**User Interface**
+
+* The Typewriter Mode feature has been improved to keep the cursor stationary at any point in the document as long as the cursor at a user-defined minimum distance from the3 top. The arrow and page keys do not trigger a reposition. The new behaviour is similar to that of the Gutenberg editor in WordPress. PR #482.
+* The document editor and viewer are now properly updated when the user switches syntax theme. There is no longer a need to restart novelWriter first to apply the changes. PR #487.
+
+**Other Changes**
+
+* The index cache file `meta/tagsIndex.json` now has line breaks and indents. This makes it easier to version control if the user really wants to track this file. PR #483.
+* The format of the meta data at the top of document files has been changed to both be easier to parse, and easier to extend with new settings, but also more human readable in cases where the user opens the file in the project folder with other software. PR #486.
+
+**Code Improvements**
+
+* Sime clean-up of comments and docstrings, as well as optimising and merging a few functions that were implemented in multiple places. PR #485.
 
 
 ## Version 1.0 Beta 5 [2020-10-18]
