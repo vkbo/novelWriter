@@ -2158,13 +2158,13 @@ class GuiDocEditHeader(QWidget):
         """Update the colours of the widget to match those of the syntax
         theme rather than the main GUI.
         """
-        self.thePalette = QPalette()
-        self.thePalette.setColor(QPalette.Window, QColor(*self.theTheme.colBack))
-        self.thePalette.setColor(QPalette.WindowText, QColor(*self.theTheme.colText))
-        self.thePalette.setColor(QPalette.Text, QColor(*self.theTheme.colText))
+        thePalette = QPalette()
+        thePalette.setColor(QPalette.Window, QColor(*self.theTheme.colBack))
+        thePalette.setColor(QPalette.WindowText, QColor(*self.theTheme.colText))
+        thePalette.setColor(QPalette.Text, QColor(*self.theTheme.colText))
 
-        self.setPalette(self.thePalette)
-        self.theTitle.setPalette(self.thePalette)
+        self.setPalette(thePalette)
+        self.theTitle.setPalette(thePalette)
 
         return
 
@@ -2368,15 +2368,15 @@ class GuiDocEditFooter(QWidget):
         """Update the colours of the widget to match those of the syntax
         theme rather than the main GUI.
         """
-        self.thePalette = QPalette()
-        self.thePalette.setColor(QPalette.Window, QColor(*self.theTheme.colBack))
-        self.thePalette.setColor(QPalette.WindowText, QColor(*self.theTheme.colText))
-        self.thePalette.setColor(QPalette.Text, QColor(*self.theTheme.colText))
+        thePalette = QPalette()
+        thePalette.setColor(QPalette.Window, QColor(*self.theTheme.colBack))
+        thePalette.setColor(QPalette.WindowText, QColor(*self.theTheme.colText))
+        thePalette.setColor(QPalette.Text, QColor(*self.theTheme.colText))
 
-        self.setPalette(self.thePalette)
-        self.statusText.setPalette(self.thePalette)
-        self.linesText.setPalette(self.thePalette)
-        self.wordsText.setPalette(self.thePalette)
+        self.setPalette(thePalette)
+        self.statusText.setPalette(thePalette)
+        self.linesText.setPalette(thePalette)
+        self.wordsText.setPalette(thePalette)
 
         return
 

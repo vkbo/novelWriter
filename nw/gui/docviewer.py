@@ -801,13 +801,13 @@ class GuiDocViewHeader(QWidget):
         """Update the colours of the widget to match those of the syntax
         theme rather than the main GUI.
         """
-        self.thePalette = QPalette()
-        self.thePalette.setColor(QPalette.Window, QColor(*self.theTheme.colBack))
-        self.thePalette.setColor(QPalette.WindowText, QColor(*self.theTheme.colText))
-        self.thePalette.setColor(QPalette.Text, QColor(*self.theTheme.colText))
+        thePalette = QPalette()
+        thePalette.setColor(QPalette.Window, QColor(*self.theTheme.colBack))
+        thePalette.setColor(QPalette.WindowText, QColor(*self.theTheme.colText))
+        thePalette.setColor(QPalette.Text, QColor(*self.theTheme.colText))
 
-        self.setPalette(self.thePalette)
-        self.theTitle.setPalette(self.thePalette)
+        self.setPalette(thePalette)
+        self.theTitle.setPalette(thePalette)
 
         return
 
@@ -1051,16 +1051,16 @@ class GuiDocViewFooter(QWidget):
         """Update the colours of the widget to match those of the syntax
         theme rather than the main GUI.
         """
-        self.thePalette = QPalette()
-        self.thePalette.setColor(QPalette.Window, QColor(*self.theTheme.colBack))
-        self.thePalette.setColor(QPalette.WindowText, QColor(*self.theTheme.colText))
-        self.thePalette.setColor(QPalette.Text, QColor(*self.theTheme.colText))
+        thePalette = QPalette()
+        thePalette.setColor(QPalette.Window, QColor(*self.theTheme.colBack))
+        thePalette.setColor(QPalette.WindowText, QColor(*self.theTheme.colText))
+        thePalette.setColor(QPalette.Text, QColor(*self.theTheme.colText))
 
-        self.setPalette(self.thePalette)
-        self.lblRefs.setPalette(self.thePalette)
-        self.lblSticky.setPalette(self.thePalette)
-        self.lblComments.setPalette(self.thePalette)
-        self.lblSynopsis.setPalette(self.thePalette)
+        self.setPalette(thePalette)
+        self.lblRefs.setPalette(thePalette)
+        self.lblSticky.setPalette(thePalette)
+        self.lblComments.setPalette(thePalette)
+        self.lblSynopsis.setPalette(thePalette)
 
         return
 
