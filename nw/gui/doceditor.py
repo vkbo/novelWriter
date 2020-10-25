@@ -206,11 +206,16 @@ class GuiDocEditor(QTextEdit):
         theFont.setPointSize(self.mainConf.textSize)
         self.setFont(theFont)
 
-        docPalette = self.palette()
-        docPalette.setColor(QPalette.Window, QColor(*self.theTheme.colBack))
+        mainPalette = self.palette()
+        mainPalette.setColor(QPalette.Window, QColor(*self.theTheme.colBack))
+        mainPalette.setColor(QPalette.Base, QColor(*self.theTheme.colBack))
+        mainPalette.setColor(QPalette.Text, QColor(*self.theTheme.colText))
+        self.setPalette(mainPalette)
+
+        docPalette = self.viewport().palette()
         docPalette.setColor(QPalette.Base, QColor(*self.theTheme.colBack))
         docPalette.setColor(QPalette.Text, QColor(*self.theTheme.colText))
-        self.setPalette(docPalette)
+        self.viewport().setPalette(docPalette)
 
         # Set default text margins
         cM = self.mainConf.getTextMargin()
