@@ -1004,6 +1004,9 @@ class GuiDocEditor(QTextEdit):
         """Decide whether to run the word counter, or not due to
         inactivity.
         """
+        if self.theHandle is None:
+            return
+
         if self.wCounter.isRunning():
             logger.verbose("Word counter is busy")
             return
