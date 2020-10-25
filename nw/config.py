@@ -93,9 +93,9 @@ class Config:
         self.guiScale    = 1.0   # Set automatically by Theme class
 
         ## Sizes
-        self.winGeometry  = [1100, 650]
-        self.treeColWidth = [120, 30, 50]
-        self.projColWidth = [140, 55, 140]
+        self.winGeometry  = [1200, 650]
+        self.treeColWidth = [200, 50, 30]
+        self.projColWidth = [200, 60, 140]
         self.mainPanePos  = [300, 800]
         self.docPanePos   = [400, 400]
         self.viewPanePos  = [500, 150]
