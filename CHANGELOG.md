@@ -1,5 +1,9 @@
 # novelWriter ChangeLog
 
+## Version 1.0 Release Candidate 1 [2020-11-01]
+
+
+
 ## Version 1.0 Beta 5 [2020-10-18]
 
 **Important Notes**
