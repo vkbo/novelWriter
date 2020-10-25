@@ -65,7 +65,6 @@ class GuiDocViewer(QTextBrowser):
         self.setAutoFillBackground(True)
         self.setOpenExternalLinks(False)
         self.setFocusPolicy(Qt.StrongFocus)
-        self.initViewer()
 
         # Document Header and Footer
         self.docHeader  = GuiDocViewHeader(self)
@@ -73,17 +72,14 @@ class GuiDocViewer(QTextBrowser):
         self.docHistory = GuiDocViewHistory(self)
         self.stickyRef  = False
 
-        theOpt = QTextOption()
-        if self.mainConf.doJustify:
-            theOpt.setAlignment(Qt.AlignJustify)
-        self.qDocument.setDefaultTextOption(theOpt)
-
         # Signals
         self.anchorClicked.connect(self._linkClicked)
 
         # Context Menu
         self.setContextMenuPolicy(Qt.CustomContextMenu)
         self.customContextMenuRequested.connect(self._openContextMenu)
+
+        self.initViewer()
 
         logger.debug("GuiDocViewer initialisation complete")
 
@@ -112,12 +108,22 @@ class GuiDocViewer(QTextBrowser):
         theFont.setPointSize(self.mainConf.textSize)
         self.setFont(theFont)
 
-        docPalette = self.palette()
-        docPalette.setColor(QPalette.Window, QColor(*self.theTheme.colBack))
+        # Set the widget colours to match syntax theme
+        mainPalette = self.palette()
+        mainPalette.setColor(QPalette.Window, QColor(*self.theTheme.colBack))
+        mainPalette.setColor(QPalette.Base, QColor(*self.theTheme.colBack))
+        mainPalette.setColor(QPalette.Text, QColor(*self.theTheme.colText))
+        self.setPalette(mainPalette)
+
+        docPalette = self.viewport().palette()
         docPalette.setColor(QPalette.Base, QColor(*self.theTheme.colBack))
         docPalette.setColor(QPalette.Text, QColor(*self.theTheme.colText))
-        self.setPalette(docPalette)
+        self.viewport().setPalette(docPalette)
 
+        self.docHeader.matchColours()
+        self.docFooter.matchColours()
+
+        # Set default text margins
         self.qDocument.setDocumentMargin(0)
         theOpt = QTextOption()
         if self.mainConf.doJustify:
@@ -700,17 +706,11 @@ class GuiDocViewHeader(QWidget):
         self.theTheme   = docViewer.theTheme
         self.theHandle  = None
 
-        # Make a QPalette that matches the Syntax Theme
-        self.thePalette = QPalette()
-        self.thePalette.setColor(QPalette.Window, QColor(*self.theTheme.colBack))
-        self.thePalette.setColor(QPalette.Text, QColor(*self.theTheme.colText))
-
         fPx = int(0.9*self.theTheme.fontPixelSize)
         hSp = self.mainConf.pxInt(6)
 
         # Main Widget Settings
         self.setAutoFillBackground(True)
-        self.setPalette(self.thePalette)
 
         # Title Label
         self.theTitle = QLabel()
@@ -721,7 +721,6 @@ class GuiDocViewHeader(QWidget):
         self.theTitle.setAutoFillBackground(True)
         self.theTitle.setAlignment(Qt.AlignHCenter | Qt.AlignTop)
         self.theTitle.setFixedHeight(fPx)
-        self.theTitle.setPalette(self.thePalette)
 
         lblFont = self.theTitle.font()
         lblFont.setPointSizeF(0.9*self.theTheme.fontPointSize)
@@ -787,13 +786,30 @@ class GuiDocViewHeader(QWidget):
         self.outerBox.addWidget(self.closeButton, 0)
         self.setLayout(self.outerBox)
 
+        # Fix the Colours
+        self.matchColours()
+
         logger.debug("GuiDocViewHeader initialisation complete")
 
         return
 
     ##
-    #  Setters
+    #  Methods
     ##
+
+    def matchColours(self):
+        """Update the colours of the widget to match those of the syntax
+        theme rather than the main GUI.
+        """
+        thePalette = QPalette()
+        thePalette.setColor(QPalette.Window, QColor(*self.theTheme.colBack))
+        thePalette.setColor(QPalette.WindowText, QColor(*self.theTheme.colText))
+        thePalette.setColor(QPalette.Text, QColor(*self.theTheme.colText))
+
+        self.setPalette(thePalette)
+        self.theTitle.setPalette(thePalette)
+
+        return
 
     def setTitleFromHandle(self, tHandle):
         """Sets the document title from the handle, or alternatively,
@@ -887,11 +903,6 @@ class GuiDocViewFooter(QWidget):
         self.viewMeta  = docViewer.theParent.viewMeta
         self.theHandle = None
 
-        # Make a QPalette that matches the Syntax Theme
-        self.thePalette = QPalette()
-        self.thePalette.setColor(QPalette.Window, QColor(*self.theTheme.colBack))
-        self.thePalette.setColor(QPalette.Text, QColor(*self.theTheme.colText))
-
         fPx = int(0.9*self.theTheme.fontPixelSize)
         bSp = self.mainConf.pxInt(2)
         hSp = self.mainConf.pxInt(8)
@@ -912,7 +923,6 @@ class GuiDocViewFooter(QWidget):
         # Main Widget Settings
         self.setContentsMargins(0, 0, 0, 0)
         self.setAutoFillBackground(True)
-        self.setPalette(self.thePalette)
 
         buttonStyle = (
             "QToolButton {{border: none; background: transparent;}} "
@@ -975,7 +985,6 @@ class GuiDocViewFooter(QWidget):
         self.lblRefs.setAutoFillBackground(True)
         self.lblRefs.setFixedHeight(fPx)
         self.lblRefs.setAlignment(Qt.AlignLeft | Qt.AlignTop)
-        self.lblRefs.setPalette(self.thePalette)
 
         self.lblSticky = QLabel("Sticky")
         self.lblSticky.setBuddy(self.stickyRefs)
@@ -985,7 +994,6 @@ class GuiDocViewFooter(QWidget):
         self.lblSticky.setAutoFillBackground(True)
         self.lblSticky.setFixedHeight(fPx)
         self.lblSticky.setAlignment(Qt.AlignLeft | Qt.AlignTop)
-        self.lblSticky.setPalette(self.thePalette)
 
         self.lblComments = QLabel("Comments")
         self.lblComments.setBuddy(self.showComments)
@@ -995,7 +1003,6 @@ class GuiDocViewFooter(QWidget):
         self.lblComments.setAutoFillBackground(True)
         self.lblComments.setFixedHeight(fPx)
         self.lblComments.setAlignment(Qt.AlignLeft | Qt.AlignTop)
-        self.lblComments.setPalette(self.thePalette)
 
         self.lblSynopsis = QLabel("Synopsis")
         self.lblSynopsis.setBuddy(self.showSynopsis)
@@ -1005,7 +1012,6 @@ class GuiDocViewFooter(QWidget):
         self.lblSynopsis.setAutoFillBackground(True)
         self.lblSynopsis.setFixedHeight(fPx)
         self.lblSynopsis.setAlignment(Qt.AlignLeft | Qt.AlignTop)
-        self.lblSynopsis.setPalette(self.thePalette)
 
         lblFont = self.font()
         lblFont.setPointSizeF(0.9*self.theTheme.fontPointSize)
@@ -1030,7 +1036,31 @@ class GuiDocViewFooter(QWidget):
         self.outerBox.addWidget(self.lblSynopsis, 0)
         self.setLayout(self.outerBox)
 
+        # Fix the Colours
+        self.matchColours()
+
         logger.debug("GuiDocViewFooter initialisation complete")
+
+        return
+
+    ##
+    #  Methods
+    ##
+
+    def matchColours(self):
+        """Update the colours of the widget to match those of the syntax
+        theme rather than the main GUI.
+        """
+        thePalette = QPalette()
+        thePalette.setColor(QPalette.Window, QColor(*self.theTheme.colBack))
+        thePalette.setColor(QPalette.WindowText, QColor(*self.theTheme.colText))
+        thePalette.setColor(QPalette.Text, QColor(*self.theTheme.colText))
+
+        self.setPalette(thePalette)
+        self.lblRefs.setPalette(thePalette)
+        self.lblSticky.setPalette(thePalette)
+        self.lblComments.setPalette(thePalette)
+        self.lblSynopsis.setPalette(thePalette)
 
         return
 
