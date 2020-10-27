@@ -428,10 +428,10 @@ class GuiWritingStats(QDialog):
                         continue
 
                     dStart = datetime.strptime(
-                        "%s %s" % (inData[0], inData[1]), nwConst.tStampFmt
+                        "%s %s" % (inData[0], inData[1]), nwConst.FMT_TSTAMP
                     )
                     dEnd = datetime.strptime(
-                        "%s %s" % (inData[2], inData[3]), nwConst.tStampFmt
+                        "%s %s" % (inData[2], inData[3]), nwConst.FMT_TSTAMP
                     )
 
                     tDiff = dEnd - dStart
@@ -528,9 +528,9 @@ class GuiWritingStats(QDialog):
                 isFirst = False
 
             if groupByDay:
-                sStart = dStart.strftime(nwConst.dStampFmt)
+                sStart = dStart.strftime(nwConst.FMT_DSTAMP)
             else:
-                sStart = dStart.strftime(nwConst.tStampFmt)
+                sStart = dStart.strftime(nwConst.FMT_TSTAMP)
 
             self.filterData.append((dStart, sStart, sDiff, dwTotal, wcNovel, wcNotes))
             listMax = min(max(listMax, dwTotal), histMax)

@@ -284,12 +284,12 @@ class GuiDocEditor(QTextEdit):
             return False
 
         docSize = len(theDoc)
-        if docSize > nwConst.maxDocSize:
+        if docSize > nwConst.MAX_DOCSIZE:
             self.theParent.makeAlert((
                 "The document you are trying to open is too big. "
                 "The document size is %.2f\u202fMB. "
                 "The maximum size allowed is %.2f\u202fMB."
-            ) % (docSize/1.0e6, nwConst.maxDocSize/1.0e6), nwAlert.ERROR)
+            ) % (docSize/1.0e6, nwConst.MAX_DOCSIZE/1.0e6), nwAlert.ERROR)
             self.clearEditor()
             return False
 
@@ -361,12 +361,12 @@ class GuiDocEditor(QTextEdit):
         text. This also clears undo history.
         """
         docSize = len(theText)
-        if docSize > nwConst.maxDocSize:
+        if docSize > nwConst.MAX_DOCSIZE:
             self.theParent.makeAlert((
                 "The text you are trying to add is too big. "
                 "The text size is %.2f\u202fMB. "
                 "The maximum size allowed is %.2f\u202fMB."
-            ) % (docSize/1.0e6, nwConst.maxDocSize/1.0e6), nwAlert.ERROR)
+            ) % (docSize/1.0e6, nwConst.MAX_DOCSIZE/1.0e6), nwAlert.ERROR)
             return False
 
         qApp.setOverrideCursor(QCursor(Qt.WaitCursor))
@@ -859,11 +859,11 @@ class GuiDocEditor(QTextEdit):
         """
         self.lastEdit = time()
         self.lastFind = None
-        if self.qDocument.characterCount() > nwConst.maxDocSize:
+        if self.qDocument.characterCount() > nwConst.MAX_DOCSIZE:
             self.theParent.makeAlert((
                 "The document has grown too big and you cannot add more text to it. "
                 "The maximum size of a single novelWriter document is %.2f\u202fMB."
-            ) % (nwConst.maxDocSize/1.0e6), nwAlert.ERROR)
+            ) % (nwConst.MAX_DOCSIZE/1.0e6), nwAlert.ERROR)
             self.undo()
             return
         if not self.docChanged:

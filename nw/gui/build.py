@@ -515,7 +515,7 @@ class GuiBuildNovel(QDialog):
                 self.docView.setStyleSheet(self.htmlStyle)
 
             htmlSize = sum([len(x) for x in self.htmlText])
-            if htmlSize < nwConst.maxBuildSize:
+            if htmlSize < nwConst.MAX_BUILDSIZE:
                 qApp.processEvents()
                 self.docView.setContent(self.htmlText, self.buildTime)
             else:
@@ -656,7 +656,7 @@ class GuiBuildNovel(QDialog):
         else:
             self.docView.setStyleSheet(self.htmlStyle)
 
-        if htmlSize < nwConst.maxBuildSize:
+        if htmlSize < nwConst.MAX_BUILDSIZE:
             self.docView.setContent(self.htmlText, self.buildTime)
             self._enableQtSave(True)
         else:

@@ -216,7 +216,7 @@ class Tokenizer():
             self.theText = theDocument.openDocument(theHandle)
 
         docSize = len(self.theText)
-        if docSize > nwConst.maxDocSize:
+        if docSize > nwConst.MAX_DOCSIZE:
             errVal = "Document '%s' is too big (%.2f MB). Skipping." % (
                 self.theItem.itemName, docSize/1.0e6
             )
