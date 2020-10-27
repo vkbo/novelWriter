@@ -29,13 +29,19 @@ from nw.constants.enum import nwItemClass, nwItemLayout, nwOutline
 
 class nwConst():
 
+    # Date and Time Formats
     tStampFmt = "%Y-%m-%d %H:%M:%S" # Default format
     fStampFmt = "%Y-%m-%d %H.%M.%S" # FileName safe format
     dStampFmt = "%Y-%m-%d"          # Date only format
 
+    # Various Hard Limits
     maxDepth     = 30       # Maximum folder depth of a project
     maxDocSize   = 5000000  # Maxium size of a single document
     maxBuildSize = 10000000 # Maxium size of a project build
+
+    # Spell Check Providers
+    SP_INTERNAL = "internal"
+    SP_ENCHANT  = "enchant"
 
 # END Class nwConst
 

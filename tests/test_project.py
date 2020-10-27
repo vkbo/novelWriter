@@ -13,7 +13,7 @@ from nwtools import cmpFiles
 from nw.core.project import NWProject
 from nw.core.document import NWDoc
 from nw.core.spellcheck import NWSpellEnchant, NWSpellSimple
-from nw.constants import nwItemClass, nwItemType, nwItemLayout, nwFiles
+from nw.constants import nwConst, nwItemClass, nwItemType, nwItemLayout, nwFiles
 
 @pytest.mark.project
 def testProjectNewOpenSave(nwFuncTemp, nwTempProj, nwRef, nwTemp, nwDummy):
@@ -405,7 +405,7 @@ def testSpellSimple(nwTemp, nwConf):
 
     aTag, aName = spChk.describeDict()
     assert aTag == "en"
-    assert aName == "internal"
+    assert aName == nwConst.SP_INTERNAL
 
 @pytest.mark.project
 def testProjectOptions(nwDummy, nwLipsum):
