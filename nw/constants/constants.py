@@ -80,6 +80,24 @@ class nwKeyWords:
     ENTITY_KEY = "@entity"
     CUSTOM_KEY = "@custom"
 
+    # Set of Valid Keys
+    VALID_KEYS = {
+        TAG_KEY, POV_KEY, CHAR_KEY, PLOT_KEY, TIME_KEY,
+        WORLD_KEY, OBJECT_KEY, ENTITY_KEY, CUSTOM_KEY
+    }
+
+    # Map from Keys to Item Class
+    KEY_CLASS = {
+        CHAR_KEY   : nwItemClass.CHARACTER,
+        POV_KEY    : nwItemClass.CHARACTER,
+        PLOT_KEY   : nwItemClass.PLOT,
+        TIME_KEY   : nwItemClass.TIMELINE,
+        WORLD_KEY  : nwItemClass.WORLD,
+        OBJECT_KEY : nwItemClass.OBJECT,
+        ENTITY_KEY : nwItemClass.ENTITY,
+        CUSTOM_KEY : nwItemClass.CUSTOM,
+    }
+
 # END Class nwKeyWords
 
 class nwLabels():
