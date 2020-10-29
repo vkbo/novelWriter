@@ -5,22 +5,19 @@ The main setup script for novelWeiter.
 It runs the standard setuptool.setup() with all options taken from the
 setup.cfg file.
 
-In addtion, a few speicalised commands are available:
-
- * sample: Will build a sample.zip file, which is the way the sample project is
-   included into distributable packages.
- * qthelp: Will build a QtAssistant readable version of the novelWriter
-   documentation. This should also be a part of distributed packages. It allows
-   for reading the help offline. Otherwise, the F1 button redirects to the
-   online documentation only.
- * launcher: Will attempt to install novelWriter icons, mime type and create a
-   launcher for the application.
-
+In addtion, a few speicalised commands are available. These are
+described in the help text in the main section.
 """
+
 import os
 import sys
 import shutil
 import subprocess
+
+OS_NONE   = 0
+OS_LINUX  = 1
+OS_WIN    = 2
+OS_DARWIN = 3
 
 # =============================================================================================== #
 #  Qt Assistant Documentation Builder
@@ -285,6 +282,19 @@ def xdgInstall():
 # =============================================================================================== #
 
 if __name__ == "__main__":
+    """Parse command line options and run the commands.
+    """
+    # Detect OS
+    if sys.platform.startswith("linux"):
+        hostOS = OS_LINUX
+    elif sys.platform.startswith("darwin"):
+        hostOS = OS_DARWIN
+    elif sys.platform.startswith("win32"):
+        hostOS = OS_WIN
+    elif sys.platform.startswith("cygwin"):
+        hostOS = OS_WIN
+    else:
+        hostOS = OS_NONE
 
     helpMsg = (
         "\n"
@@ -292,16 +302,28 @@ if __name__ == "__main__":
         "======================\n"
         "This tool provides some additional setup commands for novelWriter.\n"
         "\n"
-        "help         Print the help message.\n"
-        "qthelp       Build the help documentation for use with the QtAssistant.\n"
+        "help         Print this help message.\n"
+        "qthelp       Build the help documentation for use with the Qt Assistant.\n"
+        "             Run before install to enable in the the installed version.\n"
         "sample       Build the sample project as a zip file.\n"
+        "             Run before install to enable creating sample projects.\n"
+        "install      Installs novelWriter to the system's Python install location.\n"
+        "             Run as root or with sudo for system-wide install, or as\n"
+        "             user for single user install.\n"
         "xdg-install  Install launcher and icons for freedesktop systems.\n"
+        "             Run as root or with sudo for system-wide install, or as\n"
+        "             user for single user install.\n"
     )
 
     if "help" in sys.argv:
         sys.argv.remove("help")
         print(helpMsg)
         sys.exit(0)
+
+    if "launcher" in sys.argv:
+        sys.argv.remove("launcher")
+        print("The 'launcher' option has been replaced by 'xdg-install'.")
+        sys.exit(1)
 
     if "qthelp" in sys.argv:
         sys.argv.remove("qthelp")
@@ -313,11 +335,11 @@ if __name__ == "__main__":
 
     if "xdg-install" in sys.argv:
         sys.argv.remove("xdg-install")
-        if not sys.platform.startswith("win32"):
-            xdgInstall()
-        else:
+        if hostOS == OS_WIN:
             print("ERROR: xdg-install cannot be used on Windows")
             sys.exit(1)
+        else:
+            xdgInstall()
 
     if len(sys.argv) <= 1:
         # Nothing more to do
