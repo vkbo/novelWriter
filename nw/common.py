@@ -165,9 +165,9 @@ def formatTimeStamp(theTime, fileSafe=False):
     it to a timestamp string.
     """
     if fileSafe:
-        return datetime.fromtimestamp(theTime).strftime(nwConst.fStampFmt)
+        return datetime.fromtimestamp(theTime).strftime(nwConst.FMT_FSTAMP)
     else:
-        return datetime.fromtimestamp(theTime).strftime(nwConst.tStampFmt)
+        return datetime.fromtimestamp(theTime).strftime(nwConst.FMT_TSTAMP)
 
 def formatTime(tS):
     """Format a time in seconds in HH:MM:SS format or d-HH:MM:SS format

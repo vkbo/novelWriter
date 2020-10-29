@@ -31,7 +31,7 @@ import os
 
 from difflib import get_close_matches
 
-from nw.constants import isoLanguage
+from nw.constants import nwConst, isoLanguage
 
 logger = logging.getLogger(__name__)
 
@@ -41,11 +41,8 @@ logger = logging.getLogger(__name__)
 
 class NWSpellCheck():
 
-    SP_INTERNAL = "internal"
-    SP_ENCHANT  = "enchant"
-
     theDict = None
-    PROJW = []
+    projDict = []
 
     def __init__(self):
         self.mainConf = nw.CONFIG
@@ -71,9 +68,9 @@ class NWSpellCheck():
     def addWord(self, newWord):
         """Add a word to the project dictionary.
         """
-        if self.projectDict is not None and newWord not in self.PROJW:
+        if self.projectDict is not None and newWord not in self.projDict:
             newWord = newWord.strip()
-            self.PROJW.append(newWord)
+            self.projDict.append(newWord)
             try:
                 with open(self.projectDict, mode="a+", encoding="utf-8") as outFile:
                     outFile.write("%s\n" % newWord)
@@ -110,7 +107,7 @@ class NWSpellCheck():
         """Read the content of the project dictionary, and add it to the
         lookup lists.
         """
-        self.PROJW = []
+        self.projDict = []
         if projectDict is not None:
             self.projectDict = projectDict
             if not os.path.isfile(projectDict):
@@ -120,9 +117,9 @@ class NWSpellCheck():
                 with open(projectDict, mode="r", encoding="utf-8") as wordsFile:
                     for theLine in wordsFile:
                         theLine = theLine.strip()
-                        if len(theLine) > 0 and theLine not in self.PROJW:
-                            self.PROJW.append(theLine)
-                logger.debug("Project word list contains %d words" % len(self.PROJW))
+                        if len(theLine) > 0 and theLine not in self.projDict:
+                            self.projDict.append(theLine)
+                logger.debug("Project word list contains %d words" % len(self.projDict))
             except Exception as e:
                 logger.error("Failed to load project word list")
                 logger.error(str(e))
@@ -157,7 +154,7 @@ class NWSpellEnchant(NWSpellCheck):
             self.spellLanguage = None
 
         self._readProjectDictionary(projectDict)
-        for pWord in self.PROJW:
+        for pWord in self.projDict:
             self.theDict.add_to_session(pWord)
 
         return
@@ -236,7 +233,6 @@ class NWSpellSimple(NWSpellCheck):
     when no other is available. This method is fairly slow compared to
     other implementations.
     """
-
     WORDS = []
 
     def __init__(self):
@@ -266,7 +262,7 @@ class NWSpellSimple(NWSpellCheck):
             self.spellLanguage = None
 
         self._readProjectDictionary(projectDict)
-        for pWord in self.PROJW:
+        for pWord in self.projDict:
             if pWord not in self.WORDS:
                 self.WORDS.append(pWord)
 
@@ -324,7 +320,7 @@ class NWSpellSimple(NWSpellCheck):
             if theBits[1] != ".dict":
                 continue
 
-            spName = "%s [internal]" % self.expandLanguage(theBits[0])
+            spName = "%s [%s]" % (self.expandLanguage(theBits[0]), nwConst.SP_INTERNAL)
             retList.append((theBits[0], spName))
 
         return retList
@@ -333,6 +329,6 @@ class NWSpellSimple(NWSpellCheck):
         """Return the tag and provider of the currently loaded
         dictionary.
         """
-        return self.theLang, "internal"
+        return self.theLang, nwConst.SP_INTERNAL
 
 # END Class NWSpellSimple

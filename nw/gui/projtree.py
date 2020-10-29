@@ -243,8 +243,8 @@ class GuiProjectTree(QTreeWidget):
                 tHandle = self.theProject.newFile("New File", itemClass, pHandle)
 
             elif itemType == nwItemType.FOLDER:
-                if len(parTree) >= nwConst.maxDepth - 1:
-                    # Folders cannot be deeper than maxDepth - 1, leaving room
+                if len(parTree) >= nwConst.MAX_DEPTH - 1:
+                    # Folders cannot be deeper than MAX_DEPTH - 1, leaving room
                     # for one more level of files.
                     self.makeAlert((
                         "Cannot add new folder to this item. "
@@ -579,7 +579,7 @@ class GuiProjectTree(QTreeWidget):
                     pCount += int(pItem.child(i).data(self.C_COUNT, Qt.UserRole))
                     pHandle = pItem.data(self.C_NAME, Qt.UserRole)
 
-                if not nDepth > nwConst.maxDepth + 1 and pHandle != "":
+                if not nDepth > nwConst.MAX_DEPTH + 1 and pHandle != "":
                     self.propagateCount(pHandle, pCount, nDepth+1)
 
         return
