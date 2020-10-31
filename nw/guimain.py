@@ -345,6 +345,7 @@ class GuiMain(QMainWindow):
             self.closeDocument()
             self.docViewer.clearNavHistory()
             self.projView.closeOutline()
+            self.projMeta.clearDetails()
             self.theProject.closeProject()
             self.theIndex.clearIndex()
             self.clearGUI()
