@@ -781,6 +781,10 @@ class NWProject():
     def zipIt(self, doNotify):
         """Create a zip file of the entire project.
         """
+        if not self.theParent.hasProject:
+            logger.error("No project open")
+            return False
+
         logger.info("Backing up project")
         self.theParent.setStatus("Backing up project ...")
 

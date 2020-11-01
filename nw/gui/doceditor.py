@@ -620,9 +620,10 @@ class GuiDocEditor(QTextEdit):
         this class when calling these actions from other classes.
         """
         logger.verbose("Requesting action: %s" % theAction.name)
-        if not self.theParent.hasProject:
-            logger.error("No project open")
+        if self.theHandle is None:
+            logger.error("No document open")
             return False
+
         self._allowAutoReplace(False)
         if theAction == nwDocAction.UNDO:
             self.undo()
@@ -678,7 +679,9 @@ class GuiDocEditor(QTextEdit):
             logger.debug("Unknown or unsupported document action %s" % str(theAction))
             self._allowAutoReplace(True)
             return False
+
         self._allowAutoReplace(True)
+
         return True
 
     def isEmpty(self):
@@ -690,16 +693,20 @@ class GuiDocEditor(QTextEdit):
         """Tell the user where on the file system the file in the editor
         is saved.
         """
-        if self.theHandle is not None:
-            msgBox = QMessageBox()
-            msgBox.information(self, "File Location", (
-                "File details for the currently open file<br>"
-                "Handle: {handle:s}<br>"
-                "Location: {fileLoc:s}"
-            ).format(
-                handle  = self.theHandle,
-                fileLoc = str(self.nwDocument.getFileLocation())
-            ))
+        if self.theHandle is None:
+            logger.error("No document open")
+            return False
+
+        msgBox = QMessageBox()
+        msgBox.information(self, "File Location", (
+            "File details for the currently open file<br>"
+            "Handle: {handle:s}<br>"
+            "Location: {fileLoc:s}"
+        ).format(
+            handle  = self.theHandle,
+            fileLoc = str(self.nwDocument.getFileLocation())
+        ))
+
         return
 
     def insertText(self, theInsert):

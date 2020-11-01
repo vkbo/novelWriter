@@ -1053,6 +1053,7 @@ class GuiMain(QMainWindow):
         """
         if self.docEditor.theHandle is None:
             logger.error("No document open, so not activating Focus Mode")
+            self.mainMenu.aFocusMode.setChecked(self.isFocusMode)
             return False
 
         self.isFocusMode = not self.isFocusMode
