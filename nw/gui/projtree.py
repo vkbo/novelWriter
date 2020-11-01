@@ -163,6 +163,7 @@ class GuiProjectTree(QTreeWidget):
         nHandle = None
 
         if not self.theParent.hasProject:
+            logger.error("No project open")
             return False
 
         # The item needs to be assigned an item class, so one must be
@@ -281,6 +282,10 @@ class GuiProjectTree(QTreeWidget):
         """Move an item up or down in the tree, but only if the treeView
         has focus. This also applies when the menu is used.
         """
+        if not self.theParent.hasProject:
+            logger.error("No project open")
+            return False
+
         hasFocus = qApp.focusWidget() == self or not self.mainConf.showGUI
         if hasFocus and self.theParent.hasProject:
 
@@ -364,6 +369,10 @@ class GuiProjectTree(QTreeWidget):
         function only asks for confirmation once, and calls the regular
         deleteItem function for each document in the Trash folder.
         """
+        if not self.theParent.hasProject:
+            logger.error("No project open")
+            return False
+
         trashHandle = self.theProject.projTree.trashRoot()
 
         logger.debug("Emptying Trash folder")
@@ -409,6 +418,10 @@ class GuiProjectTree(QTreeWidget):
         delete the files on disk. Folders are deleted if they're empty only,
         and the deletion is always permanent.
         """
+        if not self.theParent.hasProject:
+            logger.error("No project open")
+            return False
+
         if tHandle is None:
             tHandle = self.getSelectedHandle()
 
