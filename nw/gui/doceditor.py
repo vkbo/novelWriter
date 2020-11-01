@@ -705,6 +705,10 @@ class GuiDocEditor(QTextEdit):
     def insertText(self, theInsert):
         """Insert a specific type of text at the cursor position.
         """
+        if self.theHandle is None:
+            logger.error("No document open")
+            return False
+
         if isinstance(theInsert, str):
             theText = theInsert
         elif isinstance(theInsert, nwDocInsert):
