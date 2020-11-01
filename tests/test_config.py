@@ -44,11 +44,11 @@ def testConfigSetWinSize(tmpConf, nwTemp, nwRef):
     tmpConf.guiScale = 1.0
 
     assert tmpConf.confPath == nwTemp
-    assert tmpConf.setWinSize(1105, 655)
+    assert tmpConf.setWinSize(1205, 655)
     assert not tmpConf.confChanged
     assert tmpConf.setWinSize(70, 70)
     assert tmpConf.confChanged
-    assert tmpConf.setWinSize(1100, 650)
+    assert tmpConf.setWinSize(1200, 650)
     assert tmpConf.saveConfig()
 
     assert cmpFiles(testConf, refConf, [2])
@@ -62,13 +62,13 @@ def testConfigSetTreeColWidths(tmpConf, nwTemp, nwRef):
     assert tmpConf.confPath == nwTemp
     tmpConf.guiScale = 1.0
 
-    assert tmpConf.setTreeColWidths([10, 20, 30])
-    assert tmpConf.treeColWidth == [10, 20, 30]
-    assert tmpConf.setTreeColWidths([120, 30, 50])
+    assert tmpConf.setTreeColWidths([10, 20, 25])
+    assert tmpConf.treeColWidth == [10, 20, 25]
+    assert tmpConf.setTreeColWidths([200, 50, 30])
 
     assert tmpConf.setProjColWidths([10, 20, 30])
     assert tmpConf.projColWidth == [10, 20, 30]
-    assert tmpConf.setProjColWidths([140, 55, 140])
+    assert tmpConf.setProjColWidths([200, 60, 140])
 
     assert tmpConf.confChanged
     assert tmpConf.saveConfig()

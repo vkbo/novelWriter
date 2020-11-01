@@ -42,28 +42,6 @@ logger = logging.getLogger(__name__)
 
 class NWIndex():
 
-    VALID_KEYS = {
-        nwKeyWords.TAG_KEY,
-        nwKeyWords.PLOT_KEY,
-        nwKeyWords.POV_KEY,
-        nwKeyWords.CHAR_KEY,
-        nwKeyWords.WORLD_KEY,
-        nwKeyWords.TIME_KEY,
-        nwKeyWords.OBJECT_KEY,
-        nwKeyWords.ENTITY_KEY,
-        nwKeyWords.CUSTOM_KEY
-    }
-    TAG_CLASS  = {
-        nwKeyWords.CHAR_KEY   : nwItemClass.CHARACTER,
-        nwKeyWords.POV_KEY    : nwItemClass.CHARACTER,
-        nwKeyWords.PLOT_KEY   : nwItemClass.PLOT,
-        nwKeyWords.TIME_KEY   : nwItemClass.TIMELINE,
-        nwKeyWords.WORLD_KEY  : nwItemClass.WORLD,
-        nwKeyWords.OBJECT_KEY : nwItemClass.OBJECT,
-        nwKeyWords.ENTITY_KEY : nwItemClass.ENTITY,
-        nwKeyWords.CUSTOM_KEY : nwItemClass.CUSTOM,
-    }
-
     def __init__(self, theProject, theParent):
 
         # Internal
@@ -530,7 +508,7 @@ class NWIndex():
             return []
 
         # Check that the key is valid
-        isGood[0] = theBits[0] in self.VALID_KEYS
+        isGood[0] = theBits[0] in nwKeyWords.VALID_KEYS
         if not isGood[0] or nBits == 1:
             return isGood
 
@@ -550,7 +528,7 @@ class NWIndex():
         # If we're still here, we better check that the references exist
         for n in range(1, nBits):
             if theBits[n] in self.tagIndex:
-                isGood[n] = self.TAG_CLASS[theBits[0]].name == self.tagIndex[theBits[n]][2]
+                isGood[n] = nwKeyWords.KEY_CLASS[theBits[0]].name == self.tagIndex[theBits[n]][2]
 
         return isGood
 
@@ -608,7 +586,7 @@ class NWIndex():
         section. sTitle must be a string.
         """
         theRefs = {}
-        for tKey in self.TAG_CLASS:
+        for tKey in nwKeyWords.KEY_CLASS:
             theRefs[tKey] = []
 
         if tHandle not in self.refIndex:

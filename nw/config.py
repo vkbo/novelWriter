@@ -37,7 +37,7 @@ from shutil import which
 from PyQt5.Qt import PYQT_VERSION_STR
 from PyQt5.QtCore import QT_VERSION_STR, QStandardPaths, QSysInfo
 
-from nw.constants import nwFiles, nwUnicode
+from nw.constants import nwConst, nwFiles, nwUnicode
 from nw.common import splitVersionNumber, formatTimeStamp
 
 logger = logging.getLogger(__name__)
@@ -88,14 +88,14 @@ class Config:
         self.guiIcons    = "typicons_colour_light"
         self.guiDark     = False # Load icons for dark backgrounds, if available
         self.guiLang     = "en"  # Hardcoded for now since the GUI is only in English
-        self.guiFont     = ""    # Defaults to system defualt font
+        self.guiFont     = ""    # Defaults to system default font
         self.guiFontSize = 11
         self.guiScale    = 1.0   # Set automatically by Theme class
 
         ## Sizes
-        self.winGeometry  = [1100, 650]
-        self.treeColWidth = [120, 30, 50]
-        self.projColWidth = [140, 55, 140]
+        self.winGeometry  = [1200, 650]
+        self.treeColWidth = [200, 50, 30]
+        self.projColWidth = [200, 60, 140]
         self.mainPanePos  = [300, 800]
         self.docPanePos   = [400, 400]
         self.viewPanePos  = [500, 150]
@@ -284,7 +284,7 @@ class Config:
         logger.verbose("App path: %s" % self.appPath)
         logger.verbose("Last path: %s" % self.lastPath)
 
-        # If config folder does not exist, make it.
+        # If config folder does not exist, create it.
         # This assumes that the os config folder itself exists.
         if not os.path.isdir(self.confPath):
             try:
@@ -327,7 +327,7 @@ class Config:
         self._checkOptionalPackages()
 
         if self.spellTool is None:
-            self.spellTool = "internal"
+            self.spellTool = nwConst.SP_INTERNAL
         if self.spellLanguage is None:
             self.spellLanguage = "en"
 

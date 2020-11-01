@@ -260,7 +260,7 @@ class NWTree():
         """
         tItem = self.__getitem__(tHandle)
         if tItem is not None:
-            for i in range(nwConst.maxDepth + 1):
+            for i in range(nwConst.MAX_DEPTH + 1):
                 if tItem.itemParent is None:
                     return tItem
                 else:
@@ -278,7 +278,7 @@ class NWTree():
         tItem = self.__getitem__(tHandle)
         if tItem is not None:
             tTree.append(tHandle)
-            for i in range(nwConst.maxDepth + 1):
+            for i in range(nwConst.MAX_DEPTH + 1):
                 if tItem.itemParent is None:
                     return tTree
                 else:

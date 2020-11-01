@@ -422,7 +422,7 @@ class GuiBuildNovel(QDialog):
         self.buttonBox.addWidget(self.btnSave)
         self.buttonBox.addWidget(self.btnPrint)
         self.buttonBox.addWidget(self.btnClose)
-        self.buttonBox.setSpacing(4)
+        self.buttonBox.setSpacing(self.mainConf.pxInt(4))
 
         # Assemble GUI
         # ============
@@ -464,12 +464,13 @@ class GuiBuildNovel(QDialog):
             self.toolsArea.setHorizontalScrollBarPolicy(Qt.ScrollBarAsNeeded)
 
         # Tools and Buttons Layout
+        tSp = self.mainConf.pxInt(8)
         self.innerBox = QVBoxLayout()
         self.innerBox.addWidget(self.toolsArea)
-        self.innerBox.addSpacing(8)
+        self.innerBox.addSpacing(tSp)
         self.innerBox.addWidget(self.buildProgress)
         self.innerBox.addWidget(self.buildNovel)
-        self.innerBox.addSpacing(8)
+        self.innerBox.addSpacing(tSp)
         self.innerBox.addLayout(self.buttonBox)
 
         # Tools and Buttons Wrapper Widget
@@ -481,6 +482,12 @@ class GuiBuildNovel(QDialog):
         self.mainSplit.addWidget(self.innerWidget)
         self.mainSplit.addWidget(self.docView)
         self.mainSplit.setSizes([boxWidth, docWidth])
+
+        self.idxSettings = self.mainSplit.indexOf(self.innerWidget)
+        self.idxDocument = self.mainSplit.indexOf(self.docView)
+
+        self.mainSplit.setCollapsible(self.idxSettings, False)
+        self.mainSplit.setCollapsible(self.idxDocument, False)
 
         # Outer Layout
         self.outerBox = QHBoxLayout()
@@ -508,7 +515,7 @@ class GuiBuildNovel(QDialog):
                 self.docView.setStyleSheet(self.htmlStyle)
 
             htmlSize = sum([len(x) for x in self.htmlText])
-            if htmlSize < nwConst.maxBuildSize:
+            if htmlSize < nwConst.MAX_BUILDSIZE:
                 qApp.processEvents()
                 self.docView.setContent(self.htmlText, self.buildTime)
             else:
@@ -649,7 +656,7 @@ class GuiBuildNovel(QDialog):
         else:
             self.docView.setStyleSheet(self.htmlStyle)
 
-        if htmlSize < nwConst.maxBuildSize:
+        if htmlSize < nwConst.MAX_BUILDSIZE:
             self.docView.setContent(self.htmlText, self.buildTime)
             self._enableQtSave(True)
         else:

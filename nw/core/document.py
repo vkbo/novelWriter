@@ -251,7 +251,7 @@ class NWDoc():
                     self._docMeta["layout"] = nwItemLayout[metaBits[1]]
 
         else:
-            logger.debug("Ignoring meta data: '%s'" % metaLine)
+            logger.debug("Ignoring meta data: '%s'" % metaLine.strip())
 
         return
 

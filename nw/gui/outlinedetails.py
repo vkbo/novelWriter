@@ -246,6 +246,27 @@ class GuiOutlineDetails(QScrollArea):
 
         return
 
+    def clearDetails(self):
+        """Clear all the data labels.
+        """
+        self.titleLabel.setText("<b>Title</b>")
+        self.titleValue.setText("")
+        self.fileValue.setText("")
+        self.itemValue.setText("")
+        self.cCValue.setText("")
+        self.wCValue.setText("")
+        self.pCValue.setText("")
+        self.synopValue.setText("")
+        self.povKeyValue.setText("")
+        self.chrKeyValue.setText("")
+        self.pltKeyValue.setText("")
+        self.timKeyValue.setText("")
+        self.wldKeyValue.setText("")
+        self.objKeyValue.setText("")
+        self.entKeyValue.setText("")
+        self.cstKeyValue.setText("")
+        return
+
     def showItem(self, tHandle, sTitle):
         """Update the content of the tree with the given handle and line
         number pointing to a header.

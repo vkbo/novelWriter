@@ -37,7 +37,8 @@ from PyQt5.QtWidgets import (
 )
 
 from nw.gui.custom import QSwitch, QConfigLayout, PagedDialog, QuotesDialog
-from nw.core import NWSpellCheck, NWSpellSimple, NWSpellEnchant
+from nw.core import NWSpellSimple, NWSpellEnchant
+from nw.constants import nwConst
 
 logger = logging.getLogger(__name__)
 
@@ -703,11 +704,11 @@ class GuiConfigEditEditingTab(QWidget):
         ## Spell Check Provider and Language
         self.spellLangList = QComboBox(self)
         self.spellToolList = QComboBox(self)
-        self.spellToolList.addItem("Internal (difflib)",        NWSpellCheck.SP_INTERNAL)
-        self.spellToolList.addItem("Spell Enchant (pyenchant)", NWSpellCheck.SP_ENCHANT)
+        self.spellToolList.addItem("Internal (difflib)",        nwConst.SP_INTERNAL)
+        self.spellToolList.addItem("Spell Enchant (pyenchant)", nwConst.SP_ENCHANT)
 
         theModel  = self.spellToolList.model()
-        idEnchant = self.spellToolList.findData(NWSpellCheck.SP_ENCHANT)
+        idEnchant = self.spellToolList.findData(nwConst.SP_ENCHANT)
         theModel.item(idEnchant).setEnabled(self.mainConf.hasEnchant)
 
         self.spellToolList.currentIndexChanged.connect(self._doUpdateSpellTool)
@@ -814,7 +815,7 @@ class GuiConfigEditEditingTab(QWidget):
         preserve the language choice, if the language exists in the
         updated list.
         """
-        if spellTool == NWSpellCheck.SP_ENCHANT:
+        if spellTool == nwConst.SP_ENCHANT:
             theDict = NWSpellEnchant()
         else:
             theDict = NWSpellSimple()
