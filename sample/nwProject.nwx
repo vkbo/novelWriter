@@ -1,13 +1,13 @@
 <?xml version='1.0' encoding='utf-8'?>
-<novelWriterXML appVersion="1.0b5" hexVersion="0x010000b5" fileVersion="1.2" timeStamp="2020-10-24 18:57:05">
+<novelWriterXML appVersion="1.0rc1" hexVersion="0x010000c1" fileVersion="1.2" timeStamp="2020-11-01 17:13:13">
   <project>
     <name>Sample Project</name>
     <title>Sample Project</title>
     <author>Jane Smith</author>
     <author>Jay Doh</author>
-    <saveCount>766</saveCount>
-    <autoCount>148</autoCount>
-    <editTime>37687</editTime>
+    <saveCount>793</saveCount>
+    <autoCount>151</autoCount>
+    <editTime>38598</editTime>
   </project>
   <settings>
     <doBackup>False</doBackup>
@@ -120,7 +120,7 @@
       <charCount>1811</charCount>
       <wordCount>318</wordCount>
       <paraCount>8</paraCount>
-      <cursorPos>1332</cursorPos>
+      <cursorPos>219</cursorPos>
     </item>
     <item handle="bc0cbd2a407f3" order="2" parent="e7ded148d6e4a">
       <name>Another Scene</name>

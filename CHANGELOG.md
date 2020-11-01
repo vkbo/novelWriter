@@ -1,15 +1,20 @@
 # novelWriter ChangeLog
 
-## Version 1.0 Release Candidate 1 [2020-11-01]
+## Version 1.0 Release Candidate 1 [2020-11-08]
 
 **Installation**
 
 * A new setup option `setup.py xdg-install` will install the desktop integration (icons, mime and launcher) using the OS' `xdg-utils`. This is a more standardised way of installing these elements, and replaces the previous `launcher` option. PR #484.
 
+**Bugfixes**
+
+* The Details Panel below the Outline Tree View was not cleared when a project was closed, and whatever was listed there was still present if a new project was opened. The panel is now reset when a project is closed. Issue #490, PR #491.
+
 **User Interface**
 
 * The Typewriter Mode feature has been improved to keep the cursor stationary at any point in the document as long as the cursor is at a user-defined minimum distance from the top of the editor window. The mouse, arrow and page keys do not trigger a reposition. The new behaviour is similar to that of the Gutenberg editor in WordPress. PR #482.
 * The document editor and viewer are now properly updated when the user switches syntax theme. There is no longer a need to restart novelWriter first to apply the changes. PR #487.
+* Some minor GUI changes include: don't run the background word counter when there is no document open, make the split panels of the Build Novel Project tool non-collapsible, and set the initial column widths of tree views to more sensible values. PR #489.
 
 **Other Changes**
 
@@ -19,6 +24,7 @@
 **Code Improvements**
 
 * There has been some clean-up of comments and docstrings, as well as optimisation and merging of a few functions that were implemented in multiple places. PR #485.
+* Move some of the constants defined in various other classes into the appropriate constants classes, and make all constants upper case variables. PR #489.
 
 
 ## Version 1.0 Beta 5 [2020-10-18]
