@@ -145,7 +145,6 @@ class NWTree():
         """
         tocList = []
         tocLen = 0
-        # for tHandle in sorted(self._treeOrder):
         for tHandle in self._treeOrder:
             tItem = self.__getitem__(tHandle)
             if tItem is None:
