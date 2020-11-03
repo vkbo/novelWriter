@@ -627,7 +627,6 @@ def testProjectOldFormat(nwDummy, nwOldProj):
     # Check that new files have been created
     assert os.path.isfile(os.path.join(nwOldProj, "meta", "guiOptions.json"))
     assert os.path.isfile(os.path.join(nwOldProj, "meta", "sessionStats.log"))
-    assert os.path.isfile(os.path.join(nwOldProj, "ToC.json"))
     assert os.path.isfile(os.path.join(nwOldProj, "ToC.txt"))
 
 @pytest.mark.project

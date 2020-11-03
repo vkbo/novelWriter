@@ -139,45 +139,42 @@ class NWTree():
 
         return True
 
-    def writeToCFiles(self):
-        """Write the convenience table of contents files in the root of
-        the project directory. These files are there to assist the user
-        if they wish to browse the stored files.
+    def writeToCFile(self):
+        """Write the convenience table of contents file in the root of
+        the project directory.
         """
-        tocText = os.path.join(self.theProject.projPath, nwFiles.TOC_TXT)
-        tocJson = os.path.join(self.theProject.projPath, nwFiles.TOC_JSON)
+        tocList = []
+        tocLen = 0
+        # for tHandle in sorted(self._treeOrder):
+        for tHandle in self._treeOrder:
+            tItem = self.__getitem__(tHandle)
+            if tItem is None:
+                continue
+            tFile = tHandle+".nwd"
+            if os.path.isfile(os.path.join(self.theProject.projContent, tFile)):
+                tocLine = "%-25s  %-9s  %-10s  %s" % (
+                    os.path.join("content", tFile),
+                    tItem.itemClass.name,
+                    tItem.itemLayout.name,
+                    tItem.itemName,
+                )
+                tocList.append(tocLine)
+                tocLen = max(tocLen, len(tocLine))
 
-        jsonData = []
         try:
             # Dump the text
+            tocText = os.path.join(self.theProject.projPath, nwFiles.TOC_TXT)
             with open(tocText, mode="w", encoding="utf8") as outFile:
                 outFile.write("\n")
-                outFile.write(" Table of Contents\n")
-                outFile.write("===================\n")
+                outFile.write("Table of Contents\n")
+                outFile.write("=================\n")
                 outFile.write("\n")
-                outFile.write(" %-25s  %-9s  %s\n" % ("File Name", "Class", "Document Label"))
-                outFile.write("-"*80+"\n")
-                for tHandle in sorted(self._treeOrder):
-                    tItem = self.__getitem__(tHandle)
-                    if tItem is None:
-                        continue
-                    tFile = tHandle+".nwd"
-                    if os.path.isfile(os.path.join(self.theProject.projContent, tFile)):
-                        outFile.write(" %-25s  %-9s  %s\n" % (
-                            os.path.join("content", tFile),
-                            tItem.itemClass.name,
-                            tItem.itemName,
-                        ))
-                        jsonData.append([
-                            os.path.join("content", tFile),
-                            tItem.itemClass.name,
-                            tItem.itemName,
-                        ])
+                outFile.write("%-25s  %-9s  %-10s  %s\n" % (
+                    "File Name", "Class", "Layout", "Document Label"
+                ))
+                outFile.write("-"*tocLen + "\n")
+                outFile.write("\n".join(tocList))
                 outFile.write("\n")
-
-            # Dump the JSON
-            with open(tocJson, mode="w+", encoding="utf8") as outFile:
-                json.dump(jsonData, outFile, indent=2)
 
         except Exception as e:
             logger.error(str(e))
