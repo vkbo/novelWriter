@@ -743,7 +743,7 @@ class NWProject():
         """Close the current project and clear all meta data.
         """
         self.optState.saveSettings()
-        self.projTree.writeToCFiles()
+        self.projTree.writeToCFile()
         self._appendSessionStats()
         self._clearLockFile()
         self.clearProject()
@@ -1480,6 +1480,7 @@ class NWProject():
             os.path.join(self.projMeta,  "timelineOptions.json"),
             os.path.join(self.projMeta,  "docMergeOptions.json"),
             os.path.join(self.projMeta,  "sessionLogOptions.json"),
+            os.path.join(self.projPath,  "ToC.json"),
         ]
 
         for rmFile in rmList:

@@ -49,8 +49,8 @@ and the file extension ``.nwd``.
 
 If you wish to find the physical location of a file in the project, you can either look it up in the
 project XML file, select :guilabel:`Show File Details` from the :guilabel:`Document` menu when
-having the document open, or look in one of the ``ToC`` files in the root of the project folder.
-The ``ToC`` files have a list of all document files in the project and where they are saved.
+having the document open, or look in the ``ToC.txt`` file in the root of the project folder.
+The ``ToC.txt`` file has a list of all document files in the project and where they are saved.
 
 The reason for this cryptic file naming is to avoid issues with file naming conventions and
 restrictions on different operating systems, and also to have a file name that does not depend on
