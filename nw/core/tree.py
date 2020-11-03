@@ -26,7 +26,6 @@
 """
 
 import logging
-import json
 import os
 
 from lxml import etree
