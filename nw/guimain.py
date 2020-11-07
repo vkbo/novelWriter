@@ -316,7 +316,8 @@ class GuiMain(QMainWindow):
         if not isYes:
             msgBox = QMessageBox()
             msgRes = msgBox.question(
-                self, "Close Project", "Save changes and close the current project?"
+                self, "Close Project",
+                "Close the current project?<br>Changes are saved automatically."
             )
             if msgRes != QMessageBox.Yes:
                 return False
@@ -988,7 +989,8 @@ class GuiMain(QMainWindow):
         if self.hasProject:
             msgBox = QMessageBox()
             msgRes = msgBox.question(
-                self, "Exit", "Do you want to save changes and exit?"
+                self, "Exit",
+                "Do you want to exit novelWriter?<br>Changes are saved automatically."
             )
             if msgRes != QMessageBox.Yes:
                 return False
