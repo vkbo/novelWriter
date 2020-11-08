@@ -59,7 +59,6 @@ class nwFiles():
     PROJ_DICT   = "wordlist.txt"
     PROJ_LOCK   = "nwProject.lock"
     TOC_TXT     = "ToC.txt"
-    TOC_JSON    = "ToC.json"
     SESS_STATS  = "sessionStats.log"
     INDEX_FILE  = "tagsIndex.json"
     OPTS_FILE   = "guiOptions.json"

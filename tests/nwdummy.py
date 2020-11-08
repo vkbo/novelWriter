@@ -6,6 +6,7 @@ class DummyMain():
 
     def __init__(self):
         self.mainConf = None
+        self.hasProject = True
         self.statusBar = StatusBar()
         return
 

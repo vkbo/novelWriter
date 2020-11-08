@@ -316,7 +316,8 @@ class GuiMain(QMainWindow):
         if not isYes:
             msgBox = QMessageBox()
             msgRes = msgBox.question(
-                self, "Close Project", "Save changes and close the current project?"
+                self, "Close Project",
+                "Close the current project?<br>Changes are saved automatically."
             )
             if msgRes != QMessageBox.Yes:
                 return False
@@ -442,6 +443,7 @@ class GuiMain(QMainWindow):
         """Save the current project.
         """
         if not self.hasProject:
+            logger.error("No project open")
             return False
 
         # If the project is new, it may not have a path, so we need one
@@ -465,27 +467,33 @@ class GuiMain(QMainWindow):
     def closeDocument(self):
         """Close the document and clear the editor and title field.
         """
-        if self.hasProject:
-            self.docEditor.saveCursorPosition()
-            if self.docEditor.docChanged:
-                self.saveDocument()
-            self.docEditor.clearEditor()
+        if not self.hasProject:
+            logger.error("No project open")
+            return False
+
+        self.docEditor.saveCursorPosition()
+        if self.docEditor.docChanged:
+            self.saveDocument()
+        self.docEditor.clearEditor()
 
         return True
 
     def openDocument(self, tHandle, tLine=None, changeFocus=True, doScroll=False):
         """Open a specific document, optionally at a given line.
         """
-        if self.hasProject:
-            self.closeDocument()
-            self.tabWidget.setCurrentWidget(self.splitDocs)
-            if self.docEditor.loadText(tHandle, tLine):
-                if changeFocus:
-                    self.docEditor.setFocus()
-                self.theProject.setLastEdited(tHandle)
-                self.treeView.setSelectedHandle(tHandle, doScroll=doScroll)
-            else:
-                return False
+        if not self.hasProject:
+            logger.error("No project open")
+            return False
+
+        self.closeDocument()
+        self.tabWidget.setCurrentWidget(self.splitDocs)
+        if self.docEditor.loadText(tHandle, tLine):
+            if changeFocus:
+                self.docEditor.setFocus()
+            self.theProject.setLastEdited(tHandle)
+            self.treeView.setSelectedHandle(tHandle, doScroll=doScroll)
+        else:
+            return False
 
         return True
 
@@ -493,43 +501,54 @@ class GuiMain(QMainWindow):
         """Opens the next document in the project tree, following the
         document with the given handle. Stops when reaching the end.
         """
-        if self.hasProject:
-            self.treeView.flushTreeOrder()
-            nHandle = None  # The next handle after tHandle
-            fHandle = None  # The first file handle we encounter
-            foundIt = False # We've found tHandle, pick the next we see
-            for tItem in self.theProject.projTree:
-                if tItem is None:
-                    continue
-                if tItem.itemType != nwItemType.FILE:
-                    continue
-                if fHandle is None:
-                    fHandle = tItem.itemHandle
-                if tItem.itemHandle == tHandle:
-                    foundIt = True
-                elif foundIt:
-                    nHandle = tItem.itemHandle
-                    break
+        if not self.hasProject:
+            logger.error("No project open")
+            return False
 
-            if nHandle is not None:
-                self.openDocument(nHandle, tLine=0, doScroll=True)
-                return True
-            elif wrapAround:
-                self.openDocument(fHandle, tLine=0, doScroll=True)
-                return False
+        self.treeView.flushTreeOrder()
+        nHandle = None  # The next handle after tHandle
+        fHandle = None  # The first file handle we encounter
+        foundIt = False # We've found tHandle, pick the next we see
+        for tItem in self.theProject.projTree:
+            if tItem is None:
+                continue
+            if tItem.itemType != nwItemType.FILE:
+                continue
+            if fHandle is None:
+                fHandle = tItem.itemHandle
+            if tItem.itemHandle == tHandle:
+                foundIt = True
+            elif foundIt:
+                nHandle = tItem.itemHandle
+                break
+
+        if nHandle is not None:
+            self.openDocument(nHandle, tLine=0, doScroll=True)
+            return True
+        elif wrapAround:
+            self.openDocument(fHandle, tLine=0, doScroll=True)
+            return False
 
         return False
 
     def saveDocument(self):
         """Save the current documents.
         """
-        if self.hasProject:
-            self.docEditor.saveText()
+        if not self.hasProject:
+            logger.error("No project open")
+            return False
+
+        self.docEditor.saveText()
+
         return True
 
     def viewDocument(self, tHandle=None, tAnchor=None):
         """Load a document for viewing in the view panel.
         """
+        if not self.hasProject:
+            logger.error("No project open")
+            return False
+
         if tHandle is None:
             logger.debug("Viewing document, but no handle provided")
 
@@ -573,8 +592,11 @@ class GuiMain(QMainWindow):
         """Import the text contained in an out-of-project text file, and
         insert the text into the currently open document.
         """
-        lastPath = self.mainConf.lastPath
+        if not self.hasProject:
+            logger.error("No project open")
+            return False
 
+        lastPath = self.mainConf.lastPath
         extFilter = [
             "Text files (*.txt)",
             "Markdown files (*.md)",
@@ -627,16 +649,26 @@ class GuiMain(QMainWindow):
     def mergeDocuments(self):
         """Merge multiple documents to one single new document.
         """
+        if not self.hasProject:
+            logger.error("No project open")
+            return False
+
         dlgMerge = GuiDocMerge(self, self.theProject)
         dlgMerge.exec_()
-        return
+
+        return True
 
     def splitDocument(self):
         """Split a single document into multiple documents.
         """
+        if not self.hasProject:
+            logger.error("No project open")
+            return False
+
         dlgSplit = GuiDocSplit(self, self.theProject)
         dlgSplit.exec_()
-        return
+
+        return True
 
     def passDocumentAction(self, theAction):
         """Pass on document action theAction to the document viewer if
@@ -655,6 +687,10 @@ class GuiMain(QMainWindow):
     def openSelectedItem(self):
         """Open the selected documents.
         """
+        if not self.hasProject:
+            logger.error("No project open")
+            return False
+
         tHandle = self.treeView.getSelectedHandle()
         if tHandle is None:
             logger.warning("No item selected")
@@ -673,6 +709,10 @@ class GuiMain(QMainWindow):
     def editItem(self, tHandle=None):
         """Open the edit item dialog.
         """
+        if not self.hasProject:
+            logger.error("No project open")
+            return False
+
         if tHandle is None:
             tHandle = self.treeView.getSelectedHandle()
         if tHandle is None:
@@ -703,6 +743,7 @@ class GuiMain(QMainWindow):
         """Rebuild the entire index.
         """
         if not self.hasProject:
+            logger.error("No project open")
             return False
 
         logger.debug("Rebuilding index ...")
@@ -748,9 +789,14 @@ class GuiMain(QMainWindow):
     def rebuildOutline(self):
         """Force a rebuild of the Outline view.
         """
+        if not self.hasProject:
+            logger.error("No project open")
+            return False
+
         logger.verbose("Forcing a rebuild of the Project Outline")
         self.tabWidget.setCurrentWidget(self.splitOutline)
         self.projView.refreshTree(overRide=True)
+
         return True
 
     ##
@@ -943,7 +989,8 @@ class GuiMain(QMainWindow):
         if self.hasProject:
             msgBox = QMessageBox()
             msgRes = msgBox.question(
-                self, "Exit", "Do you want to save changes and exit?"
+                self, "Exit",
+                "Do you want to exit novelWriter?<br>Changes are saved automatically."
             )
             if msgRes != QMessageBox.Yes:
                 return False
@@ -1008,6 +1055,7 @@ class GuiMain(QMainWindow):
         """
         if self.docEditor.theHandle is None:
             logger.error("No document open, so not activating Focus Mode")
+            self.mainMenu.aFocusMode.setChecked(self.isFocusMode)
             return False
 
         self.isFocusMode = not self.isFocusMode
