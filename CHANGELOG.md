@@ -1,6 +1,6 @@
 # novelWriter ChangeLog
 
-## Version 1.0 Release Candidate 1 [2020-11-08]
+## Version 1.0 Release Candidate 1 [2020-11-15]
 
 **Installation**
 
@@ -15,11 +15,14 @@
 * The Typewriter Mode feature has been improved to keep the cursor stationary at any point in the document as long as the cursor is at a user-defined minimum distance from the top of the editor window. The mouse, arrow and page keys do not trigger a reposition. The new behaviour is similar to that of the Gutenberg editor in WordPress. PR #482.
 * The document editor and viewer are now properly updated when the user switches syntax theme. There is no longer a need to restart novelWriter first to apply the changes. PR #487.
 * Some minor GUI changes include: don't run the background word counter when there is no document open, make the split panels of the Build Novel Project tool non-collapsible, and set the initial column widths of tree views to more sensible values. PR #489.
+* Block various menu actions, like split and merge documents, project backup, inserts, etc, when there is no project open. None of these caused any errors as these actions were all handled by the various tools, but they shouldn't even trigger when there is no project to perform the action on. PR #492.
+* Clarify the message of the Close Project and Exit novelWriter dialogs. Previously, it may have seemed to some users that clicking "No" would allow the closing to procede without saving changes. This is not true as changes are saved automatically when editing a project. The dialog text should now make this clearer. Issue #494, PR #495.
 
 **Other Changes**
 
 * The index cache file `meta/tagsIndex.json` now has line breaks and indents. This makes it easier to version control if the user really wants to track this file. PR #483.
 * The format of the meta data at the top of document files has been changed to be easier to parse, and easier to extend with new settings. It is also more human readable in cases where the user opens a document file with other software. PR #486.
+* Remove the `ToC.json` file and improve the `ToC.txt` file. There latter now has additional information and the format has been improved slightly to be easier to parse if read by an external program or script. PR #493.
 
 **Code Improvements**
 
