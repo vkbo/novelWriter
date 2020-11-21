@@ -12,13 +12,14 @@ from shutil import copyfile
 from nwtools import cmpFiles
 
 from PyQt5.QtCore import Qt, QUrl, QPoint, QItemSelectionModel
-from PyQt5.QtGui import QTextCursor, QColor, QPixmap, QIcon
+from PyQt5.QtGui import QTextCursor, QColor, QPixmap, QIcon, QTextBlock
 from PyQt5.QtWidgets import (
     qApp, QAction, QTreeWidgetItem, QStyle, QFileDialog, QMessageBox
 )
 
 from nw.constants import (
-    nwItemType, nwItemClass, nwUnicode, nwOutline, nwDocAction, nwDocInsert
+    nwItemType, nwItemClass, nwUnicode, nwOutline, nwDocAction, nwDocInsert,
+    nwKeyWords
 )
 
 keyDelay = 2
@@ -1099,8 +1100,57 @@ def testInsertMenu(qtbot, monkeypatch, nwFuncTemp, nwTemp):
     nwGUI.docEditor.clear()
 
     ##
+    #  Insert Keywords
+    ##
+
+    nwGUI.docEditor.setText("Stuff")
+    nwGUI.mainMenu.mInsKWItems[nwKeyWords.TAG_KEY][0].activate(QAction.Trigger)
+    assert nwGUI.docEditor.getText() == "Stuff\n%s: " % nwKeyWords.TAG_KEY
+
+    nwGUI.docEditor.setText("Stuff")
+    nwGUI.mainMenu.mInsKWItems[nwKeyWords.POV_KEY][0].activate(QAction.Trigger)
+    assert nwGUI.docEditor.getText() == "Stuff\n%s: " % nwKeyWords.POV_KEY
+
+    nwGUI.docEditor.setText("Stuff")
+    nwGUI.mainMenu.mInsKWItems[nwKeyWords.CHAR_KEY][0].activate(QAction.Trigger)
+    assert nwGUI.docEditor.getText() == "Stuff\n%s: " % nwKeyWords.CHAR_KEY
+
+    nwGUI.docEditor.setText("Stuff")
+    nwGUI.mainMenu.mInsKWItems[nwKeyWords.PLOT_KEY][0].activate(QAction.Trigger)
+    assert nwGUI.docEditor.getText() == "Stuff\n%s: " % nwKeyWords.PLOT_KEY
+
+    nwGUI.docEditor.setText("Stuff")
+    nwGUI.mainMenu.mInsKWItems[nwKeyWords.TIME_KEY][0].activate(QAction.Trigger)
+    assert nwGUI.docEditor.getText() == "Stuff\n%s: " % nwKeyWords.TIME_KEY
+
+    nwGUI.docEditor.setText("Stuff")
+    nwGUI.mainMenu.mInsKWItems[nwKeyWords.WORLD_KEY][0].activate(QAction.Trigger)
+    assert nwGUI.docEditor.getText() == "Stuff\n%s: " % nwKeyWords.WORLD_KEY
+
+    nwGUI.docEditor.setText("Stuff")
+    nwGUI.mainMenu.mInsKWItems[nwKeyWords.OBJECT_KEY][0].activate(QAction.Trigger)
+    assert nwGUI.docEditor.getText() == "Stuff\n%s: " % nwKeyWords.OBJECT_KEY
+
+    nwGUI.docEditor.setText("Stuff")
+    nwGUI.mainMenu.mInsKWItems[nwKeyWords.ENTITY_KEY][0].activate(QAction.Trigger)
+    assert nwGUI.docEditor.getText() == "Stuff\n%s: " % nwKeyWords.ENTITY_KEY
+
+    nwGUI.docEditor.setText("Stuff")
+    nwGUI.mainMenu.mInsKWItems[nwKeyWords.CUSTOM_KEY][0].activate(QAction.Trigger)
+    assert nwGUI.docEditor.getText() == "Stuff\n%s: " % nwKeyWords.CUSTOM_KEY
+
+    # Faulty Keyword Inserts
+    assert not nwGUI.docEditor.insertKeyWord("blabla")
+    monkeypatch.setattr(QTextBlock, "isValid", lambda *args, **kwards: False)
+    assert not nwGUI.docEditor.insertKeyWord(nwKeyWords.TAG_KEY)
+    monkeypatch.undo()
+
+    nwGUI.docEditor.clear()
+
+    ##
     #  Insert text from file
     ##
+
     nwGUI.closeDocument()
 
     # First, with no path

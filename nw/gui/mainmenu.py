@@ -32,7 +32,9 @@ from PyQt5.QtCore import QUrl, QProcess
 from PyQt5.QtGui import QDesktopServices
 from PyQt5.QtWidgets import QMenuBar, QAction
 
-from nw.constants import nwItemType, nwItemClass, nwDocAction, nwDocInsert
+from nw.constants import (
+    nwItemType, nwItemClass, nwDocAction, nwDocInsert, nwKeyWords, nwLabels
+)
 
 logger = logging.getLogger(__name__)
 
@@ -61,10 +63,11 @@ class GuiMainMenu(QMenuBar):
         self._buildHelpMenu()
 
         # Function Pointers
-        self._docAction    = self.theParent.passDocumentAction
-        self._moveTreeItem = self.theParent.treeView.moveTreeItem
-        self._newTreeItem  = self.theParent.treeView.newTreeItem
-        self._docInsert    = self.theParent.docEditor.insertText
+        self._docAction     = self.theParent.passDocumentAction
+        self._moveTreeItem  = self.theParent.treeView.moveTreeItem
+        self._newTreeItem   = self.theParent.treeView.newTreeItem
+        self._docInsert     = self.theParent.docEditor.insertText
+        self._insertKeyWord = self.theParent.docEditor.insertKeyWord
 
         logger.debug("GuiMainMenu initialisation complete")
 
@@ -499,98 +502,121 @@ class GuiMainMenu(QMenuBar):
         # Insert
         self.insertMenu = self.addMenu("&Insert")
 
+        # Insert > Dashes and Dots
+        self.mInsDashes = self.insertMenu.addMenu("Dashes and Dots")
+
         # Insert > Short Dash
         self.aInsENDash = QAction("Short Dash", self)
         self.aInsENDash.setStatusTip("Insert short dash")
         self.aInsENDash.setShortcut("Ctrl+K, -")
         self.aInsENDash.triggered.connect(lambda: self._docInsert(nwDocInsert.SHORT_DASH))
-        self.insertMenu.addAction(self.aInsENDash)
+        self.mInsDashes.addAction(self.aInsENDash)
 
         # Insert > Long Dash
         self.aInsEMDash = QAction("Long Dash", self)
         self.aInsEMDash.setStatusTip("Insert long dash")
         self.aInsEMDash.setShortcut("Ctrl+K, _")
         self.aInsEMDash.triggered.connect(lambda: self._docInsert(nwDocInsert.LONG_DASH))
-        self.insertMenu.addAction(self.aInsEMDash)
+        self.mInsDashes.addAction(self.aInsEMDash)
 
         # Insert > Ellipsis
         self.aInsEllipsis = QAction("Ellipsis", self)
         self.aInsEllipsis.setStatusTip("Insert ellipsis")
         self.aInsEllipsis.setShortcut("Ctrl+K, .")
         self.aInsEllipsis.triggered.connect(lambda: self._docInsert(nwDocInsert.ELLIPSIS))
-        self.insertMenu.addAction(self.aInsEllipsis)
+        self.mInsDashes.addAction(self.aInsEllipsis)
 
-        # Insert > Separator
-        self.insertMenu.addSeparator()
+        # Insert > Quote Marks
+        self.mInsQuotes = self.insertMenu.addMenu("Quote Marks")
 
         # Insert > Left Single Quote
         self.aInsQuoteLS = QAction("Left Single Quote", self)
         self.aInsQuoteLS.setStatusTip("Insert left single quote")
         self.aInsQuoteLS.setShortcut("Ctrl+K, 1")
         self.aInsQuoteLS.triggered.connect(lambda: self._docInsert(nwDocInsert.QUOTE_LS))
-        self.insertMenu.addAction(self.aInsQuoteLS)
+        self.mInsQuotes.addAction(self.aInsQuoteLS)
 
         # Insert > Right Single Quote
         self.aInsQuoteRS = QAction("Right Single Quote", self)
         self.aInsQuoteRS.setStatusTip("Insert right single quote")
         self.aInsQuoteRS.setShortcut("Ctrl+K, 2")
         self.aInsQuoteRS.triggered.connect(lambda: self._docInsert(nwDocInsert.QUOTE_RS))
-        self.insertMenu.addAction(self.aInsQuoteRS)
+        self.mInsQuotes.addAction(self.aInsQuoteRS)
 
         # Insert > Left Double Quote
         self.aInsQuoteLD = QAction("Left Double Quote", self)
         self.aInsQuoteLD.setStatusTip("Insert left double quote")
         self.aInsQuoteLD.setShortcut("Ctrl+K, 3")
         self.aInsQuoteLD.triggered.connect(lambda: self._docInsert(nwDocInsert.QUOTE_LD))
-        self.insertMenu.addAction(self.aInsQuoteLD)
+        self.mInsQuotes.addAction(self.aInsQuoteLD)
 
         # Insert > Right Double Quote
         self.aInsQuoteRD = QAction("Right Double Quote", self)
         self.aInsQuoteRD.setStatusTip("Insert right double quote")
         self.aInsQuoteRD.setShortcut("Ctrl+K, 4")
         self.aInsQuoteRD.triggered.connect(lambda: self._docInsert(nwDocInsert.QUOTE_RD))
-        self.insertMenu.addAction(self.aInsQuoteRD)
-
-        # Insert > Separator
-        self.insertMenu.addSeparator()
+        self.mInsQuotes.addAction(self.aInsQuoteRD)
 
         # Insert > Alternative Apostrophe
         self.aInsMSApos = QAction("Alternative Apostrophe", self)
         self.aInsMSApos.setStatusTip("Insert unicode modifier letter single apostrophe")
         self.aInsMSApos.setShortcut("Ctrl+K, '")
         self.aInsMSApos.triggered.connect(lambda: self._docInsert(nwDocInsert.MODAPOS_S))
-        self.insertMenu.addAction(self.aInsMSApos)
+        self.mInsQuotes.addAction(self.aInsMSApos)
 
-        # Insert > Separator
-        self.insertMenu.addSeparator()
+        # Insert > Breaks and Spaces
+        self.mInsBreaks = self.insertMenu.addMenu("Breaks and Spaces")
 
         # Insert > Hard Line Break
         self.aInsHardBreak = QAction("Hard Line Break", self)
         self.aInsHardBreak.setStatusTip("Insert a hard line break")
         self.aInsHardBreak.setShortcut("Ctrl+K, Return")
         self.aInsHardBreak.triggered.connect(lambda: self._docInsert(nwDocInsert.HARD_BREAK))
-        self.insertMenu.addAction(self.aInsHardBreak)
+        self.mInsBreaks.addAction(self.aInsHardBreak)
 
         # Insert > Non-Breaking Space
         self.aInsNBSpace = QAction("Non-Breaking Space", self)
         self.aInsNBSpace.setStatusTip("Insert a non-breaking space")
         self.aInsNBSpace.setShortcut("Ctrl+K, Space")
         self.aInsNBSpace.triggered.connect(lambda: self._docInsert(nwDocInsert.NB_SPACE))
-        self.insertMenu.addAction(self.aInsNBSpace)
+        self.mInsBreaks.addAction(self.aInsNBSpace)
 
         # Insert > Thin Space
         self.aInsThinSpace = QAction("Thin Space", self)
         self.aInsThinSpace.setStatusTip("Insert a thin space")
         self.aInsThinSpace.setShortcut("Ctrl+K, Shift+Space")
         self.aInsThinSpace.triggered.connect(lambda: self._docInsert(nwDocInsert.THIN_SPACE))
-        self.insertMenu.addAction(self.aInsThinSpace)
+        self.mInsBreaks.addAction(self.aInsThinSpace)
 
         # Insert > Thin Non-Breaking Space
         self.aInsThinNBSpace = QAction("Thin Non-Breaking Space", self)
         self.aInsThinNBSpace.setStatusTip("Insert a thin non-breaking space")
         self.aInsThinNBSpace.setShortcut("Ctrl+K, Ctrl+Space")
         self.aInsThinNBSpace.triggered.connect(lambda: self._docInsert(nwDocInsert.THIN_NB_SPACE))
-        self.insertMenu.addAction(self.aInsThinNBSpace)
+        self.mInsBreaks.addAction(self.aInsThinNBSpace)
+
+        # Insert > Separator
+        self.insertMenu.addSeparator()
+
+        # Insert > Keywords and Tags
+        self.mInsKeywords = self.insertMenu.addMenu("Keywords and Tags")
+        self.mInsKWItems = {}
+        self.mInsKWItems[nwKeyWords.TAG_KEY]    = (QAction(self.mInsKeywords), "Ctrl+K, G")
+        self.mInsKWItems[nwKeyWords.POV_KEY]    = (QAction(self.mInsKeywords), "Ctrl+K, V")
+        self.mInsKWItems[nwKeyWords.CHAR_KEY]   = (QAction(self.mInsKeywords), "Ctrl+K, C")
+        self.mInsKWItems[nwKeyWords.PLOT_KEY]   = (QAction(self.mInsKeywords), "Ctrl+K, P")
+        self.mInsKWItems[nwKeyWords.TIME_KEY]   = (QAction(self.mInsKeywords), "Ctrl+K, T")
+        self.mInsKWItems[nwKeyWords.WORLD_KEY]  = (QAction(self.mInsKeywords), "Ctrl+K, L")
+        self.mInsKWItems[nwKeyWords.OBJECT_KEY] = (QAction(self.mInsKeywords), "Ctrl+K, O")
+        self.mInsKWItems[nwKeyWords.ENTITY_KEY] = (QAction(self.mInsKeywords), "Ctrl+K, E")
+        self.mInsKWItems[nwKeyWords.CUSTOM_KEY] = (QAction(self.mInsKeywords), "Ctrl+K, X")
+        for n, keyWord in enumerate(self.mInsKWItems):
+            self.mInsKWItems[keyWord][0].setText(nwLabels.KEY_NAME[keyWord])
+            self.mInsKWItems[keyWord][0].setShortcut(self.mInsKWItems[keyWord][1])
+            self.mInsKWItems[keyWord][0].triggered.connect(
+                lambda n, keyWord=keyWord: self._insertKeyWord(keyWord)
+            )
+            self.mInsKeywords.addAction(self.mInsKWItems[keyWord][0])
 
         return
 

@@ -1143,6 +1143,9 @@ class GuiMain(QMainWindow):
         self.addAction(self.mainMenu.aInsThinSpace)
         self.addAction(self.mainMenu.aInsThinNBSpace)
 
+        for mAction, _ in self.mainMenu.mInsKWItems.values():
+            self.addAction(mAction)
+
         # Format
         self.addAction(self.mainMenu.aFmtEmph)
         self.addAction(self.mainMenu.aFmtStrong)

@@ -54,7 +54,8 @@ from nw.core import NWDoc, NWSpellSimple, countWords
 from nw.gui.dochighlight import GuiDocHighlighter
 from nw.common import transferCase
 from nw.constants import (
-    nwConst, nwAlert, nwUnicode, nwDocAction, nwDocInsert, nwItemClass
+    nwConst, nwAlert, nwUnicode, nwDocAction, nwDocInsert, nwItemClass,
+    nwKeyWords
 )
 
 logger = logging.getLogger(__name__)
@@ -752,6 +753,35 @@ class GuiDocEditor(QTextEdit):
         theCursor.beginEditBlock()
         theCursor.insertText(theText)
         theCursor.endEditBlock()
+
+        return True
+
+    def insertKeyWord(self, keyWord):
+        """Insert a keyword in the text editor, at the cursor position.
+        If the insert line is not blank, a new line is started.
+        """
+        if keyWord not in nwKeyWords.VALID_KEYS:
+            logger.error("Invalid keyword '%s'" % keyWord)
+            return False
+
+        logger.verbose("Inserting keyword '%s'" % keyWord)
+
+        theCursor = self.textCursor()
+        theBlock = theCursor.block()
+        if not theBlock.isValid():
+            logger.error("Filed to insert keyword '%s'" % keyWord)
+            return False
+
+        theCursor.beginEditBlock()
+
+        if theBlock.length() > 1:
+            theCursor.setPosition(theBlock.position() + theBlock.length() - 1)
+            theCursor.insertText("\n")
+
+        theCursor.insertText("%s: " % keyWord)
+        theCursor.endEditBlock()
+
+        self.setTextCursor(theCursor)
 
         return True
 
