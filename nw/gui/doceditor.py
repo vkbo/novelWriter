@@ -773,10 +773,15 @@ class GuiDocEditor(QTextEdit):
             return False
 
         theCursor.beginEditBlock()
+
         if theBlock.length() > 1:
+            theCursor.setPosition(theBlock.position() + theBlock.length() - 1)
             theCursor.insertText("\n")
+
         theCursor.insertText("%s: " % keyWord)
         theCursor.endEditBlock()
+
+        self.setTextCursor(theCursor)
 
         return True
 
