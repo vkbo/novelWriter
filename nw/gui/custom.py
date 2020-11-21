@@ -59,8 +59,9 @@ class QConfigLayout(QGridLayout):
 
         self._itemMap = {}
 
-        self.setHorizontalSpacing(8)
-        self.setVerticalSpacing(8)
+        wSp = nw.CONFIG.pxInt(8)
+        self.setHorizontalSpacing(wSp)
+        self.setVerticalSpacing(wSp)
 
         return
 
@@ -107,11 +108,12 @@ class QConfigLayout(QGridLayout):
             qLabel = None
             raise ValueError("theLabel must be a QLabel")
 
-        qLabel.setContentsMargins(0, 4, 0, 4)
+        hM = nw.CONFIG.pxInt(4)
+        qLabel.setContentsMargins(0, hM, 0, hM)
         self.addWidget(qLabel, self._nextRow, 0, 1, 2, Qt.AlignLeft)
 
         self.setRowStretch(self._nextRow, 0)
-        self.setRowStretch(self._nextRow+1, 1)
+        self.setRowStretch(self._nextRow + 1, 1)
 
         self._nextRow += 1
 
@@ -140,10 +142,11 @@ class QConfigLayout(QGridLayout):
             qWidget = None
             raise ValueError("theWidget must be a QWidget")
 
-        qLabel.setIndent(8)
+        wSp = nw.CONFIG.pxInt(8)
+        qLabel.setIndent(wSp)
         if helpText is not None:
             qHelp = QHelpLabel(str(helpText), self._helpCol, self._fontScale)
-            qHelp.setIndent(8)
+            qHelp.setIndent(wSp)
 
             labelBox = QVBoxLayout()
             labelBox.addWidget(qLabel)
@@ -160,13 +163,13 @@ class QConfigLayout(QGridLayout):
             controlBox = QHBoxLayout()
             controlBox.addWidget(qWidget, 0, Qt.AlignVCenter)
             controlBox.addWidget(QLabel(theUnit), 0, Qt.AlignVCenter)
-            controlBox.setSpacing(8)
+            controlBox.setSpacing(wSp)
             self.addLayout(controlBox, self._nextRow, 1, 1, 1, Qt.AlignRight | Qt.AlignVCenter)
         elif theButton is not None:
             controlBox = QHBoxLayout()
             controlBox.addWidget(qWidget, 0, Qt.AlignVCenter)
             controlBox.addWidget(theButton, 0, Qt.AlignVCenter)
-            controlBox.setSpacing(8)
+            controlBox.setSpacing(wSp)
             self.addLayout(controlBox, self._nextRow, 1, 1, 1, Qt.AlignRight | Qt.AlignVCenter)
         else:
             self.addWidget(qWidget, self._nextRow, 1, 1, 1, Qt.AlignRight | Qt.AlignVCenter)
@@ -215,11 +218,19 @@ class QHelpLabel(QLabel):
 
 class QSwitch(QAbstractButton):
 
-    def __init__(self, parent=None, width=40, height=20):
+    def __init__(self, parent=None, width=None, height=None):
         super().__init__(parent=parent)
 
-        self._xW = int(nw.CONFIG.guiScale*width)
-        self._xH = int(nw.CONFIG.guiScale*height)
+        if width is None:
+            self._xW = nw.CONFIG.pxInt(40)
+        else:
+            self._xW = width
+
+        if height is None:
+            self._xH = nw.CONFIG.pxInt(20)
+        else:
+            self._xH = height
+
         self._xR = int(self._xH*0.5)
         self._xT = int(self._xH*0.6)
         self._rB = int(nw.CONFIG.guiScale*2)
