@@ -502,6 +502,102 @@ class GuiMainMenu(QMenuBar):
         # Insert
         self.insertMenu = self.addMenu("&Insert")
 
+        # Insert > Dashes
+        self.mInsDashes = self.insertMenu.addMenu("Dashes")
+
+        # Insert > Short Dash
+        self.aInsENDash = QAction("Short Dash", self)
+        self.aInsENDash.setStatusTip("Insert short dash")
+        self.aInsENDash.setShortcut("Ctrl+K, -")
+        self.aInsENDash.triggered.connect(lambda: self._docInsert(nwDocInsert.SHORT_DASH))
+        self.mInsDashes.addAction(self.aInsENDash)
+
+        # Insert > Long Dash
+        self.aInsEMDash = QAction("Long Dash", self)
+        self.aInsEMDash.setStatusTip("Insert long dash")
+        self.aInsEMDash.setShortcut("Ctrl+K, _")
+        self.aInsEMDash.triggered.connect(lambda: self._docInsert(nwDocInsert.LONG_DASH))
+        self.mInsDashes.addAction(self.aInsEMDash)
+
+        # Insert > Ellipsis
+        self.aInsEllipsis = QAction("Ellipsis", self)
+        self.aInsEllipsis.setStatusTip("Insert ellipsis")
+        self.aInsEllipsis.setShortcut("Ctrl+K, .")
+        self.aInsEllipsis.triggered.connect(lambda: self._docInsert(nwDocInsert.ELLIPSIS))
+        self.mInsDashes.addAction(self.aInsEllipsis)
+
+        # Insert > Quote Marks
+        self.mInsQuotes = self.insertMenu.addMenu("Quote Marks")
+
+        # Insert > Left Single Quote
+        self.aInsQuoteLS = QAction("Left Single Quote", self)
+        self.aInsQuoteLS.setStatusTip("Insert left single quote")
+        self.aInsQuoteLS.setShortcut("Ctrl+K, 1")
+        self.aInsQuoteLS.triggered.connect(lambda: self._docInsert(nwDocInsert.QUOTE_LS))
+        self.mInsQuotes.addAction(self.aInsQuoteLS)
+
+        # Insert > Right Single Quote
+        self.aInsQuoteRS = QAction("Right Single Quote", self)
+        self.aInsQuoteRS.setStatusTip("Insert right single quote")
+        self.aInsQuoteRS.setShortcut("Ctrl+K, 2")
+        self.aInsQuoteRS.triggered.connect(lambda: self._docInsert(nwDocInsert.QUOTE_RS))
+        self.mInsQuotes.addAction(self.aInsQuoteRS)
+
+        # Insert > Left Double Quote
+        self.aInsQuoteLD = QAction("Left Double Quote", self)
+        self.aInsQuoteLD.setStatusTip("Insert left double quote")
+        self.aInsQuoteLD.setShortcut("Ctrl+K, 3")
+        self.aInsQuoteLD.triggered.connect(lambda: self._docInsert(nwDocInsert.QUOTE_LD))
+        self.mInsQuotes.addAction(self.aInsQuoteLD)
+
+        # Insert > Right Double Quote
+        self.aInsQuoteRD = QAction("Right Double Quote", self)
+        self.aInsQuoteRD.setStatusTip("Insert right double quote")
+        self.aInsQuoteRD.setShortcut("Ctrl+K, 4")
+        self.aInsQuoteRD.triggered.connect(lambda: self._docInsert(nwDocInsert.QUOTE_RD))
+        self.mInsQuotes.addAction(self.aInsQuoteRD)
+
+        # Insert > Alternative Apostrophe
+        self.aInsMSApos = QAction("Alternative Apostrophe", self)
+        self.aInsMSApos.setStatusTip("Insert unicode modifier letter single apostrophe")
+        self.aInsMSApos.setShortcut("Ctrl+K, '")
+        self.aInsMSApos.triggered.connect(lambda: self._docInsert(nwDocInsert.MODAPOS_S))
+        self.mInsQuotes.addAction(self.aInsMSApos)
+
+        # Insert > Breaks and Spaces
+        self.mInsBreaks = self.insertMenu.addMenu("Breaks and Spaces")
+
+        # Insert > Hard Line Break
+        self.aInsHardBreak = QAction("Hard Line Break", self)
+        self.aInsHardBreak.setStatusTip("Insert a hard line break")
+        self.aInsHardBreak.setShortcut("Ctrl+K, Return")
+        self.aInsHardBreak.triggered.connect(lambda: self._docInsert(nwDocInsert.HARD_BREAK))
+        self.mInsBreaks.addAction(self.aInsHardBreak)
+
+        # Insert > Non-Breaking Space
+        self.aInsNBSpace = QAction("Non-Breaking Space", self)
+        self.aInsNBSpace.setStatusTip("Insert a non-breaking space")
+        self.aInsNBSpace.setShortcut("Ctrl+K, Space")
+        self.aInsNBSpace.triggered.connect(lambda: self._docInsert(nwDocInsert.NB_SPACE))
+        self.mInsBreaks.addAction(self.aInsNBSpace)
+
+        # Insert > Thin Space
+        self.aInsThinSpace = QAction("Thin Space", self)
+        self.aInsThinSpace.setStatusTip("Insert a thin space")
+        self.aInsThinSpace.setShortcut("Ctrl+K, Shift+Space")
+        self.aInsThinSpace.triggered.connect(lambda: self._docInsert(nwDocInsert.THIN_SPACE))
+        self.mInsBreaks.addAction(self.aInsThinSpace)
+
+        # Insert > Thin Non-Breaking Space
+        self.aInsThinNBSpace = QAction("Thin Non-Breaking Space", self)
+        self.aInsThinNBSpace.setStatusTip("Insert a thin non-breaking space")
+        self.aInsThinNBSpace.setShortcut("Ctrl+K, Ctrl+Space")
+        self.aInsThinNBSpace.triggered.connect(lambda: self._docInsert(nwDocInsert.THIN_NB_SPACE))
+        self.mInsBreaks.addAction(self.aInsThinNBSpace)
+
+        # Insert > Separator
+        self.insertMenu.addSeparator()
+
         # Insert > Keywords and Tags
         self.mInsKeywords = self.insertMenu.addMenu("Keywords and Tags")
         self.mInsKWItems = {}
@@ -521,99 +617,6 @@ class GuiMainMenu(QMenuBar):
                 lambda n, keyWord=keyWord: self._insertKeyWord(keyWord)
             )
             self.mInsKeywords.addAction(self.mInsKWItems[keyWord][0])
-
-        # Insert > Short Dash
-        self.aInsENDash = QAction("Short Dash", self)
-        self.aInsENDash.setStatusTip("Insert short dash")
-        self.aInsENDash.setShortcut("Ctrl+K, -")
-        self.aInsENDash.triggered.connect(lambda: self._docInsert(nwDocInsert.SHORT_DASH))
-        self.insertMenu.addAction(self.aInsENDash)
-
-        # Insert > Long Dash
-        self.aInsEMDash = QAction("Long Dash", self)
-        self.aInsEMDash.setStatusTip("Insert long dash")
-        self.aInsEMDash.setShortcut("Ctrl+K, _")
-        self.aInsEMDash.triggered.connect(lambda: self._docInsert(nwDocInsert.LONG_DASH))
-        self.insertMenu.addAction(self.aInsEMDash)
-
-        # Insert > Ellipsis
-        self.aInsEllipsis = QAction("Ellipsis", self)
-        self.aInsEllipsis.setStatusTip("Insert ellipsis")
-        self.aInsEllipsis.setShortcut("Ctrl+K, .")
-        self.aInsEllipsis.triggered.connect(lambda: self._docInsert(nwDocInsert.ELLIPSIS))
-        self.insertMenu.addAction(self.aInsEllipsis)
-
-        # Insert > Separator
-        self.insertMenu.addSeparator()
-
-        # Insert > Left Single Quote
-        self.aInsQuoteLS = QAction("Left Single Quote", self)
-        self.aInsQuoteLS.setStatusTip("Insert left single quote")
-        self.aInsQuoteLS.setShortcut("Ctrl+K, 1")
-        self.aInsQuoteLS.triggered.connect(lambda: self._docInsert(nwDocInsert.QUOTE_LS))
-        self.insertMenu.addAction(self.aInsQuoteLS)
-
-        # Insert > Right Single Quote
-        self.aInsQuoteRS = QAction("Right Single Quote", self)
-        self.aInsQuoteRS.setStatusTip("Insert right single quote")
-        self.aInsQuoteRS.setShortcut("Ctrl+K, 2")
-        self.aInsQuoteRS.triggered.connect(lambda: self._docInsert(nwDocInsert.QUOTE_RS))
-        self.insertMenu.addAction(self.aInsQuoteRS)
-
-        # Insert > Left Double Quote
-        self.aInsQuoteLD = QAction("Left Double Quote", self)
-        self.aInsQuoteLD.setStatusTip("Insert left double quote")
-        self.aInsQuoteLD.setShortcut("Ctrl+K, 3")
-        self.aInsQuoteLD.triggered.connect(lambda: self._docInsert(nwDocInsert.QUOTE_LD))
-        self.insertMenu.addAction(self.aInsQuoteLD)
-
-        # Insert > Right Double Quote
-        self.aInsQuoteRD = QAction("Right Double Quote", self)
-        self.aInsQuoteRD.setStatusTip("Insert right double quote")
-        self.aInsQuoteRD.setShortcut("Ctrl+K, 4")
-        self.aInsQuoteRD.triggered.connect(lambda: self._docInsert(nwDocInsert.QUOTE_RD))
-        self.insertMenu.addAction(self.aInsQuoteRD)
-
-        # Insert > Separator
-        self.insertMenu.addSeparator()
-
-        # Insert > Alternative Apostrophe
-        self.aInsMSApos = QAction("Alternative Apostrophe", self)
-        self.aInsMSApos.setStatusTip("Insert unicode modifier letter single apostrophe")
-        self.aInsMSApos.setShortcut("Ctrl+K, '")
-        self.aInsMSApos.triggered.connect(lambda: self._docInsert(nwDocInsert.MODAPOS_S))
-        self.insertMenu.addAction(self.aInsMSApos)
-
-        # Insert > Separator
-        self.insertMenu.addSeparator()
-
-        # Insert > Hard Line Break
-        self.aInsHardBreak = QAction("Hard Line Break", self)
-        self.aInsHardBreak.setStatusTip("Insert a hard line break")
-        self.aInsHardBreak.setShortcut("Ctrl+K, Return")
-        self.aInsHardBreak.triggered.connect(lambda: self._docInsert(nwDocInsert.HARD_BREAK))
-        self.insertMenu.addAction(self.aInsHardBreak)
-
-        # Insert > Non-Breaking Space
-        self.aInsNBSpace = QAction("Non-Breaking Space", self)
-        self.aInsNBSpace.setStatusTip("Insert a non-breaking space")
-        self.aInsNBSpace.setShortcut("Ctrl+K, Space")
-        self.aInsNBSpace.triggered.connect(lambda: self._docInsert(nwDocInsert.NB_SPACE))
-        self.insertMenu.addAction(self.aInsNBSpace)
-
-        # Insert > Thin Space
-        self.aInsThinSpace = QAction("Thin Space", self)
-        self.aInsThinSpace.setStatusTip("Insert a thin space")
-        self.aInsThinSpace.setShortcut("Ctrl+K, Shift+Space")
-        self.aInsThinSpace.triggered.connect(lambda: self._docInsert(nwDocInsert.THIN_SPACE))
-        self.insertMenu.addAction(self.aInsThinSpace)
-
-        # Insert > Thin Non-Breaking Space
-        self.aInsThinNBSpace = QAction("Thin Non-Breaking Space", self)
-        self.aInsThinNBSpace.setStatusTip("Insert a thin non-breaking space")
-        self.aInsThinNBSpace.setShortcut("Ctrl+K, Ctrl+Space")
-        self.aInsThinNBSpace.triggered.connect(lambda: self._docInsert(nwDocInsert.THIN_NB_SPACE))
-        self.insertMenu.addAction(self.aInsThinNBSpace)
 
         return
 
