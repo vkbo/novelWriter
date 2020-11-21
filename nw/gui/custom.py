@@ -218,11 +218,19 @@ class QHelpLabel(QLabel):
 
 class QSwitch(QAbstractButton):
 
-    def __init__(self, parent=None, width=40, height=20):
+    def __init__(self, parent=None, width=None, height=None):
         super().__init__(parent=parent)
 
-        self._xW = int(nw.CONFIG.guiScale*width)
-        self._xH = int(nw.CONFIG.guiScale*height)
+        if width is None:
+            self._xW = nw.CONFIG.pxInt(40)
+        else:
+            self._xW = width
+
+        if height is None:
+            self._xH = nw.CONFIG.pxInt(20)
+        else:
+            self._xH = height
+
         self._xR = int(self._xH*0.5)
         self._xT = int(self._xH*0.6)
         self._rB = int(nw.CONFIG.guiScale*2)
