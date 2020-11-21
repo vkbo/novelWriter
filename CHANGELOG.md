@@ -1,5 +1,17 @@
 # novelWriter ChangeLog
 
+## Version 1.0 Release Candidate 2 [2020-11-29]
+
+**Bugfixes**
+
+* The headers and footers of the document editor and viewer would be clipped on high DPI monitors. This was due to the QWidget holding these did not automatically scale in the layout. The proper height of these are now calculated and enforced instead of relying on automated scaling. Issue #499, PR #502.
+* Fixed a few inconsistencies in scaling of toggle switches, the form layouts, and the margins of the Item Editor when viewing on a high DPI screen. PR #502.
+
+**User Interface**
+
+* Added all the possible keywords for tags and references to the Insert menu. Since the list was growing long, the Insert menu entries have been split up into four sub menus according to the previous grouping. Issue #501, PR #503.
+
+
 ## Version 1.0 Release Candidate 1 [2020-11-16]
 
 **Installation**

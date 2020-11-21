@@ -58,15 +58,16 @@ from nw.config import Config
 #
 
 __package__    = "nw"
-__author__     = "Veronica Berglyd Olsen"
-__copyright__  = "Copyright 2018–2020, Veronica Berglyd Olsen"
 __license__    = "GPLv3"
-__version__    = "1.0rc1"
-__hexversion__ = "0x010000c1"
-__date__       = "2020-11-16"
+__author__     = "Veronica Berglyd Olsen"
 __maintainer__ = "Veronica Berglyd Olsen"
+__copyright__  = "Copyright 2018–2020, Veronica Berglyd Olsen"
 __email__      = "code@vkbo.net"
+__version__    = "1.0rc2"
+__hexversion__ = "0x010000c2"
+__date__       = "2020-11-29"
 __status__     = "Beta"
+__isstable__   = False
 __url__        = "https://novelwriter.io"
 __sourceurl__  = "https://github.com/vkbo/novelWriter"
 __issuesurl__  = "https://github.com/vkbo/novelWriter/issues"
