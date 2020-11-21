@@ -502,8 +502,8 @@ class GuiMainMenu(QMenuBar):
         # Insert
         self.insertMenu = self.addMenu("&Insert")
 
-        # Insert > Dashes
-        self.mInsDashes = self.insertMenu.addMenu("Dashes")
+        # Insert > Dashes and Dots
+        self.mInsDashes = self.insertMenu.addMenu("Dashes and Dots")
 
         # Insert > Short Dash
         self.aInsENDash = QAction("Short Dash", self)
