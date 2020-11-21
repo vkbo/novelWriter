@@ -2157,6 +2157,13 @@ class GuiDocEditHeader(QWidget):
         self.outerBox.addWidget(self.closeButton, 0)
         self.setLayout(self.outerBox)
 
+        # Fix Margins and Size
+        # This is needed for high DPI systems. See issue #499.
+        cM = self.mainConf.pxInt(8)
+        self.setContentsMargins(0, 0, 0, 0)
+        self.outerBox.setContentsMargins(cM, cM, cM, cM)
+        self.setMinimumHeight(fPx + 2*cM)
+
         # Fix the Colours
         self.matchColours()
 
@@ -2366,6 +2373,13 @@ class GuiDocEditFooter(QWidget):
         self.outerBox.addWidget(self.wordsIcon)
         self.outerBox.addWidget(self.wordsText)
         self.setLayout(self.outerBox)
+
+        # Fix Margins and Size
+        # This is needed for high DPI systems. See issue #499.
+        cM = self.mainConf.pxInt(8)
+        self.setContentsMargins(0, 0, 0, 0)
+        self.outerBox.setContentsMargins(cM, cM, cM, cM)
+        self.setMinimumHeight(fPx + 2*cM)
 
         # Fix the Colours
         self.matchColours()
