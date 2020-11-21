@@ -124,8 +124,8 @@ class GuiItemEditor(QDialog):
 
         # Assemble
         self.mainForm = QGridLayout()
-        self.mainForm.setVerticalSpacing(4)
-        self.mainForm.setHorizontalSpacing(16)
+        self.mainForm.setVerticalSpacing(self.mainConf.pxInt(4))
+        self.mainForm.setHorizontalSpacing(self.mainConf.pxInt(16))
         self.mainForm.addWidget(QLabel("Label"),  0, 0, 1, 1)
         self.mainForm.addWidget(self.editName,    0, 1, 1, 2)
         self.mainForm.addWidget(QLabel("Status"), 1, 0, 1, 1)
