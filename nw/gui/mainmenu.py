@@ -32,7 +32,9 @@ from PyQt5.QtCore import QUrl, QProcess
 from PyQt5.QtGui import QDesktopServices
 from PyQt5.QtWidgets import QMenuBar, QAction
 
-from nw.constants import nwItemType, nwItemClass, nwDocAction, nwDocInsert
+from nw.constants import (
+    nwItemType, nwItemClass, nwDocAction, nwDocInsert, nwKeyWords, nwLabels
+)
 
 logger = logging.getLogger(__name__)
 
@@ -61,10 +63,11 @@ class GuiMainMenu(QMenuBar):
         self._buildHelpMenu()
 
         # Function Pointers
-        self._docAction    = self.theParent.passDocumentAction
-        self._moveTreeItem = self.theParent.treeView.moveTreeItem
-        self._newTreeItem  = self.theParent.treeView.newTreeItem
-        self._docInsert    = self.theParent.docEditor.insertText
+        self._docAction     = self.theParent.passDocumentAction
+        self._moveTreeItem  = self.theParent.treeView.moveTreeItem
+        self._newTreeItem   = self.theParent.treeView.newTreeItem
+        self._docInsert     = self.theParent.docEditor.insertText
+        self._insertKeyWord = self.theParent.docEditor.insertKeyWord
 
         logger.debug("GuiMainMenu initialisation complete")
 
@@ -498,6 +501,26 @@ class GuiMainMenu(QMenuBar):
         """
         # Insert
         self.insertMenu = self.addMenu("&Insert")
+
+        # Insert > Keywords and Tags
+        self.mInsKeywords = self.insertMenu.addMenu("Keywords and Tags")
+        self.mInsKWItems = {}
+        self.mInsKWItems[nwKeyWords.TAG_KEY]    = (QAction(self.mInsKeywords), "Ctrl+K, G")
+        self.mInsKWItems[nwKeyWords.POV_KEY]    = (QAction(self.mInsKeywords), "Ctrl+K, V")
+        self.mInsKWItems[nwKeyWords.CHAR_KEY]   = (QAction(self.mInsKeywords), "Ctrl+K, C")
+        self.mInsKWItems[nwKeyWords.PLOT_KEY]   = (QAction(self.mInsKeywords), "Ctrl+K, P")
+        self.mInsKWItems[nwKeyWords.TIME_KEY]   = (QAction(self.mInsKeywords), "Ctrl+K, T")
+        self.mInsKWItems[nwKeyWords.WORLD_KEY]  = (QAction(self.mInsKeywords), "Ctrl+K, L")
+        self.mInsKWItems[nwKeyWords.OBJECT_KEY] = (QAction(self.mInsKeywords), "Ctrl+K, O")
+        self.mInsKWItems[nwKeyWords.ENTITY_KEY] = (QAction(self.mInsKeywords), "Ctrl+K, E")
+        self.mInsKWItems[nwKeyWords.CUSTOM_KEY] = (QAction(self.mInsKeywords), "Ctrl+K, X")
+        for n, keyWord in enumerate(self.mInsKWItems):
+            self.mInsKWItems[keyWord][0].setText(nwLabels.KEY_NAME[keyWord])
+            self.mInsKWItems[keyWord][0].setShortcut(self.mInsKWItems[keyWord][1])
+            self.mInsKWItems[keyWord][0].triggered.connect(
+                lambda n, keyWord=keyWord: self._insertKeyWord(keyWord)
+            )
+            self.mInsKeywords.addAction(self.mInsKWItems[keyWord][0])
 
         # Insert > Short Dash
         self.aInsENDash = QAction("Short Dash", self)

@@ -167,7 +167,7 @@ class nwLabels():
         nwKeyWords.POV_KEY    : "Point of View",
         nwKeyWords.CHAR_KEY   : "Characters",
         nwKeyWords.PLOT_KEY   : "Plot",
-        nwKeyWords.TIME_KEY   : "Time",
+        nwKeyWords.TIME_KEY   : "Timeline",
         nwKeyWords.WORLD_KEY  : "Locations",
         nwKeyWords.OBJECT_KEY : "Objects",
         nwKeyWords.ENTITY_KEY : "Entities",
