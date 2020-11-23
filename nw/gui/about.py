@@ -84,10 +84,15 @@ class GuiAbout(QDialog):
         self.pageLicense.setOpenExternalLinks(True)
         self.pageLicense.document().setDocumentMargin(self.mainConf.pxInt(16))
 
+        self.pageNotes = QTextBrowser()
+        self.pageNotes.setOpenExternalLinks(True)
+        self.pageNotes.document().setDocumentMargin(self.mainConf.pxInt(16))
+
         # Main Tab Area
         self.tabBox = QTabWidget()
         self.tabBox.addTab(self.pageAbout, "About")
         self.tabBox.addTab(self.pageLicense, "License")
+        self.tabBox.addTab(self.pageNotes, "Release Notes")
         self.innerBox.addWidget(self.tabBox)
 
         # OK Button
@@ -101,6 +106,7 @@ class GuiAbout(QDialog):
         self._setStyleSheet()
         self._fillAboutPage()
         self._fillLicensePage()
+        self._fillNotesPage()
 
         logger.debug("GuiAbout initialisation complete")
 
@@ -205,6 +211,19 @@ class GuiAbout(QDialog):
             self.pageLicense.setHtml("Error loading license text ...")
         return
 
+    def _fillNotesPage(self):
+        """Load the content for the Release Notes page.
+        """
+        docName = "release_notes_%s.htm" % self.mainConf.guiLang
+        docPath = os.path.join(self.mainConf.assetPath, "text", docName)
+        if os.path.isfile(docPath):
+            with open(docPath, mode="r", encoding="utf8") as inFile:
+                helpText = inFile.read()
+            self.pageNotes.setHtml(helpText)
+        else:
+            self.pageNotes.setHtml("Error release notes text ...")
+        return
+
     def _setStyleSheet(self):
         """Set stylesheet for all browser tabs
         """
@@ -222,6 +241,7 @@ class GuiAbout(QDialog):
         )
         self.pageAbout.document().setDefaultStyleSheet(styleSheet)
         self.pageLicense.document().setDefaultStyleSheet(styleSheet)
+        self.pageNotes.document().setDefaultStyleSheet(styleSheet)
 
         return
 

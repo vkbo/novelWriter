@@ -598,8 +598,8 @@ class GuiMainMenu(QMenuBar):
         # Insert > Separator
         self.insertMenu.addSeparator()
 
-        # Insert > Keywords and Tags
-        self.mInsKeywords = self.insertMenu.addMenu("Keywords and Tags")
+        # Insert > Tags and References
+        self.mInsKeywords = self.insertMenu.addMenu("Tags and References")
         self.mInsKWItems = {}
         self.mInsKWItems[nwKeyWords.TAG_KEY]    = (QAction(self.mInsKeywords), "Ctrl+K, G")
         self.mInsKWItems[nwKeyWords.POV_KEY]    = (QAction(self.mInsKeywords), "Ctrl+K, V")
