@@ -377,7 +377,7 @@ def testAboutBox(qtbot, monkeypatch, nwFuncTemp, nwTemp):
     assert msgAbout.pageNotes.document().characterCount() > 100
     assert msgAbout.pageLicense.document().characterCount() > 100
 
-    msgAbout.mainConf.guiLang = "whatever"
+    msgAbout.mainConf.assetPath = "whatever"
 
     msgAbout._fillNotesPage()
     assert msgAbout.pageNotes.toPlainText() == "Error loading release notes text ..."
