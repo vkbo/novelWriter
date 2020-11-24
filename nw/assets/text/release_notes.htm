@@ -4,29 +4,30 @@
 <h2>Release Notes for 1.0 RC1</h2>
 <p>This is the first release candidate for the upcoming release of novelWriter 1.0.</p>
 <p>Since the fifth beta release about four weeks ago, not much has been changed in novelWriter. A
-few minor tweaks have been made to the GUI. A number of features and tools are now automatically
-switched off when there is no project or document open for those features to act upon. No serious
-bugs have been reported or encountered, and I feel it’s time to move on to the release candidates.
-Most of the minor changes should not be noticeable to most users. However, there are a couple of
-noticeable changes.</p>
+few minor tweaks have been made to the GUI.</p>
+<p>A number of features and tools are now automatically switched off when there is no project or
+document open for those features to act upon. Previously, this was a bit inconsistent, although no
+serious bugs have been reported or encountered.</p>
+<p>Most of the minor changes in this release should not be noticeable to most users. However, there
+are a couple of noticeable changes.</p>
 <h3>Typewriter Mode</h3>
 <p>The "Typewriter Mode" of the editor has been improved. Essentially, this feature is a sort of
 smart scroll. It tries to keep the cursor stationary in the vertical direction, and will try to
 scroll the document up when the cursor skips to a new line while typing (or down in case of
-backspace). This is similar to the way a typewriter scrolls the paper when hitting the return key.
+backspaces). This is similar to the way a typewriter scrolls the paper when hitting the return key.
 It improves the writing experience as the current active line will stay at the same eye height
 level on the screen.</p>
 <p>Previously, the feature would lock the cursor to a given vertical position defined by the user.
 Now, instead, the cursor will remain stationary in the vertical direction at any position the user
 sets it to by mouse click or keyboard navigation. The user can define a minimum distance from the
-top where this feature is activated. It makes it more flexible. The feature can be controlled from
-the main Preferences.</p>
+top where this feature is activated. These changes makes it more flexible in terms of where the
+focus is in the editor. The feature can be controlled from the main Preferences.</p>
 <h3>Switching Syntax Theme</h3>
 <p>It is now possible to switch syntax highlighting theme without restarting novelWriter.
 Previously, changing the theme would only half-way update the document, header and footer
-background and text colour. The new settings would not be applied until the application was shut
-down and started again. This makes it a bit tedious to look through themes to find the one you
-want. This issue has now been resolved.</p>
+background and text colours. The new settings would not be fully applied until the application was
+shut down and started again, thus making it a bit tedious to look through syntax themes to find the
+one you want.</p>
 <p>Switching main GUI theme still requires a restart.</p>
 <p><i>The full changelog is available
 <a href="https://github.com/vkbo/novelWriter/blob/main/CHANGELOG.md">here</a>.</i></p>
