@@ -14,7 +14,7 @@ def testConfigCore(tmpConf, nwTemp, nwRef):
 
     assert tmpConf.confPath == nwTemp
     assert tmpConf.saveConfig()
-    assert cmpFiles(testConf, refConf, [2])
+    assert cmpFiles(testConf, refConf, [2, 9])
     assert not tmpConf.confChanged
 
     assert tmpConf.loadConfig()
@@ -51,7 +51,7 @@ def testConfigSetWinSize(tmpConf, nwTemp, nwRef):
     assert tmpConf.setWinSize(1200, 650)
     assert tmpConf.saveConfig()
 
-    assert cmpFiles(testConf, refConf, [2])
+    assert cmpFiles(testConf, refConf, [2, 9])
     assert not tmpConf.confChanged
 
 @pytest.mark.core
@@ -73,7 +73,7 @@ def testConfigSetTreeColWidths(tmpConf, nwTemp, nwRef):
     assert tmpConf.confChanged
     assert tmpConf.saveConfig()
 
-    assert cmpFiles(testConf, refConf, [2])
+    assert cmpFiles(testConf, refConf, [2, 9])
     assert not tmpConf.confChanged
 
 @pytest.mark.core
@@ -109,7 +109,7 @@ def testConfigSetPanePos(tmpConf, nwTemp, nwRef):
     assert tmpConf.confChanged
     assert tmpConf.saveConfig()
 
-    assert cmpFiles(testConf, refConf, [2])
+    assert cmpFiles(testConf, refConf, [2, 9])
     assert not tmpConf.confChanged
 
 @pytest.mark.core
@@ -133,7 +133,7 @@ def testConfigFlags(tmpConf, nwTemp, nwRef):
     assert tmpConf.confChanged
     assert tmpConf.saveConfig()
 
-    assert cmpFiles(testConf, refConf, [2])
+    assert cmpFiles(testConf, refConf, [2, 9])
     assert not tmpConf.confChanged
 
 @pytest.mark.core
