@@ -91,6 +91,7 @@ class Config:
         self.guiFont     = ""    # Defaults to system default font
         self.guiFontSize = 11
         self.guiScale    = 1.0   # Set automatically by Theme class
+        self.lastNotes   = ""    # The latest release notes that have been shown
 
         ## Sizes
         self.winGeometry  = [1200, 650]
@@ -380,6 +381,9 @@ class Config:
         self.guiFontSize = self._parseLine(
             cnfParse, cnfSec, "guifontsize", self.CNF_INT, self.guiFontSize
         )
+        self.lastNotes = self._parseLine(
+            cnfParse, cnfSec, "lastnotes", self.CNF_STR, self.lastNotes
+        )
 
         ## Sizes
         cnfSec = "Sizes"
@@ -584,6 +588,7 @@ class Config:
         cnfParse.set(cnfSec, "guidark",     str(self.guiDark))
         cnfParse.set(cnfSec, "guifont",     str(self.guiFont))
         cnfParse.set(cnfSec, "guifontsize", str(self.guiFontSize))
+        cnfParse.set(cnfSec, "lastnotes",   str(self.lastNotes))
 
         ## Sizes
         cnfSec = "Sizes"

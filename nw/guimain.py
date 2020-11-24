@@ -238,6 +238,12 @@ class GuiMain(QMainWindow):
             if self.mainConf.showGUI:
                 self.showProjectLoadDialog()
 
+        # Show the latest release notes, if they haven't been shown before
+        if self.mainConf.lastNotes != nw.__version__:
+            if self.mainConf.showGUI:
+                self.showAboutNWDialog(showNotes=True)
+            self.mainConf.lastNotes = nw.__version__
+
         logger.debug("novelWriter is ready ...")
         self.setStatus("novelWriter is ready ...")
 
@@ -915,11 +921,18 @@ class GuiMain(QMainWindow):
 
         return
 
-    def showAboutNWDialog(self):
+    def showAboutNWDialog(self, showNotes=False):
         """Show the about dialog for novelWriter.
         """
         dlgAbout = GuiAbout(self)
-        dlgAbout.exec_()
+        dlgAbout.setModal(True)
+        dlgAbout.show()
+        qApp.processEvents()
+        dlgAbout.populateGUI()
+
+        if showNotes:
+            dlgAbout.showReleaseNotes()
+
         return
 
     def showAboutQtDialog(self):
