@@ -70,6 +70,7 @@ __status__     = "Beta"
 __url__        = "https://novelwriter.io"
 __sourceurl__  = "https://github.com/vkbo/novelWriter"
 __issuesurl__  = "https://github.com/vkbo/novelWriter/issues"
+__releaseurl__ = "https://github.com/vkbo/novelWriter/releases/latest"
 __domain__     = "novelwriter.io"
 __docurl__     = "https://novelwriter.readthedocs.io"
 __credits__    = [
