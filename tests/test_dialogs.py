@@ -374,11 +374,19 @@ def testAboutBox(qtbot, monkeypatch, nwFuncTemp, nwTemp):
     msgAbout.show()
 
     assert msgAbout.pageAbout.document().characterCount() > 100
+    assert msgAbout.pageNotes.document().characterCount() > 100
     assert msgAbout.pageLicense.document().characterCount() > 100
 
-    msgAbout.mainConf.guiLang = "whatever"
+    msgAbout.mainConf.assetPath = "whatever"
+
+    msgAbout._fillNotesPage()
+    assert msgAbout.pageNotes.toPlainText() == "Error loading release notes text ..."
+
     msgAbout._fillLicensePage()
     assert msgAbout.pageLicense.toPlainText() == "Error loading license text ..."
+
+    msgAbout.showReleaseNotes()
+    assert msgAbout.tabBox.currentWidget() == msgAbout.pageNotes
 
     # Qt About
     monkeypatch.setattr(QMessageBox, "aboutQt", lambda *args, **kwargs: None)
@@ -1201,8 +1209,9 @@ def testPreferences(qtbot, monkeypatch, yesToAll, nwMinimal, nwTemp, nwRef, tmpC
     copyfile(projConf, testConf)
     ignoreLines = [
         2,                          # Timestamp
-        11, 12, 13, 14, 15, 16, 17, # Window sizes
-        7, 27,                      # Fonts (depends on system default)
+        9,                          # Release Notes
+        12, 13, 14, 15, 16, 17, 18, # Window sizes
+        7, 28,                      # Fonts (depends on system default)
     ]
     assert cmpFiles(testConf, refConf, ignoreLines)
 
