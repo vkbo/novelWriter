@@ -47,7 +47,6 @@ Source: "{#nwAppDir}\novelWriter\*"; DestDir: "{app}"; Flags: ignoreversion recu
 [Icons]
 Name: "{autoprograms}\{#nwAppName}"; Filename: "{app}\{#nwAppExeName}"
 Name: "{autodesktop}\{#nwAppName}"; Filename: "{app}\{#nwAppExeName}"; Tasks: desktopicon
-Name: "{autodesktop}\{#nwAppName}"; Filename: "{app}\assets\icons\x-novelwriter-project.ico"; Tasks: icon
 Name: "{userappdata}\Microsoft\Internet Explorer\Quick Launch\{#nwAppName}"; Filename: "{app}\{#nwAppExeName}"; Tasks: quicklaunchicon
 
 [Run]
@@ -55,11 +54,7 @@ Filename: "{app}\{#nwAppExeName}"; Description: "{cm:LaunchProgram,{#StringChang
 
 [Registry]
 Root: HKA; Subkey: "Software\Classes\.nwx\OpenWithProgids"; ValueType: string; ValueName: "novelWriterProject.nwx"; ValueData: ""; Flags: uninsdeletevalue
-; ".myp" is the extension we're associating. "MyProgramFile.myp" is the internal name for the file type as stored in the registry. Make sure you use a unique name for this so you don't inadvertently overwrite another application's registry key.
 Root: HKA; Subkey: "Software\Classes\novelWriterProject.nwx"; ValueType: string; ValueName: ""; ValueData: "novelWriter Project File"; Flags: uninsdeletekey
-; "My Program File" above is the name for the file type as shown in Explorer.
-Root: HKA; Subkey: "Software\Classes\novelWriterProject.nwx\DefaultIcon"; ValueType: string; ValueName: ""; ValueData: "{app}\novelWriter.exe,2"
-; "DefaultIcon" is the registry key that specifies the filename containing the icon to associate with the file type. ",0" tells Explorer to use the first icon from MyProg.exe. (",1" would mean the second icon.)
+Root: HKA; Subkey: "Software\Classes\novelWriterProject.nwx\DefaultIcon"; ValueType: string; ValueName: ""; ValueData: "{app}\assets\icons\x-novelwriter-project.ico"
 Root: HKA; Subkey: "Software\Classes\novelWriterProject.nwx\shell\open\command"; ValueType: string; ValueName: ""; ValueData: """{app}\novelWriter.exe"" ""%1"""
-; "shell\open\command" is the registry key that specifies the program to execute when a file of the type is double-clicked in Explorer. The surrounding quotes are in the command line so it handles long filenames correctly.
 Root: HKA; Subkey: "Software\Classes\Applications\novelWriter.exe\SupportedTypes"; ValueType: string; ValueName: ".nwx"; ValueData: ""
