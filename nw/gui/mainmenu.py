@@ -896,6 +896,12 @@ class GuiMainMenu(QMenuBar):
         self.aAboutQt.triggered.connect(lambda: self.theParent.showAboutQtDialog())
         self.helpMenu.addAction(self.aAboutQt)
 
+        # Document > Main Website
+        self.aWebsite = QAction("Main Website", self)
+        self.aWebsite.setStatusTip("Open the main website at %s" % nw.__url__)
+        self.aWebsite.triggered.connect(lambda: self._openWebsite(nw.__url__))
+        self.helpMenu.addAction(self.aWebsite)
+
         # Help > Separator
         self.helpMenu.addSeparator()
 
@@ -908,19 +914,13 @@ class GuiMainMenu(QMenuBar):
             self.helpMenu.addAction(self.aHelpLoc)
 
         self.aHelpWeb = QAction("Documentation (Online)", self)
-        self.aHelpWeb.setStatusTip("View online documentation")
+        self.aHelpWeb.setStatusTip("View online documentation at %s" % nw.__docurl__)
         self.aHelpWeb.triggered.connect(lambda: self._openWebsite(nw.__docurl__))
         if self.mainConf.hasHelp and self.mainConf.hasAssistant:
             self.aHelpWeb.setShortcut("Shift+F1")
         else:
             self.aHelpWeb.setShortcuts(["F1", "Shift+F1"])
         self.helpMenu.addAction(self.aHelpWeb)
-
-        # Document > Go to Website
-        self.aWebsite = QAction("Open the novelWriter Website", self)
-        self.aWebsite.setStatusTip("Open the main website at %s" % nw.__url__)
-        self.aWebsite.triggered.connect(lambda: self._openWebsite(nw.__url__))
-        self.helpMenu.addAction(self.aWebsite)
 
         # Document > Report Issue
         self.aIssue = QAction("Report an Issue (GitHub)", self)
