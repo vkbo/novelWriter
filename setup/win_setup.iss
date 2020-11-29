@@ -27,11 +27,12 @@ UsedUserAreasWarning=no
 ;PrivilegesRequired=lowest
 PrivilegesRequiredOverridesAllowed=dialog
 OutputDir={#nwAppDir}
-OutputBaseFilename=novelwriter_{#nwAppVersion}_win_amd64_setup
+OutputBaseFilename=novelwriter-{#nwAppVersion}-win10-amd64-setup
 Compression=lzma
 SolidCompression=yes
 WizardStyle=modern
 ArchitecturesInstallIn64BitMode=x64
+ChangesAssociations=yes
 
 [Languages]
 Name: "english"; MessagesFile: "compiler:Default.isl"
@@ -50,3 +51,10 @@ Name: "{userappdata}\Microsoft\Internet Explorer\Quick Launch\{#nwAppName}"; Fil
 
 [Run]
 Filename: "{app}\{#nwAppExeName}"; Description: "{cm:LaunchProgram,{#StringChange(nwAppName, '&', '&&')}}"; Flags: nowait postinstall skipifsilent
+
+[Registry]
+Root: HKA; Subkey: "Software\Classes\.nwx\OpenWithProgids"; ValueType: string; ValueName: "novelWriterProject.nwx"; ValueData: ""; Flags: uninsdeletevalue
+Root: HKA; Subkey: "Software\Classes\novelWriterProject.nwx"; ValueType: string; ValueName: ""; ValueData: "novelWriter Project File"; Flags: uninsdeletekey
+Root: HKA; Subkey: "Software\Classes\novelWriterProject.nwx\DefaultIcon"; ValueType: string; ValueName: ""; ValueData: "{app}\assets\icons\x-novelwriter-project.ico"
+Root: HKA; Subkey: "Software\Classes\novelWriterProject.nwx\shell\open\command"; ValueType: string; ValueName: ""; ValueData: """{app}\novelWriter.exe"" ""%1"""
+Root: HKA; Subkey: "Software\Classes\Applications\novelWriter.exe\SupportedTypes"; ValueType: string; ValueName: ".nwx"; ValueData: ""
