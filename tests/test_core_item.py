@@ -10,8 +10,8 @@ from nw.core.project import NWProject, NWItem
 from nw.constants import nwItemClass, nwItemType, nwItemLayout
 
 @pytest.mark.core
-def testCoreItemSetters(dummyGUI):
-    """Test all the simple setter classes for the NWItem class.
+def testCoreItem_Setters(dummyGUI):
+    """Test all the simple setters for the NWItem class.
     """
     theProject = NWProject(dummyGUI)
     theItem = NWItem(theProject)
@@ -144,10 +144,10 @@ def testCoreItemSetters(dummyGUI):
     theItem.saveInitialCount()
     assert theItem.initCount == 234
 
-# END Test testCoreItemSetters
+# END Test testCoreItem_Setters
 
 @pytest.mark.core
-def testCoreItemTypeSetter(dummyGUI):
+def testCoreItem_TypeSetter(dummyGUI):
     """Test the setter for all the nwItemType values for the NWItem
     class.
     """
@@ -172,10 +172,10 @@ def testCoreItemTypeSetter(dummyGUI):
     theItem.setType(nwItemType.ROOT)
     assert theItem.itemType == nwItemType.ROOT
 
-# END Test testCoreItemTypeSetter
+# END Test testCoreItem_TypeSetter
 
 @pytest.mark.core
-def testCoreItemClassSetter(dummyGUI):
+def testCoreItem_ClassSetter(dummyGUI):
     """Test the setter for all the nwItemClass values for the NWItem
     class.
     """
@@ -212,10 +212,10 @@ def testCoreItemClassSetter(dummyGUI):
     theItem.setClass(nwItemClass.NOVEL)
     assert theItem.itemClass == nwItemClass.NOVEL
 
-# END Test testCoreItemClassSetter
+# END Test testCoreItem_ClassSetter
 
 @pytest.mark.core
-def testCoreItemLayoutSetter(dummyGUI):
+def testCoreItem_LayoutSetter(dummyGUI):
     """Test the setter for all the nwItemLayout values for the NWItem
     class.
     """
@@ -248,10 +248,10 @@ def testCoreItemLayoutSetter(dummyGUI):
     theItem.setLayout(nwItemLayout.NOTE)
     assert theItem.itemLayout == nwItemLayout.NOTE
 
-# END Test testCoreItemLayoutSetter
+# END Test testCoreItem_LayoutSetter
 
 @pytest.mark.core
-def testCoreItemXMLPackUnpack(dummyGUI):
+def testCoreItem_XMLPackUnpack(dummyGUI):
     """Test packing and unpacking XML objects for the NWItem class.
     """
     theProject = NWProject(dummyGUI)
@@ -379,4 +379,4 @@ def testCoreItemXMLPackUnpack(dummyGUI):
         b"<group/>"
     )
 
-# END Test testCoreItemXMLPackUnpack
+# END Test testCoreItem_XMLPackUnpack
