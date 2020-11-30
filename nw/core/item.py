@@ -96,20 +96,21 @@ class NWItem():
             return False
 
         if "handle" in xItem.attrib:
-            self.itemHandle = xItem.attrib["handle"]
+            self.setHandle(xItem.attrib["handle"])
         else:
             logger.error("XML item entry does not have a handle")
             return False
 
         if "parent" in xItem.attrib:
-            self.itemParent = xItem.attrib["parent"]
+            self.setParent(xItem.attrib["parent"])
+
+        if "order" in xItem.attrib:
+            self.setOrder(xItem.attrib["order"])
 
         retStatus = True
         for xValue in xItem:
             if xValue.tag == "name":
                 self.setName(xValue.text)
-            elif xValue.tag == "order":
-                self.setOrder(xValue.text)
             elif xValue.tag == "type":
                 self.setType(xValue.text)
             elif xValue.tag == "class":
@@ -156,7 +157,10 @@ class NWItem():
     def setName(self, theName):
         """Set the item name.
         """
-        self.itemName = theName.strip()
+        if isinstance(theName, str):
+            self.itemName = theName.strip()
+        else:
+            self.itemName = ""
         return
 
     def setHandle(self, theHandle):
