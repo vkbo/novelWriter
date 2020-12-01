@@ -26,12 +26,12 @@ def tmpDir():
     be checked. The folder is instead cleared before a new test session.
     """
     testDir = os.path.dirname(__file__)
-    tempDir = os.path.join(testDir, "temp")
-    if os.path.isdir(tempDir):
-        shutil.rmtree(tempDir)
-    if not os.path.isdir(tempDir):
-        os.mkdir(tempDir)
-    return tempDir
+    theDir = os.path.join(testDir, "temp")
+    if os.path.isdir(theDir):
+        shutil.rmtree(theDir)
+    if not os.path.isdir(theDir):
+        os.mkdir(theDir)
+    return theDir
 
 @pytest.fixture(scope="session")
 def refDir():
@@ -39,8 +39,17 @@ def refDir():
     the results of tests.
     """
     testDir = os.path.dirname(__file__)
-    refDir = os.path.join(testDir, "reference")
-    return refDir
+    theDir = os.path.join(testDir, "reference")
+    return theDir
+
+@pytest.fixture(scope="session")
+def outDir(tmpDir):
+    """An output folder for test results
+    """
+    theDir = os.path.join(tmpDir, "results")
+    if not os.path.isdir(theDir):
+        os.mkdir(theDir)
+    return theDir
 
 ##
 #  novelWriter Objects
