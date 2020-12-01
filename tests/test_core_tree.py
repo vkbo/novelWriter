@@ -239,7 +239,7 @@ def testCoreTree_Methods(dummyGUI, dummyItems):
 # END Test testCoreTree_Methods
 
 @pytest.mark.core
-def testCoreTree_MakeHandles(dummyGUI, monkeypatch):
+def testCoreTree_MakeHandles(monkeypatch, dummyGUI):
     """Test generating item handles.
     """
     theProject = NWProject(dummyGUI)
@@ -384,7 +384,7 @@ def testCoreTree_XMLPackUnpack(dummyGUI, dummyItems):
 # END Test testCoreTree_XMLPackUnpack
 
 @pytest.mark.core
-def testCoreTree_ToCFile(dummyGUI, dummyItems, tmpDir, monkeypatch):
+def testCoreTree_ToCFile(monkeypatch, dummyGUI, dummyItems, tmpDir):
     """Test writing the ToC.txt file.
     """
     theProject = NWProject(dummyGUI)
