@@ -72,68 +72,8 @@ def dummyGUI(tmpConf):
     theDummy.mainConf = tmpConf
     return theDummy
 
-# =============================================================================================== #
-
 ##
-#  novelWriter Objects
-##
-
-@pytest.fixture(scope="session")
-def nwConf(refDir, tmpDir):
-    """Temporary novelWriter configuration used for the dummy instance
-    of novelWriter's main GUI.
-    """
-    theConf = Config()
-    theConf.initConfig(refDir, tmpDir)
-    return theConf
-
-##
-#  Temporary Test Folders
-##
-
-@pytest.fixture(scope="session")
-def nwTempProj(tmpDir):
-    """A temporary folder for project tests.
-    """
-    projDir = os.path.join(tmpDir, "proj")
-    if not os.path.isdir(projDir):
-        os.mkdir(projDir)
-    return projDir
-
-@pytest.fixture(scope="session")
-def nwTempGUI(tmpDir):
-    """A temporary folder for GUI tests.
-    """
-    guiDir = os.path.join(tmpDir, "gui")
-    if not os.path.isdir(guiDir):
-        os.mkdir(guiDir)
-    return guiDir
-
-@pytest.fixture(scope="session")
-def nwTempBuild(tmpDir):
-    """A temporary folder for build tests.
-    """
-    buildDir = os.path.join(tmpDir, "build")
-    if not os.path.isdir(buildDir):
-        os.mkdir(buildDir)
-    return buildDir
-
-@pytest.fixture(scope="function")
-def nwFuncTemp(tmpDir):
-    """A temporary folder for a single test function.
-    """
-    funcDir = os.path.join(tmpDir, "ftemp")
-    if os.path.isdir(funcDir):
-        shutil.rmtree(funcDir)
-    if not os.path.isdir(funcDir):
-        os.mkdir(funcDir)
-    yield funcDir
-    if os.path.isdir(funcDir):
-        shutil.rmtree(funcDir)
-    return
-
-##
-#  Temp Folders for Projects
+#  Temp Project Folders
 ##
 
 @pytest.fixture(scope="function")
@@ -214,4 +154,64 @@ def yesToAll(monkeypatch):
     monkeypatch.setattr(
         QMessageBox, "critical", lambda *args, **kwargs: QMessageBox.Yes
     )
+    return
+
+# =============================================================================================== #
+
+##
+#  novelWriter Objects
+##
+
+@pytest.fixture(scope="session")
+def nwConf(refDir, tmpDir):
+    """Temporary novelWriter configuration used for the dummy instance
+    of novelWriter's main GUI.
+    """
+    theConf = Config()
+    theConf.initConfig(refDir, tmpDir)
+    return theConf
+
+##
+#  Temporary Test Folders
+##
+
+@pytest.fixture(scope="session")
+def nwTempProj(tmpDir):
+    """A temporary folder for project tests.
+    """
+    projDir = os.path.join(tmpDir, "proj")
+    if not os.path.isdir(projDir):
+        os.mkdir(projDir)
+    return projDir
+
+@pytest.fixture(scope="session")
+def nwTempGUI(tmpDir):
+    """A temporary folder for GUI tests.
+    """
+    guiDir = os.path.join(tmpDir, "gui")
+    if not os.path.isdir(guiDir):
+        os.mkdir(guiDir)
+    return guiDir
+
+@pytest.fixture(scope="session")
+def nwTempBuild(tmpDir):
+    """A temporary folder for build tests.
+    """
+    buildDir = os.path.join(tmpDir, "build")
+    if not os.path.isdir(buildDir):
+        os.mkdir(buildDir)
+    return buildDir
+
+@pytest.fixture(scope="function")
+def nwFuncTemp(tmpDir):
+    """A temporary folder for a single test function.
+    """
+    funcDir = os.path.join(tmpDir, "ftemp")
+    if os.path.isdir(funcDir):
+        shutil.rmtree(funcDir)
+    if not os.path.isdir(funcDir):
+        os.mkdir(funcDir)
+    yield funcDir
+    if os.path.isdir(funcDir):
+        shutil.rmtree(funcDir)
     return

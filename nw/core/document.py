@@ -168,7 +168,8 @@ class NWDoc():
             os.unlink(docPath)
         os.rename(docTemp, docPath)
 
-        self.theParent.setStatus("Saved Document: %s" % self._theItem.itemName)
+        if self._theItem is not None:
+            self.theParent.setStatus("Saved Document: %s" % self._theItem.itemName)
 
         return True
 

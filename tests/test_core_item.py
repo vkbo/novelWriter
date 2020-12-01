@@ -6,7 +6,8 @@ import pytest
 
 from lxml import etree
 
-from nw.core.project import NWProject, NWItem
+from nw.core import NWProject
+from nw.core.item import NWItem
 from nw.constants import nwItemClass, nwItemType, nwItemLayout
 
 @pytest.mark.core

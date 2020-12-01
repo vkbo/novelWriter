@@ -326,30 +326,6 @@ def testProjectMethods(monkeypatch, nwMinimal, dummyGUI):
     assert theProject.bookAuthors == ["Jane Doe", "John Doh"]
 
 @pytest.mark.project
-def testDocMeta(dummyGUI, nwLipsum):
-    """Check that the document meta data string is parsed correctly.
-    """
-    theProject = NWProject(dummyGUI)
-    theProject.projTree.setSeed(42)
-    assert theProject.openProject(nwLipsum)
-
-    aDoc = NWDoc(theProject, dummyGUI)
-    assert aDoc.openDocument("47666c91c7ccf")
-    theName, theParent, theClass, theLayout = aDoc.getMeta()
-
-    assert theName == "Scene Five"
-    assert theParent == "6bd935d2490cd"
-    assert theClass == nwItemClass.NOVEL
-    assert theLayout == nwItemLayout.SCENE
-
-    aDoc._docMeta = {"stuff": None}
-    theName, theParent, theClass, theLayout = aDoc.getMeta()
-    assert theName == ""
-    assert theParent is None
-    assert theClass is None
-    assert theLayout is None
-
-@pytest.mark.project
 def testSpellEnchant(tmpDir, nwConf):
     wList = os.path.join(tmpDir, "wordlist.txt")
     with open(wList, mode="w") as wFile:
