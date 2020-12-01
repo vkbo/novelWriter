@@ -48,8 +48,10 @@ class NWTree():
         self._treeOrder   = []    # The order of the tree items on the tree view
         self._treeRoots   = []    # The root items of the tree
         self._trashRoot   = None  # The handle of the trash root folder
+        self._archRoot    = None  # The handle of the archive root folder
         self._theIndex    = 0     # The current iterator index
         self._treeChanged = False # True if tree structure has changed
+
         self._handleSeed  = None  # Used for generating handles for testing
 
         return
@@ -83,13 +85,14 @@ class NWTree():
         if tHandle is None:
             tHandle = self._makeHandle()
 
+        if tHandle in self._projTree:
+            logger.warning("Duplicate handle %s detected, generating new" % tHandle)
+            tHandle = self._makeHandle()
+
         logger.verbose("Adding item %s with parent %s" % (str(tHandle), str(pHandle)))
 
         nwItem.setHandle(tHandle)
         nwItem.setParent(pHandle)
-
-        self._projTree[tHandle] = nwItem
-        self._treeOrder.append(tHandle)
 
         if nwItem.itemType == nwItemType.ROOT:
             logger.verbose("Item %s is a root item" % str(tHandle))
@@ -104,7 +107,10 @@ class NWTree():
                 self._trashRoot = tHandle
             else:
                 logger.error("Only one trash folder allowed")
+                return
 
+        self._projTree[tHandle] = nwItem
+        self._treeOrder.append(tHandle)
         self._setTreeChanged(True)
 
         return
@@ -176,8 +182,9 @@ class NWTree():
 
         except Exception as e:
             logger.error(str(e))
+            return False
 
-        return
+        return True
 
     def sumWords(self):
         """Loops over all entries and adds up the word counts.
@@ -244,6 +251,8 @@ class NWTree():
             return True
         for aRoot in self._treeRoots:
             tItem = self.__getitem__(aRoot)
+            if tItem is None:
+                continue
             if theClass == tItem.itemClass:
                 return False
         return True
@@ -397,7 +406,7 @@ class NWTree():
             del self._projTree[tHandle]
         else:
             logger.warning("Failed to delete item %s: item not found" % tHandle)
-            return False
+            return
 
         if tHandle in self._treeRoots:
             self._treeRoots.remove(tHandle)
@@ -408,7 +417,7 @@ class NWTree():
 
         self._setTreeChanged(True)
 
-        return True
+        return
 
     def __contains__(self, tHandle):
         """Checks if a handle exists in the tree.
