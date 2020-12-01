@@ -413,6 +413,10 @@ def testCoreTree_ToCFile(monkeypatch, dummyGUI, dummyItems, tmpDir):
     theProject.projPath = tmpDir
     assert theTree.writeToCFile()
 
+    pathA = os.path.join("content", "c000000000001.nwd")
+    pathB = os.path.join("content", "c000000000002.nwd")
+    pathC = os.path.join("content", "b000000000002.nwd")
+
     with open(os.path.join(tmpDir, nwFiles.TOC_TXT), mode="r", encoding="utf8") as inFile:
         assert inFile.read() == (
             "\n"
@@ -421,9 +425,9 @@ def testCoreTree_ToCFile(monkeypatch, dummyGUI, dummyItems, tmpDir):
             "\n"
             "File Name                  Class      Layout      Document Label\n"
             "-------------------------------------------------------------\n"
-            "content/c000000000001.nwd  NOVEL      UNNUMBERED  Chapter One\n"
-            "content/c000000000002.nwd  NOVEL      SCENE       Scene One\n"
-            "content/b000000000002.nwd  CHARACTER  NOTE        Jane Doe\n"
+            f"{pathA}  NOVEL      UNNUMBERED  Chapter One\n"
+            f"{pathB}  NOVEL      SCENE       Scene One\n"
+            f"{pathC}  CHARACTER  NOTE        Jane Doe\n"
         )
 
 # END Test testCoreTree_ToCFile

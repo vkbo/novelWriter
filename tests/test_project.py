@@ -11,7 +11,6 @@ from zipfile import ZipFile
 from nwtools import cmpFiles
 
 from nw.core.project import NWProject
-from nw.core.document import NWDoc
 from nw.core.spellcheck import NWSpellEnchant, NWSpellSimple
 from nw.constants import nwConst, nwItemClass, nwItemType, nwItemLayout, nwFiles
 
