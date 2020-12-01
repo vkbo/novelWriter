@@ -107,7 +107,7 @@ def testCoreTree_BuildTree(dummyGUI, dummyItems):
     aHandles = []
     for tHandle, pHande, nwItem in dummyItems:
         aHandles.append(tHandle)
-        theTree.append(tHandle, pHande, nwItem)
+        assert theTree.append(tHandle, pHande, nwItem)
 
     assert theTree._treeChanged
 
@@ -136,7 +136,7 @@ def testCoreTree_BuildTree(dummyGUI, dummyItems):
     itemT.itemClass = nwItemClass.TRASH
     itemT.isExpanded = False
 
-    theTree.append("1234567890abc", None, itemT)
+    assert not theTree.append("1234567890abc", None, itemT)
     assert len(theTree) == len(dummyItems)
 
     # Generate handle automatically
@@ -146,37 +146,26 @@ def testCoreTree_BuildTree(dummyGUI, dummyItems):
     itemT.itemClass = nwItemClass.NOVEL
     itemT.itemLayout = nwItemLayout.SCENE
 
-    theTree.append(None, None, itemT)
+    assert theTree.append(None, None, itemT)
     assert len(theTree) == len(dummyItems) + 1
 
     theList = theTree.handles()
     assert theList[-1] == "73475cb40a568"
 
-    # Duplicate handle
-    itemT = NWItem(theProject)
-    itemT.itemName = "New File"
-    itemT.itemType = nwItemType.FILE
-    itemT.itemClass = nwItemClass.NOVEL
-    itemT.itemLayout = nwItemLayout.SCENE
-
-    theTree.append("73475cb40a568", None, itemT)
-    assert len(theTree) == len(dummyItems) + 2
-
-    theList = theTree.handles()
-    assert theList[-1] == "44cb730c42048"
-
-    # Delete the last two items
-    del theTree["dummy"]
-    assert len(theTree) == len(dummyItems) + 2
-
-    del theTree["44cb730c42048"]
+    # Try to add existing handle
+    assert not theTree.append("73475cb40a568", None, itemT)
     assert len(theTree) == len(dummyItems) + 1
-    assert "44cb730c42048" not in theTree
 
+    # Delete a non-existing item
+    del theTree["dummy"]
+    assert len(theTree) == len(dummyItems) + 1
+
+    # Delete the last item
     del theTree["73475cb40a568"]
     assert len(theTree) == len(dummyItems)
     assert "73475cb40a568" not in theTree
 
+    # Delete the Novel, Archive and Trash folders
     del theTree["a000000000001"]
     assert len(theTree) == len(dummyItems) - 1
     assert "a000000000001" not in theTree
@@ -407,7 +396,15 @@ def testCoreTree_ToCFile(dummyGUI, dummyItems, tmpDir, monkeypatch):
     assert len(theTree) == len(dummyItems)
     theTree._treeOrder.append("dummy")
 
-    monkeypatch.setattr("os.path.isfile", lambda *args: True)
+    def dummyIsFile(fileName):
+        """Return True for items that are files in novelWriter and
+        should thus also be files in the project folder structure.
+        """
+        dItem = theTree[fileName[8:21]]
+        assert dItem is not None
+        return dItem.itemType == nwItemType.FILE
+
+    monkeypatch.setattr("os.path.isfile", dummyIsFile)
 
     theProject.projContent = "content"
     theProject.projPath = None
@@ -424,13 +421,8 @@ def testCoreTree_ToCFile(dummyGUI, dummyItems, tmpDir, monkeypatch):
             "\n"
             "File Name                  Class      Layout      Document Label\n"
             "-------------------------------------------------------------\n"
-            "content/a000000000001.nwd  NOVEL      NO_LAYOUT   Novel\n"
-            "content/b000000000001.nwd  NOVEL      NO_LAYOUT   Act One\n"
             "content/c000000000001.nwd  NOVEL      UNNUMBERED  Chapter One\n"
             "content/c000000000002.nwd  NOVEL      SCENE       Scene One\n"
-            "content/a000000000002.nwd  ARCHIVE    NO_LAYOUT   Outtakes\n"
-            "content/a000000000003.nwd  TRASH      NO_LAYOUT   Trash\n"
-            "content/a000000000004.nwd  CHARACTER  NO_LAYOUT   Characters\n"
             "content/b000000000002.nwd  CHARACTER  NOTE        Jane Doe\n"
         )
 

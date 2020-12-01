@@ -86,8 +86,8 @@ class NWTree():
             tHandle = self._makeHandle()
 
         if tHandle in self._projTree:
-            logger.warning("Duplicate handle %s detected, generating new" % tHandle)
-            tHandle = self._makeHandle()
+            logger.warning("Duplicate handle %s detected, skipping" % tHandle)
+            return False
 
         logger.verbose("Adding item %s with parent %s" % (str(tHandle), str(pHandle)))
 
@@ -107,13 +107,13 @@ class NWTree():
                 self._trashRoot = tHandle
             else:
                 logger.error("Only one trash folder allowed")
-                return
+                return False
 
         self._projTree[tHandle] = nwItem
         self._treeOrder.append(tHandle)
         self._setTreeChanged(True)
 
-        return
+        return True
 
     def packXML(self, xParent):
         """Pack the content of the tree into the provided XML object. In
