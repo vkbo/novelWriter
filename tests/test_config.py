@@ -8,8 +8,8 @@ import os
 from nwtools import cmpFiles
 
 @pytest.mark.core
-def testConfigCore(tmpConf, tmpDir, nwRef):
-    refConf = os.path.join(nwRef, "novelwriter.conf")
+def testConfigCore(tmpConf, tmpDir, refDir):
+    refConf = os.path.join(refDir, "novelwriter.conf")
     testConf = os.path.join(tmpConf.confPath, "novelwriter.conf")
 
     assert tmpConf.confPath == tmpDir
@@ -38,8 +38,8 @@ def testConfigSetDataPath(tmpConf, tmpDir):
     assert not tmpConf.confChanged
 
 @pytest.mark.core
-def testConfigSetWinSize(tmpConf, tmpDir, nwRef):
-    refConf = os.path.join(nwRef, "novelwriter.conf")
+def testConfigSetWinSize(tmpConf, tmpDir, refDir):
+    refConf = os.path.join(refDir, "novelwriter.conf")
     testConf = os.path.join(tmpConf.confPath, "novelwriter.conf")
     tmpConf.guiScale = 1.0
 
@@ -55,8 +55,8 @@ def testConfigSetWinSize(tmpConf, tmpDir, nwRef):
     assert not tmpConf.confChanged
 
 @pytest.mark.core
-def testConfigSetTreeColWidths(tmpConf, tmpDir, nwRef):
-    refConf = os.path.join(nwRef, "novelwriter.conf")
+def testConfigSetTreeColWidths(tmpConf, tmpDir, refDir):
+    refConf = os.path.join(refDir, "novelwriter.conf")
     testConf = os.path.join(tmpConf.confPath, "novelwriter.conf")
 
     assert tmpConf.confPath == tmpDir
@@ -77,8 +77,8 @@ def testConfigSetTreeColWidths(tmpConf, tmpDir, nwRef):
     assert not tmpConf.confChanged
 
 @pytest.mark.core
-def testConfigSetPanePos(tmpConf, tmpDir, nwRef):
-    refConf = os.path.join(nwRef, "novelwriter.conf")
+def testConfigSetPanePos(tmpConf, tmpDir, refDir):
+    refConf = os.path.join(refDir, "novelwriter.conf")
     testConf = os.path.join(tmpConf.confPath, "novelwriter.conf")
 
     assert tmpConf.confPath == tmpDir
@@ -113,8 +113,8 @@ def testConfigSetPanePos(tmpConf, tmpDir, nwRef):
     assert not tmpConf.confChanged
 
 @pytest.mark.core
-def testConfigFlags(tmpConf, tmpDir, nwRef):
-    refConf = os.path.join(nwRef, "novelwriter.conf")
+def testConfigFlags(tmpConf, tmpDir, refDir):
+    refConf = os.path.join(refDir, "novelwriter.conf")
     testConf = os.path.join(tmpConf.confPath, "novelwriter.conf")
 
     assert tmpConf.confPath == tmpDir
@@ -137,7 +137,7 @@ def testConfigFlags(tmpConf, tmpDir, nwRef):
     assert not tmpConf.confChanged
 
 @pytest.mark.core
-def testTextSizes(tmpConf, tmpDir, nwRef):
+def testTextSizes(tmpConf, tmpDir, refDir):
     assert tmpConf.confPath == tmpDir
 
     tmpConf.guiScale = 2.0

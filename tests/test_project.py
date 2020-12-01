@@ -16,12 +16,12 @@ from nw.core.spellcheck import NWSpellEnchant, NWSpellSimple
 from nw.constants import nwConst, nwItemClass, nwItemType, nwItemLayout, nwFiles
 
 @pytest.mark.project
-def testProjectNewOpenSave(nwFuncTemp, nwTempProj, nwRef, tmpDir, dummyGUI):
+def testProjectNewOpenSave(nwFuncTemp, nwTempProj, refDir, tmpDir, dummyGUI):
     """Test that a basic project can be created, and opened and saved.
     """
     projFile = os.path.join(nwFuncTemp, "nwProject.nwx")
     testFile = os.path.join(nwTempProj, "1_nwProject.nwx")
-    refFile  = os.path.join(nwRef, "proj", "1_nwProject.nwx")
+    refFile  = os.path.join(refDir, "proj", "1_nwProject.nwx")
 
     theProject = NWProject(dummyGUI)
     theProject.projTree.setSeed(42)
@@ -62,12 +62,12 @@ def testProjectNewOpenSave(nwFuncTemp, nwTempProj, nwRef, tmpDir, dummyGUI):
     assert cmpFiles(testFile, refFile, [2, 6, 7, 8])
 
 @pytest.mark.project
-def testProjectNewRoot(nwFuncTemp, nwTempProj, nwRef, dummyGUI):
+def testProjectNewRoot(nwFuncTemp, nwTempProj, refDir, dummyGUI):
     """Check that new root folders can be added to the project.
     """
     projFile = os.path.join(nwFuncTemp, "nwProject.nwx")
     testFile = os.path.join(nwTempProj, "2_nwProject.nwx")
-    refFile  = os.path.join(nwRef, "proj", "2_nwProject.nwx")
+    refFile  = os.path.join(refDir, "proj", "2_nwProject.nwx")
 
     theProject = NWProject(dummyGUI)
     theProject.projTree.setSeed(42)
@@ -96,12 +96,12 @@ def testProjectNewRoot(nwFuncTemp, nwTempProj, nwRef, dummyGUI):
     assert not theProject.projChanged
 
 @pytest.mark.project
-def testProjectNewFile(nwFuncTemp, nwTempProj, nwRef, dummyGUI):
+def testProjectNewFile(nwFuncTemp, nwTempProj, refDir, dummyGUI):
     """Check that new files can be added to the project.
     """
     projFile = os.path.join(nwFuncTemp, "nwProject.nwx")
     testFile = os.path.join(nwTempProj, "3_nwProject.nwx")
-    refFile  = os.path.join(nwRef, "proj", "3_nwProject.nwx")
+    refFile  = os.path.join(refDir, "proj", "3_nwProject.nwx")
 
     theProject = NWProject(dummyGUI)
     theProject.projTree.setSeed(42)
@@ -123,13 +123,13 @@ def testProjectNewFile(nwFuncTemp, nwTempProj, nwRef, dummyGUI):
     assert not theProject.projChanged
 
 @pytest.mark.project
-def testProjectNewCustomA(nwFuncTemp, nwTempProj, nwRef, dummyGUI):
+def testProjectNewCustomA(nwFuncTemp, nwTempProj, refDir, dummyGUI):
     """Create a new project from a project wizard dictionary.
     Custom type with chapters and scenes.
     """
     projFile = os.path.join(nwFuncTemp, "nwProject.nwx")
     testFile = os.path.join(nwTempProj, "4_nwProject.nwx")
-    refFile  = os.path.join(nwRef, "proj", "4_nwProject.nwx")
+    refFile  = os.path.join(refDir, "proj", "4_nwProject.nwx")
 
     projData = {
         "projName": "Test Custom",
@@ -162,13 +162,13 @@ def testProjectNewCustomA(nwFuncTemp, nwTempProj, nwRef, dummyGUI):
     assert cmpFiles(testFile, refFile, [2, 6, 7, 8])
 
 @pytest.mark.project
-def testProjectNewCustomB(nwFuncTemp, nwTempProj, nwRef, dummyGUI):
+def testProjectNewCustomB(nwFuncTemp, nwTempProj, refDir, dummyGUI):
     """Create a new project from a project wizard dictionary.
     Custom type without chapters, but with scenes.
     """
     projFile = os.path.join(nwFuncTemp, "nwProject.nwx")
     testFile = os.path.join(nwTempProj, "5_nwProject.nwx")
-    refFile  = os.path.join(nwRef, "proj", "5_nwProject.nwx")
+    refFile  = os.path.join(refDir, "proj", "5_nwProject.nwx")
 
     projData = {
         "projName": "Test Custom",

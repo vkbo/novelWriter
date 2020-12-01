@@ -33,6 +33,15 @@ def tmpDir():
         os.mkdir(tempDir)
     return tempDir
 
+@pytest.fixture(scope="session")
+def refDir():
+    """The folder where all the reference files are stored for verifying
+    the results of tests.
+    """
+    testDir = os.path.dirname(__file__)
+    refDir = os.path.join(testDir, "reference")
+    return refDir
+
 ##
 #  novelWriter Objects
 ##
@@ -57,29 +66,16 @@ def dummyGUI(tmpConf):
 # =============================================================================================== #
 
 ##
-#  Core Test Folders
-##
-
-@pytest.fixture(scope="session")
-def nwRef():
-    """The folder where all the reference files are stored for verifying
-    the results of tests.
-    """
-    testDir = os.path.dirname(__file__)
-    refDir = os.path.join(testDir, "reference")
-    return refDir
-
-##
 #  novelWriter Objects
 ##
 
 @pytest.fixture(scope="session")
-def nwConf(nwRef, tmpDir):
+def nwConf(refDir, tmpDir):
     """Temporary novelWriter configuration used for the dummy instance
     of novelWriter's main GUI.
     """
     theConf = Config()
-    theConf.initConfig(nwRef, tmpDir)
+    theConf.initConfig(refDir, tmpDir)
     return theConf
 
 ##

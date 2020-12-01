@@ -15,13 +15,13 @@ from nw.core.index import NWIndex
 from nw.constants import nwItemClass, nwItemLayout
 
 @pytest.mark.core
-def testCoreIndex_LoadSave(monkeypatch, nwLipsum, dummyGUI, nwTempProj, nwRef):
+def testCoreIndex_LoadSave(monkeypatch, nwLipsum, dummyGUI, nwTempProj, refDir):
     """Test core functionality of scaning, saving, loading and checking
     the index cache file.
     """
     projFile = os.path.join(nwLipsum, "meta", "tagsIndex.json")
     testFile = os.path.join(nwTempProj, "coreIndex_LoadSave_tagsIndex.json")
-    compFile = os.path.join(nwRef, "coreIndex_LoadSave_tagsIndex.json")
+    compFile = os.path.join(refDir, "coreIndex_LoadSave_tagsIndex.json")
 
     theProject = NWProject(dummyGUI)
     theProject.projTree.setSeed(42)

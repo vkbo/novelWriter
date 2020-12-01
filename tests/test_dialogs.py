@@ -30,7 +30,7 @@ typeDelay = 1
 stepDelay = 20
 
 @pytest.mark.gui
-def testProjectSettings(qtbot, monkeypatch, yesToAll, nwFuncTemp, nwTempGUI, nwRef, tmpDir):
+def testProjectSettings(qtbot, monkeypatch, yesToAll, nwFuncTemp, nwTempGUI, refDir, tmpDir):
     nwGUI = nw.main(["--testmode", "--config=%s" % tmpDir, "--data=%s" % tmpDir])
     qtbot.addWidget(nwGUI)
     nwGUI.show()
@@ -137,7 +137,7 @@ def testProjectSettings(qtbot, monkeypatch, yesToAll, nwFuncTemp, nwTempGUI, nwR
     # Check the files
     projFile = os.path.join(nwFuncTemp, "nwProject.nwx")
     testFile = os.path.join(nwTempGUI, "2_nwProject.nwx")
-    refFile  = os.path.join(nwRef, "gui", "2_nwProject.nwx")
+    refFile  = os.path.join(refDir, "gui", "2_nwProject.nwx")
     copyfile(projFile, testFile)
     assert cmpFiles(testFile, refFile, [2, 8, 9, 10])
 
@@ -145,7 +145,7 @@ def testProjectSettings(qtbot, monkeypatch, yesToAll, nwFuncTemp, nwTempGUI, nwR
     nwGUI.closeMain()
 
 @pytest.mark.gui
-def testItemEditor(qtbot, yesToAll, monkeypatch, nwFuncTemp, nwTempGUI, nwRef, tmpDir):
+def testItemEditor(qtbot, yesToAll, monkeypatch, nwFuncTemp, nwTempGUI, refDir, tmpDir):
     nwGUI = nw.main(["--testmode", "--config=%s" % tmpDir, "--data=%s" % tmpDir])
     qtbot.addWidget(nwGUI)
     nwGUI.show()
@@ -210,7 +210,7 @@ def testItemEditor(qtbot, yesToAll, monkeypatch, nwFuncTemp, nwTempGUI, nwRef, t
     # Check the files
     projFile = os.path.join(nwFuncTemp, "nwProject.nwx")
     testFile = os.path.join(nwTempGUI, "3_nwProject.nwx")
-    refFile  = os.path.join(nwRef, "gui", "3_nwProject.nwx")
+    refFile  = os.path.join(refDir, "gui", "3_nwProject.nwx")
     copyfile(projFile, testFile)
     assert cmpFiles(testFile, refFile, [2, 6, 7, 8])
 
@@ -397,7 +397,7 @@ def testAboutBox(qtbot, monkeypatch, nwFuncTemp, tmpDir):
     nwGUI.closeMain()
 
 @pytest.mark.gui
-def testBuildTool(qtbot, yesToAll, nwTempBuild, nwLipsum, nwRef, tmpDir):
+def testBuildTool(qtbot, yesToAll, nwTempBuild, nwLipsum, refDir, tmpDir):
 
     nwGUI = nw.main(["--testmode", "--config=%s" % nwLipsum, "--data=%s" % tmpDir])
     qtbot.addWidget(nwGUI)
@@ -428,13 +428,13 @@ def testBuildTool(qtbot, yesToAll, nwTempBuild, nwLipsum, nwRef, tmpDir):
 
     projFile = os.path.join(nwLipsum, "Lorem Ipsum.nwd")
     testFile = os.path.join(nwTempBuild, "1_LoremIpsum.nwd")
-    refFile  = os.path.join(nwRef, "build", "1_LoremIpsum.nwd")
+    refFile  = os.path.join(refDir, "build", "1_LoremIpsum.nwd")
     copyfile(projFile, testFile)
     assert cmpFiles(testFile, refFile)
 
     projFile = os.path.join(nwLipsum, "Lorem Ipsum.htm")
     testFile = os.path.join(nwTempBuild, "1_LoremIpsum.htm")
-    refFile  = os.path.join(nwRef, "build", "1_LoremIpsum.htm")
+    refFile  = os.path.join(refDir, "build", "1_LoremIpsum.htm")
     copyfile(projFile, testFile)
     assert cmpFiles(testFile, refFile)
 
@@ -467,13 +467,13 @@ def testBuildTool(qtbot, yesToAll, nwTempBuild, nwLipsum, nwRef, tmpDir):
 
     projFile = os.path.join(nwLipsum, "Lorem Ipsum.nwd")
     testFile = os.path.join(nwTempBuild, "2_LoremIpsum.nwd")
-    refFile  = os.path.join(nwRef, "build", "2_LoremIpsum.nwd")
+    refFile  = os.path.join(refDir, "build", "2_LoremIpsum.nwd")
     copyfile(projFile, testFile)
     assert cmpFiles(testFile, refFile)
 
     projFile = os.path.join(nwLipsum, "Lorem Ipsum.htm")
     testFile = os.path.join(nwTempBuild, "2_LoremIpsum.htm")
-    refFile  = os.path.join(nwRef, "build", "2_LoremIpsum.htm")
+    refFile  = os.path.join(refDir, "build", "2_LoremIpsum.htm")
     copyfile(projFile, testFile)
     assert cmpFiles(testFile, refFile)
 
@@ -487,14 +487,14 @@ def testBuildTool(qtbot, yesToAll, nwTempBuild, nwLipsum, nwRef, tmpDir):
     assert nwBuild._saveDocument(nwBuild.FMT_NWD)
     projFile = os.path.join(nwLipsum, "Lorem Ipsum.nwd")
     testFile = os.path.join(nwTempBuild, "3_LoremIpsum.nwd")
-    refFile  = os.path.join(nwRef, "build", "3_LoremIpsum.nwd")
+    refFile  = os.path.join(refDir, "build", "3_LoremIpsum.nwd")
     copyfile(projFile, testFile)
     assert cmpFiles(testFile, refFile)
 
     assert nwBuild._saveDocument(nwBuild.FMT_HTM)
     projFile = os.path.join(nwLipsum, "Lorem Ipsum.htm")
     testFile = os.path.join(nwTempBuild, "3_LoremIpsum.htm")
-    refFile  = os.path.join(nwRef, "build", "3_LoremIpsum.htm")
+    refFile  = os.path.join(refDir, "build", "3_LoremIpsum.htm")
     copyfile(projFile, testFile)
     assert cmpFiles(testFile, refFile)
 
@@ -521,14 +521,14 @@ def testBuildTool(qtbot, yesToAll, nwTempBuild, nwLipsum, nwRef, tmpDir):
     assert nwBuild._saveDocument(nwBuild.FMT_NWD)
     projFile = os.path.join(nwLipsum, "Lorem Ipsum.nwd")
     testFile = os.path.join(nwTempBuild, "4_LoremIpsum.nwd")
-    refFile  = os.path.join(nwRef, "build", "4_LoremIpsum.nwd")
+    refFile  = os.path.join(refDir, "build", "4_LoremIpsum.nwd")
     copyfile(projFile, testFile)
     assert cmpFiles(testFile, refFile)
 
     assert nwBuild._saveDocument(nwBuild.FMT_HTM)
     projFile = os.path.join(nwLipsum, "Lorem Ipsum.htm")
     testFile = os.path.join(nwTempBuild, "4_LoremIpsum.htm")
-    refFile  = os.path.join(nwRef, "build", "4_LoremIpsum.htm")
+    refFile  = os.path.join(refDir, "build", "4_LoremIpsum.htm")
     copyfile(projFile, testFile)
     assert cmpFiles(testFile, refFile)
 
@@ -536,14 +536,14 @@ def testBuildTool(qtbot, yesToAll, nwTempBuild, nwLipsum, nwRef, tmpDir):
     assert nwBuild._saveDocument(nwBuild.FMT_JSON_H)
     projFile = os.path.join(nwLipsum, "Lorem Ipsum.json")
     testFile = os.path.join(nwTempBuild, "4H_LoremIpsum.json")
-    refFile  = os.path.join(nwRef, "build", "4H_LoremIpsum.json")
+    refFile  = os.path.join(refDir, "build", "4H_LoremIpsum.json")
     copyfile(projFile, testFile)
     assert cmpFiles(testFile, refFile, [8])
 
     assert nwBuild._saveDocument(nwBuild.FMT_JSON_M)
     projFile = os.path.join(nwLipsum, "Lorem Ipsum.json")
     testFile = os.path.join(nwTempBuild, "4M_LoremIpsum.json")
-    refFile  = os.path.join(nwRef, "build", "4M_LoremIpsum.json")
+    refFile  = os.path.join(refDir, "build", "4M_LoremIpsum.json")
     copyfile(projFile, testFile)
     assert cmpFiles(testFile, refFile, [8])
 
@@ -589,7 +589,7 @@ def testBuildTool(qtbot, yesToAll, nwTempBuild, nwLipsum, nwRef, tmpDir):
     nwGUI.closeMain()
 
 @pytest.mark.gui
-def testMergeSplitTools(qtbot, monkeypatch, yesToAll, nwTempGUI, nwLipsum, nwRef, tmpDir):
+def testMergeSplitTools(qtbot, monkeypatch, yesToAll, nwTempGUI, nwLipsum, refDir, tmpDir):
 
     nwGUI = nw.main(["--testmode", "--config=%s" % nwLipsum, "--data=%s" % tmpDir])
     qtbot.addWidget(nwGUI)
@@ -620,7 +620,7 @@ def testMergeSplitTools(qtbot, monkeypatch, yesToAll, nwTempGUI, nwLipsum, nwRef
 
     projFile = os.path.join(nwLipsum, "content", "73475cb40a568.nwd")
     testFile = os.path.join(nwTempGUI, "4_73475cb40a568.nwd")
-    refFile  = os.path.join(nwRef, "gui", "4_73475cb40a568.nwd")
+    refFile  = os.path.join(refDir, "gui", "4_73475cb40a568.nwd")
     copyfile(projFile, testFile)
     assert cmpFiles(testFile, refFile)
 
@@ -646,7 +646,7 @@ def testMergeSplitTools(qtbot, monkeypatch, yesToAll, nwTempGUI, nwLipsum, nwRef
     # This should give us back the file as it was before
     projFile = os.path.join(nwLipsum, "content", "71ee45a3c0db9.nwd")
     testFile = os.path.join(nwTempGUI, "4_71ee45a3c0db9.nwd")
-    refFile  = os.path.join(nwRef, "gui", "4_73475cb40a568.nwd")
+    refFile  = os.path.join(refDir, "gui", "4_73475cb40a568.nwd")
     copyfile(projFile, testFile)
     assert cmpFiles(testFile, refFile, [1, 2, 3])
 
@@ -670,19 +670,19 @@ def testMergeSplitTools(qtbot, monkeypatch, yesToAll, nwTempGUI, nwLipsum, nwRef
 
     projFile = os.path.join(nwLipsum, "content", "25fc0e7096fc6.nwd")
     testFile = os.path.join(nwTempGUI, "5_25fc0e7096fc6.nwd")
-    refFile  = os.path.join(nwRef, "gui", "5_25fc0e7096fc6.nwd")
+    refFile  = os.path.join(refDir, "gui", "5_25fc0e7096fc6.nwd")
     copyfile(projFile, testFile)
     assert cmpFiles(testFile, refFile)
 
     projFile = os.path.join(nwLipsum, "content", "31489056e0916.nwd")
     testFile = os.path.join(nwTempGUI, "5_31489056e0916.nwd")
-    refFile  = os.path.join(nwRef, "gui", "5_31489056e0916.nwd")
+    refFile  = os.path.join(refDir, "gui", "5_31489056e0916.nwd")
     copyfile(projFile, testFile)
     assert cmpFiles(testFile, refFile)
 
     projFile = os.path.join(nwLipsum, "content", "98010bd9270f9.nwd")
     testFile = os.path.join(nwTempGUI, "5_98010bd9270f9.nwd")
-    refFile  = os.path.join(nwRef, "gui", "5_98010bd9270f9.nwd")
+    refFile  = os.path.join(refDir, "gui", "5_98010bd9270f9.nwd")
     copyfile(projFile, testFile)
     assert cmpFiles(testFile, refFile)
 
@@ -708,31 +708,31 @@ def testMergeSplitTools(qtbot, monkeypatch, yesToAll, nwTempGUI, nwLipsum, nwRef
 
     projFile = os.path.join(nwLipsum, "content", "1a6562590ef19.nwd")
     testFile = os.path.join(nwTempGUI, "5_25fc0e7096fc6.nwd")
-    refFile  = os.path.join(nwRef, "gui", "5_25fc0e7096fc6.nwd")
+    refFile  = os.path.join(refDir, "gui", "5_25fc0e7096fc6.nwd")
     copyfile(projFile, testFile)
     assert cmpFiles(testFile, refFile, [1, 2, 3])
 
     projFile = os.path.join(nwLipsum, "content", "031b4af5197ec.nwd")
     testFile = os.path.join(nwTempGUI, "5_031b4af5197ec.nwd")
-    refFile  = os.path.join(nwRef, "gui", "5_031b4af5197ec.nwd")
+    refFile  = os.path.join(refDir, "gui", "5_031b4af5197ec.nwd")
     copyfile(projFile, testFile)
     assert cmpFiles(testFile, refFile)
 
     projFile = os.path.join(nwLipsum, "content", "41cfc0d1f2d12.nwd")
     testFile = os.path.join(nwTempGUI, "5_41cfc0d1f2d12.nwd")
-    refFile  = os.path.join(nwRef, "gui", "5_41cfc0d1f2d12.nwd")
+    refFile  = os.path.join(refDir, "gui", "5_41cfc0d1f2d12.nwd")
     copyfile(projFile, testFile)
     assert cmpFiles(testFile, refFile)
 
     projFile = os.path.join(nwLipsum, "content", "2858dcd1057d3.nwd")
     testFile = os.path.join(nwTempGUI, "5_2858dcd1057d3.nwd")
-    refFile  = os.path.join(nwRef, "gui", "5_2858dcd1057d3.nwd")
+    refFile  = os.path.join(refDir, "gui", "5_2858dcd1057d3.nwd")
     copyfile(projFile, testFile)
     assert cmpFiles(testFile, refFile)
 
     projFile = os.path.join(nwLipsum, "content", "2fca346db6561.nwd")
     testFile = os.path.join(nwTempGUI, "5_2fca346db6561.nwd")
-    refFile  = os.path.join(nwRef, "gui", "5_2fca346db6561.nwd")
+    refFile  = os.path.join(refDir, "gui", "5_2fca346db6561.nwd")
     copyfile(projFile, testFile)
     assert cmpFiles(testFile, refFile)
 
@@ -1017,7 +1017,7 @@ def testLoadProject(qtbot, monkeypatch, yesToAll, nwMinimal, tmpDir):
     nwGUI.close()
 
 @pytest.mark.gui
-def testPreferences(qtbot, monkeypatch, yesToAll, nwMinimal, tmpDir, nwRef, tmpConf):
+def testPreferences(qtbot, monkeypatch, yesToAll, nwMinimal, tmpDir, refDir, tmpConf):
     nwGUI = nw.main(["--testmode", "--config=%s" % nwMinimal, "--data=%s" % tmpDir])
     qtbot.addWidget(nwGUI)
     nwGUI.show()
@@ -1203,7 +1203,7 @@ def testPreferences(qtbot, monkeypatch, yesToAll, nwMinimal, tmpDir, nwRef, tmpC
     # qtbot.stopForInteraction()
     nwGUI.closeMain()
 
-    refConf = os.path.join(nwRef, "novelwriter_prefs.conf")
+    refConf = os.path.join(refDir, "novelwriter_prefs.conf")
     projConf = os.path.join(nwGUI.mainConf.confPath, "novelwriter.conf")
     testConf = os.path.join(tmpDir, "novelwriter_prefs.conf")
     copyfile(projConf, testConf)

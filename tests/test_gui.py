@@ -103,7 +103,7 @@ def testLaunch(qtbot, monkeypatch, nwFuncTemp, tmpDir):
     monkeypatch.undo()
 
 @pytest.mark.gui
-def testDocEditor(qtbot, yesToAll, nwFuncTemp, nwTempGUI, nwRef, tmpDir):
+def testDocEditor(qtbot, yesToAll, nwFuncTemp, nwTempGUI, refDir, tmpDir):
 
     nwGUI = nw.main(["--testmode", "--config=%s" % tmpDir, "--data=%s" % tmpDir])
     qtbot.addWidget(nwGUI)
@@ -132,7 +132,7 @@ def testDocEditor(qtbot, yesToAll, nwFuncTemp, nwTempGUI, nwRef, tmpDir):
     # Check the files
     projFile = os.path.join(nwFuncTemp, "nwProject.nwx")
     testFile = os.path.join(nwTempGUI, "0_nwProject.nwx")
-    refFile  = os.path.join(nwRef, "gui", "0_nwProject.nwx")
+    refFile  = os.path.join(refDir, "gui", "0_nwProject.nwx")
     copyfile(projFile, testFile)
     assert cmpFiles(testFile, refFile, [2, 6, 7, 8])
     qtbot.wait(stepDelay)
@@ -381,31 +381,31 @@ def testDocEditor(qtbot, yesToAll, nwFuncTemp, nwTempGUI, nwRef, tmpDir):
     # Check the files
     projFile = os.path.join(nwFuncTemp, "nwProject.nwx")
     testFile = os.path.join(nwTempGUI, "1_nwProject.nwx")
-    refFile  = os.path.join(nwRef, "gui", "1_nwProject.nwx")
+    refFile  = os.path.join(refDir, "gui", "1_nwProject.nwx")
     copyfile(projFile, testFile)
     assert cmpFiles(testFile, refFile, [2, 6, 7, 8])
 
     projFile = os.path.join(nwFuncTemp, "content", "031b4af5197ec.nwd")
     testFile = os.path.join(nwTempGUI, "1_031b4af5197ec.nwd")
-    refFile  = os.path.join(nwRef, "gui", "1_031b4af5197ec.nwd")
+    refFile  = os.path.join(refDir, "gui", "1_031b4af5197ec.nwd")
     copyfile(projFile, testFile)
     assert cmpFiles(testFile, refFile)
 
     projFile = os.path.join(nwFuncTemp, "content", "1a6562590ef19.nwd")
     testFile = os.path.join(nwTempGUI, "1_1a6562590ef19.nwd")
-    refFile  = os.path.join(nwRef, "gui", "1_1a6562590ef19.nwd")
+    refFile  = os.path.join(refDir, "gui", "1_1a6562590ef19.nwd")
     copyfile(projFile, testFile)
     assert cmpFiles(testFile, refFile)
 
     projFile = os.path.join(nwFuncTemp, "content", "0e17daca5f3e1.nwd")
     testFile = os.path.join(nwTempGUI, "1_0e17daca5f3e1.nwd")
-    refFile  = os.path.join(nwRef, "gui", "1_0e17daca5f3e1.nwd")
+    refFile  = os.path.join(refDir, "gui", "1_0e17daca5f3e1.nwd")
     copyfile(projFile, testFile)
     assert cmpFiles(testFile, refFile)
 
     projFile = os.path.join(nwFuncTemp, "content", "41cfc0d1f2d12.nwd")
     testFile = os.path.join(nwTempGUI, "1_41cfc0d1f2d12.nwd")
-    refFile  = os.path.join(nwRef, "gui", "1_41cfc0d1f2d12.nwd")
+    refFile  = os.path.join(refDir, "gui", "1_41cfc0d1f2d12.nwd")
     copyfile(projFile, testFile)
     assert cmpFiles(testFile, refFile)
 
