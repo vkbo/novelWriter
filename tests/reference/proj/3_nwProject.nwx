@@ -39,35 +39,35 @@
     </importance>
   </settings>
   <content count="10">
-    <item handle="73475cb40a568" order="None" parent="None">
+    <item handle="73475cb40a568" order="0" parent="None">
       <name>Novel</name>
       <type>ROOT</type>
       <class>NOVEL</class>
       <status>New</status>
       <expanded>False</expanded>
     </item>
-    <item handle="44cb730c42048" order="None" parent="None">
+    <item handle="44cb730c42048" order="0" parent="None">
       <name>Plot</name>
       <type>ROOT</type>
       <class>PLOT</class>
       <status>New</status>
       <expanded>False</expanded>
     </item>
-    <item handle="71ee45a3c0db9" order="None" parent="None">
+    <item handle="71ee45a3c0db9" order="0" parent="None">
       <name>Characters</name>
       <type>ROOT</type>
       <class>CHARACTER</class>
       <status>New</status>
       <expanded>False</expanded>
     </item>
-    <item handle="811786ad1ae74" order="None" parent="None">
+    <item handle="811786ad1ae74" order="0" parent="None">
       <name>World</name>
       <type>ROOT</type>
       <class>WORLD</class>
       <status>New</status>
       <expanded>False</expanded>
     </item>
-    <item handle="25fc0e7096fc6" order="None" parent="73475cb40a568">
+    <item handle="25fc0e7096fc6" order="0" parent="73475cb40a568">
       <name>Title Page</name>
       <type>FILE</type>
       <class>NOVEL</class>
@@ -79,14 +79,14 @@
       <paraCount>0</paraCount>
       <cursorPos>0</cursorPos>
     </item>
-    <item handle="31489056e0916" order="None" parent="73475cb40a568">
+    <item handle="31489056e0916" order="0" parent="73475cb40a568">
       <name>New Chapter</name>
       <type>FOLDER</type>
       <class>NOVEL</class>
       <status>New</status>
       <expanded>False</expanded>
     </item>
-    <item handle="98010bd9270f9" order="None" parent="31489056e0916">
+    <item handle="98010bd9270f9" order="0" parent="31489056e0916">
       <name>New Chapter</name>
       <type>FILE</type>
       <class>NOVEL</class>
@@ -98,7 +98,7 @@
       <paraCount>0</paraCount>
       <cursorPos>0</cursorPos>
     </item>
-    <item handle="0e17daca5f3e1" order="None" parent="31489056e0916">
+    <item handle="0e17daca5f3e1" order="0" parent="31489056e0916">
       <name>New Scene</name>
       <type>FILE</type>
       <class>NOVEL</class>
@@ -110,7 +110,7 @@
       <paraCount>0</paraCount>
       <cursorPos>0</cursorPos>
     </item>
-    <item handle="1a6562590ef19" order="None" parent="31489056e0916">
+    <item handle="1a6562590ef19" order="0" parent="31489056e0916">
       <name>Hello</name>
       <type>FILE</type>
       <class>NOVEL</class>
@@ -122,7 +122,7 @@
       <paraCount>0</paraCount>
       <cursorPos>0</cursorPos>
     </item>
-    <item handle="031b4af5197ec" order="None" parent="71ee45a3c0db9">
+    <item handle="031b4af5197ec" order="0" parent="71ee45a3c0db9">
       <name>Jane</name>
       <type>FILE</type>
       <class>CHARACTER</class>

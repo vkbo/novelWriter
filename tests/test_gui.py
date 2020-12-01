@@ -27,11 +27,11 @@ typeDelay = 1
 stepDelay = 20
 
 @pytest.mark.gui
-def testLaunch(qtbot, monkeypatch, nwFuncTemp, nwTemp):
+def testLaunch(qtbot, monkeypatch, nwFuncTemp, tmpDir):
 
     # Defaults
     nwGUI = nw.main(
-        ["--testmode", "--config=%s" % nwFuncTemp, "--data=%s" % nwTemp, "--style=Fusion"]
+        ["--testmode", "--config=%s" % nwFuncTemp, "--data=%s" % tmpDir, "--style=Fusion"]
     )
     assert nw.logger.getEffectiveLevel() == logging.WARNING
     nwGUI.closeMain()
@@ -39,21 +39,21 @@ def testLaunch(qtbot, monkeypatch, nwFuncTemp, nwTemp):
 
     # Log Levels
     nwGUI = nw.main(
-        ["--testmode", "--info", "--config=%s" % nwFuncTemp, "--data=%s" % nwTemp]
+        ["--testmode", "--info", "--config=%s" % nwFuncTemp, "--data=%s" % tmpDir]
     )
     assert nw.logger.getEffectiveLevel() == logging.INFO
     nwGUI.closeMain()
     nwGUI.close()
 
     nwGUI = nw.main(
-        ["--testmode", "--debug", "--config=%s" % nwFuncTemp, "--data=%s" % nwTemp]
+        ["--testmode", "--debug", "--config=%s" % nwFuncTemp, "--data=%s" % tmpDir]
     )
     assert nw.logger.getEffectiveLevel() == logging.DEBUG
     nwGUI.closeMain()
     nwGUI.close()
 
     nwGUI = nw.main(
-        ["--testmode", "--verbose", "--config=%s" % nwFuncTemp, "--data=%s" % nwTemp]
+        ["--testmode", "--verbose", "--config=%s" % nwFuncTemp, "--data=%s" % tmpDir]
     )
     assert nw.logger.getEffectiveLevel() == 5
     nwGUI.closeMain()
@@ -62,7 +62,7 @@ def testLaunch(qtbot, monkeypatch, nwFuncTemp, nwTemp):
     # Help and Version
     with pytest.raises(SystemExit) as ex:
         nwGUI = nw.main(
-            ["--testmode", "--help", "--config=%s" % nwFuncTemp, "--data=%s" % nwTemp]
+            ["--testmode", "--help", "--config=%s" % nwFuncTemp, "--data=%s" % tmpDir]
         )
     nwGUI.closeMain()
     nwGUI.close()
@@ -70,7 +70,7 @@ def testLaunch(qtbot, monkeypatch, nwFuncTemp, nwTemp):
 
     with pytest.raises(SystemExit) as ex:
         nwGUI = nw.main(
-            ["--testmode", "--version", "--config=%s" % nwFuncTemp, "--data=%s" % nwTemp]
+            ["--testmode", "--version", "--config=%s" % nwFuncTemp, "--data=%s" % tmpDir]
         )
     nwGUI.closeMain()
     nwGUI.close()
@@ -79,7 +79,7 @@ def testLaunch(qtbot, monkeypatch, nwFuncTemp, nwTemp):
     # Invalid options
     with pytest.raises(SystemExit) as ex:
         nwGUI = nw.main(
-            ["--testmode", "--invalid", "--config=%s" % nwFuncTemp, "--data=%s" % nwTemp]
+            ["--testmode", "--invalid", "--config=%s" % nwFuncTemp, "--data=%s" % tmpDir]
         )
     nwGUI.closeMain()
     nwGUI.close()
@@ -92,7 +92,7 @@ def testLaunch(qtbot, monkeypatch, nwFuncTemp, nwTemp):
     monkeypatch.setattr("nw.CONFIG.verPyQtValue", 50000)
     with pytest.raises(SystemExit) as ex:
         nwGUI = nw.main(
-            ["--testmode", "--config=%s" % nwFuncTemp, "--data=%s" % nwTemp]
+            ["--testmode", "--config=%s" % nwFuncTemp, "--data=%s" % tmpDir]
         )
     nwGUI.closeMain()
     nwGUI.close()
@@ -103,9 +103,9 @@ def testLaunch(qtbot, monkeypatch, nwFuncTemp, nwTemp):
     monkeypatch.undo()
 
 @pytest.mark.gui
-def testDocEditor(qtbot, yesToAll, nwFuncTemp, nwTempGUI, nwRef, nwTemp):
+def testDocEditor(qtbot, yesToAll, nwFuncTemp, nwTempGUI, nwRef, tmpDir):
 
-    nwGUI = nw.main(["--testmode", "--config=%s" % nwTemp, "--data=%s" % nwTemp])
+    nwGUI = nw.main(["--testmode", "--config=%s" % tmpDir, "--data=%s" % tmpDir])
     qtbot.addWidget(nwGUI)
     nwGUI.show()
     qtbot.waitForWindowShown(nwGUI)
@@ -414,9 +414,9 @@ def testDocEditor(qtbot, yesToAll, nwFuncTemp, nwTempGUI, nwRef, nwTemp):
     nwGUI.close()
 
 @pytest.mark.gui
-def testDocViewer(qtbot, yesToAll, nwLipsum, nwTemp):
+def testDocViewer(qtbot, yesToAll, nwLipsum, tmpDir):
 
-    nwGUI = nw.main(["--testmode", "--config=%s" % nwLipsum, "--data=%s" % nwTemp])
+    nwGUI = nw.main(["--testmode", "--config=%s" % nwLipsum, "--data=%s" % tmpDir])
     qtbot.addWidget(nwGUI)
     nwGUI.show()
     qtbot.waitForWindowShown(nwGUI)
@@ -566,9 +566,9 @@ def testDocViewer(qtbot, yesToAll, nwLipsum, nwTemp):
     nwGUI.close()
 
 @pytest.mark.gui
-def testProjectTree(qtbot, yesToAll, nwMinimal, nwTemp):
+def testProjectTree(qtbot, yesToAll, nwMinimal, tmpDir):
 
-    nwGUI = nw.main(["--testmode", "--config=%s" % nwMinimal, "--data=%s" % nwTemp, nwMinimal])
+    nwGUI = nw.main(["--testmode", "--config=%s" % nwMinimal, "--data=%s" % tmpDir, nwMinimal])
     qtbot.addWidget(nwGUI)
     nwGUI.show()
     qtbot.waitForWindowShown(nwGUI)
@@ -690,9 +690,9 @@ def testProjectTree(qtbot, yesToAll, nwMinimal, nwTemp):
     nwGUI.close()
 
 @pytest.mark.gui
-def testEditFormatMenu(qtbot, yesToAll, nwLipsum, nwTemp):
+def testEditFormatMenu(qtbot, yesToAll, nwLipsum, tmpDir):
 
-    nwGUI = nw.main(["--testmode", "--config=%s" % nwLipsum, "--data=%s" % nwTemp])
+    nwGUI = nw.main(["--testmode", "--config=%s" % nwLipsum, "--data=%s" % tmpDir])
     qtbot.addWidget(nwGUI)
     nwGUI.show()
     qtbot.waitForWindowShown(nwGUI)
@@ -927,9 +927,9 @@ def testEditFormatMenu(qtbot, yesToAll, nwLipsum, nwTemp):
     nwGUI.close()
 
 @pytest.mark.gui
-def testContextMenu(qtbot, yesToAll, nwLipsum, nwTemp):
+def testContextMenu(qtbot, yesToAll, nwLipsum, tmpDir):
 
-    nwGUI = nw.main(["--testmode", "--config=%s" % nwLipsum, "--data=%s" % nwTemp])
+    nwGUI = nw.main(["--testmode", "--config=%s" % nwLipsum, "--data=%s" % tmpDir])
     qtbot.addWidget(nwGUI)
     nwGUI.show()
     qtbot.waitForWindowShown(nwGUI)
@@ -1013,8 +1013,8 @@ def testContextMenu(qtbot, yesToAll, nwLipsum, nwTemp):
     nwGUI.close()
 
 @pytest.mark.gui
-def testInsertMenu(qtbot, monkeypatch, nwFuncTemp, nwTemp):
-    nwGUI = nw.main(["--testmode", "--config=%s" % nwTemp, "--data=%s" % nwTemp])
+def testInsertMenu(qtbot, monkeypatch, nwFuncTemp, tmpDir):
+    nwGUI = nw.main(["--testmode", "--config=%s" % tmpDir, "--data=%s" % tmpDir])
     qtbot.addWidget(nwGUI)
     nwGUI.show()
     qtbot.waitForWindowShown(nwGUI)
@@ -1162,7 +1162,7 @@ def testInsertMenu(qtbot, monkeypatch, nwFuncTemp, nwTemp):
     assert not nwGUI.importDocument()
 
     # Then a valid path, but bot a file that exists
-    theFile = os.path.join(nwTemp, "import.txt")
+    theFile = os.path.join(tmpDir, "import.txt")
     monkeypatch.setattr(QFileDialog, "getOpenFileName", lambda *args, **kwards: (theFile, ""))
     assert not nwGUI.importDocument()
 
@@ -1212,9 +1212,9 @@ def testInsertMenu(qtbot, monkeypatch, nwFuncTemp, nwTemp):
     nwGUI.close()
 
 @pytest.mark.gui
-def testTextSearch(qtbot, monkeypatch, yesToAll, nwLipsum, nwTemp):
+def testTextSearch(qtbot, monkeypatch, yesToAll, nwLipsum, tmpDir):
 
-    nwGUI = nw.main(["--testmode", "--config=%s" % nwLipsum, "--data=%s" % nwTemp])
+    nwGUI = nw.main(["--testmode", "--config=%s" % nwLipsum, "--data=%s" % tmpDir])
     qtbot.addWidget(nwGUI)
     nwGUI.show()
     qtbot.waitForWindowShown(nwGUI)
@@ -1392,9 +1392,9 @@ def testTextSearch(qtbot, monkeypatch, yesToAll, nwLipsum, nwTemp):
     nwGUI.close()
 
 @pytest.mark.gui
-def testOutline(qtbot, yesToAll, nwLipsum, nwTemp):
+def testOutline(qtbot, yesToAll, nwLipsum, tmpDir):
 
-    nwGUI = nw.main(["--testmode", "--config=%s" % nwLipsum, "--data=%s" % nwTemp])
+    nwGUI = nw.main(["--testmode", "--config=%s" % nwLipsum, "--data=%s" % tmpDir])
     qtbot.addWidget(nwGUI)
     nwGUI.show()
     qtbot.waitForWindowShown(nwGUI)
@@ -1453,9 +1453,9 @@ def testOutline(qtbot, yesToAll, nwLipsum, nwTemp):
     nwGUI.close()
 
 @pytest.mark.gui
-def testThemes(qtbot, yesToAll, nwMinimal, nwTemp):
+def testThemes(qtbot, yesToAll, nwMinimal, tmpDir):
 
-    nwGUI = nw.main(["--testmode", "--config=%s" % nwMinimal, "--data=%s" % nwTemp, nwMinimal])
+    nwGUI = nw.main(["--testmode", "--config=%s" % nwMinimal, "--data=%s" % tmpDir, nwMinimal])
     qtbot.addWidget(nwGUI)
     nwGUI.show()
     qtbot.waitForWindowShown(nwGUI)
@@ -1478,7 +1478,7 @@ def testThemes(qtbot, yesToAll, nwMinimal, nwTemp):
 
     # Re-open
     assert nw.CONFIG.confPath == nwMinimal
-    nwGUI = nw.main(["--testmode", "--config=%s" % nwMinimal, "--data=%s" % nwTemp, nwMinimal])
+    nwGUI = nw.main(["--testmode", "--config=%s" % nwMinimal, "--data=%s" % tmpDir, nwMinimal])
     assert nwGUI.mainConf.confPath == nwMinimal
     qtbot.addWidget(nwGUI)
     nwGUI.show()

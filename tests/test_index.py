@@ -15,7 +15,7 @@ from nw.core.index import NWIndex
 from nw.constants import nwItemClass, nwItemLayout
 
 @pytest.mark.project
-def testIndexBuildCheck(monkeypatch, nwLipsum, nwDummy, nwTempProj, nwRef):
+def testIndexBuildCheck(monkeypatch, nwLipsum, dummyGUI, nwTempProj, nwRef):
     """Test core functionality of scaning, saving, loading and checking
     the index cache file.
     """
@@ -23,13 +23,13 @@ def testIndexBuildCheck(monkeypatch, nwLipsum, nwDummy, nwTempProj, nwRef):
     testFile = os.path.join(nwTempProj, "1_tagsIndex.json")
     refFile  = os.path.join(nwRef, "proj", "1_tagsIndex.json")
 
-    theProject = NWProject(nwDummy)
+    theProject = NWProject(dummyGUI)
     theProject.projTree.setSeed(42)
     assert theProject.openProject(nwLipsum)
 
     monkeypatch.setattr("nw.core.index.time", lambda: 123.4)
 
-    theIndex = NWIndex(theProject, nwDummy)
+    theIndex = NWIndex(theProject, dummyGUI)
     notIndexable = {
         "b3643d0f92e32": False, # Novel ROOT
         "45e6b01ca35c1": False, # Chapter One FOLDER
@@ -139,14 +139,14 @@ def testIndexBuildCheck(monkeypatch, nwLipsum, nwDummy, nwTempProj, nwRef):
     assert cmpFiles(testFile, refFile)
 
 @pytest.mark.project
-def testIndexScanThis(nwMinimal, nwDummy):
+def testIndexScanThis(nwMinimal, dummyGUI):
     """Test the tag scanner function scanThis.
     """
-    theProject = NWProject(nwDummy)
+    theProject = NWProject(dummyGUI)
     theProject.projTree.setSeed(42)
     assert theProject.openProject(nwMinimal)
 
-    theIndex = NWIndex(theProject, nwDummy)
+    theIndex = NWIndex(theProject, dummyGUI)
 
     isValid, theBits, thePos = theIndex.scanThis("tag: this, and this")
     assert not isValid
@@ -188,14 +188,14 @@ def testIndexScanThis(nwMinimal, nwDummy):
     assert theProject.closeProject()
 
 @pytest.mark.project
-def testIndexCheckThese(nwMinimal, nwDummy):
+def testIndexCheckThese(nwMinimal, dummyGUI):
     """Test the tag checker function checkThese.
     """
-    theProject = NWProject(nwDummy)
+    theProject = NWProject(dummyGUI)
     theProject.projTree.setSeed(42)
     assert theProject.openProject(nwMinimal)
 
-    theIndex = NWIndex(theProject, nwDummy)
+    theIndex = NWIndex(theProject, dummyGUI)
     nHandle = theProject.newFile("Hello", nwItemClass.NOVEL,     "a508bb932959c")
     cHandle = theProject.newFile("Jane",  nwItemClass.CHARACTER, "afb3043c7b2b3")
     nItem = theProject.projTree[nHandle]
@@ -224,14 +224,14 @@ def testIndexCheckThese(nwMinimal, nwDummy):
     assert theProject.closeProject()
 
 @pytest.mark.project
-def testIndexScanText(nwMinimal, nwDummy):
+def testIndexScanText(nwMinimal, dummyGUI):
     """Check the index data extraction functions.
     """
-    theProject = NWProject(nwDummy)
+    theProject = NWProject(dummyGUI)
     theProject.projTree.setSeed(42)
     assert theProject.openProject(nwMinimal)
 
-    theIndex = NWIndex(theProject, nwDummy)
+    theIndex = NWIndex(theProject, dummyGUI)
 
     # Some items for fail to scan tests
     dHandle = theProject.newFolder("Folder", nwItemClass.NOVEL, "a508bb932959c")
@@ -399,14 +399,14 @@ def testIndexScanText(nwMinimal, nwDummy):
     assert theProject.closeProject()
 
 @pytest.mark.project
-def testIndexExtractData(nwMinimal, nwDummy):
+def testIndexExtractData(nwMinimal, dummyGUI):
     """Check the index data extraction functions.
     """
-    theProject = NWProject(nwDummy)
+    theProject = NWProject(dummyGUI)
     theProject.projTree.setSeed(42)
     assert theProject.openProject(nwMinimal)
 
-    theIndex = NWIndex(theProject, nwDummy)
+    theIndex = NWIndex(theProject, dummyGUI)
     nHandle = theProject.newFile("Hello", nwItemClass.NOVEL,     "a508bb932959c")
     cHandle = theProject.newFile("Jane",  nwItemClass.CHARACTER, "afb3043c7b2b3")
 

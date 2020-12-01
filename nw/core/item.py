@@ -43,7 +43,7 @@ class NWItem():
         self.itemName   = ""
         self.itemHandle = None
         self.itemParent = None
-        self.itemOrder  = None
+        self.itemOrder  = 0
         self.itemType   = nwItemType.NO_TYPE
         self.itemClass  = nwItemClass.NO_CLASS
         self.itemLayout = nwItemLayout.NO_LAYOUT

@@ -16,14 +16,14 @@ from nw.core.spellcheck import NWSpellEnchant, NWSpellSimple
 from nw.constants import nwConst, nwItemClass, nwItemType, nwItemLayout, nwFiles
 
 @pytest.mark.project
-def testProjectNewOpenSave(nwFuncTemp, nwTempProj, nwRef, nwTemp, nwDummy):
+def testProjectNewOpenSave(nwFuncTemp, nwTempProj, nwRef, tmpDir, dummyGUI):
     """Test that a basic project can be created, and opened and saved.
     """
     projFile = os.path.join(nwFuncTemp, "nwProject.nwx")
     testFile = os.path.join(nwTempProj, "1_nwProject.nwx")
     refFile  = os.path.join(nwRef, "proj", "1_nwProject.nwx")
 
-    theProject = NWProject(nwDummy)
+    theProject = NWProject(dummyGUI)
     theProject.projTree.setSeed(42)
 
     # Setting no data should fail
@@ -62,14 +62,14 @@ def testProjectNewOpenSave(nwFuncTemp, nwTempProj, nwRef, nwTemp, nwDummy):
     assert cmpFiles(testFile, refFile, [2, 6, 7, 8])
 
 @pytest.mark.project
-def testProjectNewRoot(nwFuncTemp, nwTempProj, nwRef, nwDummy):
+def testProjectNewRoot(nwFuncTemp, nwTempProj, nwRef, dummyGUI):
     """Check that new root folders can be added to the project.
     """
     projFile = os.path.join(nwFuncTemp, "nwProject.nwx")
     testFile = os.path.join(nwTempProj, "2_nwProject.nwx")
     refFile  = os.path.join(nwRef, "proj", "2_nwProject.nwx")
 
-    theProject = NWProject(nwDummy)
+    theProject = NWProject(dummyGUI)
     theProject.projTree.setSeed(42)
 
     assert theProject.newProject({"projPath": nwFuncTemp})
@@ -96,14 +96,14 @@ def testProjectNewRoot(nwFuncTemp, nwTempProj, nwRef, nwDummy):
     assert not theProject.projChanged
 
 @pytest.mark.project
-def testProjectNewFile(nwFuncTemp, nwTempProj, nwRef, nwDummy):
+def testProjectNewFile(nwFuncTemp, nwTempProj, nwRef, dummyGUI):
     """Check that new files can be added to the project.
     """
     projFile = os.path.join(nwFuncTemp, "nwProject.nwx")
     testFile = os.path.join(nwTempProj, "3_nwProject.nwx")
     refFile  = os.path.join(nwRef, "proj", "3_nwProject.nwx")
 
-    theProject = NWProject(nwDummy)
+    theProject = NWProject(dummyGUI)
     theProject.projTree.setSeed(42)
 
     assert theProject.newProject({"projPath": nwFuncTemp})
@@ -123,7 +123,7 @@ def testProjectNewFile(nwFuncTemp, nwTempProj, nwRef, nwDummy):
     assert not theProject.projChanged
 
 @pytest.mark.project
-def testProjectNewCustomA(nwFuncTemp, nwTempProj, nwRef, nwDummy):
+def testProjectNewCustomA(nwFuncTemp, nwTempProj, nwRef, dummyGUI):
     """Create a new project from a project wizard dictionary.
     Custom type with chapters and scenes.
     """
@@ -151,7 +151,7 @@ def testProjectNewCustomA(nwFuncTemp, nwTempProj, nwRef, nwDummy):
         "numScenes": 3,
         "chFolders": True,
     }
-    theProject = NWProject(nwDummy)
+    theProject = NWProject(dummyGUI)
     theProject.projTree.setSeed(42)
 
     assert theProject.newProject(projData)
@@ -162,7 +162,7 @@ def testProjectNewCustomA(nwFuncTemp, nwTempProj, nwRef, nwDummy):
     assert cmpFiles(testFile, refFile, [2, 6, 7, 8])
 
 @pytest.mark.project
-def testProjectNewCustomB(nwFuncTemp, nwTempProj, nwRef, nwDummy):
+def testProjectNewCustomB(nwFuncTemp, nwTempProj, nwRef, dummyGUI):
     """Create a new project from a project wizard dictionary.
     Custom type without chapters, but with scenes.
     """
@@ -190,7 +190,7 @@ def testProjectNewCustomB(nwFuncTemp, nwTempProj, nwRef, nwDummy):
         "numScenes": 6,
         "chFolders": True,
     }
-    theProject = NWProject(nwDummy)
+    theProject = NWProject(dummyGUI)
     theProject.projTree.setSeed(42)
 
     assert theProject.newProject(projData)
@@ -201,7 +201,7 @@ def testProjectNewCustomB(nwFuncTemp, nwTempProj, nwRef, nwDummy):
     assert cmpFiles(testFile, refFile, [2, 6, 7, 8])
 
 @pytest.mark.project
-def testProjectNewSampleA(nwFuncTemp, nwConf, nwDummy, nwTemp):
+def testProjectNewSampleA(nwFuncTemp, nwConf, dummyGUI, tmpDir):
     """Check that we can create a new project can be created from the
     provided sample project via a zip file.
     """
@@ -214,7 +214,7 @@ def testProjectNewSampleA(nwFuncTemp, nwConf, nwDummy, nwTemp):
         "popMinimal": False,
         "popCustom": False,
     }
-    theProject = NWProject(nwDummy)
+    theProject = NWProject(dummyGUI)
     theProject.projTree.setSeed(42)
     theProject.mainConf = nwConf
 
@@ -223,8 +223,8 @@ def testProjectNewSampleA(nwFuncTemp, nwConf, nwDummy, nwTemp):
 
     # Force the lookup path for assets to our temp folder
     srcSample = os.path.abspath(os.path.join(nwConf.appRoot, "sample"))
-    dstSample = os.path.join(nwTemp, "sample.zip")
-    nwConf.assetPath = nwTemp
+    dstSample = os.path.join(tmpDir, "sample.zip")
+    nwConf.assetPath = tmpDir
 
     # Create and open a defective zip file
     with open(dstSample, mode="w+") as outFile:
@@ -248,7 +248,7 @@ def testProjectNewSampleA(nwFuncTemp, nwConf, nwDummy, nwTemp):
     os.unlink(dstSample)
 
 @pytest.mark.project
-def testProjectNewSampleB(monkeypatch, nwFuncTemp, nwConf, nwDummy, nwTemp):
+def testProjectNewSampleB(monkeypatch, nwFuncTemp, nwConf, dummyGUI, tmpDir):
     """Check that we can create a new project can be created from the
     provided sample project folder.
     """
@@ -261,12 +261,12 @@ def testProjectNewSampleB(monkeypatch, nwFuncTemp, nwConf, nwDummy, nwTemp):
         "popMinimal": False,
         "popCustom": False,
     }
-    theProject = NWProject(nwDummy)
+    theProject = NWProject(dummyGUI)
     theProject.projTree.setSeed(42)
     theProject.mainConf = nwConf
 
     # Make sure we do not pick up the nw/assets/sample.zip file
-    nwConf.assetPath = nwTemp
+    nwConf.assetPath = tmpDir
 
     # Set a fake project file name
     monkeypatch.setattr(nwFiles, "PROJ_FILE", "nothing.nwx")
@@ -280,14 +280,14 @@ def testProjectNewSampleB(monkeypatch, nwFuncTemp, nwConf, nwDummy, nwTemp):
     assert theProject.closeProject()
 
     # Misdirect the appRoot path so neither is possible
-    nwConf.appRoot = nwTemp
+    nwConf.appRoot = tmpDir
     assert not theProject.newProject(projData)
 
 @pytest.mark.project
-def testProjectMethods(monkeypatch, nwMinimal, nwDummy):
+def testProjectMethods(monkeypatch, nwMinimal, dummyGUI):
     """Test other project class methods and functions.
     """
-    theProject = NWProject(nwDummy)
+    theProject = NWProject(dummyGUI)
     theProject.projTree.setSeed(42)
     assert theProject.openProject(nwMinimal)
     assert theProject.projPath == nwMinimal
@@ -326,14 +326,14 @@ def testProjectMethods(monkeypatch, nwMinimal, nwDummy):
     assert theProject.bookAuthors == ["Jane Doe", "John Doh"]
 
 @pytest.mark.project
-def testDocMeta(nwDummy, nwLipsum):
+def testDocMeta(dummyGUI, nwLipsum):
     """Check that the document meta data string is parsed correctly.
     """
-    theProject = NWProject(nwDummy)
+    theProject = NWProject(dummyGUI)
     theProject.projTree.setSeed(42)
     assert theProject.openProject(nwLipsum)
 
-    aDoc = NWDoc(theProject, nwDummy)
+    aDoc = NWDoc(theProject, dummyGUI)
     assert aDoc.openDocument("47666c91c7ccf")
     theName, theParent, theClass, theLayout = aDoc.getMeta()
 
@@ -350,8 +350,8 @@ def testDocMeta(nwDummy, nwLipsum):
     assert theLayout is None
 
 @pytest.mark.project
-def testSpellEnchant(nwTemp, nwConf):
-    wList = os.path.join(nwTemp, "wordlist.txt")
+def testSpellEnchant(tmpDir, nwConf):
+    wList = os.path.join(tmpDir, "wordlist.txt")
     with open(wList, mode="w") as wFile:
         wFile.write("a_word\nb_word\nc_word\n")
 
@@ -379,8 +379,8 @@ def testSpellEnchant(nwTemp, nwConf):
     assert aName != ""
 
 @pytest.mark.project
-def testSpellSimple(nwTemp, nwConf):
-    wList = os.path.join(nwTemp, "wordlist.txt")
+def testSpellSimple(tmpDir, nwConf):
+    wList = os.path.join(tmpDir, "wordlist.txt")
     with open(wList, mode="w") as wFile:
         wFile.write("a_word\nb_word\nc_word\n")
 
@@ -408,12 +408,12 @@ def testSpellSimple(nwTemp, nwConf):
     assert aName == nwConst.SP_INTERNAL
 
 @pytest.mark.project
-def testProjectOptions(nwDummy, nwLipsum):
+def testProjectOptions(dummyGUI, nwLipsum):
     """Test the class that holds all the GUI state user options that are
     tied to the current open project. Non-project related GUI options
     are handled by the Config class.
     """
-    theProject = NWProject(nwDummy)
+    theProject = NWProject(dummyGUI)
     assert theProject.projMeta is None
 
     theOpts = theProject.optState
@@ -471,13 +471,13 @@ def testProjectOptions(nwDummy, nwLipsum):
     assert theOpts.getFloat("GuiWritingStats", "winWidth", False) is False
 
 @pytest.mark.project
-def testProjectOrphanedFiles(nwDummy, nwLipsum):
+def testProjectOrphanedFiles(dummyGUI, nwLipsum):
     """Check that files in the content folder that are not tracked in
     the project XML file are handled correctly by the orphaned files
     function. It should also restore as much meta data as possible from
     the meta line at the top of the document file.
     """
-    theProject = NWProject(nwDummy)
+    theProject = NWProject(dummyGUI)
     assert theProject.openProject(nwLipsum)
     assert theProject.projTree["636b6aa9b697b"] is None
     assert theProject.closeProject()
@@ -540,13 +540,13 @@ def testProjectOrphanedFiles(nwDummy, nwLipsum):
     assert theProject.closeProject()
 
 @pytest.mark.project
-def testProjectOldFormat(nwDummy, nwOldProj):
+def testProjectOldFormat(dummyGUI, nwOldProj):
     """Test that a project folder structure of version 1.0 can be
     converted to the latest folder structure. Version 1.0 split the
     documents into 'data_0' ... 'data_f' folders, which are now all
     contained in a single 'content' folder.
     """
-    theProject = NWProject(nwDummy)
+    theProject = NWProject(dummyGUI)
     theProject.mainConf.showGUI = False
 
     # Create dummy files for known legacy files
@@ -630,13 +630,13 @@ def testProjectOldFormat(nwDummy, nwOldProj):
     assert os.path.isfile(os.path.join(nwOldProj, "ToC.txt"))
 
 @pytest.mark.project
-def testProjectBackup(nwDummy, nwMinimal, nwTemp):
+def testProjectBackup(dummyGUI, nwMinimal, tmpDir):
     """Test the automated backup feature of the project class. The test
     creates a backup of the Minimal test project, and then unzips the
     backupd file and checks that the project XML file is identical to
     the original file.
     """
-    theProject = NWProject(nwDummy)
+    theProject = NWProject(dummyGUI)
     assert theProject.openProject(nwMinimal)
 
     # Test faulty settings
@@ -645,12 +645,12 @@ def testProjectBackup(nwDummy, nwMinimal, nwTemp):
     assert not theProject.zipIt(doNotify=False)
 
     # Missing project name
-    theProject.mainConf.backupPath = nwTemp
+    theProject.mainConf.backupPath = tmpDir
     theProject.projName = ""
     assert not theProject.zipIt(doNotify=False)
 
     # Non-existent folder
-    theProject.mainConf.backupPath = os.path.join(nwTemp, "nonexistent")
+    theProject.mainConf.backupPath = os.path.join(tmpDir, "nonexistent")
     theProject.projName = "Test Minimal"
     assert not theProject.zipIt(doNotify=False)
 
@@ -659,10 +659,10 @@ def testProjectBackup(nwDummy, nwMinimal, nwTemp):
     assert not theProject.zipIt(doNotify=False)
 
     # Test correct settings
-    theProject.mainConf.backupPath = nwTemp
+    theProject.mainConf.backupPath = tmpDir
     assert theProject.zipIt(doNotify=False)
 
-    theFiles = os.listdir(os.path.join(nwTemp, "Test Minimal"))
+    theFiles = os.listdir(os.path.join(tmpDir, "Test Minimal"))
     assert len(theFiles) == 1
 
     theZip = theFiles[0]
@@ -670,10 +670,10 @@ def testProjectBackup(nwDummy, nwMinimal, nwTemp):
     assert theZip[-4:] == ".zip"
 
     # Extract the archive
-    with ZipFile(os.path.join(nwTemp, "Test Minimal", theZip), "r") as inZip:
-        inZip.extractall(os.path.join(nwTemp, "extract"))
+    with ZipFile(os.path.join(tmpDir, "Test Minimal", theZip), "r") as inZip:
+        inZip.extractall(os.path.join(tmpDir, "extract"))
 
     # Check that the main project file was restored
     assert cmpFiles(
-        os.path.join(nwMinimal, "nwProject.nwx"), os.path.join(nwTemp, "extract", "nwProject.nwx")
+        os.path.join(nwMinimal, "nwProject.nwx"), os.path.join(tmpDir, "extract", "nwProject.nwx")
     )
