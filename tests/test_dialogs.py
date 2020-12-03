@@ -9,7 +9,7 @@ import os
 import sys
 
 from shutil import copyfile
-from nwtools import cmpFiles, getGuiItem
+from tools import cmpFiles, getGuiItem
 
 from PyQt5.QtCore import Qt, QItemSelectionModel
 from PyQt5.QtWidgets import (

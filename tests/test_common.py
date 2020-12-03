@@ -9,7 +9,7 @@ from nw.common import (
     checkString, checkBool, checkInt, colRange, formatInt, transferCase,
     fuzzyTime, checkHandle, formatTimeStamp, formatTime
 )
-from nwtools import cmpList
+from tools import cmpList
 
 @pytest.mark.core
 def testCheckString():

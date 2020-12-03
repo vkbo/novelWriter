@@ -9,7 +9,7 @@ import os
 import sys
 
 from shutil import copyfile
-from nwtools import cmpFiles
+from tools import cmpFiles
 
 from PyQt5.QtCore import Qt, QUrl, QPoint, QItemSelectionModel
 from PyQt5.QtGui import QTextCursor, QColor, QPixmap, QIcon, QTextBlock

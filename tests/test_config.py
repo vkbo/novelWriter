@@ -5,7 +5,7 @@
 import pytest
 import os
 
-from nwtools import cmpFiles
+from tools import cmpFiles
 
 @pytest.mark.core
 def testConfigCore(tmpConf, tmpDir, refDir):

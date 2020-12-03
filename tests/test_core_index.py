@@ -8,7 +8,7 @@ import json
 
 from shutil import copyfile
 
-from nwtools import cmpFiles
+from tools import cmpFiles
 
 from nw.core.project import NWProject
 from nw.core.index import NWIndex

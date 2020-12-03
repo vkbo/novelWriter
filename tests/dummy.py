@@ -2,6 +2,10 @@
 """novelWriter Test Dummy GUI Classes
 """
 
+# =========================================================================== #
+#  Mock GUI
+# =========================================================================== #
+
 class DummyMain():
 
     def __init__(self):
@@ -37,3 +41,11 @@ class StatusBar():
         return
 
 # END Class StatusBar
+
+# =========================================================================== #
+#  Error Functions
+#  Dummy functions that will raise errors instead.
+# =========================================================================== #
+
+def dummyIO(*args, **kwargs):
+    raise OSError

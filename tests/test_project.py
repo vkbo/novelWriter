@@ -8,7 +8,7 @@ import os
 from shutil import copyfile
 from zipfile import ZipFile
 
-from nwtools import cmpFiles
+from tools import cmpFiles
 
 from nw.core.project import NWProject
 from nw.core.spellcheck import NWSpellEnchant, NWSpellSimple
@@ -323,127 +323,6 @@ def testProjectMethods(monkeypatch, nwMinimal, dummyGUI):
     assert not theProject.setBookAuthors([])
     assert theProject.setBookAuthors(" Jane Doe \n John Doh \n ")
     assert theProject.bookAuthors == ["Jane Doe", "John Doh"]
-
-@pytest.mark.project
-def testSpellEnchant(tmpDir, nwConf):
-    wList = os.path.join(tmpDir, "wordlist.txt")
-    with open(wList, mode="w") as wFile:
-        wFile.write("a_word\nb_word\nc_word\n")
-
-    spChk = NWSpellEnchant()
-    spChk.mainConf = nwConf
-    spChk.setLanguage("en", wList)
-
-    assert spChk.checkWord("a_word")
-    assert spChk.checkWord("b_word")
-    assert spChk.checkWord("c_word")
-    assert not spChk.checkWord("d_word")
-
-    spChk.addWord("d_word")
-    assert spChk.checkWord("d_word")
-
-    wSuggest = spChk.suggestWords("wrod")
-    assert len(wSuggest) > 0
-    assert "word" in wSuggest
-
-    dList = spChk.listDictionaries()
-    assert len(dList) > 0
-
-    aTag, aName = spChk.describeDict()
-    assert aTag == "en"
-    assert aName != ""
-
-@pytest.mark.project
-def testSpellSimple(tmpDir, nwConf):
-    wList = os.path.join(tmpDir, "wordlist.txt")
-    with open(wList, mode="w") as wFile:
-        wFile.write("a_word\nb_word\nc_word\n")
-
-    spChk = NWSpellSimple()
-    spChk.mainConf = nwConf
-    spChk.setLanguage("en", wList)
-
-    assert spChk.checkWord("a_word")
-    assert spChk.checkWord("b_word")
-    assert spChk.checkWord("c_word")
-    assert not spChk.checkWord("d_word")
-
-    spChk.addWord("d_word")
-    assert spChk.checkWord("d_word")
-
-    wSuggest = spChk.suggestWords("wrod")
-    assert len(wSuggest) > 0
-    assert "word" in wSuggest
-
-    dList = spChk.listDictionaries()
-    assert len(dList) > 0
-
-    aTag, aName = spChk.describeDict()
-    assert aTag == "en"
-    assert aName == nwConst.SP_INTERNAL
-
-@pytest.mark.project
-def testProjectOptions(dummyGUI, nwLipsum):
-    """Test the class that holds all the GUI state user options that are
-    tied to the current open project. Non-project related GUI options
-    are handled by the Config class.
-    """
-    theProject = NWProject(dummyGUI)
-    assert theProject.projMeta is None
-
-    theOpts = theProject.optState
-    assert not theOpts.loadSettings()
-    assert not theOpts.saveSettings()
-
-    # No Settings
-    assert theProject.openProject(nwLipsum)
-    assert theOpts.loadSettings()
-    assert theOpts.saveSettings()
-    assert str(theOpts.theState) == r"{}"
-
-    # Read Invalid Settings and Filter
-    stateFile = os.path.join(theProject.projMeta, nwFiles.OPTS_FILE)
-    with open(stateFile, mode="w", encoding="utf8") as outFile:
-        outFile.write(
-            r'{"GuiProjectSettings": {"winWidth": 100, "winHeight": 50}, "NoGroup": {"NoName": 0}}'
-        )
-    assert theOpts.loadSettings()
-    assert str(theOpts.theState) == r"{'GuiProjectSettings': {'winWidth': 100, 'winHeight': 50}}"
-
-    # Set New Settings
-    assert not theOpts.setValue("NoGroup", "NoName", None)
-    assert not theOpts.setValue("GuiProjectSettings", "NoName", None)
-    assert theOpts.setValue("GuiProjectSettings", "winWidth", 200)
-    assert theOpts.setValue("GuiProjectSettings", "winHeight", 80)
-    assert str(theOpts.theState) == r"{'GuiProjectSettings': {'winWidth': 200, 'winHeight': 80}}"
-
-    # Check Read/Write Types
-
-    ## String
-    assert theOpts.setValue("GuiWritingStats", "winWidth", "123")
-    assert isinstance(theOpts.getString("GuiWritingStats", "winWidth", "456"), str)
-    assert theOpts.getString("GuiWritingStats", "NoName", "456") == "456"
-
-    ## Int
-    assert theOpts.setValue("GuiWritingStats", "winWidth", "123")
-    assert isinstance(theOpts.getInt("GuiWritingStats", "winWidth", 456), int)
-    assert theOpts.getInt("GuiWritingStats", "NoName", 456) == 456
-    assert theOpts.setValue("GuiWritingStats", "winWidth", "True")
-    assert theOpts.getInt("GuiWritingStats", "NoName", 456) == 456
-
-    ## Float
-    assert theOpts.setValue("GuiWritingStats", "winWidth", "123")
-    assert isinstance(theOpts.getFloat("GuiWritingStats", "winWidth", 456.0), float)
-    assert theOpts.getFloat("GuiWritingStats", "NoName", 456.0) == 456.0
-    assert theOpts.setValue("GuiWritingStats", "winWidth", "True")
-    assert theOpts.getFloat("GuiWritingStats", "winWidth", 456.0) == 456.0
-
-    ## Bool
-    assert theOpts.setValue("GuiWritingStats", "winWidth", True)
-    assert isinstance(theOpts.getBool("GuiWritingStats", "winWidth", False), bool)
-    assert theOpts.getFloat("GuiWritingStats", "NoName", False) is False
-    assert theOpts.setValue("GuiWritingStats", "winWidth", "True")
-    assert theOpts.getFloat("GuiWritingStats", "winWidth", False) is False
 
 @pytest.mark.project
 def testProjectOrphanedFiles(dummyGUI, nwLipsum):

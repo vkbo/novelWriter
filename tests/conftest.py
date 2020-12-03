@@ -7,7 +7,7 @@ import pytest
 import shutil
 import os
 
-from nwdummy import DummyMain
+from dummy import DummyMain
 
 from PyQt5.QtWidgets import QMessageBox
 
