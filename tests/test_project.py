@@ -11,8 +11,7 @@ from zipfile import ZipFile
 from tools import cmpFiles
 
 from nw.core.project import NWProject
-from nw.core.spellcheck import NWSpellEnchant, NWSpellSimple
-from nw.constants import nwConst, nwItemClass, nwItemType, nwItemLayout, nwFiles
+from nw.constants import nwItemClass, nwItemType, nwItemLayout, nwFiles
 
 @pytest.mark.project
 def testProjectNewOpenSave(nwFuncTemp, nwTempProj, refDir, tmpDir, dummyGUI):

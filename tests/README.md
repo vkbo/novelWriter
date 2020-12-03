@@ -66,5 +66,6 @@ The commands for the respective test categories are listed below.
 | Unit | NWIndex class      | nw/core/index.py      | `-m core` | `-k testCoreIndex`    |
 | Unit | NWItem class       | nw/core/item.py       | `-m core` | `-k testCoreItem`     |
 | Unit | NWSpell* classes   | nw/core/spellcheck.py | `-m core` | `-k testCoreSpell`    |
+| Unit | NWStatus class     | nw/core/status.py     | `-m core` | `-k testCoreStatus`   |
 | Unit | NWTree class       | nw/core/tree.py       | `-m core` | `-k testCoreTree`     |
 | Unit | OptionsState class | nw/core/options.py    | `-m core` | `-k testCoreOptions`  |

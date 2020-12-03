@@ -6,8 +6,6 @@ import os
 import sys
 import pytest
 
-from difflib import get_close_matches
-
 from dummy import causeOSError
 from tools import readFile, writeFile
 
