@@ -47,5 +47,5 @@ class StatusBar():
 #  Dummy functions that will raise errors instead.
 # =========================================================================== #
 
-def dummyIO(*args, **kwargs):
+def causeOSError(*args, **kwargs):
     raise OSError

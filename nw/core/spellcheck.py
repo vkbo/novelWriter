@@ -28,8 +28,7 @@
 import nw
 import logging
 import os
-
-from difflib import get_close_matches
+import difflib
 
 from nw.constants import nwConst, isoLanguage
 
@@ -70,14 +69,16 @@ class NWSpellCheck():
         """
         if self.projectDict is not None and newWord not in self.projDict:
             newWord = newWord.strip()
-            self.projDict.append(newWord)
             try:
                 with open(self.projectDict, mode="a+", encoding="utf-8") as outFile:
                     outFile.write("%s\n" % newWord)
+                self.projDict.append(newWord)
             except Exception as e:
                 logger.error("Failed to add word to project word list %s" % str(self.projectDict))
                 logger.error(str(e))
-        return
+                return False
+            return True
+        return False
 
     def listDictionaries(self):
         """Dummy function.
@@ -109,9 +110,12 @@ class NWSpellCheck():
         """
         self.projDict = []
         if projectDict is not None:
-            self.projectDict = projectDict
             if not os.path.isfile(projectDict):
-                return
+                self.projectDict = None
+                return False
+            else:
+                self.projectDict = projectDict
+
             try:
                 logger.debug("Loading project word list")
                 with open(projectDict, mode="r", encoding="utf-8") as wordsFile:
@@ -123,7 +127,9 @@ class NWSpellCheck():
             except Exception as e:
                 logger.error("Failed to load project word list")
                 logger.error(str(e))
-        return
+                return False
+
+        return True
 
 # END Class NWSpellCheck
 
@@ -287,7 +293,7 @@ class NWSpellSimple(NWSpellCheck):
         if len(theWord) == 0:
             return []
 
-        theMatches = get_close_matches(theWord.lower(), self.WORDS, n=10, cutoff=0.75)
+        theMatches = difflib.get_close_matches(theWord.lower(), self.WORDS, n=10, cutoff=0.75)
         theOptions = []
         for aWord in theMatches:
             if len(aWord) == 0:
@@ -314,14 +320,12 @@ class NWSpellSimple(NWSpellCheck):
         retList = []
         for dictFile in os.listdir(self.mainConf.dictPath):
 
-            theBits = os.path.splitext(dictFile)
-            if len(theBits) != 2:
-                continue
-            if theBits[1] != ".dict":
+            fRoot, fExt = os.path.splitext(dictFile)
+            if fExt != ".dict":
                 continue
 
-            spName = "%s [%s]" % (self.expandLanguage(theBits[0]), nwConst.SP_INTERNAL)
-            retList.append((theBits[0], spName))
+            spName = "%s [%s]" % (self.expandLanguage(fRoot), nwConst.SP_INTERNAL)
+            retList.append((fRoot, spName))
 
         return retList
 

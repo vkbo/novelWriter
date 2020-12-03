@@ -6,6 +6,8 @@ import os
 import json
 import pytest
 
+from dummy import causeOSError
+
 from nw.core import NWProject
 from nw.core.options import OptionState
 from nw.constants import nwFiles
@@ -44,10 +46,7 @@ def testCoreOptions_LoadSave(monkeypatch, dummyGUI, tmpDir):
     assert theProject.projMeta == tmpDir
 
     # Cause open() to fail
-    def dummyIO(*args, **kwargs):
-        raise OSError
-
-    monkeypatch.setattr("builtins.open", dummyIO)
+    monkeypatch.setattr("builtins.open", causeOSError)
     assert not theOpts.loadSettings()
     assert not theOpts.saveSettings()
     monkeypatch.undo()

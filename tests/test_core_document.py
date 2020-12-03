@@ -5,6 +5,8 @@
 import os
 import pytest
 
+from dummy import causeOSError
+
 from nw.core import NWProject, NWDoc
 from nw.core.item import NWItem
 from nw.constants import nwItemClass, nwItemLayout
@@ -75,10 +77,7 @@ def testCoreDocument_LoadSave(monkeypatch, dummyGUI, nwMinimal):
         assert inFile.read() == theText
 
     # Cause open() to fail while saving
-    def dummyIO(*args, **kwargs):
-        raise OSError
-
-    monkeypatch.setattr("builtins.open", dummyIO)
+    monkeypatch.setattr("builtins.open", causeOSError)
     assert not theDoc.saveDocument(theText)
     monkeypatch.undo()
 
@@ -91,7 +90,7 @@ def testCoreDocument_LoadSave(monkeypatch, dummyGUI, nwMinimal):
     assert os.path.isfile(docPath)
 
     # Cause the delete to fail
-    monkeypatch.setattr("os.unlink", dummyIO)
+    monkeypatch.setattr("os.unlink", causeOSError)
     assert not theDoc.deleteDocument(xHandle)
     monkeypatch.undo()
 
