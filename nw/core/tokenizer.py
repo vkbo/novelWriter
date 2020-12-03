@@ -180,7 +180,7 @@ class Tokenizer():
     ##
 
     def addRootHeading(self, theHandle):
-        """Add a heading at the start if a new root folder.
+        """Add a heading at the start of a new root folder.
         """
         theItem = self.theProject.projTree[theHandle]
         if theItem is None:
@@ -205,7 +205,7 @@ class Tokenizer():
         self.theHandle = theHandle
         self.theItem   = self.theProject.projTree[theHandle]
         if self.theItem is None:
-            return
+            return False
 
         if theText is not None:
             # If the text is set, just use that
@@ -234,7 +234,7 @@ class Tokenizer():
         self.isNote  = self.theItem.itemLayout == nwItemLayout.NOTE
         self.isNovel = self.isBook or self.isUnNum or self.isChap or self.isScene
 
-        return
+        return True
 
     def getResult(self):
         """Return the result from the conversion.
@@ -244,6 +244,8 @@ class Tokenizer():
     def getResultSize(self):
         """Return the size of the result from the conversion.
         """
+        if self.theResult is None:
+            return 0
         return len(self.theResult)
 
     def getFilteredMarkdown(self):
@@ -445,7 +447,7 @@ class Tokenizer():
         """
         # No special header formatting for notes and no-layout files
         if self.isNone or self.isNote:
-            return
+            return False
 
         # For novel files, we need to handle chapter numbering, scene
         # numbering, and scene breaks
@@ -479,8 +481,7 @@ class Tokenizer():
                     if self.isUnNum:
                         tTemp = self._formatHeading(self.fmtUnNum, tToken[2])
                     elif tToken[2].startswith("*"):
-                        tTemp = self._formatHeading(self.fmtUnNum, tToken[2])
-                        tTemp = tTemp[1:].lstrip()
+                        tTemp = self._formatHeading(self.fmtUnNum, tToken[2][1:].lstrip())
                     else:
                         self.numChapter += 1
                         tTemp = self._formatHeading(self.fmtChapter, tToken[2])
@@ -663,7 +664,7 @@ class Tokenizer():
                         self.A_LEFT
                     )
 
-        return
+        return True
 
     ##
     #  Internal Functions
