@@ -69,4 +69,5 @@ The commands for the respective test categories are listed below.
 | Unit | NWStatus class     | nw/core/status.py     | `-m core` | `-k testCoreStatus`   |
 | Unit | NWTree class       | nw/core/tree.py       | `-m core` | `-k testCoreTree`     |
 | Unit | OptionsState class | nw/core/options.py    | `-m core` | `-k testCoreOptions`  |
+| Unit | ToHtml class       | nw/core/tohtml.py     | `-m core` | `-k testCoreToHtml`   |
 | Unit | Tokenizer class    | nw/core/tokenizer.py  | `-m core` | `-k testCoreToken`    |

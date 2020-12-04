@@ -13,13 +13,13 @@ from tools import cmpFiles
 from nw.core.project import NWProject
 from nw.constants import nwItemClass, nwItemType, nwItemLayout, nwFiles
 
-@pytest.mark.project
-def testProjectNewOpenSave(nwFuncTemp, nwTempProj, refDir, tmpDir, dummyGUI):
-    """Test that a basic project can be created, and opened and saved.
+@pytest.mark.core
+def testCoreProject_NewOpenSave(fncDir, outDir, refDir, tmpDir, dummyGUI):
+    """Test that a basic project can be created, opened and saved.
     """
-    projFile = os.path.join(nwFuncTemp, "nwProject.nwx")
-    testFile = os.path.join(nwTempProj, "1_nwProject.nwx")
-    refFile  = os.path.join(refDir, "proj", "1_nwProject.nwx")
+    projFile = os.path.join(fncDir, "nwProject.nwx")
+    testFile = os.path.join(outDir, "coreProject_1_nwProject.nwx")
+    compFile = os.path.join(refDir, "coreProject_1_nwProject.nwx")
 
     theProject = NWProject(dummyGUI)
     theProject.projTree.setSeed(42)
@@ -28,17 +28,17 @@ def testProjectNewOpenSave(nwFuncTemp, nwTempProj, refDir, tmpDir, dummyGUI):
     assert not theProject.newProject({})
 
     # Try again with a proper path
-    assert theProject.newProject({"projPath": nwFuncTemp})
-    assert theProject.setProjectPath(nwFuncTemp)
+    assert theProject.newProject({"projPath": fncDir})
+    assert theProject.setProjectPath(fncDir)
     assert theProject.saveProject()
     assert theProject.closeProject()
 
     # Creating the project once more should fail
-    assert not theProject.newProject({"projPath": nwFuncTemp})
+    assert not theProject.newProject({"projPath": fncDir})
 
     # Check the new project
     copyfile(projFile, testFile)
-    assert cmpFiles(testFile, refFile, [2, 6, 7, 8])
+    assert cmpFiles(testFile, compFile, [2, 6, 7, 8])
 
     # Open again
     assert theProject.openProject(projFile)
@@ -47,7 +47,7 @@ def testProjectNewOpenSave(nwFuncTemp, nwTempProj, refDir, tmpDir, dummyGUI):
     assert theProject.saveProject()
     assert theProject.closeProject()
     copyfile(projFile, testFile)
-    assert cmpFiles(testFile, refFile, [2, 6, 7, 8])
+    assert cmpFiles(testFile, compFile, [2, 6, 7, 8])
     assert not theProject.projChanged
 
     # Open a second time
@@ -57,21 +57,23 @@ def testProjectNewOpenSave(nwFuncTemp, nwTempProj, refDir, tmpDir, dummyGUI):
     assert theProject.saveProject()
     assert theProject.closeProject()
     copyfile(projFile, testFile)
-    assert cmpFiles(testFile, refFile, [2, 6, 7, 8])
+    assert cmpFiles(testFile, compFile, [2, 6, 7, 8])
 
-@pytest.mark.project
-def testProjectNewRoot(nwFuncTemp, nwTempProj, refDir, dummyGUI):
+# END Test testCoreProject_NewOpenSave
+
+@pytest.mark.core
+def testCoreProject_NewRoot(fncDir, outDir, refDir, dummyGUI):
     """Check that new root folders can be added to the project.
     """
-    projFile = os.path.join(nwFuncTemp, "nwProject.nwx")
-    testFile = os.path.join(nwTempProj, "2_nwProject.nwx")
-    refFile  = os.path.join(refDir, "proj", "2_nwProject.nwx")
+    projFile = os.path.join(fncDir, "nwProject.nwx")
+    testFile = os.path.join(outDir, "coreProject_2_nwProject.nwx")
+    compFile = os.path.join(refDir, "coreProject_2_nwProject.nwx")
 
     theProject = NWProject(dummyGUI)
     theProject.projTree.setSeed(42)
 
-    assert theProject.newProject({"projPath": nwFuncTemp})
-    assert theProject.setProjectPath(nwFuncTemp)
+    assert theProject.newProject({"projPath": fncDir})
+    assert theProject.setProjectPath(fncDir)
     assert theProject.saveProject()
     assert theProject.closeProject()
     assert theProject.openProject(projFile)
@@ -90,22 +92,24 @@ def testProjectNewRoot(nwFuncTemp, nwTempProj, refDir, dummyGUI):
     assert theProject.closeProject()
 
     copyfile(projFile, testFile)
-    assert cmpFiles(testFile, refFile, [2, 6, 7, 8])
+    assert cmpFiles(testFile, compFile, [2, 6, 7, 8])
     assert not theProject.projChanged
 
-@pytest.mark.project
-def testProjectNewFile(nwFuncTemp, nwTempProj, refDir, dummyGUI):
+# END Test testCoreProject_NewRoot
+
+@pytest.mark.core
+def testCoreProject_NewFile(fncDir, outDir, refDir, dummyGUI):
     """Check that new files can be added to the project.
     """
-    projFile = os.path.join(nwFuncTemp, "nwProject.nwx")
-    testFile = os.path.join(nwTempProj, "3_nwProject.nwx")
-    refFile  = os.path.join(refDir, "proj", "3_nwProject.nwx")
+    projFile = os.path.join(fncDir, "nwProject.nwx")
+    testFile = os.path.join(outDir, "coreProject_3_nwProject.nwx")
+    compFile = os.path.join(refDir, "coreProject_3_nwProject.nwx")
 
     theProject = NWProject(dummyGUI)
     theProject.projTree.setSeed(42)
 
-    assert theProject.newProject({"projPath": nwFuncTemp})
-    assert theProject.setProjectPath(nwFuncTemp)
+    assert theProject.newProject({"projPath": fncDir})
+    assert theProject.setProjectPath(fncDir)
     assert theProject.saveProject()
     assert theProject.closeProject()
     assert theProject.openProject(projFile)
@@ -117,23 +121,25 @@ def testProjectNewFile(nwFuncTemp, nwTempProj, refDir, dummyGUI):
     assert theProject.closeProject()
 
     copyfile(projFile, testFile)
-    assert cmpFiles(testFile, refFile, [2, 6, 7, 8])
+    assert cmpFiles(testFile, compFile, [2, 6, 7, 8])
     assert not theProject.projChanged
 
-@pytest.mark.project
-def testProjectNewCustomA(nwFuncTemp, nwTempProj, refDir, dummyGUI):
+# END Test testCoreProject_NewFile
+
+@pytest.mark.core
+def testCoreProject_NewCustomA(fncDir, outDir, refDir, dummyGUI):
     """Create a new project from a project wizard dictionary.
     Custom type with chapters and scenes.
     """
-    projFile = os.path.join(nwFuncTemp, "nwProject.nwx")
-    testFile = os.path.join(nwTempProj, "4_nwProject.nwx")
-    refFile  = os.path.join(refDir, "proj", "4_nwProject.nwx")
+    projFile = os.path.join(fncDir, "nwProject.nwx")
+    testFile = os.path.join(outDir, "coreProject_4_nwProject.nwx")
+    compFile = os.path.join(refDir, "coreProject_4_nwProject.nwx")
 
     projData = {
         "projName": "Test Custom",
         "projTitle": "Test Novel",
         "projAuthors": "Jane Doe\nJohn Doh\n",
-        "projPath": nwFuncTemp,
+        "projPath": fncDir,
         "popSample": False,
         "popMinimal": False,
         "popCustom": True,
@@ -157,22 +163,24 @@ def testProjectNewCustomA(nwFuncTemp, nwTempProj, refDir, dummyGUI):
     assert theProject.closeProject()
 
     copyfile(projFile, testFile)
-    assert cmpFiles(testFile, refFile, [2, 6, 7, 8])
+    assert cmpFiles(testFile, compFile, [2, 6, 7, 8])
 
-@pytest.mark.project
-def testProjectNewCustomB(nwFuncTemp, nwTempProj, refDir, dummyGUI):
+# END Test testCoreProject_NewCustomA
+
+@pytest.mark.core
+def testCoreProject_NewCustomB(fncDir, outDir, refDir, dummyGUI):
     """Create a new project from a project wizard dictionary.
     Custom type without chapters, but with scenes.
     """
-    projFile = os.path.join(nwFuncTemp, "nwProject.nwx")
-    testFile = os.path.join(nwTempProj, "5_nwProject.nwx")
-    refFile  = os.path.join(refDir, "proj", "5_nwProject.nwx")
+    projFile = os.path.join(fncDir, "nwProject.nwx")
+    testFile = os.path.join(outDir, "coreProject_5_nwProject.nwx")
+    compFile = os.path.join(refDir, "coreProject_5_nwProject.nwx")
 
     projData = {
         "projName": "Test Custom",
         "projTitle": "Test Novel",
         "projAuthors": "Jane Doe\nJohn Doh\n",
-        "projPath": nwFuncTemp,
+        "projPath": fncDir,
         "popSample": False,
         "popMinimal": False,
         "popCustom": True,
@@ -196,10 +204,12 @@ def testProjectNewCustomB(nwFuncTemp, nwTempProj, refDir, dummyGUI):
     assert theProject.closeProject()
 
     copyfile(projFile, testFile)
-    assert cmpFiles(testFile, refFile, [2, 6, 7, 8])
+    assert cmpFiles(testFile, compFile, [2, 6, 7, 8])
 
-@pytest.mark.project
-def testProjectNewSampleA(nwFuncTemp, nwConf, dummyGUI, tmpDir):
+# END Test testCoreProject_NewCustomB
+
+@pytest.mark.core
+def testCoreProject_NewSampleA(fncDir, tmpConf, dummyGUI, tmpDir):
     """Check that we can create a new project can be created from the
     provided sample project via a zip file.
     """
@@ -207,22 +217,22 @@ def testProjectNewSampleA(nwFuncTemp, nwConf, dummyGUI, tmpDir):
         "projName": "Test Sample",
         "projTitle": "Test Novel",
         "projAuthors": "Jane Doe\nJohn Doh\n",
-        "projPath": nwFuncTemp,
+        "projPath": fncDir,
         "popSample": True,
         "popMinimal": False,
         "popCustom": False,
     }
     theProject = NWProject(dummyGUI)
     theProject.projTree.setSeed(42)
-    theProject.mainConf = nwConf
+    theProject.mainConf = tmpConf
 
     # Sample set, but no path
     assert not theProject.newProject({"popSample": True})
 
     # Force the lookup path for assets to our temp folder
-    srcSample = os.path.abspath(os.path.join(nwConf.appRoot, "sample"))
+    srcSample = os.path.abspath(os.path.join(tmpConf.appRoot, "sample"))
     dstSample = os.path.join(tmpDir, "sample.zip")
-    nwConf.assetPath = tmpDir
+    tmpConf.assetPath = tmpDir
 
     # Create and open a defective zip file
     with open(dstSample, mode="w+") as outFile:
@@ -239,14 +249,16 @@ def testProjectNewSampleA(nwFuncTemp, nwConf, dummyGUI, tmpDir):
             zipObj.write(srcDoc, "content/"+docFile)
 
     assert theProject.newProject(projData)
-    assert theProject.openProject(nwFuncTemp)
+    assert theProject.openProject(fncDir)
     assert theProject.projName == "Sample Project"
     assert theProject.saveProject()
     assert theProject.closeProject()
     os.unlink(dstSample)
 
-@pytest.mark.project
-def testProjectNewSampleB(monkeypatch, nwFuncTemp, nwConf, dummyGUI, tmpDir):
+# END Test testCoreProject_NewSampleA
+
+@pytest.mark.core
+def testCoreProject_NewSampleB(monkeypatch, fncDir, tmpConf, dummyGUI, tmpDir):
     """Check that we can create a new project can be created from the
     provided sample project folder.
     """
@@ -254,17 +266,17 @@ def testProjectNewSampleB(monkeypatch, nwFuncTemp, nwConf, dummyGUI, tmpDir):
         "projName": "Test Sample",
         "projTitle": "Test Novel",
         "projAuthors": "Jane Doe\nJohn Doh\n",
-        "projPath": nwFuncTemp,
+        "projPath": fncDir,
         "popSample": True,
         "popMinimal": False,
         "popCustom": False,
     }
     theProject = NWProject(dummyGUI)
     theProject.projTree.setSeed(42)
-    theProject.mainConf = nwConf
+    theProject.mainConf = tmpConf
 
     # Make sure we do not pick up the nw/assets/sample.zip file
-    nwConf.assetPath = tmpDir
+    tmpConf.assetPath = tmpDir
 
     # Set a fake project file name
     monkeypatch.setattr(nwFiles, "PROJ_FILE", "nothing.nwx")
@@ -272,17 +284,19 @@ def testProjectNewSampleB(monkeypatch, nwFuncTemp, nwConf, dummyGUI, tmpDir):
 
     monkeypatch.setattr(nwFiles, "PROJ_FILE", "nwProject.nwx")
     assert theProject.newProject(projData)
-    assert theProject.openProject(nwFuncTemp)
+    assert theProject.openProject(fncDir)
     assert theProject.projName == "Sample Project"
     assert theProject.saveProject()
     assert theProject.closeProject()
 
     # Misdirect the appRoot path so neither is possible
-    nwConf.appRoot = tmpDir
+    tmpConf.appRoot = tmpDir
     assert not theProject.newProject(projData)
 
-@pytest.mark.project
-def testProjectMethods(monkeypatch, nwMinimal, dummyGUI):
+# END Test testCoreProject_NewSampleB
+
+@pytest.mark.core
+def testCoreProject_Methods(monkeypatch, nwMinimal, dummyGUI):
     """Test other project class methods and functions.
     """
     theProject = NWProject(dummyGUI)
@@ -323,8 +337,10 @@ def testProjectMethods(monkeypatch, nwMinimal, dummyGUI):
     assert theProject.setBookAuthors(" Jane Doe \n John Doh \n ")
     assert theProject.bookAuthors == ["Jane Doe", "John Doh"]
 
-@pytest.mark.project
-def testProjectOrphanedFiles(dummyGUI, nwLipsum):
+# END Test testCoreProject_Methods
+
+@pytest.mark.core
+def testCoreProject_OrphanedFiles(dummyGUI, nwLipsum):
     """Check that files in the content folder that are not tracked in
     the project XML file are handled correctly by the orphaned files
     function. It should also restore as much meta data as possible from
@@ -392,8 +408,10 @@ def testProjectOrphanedFiles(dummyGUI, nwLipsum):
     assert theProject.saveProject(nwLipsum)
     assert theProject.closeProject()
 
-@pytest.mark.project
-def testProjectOldFormat(dummyGUI, nwOldProj):
+# END Test testCoreProject_OrphanedFiles
+
+@pytest.mark.core
+def testCoreProject_OldFormat(dummyGUI, nwOldProj):
     """Test that a project folder structure of version 1.0 can be
     converted to the latest folder structure. Version 1.0 split the
     documents into 'data_0' ... 'data_f' folders, which are now all
@@ -482,8 +500,10 @@ def testProjectOldFormat(dummyGUI, nwOldProj):
     assert os.path.isfile(os.path.join(nwOldProj, "meta", "sessionStats.log"))
     assert os.path.isfile(os.path.join(nwOldProj, "ToC.txt"))
 
-@pytest.mark.project
-def testProjectBackup(dummyGUI, nwMinimal, tmpDir):
+# END Test testCoreProject_OldFormat
+
+@pytest.mark.core
+def testCoreProject_Backup(dummyGUI, nwMinimal, tmpDir):
     """Test the automated backup feature of the project class. The test
     creates a backup of the Minimal test project, and then unzips the
     backupd file and checks that the project XML file is identical to
@@ -530,3 +550,5 @@ def testProjectBackup(dummyGUI, nwMinimal, tmpDir):
     assert cmpFiles(
         os.path.join(nwMinimal, "nwProject.nwx"), os.path.join(tmpDir, "extract", "nwProject.nwx")
     )
+
+# END Test testCoreProject_Backup
