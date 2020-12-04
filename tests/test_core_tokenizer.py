@@ -12,7 +12,7 @@ def testCoreToken_Setters(dummyGUI):
     """Test all the setters for the Tokenizer class.
     """
     theProject = NWProject(dummyGUI)
-    theToken = Tokenizer(dummyGUI, theProject)
+    theToken = Tokenizer(theProject, dummyGUI)
 
     # Verify defaults
     assert theToken.fmtTitle == "%title%"
@@ -600,7 +600,6 @@ def testCoreToken_Headers(dummyGUI):
 
     # H1: Title
     theToken.theText = "# Novel Title\n"
-    theToken.setTitleFormat(r"T: %title%")
     theToken.tokenizeText()
     theToken.isTitle = True
     theToken.isPart = False

@@ -81,14 +81,14 @@ class GuiMain(QMainWindow):
         # Core Classes
         # ============
 
-        # Core Classes and settings
+        # Core Classes and Settings
         self.theTheme    = GuiTheme(self)
         self.theProject  = NWProject(self)
         self.theIndex    = NWIndex(self.theProject, self)
         self.hasProject  = False
         self.isFocusMode = False
 
-        # Prepare main window
+        # Prepare Main Window
         self.resize(*self.mainConf.getWinSize())
         self._setWindowTitle()
         self.setWindowIcon(QIcon(self.mainConf.appIcon))
@@ -1073,10 +1073,10 @@ class GuiMain(QMainWindow):
 
         self.isFocusMode = not self.isFocusMode
         if self.isFocusMode:
-            logger.debug("Activating Focus mode")
+            logger.debug("Activating Focus Mode")
             self.tabWidget.setCurrentWidget(self.splitDocs)
         else:
-            logger.debug("Deactivating Focus mode")
+            logger.debug("Deactivating Focus Mode")
 
         isVisible = not self.isFocusMode
         self.treePane.setVisible(isVisible)
