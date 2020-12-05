@@ -982,6 +982,13 @@ class GuiMain(QMainWindow):
 
         return
 
+    def askQuestion(self, theTitle, theQuestion):
+        """Ask the user a Yes/No question.
+        """
+        msgBox = QMessageBox()
+        msgRes = msgBox.question(self, theTitle, theQuestion)
+        return msgRes == QMessageBox.Yes
+
     def reportConfErr(self):
         """Checks if the Config module has any errors to report, and let
         the user know if this is the case. The Config module caches

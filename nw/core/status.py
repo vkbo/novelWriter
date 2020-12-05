@@ -109,7 +109,8 @@ class NWStatus():
         return
 
     def countEntry(self, theLabel):
-        """Lookup the usage count of a given entry.
+        """Increment the counter for a given label. This should be used
+        together with resetCounts in a loop over project items.
         """
         theIndex = self.lookupEntry(theLabel)
         if theIndex is not None:
