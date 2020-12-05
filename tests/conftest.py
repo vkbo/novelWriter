@@ -6,15 +6,12 @@ import sys
 import pytest
 import shutil
 import os
-import time
 
 from dummy import DummyMain
 
 from PyQt5.QtWidgets import QMessageBox
 
 sys.path.insert(1, os.path.abspath(os.path.join(os.path.dirname(__file__), os.path.pardir)))
-os.environ["TZ"] = "UTC"
-time.tzset()
 
 from nw.config import Config # noqa: E402
 

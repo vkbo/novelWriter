@@ -14,6 +14,7 @@ from dummy import causeOSError
 
 from nw.core.project import NWProject
 from nw.constants import nwItemClass, nwItemType, nwItemLayout, nwFiles
+from nw.common import formatTimeStamp
 
 @pytest.mark.core
 def testCoreProject_NewMinimal(fncDir, outDir, refDir, tmpDir, dummyGUI):
@@ -842,8 +843,8 @@ def testCoreProject_Methods(monkeypatch, nwMinimal, dummyGUI, tmpDir):
     assert readFile(statsFile) == (
         "# Offset 100\n"
         "# Start Time         End Time                Novel     Notes\n"
-        "2020-09-13 13:00:00  2020-09-13 14:00:00       200       100\n"
-    )
+        "%s  %s       200       100\n"
+    ) % (formatTimeStamp(1600002000), formatTimeStamp(1600005600))
 
     # Pack XML Value
     xElem = etree.Element("element")
