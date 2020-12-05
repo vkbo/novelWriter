@@ -30,7 +30,7 @@ typeDelay = 1
 stepDelay = 20
 
 @pytest.mark.gui
-def testProjectSettings(qtbot, monkeypatch, yesToAll, nwFuncTemp, nwTempGUI, refDir, tmpDir):
+def testProjectSettings(qtbot, monkeypatch, yesToAll, fncDir, nwTempGUI, refDir, tmpDir):
     nwGUI = nw.main(["--testmode", "--config=%s" % tmpDir, "--data=%s" % tmpDir])
     qtbot.addWidget(nwGUI)
     nwGUI.show()
@@ -43,8 +43,8 @@ def testProjectSettings(qtbot, monkeypatch, yesToAll, nwFuncTemp, nwTempGUI, ref
 
     # Create new project
     nwGUI.theProject.projTree.setSeed(42)
-    assert nwGUI.newProject({"projPath": nwFuncTemp})
-    nwGUI.mainConf.backupPath = nwFuncTemp
+    assert nwGUI.newProject({"projPath": fncDir})
+    nwGUI.mainConf.backupPath = fncDir
 
     # Get the dialog object
     monkeypatch.setattr(GuiProjectSettings, "exec_", lambda *args: None)
@@ -135,7 +135,7 @@ def testProjectSettings(qtbot, monkeypatch, yesToAll, nwFuncTemp, nwTempGUI, ref
     qtbot.wait(stepDelay)
 
     # Check the files
-    projFile = os.path.join(nwFuncTemp, "nwProject.nwx")
+    projFile = os.path.join(fncDir, "nwProject.nwx")
     testFile = os.path.join(nwTempGUI, "2_nwProject.nwx")
     refFile  = os.path.join(refDir, "gui", "2_nwProject.nwx")
     copyfile(projFile, testFile)
@@ -145,7 +145,7 @@ def testProjectSettings(qtbot, monkeypatch, yesToAll, nwFuncTemp, nwTempGUI, ref
     nwGUI.closeMain()
 
 @pytest.mark.gui
-def testItemEditor(qtbot, yesToAll, monkeypatch, nwFuncTemp, nwTempGUI, refDir, tmpDir):
+def testItemEditor(qtbot, yesToAll, monkeypatch, fncDir, nwTempGUI, refDir, tmpDir):
     nwGUI = nw.main(["--testmode", "--config=%s" % tmpDir, "--data=%s" % tmpDir])
     qtbot.addWidget(nwGUI)
     nwGUI.show()
@@ -154,7 +154,7 @@ def testItemEditor(qtbot, yesToAll, monkeypatch, nwFuncTemp, nwTempGUI, refDir, 
 
     # Create new, save, open project
     nwGUI.theProject.projTree.setSeed(42)
-    assert nwGUI.newProject({"projPath": nwFuncTemp})
+    assert nwGUI.newProject({"projPath": fncDir})
     assert nwGUI.openDocument("0e17daca5f3e1")
     assert nwGUI.treeView.setSelectedHandle("0e17daca5f3e1", doScroll=True)
 
@@ -208,7 +208,7 @@ def testItemEditor(qtbot, yesToAll, monkeypatch, nwFuncTemp, nwTempGUI, refDir, 
     qtbot.wait(stepDelay)
 
     # Check the files
-    projFile = os.path.join(nwFuncTemp, "nwProject.nwx")
+    projFile = os.path.join(fncDir, "nwProject.nwx")
     testFile = os.path.join(nwTempGUI, "3_nwProject.nwx")
     refFile  = os.path.join(refDir, "gui", "3_nwProject.nwx")
     copyfile(projFile, testFile)
@@ -218,7 +218,7 @@ def testItemEditor(qtbot, yesToAll, monkeypatch, nwFuncTemp, nwTempGUI, refDir, 
     nwGUI.closeMain()
 
 @pytest.mark.gui
-def testWritingStatsExport(qtbot, monkeypatch, yesToAll, nwFuncTemp, tmpDir):
+def testWritingStatsExport(qtbot, monkeypatch, yesToAll, fncDir, tmpDir):
     nwGUI = nw.main(["--testmode", "--config=%s" % tmpDir, "--data=%s" % tmpDir])
     qtbot.addWidget(nwGUI)
     nwGUI.show()
@@ -227,13 +227,13 @@ def testWritingStatsExport(qtbot, monkeypatch, yesToAll, nwFuncTemp, tmpDir):
 
     # Create new, save, close project
     nwGUI.theProject.projTree.setSeed(42)
-    assert nwGUI.newProject({"projPath": nwFuncTemp})
+    assert nwGUI.newProject({"projPath": fncDir})
     qtbot.wait(200)
     assert nwGUI.saveProject()
     assert nwGUI.closeProject()
     qtbot.wait(stepDelay)
 
-    sessFile = os.path.join(nwFuncTemp, "meta", nwFiles.SESS_STATS)
+    sessFile = os.path.join(fncDir, "meta", nwFiles.SESS_STATS)
     with open(sessFile, mode="w+", encoding="utf-8") as outFile:
         outFile.write(
             "# Start Time         End Time                Novel     Notes\n"
@@ -244,10 +244,10 @@ def testWritingStatsExport(qtbot, monkeypatch, yesToAll, nwFuncTemp, tmpDir):
         )
 
     # Open again, and check the stats
-    assert nwGUI.openProject(nwFuncTemp)
+    assert nwGUI.openProject(fncDir)
     qtbot.wait(stepDelay)
 
-    nwGUI.mainConf.lastPath = nwFuncTemp
+    nwGUI.mainConf.lastPath = fncDir
     nwGUI.mainMenu.aWritingStats.activate(QAction.Trigger)
     qtbot.waitUntil(lambda: getGuiItem("GuiWritingStats") is not None, timeout=1000)
 
@@ -264,7 +264,7 @@ def testWritingStatsExport(qtbot, monkeypatch, yesToAll, nwFuncTemp, tmpDir):
     assert sessLog._saveData(sessLog.FMT_JSON)
     qtbot.wait(100)
 
-    jsonStats = os.path.join(nwFuncTemp, "sessionStats.json")
+    jsonStats = os.path.join(fncDir, "sessionStats.json")
     with open(jsonStats, mode="r", encoding="utf-8") as inFile:
         jsonData = json.load(inFile)
 
@@ -282,7 +282,7 @@ def testWritingStatsExport(qtbot, monkeypatch, yesToAll, nwFuncTemp, tmpDir):
     assert sessLog._saveData(sessLog.FMT_JSON)
     qtbot.wait(stepDelay)
 
-    jsonStats = os.path.join(nwFuncTemp, "sessionStats.json")
+    jsonStats = os.path.join(fncDir, "sessionStats.json")
     with open(jsonStats, mode="r", encoding="utf-8") as inFile:
         jsonData = json.loads(inFile.read())
 
@@ -299,7 +299,7 @@ def testWritingStatsExport(qtbot, monkeypatch, yesToAll, nwFuncTemp, tmpDir):
     assert sessLog._saveData(sessLog.FMT_JSON)
     qtbot.wait(stepDelay)
 
-    jsonStats = os.path.join(nwFuncTemp, "sessionStats.json")
+    jsonStats = os.path.join(fncDir, "sessionStats.json")
     with open(jsonStats, mode="r", encoding="utf-8") as inFile:
         jsonData = json.load(inFile)
 
@@ -316,7 +316,7 @@ def testWritingStatsExport(qtbot, monkeypatch, yesToAll, nwFuncTemp, tmpDir):
     assert sessLog._saveData(sessLog.FMT_JSON)
     qtbot.wait(stepDelay)
 
-    jsonStats = os.path.join(nwFuncTemp, "sessionStats.json")
+    jsonStats = os.path.join(fncDir, "sessionStats.json")
     with open(jsonStats, mode="r", encoding="utf-8") as inFile:
         jsonData = json.load(inFile)
 
@@ -329,7 +329,7 @@ def testWritingStatsExport(qtbot, monkeypatch, yesToAll, nwFuncTemp, tmpDir):
     assert sessLog._saveData(sessLog.FMT_JSON)
     qtbot.wait(stepDelay)
 
-    jsonStats = os.path.join(nwFuncTemp, "sessionStats.json")
+    jsonStats = os.path.join(fncDir, "sessionStats.json")
     with open(jsonStats, mode="r", encoding="utf-8") as inFile:
         jsonData = json.load(inFile)
 
@@ -341,7 +341,7 @@ def testWritingStatsExport(qtbot, monkeypatch, yesToAll, nwFuncTemp, tmpDir):
     assert sessLog._saveData(sessLog.FMT_JSON)
     qtbot.wait(stepDelay)
 
-    jsonStats = os.path.join(nwFuncTemp, "sessionStats.json")
+    jsonStats = os.path.join(fncDir, "sessionStats.json")
     with open(jsonStats, mode="r", encoding="utf-8") as inFile:
         jsonData = json.load(inFile)
 
@@ -357,8 +357,8 @@ def testWritingStatsExport(qtbot, monkeypatch, yesToAll, nwFuncTemp, tmpDir):
     nwGUI.closeMain()
 
 @pytest.mark.gui
-def testAboutBox(qtbot, monkeypatch, nwFuncTemp, tmpDir):
-    nwGUI = nw.main(["--testmode", "--config=%s" % nwFuncTemp, "--data=%s" % tmpDir])
+def testAboutBox(qtbot, monkeypatch, fncDir, tmpDir):
+    nwGUI = nw.main(["--testmode", "--config=%s" % fncDir, "--data=%s" % tmpDir])
     qtbot.addWidget(nwGUI)
     nwGUI.show()
     qtbot.waitForWindowShown(nwGUI)

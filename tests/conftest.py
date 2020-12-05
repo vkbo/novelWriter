@@ -198,17 +198,3 @@ def nwTempBuild(tmpDir):
     if not os.path.isdir(buildDir):
         os.mkdir(buildDir)
     return buildDir
-
-@pytest.fixture(scope="function")
-def nwFuncTemp(tmpDir):
-    """A temporary folder for a single test function.
-    """
-    funcDir = os.path.join(tmpDir, "ftemp")
-    if os.path.isdir(funcDir):
-        shutil.rmtree(funcDir)
-    if not os.path.isdir(funcDir):
-        os.mkdir(funcDir)
-    yield funcDir
-    if os.path.isdir(funcDir):
-        shutil.rmtree(funcDir)
-    return

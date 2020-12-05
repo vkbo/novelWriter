@@ -10,9 +10,9 @@ from PyQt5.QtWidgets import qApp
 from nw.error import NWErrorMessage, exceptionHandler
 
 @pytest.mark.error
-def testErrorDialog(qtbot, nwFuncTemp, tmpDir):
+def testErrorDialog(qtbot, fncDir, tmpDir):
     qApp.closeAllWindows()
-    nwGUI = nw.main(["--testmode", "--config=%s" % nwFuncTemp, "--data=%s" % tmpDir])
+    nwGUI = nw.main(["--testmode", "--config=%s" % fncDir, "--data=%s" % tmpDir])
     qtbot.addWidget(nwGUI)
     nwGUI.show()
     qtbot.waitForWindowShown(nwGUI)
