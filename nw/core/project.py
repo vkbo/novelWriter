@@ -1125,13 +1125,11 @@ class NWProject():
         sentItems = []
         iterItems = self.projTree.handles()
         n = 0
-        nMax = len(iterItems)
+        nMax = min(len(iterItems), 10000)
         while n < nMax:
             tHandle = iterItems[n]
             tItem   = self.projTree[tHandle]
             n += 1
-            if n > 10000:
-                return # Just in case
             if tItem is None:
                 # Technically a bug since treeOrder is built from the
                 # same data as projTree
@@ -1147,10 +1145,11 @@ class NWProject():
                 yield tItem
             elif tItem.itemParent in iterItems:
                 # Item's parent exists, but hasn't been sent yet, so add
-                # it again to the end
+                # it again to the end, but make sure this doesn't get
+                # out hand, so we cap at 10000 items
                 logger.warning("Item %s found before its parent" % tHandle)
                 iterItems.append(tHandle)
-                nMax = len(iterItems)
+                nMax = min(len(iterItems), 10000)
             else:
                 # Item is orphaned
                 logger.error("Item %s has no parent in current tree" % tHandle)
@@ -1189,13 +1188,12 @@ class NWProject():
         if not os.path.isfile(lockFile):
             return []
 
+        theLines = []
         try:
             with open(lockFile, mode="r", encoding="utf8") as inFile:
                 theData = inFile.read()
                 theLines = theData.splitlines()
-                if len(theLines) == 4:
-                    return theLines
-                else:
+                if len(theLines) != 4:
                     return ["ERROR"]
 
         except Exception as e:
@@ -1203,7 +1201,7 @@ class NWProject():
             logger.error(str(e))
             return ["ERROR"]
 
-        return ["ERROR"]
+        return theLines
 
     def _writeLockFile(self):
         """Writes a lock file to the project folder.
@@ -1236,13 +1234,12 @@ class NWProject():
         if os.path.isfile(lockFile):
             try:
                 os.unlink(lockFile)
-                return True
             except Exception as e:
                 logger.error("Failed to remove project lockfile")
                 logger.error(str(e))
                 return False
 
-        return None
+        return True
 
     def _checkFolder(self, thePath):
         """Check if a folder exists, and if it doesn't, create it.
@@ -1356,21 +1353,27 @@ class NWProject():
         sessionFile = os.path.join(self.projMeta, nwFiles.SESS_STATS)
         isFile = os.path.isfile(sessionFile)
 
-        with open(sessionFile, mode="a+", encoding="utf8") as outFile:
-            if not isFile:
-                # It's a new file, so add a header
-                if self.lastWCount > 0:
-                    outFile.write("# Offset %d\n" % self.lastWCount)
-                outFile.write("# %-17s  %-19s  %8s  %8s\n" % (
-                    "Start Time", "End Time", "Novel", "Notes"
+        try:
+            with open(sessionFile, mode="a+", encoding="utf8") as outFile:
+                if not isFile:
+                    # It's a new file, so add a header
+                    if self.lastWCount > 0:
+                        outFile.write("# Offset %d\n" % self.lastWCount)
+                    outFile.write("# %-17s  %-19s  %8s  %8s\n" % (
+                        "Start Time", "End Time", "Novel", "Notes"
+                    ))
+
+                outFile.write("%-19s  %-19s  %8d  %8d\n" % (
+                    formatTimeStamp(self.projOpened),
+                    formatTimeStamp(time()),
+                    self.novelWCount,
+                    self.notesWCount,
                 ))
 
-            outFile.write("%-19s  %-19s  %8d  %8d\n" % (
-                formatTimeStamp(self.projOpened),
-                formatTimeStamp(time()),
-                self.novelWCount,
-                self.notesWCount,
-            ))
+        except Exception as e:
+            logger.error("Failed to write session stats file")
+            logger.error(str(e))
+            return False
 
         return True
 

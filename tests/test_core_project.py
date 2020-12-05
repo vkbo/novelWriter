@@ -7,15 +7,18 @@ import os
 
 from shutil import copyfile
 from zipfile import ZipFile
+from lxml import etree
 
-from tools import cmpFiles
+from tools import cmpFiles, writeFile, readFile
+from dummy import causeOSError
 
 from nw.core.project import NWProject
 from nw.constants import nwItemClass, nwItemType, nwItemLayout, nwFiles
 
 @pytest.mark.core
-def testCoreProject_NewOpenSave(fncDir, outDir, refDir, tmpDir, dummyGUI):
-    """Test that a basic project can be created, opened and saved.
+def testCoreProject_NewMinimal(fncDir, outDir, refDir, tmpDir, dummyGUI):
+    """Create a new project from a project wizard dictionary. With
+    default setting, creating a Minimal project.
     """
     projFile = os.path.join(fncDir, "nwProject.nwx")
     testFile = os.path.join(outDir, "coreProject_1_nwProject.nwx")
@@ -29,7 +32,6 @@ def testCoreProject_NewOpenSave(fncDir, outDir, refDir, tmpDir, dummyGUI):
 
     # Try again with a proper path
     assert theProject.newProject({"projPath": fncDir})
-    assert theProject.setProjectPath(fncDir)
     assert theProject.saveProject()
     assert theProject.closeProject()
 
@@ -59,72 +61,7 @@ def testCoreProject_NewOpenSave(fncDir, outDir, refDir, tmpDir, dummyGUI):
     copyfile(projFile, testFile)
     assert cmpFiles(testFile, compFile, [2, 6, 7, 8])
 
-# END Test testCoreProject_NewOpenSave
-
-@pytest.mark.core
-def testCoreProject_NewRoot(fncDir, outDir, refDir, dummyGUI):
-    """Check that new root folders can be added to the project.
-    """
-    projFile = os.path.join(fncDir, "nwProject.nwx")
-    testFile = os.path.join(outDir, "coreProject_2_nwProject.nwx")
-    compFile = os.path.join(refDir, "coreProject_2_nwProject.nwx")
-
-    theProject = NWProject(dummyGUI)
-    theProject.projTree.setSeed(42)
-
-    assert theProject.newProject({"projPath": fncDir})
-    assert theProject.setProjectPath(fncDir)
-    assert theProject.saveProject()
-    assert theProject.closeProject()
-    assert theProject.openProject(projFile)
-
-    assert isinstance(theProject.newRoot("Novel",     nwItemClass.NOVEL),     type(None))
-    assert isinstance(theProject.newRoot("Plot",      nwItemClass.PLOT),      type(None))
-    assert isinstance(theProject.newRoot("Character", nwItemClass.CHARACTER), type(None))
-    assert isinstance(theProject.newRoot("World",     nwItemClass.WORLD),     type(None))
-    assert isinstance(theProject.newRoot("Timeline",  nwItemClass.TIMELINE),  str)
-    assert isinstance(theProject.newRoot("Object",    nwItemClass.OBJECT),    str)
-    assert isinstance(theProject.newRoot("Custom1",   nwItemClass.CUSTOM),    str)
-    assert isinstance(theProject.newRoot("Custom2",   nwItemClass.CUSTOM),    str)
-
-    assert theProject.projChanged
-    assert theProject.saveProject()
-    assert theProject.closeProject()
-
-    copyfile(projFile, testFile)
-    assert cmpFiles(testFile, compFile, [2, 6, 7, 8])
-    assert not theProject.projChanged
-
-# END Test testCoreProject_NewRoot
-
-@pytest.mark.core
-def testCoreProject_NewFile(fncDir, outDir, refDir, dummyGUI):
-    """Check that new files can be added to the project.
-    """
-    projFile = os.path.join(fncDir, "nwProject.nwx")
-    testFile = os.path.join(outDir, "coreProject_3_nwProject.nwx")
-    compFile = os.path.join(refDir, "coreProject_3_nwProject.nwx")
-
-    theProject = NWProject(dummyGUI)
-    theProject.projTree.setSeed(42)
-
-    assert theProject.newProject({"projPath": fncDir})
-    assert theProject.setProjectPath(fncDir)
-    assert theProject.saveProject()
-    assert theProject.closeProject()
-    assert theProject.openProject(projFile)
-
-    assert isinstance(theProject.newFile("Hello", nwItemClass.NOVEL,     "31489056e0916"), str)
-    assert isinstance(theProject.newFile("Jane",  nwItemClass.CHARACTER, "71ee45a3c0db9"), str)
-    assert theProject.projChanged
-    assert theProject.saveProject()
-    assert theProject.closeProject()
-
-    copyfile(projFile, testFile)
-    assert cmpFiles(testFile, compFile, [2, 6, 7, 8])
-    assert not theProject.projChanged
-
-# END Test testCoreProject_NewFile
+# END Test testCoreProject_NewMinimal
 
 @pytest.mark.core
 def testCoreProject_NewCustomA(fncDir, outDir, refDir, dummyGUI):
@@ -132,8 +69,8 @@ def testCoreProject_NewCustomA(fncDir, outDir, refDir, dummyGUI):
     Custom type with chapters and scenes.
     """
     projFile = os.path.join(fncDir, "nwProject.nwx")
-    testFile = os.path.join(outDir, "coreProject_4_nwProject.nwx")
-    compFile = os.path.join(refDir, "coreProject_4_nwProject.nwx")
+    testFile = os.path.join(outDir, "coreProject_2_nwProject.nwx")
+    compFile = os.path.join(refDir, "coreProject_2_nwProject.nwx")
 
     projData = {
         "projName": "Test Custom",
@@ -173,8 +110,8 @@ def testCoreProject_NewCustomB(fncDir, outDir, refDir, dummyGUI):
     Custom type without chapters, but with scenes.
     """
     projFile = os.path.join(fncDir, "nwProject.nwx")
-    testFile = os.path.join(outDir, "coreProject_5_nwProject.nwx")
-    compFile = os.path.join(refDir, "coreProject_5_nwProject.nwx")
+    testFile = os.path.join(outDir, "coreProject_3_nwProject.nwx")
+    compFile = os.path.join(refDir, "coreProject_3_nwProject.nwx")
 
     projData = {
         "projName": "Test Custom",
@@ -296,7 +233,418 @@ def testCoreProject_NewSampleB(monkeypatch, fncDir, tmpConf, dummyGUI, tmpDir):
 # END Test testCoreProject_NewSampleB
 
 @pytest.mark.core
-def testCoreProject_Methods(monkeypatch, nwMinimal, dummyGUI):
+def testCoreProject_NewRoot(fncDir, outDir, refDir, dummyGUI):
+    """Check that new root folders can be added to the project.
+    """
+    projFile = os.path.join(fncDir, "nwProject.nwx")
+    testFile = os.path.join(outDir, "coreProject_4_nwProject.nwx")
+    compFile = os.path.join(refDir, "coreProject_4_nwProject.nwx")
+
+    theProject = NWProject(dummyGUI)
+    theProject.projTree.setSeed(42)
+
+    assert theProject.newProject({"projPath": fncDir})
+    assert theProject.setProjectPath(fncDir)
+    assert theProject.saveProject()
+    assert theProject.closeProject()
+    assert theProject.openProject(projFile)
+
+    assert isinstance(theProject.newRoot("Novel",     nwItemClass.NOVEL),     type(None))
+    assert isinstance(theProject.newRoot("Plot",      nwItemClass.PLOT),      type(None))
+    assert isinstance(theProject.newRoot("Character", nwItemClass.CHARACTER), type(None))
+    assert isinstance(theProject.newRoot("World",     nwItemClass.WORLD),     type(None))
+    assert isinstance(theProject.newRoot("Timeline",  nwItemClass.TIMELINE),  str)
+    assert isinstance(theProject.newRoot("Object",    nwItemClass.OBJECT),    str)
+    assert isinstance(theProject.newRoot("Custom1",   nwItemClass.CUSTOM),    str)
+    assert isinstance(theProject.newRoot("Custom2",   nwItemClass.CUSTOM),    str)
+
+    assert theProject.projChanged
+    assert theProject.saveProject()
+    assert theProject.closeProject()
+
+    copyfile(projFile, testFile)
+    assert cmpFiles(testFile, compFile, [2, 6, 7, 8])
+    assert not theProject.projChanged
+
+# END Test testCoreProject_NewRoot
+
+@pytest.mark.core
+def testCoreProject_NewFile(fncDir, outDir, refDir, dummyGUI):
+    """Check that new files can be added to the project.
+    """
+    projFile = os.path.join(fncDir, "nwProject.nwx")
+    testFile = os.path.join(outDir, "coreProject_5_nwProject.nwx")
+    compFile = os.path.join(refDir, "coreProject_5_nwProject.nwx")
+
+    theProject = NWProject(dummyGUI)
+    theProject.projTree.setSeed(42)
+
+    assert theProject.newProject({"projPath": fncDir})
+    assert theProject.setProjectPath(fncDir)
+    assert theProject.saveProject()
+    assert theProject.closeProject()
+    assert theProject.openProject(projFile)
+
+    assert isinstance(theProject.newFile("Hello", nwItemClass.NOVEL,     "31489056e0916"), str)
+    assert isinstance(theProject.newFile("Jane",  nwItemClass.CHARACTER, "71ee45a3c0db9"), str)
+    assert theProject.projChanged
+    assert theProject.saveProject()
+    assert theProject.closeProject()
+
+    copyfile(projFile, testFile)
+    assert cmpFiles(testFile, compFile, [2, 6, 7, 8])
+    assert not theProject.projChanged
+
+# END Test testCoreProject_NewFile
+
+@pytest.mark.core
+def testCoreProject_Open(monkeypatch, nwMinimal, dummyGUI):
+    """Test opening a project.
+    """
+    theProject = NWProject(dummyGUI)
+
+    # Rename the project file to check handling
+    rName = os.path.join(nwMinimal, nwFiles.PROJ_FILE)
+    wName = os.path.join(nwMinimal, nwFiles.PROJ_FILE+"_sdfghj")
+    os.rename(rName, wName)
+    assert theProject.openProject(nwMinimal) is False
+    os.rename(wName, rName)
+
+    # Fail on folder structure check
+    monkeypatch.setattr("os.mkdir", causeOSError)
+    assert theProject.openProject(nwMinimal) is False
+    monkeypatch.undo()
+
+    # Fail on lock file
+    theProject.setProjectPath(nwMinimal)
+    assert theProject._writeLockFile()
+    assert theProject.openProject(nwMinimal) is False
+
+    # Fail to read lockfile (which still opens the project)
+    monkeypatch.setattr("builtins.open", causeOSError)
+    assert theProject.openProject(nwMinimal) is True
+    monkeypatch.undo()
+    assert theProject.closeProject()
+
+    # Force open with lockfile
+    theProject.setProjectPath(nwMinimal)
+    assert theProject._writeLockFile()
+    assert theProject.openProject(nwMinimal, overrideLock=True) is True
+    assert theProject.closeProject()
+
+    # Make a junk XML file
+    oName = os.path.join(nwMinimal, nwFiles.PROJ_FILE[:-3]+"orig")
+    bName = os.path.join(nwMinimal, nwFiles.PROJ_FILE[:-3]+"bak")
+    os.rename(rName, oName)
+    writeFile(rName, "dummy")
+    assert theProject.openProject(nwMinimal) is False
+
+    # Also write a jun XML backup file
+    writeFile(bName, "dummy")
+    assert theProject.openProject(nwMinimal) is False
+
+    # Wrong root item
+    writeFile(rName, "<not_novelWriterXML></not_novelWriterXML>\n")
+    assert theProject.openProject(nwMinimal) is False
+
+    # Wrong file version
+    writeFile(rName, (
+        "<?xml version='1.0' encoding='utf-8'?>\n"
+        "<novelWriterXML "
+        "appVersion=\"1.0\" "
+        "hexVersion=\"0x01000000\" "
+        "fileVersion=\"1.0\" "
+        "timeStamp=\"2020-01-01 00:00:00\">\n"
+        "</novelWriterXML>\n"
+    ))
+    dummyGUI.askResponse = False
+    assert theProject.openProject(nwMinimal) is False
+    dummyGUI.undo()
+
+    # Future file version
+    writeFile(rName, (
+        "<?xml version='1.0' encoding='utf-8'?>\n"
+        "<novelWriterXML "
+        "appVersion=\"1.0\" "
+        "hexVersion=\"0x01000000\" "
+        "fileVersion=\"99.99\" "
+        "timeStamp=\"2020-01-01 00:00:00\">\n"
+        "</novelWriterXML>\n"
+    ))
+    assert theProject.openProject(nwMinimal) is False
+
+    # Larger hex version
+    writeFile(rName, (
+        "<?xml version='1.0' encoding='utf-8'?>\n"
+        "<novelWriterXML "
+        "appVersion=\"1.0\" "
+        "hexVersion=\"0xffffffff\" "
+        "fileVersion=\"1.2\" "
+        "timeStamp=\"2020-01-01 00:00:00\">\n"
+        "</novelWriterXML>\n"
+    ))
+    dummyGUI.askResponse = False
+    assert theProject.openProject(nwMinimal) is False
+    dummyGUI.undo()
+
+    # Test skipping XML entries
+    writeFile(rName, (
+        "<?xml version='1.0' encoding='utf-8'?>\n"
+        "<novelWriterXML "
+        "appVersion=\"1.0\" "
+        "hexVersion=\"0x01000000\" "
+        "fileVersion=\"1.2\" "
+        "timeStamp=\"2020-01-01 00:00:00\">\n"
+        "<project><stuff/></project>\n"
+        "<settings><stuff/></settings>\n"
+        "</novelWriterXML>\n"
+    ))
+    assert theProject.openProject(nwMinimal) is True
+    assert theProject.closeProject()
+
+    # Test deprecated XML entries
+    writeFile(rName, (
+        "<?xml version='1.0' encoding='utf-8'?>\n"
+        "<novelWriterXML "
+        "appVersion=\"1.0\" "
+        "hexVersion=\"0x01000000\" "
+        "fileVersion=\"1.2\" "
+        "timeStamp=\"2020-01-01 00:00:00\">\n"
+        "<settings>\n"
+        "<autoReplace>\n"
+        "<A>B</A>\n"
+        "</autoReplace>\n"
+        "</settings>\n"
+        "</novelWriterXML>\n"
+    ))
+    assert theProject.openProject(nwMinimal) is True
+    assert theProject.autoReplace == {"A": "B"}
+    assert theProject.closeProject()
+
+    # Clean up XML files
+    os.unlink(rName)
+    os.unlink(bName)
+    os.rename(oName, rName)
+
+    # Add some legacy stuff that cannot be removed
+    writeFile(os.path.join(nwMinimal, "junk"), "dummy")
+    os.mkdir(os.path.join(nwMinimal, "data_0"))
+    writeFile(os.path.join(nwMinimal, "data_0", "junk"), "dummy")
+    dummyGUI.clear()
+    assert theProject.openProject(nwMinimal) is True
+    assert "data_0" in dummyGUI.lastAlert
+    assert theProject.closeProject()
+
+# END Test testCoreProject_Open
+
+@pytest.mark.core
+def testCoreProject_Save(monkeypatch, nwMinimal, dummyGUI, refDir):
+    """Test saving a project.
+    """
+    theProject = NWProject(dummyGUI)
+    testFile = os.path.join(nwMinimal, "nwProject.nwx")
+    compFile = os.path.join(refDir, os.path.pardir, "minimal", "nwProject.nwx")
+
+    # Nothing to save
+    assert theProject.saveProject() is False
+
+    # Open test project
+    assert theProject.openProject(nwMinimal)
+
+    # Fail on folder structure check
+    monkeypatch.setattr("os.path.isdir", lambda *args: False)
+    assert theProject.saveProject() is False
+    monkeypatch.undo()
+
+    # Fail on open file
+    monkeypatch.setattr("builtins.open", causeOSError)
+    assert theProject.saveProject() is False
+    monkeypatch.undo()
+
+    # Successful save
+    saveCount = theProject.saveCount
+    autoCount = theProject.autoCount
+    assert theProject.saveProject() is True
+    assert theProject.saveCount == saveCount + 1
+    assert theProject.autoCount == autoCount
+    assert cmpFiles(testFile, compFile, [2, 6, 7, 8, 9])
+
+    # Successful autosave
+    saveCount = theProject.saveCount
+    autoCount = theProject.autoCount
+    assert theProject.saveProject(autoSave=True) is True
+    assert theProject.saveCount == saveCount
+    assert theProject.autoCount == autoCount + 1
+    assert cmpFiles(testFile, compFile, [2, 6, 7, 8, 9])
+
+    # Close test project
+    assert theProject.closeProject()
+
+# END Test testCoreProject_Save
+
+@pytest.mark.core
+def testCoreProject_LockFile(monkeypatch, fncDir, dummyGUI):
+    """Test lock file functions for the project folder.
+    """
+    theProject = NWProject(dummyGUI)
+
+    lockFile = os.path.join(fncDir, nwFiles.PROJ_LOCK)
+
+    # No project
+    assert theProject._writeLockFile() is False
+    assert theProject._readLockFile() == ["ERROR"]
+    assert theProject._clearLockFile() is False
+
+    theProject.projPath = fncDir
+    theProject.mainConf.hostName = "TestHost"
+    theProject.mainConf.osType = "TestOS"
+    theProject.mainConf.kernelVer = "1.0"
+
+    # Block open
+    monkeypatch.setattr("builtins.open", causeOSError)
+    assert theProject._writeLockFile() is False
+    monkeypatch.undo()
+
+    # Write lock file
+    monkeypatch.setattr("nw.core.project.time", lambda: 123.4)
+    assert theProject._writeLockFile() is True
+    monkeypatch.undo()
+    assert readFile(lockFile) == "TestHost\nTestOS\n1.0\n123\n"
+
+    # Block open
+    monkeypatch.setattr("builtins.open", causeOSError)
+    assert theProject._readLockFile() == ["ERROR"]
+    monkeypatch.undo()
+
+    # Read lock file
+    assert theProject._readLockFile() == ["TestHost", "TestOS", "1.0", "123"]
+
+    # Block unlink
+    monkeypatch.setattr("os.unlink", causeOSError)
+    assert os.path.isfile(lockFile)
+    assert theProject._clearLockFile() is False
+    assert os.path.isfile(lockFile)
+    monkeypatch.undo()
+
+    # Clear file
+    assert os.path.isfile(lockFile)
+    assert theProject._clearLockFile() is True
+    assert not os.path.isfile(lockFile)
+
+    # Read again, no file
+    assert theProject._readLockFile() == []
+
+    # Read an invalid lock file
+    writeFile(lockFile, "A\nB")
+    assert theProject._readLockFile() == ["ERROR"]
+    assert theProject._clearLockFile() is True
+
+# END Test testCoreProject_LockFile
+
+@pytest.mark.core
+def testCoreProject_Helpers(monkeypatch, fncDir, dummyGUI):
+    """Test helper functions for the project folder.
+    """
+    theProject = NWProject(dummyGUI)
+
+    # No path
+    assert theProject.ensureFolderStructure() is False
+
+    # Set the correct dir
+    theProject.projPath = fncDir
+
+    # Block user's home folder
+    monkeypatch.setattr("os.path.expanduser", lambda *args, **kwargs: fncDir)
+    assert theProject.ensureFolderStructure() is False
+    monkeypatch.undo()
+
+    # Create a file to block meta folder
+    metaDir = os.path.join(fncDir, "meta")
+    writeFile(metaDir, "dummy")
+    assert theProject.ensureFolderStructure() is False
+    os.unlink(metaDir)
+
+    # Create a file to block cache folder
+    cacheDir = os.path.join(fncDir, "cache")
+    writeFile(cacheDir, "dummy")
+    assert theProject.ensureFolderStructure() is False
+    os.unlink(cacheDir)
+
+    # Create a file to block content folder
+    contentDir = os.path.join(fncDir, "content")
+    writeFile(contentDir, "dummy")
+    assert theProject.ensureFolderStructure() is False
+    os.unlink(contentDir)
+
+    # Now, do it right
+    assert theProject.ensureFolderStructure() is True
+    assert os.path.isdir(metaDir)
+    assert os.path.isdir(cacheDir)
+    assert os.path.isdir(contentDir)
+
+# END Test testCoreProject_Helpers
+
+@pytest.mark.core
+def testCoreProject_AccessItems(nwMinimal, dummyGUI):
+    """Test helper functions for the project folder.
+    """
+    theProject = NWProject(dummyGUI)
+    theProject.openProject(nwMinimal)
+
+    # Move Novel ROOT to after its files
+    oldOrder = [
+        "a508bb932959c", # ROOT: Novel
+        "a35baf2e93843", # FILE: Title Page
+        "a6d311a93600a", # FOLDER: New Chapter
+        "f5ab3e30151e1", # FILE: New Chapter
+        "8c659a11cd429", # FILE: New Scene
+        "7695ce551d265", # ROOT: Plot
+        "afb3043c7b2b3", # ROOT: Characters
+        "9d5247ab588e0", # ROOT: World
+    ]
+    newOrder = [
+        "a35baf2e93843", # FILE: Title Page
+        "f5ab3e30151e1", # FILE: New Chapter
+        "8c659a11cd429", # FILE: New Scene
+        "a6d311a93600a", # FOLDER: New Chapter
+        "a508bb932959c", # ROOT: Novel
+        "7695ce551d265", # ROOT: Plot
+        "afb3043c7b2b3", # ROOT: Characters
+        "9d5247ab588e0", # ROOT: World
+    ]
+    assert theProject.projTree.handles() == oldOrder
+    assert theProject.setTreeOrder(newOrder)
+    assert theProject.projTree.handles() == newOrder
+
+    # Add a non-existing item
+    theProject.projTree._treeOrder.append("01234567789abc")
+
+    # Add an item with a non-existent parent
+    nHandle = theProject.newFile("Test File", nwItemClass.NOVEL, "a6d311a93600a")
+    theProject.projTree[nHandle].setParent("cba9876543210")
+    assert theProject.projTree[nHandle].itemParent == "cba9876543210"
+
+    retOrder = []
+    for tItem in theProject.getProjectItems():
+        retOrder.append(tItem.itemHandle)
+
+    assert retOrder == [
+        "a508bb932959c", # ROOT: Novel
+        "7695ce551d265", # ROOT: Plot
+        "afb3043c7b2b3", # ROOT: Characters
+        "9d5247ab588e0", # ROOT: World
+        nHandle,         # FILE: Test File
+        "a35baf2e93843", # FILE: Title Page
+        "a6d311a93600a", # FOLDER: New Chapter
+        "f5ab3e30151e1", # FILE: New Chapter
+        "8c659a11cd429", # FILE: New Scene
+    ]
+    assert theProject.projTree[nHandle].itemParent is None
+
+# END Test testCoreProject_AccessItems
+
+@pytest.mark.core
+def testCoreProject_Methods(monkeypatch, nwMinimal, dummyGUI, tmpDir):
     """Test other project class methods and functions.
     """
     theProject = NWProject(dummyGUI)
@@ -317,12 +665,12 @@ def testCoreProject_Methods(monkeypatch, nwMinimal, dummyGUI):
     assert theProject.setProjectPath(projPath, newProject=True)
 
     # Make os.mkdir fail
-    def altMkdir(*args):
-        raise Exception("Oops!")
-
-    monkeypatch.setattr("os.mkdir", altMkdir)
+    monkeypatch.setattr("os.mkdir", causeOSError)
     projPath = os.path.join(nwMinimal, "dummy2")
     assert not theProject.setProjectPath(projPath, newProject=True)
+
+    # Set back
+    assert theProject.setProjectPath(nwMinimal)
 
     # Project Name
     assert theProject.setProjectName("  A Name ")
@@ -337,6 +685,191 @@ def testCoreProject_Methods(monkeypatch, nwMinimal, dummyGUI):
     assert theProject.setBookAuthors(" Jane Doe \n John Doh \n ")
     assert theProject.bookAuthors == ["Jane Doe", "John Doh"]
 
+    # Trash folder
+    # Should create on first call, and just returned on later calls
+    assert theProject.projTree["73475cb40a568"] is None
+    assert theProject.trashFolder() == "73475cb40a568"
+    assert theProject.trashFolder() == "73475cb40a568"
+
+    # Project backup
+    assert theProject.doBackup is True
+    assert theProject.setProjBackup(False)
+    assert theProject.doBackup is False
+
+    assert not theProject.setProjBackup(True)
+    theProject.mainConf.backupPath = tmpDir
+    assert theProject.setProjBackup(True)
+
+    assert theProject.setProjectName("")
+    assert not theProject.setProjBackup(True)
+    assert theProject.setProjectName("A Name")
+    assert theProject.setProjBackup(True)
+
+    # Spell check
+    theProject.projChanged = False
+    assert theProject.setSpellCheck(True)
+    assert not theProject.setSpellCheck(False)
+    assert theProject.projChanged
+
+    # Spell language
+    theProject.projChanged = False
+    assert theProject.setSpellLang(None)
+    assert theProject.projLang is None
+    assert theProject.setSpellLang("None")
+    assert theProject.projLang is None
+    assert theProject.setSpellLang("en_GB")
+    assert theProject.projLang == "en_GB"
+    assert theProject.projChanged
+
+    # Automatic outline update
+    theProject.projChanged = False
+    assert theProject.setAutoOutline(True)
+    assert not theProject.setAutoOutline(False)
+    assert theProject.projChanged
+
+    # Last edited
+    theProject.projChanged = False
+    assert theProject.setLastEdited("0123456789abc")
+    assert theProject.lastEdited == "0123456789abc"
+    assert theProject.projChanged
+
+    # Last viewed
+    theProject.projChanged = False
+    assert theProject.setLastViewed("0123456789abc")
+    assert theProject.lastViewed == "0123456789abc"
+    assert theProject.projChanged
+
+    # Autoreplace
+    theProject.projChanged = False
+    assert theProject.setAutoReplace({"A": "B", "C": "D"})
+    assert theProject.autoReplace == {"A": "B", "C": "D"}
+    assert theProject.projChanged
+
+    # Change project tree order
+    oldOrder = [
+        "a508bb932959c", "a35baf2e93843", "a6d311a93600a",
+        "f5ab3e30151e1", "8c659a11cd429", "7695ce551d265",
+        "afb3043c7b2b3", "9d5247ab588e0", "73475cb40a568",
+    ]
+    newOrder = [
+        "f5ab3e30151e1", "8c659a11cd429", "7695ce551d265",
+        "a508bb932959c", "a35baf2e93843", "a6d311a93600a",
+        "afb3043c7b2b3", "9d5247ab588e0",
+    ]
+    assert theProject.projTree.handles() == oldOrder
+    assert theProject.setTreeOrder(newOrder)
+    assert theProject.projTree.handles() == newOrder
+    assert theProject.setTreeOrder(oldOrder)
+    assert theProject.projTree.handles() == oldOrder
+
+    # Change status
+    theProject.projTree["a35baf2e93843"].setStatus("Finished")
+    theProject.projTree["a6d311a93600a"].setStatus("Draft")
+    theProject.projTree["f5ab3e30151e1"].setStatus("Note")
+    theProject.projTree["8c659a11cd429"].setStatus("Finished")
+    newList = [
+        ("New", 1, 1, 1, "New"),
+        ("Draft", 2, 2, 2, "Note"),      # These are swapped
+        ("Note", 3, 3, 3, "Draft"),      # These are swapped
+        ("Edited", 4, 4, 4, "Finished"), # Renamed
+        ("Finished", 5, 5, 5, None),     # New, with reused name
+    ]
+    assert theProject.setStatusColours(newList)
+    assert theProject.statusItems._theLabels == [
+        "New", "Draft", "Note", "Edited", "Finished"
+    ]
+    assert theProject.statusItems._theColours == [
+        (1, 1, 1), (2, 2, 2), (3, 3, 3), (4, 4, 4), (5, 5, 5)
+    ]
+    assert theProject.projTree["a35baf2e93843"].itemStatus == "Edited" # Renamed
+    assert theProject.projTree["a6d311a93600a"].itemStatus == "Note"   # Swapped
+    assert theProject.projTree["f5ab3e30151e1"].itemStatus == "Draft"  # Swapped
+    assert theProject.projTree["8c659a11cd429"].itemStatus == "Edited" # Renamed
+
+    # Change importance
+    fHandle = theProject.newFile("Jane Doe", nwItemClass.CHARACTER, "afb3043c7b2b3")
+    theProject.projTree[fHandle].setStatus("Main")
+    newList = [
+        ("New", 1, 1, 1, "New"),
+        ("Minor", 2, 2, 2, "Minor"),
+        ("Major", 3, 3, 3, "Major"),
+        ("Min", 4, 4, 4, "Main"),
+        ("Max", 5, 5, 5, None),
+    ]
+    assert theProject.setImportColours(newList)
+    assert theProject.importItems._theLabels == [
+        "New", "Minor", "Major", "Min", "Max"
+    ]
+    assert theProject.importItems._theColours == [
+        (1, 1, 1), (2, 2, 2), (3, 3, 3), (4, 4, 4), (5, 5, 5)
+    ]
+    assert theProject.projTree[fHandle].itemStatus == "Min"
+
+    # Check status counts
+    assert theProject.statusItems._theCounts == [0, 0, 0, 0, 0]
+    assert theProject.importItems._theCounts == [0, 0, 0, 0, 0]
+    theProject.countStatus()
+    assert theProject.statusItems._theCounts == [1, 1, 1, 2, 0]
+    assert theProject.importItems._theCounts == [3, 0, 0, 1, 0]
+
+    # Check word counts
+    theProject.currWCount = 200
+    theProject.lastWCount = 100
+    assert theProject.getSessionWordCount() == 100
+
+    # Session stats
+    monkeypatch.setattr("os.path.isdir", lambda *args, **kwargs: False)
+    assert not theProject._appendSessionStats()
+    monkeypatch.undo()
+
+    # Block open
+    monkeypatch.setattr("builtins.open", causeOSError)
+    assert not theProject._appendSessionStats()
+    monkeypatch.undo()
+
+    # Write entry
+    assert theProject.projMeta == os.path.join(nwMinimal, "meta")
+    statsFile = os.path.join(theProject.projMeta, nwFiles.SESS_STATS)
+
+    theProject.projOpened = 1600002000
+    theProject.novelWCount = 200
+    theProject.notesWCount = 100
+
+    monkeypatch.setattr("nw.core.project.time", lambda: 1600005600)
+    assert theProject._appendSessionStats()
+    monkeypatch.undo()
+
+    assert readFile(statsFile) == (
+        "# Offset 100\n"
+        "# Start Time         End Time                Novel     Notes\n"
+        "2020-09-13 13:00:00  2020-09-13 14:00:00       200       100\n"
+    )
+
+    # Pack XML Value
+    xElem = etree.Element("element")
+    theProject._packProjectValue(xElem, "A", "B", allowNone=False)
+    assert etree.tostring(xElem, pretty_print=False, encoding="utf-8") == (
+        b"<element><A>B</A></element>"
+    )
+
+    xElem = etree.Element("element")
+    theProject._packProjectValue(xElem, "A", "", allowNone=False)
+    assert etree.tostring(xElem, pretty_print=False, encoding="utf-8") == (
+        b"<element/>"
+    )
+
+    # Pack XML Key/Value
+    xElem = etree.Element("element")
+    theProject._packProjectKeyValue(xElem, "item", {"A": "B", "C": "D"})
+    assert etree.tostring(xElem, pretty_print=False, encoding="utf-8") == (
+        b"<element>"
+        b"<item>"
+        b"<entry key=\"A\">B</entry>"
+        b"<entry key=\"C\">D</entry>"
+        b"</item>"
+        b"</element>"
+    )
+
 # END Test testCoreProject_Methods
 
 @pytest.mark.core
@@ -347,6 +880,7 @@ def testCoreProject_OrphanedFiles(dummyGUI, nwLipsum):
     the meta line at the top of the document file.
     """
     theProject = NWProject(dummyGUI)
+
     assert theProject.openProject(nwLipsum)
     assert theProject.projTree["636b6aa9b697b"] is None
     assert theProject.closeProject()
@@ -408,6 +942,10 @@ def testCoreProject_OrphanedFiles(dummyGUI, nwLipsum):
     assert theProject.saveProject(nwLipsum)
     assert theProject.closeProject()
 
+    # Finally, check that the orphaned files function returns
+    # if no project is open and no path is set
+    assert not theProject._scanProjectFolder()
+
 # END Test testCoreProject_OrphanedFiles
 
 @pytest.mark.core
@@ -418,7 +956,6 @@ def testCoreProject_OldFormat(dummyGUI, nwOldProj):
     contained in a single 'content' folder.
     """
     theProject = NWProject(dummyGUI)
-    theProject.mainConf.showGUI = False
 
     # Create dummy files for known legacy files
     deleteFiles = [
@@ -451,8 +988,7 @@ def testCoreProject_OldFormat(dummyGUI, nwOldProj):
     # Create dummy files
     os.mkdir(os.path.join(nwOldProj, "cache"))
     for aFile in deleteFiles:
-        with open(aFile, mode="w+", encoding="utf8") as outFile:
-            outFile.write("Hi")
+        writeFile(aFile, "Hi")
     for aFile in deleteFiles:
         assert os.path.isfile(aFile)
 
@@ -503,7 +1039,112 @@ def testCoreProject_OldFormat(dummyGUI, nwOldProj):
 # END Test testCoreProject_OldFormat
 
 @pytest.mark.core
-def testCoreProject_Backup(dummyGUI, nwMinimal, tmpDir):
+def testCoreProject_LegacyData(monkeypatch, dummyGUI, fncDir):
+    """Test the functins that handle legacy data folders and structure
+    with additional tests of failure handling.
+    """
+    theProject = NWProject(dummyGUI)
+    theProject.setProjectPath(fncDir)
+
+    # assert theProject.newProject({"projPath": fncDir})
+    # assert theProject.saveProject()
+    # assert theProject.closeProject()
+
+    # Check behaviour of deprecated files function on OSError
+    tstFile = os.path.join(fncDir, "ToC.json")
+    writeFile(tstFile, "dummy")
+    assert os.path.isfile(tstFile)
+
+    monkeypatch.setattr("os.unlink", causeOSError)
+    assert not theProject._deprecatedFiles()
+    monkeypatch.undo()
+
+    assert theProject._deprecatedFiles()
+    assert not os.path.isfile(tstFile)
+
+    # Check processing non-folders
+    tstFile = os.path.join(fncDir, "data_0")
+    writeFile(tstFile, "dummy")
+    assert os.path.isfile(tstFile)
+
+    errList = []
+    errList = theProject._legacyDataFolder(tstFile, errList)
+    assert len(errList) > 0
+
+    # Move folder in data folder, shouldn't be there
+    tstData = os.path.join(fncDir, "data_1")
+    errItem = os.path.join(fncDir, "data_1", "stuff")
+    os.mkdir(tstData)
+    os.mkdir(errItem)
+    assert os.path.isdir(tstData)
+    assert os.path.isdir(errItem)
+
+    # This causes a failure to create the 'junk' folder
+    monkeypatch.setattr("os.mkdir", causeOSError)
+    errList = []
+    errList = theProject._legacyDataFolder(tstData, errList)
+    assert len(errList) > 0
+    monkeypatch.undo()
+
+    # This causes a failure to move 'stuff' to 'junk'
+    monkeypatch.setattr("os.rename", causeOSError)
+    errList = []
+    errList = theProject._legacyDataFolder(tstData, errList)
+    assert len(errList) > 0
+    monkeypatch.undo()
+
+    # This should be successful
+    errList = []
+    errList = theProject._legacyDataFolder(tstData, errList)
+    assert len(errList) == 0
+    assert os.path.isdir(os.path.join(fncDir, "junk", "stuff"))
+
+    # Check renaming/deleting of old document files
+    tstData = os.path.join(fncDir, "data_2")
+    tstDoc1m = os.path.join(tstData, "000000000001_main.nwd")
+    tstDoc1b = os.path.join(tstData, "000000000001_main.bak")
+    tstDoc2m = os.path.join(tstData, "000000000002_main.nwd")
+    tstDoc2b = os.path.join(tstData, "000000000002_main.bak")
+    tstDoc3m = os.path.join(tstData, "tooshort003_main.nwd")
+    tstDoc3b = os.path.join(tstData, "tooshort003_main.bak")
+
+    os.mkdir(tstData)
+    writeFile(tstDoc1m, "dummy")
+    writeFile(tstDoc1b, "dummy")
+    writeFile(tstDoc2m, "dummy")
+    writeFile(tstDoc2b, "dummy")
+    writeFile(tstDoc3m, "dummy")
+    writeFile(tstDoc3b, "dummy")
+
+    # Make the above fail
+    monkeypatch.setattr("os.rename", causeOSError)
+    monkeypatch.setattr("os.unlink", causeOSError)
+    errList = []
+    errList = theProject._legacyDataFolder(tstData, errList)
+    assert len(errList) > 0
+    assert os.path.isfile(tstDoc1m)
+    assert os.path.isfile(tstDoc1b)
+    assert os.path.isfile(tstDoc2m)
+    assert os.path.isfile(tstDoc2b)
+    assert os.path.isfile(tstDoc3m)
+    assert os.path.isfile(tstDoc3b)
+    monkeypatch.undo()
+
+    # And succeed ...
+    errList = []
+    errList = theProject._legacyDataFolder(tstData, errList)
+    assert len(errList) == 0
+
+    assert not os.path.isdir(tstData)
+    assert os.path.isfile(os.path.join(fncDir, "content", "2000000000001.nwd"))
+    assert os.path.isfile(os.path.join(fncDir, "content", "2000000000002.nwd"))
+    assert os.path.isfile(os.path.join(fncDir, "junk", "tooshort003_main.nwd"))
+    assert os.path.isfile(os.path.join(fncDir, "junk", "tooshort003_main.bak"))
+
+# END Test testCoreProject_LegacyData
+
+@pytest.mark.core
+def testCoreProject_Backup(monkeypatch, dummyGUI, nwMinimal, tmpDir):
     """Test the automated backup feature of the project class. The test
     creates a backup of the Minimal test project, and then unzips the
     backupd file and checks that the project XML file is identical to
@@ -513,6 +1154,12 @@ def testCoreProject_Backup(dummyGUI, nwMinimal, tmpDir):
     assert theProject.openProject(nwMinimal)
 
     # Test faulty settings
+
+    # No project
+    dummyGUI.hasProject = False
+    assert not theProject.zipIt(doNotify=False)
+    dummyGUI.hasProject = True
+
     # Invalid path
     theProject.mainConf.backupPath = None
     assert not theProject.zipIt(doNotify=False)
@@ -531,9 +1178,21 @@ def testCoreProject_Backup(dummyGUI, nwMinimal, tmpDir):
     theProject.mainConf.backupPath = nwMinimal
     assert not theProject.zipIt(doNotify=False)
 
-    # Test correct settings
+    # Set a valid folder
     theProject.mainConf.backupPath = tmpDir
-    assert theProject.zipIt(doNotify=False)
+
+    # Can't make folder
+    monkeypatch.setattr("os.mkdir", causeOSError)
+    assert not theProject.zipIt(doNotify=False)
+    monkeypatch.undo()
+
+    # Can't write archive
+    monkeypatch.setattr("shutil.make_archive", causeOSError)
+    assert not theProject.zipIt(doNotify=False)
+    monkeypatch.undo()
+
+    # Test correct settings
+    assert theProject.zipIt(doNotify=True)
 
     theFiles = os.listdir(os.path.join(tmpDir, "Test Minimal"))
     assert len(theFiles) == 1
@@ -548,7 +1207,8 @@ def testCoreProject_Backup(dummyGUI, nwMinimal, tmpDir):
 
     # Check that the main project file was restored
     assert cmpFiles(
-        os.path.join(nwMinimal, "nwProject.nwx"), os.path.join(tmpDir, "extract", "nwProject.nwx")
+        os.path.join(nwMinimal, "nwProject.nwx"),
+        os.path.join(tmpDir, "extract", "nwProject.nwx")
     )
 
 # END Test testCoreProject_Backup

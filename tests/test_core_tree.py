@@ -10,7 +10,7 @@ from lxml import etree
 from nw.core.project import NWProject, NWItem, NWTree
 from nw.constants import nwItemClass, nwItemType, nwItemLayout, nwFiles
 
-@pytest.fixture(scope="session")
+@pytest.fixture(scope="function")
 def dummyItems(dummyGUI):
     """Create a list of dummy items.
     """
@@ -353,7 +353,7 @@ def testCoreTree_XMLPackUnpack(dummyGUI, dummyItems):
         b"<expanded>True</expanded></item>"
         b"<item handle=\"c000000000001\" order=\"0\" parent=\"b000000000001\">"
         b"<name>Chapter One</name><type>FILE</type><class>NOVEL</class><status>None</status>"
-        b"<exported>True</exported><layout>UNNUMBERED</layout><charCount>300</charCount>"
+        b"<exported>True</exported><layout>CHAPTER</layout><charCount>300</charCount>"
         b"<wordCount>50</wordCount><paraCount>2</paraCount><cursorPos>0</cursorPos></item>"
         b"<item handle=\"c000000000002\" order=\"0\" parent=\"b000000000001\">"
         b"<name>Scene One</name><type>FILE</type><class>NOVEL</class><status>None</status>"
@@ -425,7 +425,7 @@ def testCoreTree_ToCFile(monkeypatch, dummyGUI, dummyItems, tmpDir):
             "\n"
             "File Name                  Class      Layout      Document Label\n"
             "-------------------------------------------------------------\n"
-            f"{pathA}  NOVEL      UNNUMBERED  Chapter One\n"
+            f"{pathA}  NOVEL      CHAPTER     Chapter One\n"
             f"{pathB}  NOVEL      SCENE       Scene One\n"
             f"{pathC}  CHARACTER  NOTE        Jane Doe\n"
         )

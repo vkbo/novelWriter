@@ -6,12 +6,15 @@ import sys
 import pytest
 import shutil
 import os
+import time
 
 from dummy import DummyMain
 
 from PyQt5.QtWidgets import QMessageBox
 
 sys.path.insert(1, os.path.abspath(os.path.join(os.path.dirname(__file__), os.path.pardir)))
+os.environ["TZ"] = "UTC"
+time.tzset()
 
 from nw.config import Config # noqa: E402
 
@@ -69,7 +72,7 @@ def fncDir(tmpDir):
 #  novelWriter Objects
 ##
 
-@pytest.fixture(scope="session")
+@pytest.fixture(scope="function")
 def tmpConf(tmpDir):
     """Create a temporary novelWriter configuration object.
     """
@@ -78,7 +81,7 @@ def tmpConf(tmpDir):
     theConf.setLastPath("")
     return theConf
 
-@pytest.fixture(scope="session")
+@pytest.fixture(scope="function")
 def dummyGUI(tmpConf):
     """Create a dummy instance of novelWriter's main GUI class.
     """
@@ -168,6 +171,8 @@ def yesToAll(monkeypatch):
     monkeypatch.setattr(
         QMessageBox, "critical", lambda *args, **kwargs: QMessageBox.Yes
     )
+    yield
+    monkeypatch.undo()
     return
 
 # =============================================================================================== #
