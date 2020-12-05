@@ -5,14 +5,14 @@
 import pytest
 import os
 
-from nwtools import cmpFiles
+from tools import cmpFiles
 
 @pytest.mark.core
-def testConfigCore(tmpConf, nwTemp, nwRef):
-    refConf = os.path.join(nwRef, "novelwriter.conf")
+def testConfigCore(tmpConf, tmpDir, refDir):
+    refConf = os.path.join(refDir, "novelwriter.conf")
     testConf = os.path.join(tmpConf.confPath, "novelwriter.conf")
 
-    assert tmpConf.confPath == nwTemp
+    assert tmpConf.confPath == tmpDir
     assert tmpConf.saveConfig()
     assert cmpFiles(testConf, refConf, [2, 9])
     assert not tmpConf.confChanged
@@ -21,29 +21,29 @@ def testConfigCore(tmpConf, nwTemp, nwRef):
     assert not tmpConf.confChanged
 
 @pytest.mark.core
-def testConfigSetConfPath(tmpConf, nwTemp):
+def testConfigSetConfPath(tmpConf, tmpDir):
     assert tmpConf.setConfPath(None)
     assert not tmpConf.setConfPath(os.path.join("somewhere", "over", "the", "rainbow"))
-    assert tmpConf.setConfPath(os.path.join(nwTemp, "novelwriter.conf"))
-    assert tmpConf.confPath == nwTemp
+    assert tmpConf.setConfPath(os.path.join(tmpDir, "novelwriter.conf"))
+    assert tmpConf.confPath == tmpDir
     assert tmpConf.confFile == "novelwriter.conf"
     assert not tmpConf.confChanged
 
 @pytest.mark.core
-def testConfigSetDataPath(tmpConf, nwTemp):
+def testConfigSetDataPath(tmpConf, tmpDir):
     assert tmpConf.setDataPath(None)
     assert not tmpConf.setDataPath(os.path.join("somewhere", "over", "the", "rainbow"))
-    assert tmpConf.setDataPath(nwTemp)
-    assert tmpConf.dataPath == nwTemp
+    assert tmpConf.setDataPath(tmpDir)
+    assert tmpConf.dataPath == tmpDir
     assert not tmpConf.confChanged
 
 @pytest.mark.core
-def testConfigSetWinSize(tmpConf, nwTemp, nwRef):
-    refConf = os.path.join(nwRef, "novelwriter.conf")
+def testConfigSetWinSize(tmpConf, tmpDir, refDir):
+    refConf = os.path.join(refDir, "novelwriter.conf")
     testConf = os.path.join(tmpConf.confPath, "novelwriter.conf")
     tmpConf.guiScale = 1.0
 
-    assert tmpConf.confPath == nwTemp
+    assert tmpConf.confPath == tmpDir
     assert tmpConf.setWinSize(1205, 655)
     assert not tmpConf.confChanged
     assert tmpConf.setWinSize(70, 70)
@@ -55,11 +55,11 @@ def testConfigSetWinSize(tmpConf, nwTemp, nwRef):
     assert not tmpConf.confChanged
 
 @pytest.mark.core
-def testConfigSetTreeColWidths(tmpConf, nwTemp, nwRef):
-    refConf = os.path.join(nwRef, "novelwriter.conf")
+def testConfigSetTreeColWidths(tmpConf, tmpDir, refDir):
+    refConf = os.path.join(refDir, "novelwriter.conf")
     testConf = os.path.join(tmpConf.confPath, "novelwriter.conf")
 
-    assert tmpConf.confPath == nwTemp
+    assert tmpConf.confPath == tmpDir
     tmpConf.guiScale = 1.0
 
     assert tmpConf.setTreeColWidths([10, 20, 25])
@@ -77,11 +77,11 @@ def testConfigSetTreeColWidths(tmpConf, nwTemp, nwRef):
     assert not tmpConf.confChanged
 
 @pytest.mark.core
-def testConfigSetPanePos(tmpConf, nwTemp, nwRef):
-    refConf = os.path.join(nwRef, "novelwriter.conf")
+def testConfigSetPanePos(tmpConf, tmpDir, refDir):
+    refConf = os.path.join(refDir, "novelwriter.conf")
     testConf = os.path.join(tmpConf.confPath, "novelwriter.conf")
 
-    assert tmpConf.confPath == nwTemp
+    assert tmpConf.confPath == tmpDir
 
     tmpConf.guiScale = 2.0
     assert tmpConf.setMainPanePos([200, 700])
@@ -113,11 +113,11 @@ def testConfigSetPanePos(tmpConf, nwTemp, nwRef):
     assert not tmpConf.confChanged
 
 @pytest.mark.core
-def testConfigFlags(tmpConf, nwTemp, nwRef):
-    refConf = os.path.join(nwRef, "novelwriter.conf")
+def testConfigFlags(tmpConf, tmpDir, refDir):
+    refConf = os.path.join(refDir, "novelwriter.conf")
     testConf = os.path.join(tmpConf.confPath, "novelwriter.conf")
 
-    assert tmpConf.confPath == nwTemp
+    assert tmpConf.confPath == tmpDir
 
     assert not tmpConf.setShowRefPanel(False)
     assert tmpConf.setShowRefPanel(True)
@@ -137,8 +137,8 @@ def testConfigFlags(tmpConf, nwTemp, nwRef):
     assert not tmpConf.confChanged
 
 @pytest.mark.core
-def testTextSizes(tmpConf, nwTemp, nwRef):
-    assert tmpConf.confPath == nwTemp
+def testTextSizes(tmpConf, tmpDir, refDir):
+    assert tmpConf.confPath == tmpDir
 
     tmpConf.guiScale = 2.0
     assert tmpConf.getTextWidth() == 1200

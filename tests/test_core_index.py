@@ -8,28 +8,28 @@ import json
 
 from shutil import copyfile
 
-from nwtools import cmpFiles
+from tools import cmpFiles
 
 from nw.core.project import NWProject
 from nw.core.index import NWIndex
 from nw.constants import nwItemClass, nwItemLayout
 
-@pytest.mark.project
-def testIndexBuildCheck(monkeypatch, nwLipsum, nwDummy, nwTempProj, nwRef):
+@pytest.mark.core
+def testCoreIndex_LoadSave(monkeypatch, nwLipsum, dummyGUI, outDir, refDir):
     """Test core functionality of scaning, saving, loading and checking
     the index cache file.
     """
     projFile = os.path.join(nwLipsum, "meta", "tagsIndex.json")
-    testFile = os.path.join(nwTempProj, "1_tagsIndex.json")
-    refFile  = os.path.join(nwRef, "proj", "1_tagsIndex.json")
+    testFile = os.path.join(outDir, "coreIndex_LoadSave_tagsIndex.json")
+    compFile = os.path.join(refDir, "coreIndex_LoadSave_tagsIndex.json")
 
-    theProject = NWProject(nwDummy)
+    theProject = NWProject(dummyGUI)
     theProject.projTree.setSeed(42)
     assert theProject.openProject(nwLipsum)
 
     monkeypatch.setattr("nw.core.index.time", lambda: 123.4)
 
-    theIndex = NWIndex(theProject, nwDummy)
+    theIndex = NWIndex(theProject, dummyGUI)
     notIndexable = {
         "b3643d0f92e32": False, # Novel ROOT
         "45e6b01ca35c1": False, # Chapter One FOLDER
@@ -136,17 +136,19 @@ def testIndexBuildCheck(monkeypatch, nwLipsum, nwDummy, nwTempProj, nwRef):
     assert theProject.closeProject()
 
     copyfile(projFile, testFile)
-    assert cmpFiles(testFile, refFile)
+    assert cmpFiles(testFile, compFile)
 
-@pytest.mark.project
-def testIndexScanThis(nwMinimal, nwDummy):
+# END Test testCoreIndex_LoadSave
+
+@pytest.mark.core
+def testCoreIndex_ScanThis(nwMinimal, dummyGUI):
     """Test the tag scanner function scanThis.
     """
-    theProject = NWProject(nwDummy)
+    theProject = NWProject(dummyGUI)
     theProject.projTree.setSeed(42)
     assert theProject.openProject(nwMinimal)
 
-    theIndex = NWIndex(theProject, nwDummy)
+    theIndex = NWIndex(theProject, dummyGUI)
 
     isValid, theBits, thePos = theIndex.scanThis("tag: this, and this")
     assert not isValid
@@ -162,40 +164,42 @@ def testIndexScanThis(nwMinimal, nwDummy):
 
     isValid, theBits, thePos = theIndex.scanThis("@a:")
     assert isValid
-    assert str(theBits) == "['@a']"
-    assert str(thePos)  == "[0]"
+    assert theBits == ["@a"]
+    assert thePos  == [0]
 
     isValid, theBits, thePos = theIndex.scanThis("@a:b")
     assert isValid
-    assert str(theBits) == "['@a', 'b']"
-    assert str(thePos)  == "[0, 3]"
+    assert theBits == ["@a", "b"]
+    assert thePos  == [0, 3]
 
     isValid, theBits, thePos = theIndex.scanThis("@a:b,c,d")
     assert isValid
-    assert str(theBits) == "['@a', 'b', 'c', 'd']"
-    assert str(thePos)  == "[0, 3, 5, 7]"
+    assert theBits == ["@a", "b", "c", "d"]
+    assert thePos  == [0, 3, 5, 7]
 
     isValid, theBits, thePos = theIndex.scanThis("@a : b , c , d")
     assert isValid
-    assert str(theBits) == "['@a', 'b', 'c', 'd']"
-    assert str(thePos)  == "[0, 5, 9, 13]"
+    assert theBits == ["@a", "b", "c", "d"]
+    assert thePos  == [0, 5, 9, 13]
 
     isValid, theBits, thePos = theIndex.scanThis("@tag: this, and this")
     assert isValid
-    assert str(theBits) == "['@tag', 'this', 'and this']"
-    assert str(thePos)  == "[0, 6, 12]"
+    assert theBits == ["@tag", "this", "and this"]
+    assert thePos  == [0, 6, 12]
 
     assert theProject.closeProject()
 
-@pytest.mark.project
-def testIndexCheckThese(nwMinimal, nwDummy):
+# END Test testCoreIndex_ScanThis
+
+@pytest.mark.core
+def testCoreIndex_CheckThese(nwMinimal, dummyGUI):
     """Test the tag checker function checkThese.
     """
-    theProject = NWProject(nwDummy)
+    theProject = NWProject(dummyGUI)
     theProject.projTree.setSeed(42)
     assert theProject.openProject(nwMinimal)
 
-    theIndex = NWIndex(theProject, nwDummy)
+    theIndex = NWIndex(theProject, dummyGUI)
     nHandle = theProject.newFile("Hello", nwItemClass.NOVEL,     "a508bb932959c")
     cHandle = theProject.newFile("Jane",  nwItemClass.CHARACTER, "afb3043c7b2b3")
     nItem = theProject.projTree[nHandle]
@@ -209,29 +213,32 @@ def testIndexCheckThese(nwMinimal, nwDummy):
         "# Hello World!\n"
         "@pov: Jane"
     ))
-    assert str(theIndex.tagIndex) == "{'Jane': [2, '%s', 'CHARACTER', 'T000001']}" % cHandle
+    assert theIndex.tagIndex == {"Jane": [2, cHandle, "CHARACTER", "T000001"]}
     assert theIndex.novelIndex[nHandle]["T000001"]["title"] == "Hello World!"
 
-    assert str(theIndex.checkThese(["@tag",  "Jane"], cItem)) == "[True, True]"
-    assert str(theIndex.checkThese(["@tag",  "John"], cItem)) == "[True, True]"
-    assert str(theIndex.checkThese(["@tag",  "Jane"], nItem)) == "[True, False]"
-    assert str(theIndex.checkThese(["@tag",  "John"], nItem)) == "[True, True]"
-    assert str(theIndex.checkThese(["@pov",  "John"], nItem)) == "[True, False]"
-    assert str(theIndex.checkThese(["@pov",  "Jane"], nItem)) == "[True, True]"
-    assert str(theIndex.checkThese(["@ pov", "Jane"], nItem)) == "[False, False]"
-    assert str(theIndex.checkThese(["@what", "Jane"], nItem)) == "[False, False]"
+    assert theIndex.checkThese([], cItem) == []
+    assert theIndex.checkThese(["@tag",  "Jane"], cItem) == [True, True]
+    assert theIndex.checkThese(["@tag",  "John"], cItem) == [True, True]
+    assert theIndex.checkThese(["@tag",  "Jane"], nItem) == [True, False]
+    assert theIndex.checkThese(["@tag",  "John"], nItem) == [True, True]
+    assert theIndex.checkThese(["@pov",  "John"], nItem) == [True, False]
+    assert theIndex.checkThese(["@pov",  "Jane"], nItem) == [True, True]
+    assert theIndex.checkThese(["@ pov", "Jane"], nItem) == [False, False]
+    assert theIndex.checkThese(["@what", "Jane"], nItem) == [False, False]
 
     assert theProject.closeProject()
 
-@pytest.mark.project
-def testIndexScanText(nwMinimal, nwDummy):
-    """Check the index data extraction functions.
+# END Test testCoreIndex_CheckThese
+
+@pytest.mark.core
+def testCoreIndex_ScanText(nwMinimal, dummyGUI):
+    """Check the index text scanner.
     """
-    theProject = NWProject(nwDummy)
+    theProject = NWProject(dummyGUI)
     theProject.projTree.setSeed(42)
     assert theProject.openProject(nwMinimal)
 
-    theIndex = NWIndex(theProject, nwDummy)
+    theIndex = NWIndex(theProject, dummyGUI)
 
     # Some items for fail to scan tests
     dHandle = theProject.newFolder("Folder", nwItemClass.NOVEL, "a508bb932959c")
@@ -392,21 +399,23 @@ def testIndexScanText(nwMinimal, nwDummy):
         "% synopsis: Synopsis One.\n\n"
         "Paragraph One.\n\n"
     ))
-    assert str(theIndex.refIndex[sHandle]["T000001"]["tags"]) == (
-        "[[3, '@pov', 'One'], [5, '@char', 'Two']]"
+    assert theIndex.refIndex[sHandle]["T000001"]["tags"] == (
+        [[3, "@pov", "One"], [5, "@char", "Two"]]
     )
 
     assert theProject.closeProject()
 
-@pytest.mark.project
-def testIndexExtractData(nwMinimal, nwDummy):
+# END Test testCoreIndex_ScanText
+
+@pytest.mark.core
+def testCoreIndex_ExtractData(nwMinimal, dummyGUI):
     """Check the index data extraction functions.
     """
-    theProject = NWProject(nwDummy)
+    theProject = NWProject(dummyGUI)
     theProject.projTree.setSeed(42)
     assert theProject.openProject(nwMinimal)
 
-    theIndex = NWIndex(theProject, nwDummy)
+    theIndex = NWIndex(theProject, dummyGUI)
     nHandle = theProject.newFile("Hello", nwItemClass.NOVEL,     "a508bb932959c")
     cHandle = theProject.newFile("Jane",  nwItemClass.CHARACTER, "afb3043c7b2b3")
 
@@ -424,7 +433,13 @@ def testIndexExtractData(nwMinimal, nwDummy):
     ))
 
     # The novel structure should contain the pointer to the novel file header
-    assert str(theIndex.getNovelStructure()) == "['%s:T000001']" % nHandle
+    assert theIndex.getNovelStructure() == ["%s:T000001" % nHandle]
+
+    # Check that excluded files can be skipped
+    theProject.projTree[nHandle].setExported(False)
+    assert theIndex.getNovelStructure(skipExcluded=False) == ["%s:T000001" % nHandle]
+    assert theIndex.getNovelStructure(skipExcluded=True) == []
+    assert theIndex.getNovelStructure() == []
 
     # The novel file should have the correct counts
     cC, wC, pC = theIndex.getCounts(nHandle)
@@ -443,8 +458,8 @@ def testIndexExtractData(nwMinimal, nwDummy):
 
     # The novel file should now refer to Jane as @pov and @char
     theRefs = theIndex.getReferences(nHandle)
-    assert str(theRefs["@pov"]) == "['Jane']"
-    assert str(theRefs["@char"]) == "['Jane']"
+    assert theRefs["@pov"] == ["Jane"]
+    assert theRefs["@char"] == ["Jane"]
 
     ##
     #  getBackReferenceList
@@ -455,7 +470,7 @@ def testIndexExtractData(nwMinimal, nwDummy):
 
     # The character file should have a record of the reference from the novel file
     theRefs = theIndex.getBackReferenceList(cHandle)
-    assert str(theRefs) == "{'%s': 'T000001'}" % nHandle
+    assert theRefs == {nHandle: "T000001"}
 
     ##
     #  getTagSource
@@ -535,3 +550,5 @@ def testIndexExtractData(nwMinimal, nwDummy):
     assert pC == 2
 
     assert theProject.closeProject()
+
+# END Test testCoreIndex_ExtractData

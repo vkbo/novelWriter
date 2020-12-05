@@ -68,16 +68,16 @@ class ToHtml(Tokenizer):
     #  Setters
     ##
 
-    def setPreview(self, forPreview, doComments, doSynopsis):
+    def setPreview(self, doComments, doSynopsis):
         """If we're using this class to generate markdown preview, we
         need to make a few changes to formatting, which is managed by
         these flags.
         """
-        if forPreview:
-            self.genMode    = self.M_PREVIEW
-            self.doKeywords = True
-            self.doComments = doComments
-            self.doSynopsis = doSynopsis
+        self.genMode    = self.M_PREVIEW
+        self.doKeywords = True
+        self.doComments = doComments
+        self.doSynopsis = doSynopsis
+
         return
 
     def setStyles(self, cssStyles):
@@ -141,11 +141,13 @@ class ToHtml(Tokenizer):
             # For novel files for export, we bump the titles one level
             # up as this is more useful for printing and word processor
             # imports.
-            h1 = "h1 class='title'"
+            h1Cl = " class='title'"
+            h1 = "h1"
             h2 = "h1"
             h3 = "h2"
             h4 = "h3"
         else:
+            h1Cl = ""
             h1 = "h1"
             h2 = "h2"
             h3 = "h3"
@@ -193,7 +195,7 @@ class ToHtml(Tokenizer):
             else:
                 aNm = ""
 
-            # Process TextType
+            # Process Text Type
             if tType == self.T_EMPTY:
                 if parStyle is None:
                     parStyle = ""
@@ -214,7 +216,7 @@ class ToHtml(Tokenizer):
 
             elif tType == self.T_HEAD1:
                 tHead = tText.replace(r"\\", "<br/>")
-                tmpResult.append("<%s%s>%s%s</%s>\n" % (h1, hStyle, aNm, tHead, h1))
+                tmpResult.append("<%s%s%s>%s%s</%s>\n" % (h1, h1Cl, hStyle, aNm, tHead, h1))
 
             elif tType == self.T_HEAD2:
                 tHead = tText.replace(r"\\", "<br/>")

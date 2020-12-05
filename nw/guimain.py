@@ -81,14 +81,14 @@ class GuiMain(QMainWindow):
         # Core Classes
         # ============
 
-        # Core Classes and settings
+        # Core Classes and Settings
         self.theTheme    = GuiTheme(self)
         self.theProject  = NWProject(self)
         self.theIndex    = NWIndex(self.theProject, self)
         self.hasProject  = False
         self.isFocusMode = False
 
-        # Prepare main window
+        # Prepare Main Window
         self.resize(*self.mainConf.getWinSize())
         self._setWindowTitle()
         self.setWindowIcon(QIcon(self.mainConf.appIcon))
@@ -982,6 +982,13 @@ class GuiMain(QMainWindow):
 
         return
 
+    def askQuestion(self, theTitle, theQuestion):
+        """Ask the user a Yes/No question.
+        """
+        msgBox = QMessageBox()
+        msgRes = msgBox.question(self, theTitle, theQuestion)
+        return msgRes == QMessageBox.Yes
+
     def reportConfErr(self):
         """Checks if the Config module has any errors to report, and let
         the user know if this is the case. The Config module caches
@@ -1073,10 +1080,10 @@ class GuiMain(QMainWindow):
 
         self.isFocusMode = not self.isFocusMode
         if self.isFocusMode:
-            logger.debug("Activating Focus mode")
+            logger.debug("Activating Focus Mode")
             self.tabWidget.setCurrentWidget(self.splitDocs)
         else:
-            logger.debug("Deactivating Focus mode")
+            logger.debug("Deactivating Focus Mode")
 
         isVisible = not self.isFocusMode
         self.treePane.setVisible(isVisible)

@@ -176,11 +176,7 @@ class OptionState():
         """
         if getGroup in self.theState:
             if getName in self.theState[getGroup]:
-                try:
-                    return self.theState[getGroup][getName]
-                except Exception as e:
-                    logger.warning(str(e))
-                    return defaultValue
+                return self.theState[getGroup][getName]
         return defaultValue
 
     def getString(self, getGroup, getName, defaultValue):
@@ -189,11 +185,7 @@ class OptionState():
         """
         if getGroup in self.theState:
             if getName in self.theState[getGroup]:
-                try:
-                    return str(self.theState[getGroup][getName])
-                except Exception as e:
-                    logger.warning(str(e))
-                    return defaultValue
+                return str(self.theState[getGroup][getName])
         return defaultValue
 
     def getInt(self, getGroup, getName, defaultValue):
@@ -228,11 +220,7 @@ class OptionState():
         """
         if getGroup in self.theState:
             if getName in self.theState[getGroup]:
-                try:
-                    return bool(self.theState[getGroup][getName])
-                except Exception as e:
-                    logger.warning(str(e))
-                    return defaultValue
+                return bool(self.theState[getGroup][getName])
         return defaultValue
 
     ##

@@ -28,12 +28,10 @@
 import nw
 import logging
 import os
+import shutil
 
 from lxml import etree
 from time import time
-from shutil import make_archive, unpack_archive, copyfile
-
-from PyQt5.QtWidgets import QMessageBox
 
 from nw.core.tree import NWTree
 from nw.core.item import NWItem
@@ -436,26 +434,15 @@ class NWProject():
         xRoot = nwXML.getroot()
         nwxRoot = xRoot.tag
 
-        appVersion = "Unknown"
-        hexVersion = "0x0"
-        fileVersion = "Unknown"
-        self.saveCount = 0
-        self.autoCount = 0
-
-        if "appVersion" in xRoot.attrib:
-            appVersion = xRoot.attrib["appVersion"]
-        if "hexVersion" in xRoot.attrib:
-            hexVersion = xRoot.attrib["hexVersion"]
-        if "fileVersion" in xRoot.attrib:
-            fileVersion = xRoot.attrib["fileVersion"]
+        appVersion  = xRoot.attrib.get("appVersion",  "Unknown")
+        hexVersion  = xRoot.attrib.get("hexVersion",  "0x0")
+        fileVersion = xRoot.attrib.get("fileVersion", "Unknown")
 
         # The following are deprecated and will be removed
-        if "saveCount" in xRoot.attrib:
-            self.saveCount = checkInt(xRoot.attrib["saveCount"], 0, False)
-        if "autoCount" in xRoot.attrib:
-            self.autoCount = checkInt(xRoot.attrib["autoCount"], 0, False)
-        if "editTime" in xRoot.attrib:
-            self.editTime = checkInt(xRoot.attrib["editTime"], 0, False)
+        # The settings have been moved to the <project> tag
+        self.saveCount = checkInt(xRoot.attrib.get("saveCount", 0), 0, False)
+        self.autoCount = checkInt(xRoot.attrib.get("autoCount", 0), 0, False)
+        self.editTime  = checkInt(xRoot.attrib.get("editTime",  0), 0, False)
 
         logger.verbose("XML root is %s" % nwxRoot)
         logger.verbose("File version is %s" % fileVersion)
@@ -483,20 +470,19 @@ class NWProject():
         #       parser will lose the autoReplace settings if allowed to
         #       read the file. Introduced in version 0.10.
 
-        if fileVersion == "1.0" and self.mainConf.showGUI:
-            msgBox = QMessageBox()
-            msgRes = msgBox.question(self.theParent, "Old Project Version", (
+        if fileVersion == "1.0":
+            msgRes = self.theParent.askQuestion("Old Project Version", (
                 "The project file and data is created by a novelWriter version "
                 "lower than 0.7. Do you want to upgrade the project to the "
                 "most recent format?<br><br>Note that after the upgrade, you "
                 "cannot open the project with an older version of novelWriter "
                 "any more, so make sure you have a recent backup."
             ))
-            if msgRes != QMessageBox.Yes:
+            if not msgRes:
                 self.clearProject()
                 return False
 
-        elif fileVersion != "1.1" and fileVersion != "1.2" and self.mainConf.showGUI:
+        elif fileVersion != "1.1" and fileVersion != "1.2":
             self.makeAlert((
                 "Unknown or unsupported novelWriter project file format. "
                 "The project cannot be opened by this version of novelWriter. "
@@ -510,9 +496,8 @@ class NWProject():
         # Check novelWriter Version
         # =========================
 
-        if int(hexVersion, 16) > int(nw.__hexversion__, 16) and self.mainConf.showGUI:
-            msgBox = QMessageBox()
-            msgRes = msgBox.question(self.theParent, "Version Conflict", (
+        if int(hexVersion, 16) > int(nw.__hexversion__, 16):
+            msgRes = self.theParent.askQuestion("Version Conflict", (
                 "This project was saved by a newer version of novelWriter, version %s. "
                 "This is version %s. If you continue to open the project, some attributes "
                 "and settings may not be preserved, but the overall project should be fine. "
@@ -520,7 +505,7 @@ class NWProject():
             ) % (
                 appVersion, nw.__version__
             ))
-            if msgRes != QMessageBox.Yes:
+            if not msgRes:
                 self.clearProject()
                 return False
 
@@ -835,15 +820,15 @@ class NWProject():
 
         try:
             self._clearLockFile()
-            make_archive(baseName, "zip", self.projPath, ".")
+            shutil.make_archive(baseName, "zip", self.projPath, ".")
             self._writeLockFile()
+            logger.info("Backup written to: %s" % archName)
             if doNotify:
                 self.theParent.makeAlert(
                     "Backup archive file written to: %s.zip" % os.path.join(cleanName, archName),
                     nwAlert.INFO
                 )
-            else:
-                logger.info("Backup written to: %s" % archName)
+
         except Exception as e:
             self.theParent.makeAlert(
                 ["Could not write backup archive.", str(e)],
@@ -874,7 +859,7 @@ class NWProject():
 
             self.setProjectPath(projPath, newProject=True)
             try:
-                unpack_archive(pkgSample, projPath)
+                shutil.unpack_archive(pkgSample, projPath)
                 isSuccess = True
             except Exception as e:
                 self.makeAlert(
@@ -887,14 +872,14 @@ class NWProject():
             try:
                 srcProj = os.path.join(srcSample, nwFiles.PROJ_FILE)
                 dstProj = os.path.join(projPath, nwFiles.PROJ_FILE)
-                copyfile(srcProj, dstProj)
+                shutil.copyfile(srcProj, dstProj)
 
                 srcContent = os.path.join(srcSample, "content")
                 dstContent = os.path.join(projPath, "content")
                 for srcFile in os.listdir(srcContent):
                     srcDoc = os.path.join(srcContent, srcFile)
                     dstDoc = os.path.join(dstContent, srcFile)
-                    copyfile(srcDoc, dstDoc)
+                    shutil.copyfile(srcDoc, dstDoc)
 
                 isSuccess = True
 
@@ -998,11 +983,15 @@ class NWProject():
                     "You must set a valid backup path in preferences to use "
                     "the automatic project backup feature."
                 ), nwAlert.WARN)
+                return False
+
             if self.projName == "":
                 self.theParent.makeAlert((
                     "You must set a valid project name in project settings to "
                     "use the automatic project backup feature."
                 ), nwAlert.WARN)
+                return False
+
         return True
 
     def setSpellCheck(self, theMode):
@@ -1011,12 +1000,15 @@ class NWProject():
         if self.spellCheck != theMode:
             self.spellCheck = theMode
             self.setProjectChanged(True)
-        return True
+        return self.spellCheck
 
     def setSpellLang(self, theLang):
         """Set the project-specific spell check language.
         """
-        self.projLang = checkString(theLang, None, True)
+        theLang = checkString(theLang, None, True)
+        if self.projLang != theLang:
+            self.projLang = theLang
+            self.setProjectChanged(True)
         return True
 
     def setAutoOutline(self, theMode):
@@ -1025,7 +1017,7 @@ class NWProject():
         if self.autoOutline != theMode:
             self.autoOutline = theMode
             self.setProjectChanged(True)
-        return True
+        return self.autoOutline
 
     def setTreeOrder(self, newOrder):
         """A list representing the linear/flattened order of project
@@ -1072,7 +1064,7 @@ class NWProject():
                 if nwItem.itemStatus in replaceMap.keys():
                     nwItem.setStatus(replaceMap[nwItem.itemStatus])
         self.setProjectChanged(True)
-        return
+        return True
 
     def setImportColours(self, newCols):
         """Update the list of note file importance flags. Also iterate
@@ -1084,14 +1076,15 @@ class NWProject():
                 if nwItem.itemStatus in replaceMap.keys():
                     nwItem.setStatus(replaceMap[nwItem.itemStatus])
         self.setProjectChanged(True)
-        return
+        return True
 
     def setAutoReplace(self, autoReplace):
         """Update the auto-replace dictionary. This replaces the entire
         dictionary, so alterations have to be made in a copy.
         """
         self.autoReplace = autoReplace
-        return
+        self.setProjectChanged(True)
+        return True
 
     def setTitleFormat(self, titleFormat):
         """Set the formatting of titles in the project.
@@ -1099,7 +1092,7 @@ class NWProject():
         for valKey, valEntry in titleFormat.items():
             if valKey in self.titleFormat:
                 self.titleFormat[valKey] = checkString(valEntry, self.titleFormat[valKey], False)
-        return
+        return True
 
     def setProjectChanged(self, bValue):
         """Toggle the project changed flag, and propagate the
@@ -1132,13 +1125,11 @@ class NWProject():
         sentItems = []
         iterItems = self.projTree.handles()
         n = 0
-        nMax = len(iterItems)
+        nMax = min(len(iterItems), 10000)
         while n < nMax:
             tHandle = iterItems[n]
             tItem   = self.projTree[tHandle]
             n += 1
-            if n > 10000:
-                return # Just in case
             if tItem is None:
                 # Technically a bug since treeOrder is built from the
                 # same data as projTree
@@ -1154,10 +1145,11 @@ class NWProject():
                 yield tItem
             elif tItem.itemParent in iterItems:
                 # Item's parent exists, but hasn't been sent yet, so add
-                # it again to the end
+                # it again to the end, but make sure this doesn't get
+                # out hand, so we cap at 10000 items
                 logger.warning("Item %s found before its parent" % tHandle)
                 iterItems.append(tHandle)
-                nMax = len(iterItems)
+                nMax = min(len(iterItems), 10000)
             else:
                 # Item is orphaned
                 logger.error("Item %s has no parent in current tree" % tHandle)
@@ -1196,13 +1188,12 @@ class NWProject():
         if not os.path.isfile(lockFile):
             return []
 
+        theLines = []
         try:
             with open(lockFile, mode="r", encoding="utf8") as inFile:
                 theData = inFile.read()
                 theLines = theData.splitlines()
-                if len(theLines) == 4:
-                    return theLines
-                else:
+                if len(theLines) != 4:
                     return ["ERROR"]
 
         except Exception as e:
@@ -1210,7 +1201,7 @@ class NWProject():
             logger.error(str(e))
             return ["ERROR"]
 
-        return ["ERROR"]
+        return theLines
 
     def _writeLockFile(self):
         """Writes a lock file to the project folder.
@@ -1243,13 +1234,12 @@ class NWProject():
         if os.path.isfile(lockFile):
             try:
                 os.unlink(lockFile)
-                return True
             except Exception as e:
                 logger.error("Failed to remove project lockfile")
                 logger.error(str(e))
                 return False
 
-        return None
+        return True
 
     def _checkFolder(self, thePath):
         """Check if a folder exists, and if it doesn't, create it.
@@ -1292,7 +1282,7 @@ class NWProject():
         back into the project tree.
         """
         if self.projPath is None:
-            return
+            return False
 
         # Then check the files in the data folder
         logger.debug("Checking files in project content folder")
@@ -1352,7 +1342,7 @@ class NWProject():
             orphItem.setLayout(oLayout)
             self.projTree.append(oHandle, None, orphItem)
 
-        return
+        return True
 
     def _appendSessionStats(self):
         """Append session statistics to the sessions log file.
@@ -1363,21 +1353,27 @@ class NWProject():
         sessionFile = os.path.join(self.projMeta, nwFiles.SESS_STATS)
         isFile = os.path.isfile(sessionFile)
 
-        with open(sessionFile, mode="a+", encoding="utf8") as outFile:
-            if not isFile:
-                # It's a new file, so add a header
-                if self.lastWCount > 0:
-                    outFile.write("# Offset %d\n" % self.lastWCount)
-                outFile.write("# %-17s  %-19s  %8s  %8s\n" % (
-                    "Start Time", "End Time", "Novel", "Notes"
+        try:
+            with open(sessionFile, mode="a+", encoding="utf8") as outFile:
+                if not isFile:
+                    # It's a new file, so add a header
+                    if self.lastWCount > 0:
+                        outFile.write("# Offset %d\n" % self.lastWCount)
+                    outFile.write("# %-17s  %-19s  %8s  %8s\n" % (
+                        "Start Time", "End Time", "Novel", "Notes"
+                    ))
+
+                outFile.write("%-19s  %-19s  %8d  %8d\n" % (
+                    formatTimeStamp(self.projOpened),
+                    formatTimeStamp(time()),
+                    self.novelWCount,
+                    self.notesWCount,
                 ))
 
-            outFile.write("%-19s  %-19s  %8d  %8d\n" % (
-                formatTimeStamp(self.projOpened),
-                formatTimeStamp(time()),
-                self.novelWCount,
-                self.notesWCount,
-            ))
+        except Exception as e:
+            logger.error("Failed to write session stats file")
+            logger.error(str(e))
+            return False
 
         return True
 
@@ -1490,7 +1486,8 @@ class NWProject():
                     os.unlink(rmFile)
                 except Exception as e:
                     logger.error(str(e))
+                    return False
 
-        return
+        return True
 
 # END Class NWProject
