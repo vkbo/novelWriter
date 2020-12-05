@@ -22,8 +22,8 @@ def testCoreProject_NewMinimal(fncDir, outDir, refDir, tmpDir, dummyGUI):
     default setting, creating a Minimal project.
     """
     projFile = os.path.join(fncDir, "nwProject.nwx")
-    testFile = os.path.join(outDir, "coreProject_1_nwProject.nwx")
-    compFile = os.path.join(refDir, "coreProject_1_nwProject.nwx")
+    testFile = os.path.join(outDir, "coreProject_NewMinimal_nwProject.nwx")
+    compFile = os.path.join(refDir, "coreProject_NewMinimal_nwProject.nwx")
 
     theProject = NWProject(dummyGUI)
     theProject.projTree.setSeed(42)
@@ -70,8 +70,8 @@ def testCoreProject_NewCustomA(fncDir, outDir, refDir, dummyGUI):
     Custom type with chapters and scenes.
     """
     projFile = os.path.join(fncDir, "nwProject.nwx")
-    testFile = os.path.join(outDir, "coreProject_2_nwProject.nwx")
-    compFile = os.path.join(refDir, "coreProject_2_nwProject.nwx")
+    testFile = os.path.join(outDir, "coreProject_NewCustomA_nwProject.nwx")
+    compFile = os.path.join(refDir, "coreProject_NewCustomA_nwProject.nwx")
 
     projData = {
         "projName": "Test Custom",
@@ -111,8 +111,8 @@ def testCoreProject_NewCustomB(fncDir, outDir, refDir, dummyGUI):
     Custom type without chapters, but with scenes.
     """
     projFile = os.path.join(fncDir, "nwProject.nwx")
-    testFile = os.path.join(outDir, "coreProject_3_nwProject.nwx")
-    compFile = os.path.join(refDir, "coreProject_3_nwProject.nwx")
+    testFile = os.path.join(outDir, "coreProject_NewCustomB_nwProject.nwx")
+    compFile = os.path.join(refDir, "coreProject_NewCustomB_nwProject.nwx")
 
     projData = {
         "projName": "Test Custom",
@@ -238,8 +238,8 @@ def testCoreProject_NewRoot(fncDir, outDir, refDir, dummyGUI):
     """Check that new root folders can be added to the project.
     """
     projFile = os.path.join(fncDir, "nwProject.nwx")
-    testFile = os.path.join(outDir, "coreProject_4_nwProject.nwx")
-    compFile = os.path.join(refDir, "coreProject_4_nwProject.nwx")
+    testFile = os.path.join(outDir, "coreProject_NewRoot_nwProject.nwx")
+    compFile = os.path.join(refDir, "coreProject_NewRoot_nwProject.nwx")
 
     theProject = NWProject(dummyGUI)
     theProject.projTree.setSeed(42)
@@ -274,8 +274,8 @@ def testCoreProject_NewFile(fncDir, outDir, refDir, dummyGUI):
     """Check that new files can be added to the project.
     """
     projFile = os.path.join(fncDir, "nwProject.nwx")
-    testFile = os.path.join(outDir, "coreProject_5_nwProject.nwx")
-    compFile = os.path.join(refDir, "coreProject_5_nwProject.nwx")
+    testFile = os.path.join(outDir, "coreProject_NewFile_nwProject.nwx")
+    compFile = os.path.join(refDir, "coreProject_NewFile_nwProject.nwx")
 
     theProject = NWProject(dummyGUI)
     theProject.projTree.setSeed(42)
