@@ -71,3 +71,6 @@ class StatusBar():
 
 def causeOSError(*args, **kwargs):
     raise OSError
+
+def causeException(*args, **kwargs):
+    raise Exception
