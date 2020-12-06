@@ -61,6 +61,7 @@ The commands for the respective test categories are listed below.
 
 | Type | Test Target        | Source File(s)        | Marker    | Filter                |
 | :--- | :----------------- | :-------------------- | :-------- | :-------------------- |
+| Unit | Common functions   | nw/common.py          | `-m base` | `-k testBaseCommon`   |
 | Unit | Core functions     | nw/core/tools.py      | `-m core` | `-k testCoreTools`    |
 | Unit | NWDoc class        | nw/core/document.py   | `-m core` | `-k testCoreDocument` |
 | Unit | NWIndex class      | nw/core/index.py      | `-m core` | `-k testCoreIndex`    |
