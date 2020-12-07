@@ -10,7 +10,7 @@ import configparser
 from shutil import copyfile
 
 from dummy import causeOSError
-from tools import cmpFiles, readFile
+from tools import cmpFiles
 
 from nw.config import Config
 from nw.constants import nwConst, nwFiles
