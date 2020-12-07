@@ -246,19 +246,20 @@ def main(sysArgs=None):
         errorCode |= 32
 
     if errorData:
-        if not testMode:
-            errApp = QApplication([])
-            errMsg = QErrorMessage()
-            errMsg.resize(500, 300)
-            errMsg.showMessage((
-                "<h3>A critical error has been encountered</h3>"
-                "<p>novelWriter cannot start due to the following issues:<p>"
-                "<p>&nbsp;-&nbsp;%s</p>"
-                "<p>Shutting down ...</p>"
-            ) % (
-                "<br>&nbsp;-&nbsp;".join(errorData)
-            ))
-            errApp.exec_()
+        errApp = QApplication([])
+        errMsg = QErrorMessage()
+        errMsg.resize(500, 300)
+        errMsg.showMessage((
+            "<h3>A critical error has been encountered</h3>"
+            "<p>novelWriter cannot start due to the following issues:<p>"
+            "<p>&nbsp;-&nbsp;%s</p>"
+            "<p>Shutting down ...</p>"
+        ) % (
+            "<br>&nbsp;-&nbsp;".join(errorData)
+        ))
+        for errMsg in errorData:
+            logger.critical(errMsg)
+        errApp.exec_()
         sys.exit(errorCode)
 
     # Finish initialising config
@@ -293,4 +294,4 @@ def main(sysArgs=None):
         nwGUI = GuiMain()
         sys.exit(nwApp.exec_())
 
-    return
+# END Function main

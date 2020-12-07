@@ -13,7 +13,7 @@ class DummyMain():
         self.hasProject = True
         self.theIndex = None
         self.theProject = None
-        self.statusBar = StatusBar()
+        self.statusBar = DummyStatusBar()
 
         # Test Variables
         self.askResponse = True
@@ -42,6 +42,12 @@ class DummyMain():
     def rebuildIndex(self):
         return
 
+    def closeMain(self):
+        return "closeMain"
+
+    def close(self):
+        return "close"
+
     # Test Functions
 
     def undo(self):
@@ -52,9 +58,9 @@ class DummyMain():
         self.lastAlert = ""
         return
 
-# END Class GuiMain
+# END Class DummyMain
 
-class StatusBar():
+class DummyStatusBar():
 
     def __init__(self):
         return
@@ -62,7 +68,7 @@ class StatusBar():
     def setStatus(self, theText):
         return
 
-# END Class StatusBar
+# END Class DummyStatusBar
 
 # =========================================================================== #
 #  Error Functions
@@ -71,3 +77,6 @@ class StatusBar():
 
 def causeOSError(*args, **kwargs):
     raise OSError
+
+def causeException(*args, **kwargs):
+    raise Exception
