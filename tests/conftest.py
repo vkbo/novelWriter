@@ -73,6 +73,9 @@ def fncDir(tmpDir):
 def tmpConf(tmpDir):
     """Create a temporary novelWriter configuration object.
     """
+    confFile = os.path.join(tmpDir, "novelwriter.conf")
+    if os.path.isfile(confFile):
+        os.unlink(confFile)
     theConf = Config()
     theConf.initConfig(tmpDir, tmpDir)
     theConf.setLastPath("")
