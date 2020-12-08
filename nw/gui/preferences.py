@@ -946,7 +946,7 @@ class GuiConfigEditAutoReplaceTab(QWidget):
         self.mainForm.addRow(
             "Single quote open style",
             self.quoteSym["SO"],
-            "The symbol used for a leading single quote.",
+            "The symbol to use for a leading single quote.",
             theButton=self.btnSingleStyleO
         )
 
@@ -962,7 +962,7 @@ class GuiConfigEditAutoReplaceTab(QWidget):
         self.mainForm.addRow(
             "Single quote close style",
             self.quoteSym["SC"],
-            "The symbol used for a trailing single quote.",
+            "The symbol to use for a trailing single quote.",
             theButton=self.btnSingleStyleC
         )
 
@@ -979,7 +979,7 @@ class GuiConfigEditAutoReplaceTab(QWidget):
         self.mainForm.addRow(
             "Double quote open style",
             self.quoteSym["DO"],
-            "The symbol used for a leading double quote.",
+            "The symbol to use for a leading double quote.",
             theButton=self.btnDoubleStyleO
         )
 
@@ -995,7 +995,7 @@ class GuiConfigEditAutoReplaceTab(QWidget):
         self.mainForm.addRow(
             "Double quote close style",
             self.quoteSym["DC"],
-            "The symbol used for a trailing double quote.",
+            "The symbol to use for a trailing double quote.",
             theButton=self.btnDoubleStyleC
         )
 
