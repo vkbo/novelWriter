@@ -281,11 +281,11 @@ class GuiTheme:
         cnfSec = "Main"
         if confParser.has_section(cnfSec):
             self.themeName        = self._parseLine(confParser, cnfSec, "name", "")
-            self.themeDescription = self._parseLine(confParser, cnfSec, "description", "")
-            self.themeAuthor      = self._parseLine(confParser, cnfSec, "author", "")
-            self.themeCredit      = self._parseLine(confParser, cnfSec, "credit", "")
+            self.themeDescription = self._parseLine(confParser, cnfSec, "description", "N/A")
+            self.themeAuthor      = self._parseLine(confParser, cnfSec, "author", "N/A")
+            self.themeCredit      = self._parseLine(confParser, cnfSec, "credit", "N/A")
             self.themeUrl         = self._parseLine(confParser, cnfSec, "url", "")
-            self.themeLicense     = self._parseLine(confParser, cnfSec, "license", "")
+            self.themeLicense     = self._parseLine(confParser, cnfSec, "license", "N/A")
             self.themeLicenseUrl  = self._parseLine(confParser, cnfSec, "licenseurl", "")
 
         ## Palette
@@ -638,10 +638,10 @@ class GuiIcons:
         if confParser.has_section(cnfSec):
             self.themeName        = self._parseLine(confParser, cnfSec, "name", "")
             self.themeDescription = self._parseLine(confParser, cnfSec, "description", "")
-            self.themeAuthor      = self._parseLine(confParser, cnfSec, "author", "")
-            self.themeCredit      = self._parseLine(confParser, cnfSec, "credit", "")
+            self.themeAuthor      = self._parseLine(confParser, cnfSec, "author", "N/A")
+            self.themeCredit      = self._parseLine(confParser, cnfSec, "credit", "N/A")
             self.themeUrl         = self._parseLine(confParser, cnfSec, "url", "")
-            self.themeLicense     = self._parseLine(confParser, cnfSec, "license", "")
+            self.themeLicense     = self._parseLine(confParser, cnfSec, "license", "N/A")
             self.themeLicenseUrl  = self._parseLine(confParser, cnfSec, "licenseurl", "")
 
         ## Palette
