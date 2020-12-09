@@ -1027,9 +1027,8 @@ class GuiProjectTreeMenu(QMenu):
         """Update item settings from the nwItem.
         """
         self.theItem = theItem
-        theRoot = self.theTree.theProject.projTree.getRootItem(theItem.itemHandle)
 
-        if theItem is None or theRoot is None:
+        if theItem is None:
             logger.error("Failed to extract information to build tree context menu")
             return False
 
@@ -1038,14 +1037,13 @@ class GuiProjectTreeMenu(QMenu):
         inTrash = theItem.itemParent == trashHandle and trashHandle is not None
         isTrash = theItem.itemHandle == trashHandle and trashHandle is not None
         isFile  = theItem.itemType == nwItemType.FILE
-        isArch  = theRoot.itemClass == nwItemClass.ARCHIVE
         isOrph  = isFile and theItem.itemParent is None
 
         showOpen      = isFile
         showView      = isFile
         showEdit      = not isTrash and not isOrph
         showExport    = isFile
-        showNewFile   = not (isTrash or inTrash or isOrph or isArch)
+        showNewFile   = not (isTrash or inTrash or isOrph)
         showNewFolder = not (isTrash or inTrash or isOrph)
         showDelete    = not isTrash
         showEmpty     = isTrash
