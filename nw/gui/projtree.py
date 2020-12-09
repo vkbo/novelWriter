@@ -1024,7 +1024,8 @@ class GuiProjectTreeMenu(QMenu):
         return
 
     def filterActions(self, theItem):
-        """Update item settings from the nwItem.
+        """Filter the menu entries available based on the properties of
+        the item the menu was activated on.
         """
         self.theItem = theItem
 
