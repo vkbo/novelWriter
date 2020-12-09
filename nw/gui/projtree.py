@@ -286,36 +286,36 @@ class GuiProjectTree(QTreeWidget):
             logger.error("No project open")
             return False
 
-        hasFocus = qApp.focusWidget() == self or not self.mainConf.showGUI
-        if hasFocus and self.theParent.hasProject:
+        if qApp.focusWidget() != self and self.mainConf.showGUI:
+            return False
 
-            tHandle = self.getSelectedHandle()
-            tItem = self._getTreeItem(tHandle)
-            pItem = tItem.parent()
-            if pItem is None:
-                tIndex = self.indexOfTopLevelItem(tItem)
-                nChild = self.topLevelItemCount()
-                nIndex = tIndex + nStep
-                if nIndex < 0 or nIndex >= nChild:
-                    return False
-                cItem = self.takeTopLevelItem(tIndex)
-                self.insertTopLevelItem(nIndex, cItem)
+        tHandle = self.getSelectedHandle()
+        tItem = self._getTreeItem(tHandle)
+        if tItem is None:
+            return False
 
-            else:
-                tIndex = pItem.indexOfChild(tItem)
-                nChild = pItem.childCount()
-                nIndex = tIndex + nStep
-                if nIndex < 0 or nIndex >= nChild:
-                    return False
-                cItem = pItem.takeChild(tIndex)
-                pItem.insertChild(nIndex, cItem)
-
-            self.clearSelection()
-            cItem.setSelected(True)
-            self._setTreeChanged(True)
+        pItem = tItem.parent()
+        if pItem is None:
+            tIndex = self.indexOfTopLevelItem(tItem)
+            nChild = self.topLevelItemCount()
+            nIndex = tIndex + nStep
+            if nIndex < 0 or nIndex >= nChild:
+                return False
+            cItem = self.takeTopLevelItem(tIndex)
+            self.insertTopLevelItem(nIndex, cItem)
 
         else:
-            return False
+            tIndex = pItem.indexOfChild(tItem)
+            nChild = pItem.childCount()
+            nIndex = tIndex + nStep
+            if nIndex < 0 or nIndex >= nChild:
+                return False
+            cItem = pItem.takeChild(tIndex)
+            pItem.insertChild(nIndex, cItem)
+
+        self.clearSelection()
+        cItem.setSelected(True)
+        self._setTreeChanged(True)
 
         return True
 
@@ -431,7 +431,7 @@ class GuiProjectTree(QTreeWidget):
         trItemS = self._getTreeItem(tHandle)
         nwItemS = self.theProject.projTree[tHandle]
 
-        if nwItemS is None:
+        if trItemS is None or nwItemS is None:
             return False
 
         wCount = int(trItemS.data(self.C_COUNT, Qt.UserRole))
@@ -582,18 +582,23 @@ class GuiProjectTree(QTreeWidget):
         properly reported to the function.
         """
         tItem = self._getTreeItem(tHandle)
-        if tItem is not None:
-            tItem.setText(self.C_COUNT, f"{theCount:n}")
-            tItem.setData(self.C_COUNT, Qt.UserRole, int(theCount))
-            pItem = tItem.parent()
-            if pItem is not None:
-                pCount = 0
-                for i in range(pItem.childCount()):
-                    pCount += int(pItem.child(i).data(self.C_COUNT, Qt.UserRole))
-                    pHandle = pItem.data(self.C_NAME, Qt.UserRole)
+        if tItem is None:
+            return
 
-                if not nDepth > nwConst.MAX_DEPTH + 1 and pHandle != "":
-                    self.propagateCount(pHandle, pCount, nDepth+1)
+        tItem.setText(self.C_COUNT, f"{theCount:n}")
+        tItem.setData(self.C_COUNT, Qt.UserRole, int(theCount))
+
+        pItem = tItem.parent()
+        if pItem is None:
+            return
+
+        pCount = 0
+        for i in range(pItem.childCount()):
+            pCount += int(pItem.child(i).data(self.C_COUNT, Qt.UserRole))
+            pHandle = pItem.data(self.C_NAME, Qt.UserRole)
+
+        if not nDepth > nwConst.MAX_DEPTH + 1 and pHandle != "":
+            self.propagateCount(pHandle, pCount, nDepth+1)
 
         return
 
