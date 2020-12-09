@@ -286,36 +286,36 @@ class GuiProjectTree(QTreeWidget):
             logger.error("No project open")
             return False
 
-        hasFocus = qApp.focusWidget() == self or not self.mainConf.showGUI
-        if hasFocus and self.theParent.hasProject:
+        if qApp.focusWidget() != self and self.mainConf.showGUI:
+            return False
 
-            tHandle = self.getSelectedHandle()
-            tItem = self._getTreeItem(tHandle)
-            pItem = tItem.parent()
-            if pItem is None:
-                tIndex = self.indexOfTopLevelItem(tItem)
-                nChild = self.topLevelItemCount()
-                nIndex = tIndex + nStep
-                if nIndex < 0 or nIndex >= nChild:
-                    return False
-                cItem = self.takeTopLevelItem(tIndex)
-                self.insertTopLevelItem(nIndex, cItem)
+        tHandle = self.getSelectedHandle()
+        tItem = self._getTreeItem(tHandle)
+        if tItem is None:
+            return False
 
-            else:
-                tIndex = pItem.indexOfChild(tItem)
-                nChild = pItem.childCount()
-                nIndex = tIndex + nStep
-                if nIndex < 0 or nIndex >= nChild:
-                    return False
-                cItem = pItem.takeChild(tIndex)
-                pItem.insertChild(nIndex, cItem)
-
-            self.clearSelection()
-            cItem.setSelected(True)
-            self._setTreeChanged(True)
+        pItem = tItem.parent()
+        if pItem is None:
+            tIndex = self.indexOfTopLevelItem(tItem)
+            nChild = self.topLevelItemCount()
+            nIndex = tIndex + nStep
+            if nIndex < 0 or nIndex >= nChild:
+                return False
+            cItem = self.takeTopLevelItem(tIndex)
+            self.insertTopLevelItem(nIndex, cItem)
 
         else:
-            return False
+            tIndex = pItem.indexOfChild(tItem)
+            nChild = pItem.childCount()
+            nIndex = tIndex + nStep
+            if nIndex < 0 or nIndex >= nChild:
+                return False
+            cItem = pItem.takeChild(tIndex)
+            pItem.insertChild(nIndex, cItem)
+
+        self.clearSelection()
+        cItem.setSelected(True)
+        self._setTreeChanged(True)
 
         return True
 
