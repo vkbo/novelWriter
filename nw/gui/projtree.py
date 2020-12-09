@@ -431,7 +431,7 @@ class GuiProjectTree(QTreeWidget):
         trItemS = self._getTreeItem(tHandle)
         nwItemS = self.theProject.projTree[tHandle]
 
-        if nwItemS is None:
+        if trItemS is None or nwItemS is None:
             return False
 
         wCount = int(trItemS.data(self.C_COUNT, Qt.UserRole))
@@ -582,18 +582,23 @@ class GuiProjectTree(QTreeWidget):
         properly reported to the function.
         """
         tItem = self._getTreeItem(tHandle)
-        if tItem is not None:
-            tItem.setText(self.C_COUNT, f"{theCount:n}")
-            tItem.setData(self.C_COUNT, Qt.UserRole, int(theCount))
-            pItem = tItem.parent()
-            if pItem is not None:
-                pCount = 0
-                for i in range(pItem.childCount()):
-                    pCount += int(pItem.child(i).data(self.C_COUNT, Qt.UserRole))
-                    pHandle = pItem.data(self.C_NAME, Qt.UserRole)
+        if tItem is None:
+            return
 
-                if not nDepth > nwConst.MAX_DEPTH + 1 and pHandle != "":
-                    self.propagateCount(pHandle, pCount, nDepth+1)
+        tItem.setText(self.C_COUNT, f"{theCount:n}")
+        tItem.setData(self.C_COUNT, Qt.UserRole, int(theCount))
+
+        pItem = tItem.parent()
+        if pItem is None:
+            return
+
+        pCount = 0
+        for i in range(pItem.childCount()):
+            pCount += int(pItem.child(i).data(self.C_COUNT, Qt.UserRole))
+            pHandle = pItem.data(self.C_NAME, Qt.UserRole)
+
+        if not nDepth > nwConst.MAX_DEPTH + 1 and pHandle != "":
+            self.propagateCount(pHandle, pCount, nDepth+1)
 
         return
 
