@@ -59,20 +59,21 @@ Available markers are:
 To filter specific groups of tests, use the `-k` switch.
 The commands for the respective test categories are listed below.
 
-| Type | Test Target        | Source File(s)        | Marker    | Filter                |
-| :--- | :----------------- | :-------------------- | :-------- | :-------------------- |
-| Unit | Main function      | nw/\_\_init\_\_.py    | `-m base` | `-k testBaseInit`     |
-| Unit | Common functions   | nw/common.py          | `-m base` | `-k testBaseCommon`   |
-| Unit | Config class       | nw/config.py          | `-m base` | `-k testBaseConfig`   |
-| Unit | Error handlers     | nw/error.py           | `-m base` | `-k testBaseError`    |
-| Unit | Core functions     | nw/core/tools.py      | `-m core` | `-k testCoreTools`    |
-| Unit | NWDoc class        | nw/core/document.py   | `-m core` | `-k testCoreDocument` |
-| Unit | NWIndex class      | nw/core/index.py      | `-m core` | `-k testCoreIndex`    |
-| Unit | NWItem class       | nw/core/item.py       | `-m core` | `-k testCoreItem`     |
-| Unit | NWProject class    | nw/core/project.py    | `-m core` | `-k testCoreProject`  |
-| Unit | NWSpell* classes   | nw/core/spellcheck.py | `-m core` | `-k testCoreSpell`    |
-| Unit | NWStatus class     | nw/core/status.py     | `-m core` | `-k testCoreStatus`   |
-| Unit | NWTree class       | nw/core/tree.py       | `-m core` | `-k testCoreTree`     |
-| Unit | OptionsState class | nw/core/options.py    | `-m core` | `-k testCoreOptions`  |
-| Unit | ToHtml class       | nw/core/tohtml.py     | `-m core` | `-k testCoreToHtml`   |
-| Unit | Tokenizer class    | nw/core/tokenizer.py  | `-m core` | `-k testCoreToken`    |
+| Type        | Test Target        | Source File(s)         | Marker    | Filter                   |
+| :---------- | :----------------- | :--------------------- | :-------- | :----------------------- |
+| Unit        | Main function      | nw/\_\_init\_\_.py     | `-m base` | `-k testBaseInit`        |
+| Unit        | Common functions   | nw/common.py           | `-m base` | `-k testBaseCommon`      |
+| Unit        | Config class       | nw/config.py           | `-m base` | `-k testBaseConfig`      |
+| Unit        | Error handlers     | nw/error.py            | `-m base` | `-k testBaseError`       |
+| Unit        | Core functions     | nw/core/tools.py       | `-m core` | `-k testCoreTools`       |
+| Unit        | NWDoc class        | nw/core/document.py    | `-m core` | `-k testCoreDocument`    |
+| Unit        | NWIndex class      | nw/core/index.py       | `-m core` | `-k testCoreIndex`       |
+| Unit        | NWItem class       | nw/core/item.py        | `-m core` | `-k testCoreItem`        |
+| Unit        | NWProject class    | nw/core/project.py     | `-m core` | `-k testCoreProject`     |
+| Unit        | NWSpell* classes   | nw/core/spellcheck.py  | `-m core` | `-k testCoreSpell`       |
+| Unit        | NWStatus class     | nw/core/status.py      | `-m core` | `-k testCoreStatus`      |
+| Unit        | NWTree class       | nw/core/tree.py        | `-m core` | `-k testCoreTree`        |
+| Unit        | OptionsState class | nw/core/options.py     | `-m core` | `-k testCoreOptions`     |
+| Unit        | ToHtml class       | nw/core/tohtml.py      | `-m core` | `-k testCoreToHtml`      |
+| Unit        | Tokenizer class    | nw/core/tokenizer.py   | `-m core` | `-k testCoreToken`       |
+| Integration | Writing Stats GUI  | nw/gui/writingstats.py | `-m gui`  | `-k testGuiWritingStats` |

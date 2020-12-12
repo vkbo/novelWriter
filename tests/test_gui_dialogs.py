@@ -4,7 +4,6 @@
 
 import nw
 import pytest
-import json
 import os
 import sys
 
@@ -19,11 +18,10 @@ from PyQt5.QtWidgets import (
 
 from nw.gui import (
     GuiProjectSettings, GuiItemEditor, GuiAbout, GuiBuildNovel,
-    GuiDocMerge, GuiDocSplit, GuiWritingStats, GuiProjectWizard,
-    GuiProjectLoad, GuiPreferences
+    GuiDocMerge, GuiDocSplit, GuiProjectWizard, GuiProjectLoad, GuiPreferences
 )
 from nw.gui.custom import QuotesDialog
-from nw.constants import nwItemLayout, nwItemClass, nwFiles
+from nw.constants import nwItemLayout, nwItemClass
 
 keyDelay = 2
 typeDelay = 1
@@ -215,145 +213,6 @@ def testItemEditor(qtbot, yesToAll, monkeypatch, fncDir, nwTempGUI, refDir, tmpD
     assert cmpFiles(testFile, refFile, [2, 6, 7, 8])
 
     # qtbot.stopForInteraction()
-    nwGUI.closeMain()
-
-@pytest.mark.gui
-def testWritingStatsExport(qtbot, monkeypatch, yesToAll, fncDir, tmpDir):
-    nwGUI = nw.main(["--testmode", "--config=%s" % tmpDir, "--data=%s" % tmpDir])
-    qtbot.addWidget(nwGUI)
-    nwGUI.show()
-    qtbot.waitForWindowShown(nwGUI)
-    qtbot.wait(stepDelay)
-
-    # Create new, save, close project
-    nwGUI.theProject.projTree.setSeed(42)
-    assert nwGUI.newProject({"projPath": fncDir})
-    qtbot.wait(200)
-    assert nwGUI.saveProject()
-    assert nwGUI.closeProject()
-    qtbot.wait(stepDelay)
-
-    sessFile = os.path.join(fncDir, "meta", nwFiles.SESS_STATS)
-    with open(sessFile, mode="w+", encoding="utf-8") as outFile:
-        outFile.write(
-            "# Start Time         End Time                Novel     Notes\n"
-            "2020-01-01 21:00:00  2020-01-01 21:00:05         6         0\n"
-            "2020-01-03 21:00:00  2020-01-03 21:00:15       125         0\n"
-            "2020-01-03 21:30:00  2020-01-03 21:30:15       125         5\n"
-            "2020-01-06 21:00:00  2020-01-06 21:00:10       125         5\n"
-        )
-
-    # Open again, and check the stats
-    assert nwGUI.openProject(fncDir)
-    qtbot.wait(stepDelay)
-
-    nwGUI.mainConf.lastPath = fncDir
-    nwGUI.mainMenu.aWritingStats.activate(QAction.Trigger)
-    qtbot.waitUntil(lambda: getGuiItem("GuiWritingStats") is not None, timeout=1000)
-
-    sessLog = getGuiItem("GuiWritingStats")
-    assert isinstance(sessLog, GuiWritingStats)
-    qtbot.wait(stepDelay)
-
-    monkeypatch.setattr(QFileDialog, "getSaveFileName", lambda *args, **kwargs: ("", ""))
-    assert not sessLog._saveData(sessLog.FMT_CSV)
-
-    monkeypatch.setattr(QFileDialog, "getSaveFileName", lambda ss, tt, pp, options: (pp, ""))
-    assert sessLog._saveData(sessLog.FMT_CSV)
-    qtbot.wait(100)
-    assert sessLog._saveData(sessLog.FMT_JSON)
-    qtbot.wait(100)
-
-    jsonStats = os.path.join(fncDir, "sessionStats.json")
-    with open(jsonStats, mode="r", encoding="utf-8") as inFile:
-        jsonData = json.load(inFile)
-
-    qtbot.wait(stepDelay)
-
-    assert len(jsonData) == 3
-    assert jsonData[1]["length"] >= 14.0
-    assert jsonData[1]["newWords"] == 119
-    assert jsonData[1]["novelWords"] == 125
-    assert jsonData[1]["noteWords"] == 0
-
-    # No Novel Files
-    qtbot.mouseClick(sessLog.incNovel, Qt.LeftButton)
-    qtbot.wait(stepDelay)
-    assert sessLog._saveData(sessLog.FMT_JSON)
-    qtbot.wait(stepDelay)
-
-    jsonStats = os.path.join(fncDir, "sessionStats.json")
-    with open(jsonStats, mode="r", encoding="utf-8") as inFile:
-        jsonData = json.loads(inFile.read())
-
-    assert len(jsonData) == 1
-    assert jsonData[0]["length"] >= 14.0
-    assert jsonData[0]["newWords"] == 5
-    assert jsonData[0]["novelWords"] == 125
-    assert jsonData[0]["noteWords"] == 5
-
-    # No Note Files
-    qtbot.mouseClick(sessLog.incNovel, Qt.LeftButton)
-    qtbot.mouseClick(sessLog.incNotes, Qt.LeftButton)
-    qtbot.wait(stepDelay)
-    assert sessLog._saveData(sessLog.FMT_JSON)
-    qtbot.wait(stepDelay)
-
-    jsonStats = os.path.join(fncDir, "sessionStats.json")
-    with open(jsonStats, mode="r", encoding="utf-8") as inFile:
-        jsonData = json.load(inFile)
-
-    assert len(jsonData) == 2
-    assert jsonData[1]["length"] >= 14.0
-    assert jsonData[1]["newWords"] == 119
-    assert jsonData[1]["novelWords"] == 125
-    assert jsonData[1]["noteWords"] == 0
-
-    # No Negative Entries
-    qtbot.mouseClick(sessLog.incNotes, Qt.LeftButton)
-    qtbot.mouseClick(sessLog.hideNegative, Qt.LeftButton)
-    qtbot.wait(stepDelay)
-    assert sessLog._saveData(sessLog.FMT_JSON)
-    qtbot.wait(stepDelay)
-
-    jsonStats = os.path.join(fncDir, "sessionStats.json")
-    with open(jsonStats, mode="r", encoding="utf-8") as inFile:
-        jsonData = json.load(inFile)
-
-    assert len(jsonData) == 3
-
-    # Un-hide Zero Entries
-    qtbot.mouseClick(sessLog.hideNegative, Qt.LeftButton)
-    qtbot.mouseClick(sessLog.hideZeros, Qt.LeftButton)
-    qtbot.wait(stepDelay)
-    assert sessLog._saveData(sessLog.FMT_JSON)
-    qtbot.wait(stepDelay)
-
-    jsonStats = os.path.join(fncDir, "sessionStats.json")
-    with open(jsonStats, mode="r", encoding="utf-8") as inFile:
-        jsonData = json.load(inFile)
-
-    assert len(jsonData) == 4
-
-    # Group by Day
-    qtbot.mouseClick(sessLog.groupByDay, Qt.LeftButton)
-    qtbot.wait(stepDelay)
-    assert sessLog._saveData(sessLog.FMT_JSON)
-    qtbot.wait(stepDelay)
-
-    jsonStats = os.path.join(fncDir, "sessionStats.json")
-    with open(jsonStats, mode="r", encoding="utf-8") as inFile:
-        jsonData = json.load(inFile)
-
-    # Check against both 1 and 2 as this can be 2 if test was started just before midnight.
-    # A failed test should in any case produce a 4
-    assert len(jsonData) == 3
-
-    # qtbot.stopForInteraction()
-
-    sessLog._doClose()
-    assert nwGUI.closeProject()
-    qtbot.wait(stepDelay)
     nwGUI.closeMain()
 
 @pytest.mark.gui

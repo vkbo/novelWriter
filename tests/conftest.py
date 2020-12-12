@@ -13,6 +13,8 @@ from PyQt5.QtWidgets import QMessageBox
 
 sys.path.insert(1, os.path.abspath(os.path.join(os.path.dirname(__file__), os.path.pardir)))
 
+import nw # noqa: E402
+
 from nw.config import Config # noqa: E402
 
 ##
@@ -55,15 +57,27 @@ def outDir(tmpDir):
 def fncDir(tmpDir):
     """A temporary folder for a single test function.
     """
-    funcDir = os.path.join(tmpDir, "ftemp")
-    if os.path.isdir(funcDir):
-        shutil.rmtree(funcDir)
-    if not os.path.isdir(funcDir):
-        os.mkdir(funcDir)
-    yield funcDir
-    if os.path.isdir(funcDir):
-        shutil.rmtree(funcDir)
+    fncDir = os.path.join(tmpDir, "f_temp")
+    if os.path.isdir(fncDir):
+        shutil.rmtree(fncDir)
+    if not os.path.isdir(fncDir):
+        os.mkdir(fncDir)
+    yield fncDir
+    if os.path.isdir(fncDir):
+        shutil.rmtree(fncDir)
     return
+
+@pytest.fixture(scope="function")
+def fncProj(fncDir):
+    """A temporary folder for a single test function,
+    with a project folder.
+    """
+    prjDir = os.path.join(fncDir, "project")
+    if os.path.isdir(prjDir):
+        shutil.rmtree(prjDir)
+    if not os.path.isdir(prjDir):
+        os.mkdir(prjDir)
+    return prjDir
 
 ##
 #  novelWriter Objects
@@ -88,6 +102,26 @@ def dummyGUI(tmpConf):
     theDummy = DummyMain()
     theDummy.mainConf = tmpConf
     return theDummy
+
+@pytest.fixture(scope="function")
+def nwGUI(qtbot, fncDir):
+    """Create an instance of the novelWriter GUI.
+    """
+    nwGUI = nw.main(["--testmode", "--config=%s" % fncDir, "--data=%s" % fncDir])
+    qtbot.addWidget(nwGUI)
+    nwGUI.show()
+    qtbot.waitForWindowShown(nwGUI)
+    qtbot.wait(20)
+
+    nwGUI.mainConf.lastPath = fncDir
+
+    yield nwGUI
+
+    qtbot.wait(20)
+    nwGUI.closeMain()
+    qtbot.wait(20)
+
+    return
 
 ##
 #  Temp Project Folders
