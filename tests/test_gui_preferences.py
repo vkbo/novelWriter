@@ -209,6 +209,7 @@ def testGuiPreferences_Main(qtbot, monkeypatch, fncDir, outDir, refDir):
 
     # Save and Check Config
     qtbot.mouseClick(nwPrefs.buttonBox.button(QDialogButtonBox.Ok), Qt.LeftButton)
+    nwPrefs._doClose()
 
     assert theConf.confChanged
     theConf.lastPath = ""

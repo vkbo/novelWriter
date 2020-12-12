@@ -806,14 +806,6 @@ class GuiConfigEditEditingTab(QWidget):
     #  Internal Functions
     ##
 
-    def _disableComboItem(self, theList, theValue):
-        """Disable a list item in the combo box.
-        """
-        theModel = theList.model()
-        anItem = theModel.item(1)
-        anItem.setFlags(anItem.flags() ^ Qt.ItemIsEnabled)
-        return theModel
-
     def _doUpdateSpellTool(self, currIdx):
         """Update the list of dictionaries based on spell tool selected.
         """

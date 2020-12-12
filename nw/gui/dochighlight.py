@@ -102,10 +102,9 @@ class GuiDocHighlighter(QSyntaxHighlighter):
         self.colTrail  = QColor(*self.theTheme.colEmph)
         self.colTrail.setAlpha(64)
 
+        self.colEmph = None
         if self.mainConf.highlightEmph:
             self.colEmph = QColor(*self.theTheme.colEmph)
-        else:
-            self.colEmph = None
 
         self.hStyles = {
             "header1"    : self._makeFormat(self.colHead, "bold", 1.8),

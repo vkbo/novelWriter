@@ -230,7 +230,7 @@ def testGuiEditor_Main(qtbot, monkeypatch, nwGUI, fncDir, fncProj, refDir, outDi
 
     for c in (
         "This is another paragraph of much longer dummy text. "
-        "It is in fact very very dumb dummy text! "
+        "It is in fact 1 very very DUMB dummy text! "
     ):
         qtbot.keyClick(nwGUI.docEditor, c, delay=typeDelay)
     for c in "We can also try replacing \"quotes\", even single 'quotes' are replaced. ":
