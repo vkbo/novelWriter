@@ -27,12 +27,12 @@
 
 import logging
 import configparser
+import shutil
 import json
 import sys
 import os
 
 from time import time
-from shutil import which
 
 from PyQt5.Qt import PYQT_VERSION_STR
 from PyQt5.QtCore import QT_VERSION_STR, QStandardPaths, QSysInfo
@@ -44,10 +44,11 @@ logger = logging.getLogger(__name__)
 
 class Config:
 
-    CNF_STR  = 0
-    CNF_INT  = 1
-    CNF_BOOL = 2
-    CNF_LIST = 3
+    CNF_STR   = 0
+    CNF_INT   = 1
+    CNF_BOOL  = 2
+    CNF_S_LST = 3
+    CNF_I_LST = 4
 
     def __init__(self):
 
@@ -91,6 +92,7 @@ class Config:
         self.guiFont     = ""    # Defaults to system default font
         self.guiFontSize = 11
         self.guiScale    = 1.0   # Set automatically by Theme class
+        self.lastNotes   = ""    # The latest release notes that have been shown
 
         ## Sizes
         self.winGeometry  = [1200, 650]
@@ -210,12 +212,8 @@ class Config:
             self.osUnknown = True
 
         # Other System Info
-        if self.verQtValue >= 50600:
-            self.hostName  = QSysInfo.machineHostName()
-            self.kernelVer = QSysInfo.kernelVersion()
-        else:
-            self.hostName  = "Unknown"
-            self.kernelVer = "Unknown"
+        self.hostName  = "Unknown"
+        self.kernelVer = "Unknown"
 
         # Packages
         self.hasEnchant   = False # The pyenchant package
@@ -320,6 +318,11 @@ class Config:
                     self.errData.append(str(e))
                     self.dataPath = None
 
+        # Host and Kernel
+        if self.verQtValue >= 50600:
+            self.hostName  = QSysInfo.machineHostName()
+            self.kernelVer = QSysInfo.kernelVersion()
+
         # Load recent projects cache
         self.loadRecentCache()
 
@@ -380,29 +383,32 @@ class Config:
         self.guiFontSize = self._parseLine(
             cnfParse, cnfSec, "guifontsize", self.CNF_INT, self.guiFontSize
         )
+        self.lastNotes = self._parseLine(
+            cnfParse, cnfSec, "lastnotes", self.CNF_STR, self.lastNotes
+        )
 
         ## Sizes
         cnfSec = "Sizes"
         self.winGeometry = self._parseLine(
-            cnfParse, cnfSec, "geometry", self.CNF_LIST, self.winGeometry
+            cnfParse, cnfSec, "geometry", self.CNF_I_LST, self.winGeometry
         )
         self.treeColWidth = self._parseLine(
-            cnfParse, cnfSec, "treecols", self.CNF_LIST, self.treeColWidth
+            cnfParse, cnfSec, "treecols", self.CNF_I_LST, self.treeColWidth
         )
         self.projColWidth = self._parseLine(
-            cnfParse, cnfSec, "projcols", self.CNF_LIST, self.projColWidth
+            cnfParse, cnfSec, "projcols", self.CNF_I_LST, self.projColWidth
         )
         self.mainPanePos = self._parseLine(
-            cnfParse, cnfSec, "mainpane", self.CNF_LIST, self.mainPanePos
+            cnfParse, cnfSec, "mainpane", self.CNF_I_LST, self.mainPanePos
         )
         self.docPanePos = self._parseLine(
-            cnfParse, cnfSec, "docpane", self.CNF_LIST, self.docPanePos
+            cnfParse, cnfSec, "docpane", self.CNF_I_LST, self.docPanePos
         )
         self.viewPanePos = self._parseLine(
-            cnfParse, cnfSec, "viewpane", self.CNF_LIST, self.viewPanePos
+            cnfParse, cnfSec, "viewpane", self.CNF_I_LST, self.viewPanePos
         )
         self.outlnPanePos = self._parseLine(
-            cnfParse, cnfSec, "outlinepane", self.CNF_LIST, self.outlnPanePos
+            cnfParse, cnfSec, "outlinepane", self.CNF_I_LST, self.outlnPanePos
         )
         self.isFullScreen = self._parseLine(
             cnfParse, cnfSec, "fullscreen", self.CNF_BOOL, self.isFullScreen
@@ -480,10 +486,10 @@ class Config:
             cnfParse, cnfSec, "autoscrollpos", self.CNF_INT, self.autoScrollPos
         )
         self.fmtSingleQuotes = self._parseLine(
-            cnfParse, cnfSec, "fmtsinglequote", self.CNF_LIST, self.fmtSingleQuotes
+            cnfParse, cnfSec, "fmtsinglequote", self.CNF_S_LST, self.fmtSingleQuotes
         )
         self.fmtDoubleQuotes = self._parseLine(
-            cnfParse, cnfSec, "fmtdoublequote", self.CNF_LIST, self.fmtDoubleQuotes
+            cnfParse, cnfSec, "fmtdoublequote", self.CNF_S_LST, self.fmtDoubleQuotes
         )
         self.spellTool = self._parseLine(
             cnfParse, cnfSec, "spelltool", self.CNF_STR, self.spellTool
@@ -584,6 +590,7 @@ class Config:
         cnfParse.set(cnfSec, "guidark",     str(self.guiDark))
         cnfParse.set(cnfSec, "guifont",     str(self.guiFont))
         cnfParse.set(cnfSec, "guifontsize", str(self.guiFontSize))
+        cnfParse.set(cnfSec, "lastnotes",   str(self.lastNotes))
 
         ## Sizes
         cnfSec = "Sizes"
@@ -896,22 +903,27 @@ class Config:
     #  Internal Functions
     ##
 
-    def _unpackList(self, inStr, listLen, listDefault, castTo=int):
-        """Unpack a comma separated string of items into a list.
-        """
-        inData = inStr.split(",")
-        outData = []
-        for i in range(listLen):
-            try:
-                outData.append(castTo(inData[i]))
-            except Exception:
-                outData.append(listDefault[i])
-        return outData
-
     def _packList(self, inData):
-        """Pack a list of items into a comma separated string.
+        """Pack a list of items into a comma-separated string.
         """
         return ", ".join([str(inVal) for inVal in inData])
+
+    def _unpackList(self, inStr, listDefault, cnfType):
+        """Unpack a comma-separated string of items into a list.
+        """
+        inData = inStr.split(",")
+        outData = listDefault.copy()
+        for i in range(min(len(inData), len(listDefault))):
+            try:
+                if cnfType == self.CNF_S_LST:
+                    outData[i] = inData[i].strip()
+                elif cnfType == self.CNF_I_LST:
+                    outData[i] = int(inData[i].strip())
+                else:
+                    continue
+            except Exception:
+                continue
+        return outData
 
     def _parseLine(self, cnfParse, cnfSec, cnfName, cnfType, cnfDefault):
         """Parse a line and return the correct datatype.
@@ -925,18 +937,24 @@ class Config:
                         return cnfParse.getint(cnfSec, cnfName)
                     elif cnfType == self.CNF_BOOL:
                         return cnfParse.getboolean(cnfSec, cnfName)
-                    elif cnfType == self.CNF_LIST:
+                    elif cnfType == self.CNF_I_LST:
                         return self._unpackList(
-                            cnfParse.get(cnfSec, cnfName), len(cnfDefault), cnfDefault
+                            cnfParse.get(cnfSec, cnfName), cnfDefault, self.CNF_I_LST
+                        )
+                    elif cnfType == self.CNF_S_LST:
+                        return self._unpackList(
+                            cnfParse.get(cnfSec, cnfName), cnfDefault, self.CNF_S_LST
                         )
                 except ValueError as e:
                     logger.error("Failed to load value from config file.")
                     logger.error(str(e))
+                    return cnfDefault
 
         return cnfDefault
 
     def _checkNone(self, checkVal):
-        """Convert a string to a none type.
+        """Return a NoneType if the value correspomds to None, otherwise
+        return the value unchanged.
         """
         if checkVal is None:
             return None
@@ -956,10 +974,8 @@ class Config:
             self.hasEnchant = False
             logger.debug("Checking package 'pyenchant': Missing")
 
-        try:
-            self.hasAssistant = which("assistant")
-        except Exception:
-            self.hasAssistant = False
+        assistPath = shutil.which("assistant")
+        self.hasAssistant = assistPath is not None
         if self.hasAssistant:
             logger.debug("Checking executable 'assistant': Ok")
         else:

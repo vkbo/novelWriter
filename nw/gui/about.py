@@ -32,8 +32,9 @@ import os
 from datetime import datetime
 
 from PyQt5.QtCore import Qt
+from PyQt5.QtGui import QCursor
 from PyQt5.QtWidgets import (
-    QDialog, QHBoxLayout, QVBoxLayout, QDialogButtonBox, QTabWidget,
+    qApp, QDialog, QHBoxLayout, QVBoxLayout, QDialogButtonBox, QTabWidget,
     QTextBrowser, QLabel
 )
 
@@ -80,6 +81,10 @@ class GuiAbout(QDialog):
         self.pageAbout.setOpenExternalLinks(True)
         self.pageAbout.document().setDocumentMargin(self.mainConf.pxInt(16))
 
+        self.pageNotes = QTextBrowser()
+        self.pageNotes.setOpenExternalLinks(True)
+        self.pageNotes.document().setDocumentMargin(self.mainConf.pxInt(16))
+
         self.pageLicense = QTextBrowser()
         self.pageLicense.setOpenExternalLinks(True)
         self.pageLicense.document().setDocumentMargin(self.mainConf.pxInt(16))
@@ -87,6 +92,7 @@ class GuiAbout(QDialog):
         # Main Tab Area
         self.tabBox = QTabWidget()
         self.tabBox.addTab(self.pageAbout, "About")
+        self.tabBox.addTab(self.pageNotes, "Release")
         self.tabBox.addTab(self.pageLicense, "License")
         self.innerBox.addWidget(self.tabBox)
 
@@ -98,12 +104,25 @@ class GuiAbout(QDialog):
         self.outerBox.addWidget(self.buttonBox)
         self.setLayout(self.outerBox)
 
-        self._setStyleSheet()
-        self._fillAboutPage()
-        self._fillLicensePage()
-
         logger.debug("GuiAbout initialisation complete")
 
+        return
+
+    def populateGUI(self):
+        """Populate tabs with text.
+        """
+        qApp.setOverrideCursor(QCursor(Qt.WaitCursor))
+        self._setStyleSheet()
+        self._fillAboutPage()
+        self._fillNotesPage()
+        self._fillLicensePage()
+        qApp.restoreOverrideCursor()
+        return
+
+    def showReleaseNotes(self):
+        """Show the release notes.
+        """
+        self.tabBox.setCurrentWidget(self.pageNotes)
         return
 
     ##
@@ -121,14 +140,14 @@ class GuiAbout(QDialog):
             "<p>novelWriter is a markdown-like text editor designed for "
             "organising and writing novels. It is written in Python 3 with a "
             "Qt5 GUI, using PyQt5.</p>"
-            "<p>novelWriter is free software: you can redistribute it and/or "
+            "<p>novelWriter is free software: you can redistribute it and "
             "modify it under the terms of the GNU General Public License as "
             "published by the Free Software Foundation, either version 3 of "
             "the License, or (at your option) any later version.</p>"
             "<p>novelWriter is distributed in the hope that it will be useful, "
             "but WITHOUT ANY WARRANTY; without even the implied warranty of "
             "MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.</p>"
-            "<p>See the License tab for the full text, or visit  the GNU website "
+            "<p>See the License tab for the full license text, or visit the GNU website "
             "at <a href='https://www.gnu.org/licenses/gpl-3.0.html'>GPL v3.0</a> "
             "for more details.</p>"
             "<h3>Credits</h3>"
@@ -192,11 +211,22 @@ class GuiAbout(QDialog):
 
         return
 
+    def _fillNotesPage(self):
+        """Load the content for the Release Notes page.
+        """
+        docPath = os.path.join(self.mainConf.assetPath, "text", "release_notes.htm")
+        if os.path.isfile(docPath):
+            with open(docPath, mode="r", encoding="utf8") as inFile:
+                helpText = inFile.read()
+            self.pageNotes.setHtml(helpText)
+        else:
+            self.pageNotes.setHtml("Error loading release notes text ...")
+        return
+
     def _fillLicensePage(self):
         """Load the content for the License page.
         """
-        docName = "gplv3_%s.htm" % self.mainConf.guiLang
-        docPath = os.path.join(self.mainConf.assetPath, "text", docName)
+        docPath = os.path.join(self.mainConf.assetPath, "text", "gplv3_en.htm")
         if os.path.isfile(docPath):
             with open(docPath, mode="r", encoding="utf8") as inFile:
                 helpText = inFile.read()
@@ -221,6 +251,7 @@ class GuiAbout(QDialog):
             hColB = self.theParent.theTheme.colHead[2],
         )
         self.pageAbout.document().setDefaultStyleSheet(styleSheet)
+        self.pageNotes.document().setDefaultStyleSheet(styleSheet)
         self.pageLicense.document().setDefaultStyleSheet(styleSheet)
 
         return

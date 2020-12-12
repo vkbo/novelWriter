@@ -7,7 +7,7 @@ import pytest
 from nw.core.tools import countWords, numberToRoman, numberToWord
 
 @pytest.mark.core
-def testCountWords():
+def testCoreTools_CountWords():
     """Test the word counter and the exclusion filers.
     """
     testText = (
@@ -26,15 +26,46 @@ def testCountWords():
         "\n"
         "\n"
         "The third paragraph.\n"
+        "\n"
+        "Dashes\u2013and even longer\u2014dashes."
     )
     cC, wC, pC = countWords(testText)
 
-    assert cC == 108
-    assert wC == 17
-    assert pC == 3
+    assert cC == 138
+    assert wC == 22
+    assert pC == 4
+
+# END Test testCoreTools_CountWords
 
 @pytest.mark.core
-def testNumberWords():
+def testCoreTools_RomanNumbers():
+    """Test conversion of integers to Roman numbers.
+    """
+    assert numberToRoman(None, False) == "NAN"
+    assert numberToRoman(0, False) == "OOR"
+    assert numberToRoman(1, False) == "I"
+    assert numberToRoman(2, False) == "II"
+    assert numberToRoman(3, False) == "III"
+    assert numberToRoman(4, False) == "IV"
+    assert numberToRoman(5, False) == "V"
+    assert numberToRoman(6, False) == "VI"
+    assert numberToRoman(7, False) == "VII"
+    assert numberToRoman(8, False) == "VIII"
+    assert numberToRoman(9, False) == "IX"
+    assert numberToRoman(10, False) == "X"
+    assert numberToRoman(14, False) == "XIV"
+    assert numberToRoman(42, False) == "XLII"
+    assert numberToRoman(99, False) == "XCIX"
+    assert numberToRoman(142, False) == "CXLII"
+    assert numberToRoman(542, False) == "DXLII"
+    assert numberToRoman(999, False) == "CMXCIX"
+    assert numberToRoman(2010, False) == "MMX"
+    assert numberToRoman(999, True) == "cmxcix"
+
+# END Test testCoreTools_RomanNumbers
+
+@pytest.mark.core
+def testCoreTools_NumberWords():
     """Test the conversion of integer to English words.
     """
     assert numberToWord(0, "en") == "Zero"
@@ -70,27 +101,9 @@ def testNumberWords():
     assert numberToWord(2, "foo") == "Two"
     assert numberToWord(3, "foo") == "Three"
 
-@pytest.mark.core
-def testRomanNumbers():
-    """Test conversion of integers to Roman numbers.
-    """
-    assert numberToRoman(None, False) == "NAN"
-    assert numberToRoman(0, False) == "OOR"
-    assert numberToRoman(1, False) == "I"
-    assert numberToRoman(2, False) == "II"
-    assert numberToRoman(3, False) == "III"
-    assert numberToRoman(4, False) == "IV"
-    assert numberToRoman(5, False) == "V"
-    assert numberToRoman(6, False) == "VI"
-    assert numberToRoman(7, False) == "VII"
-    assert numberToRoman(8, False) == "VIII"
-    assert numberToRoman(9, False) == "IX"
-    assert numberToRoman(10, False) == "X"
-    assert numberToRoman(14, False) == "XIV"
-    assert numberToRoman(42, False) == "XLII"
-    assert numberToRoman(99, False) == "XCIX"
-    assert numberToRoman(142, False) == "CXLII"
-    assert numberToRoman(542, False) == "DXLII"
-    assert numberToRoman(999, False) == "CMXCIX"
-    assert numberToRoman(2010, False) == "MMX"
-    assert numberToRoman(999, True) == "cmxcix"
+    # Test out of range values
+    assert numberToWord(12345, "en") == "[Out of Range]"
+    assert numberToWord(-2345, "en") == "[Negative]"
+    assert numberToWord("234", "en") == "[NaN]"
+
+# END Test testCoreTools_NumberWords

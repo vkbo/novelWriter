@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-"""novelWriter Common Class Tester
+"""novelWriter Common Functions Tester
 """
 
 import time
@@ -9,10 +9,12 @@ from nw.common import (
     checkString, checkBool, checkInt, colRange, formatInt, transferCase,
     fuzzyTime, checkHandle, formatTimeStamp, formatTime
 )
-from nwtools import cmpList
+from tools import cmpList
 
-@pytest.mark.core
-def testCheckString():
+@pytest.mark.base
+def testBaseCommon_CheckString():
+    """Test the checkString function.
+    """
     assert checkString(None, "NotNone", True) is None
     assert checkString("None", "NotNone", True) is None
     assert checkString("None", "NotNone", False) == "None"
@@ -21,8 +23,12 @@ def testCheckString():
     assert checkString(1.0, "NotNone", False) == "NotNone"
     assert checkString(True, "NotNone", False) == "NotNone"
 
-@pytest.mark.core
-def testCheckInt():
+# END Test testBaseCommon_CheckString
+
+@pytest.mark.base
+def testBaseCommon_CheckInt():
+    """Test the checkInt function.
+    """
     assert checkInt(None, 3, True) is None
     assert checkInt("None", 3, True) is None
     assert checkInt(None, 3, False) == 3
@@ -30,8 +36,12 @@ def testCheckInt():
     assert checkInt(1.0, 3, False) == 1
     assert checkInt(True, 3, False) == 1
 
-@pytest.mark.core
-def testCheckBool():
+# END Test testBaseCommon_CheckInt
+
+@pytest.mark.base
+def testBaseCommon_CheckBool():
+    """Test the checkBool function.
+    """
     assert checkBool(None, 3, True) is None
     assert checkBool("None", 3, True) is None
     assert checkBool("True", False, False)
@@ -44,8 +54,12 @@ def testCheckBool():
     assert checkBool(1.0, None, False) is None
     assert checkBool(2.0, None, False) is None
 
-@pytest.mark.core
-def testCheckHandle():
+# END Test testBaseCommon_CheckBool
+
+@pytest.mark.base
+def testBaseCommon_CheckHandle():
+    """Test the checkHandle function.
+    """
     assert checkHandle("None", 1, True) is None
     assert checkHandle("None", 1, False) == 1
     assert checkHandle(None, 1, True) is None
@@ -53,8 +67,12 @@ def testCheckHandle():
     assert checkHandle("47666c91c7ccf", None, False) == "47666c91c7ccf"
     assert checkHandle("h7666c91c7ccf", None, False) is None
 
-@pytest.mark.core
-def testColRange():
+# END Test testBaseCommon_CheckHandle
+
+@pytest.mark.base
+def testBaseCommon_ColRange():
+    """Test the colRange function.
+    """
     assert colRange([0, 0], [0, 0], 0) is None
     assert cmpList(
         colRange([200, 50, 0], [50, 200, 0], 1),
@@ -77,14 +95,22 @@ def testColRange():
         [[200, 50, 0], [162, 87, 0], [124, 124, 0], [86, 161, 0], [50, 200, 0]]
     )
 
-@pytest.mark.core
-def testFormatTimeStamp():
+# END Test testBaseCommon_ColRange
+
+@pytest.mark.base
+def testBaseCommon_FormatTimeStamp():
+    """Test the formatTimeStamp function.
+    """
     tTime = time.mktime(time.gmtime(0))
     assert formatTimeStamp(tTime, False) == "1970-01-01 00:00:00"
     assert formatTimeStamp(tTime, True) == "1970-01-01 00.00.00"
 
-@pytest.mark.core
-def testFormatTime():
+# END Test testBaseCommon_FormatTimeStamp
+
+@pytest.mark.base
+def testBaseCommon_FormatTime():
+    """Test the formatTime function.
+    """
     assert formatTime("1") == "ERROR"
     assert formatTime(1.0) == "ERROR"
     assert formatTime(1) == "00:00:01"
@@ -101,8 +127,12 @@ def testFormatTime():
     assert formatTime(86400) == "1-00:00:00"
     assert formatTime(360000) == "4-04:00:00"
 
-@pytest.mark.core
-def testFormatInt():
+# END Test testBaseCommon_FormatTime
+
+@pytest.mark.base
+def testBaseCommon_FormatInt():
+    """Test the formatInt function.
+    """
     assert formatInt(1000) == "1000"
     assert formatInt(1234) == "1.23\u2009k"
     assert formatInt(12345) == "12.3\u2009k"
@@ -112,8 +142,12 @@ def testFormatInt():
     assert formatInt(123456789) == "123\u2009M"
     assert formatInt(1234567890) == "1.23\u2009G"
 
-@pytest.mark.core
-def testTransferCase():
+# END Test testBaseCommon_FormatInt
+
+@pytest.mark.base
+def testBaseCommon_TransferCase():
+    """Test the transferCase function.
+    """
     assert transferCase(1, "TaRgEt") == "TaRgEt"
     assert transferCase("source", 1) == 1
     assert transferCase("", "TaRgEt") == "TaRgEt"
@@ -122,8 +156,12 @@ def testTransferCase():
     assert transferCase("SOURCE", "target") == "TARGET"
     assert transferCase("source", "TARGET") == "target"
 
-@pytest.mark.core
-def testFuzzyTime():
+# END Test testBaseCommon_TransferCase
+
+@pytest.mark.base
+def testBaseCommon_FuzzyTime():
+    """Test the fuzzyTime function.
+    """
     assert fuzzyTime(-1) == "in the future"
     assert fuzzyTime(0) == "just now"
     assert fuzzyTime(29) == "just now"
@@ -152,3 +190,5 @@ def testFuzzyTime():
     assert fuzzyTime(29808000) == "a year ago"
     assert fuzzyTime(47336399) == "a year ago"
     assert fuzzyTime(47336400) == "2 years ago"
+
+# END Test testBaseCommon_FuzzyTime

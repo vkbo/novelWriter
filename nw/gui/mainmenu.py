@@ -598,8 +598,8 @@ class GuiMainMenu(QMenuBar):
         # Insert > Separator
         self.insertMenu.addSeparator()
 
-        # Insert > Keywords and Tags
-        self.mInsKeywords = self.insertMenu.addMenu("Keywords and Tags")
+        # Insert > Tags and References
+        self.mInsKeywords = self.insertMenu.addMenu("Tags and References")
         self.mInsKWItems = {}
         self.mInsKWItems[nwKeyWords.TAG_KEY]    = (QAction(self.mInsKeywords), "Ctrl+K, G")
         self.mInsKWItems[nwKeyWords.POV_KEY]    = (QAction(self.mInsKeywords), "Ctrl+K, V")
@@ -908,7 +908,7 @@ class GuiMainMenu(QMenuBar):
             self.helpMenu.addAction(self.aHelpLoc)
 
         self.aHelpWeb = QAction("Documentation (Online)", self)
-        self.aHelpWeb.setStatusTip("View online documentation")
+        self.aHelpWeb.setStatusTip("View online documentation at %s" % nw.__docurl__)
         self.aHelpWeb.triggered.connect(lambda: self._openWebsite(nw.__docurl__))
         if self.mainConf.hasHelp and self.mainConf.hasAssistant:
             self.aHelpWeb.setShortcut("Shift+F1")
@@ -916,17 +916,32 @@ class GuiMainMenu(QMenuBar):
             self.aHelpWeb.setShortcuts(["F1", "Shift+F1"])
         self.helpMenu.addAction(self.aHelpWeb)
 
-        # Document > Go to Website
-        self.aWebsite = QAction("Open the novelWriter Website", self)
-        self.aWebsite.setStatusTip("View the main website")
-        self.aWebsite.triggered.connect(lambda: self._openWebsite(nw.__url__))
-        self.helpMenu.addAction(self.aWebsite)
+        # Help > Separator
+        self.helpMenu.addSeparator()
 
-        # Document > Report Issue
-        self.aIssue = QAction("Report an Issue", self)
-        self.aIssue.setStatusTip("Report a bug or issue on GitHub")
+        # Document > Report an Issue
+        self.aIssue = QAction("Report an Issue (GitHub)", self)
+        self.aIssue.setStatusTip("Report a bug or issue on GitHub at %s" % nw.__issuesurl__)
         self.aIssue.triggered.connect(lambda: self._openWebsite(nw.__issuesurl__))
         self.helpMenu.addAction(self.aIssue)
+
+        # Document > Ask a Question
+        self.aQuestion = QAction("Ask a Question (GitHub)", self)
+        self.aQuestion.setStatusTip("Ask a question on GitHub at %s" % nw.__helpurl__)
+        self.aQuestion.triggered.connect(lambda: self._openWebsite(nw.__helpurl__))
+        self.helpMenu.addAction(self.aQuestion)
+
+        # Document > Latest Release
+        self.aRelease = QAction("Latest Release (GitHub)", self)
+        self.aRelease.setStatusTip("Open the Releases page on GitHub at %s" % nw.__releaseurl__)
+        self.aRelease.triggered.connect(lambda: self._openWebsite(nw.__releaseurl__))
+        self.helpMenu.addAction(self.aRelease)
+
+        # Document > Main Website
+        self.aWebsite = QAction("The novelWriter Website", self)
+        self.aWebsite.setStatusTip("Open the novelWriter website at %s" % nw.__url__)
+        self.aWebsite.triggered.connect(lambda: self._openWebsite(nw.__url__))
+        self.helpMenu.addAction(self.aWebsite)
 
         return
 

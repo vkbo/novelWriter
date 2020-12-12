@@ -79,6 +79,7 @@ class NWStatus():
         theStatus = checkInt(theStatus, 0, False)
         if theStatus >= 0 and theStatus < self._theLength:
             return self._theLabels[theStatus]
+        return self._theLabels[0]
 
     def setNewEntries(self, newList):
         """Update the list of entries after they have been modified by
@@ -108,7 +109,8 @@ class NWStatus():
         return
 
     def countEntry(self, theLabel):
-        """Lookup the usage count of a given entry.
+        """Increment the counter for a given label. This should be used
+        together with resetCounts in a loop over project items.
         """
         theIndex = self.lookupEntry(theLabel)
         if theIndex is not None:
@@ -136,18 +138,9 @@ class NWStatus():
 
         for xChild in xParent:
             theLabels.append(xChild.text)
-            if "red" in xChild.attrib:
-                cR = checkInt(xChild.attrib["red"], 0, False)
-            else:
-                cR = 0
-            if "green" in xChild.attrib:
-                cG = checkInt(xChild.attrib["green"], 0, False)
-            else:
-                cG = 0
-            if "blue" in xChild.attrib:
-                cB = checkInt(xChild.attrib["blue"], 0, False)
-            else:
-                cB = 0
+            cR = checkInt(xChild.attrib.get("red", 0), 0, False)
+            cG = checkInt(xChild.attrib.get("green", 0), 0, False)
+            cB = checkInt(xChild.attrib.get("blue", 0), 0, False)
             theColours.append((cR, cG, cB))
 
         if len(theLabels) > 0:

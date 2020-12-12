@@ -262,10 +262,10 @@ class GuiDocEditor(QTextEdit):
         # If we have a document open, we should reload it in case the
         # font changed, otherwise we just clear the editor entirely,
         # which makes it read only.
-        if self.theHandle is not None:
-            self.redrawText()
-        else:
+        if self.theHandle is None:
             self.clearEditor()
+        else:
+            self.redrawText()
 
         return True
 
@@ -355,6 +355,7 @@ class GuiDocEditor(QTextEdit):
         """Redraw the text by marking the document content as "dirty".
         """
         self.qDocument.markContentsDirty(0, self.qDocument.characterCount())
+        self.updateDocMargins()
         return
 
     def replaceText(self, theText):

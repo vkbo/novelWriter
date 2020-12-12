@@ -141,6 +141,15 @@ def _numberToWordEN(numVal):
     tenWord = ""
     hunWord = ""
 
+    if not isinstance(numVal, int):
+        return "[NaN]"
+
+    if numVal < 0:
+        return "[Negative]"
+
+    if numVal > 999:
+        return "[Out of Range]"
+
     if numVal == 0:
         return "Zero"
 
@@ -166,19 +175,20 @@ def _numberToWordEN(numVal):
         5: "Five", 6: "Six", 7: "Seven", 8: "Eight", 9: "Nine",
     }
 
+    retVale = ""
     hunWord = theHundreds.get(hunVal, "")
     if tenVal == 10:
         oneWord = theTeens.get(oneVal, "")
-        return f"{hunWord} {oneWord}".strip()
+        retVale = f"{hunWord} {oneWord}".strip()
     else:
         oneWord = theOnes.get(oneVal, "")
         if tenVal == 0:
-            return f"{hunWord} {oneWord}".strip()
+            retVale = f"{hunWord} {oneWord}".strip()
         else:
             tenWord = theTens.get(tenVal, "")
             if oneVal == 0:
-                return f"{hunWord} {tenWord}".strip()
+                retVale = f"{hunWord} {tenWord}".strip()
             else:
-                return f"{hunWord} {tenWord}-{oneWord}".strip()
+                retVale = f"{hunWord} {tenWord}-{oneWord}".strip()
 
-    return ""
+    return retVale

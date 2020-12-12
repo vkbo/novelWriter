@@ -149,7 +149,7 @@ class GuiDocViewer(QTextBrowser):
 
         # If we have a document open, we should reload it in case the font changed
         if self.theHandle is not None:
-            self.redrawText()
+            self.reloadText()
 
         return True
 
@@ -169,7 +169,7 @@ class GuiDocViewer(QTextBrowser):
 
         sPos = self.verticalScrollBar().value()
         aDoc = ToHtml(self.theProject, self.theParent)
-        aDoc.setPreview(True, self.mainConf.viewComments, self.mainConf.viewSynopsis)
+        aDoc.setPreview(self.mainConf.viewComments, self.mainConf.viewSynopsis)
         aDoc.setLinkHeaders(True)
 
         # Be extra careful here to prevent crashes when first opening a
@@ -233,6 +233,7 @@ class GuiDocViewer(QTextBrowser):
         """Redraw the text by marking the document content as "dirty".
         """
         self.qDocument.markContentsDirty(0, self.qDocument.characterCount())
+        self.updateDocMargins()
         return
 
     def loadFromTag(self, theTag):

@@ -58,20 +58,21 @@ from nw.config import Config
 #
 
 __package__    = "nw"
+__copyright__  = "Copyright 2018–2020, Veronica Berglyd Olsen"
 __license__    = "GPLv3"
 __author__     = "Veronica Berglyd Olsen"
 __maintainer__ = "Veronica Berglyd Olsen"
-__copyright__  = "Copyright 2018–2020, Veronica Berglyd Olsen"
 __email__      = "code@vkbo.net"
 __version__    = "1.0rc2"
 __hexversion__ = "0x010000c2"
-__date__       = "2020-11-29"
+__date__       = "2020-12-13"
 __status__     = "Beta"
-__isstable__   = False
+__domain__     = "novelwriter.io"
 __url__        = "https://novelwriter.io"
 __sourceurl__  = "https://github.com/vkbo/novelWriter"
 __issuesurl__  = "https://github.com/vkbo/novelWriter/issues"
-__domain__     = "novelwriter.io"
+__helpurl__    = "https://github.com/vkbo/novelWriter/discussions"
+__releaseurl__ = "https://github.com/vkbo/novelWriter/releases/latest"
 __docurl__     = "https://novelwriter.readthedocs.io"
 __credits__    = [
     "Veronica Berglyd Olsen (developer)",
@@ -246,19 +247,20 @@ def main(sysArgs=None):
         errorCode |= 32
 
     if errorData:
-        if not testMode:
-            errApp = QApplication([])
-            errMsg = QErrorMessage()
-            errMsg.resize(500, 300)
-            errMsg.showMessage((
-                "<h3>A critical error has been encountered</h3>"
-                "<p>novelWriter cannot start due to the following issues:<p>"
-                "<p>&nbsp;-&nbsp;%s</p>"
-                "<p>Shutting down ...</p>"
-            ) % (
-                "<br>&nbsp;-&nbsp;".join(errorData)
-            ))
-            errApp.exec_()
+        errApp = QApplication([])
+        errMsg = QErrorMessage()
+        errMsg.resize(500, 300)
+        errMsg.showMessage((
+            "<h3>A critical error has been encountered</h3>"
+            "<p>novelWriter cannot start due to the following issues:<p>"
+            "<p>&nbsp;-&nbsp;%s</p>"
+            "<p>Shutting down ...</p>"
+        ) % (
+            "<br>&nbsp;-&nbsp;".join(errorData)
+        ))
+        for errMsg in errorData:
+            logger.critical(errMsg)
+        errApp.exec_()
         sys.exit(errorCode)
 
     # Finish initialising config
@@ -293,4 +295,4 @@ def main(sysArgs=None):
         nwGUI = GuiMain()
         sys.exit(nwApp.exec_())
 
-    return
+# END Function main

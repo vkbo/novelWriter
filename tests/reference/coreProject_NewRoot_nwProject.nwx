@@ -1,11 +1,9 @@
 <?xml version='1.0' encoding='utf-8'?>
-<novelWriterXML appVersion="1.0b3" hexVersion="0x010000b3" fileVersion="1.2" timeStamp="2020-09-29 21:12:51">
+<novelWriterXML appVersion="1.0b1" hexVersion="0x010000b1" fileVersion="1.2" timeStamp="2020-09-05 17:31:43">
   <project>
-    <name>Test Custom</name>
-    <title>Test Novel</title>
-    <author>Jane Doe</author>
-    <author>John Doh</author>
-    <saveCount>1</saveCount>
+    <name>New Project</name>
+    <title></title>
+    <saveCount>2</saveCount>
     <autoCount>1</autoCount>
     <editTime>0</editTime>
   </project>
@@ -40,57 +38,36 @@
       <entry blue="0" green="200" red="50">Main</entry>
     </importance>
   </settings>
-  <content count="14">
-    <item handle="73475cb40a568" order="None" parent="None">
+  <content count="12">
+    <item handle="73475cb40a568" order="0" parent="None">
       <name>Novel</name>
       <type>ROOT</type>
       <class>NOVEL</class>
       <status>New</status>
       <expanded>False</expanded>
     </item>
-    <item handle="44cb730c42048" order="None" parent="None">
+    <item handle="44cb730c42048" order="0" parent="None">
       <name>Plot</name>
       <type>ROOT</type>
       <class>PLOT</class>
       <status>New</status>
       <expanded>False</expanded>
     </item>
-    <item handle="71ee45a3c0db9" order="None" parent="None">
+    <item handle="71ee45a3c0db9" order="0" parent="None">
       <name>Characters</name>
       <type>ROOT</type>
       <class>CHARACTER</class>
       <status>New</status>
       <expanded>False</expanded>
     </item>
-    <item handle="811786ad1ae74" order="None" parent="None">
-      <name>Locations</name>
+    <item handle="811786ad1ae74" order="0" parent="None">
+      <name>World</name>
       <type>ROOT</type>
       <class>WORLD</class>
       <status>New</status>
       <expanded>False</expanded>
     </item>
-    <item handle="25fc0e7096fc6" order="None" parent="None">
-      <name>Timeline</name>
-      <type>ROOT</type>
-      <class>TIMELINE</class>
-      <status>New</status>
-      <expanded>False</expanded>
-    </item>
-    <item handle="31489056e0916" order="None" parent="None">
-      <name>Objects</name>
-      <type>ROOT</type>
-      <class>OBJECT</class>
-      <status>New</status>
-      <expanded>False</expanded>
-    </item>
-    <item handle="98010bd9270f9" order="None" parent="None">
-      <name>Entity</name>
-      <type>ROOT</type>
-      <class>ENTITY</class>
-      <status>New</status>
-      <expanded>False</expanded>
-    </item>
-    <item handle="0e17daca5f3e1" order="None" parent="73475cb40a568">
+    <item handle="25fc0e7096fc6" order="0" parent="73475cb40a568">
       <name>Title Page</name>
       <type>FILE</type>
       <class>NOVEL</class>
@@ -102,8 +79,27 @@
       <paraCount>0</paraCount>
       <cursorPos>0</cursorPos>
     </item>
-    <item handle="1a6562590ef19" order="None" parent="73475cb40a568">
-      <name>Scene 1</name>
+    <item handle="31489056e0916" order="0" parent="73475cb40a568">
+      <name>New Chapter</name>
+      <type>FOLDER</type>
+      <class>NOVEL</class>
+      <status>New</status>
+      <expanded>False</expanded>
+    </item>
+    <item handle="98010bd9270f9" order="0" parent="31489056e0916">
+      <name>New Chapter</name>
+      <type>FILE</type>
+      <class>NOVEL</class>
+      <status>New</status>
+      <exported>True</exported>
+      <layout>CHAPTER</layout>
+      <charCount>0</charCount>
+      <wordCount>0</wordCount>
+      <paraCount>0</paraCount>
+      <cursorPos>0</cursorPos>
+    </item>
+    <item handle="0e17daca5f3e1" order="0" parent="31489056e0916">
+      <name>New Scene</name>
       <type>FILE</type>
       <class>NOVEL</class>
       <status>New</status>
@@ -114,65 +110,33 @@
       <paraCount>0</paraCount>
       <cursorPos>0</cursorPos>
     </item>
-    <item handle="031b4af5197ec" order="None" parent="73475cb40a568">
-      <name>Scene 2</name>
-      <type>FILE</type>
-      <class>NOVEL</class>
+    <item handle="1a6562590ef19" order="0" parent="None">
+      <name>Timeline</name>
+      <type>ROOT</type>
+      <class>TIMELINE</class>
       <status>New</status>
-      <exported>True</exported>
-      <layout>SCENE</layout>
-      <charCount>0</charCount>
-      <wordCount>0</wordCount>
-      <paraCount>0</paraCount>
-      <cursorPos>0</cursorPos>
+      <expanded>False</expanded>
     </item>
-    <item handle="41cfc0d1f2d12" order="None" parent="73475cb40a568">
-      <name>Scene 3</name>
-      <type>FILE</type>
-      <class>NOVEL</class>
+    <item handle="031b4af5197ec" order="0" parent="None">
+      <name>Object</name>
+      <type>ROOT</type>
+      <class>OBJECT</class>
       <status>New</status>
-      <exported>True</exported>
-      <layout>SCENE</layout>
-      <charCount>0</charCount>
-      <wordCount>0</wordCount>
-      <paraCount>0</paraCount>
-      <cursorPos>0</cursorPos>
+      <expanded>False</expanded>
     </item>
-    <item handle="2858dcd1057d3" order="None" parent="73475cb40a568">
-      <name>Scene 4</name>
-      <type>FILE</type>
-      <class>NOVEL</class>
+    <item handle="41cfc0d1f2d12" order="0" parent="None">
+      <name>Custom1</name>
+      <type>ROOT</type>
+      <class>CUSTOM</class>
       <status>New</status>
-      <exported>True</exported>
-      <layout>SCENE</layout>
-      <charCount>0</charCount>
-      <wordCount>0</wordCount>
-      <paraCount>0</paraCount>
-      <cursorPos>0</cursorPos>
+      <expanded>False</expanded>
     </item>
-    <item handle="2fca346db6561" order="None" parent="73475cb40a568">
-      <name>Scene 5</name>
-      <type>FILE</type>
-      <class>NOVEL</class>
+    <item handle="2858dcd1057d3" order="0" parent="None">
+      <name>Custom2</name>
+      <type>ROOT</type>
+      <class>CUSTOM</class>
       <status>New</status>
-      <exported>True</exported>
-      <layout>SCENE</layout>
-      <charCount>0</charCount>
-      <wordCount>0</wordCount>
-      <paraCount>0</paraCount>
-      <cursorPos>0</cursorPos>
-    </item>
-    <item handle="02d20bbd7e394" order="None" parent="73475cb40a568">
-      <name>Scene 6</name>
-      <type>FILE</type>
-      <class>NOVEL</class>
-      <status>New</status>
-      <exported>True</exported>
-      <layout>SCENE</layout>
-      <charCount>0</charCount>
-      <wordCount>0</wordCount>
-      <paraCount>0</paraCount>
-      <cursorPos>0</cursorPos>
+      <expanded>False</expanded>
     </item>
   </content>
 </novelWriterXML>

@@ -4,12 +4,10 @@
 
 import nw
 import pytest
-import logging
 import os
-import sys
 
 from shutil import copyfile
-from nwtools import cmpFiles
+from tools import cmpFiles
 
 from PyQt5.QtCore import Qt, QUrl, QPoint, QItemSelectionModel
 from PyQt5.QtGui import QTextCursor, QColor, QPixmap, QIcon, QTextBlock
@@ -27,85 +25,9 @@ typeDelay = 1
 stepDelay = 20
 
 @pytest.mark.gui
-def testLaunch(qtbot, monkeypatch, nwFuncTemp, nwTemp):
+def testDocEditor(qtbot, yesToAll, fncDir, nwTempGUI, refDir, tmpDir):
 
-    # Defaults
-    nwGUI = nw.main(
-        ["--testmode", "--config=%s" % nwFuncTemp, "--data=%s" % nwTemp, "--style=Fusion"]
-    )
-    assert nw.logger.getEffectiveLevel() == logging.WARNING
-    nwGUI.closeMain()
-    nwGUI.close()
-
-    # Log Levels
-    nwGUI = nw.main(
-        ["--testmode", "--info", "--config=%s" % nwFuncTemp, "--data=%s" % nwTemp]
-    )
-    assert nw.logger.getEffectiveLevel() == logging.INFO
-    nwGUI.closeMain()
-    nwGUI.close()
-
-    nwGUI = nw.main(
-        ["--testmode", "--debug", "--config=%s" % nwFuncTemp, "--data=%s" % nwTemp]
-    )
-    assert nw.logger.getEffectiveLevel() == logging.DEBUG
-    nwGUI.closeMain()
-    nwGUI.close()
-
-    nwGUI = nw.main(
-        ["--testmode", "--verbose", "--config=%s" % nwFuncTemp, "--data=%s" % nwTemp]
-    )
-    assert nw.logger.getEffectiveLevel() == 5
-    nwGUI.closeMain()
-    nwGUI.close()
-
-    # Help and Version
-    with pytest.raises(SystemExit) as ex:
-        nwGUI = nw.main(
-            ["--testmode", "--help", "--config=%s" % nwFuncTemp, "--data=%s" % nwTemp]
-        )
-    nwGUI.closeMain()
-    nwGUI.close()
-    assert ex.value.code == 0
-
-    with pytest.raises(SystemExit) as ex:
-        nwGUI = nw.main(
-            ["--testmode", "--version", "--config=%s" % nwFuncTemp, "--data=%s" % nwTemp]
-        )
-    nwGUI.closeMain()
-    nwGUI.close()
-    assert ex.value.code == 0
-
-    # Invalid options
-    with pytest.raises(SystemExit) as ex:
-        nwGUI = nw.main(
-            ["--testmode", "--invalid", "--config=%s" % nwFuncTemp, "--data=%s" % nwTemp]
-        )
-    nwGUI.closeMain()
-    nwGUI.close()
-    assert ex.value.code == 2
-
-    # Simulate import error
-    monkeypatch.setitem(sys.modules, "lxml", None)
-    monkeypatch.setattr("sys.hexversion", 0x0)
-    monkeypatch.setattr("nw.CONFIG.verQtValue", 50000)
-    monkeypatch.setattr("nw.CONFIG.verPyQtValue", 50000)
-    with pytest.raises(SystemExit) as ex:
-        nwGUI = nw.main(
-            ["--testmode", "--config=%s" % nwFuncTemp, "--data=%s" % nwTemp]
-        )
-    nwGUI.closeMain()
-    nwGUI.close()
-    assert ex.value.code & 4 == 4   # Python version not satisfied
-    assert ex.value.code & 8 == 8   # Qt version not satisfied
-    assert ex.value.code & 16 == 16 # PyQt version not satisfied
-    assert ex.value.code & 32 == 32 # lxml package missing
-    monkeypatch.undo()
-
-@pytest.mark.gui
-def testDocEditor(qtbot, yesToAll, nwFuncTemp, nwTempGUI, nwRef, nwTemp):
-
-    nwGUI = nw.main(["--testmode", "--config=%s" % nwTemp, "--data=%s" % nwTemp])
+    nwGUI = nw.main(["--testmode", "--config=%s" % tmpDir, "--data=%s" % tmpDir])
     qtbot.addWidget(nwGUI)
     nwGUI.show()
     qtbot.waitForWindowShown(nwGUI)
@@ -113,7 +35,7 @@ def testDocEditor(qtbot, yesToAll, nwFuncTemp, nwTempGUI, nwRef, nwTemp):
 
     # Create new, save, close project
     nwGUI.theProject.projTree.setSeed(42)
-    assert nwGUI.newProject({"projPath": nwFuncTemp})
+    assert nwGUI.newProject({"projPath": fncDir})
     assert nwGUI.saveProject()
     assert nwGUI.closeProject()
 
@@ -130,9 +52,9 @@ def testDocEditor(qtbot, yesToAll, nwFuncTemp, nwTempGUI, nwRef, nwTemp):
     assert not nwGUI.theProject.spellCheck
 
     # Check the files
-    projFile = os.path.join(nwFuncTemp, "nwProject.nwx")
+    projFile = os.path.join(fncDir, "nwProject.nwx")
     testFile = os.path.join(nwTempGUI, "0_nwProject.nwx")
-    refFile  = os.path.join(nwRef, "gui", "0_nwProject.nwx")
+    refFile  = os.path.join(refDir, "gui", "0_nwProject.nwx")
     copyfile(projFile, testFile)
     assert cmpFiles(testFile, refFile, [2, 6, 7, 8])
     qtbot.wait(stepDelay)
@@ -140,7 +62,7 @@ def testDocEditor(qtbot, yesToAll, nwFuncTemp, nwTempGUI, nwRef, nwTemp):
     # qtbot.stopForInteraction()
 
     # Re-open project
-    assert nwGUI.openProject(nwFuncTemp)
+    assert nwGUI.openProject(fncDir)
     qtbot.wait(stepDelay)
 
     # Check that we loaded the data
@@ -148,8 +70,8 @@ def testDocEditor(qtbot, yesToAll, nwFuncTemp, nwTempGUI, nwRef, nwTemp):
     assert len(nwGUI.theProject.projTree._treeOrder) == 8
     assert len(nwGUI.theProject.projTree._treeRoots) == 4
     assert nwGUI.theProject.projTree.trashRoot() is None
-    assert nwGUI.theProject.projPath == nwFuncTemp
-    assert nwGUI.theProject.projMeta == os.path.join(nwFuncTemp, "meta")
+    assert nwGUI.theProject.projPath == fncDir
+    assert nwGUI.theProject.projMeta == os.path.join(fncDir, "meta")
     assert nwGUI.theProject.projFile == "nwProject.nwx"
     assert nwGUI.theProject.projName == "New Project"
     assert nwGUI.theProject.bookTitle == ""
@@ -379,33 +301,33 @@ def testDocEditor(qtbot, yesToAll, nwFuncTemp, nwTempGUI, nwRef, nwTemp):
     assert nwGUI.saveProject()
 
     # Check the files
-    projFile = os.path.join(nwFuncTemp, "nwProject.nwx")
+    projFile = os.path.join(fncDir, "nwProject.nwx")
     testFile = os.path.join(nwTempGUI, "1_nwProject.nwx")
-    refFile  = os.path.join(nwRef, "gui", "1_nwProject.nwx")
+    refFile  = os.path.join(refDir, "gui", "1_nwProject.nwx")
     copyfile(projFile, testFile)
     assert cmpFiles(testFile, refFile, [2, 6, 7, 8])
 
-    projFile = os.path.join(nwFuncTemp, "content", "031b4af5197ec.nwd")
+    projFile = os.path.join(fncDir, "content", "031b4af5197ec.nwd")
     testFile = os.path.join(nwTempGUI, "1_031b4af5197ec.nwd")
-    refFile  = os.path.join(nwRef, "gui", "1_031b4af5197ec.nwd")
+    refFile  = os.path.join(refDir, "gui", "1_031b4af5197ec.nwd")
     copyfile(projFile, testFile)
     assert cmpFiles(testFile, refFile)
 
-    projFile = os.path.join(nwFuncTemp, "content", "1a6562590ef19.nwd")
+    projFile = os.path.join(fncDir, "content", "1a6562590ef19.nwd")
     testFile = os.path.join(nwTempGUI, "1_1a6562590ef19.nwd")
-    refFile  = os.path.join(nwRef, "gui", "1_1a6562590ef19.nwd")
+    refFile  = os.path.join(refDir, "gui", "1_1a6562590ef19.nwd")
     copyfile(projFile, testFile)
     assert cmpFiles(testFile, refFile)
 
-    projFile = os.path.join(nwFuncTemp, "content", "0e17daca5f3e1.nwd")
+    projFile = os.path.join(fncDir, "content", "0e17daca5f3e1.nwd")
     testFile = os.path.join(nwTempGUI, "1_0e17daca5f3e1.nwd")
-    refFile  = os.path.join(nwRef, "gui", "1_0e17daca5f3e1.nwd")
+    refFile  = os.path.join(refDir, "gui", "1_0e17daca5f3e1.nwd")
     copyfile(projFile, testFile)
     assert cmpFiles(testFile, refFile)
 
-    projFile = os.path.join(nwFuncTemp, "content", "41cfc0d1f2d12.nwd")
+    projFile = os.path.join(fncDir, "content", "41cfc0d1f2d12.nwd")
     testFile = os.path.join(nwTempGUI, "1_41cfc0d1f2d12.nwd")
-    refFile  = os.path.join(nwRef, "gui", "1_41cfc0d1f2d12.nwd")
+    refFile  = os.path.join(refDir, "gui", "1_41cfc0d1f2d12.nwd")
     copyfile(projFile, testFile)
     assert cmpFiles(testFile, refFile)
 
@@ -414,9 +336,9 @@ def testDocEditor(qtbot, yesToAll, nwFuncTemp, nwTempGUI, nwRef, nwTemp):
     nwGUI.close()
 
 @pytest.mark.gui
-def testDocViewer(qtbot, yesToAll, nwLipsum, nwTemp):
+def testDocViewer(qtbot, yesToAll, nwLipsum, tmpDir):
 
-    nwGUI = nw.main(["--testmode", "--config=%s" % nwLipsum, "--data=%s" % nwTemp])
+    nwGUI = nw.main(["--testmode", "--config=%s" % nwLipsum, "--data=%s" % tmpDir])
     qtbot.addWidget(nwGUI)
     nwGUI.show()
     qtbot.waitForWindowShown(nwGUI)
@@ -566,9 +488,9 @@ def testDocViewer(qtbot, yesToAll, nwLipsum, nwTemp):
     nwGUI.close()
 
 @pytest.mark.gui
-def testProjectTree(qtbot, yesToAll, nwMinimal, nwTemp):
+def testProjectTree(qtbot, yesToAll, nwMinimal, tmpDir):
 
-    nwGUI = nw.main(["--testmode", "--config=%s" % nwMinimal, "--data=%s" % nwTemp, nwMinimal])
+    nwGUI = nw.main(["--testmode", "--config=%s" % nwMinimal, "--data=%s" % tmpDir, nwMinimal])
     qtbot.addWidget(nwGUI)
     nwGUI.show()
     qtbot.waitForWindowShown(nwGUI)
@@ -690,9 +612,9 @@ def testProjectTree(qtbot, yesToAll, nwMinimal, nwTemp):
     nwGUI.close()
 
 @pytest.mark.gui
-def testEditFormatMenu(qtbot, yesToAll, nwLipsum, nwTemp):
+def testEditFormatMenu(qtbot, yesToAll, nwLipsum, tmpDir):
 
-    nwGUI = nw.main(["--testmode", "--config=%s" % nwLipsum, "--data=%s" % nwTemp])
+    nwGUI = nw.main(["--testmode", "--config=%s" % nwLipsum, "--data=%s" % tmpDir])
     qtbot.addWidget(nwGUI)
     nwGUI.show()
     qtbot.waitForWindowShown(nwGUI)
@@ -927,9 +849,9 @@ def testEditFormatMenu(qtbot, yesToAll, nwLipsum, nwTemp):
     nwGUI.close()
 
 @pytest.mark.gui
-def testContextMenu(qtbot, yesToAll, nwLipsum, nwTemp):
+def testContextMenu(qtbot, yesToAll, nwLipsum, tmpDir):
 
-    nwGUI = nw.main(["--testmode", "--config=%s" % nwLipsum, "--data=%s" % nwTemp])
+    nwGUI = nw.main(["--testmode", "--config=%s" % nwLipsum, "--data=%s" % tmpDir])
     qtbot.addWidget(nwGUI)
     nwGUI.show()
     qtbot.waitForWindowShown(nwGUI)
@@ -1013,15 +935,15 @@ def testContextMenu(qtbot, yesToAll, nwLipsum, nwTemp):
     nwGUI.close()
 
 @pytest.mark.gui
-def testInsertMenu(qtbot, monkeypatch, nwFuncTemp, nwTemp):
-    nwGUI = nw.main(["--testmode", "--config=%s" % nwTemp, "--data=%s" % nwTemp])
+def testInsertMenu(qtbot, monkeypatch, fncDir, tmpDir):
+    nwGUI = nw.main(["--testmode", "--config=%s" % tmpDir, "--data=%s" % tmpDir])
     qtbot.addWidget(nwGUI)
     nwGUI.show()
     qtbot.waitForWindowShown(nwGUI)
     qtbot.wait(stepDelay)
 
     nwGUI.theProject.projTree.setSeed(42)
-    assert nwGUI.newProject({"projPath": nwFuncTemp})
+    assert nwGUI.newProject({"projPath": fncDir})
 
     assert nwGUI.treeView._getTreeItem("0e17daca5f3e1") is not None
 
@@ -1162,7 +1084,7 @@ def testInsertMenu(qtbot, monkeypatch, nwFuncTemp, nwTemp):
     assert not nwGUI.importDocument()
 
     # Then a valid path, but bot a file that exists
-    theFile = os.path.join(nwTemp, "import.txt")
+    theFile = os.path.join(tmpDir, "import.txt")
     monkeypatch.setattr(QFileDialog, "getOpenFileName", lambda *args, **kwards: (theFile, ""))
     assert not nwGUI.importDocument()
 
@@ -1205,16 +1127,16 @@ def testInsertMenu(qtbot, monkeypatch, nwFuncTemp, nwTemp):
     assert len(theBits) == 3
     assert theBits[0] == "File details for the currently open file"
     assert theBits[1] == "Handle: 0e17daca5f3e1"
-    assert theBits[2] == "Location: %s" % os.path.join(nwFuncTemp, "content", "0e17daca5f3e1.nwd")
+    assert theBits[2] == "Location: %s" % os.path.join(fncDir, "content", "0e17daca5f3e1.nwd")
 
     # qtbot.stopForInteraction()
     nwGUI.closeMain()
     nwGUI.close()
 
 @pytest.mark.gui
-def testTextSearch(qtbot, monkeypatch, yesToAll, nwLipsum, nwTemp):
+def testTextSearch(qtbot, monkeypatch, yesToAll, nwLipsum, tmpDir):
 
-    nwGUI = nw.main(["--testmode", "--config=%s" % nwLipsum, "--data=%s" % nwTemp])
+    nwGUI = nw.main(["--testmode", "--config=%s" % nwLipsum, "--data=%s" % tmpDir])
     qtbot.addWidget(nwGUI)
     nwGUI.show()
     qtbot.waitForWindowShown(nwGUI)
@@ -1392,9 +1314,9 @@ def testTextSearch(qtbot, monkeypatch, yesToAll, nwLipsum, nwTemp):
     nwGUI.close()
 
 @pytest.mark.gui
-def testOutline(qtbot, yesToAll, nwLipsum, nwTemp):
+def testOutline(qtbot, yesToAll, nwLipsum, tmpDir):
 
-    nwGUI = nw.main(["--testmode", "--config=%s" % nwLipsum, "--data=%s" % nwTemp])
+    nwGUI = nw.main(["--testmode", "--config=%s" % nwLipsum, "--data=%s" % tmpDir])
     qtbot.addWidget(nwGUI)
     nwGUI.show()
     qtbot.waitForWindowShown(nwGUI)
@@ -1453,9 +1375,9 @@ def testOutline(qtbot, yesToAll, nwLipsum, nwTemp):
     nwGUI.close()
 
 @pytest.mark.gui
-def testThemes(qtbot, yesToAll, nwMinimal, nwTemp):
+def testThemes(qtbot, yesToAll, nwMinimal, tmpDir):
 
-    nwGUI = nw.main(["--testmode", "--config=%s" % nwMinimal, "--data=%s" % nwTemp, nwMinimal])
+    nwGUI = nw.main(["--testmode", "--config=%s" % nwMinimal, "--data=%s" % tmpDir, nwMinimal])
     qtbot.addWidget(nwGUI)
     nwGUI.show()
     qtbot.waitForWindowShown(nwGUI)
@@ -1478,7 +1400,7 @@ def testThemes(qtbot, yesToAll, nwMinimal, nwTemp):
 
     # Re-open
     assert nw.CONFIG.confPath == nwMinimal
-    nwGUI = nw.main(["--testmode", "--config=%s" % nwMinimal, "--data=%s" % nwTemp, nwMinimal])
+    nwGUI = nw.main(["--testmode", "--config=%s" % nwMinimal, "--data=%s" % tmpDir, nwMinimal])
     assert nwGUI.mainConf.confPath == nwMinimal
     qtbot.addWidget(nwGUI)
     nwGUI.show()
