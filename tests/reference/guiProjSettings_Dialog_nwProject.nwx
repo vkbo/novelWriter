@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='utf-8'?>
-<novelWriterXML appVersion="1.0b1" hexVersion="0x010000b1" fileVersion="1.2" timeStamp="2020-09-05 17:31:40">
+<novelWriterXML appVersion="1.0rc1" hexVersion="0x010000c1" fileVersion="1.2" timeStamp="2020-12-12 15:22:16">
   <project>
     <name>Project Name</name>
     <title>Project Title</title>
@@ -12,7 +12,7 @@
   <settings>
     <doBackup>True</doBackup>
     <spellCheck>False</spellCheck>
-    <spellLang>None</spellLang>
+    <spellLang>en</spellLang>
     <autoOutline>True</autoOutline>
     <lastEdited>None</lastEdited>
     <lastViewed>None</lastViewed>
@@ -20,6 +20,8 @@
     <novelWordCount>6</novelWordCount>
     <notesWordCount>0</notesWordCount>
     <autoReplace>
+      <entry key="A">B</entry>
+      <entry key="C">D</entry>
       <entry key="This">With This Stuff </entry>
     </autoReplace>
     <titleFormat>
@@ -33,13 +35,13 @@
       <entry blue="100" green="100" red="100">New</entry>
       <entry blue="0" green="50" red="200">Note</entry>
       <entry blue="0" green="200" red="50">Finished</entry>
-      <entry blue="0" green="0" red="0">Final</entry>
+      <entry blue="40" green="30" red="20">Final</entry>
     </status>
     <importance>
       <entry blue="100" green="100" red="100">New</entry>
       <entry blue="0" green="50" red="200">Minor</entry>
       <entry blue="0" green="150" red="200">Major</entry>
-      <entry blue="0" green="200" red="50">Main</entry>
+      <entry blue="0" green="0" red="0">Final</entry>
     </importance>
   </settings>
   <content count="8">

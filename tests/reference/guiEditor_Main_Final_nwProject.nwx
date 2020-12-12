@@ -14,8 +14,8 @@
     <autoOutline>True</autoOutline>
     <lastEdited>0e17daca5f3e1</lastEdited>
     <lastViewed>None</lastViewed>
-    <lastWordCount>113</lastWordCount>
-    <novelWordCount>86</novelWordCount>
+    <lastWordCount>114</lastWordCount>
+    <novelWordCount>87</novelWordCount>
     <notesWordCount>27</notesWordCount>
     <autoReplace/>
     <titleFormat>
@@ -84,10 +84,10 @@
       <status>New</status>
       <exported>True</exported>
       <layout>SCENE</layout>
-      <charCount>464</charCount>
-      <wordCount>82</wordCount>
+      <charCount>466</charCount>
+      <wordCount>83</wordCount>
       <paraCount>4</paraCount>
-      <cursorPos>602</cursorPos>
+      <cursorPos>604</cursorPos>
     </item>
     <item handle="44cb730c42048" order="1" parent="None">
       <name>Plot</name>
