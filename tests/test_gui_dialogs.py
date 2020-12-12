@@ -13,12 +13,12 @@ from tools import cmpFiles, getGuiItem
 from PyQt5.QtCore import Qt, QItemSelectionModel
 from PyQt5.QtWidgets import (
     QDialogButtonBox, QTreeWidgetItem, QListWidgetItem, QDialog, QAction,
-    QMessageBox, QFileDialog, QFontDialog
+    QFileDialog, QFontDialog
 )
 
 from nw.gui import (
-    GuiItemEditor, GuiAbout, GuiBuildNovel, GuiDocMerge, GuiDocSplit,
-    GuiProjectWizard, GuiProjectLoad, GuiPreferences
+    GuiItemEditor, GuiBuildNovel, GuiDocMerge, GuiDocSplit, GuiProjectWizard,
+    GuiProjectLoad, GuiPreferences
 )
 from nw.gui.custom import QuotesDialog
 from nw.constants import nwItemLayout, nwItemClass
@@ -98,46 +98,6 @@ def testItemEditor(qtbot, yesToAll, monkeypatch, fncDir, nwTempGUI, refDir, tmpD
     assert cmpFiles(testFile, refFile, [2, 6, 7, 8])
 
     # qtbot.stopForInteraction()
-    nwGUI.closeMain()
-
-@pytest.mark.gui
-def testAboutBox(qtbot, monkeypatch, fncDir, tmpDir):
-    nwGUI = nw.main(["--testmode", "--config=%s" % fncDir, "--data=%s" % tmpDir])
-    qtbot.addWidget(nwGUI)
-    nwGUI.show()
-    qtbot.waitForWindowShown(nwGUI)
-    qtbot.wait(stepDelay)
-
-    # NW About
-    monkeypatch.setattr(GuiAbout, "exec_", lambda *args: None)
-    nwGUI.mainMenu.aAboutNW.activate(QAction.Trigger)
-    qtbot.waitUntil(lambda: getGuiItem("GuiAbout") is not None, timeout=1000)
-
-    msgAbout = getGuiItem("GuiAbout")
-    assert isinstance(msgAbout, GuiAbout)
-    msgAbout.show()
-
-    assert msgAbout.pageAbout.document().characterCount() > 100
-    assert msgAbout.pageNotes.document().characterCount() > 100
-    assert msgAbout.pageLicense.document().characterCount() > 100
-
-    msgAbout.mainConf.assetPath = "whatever"
-
-    msgAbout._fillNotesPage()
-    assert msgAbout.pageNotes.toPlainText() == "Error loading release notes text ..."
-
-    msgAbout._fillLicensePage()
-    assert msgAbout.pageLicense.toPlainText() == "Error loading license text ..."
-
-    msgAbout.showReleaseNotes()
-    assert msgAbout.tabBox.currentWidget() == msgAbout.pageNotes
-
-    # Qt About
-    monkeypatch.setattr(QMessageBox, "aboutQt", lambda *args, **kwargs: None)
-    nwGUI.mainMenu.aAboutQt.activate(QAction.Trigger)
-
-    # qtbot.stopForInteraction()
-    msgAbout._doClose()
     nwGUI.closeMain()
 
 @pytest.mark.gui
