@@ -1,15 +1,31 @@
 # novelWriter Change Log
 
-## Version 1.0 Release Candidate 2 [2020-11-29]
+## Version 1.0 Release Candidate 2 [2020-12-13]
 
 **Bugfixes**
 
 * The headers and footers of the document editor and viewer would be clipped on high DPI monitors. This was due to the QWidget holding these did not automatically scale in the layout. The proper height of these are now calculated and enforced instead of relying on automated scaling. Issue #499, PR #502.
 * Fixed a few inconsistencies in scaling of toggle switches, the form layouts, and the margins of the Item Editor when viewing on a high DPI screen. PR #502.
+* Switching syntax theme live would not update all colours in the editor and viewer. This has now been fixed. PR #516.
+* Using the Tools menu to move items up or down in the project tree, without selecting an item to move, would cause a crash. The move actions are now quietly rejected if no item is selected. Issue #521, PR #522.
 
 **User Interface**
 
 * Added all the possible keywords for tags and references to the Insert menu. Since the list was growing long, the Insert menu entries have been split up into four sub menus according to the previous grouping. Issue #501, PR #503.
+* A "Release Notes" tab has been added to the "About novelWriter" dialog where the latest release notes can be displayed. PR #508.
+* Menu entries that will open the "Releases" and "Discussions" pages on the novelWriter GitHub repo has been added to the Help menu. PRs #509, #511 and #520.
+* The help text of many of the Preferences options have been clarified and rewritten. PR #516.
+* Added two greyscale syntax themes. These will match with the greyscale icon themes to produce a GUI without colours. PR #516.
+
+**Other Changes**
+
+* The Windows installer now properly sets up the mime type for novelWriter, meaning novelWriter project files can be opened from the Explorer directly into novelWriter. PR #511.
+* It is now possible to create new files in the Outtakes root folder from the context menu. Issue #517, PR #519.
+
+**Test Suite**
+
+* The tests for the core classes of novelWriter have been completely rewritten. Every class or source file of the core functionality (everything handling the actual project data and documents, as well as the meta data) is now covered by its own testmodule with a 100% coverage for each module. PR #512.
+* Likewise, the base tests have been rewritten to cover the `Config` class, the `main` function that launches the app, and the error handling class. The structure matches the core tests from #512. PR #514.
 
 
 ## Version 1.0 Release Candidate 1 [2020-11-16]
