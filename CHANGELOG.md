@@ -26,6 +26,7 @@
 
 * The tests for the core classes of novelWriter have been completely rewritten. Every class or source file of the core functionality (everything handling the actual project data and documents, as well as the meta data) is now covered by its own testmodule with a 100% coverage for each module. PR #512.
 * Likewise, the base tests have been rewritten to cover the `Config` class, the `main` function that launches the app, and the error handling class. The structure matches the core tests from #512. PR #514.
+* The GUI tests have been reorganised to match the new test structure, and somewhat improved, but some parts still need additional coverage. PR #527.
 
 
 ## Version 1.0 Release Candidate 1 [2020-11-16]
