@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-"""novelWriter Dialog Class Tester
+"""novelWriter Writing Stats Dialog Class Tester
 """
 
 import pytest
@@ -20,10 +20,10 @@ typeDelay = 1
 stepDelay = 20
 
 @pytest.mark.gui
-def testGuiWritingStats_All(qtbot, monkeypatch, nwGUI, fncDir, fncProj):
+def testGuiWritingStats_Dialog(qtbot, monkeypatch, nwGUI, fncDir, fncProj):
     """Test the full writing stats tool.
     """
-    # Block questions dialog
+    # Block message box
     monkeypatch.setattr(QMessageBox, "question", lambda *args: QMessageBox.Yes)
     monkeypatch.setattr(QMessageBox, "information", lambda *args: QMessageBox.Yes)
     monkeypatch.setattr(QMessageBox, "warning", lambda *args: QMessageBox.Yes)
@@ -213,4 +213,4 @@ def testGuiWritingStats_All(qtbot, monkeypatch, nwGUI, fncDir, fncProj):
 
     monkeypatch.undo()
 
-# END Test testGuiWritingStats_All
+# END Test testGuiWritingStats_Dialog

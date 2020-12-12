@@ -17,8 +17,8 @@ from PyQt5.QtWidgets import (
 )
 
 from nw.gui import (
-    GuiProjectSettings, GuiItemEditor, GuiAbout, GuiBuildNovel,
-    GuiDocMerge, GuiDocSplit, GuiProjectWizard, GuiProjectLoad, GuiPreferences
+    GuiItemEditor, GuiAbout, GuiBuildNovel, GuiDocMerge, GuiDocSplit,
+    GuiProjectWizard, GuiProjectLoad, GuiPreferences
 )
 from nw.gui.custom import QuotesDialog
 from nw.constants import nwItemLayout, nwItemClass
@@ -26,121 +26,6 @@ from nw.constants import nwItemLayout, nwItemClass
 keyDelay = 2
 typeDelay = 1
 stepDelay = 20
-
-@pytest.mark.gui
-def testProjectSettings(qtbot, monkeypatch, yesToAll, fncDir, nwTempGUI, refDir, tmpDir):
-    nwGUI = nw.main(["--testmode", "--config=%s" % tmpDir, "--data=%s" % tmpDir])
-    qtbot.addWidget(nwGUI)
-    nwGUI.show()
-    qtbot.waitForWindowShown(nwGUI)
-    qtbot.wait(stepDelay)
-
-    # Check that we cannot open when there is no project
-    nwGUI.mainMenu.aProjectSettings.activate(QAction.Trigger)
-    assert getGuiItem("GuiProjectSettings") is None
-
-    # Create new project
-    nwGUI.theProject.projTree.setSeed(42)
-    assert nwGUI.newProject({"projPath": fncDir})
-    nwGUI.mainConf.backupPath = fncDir
-
-    # Get the dialog object
-    monkeypatch.setattr(GuiProjectSettings, "exec_", lambda *args: None)
-    monkeypatch.setattr(GuiProjectSettings, "result", lambda *args: QDialog.Accepted)
-    nwGUI.mainMenu.aProjectSettings.activate(QAction.Trigger)
-    qtbot.waitUntil(lambda: getGuiItem("GuiProjectSettings") is not None, timeout=1000)
-
-    projEdit = getGuiItem("GuiProjectSettings")
-    assert isinstance(projEdit, GuiProjectSettings)
-    projEdit.show()
-    qtbot.addWidget(projEdit)
-
-    # Main settings
-    qtbot.wait(stepDelay)
-    projEdit.tabMain.editName.setText("")
-    for c in "Project Name":
-        qtbot.keyClick(projEdit.tabMain.editName, c, delay=typeDelay)
-    for c in "Project Title":
-        qtbot.keyClick(projEdit.tabMain.editTitle, c, delay=typeDelay)
-    for c in "Jane Doe":
-        qtbot.keyClick(projEdit.tabMain.editAuthors, c, delay=typeDelay)
-    qtbot.keyClick(projEdit.tabMain.editAuthors, Qt.Key_Return, delay=keyDelay)
-    for c in "John Doh":
-        qtbot.keyClick(projEdit.tabMain.editAuthors, c, delay=typeDelay)
-
-    # Test Status Tab
-    qtbot.wait(stepDelay)
-    projEdit._tabBox.setCurrentWidget(projEdit.tabStatus)
-    projEdit.tabStatus.listBox.item(2).setSelected(True)
-    qtbot.mouseClick(projEdit.tabStatus.delButton, Qt.LeftButton)
-    qtbot.mouseClick(projEdit.tabStatus.newButton, Qt.LeftButton)
-    projEdit.tabStatus.listBox.item(3).setSelected(True)
-    for n in range(8):
-        qtbot.keyClick(projEdit.tabStatus.editName, Qt.Key_Backspace, delay=typeDelay)
-    for c in "Final":
-        qtbot.keyClick(projEdit.tabStatus.editName, c, delay=typeDelay)
-    qtbot.mouseClick(projEdit.tabStatus.saveButton, Qt.LeftButton)
-
-    # Auto-Replace Tab
-    qtbot.wait(stepDelay)
-    projEdit._tabBox.setCurrentWidget(projEdit.tabReplace)
-
-    qtbot.mouseClick(projEdit.tabReplace.addButton, Qt.LeftButton)
-    projEdit.tabReplace.listBox.topLevelItem(0).setSelected(True)
-    for c in "Th is ":
-        qtbot.keyClick(projEdit.tabReplace.editKey, c, delay=typeDelay)
-    for c in "With This Stuff ":
-        qtbot.keyClick(projEdit.tabReplace.editValue, c, delay=typeDelay)
-    qtbot.mouseClick(projEdit.tabReplace.saveButton, Qt.LeftButton)
-
-    qtbot.wait(stepDelay)
-    projEdit.tabReplace.listBox.clearSelection()
-    qtbot.mouseClick(projEdit.tabReplace.addButton, Qt.LeftButton)
-
-    newIdx = -1
-    for i in range(projEdit.tabReplace.listBox.topLevelItemCount()):
-        if projEdit.tabReplace.listBox.topLevelItem(i).text(0) == "<keyword2>":
-            newIdx = i
-            break
-
-    assert newIdx >= 0
-    newItem = projEdit.tabReplace.listBox.topLevelItem(newIdx)
-    projEdit.tabReplace.listBox.setCurrentItem(newItem)
-    qtbot.mouseClick(projEdit.tabReplace.delButton, Qt.LeftButton)
-
-    qtbot.wait(stepDelay)
-    projEdit._doSave()
-
-    # Open again, and check project settings
-    nwGUI.mainMenu.aProjectSettings.activate(QAction.Trigger)
-    qtbot.waitUntil(lambda: getGuiItem("GuiProjectSettings") is not None, timeout=1000)
-
-    projEdit = getGuiItem("GuiProjectSettings")
-    assert isinstance(projEdit, GuiProjectSettings)
-
-    qtbot.addWidget(projEdit)
-    assert projEdit.tabMain.editName.text()  == "Project Name"
-    assert projEdit.tabMain.editTitle.text() == "Project Title"
-    theAuth = projEdit.tabMain.editAuthors.toPlainText().strip().splitlines()
-    assert len(theAuth) == 2
-    assert theAuth[0] == "Jane Doe"
-    assert theAuth[1] == "John Doh"
-
-    projEdit._doClose()
-
-    qtbot.wait(stepDelay)
-    assert nwGUI.saveProject()
-    qtbot.wait(stepDelay)
-
-    # Check the files
-    projFile = os.path.join(fncDir, "nwProject.nwx")
-    testFile = os.path.join(nwTempGUI, "2_nwProject.nwx")
-    refFile  = os.path.join(refDir, "gui", "2_nwProject.nwx")
-    copyfile(projFile, testFile)
-    assert cmpFiles(testFile, refFile, [2, 8, 9, 10])
-
-    # qtbot.stopForInteraction()
-    nwGUI.closeMain()
 
 @pytest.mark.gui
 def testItemEditor(qtbot, yesToAll, monkeypatch, fncDir, nwTempGUI, refDir, tmpDir):
