@@ -52,7 +52,9 @@ pytest-3 -v -m core
 
 Available markers are:
 
-* '`core`' for unit tests covering the classes in the `nw/core` folder
+* `base` for unit tests covering the non-gui classes of the `bw` folder..
+* `core` for unit tests covering the classes in the `nw/core` folder.
+* `gui` for unit and integrations tests covering the classes in the `nw/gui` folder.
 
 ## Tests
 
@@ -78,6 +80,17 @@ The commands for the respective test categories are listed below.
 | Unit        | Tokenizer class          | nw/core/tokenizer.py   | `-m core` | `-k testCoreToken`       |
 | Integration | About Dialogs            | nw/gui/about.py        | `-m gui`  | `-k testGuiAbout`        |
 | Integration | Build Novel Project Tool | nw/gui/build.py        | `-m gui`  | `-k testGuiBuild`        |
+| Integration | Document Editor Widget   | nw/gui/doceditor.py    | `-m gui`  | `-k testGuiEditor`       |
+| Integration | Document Viewer Widget   | nw/gui/docviewer.py    | `-m gui`  | `-k testGuiViewer`       |
 | Integration | Item Editor Dialog       | nw/gui/itemeditor.py   | `-m gui`  | `-k testGuiItemEditor`   |
+| Integration | Menu Widgets             | nw/gui/mainmenu.py     | `-m gui`  | `-k testGuiMenu`         |
+| Integration | Merge Tool               | nw/gui/docmerge.py     | `-m gui`  | `-k testGuiMergeSplit`   |
+| Integration | Outline Widget           | nw/gui/outline.py      | `-m gui`  | `-k testGuiOutline`      |
+| Integration | Preferences Dialog       | nw/gui/preferences.py  | `-m gui`  | `-k testGuiPreferences`  |
+| Integration | Project Load Dialog      | nw/gui/projload.py     | `-m gui`  | `-k testGuiProjLoad`     |
 | Integration | Project Settings Dialog  | nw/gui/projsettings.py | `-m gui`  | `-k testGuiProjSettings` |
+| Integration | Project Tree Widget      | nw/gui/projtree.py     | `-m gui`  | `-k testGuiProjTree`     |
+| Integration | Theme/Icon Classes       | nw/gui/theme.py        | `-m gui`  | `-k testGuiTheme`        |
+| Integration | Split Tool               | nw/gui/docsplit.py     | `-m gui`  | `-k testGuiMergeSplit`   |
 | Integration | Writing Stats Dialog     | nw/gui/writingstats.py | `-m gui`  | `-k testGuiWritingStats` |
+| Integration | Various Dialogs          | N/A                    | `-m gui`  | `-k testGuiDialogs`      |

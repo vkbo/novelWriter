@@ -9,8 +9,6 @@ import os
 
 from dummy import DummyMain
 
-from PyQt5.QtWidgets import QMessageBox
-
 sys.path.insert(1, os.path.abspath(os.path.join(os.path.dirname(__file__), os.path.pardir)))
 
 import nw # noqa: E402
@@ -184,42 +182,3 @@ def nwOldProj(tmpDir):
     if os.path.isdir(oldProjDir):
         shutil.rmtree(oldProjDir)
     return
-
-##
-#  Monkey Patch Dialogs
-##
-
-@pytest.fixture(scope="function")
-def yesToAll(monkeypatch):
-    """Make the message boxes/questions always say yes.
-    """
-    monkeypatch.setattr(
-        QMessageBox, "question", lambda *args, **kwargs: QMessageBox.Yes
-    )
-    monkeypatch.setattr(
-        QMessageBox, "information", lambda *args, **kwargs: QMessageBox.Yes
-    )
-    monkeypatch.setattr(
-        QMessageBox, "warning", lambda *args, **kwargs: QMessageBox.Yes
-    )
-    monkeypatch.setattr(
-        QMessageBox, "critical", lambda *args, **kwargs: QMessageBox.Yes
-    )
-    yield
-    monkeypatch.undo()
-    return
-
-# =============================================================================================== #
-
-##
-#  Temporary Test Folders
-##
-
-@pytest.fixture(scope="session")
-def nwTempGUI(tmpDir):
-    """A temporary folder for GUI tests.
-    """
-    guiDir = os.path.join(tmpDir, "gui")
-    if not os.path.isdir(guiDir):
-        os.mkdir(guiDir)
-    return guiDir
