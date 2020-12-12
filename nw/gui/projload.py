@@ -155,14 +155,14 @@ class GuiProjectLoad(QDialog):
         logger.verbose("GuiProjectLoad open button clicked")
         self._saveSettings()
 
+        self.openPath = None
+        self.openState = self.NONE_STATE
+
         selItems = self.listBox.selectedItems()
         if selItems:
             self.openPath = selItems[0].data(self.C_NAME, Qt.UserRole)
             self.openState = self.OPEN_STATE
             self.accept()
-        else:
-            self.openPath = None
-            self.openState = self.NONE_STATE
 
         return
 

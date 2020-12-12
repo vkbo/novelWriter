@@ -9,9 +9,9 @@ import os
 
 from dummy import DummyMain
 
-from PyQt5.QtWidgets import QMessageBox
-
 sys.path.insert(1, os.path.abspath(os.path.join(os.path.dirname(__file__), os.path.pardir)))
+
+import nw # noqa: E402
 
 from nw.config import Config # noqa: E402
 
@@ -55,15 +55,27 @@ def outDir(tmpDir):
 def fncDir(tmpDir):
     """A temporary folder for a single test function.
     """
-    funcDir = os.path.join(tmpDir, "ftemp")
-    if os.path.isdir(funcDir):
-        shutil.rmtree(funcDir)
-    if not os.path.isdir(funcDir):
-        os.mkdir(funcDir)
-    yield funcDir
-    if os.path.isdir(funcDir):
-        shutil.rmtree(funcDir)
+    fncDir = os.path.join(tmpDir, "f_temp")
+    if os.path.isdir(fncDir):
+        shutil.rmtree(fncDir)
+    if not os.path.isdir(fncDir):
+        os.mkdir(fncDir)
+    yield fncDir
+    if os.path.isdir(fncDir):
+        shutil.rmtree(fncDir)
     return
+
+@pytest.fixture(scope="function")
+def fncProj(fncDir):
+    """A temporary folder for a single test function,
+    with a project folder.
+    """
+    prjDir = os.path.join(fncDir, "project")
+    if os.path.isdir(prjDir):
+        shutil.rmtree(prjDir)
+    if not os.path.isdir(prjDir):
+        os.mkdir(prjDir)
+    return prjDir
 
 ##
 #  novelWriter Objects
@@ -88,6 +100,26 @@ def dummyGUI(tmpConf):
     theDummy = DummyMain()
     theDummy.mainConf = tmpConf
     return theDummy
+
+@pytest.fixture(scope="function")
+def nwGUI(qtbot, fncDir):
+    """Create an instance of the novelWriter GUI.
+    """
+    nwGUI = nw.main(["--testmode", "--config=%s" % fncDir, "--data=%s" % fncDir])
+    qtbot.addWidget(nwGUI)
+    nwGUI.show()
+    qtbot.waitForWindowShown(nwGUI)
+    qtbot.wait(20)
+
+    nwGUI.mainConf.lastPath = fncDir
+
+    yield nwGUI
+
+    qtbot.wait(20)
+    nwGUI.closeMain()
+    qtbot.wait(20)
+
+    return
 
 ##
 #  Temp Project Folders
@@ -150,51 +182,3 @@ def nwOldProj(tmpDir):
     if os.path.isdir(oldProjDir):
         shutil.rmtree(oldProjDir)
     return
-
-##
-#  Monkey Patch Dialogs
-##
-
-@pytest.fixture(scope="function")
-def yesToAll(monkeypatch):
-    """Make the message boxes/questions always say yes.
-    """
-    monkeypatch.setattr(
-        QMessageBox, "question", lambda *args, **kwargs: QMessageBox.Yes
-    )
-    monkeypatch.setattr(
-        QMessageBox, "information", lambda *args, **kwargs: QMessageBox.Yes
-    )
-    monkeypatch.setattr(
-        QMessageBox, "warning", lambda *args, **kwargs: QMessageBox.Yes
-    )
-    monkeypatch.setattr(
-        QMessageBox, "critical", lambda *args, **kwargs: QMessageBox.Yes
-    )
-    yield
-    monkeypatch.undo()
-    return
-
-# =============================================================================================== #
-
-##
-#  Temporary Test Folders
-##
-
-@pytest.fixture(scope="session")
-def nwTempGUI(tmpDir):
-    """A temporary folder for GUI tests.
-    """
-    guiDir = os.path.join(tmpDir, "gui")
-    if not os.path.isdir(guiDir):
-        os.mkdir(guiDir)
-    return guiDir
-
-@pytest.fixture(scope="session")
-def nwTempBuild(tmpDir):
-    """A temporary folder for build tests.
-    """
-    buildDir = os.path.join(tmpDir, "build")
-    if not os.path.isdir(buildDir):
-        os.mkdir(buildDir)
-    return buildDir

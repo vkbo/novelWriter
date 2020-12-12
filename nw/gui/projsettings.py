@@ -220,9 +220,8 @@ class GuiProjectEditMain(QWidget):
             "Overrides main preferences."
         )
 
-        if self.theProject.projLang is None:
-            spellIdx = 0
-        else:
+        spellIdx = 0
+        if self.theProject.projLang is not None:
             spellIdx = self.spellLang.findData(self.theProject.projLang)
         if spellIdx != -1:
             self.spellLang.setCurrentIndex(spellIdx)
@@ -515,9 +514,7 @@ class GuiProjectEditStatus(QWidget):
         """Get the currently selected item.
         """
         selItem = self.listBox.selectedItems()
-        if len(selItem) == 0:
-            return None
-        if isinstance(selItem[0], QListWidgetItem):
+        if len(selItem) > 0:
             return selItem[0]
         return None
 

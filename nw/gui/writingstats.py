@@ -39,7 +39,7 @@ from PyQt5.QtWidgets import (
     QLabel, QGroupBox, QMenu, QAction, QFileDialog, QSpinBox, QHBoxLayout
 )
 
-from nw.common import formatTime
+from nw.common import formatTime, checkInt
 from nw.constants import nwConst, nwFiles, nwAlert
 from nw.gui.custom import QSwitch
 
@@ -316,36 +316,29 @@ class GuiWritingStats(QDialog):
         if dataFmt == self.FMT_JSON:
             fileExt = "json"
             textFmt = "JSON Data File"
-
         elif dataFmt == self.FMT_CSV:
             fileExt = "csv"
             textFmt = "CSV Data File"
-
         else:
             return False
 
         # Generate the file name
-        if fileExt:
-            saveDir = self.mainConf.lastPath
-            if not os.path.isdir(saveDir):
-                saveDir = os.path.expanduser("~")
+        saveDir = self.mainConf.lastPath
+        if not os.path.isdir(saveDir):
+            saveDir = os.path.expanduser("~")
 
-            fileName = "sessionStats.%s" % fileExt
-            savePath = os.path.join(saveDir, fileName)
+        fileName = "sessionStats.%s" % fileExt
+        savePath = os.path.join(saveDir, fileName)
 
-            dlgOpt  = QFileDialog.Options()
-            dlgOpt |= QFileDialog.DontUseNativeDialog
-            savePath, _ = QFileDialog.getSaveFileName(
-                self, "Save Document As", savePath, options=dlgOpt
-            )
-
-            if not savePath:
-                return False
-
-            self.mainConf.setLastPath(savePath)
-
-        else:
+        dlgOpt  = QFileDialog.Options()
+        dlgOpt |= QFileDialog.DontUseNativeDialog
+        savePath, _ = QFileDialog.getSaveFileName(
+            self, "Save Document As", savePath, options=dlgOpt
+        )
+        if not savePath:
             return False
+
+        self.mainConf.setLastPath(savePath)
 
         # Do the actual writing
         wSuccess = False
@@ -366,7 +359,7 @@ class GuiWritingStats(QDialog):
                     json.dump(jsonData, outFile, indent=2)
                     wSuccess = True
 
-                elif dataFmt == self.FMT_CSV:
+                if dataFmt == self.FMT_CSV:
                     outFile.write(
                         '"Date","Length (sec)","Words Changed","Novel Words","Note Words"\n'
                     )
@@ -374,11 +367,9 @@ class GuiWritingStats(QDialog):
                         outFile.write(f'"{sD}",{tT:.0f},{wD},{wA},{wB}\n')
                     wSuccess = True
 
-                else:
-                    errMsg = "Unknown format"
-
         except Exception as e:
-            errMsg = str(e).replace("\n", "<br>")
+            errMsg = str(e)
+            wSuccess = False
 
         # Report to user
         if wSuccess:
@@ -394,7 +385,7 @@ class GuiWritingStats(QDialog):
                 ), nwAlert.ERROR
             )
 
-        return True
+        return wSuccess
 
     ##
     #  Internal Functions
@@ -406,6 +397,7 @@ class GuiWritingStats(QDialog):
         logger.debug("Loading session log file")
 
         self.logData = []
+        self.wordOffset = 0
 
         ttNovel = 0
         ttNotes = 0
@@ -417,7 +409,7 @@ class GuiWritingStats(QDialog):
                 for inLine in inFile:
                     if inLine.startswith("#"):
                         if inLine.startswith("# Offset"):
-                            self.wordOffset = int(inLine[9:].strip())
+                            self.wordOffset = checkInt(inLine[9:].strip(), 0)
                             logger.verbose(
                                 "Initial word count when log was started is %d" % self.wordOffset
                             )

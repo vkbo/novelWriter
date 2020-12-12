@@ -130,6 +130,7 @@ class GuiMainStatus(QStatusBar):
         """Reset all widgets on the status bar to default values.
         """
         self.setRefTime(None)
+        self.setLanguage(None)
         self.setStats(0, 0)
         self.setProjectStatus(None)
         self.setDocumentStatus(None)
@@ -234,15 +235,14 @@ class StatusLED(QAbstractButton):
     def setState(self, theState):
         """Set the colour state.
         """
-        if theState is None:
-            self._theCol = self.colNone
-        elif theState:
+        self._theCol = self.colNone
+        if theState is True:
             self._theCol = self.colTrue
-        elif not theState:
+        elif theState is False:
             self._theCol = self.colFalse
-        else:
-            self._theCol = self.colNone
+
         self.update()
+
         return
 
     ##
