@@ -223,12 +223,3 @@ def nwTempGUI(tmpDir):
     if not os.path.isdir(guiDir):
         os.mkdir(guiDir)
     return guiDir
-
-@pytest.fixture(scope="session")
-def nwTempBuild(tmpDir):
-    """A temporary folder for build tests.
-    """
-    buildDir = os.path.join(tmpDir, "build")
-    if not os.path.isdir(buildDir):
-        os.mkdir(buildDir)
-    return buildDir
