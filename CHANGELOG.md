@@ -1,6 +1,76 @@
 # novelWriter Change Log
 
+## Version 1.0 Release Candidate 2 [2020-12-13]
+
+### Release Notes
+
+This second release candidate for 1.0 comes with only minor changes and improvements, and a handful of minor bugfixes.
+
+Among the improvements is the addition of all the possible @-keywords for tags and references to the "Insert" menu under the sub-menu "Tags and References". The "Help" menu has also received a few improvements and additional links to useful webpages. This release also adds a "Release" notes tab to the "About novelWriter" dialog. The release notes are displayed automatically the first time you launch novelWriter after updating to a new version.
+
+Among the fixes is better support for high resolution screens. A few elements on the GUI did not scale properly, among them the document editor and viewer header and footer. These were clipped on high res screens due to an underlying issue with the Qt widget underestimating how much space it required to accommodate the text. Unfortunately, dragging the novelWriter app between screens of different scaling factors is not currently supported. However, the GUI should scale properly to the scaling factor on the screen it is opened on.
+
+The work leading up to this release has mostly been focused on improving the test coverage of the source code of novelWriter. This helps to ensure that the code does what it is intended to do, and is able to handle corner cases and unexpected external errors and user actions that may occur. While writing these tests, a number of minor potential issues have been uncovered and handled. Most of these are corner cases that may not even be reachable by unexpected user actions.
+
+Hopefully, these changes have resulted in an even more stable version of novelWriter. If no more issues are discovered, the next release will be the final version 1.0 release.
+
+### Detailed Changelog
+
+**Bugfixes**
+
+* The headers and footers of the document editor and viewer would be clipped on high DPI monitors. This was due to the QWidget holding these did not automatically scale in the layout. The proper height of these are now calculated and enforced instead of relying on automated scaling. Issue #499, PR #502.
+* Fixed a few inconsistencies in scaling of toggle switches, the form layouts, and the margins of the Item Editor when viewing on a high DPI screen. PR #502.
+* Switching syntax theme live would not update all colours in the editor and viewer. This has now been fixed. PR #516.
+* Using the Tools menu to move items up or down in the project tree, without selecting an item to move, would cause a crash. The move actions are now quietly rejected if no item is selected. Issue #521, PR #522.
+
+**User Interface**
+
+* Added all the possible keywords for tags and references to the Insert menu. Since the list was growing long, the Insert menu entries have been split up into four sub menus according to the previous grouping. Issue #501, PR #503.
+* A "Release Notes" tab has been added to the "About novelWriter" dialog where the latest release notes can be displayed. PR #508.
+* Menu entries that will open the "Releases" and "Discussions" pages on the novelWriter GitHub repo has been added to the Help menu. PRs #509, #511 and #520.
+* The help text of many of the Preferences options have been clarified and rewritten. PR #516.
+* Added two greyscale syntax themes. These will match with the greyscale icon themes to produce a GUI without colours. PR #516.
+
+**Other Changes**
+
+* The Windows installer now properly sets up the mime type for novelWriter, meaning novelWriter project files can be opened from the Explorer directly into novelWriter. PR #511.
+* It is now possible to create new files in the Outtakes root folder from the context menu. Issue #517, PR #519.
+
+**Test Suite**
+
+* The tests for the core classes of novelWriter have been completely rewritten. Every class or source file of the core functionality (everything handling the actual project data and documents, as well as the meta data) is now covered by its own testmodule with a 100% coverage for each module. PR #512.
+* Likewise, the base tests have been rewritten to cover the `Config` class, the `main` function that launches the app, and the error handling class. The structure matches the core tests from #512. PR #514.
+* The GUI tests have been reorganised to match the new test structure, and somewhat improved, but some parts still need additional coverage. PR #527.
+
+----
+
 ## Version 1.0 Release Candidate 1 [2020-11-16]
+
+### Release Notes
+
+This is the first release candidate for the upcoming release of novelWriter 1.0.
+
+Since the fifth beta release about four weeks ago, not much has been changed in novelWriter. A few minor tweaks have been made to the GUI.
+
+A number of features and tools are now automatically switched off when there is no project or document open for those features to act upon. Previously, this was a bit inconsistent, although no serious bugs have been reported or encountered.
+
+Most of the minor changes in this release should not be noticeable to most users. However, there are a couple of noticeable changes.
+
+**Typewriter Mode**
+
+The "Typewriter Mode" of the editor has been improved. Essentially, this feature is a sort of smart scroll. It tries to keep the cursor stationary in the vertical direction, and will try to scroll the document up when the cursor skips to a new line while typing (or down in case of backspaces). This is similar to the way a typewriter scrolls the paper when hitting the return key. It improves the writing experience as the current active line will stay at the same eye heightlevel on the screen.
+
+Previously, the feature would lock the cursor to a given vertical position defined by the user. Now, instead, the cursor will remain stationary in the vertical direction at any position the user sets it to by mouse click or keyboard navigation. The user can define a minimum distance from the top where this feature is activated. These changes makes it more flexible in terms of where the
+focus is in the editor. The feature can be controlled from the main Preferences.
+
+**Switching Syntax Theme**
+
+It is now possible to switch syntax highlighting theme without restarting novelWriter. Previously, changing the theme would only half-way update the document, header and footer background and text colours. The new settings would not be fully applied until the application was shut down and started again, thus making it a bit tedious to look through syntax themes to find the
+one you want.
+
+Switching main GUI theme still requires a restart.
+
+### Detailed Changelog
 
 **Installation**
 
@@ -29,6 +99,7 @@
 * There has been some clean-up of comments and docstrings, as well as optimisation and merging of a few functions that were implemented in multiple places. PR #485.
 * Move some of the constants defined in various other classes into the appropriate constants classes, and make all constants upper case variables. PR #489.
 
+----
 
 ## Version 1.0 Beta 5 [2020-10-18]
 
@@ -58,6 +129,7 @@
 * Since support for Python < 3.6 has been dropped, it is now possible to use `f""` formatted strings in many more places in the source code where this is convenient. This has been implemented many places, but the code is still a mix of all three styles of formatting text. PR #478.
 * Extensive changes have been made to the build and distribute tools. The `install.py` file has been dropped, and the features in it merged into a new file named `make.py`. The make file can now also build a setup installer for Windows. The `setup.py` file has been rewritten to a more standardised source layout, and all the setup configuration moved to the `setup.cfg` file. PRs #479 and #480.
 
+----
 
 ## Version 1.0 Beta 4 [2020-10-11]
 
@@ -108,6 +180,7 @@
 * Major additions to the test suite, taking the test coverage to 91%. PR #453.
 * Test coverage for Linux (Ubuntu) for Python versions 3.6, 3.7, and 3.8 are now separate jobs. In addition, Windows with Python 3.8 and macOS with Python 3.8 is also tested. All OSes are piped into test coverage, and they all have status badges. PRs #453 and #454.
 
+----
 
 ## Version 1.0 Beta 3 [2020-09-20]
 
@@ -131,6 +204,7 @@
 
 * A lot more tests have been added and test coverage improved. PR #449.
 
+----
 
 ## Version 1.0 Beta 2 [2020-09-13]
 
@@ -157,6 +231,7 @@
 
 * Improved test coverage. PR #446.
 
+----
 
 ## Version 1.0 Beta 1 [2020-08-30]
 
@@ -190,6 +265,7 @@
 * Switched from Travis-CI to GitHub actions for running Python tests. PRs #424, #425 and #426.
 * All tests can now be run independently of other tests on a function level. Before, this was only possible on a test file level. Issue #431, PR #432.
 
+----
 
 ## Version 0.12.1 [2020-08-16]
 
@@ -202,6 +278,7 @@
 * The Select Paragraph feature in the Edit menu now selects only the paragraph itself, without the leading line break. This was previously handled entirely by the Qt library, which does this for some reason. Issue #395, PR #405.
 * A chapter heading in a file with a different layout than `Unnumbered` can now also be flagged as an unnumbered chapter heading by adding an asterisk to the begfinning of the title text. This only affects the number assignment and counter when running the Build Novel Project tool. The rest of the app ignores the asterisk. Issue #402, PR #406.
 
+----
 
 ## Version 0.12 [2020-08-15]
 
@@ -215,6 +292,7 @@
 * Cleaned up code using `flake8` tool and added it as a permanent check on pull requests. The tool filtered out a number of unused variables and imports, which wastes CPU time and memory. Every bit helps. PRs #394, #397 and #401.
 * Added contributing guide, code of conduct and issue templates. Direct push to main, and PR #398.
 
+----
 
 ## Version 0.11.1 [2020-08-09]
 
@@ -236,6 +314,7 @@
 * The Travis CI build system has been altered to first check that the tests pass for Python 3.8, for then to move to the other supported Python versions. These are currently 3.6 and 3.7. Python 3.9 will be added when it is released in October. PR #388.
 * Some clean-up of the source code, mostly in terms of unused imports and missing docstrings. PR #391.
 
+----
 
 ## Version 0.11 [2020-08-08]
 
@@ -260,6 +339,7 @@ See their [notes](https://github.com/github/renaming) for more information.
 
 * Some minor changes to the source code has been made to more correctly use the Python `__package__` variable. PR #376.
 
+----
 
 ## Version 0.10.2 [2020-07-29]
 
@@ -272,6 +352,7 @@ See their [notes](https://github.com/github/renaming) for more information.
 
 * Insert menu entries to insert single and double open and close quote symbols have been added. These are the symbols selected as the quote symbols in Preferences. They also have keyboard shortcuts associated with them. PR #367.
 
+----
 
 ## Version 0.10.1 [2020-07-11]
 
@@ -296,6 +377,7 @@ See their [notes](https://github.com/github/renaming) for more information.
 * The manifest file now lists the root assets folder, so that it is included in the pypi build. PR #364.
 * The .desktop template file has the correct categories set according to the FreeDesktop standard. PR #364.
 
+----
 
 ## Version 0.10.0 [2020-06-30]
 
@@ -316,6 +398,7 @@ See their [notes](https://github.com/github/renaming) for more information.
 
 * The way the auto-replace settings are stored in the project XML file has been changed in order to be more consistent with other features, and to avoid a potential pitfall in defining the tag name from a user-entered string. The project class retains its ability to read the old format of the file, and will save in the new format. The file format of the project XML file has been bumped to 1.2. PRs #344, #346 and #347.
 
+----
 
 ## Version 0.9.2 [2020-06-26]
 
@@ -332,6 +415,7 @@ See their [notes](https://github.com/github/renaming) for more information.
 
 * The documentation has been updated to clarify the correct formatting for italic, bold and strikethrough formatting tags. Issue #220, PR #338.
 
+----
 
 ## Version 0.9.1 [2020-06-21]
 
@@ -339,6 +423,7 @@ See their [notes](https://github.com/github/renaming) for more information.
 
 * Fixed a serious bug in the replace part of the search/replace function that caused novelWriter to crash when the replace text function was called. Issue #327, PR #328.
 
+----
 
 ## Version 0.9 [2020-06-21]
 
@@ -365,6 +450,7 @@ See their [notes](https://github.com/github/renaming) for more information.
 
 * Added the file's class and layout to the meta data string of saved document files. This meta data is only used to restore the file meta information into the project if it was lost from the project file. It is also useful information when reading the file in external tools. PR #308.
 
+----
 
 ## Version 0.8 [2020-06-14]
 
@@ -398,6 +484,7 @@ See their [notes](https://github.com/github/renaming) for more information.
 * A lot of Inkscape meta data has been removed from the SVG icons, reducing the file sizes quite a bit. PR #291.
 * Opening and closing of files are now properly handled also when using the ConfigParser tool. Previously, files were not properly closed after the content had been read, leaving the handles open until the Python garbage collector handled them. PR #300.
 
+----
 
 ## Version 0.7.1 [2020-06-06]
 
@@ -419,6 +506,7 @@ See their [notes](https://github.com/github/renaming) for more information.
 
 * Reduced the number of files and folders in the source code a bit. PR #277.
 
+----
 
 ## Version 0.7 [2020-06-01]
 
@@ -457,6 +545,7 @@ See their [notes](https://github.com/github/renaming) for more information.
 
 * Added tests for Build Novel Project, Merge Folder and Split Document tools. PRs #263 and #264.
 
+----
 
 ## Version 0.6.3 [2020-05-28]
 
@@ -476,11 +565,13 @@ See their [notes](https://github.com/github/renaming) for more information.
 * Removed the `Xo` icon for NO_LAYOUT in the project tree details panel. Mentioned in #235, PR #239.
 * Added a "Details" tab to the "Project Settings" dialog, which also lists the project path. Issue #242, PR #239.
 
+----
 
 ## Version 0.6.2 [2020-05-28]
 
 * Botched release. Replaced with 0.6.3. Crashes when Build Novel Project is opened.
 
+----
 
 ## Version 0.6.1 [2020-05-25]
 
@@ -505,6 +596,7 @@ See their [notes](https://github.com/github/renaming) for more information.
 
 * The export page in the documentation erroneously stated that line breaks could be added to titles by adding `%\\%`. The correct syntax is `\\`. Issue #229, PR #231.
 
+----
 
 ## Version 0.6 [2020-05-24]
 
@@ -521,6 +613,7 @@ See their [notes](https://github.com/github/renaming) for more information.
 * The Open Project dialog has been cleaned up and made more readable. The project paths have been moved out of the list, and are now displayed when an item is selected instead. Icons have been added, and the New project dialog can also be triggered from this dialog. PR #218.
 * The document stats have been added to the details panel below the project tree. PR #219.
 
+----
 
 ## Version 0.5.2 [2020-05-21]
 
@@ -540,6 +633,7 @@ See their [notes](https://github.com/github/renaming) for more information.
 * Checking for version dependencies and a few packages (aside from PyQt5) is now done later in the start-up so that it is possible to alert the user with a dialog box instead of terminal error messages. PR #210.
 * Made a few minor changes to the code so novelWriter can run with Python 3.4.3 and Qt 5.2.1, that is, it runs on last version of Ubuntu 14.04. This level of compatibility is not guaranteed to remain in the future, but for now, the changes have no impact on functionality. PR #210.
 
+----
 
 ## Version 0.5.1 [2020-05-14]
 
@@ -556,6 +650,7 @@ See their [notes](https://github.com/github/renaming) for more information.
 
 * Reduced the number of command line switches needed for debug runs. PR #205.
 
+----
 
 ## Version 0.5 [2020-05-09]
 
@@ -612,6 +707,7 @@ In the pipeline for 1.0 is a completely new export tool with improved and added 
 * Also added license info to the command line output. PR #189.
 * Large chunks of the code has been restructured. Mainly the non-GUI parts, which have mostly been merged into a new `core` folder. Several classes which are only used by a single object have been merged into the same file, reducing the total number of source files a bit. PR #199.
 
+----
 
 ## Version 0.4.5 [2020-02-17]
 
@@ -636,11 +732,13 @@ In the pipeline for 1.0 is a completely new export tool with improved and added 
 * The cache folder has been removed. It was used to store the 10 most recent versions of the project file. Instead, the previous project file is renamed to .bak, and can be restored if opening from the latest project file fails. Any additional restore capabilities should be ensured by backup solutions, either the internal simple zip backup, or other third party tools. PR #165.
 * The dependency on the Python package `appdirs` has been dropped. It was used only for extracting the path to the user's config folder, a feature which is also provided by Qt. PR #169.
 
+----
 
 ## Version 0.4.4 [2020-02-17]
 
 * Botched release. Replaced with 0.4.5.
 
+----
 
 ## Version 0.4.3 [2019-11-24]
 
@@ -656,6 +754,7 @@ In the pipeline for 1.0 is a completely new export tool with improved and added 
 * Fixed an issue with markdown export where it did not take into account hard line breaks. Issue #151, PR #152.
 * Fixed a crash when running file status check when the project contains orphaned files. PR #152.
 
+----
 
 ## Version 0.4.2 [2019-11-17]
 
@@ -668,6 +767,7 @@ In the pipeline for 1.0 is a completely new export tool with improved and added 
 * Fixed various issues with spell checking highlighting. The highlighting and the editor didn't always agree on what words were spelled wrong. PR #141.
 * The status bar now shows what spell checking language is actually loaded. Previously, it just showed the language selected in the settings. That was a bit misleading as the available dictionaries can change due to the change in installed dictionary on the system. PR #145.
 
+----
 
 ## Version 0.4.1 [2019-11-10]
 
@@ -695,6 +795,7 @@ In the pipeline for 1.0 is a completely new export tool with improved and added 
 * The dependency on the `pycountry` package has been dropped. The feature based on it now uses an internal list of country codes for describing spell checker languages. PR #129.
 * The themes manager has been improved, and the loading of icons now supports a number of fallback steps to ensure something is shown in most cases. The final fallback is the system's own icon theme. PR #135.
 
+----
 
 ## Version 0.4 [2019-11-03]
 
@@ -733,6 +834,7 @@ In the pipeline for 1.0 is a completely new export tool with improved and added 
 * A script for `pyinstaller` has been added, making it possible to generate standalone executables of novelWriter on at least Windows and Linux. PR #91.
 * novelWriter has been made `pip install` ready. PRs #107 and #108.
 
+----
 
 ## Version 0.3.2 [2019-10-27]
 
@@ -748,6 +850,7 @@ In the pipeline for 1.0 is a completely new export tool with improved and added 
 * The Export feature now includes exporting to LaTeX, which allows building PDFs with pdflatex or other tools. PR #73.
 * Export of a novelWriter flavour markdown file is also supported. This file can be imported back in as-is, and almost completes an export-edit-import cycle. A split document into multiple files feature will be added soon. PR #73.
 
+----
 
 ## Version 0.3.1 [2019-10-20]
 
@@ -762,6 +865,7 @@ In the pipeline for 1.0 is a completely new export tool with improved and added 
 * Added a GUI to display the session log. The log has been around for a while, and records when a project is opened, when it's closed, and how many words were added or removed during the session. This information is now available in a small dialog under `Project > Session Log` in the main menu. PR #59.
 * The export project feature now also exports the project to Markdown and HTML5 format. PR #57.
 
+----
 
 ## Version 0.3 [2019-10-19]
 
@@ -769,6 +873,7 @@ In the pipeline for 1.0 is a completely new export tool with improved and added 
 
 * Added project export feature with a new GUI dialog and a number of export setting. The export feature currently only exports to a plain text file. PR #55.
 
+----
 
 ## Version 0.2.3 [2019-10-06]
 
@@ -777,6 +882,7 @@ In the pipeline for 1.0 is a completely new export tool with improved and added 
 * The search feature now also allows for replacing text, so the basic search/replace tools in now complete. PRs #51 and #52.
 * All icons have been removed from the menu, and the dark theme has received a new set of basic icons. They are not very fancy, so will perhaps be replaced by a proper icon set later. PR #53.
 
+----
 
 ## Version 0.2.2 [2019-09-29]
 
@@ -788,6 +894,7 @@ In the pipeline for 1.0 is a completely new export tool with improved and added 
 
 * Added a basic search function for the currently open document. This is a simple interface to the find command that exists in the Qt document editor. It will be extended further in the future. PR #49.
 
+----
 
 ## Version 0.2.1 [2019-09-14]
 
@@ -808,6 +915,7 @@ In the pipeline for 1.0 is a completely new export tool with improved and added 
 
 * Minor changes to the About novelWriter dialog and to how backup filenames are generated. PR #41.
 
+----
 
 ## Version 0.2 [2019-06-27]
 
@@ -832,6 +940,7 @@ In the pipeline for 1.0 is a completely new export tool with improved and added 
 
 * Spell checking is now handled by a standard class that can be subclassed to support different spell check tools. This was done because pyenchant is no longer maintained and having a standard wrapper makes it easier to support other tools. PR #31.
 
+----
 
 ## Version 0.1.5 [2019-06-08]
 
@@ -857,6 +966,7 @@ In the pipeline for 1.0 is a completely new export tool with improved and added 
 * A document can be closed, which also clears it from last edited document setting in the project file. I.e. it is not re-opened on next start. PR #21.
 * Tab width is now by default 40 pixels, and can be set in the config. PR #21.
 
+----
 
 ## Version 0.1.4 [2019-05-25]
 
@@ -884,6 +994,7 @@ In the pipeline for 1.0 is a completely new export tool with improved and added 
 
 * Loading the project with the items in the wrong order is possible. That is, the child item is stored before its parent. A saved file should not ever be like that, but an edited file might. Even if the file shouldn't be edited manually. PR #16.
 
+----
 
 ## Version 0.1.3 [2019-05-18]
 
@@ -895,6 +1006,7 @@ In the pipeline for 1.0 is a completely new export tool with improved and added 
 
 * Major upgrades to the test suite, now also testing GUI elements. Coverage at 73%. PRs #9 and #11.
 
+----
 
 ## Version 0.1.2 [2019-05-12]
 
@@ -907,6 +1019,7 @@ In the pipeline for 1.0 is a completely new export tool with improved and added 
 
 * Changed the way user alerts are generated, and added the alert levels to an enum class named `nwAlert`. Also added a new level named `BUG`.
 
+----
 
 ## Version 0.1.1 [2019-05-12]
 
@@ -918,6 +1031,7 @@ In the pipeline for 1.0 is a completely new export tool with improved and added 
 
 * Added a unit test framework based on `pytest`. This currently checks basic opening and saving of the main config file and the main project file. PR #2
 
+----
 
 ## Version 0.1 [2019-05-10]
 
