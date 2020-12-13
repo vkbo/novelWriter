@@ -1079,6 +1079,7 @@ class GuiMain(QMainWindow):
             return False
 
         self.isFocusMode = not self.isFocusMode
+        self.mainMenu.aFocusMode.setChecked(self.isFocusMode)
         if self.isFocusMode:
             logger.debug("Activating Focus Mode")
             self.tabWidget.setCurrentWidget(self.splitDocs)
