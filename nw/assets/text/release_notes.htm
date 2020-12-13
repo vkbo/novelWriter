@@ -1,7 +1,37 @@
 <!DOCTYPE html public "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
 <html>
 <body>
+
+<h2>Release Notes for 1.0 RC2</h2>
+<p><i>Released on 13 December 2020</i></p>
+<p>This second release candidate for 1.0 comes with only minor changes and improvements, and a
+handful of minor bugfixes.</p>
+<p>Among the improvements is the addition of all the possible @-keywords for tags and references to
+the "Insert" menu under the sub-menu "Tags and References". The "Help" menu has also received a few
+improvements and additional links to useful webpages. This release also adds a "Release" notes tab
+to the "About novelWriter" dialog. The release notes are displayed automatically the first time you
+launch novelWriter after updating to a new version.</p>
+<p>Among the fixes is better support for high resolution screens. A few elements on the GUI did not
+scale properly, among them the document editor and viewer header and footer. These were clipped on
+high res screens due to an underlying issue with the Qt widget underestimating how much space it
+required to accommodate the text. Unfortunately, dragging the novelWriter app between screens of
+different scaling factors is not currently supported. However, the GUI should scale properly to the
+scaling factor on the screen it is opened on.</p>
+<p>The work leading up to this release has mostly been focused on improving the test coverage of
+the source code of novelWriter. This helps to ensure that the code does what it is intended to do,
+and is able to handle corner cases and unexpected external errors and user actions that may occur.
+While writing these tests, a number of minor potential issues have been uncovered and handled. Most
+of these are corner cases that may not even be reachable by unexpected user actions.</p>
+<p>Hopefully, these changes have resulted in an even more stable version of novelWriter. If no more
+issues are discovered, the next release will be the final version 1.0 release.</p>
+
+<p><i>The full changelog is available
+<a href="https://github.com/vkbo/novelWriter/blob/main/CHANGELOG.md">here</a>.</i></p>
+
+<hr/>
+
 <h2>Release Notes for 1.0 RC1</h2>
+<p><i>Released on 16 November 2020</i></p>
 <p>This is the first release candidate for the upcoming release of novelWriter 1.0.</p>
 <p>Since the fifth beta release about four weeks ago, not much has been changed in novelWriter. A
 few minor tweaks have been made to the GUI.</p>
@@ -29,7 +59,6 @@ background and text colours. The new settings would not be fully applied until t
 shut down and started again, thus making it a bit tedious to look through syntax themes to find the
 one you want.</p>
 <p>Switching main GUI theme still requires a restart.</p>
-<p><i>The full changelog is available
-<a href="https://github.com/vkbo/novelWriter/blob/main/CHANGELOG.md">here</a>.</i></p>
+
 </body>
 </html>
