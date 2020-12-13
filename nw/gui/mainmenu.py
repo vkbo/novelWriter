@@ -484,7 +484,7 @@ class GuiMainMenu(QMenuBar):
         self.aFocusMode.setShortcut("F8")
         self.aFocusMode.setCheckable(True)
         self.aFocusMode.setChecked(self.theParent.isFocusMode)
-        self.aFocusMode.toggled.connect(self.theParent.toggleFocusMode)
+        self.aFocusMode.triggered.connect(lambda: self.theParent.toggleFocusMode())
         self.viewMenu.addAction(self.aFocusMode)
 
         # View > Toggle Full Screen
