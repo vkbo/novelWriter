@@ -40,8 +40,8 @@ To add test coverage, run the following:
 pytest-3 -v --cov=nw --cov-report=html
 ```
 
-The `--cov-report` switch generates an html report, omit it to print a coverage summary to the terminal.
-The html coverage report will be available in the `htmlcov` folder.
+The `--cov-report` switch generates an html report, omit it to print a coverage summary to the
+terminal. The html coverage report will be available in the `htmlcov` folder.
 
 ### Test Markers (Categories)
 
