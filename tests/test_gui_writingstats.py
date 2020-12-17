@@ -203,6 +203,7 @@ def testGuiWritingStats_Dialog(qtbot, monkeypatch, nwGUI, fncDir, fncProj):
     # IOError
     # =======
     monkeypatch.setattr("builtins.open", causeOSError)
+    assert not sessLog._loadLogFile()
     assert not sessLog._saveData(sessLog.FMT_CSV)
 
     # qtbot.stopForInteraction()

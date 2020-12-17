@@ -403,8 +403,12 @@ class GuiWritingStats(QDialog):
         ttNotes = 0
         ttTime  = 0
 
+        logFile = os.path.join(self.theProject.projMeta, nwFiles.SESS_STATS)
+        if not os.path.isfile(logFile):
+            logger.info("This project has no writing stats logfile")
+            return False
+
         try:
-            logFile = os.path.join(self.theProject.projMeta, nwFiles.SESS_STATS)
             with open(logFile, mode="r", encoding="utf8") as inFile:
                 for inLine in inFile:
                     if inLine.startswith("#"):
