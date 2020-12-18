@@ -73,15 +73,19 @@ class GuiRootManager(QDialog):
         # Action Buttons
         self.addRoot = QPushButton()
         self.addRoot.setIcon(self.theTheme.getIcon("backward"))
+        self.addRoot.clicked.connect(self._addRootFolder)
 
         self.removeRoot = QPushButton()
         self.removeRoot.setIcon(self.theTheme.getIcon("forward"))
+        self.removeRoot.clicked.connect(self._removeRootFolder)
 
         self.moveUp = QPushButton()
         self.moveUp.setIcon(self.theTheme.getIcon("up"))
+        self.moveUp.clicked.connect(lambda: self._moveProjRoot(-1))
 
         self.moveDown = QPushButton()
         self.moveDown.setIcon(self.theTheme.getIcon("down"))
+        self.moveDown.clicked.connect(lambda: self._moveProjRoot(+1))
 
         # OK Button
         self.buttonBox = QDialogButtonBox(QDialogButtonBox.Ok | QDialogButtonBox.Cancel)
@@ -96,9 +100,10 @@ class GuiRootManager(QDialog):
         self.actionBox = QVBoxLayout()
         self.actionBox.setSpacing(iSp)
         self.actionBox.addStretch(1)
-        self.actionBox.addWidget(self.moveUp)
         self.actionBox.addWidget(self.addRoot)
         self.actionBox.addWidget(self.removeRoot)
+        self.actionBox.addSpacing(mSp)
+        self.actionBox.addWidget(self.moveUp)
         self.actionBox.addWidget(self.moveDown)
         self.actionBox.addStretch(1)
 
@@ -141,7 +146,7 @@ class GuiRootManager(QDialog):
                 self._appendProjRoot(tItem.itemName, tItem.itemClass, tHandle)
             else:
                 if tItem.itemParent in self.rootOrder:
-                    self.rootState[tHandle] = True
+                    self.rootState[tItem.itemParent] = True
 
         for itemClass in nwLabels.CLASS_NAME:
             if itemClass in (nwItemClass.NO_CLASS, nwItemClass.TRASH):
@@ -149,11 +154,59 @@ class GuiRootManager(QDialog):
             if self.theProject.projTree.checkRootUnique(itemClass):
                 self._appendAvailRoot(itemClass)
 
+        if self.projRoots.count() > 0:
+            self.projRoots.setCurrentRow(0)
+
+        if self.availRoots.count() > 0:
+            self.availRoots.setCurrentRow(0)
+
         return
 
     ##
     #  Slots
     ##
+
+    def _addRootFolder(self):
+        """Add a root folder to the project.
+        """
+        aItem = self.availRoots.currentItem()
+        aClass = aItem.data(Qt.UserRole)
+        self._appendProjRoot(
+            nwLabels.CLASS_NAME[aClass], aClass, None
+        )
+        if aClass != nwItemClass.CUSTOM:
+            self.availRoots.takeItem(self.availRoots.currentRow())
+
+        return
+
+    def _removeRootFolder(self):
+        """Remove a root folder from the project.
+        """
+        pItem = self.projRoots.currentItem()
+        pHandle, pClass = pItem.data(Qt.UserRole)
+        if self.rootState.get(pHandle, False):
+            return
+
+        self.projRoots.takeItem(self.projRoots.currentRow())
+        if pClass != nwItemClass.CUSTOM:
+            self._appendAvailRoot(pClass)
+
+        return
+
+    def _moveProjRoot(self, nStep):
+        """Move a root folder up or down.
+        """
+        tIndex = self.projRoots.currentRow()
+        nChild = self.projRoots.count()
+        nIndex = tIndex + nStep
+        if nIndex < 0 or nIndex >= nChild:
+            return
+
+        cItem = self.projRoots.takeItem(tIndex)
+        self.projRoots.insertItem(nIndex, cItem)
+        self.projRoots.setCurrentRow(nIndex)
+
+        return
 
     def _doSave(self):
         """Accept the changes.
@@ -176,23 +229,30 @@ class GuiRootManager(QDialog):
         """
         className = nwLabels.CLASS_NAME[itemClass]
         classIcon = nwLabels.CLASS_ICON[itemClass]
+
         newItem = QListWidgetItem()
         if itemLabel == className:
             newItem.setText(itemLabel)
         else:
             newItem.setText(f"{className} [{itemLabel}]")
         newItem.setIcon(self.theTheme.getIcon(classIcon))
-        newItem.setData(Qt.UserRole, itemHandle)
+        newItem.setData(Qt.UserRole, (itemHandle, itemClass))
         self.projRoots.addItem(newItem)
+
+        return
 
     def _appendAvailRoot(self, itemClass):
         """Append an item to the available roots list.
         """
         className = nwLabels.CLASS_NAME[itemClass]
         classIcon = nwLabels.CLASS_ICON[itemClass]
+
         newItem = QListWidgetItem()
         newItem.setText(className)
         newItem.setIcon(self.theTheme.getIcon(classIcon))
+        newItem.setData(Qt.UserRole, itemClass)
         self.availRoots.addItem(newItem)
+
+        return
 
 # END Class GuiRootManager
