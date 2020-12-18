@@ -893,13 +893,11 @@ class GuiMain(QMainWindow):
             return
 
         dlgRoot = GuiRootManager(self, self.theProject)
-        dlgRoot.setModal(True)
-        dlgRoot.show()
-        qApp.processEvents()
-        dlgRoot.populateGUI()
+        dlgRoot.exec_()
 
         if dlgRoot.result() == QDialog.Accepted:
             logger.debug("Applying new root folder settings")
+            self.treeView.reorderRoots(dlgRoot.newRoots, dlgRoot.delRoots)
 
         return
 

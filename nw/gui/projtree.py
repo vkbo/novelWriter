@@ -319,6 +319,30 @@ class GuiProjectTree(QTreeWidget):
 
         return True
 
+    def reorderRoots(self, rootOrder, removeList):
+        """Change the order of the root folders.
+        """
+        for rHandle, rClass in reversed(rootOrder):
+            rItem = self._getTreeItem(rHandle)
+            if rItem is None:
+                nHandle = self.theProject.newRoot(nwLabels.CLASS_NAME[rClass], rClass)
+                self.revealNewTreeItem(nHandle)
+                rItem = self._getTreeItem(nHandle)
+
+            if rItem is None:
+                continue
+
+            if rItem.parent() is not None:
+                continue
+
+            mItem = self.takeTopLevelItem(self.indexOfTopLevelItem(rItem))
+            self.insertTopLevelItem(0, mItem)
+
+        for dHandle in removeList:
+            self.deleteItem(dHandle, alreadyAsked=True)
+
+        return
+
     def saveTreeOrder(self):
         """Build a list of the items in the project tree and send them
         to the project class. This syncs up the two versions of the

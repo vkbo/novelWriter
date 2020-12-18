@@ -52,6 +52,8 @@ class GuiRootManager(QDialog):
 
         self.rootOrder = []
         self.rootState = {}
+        self.newRoots  = []
+        self.delRoots  = []
 
         iPx = self.theTheme.baseIconSize
         mSp = self.mainConf.pxInt(16)
@@ -123,42 +125,9 @@ class GuiRootManager(QDialog):
         self.outerBox.addWidget(self.buttonBox)
         self.setLayout(self.outerBox)
 
+        self._populateGUI()
+
         logger.debug("GuiRootManager initialisation complete")
-
-        return
-
-    def populateGUI(self):
-        """Load the values and populate the GUI.
-        """
-        self.rootOrder = []
-        self.rootState = {}
-
-        self.theParent.treeView.flushTreeOrder()
-
-        for tItem in self.theProject.projTree:
-            if tItem is None:
-                continue
-
-            tHandle = tItem.itemHandle
-            if tItem.itemType == nwItemType.ROOT:
-                self.rootOrder.append(tHandle)
-                self.rootState[tHandle] = False
-                self._appendProjRoot(tItem.itemName, tItem.itemClass, tHandle)
-            else:
-                if tItem.itemParent in self.rootOrder:
-                    self.rootState[tItem.itemParent] = True
-
-        for itemClass in nwLabels.CLASS_NAME:
-            if itemClass in (nwItemClass.NO_CLASS, nwItemClass.TRASH):
-                continue
-            if self.theProject.projTree.checkRootUnique(itemClass):
-                self._appendAvailRoot(itemClass)
-
-        if self.projRoots.count() > 0:
-            self.projRoots.setCurrentRow(0)
-
-        if self.availRoots.count() > 0:
-            self.availRoots.setCurrentRow(0)
 
         return
 
@@ -211,18 +180,69 @@ class GuiRootManager(QDialog):
     def _doSave(self):
         """Accept the changes.
         """
+        self.newRoots = []
+        remainRoots = []
+        for i in range(self.projRoots.count()):
+            rItem = self.projRoots.item(i)
+            rTuple = rItem.data(Qt.UserRole)
+            self.newRoots.append(rTuple)
+            if rTuple[0] is not None:
+                remainRoots.append(rTuple[0])
+
+        self.delRoots = []
+        for tHandle in self.rootOrder:
+            if tHandle not in remainRoots:
+                self.delRoots.append(tHandle)
+
         self.accept()
+
         return
 
     def _doClose(self):
         """Reject the changes.
         """
+        self.newRoots = []
         self.reject()
         return
 
     ##
     #  Internal Functions
     ##
+
+    def _populateGUI(self):
+        """Load the values and populate the GUI.
+        """
+        self.rootOrder = []
+        self.rootState = {}
+
+        self.theParent.treeView.flushTreeOrder()
+
+        for tItem in self.theProject.projTree:
+            if tItem is None:
+                continue
+
+            tHandle = tItem.itemHandle
+            if tItem.itemType == nwItemType.ROOT:
+                self.rootOrder.append(tHandle)
+                self.rootState[tHandle] = False
+                self._appendProjRoot(tItem.itemName, tItem.itemClass, tHandle)
+            else:
+                if tItem.itemParent in self.rootOrder:
+                    self.rootState[tItem.itemParent] = True
+
+        for itemClass in nwLabels.CLASS_NAME:
+            if itemClass in (nwItemClass.NO_CLASS, nwItemClass.TRASH):
+                continue
+            if self.theProject.projTree.checkRootUnique(itemClass):
+                self._appendAvailRoot(itemClass)
+
+        if self.projRoots.count() > 0:
+            self.projRoots.setCurrentRow(0)
+
+        if self.availRoots.count() > 0:
+            self.availRoots.setCurrentRow(0)
+
+        return
 
     def _appendProjRoot(self, itemLabel, itemClass, itemHandle=None):
         """Append an item to the project roots list.
