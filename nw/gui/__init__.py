@@ -16,6 +16,7 @@ from nw.gui.projload import GuiProjectLoad
 from nw.gui.projsettings import GuiProjectSettings
 from nw.gui.projtree import GuiProjectTree
 from nw.gui.projwizard import GuiProjectWizard
+from nw.gui.rootmanager import GuiRootManager
 from nw.gui.statusbar import GuiMainStatus
 from nw.gui.theme import GuiTheme
 from nw.gui.writingstats import GuiWritingStats
@@ -39,6 +40,7 @@ __all__ = [
     "GuiProjectSettings",
     "GuiProjectTree",
     "GuiProjectWizard",
+    "GuiRootManager",
     "GuiTheme",
     "GuiWritingStats",
 ]

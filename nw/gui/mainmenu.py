@@ -223,6 +223,13 @@ class GuiMainMenu(QMenuBar):
         self.projMenu.addSeparator()
 
         # Project > New Root
+        self.rootManager = QAction("Manage Root Folders", self)
+        self.rootManager.setStatusTip("Add, remove or reorganise toot folders")
+        self.rootManager.setShortcut("Ctrl+Shift+M")
+        self.rootManager.triggered.connect(lambda: self.theParent.showRootManagerDialog())
+        self.projMenu.addAction(self.rootManager)
+
+        # Project > New Root
         self.rootMenu = self.projMenu.addMenu("Create Root Folder")
         self.rootItems = {}
         self.rootItems[nwItemClass.NOVEL]     = QAction("Novel Root",     self.rootMenu)

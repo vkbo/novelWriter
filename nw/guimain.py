@@ -44,7 +44,7 @@ from nw.gui import (
     GuiDocViewDetails, GuiDocViewer, GuiItemDetails, GuiItemEditor,
     GuiMainMenu, GuiMainStatus, GuiOutline, GuiOutlineDetails, GuiPreferences,
     GuiProjectLoad, GuiProjectSettings, GuiProjectTree, GuiProjectWizard,
-    GuiTheme, GuiWritingStats
+    GuiRootManager, GuiTheme, GuiWritingStats
 )
 from nw.core import NWProject, NWDoc, NWIndex
 from nw.constants import nwItemType, nwItemClass, nwAlert
@@ -882,6 +882,24 @@ class GuiMain(QMainWindow):
             logger.debug("Applying new project settings")
             self.docEditor.setDictionaries()
             self._setWindowTitle(self.theProject.projName)
+
+        return
+
+    def showRootManagerDialog(self):
+        """Open the root folder manager dialog.
+        """
+        if not self.hasProject:
+            logger.error("No project open")
+            return
+
+        dlgRoot = GuiRootManager(self, self.theProject)
+        dlgRoot.setModal(True)
+        dlgRoot.show()
+        qApp.processEvents()
+        dlgRoot.populateGUI()
+
+        if dlgRoot.result() == QDialog.Accepted:
+            logger.debug("Applying new root folder settings")
 
         return
 
