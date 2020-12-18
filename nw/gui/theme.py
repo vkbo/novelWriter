@@ -560,6 +560,8 @@ class GuiIcons:
         "maximise"       : (None, None),
         "minimise"       : (None, None),
         "refresh"        : (None, None),
+        "up"             : (None, None),
+        "down"           : (None, None),
         "reference"      : (None, None),
         "backward"       : (None, None),
         "forward"        : (None, None),
