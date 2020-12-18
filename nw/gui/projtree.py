@@ -994,6 +994,10 @@ class GuiProjectTreeMenu(QMenu):
         self.theTree = theTree
         self.theItem = None
 
+        self.editItem = QAction("Edit Project Item", self)
+        self.editItem.triggered.connect(self._doEditItem)
+        self.addAction(self.editItem)
+
         self.openItem = QAction("Open Document", self)
         self.openItem.triggered.connect(self._doOpenItem)
         self.addAction(self.openItem)
@@ -1001,10 +1005,6 @@ class GuiProjectTreeMenu(QMenu):
         self.viewItem = QAction("View Document", self)
         self.viewItem.triggered.connect(self._doViewItem)
         self.addAction(self.viewItem)
-
-        self.editItem = QAction("Edit Project Item", self)
-        self.editItem.triggered.connect(self._doEditItem)
-        self.addAction(self.editItem)
 
         self.toggleExp = QAction("Toggle Included Flag", self)
         self.toggleExp.triggered.connect(self._doToggleExported)
@@ -1026,6 +1026,14 @@ class GuiProjectTreeMenu(QMenu):
         self.emptyTrash.triggered.connect(self._doEmptyTrash)
         self.addAction(self.emptyTrash)
 
+        self.moveUp = QAction("Move Item Up", self)
+        self.moveUp.triggered.connect(self._doMoveUp)
+        self.addAction(self.moveUp)
+
+        self.moveDown = QAction("Move Item Down", self)
+        self.moveDown.triggered.connect(self._doMoveDown)
+        self.addAction(self.moveDown)
+
         return
 
     def filterActions(self, theItem):
@@ -1045,23 +1053,17 @@ class GuiProjectTreeMenu(QMenu):
         isFile  = theItem.itemType == nwItemType.FILE
         isOrph  = isFile and theItem.itemParent is None
 
-        showOpen      = isFile
-        showView      = isFile
-        showEdit      = not isTrash and not isOrph
-        showExport    = isFile
-        showNewFile   = not (isTrash or inTrash or isOrph)
-        showNewFolder = not (isTrash or inTrash or isOrph)
-        showDelete    = not isTrash
-        showEmpty     = isTrash
+        allowEdit = not (isTrash or isOrph)
+        allowNew  = not (isTrash or inTrash or isOrph)
 
-        self.openItem.setVisible(showOpen)
-        self.viewItem.setVisible(showView)
-        self.editItem.setVisible(showEdit)
-        self.toggleExp.setVisible(showExport)
-        self.newFile.setVisible(showNewFile)
-        self.newFolder.setVisible(showNewFolder)
-        self.deleteItem.setVisible(showDelete)
-        self.emptyTrash.setVisible(showEmpty)
+        self.editItem.setVisible(allowEdit)
+        self.openItem.setVisible(isFile)
+        self.viewItem.setVisible(isFile)
+        self.toggleExp.setVisible(isFile)
+        self.newFile.setVisible(allowNew)
+        self.newFolder.setVisible(allowNew)
+        self.deleteItem.setVisible(not isTrash)
+        self.emptyTrash.setVisible(isTrash)
 
         return True
 
@@ -1123,6 +1125,18 @@ class GuiProjectTreeMenu(QMenu):
         """Forward the delete item call to the project tree.
         """
         self.theTree.emptyTrash()
+        return
+
+    def _doMoveUp(self):
+        """Forward the move item call to the project tree.
+        """
+        self.theTree.moveTreeItem(-1)
+        return
+
+    def _doMoveDown(self):
+        """Forward the move item call to the project tree.
+        """
+        self.theTree.moveTreeItem(1)
         return
 
 # END Class GuiProjectTreeMenu
