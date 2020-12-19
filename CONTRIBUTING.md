@@ -40,14 +40,14 @@ The documentation is available [here](https://flake8.pycqa.org/en/latest/).
 The `setup.cfg` file in the root of this project has the following settings:
 ```conf
 [flake8]
-ignore = E203,E221,E226,E241,E251,E261,E266,E302,E305
+ignore = E203,E221,E226,E228,E241,E251,E261,E266,E302,E305
 max-line-length = 99
 exclude = docs/*
 ```
 
 The command line equivalent, with reporting, is:
 ```bash
-flake8 . --count --ignore E203,E221,E226,E241,E251,E261,E266,E302,E305 --max-line-length=99 --show-source --statistics
+flake8 . --count --ignore E203,E221,E226,E228,E241,E251,E261,E266,E302,E305 --max-line-length=99 --show-source --statistics
 ```
 
 Passing this check is required before contributions are merged into the `main` branch. This is
@@ -80,6 +80,9 @@ The ignored errors are all `pycodestyle` errors, and they are documented
 operator precedence like `2*a + 3*b` instead of `a * a + 3 * b`. Generally, don't use spaces around
 `*`, `/` and `**`, but do use spaces around `+` and `-`. For appending strings, the spaces can be
 dropped. Don't use the `+` operator for appending multiple strings. Use formatting instead.
+
+**E228** missing whitespace around modulo operator  
+**Reason:** Column alignment.
 
 **E241:** multiple spaces after ‘,’  
 **Reason:** Column alignment.
