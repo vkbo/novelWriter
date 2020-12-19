@@ -82,7 +82,7 @@ operator precedence like `2*a + 3*b` instead of `a * a + 3 * b`. Generally, don'
 dropped. Don't use the `+` operator for appending multiple strings. Use formatting instead.
 
 **E228** missing whitespace around modulo operator  
-**Reason:** Column alignment.
+**Reason:** See reason for E226. Formatting `%` like `/` and `*` should be possible.
 
 **E241:** multiple spaces after ‘,’  
 **Reason:** Column alignment.
