@@ -320,12 +320,11 @@ class GuiMain(QMainWindow):
             return True
 
         if not isYes:
-            msgBox = QMessageBox()
-            msgRes = msgBox.question(
-                self, "Close Project",
+            msgYes = self.askQuestion(
+                "Close Project",
                 "Close the current project?<br>Changes are saved automatically."
             )
-            if msgRes != QMessageBox.Yes:
+            if not msgYes:
                 return False
 
         if self.docEditor.docChanged:
@@ -337,11 +336,10 @@ class GuiMain(QMainWindow):
             if self.theProject.doBackup and self.mainConf.backupOnClose:
                 doBackup = True
                 if self.mainConf.askBeforeBackup:
-                    msgBox = QMessageBox()
-                    msgRes = msgBox.question(
-                        self, "Backup Project", "Backup the current project?"
+                    msgYes = self.askQuestion(
+                        "Backup Project", "Backup the current project?"
                     )
-                    if msgRes != QMessageBox.Yes:
+                    if not msgYes:
                         doBackup = False
             if doBackup:
                 self.theProject.zipIt(False)
@@ -640,12 +638,11 @@ class GuiMain(QMainWindow):
             return False
 
         if not self.docEditor.isEmpty():
-            msgBox = QMessageBox()
-            msgRes = msgBox.question(self, "Import Document", (
+            msgYes = self.askQuestion("Import Document", (
                 "Importing the file will overwrite the current content of the document. "
                 "Do you want to proceed?"
             ))
-            if msgRes != QMessageBox.Yes:
+            if not msgYes:
                 return False
 
         self.docEditor.replaceText(theText)
@@ -1007,12 +1004,11 @@ class GuiMain(QMainWindow):
         """Save everything, and close novelWriter.
         """
         if self.hasProject:
-            msgBox = QMessageBox()
-            msgRes = msgBox.question(
-                self, "Exit",
+            msgYes = self.askQuestion(
+                "Exit",
                 "Do you want to exit novelWriter?<br>Changes are saved automatically."
             )
-            if msgRes != QMessageBox.Yes:
+            if not msgYes:
                 return False
 
         logger.info("Exiting novelWriter")

@@ -471,14 +471,14 @@ class NWProject():
         #       read the file. Introduced in version 0.10.
 
         if fileVersion == "1.0":
-            msgRes = self.theParent.askQuestion("Old Project Version", (
+            msgYes = self.theParent.askQuestion("Old Project Version", (
                 "The project file and data is created by a novelWriter version "
                 "lower than 0.7. Do you want to upgrade the project to the "
                 "most recent format?<br><br>Note that after the upgrade, you "
                 "cannot open the project with an older version of novelWriter "
                 "any more, so make sure you have a recent backup."
             ))
-            if not msgRes:
+            if not msgYes:
                 self.clearProject()
                 return False
 
@@ -497,7 +497,7 @@ class NWProject():
         # =========================
 
         if int(hexVersion, 16) > int(nw.__hexversion__, 16):
-            msgRes = self.theParent.askQuestion("Version Conflict", (
+            msgYes = self.theParent.askQuestion("Version Conflict", (
                 "This project was saved by a newer version of novelWriter, version %s. "
                 "This is version %s. If you continue to open the project, some attributes "
                 "and settings may not be preserved, but the overall project should be fine. "
@@ -505,7 +505,7 @@ class NWProject():
             ) % (
                 appVersion, nw.__version__
             ))
-            if not msgRes:
+            if not msgYes:
                 self.clearProject()
                 return False
 

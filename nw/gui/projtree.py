@@ -32,8 +32,7 @@ import logging
 from PyQt5.QtCore import Qt, QSize
 from PyQt5.QtGui import QIcon
 from PyQt5.QtWidgets import (
-    qApp, QTreeWidget, QTreeWidgetItem, QAbstractItemView, QMessageBox,
-    QMenu, QAction
+    qApp, QTreeWidget, QTreeWidgetItem, QAbstractItemView, QMenu, QAction
 )
 
 from nw.core import NWDoc
@@ -391,13 +390,12 @@ class GuiProjectTree(QTreeWidget):
             self.makeAlert("The Trash folder is already empty.", nwAlert.INFO)
             return False
 
-        msgBox = QMessageBox()
-        msgRes = msgBox.question(
-            self, "Empty Trash", "Permanently delete %d file%s from Trash?" % (
+        msgYes = self.theParent.askQuestion(
+            "Empty Trash", "Permanently delete %d file%s from Trash?" % (
                 nTrash, "s" if nTrash > 1 else ""
             )
         )
-        if msgRes != QMessageBox.Yes:
+        if not msgYes:
             return False
 
         logger.verbose("Deleting %d files from Trash" % nTrash)
@@ -449,11 +447,10 @@ class GuiProjectTree(QTreeWidget):
                 # user if they want to permanently delete the file.
                 doPermanent = False
                 if not alreadyAsked:
-                    msgBox = QMessageBox()
-                    msgRes = msgBox.question(
-                        self, "Delete File", "Permanently delete file '%s'?" % nwItemS.itemName
+                    msgYes = self.theParent.askQuestion(
+                        "Delete File", "Permanently delete file '%s'?" % nwItemS.itemName
                     )
-                    if msgRes == QMessageBox.Yes:
+                    if msgYes:
                         doPermanent = True
                 else:
                     doPermanent = True
@@ -478,11 +475,10 @@ class GuiProjectTree(QTreeWidget):
                 # move it there.
                 doTrash = False
                 if askForTrash:
-                    msgBox = QMessageBox()
-                    msgRes = msgBox.question(
-                        self, "Delete File", "Move file '%s' to Trash?" % nwItemS.itemName
+                    msgYes = self.theParent.askQuestion(
+                        "Delete File", "Move file '%s' to Trash?" % nwItemS.itemName
                     )
-                    if msgRes == QMessageBox.Yes:
+                    if msgYes:
                         doTrash = True
                 else:
                     doTrash = True
@@ -1122,7 +1118,7 @@ class GuiProjectTreeMenu(QMenu):
         return
 
     def _doEmptyTrash(self):
-        """Forward the delete item call to the project tree.
+        """Forward the empty trash call to the project tree.
         """
         self.theTree.emptyTrash()
         return
