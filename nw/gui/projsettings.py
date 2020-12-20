@@ -118,7 +118,7 @@ class GuiProjectSettings(PagedDialog):
             self.theProject.setImportColours(importCol)
 
         if self.tabStatus.colChanged or self.tabImport.colChanged:
-            self.theParent.rebuildTree()
+            self.theParent.rebuildTrees()
 
         if self.tabReplace.arChanged:
             newList = self.tabReplace.getNewList()

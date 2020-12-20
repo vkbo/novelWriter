@@ -190,7 +190,7 @@ class GuiMain(QMainWindow):
         # Initialise the Project Tree
         self.treeView.itemSelectionChanged.connect(self._treeSingleClick)
         self.treeView.itemDoubleClicked.connect(self._treeDoubleClick)
-        self.rebuildTree()
+        self.rebuildTrees()
 
         # Set Main Window Elements
         self.setMenuBar(self.mainMenu)
@@ -312,7 +312,7 @@ class GuiMain(QMainWindow):
 
         logger.info("Creating new project")
         if self.theProject.newProject(projData):
-            self.rebuildTree()
+            self.rebuildTrees()
             self.saveProject()
             self.hasProject = True
             self.statusBar.setRefTime(self.theProject.projOpened)
@@ -436,7 +436,7 @@ class GuiMain(QMainWindow):
 
         # Update GUI
         self._setWindowTitle(self.theProject.projName)
-        self.rebuildTree()
+        self.rebuildTrees()
         self.docEditor.setDictionaries()
         self.docEditor.setSpellCheck(self.theProject.spellCheck)
         self.mainMenu.setAutoOutline(self.theProject.autoOutline)
@@ -746,13 +746,15 @@ class GuiMain(QMainWindow):
 
         return
 
-    def rebuildTree(self):
+    def rebuildTrees(self):
         """Rebuild the project tree.
         """
         self._makeStatusIcons()
         self._makeImportIcons()
         self.treeView.clearTree()
         self.treeView.buildTree()
+        self.novelView.clearTree()
+        self.novelView.refreshTree()
         return
 
     def rebuildIndex(self, beQuiet=False):
