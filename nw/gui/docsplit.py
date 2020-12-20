@@ -31,7 +31,7 @@ import logging
 from PyQt5.QtCore import Qt
 from PyQt5.QtWidgets import (
     QDialog, QVBoxLayout, QComboBox, QListWidget, QAbstractItemView,
-    QListWidgetItem, QDialogButtonBox, QLabel, QMessageBox
+    QListWidgetItem, QDialogButtonBox, QLabel
 )
 
 from nw.core import NWDoc
@@ -163,15 +163,12 @@ class GuiDocSplit(QDialog):
             ), nwAlert.ERROR)
             return
 
-        msgBox = QMessageBox()
-        msgRes = msgBox.question(
-            self, "Split Document", (
-                "The document will be split into %d file(s) in a new folder. "
-                "The original document will remain intact.<br><br>"
-                "Continue with the splitting process?"
-            ) % nFiles
-        )
-        if msgRes != QMessageBox.Yes:
+        msgYes = self.theParent.askQuestion("Split Document", (
+            "The document will be split into %d file(s) in a new folder. "
+            "The original document will remain intact.<br><br>"
+            "Continue with the splitting process?"
+        ) % nFiles)
+        if not msgYes:
             return
 
         # Create the folder

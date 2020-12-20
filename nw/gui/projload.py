@@ -36,7 +36,7 @@ from PyQt5.QtGui import QKeySequence
 from PyQt5.QtWidgets import (
     QDialog, QHBoxLayout, QVBoxLayout, QGridLayout, QPushButton, QTreeWidget,
     QAbstractItemView, QTreeWidgetItem, QDialogButtonBox, QLabel, QShortcut,
-    QFileDialog, QLineEdit, QMessageBox
+    QFileDialog, QLineEdit
 )
 
 from nw.common import formatInt
@@ -218,12 +218,11 @@ class GuiProjectLoad(QDialog):
         """
         selList = self.listBox.selectedItems()
         if selList:
-            msgBox = QMessageBox()
-            msgRes = msgBox.question(
-                self, "Remove Entry",
+            msgYes = self.theParent.askQuestion(
+                "Remove Entry",
                 "Remove the selected entry from the recent projects list?"
             )
-            if msgRes == QMessageBox.Yes:
+            if msgYes:
                 self.mainConf.removeFromRecentCache(
                     selList[0].data(self.C_NAME, Qt.UserRole)
                 )
