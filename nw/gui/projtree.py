@@ -640,11 +640,7 @@ class GuiProjectTree(QTreeWidget):
         selected, return the first.
         """
         selItem = self.selectedItems()
-
-        if len(selItem) == 0:
-            return None
-
-        if isinstance(selItem[0], QTreeWidgetItem):
+        if selItem:
             return selItem[0].data(self.C_NAME, Qt.UserRole)
 
         return None

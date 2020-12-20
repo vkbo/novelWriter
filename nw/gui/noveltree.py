@@ -126,7 +126,20 @@ class GuiNovelTree(QTreeWidget):
     def refreshTree(self, overRide=False):
         """Called whenever the Novel tab is activated.
         """
+        if self.lastBuild >= self.theIndex.timeNovel:
+            logger.verbose("Novel tree more recent than the novel index: not updating")
+            return
+
+        selItem = self.selectedItems()
+        titleKey = None
+        if selItem:
+            titleKey = selItem[0].data(self.C_TITLE, Qt.UserRole)[2]
+
         self._populateTree()
+
+        if titleKey is not None and titleKey in self.treeMap:
+            self.treeMap[titleKey].setSelected(True)
+
         return
 
     def getColumnSizes(self):
@@ -137,6 +150,16 @@ class GuiNovelTree(QTreeWidget):
             self.columnWidth(1),
         ]
         return retVals
+
+    def getSelectedHandle(self):
+        """Get the currently selected handle. If multiple items are
+        selected, return the first.
+        """
+        selItem = self.selectedItems()
+        if selItem:
+            return selItem[0].data(self.C_TITLE, Qt.UserRole)[0]
+
+        return None
 
     ##
     #  Slots
@@ -193,7 +216,7 @@ class GuiNovelTree(QTreeWidget):
                 continue
 
             tLevel = self.theIndex.novelIndex[tHandle][sTitle]["level"]
-            tItem  = self._createTreeItem(tHandle, sTitle, tLevel)
+            tItem  = self._createTreeItem(tHandle, sTitle, tLevel, titleKey)
             self.treeMap[titleKey] = tItem
 
             if tLevel == "H1":
@@ -232,14 +255,14 @@ class GuiNovelTree(QTreeWidget):
 
         return
 
-    def _createTreeItem(self, tHandle, sTitle, tLevel):
+    def _createTreeItem(self, tHandle, sTitle, tLevel, titleKey):
         """Populate a tree item with all the column values.
         """
         novIdx = self.theIndex.novelIndex[tHandle][sTitle]
 
         newItem = QTreeWidgetItem()
         hIcon   = "doc_%s" % tLevel.lower()
-        theData = (tHandle, sTitle[1:].lstrip("0"))
+        theData = (tHandle, sTitle[1:].lstrip("0"), titleKey)
 
         wC = int(novIdx["wCount"])
 

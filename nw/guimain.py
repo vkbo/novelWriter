@@ -118,6 +118,7 @@ class GuiMain(QMainWindow):
         self.projTabs.setStyleSheet("QTabWidget::pane {border: 0;};")
         self.projTabs.addTab(self.treeView, "Project")
         self.projTabs.addTab(self.novelView, "Novel")
+        self.projTabs.currentChanged.connect(self._projTabsChanged)
 
         tabFont = self.projTabs.tabBar().font()
         tabFont.setPointSize(round(0.9*self.theTheme.fontPointSize))
@@ -166,14 +167,16 @@ class GuiMain(QMainWindow):
         self.splitMain.setSizes(self.mainConf.getMainPanePos())
 
         # Indices of All Splitter Widgets
-        self.idxTree     = self.splitMain.indexOf(self.treePane)
-        self.idxMain     = self.splitMain.indexOf(self.mainTabs)
-        self.idxEditor   = self.splitDocs.indexOf(self.docEditor)
-        self.idxViewer   = self.splitDocs.indexOf(self.splitView)
-        self.idxViewDoc  = self.splitView.indexOf(self.docViewer)
-        self.idxViewMeta = self.splitView.indexOf(self.viewMeta)
-        self.idxTabEdit  = self.mainTabs.indexOf(self.splitDocs)
-        self.idxTabProj  = self.mainTabs.indexOf(self.splitOutline)
+        self.idxTree      = self.splitMain.indexOf(self.treePane)
+        self.idxMain      = self.splitMain.indexOf(self.mainTabs)
+        self.idxEditor    = self.splitDocs.indexOf(self.docEditor)
+        self.idxViewer    = self.splitDocs.indexOf(self.splitView)
+        self.idxViewDoc   = self.splitView.indexOf(self.docViewer)
+        self.idxViewMeta  = self.splitView.indexOf(self.viewMeta)
+        self.idxTabEdit   = self.mainTabs.indexOf(self.splitDocs)
+        self.idxTabProj   = self.mainTabs.indexOf(self.splitOutline)
+        self.idxTreeView  = self.projTabs.indexOf(self.treeView)
+        self.idxNovelView = self.projTabs.indexOf(self.novelView)
 
         # Splitter Behaviour
         self.splitMain.setCollapsible(self.idxTree, False)
@@ -1373,6 +1376,25 @@ class GuiMain(QMainWindow):
             logger.verbose("Project outline tab activated")
             if self.hasProject:
                 self.projView.refreshTree()
+        return
+
+    def _projTabsChanged(self, tabIndex):
+        """Activated when the project view tab is changed.
+        """
+        tHandle = None
+
+        if tabIndex == self.idxTreeView:
+            logger.verbose("Project tree tab activated")
+            tHandle = self.treeView.getSelectedHandle()
+
+        elif tabIndex == self.idxNovelView:
+            logger.verbose("Novel tree tab activated")
+            if self.hasProject:
+                self.novelView.refreshTree()
+                tHandle = self.novelView.getSelectedHandle()
+
+        self.treeMeta.updateViewBox(tHandle)
+
         return
 
 # END Class GuiMain
