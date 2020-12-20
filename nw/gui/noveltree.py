@@ -77,6 +77,10 @@ class GuiNovelTree(QTreeWidget):
         treeHeadItem.setToolTip(self.C_WORDS, "Word count")
         treeHeadItem.setToolTip(self.C_POV,   "Point-of-view character")
 
+        treeHeader = self.header()
+        treeHeader.setStretchLastSection(True)
+        treeHeader.setMinimumSectionSize(iPx + 6)
+
         # Get user's column width preferences for NAME and COUNT
         treeColWidth = self.mainConf.getNovelColWidths()
         if len(treeColWidth) <= 3:
@@ -160,6 +164,35 @@ class GuiNovelTree(QTreeWidget):
             return selItem[0].data(self.C_TITLE, Qt.UserRole)[0]
 
         return None
+
+    ##
+    #  Events
+    ##
+
+    def mousePressEvent(self, theEvent):
+        """Overload mousePressEvent to clear selection if clicking the
+        mouse in a blank area of the tree view, and to load a document
+        for viewing if the user middle-clicked.
+        """
+        QTreeWidget.mousePressEvent(self, theEvent)
+
+        if theEvent.button() == Qt.LeftButton:
+            selItem = self.indexAt(theEvent.pos())
+            if not selItem.isValid():
+                self.clearSelection()
+
+        elif theEvent.button() == Qt.MiddleButton:
+            selItem = self.itemAt(theEvent.pos())
+            if not isinstance(selItem, QTreeWidgetItem):
+                return
+
+            tHandle = self.getSelectedHandle()
+            if tHandle is None:
+                return
+
+            self.theParent.viewDocument(tHandle)
+
+        return
 
     ##
     #  Slots

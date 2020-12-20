@@ -699,7 +699,7 @@ class GuiProjectTree(QTreeWidget):
     def mousePressEvent(self, theEvent):
         """Overload mousePressEvent to clear selection if clicking the
         mouse in a blank area of the tree view, and to load a document
-        for viewing if the suer middle clicked.
+        for viewing if the user middle-clicked.
         """
         QTreeWidget.mousePressEvent(self, theEvent)
 

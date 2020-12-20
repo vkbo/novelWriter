@@ -269,6 +269,7 @@ class GuiMain(QMainWindow):
         """Wrapper function to clear all sub-elements of the main GUI.
         """
         self.treeView.clearTree()
+        self.novelView.clearTree()
         self.docEditor.clearEditor()
         self.closeDocViewer()
         self.statusBar.clearStatus()
@@ -878,6 +879,7 @@ class GuiMain(QMainWindow):
             self.docEditor.initEditor()
             self.docViewer.initViewer()
             self.treeView.initTree()
+            self.novelView.initTree()
             self.projView.initOutline()
             self.projMeta.initDetails()
 
@@ -1381,19 +1383,19 @@ class GuiMain(QMainWindow):
     def _projTabsChanged(self, tabIndex):
         """Activated when the project view tab is changed.
         """
-        tHandle = None
+        sHandle = None
 
         if tabIndex == self.idxTreeView:
             logger.verbose("Project tree tab activated")
-            tHandle = self.treeView.getSelectedHandle()
+            sHandle = self.treeView.getSelectedHandle()
 
         elif tabIndex == self.idxNovelView:
             logger.verbose("Novel tree tab activated")
             if self.hasProject:
                 self.novelView.refreshTree()
-                tHandle = self.novelView.getSelectedHandle()
+                sHandle = self.novelView.getSelectedHandle()
 
-        self.treeMeta.updateViewBox(tHandle)
+        self.treeMeta.updateViewBox(sHandle)
 
         return
 
