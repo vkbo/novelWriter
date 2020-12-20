@@ -42,9 +42,9 @@ from PyQt5.QtWidgets import (
 from nw.gui import (
     GuiAbout, GuiBuildNovel, GuiDocEditor, GuiDocMerge, GuiDocSplit,
     GuiDocViewDetails, GuiDocViewer, GuiItemDetails, GuiItemEditor,
-    GuiMainMenu, GuiMainStatus, GuiOutline, GuiOutlineDetails, GuiPreferences,
-    GuiProjectLoad, GuiProjectSettings, GuiProjectTree, GuiProjectWizard,
-    GuiTheme, GuiWritingStats
+    GuiMainMenu, GuiMainStatus, GuiNovelTree, GuiOutline, GuiOutlineDetails,
+    GuiPreferences, GuiProjectLoad, GuiProjectSettings, GuiProjectTree,
+    GuiProjectWizard, GuiTheme, GuiWritingStats
 )
 from nw.core import NWProject, NWDoc, NWIndex
 from nw.constants import nwItemType, nwItemClass, nwAlert
@@ -99,6 +99,7 @@ class GuiMain(QMainWindow):
         # Main GUI Elements
         self.statusBar = GuiMainStatus(self)
         self.treeView  = GuiProjectTree(self)
+        self.novelView = GuiNovelTree(self)
         self.docEditor = GuiDocEditor(self)
         self.viewMeta  = GuiDocViewDetails(self)
         self.docViewer = GuiDocViewer(self)
@@ -111,11 +112,23 @@ class GuiMain(QMainWindow):
         self.statusIcons = []
         self.importIcons = []
 
+        # Project Tabs : Project / Novel
+        self.projTabs = QTabWidget()
+        self.projTabs.setTabPosition(QTabWidget.South)
+        self.projTabs.setStyleSheet("QTabWidget::pane {border: 0;};")
+        self.projTabs.addTab(self.treeView, "Project")
+        self.projTabs.addTab(self.novelView, "Novel")
+
+        tabFont = self.projTabs.tabBar().font()
+        tabFont.setPointSize(round(0.9*self.theTheme.fontPointSize))
+        self.projTabs.tabBar().setFont(tabFont)
+
         # Project Tree View
         self.treePane = QWidget()
         self.treeBox = QVBoxLayout()
         self.treeBox.setContentsMargins(0, 0, 0, 0)
-        self.treeBox.addWidget(self.treeView)
+        self.treeBox.setSpacing(0)
+        self.treeBox.addWidget(self.projTabs)
         self.treeBox.addWidget(self.treeMeta)
         self.treePane.setLayout(self.treeBox)
 
@@ -136,31 +149,31 @@ class GuiMain(QMainWindow):
         self.splitOutline.addWidget(self.projMeta)
         self.splitOutline.setSizes(self.mainConf.getOutlinePanePos())
 
-        # Main Tabs : Edirot / Outline
-        self.tabWidget = QTabWidget()
-        self.tabWidget.setTabPosition(QTabWidget.East)
-        self.tabWidget.setStyleSheet("QTabWidget::pane {border: 0;}")
-        self.tabWidget.addTab(self.splitDocs, "Editor")
-        self.tabWidget.addTab(self.splitOutline, "Outline")
-        self.tabWidget.currentChanged.connect(self._mainTabChanged)
+        # Main Tabs : Editor / Outline
+        self.mainTabs = QTabWidget()
+        self.mainTabs.setTabPosition(QTabWidget.East)
+        self.mainTabs.setStyleSheet("QTabWidget::pane {border: 0;}")
+        self.mainTabs.addTab(self.splitDocs, "Editor")
+        self.mainTabs.addTab(self.splitOutline, "Outline")
+        self.mainTabs.currentChanged.connect(self._mainTabChanged)
 
         # Splitter : Project Tree / Main Tabs
         xCM = self.mainConf.pxInt(4)
         self.splitMain = QSplitter(Qt.Horizontal)
         self.splitMain.setContentsMargins(xCM, xCM, xCM, xCM)
         self.splitMain.addWidget(self.treePane)
-        self.splitMain.addWidget(self.tabWidget)
+        self.splitMain.addWidget(self.mainTabs)
         self.splitMain.setSizes(self.mainConf.getMainPanePos())
 
         # Indices of All Splitter Widgets
         self.idxTree     = self.splitMain.indexOf(self.treePane)
-        self.idxMain     = self.splitMain.indexOf(self.tabWidget)
+        self.idxMain     = self.splitMain.indexOf(self.mainTabs)
         self.idxEditor   = self.splitDocs.indexOf(self.docEditor)
         self.idxViewer   = self.splitDocs.indexOf(self.splitView)
         self.idxViewDoc  = self.splitView.indexOf(self.docViewer)
         self.idxViewMeta = self.splitView.indexOf(self.viewMeta)
-        self.idxTabEdit  = self.tabWidget.indexOf(self.splitDocs)
-        self.idxTabProj  = self.tabWidget.indexOf(self.splitOutline)
+        self.idxTabEdit  = self.mainTabs.indexOf(self.splitDocs)
+        self.idxTabProj  = self.mainTabs.indexOf(self.splitOutline)
 
         # Splitter Behaviour
         self.splitMain.setCollapsible(self.idxTree, False)
@@ -355,7 +368,7 @@ class GuiMain(QMainWindow):
             self.theIndex.clearIndex()
             self.clearGUI()
             self.hasProject = False
-            self.tabWidget.setCurrentWidget(self.splitDocs)
+            self.mainTabs.setCurrentWidget(self.splitDocs)
 
         return saveOK
 
@@ -371,7 +384,7 @@ class GuiMain(QMainWindow):
             return False
 
         # Switch main tab to editor view
-        self.tabWidget.setCurrentWidget(self.splitDocs)
+        self.mainTabs.setCurrentWidget(self.splitDocs)
 
         # Try to open the project
         if not self.theProject.openProject(projFile):
@@ -490,7 +503,7 @@ class GuiMain(QMainWindow):
             return False
 
         self.closeDocument()
-        self.tabWidget.setCurrentWidget(self.splitDocs)
+        self.mainTabs.setCurrentWidget(self.splitDocs)
         if self.docEditor.loadText(tHandle, tLine):
             if changeFocus:
                 self.docEditor.setFocus()
@@ -575,7 +588,7 @@ class GuiMain(QMainWindow):
                 return False
 
         # Make sure main tab is in Editor view
-        self.tabWidget.setCurrentWidget(self.splitDocs)
+        self.mainTabs.setCurrentWidget(self.splitDocs)
 
         logger.debug("Viewing document with handle %s" % tHandle)
         if self.docViewer.loadText(tHandle):
@@ -797,7 +810,7 @@ class GuiMain(QMainWindow):
             return False
 
         logger.verbose("Forcing a rebuild of the Project Outline")
-        self.tabWidget.setCurrentWidget(self.splitOutline)
+        self.mainTabs.setCurrentWidget(self.splitOutline)
         self.projView.refreshTree(overRide=True)
 
         return True
@@ -1022,6 +1035,7 @@ class GuiMain(QMainWindow):
 
         self.mainConf.setShowRefPanel(self.viewMeta.isVisible())
         self.mainConf.setTreeColWidths(self.treeView.getColumnSizes())
+        self.mainConf.setNovelColWidths(self.novelView.getColumnSizes())
         if not self.mainConf.isFullScreen:
             self.mainConf.setWinSize(self.width(), self.height())
 
@@ -1078,7 +1092,7 @@ class GuiMain(QMainWindow):
         self.mainMenu.aFocusMode.setChecked(self.isFocusMode)
         if self.isFocusMode:
             logger.debug("Activating Focus Mode")
-            self.tabWidget.setCurrentWidget(self.splitDocs)
+            self.mainTabs.setCurrentWidget(self.splitDocs)
         else:
             logger.debug("Deactivating Focus Mode")
 
@@ -1086,7 +1100,7 @@ class GuiMain(QMainWindow):
         self.treePane.setVisible(isVisible)
         self.statusBar.setVisible(isVisible)
         self.mainMenu.setVisible(isVisible)
-        self.tabWidget.tabBar().setVisible(isVisible)
+        self.mainTabs.tabBar().setVisible(isVisible)
 
         hideDocFooter = self.isFocusMode and self.mainConf.hideFocusFooter
         self.docEditor.docFooter.setVisible(not hideDocFooter)

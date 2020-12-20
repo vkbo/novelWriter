@@ -357,9 +357,9 @@ class GuiProjectTree(QTreeWidget):
         """Return the column widths for the tree columns.
         """
         retVals = [
-            self.columnWidth(0),
-            self.columnWidth(1),
-            self.columnWidth(2),
+            self.columnWidth(self.C_NAME),
+            self.columnWidth(self.C_COUNT),
+            self.columnWidth(self.C_EXPORT),
         ]
         return retVals
 

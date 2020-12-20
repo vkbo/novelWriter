@@ -95,14 +95,15 @@ class Config:
         self.lastNotes   = ""    # The latest release notes that have been shown
 
         ## Sizes
-        self.winGeometry  = [1200, 650]
-        self.treeColWidth = [200, 50, 30]
-        self.projColWidth = [200, 60, 140]
-        self.mainPanePos  = [300, 800]
-        self.docPanePos   = [400, 400]
-        self.viewPanePos  = [500, 150]
-        self.outlnPanePos = [500, 150]
-        self.isFullScreen = False
+        self.winGeometry   = [1200, 650]
+        self.treeColWidth  = [200, 50, 30]
+        self.novelColWidth = [200, 50]
+        self.projColWidth  = [200, 60, 140]
+        self.mainPanePos   = [300, 800]
+        self.docPanePos    = [400, 400]
+        self.viewPanePos   = [500, 150]
+        self.outlnPanePos  = [500, 150]
+        self.isFullScreen  = False
 
         ## Features
         self.hideVScroll = False # Hide vertical scroll bars on main widgets
@@ -395,6 +396,9 @@ class Config:
         self.treeColWidth = self._parseLine(
             cnfParse, cnfSec, "treecols", self.CNF_I_LST, self.treeColWidth
         )
+        self.novelColWidth = self._parseLine(
+            cnfParse, cnfSec, "novelcols", self.CNF_I_LST, self.novelColWidth
+        )
         self.projColWidth = self._parseLine(
             cnfParse, cnfSec, "projcols", self.CNF_I_LST, self.projColWidth
         )
@@ -597,6 +601,7 @@ class Config:
         cnfParse.add_section(cnfSec)
         cnfParse.set(cnfSec, "geometry",    self._packList(self.winGeometry))
         cnfParse.set(cnfSec, "treecols",    self._packList(self.treeColWidth))
+        cnfParse.set(cnfSec, "novelcols",   self._packList(self.novelColWidth))
         cnfParse.set(cnfSec, "projcols",    self._packList(self.projColWidth))
         cnfParse.set(cnfSec, "mainpane",    self._packList(self.mainPanePos))
         cnfParse.set(cnfSec, "docpane",     self._packList(self.docPanePos))
@@ -816,6 +821,11 @@ class Config:
         self.confChanged = True
         return True
 
+    def setNovelColWidths(self, colWidths):
+        self.novelColWidth = [int(x/self.guiScale) for x in colWidths]
+        self.confChanged = True
+        return True
+
     def setProjColWidths(self, colWidths):
         self.projColWidth = [int(x/self.guiScale) for x in colWidths]
         self.confChanged = True
@@ -871,6 +881,9 @@ class Config:
 
     def getTreeColWidths(self):
         return [int(x*self.guiScale) for x in self.treeColWidth]
+
+    def getNovelColWidths(self):
+        return [int(x*self.guiScale) for x in self.novelColWidth]
 
     def getProjColWidths(self):
         return [int(x*self.guiScale) for x in self.projColWidth]

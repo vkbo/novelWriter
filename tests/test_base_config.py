@@ -304,6 +304,19 @@ def testBaseConfig_SettersGetters(tmpConf, tmpDir, outDir, refDir):
 
     assert tmpConf.setTreeColWidths([200, 50, 30])
 
+    # Novel Tree Columns
+    tmpConf.guiScale = 2.0
+    assert tmpConf.setNovelColWidths([10, 20])
+    assert tmpConf.getNovelColWidths() == [10, 20]
+    assert tmpConf.novelColWidth == [5, 10]
+
+    tmpConf.guiScale = 1.0
+    assert tmpConf.setNovelColWidths([10, 20])
+    assert tmpConf.getNovelColWidths() == [10, 20]
+    assert tmpConf.novelColWidth == [10, 20]
+
+    assert tmpConf.setNovelColWidths([200, 50])
+
     # Project Settings Tree Columns
     tmpConf.guiScale = 2.0
     assert tmpConf.setProjColWidths([10, 20, 30])
