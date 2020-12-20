@@ -687,9 +687,11 @@ class GuiProjectTree(QTreeWidget):
         selItem = self.itemAt(clickPos)
         if isinstance(selItem, QTreeWidgetItem):
             tHandle = selItem.data(self.C_NAME, Qt.UserRole)
-            tItem   = self.theProject.projTree[tHandle]
-            self.setSelectedHandle(tHandle) # Just to be safe
+            if tHandle is None:
+                return
 
+            self.setSelectedHandle(tHandle) # Just to be safe
+            tItem = self.theProject.projTree[tHandle]
             if self.ctxMenu.filterActions(tItem):
                 # Only open menu if any actions remain after filter
                 self.ctxMenu.exec_(self.viewport().mapToGlobal(clickPos))
@@ -718,6 +720,9 @@ class GuiProjectTree(QTreeWidget):
                 return
 
             tHandle = selItem.data(self.C_NAME, Qt.UserRole)
+            if tHandle is None:
+                return
+
             tItem = self.theProject.projTree[tHandle]
             if tItem is None:
                 return
@@ -909,16 +914,16 @@ class GuiProjectTree(QTreeWidget):
         """
         if self.orphRoot is None:
             newItem = QTreeWidgetItem([""]*4)
-            newItem.setText(self.C_NAME,   "Orphaned Files")
-            newItem.setText(self.C_COUNT,  "")
+            newItem.setText(self.C_NAME, "Orphaned Files")
+            newItem.setData(self.C_NAME, Qt.UserRole, None)
+            newItem.setIcon(self.C_NAME, self.theTheme.getIcon("proj_orphan"))
+            newItem.setText(self.C_COUNT, "")
+            newItem.setData(self.C_COUNT, Qt.UserRole, 0)
             newItem.setText(self.C_EXPORT, "")
-            newItem.setText(self.C_FLAGS,  "")
+            newItem.setText(self.C_FLAGS, "")
             self.addTopLevelItem(newItem)
             self.orphRoot = newItem
             newItem.setExpanded(True)
-            newItem.setData(self.C_NAME, Qt.UserRole, "")
-            newItem.setData(self.C_COUNT, Qt.UserRole, 0)
-            newItem.setIcon(self.C_NAME, self.theTheme.getIcon("proj_orphan"))
 
         return
 

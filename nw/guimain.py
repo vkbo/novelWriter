@@ -47,7 +47,7 @@ from nw.gui import (
     GuiTheme, GuiWritingStats
 )
 from nw.core import NWProject, NWDoc, NWIndex
-from nw.constants import nwItemType, nwItemClass, nwAlert
+from nw.constants import nwItemType, nwItemClass, nwAlert, nwConst
 from nw.common import getGuiItem
 
 logger = logging.getLogger(__name__)
@@ -722,6 +722,12 @@ class GuiMain(QMainWindow):
             logger.warning("No item selected")
             return
 
+        tItem = self.theProject.projTree[tHandle]
+        if tItem is None:
+            return
+        if tItem.itemType not in nwConst.REG_TYPES:
+            return
+
         logger.verbose("Requesting change to item %s" % tHandle)
         dlgProj = GuiItemEditor(self, self.theProject, tHandle)
         dlgProj.exec_()
@@ -1312,6 +1318,9 @@ class GuiMain(QMainWindow):
         we open it. Otherwise, we do nothing.
         """
         tHandle = tItem.data(self.treeView.C_NAME, Qt.UserRole)
+        if tHandle is None:
+            return
+
         logger.verbose("User double clicked tree item with handle %s" % tHandle)
         nwItem = self.theProject.projTree[tHandle]
         if nwItem is not None:
@@ -1320,6 +1329,7 @@ class GuiMain(QMainWindow):
                 self.openDocument(tHandle, changeFocus=False, doScroll=False)
             else:
                 logger.verbose("Requested item %s is a folder" % tHandle)
+
         return
 
     def _treeKeyPressReturn(self):
