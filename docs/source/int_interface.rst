@@ -75,7 +75,7 @@ having it selected. This will open the file in the document editor. The editor u
 markdown format. The format is described in the :ref:`a_ui_md` section below. The editor has a
 maximise button (activates :guilabel:`Focus Mode`) and a close button in the top-right corner.
 
-Any document in the project tree can also be viewed in parallel in a right hand side document viewer
+Any document in the project tree can also be viewed in parallel in a right hand side document viewer.
 To view a document, press :kbd:`Ctrl`:kbd:`R`, or select :guilabel:`View Document` in the menu. The
 document viewed does not have to be the same document currently being edited. However, If you *are*
 viewing the same document, pressing :kbd:`Ctrl`:kbd:`R` again will update the document with your
@@ -188,7 +188,7 @@ A minimal set of text emphasis styles are supported.
 
 In markdown guides it is often recommended to differentiate between strong importance and emphasis
 by using ``**`` for strong and ``_`` for emphasis, although markdown generally supports also ``__``
-for strong and ``*`` fdr emphasis. However, since the differentiation makes the highlighting and
+for strong and ``*`` for emphasis. However, since the differentiation makes the highlighting and
 conversion significantly simpler and faster, in novelWriter this is a rule, not just a
 recommendation. The following is therefore the only supported formatting syntax:
 

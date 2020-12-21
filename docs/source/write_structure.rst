@@ -7,7 +7,7 @@ Novel Structure
 This section covers the structure of a novel project.
 
 This section concerns files under the Novel type root folder only. There are some restrictions
-and features that only applies to these type of files.
+and features that only apply to these types of files.
 
 
 .. _a_struct_heads:
@@ -36,8 +36,8 @@ way:
 ``## Header2``
    Header level two signifies a chapter level partition. Each time you want to start a new chapter,
    you must add such a heading. If you choose to split your manuscript up into one file per scene,
-   you need a single chapeter file with just the heading. You can of course also add a synopsis and
-   reference keywords to the chapter file. If you want to open the chaper with a quote, this is
+   you need a single chapter file with just the heading. You can of course also add a synopsis and
+   reference keywords to the chapter file. If you want to open the chapter with a quote, this is
    also where you'd put the text for that.
 
 ``### Header3``
@@ -46,7 +46,7 @@ way:
 
 ``#### Header4``
    Header level four signifies a sub-scene level partition, usually called just a section in the
-   documentation und user interface. These can be useful if you want to change tag references
+   documentation and user interface. These can be useful if you want to change tag references
    mid-scene, like if you change the point-of-view character. You are free to use sections as you
    wish also in novel files, and can filter the titles out of the final manuscript just like with
    scene titles.
@@ -64,7 +64,7 @@ Unnumbered Chapter Headings
 If you use file layout types for your files, the automatic numbering feature for your chapters is
 controlled by whether you use the :guilabel:`Chapter` or :guilabel:`Unnumbered` layout type for your
 file. However, if you have a different file layout where this isn't practical, you can also switch
-off chapter numbering for a chapter by making the first charcater of the chapter title an ``*``.
+off chapter numbering for a chapter by making the first character of the chapter title an ``*``.
 Like so:
 
 ``## *Unnumbered Chapter Title``
@@ -195,7 +195,7 @@ Below is an overview of all available layout formats.
 
 :guilabel:`Unnumbered`
    Same as :guilabel:`Chapter`, but when exporting the files and automatic chapter numbering is
-   enabled, this file will not increment the chapeter number. It also has a separate title
+   enabled, this file will not increment the chapter number. It also has a separate title
    formatting setting. This makes the layout suitable for Prologue and Epilogue type chapters.
 
 :guilabel:`Scene`

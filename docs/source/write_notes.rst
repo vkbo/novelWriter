@@ -4,14 +4,14 @@
 Supporting Files (Notes)
 ************************
 
-novelWriter doesn't have a database and compicated forms to fill in all details about plot elements,
+novelWriter doesn't have a database and complicated forms to fill in all details about plot elements,
 characters, and all sorts of additional information that isn't a part of the novel text itself.
 Instead, all such information is saved in notes. The relation between all these additional elements
 is extracted from these files by the project indexer based on the tags and references you set.
 
-These files are not required, but making at least minimal files for each such plot element, and add
+These files are not required, but making at least minimal files for each such plot element, and adding
 a tag to them, makes it possible to use the :guilabel:`Outline` feature to see how each element
-intersects with each section of the novel itself, and add clickable cross-references between
+intersects with each section of the novel itself, and adds clickable cross-references between
 documents in the editor and viewer.
 
 
