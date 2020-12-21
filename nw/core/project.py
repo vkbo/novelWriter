@@ -1324,23 +1324,30 @@ class NWProject():
             oClass = None
             oLayout = None
             if aDoc.openDocument(oHandle, showStatus=False, isOrphan=True) is not None:
-                oName, _, oClass, oLayout = aDoc.getMeta()
+                oName, oParent, oClass, oLayout = aDoc.getMeta()
 
-            if oName == "":
+            if oName:
+                oName = "Recovered: %s" % oName.lstrip("Recovered: ")
+            else:
                 nOrph += 1
-                oName = "Orphaned File %d" % nOrph
+                oName = "Recovered File %d" % nOrph
 
             if oClass is None:
-                oClass = nwItemClass.NO_CLASS
+                oClass = nwItemClass.NOVEL
             if oLayout is None:
-                oLayout = nwItemLayout.NO_LAYOUT
+                oLayout = nwItemLayout.NOTE
+
+            if oParent is None or not self.projTree.isValid(oParent):
+                oParent = self.projTree.findRoot(oClass)
+                if oParent is None:
+                    oParent = self.projTree.findRoot(nwItemClass.NOVEL)
 
             orphItem = NWItem(self)
             orphItem.setName(oName)
             orphItem.setType(nwItemType.FILE)
             orphItem.setClass(oClass)
             orphItem.setLayout(oLayout)
-            self.projTree.append(oHandle, None, orphItem)
+            self.projTree.append(oHandle, oParent, orphItem)
 
         return True
 

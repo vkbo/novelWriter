@@ -851,7 +851,6 @@ class GuiProjectTree(QTreeWidget):
         newItem.setData(self.C_NAME, Qt.UserRole, tHandle)
         newItem.setData(self.C_COUNT, Qt.UserRole, 0)
 
-        self.theMap[tHandle] = newItem
         if pHandle is None:
             if nwItem.itemType == nwItemType.ROOT:
                 self.addTopLevelItem(newItem)
@@ -859,8 +858,11 @@ class GuiProjectTree(QTreeWidget):
             elif nwItem.itemType == nwItemType.TRASH:
                 self.addTopLevelItem(newItem)
             else:
-                self._addOrphanedRoot()
-                self.orphRoot.addChild(newItem)
+                self.makeAlert(
+                    "There is nowhere to add file with name '%s'" % nwItem.itemName, nwAlert.ERROR
+                )
+                # self._addOrphanedRoot()
+                # self.orphRoot.addChild(newItem)
         else:
             byIndex = -1
             if nHandle is not None and nHandle in self.theMap:
@@ -874,6 +876,7 @@ class GuiProjectTree(QTreeWidget):
                 self.theMap[pHandle].addChild(newItem)
             self.propagateCount(tHandle, nwItem.wordCount)
 
+        self.theMap[tHandle] = newItem
         self.setTreeItemValues(tHandle)
         newItem.setExpanded(nwItem.isExpanded)
 
