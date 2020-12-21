@@ -7,9 +7,10 @@ Novel Projects
 A novelWriter project requires a dedicated folder for storing its files on the local file system.
 See the :ref:`a_tech` page for further details on how files are organised.
 
-A new project can be created from the :guilabel:`Project` menu by selecting :guilabel:`New Project`.
-A list of recently opened projects is maintained, and displayed in the :guilabel:`Open Project`
-dialog. A project can be removed from this list by selecting it and pressing the :kbd:`Del` key.
+A new project can be created from the :guilabel:`Project` menu by selecting
+:guilabel:`New Project`. A list of recently opened projects is maintained, and displayed in the
+:guilabel:`Open Project` dialog. A project can be removed from this list by selecting it and
+pressing the :kbd:`Del` key.
 
 The project specific settings are available in :guilabel:`Project Settings` in the
 :guilabel:`Project` menu. See further details below in the :ref:`a_proj_settings` section.
@@ -23,15 +24,15 @@ Project Roots
 Projects are structured into a set of top level folders called *root folders*. They are visible in
 the project tree at the left side of the main window.
 
-The core novel files go into a root folder of type :guilabel:`Novel`. Other supporting files go into
-the other root folders. These other root folder types are intended for your notes on the various
-elements of your story. Using these is of course entirely optional.
+The core novel files go into a root folder of type :guilabel:`Novel`. Other supporting files go
+into the other root folders. These other root folder types are intended for your notes on the
+various elements of your story. Using these is of course entirely optional.
 
 A new project will not have all of the root folders present, but you can add the ones you want from
 :guilabel:`Create Root Folder` in the :guilabel:`Project` menu.
 
-The root folders are intended for the following use, but aside from the :guilabel:`Novel` folder, no
-restrictions are enforced by the application. You can use them however you want.
+The root folders are intended for the following use, but aside from the :guilabel:`Novel` folder,
+no restrictions are enforced by the application. You can use them however you want.
 
 :guilabel:`Novel`
    This is the root folder of all text that goes into the final novel. This class of files have
@@ -40,8 +41,8 @@ restrictions are enforced by the application. You can use them however you want.
 
 :guilabel:`Plot`
    This is the root folder where main plots can be outlined. It is optional, but adding at least
-   dummy files can be useful in order to tag plot elements for the Outline view. Tags in this folder
-   can be references using the ``@plot`` keyword.
+   dummy files can be useful in order to tag plot elements for the Outline view. Tags in this
+   folder can be references using the ``@plot`` keyword.
 
 :guilabel:`Characters`
    Character files go in this root folder. These are especially important if one wants to use the
@@ -86,8 +87,8 @@ Deleted Documents
 -----------------
 
 Deleted document files will be moved into a special :guilabel:`Trash` root folder. Files in the
-trash folder can then be deleted permanently, either individually, or by emptying the trash from the
-menu. Files in this folder are removed from the project index and cannot be referenced.
+trash folder can then be deleted permanently, either individually, or by emptying the trash from
+the menu. Files in this folder are removed from the project index and cannot be referenced.
 
 Folders and root folders can only be deleted when they are empty. Recursive deletion is not
 supported. A document file or a folder can be deleted from the :guilabel:`project` menu, or by
@@ -106,25 +107,30 @@ folder, only files. If you need folders in it to organise your files, you can of
 ones there.
 
 You can drag any file to this folder and preserve its settings. The file will always be excluded
-from the :guilabel:`Build Novel Project` builds. The file is also removed from the project index, so
-the tags and references defined in it will not show up anywhere else.
+from the :guilabel:`Build Novel Project` builds. The file is also removed from the project index,
+so the tags and references defined in it will not show up anywhere else.
 
 
 .. _a_proj_roots_orph:
 
-Orphaned Documents
-------------------
+Recovered Documents
+-------------------
 
 If novelWriter crashes or otherwise exits without saving the project state, or if you're using a
-file synchronisation tool that runs out of sync, there may be files in the project folder that isn't
-tracked in the core project file. These files, when discovered, are handled by the Orphaned
-Documents routine.
+file synchronisation tool that runs out of sync, there may be files in the project folder that
+aren't tracked in the core project file. These files, when discovered, are recovered and added back
+into the project if possible.
 
-Files that are discovered in the project folder, but not in the project, will be re-added to the
-project tree in a special :guilabel:`Orphaned Items` root folder next time the application is
-started. These orphaned files will not have most of the meta data preserved, although novelWriter
-will try to restore the file label it had in the project tree. Other information will have to be set
-again, and the files moved back to the correct location in the project tree.
+The discovered files are scanned for meta information that gives clues as to where the file may
+previously have been located in the project. The project loading routines will try to put them back
+as close as possible to this location if it still exists. Generally, it will be appended to the end
+of the folder where it previously was located. If that folder doesn't exist, it will try to add it
+to the correct root folder. If it cannot figure out which root folder is correct, the file will be
+added to the :guilabel:`Novel` root folder.
+
+If the title of the file can be recovered, the word "Recovered:" will be added as a prefix. If the
+title cannot be determined, the file will be named "Recovered File N" where N is a sequential
+number.
 
 
 .. _a_proj_roots_lock:
@@ -193,16 +199,16 @@ Word Counts
 
 A character, word and paragraph count is maintained for each file, as well as dor each section of a
 file defined by a header. The word count, and change of words in the current session, is displayed
-in the footer of any document open in the editor, and all stats are shown in the details panel below
-the project tree for any file selected.
+in the footer of any document open in the editor, and all stats are shown in the details panel
+below the project tree for any file selected.
 
 The word counts are not updated in real time, but runs in the background every five seconds for as
 long as the document is being actively edited.
 
-A total project word count is displayed in the status bar. The total count depends on the sum of the
-values in the project tree, which again depend on an up to date index. If the counts seem wrong, a
-full project word recount can be initiated by rebuilding the project's index. Either form the
-:guilabel:`Tools` menu, or by pressing :kbd:`F9`.
+A total project word count is displayed in the status bar. The total count depends on the sum of
+the values in the project tree, which again depend on an up to date index. If the counts seem
+wrong, a full project word recount can be initiated by rebuilding the project's index. Either form
+the :guilabel:`Tools` menu, or by pressing :kbd:`F9`.
 
 
 .. _a_proj_settings:
@@ -242,9 +248,9 @@ many words exist in the entire project.
 Status and Importance Tabs
 --------------------------
 
-Each file of type "Novel" can be given a status level, signified by a coloured icon and each file of
-the remaining types can be given an importance level. These are colour coded icons and labels that
-can be applied to each file.
+Each file of type "Novel" can be given a status level, signified by a coloured icon and each file
+of the remaining types can be given an importance level. These are colour coded icons and labels
+that can be applied to each file.
 
 These are purely there for the user's convenience, and you are not required to use them for any
 other feature to work. No other part of novelWriter accesses this information. The intention is to
@@ -266,8 +272,8 @@ also be applied to exports.
 
 .. note::
    A keyword cannot contain any spaces. The angle brackets are added by default, and when used in
-   the text are a part of the keyword to be replaced. This is to ensure that parts of the text isn't
-   unintentionally replaced by the content of the list.
+   the text are a part of the keyword to be replaced. This is to ensure that parts of the text
+   isn't unintentionally replaced by the content of the list.
 
 
 .. _a_proj_backup:
@@ -275,22 +281,22 @@ also be applied to exports.
 Backup
 ======
 
-An automatic backup system is built into novelWriter. In order to use it, a backup path to where the
-backup files are to be stored must to be provided in :guilabel:`Preferences`.
+An automatic backup system is built into novelWriter. In order to use it, a backup path to where
+the backup files are to be stored must to be provided in :guilabel:`Preferences`.
 
 Backups can be run automatically when a project is closed, which also implies it is run when the
 application is closed. Backups are date stamped zip files of the entire project folder, and are
-stored in a subfolder of the backup path with the same name as the project :guilabel:`Working Title`
-set in :ref:`a_proj_settings`.
+stored in a subfolder of the backup path with the same name as the project :guilabel:`Working
+Title` set in :ref:`a_proj_settings`.
 
 The backup feature, when configured, can also be run manually from the :guilabel:`Tools` menu.
 It is also possible to dissable automated backup for a given project in :guilabel:`Project
 Settings`.
 
 .. note::
-   For the backup to be able to run, the :guilabel:`Working Title` must be set in :guilabel:`Project
-   Settings`. This value is used to generate the folder name for the zip files. Without it, the
-   backup will not run at all, but produce a warning message.
+   For the backup to be able to run, the :guilabel:`Working Title` must be set in
+   :guilabel:`Project Settings`. This value is used to generate the folder name for the zip files.
+   Without it, the backup will not run at all, but produce a warning message.
 
 .. _a_proj_stats:
 

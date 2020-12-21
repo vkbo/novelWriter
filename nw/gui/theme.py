@@ -524,7 +524,6 @@ class GuiIcons:
         "cls_trash"       : (QStyle.SP_DriveHDIcon, "drive-harddisk"),
         "proj_document"   : (QStyle.SP_FileIcon,    "x-office-document"),
         "proj_folder"     : (QStyle.SP_DirIcon,     "folder"),
-        "proj_orphan"     : (QStyle.SP_MessageBoxWarning, "dialog-warning"),
         "proj_nwx"        : (None, None),
         "status_lang"     : (None, None),
         "status_time"     : (None, None),
