@@ -47,7 +47,7 @@ from nw.gui import (
     GuiProjectWizard, GuiTheme, GuiWritingStats
 )
 from nw.core import NWProject, NWDoc, NWIndex
-from nw.constants import nwItemType, nwItemClass, nwAlert
+from nw.constants import nwItemType, nwItemClass, nwAlert, nwConst
 from nw.common import getGuiItem
 
 logger = logging.getLogger(__name__)
@@ -739,6 +739,12 @@ class GuiMain(QMainWindow):
             logger.warning("No item selected")
             return
 
+        tItem = self.theProject.projTree[tHandle]
+        if tItem is None:
+            return
+        if tItem.itemType not in nwConst.REG_TYPES:
+            return
+
         logger.verbose("Requesting change to item %s" % tHandle)
         dlgProj = GuiItemEditor(self, self.theProject, tHandle)
         dlgProj.exec_()
@@ -985,17 +991,16 @@ class GuiMain(QMainWindow):
                 logger.error(msgLine)
 
         # Popup
-        if self.mainConf.showGUI:
-            msgBox = QMessageBox()
-            if theLevel == nwAlert.INFO:
-                msgBox.information(self, "Information", popMsg)
-            elif theLevel == nwAlert.WARN:
-                msgBox.warning(self, "Warning", popMsg)
-            elif theLevel == nwAlert.ERROR:
-                msgBox.critical(self, "Error", popMsg)
-            elif theLevel == nwAlert.BUG:
-                popMsg += "<br>This is a bug!"
-                msgBox.critical(self, "Internal Error", popMsg)
+        msgBox = QMessageBox()
+        if theLevel == nwAlert.INFO:
+            msgBox.information(self, "Information", popMsg)
+        elif theLevel == nwAlert.WARN:
+            msgBox.warning(self, "Warning", popMsg)
+        elif theLevel == nwAlert.ERROR:
+            msgBox.critical(self, "Error", popMsg)
+        elif theLevel == nwAlert.BUG:
+            popMsg += "<br>This is a bug!"
+            msgBox.critical(self, "Internal Error", popMsg)
 
         return
 
@@ -1341,6 +1346,7 @@ class GuiMain(QMainWindow):
                 self.openDocument(tHandle, changeFocus=False, doScroll=False)
             else:
                 logger.verbose("Requested item %s is a folder" % tHandle)
+
         return
 
     def _treeKeyPressReturn(self):

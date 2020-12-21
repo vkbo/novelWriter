@@ -61,7 +61,6 @@ def testBaseInit_Options(monkeypatch, tmpDir):
     nwGUI = nw.main()
     assert nw.logger.getEffectiveLevel() == logging.WARNING
     assert nw.CONFIG.debugInfo is False
-    assert nw.CONFIG.showGUI is False
     assert nwGUI.closeMain() == "closeMain"
 
     # Defaults

@@ -9,7 +9,7 @@ from shutil import copyfile
 from tools import cmpFiles, getGuiItem
 
 from PyQt5.QtCore import Qt
-from PyQt5.QtWidgets import QAction, QMessageBox
+from PyQt5.QtWidgets import QAction, QMessageBox, QFileDialog
 
 from nw.gui import GuiBuildNovel
 
@@ -23,6 +23,8 @@ def testGuiBuild_Tool(qtbot, monkeypatch, nwGUI, nwLipsum, refDir, outDir):
     """
     # Block message box
     monkeypatch.setattr(QMessageBox, "question", lambda *args: QMessageBox.Yes)
+    monkeypatch.setattr(QMessageBox, "information", lambda *args: QMessageBox.Yes)
+    monkeypatch.setattr(QFileDialog, "getSaveFileName", lambda a, b, c, **kwargs: (c, None))
 
     # Check that we cannot open when there is no project
     nwGUI.mainMenu.aBuildProject.activate(QAction.Trigger)

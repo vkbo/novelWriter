@@ -1317,30 +1317,52 @@ class NWProject():
         # Handle orphans
         aDoc = NWDoc(self, self.theParent)
         nOrph = 0
+        noWhere = False
         for oHandle in orphanFiles:
 
             # Look for meta data
             oName = ""
+            oParent = None
             oClass = None
             oLayout = None
             if aDoc.openDocument(oHandle, showStatus=False, isOrphan=True) is not None:
-                oName, _, oClass, oLayout = aDoc.getMeta()
+                oName, oParent, oClass, oLayout = aDoc.getMeta()
 
-            if oName == "":
+            if oName:
+                oName = "Recovered: %s" % oName.lstrip("Recovered: ")
+            else:
                 nOrph += 1
-                oName = "Orphaned File %d" % nOrph
+                oName = "Recovered File %d" % nOrph
 
+            # Recover file meta data
             if oClass is None:
-                oClass = nwItemClass.NO_CLASS
+                oClass = nwItemClass.NOVEL
+
             if oLayout is None:
-                oLayout = nwItemLayout.NO_LAYOUT
+                oLayout = nwItemLayout.NOTE
+
+            if oParent is None or not self.projTree.handleExists(oParent):
+                oParent = self.projTree.findRoot(oClass)
+                if oParent is None:
+                    oParent = self.projTree.findRoot(nwItemClass.NOVEL)
+
+            # If the file still has no parent item, skip it
+            if oParent is None:
+                noWhere = True
+                continue
 
             orphItem = NWItem(self)
             orphItem.setName(oName)
             orphItem.setType(nwItemType.FILE)
             orphItem.setClass(oClass)
             orphItem.setLayout(oLayout)
-            self.projTree.append(oHandle, None, orphItem)
+            self.projTree.append(oHandle, oParent, orphItem)
+
+        if noWhere:
+            self.makeAlert((
+                "One or more orphaned files could not be added back into the "
+                "project. Make sure at least a Novel root folder exists."
+            ), nwAlert.WARN)
 
         return True
 

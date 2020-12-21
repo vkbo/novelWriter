@@ -149,9 +149,9 @@ class NWDoc():
             docMeta = ""
         else:
             docMeta = (
-                f"%%~name: {self._theItem.itemName:s}\n"
-                f"%%~path: {self._theItem.itemParent:s}/{self._theItem.itemHandle:s}\n"
-                f"%%~kind: {self._theItem.itemClass.name:s}/{self._theItem.itemLayout.name:s}\n"
+                f"%%~name: {self._theItem.itemName}\n"
+                f"%%~path: {self._theItem.itemParent}/{self._theItem.itemHandle}\n"
+                f"%%~kind: {self._theItem.itemClass.name}/{self._theItem.itemLayout.name}\n"
             )
 
         try:
