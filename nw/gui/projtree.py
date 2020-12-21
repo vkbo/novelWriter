@@ -61,7 +61,7 @@ class GuiProjectTree(QTreeWidget):
         self.theIndex   = theParent.theIndex
 
         # Tree Settings
-        self.theMap      = None
+        self.theMap      = {}
         self.treeChanged = False
 
         self.ctxMenu = GuiProjectTreeMenu(self)
@@ -144,10 +144,11 @@ class GuiProjectTree(QTreeWidget):
     ##
 
     def clearTree(self):
-        """Clear the GUI content and the related maps.
+        """Clear the GUI content and the related map.
         """
         self.clear()
         self.theMap = {}
+        self.treeChanged = False
         return
 
     def newTreeItem(self, itemType, itemClass):
@@ -390,14 +391,12 @@ class GuiProjectTree(QTreeWidget):
             return False
 
         msgYes = self.theParent.askQuestion(
-            "Empty Trash", "Permanently delete %d file%s from Trash?" % (
-                nTrash, "s" if nTrash > 1 else ""
-            )
+            "Empty Trash", "Permanently delete %d file(s) from Trash?" % nTrash
         )
         if not msgYes:
             return False
 
-        logger.verbose("Deleting %d files from Trash" % nTrash)
+        logger.verbose("Deleting %d file(s) from Trash" % nTrash)
         for tHandle in self.getTreeFromHandle(trashHandle):
             if tHandle == trashHandle:
                 continue
@@ -637,11 +636,7 @@ class GuiProjectTree(QTreeWidget):
         selected, return the first.
         """
         selItem = self.selectedItems()
-
-        if len(selItem) == 0:
-            return None
-
-        if isinstance(selItem[0], QTreeWidgetItem):
+        if selItem:
             return selItem[0].data(self.C_NAME, Qt.UserRole)
 
         return None
@@ -660,18 +655,21 @@ class GuiProjectTree(QTreeWidget):
     def setSelectedHandle(self, tHandle, doScroll=False):
         """Set a specific handle as the selected item.
         """
-        if tHandle in self.theMap:
-            self.clearSelection()
-            self.theMap[tHandle].setSelected(True)
+        if tHandle not in self.theMap:
+            return False
 
-            selItems = self.selectedIndexes()
-            if selItems and doScroll:
-                self.scrollTo(
-                    selItems[0], QAbstractItemView.PositionAtCenter
-                )
-            return True
+        tItem = self._getTreeItem(tHandle)
+        if tItem is None:
+            return False
 
-        return False
+        self.clearSelection()
+        self.theMap[tHandle].setSelected(True)
+
+        selItems = self.selectedIndexes()
+        if selItems and doScroll:
+            self.scrollTo(selItems[0], QAbstractItemView.PositionAtCenter)
+
+        return True
 
     ##
     #  Slots
@@ -684,14 +682,12 @@ class GuiProjectTree(QTreeWidget):
         selItem = self.itemAt(clickPos)
         if isinstance(selItem, QTreeWidgetItem):
             tHandle = selItem.data(self.C_NAME, Qt.UserRole)
-            if tHandle is None:
-                return
-
             self.setSelectedHandle(tHandle) # Just to be safe
             tItem = self.theProject.projTree[tHandle]
-            if self.ctxMenu.filterActions(tItem):
-                # Only open menu if any actions remain after filter
-                self.ctxMenu.exec_(self.viewport().mapToGlobal(clickPos))
+            if tItem is not None:
+                if self.ctxMenu.filterActions(tItem):
+                    # Only open menu if any actions remain after filter
+                    self.ctxMenu.exec_(self.viewport().mapToGlobal(clickPos))
 
         return
 
@@ -770,7 +766,7 @@ class GuiProjectTree(QTreeWidget):
 
             # If the item does not have the same class as the target,
             # and the target is not a free root folder, update its class
-            if not isSame and not onFree:
+            if not (isSame or onFree):
                 logger.debug("Item %s class has been changed from %s to %s" % (
                     sHandle,
                     snItem.itemClass.name,
@@ -803,9 +799,7 @@ class GuiProjectTree(QTreeWidget):
     def _getTreeItem(self, tHandle):
         """Returns the QTreeWidgetItem of a given item handle.
         """
-        if tHandle in self.theMap.keys():
-            return self.theMap[tHandle]
-        return None
+        return self.theMap.get(tHandle, None)
 
     def _scanChildren(self, theList, theItem, theIndex):
         """This is a recursive function returning all items in a tree
@@ -829,19 +823,20 @@ class GuiProjectTree(QTreeWidget):
         tClass  = nwItem.itemClass
         newItem = QTreeWidgetItem([""]*4)
 
-        newItem.setText(self.C_NAME,   "")
-        newItem.setText(self.C_COUNT,  "0")
+        newItem.setText(self.C_NAME, "")
+        newItem.setText(self.C_COUNT, "0")
         newItem.setText(self.C_EXPORT, "")
-        newItem.setText(self.C_FLAGS,  "")
+        newItem.setText(self.C_FLAGS, "")
 
-        newItem.setTextAlignment(self.C_NAME,   Qt.AlignLeft  | Qt.AlignVCenter)
-        newItem.setTextAlignment(self.C_COUNT,  Qt.AlignRight | Qt.AlignVCenter)
-        newItem.setTextAlignment(self.C_EXPORT, Qt.AlignLeft  | Qt.AlignVCenter)
-        newItem.setTextAlignment(self.C_FLAGS,  Qt.AlignLeft  | Qt.AlignVCenter)
+        newItem.setTextAlignment(self.C_NAME, Qt.AlignLeft)
+        newItem.setTextAlignment(self.C_COUNT, Qt.AlignRight)
+        newItem.setTextAlignment(self.C_EXPORT, Qt.AlignLeft)
+        newItem.setTextAlignment(self.C_FLAGS, Qt.AlignLeft)
 
         newItem.setData(self.C_NAME, Qt.UserRole, tHandle)
         newItem.setData(self.C_COUNT, Qt.UserRole, 0)
 
+        self.theMap[tHandle] = newItem
         if pHandle is None:
             if nwItem.itemType == nwItemType.ROOT:
                 self.addTopLevelItem(newItem)
@@ -850,9 +845,11 @@ class GuiProjectTree(QTreeWidget):
                 self.addTopLevelItem(newItem)
             else:
                 self.makeAlert(
-                    "There is nowhere to add file with name '%s'" % nwItem.itemName, nwAlert.ERROR
+                    "There is nowhere to add item with name '%s'" % nwItem.itemName, nwAlert.ERROR
                 )
+                del self.theMap[tHandle]
                 return None
+
         else:
             byIndex = -1
             if nHandle is not None and nHandle in self.theMap:
@@ -866,7 +863,6 @@ class GuiProjectTree(QTreeWidget):
                 self.theMap[pHandle].addChild(newItem)
             self.propagateCount(tHandle, nwItem.wordCount)
 
-        self.theMap[tHandle] = newItem
         self.setTreeItemValues(tHandle)
         newItem.setExpanded(nwItem.isExpanded)
 

@@ -1317,10 +1317,12 @@ class NWProject():
         # Handle orphans
         aDoc = NWDoc(self, self.theParent)
         nOrph = 0
+        noWhere = False
         for oHandle in orphanFiles:
 
             # Look for meta data
             oName = ""
+            oParent = None
             oClass = None
             oLayout = None
             if aDoc.openDocument(oHandle, showStatus=False, isOrphan=True) is not None:
@@ -1332,15 +1334,22 @@ class NWProject():
                 nOrph += 1
                 oName = "Recovered File %d" % nOrph
 
+            # Recover file meta data
             if oClass is None:
                 oClass = nwItemClass.NOVEL
+
             if oLayout is None:
                 oLayout = nwItemLayout.NOTE
 
-            if oParent is None or not self.projTree.isValid(oParent):
+            if oParent is None or not self.projTree.handleExists(oParent):
                 oParent = self.projTree.findRoot(oClass)
                 if oParent is None:
                     oParent = self.projTree.findRoot(nwItemClass.NOVEL)
+
+            # If the file still has no parent item, skip it
+            if oParent is None:
+                noWhere = True
+                continue
 
             orphItem = NWItem(self)
             orphItem.setName(oName)
@@ -1348,6 +1357,12 @@ class NWProject():
             orphItem.setClass(oClass)
             orphItem.setLayout(oLayout)
             self.projTree.append(oHandle, oParent, orphItem)
+
+        if noWhere:
+            self.makeAlert((
+                "One or more orphaned files could not be added back into the "
+                "project. Make sure at least a Novel root folder exists."
+            ), nwAlert.WARN)
 
         return True
 
