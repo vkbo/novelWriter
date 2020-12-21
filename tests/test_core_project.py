@@ -923,9 +923,9 @@ def testCoreProject_OrphanedFiles(dummyGUI, nwLipsum):
     # First Item with Meta Data
     oItem = theProject.projTree["636b6aa9b697b"]
     assert oItem is not None
-    assert oItem.itemName == "Mars"
+    assert oItem.itemName == "Recovered: Mars"
     assert oItem.itemHandle == "636b6aa9b697b"
-    assert oItem.itemParent is None
+    assert oItem.itemParent == "60bdf227455cc"
     assert oItem.itemClass == nwItemClass.WORLD
     assert oItem.itemType == nwItemType.FILE
     assert oItem.itemLayout == nwItemLayout.NOTE
@@ -933,12 +933,12 @@ def testCoreProject_OrphanedFiles(dummyGUI, nwLipsum):
     # Second Item without Meta Data
     oItem = theProject.projTree["736b6aa9b697b"]
     assert oItem is not None
-    assert oItem.itemName == "Orphaned File 1"
+    assert oItem.itemName == "Recovered File 1"
     assert oItem.itemHandle == "736b6aa9b697b"
-    assert oItem.itemParent is None
-    assert oItem.itemClass == nwItemClass.NO_CLASS
+    assert oItem.itemParent == "b3643d0f92e32"
+    assert oItem.itemClass == nwItemClass.NOVEL
     assert oItem.itemType == nwItemType.FILE
-    assert oItem.itemLayout == nwItemLayout.NO_LAYOUT
+    assert oItem.itemLayout == nwItemLayout.NOTE
 
     assert theProject.saveProject(nwLipsum)
     assert theProject.closeProject()

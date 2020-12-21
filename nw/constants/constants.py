@@ -25,7 +25,9 @@
  along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
 
-from nw.constants.enum import nwItemClass, nwItemLayout, nwOutline
+from nw.constants.enum import (
+    nwItemClass, nwItemLayout, nwItemType, nwOutline
+)
 
 class nwConst():
 
@@ -42,6 +44,9 @@ class nwConst():
     # Spell Check Providers
     SP_INTERNAL = "internal"
     SP_ENCHANT  = "enchant"
+
+    # Check Lists
+    REG_TYPES = {nwItemType.ROOT, nwItemType.FOLDER, nwItemType.FILE}
 
 # END Class nwConst
 
