@@ -127,11 +127,10 @@ def testGuiProjTree_Main(qtbot, monkeypatch, nwGUI, nwMinimal):
     nwGUI.openProject(nwMinimal)
 
     # Check that the orphaned file was found and added to the tree
-    assert nwTree.orphRoot is not None
     nwTree.flushTreeOrder()
-    assert "1234567890abc" not in nwGUI.theProject.projTree._treeOrder
+    assert "1234567890abc" in nwGUI.theProject.projTree._treeOrder
     orItem = nwTree._getTreeItem("1234567890abc")
-    assert orItem.text(nwTree.C_NAME) == "Orphaned File 1"
+    assert orItem.text(nwTree.C_NAME) == "Recovered File 1"
 
     # qtbot.stopForInteraction()
 

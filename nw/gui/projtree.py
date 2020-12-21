@@ -62,7 +62,6 @@ class GuiProjectTree(QTreeWidget):
 
         # Tree Settings
         self.theMap      = None
-        self.orphRoot    = None
         self.treeChanged = False
 
         self.ctxMenu = GuiProjectTreeMenu(self)
@@ -149,7 +148,6 @@ class GuiProjectTree(QTreeWidget):
         """
         self.clear()
         self.theMap = {}
-        self.orphRoot = None
         return
 
     def newTreeItem(self, itemType, itemClass):
@@ -270,6 +268,9 @@ class GuiProjectTree(QTreeWidget):
         """
         nwItem = self.theProject.projTree[tHandle]
         trItem = self._addTreeItem(nwItem, nHandle)
+        if trItem is None:
+            return False
+
         pHandle = nwItem.itemParent
         if pHandle is not None and pHandle in self.theMap:
             self.theMap[pHandle].setExpanded(True)
@@ -326,8 +327,6 @@ class GuiProjectTree(QTreeWidget):
         """
         theList = []
         for i in range(self.topLevelItemCount()):
-            if self.topLevelItem(i) == self.orphRoot:
-                continue
             theList = self._scanChildren(theList, self.topLevelItem(i), i)
         logger.debug("Saving project tree item order")
         self.theProject.setTreeOrder(theList)
@@ -603,13 +602,11 @@ class GuiProjectTree(QTreeWidget):
         relevant values in the project and on the status bar. This call
         is a fast way of getting this number, and depends on the
         propagateCount function being called when it should to maintain
-        the correct count. Orphan folder is not included in the total.
+        the correct count.
         """
         nWords = 0
         for n in range(self.topLevelItemCount()):
             tItem = self.topLevelItem(n)
-            if tItem == self.orphRoot:
-                continue
             nWords += int(tItem.data(self.C_COUNT, Qt.UserRole))
 
         self.theProject.setProjectWordCount(nWords)
@@ -769,13 +766,7 @@ class GuiProjectTree(QTreeWidget):
             logger.debug("Drag'n'drop of item %s accepted" % sHandle)
             self.propagateCount(sHandle, 0)
             QTreeWidget.dropEvent(self, theEvent)
-
-            # Handle orphaned files differently than tracked files
-            if isNone:
-                self._moveOrphanedItem(sHandle, dHandle)
-                self._cleanOrphanedRoot()
-            else:
-                self._updateItemParent(sHandle)
+            self._updateItemParent(sHandle)
 
             # If the item does not have the same class as the target,
             # and the target is not a free root folder, update its class
@@ -861,8 +852,7 @@ class GuiProjectTree(QTreeWidget):
                 self.makeAlert(
                     "There is nowhere to add file with name '%s'" % nwItem.itemName, nwAlert.ERROR
                 )
-                # self._addOrphanedRoot()
-                # self.orphRoot.addChild(newItem)
+                return None
         else:
             byIndex = -1
             if nHandle is not None and nHandle in self.theMap:
@@ -906,38 +896,11 @@ class GuiProjectTree(QTreeWidget):
             trItem = self._addTreeItem(
                 self.theProject.projTree[trashHandle]
             )
-            trItem.setExpanded(True)
-            self._setTreeChanged(True)
+            if trItem is not None:
+                trItem.setExpanded(True)
+                self._setTreeChanged(True)
 
         return trItem
-
-    def _addOrphanedRoot(self):
-        """Add the special Orphaned Files root item to hold non-root
-        items with no parent set.
-        """
-        if self.orphRoot is None:
-            newItem = QTreeWidgetItem([""]*4)
-            newItem.setText(self.C_NAME, "Orphaned Files")
-            newItem.setData(self.C_NAME, Qt.UserRole, None)
-            newItem.setIcon(self.C_NAME, self.theTheme.getIcon("proj_orphan"))
-            newItem.setText(self.C_COUNT, "")
-            newItem.setData(self.C_COUNT, Qt.UserRole, 0)
-            newItem.setText(self.C_EXPORT, "")
-            newItem.setText(self.C_FLAGS, "")
-            self.addTopLevelItem(newItem)
-            self.orphRoot = newItem
-            newItem.setExpanded(True)
-
-        return
-
-    def _cleanOrphanedRoot(self):
-        """Remove the special Orphaned Files root folder if it is empty.
-        """
-        if self.orphRoot is not None:
-            if self.orphRoot.childCount() == 0:
-                self.takeTopLevelItem(self.indexOfTopLevelItem(self.orphRoot))
-                self.orphRoot = None
-        return
 
     def _updateItemParent(self, tHandle):
         """Update the parent handle of an item so that the information
@@ -956,27 +919,6 @@ class GuiProjectTree(QTreeWidget):
         self._setTreeChanged(True)
 
         logger.debug("The parent of item %s has been changed to %s" % (tHandle, pHandle))
-
-        return True
-
-    def _moveOrphanedItem(self, tHandle, dHandle):
-        """Move an Orphaned Item to a new dHandle parent item. This
-        function will set all the missing meta data based on the meta
-        data of the destination item.
-        """
-        trItemS = self._getTreeItem(tHandle)
-        nwItemS = self.theProject.projTree[tHandle]
-        nwItemD = self.theProject.projTree[dHandle]
-        trItemP = trItemS.parent()
-        nwItemS.setClass(nwItemD.itemClass)
-        if trItemP is None:
-            logger.error("Failed to find new parent item of %s" % tHandle)
-            return False
-
-        pHandle = trItemP.data(self.C_NAME, Qt.UserRole)
-        nwItemS.setParent(pHandle)
-        self.setTreeItemValues(tHandle)
-        self._setTreeChanged(True)
 
         return True
 
@@ -1055,12 +997,10 @@ class GuiProjectTreeMenu(QMenu):
         inTrash = theItem.itemParent == trashHandle and trashHandle is not None
         isTrash = theItem.itemHandle == trashHandle and trashHandle is not None
         isFile  = theItem.itemType == nwItemType.FILE
-        isOrph  = isFile and theItem.itemParent is None
 
-        allowEdit = not (isTrash or isOrph)
-        allowNew  = not (isTrash or inTrash or isOrph)
+        allowNew = not (isTrash or inTrash)
 
-        self.editItem.setVisible(allowEdit)
+        self.editItem.setVisible(not isTrash)
         self.openItem.setVisible(isFile)
         self.viewItem.setVisible(isFile)
         self.toggleExp.setVisible(isFile)
