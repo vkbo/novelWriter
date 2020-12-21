@@ -971,17 +971,16 @@ class GuiMain(QMainWindow):
                 logger.error(msgLine)
 
         # Popup
-        if self.mainConf.showGUI:
-            msgBox = QMessageBox()
-            if theLevel == nwAlert.INFO:
-                msgBox.information(self, "Information", popMsg)
-            elif theLevel == nwAlert.WARN:
-                msgBox.warning(self, "Warning", popMsg)
-            elif theLevel == nwAlert.ERROR:
-                msgBox.critical(self, "Error", popMsg)
-            elif theLevel == nwAlert.BUG:
-                popMsg += "<br>This is a bug!"
-                msgBox.critical(self, "Internal Error", popMsg)
+        msgBox = QMessageBox()
+        if theLevel == nwAlert.INFO:
+            msgBox.information(self, "Information", popMsg)
+        elif theLevel == nwAlert.WARN:
+            msgBox.warning(self, "Warning", popMsg)
+        elif theLevel == nwAlert.ERROR:
+            msgBox.critical(self, "Error", popMsg)
+        elif theLevel == nwAlert.BUG:
+            popMsg += "<br>This is a bug!"
+            msgBox.critical(self, "Internal Error", popMsg)
 
         return
 
