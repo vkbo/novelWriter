@@ -714,9 +714,6 @@ class GuiProjectTree(QTreeWidget):
                 return
 
             tHandle = selItem.data(self.C_NAME, Qt.UserRole)
-            if tHandle is None:
-                return
-
             tItem = self.theProject.projTree[tHandle]
             if tItem is None:
                 return

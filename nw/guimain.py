@@ -1317,9 +1317,6 @@ class GuiMain(QMainWindow):
         we open it. Otherwise, we do nothing.
         """
         tHandle = tItem.data(self.treeView.C_NAME, Qt.UserRole)
-        if tHandle is None:
-            return
-
         logger.verbose("User double clicked tree item with handle %s" % tHandle)
         nwItem = self.theProject.projTree[tHandle]
         if nwItem is not None:
