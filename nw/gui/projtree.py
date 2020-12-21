@@ -164,6 +164,11 @@ class GuiProjectTree(QTreeWidget):
             logger.error("No project open")
             return False
 
+        if not isinstance(itemType, nwItemType):
+            # This would indicate an internal bug
+            logger.error("No itemType provided")
+            return False
+
         # The item needs to be assigned an item class, so one must be
         # provided, or it must be possible to extract it from the parent
         # item of the new item.
@@ -172,21 +177,18 @@ class GuiProjectTree(QTreeWidget):
             if pItem is not None:
                 itemClass = pItem.itemClass
 
+        # If class is still not set, alert the user and exit
         if itemClass is None:
-            if itemType is not None:
-                if itemType == nwItemType.FILE:
-                    self.makeAlert(
-                        "Please select a valid location in the tree to add a document.",
-                        nwAlert.ERROR
-                    )
-                    return False
-                elif itemType == nwItemType.FOLDER:
-                    self.makeAlert(
-                        "Please select a valid location in the tree to add a folder.",
-                        nwAlert.ERROR
-                    )
-                    return False
-            self.makeAlert("Failed to add new item.", nwAlert.BUG)
+            if itemType == nwItemType.FILE:
+                self.makeAlert(
+                    "Please select a valid location in the tree to add the document.",
+                    nwAlert.ERROR
+                )
+            else:
+                self.makeAlert(
+                    "Please select a valid location in the tree to add the folder.",
+                    nwAlert.ERROR
+                )
             return False
 
         # Everything is fine, we have what we need, so we proceed
@@ -259,8 +261,7 @@ class GuiProjectTree(QTreeWidget):
         # Add the new item to the tree
         if tHandle is not None:
             self.revealNewTreeItem(tHandle, nHandle)
-            if self.mainConf.showGUI:
-                self.theParent.editItem(tHandle)
+            self.theParent.editItem(tHandle)
 
         return True
 
@@ -287,7 +288,7 @@ class GuiProjectTree(QTreeWidget):
             logger.error("No project open")
             return False
 
-        if qApp.focusWidget() != self and self.mainConf.showGUI:
+        if qApp.focusWidget() != self:
             return False
 
         tHandle = self.getSelectedHandle()
