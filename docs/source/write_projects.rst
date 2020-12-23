@@ -197,12 +197,12 @@ This is covered in the :ref:`a_export_files` section.
 Word Counts
 -----------
 
-A character, word and paragraph count is maintained for each file, as well as dor each section of a
+A character, word and paragraph count is maintained for each file, as well as for each section of a
 file defined by a header. The word count, and change of words in the current session, is displayed
 in the footer of any document open in the editor, and all stats are shown in the details panel
 below the project tree for any file selected.
 
-The word counts are not updated in real time, but runs in the background every five seconds for as
+The word counts are not updated in real time, but run in the background every five seconds for as
 long as the document is being actively edited.
 
 A total project word count is displayed in the status bar. The total count depends on the sum of
@@ -273,7 +273,7 @@ also be applied to exports.
 .. note::
    A keyword cannot contain any spaces. The angle brackets are added by default, and when used in
    the text are a part of the keyword to be replaced. This is to ensure that parts of the text
-   isn't unintentionally replaced by the content of the list.
+   aren't unintentionally replaced by the content of the list.
 
 
 .. _a_proj_backup:
@@ -282,7 +282,7 @@ Backup
 ======
 
 An automatic backup system is built into novelWriter. In order to use it, a backup path to where
-the backup files are to be stored must to be provided in :guilabel:`Preferences`.
+the backup files are to be stored must be provided in :guilabel:`Preferences`.
 
 Backups can be run automatically when a project is closed, which also implies it is run when the
 application is closed. Backups are date stamped zip files of the entire project folder, and are
@@ -290,7 +290,7 @@ stored in a subfolder of the backup path with the same name as the project :guil
 Title` set in :ref:`a_proj_settings`.
 
 The backup feature, when configured, can also be run manually from the :guilabel:`Tools` menu.
-It is also possible to dissable automated backup for a given project in :guilabel:`Project
+It is also possible to disable automated backup for a given project in :guilabel:`Project
 Settings`.
 
 .. note::

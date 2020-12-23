@@ -108,7 +108,7 @@ Currently, six formats are supported for exporting.
 OpenDocument Format
    This produces an open document ``.odt`` file. The document produced has very little formatting,
    and may require further editing afterwards. For a better formatted office document, you may get a
-   better result with exporting to HTML and the import that HTML document into your office word
+   better result with exporting to HTML and then import that HTML document into your office word
    processor. They are generally very good at importing HTML files.
 
 PDF Format
