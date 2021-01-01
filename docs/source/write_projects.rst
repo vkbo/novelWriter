@@ -8,9 +8,11 @@ A novelWriter project requires a dedicated folder for storing its files on the l
 See the :ref:`a_tech` page for further details on how files are organised.
 
 A new project can be created from the :guilabel:`Project` menu by selecting
-:guilabel:`New Project`. A list of recently opened projects is maintained, and displayed in the
-:guilabel:`Open Project` dialog. A project can be removed from this list by selecting it and
-pressing the :kbd:`Del` key.
+:guilabel:`New Project`. This will open the :guilabel:`New Project Wizard` that will assist you in
+creating a barebone project suited to your needs.
+
+A list of recently opened projects is maintained, and displayed in the :guilabel:`Open Project`
+dialog. A project can be removed from this list by selecting it and pressing the :kbd:`Del` key.
 
 The project specific settings are available in :guilabel:`Project Settings` in the
 :guilabel:`Project` menu. See further details below in the :ref:`a_proj_settings` section.
@@ -28,7 +30,7 @@ The core novel files go into a root folder of type :guilabel:`Novel`. Other supp
 into the other root folders. These other root folder types are intended for your notes on the
 various elements of your story. Using these is of course entirely optional.
 
-A new project will not have all of the root folders present, but you can add the ones you want from
+A new project may not have all of the root folders present, but you can add the ones you want from
 :guilabel:`Create Root Folder` in the :guilabel:`Project` menu.
 
 The root folders are intended for the following use, but aside from the :guilabel:`Novel` folder,
@@ -65,8 +67,8 @@ no restrictions are enforced by the application. You can use them however you wa
 
 :guilabel:`Entities`
    Does your plot have many powerful organisations or companies? Or other entities that are part of
-   the plot? They can be organised here. Tags in this folder can be references using the ``@entity``
-   keyword.
+   the plot? They can be organised here. Tags in this folder can be references using the
+   ``@entity`` keyword.
 
 :guilabel:`Custom`
    The custom root folder can be used for tracking anything else not covered by the above options.
@@ -91,7 +93,7 @@ trash folder can then be deleted permanently, either individually, or by emptyin
 the menu. Files in this folder are removed from the project index and cannot be referenced.
 
 Folders and root folders can only be deleted when they are empty. Recursive deletion is not
-supported. A document file or a folder can be deleted from the :guilabel:`project` menu, or by
+supported. A document file or a folder can be deleted from the :guilabel:`Project` menu, or by
 pressing :kbd:`Ctrl`:kbd:`Del`.
 
 
@@ -123,10 +125,11 @@ into the project if possible.
 
 The discovered files are scanned for meta information that gives clues as to where the file may
 previously have been located in the project. The project loading routines will try to put them back
-as close as possible to this location if it still exists. Generally, it will be appended to the end
-of the folder where it previously was located. If that folder doesn't exist, it will try to add it
-to the correct root folder. If it cannot figure out which root folder is correct, the file will be
-added to the :guilabel:`Novel` root folder.
+as close as possible to this location, if it still exists. Generally, it will be appended to the
+end of the folder where it previously was located. If that folder doesn't exist, it will try to add
+it to the correct root folder. If it cannot figure out which root folder is correct, the file will
+be added to the :guilabel:`Novel` root folder. Only if the :guilabel:`Novel` folder is missing, it
+will give up.
 
 If the title of the file can be recovered, the word "Recovered:" will be added as a prefix. If the
 title cannot be determined, the file will be named "Recovered File N" where N is a sequential
@@ -138,11 +141,11 @@ number.
 Project Lockfile
 ----------------
 
-To prevent orphaned files caused by file conflicts when novelWriter projects are synced with file
+To prevent lost files caused by file conflicts when novelWriter projects are synced with file
 synchronisation tools, a project lockfile is written to the project folder. If you try to open a
 project which has such a file present, you will be presented with a warning, and some information
 about where else novelWriter thinks the project is also open. You will be give the option to ignore
-this warning, and continue opening the project.
+this warning, and continue opening the project at your own risk.
 
 .. note::
    If, for some reason, novelWriter crashes, the lock file may remain even if there are no other
@@ -152,7 +155,8 @@ this warning, and continue opening the project.
 .. warning::
    If you choose to ignore the warning and continue opening the project, and multiple instances of
    the project are in fact open, you are likely to cause inconsistencies and create diverging
-   project files, potentially resulting in loss of data and orphaned files.
+   project files, potentially resulting in loss of data and orphaned files. You are not likely to
+   lose any actual text unless both instances have the same document open in the editor,
 
 
 .. _a_proj_roots_dirs:
@@ -178,18 +182,20 @@ Project Files
 =============
 
 New document files can be created from the :guilabel:`Document` menu, or by pressing
-:kbd:`Ctrl`:kbd:`N` while in the Project Tree. This will create a new, empty file, and open the
+:kbd:`Ctrl`:kbd:`N` while in the project tree. This will create a new, empty file, and open the
 :guilabel:`:Item Settings` dialog where the filename and various other settings can be changed.
 This dialog can also be opened again later from either the :guilabel:`Project` menu, selecting
-:guilabel:`Edit Item`, or by pressing :kbd:`Ctrl`:kbd:`E` or :kbd:`F2` with the item selected.
+:guilabel:`Edit Project Item`, or by pressing :kbd:`Ctrl`:kbd:`E` or :kbd:`F2` with the item
+selected.
 
 The layout of the file is also defined here. For Novel files, the full list of layout options are
 available. For non-Novel files, only "Note" is available. See :ref:`a_struct_layout` for more
 details.
 
-You can also select whether the file is by default included when building the project. This setting
-can be overridden in the :guilabel:`Build Novel Project` tool if you wish to include them anyway.
-This is covered in the :ref:`a_export_files` section.
+You can also select whether the document is by default included when building the project. This
+setting can be overridden in the :guilabel:`Build Novel Project` tool if you wish to include them
+anyway. This is covered in the :ref:`a_export_files` section. You can also toggle the included
+state of a document from the right-click context menu.
 
 
 .. _a_proj_files_counts:
@@ -197,10 +203,10 @@ This is covered in the :ref:`a_export_files` section.
 Word Counts
 -----------
 
-A character, word and paragraph count is maintained for each file, as well as for each section of a
-file defined by a header. The word count, and change of words in the current session, is displayed
-in the footer of any document open in the editor, and all stats are shown in the details panel
-below the project tree for any file selected.
+A character, word and paragraph count is maintained for each document, as well as for each section
+of a document following a header. The word count, and change of words in the current session, is
+displayed in the footer of any document open in the editor, and all stats are shown in the details
+panel below the project tree for any file selected.
 
 The word counts are not updated in real time, but run in the background every five seconds for as
 long as the document is being actively edited.
@@ -228,11 +234,11 @@ The :guilabel:`Settings` tab holds the project title and author settings.
 The :guilabel:`Working Title` can be set to a different title than the :guilabel:`Book Title`. The
 difference between them is simply that the :guilabel:`Working Title` is used for the GUI (main
 window title) and for generating the backup files. The intention is that the :guilabel:`Working
-Title` should remain unchanged throughput the project, otherwise the name of exported files and
+Title` should remain unchanged throughout the project, otherwise the name of exported files and
 backup files may change too.
 
 The :guilabel:`Book Title` and :guilabel:`Book Authors` settings are currently not used for
-anything, so setting then is just for the benefit of the author. Future, planned features will be
+anything, so setting then is just for the benefit of the author. Future, planned features may be
 using them, and they are exported on some export formats in the :guilabel:`Build Novel Project`
 tool.
 
@@ -254,7 +260,7 @@ that can be applied to each file.
 
 These are purely there for the user's convenience, and you are not required to use them for any
 other feature to work. No other part of novelWriter accesses this information. The intention is to
-use these to indicate at what stage of completeion each novel file is, or how important the content
+use these to indicate at what stage of completion each novel file is, or how important the content
 of a note file is to the plot. You don't have to use them this way, that's just what they were
 intended for, but you can make them whatever you want.
 
@@ -269,6 +275,9 @@ Auto-Replace Tab
 A set of automatically replaced keywords can be added in this tab. The keywords in the left column
 will be replaced by the text in the right column when documents are opened in the viewer. They will
 also be applied to exports.
+
+The auto-replace feature will replace text in angle brackets that are also in this list. The syntax
+highlighter will add an alternate colour to text marching the syntax.
 
 .. note::
    A keyword cannot contain any spaces. The angle brackets are added by default, and when used in
@@ -298,17 +307,18 @@ Settings`.
    :guilabel:`Project Settings`. This value is used to generate the folder name for the zip files.
    Without it, the backup will not run at all, but produce a warning message.
 
+
 .. _a_proj_stats:
 
 Writing Statistics
 ==================
 
-When you work on your project, a log file records when you opened it, when you closed it, and how
-many words you added to your novel and note files during the session. You can view this file in the
-``meta`` folder in the directory where you saved your project. The file is named
+When you work on your project, a log file records when you opened it, when you closed it, and the
+latest total word counts of your novel and note files after the session. You can view this file in
+the ``meta`` folder in the directory where you saved your project. The file is named
 ``sessionStats.log``.
 
-A small tool to view the content of this file is available in the :guilabel:`Tools` menu under
+A tool to view the content of this file is available in the :guilabel:`Tools` menu under
 :guilabel:`Writing Statistics`. You can also launch it by pressing :kbd:`F6`.
 
 The tool will show a list of all your sessions, and a set of filters to apply to it. You can also
