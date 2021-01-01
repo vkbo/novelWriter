@@ -56,7 +56,7 @@ a series of keyword–replace steps. They are all on the format ``%keyword%``.
 
 **Example**
 
-* The format ``%title%`` just reproduces the title you set in the document file.
+* The format ``%title%`` just reproduces the title you set in the document.
 * The format ``Chapter %ch%: %title%`` produces something like "Chapter 1: My Chapter Title".
 * The format ``Scene %ch%.%sc%`` produces something like "Scene 1.2" for scene 2 in chapter 1.
 
@@ -79,11 +79,11 @@ separator.
 File Selection
 ==============
 
-Which document files are selected for export can be controlled from the options on the left side of
-the dialog window. The switch for :guilabel:`Include novel files` will select any document that
-isn't classified as a note. The switch for :guilabel:`Include note files` will select any document 
-that *is* a note. This is allows for exporting just the novel, just your notes, or both, as you see
-fit.
+Which documents and notes are selected for export can be controlled from the options on the left
+side of the dialog window. The switch for :guilabel:`Include novel files` will select any document
+that isn't classified as a note. The switch for :guilabel:`Include note files` will select any
+document that *is* a note. This is allows for exporting just the novel, just your notes, or both,
+as you see fit.
 
 In addition, you can select to export the synopsis comments, regular comments, keywords, and even
 exclude the body text itself.

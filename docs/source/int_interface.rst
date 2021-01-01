@@ -16,28 +16,28 @@ The main window contains a project tree in the left-most panel. It shows the ent
 the project. It has four columns:
 
 :guilabel:`Label`
-   The first column shows the item icon and its label. The labels can be edited from the menu
+   The first column shows the item icon and its label. The labels can be edited from the
    :guilabel:`Project` menu, or by pressing :kbd:`F2` or :kbd:`Ctrl`:kbd:`E`. The label is not the
    same as the title you set inside the document, but it will appear in the header above the
    document text itself.
 
 :guilabel:`Words`
-   The second column shows the word count of the file, or the sum of words in the child items if it
-   is a folder. If the counts seem incorrect, they can be updated by rebuilding the project index
-   from the :guilabel:`Tools` menu, or by pressing :kbd:`F9`.
+   The second column shows the word count of the document, or the sum of words in the child items
+   if it is a folder. If the counts seem incorrect, they can be updated by rebuilding the project
+   index from the :guilabel:`Tools` menu, or by pressing :kbd:`F9`.
 
 :guilabel:`Inc`
-   The third column indicates whether the file is included in the final project build or not. You
-   may want to filter out files that you no longer want to keep in the final manuscript, but want
-   to keep in the project for reference.
+   The third column indicates whether the document is included in the final project build or not.
+   You may want to filter out documents that you no longer want to keep in the final manuscript,
+   but want to keep in the project for reference.
 
 :guilabel:`Flags`
    The fourth column shows various meta data flags for the item. The first is an icon indicating
-   the importance or status of the file. These are colour coded status levels that you control and
-   define yourself. They can be changed in :guilabel:`Project Settings` from the
+   the importance or status of the document. These are colour coded status levels that you control
+   and define yourself. They can be changed in :guilabel:`Project Settings` from the
    :guilabel:`Project` menu. The first character after the icon indicates the class of the item,
    that is ``N`` for **Novel**, ``C`` for **Character**, etc (see :ref:`a_struct_tags`). The second
-   character indicates the file layout type (see :ref:`a_proj_roots`).
+   character indicates the document layout type (see :ref:`a_proj_roots`).
 
 Below the project tree you will find a small details panel showing the full information of the
 currently selected item. This panel also includes the latest paragraph and character counts in
@@ -53,16 +53,16 @@ Project Tree Drag and Drop
 --------------------------
 
 The project tree allows drag and drop to a certain extent. This feature is primarily intended for
-rearranging the order of your files within each root folder, and has only limited support for
-moving files elsewhere in the project tree. In general, bulk actions are not allowed. This is
+rearranging the order of your documents within each root folder, and has only limited support for
+moving documents elsewhere in the project tree. In general, bulk actions are not allowed. This is
 deliberate to avoid accidentally messing up your project. The project tree has no undo function.
 
-Document files and their folders can be rearranged freely within their root folders. Novel files
+Documents and their folders can be rearranged freely within their root folders. Novel documents
 cannot be moved out of the :guilabel:`Novel` folder, except to :guilabel:`Trash` and the
-:guilabel:`Outtakes` folder. Note files can be moved freely between root folders.
+:guilabel:`Outtakes` folder. Notes can be moved freely between root folders.
 
-Folders cannot be moved at all outside their root tree. Neither can a folder containing files be
-deleted. You must first delete the files.
+Folders cannot be moved at all outside their root tree. Neither can a folder containing documents
+be deleted. You must first delete the containing documents.
 
 Root folders in the project tree cannot be dragged and dropped at all. If you want to reorder them,
 you can move them up or down with respect to eachother from the :guilabel:`Tools` menu or the
@@ -75,10 +75,11 @@ key.
 Editing and Viewing Documents
 =============================
 
-To edit a document, double-click the file in the project tree, or press the :kbd:`Return` key while
-having it selected. This will open the file in the document editor. The editor uses a simplified
-markdown format. The format is described in the :ref:`a_ui_md` section below. The editor has a
-maximise button (activates :guilabel:`Focus Mode`) and a close button in the top-right corner.
+To edit a document, double-click it in the project tree, or press the :kbd:`Return` key while
+having it selected. This will open the document in the document editor. The editor uses a
+simplified markdown format. The format is described in the :ref:`a_ui_md` section below. The editor
+has a maximise button (activates :guilabel:`Distraction Free Mode`) and a close button in the
+top-right corner.
 
 Any document in the project tree can also be viewed in parallel in a right hand side document
 viewer. To view a document, press :kbd:`Ctrl`:kbd:`R`, or select :guilabel:`View Document` in the
@@ -89,10 +90,10 @@ with your latest changes. You can also press the reload button in the top-right 
 panel next to the close button to achieve the same thing.
 
 Both the document editor and viewer will show the label of the document in the header at the top of
-the edit or view panel. Optionally, the full project path to the file can be shown. This can be set
-in the :guilabel:`Preferences` dialog from the :guilabel:`Tools` menu. Clicking on the document
-title bar will select and reveal the file in the project tree, making it easier to find the project
-location of the file in a large project.
+the edit or view panel. Optionally, the full project path to the document can be shown. This can be
+set in the :guilabel:`Preferences` dialog from the :guilabel:`Tools` menu. Clicking on the document
+title bar will select and reveal its location in the project tree, making it easier to find in a
+large project.
 
 Any reference to a tag in the editor can be opened in the viewer by moving the cursor to the label
 and pressing :kbd:`Ctrl`:kbd:`Return`. In the viewer, the references become clickable links.
@@ -153,28 +154,28 @@ a synopsis tag, and a set of keyword and value sets used for tags and references
 Headings
 --------
 
-Four levels of headings are allowed. For files of type "Note", they are free to be used as you see
-fit, but for all other file layouts used for the novel text itself, they indicate the structural
+Four levels of headings are allowed. For documents of layout "Note", they are free to be used as
+you see fit, but for all other layouts used for the novel text itself, they indicate the structural
 level of the novel. See :ref:`a_struct_heads` for more details.
 
 ``# Title``
-   Heading level one. If the file is a novel file, the header level indicates the start of a new
-   partition. This heading level can also be used for the title page novel title.
+   Heading level one. If the document is a novel file, the header level indicates the start of a
+   new partition. This heading level can also be used for the title page novel title.
 
 ``## Title``
-   Heading level two. If the file is a novel file, the header level indicates the start of a new
-   chapter.
+   Heading level two. If the document is a novel file, the header level indicates the start of a
+   new chapter.
 
 ``### Title``
-   Heading level three. If the file is a novel file, the header level indicates the start of a new
-   scene.
+   Heading level three. If the document is a novel file, the header level indicates the start of a
+   new scene.
 
 ``#### Title``
-   Heading level four. If the file is a novel file, the header level indicates the start of a new
-   section.
+   Heading level four. If the document is a novel file, the header level indicates the start of a
+   new section.
 
 .. note::
-   The space after the ``#`` characters is mandatory. The syntaxhighlighter will change colour and
+   The space after the ``#`` characters is mandatory. The syntax highlighter will change colour and
    font size when the heading is correctly formatted.
 
 
@@ -198,7 +199,9 @@ In markdown guides it is often recommended to differentiate between strong impor
 by using ``**`` for strong and ``_`` for emphasis, although markdown generally also supports ``__``
 for strong and ``*`` for emphasis. However, since the differentiation makes the highlighting and
 conversion significantly simpler and faster, in novelWriter this is a rule, not just a
-recommendation. The following is therefore the only supported formatting syntax:
+recommendation.
+
+In addition, the following rules apply:
 
 1. The emphasis and strikethrough formatting tags do not allow spaces between the words and the tag
    itself. That is, ``**text**`` is valid, ``**text **`` is not.
@@ -216,12 +219,12 @@ recommendation. The following is therefore the only supported formatting syntax:
 Comments and Synopsis
 ---------------------
 
-In addition to these standard markdown features, novelWriter also allows for comments in the text
-files. The text of the comment is ignored by the word counter and not exported or, optionally,
-hidden when viewing the document. If the first word of a comment is ``Synopsis:`` (with the colon),
-the comment is treated specially and will show up in the :ref:`a_ui_outline` in a dedicated column.
-The word ``synopsis`` is not case sensitive. If it is correctly formatted, the syntax highlighter
-will indicate this by altering the colour of the word.
+In addition to these standard markdown features, novelWriter also allows for comments in document.
+The text of the comment is ignored by the word counter and not exported or, optionally, hidden when
+viewing the document. If the first word of a comment is ``Synopsis:`` (with the colon), the comment
+is treated specially and will show up in the :ref:`a_ui_outline` in a dedicated column. The word
+``synopsis`` is not case sensitive. If it is correctly formatted, the syntax highlighter will
+indicate this by altering the colour of the word.
 
 ``% text...``
    A comment. The text is not exported by default (this can be overridden), seen in the Viewer, or
@@ -244,8 +247,8 @@ Tags and References
 -------------------
 
 The document editor supports a minimal set of keywords used for setting tags, and making references
-between files. The tags and references can be set once per section defined by a heading. Using them
-multiple times under the same heading will just override the previous setting.
+between documents. The tags and references can be set once per section defined by a heading. Using
+them multiple times under the same heading will just override the previous setting.
 
 ``@keyword: value``
    A keyword argument followed by a value, or a comma separated list of values.
@@ -261,7 +264,7 @@ Additional Markdown and Non-Standard Features
 
 The editor and viewer also supports markdown standard hard line breaks, and preserves non-breaking
 spaces if running with Qt 5.9 or higher. For older versions, the non-breaking spaces are lost when
-the file is saved. This is unfortunately hard-coded in the Qt text editor.
+the document is saved. This is unfortunately hard-coded in the Qt text editor.
 
 * A hard line break is achieved by leaving two or more spaces at the end of the line.
   Alternatively, the user can press :kbd:`Ctrl`:kbd:`K`, :kbd:`Return` to insert this.
@@ -284,16 +287,16 @@ Project Outline View
 
 The project's Outline view is available as the second tab on the right hand side of the main window
 labelled :guilabel:`Outline`. The outline provides an overview of the novel structure, displaying a
-tree hierarchy of the elements of the novel, that is, the level 1 to 4 headings, not the files.
+tree hierarchy of the elements of the novel, that is, the level 1 to 4 headings.
 
-The document file containing the heading can also be displayed as a separate column, as well as the
-line number where it occurs. Double-clicking an entry will open the corresponding file in the
+The document containing the heading can also be displayed as a separate column, as well as the line
+number where it occurs. Double-clicking an entry will open the corresponding document in the
 editor.
 
 .. note::
-   Since the internal structure of the novel does not depend on the file structure of the project
-   tree, these will not necessarily look the same, depending how you choose to organise your files.
-   See the :ref:`a_struct` page for more details.
+   Since the internal structure of the novel does not depend directly on the folder and document
+   structure of the project tree, these will not necessarily look the same, depending how you
+   choose to organise your documents. See the :ref:`a_struct` page for more details.
 
 Various meta data and information extracted from tags can be displayed in columns in the outline.
 A default set of such columns is visible, but you can turn on or off more columns by right clicking
@@ -405,8 +408,8 @@ Insert Shortcuts
 ----------------
 
 A set of insert features are also available through shortcuts, but they require a double
-combination of key sequences. The insert feature is activated with :kbd:`Ctrl-K`, followed by a key
-or combination for the inserted character or punctuation.
+combination of key sequences. The insert feature is activated with :kbd:`Ctrl`:kbd:`K`, followed by
+a key or combination for the inserted character or punctuation.
 
 .. csv-table:: Keyboard Shortcuts
    :header: "Shortcut", "Description"

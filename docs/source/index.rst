@@ -30,8 +30,8 @@ novelWriter |release|
 
 novelWriter is a markdown-like text editor designed for writing novels and larger projects of many
 smaller plain text documents. It uses its own flavour of markdown that supports a meta data syntax
-for comments, synopsis and cross-referencing between files. The idea is to have a simple text
-editor which allows for easy organisation of text files and notes, built on a plain text file
+for comments, synopsis and cross-referencing between documents. The idea is to have a simple text
+editor which allows for easy organisation of text documents and notes, built on a plain text file
 project repository for robustness.
 
 The plain text storage is suitable for version control software, and also well suited for file

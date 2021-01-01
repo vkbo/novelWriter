@@ -6,8 +6,8 @@ Novel Structure
 
 This section covers the structure of a novel project.
 
-It concerns documents under the Novel type root folder only. There are some restrictions and
-features that only apply to these types of documents.
+It concerns documents under the :guilabel:`Novel` type root folder only. There are some
+restrictions and features that only apply to these types of documents.
 
 
 .. _a_struct_heads:
@@ -76,8 +76,8 @@ removed before inserted at the location of the ``%title%`` label. See the :ref:`
 more details.
 
 .. note::
-   If you need the first character of the title to be an actual asterisk, you must escape it like
-   so: ``\*``.
+   If you need the first character of the title to be an actual asterisk, you must escape it:
+   ``\*``.
 
 
 .. _a_struct_tags:
@@ -86,9 +86,9 @@ Tag References
 ==============
 
 Each text partition indicated by a heading of any level, can contain references to tags set in the
-supporting documents of the project. The references are gathered by the indexer and used to
-generate the outline view on the :guilabel:`Outline` tab of how the different parts of the novel
-are connected.
+supporting notes of the project. The references are gathered by the indexer and used to generate
+the outline view on the :guilabel:`Outline` tab of how the different parts of the novel are
+connected.
 
 References and tags are also clickable in the document editor and viewer, making it easy to
 navigate between reference notes while writing. Clicked links are always opened in the view panel.

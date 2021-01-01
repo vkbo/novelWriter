@@ -1,8 +1,8 @@
 .. _a_notes:
 
-************************
-Supporting Files (Notes)
-************************
+*************
+Project Notes
+*************
 
 novelWriter doesn't have a database and complicated forms to fill in all details about plot
 elements, characters, and all sorts of additional information that isn't a part of the novel text
@@ -10,7 +10,7 @@ itself. Instead, all such information is saved in notes. The relation between al
 elements is extracted from these documents by the project indexer based on the tags and references
 you set.
 
-These documents are not required, but making at least minimal files for each such plot element, and
+These notes are not required, but making at least minimal files for each such plot element, and
 adding a tag to them, makes it possible to use the :guilabel:`Outline` feature to see how each
 element intersects with each section of the novel itself, and adds clickable cross-references
 between documents in the editor and viewer.

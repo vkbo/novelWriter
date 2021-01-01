@@ -26,9 +26,9 @@ Project Roots
 Projects are structured into a set of top level folders called *root folders*. They are visible in
 the project tree at the left side of the main window.
 
-The core novel files go into a root folder of type :guilabel:`Novel`. Other supporting files go
-into the other root folders. These other root folder types are intended for your notes on the
-various elements of your story. Using these is of course entirely optional.
+The core novel documents go into a root folder of type :guilabel:`Novel`. Other supporting
+documents go into the other root folders. These other root folder types are intended for your notes
+on the various elements of your story. Using these is of course entirely optional.
 
 A new project may not have all of the root folders present, but you can add the ones you want from
 :guilabel:`Create Root Folder` in the :guilabel:`Project` menu.
@@ -37,17 +37,17 @@ The root folders are intended for the following use, but aside from the :guilabe
 no restrictions are enforced by the application. You can use them however you want.
 
 :guilabel:`Novel`
-   This is the root folder of all text that goes into the final novel. This class of files have
-   other rules and features than other files in the project. See the :ref:`a_struct` page for more
-   details.
+   This is the root folder of all text that goes into the final novel. This class of documents have
+   other rules and features than other documents in the project. See the :ref:`a_struct` page for
+   more details.
 
 :guilabel:`Plot`
    This is the root folder where main plots can be outlined. It is optional, but adding at least
-   dummy files can be useful in order to tag plot elements for the Outline view. Tags in this
+   dummy notes can be useful in order to tag plot elements for the Outline view. Tags in this
    folder can be references using the ``@plot`` keyword.
 
 :guilabel:`Characters`
-   Character files go in this root folder. These are especially important if one wants to use the
+   Character notes go in this root folder. These are especially important if one wants to use the
    Outline view to see which character appears where, and which part of the story is told from a
    specific character's point-of-view. Tags in this folder can be references using the ``@pov``
    keyword for point-of-view characters, or the ``@char`` keyword for other characters.
@@ -58,7 +58,7 @@ no restrictions are enforced by the application. You can use them however you wa
 
 :guilabel:`Timeline`
    If the story has multiple plot timelines or jumps in time within the same plot, this class of
-   files can be used to track this. Tags in this folder can be references using the ``@time``
+   notes can be used to track this. Tags in this folder can be references using the ``@time``
    keyword.
 
 :guilabel:`Objects`
@@ -88,13 +88,14 @@ information about the tags listed, see :ref:`a_struct_tags`.
 Deleted Documents
 -----------------
 
-Deleted document files will be moved into a special :guilabel:`Trash` root folder. Files in the
+Deleted documents will be moved into a special :guilabel:`Trash` root folder. Documents in the
 trash folder can then be deleted permanently, either individually, or by emptying the trash from
-the menu. Files in this folder are removed from the project index and cannot be referenced.
+the menu. Documents in the trash folder are removed from the project index and cannot be
+referenced.
 
 Folders and root folders can only be deleted when they are empty. Recursive deletion is not
-supported. A document file or a folder can be deleted from the :guilabel:`Project` menu, or by
-pressing :kbd:`Ctrl`:kbd:`Del`.
+supported. A document or a folder can be deleted from the :guilabel:`Project` menu, or by pressing
+:kbd:`Ctrl`:kbd:`Del`.
 
 
 .. _a_proj_roots_out:
@@ -102,15 +103,15 @@ pressing :kbd:`Ctrl`:kbd:`Del`.
 Archived Documents (Outtakes)
 -----------------------------
 
-If you don't want to delete a file, or put it in the :guilabel:`Trash` folder where it may be
+If you don't want to delete a document, or put it in the :guilabel:`Trash` folder where it may be
 deleted, but still want it out of your main project tree, you can create an :guilabel:`Outtakes`
 root folder from the :guilabel:`Project` menu. You are not allowed to move folders to this root
-folder, only files. If you need folders in it to organise your files, you can of course create new
-ones there.
+folder, only documents. If you need folders in it to organise your documents, you can of course
+create new ones there.
 
-You can drag any file to this folder and preserve its settings. The file will always be excluded
-from the :guilabel:`Build Novel Project` builds. The file is also removed from the project index,
-so the tags and references defined in it will not show up anywhere else.
+You can drag any document to this folder and preserve its settings. The document will always be
+excluded from the :guilabel:`Build Novel Project` builds. It is also removed from the project
+index, so the tags and references defined in it will not show up anywhere else.
 
 
 .. _a_proj_roots_orph:
@@ -123,17 +124,17 @@ file synchronisation tool that runs out of sync, there may be files in the proje
 aren't tracked in the core project file. These files, when discovered, are recovered and added back
 into the project if possible.
 
-The discovered files are scanned for meta information that gives clues as to where the file may
+The discovered files are scanned for meta information that gives clues as to where the document may
 previously have been located in the project. The project loading routines will try to put them back
 as close as possible to this location, if it still exists. Generally, it will be appended to the
 end of the folder where it previously was located. If that folder doesn't exist, it will try to add
-it to the correct root folder. If it cannot figure out which root folder is correct, the file will
-be added to the :guilabel:`Novel` root folder. Only if the :guilabel:`Novel` folder is missing, it
-will give up.
+it to the correct root folder. If it cannot figure out which root folder is correct, the document
+will be added to the :guilabel:`Novel` root folder. Only if the :guilabel:`Novel` folder is
+missing will it give up.
 
-If the title of the file can be recovered, the word "Recovered:" will be added as a prefix. If the
-title cannot be determined, the file will be named "Recovered File N" where N is a sequential
-number.
+If the title of the document can be recovered, the word "Recovered:" will be added as a prefix. If
+the title cannot be determined, the document will be named "Recovered File N" where N is a
+sequential number.
 
 
 .. _a_proj_roots_lock:
@@ -141,7 +142,7 @@ number.
 Project Lockfile
 ----------------
 
-To prevent lost files caused by file conflicts when novelWriter projects are synced with file
+To prevent lost documents caused by file conflicts when novelWriter projects are synced with file
 synchronisation tools, a project lockfile is written to the project folder. If you try to open a
 project which has such a file present, you will be presented with a warning, and some information
 about where else novelWriter thinks the project is also open. You will be give the option to ignore
@@ -165,32 +166,33 @@ Using Folders in the Project Tree
 ---------------------------------
 
 Folders, aside from root folders, have no structural significance to the project. When novelWriter
-is processing the files in the novel, like for instance during export, these folders are ignored.
-Only the order of the document files themselves matter.
+is processing the documents in the novel, like for instance during export, these folders are
+ignored. Only the order of the documents themselves matter.
 
-The folders are there purely as a way for the user to organise the files in meaningful sections and
-to be able to collapse and hide them in the project tree when you're not working on those files.
+The folders are there purely as a way for the user to organise the documents in meaningful sections
+and to be able to collapse and hide them in the project tree when you're not working on those
+documents.
 
 .. tip::
-   You can use folders to sort your scene files into chapters. You will then need to add a chapter
-   file as the first file of your folder, and the scene files as the following files.
+   You can use folders to sort your scene documents into chapters. You will then need to add a
+   chapter documents as the first item of your folder, and the scene documents as the following
+   items.
 
 
 .. _a_proj_files:
 
-Project Files
-=============
+Project Documents
+=================
 
-New document files can be created from the :guilabel:`Document` menu, or by pressing
-:kbd:`Ctrl`:kbd:`N` while in the project tree. This will create a new, empty file, and open the
-:guilabel:`:Item Settings` dialog where the filename and various other settings can be changed.
-This dialog can also be opened again later from either the :guilabel:`Project` menu, selecting
-:guilabel:`Edit Project Item`, or by pressing :kbd:`Ctrl`:kbd:`E` or :kbd:`F2` with the item
-selected.
+New documents can be created from the :guilabel:`Document` menu, or by pressing :kbd:`Ctrl`:kbd:`N`
+while in the project tree. This will create a new, empty document, and open the :guilabel:`Item
+Settings` dialog where the document label and various other settings can be changed. This dialog
+can also be opened again later from either the :guilabel:`Project` menu, selecting :guilabel:`Edit
+Project Item`, or by pressing :kbd:`Ctrl`:kbd:`E` or :kbd:`F2` with the item selected.
 
-The layout of the file is also defined here. For Novel files, the full list of layout options are
-available. For non-Novel files, only "Note" is available. See :ref:`a_struct_layout` for more
-details.
+The layout of the document is also defined here. For Novel documents, the full list of layout
+options are available. For non-Novel documents, only :guilabel:`Note` is available. See
+:ref:`a_struct_layout` for more details.
 
 You can also select whether the document is by default included when building the project. This
 setting can be overridden in the :guilabel:`Build Novel Project` tool if you wish to include them
@@ -206,7 +208,7 @@ Word Counts
 A character, word and paragraph count is maintained for each document, as well as for each section
 of a document following a header. The word count, and change of words in the current session, is
 displayed in the footer of any document open in the editor, and all stats are shown in the details
-panel below the project tree for any file selected.
+panel below the project tree for any document selected in the project tree.
 
 The word counts are not updated in real time, but run in the background every five seconds for as
 long as the document is being actively edited.
@@ -238,35 +240,34 @@ Title` should remain unchanged throughout the project, otherwise the name of exp
 backup files may change too.
 
 The :guilabel:`Book Title` and :guilabel:`Book Authors` settings are currently not used for
-anything, so setting then is just for the benefit of the author. Future, planned features may be
-using them, and they are exported on some export formats in the :guilabel:`Build Novel Project`
-tool.
+anything, so setting then is just for the benefit of the author. Future features may be using them,
+and they are exported on some export formats in the :guilabel:`Build Novel Project` tool.
 
 
 Details Tab
 -----------
 
 This tab presents an overview of meta data for the project. It states where on your file system the
-project is saved, how may times it has been saved, how many folders and files it contains, and how
-many words exist in the entire project.
+project is saved, how may times it has been saved, how many folders and documents it contains, and
+how many words exist in the entire project.
 
 
 Status and Importance Tabs
 --------------------------
 
-Each file of type "Novel" can be given a status level, signified by a coloured icon and each file
-of the remaining types can be given an importance level. These are colour coded icons and labels
-that can be applied to each file.
+Each document or folder of type :guilabel:`Novel` can be given a status level, signified by a
+coloured icon, and each document or folder of the remaining types can be given an importance level.
+These are colour coded icons and labels that can be applied to each document or folder.
 
 These are purely there for the user's convenience, and you are not required to use them for any
-other feature to work. No other part of novelWriter accesses this information. The intention is to
-use these to indicate at what stage of completion each novel file is, or how important the content
-of a note file is to the plot. You don't have to use them this way, that's just what they were
+other features to work. No other part of novelWriter accesses this information. The intention is to
+use these to indicate at what stage of completion each novel document is, or how important the
+content of a note is to the plot. You don't have to use them this way, that's just what they were
 intended for, but you can make them whatever you want.
 
 .. note::
-   The status or importance level currently in use by one or more files cannot be deleted, but they
-   can be edited.
+   The status or importance level currently in use by one or more documents cannot be deleted, but
+   they can be edited.
 
 
 Auto-Replace Tab
@@ -313,9 +314,9 @@ Settings`.
 Writing Statistics
 ==================
 
-When you work on your project, a log file records when you opened it, when you closed it, and the
-latest total word counts of your novel and note files after the session. You can view this file in
-the ``meta`` folder in the directory where you saved your project. The file is named
+When you work on a project, a log file records when you opened it, when you closed it, and the
+total word counts of your novel documents and notes at the end of the session. You can view this
+file in the ``meta`` folder in the directory where you saved your project. The file is named
 ``sessionStats.log``.
 
 A tool to view the content of this file is available in the :guilabel:`Tools` menu under

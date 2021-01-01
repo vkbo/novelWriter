@@ -12,15 +12,15 @@ projects are structured is covered on the :ref:`a_struct` page.
 In addition, the project can contain notes on the various plot elements, characters, locations,
 etc, that make up the story. These notes are organised in a set of category-specific top-level
 folders (root folders), and each entry can be tagged and cross-referenced from within the novel
-files and other note files. These tags make it possible to inter-link documents, and generate an
-overview of the entire novel project and how the various files and plot elements are
-interconnected. This is covered on the :ref:`a_proj` and :ref:`a_notes` pages.
+documents and notes. These tags make it possible to inter-link documents, and generate an overview
+of the entire novel project and how the various documents and plot elements are interconnected.
+This is covered on the :ref:`a_proj` and :ref:`a_notes` pages.
 
 These additional features are not standard in markdown, but are available through special meta
-keywords described on :ref:`a_struct_tags`. Syntax highlighting is provided to make it easier to
+keywords described in :ref:`a_struct_tags`. Syntax highlighting is provided to make it easier to
 verify that the markdown tags are used correctly.
 
-An overview of the extended markdown syntax is covered on the :ref:`a_ui` page.
+An overview of the supported markdown syntax is covered on the :ref:`a_ui` page.
 
 
 .. _a_intro_design:
@@ -33,7 +33,7 @@ at the same time provide a complete set of features needed for writing a novel.
 
 .. note::
    novelWriter is not intended to be a full office type word processor. It doesn't support images,
-   links, tables, and other complex structure and objects often needed for such document.
+   links, tables, and other complex structures and objects often needed for such documents.
    Formatting is limited to headers, and bold, italicised and strikethrough text.
 
 The main window does not have a toolbar like most other applications do. This reduces clutter, and
@@ -52,13 +52,14 @@ of icon themes in colour and greyscale are also offered. The icons are based on 
 set designed by Stephen Hutchings.
 
 The main window is split in two, or optionally three, panels. The left-most contains the project
-tree and all the files in your project. The second panel is the document editor, and the optional
-third panel is a document viewer which can view any document in your project.
+tree and all the documents in your project. The second panel is the document editor, and the
+optional third panel is a document viewer which can view any document in your project.
 
 A second tab is also available on the main window. This is the :guilabel:`Outline` tab where the
 entire novel structure can be displayed, with all the tags and references listed. Depending on how
-you structure your novel project files, this outline can be quite different from your project tree.
-Your project tree lists files, your Outline tree lists the structure of the novel itself.
+you structure your novel documents, this outline can be quite different from your project tree.
+Your project tree lists individual documents, your Outline tree lists the structure of the novel
+itself as it appears in the text of the documents.
 
 .. _Typicons: https://github.com/stephenhutchings/typicons.font
 
@@ -68,10 +69,10 @@ Your project tree lists files, your Outline tree lists the structure of the nove
 Project Layout
 ==============
 
-You are free to structure your project files as you wish in subfolders, and split the text between
-files in whatever way suits you. All that matters to novelWriter is the linear order the files
-appear at in the project tree (top to bottom). The chapters, scenes and sections of the novel are
-determined by the headings within those files.
+You are free to structure your project documents as you wish in subfolders, and split the text
+between documents in whatever way suits you. All that matters to novelWriter is the linear order
+the documents appear at in the project tree (top to bottom). The chapters, scenes and sections of
+the novel are determined by the headings within those documents.
 
 The four heading levels (**H1** to **H4**) are treated as follows:
 
@@ -80,9 +81,9 @@ The four heading levels (**H1** to **H4**) are treated as follows:
 * **H3** is used for scene titles – optionally replaced by separators.
 * **H4** is for section titles within scenes, if such granularity is needed.
 
-This header level structure is only taken into account for novel files. For the files designated as
-project notes, the header levels have no structural meaning, and the user is free to do whatever
-they want. See the :ref:`a_struct` page for more details.
+This header level structure is only taken into account for novel documents. For the project notes,
+the header levels have no structural meaning, and the user is free to do whatever they want. See
+the :ref:`a_struct` and :ref:`a_notes` pages for more details.
 
 
 .. _a_intro_export:

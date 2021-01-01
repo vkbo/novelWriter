@@ -45,11 +45,6 @@ needed for novelWriter to run, including Python and the xml and Qt libraries.
 
 .. _main website: https://novelwriter.io
 
-.. note::
-   While the majority of virus scanners have no warnings, some scanners will flag the installer.
-   This is caused by the ``pyinstaller`` tool being used to create the package. The ``pyinstaller``
-   binaries bundled with the installer are from the official PyPi repository.
-
 
 .. _a_started_install_source:
 
@@ -122,7 +117,7 @@ The spell checking extension is optional, but recommended:
 
 * ``pyenchant``, needed for efficient spell checking.
 
-The optional spell check library must be at least 3.0.0 to work with Windows. On Linux, 2.0.0 also
+The optional spell check library must be at least 3.0 to work with Windows. On Linux, 2.0 also
 works fine.
 
 
