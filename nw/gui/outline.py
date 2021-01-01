@@ -227,6 +227,7 @@ class GuiOutline(QTreeWidget):
             tHandle = selItems[0].data(self.colIndex[nwOutline.TITLE], Qt.UserRole)
             sTitle  = selItems[0].data(self.colIndex[nwOutline.LINE], Qt.UserRole)
             self.theParent.projMeta.showItem(tHandle, sTitle)
+            self.theParent.treeView.setSelectedHandle(tHandle)
 
         return
 
