@@ -30,18 +30,19 @@ novelWriter |release|
 
 novelWriter is a markdown-like text editor designed for writing novels and larger projects of many
 smaller plain text documents. It uses its own flavour of markdown that supports a meta data syntax
-for comments, synopsis and cross-referencing between files. The idea is to have a simple text editor
-which allows for easy organisation of text files and notes, built on a plain text file project
-repository for robustness.
+for comments, synopsis and cross-referencing between files. The idea is to have a simple text
+editor which allows for easy organisation of text files and notes, built on a plain text file
+project repository for robustness.
 
 The plain text storage is suitable for version control software, and also well suited for file
-synchronisation tools. The core project structure is stored in a project XML file. Other meta data
-is primarily saved as JSON files.
+synchronisation tools. The core project structure is stored in a single project XML file. Other
+meta data is primarily saved as JSON files.
 
 Any operating system that can run Python 3 and has the Qt 5 libraries should be able to run
-novelWriter. It runs fine on Linux, Windows and macOS already, and users have tested it on other
-platforms too. Since novelWriter is still under development, it is easier to run it if you are
-already familiar with how to run Python applications on your platform.
+novelWriter. It runs fine on Linux, Windows and macOS, and users have tested it on other platforms
+too. novelWriter can be run directly from the Python source, or installed from the pip tool or via
+the provided setup script. A setup.exe is provided for Windows. See :ref:`a_started` for further
+details.
 
 **Useful Links**
 
@@ -50,6 +51,7 @@ already familiar with how to run Python applications on your platform.
 * Source Code: https://github.com/vkbo/novelWriter
 * Source Releases: https://github.com/vkbo/novelWriter/releases
 * Issue Tracker: https://github.com/vkbo/novelWriter/issues
+* Feature Discussions: https://github.com/vkbo/novelWriter/discussions
 * PyPi Project: https://pypi.org/project/novelWriter
 
 
