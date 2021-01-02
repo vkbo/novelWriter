@@ -51,18 +51,16 @@ class NWIndex():
         self.indexBroken = False
 
         # Indices
-        self.tagIndex   = None
-        self.refIndex   = None
-        self.novelIndex = None
-        self.noteIndex  = None
-        self.textCounts = None
+        self.tagIndex   = {}
+        self.refIndex   = {}
+        self.novelIndex = {}
+        self.noteIndex  = {}
+        self.textCounts = {}
 
         # TimeStamps
-        self.timeNovel = 0
-        self.timeNote  = 0
-        self.timeIndex = 0
-
-        self.clearIndex()
+        self._timeNovel = 0
+        self._timeNotes = 0
+        self._timeIndex = 0
 
         return
 
@@ -78,9 +76,9 @@ class NWIndex():
         self.novelIndex = {}
         self.noteIndex  = {}
         self.textCounts = {}
-        self.timeNovel  = 0
-        self.timeNote   = 0
-        self.timeIndex  = 0
+        self._timeNovel = 0
+        self._timeNotes = 0
+        self._timeIndex = 0
         return
 
     def deleteHandle(self, tHandle):
@@ -123,6 +121,21 @@ class NWIndex():
 
         return True
 
+    def novelChangedSince(self, checkTime):
+        """Check if the novel index has changed since a given time.
+        """
+        return self._timeNovel > checkTime
+
+    def notesChangedSince(self, checkTime):
+        """Check if the notes index has changed since a given time.
+        """
+        return self._timeNotes > checkTime
+
+    def indexChangedSince(self, checkTime):
+        """Check if the index has changed since a given time.
+        """
+        return self._timeIndex > checkTime
+
     ##
     #  Load and Save Index to/from File
     ##
@@ -155,9 +168,9 @@ class NWIndex():
                 self.textCounts = theData["textCounts"]
 
             nowTime = round(time())
-            self.timeNovel = nowTime
-            self.timeNote  = nowTime
-            self.timeIndex = nowTime
+            self._timeNovel = nowTime
+            self._timeNotes = nowTime
+            self._timeIndex = nowTime
 
         self.checkIndex()
 
@@ -334,11 +347,11 @@ class NWIndex():
 
         # Update timestamps for index changes
         nowTime = round(time())
-        self.timeIndex = nowTime
+        self._timeIndex = nowTime
         if isNovel:
-            self.timeNovel = nowTime
+            self._timeNovel = nowTime
         else:
-            self.timeNote = nowTime
+            self._timeNotes = nowTime
 
         return True
 

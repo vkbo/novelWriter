@@ -205,6 +205,10 @@ def testCoreIndex_CheckThese(nwMinimal, dummyGUI):
     nItem = theProject.projTree[nHandle]
     cItem = theProject.projTree[cHandle]
 
+    assert not theIndex.novelChangedSince(0)
+    assert not theIndex.notesChangedSince(0)
+    assert not theIndex.indexChangedSince(0)
+
     assert theIndex.scanText(cHandle, (
         "# Jane Smith\n"
         "@tag: Jane"
@@ -215,6 +219,10 @@ def testCoreIndex_CheckThese(nwMinimal, dummyGUI):
     ))
     assert theIndex.tagIndex == {"Jane": [2, cHandle, "CHARACTER", "T000001"]}
     assert theIndex.novelIndex[nHandle]["T000001"]["title"] == "Hello World!"
+
+    assert theIndex.novelChangedSince(0)
+    assert theIndex.notesChangedSince(0)
+    assert theIndex.indexChangedSince(0)
 
     assert theIndex.checkThese([], cItem) == []
     assert theIndex.checkThese(["@tag",  "Jane"], cItem) == [True, True]

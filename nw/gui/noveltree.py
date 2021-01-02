@@ -54,9 +54,9 @@ class GuiNovelTree(QTreeWidget):
         self.theProject = theParent.theProject
         self.theIndex   = theParent.theIndex
 
-        # Tree State
-        self.lastBuild = 0
-        self.treeMap = {}
+        # Internal Variables
+        self._treeMap   = {}
+        self._lastBuild = 0
 
         # Build GUI
         iPx = self.theTheme.baseIconSize
@@ -124,14 +124,17 @@ class GuiNovelTree(QTreeWidget):
         """Clear the GUI content and the related maps.
         """
         self.clear()
-        self.treeMap = {}
+        self._treeMap = {}
+        self._lastBuild = 0
         return
 
     def refreshTree(self, overRide=False):
         """Called whenever the Novel tab is activated.
         """
-        if self.lastBuild >= self.theIndex.timeNovel:
-            logger.verbose("Novel tree more recent than the novel index: not updating")
+        treeChanged = self.theParent.treeView.changedSince(self._lastBuild)
+        indexChanged = self.theIndex.novelChangedSince(self._lastBuild)
+        if not (treeChanged or indexChanged):
+            logger.verbose("No changes made to the novel")
             return
 
         selItem = self.selectedItems()
@@ -139,10 +142,11 @@ class GuiNovelTree(QTreeWidget):
         if selItem:
             titleKey = selItem[0].data(self.C_TITLE, Qt.UserRole)[2]
 
+        self.theParent.treeView.flushTreeOrder()
         self._populateTree()
 
-        if titleKey is not None and titleKey in self.treeMap:
-            self.treeMap[titleKey].setSelected(True)
+        if titleKey is not None and titleKey in self._treeMap:
+            self._treeMap[titleKey].setSelected(True)
 
         return
 
@@ -233,7 +237,7 @@ class GuiNovelTree(QTreeWidget):
     def _populateTree(self):
         """Build the tree based on the project index.
         """
-        self.clear()
+        self.clearTree()
 
         for titleKey in self.theIndex.getNovelStructure(skipExcluded=True):
 
@@ -250,7 +254,7 @@ class GuiNovelTree(QTreeWidget):
 
             tLevel = self.theIndex.novelIndex[tHandle][sTitle]["level"]
             tItem  = self._createTreeItem(tHandle, sTitle, tLevel, titleKey)
-            self.treeMap[titleKey] = tItem
+            self._treeMap[titleKey] = tItem
 
             if tLevel == "H1":
                 currTitle = tItem
@@ -284,7 +288,7 @@ class GuiNovelTree(QTreeWidget):
 
             tItem.setExpanded(True)
 
-        self.lastBuild = time()
+        self._lastBuild = time()
 
         return
 

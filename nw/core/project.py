@@ -1025,7 +1025,7 @@ class NWProject():
         by drag-and-drop. Forwarded to the NWTree class.
         """
         if len(self.projTree) != len(newOrder):
-            logger.warning("Size of new and old tree order do not match")
+            logger.warning("Sizes of new and old tree order do not match")
         self.projTree.setOrder(newOrder)
         self.setProjectChanged(True)
         return True
@@ -1341,7 +1341,7 @@ class NWProject():
             if oLayout is None:
                 oLayout = nwItemLayout.NOTE
 
-            if oParent is None or not self.projTree.handleExists(oParent):
+            if oParent is None or oParent not in self.projTree:
                 oParent = self.projTree.findRoot(oClass)
                 if oParent is None:
                     oParent = self.projTree.findRoot(nwItemClass.NOVEL)

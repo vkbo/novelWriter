@@ -761,9 +761,7 @@ class GuiMain(QMainWindow):
         """
         self._makeStatusIcons()
         self._makeImportIcons()
-        self.treeView.clearTree()
         self.treeView.buildTree()
-        self.novelView.clearTree()
         self.novelView.refreshTree()
         return
 

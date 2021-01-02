@@ -294,11 +294,6 @@ class NWTree():
                         tTree.append(tHandle)
         return tTree
 
-    def handleExists(self, tHandle):
-        """Check if a handle exists in the project.
-        """
-        return tHandle in self._treeOrder
-
     ##
     #  Setters
     ##
