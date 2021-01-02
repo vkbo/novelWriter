@@ -4,13 +4,19 @@
 Getting Started
 ***************
 
-This is a brief guide to how you can get novelWriter running on your computer. These are the methods
-currently supported by the developer. Packages may also be available in other package managers, but
-those are not managed by me.
+This is a brief guide to how you can get novelWriter running on your computer. These are the
+methods currently supported by the developer. Packages may also be available in other package
+managers, but those are not managed by the developer. A Windows installer file is also provided on
+the GitHub page and main website.
 
-As novelWriter matures, more options for how to install it and get it running will be added. At the
-present time, the process is best suited for people used to work with Python projects from command
-line.
+As novelWriter matures, more options for how to install it and get it running will be added. For
+non-Windows users the install process is at the present time best suited for people used to working
+with the command line.
+
+.. note::
+   The text below assumes the command ``python`` corresponds to a Python 3 executable. For
+   operating systems with both Python 2 and 3, the command ``python3`` may be needed instead. On
+   Linux, the scripts can also be made executable and run without the ``python`` command.
 
 
 .. _a_started_install:
@@ -26,6 +32,41 @@ Latest version of novelWriter is |release|.
 
 .. _GitHub: https://github.com/vkbo/novelWriter/releases
 .. _PyPi: https://pypi.org/project/novelWriter/
+
+
+.. _a_started_install_win:
+
+Windows Installer
+-----------------
+
+You can run novelWriter directly from source on Windows, but a Windows installer is also provided
+for 64-bit Windows on the `main website`_ and GitHub_ page. This installer bundles all that is
+needed for novelWriter to run, including Python and the xml and Qt libraries.
+
+.. _main website: https://novelwriter.io
+
+
+.. _a_started_install_source:
+
+Install from Source on Linux
+----------------------------
+
+For Linux systems, novelWriter can be installed from source with the provided ``setup.py`` script.
+To install novelWriter into the system's default Python install locations, run:
+
+.. code-block:: console
+
+   python setup.py install
+
+To set up the novelWriter desktop launcher, the icons and the project file association, run:
+
+.. code-block:: console
+
+   python setup.py xdg-install
+
+By default, these commands installs novelWriter and its icons for the current user only. To install
+for all users, run the script with the ``sudo`` command. Other options are also available. Run
+``python setup.py help`` for a full list of install options.
 
 
 .. _a_started_depend:
@@ -68,17 +109,15 @@ You can of course also install these packages from your operating system's packa
 
 PyQt/Qt should be at least 5.2.1, but ideally 5.10 or higher for nearly all features to work.
 Exporting to standard Markdown, for instance, requires PyQt/Qt 5.14. Searching using regular
-expressions requires 5.3, and for full Unicode support, 5.13.
-
-There are no known minimum version requirement for package ``lxml``, but the code was originally
-written with 4.2, which is therefore set as the minimum. It may work on lower versions. You have to
-test it.
+expressions requires 5.3, and for full Unicode support, 5.13. There is no known minimum version
+requirement for package ``lxml``, but the code was originally written with 4.2, which is therefore
+set as the minimum. It may work on lower versions. You have to test it.
 
 The spell checking extension is optional, but recommended:
 
 * ``pyenchant``, needed for efficient spell checking.
 
-The optional spell check library must be at least 3.0.0 to work with Windows. On Linux, 2.0.0 also
+The optional spell check library must be at least 3.0 to work with Windows. On Linux, 2.0 also
 works fine.
 
 
@@ -87,9 +126,9 @@ works fine.
 Building the Documentation
 --------------------------
 
-If you installed novelWriter from a package, the documentation should be included. If you're running
-novelWriter from the source code, a local copy of this documentation can be generated. It requires
-the following Python packages on Debian and Ubuntu.
+If you installed novelWriter from a package, the documentation should be included. If you're
+running novelWriter from the source code, a local copy of this documentation can be generated. It
+requires the following Python packages on Debian and Ubuntu.
 
 * ``python3-sphinx``
 * ``python3-sphinxcontrib.qthelp``
@@ -100,13 +139,20 @@ Or from PyPi:
 
    pip install sphinx sphinxcontrib-qthelp
 
-To build the help packages from the documentation source, run
+The documentation can then be built from the ``docs`` folder in the source code by running:
 
 .. code-block:: console
 
-   ./setup.py qthelp
+   make html
 
-from the root source folder.
+If successful, the documentation should then be available in the ``docs/build/html`` folder.
+
+The documentation can also be built for the Qt Assistant. To build the help packages from the
+documentation source, run the following from the root source folder:
+
+.. code-block:: console
+
+   python setup.py qthelp
 
 The setup script will copy the generated files into the ``nw/assets/help`` folder, and novelWriter
 will detect the presence of the files and redirect the menu help entry to open help locally instead
@@ -121,17 +167,14 @@ locally first, then send you to the website as a fallback.
 
 .. _a_started_running:
 
-Running novelWriter
+Running from Source
 ===================
 
-If all the required dependencies are met, you can run novelWriter from the command line in one of
-the following ways:
+If all the required dependencies are met, you can run novelWriter from the command line:
 
 .. code-block:: console
 
    python novelWriter.py
-   python3 novelWriter.py
-   ./novelWriter.py
 
 A few switches are supported from the command line, mostly to assist in debugging if an error is
 encountered. To list all options, run:
@@ -140,10 +183,6 @@ encountered. To list all options, run:
 
    python novelWriter.py --help
 
-There are also a couple of install scripts in the setup folder which will assist in setting up a
-launch icon and the novelWriter project file mimetype for Gnome desktops on Linux. Currently,
-there's one script for Debian and one for Ubuntu.
-
 
 .. _a_started_standalone:
 
@@ -151,15 +190,10 @@ Building a Standalone Executable
 ================================
 
 A standalone executable can be built with ``pyinstaller``, using the provided python script
-``install.py`` in the source folder. This script will automatically try to install all dependencies
-and build the standalone executable of novelWriter. You can run the script by typing the following
-into your command prompt:
+``make.py`` in the source folder. This script can install dependencies, build a standalone
+executable of novelWriter, or build a ``setup.exe`` file with Inno Setup.
 
-.. code-block:: console
-
-   python install.py
-
-If successful, the executable will be in the "dist" folder.
+For a full list of the script's options, run ``python make.py help``.
 
 
 .. _a_started_standalone_win:
