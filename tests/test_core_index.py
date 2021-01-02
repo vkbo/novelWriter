@@ -218,7 +218,7 @@ def testCoreIndex_CheckThese(nwMinimal, dummyGUI):
         "@pov: Jane"
     ))
     assert theIndex.tagIndex == {"Jane": [2, cHandle, "CHARACTER", "T000001"]}
-    assert theIndex.novelIndex[nHandle]["T000001"]["title"] == "Hello World!"
+    assert theIndex.getNovelData(nHandle, "T000001")["title"] == "Hello World!"
 
     assert theIndex.novelChangedSince(0)
     assert theIndex.notesChangedSince(0)
@@ -294,7 +294,7 @@ def testCoreIndex_ScanText(nwMinimal, dummyGUI):
         "Well, not really.\n"
     ))
     assert str(theIndex.tagIndex) == "{'Jane': [2, '%s', 'CHARACTER', 'T000001']}" % cHandle
-    assert theIndex.novelIndex[nHandle]["T000001"]["title"] == "Hello World!"
+    assert theIndex.getNovelData(nHandle, "T000001")["title"] == "Hello World!"
 
     # Check that title sections are indexed properly
     assert theIndex.scanText(nHandle, (
@@ -426,6 +426,9 @@ def testCoreIndex_ExtractData(nwMinimal, dummyGUI):
     theIndex = NWIndex(theProject, dummyGUI)
     nHandle = theProject.newFile("Hello", nwItemClass.NOVEL,     "a508bb932959c")
     cHandle = theProject.newFile("Jane",  nwItemClass.CHARACTER, "afb3043c7b2b3")
+
+    assert theIndex.getNovelData("", "") is None
+    assert theIndex.getNovelData("a508bb932959c", "") is None
 
     assert theIndex.scanText(cHandle, (
         "# Jane Smith\n"

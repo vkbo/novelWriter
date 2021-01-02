@@ -611,6 +611,14 @@ class NWIndex():
 
         return theRefs
 
+    def getNovelData(self, tHandle, sTitle):
+        """Return the novel data of a given handle and title.
+        """
+        if tHandle in self.novelIndex:
+            if sTitle in self.novelIndex[tHandle]:
+                return self.novelIndex[tHandle][sTitle]
+        return None
+
     def getBackReferenceList(self, tHandle):
         """Build a list of files referring back to our file, specified
         by tHandle.
