@@ -141,7 +141,7 @@ def testGuiNovelTree_TreeItems(qtbot, caplog, monkeypatch, nwGUI, nwMinimal):
     #  Close
     ##
 
-    qtbot.stopForInteraction()
+    # qtbot.stopForInteraction()
     nwGUI.closeProject()
 
 # END Test testGuiNovelTree_TreeItems
