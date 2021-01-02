@@ -31,7 +31,7 @@ import logging
 
 from time import time
 
-from PyQt5.QtCore import Qt, QSize
+from PyQt5.QtCore import Qt, QSize, pyqtSignal
 from PyQt5.QtGui import QIcon
 from PyQt5.QtWidgets import (
     qApp, QTreeWidget, QTreeWidgetItem, QAbstractItemView, QMenu, QAction
@@ -50,6 +50,9 @@ class GuiProjectTree(QTreeWidget):
     C_COUNT  = 1
     C_EXPORT = 2
     C_FLAGS  = 3
+
+    novelItemChanged = pyqtSignal()
+    noteItemChanged = pyqtSignal()
 
     def __init__(self, theParent):
         QTreeWidget.__init__(self, theParent)
@@ -285,8 +288,11 @@ class GuiProjectTree(QTreeWidget):
         pHandle = nwItem.itemParent
         if pHandle is not None and pHandle in self._treeMap:
             self._treeMap[pHandle].setExpanded(True)
+
+        self._emitItemChange(tHandle)
         self.clearSelection()
         trItem.setSelected(True)
+
         return True
 
     def moveTreeItem(self, nStep):
@@ -327,6 +333,7 @@ class GuiProjectTree(QTreeWidget):
         self.clearSelection()
         cItem.setSelected(True)
         self._setTreeChanged(True)
+        self._emitItemChange(tHandle)
 
         return True
 
@@ -788,6 +795,10 @@ class GuiProjectTree(QTreeWidget):
             else:
                 self.theIndex.reIndexHandle(sHandle)
 
+            # Trigger dependent updates
+            self._setTreeChanged(True)
+            self._emitItemChange(sHandle)
+
         else:
             theEvent.ignore()
             logger.debug("Drag'n'drop of item %s not accepted" % sHandle)
@@ -915,7 +926,6 @@ class GuiProjectTree(QTreeWidget):
         pHandle = trItemP.data(self.C_NAME, Qt.UserRole)
         nwItemS.setParent(pHandle)
         self.setTreeItemValues(tHandle)
-        self._setTreeChanged(True)
 
         logger.debug("The parent of item %s has been changed to %s" % (tHandle, pHandle))
 
@@ -928,6 +938,21 @@ class GuiProjectTree(QTreeWidget):
         if theState:
             self._timeChanged = time()
             self.theProject.setProjectChanged(True)
+        return
+
+    def _emitItemChange(self, tHandle):
+        """Emit an item change signal for a given handle.
+        """
+        nwItem = self.theProject.projTree[tHandle]
+        if nwItem is None:
+            return
+
+        if nwItem.itemType == nwItemType.FILE:
+            if nwItem.itemClass == nwItemClass.NOVEL:
+                self.novelItemChanged.emit()
+            else:
+                self.noteItemChanged.emit()
+
         return
 
 # END Class GuiProjectTree

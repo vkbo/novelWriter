@@ -165,7 +165,7 @@ class GuiOutline(QTreeWidget):
 
         return
 
-    def refreshTree(self, overRide=False):
+    def refreshTree(self, overRide=False, novelChanged=False):
         """Called whenever the Outline tab is activated and controls
         what data to load, and if necessary, force a rebuild of the
         tree.
@@ -177,10 +177,10 @@ class GuiOutline(QTreeWidget):
             self.firstView = False
             return
 
-        # If the novel index has changed since the tree was last built,
-        # we rebuild the tree from the updated index.
-        idxChanged = self.theParent.theIndex.novelChangedSince(self.lastBuild)
-        doBuild = idxChanged and self.theProject.autoOutline
+        # If the novel index or novel tree has changed since the tree
+        # was last built, we rebuild the tree from the updated index.
+        indexChanged = self.theIndex.novelChangedSince(self.lastBuild)
+        doBuild = (novelChanged or indexChanged) and self.theProject.autoOutline
         if doBuild or overRide:
             logger.debug("Rebuilding Project Outline")
             self._populateTree()

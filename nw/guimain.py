@@ -32,7 +32,7 @@ import os
 from datetime import datetime
 from time import time
 
-from PyQt5.QtCore import Qt, QTimer, QThreadPool
+from PyQt5.QtCore import Qt, QTimer, QThreadPool, pyqtSlot
 from PyQt5.QtGui import QIcon, QPixmap, QColor, QKeySequence, QCursor
 from PyQt5.QtWidgets import (
     qApp, QMainWindow, QVBoxLayout, QWidget, QSplitter, QFileDialog, QShortcut,
@@ -193,6 +193,7 @@ class GuiMain(QMainWindow):
         # Initialise the Project Tree
         self.treeView.itemSelectionChanged.connect(self._treeSingleClick)
         self.treeView.itemDoubleClicked.connect(self._treeDoubleClick)
+        self.treeView.novelItemChanged.connect(self._treeNovelItemChanged)
         self.rebuildTrees()
 
         # Set Main Window Elements
@@ -1319,9 +1320,10 @@ class GuiMain(QMainWindow):
         return
 
     ##
-    #  Signal Handlers
+    #  Slots
     ##
 
+    @pyqtSlot()
     def _treeSingleClick(self):
         """Single click on a project tree item just updates the details
         panel below the tree.
@@ -1331,12 +1333,14 @@ class GuiMain(QMainWindow):
             self.treeMeta.updateViewBox(sHandle)
         return
 
+    @pyqtSlot("QTreeWidgetItem*", int)
     def _treeDoubleClick(self, tItem, colNo):
         """The user double-clicked an item in the tree. If it is a file,
         we open it. Otherwise, we do nothing.
         """
         tHandle = tItem.data(self.treeView.C_NAME, Qt.UserRole)
         logger.verbose("User double clicked tree item with handle %s" % tHandle)
+
         nwItem = self.theProject.projTree[tHandle]
         if nwItem is not None:
             if nwItem.itemType == nwItemType.FILE:
@@ -1347,6 +1351,20 @@ class GuiMain(QMainWindow):
 
         return
 
+    @pyqtSlot()
+    def _treeNovelItemChanged(self):
+        """Triggered when there is a change to a novel item in the
+        project tree.
+        """
+        if self.mainTabs.currentIndex() == self.idxTabProj:
+            logger.verbose("Novel tree changed while Outline tab active")
+            if self.hasProject:
+                self.treeView.flushTreeOrder()
+                self.projView.refreshTree(novelChanged=True)
+
+        return
+
+    @pyqtSlot()
     def _treeKeyPressReturn(self):
         """The user pressed return on an item in the tree. If it is a
         file, we open it. Otherwise, we do nothing. Pressing return does
@@ -1354,6 +1372,7 @@ class GuiMain(QMainWindow):
         """
         tHandle = self.treeView.getSelectedHandle()
         logger.verbose("User pressed return on tree item with handle %s" % tHandle)
+
         nwItem = self.theProject.projTree[tHandle]
         if nwItem is not None:
             if nwItem.itemType == nwItemType.FILE:
@@ -1361,8 +1380,10 @@ class GuiMain(QMainWindow):
                 self.openDocument(tHandle, changeFocus=False, doScroll=False)
             else:
                 logger.verbose("Requested item %s is a folder" % tHandle)
+
         return
 
+    @pyqtSlot()
     def _keyPressEscape(self):
         """When the escape key is pressed somewhere in the main window,
         do the following, in order:
@@ -1371,8 +1392,10 @@ class GuiMain(QMainWindow):
             self.docEditor.closeSearch()
         elif self.isFocusMode:
             self.toggleFocusMode()
+
         return
 
+    @pyqtSlot(int)
     def _mainTabChanged(self, tabIndex):
         """Activated when the main window tab is changed.
         """
@@ -1382,8 +1405,10 @@ class GuiMain(QMainWindow):
             logger.verbose("Project outline tab activated")
             if self.hasProject:
                 self.projView.refreshTree()
+
         return
 
+    @pyqtSlot(int)
     def _projTabsChanged(self, tabIndex):
         """Activated when the project view tab is changed.
         """
