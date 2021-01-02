@@ -34,6 +34,7 @@ from PyQt5.QtCore import Qt, QSize
 from PyQt5.QtWidgets import QTreeWidget, QTreeWidgetItem, QAbstractItemView
 
 from nw.constants import nwKeyWords
+from nw.common import checkInt
 
 logger = logging.getLogger(__name__)
 
@@ -209,10 +210,7 @@ class GuiNovelTree(QTreeWidget):
         """
         theData = tItem.data(self.C_TITLE, Qt.UserRole)
         tHandle = theData[0]
-        try:
-            tLine = int(theData[1])
-        except Exception:
-            tLine = 1
+        tLine = checkInt(theData[1], 1)
 
         logger.verbose("User selected entry with handle %s on line %s" % (tHandle, tLine))
         self.theParent.openDocument(tHandle, tLine=tLine-1, doScroll=True)
@@ -239,23 +237,12 @@ class GuiNovelTree(QTreeWidget):
         """
         self.clearTree()
 
-        for titleKey in self.theIndex.getNovelStructure(skipExcluded=True):
+        for tKey, tHandle, sTitle, novIdx in self.theIndex.novelStructure(skipExcluded=True):
 
-            if len(titleKey) < 16:
-                continue
+            tItem = self._createTreeItem(tHandle, sTitle, tKey, novIdx)
+            self._treeMap[tKey] = tItem
 
-            tHandle = titleKey[:13]
-            sTitle  = titleKey[14:]
-
-            if tHandle not in self.theIndex.novelIndex:
-                continue
-            if sTitle not in self.theIndex.novelIndex[tHandle]:
-                continue
-
-            tLevel = self.theIndex.novelIndex[tHandle][sTitle]["level"]
-            tItem  = self._createTreeItem(tHandle, sTitle, tLevel, titleKey)
-            self._treeMap[titleKey] = tItem
-
+            tLevel = novIdx["level"]
             if tLevel == "H1":
                 currTitle = tItem
                 self.addTopLevelItem(tItem)
@@ -292,13 +279,11 @@ class GuiNovelTree(QTreeWidget):
 
         return
 
-    def _createTreeItem(self, tHandle, sTitle, tLevel, titleKey):
+    def _createTreeItem(self, tHandle, sTitle, titleKey, novIdx):
         """Populate a tree item with all the column values.
         """
-        novIdx = self.theIndex.novelIndex[tHandle][sTitle]
-
         newItem = QTreeWidgetItem()
-        hIcon   = "doc_%s" % tLevel.lower()
+        hIcon   = "doc_%s" % novIdx["level"].lower()
         theData = (tHandle, sTitle[1:].lstrip("0"), titleKey)
 
         wC = int(novIdx["wCount"])

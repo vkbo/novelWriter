@@ -375,23 +375,12 @@ class GuiOutline(QTreeWidget):
         currChapter = None
         currScene   = None
 
-        for titleKey in self.theIndex.getNovelStructure(skipExcluded=True):
+        for tKey, tHandle, sTitle, novIdx in self.theIndex.novelStructure(skipExcluded=True):
 
-            if len(titleKey) < 16:
-                continue
+            tItem = self._createTreeItem(tHandle, sTitle, novIdx)
+            self.treeMap[tKey] = tItem
 
-            tHandle = titleKey[:13]
-            sTitle  = titleKey[14:]
-
-            if tHandle not in self.theIndex.novelIndex:
-                continue
-            if sTitle not in self.theIndex.novelIndex[tHandle]:
-                continue
-
-            tLevel = self.theIndex.novelIndex[tHandle][sTitle]["level"]
-            tItem  = self._createTreeItem(tHandle, sTitle, tLevel)
-            self.treeMap[titleKey] = tItem
-
+            tLevel = novIdx["level"]
             if tLevel == "H1":
                 currTitle = tItem
                 self.addTopLevelItem(tItem)
@@ -428,14 +417,12 @@ class GuiOutline(QTreeWidget):
 
         return
 
-    def _createTreeItem(self, tHandle, sTitle, tLevel):
+    def _createTreeItem(self, tHandle, sTitle, novIdx):
         """Populate a tree item with all the column values.
         """
-        nwItem = self.theProject.projTree[tHandle]
-        novIdx = self.theIndex.novelIndex[tHandle][sTitle]
-
+        nwItem  = self.theProject.projTree[tHandle]
         newItem = QTreeWidgetItem()
-        hIcon   = "doc_%s" % tLevel.lower()
+        hIcon   = "doc_%s" % novIdx["level"].lower()
 
         cC = int(novIdx["cCount"])
         wC = int(novIdx["wCount"])

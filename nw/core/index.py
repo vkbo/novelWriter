@@ -549,12 +549,11 @@ class NWIndex():
     #  Extract Data
     ##
 
-    def getNovelStructure(self, skipExcluded=True):
-        """Builds a list of all titles in the novel, in the correct
-        order as they appear in the tree view and in the respective
-        document files, but skipping all note files.
+    def novelStructure(self, skipExcluded=True):
+        """Iterate over all titles in the novel, in the correct order as
+        they appear in the tree view and in the respective document
+        files, but skipping all note files.
         """
-        theStructure = []
         for tItem in self.theProject.projTree:
             if tItem is not None:
                 if not tItem.isExported and skipExcluded:
@@ -562,10 +561,9 @@ class NWIndex():
                 tHandle = tItem.itemHandle
                 if tHandle not in self.novelIndex:
                     continue
-                for sTitle in sorted(self.novelIndex[tHandle].keys()):
-                    theStructure.append("%s:%s" % (tHandle, sTitle))
-
-        return theStructure
+                for sTitle in sorted(self.novelIndex[tHandle]):
+                    tKey = "%s:%s" % (tHandle, sTitle)
+                    yield tKey, tHandle, sTitle, self.novelIndex[tHandle][sTitle]
 
     def getCounts(self, tHandle, sTitle=None):
         """Returns the counts for a file, or a section of a file

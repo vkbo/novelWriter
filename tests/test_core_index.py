@@ -441,13 +441,32 @@ def testCoreIndex_ExtractData(nwMinimal, dummyGUI):
     ))
 
     # The novel structure should contain the pointer to the novel file header
-    assert theIndex.getNovelStructure() == ["%s:T000001" % nHandle]
+    theKeys = []
+    for aKey, _, _, _ in theIndex.novelStructure():
+        theKeys.append(aKey)
+
+    assert theKeys == ["%s:T000001" % nHandle]
 
     # Check that excluded files can be skipped
     theProject.projTree[nHandle].setExported(False)
-    assert theIndex.getNovelStructure(skipExcluded=False) == ["%s:T000001" % nHandle]
-    assert theIndex.getNovelStructure(skipExcluded=True) == []
-    assert theIndex.getNovelStructure() == []
+
+    theKeys = []
+    for aKey, _, _, _ in theIndex.novelStructure(skipExcluded=False):
+        theKeys.append(aKey)
+
+    assert theKeys == ["%s:T000001" % nHandle]
+
+    theKeys = []
+    for aKey, _, _, _ in theIndex.novelStructure(skipExcluded=True):
+        theKeys.append(aKey)
+
+    assert theKeys == []
+
+    theKeys = []
+    for aKey, _, _, _ in theIndex.novelStructure():
+        theKeys.append(aKey)
+
+    assert theKeys == []
 
     # The novel file should have the correct counts
     cC, wC, pC = theIndex.getCounts(nHandle)
