@@ -51,11 +51,11 @@ class NWIndex():
         self.indexBroken = False
 
         # Indices
-        self.tagIndex   = {}
-        self.refIndex   = {}
-        self.novelIndex = {}
-        self.noteIndex  = {}
-        self.textCounts = {}
+        self._tagIndex   = {}
+        self._refIndex   = {}
+        self._novelIndex = {}
+        self._noteIndex  = {}
+        self._textCounts = {}
 
         # TimeStamps
         self._timeNovel = 0
@@ -71,14 +71,14 @@ class NWIndex():
     def clearIndex(self):
         """Clear the index dictionaries and time stamps.
         """
-        self.tagIndex   = {}
-        self.refIndex   = {}
-        self.novelIndex = {}
-        self.noteIndex  = {}
-        self.textCounts = {}
-        self._timeNovel = 0
-        self._timeNotes = 0
-        self._timeIndex = 0
+        self._tagIndex   = {}
+        self._refIndex   = {}
+        self._novelIndex = {}
+        self._noteIndex  = {}
+        self._textCounts = {}
+        self._timeNovel  = 0
+        self._timeNotes  = 0
+        self._timeIndex  = 0
         return
 
     def deleteHandle(self, tHandle):
@@ -87,17 +87,17 @@ class NWIndex():
         logger.debug("Removing item %s from the index" % tHandle)
 
         delTags = []
-        for tTag in self.tagIndex:
-            if self.tagIndex[tTag][1] == tHandle:
+        for tTag in self._tagIndex:
+            if self._tagIndex[tTag][1] == tHandle:
                 delTags.append(tTag)
 
         for tTag in delTags:
-            self.tagIndex.pop(tTag, None)
+            self._tagIndex.pop(tTag, None)
 
-        self.refIndex.pop(tHandle, None)
-        self.novelIndex.pop(tHandle, None)
-        self.noteIndex.pop(tHandle, None)
-        self.textCounts.pop(tHandle, None)
+        self._refIndex.pop(tHandle, None)
+        self._novelIndex.pop(tHandle, None)
+        self._noteIndex.pop(tHandle, None)
+        self._textCounts.pop(tHandle, None)
 
         return
 
@@ -157,15 +157,15 @@ class NWIndex():
                 return False
 
             if "tagIndex" in theData.keys():
-                self.tagIndex = theData["tagIndex"]
+                self._tagIndex = theData["tagIndex"]
             if "refIndex" in theData.keys():
-                self.refIndex = theData["refIndex"]
+                self._refIndex = theData["refIndex"]
             if "novelIndex" in theData.keys():
-                self.novelIndex = theData["novelIndex"]
+                self._novelIndex = theData["novelIndex"]
             if "noteIndex" in theData.keys():
-                self.noteIndex = theData["noteIndex"]
+                self._noteIndex = theData["noteIndex"]
             if "textCounts" in theData.keys():
-                self.textCounts = theData["textCounts"]
+                self._textCounts = theData["textCounts"]
 
             nowTime = round(time())
             self._timeNovel = nowTime
@@ -186,11 +186,11 @@ class NWIndex():
         try:
             with open(indexFile, mode="w+", encoding="utf8") as outFile:
                 json.dump({
-                    "tagIndex"   : self.tagIndex,
-                    "refIndex"   : self.refIndex,
-                    "novelIndex" : self.novelIndex,
-                    "noteIndex"  : self.noteIndex,
-                    "textCounts" : self.textCounts,
+                    "tagIndex"   : self._tagIndex,
+                    "refIndex"   : self._refIndex,
+                    "novelIndex" : self._novelIndex,
+                    "noteIndex"  : self._noteIndex,
+                    "textCounts" : self._textCounts,
                 }, outFile, indent=2)
         except Exception as e:
             logger.error("Failed to save index file")
@@ -207,28 +207,28 @@ class NWIndex():
         self.indexBroken = False
 
         try:
-            for tTag in self.tagIndex:
-                if len(self.tagIndex[tTag]) != 4:
+            for tTag in self._tagIndex:
+                if len(self._tagIndex[tTag]) != 4:
                     self.indexBroken = True
 
-            for tHandle in self.refIndex:
-                for sTitle in self.refIndex[tHandle]:
-                    for tEntry in self.refIndex[tHandle][sTitle]["tags"]:
+            for tHandle in self._refIndex:
+                for sTitle in self._refIndex[tHandle]:
+                    for tEntry in self._refIndex[tHandle][sTitle]["tags"]:
                         if len(tEntry) != 3:
                             self.indexBroken = True
 
-            for tHandle in self.novelIndex:
-                for sLine in self.novelIndex[tHandle]:
-                    if len(self.novelIndex[tHandle][sLine].keys()) != 8:
+            for tHandle in self._novelIndex:
+                for sLine in self._novelIndex[tHandle]:
+                    if len(self._novelIndex[tHandle][sLine].keys()) != 8:
                         self.indexBroken = True
 
-            for tHandle in self.noteIndex:
-                for sLine in self.noteIndex[tHandle]:
-                    if len(self.noteIndex[tHandle][sLine].keys()) != 8:
+            for tHandle in self._noteIndex:
+                for sLine in self._noteIndex[tHandle]:
+                    if len(self._noteIndex[tHandle][sLine].keys()) != 8:
                         self.indexBroken = True
 
-            for tHandle in self.textCounts:
-                if len(self.textCounts[tHandle]) != 3:
+            for tHandle in self._textCounts:
+                if len(self._textCounts[tHandle]) != 3:
                     self.indexBroken = True
 
         except Exception:
@@ -271,7 +271,7 @@ class NWIndex():
 
         # Run word counter for the whole text
         cC, wC, pC = countWords(theText)
-        self.textCounts[tHandle] = [cC, wC, pC]
+        self._textCounts[tHandle] = [cC, wC, pC]
 
         # If the file is archived or trashed, we don't index the file itself
         if self.theProject.projTree.isTrashRoot(theItem.itemParent):
@@ -288,25 +288,25 @@ class NWIndex():
 
         # Check file type, and reset its old index
         # Also add a dummy entry T000000 in case the file has no title
-        self.refIndex[tHandle] = {}
-        self.refIndex[tHandle]["T000000"] = {
+        self._refIndex[tHandle] = {}
+        self._refIndex[tHandle]["T000000"] = {
             "tags"    : [],
             "updated" : round(time()),
         }
         if itemLayout == nwItemLayout.NOTE:
-            self.noteIndex[tHandle] = {}
+            self._noteIndex[tHandle] = {}
             isNovel = False
         else:
-            self.novelIndex[tHandle] = {}
+            self._novelIndex[tHandle] = {}
             isNovel = True
 
         # Also clear references to file in tag index
         clearTags = []
-        for aTag in self.tagIndex:
-            if self.tagIndex[aTag][1] == tHandle:
+        for aTag in self._tagIndex:
+            if self._tagIndex[aTag][1] == tHandle:
                 clearTags.append(aTag)
         for aTag in clearTags:
-            self.tagIndex.pop(aTag)
+            self._tagIndex.pop(aTag)
 
         nLine  = 0
         nTitle = 0
@@ -379,7 +379,7 @@ class NWIndex():
             return False
 
         sTitle = "T%06d" % nLine
-        self.refIndex[tHandle][sTitle] = {
+        self._refIndex[tHandle][sTitle] = {
             "tags"    : [],
             "updated" : round(time()),
         }
@@ -396,11 +396,11 @@ class NWIndex():
 
         if hText != "":
             if isNovel:
-                if tHandle in self.novelIndex:
-                    self.novelIndex[tHandle][sTitle] = theData
+                if tHandle in self._novelIndex:
+                    self._novelIndex[tHandle][sTitle] = theData
             else:
-                if tHandle in self.noteIndex:
-                    self.noteIndex[tHandle][sTitle] = theData
+                if tHandle in self._noteIndex:
+                    self._noteIndex[tHandle][sTitle] = theData
 
         return True
 
@@ -410,19 +410,19 @@ class NWIndex():
         cC, wC, pC = countWords(theText)
         sTitle = "T%06d" % nTitle
         if isNovel:
-            if tHandle in self.novelIndex:
-                if sTitle in self.novelIndex[tHandle]:
-                    self.novelIndex[tHandle][sTitle]["cCount"] = cC
-                    self.novelIndex[tHandle][sTitle]["wCount"] = wC
-                    self.novelIndex[tHandle][sTitle]["pCount"] = pC
-                    self.novelIndex[tHandle][sTitle]["updated"] = round(time())
+            if tHandle in self._novelIndex:
+                if sTitle in self._novelIndex[tHandle]:
+                    self._novelIndex[tHandle][sTitle]["cCount"] = cC
+                    self._novelIndex[tHandle][sTitle]["wCount"] = wC
+                    self._novelIndex[tHandle][sTitle]["pCount"] = pC
+                    self._novelIndex[tHandle][sTitle]["updated"] = round(time())
         else:
-            if tHandle in self.noteIndex:
-                if sTitle in self.noteIndex[tHandle]:
-                    self.noteIndex[tHandle][sTitle]["cCount"] = cC
-                    self.noteIndex[tHandle][sTitle]["wCount"] = wC
-                    self.noteIndex[tHandle][sTitle]["pCount"] = pC
-                    self.noteIndex[tHandle][sTitle]["updated"] = round(time())
+            if tHandle in self._noteIndex:
+                if sTitle in self._noteIndex[tHandle]:
+                    self._noteIndex[tHandle][sTitle]["cCount"] = cC
+                    self._noteIndex[tHandle][sTitle]["wCount"] = wC
+                    self._noteIndex[tHandle][sTitle]["pCount"] = pC
+                    self._noteIndex[tHandle][sTitle]["updated"] = round(time())
         return
 
     def _indexSynopsis(self, tHandle, isNovel, theText, nTitle):
@@ -430,15 +430,15 @@ class NWIndex():
         """
         sTitle = "T%06d" % nTitle
         if isNovel:
-            if tHandle in self.novelIndex:
-                if sTitle in self.novelIndex[tHandle]:
-                    self.novelIndex[tHandle][sTitle]["synopsis"] = theText
-                    self.novelIndex[tHandle][sTitle]["updated"] = round(time())
+            if tHandle in self._novelIndex:
+                if sTitle in self._novelIndex[tHandle]:
+                    self._novelIndex[tHandle][sTitle]["synopsis"] = theText
+                    self._novelIndex[tHandle][sTitle]["updated"] = round(time())
         else:
-            if tHandle in self.noteIndex:
-                if sTitle in self.noteIndex[tHandle]:
-                    self.noteIndex[tHandle][sTitle]["synopsis"] = theText
-                    self.noteIndex[tHandle][sTitle]["updated"] = round(time())
+            if tHandle in self._noteIndex:
+                if sTitle in self._noteIndex[tHandle]:
+                    self._noteIndex[tHandle][sTitle]["synopsis"] = theText
+                    self._noteIndex[tHandle][sTitle]["updated"] = round(time())
         return
 
     def _indexNoteRef(self, tHandle, aLine, nLine, nTitle):
@@ -450,9 +450,9 @@ class NWIndex():
             return False
 
         sTitle = "T%06d" % nTitle
-        if sTitle in self.refIndex[tHandle] and theBits[0] != nwKeyWords.TAG_KEY:
+        if sTitle in self._refIndex[tHandle] and theBits[0] != nwKeyWords.TAG_KEY:
             for aVal in theBits[1:]:
-                self.refIndex[tHandle][sTitle]["tags"].append([nLine, theBits[0], aVal])
+                self._refIndex[tHandle][sTitle]["tags"].append([nLine, theBits[0], aVal])
 
         return True
 
@@ -465,7 +465,7 @@ class NWIndex():
 
         if theBits[0] == nwKeyWords.TAG_KEY:
             sTitle = "T%06d" % nTitle
-            self.tagIndex[theBits[1]] = [nLine, tHandle, itemClass.name, sTitle]
+            self._tagIndex[theBits[1]] = [nLine, tHandle, itemClass.name, sTitle]
 
         return True
 
@@ -529,8 +529,8 @@ class NWIndex():
         # is ignored
         if theBits[0] == nwKeyWords.TAG_KEY and nBits > 1:
             isGood[0] = True
-            if theBits[1] in self.tagIndex:
-                if self.tagIndex[theBits[1]][1] == tItem.itemHandle:
+            if theBits[1] in self._tagIndex:
+                if self._tagIndex[theBits[1]][1] == tItem.itemHandle:
                     isGood[1] = True
                 else:
                     isGood[1] = False
@@ -540,8 +540,8 @@ class NWIndex():
 
         # If we're still here, we better check that the references exist
         for n in range(1, nBits):
-            if theBits[n] in self.tagIndex:
-                isGood[n] = nwKeyWords.KEY_CLASS[theBits[0]].name == self.tagIndex[theBits[n]][2]
+            if theBits[n] in self._tagIndex:
+                isGood[n] = nwKeyWords.KEY_CLASS[theBits[0]].name == self._tagIndex[theBits[n]][2]
 
         return isGood
 
@@ -559,11 +559,11 @@ class NWIndex():
                 if not tItem.isExported and skipExcluded:
                     continue
                 tHandle = tItem.itemHandle
-                if tHandle not in self.novelIndex:
+                if tHandle not in self._novelIndex:
                     continue
-                for sTitle in sorted(self.novelIndex[tHandle]):
+                for sTitle in sorted(self._novelIndex[tHandle]):
                     tKey = "%s:%s" % (tHandle, sTitle)
-                    yield tKey, tHandle, sTitle, self.novelIndex[tHandle][sTitle]
+                    yield tKey, tHandle, sTitle, self._novelIndex[tHandle][sTitle]
 
     def getCounts(self, tHandle, sTitle=None):
         """Returns the counts for a file, or a section of a file
@@ -574,21 +574,21 @@ class NWIndex():
         pC = 0
 
         if sTitle is None:
-            if tHandle in self.textCounts:
-                cC = self.textCounts[tHandle][0]
-                wC = self.textCounts[tHandle][1]
-                pC = self.textCounts[tHandle][2]
+            if tHandle in self._textCounts:
+                cC = self._textCounts[tHandle][0]
+                wC = self._textCounts[tHandle][1]
+                pC = self._textCounts[tHandle][2]
         else:
-            if tHandle in self.novelIndex:
-                if sTitle in self.novelIndex[tHandle]:
-                    cC = self.novelIndex[tHandle][sTitle]["cCount"]
-                    wC = self.novelIndex[tHandle][sTitle]["wCount"]
-                    pC = self.novelIndex[tHandle][sTitle]["pCount"]
-            elif tHandle in self.noteIndex:
-                if sTitle in self.noteIndex[tHandle]:
-                    cC = self.noteIndex[tHandle][sTitle]["cCount"]
-                    wC = self.noteIndex[tHandle][sTitle]["wCount"]
-                    pC = self.noteIndex[tHandle][sTitle]["pCount"]
+            if tHandle in self._novelIndex:
+                if sTitle in self._novelIndex[tHandle]:
+                    cC = self._novelIndex[tHandle][sTitle]["cCount"]
+                    wC = self._novelIndex[tHandle][sTitle]["wCount"]
+                    pC = self._novelIndex[tHandle][sTitle]["pCount"]
+            elif tHandle in self._noteIndex:
+                if sTitle in self._noteIndex[tHandle]:
+                    cC = self._noteIndex[tHandle][sTitle]["cCount"]
+                    wC = self._noteIndex[tHandle][sTitle]["wCount"]
+                    pC = self._noteIndex[tHandle][sTitle]["pCount"]
 
         return cC, wC, pC
 
@@ -600,11 +600,11 @@ class NWIndex():
         for tKey in nwKeyWords.KEY_CLASS:
             theRefs[tKey] = []
 
-        if tHandle not in self.refIndex:
+        if tHandle not in self._refIndex:
             return theRefs
 
-        for refTitle in self.refIndex[tHandle]:
-            theTags = self.refIndex[tHandle][refTitle].get("tags", None)
+        for refTitle in self._refIndex[tHandle]:
+            theTags = self._refIndex[tHandle][refTitle].get("tags", None)
             for aTag in theTags:
                 if len(aTag) == 3 and (sTitle is None or sTitle == refTitle):
                     theRefs[aTag[1]].append(aTag[2])
@@ -614,9 +614,9 @@ class NWIndex():
     def getNovelData(self, tHandle, sTitle):
         """Return the novel data of a given handle and title.
         """
-        if tHandle in self.novelIndex:
-            if sTitle in self.novelIndex[tHandle]:
-                return self.novelIndex[tHandle][sTitle]
+        if tHandle in self._novelIndex:
+            if sTitle in self._novelIndex[tHandle]:
+                return self._novelIndex[tHandle][sTitle]
         return None
 
     def getBackReferenceList(self, tHandle):
@@ -628,14 +628,14 @@ class NWIndex():
             return theRefs
 
         theTags = set()
-        for tTag in self.tagIndex:
-            if tHandle == self.tagIndex[tTag][1]:
+        for tTag in self._tagIndex:
+            if tHandle == self._tagIndex[tTag][1]:
                 theTags.add(tTag)
 
         if theTags:
-            for tHandle in self.refIndex:
-                for sTitle in self.refIndex[tHandle]:
-                    for _, _, tTag in self.refIndex[tHandle][sTitle]["tags"]:
+            for tHandle in self._refIndex:
+                for sTitle in self._refIndex[tHandle]:
+                    for _, _, tTag in self._refIndex[tHandle][sTitle]["tags"]:
                         if tTag in theTags and tHandle not in theRefs:
                             theRefs[tHandle] = sTitle
 
@@ -644,8 +644,8 @@ class NWIndex():
     def getTagSource(self, theTag):
         """Return the source location of a given tag.
         """
-        if theTag in self.tagIndex:
-            theRef = self.tagIndex[theTag]
+        if theTag in self._tagIndex:
+            theRef = self._tagIndex[theTag]
             if len(theRef) == 4:
                 return theRef[1], theRef[0], theRef[3]
         return None, 0, "T000000"
