@@ -274,7 +274,7 @@ class GuiOutlineDetails(QScrollArea):
         nwItem  = self.theProject.projTree[tHandle]
         novIdx  = self.theIndex.getNovelData(tHandle, sTitle)
         theRefs = self.theIndex.getReferences(tHandle, sTitle)
-        if nwItem is None or novIdx is None or theRefs == {}:
+        if nwItem is None or novIdx is None:
             return False
 
         if novIdx["level"] in self.LVL_MAP:
@@ -328,7 +328,7 @@ class GuiOutlineDetails(QScrollArea):
     def _formatTags(self, theRefs, theKey):
         """Format the tags as clickable links.
         """
-        if theKey not in theKey:
+        if theKey not in theRefs:
             return ""
         refTags = []
         for tTag in theRefs[theKey]:
