@@ -43,8 +43,8 @@ from nw.gui import (
     GuiAbout, GuiBuildNovel, GuiDocEditor, GuiDocMerge, GuiDocSplit,
     GuiDocViewDetails, GuiDocViewer, GuiItemDetails, GuiItemEditor,
     GuiMainMenu, GuiMainStatus, GuiNovelTree, GuiOutline, GuiOutlineDetails,
-    GuiPreferences, GuiProjectLoad, GuiProjectSettings, GuiProjectTree,
-    GuiProjectWizard, GuiTheme, GuiWritingStats
+    GuiPreferences, GuiProjectDetails, GuiProjectLoad, GuiProjectSettings,
+    GuiProjectTree, GuiProjectWizard, GuiTheme, GuiWritingStats
 )
 from nw.core import NWProject, NWDoc, NWIndex
 from nw.constants import nwItemType, nwItemClass, nwAlert, nwConst
@@ -904,6 +904,19 @@ class GuiMain(QMainWindow):
             logger.debug("Applying new project settings")
             self.docEditor.setDictionaries()
             self._setWindowTitle(self.theProject.projName)
+
+        return
+
+    def showProjectDetailsDialog(self):
+        """Open the project details dialog.
+        """
+        if not self.hasProject:
+            logger.error("No project open")
+            return
+
+        dlgDetails = GuiProjectDetails(self, self.theProject)
+        dlgDetails.setModal(False)
+        dlgDetails.show()
 
         return
 

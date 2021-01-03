@@ -28,12 +28,9 @@
 import nw
 import logging
 
-from PyQt5.QtCore import Qt
-from PyQt5.QtWidgets import (
-    QWidget, QDialogButtonBox, QTreeWidget, QTreeWidgetItem
-)
+from PyQt5.QtWidgets import QDialogButtonBox
 
-from nw.gui.custom import PagedDialog, QConfigLayout
+from nw.gui.custom import PagedDialog
 
 logger = logging.getLogger(__name__)
 
@@ -66,7 +63,7 @@ class GuiProjectDetails(PagedDialog):
 
         # self.addTab(self.tabMain,    "Settings")
 
-        self.buttonBox = QDialogButtonBox(QDialogButtonBox.Ok)
+        self.buttonBox = QDialogButtonBox(QDialogButtonBox.Close)
         self.buttonBox.rejected.connect(self._doClose)
         self.addControls(self.buttonBox)
 

@@ -219,6 +219,13 @@ class GuiMainMenu(QMenuBar):
         self.aProjectSettings.triggered.connect(lambda: self.theParent.showProjectSettingsDialog())
         self.projMenu.addAction(self.aProjectSettings)
 
+        # Project > Project Details
+        self.aProjectDetails = QAction("Project Details", self)
+        self.aProjectDetails.setStatusTip("Project details")
+        self.aProjectDetails.setShortcut("Ctrl+Shift+E")
+        self.aProjectDetails.triggered.connect(lambda: self.theParent.showProjectDetailsDialog())
+        self.projMenu.addAction(self.aProjectDetails)
+
         # Project > Separator
         self.projMenu.addSeparator()
 
