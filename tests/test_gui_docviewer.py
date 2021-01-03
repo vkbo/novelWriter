@@ -26,11 +26,11 @@ def testGuiViewer_Main(qtbot, monkeypatch, nwGUI, nwLipsum):
     assert nwGUI.openProject(nwLipsum)
 
     # Rebuild the index as it isn't automatically copied
-    assert nwGUI.theIndex.tagIndex == {}
-    assert nwGUI.theIndex.refIndex == {}
+    assert nwGUI.theIndex._tagIndex == {}
+    assert nwGUI.theIndex._refIndex == {}
     nwGUI.mainMenu.aRebuildIndex.activate(QAction.Trigger)
-    assert nwGUI.theIndex.tagIndex != {}
-    assert nwGUI.theIndex.refIndex != {}
+    assert nwGUI.theIndex._tagIndex != {}
+    assert nwGUI.theIndex._refIndex != {}
 
     # Select a document in the project tree
     assert nwGUI.treeView.setSelectedHandle("88243afbe5ed8")

@@ -9,6 +9,7 @@ from nw.gui.docviewer import GuiDocViewer, GuiDocViewDetails
 from nw.gui.itemdetails import GuiItemDetails
 from nw.gui.itemeditor import GuiItemEditor
 from nw.gui.mainmenu import GuiMainMenu
+from nw.gui.noveltree import GuiNovelTree
 from nw.gui.outline import GuiOutline
 from nw.gui.outlinedetails import GuiOutlineDetails
 from nw.gui.preferences import GuiPreferences
@@ -31,6 +32,7 @@ __all__ = [
     "GuiItemDetails",
     "GuiItemEditor",
     "GuiMainMenu",
+    "GuiNovelTree",
     "GuiMainStatus",
     "GuiOutline",
     "GuiOutlineDetails",

@@ -165,7 +165,7 @@ class GuiOutline(QTreeWidget):
 
         return
 
-    def refreshTree(self, overRide=False):
+    def refreshTree(self, overRide=False, novelChanged=False):
         """Called whenever the Outline tab is activated and controls
         what data to load, and if necessary, force a rebuild of the
         tree.
@@ -177,13 +177,10 @@ class GuiOutline(QTreeWidget):
             self.firstView = False
             return
 
-        # If the novel index has changed since the tree was last built,
-        # we rebuild the tree from the updated index.
-        lastChange = self.theParent.theIndex.timeNovel
-        logger.verbose("Last outline build: %.3f" % self.lastBuild)
-        logger.verbose("Novel index change: %.3f" % lastChange)
-
-        doBuild = lastChange > self.lastBuild and self.theProject.autoOutline
+        # If the novel index or novel tree has changed since the tree
+        # was last built, we rebuild the tree from the updated index.
+        indexChanged = self.theIndex.novelChangedSince(self.lastBuild)
+        doBuild = (novelChanged or indexChanged) and self.theProject.autoOutline
         if doBuild or overRide:
             logger.debug("Rebuilding Project Outline")
             self._populateTree()
@@ -227,6 +224,7 @@ class GuiOutline(QTreeWidget):
             tHandle = selItems[0].data(self.colIndex[nwOutline.TITLE], Qt.UserRole)
             sTitle  = selItems[0].data(self.colIndex[nwOutline.LINE], Qt.UserRole)
             self.theParent.projMeta.showItem(tHandle, sTitle)
+            self.theParent.treeView.setSelectedHandle(tHandle)
 
         return
 
@@ -377,23 +375,12 @@ class GuiOutline(QTreeWidget):
         currChapter = None
         currScene   = None
 
-        for titleKey in self.theIndex.getNovelStructure(skipExcluded=True):
+        for tKey, tHandle, sTitle, novIdx in self.theIndex.novelStructure(skipExcluded=True):
 
-            if len(titleKey) < 16:
-                continue
+            tItem = self._createTreeItem(tHandle, sTitle, novIdx)
+            self.treeMap[tKey] = tItem
 
-            tHandle = titleKey[:13]
-            sTitle  = titleKey[14:]
-
-            if tHandle not in self.theIndex.novelIndex:
-                continue
-            if sTitle not in self.theIndex.novelIndex[tHandle]:
-                continue
-
-            tLevel = self.theIndex.novelIndex[tHandle][sTitle]["level"]
-            tItem  = self._createTreeItem(tHandle, sTitle, tLevel)
-            self.treeMap[titleKey] = tItem
-
+            tLevel = novIdx["level"]
             if tLevel == "H1":
                 self.addTopLevelItem(tItem)
                 currTitle   = tItem
@@ -436,14 +423,12 @@ class GuiOutline(QTreeWidget):
 
         return
 
-    def _createTreeItem(self, tHandle, sTitle, tLevel):
+    def _createTreeItem(self, tHandle, sTitle, novIdx):
         """Populate a tree item with all the column values.
         """
-        nwItem = self.theProject.projTree[tHandle]
-        novIdx = self.theIndex.novelIndex[tHandle][sTitle]
-
+        nwItem  = self.theProject.projTree[tHandle]
         newItem = QTreeWidgetItem()
-        hIcon   = "doc_%s" % tLevel.lower()
+        hIcon   = "doc_%s" % novIdx["level"].lower()
 
         cC = int(novIdx["cCount"])
         wC = int(novIdx["wCount"])

@@ -271,11 +271,10 @@ class GuiOutlineDetails(QScrollArea):
         """Update the content of the tree with the given handle and line
         number pointing to a header.
         """
-        try:
-            nwItem  = self.theProject.projTree[tHandle]
-            novIdx  = self.theIndex.novelIndex[tHandle][sTitle]
-            theRefs = self.theIndex.getReferences(tHandle, sTitle)
-        except Exception:
+        nwItem  = self.theProject.projTree[tHandle]
+        novIdx  = self.theIndex.getNovelData(tHandle, sTitle)
+        theRefs = self.theIndex.getReferences(tHandle, sTitle)
+        if nwItem is None or novIdx is None:
             return False
 
         if novIdx["level"] in self.LVL_MAP:

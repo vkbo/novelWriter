@@ -220,10 +220,11 @@ def testGuiPreferences_Main(qtbot, monkeypatch, fncDir, outDir, refDir):
     compFile = os.path.join(refDir, "guiPreferences_novelwriter.conf")
     copyfile(projFile, testFile)
     ignoreLines = [
-        2,                          # Timestamp
-        9,                          # Release Notes
-        12, 13, 14, 15, 16, 17, 18, # Window sizes
-        7, 28,                      # Fonts (depends on system default)
+        2,              # Timestamp
+        9,              # Release Notes
+        12, 13, 14, 15, # Window sizes
+        16, 17, 18, 19, # Window sizes
+        7, 29,          # Fonts (depends on system default)
     ]
     assert cmpFiles(testFile, compFile, ignoreLines)
 

@@ -2,6 +2,17 @@
 
 ## Version 1.1 Dev (Alpha)
 
+### Release Notes
+
+### Detailed Changelog
+
+**User Interface**
+
+* Added a Novel tab under the project tree where the user can navigate the novel's layout of
+  chapters and scenes, similar to the Outline view, but next to the document editor. The Outline
+  view and Novel/Project trees now also behave more in cooperation. When files on one are selected
+  or moved, the other will follow and update. PR #537.
+
 ----
 
 ## Version 1.0 [2021-01-03]

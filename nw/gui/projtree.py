@@ -29,7 +29,9 @@
 import nw
 import logging
 
-from PyQt5.QtCore import Qt, QSize
+from time import time
+
+from PyQt5.QtCore import Qt, QSize, pyqtSignal
 from PyQt5.QtGui import QIcon
 from PyQt5.QtWidgets import (
     qApp, QTreeWidget, QTreeWidgetItem, QAbstractItemView, QMenu, QAction
@@ -49,6 +51,9 @@ class GuiProjectTree(QTreeWidget):
     C_EXPORT = 2
     C_FLAGS  = 3
 
+    novelItemChanged = pyqtSignal()
+    noteItemChanged = pyqtSignal()
+
     def __init__(self, theParent):
         QTreeWidget.__init__(self, theParent)
 
@@ -60,22 +65,27 @@ class GuiProjectTree(QTreeWidget):
         self.theProject = theParent.theProject
         self.theIndex   = theParent.theIndex
 
-        # Tree Settings
-        self.theMap      = {}
-        self.treeChanged = False
+        # Internal Variables
+        self._treeMap     = {}
+        self._treeChanged = False
+        self._timeChanged = 0
 
+        ##
+        #  Build GUI
+        ##
+
+        # Context Menu
         self.ctxMenu = GuiProjectTreeMenu(self)
-        self.clearTree()
+        self.setContextMenuPolicy(Qt.CustomContextMenu)
+        self.customContextMenuRequested.connect(self._rightClickMenu)
 
-        # Build GUI
+        # Tree Settings
         iPx = self.theTheme.baseIconSize
         self.setIconSize(QSize(iPx, iPx))
         self.setExpandsOnDoubleClick(True)
         self.setIndentation(iPx)
         self.setColumnCount(4)
         self.setHeaderLabels(["Label", "Words", "Inc", "Flags"])
-        self.setContextMenuPolicy(Qt.CustomContextMenu)
-        self.customContextMenuRequested.connect(self._rightClickMenu)
 
         treeHeadItem = self.headerItem()
         treeHeadItem.setTextAlignment(self.C_COUNT, Qt.AlignRight)
@@ -102,7 +112,7 @@ class GuiProjectTree(QTreeWidget):
         # Set Multiple Selection by CTRL
         # Disabled for now, until the merge files option has been added
         # self.setSelectionMode(QAbstractItemView.ExtendedSelection)
-        # self.setSelectionBehavior(QAbstractItemView.SelectRows)
+        self.setSelectionBehavior(QAbstractItemView.SelectRows)
 
         # Get user's column width preferences for NAME and COUNT
         treeColWidth = self.mainConf.getTreeColWidths()
@@ -116,10 +126,11 @@ class GuiProjectTree(QTreeWidget):
         # Set custom settings
         self.initTree()
 
-        logger.debug("GuiProjectTree initialisation complete")
+        # Internal Function Mapping
+        self.makeAlert   = self.theParent.makeAlert
+        self.askQuestion = self.theParent.askQuestion
 
-        # Internal Mapping
-        self.makeAlert = self.theParent.makeAlert
+        logger.debug("GuiProjectTree initialisation complete")
 
         return
 
@@ -147,8 +158,9 @@ class GuiProjectTree(QTreeWidget):
         """Clear the GUI content and the related map.
         """
         self.clear()
-        self.theMap = {}
-        self.treeChanged = False
+        self._treeMap = {}
+        self._treeChanged = False
+        self._timeChanged = 0
         return
 
     def newTreeItem(self, itemType, itemClass):
@@ -274,10 +286,13 @@ class GuiProjectTree(QTreeWidget):
             return False
 
         pHandle = nwItem.itemParent
-        if pHandle is not None and pHandle in self.theMap:
-            self.theMap[pHandle].setExpanded(True)
+        if pHandle is not None and pHandle in self._treeMap:
+            self._treeMap[pHandle].setExpanded(True)
+
+        self._emitItemChange(tHandle)
         self.clearSelection()
         trItem.setSelected(True)
+
         return True
 
     def moveTreeItem(self, nStep):
@@ -318,6 +333,7 @@ class GuiProjectTree(QTreeWidget):
         self.clearSelection()
         cItem.setSelected(True)
         self._setTreeChanged(True)
+        self._emitItemChange(tHandle)
 
         return True
 
@@ -338,7 +354,7 @@ class GuiProjectTree(QTreeWidget):
         """Calls saveTreeOrder if there are unsaved changes, otherwise
         does nothing.
         """
-        if self.treeChanged:
+        if self._treeChanged:
             logger.verbose("Flushing project tree to project class")
             self.saveTreeOrder()
             self._setTreeChanged(False)
@@ -391,7 +407,7 @@ class GuiProjectTree(QTreeWidget):
             self.makeAlert("The Trash folder is already empty.", nwAlert.INFO)
             return False
 
-        msgYes = self.theParent.askQuestion(
+        msgYes = self.askQuestion(
             "Empty Trash", "Permanently delete %d file(s) from Trash?" % nTrash
         )
         if not msgYes:
@@ -446,7 +462,7 @@ class GuiProjectTree(QTreeWidget):
                 # user if they want to permanently delete the file.
                 doPermanent = False
                 if not alreadyAsked:
-                    msgYes = self.theParent.askQuestion(
+                    msgYes = self.askQuestion(
                         "Delete File", "Permanently delete file '%s'?" % nwItemS.itemName
                     )
                     if msgYes:
@@ -474,7 +490,7 @@ class GuiProjectTree(QTreeWidget):
                 # move it there.
                 doTrash = False
                 if askForTrash:
-                    msgYes = self.theParent.askQuestion(
+                    msgYes = self.askQuestion(
                         "Delete File", "Move file '%s' to Trash?" % nwItemS.itemName
                     )
                     if msgYes:
@@ -533,7 +549,9 @@ class GuiProjectTree(QTreeWidget):
         return True
 
     def setTreeItemValues(self, tHandle):
-        """Set the name and flag values for a tree item.
+        """Set the name and flag values for a tree item from a handle in
+        the project tree. Does not trigger a tree change as the data is
+        already coming from the project tree.
         """
         trItem  = self._getTreeItem(tHandle)
         nwItem  = self.theProject.projTree[tHandle]
@@ -622,9 +640,9 @@ class GuiProjectTree(QTreeWidget):
         sent first.
         """
         logger.debug("Building the project tree ...")
-        self.clear()
-        iCount = 0
+        self.clearTree()
 
+        iCount = 0
         for nwItem in self.theProject.getProjectItems():
             iCount += 1
             self._addTreeItem(nwItem)
@@ -642,21 +660,10 @@ class GuiProjectTree(QTreeWidget):
 
         return None
 
-    def getSelectedHandles(self):
-        """Return a list of all currently selected item handles.
-        """
-        selItems = self.selectedItems()
-        selHandles = []
-        for n in range(len(selItems)):
-            if isinstance(selItems[n], QTreeWidgetItem):
-                selHandles.append(selItems[n].data(self.C_NAME, Qt.UserRole))
-
-        return selHandles
-
     def setSelectedHandle(self, tHandle, doScroll=False):
         """Set a specific handle as the selected item.
         """
-        if tHandle not in self.theMap:
+        if tHandle not in self._treeMap:
             return False
 
         tItem = self._getTreeItem(tHandle)
@@ -664,13 +671,18 @@ class GuiProjectTree(QTreeWidget):
             return False
 
         self.clearSelection()
-        self.theMap[tHandle].setSelected(True)
+        self._treeMap[tHandle].setSelected(True)
 
         selItems = self.selectedIndexes()
         if selItems and doScroll:
             self.scrollTo(selItems[0], QAbstractItemView.PositionAtCenter)
 
         return True
+
+    def changedSince(self, checkTime):
+        """Check if the tree has changed since a given time.
+        """
+        return self._timeChanged > checkTime
 
     ##
     #  Slots
@@ -699,7 +711,7 @@ class GuiProjectTree(QTreeWidget):
     def mousePressEvent(self, theEvent):
         """Overload mousePressEvent to clear selection if clicking the
         mouse in a blank area of the tree view, and to load a document
-        for viewing if the suer middle clicked.
+        for viewing if the user middle-clicked.
         """
         QTreeWidget.mousePressEvent(self, theEvent)
 
@@ -783,6 +795,10 @@ class GuiProjectTree(QTreeWidget):
             else:
                 self.theIndex.reIndexHandle(sHandle)
 
+            # Trigger dependent updates
+            self._setTreeChanged(True)
+            self._emitItemChange(sHandle)
+
         else:
             theEvent.ignore()
             logger.debug("Drag'n'drop of item %s not accepted" % sHandle)
@@ -797,7 +813,7 @@ class GuiProjectTree(QTreeWidget):
     def _getTreeItem(self, tHandle):
         """Returns the QTreeWidgetItem of a given item handle.
         """
-        return self.theMap.get(tHandle, None)
+        return self._treeMap.get(tHandle, None)
 
     def _scanChildren(self, theList, theItem, theIndex):
         """This is a recursive function returning all items in a tree
@@ -834,7 +850,7 @@ class GuiProjectTree(QTreeWidget):
         newItem.setData(self.C_NAME, Qt.UserRole, tHandle)
         newItem.setData(self.C_COUNT, Qt.UserRole, 0)
 
-        self.theMap[tHandle] = newItem
+        self._treeMap[tHandle] = newItem
         if pHandle is None:
             if nwItem.itemType == nwItemType.ROOT:
                 self.addTopLevelItem(newItem)
@@ -845,20 +861,20 @@ class GuiProjectTree(QTreeWidget):
                 self.makeAlert(
                     "There is nowhere to add item with name '%s'" % nwItem.itemName, nwAlert.ERROR
                 )
-                del self.theMap[tHandle]
+                del self._treeMap[tHandle]
                 return None
 
         else:
             byIndex = -1
-            if nHandle is not None and nHandle in self.theMap:
+            if nHandle is not None and nHandle in self._treeMap:
                 try:
-                    byIndex = self.theMap[pHandle].indexOfChild(self.theMap[nHandle])
+                    byIndex = self._treeMap[pHandle].indexOfChild(self._treeMap[nHandle])
                 except Exception:
                     logger.error("Failed to get index of item with handle %s" % nHandle)
             if byIndex >= 0:
-                self.theMap[pHandle].insertChild(byIndex+1, newItem)
+                self._treeMap[pHandle].insertChild(byIndex+1, newItem)
             else:
-                self.theMap[pHandle].addChild(newItem)
+                self._treeMap[pHandle].addChild(newItem)
             self.propagateCount(tHandle, nwItem.wordCount)
 
         self.setTreeItemValues(tHandle)
@@ -910,7 +926,6 @@ class GuiProjectTree(QTreeWidget):
         pHandle = trItemP.data(self.C_NAME, Qt.UserRole)
         nwItemS.setParent(pHandle)
         self.setTreeItemValues(tHandle)
-        self._setTreeChanged(True)
 
         logger.debug("The parent of item %s has been changed to %s" % (tHandle, pHandle))
 
@@ -919,9 +934,25 @@ class GuiProjectTree(QTreeWidget):
     def _setTreeChanged(self, theState):
         """Set the tree change flag, and propagate to the project.
         """
-        self.treeChanged = theState
+        self._treeChanged = theState
         if theState:
+            self._timeChanged = time()
             self.theProject.setProjectChanged(True)
+        return
+
+    def _emitItemChange(self, tHandle):
+        """Emit an item change signal for a given handle.
+        """
+        nwItem = self.theProject.projTree[tHandle]
+        if nwItem is None:
+            return
+
+        if nwItem.itemType == nwItemType.FILE:
+            if nwItem.itemClass == nwItemClass.NOVEL:
+                self.novelItemChanged.emit()
+            else:
+                self.noteItemChanged.emit()
+
         return
 
 # END Class GuiProjectTree
