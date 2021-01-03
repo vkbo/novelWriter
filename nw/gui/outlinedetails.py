@@ -329,7 +329,7 @@ class GuiOutlineDetails(QScrollArea):
     def _formatTags(self, theRefs, theKey):
         """Format the tags as clickable links.
         """
-        if theKey not in theKey:
+        if theKey not in theRefs:
             return ""
         refTags = []
         for tTag in theRefs[theKey]:
