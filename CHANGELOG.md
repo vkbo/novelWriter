@@ -41,6 +41,8 @@ requests in the issue tracker, or if not fully formed, can be discussed on the
   should just be quietly ignored. PR #535.
 * Don't enforce string data type in meta data lines written to the head of documents. Some of the
   entries can potentially be of NoneType, and the enforced type will then cause a crash. PR #539.
+* Fixed a couple of faulty checks in the index and outline details panel. The checks were not
+  reachable by user actions, but put in place to capture coding errors. PR #549.
 
 **User Interface**
 
@@ -59,6 +61,10 @@ requests in the issue tracker, or if not fully formed, can be discussed on the
   Files found in the project's storage folder that do not exist in the project file will now be
   imported into the main project tree based on a set of fallbacks. All recovered files are prefixed
   with the word "Recovered". Issue #540, PR #543.
+* Changed the way novel headers are added to the Outline view in cases where the strict logic of
+  header levelled isn't obeyed. Previously. a scene header not under a chapter would be added to a
+  previous chapter. That may be a bit confusing. Now, instead, a scene outside a chapter will just
+  be bumped up one level. PR #549.
 
 **Documentation**
 
