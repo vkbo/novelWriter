@@ -9,7 +9,7 @@
  Created: 2018-09-22 [0.0.1]
 
  This file is a part of novelWriter
- Copyright 2018–2020, Veronica Berglyd Olsen
+ Copyright 2018–2021, Veronica Berglyd Olsen
 
  This program is free software: you can redistribute it and/or modify
  it under the terms of the GNU General Public License as published by
@@ -58,15 +58,15 @@ from nw.config import Config
 #
 
 __package__    = "nw"
-__copyright__  = "Copyright 2018–2020, Veronica Berglyd Olsen"
+__copyright__  = "Copyright 2018–2021, Veronica Berglyd Olsen"
 __license__    = "GPLv3"
 __author__     = "Veronica Berglyd Olsen"
 __maintainer__ = "Veronica Berglyd Olsen"
 __email__      = "code@vkbo.net"
-__version__    = "1.0rc2"
-__hexversion__ = "0x010000c2"
-__date__       = "2020-12-13"
-__status__     = "Beta"
+__version__    = "1.0"
+__hexversion__ = "0x010000f0"
+__date__       = "2021-01-03"
+__status__     = "Stable"
 __domain__     = "novelwriter.io"
 __url__        = "https://novelwriter.io"
 __sourceurl__  = "https://github.com/vkbo/novelWriter"

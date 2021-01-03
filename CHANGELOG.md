@@ -1,5 +1,88 @@
 # novelWriter Change Log
 
+## Version 1.0 [2021-01-03]
+
+### Release Notes
+
+Based on my own testing and usage, and no serious bugs discovered in quite some time (aside from a
+few corner case issues), it appears that novelWriter is stable enough for a 1.0 release. Thanks to
+all the new users who keep providing feedback on bugs, cosmetic issues, or suggesting improvements
+and new features. I'm glad to hear that others find my application useful, and I will keep making
+improvements as I get new suggestions and have new ideas myself. At the same time, I will continue
+to keep novelWriter simple and clean and avoid feature-bloat.
+
+This release mainly fixes cosmetic and other minor issues to the user interface and makes a few
+minor improvements to some less used features. Aside from this, nothing major has changed since the
+last release candidate.
+
+This release concludes over two years of tinkering with this project. The project grew out of
+numerous lunch and coffee discussions with my colleague Marian Lückhof at my former job. We were
+both looking for a tool for writing novels on Linux that suited our needs. We started assembling a
+wish list of features that has become novelWriter. In addition, users on GitHub have continued to
+test new features, provide very helpful feedback, and make new suggestions for improvements.
+Especially the feedback from @johnblommers has been helpful during much of the initial development
+time. Over the last months more users have started posting ideas and feedback. Thanks to all of you
+for your contributions.
+
+The 1.0 release is intended as a first release of the core features of novelWriter. That does not
+mean that all planned features have been fully implemented. There is a long list of ideas and
+suggestions to consider and implement. New ideas and suggestions are welcome. Either as feature
+requests in the issue tracker, or if not fully formed, can be discussed on the
+[discussions page](https://github.com/vkbo/novelWriter/discussions).
+
+### Detailed Changelog
+
+**Bugfixes**
+
+* Fixed a minor cosmetic issue with the checkbox next to the "Distraction Free Mode" entry in the
+  menu where its checkmark wouldn't always correspond to the current state of the mode. PR #532.
+* When opening the "Writing Stats" dialog in a new project where there is no session log file yet,
+  an error dialog would pop up to complain the file is missing. A missing file is not an error, and
+  should just be quietly ignored. PR #535.
+* Don't enforce string data type in meta data lines written to the head of documents. Some of the
+  entries can potentially be of NoneType, and the enforced type will then cause a crash. PR #539.
+* Fixed a couple of faulty checks in the index and outline details panel. The checks were not
+  reachable by user actions, but put in place to capture coding errors. PR #549.
+
+**User Interface**
+
+* The placeholder text in the "Build Novel Project" tool was referring to the name of the build
+  button by a previous label. It now refers to the label that is on the current button. PR #535.
+* Add "Move Item Up" and "Move Item Down" to the project tree context menu. These connect to the
+  same function as the same entries in the Tools menu. PR #535.
+* Block the Item Editor for the root Trash folder. PR #539.
+
+**Other Changes**
+
+* The special "Orphaned Files" folder has been dropped. Since the document class saves most of the
+  document meta data to the header of document files, it is no longer strictly necessary and it
+  does complicate the code behind the project tree as the orphaned folder isn't a tracked folder
+  and therefore needs a fair bit of customised code to fit into the rest of the tree data model.
+  Files found in the project's storage folder that do not exist in the project file will now be
+  imported into the main project tree based on a set of fallbacks. All recovered files are prefixed
+  with the word "Recovered". Issue #540, PR #543.
+* Changed the way novel headers are added to the Outline view in cases where the strict logic of
+  header levelled isn't obeyed. Previously. a scene header not under a chapter would be added to a
+  previous chapter. That may be a bit confusing. Now, instead, a scene outside a chapter will just
+  be bumped up one level. PR #549.
+
+**Documentation**
+
+* Fixed some minor typo or wrong word errors in the contributing guidelines. PR #537 by Curtis
+  Gedak @gedakc.
+* Fixed minor grammar and typo issues in documentation. PR #544 by Curtis Gedak @gedakc.
+* Updated documentation with latest changes and rewritten some sections to make the terminology
+  more consistent. PR #548.
+
+**Code Improvements**
+
+* Also enforce the maximum line length in text documents. PR #534.
+* Updated various parts of the code where a question message box is opened and redirected the call
+  to the main GUI class. This was done mostly for consistency, but the feature was added earlier to
+  ensure that core classes do not depend on Qt libraries. PR #535.
+
+----
+
 ## Version 1.0 Release Candidate 2 [2020-12-13]
 
 ### Release Notes

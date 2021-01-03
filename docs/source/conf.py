@@ -21,13 +21,13 @@ import sphinx_rtd_theme # noqa: F401
 # -- Project information -----------------------------------------------------
 
 project = "novelWriter"
-copyright = "2018-2020, Veronica Berglyd Olsen"
+copyright = "2018–2021, Veronica Berglyd Olsen"
 author = "Veronica Berglyd Olsen"
 
 # The short X.Y version
 version = "1.0"
 # The full version, including alpha/beta/rc tags
-release = "1.0-rc2"
+release = "1.0"
 
 
 # -- General configuration ---------------------------------------------------
