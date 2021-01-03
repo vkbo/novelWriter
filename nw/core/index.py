@@ -143,16 +143,11 @@ class NWIndex():
                 logger.error(str(e))
                 return False
 
-            if "tagIndex" in theData.keys():
-                self.tagIndex = theData["tagIndex"]
-            if "refIndex" in theData.keys():
-                self.refIndex = theData["refIndex"]
-            if "novelIndex" in theData.keys():
-                self.novelIndex = theData["novelIndex"]
-            if "noteIndex" in theData.keys():
-                self.noteIndex = theData["noteIndex"]
-            if "textCounts" in theData.keys():
-                self.textCounts = theData["textCounts"]
+            self.tagIndex   = theData.get("tagIndex", {})
+            self.refIndex   = theData.get("refIndex", {})
+            self.novelIndex = theData.get("novelIndex", {})
+            self.noteIndex  = theData.get("noteIndex", {})
+            self.textCounts = theData.get("textCounts", {})
 
             nowTime = round(time())
             self.timeNovel = nowTime
@@ -221,6 +216,7 @@ class NWIndex():
         except Exception:
             self.indexBroken = True
 
+        logger.debug("Index check complete")
         if self.indexBroken:
             self.clearIndex()
             self.theParent.makeAlert(
@@ -593,8 +589,7 @@ class NWIndex():
             return theRefs
 
         for refTitle in self.refIndex[tHandle]:
-            theTags = self.refIndex[tHandle][refTitle].get("tags", None)
-            for aTag in theTags:
+            for aTag in self.refIndex[tHandle][refTitle].get("tags", []):
                 if len(aTag) == 3 and (sTitle is None or sTitle == refTitle):
                     theRefs[aTag[1]].append(aTag[2])
 
