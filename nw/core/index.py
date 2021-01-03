@@ -9,7 +9,7 @@
  Created: 2019-05-27 [0.1.4]
 
  This file is a part of novelWriter
- Copyright 2018–2020, Veronica Berglyd Olsen
+ Copyright 2018–2021, Veronica Berglyd Olsen
 
  This program is free software: you can redistribute it and/or modify
  it under the terms of the GNU General Public License as published by
@@ -156,16 +156,11 @@ class NWIndex():
                 logger.error(str(e))
                 return False
 
-            if "tagIndex" in theData.keys():
-                self._tagIndex = theData["tagIndex"]
-            if "refIndex" in theData.keys():
-                self._refIndex = theData["refIndex"]
-            if "novelIndex" in theData.keys():
-                self._novelIndex = theData["novelIndex"]
-            if "noteIndex" in theData.keys():
-                self._noteIndex = theData["noteIndex"]
-            if "textCounts" in theData.keys():
-                self._textCounts = theData["textCounts"]
+            self._tagIndex   = theData.get("tagIndex", {})
+            self._refIndex   = theData.get("refIndex", {})
+            self._novelIndex = theData.get("novelIndex", {})
+            self._noteIndex  = theData.get("noteIndex", {})
+            self._textCounts = theData.get("textCounts", {})
 
             nowTime = round(time())
             self._timeNovel = nowTime
@@ -234,6 +229,7 @@ class NWIndex():
         except Exception:
             self.indexBroken = True
 
+        logger.debug("Index check complete")
         if self.indexBroken:
             self.clearIndex()
             self.theParent.makeAlert(
@@ -604,8 +600,7 @@ class NWIndex():
             return theRefs
 
         for refTitle in self._refIndex[tHandle]:
-            theTags = self._refIndex[tHandle][refTitle].get("tags", None)
-            for aTag in theTags:
+            for aTag in self._refIndex[tHandle][refTitle].get("tags", []):
                 if len(aTag) == 3 and (sTitle is None or sTitle == refTitle):
                     theRefs[aTag[1]].append(aTag[2])
 
