@@ -9,7 +9,7 @@
  Created: 2019-11-16 [0.4.1]
 
  This file is a part of novelWriter
- Copyright 2018–2020, Veronica Berglyd Olsen
+ Copyright 2018–2021, Veronica Berglyd Olsen
 
  This program is free software: you can redistribute it and/or modify
  it under the terms of the GNU General Public License as published by
@@ -395,14 +395,19 @@ class GuiOutline(QTreeWidget):
             self.treeMap[titleKey] = tItem
 
             if tLevel == "H1":
-                currTitle = tItem
                 self.addTopLevelItem(tItem)
+                currTitle   = tItem
+                currChapter = None
+                currScene   = None
+
             elif tLevel == "H2":
                 if currTitle is None:
                     self.addTopLevelItem(tItem)
                 else:
                     currTitle.addChild(tItem)
                 currChapter = tItem
+                currScene   = None
+
             elif tLevel == "H3":
                 if currChapter is None:
                     if currTitle is None:
@@ -412,6 +417,7 @@ class GuiOutline(QTreeWidget):
                 else:
                     currChapter.addChild(tItem)
                 currScene = tItem
+
             elif tLevel == "H4":
                 if currScene is None:
                     if currChapter is None:

@@ -31,22 +31,6 @@ The full documentation is available at
 The contributing guide is available in [CONTRIBUTING](CONTRIBUTING.md).
 
 
-### Development Status
-
-The application is still under initial development, but all core features have now been added.
-The core functionality has been in place for a while, and novelWriter is being used for writing
-projects by the author and collaborators.
-
-No new major features will be added at this time, until the application is stable. Until then,
-novelWriter is in a _beta_ state. Please report any issues you encounter via the repository's issue
-tracker.
-
-You should be able to use novelWriter for real projects, but as with all software, please make
-regular backups of your data. There is a built in backup feature that can pack the entire project
-into a zip file each time the main window or the project is closed. Please check the documentation
-for further details.
-
-
 ## Implementation
 
 The application is written in Python 3 using Qt5 via PyQt5. It is developed on Linux, but it should

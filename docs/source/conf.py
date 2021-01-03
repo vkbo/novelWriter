@@ -21,7 +21,7 @@ import sphinx_rtd_theme # noqa: F401
 # -- Project information -----------------------------------------------------
 
 project = "novelWriter"
-copyright = "2018-2020, Veronica Berglyd Olsen"
+copyright = "2018–2021, Veronica Berglyd Olsen"
 author = "Veronica Berglyd Olsen"
 
 # The short X.Y version
