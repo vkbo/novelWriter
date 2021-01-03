@@ -13,6 +13,7 @@ from nw.gui.noveltree import GuiNovelTree
 from nw.gui.outline import GuiOutline
 from nw.gui.outlinedetails import GuiOutlineDetails
 from nw.gui.preferences import GuiPreferences
+from nw.gui.projdetails import GuiProjectDetails
 from nw.gui.projload import GuiProjectLoad
 from nw.gui.projsettings import GuiProjectSettings
 from nw.gui.projtree import GuiProjectTree
@@ -37,6 +38,7 @@ __all__ = [
     "GuiOutline",
     "GuiOutlineDetails",
     "GuiPreferences",
+    "GuiProjectDetails",
     "GuiProjectLoad",
     "GuiProjectSettings",
     "GuiProjectTree",
