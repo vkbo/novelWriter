@@ -221,6 +221,7 @@ class NWIndex():
         except Exception:
             self.indexBroken = True
 
+        logger.debug("Index check complete")
         if self.indexBroken:
             self.clearIndex()
             self.theParent.makeAlert(
@@ -593,7 +594,7 @@ class NWIndex():
             return theRefs
 
         for refTitle in self.refIndex[tHandle]:
-            theTags = self.refIndex[tHandle][refTitle].get("tags", None)
+            theTags = self.refIndex[tHandle][refTitle].get("tags", [])
             for aTag in theTags:
                 if len(aTag) == 3 and (sTitle is None or sTitle == refTitle):
                     theRefs[aTag[1]].append(aTag[2])
