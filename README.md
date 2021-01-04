@@ -71,16 +71,16 @@ needed are `pyqt5`, `lxml` and `pyenchant`.
 
 You can also install novelWriter from source with:
 ```bash
-python3 setup.py sample
-sudo python3 setup.py install
-sudo python3 setup.py launcher
+python setup.py sample
+sudo python setup.py install
+sudo python setup.py xdg-install
 ```
 
-The last line will install the application icons and set up a launcher for novelWriter. The method
-uses hardcoded paths, so it may or may not work for your Linux distro. If you have any issues,
-please submit a ticket so the script can be tuned.
+The last line will install the application icons and set up a launcher for novelWriter. The script
+may prompt you to choose which executable to configure if it finds more than one.
 
-The script may prompt you to choose which executable to configure if it finds more than one.
+**Note:** If your distro has multiple versions of Python installed, you may need to use the
+`python3` command instead of `python`.
 
 ### Running from Source
 
@@ -162,7 +162,8 @@ particularly useful for increasing logging output for debugging.
 
 # Key Features
 
-Some features of novelWriter are listed below. Consult the documentation for more information.
+Some features of novelWriter are listed below. Consult the
+[documentation](https://novelwriter.readthedocs.io/) for more information.
 
 ### Markdown Flavour
 
@@ -170,7 +171,7 @@ novelWriter is _not_ a full-feature Markdown editor. It allows for a minimal set
 needed for writing text documents for novels. These are currently limited to:
 
 * Headings level 1 to 4 using the `#` syntax only.
-* Emphasised and strong text. These are rendered as italicised and bold.
+* Emphasised and strongly emphasised text. These are rendered as italicised and bold text.
 * Strikethrough text.
 * Hard line breaks using two or more spaces at the end of a line.
 
