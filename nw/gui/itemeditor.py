@@ -28,13 +28,14 @@
 import nw
 import logging
 
+from PyQt5.QtCore import pyqtSlot
 from PyQt5.QtWidgets import (
     QDialog, QVBoxLayout, QGridLayout, QLineEdit, QComboBox, QLabel,
     QDialogButtonBox
 )
 
 from nw.gui.custom import QSwitch
-from nw.constants import nwLabels, nwItemLayout, nwItemClass, nwItemType
+from nw.constants import nwLabels, nwItemLayout, nwItemType, nwLists
 
 logger = logging.getLogger(__name__)
 
@@ -50,14 +51,15 @@ class GuiItemEditor(QDialog):
         self.theProject = theProject
         self.theParent  = theParent
 
-        self.outerBox = QVBoxLayout()
+        ##
+        #  Build GUI
+        ##
 
         self.theItem = self.theProject.projTree[tHandle]
         if self.theItem is None:
             self._doClose()
 
         self.setWindowTitle("Item Settings")
-        self.setLayout(self.outerBox)
 
         # Item Label
         self.editName = QLineEdit()
@@ -66,7 +68,7 @@ class GuiItemEditor(QDialog):
 
         # Item Status
         self.editStatus = QComboBox()
-        if self.theItem.itemClass == nwItemClass.NOVEL:
+        if self.theItem.itemClass in nwLists.CLS_NOVEL:
             for sLabel, _, _ in self.theProject.statusItems:
                 self.editStatus.addItem(
                     self.theParent.statusIcons[sLabel], sLabel, sLabel
@@ -81,7 +83,7 @@ class GuiItemEditor(QDialog):
         self.editLayout = QComboBox()
         self.validLayouts = []
         if self.theItem.itemType == nwItemType.FILE:
-            if self.theItem.itemClass == nwItemClass.NOVEL:
+            if self.theItem.itemClass in nwLists.CLS_NOVEL:
                 self.validLayouts.append(nwItemLayout.TITLE)
                 self.validLayouts.append(nwItemLayout.BOOK)
                 self.validLayouts.append(nwItemLayout.PAGE)
@@ -109,20 +111,27 @@ class GuiItemEditor(QDialog):
             self.editExport.setEnabled(False)
             self.editExport.setChecked(False)
 
-        self.editName.setText(self.theItem.itemName)
-        statusIdx = self.editStatus.findData(self.theItem.itemStatus)
-        if statusIdx != -1:
-            self.editStatus.setCurrentIndex(statusIdx)
-        layoutIdx = self.editLayout.findData(self.theItem.itemLayout)
-        if layoutIdx != -1:
-            self.editLayout.setCurrentIndex(layoutIdx)
-
         # Buttons
         self.buttonBox = QDialogButtonBox(QDialogButtonBox.Ok | QDialogButtonBox.Cancel)
         self.buttonBox.accepted.connect(self._doSave)
         self.buttonBox.rejected.connect(self._doClose)
 
-        # Assemble
+        # Set Current Values
+        self.editName.setText(self.theItem.itemName)
+        self.editName.selectAll()
+
+        statusIdx = self.editStatus.findData(self.theItem.itemStatus)
+        if statusIdx != -1:
+            self.editStatus.setCurrentIndex(statusIdx)
+
+        layoutIdx = self.editLayout.findData(self.theItem.itemLayout)
+        if layoutIdx != -1:
+            self.editLayout.setCurrentIndex(layoutIdx)
+
+        ##
+        #  Assemble
+        ##
+
         self.mainForm = QGridLayout()
         self.mainForm.setVerticalSpacing(self.mainConf.pxInt(4))
         self.mainForm.setHorizontalSpacing(self.mainConf.pxInt(16))
@@ -135,6 +144,7 @@ class GuiItemEditor(QDialog):
         self.mainForm.addWidget(self.textExport,  3, 0, 1, 2)
         self.mainForm.addWidget(self.editExport,  3, 2, 1, 1)
 
+        self.outerBox = QVBoxLayout()
         self.outerBox.setSpacing(self.mainConf.pxInt(16))
         self.outerBox.addLayout(self.mainForm)
         self.outerBox.addStretch(1)
@@ -142,12 +152,16 @@ class GuiItemEditor(QDialog):
         self.setLayout(self.outerBox)
 
         self.rejected.connect(self._doClose)
-        self.editName.selectAll()
 
         logger.debug("GuiItemEditor initialisation complete")
 
         return
 
+    ##
+    #  Slots
+    ##
+
+    @pyqtSlot()
     def _doSave(self):
         """Save the setting to the item.
         """
@@ -170,10 +184,11 @@ class GuiItemEditor(QDialog):
 
         return
 
+    @pyqtSlot()
     def _doClose(self):
         """Close the dialog without saving the settings.
         """
-        logger.verbose("ItemEditor close button clicked")
+        logger.verbose("ItemEditor cancel button clicked")
         self.close()
         return
 
