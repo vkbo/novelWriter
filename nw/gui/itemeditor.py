@@ -61,13 +61,18 @@ class GuiItemEditor(QDialog):
 
         self.setWindowTitle("Item Settings")
 
+        mVd = self.mainConf.pxInt(220)
+        mSp = self.mainConf.pxInt(16)
+        vSp = self.mainConf.pxInt(4)
+
         # Item Label
         self.editName = QLineEdit()
-        self.editName.setMinimumWidth(self.mainConf.pxInt(220))
+        self.editName.setMinimumWidth(mVd)
         self.editName.setMaxLength(200)
 
         # Item Status
         self.editStatus = QComboBox()
+        self.editStatus.setMinimumWidth(mVd)
         if self.theItem.itemClass in nwLists.CLS_NOVEL:
             for sLabel, _, _ in self.theProject.statusItems:
                 self.editStatus.addItem(
@@ -81,24 +86,24 @@ class GuiItemEditor(QDialog):
 
         # Item Layout
         self.editLayout = QComboBox()
-        self.validLayouts = []
+        self.editLayout.setMinimumWidth(mVd)
+        validLayouts = []
         if self.theItem.itemType == nwItemType.FILE:
             if self.theItem.itemClass in nwLists.CLS_NOVEL:
-                self.validLayouts.append(nwItemLayout.TITLE)
-                self.validLayouts.append(nwItemLayout.BOOK)
-                self.validLayouts.append(nwItemLayout.PAGE)
-                self.validLayouts.append(nwItemLayout.PARTITION)
-                self.validLayouts.append(nwItemLayout.UNNUMBERED)
-                self.validLayouts.append(nwItemLayout.CHAPTER)
-                self.validLayouts.append(nwItemLayout.SCENE)
-                self.validLayouts.append(nwItemLayout.NOTE)
-            else:
-                self.validLayouts.append(nwItemLayout.NOTE)
+                validLayouts.append(nwItemLayout.TITLE)
+                validLayouts.append(nwItemLayout.BOOK)
+                validLayouts.append(nwItemLayout.PAGE)
+                validLayouts.append(nwItemLayout.PARTITION)
+                validLayouts.append(nwItemLayout.UNNUMBERED)
+                validLayouts.append(nwItemLayout.CHAPTER)
+                validLayouts.append(nwItemLayout.SCENE)
+            validLayouts.append(nwItemLayout.NOTE)
         else:
-            self.validLayouts.append(nwItemLayout.NO_LAYOUT)
+            validLayouts.append(nwItemLayout.NO_LAYOUT)
+            self.editLayout.setEnabled(False)
 
         for itemLayout in nwItemLayout:
-            if itemLayout in self.validLayouts:
+            if itemLayout in validLayouts:
                 self.editLayout.addItem(nwLabels.LAYOUT_NAME[itemLayout], itemLayout)
 
         # Export Switch
@@ -133,8 +138,8 @@ class GuiItemEditor(QDialog):
         ##
 
         self.mainForm = QGridLayout()
-        self.mainForm.setVerticalSpacing(self.mainConf.pxInt(4))
-        self.mainForm.setHorizontalSpacing(self.mainConf.pxInt(16))
+        self.mainForm.setVerticalSpacing(vSp)
+        self.mainForm.setHorizontalSpacing(mSp)
         self.mainForm.addWidget(QLabel("Label"),  0, 0, 1, 1)
         self.mainForm.addWidget(self.editName,    0, 1, 1, 2)
         self.mainForm.addWidget(QLabel("Status"), 1, 0, 1, 1)
@@ -148,7 +153,7 @@ class GuiItemEditor(QDialog):
         self.mainForm.setColumnStretch(2, 0)
 
         self.outerBox = QVBoxLayout()
-        self.outerBox.setSpacing(self.mainConf.pxInt(16))
+        self.outerBox.setSpacing(mSp)
         self.outerBox.addLayout(self.mainForm)
         self.outerBox.addStretch(1)
         self.outerBox.addWidget(self.buttonBox)
