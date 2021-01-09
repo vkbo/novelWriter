@@ -903,12 +903,13 @@ class GuiDocEditor(QTextEdit):
     ##
 
     @pyqtSlot(int, int, int)
-    def _docChange(self, thePos, charsRemoved, charsAdded):
+    def _docChange(self, thePos, chrRem, chrAdd):
         """Triggered by QTextDocument->contentsChanged. This also
         triggers the syntax highlighter.
         """
         self.lastEdit = time()
         self.lastFind = None
+
         if self.qDocument.characterCount() > nwConst.MAX_DOCSIZE:
             self.theParent.makeAlert((
                 "The document has grown too big and you cannot add more text to it. "
@@ -916,12 +917,16 @@ class GuiDocEditor(QTextEdit):
             ) % (nwConst.MAX_DOCSIZE/1.0e6), nwAlert.ERROR)
             self.undo()
             return
+
         if not self.docChanged:
-            self.setDocumentChanged(True)
+            self.setDocumentChanged(chrRem != 0 or chrAdd != 0)
+
         if not self.wcTimer.isActive():
             self.wcTimer.start()
-        if self.doReplace and charsAdded == 1:
+
+        if self.doReplace and chrAdd == 1:
             self._docAutoReplace(self.qDocument.findBlock(thePos))
+
         return
 
     @pyqtSlot("QPoint")
