@@ -316,7 +316,6 @@ class GuiDocEditor(QTextEdit):
         self.lastEdit = time()
         self._runCounter()
         self.wcTimer.start()
-        self.setDocumentChanged(False)
         self.theHandle = tHandle
 
         self.setReadOnly(False)
@@ -340,6 +339,9 @@ class GuiDocEditor(QTextEdit):
 
         self.docFooter.updateLineCount()
         self.lengthLast = self.qDocument.characterCount()
+
+        qApp.processEvents()
+        self.setDocumentChanged(False)
 
         qApp.restoreOverrideCursor()
 
@@ -373,8 +375,8 @@ class GuiDocEditor(QTextEdit):
 
         qApp.setOverrideCursor(QCursor(Qt.WaitCursor))
         self.setPlainText(theText)
-        self.setDocumentChanged(True)
         self.updateDocMargins()
+        self.setDocumentChanged(True)
         qApp.restoreOverrideCursor()
 
         return True
@@ -450,10 +452,16 @@ class GuiDocEditor(QTextEdit):
         lM = max(cM, fH)
         self.setViewportMargins(tM, uM, tM, lM)
 
+        docChanged = self.docChanged
         if self.mainConf.scrollPastEnd:
             docFrame = self.qDocument.rootFrame().frameFormat()
             docFrame.setBottomMargin(max(0, 0.6*(wH - uM - lM - 4*tB)))
             self.qDocument.rootFrame().setFrameFormat(docFrame)
+
+        # This is needed as the setFrameFormat function itself will
+        # trigger the contetsChanged signal which sets docChanged, so we
+        # set it back to whatever it was before.
+        self.setDocumentChanged(docChanged)
 
         return
 
