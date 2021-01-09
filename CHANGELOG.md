@@ -8,8 +8,11 @@ This release is mainly to bring the documentation up to date, as I forgot to upd
 instructions in the original 1.0 release. I also forgot to change the various settings and help
 texts that describe novelWriter as under initial development (beta state).
 
-Some minor improvements have also been made to the "Edit Project Item" dialog and some restrictions
-on the settings available for documents created in the "Outtakes" folder relaxed.
+Some minor improvements have been made to the "Edit Project Item" dialog and some restrictions on
+the settings available for documents created in the "Outtakes" folder relaxed. A few minor issues
+with the document and project changed icons on the status bar have also been resolved. The
+indicators were previously set to changed status even if no actual change had been made to the
+project.
 
 ### Detailed Changelog
 
@@ -21,6 +24,10 @@ on the settings available for documents created in the "Outtakes" folder relaxed
 * The text input and dropdown boxes of the Edit Project Item dialog box now extend when the dialog
   window is resized. Previously, the space between the label and the box would stretch instead,
   which isn't very useful. PR #552.
+* The document and project changed status icons on the status bar are now set to unchanged status
+  when the project is opened. In addition, an issue with the status being set to changed on various
+  events that were not actual changes to the document or project has been resolved. For instance,
+  changing the size of the document editor would flag the document itself as changed. PR #554.
 
 **Documentation**
 
