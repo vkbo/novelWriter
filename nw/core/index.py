@@ -341,6 +341,11 @@ class NWIndex():
             lastText = "\n".join(theLines[nTitle-1:])
             self._indexWordCounts(tHandle, isNovel, lastText, nTitle)
 
+        # Index page with no titles and references
+        if nTitle == 0:
+            self._indexPage(tHandle, isNovel, itemLayout)
+            self._indexWordCounts(tHandle, isNovel, theText, nTitle)
+
         # Update timestamps for index changes
         nowTime = round(time())
         self._timeIndex = nowTime
@@ -399,6 +404,29 @@ class NWIndex():
                     self._noteIndex[tHandle][sTitle] = theData
 
         return True
+
+    def _indexPage(self, tHandle, isNovel, itemLayout):
+        """Index a page with no title.
+        """
+        theData = {
+            "level"    : "H0",
+            "title"    : "Untitled Page",
+            "layout"   : itemLayout.name,
+            "synopsis" : "",
+            "cCount"   : 0,
+            "wCount"   : 0,
+            "pCount"   : 0,
+            "updated"  : round(time()),
+        }
+
+        if isNovel:
+            if tHandle in self._novelIndex:
+                self._novelIndex[tHandle]["T000000"] = theData
+        else:
+            if tHandle in self._noteIndex:
+                self._noteIndex[tHandle]["T000000"] = theData
+
+        return
 
     def _indexWordCounts(self, tHandle, isNovel, theText, nTitle):
         """Count text stats and save the counts to the index.
@@ -551,15 +579,61 @@ class NWIndex():
         files, but skipping all note files.
         """
         for tItem in self.theProject.projTree:
-            if tItem is not None:
-                if not tItem.isExported and skipExcluded:
-                    continue
-                tHandle = tItem.itemHandle
-                if tHandle not in self._novelIndex:
-                    continue
-                for sTitle in sorted(self._novelIndex[tHandle]):
-                    tKey = "%s:%s" % (tHandle, sTitle)
-                    yield tKey, tHandle, sTitle, self._novelIndex[tHandle][sTitle]
+            if tItem is None:
+                continue
+            if not tItem.isExported and skipExcluded:
+                continue
+
+            tHandle = tItem.itemHandle
+            if tHandle not in self._novelIndex:
+                continue
+
+            for sTitle in sorted(self._novelIndex[tHandle]):
+                tKey = "%s:%s" % (tHandle, sTitle)
+                yield tKey, tHandle, sTitle, self._novelIndex[tHandle][sTitle]
+
+    def getTableOfContents(self, maxDepth, skipExcluded=True):
+        """Generate a table of contents up to a maxiumum depth.
+        """
+        hLevel = {"H0": 0, "H1": 1, "H2": 2, "H3": 3, "H4": 4}
+
+        tOrder = []
+        tData = {}
+        pKey = None
+        for tItem in self.theProject.projTree:
+            if tItem is None:
+                continue
+            if not tItem.isExported and skipExcluded:
+                continue
+
+            tHandle = tItem.itemHandle
+            if tHandle not in self._novelIndex:
+                continue
+
+            for sTitle in sorted(self._novelIndex[tHandle]):
+                tKey = "%s:%s" % (tHandle, sTitle)
+                theData = self._novelIndex[tHandle][sTitle]
+                iLevel = hLevel.get(theData["level"], 0)
+                if iLevel > maxDepth:
+                    if pKey in tData:
+                        theData["wCount"]
+                        tData[pKey]["words"] += theData["wCount"]
+                else:
+                    pKey = tKey
+                    tOrder.append(tKey)
+                    tData[tKey] = {
+                        "level": theData["level"],
+                        "title": theData["title"],
+                        "words": theData["wCount"],
+                    }
+
+        theToC = []
+        for tKey in tOrder:
+            theToC.append((
+                tKey, tData[tKey]["level"], tData[tKey]["title"], tData[tKey]["words"]
+            ))
+
+        return theToC
 
     def getCounts(self, tHandle, sTitle=None):
         """Returns the counts for a file, or a section of a file
