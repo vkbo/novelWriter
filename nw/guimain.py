@@ -428,6 +428,7 @@ class GuiMain(QMainWindow):
         self.docEditor.setSpellCheck(self.theProject.spellCheck)
         self.mainMenu.setAutoOutline(self.theProject.autoOutline)
         self.statusBar.setRefTime(self.theProject.projOpened)
+        self.statusBar.setStats(self.theProject.currWCount, 0)
 
         # Restore previously open documents, if any
         if self.theProject.lastEdited is not None:
