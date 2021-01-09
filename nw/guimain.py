@@ -446,16 +446,24 @@ class GuiMain(QMainWindow):
         self.docEditor.setSpellCheck(self.theProject.spellCheck)
         self.mainMenu.setAutoOutline(self.theProject.autoOutline)
         self.statusBar.setRefTime(self.theProject.projOpened)
+        self.statusBar.setStats(self.theProject.currWCount, 0)
 
         # Restore previously open documents, if any
         if self.theProject.lastEdited is not None:
             self.openDocument(self.theProject.lastEdited, doScroll=True)
+
         if self.theProject.lastViewed is not None:
             self.viewDocument(self.theProject.lastViewed)
 
         # Check if we need to rebuild the index
         if self.theIndex.indexBroken:
             self.rebuildIndex()
+
+        # Make sure the changed status is set to false on all that was
+        # just opened
+        qApp.processEvents()
+        self.docEditor.setDocumentChanged(False)
+        self.theProject.setProjectChanged(False)
 
         logger.debug("Project load complete")
 
@@ -477,7 +485,7 @@ class GuiMain(QMainWindow):
             return False
 
         self.treeView.saveTreeOrder()
-        self.theProject.saveProject(autoSave)
+        self.theProject.saveProject(autoSave=autoSave)
         self.theIndex.saveIndex()
 
         return True

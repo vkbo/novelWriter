@@ -606,10 +606,13 @@ class NWProject():
         self.theParent.setStatus("Opened Project: %s" % self.projName)
 
         self._scanProjectFolder()
-        self.setProjectChanged(False)
+
+        self.currWCount = self.lastWCount
         self.projOpened = time()
         self.projAltered = False
+
         self._writeLockFile()
+        self.setProjectChanged(False)
 
         return True
 
