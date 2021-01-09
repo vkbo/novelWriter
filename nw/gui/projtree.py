@@ -553,36 +553,30 @@ class GuiProjectTree(QTreeWidget):
         the project tree. Does not trigger a tree change as the data is
         already coming from the project tree.
         """
-        trItem  = self._getTreeItem(tHandle)
-        nwItem  = self.theProject.projTree[tHandle]
-        tName   = nwItem.itemName
-        tClass  = nwItem.itemClass
-        tHandle = nwItem.itemHandle
+        trItem = self._getTreeItem(tHandle)
+        nwItem = self.theProject.projTree[tHandle]
 
         expIcon = QIcon()
-
-        stClass = nwLabels.CLASS_FLAG[nwItem.itemClass]
-        stLayout = ""
+        stFlags = nwLabels.CLASS_FLAG[nwItem.itemClass]
         if nwItem.itemType == nwItemType.FILE:
-            stLayout = "."+nwLabels.LAYOUT_FLAG[nwItem.itemLayout]
+            stFlags += "."+nwLabels.LAYOUT_FLAG[nwItem.itemLayout]
             if nwItem.isExported:
                 expIcon = self.theTheme.getIcon("check")
             else:
                 expIcon = self.theTheme.getIcon("cross")
-        tStatus = stClass+stLayout
 
         iStatus = nwItem.itemStatus
-        if tClass == nwItemClass.NOVEL:
+        if nwItem.itemClass == nwItemClass.NOVEL:
             iStatus = self.theProject.statusItems.checkEntry(iStatus) # Make sure it's valid
             flagIcon = self.theParent.statusIcons[iStatus]
         else:
             iStatus = self.theProject.importItems.checkEntry(iStatus) # Make sure it's valid
             flagIcon = self.theParent.importIcons[iStatus]
 
-        trItem.setText(self.C_NAME, tName)
+        trItem.setText(self.C_NAME, nwItem.itemName)
         trItem.setIcon(self.C_EXPORT, expIcon)
-        trItem.setText(self.C_FLAGS, tStatus)
         trItem.setIcon(self.C_FLAGS, flagIcon)
+        trItem.setText(self.C_FLAGS, stFlags)
 
         return
 

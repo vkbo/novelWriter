@@ -45,10 +45,19 @@ class nwConst():
     SP_INTERNAL = "internal"
     SP_ENCHANT  = "enchant"
 
-    # Check Lists
+# END Class nwConst
+
+class nwLists():
+    """Lists used for grouping various other constants.
+    """
+
+    # Regular user-accessible item types
     REG_TYPES = {nwItemType.ROOT, nwItemType.FOLDER, nwItemType.FILE}
 
-# END Class nwConst
+    # Item classes where the full list of novel layouts are allowed
+    CLS_NOVEL = {nwItemClass.NOVEL, nwItemClass.ARCHIVE}
+
+# END Class nwLists
 
 class nwRegEx():
 

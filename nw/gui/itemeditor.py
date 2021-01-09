@@ -28,13 +28,14 @@
 import nw
 import logging
 
+from PyQt5.QtCore import pyqtSlot
 from PyQt5.QtWidgets import (
     QDialog, QVBoxLayout, QGridLayout, QLineEdit, QComboBox, QLabel,
     QDialogButtonBox
 )
 
 from nw.gui.custom import QSwitch
-from nw.constants import nwLabels, nwItemLayout, nwItemClass, nwItemType
+from nw.constants import nwLabels, nwItemLayout, nwItemType, nwLists
 
 logger = logging.getLogger(__name__)
 
@@ -50,23 +51,29 @@ class GuiItemEditor(QDialog):
         self.theProject = theProject
         self.theParent  = theParent
 
-        self.outerBox = QVBoxLayout()
+        ##
+        #  Build GUI
+        ##
 
         self.theItem = self.theProject.projTree[tHandle]
         if self.theItem is None:
             self._doClose()
 
         self.setWindowTitle("Item Settings")
-        self.setLayout(self.outerBox)
+
+        mVd = self.mainConf.pxInt(220)
+        mSp = self.mainConf.pxInt(16)
+        vSp = self.mainConf.pxInt(4)
 
         # Item Label
         self.editName = QLineEdit()
-        self.editName.setMinimumWidth(self.mainConf.pxInt(220))
-        self.editName.setMaxLength(self.mainConf.pxInt(200))
+        self.editName.setMinimumWidth(mVd)
+        self.editName.setMaxLength(200)
 
         # Item Status
         self.editStatus = QComboBox()
-        if self.theItem.itemClass == nwItemClass.NOVEL:
+        self.editStatus.setMinimumWidth(mVd)
+        if self.theItem.itemClass in nwLists.CLS_NOVEL:
             for sLabel, _, _ in self.theProject.statusItems:
                 self.editStatus.addItem(
                     self.theParent.statusIcons[sLabel], sLabel, sLabel
@@ -79,24 +86,24 @@ class GuiItemEditor(QDialog):
 
         # Item Layout
         self.editLayout = QComboBox()
-        self.validLayouts = []
+        self.editLayout.setMinimumWidth(mVd)
+        validLayouts = []
         if self.theItem.itemType == nwItemType.FILE:
-            if self.theItem.itemClass == nwItemClass.NOVEL:
-                self.validLayouts.append(nwItemLayout.TITLE)
-                self.validLayouts.append(nwItemLayout.BOOK)
-                self.validLayouts.append(nwItemLayout.PAGE)
-                self.validLayouts.append(nwItemLayout.PARTITION)
-                self.validLayouts.append(nwItemLayout.UNNUMBERED)
-                self.validLayouts.append(nwItemLayout.CHAPTER)
-                self.validLayouts.append(nwItemLayout.SCENE)
-                self.validLayouts.append(nwItemLayout.NOTE)
-            else:
-                self.validLayouts.append(nwItemLayout.NOTE)
+            if self.theItem.itemClass in nwLists.CLS_NOVEL:
+                validLayouts.append(nwItemLayout.TITLE)
+                validLayouts.append(nwItemLayout.BOOK)
+                validLayouts.append(nwItemLayout.PAGE)
+                validLayouts.append(nwItemLayout.PARTITION)
+                validLayouts.append(nwItemLayout.UNNUMBERED)
+                validLayouts.append(nwItemLayout.CHAPTER)
+                validLayouts.append(nwItemLayout.SCENE)
+            validLayouts.append(nwItemLayout.NOTE)
         else:
-            self.validLayouts.append(nwItemLayout.NO_LAYOUT)
+            validLayouts.append(nwItemLayout.NO_LAYOUT)
+            self.editLayout.setEnabled(False)
 
         for itemLayout in nwItemLayout:
-            if itemLayout in self.validLayouts:
+            if itemLayout in validLayouts:
                 self.editLayout.addItem(nwLabels.LAYOUT_NAME[itemLayout], itemLayout)
 
         # Export Switch
@@ -109,23 +116,30 @@ class GuiItemEditor(QDialog):
             self.editExport.setEnabled(False)
             self.editExport.setChecked(False)
 
-        self.editName.setText(self.theItem.itemName)
-        statusIdx = self.editStatus.findData(self.theItem.itemStatus)
-        if statusIdx != -1:
-            self.editStatus.setCurrentIndex(statusIdx)
-        layoutIdx = self.editLayout.findData(self.theItem.itemLayout)
-        if layoutIdx != -1:
-            self.editLayout.setCurrentIndex(layoutIdx)
-
         # Buttons
         self.buttonBox = QDialogButtonBox(QDialogButtonBox.Ok | QDialogButtonBox.Cancel)
         self.buttonBox.accepted.connect(self._doSave)
         self.buttonBox.rejected.connect(self._doClose)
 
-        # Assemble
+        # Set Current Values
+        self.editName.setText(self.theItem.itemName)
+        self.editName.selectAll()
+
+        statusIdx = self.editStatus.findData(self.theItem.itemStatus)
+        if statusIdx != -1:
+            self.editStatus.setCurrentIndex(statusIdx)
+
+        layoutIdx = self.editLayout.findData(self.theItem.itemLayout)
+        if layoutIdx != -1:
+            self.editLayout.setCurrentIndex(layoutIdx)
+
+        ##
+        #  Assemble
+        ##
+
         self.mainForm = QGridLayout()
-        self.mainForm.setVerticalSpacing(self.mainConf.pxInt(4))
-        self.mainForm.setHorizontalSpacing(self.mainConf.pxInt(16))
+        self.mainForm.setVerticalSpacing(vSp)
+        self.mainForm.setHorizontalSpacing(mSp)
         self.mainForm.addWidget(QLabel("Label"),  0, 0, 1, 1)
         self.mainForm.addWidget(self.editName,    0, 1, 1, 2)
         self.mainForm.addWidget(QLabel("Status"), 1, 0, 1, 1)
@@ -134,20 +148,28 @@ class GuiItemEditor(QDialog):
         self.mainForm.addWidget(self.editLayout,  2, 1, 1, 2)
         self.mainForm.addWidget(self.textExport,  3, 0, 1, 2)
         self.mainForm.addWidget(self.editExport,  3, 2, 1, 1)
+        self.mainForm.setColumnStretch(0, 0)
+        self.mainForm.setColumnStretch(1, 1)
+        self.mainForm.setColumnStretch(2, 0)
 
-        self.outerBox.setSpacing(self.mainConf.pxInt(16))
+        self.outerBox = QVBoxLayout()
+        self.outerBox.setSpacing(mSp)
         self.outerBox.addLayout(self.mainForm)
         self.outerBox.addStretch(1)
         self.outerBox.addWidget(self.buttonBox)
         self.setLayout(self.outerBox)
 
         self.rejected.connect(self._doClose)
-        self.editName.selectAll()
 
         logger.debug("GuiItemEditor initialisation complete")
 
         return
 
+    ##
+    #  Slots
+    ##
+
+    @pyqtSlot()
     def _doSave(self):
         """Save the setting to the item.
         """
@@ -170,10 +192,11 @@ class GuiItemEditor(QDialog):
 
         return
 
+    @pyqtSlot()
     def _doClose(self):
         """Close the dialog without saving the settings.
         """
-        logger.verbose("ItemEditor close button clicked")
+        logger.verbose("ItemEditor cancel button clicked")
         self.close()
         return
 

@@ -47,7 +47,7 @@ from nw.gui import (
     GuiProjectWizard, GuiTheme, GuiWritingStats
 )
 from nw.core import NWProject, NWDoc, NWIndex
-from nw.constants import nwItemType, nwItemClass, nwAlert, nwConst
+from nw.constants import nwItemType, nwItemClass, nwAlert, nwLists
 from nw.common import getGuiItem
 
 logger = logging.getLogger(__name__)
@@ -743,7 +743,7 @@ class GuiMain(QMainWindow):
         tItem = self.theProject.projTree[tHandle]
         if tItem is None:
             return
-        if tItem.itemType not in nwConst.REG_TYPES:
+        if tItem.itemType not in nwLists.REG_TYPES:
             return
 
         logger.verbose("Requesting change to item %s" % tHandle)
