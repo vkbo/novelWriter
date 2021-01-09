@@ -467,7 +467,7 @@ class GuiMain(QMainWindow):
             return False
 
         self.treeView.saveTreeOrder()
-        self.theProject.saveProject(autoSave)
+        self.theProject.saveProject(autoSave=autoSave)
         self.theIndex.saveIndex()
 
         return True
