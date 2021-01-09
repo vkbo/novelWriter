@@ -51,9 +51,6 @@ class GuiMainStatus(QStatusBar):
         self.theTheme  = theParent.theTheme
         self.refTime   = None
 
-        self.projWords = 0
-        self.sessWords = 0
-
         colNone  = QColor(*self.theTheme.statNone)
         colTrue  = QColor(*self.theTheme.statUnsaved)
         colFalse = QColor(*self.theTheme.statSaved)
@@ -182,25 +179,13 @@ class GuiMainStatus(QStatusBar):
     def setStats(self, pWC, sWC):
         """Set the current project statistics.
         """
-        self.projWords = pWC
-        self.sessWords = sWC
-        self._updateStats()
+        self.statsText.setText(f"Words: {pWC:n} ({sWC:+n})")
+        self.statsText.setToolTip("Project word count (session change)")
         return
 
     ##
     #  Internal Functions
     ##
-
-    def _updateStats(self):
-        """Update statistics.
-        """
-        self.statsText.setToolTip(
-            "Project word count (session change)"
-        )
-        self.statsText.setText(
-            f"Words: {self.projWords:n} ({self.sessWords:+n})"
-        )
-        return
 
     def _updateTime(self):
         """Update the session clock.
