@@ -529,6 +529,7 @@ class GuiIcons:
         "status_time"     : (None, None),
         "status_stats"    : (None, None),
         "status_lines"    : (None, None),
+        "doc_h0"          : (QStyle.SP_FileIcon, "x-office-document"),
         "doc_h1"          : (QStyle.SP_FileIcon, "x-office-document"),
         "doc_h2"          : (QStyle.SP_FileIcon, "x-office-document"),
         "doc_h3"          : (QStyle.SP_FileIcon, "x-office-document"),
