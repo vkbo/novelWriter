@@ -18,20 +18,21 @@ Importance of Headings
 Subfolders under root folders have no impact on the structure of the novel itself. The structure is
 instead dictated by the heading level of the headers within the documents.
 
-Four levels of headings are supported, signified by the number of hashes preceding the title. See
-also the :ref:`a_ui_md` section for more details about the markdown syntax.
+Four levels of headings are supported, signified by the number of hashes (``#``) preceding the
+title. See also the :ref:`a_ui_md` section for more details about the markdown syntax.
 
 .. note::
    The header levels are not only important when generating the exported novel file, they are also
    used by the indexer when building the outline tree in the :guilabel:`Outline` tab. Each heading
-   also starts a new region where new references to tags can be set.
+   also starts a new region where new references and tags can be set.
 
 The different header levels are interpreted as specific section types of the novel in the following
 way:
 
 ``# Header1``
    Header level one signifies that the text refers to either the novel title or the name of a top
-   level partition useful when you want to split the manuscript up into books, parts, or acts.
+   level partition. The latter is useful when you want to split the manuscript up into books,
+   parts, or acts.
 
 ``## Header2``
    Header level two signifies a chapter level partition. Each time you want to start a new chapter,
@@ -47,8 +48,8 @@ way:
    manuscript.
 
 ``#### Header4``
-   Header level four signifies a sub-scene level partition, usually called just a section in the
-   documentation and user interface. These can be useful if you want to change tag references
+   Header level four signifies a sub-scene level partition, usually called a "section" in the
+   documentation and the user interface. These can be useful if you want to change tag references
    mid-scene, like if you change the point-of-view character. You are free to use sections as you
    wish, and can filter the titles out of the final manuscript just like with scene titles.
 
@@ -67,7 +68,7 @@ If you use layout types for your documents, the automatic numbering feature for 
 controlled by whether you use the :guilabel:`Chapter` or :guilabel:`Unnumbered` layout type for
 your document. However, if you have a different document layout where this isn't practical, you can
 also switch off chapter numbering for a chapter by making the first character of the chapter title
-an ``*``. Like so:
+an asterisk (``*``). Like so:
 
 ``## *Unnumbered Chapter Title``
 
@@ -87,7 +88,7 @@ Tag References
 
 Each text partition indicated by a heading of any level, can contain references to tags set in the
 supporting notes of the project. The references are gathered by the indexer and used to generate
-the outline view on the :guilabel:`Outline` tab of how the different parts of the novel are
+an outline view on the :guilabel:`Outline` tab of how the different parts of the novel are
 connected.
 
 References and tags are also clickable in the document editor and viewer, making it easy to
@@ -103,7 +104,7 @@ allow multiple values.
 
 ``@char``
    Other characters in the current section. The target must be a note tag in a
-   :guilabel:`Character` type root folder. This should not include the point-of-view character(s).
+   :guilabel:`Character` type root folder. This should not include the point-of-view character.
 
 ``@plot``
    The plot or subplot advanced in the current section. The target must be a note tag in a
@@ -142,15 +143,15 @@ the index for a document is regenerated when it is saved, so this shouldn't norm
 Novel Document Layout
 =====================
 
-All documents in a novelWriter project can have a layout format set. These layouts are important
-when the project is exported as they indicate how to treat the content in terms of formatting,
+All documents in the project can have a layout format set. These layouts are important when the
+project is exported as they indicate how to treat the content in terms of text formatting,
 headings, and page breaks. The layout for each document is indicated as the last set of characters
 in the :guilabel:`Flags` column of the project tree.
 
 Not all layout types are actually treated differently, they also help to indicate what each
-document is for in your project. The :guilabel:`Book` layout is a generic novel document layout
-that is formatted identically to :guilabel:`Chapter` and :guilabel:`Scene` layout documents, but
-may help to indicate what each document does in your project.
+document is intended for in your project. The :guilabel:`Book` layout is a generic novel document
+layout that is formatted identically to :guilabel:`Chapter` and :guilabel:`Scene` layout documents,
+but may help to indicate what each document does in your project.
 
 You can for instance lay out your project using :guilabel:`Book` documents for each act, and then
 later split those into chapter or scene documents by using the :guilabel:`Split Document` tool.
@@ -163,15 +164,15 @@ Some layouts *do* have implications on how the project is exported. Documents wi
 contained within it. The latter is convenient for Prologue and Epilogue type chapters.
 
 The above layout formats are only usable in the Novel root folder. Documents that are not a part of
-the novel itself should have the Note layout. These documents are not getting any special
-formatting, and it is possible to collectively filter them out during export. Notes can be used
-anywhere in the project, also in the Novel root folder.
+the novel itself should have the :guilabel:`Note` layout. These documents are not getting any
+special formatting, and it is possible to collectively filter them out during export. Notes can be
+used anywhere in the project, also in the :guilabel:`Novel` root folder.
 
 Below is an overview of all available layout formats.
 
 :guilabel:`Title Page`
-   The title page layout. The title should be formatted as a heading level one. All text is
-   automatically centred on exports.
+   The title page layout. The title should be formatted as a heading level one. All text is centred
+   on export.
 
 :guilabel:`Plain Page`
    A plain page layout useful for instance for front matter pages. Heading levels are ignored for
@@ -184,7 +185,7 @@ Below is an overview of all available layout formats.
    produce the same result as a collection of :guilabel:`Partition`, :guilabel:`Chapter` and
    :guilabel:`Scene` layout documents. However, it does not provide the functionality of the
    :guilabel:`Unnumbered` layout format by default, but this can still be achieved by prefixing the
-   chapter title with a ``*``.
+   chapter title with an asterisk (``*``).
 
 :guilabel:`Partition`
    A partition can be used to split the novel into parts. Partition titles are indicated with a
@@ -200,7 +201,7 @@ Below is an overview of all available layout formats.
    text.
 
 :guilabel:`Unnumbered`
-   Same as :guilabel:`Chapter`, but when exporting the documents and automatic chapter numbering is
+   Same as :guilabel:`Chapter`, but when exporting the project, and automatic chapter numbering is
    enabled, documents with this layout will not increment the chapter number. It also has a
    separate title formatting setting. This makes the layout suitable for Prologue and Epilogue type
    chapters.
@@ -210,10 +211,10 @@ Below is an overview of all available layout formats.
    headers of level four, but there are no layout specifically for sections.
 
 :guilabel:`Note`
-   A generic document that is optionally ignored when the novel is exported. Use this layout for
-   descriptions of content in the supporting root folders. Notes can also be added to the
-   :guilabel:`Novel` root folder if you need to insert notes there. Note headers receive no special
-   formatting when building the project. They are always exported as-is.
+   A generic document that is optionally ignored when the novel project is exported. Use this
+   layout for descriptions of content in the supporting root folders. Notes can also be added to
+   the :guilabel:`Novel` root folder if you need to insert notes there. Note headers receive no
+   special formatting when building the project. They are always exported as-is.
 
 .. note::
    The layout granularity is entirely optional. In principle, you can write the entire novel in a

@@ -14,7 +14,7 @@ Header Formatting
 =================
 
 The titles for the five types of titles (the chapter headings come in a numbered and unnumbered
-version) of story structure can be formatted collectively in the export tool. This is done through
+version) of story structure can be formatted collectively in the build tool. This is done through
 a series of keyword–replace steps. They are all on the format ``%keyword%``.
 
 ``%title%``
@@ -22,20 +22,20 @@ a series of keyword–replace steps. They are all on the format ``%keyword%``.
    your document.
 
 ``%ch%``
-   This is replaced by a chapter number. The number is incremented by one each time the build tool
-   sees a new heading of level two in a document with layout :guilabel:`Chapter`. If the document
-   has layout :guilabel:`Unnumbered`, the counter is *not* incremented. The latter is useful for
-   for instance Prologue and Epilogue chapters.
+   This will be replaced by a chapter number. The number is incremented by one each time the build
+   tool sees a new heading of level two in a document with layout :guilabel:`Chapter`. If the
+   document has layout :guilabel:`Unnumbered`, the counter is *not* incremented. The latter is
+   useful for for instance Prologue and Epilogue chapters. Adding an asterisk (``*``) in front of
+   the title text of a level two heading will also disable the chapter counter for that heading.
 
 ``%chw%``
-   This is like ``%ch%``, but the number is expressed as a word like for instance "One", "Two",
-   etc.
+   Behaves like ``%ch%``, but the number is represented as a number word.
 
 ``%chi%``
-   This is also like ``%ch%``, but the number is represented as a lower case Roman number.
+   Begaves like ``%ch%``, but the number is represented as a lower case Roman number.
 
 ``%chI%``
-   This is also like ``%ch%``, but the number is represented as an upper case Roman number.
+   Behaves like ``%ch%``, but the number is represented as an upper case Roman number.
 
 ``%sc%``
    This is the number counter equivalent for scenes. These are incremented each time a heading of
@@ -43,8 +43,8 @@ a series of keyword–replace steps. They are all on the format ``%keyword%``.
    used for counting scenes within a chapter.
 
 ``%sca%``
-   This is like ``%sc%``, but the number is *not* reset to 1 for each chapter. Instead it runs from
-   1 from the beginning of the novel.
+   Behaves like ``%sc%``, but the number is *not* reset to 1 for each chapter. Instead it runs from
+   1 from the beginning of the novel to produce an absolute scene count.
 
 ``\\``
    This inserts a line break within the title.
@@ -67,11 +67,12 @@ Scene Separators
 ================
 
 If you don't want any titles for your scenes (or for your sections if you have them), you can leave
-the boxes empty. If so, an empty paragraph will be inserted between the scenes or sections instead.
+the formatting boxes empty. If so, an empty paragraph will be inserted between the scenes or
+sections instead.
 
-Alternatively, if you want a separator between them, like the common ``* * *``, you can also enter
-that in the box. In fact, if the format is a piece of static text, it will always be treated as a
-separator.
+Alternatively, if you want a separator between them, like the common ``* * *``, you can enter the
+desired separator text in the formatting box. In fact, if the format is a piece of static text, it
+will always be treated as a separator.
 
 
 .. _a_export_files:
@@ -82,8 +83,8 @@ File Selection
 Which documents and notes are selected for export can be controlled from the options on the left
 side of the dialog window. The switch for :guilabel:`Include novel files` will select any document
 that isn't classified as a note. The switch for :guilabel:`Include note files` will select any
-document that *is* a note. This is allows for exporting just the novel, just your notes, or both,
-as you see fit.
+document that *is* a note. This allows for exporting just the novel, just your notes, or both, as
+you see fit.
 
 In addition, you can select to export the synopsis comments, regular comments, keywords, and even
 exclude the body text itself.
@@ -111,23 +112,23 @@ Currently, six formats are supported for exporting.
 OpenDocument Format
    This produces an open document ``.odt`` file. The document produced has very little formatting,
    and may require further editing afterwards. For a better formatted office document, you may get
-   a better result with exporting to HTML and then import that HTML document into your office word
-   processor. They are generally very good at importing HTML documents.
+   a better result by exporting to HTML and then importing that HTML document into your office word
+   processor. They are generally good at importing HTML documents.
 
 PDF Format
-   The PDF export is just a shortcut for print to file. For a better PDF result, you may instead
-   want to export to HTML, and use a word processor to convert the HTML document to PDF.
+   The PDF export is just a shortcut for print-to-file. For a better PDF result, you may instead
+   want to export to HTML and use a word processor to convert the HTML document to PDF.
 
 novelWriter HTML
    The HTML export format writes a single ``.htm`` file with minimal style formatting. The exported
    HTML document is suitable for further processing by document conversion tools like Pandoc, for
    importing in word processors, or for printing from browser. It is generally the best formatted
-   export option and supports all features of novelWriter since it is entirely geenrated by the
+   export option and supports all features of novelWriter since it is entirely generated by the
    application and doesn't depend on Qt library features.
 
 novelWriter Markdown
    This is simply a concatenation of the project documents selected by the filters. The documents
-   are    stacked together in the order they appear in the project tree, with comments, tags, etc.
+   are stacked together in the order they appear in the project tree, with comments, tags, etc.
    included if they are selected. This is a useful format for exporting the project for later
    import back into novelWriter.
 
@@ -146,11 +147,11 @@ Additional Export Options
 
 In addition to the above document formats, the novelWriter HTML and Markdown formats can also be
 wrapped in a JSON file. These files will have a meta data entry and a body entry. For HTML, also
-accompanying css styles are exported.
+the accompanying css styles are exported.
 
-The text body is saved in a two-level list. The outer list contains one entry per exported file, in
-the order they appear in the project tree. Each file is then split up into a list as well, with one
-entry per paragraph in the document.
+The text body is saved in a two-level list. The outer list contains one entry per exported
+document, in the order they appear in the project tree. Each document is then split up into a list
+as well, with one entry per paragraph it contains.
 
 These files are mainly intended for scripted post-processing for those who want that option. A JSON
 file can be imported directly into a Python dict object or a PHP array, to mentions a few options.

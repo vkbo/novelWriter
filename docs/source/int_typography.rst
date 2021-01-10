@@ -34,10 +34,10 @@ Single and Double Quotes
 
 All the different quotation marks listed on the `Quotation Mark`_ Wikipedia page are available, and
 can be selected as auto-replaced symbols for straight single and double quote key strokes. The
-settings can be found in the :guilabel:`Preferences`.
+settings can be found in :guilabel:`Preferences`.
 
 Ordinarily, text wrapped in quotes are highlighted by the editor. This is meant as a convenience
-for highlighting dialogue between characters. This feature can be disabled in the
+for highlighting dialogue between characters. This feature can be disabled in
 :guilabel:`Preferences` if this feature isn't wanted.
 
 The editor distinguishes between text wrapped in straight quotes and with the user-selected double
@@ -48,21 +48,21 @@ re-format a selected section of text with the correct quote symbols.
 .. _Quotation Mark: https://en.wikipedia.org/wiki/Quotation_mark
 
 
-Modifier Letter Apostrophes
----------------------------
+Modifier Letter Apostrophe
+--------------------------
 
 The auto-replace feature will consider any right-facing single straight quote as a quote symbol,
 even if it's intended as an apostrophe. This also includes the syntax highlighter, which may assume
 the first following apostrophe is the closing symbol of a single quoted region of text.
 
 To get around this, an alternative apostrophe is available. It is a special Unicode character that
-is not categorised as punctuation, but as a modifier. It is usually renderred the same way as right
-single quotation marks, but not always, depending on the font. There is a Wikipedia article for the
+is not categorised as punctuation, but as a modifier. It is usually renderred the same way as the
+right single quotation marks, depending on the font. There is a Wikipedia article for the
 `Modifier letter apostrophe`_ with more details.
 
 .. note::
    On export with the :guilabel:`Build Novel Project` tool, these apostrophes will be replaced
-   automatically with the corresponding right hand quote symbols as is generally recommended.
+   automatically with the corresponding right hand single quote symbol as is generally recommended.
    Therefore it doesn't really matter if you only use them to correct highlighting.
 
 .. _Modifier letter apostrophe: https://en.wikipedia.org/wiki/Modifier_letter_apostrophe
