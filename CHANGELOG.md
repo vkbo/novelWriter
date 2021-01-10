@@ -1,5 +1,41 @@
 # novelWriter Change Log
 
+## Version 1.0.1 [2021-01-10]
+
+### Release Notes
+
+This release is mainly to bring the documentation up to date, as I forgot to update the install
+instructions in the original 1.0 release. I also forgot to change the various settings and help
+texts that describe novelWriter as under initial development (beta state).
+
+Some minor improvements have been made to the "Edit Project Item" dialog and some restrictions on
+the settings available for documents created in the "Outtakes" folder relaxed. A few minor issues
+with the document and project changed icons on the status bar have also been resolved. The
+indicators were previously set to changed status even if no actual change had been made to the
+project.
+
+### Detailed Changelog
+
+**User Interface**
+
+* Added the Outtakes folder to a list of root folders that will allow the setting of file layouts
+  otherwise only permitted under the Novel root folder. It makes sense to permit the files in this
+  folder to have the same extended settings that Novel files have. PR #552.
+* The text input and dropdown boxes of the Edit Project Item dialog box now extend when the dialog
+  window is resized. Previously, the space between the label and the box would stretch instead,
+  which isn't very useful. PR #552.
+* The document and project changed status icons on the status bar are now set to unchanged status
+  when the project is opened. In addition, an issue with the status being set to changed on various
+  events that were not actual changes to the document or project has been resolved. For instance,
+  changing the size of the document editor would flag the document itself as changed. PR #554.
+
+**Documentation**
+
+* Updated the install instructions of the documentation and the main readme file, as well as the
+  current development status as listed on PyPi. PRs #550 and #551.
+
+----
+
 ## Version 1.0 [2021-01-03]
 
 ### Release Notes
