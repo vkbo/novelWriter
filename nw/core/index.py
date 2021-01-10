@@ -42,6 +42,8 @@ logger = logging.getLogger(__name__)
 
 class NWIndex():
 
+    H_LEVEL = {"H0": 0, "H1": 1, "H2": 2, "H3": 3, "H4": 4}
+
     def __init__(self, theProject, theParent):
 
         # Internal
@@ -592,11 +594,30 @@ class NWIndex():
                 tKey = "%s:%s" % (tHandle, sTitle)
                 yield tKey, tHandle, sTitle, self._novelIndex[tHandle][sTitle]
 
+    def getNovelCounts(self, skipExcluded=True):
+        """Count the number of titles in the novel project.
+        """
+        hCount = [0, 0, 0, 0, 0]
+        for tItem in self.theProject.projTree:
+            if tItem is None:
+                continue
+            if not tItem.isExported and skipExcluded:
+                continue
+
+            tHandle = tItem.itemHandle
+            if tHandle not in self._novelIndex:
+                continue
+
+            for sTitle in self._novelIndex[tHandle]:
+                theData = self._novelIndex[tHandle][sTitle]
+                iLevel = self.H_LEVEL.get(theData["level"], 0)
+                hCount[iLevel] += 1
+
+        return hCount
+
     def getTableOfContents(self, maxDepth, skipExcluded=True):
         """Generate a table of contents up to a maxiumum depth.
         """
-        hLevel = {"H0": 0, "H1": 1, "H2": 2, "H3": 3, "H4": 4}
-
         tOrder = []
         tData = {}
         pKey = None
@@ -613,7 +634,7 @@ class NWIndex():
             for sTitle in sorted(self._novelIndex[tHandle]):
                 tKey = "%s:%s" % (tHandle, sTitle)
                 theData = self._novelIndex[tHandle][sTitle]
-                iLevel = hLevel.get(theData["level"], 0)
+                iLevel = self.H_LEVEL.get(theData["level"], 0)
                 if iLevel > maxDepth:
                     if pKey in tData:
                         theData["wCount"]

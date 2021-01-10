@@ -30,9 +30,10 @@ import logging
 import math
 
 from PyQt5.QtCore import Qt, QSize
+from PyQt5.QtGui import QFont
 from PyQt5.QtWidgets import (
     QWidget, QDialogButtonBox, QVBoxLayout, QTreeWidget, QTreeWidgetItem,
-    QLabel, QSpinBox, QGroupBox, QGridLayout
+    QLabel, QSpinBox, QGroupBox, QGridLayout, QHBoxLayout
 )
 
 from nw.gui.custom import PagedDialog, QSwitch
@@ -131,6 +132,77 @@ class GuiProjectDetailsMain(QWidget):
         self.mainConf   = nw.CONFIG
         self.theParent  = theParent
         self.theProject = theProject
+        self.theTheme   = theParent.theTheme
+        self.theIndex   = theParent.theIndex
+
+        fPx = self.theTheme.fontPixelSize
+        vPx = self.mainConf.pxInt(4)
+        hPx = self.mainConf.pxInt(12)
+
+        # Header
+        # ======
+
+        self.bookTitle = QLabel(self.theProject.bookTitle)
+        bookFont = self.bookTitle.font()
+        bookFont.setPixelSize(round(2.2*fPx))
+        bookFont.setWeight(QFont.Bold)
+        self.bookTitle.setFont(bookFont)
+        self.bookTitle.setAlignment(Qt.AlignHCenter)
+
+        self.projName = QLabel("Working Title: %s" % self.theProject.projName)
+        workFont = self.projName.font()
+        workFont.setPixelSize(round(0.8*fPx))
+        workFont.setItalic(True)
+        self.projName.setFont(workFont)
+        self.projName.setAlignment(Qt.AlignHCenter)
+
+        self.bookAuthors = QLabel("By: %s" % ", ".join(self.theProject.bookAuthors))
+        authFont = self.bookAuthors.font()
+        authFont.setPixelSize(round(1.2*fPx))
+        self.bookAuthors.setFont(authFont)
+        self.bookAuthors.setAlignment(Qt.AlignHCenter)
+
+        # Stats
+        # =====
+
+        hCounts = self.theIndex.getNovelCounts()
+
+        self.wordCountLbl = QLabel("<b>Words:</b>")
+        self.wordCountVal = QLabel(f"{self.theProject.currWCount:n}")
+
+        self.chapCountLbl = QLabel("<b>Chapters:</b>")
+        self.chapCountVal = QLabel(f"{hCounts[2]:n}")
+
+        self.sceneCountLbl = QLabel("<b>Scenes:</b>")
+        self.sceneCountVal = QLabel(f"{hCounts[3]:n}")
+
+        self.statsGrid = QGridLayout()
+        self.statsGrid.addWidget(self.wordCountLbl,  0, 0, 1, 1, Qt.AlignLeft)
+        self.statsGrid.addWidget(self.wordCountVal,  0, 1, 1, 1, Qt.AlignRight)
+        self.statsGrid.addWidget(self.chapCountLbl,  1, 0, 1, 1, Qt.AlignLeft)
+        self.statsGrid.addWidget(self.chapCountVal,  1, 1, 1, 1, Qt.AlignRight)
+        self.statsGrid.addWidget(self.sceneCountLbl, 2, 0, 1, 1, Qt.AlignLeft)
+        self.statsGrid.addWidget(self.sceneCountVal, 2, 1, 1, 1, Qt.AlignRight)
+        self.statsGrid.setHorizontalSpacing(hPx)
+        self.statsGrid.setVerticalSpacing(vPx)
+
+        self.statsBox = QHBoxLayout()
+        self.statsBox.addStretch(1)
+        self.statsBox.addLayout(self.statsGrid)
+        self.statsBox.addStretch(1)
+
+        # Assemble
+        # ========
+
+        self.outerBox = QVBoxLayout()
+        self.outerBox.addWidget(self.bookTitle)
+        self.outerBox.addWidget(self.projName)
+        self.outerBox.addWidget(self.bookAuthors)
+        self.outerBox.addSpacing(round(2.5*fPx))
+        self.outerBox.addLayout(self.statsBox)
+        self.outerBox.addStretch(1)
+
+        self.setLayout(self.outerBox)
 
         return
 
