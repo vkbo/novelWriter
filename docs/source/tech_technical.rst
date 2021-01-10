@@ -84,3 +84,60 @@ For the project XML file, a ``.bak`` file is in addition kept, which will always
 previous version of the file, although when auto-save is enabled, they may have the same content.
 If the opening of a project file fails, novelWriter will automatically try to open the ``.bak``
 file instead.
+
+
+Project Meta Data
+=================
+
+The project folder contains a subfolder named ``meta``, containing  a number of files. The meta
+folder contains semi-important files. That is, they can be lost with only minor impact to the
+project.
+
+If you use version control software on your project, you can exclude this folder, although you may
+want to track the session log file. The JSON files within this folder can safely be ignored.
+
+
+The Project Index
+-----------------
+
+Between writing sessions, the project index is saved in a JSON file in ``meta/tagsIndex.json``.
+This file is not critical. If it is lost, it can be rebuilt from within novelWriter from the
+:guilabel:`Tools` menu.
+
+The index is maintained and updated whenever a document or note is saved in the editor. It contains
+all references and tags in documents and notes, as well as the location of all headers in the
+project, and the word counts within each header section.
+
+While the integrity of the index is checked when the file is loaded, the check is not very deep and
+it is possible to corrupt the index if the file is manually edited and manipulated. If so,
+novelWriter may crash during launch. If this happens, you must delete the index file and rebuild
+the index.
+
+
+Cached GUI Options
+------------------
+
+A file named ``meta/guiOptions.json`` contains the latest state of various GUI buttons, switches,
+dialog window sizes, column sizes, etc, from the GUI. These are the GUI settings that are specific
+to the project. Global GUI settings are stored in the main config file.
+
+The file is not critical, but if it is lost, all such GUI options will revert back to their default
+settings.
+
+Session Stats
+-------------
+
+The writing progress is saved in the ``meta/sessionStats.log`` file. This file records the length
+and word counts of each writing session on the given project. The file is used by the
+:guilabel:`Writing Statistics` tool. If this file is lost, the history it contains is also lost,
+but it has otherwise no impact on the project.
+
+
+Project Cache
+=============
+
+The project ``cache`` folder contains non-critical files. If these files are lost, there is no
+impact on the functionality of novelWriter or the history of the project. It contains temporary
+files, like the preview document in the :guilabel:`Build Novel Project` tool.
+
+It should be excluded from version control tools if such are used.
