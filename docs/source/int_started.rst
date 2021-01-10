@@ -7,7 +7,7 @@ Getting Started
 This is a brief guide to how you can get novelWriter running on your computer. These are the
 methods currently supported by the developer. Packages may also be available in other package
 managers, but those are not managed by the developer. A Windows installer file is also provided on
-the GitHub page and on the main website.
+the GitHub releases page and linked from the `main website`_.
 
 As novelWriter matures, more options for how to install it and get it running will be added. For
 non-Windows users the install process is at the present time best suited for people used to working
@@ -19,6 +19,8 @@ with the command line. But even if you're not, the install process is fairly str
    Linux, the scripts can also be made executable and run without the ``python`` command. Likewise,
    ``pip`` may need to be replaced with ``pip3``.
 
+.. _main website: https://novelwriter.io
+
 
 .. _a_started_install:
 
@@ -26,7 +28,7 @@ Installing and Running
 ======================
 
 The application is written in Python 3 using Qt5 via PyQt5. It is developed on Linux, but it should
-in principle work fine on other operating systems as well as long as dependencies are met.
+in principle work fine on other operating systems as long as dependencies are met.
 
 You can download the latest version of novelWriter from the source repository on GitHub_.
 novelWriter is also hosted on PyPi_, and can be installed on all operating systems that support Qt5
@@ -177,10 +179,8 @@ Windows Installer
 
 You can install novelWriter with the Windows installer for 64-bit Windows available on the
 `main website`_ and GitHub_ page. This installer bundles all that is needed for novelWriter to run,
-including Python and the xml and Qt libraries. When installing novelWriter this way, you don't need
+including Python and the XML and Qt libraries. When installing novelWriter this way, you don't need
 to install any of the dependencies manually. The installer is made with pyinstaller and Inno Setup.
-
-.. _main website: https://novelwriter.io
 
 
 .. _a_started_win_source:
@@ -192,7 +192,8 @@ To run from source, you may first need to install Python. If you don't have it i
 download it from the python.org_ website. novelWriter should work with Python 3.6 or higher, but it
 is recommended that you install the latest version of Python.
 
-Also, make sure you select the "Add Python to PATH" option during installation.
+Also, make sure you select the "Add Python to PATH" option during installation, otherwise the
+``python`` command will not work in the command line window.
 
 .. image:: images/python_win_install.png
    :width: 600
@@ -245,7 +246,8 @@ The documentation can then be built from the ``docs`` folder in the source code 
 
    make html
 
-If successful, the documentation should be available in the ``docs/build/html`` folder.
+If successful, the documentation should be available in the ``docs/build/html`` folder and you can
+open the ``index.html`` file in your browser.
 
 The documentation can also be built for the Qt Assistant. To build the help packages from the
 documentation source, run the following from the root source folder:
@@ -263,4 +265,3 @@ locally first, then send you to the website as a fallback.
    In order for the local version of help to work, the Qt Assistant must be installed on the local
    computer. If it isn't available, or novelWriter cannot find it, the help feature will fall back
    to redirecting you to the documentation website.
-

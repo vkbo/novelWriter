@@ -7,8 +7,8 @@ Technical Information
 This section contains details of how novelWriter stores and handles the project data.
 
 
-How Data is Stored
-==================
+How Project Data is Stored
+==========================
 
 All novelWriter files are written with utf-8 encoding. Since Python automatically converts Unix
 line endings to Windows line endings on Windows systems, novelWriter does not make any adaptations
@@ -20,13 +20,14 @@ operating systems.
 Main Project File
 -----------------
 
-The project itself requires a dedicated folder for storing its files, where novelWriter will create
+The project itself requires a dedicated folder for storing its files where novelWriter will create
 its own "file system" where the folder and file hierarchy is described in a project XML file. This
 is the main project file in the project's root folder with the name ``nwProject.nwx``. This file
 also contains all the meta data required for the project, and a number of related project settings.
 
-If this file is lost or corrupted, the structure of the project is lost. It is important to keep
-this file backed up, either through the built-in backup tool, or your own backup solution.
+If this file is lost or corrupted, the structure of the project is lost, although not the text
+itself. It is important to keep this file backed up, either through the built-in backup tool, or
+your own backup solution.
 
 .. tip::
    The novelWriter project folder is structured so that it can easily be added to a version control
@@ -36,7 +37,7 @@ this file backed up, either through the built-in backup tool, or your own backup
 
 The project XML file is indent-formatted, suitable for diff tools and version control since most of
 the file will stay static, although a timesetamp is set in the meta section on line 2 each time the
-file is saved.
+file is saved, and various meta data entries are incremented on each save.
 
 
 Project Documents
@@ -50,7 +51,7 @@ hash and the file extension ``.nwd``.
 If you wish to find the physical location of a document in the project, you can either look it up
 in the project XML file, select :guilabel:`Show File Details` from the :guilabel:`Document` menu
 when having the document open, or look in the ``ToC.txt`` file in the root of the project folder.
-The ``ToC.txt`` file has a list of all document files in the project and where they are saved.
+The ``ToC.txt`` file has a list of all documents in the project and where they are saved.
 
 The reason for this cryptic file naming is to avoid issues with file naming conventions and
 restrictions on different operating systems, and also to have a file name that does not depend on
