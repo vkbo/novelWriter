@@ -31,10 +31,11 @@ import math
 
 from PyQt5.QtCore import Qt, QSize
 from PyQt5.QtWidgets import (
-    QWidget, QDialogButtonBox, QVBoxLayout, QTreeWidget, QTreeWidgetItem
+    QWidget, QDialogButtonBox, QVBoxLayout, QTreeWidget, QTreeWidgetItem,
+    QLabel, QSpinBox, QGroupBox, QGridLayout
 )
 
-from nw.gui.custom import PagedDialog
+from nw.gui.custom import PagedDialog, QSwitch
 
 logger = logging.getLogger(__name__)
 
@@ -64,10 +65,10 @@ class GuiProjectDetails(PagedDialog):
         )
 
         self.tabMain     = GuiProjectDetailsMain(self.theParent, self.theProject)
-        self.tabChapters = GuiProjectDetailsChapters(self.theParent, self.theProject)
+        self.tabContents = GuiProjectDetailsContents(self.theParent, self.theProject)
 
         self.addTab(self.tabMain,     "Overview")
-        self.addTab(self.tabChapters, "Chapters")
+        self.addTab(self.tabContents, "Contents")
 
         self.buttonBox = QDialogButtonBox(QDialogButtonBox.Close)
         self.buttonBox.rejected.connect(self._doClose)
@@ -98,20 +99,25 @@ class GuiProjectDetails(PagedDialog):
         winWidth  = self.mainConf.rpxInt(self.width())
         winHeight = self.mainConf.rpxInt(self.height())
 
-        chColWidth = self.tabChapters.getColumnSizes()
-        widthCol0 = self.mainConf.rpxInt(chColWidth[0])
-        widthCol1 = self.mainConf.rpxInt(chColWidth[1])
-        widthCol2 = self.mainConf.rpxInt(chColWidth[2])
-        widthCol3 = self.mainConf.rpxInt(chColWidth[3])
-        widthCol4 = self.mainConf.rpxInt(chColWidth[4])
+        cColWidth = self.tabContents.getColumnSizes()
+        widthCol0 = self.mainConf.rpxInt(cColWidth[0])
+        widthCol1 = self.mainConf.rpxInt(cColWidth[1])
+        widthCol2 = self.mainConf.rpxInt(cColWidth[2])
+        widthCol3 = self.mainConf.rpxInt(cColWidth[3])
+        widthCol4 = self.mainConf.rpxInt(cColWidth[4])
 
-        self.optState.setValue("GuiProjectDetails", "winWidth",  winWidth)
-        self.optState.setValue("GuiProjectDetails", "winHeight", winHeight)
-        self.optState.setValue("GuiProjectDetails", "widthCol0", widthCol0)
-        self.optState.setValue("GuiProjectDetails", "widthCol1", widthCol1)
-        self.optState.setValue("GuiProjectDetails", "widthCol2", widthCol2)
-        self.optState.setValue("GuiProjectDetails", "widthCol3", widthCol3)
-        self.optState.setValue("GuiProjectDetails", "widthCol4", widthCol4)
+        wordsPerPage = self.tabContents.wpValue.value()
+        clearDouble  = self.tabContents.dblValue.isChecked()
+
+        self.optState.setValue("GuiProjectDetails", "winWidth",     winWidth)
+        self.optState.setValue("GuiProjectDetails", "winHeight",    winHeight)
+        self.optState.setValue("GuiProjectDetails", "widthCol0",    widthCol0)
+        self.optState.setValue("GuiProjectDetails", "widthCol1",    widthCol1)
+        self.optState.setValue("GuiProjectDetails", "widthCol2",    widthCol2)
+        self.optState.setValue("GuiProjectDetails", "widthCol3",    widthCol3)
+        self.optState.setValue("GuiProjectDetails", "widthCol4",    widthCol4)
+        self.optState.setValue("GuiProjectDetails", "wordsPerPage", wordsPerPage)
+        self.optState.setValue("GuiProjectDetails", "clearDouble",  clearDouble)
 
         return
 
@@ -130,7 +136,7 @@ class GuiProjectDetailsMain(QWidget):
 
 # END Class GuiProjectDetailsMain
 
-class GuiProjectDetailsChapters(QWidget):
+class GuiProjectDetailsContents(QWidget):
 
     C_TITLE = 0
     C_WORDS = 1
@@ -148,7 +154,13 @@ class GuiProjectDetailsChapters(QWidget):
         self.theIndex   = theParent.theIndex
         self.optState   = theProject.optState
 
+        # Internal
+        self._theToC = []
+
         iPx = self.theTheme.baseIconSize
+
+        # Contents Tree
+        # =============
 
         self.chTree = QTreeWidget()
         self.chTree.setIconSize(QSize(iPx, iPx))
@@ -166,7 +178,6 @@ class GuiProjectDetailsChapters(QWidget):
         treeHeader.setStretchLastSection(True)
         treeHeader.setMinimumSectionSize(iPx + 6)
 
-        # Get user's column width preferences
         wCol0 = self.mainConf.pxInt(self.optState.getInt("GuiProjectDetails", "widthCol0", 200))
         wCol1 = self.mainConf.pxInt(self.optState.getInt("GuiProjectDetails", "widthCol1", 60))
         wCol2 = self.mainConf.pxInt(self.optState.getInt("GuiProjectDetails", "widthCol2", 60))
@@ -179,11 +190,45 @@ class GuiProjectDetailsChapters(QWidget):
         self.chTree.setColumnWidth(4, wCol4)
         self.chTree.setColumnWidth(5, 0)
 
+        # Options
+        # =======
+
+        wordsPerPage = self.optState.getInt("GuiProjectDetails", "wordsPerPage", 300)
+        clearDouble  = self.optState.getInt("GuiProjectDetails", "clearDouble", True)
+
+        self.optionsBox  = QGroupBox("Options", self)
+        self.optionsForm = QGridLayout(self)
+        self.optionsBox.setLayout(self.optionsForm)
+
+        self.wpLabel = QLabel("Words per page")
+        self.wpValue = QSpinBox()
+        self.wpValue.setMinimum(10)
+        self.wpValue.setMaximum(1000)
+        self.wpValue.setSingleStep(10)
+        self.wpValue.setValue(wordsPerPage)
+        self.wpValue.valueChanged.connect(self._populateTree)
+
+        self.dblLabel = QLabel("Clear double pages")
+        self.dblValue = QSwitch(self, 2*iPx, iPx)
+        self.dblValue.setChecked(clearDouble)
+        self.dblValue.clicked.connect(self._populateTree)
+
+        self.optionsForm.addWidget(self.wpLabel,  0, 0, 1, 1, Qt.AlignLeft)
+        self.optionsForm.addWidget(self.wpValue,  0, 1, 1, 1, Qt.AlignRight)
+        self.optionsForm.addWidget(self.dblLabel, 1, 0, 1, 1, Qt.AlignLeft)
+        self.optionsForm.addWidget(self.dblValue, 1, 1, 1, 1, Qt.AlignRight)
+        self.optionsForm.setColumnStretch(2, 1)
+
+        # Assemble
+        # ========
+
         self.outerBox = QVBoxLayout()
         self.outerBox.addWidget(self.chTree)
+        self.outerBox.addWidget(self.optionsBox)
 
         self.setLayout(self.outerBox)
 
+        self._prepareData()
         self._populateTree()
 
         return
@@ -204,27 +249,36 @@ class GuiProjectDetailsChapters(QWidget):
     #  Internal Functions
     ##
 
+    def _prepareData(self):
+        """Extract the data for the tree.
+        """
+        self._theToC = []
+        self._theToC = self.theIndex.getTableOfContents(2)
+        self._theToC.append(("", "H0", "END", 0))
+        return
+
+    ##
+    #  Slots
+    ##
+
     def _populateTree(self):
         """Set the content of the chapter/page tree.
         """
-        self.chTree.clear()
+        dblPages = self.dblValue.isChecked()
+        wpPage   = self.wpValue.value()
 
-        dblPages = True
-        wpPage = 100
         tPages = 1
-
-        theToC = self.theIndex.getTableOfContents(2)
-        theToC.append(("", "H0", "END", 0))
+        pTotal = 0
 
         theList = []
-        pTotal = 0
-        for tKey, tLevel, tTitle, wCount in theToC:
+        for tKey, tLevel, tTitle, wCount in self._theToC:
             pCount = math.ceil(wCount/wpPage)
             if dblPages:
                 pCount += pCount%2
             pTotal += pCount
             theList.append((tLevel, tTitle, wCount, pCount))
 
+        self.chTree.clear()
         for tLevel, tTitle, wCount, pCount in theList:
             newItem = QTreeWidgetItem()
 
@@ -233,7 +287,7 @@ class GuiProjectDetailsChapters(QWidget):
             newItem.setText(self.C_WORDS, f"{wCount:n}")
             newItem.setText(self.C_PAGES, f"{pCount:n}")
             newItem.setText(self.C_PAGE,  f"{tPages:n}")
-            newItem.setText(self.C_PROG,  f"{100*(tPages-1)/pTotal:.2f}%")
+            newItem.setText(self.C_PROG,  f"{100*(tPages-1)/pTotal:.1f}\u202f%")
 
             newItem.setTextAlignment(self.C_WORDS, Qt.AlignRight)
             newItem.setTextAlignment(self.C_PAGES, Qt.AlignRight)
@@ -246,4 +300,4 @@ class GuiProjectDetailsChapters(QWidget):
 
         return
 
-# END Class GuiProjectDetailsChapters
+# END Class GuiProjectDetailsContents
