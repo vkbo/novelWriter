@@ -222,7 +222,7 @@ class GuiMainMenu(QMenuBar):
         # Project > Project Details
         self.aProjectDetails = QAction("Project Details", self)
         self.aProjectDetails.setStatusTip("Project details")
-        self.aProjectDetails.setShortcut("Ctrl+Shift+E")
+        self.aProjectDetails.setShortcut("Shift+F6")
         self.aProjectDetails.triggered.connect(lambda: self.theParent.showProjectDetailsDialog())
         self.projMenu.addAction(self.aProjectDetails)
 

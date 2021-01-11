@@ -682,9 +682,30 @@ def testCoreProject_Methods(monkeypatch, nwMinimal, dummyGUI, tmpDir):
     assert theProject.bookTitle == "A Title"
 
     # Project Authors
+    # Check that the list is cleaned up and that it can be extracted as
+    # a properly formatted string, depending on number of names
     assert not theProject.setBookAuthors([])
     assert theProject.setBookAuthors(" Jane Doe \n John Doh \n ")
     assert theProject.bookAuthors == ["Jane Doe", "John Doh"]
+
+    assert theProject.setBookAuthors("")
+    assert theProject.getAuthors() == ""
+
+    assert theProject.setBookAuthors("Jane Doe")
+    assert theProject.getAuthors() == "Jane Doe"
+
+    assert theProject.setBookAuthors("Jane Doe\nJohn Doh")
+    assert theProject.getAuthors() == "Jane Doe and John Doh"
+
+    assert theProject.setBookAuthors("Jane Doe\nJohn Doh\nBod Owens")
+    assert theProject.getAuthors() == "Jane Doe, John Doh and Bod Owens"
+
+    # Edit Time
+    theProject.editTime = 1234
+    theProject.projOpened = 1600000000
+    monkeypatch.setattr("nw.core.project.time", lambda: 1600005600)
+    assert theProject.getCurrentEditTime() == 6834
+    monkeypatch.undo()
 
     # Trash folder
     # Should create on first call, and just returned on later calls

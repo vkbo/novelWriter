@@ -33,7 +33,7 @@ from PyQt5.QtCore import Qt, QSize
 from PyQt5.QtGui import QFont
 from PyQt5.QtWidgets import (
     QWidget, QDialogButtonBox, QVBoxLayout, QTreeWidget, QTreeWidgetItem,
-    QLabel, QSpinBox, QGroupBox, QGridLayout, QHBoxLayout
+    QLabel, QSpinBox, QGridLayout, QHBoxLayout, QLineEdit
 )
 
 from nw.gui.custom import PagedDialog, QSwitch
@@ -148,6 +148,7 @@ class GuiProjectDetailsMain(QWidget):
         bookFont.setWeight(QFont.Bold)
         self.bookTitle.setFont(bookFont)
         self.bookTitle.setAlignment(Qt.AlignHCenter)
+        self.bookTitle.setWordWrap(True)
 
         self.projName = QLabel("Working Title: %s" % self.theProject.projName)
         workFont = self.projName.font()
@@ -155,12 +156,14 @@ class GuiProjectDetailsMain(QWidget):
         workFont.setItalic(True)
         self.projName.setFont(workFont)
         self.projName.setAlignment(Qt.AlignHCenter)
+        self.projName.setWordWrap(True)
 
-        self.bookAuthors = QLabel("By: %s" % ", ".join(self.theProject.bookAuthors))
+        self.bookAuthors = QLabel("By %s" % self.theProject.getAuthors())
         authFont = self.bookAuthors.font()
         authFont.setPixelSize(round(1.2*fPx))
         self.bookAuthors.setFont(authFont)
         self.bookAuthors.setAlignment(Qt.AlignHCenter)
+        self.bookAuthors.setWordWrap(True)
 
         # Stats
         # =====
@@ -176,20 +179,39 @@ class GuiProjectDetailsMain(QWidget):
         self.sceneCountLbl = QLabel("<b>Scenes:</b>")
         self.sceneCountVal = QLabel(f"{hCounts[3]:n}")
 
+        self.revCountLbl = QLabel("<b>Revisions:</b>")
+        self.revCountVal = QLabel(f"{self.theProject.saveCount:n}")
+
+        edTime = self.theProject.getCurrentEditTime()
+        self.editTimeLbl = QLabel("<b>Editing Time:</b>")
+        self.editTimeVal = QLabel(f"{edTime//3600:02d}:{edTime%3600//60:02d}")
+
         self.statsGrid = QGridLayout()
-        self.statsGrid.addWidget(self.wordCountLbl,  0, 0, 1, 1, Qt.AlignLeft)
-        self.statsGrid.addWidget(self.wordCountVal,  0, 1, 1, 1, Qt.AlignRight)
-        self.statsGrid.addWidget(self.chapCountLbl,  1, 0, 1, 1, Qt.AlignLeft)
-        self.statsGrid.addWidget(self.chapCountVal,  1, 1, 1, 1, Qt.AlignRight)
-        self.statsGrid.addWidget(self.sceneCountLbl, 2, 0, 1, 1, Qt.AlignLeft)
-        self.statsGrid.addWidget(self.sceneCountVal, 2, 1, 1, 1, Qt.AlignRight)
+        self.statsGrid.addWidget(self.wordCountLbl,  0, 0, 1, 1, Qt.AlignRight)
+        self.statsGrid.addWidget(self.wordCountVal,  0, 1, 1, 1, Qt.AlignLeft)
+        self.statsGrid.addWidget(self.chapCountLbl,  1, 0, 1, 1, Qt.AlignRight)
+        self.statsGrid.addWidget(self.chapCountVal,  1, 1, 1, 1, Qt.AlignLeft)
+        self.statsGrid.addWidget(self.sceneCountLbl, 2, 0, 1, 1, Qt.AlignRight)
+        self.statsGrid.addWidget(self.sceneCountVal, 2, 1, 1, 1, Qt.AlignLeft)
+        self.statsGrid.addWidget(self.revCountLbl,   3, 0, 1, 1, Qt.AlignRight)
+        self.statsGrid.addWidget(self.revCountVal,   3, 1, 1, 1, Qt.AlignLeft)
+        self.statsGrid.addWidget(self.editTimeLbl,   4, 0, 1, 1, Qt.AlignRight)
+        self.statsGrid.addWidget(self.editTimeVal,   4, 1, 1, 1, Qt.AlignLeft)
         self.statsGrid.setHorizontalSpacing(hPx)
         self.statsGrid.setVerticalSpacing(vPx)
 
-        self.statsBox = QHBoxLayout()
-        self.statsBox.addStretch(1)
-        self.statsBox.addLayout(self.statsGrid)
-        self.statsBox.addStretch(1)
+        # Meta
+        # ====
+
+        self.projPathLbl = QLabel("<b>Path:</b>")
+        self.projPathVal = QLineEdit()
+        self.projPathVal.setText(self.theProject.projPath)
+        self.projPathVal.setReadOnly(True)
+
+        self.projPathBox = QHBoxLayout()
+        self.projPathBox.addWidget(self.projPathLbl)
+        self.projPathBox.addWidget(self.projPathVal)
+        self.projPathBox.setSpacing(hPx)
 
         # Assemble
         # ========
@@ -199,8 +221,10 @@ class GuiProjectDetailsMain(QWidget):
         self.outerBox.addWidget(self.projName)
         self.outerBox.addWidget(self.bookAuthors)
         self.outerBox.addSpacing(round(2.5*fPx))
-        self.outerBox.addLayout(self.statsBox)
+        self.outerBox.addLayout(self.statsGrid)
+        self.outerBox.addSpacing(round(0.8*fPx))
         self.outerBox.addStretch(1)
+        self.outerBox.addLayout(self.projPathBox)
 
         self.setLayout(self.outerBox)
 
@@ -230,6 +254,7 @@ class GuiProjectDetailsContents(QWidget):
         self._theToC = []
 
         iPx = self.theTheme.baseIconSize
+        hPx = self.mainConf.pxInt(12)
 
         # Contents Tree
         # =============
@@ -265,38 +290,49 @@ class GuiProjectDetailsContents(QWidget):
         # Options
         # =======
 
-        wordsPerPage = self.optState.getInt("GuiProjectDetails", "wordsPerPage", 300)
+        wordsPerPage = self.optState.getInt("GuiProjectDetails", "wordsPerPage", 350)
         clearDouble  = self.optState.getInt("GuiProjectDetails", "clearDouble", True)
 
-        self.optionsBox  = QGroupBox("Options", self)
-        self.optionsForm = QGridLayout(self)
-        self.optionsBox.setLayout(self.optionsForm)
+        wordsHelp = (
+            "Typical word count for a 5\u00d78 inch book page with 11 pt font is 350."
+        )
+        dblHelp = (
+            "Assume a new chapter or partition always start on an odd numbered page."
+        )
 
         self.wpLabel = QLabel("Words per page")
+        self.wpLabel.setToolTip(wordsHelp)
+
         self.wpValue = QSpinBox()
         self.wpValue.setMinimum(10)
         self.wpValue.setMaximum(1000)
         self.wpValue.setSingleStep(10)
         self.wpValue.setValue(wordsPerPage)
+        self.wpValue.setToolTip(wordsHelp)
         self.wpValue.valueChanged.connect(self._populateTree)
 
         self.dblLabel = QLabel("Clear double pages")
+        self.dblLabel.setToolTip(dblHelp)
+
         self.dblValue = QSwitch(self, 2*iPx, iPx)
         self.dblValue.setChecked(clearDouble)
+        self.dblValue.setToolTip(dblHelp)
         self.dblValue.clicked.connect(self._populateTree)
 
-        self.optionsForm.addWidget(self.wpLabel,  0, 0, 1, 1, Qt.AlignLeft)
-        self.optionsForm.addWidget(self.wpValue,  0, 1, 1, 1, Qt.AlignRight)
-        self.optionsForm.addWidget(self.dblLabel, 1, 0, 1, 1, Qt.AlignLeft)
-        self.optionsForm.addWidget(self.dblValue, 1, 1, 1, 1, Qt.AlignRight)
-        self.optionsForm.setColumnStretch(2, 1)
+        self.optionsBox = QHBoxLayout()
+        self.optionsBox.addWidget(self.wpLabel)
+        self.optionsBox.addWidget(self.wpValue)
+        self.optionsBox.addStretch(1)
+        self.optionsBox.addWidget(self.dblLabel)
+        self.optionsBox.addWidget(self.dblValue)
+        self.optionsBox.setSpacing(hPx)
 
         # Assemble
         # ========
 
         self.outerBox = QVBoxLayout()
         self.outerBox.addWidget(self.chTree)
-        self.outerBox.addWidget(self.optionsBox)
+        self.outerBox.addLayout(self.optionsBox)
 
         self.setLayout(self.outerBox)
 

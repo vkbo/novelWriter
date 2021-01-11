@@ -1112,10 +1112,31 @@ class NWProject():
     #  Getters
     ##
 
+    def getAuthors(self):
+        """Returns a formatted string of authors.
+        """
+        nAuth = len(self.bookAuthors)
+        authString = ""
+
+        if nAuth == 1:
+            authString = self.bookAuthors[0]
+        elif nAuth > 1:
+            authString = "%s and %s" % (
+                ", ".join(self.bookAuthors[0:-1]), self.bookAuthors[-1]
+            )
+
+        return authString
+
     def getSessionWordCount(self):
         """Returns the number of words added or removed this session.
         """
         return self.currWCount - self.lastWCount
+
+    def getCurrentEditTime(self):
+        """Get the total project edit time, including the time spent in
+        the current session.
+        """
+        return round(self.editTime + time() - self.projOpened)
 
     def getProjectItems(self):
         """This function ensures that the item tree loaded is sent to
