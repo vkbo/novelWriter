@@ -276,6 +276,7 @@ def testCoreIndex_ScanText(nwMinimal, dummyGUI):
     assert not theIndex.scanText(xHandle, "Hello World!")
 
     # Make some usable items
+    pHandle = theProject.newFile("Page",  nwItemClass.NOVEL, "a508bb932959c")
     nHandle = theProject.newFile("Hello", nwItemClass.NOVEL, "a508bb932959c")
     cHandle = theProject.newFile("Jane",  nwItemClass.CHARACTER, "afb3043c7b2b3")
     sHandle = theProject.newFile("Scene", nwItemClass.NOVEL, "a508bb932959c")
@@ -310,7 +311,7 @@ def testCoreIndex_ScanText(nwMinimal, dummyGUI):
         "#### Title Four\n\n"
         "% synopsis: Synopsis Four.\n\n"
         "Paragraph Four.\n\n"
-        "##### Title Five\n\n" # Not interpreted as a title, the hashes is counted as a word
+        "##### Title Five\n\n" # Not interpreted as a title, the hashes are counted as a word
         "Paragraph Five.\n\n"
     ))
     assert theIndex._refIndex[nHandle].get("T000000", None) is not None # Always there
@@ -410,6 +411,33 @@ def testCoreIndex_ScanText(nwMinimal, dummyGUI):
     assert theIndex._refIndex[sHandle]["T000001"]["tags"] == (
         [[3, "@pov", "One"], [5, "@char", "Two"]]
     )
+
+    # Page wo/Title
+    theProject.projTree[pHandle].itemLayout = nwItemLayout.PAGE
+    assert theIndex.scanText(pHandle, (
+        "This is a page with some text on it.\n\n"
+    ))
+    assert theIndex._novelIndex[pHandle]["T000000"]["level"] == "H0"
+    assert theIndex._novelIndex[pHandle]["T000000"]["title"] == "Untitled Page"
+    assert theIndex._novelIndex[pHandle]["T000000"]["layout"] == "PAGE"
+    assert theIndex._novelIndex[pHandle]["T000000"]["synopsis"] == ""
+    assert theIndex._novelIndex[pHandle]["T000000"]["cCount"] == 36
+    assert theIndex._novelIndex[pHandle]["T000000"]["wCount"] == 9
+    assert theIndex._novelIndex[pHandle]["T000000"]["pCount"] == 1
+    assert pHandle not in theIndex._noteIndex
+
+    theProject.projTree[pHandle].itemLayout = nwItemLayout.NOTE
+    assert theIndex.scanText(pHandle, (
+        "This is a page with some text on it.\n\n"
+    ))
+    assert theIndex._noteIndex[pHandle]["T000000"]["level"] == "H0"
+    assert theIndex._noteIndex[pHandle]["T000000"]["title"] == "Untitled Page"
+    assert theIndex._noteIndex[pHandle]["T000000"]["layout"] == "NOTE"
+    assert theIndex._noteIndex[pHandle]["T000000"]["synopsis"] == ""
+    assert theIndex._noteIndex[pHandle]["T000000"]["cCount"] == 36
+    assert theIndex._noteIndex[pHandle]["T000000"]["wCount"] == 9
+    assert theIndex._noteIndex[pHandle]["T000000"]["pCount"] == 1
+    assert pHandle not in theIndex._novelIndex
 
     assert theProject.closeProject()
 
@@ -578,6 +606,54 @@ def testCoreIndex_ExtractData(nwMinimal, dummyGUI):
     assert cC == 62
     assert wC == 12
     assert pC == 2
+
+    ##
+    #  Novel Stats
+    ##
+
+    hHandle = theProject.newFile("Chapter", nwItemClass.NOVEL, "a508bb932959c")
+    sHandle = theProject.newFile("Scene One", nwItemClass.NOVEL, "a508bb932959c")
+    tHandle = theProject.newFile("Scene Two", nwItemClass.NOVEL, "a508bb932959c")
+
+    theProject.projTree[hHandle].itemLayout == nwItemLayout.CHAPTER
+    theProject.projTree[sHandle].itemLayout == nwItemLayout.SCENE
+    theProject.projTree[tHandle].itemLayout == nwItemLayout.SCENE
+
+    assert theIndex.scanText(hHandle, "## Chapter One\n\n")
+    assert theIndex.scanText(sHandle, "### Scene One\n\n")
+    assert theIndex.scanText(tHandle, "### Scene Two\n\n")
+
+    assert theIndex._listNovelHandles(False) == [nHandle, hHandle, sHandle, tHandle]
+    assert theIndex._listNovelHandles(True) == [hHandle, sHandle, tHandle]
+
+    # Add a fake handle to the tree and check that it's ignored
+    theProject.projTree._treeOrder.append("0000000000000")
+    assert theIndex._listNovelHandles(False) == [nHandle, hHandle, sHandle, tHandle]
+    theProject.projTree._treeOrder.remove("0000000000000")
+
+    # Extract stats
+    assert theIndex.getNovelWordCount(False) == 30
+    assert theIndex.getNovelWordCount(True) == 6
+    assert theIndex.getNovelTitleCounts(False) == [0, 2, 1, 2, 0]
+    assert theIndex.getNovelTitleCounts(True) == [0, 0, 1, 2, 0]
+
+    # Table of Contents
+    assert theIndex.getTableOfContents(0, True) == []
+    assert theIndex.getTableOfContents(1, True) == []
+    assert theIndex.getTableOfContents(2, True) == [
+        ("%s:T000001" % hHandle, "H2", "Chapter One", 6),
+    ]
+    assert theIndex.getTableOfContents(3, True) == [
+        ("%s:T000001" % hHandle, "H2", "Chapter One", 2),
+        ("%s:T000001" % sHandle, "H3", "Scene One", 2),
+        ("%s:T000001" % tHandle, "H3", "Scene Two", 2),
+    ]
+
+    assert theIndex.getTableOfContents(0, False) == []
+    assert theIndex.getTableOfContents(1, False) == [
+        ("%s:T000001" % nHandle, "H1", "Hello World!", 12),
+        ("%s:T000011" % nHandle, "H1", "Hello World!", 18),
+    ]
 
     assert theProject.closeProject()
 

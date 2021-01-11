@@ -292,10 +292,12 @@ class NWIndex():
             "updated" : round(time()),
         }
         if itemLayout == nwItemLayout.NOTE:
+            self._novelIndex.pop(tHandle, None)
             self._noteIndex[tHandle] = {}
             isNovel = False
         else:
             self._novelIndex[tHandle] = {}
+            self._noteIndex.pop(tHandle, None)
             isNovel = True
 
         # Also clear references to file in tag index
@@ -580,34 +582,26 @@ class NWIndex():
         they appear in the tree view and in the respective document
         files, but skipping all note files.
         """
-        for tItem in self.theProject.projTree:
-            if tItem is None:
-                continue
-            if not tItem.isExported and skipExcluded:
-                continue
-
-            tHandle = tItem.itemHandle
-            if tHandle not in self._novelIndex:
-                continue
-
+        for tHandle in self._listNovelHandles(skipExcluded):
             for sTitle in sorted(self._novelIndex[tHandle]):
                 tKey = "%s:%s" % (tHandle, sTitle)
                 yield tKey, tHandle, sTitle, self._novelIndex[tHandle][sTitle]
 
-    def getNovelCounts(self, skipExcluded=True):
+    def getNovelWordCount(self, skipExcluded=True):
+        """Count the number of words in the novel project.
+        """
+        wCount = 0
+        for tHandle in self._listNovelHandles(skipExcluded):
+            for sTitle in self._novelIndex[tHandle]:
+                wCount += self._novelIndex[tHandle][sTitle]["wCount"]
+
+        return wCount
+
+    def getNovelTitleCounts(self, skipExcluded=True):
         """Count the number of titles in the novel project.
         """
         hCount = [0, 0, 0, 0, 0]
-        for tItem in self.theProject.projTree:
-            if tItem is None:
-                continue
-            if not tItem.isExported and skipExcluded:
-                continue
-
-            tHandle = tItem.itemHandle
-            if tHandle not in self._novelIndex:
-                continue
-
+        for tHandle in self._listNovelHandles(skipExcluded):
             for sTitle in self._novelIndex[tHandle]:
                 theData = self._novelIndex[tHandle][sTitle]
                 iLevel = self.H_LEVEL.get(theData["level"], 0)
@@ -621,16 +615,7 @@ class NWIndex():
         tOrder = []
         tData = {}
         pKey = None
-        for tItem in self.theProject.projTree:
-            if tItem is None:
-                continue
-            if not tItem.isExported and skipExcluded:
-                continue
-
-            tHandle = tItem.itemHandle
-            if tHandle not in self._novelIndex:
-                continue
-
+        for tHandle in self._listNovelHandles(skipExcluded):
             for sTitle in sorted(self._novelIndex[tHandle]):
                 tKey = "%s:%s" % (tHandle, sTitle)
                 theData = self._novelIndex[tHandle][sTitle]
@@ -739,5 +724,23 @@ class NWIndex():
             if len(theRef) == 4:
                 return theRef[1], theRef[0], theRef[3]
         return None, 0, "T000000"
+
+    ##
+    #  Internal Functions
+    ##
+
+    def _listNovelHandles(self, skipExcluded):
+        """Return a list of all handles that exist in the novel index.
+        """
+        theHandles = []
+        for tItem in self.theProject.projTree:
+            if tItem is None:
+                continue
+            if not tItem.isExported and skipExcluded:
+                continue
+            if tItem.itemHandle in self._novelIndex:
+                theHandles.append(tItem.itemHandle)
+
+        return theHandles
 
 # END Class NWIndex

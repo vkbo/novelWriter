@@ -168,10 +168,11 @@ class GuiProjectDetailsMain(QWidget):
         # Stats
         # =====
 
-        hCounts = self.theIndex.getNovelCounts()
+        hCounts = self.theIndex.getNovelTitleCounts()
+        nwCount = self.theIndex.getNovelWordCount()
 
         self.wordCountLbl = QLabel("<b>Words:</b>")
-        self.wordCountVal = QLabel(f"{self.theProject.currWCount:n}")
+        self.wordCountVal = QLabel(f"{nwCount:n}")
 
         self.chapCountLbl = QLabel("<b>Chapters:</b>")
         self.chapCountVal = QLabel(f"{hCounts[2]:n}")
