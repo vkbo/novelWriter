@@ -5,7 +5,7 @@ Novel Projects
 **************
 
 A novelWriter project requires a dedicated folder for storing its files on the local file system.
-See the :ref:`a_tech` page for further details on how files are organised.
+See :ref:`a_tech` for further details on how files are organised.
 
 A new project can be created from the :guilabel:`Project` menu by selecting
 :guilabel:`New Project`. This will open the :guilabel:`New Project Wizard` that will assist you in
@@ -14,8 +14,8 @@ creating a barebone project suited to your needs.
 A list of recently opened projects is maintained, and displayed in the :guilabel:`Open Project`
 dialog. A project can be removed from this list by selecting it and pressing the :kbd:`Del` key.
 
-The project specific settings are available in :guilabel:`Project Settings` in the
-:guilabel:`Project` menu. See further details below in the :ref:`a_proj_settings` section.
+Project-specific settings are available in :guilabel:`Project Settings` in the :guilabel:`Project`
+menu. See further details below in the :ref:`a_proj_settings` section.
 
 
 .. _a_proj_roots:
@@ -28,7 +28,7 @@ the project tree at the left side of the main window.
 
 The core novel documents go into a root folder of type :guilabel:`Novel`. Other supporting
 documents go into the other root folders. These other root folder types are intended for your notes
-on the various elements of your story. Using these is of course entirely optional.
+on the various elements of your story. Using them is of course entirely optional.
 
 A new project may not have all of the root folders present, but you can add the ones you want from
 :guilabel:`Create Root Folder` in the :guilabel:`Project` menu.
@@ -38,8 +38,8 @@ no restrictions are enforced by the application. You can use them however you wa
 
 :guilabel:`Novel`
    This is the root folder of all text that goes into the final novel. This class of documents have
-   other rules and features than other documents in the project. See the :ref:`a_struct` page for
-   more details.
+   other rules and features than other documents in the project. See :ref:`a_struct` for more
+   details.
 
 :guilabel:`Plot`
    This is the root folder where main plots can be outlined. It is optional, but adding at least
@@ -79,8 +79,8 @@ information about the tags listed, see :ref:`a_struct_tags`.
 
 .. tip::
    You can rename root folders to whatever you want. The first character in the :guilabel:`Flags`
-   column will still indicate what type they are, and so will the icon if you are using one of the
-   Typicons icon sets.
+   column in the project tree will still indicate what type they are, and so will the icon if you
+   are using one of the optional icon sets.
 
 
 .. _a_proj_roots_del:
@@ -157,7 +157,8 @@ this warning, and continue opening the project at your own risk.
    If you choose to ignore the warning and continue opening the project, and multiple instances of
    the project are in fact open, you are likely to cause inconsistencies and create diverging
    project files, potentially resulting in loss of data and orphaned files. You are not likely to
-   lose any actual text unless both instances have the same document open in the editor,
+   lose any actual text unless both instances have the same document open in the editor, and
+   novelWriter will try to resolve inconsistencies the next time you open the project.
 
 
 .. _a_proj_roots_dirs:
@@ -174,9 +175,9 @@ and to be able to collapse and hide them in the project tree when you're not wor
 documents.
 
 .. tip::
-   You can use folders to sort your scene documents into chapters. You will then need to add a
-   chapter documents as the first item of your folder, and the scene documents as the following
-   items.
+   You can use folders to sort your scene documents into chapters. You will still need to add a
+   chapter document as the first item of your chapter folder, and the scene documents as the
+   following items.
 
 
 .. _a_proj_files:
@@ -243,13 +244,17 @@ The :guilabel:`Book Title` and :guilabel:`Book Authors` settings are currently n
 anything, so setting then is just for the benefit of the author. Future features may be using them,
 and they are exported on some export formats in the :guilabel:`Build Novel Project` tool.
 
+If your project is in a different language than your main spell checking is set to, you can
+override the default spell checking language here. You can also override the automatic backup
+setting.
+
 
 Details Tab
 -----------
 
-This tab presents an overview of meta data for the project. It states where on your file system the
-project is saved, how may times it has been saved, how many folders and documents it contains, and
-how many words exist in the entire project.
+This tab presents an overview of technical meta data for the project. It states where on your file
+system the project is saved, how may times it has been saved, how many folders and documents it
+contains, and how many words exist in the entire project.
 
 
 Status and Importance Tabs
@@ -277,13 +282,14 @@ A set of automatically replaced keywords can be added in this tab. The keywords 
 will be replaced by the text in the right column when documents are opened in the viewer. They will
 also be applied to exports.
 
-The auto-replace feature will replace text in angle brackets that are also in this list. The syntax
-highlighter will add an alternate colour to text marching the syntax.
+The auto-replace feature will replace text in angle brackets that are in this list. The syntax
+highlighter will add an alternate colour to text marching the syntax, but it doesn't check if the
+text is in this list.
 
 .. note::
-   A keyword cannot contain any spaces. The angle brackets are added by default, and when used in
-   the text are a part of the keyword to be replaced. This is to ensure that parts of the text
-   aren't unintentionally replaced by the content of the list.
+   A keyword cannot contain spaces. The angle brackets are added by default, and when used in the
+   text are a part of the keyword to be replaced. This is to ensure that parts of the text aren't
+   unintentionally replaced by the content of the list.
 
 
 .. _a_proj_backup:
@@ -295,9 +301,9 @@ An automatic backup system is built into novelWriter. In order to use it, a back
 the backup files are to be stored must be provided in :guilabel:`Preferences`.
 
 Backups can be run automatically when a project is closed, which also implies it is run when the
-application is closed. Backups are date stamped zip files of the entire project folder, and are
-stored in a subfolder of the backup path with the same name as the project :guilabel:`Working
-Title` set in :ref:`a_proj_settings`.
+application itself is closed. Backups are date stamped zip files of the entire project folder, and
+are stored in a subfolder of the backup path. The subfolder will have the same name as the project
+:guilabel:`Working Title` set in :ref:`a_proj_settings`.
 
 The backup feature, when configured, can also be run manually from the :guilabel:`Tools` menu.
 It is also possible to disable automated backup for a given project in :guilabel:`Project
@@ -306,7 +312,7 @@ Settings`.
 .. note::
    For the backup to be able to run, the :guilabel:`Working Title` must be set in
    :guilabel:`Project Settings`. This value is used to generate the folder name for the zip files.
-   Without it, the backup will not run at all, but produce a warning message.
+   Without it, the backup will not run at all, but it will produce a warning message.
 
 
 .. _a_proj_stats:

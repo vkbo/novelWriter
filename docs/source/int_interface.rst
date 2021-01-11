@@ -22,7 +22,7 @@ the project. It has four columns:
    document text itself.
 
 :guilabel:`Words`
-   The second column shows the word count of the document, or the sum of words in the child items
+   The second column shows the word count of the document, or the sum of words of the child items
    if it is a folder. If the counts seem incorrect, they can be updated by rebuilding the project
    index from the :guilabel:`Tools` menu, or by pressing :kbd:`F9`.
 
@@ -36,15 +36,15 @@ the project. It has four columns:
    the importance or status of the document. These are colour coded status levels that you control
    and define yourself. They can be changed in :guilabel:`Project Settings` from the
    :guilabel:`Project` menu. The first character after the icon indicates the class of the item,
-   that is ``N`` for **Novel**, ``C`` for **Character**, etc (see :ref:`a_struct_tags`). The second
-   character indicates the document layout type (see :ref:`a_proj_roots`).
+   that is ``N`` for **Novel**, ``C`` for **Character**, etc (see :ref:`a_struct_tags`). The
+   characters after the dot indicate the document layout type (see :ref:`a_proj_roots`).
+
+Right-clicking an item in the project tree will open a context menu under the cursor, displaying
+a selection of actions that can be performed on the selected item.
 
 Below the project tree you will find a small details panel showing the full information of the
 currently selected item. This panel also includes the latest paragraph and character counts in
 addition to the word count.
-
-Right-clicking an item in the project tree will open a context menu under the cursor, displaying
-a selection of actions that can be performed on the selected item.
 
 
 .. _a_ui_tree_dnd:
@@ -59,13 +59,13 @@ deliberate to avoid accidentally messing up your project. The project tree has n
 
 Documents and their folders can be rearranged freely within their root folders. Novel documents
 cannot be moved out of the :guilabel:`Novel` folder, except to :guilabel:`Trash` and the
-:guilabel:`Outtakes` folder. Notes can be moved freely between root folders.
+:guilabel:`Outtakes` folders. Notes can be moved freely between all root folders.
 
 Folders cannot be moved at all outside their root tree. Neither can a folder containing documents
 be deleted. You must first delete the containing documents.
 
 Root folders in the project tree cannot be dragged and dropped at all. If you want to reorder them,
-you can move them up or down with respect to eachother from the :guilabel:`Tools` menu or the
+you can move them up or down with respect to eachother from the :guilabel:`Tools` menu, the
 right-click context menu, or by pressing :kbd:`Ctrl`:kbd:`Shift` and the :kbd:`Up` or :kbd:`Down`
 key.
 
@@ -78,7 +78,7 @@ Editing and Viewing Documents
 To edit a document, double-click it in the project tree, or press the :kbd:`Return` key while
 having it selected. This will open the document in the document editor. The editor uses a
 simplified markdown format. The format is described in the :ref:`a_ui_md` section below. The editor
-has a maximise button (activates :guilabel:`Distraction Free Mode`) and a close button in the
+has a maximise button (toggles the :guilabel:`Distraction Free Mode`) and a close button in the
 top-right corner.
 
 Any document in the project tree can also be viewed in parallel in a right hand side document
@@ -92,26 +92,28 @@ panel next to the close button to achieve the same thing.
 Both the document editor and viewer will show the label of the document in the header at the top of
 the edit or view panel. Optionally, the full project path to the document can be shown. This can be
 set in the :guilabel:`Preferences` dialog from the :guilabel:`Tools` menu. Clicking on the document
-title bar will select and reveal its location in the project tree, making it easier to find in a
+title bar will select and reveal its location in the project tree, making it easier to locate in a
 large project.
 
-Any reference to a tag in the editor can be opened in the viewer by moving the cursor to the label
-and pressing :kbd:`Ctrl`:kbd:`Return`. In the viewer, the references become clickable links.
-Clicking them will replace the content of the viewer with the content of the document the reference
-points to. The document viewer keeps a history of viewed documents that you can navigate with the
-arrow buttons in the top-left corner of the viewer. If your mouse has navigation buttons, these can
-be used as well.
+Any tag reference in the editor can be opened in the viewer by moving the cursor to the label and
+pressing :kbd:`Ctrl`:kbd:`Return`. You can also control-click them with your mouse. In the viewer,
+the references become clickable links. Clicking them will replace the content of the viewer with
+the content of the document the reference points to. The document viewer keeps a history of viewed
+documents, which you can navigate with the arrow buttons in the top-left corner of the viewer. If
+your mouse has back and forward navigation buttons, these can be used as well.
 
 At the bottom of the view panel there is a :guilabel:`References` panel. (If it is hidden, click
 the icon to reveal it.) This panel will show links to all documents referring back to it, if any
 has been defined. The :guilabel:`Sticky` button will freeze the content of the panel to the current
 document, even if you navigate to another document. This is convenient if you want to quickly look
-through all documents in the list in the :guilabel:`References` panel.
+through all documents in the list in the :guilabel:`References` panel without losing the list in
+the process.
 
 .. note::
-   The :guilabel:`References` panel relies on an up-to-date index of the project. If anything is
-   missing, or seems wrong, the index can always be rebuilt by selecting :guilabel:`Rebuild Index`
-   from the :guilabel:`Tools` menu, or by pressing :kbd:`F9`.
+   The :guilabel:`References` panel relies on an up-to-date index of the project. The index is
+   maintained automatically. However, if anything is missing, or seems wrong, the index can always
+   be rebuilt by selecting :guilabel:`Rebuild Index` from the :guilabel:`Tools` menu, or by
+   pressing :kbd:`F9`.
 
 
 .. _a_ui_edit_auto:
@@ -120,7 +122,7 @@ Auto-Replace as You Type
 ========================
 
 A few auto-replace features are supported by the editor. You can control every aspect of the
-auto-replace feature from :guilabel:`Preferences`.
+auto-replace feature from :guilabel:`Preferences`. You can also disable it entirely.
 
 .. tip::
    If you don't like auto-replacement, all symbols inserted by this feature are also available in
@@ -128,12 +130,14 @@ auto-replace feature from :guilabel:`Preferences`.
 
 The editor is able to replace two and three hyphens with short and long dashes, triple points with
 ellipsis, and replace straight single and double quotes with user-defined quote symbols. It will
-also try to determine whether to use the opening or closing symbol, but this feature isn't always
-accurate.
+also try to determine whether to use the opening or closing symbol, although this feature isn't
+always accurate. Especially distinguishing between closing single quote and apostrophe can be
+tricky for languages that use the same symbol for these.
 
 .. tip::
-   If the editor changes a symbol when you did not want it to change, pressing :kbd:`Ctrl`:kbd:`Z`
-   immediately after the auto-replacement will undo it without undoing the character you typed.
+   If the auto-replace feature changes a symbol when you did not want it to change, pressing
+   :kbd:`Ctrl`:kbd:`Z` immediately after the auto-replacement will undo it without undoing the
+   character you typed.
 
 
 .. _a_ui_md:
@@ -154,25 +158,27 @@ a synopsis tag, and a set of keyword and value sets used for tags and references
 Headings
 --------
 
-Four levels of headings are allowed. For documents of layout "Note", they are free to be used as
+Four levels of headings are allowed. For documents of layout ``Note``, they are free to be used as
 you see fit, but for all other layouts used for the novel text itself, they indicate the structural
 level of the novel. See :ref:`a_struct_heads` for more details.
 
 ``# Title``
    Heading level one. If the document is a novel file, the header level indicates the start of a
-   new partition. This heading level can also be used for the title page novel title.
+   new partition. This heading level can also be used for the title page's novel title.
 
 ``## Title``
    Heading level two. If the document is a novel file, the header level indicates the start of a
-   new chapter.
+   new chapter. Chapter numbers can be inserted automatically when exporting the manuscript.
 
 ``### Title``
    Heading level three. If the document is a novel file, the header level indicates the start of a
-   new scene.
+   new scene. Scene numbers or scene separators can be inserted automatically when exporting the
+   manuscript, so you can use the title field as a working title for your scenes.
 
 ``#### Title``
    Heading level four. If the document is a novel file, the header level indicates the start of a
-   new section.
+   new section. Scene titles can be replaced by separators or removed when exporting the
+   manuscript, so you can use the title field as a working title for your sections.
 
 .. note::
    The space after the ``#`` characters is mandatory. The syntax highlighter will change colour and
@@ -219,26 +225,28 @@ In addition, the following rules apply:
 Comments and Synopsis
 ---------------------
 
-In addition to these standard markdown features, novelWriter also allows for comments in document.
-The text of the comment is ignored by the word counter and not exported or, optionally, hidden when
-viewing the document. If the first word of a comment is ``Synopsis:`` (with the colon), the comment
-is treated specially and will show up in the :ref:`a_ui_outline` in a dedicated column. The word
-``synopsis`` is not case sensitive. If it is correctly formatted, the syntax highlighter will
-indicate this by altering the colour of the word.
+In addition to these standard markdown features, novelWriter also allows for comments in documents.
+The text of a comment is ignored by the word counter. The text can also be filtered out when
+exporting or viewing the document.
+
+If the first word of a comment is ``Synopsis:`` (with the colon), the comment is treated specially
+and will show up in the :ref:`a_ui_outline` in a dedicated column. The word ``synopsis`` is not
+case sensitive. If it is correctly formatted, the syntax highlighter will indicate this by altering
+the colour of the word.
 
 ``% text...``
-   A comment. The text is not exported by default (this can be overridden), seen in the Viewer, or
-   counted towards word counts.
+   This is a comment. The text is not exported by default (this can be overridden), seen in the
+   Viewer, or counted towards word counts.
 
 ``% Synopsis: text...``
-   A synopsis comment. It is generally treated in the same way as a regular comment, except that it
-   is also captured by the indexing algorithm and displayed in the :ref:`a_ui_outline`. It can also
-   be filtered separately when exporting the project to for instance generate an outline document
-   of the whole project.
+   This is a synopsis comment. It is generally treated in the same way as a regular comment, except
+   that it is also captured by the indexing algorithm and displayed in the :ref:`a_ui_outline`. It
+   can also be filtered separately when exporting the project to for instance generate an outline
+   document of the whole project.
 
 .. note::
    Only one comment can be flagged as a synopsis comment for each heading. If multiple comments are
-   flagged as synopsis comments, the last one will be used.
+   flagged as synopsis comments, the last one will be used and the rest ignored.
 
 
 .. _a_ui_md_tags:
@@ -262,13 +270,14 @@ also be inserted at the cursor position in the editor via the :guilabel:`Insert`
 Additional Markdown and Non-Standard Features
 ---------------------------------------------
 
-The editor and viewer also supports markdown standard hard line breaks, and preserves non-breaking
+The editor and viewer also support markdown standard hard line breaks, and preserves non-breaking
 spaces if running with Qt 5.9 or higher. For older versions, the non-breaking spaces are lost when
 the document is saved. This is unfortunately hard-coded in the Qt text editor.
 
-* A hard line break is achieved by leaving two or more spaces at the end of the line.
-  Alternatively, the user can press :kbd:`Ctrl`:kbd:`K`, :kbd:`Return` to insert this.
-* A non-breaking space is inserted with :kbd:`Ctrl`:kbd:`K`, :kbd:`Space`.
+* A hard line break can be achieved by leaving two or more spaces at the end of the line. This is
+  standard markdown syntax. Alternatively, the user can press :kbd:`Ctrl`:kbd:`K`, :kbd:`Return` to
+  insert this type of space.
+* A non-breaking space can be inserted with :kbd:`Ctrl`:kbd:`K`, :kbd:`Space`.
 * Thin spaces are also supported, and can be inserted with :kbd:`Ctrl`:kbd:`K`,
   :kbd:`Shift`:kbd:`Space`.
 * Non-breaking thin space can be inserted  with :kbd:`Ctrl`:kbd:`K`, :kbd:`Ctrl`:kbd:`Space`.
@@ -287,7 +296,8 @@ Project Outline View
 
 The project's Outline view is available as the second tab on the right hand side of the main window
 labelled :guilabel:`Outline`. The outline provides an overview of the novel structure, displaying a
-tree hierarchy of the elements of the novel, that is, the level 1 to 4 headings.
+tree hierarchy of the elements of the novel, that is, the level 1 to 4 headings representing
+partitions, chapters, scenes and sections.
 
 The document containing the heading can also be displayed as a separate column, as well as the line
 number where it occurs. Double-clicking an entry will open the corresponding document in the
@@ -295,7 +305,7 @@ editor.
 
 .. note::
    Since the internal structure of the novel does not depend directly on the folder and document
-   structure of the project tree, these will not necessarily look the same, depending how you
+   structure of the project tree, these will not necessarily look the same, depending on how you
    choose to organise your documents. See the :ref:`a_struct` page for more details.
 
 Various meta data and information extracted from tags can be displayed in columns in the outline.
@@ -409,7 +419,7 @@ Insert Shortcuts
 
 A set of insert features are also available through shortcuts, but they require a double
 combination of key sequences. The insert feature is activated with :kbd:`Ctrl`:kbd:`K`, followed by
-a key or combination for the inserted character or punctuation.
+a key or key combination for the inserted content.
 
 .. csv-table:: Keyboard Shortcuts
    :header: "Shortcut", "Description"
@@ -428,12 +438,12 @@ a key or combination for the inserted character or punctuation.
    ":kbd:`Ctrl`:kbd:`K`, :kbd:`Space`",             "Insert a non-breaking space."
    ":kbd:`Ctrl`:kbd:`K`, :kbd:`Shift`:kbd:`Space`", "Insert a thin space."
    ":kbd:`Ctrl`:kbd:`K`, :kbd:`Ctrl`:kbd:`Space`",  "Insert a thin non-breaking space."
-   ":kbd:`Ctrl`:kbd:`K`, :kbd:`G`",                 "Insert a @tag keyword."
-   ":kbd:`Ctrl`:kbd:`K`, :kbd:`V`",                 "Insert a @pov keyword."
-   ":kbd:`Ctrl`:kbd:`K`, :kbd:`C`",                 "Insert a @char keyword."
-   ":kbd:`Ctrl`:kbd:`K`, :kbd:`P`",                 "Insert a @plot keyword."
-   ":kbd:`Ctrl`:kbd:`K`, :kbd:`T`",                 "Insert a @time keyword."
-   ":kbd:`Ctrl`:kbd:`K`, :kbd:`L`",                 "Insert a @location keyword."
-   ":kbd:`Ctrl`:kbd:`K`, :kbd:`O`",                 "Insert a @object keyword."
-   ":kbd:`Ctrl`:kbd:`K`, :kbd:`E`",                 "Insert a @entity keyword."
-   ":kbd:`Ctrl`:kbd:`K`, :kbd:`X`",                 "Insert a @custom keyword."
+   ":kbd:`Ctrl`:kbd:`K`, :kbd:`G`",                 "Insert a ``@tag`` keyword."
+   ":kbd:`Ctrl`:kbd:`K`, :kbd:`V`",                 "Insert a ``@pov`` keyword."
+   ":kbd:`Ctrl`:kbd:`K`, :kbd:`C`",                 "Insert a ``@char`` keyword."
+   ":kbd:`Ctrl`:kbd:`K`, :kbd:`P`",                 "Insert a ``@plot`` keyword."
+   ":kbd:`Ctrl`:kbd:`K`, :kbd:`T`",                 "Insert a ``@time`` keyword."
+   ":kbd:`Ctrl`:kbd:`K`, :kbd:`L`",                 "Insert a ``@location`` keyword."
+   ":kbd:`Ctrl`:kbd:`K`, :kbd:`O`",                 "Insert an ``@object`` keyword."
+   ":kbd:`Ctrl`:kbd:`K`, :kbd:`E`",                 "Insert an ``@entity`` keyword."
+   ":kbd:`Ctrl`:kbd:`K`, :kbd:`X`",                 "Insert a ``@custom`` keyword."

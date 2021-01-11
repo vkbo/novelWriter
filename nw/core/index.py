@@ -290,10 +290,12 @@ class NWIndex():
             "updated" : round(time()),
         }
         if itemLayout == nwItemLayout.NOTE:
+            self._novelIndex.pop(tHandle, None)
             self._noteIndex[tHandle] = {}
             isNovel = False
         else:
             self._novelIndex[tHandle] = {}
+            self._noteIndex.pop(tHandle, None)
             isNovel = True
 
         # Also clear references to file in tag index
