@@ -4,16 +4,16 @@
 Project Notes
 *************
 
-novelWriter doesn't have a database and complicated forms to fill in all details about plot
+novelWriter doesn't have a database and complicated forms for filling in details about plot
 elements, characters, and all sorts of additional information that isn't a part of the novel text
 itself. Instead, all such information is saved in notes. The relation between all these additional
-elements is extracted from these documents by the project indexer based on the tags and references
-you set.
+elements is extracted from the documents and notes by the project indexer, based on the tags and
+references you set within them.
 
-These notes are not required, but making at least minimal files for each such plot element, and
-adding a tag to them, makes it possible to use the :guilabel:`Outline` feature to see how each
-element intersects with each section of the novel itself, and adds clickable cross-references
-between documents in the editor and viewer.
+Using notes is not required, but making at least minimal notes for each plot element, and adding a
+tag to them, makes it possible to use the :guilabel:`Outline` feature to see how each element
+intersects with each section of the novel itself, and adds clickable cross-references between
+documents in the editor and viewer.
 
 
 .. _a_notes_tags:
@@ -43,5 +43,5 @@ meaningful if you want to be able to click-navigate between them.
 
 .. tip::
    If you cross-reference between notes and export your project as an HTML document using the
-   :guilabel:`Build Novel Project` tool, the cross-references become clickable in the exported
-   HTML document as well.
+   :guilabel:`Build Novel Project` tool, the cross-references become clickable links in the
+   exported HTML document.
