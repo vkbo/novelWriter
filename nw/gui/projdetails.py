@@ -37,6 +37,7 @@ from PyQt5.QtWidgets import (
 )
 
 from nw.gui.custom import PagedDialog, QSwitch
+from nw.constants import nwUnicode
 
 logger = logging.getLogger(__name__)
 
@@ -274,19 +275,20 @@ class GuiProjectDetailsContents(QWidget):
 
         treeHeader = self.chTree.header()
         treeHeader.setStretchLastSection(True)
-        treeHeader.setMinimumSectionSize(iPx + 6)
+        treeHeader.setMinimumSectionSize(hPx)
 
         wCol0 = self.mainConf.pxInt(self.optState.getInt("GuiProjectDetails", "widthCol0", 200))
         wCol1 = self.mainConf.pxInt(self.optState.getInt("GuiProjectDetails", "widthCol1", 60))
         wCol2 = self.mainConf.pxInt(self.optState.getInt("GuiProjectDetails", "widthCol2", 60))
         wCol3 = self.mainConf.pxInt(self.optState.getInt("GuiProjectDetails", "widthCol3", 60))
         wCol4 = self.mainConf.pxInt(self.optState.getInt("GuiProjectDetails", "widthCol4", 90))
+
         self.chTree.setColumnWidth(0, wCol0)
         self.chTree.setColumnWidth(1, wCol1)
         self.chTree.setColumnWidth(2, wCol2)
         self.chTree.setColumnWidth(3, wCol3)
         self.chTree.setColumnWidth(4, wCol4)
-        self.chTree.setColumnWidth(5, 0)
+        self.chTree.setColumnWidth(5, hPx)
 
         # Options
         # =======
@@ -295,7 +297,7 @@ class GuiProjectDetailsContents(QWidget):
         clearDouble  = self.optState.getInt("GuiProjectDetails", "clearDouble", True)
 
         wordsHelp = (
-            "Typical word count for a 5\u00d78 inch book page with 11 pt font is 350."
+            "Typical word count for a 5 by 8 inch book page with 11 pt font is 350."
         )
         dblHelp = (
             "Assume a new chapter or partition always start on an odd numbered page."
@@ -380,7 +382,7 @@ class GuiProjectDetailsContents(QWidget):
         pTotal = 0
 
         theList = []
-        for tKey, tLevel, tTitle, wCount in self._theToC:
+        for _, tLevel, tTitle, wCount in self._theToC:
             pCount = math.ceil(wCount/wpPage)
             if dblPages:
                 pCount += pCount%2
@@ -391,12 +393,15 @@ class GuiProjectDetailsContents(QWidget):
         for tLevel, tTitle, wCount, pCount in theList:
             newItem = QTreeWidgetItem()
 
+            if tLevel == "H2":
+                tTitle = nwUnicode.U_ENSP+tTitle
+
             newItem.setIcon(self.C_TITLE, self.theTheme.getIcon("doc_%s" % tLevel.lower()))
             newItem.setText(self.C_TITLE, tTitle)
             newItem.setText(self.C_WORDS, f"{wCount:n}")
             newItem.setText(self.C_PAGES, f"{pCount:n}")
             newItem.setText(self.C_PAGE,  f"{tPages:n}")
-            newItem.setText(self.C_PROG,  f"{100*(tPages-1)/pTotal:.1f}\u202f%")
+            newItem.setText(self.C_PROG,  f"{100*(tPages - 1)/pTotal:.1f}{nwUnicode.U_THSP}%")
 
             newItem.setTextAlignment(self.C_WORDS, Qt.AlignRight)
             newItem.setTextAlignment(self.C_PAGES, Qt.AlignRight)
