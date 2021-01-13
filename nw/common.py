@@ -152,11 +152,11 @@ def formatInt(theInt):
             theVal /= 1000.0
             if theVal < 1000.0:
                 if theVal < 10.0:
-                    return f"{theVal:4.2f}{nwUnicode.U_THNSP}{pF}"
+                    return f"{theVal:4.2f}{nwUnicode.U_THSP}{pF}"
                 elif theVal < 100.0:
-                    return f"{theVal:4.1f}{nwUnicode.U_THNSP}{pF}"
+                    return f"{theVal:4.1f}{nwUnicode.U_THSP}{pF}"
                 else:
-                    return f"{theVal:3.0f}{nwUnicode.U_THNSP}{pF}"
+                    return f"{theVal:3.0f}{nwUnicode.U_THSP}{pF}"
 
     return str(theInt)
 

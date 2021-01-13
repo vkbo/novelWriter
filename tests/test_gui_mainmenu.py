@@ -410,7 +410,7 @@ def testGuiMenu_Insert(qtbot, monkeypatch, nwGUI, fncDir, fncProj):
     nwGUI.docEditor.clear()
 
     nwGUI.mainMenu.aInsThinSpace.activate(QAction.Trigger)
-    assert nwGUI.docEditor.getText() == nwUnicode.U_THNSP
+    assert nwGUI.docEditor.getText() == nwUnicode.U_THSP
     nwGUI.docEditor.clear()
 
     nwGUI.mainMenu.aInsThinNBSpace.activate(QAction.Trigger)

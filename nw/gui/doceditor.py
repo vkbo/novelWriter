@@ -734,7 +734,7 @@ class GuiDocEditor(QTextEdit):
             elif theInsert == nwDocInsert.NB_SPACE:
                 theText = nwUnicode.U_NBSP
             elif theInsert == nwDocInsert.THIN_SPACE:
-                theText = nwUnicode.U_THNSP
+                theText = nwUnicode.U_THSP
             elif theInsert == nwDocInsert.THIN_NB_SPACE:
                 theText = nwUnicode.U_THNBSP
             elif theInsert == nwDocInsert.SHORT_DASH:
