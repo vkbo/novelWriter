@@ -56,8 +56,8 @@ class GuiProjectDetails(PagedDialog):
 
         self.setWindowTitle("Project Details")
 
-        wW = self.mainConf.pxInt(570)
-        wH = self.mainConf.pxInt(375)
+        wW = self.mainConf.pxInt(600)
+        wH = self.mainConf.pxInt(425)
 
         self.setMinimumWidth(wW)
         self.setMinimumHeight(wH)

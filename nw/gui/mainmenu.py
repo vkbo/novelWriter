@@ -212,6 +212,9 @@ class GuiMainMenu(QMenuBar):
         self.aCloseProject.triggered.connect(lambda: self.theParent.closeProject(False))
         self.projMenu.addAction(self.aCloseProject)
 
+        # Project > Separator
+        self.projMenu.addSeparator()
+
         # Project > Project Settings
         self.aProjectSettings = QAction("Project Settings", self)
         self.aProjectSettings.setStatusTip("Project settings")

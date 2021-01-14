@@ -138,7 +138,7 @@ class GuiMain(QMainWindow):
         self.projDetailsBtn.triggered.connect(lambda: self.showProjectDetailsDialog())
         self.treeButtons.addAction(self.projDetailsBtn)
 
-        self.projStatsBtn = QAction("Project Statistics")
+        self.projStatsBtn = QAction("Writing Statistics")
         self.projStatsBtn.setIcon(self.theTheme.getIcon("status_stats"))
         self.projStatsBtn.triggered.connect(lambda: self.showWritingStatsDialog())
         self.treeButtons.addAction(self.projStatsBtn)
