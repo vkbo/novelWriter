@@ -473,6 +473,9 @@ class GuiTheme:
         return
 
     def _parseLine(self, confParser, cnfSec, cnfName, cnfDefault):
+        """Simple wrapper for the config parser to check that the entry
+        exists before attempting to load it.
+        """
         if confParser.has_section(cnfSec):
             if confParser.has_option(cnfSec, cnfName):
                 return confParser.get(cnfSec, cnfName)
@@ -500,12 +503,13 @@ class GuiIcons:
         the ICON_MAP data tuple[0]. This will let Qt pull the closest
         system icon.
       * Third action is to look up the freedesktop icon theme name using
-        the fromTheme Qt call. This generally produces the same results
+        the fromTheme Qt call. This generally produces the same result
         as the step above, but has more icons available in other cases.
       * Fourth, and finally, the icon is looked up in the fallback
         folder. Files in this folder must have the same file name as the
-        novelWriter internal icon key, with '-dark' appended to it for
-        the dark background version of the icon.
+        novelWriter internal icon key, with '-dark' appended to them for
+        the dark background version of the icon. If no dark icon exists,
+        the non-dark version will be returned.
     """
 
     ICON_MAP = {
@@ -529,6 +533,7 @@ class GuiIcons:
         "status_time"     : (None, None),
         "status_stats"    : (None, None),
         "status_lines"    : (None, None),
+        "doc_h0"          : (QStyle.SP_FileIcon, "x-office-document"),
         "doc_h1"          : (QStyle.SP_FileIcon, "x-office-document"),
         "doc_h2"          : (QStyle.SP_FileIcon, "x-office-document"),
         "doc_h3"          : (QStyle.SP_FileIcon, "x-office-document"),
@@ -562,6 +567,7 @@ class GuiIcons:
         "reference"      : (None, None),
         "backward"       : (None, None),
         "forward"        : (None, None),
+        "settings"       : (None, None),
 
         ## Switches
         "sticky-on"  : (None, None),
@@ -610,7 +616,6 @@ class GuiIcons:
         the GUI icons cannot really be replaced without writing specific
         update functions for the classes where they're used.
         """
-
         logger.debug("Loading icon theme files")
 
         self.themeMap = {}
@@ -747,7 +752,7 @@ class GuiIcons:
     ##
 
     def _loadIcon(self, iconKey):
-        """Load an icon from the assets or theme folder, with a
+        """Load an icon from the assets or themes folder, with a
         preference for dark/light icons depending on theme type, if such
         an icon exists. Prefer svg files over png files. Always returns
         a QIcon.
@@ -785,6 +790,7 @@ class GuiIcons:
             if os.path.isfile(fbackIcon):
                 logger.verbose("Loading icon '%s' from fallback theme (dark mode)" % iconKey)
                 return QIcon(fbackIcon)
+
         fbackIcon = os.path.join(self.mainConf.iconPath, self.fbackName, "%s.svg" % iconKey)
         if os.path.isfile(fbackIcon):
             logger.verbose("Loading icon '%s' from fallback theme (light mode)" % iconKey)
@@ -796,8 +802,8 @@ class GuiIcons:
         return QIcon()
 
     def _parseLine(self, confParser, cnfSec, cnfName, cnfDefault):
-        """Simple wrapper for the config parser check for entry existing
-        before arrempting to load.
+        """Simple wrapper for the config parser to check that the entry
+        exists before attempting to load it.
         """
         if confParser.has_section(cnfSec):
             if confParser.has_option(cnfSec, cnfName):

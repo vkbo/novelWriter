@@ -212,12 +212,22 @@ class GuiMainMenu(QMenuBar):
         self.aCloseProject.triggered.connect(lambda: self.theParent.closeProject(False))
         self.projMenu.addAction(self.aCloseProject)
 
+        # Project > Separator
+        self.projMenu.addSeparator()
+
         # Project > Project Settings
         self.aProjectSettings = QAction("Project Settings", self)
         self.aProjectSettings.setStatusTip("Project settings")
         self.aProjectSettings.setShortcut("Ctrl+Shift+,")
         self.aProjectSettings.triggered.connect(lambda: self.theParent.showProjectSettingsDialog())
         self.projMenu.addAction(self.aProjectSettings)
+
+        # Project > Project Details
+        self.aProjectDetails = QAction("Project Details", self)
+        self.aProjectDetails.setStatusTip("Project details")
+        self.aProjectDetails.setShortcut("Shift+F6")
+        self.aProjectDetails.triggered.connect(lambda: self.theParent.showProjectDetailsDialog())
+        self.projMenu.addAction(self.aProjectDetails)
 
         # Project > Separator
         self.projMenu.addSeparator()

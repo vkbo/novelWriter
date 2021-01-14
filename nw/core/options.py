@@ -87,7 +87,18 @@ class OptionState():
                 "winWidth",
                 "winHeight",
                 "replaceColW",
-            }
+            },
+            "GuiProjectDetails": {
+                "winWidth",
+                "winHeight",
+                "widthCol0",
+                "widthCol1",
+                "widthCol2",
+                "widthCol3",
+                "widthCol4",
+                "wordsPerPage",
+                "clearDouble",
+            },
         }
 
         return

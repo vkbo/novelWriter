@@ -32,19 +32,19 @@ import os
 from datetime import datetime
 from time import time
 
-from PyQt5.QtCore import Qt, QTimer, QThreadPool, pyqtSlot
+from PyQt5.QtCore import Qt, QTimer, QSize, QThreadPool, pyqtSlot
 from PyQt5.QtGui import QIcon, QPixmap, QColor, QKeySequence, QCursor
 from PyQt5.QtWidgets import (
     qApp, QMainWindow, QVBoxLayout, QWidget, QSplitter, QFileDialog, QShortcut,
-    QMessageBox, QDialog, QTabWidget
+    QMessageBox, QDialog, QTabWidget, QToolBar, QAction
 )
 
 from nw.gui import (
     GuiAbout, GuiBuildNovel, GuiDocEditor, GuiDocMerge, GuiDocSplit,
     GuiDocViewDetails, GuiDocViewer, GuiItemDetails, GuiItemEditor,
     GuiMainMenu, GuiMainStatus, GuiNovelTree, GuiOutline, GuiOutlineDetails,
-    GuiPreferences, GuiProjectLoad, GuiProjectSettings, GuiProjectTree,
-    GuiProjectWizard, GuiTheme, GuiWritingStats
+    GuiPreferences, GuiProjectDetails, GuiProjectLoad, GuiProjectSettings,
+    GuiProjectTree, GuiProjectWizard, GuiTheme, GuiWritingStats
 )
 from nw.core import NWProject, NWDoc, NWIndex
 from nw.constants import nwItemType, nwItemClass, nwAlert, nwLists
@@ -112,7 +112,7 @@ class GuiMain(QMainWindow):
         self.statusIcons = []
         self.importIcons = []
 
-        # Project Tabs : Project / Novel
+        # Project Tree Tabs
         self.projTabs = QTabWidget()
         self.projTabs.setTabPosition(QTabWidget.South)
         self.projTabs.setStyleSheet("QTabWidget::pane {border: 0;};")
@@ -123,6 +123,30 @@ class GuiMain(QMainWindow):
         tabFont = self.projTabs.tabBar().font()
         tabFont.setPointSize(round(0.9*self.theTheme.fontPointSize))
         self.projTabs.tabBar().setFont(tabFont)
+
+        # Project Tree Action Buttons
+        btnSize = round(0.7*self.theTheme.fontPixelSize)
+        self.treeButtons = QToolBar()
+        self.treeButtons.setToolButtonStyle(Qt.ToolButtonIconOnly)
+        self.treeButtons.setIconSize(QSize(btnSize, btnSize))
+        self.treeButtons.setContentsMargins(0, 0, 0, 0)
+        self.treeButtons.setStyleSheet(r"QToolBar {padding: 0;}")
+        self.projTabs.setCornerWidget(self.treeButtons, Qt.BottomRightCorner)
+
+        self.projDetailsBtn = QAction("Project Details")
+        self.projDetailsBtn.setIcon(self.theTheme.getIcon("status_lines"))
+        self.projDetailsBtn.triggered.connect(lambda: self.showProjectDetailsDialog())
+        self.treeButtons.addAction(self.projDetailsBtn)
+
+        self.projStatsBtn = QAction("Writing Statistics")
+        self.projStatsBtn.setIcon(self.theTheme.getIcon("status_stats"))
+        self.projStatsBtn.triggered.connect(lambda: self.showWritingStatsDialog())
+        self.treeButtons.addAction(self.projStatsBtn)
+
+        self.projSettingsBtn = QAction("Project Settings")
+        self.projSettingsBtn.setIcon(self.theTheme.getIcon("settings"))
+        self.projSettingsBtn.triggered.connect(lambda: self.showProjectSettingsDialog())
+        self.treeButtons.addAction(self.projSettingsBtn)
 
         # Project Tree View
         self.treePane = QWidget()
@@ -919,6 +943,19 @@ class GuiMain(QMainWindow):
             logger.debug("Applying new project settings")
             self.docEditor.setDictionaries()
             self._setWindowTitle(self.theProject.projName)
+
+        return
+
+    def showProjectDetailsDialog(self):
+        """Open the project details dialog.
+        """
+        if not self.hasProject:
+            logger.error("No project open")
+            return
+
+        dlgDetails = GuiProjectDetails(self, self.theProject)
+        dlgDetails.setModal(False)
+        dlgDetails.show()
 
         return
 

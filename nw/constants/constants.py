@@ -241,7 +241,7 @@ class nwQuotes():
 # END Class nwQuotes
 
 class nwUnicode:
-    """Supported unicode character constants and translation maps for HTML.
+    """Supported unicode character constants and their HTML equivalents.
     """
 
     # Unicode Constants
@@ -276,8 +276,10 @@ class nwUnicode:
 
     ## Spaces and Lines
     U_NBSP   = "\u00a0" # Non-breaking space
-    U_THNSP  = "\u2009" # Thin space
+    U_THSP   = "\u2009" # Thin space
     U_THNBSP = "\u202f" # Thin non-breaking space
+    U_ENSP   = "\u2002" # Short (en) space
+    U_EMSP   = "\u2003" # Long (em) space
     U_LSEP   = "\u2028" # Line separator
     U_PSEP   = "\u2029" # Paragraph separator
 
@@ -328,8 +330,10 @@ class nwUnicode:
 
     ## Spaces
     H_NBSP   = "&nbsp;"
-    H_THNSP  = "&thinsp;"
+    H_THSP   = "&thinsp;"
     H_THNBSP = "&#8239;"
+    H_ENSP   = "&ensp;"
+    H_EMSP   = "&emsp;"
 
     ## Symbols
     H_CHECK  = "&#10004;"
