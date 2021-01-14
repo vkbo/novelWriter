@@ -269,11 +269,18 @@ class GuiMain(QMainWindow):
     def clearGUI(self):
         """Wrapper function to clear all sub-elements of the main GUI.
         """
+        # Project Area
         self.treeView.clearTree()
         self.novelView.clearTree()
+        self.treeMeta.clearDetails()
+
+        # Work Area
         self.docEditor.clearEditor()
         self.closeDocViewer()
+
+        # General
         self.statusBar.clearStatus()
+
         return True
 
     def initMain(self):
