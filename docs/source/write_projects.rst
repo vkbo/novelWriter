@@ -15,7 +15,9 @@ A list of recently opened projects is maintained, and displayed in the :guilabel
 dialog. A project can be removed from this list by selecting it and pressing the :kbd:`Del` key.
 
 Project-specific settings are available in :guilabel:`Project Settings` in the :guilabel:`Project`
-menu. See further details below in the :ref:`a_proj_settings` section.
+menu. See further details below in the :ref:`a_proj_settings` section. Details about the project,
+including word counts, and a table of contents with word and page counts, is available through the
+:guilabel:`Project Details` dialog.
 
 
 .. _a_proj_roots:
@@ -247,14 +249,6 @@ and they are exported on some export formats in the :guilabel:`Build Novel Proje
 If your project is in a different language than your main spell checking is set to, you can
 override the default spell checking language here. You can also override the automatic backup
 setting.
-
-
-Details Tab
------------
-
-This tab presents an overview of technical meta data for the project. It states where on your file
-system the project is saved, how may times it has been saved, how many folders and documents it
-contains, and how many words exist in the entire project.
 
 
 Status and Importance Tabs

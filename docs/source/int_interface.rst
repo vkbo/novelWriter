@@ -406,6 +406,7 @@ Most features are available as keyboard shortcuts. These are as follows:
    ":kbd:`F11`",                         "Activate full screen mode."
    ":kbd:`Shift`:kbd:`F1`",              "Open the online documentation in the system default browser."
    ":kbd:`Shift`:kbd:`F3`",              "Find previous occurrence of search word in current document. (Same as :kbd:`Ctrl`:kbd:`Shift`:kbd:`G`.)"
+   ":kbd:`Shift`:kbd:`F6`",              "Open the :guilabel:`Project Details` dialog."
    ":kbd:`Return`",                      "If in the project tree, open a document for editing."
 
 .. note::

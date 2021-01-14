@@ -261,19 +261,19 @@ class GuiProjectDetailsContents(QWidget):
         # Contents Tree
         # =============
 
-        self.chTree = QTreeWidget()
-        self.chTree.setIconSize(QSize(iPx, iPx))
-        self.chTree.setIndentation(0)
-        self.chTree.setColumnCount(6)
-        self.chTree.setHeaderLabels(["Title", "Words", "Pages", "Page", "Progress", ""])
+        self.tocTree = QTreeWidget()
+        self.tocTree.setIconSize(QSize(iPx, iPx))
+        self.tocTree.setIndentation(0)
+        self.tocTree.setColumnCount(6)
+        self.tocTree.setHeaderLabels(["Title", "Words", "Pages", "Page", "Progress", ""])
 
-        treeHeadItem = self.chTree.headerItem()
+        treeHeadItem = self.tocTree.headerItem()
         treeHeadItem.setTextAlignment(self.C_WORDS, Qt.AlignRight)
         treeHeadItem.setTextAlignment(self.C_PAGES, Qt.AlignRight)
         treeHeadItem.setTextAlignment(self.C_PAGE,  Qt.AlignRight)
         treeHeadItem.setTextAlignment(self.C_PROG,  Qt.AlignRight)
 
-        treeHeader = self.chTree.header()
+        treeHeader = self.tocTree.header()
         treeHeader.setStretchLastSection(True)
         treeHeader.setMinimumSectionSize(hPx)
 
@@ -283,12 +283,12 @@ class GuiProjectDetailsContents(QWidget):
         wCol3 = self.mainConf.pxInt(self.optState.getInt("GuiProjectDetails", "widthCol3", 60))
         wCol4 = self.mainConf.pxInt(self.optState.getInt("GuiProjectDetails", "widthCol4", 90))
 
-        self.chTree.setColumnWidth(0, wCol0)
-        self.chTree.setColumnWidth(1, wCol1)
-        self.chTree.setColumnWidth(2, wCol2)
-        self.chTree.setColumnWidth(3, wCol3)
-        self.chTree.setColumnWidth(4, wCol4)
-        self.chTree.setColumnWidth(5, hPx)
+        self.tocTree.setColumnWidth(0, wCol0)
+        self.tocTree.setColumnWidth(1, wCol1)
+        self.tocTree.setColumnWidth(2, wCol2)
+        self.tocTree.setColumnWidth(3, wCol3)
+        self.tocTree.setColumnWidth(4, wCol4)
+        self.tocTree.setColumnWidth(5, hPx)
 
         # Options
         # =======
@@ -334,7 +334,7 @@ class GuiProjectDetailsContents(QWidget):
         # ========
 
         self.outerBox = QVBoxLayout()
-        self.outerBox.addWidget(self.chTree)
+        self.outerBox.addWidget(self.tocTree)
         self.outerBox.addLayout(self.optionsBox)
 
         self.setLayout(self.outerBox)
@@ -348,11 +348,11 @@ class GuiProjectDetailsContents(QWidget):
         """Return the column widths for the tree columns.
         """
         retVals = [
-            self.chTree.columnWidth(0),
-            self.chTree.columnWidth(1),
-            self.chTree.columnWidth(2),
-            self.chTree.columnWidth(3),
-            self.chTree.columnWidth(4),
+            self.tocTree.columnWidth(0),
+            self.tocTree.columnWidth(1),
+            self.tocTree.columnWidth(2),
+            self.tocTree.columnWidth(3),
+            self.tocTree.columnWidth(4),
         ]
         return retVals
 
@@ -389,19 +389,21 @@ class GuiProjectDetailsContents(QWidget):
             pTotal += pCount
             theList.append((tLevel, tTitle, wCount, pCount))
 
-        self.chTree.clear()
+        self.tocTree.clear()
         for tLevel, tTitle, wCount, pCount in theList:
             newItem = QTreeWidgetItem()
 
             if tLevel == "H2":
                 tTitle = nwUnicode.U_ENSP+tTitle
 
+            pgProg = 100.0*(tPages - 1)/pTotal if pTotal > 0 else 0.0
+
             newItem.setIcon(self.C_TITLE, self.theTheme.getIcon("doc_%s" % tLevel.lower()))
             newItem.setText(self.C_TITLE, tTitle)
             newItem.setText(self.C_WORDS, f"{wCount:n}")
             newItem.setText(self.C_PAGES, f"{pCount:n}")
             newItem.setText(self.C_PAGE,  f"{tPages:n}")
-            newItem.setText(self.C_PROG,  f"{100*(tPages - 1)/pTotal:.1f}{nwUnicode.U_THSP}%")
+            newItem.setText(self.C_PROG,  f"{pgProg:.1f}{nwUnicode.U_THSP}%")
 
             newItem.setTextAlignment(self.C_WORDS, Qt.AlignRight)
             newItem.setTextAlignment(self.C_PAGES, Qt.AlignRight)
@@ -410,7 +412,7 @@ class GuiProjectDetailsContents(QWidget):
 
             tPages += pCount
 
-            self.chTree.addTopLevelItem(newItem)
+            self.tocTree.addTopLevelItem(newItem)
 
         return
 
