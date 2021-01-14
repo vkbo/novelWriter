@@ -190,6 +190,22 @@ class GuiItemDetails(QWidget):
     #  Class Methods
     ##
 
+    def clearDetails(self):
+        """Clear all the data values.
+        """
+        self.labelFlag.setPixmap(QPixmap(1, 1))
+        self.labelData.setText("")
+        self.statusFlag.setPixmap(QPixmap(1, 1))
+        self.statusData.setText("")
+        self.classFlag.setText("")
+        self.classData.setText("")
+        self.layoutFlag.setText("")
+        self.layoutData.setText("")
+        self.cCountData.setText("–")
+        self.wCountData.setText("–")
+        self.pCountData.setText("–")
+        return
+
     def updateCounts(self, tHandle, cC, wC, pC):
         """Just update the counts if the handle is the same as the one
         we're already showing.
@@ -207,17 +223,7 @@ class GuiItemDetails(QWidget):
         nwItem = self.theProject.projTree[tHandle]
 
         if nwItem is None:
-            self.labelFlag.setText("")
-            self.labelData.setText("")
-            self.statusFlag.setText("")
-            self.statusData.setText("")
-            self.classFlag.setText("")
-            self.classData.setText("")
-            self.layoutFlag.setText("")
-            self.layoutData.setText("")
-            self.cCountData.setText("–")
-            self.wCountData.setText("–")
-            self.pCountData.setText("–")
+            self.clearDetails()
 
         else:
             theLabel = nwItem.itemName
