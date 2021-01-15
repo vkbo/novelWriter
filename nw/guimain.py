@@ -90,7 +90,7 @@ class GuiMain(QMainWindow):
 
         # Prepare Main Window
         self.resize(*self.mainConf.getWinSize())
-        self._setWindowTitle()
+        self._updateWindowTitle()
         self.setWindowIcon(QIcon(self.mainConf.appIcon))
 
         # Build the GUI
@@ -259,9 +259,11 @@ class GuiMain(QMainWindow):
         # Work Area
         self.docEditor.clearEditor()
         self.closeDocViewer()
+        self.projMeta.clearDetails()
 
         # General
         self.statusBar.clearStatus()
+        self._updateWindowTitle()
 
         return True
 
@@ -357,7 +359,6 @@ class GuiMain(QMainWindow):
             self.closeDocument()
             self.docViewer.clearNavHistory()
             self.projView.closeOutline()
-            self.projMeta.clearDetails()
             self.theProject.closeProject()
             self.theIndex.clearIndex()
             self.clearGUI()
@@ -429,7 +430,7 @@ class GuiMain(QMainWindow):
         self.theIndex.loadIndex()
 
         # Update GUI
-        self._setWindowTitle(self.theProject.projName)
+        self._updateWindowTitle(self.theProject.projName)
         self.rebuildTree()
         self.docEditor.setDictionaries()
         self.docEditor.setSpellCheck(self.theProject.spellCheck)
@@ -899,7 +900,7 @@ class GuiMain(QMainWindow):
         if dlgProj.result() == QDialog.Accepted:
             logger.debug("Applying new project settings")
             self.docEditor.setDictionaries()
-            self._setWindowTitle(self.theProject.projName)
+            self._updateWindowTitle(self.theProject.projName)
 
         return
 
@@ -1208,7 +1209,7 @@ class GuiMain(QMainWindow):
 
         return True
 
-    def _setWindowTitle(self, projName=None):
+    def _updateWindowTitle(self, projName=None):
         """Set the window title and add the project's working title.
         """
         winTitle = self.mainConf.appName
