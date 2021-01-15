@@ -258,6 +258,7 @@ class GuiMain(QMainWindow):
 
         # Work Area
         self.docEditor.clearEditor()
+        self.docEditor.setDictionaries()
         self.closeDocViewer()
         self.projMeta.clearDetails()
 
@@ -312,8 +313,12 @@ class GuiMain(QMainWindow):
             self.rebuildTree()
             self.saveProject()
             self.hasProject = True
-            self.statusBar.setRefTime(self.theProject.projOpened)
+            self.docEditor.setDictionaries()
             self.rebuildIndex(beQuiet=True)
+            self.statusBar.setRefTime(self.theProject.projOpened)
+            self.statusBar.setProjectStatus(True)
+            self.statusBar.setDocumentStatus(None)
+            self.statusBar.setStatus("New project created ...")
             self._updateWindowTitle(self.theProject.projName)
         else:
             self.theProject.clearProject()
