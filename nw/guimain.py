@@ -282,11 +282,12 @@ class GuiMain(QMainWindow):
         """Create new project via the new project wizard.
         """
         if self.hasProject:
-            self.makeAlert(
-                "Please close the current project before making a new one.",
-                nwAlert.ERROR
-            )
-            return False
+            if not self.closeProject():
+                self.makeAlert(
+                    "Cannot create new project when another project is open.",
+                    nwAlert.ERROR
+                )
+                return False
 
         if projData is None:
             projData = self.showNewProjectDialog()
@@ -313,6 +314,7 @@ class GuiMain(QMainWindow):
             self.hasProject = True
             self.statusBar.setRefTime(self.theProject.projOpened)
             self.rebuildIndex(beQuiet=True)
+            self._updateWindowTitle(self.theProject.projName)
         else:
             self.theProject.clearProject()
             return False
