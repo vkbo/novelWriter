@@ -2,6 +2,9 @@
 """novelWriter Test Tools
 """
 
+import os
+import shutil
+
 from itertools import chain
 
 from PyQt5.QtWidgets import qApp
@@ -82,3 +85,24 @@ def writeFile(fileName, fileData):
     """
     with open(fileName, mode="w", encoding="utf8") as outFile:
         outFile.write(fileData)
+
+def cleanProject(projPath):
+    """Delete all generated files in a project.
+    """
+    cacheDir = os.path.join(projPath, "cache")
+    if os.path.isdir(cacheDir):
+        shutil.rmtree(cacheDir)
+
+    metaDir = os.path.join(projPath, "meta")
+    if os.path.isdir(metaDir):
+        shutil.rmtree(metaDir)
+
+    bakFile = os.path.join(projPath, "nwProject.bak")
+    if os.path.isfile(bakFile):
+        os.unlink(bakFile)
+
+    tocFile = os.path.join(projPath, "ToC.txt")
+    if os.path.isfile(tocFile):
+        os.unlink(tocFile)
+
+    return

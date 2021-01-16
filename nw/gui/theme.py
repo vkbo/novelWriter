@@ -76,11 +76,10 @@ class GuiTheme:
         self.themeLicenseUrl  = ""
 
         ## GUI
-        self.treeWCount  = [0,   0,   0]
         self.statNone    = [120, 120, 120]
-        self.statUnsaved = [120, 120, 40]
-        self.statSaved   = [40,  120, 0]
-        self.helpText    = [0,   0,   0]
+        self.statUnsaved = [200, 15, 39]
+        self.statSaved   = [2, 133, 37]
+        self.helpText    = [0, 0, 0]
 
         # Loaded Syntax Settings
 
@@ -309,7 +308,6 @@ class GuiTheme:
         ## GUI
         cnfSec = "GUI"
         if confParser.has_section(cnfSec):
-            self.treeWCount  = self._loadColour(confParser, cnfSec, "treewordcount")
             self.statNone    = self._loadColour(confParser, cnfSec, "statusnone")
             self.statUnsaved = self._loadColour(confParser, cnfSec, "statusunsaved")
             self.statSaved   = self._loadColour(confParser, cnfSec, "statussaved")

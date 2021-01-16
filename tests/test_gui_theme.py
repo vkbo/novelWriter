@@ -73,7 +73,6 @@ def testGuiTheme_Main(qtbot, monkeypatch, nwMinimal, tmpDir):
     assert thePalette.link().color()            == QColor(44, 152, 247)
     assert thePalette.linkVisited().color()     == QColor(44, 152, 247)
 
-    assert nwGUI.theTheme.treeWCount  == [197, 200, 198]
     assert nwGUI.theTheme.statNone    == [150, 152, 150]
     assert nwGUI.theTheme.statSaved   == [39, 135, 78]
     assert nwGUI.theTheme.statUnsaved == [138, 32, 32]
