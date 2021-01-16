@@ -8,6 +8,7 @@ import shutil
 import os
 
 from dummy import DummyMain
+from tools import cleanProject
 
 sys.path.insert(1, os.path.abspath(os.path.join(os.path.dirname(__file__), os.path.pardir)))
 
@@ -129,21 +130,20 @@ def nwGUI(qtbot, fncDir):
 def nwMinimal(tmpDir):
     """A minimal novelWriter example project.
     """
-    testDir = os.path.dirname(__file__)
-    minimalStore = os.path.join(testDir, "minimal")
-    minimalDir = os.path.join(tmpDir, "minimal")
-    if os.path.isdir(minimalDir):
-        shutil.rmtree(minimalDir)
-    shutil.copytree(minimalStore, minimalDir)
-    cacheDir = os.path.join(minimalDir, "cache")
-    if os.path.isdir(cacheDir):
-        shutil.rmtree(cacheDir)
-    metaDir = os.path.join(minimalDir, "meta")
-    if os.path.isdir(metaDir):
-        shutil.rmtree(metaDir)
-    yield minimalDir
-    if os.path.isdir(minimalDir):
-        shutil.rmtree(minimalDir)
+    tstDir = os.path.dirname(__file__)
+    srcDir = os.path.join(tstDir, "minimal")
+    dstDir = os.path.join(tmpDir, "minimal")
+    if os.path.isdir(dstDir):
+        shutil.rmtree(dstDir)
+
+    shutil.copytree(srcDir, dstDir)
+    cleanProject(dstDir)
+
+    yield dstDir
+
+    if os.path.isdir(dstDir):
+        shutil.rmtree(dstDir)
+
     return
 
 @pytest.fixture(scope="function")
@@ -151,34 +151,38 @@ def nwLipsum(tmpDir):
     """A medium sized novelWriter example project with a lot of Lorem
     Ipsum dummy text.
     """
-    testDir = os.path.dirname(__file__)
-    lipsumStore = os.path.join(testDir, "lipsum")
-    lipsumDir = os.path.join(tmpDir, "lipsum")
-    if os.path.isdir(lipsumDir):
-        shutil.rmtree(lipsumDir)
-    shutil.copytree(lipsumStore, lipsumDir)
-    cacheDir = os.path.join(lipsumDir, "cache")
-    if os.path.isdir(cacheDir):
-        shutil.rmtree(cacheDir)
-    metaDir = os.path.join(lipsumDir, "meta")
-    if os.path.isdir(metaDir):
-        shutil.rmtree(metaDir)
-    yield lipsumDir
-    if os.path.isdir(lipsumDir):
-        shutil.rmtree(lipsumDir)
+    tstDir = os.path.dirname(__file__)
+    srcDir = os.path.join(tstDir, "lipsum")
+    dstDir = os.path.join(tmpDir, "lipsum")
+    if os.path.isdir(dstDir):
+        shutil.rmtree(dstDir)
+
+    shutil.copytree(srcDir, dstDir)
+    cleanProject(dstDir)
+
+    yield dstDir
+
+    if os.path.isdir(dstDir):
+        shutil.rmtree(dstDir)
+
     return
 
 @pytest.fixture(scope="function")
 def nwOldProj(tmpDir):
-    """A minimal movelWriter project using the old folder structure.
+    """A minimal movelWriter project using the old folder structure used
+    for storage versions < 1.2.
     """
-    testDir = os.path.dirname(__file__)
-    oldProjStore = os.path.join(testDir, "oldproj")
-    oldProjDir = os.path.join(tmpDir, "oldproj")
-    if os.path.isdir(oldProjDir):
-        shutil.rmtree(oldProjDir)
-    shutil.copytree(oldProjStore, oldProjDir)
-    yield oldProjDir
-    if os.path.isdir(oldProjDir):
-        shutil.rmtree(oldProjDir)
+    tstDir = os.path.dirname(__file__)
+    srcDir = os.path.join(tstDir, "oldproj")
+    dstDir = os.path.join(tmpDir, "oldproj")
+    if os.path.isdir(dstDir):
+        shutil.rmtree(dstDir)
+
+    shutil.copytree(srcDir, dstDir)
+
+    yield dstDir
+
+    if os.path.isdir(dstDir):
+        shutil.rmtree(dstDir)
+
     return

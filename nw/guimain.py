@@ -1,28 +1,27 @@
 # -*- coding: utf-8 -*-
-"""novelWriter GUI Main Window
+"""
+novelWriter – GUI Main Window
+=============================
+The main application window
 
- novelWriter – GUI Main Window
-===============================
- Class holding the main application window
+File History:
+Created: 2018-09-22 [0.0.1]
 
- File History:
- Created: 2018-09-22 [0.0.1]
+This file is a part of novelWriter
+Copyright 2018–2021, Veronica Berglyd Olsen
 
- This file is a part of novelWriter
- Copyright 2018–2021, Veronica Berglyd Olsen
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
 
- This program is free software: you can redistribute it and/or modify
- it under the terms of the GNU General Public License as published by
- the Free Software Foundation, either version 3 of the License, or
- (at your option) any later version.
+This program is distributed in the hope that it will be useful, but
+WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+General Public License for more details.
 
- This program is distributed in the hope that it will be useful, but
- WITHOUT ANY WARRANTY; without even the implied warranty of
- MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- General Public License for more details.
-
- You should have received a copy of the GNU General Public License
- along with this program. If not, see <https://www.gnu.org/licenses/>.
+You should have received a copy of the GNU General Public License
+along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
 
 import nw
@@ -90,7 +89,7 @@ class GuiMain(QMainWindow):
 
         # Prepare Main Window
         self.resize(*self.mainConf.getWinSize())
-        self._setWindowTitle()
+        self._updateWindowTitle()
         self.setWindowIcon(QIcon(self.mainConf.appIcon))
 
         # Build the GUI
@@ -300,10 +299,13 @@ class GuiMain(QMainWindow):
 
         # Work Area
         self.docEditor.clearEditor()
+        self.docEditor.setDictionaries()
         self.closeDocViewer()
+        self.projMeta.clearDetails()
 
         # General
         self.statusBar.clearStatus()
+        self._updateWindowTitle()
 
         return True
 
@@ -322,11 +324,12 @@ class GuiMain(QMainWindow):
         """Create new project via the new project wizard.
         """
         if self.hasProject:
-            self.makeAlert(
-                "Please close the current project before making a new one.",
-                nwAlert.ERROR
-            )
-            return False
+            if not self.closeProject():
+                self.makeAlert(
+                    "Cannot create new project when another project is open.",
+                    nwAlert.ERROR
+                )
+                return False
 
         if projData is None:
             projData = self.showNewProjectDialog()
@@ -351,8 +354,13 @@ class GuiMain(QMainWindow):
             self.rebuildTrees()
             self.saveProject()
             self.hasProject = True
-            self.statusBar.setRefTime(self.theProject.projOpened)
+            self.docEditor.setDictionaries()
             self.rebuildIndex(beQuiet=True)
+            self.statusBar.setRefTime(self.theProject.projOpened)
+            self.statusBar.setProjectStatus(True)
+            self.statusBar.setDocumentStatus(None)
+            self.statusBar.setStatus("New project created ...")
+            self._updateWindowTitle(self.theProject.projName)
         else:
             self.theProject.clearProject()
             return False
@@ -399,7 +407,6 @@ class GuiMain(QMainWindow):
             self.closeDocument()
             self.docViewer.clearNavHistory()
             self.projView.closeOutline()
-            self.projMeta.clearDetails()
             self.theProject.closeProject()
             self.theIndex.clearIndex()
             self.clearGUI()
@@ -471,8 +478,8 @@ class GuiMain(QMainWindow):
         self.theIndex.loadIndex()
 
         # Update GUI
-        self._setWindowTitle(self.theProject.projName)
-        self.rebuildTrees()
+        self._updateWindowTitle(self.theProject.projName)
+        self.rebuildTree()
         self.docEditor.setDictionaries()
         self.docEditor.setSpellCheck(self.theProject.spellCheck)
         self.mainMenu.setAutoOutline(self.theProject.autoOutline)
@@ -942,7 +949,7 @@ class GuiMain(QMainWindow):
         if dlgProj.result() == QDialog.Accepted:
             logger.debug("Applying new project settings")
             self.docEditor.setDictionaries()
-            self._setWindowTitle(self.theProject.projName)
+            self._updateWindowTitle(self.theProject.projName)
 
         return
 
@@ -1265,7 +1272,7 @@ class GuiMain(QMainWindow):
 
         return True
 
-    def _setWindowTitle(self, projName=None):
+    def _updateWindowTitle(self, projName=None):
         """Set the window title and add the project's working title.
         """
         winTitle = self.mainConf.appName

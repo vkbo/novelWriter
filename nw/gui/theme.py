@@ -1,29 +1,28 @@
 # -*- coding: utf-8 -*-
-"""novelWriter Theme and Icons Classes
+"""
+novelWriter – Theme and Icons Classes
+=====================================
+Classes managing and caching themes and icons
 
- novelWriter – Theme and Icons Classs
-======================================
- Class managing and caching themes and icons
+File History:
+Created: 2019-05-18 [0.1.3] GuiTheme
+Created: 2019-11-08 [0.4.0] GuiIcons
 
- File History:
- Created: 2019-05-18 [0.1.3] GuiTheme
- Created: 2019-11-08 [0.4.0] GuiIcons
+This file is a part of novelWriter
+Copyright 2018–2021, Veronica Berglyd Olsen
 
- This file is a part of novelWriter
- Copyright 2018–2021, Veronica Berglyd Olsen
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
 
- This program is free software: you can redistribute it and/or modify
- it under the terms of the GNU General Public License as published by
- the Free Software Foundation, either version 3 of the License, or
- (at your option) any later version.
+This program is distributed in the hope that it will be useful, but
+WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+General Public License for more details.
 
- This program is distributed in the hope that it will be useful, but
- WITHOUT ANY WARRANTY; without even the implied warranty of
- MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- General Public License for more details.
-
- You should have received a copy of the GNU General Public License
- along with this program. If not, see <https://www.gnu.org/licenses/>.
+You should have received a copy of the GNU General Public License
+along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
 
 import nw
@@ -76,11 +75,10 @@ class GuiTheme:
         self.themeLicenseUrl  = ""
 
         ## GUI
-        self.treeWCount  = [0,   0,   0]
         self.statNone    = [120, 120, 120]
-        self.statUnsaved = [120, 120, 40]
-        self.statSaved   = [40,  120, 0]
-        self.helpText    = [0,   0,   0]
+        self.statUnsaved = [200, 15, 39]
+        self.statSaved   = [2, 133, 37]
+        self.helpText    = [0, 0, 0]
 
         # Loaded Syntax Settings
 
@@ -309,7 +307,6 @@ class GuiTheme:
         ## GUI
         cnfSec = "GUI"
         if confParser.has_section(cnfSec):
-            self.treeWCount  = self._loadColour(confParser, cnfSec, "treewordcount")
             self.statNone    = self._loadColour(confParser, cnfSec, "statusnone")
             self.statUnsaved = self._loadColour(confParser, cnfSec, "statusunsaved")
             self.statSaved   = self._loadColour(confParser, cnfSec, "statussaved")
