@@ -479,7 +479,7 @@ class GuiMain(QMainWindow):
 
         # Update GUI
         self._updateWindowTitle(self.theProject.projName)
-        self.rebuildTree()
+        self.rebuildTrees()
         self.docEditor.setDictionaries()
         self.docEditor.setSpellCheck(self.theProject.spellCheck)
         self.mainMenu.setAutoOutline(self.theProject.autoOutline)
