@@ -1,5 +1,23 @@
 # -*- coding: utf-8 -*-
-"""novelWriter Writing Stats Dialog Class Tester
+"""
+novelWriter – Project Details Dialog Class Tester
+=================================================
+
+This file is a part of novelWriter
+Copyright 2018–2021, Veronica Berglyd Olsen
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful, but
+WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
 
 import pytest
@@ -17,7 +35,7 @@ stepDelay = 20
 
 @pytest.mark.gui
 def testGuiProjDetails_Dialog(qtbot, monkeypatch, nwGUI, nwLipsum):
-    """Test the full writing stats tool.
+    """Test the project details dialog.
     """
     # Block message box
     monkeypatch.setattr(QMessageBox, "question", lambda *args: QMessageBox.Yes)
