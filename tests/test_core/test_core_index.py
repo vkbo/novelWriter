@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """
-novelWriter – Project Class Tester
+novelWriter – NWIndex Class Tester
 ==================================
 
 This file is a part of novelWriter

@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 """
-novelWriter – Spell Check Class Tester
-======================================
+novelWriter – Spell Check Classes Tester
+========================================
 
 This file is a part of novelWriter
 Copyright 2018–2021, Veronica Berglyd Olsen

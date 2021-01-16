@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 """
-novelWriter – Main GUI Class Tester
-===================================
+novelWriter – GUI Theme and Icons Classes Tester
+================================================
 
 This file is a part of novelWriter
 Copyright 2018–2021, Veronica Berglyd Olsen

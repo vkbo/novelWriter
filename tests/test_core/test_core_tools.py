@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 """
-novelWriter – Tools Tester
-==========================
+novelWriter – Core Tools Tester
+===============================
 
 This file is a part of novelWriter
 Copyright 2018–2021, Veronica Berglyd Olsen

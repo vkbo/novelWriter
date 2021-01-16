@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 """
-novelWriter – Dialog Class Tester
-=================================
+novelWriter – Preferences Dialog Class Tester
+=============================================
 
 This file is a part of novelWriter
 Copyright 2018–2021, Veronica Berglyd Olsen
