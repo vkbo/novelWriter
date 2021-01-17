@@ -34,66 +34,66 @@ from nw.constants import nwConst, nwUnicode
 
 logger = logging.getLogger(__name__)
 
-def checkString(checkValue, defaultValue, allowNone=False):
+def checkString(value, default, allowNone=False):
     """Check if a variable is a string or a none.
     """
     if allowNone:
-        if checkValue is None:
+        if value is None:
             return None
-        if checkValue == "None":
+        if value == "None":
             return None
-    if isinstance(checkValue, str):
-        return str(checkValue)
-    return defaultValue
+    if isinstance(value, str):
+        return str(value)
+    return default
 
-def checkInt(checkValue, defaultValue, allowNone=False):
+def checkInt(value, default, allowNone=False):
     """Check if a variable is an integer or a none.
     """
     if allowNone:
-        if checkValue is None:
+        if value is None:
             return None
-        if checkValue == "None":
+        if value == "None":
             return None
     try:
-        return int(checkValue)
+        return int(value)
     except Exception:
-        return defaultValue
+        return default
 
-def checkBool(checkValue, defaultValue, allowNone=False):
+def checkBool(value, default, allowNone=False):
     """Check if a variable is a boolean or a none.
     """
     if allowNone:
-        if checkValue is None:
+        if value is None:
             return None
-        if checkValue == "None":
+        if value == "None":
             return None
-    if isinstance(checkValue, str):
-        if checkValue == "True":
+    if isinstance(value, str):
+        if value == "True":
             return True
-        elif checkValue == "False":
+        elif value == "False":
             return False
         else:
-            return defaultValue
-    elif isinstance(checkValue, int):
-        if checkValue == 1:
+            return default
+    elif isinstance(value, int):
+        if value == 1:
             return True
-        elif checkValue == 0:
+        elif value == 0:
             return False
         else:
-            return defaultValue
-    return defaultValue
+            return default
+    return default
 
-def checkHandle(checkValue, defaultValue, allowNone=False):
+def checkHandle(value, default, allowNone=False):
     """Check if a value is a handle.
     """
     if allowNone:
-        if checkValue is None:
+        if value is None:
             return None
-        if checkValue == "None":
+        if value == "None":
             return None
-    if isHandle(checkValue):
-        return str(checkValue)
-    return defaultValue
+    if isHandle(value):
+        return str(value)
+    return default
 
 def isHandle(theString):
     """Check if a string is a valid novelWriter handle.
@@ -108,6 +108,16 @@ def isHandle(theString):
         if c not in "0123456789abcdef":
             invalidChar = True
     return not invalidChar
+
+def hexToInt(value, default=0):
+    """Convert a hex string to an integer.
+    """
+    if isinstance(value, str):
+        try:
+            return int(value, 16)
+        except Exception:
+            return default
+    return default
 
 def colRange(rgbStart, rgbEnd, nStep):
     """Generate a range of colours from one RGB value to another.
