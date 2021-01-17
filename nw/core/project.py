@@ -40,7 +40,7 @@ from nw.core.status import NWStatus
 from nw.core.options import OptionState
 from nw.common import (
     checkString, checkBool, checkInt, isHandle, formatTimeStamp,
-    makeFileNameSafe
+    makeFileNameSafe, hexToInt
 )
 from nw.constants import (
     nwFiles, nwItemType, nwItemClass, nwItemLayout, nwLabels, nwAlert
@@ -496,7 +496,7 @@ class NWProject():
         # Check novelWriter Version
         # =========================
 
-        if int(hexVersion, 16) > int(nw.__hexversion__, 16):
+        if hexToInt(hexVersion) > hexToInt(nw.__hexversion__):
             msgYes = self.theParent.askQuestion("Version Conflict", (
                 "This project was saved by a newer version of novelWriter, version %s. "
                 "This is version %s. If you continue to open the project, some attributes "

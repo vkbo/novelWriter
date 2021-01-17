@@ -7,7 +7,8 @@ import pytest
 
 from nw.common import (
     checkString, checkBool, checkInt, colRange, formatInt, transferCase,
-    fuzzyTime, checkHandle, formatTimeStamp, formatTime
+    fuzzyTime, checkHandle, formatTimeStamp, formatTime, hexToInt,
+    makeFileNameSafe
 )
 from tools import cmpList
 
@@ -68,6 +69,19 @@ def testBaseCommon_CheckHandle():
     assert checkHandle("h7666c91c7ccf", None, False) is None
 
 # END Test testBaseCommon_CheckHandle
+
+@pytest.mark.base
+def testBaseCommon_HexToInt():
+    """Test the hexToInt function.
+    """
+    assert hexToInt(1) == 0
+    assert hexToInt("1") == 1
+    assert hexToInt("0xff") == 255
+    assert hexToInt("0xffff") == 65535
+    assert hexToInt("0xffffq") == 0
+    assert hexToInt("0xffffq", 12) == 12
+
+# END Test testBaseCommon_HexToInt
 
 @pytest.mark.base
 def testBaseCommon_ColRange():
@@ -192,3 +206,14 @@ def testBaseCommon_FuzzyTime():
     assert fuzzyTime(47336400) == "2 years ago"
 
 # END Test testBaseCommon_FuzzyTime
+
+@pytest.mark.base
+def testBaseCommon_MakeFileNameSafe():
+    """Test the fuzzyTime function.
+    """
+    assert makeFileNameSafe(" aaaa ") == "aaaa"
+    assert makeFileNameSafe("aaaa,bbbb") == "aaaabbbb"
+    assert makeFileNameSafe("aaaa\tbbbb") == "aaaabbbb"
+    assert makeFileNameSafe("aaaa bbbb") == "aaaa bbbb"
+
+# END Test testBaseCommon_MakeFileNameSafe

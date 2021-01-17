@@ -48,7 +48,7 @@ from nw.gui import (
 )
 from nw.core import NWProject, NWDoc, NWIndex
 from nw.constants import nwItemType, nwItemClass, nwAlert, nwLists
-from nw.common import getGuiItem
+from nw.common import getGuiItem, hexToInt
 
 logger = logging.getLogger(__name__)
 
@@ -239,10 +239,10 @@ class GuiMain(QMainWindow):
                 self.showProjectLoadDialog()
 
         # Show the latest release notes, if they haven't been shown before
-        if self.mainConf.lastNotes != nw.__version__:
+        if hexToInt(self.mainConf.lastNotes) < hexToInt(nw.__hexversion__):
             if self.mainConf.showGUI:
                 self.showAboutNWDialog(showNotes=True)
-            self.mainConf.lastNotes = nw.__version__
+            self.mainConf.lastNotes = nw.__hexversion__
 
         logger.debug("novelWriter is ready ...")
         self.setStatus("novelWriter is ready ...")
