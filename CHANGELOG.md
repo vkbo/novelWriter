@@ -1,5 +1,29 @@
 # novelWriter Change Log
 
+## Version 1.0.2 [2021-01-24]
+
+### Release Notes
+
+### Detailed Changelog
+
+**Bug Fixes**
+
+* Fixed an issue with note files being moved between a non-novel root folder and a novel root
+  folder without clearing its index entry in the former note or novel index. This would cause
+  duplicate entries for such a file. PR #558.
+* Fixed a cosmetic issue where the meta data panel below the project tree was not cleared when the
+  project was closed. PR #559.
+* Fixed an issue where the main window title was not cleared when a project was closed, and the new
+  title not set when a new project was first created. Issue #560, PR #561.
+
+**Documentation**
+
+* Fixed some typos and spelling mistakes in the documentation, and reworded parts of the text that
+  were unclear. The technical page has also been extended with more information of project folder
+  structure. PR #557.
+
+----
+
 ## Version 1.0.1 [2021-01-10]
 
 ### Release Notes
