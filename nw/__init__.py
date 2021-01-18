@@ -35,16 +35,16 @@ from PyQt5.QtWidgets import QApplication, QErrorMessage
 from nw.error import exceptionHandler
 from nw.config import Config
 
-#
+##
 #  Version Scheme
 # ================
 #  Generally follows PEP 440
 #  Hex Version:
-#  - Digit 1,2 : Major Version (01, 02, 03)
-#  = Digit 3,4 : Minor Version (01, 09, 10, 99)
-#  - Digit 5,6 : Patch Version (01, 09, 10, 99)
+#  - Digit 1,2 : Major Version (01-ff)
+#  = Digit 3,4 : Minor Version (01-ff)
+#  - Digit 5,6 : Patch Version (01-ff)
 #  = Digit 7   : Release Type (a: aplha, b: beta, c: candidate, f: final)
-#  - Digit 8   : Release Number (0-9)
+#  - Digit 8   : Release Number (0-f)
 #
 #  Example    : Full        Short      Description
 # -------------------------------------------------------------------------
@@ -55,7 +55,7 @@ from nw.config import Config
 #  0x010200f0 : 1.2         1.2        Final release
 #  0x010200f1 : 1.2-post1   1.2.post1  Post release, but not a code patch!
 #  0x010201f0 : 1.2.1       1.2.1      Patch release
-#
+##
 
 __package__    = "nw"
 __copyright__  = "Copyright 2018–2021, Veronica Berglyd Olsen"
@@ -79,7 +79,7 @@ __credits__    = [
     "Marian Lückhof (contributor, tester)"
 ]
 
-#
+##
 #  Logging
 # =========
 #  Standard used for logging levels in novelWriter:
@@ -90,7 +90,7 @@ __credits__    = [
 #  ----------- SPAM Threshold : Output above should be minimal -----------------
 #    DEBUG     Use for descriptions of main program flow
 #    VERBOSE   Use for outputting values and program flow details
-#
+##
 
 # Add verbose logging level
 VERBOSE = 5
@@ -104,10 +104,9 @@ logging.Logger.verbose = logVerbose
 # Initiating logging
 logger = logging.getLogger(__name__)
 
-#
+##
 #  Main Program
-# ==============
-#
+##
 
 # Load the main config as a global object
 CONFIG = Config()
@@ -142,15 +141,14 @@ def main(sysArgs=None):
         "GNU General Public License for more details.\n"
         "\n"
         "Usage:\n"
-        " -h, --help      Print this message.\n"
-        " -v, --version   Print program version and exit.\n"
-        "     --info      Print additional runtime information.\n"
-        "     --debug     Print debug output. Includes --info.\n"
-        "     --verbose   Increase verbosity of debug output. Includes --debug.\n"
-        "     --style=    Sets Qt5 style flag. Defaults to 'Fusion'.\n"
-        "     --config=   Alternative config file.\n"
-        "     --data=     Alternative user data path.\n"
-        "     --testmode  Do not display GUI. Used by the test suite.\n"
+        " -h, --help     Print this message.\n"
+        " -v, --version  Print program version and exit.\n"
+        "     --info     Print additional runtime information.\n"
+        "     --debug    Print debug output. Includes --info.\n"
+        "     --verbose  Increase verbosity of debug output. Includes --debug.\n"
+        "     --style=   Sets Qt5 style flag. Defaults to 'Fusion'.\n"
+        "     --config=  Alternative config file.\n"
+        "     --data=    Alternative user data path.\n"
     ).format(
         version   = __version__,
         status    = __status__,
@@ -205,7 +203,6 @@ def main(sysArgs=None):
             testMode = True
 
     # Set Config Options
-    CONFIG.showGUI   = not testMode
     CONFIG.debugInfo = debugLevel < logging.INFO
     CONFIG.cmdOpen   = cmdOpen
 
@@ -292,7 +289,12 @@ def main(sysArgs=None):
         # Connect the exception handler before making the main GUI
         sys.excepthook = exceptionHandler
 
+        # Launch main GUI
         nwGUI = GuiMain()
+        if not nwGUI.hasProject:
+            nwGUI.showProjectLoadDialog()
+        nwGUI.releaseNotes()
+
         sys.exit(nwApp.exec_())
 
 # END Function main

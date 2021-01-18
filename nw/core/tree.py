@@ -457,8 +457,13 @@ class NWTree():
         return
 
     def _makeHandle(self, addSeed=""):
-        """Generate a unique item handle. In the unlikely event that the
-        key already exists, salt the seed and generate a new handle.
+        """Generate a unique item handle. In the event that the key
+        already exists, salt the seed and generate a new handle.
+        A key collision is very unlikely to be caused by the truncation
+        of the sha256 hash to 13 characters. Assuming it is near-random,
+        it will on average happen every 4.5^15 times. However, the clock
+        seed is likely to occasionally generate a collision if the
+        handle requests come faster than the clock resolution.
         """
         if self._handleSeed is None:
             newSeed = str(time()) + addSeed
@@ -466,11 +471,13 @@ class NWTree():
             # This is used for debugging
             newSeed = str(self._handleSeed)
             self._handleSeed += 1
+
         logger.verbose("Generating handle with seed '%s'" % newSeed)
         itemHandle = sha256(newSeed.encode()).hexdigest()[0:13]
         if itemHandle in self._projTree:
             logger.warning("Duplicate handle encountered! Retrying ...")
             itemHandle = self._makeHandle(addSeed+"!")
+
         return itemHandle
 
 # END Class NWTree

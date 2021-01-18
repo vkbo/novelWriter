@@ -95,6 +95,11 @@ class GuiMain(QMainWindow):
         # Build the GUI
         # =============
 
+        # Sizes
+        mPx = self.mainConf.pxInt(4)
+        fPx = self.theTheme.fontPixelSize
+        fPt = self.theTheme.fontPointSize
+
         # Main GUI Elements
         self.statusBar = GuiMainStatus(self)
         self.treeView  = GuiProjectTree(self)
@@ -107,24 +112,24 @@ class GuiMain(QMainWindow):
         self.projMeta  = GuiOutlineDetails(self)
         self.mainMenu  = GuiMainMenu(self)
 
-        # Minor Gui Elements
+        # Minor GUI Elements
         self.statusIcons = []
         self.importIcons = []
 
         # Project Tree Tabs
         self.projTabs = QTabWidget()
         self.projTabs.setTabPosition(QTabWidget.South)
-        self.projTabs.setStyleSheet("QTabWidget::pane {border: 0;};")
+        self.projTabs.setStyleSheet(r"QTabWidget::pane {border: 0;};")
         self.projTabs.addTab(self.treeView, "Project")
         self.projTabs.addTab(self.novelView, "Novel")
         self.projTabs.currentChanged.connect(self._projTabsChanged)
 
         tabFont = self.projTabs.tabBar().font()
-        tabFont.setPointSize(round(0.9*self.theTheme.fontPointSize))
+        tabFont.setPointSizeF(0.9*fPt)
         self.projTabs.tabBar().setFont(tabFont)
 
         # Project Tree Action Buttons
-        btnSize = round(0.7*self.theTheme.fontPixelSize)
+        btnSize = int(round(0.7*fPx))
         self.treeButtons = QToolBar()
         self.treeButtons.setToolButtonStyle(Qt.ToolButtonIconOnly)
         self.treeButtons.setIconSize(QSize(btnSize, btnSize))
@@ -151,7 +156,7 @@ class GuiMain(QMainWindow):
         self.treePane = QWidget()
         self.treeBox = QVBoxLayout()
         self.treeBox.setContentsMargins(0, 0, 0, 0)
-        self.treeBox.setSpacing(0)
+        self.treeBox.setSpacing(mPx)
         self.treeBox.addWidget(self.projTabs)
         self.treeBox.addWidget(self.treeMeta)
         self.treePane.setLayout(self.treeBox)
@@ -176,26 +181,27 @@ class GuiMain(QMainWindow):
         # Main Tabs : Editor / Outline
         self.mainTabs = QTabWidget()
         self.mainTabs.setTabPosition(QTabWidget.East)
-        self.mainTabs.setStyleSheet("QTabWidget::pane {border: 0;}")
+        self.mainTabs.setStyleSheet(r"QTabWidget::pane {border: 0;}")
         self.mainTabs.addTab(self.splitDocs, "Editor")
         self.mainTabs.addTab(self.splitOutline, "Outline")
         self.mainTabs.currentChanged.connect(self._mainTabChanged)
 
         # Splitter : Project Tree / Main Tabs
-        xCM = self.mainConf.pxInt(4)
         self.splitMain = QSplitter(Qt.Horizontal)
-        self.splitMain.setContentsMargins(xCM, xCM, xCM, xCM)
+        self.splitMain.setContentsMargins(mPx, mPx, mPx, mPx)
         self.splitMain.addWidget(self.treePane)
         self.splitMain.addWidget(self.mainTabs)
         self.splitMain.setSizes(self.mainConf.getMainPanePos())
 
-        # Indices of All Splitter Widgets
-        self.idxTree      = self.splitMain.indexOf(self.treePane)
-        self.idxMain      = self.splitMain.indexOf(self.mainTabs)
-        self.idxEditor    = self.splitDocs.indexOf(self.docEditor)
-        self.idxViewer    = self.splitDocs.indexOf(self.splitView)
-        self.idxViewDoc   = self.splitView.indexOf(self.docViewer)
-        self.idxViewMeta  = self.splitView.indexOf(self.viewMeta)
+        # Indices of Splitter Widgets
+        self.idxTree     = self.splitMain.indexOf(self.treePane)
+        self.idxMain     = self.splitMain.indexOf(self.mainTabs)
+        self.idxEditor   = self.splitDocs.indexOf(self.docEditor)
+        self.idxViewer   = self.splitDocs.indexOf(self.splitView)
+        self.idxViewDoc  = self.splitView.indexOf(self.docViewer)
+        self.idxViewMeta = self.splitView.indexOf(self.viewMeta)
+
+        # Indices of Tab Widgets
         self.idxTabEdit   = self.mainTabs.indexOf(self.splitDocs)
         self.idxTabProj   = self.mainTabs.indexOf(self.splitOutline)
         self.idxTreeView  = self.projTabs.indexOf(self.treeView)
@@ -269,20 +275,10 @@ class GuiMain(QMainWindow):
 
         logger.debug("GUI initialisation complete")
 
-        # Check if a project path was provided at command line, and if
-        # not, open the project manager instead.
+        # If a project path was provided at command line, open it
         if self.mainConf.cmdOpen is not None:
             logger.debug("Opening project from additional command line option")
             self.openProject(self.mainConf.cmdOpen)
-        else:
-            if self.mainConf.showGUI:
-                self.showProjectLoadDialog()
-
-        # Show the latest release notes, if they haven't been shown before
-        if hexToInt(self.mainConf.lastNotes) < hexToInt(nw.__hexversion__):
-            if self.mainConf.showGUI:
-                self.showAboutNWDialog(showNotes=True)
-            self.mainConf.lastNotes = nw.__hexversion__
 
         logger.debug("novelWriter is ready ...")
         self.setStatus("novelWriter is ready ...")
@@ -315,6 +311,15 @@ class GuiMain(QMainWindow):
         self.asProjTimer.setInterval(int(self.mainConf.autoSaveProj*1000))
         self.asDocTimer.setInterval(int(self.mainConf.autoSaveDoc*1000))
         return True
+
+    def releaseNotes(self):
+        """Determine whether release notes need to be shown, and show
+        them by calling the About dialog.
+        """
+        if hexToInt(self.mainConf.lastNotes) < hexToInt(nw.__hexversion__):
+            self.mainConf.lastNotes = nw.__hexversion__
+            self.showAboutNWDialog(showNotes=True)
+        return
 
     ##
     #  Project Actions

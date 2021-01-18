@@ -390,7 +390,7 @@ class GuiDocHighlighter(QSyntaxHighlighter):
                 theFormat.setBackground(QBrush(fmtCol, Qt.SolidPattern))
 
         if fmtSize is not None:
-            theFormat.setFontPointSize(round(fmtSize*self.mainConf.textSize))
+            theFormat.setFontPointSize(int(round(fmtSize*self.mainConf.textSize)))
 
         return theFormat
 

@@ -21,6 +21,9 @@ class DummyMain():
 
         return
 
+    def releaseNotes(self):
+        return
+
     def makeAlert(self, theMessage, theLevel):
         print("%s: %s" % (str(theLevel), theMessage))
         self.lastAlert = str(theMessage)

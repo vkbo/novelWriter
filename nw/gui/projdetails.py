@@ -57,7 +57,7 @@ class GuiProjectDetails(PagedDialog):
         self.setWindowTitle("Project Details")
 
         wW = self.mainConf.pxInt(600)
-        wH = self.mainConf.pxInt(425)
+        wH = self.mainConf.pxInt(400)
 
         self.setMinimumWidth(wW)
         self.setMinimumHeight(wH)
@@ -137,6 +137,7 @@ class GuiProjectDetailsMain(QWidget):
         self.theIndex   = theParent.theIndex
 
         fPx = self.theTheme.fontPixelSize
+        fPt = self.theTheme.fontPointSize
         vPx = self.mainConf.pxInt(4)
         hPx = self.mainConf.pxInt(12)
 
@@ -145,7 +146,7 @@ class GuiProjectDetailsMain(QWidget):
 
         self.bookTitle = QLabel(self.theProject.bookTitle)
         bookFont = self.bookTitle.font()
-        bookFont.setPixelSize(round(2.2*fPx))
+        bookFont.setPointSizeF(2.2*fPt)
         bookFont.setWeight(QFont.Bold)
         self.bookTitle.setFont(bookFont)
         self.bookTitle.setAlignment(Qt.AlignHCenter)
@@ -153,7 +154,7 @@ class GuiProjectDetailsMain(QWidget):
 
         self.projName = QLabel("Working Title: %s" % self.theProject.projName)
         workFont = self.projName.font()
-        workFont.setPixelSize(round(0.8*fPx))
+        workFont.setPointSizeF(0.8*fPt)
         workFont.setItalic(True)
         self.projName.setFont(workFont)
         self.projName.setAlignment(Qt.AlignHCenter)
@@ -161,7 +162,7 @@ class GuiProjectDetailsMain(QWidget):
 
         self.bookAuthors = QLabel("By %s" % self.theProject.getAuthors())
         authFont = self.bookAuthors.font()
-        authFont.setPixelSize(round(1.2*fPx))
+        authFont.setPointSizeF(1.2*fPt)
         self.bookAuthors.setFont(authFont)
         self.bookAuthors.setAlignment(Qt.AlignHCenter)
         self.bookAuthors.setWordWrap(True)
@@ -219,12 +220,13 @@ class GuiProjectDetailsMain(QWidget):
         # ========
 
         self.outerBox = QVBoxLayout()
+        self.outerBox.addSpacing(fPx)
         self.outerBox.addWidget(self.bookTitle)
         self.outerBox.addWidget(self.projName)
         self.outerBox.addWidget(self.bookAuthors)
-        self.outerBox.addSpacing(round(2.5*fPx))
+        self.outerBox.addSpacing(2*fPx)
         self.outerBox.addLayout(self.statsGrid)
-        self.outerBox.addSpacing(round(0.8*fPx))
+        self.outerBox.addSpacing(fPx)
         self.outerBox.addStretch(1)
         self.outerBox.addLayout(self.projPathBox)
 
