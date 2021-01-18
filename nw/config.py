@@ -56,7 +56,6 @@ class Config:
         self.appHandle = self.appName.lower()
 
         # Debug Settings
-        self.showGUI   = True   # Allow blocking the GUI (disabled for testing)
         self.debugInfo = False  # True if log level is DEBUG or VERBOSE
 
         # Config Error Handling

@@ -275,20 +275,10 @@ class GuiMain(QMainWindow):
 
         logger.debug("GUI initialisation complete")
 
-        # Check if a project path was provided at command line, and if
-        # not, open the project manager instead.
+        # If a project path was provided at command line, open it
         if self.mainConf.cmdOpen is not None:
             logger.debug("Opening project from additional command line option")
             self.openProject(self.mainConf.cmdOpen)
-        else:
-            if self.mainConf.showGUI:
-                self.showProjectLoadDialog()
-
-        # Show the latest release notes, if they haven't been shown before
-        if hexToInt(self.mainConf.lastNotes) < hexToInt(nw.__hexversion__):
-            if self.mainConf.showGUI:
-                self.showAboutNWDialog(showNotes=True)
-            self.mainConf.lastNotes = nw.__hexversion__
 
         logger.debug("novelWriter is ready ...")
         self.setStatus("novelWriter is ready ...")
@@ -321,6 +311,15 @@ class GuiMain(QMainWindow):
         self.asProjTimer.setInterval(int(self.mainConf.autoSaveProj*1000))
         self.asDocTimer.setInterval(int(self.mainConf.autoSaveDoc*1000))
         return True
+
+    def releaseNotes(self):
+        """Determine whether release notes need to be shown, and show
+        them by calling the About dialog.
+        """
+        if hexToInt(self.mainConf.lastNotes) < hexToInt(nw.__hexversion__):
+            self.mainConf.lastNotes = nw.__hexversion__
+            self.showAboutNWDialog(showNotes=True)
+        return
 
     ##
     #  Project Actions
