@@ -82,8 +82,8 @@ and it is less sophisticated than full spell checking libaries, but if you only 
 files, the performance loss is not noticeable. The spell check library must be at least 3.0 to work
 with Windows. On Linux, 2.0 also works fine.
 
-If you install from PyPi, these dependencies should be installed automatically. They can be
-manually installed with:
+If you install from PyPi, these dependencies should be installed automatically. If you install from
+source, dependencies can still be installed from PyPi with:
 
 .. code-block:: console
 

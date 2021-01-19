@@ -15,6 +15,46 @@
 
 ----
 
+## Version 1.0.2 [2021-01-19]
+
+### Release Notes
+
+This patch release fixes a few minor cosmetic issues, a minor issue with the indexer, and a bug
+when adding words to the user's own spell check dictionary. Additionally, the documentation has
+been updated based on user feedback, and some install issues resolved.
+
+### Detailed Changelog
+
+**Installation**
+
+* The dependency list was missing in the setup configuration for PyPi due to a bug in the
+  `setup.cfg` file. The dependencies have been moved to a different section where the setup tool
+  now picks them up properly. Issue #570, PR #573 by @stranger-danger-zamu.
+
+**Bug Fixes**
+
+* Fixed an issue with note files being moved between a non-novel root folder and a novel root
+  folder without clearing its index entry in the former note or novel index. This would cause
+  duplicate entries for such a file. PR #558.
+* Fixed a cosmetic issue where the meta data panel below the project tree was not cleared when the
+  project was closed. PR #559.
+* Fixed an issue where the main window title would not be cleared when a project was closed, and
+  the new title not set when a new project was first created. Issue #560, PR #561.
+* The editor context menu option to "Add Word to Dictionary" should also be visible when there are
+  no spell checker suggestions. The entry was erroneously added under an if-condition that excluded
+  it in those cases. Issue #574, PR #575.
+
+**Documentation**
+
+* Fixed some typos and spelling mistakes in the documentation, and reworded parts of the text that
+  were unclear. The technical page has also been extended with more information on project folder
+  structure. PR #557.
+* Clarify install instructions, and remove the duplicate instructions in the README file and
+  replace them with a brief section. The full instructions are in the documentation. Issues #566
+  and #570, PR #576.
+
+----
+
 ## Version 1.0.1 [2021-01-10]
 
 ### Release Notes
