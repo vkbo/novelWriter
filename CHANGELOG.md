@@ -1,8 +1,12 @@
 # novelWriter Change Log
 
-## Version 1.0.2 [2021-01-24]
+## Version 1.0.2 [2021-01-19]
 
 ### Release Notes
+
+This patch release fixes a few minor cosmetic issues, a minor issue with the indexer, and a bug
+when adding words to the user's own spell check dictionary. Additionally, the documentation has
+been updated based on user feedback, and some install issues resolved.
 
 ### Detailed Changelog
 
