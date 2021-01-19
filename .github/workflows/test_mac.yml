@@ -24,6 +24,7 @@ jobs:
         run: |
           pip install --upgrade pip
           pip install -r requirements.txt
+          pip install pyobjc
           pip install pytest-timeout
           pip install pytest-cov
           pip install pytest-qt
