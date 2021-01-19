@@ -1011,17 +1011,17 @@ class GuiDocEditor(QTextEdit):
                 for aWord in theSuggest:
                     mnuWord = QAction("%s %s" % (nwUnicode.U_ENDASH, aWord), mnuContext)
                     mnuWord.triggered.connect(
-                        lambda thePos, aWord=aWord : self._correctWord(posCursor, aWord)
+                        lambda thePos, aWord=aWord: self._correctWord(posCursor, aWord)
                     )
                     mnuContext.addAction(mnuWord)
-                mnuContext.addSeparator()
-                mnuAdd = QAction("Add Word to Dictionary", mnuContext)
-                mnuAdd.triggered.connect(lambda thePos : self._addWord(posCursor))
-                mnuContext.addAction(mnuAdd)
-
             else:
-                mnuHead = QAction("No Suggestions", mnuContext)
+                mnuHead = QAction("%s No Suggestions" % nwUnicode.U_ENDASH, mnuContext)
                 mnuContext.addAction(mnuHead)
+
+            mnuContext.addSeparator()
+            mnuAdd = QAction("Add Word to Dictionary", mnuContext)
+            mnuAdd.triggered.connect(lambda thePos: self._addWord(posCursor))
+            mnuContext.addAction(mnuAdd)
 
         # Open the context menu
         mnuContext.exec_(self.viewport().mapToGlobal(thePos))
