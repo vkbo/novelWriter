@@ -151,18 +151,20 @@ class GuiDocHighlighter(QSyntaxHighlighter):
             fmtDC = self.mainConf.fmtDoubleQuotes[1]
             fmtSO = self.mainConf.fmtSingleQuotes[0]
             fmtSC = self.mainConf.fmtSingleQuotes[1]
+            dblEnd = "|$" if self.mainConf.allowOpenDQuote else ""
+            sngEnd = "|$" if self.mainConf.allowOpenSQuote else ""
             self.hRules.append((
                 "\\B\"(.*?)\"\\B", {
                     0 : self.hStyles["dialogue1"],
                 }
             ))
             self.hRules.append((
-                f"\\B{fmtDO:s}(.*?){fmtDC:s}\\B", {
+                f"(\\B{fmtDO})(.*?)({fmtDC}\\B{dblEnd})", {
                     0 : self.hStyles["dialogue2"],
                 }
             ))
             self.hRules.append((
-                f"\\B{fmtSO:s}(.*?){fmtSC:s}\\B", {
+                f"(\\B{fmtSO})(.*?)({fmtSC}\\B{sngEnd})", {
                     0 : self.hStyles["dialogue3"],
                 }
             ))

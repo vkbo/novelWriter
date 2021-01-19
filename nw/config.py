@@ -142,6 +142,8 @@ class Config:
         self.bigDocLimit     = 800   # Size threshold for heavy editor features in kilobytes
 
         self.highlightQuotes = True  # Highlight text in quotes
+        self.allowOpenSQuote = False # Allow open-ended single quotes
+        self.allowOpenDQuote = True  # Allow open-ended double quotes
         self.highlightEmph   = True  # Add colour to text emphasis
 
         ## User-Selected Symbols
@@ -514,6 +516,12 @@ class Config:
         self.highlightQuotes = self._parseLine(
             cnfParse, cnfSec, "highlightquotes", self.CNF_BOOL, self.highlightQuotes
         )
+        self.allowOpenSQuote = self._parseLine(
+            cnfParse, cnfSec, "allowopensquote", self.CNF_BOOL, self.allowOpenSQuote
+        )
+        self.allowOpenDQuote = self._parseLine(
+            cnfParse, cnfSec, "allowopendquote", self.CNF_BOOL, self.allowOpenDQuote
+        )
         self.highlightEmph = self._parseLine(
             cnfParse, cnfSec, "highlightemph", self.CNF_BOOL, self.highlightEmph
         )
@@ -645,6 +653,8 @@ class Config:
         cnfParse.set(cnfSec, "bigdoclimit",     str(self.bigDocLimit))
         cnfParse.set(cnfSec, "showfullpath",    str(self.showFullPath))
         cnfParse.set(cnfSec, "highlightquotes", str(self.highlightQuotes))
+        cnfParse.set(cnfSec, "allowopensquote", str(self.allowOpenSQuote))
+        cnfParse.set(cnfSec, "allowopendquote", str(self.allowOpenDQuote))
         cnfParse.set(cnfSec, "highlightemph",   str(self.highlightEmph))
 
         ## Backup
