@@ -577,6 +577,15 @@ class Config:
         # Check Certain Values for None
         self.spellLanguage = self._checkNone(self.spellLanguage)
 
+        # If we're using straight quotes, disable auto-replace
+        if self.fmtSingleQuotes == ["'", "'"] and self.doReplaceSQuote:
+            logger.info("Using straight single quotes, so disabling auto-replace")
+            self.doReplaceSQuote = False
+
+        if self.fmtDoubleQuotes == ["\"", "\""] and self.doReplaceDQuote:
+            logger.info("Using straight double quotes, so disabling auto-replace")
+            self.doReplaceDQuote = False
+
         return True
 
     def saveConfig(self):

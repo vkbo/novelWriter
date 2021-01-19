@@ -170,6 +170,28 @@ def testBaseConfig_Init(monkeypatch, tmpDir, fncDir, outDir, refDir):
     assert tstConf.loadConfig()
     assert tstConf.saveConfig()
 
+    # Test Correcting Quote Settings
+    origDbl = tstConf.fmtDoubleQuotes
+    origSng = tstConf.fmtSingleQuotes
+    orDoDbl = tstConf.doReplaceDQuote
+    orDoSng = tstConf.doReplaceSQuote
+
+    tstConf.fmtDoubleQuotes = ["\"", "\""]
+    tstConf.fmtSingleQuotes = ["'", "'"]
+    tstConf.doReplaceDQuote = True
+    tstConf.doReplaceSQuote = True
+    assert tstConf.saveConfig()
+
+    assert tstConf.loadConfig()
+    assert not tstConf.doReplaceDQuote
+    assert not tstConf.doReplaceSQuote
+
+    tstConf.fmtDoubleQuotes = origDbl
+    tstConf.fmtSingleQuotes = origSng
+    tstConf.doReplaceDQuote = orDoDbl
+    tstConf.doReplaceSQuote = orDoSng
+    assert tstConf.saveConfig()
+
     copyfile(confFile, testFile)
     assert cmpFiles(testFile, compFile, [2, 9])
 
