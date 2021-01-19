@@ -113,7 +113,7 @@ class GuiPreferences(PagedDialog):
             msgBox = QMessageBox()
             msgBox.information(
                 self, "Preferences",
-                "Some changes will not be applied until novelWriter has been restarted."
+                "Some changes will not be applied until novelWriter has been restarted"
             )
 
         if validEntries:
@@ -161,7 +161,7 @@ class GuiConfigEditGeneralTab(QWidget):
         self.mainForm.addRow(
             "Main GUI theme",
             self.selectTheme,
-            "Changing this requires restarting novelWriter."
+            "Changing this requires restarting novelWriter"
         )
 
         ## Select Icon Theme
@@ -177,7 +177,7 @@ class GuiConfigEditGeneralTab(QWidget):
         self.mainForm.addRow(
             "Main icon theme",
             self.selectIcons,
-            "Changing this requires restarting novelWriter."
+            "Changing this requires restarting novelWriter"
         )
 
         ## Dark Icons
@@ -186,7 +186,7 @@ class GuiConfigEditGeneralTab(QWidget):
         self.mainForm.addRow(
             "Prefer icons for dark backgrounds",
             self.preferDarkIcons,
-            "This may improve the look of icons on dark themes."
+            "This may improve the look of icons on dark themes"
         )
 
         ## Font Family
@@ -200,7 +200,7 @@ class GuiConfigEditGeneralTab(QWidget):
         self.mainForm.addRow(
             "Font family",
             self.guiFont,
-            "Changing this requires restarting novelWriter.",
+            "Changing this requires restarting novelWriter",
             theButton = self.fontButton
         )
 
@@ -213,7 +213,7 @@ class GuiConfigEditGeneralTab(QWidget):
         self.mainForm.addRow(
             "Font size",
             self.guiFontSize,
-            "Changing this requires restarting novelWriter.",
+            "Changing this requires restarting novelWriter",
             theUnit = "pt"
         )
 
@@ -226,7 +226,7 @@ class GuiConfigEditGeneralTab(QWidget):
         self.mainForm.addRow(
             "Show full path in document header",
             self.showFullPath,
-            "Add the parent folder names to the header."
+            "Add the parent folder names to the header"
         )
 
         self.hideVScroll = QSwitch()
@@ -234,7 +234,7 @@ class GuiConfigEditGeneralTab(QWidget):
         self.mainForm.addRow(
             "Hide vertical scroll bars in main windows",
             self.hideVScroll,
-            "Scrolling available with mouse wheel and keys only."
+            "Scrolling available with mouse wheel and keys only"
         )
 
         self.hideHScroll = QSwitch()
@@ -242,7 +242,7 @@ class GuiConfigEditGeneralTab(QWidget):
         self.mainForm.addRow(
             "Hide horizontal scroll bars in main windows",
             self.hideHScroll,
-            "Scrolling available with mouse wheel and keys only."
+            "Scrolling available with mouse wheel and keys only"
         )
 
         return
@@ -258,13 +258,11 @@ class GuiConfigEditGeneralTab(QWidget):
         guiDark      = self.preferDarkIcons.isChecked()
         guiFont      = self.guiFont.text()
         guiFontSize  = self.guiFontSize.value()
-        showFullPath = self.showFullPath.isChecked()
-        hideVScroll  = self.hideVScroll.isChecked()
-        hideHScroll  = self.hideHScroll.isChecked()
 
         # Check if restart is needed
         needsRestart |= self.mainConf.guiTheme != guiTheme
         needsRestart |= self.mainConf.guiIcons != guiIcons
+        needsRestart |= self.mainConf.guiDark != guiDark
         needsRestart |= self.mainConf.guiFont != guiFont
         needsRestart |= self.mainConf.guiFontSize != guiFontSize
 
@@ -273,9 +271,9 @@ class GuiConfigEditGeneralTab(QWidget):
         self.mainConf.guiDark      = guiDark
         self.mainConf.guiFont      = guiFont
         self.mainConf.guiFontSize  = guiFontSize
-        self.mainConf.showFullPath = showFullPath
-        self.mainConf.hideVScroll  = hideVScroll
-        self.mainConf.hideHScroll  = hideHScroll
+        self.mainConf.showFullPath = self.showFullPath.isChecked()
+        self.mainConf.hideVScroll  = self.hideVScroll.isChecked()
+        self.mainConf.hideHScroll  = self.hideHScroll.isChecked()
 
         self.mainConf.confChanged = True
 
@@ -326,7 +324,7 @@ class GuiConfigEditProjectsTab(QWidget):
         self.backupPathRow = self.mainForm.addRow(
             "Save document interval",
             self.autoSaveDoc,
-            "How often the open document is automatically saved.",
+            "How often the open document is automatically saved",
             theUnit="seconds"
         )
 
@@ -339,7 +337,7 @@ class GuiConfigEditProjectsTab(QWidget):
         self.backupPathRow = self.mainForm.addRow(
             "Save project interval",
             self.autoSaveProj,
-            "How often the open project is automatically saved.",
+            "How often the open project is automatically saved",
             theUnit="seconds"
         )
 
@@ -364,7 +362,7 @@ class GuiConfigEditProjectsTab(QWidget):
         self.mainForm.addRow(
             "Run backup when the project is closed",
             self.backupOnClose,
-            "Can be overridden for individual projects in project settings."
+            "Can be overridden for individual projects in project settings"
         )
 
         ## Ask before backup
@@ -375,7 +373,7 @@ class GuiConfigEditProjectsTab(QWidget):
         self.mainForm.addRow(
             "Ask before running backup",
             self.askBeforeBackup,
-            "Disabling this will cause backups to run in the background."
+            "Disabling this will cause backups to run in the background"
         )
 
         return
@@ -386,17 +384,11 @@ class GuiConfigEditProjectsTab(QWidget):
         validEntries = True
         needsRestart = False
 
-        autoSaveDoc     = self.autoSaveDoc.value()
-        autoSaveProj    = self.autoSaveProj.value()
-        backupPath      = self.backupPath
-        backupOnClose   = self.backupOnClose.isChecked()
-        askBeforeBackup = self.askBeforeBackup.isChecked()
-
-        self.mainConf.autoSaveDoc     = autoSaveDoc
-        self.mainConf.autoSaveProj    = autoSaveProj
-        self.mainConf.backupPath      = backupPath
-        self.mainConf.backupOnClose   = backupOnClose
-        self.mainConf.askBeforeBackup = askBeforeBackup
+        self.mainConf.autoSaveDoc     = self.autoSaveDoc.value()
+        self.mainConf.autoSaveProj    = self.autoSaveProj.value()
+        self.mainConf.backupPath      = self.backupPath
+        self.mainConf.backupOnClose   = self.backupOnClose.isChecked()
+        self.mainConf.askBeforeBackup = self.askBeforeBackup.isChecked()
 
         self.mainConf.confChanged = True
 
@@ -464,7 +456,7 @@ class GuiConfigEditLayoutTab(QWidget):
         self.mainForm.addRow(
             "Font family",
             self.textStyleFont,
-            "Font for the document editor and viewer.",
+            "Font for the document editor and viewer",
             theButton = self.fontButton
         )
 
@@ -477,7 +469,7 @@ class GuiConfigEditLayoutTab(QWidget):
         self.mainForm.addRow(
             "Font size",
             self.textStyleSize,
-            "Font size for the document editor and viewer.",
+            "Font size for the document editor and viewer",
             theUnit = "pt"
         )
 
@@ -494,7 +486,7 @@ class GuiConfigEditLayoutTab(QWidget):
         self.mainForm.addRow(
             "Maximum text width in \"Normal Mode\"",
             self.textFlowMax,
-            "Horizontal margins are scaled automatically.",
+            "Horizontal margins are scaled automatically",
             theUnit="px"
         )
 
@@ -507,7 +499,7 @@ class GuiConfigEditLayoutTab(QWidget):
         self.mainForm.addRow(
             "Maximum text width in \"Focus Mode\"",
             self.focusDocWidth,
-            "Horizontal margins are scaled automatically.",
+            "Horizontal margins are scaled automatically",
             theUnit="px"
         )
 
@@ -517,7 +509,7 @@ class GuiConfigEditLayoutTab(QWidget):
         self.mainForm.addRow(
             "Disable maximum text width in \"Normal Mode\"",
             self.textFlowFixed,
-            "If disabled, minimum text width is defined by the margin."
+            "If disabled, minimum text width is defined by the margin"
         )
 
         ## Focus Mode Footer
@@ -526,7 +518,7 @@ class GuiConfigEditLayoutTab(QWidget):
         self.mainForm.addRow(
             "Hide document footer in \"Focus Mode\"",
             self.hideFocusFooter,
-            "Hide the information bar at the bottom of the document."
+            "Hide the information bar at the bottom of the document"
         )
 
         ## Justify Text
@@ -535,7 +527,7 @@ class GuiConfigEditLayoutTab(QWidget):
         self.mainForm.addRow(
             "Justify the text margins in editor and viewer",
             self.textJustify,
-            "Lay out text with straight edges in the editor and viewer."
+            "Lay out text with straight edges in the editor and viewer"
         )
 
         ## Document Margins
@@ -547,7 +539,7 @@ class GuiConfigEditLayoutTab(QWidget):
         self.mainForm.addRow(
             "Text margin",
             self.textMargin,
-            "If maximum width is set, this becomes the minimum margin.",
+            "If maximum width is set, this becomes the minimum margin",
             theUnit="px"
         )
 
@@ -560,7 +552,7 @@ class GuiConfigEditLayoutTab(QWidget):
         self.mainForm.addRow(
             "Tab width",
             self.tabWidth,
-            "The width of a tab key press in the editor and viewer.",
+            "The width of a tab key press in the editor and viewer",
             theUnit="px"
         )
 
@@ -574,7 +566,7 @@ class GuiConfigEditLayoutTab(QWidget):
         self.mainForm.addRow(
             "Scroll past end of the document",
             self.scrollPastEnd,
-            "Allow scrolling until the last line is centred in the editor."
+            "Allow scrolling until the last line is centred in the editor"
         )
 
         ## Typewriter Scrolling
@@ -583,7 +575,7 @@ class GuiConfigEditLayoutTab(QWidget):
         self.mainForm.addRow(
             "Typewriter style scrolling when you type",
             self.autoScroll,
-            "Try to keep the cursor at a fixed vertical position."
+            "Try to keep the cursor at a fixed vertical position"
         )
 
         ## Font Size
@@ -595,7 +587,7 @@ class GuiConfigEditLayoutTab(QWidget):
         self.mainForm.addRow(
             "Minimum position for Typewriter scrolling",
             self.autoScrollPos,
-            "In units of percentage of the editor height.",
+            "In units of percentage of the editor height",
             theUnit = "%"
         )
 
@@ -607,31 +599,18 @@ class GuiConfigEditLayoutTab(QWidget):
         validEntries = True
         needsRestart = False
 
-        textFont        = self.textStyleFont.text()
-        textSize        = self.textStyleSize.value()
-        textWidth       = self.textFlowMax.value()
-        focusWidth      = self.focusDocWidth.value()
-        textFixedW      = not self.textFlowFixed.isChecked()
-        hideFocusFooter = self.hideFocusFooter.isChecked()
-        doJustify       = self.textJustify.isChecked()
-        textMargin      = self.textMargin.value()
-        tabWidth        = self.tabWidth.value()
-        scrollPastEnd   = self.scrollPastEnd.isChecked()
-        autoScroll      = self.autoScroll.isChecked()
-        autoScrollPos   = self.autoScrollPos.value()
-
-        self.mainConf.textFont        = textFont
-        self.mainConf.textSize        = textSize
-        self.mainConf.textWidth       = textWidth
-        self.mainConf.focusWidth      = focusWidth
-        self.mainConf.textFixedW      = textFixedW
-        self.mainConf.hideFocusFooter = hideFocusFooter
-        self.mainConf.doJustify       = doJustify
-        self.mainConf.textMargin      = textMargin
-        self.mainConf.tabWidth        = tabWidth
-        self.mainConf.scrollPastEnd   = scrollPastEnd
-        self.mainConf.autoScroll      = autoScroll
-        self.mainConf.autoScrollPos   = autoScrollPos
+        self.mainConf.textFont        = self.textStyleFont.text()
+        self.mainConf.textSize        = self.textStyleSize.value()
+        self.mainConf.textWidth       = self.textFlowMax.value()
+        self.mainConf.focusWidth      = self.focusDocWidth.value()
+        self.mainConf.textFixedW      = not self.textFlowFixed.isChecked()
+        self.mainConf.hideFocusFooter = self.hideFocusFooter.isChecked()
+        self.mainConf.doJustify       = self.textJustify.isChecked()
+        self.mainConf.textMargin      = self.textMargin.value()
+        self.mainConf.tabWidth        = self.tabWidth.value()
+        self.mainConf.scrollPastEnd   = self.scrollPastEnd.isChecked()
+        self.mainConf.autoScroll      = self.autoScroll.isChecked()
+        self.mainConf.autoScrollPos   = self.autoScrollPos.value()
 
         self.mainConf.confChanged = True
 
@@ -686,15 +665,32 @@ class GuiConfigEditEditingTab(QWidget):
         self.mainForm.addRow(
             "Highlight theme",
             self.selectSyntax,
-            "Colour theme to apply to the editor and viewer."
+            "Colour theme to apply to the editor and viewer"
         )
 
         self.highlightQuotes = QSwitch()
         self.highlightQuotes.setChecked(self.mainConf.highlightQuotes)
+        self.highlightQuotes.toggled.connect(self._toggleHighlightQuotes)
         self.mainForm.addRow(
             "Highlight text wrapped in quotes",
             self.highlightQuotes,
-            "Applies to single, double and straight quotes."
+            "Applies to single, double and straight quotes"
+        )
+
+        self.allowOpenSQuote = QSwitch()
+        self.allowOpenSQuote.setChecked(self.mainConf.allowOpenSQuote)
+        self.mainForm.addRow(
+            "Allow open-ended single quotes",
+            self.allowOpenSQuote,
+            "Highlight single-quoted line with no closing quote"
+        )
+
+        self.allowOpenDQuote = QSwitch()
+        self.allowOpenDQuote.setChecked(self.mainConf.allowOpenDQuote)
+        self.mainForm.addRow(
+            "Allow open-ended double quotes",
+            self.allowOpenDQuote,
+            "Highlight double-quoted line with no closing quote"
         )
 
         self.highlightEmph = QSwitch()
@@ -702,7 +698,7 @@ class GuiConfigEditEditingTab(QWidget):
         self.mainForm.addRow(
             "Add highlight colour to emphasised text",
             self.highlightEmph,
-            "Applies to emphasis, strong and strikethrough."
+            "Applies to emphasis, strong and strikethrough"
         )
 
         # Spell Checking
@@ -728,12 +724,12 @@ class GuiConfigEditEditingTab(QWidget):
         self.mainForm.addRow(
             "Spell check provider",
             self.spellToolList,
-            "Note that the internal spell check tool is quite slow."
+            "Note that the internal spell check tool is quite slow"
         )
         self.mainForm.addRow(
             "Spell check language",
             self.spellLangList,
-            "Available languages are determined by your system."
+            "Available languages are determined by your system"
         )
 
         ## Big Document Size Limit
@@ -745,7 +741,7 @@ class GuiConfigEditEditingTab(QWidget):
         self.mainForm.addRow(
             "Big document limit",
             self.bigDocLimit,
-            "Full spell checking is disabled above this limit.",
+            "Full spell checking is disabled above this limit",
             theUnit="kB"
         )
 
@@ -759,7 +755,7 @@ class GuiConfigEditEditingTab(QWidget):
         self.mainForm.addRow(
             "Show tabs and spaces",
             self.showTabsNSpaces,
-            "Add symbols to indicate tabs and spaces in the editor."
+            "Add symbols to indicate tabs and spaces in the editor"
         )
 
         ## Show Line Endings
@@ -768,7 +764,7 @@ class GuiConfigEditEditingTab(QWidget):
         self.mainForm.addRow(
             "Show line endings",
             self.showLineEndings,
-            "Add a symbol to indicate line endings in the editor."
+            "Add a symbol to indicate line endings in the editor"
         )
 
         return
@@ -779,23 +775,16 @@ class GuiConfigEditEditingTab(QWidget):
         validEntries = True
         needsRestart = False
 
-        guiSyntax       = self.selectSyntax.currentData()
-        highlightQuotes = self.highlightQuotes.isChecked()
-        highlightEmph   = self.highlightEmph.isChecked()
-        spellTool       = self.spellToolList.currentData()
-        spellLanguage   = self.spellLangList.currentData()
-        bigDocLimit     = self.bigDocLimit.value()
-        showTabsNSpaces = self.showTabsNSpaces.isChecked()
-        showLineEndings = self.showLineEndings.isChecked()
-
-        self.mainConf.guiSyntax       = guiSyntax
-        self.mainConf.highlightQuotes = highlightQuotes
-        self.mainConf.highlightEmph   = highlightEmph
-        self.mainConf.spellTool       = spellTool
-        self.mainConf.spellLanguage   = spellLanguage
-        self.mainConf.bigDocLimit     = bigDocLimit
-        self.mainConf.showTabsNSpaces = showTabsNSpaces
-        self.mainConf.showLineEndings = showLineEndings
+        self.mainConf.guiSyntax       = self.selectSyntax.currentData()
+        self.mainConf.highlightQuotes = self.highlightQuotes.isChecked()
+        self.mainConf.allowOpenSQuote = self.allowOpenSQuote.isChecked()
+        self.mainConf.allowOpenDQuote = self.allowOpenDQuote.isChecked()
+        self.mainConf.highlightEmph   = self.highlightEmph.isChecked()
+        self.mainConf.spellTool       = self.spellToolList.currentData()
+        self.mainConf.spellLanguage   = self.spellLangList.currentData()
+        self.mainConf.bigDocLimit     = self.bigDocLimit.value()
+        self.mainConf.showTabsNSpaces = self.showTabsNSpaces.isChecked()
+        self.mainConf.showLineEndings = self.showLineEndings.isChecked()
 
         self.mainConf.confChanged = True
 
@@ -833,6 +822,18 @@ class GuiConfigEditEditingTab(QWidget):
 
         return
 
+    ##
+    #  Slots
+    ##
+
+    def _toggleHighlightQuotes(self, theState):
+        """Enables or disables switches controlled by the highlight
+        quotes switch.
+        """
+        self.allowOpenSQuote.setEnabled(theState)
+        self.allowOpenDQuote.setEnabled(theState)
+        return
+
 # END Class GuiConfigEditEditingTab
 
 class GuiConfigEditAutoReplaceTab(QWidget):
@@ -859,7 +860,7 @@ class GuiConfigEditAutoReplaceTab(QWidget):
         self.mainForm.addRow(
             "Auto-select word under cursor",
             self.autoSelect,
-            "Apply formatting to word under cursor if no selection is made."
+            "Apply formatting to word under cursor if no selection is made"
         )
 
         ## Auto-Replace as You Type Main Switch
@@ -869,7 +870,7 @@ class GuiConfigEditAutoReplaceTab(QWidget):
         self.mainForm.addRow(
             "Auto-replace text as you type",
             self.autoReplaceMain,
-            "Allow the editor to replace symbols as you type."
+            "Allow the editor to replace symbols as you type"
         )
 
         # Auto-Replace
@@ -883,7 +884,7 @@ class GuiConfigEditAutoReplaceTab(QWidget):
         self.mainForm.addRow(
             "Auto-replace single quotes",
             self.autoReplaceSQ,
-            "Try to guess which is an opening or a closing single quote."
+            "Try to guess which is an opening or a closing single quote"
         )
 
         ## Auto-Replace Double Quotes
@@ -893,7 +894,7 @@ class GuiConfigEditAutoReplaceTab(QWidget):
         self.mainForm.addRow(
             "Auto-replace double quotes",
             self.autoReplaceDQ,
-            "Try to guess which is an opening or a closing double quote."
+            "Try to guess which is an opening or a closing double quote"
         )
 
         ## Auto-Replace Hyphens
@@ -903,7 +904,7 @@ class GuiConfigEditAutoReplaceTab(QWidget):
         self.mainForm.addRow(
             "Auto-replace dashes",
             self.autoReplaceDash,
-            "Double and triple hyphens become short and long dashes."
+            "Double and triple hyphens become short and long dashes"
         )
 
         ## Auto-Replace Dots
@@ -913,7 +914,7 @@ class GuiConfigEditAutoReplaceTab(QWidget):
         self.mainForm.addRow(
             "Auto-replace dots",
             self.autoReplaceDots,
-            "Three consecutive dots becomes ellipsis."
+            "Three consecutive dots becomes ellipsis"
         )
 
         # Quotation Style
@@ -937,7 +938,7 @@ class GuiConfigEditAutoReplaceTab(QWidget):
         self.mainForm.addRow(
             "Single quote open style",
             self.quoteSym["SO"],
-            "The symbol to use for a leading single quote.",
+            "The symbol to use for a leading single quote",
             theButton=self.btnSingleStyleO
         )
 
@@ -953,7 +954,7 @@ class GuiConfigEditAutoReplaceTab(QWidget):
         self.mainForm.addRow(
             "Single quote close style",
             self.quoteSym["SC"],
-            "The symbol to use for a trailing single quote.",
+            "The symbol to use for a trailing single quote",
             theButton=self.btnSingleStyleC
         )
 
@@ -970,7 +971,7 @@ class GuiConfigEditAutoReplaceTab(QWidget):
         self.mainForm.addRow(
             "Double quote open style",
             self.quoteSym["DO"],
-            "The symbol to use for a leading double quote.",
+            "The symbol to use for a leading double quote",
             theButton=self.btnDoubleStyleO
         )
 
@@ -986,7 +987,7 @@ class GuiConfigEditAutoReplaceTab(QWidget):
         self.mainForm.addRow(
             "Double quote close style",
             self.quoteSym["DC"],
-            "The symbol to use for a trailing double quote.",
+            "The symbol to use for a trailing double quote",
             theButton=self.btnDoubleStyleC
         )
 
@@ -998,29 +999,17 @@ class GuiConfigEditAutoReplaceTab(QWidget):
         validEntries = True
         needsRestart = False
 
-        autoSelect      = self.autoSelect.isChecked()
-        doReplace       = self.autoReplaceMain.isChecked()
-        doReplaceSQuote = self.autoReplaceSQ.isChecked()
-        doReplaceDQuote = self.autoReplaceDQ.isChecked()
-        doReplaceDash   = self.autoReplaceDash.isChecked()
-        doReplaceDots   = self.autoReplaceDots.isChecked()
+        self.mainConf.autoSelect      = self.autoSelect.isChecked()
+        self.mainConf.doReplace       = self.autoReplaceMain.isChecked()
+        self.mainConf.doReplaceSQuote = self.autoReplaceSQ.isChecked()
+        self.mainConf.doReplaceDQuote = self.autoReplaceDQ.isChecked()
+        self.mainConf.doReplaceDash   = self.autoReplaceDash.isChecked()
+        self.mainConf.doReplaceDots   = self.autoReplaceDots.isChecked()
 
-        self.mainConf.autoSelect      = autoSelect
-        self.mainConf.doReplace       = doReplace
-        self.mainConf.doReplaceSQuote = doReplaceSQuote
-        self.mainConf.doReplaceDQuote = doReplaceDQuote
-        self.mainConf.doReplaceDash   = doReplaceDash
-        self.mainConf.doReplaceDots   = doReplaceDots
-
-        fmtSingleQuotesO = self.quoteSym["SO"].text()
-        fmtSingleQuotesC = self.quoteSym["SC"].text()
-        fmtDoubleQuotesO = self.quoteSym["DO"].text()
-        fmtDoubleQuotesC = self.quoteSym["DC"].text()
-
-        self.mainConf.fmtSingleQuotes[0] = fmtSingleQuotesO
-        self.mainConf.fmtSingleQuotes[1] = fmtSingleQuotesC
-        self.mainConf.fmtDoubleQuotes[0] = fmtDoubleQuotesO
-        self.mainConf.fmtDoubleQuotes[1] = fmtDoubleQuotesC
+        self.mainConf.fmtSingleQuotes[0] = self.quoteSym["SO"].text()
+        self.mainConf.fmtSingleQuotes[1] = self.quoteSym["SC"].text()
+        self.mainConf.fmtDoubleQuotes[0] = self.quoteSym["DO"].text()
+        self.mainConf.fmtDoubleQuotes[1] = self.quoteSym["DC"].text()
 
         self.mainConf.confChanged = True
 

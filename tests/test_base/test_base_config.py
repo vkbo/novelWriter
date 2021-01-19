@@ -74,7 +74,7 @@ def testBaseConfig_Constructor(monkeypatch):
     monkeypatch.undo()
 
     # Other
-    monkeypatch.setattr("sys.platform", "some_ther_os")
+    monkeypatch.setattr("sys.platform", "some_other_os")
     tstConf = Config()
     assert tstConf.osLinux is False
     assert tstConf.osDarwin is False
