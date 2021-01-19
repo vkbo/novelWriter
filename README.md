@@ -58,7 +58,6 @@ with:
 pip install novelwriter
 ```
 Dependencies should be installed automatically, but can also be installed directly with:
-with:
 ```bash
 pip install pyqt5 lxml pyenchant
 ```
