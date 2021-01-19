@@ -28,7 +28,8 @@ is primarily saved in JSON files.
 The full documentation is available at
 [novelwriter.readthedocs.io](https://novelwriter.readthedocs.io/).
 
-The contributing guide is available in [CONTRIBUTING](CONTRIBUTING.md).
+The contributing guide is available at
+[CONTRIBUTING](https://github.com/vkbo/novelWriter/blob/main/CONTRIBUTING.md).
 
 
 ## Implementation
@@ -40,126 +41,50 @@ tests are run on the latest versions of Ubuntu Linux, Windows Server and macOS.
 
 # Installing and Running
 
+For install instructions, please check the [documentation](https://novelwriter.readthedocs.io/) in
+the [Getting Started](https://novelwriter.readthedocs.io/en/latest/int_started.html) section.
+
+## TLDR Instructions
+
+**Note:** You may need to replace `python` with `python3` and `pip` with `pip3` in the instructions
+below on some systems. You may also want to add the `--user` flag for `pip` to install in your user
+space only.
+
+### Install from PyPi
+
 novelWriter is available on [pypi.org](https://pypi.org/project/novelWriter/), and can be installed
 with:
 ```bash
 pip install novelwriter
 ```
-
-To upgrade an existing installation, use:
-```bash
-pip install --upgrade novelwriter
-```
-
-Dependencies are installed automatically.
-
-
-If you're running from source, dependencies can be installed with:
-```bash
-pip install -r requirements.txt
-```
-
-You can also install the dependencies manually with:
+Dependencies should be installed automatically, but can also be installed directly with:
+with:
 ```bash
 pip install pyqt5 lxml pyenchant
 ```
 
-Below are some brief instructions on how to get started on different operating systems.
+### Setup on Linux
 
-
-## Linux
-
-Either download the source, or install with pip.
-
-If you run from source, install the dependencies via pip, or directly from the OS repo. There are
-very few dependencies, and they should be available in the standard repo. The Python packages
-needed are `pyqt5`, `lxml` and `pyenchant`.
-
-### Installing from Source
-
-You can also install novelWriter from source with:
+If you're running from source, the following commands will set up novelWriter on Linux:
 ```bash
-python setup.py sample
-sudo python setup.py install
-sudo python setup.py xdg-install
+pip install -r requirements.txt
+python setup.py install
+python setup.py xdg-install
 ```
 
-The last line will install the application icons and set up a launcher for novelWriter. The script
-may prompt you to choose which executable to configure if it finds more than one.
+### Setup on macOS
 
-**Note:** If your distro has multiple versions of Python installed, you may need to use the
-`python3` command instead of `python`.
-
-### Running from Source
-
-If you want to run directly from the source, the application can be started with:
+If you're running from source, the following commands will set up novelWriter on macOS:
 ```bash
-./novelWriter.py
-```
-
-You can also create a launcher for running directly from source with:
-```bash
-python3 setup.py xdg-install
-```
-This will install the launcher and icons for the current user. To install them system-wide, run the
-above command with `sudo` or as root.
-
-For more install options, see [Build and Install novelWriter](setup/README.md).
-
-
-## macOS
-
-These instructions assume you're using brew, and have Python and pip set up. If not, see the
-[brew docs](https://docs.brew.sh/Homebrew-and-Python) for help.
-
-Main requirements are installed via the requirements file. You also need to install the `pyobjc`
-package on macOS, so you must run:
-```bash
+brew install enchant
 pip3 install --user -r requirements.txt
 pip3 install --user pyobjc
 ```
 
-For spell checking you may also need to install the enchant package. It comes with a lot of default
-dictionaries.
-```bash
-brew install enchant
-```
+### Setup on Windows
 
-## Windows
-
-On Windows, you may first need to install Python. See the [python.org](https://www.python.org/)
-website for download packages. It is recommended that you install the latest version of Python 3.8.
-
-To install dependencies, run:
-```bash
-pip install --user -r requirements.txt
-```
-
-**Note:** On Windows, make sure Python3 is in your PATH if you want to launch novelWriter from
-command line. You can also right click the `novelWriter.py` file, create a shortcut, then right
-click again, select "Properties" and change the target to your python executable and
-`novelWriter.py`.
-
-It should look something like this:
-```
-C:\...\AppData\Local\Programs\Python\Python38\python.exe novelWriter.py
-```
-
-You can also run the `make.py` script to generate a single executable, or an installer.
-See [Build and Install novelWriter](setup/README.md) for more details.
-
-
-## Package Versions
-
-Exporting to Markdown requires PyQt/Qt 5.14. There are no known minimum for `lxml`, but the code
-was originally written with 4.2. The optional spell check library must be at least 3.0.0 to work
-with Windows 64 bit systems. On Linux, 2.0.0 also works fine.
-
-If no external spell checking tool is installed, novelWriter will use a basic spell checker based
-on standard Python package `difflib`. Currently, only English dictionaries are available for this
-spell checker, but more can be added to the `nw/assets/dict` folder. See the
-[README](nw/assets/dict/README.md) file in that folder for how to generate more dictionaries. Note
-that the difflib-based option is both slow and limited.
+For Windows, you can either install via PyPi, or use the Windows installer available from the
+[releases](https://github.com/vkbo/novelWriter/releases) page.
 
 ## Debugging
 
@@ -257,7 +182,7 @@ to quickly navigate between the documents while editing.
 
 This is Open Source software, and novelWriter is licensed under GPLv3. See the
 [GNU General Public License website](https://www.gnu.org/licenses/gpl-3.0.en.html) for more
-details, or consult the [LICENSE](LICENSE.md) file.
+details, or consult the [LICENSE](https://github.com/vkbo/novelWriter/blob/main/LICENSE.md) file.
 
 Bundled assets have the following licenses:
 
