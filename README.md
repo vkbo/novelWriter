@@ -51,9 +51,17 @@ To upgrade an existing installation, use:
 pip install --upgrade novelwriter
 ```
 
-Dependencies are installed automatically, but can generally be installed with:
+Dependencies are installed automatically.
+
+
+If you're running from source, dependencies can be installed with:
 ```bash
 pip install -r requirements.txt
+```
+
+You can also install the dependencies manually with:
+```bash
+pip install pyqt5 lxml pyenchant
 ```
 
 Below are some brief instructions on how to get started on different operating systems.
