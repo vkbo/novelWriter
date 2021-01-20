@@ -171,6 +171,128 @@ def freezePackage(buildWindowed, oneFile, makeSetup, hostOS):
     return
 
 # =============================================================================================== #
+#  Make Simple Package
+# =============================================================================================== #
+
+def simplePackage(hostOS):
+    """Run zipapp to freeze the packages. This assumes zipapp and pip
+    are already installed.
+    """
+    # import zipapp
+
+    from nw import __version__
+
+    exName = f"novelwriter-{__version__}-zipapp"
+
+    # Set Up Folder
+    # =============
+
+    if not os.path.isdir("dist"):
+        os.mkdir("dist")
+
+    outDir = os.path.join("dist", exName)
+    libDir = os.path.join(outDir, "lib")
+    if os.path.isdir(outDir):
+        shutil.rmtree(outDir)
+
+    os.mkdir(outDir)
+    os.mkdir(libDir)
+
+    # Copy Package Files
+    # ==================
+
+    copyList = ["CHANGELOG.md", "LICENSE.md", "requirements.txt"]
+    iconList = ["novelwriter.ico", "x-novelwriter-project.ico"]
+    cpIgnore = shutil.ignore_patterns("__pycache__")
+
+    shutil.copytree("nw", os.path.join(outDir, "nw"), ignore=cpIgnore)
+    for copyFile in copyList:
+        shutil.copy2(copyFile, os.path.join(outDir, copyFile))
+    for iconFile in iconList:
+        shutil.copy2(os.path.join("setup", "icons", iconFile), os.path.join(outDir, iconFile))
+
+    with open(os.path.join(outDir, "__main__.py"), mode="w") as outFile:
+        outFile.write(
+            "#!/usr/bin/env python3\n"
+            "import os\n"
+            "import sys\n"
+            "\n"
+            "sys.path.insert(\n"
+            "    0, os.path.abspath(os.path.join(os.path.dirname(__file__), \"lib\"))\n"
+            ")\n\n"
+            "if __name__ == \"__main__\":\n"
+            "    import nw\n"
+            "    nw.main()\n"
+        )
+
+    # Install Dependencies
+    # ====================
+
+    sysCmd  = [sys.executable]
+    sysCmd += "-m pip install -r requirements.txt --target".split()
+    sysCmd += [libDir]
+    try:
+        subprocess.call(sysCmd)
+    except Exception as e:
+        print("Failed with error:")
+        print(str(e))
+        sys.exit(1)
+
+    for subDir in os.listdir(libDir):
+        chkDir = os.path.join(libDir, subDir)
+        if os.path.isdir(chkDir) and chkDir.endswith(".dist-info"):
+            shutil.rmtree(chkDir)
+
+    # Remove Unneeded Library Files
+    # =============================
+
+    delQtLibs = [
+        "Qt5DBus",
+        "Qt5Network",
+        "Qt5Qml",
+        "Qt5QmlModels",
+        "Qt5QmlWorkerScript",
+        "Qt5Quick",
+        "Qt5Quick3D",
+        "Qt5Quick3DAssetImport",
+        "Qt5Quick3DRender",
+        "Qt5Quick3DRuntimeRender",
+        "Qt5Quick3DUtils",
+        "Qt5QuickControls2",
+        "Qt5QuickParticles",
+        "Qt5QuickShapes",
+        "Qt5QuickTemplates2",
+        "Qt5QuickTest",
+        "Qt5QuickWidgets",
+        "Qt5Sql",
+    ]
+    qtLibDir = os.path.join(libDir, "PyQt5", "Qt", "lib")
+    for libName in delQtLibs:
+        if hostOS == OS_WIN:
+            libFile = f"{libName}.dll"
+        elif hostOS == OS_LINUX:
+            libFile = f"lib{libName}.so.5"
+        else:
+            continue
+
+        delFile = os.path.join(qtLibDir, libFile)
+        if os.path.isfile(delFile):
+            print("Deleting: %s" % delFile)
+            os.unlink(delFile)
+
+    qmlDir = os.path.join(libDir, "PyQt5", "Qt", "qml")
+    if os.path.isdir(qmlDir):
+        shutil.rmtree(qmlDir)
+
+    # zipapp.create_archive(
+    #     outDir,
+    #     target=os.path.join("dist", f"{exName}.pyz"),
+    #     interpreter="/usr/bin/env python3"
+    # )
+
+    return
+
+# =============================================================================================== #
 #  Inno Setup Builder
 # =============================================================================================== #
 
@@ -265,6 +387,7 @@ if __name__ == "__main__":
     oneFile = False
     makeSetup = False
     doFreeze = False
+    simPack = False
 
     helpMsg = (
         "\n"
@@ -315,6 +438,10 @@ if __name__ == "__main__":
         doFreeze = True
         oneFile = True
 
+    if "package" in sys.argv:
+        sys.argv.remove("package")
+        simPack = True
+
     if "setup" in sys.argv:
         sys.argv.remove("setup")
         if hostOS == OS_WIN:
@@ -323,6 +450,9 @@ if __name__ == "__main__":
         else:
             print("Error: Argument 'setup' for Inno Setup is Windows only.")
             sys.exit(1)
+
+    if simPack:
+        simplePackage(hostOS)
 
     if doFreeze:
         freezePackage(buildWindowed, oneFile, makeSetup, hostOS)
