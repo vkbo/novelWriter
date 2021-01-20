@@ -174,15 +174,12 @@ def freezePackage(buildWindowed, oneFile, makeSetup, hostOS):
 #  Make Simple Package
 # =============================================================================================== #
 
-def simplePackage(hostOS):
+def makeWindowsPackage():
     """Run zipapp to freeze the packages. This assumes zipapp and pip
     are already installed.
     """
-    # import zipapp
-
-    from nw import __version__
-
-    exName = f"novelwriter-{__version__}-zipapp"
+    import urllib.request
+    import zipfile
 
     # Set Up Folder
     # =============
@@ -190,7 +187,7 @@ def simplePackage(hostOS):
     if not os.path.isdir("dist"):
         os.mkdir("dist")
 
-    outDir = os.path.join("dist", exName)
+    outDir = os.path.join("dist", "novelWriter")
     libDir = os.path.join(outDir, "lib")
     if os.path.isdir(outDir):
         shutil.rmtree(outDir)
@@ -198,22 +195,63 @@ def simplePackage(hostOS):
     os.mkdir(outDir)
     os.mkdir(libDir)
 
+    # Download Python Embeddable
+    # ==========================
+
+    print("")
+    print("# Downloading Python Embeddable")
+    print("# =============================")
+    print("")
+
+    pyUrl = "https://www.python.org/ftp/python/3.8.7/python-3.8.7-embed-amd64.zip"
+    pyZip = os.path.join(outDir, "python_embed.zip")
+    print("URL: %s" % pyUrl)
+
+    urllib.request.urlretrieve(pyUrl, pyZip)
+
+    print("Extracting ...")
+    with zipfile.ZipFile(pyZip, "r") as inFile:
+        inFile.extractall(outDir)
+
+    os.unlink(pyZip)
+    print("")
+
+    # Make sample.zip
+    # ===============
+
+    try:
+        subprocess.call([sys.executable, "setup.py", "sample"])
+    except Exception as e:
+        print("Failed with error:")
+        print(str(e))
+        sys.exit(1)
+
     # Copy Package Files
     # ==================
+
+    print("")
+    print("# Copying Package Files")
+    print("# =====================")
+    print("")
 
     copyList = ["CHANGELOG.md", "LICENSE.md", "requirements.txt"]
     iconList = ["novelwriter.ico", "x-novelwriter-project.ico"]
     cpIgnore = shutil.ignore_patterns("__pycache__")
 
+    print("Copying: nw")
     shutil.copytree("nw", os.path.join(outDir, "nw"), ignore=cpIgnore)
     for copyFile in copyList:
+        print("Copying: %s" % copyFile)
         shutil.copy2(copyFile, os.path.join(outDir, copyFile))
     for iconFile in iconList:
+        print("Copying: %s" % iconFile)
         shutil.copy2(os.path.join("setup", "icons", iconFile), os.path.join(outDir, iconFile))
 
-    with open(os.path.join(outDir, "__main__.py"), mode="w") as outFile:
+    print("Writing: novelWriter.pyw")
+    with open(os.path.join(outDir, "novelWriter.pyw"), mode="w") as outFile:
         outFile.write(
-            "#!/usr/bin/env python3\n"
+            "#!\"pythonw.exe\"\n"
+            "\n"
             "import os\n"
             "import sys\n"
             "\n"
@@ -224,9 +262,15 @@ def simplePackage(hostOS):
             "    import nw\n"
             "    nw.main()\n"
         )
+    print("")
 
     # Install Dependencies
     # ====================
+
+    print("")
+    print("# Installing Dependencies")
+    print("# =======================")
+    print("")
 
     sysCmd  = [sys.executable]
     sysCmd += "-m pip install -r requirements.txt --target".split()
@@ -243,39 +287,37 @@ def simplePackage(hostOS):
         if os.path.isdir(chkDir) and chkDir.endswith(".dist-info"):
             shutil.rmtree(chkDir)
 
+    print("")
+
     # Remove Unneeded Library Files
     # =============================
 
     delQtLibs = [
-        "Qt5DBus",
-        "Qt5Network",
-        "Qt5Qml",
-        "Qt5QmlModels",
-        "Qt5QmlWorkerScript",
-        "Qt5Quick",
-        "Qt5Quick3D",
-        "Qt5Quick3DAssetImport",
-        "Qt5Quick3DRender",
-        "Qt5Quick3DRuntimeRender",
-        "Qt5Quick3DUtils",
-        "Qt5QuickControls2",
-        "Qt5QuickParticles",
-        "Qt5QuickShapes",
-        "Qt5QuickTemplates2",
-        "Qt5QuickTest",
-        "Qt5QuickWidgets",
-        "Qt5Sql",
+        "opengl32sw.dll",
+        "Qt5DBus.dll",
+        "Qt5Designer.dll",
+        "Qt5Network.dll",
+        "Qt5OpenGL.dll",
+        "Qt5Qml.dll",
+        "Qt5QmlModels.dll",
+        "Qt5QmlWorkerScript.dll",
+        "Qt5Quick.dll",
+        "Qt5Quick3D.dll",
+        "Qt5Quick3DAssetImport.dll",
+        "Qt5Quick3DRender.dll",
+        "Qt5Quick3DRuntimeRender.dll",
+        "Qt5Quick3DUtils.dll",
+        "Qt5QuickControls2.dll",
+        "Qt5QuickParticles.dll",
+        "Qt5QuickShapes.dll",
+        "Qt5QuickTemplates2.dll",
+        "Qt5QuickTest.dll",
+        "Qt5QuickWidgets.dll",
+        "Qt5Sql.dll",
     ]
-    qtLibDir = os.path.join(libDir, "PyQt5", "Qt", "lib")
+    qtLibDir = os.path.join(libDir, "PyQt5", "Qt", "bin")
     for libName in delQtLibs:
-        if hostOS == OS_WIN:
-            libFile = f"{libName}.dll"
-        elif hostOS == OS_LINUX:
-            libFile = f"lib{libName}.so.5"
-        else:
-            continue
-
-        delFile = os.path.join(qtLibDir, libFile)
+        delFile = os.path.join(qtLibDir, libName)
         if os.path.isfile(delFile):
             print("Deleting: %s" % delFile)
             os.unlink(delFile)
@@ -284,11 +326,9 @@ def simplePackage(hostOS):
     if os.path.isdir(qmlDir):
         shutil.rmtree(qmlDir)
 
-    # zipapp.create_archive(
-    #     outDir,
-    #     target=os.path.join("dist", f"{exName}.pyz"),
-    #     interpreter="/usr/bin/env python3"
-    # )
+    print("")
+    print("Done!")
+    print("")
 
     return
 
@@ -387,7 +427,7 @@ if __name__ == "__main__":
     oneFile = False
     makeSetup = False
     doFreeze = False
-    simPack = False
+    winPack = False
 
     helpMsg = (
         "\n"
@@ -438,9 +478,9 @@ if __name__ == "__main__":
         doFreeze = True
         oneFile = True
 
-    if "package" in sys.argv:
-        sys.argv.remove("package")
-        simPack = True
+    if "winpack" in sys.argv:
+        sys.argv.remove("winpack")
+        winPack = True
 
     if "setup" in sys.argv:
         sys.argv.remove("setup")
@@ -451,8 +491,8 @@ if __name__ == "__main__":
             print("Error: Argument 'setup' for Inno Setup is Windows only.")
             sys.exit(1)
 
-    if simPack:
-        simplePackage(hostOS)
+    if winPack:
+        makeWindowsPackage()
 
     if doFreeze:
         freezePackage(buildWindowed, oneFile, makeSetup, hostOS)

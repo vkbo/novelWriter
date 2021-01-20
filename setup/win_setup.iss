@@ -6,7 +6,7 @@
 #define nwAppVersion "%%version%%"
 #define nwAppPublisher "novelWriter"
 #define nwAppURL "http://novelWriter.io"
-#define nwAppExeName "novelWriter.exe"
+#define nwAppExeName "novelWriter.pyw"
 
 [Setup]
 ; NOTE: The value of AppId uniquely identifies this application. Do not use the same AppId value in installers for other applications.
@@ -45,16 +45,15 @@ Name: "quicklaunchicon"; Description: "{cm:CreateQuickLaunchIcon}"; GroupDescrip
 Source: "{#nwAppDir}\novelWriter\*"; DestDir: "{app}"; Flags: ignoreversion recursesubdirs createallsubdirs
 
 [Icons]
-Name: "{autoprograms}\{#nwAppName}"; Filename: "{app}\{#nwAppExeName}"
-Name: "{autodesktop}\{#nwAppName}"; Filename: "{app}\{#nwAppExeName}"; Tasks: desktopicon
-Name: "{userappdata}\Microsoft\Internet Explorer\Quick Launch\{#nwAppName}"; Filename: "{app}\{#nwAppExeName}"; Tasks: quicklaunchicon
+Name: "{autoprograms}\{#nwAppName}"; Filename: "{app}\pythonw.exe"; Parameters: "{#nwAppExeName}"; IconFilename: "{app}\novelwriter.ico"
+Name: "{autodesktop}\{#nwAppName}"; Filename: "{app}\pythonw.exe"; Parameters: "{#nwAppExeName}"; IconFilename: "{app}\novelwriter.ico"; Tasks: desktopicon;
 
 [Run]
-Filename: "{app}\{#nwAppExeName}"; Description: "{cm:LaunchProgram,{#StringChange(nwAppName, '&', '&&')}}"; Flags: nowait postinstall skipifsilent
+Filename:  "{app}\pythonw.exe"; Parameters: "{#nwAppExeName}"; Description: "{cm:LaunchProgram,{#StringChange(nwAppName, '&', '&&')}}"; Flags: nowait postinstall skipifsilent
 
 [Registry]
 Root: HKA; Subkey: "Software\Classes\.nwx\OpenWithProgids"; ValueType: string; ValueName: "novelWriterProject.nwx"; ValueData: ""; Flags: uninsdeletevalue
 Root: HKA; Subkey: "Software\Classes\novelWriterProject.nwx"; ValueType: string; ValueName: ""; ValueData: "novelWriter Project File"; Flags: uninsdeletekey
-Root: HKA; Subkey: "Software\Classes\novelWriterProject.nwx\DefaultIcon"; ValueType: string; ValueName: ""; ValueData: "{app}\assets\icons\x-novelwriter-project.ico"
-Root: HKA; Subkey: "Software\Classes\novelWriterProject.nwx\shell\open\command"; ValueType: string; ValueName: ""; ValueData: """{app}\novelWriter.exe"" ""%1"""
-Root: HKA; Subkey: "Software\Classes\Applications\novelWriter.exe\SupportedTypes"; ValueType: string; ValueName: ".nwx"; ValueData: ""
+Root: HKA; Subkey: "Software\Classes\novelWriterProject.nwx\DefaultIcon"; ValueType: string; ValueName: ""; ValueData: "{app}\nw\assets\icons\x-novelwriter-project.ico"
+Root: HKA; Subkey: "Software\Classes\novelWriterProject.nwx\shell\open\command"; ValueType: string; ValueName: ""; ValueData: """{app}\pythonw.exe"" ""{app}\{#nwAppExeName}"" ""%1"""
+Root: HKA; Subkey: "Software\Classes\Applications\{#nwAppExeName}\SupportedTypes"; ValueType: string; ValueName: ".nwx"; ValueData: ""
