@@ -192,10 +192,10 @@ class GuiTheme:
                             ttfList.append(ttfFile)
 
         for ttfFile in ttfList:
-            logger.verbose("Font asset: %s" % os.path.relpath(ttfFile))
+            # logger.verbose("Font asset: %s" % os.path.relpath(ttfFile))
             fontID = self.guiFontDB.addApplicationFont(ttfFile)
-            if fontID < 0:
-                logger.error("Failed to add font: %s" % os.path.relpath(ttfFile))
+            # if fontID < 0:
+            #    logger.error("Failed to add font: %s" % os.path.relpath(ttfFile))
 
         return
 
@@ -761,7 +761,7 @@ class GuiIcons:
         # Otherwise, we start looking for it
         # First in the theme folder
         if iconKey in self.themeMap:
-            logger.verbose("Loading: %s" % os.path.relpath(self.themeMap[iconKey]))
+            # logger.verbose("Loading: %s" % os.path.relpath(self.themeMap[iconKey]))
             return QIcon(self.themeMap[iconKey])
 
         # Next, we try to load the Qt style icons
