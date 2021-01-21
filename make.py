@@ -39,7 +39,7 @@ def installPackages(hostOS):
     print("#######################")
     print("")
 
-    installQueue = ["pip", "pyinstaller", "-r requirements.txt"]
+    installQueue = ["pip", "-r requirements.txt"]
     if hostOS == OS_DARWIN:
         installQueue.append("pyobjc")
 
@@ -336,7 +336,7 @@ def makeWindowsPackage():
 #  Inno Setup Builder
 # =============================================================================================== #
 
-def innoSetup():
+def innoSetup(setupType):
     """Run the Inno Setup tool to build a setup.exe file for Windows.
     """
     print("")
@@ -346,7 +346,7 @@ def innoSetup():
 
     # Read the iss template
     issData = ""
-    with open(os.path.join("setup", "win_setup.iss"), mode="r") as inFile:
+    with open(os.path.join("setup", "win_setup_%s.iss" % setupType), mode="r") as inFile:
         issData = inFile.read()
 
     import nw # noqa: E402
@@ -425,7 +425,8 @@ if __name__ == "__main__":
     # Flags and Variables
     buildWindowed = True
     oneFile = False
-    makeSetup = False
+    makeSetupExe = False
+    makeSetupPyz = False
     doFreeze = False
     winPack = False
 
@@ -433,20 +434,30 @@ if __name__ == "__main__":
         "\n"
         "novelWriter Make Tool\n"
         "=====================\n"
-        "This tool provides build commands for distibuting novelWriter as a\n"
-        "package. The available options are as follows:\n"
         "\n"
-        "help     Print the help message.\n"
-        "freeze   Freeze the package and produces a folder of all\n"
-        "         dependencies using pyinstaller.\n"
-        "onefile  Build a standalone executable with all dependencies\n"
-        "         bundled. Implies 'freeze', cannot be used with 'setup'.\n"
-        "pip      Run pip to install all package dependencies for\n"
-        "         novelWriter and this build tool.\n"
-        "setup    Build a setup.exe installer for Windows. This option\n"
-        "         automaticall disables the 'onefile' option.\n"
-        "clean    This will attempt to delete the 'build' and 'dist'\n"
-        "         folders in the current folder.\n"
+        "This tool provides build commands for distibuting novelWriter as a package on Linux and\n"
+        "Windows. The available options are as follows:\n"
+        "\n"
+        "General:\n"
+        "\n"
+        "    help       Print the help message.\n"
+        "    pip        Install all package dependencies for novelWriter using pip.\n"
+        "    clean      Will attempt to delete the 'build' and 'dist' folders.\n"
+        "\n"
+        "Python Packaging:\n"
+        "\n"
+        "    winpack    Creates a pyz package in a folder with all dependencies using the zipapp\n"
+        "               tool. This option is intended for Windows deployment.\n"
+        "    freeze     Freeze the package and produces a folder with all dependencies using the\n"
+        "               pyinstaller tool. This option is not designed for a specific OS.\n"
+        "    onefile    Build a standalone executable with all dependencies bundled using the\n"
+        "               pyinstaller tool. Implies 'freeze', cannot be used with 'setup_exe'.\n"
+        "\n"
+        "Windows Installers:\n"
+        "\n"
+        "    setup_exe  Build a Windows installer from a pyinstaller freeze package using Inno\n"
+        "               Setup. This option automatically disables 'onefile'.\n"
+        "    setup_pyz  Build a Windows installer from a zipapp package using Inno Setup.\n"
     )
 
     if "help" in sys.argv or len(sys.argv) <= 1:
@@ -482,11 +493,21 @@ if __name__ == "__main__":
         sys.argv.remove("winpack")
         winPack = True
 
-    if "setup" in sys.argv:
-        sys.argv.remove("setup")
+    if "setup_exe" in sys.argv:
+        sys.argv.remove("setup_exe")
         if hostOS == OS_WIN:
             oneFile = False
-            makeSetup = True
+            makeSetupExe = True
+            makeSetupPyz = False
+        else:
+            print("Error: Argument 'setup' for Inno Setup is Windows only.")
+            sys.exit(1)
+
+    if "setup_pyz" in sys.argv:
+        sys.argv.remove("setup_pyz")
+        if hostOS == OS_WIN:
+            makeSetupExe = False
+            makeSetupPyz = True
         else:
             print("Error: Argument 'setup' for Inno Setup is Windows only.")
             sys.exit(1)
@@ -495,9 +516,12 @@ if __name__ == "__main__":
         makeWindowsPackage()
 
     if doFreeze:
-        freezePackage(buildWindowed, oneFile, makeSetup, hostOS)
+        freezePackage(buildWindowed, oneFile, makeSetupExe, hostOS)
 
-    if makeSetup:
-        innoSetup()
+    if makeSetupExe:
+        innoSetup("exe")
+
+    if makeSetupPyz:
+        innoSetup("pyz")
 
 # END Main
