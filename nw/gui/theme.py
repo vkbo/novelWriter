@@ -196,7 +196,7 @@ class GuiTheme:
 
         for ttfFile in ttfList:
             relPath = os.path.relpath(ttfFile, fontAssets)
-            logger.verbose("Loading font: %s" % relPath)
+            logger.verbose("Adding font: %s" % relPath)
             fontID = self.guiFontDB.addApplicationFont(ttfFile)
             if fontID < 0:
                 logger.error("Failed to add font: %s" % relPath)
