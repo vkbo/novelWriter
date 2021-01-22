@@ -143,14 +143,14 @@ class GuiDocEditor(QTextEdit):
         )
 
         # Set Up Word Counter
-        self.wcInterval = self.mainConf.wordCountTimer
         self.wcTimer = QTimer()
-        self.wcTimer.setInterval(int(self.wcInterval*1000))
         self.wcTimer.timeout.connect(self._runCounter)
 
         self.wCounter = BackgroundWordCounter(self)
         self.wCounter.setAutoDelete(False)
         self.wCounter.signals.countsReady.connect(self._updateCounts)
+
+        self.wcInterval = self.mainConf.wordCountTimer
 
         self.initEditor()
 
@@ -257,6 +257,10 @@ class GuiDocEditor(QTextEdit):
 
         # Initialise the syntax highlighter
         self.hLight.initHighlighter()
+
+        # Configure word count timer
+        self.wcInterval = self.mainConf.wordCountTimer
+        self.wcTimer.setInterval(int(self.wcInterval*1000))
 
         # If we have a document open, we should reload it in case the
         # font changed, otherwise we just clear the editor entirely,
@@ -1721,7 +1725,9 @@ class BackgroundWordCounter(QRunnable):
 ## END Class BackgroundWordCounter
 
 class BackgroundWordCounterSignals(QObject):
-
+    """The QRunnable cannot emit a signal, so we need a simple QObject
+    to hold the word counter signal.
+    """
     countsReady = pyqtSignal(int, int, int)
 
 # END Class BackgroundWordCounterSignals

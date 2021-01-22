@@ -178,7 +178,7 @@ class GuiProjectEditMain(QWidget):
         self.mainForm.addRow(
             "Working title",
             self.editName,
-            "Should be set only once"
+            "Should be set only once."
         )
 
         self.editTitle = QLineEdit()
@@ -201,7 +201,7 @@ class GuiProjectEditMain(QWidget):
         self.mainForm.addRow(
             "Author(s)",
             self.editAuthors,
-            "One name per line"
+            "One name per line."
         )
 
         self.spellLang = QComboBox(self)
@@ -214,7 +214,7 @@ class GuiProjectEditMain(QWidget):
         self.mainForm.addRow(
             "Spell check language",
             self.spellLang,
-            "Overrides main preferences"
+            "Overrides main preferences."
         )
 
         spellIdx = 0
@@ -228,7 +228,7 @@ class GuiProjectEditMain(QWidget):
         self.mainForm.addRow(
             "No backup on close",
             self.doBackup,
-            "Overrides main preferences"
+            "Overrides main preferences."
         )
 
         return

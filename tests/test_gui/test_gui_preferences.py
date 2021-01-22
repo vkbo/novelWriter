@@ -78,7 +78,6 @@ def testGuiPreferences_Main(qtbot, monkeypatch, fncDir, outDir, refDir):
     nwPrefs.show()
     assert nwPrefs.mainConf.confPath == fncDir
 
-    # qtbot.stopForInteraction()
     # General Settings
     qtbot.wait(keyDelay)
     tabGeneral = nwPrefs.tabGeneral
@@ -132,98 +131,103 @@ def testGuiPreferences_Main(qtbot, monkeypatch, fncDir, outDir, refDir):
     tabProjects.autoSaveDoc.setValue(20)
     tabProjects.autoSaveProj.setValue(40)
 
-    # Text Layout Settings
+    # Document Settings
     qtbot.wait(keyDelay)
-    tabLayout = nwPrefs.tabLayout
-    nwPrefs._tabBox.setCurrentWidget(tabLayout)
+    tabDocs = nwPrefs.tabDocs
+    nwPrefs._tabBox.setCurrentWidget(tabDocs)
 
     qtbot.wait(keyDelay)
-    qtbot.mouseClick(tabLayout.fontButton, Qt.LeftButton)
+    qtbot.mouseClick(tabDocs.fontButton, Qt.LeftButton)
 
     qtbot.wait(keyDelay)
-    tabLayout.textStyleSize.setValue(13)
-    tabLayout.textFlowMax.setValue(700)
-    tabLayout.focusDocWidth.setValue(900)
-    tabLayout.textMargin.setValue(45)
-    tabLayout.tabWidth.setValue(45)
+    tabDocs.textStyleSize.setValue(13)
+    tabDocs.textFlowMax.setValue(700)
+    tabDocs.focusDocWidth.setValue(900)
+    tabDocs.textMargin.setValue(45)
+    tabDocs.tabWidth.setValue(45)
 
     qtbot.wait(keyDelay)
-    assert not tabLayout.textFlowFixed.isChecked()
-    qtbot.mouseClick(tabLayout.textFlowFixed, Qt.LeftButton)
-    assert tabLayout.textFlowFixed.isChecked()
+    assert not tabDocs.textFlowFixed.isChecked()
+    qtbot.mouseClick(tabDocs.textFlowFixed, Qt.LeftButton)
+    assert tabDocs.textFlowFixed.isChecked()
 
     qtbot.wait(keyDelay)
-    assert not tabLayout.hideFocusFooter.isChecked()
-    qtbot.mouseClick(tabLayout.hideFocusFooter, Qt.LeftButton)
-    assert tabLayout.hideFocusFooter.isChecked()
+    assert not tabDocs.hideFocusFooter.isChecked()
+    qtbot.mouseClick(tabDocs.hideFocusFooter, Qt.LeftButton)
+    assert tabDocs.hideFocusFooter.isChecked()
 
     qtbot.wait(keyDelay)
-    assert tabLayout.textJustify.isChecked()
-    qtbot.mouseClick(tabLayout.textJustify, Qt.LeftButton)
-    assert not tabLayout.textJustify.isChecked()
-
-    qtbot.wait(keyDelay)
-    assert tabLayout.scrollPastEnd.isChecked()
-    qtbot.mouseClick(tabLayout.scrollPastEnd, Qt.LeftButton)
-    assert not tabLayout.scrollPastEnd.isChecked()
-
-    qtbot.wait(keyDelay)
-    assert not tabLayout.autoScroll.isChecked()
-    qtbot.mouseClick(tabLayout.autoScroll, Qt.LeftButton)
-    assert tabLayout.autoScroll.isChecked()
+    assert tabDocs.textJustify.isChecked()
+    qtbot.mouseClick(tabDocs.textJustify, Qt.LeftButton)
+    assert not tabDocs.textJustify.isChecked()
 
     # Editor Settings
     qtbot.wait(keyDelay)
-    tabEditing = nwPrefs.tabEditing
-    nwPrefs._tabBox.setCurrentWidget(tabEditing)
+    tabEditor = nwPrefs.tabEditor
+    nwPrefs._tabBox.setCurrentWidget(tabEditor)
 
     qtbot.wait(keyDelay)
-    assert tabEditing.highlightQuotes.isChecked()
-    qtbot.mouseClick(tabEditing.highlightQuotes, Qt.LeftButton)
-    assert not tabEditing.highlightQuotes.isChecked()
+    assert not tabEditor.showTabsNSpaces.isChecked()
+    qtbot.mouseClick(tabEditor.showTabsNSpaces, Qt.LeftButton)
+    assert tabEditor.showTabsNSpaces.isChecked()
 
     qtbot.wait(keyDelay)
-    assert tabEditing.highlightEmph.isChecked()
-    qtbot.mouseClick(tabEditing.highlightEmph, Qt.LeftButton)
-    assert not tabEditing.highlightEmph.isChecked()
+    assert not tabEditor.showLineEndings.isChecked()
+    qtbot.mouseClick(tabEditor.showLineEndings, Qt.LeftButton)
+    assert tabEditor.showLineEndings.isChecked()
 
     qtbot.wait(keyDelay)
-    assert not tabEditing.showTabsNSpaces.isChecked()
-    qtbot.mouseClick(tabEditing.showTabsNSpaces, Qt.LeftButton)
-    assert tabEditing.showTabsNSpaces.isChecked()
+    assert tabEditor.scrollPastEnd.isChecked()
+    qtbot.mouseClick(tabEditor.scrollPastEnd, Qt.LeftButton)
+    assert not tabEditor.scrollPastEnd.isChecked()
 
     qtbot.wait(keyDelay)
-    assert not tabEditing.showLineEndings.isChecked()
-    qtbot.mouseClick(tabEditing.showLineEndings, Qt.LeftButton)
-    assert tabEditing.showLineEndings.isChecked()
+    assert not tabEditor.autoScroll.isChecked()
+    qtbot.mouseClick(tabEditor.autoScroll, Qt.LeftButton)
+    assert tabEditor.autoScroll.isChecked()
 
     qtbot.wait(keyDelay)
-    tabEditing.bigDocLimit.setValue(500)
+    tabEditor.bigDocLimit.setValue(500)
 
-    # Auto-Replace Settings
+    # Syntax Settings
     qtbot.wait(keyDelay)
-    tabAutoRep = nwPrefs.tabAutoRep
-    nwPrefs._tabBox.setCurrentWidget(tabAutoRep)
-
-    qtbot.wait(keyDelay)
-    assert tabAutoRep.autoSelect.isChecked()
-    qtbot.mouseClick(tabAutoRep.autoSelect, Qt.LeftButton)
-    assert not tabAutoRep.autoSelect.isChecked()
+    tabSyntax = nwPrefs.tabSyntax
+    nwPrefs._tabBox.setCurrentWidget(tabSyntax)
 
     qtbot.wait(keyDelay)
-    assert tabAutoRep.autoReplaceMain.isChecked()
-    qtbot.mouseClick(tabAutoRep.autoReplaceMain, Qt.LeftButton)
-    assert not tabAutoRep.autoReplaceMain.isChecked()
+    assert tabSyntax.highlightQuotes.isChecked()
+    qtbot.mouseClick(tabSyntax.highlightQuotes, Qt.LeftButton)
+    assert not tabSyntax.highlightQuotes.isChecked()
 
     qtbot.wait(keyDelay)
-    assert not tabAutoRep.autoReplaceSQ.isEnabled()
-    assert not tabAutoRep.autoReplaceDQ.isEnabled()
-    assert not tabAutoRep.autoReplaceDash.isEnabled()
-    assert not tabAutoRep.autoReplaceDots.isEnabled()
+    assert tabSyntax.highlightEmph.isChecked()
+    qtbot.mouseClick(tabSyntax.highlightEmph, Qt.LeftButton)
+    assert not tabSyntax.highlightEmph.isChecked()
+
+    # Automation Settings
+    qtbot.wait(keyDelay)
+    tabAuto = nwPrefs.tabAuto
+    nwPrefs._tabBox.setCurrentWidget(tabAuto)
+
+    qtbot.wait(keyDelay)
+    assert tabAuto.autoSelect.isChecked()
+    qtbot.mouseClick(tabAuto.autoSelect, Qt.LeftButton)
+    assert not tabAuto.autoSelect.isChecked()
+
+    qtbot.wait(keyDelay)
+    assert tabAuto.autoReplaceMain.isChecked()
+    qtbot.mouseClick(tabAuto.autoReplaceMain, Qt.LeftButton)
+    assert not tabAuto.autoReplaceMain.isChecked()
+
+    qtbot.wait(keyDelay)
+    assert not tabAuto.autoReplaceSQ.isEnabled()
+    assert not tabAuto.autoReplaceDQ.isEnabled()
+    assert not tabAuto.autoReplaceDash.isEnabled()
+    assert not tabAuto.autoReplaceDots.isEnabled()
 
     monkeypatch.setattr(QuotesDialog, "selectedQuote", "'")
     monkeypatch.setattr(QuotesDialog, "exec_", lambda *args: QDialog.Accepted)
-    qtbot.mouseClick(tabAutoRep.btnDoubleStyleC, Qt.LeftButton)
+    qtbot.mouseClick(tabAuto.btnDoubleStyleC, Qt.LeftButton)
 
     # Save and Check Config
     qtbot.mouseClick(nwPrefs.buttonBox.button(QDialogButtonBox.Ok), Qt.LeftButton)
