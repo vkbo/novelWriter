@@ -1,11 +1,11 @@
 #!/usr/bin/env python3
 """
-The main setup script for novelWeiter.
+The main setup script for novelWriter.
 
 It runs the standard setuptool.setup() with all options taken from the
 setup.cfg file.
 
-In addtion, a few speicalised commands are available. These are
+In addition, a few specialised commands are available. These are
 described in the help text in the main section.
 """
 

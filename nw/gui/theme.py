@@ -180,11 +180,14 @@ class GuiTheme:
     def loadFonts(self):
         """Add the fonts in the assets fonts folder to the app.
         """
+        logger.debug("Loading additional fonts")
+
         ttfList = []
         fontAssets = os.path.join(self.mainConf.assetPath, self.fontPath)
         for fontFam in os.listdir(fontAssets):
             fontDir = os.path.join(fontAssets, fontFam)
             if os.path.isdir(fontDir):
+                logger.verbose("Found font: %s" % fontFam)
                 if fontFam not in self.guiFontDB.families():
                     for fontFile in os.listdir(fontDir):
                         ttfFile = os.path.join(fontDir, fontFile)
@@ -192,10 +195,11 @@ class GuiTheme:
                             ttfList.append(ttfFile)
 
         for ttfFile in ttfList:
-            logger.verbose("Font asset: %s" % os.path.relpath(ttfFile))
+            relPath = os.path.relpath(ttfFile, fontAssets)
+            logger.verbose("Adding font: %s" % relPath)
             fontID = self.guiFontDB.addApplicationFont(ttfFile)
             if fontID < 0:
-                logger.error("Failed to add font: %s" % os.path.relpath(ttfFile))
+                logger.error("Failed to add font: %s" % relPath)
 
         return
 
@@ -251,7 +255,8 @@ class GuiTheme:
         return True
 
     def loadTheme(self):
-
+        """Load the currently specified GUI theme.
+        """
         logger.debug("Loading theme files")
         logger.debug("System icon theme is '%s'" % str(QIcon.themeName()))
 
@@ -321,6 +326,9 @@ class GuiTheme:
         return True
 
     def loadSyntax(self):
+        """Load the currently specified syntax highlighter theme.
+        """
+        logger.debug("Loading syntax theme files")
 
         confParser = configparser.ConfigParser()
         try:
@@ -367,7 +375,7 @@ class GuiTheme:
         return True
 
     def listThemes(self):
-        """Scan the gui themes folder and list all themes.
+        """Scan the GUI themes folder and list all themes.
         """
         if self.themeList:
             return self.themeList
@@ -761,7 +769,8 @@ class GuiIcons:
         # Otherwise, we start looking for it
         # First in the theme folder
         if iconKey in self.themeMap:
-            logger.verbose("Loading: %s" % os.path.relpath(self.themeMap[iconKey]))
+            relPath = os.path.relpath(self.themeMap[iconKey], self.mainConf.iconPath)
+            logger.verbose("Loading: %s" % relPath)
             return QIcon(self.themeMap[iconKey])
 
         # Next, we try to load the Qt style icons
