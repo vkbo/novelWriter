@@ -239,8 +239,8 @@ run:
    your python executable followed by ``novelWriter.py``. It should look something like this:
    ``C:\...\AppData\Local\Programs\Python\Python38\python.exe novelWriter.py``
 
-You can also run the ``make.py`` script to generate a single executable, or an installer.
-See `Build and Install novelWriter`_ for more details or run: ``python make.py help``.
+You can also run the ``setup.py`` script to generate a single executable, or an installer.
+See `Build and Install novelWriter`_ for more details or run: ``python setup.py help``.
 
 .. _python.org: https://www.python.org/downloads/windows/
 .. _Build and Install novelWriter: https://github.com/vkbo/novelWriter/blob/main/setup/README.md
