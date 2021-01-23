@@ -454,9 +454,8 @@ class GuiDocEditor(QTextEdit):
 
         docChanged = self.docChanged
         if self.mainConf.scrollPastEnd:
-            scrlFac = max(1 - self.mainConf.autoScrollPos*0.01, 0.6)
             docFrame = self.qDocument.rootFrame().frameFormat()
-            docFrame.setBottomMargin(max(0, scrlFac*(wH - uM - lM - 4*tB)))
+            docFrame.setBottomMargin(max(0, 0.9*(wH - uM - lM - 4*tB)))
             self.qDocument.rootFrame().setFrameFormat(docFrame)
 
         # This is needed as the setFrameFormat function itself will
