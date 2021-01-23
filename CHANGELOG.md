@@ -1,6 +1,6 @@
 # novelWriter Change Log
 
-## Version 1.1 Dev (Alpha)
+## Version 1.1 RC1 [2021-01-31]
 
 ### Release Notes
 
@@ -11,7 +11,22 @@
 * Added a Novel tab under the project tree where the user can navigate the novel's layout of
   chapters and scenes, similar to the Outline view, but next to the document editor. The Outline
   view and Novel/Project trees now also behave more in cooperation. When files on one are selected
-  or moved, the other will follow and update. PR #537.
+  or moved, the other will follow and update. Issues #541 and #185, PR #538.
+* Added a Project Details dialog that lists project details (moved from Project Settings' Details
+  Tab) and a Table of Contents tab where details on chapter level is displayed. This table also
+  shows an estimated page count and estimated page location of each chapter. Issue #528, PR #555.
+* Added three buttins below the project tree view that connects to Project Details, Writing
+  Statistics, and Project Settings. PR #555.
+* Added support for multi-paragraph quote (dialogue) highlighting. This feature is optional, and
+  can be enabled/disabled in Preferences. Issue #546, PR #577.
+* The settings and tabs in the Preferences dialog have been re-arranged into more tabs with less
+  options on each tab. PR #577.
+* Minor changes to margins and alignments of widgets on the main GUI. PR #565.
+
+**Code Maintenance**
+
+* Reformatting of source file headers and adding license headers to all test source files. Test
+  source files are now also organised into subfolders. PR #563.
 
 ----
 
