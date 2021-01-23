@@ -216,12 +216,13 @@ def buildSampleZip():
 #  Make Simple Package (winpack)
 ##
 
-def makeWindowsPackage():
+def makeSimplePackage(embedPython):
     """Run zipapp to freeze the packages. This assumes zipapp and pip
     are already installed.
     """
     import urllib.request
     import zipfile
+    import zipapp
 
     # Set Up Folder
     # =============
@@ -230,7 +231,10 @@ def makeWindowsPackage():
         os.mkdir("dist")
 
     outDir = os.path.join("dist", "novelWriter")
+    zipDir = os.path.join("dist", "zipapp_temp")
     libDir = os.path.join(outDir, "lib")
+    if os.path.isdir(zipDir):
+        shutil.rmtree(zipDir)
     if os.path.isdir(outDir):
         shutil.rmtree(outDir)
 
@@ -240,23 +244,24 @@ def makeWindowsPackage():
     # Download Python Embeddable
     # ==========================
 
-    print("")
-    print("# Downloading Python Embeddable")
-    print("# =============================")
-    print("")
+    if embedPython:
+        print("")
+        print("# Downloading Python Embeddable")
+        print("# =============================")
+        print("")
 
-    pyUrl = "https://www.python.org/ftp/python/3.8.7/python-3.8.7-embed-amd64.zip"
-    pyZip = os.path.join(outDir, "python_embed.zip")
-    print("URL: %s" % pyUrl)
+        pyUrl = "https://www.python.org/ftp/python/3.8.7/python-3.8.7-embed-amd64.zip"
+        pyZip = os.path.join(outDir, "python_embed.zip")
+        print("URL: %s" % pyUrl)
 
-    urllib.request.urlretrieve(pyUrl, pyZip)
+        urllib.request.urlretrieve(pyUrl, pyZip)
 
-    print("Extracting ...")
-    with zipfile.ZipFile(pyZip, "r") as inFile:
-        inFile.extractall(outDir)
+        print("Extracting ...")
+        with zipfile.ZipFile(pyZip, "r") as inFile:
+            inFile.extractall(outDir)
 
-    os.unlink(pyZip)
-    print("")
+        os.unlink(pyZip)
+        print("")
 
     # Make sample.zip
     # ===============
@@ -281,7 +286,7 @@ def makeWindowsPackage():
     cpIgnore = shutil.ignore_patterns("__pycache__")
 
     print("Copying: nw")
-    shutil.copytree("nw", os.path.join(outDir, "nw"), ignore=cpIgnore)
+    shutil.copytree("nw", os.path.join(zipDir, "nw"), ignore=cpIgnore)
     for copyFile in copyList:
         print("Copying: %s" % copyFile)
         shutil.copy2(copyFile, os.path.join(outDir, copyFile))
@@ -289,8 +294,11 @@ def makeWindowsPackage():
         print("Copying: %s" % iconFile)
         shutil.copy2(os.path.join("setup", "icons", iconFile), os.path.join(outDir, iconFile))
 
-    print("Writing: novelWriter.pyw")
-    with open(os.path.join(outDir, "novelWriter.pyw"), mode="w") as outFile:
+    nwDir = os.path.join(outDir, "nw")
+    os.rename(os.path.join(zipDir, "nw", "assets"), os.path.join(outDir, "assets"))
+
+    print("Writing: __main__.py")
+    with open(os.path.join(zipDir, "__main__.py"), mode="w") as outFile:
         outFile.write(
             "#!\"pythonw.exe\"\n"
             "\n"
@@ -298,13 +306,18 @@ def makeWindowsPackage():
             "import sys\n"
             "\n"
             "sys.path.insert(\n"
-            "    0, os.path.abspath(os.path.join(os.path.dirname(__file__), \"lib\"))\n"
+            "    0, os.path.abspath(\n"
+            "        os.path.join(os.path.dirname(__file__), os.path.pardir, \"lib\")\n"
+            "    )\n"
             ")\n\n"
             "if __name__ == \"__main__\":\n"
             "    import nw\n"
             "    nw.main()\n"
         )
     print("")
+
+    pyzFile = os.path.join(outDir, "novelWriter.pyz")
+    zipapp.create_archive(zipDir, target=pyzFile, interpreter="python3")
 
     # Install Dependencies
     # ====================
@@ -722,9 +735,9 @@ if __name__ == "__main__":
         "\n"
         "Python Packaging:\n"
         "\n"
-        "    winpack      Creates a pyz package in a folder with all dependencies using the\n"
+        "    pack-pyz     Creates a pyz package in a folder with all dependencies using the\n"
         "                 zipapp tool. This option is intended for Windows deployment.\n"
-        "    freeze       Freeze the package and produces a folder with all dependencies using\n"
+        "    pack-exe     Freeze the package and produces a folder with all dependencies using\n"
         "                 the pyinstaller tool. This option is not designed for a specific OS.\n"
         "    onefile      Build a standalone executable with all dependencies bundled using the\n"
         "                 pyinstaller tool. Implies 'freeze', cannot be used with 'setup-exe'.\n"
@@ -751,7 +764,8 @@ if __name__ == "__main__":
     makeSetupExe = False
     makeSetupPyz = False
     doFreeze = False
-    winPack = False
+    simplePack = False
+    embedPython = False
 
     # General
     # =======
@@ -783,16 +797,14 @@ if __name__ == "__main__":
     # Python Packaging
     # ================
 
-    if "winpack" in sys.argv:
-        sys.argv.remove("winpack")
+    if "pack-pyz" in sys.argv:
+        sys.argv.remove("pack-pyz")
+        simplePack = True
         if hostOS == OS_WIN:
-            winPack = True
-        else:
-            print("Error: Command 'winpack' is Windows only.")
-            sys.exit(1)
+            embedPython = True
 
-    if "freeze" in sys.argv:
-        sys.argv.remove("freeze")
+    if "pack-exe" in sys.argv:
+        sys.argv.remove("pack-exe")
         doFreeze = True
 
     if "onefile" in sys.argv:
@@ -843,8 +855,8 @@ if __name__ == "__main__":
     # For functions that are controlled by multiple flags, or need to be
     # run in a specific order.
 
-    if winPack:
-        makeWindowsPackage()
+    if simplePack:
+        makeSimplePackage(embedPython)
 
     if doFreeze:
         freezePackage(buildWindowed, oneFile, makeSetupExe, hostOS)
