@@ -26,25 +26,25 @@ synchronisation tools. The core project structure is stored in a single project 
 meta data is primarily saved in JSON files.
 
 The full documentation is available at
-[novelwriter.readthedocs.io](https://novelwriter.readthedocs.io/).
+[novelwriter.readthedocs.io](https://novelwriter.readthedocs.io).
 
 ## Implementation
 
 The application is written in Python 3 using Qt5 via PyQt5. It is developed on Linux, but it should
-in principle work fine on other operating systems as well as long as dependencies are met. The unit
-tests are run on the latest versions of Ubuntu Linux, Windows Server and macOS.
+in principle work fine on other operating systems as well, as long as dependencies are met. The
+unit tests are run on the latest versions of Ubuntu Linux, Windows Server and macOS.
 
 ## Project Contributions
 
-Contributions to this project are welcome. However, please read the Contributing Guide before
-submitting larger additions ot changes to this project. You can find the guide here:
-[CONTRIBUTING.md](https://github.com/vkbo/novelWriter/blob/main/CONTRIBUTING.md).
+Contributions to this project are welcome. However, please read the
+[Contributing Guide](https://github.com/vkbo/novelWriter/blob/main/CONTRIBUTING.md) before
+submitting larger additions ot changes to this project.
 
 
 # Key Features
 
 Some features of novelWriter are listed below. Consult the
-[documentation](https://novelwriter.readthedocs.io/) for more information.
+[documentation](https://novelwriter.readthedocs.io) for more information.
 
 ### Markdown Flavour
 
@@ -52,7 +52,7 @@ novelWriter is _not_ a full-feature Markdown editor. It is a plain text editor t
 Markdown-like syntax for adding a minimal set of formatting that is useful for the specific task
 of writing novels. The formatting is currently limited to:
 
-* Headings level 1 to 4 using the `#` syntax only.
+* Headings levels 1 to 4 using the `#` syntax only.
 * Emphasised and strongly emphasised text. These are rendered as italicised and bold text.
 * Strikethrough text.
 * Hard line breaks using two or more spaces at the end of a line.
@@ -68,7 +68,7 @@ In addition, novelWriter adds the following, which is otherwise not supported by
 * A set of meta data keyword/values starting with the character `@`. This is used for tagging
   and inter-linking documents, and can also be included when generate a project outline.
 * A variety of thin and non-breaking spaces are supported. Some of them depend on the system
-  running at least Qt 5.9.
+  running at least Qt 5.9. Earlier versions of Qt will unfortunately strip them out when saving.
 * Tabs can be used in the text, and should be properly aligned in both editor and viewer. This can
   be used to make simple tables and lists. Full Markdown tables and lists are not supported. Note
   that for HTML exports, most browsers will treat a tab as a space, so it may not show up like
@@ -76,8 +76,8 @@ In addition, novelWriter adds the following, which is otherwise not supported by
   expected.
 
 The core export format of novelWriter is HTML5. You can also export the entire project as a single
-novelWriter Markdown-flavour document. These can be imported again into novelWriter. In addition,
-other exports to Open Document, PDF, and plain text is offered through the Qt library, although
+novelWriter Markdown-flavour document. These can later be imported again into novelWriter. In
+addition, export to Open Document, PDF, and plain text is offered through the Qt library, although
 with limitations to formatting.
 
 The HTML format is well suited for file conversion tools and import into other text editors.
@@ -91,11 +91,11 @@ syntax highlighting themes. Optional GUI themes are also available, including da
 
 ### Easy Organising of Project Files
 
-The structure of the project is shown on the left hand side of the main GUI. Project files are
+The structure of the project is shown on the left hand side of the main window. Project files are
 organised into root folders, indicating what class of file they are. The most important root folder
 is the `Novel` folder, which contains all of the files that make up the finished novel. Each root
-folder can have subfolders. Folders have no impact on the final project structure, they are there
-for you to organise your files in whatever way you need.
+folder can have subfolders. Subfolders have no impact on the final project structure, they are
+there for you to organise your files in whatever way you want.
 
 The editor supports four levels of headings, which determines what level the following text belongs
 to. Headings of level one signify a book or partition title. Headings of level two signify the
@@ -104,10 +104,11 @@ four can be used internally in each scene to separate sections.
 
 Each novel file can be assigned a layout format, which shows up as a flag next to the item in the
 project tree. These are mostly to help the user track what they contain, but they also have some
-impact on the format of the exported document. See the documentation for further details.
+impact on the format of the exported document. See the
+[documentation](https://novelwriter.readthedocs.io) for further details.
 
 
-#### Project Notes
+### Project Notes
 
 Supporting note files can be added for the story plot, characters, locations, story timeline, etc.
 These have their separate root folders. These are optional files.
@@ -149,7 +150,6 @@ Dependencies should be installed automatically, but can also be installed direct
 ```bash
 pip install pyqt5 lxml pyenchant
 ```
-
 When installing via pip, novelWriter can be launched from command line with:
 ```bash
 novelWriter
@@ -169,7 +169,8 @@ python setup.py xdg-install
 ```
 
 This should make novelWriter available as a regular application on your system, with a launceher
-icon and file association with novelWriter project files.
+icon, and file association with novelWriter project files.
+
 
 ### Setup on macOS
 
@@ -178,7 +179,7 @@ If you're installing from source, the following commands will set up novelWriter
 brew install enchant
 pip3 install --user -r requirements.txt
 pip3 install --user pyobjc
-python setup.py install
+python3 setup.py install
 ```
 
 At present, novelWriter isn't further integrated into the OS, so you must launch it from command
