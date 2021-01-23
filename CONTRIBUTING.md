@@ -1,4 +1,4 @@
-# Contributing
+# Contributing Guide
 
 When contributing to this repository, please first discuss the change you wish to make via the
 issue tracker with the owner of this repository before making a change. If you just want to make a
