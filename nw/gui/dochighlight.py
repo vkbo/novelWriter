@@ -147,22 +147,29 @@ class GuiDocHighlighter(QSyntaxHighlighter):
 
         # Quoted Strings
         if self.mainConf.highlightQuotes:
-            fmtDO = self.mainConf.fmtDoubleQuotes[0]
-            fmtDC = self.mainConf.fmtDoubleQuotes[1]
-            fmtSO = self.mainConf.fmtSingleQuotes[0]
-            fmtSC = self.mainConf.fmtSingleQuotes[1]
+            fmtDbl = self.mainConf.fmtDoubleQuotes
+            fmtSng = self.mainConf.fmtSingleQuotes
+
+            # Straight Quotes
+            if fmtDbl != ["\"", "\""]:
+                self.hRules.append((
+                    "(\\B\")(.*?)(\"\\B)", {
+                        0 : self.hStyles["dialogue1"],
+                    }
+                ))
+
+            # Double Quotes
+            dblEnd = "|$" if self.mainConf.allowOpenDQuote else ""
             self.hRules.append((
-                "\\B\"(.*?)\"\\B", {
-                    0 : self.hStyles["dialogue1"],
-                }
-            ))
-            self.hRules.append((
-                f"\\B{fmtDO:s}(.*?){fmtDC:s}\\B", {
+                f"(\\B{fmtDbl[0]})(.*?)({fmtDbl[1]}\\B{dblEnd})", {
                     0 : self.hStyles["dialogue2"],
                 }
             ))
+
+            # Single Quotes
+            sngEnd = "|$" if self.mainConf.allowOpenSQuote else ""
             self.hRules.append((
-                f"\\B{fmtSO:s}(.*?){fmtSC:s}\\B", {
+                f"(\\B{fmtSng[0]})(.*?)({fmtSng[1]}\\B{sngEnd})", {
                     0 : self.hStyles["dialogue3"],
                 }
             ))

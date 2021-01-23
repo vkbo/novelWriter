@@ -74,7 +74,7 @@ def testBaseConfig_Constructor(monkeypatch):
     monkeypatch.undo()
 
     # Other
-    monkeypatch.setattr("sys.platform", "some_ther_os")
+    monkeypatch.setattr("sys.platform", "some_other_os")
     tstConf = Config()
     assert tstConf.osLinux is False
     assert tstConf.osDarwin is False
@@ -168,6 +168,28 @@ def testBaseConfig_Init(monkeypatch, tmpDir, fncDir, outDir, refDir):
     monkeypatch.undo()
 
     assert tstConf.loadConfig()
+    assert tstConf.saveConfig()
+
+    # Test Correcting Quote Settings
+    origDbl = tstConf.fmtDoubleQuotes
+    origSng = tstConf.fmtSingleQuotes
+    orDoDbl = tstConf.doReplaceDQuote
+    orDoSng = tstConf.doReplaceSQuote
+
+    tstConf.fmtDoubleQuotes = ["\"", "\""]
+    tstConf.fmtSingleQuotes = ["'", "'"]
+    tstConf.doReplaceDQuote = True
+    tstConf.doReplaceSQuote = True
+    assert tstConf.saveConfig()
+
+    assert tstConf.loadConfig()
+    assert not tstConf.doReplaceDQuote
+    assert not tstConf.doReplaceSQuote
+
+    tstConf.fmtDoubleQuotes = origDbl
+    tstConf.fmtSingleQuotes = origSng
+    tstConf.doReplaceDQuote = orDoDbl
+    tstConf.doReplaceSQuote = orDoSng
     assert tstConf.saveConfig()
 
     copyfile(confFile, testFile)
