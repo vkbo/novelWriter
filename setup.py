@@ -20,20 +20,89 @@ OS_WIN    = 2
 OS_DARWIN = 3
 
 # =============================================================================================== #
-#  Qt Assistant Documentation Builder
+#  General
 # =============================================================================================== #
+
+##
+# Package Installer (pip)
+##
+
+def installPackages(hostOS):
+    """Install package dependencies both for this script and for running
+    novelWriter itself.
+    """
+    print("")
+    print("Installing Dependencies")
+    print("#######################")
+    print("")
+
+    installQueue = ["pip", "-r requirements.txt"]
+    if hostOS == OS_DARWIN:
+        installQueue.append("pyobjc")
+
+    pyCmd = [sys.executable, "-m"]
+    pipCmd = ["pip", "install", "--user", "--upgrade"]
+    for stepCmd in installQueue:
+        pkgCmd = stepCmd.split(" ")
+        try:
+            subprocess.call(pyCmd + pipCmd + pkgCmd)
+        except Exception as e:
+            print("Failed with error:")
+            print(str(e))
+            sys.exit(1)
+
+    return
+
+##
+#  Clean Build and Dist Folders (clean)
+##
+
+def cleanInstall():
+    """Recursively delete the 'build' and 'dist' folders.
+    """
+    print("")
+    print("Cleaning up build environment ...")
+
+    buildDir = os.path.join(os.getcwd(), "build")
+    if os.path.isdir(buildDir):
+        try:
+            shutil.rmtree(buildDir)
+            print("Deleted folder 'build'")
+        except Exception as e:
+            print("Error: Cannot delete 'build' folder.")
+            print(str(e))
+            sys.exit(1)
+    else:
+        print("Folder 'build' not found")
+
+    distDir = os.path.join(os.getcwd(), "dist")
+    if os.path.isdir(distDir):
+        try:
+            shutil.rmtree(distDir)
+            print("Deleted folder 'dist'")
+        except Exception as e:
+            print("Error: Cannot delete 'dist' folder.")
+            print(str(e))
+            sys.exit(1)
+    else:
+        print("Folder 'dist' not found")
+
+    print("")
+
+    return
+
+# =============================================================================================== #
+#  Additional Buiilds
+# =============================================================================================== #
+
+##
+#  Qt Assistant Documentation Builder (qthelp)
+##
 
 def buildQtDocs():
     """This function will build the documentation as a Qt help file. The
     file is then copied into the nw/assets/help directory and can be
     included in builds.
-
-    Depends on packages:
-     * pip install sphinx
-     * pip install sphinx-rtd-theme
-     * pip install sphinxcontrib-qthelp
-
-    It also requires the qhelpgenerator to be available on the system.
     """
     buildDir = os.path.join("docs", "build", "qthelp")
     helpDir  = os.path.join("nw", "assets", "help")
@@ -85,6 +154,13 @@ def buildQtDocs():
     print("")
     if buildFail:
         print("Documentation build: FAILED")
+        print("")
+        print("Dependencies:")
+        print(" * pip install sphinx")
+        print(" * pip install sphinx-rtd-theme")
+        print(" * pip install sphinxcontrib-qthelp")
+        print("")
+        print("It also requires the qhelpgenerator to be available on the system.")
         sys.exit(1)
     else:
         print("Documentation build: OK")
@@ -92,9 +168,9 @@ def buildQtDocs():
 
     return
 
-# =============================================================================================== #
-#  Sample Project ZIP File Builder
-# =============================================================================================== #
+##
+#  Sample Project ZIP File Builder (sample)
+##
 
 def buildSampleZip():
     """Bundle the sample project into a single zip file to be saved into
@@ -133,8 +209,312 @@ def buildSampleZip():
     return
 
 # =============================================================================================== #
-#  Create Launcher
+#  Python Packaging
 # =============================================================================================== #
+
+##
+#  Make Simple Package (winpack)
+##
+
+def makeSimplePackage(embedPython):
+    """Run zipapp to freeze the packages. This assumes zipapp and pip
+    are already installed.
+    """
+    import urllib.request
+    import zipfile
+    import zipapp
+
+    # Set Up Folder
+    # =============
+
+    if not os.path.isdir("dist"):
+        os.mkdir("dist")
+
+    outDir = os.path.join("dist", "novelWriter")
+    zipDir = os.path.join("dist", "zipapp_temp")
+    libDir = os.path.join(outDir, "lib")
+    if os.path.isdir(zipDir):
+        shutil.rmtree(zipDir)
+    if os.path.isdir(outDir):
+        shutil.rmtree(outDir)
+
+    os.mkdir(outDir)
+    os.mkdir(libDir)
+
+    # Download Python Embeddable
+    # ==========================
+
+    if embedPython:
+        print("")
+        print("# Adding Python Embeddable")
+        print("# ========================")
+        print("")
+
+        pyVers = "%d.%d.%d" % (sys.version_info[:3])
+        zipFile = "python-%s-embed-amd64.zip" % pyVers
+        pyZip = os.path.join("dist", zipFile)
+        if not os.path.isfile(pyZip):
+            pyUrl = f"https://www.python.org/ftp/python/{pyVers}/{zipFile}"
+            print("Downloading: %s" % pyUrl)
+            urllib.request.urlretrieve(pyUrl, pyZip)
+
+        print("Extracting ...")
+        with zipfile.ZipFile(pyZip, "r") as inFile:
+            inFile.extractall(outDir)
+
+        print("Done")
+        print("")
+
+    # Make sample.zip
+    # ===============
+
+    try:
+        buildSampleZip()
+    except Exception as e:
+        print("Failed with error:")
+        print(str(e))
+        sys.exit(1)
+
+    # Copy Package Files
+    # ==================
+
+    print("")
+    print("# Copying Package Files")
+    print("# =====================")
+    print("")
+
+    copyList = ["CHANGELOG.md", "LICENSE.md", "requirements.txt"]
+    iconList = ["novelwriter.ico", "x-novelwriter-project.ico"]
+    cpIgnore = shutil.ignore_patterns("__pycache__")
+
+    print("Copying: nw")
+    shutil.copytree("nw", os.path.join(zipDir, "nw"), ignore=cpIgnore)
+    for copyFile in copyList:
+        print("Copying: %s" % copyFile)
+        shutil.copy2(copyFile, os.path.join(outDir, copyFile))
+    for iconFile in iconList:
+        print("Copying: %s" % iconFile)
+        shutil.copy2(os.path.join("setup", "icons", iconFile), os.path.join(outDir, iconFile))
+
+    # Move assets to outDir as it should not be packed with the rest
+    print("Copying: assets")
+    os.rename(os.path.join(zipDir, "nw", "assets"), os.path.join(outDir, "assets"))
+
+    print("Writing: __main__.py")
+    with open(os.path.join(zipDir, "__main__.py"), mode="w") as outFile:
+        outFile.write(
+            "#!\"pythonw.exe\"\n"
+            "\n"
+            "import os\n"
+            "import sys\n"
+            "\n"
+            "sys.path.insert(\n"
+            "    0, os.path.abspath(\n"
+            "        os.path.join(os.path.dirname(__file__), os.path.pardir, \"lib\")\n"
+            "    )\n"
+            ")\n\n"
+            "if __name__ == \"__main__\":\n"
+            "    import nw\n"
+            "    nw.main()\n"
+        )
+    print("")
+
+    pyzFile = os.path.join(outDir, "novelWriter.pyz")
+    zipapp.create_archive(zipDir, target=pyzFile, interpreter="python3")
+
+    # Install Dependencies
+    # ====================
+
+    print("")
+    print("# Installing Dependencies")
+    print("# =======================")
+    print("")
+
+    sysCmd  = [sys.executable]
+    sysCmd += "-m pip install -r requirements.txt --target".split()
+    sysCmd += [libDir]
+    try:
+        subprocess.call(sysCmd)
+    except Exception as e:
+        print("Failed with error:")
+        print(str(e))
+        sys.exit(1)
+
+    for subDir in os.listdir(libDir):
+        chkDir = os.path.join(libDir, subDir)
+        if os.path.isdir(chkDir) and chkDir.endswith(".dist-info"):
+            shutil.rmtree(chkDir)
+
+    print("")
+
+    # Remove Unneeded Library Files
+    # =============================
+
+    delQtLibs = [
+        "opengl32sw.dll",
+        "Qt5DBus.dll",
+        "Qt5Designer.dll",
+        "Qt5Network.dll",
+        "Qt5OpenGL.dll",
+        "Qt5Qml.dll",
+        "Qt5QmlModels.dll",
+        "Qt5QmlWorkerScript.dll",
+        "Qt5Quick.dll",
+        "Qt5Quick3D.dll",
+        "Qt5Quick3DAssetImport.dll",
+        "Qt5Quick3DRender.dll",
+        "Qt5Quick3DRuntimeRender.dll",
+        "Qt5Quick3DUtils.dll",
+        "Qt5QuickControls2.dll",
+        "Qt5QuickParticles.dll",
+        "Qt5QuickShapes.dll",
+        "Qt5QuickTemplates2.dll",
+        "Qt5QuickTest.dll",
+        "Qt5QuickWidgets.dll",
+        "Qt5Sql.dll",
+    ]
+    qtLibDir = os.path.join(libDir, "PyQt5", "Qt", "bin")
+    for libName in delQtLibs:
+        delFile = os.path.join(qtLibDir, libName)
+        if os.path.isfile(delFile):
+            print("Deleting: %s" % delFile)
+            os.unlink(delFile)
+
+    qmlDir = os.path.join(libDir, "PyQt5", "Qt", "qml")
+    if os.path.isdir(qmlDir):
+        shutil.rmtree(qmlDir)
+
+    print("")
+    print("Done!")
+    print("")
+
+    return
+
+##
+#  Run PyInstaller on Package (freeze, onefile)
+##
+
+def freezePackage(buildWindowed, oneFile, makeSetup, hostOS):
+    """Run PyInstaller to freeze the packages. This assumes all
+    dependencies are already in place.
+    """
+    try:
+        import PyInstaller.__main__ # noqa: E402
+    except Exception:
+        print("ERROR: Package 'pyinstaller' is missing on this system")
+        sys.exit(1)
+
+    print("")
+    print("Running PyInstaller")
+    print("###################")
+    print("")
+
+    if hostOS == OS_WIN:
+        dotDot = ";"
+    else:
+        dotDot = ":"
+
+    sys.modules["FixTk"] = None
+    instOpt = [
+        "--name=novelWriter",
+        "--clean",
+        "--add-data=%s%s%s" % (os.path.join("nw", "assets"), dotDot, "assets"),
+        "--icon=%s" % os.path.join("nw", "assets", "icons", "novelwriter.ico"),
+        "--exclude-module=PyQt5.QtQml",
+        "--exclude-module=PyQt5.QtBluetooth",
+        "--exclude-module=PyQt5.QtDBus",
+        "--exclude-module=PyQt5.QtMultimedia",
+        "--exclude-module=PyQt5.QtMultimediaWidgets",
+        "--exclude-module=PyQt5.QtNetwork",
+        "--exclude-module=PyQt5.QtNetworkAuth",
+        "--exclude-module=PyQt5.QtNfc",
+        "--exclude-module=PyQt5.QtQuick",
+        "--exclude-module=PyQt5.QtQuickWidgets",
+        "--exclude-module=PyQt5.QtRemoteObjects",
+        "--exclude-module=PyQt5.QtSensors",
+        "--exclude-module=PyQt5.QtSerialPort",
+        "--exclude-module=PyQt5.QtSql",
+        "--exclude-module=FixTk",
+        "--exclude-module=tcl",
+        "--exclude-module=tk",
+        "--exclude-module=_tkinter",
+        "--exclude-module=tkinter",
+        "--exclude-module=Tkinter",
+    ]
+
+    if buildWindowed:
+        instOpt.append("--windowed")
+
+    if oneFile and not makeSetup:
+        instOpt.append("--onefile")
+    else:
+        instOpt.append("--onedir")
+
+    instOpt.append("novelWriter.py")
+
+    # Make sample.zip first
+    try:
+        buildSampleZip()
+    except Exception as e:
+        print("Failed with error:")
+        print(str(e))
+        sys.exit(1)
+
+    PyInstaller.__main__.run(instOpt)
+
+    if not oneFile:
+        # These files are not needed, and take up a fair bit of space.
+        delFiles = []
+        if hostOS == OS_WIN:
+            delFiles = [
+                "Qt5DBus.dll",
+                "Qt5Network.dll",
+                "Qt5Qml.dll",
+                "Qt5QmlModels.dll",
+                "Qt5Quick.dll",
+                "Qt5Quick3D.dll",
+                "Qt5Quick3DAssetImport.dll",
+                "Qt5Quick3DRender.dll",
+                "Qt5Quick3DRuntimeRender.dll",
+                "Qt5Quick3DUtils.dll",
+                "Qt5Sql.dll"
+            ]
+        elif hostOS == OS_LINUX:
+            delFiles = [
+                "libQt5DBus.so.5",
+                "libQt5Network.so.5",
+                "libQt5Qml.so.5",
+                "libQt5QmlModels.so.5",
+                "libQt5Quick.so.5",
+                "libQt5Quick3D.so.5",
+                "libQt5Quick3DAssetImport.so.5",
+                "libQt5Quick3DRender.so.5",
+                "libQt5Quick3DRuntimeRender.so.5",
+                "libQt5Quick3DUtils.so.5",
+                "libQt5Sql.so.5"
+            ]
+        distDir = os.path.join(os.getcwd(), "dist", "novelWriter")
+        for delFile in delFiles:
+            delPath = os.path.join(distDir, delFile)
+            if os.path.isfile(delPath):
+                print("Deleting file: %s" % delPath)
+                os.unlink(delPath)
+
+    print("")
+    print("Build Finished")
+    print("")
+    print("The novelWriter executable should be in the folder named 'dist'")
+    print("")
+
+    return
+
+# =============================================================================================== #
+#  General Installers
+# =============================================================================================== #
+
+##
+#  XDG Installation (xdg-install, launcher)
+##
 
 def xdgInstall():
     """Will attempt to install icons and make a launcher.
@@ -278,12 +658,51 @@ def xdgInstall():
     return
 
 # =============================================================================================== #
-#  Process Jobs
+#  Windows Installers
+# =============================================================================================== #
+
+##
+#  Inno Setup Builder (setup-exe, setup-pyz)
+##
+
+def innoSetup(setupType):
+    """Run the Inno Setup tool to build a setup.exe file for Windows based on either a pyinstaller
+    freeze package (exe) or a zipapp package (pyz).
+    """
+    print("")
+    print("Running Inno Setup")
+    print("##################")
+    print("")
+
+    # Read the iss template
+    issData = ""
+    with open(os.path.join("setup", "win_setup_%s.iss" % setupType), mode="r") as inFile:
+        issData = inFile.read()
+
+    import nw # noqa: E402
+    issData = issData.replace(r"%%version%%", nw.__version__)
+    issData = issData.replace(r"%%dir%%", os.getcwd())
+
+    with open("setup.iss", mode="w+") as outFile:
+        outFile.write(issData)
+
+    try:
+        subprocess.call(["iscc", "setup.iss"])
+    except Exception as e:
+        print("Inno Setup failed with error:")
+        print(str(e))
+        sys.exit(1)
+
+    return
+
+# =============================================================================================== #
+#  Process Command Line
 # =============================================================================================== #
 
 if __name__ == "__main__":
     """Parse command line options and run the commands.
     """
+
     # Detect OS
     if sys.platform.startswith("linux"):
         hostOS = OS_LINUX
@@ -300,30 +719,75 @@ if __name__ == "__main__":
         "\n"
         "novelWriter Setup Tool\n"
         "======================\n"
-        "This tool provides some additional setup commands for novelWriter.\n"
         "\n"
-        "help         Print this help message.\n"
-        "qthelp       Build the help documentation for use with the Qt Assistant.\n"
-        "             Run before install to enable in the the installed version.\n"
-        "sample       Build the sample project as a zip file.\n"
-        "             Run before install to enable creating sample projects.\n"
-        "install      Installs novelWriter to the system's Python install location.\n"
-        "             Run as root or with sudo for system-wide install, or as\n"
-        "             user for single user install.\n"
-        "xdg-install  Install launcher and icons for freedesktop systems.\n"
-        "             Run as root or with sudo for system-wide install, or as\n"
-        "             user for single user install.\n"
+        "This tool provides setup and build commands for installing or distibuting novelWriter\n"
+        "as a package on Linux, Mac and Windows. The available options are as follows:\n"
+        "\n"
+        "General:\n"
+        "\n"
+        "    help         Print the help message.\n"
+        "    pip          Install all package dependencies for novelWriter using pip.\n"
+        "    clean        Will attempt to delete the 'build' and 'dist' folders.\n"
+        "\n"
+        "Additional Builds:\n"
+        "\n"
+        "    qthelp       Build the help documentation for use with the Qt Assistant. Run before\n"
+        "                 install to have local help enable in the the installed version.\n"
+        "    sample       Build the sample project as a zip file. Run before install to enable\n"
+        "                 creating sample projects in the in-app New Project Wizard.\n"
+        "\n"
+        "Python Packaging:\n"
+        "\n"
+        "    pack-pyz     Creates a pyz package in a folder with all dependencies using the\n"
+        "                 zipapp tool. On Windows, python embeddable is added to the folder.\n"
+        "    freeze       Freeze the package and produces a folder with all dependencies using\n"
+        "                 the pyinstaller tool. This option is not designed for a specific OS.\n"
+        "    onefile      Build a standalone executable with all dependencies bundled using the\n"
+        "                 pyinstaller tool. Implies 'freeze', cannot be used with 'setup-exe'.\n"
+        "\n"
+        "General Installers:\n"
+        "\n"
+        "    install      Installs novelWriter to the system's Python install location.\n"
+        "                 Run as root or with sudo for system-wide install, or as\n"
+        "                 user for single user install.\n"
+        "    xdg-install  Install launcher and icons for freedesktop systems.\n"
+        "                 Run as root or with sudo for system-wide install, or as\n"
+        "                 user for single user install.\n"
+        "\n"
+        "Windows Installers:\n"
+        "\n"
+        "    setup-exe    Build a Windows installer from a pyinstaller freeze package using Inno\n"
+        "                 Setup. This option automatically disables 'onefile'.\n"
+        "    setup-pyz    Build a Windows installer from a zipapp package using Inno Setup.\n"
     )
+
+    # Flags and Variables
+    buildWindowed = True
+    oneFile = False
+    makeSetupExe = False
+    makeSetupPyz = False
+    doFreeze = False
+    simplePack = False
+    embedPython = False
+
+    # General
+    # =======
 
     if "help" in sys.argv:
         sys.argv.remove("help")
         print(helpMsg)
         sys.exit(0)
 
-    if "launcher" in sys.argv:
-        sys.argv.remove("launcher")
-        print("The 'launcher' option has been replaced by 'xdg-install'.")
-        sys.exit(1)
+    if "pip" in sys.argv:
+        sys.argv.remove("pip")
+        installPackages(hostOS)
+
+    if "clean" in sys.argv:
+        sys.argv.remove("clean")
+        cleanInstall()
+
+    # Additional Builds
+    # =================
 
     if "qthelp" in sys.argv:
         sys.argv.remove("qthelp")
@@ -333,13 +797,78 @@ if __name__ == "__main__":
         sys.argv.remove("sample")
         buildSampleZip()
 
+    # Python Packaging
+    # ================
+
+    if "pack-pyz" in sys.argv:
+        sys.argv.remove("pack-pyz")
+        simplePack = True
+        if hostOS == OS_WIN:
+            embedPython = True
+
+    if "freeze" in sys.argv:
+        sys.argv.remove("freeze")
+        doFreeze = True
+
+    if "onefile" in sys.argv:
+        sys.argv.remove("onefile")
+        doFreeze = True
+        oneFile = True
+
+    # General Installers
+    # ==================
+
+    if "launcher" in sys.argv:
+        sys.argv.remove("launcher")
+        print("The 'launcher' command has been replaced by 'xdg-install'.")
+        sys.exit(1)
+
     if "xdg-install" in sys.argv:
         sys.argv.remove("xdg-install")
         if hostOS == OS_WIN:
-            print("ERROR: xdg-install cannot be used on Windows")
+            print("ERROR: Command 'xdg-install' cannot be used on Windows")
             sys.exit(1)
         else:
             xdgInstall()
+
+    # Windows Installers
+    # ==================
+
+    if "setup-exe" in sys.argv:
+        sys.argv.remove("setup-exe")
+        if hostOS == OS_WIN:
+            oneFile = False
+            makeSetupExe = True
+            makeSetupPyz = False
+        else:
+            print("Error: Command 'setup-exe' for Inno Setup is Windows only.")
+            sys.exit(1)
+
+    if "setup-pyz" in sys.argv:
+        sys.argv.remove("setup-pyz")
+        if hostOS == OS_WIN:
+            makeSetupExe = False
+            makeSetupPyz = True
+        else:
+            print("Error: Command 'setup-pyz' for Inno Setup is Windows only.")
+            sys.exit(1)
+
+    # Actions
+    # =======
+    # For functions that are controlled by multiple flags, or need to be
+    # run in a specific order.
+
+    if simplePack:
+        makeSimplePackage(embedPython)
+
+    if doFreeze:
+        freezePackage(buildWindowed, oneFile, makeSetupExe, hostOS)
+
+    if makeSetupExe:
+        innoSetup("exe")
+
+    if makeSetupPyz:
+        innoSetup("pyz")
 
     if len(sys.argv) <= 1:
         # Nothing more to do
