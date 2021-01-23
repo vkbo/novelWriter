@@ -35,6 +35,7 @@ from PyQt5.QtWidgets import (
 from nw.gui import GuiPreferences
 from nw.config import Config
 from nw.gui.custom import QuotesDialog
+from nw.constants import nwConst
 
 keyDelay = 2
 typeDelay = 1
@@ -67,6 +68,7 @@ def testGuiPreferences_Main(qtbot, monkeypatch, fncDir, outDir, refDir):
 
     theConf = nwGUI.mainConf
     assert theConf.confPath == fncDir
+    theConf.spellTool = nwConst.SP_INTERNAL
 
     monkeypatch.setattr(GuiPreferences, "exec_", lambda *args: None)
     monkeypatch.setattr(GuiPreferences, "result", lambda *args: QDialog.Accepted)
@@ -120,6 +122,8 @@ def testGuiPreferences_Main(qtbot, monkeypatch, fncDir, outDir, refDir):
     assert not tabProjects.backupOnClose.isChecked()
     qtbot.mouseClick(tabProjects.backupOnClose, Qt.LeftButton)
     assert tabProjects.backupOnClose.isChecked()
+
+    # qtbot.stopForInteraction()
 
     # Check Browse button
     monkeypatch.setattr(QFileDialog, "getExistingDirectory", lambda *args, **kwargs: "")
