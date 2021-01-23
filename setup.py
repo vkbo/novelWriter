@@ -246,21 +246,23 @@ def makeSimplePackage(embedPython):
 
     if embedPython:
         print("")
-        print("# Downloading Python Embeddable")
-        print("# =============================")
+        print("# Adding Python Embeddable")
+        print("# ========================")
         print("")
 
-        pyUrl = "https://www.python.org/ftp/python/3.8.7/python-3.8.7-embed-amd64.zip"
-        pyZip = os.path.join(outDir, "python_embed.zip")
-        print("URL: %s" % pyUrl)
-
-        urllib.request.urlretrieve(pyUrl, pyZip)
+        pyVers = "%d.%d.%d" % (sys.version_info[:3])
+        zipFile = "python-%s-embed-amd64.zip" % pyVers
+        pyZip = os.path.join("dist", zipFile)
+        if not os.path.isfile(pyZip):
+            pyUrl = f"https://www.python.org/ftp/python/{pyVers}/{zipFile}"
+            print("Downloading: %s" % pyUrl)
+            urllib.request.urlretrieve(pyUrl, pyZip)
 
         print("Extracting ...")
         with zipfile.ZipFile(pyZip, "r") as inFile:
             inFile.extractall(outDir)
 
-        os.unlink(pyZip)
+        print("Done")
         print("")
 
     # Make sample.zip
@@ -294,7 +296,8 @@ def makeSimplePackage(embedPython):
         print("Copying: %s" % iconFile)
         shutil.copy2(os.path.join("setup", "icons", iconFile), os.path.join(outDir, iconFile))
 
-    nwDir = os.path.join(outDir, "nw")
+    # Move assets to outDir as it should not be packed with the rest
+    print("Copying: assets")
     os.rename(os.path.join(zipDir, "nw", "assets"), os.path.join(outDir, "assets"))
 
     print("Writing: __main__.py")
@@ -736,8 +739,8 @@ if __name__ == "__main__":
         "Python Packaging:\n"
         "\n"
         "    pack-pyz     Creates a pyz package in a folder with all dependencies using the\n"
-        "                 zipapp tool. This option is intended for Windows deployment.\n"
-        "    pack-exe     Freeze the package and produces a folder with all dependencies using\n"
+        "                 zipapp tool. On Windows, python embeddable is added to the folder.\n"
+        "    freeze       Freeze the package and produces a folder with all dependencies using\n"
         "                 the pyinstaller tool. This option is not designed for a specific OS.\n"
         "    onefile      Build a standalone executable with all dependencies bundled using the\n"
         "                 pyinstaller tool. Implies 'freeze', cannot be used with 'setup-exe'.\n"
@@ -803,8 +806,8 @@ if __name__ == "__main__":
         if hostOS == OS_WIN:
             embedPython = True
 
-    if "pack-exe" in sys.argv:
-        sys.argv.remove("pack-exe")
+    if "freeze" in sys.argv:
+        sys.argv.remove("freeze")
         doFreeze = True
 
     if "onefile" in sys.argv:

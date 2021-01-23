@@ -26,7 +26,7 @@ creating sample projects in the in-app New Project Wizard.
 
 ### Python Packaging
 
-`winpack` – Creates a pyz package in a folder with all dependencies using the
+`pack-pyz` – Creates a pyz package in a folder with all dependencies using the
 zipapp tool. This option is intended for Windows deployment.
 
 `freeze` – Freeze the package and produces a folder with all dependencies using
