@@ -72,7 +72,7 @@ not conform to the standard.
 
 ## Ignored Errors
 
-Some errors are ignored in novelWriter, for various reasons. In addition, novelWriter uses
+Some `flake8` error codes are ignored for this project for various reasons. The source also uses
 camelCase function and variable names due to this being the standard for the Qt libraries, and also
 because of the author's personal preferences.
 
