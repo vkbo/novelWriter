@@ -1,5 +1,43 @@
 # novelWriter Change Log
 
+## Version 1.0.3 [2021-01-24]
+
+### Release Notes
+
+### Detailed Changelog
+
+**Bug Fixes**
+
+* Fix crash when starting novelWriter from command line on Windows from a different mounted drive
+  than where it is installed. This was caused by a relative path lookup that defaulted to the wrong
+  current directory. This works on Linux/macOS which have a common root path, but not on Windows.
+  Issue #581, PR #587.
+
+**User Interface**
+
+* Added Solarized Dark and Light GUI and syntax themes. PR #578 by @nullbasis.
+* The Typewriter Scroll Mode now works better in combination with the Scroll Past End feature. The
+  scroll mode still only works when there is actually any document to scroll, but previously it
+  would also not work until the total length of the document reached 40% of the height of the
+  editor window. This was quite confusing. This limit is now reduced to 10%. Issue #589, PR #593.
+
+**Installation**
+
+* Merged the `make.py` script into `setup.py`. PR #584.
+* Added a second way to build distributable packages of novelWriter for Windows. The new method
+  does not use any of the current package tools that produce a Windows executable of the app. These
+  packages tend to cause false virus warnings. This method uses the Python tool `zipapp` to bundle
+  novelWriter as an executable `.pyz` file, and adds Python embeddable and library dependencies
+  into the same folder. The folder itself can be distributed as-is, or a Windows installer
+  executable can be generated with `setup.py setup-pyz`. Issue #580, PR #584.
+
+**Documentation**
+
+* Updated documentation, main README and Contribution Guide to make them more consistent and to
+  improve installation instructions. Based on issue #586 and input from @mgrhm. PR #592.
+
+----
+
 ## Version 1.0.2 [2021-01-19]
 
 ### Release Notes
