@@ -268,10 +268,16 @@ class Config:
         logger.verbose("Config path: %s" % self.confPath)
         logger.verbose("Data path: %s" % self.dataPath)
 
-        self.confFile  = self.appHandle+".conf"
-        self.lastPath  = os.path.expanduser("~")
-        self.appPath   = getattr(sys, "_MEIPASS", os.path.abspath(os.path.dirname(__file__)))
-        self.appRoot   = os.path.join(self.appPath, os.path.pardir)
+        self.confFile = self.appHandle+".conf"
+        self.lastPath = os.path.expanduser("~")
+        self.appPath = getattr(sys, "_MEIPASS", os.path.abspath(os.path.dirname(__file__)))
+        self.appRoot = os.path.abspath(os.path.join(self.appPath, os.path.pardir))
+
+        if self.appRoot.endswith(".pyz"):
+            self.appRoot = os.path.abspath(os.path.join(self.appRoot, os.path.pardir))
+            self.appPath = self.appRoot
+
+        # Assets
         self.assetPath = os.path.join(self.appPath, "assets")
         self.themeRoot = os.path.join(self.assetPath, "themes")
         self.dictPath  = os.path.join(self.assetPath, "dict")

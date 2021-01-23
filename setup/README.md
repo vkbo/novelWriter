@@ -5,44 +5,48 @@ The root folder of the repository contains two scripts for setup and install:
 
 ## Script `setup.py`
 
-The `setup.py` is a standard Python setup script with a couple of additional options:
+The `setup.py` is a standard Python setup script with a couple of additional
+options:
 
-* `qthelp`: Will attempt to build a single file QtAssistand documentation file.
-  This requires the Qt tools to be installed on the local system, as well as the sphinx build tools
-  for the documentation.
-* `sample`: Will create a `sample.zip` file in the `nw/assets` folder.
-  This is the file the New Project Wizard uses to generate an example project.
-  If novelWriter is run from source, this file is not needed.
-* `xdg-install`: Will install novelWriter icons, mimetype, and desktop and menu launcher on Linux desktops.
-  the application. This should work on standard Linux desktops.
-  By default, this is installed for the current user. Run with `sudo` to install system-wide.
+### General
 
-To install novelWriter as a local Python package, run:
-```bash
-sudo python setup.py install
-```
+`help` – Print the help message
 
-## Script `make.py`
+`pip` – Install all package dependencies for novelWriter using pip.
 
-The `make.py` script provides a number of convenient options for building packages if novelWriter.
+`clean` – Will attempt to delete the `build` and `dist` folders.
 
-Usage:
-```bash
-python make.py [command]
-```
+### Additional Builds
 
-It currently accept the following commands:
+`qthelp` – Build the help documentation for use with the Qt Assistant. Run
+before install to have local help enable in the the installed version
 
-* `help`: Print the help message.
-* `freeze`: Freeze the package and produces a folder of all dependencies using pyinstaller.
-* `onefile`: Build a standalone executable with all dependencies bundled.
-   Implies `freeze`, cannot be used with `setup`.
-* `pip`: Run pip to install all package dependencies for novelWriter and this build tool.
-* `setup`: Build a setup.exe installer for Windows.
-   This option automaticall disables the `onefile` option.
-* `clean`: This will attempt to delete the `build` and `dist` folders in the current folder.
+`sample` – Build the sample project as a zip file. Run before install to enable
+creating sample projects in the in-app New Project Wizard.
 
-For instance, to create a Windows installer, run:
-```bash
-python make.py freeze setup
-```
+### Python Packaging
+
+`pack-pyz` – Creates a pyz package in a folder with all dependencies using the
+zipapp tool. This option is intended for Windows deployment.
+
+`freeze` – Freeze the package and produces a folder with all dependencies using
+the pyinstaller tool. This option is not designed for a specific OS.
+
+`onefile` – Build a standalone executable with all dependencies bundled using
+the pyinstaller tool. Implies `freeze`, cannot be used with `setup-exe`
+
+### General Installers
+
+`install` – Installs novelWriter to the system's Python install location. Run
+as root or with sudo for system-wide install, or as user for single user
+install.
+
+`xdg-install` – Install launcher and icons for freedesktop systems. Run as root
+or with sudo for system-wide install, or as user for single user install.
+
+### Windows Installers
+
+`setup-exe` – Build a Windows installer from a pyinstaller freeze package using
+Inno Setup. This option automatically disables `onefile`.
+
+`setup-pyz` – Build a Windows installer from a zipapp package using Inno Setup.

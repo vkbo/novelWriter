@@ -454,7 +454,7 @@ class GuiDocEditor(QTextEdit):
         docChanged = self.docChanged
         if self.mainConf.scrollPastEnd:
             docFrame = self.qDocument.rootFrame().frameFormat()
-            docFrame.setBottomMargin(max(0, 0.6*(wH - uM - lM - 4*tB)))
+            docFrame.setBottomMargin(max(0, 0.9*(wH - uM - lM - 4*tB)))
             self.qDocument.rootFrame().setFrameFormat(docFrame)
 
         # This is needed as the setFrameFormat function itself will
@@ -846,7 +846,7 @@ class GuiDocEditor(QTextEdit):
             if okMod and okKey:
                 cNew = self.cursorRect().center().y()
                 cMov = cNew - cOld
-                mPos = self.mainConf.autoScrollPos * self.viewport().height() * 0.01
+                mPos = self.mainConf.autoScrollPos*0.01 * self.viewport().height()
                 if abs(cMov) > 0 and cOld > mPos:
                     # Move the scroll bar
                     vBar = self.verticalScrollBar()
