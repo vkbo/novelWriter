@@ -32,7 +32,8 @@ in principle work fine on other operating systems as long as dependencies are me
 
 You can download the latest version of novelWriter from the source repository on GitHub_.
 novelWriter is also hosted on PyPi_, and can be installed on all operating systems that support Qt5
-and Python 3. It is regularly tested on Linux, Windows and macOS.
+and Python 3. It is regularly tested on Linux, Windows and macOS. The latest version of novelWriter
+is |release|.
 
 To install from PyPi you must first have the ``python`` and ``pip`` commands available on your
 system. If you don't, see specific instructions for your operating system later in this document.
@@ -48,7 +49,14 @@ To upgrade an existing installation, use:
 
    pip install --upgrade novelwriter
 
-The latest version of novelWriter is |release|.
+When installing via pip, novelWriter can be launched from command line with:
+
+.. code-block:: console
+
+   novelWriter
+
+Make sure the install location for pip is in your PATH variable. This is not always the case by
+default.
 
 .. _GitHub: https://github.com/vkbo/novelWriter/releases
 .. _PyPi: https://pypi.org/project/novelWriter/
@@ -138,6 +146,9 @@ By default, these commands install novelWriter and its icons for the current use
 for all users, run the script with the ``sudo`` command. Other options are also available. Run
 ``python setup.py help`` for a full list of install options.
 
+This should install novelWriter to either ``~/.local/bin/novelWriter`` if installed for local user
+only, or to ``/usr/local/bin/novelWriter`` if installed for all users.
+
 
 .. _a_started_macos:
 
@@ -159,6 +170,19 @@ dictionaries.
 .. code-block:: console
 
    brew install enchant
+
+With the dependencies in place, you can either launch the ``novelWriter.py`` script directly, or
+run the install command:
+
+.. code-block:: console
+
+   python setup.py install
+
+After this, you should be able to launch novelWriter by running ``novelWriter`` in a command line
+window.
+
+Right now there isn't a better integration with macOS available. Contributions from someone more
+familiar with macOS would be very much appreciated.
 
 .. _brew docs: https://docs.brew.sh/Homebrew-and-Python
 
@@ -215,8 +239,8 @@ run:
    your python executable followed by ``novelWriter.py``. It should look something like this:
    ``C:\...\AppData\Local\Programs\Python\Python38\python.exe novelWriter.py``
 
-You can also run the ``make.py`` script to generate a single executable, or an installer.
-See `Build and Install novelWriter`_ for more details or run: ``python make.py help``.
+You can also run the ``setup.py`` script to generate a single executable, or an installer.
+See `Build and Install novelWriter`_ for more details or run: ``python setup.py help``.
 
 .. _python.org: https://www.python.org/downloads/windows/
 .. _Build and Install novelWriter: https://github.com/vkbo/novelWriter/blob/main/setup/README.md
