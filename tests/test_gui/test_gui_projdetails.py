@@ -78,31 +78,33 @@ def testGuiProjDetails_Dialog(qtbot, monkeypatch, nwGUI, nwLipsum):
     tocTree = tocTab.tocTree
     assert tocTree.topLevelItemCount() == 7
     assert tocTree.topLevelItem(0).text(tocTab.C_TITLE) == "Lorem Ipsum"
-    assert tocTree.topLevelItem(2).text(tocTab.C_TITLE) == nwUnicode.U_ENSP+"Prologue"
+    assert tocTree.topLevelItem(2).text(tocTab.C_TITLE) == "Prologue"
     assert tocTree.topLevelItem(3).text(tocTab.C_TITLE) == "Act One"
-    assert tocTree.topLevelItem(4).text(tocTab.C_TITLE) == nwUnicode.U_ENSP+"Chapter One"
-    assert tocTree.topLevelItem(5).text(tocTab.C_TITLE) == nwUnicode.U_ENSP+"Chapter Two"
+    assert tocTree.topLevelItem(4).text(tocTab.C_TITLE) == "Chapter One"
+    assert tocTree.topLevelItem(5).text(tocTab.C_TITLE) == "Chapter Two"
     assert tocTree.topLevelItem(6).text(tocTab.C_TITLE) == "END"
 
     # Count Pages
     tocTab.wpValue.setValue(100)
+    tocTab.poValue.setValue(4)
     tocTab.dblValue.setChecked(False)
     tocTab._populateTree()
 
-    thePages = [1, 2, 1, 1, 11, 17, 0]
-    thePage = [1, 2, 4, 5, 6, 17, 34]
+    thePages = ["1", "2", "1", "1", "11", "17", "0"]
+    thePage = ["i", "ii", "1", "2", "3", "14", "31"]
     for i in range(7):
-        assert tocTree.topLevelItem(i).text(tocTab.C_PAGES) == f"{thePages[i]:n}"
-        assert tocTree.topLevelItem(i).text(tocTab.C_PAGE) == f"{thePage[i]:n}"
+        assert tocTree.topLevelItem(i).text(tocTab.C_PAGES) == thePages[i]
+        assert tocTree.topLevelItem(i).text(tocTab.C_PAGE) == thePage[i]
 
+    tocTab.poValue.setValue(5)
     tocTab.dblValue.setChecked(True)
     tocTab._populateTree()
 
-    thePages = [2, 2, 2, 2, 12, 18, 0]
-    thePage = [1, 3, 5, 7, 9, 21, 39]
+    thePages = ["2", "2", "2", "2", "12", "18", "0"]
+    thePage = ["i", "iii", "1", "3", "5", "17", "35"]
     for i in range(7):
-        assert tocTree.topLevelItem(i).text(tocTab.C_PAGES) == f"{thePages[i]:n}"
-        assert tocTree.topLevelItem(i).text(tocTab.C_PAGE) == f"{thePage[i]:n}"
+        assert tocTree.topLevelItem(i).text(tocTab.C_PAGES) == thePages[i]
+        assert tocTree.topLevelItem(i).text(tocTab.C_PAGE) == thePage[i]
 
     # qtbot.stopForInteraction()
 
