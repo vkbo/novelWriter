@@ -358,6 +358,7 @@ class GuiProjectDetailsContents(QWidget):
         # ========
 
         self.outerBox = QVBoxLayout()
+        self.outerBox.addWidget(QLabel("<b>Table of Contents</b>"))
         self.outerBox.addWidget(self.tocTree)
         self.outerBox.addLayout(self.optionsBox)
 
