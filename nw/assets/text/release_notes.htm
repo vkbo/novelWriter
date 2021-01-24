@@ -2,14 +2,28 @@
 <html>
 <body>
 
+<h2>Release Notes for 1.0.3</h2>
+<p><i>Released on 24 January 2021</i></p>
+<p>This patch release fixes a minor bug sometimes encountered when running novelWriter from command
+line on Windows. In addition, the Solarized Dark and Solarized Light themes have been added to the
+selection of GUI and syntax themes by a user contribution.</p>
+<p>The main change in this release is to the install scripts and the documentation related to
+installing and running novelWriter. The primary change is a different method of packaging the app
+for Windows. Instead of building an <i>.exe</i> file, the new setup instead builds a runnable zip
+file <i>.pyz</i>. The executable would often be mistakenly flagged by virus control software due to
+the packaging tools. This is a known problem with pyinstaller and similar tools, but such warnings
+are always concerning even if they are false positives.</p>
+
+<p><i>The full changelog is available
+<a href="https://github.com/vkbo/novelWriter/blob/main/CHANGELOG.md">here</a>.</i></p>
+
+<hr/>
+
 <h2>Release Notes for 1.0.2</h2>
 <p><i>Released on 19 January 2021</i></p>
 <p>This patch release fixes a few minor cosmetic issues, a minor issue with the indexer, and a bug
 when adding words to the user's own spell check dictionary. Additionally, the documentation has
 been updated based on user feedback, and some install issues resolved.</p>
-
-<p><i>The full changelog is available
-<a href="https://github.com/vkbo/novelWriter/blob/main/CHANGELOG.md">here</a>.</i></p>
 
 <hr/>
 

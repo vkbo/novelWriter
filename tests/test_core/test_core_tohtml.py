@@ -44,14 +44,14 @@ def testCoreToHtml_Format(dummyGUI):
 
     assert theHtml._formatKeywords("") == ""
     assert theHtml._formatKeywords("tag: Jane") == (
-        "<div><span class='tags'>Tag:</span> <a name='tag_Jane'>Jane</a></div>"
+        "<div><span class='tags'>Tag:</span> <a name='tag_Jane'>Jane</a></div>\n"
     )
     assert theHtml._formatKeywords("char: Bod, Jane") == (
         "<div>"
         "<span class='tags'>Characters:</span> "
         "<a href='#tag_Bod'>Bod</a>, "
         "<a href='#tag_Jane'>Jane</a>"
-        "</div>"
+        "</div>\n"
     )
 
     # Preview Mode
@@ -68,14 +68,14 @@ def testCoreToHtml_Format(dummyGUI):
 
     assert theHtml._formatKeywords("") == ""
     assert theHtml._formatKeywords("tag: Jane") == (
-        "<div><span class='tags'>Tag:</span> <a name='tag_Jane'>Jane</a></div>"
+        "<div><span class='tags'>Tag:</span> <a name='tag_Jane'>Jane</a></div>\n"
     )
     assert theHtml._formatKeywords("char: Bod, Jane") == (
         "<div>"
         "<span class='tags'>Characters:</span> "
         "<a href='#char=Bod'>Bod</a>, "
         "<a href='#char=Jane'>Jane</a>"
-        "</div>"
+        "</div>\n"
     )
 
 # END Test testCoreToHtml_Format
@@ -201,7 +201,7 @@ def testCoreToHtml_Convert(dummyGUI):
     theHtml.doConvert()
     assert theHtml.theResult == (
         "<div><span class='tags'>Characters:</span> "
-        "<a href='#tag_Bod'>Bod</a>, <a href='#tag_Jane'>Jane</a></div>"
+        "<a href='#tag_Bod'>Bod</a>, <a href='#tag_Jane'>Jane</a></div>\n"
     )
 
     # Direct Tests
