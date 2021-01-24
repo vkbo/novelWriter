@@ -965,6 +965,8 @@ class GuiMain(QMainWindow):
             logger.error("No project open")
             return
 
+        self.treeView.flushTreeOrder()
+
         dlgDetails = GuiProjectDetails(self, self.theProject)
         dlgDetails.setModal(False)
         dlgDetails.show()
