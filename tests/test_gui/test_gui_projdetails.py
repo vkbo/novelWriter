@@ -27,7 +27,6 @@ from tools import getGuiItem
 from PyQt5.QtWidgets import QAction, QMessageBox
 
 from nw.gui import GuiProjectDetails
-from nw.constants import nwUnicode
 
 keyDelay = 2
 typeDelay = 1
