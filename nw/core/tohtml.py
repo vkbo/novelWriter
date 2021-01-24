@@ -338,7 +338,7 @@ class ToHtml(Tokenizer):
                             ))
                         retText += ", ".join(refTags)
 
-        return "<div>%s</div>" % retText
+        return "<div>%s</div>\n" % retText
 
     def _buildRegEx(self):
         """Build the regular expressions
