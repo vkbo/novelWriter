@@ -38,6 +38,7 @@ from PyQt5.QtWidgets import (
 
 from nw.gui.custom import PagedDialog, QSwitch
 from nw.constants import nwUnicode
+from nw.core import numberToRoman
 
 logger = logging.getLogger(__name__)
 
@@ -109,6 +110,7 @@ class GuiProjectDetails(PagedDialog):
         widthCol4 = self.mainConf.rpxInt(cColWidth[4])
 
         wordsPerPage = self.tabContents.wpValue.value()
+        countFrom    = self.tabContents.poValue.value()
         clearDouble  = self.tabContents.dblValue.isChecked()
 
         self.optState.setValue("GuiProjectDetails", "winWidth",     winWidth)
@@ -119,6 +121,7 @@ class GuiProjectDetails(PagedDialog):
         self.optState.setValue("GuiProjectDetails", "widthCol3",    widthCol3)
         self.optState.setValue("GuiProjectDetails", "widthCol4",    widthCol4)
         self.optState.setValue("GuiProjectDetails", "wordsPerPage", wordsPerPage)
+        self.optState.setValue("GuiProjectDetails", "countFrom",    countFrom)
         self.optState.setValue("GuiProjectDetails", "clearDouble",  clearDouble)
 
         return
@@ -259,6 +262,7 @@ class GuiProjectDetailsContents(QWidget):
 
         iPx = self.theTheme.baseIconSize
         hPx = self.mainConf.pxInt(12)
+        vPx = self.mainConf.pxInt(4)
 
         # Contents Tree
         # =============
@@ -296,10 +300,14 @@ class GuiProjectDetailsContents(QWidget):
         # =======
 
         wordsPerPage = self.optState.getInt("GuiProjectDetails", "wordsPerPage", 350)
+        countFrom    = self.optState.getInt("GuiProjectDetails", "countFrom", 1)
         clearDouble  = self.optState.getInt("GuiProjectDetails", "clearDouble", True)
 
         wordsHelp = (
             "Typical word count for a 5 by 8 inch book page with 11 pt font is 350."
+        )
+        offsetHelp = (
+            "Start counting page numbers from this page."
         )
         dblHelp = (
             "Assume a new chapter or partition always start on an odd numbered page."
@@ -316,6 +324,17 @@ class GuiProjectDetailsContents(QWidget):
         self.wpValue.setToolTip(wordsHelp)
         self.wpValue.valueChanged.connect(self._populateTree)
 
+        self.poLabel = QLabel("Count pages from")
+        self.poLabel.setToolTip(offsetHelp)
+
+        self.poValue = QSpinBox()
+        self.poValue.setMinimum(1)
+        self.poValue.setMaximum(9999)
+        self.poValue.setSingleStep(1)
+        self.poValue.setValue(countFrom)
+        self.poValue.setToolTip(offsetHelp)
+        self.poValue.valueChanged.connect(self._populateTree)
+
         self.dblLabel = QLabel("Clear double pages")
         self.dblLabel.setToolTip(dblHelp)
 
@@ -324,13 +343,16 @@ class GuiProjectDetailsContents(QWidget):
         self.dblValue.setToolTip(dblHelp)
         self.dblValue.clicked.connect(self._populateTree)
 
-        self.optionsBox = QHBoxLayout()
-        self.optionsBox.addWidget(self.wpLabel)
-        self.optionsBox.addWidget(self.wpValue)
-        self.optionsBox.addStretch(1)
-        self.optionsBox.addWidget(self.dblLabel)
-        self.optionsBox.addWidget(self.dblValue)
-        self.optionsBox.setSpacing(hPx)
+        self.optionsBox = QGridLayout()
+        self.optionsBox.addWidget(self.wpLabel,  0, 0)
+        self.optionsBox.addWidget(self.wpValue,  0, 1)
+        self.optionsBox.addWidget(self.dblLabel, 0, 3)
+        self.optionsBox.addWidget(self.dblValue, 0, 4)
+        self.optionsBox.addWidget(self.poLabel,  1, 0)
+        self.optionsBox.addWidget(self.poValue,  1, 1)
+        self.optionsBox.setHorizontalSpacing(hPx)
+        self.optionsBox.setVerticalSpacing(vPx)
+        self.optionsBox.setColumnStretch(2, 1)
 
         # Assemble
         # ========
@@ -367,7 +389,7 @@ class GuiProjectDetailsContents(QWidget):
         """
         self._theToC = []
         self._theToC = self.theIndex.getTableOfContents(2)
-        self._theToC.append(("", "H0", "END", 0))
+        self._theToC.append(("", 0, "END", 0))
         return
 
     ##
@@ -379,38 +401,56 @@ class GuiProjectDetailsContents(QWidget):
         """
         dblPages = self.dblValue.isChecked()
         wpPage   = self.wpValue.value()
+        fstPage  = self.poValue.value() - 1
 
-        tPages = 1
         pTotal = 0
+        tPages = 1
 
         theList = []
         for _, tLevel, tTitle, wCount in self._theToC:
             pCount = math.ceil(wCount/wpPage)
             if dblPages:
                 pCount += pCount%2
+
             pTotal += pCount
             theList.append((tLevel, tTitle, wCount, pCount))
+
+        pMax = pTotal - fstPage
 
         self.tocTree.clear()
         for tLevel, tTitle, wCount, pCount in theList:
             newItem = QTreeWidgetItem()
 
-            if tLevel == "H2":
-                tTitle = nwUnicode.U_ENSP+tTitle
+            if tPages <= fstPage:
+                progPage = numberToRoman(tPages, True)
+                progText = ""
+            else:
+                cPage = tPages - fstPage
+                pgProg = 100.0*(cPage - 1)/pMax if pMax > 0 else 0.0
+                progPage = f"{cPage:n}"
+                progText = f"{pgProg:.1f}{nwUnicode.U_THSP}%"
 
-            pgProg = 100.0*(tPages - 1)/pTotal if pTotal > 0 else 0.0
-
-            newItem.setIcon(self.C_TITLE, self.theTheme.getIcon("doc_%s" % tLevel.lower()))
+            newItem.setIcon(self.C_TITLE, self.theTheme.getIcon("doc_h%d" % tLevel))
             newItem.setText(self.C_TITLE, tTitle)
             newItem.setText(self.C_WORDS, f"{wCount:n}")
             newItem.setText(self.C_PAGES, f"{pCount:n}")
-            newItem.setText(self.C_PAGE,  f"{tPages:n}")
-            newItem.setText(self.C_PROG,  f"{pgProg:.1f}{nwUnicode.U_THSP}%")
+            newItem.setText(self.C_PAGE,  progPage)
+            newItem.setText(self.C_PROG,  progText)
 
             newItem.setTextAlignment(self.C_WORDS, Qt.AlignRight)
             newItem.setTextAlignment(self.C_PAGES, Qt.AlignRight)
             newItem.setTextAlignment(self.C_PAGE,  Qt.AlignRight)
             newItem.setTextAlignment(self.C_PROG,  Qt.AlignRight)
+
+            # Make pages and titles/partitions stand out
+            if tLevel < 2:
+                bFont = newItem.font(self.C_TITLE)
+                if tLevel == 0:
+                    bFont.setItalic(True)
+                else:
+                    bFont.setBold(True)
+                    bFont.setUnderline(True)
+                newItem.setFont(self.C_TITLE, bFont)
 
             tPages += pCount
 
