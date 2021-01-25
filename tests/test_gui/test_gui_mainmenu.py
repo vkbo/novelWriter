@@ -392,8 +392,8 @@ def testGuiMenu_Insert(qtbot, monkeypatch, nwGUI, fncDir, fncProj):
     assert nwGUI.docEditor.getText() == nwUnicode.U_EMDASH
     nwGUI.docEditor.clear()
 
-    nwGUI.mainMenu.aInsEllipsis.activate(QAction.Trigger)
-    assert nwGUI.docEditor.getText() == nwUnicode.U_HELLIP
+    nwGUI.mainMenu.aInsFigDash.activate(QAction.Trigger)
+    assert nwGUI.docEditor.getText() == nwUnicode.U_FGDASH
     nwGUI.docEditor.clear()
 
     nwGUI.mainMenu.aInsQuoteLS.activate(QAction.Trigger)
@@ -414,6 +414,30 @@ def testGuiMenu_Insert(qtbot, monkeypatch, nwGUI, fncDir, fncProj):
 
     nwGUI.mainMenu.aInsMSApos.activate(QAction.Trigger)
     assert nwGUI.docEditor.getText() == nwUnicode.U_MAPOSS
+    nwGUI.docEditor.clear()
+
+    nwGUI.mainMenu.aInsEllipsis.activate(QAction.Trigger)
+    assert nwGUI.docEditor.getText() == nwUnicode.U_HELLIP
+    nwGUI.docEditor.clear()
+
+    nwGUI.mainMenu.aInsPrime.activate(QAction.Trigger)
+    assert nwGUI.docEditor.getText() == nwUnicode.U_PRIME
+    nwGUI.docEditor.clear()
+
+    nwGUI.mainMenu.aInsDPrime.activate(QAction.Trigger)
+    assert nwGUI.docEditor.getText() == nwUnicode.U_DPRIME
+    nwGUI.docEditor.clear()
+
+    nwGUI.mainMenu.aInsBullet.activate(QAction.Trigger)
+    assert nwGUI.docEditor.getText() == nwUnicode.U_BULL
+    nwGUI.docEditor.clear()
+
+    nwGUI.mainMenu.aInsFlower.activate(QAction.Trigger)
+    assert nwGUI.docEditor.getText() == nwUnicode.U_FLOWER
+    nwGUI.docEditor.clear()
+
+    nwGUI.mainMenu.aInsPerMille.activate(QAction.Trigger)
+    assert nwGUI.docEditor.getText() == nwUnicode.U_PERMIL
     nwGUI.docEditor.clear()
 
     nwGUI.mainMenu.aInsHardBreak.activate(QAction.Trigger)

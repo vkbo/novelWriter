@@ -157,13 +157,13 @@ def main(sysArgs=None):
     )
 
     # Defaults
-    debugLevel = logging.WARN
-    logFormat  = "{levelname:8}  {message:}"
-    confPath   = None
-    dataPath   = None
-    testMode   = False
-    qtStyle    = "Fusion"
-    cmdOpen    = None
+    logLevel  = logging.WARN
+    logFormat = "{levelname:8}  {message:}"
+    confPath  = None
+    dataPath  = None
+    testMode  = False
+    qtStyle   = "Fusion"
+    cmdOpen   = None
 
     # Parse Options
     try:
@@ -186,12 +186,12 @@ def main(sysArgs=None):
             )
             sys.exit(0)
         elif inOpt == "--info":
-            debugLevel = logging.INFO
+            logLevel = logging.INFO
         elif inOpt == "--debug":
-            debugLevel = logging.DEBUG
+            logLevel = logging.DEBUG
             logFormat  = "[{asctime:}] {name:>22}:{lineno:<4d}  {levelname:8}  {message:}"
         elif inOpt == "--verbose":
-            debugLevel = VERBOSE
+            logLevel = VERBOSE
             logFormat  = "[{asctime:}] {name:>22}:{lineno:<4d}  {levelname:8}  {message:}"
         elif inOpt == "--style":
             qtStyle = inArg
@@ -203,17 +203,16 @@ def main(sysArgs=None):
             testMode = True
 
     # Set Config Options
-    CONFIG.debugInfo = debugLevel < logging.INFO
-    CONFIG.cmdOpen   = cmdOpen
+    CONFIG.cmdOpen = cmdOpen
 
     # Set Logging
-    logFmt = logging.Formatter(fmt=logFormat, style="{")
     cHandle = logging.StreamHandler()
-    cHandle.setLevel(debugLevel)
-    cHandle.setFormatter(logFmt)
-    logger.addHandler(cHandle)
+    cHandle.setFormatter(logging.Formatter(fmt=logFormat, style="{"))
 
-    logger.setLevel(debugLevel)
+    pkgLogger = logging.getLogger(__package__)
+    pkgLogger.addHandler(cHandle)
+    pkgLogger.setLevel(logLevel)
+
     logger.info("Starting novelWriter %s (%s) %s" % (
         __version__, __hexversion__, __date__
     ))

@@ -968,11 +968,6 @@ class GuiBuildNovel(QDialog):
         """
         buildCache = os.path.join(self.theProject.projCache, nwFiles.BUILD_CACHE)
 
-        if self.mainConf.debugInfo:
-            nIndent = 2
-        else:
-            nIndent = None
-
         logger.debug("Saving build cache")
         try:
             with open(buildCache, mode="w+", encoding="utf8") as outFile:
@@ -981,7 +976,7 @@ class GuiBuildNovel(QDialog):
                     "htmlStyle" : self.htmlStyle,
                     "nwdText"   : self.nwdText,
                     "buildTime" : self.buildTime,
-                }, indent=nIndent))
+                }, indent=2))
         except Exception as e:
             logger.error("Failed to save build cache")
             logger.error(str(e))

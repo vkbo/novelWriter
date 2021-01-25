@@ -1240,16 +1240,22 @@ class GuiMain(QMainWindow):
         # Insert
         self.addAction(self.mainMenu.aInsENDash)
         self.addAction(self.mainMenu.aInsEMDash)
-        self.addAction(self.mainMenu.aInsEllipsis)
+        self.addAction(self.mainMenu.aInsFigDash)
         self.addAction(self.mainMenu.aInsQuoteLS)
         self.addAction(self.mainMenu.aInsQuoteRS)
         self.addAction(self.mainMenu.aInsQuoteLD)
         self.addAction(self.mainMenu.aInsQuoteRD)
         self.addAction(self.mainMenu.aInsMSApos)
+        self.addAction(self.mainMenu.aInsEllipsis)
+        self.addAction(self.mainMenu.aInsPrime)
+        self.addAction(self.mainMenu.aInsDPrime)
         self.addAction(self.mainMenu.aInsHardBreak)
         self.addAction(self.mainMenu.aInsNBSpace)
         self.addAction(self.mainMenu.aInsThinSpace)
         self.addAction(self.mainMenu.aInsThinNBSpace)
+        self.addAction(self.mainMenu.aInsBullet)
+        self.addAction(self.mainMenu.aInsFlower)
+        self.addAction(self.mainMenu.aInsPerMille)
 
         for mAction, _ in self.mainMenu.mInsKWItems.values():
             self.addAction(mAction)

@@ -268,10 +268,13 @@ class nwUnicode:
     U_RECQUO = "\u300f" # Right white corner bracket
 
     ## Punctuation
+    U_FGDASH = "\u2012" # Figure dash
     U_ENDASH = "\u2013" # Short dash
     U_EMDASH = "\u2014" # Long dash
     U_HELLIP = "\u2026" # Ellipsis
     U_MAPOSS = "\u02bc" # Modifier letter single apostrophe
+    U_PRIME  = "\u2032" # Prime
+    U_DPRIME = "\u2033" # Double prime
 
     ## Spaces and Lines
     U_NBSP   = "\u00a0" # Non-breaking space
@@ -286,6 +289,8 @@ class nwUnicode:
     U_CHECK  = "\u2714" # Heavy check mark
     U_MULT   = "\u2715" # Multiplication x
     U_BULL   = "\u2022" # List bullet
+    U_FLOWER = "\u2055" # Flower punctuation mark
+    U_PERMIL = "\u2030" # Per mille sign
 
     ## Arrows
     U_UTRI   = "\u25b2" # Up-pointing triangle
@@ -322,10 +327,13 @@ class nwUnicode:
     H_LWCQUO = "&#12302;"
 
     ## Punctuation
+    H_FGDASH = "&#8210;"
     H_ENDASH = "&ndash;"
     H_EMDASH = "&mdash;"
     H_HELLIP = "&hellip;"
     H_MAPOSS = "&#700;"
+    H_PRIME  = "&prime;"
+    H_DPRIME = "&#8243;"
 
     ## Spaces
     H_NBSP   = "&nbsp;"
@@ -338,6 +346,8 @@ class nwUnicode:
     H_CHECK  = "&#10004;"
     H_MULT   = "&#10005;"
     H_BULL   = "&bull;"
+    H_FLOWER = "&#8277;"
+    H_PERMIL = "&#8240;"
 
     ## Arrows
     H_UTRI   = "&#9650;"

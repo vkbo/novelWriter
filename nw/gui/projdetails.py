@@ -33,7 +33,7 @@ from PyQt5.QtCore import Qt, QSize
 from PyQt5.QtGui import QFont
 from PyQt5.QtWidgets import (
     QWidget, QDialogButtonBox, QVBoxLayout, QTreeWidget, QTreeWidgetItem,
-    QLabel, QSpinBox, QGridLayout, QHBoxLayout, QLineEdit
+    QLabel, QSpinBox, QGridLayout, QHBoxLayout, QLineEdit, QAbstractItemView
 )
 
 from nw.gui.custom import PagedDialog, QSwitch
@@ -271,6 +271,7 @@ class GuiProjectDetailsContents(QWidget):
         self.tocTree.setIconSize(QSize(iPx, iPx))
         self.tocTree.setIndentation(0)
         self.tocTree.setColumnCount(6)
+        self.tocTree.setSelectionMode(QAbstractItemView.NoSelection)
         self.tocTree.setHeaderLabels(["Title", "Words", "Pages", "Page", "Progress", ""])
 
         treeHeadItem = self.tocTree.headerItem()
