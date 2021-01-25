@@ -96,6 +96,7 @@ class OptionState():
                 "widthCol3",
                 "widthCol4",
                 "wordsPerPage",
+                "countFrom",
                 "clearDouble",
             },
         }
