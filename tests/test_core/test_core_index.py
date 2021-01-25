@@ -659,18 +659,18 @@ def testCoreIndex_ExtractData(nwMinimal, dummyGUI):
     assert theIndex.getTableOfContents(0, True) == []
     assert theIndex.getTableOfContents(1, True) == []
     assert theIndex.getTableOfContents(2, True) == [
-        ("%s:T000001" % hHandle, "H2", "Chapter One", 6),
+        ("%s:T000001" % hHandle, 2, "Chapter One", 6),
     ]
     assert theIndex.getTableOfContents(3, True) == [
-        ("%s:T000001" % hHandle, "H2", "Chapter One", 2),
-        ("%s:T000001" % sHandle, "H3", "Scene One", 2),
-        ("%s:T000001" % tHandle, "H3", "Scene Two", 2),
+        ("%s:T000001" % hHandle, 2, "Chapter One", 2),
+        ("%s:T000001" % sHandle, 3, "Scene One", 2),
+        ("%s:T000001" % tHandle, 3, "Scene Two", 2),
     ]
 
     assert theIndex.getTableOfContents(0, False) == []
     assert theIndex.getTableOfContents(1, False) == [
-        ("%s:T000001" % nHandle, "H1", "Hello World!", 12),
-        ("%s:T000011" % nHandle, "H1", "Hello World!", 18),
+        ("%s:T000001" % nHandle, 1, "Hello World!", 12),
+        ("%s:T000011" % nHandle, 1, "Hello World!", 18),
     ]
 
     assert theProject.closeProject()

@@ -627,7 +627,7 @@ class NWIndex():
                     pKey = tKey
                     tOrder.append(tKey)
                     tData[tKey] = {
-                        "level": theData["level"],
+                        "level": iLevel,
                         "title": theData["title"],
                         "words": theData["wCount"],
                     }
@@ -635,7 +635,10 @@ class NWIndex():
         theToC = []
         for tKey in tOrder:
             theToC.append((
-                tKey, tData[tKey]["level"], tData[tKey]["title"], tData[tKey]["words"]
+                tKey,
+                tData[tKey]["level"],
+                tData[tKey]["title"],
+                tData[tKey]["words"],
             ))
 
         return theToC
