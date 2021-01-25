@@ -289,6 +289,8 @@ class nwUnicode:
     U_CHECK  = "\u2714" # Heavy check mark
     U_CROSS  = "\u2715" # Heavy cross mark
     U_BULL   = "\u2022" # List bullet
+    U_TRBULL = "\u2023" # Triangle bullet
+    U_HYBULL = "\u2043" # Hyphen bullet
     U_FLOWER = "\u2055" # Flower punctuation mark
     U_PERMIL = "\u2030" # Per mille sign
     U_DEGREE = "\u00b0" # Degree symbol
@@ -349,6 +351,8 @@ class nwUnicode:
     H_CHECK  = "&#10004;"
     H_MULT   = "&#10005;"
     H_BULL   = "&bull;"
+    H_TRBULL = "&#8227;"
+    H_HYBULL = "&hybull;"
     H_FLOWER = "&#8277;"
     H_PERMIL = "&#8240;"
     H_DEGREE = "&deg;"
