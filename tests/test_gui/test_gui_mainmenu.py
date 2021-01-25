@@ -440,6 +440,18 @@ def testGuiMenu_Insert(qtbot, monkeypatch, nwGUI, fncDir, fncProj):
     assert nwGUI.docEditor.getText() == nwUnicode.U_PERMIL
     nwGUI.docEditor.clear()
 
+    nwGUI.mainMenu.aInsDegree.activate(QAction.Trigger)
+    assert nwGUI.docEditor.getText() == nwUnicode.U_DEGREE
+    nwGUI.docEditor.clear()
+
+    nwGUI.mainMenu.aInsTimes.activate(QAction.Trigger)
+    assert nwGUI.docEditor.getText() == nwUnicode.U_TIMES
+    nwGUI.docEditor.clear()
+
+    nwGUI.mainMenu.aInsDivide.activate(QAction.Trigger)
+    assert nwGUI.docEditor.getText() == nwUnicode.U_DIVIDE
+    nwGUI.docEditor.clear()
+
     nwGUI.mainMenu.aInsHardBreak.activate(QAction.Trigger)
     assert nwGUI.docEditor.getText() == "  \n"
     nwGUI.docEditor.clear()

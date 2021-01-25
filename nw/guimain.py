@@ -1256,6 +1256,9 @@ class GuiMain(QMainWindow):
         self.addAction(self.mainMenu.aInsBullet)
         self.addAction(self.mainMenu.aInsFlower)
         self.addAction(self.mainMenu.aInsPerMille)
+        self.addAction(self.mainMenu.aInsDegree)
+        self.addAction(self.mainMenu.aInsTimes)
+        self.addAction(self.mainMenu.aInsDivide)
 
         for mAction, _ in self.mainMenu.mInsKWItems.values():
             self.addAction(mAction)

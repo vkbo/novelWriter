@@ -734,26 +734,6 @@ class GuiDocEditor(QTextEdit):
         elif isinstance(theInsert, nwDocInsert):
             if theInsert == nwDocInsert.HARD_BREAK:
                 theText = "  \n"
-            elif theInsert == nwDocInsert.NB_SPACE:
-                theText = nwUnicode.U_NBSP
-            elif theInsert == nwDocInsert.THIN_SPACE:
-                theText = nwUnicode.U_THSP
-            elif theInsert == nwDocInsert.THIN_NB_SPACE:
-                theText = nwUnicode.U_THNBSP
-            elif theInsert == nwDocInsert.SHORT_DASH:
-                theText = nwUnicode.U_ENDASH
-            elif theInsert == nwDocInsert.LONG_DASH:
-                theText = nwUnicode.U_EMDASH
-            elif theInsert == nwDocInsert.FIGURE_DASH:
-                theText = nwUnicode.U_FGDASH
-            elif theInsert == nwDocInsert.MODAPOS_S:
-                theText = nwUnicode.U_MAPOSS
-            elif theInsert == nwDocInsert.ELLIPSIS:
-                theText = nwUnicode.U_HELLIP
-            elif theInsert == nwDocInsert.SINGLE_PRIME:
-                theText = nwUnicode.U_PRIME
-            elif theInsert == nwDocInsert.DOUBLE_PRIME:
-                theText = nwUnicode.U_DPRIME
             elif theInsert == nwDocInsert.QUOTE_LS:
                 theText = self.typSQOpen
             elif theInsert == nwDocInsert.QUOTE_RS:
@@ -762,12 +742,6 @@ class GuiDocEditor(QTextEdit):
                 theText = self.typDQOpen
             elif theInsert == nwDocInsert.QUOTE_RD:
                 theText = self.typDQClose
-            elif theInsert == nwDocInsert.LIST_BULLET:
-                theText = nwUnicode.U_BULL
-            elif theInsert == nwDocInsert.FLOWER_MARK:
-                theText = nwUnicode.U_FLOWER
-            elif theInsert == nwDocInsert.PER_MILLE:
-                theText = nwUnicode.U_PERMIL
             else:
                 return False
         else:

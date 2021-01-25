@@ -287,10 +287,13 @@ class nwUnicode:
 
     ## Symbols
     U_CHECK  = "\u2714" # Heavy check mark
-    U_MULT   = "\u2715" # Multiplication x
+    U_CROSS  = "\u2715" # Heavy cross mark
     U_BULL   = "\u2022" # List bullet
     U_FLOWER = "\u2055" # Flower punctuation mark
     U_PERMIL = "\u2030" # Per mille sign
+    U_DEGREE = "\u00b0" # Degree symbol
+    U_TIMES  = "\u00d7" # Multiplaction sign
+    U_DIVIDE = "\u00f7" # Division sign
 
     ## Arrows
     U_UTRI   = "\u25b2" # Up-pointing triangle
@@ -348,6 +351,9 @@ class nwUnicode:
     H_BULL   = "&bull;"
     H_FLOWER = "&#8277;"
     H_PERMIL = "&#8240;"
+    H_DEGREE = "&deg;"
+    H_TIMES  = "&times;"
+    H_DIVIDE = "&divide;"
 
     ## Arrows
     H_UTRI   = "&#9650;"

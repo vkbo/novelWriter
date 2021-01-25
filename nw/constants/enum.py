@@ -99,25 +99,12 @@ class nwDocAction(Enum):
 
 class nwDocInsert(Enum):
 
-    NO_INSERT     = 0
-    HARD_BREAK    = 1
-    NB_SPACE      = 2
-    THIN_SPACE    = 3
-    THIN_NB_SPACE = 4
-    SHORT_DASH    = 5
-    LONG_DASH     = 6
-    ELLIPSIS      = 7
-    QUOTE_LS      = 8
-    QUOTE_RS      = 9
-    QUOTE_LD      = 10
-    QUOTE_RD      = 11
-    MODAPOS_S     = 12
-    FIGURE_DASH   = 13
-    LIST_BULLET   = 14
-    PER_MILLE     = 15
-    SINGLE_PRIME  = 16
-    DOUBLE_PRIME  = 17
-    FLOWER_MARK   = 18
+    NO_INSERT  = 0
+    HARD_BREAK = 1
+    QUOTE_LS   = 2
+    QUOTE_RS   = 3
+    QUOTE_LD   = 4
+    QUOTE_RD   = 5
 
 # END Enum nwDocInsert
 
