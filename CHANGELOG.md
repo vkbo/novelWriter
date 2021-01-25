@@ -14,9 +14,10 @@
   or moved, the other will follow and update. Issues #541 and #185, PR #538.
 * Added a Project Details dialog that lists project details (moved from Project Settings' Details
   Tab) and a Table of Contents tab where details on chapter level is displayed. This table also
-  shows an estimated page count and estimated page location of each chapter. Issue #528, PR #555.
-* Added three buttins below the project tree view that connects to Project Details, Writing
-  Statistics, and Project Settings. PR #555.
+  shows an estimated page count and estimated page location of each chapter. Issue #528, PRs #555
+  and #598.
+* Added three buttons below the project tree that connects to Project Details, Writing Statistics,
+  and Project Settings. PR #555.
 * Added support for multi-paragraph quote (dialogue) highlighting. This feature is optional, and
   can be enabled/disabled in Preferences. Issue #546, PR #577.
 * The settings and tabs in the Preferences dialog have been re-arranged into more tabs with less
