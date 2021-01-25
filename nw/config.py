@@ -55,9 +55,6 @@ class Config:
         self.appName   = "novelWriter"
         self.appHandle = self.appName.lower()
 
-        # Debug Settings
-        self.debugInfo = False  # True if log level is DEBUG or VERBOSE
-
         # Config Error Handling
         self.hasError  = False  # True if the config class encountered an error
         self.errData   = []     # List of error messages
