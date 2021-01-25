@@ -112,6 +112,12 @@ class nwDocInsert(Enum):
     QUOTE_LD      = 10
     QUOTE_RD      = 11
     MODAPOS_S     = 12
+    FIGURE_DASH   = 13
+    LIST_BULLET   = 14
+    PER_MILLE     = 15
+    SINGLE_PRIME  = 16
+    DOUBLE_PRIME  = 17
+    FLOWER_MARK   = 18
 
 # END Enum nwDocInsert
 

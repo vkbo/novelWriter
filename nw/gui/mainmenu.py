@@ -511,8 +511,8 @@ class GuiMainMenu(QMenuBar):
         # Insert
         self.insertMenu = self.addMenu("&Insert")
 
-        # Insert > Dashes and Dots
-        self.mInsDashes = self.insertMenu.addMenu("Dashes and Dots")
+        # Insert > Dashes
+        self.mInsDashes = self.insertMenu.addMenu("Dashes")
 
         # Insert > Short Dash
         self.aInsENDash = QAction("Short Dash", self)
@@ -528,12 +528,12 @@ class GuiMainMenu(QMenuBar):
         self.aInsEMDash.triggered.connect(lambda: self._docInsert(nwDocInsert.LONG_DASH))
         self.mInsDashes.addAction(self.aInsEMDash)
 
-        # Insert > Ellipsis
-        self.aInsEllipsis = QAction("Ellipsis", self)
-        self.aInsEllipsis.setStatusTip("Insert ellipsis")
-        self.aInsEllipsis.setShortcut("Ctrl+K, .")
-        self.aInsEllipsis.triggered.connect(lambda: self._docInsert(nwDocInsert.ELLIPSIS))
-        self.mInsDashes.addAction(self.aInsEllipsis)
+        # Insert > Figure Dash
+        self.aInsFigDash = QAction("Figure Dash", self)
+        self.aInsFigDash.setStatusTip("Insert figure dash (same width as a number character)")
+        self.aInsFigDash.setShortcut("Ctrl+K, ~")
+        self.aInsFigDash.triggered.connect(lambda: self._docInsert(nwDocInsert.FIGURE_DASH))
+        self.mInsDashes.addAction(self.aInsFigDash)
 
         # Insert > Quote Marks
         self.mInsQuotes = self.insertMenu.addMenu("Quote Marks")
@@ -568,10 +568,34 @@ class GuiMainMenu(QMenuBar):
 
         # Insert > Alternative Apostrophe
         self.aInsMSApos = QAction("Alternative Apostrophe", self)
-        self.aInsMSApos.setStatusTip("Insert unicode modifier letter single apostrophe")
+        self.aInsMSApos.setStatusTip("Insert modifier letter single apostrophe")
         self.aInsMSApos.setShortcut("Ctrl+K, '")
         self.aInsMSApos.triggered.connect(lambda: self._docInsert(nwDocInsert.MODAPOS_S))
         self.mInsQuotes.addAction(self.aInsMSApos)
+
+        # Insert > Symbols
+        self.mInsPunct = self.insertMenu.addMenu("General Punctuation")
+
+        # Insert > Ellipsis
+        self.aInsEllipsis = QAction("Ellipsis", self)
+        self.aInsEllipsis.setStatusTip("Insert ellipsis")
+        self.aInsEllipsis.setShortcut("Ctrl+K, .")
+        self.aInsEllipsis.triggered.connect(lambda: self._docInsert(nwDocInsert.ELLIPSIS))
+        self.mInsPunct.addAction(self.aInsEllipsis)
+
+        # Insert > Prime
+        self.aInsPrime = QAction("Prime", self)
+        self.aInsPrime.setStatusTip("Insert a prime symbol")
+        self.aInsPrime.setShortcut("Ctrl+K, Ctrl+'")
+        self.aInsPrime.triggered.connect(lambda: self._docInsert(nwDocInsert.SINGLE_PRIME))
+        self.mInsPunct.addAction(self.aInsPrime)
+
+        # Insert > Double Prime
+        self.aInsDPrime = QAction("Double Prime", self)
+        self.aInsDPrime.setStatusTip("Insert a double prime symbol")
+        self.aInsDPrime.setShortcut("Ctrl+K, Ctrl+\"")
+        self.aInsDPrime.triggered.connect(lambda: self._docInsert(nwDocInsert.DOUBLE_PRIME))
+        self.mInsPunct.addAction(self.aInsDPrime)
 
         # Insert > Breaks and Spaces
         self.mInsBreaks = self.insertMenu.addMenu("Breaks and Spaces")
@@ -603,6 +627,30 @@ class GuiMainMenu(QMenuBar):
         self.aInsThinNBSpace.setShortcut("Ctrl+K, Ctrl+Space")
         self.aInsThinNBSpace.triggered.connect(lambda: self._docInsert(nwDocInsert.THIN_NB_SPACE))
         self.mInsBreaks.addAction(self.aInsThinNBSpace)
+
+        # Insert > Symbols
+        self.mInsSymbol = self.insertMenu.addMenu("Other Symbols")
+
+        # Insert > List Bullet
+        self.aInsBullet = QAction("List Bullet", self)
+        self.aInsBullet.setStatusTip("Insert a list bullet")
+        self.aInsBullet.setShortcut("Ctrl+K, *")
+        self.aInsBullet.triggered.connect(lambda: self._docInsert(nwDocInsert.LIST_BULLET))
+        self.mInsSymbol.addAction(self.aInsBullet)
+
+        # Insert > Flower Mark
+        self.aInsFlower = QAction("Flower Mark", self)
+        self.aInsFlower.setStatusTip("Insert a flower mark (alternative bullet)")
+        self.aInsFlower.setShortcut("Ctrl+K, Ctrl+*")
+        self.aInsFlower.triggered.connect(lambda: self._docInsert(nwDocInsert.FLOWER_MARK))
+        self.mInsSymbol.addAction(self.aInsFlower)
+
+        # Insert > Per Mille
+        self.aInsPerMille = QAction("Per Mille", self)
+        self.aInsPerMille.setStatusTip("Insert a per mille symbol")
+        self.aInsPerMille.setShortcut("Ctrl+K, %")
+        self.aInsPerMille.triggered.connect(lambda: self._docInsert(nwDocInsert.PER_MILLE))
+        self.mInsSymbol.addAction(self.aInsPerMille)
 
         # Insert > Separator
         self.insertMenu.addSeparator()
