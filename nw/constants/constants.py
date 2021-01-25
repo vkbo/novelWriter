@@ -349,7 +349,7 @@ class nwUnicode:
 
     ## Symbols
     H_CHECK  = "&#10004;"
-    H_MULT   = "&#10005;"
+    H_CROSS  = "&#10005;"
     H_BULL   = "&bull;"
     H_TRBULL = "&#8227;"
     H_HYBULL = "&hybull;"
