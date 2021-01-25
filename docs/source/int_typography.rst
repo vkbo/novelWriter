@@ -28,6 +28,10 @@ automatically to short and long dashes, and three dots to ellipsis. The last aut
 always be reverted with the undo command :kbd:`Ctrl`:kbd:`Z`, reverting the text to what you typed
 before the automatic replacement occurred.
 
+The symbols are available in the :guilabel:`Insert` menu. In addition, "Figure Dash" is also
+available. The Figure Dash is a dash that has the same width as the numbers of the same font, which
+tend to be the same width so that numbers align nicely in columns.
+
 
 Single and Double Quotes
 ------------------------
@@ -46,6 +50,19 @@ chosen quote symbols. Two convenience functions in the :guilabel:`Format` menu c
 re-format a selected section of text with the correct quote symbols.
 
 .. _Quotation Mark: https://en.wikipedia.org/wiki/Quotation_mark
+
+
+Single and Double Prime
+------------------------
+
+Both single and double prime symbols are available in the :guilabel:`Insert` menu. These symbols
+are the correct symbols to use for unit symbols for feet, inches, minutes and seconds. The usage of
+these is described in more detail on the Wikipedia Prime_ page. They look very similar to single
+and double straight quotes, but may be renderred similarly by the font, but they have different
+codes. Using these correctly will also prevent the auto-replace and dialogue highlighting features
+to understand their meaning in the text.
+
+.. _Prime: https://en.wikipedia.org/wiki/Prime_(symbol)
 
 
 Modifier Letter Apostrophe
