@@ -429,6 +429,7 @@ a key or key combination for the inserted content.
 
    ":kbd:`Ctrl`:kbd:`K`, :kbd:`−`",                 "Insert a short dash (en dash)."
    ":kbd:`Ctrl`:kbd:`K`, :kbd:`_`",                 "Insert a long dash (em dash)."
+   ":kbd:`Ctrl`:kbd:`K`, :kbd:`Ctrl`:kbd:`_`",      "Insert a horizontal bar (quotation dash)."
    ":kbd:`Ctrl`:kbd:`K`, :kbd:`~`",                 "Insert a figure dash (same width as a number)."
    ":kbd:`Ctrl`:kbd:`K`, :kbd:`1`",                 "Insert a left single quote."
    ":kbd:`Ctrl`:kbd:`K`, :kbd:`2`",                 "Insert a right single quote."

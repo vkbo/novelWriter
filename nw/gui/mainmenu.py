@@ -517,17 +517,24 @@ class GuiMainMenu(QMenuBar):
 
         # Insert > Short Dash
         self.aInsENDash = QAction("Short Dash", self)
-        self.aInsENDash.setStatusTip("Insert short dash")
+        self.aInsENDash.setStatusTip("Insert short dash (en dash)")
         self.aInsENDash.setShortcut("Ctrl+K, -")
         self.aInsENDash.triggered.connect(lambda: self._docInsert(nwUnicode.U_ENDASH))
         self.mInsDashes.addAction(self.aInsENDash)
 
         # Insert > Long Dash
         self.aInsEMDash = QAction("Long Dash", self)
-        self.aInsEMDash.setStatusTip("Insert long dash")
+        self.aInsEMDash.setStatusTip("Insert long dash (em dash)")
         self.aInsEMDash.setShortcut("Ctrl+K, _")
         self.aInsEMDash.triggered.connect(lambda: self._docInsert(nwUnicode.U_EMDASH))
         self.mInsDashes.addAction(self.aInsEMDash)
+
+        # Insert > Long Dash
+        self.aInsHorBar = QAction("Horizontal Bar", self)
+        self.aInsHorBar.setStatusTip("Insert a horizontal bar (quotation dash)")
+        self.aInsHorBar.setShortcut("Ctrl+K, Ctrl+_")
+        self.aInsHorBar.triggered.connect(lambda: self._docInsert(nwUnicode.U_HBAR))
+        self.mInsDashes.addAction(self.aInsHorBar)
 
         # Insert > Figure Dash
         self.aInsFigDash = QAction("Figure Dash", self)

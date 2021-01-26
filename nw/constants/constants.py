@@ -271,6 +271,7 @@ class nwUnicode:
     U_FGDASH = "\u2012" # Figure dash
     U_ENDASH = "\u2013" # Short dash
     U_EMDASH = "\u2014" # Long dash
+    U_HBAR   = "\u2015" # Horizontal bar
     U_HELLIP = "\u2026" # Ellipsis
     U_MAPOSS = "\u02bc" # Modifier letter single apostrophe
     U_PRIME  = "\u2032" # Prime
@@ -336,6 +337,7 @@ class nwUnicode:
     H_FGDASH = "&#8210;"
     H_ENDASH = "&ndash;"
     H_EMDASH = "&mdash;"
+    H_HBAR   = "&#8213;"
     H_HELLIP = "&hellip;"
     H_MAPOSS = "&#700;"
     H_PRIME  = "&prime;"

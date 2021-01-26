@@ -1240,6 +1240,7 @@ class GuiMain(QMainWindow):
         # Insert
         self.addAction(self.mainMenu.aInsENDash)
         self.addAction(self.mainMenu.aInsEMDash)
+        self.addAction(self.mainMenu.aInsHorBar)
         self.addAction(self.mainMenu.aInsFigDash)
         self.addAction(self.mainMenu.aInsQuoteLS)
         self.addAction(self.mainMenu.aInsQuoteRS)

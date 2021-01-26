@@ -392,6 +392,10 @@ def testGuiMenu_Insert(qtbot, monkeypatch, nwGUI, fncDir, fncProj):
     assert nwGUI.docEditor.getText() == nwUnicode.U_EMDASH
     nwGUI.docEditor.clear()
 
+    nwGUI.mainMenu.aInsHorBar.activate(QAction.Trigger)
+    assert nwGUI.docEditor.getText() == nwUnicode.U_HBAR
+    nwGUI.docEditor.clear()
+
     nwGUI.mainMenu.aInsFigDash.activate(QAction.Trigger)
     assert nwGUI.docEditor.getText() == nwUnicode.U_FGDASH
     nwGUI.docEditor.clear()
