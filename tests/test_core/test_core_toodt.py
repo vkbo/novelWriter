@@ -20,16 +20,32 @@ You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
 
+import nw
 import pytest
 
 from nw.core import NWProject, NWIndex, ToOdt
 
 @pytest.mark.core
-def testCoreToOdt_Convert(dummyGUI):
+def testCoreToOdt_Convert(tmpConf, dummyGUI):
     """Test the converter of the ToHtml class.
     """
+    nw.CONFIG = tmpConf
+
     theProject = NWProject(dummyGUI)
     dummyGUI.theIndex = NWIndex(theProject, dummyGUI)
     theDoc = ToOdt(theProject, dummyGUI)
+
+    # Export Mode
+    # ===========
+
+    theDoc.isNovel = True
+
+    # Header 1
+    theDoc.theText = "# Title\n"
+    theDoc.tokenizeText()
+    theDoc.initDocument()
+    theDoc.doConvert()
+    theDoc.closeDocument()
+    assert theDoc.theResult == ""
 
 # END Test testCoreToOdt_Convert
