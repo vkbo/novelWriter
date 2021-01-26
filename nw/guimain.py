@@ -1254,7 +1254,6 @@ class GuiMain(QMainWindow):
         self.addAction(self.mainMenu.aInsThinSpace)
         self.addAction(self.mainMenu.aInsThinNBSpace)
         self.addAction(self.mainMenu.aInsBullet)
-        self.addAction(self.mainMenu.aInsTriBull)
         self.addAction(self.mainMenu.aInsHyBull)
         self.addAction(self.mainMenu.aInsFlower)
         self.addAction(self.mainMenu.aInsPerMille)

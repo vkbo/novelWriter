@@ -639,13 +639,6 @@ class GuiMainMenu(QMenuBar):
         self.aInsBullet.triggered.connect(lambda: self._docInsert(nwUnicode.U_BULL))
         self.mInsSymbol.addAction(self.aInsBullet)
 
-        # Insert > Triangle Bullet
-        self.aInsTriBull = QAction("Triangle Bullet", self)
-        self.aInsTriBull.setStatusTip("Insert a triangle bullet (alternative bullet)")
-        self.aInsTriBull.setShortcut("Ctrl+K, Ctrl+T")
-        self.aInsTriBull.triggered.connect(lambda: self._docInsert(nwUnicode.U_TRBULL))
-        self.mInsSymbol.addAction(self.aInsTriBull)
-
         # Insert > Hyphen Bullet
         self.aInsHyBull = QAction("Hyphen Bullet", self)
         self.aInsHyBull.setStatusTip("Insert a hyphen bullet (alternative bullet)")
