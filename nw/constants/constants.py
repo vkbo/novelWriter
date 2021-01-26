@@ -271,6 +271,7 @@ class nwUnicode:
     U_FGDASH = "\u2012" # Figure dash
     U_ENDASH = "\u2013" # Short dash
     U_EMDASH = "\u2014" # Long dash
+    U_HBAR   = "\u2015" # Horizontal bar
     U_HELLIP = "\u2026" # Ellipsis
     U_MAPOSS = "\u02bc" # Modifier letter single apostrophe
     U_PRIME  = "\u2032" # Prime
@@ -287,10 +288,16 @@ class nwUnicode:
 
     ## Symbols
     U_CHECK  = "\u2714" # Heavy check mark
-    U_MULT   = "\u2715" # Multiplication x
+    U_CROSS  = "\u2715" # Heavy cross mark
     U_BULL   = "\u2022" # List bullet
+    U_TRBULL = "\u2023" # Triangle bullet
+    U_HYBULL = "\u2043" # Hyphen bullet
     U_FLOWER = "\u2055" # Flower punctuation mark
     U_PERMIL = "\u2030" # Per mille sign
+    U_DEGREE = "\u00b0" # Degree symbol
+    U_MINUS  = "\u2212" # Minus sign
+    U_TIMES  = "\u00d7" # Multiplaction sign
+    U_DIVIDE = "\u00f7" # Division sign
 
     ## Arrows
     U_UTRI   = "\u25b2" # Up-pointing triangle
@@ -330,6 +337,7 @@ class nwUnicode:
     H_FGDASH = "&#8210;"
     H_ENDASH = "&ndash;"
     H_EMDASH = "&mdash;"
+    H_HBAR   = "&#8213;"
     H_HELLIP = "&hellip;"
     H_MAPOSS = "&#700;"
     H_PRIME  = "&prime;"
@@ -344,10 +352,16 @@ class nwUnicode:
 
     ## Symbols
     H_CHECK  = "&#10004;"
-    H_MULT   = "&#10005;"
+    H_CROSS  = "&#10005;"
     H_BULL   = "&bull;"
+    H_TRBULL = "&#8227;"
+    H_HYBULL = "&hybull;"
     H_FLOWER = "&#8277;"
     H_PERMIL = "&#8240;"
+    H_DEGREE = "&deg;"
+    H_MINUS  = "&minus;"
+    H_TIMES  = "&times;"
+    H_DIVIDE = "&divide;"
 
     ## Arrows
     H_UTRI   = "&#9650;"

@@ -32,7 +32,8 @@ from PyQt5.QtGui import QDesktopServices
 from PyQt5.QtWidgets import QMenuBar, QAction
 
 from nw.constants import (
-    nwItemType, nwItemClass, nwDocAction, nwDocInsert, nwKeyWords, nwLabels
+    nwItemType, nwItemClass, nwDocAction, nwDocInsert, nwKeyWords, nwLabels,
+    nwUnicode
 )
 
 logger = logging.getLogger(__name__)
@@ -516,23 +517,30 @@ class GuiMainMenu(QMenuBar):
 
         # Insert > Short Dash
         self.aInsENDash = QAction("Short Dash", self)
-        self.aInsENDash.setStatusTip("Insert short dash")
+        self.aInsENDash.setStatusTip("Insert short dash (en dash)")
         self.aInsENDash.setShortcut("Ctrl+K, -")
-        self.aInsENDash.triggered.connect(lambda: self._docInsert(nwDocInsert.SHORT_DASH))
+        self.aInsENDash.triggered.connect(lambda: self._docInsert(nwUnicode.U_ENDASH))
         self.mInsDashes.addAction(self.aInsENDash)
 
         # Insert > Long Dash
         self.aInsEMDash = QAction("Long Dash", self)
-        self.aInsEMDash.setStatusTip("Insert long dash")
+        self.aInsEMDash.setStatusTip("Insert long dash (em dash)")
         self.aInsEMDash.setShortcut("Ctrl+K, _")
-        self.aInsEMDash.triggered.connect(lambda: self._docInsert(nwDocInsert.LONG_DASH))
+        self.aInsEMDash.triggered.connect(lambda: self._docInsert(nwUnicode.U_EMDASH))
         self.mInsDashes.addAction(self.aInsEMDash)
+
+        # Insert > Long Dash
+        self.aInsHorBar = QAction("Horizontal Bar", self)
+        self.aInsHorBar.setStatusTip("Insert a horizontal bar (quotation dash)")
+        self.aInsHorBar.setShortcut("Ctrl+K, Ctrl+_")
+        self.aInsHorBar.triggered.connect(lambda: self._docInsert(nwUnicode.U_HBAR))
+        self.mInsDashes.addAction(self.aInsHorBar)
 
         # Insert > Figure Dash
         self.aInsFigDash = QAction("Figure Dash", self)
         self.aInsFigDash.setStatusTip("Insert figure dash (same width as a number character)")
         self.aInsFigDash.setShortcut("Ctrl+K, ~")
-        self.aInsFigDash.triggered.connect(lambda: self._docInsert(nwDocInsert.FIGURE_DASH))
+        self.aInsFigDash.triggered.connect(lambda: self._docInsert(nwUnicode.U_FGDASH))
         self.mInsDashes.addAction(self.aInsFigDash)
 
         # Insert > Quote Marks
@@ -570,7 +578,7 @@ class GuiMainMenu(QMenuBar):
         self.aInsMSApos = QAction("Alternative Apostrophe", self)
         self.aInsMSApos.setStatusTip("Insert modifier letter single apostrophe")
         self.aInsMSApos.setShortcut("Ctrl+K, '")
-        self.aInsMSApos.triggered.connect(lambda: self._docInsert(nwDocInsert.MODAPOS_S))
+        self.aInsMSApos.triggered.connect(lambda: self._docInsert(nwUnicode.U_MAPOSS))
         self.mInsQuotes.addAction(self.aInsMSApos)
 
         # Insert > Symbols
@@ -580,21 +588,21 @@ class GuiMainMenu(QMenuBar):
         self.aInsEllipsis = QAction("Ellipsis", self)
         self.aInsEllipsis.setStatusTip("Insert ellipsis")
         self.aInsEllipsis.setShortcut("Ctrl+K, .")
-        self.aInsEllipsis.triggered.connect(lambda: self._docInsert(nwDocInsert.ELLIPSIS))
+        self.aInsEllipsis.triggered.connect(lambda: self._docInsert(nwUnicode.U_HELLIP))
         self.mInsPunct.addAction(self.aInsEllipsis)
 
         # Insert > Prime
         self.aInsPrime = QAction("Prime", self)
         self.aInsPrime.setStatusTip("Insert a prime symbol")
         self.aInsPrime.setShortcut("Ctrl+K, Ctrl+'")
-        self.aInsPrime.triggered.connect(lambda: self._docInsert(nwDocInsert.SINGLE_PRIME))
+        self.aInsPrime.triggered.connect(lambda: self._docInsert(nwUnicode.U_PRIME))
         self.mInsPunct.addAction(self.aInsPrime)
 
         # Insert > Double Prime
         self.aInsDPrime = QAction("Double Prime", self)
         self.aInsDPrime.setStatusTip("Insert a double prime symbol")
         self.aInsDPrime.setShortcut("Ctrl+K, Ctrl+\"")
-        self.aInsDPrime.triggered.connect(lambda: self._docInsert(nwDocInsert.DOUBLE_PRIME))
+        self.aInsDPrime.triggered.connect(lambda: self._docInsert(nwUnicode.U_DPRIME))
         self.mInsPunct.addAction(self.aInsDPrime)
 
         # Insert > Breaks and Spaces
@@ -611,21 +619,21 @@ class GuiMainMenu(QMenuBar):
         self.aInsNBSpace = QAction("Non-Breaking Space", self)
         self.aInsNBSpace.setStatusTip("Insert a non-breaking space")
         self.aInsNBSpace.setShortcut("Ctrl+K, Space")
-        self.aInsNBSpace.triggered.connect(lambda: self._docInsert(nwDocInsert.NB_SPACE))
+        self.aInsNBSpace.triggered.connect(lambda: self._docInsert(nwUnicode.U_NBSP))
         self.mInsBreaks.addAction(self.aInsNBSpace)
 
         # Insert > Thin Space
         self.aInsThinSpace = QAction("Thin Space", self)
         self.aInsThinSpace.setStatusTip("Insert a thin space")
         self.aInsThinSpace.setShortcut("Ctrl+K, Shift+Space")
-        self.aInsThinSpace.triggered.connect(lambda: self._docInsert(nwDocInsert.THIN_SPACE))
+        self.aInsThinSpace.triggered.connect(lambda: self._docInsert(nwUnicode.U_THSP))
         self.mInsBreaks.addAction(self.aInsThinSpace)
 
         # Insert > Thin Non-Breaking Space
         self.aInsThinNBSpace = QAction("Thin Non-Breaking Space", self)
         self.aInsThinNBSpace.setStatusTip("Insert a thin non-breaking space")
         self.aInsThinNBSpace.setShortcut("Ctrl+K, Ctrl+Space")
-        self.aInsThinNBSpace.triggered.connect(lambda: self._docInsert(nwDocInsert.THIN_NB_SPACE))
+        self.aInsThinNBSpace.triggered.connect(lambda: self._docInsert(nwUnicode.U_THNBSP))
         self.mInsBreaks.addAction(self.aInsThinNBSpace)
 
         # Insert > Symbols
@@ -635,22 +643,57 @@ class GuiMainMenu(QMenuBar):
         self.aInsBullet = QAction("List Bullet", self)
         self.aInsBullet.setStatusTip("Insert a list bullet")
         self.aInsBullet.setShortcut("Ctrl+K, *")
-        self.aInsBullet.triggered.connect(lambda: self._docInsert(nwDocInsert.LIST_BULLET))
+        self.aInsBullet.triggered.connect(lambda: self._docInsert(nwUnicode.U_BULL))
         self.mInsSymbol.addAction(self.aInsBullet)
+
+        # Insert > Hyphen Bullet
+        self.aInsHyBull = QAction("Hyphen Bullet", self)
+        self.aInsHyBull.setStatusTip("Insert a hyphen bullet (alternative bullet)")
+        self.aInsHyBull.setShortcut("Ctrl+K, Ctrl+-")
+        self.aInsHyBull.triggered.connect(lambda: self._docInsert(nwUnicode.U_HYBULL))
+        self.mInsSymbol.addAction(self.aInsHyBull)
 
         # Insert > Flower Mark
         self.aInsFlower = QAction("Flower Mark", self)
         self.aInsFlower.setStatusTip("Insert a flower mark (alternative bullet)")
         self.aInsFlower.setShortcut("Ctrl+K, Ctrl+*")
-        self.aInsFlower.triggered.connect(lambda: self._docInsert(nwDocInsert.FLOWER_MARK))
+        self.aInsFlower.triggered.connect(lambda: self._docInsert(nwUnicode.U_FLOWER))
         self.mInsSymbol.addAction(self.aInsFlower)
 
         # Insert > Per Mille
         self.aInsPerMille = QAction("Per Mille", self)
         self.aInsPerMille.setStatusTip("Insert a per mille symbol")
         self.aInsPerMille.setShortcut("Ctrl+K, %")
-        self.aInsPerMille.triggered.connect(lambda: self._docInsert(nwDocInsert.PER_MILLE))
+        self.aInsPerMille.triggered.connect(lambda: self._docInsert(nwUnicode.U_PERMIL))
         self.mInsSymbol.addAction(self.aInsPerMille)
+
+        # Insert > Degree Symbol
+        self.aInsDegree = QAction("Degree Symbol", self)
+        self.aInsDegree.setStatusTip("Insert a degree symbol")
+        self.aInsDegree.setShortcut("Ctrl+K, Ctrl+O")
+        self.aInsDegree.triggered.connect(lambda: self._docInsert(nwUnicode.U_DEGREE))
+        self.mInsSymbol.addAction(self.aInsDegree)
+
+        # Insert > Minus Sign
+        self.aInsMinus = QAction("Minus Sign", self)
+        self.aInsMinus.setStatusTip("Insert a minus sign (not a hypen or dash)")
+        self.aInsMinus.setShortcut("Ctrl+K, Ctrl+M")
+        self.aInsMinus.triggered.connect(lambda: self._docInsert(nwUnicode.U_MINUS))
+        self.mInsSymbol.addAction(self.aInsMinus)
+
+        # Insert > Times Sign
+        self.aInsTimes = QAction("Times Sign", self)
+        self.aInsTimes.setStatusTip("Insert a times sign (multiplication cross)")
+        self.aInsTimes.setShortcut("Ctrl+K, Ctrl+X")
+        self.aInsTimes.triggered.connect(lambda: self._docInsert(nwUnicode.U_TIMES))
+        self.mInsSymbol.addAction(self.aInsTimes)
+
+        # Insert > Division
+        self.aInsDivide = QAction("Division Sign", self)
+        self.aInsDivide.setStatusTip("Insert a division sign")
+        self.aInsDivide.setShortcut("Ctrl+K, Ctrl+D")
+        self.aInsDivide.triggered.connect(lambda: self._docInsert(nwUnicode.U_DIVIDE))
+        self.mInsSymbol.addAction(self.aInsDivide)
 
         # Insert > Separator
         self.insertMenu.addSeparator()
@@ -752,7 +795,7 @@ class GuiMainMenu(QMenuBar):
         # Format > Strikethrough
         self.aFmtStrike = QAction("Strikethrough", self)
         self.aFmtStrike.setStatusTip("Add strikethrough to selected text")
-        self.aFmtStrike.setShortcut("Ctrl+-")
+        self.aFmtStrike.setShortcut("Ctrl+D")
         self.aFmtStrike.triggered.connect(lambda: self._docAction(nwDocAction.STRIKE))
         self.fmtMenu.addAction(self.aFmtStrike)
 
@@ -762,14 +805,14 @@ class GuiMainMenu(QMenuBar):
         # Format > Double Quotes
         self.aFmtDQuote = QAction("Wrap Double Quotes", self)
         self.aFmtDQuote.setStatusTip("Wrap selected text in double quotes")
-        self.aFmtDQuote.setShortcut("Ctrl+D")
+        self.aFmtDQuote.setShortcut("Ctrl+\"")
         self.aFmtDQuote.triggered.connect(lambda: self._docAction(nwDocAction.D_QUOTE))
         self.fmtMenu.addAction(self.aFmtDQuote)
 
         # Format > Single Quotes
         self.aFmtSQuote = QAction("Wrap Single Quotes", self)
         self.aFmtSQuote.setStatusTip("Wrap selected text in single quotes")
-        self.aFmtSQuote.setShortcut("Ctrl+Shift+D")
+        self.aFmtSQuote.setShortcut("Ctrl+'")
         self.aFmtSQuote.triggered.connect(lambda: self._docAction(nwDocAction.S_QUOTE))
         self.fmtMenu.addAction(self.aFmtSQuote)
 

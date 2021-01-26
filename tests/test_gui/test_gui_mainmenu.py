@@ -392,6 +392,10 @@ def testGuiMenu_Insert(qtbot, monkeypatch, nwGUI, fncDir, fncProj):
     assert nwGUI.docEditor.getText() == nwUnicode.U_EMDASH
     nwGUI.docEditor.clear()
 
+    nwGUI.mainMenu.aInsHorBar.activate(QAction.Trigger)
+    assert nwGUI.docEditor.getText() == nwUnicode.U_HBAR
+    nwGUI.docEditor.clear()
+
     nwGUI.mainMenu.aInsFigDash.activate(QAction.Trigger)
     assert nwGUI.docEditor.getText() == nwUnicode.U_FGDASH
     nwGUI.docEditor.clear()
@@ -432,12 +436,32 @@ def testGuiMenu_Insert(qtbot, monkeypatch, nwGUI, fncDir, fncProj):
     assert nwGUI.docEditor.getText() == nwUnicode.U_BULL
     nwGUI.docEditor.clear()
 
+    nwGUI.mainMenu.aInsHyBull.activate(QAction.Trigger)
+    assert nwGUI.docEditor.getText() == nwUnicode.U_HYBULL
+    nwGUI.docEditor.clear()
+
     nwGUI.mainMenu.aInsFlower.activate(QAction.Trigger)
     assert nwGUI.docEditor.getText() == nwUnicode.U_FLOWER
     nwGUI.docEditor.clear()
 
     nwGUI.mainMenu.aInsPerMille.activate(QAction.Trigger)
     assert nwGUI.docEditor.getText() == nwUnicode.U_PERMIL
+    nwGUI.docEditor.clear()
+
+    nwGUI.mainMenu.aInsDegree.activate(QAction.Trigger)
+    assert nwGUI.docEditor.getText() == nwUnicode.U_DEGREE
+    nwGUI.docEditor.clear()
+
+    nwGUI.mainMenu.aInsMinus.activate(QAction.Trigger)
+    assert nwGUI.docEditor.getText() == nwUnicode.U_MINUS
+    nwGUI.docEditor.clear()
+
+    nwGUI.mainMenu.aInsTimes.activate(QAction.Trigger)
+    assert nwGUI.docEditor.getText() == nwUnicode.U_TIMES
+    nwGUI.docEditor.clear()
+
+    nwGUI.mainMenu.aInsDivide.activate(QAction.Trigger)
+    assert nwGUI.docEditor.getText() == nwUnicode.U_DIVIDE
     nwGUI.docEditor.clear()
 
     nwGUI.mainMenu.aInsHardBreak.activate(QAction.Trigger)
