@@ -432,10 +432,6 @@ def testGuiMenu_Insert(qtbot, monkeypatch, nwGUI, fncDir, fncProj):
     assert nwGUI.docEditor.getText() == nwUnicode.U_BULL
     nwGUI.docEditor.clear()
 
-    nwGUI.mainMenu.aInsTriBull.activate(QAction.Trigger)
-    assert nwGUI.docEditor.getText() == nwUnicode.U_TRBULL
-    nwGUI.docEditor.clear()
-
     nwGUI.mainMenu.aInsHyBull.activate(QAction.Trigger)
     assert nwGUI.docEditor.getText() == nwUnicode.U_HYBULL
     nwGUI.docEditor.clear()

@@ -36,10 +36,10 @@ def testCoreToHtml_Format(dummyGUI):
     # ===========
 
     assert theHtml._formatSynopsis("synopsis text") == (
-        "<p class='synopsis'><strong>Synopsis: </strong>synopsis text</p>\n"
+        "<p class='synopsis'><strong>Synopsis:</strong> synopsis text</p>\n"
     )
     assert theHtml._formatComments("comment text") == (
-        "<p class='comment'><strong>Comment: </strong>comment text</p>\n"
+        "<p class='comment'><strong>Comment:</strong> comment text</p>\n"
     )
 
     assert theHtml._formatKeywords("") == ""
@@ -60,7 +60,7 @@ def testCoreToHtml_Format(dummyGUI):
     theHtml.setPreview(True, True)
 
     assert theHtml._formatSynopsis("synopsis text") == (
-        "<p class='comment'><span class='synopsis'>Synopsis: </span>synopsis text</p>\n"
+        "<p class='comment'><span class='synopsis'>Synopsis:</span> synopsis text</p>\n"
     )
     assert theHtml._formatComments("comment text") == (
         "<p class='comment'>comment text</p>\n"
@@ -172,7 +172,7 @@ def testCoreToHtml_Convert(dummyGUI):
     theHtml.tokenizeText()
     theHtml.doConvert()
     assert theHtml.theResult == (
-        "<p class='synopsis'><strong>Synopsis: </strong>The synopsis ...</p>\n"
+        "<p class='synopsis'><strong>Synopsis:</strong> The synopsis ...</p>\n"
     )
 
     # Comment
@@ -186,7 +186,7 @@ def testCoreToHtml_Convert(dummyGUI):
     theHtml.tokenizeText()
     theHtml.doConvert()
     assert theHtml.theResult == (
-        "<p class='comment'><strong>Comment: </strong>A comment ...</p>\n"
+        "<p class='comment'><strong>Comment:</strong> A comment ...</p>\n"
     )
 
     # Keywords
