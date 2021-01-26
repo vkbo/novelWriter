@@ -294,6 +294,7 @@ class nwUnicode:
     U_FLOWER = "\u2055" # Flower punctuation mark
     U_PERMIL = "\u2030" # Per mille sign
     U_DEGREE = "\u00b0" # Degree symbol
+    U_MINUS  = "\u2212" # Minus sign
     U_TIMES  = "\u00d7" # Multiplaction sign
     U_DIVIDE = "\u00f7" # Division sign
 
@@ -356,6 +357,7 @@ class nwUnicode:
     H_FLOWER = "&#8277;"
     H_PERMIL = "&#8240;"
     H_DEGREE = "&deg;"
+    H_MINUS  = "&minus;"
     H_TIMES  = "&times;"
     H_DIVIDE = "&divide;"
 

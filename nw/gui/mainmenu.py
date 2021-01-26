@@ -662,14 +662,21 @@ class GuiMainMenu(QMenuBar):
 
         # Insert > Degree Symbol
         self.aInsDegree = QAction("Degree Symbol", self)
-        self.aInsDegree.setStatusTip("Insert a segree symbol")
-        self.aInsDegree.setShortcut("Ctrl+K, 0")
+        self.aInsDegree.setStatusTip("Insert a degree symbol")
+        self.aInsDegree.setShortcut("Ctrl+K, Ctrl+O")
         self.aInsDegree.triggered.connect(lambda: self._docInsert(nwUnicode.U_DEGREE))
         self.mInsSymbol.addAction(self.aInsDegree)
 
+        # Insert > Minus Sign
+        self.aInsMinus = QAction("Minus Sign", self)
+        self.aInsMinus.setStatusTip("Insert a minus sign (not a hypen or dash)")
+        self.aInsMinus.setShortcut("Ctrl+K, Ctrl+M")
+        self.aInsMinus.triggered.connect(lambda: self._docInsert(nwUnicode.U_MINUS))
+        self.mInsSymbol.addAction(self.aInsMinus)
+
         # Insert > Times Sign
         self.aInsTimes = QAction("Times Sign", self)
-        self.aInsTimes.setStatusTip("Insert a times (multiplication) sign")
+        self.aInsTimes.setStatusTip("Insert a times sign (multiplication cross)")
         self.aInsTimes.setShortcut("Ctrl+K, Ctrl+X")
         self.aInsTimes.triggered.connect(lambda: self._docInsert(nwUnicode.U_TIMES))
         self.mInsSymbol.addAction(self.aInsTimes)
@@ -781,7 +788,7 @@ class GuiMainMenu(QMenuBar):
         # Format > Strikethrough
         self.aFmtStrike = QAction("Strikethrough", self)
         self.aFmtStrike.setStatusTip("Add strikethrough to selected text")
-        self.aFmtStrike.setShortcut("Ctrl+-")
+        self.aFmtStrike.setShortcut("Ctrl+D")
         self.aFmtStrike.triggered.connect(lambda: self._docAction(nwDocAction.STRIKE))
         self.fmtMenu.addAction(self.aFmtStrike)
 
@@ -791,14 +798,14 @@ class GuiMainMenu(QMenuBar):
         # Format > Double Quotes
         self.aFmtDQuote = QAction("Wrap Double Quotes", self)
         self.aFmtDQuote.setStatusTip("Wrap selected text in double quotes")
-        self.aFmtDQuote.setShortcut("Ctrl+D")
+        self.aFmtDQuote.setShortcut("Ctrl+\"")
         self.aFmtDQuote.triggered.connect(lambda: self._docAction(nwDocAction.D_QUOTE))
         self.fmtMenu.addAction(self.aFmtDQuote)
 
         # Format > Single Quotes
         self.aFmtSQuote = QAction("Wrap Single Quotes", self)
         self.aFmtSQuote.setStatusTip("Wrap selected text in single quotes")
-        self.aFmtSQuote.setShortcut("Ctrl+Shift+D")
+        self.aFmtSQuote.setShortcut("Ctrl+'")
         self.aFmtSQuote.triggered.connect(lambda: self._docAction(nwDocAction.S_QUOTE))
         self.fmtMenu.addAction(self.aFmtSQuote)
 

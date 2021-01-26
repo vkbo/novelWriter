@@ -448,6 +448,10 @@ def testGuiMenu_Insert(qtbot, monkeypatch, nwGUI, fncDir, fncProj):
     assert nwGUI.docEditor.getText() == nwUnicode.U_DEGREE
     nwGUI.docEditor.clear()
 
+    nwGUI.mainMenu.aInsMinus.activate(QAction.Trigger)
+    assert nwGUI.docEditor.getText() == nwUnicode.U_MINUS
+    nwGUI.docEditor.clear()
+
     nwGUI.mainMenu.aInsTimes.activate(QAction.Trigger)
     assert nwGUI.docEditor.getText() == nwUnicode.U_TIMES
     nwGUI.docEditor.clear()

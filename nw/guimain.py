@@ -1258,6 +1258,7 @@ class GuiMain(QMainWindow):
         self.addAction(self.mainMenu.aInsFlower)
         self.addAction(self.mainMenu.aInsPerMille)
         self.addAction(self.mainMenu.aInsDegree)
+        self.addAction(self.mainMenu.aInsMinus)
         self.addAction(self.mainMenu.aInsTimes)
         self.addAction(self.mainMenu.aInsDivide)
 
