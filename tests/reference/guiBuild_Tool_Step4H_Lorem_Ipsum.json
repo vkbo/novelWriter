@@ -9,7 +9,7 @@
   },
   "text": {
     "css": [
-      "body {font-family: 'Sans'; font-size: 12pt}",
+      "body {font-family: 'DejaVu Sans'; font-size: 11pt}",
       "p {text-align: justify;}",
       "h1, h2 {color: rgb(66, 113, 174);}",
       "h3, h4 {color: rgb(50, 50, 50);}",

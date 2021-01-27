@@ -59,6 +59,9 @@ def testGuiBuild_Tool(qtbot, monkeypatch, nwGUI, nwLipsum, refDir, outDir):
     nwBuild = getGuiItem("GuiBuildNovel")
     assert isinstance(nwBuild, GuiBuildNovel)
 
+    nwBuild.textFont.setText("DejaVu Sans")
+    nwBuild.textSize.setValue(11)
+
     # Default Settings
     qtbot.mouseClick(nwBuild.buildNovel, Qt.LeftButton)
 
