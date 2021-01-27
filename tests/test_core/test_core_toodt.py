@@ -23,7 +23,24 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 import nw
 import pytest
 
+from lxml import etree
+
 from nw.core import NWProject, NWIndex, ToOdt
+
+XML_NS = [
+    ' xmlns:office="urn:oasis:names:tc:opendocument:xmlns:office:1.0"',
+    ' xmlns:style="urn:oasis:names:tc:opendocument:xmlns:style:1.0"',
+    ' xmlns:text="urn:oasis:names:tc:opendocument:xmlns:text:1.0"',
+    ' xmlns:fo="urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0"',
+]
+
+def xmlToText(xElem):
+    """Get the text content of an XML element.
+    """
+    rTxt = etree.tostring(xElem, encoding="utf-8", xml_declaration=False).decode()
+    for nSpace in XML_NS:
+        rTxt = rTxt.replace(nSpace, "")
+    return rTxt
 
 @pytest.mark.core
 def testCoreToOdt_Convert(tmpConf, dummyGUI):
@@ -46,6 +63,22 @@ def testCoreToOdt_Convert(tmpConf, dummyGUI):
     theDoc.initDocument()
     theDoc.doConvert()
     theDoc.closeDocument()
-    assert theDoc.theResult == ""
+    assert xmlToText(theDoc._xText) == (
+        '<office:text>'
+        '<text:h text:style-name="Heading_1" text:outline-level="1">Title</text:h>'
+        '</office:text>'
+    )
+
+    # Header 1
+    theDoc.theText = "## Chapter Title\n"
+    theDoc.tokenizeText()
+    theDoc.initDocument()
+    theDoc.doConvert()
+    theDoc.closeDocument()
+    assert xmlToText(theDoc._xText) == (
+        '<office:text>'
+        '<text:h text:style-name="Heading_2" text:outline-level="2">Chapter Title</text:h>'
+        '</office:text>'
+    )
 
 # END Test testCoreToOdt_Convert

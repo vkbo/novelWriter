@@ -29,6 +29,7 @@ import logging
 import os
 
 from lxml import etree
+from hashlib import sha256
 
 from nw.core.tokenizer import Tokenizer
 
@@ -39,7 +40,6 @@ XML_NS = {
     "style"  : "urn:oasis:names:tc:opendocument:xmlns:style:1.0",
     "text"   : "urn:oasis:names:tc:opendocument:xmlns:text:1.0",
     "fo"     : "urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0",
-    "loext"  : "urn:org:documentfoundation:names:experimental:office:xmlns:loext:1.0",
 }
 
 class ToOdt(Tokenizer):
@@ -51,7 +51,13 @@ class ToOdt(Tokenizer):
 
         self._xRoot = None
         self._xStyl = None
+        self._xBody = None
         self._xText = None
+        self._xAuto = None
+
+        self._mainPara = {}
+        self._autoPara = {}
+        self._autoText = {}
 
         self._dLanguage = "en"
         self._dCountry  = "GB"
@@ -97,11 +103,13 @@ class ToOdt(Tokenizer):
         }
         self._xRoot = etree.Element(_mkTag("office", "document"), attrib=rAttr, nsmap=XML_NS)
         self._xStyl = etree.SubElement(self._xRoot, _mkTag("office", "styles"))
-        self._xText = etree.SubElement(self._xRoot, _mkTag("office", "text"))
+        self._xAuto = etree.SubElement(self._xRoot, _mkTag("office", "automatic-styles"))
+        self._xBody = etree.SubElement(self._xRoot, _mkTag("office", "body"))
+        self._xText = etree.SubElement(self._xBody, _mkTag("office", "text"))
 
         # Add Styles
-        self._styleParagraph()
-        self._styleHeaders()
+        self._defaultStyles()
+        self._useableStyles()
 
         return
 
@@ -113,18 +121,60 @@ class ToOdt(Tokenizer):
 
         for tType, tLine, tText, tFormat, tStyle in self.theTokens:
 
+            # Styles
+            oStyle = ODTParagraphStyle()
+            if tStyle is not None:
+                if tStyle & self.A_LEFT:
+                    oStyle.setTextAlign("left")
+                if tStyle & self.A_RIGHT:
+                    oStyle.setTextAlign("right")
+                if tStyle & self.A_CENTRE:
+                    oStyle.setTextAlign("center")
+                if tStyle & self.A_JUSTIFY:
+                    oStyle.setTextAlign("justify")
+                if tStyle & self.A_PBB:
+                    oStyle.setBreakBefore("page")
+                if tStyle & self.A_PBA:
+                    oStyle.setBreakAfter("page")
+
             # Process Text Type
             if tType == self.T_EMPTY:
                 continue
 
             elif tType == self.T_TITLE:
-                continue
+                tHead = tText.replace(r"\\", "<br/>")
+                self._addTextPar("Title", oStyle, tHead)
+
+            elif tType == self.T_HEAD1:
+                tHead = tText.replace(r"\\", "<br/>")
+                self._addTextPar("Heading_1", oStyle, tHead, oLevel="1")
+
+            elif tType == self.T_HEAD2:
+                tHead = tText.replace(r"\\", "<br/>")
+                self._addTextPar("Heading_2", oStyle, tHead, oLevel="2")
+
+            elif tType == self.T_HEAD3:
+                tHead = tText.replace(r"\\", "<br/>")
+                self._addTextPar("Heading_3", oStyle, tHead, oLevel="3")
+
+            elif tType == self.T_HEAD4:
+                tHead = tText.replace(r"\\", "<br/>")
+                self._addTextPar("Heading_4", oStyle, tHead, oLevel="4")
+
+            elif tType == self.T_SEP:
+                self._addTextPar("Text_Body", oStyle, tText)
+
+            elif tType == self.T_SKIP:
+                self._addTextPar("Text_Body", oStyle, "")
 
         return
 
     def closeDocument(self):
         """Return the serialised XML document
         """
+        for styleName, styleObj in self._autoPara.values():
+            styleObj.packXML(self._xAuto, styleName)
+
         self.theResult = etree.tostring(
             self._xRoot,
             pretty_print = True,
@@ -139,14 +189,50 @@ class ToOdt(Tokenizer):
         return
 
     ##
+    #  Internal Functions
+    ##
+
+    def _addTextPar(self, styleName, oStyle, theText, oLevel=None):
+        """Add a text paragraph to the text XML element.
+        """
+        tAttr = {}
+        tAttr[_mkTag("text", "style-name")] = self._paraStyle(styleName, oStyle)
+        if oLevel is not None:
+            tAttr[_mkTag("text", "outline-level")] = oLevel
+        xElem = etree.SubElement(self._xText, _mkTag("text", "p"), attrib=tAttr)
+        xElem.text = theText
+        return
+
+    def _paraStyle(self, parName, oStyle):
+        """Return a name for a style object.
+        """
+        refStyle = self._mainPara.get(parName, None)
+        if refStyle is None:
+            logger.error("Unknown paragraph style '%s'" % parName)
+            return "Standard"
+
+        if not refStyle.checkNew(oStyle):
+            return parName
+
+        oStyle.setParentStyleName(parName)
+        theID = oStyle.getID()
+        if theID in self._autoPara:
+            return self._autoPara[theID][0]
+
+        newName = "P%d" % (len(self._autoPara) + 1)
+        self._autoPara[theID] = (newName, oStyle)
+
+        return newName
+
+    ##
     #  Style Elements
     ##
 
-    def _styleParagraph(self):
-        """Set the paragraph styles.
+    def _defaultStyles(self):
+        """Set the default styles.
         """
-        # Add Default Paragraph Style
-        # ===========================
+        # Add Paragraph Family Style
+        # ==========================
 
         theAttr = {}
         theAttr[_mkTag("style", "family")] = "paragraph"
@@ -165,8 +251,8 @@ class ToOdt(Tokenizer):
         theAttr[_mkTag("fo",    "country")]   = self._dCountry
         etree.SubElement(xStyl, _mkTag("style", "text-properties"), attrib=theAttr)
 
-        # Add Paragraph Style
-        # ===================
+        # Add Standard Paragraph Style
+        # ============================
 
         theAttr = {}
         theAttr[_mkTag("style", "name")]   = "Standard"
@@ -174,29 +260,6 @@ class ToOdt(Tokenizer):
         theAttr[_mkTag("style", "class")]  = "text"
         etree.SubElement(self._xStyl, _mkTag("style", "style"), attrib=theAttr)
 
-        # Add Text Body Style
-        # ===================
-
-        theAttr = {}
-        theAttr[_mkTag("style", "name")]              = "Text_body"
-        theAttr[_mkTag("style", "display-name")]      = "Text Body"
-        theAttr[_mkTag("style", "family")]            = "paragraph"
-        theAttr[_mkTag("style", "parent-style-name")] = "Standard"
-        theAttr[_mkTag("style", "class")]             = "text"
-        xStyl = etree.SubElement(self._xStyl, _mkTag("style", "style"), attrib=theAttr)
-
-        theAttr = {}
-        theAttr[_mkTag("fo",    "margin-top")]         = "0cm"
-        theAttr[_mkTag("fo",    "margin-bottom")]      = "0.247cm"
-        theAttr[_mkTag("style", "contextual-spacing")] = "false"
-        theAttr[_mkTag("fo",    "line-height")]        = "115%"
-        etree.SubElement(xStyl, _mkTag("style", "paragraph-properties"), attrib=theAttr)
-
-        return
-
-    def _styleHeaders(self):
-        """Set the header styles.
-        """
         # Add Default Heading Style
         # =========================
 
@@ -204,14 +267,13 @@ class ToOdt(Tokenizer):
         theAttr[_mkTag("style", "name")]              = "Heading"
         theAttr[_mkTag("style", "family")]            = "paragraph"
         theAttr[_mkTag("style", "parent-style-name")] = "Standard"
-        theAttr[_mkTag("style", "next-style-name")]   = "Text_body"
+        theAttr[_mkTag("style", "next-style-name")]   = "Text_Body"
         theAttr[_mkTag("style", "class")]             = "text"
         xStyl = etree.SubElement(self._xStyl, _mkTag("style", "style"), attrib=theAttr)
 
         theAttr = {}
         theAttr[_mkTag("fo",    "margin-top")]         = "0.423cm"
         theAttr[_mkTag("fo",    "margin-bottom")]      = "0.212cm"
-        theAttr[_mkTag("style", "contextual-spacing")] = "false"
         theAttr[_mkTag("fo",    "keep-with-next")]     = "always"
         etree.SubElement(xStyl, _mkTag("style", "paragraph-properties"), attrib=theAttr)
 
@@ -222,129 +284,287 @@ class ToOdt(Tokenizer):
         theAttr[_mkTag("fo",    "font-size")]   = "14pt"
         etree.SubElement(xStyl, _mkTag("style", "text-properties"), attrib=theAttr)
 
+        return
+
+    def _useableStyles(self):
+        """Set the usable styles.
+        """
+        # Add Text Body Style
+        # ===================
+
+        oStyle = ODTParagraphStyle()
+        oStyle.setDisplayName("Text Body")
+        oStyle.setParentStyleName("Standard")
+        oStyle.setClass("text")
+        oStyle.setMarginTop("0cm")
+        oStyle.setMarginBottom("0.247cm")
+        oStyle.setLineHeight("115%")
+        oStyle.packXML(self._xStyl, "Text_Body")
+
+        self._mainPara["Text_Body"] = oStyle
+
         # Add Title Style
         # ===============
 
-        theAttr = {}
-        theAttr[_mkTag("style", "name")]              = "Title"
-        theAttr[_mkTag("style", "family")]            = "paragraph"
-        theAttr[_mkTag("style", "parent-style-name")] = "Heading"
-        theAttr[_mkTag("style", "next-style-name")]   = "Text_body"
-        theAttr[_mkTag("style", "class")]             = "chapter"
-        xStyl = etree.SubElement(self._xStyl, _mkTag("style", "style"), attrib=theAttr)
+        oStyle = ODTParagraphStyle()
+        oStyle.setDisplayName("Title")
+        oStyle.setParentStyleName("Heading")
+        oStyle.setNextStyleName("Text_Body")
+        oStyle.setClass("chapter")
+        oStyle.setTextAlign("center")
+        oStyle.setFontSize("28pt")
+        oStyle.setFontWeight("bold")
+        oStyle.packXML(self._xStyl, "Title")
 
-        theAttr = {}
-        theAttr[_mkTag("fo", "text-align")] = "center"
-        etree.SubElement(xStyl, _mkTag("style", "paragraph-properties"), attrib=theAttr)
-
-        theAttr = {}
-        theAttr[_mkTag("fo", "font-size")]   = "28pt"
-        theAttr[_mkTag("fo", "font-weight")] = "bold"
-        etree.SubElement(xStyl, _mkTag("style", "text-properties"), attrib=theAttr)
+        self._mainPara["Title"] = oStyle
 
         # Add Heading 1 Style
         # ===================
 
-        theAttr = {}
-        theAttr[_mkTag("style", "name")]                  = "Heading_1"
-        theAttr[_mkTag("style", "display-name")]          = "Heading 1"
-        theAttr[_mkTag("style", "family")]                = "paragraph"
-        theAttr[_mkTag("style", "parent-style-name")]     = "Heading"
-        theAttr[_mkTag("style", "next-style-name")]       = "Text_body"
-        theAttr[_mkTag("style", "default-outline-level")] = "1"
-        theAttr[_mkTag("style", "class")]                 = "text"
-        xStyl = etree.SubElement(self._xStyl, _mkTag("style", "style"), attrib=theAttr)
+        oStyle = ODTParagraphStyle()
+        oStyle.setDisplayName("Heading 1")
+        oStyle.setParentStyleName("Heading")
+        oStyle.setNextStyleName("Text_Body")
+        oStyle.setOutlineLevel("1")
+        oStyle.setClass("text")
+        oStyle.setMarginTop("0.423cm")
+        oStyle.setMarginBottom("0.212cm")
+        oStyle.setFontSize("200%")
+        oStyle.setFontWeight("bold")
+        oStyle.packXML(self._xStyl, "Heading_1")
 
-        theAttr = {}
-        theAttr[_mkTag("fo",    "margin-top")]         = "0.423cm"
-        theAttr[_mkTag("fo",    "margin-bottom")]      = "0.212cm"
-        theAttr[_mkTag("style", "contextual-spacing")] = "false"
-        etree.SubElement(xStyl, _mkTag("style", "paragraph-properties"), attrib=theAttr)
-
-        theAttr = {}
-        theAttr[_mkTag("fo", "font-size")]   = "130%"
-        theAttr[_mkTag("fo", "font-weight")] = "bold"
-        etree.SubElement(xStyl, _mkTag("style", "text-properties"), attrib=theAttr)
+        self._mainPara["Heading_1"] = oStyle
 
         # Add Heading 2 Style
         # ===================
 
-        theAttr = {}
-        theAttr[_mkTag("style", "name")]                  = "Heading_2"
-        theAttr[_mkTag("style", "display-name")]          = "Heading 2"
-        theAttr[_mkTag("style", "family")]                = "paragraph"
-        theAttr[_mkTag("style", "parent-style-name")]     = "Heading"
-        theAttr[_mkTag("style", "next-style-name")]       = "Text_body"
-        theAttr[_mkTag("style", "default-outline-level")] = "2"
-        theAttr[_mkTag("style", "class")]                 = "text"
-        xStyl = etree.SubElement(self._xStyl, _mkTag("style", "style"), attrib=theAttr)
+        oStyle = ODTParagraphStyle()
+        oStyle.setDisplayName("Heading 2")
+        oStyle.setParentStyleName("Heading")
+        oStyle.setNextStyleName("Text_Body")
+        oStyle.setOutlineLevel("2")
+        oStyle.setClass("text")
+        oStyle.setMarginTop("0.353cm")
+        oStyle.setMarginBottom("0.212cm")
+        oStyle.setFontSize("140%")
+        oStyle.setFontWeight("bold")
+        oStyle.packXML(self._xStyl, "Heading_2")
 
-        theAttr = {}
-        theAttr[_mkTag("fo",    "margin-top")]         = "0.353cm"
-        theAttr[_mkTag("fo",    "margin-bottom")]      = "0.212cm"
-        theAttr[_mkTag("style", "contextual-spacing")] = "false"
-        etree.SubElement(xStyl, _mkTag("style", "paragraph-properties"), attrib=theAttr)
-
-        theAttr = {}
-        theAttr[_mkTag("fo", "font-size")]   = "120%"
-        theAttr[_mkTag("fo", "font-weight")] = "bold"
-        etree.SubElement(xStyl, _mkTag("style", "text-properties"), attrib=theAttr)
+        self._mainPara["Heading_2"] = oStyle
 
         # Add Heading 3 Style
         # ===================
 
-        theAttr = {}
-        theAttr[_mkTag("style", "name")]                  = "Heading_3"
-        theAttr[_mkTag("style", "display-name")]          = "Heading 3"
-        theAttr[_mkTag("style", "family")]                = "paragraph"
-        theAttr[_mkTag("style", "parent-style-name")]     = "Heading"
-        theAttr[_mkTag("style", "next-style-name")]       = "Text_body"
-        theAttr[_mkTag("style", "default-outline-level")] = "3"
-        theAttr[_mkTag("style", "class")]                 = "text"
-        xStyl = etree.SubElement(self._xStyl, _mkTag("style", "style"), attrib=theAttr)
+        oStyle = ODTParagraphStyle()
+        oStyle.setDisplayName("Heading 3")
+        oStyle.setParentStyleName("Heading")
+        oStyle.setNextStyleName("Text_Body")
+        oStyle.setOutlineLevel("3")
+        oStyle.setClass("text")
+        oStyle.setMarginTop("0.247cm")
+        oStyle.setMarginBottom("0.212cm")
+        oStyle.setFontSize("125%")
+        oStyle.setFontWeight("bold")
+        oStyle.packXML(self._xStyl, "Heading_3")
 
-        theAttr = {}
-        theAttr[_mkTag("fo",    "margin-top")]         = "0.247cm"
-        theAttr[_mkTag("fo",    "margin-bottom")]      = "0.212cm"
-        theAttr[_mkTag("style", "contextual-spacing")] = "false"
-        etree.SubElement(xStyl, _mkTag("style", "paragraph-properties"), attrib=theAttr)
-
-        theAttr = {}
-        theAttr[_mkTag("fo", "font-size")]   = "110%"
-        theAttr[_mkTag("fo", "font-weight")] = "bold"
-        etree.SubElement(xStyl, _mkTag("style", "text-properties"), attrib=theAttr)
+        self._mainPara["Heading_3"] = oStyle
 
         # Add Heading 4 Style
         # ===================
 
-        theAttr = {}
-        theAttr[_mkTag("style", "name")]                  = "Heading_4"
-        theAttr[_mkTag("style", "display-name")]          = "Heading 4"
-        theAttr[_mkTag("style", "family")]                = "paragraph"
-        theAttr[_mkTag("style", "parent-style-name")]     = "Heading"
-        theAttr[_mkTag("style", "next-style-name")]       = "Text_body"
-        theAttr[_mkTag("style", "default-outline-level")] = "4"
-        theAttr[_mkTag("style", "class")]                 = "text"
-        xStyl = etree.SubElement(self._xStyl, _mkTag("style", "style"), attrib=theAttr)
+        oStyle = ODTParagraphStyle()
+        oStyle.setDisplayName("Heading 4")
+        oStyle.setParentStyleName("Heading")
+        oStyle.setNextStyleName("Text_Body")
+        oStyle.setOutlineLevel("4")
+        oStyle.setClass("text")
+        oStyle.setMarginTop("0.247cm")
+        oStyle.setMarginBottom("0.212cm")
+        oStyle.setFontSize("110%")
+        oStyle.setFontWeight("bold")
+        oStyle.packXML(self._xStyl, "Heading_4")
 
-        theAttr = {}
-        theAttr[_mkTag("fo",    "margin-top")]         = "0.247cm"
-        theAttr[_mkTag("fo",    "margin-bottom")]      = "0.212cm"
-        theAttr[_mkTag("style", "contextual-spacing")] = "false"
-        etree.SubElement(xStyl, _mkTag("style", "paragraph-properties"), attrib=theAttr)
-
-        theAttr = {}
-        theAttr[_mkTag("fo", "font-size")]   = "100%"
-        theAttr[_mkTag("fo", "font-weight")] = "bold"
-        etree.SubElement(xStyl, _mkTag("style", "text-properties"), attrib=theAttr)
+        self._mainPara["Heading_4"] = oStyle
 
         return
 
 # END Class ToOdt
 
-# =========================================================================== #
+# =============================================================================================== #
+#  Auto-Style Classes
+# =============================================================================================== #
+
+class ODTParagraphStyle():
+
+    VALID_ALIGN  = ["start", "center", "end", "justify", "inside", "outside", "left", "right"]
+    VALID_BREAK  = ["auto", "column", "page", "even-page", "odd-page", "inherit"]
+    VALID_LEVEL  = ["1", "2", "3", "4"]
+    VALID_CLASS  = ["text", "chapter"]
+    VALID_WEIGHT = ["normal", "inherit", "bold"]
+
+    def __init__(self):
+
+        # Attributes
+        self._mAttr = {
+            "display-name":          ["style", None],
+            "parent-style-name":     ["style", None],
+            "next-style-name":       ["style", None],
+            "default-outline-level": ["style", None],
+            "class":                 ["style", None],
+        }
+
+        # Paragraph Attributes
+        self._pAttr = {
+            "margin-top":    ["fo", None],
+            "margin-bottom": ["fo", None],
+            "line-height":   ["fo", None],
+            "text-align":    ["fo", None],
+            "break-before":  ["fo", None],
+            "break-after":   ["fo", None],
+        }
+
+        # text Attributes
+        self._tAttr = {
+            "font-size":   ["fo", None],
+            "font-weight": ["fo", None],
+        }
+
+        return
+
+    ##
+    #  Attribute Setters
+    ##
+
+    def setDisplayName(self, theValue):
+        self._mAttr["display-name"][1] = str(theValue)
+        return
+
+    def setParentStyleName(self, theValue):
+        self._mAttr["parent-style-name"][1] = str(theValue)
+        return
+
+    def setNextStyleName(self, theValue):
+        self._mAttr["next-style-name"][1] = str(theValue)
+        return
+
+    def setOutlineLevel(self, theValue):
+        if theValue in self.VALID_LEVEL:
+            self._mAttr["default-outline-level"][1] = str(theValue)
+        return
+
+    def setClass(self, theValue):
+        if theValue in self.VALID_CLASS:
+            self._mAttr["class"][1] = str(theValue)
+        return
+
+    ##
+    #  Paragraph Setters
+    ##
+
+    def setMarginTop(self, theValue):
+        self._pAttr["margin-top"][1] = str(theValue)
+        return
+
+    def setMarginBottom(self, theValue):
+        self._pAttr["margin-bottom"][1] = str(theValue)
+        return
+
+    def setLineHeight(self, theValue):
+        self._pAttr["line-height"][1] = str(theValue)
+        return
+
+    def setTextAlign(self, theValue):
+        if theValue in self.VALID_ALIGN:
+            self._pAttr["text-align"][1] = str(theValue)
+        return
+
+    def setBreakBefore(self, theValue):
+        if theValue in self.VALID_BREAK:
+            self._pAttr["break-before"][1] = str(theValue)
+        return
+
+    def setBreakAfter(self, theValue):
+        if theValue in self.VALID_BREAK:
+            self._pAttr["break-after"][1] = str(theValue)
+        return
+
+    ##
+    #  Text Setters
+    ##
+
+    def setFontSize(self, theValue):
+        self._tAttr["font-size"][1] = str(theValue)
+        return
+
+    def setFontWeight(self, theValue):
+        if theValue in self.VALID_WEIGHT:
+            self._tAttr["font-weight"][1] = str(theValue)
+        return
+
+    ##
+    #  Methods
+    ##
+
+    def checkNew(self, refStyle):
+        """Check if there are new settings in refStyle that differ from
+        those in the current object.
+        """
+        for aName, (aNm, aVal) in refStyle._mAttr.items():
+            if aVal is not None and aVal != self._mAttr[aName][1]:
+                return True
+        for aName, (aNm, aVal) in refStyle._pAttr.items():
+            if aVal is not None and aVal != self._pAttr[aName][1]:
+                return True
+        for aName, (aNm, aVal) in refStyle._tAttr.items():
+            if aVal is not None and aVal != self._tAttr[aName][1]:
+                return True
+        return False
+
+    def getID(self):
+        """Generate a unique ID from the settings.
+        """
+        theString = (
+            f"Paragraph:Main:{str(self._mAttr)}:"
+            f"Paragraph:Para:{str(self._pAttr)}:"
+            f"Paragraph:Text:{str(self._tAttr)}:"
+        )
+        return sha256(theString.encode()).hexdigest()
+
+    def packXML(self, xParent, xName):
+        """Pack the content into an xml element.
+        """
+        theAttr = {}
+        theAttr[_mkTag("style", "name")] = xName
+        theAttr[_mkTag("style", "family")] = "paragraph"
+        for aName, (aNm, aVal) in self._mAttr.items():
+            if aVal is not None:
+                theAttr[_mkTag(aNm, aName)] = aVal
+
+        xEntry = etree.SubElement(xParent, _mkTag("style", "style"), attrib=theAttr)
+
+        theAttr = {}
+        for aName, (aNm, aVal) in self._pAttr.items():
+            if aVal is not None:
+                theAttr[_mkTag(aNm, aName)] = aVal
+
+        if theAttr:
+            etree.SubElement(xEntry, _mkTag("style", "paragraph-properties"), attrib=theAttr)
+
+        theAttr = {}
+        for aName, (aNm, aVal) in self._tAttr.items():
+            if aVal is not None:
+                theAttr[_mkTag(aNm, aName)] = aVal
+
+        if theAttr:
+            etree.SubElement(xEntry, _mkTag("style", "text-properties"), attrib=theAttr)
+
+        return
+
+# END Class ODTParagraphStyle
+
+# =============================================================================================== #
 #  Local Functions
-# =========================================================================== #
+# =============================================================================================== #
 
 def _mkTag(nsName, tagName):
     """Assemble namespace and tag name.
