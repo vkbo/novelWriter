@@ -80,6 +80,7 @@ class GuiBuildNovel(QDialog):
         self.htmlText  = [] # List of html documents
         self.htmlStyle = [] # List of html styles
         self.nwdText   = [] # List of markdown documents
+        self.htmlSize  = 0  # Size of the html document
         self.buildTime = 0  # The timestamp of the last build
 
         self.setWindowTitle("Build Novel Project")
@@ -553,12 +554,13 @@ class GuiBuildNovel(QDialog):
 
         tStart = int(time())
 
-        self.htmlText = []
+        self.htmlText  = []
         self.htmlStyle = []
-        self.nwdText = []
+        self.nwdText   = []
+        self.htmlSize  = 0
 
         makeHtml = ToHtml(self.theProject, self.theParent)
-        htmlSize = self._doBuild(makeHtml)
+        self._doBuild(makeHtml)
 
         if replaceTabs:
             htmlText = []
@@ -585,7 +587,7 @@ class GuiBuildNovel(QDialog):
         else:
             self.docView.setStyleSheet(self.htmlStyle)
 
-        if htmlSize < nwConst.MAX_BUILDSIZE:
+        if self.htmlSize < nwConst.MAX_BUILDSIZE:
             self.docView.setContent(self.htmlText, self.buildTime)
             self._enableQtSave(True)
         else:
@@ -642,6 +644,7 @@ class GuiBuildNovel(QDialog):
 
         if isHtml:
             bldObj.setStyles(not noStyling)
+            self.htmlSize = 0
 
         if isOdt:
             bldObj.setColourHeaders(not noStyling)
@@ -652,8 +655,6 @@ class GuiBuildNovel(QDialog):
 
         self.buildProgress.setMaximum(len(self.theProject.projTree))
         self.buildProgress.setValue(0)
-
-        accSize = 0
 
         for nItt, tItem in enumerate(self.theProject.projTree):
 
@@ -667,9 +668,10 @@ class GuiBuildNovel(QDialog):
                     # Add headers for root folders of notes
                     bldObj.addRootHeading(tItem.itemHandle)
                     bldObj.doConvert()
-                    self.htmlText.append(bldObj.getResult())
-                    self.nwdText.append(bldObj.getFilteredMarkdown())
-                    accSize += bldObj.getResultSize()
+                    if isHtml:
+                        self.htmlText.append(bldObj.getResult())
+                        self.nwdText.append(bldObj.getFilteredMarkdown())
+                        self.htmlSize += bldObj.getResultSize()
 
                 elif self._checkInclude(tItem, noteFiles, novelFiles, ignoreFlag):
                     bldObj.setText(tItem.itemHandle)
@@ -678,9 +680,10 @@ class GuiBuildNovel(QDialog):
                     bldObj.doHeaders()
                     bldObj.doConvert()
                     bldObj.doPostProcessing()
-                    self.htmlText.append(bldObj.getResult())
-                    self.nwdText.append(bldObj.getFilteredMarkdown())
-                    accSize += bldObj.getResultSize()
+                    if isHtml:
+                        self.htmlText.append(bldObj.getResult())
+                        self.nwdText.append(bldObj.getFilteredMarkdown())
+                        self.htmlSize += bldObj.getResultSize()
 
             except Exception as e:
                 logger.error("Failed to generate html of document '%s'" % tItem.itemHandle)
@@ -703,7 +706,7 @@ class GuiBuildNovel(QDialog):
                 "<br>-&nbsp;%s"
             ) % "<br>-&nbsp;".join(bldObj.errData), nwAlert.ERROR)
 
-        return accSize
+        return
 
     def _checkInclude(self, theItem, noteFiles, novelFiles, ignoreFlag):
         """This function checks whether a file should be included in the
