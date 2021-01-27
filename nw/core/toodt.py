@@ -45,6 +45,11 @@ XML_NS = {
     "fo"     : "urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0",
 }
 
+TAG_BR   = "{%s}line-break" % XML_NS["text"]
+TAG_TAB  = "{%s}tab" % XML_NS["text"]
+TAG_SPAN = "{%s}span" % XML_NS["text"]
+TAG_STNM = "{%s}style-name" % XML_NS["text"]
+
 class ToOdt(Tokenizer):
 
     X_BLD = 0x01
@@ -423,8 +428,8 @@ class ToOdt(Tokenizer):
         def appendSpan(tText, tFmt):
             nonlocal xElem, xTail
             if tText:
-                xTail = etree.SubElement(xElem, _mkTag("text", "span"), attrib={
-                    _mkTag("text", "style-name"): self._textStyle(tFmt)
+                xTail = etree.SubElement(xElem, TAG_SPAN, attrib={
+                    TAG_STNM: self._textStyle(tFmt)
                 })
                 xTail.text = tText
 
@@ -469,11 +474,11 @@ class ToOdt(Tokenizer):
                     tTemp = ""
 
                 if xFmt & self.X_BRK:
-                    xTail = etree.SubElement(xElem, _mkTag("text", "line-break"))
+                    xTail = etree.SubElement(xElem, TAG_BR)
                     xFmt ^= self.X_BRK
 
                 if xFmt & self.X_TAB:
-                    xTail = etree.SubElement(xElem, _mkTag("text", "tab"))
+                    xTail = etree.SubElement(xElem, TAG_TAB)
                     xFmt ^= self.X_TAB
 
             pFmt = xFmt
