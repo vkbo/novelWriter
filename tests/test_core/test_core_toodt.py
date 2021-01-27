@@ -52,7 +52,7 @@ def testCoreToOdt_Convert(tmpConf, dummyGUI):
 
     theProject = NWProject(dummyGUI)
     dummyGUI.theIndex = NWIndex(theProject, dummyGUI)
-    theDoc = ToOdt(theProject, dummyGUI)
+    theDoc = ToOdt(theProject, dummyGUI, isFlat=True)
 
     # Export Mode
     # ===========

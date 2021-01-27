@@ -755,10 +755,9 @@ class GuiBuildNovel(QDialog):
 
         # Create the settings
         if theFormat == self.FMT_ODT:
-            byteFmt.append("odf")
             fileExt = "odt"
             textFmt = "Open Document"
-            outTool = "Qt"
+            outTool = "NW_ODT"
 
         elif theFormat == self.FMT_FODT:
             fileExt = "fodt"
@@ -911,12 +910,20 @@ class GuiBuildNovel(QDialog):
         elif outTool == "NW_ODT":
 
             if theFormat == self.FMT_FODT:
-                makeOdt = ToOdt(self.theProject, self.theParent)
+                makeOdt = ToOdt(self.theProject, self.theParent, isFlat=True)
                 self._doBuild(makeOdt)
                 try:
-                    with open(savePath, mode="wb") as outFile:
-                        outFile.write(makeOdt.theResult)
+                    makeOdt.saveFlatXML(savePath)
+                    wSuccess = True
 
+                except Exception as e:
+                    errMsg = str(e)
+
+            elif theFormat == self.FMT_ODT:
+                makeOdt = ToOdt(self.theProject, self.theParent, isFlat=False)
+                self._doBuild(makeOdt)
+                try:
+                    makeOdt.saveOpenDocText(savePath)
                     wSuccess = True
 
                 except Exception as e:

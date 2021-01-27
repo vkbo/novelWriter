@@ -30,6 +30,7 @@ import logging
 from lxml import etree
 from hashlib import sha256
 from datetime import datetime
+from zipfile import ZipFile
 
 from nw.core.tokenizer import Tokenizer
 from nw.constants import nwLabels, nwKeyWords
@@ -45,6 +46,9 @@ XML_NS = {
     "fo"     : "urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0",
 }
 
+X_MIME = "application/vnd.oasis.opendocument.text"
+X_VERS = "1.2"
+
 TAG_BR   = "{%s}line-break" % XML_NS["text"]
 TAG_TAB  = "{%s}tab" % XML_NS["text"]
 TAG_SPAN = "{%s}span" % XML_NS["text"]
@@ -58,16 +62,23 @@ class ToOdt(Tokenizer):
     X_BRK = 0x08
     X_TAB = 0x10
 
-    def __init__(self, theProject, theParent):
+    def __init__(self, theProject, theParent, isFlat):
         Tokenizer.__init__(self, theProject, theParent)
 
         self.mainConf = nw.CONFIG
 
-        self._xRoot = None
+        self._isFlat = isFlat
+
+        self._dFlat = None
+        self._dCont = None
+        self._dMeta = None
+        self._dStyl = None
+
+        self._xMeta = None
         self._xStyl = None
+        self._xAuto = None
         self._xBody = None
         self._xText = None
-        self._xAuto = None
 
         self._mainPara = {}
         self._autoPara = {}
@@ -149,25 +160,9 @@ class ToOdt(Tokenizer):
     def initDocument(self):
         """Initialises a new open document XML tree.
         """
-        rAttr = {
-            _mkTag("office", "version")  : "1.3",
-            _mkTag("office", "mimetype") : "application/vnd.oasis.opendocument.text",
-        }
-        self._xRoot = etree.Element(_mkTag("office", "document"), attrib=rAttr, nsmap=XML_NS)
-        self._xMeta = etree.SubElement(self._xRoot, _mkTag("office", "meta"))
-        self._xFont = etree.SubElement(self._xRoot, _mkTag("office", "font-face-decls"))
-        self._xStyl = etree.SubElement(self._xRoot, _mkTag("office", "styles"))
-        self._xAuto = etree.SubElement(self._xRoot, _mkTag("office", "automatic-styles"))
-        self._xBody = etree.SubElement(self._xRoot, _mkTag("office", "body"))
-        self._xText = etree.SubElement(self._xBody, _mkTag("office", "text"))
+        # Initialise Variables
+        # ====================
 
-        # Meta Data
-        xMeta = etree.SubElement(self._xMeta, _mkTag("meta", "creation-date"))
-        xMeta.text = datetime.now().isoformat()
-        xMeta = etree.SubElement(self._xMeta, _mkTag("meta", "generator"))
-        xMeta.text = f"novelWriter/{nw.__version__}"
-
-        # Re-Init Variables
         self._fontFamily = self.textFont
         if len(self.textFont.split()) > 1:
             self._fontFamily = f"&apos;{self.textFont}&apos;"
@@ -208,7 +203,69 @@ class ToOdt(Tokenizer):
         self._lineHeight = f"{round(100 * self.lineHeight):d}%"
         self._textAlign  = "justify" if self.doJustify else "left"
 
-        # Add Styles
+        # Create Roots
+        # ============
+
+        tAttr = {}
+        tAttr[_mkTag("office", "version")]  = X_VERS
+
+        fAttr = {}
+        fAttr[_mkTag("style", "name")] = self.textFont
+        fAttr[_mkTag("style", "font-pitch")] = self._fontPitch
+
+        if self._isFlat:
+
+            # FODT File
+            # =========
+
+            tAttr[_mkTag("office", "mimetype")] = X_MIME
+
+            tFlat = _mkTag("office", "document")
+            self._dFlat = etree.Element(tFlat, attrib=tAttr, nsmap=XML_NS)
+
+            self._xMeta = etree.SubElement(self._dFlat, _mkTag("office", "meta"))
+            self._xFont = etree.SubElement(self._dFlat, _mkTag("office", "font-face-decls"))
+            self._xStyl = etree.SubElement(self._dFlat, _mkTag("office", "styles"))
+            self._xAuto = etree.SubElement(self._dFlat, _mkTag("office", "automatic-styles"))
+            self._xBody = etree.SubElement(self._dFlat, _mkTag("office", "body"))
+
+            etree.SubElement(self._xFont, _mkTag("style", "font-face"), attrib=fAttr)
+
+        else:
+
+            # ODT File
+            # ========
+
+            tCont = _mkTag("office", "document-content")
+            tMeta = _mkTag("office", "document-meta")
+            tStyl = _mkTag("office", "document-styles")
+
+            self._dCont = etree.Element(tCont, attrib=tAttr, nsmap=XML_NS)
+            self._xFnt1 = etree.SubElement(self._dCont, _mkTag("office", "font-face-decls"))
+            self._xAuto = etree.SubElement(self._dCont, _mkTag("office", "automatic-styles"))
+            self._xBody = etree.SubElement(self._dCont, _mkTag("office", "body"))
+
+            self._dMeta = etree.Element(tMeta, attrib=tAttr, nsmap=XML_NS)
+            self._xMeta = etree.SubElement(self._dMeta, _mkTag("office", "meta"))
+
+            self._dStyl = etree.Element(tStyl, attrib=tAttr, nsmap=XML_NS)
+            self._xFnt2 = etree.SubElement(self._dCont, _mkTag("office", "font-face-decls"))
+            self._xStyl = etree.SubElement(self._dStyl, _mkTag("office", "styles"))
+
+            etree.SubElement(self._xFnt1, _mkTag("style", "font-face"), attrib=fAttr)
+            etree.SubElement(self._xFnt2, _mkTag("style", "font-face"), attrib=fAttr)
+
+        # Finalise
+        # ========
+
+        self._xText = etree.SubElement(self._xBody, _mkTag("office", "text"))
+
+        # Meta Data
+        xMeta = etree.SubElement(self._xMeta, _mkTag("meta", "creation-date"))
+        xMeta.text = datetime.now().isoformat()
+        xMeta = etree.SubElement(self._xMeta, _mkTag("meta", "generator"))
+        xMeta.text = f"novelWriter/{nw.__version__}"
+
         self._defaultStyles()
         self._useableStyles()
 
@@ -341,12 +398,97 @@ class ToOdt(Tokenizer):
         for styleName, styleObj in self._autoText.values():
             styleObj.packXML(self._xAuto, styleName)
 
-        self.theResult = etree.tostring(
-            self._xRoot,
-            pretty_print = True,
-            encoding = "utf-8",
-            xml_declaration = True
-        )
+        return
+
+    def saveFlatXML(self, savePath):
+        """Save the data to an .fodt file.
+        """
+        with open(savePath, mode="wb") as outFile:
+            outFile.write(etree.tostring(
+                self._dFlat,
+                pretty_print = True,
+                encoding = "utf-8",
+                xml_declaration = True
+            ))
+        return
+
+    def saveOpenDocText(self, savePath):
+        """Save the data to an .odt file.
+        """
+        rdfMap = {"rdf": "http://www.w3.org/1999/02/22-rdf-syntax-ns#"}
+        ns0Map = {"ns0": "http://docs.oasis-open.org/ns/office/1.2/meta/pkg#"}
+
+        rdfRDF   = "{%s}RDF" % rdfMap["rdf"]
+        rdfDesc  = "{%s}Description" % rdfMap["rdf"]
+        rdfAbout = "{%s}about" % rdfMap["rdf"]
+        rdfType  = "{%s}type" % rdfMap["rdf"]
+        rdfRes   = "{%s}resource" % rdfMap["rdf"]
+        ns0Part  = "{%s}hasPart" % ns0Map["ns0"]
+
+        stylRes = "http://docs.oasis-open.org/ns/office/1.2/meta/odf#StylesFile"
+        contRes = "http://docs.oasis-open.org/ns/office/1.2/meta/odf#ContentFile"
+        docuRes = "http://docs.oasis-open.org/ns/office/1.2/meta/pkg#Document"
+
+        xMRdf = etree.Element(rdfRDF, nsmap=rdfMap)
+        xDesc = etree.SubElement(xMRdf, rdfDesc, attrib={rdfAbout: "styles.xml"})
+        _     = etree.SubElement(xDesc, rdfType, attrib={rdfRes: stylRes})
+        xDesc = etree.SubElement(xMRdf, rdfDesc, attrib={rdfAbout: ""})
+        _     = etree.SubElement(xDesc, ns0Part, attrib={rdfRes: "styles.xml"}, nsmap=ns0Map)
+        xDesc = etree.SubElement(xMRdf, rdfDesc, attrib={rdfAbout: "content.xml"})
+        _     = etree.SubElement(xDesc, rdfType, attrib={rdfRes: contRes})
+        xDesc = etree.SubElement(xMRdf, rdfDesc, attrib={rdfAbout: ""})
+        _     = etree.SubElement(xDesc, ns0Part, attrib={rdfRes: "content.xml"}, nsmap=ns0Map)
+        xDesc = etree.SubElement(xMRdf, rdfDesc, attrib={rdfAbout: ""})
+        _     = etree.SubElement(xDesc, rdfType, attrib={rdfRes: docuRes})
+
+        manMap = {
+            "manifest" : "urn:oasis:names:tc:opendocument:xmlns:manifest:1.0",
+            "loext"    : "urn:org:documentfoundation:names:experimental:office:xmlns:loext:1.0",
+        }
+        manMani = "{%s}manifest" % manMap["manifest"]
+        manVers = "{%s}version" % manMap["manifest"]
+        manPath = "{%s}full-path" % manMap["manifest"]
+        manType = "{%s}media-type" % manMap["manifest"]
+        manFile = "{%s}file-entry" % manMap["manifest"]
+        typeXML = "text/xml"
+        typeRDF = "application/rdf+xml"
+        xMani = etree.Element(manMani, attrib={manVers: X_VERS}, nsmap=manMap)
+        etree.SubElement(xMani, manFile, attrib={manPath: "/", manVers: X_VERS, manType: X_MIME})
+        etree.SubElement(xMani, manFile, attrib={manPath: "manifest.rdf", manType: typeRDF})
+        etree.SubElement(xMani, manFile, attrib={manPath: "settings.xml", manType: typeXML})
+        etree.SubElement(xMani, manFile, attrib={manPath: "content.xml", manType: typeXML})
+        etree.SubElement(xMani, manFile, attrib={manPath: "meta.xml", manType: typeXML})
+        etree.SubElement(xMani, manFile, attrib={manPath: "styles.xml", manType: typeXML})
+
+        setMap = {
+            "office" : "urn:oasis:names:tc:opendocument:xmlns:office:1.0",
+            "config" : "urn:oasis:names:tc:opendocument:xmlns:config:1.0",
+        }
+        offRoot = "{%s}document-settings" % setMap["office"]
+        offSett = "{%s}settings" % setMap["office"]
+        xSett = etree.Element(offRoot, nsmap=setMap)
+        etree.SubElement(xSett, offSett)
+
+        with ZipFile(savePath, mode="w") as outFile:
+            outFile.writestr("mimetype", X_MIME)
+            outFile.writestr("META-INF/manifest.xml", etree.tostring(
+                xMani, pretty_print=True, encoding="utf-8", xml_declaration=True
+            ))
+            outFile.writestr("manifest.rdf", etree.tostring(
+                xMRdf, pretty_print=True, encoding="utf-8", xml_declaration=True
+            ))
+            outFile.writestr("settings.xml", etree.tostring(
+                xSett, pretty_print=True, encoding="utf-8", xml_declaration=True
+            ))
+            outFile.writestr("content.xml", etree.tostring(
+                self._dCont, pretty_print=True, encoding="utf-8", xml_declaration=True
+            ))
+            outFile.writestr("meta.xml", etree.tostring(
+                self._dMeta, pretty_print=True, encoding="utf-8", xml_declaration=True
+            ))
+            outFile.writestr("styles.xml", etree.tostring(
+                self._dStyl, pretty_print=True, encoding="utf-8", xml_declaration=True
+            ))
 
         return
 
@@ -541,14 +683,6 @@ class ToOdt(Tokenizer):
     def _defaultStyles(self):
         """Set the default styles.
         """
-        # Add Font
-        # ========
-
-        theAttr = {}
-        theAttr[_mkTag("style", "name")] = self.textFont
-        theAttr[_mkTag("style", "font-pitch")] = self._fontPitch
-        xStyl = etree.SubElement(self._xFont, _mkTag("style", "font-face"), attrib=theAttr)
-
         # Add Paragraph Family Style
         # ==========================
 
