@@ -32,6 +32,7 @@ from hashlib import sha256
 from datetime import datetime
 
 from nw.core.tokenizer import Tokenizer
+from nw.constants import nwLabels, nwKeyWords
 
 logger = logging.getLogger(__name__)
 
@@ -110,6 +111,8 @@ class ToOdt(Tokenizer):
         self._opaHead12 = None
         self._colHead34 = None
         self._opaHead34 = None
+        self._colMetaTx = None
+        self._opaMetaTx = None
 
         return
 
@@ -192,8 +195,10 @@ class ToOdt(Tokenizer):
         if self.colourHead:
             self._colHead12 = "#2a6099"
             self._opaHead12 = "100%"
-            self._colHead34 = "#323232"
+            self._colHead34 = "#444444"
             self._opaHead34 = "100%"
+            self._colMetaTx = "#666666"
+            self._opaMetaTx = "100%"
 
         self._lineHeight = f"{round(100 * self.lineHeight):d}%"
         self._textAlign  = "justify" if self.doJustify else "left"
@@ -308,6 +313,18 @@ class ToOdt(Tokenizer):
                     thisPar.append(tTxt + " ")
                     thisFmt.append(tFmt + " ")
 
+            elif tType == self.T_SYNOPSIS and self.doSynopsis:
+                tTemp, fTemp = self._formatSynopsis(tText)
+                self._addTextPar("Text_Meta", oStyle, tTemp, theFmt=fTemp)
+
+            elif tType == self.T_COMMENT and self.doComments:
+                tTemp, fTemp = self._formatComments(tText)
+                self._addTextPar("Text_Meta", oStyle, tTemp, theFmt=fTemp)
+
+            elif tType == self.T_KEYWORD and self.doKeywords:
+                tTemp, fTemp = self._formatKeywords(tText)
+                self._addTextPar("Text_Meta", oStyle, tTemp, theFmt=fTemp)
+
         return
 
     def closeDocument(self):
@@ -332,6 +349,44 @@ class ToOdt(Tokenizer):
     #  Internal Functions
     ##
 
+    def _formatSynopsis(self, tText):
+        """Apply formatting to synopsis lines.
+        """
+        rTxt = "**Synopsis:** %s" % tText
+        rFmt = "_B         b_ %s" % (" "*len(tText))
+        return rTxt, rFmt
+
+    def _formatComments(self, tText):
+        """Apply formatting to comments.
+        """
+        rTxt = "**Comment:** %s" % tText
+        rFmt = "_B        b_ %s" % (" "*len(tText))
+        return rTxt, rFmt
+
+    def _formatKeywords(self, tText):
+        """Apply formatting to keywords.
+        """
+        isValid, theBits, thePos = self.theParent.theIndex.scanThis("@"+tText)
+        if not isValid or not theBits:
+            return ""
+
+        rTxt = ""
+        rFmt = ""
+        if theBits[0] in nwLabels.KEY_NAME:
+            tText = nwLabels.KEY_NAME[theBits[0]]
+            rTxt += "**%s:** " % tText
+            rFmt  += "_B%s b_ " % (" "*len(tText))
+            if len(theBits) > 1:
+                if theBits[0] == nwKeyWords.TAG_KEY:
+                    rTxt += "%s" % theBits[1]
+                    rFmt += "%s" % (" "*len(theBits[1]))
+                else:
+                    tTags = ", ".join(theBits[1:])
+                    rTxt += tTags
+                    rFmt += (" "*len(tTags))
+
+        return rTxt, rFmt
+
     def _addTextPar(self, styleName, oStyle, theText, theFmt="", isHead=False, oLevel=None):
         """Add a text paragraph to the text XML element.
         """
@@ -351,7 +406,7 @@ class ToOdt(Tokenizer):
         ##
 
         if len(theText) != len(theFmt):
-            # Genrate dummu format if there isn't any
+            # Genrate dummy format if there isn't any
             theFmt = " "*len(theText)
 
         # XML functions
@@ -570,6 +625,25 @@ class ToOdt(Tokenizer):
         oStyle.packXML(self._xStyl, "Text_Body")
 
         self._mainPara["Text_Body"] = oStyle
+
+        # Add Text Meta Style
+        # ===================
+
+        oStyle = ODTParagraphStyle()
+        oStyle.setDisplayName("Text Meta")
+        oStyle.setParentStyleName("Standard")
+        oStyle.setClass("text")
+        oStyle.setMarginTop(self._mTopText)
+        oStyle.setMarginBottom(self._mBotText)
+        oStyle.setLineHeight(self._lineHeight)
+        oStyle.setFontName(self.textFont)
+        oStyle.setFontFamily(self._fontFamily)
+        oStyle.setFontSize(self._fSizeText)
+        oStyle.setColor(self._colMetaTx)
+        oStyle.setOpacity(self._opaMetaTx)
+        oStyle.packXML(self._xStyl, "Text_Meta")
+
+        self._mainPara["Text_Meta"] = oStyle
 
         # Add Title Style
         # ===============
