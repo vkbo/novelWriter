@@ -83,4 +83,45 @@ def testCoreToOdt_Convert(tmpConf, dummyGUI):
         '</office:text>'
     )
 
+    # Nested Text
+    theDoc.theText = "Some ~~nested **bold** and _italics_ text~~ text.\nNo format\n"
+    theDoc.tokenizeText()
+    theDoc.initDocument()
+    theDoc.doConvert()
+    theDoc.closeDocument()
+    assert xmlToText(theDoc._xText) == (
+        '<office:text>'
+        '<text:p text:style-name="Text_Body">Some '
+        '<text:span text:style-name="T1">nested </text:span>'
+        '<text:span text:style-name="T2">bold</text:span>'
+        '<text:span text:style-name="T1"> and </text:span>'
+        '<text:span text:style-name="T3">italics</text:span>'
+        '<text:span text:style-name="T1"> text</text:span> text. No format</text:p>'
+        '</office:text>'
+    )
+
+    # Hard Break
+    theDoc.theText = "Some text.  \nNext line\n"
+    theDoc.tokenizeText()
+    theDoc.initDocument()
+    theDoc.doConvert()
+    theDoc.closeDocument()
+    assert xmlToText(theDoc._xText) == (
+        '<office:text>'
+        '<text:p text:style-name="Text_Body">Some text.<text:line-break/>Next line</text:p>'
+        '</office:text>'
+    )
+
+    # Tab
+    theDoc.theText = "\tItem 1\tItem 2\n"
+    theDoc.tokenizeText()
+    theDoc.initDocument()
+    theDoc.doConvert()
+    theDoc.closeDocument()
+    assert xmlToText(theDoc._xText) == (
+        '<office:text>'
+        '<text:p text:style-name="Text_Body"><text:tab/>Item 1<text:tab/>Item 2</text:p>'
+        '</office:text>'
+    )
+
 # END Test testCoreToOdt_Convert

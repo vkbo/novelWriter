@@ -26,7 +26,6 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 import nw
 import logging
-import os
 
 from lxml import etree
 from hashlib import sha256
@@ -45,10 +44,13 @@ XML_NS = {
     "fo"     : "urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0",
 }
 
-X_BR  = "{%s}line-break" % XML_NS["text"]
-X_TAB = "{%s}tab" % XML_NS["text"]
-
 class ToOdt(Tokenizer):
+
+    X_BLD = 0x01
+    X_ITA = 0x02
+    X_DEL = 0x04
+    X_BRK = 0x08
+    X_TAB = 0x10
 
     def __init__(self, theProject, theParent):
         Tokenizer.__init__(self, theProject, theParent)
@@ -208,7 +210,17 @@ class ToOdt(Tokenizer):
         """
         self.theResult = ""
 
+        odtTags = {
+            self.FMT_B_B : "_B",
+            self.FMT_B_E : "b_",
+            self.FMT_I_B : "I",
+            self.FMT_I_E : "i",
+            self.FMT_D_B : "_S",
+            self.FMT_D_E : "s_",
+        }
+
         thisPar = []
+        thisFmt = []
         parStyle = None
         hasHardBreak = False
         for tType, tLine, tText, tFormat, tStyle in self.theTokens:
@@ -238,10 +250,16 @@ class ToOdt(Tokenizer):
                 if hasHardBreak and parStyle is not None:
                     if self.doJustify:
                         parStyle.setTextAlign("left")
+
                 if len(thisPar) > 0:
                     tTemp = "".join(thisPar)
-                    self._addTextPar("Text_Body", parStyle, tTemp.rstrip())
+                    fTemp = "".join(thisFmt)
+                    tTxt = tTemp.rstrip()
+                    tFmt = fTemp[:len(tTxt)]
+                    self._addTextPar("Text_Body", parStyle, tTxt, theFmt=tFmt)
+
                 thisPar = []
+                thisFmt = []
                 parStyle = None
                 hasHardBreak = False
 
@@ -275,20 +293,30 @@ class ToOdt(Tokenizer):
                 tTemp = tText
                 if parStyle is None:
                     parStyle = oStyle
-                # for xPos, xLen, xFmt in reversed(tFormat):
-                #     tTemp = tTemp[:xPos] + htmlTags[xFmt] + tTemp[xPos+xLen:]
+
+                tFmt = " "*len(tTemp)
+                for xPos, xLen, xFmt in tFormat:
+                    tFmt = tFmt[:xPos] + odtTags[xFmt] + tFmt[xPos+xLen:]
+
+                tTxt = tTemp.rstrip()
+                tFmt = tFmt[:len(tTxt)]
                 if tText.endswith("  "):
-                    thisPar.append(tTemp.rstrip()+"\n")
+                    thisPar.append(tTxt + "\n")
+                    thisFmt.append(tFmt + " ")
                     hasHardBreak = True
                 else:
-                    thisPar.append(tTemp.rstrip()+" ")
+                    thisPar.append(tTxt + " ")
+                    thisFmt.append(tFmt + " ")
 
         return
 
     def closeDocument(self):
         """Return the serialised XML document
         """
+        # Build the auto-generated styles
         for styleName, styleObj in self._autoPara.values():
+            styleObj.packXML(self._xAuto, styleName)
+        for styleName, styleObj in self._autoText.values():
             styleObj.packXML(self._xAuto, styleName)
 
         self.theResult = etree.tostring(
@@ -298,17 +326,13 @@ class ToOdt(Tokenizer):
             xml_declaration = True
         )
 
-        cacheFile = os.path.join(os.path.expanduser("~"), "Temp", "odtGen.fodt")
-        with open(cacheFile, mode="wb") as outFile:
-            outFile.write(self.theResult)
-
         return
 
     ##
     #  Internal Functions
     ##
 
-    def _addTextPar(self, styleName, oStyle, theText, isHead=False, oLevel=None):
+    def _addTextPar(self, styleName, oStyle, theText, theFmt="", isHead=False, oLevel=None):
         """Add a text paragraph to the text XML element.
         """
         tAttr = {}
@@ -322,36 +346,85 @@ class ToOdt(Tokenizer):
         if not theText:
             return
 
-        if "\t" not in theText and "\n" not in theText:
-            xElem.text = theText
-            return
+        ##
+        #  Process Formatting
+        ##
 
-        # Process tabs and line breaks
-        tTemp = ""
+        if len(theText) != len(theFmt):
+            # Genrate dummu format if there isn't any
+            theFmt = " "*len(theText)
+
+        # XML functions
         xTail = None
-        for c in theText:
-            if c == "\t":
+
+        def appendText(tText):
+            nonlocal xElem, xTail
+            if tText:
                 if xTail is None:
-                    xElem.text = tTemp
+                    xElem.text = tText
                 else:
-                    xTail.tail = tTemp
-                tTemp = ""
-                xTail = etree.SubElement(xElem, X_TAB)
-            elif c == "\n":
-                if xTail is None:
-                    xElem.text = tTemp
-                else:
-                    xTail.tail = tTemp
-                tTemp = ""
-                xTail = etree.SubElement(xElem, X_BR)
-            else:
+                    xTail.tail = tText
+
+        def appendSpan(tText, tFmt):
+            nonlocal xElem, xTail
+            if tText:
+                xTail = etree.SubElement(xElem, _mkTag("text", "span"), attrib={
+                    _mkTag("text", "style-name"): self._textStyle(tFmt)
+                })
+                xTail.text = tText
+
+        # The formatting loop
+        tTemp = ""
+        xFmt = 0x00
+        pFmt = 0x00
+
+        for i, c in enumerate(theText):
+
+            if theFmt[i] == "_":
+                continue
+            elif theFmt[i] == "B":
+                xFmt |= self.X_BLD
+            elif theFmt[i] == "b":
+                xFmt ^= self.X_BLD
+            elif theFmt[i] == "I":
+                xFmt |= self.X_ITA
+            elif theFmt[i] == "i":
+                xFmt ^= self.X_ITA
+            elif theFmt[i] == "S":
+                xFmt |= self.X_DEL
+            elif theFmt[i] == "s":
+                xFmt ^= self.X_DEL
+
+            if c == "\n":
+                xFmt |= self.X_BRK
+                c = ""
+            elif c == "\t":
+                xFmt |= self.X_TAB
+                c = ""
+
+            if theFmt[i] == " ":
                 tTemp += c
 
-        if tTemp != "":
-            if xTail is None:
-                xElem.text = tTemp
-            else:
-                xTail.tail = tTemp
+            if xFmt != pFmt:
+                if pFmt == 0x00:
+                    appendText(tTemp)
+                    tTemp = ""
+                else:
+                    appendSpan(tTemp, pFmt)
+                    tTemp = ""
+
+                if xFmt & self.X_BRK:
+                    xTail = etree.SubElement(xElem, _mkTag("text", "line-break"))
+                    xFmt ^= self.X_BRK
+
+                if xFmt & self.X_TAB:
+                    xTail = etree.SubElement(xElem, _mkTag("text", "tab"))
+                    xFmt ^= self.X_TAB
+
+            pFmt = xFmt
+
+        # Save what remains in the buffer
+        appendText(tTemp)
 
         return
 
@@ -373,6 +446,26 @@ class ToOdt(Tokenizer):
 
         newName = "P%d" % (len(self._autoPara) + 1)
         self._autoPara[theID] = (newName, oStyle)
+
+        return newName
+
+    def _textStyle(self, styleCode):
+        """Return a text style for a given style code.
+        """
+        if styleCode in self._autoText:
+            return self._autoText[styleCode][0]
+
+        newName = "T%d" % (len(self._autoText) + 1)
+        newStyle = ODTTextStyle()
+        if styleCode & self.X_BLD:
+            newStyle.setFontWeight("bold")
+        if styleCode & self.X_ITA:
+            newStyle.setFontStyle("italic")
+        if styleCode & self.X_DEL:
+            newStyle.setStrikeStyle("solid")
+            newStyle.setStrikeType("single")
+
+        self._autoText[styleCode] = (newName, newStyle)
 
         return newName
 
@@ -802,6 +895,76 @@ class ODTParagraphStyle():
         return
 
 # END Class ODTParagraphStyle
+
+class ODTTextStyle():
+    """Wrapper class for the text style setting used by the exporter.
+    Only the used settings are exposed here to keep the class minimal
+    and fast.
+    """
+    VALID_WEIGHT = ["normal", "inherit", "bold"]
+    VALID_STYLE  = ["normal", "inherit", "italic"]
+    VALID_LSTYLE = ["none", "solid"]
+    VALID_LTYPE  = ["none", "single", "double"]
+
+    def __init__(self):
+
+        # Text Attributes
+        self._tAttr = {
+            "font-weight":             ["fo",    None],
+            "font-style":              ["fo",    None],
+            "text-line-through-style": ["style", None],
+            "text-line-through-type":  ["style", None],
+        }
+
+        return
+
+    ##
+    #  Setters
+    ##
+
+    def setFontWeight(self, theValue):
+        if theValue in self.VALID_WEIGHT:
+            self._tAttr["font-weight"][1] = str(theValue)
+        return
+
+    def setFontStyle(self, theValue):
+        if theValue in self.VALID_STYLE:
+            self._tAttr["font-style"][1] = str(theValue)
+        return
+
+    def setStrikeStyle(self, theValue):
+        if theValue in self.VALID_LSTYLE:
+            self._tAttr["text-line-through-style"][1] = str(theValue)
+        return
+
+    def setStrikeType(self, theValue):
+        if theValue in self.VALID_LTYPE:
+            self._tAttr["text-line-through-type"][1] = str(theValue)
+        return
+
+    ##
+    #  Methods
+    ##
+
+    def packXML(self, xParent, xName):
+        """Pack the content into an xml element.
+        """
+        theAttr = {}
+        theAttr[_mkTag("style", "name")] = xName
+        theAttr[_mkTag("style", "family")] = "text"
+        xEntry = etree.SubElement(xParent, _mkTag("style", "style"), attrib=theAttr)
+
+        theAttr = {}
+        for aName, (aNm, aVal) in self._tAttr.items():
+            if aVal is not None:
+                theAttr[_mkTag(aNm, aName)] = aVal
+
+        if theAttr:
+            etree.SubElement(xEntry, _mkTag("style", "text-properties"), attrib=theAttr)
+
+        return
+
+# END Class ODTTextStyle
 
 # =============================================================================================== #
 #  Local Functions

@@ -236,12 +236,12 @@ class ToHtml(Tokenizer):
                 if parStyle is None:
                     parStyle = hStyle
                 for xPos, xLen, xFmt in reversed(tFormat):
-                    tTemp = tTemp[:xPos]+htmlTags[xFmt]+tTemp[xPos+xLen:]
+                    tTemp = tTemp[:xPos] + htmlTags[xFmt] + tTemp[xPos+xLen:]
                 if tText.endswith("  "):
-                    thisPar.append(tTemp.rstrip()+"<br/>")
+                    thisPar.append(tTemp.rstrip() + "<br/>")
                     hasHardBreak = True
                 else:
-                    thisPar.append(tTemp.rstrip()+" ")
+                    thisPar.append(tTemp.rstrip() + " ")
 
             elif tType == self.T_SYNOPSIS and self.doSynopsis:
                 tmpResult.append(self._formatSynopsis(tText))
