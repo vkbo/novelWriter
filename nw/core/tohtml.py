@@ -173,16 +173,12 @@ class ToHtml(Tokenizer):
                     aStyle.append("text-align: justify;")
                 if tStyle & self.A_PBB:
                     aStyle.append("page-break-before: always;")
-                if tStyle & self.A_PBB_AV:
-                    aStyle.append("page-break-before: avoid;")
-                if tStyle & self.A_PBB_NO:
-                    aStyle.append("page-break-before: never;")
+                if tStyle & self.A_PBB_AUT:
+                    aStyle.append("page-break-before: auto;")
                 if tStyle & self.A_PBA:
                     aStyle.append("page-break-after: always;")
-                if tStyle & self.A_PBA_AV:
-                    aStyle.append("page-break-after: avoid;")
-                if tStyle & self.A_PBA_NO:
-                    aStyle.append("page-break-after: never;")
+                if tStyle & self.A_PBA_AUT:
+                    aStyle.append("page-break-after: auto;")
 
             if len(aStyle) > 0:
                 hStyle = " style='%s'" % (" ".join(aStyle))
@@ -268,22 +264,23 @@ class ToHtml(Tokenizer):
         if not self.cssStyles:
             return theStyles
 
-        if self.doJustify:
-            theStyles.append(r"p {text-align: justify;}")
-        else:
-            theStyles.append(r"p {text-align: left;}")
+        textAlign = "justify" if self.doJustify else "left"
 
-        theStyles.append(r"h1, h2 {color: rgb(66, 113, 174);}")
-        theStyles.append(r"h3, h4 {color: rgb(50, 50, 50);}")
-        theStyles.append(r"h1, h2, h3, h4 {page-break-after: avoid;}")
-        theStyles.append(r"a {color: rgb(66, 113, 174);}")
-        theStyles.append(r".title {font-size: 2.5em;}")
-        theStyles.append(r".tags {color: rgb(245, 135, 31); font-weight: bold;}")
-        theStyles.append(r".break {text-align: left;}")
-        theStyles.append(r".sep {text-align: center; margin-top: 1em; margin-bottom: 1em;}")
-        theStyles.append(r".skip {margin-top: 1em; margin-bottom: 1em;}")
-        theStyles.append(r".synopsis {font-style: italic;}")
-        theStyles.append(r".comment {font-style: italic; color: rgb(100, 100, 100);}")
+        theStyles.append("body {font-family: '%s'; font-size: %dpt}" % (
+            self.textFont, self.textSize)
+        )
+        theStyles.append("p {text-align: %s;}" % textAlign)
+        theStyles.append("h1, h2 {color: rgb(66, 113, 174);}")
+        theStyles.append("h3, h4 {color: rgb(50, 50, 50);}")
+        theStyles.append("h1, h2, h3, h4 {page-break-after: avoid;}")
+        theStyles.append("a {color: rgb(66, 113, 174);}")
+        theStyles.append(".title {font-size: 2.5em;}")
+        theStyles.append(".tags {color: rgb(245, 135, 31); font-weight: bold;}")
+        theStyles.append(".break {text-align: left;}")
+        theStyles.append(".sep {text-align: center; margin-top: 1em; margin-bottom: 1em;}")
+        theStyles.append(".skip {margin-top: 1em; margin-bottom: 1em;}")
+        theStyles.append(".synopsis {font-style: italic;}")
+        theStyles.append(".comment {font-style: italic; color: rgb(100, 100, 100);}")
 
         return theStyles
 

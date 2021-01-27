@@ -5,10 +5,11 @@
     "authors": [
       "lipsum.com"
     ],
-    "buildTime": 1611662802
+    "buildTime": 1611750760
   },
   "text": {
     "css": [
+      "body {font-family: 'Sans'; font-size: 12pt}",
       "p {text-align: justify;}",
       "h1, h2 {color: rgb(66, 113, 174);}",
       "h3, h4 {color: rgb(50, 50, 50);}",
@@ -24,7 +25,7 @@
     ],
     "html": [
       [
-        "<h1 class='title' style='text-align: center; page-break-before: never;'>Lorem Ipsum</h1>"
+        "<h1 class='title' style='text-align: center; page-break-before: auto;'>Lorem Ipsum</h1>"
       ],
       [
         ""

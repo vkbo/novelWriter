@@ -573,7 +573,7 @@ class GuiBuildNovel(QDialog):
             self.nwdText = nwdText
 
         tEnd = int(time())
-        logger.debug("Built project in %.3f ms" % (1000*(tEnd-tStart)))
+        logger.debug("Built project in %.3f ms" % (1000*(tEnd - tStart)))
         self.htmlStyle = makeHtml.getStyleSheet()
         self.buildTime = tEnd
 

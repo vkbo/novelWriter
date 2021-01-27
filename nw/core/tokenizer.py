@@ -67,11 +67,9 @@ class Tokenizer():
     A_CENTRE   = 0x0004 # Centred
     A_JUSTIFY  = 0x0008 # Justified
     A_PBB      = 0x0010 # Page break before always
-    A_PBB_AV   = 0x0020 # Page break before avoid
-    A_PBB_NO   = 0x0040 # Page break before never
-    A_PBA      = 0x0080 # Page break after always
-    A_PBA_AV   = 0x0100 # Page break after avoid
-    A_PBA_NO   = 0x0200 # Page break after avoid
+    A_PBB_AUT  = 0x0020 # Page break before auto
+    A_PBA      = 0x0040 # Page break after always
+    A_PBA_AUT  = 0x0080 # Page break after auto
 
     def __init__(self, theProject, theParent):
 
@@ -628,7 +626,7 @@ class Tokenizer():
                             tToken[1],
                             tToken[2],
                             tToken[3],
-                            self.A_PBB_NO | self.A_CENTRE
+                            self.A_PBB_AUT | self.A_CENTRE
                         )
                     else:
                         self.theTokens[n] = (

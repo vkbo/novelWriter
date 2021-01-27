@@ -30,6 +30,7 @@ import os
 
 from lxml import etree
 from hashlib import sha256
+from datetime import datetime
 
 from nw.core.tokenizer import Tokenizer
 
@@ -39,6 +40,7 @@ XML_NS = {
     "office" : "urn:oasis:names:tc:opendocument:xmlns:office:1.0",
     "style"  : "urn:oasis:names:tc:opendocument:xmlns:style:1.0",
     "text"   : "urn:oasis:names:tc:opendocument:xmlns:text:1.0",
+    "meta"   : "urn:oasis:names:tc:opendocument:xmlns:meta:1.0",
     "fo"     : "urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0",
 }
 
@@ -113,11 +115,18 @@ class ToOdt(Tokenizer):
             _mkTag("office", "mimetype") : "application/vnd.oasis.opendocument.text",
         }
         self._xRoot = etree.Element(_mkTag("office", "document"), attrib=rAttr, nsmap=XML_NS)
+        self._xMeta = etree.SubElement(self._xRoot, _mkTag("office", "meta"))
         self._xFont = etree.SubElement(self._xRoot, _mkTag("office", "font-face-decls"))
         self._xStyl = etree.SubElement(self._xRoot, _mkTag("office", "styles"))
         self._xAuto = etree.SubElement(self._xRoot, _mkTag("office", "automatic-styles"))
         self._xBody = etree.SubElement(self._xRoot, _mkTag("office", "body"))
         self._xText = etree.SubElement(self._xBody, _mkTag("office", "text"))
+
+        # Meta Data
+        xMeta = etree.SubElement(self._xMeta, _mkTag("meta", "creation-date"))
+        xMeta.text = datetime.now().isoformat()
+        xMeta = etree.SubElement(self._xMeta, _mkTag("meta", "generator"))
+        xMeta.text = f"novelWriter/{nw.__version__}"
 
         # Re-Init Variables
         self._fontFamily = self.textFont
@@ -166,8 +175,12 @@ class ToOdt(Tokenizer):
                     oStyle.setTextAlign("justify")
                 if tStyle & self.A_PBB:
                     oStyle.setBreakBefore("page")
+                if tStyle & self.A_PBB_AUT:
+                    oStyle.setBreakBefore("auto")
                 if tStyle & self.A_PBA:
                     oStyle.setBreakAfter("page")
+                if tStyle & self.A_PBA_AUT:
+                    oStyle.setBreakAfter("auto")
 
             # Process Text Type
             if tType == self.T_EMPTY:
@@ -212,7 +225,7 @@ class ToOdt(Tokenizer):
                 if parStyle is None:
                     parStyle = oStyle
                 # for xPos, xLen, xFmt in reversed(tFormat):
-                #     tTemp = tTemp[:xPos]+htmlTags[xFmt]+tTemp[xPos+xLen:]
+                #     tTemp = tTemp[:xPos] + htmlTags[xFmt] + tTemp[xPos+xLen:]
                 if tText.endswith("  "):
                     thisPar.append(tTemp.rstrip()+"\n")
                     hasHardBreak = True
@@ -511,6 +524,10 @@ class ToOdt(Tokenizer):
 # =============================================================================================== #
 
 class ODTParagraphStyle():
+    """Wrapper class for the paragraph style setting used by the
+    exporter. Only the used settings are exposed here to keep the class
+    minimal and fast.
+    """
 
     VALID_ALIGN  = ["start", "center", "end", "justify", "inside", "outside", "left", "right"]
     VALID_BREAK  = ["auto", "column", "page", "even-page", "odd-page", "inherit"]
@@ -539,7 +556,7 @@ class ODTParagraphStyle():
             "break-after":   ["fo", None],
         }
 
-        # text Attributes
+        # Text Attributes
         self._tAttr = {
             "font-name":   ["style", None],
             "font-family": ["fo",    None],
