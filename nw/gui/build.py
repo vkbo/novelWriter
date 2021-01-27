@@ -46,7 +46,7 @@ from PyQt5.QtWidgets import (
 
 from nw.common import fuzzyTime, makeFileNameSafe
 from nw.gui.custom import QSwitch
-from nw.core import ToHtml
+from nw.core import ToHtml, ToOdt
 from nw.constants import (
     nwConst, nwAlert, nwFiles, nwItemType, nwItemLayout, nwItemClass
 )
@@ -56,13 +56,14 @@ logger = logging.getLogger(__name__)
 class GuiBuildNovel(QDialog):
 
     FMT_ODT    = 1
-    FMT_PDF    = 2
-    FMT_HTM    = 3
-    FMT_MD     = 4
-    FMT_NWD    = 5
-    FMT_TXT    = 6
-    FMT_JSON_H = 7
-    FMT_JSON_M = 8
+    FMT_FODT   = 2
+    FMT_PDF    = 3
+    FMT_HTM    = 4
+    FMT_MD     = 5
+    FMT_NWD    = 6
+    FMT_TXT    = 7
+    FMT_JSON_H = 8
+    FMT_JSON_M = 9
 
     def __init__(self, theParent, theProject):
         QDialog.__init__(self, theParent)
@@ -386,6 +387,10 @@ class GuiBuildNovel(QDialog):
         self.saveODT.triggered.connect(lambda: self._saveDocument(self.FMT_ODT))
         self.saveMenu.addAction(self.saveODT)
 
+        self.saveFODT = QAction("Flat Open Document (.fodt)", self)
+        self.saveFODT.triggered.connect(lambda: self._saveDocument(self.FMT_FODT))
+        self.saveMenu.addAction(self.saveFODT)
+
         self.savePDF = QAction("Portable Document Format (.pdf)", self)
         self.savePDF.triggered.connect(lambda: self._saveDocument(self.FMT_PDF))
         self.saveMenu.addAction(self.savePDF)
@@ -533,49 +538,18 @@ class GuiBuildNovel(QDialog):
         return True
 
     ##
-    #  Slots
+    #  Slots and Related
     ##
 
     def _buildPreview(self):
         """Build a preview of the project in the document viewer.
         """
         # Get Settings
-        fmtTitle      = self.fmtTitle.text().strip()
-        fmtChapter    = self.fmtChapter.text().strip()
-        fmtUnnumbered = self.fmtUnnumbered.text().strip()
-        fmtScene      = self.fmtScene.text().strip()
-        fmtSection    = self.fmtSection.text().strip()
-        justifyText   = self.justifyText.isChecked()
-        noStyling     = self.noStyling.isChecked()
-        textFont      = self.textFont.text()
-        textSize      = self.textSize.value()
-        incSynopsis   = self.includeSynopsis.isChecked()
-        incComments   = self.includeComments.isChecked()
-        incKeywords   = self.includeKeywords.isChecked()
-        novelFiles    = self.novelFiles.isChecked()
-        noteFiles     = self.noteFiles.isChecked()
-        ignoreFlag    = self.ignoreFlag.isChecked()
-        includeBody   = self.includeBody.isChecked()
-        replaceTabs   = self.replaceTabs.isChecked()
-
-        makeHtml = ToHtml(self.theProject, self.theParent)
-        makeHtml.setTitleFormat(fmtTitle)
-        makeHtml.setChapterFormat(fmtChapter)
-        makeHtml.setUnNumberedFormat(fmtUnnumbered)
-        makeHtml.setSceneFormat(fmtScene, fmtScene == "")
-        makeHtml.setSectionFormat(fmtSection, fmtSection == "")
-        makeHtml.setBodyText(includeBody)
-        makeHtml.setSynopsis(incSynopsis)
-        makeHtml.setComments(incComments)
-        makeHtml.setKeywords(incKeywords)
-        makeHtml.setJustify(justifyText)
-        makeHtml.setStyles(not noStyling)
-
-        # Make sure the tree order is correct
-        self.theParent.treeView.flushTreeOrder()
-
-        self.buildProgress.setMaximum(len(self.theProject.projTree))
-        self.buildProgress.setValue(0)
+        justifyText = self.justifyText.isChecked()
+        noStyling   = self.noStyling.isChecked()
+        textFont    = self.textFont.text()
+        textSize    = self.textSize.value()
+        replaceTabs = self.replaceTabs.isChecked()
 
         tStart = int(time())
 
@@ -583,52 +557,8 @@ class GuiBuildNovel(QDialog):
         self.htmlStyle = []
         self.nwdText = []
 
-        htmlSize = 0
-
-        for nItt, tItem in enumerate(self.theProject.projTree):
-
-            noteRoot  = noteFiles
-            noteRoot &= tItem.itemType == nwItemType.ROOT
-            noteRoot &= tItem.itemClass != nwItemClass.NOVEL
-            noteRoot &= tItem.itemClass != nwItemClass.ARCHIVE
-
-            try:
-                if noteRoot:
-                    # Add headers for root folders of notes
-                    makeHtml.addRootHeading(tItem.itemHandle)
-                    makeHtml.doConvert()
-                    self.htmlText.append(makeHtml.getResult())
-                    self.nwdText.append(makeHtml.getFilteredMarkdown())
-                    htmlSize += makeHtml.getResultSize()
-
-                elif self._checkInclude(tItem, noteFiles, novelFiles, ignoreFlag):
-                    makeHtml.setText(tItem.itemHandle)
-                    makeHtml.doAutoReplace()
-                    makeHtml.tokenizeText()
-                    makeHtml.doHeaders()
-                    makeHtml.doConvert()
-                    makeHtml.doPostProcessing()
-                    self.htmlText.append(makeHtml.getResult())
-                    self.nwdText.append(makeHtml.getFilteredMarkdown())
-                    htmlSize += makeHtml.getResultSize()
-
-            except Exception as e:
-                logger.error("Failed to generate html of document '%s'" % tItem.itemHandle)
-                logger.error(str(e))
-                self.docView.setText((
-                    "Failed to generate preview. "
-                    "Document with title '%s' could not be parsed."
-                ) % tItem.itemName)
-                return False
-
-            # Update progress bar, also for skipped items
-            self.buildProgress.setValue(nItt+1)
-
-        if makeHtml.errData:
-            self.theParent.makeAlert((
-                "There were problems when building the project:"
-                "<br>-&nbsp;%s"
-            ) % "<br>-&nbsp;".join(makeHtml.errData), nwAlert.ERROR)
+        makeHtml = ToHtml(self.theProject, self.theParent)
+        htmlSize = self._doBuild(makeHtml)
 
         if replaceTabs:
             htmlText = []
@@ -667,6 +597,103 @@ class GuiBuildNovel(QDialog):
         self._saveCache()
 
         return
+
+    def _doBuild(self, bldObj):
+        """Rund the build with a specific build object.
+        """
+        # Get Settings
+        fmtTitle      = self.fmtTitle.text().strip()
+        fmtChapter    = self.fmtChapter.text().strip()
+        fmtUnnumbered = self.fmtUnnumbered.text().strip()
+        fmtScene      = self.fmtScene.text().strip()
+        fmtSection    = self.fmtSection.text().strip()
+        justifyText   = self.justifyText.isChecked()
+        noStyling     = self.noStyling.isChecked()
+        incSynopsis   = self.includeSynopsis.isChecked()
+        incComments   = self.includeComments.isChecked()
+        incKeywords   = self.includeKeywords.isChecked()
+        novelFiles    = self.novelFiles.isChecked()
+        noteFiles     = self.noteFiles.isChecked()
+        ignoreFlag    = self.ignoreFlag.isChecked()
+        includeBody   = self.includeBody.isChecked()
+
+        isHtml = isinstance(bldObj, ToHtml)
+        isOdt  = isinstance(bldObj, ToOdt)
+
+        bldObj.setTitleFormat(fmtTitle)
+        bldObj.setChapterFormat(fmtChapter)
+        bldObj.setUnNumberedFormat(fmtUnnumbered)
+        bldObj.setSceneFormat(fmtScene, fmtScene == "")
+        bldObj.setSectionFormat(fmtSection, fmtSection == "")
+        bldObj.setBodyText(includeBody)
+        bldObj.setSynopsis(incSynopsis)
+        bldObj.setComments(incComments)
+        bldObj.setKeywords(incKeywords)
+        bldObj.setJustify(justifyText)
+
+        if isHtml:
+            bldObj.setStyles(not noStyling)
+
+        if isOdt:
+            bldObj.initDocument()
+
+        # Make sure the tree order is correct
+        self.theParent.treeView.flushTreeOrder()
+
+        self.buildProgress.setMaximum(len(self.theProject.projTree))
+        self.buildProgress.setValue(0)
+
+        accSize = 0
+
+        for nItt, tItem in enumerate(self.theProject.projTree):
+
+            noteRoot  = noteFiles
+            noteRoot &= tItem.itemType == nwItemType.ROOT
+            noteRoot &= tItem.itemClass != nwItemClass.NOVEL
+            noteRoot &= tItem.itemClass != nwItemClass.ARCHIVE
+
+            try:
+                if noteRoot:
+                    # Add headers for root folders of notes
+                    bldObj.addRootHeading(tItem.itemHandle)
+                    bldObj.doConvert()
+                    self.htmlText.append(bldObj.getResult())
+                    self.nwdText.append(bldObj.getFilteredMarkdown())
+                    accSize += bldObj.getResultSize()
+
+                elif self._checkInclude(tItem, noteFiles, novelFiles, ignoreFlag):
+                    bldObj.setText(tItem.itemHandle)
+                    bldObj.doAutoReplace()
+                    bldObj.tokenizeText()
+                    bldObj.doHeaders()
+                    bldObj.doConvert()
+                    bldObj.doPostProcessing()
+                    self.htmlText.append(bldObj.getResult())
+                    self.nwdText.append(bldObj.getFilteredMarkdown())
+                    accSize += bldObj.getResultSize()
+
+            except Exception as e:
+                logger.error("Failed to generate html of document '%s'" % tItem.itemHandle)
+                logger.error(str(e))
+                self.docView.setText((
+                    "Failed to generate preview. "
+                    "Document with title '%s' could not be parsed."
+                ) % tItem.itemName)
+                return False
+
+            # Update progress bar, also for skipped items
+            self.buildProgress.setValue(nItt+1)
+
+        if isOdt:
+            bldObj.closeDocument()
+
+        if bldObj.errData:
+            self.theParent.makeAlert((
+                "There were problems when building the project:"
+                "<br>-&nbsp;%s"
+            ) % "<br>-&nbsp;".join(bldObj.errData), nwAlert.ERROR)
+
+        return accSize
 
     def _checkInclude(self, theItem, noteFiles, novelFiles, ignoreFlag):
         """This function checks whether a file should be included in the
@@ -722,6 +749,11 @@ class GuiBuildNovel(QDialog):
             fileExt = "odt"
             textFmt = "Open Document"
             outTool = "Qt"
+
+        elif theFormat == self.FMT_FODT:
+            fileExt = "fodt"
+            textFmt = "Flat Open Document"
+            outTool = "NW2"
 
         elif theFormat == self.FMT_PDF:
             fileExt = "pdf"
@@ -865,6 +897,13 @@ class GuiBuildNovel(QDialog):
 
             except Exception as e:
                 errMsg = str(e)
+
+        elif outTool == "NW2":
+
+            if theFormat == self.FMT_FODT:
+                makeOdt = ToOdt(self.theProject, self.theParent)
+                self._doBuild(makeOdt)
+                wSuccess = True
 
         elif outTool == "QtPrint" and theFormat == self.FMT_PDF:
             try:
