@@ -415,32 +415,6 @@ class ToOdt(Tokenizer):
     def saveOpenDocText(self, savePath):
         """Save the data to an .odt file.
         """
-        rdfMap = {"rdf": "http://www.w3.org/1999/02/22-rdf-syntax-ns#"}
-        ns0Map = {"ns0": "http://docs.oasis-open.org/ns/office/1.2/meta/pkg#"}
-
-        rdfRDF   = "{%s}RDF" % rdfMap["rdf"]
-        rdfDesc  = "{%s}Description" % rdfMap["rdf"]
-        rdfAbout = "{%s}about" % rdfMap["rdf"]
-        rdfType  = "{%s}type" % rdfMap["rdf"]
-        rdfRes   = "{%s}resource" % rdfMap["rdf"]
-        ns0Part  = "{%s}hasPart" % ns0Map["ns0"]
-
-        stylRes = "http://docs.oasis-open.org/ns/office/1.2/meta/odf#StylesFile"
-        contRes = "http://docs.oasis-open.org/ns/office/1.2/meta/odf#ContentFile"
-        docuRes = "http://docs.oasis-open.org/ns/office/1.2/meta/pkg#Document"
-
-        xMRdf = etree.Element(rdfRDF, nsmap=rdfMap)
-        xDesc = etree.SubElement(xMRdf, rdfDesc, attrib={rdfAbout: "styles.xml"})
-        _     = etree.SubElement(xDesc, rdfType, attrib={rdfRes: stylRes})
-        xDesc = etree.SubElement(xMRdf, rdfDesc, attrib={rdfAbout: ""})
-        _     = etree.SubElement(xDesc, ns0Part, attrib={rdfRes: "styles.xml"}, nsmap=ns0Map)
-        xDesc = etree.SubElement(xMRdf, rdfDesc, attrib={rdfAbout: "content.xml"})
-        _     = etree.SubElement(xDesc, rdfType, attrib={rdfRes: contRes})
-        xDesc = etree.SubElement(xMRdf, rdfDesc, attrib={rdfAbout: ""})
-        _     = etree.SubElement(xDesc, ns0Part, attrib={rdfRes: "content.xml"}, nsmap=ns0Map)
-        xDesc = etree.SubElement(xMRdf, rdfDesc, attrib={rdfAbout: ""})
-        _     = etree.SubElement(xDesc, rdfType, attrib={rdfRes: docuRes})
-
         manMap = {
             "manifest" : "urn:oasis:names:tc:opendocument:xmlns:manifest:1.0",
             "loext"    : "urn:org:documentfoundation:names:experimental:office:xmlns:loext:1.0",
@@ -450,15 +424,13 @@ class ToOdt(Tokenizer):
         manPath = "{%s}full-path" % manMap["manifest"]
         manType = "{%s}media-type" % manMap["manifest"]
         manFile = "{%s}file-entry" % manMap["manifest"]
-        typeXML = "text/xml"
-        typeRDF = "application/rdf+xml"
+
         xMani = etree.Element(manMani, attrib={manVers: X_VERS}, nsmap=manMap)
         etree.SubElement(xMani, manFile, attrib={manPath: "/", manVers: X_VERS, manType: X_MIME})
-        etree.SubElement(xMani, manFile, attrib={manPath: "manifest.rdf", manType: typeRDF})
-        etree.SubElement(xMani, manFile, attrib={manPath: "settings.xml", manType: typeXML})
-        etree.SubElement(xMani, manFile, attrib={manPath: "content.xml", manType: typeXML})
-        etree.SubElement(xMani, manFile, attrib={manPath: "meta.xml", manType: typeXML})
-        etree.SubElement(xMani, manFile, attrib={manPath: "styles.xml", manType: typeXML})
+        etree.SubElement(xMani, manFile, attrib={manPath: "settings.xml", manType: "text/xml"})
+        etree.SubElement(xMani, manFile, attrib={manPath: "content.xml", manType: "text/xml"})
+        etree.SubElement(xMani, manFile, attrib={manPath: "meta.xml", manType: "text/xml"})
+        etree.SubElement(xMani, manFile, attrib={manPath: "styles.xml", manType: "text/xml"})
 
         setMap = {
             "office" : "urn:oasis:names:tc:opendocument:xmlns:office:1.0",
@@ -473,9 +445,6 @@ class ToOdt(Tokenizer):
             outFile.writestr("mimetype", X_MIME)
             outFile.writestr("META-INF/manifest.xml", etree.tostring(
                 xMani, pretty_print=True, encoding="utf-8", xml_declaration=True
-            ))
-            outFile.writestr("manifest.rdf", etree.tostring(
-                xMRdf, pretty_print=True, encoding="utf-8", xml_declaration=True
             ))
             outFile.writestr("settings.xml", etree.tostring(
                 xSett, pretty_print=True, encoding="utf-8", xml_declaration=True
