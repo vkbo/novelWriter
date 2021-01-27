@@ -87,11 +87,15 @@ class Tokenizer():
         self.theMarkdown = None # The result text in novelWriter markdown
 
         # User Settings
-        self.doBodyText  = True  # Include body text
-        self.doSynopsis  = False # Also process synopsis comments
-        self.doComments  = False # Also process comments
-        self.doKeywords  = False # Also process keywords like tags and references
-        self.doJustify   = False # Justify text
+        self.textFont    = "Serif" # Output text font
+        self.textSize    = 11      # Output text size
+        self.textFixed   = False   # Fixed width text
+        self.lineHeight  = 1.15    # Line height
+        self.doJustify   = False   # Justify text
+        self.doBodyText  = True    # Include body text
+        self.doSynopsis  = False   # Also process synopsis comments
+        self.doComments  = False   # Also process comments
+        self.doKeywords  = False   # Also process keywords like tags and references
 
         self.fmtTitle    = "%title%" # Formatting for titles
         self.fmtChapter  = "%title%" # Formatting for numbered chapters
@@ -153,6 +157,20 @@ class Tokenizer():
         self.hideSection = hideSection
         return
 
+    def setFont(self, textFont, textSize, textFixed=False):
+        self.textFont  = textFont
+        self.textSize  = round(int(textSize))
+        self.textFixed = textFixed
+        return
+
+    def setLineHeight(self, lineHeight):
+        self.lineHeight = float(lineHeight)
+        return
+
+    def setJustify(self, doJustify):
+        self.doJustify = doJustify
+        return
+
     def setLinkHeaders(self, linkHeaders):
         self.linkHeaders = linkHeaders
         return
@@ -171,10 +189,6 @@ class Tokenizer():
 
     def setKeywords(self, doKeywords):
         self.doKeywords = doKeywords
-        return
-
-    def setJustify(self, doJustify):
-        self.doJustify = doJustify
         return
 
     ##

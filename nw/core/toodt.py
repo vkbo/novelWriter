@@ -62,10 +62,25 @@ class ToOdt(Tokenizer):
         self._autoPara = {}
         self._autoText = {}
 
-        self._dLanguage = "en"
-        self._dCountry  = "GB"
-        self._dFontFace = "Liberation Serif"
-        self._dFontSize = 12
+        # Properties
+        self.textFont  = "Liberation Serif"
+        self.textSize  = 12
+        self.textFixed = False
+
+        # Internal
+        self._fontFamily = None
+        self._fontPitch  = "variable"
+        self._fSizeTitle = "30pt"
+        self._fSizeHead1 = "24pt"
+        self._fSizeHead2 = "20pt"
+        self._fSizeHead3 = "16pt"
+        self._fSizeHead4 = "14pt"
+        self._fSizeHead  = "14pt"
+        self._fSizeText  = "12pt"
+        self._lineHeight = "115%"
+        self._textAlign  = "left"
+        self._dLanguage  = "en"
+        self._dCountry   = "GB"
 
         return
 
@@ -86,13 +101,6 @@ class ToOdt(Tokenizer):
 
         return True
 
-    def setFont(self, fontFace, fontSize):
-        """Set font and font size.
-        """
-        self._dFontFace = fontFace
-        self._dFontSize = fontSize
-        return
-
     ##
     #  Class Methods
     ##
@@ -105,10 +113,28 @@ class ToOdt(Tokenizer):
             _mkTag("office", "mimetype") : "application/vnd.oasis.opendocument.text",
         }
         self._xRoot = etree.Element(_mkTag("office", "document"), attrib=rAttr, nsmap=XML_NS)
+        self._xFont = etree.SubElement(self._xRoot, _mkTag("office", "font-face-decls"))
         self._xStyl = etree.SubElement(self._xRoot, _mkTag("office", "styles"))
         self._xAuto = etree.SubElement(self._xRoot, _mkTag("office", "automatic-styles"))
         self._xBody = etree.SubElement(self._xRoot, _mkTag("office", "body"))
         self._xText = etree.SubElement(self._xBody, _mkTag("office", "text"))
+
+        # Re-Init Variables
+        self._fontFamily = self.textFont
+        if len(self.textFont.split()) > 1:
+            self._fontFamily = f"&apos;{self.textFont}&apos;"
+        self._fontPitch = "fixed" if self.textFixed else "variable"
+
+        self._fSizeTitle = f"{round(2.50 * self.textSize):d}pt"
+        self._fSizeHead1 = f"{round(2.00 * self.textSize):d}pt"
+        self._fSizeHead2 = f"{round(1.60 * self.textSize):d}pt"
+        self._fSizeHead3 = f"{round(1.30 * self.textSize):d}pt"
+        self._fSizeHead4 = f"{round(1.15 * self.textSize):d}pt"
+        self._fSizeHead  = f"{round(1.15 * self.textSize):d}pt"
+        self._fSizeText  = f"{self.textSize:d}pt"
+
+        self._lineHeight = f"{round(100 * self.lineHeight):d}%"
+        self._textAlign  = "justify" if self.doJustify else "left"
 
         # Add Styles
         self._defaultStyles()
@@ -293,6 +319,14 @@ class ToOdt(Tokenizer):
     def _defaultStyles(self):
         """Set the default styles.
         """
+        # Add Font
+        # ========
+
+        theAttr = {}
+        theAttr[_mkTag("style", "name")] = self.textFont
+        theAttr[_mkTag("style", "font-pitch")] = self._fontPitch
+        xStyl = etree.SubElement(self._xFont, _mkTag("style", "font-face"), attrib=theAttr)
+
         # Add Paragraph Family Style
         # ==========================
 
@@ -307,10 +341,11 @@ class ToOdt(Tokenizer):
         etree.SubElement(xStyl, _mkTag("style", "paragraph-properties"), attrib=theAttr)
 
         theAttr = {}
-        theAttr[_mkTag("style", "font-name")] = self._dFontFace
-        theAttr[_mkTag("fo",    "font-size")] = "%dpt" % self._dFontSize
-        theAttr[_mkTag("fo",    "language")]  = self._dLanguage
-        theAttr[_mkTag("fo",    "country")]   = self._dCountry
+        theAttr[_mkTag("style", "font-name")]   = self.textFont
+        theAttr[_mkTag("fo",    "font-family")] = self._fontFamily
+        theAttr[_mkTag("fo",    "font-size")]   = self._fSizeText
+        theAttr[_mkTag("fo",    "language")]    = self._dLanguage
+        theAttr[_mkTag("fo",    "country")]     = self._dCountry
         etree.SubElement(xStyl, _mkTag("style", "text-properties"), attrib=theAttr)
 
         # Add Standard Paragraph Style
@@ -320,7 +355,13 @@ class ToOdt(Tokenizer):
         theAttr[_mkTag("style", "name")]   = "Standard"
         theAttr[_mkTag("style", "family")] = "paragraph"
         theAttr[_mkTag("style", "class")]  = "text"
-        etree.SubElement(self._xStyl, _mkTag("style", "style"), attrib=theAttr)
+        xStyl = etree.SubElement(self._xStyl, _mkTag("style", "style"), attrib=theAttr)
+
+        theAttr = {}
+        theAttr[_mkTag("style", "font-name")]   = self.textFont
+        theAttr[_mkTag("fo",    "font-family")] = self._fontFamily
+        theAttr[_mkTag("fo",    "font-size")]   = self._fSizeText
+        etree.SubElement(xStyl, _mkTag("style", "text-properties"), attrib=theAttr)
 
         # Add Default Heading Style
         # =========================
@@ -334,16 +375,15 @@ class ToOdt(Tokenizer):
         xStyl = etree.SubElement(self._xStyl, _mkTag("style", "style"), attrib=theAttr)
 
         theAttr = {}
-        theAttr[_mkTag("fo",    "margin-top")]         = "0.423cm"
-        theAttr[_mkTag("fo",    "margin-bottom")]      = "0.212cm"
-        theAttr[_mkTag("fo",    "keep-with-next")]     = "always"
+        theAttr[_mkTag("fo", "margin-top")]     = "0.423cm"
+        theAttr[_mkTag("fo", "margin-bottom")]  = "0.212cm"
+        theAttr[_mkTag("fo", "keep-with-next")] = "always"
         etree.SubElement(xStyl, _mkTag("style", "paragraph-properties"), attrib=theAttr)
 
         theAttr = {}
-        theAttr[_mkTag("style", "font-name")]   = self._dFontFace
-        theAttr[_mkTag("fo",    "font-family")] = "'%s'" % self._dFontFace
-        theAttr[_mkTag("style", "font-pitch")]  = "variable"
-        theAttr[_mkTag("fo",    "font-size")]   = "14pt"
+        theAttr[_mkTag("style", "font-name")]   = self.textFont
+        theAttr[_mkTag("fo",    "font-family")] = self._fontFamily
+        theAttr[_mkTag("fo",    "font-size")]   = self._fSizeHead
         etree.SubElement(xStyl, _mkTag("style", "text-properties"), attrib=theAttr)
 
         return
@@ -360,11 +400,11 @@ class ToOdt(Tokenizer):
         oStyle.setClass("text")
         oStyle.setMarginTop("0cm")
         oStyle.setMarginBottom("0.247cm")
-        oStyle.setLineHeight("115%")
-        if self.doJustify:
-            oStyle.setTextAlign("justify")
-        else:
-            oStyle.setTextAlign("left")
+        oStyle.setLineHeight(self._lineHeight)
+        oStyle.setFontName(self.textFont)
+        oStyle.setFontFamily(self._fontFamily)
+        oStyle.setFontSize(self._fSizeText)
+        oStyle.setTextAlign(self._textAlign)
         oStyle.packXML(self._xStyl, "Text_Body")
 
         self._mainPara["Text_Body"] = oStyle
@@ -378,7 +418,9 @@ class ToOdt(Tokenizer):
         oStyle.setNextStyleName("Text_Body")
         oStyle.setClass("chapter")
         oStyle.setTextAlign("center")
-        oStyle.setFontSize("28pt")
+        oStyle.setFontName(self.textFont)
+        oStyle.setFontFamily(self._fontFamily)
+        oStyle.setFontSize(self._fSizeTitle)
         oStyle.setFontWeight("bold")
         oStyle.packXML(self._xStyl, "Title")
 
@@ -395,7 +437,9 @@ class ToOdt(Tokenizer):
         oStyle.setClass("text")
         oStyle.setMarginTop("0.423cm")
         oStyle.setMarginBottom("0.212cm")
-        oStyle.setFontSize("200%")
+        oStyle.setFontName(self.textFont)
+        oStyle.setFontFamily(self._fontFamily)
+        oStyle.setFontSize(self._fSizeHead1)
         oStyle.setFontWeight("bold")
         oStyle.packXML(self._xStyl, "Heading_1")
 
@@ -412,7 +456,9 @@ class ToOdt(Tokenizer):
         oStyle.setClass("text")
         oStyle.setMarginTop("0.353cm")
         oStyle.setMarginBottom("0.212cm")
-        oStyle.setFontSize("140%")
+        oStyle.setFontName(self.textFont)
+        oStyle.setFontFamily(self._fontFamily)
+        oStyle.setFontSize(self._fSizeHead2)
         oStyle.setFontWeight("bold")
         oStyle.packXML(self._xStyl, "Heading_2")
 
@@ -429,7 +475,9 @@ class ToOdt(Tokenizer):
         oStyle.setClass("text")
         oStyle.setMarginTop("0.247cm")
         oStyle.setMarginBottom("0.212cm")
-        oStyle.setFontSize("125%")
+        oStyle.setFontName(self.textFont)
+        oStyle.setFontFamily(self._fontFamily)
+        oStyle.setFontSize(self._fSizeHead3)
         oStyle.setFontWeight("bold")
         oStyle.packXML(self._xStyl, "Heading_3")
 
@@ -446,7 +494,9 @@ class ToOdt(Tokenizer):
         oStyle.setClass("text")
         oStyle.setMarginTop("0.247cm")
         oStyle.setMarginBottom("0.212cm")
-        oStyle.setFontSize("110%")
+        oStyle.setFontName(self.textFont)
+        oStyle.setFontFamily(self._fontFamily)
+        oStyle.setFontSize(self._fSizeHead4)
         oStyle.setFontWeight("bold")
         oStyle.packXML(self._xStyl, "Heading_4")
 
@@ -491,8 +541,10 @@ class ODTParagraphStyle():
 
         # text Attributes
         self._tAttr = {
-            "font-size":   ["fo", None],
-            "font-weight": ["fo", None],
+            "font-name":   ["style", None],
+            "font-family": ["fo",    None],
+            "font-size":   ["fo",    None],
+            "font-weight": ["fo",    None],
         }
 
         return
@@ -557,6 +609,14 @@ class ODTParagraphStyle():
     ##
     #  Text Setters
     ##
+
+    def setFontName(self, theValue):
+        self._tAttr["font-name"][1] = str(theValue)
+        return
+
+    def setFontFamily(self, theValue):
+        self._tAttr["font-family"][1] = str(theValue)
+        return
 
     def setFontSize(self, theValue):
         self._tAttr["font-size"][1] = str(theValue)

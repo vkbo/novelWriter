@@ -35,7 +35,7 @@ from datetime import datetime
 from PyQt5.QtCore import Qt, QByteArray, QTimer
 from PyQt5.QtPrintSupport import QPrinter, QPrintPreviewDialog
 from PyQt5.QtGui import (
-    QPalette, QColor, QTextDocumentWriter, QFont, QCursor
+    QPalette, QColor, QTextDocumentWriter, QFont, QCursor, QFontInfo
 )
 from PyQt5.QtWidgets import (
     qApp, QDialog, QVBoxLayout, QHBoxLayout, QTextBrowser, QPushButton, QLabel,
@@ -607,6 +607,8 @@ class GuiBuildNovel(QDialog):
         fmtUnnumbered = self.fmtUnnumbered.text().strip()
         fmtScene      = self.fmtScene.text().strip()
         fmtSection    = self.fmtSection.text().strip()
+        textFont      = self.textFont.text()
+        textSize      = self.textSize.value()
         justifyText   = self.justifyText.isChecked()
         noStyling     = self.noStyling.isChecked()
         incSynopsis   = self.includeSynopsis.isChecked()
@@ -617,6 +619,10 @@ class GuiBuildNovel(QDialog):
         ignoreFlag    = self.ignoreFlag.isChecked()
         includeBody   = self.includeBody.isChecked()
 
+        # Get font information
+        fontInfo = QFontInfo(QFont(textFont, textSize))
+        textFixed = fontInfo.fixedPitch()
+
         isHtml = isinstance(bldObj, ToHtml)
         isOdt  = isinstance(bldObj, ToOdt)
 
@@ -625,11 +631,14 @@ class GuiBuildNovel(QDialog):
         bldObj.setUnNumberedFormat(fmtUnnumbered)
         bldObj.setSceneFormat(fmtScene, fmtScene == "")
         bldObj.setSectionFormat(fmtSection, fmtSection == "")
-        bldObj.setBodyText(includeBody)
+
+        bldObj.setFont(textFont, textSize, textFixed)
+        bldObj.setJustify(justifyText)
+
         bldObj.setSynopsis(incSynopsis)
         bldObj.setComments(incComments)
         bldObj.setKeywords(incKeywords)
-        bldObj.setJustify(justifyText)
+        bldObj.setBodyText(includeBody)
 
         if isHtml:
             bldObj.setStyles(not noStyling)
