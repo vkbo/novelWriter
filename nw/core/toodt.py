@@ -42,6 +42,9 @@ XML_NS = {
     "fo"     : "urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0",
 }
 
+X_BR  = "{%s}line-break" % XML_NS["text"]
+X_TAB = "{%s}tab" % XML_NS["text"]
+
 class ToOdt(Tokenizer):
 
     def __init__(self, theProject, theParent):
@@ -119,6 +122,9 @@ class ToOdt(Tokenizer):
         """
         self.theResult = ""
 
+        thisPar = []
+        parStyle = None
+        hasHardBreak = False
         for tType, tLine, tText, tFormat, tStyle in self.theTokens:
 
             # Styles
@@ -139,33 +145,53 @@ class ToOdt(Tokenizer):
 
             # Process Text Type
             if tType == self.T_EMPTY:
-                continue
+                if hasHardBreak and parStyle is not None:
+                    if self.doJustify:
+                        parStyle.setTextAlign("left")
+                if len(thisPar) > 0:
+                    tTemp = "".join(thisPar)
+                    self._addTextPar("Text_Body", parStyle, tTemp.rstrip())
+                thisPar = []
+                parStyle = None
+                hasHardBreak = False
 
             elif tType == self.T_TITLE:
-                tHead = tText.replace(r"\\", "<br/>")
-                self._addTextPar("Title", oStyle, tHead)
+                tHead = tText.replace(r"\\", "\n")
+                self._addTextPar("Title", oStyle, tHead, isHead=True)
 
             elif tType == self.T_HEAD1:
-                tHead = tText.replace(r"\\", "<br/>")
-                self._addTextPar("Heading_1", oStyle, tHead, oLevel="1")
+                tHead = tText.replace(r"\\", "\n")
+                self._addTextPar("Heading_1", oStyle, tHead, isHead=True, oLevel="1")
 
             elif tType == self.T_HEAD2:
-                tHead = tText.replace(r"\\", "<br/>")
-                self._addTextPar("Heading_2", oStyle, tHead, oLevel="2")
+                tHead = tText.replace(r"\\", "\n")
+                self._addTextPar("Heading_2", oStyle, tHead, isHead=True, oLevel="2")
 
             elif tType == self.T_HEAD3:
-                tHead = tText.replace(r"\\", "<br/>")
-                self._addTextPar("Heading_3", oStyle, tHead, oLevel="3")
+                tHead = tText.replace(r"\\", "\n")
+                self._addTextPar("Heading_3", oStyle, tHead, isHead=True, oLevel="3")
 
             elif tType == self.T_HEAD4:
-                tHead = tText.replace(r"\\", "<br/>")
-                self._addTextPar("Heading_4", oStyle, tHead, oLevel="4")
+                tHead = tText.replace(r"\\", "\n")
+                self._addTextPar("Heading_4", oStyle, tHead, isHead=True, oLevel="4")
 
             elif tType == self.T_SEP:
                 self._addTextPar("Text_Body", oStyle, tText)
 
             elif tType == self.T_SKIP:
                 self._addTextPar("Text_Body", oStyle, "")
+
+            elif tType == self.T_TEXT:
+                tTemp = tText
+                if parStyle is None:
+                    parStyle = oStyle
+                # for xPos, xLen, xFmt in reversed(tFormat):
+                #     tTemp = tTemp[:xPos]+htmlTags[xFmt]+tTemp[xPos+xLen:]
+                if tText.endswith("  "):
+                    thisPar.append(tTemp.rstrip()+"\n")
+                    hasHardBreak = True
+                else:
+                    thisPar.append(tTemp.rstrip()+" ")
 
         return
 
@@ -192,15 +218,51 @@ class ToOdt(Tokenizer):
     #  Internal Functions
     ##
 
-    def _addTextPar(self, styleName, oStyle, theText, oLevel=None):
+    def _addTextPar(self, styleName, oStyle, theText, isHead=False, oLevel=None):
         """Add a text paragraph to the text XML element.
         """
         tAttr = {}
         tAttr[_mkTag("text", "style-name")] = self._paraStyle(styleName, oStyle)
         if oLevel is not None:
             tAttr[_mkTag("text", "outline-level")] = oLevel
-        xElem = etree.SubElement(self._xText, _mkTag("text", "p"), attrib=tAttr)
-        xElem.text = theText
+
+        pTag = "h" if isHead else "p"
+        xElem = etree.SubElement(self._xText, _mkTag("text", pTag), attrib=tAttr)
+
+        if not theText:
+            return
+
+        if "\t" not in theText and "\n" not in theText:
+            xElem.text = theText
+            return
+
+        # Process tabs and line breaks
+        tTemp = ""
+        xTail = None
+        for c in theText:
+            if c == "\t":
+                if xTail is None:
+                    xElem.text = tTemp
+                else:
+                    xTail.tail = tTemp
+                tTemp = ""
+                xTail = etree.SubElement(xElem, X_TAB)
+            elif c == "\n":
+                if xTail is None:
+                    xElem.text = tTemp
+                else:
+                    xTail.tail = tTemp
+                tTemp = ""
+                xTail = etree.SubElement(xElem, X_BR)
+            else:
+                tTemp += c
+
+        if tTemp != "":
+            if xTail is None:
+                xElem.text = tTemp
+            else:
+                xTail.tail = tTemp
+
         return
 
     def _paraStyle(self, parName, oStyle):
@@ -299,6 +361,10 @@ class ToOdt(Tokenizer):
         oStyle.setMarginTop("0cm")
         oStyle.setMarginBottom("0.247cm")
         oStyle.setLineHeight("115%")
+        if self.doJustify:
+            oStyle.setTextAlign("justify")
+        else:
+            oStyle.setTextAlign("left")
         oStyle.packXML(self._xStyl, "Text_Body")
 
         self._mainPara["Text_Body"] = oStyle
@@ -500,6 +566,28 @@ class ODTParagraphStyle():
         if theValue in self.VALID_WEIGHT:
             self._tAttr["font-weight"][1] = str(theValue)
         return
+
+    ##
+    #  Getters
+    ##
+
+    def getAttr(self, attrName):
+        """Look through the dictionaries for the value, and return it if
+        we can find it, If not, return None.
+        """
+        retVal = self._mAttr.get(attrName, None)
+        if retVal is not None:
+            return retVal
+
+        retVal = self._pAttr.get(attrName, None)
+        if retVal is not None:
+            return retVal
+
+        retVal = self._tAttr.get(attrName, None)
+        if retVal is not None:
+            return retVal
+
+        return None
 
     ##
     #  Methods

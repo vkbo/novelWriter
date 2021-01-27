@@ -753,7 +753,7 @@ class GuiBuildNovel(QDialog):
         elif theFormat == self.FMT_FODT:
             fileExt = "fodt"
             textFmt = "Flat Open Document"
-            outTool = "NW2"
+            outTool = "NW_ODT"
 
         elif theFormat == self.FMT_PDF:
             fileExt = "pdf"
@@ -898,12 +898,19 @@ class GuiBuildNovel(QDialog):
             except Exception as e:
                 errMsg = str(e)
 
-        elif outTool == "NW2":
+        elif outTool == "NW_ODT":
 
             if theFormat == self.FMT_FODT:
                 makeOdt = ToOdt(self.theProject, self.theParent)
                 self._doBuild(makeOdt)
-                wSuccess = True
+                try:
+                    with open(savePath, mode="wb") as outFile:
+                        outFile.write(makeOdt.theResult)
+
+                    wSuccess = True
+
+                except Exception as e:
+                    errMsg = str(e)
 
         elif outTool == "QtPrint" and theFormat == self.FMT_PDF:
             try:
