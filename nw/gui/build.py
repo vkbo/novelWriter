@@ -644,6 +644,7 @@ class GuiBuildNovel(QDialog):
             bldObj.setStyles(not noStyling)
 
         if isOdt:
+            bldObj.setColourHeaders(not noStyling)
             bldObj.initDocument()
 
         # Make sure the tree order is correct

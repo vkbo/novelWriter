@@ -95,6 +95,15 @@ class Tokenizer():
         self.doComments  = False   # Also process comments
         self.doKeywords  = False   # Also process keywords like tags and references
 
+        ## Title Margins
+        self.marginTitle = (1.00, 0.50)
+        self.marginHead1 = (1.00, 0.50)
+        self.marginHead2 = (0.85, 0.50)
+        self.marginHead3 = (0.58, 0.50)
+        self.marginHead4 = (0.58, 0.50)
+        self.marginText  = (0.00, 0.58)
+
+        ## Title Formats
         self.fmtTitle    = "%title%" # Formatting for titles
         self.fmtChapter  = "%title%" # Formatting for numbered chapters
         self.fmtUnNum    = "%title%" # Formatting for unnumbered chapters
@@ -167,6 +176,30 @@ class Tokenizer():
 
     def setJustify(self, doJustify):
         self.doJustify = doJustify
+        return
+
+    def setTitleMargins(self, mUpper, mLower):
+        self.marginTitle = (float(mUpper), float(mLower))
+        return
+
+    def setHead1Margins(self, mUpper, mLower):
+        self.marginHead1 = (float(mUpper), float(mLower))
+        return
+
+    def setHead2Margins(self, mUpper, mLower):
+        self.marginHead2 = (float(mUpper), float(mLower))
+        return
+
+    def setHead3Margins(self, mUpper, mLower):
+        self.marginHead3 = (float(mUpper), float(mLower))
+        return
+
+    def setHead4Margins(self, mUpper, mLower):
+        self.marginHead4 = (float(mUpper), float(mLower))
+        return
+
+    def setTextMargins(self, mUpper, mLower):
+        self.marginText = (float(mUpper), float(mLower))
         return
 
     def setLinkHeaders(self, linkHeaders):

@@ -30,6 +30,7 @@ from nw.core import NWProject, NWIndex, ToOdt
 XML_NS = [
     ' xmlns:office="urn:oasis:names:tc:opendocument:xmlns:office:1.0"',
     ' xmlns:style="urn:oasis:names:tc:opendocument:xmlns:style:1.0"',
+    ' xmlns:loext="urn:org:documentfoundation:names:experimental:office:xmlns:loext:1.0"',
     ' xmlns:text="urn:oasis:names:tc:opendocument:xmlns:text:1.0"',
     ' xmlns:meta="urn:oasis:names:tc:opendocument:xmlns:meta:1.0"',
     ' xmlns:fo="urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0"',

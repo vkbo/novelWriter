@@ -39,6 +39,7 @@ logger = logging.getLogger(__name__)
 XML_NS = {
     "office" : "urn:oasis:names:tc:opendocument:xmlns:office:1.0",
     "style"  : "urn:oasis:names:tc:opendocument:xmlns:style:1.0",
+    "loext"  : "urn:org:documentfoundation:names:experimental:office:xmlns:loext:1.0",
     "text"   : "urn:oasis:names:tc:opendocument:xmlns:text:1.0",
     "meta"   : "urn:oasis:names:tc:opendocument:xmlns:meta:1.0",
     "fo"     : "urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0",
@@ -65,12 +66,13 @@ class ToOdt(Tokenizer):
         self._autoText = {}
 
         # Properties
-        self.textFont  = "Liberation Serif"
-        self.textSize  = 12
-        self.textFixed = False
+        self.textFont   = "Liberation Serif"
+        self.textSize   = 12
+        self.textFixed  = False
+        self.colourHead = False
 
         # Internal
-        self._fontFamily = None
+        self._fontFamily = "&apos;Liberation Sans&apos;"
         self._fontPitch  = "variable"
         self._fSizeTitle = "30pt"
         self._fSizeHead1 = "24pt"
@@ -83,6 +85,29 @@ class ToOdt(Tokenizer):
         self._textAlign  = "left"
         self._dLanguage  = "en"
         self._dCountry   = "GB"
+
+        ## Text Margings in Units of em
+        self._mTopTitle = "0.423cm"
+        self._mTopHead1 = "0.423cm"
+        self._mTopHead2 = "0.353cm"
+        self._mTopHead3 = "0.247cm"
+        self._mTopHead4 = "0.247cm"
+        self._mTopHead  = "0.423cm"
+        self._mTopText  = "0.000cm"
+
+        self._mBotTitle = "0.212cm"
+        self._mBotHead1 = "0.212cm"
+        self._mBotHead2 = "0.212cm"
+        self._mBotHead3 = "0.212cm"
+        self._mBotHead4 = "0.212cm"
+        self._mBotHead  = "0.212cm"
+        self._mBotText  = "0.247cm"
+
+        ## Colour
+        self._colHead12 = None
+        self._opaHead12 = None
+        self._colHead34 = None
+        self._opaHead34 = None
 
         return
 
@@ -102,6 +127,10 @@ class ToOdt(Tokenizer):
             self._dCountry = langBits[1]
 
         return True
+
+    def setColourHeaders(self, doColour):
+        self.colourHead = doColour
+        return
 
     ##
     #  Class Methods
@@ -141,6 +170,28 @@ class ToOdt(Tokenizer):
         self._fSizeHead4 = f"{round(1.15 * self.textSize):d}pt"
         self._fSizeHead  = f"{round(1.15 * self.textSize):d}pt"
         self._fSizeText  = f"{self.textSize:d}pt"
+
+        self._mTopTitle = self._emToCm(self.marginTitle[0])
+        self._mTopHead1 = self._emToCm(self.marginHead1[0])
+        self._mTopHead2 = self._emToCm(self.marginHead2[0])
+        self._mTopHead3 = self._emToCm(self.marginHead3[0])
+        self._mTopHead4 = self._emToCm(self.marginHead4[0])
+        self._mTopHead  = self._emToCm(self.marginHead4[0])
+        self._mTopText  = self._emToCm(self.marginText[0])
+
+        self._mBotTitle = self._emToCm(self.marginTitle[1])
+        self._mBotHead1 = self._emToCm(self.marginHead1[1])
+        self._mBotHead2 = self._emToCm(self.marginHead2[1])
+        self._mBotHead3 = self._emToCm(self.marginHead3[1])
+        self._mBotHead4 = self._emToCm(self.marginHead4[1])
+        self._mBotHead  = self._emToCm(self.marginHead4[1])
+        self._mBotText  = self._emToCm(self.marginText[1])
+
+        if self.colourHead:
+            self._colHead12 = "#2a6099"
+            self._opaHead12 = "100%"
+            self._colHead34 = "#323232"
+            self._opaHead34 = "100%"
 
         self._lineHeight = f"{round(100 * self.lineHeight):d}%"
         self._textAlign  = "justify" if self.doJustify else "left"
@@ -325,6 +376,11 @@ class ToOdt(Tokenizer):
 
         return newName
 
+    def _emToCm(self, emVal):
+        """Converts an em value to centimetres.
+        """
+        return f"{emVal*2.54/72*self.textSize:.3f}cm"
+
     ##
     #  Style Elements
     ##
@@ -388,8 +444,8 @@ class ToOdt(Tokenizer):
         xStyl = etree.SubElement(self._xStyl, _mkTag("style", "style"), attrib=theAttr)
 
         theAttr = {}
-        theAttr[_mkTag("fo", "margin-top")]     = "0.423cm"
-        theAttr[_mkTag("fo", "margin-bottom")]  = "0.212cm"
+        theAttr[_mkTag("fo", "margin-top")]     = self._mTopHead
+        theAttr[_mkTag("fo", "margin-bottom")]  = self._mBotHead
         theAttr[_mkTag("fo", "keep-with-next")] = "always"
         etree.SubElement(xStyl, _mkTag("style", "paragraph-properties"), attrib=theAttr)
 
@@ -411,8 +467,8 @@ class ToOdt(Tokenizer):
         oStyle.setDisplayName("Text Body")
         oStyle.setParentStyleName("Standard")
         oStyle.setClass("text")
-        oStyle.setMarginTop("0cm")
-        oStyle.setMarginBottom("0.247cm")
+        oStyle.setMarginTop(self._mTopText)
+        oStyle.setMarginBottom(self._mBotText)
         oStyle.setLineHeight(self._lineHeight)
         oStyle.setFontName(self.textFont)
         oStyle.setFontFamily(self._fontFamily)
@@ -431,6 +487,8 @@ class ToOdt(Tokenizer):
         oStyle.setNextStyleName("Text_Body")
         oStyle.setClass("chapter")
         oStyle.setTextAlign("center")
+        oStyle.setMarginTop(self._mTopTitle)
+        oStyle.setMarginBottom(self._mBotTitle)
         oStyle.setFontName(self.textFont)
         oStyle.setFontFamily(self._fontFamily)
         oStyle.setFontSize(self._fSizeTitle)
@@ -448,11 +506,13 @@ class ToOdt(Tokenizer):
         oStyle.setNextStyleName("Text_Body")
         oStyle.setOutlineLevel("1")
         oStyle.setClass("text")
-        oStyle.setMarginTop("0.423cm")
-        oStyle.setMarginBottom("0.212cm")
+        oStyle.setMarginTop(self._mTopHead1)
+        oStyle.setMarginBottom(self._mBotHead1)
         oStyle.setFontName(self.textFont)
         oStyle.setFontFamily(self._fontFamily)
         oStyle.setFontSize(self._fSizeHead1)
+        oStyle.setColor(self._colHead12)
+        oStyle.setOpacity(self._opaHead12)
         oStyle.setFontWeight("bold")
         oStyle.packXML(self._xStyl, "Heading_1")
 
@@ -467,11 +527,13 @@ class ToOdt(Tokenizer):
         oStyle.setNextStyleName("Text_Body")
         oStyle.setOutlineLevel("2")
         oStyle.setClass("text")
-        oStyle.setMarginTop("0.353cm")
-        oStyle.setMarginBottom("0.212cm")
+        oStyle.setMarginTop(self._mTopHead2)
+        oStyle.setMarginBottom(self._mBotHead2)
         oStyle.setFontName(self.textFont)
         oStyle.setFontFamily(self._fontFamily)
         oStyle.setFontSize(self._fSizeHead2)
+        oStyle.setColor(self._colHead12)
+        oStyle.setOpacity(self._opaHead12)
         oStyle.setFontWeight("bold")
         oStyle.packXML(self._xStyl, "Heading_2")
 
@@ -486,11 +548,13 @@ class ToOdt(Tokenizer):
         oStyle.setNextStyleName("Text_Body")
         oStyle.setOutlineLevel("3")
         oStyle.setClass("text")
-        oStyle.setMarginTop("0.247cm")
-        oStyle.setMarginBottom("0.212cm")
+        oStyle.setMarginTop(self._mTopHead3)
+        oStyle.setMarginBottom(self._mBotHead3)
         oStyle.setFontName(self.textFont)
         oStyle.setFontFamily(self._fontFamily)
         oStyle.setFontSize(self._fSizeHead3)
+        oStyle.setColor(self._colHead34)
+        oStyle.setOpacity(self._opaHead34)
         oStyle.setFontWeight("bold")
         oStyle.packXML(self._xStyl, "Heading_3")
 
@@ -505,11 +569,13 @@ class ToOdt(Tokenizer):
         oStyle.setNextStyleName("Text_Body")
         oStyle.setOutlineLevel("4")
         oStyle.setClass("text")
-        oStyle.setMarginTop("0.247cm")
-        oStyle.setMarginBottom("0.212cm")
+        oStyle.setMarginTop(self._mTopHead4)
+        oStyle.setMarginBottom(self._mBotHead4)
         oStyle.setFontName(self.textFont)
         oStyle.setFontFamily(self._fontFamily)
         oStyle.setFontSize(self._fSizeHead4)
+        oStyle.setColor(self._colHead34)
+        oStyle.setOpacity(self._opaHead34)
         oStyle.setFontWeight("bold")
         oStyle.packXML(self._xStyl, "Heading_4")
 
@@ -562,6 +628,8 @@ class ODTParagraphStyle():
             "font-family": ["fo",    None],
             "font-size":   ["fo",    None],
             "font-weight": ["fo",    None],
+            "color":       ["fo",    None],
+            "opacity":     ["loext", None],
         }
 
         return
@@ -642,6 +710,14 @@ class ODTParagraphStyle():
     def setFontWeight(self, theValue):
         if theValue in self.VALID_WEIGHT:
             self._tAttr["font-weight"][1] = str(theValue)
+        return
+
+    def setColor(self, theValue):
+        self._tAttr["color"][1] = str(theValue)
+        return
+
+    def setOpacity(self, theValue):
+        self._tAttr["opacity"][1] = str(theValue)
         return
 
     ##
