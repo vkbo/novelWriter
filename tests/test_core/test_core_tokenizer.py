@@ -38,6 +38,18 @@ def testCoreToken_Setters(dummyGUI):
     assert theToken.fmtUnNum == "%title%"
     assert theToken.fmtScene == "%title%"
     assert theToken.fmtSection == "%title%"
+    assert theToken.textFont == "Serif"
+    assert theToken.textSize == 11
+    assert theToken.textFixed is False
+    assert theToken.lineHeight == 1.15
+    assert theToken.doJustify is False
+    assert theToken.marginTitle == (1.000, 0.500)
+    assert theToken.marginHead1 == (1.000, 0.500)
+    assert theToken.marginHead2 == (0.834, 0.500)
+    assert theToken.marginHead3 == (0.584, 0.500)
+    assert theToken.marginHead4 == (0.584, 0.500)
+    assert theToken.marginText == (0.000, 0.584)
+    assert theToken.marginMeta == (0.000, 0.584)
     assert theToken.hideScene is False
     assert theToken.hideSection is False
     assert theToken.linkHeaders is False
@@ -45,7 +57,6 @@ def testCoreToken_Setters(dummyGUI):
     assert theToken.doSynopsis is False
     assert theToken.doComments is False
     assert theToken.doKeywords is False
-    assert theToken.doJustify is False
 
     # Set new values
     theToken.setTitleFormat("T: %title%")
@@ -53,12 +64,21 @@ def testCoreToken_Setters(dummyGUI):
     theToken.setUnNumberedFormat("U: %title%")
     theToken.setSceneFormat("S: %title%", True)
     theToken.setSectionFormat("X: %title%", True)
+    theToken.setFont("Monospace", 10, True)
+    theToken.setLineHeight(2)
+    theToken.setJustify(True)
+    theToken.setTitleMargins(2.0, 2.0)
+    theToken.setHead1Margins(2.0, 2.0)
+    theToken.setHead2Margins(2.0, 2.0)
+    theToken.setHead3Margins(2.0, 2.0)
+    theToken.setHead4Margins(2.0, 2.0)
+    theToken.setTextMargins(2.0, 2.0)
+    theToken.setMetaMargins(2.0, 2.0)
     theToken.setLinkHeaders(True)
     theToken.setBodyText(False)
     theToken.setSynopsis(True)
     theToken.setComments(True)
     theToken.setKeywords(True)
-    theToken.setJustify(True)
 
     # Check new values
     assert theToken.fmtTitle == "T: %title%"
@@ -66,6 +86,18 @@ def testCoreToken_Setters(dummyGUI):
     assert theToken.fmtUnNum == "U: %title%"
     assert theToken.fmtScene == "S: %title%"
     assert theToken.fmtSection == "X: %title%"
+    assert theToken.textFont == "Monospace"
+    assert theToken.textSize == 10
+    assert theToken.textFixed is True
+    assert theToken.lineHeight == 2.0
+    assert theToken.doJustify is True
+    assert theToken.marginTitle == (2.0, 2.0)
+    assert theToken.marginHead1 == (2.0, 2.0)
+    assert theToken.marginHead2 == (2.0, 2.0)
+    assert theToken.marginHead3 == (2.0, 2.0)
+    assert theToken.marginHead4 == (2.0, 2.0)
+    assert theToken.marginText == (2.0, 2.0)
+    assert theToken.marginMeta == (2.0, 2.0)
     assert theToken.hideScene is True
     assert theToken.hideSection is True
     assert theToken.linkHeaders is True
@@ -73,7 +105,6 @@ def testCoreToken_Setters(dummyGUI):
     assert theToken.doSynopsis is True
     assert theToken.doComments is True
     assert theToken.doKeywords is True
-    assert theToken.doJustify is True
 
 # END Test testCoreToken_Setters
 
@@ -84,6 +115,7 @@ def testCoreToken_TextOps(monkeypatch, nwMinimal, dummyGUI):
     theProject = NWProject(dummyGUI)
     theProject.projTree.setSeed(42)
     theToken = Tokenizer(theProject, dummyGUI)
+    theToken.setKeepMarkdown(True)
 
     assert theProject.openProject(nwMinimal)
     sHandle = "8c659a11cd429"
@@ -112,7 +144,7 @@ def testCoreToken_TextOps(monkeypatch, nwMinimal, dummyGUI):
     assert theToken.addRootHeading("dummy") is False
     assert theToken.addRootHeading(sHandle) is False
     assert theToken.addRootHeading("7695ce551d265") is True
-    assert theToken.theMarkdown == "# Notes: Plot\n\n"
+    assert theToken.theMarkdown[-1] == "# Notes: Plot\n\n"
 
     # Set text
     assert theToken.setText("dummy") is False
@@ -145,12 +177,6 @@ def testCoreToken_TextOps(monkeypatch, nwMinimal, dummyGUI):
     theToken.doAutoReplace()
     assert theToken.theText == docTextR
 
-    # Access
-    assert theToken.getResult() is None
-    assert theToken.getResultSize() == 0
-    theToken.theResult = ""
-    assert theToken.getResultSize() == 0
-
     # Post Processing
     theToken.theResult = r"This is text with escapes: \** \~~ \__"
     theToken.doPostProcessing()
@@ -164,6 +190,7 @@ def testCoreToken_Tokenize(dummyGUI):
     """
     theProject = NWProject(dummyGUI)
     theToken = Tokenizer(theProject, dummyGUI)
+    theToken.setKeepMarkdown(True)
 
     # Header 1
     theToken.theText = "# Novel Title\n"
@@ -172,7 +199,7 @@ def testCoreToken_Tokenize(dummyGUI):
         (Tokenizer.T_HEAD1, 1, "Novel Title", None, Tokenizer.A_NONE),
         (Tokenizer.T_EMPTY, 1, "", None, Tokenizer.A_NONE),
     ]
-    assert theToken.theMarkdown == "# Novel Title\n\n"
+    assert theToken.theMarkdown[-1] == "# Novel Title\n\n"
 
     # Header 2
     theToken.theText = "## Chapter One\n"
@@ -181,7 +208,7 @@ def testCoreToken_Tokenize(dummyGUI):
         (Tokenizer.T_HEAD2, 1, "Chapter One", None, Tokenizer.A_NONE),
         (Tokenizer.T_EMPTY, 1, "", None, Tokenizer.A_NONE),
     ]
-    assert theToken.theMarkdown == "## Chapter One\n\n"
+    assert theToken.theMarkdown[-1] == "## Chapter One\n\n"
 
     # Header 3
     theToken.theText = "### Scene One\n"
@@ -190,7 +217,7 @@ def testCoreToken_Tokenize(dummyGUI):
         (Tokenizer.T_HEAD3, 1, "Scene One", None, Tokenizer.A_NONE),
         (Tokenizer.T_EMPTY, 1, "", None, Tokenizer.A_NONE),
     ]
-    assert theToken.theMarkdown == "### Scene One\n\n"
+    assert theToken.theMarkdown[-1] == "### Scene One\n\n"
 
     # Header 4
     theToken.theText = "#### A Section\n"
@@ -199,7 +226,7 @@ def testCoreToken_Tokenize(dummyGUI):
         (Tokenizer.T_HEAD4, 1, "A Section", None, Tokenizer.A_NONE),
         (Tokenizer.T_EMPTY, 1, "", None, Tokenizer.A_NONE),
     ]
-    assert theToken.theMarkdown == "#### A Section\n\n"
+    assert theToken.theMarkdown[-1] == "#### A Section\n\n"
 
     # Comment
     theToken.theText = "% A comment\n"
@@ -208,11 +235,11 @@ def testCoreToken_Tokenize(dummyGUI):
         (Tokenizer.T_COMMENT, 1, "A comment", None, Tokenizer.A_NONE),
         (Tokenizer.T_EMPTY, 1, "", None, Tokenizer.A_NONE),
     ]
-    assert theToken.theMarkdown == "\n"
+    assert theToken.theMarkdown[-1] == "\n"
 
     theToken.setComments(True)
     theToken.tokenizeText()
-    assert theToken.theMarkdown == "% A comment\n\n"
+    assert theToken.theMarkdown[-1] == "% A comment\n\n"
 
     # Symopsis
     theToken.theText = "%synopsis: The synopsis\n"
@@ -227,11 +254,11 @@ def testCoreToken_Tokenize(dummyGUI):
         (Tokenizer.T_SYNOPSIS, 1, "The synopsis", None, Tokenizer.A_NONE),
         (Tokenizer.T_EMPTY, 1, "", None, Tokenizer.A_NONE),
     ]
-    assert theToken.theMarkdown == "\n"
+    assert theToken.theMarkdown[-1] == "\n"
 
     theToken.setSynopsis(True)
     theToken.tokenizeText()
-    assert theToken.theMarkdown == "% synopsis: The synopsis\n\n"
+    assert theToken.theMarkdown[-1] == "% synopsis: The synopsis\n\n"
 
     # Keyword
     theToken.theText = "@char: Bod\n"
@@ -240,11 +267,24 @@ def testCoreToken_Tokenize(dummyGUI):
         (Tokenizer.T_KEYWORD, 1, "char: Bod", None, Tokenizer.A_NONE),
         (Tokenizer.T_EMPTY, 1, "", None, Tokenizer.A_NONE),
     ]
-    assert theToken.theMarkdown == "\n"
+    assert theToken.theMarkdown[-1] == "\n"
 
     theToken.setKeywords(True)
     theToken.tokenizeText()
-    assert theToken.theMarkdown == "@char: Bod\n\n"
+    assert theToken.theMarkdown[-1] == "@char: Bod\n\n"
+
+    theToken.theText = "@pov: Bod\n@plot: Main\n@location: Europe\n"
+    theToken.tokenizeText()
+    styTop = Tokenizer.A_NONE | Tokenizer.A_Z_BTMMRG
+    styMid = Tokenizer.A_NONE | Tokenizer.A_Z_BTMMRG | Tokenizer.A_Z_TOPMRG
+    styBtm = Tokenizer.A_NONE | Tokenizer.A_Z_TOPMRG
+    assert theToken.theTokens == [
+        (Tokenizer.T_KEYWORD, 1, "pov: Bod", None, styTop),
+        (Tokenizer.T_KEYWORD, 2, "plot: Main", None, styMid),
+        (Tokenizer.T_KEYWORD, 3, "location: Europe", None, styBtm),
+        (Tokenizer.T_EMPTY, 3, "", None, Tokenizer.A_NONE),
+    ]
+    assert theToken.theMarkdown[-1] == "@pov: Bod\n@plot: Main\n@location: Europe\n\n"
 
     # Text
     theToken.theText = "Some plain text\non two lines\n\n\n"
@@ -256,7 +296,7 @@ def testCoreToken_Tokenize(dummyGUI):
         (Tokenizer.T_EMPTY, 4, "", None, Tokenizer.A_NONE),
         (Tokenizer.T_EMPTY, 4, "", None, Tokenizer.A_NONE),
     ]
-    assert theToken.theMarkdown == "Some plain text\non two lines\n\n\n\n"
+    assert theToken.theMarkdown[-1] == "Some plain text\non two lines\n\n\n\n"
 
     theToken.setBodyText(False)
     theToken.tokenizeText()
@@ -265,7 +305,7 @@ def testCoreToken_Tokenize(dummyGUI):
         (Tokenizer.T_EMPTY, 4, "", None, Tokenizer.A_NONE),
         (Tokenizer.T_EMPTY, 4, "", None, Tokenizer.A_NONE),
     ]
-    assert theToken.theMarkdown == "\n\n\n"
+    assert theToken.theMarkdown[-1] == "\n\n\n"
     theToken.setBodyText(True)
 
     # Text Emphasis
@@ -283,7 +323,7 @@ def testCoreToken_Tokenize(dummyGUI):
         ),
         (Tokenizer.T_EMPTY, 1, "", None, Tokenizer.A_NONE),
     ]
-    assert theToken.theMarkdown == "Some **bolded text** on this lines\n\n"
+    assert theToken.theMarkdown[-1] == "Some **bolded text** on this lines\n\n"
 
     theToken.theText = "Some _italic text_ on this lines\n"
     theToken.tokenizeText()
@@ -299,7 +339,7 @@ def testCoreToken_Tokenize(dummyGUI):
         ),
         (Tokenizer.T_EMPTY, 1, "", None, Tokenizer.A_NONE),
     ]
-    assert theToken.theMarkdown == "Some _italic text_ on this lines\n\n"
+    assert theToken.theMarkdown[-1] == "Some _italic text_ on this lines\n\n"
 
     theToken.theText = "Some **_bold italic text_** on this lines\n"
     theToken.tokenizeText()
@@ -317,7 +357,7 @@ def testCoreToken_Tokenize(dummyGUI):
         ),
         (Tokenizer.T_EMPTY, 1, "", None, Tokenizer.A_NONE),
     ]
-    assert theToken.theMarkdown == "Some **_bold italic text_** on this lines\n\n"
+    assert theToken.theMarkdown[-1] == "Some **_bold italic text_** on this lines\n\n"
 
     theToken.theText = "Some ~~strikethrough text~~ on this lines\n"
     theToken.tokenizeText()
@@ -333,7 +373,7 @@ def testCoreToken_Tokenize(dummyGUI):
         ),
         (Tokenizer.T_EMPTY, 1, "", None, Tokenizer.A_NONE),
     ]
-    assert theToken.theMarkdown == "Some ~~strikethrough text~~ on this lines\n\n"
+    assert theToken.theMarkdown[-1] == "Some ~~strikethrough text~~ on this lines\n\n"
 
     theToken.theText = "Some **nested bold and _italic_ and ~~strikethrough~~ text** here\n"
     theToken.tokenizeText()
@@ -353,12 +393,12 @@ def testCoreToken_Tokenize(dummyGUI):
         ),
         (Tokenizer.T_EMPTY, 1, "", None, Tokenizer.A_NONE),
     ]
-    assert theToken.theMarkdown == (
+    assert theToken.theMarkdown[-1] == (
         "Some **nested bold and _italic_ and ~~strikethrough~~ text** here\n\n"
     )
 
     # Check the markdown function as well
-    assert theToken.getFilteredMarkdown() == (
+    assert theToken.theMarkdown[-1] == (
         "Some **nested bold and _italic_ and ~~strikethrough~~ text** here\n\n"
     )
 
@@ -623,7 +663,7 @@ def testCoreToken_Headers(dummyGUI):
     theToken.isPart = False
     theToken.doHeaders()
     assert theToken.theTokens == [
-        (Tokenizer.T_TITLE, 1, "Novel Title", None, Tokenizer.A_PBB_NO | Tokenizer.A_CENTRE),
+        (Tokenizer.T_TITLE, 1, "Novel Title", None, Tokenizer.A_PBB_AUT | Tokenizer.A_CENTRE),
         (Tokenizer.T_EMPTY, 1, "", None, Tokenizer.A_PBA | Tokenizer.A_CENTRE),
     ]
 

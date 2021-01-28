@@ -59,6 +59,9 @@ def testGuiBuild_Tool(qtbot, monkeypatch, nwGUI, nwLipsum, refDir, outDir):
     nwBuild = getGuiItem("GuiBuildNovel")
     assert isinstance(nwBuild, GuiBuildNovel)
 
+    nwBuild.textFont.setText("DejaVu Sans")
+    nwBuild.textSize.setValue(11)
+
     # Default Settings
     qtbot.mouseClick(nwBuild.buildNovel, Qt.LeftButton)
 
@@ -205,7 +208,6 @@ def testGuiBuild_Tool(qtbot, monkeypatch, nwGUI, nwLipsum, refDir, outDir):
     # Close the build tool
     htmlText  = nwBuild.htmlText
     htmlStyle = nwBuild.htmlStyle
-    nwdText   = nwBuild.nwdText
     buildTime = nwBuild.buildTime
     nwBuild._doClose()
 
@@ -219,7 +221,6 @@ def testGuiBuild_Tool(qtbot, monkeypatch, nwGUI, nwLipsum, refDir, outDir):
     assert nwBuild.viewCachedDoc()
     assert nwBuild.htmlText  == htmlText
     assert nwBuild.htmlStyle == htmlStyle
-    assert nwBuild.nwdText   == nwdText
     assert nwBuild.buildTime == buildTime
 
     nwBuild._doClose()
