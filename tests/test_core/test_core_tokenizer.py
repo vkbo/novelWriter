@@ -38,6 +38,18 @@ def testCoreToken_Setters(dummyGUI):
     assert theToken.fmtUnNum == "%title%"
     assert theToken.fmtScene == "%title%"
     assert theToken.fmtSection == "%title%"
+    assert theToken.textFont == "Serif"
+    assert theToken.textSize == 11
+    assert theToken.textFixed is False
+    assert theToken.lineHeight == 1.15
+    assert theToken.doJustify is False
+    assert theToken.marginTitle == (1.000, 0.500)
+    assert theToken.marginHead1 == (1.000, 0.500)
+    assert theToken.marginHead2 == (0.834, 0.500)
+    assert theToken.marginHead3 == (0.584, 0.500)
+    assert theToken.marginHead4 == (0.584, 0.500)
+    assert theToken.marginText == (0.000, 0.584)
+    assert theToken.marginMeta == (0.000, 0.584)
     assert theToken.hideScene is False
     assert theToken.hideSection is False
     assert theToken.linkHeaders is False
@@ -45,7 +57,6 @@ def testCoreToken_Setters(dummyGUI):
     assert theToken.doSynopsis is False
     assert theToken.doComments is False
     assert theToken.doKeywords is False
-    assert theToken.doJustify is False
 
     # Set new values
     theToken.setTitleFormat("T: %title%")
@@ -53,12 +64,21 @@ def testCoreToken_Setters(dummyGUI):
     theToken.setUnNumberedFormat("U: %title%")
     theToken.setSceneFormat("S: %title%", True)
     theToken.setSectionFormat("X: %title%", True)
+    theToken.setFont("Monospace", 10, True)
+    theToken.setLineHeight(2)
+    theToken.setJustify(True)
+    theToken.setTitleMargins(2.0, 2.0)
+    theToken.setHead1Margins(2.0, 2.0)
+    theToken.setHead2Margins(2.0, 2.0)
+    theToken.setHead3Margins(2.0, 2.0)
+    theToken.setHead4Margins(2.0, 2.0)
+    theToken.setTextMargins(2.0, 2.0)
+    theToken.setMetaMargins(2.0, 2.0)
     theToken.setLinkHeaders(True)
     theToken.setBodyText(False)
     theToken.setSynopsis(True)
     theToken.setComments(True)
     theToken.setKeywords(True)
-    theToken.setJustify(True)
 
     # Check new values
     assert theToken.fmtTitle == "T: %title%"
@@ -66,6 +86,18 @@ def testCoreToken_Setters(dummyGUI):
     assert theToken.fmtUnNum == "U: %title%"
     assert theToken.fmtScene == "S: %title%"
     assert theToken.fmtSection == "X: %title%"
+    assert theToken.textFont == "Monospace"
+    assert theToken.textSize == 10
+    assert theToken.textFixed is True
+    assert theToken.lineHeight == 2.0
+    assert theToken.doJustify is True
+    assert theToken.marginTitle == (2.0, 2.0)
+    assert theToken.marginHead1 == (2.0, 2.0)
+    assert theToken.marginHead2 == (2.0, 2.0)
+    assert theToken.marginHead3 == (2.0, 2.0)
+    assert theToken.marginHead4 == (2.0, 2.0)
+    assert theToken.marginText == (2.0, 2.0)
+    assert theToken.marginMeta == (2.0, 2.0)
     assert theToken.hideScene is True
     assert theToken.hideSection is True
     assert theToken.linkHeaders is True
@@ -73,7 +105,6 @@ def testCoreToken_Setters(dummyGUI):
     assert theToken.doSynopsis is True
     assert theToken.doComments is True
     assert theToken.doKeywords is True
-    assert theToken.doJustify is True
 
 # END Test testCoreToken_Setters
 
@@ -241,6 +272,19 @@ def testCoreToken_Tokenize(dummyGUI):
     theToken.setKeywords(True)
     theToken.tokenizeText()
     assert theToken.theMarkdown[-1] == "@char: Bod\n\n"
+
+    theToken.theText = "@pov: Bod\n@plot: Main\n@location: Europe\n"
+    theToken.tokenizeText()
+    styTop = Tokenizer.A_NONE | Tokenizer.A_Z_BTMMRG
+    styMid = Tokenizer.A_NONE | Tokenizer.A_Z_BTMMRG | Tokenizer.A_Z_TOPMRG
+    styBtm = Tokenizer.A_NONE | Tokenizer.A_Z_TOPMRG
+    assert theToken.theTokens == [
+        (Tokenizer.T_KEYWORD, 1, "pov: Bod", None, styTop),
+        (Tokenizer.T_KEYWORD, 2, "plot: Main", None, styMid),
+        (Tokenizer.T_KEYWORD, 3, "location: Europe", None, styBtm),
+        (Tokenizer.T_EMPTY, 3, "", None, Tokenizer.A_NONE),
+    ]
+    assert theToken.theMarkdown[-1] == "@pov: Bod\n@plot: Main\n@location: Europe\n\n"
 
     # Text
     theToken.theText = "Some plain text\non two lines\n\n\n"

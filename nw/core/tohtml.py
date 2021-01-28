@@ -267,7 +267,8 @@ class ToHtml(Tokenizer):
                 tmpResult.append(self._formatComments(tText))
 
             elif tType == self.T_KEYWORD and self.doKeywords:
-                tmpResult.append(self._formatKeywords(tText))
+                tTemp = "<p%s>%s</p>\n" % (hStyle, self._formatKeywords(tText))
+                tmpResult.append(tTemp)
 
         self.theResult = "".join(tmpResult)
         tmpResult = []
@@ -284,7 +285,7 @@ class ToHtml(Tokenizer):
             theStyle = self.getStyleSheet()
             theStyle.append("article {width: 800px; margin: 40px auto;}")
             bodyText = "".join(self.fullHTML)
-            bodyText = bodyText.replace("\t", "&#09;")
+            bodyText = bodyText.replace("\t", "&#09;").rstrip()
 
             theHtml = (
                 "<!DOCTYPE html>\n"
@@ -399,7 +400,7 @@ class ToHtml(Tokenizer):
                             ))
                         retText += ", ".join(refTags)
 
-        return "<div>%s</div>\n" % retText
+        return retText
 
     def _buildRegEx(self):
         """Build the regular expressions
