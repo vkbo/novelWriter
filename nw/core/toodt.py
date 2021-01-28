@@ -37,6 +37,7 @@ from nw.constants import nwLabels, nwKeyWords
 
 logger = logging.getLogger(__name__)
 
+# Main XML NameSpaces
 XML_NS = {
     "office" : "urn:oasis:names:tc:opendocument:xmlns:office:1.0",
     "style"  : "urn:oasis:names:tc:opendocument:xmlns:style:1.0",
@@ -46,9 +47,11 @@ XML_NS = {
     "fo"     : "urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0",
 }
 
+# Mimetype and Version
 X_MIME = "application/vnd.oasis.opendocument.text"
 X_VERS = "1.2"
 
+# Text Formatting Tags
 TAG_BR   = "{%s}line-break" % XML_NS["text"]
 TAG_TAB  = "{%s}tab" % XML_NS["text"]
 TAG_SPAN = "{%s}span" % XML_NS["text"]
@@ -56,33 +59,33 @@ TAG_STNM = "{%s}style-name" % XML_NS["text"]
 
 class ToOdt(Tokenizer):
 
-    X_BLD = 0x01
-    X_ITA = 0x02
-    X_DEL = 0x04
-    X_BRK = 0x08
-    X_TAB = 0x10
+    X_BLD = 0x01 # Bold format
+    X_ITA = 0x02 # Italic format
+    X_DEL = 0x04 # Strikethrough format
+    X_BRK = 0x08 # Line break
+    X_TAB = 0x10 # Tab
 
     def __init__(self, theProject, theParent, isFlat):
         Tokenizer.__init__(self, theProject, theParent)
 
         self.mainConf = nw.CONFIG
 
-        self._isFlat = isFlat
+        self._isFlat = isFlat # Flat: .fodt, otherwise .odt
 
-        self._dFlat = None
-        self._dCont = None
-        self._dMeta = None
-        self._dStyl = None
+        self._dFlat = None # FODT file XML root
+        self._dCont = None # ODT content.xml root
+        self._dMeta = None # ODT meta.xml root
+        self._dStyl = None # ODT styles.xml root
 
-        self._xMeta = None
-        self._xStyl = None
-        self._xAuto = None
-        self._xBody = None
-        self._xText = None
+        self._xMeta = None # Office meta root
+        self._xStyl = None # Office styles root
+        self._xAuto = None # Office auto-styles root
+        self._xBody = None # Office body root
+        self._xText = None # Office text root
 
-        self._mainPara = {}
-        self._autoPara = {}
-        self._autoText = {}
+        self._mainPara = {} # User-accessible paragraph styles
+        self._autoPara = {} # Auto-generated paragraph styles
+        self._autoText = {} # Auto-generated text styles
 
         # Properties
         self.textFont   = "Liberation Serif"
@@ -150,6 +153,8 @@ class ToOdt(Tokenizer):
         return True
 
     def setColourHeaders(self, doColour):
+        """Enable/disable coloured headings and comments.
+        """
         self.colourHead = doColour
         return
 
@@ -207,7 +212,7 @@ class ToOdt(Tokenizer):
         # ============
 
         tAttr = {}
-        tAttr[_mkTag("office", "version")]  = X_VERS
+        tAttr[_mkTag("office", "version")] = X_VERS
 
         fAttr = {}
         fAttr[_mkTag("style", "name")] = self.textFont
@@ -263,6 +268,7 @@ class ToOdt(Tokenizer):
         # Meta Data
         xMeta = etree.SubElement(self._xMeta, _mkTag("meta", "creation-date"))
         xMeta.text = datetime.now().isoformat()
+
         xMeta = etree.SubElement(self._xMeta, _mkTag("meta", "generator"))
         xMeta.text = f"novelWriter/{nw.__version__}"
 
@@ -272,18 +278,17 @@ class ToOdt(Tokenizer):
         return
 
     def doConvert(self):
-        """Convert the list of text tokens into a HTML document saved
-        to theResult.
+        """Convert the list of text tokens into XML elements.
         """
-        self.theResult = ""
+        self.theResult = "" # Not used, but cleared just in case
 
         odtTags = {
-            self.FMT_B_B : "_B",
-            self.FMT_B_E : "b_",
-            self.FMT_I_B : "I",
-            self.FMT_I_E : "i",
-            self.FMT_D_B : "_S",
-            self.FMT_D_E : "s_",
+            self.FMT_B_B : "_B", # Bold open format
+            self.FMT_B_E : "b_", # Bold close format
+            self.FMT_I_B : "I",  # Italic open format
+            self.FMT_I_E : "i",  # Italic close format
+            self.FMT_D_B : "_S", # Strikethrough open format
+            self.FMT_D_E : "s_", # Strikethrough close format
         }
 
         thisPar = []
@@ -312,7 +317,7 @@ class ToOdt(Tokenizer):
                 if tStyle & self.A_PBA_AUT:
                     oStyle.setBreakAfter("auto")
 
-            # Process Text Type
+            # Process Text Types
             if tType == self.T_EMPTY:
                 if hasHardBreak and parStyle is not None:
                     if self.doJustify:
@@ -415,48 +420,42 @@ class ToOdt(Tokenizer):
     def saveOpenDocText(self, savePath):
         """Save the data to an .odt file.
         """
-        manMap = {
-            "manifest" : "urn:oasis:names:tc:opendocument:xmlns:manifest:1.0",
-            "loext"    : "urn:org:documentfoundation:names:experimental:office:xmlns:loext:1.0",
-        }
-        manMani = "{%s}manifest" % manMap["manifest"]
-        manVers = "{%s}version" % manMap["manifest"]
-        manPath = "{%s}full-path" % manMap["manifest"]
-        manType = "{%s}media-type" % manMap["manifest"]
-        manFile = "{%s}file-entry" % manMap["manifest"]
+        mMap = {"manifest" : "urn:oasis:names:tc:opendocument:xmlns:manifest:1.0"}
+        mMani = "{%s}manifest" % mMap["manifest"]
+        mVers = "{%s}version" % mMap["manifest"]
+        mPath = "{%s}full-path" % mMap["manifest"]
+        mType = "{%s}media-type" % mMap["manifest"]
+        mFile = "{%s}file-entry" % mMap["manifest"]
 
-        xMani = etree.Element(manMani, attrib={manVers: X_VERS}, nsmap=manMap)
-        etree.SubElement(xMani, manFile, attrib={manPath: "/", manVers: X_VERS, manType: X_MIME})
-        etree.SubElement(xMani, manFile, attrib={manPath: "settings.xml", manType: "text/xml"})
-        etree.SubElement(xMani, manFile, attrib={manPath: "content.xml", manType: "text/xml"})
-        etree.SubElement(xMani, manFile, attrib={manPath: "meta.xml", manType: "text/xml"})
-        etree.SubElement(xMani, manFile, attrib={manPath: "styles.xml", manType: "text/xml"})
+        xMani = etree.Element(mMani, attrib={mVers: X_VERS}, nsmap=mMap)
+        etree.SubElement(xMani, mFile, attrib={mPath: "/", mVers: X_VERS, mType: X_MIME})
+        etree.SubElement(xMani, mFile, attrib={mPath: "settings.xml", mType: "text/xml"})
+        etree.SubElement(xMani, mFile, attrib={mPath: "content.xml", mType: "text/xml"})
+        etree.SubElement(xMani, mFile, attrib={mPath: "meta.xml", mType: "text/xml"})
+        etree.SubElement(xMani, mFile, attrib={mPath: "styles.xml", mType: "text/xml"})
 
-        setMap = {
-            "office" : "urn:oasis:names:tc:opendocument:xmlns:office:1.0",
-            "config" : "urn:oasis:names:tc:opendocument:xmlns:config:1.0",
-        }
-        offRoot = "{%s}document-settings" % setMap["office"]
-        offSett = "{%s}settings" % setMap["office"]
-        xSett = etree.Element(offRoot, nsmap=setMap)
-        etree.SubElement(xSett, offSett)
+        sMap = {"office" : "urn:oasis:names:tc:opendocument:xmlns:office:1.0"}
+        oRoot = "{%s}document-settings" % sMap["office"]
+        oSett = "{%s}settings" % sMap["office"]
+        xSett = etree.Element(oRoot, nsmap=sMap)
+        etree.SubElement(xSett, oSett)
 
         with ZipFile(savePath, mode="w") as outFile:
             outFile.writestr("mimetype", X_MIME)
             outFile.writestr("META-INF/manifest.xml", etree.tostring(
-                xMani, pretty_print=True, encoding="utf-8", xml_declaration=True
+                xMani, pretty_print=False, encoding="utf-8", xml_declaration=True
             ))
             outFile.writestr("settings.xml", etree.tostring(
-                xSett, pretty_print=True, encoding="utf-8", xml_declaration=True
+                xSett, pretty_print=False, encoding="utf-8", xml_declaration=True
             ))
             outFile.writestr("content.xml", etree.tostring(
-                self._dCont, pretty_print=True, encoding="utf-8", xml_declaration=True
+                self._dCont, pretty_print=False, encoding="utf-8", xml_declaration=True
             ))
             outFile.writestr("meta.xml", etree.tostring(
-                self._dMeta, pretty_print=True, encoding="utf-8", xml_declaration=True
+                self._dMeta, pretty_print=False, encoding="utf-8", xml_declaration=True
             ))
             outFile.writestr("styles.xml", etree.tostring(
-                self._dStyl, pretty_print=True, encoding="utf-8", xml_declaration=True
+                self._dStyl, pretty_print=False, encoding="utf-8", xml_declaration=True
             ))
 
         return
@@ -869,7 +868,6 @@ class ODTParagraphStyle():
     exporter. Only the used settings are exposed here to keep the class
     minimal and fast.
     """
-
     VALID_ALIGN  = ["start", "center", "end", "justify", "inside", "outside", "left", "right"]
     VALID_BREAK  = ["auto", "column", "page", "even-page", "odd-page", "inherit"]
     VALID_LEVEL  = ["1", "2", "3", "4"]
