@@ -344,6 +344,7 @@ Most features are available as keyboard shortcuts. These are as follows:
    ":kbd:`Alt`:kbd:`1`",                 "Switch focus to the project tree."
    ":kbd:`Alt`:kbd:`2`",                 "Switch focus to document editor."
    ":kbd:`Alt`:kbd:`3`",                 "Switch focus to document viewer."
+   ":kbd:`Alt`:kbd:`4`",                 "Switch focus to outline view."
    ":kbd:`Alt`:kbd:`Left`",              "Move backward in the view history of the document viewer."
    ":kbd:`Alt`:kbd:`Right`",             "Move forward in the view history of the document viewer."
    ":kbd:`Ctrl`:kbd:`.`",                "Open menu to correct word under cursor."
