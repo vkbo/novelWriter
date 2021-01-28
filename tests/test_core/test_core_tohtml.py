@@ -332,6 +332,7 @@ def testCoreToHtml_Methods(dummyGUI):
     """
     theProject = NWProject(dummyGUI)
     theHtml = ToHtml(theProject, dummyGUI)
+    theHtml.setKeepMarkdown(True)
 
     # Auto-Replace
     docText = "Text with <brackets> & short–dash, long—dash …\n"
@@ -344,11 +345,11 @@ def testCoreToHtml_Methods(dummyGUI):
     )
 
     # Revert on MD
-    assert theHtml.theMarkdown == (
+    assert theHtml.theMarkdown[-1] == (
         "Text with &lt;brackets&gt; &amp; short&ndash;dash, long&mdash;dash &hellip;\n\n"
     )
     theHtml.doPostProcessing()
-    assert theHtml.theMarkdown == docText + "\n"
+    assert theHtml.theMarkdown[-1] == docText + "\n"
 
     # With Preview, No Revert
     theHtml.setPreview(True, True)
@@ -356,11 +357,11 @@ def testCoreToHtml_Methods(dummyGUI):
     theHtml.doAutoReplace()
     theHtml.tokenizeText()
     theHtml.doConvert()
-    assert theHtml.theMarkdown == (
+    assert theHtml.theMarkdown[-1] == (
         "Text with &lt;brackets&gt; &amp; short&ndash;dash, long&mdash;dash &hellip;\n\n"
     )
     theHtml.doPostProcessing()
-    assert theHtml.theMarkdown == (
+    assert theHtml.theMarkdown[-1] == (
         "Text with &lt;brackets&gt; &amp; short&ndash;dash, long&mdash;dash &hellip;\n\n"
     )
 
