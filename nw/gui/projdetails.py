@@ -5,7 +5,7 @@ novelWriter – GUI Project Details
 Class holding the project details dialog
 
 File History:
-Created: 2021-01-03 [1.0a0]
+Created: 2021-01-03 [1.1a0]
 
 This file is a part of novelWriter
 Copyright 2018–2021, Veronica Berglyd Olsen
