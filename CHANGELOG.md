@@ -14,15 +14,27 @@
   or moved, the other will follow and update. Issues #541 and #185, PR #538.
 * Added a Project Details dialog that lists project details (moved from Project Settings' Details
   Tab) and a Table of Contents tab where details on chapter level is displayed. This table also
-  shows an estimated page count and estimated page location of each chapter. Issue #528, PRs #555
-  and #598.
+  shows an estimated page count and estimated page location of each chapter. Issue #528, PRs #555,
+  #598 and #603.
 * Added three buttons below the project tree that connects to Project Details, Writing Statistics,
   and Project Settings. PR #555.
-* Added support for multi-paragraph quote (dialogue) highlighting. This feature is optional, and
-  can be enabled/disabled in Preferences. Issue #546, PR #577.
 * The settings and tabs in the Preferences dialog have been re-arranged into more tabs with less
   options on each tab. PR #577.
 * Minor changes to margins and alignments of widgets on the main GUI. PR #565.
+* Added a keyboard shortcut to change focus to the Outline tab. The focus change now also ensures
+  that the main GUI also switches to the tab where the focus is shifted. Issues #609 and #612, PR
+  #615.
+
+**Text Editor**
+
+* Added support for multi-paragraph quote (dialogue) highlighting. This feature is optional, and
+  can be enabled/disabled in Preferences. Issue #546, PR #577.
+* Add several new symbols to the Insert menu/ Issue #602, PRs #603 and #604.
+
+**Other Changes**
+
+* Trigger a save document call before the Build Novel Project tool starts the build. This ensures
+  that unsaved changes in the editor are included in the build. Issue #610, PR #616.
 
 **Code Maintenance**
 
@@ -80,7 +92,7 @@ always concerning even if they are false positives.
 * Updated documentation, main README and Contribution Guide to make them more consistent and to
   improve installation instructions. Based on issue #586 and input from @mgrhm. PR #592.
 
-**Other CHanges**
+**Other Changes**
 
 * The HTML generator now adds line breaks after `div` blocks used to wrap tag/reference lines. This
   makes the output easier to process by scripts, but has no impact on browser rendering and import
