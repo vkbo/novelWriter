@@ -468,6 +468,13 @@ class GuiMainMenu(QMenuBar):
         self.aFocusView.triggered.connect(lambda: self.theParent.setFocus(3))
         self.viewMenu.addAction(self.aFocusView)
 
+        # View > Outline
+        self.aFocusOutline = QAction("Focus Outline", self)
+        self.aFocusOutline.setStatusTip("Move focus to outline")
+        self.aFocusOutline.setShortcut("Alt+4")
+        self.aFocusOutline.triggered.connect(lambda: self.theParent.setFocus(4))
+        self.viewMenu.addAction(self.aFocusOutline)
+
         # View > Separator
         self.viewMenu.addSeparator()
 

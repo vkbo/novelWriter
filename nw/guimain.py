@@ -1128,14 +1128,19 @@ class GuiMain(QMainWindow):
         return True
 
     def setFocus(self, paneNo):
-        """Switch focus to one of the three main GUI panes.
+        """Switch focus between main GUI views.
         """
         if paneNo == 1:
             self.treeView.setFocus()
         elif paneNo == 2:
+            self.mainTabs.setCurrentWidget(self.splitDocs)
             self.docEditor.setFocus()
         elif paneNo == 3:
+            self.mainTabs.setCurrentWidget(self.splitDocs)
             self.docViewer.setFocus()
+        elif paneNo == 4:
+            self.mainTabs.setCurrentWidget(self.splitOutline)
+            self.projView.setFocus()
         return
 
     def closeDocEditor(self):
