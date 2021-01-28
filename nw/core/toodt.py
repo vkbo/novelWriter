@@ -116,6 +116,7 @@ class ToOdt(Tokenizer):
         self._mTopHead4 = "0.247cm"
         self._mTopHead  = "0.423cm"
         self._mTopText  = "0.000cm"
+        self._mTopMeta  = "0.000cm"
 
         self._mBotTitle = "0.212cm"
         self._mBotHead1 = "0.212cm"
@@ -124,6 +125,7 @@ class ToOdt(Tokenizer):
         self._mBotHead4 = "0.212cm"
         self._mBotHead  = "0.212cm"
         self._mBotText  = "0.247cm"
+        self._mBotMeta  = "0.106cm"
 
         ## Colour
         self._colHead12 = None
@@ -170,7 +172,7 @@ class ToOdt(Tokenizer):
 
         self._fontFamily = self.textFont
         if len(self.textFont.split()) > 1:
-            self._fontFamily = f"&apos;{self.textFont}&apos;"
+            self._fontFamily = f"'{self.textFont}'"
         self._fontPitch = "fixed" if self.textFixed else "variable"
 
         self._fSizeTitle = f"{round(2.50 * self.textSize):d}pt"
@@ -188,6 +190,7 @@ class ToOdt(Tokenizer):
         self._mTopHead4 = self._emToCm(self.marginHead4[0])
         self._mTopHead  = self._emToCm(self.marginHead4[0])
         self._mTopText  = self._emToCm(self.marginText[0])
+        self._mTopMeta  = self._emToCm(self.marginMeta[0])
 
         self._mBotTitle = self._emToCm(self.marginTitle[1])
         self._mBotHead1 = self._emToCm(self.marginHead1[1])
@@ -196,13 +199,14 @@ class ToOdt(Tokenizer):
         self._mBotHead4 = self._emToCm(self.marginHead4[1])
         self._mBotHead  = self._emToCm(self.marginHead4[1])
         self._mBotText  = self._emToCm(self.marginText[1])
+        self._mBotMeta  = self._emToCm(self.marginMeta[1])
 
         if self.colourHead:
             self._colHead12 = "#2a6099"
             self._opaHead12 = "100%"
             self._colHead34 = "#444444"
             self._opaHead34 = "100%"
-            self._colMetaTx = "#666666"
+            self._colMetaTx = "#813709"
             self._opaMetaTx = "100%"
 
         self._lineHeight = f"{round(100 * self.lineHeight):d}%"
@@ -302,20 +306,27 @@ class ToOdt(Tokenizer):
             if tStyle is not None:
                 if tStyle & self.A_LEFT:
                     oStyle.setTextAlign("left")
-                if tStyle & self.A_RIGHT:
+                elif tStyle & self.A_RIGHT:
                     oStyle.setTextAlign("right")
-                if tStyle & self.A_CENTRE:
+                elif tStyle & self.A_CENTRE:
                     oStyle.setTextAlign("center")
-                if tStyle & self.A_JUSTIFY:
+                elif tStyle & self.A_JUSTIFY:
                     oStyle.setTextAlign("justify")
+
                 if tStyle & self.A_PBB:
                     oStyle.setBreakBefore("page")
-                if tStyle & self.A_PBB_AUT:
+                elif tStyle & self.A_PBB_AUT:
                     oStyle.setBreakBefore("auto")
+
                 if tStyle & self.A_PBA:
                     oStyle.setBreakAfter("page")
-                if tStyle & self.A_PBA_AUT:
+                elif tStyle & self.A_PBA_AUT:
                     oStyle.setBreakAfter("auto")
+
+                if tStyle & self.A_Z_BTMMRG:
+                    oStyle.setMarginBottom("0.000cm")
+                if tStyle & self.A_Z_TOPMRG:
+                    oStyle.setMarginTop("0.000cm")
 
             # Process Text Types
             if tType == self.T_EMPTY:
@@ -740,8 +751,8 @@ class ToOdt(Tokenizer):
         oStyle.setDisplayName("Text Meta")
         oStyle.setParentStyleName("Standard")
         oStyle.setClass("text")
-        oStyle.setMarginTop(self._mTopText)
-        oStyle.setMarginBottom(self._mBotText)
+        oStyle.setMarginTop(self._mTopMeta)
+        oStyle.setMarginBottom(self._mBotMeta)
         oStyle.setLineHeight(self._lineHeight)
         oStyle.setFontName(self.textFont)
         oStyle.setFontFamily(self._fontFamily)

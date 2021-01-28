@@ -61,6 +61,8 @@ class ToHtml(Tokenizer):
         self.reReverse = []
         self._buildRegEx()
 
+        self.fullHTML = []
+
         return
 
     ##
@@ -90,6 +92,11 @@ class ToHtml(Tokenizer):
     #  Class Methods
     ##
 
+    def getFullResultSize(self):
+        """Return the size of the full HTML result.
+        """
+        return sum([len(x) for x in self.fullHTML])
+
     def doAutoReplace(self):
         """Extend the auto-replace to also properly encode some unicode
         characters into their respective HTML entities.
@@ -108,9 +115,12 @@ class ToHtml(Tokenizer):
         if self.genMode == self.M_PREVIEW:
             # Doesn't matter for preview as we don't use the markdown
             return
-        self.theMarkdown = self.reReverse.sub(
-            lambda x: self.revDict[x.group(0)], self.theMarkdown
-        )
+
+        if self.keepMarkdown:
+            self.theMarkdown[-1] = self.reReverse.sub(
+                lambda x: self.revDict[x.group(0)], self.theMarkdown[-1]
+            )
+
         return
 
     def doConvert(self):
@@ -165,20 +175,27 @@ class ToHtml(Tokenizer):
             if tStyle is not None and self.cssStyles:
                 if tStyle & self.A_LEFT:
                     aStyle.append("text-align: left;")
-                if tStyle & self.A_RIGHT:
+                elif tStyle & self.A_RIGHT:
                     aStyle.append("text-align: right;")
-                if tStyle & self.A_CENTRE:
+                elif tStyle & self.A_CENTRE:
                     aStyle.append("text-align: center;")
-                if tStyle & self.A_JUSTIFY:
+                elif tStyle & self.A_JUSTIFY:
                     aStyle.append("text-align: justify;")
+
                 if tStyle & self.A_PBB:
                     aStyle.append("page-break-before: always;")
-                if tStyle & self.A_PBB_AUT:
+                elif tStyle & self.A_PBB_AUT:
                     aStyle.append("page-break-before: auto;")
+
                 if tStyle & self.A_PBA:
                     aStyle.append("page-break-after: always;")
-                if tStyle & self.A_PBA_AUT:
+                elif tStyle & self.A_PBA_AUT:
                     aStyle.append("page-break-after: auto;")
+
+                if tStyle & self.A_Z_BTMMRG:
+                    aStyle.append("margin-bottom: 0;")
+                if tStyle & self.A_Z_TOPMRG:
+                    aStyle.append("margin-top: 0;")
 
             if len(aStyle) > 0:
                 hStyle = " style='%s'" % (" ".join(aStyle))
@@ -255,6 +272,54 @@ class ToHtml(Tokenizer):
         self.theResult = "".join(tmpResult)
         tmpResult = []
 
+        if self.genMode != self.M_PREVIEW:
+            self.fullHTML.append(self.theResult)
+
+        return
+
+    def saveHTML5(self, savePath):
+        """Save the data to an .html file.
+        """
+        with open(savePath, mode="w", encoding="utf8") as outFile:
+            theStyle = self.getStyleSheet()
+            theStyle.append("article {width: 800px; margin: 40px auto;}")
+            bodyText = "".join(self.fullHTML)
+            bodyText = bodyText.replace("\t", "&#09;")
+
+            theHtml = (
+                "<!DOCTYPE html>\n"
+                "<html>\n"
+                "<head>\n"
+                "<meta charset='utf-8'>\n"
+                "<title>{projTitle:s}</title>\n"
+                "</head>\n"
+                "<style>\n"
+                "{htmlStyle:s}\n"
+                "</style>\n"
+                "<body>\n"
+                "<article>\n"
+                "{bodyText:s}\n"
+                "</article>\n"
+                "</body>\n"
+                "</html>\n"
+            ).format(
+                projTitle = self.theProject.projName,
+                htmlStyle = "\n".join(theStyle),
+                bodyText = bodyText,
+            )
+            outFile.write(theHtml)
+
+        return
+
+    def replaceTabs(self, nSpaces=8, spaceChar="&nbsp;"):
+        """Replace tabs with spaces in the html.
+        """
+        htmlText = []
+        eightSpace = spaceChar*nSpaces
+        for aLine in self.fullHTML:
+            htmlText.append(aLine.replace("\t", eightSpace))
+
+        self.fullHTML = htmlText
         return
 
     def getStyleSheet(self):

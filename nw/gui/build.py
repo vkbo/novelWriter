@@ -79,7 +79,6 @@ class GuiBuildNovel(QDialog):
 
         self.htmlText  = [] # List of html documents
         self.htmlStyle = [] # List of html styles
-        self.nwdText   = [] # List of markdown documents
         self.htmlSize  = 0  # Size of the html document
         self.buildTime = 0  # The timestamp of the last build
 
@@ -532,7 +531,6 @@ class GuiBuildNovel(QDialog):
         else:
             self.htmlText = []
             self.htmlStyle = []
-            self.nwdText = []
             self.buildTime = 0
             return False
 
@@ -552,34 +550,26 @@ class GuiBuildNovel(QDialog):
         textSize    = self.textSize.value()
         replaceTabs = self.replaceTabs.isChecked()
 
-        tStart = int(time())
-
         self.htmlText  = []
         self.htmlStyle = []
-        self.nwdText   = []
         self.htmlSize  = 0
 
+        # Build Preview
+        # =============
+
         makeHtml = ToHtml(self.theProject, self.theParent)
-        self._doBuild(makeHtml)
-
+        self._doBuild(makeHtml, isPreview=True)
         if replaceTabs:
-            htmlText = []
-            eightSpace = "&nbsp;"*8
-            for aLine in self.htmlText:
-                htmlText.append(aLine.replace("\t", eightSpace))
-            self.htmlText = htmlText
+            makeHtml.replaceTabs()
 
-            nwdText = []
-            for aLine in self.nwdText:
-                nwdText.append(aLine.replace("\t", "        "))
-            self.nwdText = nwdText
-
-        tEnd = int(time())
-        logger.debug("Built project in %.3f ms" % (1000*(tEnd - tStart)))
+        self.htmlText  = makeHtml.fullHTML
         self.htmlStyle = makeHtml.getStyleSheet()
-        self.buildTime = tEnd
+        self.htmlSize  = makeHtml.getFullResultSize()
+        self.buildTime = int(time())
 
-        # Load the preview document with the html data
+        # Load Preview
+        # ============
+
         self.docView.setTextFont(textFont, textSize)
         self.docView.setJustify(justifyText)
         if noStyling:
@@ -600,9 +590,11 @@ class GuiBuildNovel(QDialog):
 
         return
 
-    def _doBuild(self, bldObj):
+    def _doBuild(self, bldObj, isPreview=False, doConvert=True):
         """Rund the build with a specific build object.
         """
+        tStart = int(time())
+
         # Get Settings
         fmtTitle      = self.fmtTitle.text().strip()
         fmtChapter    = self.fmtChapter.text().strip()
@@ -644,7 +636,6 @@ class GuiBuildNovel(QDialog):
 
         if isHtml:
             bldObj.setStyles(not noStyling)
-            self.htmlSize = 0
 
         if isOdt:
             bldObj.setColourHeaders(not noStyling)
@@ -667,31 +658,27 @@ class GuiBuildNovel(QDialog):
                 if noteRoot:
                     # Add headers for root folders of notes
                     bldObj.addRootHeading(tItem.itemHandle)
-                    bldObj.doConvert()
-                    if isHtml:
-                        self.htmlText.append(bldObj.getResult())
-                        self.nwdText.append(bldObj.getFilteredMarkdown())
-                        self.htmlSize += bldObj.getResultSize()
+                    if doConvert:
+                        bldObj.doConvert()
 
                 elif self._checkInclude(tItem, noteFiles, novelFiles, ignoreFlag):
                     bldObj.setText(tItem.itemHandle)
                     bldObj.doAutoReplace()
                     bldObj.tokenizeText()
                     bldObj.doHeaders()
-                    bldObj.doConvert()
+                    if doConvert:
+                        bldObj.doConvert()
                     bldObj.doPostProcessing()
-                    if isHtml:
-                        self.htmlText.append(bldObj.getResult())
-                        self.nwdText.append(bldObj.getFilteredMarkdown())
-                        self.htmlSize += bldObj.getResultSize()
 
             except Exception as e:
                 logger.error("Failed to generate html of document '%s'" % tItem.itemHandle)
                 logger.error(str(e))
-                self.docView.setText((
-                    "Failed to generate preview. "
-                    "Document with title '%s' could not be parsed."
-                ) % tItem.itemName)
+                if isPreview:
+                    self.docView.setText((
+                        "Failed to generate preview. "
+                        "Document with title '%s' could not be parsed."
+                    ) % tItem.itemName)
+
                 return False
 
             # Update progress bar, also for skipped items
@@ -699,6 +686,9 @@ class GuiBuildNovel(QDialog):
 
         if isOdt:
             bldObj.closeDocument()
+
+        tEnd = int(time())
+        logger.debug("Built project in %.3f ms" % (1000*(tEnd - tStart)))
 
         if bldObj.errData:
             self.theParent.makeAlert((
@@ -751,63 +741,59 @@ class GuiBuildNovel(QDialog):
     def _saveDocument(self, theFormat):
         """Save the document to various formats.
         """
+        replaceTabs = self.replaceTabs.isChecked()
+
         byteFmt = QByteArray()
         fileExt = ""
         textFmt = ""
-        outTool = ""
 
-        # Create the settings
+        # Settings
+        # ========
+
         if theFormat == self.FMT_ODT:
             fileExt = "odt"
             textFmt = "Open Document"
-            outTool = "NW_ODT"
 
         elif theFormat == self.FMT_FODT:
             fileExt = "fodt"
             textFmt = "Flat Open Document"
-            outTool = "NW_ODT"
 
         elif theFormat == self.FMT_PDF:
             fileExt = "pdf"
             textFmt = "PDF"
-            outTool = "QtPrint"
 
         elif theFormat == self.FMT_HTM:
             fileExt = "htm"
             textFmt = "Plain HTML"
-            outTool = "NW"
 
         elif theFormat == self.FMT_MD:
             byteFmt.append("markdown")
             fileExt = "md"
             textFmt = "Markdown"
-            outTool = "Qt"
 
         elif theFormat == self.FMT_NWD:
             fileExt = "nwd"
             textFmt = "%s Markdown" % nw.__package__
-            outTool = "NW"
 
         elif theFormat == self.FMT_TXT:
             byteFmt.append("plaintext")
             fileExt = "txt"
             textFmt = "Plain Text"
-            outTool = "Qt"
 
         elif theFormat == self.FMT_JSON_H:
             fileExt = "json"
             textFmt = "JSON + %s HTML" % nw.__package__
-            outTool = "NW"
 
         elif theFormat == self.FMT_JSON_M:
             fileExt = "json"
             textFmt = "JSON + %s Markdown" % nw.__package__
-            outTool = "NW"
 
         else:
             return False
 
-        # Generate the file name
+        # Generate File Name
+        # ==================
+
         if fileExt:
 
             cleanName = makeFileNameSafe(self.theProject.projName)
@@ -830,109 +816,109 @@ class GuiBuildNovel(QDialog):
         else:
             return False
 
-        # Do the actual writing
-        wSuccess = False
+        # Build and Write
+        # ===============
+
         errMsg = ""
-        if outTool == "Qt":
+        wSuccess = False
+
+        if theFormat == self.FMT_MD or theFormat == self.FMT_TXT:
             docWriter = QTextDocumentWriter()
             docWriter.setFileName(savePath)
             docWriter.setFormat(byteFmt)
             wSuccess = docWriter.write(self.docView.qDocument)
 
-        elif outTool == "NW":
+        elif theFormat == self.FMT_HTM:
+            makeHtml = ToHtml(self.theProject, self.theParent)
+            self._doBuild(makeHtml)
+            if replaceTabs:
+                makeHtml.replaceTabs()
+
             try:
-                with open(savePath, mode="w", encoding="utf8") as outFile:
-                    if theFormat == self.FMT_HTM:
-                        # Write novelWriter HTML data
-                        theStyle = self.htmlStyle.copy()
-                        theStyle.append(r"article {width: 800px; margin: 40px auto;}")
-                        bodyText = "".join(self.htmlText)
-                        bodyText = bodyText.replace("\t", "&#09;")
-
-                        theHtml = (
-                            "<!DOCTYPE html>\n"
-                            "<html>\n"
-                            "<head>\n"
-                            "<meta charset='utf-8'>\n"
-                            "<title>{projTitle:s}</title>\n"
-                            "</head>\n"
-                            "<style>\n"
-                            "{htmlStyle:s}\n"
-                            "</style>\n"
-                            "<body>\n"
-                            "<article>\n"
-                            "{bodyText:s}\n"
-                            "</article>\n"
-                            "</body>\n"
-                            "</html>\n"
-                        ).format(
-                            projTitle = self.theProject.projName,
-                            htmlStyle = "\n".join(theStyle),
-                            bodyText = bodyText,
-                        )
-                        outFile.write(theHtml)
-
-                    elif theFormat == self.FMT_NWD:
-                        # Write novelWriter markdown data
-                        for aLine in self.nwdText:
-                            outFile.write(aLine)
-
-                    elif theFormat == self.FMT_JSON_H or theFormat == self.FMT_JSON_M:
-                        jsonData = {
-                            "meta" : {
-                                "workingTitle" : self.theProject.projName,
-                                "novelTitle"   : self.theProject.bookTitle,
-                                "authors"      : self.theProject.bookAuthors,
-                                "buildTime"    : self.buildTime,
-                            }
-                        }
-
-                        if theFormat == self.FMT_JSON_H:
-                            theBody = []
-                            for htmlPage in self.htmlText:
-                                theBody.append(htmlPage.rstrip("\n").split("\n"))
-                            jsonData["text"] = {
-                                "css"  : self.htmlStyle,
-                                "html" : theBody,
-                            }
-                        elif theFormat == self.FMT_JSON_M:
-                            theBody = []
-                            for nwdPage in self.nwdText:
-                                theBody.append(nwdPage.split("\n"))
-                            jsonData["text"] = {
-                                "nwd" : theBody,
-                            }
-
-                        outFile.write(json.dumps(jsonData, indent=2))
-
+                makeHtml.saveHTML5(savePath)
                 wSuccess = True
-
             except Exception as e:
                 errMsg = str(e)
 
-        elif outTool == "NW_ODT":
+        elif theFormat == self.FMT_NWD:
+            makeNwd = ToHtml(self.theProject, self.theParent)
+            makeNwd.setKeepMarkdown(True)
+            self._doBuild(makeNwd, doConvert=False)
+            if replaceTabs:
+                makeNwd.replaceTabs(spaceChar=" ")
 
-            if theFormat == self.FMT_FODT:
-                makeOdt = ToOdt(self.theProject, self.theParent, isFlat=True)
-                self._doBuild(makeOdt)
-                try:
-                    makeOdt.saveFlatXML(savePath)
+            try:
+                with open(savePath, mode="w", encoding="utf8") as outFile:
+                    for nwdPage in makeNwd.theMarkdown:
+                        outFile.write(nwdPage)
+                wSuccess = True
+            except Exception as e:
+                errMsg = str(e)
+
+        elif theFormat == self.FMT_FODT:
+            makeOdt = ToOdt(self.theProject, self.theParent, isFlat=True)
+            self._doBuild(makeOdt)
+            try:
+                makeOdt.saveFlatXML(savePath)
+                wSuccess = True
+            except Exception as e:
+                errMsg = str(e)
+
+        elif theFormat == self.FMT_ODT:
+            makeOdt = ToOdt(self.theProject, self.theParent, isFlat=False)
+            self._doBuild(makeOdt)
+            try:
+                makeOdt.saveOpenDocText(savePath)
+                wSuccess = True
+            except Exception as e:
+                errMsg = str(e)
+
+        elif theFormat == self.FMT_JSON_H or theFormat == self.FMT_JSON_M:
+            jsonData = {
+                "meta" : {
+                    "workingTitle" : self.theProject.projName,
+                    "novelTitle"   : self.theProject.bookTitle,
+                    "authors"      : self.theProject.bookAuthors,
+                    "buildTime"    : self.buildTime,
+                }
+            }
+
+            if theFormat == self.FMT_JSON_H:
+                makeHtml = ToHtml(self.theProject, self.theParent)
+                self._doBuild(makeHtml)
+                if replaceTabs:
+                    makeHtml.replaceTabs()
+
+                theBody = []
+                for htmlPage in makeHtml.fullHTML:
+                    theBody.append(htmlPage.rstrip("\n").split("\n"))
+                jsonData["text"] = {
+                    "css"  : self.htmlStyle,
+                    "html" : theBody,
+                }
+
+            elif theFormat == self.FMT_JSON_M:
+                makeNwd = ToHtml(self.theProject, self.theParent)
+                makeNwd.setKeepMarkdown(True)
+                self._doBuild(makeNwd, doConvert=False)
+                if replaceTabs:
+                    makeNwd.replaceTabs(spaceChar=" ")
+
+                theBody = []
+                for nwdPage in makeNwd.theMarkdown:
+                    theBody.append(nwdPage.split("\n"))
+                jsonData["text"] = {
+                    "nwd" : theBody,
+                }
+
+            try:
+                with open(savePath, mode="w", encoding="utf8") as outFile:
+                    outFile.write(json.dumps(jsonData, indent=2))
                     wSuccess = True
+            except Exception as e:
+                errMsg = str(e)
 
-                except Exception as e:
-                    errMsg = str(e)
-
-            elif theFormat == self.FMT_ODT:
-                makeOdt = ToOdt(self.theProject, self.theParent, isFlat=False)
-                self._doBuild(makeOdt)
-                try:
-                    makeOdt.saveOpenDocText(savePath)
-                    wSuccess = True
-
-                except Exception as e:
-                    errMsg = str(e)
-
-        elif outTool == "QtPrint" and theFormat == self.FMT_PDF:
+        elif theFormat == self.FMT_PDF:
             try:
                 thePrinter = QPrinter()
                 thePrinter.setOutputFormat(QPrinter.PdfFormat)
@@ -1021,13 +1007,10 @@ class GuiBuildNovel(QDialog):
             if "htmlStyle" in theData.keys():
                 self.htmlStyle = theData["htmlStyle"]
                 dataCount += 1
-            if "nwdText" in theData.keys():
-                self.nwdText = theData["nwdText"]
-                dataCount += 1
             if "buildTime" in theData.keys():
                 self.buildTime = theData["buildTime"]
 
-        return dataCount == 3
+        return dataCount == 2
 
     def _saveCache(self):
         """Save the current data to cache.
@@ -1040,7 +1023,6 @@ class GuiBuildNovel(QDialog):
                 outFile.write(json.dumps({
                     "htmlText"  : self.htmlText,
                     "htmlStyle" : self.htmlStyle,
-                    "nwdText"   : self.nwdText,
                     "buildTime" : self.buildTime,
                 }, indent=2))
         except Exception as e:
