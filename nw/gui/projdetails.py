@@ -1,28 +1,27 @@
 # -*- coding: utf-8 -*-
-"""novelWriter GUI Project Details
+"""
+novelWriter – GUI Project Details
+=================================
+Class holding the project details dialog
 
- novelWriter – GUI Project Details
-===================================
- Class holding the project details dialog
+File History:
+Created: 2021-01-03 [1.1a0]
 
- File History:
- Created: 2021-01-03 [1.0a0]
+This file is a part of novelWriter
+Copyright 2018–2021, Veronica Berglyd Olsen
 
- This file is a part of novelWriter
- Copyright 2018–2021, Veronica Berglyd Olsen
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
 
- This program is free software: you can redistribute it and/or modify
- it under the terms of the GNU General Public License as published by
- the Free Software Foundation, either version 3 of the License, or
- (at your option) any later version.
+This program is distributed in the hope that it will be useful, but
+WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+General Public License for more details.
 
- This program is distributed in the hope that it will be useful, but
- WITHOUT ANY WARRANTY; without even the implied warranty of
- MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- General Public License for more details.
-
- You should have received a copy of the GNU General Public License
- along with this program. If not, see <https://www.gnu.org/licenses/>.
+You should have received a copy of the GNU General Public License
+along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
 
 import nw
@@ -33,7 +32,7 @@ from PyQt5.QtCore import Qt, QSize
 from PyQt5.QtGui import QFont
 from PyQt5.QtWidgets import (
     QWidget, QDialogButtonBox, QVBoxLayout, QTreeWidget, QTreeWidgetItem,
-    QLabel, QSpinBox, QGridLayout, QHBoxLayout, QLineEdit
+    QLabel, QSpinBox, QGridLayout, QHBoxLayout, QLineEdit, QAbstractItemView
 )
 
 from nw.gui.custom import PagedDialog, QSwitch
@@ -271,6 +270,7 @@ class GuiProjectDetailsContents(QWidget):
         self.tocTree.setIconSize(QSize(iPx, iPx))
         self.tocTree.setIndentation(0)
         self.tocTree.setColumnCount(6)
+        self.tocTree.setSelectionMode(QAbstractItemView.NoSelection)
         self.tocTree.setHeaderLabels(["Title", "Words", "Pages", "Page", "Progress", ""])
 
         treeHeadItem = self.tocTree.headerItem()

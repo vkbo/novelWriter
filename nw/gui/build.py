@@ -571,8 +571,9 @@ class GuiBuildNovel(QDialog):
         makeHtml.setJustify(justifyText)
         makeHtml.setStyles(not noStyling)
 
-        # Make sure the tree order is correct
+        # Make sure the project and document is up to date
         self.theParent.treeView.flushTreeOrder()
+        self.theParent.saveDocument()
 
         self.buildProgress.setMaximum(len(self.theProject.projTree))
         self.buildProgress.setValue(0)
@@ -968,11 +969,6 @@ class GuiBuildNovel(QDialog):
         """
         buildCache = os.path.join(self.theProject.projCache, nwFiles.BUILD_CACHE)
 
-        if self.mainConf.debugInfo:
-            nIndent = 2
-        else:
-            nIndent = None
-
         logger.debug("Saving build cache")
         try:
             with open(buildCache, mode="w+", encoding="utf8") as outFile:
@@ -981,7 +977,7 @@ class GuiBuildNovel(QDialog):
                     "htmlStyle" : self.htmlStyle,
                     "nwdText"   : self.nwdText,
                     "buildTime" : self.buildTime,
-                }, indent=nIndent))
+                }, indent=2))
         except Exception as e:
             logger.error("Failed to save build cache")
             logger.error(str(e))

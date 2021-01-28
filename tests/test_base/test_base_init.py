@@ -78,7 +78,6 @@ def testBaseInit_Options(monkeypatch, tmpDir):
     # Defaults w/None Args
     nwGUI = nw.main()
     assert nw.logger.getEffectiveLevel() == logging.WARNING
-    assert nw.CONFIG.debugInfo is False
     assert nwGUI.closeMain() == "closeMain"
 
     # Defaults
@@ -86,7 +85,6 @@ def testBaseInit_Options(monkeypatch, tmpDir):
         ["--testmode", "--config=%s" % tmpDir, "--data=%s" % tmpDir, "--style=Fusion"]
     )
     assert nw.logger.getEffectiveLevel() == logging.WARNING
-    assert nw.CONFIG.debugInfo is False
     assert nwGUI.closeMain() == "closeMain"
 
     # Log Levels
@@ -94,21 +92,18 @@ def testBaseInit_Options(monkeypatch, tmpDir):
         ["--testmode", "--info", "--config=%s" % tmpDir, "--data=%s" % tmpDir]
     )
     assert nw.logger.getEffectiveLevel() == logging.INFO
-    assert nw.CONFIG.debugInfo is False
     assert nwGUI.closeMain() == "closeMain"
 
     nwGUI = nw.main(
         ["--testmode", "--debug", "--config=%s" % tmpDir, "--data=%s" % tmpDir]
     )
     assert nw.logger.getEffectiveLevel() == logging.DEBUG
-    assert nw.CONFIG.debugInfo is True
     assert nwGUI.closeMain() == "closeMain"
 
     nwGUI = nw.main(
         ["--testmode", "--verbose", "--config=%s" % tmpDir, "--data=%s" % tmpDir]
     )
     assert nw.logger.getEffectiveLevel() == 5
-    assert nw.CONFIG.debugInfo is True
     assert nwGUI.closeMain() == "closeMain"
 
     # Help and Version

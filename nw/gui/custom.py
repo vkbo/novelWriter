@@ -303,7 +303,7 @@ class QSwitch(QAbstractButton):
             trackBrush = qPalette.dark()
             thumbBrush = qPalette.light()
             textColor  = qPalette.dark().color()
-            thumbText  = nwUnicode.U_MULT
+            thumbText  = nwUnicode.U_CROSS
 
         if self.isEnabled():
             trackOpacity = 1.0
