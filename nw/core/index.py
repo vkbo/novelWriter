@@ -57,6 +57,7 @@ class NWIndex():
         self._novelIndex = {}
         self._noteIndex  = {}
         self._textCounts = {}
+        self._firstTitle = {}
 
         # TimeStamps
         self._timeNovel = 0
@@ -77,6 +78,7 @@ class NWIndex():
         self._novelIndex = {}
         self._noteIndex  = {}
         self._textCounts = {}
+        self._firstTitle = {}
         self._timeNovel  = 0
         self._timeNotes  = 0
         self._timeIndex  = 0
@@ -99,6 +101,7 @@ class NWIndex():
         self._novelIndex.pop(tHandle, None)
         self._noteIndex.pop(tHandle, None)
         self._textCounts.pop(tHandle, None)
+        self._firstTitle.pop(tHandle, None)
 
         return
 
@@ -162,6 +165,7 @@ class NWIndex():
             self._novelIndex = theData.get("novelIndex", {})
             self._noteIndex  = theData.get("noteIndex", {})
             self._textCounts = theData.get("textCounts", {})
+            self._firstTitle = theData.get("firstTitle", {})
 
             nowTime = round(time())
             self._timeNovel = nowTime
@@ -187,6 +191,7 @@ class NWIndex():
                     "novelIndex" : self._novelIndex,
                     "noteIndex"  : self._noteIndex,
                     "textCounts" : self._textCounts,
+                    "firstTitle" : self._firstTitle,
                 }, outFile, indent=2)
         except Exception as e:
             logger.error("Failed to save index file")
@@ -227,7 +232,13 @@ class NWIndex():
                 if len(self._textCounts[tHandle]) != 3:
                     self.indexBroken = True
 
-        except Exception:
+            for tHandle in self._firstTitle:
+                if len(self._firstTitle[tHandle]) != 2:
+                    self.indexBroken = True
+
+        except Exception as e:
+            logger.error("Error while checking index")
+            logger.error(str(e))
             self.indexBroken = True
 
         logger.debug("Index check complete")
@@ -290,6 +301,7 @@ class NWIndex():
             "tags"    : [],
             "updated" : round(time()),
         }
+        self._firstTitle[tHandle] = ["H0", "T000000"]
         if itemLayout == nwItemLayout.NOTE:
             self._novelIndex.pop(tHandle, None)
             self._noteIndex[tHandle] = {}
@@ -317,7 +329,7 @@ class NWIndex():
             if nChar == 0:
                 continue
 
-            if aLine.startswith(r"#"):
+            if aLine.startswith("#"):
                 isTitle = self._indexTitle(tHandle, isNovel, aLine, nLine, itemLayout)
                 if isTitle and nLine > 0:
                     if nTitle > 0:
@@ -325,11 +337,11 @@ class NWIndex():
                         self._indexWordCounts(tHandle, isNovel, lastText, nTitle)
                     nTitle = nLine
 
-            elif aLine.startswith(r"@"):
+            elif aLine.startswith("@"):
                 self._indexNoteRef(tHandle, aLine, nLine, nTitle)
                 self._indexTag(tHandle, aLine, nLine, nTitle, itemClass)
 
-            elif aLine.startswith(r"%"):
+            elif aLine.startswith("%"):
                 if nTitle > 0:
                     toCheck = aLine[1:].lstrip()
                     synTag = toCheck[:9].lower()
@@ -397,6 +409,9 @@ class NWIndex():
             "pCount"   : 0,
             "updated"  : round(time()),
         }
+
+        if self._firstTitle[tHandle][0] == "H0":
+            self._firstTitle[tHandle] = [hDepth, sTitle]
 
         if hText != "":
             if isNovel:
@@ -642,6 +657,11 @@ class NWIndex():
             ))
 
         return theToC
+
+    def getFirstTitle(self, tHandle):
+        """Return the level and location of the first title of a handle.
+        """
+        return self._firstTitle.get(tHandle, ["H0", "T000000"])
 
     def getCounts(self, tHandle, sTitle=None):
         """Returns the counts for a file, or a section of a file
