@@ -1,5 +1,9 @@
 # novelWriter Change Log
 
+## Version 1.2 Dev (Alpha)
+
+----
+
 ## Version 1.1 Dev (Alpha)
 
 ### Release Notes
