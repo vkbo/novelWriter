@@ -180,9 +180,9 @@ class GuiDocViewer(QTextBrowser):
             aDoc.tokenizeText()
             aDoc.doConvert()
             aDoc.doPostProcessing()
-        except Exception as e:
+        except Exception:
             logger.error("Failed to generate preview for document with handle '%s'" % tHandle)
-            logger.error(str(e))
+            nw.logException()
             self.setText("An error occurred while generating the preview.")
             return False
 

@@ -38,6 +38,7 @@ from PyQt5.QtCore import QT_VERSION_STR, QStandardPaths, QSysInfo
 
 from nw.constants import nwConst, nwFiles, nwUnicode
 from nw.common import splitVersionNumber, formatTimeStamp
+from nw.error import logException
 
 logger = logging.getLogger(__name__)
 
@@ -293,7 +294,7 @@ class Config:
                 os.mkdir(self.confPath)
             except Exception as e:
                 logger.error("Could not create folder: %s" % self.confPath)
-                logger.error(str(e))
+                logException()
                 self.hasError = True
                 self.errData.append("Could not create folder: %s" % self.confPath)
                 self.errData.append(str(e))
@@ -316,7 +317,7 @@ class Config:
                     os.mkdir(self.dataPath)
                 except Exception as e:
                     logger.error("Could not create folder: %s" % self.dataPath)
-                    logger.error(str(e))
+                    logException()
                     self.hasError = True
                     self.errData.append("Could not create folder: %s" % self.dataPath)
                     self.errData.append(str(e))
@@ -361,7 +362,7 @@ class Config:
                 cnfParse.read_file(inFile)
         except Exception as e:
             logger.error("Could not load config file")
-            logger.error(str(e))
+            logException()
             self.hasError = True
             self.errData.append("Could not load config file")
             self.errData.append(str(e))
@@ -702,7 +703,7 @@ class Config:
             self.confChanged = False
         except Exception as e:
             logger.error("Could not save config file")
-            logger.error(str(e))
+            logException()
             self.hasError = True
             self.errData.append("Could not save config file")
             self.errData.append(str(e))
@@ -978,9 +979,9 @@ class Config:
                         return self._unpackList(
                             cnfParse.get(cnfSec, cnfName), cnfDefault, self.CNF_S_LST
                         )
-                except ValueError as e:
+                except ValueError:
                     logger.error("Failed to load value from config file.")
-                    logger.error(str(e))
+                    logException()
                     return cnfDefault
 
         return cnfDefault

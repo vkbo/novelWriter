@@ -24,11 +24,30 @@ You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
 
+import sys
+import logging
+
 from PyQt5.QtCore import Qt
 from PyQt5.QtWidgets import (
     qApp, QDialog, QGridLayout, QStyle, QPlainTextEdit, QLabel,
     QDialogButtonBox
 )
+
+logger = logging.getLogger(__name__)
+
+# =============================================================================================== #
+#  Utility Functions
+# =============================================================================================== #
+
+def logException():
+    """Log the content of an exception message.
+    """
+    exType, exValue, _ = sys.exc_info()
+    logger.error("%s: %s" % (exType.__name__, str(exValue).strip("'")))
+
+# =============================================================================================== #
+#  Error Handler
+# =============================================================================================== #
 
 class NWErrorMessage(QDialog):
 
@@ -72,7 +91,6 @@ class NWErrorMessage(QDialog):
         """Generate a message and append session data, error info and
         error traceback.
         """
-        import sys
         from traceback import format_tb
         from nw import __issuesurl__, __version__
         from PyQt5.Qt import PYQT_VERSION_STR
@@ -133,15 +151,12 @@ class NWErrorMessage(QDialog):
 
 # END Class NWErrorMessage
 
-
 def exceptionHandler(exType, exValue, exTrace):
     """Function to catch unhandled global exceptions.
     """
-    import logging
     from traceback import print_tb
     from PyQt5.QtWidgets import qApp
 
-    logger = logging.getLogger(__name__)
     logger.critical("%s: %s" % (exType.__name__, str(exValue)))
     print_tb(exTrace)
 

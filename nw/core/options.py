@@ -25,6 +25,7 @@ You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
 
+import nw
 import logging
 import json
 import os
@@ -121,9 +122,9 @@ class OptionState():
             try:
                 with open(stateFile, mode="r", encoding="utf8") as inFile:
                     theState = json.load(inFile)
-            except Exception as e:
+            except Exception:
                 logger.error("Failed to load GUI options file")
-                logger.error(str(e))
+                nw.logException()
                 return False
 
         # Filter out unused variables
@@ -148,9 +149,9 @@ class OptionState():
         try:
             with open(stateFile, mode="w+", encoding="utf8") as outFile:
                 json.dump(self.theState, outFile, indent=2)
-        except Exception as e:
+        except Exception:
             logger.error("Failed to save GUI options file")
-            logger.error(str(e))
+            nw.logException()
             return False
 
         return True

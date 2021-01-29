@@ -24,6 +24,7 @@ You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
 
+import nw
 import logging
 import os
 
@@ -204,8 +205,9 @@ class NWTree():
                 outFile.write("\n".join(tocList))
                 outFile.write("\n")
 
-        except Exception as e:
-            logger.error(str(e))
+        except Exception:
+            logger.error("Could not write ToC file")
+            nw.logException()
             return False
 
         return True
