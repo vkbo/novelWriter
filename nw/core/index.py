@@ -154,9 +154,9 @@ class NWIndex():
             try:
                 with open(indexFile, mode="r", encoding="utf8") as inFile:
                     theData = json.load(inFile)
-            except Exception as e:
+            except Exception:
                 logger.error("Failed to load index file")
-                logger.error(str(e))
+                nw.logException()
                 self.indexBroken = True
                 self.theParent.makeAlert(
                     "Could not load cached index file. Rebuilding index.",
@@ -195,9 +195,9 @@ class NWIndex():
                     "noteIndex"  : self._noteIndex,
                     "textCounts" : self._textCounts,
                 }, outFile, indent=2)
-        except Exception as e:
+        except Exception:
             logger.error("Failed to save index file")
-            logger.error(str(e))
+            nw.logException()
             return False
 
         return True
@@ -217,9 +217,9 @@ class NWIndex():
             self._checkTextCounts()
             self.indexBroken = False
 
-        except Exception as e:
+        except Exception:
             logger.error("Error while checking index")
-            nw.logException(e)
+            nw.logException()
             self.indexBroken = True
 
         tEnd = time()

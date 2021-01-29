@@ -72,9 +72,9 @@ class NWSpellCheck():
                 with open(self.projectDict, mode="a+", encoding="utf-8") as outFile:
                     outFile.write("%s\n" % newWord)
                 self.projDict.append(newWord)
-            except Exception as e:
+            except Exception:
                 logger.error("Failed to add word to project word list %s" % str(self.projectDict))
-                logger.error(str(e))
+                nw.logException()
                 return False
             return True
         return False
@@ -123,9 +123,9 @@ class NWSpellCheck():
                         if len(theLine) > 0 and theLine not in self.projDict:
                             self.projDict.append(theLine)
                 logger.debug("Project word list contains %d words" % len(self.projDict))
-            except Exception as e:
+            except Exception:
                 logger.error("Failed to load project word list")
-                logger.error(str(e))
+                nw.logException()
                 return False
 
         return True
@@ -201,9 +201,9 @@ class NWSpellEnchant(NWSpellCheck):
         try:
             spTag = self.theDict.tag
             spName = self.theDict.provider.name
-        except Exception as e:
+        except Exception:
             logger.error("Failed to extract information about the dictionary")
-            logger.error(str(e))
+            nw.logException()
             spTag = ""
             spName = ""
 
@@ -261,9 +261,9 @@ class NWSpellSimple(NWSpellCheck):
             logger.debug("Spell check word list for language %s loaded" % theLang)
             logger.debug("Word list contains %d words" % len(self.WORDS))
             self.spellLanguage = theLang
-        except Exception as e:
+        except Exception:
             logger.error("Failed to load spell check word list for language %s" % theLang)
-            logger.error(str(e))
+            nw.logException()
             self.spellLanguage = None
 
         self._readProjectDictionary(projectDict)

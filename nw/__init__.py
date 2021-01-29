@@ -268,9 +268,9 @@ def main(sysArgs=None):
             bundle = NSBundle.mainBundle()
             info = bundle.localizedInfoDictionary() or bundle.infoDictionary()
             info["CFBundleName"] = "novelWriter"
-        except ImportError as e:
+        except ImportError:
             logger.error("Failed to set application name")
-            logException(e)
+            logException()
 
     # Import GUI (after dependency checks), and launch
     from nw.guimain import GuiMain

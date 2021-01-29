@@ -39,7 +39,7 @@ logger = logging.getLogger(__name__)
 #  Utility Functions
 # =============================================================================================== #
 
-def logException(exObj):
+def logException():
     """Log the content of an exception message.
     """
     exType, exValue, _ = sys.exc_info()
