@@ -39,12 +39,11 @@ from nw.constants import (
 
 logger = logging.getLogger(__name__)
 
-# Translation map for item layouts
-NOVEL_MAP = {
+# Layout Translation Map
+LAYOUT_MAP = {
     nwItemLayout.SCENE: {
         "H1": nwItemLayout.BOOK,
         "H2": nwItemLayout.CHAPTER,
-        "H4": nwItemLayout.SCENE,
     },
     nwItemLayout.CHAPTER: {
         "H1": nwItemLayout.BOOK,
@@ -56,7 +55,7 @@ NOVEL_MAP = {
         "H3": nwItemLayout.SCENE,
         "H4": nwItemLayout.SCENE,
     },
-    nwItemLayout.BOOK: {
+    nwItemLayout.PARTITION: {
         "H2": nwItemLayout.CHAPTER,
         "H3": nwItemLayout.SCENE,
         "H4": nwItemLayout.SCENE,
@@ -241,9 +240,9 @@ class NWTree():
             return False
 
         iLayout = tItem.itemLayout
-        if iLayout in NOVEL_MAP:
-            if hLevel in NOVEL_MAP[iLayout]:
-                tItem.itemLayout = NOVEL_MAP[iLayout][hLevel]
+        if iLayout in LAYOUT_MAP:
+            if hLevel in LAYOUT_MAP[iLayout]:
+                tItem.itemLayout = LAYOUT_MAP[iLayout][hLevel]
                 return True
 
         return False
