@@ -28,8 +28,10 @@ import logging
 
 from lxml import etree
 
-from nw.common import checkInt, isHandle
 from nw.constants import nwItemType, nwItemClass, nwItemLayout
+from nw.common import (
+    checkInt, isHandle, isItemClass, isItemLayout, isItemType
+)
 
 logger = logging.getLogger(__name__)
 
@@ -201,7 +203,7 @@ class NWItem():
         """
         if isinstance(theType, nwItemType):
             self.itemType = theType
-        elif theType in nwItemType.__members__:
+        elif isItemType(theType):
             self.itemType = nwItemType[theType]
         else:
             logger.error("Unrecognised item type '%s'" % theType)
@@ -214,7 +216,7 @@ class NWItem():
         """
         if isinstance(theClass, nwItemClass):
             self.itemClass = theClass
-        elif theClass in nwItemClass.__members__:
+        elif isItemClass(theClass):
             self.itemClass = nwItemClass[theClass]
         else:
             logger.error("Unrecognised item class '%s'" % theClass)
@@ -227,7 +229,7 @@ class NWItem():
         """
         if isinstance(theLayout, nwItemLayout):
             self.itemLayout = theLayout
-        elif theLayout in nwItemLayout.__members__:
+        elif isItemLayout(theLayout):
             self.itemLayout = nwItemLayout[theLayout]
         else:
             logger.error("Unrecognised item layout '%s'" % theLayout)
