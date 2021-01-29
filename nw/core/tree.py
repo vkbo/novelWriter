@@ -42,21 +42,21 @@ logger = logging.getLogger(__name__)
 # Translation map for item layouts
 NOVEL_MAP = {
     nwItemLayout.SCENE: {
-        "H1": nwItemLayout.PARTITION,
+        "H1": nwItemLayout.BOOK,
         "H2": nwItemLayout.CHAPTER,
         "H4": nwItemLayout.SCENE,
     },
     nwItemLayout.CHAPTER: {
-        "H1": nwItemLayout.PARTITION,
+        "H1": nwItemLayout.BOOK,
         "H3": nwItemLayout.SCENE,
         "H4": nwItemLayout.SCENE,
     },
     nwItemLayout.UNNUMBERED: {
-        "H1": nwItemLayout.PARTITION,
+        "H1": nwItemLayout.BOOK,
         "H3": nwItemLayout.SCENE,
         "H4": nwItemLayout.SCENE,
     },
-    nwItemLayout.PARTITION: {
+    nwItemLayout.BOOK: {
         "H2": nwItemLayout.CHAPTER,
         "H3": nwItemLayout.SCENE,
         "H4": nwItemLayout.SCENE,
