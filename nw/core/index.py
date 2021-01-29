@@ -220,11 +220,8 @@ class NWIndex():
             self._checkNovelNoteIndex("novelIndex")
             self._checkNovelNoteIndex("noteIndex")
             self._checkTextCounts()
+            self._checkFirstTitles()
             self.indexBroken = False
-
-            for tHandle in self._firstTitle:
-                if len(self._firstTitle[tHandle]) != 2:
-                    self.indexBroken = True
 
         except Exception:
             logger.error("Error while checking index")
@@ -894,6 +891,24 @@ class NWIndex():
                 raise ValueError("textCounts[a][1] is not an integer")
             if not isinstance(tEntry[2], int):
                 raise ValueError("textCounts[a][2] is not an integer")
+
+        return
+
+    def _checkFirstTitles(self):
+        """Scan the first titles index for errors.
+        Waring: This function raises exceptions.
+        """
+        for tHandle in self._firstTitle:
+            if not isHandle(tHandle):
+                raise KeyError("firstTitle key is not a handle")
+
+            tEntry = self._firstTitle[tHandle]
+            if len(tEntry) != 2:
+                raise IndexError("firstTitle[a] expected 2 values")
+            if not tEntry[0] in self.H_VALID:
+                raise ValueError("firstTitle[a][0] is not a header level")
+            if not isTitleTag(tEntry[1]):
+                raise ValueError("firstTitle[a][1] is not a title tag")
 
         return
 
