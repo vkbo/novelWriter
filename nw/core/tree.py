@@ -33,9 +33,35 @@ from time import time
 
 from nw.core.item import NWItem
 from nw.common import checkHandle
-from nw.constants import nwFiles, nwItemType, nwItemClass, nwItemLayout, nwConst
+from nw.constants import (
+    nwFiles, nwItemType, nwItemClass, nwItemLayout, nwConst, nwLists
+)
 
 logger = logging.getLogger(__name__)
+
+# Translation map for item layouts
+NOVEL_MAP = {
+    nwItemLayout.SCENE: {
+        "H1": nwItemLayout.PARTITION,
+        "H2": nwItemLayout.CHAPTER,
+        "H4": nwItemLayout.SCENE,
+    },
+    nwItemLayout.CHAPTER: {
+        "H1": nwItemLayout.PARTITION,
+        "H3": nwItemLayout.SCENE,
+        "H4": nwItemLayout.SCENE,
+    },
+    nwItemLayout.UNNUMBERED: {
+        "H1": nwItemLayout.PARTITION,
+        "H3": nwItemLayout.SCENE,
+        "H4": nwItemLayout.SCENE,
+    },
+    nwItemLayout.PARTITION: {
+        "H2": nwItemLayout.CHAPTER,
+        "H3": nwItemLayout.SCENE,
+        "H4": nwItemLayout.SCENE,
+    },
+}
 
 class NWTree():
 
@@ -201,6 +227,26 @@ class NWTree():
             else:
                 novelWords += tItem.wordCount
         return novelWords, noteWords
+
+    def updateItemLayout(self, tHandle, hLevel):
+        """Check if the item layout needs updating based on the header
+        given level.
+        """
+        tItem = self.__getitem__(tHandle)
+        if tItem is None:
+            return False
+        if tItem.itemClass not in nwLists.CLS_NOVEL:
+            return False
+        if hLevel not in ("H1", "H2", "H3", "H4"):
+            return False
+
+        iLayout = tItem.itemLayout
+        if iLayout in NOVEL_MAP:
+            if hLevel in NOVEL_MAP[iLayout]:
+                tItem.itemLayout = NOVEL_MAP[iLayout][hLevel]
+                return True
+
+        return False
 
     ##
     #  Tree Structure Methods
