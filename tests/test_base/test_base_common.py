@@ -26,7 +26,8 @@ import pytest
 from nw.common import (
     checkString, checkBool, checkInt, colRange, formatInt, transferCase,
     fuzzyTime, checkHandle, formatTimeStamp, formatTime, hexToInt,
-    makeFileNameSafe
+    makeFileNameSafe, isHandle, isTitleTag, isItemClass, isItemType,
+    isItemLayout
 )
 from tools import cmpList
 
@@ -87,6 +88,95 @@ def testBaseCommon_CheckHandle():
     assert checkHandle("h7666c91c7ccf", None, False) is None
 
 # END Test testBaseCommon_CheckHandle
+
+@pytest.mark.base
+def testBaseCommon_IsHandle():
+    """Test the isHandle function.
+    """
+    assert isHandle("47666c91c7ccf")
+
+    assert not isHandle("47666C91C7CCF")
+    assert not isHandle("h7666c91c7ccf")
+    assert not isHandle("None")
+    assert not isHandle(None)
+    assert not isHandle("STUFF")
+
+# END Test testBaseCommon_IsHandle
+
+@pytest.mark.base
+def testBaseCommon_IsTitleTag():
+    """Test the isItemClass function.
+    """
+    assert isTitleTag("T123456")
+
+    assert not isTitleTag("t123456")
+    assert not isTitleTag("S123456")
+    assert not isTitleTag("T12345A")
+    assert not isTitleTag("T1234567")
+
+    assert not isTitleTag("None")
+    assert not isTitleTag(None)
+    assert not isTitleTag("STUFF")
+
+# END Test testBaseCommon_IsTitleTag
+
+@pytest.mark.base
+def testBaseCommon_IsItemClass():
+    """Test the isItemClass function.
+    """
+    assert isItemClass("NO_CLASS")
+    assert isItemClass("NOVEL")
+    assert isItemClass("PLOT")
+    assert isItemClass("CHARACTER")
+    assert isItemClass("WORLD")
+    assert isItemClass("TIMELINE")
+    assert isItemClass("OBJECT")
+    assert isItemClass("ENTITY")
+    assert isItemClass("CUSTOM")
+    assert isItemClass("ARCHIVE")
+    assert isItemClass("TRASH")
+
+    assert not isItemClass("None")
+    assert not isItemClass(None)
+    assert not isItemClass("STUFF")
+
+# END Test testBaseCommon_IsItemClass
+
+@pytest.mark.base
+def testBaseCommon_IsItemType():
+    """Test the isItemType function.
+    """
+    assert isItemType("NO_TYPE")
+    assert isItemType("ROOT")
+    assert isItemType("FOLDER")
+    assert isItemType("FILE")
+    assert isItemType("TRASH")
+
+    assert not isItemType("None")
+    assert not isItemType(None)
+    assert not isItemType("STUFF")
+
+# END Test testBaseCommon_IsItemType
+
+@pytest.mark.base
+def testBaseCommon_IsItemLayout():
+    """Test the isItemLayout function.
+    """
+    assert isItemLayout("NO_LAYOUT")
+    assert isItemLayout("TITLE")
+    assert isItemLayout("BOOK")
+    assert isItemLayout("PAGE")
+    assert isItemLayout("PARTITION")
+    assert isItemLayout("UNNUMBERED")
+    assert isItemLayout("CHAPTER")
+    assert isItemLayout("SCENE")
+    assert isItemLayout("NOTE")
+
+    assert not isItemLayout("None")
+    assert not isItemLayout(None)
+    assert not isItemLayout("STUFF")
+
+# END Test testBaseCommon_IsItemLayout
 
 @pytest.mark.base
 def testBaseCommon_HexToInt():

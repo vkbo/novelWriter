@@ -32,7 +32,7 @@ import logging
 from PyQt5.QtGui import QIcon
 from PyQt5.QtWidgets import QApplication, QErrorMessage
 
-from nw.error import exceptionHandler
+from nw.error import exceptionHandler, logException
 from nw.config import Config
 
 ##
@@ -268,9 +268,9 @@ def main(sysArgs=None):
             bundle = NSBundle.mainBundle()
             info = bundle.localizedInfoDictionary() or bundle.infoDictionary()
             info["CFBundleName"] = "novelWriter"
-        except ImportError as e:
+        except ImportError:
             logger.error("Failed to set application name")
-            logger.error(str(e))
+            logException()
 
     # Import GUI (after dependency checks), and launch
     from nw.guimain import GuiMain

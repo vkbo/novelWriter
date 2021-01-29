@@ -1219,9 +1219,9 @@ class NWProject():
                 if len(theLines) != 4:
                     return ["ERROR"]
 
-        except Exception as e:
+        except Exception:
             logger.error("Failed to read project lockfile")
-            logger.error(str(e))
+            nw.logException()
             return ["ERROR"]
 
         return theLines
@@ -1240,9 +1240,9 @@ class NWProject():
                 outFile.write("%s\n" % self.mainConf.kernelVer)
                 outFile.write("%d\n" % time())
 
-        except Exception as e:
+        except Exception:
             logger.error("Failed to write project lockfile")
-            logger.error(str(e))
+            nw.logException()
             return False
 
         return True
@@ -1257,9 +1257,9 @@ class NWProject():
         if os.path.isfile(lockFile):
             try:
                 os.unlink(lockFile)
-            except Exception as e:
+            except Exception:
                 logger.error("Failed to remove project lockfile")
-                logger.error(str(e))
+                nw.logException()
                 return False
 
         return True
@@ -1415,9 +1415,9 @@ class NWProject():
                     self.notesWCount,
                 ))
 
-        except Exception as e:
+        except Exception:
             logger.error("Failed to write session stats file")
-            logger.error(str(e))
+            nw.logException()
             return False
 
         return True
@@ -1453,17 +1453,19 @@ class NWProject():
                     os.rename(theFile, newPath)
                     logger.info("Moved file: %s" % theFile)
                     logger.info("New location: %s" % newPath)
-                except Exception as e:
-                    logger.error(str(e))
+                except Exception:
                     errList.append("Could not move: %s" % theFile)
+                    logger.error("Could not move: %s" % theFile)
+                    nw.logException()
 
             elif len(dataItem) == 21 and dataItem.endswith("_main.bak"):
                 try:
                     os.unlink(theFile)
                     logger.info("Deleted file: %s" % theFile)
-                except Exception as e:
-                    logger.error(str(e))
+                except Exception:
                     errList.append("Could not delete: %s" % theFile)
+                    logger.error("Could not delete: %s" % theFile)
+                    nw.logException()
 
             else:
                 theErr = self._moveUnknownItem(theData, dataItem)
@@ -1475,9 +1477,10 @@ class NWProject():
         try:
             os.rmdir(theData)
             logger.info("Removed folder: %s" % theFolder)
-        except Exception as e:
-            logger.error(str(e))
+        except Exception:
             errList.append("Failed to remove: %s" % theFolder)
+            logger.error("Failed to remove: %s" % theFolder)
+            nw.logException()
 
         return errList
 
@@ -1495,8 +1498,9 @@ class NWProject():
         try:
             os.rename(theSrc, theDst)
             logger.info("Moved to junk: %s" % theSrc)
-        except Exception as e:
-            logger.error(str(e))
+        except Exception:
+            logger.error("Could not move item %s to junk." % theSrc)
+            nw.logException()
             return "Could not move item %s to junk." % theSrc
 
         return ""
@@ -1529,8 +1533,9 @@ class NWProject():
                 logger.info("Deleting: %s" % rmFile)
                 try:
                     os.unlink(rmFile)
-                except Exception as e:
-                    logger.error(str(e))
+                except Exception:
+                    logger.error("Could not delete: %s" % rmFile)
+                    nw.logException()
                     return False
 
         return True

@@ -671,9 +671,9 @@ class GuiBuildNovel(QDialog):
                         bldObj.doConvert()
                     bldObj.doPostProcessing()
 
-            except Exception as e:
+            except Exception:
                 logger.error("Failed to generate html of document '%s'" % tItem.itemHandle)
-                logger.error(str(e))
+                nw.logException()
                 if isPreview:
                     self.docView.setText((
                         "Failed to generate preview. "
@@ -997,9 +997,9 @@ class GuiBuildNovel(QDialog):
                 with open(buildCache, mode="r", encoding="utf8") as inFile:
                     theJson = inFile.read()
                 theData = json.loads(theJson)
-            except Exception as e:
+            except Exception:
                 logger.error("Failed to load build cache")
-                logger.error(str(e))
+                nw.logException()
                 return False
 
             if "htmlText" in theData.keys():
@@ -1026,9 +1026,9 @@ class GuiBuildNovel(QDialog):
                     "htmlStyle" : self.htmlStyle,
                     "buildTime" : self.buildTime,
                 }, indent=2))
-        except Exception as e:
+        except Exception:
             logger.error("Failed to save build cache")
-            logger.error(str(e))
+            nw.logException()
             return False
 
         return True

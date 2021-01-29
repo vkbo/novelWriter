@@ -265,9 +265,9 @@ class GuiTheme:
             if os.path.isfile(self.cssFile):
                 with open(self.cssFile, mode="r", encoding="utf8") as inFile:
                     cssData = inFile.read()
-        except Exception as e:
+        except Exception:
             logger.error("Could not load theme css file")
-            logger.error(str(e))
+            nw.logException()
             return False
 
         # Config File
@@ -275,9 +275,9 @@ class GuiTheme:
         try:
             with open(self.confFile, mode="r", encoding="utf8") as inFile:
                 confParser.read_file(inFile)
-        except Exception as e:
+        except Exception:
             logger.error("Could not load theme settings from: %s" % self.confFile)
-            logger.error(str(e))
+            nw.logException()
             return False
 
         ## Main
@@ -333,9 +333,9 @@ class GuiTheme:
         try:
             with open(self.syntaxFile, mode="r", encoding="utf8") as inFile:
                 confParser.read_file(inFile)
-        except Exception as e:
+        except Exception:
             logger.error("Could not load syntax colours from: %s" % self.syntaxFile)
-            logger.error(str(e))
+            nw.logException()
             return False
 
         ## Main
@@ -637,9 +637,9 @@ class GuiIcons:
         try:
             with open(self.confFile, mode="r", encoding="utf8") as inFile:
                 confParser.read_file(inFile)
-        except Exception as e:
+        except Exception:
             logger.error("Could not load icon theme settings from: %s" % self.confFile)
-            logger.error(str(e))
+            nw.logException()
             return False
 
         ## Main
