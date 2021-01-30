@@ -66,7 +66,7 @@ class GuiPreferences(PagedDialog):
         self.addTab(self.tabProjects, "Projects")
         self.addTab(self.tabDocs,     "Documents")
         self.addTab(self.tabEditor,   "Editor")
-        self.addTab(self.tabSyntax,   "Syntax")
+        self.addTab(self.tabSyntax,   "Highlighting")
         self.addTab(self.tabAuto,     "Automation")
 
         self.buttonBox = QDialogButtonBox(QDialogButtonBox.Ok | QDialogButtonBox.Cancel)
@@ -170,7 +170,7 @@ class GuiPreferencesGeneral(QWidget):
         self.mainForm.addRow(
             "Prefer icons for dark backgrounds",
             self.guiDark,
-            "This may improve the look of icons on dark themes."
+            "May improve the look of icons on dark themes."
         )
 
         ## Font Family
@@ -355,7 +355,7 @@ class GuiPreferencesProjects(QWidget):
         self.mainForm.addRow(
             "Ask before running backup",
             self.askBeforeBackup,
-            "Disabling this will cause backups to run in the background."
+            "If off, backups will run in the background."
         )
 
         return
@@ -491,7 +491,7 @@ class GuiPreferencesDocuments(QWidget):
         self.mainForm.addRow(
             "Disable maximum text width in \"Normal Mode\"",
             self.textFixedW,
-            "If disabled, text width is defined by the margins only."
+            "Text width is defined by the margins only."
         )
 
         ## Focus Mode Footer
@@ -708,7 +708,7 @@ class GuiPreferencesEditor(QWidget):
         self.mainForm.addRow(
             "Minimum position for Typewriter scrolling",
             self.autoScrollPos,
-            "In units of percentage of the editor height.",
+            "Percentage of the editor height from the top.",
             theUnit = "%"
         )
 
