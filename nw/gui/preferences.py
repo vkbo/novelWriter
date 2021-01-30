@@ -66,7 +66,7 @@ class GuiPreferences(PagedDialog):
         self.addTab(self.tabProjects, "Projects")
         self.addTab(self.tabDocs,     "Documents")
         self.addTab(self.tabEditor,   "Editor")
-        self.addTab(self.tabSyntax,   "Syntax")
+        self.addTab(self.tabSyntax,   "Highlighting")
         self.addTab(self.tabAuto,     "Automation")
 
         self.buttonBox = QDialogButtonBox(QDialogButtonBox.Ok | QDialogButtonBox.Cancel)
@@ -133,44 +133,44 @@ class GuiPreferencesGeneral(QWidget):
         self.mainForm.addGroupLabel("Look and Feel")
 
         ## Select Theme
-        self.selectTheme = QComboBox()
-        self.selectTheme.setMinimumWidth(self.mainConf.pxInt(200))
+        self.guiTheme = QComboBox()
+        self.guiTheme.setMinimumWidth(self.mainConf.pxInt(200))
         self.theThemes = self.theTheme.listThemes()
         for themeDir, themeName in self.theThemes:
-            self.selectTheme.addItem(themeName, themeDir)
-        themeIdx = self.selectTheme.findData(self.mainConf.guiTheme)
+            self.guiTheme.addItem(themeName, themeDir)
+        themeIdx = self.guiTheme.findData(self.mainConf.guiTheme)
         if themeIdx != -1:
-            self.selectTheme.setCurrentIndex(themeIdx)
+            self.guiTheme.setCurrentIndex(themeIdx)
 
         self.mainForm.addRow(
             "Main GUI theme",
-            self.selectTheme,
+            self.guiTheme,
             "Changing this requires restarting novelWriter."
         )
 
         ## Select Icon Theme
-        self.selectIcons = QComboBox()
-        self.selectIcons.setMinimumWidth(self.mainConf.pxInt(200))
+        self.guiIcons = QComboBox()
+        self.guiIcons.setMinimumWidth(self.mainConf.pxInt(200))
         self.theIcons = self.theTheme.theIcons.listThemes()
         for iconDir, iconName in self.theIcons:
-            self.selectIcons.addItem(iconName, iconDir)
-        iconIdx = self.selectIcons.findData(self.mainConf.guiIcons)
+            self.guiIcons.addItem(iconName, iconDir)
+        iconIdx = self.guiIcons.findData(self.mainConf.guiIcons)
         if iconIdx != -1:
-            self.selectIcons.setCurrentIndex(iconIdx)
+            self.guiIcons.setCurrentIndex(iconIdx)
 
         self.mainForm.addRow(
             "Main icon theme",
-            self.selectIcons,
+            self.guiIcons,
             "Changing this requires restarting novelWriter."
         )
 
         ## Dark Icons
-        self.preferDarkIcons = QSwitch()
-        self.preferDarkIcons.setChecked(self.mainConf.guiDark)
+        self.guiDark = QSwitch()
+        self.guiDark.setChecked(self.mainConf.guiDark)
         self.mainForm.addRow(
             "Prefer icons for dark backgrounds",
-            self.preferDarkIcons,
-            "This may improve the look of icons on dark themes."
+            self.guiDark,
+            "May improve the look of icons on dark themes."
         )
 
         ## Font Family
@@ -234,9 +234,9 @@ class GuiPreferencesGeneral(QWidget):
     def saveValues(self):
         """Save the values set for this tab.
         """
-        guiTheme     = self.selectTheme.currentData()
-        guiIcons     = self.selectIcons.currentData()
-        guiDark      = self.preferDarkIcons.isChecked()
+        guiTheme     = self.guiTheme.currentData()
+        guiIcons     = self.guiIcons.currentData()
+        guiDark      = self.guiDark.isChecked()
         guiFont      = self.guiFont.text()
         guiFontSize  = self.guiFontSize.value()
 
@@ -355,7 +355,7 @@ class GuiPreferencesProjects(QWidget):
         self.mainForm.addRow(
             "Ask before running backup",
             self.askBeforeBackup,
-            "Disabling this will cause backups to run in the background."
+            "If off, backups will run in the background."
         )
 
         return
@@ -428,29 +428,29 @@ class GuiPreferencesDocuments(QWidget):
         self.mainForm.addGroupLabel("Text Style")
 
         ## Font Family
-        self.textStyleFont = QLineEdit()
-        self.textStyleFont.setReadOnly(True)
-        self.textStyleFont.setFixedWidth(self.mainConf.pxInt(162))
-        self.textStyleFont.setText(self.mainConf.textFont)
+        self.textFont = QLineEdit()
+        self.textFont.setReadOnly(True)
+        self.textFont.setFixedWidth(self.mainConf.pxInt(162))
+        self.textFont.setText(self.mainConf.textFont)
         self.fontButton = QPushButton("...")
         self.fontButton.setMaximumWidth(int(2.5*self.theTheme.getTextWidth("...")))
         self.fontButton.clicked.connect(self._selectFont)
         self.mainForm.addRow(
             "Font family",
-            self.textStyleFont,
+            self.textFont,
             "Font for the document editor and viewer.",
             theButton = self.fontButton
         )
 
         ## Font Size
-        self.textStyleSize = QSpinBox(self)
-        self.textStyleSize.setMinimum(8)
-        self.textStyleSize.setMaximum(60)
-        self.textStyleSize.setSingleStep(1)
-        self.textStyleSize.setValue(self.mainConf.textSize)
+        self.textSize = QSpinBox(self)
+        self.textSize.setMinimum(8)
+        self.textSize.setMaximum(60)
+        self.textSize.setSingleStep(1)
+        self.textSize.setValue(self.mainConf.textSize)
         self.mainForm.addRow(
             "Font size",
-            self.textStyleSize,
+            self.textSize,
             "Font size for the document editor and viewer.",
             theUnit = "pt"
         )
@@ -460,38 +460,38 @@ class GuiPreferencesDocuments(QWidget):
         self.mainForm.addGroupLabel("Text Flow")
 
         ## Max Text Width in Normal Mode
-        self.textFlowMax = QSpinBox(self)
-        self.textFlowMax.setMinimum(300)
-        self.textFlowMax.setMaximum(10000)
-        self.textFlowMax.setSingleStep(10)
-        self.textFlowMax.setValue(self.mainConf.textWidth)
+        self.textWidth = QSpinBox(self)
+        self.textWidth.setMinimum(300)
+        self.textWidth.setMaximum(10000)
+        self.textWidth.setSingleStep(10)
+        self.textWidth.setValue(self.mainConf.textWidth)
         self.mainForm.addRow(
             "Maximum text width in \"Normal Mode\"",
-            self.textFlowMax,
+            self.textWidth,
             "Horizontal margins are scaled automatically.",
             theUnit="px"
         )
 
         ## Max Text Width in Focus Mode
-        self.focusDocWidth = QSpinBox(self)
-        self.focusDocWidth.setMinimum(300)
-        self.focusDocWidth.setMaximum(10000)
-        self.focusDocWidth.setSingleStep(10)
-        self.focusDocWidth.setValue(self.mainConf.focusWidth)
+        self.focusWidth = QSpinBox(self)
+        self.focusWidth.setMinimum(300)
+        self.focusWidth.setMaximum(10000)
+        self.focusWidth.setSingleStep(10)
+        self.focusWidth.setValue(self.mainConf.focusWidth)
         self.mainForm.addRow(
             "Maximum text width in \"Focus Mode\"",
-            self.focusDocWidth,
+            self.focusWidth,
             "Horizontal margins are scaled automatically.",
             theUnit="px"
         )
 
         ## Document Fixed Width
-        self.textFlowFixed = QSwitch()
-        self.textFlowFixed.setChecked(not self.mainConf.textFixedW)
+        self.textFixedW = QSwitch()
+        self.textFixedW.setChecked(not self.mainConf.textFixedW)
         self.mainForm.addRow(
             "Disable maximum text width in \"Normal Mode\"",
-            self.textFlowFixed,
-            "If disabled, minimum text width is defined by the margin."
+            self.textFixedW,
+            "Text width is defined by the margins only."
         )
 
         ## Focus Mode Footer
@@ -504,11 +504,11 @@ class GuiPreferencesDocuments(QWidget):
         )
 
         ## Justify Text
-        self.textJustify = QSwitch()
-        self.textJustify.setChecked(self.mainConf.textFixedW)
+        self.doJustify = QSwitch()
+        self.doJustify.setChecked(self.mainConf.doJustify)
         self.mainForm.addRow(
             "Justify the text margins in editor and viewer",
-            self.textJustify,
+            self.doJustify,
             "Lay out text with straight edges in the editor and viewer."
         )
 
@@ -544,15 +544,15 @@ class GuiPreferencesDocuments(QWidget):
         """Save the values set for this tab.
         """
         # Text Style
-        self.mainConf.textFont = self.textStyleFont.text()
-        self.mainConf.textSize = self.textStyleSize.value()
+        self.mainConf.textFont = self.textFont.text()
+        self.mainConf.textSize = self.textSize.value()
 
         # Text Flow
-        self.mainConf.textWidth       = self.textFlowMax.value()
-        self.mainConf.focusWidth      = self.focusDocWidth.value()
-        self.mainConf.textFixedW      = not self.textFlowFixed.isChecked()
+        self.mainConf.textWidth       = self.textWidth.value()
+        self.mainConf.focusWidth      = self.focusWidth.value()
+        self.mainConf.textFixedW      = not self.textFixedW.isChecked()
         self.mainConf.hideFocusFooter = self.hideFocusFooter.isChecked()
-        self.mainConf.doJustify       = self.textJustify.isChecked()
+        self.mainConf.doJustify       = self.doJustify.isChecked()
         self.mainConf.textMargin      = self.textMargin.value()
         self.mainConf.tabWidth        = self.tabWidth.value()
 
@@ -572,8 +572,8 @@ class GuiPreferencesDocuments(QWidget):
         currFont.setPointSize(self.mainConf.textSize)
         theFont, theStatus = QFontDialog.getFont(currFont, self)
         if theStatus:
-            self.textStyleFont.setText(theFont.family())
-            self.textStyleSize.setValue(theFont.pointSize())
+            self.textFont.setText(theFont.family())
+            self.textSize.setValue(theFont.pointSize())
 
         return
 
@@ -687,7 +687,7 @@ class GuiPreferencesEditor(QWidget):
         self.mainForm.addRow(
             "Scroll past end of the document",
             self.scrollPastEnd,
-            "Allow scrolling until the last line is centred in the editor."
+            "Also improves trypewriter scrolling for short documents."
         )
 
         ## Typewriter Scrolling
@@ -708,7 +708,7 @@ class GuiPreferencesEditor(QWidget):
         self.mainForm.addRow(
             "Minimum position for Typewriter scrolling",
             self.autoScrollPos,
-            "In units of percentage of the editor height.",
+            "Percentage of the editor height from the top.",
             theUnit = "%"
         )
 
@@ -790,18 +790,18 @@ class GuiPreferencesSyntax(QWidget):
         # ==================
         self.mainForm.addGroupLabel("Highlighting Theme")
 
-        self.selectSyntax = QComboBox()
-        self.selectSyntax.setMinimumWidth(self.mainConf.pxInt(200))
+        self.guiSyntax = QComboBox()
+        self.guiSyntax.setMinimumWidth(self.mainConf.pxInt(200))
         self.theSyntaxes = self.theTheme.listSyntax()
         for syntaxFile, syntaxName in self.theSyntaxes:
-            self.selectSyntax.addItem(syntaxName, syntaxFile)
-        syntaxIdx = self.selectSyntax.findData(self.mainConf.guiSyntax)
+            self.guiSyntax.addItem(syntaxName, syntaxFile)
+        syntaxIdx = self.guiSyntax.findData(self.mainConf.guiSyntax)
         if syntaxIdx != -1:
-            self.selectSyntax.setCurrentIndex(syntaxIdx)
+            self.guiSyntax.setCurrentIndex(syntaxIdx)
 
         self.mainForm.addRow(
             "Highlighting theme",
-            self.selectSyntax,
+            self.guiSyntax,
             "Colour theme to apply to the editor and viewer."
         )
 
@@ -852,7 +852,7 @@ class GuiPreferencesSyntax(QWidget):
         """Save the values set for this tab.
         """
         # Highlighting Theme
-        self.mainConf.guiSyntax = self.selectSyntax.currentData()
+        self.mainConf.guiSyntax = self.guiSyntax.currentData()
 
         # Quotes & Dialogue
         self.mainConf.highlightQuotes = self.highlightQuotes.isChecked()
@@ -908,12 +908,12 @@ class GuiPreferencesAutomation(QWidget):
         )
 
         ## Auto-Replace as You Type Main Switch
-        self.autoReplaceMain = QSwitch()
-        self.autoReplaceMain.setChecked(self.mainConf.doReplace)
-        self.autoReplaceMain.toggled.connect(self._toggleAutoReplaceMain)
+        self.doReplace = QSwitch()
+        self.doReplace.setChecked(self.mainConf.doReplace)
+        self.doReplace.toggled.connect(self._toggleAutoReplaceMain)
         self.mainForm.addRow(
             "Auto-replace text as you type",
-            self.autoReplaceMain,
+            self.doReplace,
             "Allow the editor to replace symbols as you type."
         )
 
@@ -922,42 +922,42 @@ class GuiPreferencesAutomation(QWidget):
         self.mainForm.addGroupLabel("Replace as You Type")
 
         ## Auto-Replace Single Quotes
-        self.autoReplaceSQ = QSwitch()
-        self.autoReplaceSQ.setChecked(self.mainConf.doReplaceSQuote)
-        self.autoReplaceSQ.setEnabled(self.mainConf.doReplace)
+        self.doReplaceSQuote = QSwitch()
+        self.doReplaceSQuote.setChecked(self.mainConf.doReplaceSQuote)
+        self.doReplaceSQuote.setEnabled(self.mainConf.doReplace)
         self.mainForm.addRow(
             "Auto-replace single quotes",
-            self.autoReplaceSQ,
+            self.doReplaceSQuote,
             "Try to guess which is an opening or a closing single quote."
         )
 
         ## Auto-Replace Double Quotes
-        self.autoReplaceDQ = QSwitch()
-        self.autoReplaceDQ.setChecked(self.mainConf.doReplaceDQuote)
-        self.autoReplaceDQ.setEnabled(self.mainConf.doReplace)
+        self.doReplaceDQuote = QSwitch()
+        self.doReplaceDQuote.setChecked(self.mainConf.doReplaceDQuote)
+        self.doReplaceDQuote.setEnabled(self.mainConf.doReplace)
         self.mainForm.addRow(
             "Auto-replace double quotes",
-            self.autoReplaceDQ,
+            self.doReplaceDQuote,
             "Try to guess which is an opening or a closing double quote."
         )
 
         ## Auto-Replace Hyphens
-        self.autoReplaceDash = QSwitch()
-        self.autoReplaceDash.setChecked(self.mainConf.doReplaceDash)
-        self.autoReplaceDash.setEnabled(self.mainConf.doReplace)
+        self.doReplaceDash = QSwitch()
+        self.doReplaceDash.setChecked(self.mainConf.doReplaceDash)
+        self.doReplaceDash.setEnabled(self.mainConf.doReplace)
         self.mainForm.addRow(
             "Auto-replace dashes",
-            self.autoReplaceDash,
+            self.doReplaceDash,
             "Double and triple hyphens become short and long dashes."
         )
 
         ## Auto-Replace Dots
-        self.autoReplaceDots = QSwitch()
-        self.autoReplaceDots.setChecked(self.mainConf.doReplaceDots)
-        self.autoReplaceDots.setEnabled(self.mainConf.doReplace)
+        self.doReplaceDots = QSwitch()
+        self.doReplaceDots.setChecked(self.mainConf.doReplaceDots)
+        self.doReplaceDots.setEnabled(self.mainConf.doReplace)
         self.mainForm.addRow(
             "Auto-replace dots",
-            self.autoReplaceDots,
+            self.doReplaceDots,
             "Three consecutive dots become ellipsis."
         )
 
@@ -1042,13 +1042,13 @@ class GuiPreferencesAutomation(QWidget):
         """
         # Automatic Features
         self.mainConf.autoSelect = self.autoSelect.isChecked()
-        self.mainConf.doReplace  = self.autoReplaceMain.isChecked()
+        self.mainConf.doReplace  = self.doReplace.isChecked()
 
         # Replace as You Type
-        self.mainConf.doReplaceSQuote = self.autoReplaceSQ.isChecked()
-        self.mainConf.doReplaceDQuote = self.autoReplaceDQ.isChecked()
-        self.mainConf.doReplaceDash   = self.autoReplaceDash.isChecked()
-        self.mainConf.doReplaceDots   = self.autoReplaceDots.isChecked()
+        self.mainConf.doReplaceSQuote = self.doReplaceSQuote.isChecked()
+        self.mainConf.doReplaceDQuote = self.doReplaceDQuote.isChecked()
+        self.mainConf.doReplaceDash   = self.doReplaceDash.isChecked()
+        self.mainConf.doReplaceDots   = self.doReplaceDots.isChecked()
 
         # Quotation Style
         self.mainConf.fmtSingleQuotes[0] = self.quoteSym["SO"].text()
@@ -1068,10 +1068,10 @@ class GuiPreferencesAutomation(QWidget):
         """Enables or disables switches controlled by the main auto
         replace switch.
         """
-        self.autoReplaceSQ.setEnabled(theState)
-        self.autoReplaceDQ.setEnabled(theState)
-        self.autoReplaceDash.setEnabled(theState)
-        self.autoReplaceDots.setEnabled(theState)
+        self.doReplaceSQuote.setEnabled(theState)
+        self.doReplaceDQuote.setEnabled(theState)
+        self.doReplaceDash.setEnabled(theState)
+        self.doReplaceDots.setEnabled(theState)
         return
 
     def _getQuote(self, qType):
