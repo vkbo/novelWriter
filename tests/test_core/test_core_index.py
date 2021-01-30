@@ -492,9 +492,8 @@ def testCoreIndex_ExtractData(nwMinimal, dummyGUI):
     assert wC == 12 # Words in text and title only
     assert pC == 2  # Paragraphs in text only
 
-    ##
-    #  getReferences
-    ##
+    # getReferences
+    # =============
 
     # Look up an ivalid handle
     theRefs = theIndex.getReferences("Not a handle")
@@ -506,9 +505,8 @@ def testCoreIndex_ExtractData(nwMinimal, dummyGUI):
     assert theRefs["@pov"] == ["Jane"]
     assert theRefs["@char"] == ["Jane"]
 
-    ##
-    #  getBackReferenceList
-    ##
+    # getBackReferenceList
+    # ====================
 
     # None handle should return an empty dict
     assert theIndex.getBackReferenceList(None) == {}
@@ -517,16 +515,15 @@ def testCoreIndex_ExtractData(nwMinimal, dummyGUI):
     theRefs = theIndex.getBackReferenceList(cHandle)
     assert theRefs == {nHandle: "T000001"}
 
-    ##
-    #  getTagSource
-    ##
+    # getTagSource
+    # ============
 
     assert theIndex.getTagSource("Jane") == (cHandle, 2, "T000001")
     assert theIndex.getTagSource("John") == (None, 0, "T000000")
 
-    ##
-    #  getCounts for whole text and sections
-    ##
+    # getCounts
+    # =========
+    # For whole text and sections
 
     # Get section counts for a novel file
     assert theIndex.scanText(nHandle, (
@@ -555,7 +552,7 @@ def testCoreIndex_ExtractData(nwMinimal, dummyGUI):
     assert wC == 12
     assert pC == 2
 
-    # First part
+    # Second part
     cC, wC, pC = theIndex.getCounts(nHandle, "T000011")
     assert cC == 62
     assert wC == 12
@@ -588,15 +585,19 @@ def testCoreIndex_ExtractData(nwMinimal, dummyGUI):
     assert wC == 12
     assert pC == 2
 
-    # First part
+    # Second part
     cC, wC, pC = theIndex.getCounts(cHandle, "T000011")
     assert cC == 62
     assert wC == 12
     assert pC == 2
 
-    ##
-    #  Novel Stats
-    ##
+    # getFirstTitle
+    # =============
+
+    assert theIndex.getFirstTitle(cHandle) == ["H1", "T000001"]
+
+    # Novel Stats
+    # ===========
 
     hHandle = theProject.newFile("Chapter", nwItemClass.NOVEL, "a508bb932959c")
     sHandle = theProject.newFile("Scene One", nwItemClass.NOVEL, "a508bb932959c")
@@ -1145,3 +1146,51 @@ def testCoreIndex_CheckTextCounts(dummyGUI):
         theIndex._checkTextCounts()
 
 # END Test testCoreIndex_CheckTextCounts
+
+@pytest.mark.core
+def testCoreIndex_CheckFirstTitle(dummyGUI):
+    """Test the first title checker.
+    """
+    theProject = NWProject(dummyGUI)
+    theIndex = NWIndex(theProject, dummyGUI)
+
+    # Valid Index
+    theIndex._firstTitle = {
+        "53b69b83cdafc": ["H1", "T000001"],
+        "974e400180a99": ["H0", "T000000"],
+    }
+    assert theIndex._checkFirstTitles() is None
+
+    # Invalid Handle
+    theIndex._firstTitle = {
+        "53b69b83cdafc": ["H1", "T000001"],
+        "h74e400180a99": ["H0", "T000000"],
+    }
+    with pytest.raises(KeyError):
+        theIndex._checkFirstTitles()
+
+    # Wrong Length
+    theIndex._firstTitle = {
+        "53b69b83cdafc": ["H1", "T000001"],
+        "974e400180a99": ["H0", "T000000", "stuff"],
+    }
+    with pytest.raises(IndexError):
+        theIndex._checkFirstTitles()
+
+    # Wrong Header
+    theIndex._firstTitle = {
+        "53b69b83cdafc": ["H1", "T000001"],
+        "974e400180a99": ["XX", "T000000"],
+    }
+    with pytest.raises(ValueError):
+        theIndex._checkFirstTitles()
+
+    # Wrong Title
+    theIndex._firstTitle = {
+        "53b69b83cdafc": ["H1", "T000001"],
+        "974e400180a99": ["H0", "INVALID"],
+    }
+    with pytest.raises(ValueError):
+        theIndex._checkFirstTitles()
+
+# END Test testCoreIndex_CheckFirstTitle

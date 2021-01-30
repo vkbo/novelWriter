@@ -398,6 +398,7 @@ class GuiDocEditor(QTextEdit):
             return False
 
         docText = self.getText()
+        tHandle = theItem.itemHandle
 
         cC, wC, pC = countWords(docText)
         self._updateCounts(cC, wC, pC)
@@ -410,7 +411,12 @@ class GuiDocEditor(QTextEdit):
         self.nwDocument.saveDocument(docText)
         self.setDocumentChanged(False)
 
-        self.theParent.theIndex.scanText(theItem.itemHandle, docText)
+        self.theParent.theIndex.scanText(tHandle, docText)
+
+        hLevel, _ = self.theParent.theIndex.getFirstTitle(tHandle)
+        if self.theProject.projTree.updateItemLayout(tHandle, hLevel):
+            self.theParent.treeView.setTreeItemValues(tHandle)
+            self.nwDocument.saveDocument(docText)
 
         return True
 
