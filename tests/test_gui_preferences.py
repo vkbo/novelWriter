@@ -140,9 +140,9 @@ def testGuiPreferences_Main(qtbot, monkeypatch, fncDir, outDir, refDir):
     assert tabLayout.hideFocusFooter.isChecked()
 
     qtbot.wait(keyDelay)
-    assert tabLayout.textJustify.isChecked()
-    qtbot.mouseClick(tabLayout.textJustify, Qt.LeftButton)
     assert not tabLayout.textJustify.isChecked()
+    qtbot.mouseClick(tabLayout.textJustify, Qt.LeftButton)
+    assert tabLayout.textJustify.isChecked()
 
     qtbot.wait(keyDelay)
     assert tabLayout.scrollPastEnd.isChecked()
