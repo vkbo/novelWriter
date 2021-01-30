@@ -345,8 +345,13 @@ class GuiDocEditor(QTextEdit):
 
         qApp.processEvents()
         self.setDocumentChanged(False)
-
         qApp.restoreOverrideCursor()
+
+        # This is a hack to fix invisble cursor on an empty document
+        if self.qDocument.characterCount() <= 1:
+            self.setPlainText("\n")
+            self.setPlainText("")
+            self.setCursorPosition(0)
 
         return True
 
@@ -513,9 +518,10 @@ class GuiDocEditor(QTextEdit):
         if not isinstance(thePosition, int):
             return False
 
-        if thePosition >= 0:
+        nChars = self.qDocument.characterCount()
+        if nChars > 1:
             theCursor = self.textCursor()
-            theCursor.setPosition(thePosition)
+            theCursor.setPosition(min(max(thePosition, 0), nChars-1))
             self.setTextCursor(theCursor)
             self.docFooter.updateLineCount()
 

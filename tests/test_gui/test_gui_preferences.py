@@ -86,9 +86,9 @@ def testGuiPreferences_Main(qtbot, monkeypatch, fncDir, outDir, refDir):
     nwPrefs._tabBox.setCurrentWidget(tabGeneral)
 
     qtbot.wait(keyDelay)
-    assert not tabGeneral.preferDarkIcons.isChecked()
-    qtbot.mouseClick(tabGeneral.preferDarkIcons, Qt.LeftButton)
-    assert tabGeneral.preferDarkIcons.isChecked()
+    assert not tabGeneral.guiDark.isChecked()
+    qtbot.mouseClick(tabGeneral.guiDark, Qt.LeftButton)
+    assert tabGeneral.guiDark.isChecked()
 
     qtbot.wait(keyDelay)
     assert tabGeneral.showFullPath.isChecked()
@@ -144,16 +144,16 @@ def testGuiPreferences_Main(qtbot, monkeypatch, fncDir, outDir, refDir):
     qtbot.mouseClick(tabDocs.fontButton, Qt.LeftButton)
 
     qtbot.wait(keyDelay)
-    tabDocs.textStyleSize.setValue(13)
-    tabDocs.textFlowMax.setValue(700)
-    tabDocs.focusDocWidth.setValue(900)
+    tabDocs.textSize.setValue(13)
+    tabDocs.textWidth.setValue(700)
+    tabDocs.focusWidth.setValue(900)
     tabDocs.textMargin.setValue(45)
     tabDocs.tabWidth.setValue(45)
 
     qtbot.wait(keyDelay)
-    assert not tabDocs.textFlowFixed.isChecked()
-    qtbot.mouseClick(tabDocs.textFlowFixed, Qt.LeftButton)
-    assert tabDocs.textFlowFixed.isChecked()
+    assert not tabDocs.textFixedW.isChecked()
+    qtbot.mouseClick(tabDocs.textFixedW, Qt.LeftButton)
+    assert tabDocs.textFixedW.isChecked()
 
     qtbot.wait(keyDelay)
     assert not tabDocs.hideFocusFooter.isChecked()
@@ -161,9 +161,9 @@ def testGuiPreferences_Main(qtbot, monkeypatch, fncDir, outDir, refDir):
     assert tabDocs.hideFocusFooter.isChecked()
 
     qtbot.wait(keyDelay)
-    assert tabDocs.textJustify.isChecked()
-    qtbot.mouseClick(tabDocs.textJustify, Qt.LeftButton)
-    assert not tabDocs.textJustify.isChecked()
+    assert not tabDocs.doJustify.isChecked()
+    qtbot.mouseClick(tabDocs.doJustify, Qt.LeftButton)
+    assert tabDocs.doJustify.isChecked()
 
     # Editor Settings
     qtbot.wait(keyDelay)
@@ -219,15 +219,15 @@ def testGuiPreferences_Main(qtbot, monkeypatch, fncDir, outDir, refDir):
     assert not tabAuto.autoSelect.isChecked()
 
     qtbot.wait(keyDelay)
-    assert tabAuto.autoReplaceMain.isChecked()
-    qtbot.mouseClick(tabAuto.autoReplaceMain, Qt.LeftButton)
-    assert not tabAuto.autoReplaceMain.isChecked()
+    assert tabAuto.doReplace.isChecked()
+    qtbot.mouseClick(tabAuto.doReplace, Qt.LeftButton)
+    assert not tabAuto.doReplace.isChecked()
 
     qtbot.wait(keyDelay)
-    assert not tabAuto.autoReplaceSQ.isEnabled()
-    assert not tabAuto.autoReplaceDQ.isEnabled()
-    assert not tabAuto.autoReplaceDash.isEnabled()
-    assert not tabAuto.autoReplaceDots.isEnabled()
+    assert not tabAuto.doReplaceSQuote.isEnabled()
+    assert not tabAuto.doReplaceDQuote.isEnabled()
+    assert not tabAuto.doReplaceDash.isEnabled()
+    assert not tabAuto.doReplaceDots.isEnabled()
 
     monkeypatch.setattr(QuotesDialog, "selectedQuote", "'")
     monkeypatch.setattr(QuotesDialog, "exec_", lambda *args: QDialog.Accepted)
