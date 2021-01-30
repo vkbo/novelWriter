@@ -54,7 +54,7 @@ from nw.gui.dochighlight import GuiDocHighlighter
 from nw.common import transferCase
 from nw.constants import (
     nwConst, nwAlert, nwUnicode, nwDocAction, nwDocInsert, nwItemClass,
-    nwKeyWords
+    nwKeyWords, nwLabels
 )
 
 logger = logging.getLogger(__name__)
@@ -417,6 +417,7 @@ class GuiDocEditor(QTextEdit):
         if self.theProject.projTree.updateItemLayout(tHandle, hLevel):
             self.theParent.treeView.setTreeItemValues(tHandle)
             self.nwDocument.saveDocument(docText)
+            self.docFooter.updateInfo()
 
         return True
 
@@ -2484,8 +2485,11 @@ class GuiDocEditFooter(QWidget):
             else:
                 iStatus = self.theProject.importItems.checkEntry(iStatus)
                 theIcon = self.theParent.importIcons[iStatus]
+
             sIcon = theIcon.pixmap(self.sPx, self.sPx)
-            sText = self.theItem.itemStatus
+            sClass = nwLabels.CLASS_NAME[self.theItem.itemClass]
+            sLayout = nwLabels.LAYOUT_NAME[self.theItem.itemLayout]
+            sText = f"{self.theItem.itemStatus} / {sClass} / {sLayout}"
 
         self.statusIcon.setPixmap(sIcon)
         self.statusText.setText(sText)

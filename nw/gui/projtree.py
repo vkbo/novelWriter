@@ -269,10 +269,43 @@ class GuiProjectTree(QTreeWidget):
                 logger.error("Failed to add new item")
                 return False
 
+        # If there is no handle set, return here
+        if tHandle is None:
+            return True
+
         # Add the new item to the tree
-        if tHandle is not None:
-            self.revealNewTreeItem(tHandle, nHandle)
-            self.theParent.editItem(tHandle)
+        self.revealNewTreeItem(tHandle, nHandle)
+        self.theParent.editItem(tHandle)
+        nwItem = self.theProject.projTree[tHandle]
+
+        # If this is a folder, return here
+        if nwItem.itemType != nwItemType.FILE:
+            return True
+
+        # This is a new files, so let's add some content
+        newDoc = NWDoc(self.theProject, self.theParent)
+        curTxt = newDoc.openDocument(tHandle, showStatus=False)
+        if curTxt == "":
+            if nwItem.itemLayout == nwItemLayout.CHAPTER:
+                newText = f"## {nwItem.itemName}\n\n"
+            elif nwItem.itemLayout == nwItemLayout.UNNUMBERED:
+                newText = f"## {nwItem.itemName}\n\n"
+            elif nwItem.itemLayout == nwItemLayout.SCENE:
+                newText = f"### {nwItem.itemName}\n\n"
+            else:
+                newText = f"# {nwItem.itemName}\n\n"
+
+            # Save the text and index it
+            newDoc.saveDocument(newText)
+            self.theParent.theIndex.scanText(tHandle, newText)
+
+            # Get Word Counts
+            cC, wC, pC = self.theParent.theIndex.getCounts(tHandle)
+            nwItem.setCharCount(cC)
+            nwItem.setWordCount(wC)
+            nwItem.setParaCount(pC)
+            self.propagateCount(tHandle, wC)
+            self.projectWordCount()
 
         return True
 
