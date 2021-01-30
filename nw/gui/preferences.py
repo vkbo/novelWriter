@@ -532,7 +532,7 @@ class GuiConfigEditLayoutTab(QWidget):
 
         ## Justify Text
         self.textJustify = QSwitch()
-        self.textJustify.setChecked(self.mainConf.textFixedW)
+        self.textJustify.setChecked(self.mainConf.doJustify)
         self.mainForm.addRow(
             "Justify the text margins in editor and viewer",
             self.textJustify,
