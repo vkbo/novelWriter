@@ -245,6 +245,9 @@ class NWTree():
         if iLayout in LAYOUT_MAP:
             if hLevel in LAYOUT_MAP[iLayout]:
                 tItem.itemLayout = LAYOUT_MAP[iLayout][hLevel]
+                logger.debug("Changed layout for %s from %s to %s" % (
+                    tHandle, iLayout.name, tItem.itemLayout.name
+                ))
                 return True
 
         return False
