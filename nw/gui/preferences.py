@@ -491,7 +491,7 @@ class GuiPreferencesDocuments(QWidget):
         self.mainForm.addRow(
             "Disable maximum text width in \"Normal Mode\"",
             self.textFlowFixed,
-            "If disabled, minimum text width is defined by the margin."
+            "If disabled, text width is defined by the margins only."
         )
 
         ## Focus Mode Footer
@@ -505,7 +505,7 @@ class GuiPreferencesDocuments(QWidget):
 
         ## Justify Text
         self.textJustify = QSwitch()
-        self.textJustify.setChecked(self.mainConf.textFixedW)
+        self.textJustify.setChecked(self.mainConf.doJustify)
         self.mainForm.addRow(
             "Justify the text margins in editor and viewer",
             self.textJustify,
@@ -687,7 +687,7 @@ class GuiPreferencesEditor(QWidget):
         self.mainForm.addRow(
             "Scroll past end of the document",
             self.scrollPastEnd,
-            "Allow scrolling until the last line is centred in the editor."
+            "Also improves trypewriter scrolling for short documents."
         )
 
         ## Typewriter Scrolling
