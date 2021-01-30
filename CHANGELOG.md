@@ -19,11 +19,13 @@
 * Added three buttons below the project tree that connects to Project Details, Writing Statistics,
   and Project Settings. PR #555.
 * The settings and tabs in the Preferences dialog have been re-arranged into more tabs with less
-  options on each tab. PR #577.
+  options on each tab. PRs #577 and #624.
 * Minor changes to margins and alignments of widgets on the main GUI. PR #565.
 * Added a keyboard shortcut to change focus to the Outline tab. The focus change now also ensures
   that the main GUI also switches to the tab where the focus is shifted. Issues #609 and #612, PR
   #615.
+* The cursor should now also be visible when opening a blank document and the editor has focus.
+  Issue #608, PR #621.
 
 **Text Editor**
 
