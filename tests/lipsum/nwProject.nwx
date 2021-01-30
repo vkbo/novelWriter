@@ -1,12 +1,12 @@
 <?xml version='1.0' encoding='utf-8'?>
-<novelWriterXML appVersion="1.0b5" hexVersion="0x010000b5" fileVersion="1.2" timeStamp="2020-10-24 18:43:56">
+<novelWriterXML appVersion="1.2a0" hexVersion="0x010200a0" fileVersion="1.2" timeStamp="2021-01-30 18:57:20">
   <project>
     <name>Lorem Ipsum</name>
     <title>Lorem Ipsum</title>
     <author>lipsum.com</author>
-    <saveCount>10</saveCount>
-    <autoCount>22</autoCount>
-    <editTime>1571</editTime>
+    <saveCount>12</saveCount>
+    <autoCount>23</autoCount>
+    <editTime>1650</editTime>
   </project>
   <settings>
     <doBackup>False</doBackup>
