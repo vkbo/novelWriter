@@ -257,40 +257,31 @@ class GuiProjectLoad(QDialog):
     def _populateList(self):
         """Populate the list box with recent project data.
         """
-        listOrder = []
-        listData  = {}
-        for projPath in self.mainConf.recentProj.keys():
+        dataList = []
+        for projPath in self.mainConf.recentProj:
             theEntry = self.mainConf.recentProj[projPath]
-            theTitle = ""
-            theTime  = 0
-            theWords = 0
-            if "title" in theEntry.keys():
-                theTitle = theEntry["title"]
-            if "time" in theEntry.keys():
-                theTime = theEntry["time"]
-            if "words" in theEntry.keys():
-                theWords = theEntry["words"]
-            if theTime > 0:
-                listOrder.append(theTime)
-                listData[theTime] = [theTitle, theWords, projPath]
+            theTitle = theEntry.get("title", "")
+            theTime  = theEntry.get("time", 0)
+            theWords = theEntry.get("words", 0)
+            dataList.append([theTitle, theTime, theWords, projPath])
 
         self.listBox.clear()
-        hasSelection = False
-        for timeStamp in sorted(listOrder, reverse=True):
+        sortList = sorted(dataList, key=lambda x: x[1], reverse=True)
+        for theTitle, theTime, theWords, projPath in sortList:
             newItem = QTreeWidgetItem([""]*4)
             newItem.setIcon(self.C_NAME,  self.theParent.theTheme.getIcon("proj_nwx"))
-            newItem.setText(self.C_NAME,  listData[timeStamp][0])
-            newItem.setData(self.C_NAME,  Qt.UserRole, listData[timeStamp][2])
-            newItem.setText(self.C_COUNT, formatInt(listData[timeStamp][1]))
-            newItem.setText(self.C_TIME,  datetime.fromtimestamp(timeStamp).strftime("%x %X"))
+            newItem.setText(self.C_NAME,  theTitle)
+            newItem.setData(self.C_NAME,  Qt.UserRole, projPath)
+            newItem.setText(self.C_COUNT, formatInt(theWords))
+            newItem.setText(self.C_TIME,  datetime.fromtimestamp(theTime).strftime("%x %X"))
             newItem.setTextAlignment(self.C_NAME,  Qt.AlignLeft  | Qt.AlignVCenter)
             newItem.setTextAlignment(self.C_COUNT, Qt.AlignRight | Qt.AlignVCenter)
             newItem.setTextAlignment(self.C_TIME,  Qt.AlignRight | Qt.AlignVCenter)
             newItem.setFont(self.C_TIME, self.theTheme.guiFontFixed)
             self.listBox.addTopLevelItem(newItem)
-            if not hasSelection:
-                newItem.setSelected(True)
-                hasSelection = True
+
+        if self.listBox.topLevelItemCount() > 0:
+            self.listBox.topLevelItem(0).setSelected(True)
 
         projColWidth = self.mainConf.getProjColWidths()
         if len(projColWidth) == 3:
