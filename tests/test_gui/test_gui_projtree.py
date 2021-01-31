@@ -134,6 +134,15 @@ def testGuiProjTree_TreeItems(qtbot, caplog, monkeypatch, nwGUI, nwMinimal):
         "a6d311a93600a", "f5ab3e30151e1", "44cb730c42048", "71ee45a3c0db9", "8c659a11cd429"
     ]
 
+    # Move up twice, and undo
+    nwTree._lastMove = {}
+    nwGUI.mainMenu.aMoveUp.activate(QAction.Trigger)
+    nwGUI.mainMenu.aMoveUp.activate(QAction.Trigger)
+    nwGUI.mainMenu.aMoveUndo.activate(QAction.Trigger)
+    assert nwTree.getTreeFromHandle("a6d311a93600a") == [
+        "a6d311a93600a", "f5ab3e30151e1", "44cb730c42048", "71ee45a3c0db9", "8c659a11cd429"
+    ]
+
     # Move a root item (top level items are different) twice
     nwTree.flushTreeOrder()
     assert nwGUI.theProject.projTree._treeOrder.index("9d5247ab588e0") == 10
