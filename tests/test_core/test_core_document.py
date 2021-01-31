@@ -28,7 +28,6 @@ from dummy import causeOSError
 from nw.core import NWProject, NWDoc
 from nw.core.item import NWItem
 from nw.constants import nwItemClass, nwItemLayout
-from nw.common import formatTimeStamp
 
 @pytest.mark.core
 def testCoreDocument_LoadSave(monkeypatch, dummyGUI, nwMinimal):
@@ -75,7 +74,6 @@ def testCoreDocument_LoadSave(monkeypatch, dummyGUI, nwMinimal):
     assert theDoc.saveDocument(theText)
 
     # Save again to ensure temp file and previous file is handled
-    monkeypatch.setattr("nw.core.document.time", lambda: 123.4)
     assert theDoc.saveDocument(theText)
 
     # Check file content
@@ -85,11 +83,9 @@ def testCoreDocument_LoadSave(monkeypatch, dummyGUI, nwMinimal):
             "%%~name: New File\n"
             f"%%~path: a508bb932959c/{xHandle}\n"
             "%%~kind: NOVEL/SCENE\n"
-            f"%%~time: {formatTimeStamp(123.4)}\n"
             "### Test File\n\n"
             "Text ...\n\n"
         )
-    monkeypatch.undo()
 
     # Force no meta data
     theDoc._theItem = None
@@ -151,14 +147,12 @@ def testCoreDocument_Methods(monkeypatch, dummyGUI, nwMinimal):
     assert theLayout == nwItemLayout.SCENE
 
     # Add meta data garbage
-    monkeypatch.setattr("nw.core.document.time", lambda: 123.4)
     assert theDoc.saveDocument("%%~ stuff\n### Test File\n\nText ...\n\n")
     with open(docPath, mode="r", encoding="utf8") as inFile:
         assert inFile.read() == (
             "%%~name: New Scene\n"
             f"%%~path: a6d311a93600a/{sHandle}\n"
             "%%~kind: NOVEL/SCENE\n"
-            f"%%~time: {formatTimeStamp(123.4)}\n"
             "%%~ stuff\n"
             "### Test File\n\n"
             "Text ...\n\n"

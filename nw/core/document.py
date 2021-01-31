@@ -27,10 +27,8 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 import logging
 import os
 
-from time import time
-
 from nw.constants import nwAlert
-from nw.common import isHandle, formatTimeStamp
+from nw.common import isHandle
 from nw.constants import nwItemLayout, nwItemClass
 
 logger = logging.getLogger(__name__)
@@ -153,7 +151,6 @@ class NWDoc():
                 f"%%~name: {self._theItem.itemName}\n"
                 f"%%~path: {self._theItem.itemParent}/{self._theItem.itemHandle}\n"
                 f"%%~kind: {self._theItem.itemClass.name}/{self._theItem.itemLayout.name}\n"
-                f"%%~time: {formatTimeStamp(time())}\n"
             )
 
         try:
