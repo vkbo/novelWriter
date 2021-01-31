@@ -260,15 +260,15 @@ class GuiMainMenu(QMenuBar):
         self.projMenu.addSeparator()
 
         # Project > Edit
-        self.aEditItem = QAction("Edit Project Item", self)
-        self.aEditItem.setStatusTip("Change item settings")
+        self.aEditItem = QAction("Edit Item", self)
+        self.aEditItem.setStatusTip("Change project item settings")
         self.aEditItem.setShortcuts(["Ctrl+E", "F2"])
         self.aEditItem.triggered.connect(lambda: self.theParent.editItem(None))
         self.projMenu.addAction(self.aEditItem)
 
         # Project > Delete
-        self.aDeleteItem = QAction("Delete Project Item", self)
-        self.aDeleteItem.setStatusTip("Delete selected item")
+        self.aDeleteItem = QAction("Delete Item", self)
+        self.aDeleteItem.setStatusTip("Delete selected project item")
         self.aDeleteItem.setShortcut("Ctrl+Del")
         self.aDeleteItem.triggered.connect(lambda: self.theParent.treeView.deleteItem(None))
         self.projMenu.addAction(self.aDeleteItem)
@@ -286,6 +286,13 @@ class GuiMainMenu(QMenuBar):
         self.aMoveDown.setShortcut("Ctrl+Down")
         self.aMoveDown.triggered.connect(lambda: self._moveTreeItem(1))
         self.projMenu.addAction(self.aMoveDown)
+
+        # Project > Undo Last Action
+        self.aMoveUndo = QAction("Undo Last Move", self)
+        self.aMoveUndo.setStatusTip("Undo last item move")
+        self.aMoveUndo.setShortcut("Ctrl+Shift+Z")
+        self.aMoveUndo.triggered.connect(lambda: self.theParent.treeView.undoLastMove())
+        self.projMenu.addAction(self.aMoveUndo)
 
         # Project > Empty Trash
         self.aEmptyTrash = QAction("Empty Trash", self)
