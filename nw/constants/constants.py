@@ -49,7 +49,6 @@ class nwConst():
 class nwLists():
     """Lists used for grouping various other constants.
     """
-
     # Regular user-accessible item types
     REG_TYPES = {nwItemType.ROOT, nwItemType.FOLDER, nwItemType.FILE}
 
