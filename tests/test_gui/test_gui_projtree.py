@@ -38,6 +38,9 @@ def testGuiProjTree_TreeItems(qtbot, caplog, monkeypatch, nwGUI, nwMinimal):
     """
     # Block message box
     monkeypatch.setattr(QMessageBox, "question", lambda *args: QMessageBox.Yes)
+    monkeypatch.setattr(QMessageBox, "critical", lambda *args: QMessageBox.Yes)
+    monkeypatch.setattr(QMessageBox, "warning", lambda *args: QMessageBox.Yes)
+    monkeypatch.setattr(QMessageBox, "information", lambda *args: QMessageBox.Yes)
     monkeypatch.setattr(GuiMain, "editItem", lambda *args: None)
     monkeypatch.setattr(GuiProjectTree, "hasFocus", lambda *args: True)
 
@@ -96,12 +99,12 @@ def testGuiProjTree_TreeItems(qtbot, caplog, monkeypatch, nwGUI, nwMinimal):
     nwTree.setSelectedHandle("8c659a11cd429")
 
     # Shift focus and try to move item
-    monkeypatch.setattr("PyQt5.QtWidgets.qApp.focusWidget", lambda: None)
+    monkeypatch.setattr(GuiProjectTree, "hasFocus", lambda *args: False)
     assert not nwTree.moveTreeItem(1)
     assert nwTree.getTreeFromHandle("a6d311a93600a") == [
         "a6d311a93600a", "f5ab3e30151e1", "8c659a11cd429", "44cb730c42048", "71ee45a3c0db9"
     ]
-    monkeypatch.setattr("PyQt5.QtWidgets.qApp.focusWidget", lambda: nwTree)
+    monkeypatch.setattr(GuiProjectTree, "hasFocus", lambda *args: True)
 
     # Move second item up twice (should give same result)
     nwGUI.mainMenu.aMoveUp.activate(QAction.Trigger)
