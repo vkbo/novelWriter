@@ -28,6 +28,8 @@ from tools import writeFile
 from PyQt5.QtCore import QItemSelectionModel
 from PyQt5.QtWidgets import QAction, QMessageBox
 
+from nw.guimain import GuiMain
+from nw.gui.projtree import GuiProjectTree
 from nw.constants import nwItemType, nwItemClass
 
 @pytest.mark.gui
@@ -36,7 +38,8 @@ def testGuiProjTree_TreeItems(qtbot, caplog, monkeypatch, nwGUI, nwMinimal):
     """
     # Block message box
     monkeypatch.setattr(QMessageBox, "question", lambda *args: QMessageBox.Yes)
-    monkeypatch.setattr("nw.guimain.GuiMain.editItem", lambda *args: None)
+    monkeypatch.setattr(GuiMain, "editItem", lambda *args: None)
+    monkeypatch.setattr(GuiProjectTree, "hasFocus", lambda *args: True)
 
     nwGUI.theProject.projTree.setSeed(42)
     nwTree = nwGUI.treeView
