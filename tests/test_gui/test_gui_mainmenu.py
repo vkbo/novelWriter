@@ -27,6 +27,7 @@ from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QTextCursor, QTextBlock
 from PyQt5.QtWidgets import QAction, QFileDialog, QMessageBox
 
+from nw.gui.doceditor import GuiDocEditor
 from nw.constants import nwUnicode, nwDocAction, nwDocInsert, nwKeyWords
 
 keyDelay = 2
@@ -39,6 +40,7 @@ def testGuiMenu_EditFormat(qtbot, monkeypatch, nwGUI, nwLipsum):
     """
     # Block message box
     monkeypatch.setattr(QMessageBox, "question", lambda *args: QMessageBox.Yes)
+    monkeypatch.setattr(GuiDocEditor, "hasFocus", lambda *args: True)
 
     # Test Document Action with No Project
     assert not nwGUI.docEditor.docAction(nwDocAction.COPY)

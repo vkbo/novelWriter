@@ -30,6 +30,7 @@ from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QTextCursor
 from PyQt5.QtWidgets import QAction, QMessageBox
 
+from nw.gui.doceditor import GuiDocEditor
 from nw.gui.projtree import GuiProjectTree
 from nw.constants import nwItemType, nwDocAction
 
@@ -44,6 +45,7 @@ def testGuiEditor_Main(qtbot, monkeypatch, nwGUI, fncDir, fncProj, refDir, outDi
     # Block message box
     monkeypatch.setattr(QMessageBox, "question", lambda *args: QMessageBox.Yes)
     monkeypatch.setattr(GuiProjectTree, "hasFocus", lambda *args: True)
+    monkeypatch.setattr(GuiDocEditor, "hasFocus", lambda *args: True)
 
     # Create new, save, close project
     nwGUI.theProject.projTree.setSeed(42)
@@ -353,6 +355,7 @@ def testGuiEditor_Search(qtbot, monkeypatch, nwGUI, nwLipsum):
     """
     # Block message box
     monkeypatch.setattr(QMessageBox, "question", lambda *args: QMessageBox.Yes)
+    monkeypatch.setattr(GuiDocEditor, "hasFocus", lambda *args: True)
 
     nwGUI.theProject.projTree.setSeed(42)
     assert nwGUI.openProject(nwLipsum)
