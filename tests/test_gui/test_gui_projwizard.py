@@ -46,6 +46,7 @@ def testGuiProjectWizard_Main(qtbot, monkeypatch, nwGUI, nwMinimal):
     """
     # Block message box
     monkeypatch.setattr(QMessageBox, "question", lambda *args: QMessageBox.Yes)
+    monkeypatch.setattr(QMessageBox, "critical", lambda *args: QMessageBox.Yes)
 
     if sys.platform.startswith("darwin"):
         # Disable for macOS because the test segfaults on QWizard.show()

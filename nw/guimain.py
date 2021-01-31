@@ -1167,11 +1167,11 @@ class GuiMain(QMainWindow):
         """
         if self.docEditor.theHandle is None:
             logger.error("No document open, so not activating Focus Mode")
-            self.mainMenu.aFocusMode.setChecked(self.isFocusMode)
+            self.mainMenu.setFocusMode(self.isFocusMode)
             return False
 
         self.isFocusMode = not self.isFocusMode
-        self.mainMenu.aFocusMode.setChecked(self.isFocusMode)
+        self.mainMenu.setFocusMode(self.isFocusMode)
         if self.isFocusMode:
             logger.debug("Activating Focus Mode")
             self.mainTabs.setCurrentWidget(self.splitDocs)

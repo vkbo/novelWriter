@@ -49,12 +49,14 @@ class nwConst():
 class nwLists():
     """Lists used for grouping various other constants.
     """
-
     # Regular user-accessible item types
     REG_TYPES = {nwItemType.ROOT, nwItemType.FOLDER, nwItemType.FILE}
 
     # Item classes where the full list of novel layouts are allowed
     CLS_NOVEL = {nwItemClass.NOVEL, nwItemClass.ARCHIVE}
+
+    # Item classes which do not require items to have same class
+    FREE_CLASS = {nwItemClass.ARCHIVE, nwItemClass.TRASH}
 
 # END Class nwLists
 

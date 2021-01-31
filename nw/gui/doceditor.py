@@ -646,6 +646,10 @@ class GuiDocEditor(QTextEdit):
         this class when calling these actions from other classes.
         """
         logger.verbose("Requesting action: %s" % theAction.name)
+        if not self.hasFocus():
+            logger.verbose("Editor does not have focus")
+            return False
+
         if self.theHandle is None:
             logger.error("No document open")
             return False
