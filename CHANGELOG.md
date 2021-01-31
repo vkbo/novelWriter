@@ -4,9 +4,35 @@
 
 ----
 
-## Version 1.1 Dev (Alpha)
+## Version 1.1 RC1 [2021-01-31]
 
 ### Release Notes
+
+This is a preview and test release for version 1.1.
+
+A few new features have been added. The primary change is that the project tree on the left side of
+the main window now has two tabs. The regular project tree is now on a tab named "Project", while a
+new tab "Novel" displays a simpler version of the information on the main "Outline" page. It lists
+all the headers of the novel part of the project, as well as the word count and point-of-view
+character of each section. This is an alternative way to navigate the novel part of the project.
+The various tree views are now also kept better in sync when the user selects various documents and
+headers.
+
+In addition, a new information dialog named "Project Details" has been added. It replaces the
+"Details" tab in "Project Settings", and adds more information about the novel part of the project.
+In particular, a "Table of Contents" in the "Contents" tab displays a summary of the main parts
+and chapters of the project, their total word counts, and an estimated page count. This was made in
+response to users asking for ways to estimate the total page count of the project. The page count
+is estimated based on the word count, and can be changed on the dialog window.
+
+Since the tabs below the project tree now adds some extra room on the GUI, some convenient buttons
+have been added, with direct access to "Project Details", "Writing Statistics" and "Project
+Setting".
+
+A few other minor changes have been made as well. The Preferences dialog has been improved with
+clearer categories and hopefully better help text. Some new options have been added too. They allow
+syntax highlighting of multi-paragraph quotes. The highlighter can now optionally accept quotes to
+be left "hanging", that is, no closing quote in the same paragraph.
 
 ### Detailed Changelog
 
@@ -15,7 +41,37 @@
 * Added a Novel tab under the project tree where the user can navigate the novel's layout of
   chapters and scenes, similar to the Outline view, but next to the document editor. The Outline
   view and Novel/Project trees now also behave more in cooperation. When files on one are selected
-  or moved, the other will follow and update. PR #537.
+  or moved, the other will follow and update. Issues #541 and #185, PR #538.
+* Added a Project Details dialog that lists project details (moved from Project Settings' Details
+  Tab) and a Table of Contents tab where details on chapter level is displayed. This table also
+  shows an estimated page count and estimated page location of each chapter. Issue #528, PRs #555,
+  #598 and #603.
+* Added three buttons below the project tree that connects to Project Details, Writing Statistics,
+  and Project Settings. PR #555.
+* The settings and tabs in the Preferences dialog have been re-arranged into more tabs with less
+  options on each tab. PRs #577 and #624.
+* Minor changes to margins and alignments of widgets on the main GUI. PR #565.
+* Added a keyboard shortcut to change focus to the Outline tab. The focus change now also ensures
+  that the main GUI also switches to the tab where the focus is shifted. Issues #609 and #612, PR
+  #615.
+* The cursor should now also be visible when opening a blank document and the editor has focus.
+  Issue #608, PR #621.
+
+**Text Editor**
+
+* Added support for multi-paragraph quote (dialogue) highlighting. This feature is optional, and
+  can be enabled/disabled in Preferences. Issue #546, PR #577.
+* Add several new symbols to the Insert menu/ Issue #602, PRs #603 and #604.
+
+**Other Changes**
+
+* Trigger a save document call before the Build Novel Project tool starts the build. This ensures
+  that unsaved changes in the editor are included in the build. Issue #610, PR #616.
+
+**Code Maintenance**
+
+* Reformatting of source file headers and adding license headers to all test source files. Test
+  source files are now also organised into subfolders. PR #563.
 
 ----
 
@@ -68,7 +124,7 @@ always concerning even if they are false positives.
 * Updated documentation, main README and Contribution Guide to make them more consistent and to
   improve installation instructions. Based on issue #586 and input from @mgrhm. PR #592.
 
-**Other CHanges**
+**Other Changes**
 
 * The HTML generator now adds line breaks after `div` blocks used to wrap tag/reference lines. This
   makes the output easier to process by scripts, but has no impact on browser rendering and import
