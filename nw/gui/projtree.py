@@ -837,7 +837,6 @@ class GuiProjectTree(QTreeWidget):
             return
 
         sItem = self._getTreeItem(sHandle)
-        pItem = sItem.parent()
         dItem = self.itemFromIndex(dIndex)
         dHandle = dItem.data(self.C_NAME, Qt.UserRole)
         snItem = self.theProject.projTree[sHandle]
@@ -846,16 +845,25 @@ class GuiProjectTree(QTreeWidget):
             self.makeAlert("The item cannot be moved to that location.", nwAlert.ERROR)
             return
 
+        pItem = sItem.parent()
+        pIndex = 0
+        if pItem is not None:
+            pIndex = pItem.indexOfChild(sItem)
+
         wCount = int(sItem.data(self.C_COUNT, Qt.UserRole))
+        isFile = snItem.itemType == nwItemType.FILE
+        isRoot = snItem.itemType == nwItemType.ROOT
+        onFile = dnItem.itemType == nwItemType.FILE
+
         isSame = snItem.itemClass == dnItem.itemClass
         isNone = snItem.itemClass == nwItemClass.NO_CLASS
         isNote = snItem.itemLayout == nwItemLayout.NOTE
-        isRoot = snItem.itemType == nwItemType.ROOT
-        isFile = snItem.itemType == nwItemType.FILE
-        onFile = dnItem.itemType == nwItemType.FILE
         onFree = dnItem.itemClass in nwLists.FREE_CLASS and isFile
-        isOnTop = self.dropIndicatorPosition() == QAbstractItemView.OnItem
-        if (isSame or isNone or isNote or onFree) and not (onFile and isOnTop) and not isRoot:
+
+        allowDrop  = isSame or isNone or isNote or onFree
+        allowDrop &= not (self.dropIndicatorPosition() == QAbstractItemView.OnItem and onFile)
+
+        if allowDrop and not isRoot:
             logger.debug("Drag'n'drop of item %s accepted" % sHandle)
             self.propagateCount(sHandle, 0)
             QTreeWidget.dropEvent(self, theEvent)
@@ -871,7 +879,7 @@ class GuiProjectTree(QTreeWidget):
                 self.setTreeItemValues(sHandle)
 
             self.propagateCount(sHandle, wCount)
-            self._recordLastMove(sItem, pItem, pItem.indexOfChild(sItem))
+            self._recordLastMove(sItem, pItem, pIndex)
 
             # The items dropped into archive or trash should be removed
             # from the project index, for all other items, we rescan the
