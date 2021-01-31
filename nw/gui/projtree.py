@@ -335,7 +335,7 @@ class GuiProjectTree(QTreeWidget):
             logger.error("No project open")
             return False
 
-        if qApp.focusWidget() != self:
+        if not self.hasFocus():
             return False
 
         tHandle = self.getSelectedHandle()

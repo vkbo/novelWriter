@@ -115,22 +115,25 @@ class GuiMainMenu(QMenuBar):
     ##
 
     def setSpellCheck(self, theMode):
-        """Set the spell check check box to theMode. This is controlled
-        by the document editor class, which holds the master spell check
-        flag.
+        """Forward spell check check state to its action.
         """
         self.aSpellCheck.setChecked(theMode)
         return
 
     def setAutoOutline(self, theMode):
-        """Set the auto outline check box to theMode. Used during
-        initialisation.
+        """Forward auto outline check state to its action.
         """
         self.aAutoOutline.setChecked(theMode)
         return
 
+    def setFocusMode(self, theMode):
+        """Forward focus mode check state to its action.
+        """
+        self.aFocusMode.setChecked(theMode)
+        return
+
     ##
-    #  Menu Action
+    #  Slots
     ##
 
     def _toggleSpellCheck(self, isChecked=False):
@@ -164,15 +167,9 @@ class GuiMainMenu(QMenuBar):
         return True
 
     def _openWebsite(self, theUrl):
-        """Open an URL in the system's default browser.
+        """Open a URL in the system's default browser.
         """
         QDesktopServices.openUrl(QUrl(theUrl))
-        return True
-
-    def _openIssue(self):
-        """Open the issue tracker URL in the system's default browser.
-        """
-        QDesktopServices.openUrl(QUrl(nw.__issuesurl__))
         return True
 
     ##
@@ -275,6 +272,20 @@ class GuiMainMenu(QMenuBar):
         self.aDeleteItem.setShortcut("Ctrl+Del")
         self.aDeleteItem.triggered.connect(lambda: self.theParent.treeView.deleteItem(None))
         self.projMenu.addAction(self.aDeleteItem)
+
+        # Project > Move Up
+        self.aMoveUp = QAction("Move Item Up", self)
+        self.aMoveUp.setStatusTip("Move project item up")
+        self.aMoveUp.setShortcut("Ctrl+Up")
+        self.aMoveUp.triggered.connect(lambda: self._moveTreeItem(-1))
+        self.projMenu.addAction(self.aMoveUp)
+
+        # Project > Move Down
+        self.aMoveDown = QAction("Move Item Down", self)
+        self.aMoveDown.setStatusTip("Move project item down")
+        self.aMoveDown.setShortcut("Ctrl+Down")
+        self.aMoveDown.triggered.connect(lambda: self._moveTreeItem(1))
+        self.projMenu.addAction(self.aMoveDown)
 
         # Project > Empty Trash
         self.aEmptyTrash = QAction("Empty Trash", self)
@@ -890,23 +901,6 @@ class GuiMainMenu(QMenuBar):
         """
         # Tools
         self.toolsMenu = self.addMenu("&Tools")
-
-        # Tools > Move Up
-        self.aMoveUp = QAction("Move Tree Item Up", self)
-        self.aMoveUp.setStatusTip("Move item up")
-        self.aMoveUp.setShortcut("Ctrl+Shift+Up")
-        self.aMoveUp.triggered.connect(lambda: self._moveTreeItem(-1))
-        self.toolsMenu.addAction(self.aMoveUp)
-
-        # Tools > Move Down
-        self.aMoveDown = QAction("Move Tree Item Down", self)
-        self.aMoveDown.setStatusTip("Move item down")
-        self.aMoveDown.setShortcut("Ctrl+Shift+Down")
-        self.aMoveDown.triggered.connect(lambda: self._moveTreeItem(1))
-        self.toolsMenu.addAction(self.aMoveDown)
-
-        # Tools > Separator
-        self.toolsMenu.addSeparator()
 
         # Tools > Toggle Spell Check
         self.aSpellCheck = QAction("Check Spelling", self)
