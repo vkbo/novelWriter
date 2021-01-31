@@ -298,10 +298,10 @@ class GuiProjectTree(QTreeWidget):
 
             # Save the text and index it
             newDoc.saveDocument(newText)
-            self.theParent.theIndex.scanText(tHandle, newText)
+            self.theIndex.scanText(tHandle, newText)
 
             # Get Word Counts
-            cC, wC, pC = self.theParent.theIndex.getCounts(tHandle)
+            cC, wC, pC = self.theIndex.getCounts(tHandle)
             nwItem.setCharCount(cC)
             nwItem.setWordCount(wC)
             nwItem.setParaCount(pC)
@@ -719,17 +719,10 @@ class GuiProjectTree(QTreeWidget):
         srcIndex = parItem.indexOfChild(srcItem)
         movItem = parItem.takeChild(srcIndex)
         dstItem.insertChild(dstIndex, movItem)
-        self._updateItemParent(sHandle)
-        self.propagateCount(sHandle, wCount)
 
         snItem = self.theProject.projTree[sHandle]
         dnItem = self.theProject.projTree[dHandle]
-        if dnItem.itemClass not in nwLists.FREE_CLASS:
-            logger.debug("Item %s class has been changed from %s to %s" % (
-                sHandle, snItem.itemClass.name, dnItem.itemClass.name
-            ))
-            snItem.setClass(dnItem.itemClass)
-            self.setTreeItemValues(sHandle)
+        self._postItemMove(sHandle, snItem, dnItem, wCount)
 
         self.clearSelection()
         movItem.setSelected(True)
@@ -867,31 +860,8 @@ class GuiProjectTree(QTreeWidget):
             logger.debug("Drag'n'drop of item %s accepted" % sHandle)
             self.propagateCount(sHandle, 0)
             QTreeWidget.dropEvent(self, theEvent)
-            self._updateItemParent(sHandle)
-
-            # If the item does not have the same class as the target,
-            # and the target is not a free root folder, update its class
-            if not (isSame or onFree):
-                logger.debug("Item %s class has been changed from %s to %s" % (
-                    sHandle, snItem.itemClass.name, dnItem.itemClass.name
-                ))
-                snItem.setClass(dnItem.itemClass)
-                self.setTreeItemValues(sHandle)
-
-            self.propagateCount(sHandle, wCount)
+            self._postItemMove(sHandle, snItem, dnItem, wCount)
             self._recordLastMove(sItem, pItem, pIndex)
-
-            # The items dropped into archive or trash should be removed
-            # from the project index, for all other items, we rescan the
-            # file to ensure the index is up to date.
-            if onFree:
-                self.theIndex.deleteHandle(sHandle)
-            else:
-                self.theIndex.reIndexHandle(sHandle)
-
-            # Trigger dependent updates
-            self._setTreeChanged(True)
-            self._emitItemChange(sHandle)
 
         else:
             theEvent.ignore()
@@ -903,6 +873,40 @@ class GuiProjectTree(QTreeWidget):
     ##
     #  Internal Functions
     ##
+
+    def _postItemMove(self, sHandle, snItem, dnItem, wCount):
+        """Run various maintenance tasks for a moved item.
+        """
+        isFile = snItem.itemType == nwItemType.FILE
+        isSame = snItem.itemClass == dnItem.itemClass
+        onFree = dnItem.itemClass in nwLists.FREE_CLASS and isFile
+
+        self._updateItemParent(sHandle)
+
+        # If the item does not have the same class as the target,
+        # and the target is not a free root folder, update its class
+        if not (isSame or onFree):
+            logger.debug("Item %s class has been changed from %s to %s" % (
+                sHandle, snItem.itemClass.name, dnItem.itemClass.name
+            ))
+            snItem.setClass(dnItem.itemClass)
+            self.setTreeItemValues(sHandle)
+
+        self.propagateCount(sHandle, wCount)
+
+        # The items dropped into archive or trash should be removed
+        # from the project index, for all other items, we rescan the
+        # file to ensure the index is up to date.
+        if onFree:
+            self.theIndex.deleteHandle(sHandle)
+        else:
+            self.theIndex.reIndexHandle(sHandle)
+
+        # Trigger dependent updates
+        self._setTreeChanged(True)
+        self._emitItemChange(sHandle)
+
+        return
 
     def _getTreeItem(self, tHandle):
         """Returns the QTreeWidgetItem of a given item handle.
@@ -916,17 +920,17 @@ class GuiProjectTree(QTreeWidget):
         self._treeMap.pop(tHandle, None)
         return
 
-    def _scanChildren(self, theList, theItem, theIndex):
+    def _scanChildren(self, theList, tItem, tIndex):
         """This is a recursive function returning all items in a tree
         starting at a given QTreeWidgetItem.
         """
-        tHandle = theItem.data(self.C_NAME, Qt.UserRole)
+        tHandle = tItem.data(self.C_NAME, Qt.UserRole)
         nwItem = self.theProject.projTree[tHandle]
-        nwItem.setExpanded(theItem.isExpanded())
-        nwItem.setOrder(theIndex)
+        nwItem.setExpanded(tItem.isExpanded())
+        nwItem.setOrder(tIndex)
         theList.append(tHandle)
-        for i in range(theItem.childCount()):
-            self._scanChildren(theList, theItem.child(i), i)
+        for i in range(tItem.childCount()):
+            self._scanChildren(theList, tItem.child(i), i)
         return theList
 
     def _addTreeItem(self, nwItem, nHandle=None):
