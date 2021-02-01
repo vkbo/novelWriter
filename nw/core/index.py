@@ -608,6 +608,36 @@ class NWIndex():
 
         return hCount
 
+    def getHandleWordCounts(self, tHandle):
+        """Get all header word counts for a specific handle.
+        """
+        theCounts = []
+        hRecord = self._novelIndex.get(tHandle, None)
+        if hRecord is None:
+            hRecord = self._noteIndex.get(tHandle, None)
+        if hRecord is None:
+            return theCounts
+
+        for sTitle, sData in hRecord.items():
+            theCounts.append(("%s:%s" % (tHandle, sTitle), sData["wCount"]))
+
+        return theCounts
+
+    def getHandleHeaders(self, tHandle):
+        """Get all headers for a specific handle.
+        """
+        theHeaders = []
+        hRecord = self._novelIndex.get(tHandle, None)
+        if hRecord is None:
+            hRecord = self._noteIndex.get(tHandle, None)
+        if hRecord is None:
+            return theHeaders
+
+        for sTitle, sData in hRecord.items():
+            theHeaders.append((sTitle, sData["level"], sData["title"]))
+
+        return theHeaders
+
     def getTableOfContents(self, maxDepth, skipExcluded=True):
         """Generate a table of contents up to a maxiumum depth.
         """

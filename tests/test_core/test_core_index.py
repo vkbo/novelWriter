@@ -572,12 +572,12 @@ def testCoreIndex_ExtractData(nwMinimal, dummyGUI):
         "@char: Jane\n\n"
         "% this is a comment\n\n"
         "This is a story about Jane Smith.\n\n"
-        "Well, not really.\n"
+        "Well, not really. She's still awesome though.\n"
     ))
     # Whole document
     cC, wC, pC = theIndex.getCounts(nHandle)
-    assert cC == 124
-    assert wC == 24
+    assert cC == 152
+    assert wC == 28
     assert pC == 4
 
     # First part
@@ -588,8 +588,8 @@ def testCoreIndex_ExtractData(nwMinimal, dummyGUI):
 
     # First part
     cC, wC, pC = theIndex.getCounts(nHandle, "T000011")
-    assert cC == 62
-    assert wC == 12
+    assert cC == 90
+    assert wC == 16
     assert pC == 2
 
     # Get section counts for a note file
@@ -605,12 +605,12 @@ def testCoreIndex_ExtractData(nwMinimal, dummyGUI):
         "@char: Jane\n\n"
         "% this is a comment\n\n"
         "This is a story about Jane Smith.\n\n"
-        "Well, not really.\n"
+        "Well, not really. She's still awesome though.\n"
     ))
     # Whole document
     cC, wC, pC = theIndex.getCounts(cHandle)
-    assert cC == 124
-    assert wC == 24
+    assert cC == 152
+    assert wC == 28
     assert pC == 4
 
     # First part
@@ -621,8 +621,8 @@ def testCoreIndex_ExtractData(nwMinimal, dummyGUI):
 
     # First part
     cC, wC, pC = theIndex.getCounts(cHandle, "T000011")
-    assert cC == 62
-    assert wC == 12
+    assert cC == 90
+    assert wC == 16
     assert pC == 2
 
     ##
@@ -650,7 +650,7 @@ def testCoreIndex_ExtractData(nwMinimal, dummyGUI):
     theProject.projTree._treeOrder.remove("0000000000000")
 
     # Extract stats
-    assert theIndex.getNovelWordCount(False) == 30
+    assert theIndex.getNovelWordCount(False) == 34
     assert theIndex.getNovelWordCount(True) == 6
     assert theIndex.getNovelTitleCounts(False) == [0, 2, 1, 2, 0]
     assert theIndex.getNovelTitleCounts(True) == [0, 0, 1, 2, 0]
@@ -670,9 +670,29 @@ def testCoreIndex_ExtractData(nwMinimal, dummyGUI):
     assert theIndex.getTableOfContents(0, False) == []
     assert theIndex.getTableOfContents(1, False) == [
         ("%s:T000001" % nHandle, 1, "Hello World!", 12),
-        ("%s:T000011" % nHandle, 1, "Hello World!", 18),
+        ("%s:T000011" % nHandle, 1, "Hello World!", 22),
+    ]
+
+    # Header Word Counts
+    bHandle = "0000000000000"
+    assert theIndex.getHandleWordCounts(bHandle) == []
+    assert theIndex.getHandleWordCounts(hHandle) == [("%s:T000001" % hHandle, 2)]
+    assert theIndex.getHandleWordCounts(sHandle) == [("%s:T000001" % sHandle, 2)]
+    assert theIndex.getHandleWordCounts(tHandle) == [("%s:T000001" % tHandle, 2)]
+    assert theIndex.getHandleWordCounts(nHandle) == [
+        ("%s:T000001" % nHandle, 12), ("%s:T000011" % nHandle, 16)
     ]
 
     assert theProject.closeProject()
+
+    # Header Record
+    bHandle = "0000000000000"
+    assert theIndex.getHandleHeaders(bHandle) == []
+    assert theIndex.getHandleHeaders(hHandle) == [("T000001", "H2", "Chapter One")]
+    assert theIndex.getHandleHeaders(sHandle) == [("T000001", "H3", "Scene One")]
+    assert theIndex.getHandleHeaders(tHandle) == [("T000001", "H3", "Scene Two")]
+    assert theIndex.getHandleHeaders(nHandle) == [
+        ("T000001", "H1", "Hello World!"), ("T000011", "H1", "Hello World!")
+    ]
 
 # END Test testCoreIndex_ExtractData
