@@ -150,6 +150,15 @@ class GuiNovelTree(QTreeWidget):
 
         return
 
+    def updateWordCounts(self, tHandle):
+        """Update the word count for a given handle.
+        """
+        tHeaders = self.theIndex.getHandleWordCounts(tHandle)
+        for titleKey, wCount in tHeaders:
+            if titleKey in self._treeMap:
+                self._treeMap[titleKey].setText(self.C_WORDS, f"{wCount:n}")
+        return
+
     def getColumnSizes(self):
         """Return the column widths for the tree columns.
         """
