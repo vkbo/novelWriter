@@ -39,6 +39,8 @@ def installPackages(hostOS):
     installQueue = ["pip", "-r requirements.txt"]
     if hostOS == OS_DARWIN:
         installQueue.append("pyobjc")
+    elif hostOS == OS_WIN:
+        installQueue.append("pywin32")
 
     pyCmd = [sys.executable, "-m"]
     pipCmd = ["pip", "install", "--user", "--upgrade"]
@@ -400,8 +402,11 @@ def freezePackage(buildWindowed, oneFile, makeSetup, hostOS):
     """
     try:
         import PyInstaller.__main__ # noqa: E402
-    except Exception:
-        print("ERROR: Package 'pyinstaller' is missing on this system")
+    except ImportError:
+        print(
+            "ERROR: Package 'pyinstaller' is missing on this system.\n"
+            "       Please run 'pip install --user pyinstaller'."
+        )
         sys.exit(1)
 
     print("")
@@ -513,7 +518,7 @@ def freezePackage(buildWindowed, oneFile, makeSetup, hostOS):
 # =============================================================================================== #
 
 ##
-#  XDG Installation (xdg-install, launcher)
+#  XDG Installation (xdg-install)
 ##
 
 def xdgInstall():
@@ -657,6 +662,116 @@ def xdgInstall():
 
     return
 
+##
+#  WIN Installation (win-install, launcher)
+##
+
+def winInstall():
+    """Will attempt to install icons and make a launcher for Windows.
+    """
+    from nw import __version__, __hexversion__
+    try:
+        import win32com.client
+    except ImportError:
+        print(
+            "ERROR: Package 'pywin32' is missing on this system.\n"
+            "       Please run 'setup.py pip' to automatically install\n"
+            "       dependecies, or run 'pip install --user pywin32'."
+        )
+        sys.exit(1)
+
+    print("")
+    print("Windows Install")
+    print("===============")
+    print("")
+
+    nwTesting = not __hexversion__.endswith("f0")
+    wShell = win32com.client.Dispatch("WScript.Shell")
+
+    if nwTesting:
+        linkName = "novelWriter Testing %s.lnk" % __version__
+    else:
+        linkName = "novelWriter %s.lnk" % __version__
+
+    desktopDir = wShell.SpecialFolders("Desktop")
+    desktopIcon = os.path.join(desktopDir, linkName)
+
+    startMenuDir = wShell.SpecialFolders("StartMenu")
+    startMenuProg = os.path.join(startMenuDir, "Programs", "novelWriter")
+    startMenuIcon = os.path.join(startMenuProg, linkName)
+
+    pythonDir = os.path.dirname(sys.executable)
+    pythonExe = os.path.join(pythonDir, "pythonw.exe")
+
+    targetDir = os.path.abspath(os.path.dirname(__file__))
+    targetPy = os.path.join(targetDir, "novelWriter.pyw")
+    targetIcon = os.path.join(targetDir, "setup", "icons", "novelwriter.ico")
+
+    os.curdir = os.path.dirname(__file__)
+    with open(targetPy, mode="w") as outFile:
+        outFile.write(
+            "#!/usr/bin/env python3\n"
+            "# -*- coding: utf-8 -*-\n\n"
+            "import os\n\n"
+            "os.curdir = os.path.abspath(os.path.dirname(__file__))\n\n"
+            "if __name__ == \"__main__\":\n"
+            "    import nw\n"
+            "    nw.main()\n"
+        )
+
+    print("Collecting Info ...")
+    print("Desktop Folder:    %s" % desktopDir)
+    print("Start Menu Folder: %s" % startMenuDir)
+    print("Python Executable: %s" % pythonExe)
+    print("Target Executable: %s" % targetPy)
+    print("Target Icon:       %s" % targetIcon)
+    print("")
+
+    print("Creating Links ...")
+    if os.path.isfile(desktopIcon):
+        os.unlink(desktopIcon)
+        print("Deleted: %s" % desktopIcon)
+
+    if os.path.isdir(startMenuProg):
+        for oldIcon in os.listdir(startMenuProg):
+            oldPath = os.path.join(startMenuProg, oldIcon)
+            if not oldIcon.startswith("novelWriter"):
+                continue
+
+            isTesting = oldIcon.startswith("novelWriter Testing")
+            if isTesting and nwTesting:
+                os.unlink(oldPath)
+                print("Deleted: %s" % oldPath)
+            if not isTesting and not nwTesting:
+                os.unlink(oldPath)
+                print("Deleted: %s" % oldPath)
+
+    else:
+        os.mkdir(startMenuProg)
+        print("Created: %s" % startMenuProg)
+
+    wShortcut = wShell.CreateShortCut(desktopIcon)
+    wShortcut.TargetPath = targetPy
+    wShortcut.WorkingDirectory = targetDir
+    wShortcut.IconLocation = targetIcon
+    wShortcut.WindowStyle = 1
+    wShortcut.save()
+    print("Created: %s" % desktopIcon)
+
+    wShortcut = wShell.CreateShortCut(startMenuIcon)
+    wShortcut.TargetPath = targetPy
+    wShortcut.WorkingDirectory = targetDir
+    wShortcut.IconLocation = targetIcon
+    wShortcut.WindowStyle = 1
+    wShortcut.save()
+    print("Created: %s" % startMenuIcon)
+
+    print("")
+    print("Done!")
+    print("")
+
+    return
+
 # =============================================================================================== #
 #  Windows Installers
 # =============================================================================================== #
@@ -747,12 +862,12 @@ if __name__ == "__main__":
         "\n"
         "General Installers:\n"
         "\n"
-        "    install      Installs novelWriter to the system's Python install location.\n"
-        "                 Run as root or with sudo for system-wide install, or as\n"
-        "                 user for single user install.\n"
-        "    xdg-install  Install launcher and icons for freedesktop systems.\n"
-        "                 Run as root or with sudo for system-wide install, or as\n"
-        "                 user for single user install.\n"
+        "    install      Installs novelWriter to the system's Python install location. Run as \n"
+        "                 root or with sudo for system-wide install, or as user for single user \n"
+        "                 install.\n"
+        "    xdg-install  Install launcher and icons for freedesktop systems. Run as root or \n"
+        "                 with sudo for system-wide install, or as user for single user install.\n"
+        "    win-install  Install desktop and start menu icons for Windows systems.\n"
         "\n"
         "Windows Installers:\n"
         "\n"
@@ -831,8 +946,16 @@ if __name__ == "__main__":
         else:
             xdgInstall()
 
-    # Windows Installers
-    # ==================
+    if "win-install" in sys.argv:
+        sys.argv.remove("win-install")
+        if hostOS == OS_WIN:
+            winInstall()
+        else:
+            print("ERROR: Command 'win-install' can only be used on Windows")
+            sys.exit(1)
+
+    # Windows Setup Installers
+    # ========================
 
     if "setup-exe" in sys.argv:
         sys.argv.remove("setup-exe")

@@ -21,3 +21,7 @@
     white-space: normal !important;
     vertical-align: text-top;
 }
+
+pre span.go {
+    color: #333333 !important;
+}
