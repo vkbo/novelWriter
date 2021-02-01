@@ -591,11 +591,6 @@ def testCoreIndex_ExtractData(nwMinimal, dummyGUI):
     assert wC == 16
     assert pC == 2
 
-    # getFirstTitle
-    # =============
-
-    assert theIndex.getFirstTitle(cHandle) == ["H1", "T000001"]
-
     # Novel Stats
     # ===========
 
@@ -1166,51 +1161,3 @@ def testCoreIndex_CheckTextCounts(dummyGUI):
         theIndex._checkTextCounts()
 
 # END Test testCoreIndex_CheckTextCounts
-
-@pytest.mark.core
-def testCoreIndex_CheckFirstTitle(dummyGUI):
-    """Test the first title checker.
-    """
-    theProject = NWProject(dummyGUI)
-    theIndex = NWIndex(theProject, dummyGUI)
-
-    # Valid Index
-    theIndex._firstTitle = {
-        "53b69b83cdafc": ["H1", "T000001"],
-        "974e400180a99": ["H0", "T000000"],
-    }
-    assert theIndex._checkFirstTitles() is None
-
-    # Invalid Handle
-    theIndex._firstTitle = {
-        "53b69b83cdafc": ["H1", "T000001"],
-        "h74e400180a99": ["H0", "T000000"],
-    }
-    with pytest.raises(KeyError):
-        theIndex._checkFirstTitles()
-
-    # Wrong Length
-    theIndex._firstTitle = {
-        "53b69b83cdafc": ["H1", "T000001"],
-        "974e400180a99": ["H0", "T000000", "stuff"],
-    }
-    with pytest.raises(IndexError):
-        theIndex._checkFirstTitles()
-
-    # Wrong Header
-    theIndex._firstTitle = {
-        "53b69b83cdafc": ["H1", "T000001"],
-        "974e400180a99": ["XX", "T000000"],
-    }
-    with pytest.raises(ValueError):
-        theIndex._checkFirstTitles()
-
-    # Wrong Title
-    theIndex._firstTitle = {
-        "53b69b83cdafc": ["H1", "T000001"],
-        "974e400180a99": ["H0", "INVALID"],
-    }
-    with pytest.raises(ValueError):
-        theIndex._checkFirstTitles()
-
-# END Test testCoreIndex_CheckFirstTitle
