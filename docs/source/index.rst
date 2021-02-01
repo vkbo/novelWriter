@@ -57,22 +57,25 @@ details.
 
 .. toctree::
    :maxdepth: 2
-   :caption: First Steps
+   :caption: Introduction
 
    int_introduction
    int_started
-   int_interface
-   int_typography
+   int_linux
+   int_mac
+   int_windows
 
 
 .. toctree::
    :maxdepth: 2
-   :caption: Writing Novels
+   :caption: Usage
 
-   write_projects
-   write_structure
-   write_notes
-   write_export
+   usage_interface
+   usage_projects
+   usage_structure
+   usage_notes
+   usage_export
+   usage_typography
 
 
 .. toctree::
