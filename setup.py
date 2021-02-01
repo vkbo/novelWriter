@@ -669,7 +669,7 @@ def xdgInstall():
 def winInstall():
     """Will attempt to install icons and make a launcher for Windows.
     """
-    from nw import __version__
+    from nw import __version__, __hexversion__
     try:
         import win32com.client
     except ImportError:
@@ -685,9 +685,13 @@ def winInstall():
     print("===============")
     print("")
 
+    nwTesting = not __hexversion__.endswith("f0")
     wShell = win32com.client.Dispatch("WScript.Shell")
 
-    linkName = "novelWriter %s.lnk" % __version__
+    if nwTesting:
+        linkName = "novelWriter Testing %s.lnk" % __version__
+    else:
+        linkName = "novelWriter %s.lnk" % __version__
 
     desktopDir = wShell.SpecialFolders("Desktop")
     desktopIcon = os.path.join(desktopDir, linkName)
@@ -727,11 +731,21 @@ def winInstall():
     if os.path.isfile(desktopIcon):
         os.unlink(desktopIcon)
         print("Deleted: %s" % desktopIcon)
+
     if os.path.isdir(startMenuProg):
         for oldIcon in os.listdir(startMenuProg):
             oldPath = os.path.join(startMenuProg, oldIcon)
-            os.unlink(oldPath)
-            print("Deleted: %s" % oldPath)
+            if not oldIcon.startswith("novelWriter"):
+                continue
+
+            isTesting = oldIcon.startswith("novelWriter Testing")
+            if isTesting and nwTesting:
+                os.unlink(oldPath)
+                print("Deleted: %s" % oldPath)
+            if not isTesting and not nwTesting:
+                os.unlink(oldPath)
+                print("Deleted: %s" % oldPath)
+
     else:
         os.mkdir(startMenuProg)
         print("Created: %s" % startMenuProg)
