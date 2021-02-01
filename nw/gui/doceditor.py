@@ -416,7 +416,9 @@ class GuiDocEditor(QTextEdit):
 
         self.theIndex.scanText(tHandle, docText)
         if self._updateHeaders(checkLevel=True):
-            self.theParent.novelView.refreshTree()
+            if self.theParent.projTabs.currentIndex() == self.theParent.idxNovelView:
+                logger.verbose("Document headers have changed, updating novel tree")
+                self.theParent.novelView.refreshTree()
         else:
             self.theParent.novelView.updateWordCounts(tHandle)
 
