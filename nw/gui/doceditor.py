@@ -75,12 +75,14 @@ class GuiDocEditor(QTextEdit):
         self.mainConf   = nw.CONFIG
         self.theParent  = theParent
         self.theTheme   = theParent.theTheme
+        self.theIndex   = theParent.theIndex
         self.theProject = theParent.theProject
         self.nwDocument = NWDoc(self.theProject, self.theParent)
 
         self.docChanged = False # Flag for changed status of document
         self.spellCheck = False # Flag for spell checking enabled
         self.theHandle  = None  # The handle of the open file
+        self.theHeaders = []    # Record of headers in the file
         self.theDict    = None  # The current spell check dictionary
         self.nonWord    = "\"'" # Characters to not include in spell checking
 
@@ -342,6 +344,7 @@ class GuiDocEditor(QTextEdit):
 
         self.docFooter.updateLineCount()
         self.lengthLast = self.qDocument.characterCount()
+        self.theHeaders = self.theIndex.getHandleHeaders(self.theHandle)
 
         qApp.processEvents()
         self.setDocumentChanged(False)
@@ -398,6 +401,7 @@ class GuiDocEditor(QTextEdit):
             return False
 
         docText = self.getText()
+        tHandle = theItem.itemHandle
 
         cC, wC, pC = countWords(docText)
         self._updateCounts(cC, wC, pC)
@@ -410,7 +414,11 @@ class GuiDocEditor(QTextEdit):
         self.nwDocument.saveDocument(docText)
         self.setDocumentChanged(False)
 
-        self.theParent.theIndex.scanText(theItem.itemHandle, docText)
+        self.theIndex.scanText(tHandle, docText)
+        if self._updateHeaders(checkLevel=True):
+            self.theParent.novelView.refreshTree()
+        else:
+            self.theParent.novelView.updateWordCounts(tHandle)
 
         return True
 
@@ -1218,6 +1226,30 @@ class GuiDocEditor(QTextEdit):
             theCursor.insertText(nwUnicode.U_HELLIP)
 
         return
+
+    def _updateHeaders(self, checkPos=False, checkLevel=False):
+        """Update the headers record and return True if anything
+        changed, if a check flag was provided.
+        """
+        if self.theHandle is None:
+            return False
+
+        newHeaders = self.theIndex.getHandleHeaders(self.theHandle)
+        if checkPos:
+            newPos = [x[0] for x in newHeaders]
+            oldPos = [x[0] for x in self.theHeaders]
+        if checkLevel:
+            newLev = [x[1] for x in newHeaders]
+            oldLev = [x[1] for x in self.theHeaders]
+
+        self.theHeaders = newHeaders
+
+        if checkPos:
+            return newPos != oldPos
+        if checkLevel:
+            return newLev != oldLev
+
+        return False
 
     def _replaceQuotes(self, sQuote, oQuote, cQuote):
         """Replace all straight quotes in the selected text.
