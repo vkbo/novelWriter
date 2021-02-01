@@ -416,16 +416,21 @@ class GuiDocEditor(QTextEdit):
 
         self.theIndex.scanText(tHandle, docText)
 
-        hLevel, _ = self.theParent.theIndex.getFirstTitle(tHandle)
+        if self._updateHeaders(checkLevel=True):
+            if self.theParent.projTabs.currentIndex() == self.theParent.idxNovelView:
+                logger.verbose("Document headers have changed, updating novel tree")
+                self.theParent.novelView.refreshTree()
+        else:
+            self.theParent.novelView.updateWordCounts(tHandle)
+
+        hLevel = "H0"
+        if self.theHeaders:
+            hLevel = self.theHeaders[0][1]
+
         if self.theProject.projTree.updateItemLayout(tHandle, hLevel):
             self.theParent.treeView.setTreeItemValues(tHandle)
             self.nwDocument.saveDocument(docText)
             self.docFooter.updateInfo()
-
-        if self._updateHeaders(checkLevel=True):
-            self.theParent.novelView.refreshTree()
-        else:
-            self.theParent.novelView.updateWordCounts(tHandle)
 
         return True
 
