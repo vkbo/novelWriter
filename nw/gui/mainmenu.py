@@ -513,9 +513,9 @@ class GuiMainMenu(QMenuBar):
         # View > Separator
         self.viewMenu.addSeparator()
 
-        # View > Toggle Distraction Free Mode
-        self.aFocusMode = QAction("Distraction Free Mode", self)
-        self.aFocusMode.setStatusTip("Toggles distraction free mode, only showing text editor")
+        # View > Focus Mode
+        self.aFocusMode = QAction("Focus Mode", self)
+        self.aFocusMode.setStatusTip("Toggles a distraction free mode, only showing text editor")
         self.aFocusMode.setShortcut("F8")
         self.aFocusMode.setCheckable(True)
         self.aFocusMode.setChecked(self.theParent.isFocusMode)
