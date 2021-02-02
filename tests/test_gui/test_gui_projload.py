@@ -102,7 +102,7 @@ def testGuiLoadProject_Main(qtbot, monkeypatch, nwGUI, nwMinimal):
 
     qtbot.wait(stepDelay)
     nwLoad.show()
-    nwLoad._keyPressDelete()
+    nwLoad._doDeleteRecent()
     assert nwLoad.listBox.topLevelItemCount() == recentCount - 1
 
     getFile = os.path.join(nwMinimal, "nwProject.nwx")
