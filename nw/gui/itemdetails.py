@@ -227,55 +227,58 @@ class GuiItemDetails(QWidget):
     def updateViewBox(self, tHandle):
         """Populate the details box from a given handle.
         """
-        self.theHandle = tHandle
-        nwItem = self.theProject.projTree[tHandle]
+        if tHandle is None:
+            self.clearDetails()
+            return
 
+        nwItem = self.theProject.projTree[tHandle]
         if nwItem is None:
             self.clearDetails()
+            return
 
+        self.theHandle = tHandle
+        theLabel = nwItem.itemName
+        if len(theLabel) > 100:
+            theLabel = theLabel[:96].rstrip()+" ..."
+
+        itStatus = nwItem.itemStatus
+        if nwItem.itemClass == nwItemClass.NOVEL:
+            itStatus = self.theProject.statusItems.checkEntry(itStatus) # Make sure it's valid
+            flagIcon = self.theParent.statusIcons[itStatus]
         else:
-            theLabel = nwItem.itemName
-            if len(theLabel) > 100:
-                theLabel = theLabel[:96].rstrip()+" ..."
+            itStatus = self.theProject.importItems.checkEntry(itStatus) # Make sure it's valid
+            flagIcon = self.theParent.importIcons[itStatus]
 
-            itStatus = nwItem.itemStatus
-            if nwItem.itemClass == nwItemClass.NOVEL:
-                itStatus = self.theProject.statusItems.checkEntry(itStatus) # Make sure it's valid
-                flagIcon = self.theParent.statusIcons[itStatus]
+        if nwItem.itemType == nwItemType.FILE:
+            if nwItem.isExported:
+                self.labelFlag.setPixmap(self.expCheck)
             else:
-                itStatus = self.theProject.importItems.checkEntry(itStatus) # Make sure it's valid
-                flagIcon = self.theParent.importIcons[itStatus]
+                self.labelFlag.setPixmap(self.expCross)
+        else:
+            self.labelFlag.setPixmap(QPixmap(1, 1))
 
-            if nwItem.itemType == nwItemType.FILE:
-                if nwItem.isExported:
-                    self.labelFlag.setPixmap(self.expCheck)
-                else:
-                    self.labelFlag.setPixmap(self.expCross)
-            else:
-                self.labelFlag.setPixmap(QPixmap(1, 1))
+        iPx = int(round(0.8*self.theTheme.baseIconSize))
+        self.statusFlag.setPixmap(flagIcon.pixmap(iPx, iPx))
+        self.classFlag.setText(nwLabels.CLASS_FLAG[nwItem.itemClass])
 
-            iPx = int(round(0.8*self.theTheme.baseIconSize))
-            self.statusFlag.setPixmap(flagIcon.pixmap(iPx, iPx))
-            self.classFlag.setText(nwLabels.CLASS_FLAG[nwItem.itemClass])
+        if nwItem.itemLayout == nwItemLayout.NO_LAYOUT:
+            self.layoutFlag.setText("-")
+        else:
+            self.layoutFlag.setText(nwLabels.LAYOUT_FLAG[nwItem.itemLayout])
 
-            if nwItem.itemLayout == nwItemLayout.NO_LAYOUT:
-                self.layoutFlag.setText("-")
-            else:
-                self.layoutFlag.setText(nwLabels.LAYOUT_FLAG[nwItem.itemLayout])
+        self.labelData.setText(theLabel)
+        self.statusData.setText(nwItem.itemStatus)
+        self.classData.setText(nwLabels.CLASS_NAME[nwItem.itemClass])
+        self.layoutData.setText(nwLabels.LAYOUT_NAME[nwItem.itemLayout])
 
-            self.labelData.setText(theLabel)
-            self.statusData.setText(nwItem.itemStatus)
-            self.classData.setText(nwLabels.CLASS_NAME[nwItem.itemClass])
-            self.layoutData.setText(nwLabels.LAYOUT_NAME[nwItem.itemLayout])
-
-            if nwItem.itemType == nwItemType.FILE:
-                self.cCountData.setText(f"{nwItem.charCount:n}")
-                self.wCountData.setText(f"{nwItem.wordCount:n}")
-                self.pCountData.setText(f"{nwItem.paraCount:n}")
-            else:
-                self.cCountData.setText("–")
-                self.wCountData.setText("–")
-                self.pCountData.setText("–")
+        if nwItem.itemType == nwItemType.FILE:
+            self.cCountData.setText(f"{nwItem.charCount:n}")
+            self.wCountData.setText(f"{nwItem.wordCount:n}")
+            self.pCountData.setText(f"{nwItem.paraCount:n}")
+        else:
+            self.cCountData.setText("–")
+            self.wCountData.setText("–")
+            self.pCountData.setText("–")
 
         return
 
