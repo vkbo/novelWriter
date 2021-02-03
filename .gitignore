@@ -7,7 +7,6 @@
 *.egg-info
 setup.iss
 novelwriter.desktop
-novelWriter.pyw
 
 # Documentation
 /docs/build/

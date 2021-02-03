@@ -61,9 +61,9 @@ details.
 
    int_introduction
    int_started
-   int_linux
-   int_mac
-   int_windows
+   setup_linux
+   setup_mac
+   setup_windows
 
 
 .. toctree::
