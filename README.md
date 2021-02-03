@@ -191,9 +191,15 @@ novelWriter
 
 ### Setup on Windows
 
-For Windows, you can either install via PyPi, or use the Windows installer available from the
-[releases](https://github.com/vkbo/novelWriter/releases) page. This should add the necessary icons
-to your desktop and start menu.
+For Windows, first ensure that you have Python installed. If not, get it from
+[python.org/downloads](https://www.python.org/downloads/). Remember to select "Add Python to PATH"
+during the installation, otherwise novelWriter cannot find it.
+
+Then, download the `novelWriter-x.y.z-minimal.zip` file, where `x.y.z` is the version number, from
+the [releases](https://github.com/vkbo/novelWriter/releases) page. You can extract it to wherever
+you want to keep novelWriter on your PC, and run the `setup_windows.bat` file in it
+(double-clicking it should work). This will install the necessary dependencies from
+[pypi,org](https://pypi.org/) and create desktop and start menu icons.
 
 
 ## Debugging
@@ -211,7 +217,7 @@ details, or consult the [LICENSE](https://github.com/vkbo/novelWriter/blob/main/
 
 Bundled assets have the following licenses:
 
-* The Typicon-based icon themes by Stephen Hutchings are licensed under
+* The Typicons-based icon themes by Stephen Hutchings are licensed under
   [CC BY-SA 4.0](http://creativecommons.org/licenses/by-sa/4.0/). The icons have been altered in
   size and colour for use with novelWriter, and some additional icons added. The original icon set
   is available at
