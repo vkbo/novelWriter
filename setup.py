@@ -686,7 +686,7 @@ def winInstall():
     """Will attempt to install icons and make a launcher for Windows.
     """
     import winreg
-    from nw import __version__, __hexversion__
+    from nw import __version__, __status__
     try:
         import win32com.client
     except ImportError:
@@ -702,7 +702,7 @@ def winInstall():
     print("===============")
     print("")
 
-    nwTesting = not __hexversion__.endswith("f0")
+    nwTesting = not __status__.lower().startswith("stable")
     wShell = win32com.client.Dispatch("WScript.Shell")
 
     if nwTesting:
@@ -780,7 +780,7 @@ def winInstall():
         winreg.SetValueEx(regKey, kName, 0, winreg.REG_SZ, kVal)
         winreg.CloseKey(regKey)
 
-    mimeIcon = os.path.join(targetDir, "assets", "icons", "x-novelwriter-project.ico")
+    mimeIcon = os.path.join(targetDir, "nw", "assets", "icons", "x-novelwriter-project.ico")
     mimeExec = '"%s" "%s" "%%1"' % (pythonExe, targetPy)
 
     try:

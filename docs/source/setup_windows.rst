@@ -69,6 +69,10 @@ Open the folder where you extracted the novelWriter source, and double-click the
 setup script to install dependencies, and desktop and start menu icons. It will also check that it
 can find Python from Step 1.
 
+.. note::
+   If you upgrade Python to a newer version and the path to ``pythonw.exe`` changes, you may need
+   to run this script again.
+
 **Alternative B: Manual Installation**
 
 The above alternative can also be run manually.
