@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-novelWriter – Linux Start Script
-================================
-The main start script for Linux
+novelWriter – Terminal Start Script
+===================================
+The main start script for the terminal
 """
 
 import sys

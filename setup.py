@@ -49,7 +49,7 @@ def installPackages(hostOS):
     """
     print("")
     print("Installing Dependencies")
-    print("#######################")
+    print("=======================")
     print("")
 
     installQueue = ["pip", "-r requirements.txt"]
@@ -427,7 +427,7 @@ def freezePackage(buildWindowed, oneFile, makeSetup, hostOS):
 
     print("")
     print("Running PyInstaller")
-    print("###################")
+    print("===================")
     print("")
 
     if hostOS == OS_WIN:
@@ -685,6 +685,7 @@ def xdgInstall():
 def winInstall():
     """Will attempt to install icons and make a launcher for Windows.
     """
+    import winreg
     from nw import __version__, __hexversion__
     try:
         import win32com.client
@@ -722,18 +723,6 @@ def winInstall():
     targetDir = os.path.abspath(os.path.dirname(__file__))
     targetPy = os.path.join(targetDir, "novelWriter.pyw")
     targetIcon = os.path.join(targetDir, "setup", "icons", "novelwriter.ico")
-
-    os.curdir = os.path.dirname(__file__)
-    with open(targetPy, mode="w") as outFile:
-        outFile.write(
-            "#!/usr/bin/env python3\n"
-            "# -*- coding: utf-8 -*-\n\n"
-            "import os\n\n"
-            "os.curdir = os.path.abspath(os.path.dirname(__file__))\n\n"
-            "if __name__ == \"__main__\":\n"
-            "    import nw\n"
-            "    nw.main()\n"
-        )
 
     print("Collecting Info ...")
     print("Desktop Folder:    %s" % desktopDir)
@@ -781,6 +770,28 @@ def winInstall():
     wShortcut.WindowStyle = 1
     wShortcut.save()
     print("Created: %s" % startMenuIcon)
+
+    print("")
+    print("Creating registry keys ...")
+
+    def setKey(kPath, kName, kVal):
+        winreg.CreateKey(winreg.HKEY_CURRENT_USER, kPath)
+        regKey = winreg.OpenKey(winreg.HKEY_CURRENT_USER, kPath, 0, winreg.KEY_WRITE)
+        winreg.SetValueEx(regKey, kName, 0, winreg.REG_SZ, kVal)
+        winreg.CloseKey(regKey)
+
+    mimeIcon = os.path.join(targetDir, "assets", "icons", "x-novelwriter-project.ico")
+    mimeExec = '"%s" "%s" "%%1"' % (pythonExe, targetPy)
+
+    try:
+        setKey(r"Software\Classes\.nwx\OpenWithProgids", "novelWriterProject.nwx", "")
+        setKey(r"Software\Classes\novelWriterProject.nwx", "", "novelWriter Project File")
+        setKey(r"Software\Classes\novelWriterProject.nwx\DefaultIcon", "", mimeIcon)
+        setKey(r"Software\Classes\novelWriterProject.nwx\shell\open\command", "", mimeExec)
+        setKey(r"Software\Classes\Applications\novelWriter.pyw\SupportedTypes", ".nwx", "")
+    except WindowsError:
+        print("ERROR: Failed to set registry keys.")
+        print("")
 
     print("")
     print("Done!")

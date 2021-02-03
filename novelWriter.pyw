@@ -3,7 +3,7 @@
 """
 novelWriter – Windows Start Script
 ==================================
-The main start script for Windows
+The main start script for Windows GUI
 """
 
 import os
