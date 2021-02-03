@@ -263,6 +263,7 @@ def makeMinimalPackage():
     rootFiles = [
         "LICENSE.md",
         "README.md",
+        "CHANGELOG.md",
         "novelWriter.pyw",
         "requirements.txt",
         "setup.py",
