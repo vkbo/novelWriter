@@ -231,7 +231,71 @@ def buildSampleZip():
 # =============================================================================================== #
 
 ##
-#  Make Simple Package (winpack)
+#  Make Minimal Package (minimal-zip)
+##
+
+def makeMinimalPackage():
+    """Pack the core source file in a single zip file.
+    """
+    from nw import __version__
+    from zipfile import ZipFile
+
+    # Make sample.zip first
+    try:
+        buildSampleZip()
+    except Exception as e:
+        print("Failed with error:")
+        print(str(e))
+        sys.exit(1)
+
+    print("")
+    print("Building Minimal ZIP File")
+    print("=========================")
+    print("")
+
+    if not os.path.isdir("dist"):
+        os.mkdir("dist")
+
+    outFile = os.path.join("dist", "novelWriter-%s-minimal.zip" % __version__)
+    if os.path.isfile(outFile):
+        os.unlink(outFile)
+
+    rootFiles = [
+        "LICENSE.md",
+        "README.md",
+        "CHANGELOG.md",
+        "novelWriter.pyw",
+        "requirements.txt",
+        "setup.py",
+        "setup_windows.bat",
+    ]
+
+    with ZipFile(outFile, "w") as zipObj:
+        for nRoot, _, nFiles in os.walk("nw"):
+            if nRoot.endswith("__pycache__"):
+                print("Skipping: %s" % nRoot)
+                continue
+
+            print("Compressing: %s [%d files]" % (nRoot, len(nFiles)))
+            for aFile in nFiles:
+                if aFile.endswith(".pyc"):
+                    print("Skipping: %s" % aFile)
+                    continue
+                zipObj.write(os.path.join(nRoot, aFile))
+
+        for aFile in rootFiles:
+            assert os.path.isfile(aFile)
+            print("Compressing: %s" % aFile)
+            zipObj.write(aFile)
+
+    print("")
+    print("Built file: %s" % outFile)
+    print("")
+
+    return
+
+##
+#  Make Simple Package (pack-pyz)
 ##
 
 def makeSimplePackage(embedPython):
@@ -722,7 +786,7 @@ def winInstall():
 
     targetDir = os.path.abspath(os.path.dirname(__file__))
     targetPy = os.path.join(targetDir, "novelWriter.pyw")
-    targetIcon = os.path.join(targetDir, "setup", "icons", "novelwriter.ico")
+    targetIcon = os.path.join(targetDir, "nw", "assets", "icons", "novelwriter.ico")
 
     print("Collecting Info ...")
     print("Desktop Folder:    %s" % desktopDir)
@@ -880,6 +944,8 @@ if __name__ == "__main__":
         "\n"
         "Python Packaging:\n"
         "\n"
+        "    minimal-zip  Creates a minimal zip file of the core application without all the\n"
+        "                 other source files.\n"
         "    pack-pyz     Creates a pyz package in a folder with all dependencies using the\n"
         "                 zipapp tool. On Windows, python embeddable is added to the folder.\n"
         "    freeze       Freeze the package and produces a folder with all dependencies using\n"
@@ -941,6 +1007,10 @@ if __name__ == "__main__":
 
     # Python Packaging
     # ================
+
+    if "minimal-zip" in sys.argv:
+        sys.argv.remove("minimal-zip")
+        makeMinimalPackage()
 
     if "pack-pyz" in sys.argv:
         sys.argv.remove("pack-pyz")
