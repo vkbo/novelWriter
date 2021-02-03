@@ -8,9 +8,6 @@ if errorlevel 1 goto errorNoPython
 echo Python found. OK.
 echo.
 
-:: Generate the sample project
-python setup.py sample
-
 :: Install the PyQt5, lxml and pyenchant dependencies
 python setup.py pip
 

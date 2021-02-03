@@ -264,6 +264,7 @@ def makeMinimalPackage():
         "LICENSE.md",
         "README.md",
         "novelWriter.pyw",
+        "requirements.txt",
         "setup.py",
         "setup_windows.bat",
     ]
@@ -784,7 +785,7 @@ def winInstall():
 
     targetDir = os.path.abspath(os.path.dirname(__file__))
     targetPy = os.path.join(targetDir, "novelWriter.pyw")
-    targetIcon = os.path.join(targetDir, "setup", "icons", "novelwriter.ico")
+    targetIcon = os.path.join(targetDir, "nw", "assets", "icons", "novelwriter.ico")
 
     print("Collecting Info ...")
     print("Desktop Folder:    %s" % desktopDir)
