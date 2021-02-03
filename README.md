@@ -40,7 +40,6 @@ Contributions to this project are welcome. However, please read the
 [Contributing Guide](https://github.com/vkbo/novelWriter/blob/main/CONTRIBUTING.md) before
 submitting larger additions ot changes to this project.
 
-
 # Key Features
 
 Some features of novelWriter are listed below. Consult the
@@ -82,7 +81,6 @@ with limitations to formatting.
 
 The HTML format is well suited for file conversion tools and import into other text editors.
 
-
 ### Colour Themes
 
 The editor has syntax highlighting for the features it supports, and includes a set of different
@@ -107,7 +105,6 @@ project tree. These are mostly to help the user track what they contain, but the
 impact on the format of the exported document. See the
 [documentation](https://novelwriter.readthedocs.io) for further details.
 
-
 ### Project Notes
 
 Supporting note files can be added for the story plot, characters, locations, story timeline, etc.
@@ -122,12 +119,10 @@ connects to the plot, and which characters, etc. occur in them. In addition, the
 are clickable in the document view pane, and control-clickable in the editor. They make it possible
 to quickly navigate between the documents while editing.
 
-
 # Installing and Running
 
 For install instructions, please check the [documentation](https://novelwriter.readthedocs.io/) in
 the [Getting Started](https://novelwriter.readthedocs.io/en/latest/int_started.html) section.
-
 
 ## TLDR Instructions
 
@@ -137,7 +132,6 @@ file from command line. For installations on Linux, macOS or Windows, see below.
 **Note:** You may need to replace `python` with `python3` and `pip` with `pip3` in the instructions
 below on some systems. You may also want to add the `--user` flag for `pip` to install in your user
 space only.
-
 
 ### Install from PyPi
 
@@ -158,7 +152,6 @@ novelWriter
 Make sure the install location for pip is in your PATH variable. This is not always the case by
 default.
 
-
 ### Setup on Linux
 
 If you're installing from source, the following commands will set up novelWriter on Linux:
@@ -170,7 +163,6 @@ python setup.py xdg-install
 
 This should make novelWriter available as a regular application on your system, with a launceher
 icon, and file association with novelWriter project files.
-
 
 ### Setup on macOS
 
@@ -188,7 +180,6 @@ line with:
 novelWriter
 ```
 
-
 ### Setup on Windows
 
 For Windows, first ensure that you have Python installed. If not, get it from
@@ -199,15 +190,13 @@ Then, download the `novelWriter-x.y.z-minimal.zip` file, where `x.y.z` is the ve
 the [releases](https://github.com/vkbo/novelWriter/releases) page. You can extract it to wherever
 you want to keep novelWriter on your PC, and run the `setup_windows.bat` file in it
 (double-clicking it should work). This will install the necessary dependencies from
-[pypi,org](https://pypi.org/) and create desktop and start menu icons.
-
+[pypi.org](https://pypi.org/) and create desktop and start menu icons.
 
 ## Debugging
 
 If you need to debug novelWriter, you must run it from command line. It takes a few parameters,
 which can be listed with the switch `--help`. The `--info`, `--debug` or `--verbose` flags are
 particularly useful for increasing logging output for debugging.
-
 
 # Licenses
 
@@ -234,7 +223,6 @@ Bundled assets have the following licenses:
   with the [MIT License](https://github.com/sdras/night-owl-vscode-theme/blob/master/LICENSE), and
   the main repo is available at
   [sdras/night-owl-vscode-theme](https://github.com/sdras/night-owl-vscode-theme).
-
 
 # Screenshot
 
