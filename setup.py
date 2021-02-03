@@ -238,7 +238,7 @@ def makeMinimalPackage():
     """Pack the core source file in a single zip file.
     """
     from nw import __version__
-    from zipfile import ZipFile
+    from zipfile import ZipFile, ZIP_DEFLATED
 
     # Make sample.zip first
     try:
@@ -270,7 +270,7 @@ def makeMinimalPackage():
         "setup_windows.bat",
     ]
 
-    with ZipFile(outFile, "w") as zipObj:
+    with ZipFile(outFile, "w", compression=ZIP_DEFLATED, compresslevel=9) as zipObj:
         for nRoot, _, nFiles in os.walk("nw"):
             if nRoot.endswith("__pycache__"):
                 print("Skipping: %s" % nRoot)
