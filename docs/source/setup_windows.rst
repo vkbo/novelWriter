@@ -1,0 +1,95 @@
+.. _a_setup_win:
+
+****************
+Setup on Windows
+****************
+
+This is a brief guide to how you can get novelWriter running on a Windows computer.
+
+Unlike other operating systems, Windows does not come prepared with an environment to run Python
+applications, so you must first install Python. After that, running novelWriter is straightfoeward.
+
+If you have any problems, you can always open a question on the project's discussions_ page. This
+requires a GitHub account.
+
+.. _discussions: https://github.com/vkbo/novelWriter/discussions
+
+
+.. _a_setup_win_installer:
+
+Using the Installer
+===================
+
+The installer for Windows is no longer provided. You can still create it yourself if you want to.
+It can be generated with the provided `setup.py` script. use the script's `help` command to get
+further instructions.
+
+Please use the "Running from Source" option below instead.
+
+
+.. _a_setup_win_source:
+
+Running from Source
+===================
+
+To run novelWriter from source, download the latest source zip file from the release page on
+GitHub_ or the `main website`_, or if you have git running on your computer, you can also clone the
+repository.
+
+In order to make novelWriter run on your system, you must first have Python installed (Step 1).
+Thereafter, a script will do the rest of the job (Step 2). or you can do it yourself manually.
+
+.. _GitHub: https://github.com/vkbo/novelWriter/releases
+.. _main website: https://novelwriter.io
+
+
+Step 1: Installing Python
+-------------------------
+
+If you already have Python installed, you can skip this step. If you don't have it installed, you
+can download it from the python.org_ website. novelWriter should work with Python 3.6 or higher,
+but it is recommended that you install the latest version of Python.
+
+Also, make sure you select the "Add Python to PATH" option during installation, otherwise the
+``python`` command will not work in the command line window.
+
+.. image:: images/python_win_install.png
+   :width: 600
+
+.. _python.org: https://www.python.org/downloads/windows
+
+
+Step 2: Dependencies and Icons
+------------------------------
+
+**Alternative A: By Script**
+
+Open the folder where you extracted the novelWriter source, and double-click the file named
+``setup_windows`` or ``setup_windows.bat``. This should open a command line window and run the
+setup script to install dependencies, and desktop and start menu icons. It will also check that it
+can find Python from Step 1.
+
+.. note::
+   If you upgrade Python to a newer version and the path to ``pythonw.exe`` changes, you may need
+   to run this script again.
+
+**Alternative B: Manual Installation**
+
+The above alternative can also be run manually.
+
+Open the windows command prompt. It can be launched by pressing the :kbd:`Win` key and typing "cmd".
+The "Command Prompt" app should then be in the list of applications.
+
+With the command prompt open, navigate to the folder where you extracted the novelWriter source,
+and run the following commands:
+
+.. code-block:: console
+
+   python setup.py pip
+   python setup.py win-install
+
+The first command will install the dependencies on your system from the `Python Package Index`_,
+and the second command will create a desktop icon and a start menu icon. That should be all that
+you need.
+
+.. _Python Package Index: https://pypi.org/
