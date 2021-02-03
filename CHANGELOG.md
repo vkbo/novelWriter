@@ -4,36 +4,44 @@
 
 ### Release Notes
 
+This patch release fixes a couple of minor issues with the Preferences dialog and the behaviour of
+one of the keyboard shortcuts.
+
+Aside from these fixes, the main point of this patch is to add new setup features for novelWriter
+on Windows. A Windows installer will no longer be provided for the foreseeable future, and instead
+functionality has been added to the main setup script to create desktop and start menu icons.
+
 ### Detailed Changelog
 
 **Bug Fixes**
 
-* Fixed an issue where the  setting for justified text in the text editor was in the Preferences
-  dialog mixed with the setting for fixed text width in the editor. This meant that the justified
-  text setting could potentially get overridden when the Preferences dialog was used. Issue #623,
-  PR #625.
+* Fixed an issue with the Preferences dialog where the setting for justified text was mixed with
+  the setting for fixed text width. This meant that the justified text setting could potentially
+  get overwritten when the Preferences were changed and saved. Issue #623, PR #625.
 * Fixed an issue with the Open Project dialog where the list of recent projects would contain
   duplicate entries if the dialog was opened multiple times. PR #627.
 
 **User Interface**
 
 * The `Ctrl+Del` keyboard shortcut is now only active when the project tree has focus. Since this
-  is also a common used shortcut in many application for deleting the next word, the deletion of a
-  file when the key combination is used in the editor is unexpected. Issue #629, PR #631.
+  is also a common shortcut in many applications for deleting the next word ahead of the cursor,
+  the activation of the delete file function when the editor has focus is unexpected to some users.
+  Issue #629, PR #631.
 
 **Installation**
 
 * A new command has been added to the `setup.py` script. The new command, `win-install`, will
   create a desktop and start menu icon for novelWriter when run in the source folder. A windows
-  batch file, `win_install.bat`, has also been added. Running this file from the source folder,
+  batch file, `setup_windows.bat`, has also been added. Running this file from the source folder,
   either by command line or by double-click, will install dependencies from PyPi and set up the
-  icons. This should make it easier to run novelWriter from the source folder on Windows. PR #634.
+  icons and file association with novelWriter project files. This should make it easier to run
+  novelWriter from the source folder on Windows. PRs #634 and #641.
 
 **Documentation**
 
 * The documentation on how to setup and install novelWriter has been extended and reorganised into
   one file per operating system. Some of the other documentation files have also been moved to a
-  new section. PR #634.
+  different section. PR #634.
 
 ----
 
@@ -917,7 +925,7 @@ planned by GitHub. See their [notes](https://github.com/github/renaming) for mor
 **Other Changes**
 
 * The install scripts now try to create folders before copying icons. PR #364.
-* The manifest file now lists the root assets folder, so that it is included in the pypi build. PR
+* The manifest file now lists the root assets folder, so that it is included in the PyPi build. PR
   #364.
 * The .desktop template file has the correct categories set according to the FreeDesktop standard.
   PR #364.
