@@ -1,12 +1,28 @@
 #!/usr/bin/env python3
+# -*- coding: utf-8 -*-
 """
-The main setup script for novelWriter.
+novelWriter – Main Setup Script
+===============================
+The main setup and install script for all operating systems
 
-It runs the standard setuptool.setup() with all options taken from the
-setup.cfg file.
+File History:
+Created: 2019-05-16 [0.5.1]
 
-In addition, a few specialised commands are available. These are
-described in the help text in the main section.
+This file is a part of novelWriter
+Copyright 2018–2021, Veronica Berglyd Olsen
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful, but
+WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
 
 import os
@@ -33,7 +49,7 @@ def installPackages(hostOS):
     """
     print("")
     print("Installing Dependencies")
-    print("#######################")
+    print("=======================")
     print("")
 
     installQueue = ["pip", "-r requirements.txt"]
@@ -215,7 +231,71 @@ def buildSampleZip():
 # =============================================================================================== #
 
 ##
-#  Make Simple Package (winpack)
+#  Make Minimal Package (minimal-zip)
+##
+
+def makeMinimalPackage():
+    """Pack the core source file in a single zip file.
+    """
+    from nw import __version__
+    from zipfile import ZipFile
+
+    # Make sample.zip first
+    try:
+        buildSampleZip()
+    except Exception as e:
+        print("Failed with error:")
+        print(str(e))
+        sys.exit(1)
+
+    print("")
+    print("Building Minimal ZIP File")
+    print("=========================")
+    print("")
+
+    if not os.path.isdir("dist"):
+        os.mkdir("dist")
+
+    outFile = os.path.join("dist", "novelWriter-%s-minimal.zip" % __version__)
+    if os.path.isfile(outFile):
+        os.unlink(outFile)
+
+    rootFiles = [
+        "LICENSE.md",
+        "README.md",
+        "CHANGELOG.md",
+        "novelWriter.pyw",
+        "requirements.txt",
+        "setup.py",
+        "setup_windows.bat",
+    ]
+
+    with ZipFile(outFile, "w") as zipObj:
+        for nRoot, _, nFiles in os.walk("nw"):
+            if nRoot.endswith("__pycache__"):
+                print("Skipping: %s" % nRoot)
+                continue
+
+            print("Compressing: %s [%d files]" % (nRoot, len(nFiles)))
+            for aFile in nFiles:
+                if aFile.endswith(".pyc"):
+                    print("Skipping: %s" % aFile)
+                    continue
+                zipObj.write(os.path.join(nRoot, aFile))
+
+        for aFile in rootFiles:
+            assert os.path.isfile(aFile)
+            print("Compressing: %s" % aFile)
+            zipObj.write(aFile)
+
+    print("")
+    print("Built file: %s" % outFile)
+    print("")
+
+    return
+
+##
+#  Make Simple Package (pack-pyz)
 ##
 
 def makeSimplePackage(embedPython):
@@ -411,7 +491,7 @@ def freezePackage(buildWindowed, oneFile, makeSetup, hostOS):
 
     print("")
     print("Running PyInstaller")
-    print("###################")
+    print("===================")
     print("")
 
     if hostOS == OS_WIN:
@@ -669,7 +749,8 @@ def xdgInstall():
 def winInstall():
     """Will attempt to install icons and make a launcher for Windows.
     """
-    from nw import __version__, __hexversion__
+    import winreg
+    from nw import __version__, __status__
     try:
         import win32com.client
     except ImportError:
@@ -685,7 +766,7 @@ def winInstall():
     print("===============")
     print("")
 
-    nwTesting = not __hexversion__.endswith("f0")
+    nwTesting = not __status__.lower().startswith("stable")
     wShell = win32com.client.Dispatch("WScript.Shell")
 
     if nwTesting:
@@ -705,19 +786,7 @@ def winInstall():
 
     targetDir = os.path.abspath(os.path.dirname(__file__))
     targetPy = os.path.join(targetDir, "novelWriter.pyw")
-    targetIcon = os.path.join(targetDir, "setup", "icons", "novelwriter.ico")
-
-    os.curdir = os.path.dirname(__file__)
-    with open(targetPy, mode="w") as outFile:
-        outFile.write(
-            "#!/usr/bin/env python3\n"
-            "# -*- coding: utf-8 -*-\n\n"
-            "import os\n\n"
-            "os.curdir = os.path.abspath(os.path.dirname(__file__))\n\n"
-            "if __name__ == \"__main__\":\n"
-            "    import nw\n"
-            "    nw.main()\n"
-        )
+    targetIcon = os.path.join(targetDir, "nw", "assets", "icons", "novelwriter.ico")
 
     print("Collecting Info ...")
     print("Desktop Folder:    %s" % desktopDir)
@@ -765,6 +834,28 @@ def winInstall():
     wShortcut.WindowStyle = 1
     wShortcut.save()
     print("Created: %s" % startMenuIcon)
+
+    print("")
+    print("Creating registry keys ...")
+
+    def setKey(kPath, kName, kVal):
+        winreg.CreateKey(winreg.HKEY_CURRENT_USER, kPath)
+        regKey = winreg.OpenKey(winreg.HKEY_CURRENT_USER, kPath, 0, winreg.KEY_WRITE)
+        winreg.SetValueEx(regKey, kName, 0, winreg.REG_SZ, kVal)
+        winreg.CloseKey(regKey)
+
+    mimeIcon = os.path.join(targetDir, "nw", "assets", "icons", "x-novelwriter-project.ico")
+    mimeExec = '"%s" "%s" "%%1"' % (pythonExe, targetPy)
+
+    try:
+        setKey(r"Software\Classes\.nwx\OpenWithProgids", "novelWriterProject.nwx", "")
+        setKey(r"Software\Classes\novelWriterProject.nwx", "", "novelWriter Project File")
+        setKey(r"Software\Classes\novelWriterProject.nwx\DefaultIcon", "", mimeIcon)
+        setKey(r"Software\Classes\novelWriterProject.nwx\shell\open\command", "", mimeExec)
+        setKey(r"Software\Classes\Applications\novelWriter.pyw\SupportedTypes", ".nwx", "")
+    except WindowsError:
+        print("ERROR: Failed to set registry keys.")
+        print("")
 
     print("")
     print("Done!")
@@ -853,6 +944,8 @@ if __name__ == "__main__":
         "\n"
         "Python Packaging:\n"
         "\n"
+        "    minimal-zip  Creates a minimal zip file of the core application without all the\n"
+        "                 other source files.\n"
         "    pack-pyz     Creates a pyz package in a folder with all dependencies using the\n"
         "                 zipapp tool. On Windows, python embeddable is added to the folder.\n"
         "    freeze       Freeze the package and produces a folder with all dependencies using\n"
@@ -914,6 +1007,10 @@ if __name__ == "__main__":
 
     # Python Packaging
     # ================
+
+    if "minimal-zip" in sys.argv:
+        sys.argv.remove("minimal-zip")
+        makeMinimalPackage()
 
     if "pack-pyz" in sys.argv:
         sys.argv.remove("pack-pyz")
