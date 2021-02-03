@@ -217,7 +217,7 @@ details, or consult the [LICENSE](https://github.com/vkbo/novelWriter/blob/main/
 
 Bundled assets have the following licenses:
 
-* The Typicon-based icon themes by Stephen Hutchings are licensed under
+* The Typicons-based icon themes by Stephen Hutchings are licensed under
   [CC BY-SA 4.0](http://creativecommons.org/licenses/by-sa/4.0/). The icons have been altered in
   size and colour for use with novelWriter, and some additional icons added. The original icon set
   is available at
