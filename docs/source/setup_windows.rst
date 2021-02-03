@@ -21,7 +21,7 @@ Using the Installer
 ===================
 
 The installer for Windows is no longer provided. You can still create it yourself if you want to.
-It can be generated with the provided `setup.py` script. use the script's `help` command to get
+It can be generated with the provided ``setup.py`` script. use the script's ``help`` command to get
 further instructions.
 
 Please use the "Running from Source" option below instead.
@@ -33,11 +33,12 @@ Running from Source
 ===================
 
 To run novelWriter from source, download the latest source zip file from the release page on
-GitHub_ or the `main website`_, or if you have git running on your computer, you can also clone the
-repository.
+GitHub_ or the `main website`_. The file named ``novelWriter-x.y.z-minimal.zip``, where ``x.y.z``
+is the version number, is ideal for this. You can also download the full source.
 
 In order to make novelWriter run on your system, you must first have Python installed (Step 1).
-Thereafter, a script will do the rest of the job (Step 2). or you can do it yourself manually.
+Thereafter, a script will do the rest of the job (Step 2). or you can do it yourself manually if
+you wish to.
 
 .. _GitHub: https://github.com/vkbo/novelWriter/releases
 .. _main website: https://novelwriter.io
@@ -50,8 +51,8 @@ If you already have Python installed, you can skip this step. If you don't have 
 can download it from the python.org_ website. novelWriter should work with Python 3.6 or higher,
 but it is recommended that you install the latest version of Python.
 
-Also, make sure you select the "Add Python to PATH" option during installation, otherwise the
-``python`` command will not work in the command line window.
+Make sure you select the "Add Python to PATH" option during installation, otherwise the ``python``
+command will not work in the command line window.
 
 .. image:: images/python_win_install.png
    :width: 600
@@ -66,8 +67,8 @@ Step 2: Dependencies and Icons
 
 Open the folder where you extracted the novelWriter source, and double-click the file named
 ``setup_windows`` or ``setup_windows.bat``. This should open a command line window and run the
-setup script to install dependencies, and desktop and start menu icons. It will also check that it
-can find Python from Step 1.
+setup script to install dependencies, and add desktop and start menu icons. It will also check that
+it can find Python from Step 1.
 
 .. note::
    If you upgrade Python to a newer version and the path to ``pythonw.exe`` changes, you may need

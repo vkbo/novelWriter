@@ -35,7 +35,7 @@ functionality has been added to the main setup script to create desktop and star
   batch file, `setup_windows.bat`, has also been added. Running this file from the source folder,
   either by command line or by double-click, will install dependencies from PyPi and set up the
   icons and file association with novelWriter project files. This should make it easier to run
-  novelWriter from the source folder on Windows. PRs #634 and #641.
+  novelWriter from the source folder on Windows. PRs #634, #641 and #642.
 
 **Documentation**
 
