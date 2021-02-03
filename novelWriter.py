@@ -1,5 +1,10 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
+"""
+novelWriter – Linux Start Script
+================================
+The main start script for Linux
+"""
 
 import sys
 
