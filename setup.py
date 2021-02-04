@@ -271,6 +271,11 @@ def makeMinimalPackage():
     ]
 
     with ZipFile(outFile, "w", compression=ZIP_DEFLATED, compresslevel=9) as zipObj:
+        for nRoot, _, nFiles in os.walk("setup"):
+            print("Compressing: %s [%d files]" % (nRoot, len(nFiles)))
+            for aFile in nFiles:
+                zipObj.write(os.path.join(nRoot, aFile))
+
         for nRoot, _, nFiles in os.walk("nw"):
             if nRoot.endswith("__pycache__"):
                 print("Skipping: %s" % nRoot)
