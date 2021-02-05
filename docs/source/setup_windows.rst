@@ -7,10 +7,11 @@ Setup on Windows
 This is a brief guide to how you can get novelWriter running on a Windows computer.
 
 Unlike other operating systems, Windows does not come prepared with an environment to run Python
-applications, so you must first install Python. After that, running novelWriter is straightfoeward.
+applications, so you must first install Python. After that, running novelWriter is straightforward.
 
-If you have any problems, you can always open a question on the project's discussions_ page. This
-requires a GitHub account.
+.. tip::
+   If you have any problems, you can always open a question on the project's discussions_ page.
+   This requires a GitHub account.
 
 .. _discussions: https://github.com/vkbo/novelWriter/discussions
 
@@ -20,11 +21,15 @@ requires a GitHub account.
 Using the Installer
 ===================
 
-The installer for Windows is no longer provided. You can still create it yourself if you want to.
-It can be generated with the provided ``setup.py`` script. use the script's ``help`` command to get
-further instructions.
+The installer for Windows is no longer provided. See the `installer issue`_ for more info on why.
+You can still create the installer yourself if you want to. It can be generated with the provided
+``setup.py`` script. use the script's ``help`` command to get further instructions.
 
-Please use the "Running from Source" option below instead.
+Please use the "Running from Source" option below instead. It has been improved and a script has
+been added that does nearly the same thing.
+
+
+.. _installer issue: https://github.com/vkbo/novelWriter/issues/640
 
 
 .. _a_setup_win_source:
@@ -33,12 +38,18 @@ Running from Source
 ===================
 
 To run novelWriter from source, download the latest source zip file from the release page on
-GitHub_ or the `main website`_. The file named ``novelWriter-x.y.z-minimal.zip``, where ``x.y.z``
-is the version number, is ideal for this. You can also download the full source.
+GitHub_, or from the `main website`_. You can download the "Minimal Windows" zip file. It is a
+minimal version of the source that contains only the files needed for running on Windows. You can
+also download the full source if you wish.
 
 In order to make novelWriter run on your system, you must first have Python installed (Step 1).
-Thereafter, a script will do the rest of the job (Step 2). or you can do it yourself manually if
-you wish to.
+Thereafter, a script will do the rest of the job (Step 2). Alternatively, you can run this step
+manually from the command prompt if you wish to.
+
+.. tip::
+   If your system already has all the dependencies installed, you can run novelWriter directly from
+   the extracted folder by double-clicking the ``novelWriter.pyw`` file. However, running the
+   script also adds start icons.
 
 .. _GitHub: https://github.com/vkbo/novelWriter/releases
 .. _main website: https://novelwriter.io
@@ -66,13 +77,17 @@ Step 2: Dependencies and Icons
 **Alternative A: By Script**
 
 Open the folder where you extracted the novelWriter source, and double-click the file named
-``setup_windows`` or ``setup_windows.bat``. This should open a command line window and run the
-setup script to install dependencies, and add desktop and start menu icons. It will also check that
-it can find Python from Step 1.
+``setup_windows.bat``. This should open a command line window and run the setup script to install
+dependencies, and add desktop and start menu icons.
+
+The script will also check that it can find Python on your system and alert you if it cannot run
+it. If you are sure you have installed it, but the script cannot find it, you probably didn't
+install it with the "Add Python to PATH" option mentioned in Step 1.
 
 .. note::
-   If you upgrade Python to a newer version and the path to ``pythonw.exe`` changes, you may need
-   to run this script again.
+   If you upgrade Python to a newer version and the path to ``pythonw.exe`` has therefore changed,
+   you may need to run this script again. You can also run it to upgrade dependencies to the latest
+   version.
 
 **Alternative B: Manual Installation**
 
