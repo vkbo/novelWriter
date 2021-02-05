@@ -489,127 +489,6 @@ def makeSimplePackage(embedPython):
 
     return
 
-##
-#  Run PyInstaller on Package (freeze, onefile)
-##
-
-def freezePackage(buildWindowed, oneFile, makeSetup, hostOS):
-    """Run PyInstaller to freeze the packages. This assumes all
-    dependencies are already in place.
-    """
-    try:
-        import PyInstaller.__main__ # noqa: E402
-    except ImportError:
-        print(
-            "ERROR: Package 'pyinstaller' is missing on this system.\n"
-            "       Please run 'pip install --user pyinstaller'."
-        )
-        sys.exit(1)
-
-    print("")
-    print("Running PyInstaller")
-    print("===================")
-    print("")
-
-    if hostOS == OS_WIN:
-        dotDot = ";"
-    else:
-        dotDot = ":"
-
-    sys.modules["FixTk"] = None
-    instOpt = [
-        "--name=novelWriter",
-        "--clean",
-        "--add-data=%s%s%s" % (os.path.join("nw", "assets"), dotDot, "assets"),
-        "--icon=%s" % os.path.join("nw", "assets", "icons", "novelwriter.ico"),
-        "--exclude-module=PyQt5.QtQml",
-        "--exclude-module=PyQt5.QtBluetooth",
-        "--exclude-module=PyQt5.QtDBus",
-        "--exclude-module=PyQt5.QtMultimedia",
-        "--exclude-module=PyQt5.QtMultimediaWidgets",
-        "--exclude-module=PyQt5.QtNetwork",
-        "--exclude-module=PyQt5.QtNetworkAuth",
-        "--exclude-module=PyQt5.QtNfc",
-        "--exclude-module=PyQt5.QtQuick",
-        "--exclude-module=PyQt5.QtQuickWidgets",
-        "--exclude-module=PyQt5.QtRemoteObjects",
-        "--exclude-module=PyQt5.QtSensors",
-        "--exclude-module=PyQt5.QtSerialPort",
-        "--exclude-module=PyQt5.QtSql",
-        "--exclude-module=FixTk",
-        "--exclude-module=tcl",
-        "--exclude-module=tk",
-        "--exclude-module=_tkinter",
-        "--exclude-module=tkinter",
-        "--exclude-module=Tkinter",
-    ]
-
-    if buildWindowed:
-        instOpt.append("--windowed")
-
-    if oneFile and not makeSetup:
-        instOpt.append("--onefile")
-    else:
-        instOpt.append("--onedir")
-
-    instOpt.append("novelWriter.py")
-
-    # Make sample.zip first
-    try:
-        buildSampleZip()
-    except Exception as e:
-        print("Failed with error:")
-        print(str(e))
-        sys.exit(1)
-
-    PyInstaller.__main__.run(instOpt)
-
-    if not oneFile:
-        # These files are not needed, and take up a fair bit of space.
-        delFiles = []
-        if hostOS == OS_WIN:
-            delFiles = [
-                "Qt5DBus.dll",
-                "Qt5Network.dll",
-                "Qt5Qml.dll",
-                "Qt5QmlModels.dll",
-                "Qt5Quick.dll",
-                "Qt5Quick3D.dll",
-                "Qt5Quick3DAssetImport.dll",
-                "Qt5Quick3DRender.dll",
-                "Qt5Quick3DRuntimeRender.dll",
-                "Qt5Quick3DUtils.dll",
-                "Qt5Sql.dll"
-            ]
-        elif hostOS == OS_LINUX:
-            delFiles = [
-                "libQt5DBus.so.5",
-                "libQt5Network.so.5",
-                "libQt5Qml.so.5",
-                "libQt5QmlModels.so.5",
-                "libQt5Quick.so.5",
-                "libQt5Quick3D.so.5",
-                "libQt5Quick3DAssetImport.so.5",
-                "libQt5Quick3DRender.so.5",
-                "libQt5Quick3DRuntimeRender.so.5",
-                "libQt5Quick3DUtils.so.5",
-                "libQt5Sql.so.5"
-            ]
-        distDir = os.path.join(os.getcwd(), "dist", "novelWriter")
-        for delFile in delFiles:
-            delPath = os.path.join(distDir, delFile)
-            if os.path.isfile(delPath):
-                print("Deleting file: %s" % delPath)
-                os.unlink(delPath)
-
-    print("")
-    print("Build Finished")
-    print("")
-    print("The novelWriter executable should be in the folder named 'dist'")
-    print("")
-
-    return
-
 # =============================================================================================== #
 #  General Installers
 # =============================================================================================== #
@@ -888,9 +767,8 @@ def winInstall():
 #  Inno Setup Builder (setup-exe, setup-pyz)
 ##
 
-def innoSetup(setupType):
-    """Run the Inno Setup tool to build a setup.exe file for Windows based on either a pyinstaller
-    freeze package (exe) or a zipapp package (pyz).
+def innoSetup():
+    """Run the Inno Setup tool to build a setup.exe file for Windows based on the pyz package.
     """
     print("")
     print("Running Inno Setup")
@@ -899,7 +777,7 @@ def innoSetup(setupType):
 
     # Read the iss template
     issData = ""
-    with open(os.path.join("setup", "win_setup_%s.iss" % setupType), mode="r") as inFile:
+    with open(os.path.join("setup", "win_setup_pyz.iss"), mode="r") as inFile:
         issData = inFile.read()
 
     import nw # noqa: E402
@@ -938,14 +816,14 @@ if __name__ == "__main__":
         hostOS = OS_NONE
 
     # Set Target OS
-    if "--linux" in sys.argv:
-        sys.argv.remove("--linux")
+    if "--target-linux" in sys.argv:
+        sys.argv.remove("--target-linux")
         targetOS = OS_LINUX
-    elif "--darwin" in sys.argv:
-        sys.argv.remove("--darwin")
+    elif "--target-darwin" in sys.argv:
+        sys.argv.remove("--target-darwin")
         targetOS = OS_DARWIN
-    elif "--win" in sys.argv:
-        sys.argv.remove("--win")
+    elif "--target-win" in sys.argv:
+        sys.argv.remove("--target-win")
         targetOS = OS_WIN
     else:
         targetOS = hostOS
@@ -959,7 +837,7 @@ if __name__ == "__main__":
         "as a package on Linux, Mac and Windows. The available options are as follows:\n"
         "\n"
         "Some of the commands can be targeted towards a different OS than the host OS. To target\n"
-        "the command, add one of '--linux', '--darwin' or '--win'.\n"
+        "the command, add one of '--target-linux', '--target-darwin' or '--target-win'.\n"
         "\n"
         "General:\n"
         "\n"
@@ -980,12 +858,9 @@ if __name__ == "__main__":
         "                 other source files. Accepts a target OS flag.\n"
         "    pack-pyz     Creates a pyz package in a folder with all dependencies using the\n"
         "                 zipapp tool. On Windows, python embeddable is added to the folder.\n"
-        "    freeze       Freeze the package and produces a folder with all dependencies using\n"
-        "                 the pyinstaller tool. This option is not designed for a specific OS.\n"
-        "    onefile      Build a standalone executable with all dependencies bundled using the\n"
-        "                 pyinstaller tool. Implies 'freeze', cannot be used with 'setup-exe'.\n"
+        "    setup-pyz    Build a Windows installer from a zipapp package using Inno Setup.\n"
         "\n"
-        "General Installers:\n"
+        "System Install:\n"
         "\n"
         "    install      Installs novelWriter to the system's Python install location. Run as \n"
         "                 root or with sudo for system-wide install, or as user for single user \n"
@@ -993,20 +868,10 @@ if __name__ == "__main__":
         "    xdg-install  Install launcher and icons for freedesktop systems. Run as root or \n"
         "                 with sudo for system-wide install, or as user for single user install.\n"
         "    win-install  Install desktop and start menu icons for Windows systems.\n"
-        "\n"
-        "Windows Installers:\n"
-        "\n"
-        "    setup-exe    Build a Windows installer from a pyinstaller freeze package using Inno\n"
-        "                 Setup. This option automatically disables 'onefile'.\n"
-        "    setup-pyz    Build a Windows installer from a zipapp package using Inno Setup.\n"
     )
 
     # Flags and Variables
-    buildWindowed = True
-    oneFile = False
-    makeSetupExe = False
     makeSetupPyz = False
-    doFreeze = False
     simplePack = False
     embedPython = False
 
@@ -1050,15 +915,6 @@ if __name__ == "__main__":
         if hostOS == OS_WIN:
             embedPython = True
 
-    if "freeze" in sys.argv:
-        sys.argv.remove("freeze")
-        doFreeze = True
-
-    if "onefile" in sys.argv:
-        sys.argv.remove("onefile")
-        doFreeze = True
-        oneFile = True
-
     # General Installers
     # ==================
 
@@ -1083,23 +939,12 @@ if __name__ == "__main__":
             print("ERROR: Command 'win-install' can only be used on Windows")
             sys.exit(1)
 
-    # Windows Setup Installers
-    # ========================
-
-    if "setup-exe" in sys.argv:
-        sys.argv.remove("setup-exe")
-        if hostOS == OS_WIN:
-            oneFile = False
-            makeSetupExe = True
-            makeSetupPyz = False
-        else:
-            print("Error: Command 'setup-exe' for Inno Setup is Windows only.")
-            sys.exit(1)
+    # Windows Setup Installer
+    # =======================
 
     if "setup-pyz" in sys.argv:
         sys.argv.remove("setup-pyz")
         if hostOS == OS_WIN:
-            makeSetupExe = False
             makeSetupPyz = True
         else:
             print("Error: Command 'setup-pyz' for Inno Setup is Windows only.")
@@ -1113,14 +958,8 @@ if __name__ == "__main__":
     if simplePack:
         makeSimplePackage(embedPython)
 
-    if doFreeze:
-        freezePackage(buildWindowed, oneFile, makeSetupExe, hostOS)
-
-    if makeSetupExe:
-        innoSetup("exe")
-
     if makeSetupPyz:
-        innoSetup("pyz")
+        innoSetup()
 
     if len(sys.argv) <= 1:
         # Nothing more to do
