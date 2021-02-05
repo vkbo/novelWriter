@@ -8,9 +8,13 @@ The root folder of the repository contains two scripts for setup and install:
 The `setup.py` is a standard Python setup script with a couple of additional
 options:
 
+Some of the commands can be targeted towards a different OS than the host OS.
+To target the command, add one of `--target-linux`, `--target-darwin` or
+`--target-win`.
+
 ### General
 
-`help` – Print the help message
+`help` – Print the help message.
 
 `pip` – Install all package dependencies for novelWriter using pip.
 
@@ -26,16 +30,15 @@ creating sample projects in the in-app New Project Wizard.
 
 ### Python Packaging
 
+`minimal-zip` – Creates a minimal zip file of the core application without all
+the other source files.
+
 `pack-pyz` – Creates a pyz package in a folder with all dependencies using the
-zipapp tool. This option is intended for Windows deployment.
+zipapp tool. On Windows, python embeddable is added to the folder.
 
-`freeze` – Freeze the package and produces a folder with all dependencies using
-the pyinstaller tool. This option is not designed for a specific OS.
+`setup-pyz` – Build a Windows installer from a zipapp package using Inno Setup.
 
-`onefile` – Build a standalone executable with all dependencies bundled using
-the pyinstaller tool. Implies `freeze`, cannot be used with `setup-exe`
-
-### General Installers
+### System Install
 
 `install` – Installs novelWriter to the system's Python install location. Run
 as root or with sudo for system-wide install, or as user for single user
@@ -44,9 +47,4 @@ install.
 `xdg-install` – Install launcher and icons for freedesktop systems. Run as root
 or with sudo for system-wide install, or as user for single user install.
 
-### Windows Installers
-
-`setup-exe` – Build a Windows installer from a pyinstaller freeze package using
-Inno Setup. This option automatically disables `onefile`.
-
-`setup-pyz` – Build a Windows installer from a zipapp package using Inno Setup.
+`win-install` – Install desktop and start menu icons for Windows systems.
