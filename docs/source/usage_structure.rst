@@ -86,10 +86,11 @@ more details.
 Tag References
 ==============
 
-Each text partition indicated by a heading of any level, can contain references to tags set in the
-supporting notes of the project. The references are gathered by the indexer and used to generate
-an outline view on the :guilabel:`Outline` tab of how the different parts of the novel are
-connected.
+Each text partition, indicated by a heading of any level, can contain references to tags set in the
+supporting notes of the project. The references are gathered by the indexer and used to generate an
+outline view on the :guilabel:`Outline` tab of how the different parts of the novel are connected.
+This section covers how to set references to tags. See :ref:`a_notes_tags` for how to define tags
+the references can point to.
 
 References and tags are also clickable in the document editor and viewer, making it easy to
 navigate between reference notes while writing. Clicked links are always opened in the view panel.

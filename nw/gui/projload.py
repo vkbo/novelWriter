@@ -129,6 +129,9 @@ class GuiProjectLoad(QDialog):
         self.newButton = self.buttonBox.addButton("New", QDialogButtonBox.ActionRole)
         self.newButton.clicked.connect(self._doNewProject)
 
+        self.delButton = self.buttonBox.addButton("Remove", QDialogButtonBox.ActionRole)
+        self.delButton.clicked.connect(self._doDeleteRecent)
+
         self.outerBox.addLayout(self.innerBox)
         self.outerBox.addWidget(self.buttonBox)
         self.setLayout(self.outerBox)
@@ -138,7 +141,7 @@ class GuiProjectLoad(QDialog):
 
         keyDelete = QShortcut(self.listBox)
         keyDelete.setKey(QKeySequence(Qt.Key_Delete))
-        keyDelete.activated.connect(self._keyPressDelete)
+        keyDelete.activated.connect(self._doDeleteRecent)
 
         logger.debug("GuiProjectLoad initialisation complete")
 
@@ -212,15 +215,16 @@ class GuiProjectLoad(QDialog):
         self.accept()
         return
 
-    def _keyPressDelete(self):
+    def _doDeleteRecent(self):
         """Remove an entry from the recent projects list.
         """
         selList = self.listBox.selectedItems()
         if selList:
-            msgYes = self.theParent.askQuestion(
-                "Remove Entry",
-                "Remove the selected entry from the recent projects list?"
-            )
+            projName = selList[0].text(self.C_NAME)
+            msgYes = self.theParent.askQuestion("Remove Entry", (
+                "Remove '%s' from the recent projects list? "
+                "The project files will not be deleted."
+            ) % projName)
             if msgYes:
                 self.mainConf.removeFromRecentCache(
                     selList[0].data(self.C_NAME, Qt.UserRole)
