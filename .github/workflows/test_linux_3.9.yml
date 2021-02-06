@@ -2,9 +2,9 @@ name: Linux (3.9)
 
 on:
   push:
-    branches: [ main, dev, release ]
+    branches: [ main, testing, dev ]
   pull_request:
-    branches: [ main, dev, release ]
+    branches: [ main, testing, dev ]
 
 jobs:
   testLinux39:
