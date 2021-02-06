@@ -382,7 +382,7 @@ class GuiBuildNovel(QDialog):
         self.btnPrint = QPushButton("Print")
         self.btnPrint.setMenu(self.printMenu)
 
-        self.printSend = QAction("Send to Printer", self)
+        self.printSend = QAction("Print Preview", self)
         self.printSend.triggered.connect(self._printDocument)
         self.printMenu.addAction(self.printSend)
 
