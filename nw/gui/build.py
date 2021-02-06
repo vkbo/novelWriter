@@ -32,7 +32,7 @@ import os
 from time import time
 from datetime import datetime
 
-from PyQt5.QtCore import Qt, QByteArray, QTimer
+from PyQt5.QtCore import Qt, QTimer
 from PyQt5.QtPrintSupport import QPrinter, QPrintPreviewDialog
 from PyQt5.QtGui import (
     QPalette, QColor, QFont, QCursor, QFontInfo
