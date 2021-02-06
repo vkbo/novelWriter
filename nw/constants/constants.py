@@ -213,7 +213,6 @@ class nwQuotes():
     """Allowed quotation marks.
     Source: https://en.wikipedia.org/wiki/Quotation_mark
     """
-
     SYMBOLS = {
         "\u0027" : "Straight single quotation mark",
         "\u0022" : "Straight double quotation mark",
@@ -244,7 +243,6 @@ class nwQuotes():
 class nwUnicode:
     """Supported unicode character constants and their HTML equivalents.
     """
-
     # Unicode Constants
     # =================
 

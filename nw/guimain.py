@@ -817,6 +817,14 @@ class GuiMain(QMainWindow):
         self.novelView.refreshTree()
         return
 
+    def requestNovelTreeRefresh(self):
+        """Update the novel tree, but only if it is visible.
+        """
+        if self.projTabs.currentIndex() == self.idxNovelView and self.hasProject:
+            self.novelView.refreshTree()
+            return True
+        return False
+
     def rebuildIndex(self, beQuiet=False):
         """Rebuild the entire index.
         """
