@@ -623,7 +623,6 @@ class GuiBuildNovel(QDialog):
 
         isHtml = isinstance(bldObj, ToHtml)
         isOdt  = isinstance(bldObj, ToOdt)
-        # isMd   = isinstance(bldObj, ToMarkdown)
 
         bldObj.setTitleFormat(fmtTitle)
         bldObj.setChapterFormat(fmtChapter)
@@ -849,11 +848,22 @@ class GuiBuildNovel(QDialog):
             except Exception as e:
                 errMsg = str(e)
 
-        elif theFmt in (self.FMT_NWD, self.FMT_MD, self.FMT_GH):
+        elif theFmt == self.FMT_NWD:
+            makeNwd = ToMarkdown(self.theProject, self.theParent)
+            makeNwd.setKeepMarkdown(True)
+            self._doBuild(makeNwd, doConvert=False)
+            if replaceTabs:
+                makeNwd.replaceTabs(spaceChar=" ")
+
+            try:
+                makeNwd.saveRawMarkdown(savePath)
+                wSuccess = True
+            except Exception as e:
+                errMsg = str(e)
+
+        elif theFmt in (self.FMT_MD, self.FMT_GH):
             makeMd = ToMarkdown(self.theProject, self.theParent)
-            if theFmt == self.FMT_NWD:
-                makeMd.setNovelWriterMarkdown()
-            elif theFmt == self.FMT_GH:
+            if theFmt == self.FMT_GH:
                 makeMd.setGitHubMarkdown()
             else:
                 makeMd.setStandardMarkdown()

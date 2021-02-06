@@ -20,7 +20,10 @@ You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
 
+import os
 import pytest
+
+from tools import readFile
 
 from nw.core import NWProject, NWDoc
 from nw.core.tokenizer import Tokenizer
@@ -181,6 +184,11 @@ def testCoreToken_TextOps(monkeypatch, nwMinimal, dummyGUI):
     theToken.theResult = r"This is text with escapes: \** \~~ \__"
     theToken.doPostProcessing()
     assert theToken.theResult == "This is text with escapes: ** ~~ __"
+
+    # Save File
+    savePath = os.path.join(nwMinimal, "dump.nwd")
+    theToken.saveRawMarkdown(savePath)
+    assert readFile(savePath) == "# Notes: Plot\n\n"
 
 # END Test testCoreToken_TextOps
 
@@ -393,11 +401,6 @@ def testCoreToken_Tokenize(dummyGUI):
         ),
         (Tokenizer.T_EMPTY, 1, "", None, Tokenizer.A_NONE),
     ]
-    assert theToken.theMarkdown[-1] == (
-        "Some **nested bold and _italic_ and ~~strikethrough~~ text** here\n\n"
-    )
-
-    # Check the markdown function as well
     assert theToken.theMarkdown[-1] == (
         "Some **nested bold and _italic_ and ~~strikethrough~~ text** here\n\n"
     )

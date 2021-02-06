@@ -35,7 +35,6 @@ class ToMarkdown(Tokenizer):
 
     M_STD = 0 # Standard Markdown
     M_GH  = 1 # GitHub Markdown
-    M_NW  = 2 # novelWriter Markdown
 
     def __init__(self, theProject, theParent):
         Tokenizer.__init__(self, theProject, theParent)
@@ -55,10 +54,6 @@ class ToMarkdown(Tokenizer):
 
     def setGitHubMarkdown(self):
         self.genMode = self.M_GH
-        return
-
-    def setNovelWriterMarkdown(self):
-        self.genMode = self.M_NW
         return
 
     ##
@@ -139,10 +134,10 @@ class ToMarkdown(Tokenizer):
                     thisPar.append(tTemp.rstrip() + " ")
 
             elif tType == self.T_SYNOPSIS and self.doSynopsis:
-                tmpResult.append(self._formatSynopsis(tText))
+                tmpResult.append("**Synopsis:** %s\n\n" % tText)
 
             elif tType == self.T_COMMENT and self.doComments:
-                tmpResult.append(self._formatComments(tText))
+                tmpResult.append("**Comment:** %s\n\n" % tText)
 
             elif tType == self.T_KEYWORD and self.doKeywords:
                 tmpResult.append(self._formatKeywords(tText, tStyle))
@@ -155,7 +150,7 @@ class ToMarkdown(Tokenizer):
         return
 
     def saveMarkdown(self, savePath):
-        """Save the data to a plain text file file.
+        """Save the data to a plain text file.
         """
         with open(savePath, mode="w", encoding="utf8") as outFile:
             theText = "".join(self.fullMD)
@@ -178,22 +173,6 @@ class ToMarkdown(Tokenizer):
     #  Internal Functions
     ##
 
-    def _formatSynopsis(self, tText):
-        """Apply Markdown formatting to synopsis.
-        """
-        if self.genMode == self.M_NW:
-            return "%% Synopsis: %s\n\n" % tText
-        else:
-            return "**Synopsis:** %s\n\n" % tText
-
-    def _formatComments(self, tText):
-        """Apply Markdown formatting to comments.
-        """
-        if self.genMode == self.M_NW:
-            return "%% %s\n\n" % tText
-        else:
-            return "**Comment:** %s\n\n" % tText
-
     def _formatKeywords(self, tText, tStyle):
         """Apply Markdown formatting to keywords.
         """
@@ -203,15 +182,12 @@ class ToMarkdown(Tokenizer):
 
         retText = ""
         if theBits[0] in nwLabels.KEY_NAME:
-            if self.genMode == self.M_NW:
-                retText += "%s: " % theBits[0]
-            else:
-                retText += "**%s:** " % nwLabels.KEY_NAME[theBits[0]]
+            retText += "**%s:** " % nwLabels.KEY_NAME[theBits[0]]
 
             if len(theBits) > 1:
                 retText += ", ".join(theBits[1:])
 
-        if tStyle & self.A_Z_BTMMRG and self.genMode != self.M_NW:
+        if tStyle & self.A_Z_BTMMRG:
             retText += "  \n"
         else:
             retText += "\n\n"

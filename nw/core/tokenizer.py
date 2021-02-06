@@ -628,6 +628,14 @@ class Tokenizer():
 
         return True
 
+    def saveRawMarkdown(self, savePath):
+        """Save the data to a plain text file.
+        """
+        with open(savePath, mode="w", encoding="utf8") as outFile:
+            for nwdPage in self.theMarkdown:
+                outFile.write(nwdPage)
+        return
+
     ##
     #  Internal Functions
     ##
