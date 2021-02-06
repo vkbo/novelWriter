@@ -132,6 +132,12 @@ class ToOdt(Tokenizer):
         self._mBotText  = "0.247cm"
         self._mBotMeta  = "0.106cm"
 
+        ## Document Margins
+        self._mDocTop   = "2.000cm"
+        self._mDocBtm   = "2.000cm"
+        self._mDocLeft  = "2.000cm"
+        self._mDocRight = "2.000cm"
+
         ## Colour
         self._colHead12 = None
         self._opaHead12 = None
@@ -683,10 +689,6 @@ class ToOdt(Tokenizer):
     def _pageStyles(self):
         """Set the default page style.
         """
-        # If we're in flat layout, the page style goes to the main auto-styles
-        # In archived file, we make a duplicate auto-styles in the self._xPage
-        # variable which is later added to the styles.xml to go with the
-        # master-page definition
         theAttr = {}
         theAttr[_mkTag("style", "name")] = "PM1"
         if self._isFlat:
@@ -695,10 +697,10 @@ class ToOdt(Tokenizer):
             xPage = etree.SubElement(self._xAut2, _mkTag("style", "page-layout"), attrib=theAttr)
 
         theAttr = {}
-        theAttr[_mkTag("fo", "margin-top")]    = "2.000cm"
-        theAttr[_mkTag("fo", "margin-bottom")] = "2.000cm"
-        theAttr[_mkTag("fo", "margin-left")]   = "2.000cm"
-        theAttr[_mkTag("fo", "margin-right")]  = "2.000cm"
+        theAttr[_mkTag("fo", "margin-top")]    = self._mDocTop
+        theAttr[_mkTag("fo", "margin-bottom")] = self._mDocBtm
+        theAttr[_mkTag("fo", "margin-left")]   = self._mDocLeft
+        theAttr[_mkTag("fo", "margin-right")]  = self._mDocRight
         etree.SubElement(xPage, _mkTag("style", "page-layout-properties"), attrib=theAttr)
 
         xHead = etree.SubElement(xPage, _mkTag("style", "header-style"))
@@ -707,7 +709,7 @@ class ToOdt(Tokenizer):
         theAttr[_mkTag("fo", "min-height")]    = "0.600cm"
         theAttr[_mkTag("fo", "margin-left")]   = "0.000cm"
         theAttr[_mkTag("fo", "margin-right")]  = "0.000cm"
-        theAttr[_mkTag("fo", "margin-bottom")] = "0.499cm"
+        theAttr[_mkTag("fo", "margin-bottom")] = "0.500cm"
         etree.SubElement(xHead, _mkTag("style", "header-footer-properties"), attrib=theAttr)
 
         return
