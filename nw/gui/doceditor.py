@@ -1988,6 +1988,7 @@ class GuiDocEditSearch(QFrame):
         if theText is not None:
             self.searchBox.setText(theText)
         self.searchBox.setFocus()
+        self.searchBox.selectAll()
         if self.isRegEx:
             self._alertSearchValid(True)
         logger.verbose("Setting search text to '%s'" % theText)
