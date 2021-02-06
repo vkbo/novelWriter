@@ -44,10 +44,9 @@ The following Python packages are needed to run novelWriter:
 * ``pyenchant`` – needed for efficient spell checking (optional).
 
 PyQt/Qt should be at least 5.2.1, but ideally 5.10 or higher for nearly all features to work.
-Exporting to standard Markdown, for instance, requires PyQt/Qt 5.14. Searching using regular
-expressions requires 5.3, and for full Unicode support, 5.13. There is no known minimum version
-requirement for package ``lxml``, but the code was originally written with 4.2, which is therefore
-set as the minimum. It may work on lower versions. You have to test it.
+Searching using regular expressions requires 5.3, and for full Unicode support, 5.13. There is no
+known minimum version requirement for package ``lxml``, but the code was originally written with
+4.2, which is therefore set as the minimum. It may work on lower versions. You have to test it.
 
 Optionally, a package can be installed to interface with the Enchant spell checking libaries, but
 this isn't strictly required. If no external spell checking library is available, novelWriter falls

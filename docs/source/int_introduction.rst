@@ -93,13 +93,11 @@ Project Export
 ==============
 
 The project can at any time be exported to a range of different formats through the
-:guilabel:`Build Novel Project` tool. Natively, novelWriter supports export to plain text file,
-HTML document, novelWriter flavoured markdown, standard markdown (requires Qt 5.14), and to a basic
-Open Document format.
+:guilabel:`Build Novel Project` tool. Natively, novelWriter supports export to Open Document,
+HTML5, and various flavours of Markdown.
 
-In addition, printing and printing to PDF is also possible. The best supported export format is
-HTML, which can be imported or converted by a number of other tools like Pandoc, or simply imported
-into Libre Office Writer and similar word processors.
+The HTML5 export format is suitable for convertion by a number of other tools like Pandoc, or for
+importing into word processors. In addition, printing and printing to PDF is also possible. 
 
 It is also possible to export the content of the project to a JSON file. This is useful if you want
 to write your own processing script in for instance Python as the entire novel can be read into a
