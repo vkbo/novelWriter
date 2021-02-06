@@ -32,10 +32,10 @@ import os
 from time import time
 from datetime import datetime
 
-from PyQt5.QtCore import Qt, QByteArray, QTimer
+from PyQt5.QtCore import Qt, QTimer
 from PyQt5.QtPrintSupport import QPrinter, QPrintPreviewDialog
 from PyQt5.QtGui import (
-    QPalette, QColor, QTextDocumentWriter, QFont, QCursor, QFontInfo
+    QPalette, QColor, QFont, QCursor, QFontInfo
 )
 from PyQt5.QtWidgets import (
     qApp, QDialog, QVBoxLayout, QHBoxLayout, QTextBrowser, QPushButton, QLabel,
@@ -46,7 +46,7 @@ from PyQt5.QtWidgets import (
 
 from nw.common import fuzzyTime, makeFileNameSafe
 from nw.gui.custom import QSwitch
-from nw.core import ToHtml, ToOdt
+from nw.core import ToHtml, ToOdt, ToMarkdown
 from nw.constants import (
     nwConst, nwAlert, nwFiles, nwItemType, nwItemLayout, nwItemClass
 )
@@ -60,8 +60,8 @@ class GuiBuildNovel(QDialog):
     FMT_PDF    = 3
     FMT_HTM    = 4
     FMT_MD     = 5
-    FMT_NWD    = 6
-    FMT_TXT    = 7
+    FMT_GH     = 6
+    FMT_NWD    = 7
     FMT_JSON_H = 8
     FMT_JSON_M = 9
 
@@ -376,11 +376,24 @@ class GuiBuildNovel(QDialog):
 
         self.buttonBox = QHBoxLayout()
 
-        self.btnPrint = QPushButton("Print")
-        self.btnPrint.clicked.connect(self._printDocument)
+        # Printing
 
-        self.btnSave = QPushButton("Save As")
+        self.printMenu = QMenu(self)
+        self.btnPrint = QPushButton("Print")
+        self.btnPrint.setMenu(self.printMenu)
+
+        self.printSend = QAction("Send to Printer", self)
+        self.printSend.triggered.connect(self._printDocument)
+        self.printMenu.addAction(self.printSend)
+
+        self.printFile = QAction("Print to PDF", self)
+        self.printFile.triggered.connect(lambda: self._saveDocument(self.FMT_PDF))
+        self.printMenu.addAction(self.printFile)
+
+        # Saving to File
+
         self.saveMenu = QMenu(self)
+        self.btnSave = QPushButton("Save As")
         self.btnSave.setMenu(self.saveMenu)
 
         self.saveODT = QAction("Open Document (.odt)", self)
@@ -391,10 +404,6 @@ class GuiBuildNovel(QDialog):
         self.saveFODT.triggered.connect(lambda: self._saveDocument(self.FMT_FODT))
         self.saveMenu.addAction(self.saveFODT)
 
-        self.savePDF = QAction("Portable Document Format (.pdf)", self)
-        self.savePDF.triggered.connect(lambda: self._saveDocument(self.FMT_PDF))
-        self.saveMenu.addAction(self.savePDF)
-
         self.saveHTM = QAction("novelWriter HTML (.htm)", self)
         self.saveHTM.triggered.connect(lambda: self._saveDocument(self.FMT_HTM))
         self.saveMenu.addAction(self.saveHTM)
@@ -403,14 +412,13 @@ class GuiBuildNovel(QDialog):
         self.saveNWD.triggered.connect(lambda: self._saveDocument(self.FMT_NWD))
         self.saveMenu.addAction(self.saveNWD)
 
-        if self.mainConf.verQtValue >= 51400:
-            self.saveMD = QAction("Markdown (.md)", self)
-            self.saveMD.triggered.connect(lambda: self._saveDocument(self.FMT_MD))
-            self.saveMenu.addAction(self.saveMD)
+        self.saveMD = QAction("Standard Markdown (.md)", self)
+        self.saveMD.triggered.connect(lambda: self._saveDocument(self.FMT_MD))
+        self.saveMenu.addAction(self.saveMD)
 
-        self.saveTXT = QAction("Plain Text (.txt)", self)
-        self.saveTXT.triggered.connect(lambda: self._saveDocument(self.FMT_TXT))
-        self.saveMenu.addAction(self.saveTXT)
+        self.saveGH = QAction("GitHub Markdown (.md)", self)
+        self.saveGH.triggered.connect(lambda: self._saveDocument(self.FMT_GH))
+        self.saveMenu.addAction(self.saveGH)
 
         self.saveJsonH = QAction("JSON + novelWriter HTML (.json)", self)
         self.saveJsonH.triggered.connect(lambda: self._saveDocument(self.FMT_JSON_H))
@@ -526,7 +534,6 @@ class GuiBuildNovel(QDialog):
                 self.docView.setText(
                     "Failed to generate preview. The result is too big."
                 )
-                self._enableQtSave(False)
 
         else:
             self.htmlText = []
@@ -579,12 +586,10 @@ class GuiBuildNovel(QDialog):
 
         if self.htmlSize < nwConst.MAX_BUILDSIZE:
             self.docView.setContent(self.htmlText, self.buildTime)
-            self._enableQtSave(True)
         else:
             self.docView.setText(
                 "Failed to generate preview. The result is too big."
             )
-            self._enableQtSave(False)
 
         self._saveCache()
 
@@ -672,7 +677,7 @@ class GuiBuildNovel(QDialog):
                     bldObj.doPostProcessing()
 
             except Exception:
-                logger.error("Failed to generate html of document '%s'" % tItem.itemHandle)
+                logger.error("Failed to build document '%s'" % tItem.itemHandle)
                 nw.logException()
                 if isPreview:
                     self.docView.setText((
@@ -739,55 +744,52 @@ class GuiBuildNovel(QDialog):
 
         return True
 
-    def _saveDocument(self, theFormat):
+    def _saveDocument(self, theFmt):
         """Save the document to various formats.
         """
         replaceTabs = self.replaceTabs.isChecked()
 
-        byteFmt = QByteArray()
         fileExt = ""
         textFmt = ""
 
         # Settings
         # ========
 
-        if theFormat == self.FMT_ODT:
+        if theFmt == self.FMT_ODT:
             fileExt = "odt"
             textFmt = "Open Document"
 
-        elif theFormat == self.FMT_FODT:
+        elif theFmt == self.FMT_FODT:
             fileExt = "fodt"
             textFmt = "Flat Open Document"
 
-        elif theFormat == self.FMT_PDF:
-            fileExt = "pdf"
-            textFmt = "PDF"
-
-        elif theFormat == self.FMT_HTM:
+        elif theFmt == self.FMT_HTM:
             fileExt = "htm"
             textFmt = "Plain HTML"
 
-        elif theFormat == self.FMT_MD:
-            byteFmt.append("markdown")
-            fileExt = "md"
-            textFmt = "Markdown"
-
-        elif theFormat == self.FMT_NWD:
+        elif theFmt == self.FMT_NWD:
             fileExt = "nwd"
-            textFmt = "%s Markdown" % nw.__package__
+            textFmt = "novelWriter Markdown"
 
-        elif theFormat == self.FMT_TXT:
-            byteFmt.append("plaintext")
-            fileExt = "txt"
-            textFmt = "Plain Text"
+        elif theFmt == self.FMT_MD:
+            fileExt = "md"
+            textFmt = "Standard Markdown"
 
-        elif theFormat == self.FMT_JSON_H:
+        elif theFmt == self.FMT_GH:
+            fileExt = "md"
+            textFmt = "GitHub Markdown"
+
+        elif theFmt == self.FMT_JSON_H:
             fileExt = "json"
-            textFmt = "JSON + %s HTML" % nw.__package__
+            textFmt = "JSON + novelWriter HTML"
 
-        elif theFormat == self.FMT_JSON_M:
+        elif theFmt == self.FMT_JSON_M:
             fileExt = "json"
-            textFmt = "JSON + %s Markdown" % nw.__package__
+            textFmt = "JSON + novelWriter Markdown"
+
+        elif theFmt == self.FMT_PDF:
+            fileExt = "pdf"
+            textFmt = "PDF"
 
         else:
             return False
@@ -823,13 +825,25 @@ class GuiBuildNovel(QDialog):
         errMsg = ""
         wSuccess = False
 
-        if theFormat == self.FMT_MD or theFormat == self.FMT_TXT:
-            docWriter = QTextDocumentWriter()
-            docWriter.setFileName(savePath)
-            docWriter.setFormat(byteFmt)
-            wSuccess = docWriter.write(self.docView.qDocument)
+        if theFmt == self.FMT_ODT:
+            makeOdt = ToOdt(self.theProject, self.theParent, isFlat=False)
+            self._doBuild(makeOdt)
+            try:
+                makeOdt.saveOpenDocText(savePath)
+                wSuccess = True
+            except Exception as e:
+                errMsg = str(e)
 
-        elif theFormat == self.FMT_HTM:
+        elif theFmt == self.FMT_FODT:
+            makeOdt = ToOdt(self.theProject, self.theParent, isFlat=True)
+            self._doBuild(makeOdt)
+            try:
+                makeOdt.saveFlatXML(savePath)
+                wSuccess = True
+            except Exception as e:
+                errMsg = str(e)
+
+        elif theFmt == self.FMT_HTM:
             makeHtml = ToHtml(self.theProject, self.theParent)
             self._doBuild(makeHtml)
             if replaceTabs:
@@ -841,40 +855,37 @@ class GuiBuildNovel(QDialog):
             except Exception as e:
                 errMsg = str(e)
 
-        elif theFormat == self.FMT_NWD:
-            makeNwd = ToHtml(self.theProject, self.theParent)
+        elif theFmt == self.FMT_NWD:
+            makeNwd = ToMarkdown(self.theProject, self.theParent)
             makeNwd.setKeepMarkdown(True)
             self._doBuild(makeNwd, doConvert=False)
             if replaceTabs:
                 makeNwd.replaceTabs(spaceChar=" ")
 
             try:
-                with open(savePath, mode="w", encoding="utf8") as outFile:
-                    for nwdPage in makeNwd.theMarkdown:
-                        outFile.write(nwdPage)
+                makeNwd.saveRawMarkdown(savePath)
                 wSuccess = True
             except Exception as e:
                 errMsg = str(e)
 
-        elif theFormat == self.FMT_FODT:
-            makeOdt = ToOdt(self.theProject, self.theParent, isFlat=True)
-            self._doBuild(makeOdt)
+        elif theFmt in (self.FMT_MD, self.FMT_GH):
+            makeMd = ToMarkdown(self.theProject, self.theParent)
+            if theFmt == self.FMT_GH:
+                makeMd.setGitHubMarkdown()
+            else:
+                makeMd.setStandardMarkdown()
+
+            self._doBuild(makeMd)
+            if replaceTabs:
+                makeMd.replaceTabs(nSpaces=4, spaceChar=" ")
+
             try:
-                makeOdt.saveFlatXML(savePath)
+                makeMd.saveMarkdown(savePath)
                 wSuccess = True
             except Exception as e:
                 errMsg = str(e)
 
-        elif theFormat == self.FMT_ODT:
-            makeOdt = ToOdt(self.theProject, self.theParent, isFlat=False)
-            self._doBuild(makeOdt)
-            try:
-                makeOdt.saveOpenDocText(savePath)
-                wSuccess = True
-            except Exception as e:
-                errMsg = str(e)
-
-        elif theFormat == self.FMT_JSON_H or theFormat == self.FMT_JSON_M:
+        elif theFmt == self.FMT_JSON_H or theFmt == self.FMT_JSON_M:
             jsonData = {
                 "meta" : {
                     "workingTitle" : self.theProject.projName,
@@ -884,7 +895,7 @@ class GuiBuildNovel(QDialog):
                 }
             }
 
-            if theFormat == self.FMT_JSON_H:
+            if theFmt == self.FMT_JSON_H:
                 makeHtml = ToHtml(self.theProject, self.theParent)
                 self._doBuild(makeHtml)
                 if replaceTabs:
@@ -898,15 +909,15 @@ class GuiBuildNovel(QDialog):
                     "html" : theBody,
                 }
 
-            elif theFormat == self.FMT_JSON_M:
-                makeNwd = ToHtml(self.theProject, self.theParent)
-                makeNwd.setKeepMarkdown(True)
-                self._doBuild(makeNwd, doConvert=False)
+            elif theFmt == self.FMT_JSON_M:
+                makeMd = ToHtml(self.theProject, self.theParent)
+                makeMd.setKeepMarkdown(True)
+                self._doBuild(makeMd, doConvert=False)
                 if replaceTabs:
-                    makeNwd.replaceTabs(spaceChar=" ")
+                    makeMd.replaceTabs(spaceChar=" ")
 
                 theBody = []
-                for nwdPage in makeNwd.theMarkdown:
+                for nwdPage in makeMd.theMarkdown:
                     theBody.append(nwdPage.split("\n"))
                 jsonData["text"] = {
                     "nwd" : theBody,
@@ -919,7 +930,7 @@ class GuiBuildNovel(QDialog):
             except Exception as e:
                 errMsg = str(e)
 
-        elif theFormat == self.FMT_PDF:
+        elif theFmt == self.FMT_PDF:
             try:
                 thePrinter = QPrinter()
                 thePrinter.setOutputFormat(QPrinter.PdfFormat)
@@ -1054,17 +1065,6 @@ class GuiBuildNovel(QDialog):
     ##
     #  Internal Functions
     ##
-
-    def _enableQtSave(self, theState):
-        """Set the enabled status of Save menu entries that depend on
-        the QTextDocument.
-        """
-        self.saveODT.setEnabled(theState)
-        self.savePDF.setEnabled(theState)
-        self.saveTXT.setEnabled(theState)
-        if self.mainConf.verQtValue >= 51400:
-            self.saveMD.setEnabled(theState)
-        return
 
     def _saveSettings(self):
         """Save the various user settings.

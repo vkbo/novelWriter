@@ -168,6 +168,7 @@ class ToHtml(Tokenizer):
         parStyle = None
         tmpResult = []
         hasHardBreak = False
+
         for tType, tLine, tText, tFormat, tStyle in self.theTokens:
 
             # Styles
