@@ -58,7 +58,7 @@ class ToMarkdown(Tokenizer):
         return
 
     def setNovelWriterMarkdown(self):
-        self.genMode = self.M_MD
+        self.genMode = self.M_NW
         return
 
     ##
@@ -100,29 +100,28 @@ class ToMarkdown(Tokenizer):
             if tType == self.T_EMPTY:
                 if len(thisPar) > 0:
                     tTemp = "".join(thisPar)
-                    tmpResult.append("%s\n" % tTemp)
-
+                    tmpResult.append("%s\n\n" % tTemp.rstrip(" "))
                 thisPar = []
 
             elif tType == self.T_TITLE:
                 tHead = tText.replace(r"\\", "\n")
-                tmpResult.append("# %s\n" % tHead)
+                tmpResult.append("# %s\n\n" % tHead)
 
             elif tType == self.T_HEAD1:
                 tHead = tText.replace(r"\\", "\n")
-                tmpResult.append("# %s\n" % tHead)
+                tmpResult.append("# %s\n\n" % tHead)
 
             elif tType == self.T_HEAD2:
                 tHead = tText.replace(r"\\", "\n")
-                tmpResult.append("## %s\n" % tHead)
+                tmpResult.append("## %s\n\n" % tHead)
 
             elif tType == self.T_HEAD3:
                 tHead = tText.replace(r"\\", "\n")
-                tmpResult.append("### %s\n" % tHead)
+                tmpResult.append("### %s\n\n" % tHead)
 
             elif tType == self.T_HEAD4:
                 tHead = tText.replace(r"\\", "\n")
-                tmpResult.append("#### %s\n" % tHead)
+                tmpResult.append("#### %s\n\n" % tHead)
 
             elif tType == self.T_SEP:
                 tmpResult.append("%s\n\n" % tText)
@@ -135,7 +134,7 @@ class ToMarkdown(Tokenizer):
                 for xPos, xLen, xFmt in reversed(tFormat):
                     tTemp = tTemp[:xPos] + mdTags[xFmt] + tTemp[xPos+xLen:]
                 if tText.endswith("  "):
-                    thisPar.append(tTemp.rstrip() + "  ")
+                    thisPar.append(tTemp.rstrip() + "  \n")
                 else:
                     thisPar.append(tTemp.rstrip() + " ")
 
@@ -146,7 +145,7 @@ class ToMarkdown(Tokenizer):
                 tmpResult.append(self._formatComments(tText))
 
             elif tType == self.T_KEYWORD and self.doKeywords:
-                tmpResult.append(self._formatKeywords(tText))
+                tmpResult.append(self._formatKeywords(tText, tStyle))
 
         self.theResult = "".join(tmpResult)
         tmpResult = []
@@ -183,19 +182,19 @@ class ToMarkdown(Tokenizer):
         """Apply Markdown formatting to synopsis.
         """
         if self.genMode == self.M_NW:
-            return "%% Synopsis: %s\n" % tText
+            return "%% Synopsis: %s\n\n" % tText
         else:
-            return "**Synopsis:** %s\n" % tText
+            return "**Synopsis:** %s\n\n" % tText
 
     def _formatComments(self, tText):
         """Apply Markdown formatting to comments.
         """
         if self.genMode == self.M_NW:
-            return "%% %s\n" % tText
+            return "%% %s\n\n" % tText
         else:
-            return "**Comment:** %s\n" % tText
+            return "**Comment:** %s\n\n" % tText
 
-    def _formatKeywords(self, tText):
+    def _formatKeywords(self, tText, tStyle):
         """Apply Markdown formatting to keywords.
         """
         isValid, theBits, thePos = self.theParent.theIndex.scanThis("@"+tText)
@@ -205,12 +204,17 @@ class ToMarkdown(Tokenizer):
         retText = ""
         if theBits[0] in nwLabels.KEY_NAME:
             if self.genMode == self.M_NW:
-                retText += "@%s: " % theBits[0]
+                retText += "%s: " % theBits[0]
             else:
                 retText += "**%s:** " % nwLabels.KEY_NAME[theBits[0]]
 
             if len(theBits) > 1:
                 retText += ", ".join(theBits[1:])
+
+        if tStyle & self.A_Z_BTMMRG and self.genMode != self.M_NW:
+            retText += "  \n"
+        else:
+            retText += "\n\n"
 
         return retText
 

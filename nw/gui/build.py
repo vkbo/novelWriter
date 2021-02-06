@@ -854,13 +854,13 @@ class GuiBuildNovel(QDialog):
             if theFmt == self.FMT_NWD:
                 makeMd.setNovelWriterMarkdown()
             elif theFmt == self.FMT_GH:
-                makeMd.setGitHubMarkdown
+                makeMd.setGitHubMarkdown()
             else:
                 makeMd.setStandardMarkdown()
 
             self._doBuild(makeMd)
             if replaceTabs:
-                makeMd.replaceTabs(spaceChar=" ")
+                makeMd.replaceTabs(nSpaces=4, spaceChar=" ")
 
             try:
                 makeMd.saveMarkdown(savePath)
