@@ -80,6 +80,20 @@ def testGuiBuild_Tool(qtbot, monkeypatch, nwGUI, nwLipsum, refDir, outDir):
     copyfile(projFile, testFile)
     assert cmpFiles(testFile, compFile)
 
+    assert nwBuild._saveDocument(nwBuild.FMT_MD)
+    projFile = os.path.join(nwLipsum, "Lorem Ipsum.md")
+    testFile = os.path.join(outDir, "guiBuild_Tool_Step1_Lorem_Ipsum.md")
+    compFile = os.path.join(refDir, "guiBuild_Tool_Step1_Lorem_Ipsum.md")
+    copyfile(projFile, testFile)
+    assert cmpFiles(testFile, compFile)
+
+    assert nwBuild._saveDocument(nwBuild.FMT_GH)
+    projFile = os.path.join(nwLipsum, "Lorem Ipsum.md")
+    testFile = os.path.join(outDir, "guiBuild_Tool_Step1G_Lorem_Ipsum.md")
+    compFile = os.path.join(refDir, "guiBuild_Tool_Step1G_Lorem_Ipsum.md")
+    copyfile(projFile, testFile)
+    assert cmpFiles(testFile, compFile)
+
     # Change Title Formats and Flip Switches
     nwBuild.fmtChapter.setText(r"Chapter %chw%: %title%")
     qtbot.wait(stepDelay)
@@ -119,6 +133,13 @@ def testGuiBuild_Tool(qtbot, monkeypatch, nwGUI, nwLipsum, refDir, outDir):
     copyfile(projFile, testFile)
     assert cmpFiles(testFile, compFile)
 
+    assert nwBuild._saveDocument(nwBuild.FMT_MD)
+    projFile = os.path.join(nwLipsum, "Lorem Ipsum.md")
+    testFile = os.path.join(outDir, "guiBuild_Tool_Step2_Lorem_Ipsum.md")
+    compFile = os.path.join(refDir, "guiBuild_Tool_Step2_Lorem_Ipsum.md")
+    copyfile(projFile, testFile)
+    assert cmpFiles(testFile, compFile)
+
     # Replace Tabs with Spaces
     qtbot.mouseClick(nwBuild.replaceTabs, Qt.LeftButton)
     qtbot.wait(stepDelay)
@@ -137,6 +158,13 @@ def testGuiBuild_Tool(qtbot, monkeypatch, nwGUI, nwLipsum, refDir, outDir):
     projFile = os.path.join(nwLipsum, "Lorem Ipsum.htm")
     testFile = os.path.join(outDir, "guiBuild_Tool_Step3_Lorem_Ipsum.htm")
     compFile = os.path.join(refDir, "guiBuild_Tool_Step3_Lorem_Ipsum.htm")
+    copyfile(projFile, testFile)
+    assert cmpFiles(testFile, compFile)
+
+    assert nwBuild._saveDocument(nwBuild.FMT_MD)
+    projFile = os.path.join(nwLipsum, "Lorem Ipsum.md")
+    testFile = os.path.join(outDir, "guiBuild_Tool_Step3_Lorem_Ipsum.md")
+    compFile = os.path.join(refDir, "guiBuild_Tool_Step3_Lorem_Ipsum.md")
     copyfile(projFile, testFile)
     assert cmpFiles(testFile, compFile)
 
@@ -198,12 +226,6 @@ def testGuiBuild_Tool(qtbot, monkeypatch, nwGUI, nwLipsum, refDir, outDir):
     if not nwGUI.mainConf.osDarwin:
         assert nwBuild._saveDocument(nwBuild.FMT_PDF)
         assert os.path.isfile(os.path.join(nwLipsum, "Lorem Ipsum.pdf"))
-
-    assert nwBuild._saveDocument(nwBuild.FMT_MD)
-    assert os.path.isfile(os.path.join(nwLipsum, "Lorem Ipsum.md"))
-
-    assert nwBuild._saveDocument(nwBuild.FMT_TXT)
-    assert os.path.isfile(os.path.join(nwLipsum, "Lorem Ipsum.txt"))
 
     # Close the build tool
     htmlText  = nwBuild.htmlText
