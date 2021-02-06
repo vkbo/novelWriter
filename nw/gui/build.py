@@ -366,9 +366,8 @@ class GuiBuildNovel(QDialog):
         # ============
 
         self.buildProgress = QProgressBar()
-        self.buildProgress = QProgressBar()
 
-        self.buildNovel = QPushButton("Build Project")
+        self.buildNovel = QPushButton("Build Preview")
         self.buildNovel.clicked.connect(self._buildPreview)
 
         # Action Buttons
@@ -1155,7 +1154,7 @@ class GuiBuildNovelDocView(QTextBrowser):
         self.qDocument.setDocumentMargin(self.mainConf.getTextMargin())
         self.setPlaceholderText(
             "This area will show the content of the document to be "
-            "exported or printed. Press the \"Build Project\" button "
+            "exported or printed. Press the \"Build Preview\" button "
             "to generate content."
         )
 
