@@ -66,7 +66,7 @@ __email__      = "code@vkbo.net"
 __version__    = "1.2a0"
 __hexversion__ = "0x010200a0"
 __date__       = "2020-02-01"
-__status__     = "Unstable"
+__status__     = "Stable"
 __domain__     = "novelwriter.io"
 __url__        = "https://novelwriter.io"
 __sourceurl__  = "https://github.com/vkbo/novelWriter"
@@ -132,7 +132,7 @@ def main(sysArgs=None):
     ]
 
     helpMsg = (
-        "novelWriter {version} ({status} {date})\n"
+        "novelWriter {version} ({date})\n"
         "{copyright}\n"
         "\n"
         "This program is distributed in the hope that it will be useful,\n"
@@ -151,7 +151,6 @@ def main(sysArgs=None):
         "     --data=    Alternative user data path.\n"
     ).format(
         version   = __version__,
-        status    = __status__,
         copyright = __copyright__,
         date      = __date__,
     )
@@ -181,9 +180,7 @@ def main(sysArgs=None):
             print(helpMsg)
             sys.exit(0)
         elif inOpt in ("-v", "--version"):
-            print("novelWriter %s Version %s [%s]" % (
-                __status__, __version__, __date__)
-            )
+            print("novelWriter Version %s [%s]" % (__version__, __date__))
             sys.exit(0)
         elif inOpt == "--info":
             logLevel = logging.INFO

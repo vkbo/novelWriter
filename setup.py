@@ -646,7 +646,7 @@ def winInstall():
     """Will attempt to install icons and make a launcher for Windows.
     """
     import winreg
-    from nw import __version__, __status__
+    from nw import __version__, __hexversion__
     try:
         import win32com.client
     except ImportError:
@@ -662,7 +662,7 @@ def winInstall():
     print("===============")
     print("")
 
-    nwTesting = not __status__.lower().startswith("stable")
+    nwTesting = not __hexversion__[-2] == "f"
     wShell = win32com.client.Dispatch("WScript.Shell")
 
     if nwTesting:
