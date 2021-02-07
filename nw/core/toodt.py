@@ -80,8 +80,11 @@ class ToOdt(Tokenizer):
         self._xMeta = None # Office meta root
         self._xStyl = None # Office styles root
         self._xAuto = None # Office auto-styles root
+        self._xMast = None # Office master-styles root
         self._xBody = None # Office body root
         self._xText = None # Office text root
+
+        self._xAut2 = None # Page layout auto-styles for ODT file
 
         self._mainPara = {} # User-accessible paragraph styles
         self._autoPara = {} # Auto-generated paragraph styles
@@ -92,6 +95,8 @@ class ToOdt(Tokenizer):
         self.textSize   = 12
         self.textFixed  = False
         self.colourHead = False
+        self.addHeader  = True
+        self.headerText = ""
 
         # Internal
         self._fontFamily = "&apos;Liberation Sans&apos;"
@@ -126,6 +131,12 @@ class ToOdt(Tokenizer):
         self._mBotHead  = "0.212cm"
         self._mBotText  = "0.247cm"
         self._mBotMeta  = "0.106cm"
+
+        ## Document Margins
+        self._mDocTop   = "2.000cm"
+        self._mDocBtm   = "2.000cm"
+        self._mDocLeft  = "2.000cm"
+        self._mDocRight = "2.000cm"
 
         ## Colour
         self._colHead12 = None
@@ -212,6 +223,14 @@ class ToOdt(Tokenizer):
         self._lineHeight = f"{round(100 * self.lineHeight):d}%"
         self._textAlign  = "justify" if self.doJustify else "left"
 
+        # Document Header
+        # ===============
+
+        if self.headerText == "":
+            theTitle = self.theProject.bookTitle
+            theAuth  = self.theProject.getAuthors()
+            self.headerText = f"{theTitle} / {theAuth} /"
+
         # Create Roots
         # ============
 
@@ -236,6 +255,7 @@ class ToOdt(Tokenizer):
             self._xFont = etree.SubElement(self._dFlat, _mkTag("office", "font-face-decls"))
             self._xStyl = etree.SubElement(self._dFlat, _mkTag("office", "styles"))
             self._xAuto = etree.SubElement(self._dFlat, _mkTag("office", "automatic-styles"))
+            self._xMast = etree.SubElement(self._dFlat, _mkTag("office", "master-styles"))
             self._xBody = etree.SubElement(self._dFlat, _mkTag("office", "body"))
 
             etree.SubElement(self._xFont, _mkTag("style", "font-face"), attrib=fAttr)
@@ -249,17 +269,22 @@ class ToOdt(Tokenizer):
             tMeta = _mkTag("office", "document-meta")
             tStyl = _mkTag("office", "document-styles")
 
+            # content.xml
             self._dCont = etree.Element(tCont, attrib=tAttr, nsmap=XML_NS)
             self._xFnt1 = etree.SubElement(self._dCont, _mkTag("office", "font-face-decls"))
             self._xAuto = etree.SubElement(self._dCont, _mkTag("office", "automatic-styles"))
             self._xBody = etree.SubElement(self._dCont, _mkTag("office", "body"))
 
+            # meta.xml
             self._dMeta = etree.Element(tMeta, attrib=tAttr, nsmap=XML_NS)
             self._xMeta = etree.SubElement(self._dMeta, _mkTag("office", "meta"))
 
+            # styles.xml
             self._dStyl = etree.Element(tStyl, attrib=tAttr, nsmap=XML_NS)
-            self._xFnt2 = etree.SubElement(self._dCont, _mkTag("office", "font-face-decls"))
+            self._xFnt2 = etree.SubElement(self._dStyl, _mkTag("office", "font-face-decls"))
             self._xStyl = etree.SubElement(self._dStyl, _mkTag("office", "styles"))
+            self._xAut2 = etree.SubElement(self._dStyl, _mkTag("office", "automatic-styles"))
+            self._xMast = etree.SubElement(self._dStyl, _mkTag("office", "master-styles"))
 
             etree.SubElement(self._xFnt1, _mkTag("style", "font-face"), attrib=fAttr)
             etree.SubElement(self._xFnt2, _mkTag("style", "font-face"), attrib=fAttr)
@@ -276,8 +301,10 @@ class ToOdt(Tokenizer):
         xMeta = etree.SubElement(self._xMeta, _mkTag("meta", "generator"))
         xMeta.text = f"novelWriter/{nw.__version__}"
 
+        self._pageStyles()
         self._defaultStyles()
         self._useableStyles()
+        self._writeHeader()
 
         return
 
@@ -659,6 +686,34 @@ class ToOdt(Tokenizer):
     #  Style Elements
     ##
 
+    def _pageStyles(self):
+        """Set the default page style.
+        """
+        theAttr = {}
+        theAttr[_mkTag("style", "name")] = "PM1"
+        if self._isFlat:
+            xPage = etree.SubElement(self._xAuto, _mkTag("style", "page-layout"), attrib=theAttr)
+        else:
+            xPage = etree.SubElement(self._xAut2, _mkTag("style", "page-layout"), attrib=theAttr)
+
+        theAttr = {}
+        theAttr[_mkTag("fo", "margin-top")]    = self._mDocTop
+        theAttr[_mkTag("fo", "margin-bottom")] = self._mDocBtm
+        theAttr[_mkTag("fo", "margin-left")]   = self._mDocLeft
+        theAttr[_mkTag("fo", "margin-right")]  = self._mDocRight
+        etree.SubElement(xPage, _mkTag("style", "page-layout-properties"), attrib=theAttr)
+
+        xHead = etree.SubElement(xPage, _mkTag("style", "header-style"))
+
+        theAttr = {}
+        theAttr[_mkTag("fo", "min-height")]    = "0.600cm"
+        theAttr[_mkTag("fo", "margin-left")]   = "0.000cm"
+        theAttr[_mkTag("fo", "margin-right")]  = "0.000cm"
+        theAttr[_mkTag("fo", "margin-bottom")] = "0.500cm"
+        etree.SubElement(xHead, _mkTag("style", "header-footer-properties"), attrib=theAttr)
+
+        return
+
     def _defaultStyles(self):
         """Set the default styles.
         """
@@ -720,6 +775,19 @@ class ToOdt(Tokenizer):
         theAttr[_mkTag("fo",    "font-family")] = self._fontFamily
         theAttr[_mkTag("fo",    "font-size")]   = self._fSizeHead
         etree.SubElement(xStyl, _mkTag("style", "text-properties"), attrib=theAttr)
+
+        # Add Header and Footer Styles
+        # ============================
+        if not self.addHeader:
+            return
+
+        theAttr = {}
+        theAttr[_mkTag("style", "name")]              = "Header_and_Footer"
+        theAttr[_mkTag("style", "display-name")]      = "Header and Footer"
+        theAttr[_mkTag("style", "family")]            = "paragraph"
+        theAttr[_mkTag("style", "parent-style-name")] = "Standard"
+        theAttr[_mkTag("style", "class")]             = "extra"
+        etree.SubElement(self._xStyl, _mkTag("style", "style"), attrib=theAttr)
 
         return
 
@@ -865,6 +933,50 @@ class ToOdt(Tokenizer):
         oStyle.packXML(self._xStyl, "Heading_4")
 
         self._mainPara["Heading_4"] = oStyle
+
+        # Add Header Style
+        # ================
+        if not self.addHeader:
+            return
+
+        oStyle = ODTParagraphStyle()
+        oStyle.setDisplayName("Header")
+        oStyle.setParentStyleName("Header_and_Footer")
+        oStyle.setTextAlign("right")
+        oStyle.packXML(self._xStyl, "Header")
+
+        self._mainPara["Header"] = oStyle
+
+        return
+
+    def _writeHeader(self):
+        """Write the header elements.
+        """
+        if not self.addHeader:
+            return
+
+        theAttr = {}
+        theAttr[_mkTag("style", "name")]             = "Standard"
+        theAttr[_mkTag("style", "page-layout-name")] = "PM1"
+        xPage = etree.SubElement(self._xMast, _mkTag("style", "master-page"), attrib=theAttr)
+
+        # Standard Page Header
+        xHead = etree.SubElement(xPage, _mkTag("style", "header"))
+        xPar = etree.SubElement(xHead, _mkTag("text", "p"), attrib={
+            _mkTag("text", "style-name"): "Header"
+        })
+        xPar.text = self.headerText.strip() + " "
+
+        xTail = etree.SubElement(xPar, _mkTag("text", "page-number"), attrib={
+            _mkTag("text", "select-page"): "current"
+        })
+        xTail.text = "2"
+
+        # First Page Header
+        xHead = etree.SubElement(xPage, _mkTag("style", "header-first"))
+        xPar = etree.SubElement(xHead, _mkTag("text", "p"), attrib={
+            _mkTag("text", "style-name"): "Header"
+        })
 
         return
 
