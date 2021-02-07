@@ -4,11 +4,34 @@
 
 ### Release Notes
 
+The main change in this release is the addition of a new tab to the project tree on the left side
+of the main window. The regular project tree is now on a tab named "Project", while a new tab named
+"Novel" displays a simpler version of the information on the main "Outline" page. It lists all the
+headers of the novel part of the project, as well as the word count and point-of-view character of
+each section. This is an alternative way to navigate the novel part of the project. The various
+tree views are now also kept better in sync when the user selects various documents and headers.
+
+In addition, a new information dialog named "Project Details" has been added. It replaces the
+"Details" tab in "Project Settings", and adds more information about the novel part of the project.
+In particular, a "Table of Contents" in the "Contents" tab displays a summary of the main parts
+and chapters of the project, their total word counts, and an estimated page count. This was made in
+response to users asking for ways to estimate the total page count of the project. The page count
+is estimated based on a words per page setting, which can be changed on the dialog window.
+
+Since the tabs below the project tree now add some extra room on the GUI, some convenient buttons
+have been added in the same area, with direct access to "Project Details", "Writing Statistics" and
+"Project Setting".
+
+A few other minor changes have been made as well. The Preferences dialog has been improved with
+clearer categories and hopefully better help text. Some new options have been added too. They allow
+syntax highlighting of multi-paragraph quotes. The highlighter can now optionally accept quotes to
+be left "hanging", that is, no closing quote in the same paragraph.
+
 ### Detailed Changelog
 
 **Bugfixes**
 
-* A missing `None` check in the details panel below the project tree was missing, resulting in an
+* A `None` check in the details panel below the project tree was missing, resulting in an
   occasional error message being printed to the logging output. The error was otherwise handles, so
   this is mainly a fix to prevent the error message. PR #639.
 
