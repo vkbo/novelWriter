@@ -72,7 +72,7 @@ def testGuiWritingStats_Dialog(qtbot, monkeypatch, nwGUI, fncDir, fncProj):
     # Make a test log file
     writeFile(sessFile, (
         "# Offset 123\n"
-        "# Start Time         End Time                Novel     Notes\n"
+        "# Start Time         End Time                Novel     Notes      Idle\n"
         "2020-01-01 21:00:00  2020-01-01 21:00:05         6         0\n"
         "2020-01-03 21:00:00  2020-01-03 21:00:15       125         0\n"
         "2020-01-03 21:30:00  2020-01-03 21:30:15       125         5\n"
@@ -86,8 +86,8 @@ def testGuiWritingStats_Dialog(qtbot, monkeypatch, nwGUI, fncDir, fncProj):
     # Make sure a faulty file can still be read
     writeFile(sessFile, (
         "# Offset abc123\n"
-        "# Start Time         End Time                Novel     Notes\n"
-        "2020-01-01 21:00:00  2020-01-01 21:00:05         6         0\n"
+        "# Start Time         End Time                Novel     Notes      Idle\n"
+        "2020-01-01 21:00:00  2020-01-01 21:00:05         6         0        50\n"
         "2020-01-03 21:00:00  2020-01-03 21:00:15       125         0\n"
         "2020-01-03 21:30:00  2020-01-03 21:30:15       125         5\n"
         "2020-01-06 21:00:00  2020-01-06 21:00:10       125\n"
@@ -100,8 +100,8 @@ def testGuiWritingStats_Dialog(qtbot, monkeypatch, nwGUI, fncDir, fncProj):
     # ==============
 
     writeFile(sessFile, (
-        "# Start Time         End Time                Novel     Notes\n"
-        "2020-01-01 21:00:00  2020-01-01 21:00:05         6         0\n"
+        "# Start Time         End Time                Novel     Notes      Idle\n"
+        "2020-01-01 21:00:00  2020-01-01 21:00:05         6         0        50\n"
         "2020-01-03 21:00:00  2020-01-03 21:00:15       125         0\n"
         "2020-01-03 21:30:00  2020-01-03 21:30:15       125         5\n"
         "2020-01-06 21:00:00  2020-01-06 21:00:10       125         5\n"
@@ -133,10 +133,17 @@ def testGuiWritingStats_Dialog(qtbot, monkeypatch, nwGUI, fncDir, fncProj):
         jsonData = json.load(inFile)
 
     assert len(jsonData) == 4
+    assert jsonData[0]["length"] >= 4.0
+    assert jsonData[0]["newWords"] == 6
+    assert jsonData[0]["novelWords"] == 6
+    assert jsonData[0]["noteWords"] == 0
+    assert jsonData[0]["idleTime"] == 50
+
     assert jsonData[1]["length"] >= 14.0
     assert jsonData[1]["newWords"] == 119
     assert jsonData[1]["novelWords"] == 125
     assert jsonData[1]["noteWords"] == 0
+    assert jsonData[1]["idleTime"] == 0
 
     # Test Filters
     # ============
@@ -160,6 +167,7 @@ def testGuiWritingStats_Dialog(qtbot, monkeypatch, nwGUI, fncDir, fncProj):
     assert jsonData[0]["newWords"] == 5
     assert jsonData[0]["novelWords"] == 125
     assert jsonData[0]["noteWords"] == 5
+    assert jsonData[0]["idleTime"] == 0
 
     # No Note Files
     qtbot.mouseClick(sessLog.incNovel, Qt.LeftButton)
@@ -177,6 +185,7 @@ def testGuiWritingStats_Dialog(qtbot, monkeypatch, nwGUI, fncDir, fncProj):
     assert jsonData[1]["newWords"] == 119
     assert jsonData[1]["novelWords"] == 125
     assert jsonData[1]["noteWords"] == 0
+    assert jsonData[1]["idleTime"] == 0
 
     # No Negative Entries
     qtbot.mouseClick(sessLog.incNotes, Qt.LeftButton)
