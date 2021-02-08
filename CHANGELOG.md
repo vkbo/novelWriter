@@ -1,4 +1,4 @@
-# novelWriter Change Log
+# novelWriter Changelog
 
 ## Version 1.1 [2021-02-07]
 
@@ -26,6 +26,8 @@ A few other minor changes have been made as well. The Preferences dialog has bee
 clearer categories and hopefully better help text. Some new options have been added too. They allow
 syntax highlighting of multi-paragraph quotes. The highlighter can now optionally accept quotes to
 be left "hanging", that is, no closing quote in the same paragraph.
+
+_These Release Notes also include the changes from 1.1 RC 1._
 
 ### Detailed Changelog
 
@@ -97,7 +99,7 @@ functionality has been added to the main setup script to create desktop and star
 
 ----
 
-## Version 1.1 RC1 [2021-01-31]
+## Version 1.1 RC 1 [2021-01-31]
 
 ### Release Notes
 
