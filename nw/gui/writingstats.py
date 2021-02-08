@@ -204,17 +204,25 @@ class GuiWritingStats(QDialog):
         )
         self.groupByDay.clicked.connect(self._updateListBox)
 
+        self.showIdleTime = QSwitch(width=2*sPx, height=sPx)
+        self.showIdleTime.setChecked(
+            self.optState.getBool("GuiWritingStats", "showIdleTime", False)
+        )
+        self.showIdleTime.clicked.connect(self._idleTimeVisibility)
+
         self.filterForm.addWidget(QLabel("Count novel files"),        0, 0)
         self.filterForm.addWidget(QLabel("Count note files"),         1, 0)
         self.filterForm.addWidget(QLabel("Hide zero word count"),     2, 0)
         self.filterForm.addWidget(QLabel("Hide negative word count"), 3, 0)
         self.filterForm.addWidget(QLabel("Group entries by day"),     4, 0)
+        self.filterForm.addWidget(QLabel("Show idle time column"),    5, 0)
         self.filterForm.addWidget(self.incNovel,     0, 1)
         self.filterForm.addWidget(self.incNotes,     1, 1)
         self.filterForm.addWidget(self.hideZeros,    2, 1)
         self.filterForm.addWidget(self.hideNegative, 3, 1)
         self.filterForm.addWidget(self.groupByDay,   4, 1)
-        self.filterForm.setRowStretch(5, 1)
+        self.filterForm.addWidget(self.showIdleTime, 5, 1)
+        self.filterForm.setRowStretch(6, 1)
 
         # Settings
         self.histMax = QSpinBox(self)
@@ -263,6 +271,9 @@ class GuiWritingStats(QDialog):
 
         self.setLayout(self.outerBox)
 
+        # Finalise
+        self._idleTimeVisibility(None)
+
         logger.debug("GuiWritingStats initialisation complete")
 
         return
@@ -298,7 +309,11 @@ class GuiWritingStats(QDialog):
         hideZeros    = self.hideZeros.isChecked()
         hideNegative = self.hideNegative.isChecked()
         groupByDay   = self.groupByDay.isChecked()
+        showIdleTime = self.showIdleTime.isChecked()
         histMax      = self.histMax.value()
+
+        if not showIdleTime:
+            widthCol2 = 80
 
         self.optState.setValue("GuiWritingStats", "winWidth",     winWidth)
         self.optState.setValue("GuiWritingStats", "winHeight",    winHeight)
@@ -313,6 +328,7 @@ class GuiWritingStats(QDialog):
         self.optState.setValue("GuiWritingStats", "hideZeros",    hideZeros)
         self.optState.setValue("GuiWritingStats", "hideNegative", hideNegative)
         self.optState.setValue("GuiWritingStats", "groupByDay",   groupByDay)
+        self.optState.setValue("GuiWritingStats", "showIdleTime", showIdleTime)
         self.optState.setValue("GuiWritingStats", "histMax",      histMax)
 
         self.optState.saveSettings()
@@ -476,6 +492,16 @@ class GuiWritingStats(QDialog):
         self.totalWords.setText(f"{ttWords:n}")
 
         return True
+
+    ##
+    #  Slots
+    ##
+
+    def _idleTimeVisibility(self, dummyVar=None):
+        """
+        """
+        self.listBox.setColumnHidden(self.C_IDLE, not self.showIdleTime.isChecked())
+        return
 
     def _updateListBox(self, dummyVar=None):
         """Load/reload the content of the list box. The dummyVar

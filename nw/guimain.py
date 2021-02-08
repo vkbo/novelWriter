@@ -1440,7 +1440,6 @@ class GuiMain(QMainWindow):
 
         self.idleRefTime = currTime
         self.statusBar.updateTime(idleTime=self.idleTime)
-        # print(editIdle, userIdle, self.idleTime)
 
         return
 

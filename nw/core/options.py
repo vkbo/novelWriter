@@ -55,6 +55,7 @@ class OptionState():
                 "hideZeros",
                 "hideNegative",
                 "groupByDay",
+                "showIdleTime",
                 "histMax",
             },
             "GuiDocSplit": {
