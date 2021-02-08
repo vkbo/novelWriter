@@ -203,14 +203,17 @@ class GuiTheme:
         return
 
     def updateFont(self):
-        """Updated the GUI's font style from settings,
+        """Update the GUI's font style from settings.
         """
         theFont = QFont()
         if self.mainConf.guiFont not in self.guiFontDB.families():
             if self.mainConf.osWindows:
-                # On Windows, default to Cantarell provided by novelWriter
-                theFont.setFamily("Cantarell")
-                theFont.setPointSize(11)
+                if "Arial" in self.guiFontDB.families():
+                    theFont.setFamily("Arial")
+                else:
+                    # On Windows, fall back to Cantarell provided by novelWriter
+                    theFont.setFamily("Cantarell")
+                theFont.setPointSize(10)
             else:
                 theFont = self.guiFontDB.systemFont(QFontDatabase.GeneralFont)
             self.mainConf.guiFont = theFont.family()

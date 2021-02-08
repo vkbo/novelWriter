@@ -402,7 +402,7 @@ def makeSimplePackage(embedPython):
     print("Writing: __main__.py")
     with open(os.path.join(zipDir, "__main__.py"), mode="w") as outFile:
         outFile.write(
-            "#!\"pythonw.exe\"\n"
+            "#!/usr/bin/env python3\n"
             "\n"
             "import os\n"
             "import sys\n"
@@ -419,7 +419,7 @@ def makeSimplePackage(embedPython):
     print("")
 
     pyzFile = os.path.join(outDir, "novelWriter.pyz")
-    zipapp.create_archive(zipDir, target=pyzFile, interpreter="python3")
+    zipapp.create_archive(zipDir, target=pyzFile, interpreter="/usr/bin/env python3")
 
     # Install Dependencies
     # ====================

@@ -273,8 +273,11 @@ class Config:
         self.appPath = getattr(sys, "_MEIPASS", os.path.abspath(os.path.dirname(__file__)))
         self.appRoot = os.path.abspath(os.path.join(self.appPath, os.path.pardir))
 
-        if self.appRoot.endswith(".pyz"):
-            self.appRoot = os.path.abspath(os.path.join(self.appRoot, os.path.pardir))
+        if os.path.isfile(self.appRoot):
+            # novelWriter is packaged as a single file, so the app and
+            # root paths are the same, and equal to the folder that
+            # contains the single executable.
+            self.appRoot = os.path.dirname(self.appRoot)
             self.appPath = self.appRoot
 
         # Assets
