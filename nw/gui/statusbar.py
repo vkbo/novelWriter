@@ -175,13 +175,13 @@ class GuiMainStatus(QStatusBar):
         self.statsText.setToolTip("Project word count (session change)")
         return
 
-    def updateTime(self):
+    def updateTime(self, idleTime=0.0):
         """Update the session clock.
         """
         if self.refTime is None:
             self.timeText.setText("00:00:00")
         else:
-            self.timeText.setText(formatTime(round(time() - self.refTime)))
+            self.timeText.setText(formatTime(round(time() - self.refTime - idleTime)))
         return
 
 # END Class GuiMainStatus

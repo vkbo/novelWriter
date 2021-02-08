@@ -86,8 +86,8 @@ class GuiMain(QMainWindow):
         self.theIndex    = NWIndex(self.theProject, self)
         self.hasProject  = False
         self.isFocusMode = False
-        self.userActive  = False
-        self.lastActive  = 0
+        self.idleRefTime = time()
+        self.idleTime    = 0.0
 
         # Prepare Main Window
         self.resize(*self.mainConf.getWinSize())
@@ -485,7 +485,9 @@ class GuiMain(QMainWindow):
                 return False
 
         # Project is loaded
-        self.hasProject = True
+        self.hasProject  = True
+        self.idleRefTime = time()
+        self.idleTime    = 0.0
 
         # Load the tag index
         self.theIndex.loadIndex()
@@ -1426,7 +1428,20 @@ class GuiMain(QMainWindow):
     def _timeTick(self):
         """Triggered on every tick of the timer.
         """
-        self.statusBar.updateTime()
+        if not self.hasProject:
+            return
+
+        currTime = time()
+        editIdle = currTime - self.docEditor.lastEdit > 30.0
+        userIdle = qApp.applicationState() != Qt.ApplicationActive
+
+        if editIdle or userIdle:
+            self.idleTime += currTime - self.idleRefTime
+
+        self.idleRefTime = currTime
+        self.statusBar.updateTime(idleTime=self.idleTime)
+        # print(editIdle, userIdle, self.idleTime)
+
         return
 
     @pyqtSlot()
