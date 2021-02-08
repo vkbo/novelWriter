@@ -29,7 +29,6 @@ import logging
 
 from time import time
 
-from PyQt5.QtCore import QTimer
 from PyQt5.QtGui import QColor, QPainter
 from PyQt5.QtWidgets import qApp, QStatusBar, QLabel, QAbstractButton
 
@@ -110,12 +109,6 @@ class GuiMainStatus(QStatusBar):
         # Other Settings
         self.setSizeGripEnabled(True)
 
-        # Start the Clock
-        self.sessionTimer = QTimer()
-        self.sessionTimer.setInterval(1000)
-        self.sessionTimer.timeout.connect(self._updateTime)
-        self.sessionTimer.start()
-
         logger.debug("GuiMainStatus initialisation complete")
 
         self.clearStatus()
@@ -130,7 +123,7 @@ class GuiMainStatus(QStatusBar):
         self.setStats(0, 0)
         self.setProjectStatus(None)
         self.setDocumentStatus(None)
-        self._updateTime()
+        self.updateTime()
         return True
 
     ##
@@ -182,11 +175,7 @@ class GuiMainStatus(QStatusBar):
         self.statsText.setToolTip("Project word count (session change)")
         return
 
-    ##
-    #  Internal Functions
-    ##
-
-    def _updateTime(self):
+    def updateTime(self):
         """Update the session clock.
         """
         if self.refTime is None:

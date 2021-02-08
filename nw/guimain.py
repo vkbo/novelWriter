@@ -86,6 +86,8 @@ class GuiMain(QMainWindow):
         self.theIndex    = NWIndex(self.theProject, self)
         self.hasProject  = False
         self.isFocusMode = False
+        self.userActive  = False
+        self.lastActive  = 0
 
         # Prepare Main Window
         self.resize(*self.mainConf.getWinSize())
@@ -240,6 +242,12 @@ class GuiMain(QMainWindow):
         # Set Up Auto-Save Document Timer
         self.asDocTimer = QTimer()
         self.asDocTimer.timeout.connect(self._autoSaveDocument)
+
+        # Main Clock
+        self.mainTimer = QTimer()
+        self.mainTimer.setInterval(1000)
+        self.mainTimer.timeout.connect(self._timeTick)
+        self.mainTimer.start()
 
         # Shortcuts and Actions
         self._connectMenuActions()
@@ -1413,6 +1421,13 @@ class GuiMain(QMainWindow):
     ##
     #  Slots
     ##
+
+    @pyqtSlot()
+    def _timeTick(self):
+        """Triggered on every tick of the timer.
+        """
+        self.statusBar.updateTime()
+        return
 
     @pyqtSlot()
     def _treeSingleClick(self):
