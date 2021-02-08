@@ -420,7 +420,7 @@ class GuiMain(QMainWindow):
             self.closeDocument()
             self.docViewer.clearNavHistory()
             self.projView.closeOutline()
-            self.theProject.closeProject()
+            self.theProject.closeProject(self.idleTime)
             self.theIndex.clearIndex()
             self.clearGUI()
             self.hasProject = False
