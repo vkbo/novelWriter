@@ -203,7 +203,7 @@ class GuiTheme:
         return
 
     def updateFont(self):
-        """Updated the GUI's font style from settings,
+        """Update the GUI's font style from settings.
         """
         theFont = QFont()
         if self.mainConf.guiFont not in self.guiFontDB.families():
