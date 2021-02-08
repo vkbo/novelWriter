@@ -313,7 +313,7 @@ class GuiWritingStats(QDialog):
         histMax      = self.histMax.value()
 
         if not showIdleTime:
-            widthCol2 = 80
+            widthCol2 = self.mainConf.pxInt(80)
 
         self.optState.setValue("GuiWritingStats", "winWidth",     winWidth)
         self.optState.setValue("GuiWritingStats", "winHeight",    winHeight)
