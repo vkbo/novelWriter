@@ -182,6 +182,9 @@ class GuiMainStatus(QStatusBar):
     def setUserIdle(self, userIdle):
         """Change the idle status icon.
         """
+        if not self.mainConf.stopWhenIdle:
+            userIdle = False
+
         if self.userIdle != userIdle:
             if userIdle:
                 self.timeIcon.setPixmap(self.idlePixmap)
@@ -198,7 +201,11 @@ class GuiMainStatus(QStatusBar):
         if self.refTime is None:
             self.timeText.setText("00:00:00")
         else:
-            self.timeText.setText(formatTime(round(time() - self.refTime - idleTime)))
+            if self.mainConf.stopWhenIdle:
+                sessTime = round(time() - self.refTime - idleTime)
+            else:
+                sessTime = round(time() - self.refTime)
+            self.timeText.setText(formatTime(sessTime))
         return
 
 # END Class GuiMainStatus

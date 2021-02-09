@@ -420,7 +420,11 @@ class GuiMain(QMainWindow):
             self.closeDocument()
             self.docViewer.clearNavHistory()
             self.projView.closeOutline()
+
             self.theProject.closeProject(self.idleTime)
+            self.idleRefTime = time()
+            self.idleTime    = 0.0
+
             self.theIndex.clearIndex()
             self.clearGUI()
             self.hasProject = False
@@ -1432,7 +1436,7 @@ class GuiMain(QMainWindow):
             return
 
         currTime = time()
-        editIdle = currTime - self.docEditor.lastEdit > 30.0
+        editIdle = currTime - self.docEditor.lastActive > self.mainConf.userIdleTime
         userIdle = qApp.applicationState() != Qt.ApplicationActive
 
         if editIdle or userIdle:

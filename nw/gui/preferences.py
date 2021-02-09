@@ -358,6 +358,33 @@ class GuiPreferencesProjects(QWidget):
             "If off, backups will run in the background."
         )
 
+        # Session Timer
+        # =============
+        self.mainForm.addGroupLabel("Session Timer")
+
+        ## Pause when idle
+        self.stopWhenIdle = QSwitch()
+        self.stopWhenIdle.setChecked(self.mainConf.stopWhenIdle)
+        self.mainForm.addRow(
+            "Pause the session timer when not writing",
+            self.stopWhenIdle,
+            "Also pauses when the application window does not have focus."
+        )
+
+        ## Inactive time for idle
+        self.userIdleTime = QDoubleSpinBox()
+        self.userIdleTime.setMinimum(0.5)
+        self.userIdleTime.setMaximum(600.0)
+        self.userIdleTime.setSingleStep(0.5)
+        self.userIdleTime.setDecimals(1)
+        self.userIdleTime.setValue(self.mainConf.userIdleTime/60.0)
+        self.mainForm.addRow(
+            "Editor inactive time before pausing timer",
+            self.userIdleTime,
+            "User activity includes typing and changing the content.",
+            theUnit="minutes"
+        )
+
         return
 
     def saveValues(self):
@@ -371,6 +398,10 @@ class GuiPreferencesProjects(QWidget):
         self.mainConf.backupPath      = self.backupPath
         self.mainConf.backupOnClose   = self.backupOnClose.isChecked()
         self.mainConf.askBeforeBackup = self.askBeforeBackup.isChecked()
+
+        # Session Timer
+        self.mainConf.stopWhenIdle = self.stopWhenIdle.isChecked()
+        self.mainConf.userIdleTime = round(self.userIdleTime.value() * 60)
 
         self.mainConf.confChanged = True
 

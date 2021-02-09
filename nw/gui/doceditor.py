@@ -91,6 +91,7 @@ class GuiDocEditor(QTextEdit):
         self.wordCount  = 0     # Word count
         self.paraCount  = 0     # Paragraph count
         self.lastEdit   = 0     # Time stamp of last edit
+        self.lastActive = 0     # Time stamp of last activity
         self.lastFind   = None  # Position of the last found search word
         self.bigDoc     = False # Flag for very large document size
         self.doReplace  = False # Switch to temporarily disable auto-replace
@@ -169,15 +170,16 @@ class GuiDocEditor(QTextEdit):
         self.clear()
         self.wcTimer.stop()
 
-        self.theHandle = None
-        self.charCount = 0
-        self.wordCount = 0
-        self.paraCount = 0
-        self.lastEdit  = 0
-        self.lastFind  = None
-        self.bigDoc    = False
-        self.doReplace = False
-        self.queuePos  = None
+        self.theHandle  = None
+        self.charCount  = 0
+        self.wordCount  = 0
+        self.paraCount  = 0
+        self.lastEdit   = 0
+        self.lastActive = 0
+        self.lastFind   = None
+        self.bigDoc     = False
+        self.doReplace  = False
+        self.queuePos   = None
 
         self.setDocumentChanged(False)
         self.docHeader.setTitleFromHandle(self.theHandle)
@@ -319,6 +321,7 @@ class GuiDocEditor(QTextEdit):
         logger.debug("Document highlighted in %.3f ms" % (1000*(afTime-bfTime)))
 
         self.lastEdit = time()
+        self.lastActive = time()
         self._runCounter()
         self.wcTimer.start()
         self.theHandle = tHandle
@@ -722,6 +725,7 @@ class GuiDocEditor(QTextEdit):
             return False
 
         self._allowAutoReplace(True)
+        self.lastActive = time()
 
         return True
 
@@ -839,6 +843,7 @@ class GuiDocEditor(QTextEdit):
           * The undo/redo/select all sequences bypasses the docAction
             pathway from the menu, so we redirect them back from here.
         """
+        self.lastActive = time()
         isReturn  = keyEvent.key() == Qt.Key_Return
         isReturn |= keyEvent.key() == Qt.Key_Enter
         if isReturn and self.docSearch.anyFocus():
@@ -1083,7 +1088,7 @@ class GuiDocEditor(QTextEdit):
             logger.verbose("Word counter is busy")
             return
 
-        if time() - self.lastEdit < 5*self.wcInterval:
+        if time() - self.lastEdit < 5 * self.wcInterval:
             logger.verbose("Running word counter")
             self.theParent.threadPool.start(self.wCounter)
 
