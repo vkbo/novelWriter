@@ -208,7 +208,7 @@ class GuiWritingStats(QDialog):
         self.showIdleTime.setChecked(
             self.optState.getBool("GuiWritingStats", "showIdleTime", False)
         )
-        self.showIdleTime.clicked.connect(self._idleTimeVisibility)
+        self.showIdleTime.clicked.connect(self._updateListBox)
 
         self.filterForm.addWidget(QLabel("Count novel files"),        0, 0)
         self.filterForm.addWidget(QLabel("Count note files"),         1, 0)
@@ -271,9 +271,6 @@ class GuiWritingStats(QDialog):
 
         self.setLayout(self.outerBox)
 
-        # Finalise
-        self._idleTimeVisibility(None)
-
         logger.debug("GuiWritingStats initialisation complete")
 
         return
@@ -311,9 +308,6 @@ class GuiWritingStats(QDialog):
         groupByDay   = self.groupByDay.isChecked()
         showIdleTime = self.showIdleTime.isChecked()
         histMax      = self.histMax.value()
-
-        if not showIdleTime:
-            widthCol2 = self.mainConf.pxInt(80)
 
         self.optState.setValue("GuiWritingStats", "winWidth",     winWidth)
         self.optState.setValue("GuiWritingStats", "winHeight",    winHeight)
@@ -497,12 +491,6 @@ class GuiWritingStats(QDialog):
     #  Slots
     ##
 
-    def _idleTimeVisibility(self, dummyVar=None):
-        """
-        """
-        self.listBox.setColumnHidden(self.C_IDLE, not self.showIdleTime.isChecked())
-        return
-
     def _updateListBox(self, dummyVar=None):
         """Load/reload the content of the list box. The dummyVar
         variable captures the variable sent from the widgets connecting
@@ -584,12 +572,19 @@ class GuiWritingStats(QDialog):
             pcTotal = wcTotal
 
         # Populate the list
+        showIdleTime = self.showIdleTime.isChecked()
         for _, sStart, sDiff, nWords, _, _, sIdle in self.filterData:
+
+            if showIdleTime:
+                idleEntry = formatTime(sIdle)
+            else:
+                sRatio = sIdle/sDiff if sDiff > 0.0 else 0.0
+                idleEntry = "%d %%" % round(100.0 * sRatio)
 
             newItem = QTreeWidgetItem()
             newItem.setText(self.C_TIME, sStart)
             newItem.setText(self.C_LENGTH, formatTime(round(sDiff)))
-            newItem.setText(self.C_IDLE, formatTime(sIdle))
+            newItem.setText(self.C_IDLE, idleEntry)
             newItem.setText(self.C_COUNT, f"{nWords:n}")
 
             if nWords > 0 and listMax > 0:
@@ -608,8 +603,11 @@ class GuiWritingStats(QDialog):
 
             newItem.setFont(self.C_TIME, self.theTheme.guiFontFixed)
             newItem.setFont(self.C_LENGTH, self.theTheme.guiFontFixed)
-            newItem.setFont(self.C_IDLE, self.theTheme.guiFontFixed)
             newItem.setFont(self.C_COUNT, self.theTheme.guiFontFixed)
+            if showIdleTime:
+                newItem.setFont(self.C_IDLE, self.theTheme.guiFontFixed)
+            else:
+                newItem.setFont(self.C_IDLE, self.theTheme.guiFont)
 
             self.listBox.addTopLevelItem(newItem)
             self.timeFilter += sDiff
