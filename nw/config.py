@@ -144,6 +144,9 @@ class Config:
         self.allowOpenDQuote = True  # Allow open-ended double quotes
         self.highlightEmph   = True  # Add colour to text emphasis
 
+        self.stopWhenIdle    = True  # Stop the status bar clock when the user is idle
+        self.userIdleTime    = 300   # Time of inactivity to consider user idle
+
         ## User-Selected Symbols
         self.fmtApostrophe   = nwUnicode.U_RSQUO
         self.fmtSingleQuotes = [nwUnicode.U_LSQUO, nwUnicode.U_RSQUO]
@@ -532,6 +535,12 @@ class Config:
         self.highlightEmph = self._parseLine(
             cnfParse, cnfSec, "highlightemph", self.CNF_BOOL, self.highlightEmph
         )
+        self.stopWhenIdle = self._parseLine(
+            cnfParse, cnfSec, "stopwhenidle", self.CNF_BOOL, self.stopWhenIdle
+        )
+        self.userIdleTime = self._parseLine(
+            cnfParse, cnfSec, "useridletime", self.CNF_INT, self.userIdleTime
+        )
 
         ## Backup
         cnfSec = "Backup"
@@ -672,6 +681,8 @@ class Config:
         cnfParse.set(cnfSec, "allowopensquote", str(self.allowOpenSQuote))
         cnfParse.set(cnfSec, "allowopendquote", str(self.allowOpenDQuote))
         cnfParse.set(cnfSec, "highlightemph",   str(self.highlightEmph))
+        cnfParse.set(cnfSec, "stopwhenidle",    str(self.stopWhenIdle))
+        cnfParse.set(cnfSec, "useridletime",    str(self.userIdleTime))
 
         ## Backup
         cnfSec = "Backup"

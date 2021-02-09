@@ -859,12 +859,12 @@ def testCoreProject_Methods(monkeypatch, nwMinimal, dummyGUI, tmpDir):
 
     # Session stats
     monkeypatch.setattr("os.path.isdir", lambda *args, **kwargs: False)
-    assert not theProject._appendSessionStats()
+    assert not theProject._appendSessionStats(idleTime=0)
     monkeypatch.undo()
 
     # Block open
     monkeypatch.setattr("builtins.open", causeOSError)
-    assert not theProject._appendSessionStats()
+    assert not theProject._appendSessionStats(idleTime=0)
     monkeypatch.undo()
 
     # Write entry
@@ -876,13 +876,13 @@ def testCoreProject_Methods(monkeypatch, nwMinimal, dummyGUI, tmpDir):
     theProject.notesWCount = 100
 
     monkeypatch.setattr("nw.core.project.time", lambda: 1600005600)
-    assert theProject._appendSessionStats()
+    assert theProject._appendSessionStats(idleTime=99)
     monkeypatch.undo()
 
     assert readFile(statsFile) == (
         "# Offset 100\n"
-        "# Start Time         End Time                Novel     Notes\n"
-        "%s  %s       200       100\n"
+        "# Start Time         End Time                Novel     Notes      Idle\n"
+        "%s  %s       200       100        99\n"
     ) % (formatTimeStamp(1600002000), formatTimeStamp(1600005600))
 
     # Pack XML Value

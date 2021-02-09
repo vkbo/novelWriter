@@ -47,6 +47,7 @@ class OptionState():
                 "widthCol0",
                 "widthCol1",
                 "widthCol2",
+                "widthCol3",
                 "sortCol",
                 "sortOrder",
                 "incNovel",
@@ -54,6 +55,7 @@ class OptionState():
                 "hideZeros",
                 "hideNegative",
                 "groupByDay",
+                "showIdleTime",
                 "histMax",
             },
             "GuiDocSplit": {

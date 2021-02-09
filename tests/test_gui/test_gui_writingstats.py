@@ -72,7 +72,7 @@ def testGuiWritingStats_Dialog(qtbot, monkeypatch, nwGUI, fncDir, fncProj):
     # Make a test log file
     writeFile(sessFile, (
         "# Offset 123\n"
-        "# Start Time         End Time                Novel     Notes\n"
+        "# Start Time         End Time                Novel     Notes      Idle\n"
         "2020-01-01 21:00:00  2020-01-01 21:00:05         6         0\n"
         "2020-01-03 21:00:00  2020-01-03 21:00:15       125         0\n"
         "2020-01-03 21:30:00  2020-01-03 21:30:15       125         5\n"
@@ -86,8 +86,8 @@ def testGuiWritingStats_Dialog(qtbot, monkeypatch, nwGUI, fncDir, fncProj):
     # Make sure a faulty file can still be read
     writeFile(sessFile, (
         "# Offset abc123\n"
-        "# Start Time         End Time                Novel     Notes\n"
-        "2020-01-01 21:00:00  2020-01-01 21:00:05         6         0\n"
+        "# Start Time         End Time                Novel     Notes      Idle\n"
+        "2020-01-01 21:00:00  2020-01-01 21:00:05         6         0        50\n"
         "2020-01-03 21:00:00  2020-01-03 21:00:15       125         0\n"
         "2020-01-03 21:30:00  2020-01-03 21:30:15       125         5\n"
         "2020-01-06 21:00:00  2020-01-06 21:00:10       125\n"
@@ -101,17 +101,17 @@ def testGuiWritingStats_Dialog(qtbot, monkeypatch, nwGUI, fncDir, fncProj):
 
     writeFile(sessFile, (
         "# Offset 1075\n"
-        "# Start Time         End Time                Novel     Notes\n"
-        "2021-01-31 19:00:00  2021-01-31 19:30:00       700       375\n"
-        "2021-02-01 19:00:00  2021-02-01 19:30:00       700       375\n"
-        "2021-02-01 20:00:00  2021-02-01 20:30:00       600       275\n"
-        "2021-02-02 19:00:00  2021-02-02 19:30:00       750       425\n"
-        "2021-02-02 20:00:00  2021-02-02 20:30:00       690       365\n"
-        "2021-02-03 19:00:00  2021-02-03 19:30:00       680       355\n"
-        "2021-02-04 19:00:00  2021-02-04 19:30:00       700       375\n"
-        "2021-02-05 19:00:00  2021-02-05 19:30:00       500       175\n"
-        "2021-02-06 19:00:00  2021-02-06 19:30:00       600       275\n"
-        "2021-02-07 19:00:00  2021-02-07 19:30:00       600       275\n"
+        "# Start Time         End Time                Novel     Notes      Idle\n"
+        "2021-01-31 19:00:00  2021-01-31 19:30:00       700       375         0\n"
+        "2021-02-01 19:00:00  2021-02-01 19:30:00       700       375        10\n"
+        "2021-02-01 20:00:00  2021-02-01 20:30:00       600       275        20\n"
+        "2021-02-02 19:00:00  2021-02-02 19:30:00       750       425        30\n"
+        "2021-02-02 20:00:00  2021-02-02 20:30:00       690       365        40\n"
+        "2021-02-03 19:00:00  2021-02-03 19:30:00       680       355        50\n"
+        "2021-02-04 19:00:00  2021-02-04 19:30:00       700       375        60\n"
+        "2021-02-05 19:00:00  2021-02-05 19:30:00       500       175        70\n"
+        "2021-02-06 19:00:00  2021-02-06 19:30:00       600       275        80\n"
+        "2021-02-07 19:00:00  2021-02-07 19:30:00       600       275        90\n"
     ))
     sessLog.populateGUI()
 
@@ -156,28 +156,28 @@ def testGuiWritingStats_Dialog(qtbot, monkeypatch, nwGUI, fncDir, fncProj):
     assert jsonData == [
         {
             "date": "2021-01-31 19:00:00", "length": 1800.0,
-            "newWords": 1, "novelWords": 700, "noteWords": 375
+            "newWords": 1, "novelWords": 700, "noteWords": 375, "idleTime": 0
         }, {
             "date": "2021-02-01 20:00:00", "length": 1800.0,
-            "newWords": -200, "novelWords": 600, "noteWords": 275
+            "newWords": -200, "novelWords": 600, "noteWords": 275, "idleTime": 20
         }, {
             "date": "2021-02-02 19:00:00", "length": 1800.0,
-            "newWords": 300, "novelWords": 750, "noteWords": 425
+            "newWords": 300, "novelWords": 750, "noteWords": 425, "idleTime": 30
         }, {
             "date": "2021-02-02 20:00:00", "length": 1800.0,
-            "newWords": -120, "novelWords": 690, "noteWords": 365
+            "newWords": -120, "novelWords": 690, "noteWords": 365, "idleTime": 40
         }, {
             "date": "2021-02-03 19:00:00", "length": 1800.0,
-            "newWords": -20, "novelWords": 680, "noteWords": 355
+            "newWords": -20, "novelWords": 680, "noteWords": 355, "idleTime": 50
         }, {
             "date": "2021-02-04 19:00:00", "length": 1800.0,
-            "newWords": 40, "novelWords": 700, "noteWords": 375
+            "newWords": 40, "novelWords": 700, "noteWords": 375, "idleTime": 60
         }, {
             "date": "2021-02-05 19:00:00", "length": 1800.0,
-            "newWords": -400, "novelWords": 500, "noteWords": 175
+            "newWords": -400, "novelWords": 500, "noteWords": 175, "idleTime": 70
         }, {
             "date": "2021-02-06 19:00:00", "length": 1800.0,
-            "newWords": 200, "novelWords": 600, "noteWords": 275
+            "newWords": 200, "novelWords": 600, "noteWords": 275, "idleTime": 80
         }
     ]
 
@@ -206,28 +206,28 @@ def testGuiWritingStats_Dialog(qtbot, monkeypatch, nwGUI, fncDir, fncProj):
     assert jsonData == [
         {
             "date": "2021-01-31 19:00:00", "length": 1800.0,
-            "newWords": 1, "novelWords": 700, "noteWords": 375
+            "newWords": 1, "novelWords": 700, "noteWords": 375, "idleTime": 0
         }, {
             "date": "2021-02-01 20:00:00", "length": 1800.0,
-            "newWords": -100, "novelWords": 600, "noteWords": 275
+            "newWords": -100, "novelWords": 600, "noteWords": 275, "idleTime": 20
         }, {
             "date": "2021-02-02 19:00:00", "length": 1800.0,
-            "newWords": 150, "novelWords": 750, "noteWords": 425
+            "newWords": 150, "novelWords": 750, "noteWords": 425, "idleTime": 30
         }, {
             "date": "2021-02-02 20:00:00", "length": 1800.0,
-            "newWords": -60, "novelWords": 690, "noteWords": 365
+            "newWords": -60, "novelWords": 690, "noteWords": 365, "idleTime": 40
         }, {
             "date": "2021-02-03 19:00:00", "length": 1800.0,
-            "newWords": -10, "novelWords": 680, "noteWords": 355
+            "newWords": -10, "novelWords": 680, "noteWords": 355, "idleTime": 50
         }, {
             "date": "2021-02-04 19:00:00", "length": 1800.0,
-            "newWords": 20, "novelWords": 700, "noteWords": 375
+            "newWords": 20, "novelWords": 700, "noteWords": 375, "idleTime": 60
         }, {
             "date": "2021-02-05 19:00:00", "length": 1800.0,
-            "newWords": -200, "novelWords": 500, "noteWords": 175
+            "newWords": -200, "novelWords": 500, "noteWords": 175, "idleTime": 70
         }, {
             "date": "2021-02-06 19:00:00", "length": 1800.0,
-            "newWords": 100, "novelWords": 600, "noteWords": 275
+            "newWords": 100, "novelWords": 600, "noteWords": 275, "idleTime": 80
         }
     ]
 
@@ -254,28 +254,28 @@ def testGuiWritingStats_Dialog(qtbot, monkeypatch, nwGUI, fncDir, fncProj):
     assert jsonData == [
         {
             "date": "2021-01-31 19:00:00", "length": 1800.0,
-            "newWords": 1, "novelWords": 700, "noteWords": 375
+            "newWords": 1, "novelWords": 700, "noteWords": 375, "idleTime": 0
         }, {
             "date": "2021-02-01 20:00:00", "length": 1800.0,
-            "newWords": -100, "novelWords": 600, "noteWords": 275
+            "newWords": -100, "novelWords": 600, "noteWords": 275, "idleTime": 20
         }, {
             "date": "2021-02-02 19:00:00", "length": 1800.0,
-            "newWords": 150, "novelWords": 750, "noteWords": 425
+            "newWords": 150, "novelWords": 750, "noteWords": 425, "idleTime": 30
         }, {
             "date": "2021-02-02 20:00:00", "length": 1800.0,
-            "newWords": -60, "novelWords": 690, "noteWords": 365
+            "newWords": -60, "novelWords": 690, "noteWords": 365, "idleTime": 40
         }, {
             "date": "2021-02-03 19:00:00", "length": 1800.0,
-            "newWords": -10, "novelWords": 680, "noteWords": 355
+            "newWords": -10, "novelWords": 680, "noteWords": 355, "idleTime": 50
         }, {
             "date": "2021-02-04 19:00:00", "length": 1800.0,
-            "newWords": 20, "novelWords": 700, "noteWords": 375
+            "newWords": 20, "novelWords": 700, "noteWords": 375, "idleTime": 60
         }, {
             "date": "2021-02-05 19:00:00", "length": 1800.0,
-            "newWords": -200, "novelWords": 500, "noteWords": 175
+            "newWords": -200, "novelWords": 500, "noteWords": 175, "idleTime": 70
         }, {
             "date": "2021-02-06 19:00:00", "length": 1800.0,
-            "newWords": 100, "novelWords": 600, "noteWords": 275
+            "newWords": 100, "novelWords": 600, "noteWords": 275, "idleTime": 80
         }
     ]
 
@@ -300,16 +300,16 @@ def testGuiWritingStats_Dialog(qtbot, monkeypatch, nwGUI, fncDir, fncProj):
     assert jsonData == [
         {
             "date": "2021-01-31 19:00:00", "length": 1800.0,
-            "newWords": 1, "novelWords": 700, "noteWords": 375
+            "newWords": 1, "novelWords": 700, "noteWords": 375, "idleTime": 0
         }, {
             "date": "2021-02-02 19:00:00", "length": 1800.0,
-            "newWords": 300, "novelWords": 750, "noteWords": 425
+            "newWords": 300, "novelWords": 750, "noteWords": 425, "idleTime": 30
         }, {
             "date": "2021-02-04 19:00:00", "length": 1800.0,
-            "newWords": 40, "novelWords": 700, "noteWords": 375
+            "newWords": 40, "novelWords": 700, "noteWords": 375, "idleTime": 60
         }, {
             "date": "2021-02-06 19:00:00", "length": 1800.0,
-            "newWords": 200, "novelWords": 600, "noteWords": 275
+            "newWords": 200, "novelWords": 600, "noteWords": 275, "idleTime": 80
         }
     ]
 
@@ -338,34 +338,34 @@ def testGuiWritingStats_Dialog(qtbot, monkeypatch, nwGUI, fncDir, fncProj):
     assert jsonData == [
         {
             "date": "2021-01-31 19:00:00", "length": 1800.0,
-            "newWords": 1, "novelWords": 700, "noteWords": 375
+            "newWords": 1, "novelWords": 700, "noteWords": 375, "idleTime": 0
         }, {
             "date": "2021-02-01 19:00:00", "length": 1800.0,
-            "newWords": 0, "novelWords": 700, "noteWords": 375
+            "newWords": 0, "novelWords": 700, "noteWords": 375, "idleTime": 10
         }, {
             "date": "2021-02-01 20:00:00", "length": 1800.0,
-            "newWords": -200, "novelWords": 600, "noteWords": 275
+            "newWords": -200, "novelWords": 600, "noteWords": 275, "idleTime": 20
         }, {
             "date": "2021-02-02 19:00:00", "length": 1800.0,
-            "newWords": 300, "novelWords": 750, "noteWords": 425
+            "newWords": 300, "novelWords": 750, "noteWords": 425, "idleTime": 30
         }, {
             "date": "2021-02-02 20:00:00", "length": 1800.0,
-            "newWords": -120, "novelWords": 690, "noteWords": 365
+            "newWords": -120, "novelWords": 690, "noteWords": 365, "idleTime": 40
         }, {
             "date": "2021-02-03 19:00:00", "length": 1800.0,
-            "newWords": -20, "novelWords": 680, "noteWords": 355
+            "newWords": -20, "novelWords": 680, "noteWords": 355, "idleTime": 50
         }, {
             "date": "2021-02-04 19:00:00", "length": 1800.0,
-            "newWords": 40, "novelWords": 700, "noteWords": 375
+            "newWords": 40, "novelWords": 700, "noteWords": 375, "idleTime": 60
         }, {
             "date": "2021-02-05 19:00:00", "length": 1800.0,
-            "newWords": -400, "novelWords": 500, "noteWords": 175
+            "newWords": -400, "novelWords": 500, "noteWords": 175, "idleTime": 70
         }, {
             "date": "2021-02-06 19:00:00", "length": 1800.0,
-            "newWords": 200, "novelWords": 600, "noteWords": 275
+            "newWords": 200, "novelWords": 600, "noteWords": 275, "idleTime": 80
         }, {
             "date": "2021-02-07 19:00:00", "length": 1800.0,
-            "newWords": 0, "novelWords": 600, "noteWords": 275
+            "newWords": 0, "novelWords": 600, "noteWords": 275, "idleTime": 90
         }
     ]
 
@@ -391,28 +391,28 @@ def testGuiWritingStats_Dialog(qtbot, monkeypatch, nwGUI, fncDir, fncProj):
     assert jsonData == [
         {
             "date": "2021-01-31", "length": 1800.0,
-            "newWords": 1, "novelWords": 700, "noteWords": 375
+            "newWords": 1, "novelWords": 700, "noteWords": 375, "idleTime": 10
         }, {
             "date": "2021-02-01", "length": 3600.0,
-            "newWords": -200, "novelWords": 600, "noteWords": 275
+            "newWords": -200, "novelWords": 600, "noteWords": 275, "idleTime": 30
         }, {
             "date": "2021-02-02", "length": 3600.0,
-            "newWords": 180, "novelWords": 690, "noteWords": 365
+            "newWords": 180, "novelWords": 690, "noteWords": 365, "idleTime": 50
         }, {
             "date": "2021-02-03", "length": 1800.0,
-            "newWords": -20, "novelWords": 680, "noteWords": 355
+            "newWords": -20, "novelWords": 680, "noteWords": 355, "idleTime": 60
         }, {
             "date": "2021-02-04", "length": 1800.0,
-            "newWords": 40, "novelWords": 700, "noteWords": 375
+            "newWords": 40, "novelWords": 700, "noteWords": 375, "idleTime": 70
         }, {
             "date": "2021-02-05", "length": 1800.0,
-            "newWords": -400, "novelWords": 500, "noteWords": 175
+            "newWords": -400, "novelWords": 500, "noteWords": 175, "idleTime": 80
         }, {
             "date": "2021-02-06", "length": 1800.0,
-            "newWords": 200, "novelWords": 600, "noteWords": 275
+            "newWords": 200, "novelWords": 600, "noteWords": 275, "idleTime": 90
         }, {
             "date": "2021-02-07", "length": 1800.0,
-            "newWords": 0, "novelWords": 600, "noteWords": 275
+            "newWords": 0, "novelWords": 600, "noteWords": 275, "idleTime": 90
         }
     ]
 

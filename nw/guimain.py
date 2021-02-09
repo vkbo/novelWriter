@@ -86,6 +86,8 @@ class GuiMain(QMainWindow):
         self.theIndex    = NWIndex(self.theProject, self)
         self.hasProject  = False
         self.isFocusMode = False
+        self.idleRefTime = time()
+        self.idleTime    = 0.0
 
         # Prepare Main Window
         self.resize(*self.mainConf.getWinSize())
@@ -240,6 +242,12 @@ class GuiMain(QMainWindow):
         # Set Up Auto-Save Document Timer
         self.asDocTimer = QTimer()
         self.asDocTimer.timeout.connect(self._autoSaveDocument)
+
+        # Main Clock
+        self.mainTimer = QTimer()
+        self.mainTimer.setInterval(1000)
+        self.mainTimer.timeout.connect(self._timeTick)
+        self.mainTimer.start()
 
         # Shortcuts and Actions
         self._connectMenuActions()
@@ -412,7 +420,11 @@ class GuiMain(QMainWindow):
             self.closeDocument()
             self.docViewer.clearNavHistory()
             self.projView.closeOutline()
-            self.theProject.closeProject()
+
+            self.theProject.closeProject(self.idleTime)
+            self.idleRefTime = time()
+            self.idleTime    = 0.0
+
             self.theIndex.clearIndex()
             self.clearGUI()
             self.hasProject = False
@@ -477,7 +489,9 @@ class GuiMain(QMainWindow):
                 return False
 
         # Project is loaded
-        self.hasProject = True
+        self.hasProject  = True
+        self.idleRefTime = time()
+        self.idleTime    = 0.0
 
         # Load the tag index
         self.theIndex.loadIndex()
@@ -1413,6 +1427,28 @@ class GuiMain(QMainWindow):
     ##
     #  Slots
     ##
+
+    @pyqtSlot()
+    def _timeTick(self):
+        """Triggered on every tick of the timer.
+        """
+        if not self.hasProject:
+            return
+
+        currTime = time()
+        editIdle = currTime - self.docEditor.lastActive > self.mainConf.userIdleTime
+        userIdle = qApp.applicationState() != Qt.ApplicationActive
+
+        if editIdle or userIdle:
+            self.idleTime += currTime - self.idleRefTime
+            self.statusBar.setUserIdle(True)
+        else:
+            self.statusBar.setUserIdle(False)
+
+        self.idleRefTime = currTime
+        self.statusBar.updateTime(idleTime=self.idleTime)
+
+        return
 
     @pyqtSlot()
     def _treeSingleClick(self):
