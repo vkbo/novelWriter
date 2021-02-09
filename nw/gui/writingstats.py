@@ -514,6 +514,7 @@ class GuiWritingStats(QDialog):
             if hideZeros and dwTotal == 0:
                 continue
             if hideNegative and dwTotal < 0:
+                pcTotal = wcTotal
                 continue
 
             if isFirst:
