@@ -55,14 +55,14 @@ class GuiAbout(QDialog):
         self.innerBox = QHBoxLayout()
         self.innerBox.setSpacing(self.mainConf.pxInt(16))
 
-        self.setWindowTitle("About novelWriter")
+        self.setWindowTitle(self.tr("About novelWriter"))
         self.setMinimumWidth(self.mainConf.pxInt(650))
         self.setMinimumHeight(self.mainConf.pxInt(600))
 
         nPx = self.mainConf.pxInt(96)
         self.nwIcon = QLabel()
         self.nwIcon.setPixmap(self.theParent.theTheme.getPixmap("novelwriter", (nPx, nPx)))
-        self.lblName = QLabel("<b>novelWriter</b>")
+        self.lblName = QLabel("<b>%s</b>" % self.tr("novelWriter"))
         self.lblVers = QLabel("v%s" % nw.__version__)
         self.lblDate = QLabel(datetime.strptime(nw.__date__, "%Y-%m-%d").strftime("%x"))
 
@@ -90,13 +90,14 @@ class GuiAbout(QDialog):
 
         # Main Tab Area
         self.tabBox = QTabWidget()
-        self.tabBox.addTab(self.pageAbout, "About")
-        self.tabBox.addTab(self.pageNotes, "Release")
-        self.tabBox.addTab(self.pageLicense, "License")
+        self.tabBox.addTab(self.pageAbout, self.tr("About"))
+        self.tabBox.addTab(self.pageNotes, self.tr("Release"))
+        self.tabBox.addTab(self.pageLicense, self.tr("License"))
         self.innerBox.addWidget(self.tabBox)
 
         # OK Button
         self.buttonBox = QDialogButtonBox(QDialogButtonBox.Ok)
+        self.buttonBox.button(QDialogButtonBox.Ok).setText(self.tr("OK"))
         self.buttonBox.accepted.connect(self._doClose)
 
         self.outerBox.addLayout(self.innerBox)
@@ -132,28 +133,30 @@ class GuiAbout(QDialog):
         """Generate the content for the About page.
         """
         listPrefix = "&nbsp;&nbsp;&bull;&nbsp;&nbsp;"
-        aboutMsg   = (
-            "<h2>About novelWriter</h2>"
-            "<p>{copyright:s}.</p>"
-            "<p>Website: <a href='{website:s}'>{domain:s}</a></p>"
-            "<p>novelWriter is a markdown-like text editor designed for "
-            "organising and writing novels. It is written in Python 3 with a "
-            "Qt5 GUI, using PyQt5.</p>"
-            "<p>novelWriter is free software: you can redistribute it and/or "
-            "modify it under the terms of the GNU General Public License as "
-            "published by the Free Software Foundation, either version 3 of "
-            "the License, or (at your option) any later version.</p>"
-            "<p>novelWriter is distributed in the hope that it will be "
-            "useful, but WITHOUT ANY WARRANTY; without even the implied "
-            "warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR "
-            "PURPOSE.</p>"
-            "<p>See the License tab for the full license text, or visit the "
-            "GNU website at "
-            "<a href='https://www.gnu.org/licenses/gpl-3.0.html'>GPL v3.0</a> "
-            "for more details.</p>"
-            "<h3>Credits</h3>"
-            "<p>{credits:s}</p>"
-        ).format(
+        aboutMsg   = "".join([
+            "<h2>%s</h2>" % self.tr("About novelWriter"),
+            "<p>{copyright:s}.</p>",
+            "<p>%s</p>" % (self.tr("{0}: {1}").format(
+                self.tr("Website"),
+                "<a href=\"{website:s}\">{domain:s}</a>"
+            )),
+            "<p>%s</p>" % self.tr("novelWriter is a markdown-like text editor designed for "
+                                  "organising and writing novels. It is written in Python 3 with "
+                                  "a Qt5 GUI, using PyQt5."),
+            "<p>%s</p>" % self.tr("novelWriter is free software: you can redistribute it and/or "
+                                  "modify it under the terms of the GNU General Public License as "
+                                  "published by the Free Software Foundation, either version 3 of "
+                                  "the License, or (at your option) any later version."),
+            "<p>%s</p>" % self.tr("novelWriter is distributed in the hope that it will be "
+                                  "useful, but WITHOUT ANY WARRANTY; without even the implied "
+                                  "warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR "
+                                  "PURPOSE."),
+            "<p>%s</p>" % (self.tr("See the License tab for the full license text, or visit the "
+                                   "GNU website at {0} for more details.").format(
+                           "<a href=\"https://www.gnu.org/licenses/gpl-3.0.html\">GPL v3.0</a>")),
+            "<h3>%s</h3>" % self.tr("Credits"),
+            "<p>{credits:s}</p>",
+        ]).format(
             copyright = nw.__copyright__,
             website   = nw.__url__,
             domain    = nw.__domain__,
@@ -163,50 +166,52 @@ class GuiAbout(QDialog):
         theTheme = self.theParent.theTheme
         theIcons = self.theParent.theTheme.theIcons
         if theTheme.themeName:
-            aboutMsg += (
-                "<h4>Theme: {name:s}</h4>"
-                "<p>"
-                "<b>Author:</b> {author:s}<br/>"
-                "<b>Credit:</b> {credit:s}<br/>"
-                "<b>License:</b> <a href='{lic_url:s}'>{license:s}</a>"
+            aboutMsg += "".join([
+                ("<h4>%s</h4>" % self.tr("{0}: {1}").format(self.tr("Theme"), theTheme.themeName)),
+                "<p>",
+                ("%s<br/>" % self.tr("<b>{0}:</b> {1}").format(
+                    self.tr("Author"), theTheme.themeAuthor)),
+                ("%s<br/>" % self.tr("<b>{0}:</b> {1}").format(
+                    self.tr("Credit"), theTheme.themeCredit)),
+                (self.tr("<b>{0}:</b> {1}").format(
+                    self.tr("License"),
+                    "<a href=\"{0}\">{1}</a>".format(
+                        theTheme.themeLicenseUrl, theTheme.themeLicense)
+                )),
                 "</p>"
-            ).format(
-                name    = theTheme.themeName,
-                author  = theTheme.themeAuthor,
-                credit  = theTheme.themeCredit,
-                license = theTheme.themeLicense,
-                lic_url = theTheme.themeLicenseUrl,
-            )
+            ])
         if theIcons.themeName:
-            aboutMsg += (
-                "<h4>Icons: {name:s}</h4>"
-                "<p>"
-                "<b>Author:</b> {author:s}<br/>"
-                "<b>Credit:</b> {credit:s}<br/>"
-                "<b>License:</b> <a href='{lic_url:s}'>{license:s}</a>"
+            aboutMsg += "".join([
+                ("<h4>%s</h4>" % self.tr("{0}: {1}").format(self.tr("Icons"), theIcons.themeName)),
+                "<p>",
+                ("%s<br/>" % self.tr("<b>{0}:</b> {1}").format(
+                    self.tr("Author"), theIcons.themeAuthor)),
+                ("%s<br/>" % self.tr("<b>{0}:</b> {1}").format(
+                    self.tr("Credit"), theIcons.themeCredit)),
+                (self.tr("<b>{0}:</b> {1}").format(
+                    self.tr("License"),
+                    "<a href=\"{0}\">{1}</a>".format(
+                        theIcons.themeLicenseUrl, theIcons.themeLicense)
+                )),
                 "</p>"
-            ).format(
-                name    = theIcons.themeName,
-                author  = theIcons.themeAuthor,
-                credit  = theIcons.themeCredit,
-                license = theIcons.themeLicense,
-                lic_url = theIcons.themeLicenseUrl,
-            )
+            ])
         if theTheme.syntaxName:
-            aboutMsg += (
-                "<h4>Syntax: {name:s}</h4>"
-                "<p>"
-                "<b>Author:</b> {author:s}<br/>"
-                "<b>Credit:</b> {credit:s}<br/>"
-                "<b>License:</b> <a href='{lic_url:s}'>{license:s}</a>"
+            aboutMsg += "".join([
+                ("<h4>%s</h4>" % self.tr("{0}: {1}").format(
+                    self.tr("Syntax"),
+                    theTheme.syntaxName)),
+                "<p>",
+                ("%s<br/>" % self.tr("<b>{0}:</b> {1}").format(
+                    self.tr("Author"), theTheme.syntaxAuthor)),
+                ("%s<br/>" % self.tr("<b>{0{0}</b> {{1}").format(
+                    self.tr("Credit"), theTheme.syntaxCredit)),
+                (self.tr("<b>{0}:</b> {1}").format(
+                    self.tr("License"),
+                    "<a href=\"{0}\">{1}</a>".format(
+                        theTheme.syntaxLicenseUrl, theTheme.syntaxLicense)
+                )),
                 "</p>"
-            ).format(
-                name    = theTheme.syntaxName,
-                author  = theTheme.syntaxAuthor,
-                credit  = theTheme.syntaxCredit,
-                license = theTheme.syntaxLicense,
-                lic_url = theTheme.syntaxLicenseUrl,
-            )
+            ])
 
         self.pageAbout.setHtml(aboutMsg)
 

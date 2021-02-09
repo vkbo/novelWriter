@@ -84,7 +84,7 @@ class GuiBuildNovel(QDialog):
         self.htmlSize  = 0  # Size of the html document
         self.buildTime = 0  # The timestamp of the last build
 
-        self.setWindowTitle("Build Novel Project")
+        self.setWindowTitle(self.tr("Build Novel Project"))
         self.setMinimumWidth(self.mainConf.pxInt(700))
         self.setMinimumHeight(self.mainConf.pxInt(600))
 
@@ -101,26 +101,26 @@ class GuiBuildNovel(QDialog):
         # Title Formats
         # =============
 
-        self.titleGroup = QGroupBox("Title Formats for Novel Files", self)
+        self.titleGroup = QGroupBox(self.tr("Title Formats for Novel Files"), self)
         self.titleForm  = QGridLayout(self)
         self.titleGroup.setLayout(self.titleForm)
 
-        fmtHelp = (
-            r"<b>Formatting Codes:</b><br>"
-            r"%title% for the title as set in the document<br>"
-            r"%ch% for chapter number (1, 2, 3)<br>"
-            r"%chw% for chapter number as a word (one, two)<br>"
-            r"%chI% for chapter number in upper case Roman<br>"
-            r"%chi% for chapter number in lower case Roman<br>"
-            r"%sc% for scene number within chapter<br>"
-            r"%sca% for scene number within novel"
+        fmtHelp = "<br>".join(
+            "<b>%s</b>" % self.tr("{0}:").format("Formatting Codes"),
+            self.tr("{0} for the title as set in the document").format(r"%title%"),
+            self.tr("{0} for chapter number (1, 2, 3)").format(r"%ch%"),
+            self.tr("{0} for chapter number as a word (one, two)").format(r"%chw%"),
+            self.tr("{0} for chapter number in upper case Roman").format(r"%chI%"),
+            self.tr("{0} for chapter number in lower case Roman").format(r"%chi%"),
+            self.tr("{0} for scene number within chapter").format(r"%sc%"),
+            self.tr("{0} for scene number within novel").format(r"%sca%"),
         )
         fmtScHelp = (
-            r"<br><br>"
-            r"Leave blank to skip this heading, or set to a static text, like "
-            r"for instance '* * *', to make a separator. The separator will "
-            r"be centred automatically and only appear between sections of "
-            r"the same type."
+            "<br><br>%s" %
+            self.tr("Leave blank to skip this heading, or set to a static text, like "
+                    "for instance '{0}', to make a separator. The separator will "
+                    "be centred automatically and only appear between sections of "
+                    "the same type.").format("* * *")
         )
         xFmt = self.mainConf.pxInt(100)
 
@@ -176,11 +176,11 @@ class GuiBuildNovel(QDialog):
         self.boxSection = QHBoxLayout()
         self.boxSection.addWidget(self.fmtSection)
 
-        titleLabel   = QLabel("Title")
-        chapterLabel = QLabel("Chapter")
-        unnumbLabel  = QLabel("Unnumbered")
-        sceneLabel   = QLabel("Scene")
-        sectionLabel = QLabel("Section")
+        titleLabel   = QLabel(self.tr("Title"))
+        chapterLabel = QLabel(self.tr("Chapter"))
+        unnumbLabel  = QLabel(self.tr("Unnumbered"))
+        sceneLabel   = QLabel(self.tr("Scene"))
+        sectionLabel = QLabel(self.tr("Section"))
 
         self.titleForm.addWidget(titleLabel,      0, 0, 1, 1, Qt.AlignLeft)
         self.titleForm.addLayout(self.boxTitle,   0, 1, 1, 1, Qt.AlignRight)
@@ -199,7 +199,7 @@ class GuiBuildNovel(QDialog):
         # Font Options
         # ============
 
-        self.fontGroup = QGroupBox("Font Options", self)
+        self.fontGroup = QGroupBox(self.tr("Font Options"), self)
         self.fontForm  = QGridLayout(self)
         self.fontGroup.setLayout(self.fontForm)
 
@@ -237,11 +237,11 @@ class GuiBuildNovel(QDialog):
         self.boxFont = QHBoxLayout()
         self.boxFont.addWidget(self.textFont)
 
-        fontFamilyLabel = QLabel("Font family")
-        fontSizeLabel   = QLabel("Font size")
-        lineHeightLabel = QLabel("Line height")
-        justifyLabel    = QLabel("Justify text")
-        stylingLabel    = QLabel("Disable styling")
+        fontFamilyLabel = QLabel(self.tr("Font family"))
+        fontSizeLabel   = QLabel(self.tr("Font size"))
+        lineHeightLabel = QLabel(self.tr("Line height"))
+        justifyLabel    = QLabel(self.tr("Justify text"))
+        stylingLabel    = QLabel(self.tr("Disable styling"))
 
         self.fontForm.addWidget(fontFamilyLabel,  0, 0, 1, 1, Qt.AlignLeft)
         self.fontForm.addLayout(self.boxFont,     0, 1, 1, 1, Qt.AlignRight)
@@ -283,7 +283,7 @@ class GuiBuildNovel(QDialog):
         # Include Options
         # ===============
 
-        self.textGroup = QGroupBox("Include Options", self)
+        self.textGroup = QGroupBox(self.tr("Include Options"), self)
         self.textForm  = QGridLayout(self)
         self.textGroup.setLayout(self.textForm)
 
@@ -307,10 +307,10 @@ class GuiBuildNovel(QDialog):
             self.optState.getBool("GuiBuildNovel", "incBodyText", True)
         )
 
-        synopsisLabel = QLabel("Include synopsis")
-        commentsLabel = QLabel("Include comments")
-        keywordsLabel = QLabel("Include keywords")
-        bodyLabel     = QLabel("Include body text")
+        synopsisLabel = QLabel(self.tr("Include synopsis"))
+        commentsLabel = QLabel(self.tr("Include comments"))
+        keywordsLabel = QLabel(self.tr("Include keywords"))
+        bodyLabel     = QLabel(self.tr("Include body text"))
 
         self.textForm.addWidget(synopsisLabel,        0, 0, 1, 1, Qt.AlignLeft)
         self.textForm.addWidget(self.includeSynopsis, 0, 1, 1, 1, Qt.AlignRight)
@@ -327,37 +327,37 @@ class GuiBuildNovel(QDialog):
         # File Filter Options
         # ===================
 
-        self.fileGroup = QGroupBox("File Filter Options", self)
+        self.fileGroup = QGroupBox(self.tr("File Filter Options"), self)
         self.fileForm  = QGridLayout(self)
         self.fileGroup.setLayout(self.fileForm)
 
         self.novelFiles = QSwitch(width=wS, height=hS)
         self.novelFiles.setToolTip(
-            "Include files with layouts 'Book', 'Page', 'Partition', "
-            "'Chapter', 'Unnumbered', and 'Scene'."
+            self.tr("Include files with layouts 'Book', 'Page', 'Partition', "
+                    "'Chapter', 'Unnumbered', and 'Scene'.")
         )
         self.novelFiles.setChecked(
             self.optState.getBool("GuiBuildNovel", "addNovel", True)
         )
 
         self.noteFiles = QSwitch(width=wS, height=hS)
-        self.noteFiles.setToolTip("Include files with layout 'Note'.")
+        self.noteFiles.setToolTip(self.tr("Include files with layout 'Note'."))
         self.noteFiles.setChecked(
             self.optState.getBool("GuiBuildNovel", "addNotes", False)
         )
 
         self.ignoreFlag = QSwitch(width=wS, height=hS)
         self.ignoreFlag.setToolTip(
-            "Ignore the 'Include when building project' setting and include "
-            "all files in the output."
+            self.tr("Ignore the 'Include when building project' setting and include "
+                    "all files in the output.")
         )
         self.ignoreFlag.setChecked(
             self.optState.getBool("GuiBuildNovel", "ignoreFlag", False)
         )
 
-        novelLabel  = QLabel("Include novel files")
-        notesLabel  = QLabel("Include note files")
-        exportLabel = QLabel("Ignore export flag")
+        novelLabel  = QLabel(self.tr("Include novel files"))
+        notesLabel  = QLabel(self.tr("Include note files"))
+        exportLabel = QLabel(self.tr("Ignore export flag"))
 
         self.fileForm.addWidget(novelLabel,      0, 0, 1, 1, Qt.AlignLeft)
         self.fileForm.addWidget(self.novelFiles, 0, 1, 1, 1, Qt.AlignRight)
@@ -372,7 +372,7 @@ class GuiBuildNovel(QDialog):
         # Export Options
         # ==============
 
-        self.exportGroup = QGroupBox("Export Options", self)
+        self.exportGroup = QGroupBox(self.tr("Export Options"), self)
         self.exportForm  = QGridLayout(self)
         self.exportGroup.setLayout(self.exportForm)
 
@@ -386,8 +386,8 @@ class GuiBuildNovel(QDialog):
             self.optState.getBool("GuiBuildNovel", "replaceUCode", False)
         )
 
-        tabsLabel  = QLabel("Replace tabs with spaces")
-        uCodeLabel = QLabel("Replace Unicode in HTML")
+        tabsLabel  = QLabel(self.tr("Replace tabs with spaces"))
+        uCodeLabel = QLabel(self.tr("Replace Unicode in HTML"))
 
         self.exportForm.addWidget(tabsLabel,         0, 0, 1, 1, Qt.AlignLeft)
         self.exportForm.addWidget(self.replaceTabs,  0, 1, 1, 1, Qt.AlignRight)
@@ -402,7 +402,7 @@ class GuiBuildNovel(QDialog):
 
         self.buildProgress = QProgressBar()
 
-        self.buildNovel = QPushButton("Build Preview")
+        self.buildNovel = QPushButton(self.tr("Build Preview"))
         self.buildNovel.clicked.connect(self._buildPreview)
 
         # Action Buttons
@@ -413,14 +413,14 @@ class GuiBuildNovel(QDialog):
         # Printing
 
         self.printMenu = QMenu(self)
-        self.btnPrint = QPushButton("Print")
+        self.btnPrint = QPushButton(self.tr("Print"))
         self.btnPrint.setMenu(self.printMenu)
 
-        self.printSend = QAction("Print Preview", self)
+        self.printSend = QAction(self.tr("Print Preview"), self)
         self.printSend.triggered.connect(self._printDocument)
         self.printMenu.addAction(self.printSend)
 
-        self.printFile = QAction("Print to PDF", self)
+        self.printFile = QAction(self.tr("Print to PDF"), self)
         self.printFile.triggered.connect(lambda: self._saveDocument(self.FMT_PDF))
         self.printMenu.addAction(self.printFile)
 
@@ -430,39 +430,46 @@ class GuiBuildNovel(QDialog):
         self.btnSave = QPushButton("Save As")
         self.btnSave.setMenu(self.saveMenu)
 
-        self.saveODT = QAction("Open Document (.odt)", self)
+        self.saveODT = QAction(self.tr("{0} ({1})").format(self.tr("Open Document"), ".odt"), self)
         self.saveODT.triggered.connect(lambda: self._saveDocument(self.FMT_ODT))
         self.saveMenu.addAction(self.saveODT)
 
-        self.saveFODT = QAction("Flat Open Document (.fodt)", self)
+        self.saveFODT = QAction(
+            self.tr("{0} ({1})").format(self.tr("Flat Open Document"), ".fodt"), self)
         self.saveFODT.triggered.connect(lambda: self._saveDocument(self.FMT_FODT))
         self.saveMenu.addAction(self.saveFODT)
 
-        self.saveHTM = QAction("novelWriter HTML (.htm)", self)
+        self.saveHTM = QAction(self.tr("{0} ({1})").format(
+            self.tr("novelWriter HTML"), ".htm"), self)
         self.saveHTM.triggered.connect(lambda: self._saveDocument(self.FMT_HTM))
         self.saveMenu.addAction(self.saveHTM)
 
-        self.saveNWD = QAction("novelWriter Markdown (.nwd)", self)
+        self.saveNWD = QAction(self.tr("{0} ({1})").format(
+            self.tr("novelWriter Markdown"), ".nwd"), self)
         self.saveNWD.triggered.connect(lambda: self._saveDocument(self.FMT_NWD))
         self.saveMenu.addAction(self.saveNWD)
 
-        self.saveMD = QAction("Standard Markdown (.md)", self)
+        self.saveMD = QAction(
+            self.tr("{0} ({1})").format(self.tr("Standard Markdown"), ".md"), self)
         self.saveMD.triggered.connect(lambda: self._saveDocument(self.FMT_MD))
         self.saveMenu.addAction(self.saveMD)
 
-        self.saveGH = QAction("GitHub Markdown (.md)", self)
+        self.saveGH = QAction(
+            self.tr("{0} ({1})").format(self.tr("GitHub Markdown"), ".md"), self)
         self.saveGH.triggered.connect(lambda: self._saveDocument(self.FMT_GH))
         self.saveMenu.addAction(self.saveGH)
 
-        self.saveJsonH = QAction("JSON + novelWriter HTML (.json)", self)
+        self.saveJsonH = QAction(self.tr("{0} ({1})").format(
+            self.tr("JSON + novelWriter HTML"), ".json"), self)
         self.saveJsonH.triggered.connect(lambda: self._saveDocument(self.FMT_JSON_H))
         self.saveMenu.addAction(self.saveJsonH)
 
-        self.saveJsonM = QAction("JSON + novelWriters Markdown (.json)", self)
+        self.saveJsonM = QAction(self.tr("{0} ({1})").format(
+            self.tr("JSON + novelWriters Markdown"), ".json"), self)
         self.saveJsonM.triggered.connect(lambda: self._saveDocument(self.FMT_JSON_M))
         self.saveMenu.addAction(self.saveJsonM)
 
-        self.btnClose = QPushButton("Close")
+        self.btnClose = QPushButton(self.tr("Close"))
         self.btnClose.clicked.connect(self._doClose)
 
         self.buttonBox.addWidget(self.btnSave)
@@ -567,7 +574,7 @@ class GuiBuildNovel(QDialog):
                 self.docView.setContent(self.htmlText, self.buildTime)
             else:
                 self.docView.setText(
-                    "Failed to generate preview. The result is too big."
+                    self.tr("Failed to generate preview. The result is too big.")
                 )
 
         else:
@@ -736,10 +743,9 @@ class GuiBuildNovel(QDialog):
         logger.debug("Built project in %.3f ms" % (1000*(tEnd - tStart)))
 
         if bldObj.errData:
-            self.theParent.makeAlert((
-                "There were problems when building the project:"
-                "<br>-&nbsp;%s"
-            ) % "<br>-&nbsp;".join(bldObj.errData), nwAlert.ERROR)
+            self.theParent.makeAlert("%s:<br>-&nbsp;%s" % (
+                self.tr("There were problems when building the project"),
+                "<br>-&nbsp;".join(bldObj.errData)), nwAlert.ERROR)
 
         return
 
@@ -796,39 +802,39 @@ class GuiBuildNovel(QDialog):
 
         if theFmt == self.FMT_ODT:
             fileExt = "odt"
-            textFmt = "Open Document"
+            textFmt = self.tr("Open Document")
 
         elif theFmt == self.FMT_FODT:
             fileExt = "fodt"
-            textFmt = "Flat Open Document"
+            textFmt = self.tr("Flat Open Document")
 
         elif theFmt == self.FMT_HTM:
             fileExt = "htm"
-            textFmt = "Plain HTML"
+            textFmt = self.tr("Plain HTML")
 
         elif theFmt == self.FMT_NWD:
             fileExt = "nwd"
-            textFmt = "novelWriter Markdown"
+            textFmt = self.tr("novelWriter Markdown")
 
         elif theFmt == self.FMT_MD:
             fileExt = "md"
-            textFmt = "Standard Markdown"
+            textFmt = self.tr("Standard Markdown")
 
         elif theFmt == self.FMT_GH:
             fileExt = "md"
-            textFmt = "GitHub Markdown"
+            textFmt = self.tr("GitHub Markdown")
 
         elif theFmt == self.FMT_JSON_H:
             fileExt = "json"
-            textFmt = "JSON + novelWriter HTML"
+            textFmt = self.tr("JSON + novelWriter HTML")
 
         elif theFmt == self.FMT_JSON_M:
             fileExt = "json"
-            textFmt = "JSON + novelWriter Markdown"
+            textFmt = self.tr("JSON + novelWriter Markdown")
 
         elif theFmt == self.FMT_PDF:
             fileExt = "pdf"
-            textFmt = "PDF"
+            textFmt = self.tr("PDF")
 
         else:
             return False
@@ -848,7 +854,7 @@ class GuiBuildNovel(QDialog):
             dlgOpt  = QFileDialog.Options()
             dlgOpt |= QFileDialog.DontUseNativeDialog
             savePath, _ = QFileDialog.getSaveFileName(
-                self, "Save Document As", savePath, options=dlgOpt
+                self, self.tr("Save Document As"), savePath, options=dlgOpt
             )
             if not savePath:
                 return False
@@ -985,20 +991,20 @@ class GuiBuildNovel(QDialog):
                 errMsg - str(e)
 
         else:
-            errMsg = "Unknown format"
+            errMsg = self.tr("Unknown format")
 
         # Report to user
         if wSuccess:
             self.theParent.makeAlert(
-                "%s file successfully written to:<br> %s" % (
-                    textFmt, savePath
+                "%s<br> %s" % (
+                    self.tr("{0} file successfully written to:").format(textFmt),
+                    savePath
                 ), nwAlert.INFO
             )
         else:
             self.theParent.makeAlert(
-                "Failed to write %s file. %s" % (
-                    textFmt, errMsg
-                ), nwAlert.ERROR
+                self.tr("Failed to write {0} file. {1}").format(
+                    textFmt, errMsg), nwAlert.ERROR
             )
 
         return wSuccess
@@ -1194,9 +1200,9 @@ class GuiBuildNovelDocView(QTextBrowser):
         self.qDocument = self.document()
         self.qDocument.setDocumentMargin(self.mainConf.getTextMargin())
         self.setPlaceholderText(
-            "This area will show the content of the document to be "
-            "exported or printed. Press the \"Build Preview\" button "
-            "to generate content."
+            self.tr("This area will show the content of the document to be "
+                    "exported or printed. Press the \"Build Preview\" button "
+                    "to generate content.")
         )
 
         theFont = QFont()
@@ -1227,7 +1233,8 @@ class GuiBuildNovelDocView(QTextBrowser):
 
         fPx = int(1.1*self.theTheme.fontPixelSize)
 
-        self.theTitle = QLabel("<b>Build Time:</b> Unknown", self)
+        self.theTitle = QLabel(self.tr("<b>{0}:</b> {1}".format(
+            self.tr("Build Time"), self.tr("Unknown"))), self)
         self.theTitle.setIndent(0)
         self.theTitle.setAutoFillBackground(True)
         self.theTitle.setAlignment(Qt.AlignCenter)
@@ -1341,8 +1348,9 @@ class GuiBuildNovelDocView(QTextBrowser):
                 fuzzyTime(time() - self.buildTime)
             )
         else:
-            strBuildTime = "Unknown"
-        self.theTitle.setText("<b>Build Time:</b> %s" % strBuildTime)
+            strBuildTime = self.tr("Unknown")
+        self.theTitle.setText(self.tr("<b>{0}:</b> {1}").format(
+            self.tr("Build Time"), strBuildTime))
 
     def _updateDocMargins(self):
         """Automatically adjust the header to fill the top of the

@@ -393,7 +393,7 @@ class GuiTheme:
                     confParser.read_file(inFile)
             except Exception as e:
                 self.theParent.makeAlert(
-                    ["Could not load theme config file.", str(e)], nwAlert.ERROR
+                    [self.tr("Could not load theme config file."), str(e)], nwAlert.ERROR
                 )
                 continue
             themeName = ""
@@ -426,7 +426,7 @@ class GuiTheme:
                     confParser.read_file(inFile)
             except Exception as e:
                 self.theParent.makeAlert(
-                    ["Could not load syntax file.", str(e)], nwAlert.ERROR
+                    [self.tr("Could not load syntax file."), str(e)], nwAlert.ERROR
                 )
                 return []
             syntaxName = ""
@@ -741,7 +741,7 @@ class GuiIcons:
                     confParser.read_file(inFile)
             except Exception as e:
                 self.theParent.makeAlert(
-                    ["Could not load theme config file.", str(e)], nwAlert.ERROR
+                    [self.tr("Could not load theme config file."), str(e)], nwAlert.ERROR
                 )
                 continue
             themeName = ""

@@ -56,11 +56,12 @@ class GuiDocSplit(QDialog):
         self.sourceItem = None
 
         self.outerBox = QVBoxLayout()
-        self.setWindowTitle("Split Document")
+        self.setWindowTitle(self.tr("Split Document"))
 
-        self.headLabel = QLabel("<b>Document Headers</b>")
+        self.headLabel = QLabel("<b>%s</b>" % self.tr("Document Headers"))
         self.helpLabel = QHelpLabel(
-            "Select the maximum level to split into files.", self.theParent.theTheme.helpText
+            self.tr("Select the maximum level to split into files."),
+            self.theParent.theTheme.helpText
         )
 
         self.listBox = QListWidget()
@@ -69,10 +70,10 @@ class GuiDocSplit(QDialog):
         self.listBox.setMinimumHeight(self.mainConf.pxInt(180))
 
         self.splitLevel = QComboBox(self)
-        self.splitLevel.addItem("Split on Header Level 1 (Title)",      1)
-        self.splitLevel.addItem("Split up to Header Level 2 (Chapter)", 2)
-        self.splitLevel.addItem("Split up to Header Level 3 (Scene)",   3)
-        self.splitLevel.addItem("Split up to Header Level 4 (Section)", 4)
+        self.splitLevel.addItem(self.tr("Split on Header Level 1 (Title)"),      1)
+        self.splitLevel.addItem(self.tr("Split up to Header Level 2 (Chapter)"), 2)
+        self.splitLevel.addItem(self.tr("Split up to Header Level 3 (Scene)"),   3)
+        self.splitLevel.addItem(self.tr("Split up to Header Level 4 (Section)"), 4)
         spIndex = self.splitLevel.findData(
             self.optState.getInt("GuiDocSplit", "spLevel", 3)
         )
@@ -81,6 +82,8 @@ class GuiDocSplit(QDialog):
         self.splitLevel.currentIndexChanged.connect(self._populateList)
 
         self.buttonBox = QDialogButtonBox(QDialogButtonBox.Ok | QDialogButtonBox.Cancel)
+        self.buttonBox.button(QDialogButtonBox.Ok).setText(self.tr("Ok"))
+        self.buttonBox.button(QDialogButtonBox.Cancel).setText(self.tr("Cancel"))
         self.buttonBox.accepted.connect(self._doSplit)
         self.buttonBox.rejected.connect(self._doClose)
 
@@ -116,14 +119,14 @@ class GuiDocSplit(QDialog):
 
         if self.sourceItem is None:
             self.theParent.makeAlert((
-                "No source document selected. Nothing to do."
+                self.tr("No source document selected. Nothing to do.")
             ), nwAlert.ERROR)
             return
 
         srcItem = self.theProject.projTree[self.sourceItem]
         if srcItem is None:
             self.theParent.makeAlert((
-                "Could not parse source document."
+                self.tr("Could not parse source document.")
             ), nwAlert.ERROR)
             return
 
@@ -148,7 +151,7 @@ class GuiDocSplit(QDialog):
         nFiles = len(finalOrder)
         if nFiles == 0:
             self.theParent.makeAlert((
-                "No headers found. Nothing to do."
+                self.tr("No headers found. Nothing to do.")
             ), nwAlert.ERROR)
             return
 
@@ -156,17 +159,17 @@ class GuiDocSplit(QDialog):
         parTree = self.theProject.projTree.getItemPath(srcItem.itemParent)
         if len(parTree) >= nwConst.MAX_DEPTH - 1:
             self.theParent.makeAlert((
-                "Cannot add new folder for the document split. "
-                "Maximum folder depth has been reached. "
-                "Please move the file to another level in the project tree."
+                self.tr("Cannot add new folder for the document split. "
+                        "Maximum folder depth has been reached. "
+                        "Please move the file to another level in the project tree.")
             ), nwAlert.ERROR)
             return
 
-        msgYes = self.theParent.askQuestion("Split Document", (
-            "The document will be split into %d file(s) in a new folder. "
-            "The original document will remain intact.<br><br>"
-            "Continue with the splitting process?"
-        ) % nFiles)
+        msgYes = self.theParent.askQuestion(self.tr("Split Document"), "%s<br><br>%s" % (
+            self.tr("The document will be split into {0} file(s) in a new folder. "
+                    "The original document will remain intact.", n=nFiles).format(nFiles),
+            self.tr("Continue with the splitting process?")
+        ))
         if not msgYes:
             return
 
@@ -243,7 +246,7 @@ class GuiDocSplit(QDialog):
             return
         if nwItem.itemType is not nwItemType.FILE:
             self.theParent.makeAlert((
-                "Element selected in the project tree must be a file."
+                self.tr("Element selected in the project tree must be a file.")
             ), nwAlert.ERROR)
             return
 

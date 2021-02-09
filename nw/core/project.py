@@ -24,6 +24,9 @@ You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
 
+from functools import partial
+
+from PyQt5.QtCore import QCoreApplication
 import nw
 import logging
 import os
@@ -97,11 +100,12 @@ class NWProject():
         self.notesWCount = 0     # Total number of words in note files
         self.doBackup    = True  # Run project backup on exit
 
-        # Set Defaults
-        self.clearProject()
-
         # Internal Mapping
         self.makeAlert = self.theParent.makeAlert
+        self.tr = partial(QCoreApplication.translate, self.__class__.__name__)
+
+        # Set Defaults
+        self.clearProject()
 
         return
 
@@ -157,7 +161,7 @@ class NWProject():
         trashHandle = self.projTree.trashRoot()
         if trashHandle is None:
             newItem = NWItem(self)
-            newItem.setName("Trash")
+            newItem.setName(self.tr("Trash"))
             newItem.setType(nwItemType.TRASH)
             newItem.setClass(nwItemClass.TRASH)
             self.projTree.append(None, None, newItem)
@@ -197,7 +201,7 @@ class NWProject():
         self.autoReplace = {}
         self.titleFormat = {
             "title"      : r"%title%",
-            "chapter"    : r"Chapter %ch%: %title%",
+            "chapter"    : self.tr(r"Chapter %ch%: %title%"),
             "unnumbered" : r"%title%",
             "scene"      : r"* * *",
             "section"    : r"",
@@ -205,15 +209,15 @@ class NWProject():
         self.spellCheck  = False
         self.autoOutline = True
         self.statusItems = NWStatus()
-        self.statusItems.addEntry("New",      (100, 100, 100))
-        self.statusItems.addEntry("Note",     (200, 50,  0))
-        self.statusItems.addEntry("Draft",    (200, 150, 0))
-        self.statusItems.addEntry("Finished", (50,  200, 0))
+        self.statusItems.addEntry(self.tr("New"),      (100, 100, 100))
+        self.statusItems.addEntry(self.tr("Note"),     (200, 50,  0))
+        self.statusItems.addEntry(self.tr("Draft"),    (200, 150, 0))
+        self.statusItems.addEntry(self.tr("Finished"), (50,  200, 0))
         self.importItems = NWStatus()
-        self.importItems.addEntry("New",      (100, 100, 100))
-        self.importItems.addEntry("Minor",    (200, 50,  0))
-        self.importItems.addEntry("Major",    (200, 150, 0))
-        self.importItems.addEntry("Main",     (50,  200, 0))
+        self.importItems.addEntry(self.tr("New"),      (100, 100, 100))
+        self.importItems.addEntry(self.tr("Minor"),    (200, 50,  0))
+        self.importItems.addEntry(self.tr("Major"),    (200, 150, 0))
+        self.importItems.addEntry(self.tr("Main"),     (50,  200, 0))
         self.lastEdited = None
         self.lastViewed = None
         self.lastWCount = 0
@@ -239,7 +243,7 @@ class NWProject():
 
         # Project Settings
         projPath = projData.get("projPath", None)
-        projName = projData.get("projName", "New Project")
+        projName = projData.get("projName", self.tr("New Project"))
         projTitle = projData.get("projTitle", "")
         projAuthors = projData.get("projAuthors", "")
 
@@ -256,7 +260,7 @@ class NWProject():
 
         titlePage = "# %s\n\n" % (self.bookTitle if self.bookTitle else self.projName)
         if self.bookAuthors:
-            titlePage = "%sBy %s\n" % (titlePage, ", ".join(self.bookAuthors))
+            titlePage = "%s%s %s\n" % (titlePage, self.tr("By"), ", ".join(self.bookAuthors))
 
         # Document object for writing files
         aDoc = NWDoc(self, self.theParent)
@@ -265,14 +269,14 @@ class NWProject():
             # Creating a minimal project with a few root folders and a
             # single chapter folder with a single file.
             xHandle = {}
-            xHandle[1] = self.newRoot("Novel",         nwItemClass.NOVEL)
-            xHandle[2] = self.newRoot("Plot",          nwItemClass.PLOT)
-            xHandle[3] = self.newRoot("Characters",    nwItemClass.CHARACTER)
-            xHandle[4] = self.newRoot("World",         nwItemClass.WORLD)
-            xHandle[5] = self.newFile("Title Page",    nwItemClass.NOVEL, xHandle[1])
-            xHandle[6] = self.newFolder("New Chapter", nwItemClass.NOVEL, xHandle[1])
-            xHandle[7] = self.newFile("New Chapter",   nwItemClass.NOVEL, xHandle[6])
-            xHandle[8] = self.newFile("New Scene",     nwItemClass.NOVEL, xHandle[6])
+            xHandle[1] = self.newRoot(self.tr("Novel"),         nwItemClass.NOVEL)
+            xHandle[2] = self.newRoot(self.tr("Plot"),          nwItemClass.PLOT)
+            xHandle[3] = self.newRoot(self.tr("Characters"),    nwItemClass.CHARACTER)
+            xHandle[4] = self.newRoot(self.tr("World"),         nwItemClass.WORLD)
+            xHandle[5] = self.newFile(self.tr("Title Page"),    nwItemClass.NOVEL, xHandle[1])
+            xHandle[6] = self.newFolder(self.tr("New Chapter"), nwItemClass.NOVEL, xHandle[1])
+            xHandle[7] = self.newFile(self.tr("New Chapter"),   nwItemClass.NOVEL, xHandle[6])
+            xHandle[8] = self.newFile(self.tr("New Scene"),     nwItemClass.NOVEL, xHandle[6])
 
             self.projTree.setFileItemLayout(xHandle[5], nwItemLayout.TITLE)
             self.projTree.setFileItemLayout(xHandle[7], nwItemLayout.CHAPTER)
@@ -282,11 +286,11 @@ class NWProject():
             aDoc.clearDocument()
 
             aDoc.openDocument(xHandle[7], showStatus=False)
-            aDoc.saveDocument("## New Chapter\n\n")
+            aDoc.saveDocument("## %s\n\n" % self.tr("New Chapter"))
             aDoc.clearDocument()
 
             aDoc.openDocument(xHandle[8], showStatus=False)
-            aDoc.saveDocument("### New Scene\n\n")
+            aDoc.saveDocument("### %s\n\n" % self.tr("New Scene"))
             aDoc.clearDocument()
 
         elif popCustom:
@@ -295,13 +299,14 @@ class NWProject():
             # wizard's custom page.
 
             # Create root folders
-            nHandle = self.newRoot("Novel", nwItemClass.NOVEL)
+            nHandle = self.newRoot(self.tr("Novel"), nwItemClass.NOVEL)
             for newRoot in projData.get("addRoots", []):
                 if newRoot in nwItemClass:
-                    self.newRoot(nwLabels.CLASS_NAME[newRoot], newRoot)
+                    self.newRoot(QCoreApplication.translate(
+                        "Constant", nwLabels.CLASS_NAME[newRoot]), newRoot)
 
             # Create a title page
-            tHandle = self.newFile("Title Page", nwItemClass.NOVEL, nHandle)
+            tHandle = self.newFile(self.tr("Title Page"), nwItemClass.NOVEL, nHandle)
             self.projTree.setFileItemLayout(tHandle, nwItemLayout.TITLE)
 
             aDoc.openDocument(tHandle, showStatus=False)
@@ -316,7 +321,7 @@ class NWProject():
             # Create chapters
             if numChapters > 0:
                 for ch in range(numChapters):
-                    chTitle = "Chapter %d" % (ch+1)
+                    chTitle = self.tr("Chapter {0}").format(f"{ch+1:d}")
                     pHandle = nHandle
                     if chFolders:
                         pHandle = self.newFolder(chTitle, nwItemClass.NOVEL, nHandle)
@@ -331,7 +336,7 @@ class NWProject():
                     # Create chapter scenes
                     if numScenes > 0:
                         for sc in range(numScenes):
-                            scTitle = "Scene %d.%d" % (ch+1, sc+1)
+                            scTitle = self.tr("Scene {0}").format(f"{ch+1:d}.{sc+1:d}")
                             sHandle = self.newFile(scTitle, nwItemClass.NOVEL, pHandle)
 
                             aDoc.openDocument(sHandle, showStatus=False)
@@ -341,7 +346,7 @@ class NWProject():
             # Create scenes (no chapters)
             elif numScenes > 0:
                 for sc in range(numScenes):
-                    scTitle = "Scene %d" % (sc+1)
+                    scTitle = self.tr("Scene {0}").format(f"{sc+1:d}")
                     sHandle = self.newFile(scTitle, nwItemClass.NOVEL, nHandle)
 
                     aDoc.openDocument(sHandle, showStatus=False)
@@ -365,7 +370,7 @@ class NWProject():
         if not os.path.isfile(fileName):
             fileName = os.path.join(fileName, nwFiles.PROJ_FILE)
             if not os.path.isfile(fileName):
-                self.makeAlert("File not found: %s" % fileName, nwAlert.ERROR)
+                self.makeAlert(self.tr("File not found: {0}").format(fileName), nwAlert.ERROR)
                 return False
 
         self.clearProject()
@@ -414,16 +419,18 @@ class NWProject():
         try:
             nwXML = etree.parse(fileName)
         except Exception as e:
-            self.makeAlert(["Failed to parse project xml.", str(e)], nwAlert.ERROR)
+            self.makeAlert([self.tr("Failed to parse project xml."), str(e)], nwAlert.ERROR)
 
             # Trying to open backup file instead
             backFile = fileName[:-3]+"bak"
             if os.path.isfile(backFile):
-                self.makeAlert("Attempting to open backup project file instead.", nwAlert.INFO)
+                self.makeAlert(self.tr("Attempting to open backup project file instead."),
+                               nwAlert.INFO)
                 try:
                     nwXML = etree.parse(backFile)
                 except Exception as e:
-                    self.makeAlert(["Failed to parse project xml.", str(e)], nwAlert.ERROR)
+                    self.makeAlert([self.tr("Failed to parse project xml."), str(e)],
+                                   nwAlert.ERROR)
                     self.clearProject()
                     return False
             else:
@@ -433,9 +440,9 @@ class NWProject():
         xRoot = nwXML.getroot()
         nwxRoot = xRoot.tag
 
-        appVersion  = xRoot.attrib.get("appVersion",  "Unknown")
+        appVersion  = xRoot.attrib.get("appVersion",  self.tr("Unknown"))
         hexVersion  = xRoot.attrib.get("hexVersion",  "0x0")
-        fileVersion = xRoot.attrib.get("fileVersion", "Unknown")
+        fileVersion = xRoot.attrib.get("fileVersion", self.tr("Unknown"))
 
         # The following are deprecated and will be removed
         # The settings have been moved to the <project> tag
@@ -451,7 +458,7 @@ class NWProject():
 
         if not nwxRoot == "novelWriterXML":
             self.makeAlert(
-                "Project file does not appear to be a novelWriterXML file.",
+                self.tr("Project file does not appear to be a novelWriterXML file."),
                 nwAlert.ERROR
             )
             self.clearProject()
@@ -470,24 +477,23 @@ class NWProject():
         #       read the file. Introduced in version 0.10.
 
         if fileVersion == "1.0":
-            msgYes = self.theParent.askQuestion("Old Project Version", (
-                "The project file and data is created by a novelWriter version "
-                "lower than 0.7. Do you want to upgrade the project to the "
-                "most recent format?<br><br>Note that after the upgrade, you "
-                "cannot open the project with an older version of novelWriter "
-                "any more, so make sure you have a recent backup."
-            ))
+            msgYes = self.theParent.askQuestion(self.tr("Old Project Version"), (
+                "%s<br><br>%s" % (
+                    self.tr("The project file and data is created by a novelWriter version "
+                            "lower than 0.7. Do you want to upgrade the project to the "
+                            "most recent format?"),
+                    self.tr("Note that after the upgrade, you "
+                            "cannot open the project with an older version of novelWriter "
+                            "any more, so make sure you have a recent backup."))))
             if not msgYes:
                 self.clearProject()
                 return False
 
         elif fileVersion != "1.1" and fileVersion != "1.2":
             self.makeAlert((
-                "Unknown or unsupported novelWriter project file format. "
-                "The project cannot be opened by this version of novelWriter. "
-                "The file was saved with novelWriter version {vers:s}."
-            ).format(
-                vers = appVersion,
+                self.tr("Unknown or unsupported novelWriter project file format. "
+                        "The project cannot be opened by this version of novelWriter. "
+                        "The file was saved with novelWriter version {0}.").format(appVersion)
             ), nwAlert.ERROR)
             self.clearProject()
             return False
@@ -496,13 +502,14 @@ class NWProject():
         # =========================
 
         if hexToInt(hexVersion) > hexToInt(nw.__hexversion__):
-            msgYes = self.theParent.askQuestion("Version Conflict", (
-                "This project was saved by a newer version of novelWriter, version %s. "
-                "This is version %s. If you continue to open the project, some attributes "
-                "and settings may not be preserved, but the overall project should be fine. "
-                "Continue opening the project?"
-            ) % (
-                appVersion, nw.__version__
+            msgYes = self.theParent.askQuestion(self.tr("Version Conflict"), (
+                self.tr("This project was saved by a newer version of novelWriter, version "
+                        "{new_version}. This is version {version}. If you continue to open the "
+                        "project, some attributes and settings may not be preserved, but the "
+                        "overall project should be fine. Continue opening the project?")
+            ).format(
+                new_version = appVersion,
+                version = nw.__version__
             ))
             if not msgYes:
                 self.clearProject()
@@ -602,7 +609,9 @@ class NWProject():
         self.mainConf.updateRecentCache(self.projPath, self.projName, self.lastWCount, time())
         self.mainConf.saveRecentCache()
 
-        self.theParent.setStatus("Opened Project: %s" % self.projName)
+        self.theParent.setStatus(self.tr("{0}: {1}").format(
+            self.tr("Opened Project"),
+            self.projName))
 
         self._scanProjectFolder()
 
@@ -623,7 +632,7 @@ class NWProject():
         """
         if self.projPath is None:
             self.makeAlert(
-                "Project path not set, cannot save project.", nwAlert.ERROR
+                self.tr("Project path not set, cannot save project."), nwAlert.ERROR
             )
             return False
 
@@ -702,7 +711,7 @@ class NWProject():
                     xml_declaration = True
                 ))
         except Exception as e:
-            self.makeAlert(["Failed to save project.", str(e)], nwAlert.ERROR)
+            self.makeAlert([self.tr("Failed to save project."), str(e)], nwAlert.ERROR)
             return False
 
         # If we're here, the file was successfully saved,
@@ -721,7 +730,9 @@ class NWProject():
         self.mainConf.saveRecentCache()
 
         self._writeLockFile()
-        self.theParent.setStatus("Saved Project: %s" % self.projName)
+        self.theParent.setStatus(self.tr("{0}: {1}").format(
+            self.tr("Saved Project"),
+            self.projName))
         self.setProjectChanged(False)
 
         return True
@@ -773,26 +784,26 @@ class NWProject():
             return False
 
         logger.info("Backing up project")
-        self.theParent.setStatus("Backing up project ...")
+        self.theParent.setStatus(self.tr("Backing up project ..."))
 
         if self.mainConf.backupPath is None or self.mainConf.backupPath == "":
             self.theParent.makeAlert((
-                "Cannot backup project because no backup path is set. "
-                "Please set a valid backup location in Tools > Preferences."
+                self.tr("Cannot backup project because no backup path is set. "
+                        "Please set a valid backup location in Tools > Preferences.")
             ), nwAlert.ERROR)
             return False
 
         if self.projName is None or self.projName == "":
             self.theParent.makeAlert((
-                "Cannot backup project because no project name is set. "
-                "Please set a Working Title in Project > Project Settings."
+                self.tr("Cannot backup project because no project name is set. "
+                        "Please set a Working Title in Project > Project Settings.")
             ), nwAlert.ERROR)
             return False
 
         if not os.path.isdir(self.mainConf.backupPath):
             self.theParent.makeAlert((
-                "Cannot backup project because the backup path does not exist. "
-                "Please set a valid backup location in Tools > Preferences."
+                self.tr("Cannot backup project because the backup path does not exist. "
+                        "Please set a valid backup location in Tools > Preferences.")
             ), nwAlert.ERROR)
             return False
 
@@ -804,20 +815,20 @@ class NWProject():
                 logger.debug("Created folder %s" % baseDir)
             except Exception as e:
                 self.theParent.makeAlert(
-                    ["Could not create backup folder.", str(e)],
+                    [self.tr("Could not create backup folder."), str(e)],
                     nwAlert.ERROR
                 )
                 return False
 
         if os.path.commonpath([self.projPath, baseDir]) == self.projPath:
             self.theParent.makeAlert((
-                "Cannot backup project because the backup path is within the "
-                "project folder to be backed up. Please choose a different "
-                "backup path in Tools > Preferences."
+                self.tr("Cannot backup project because the backup path is within the "
+                        "project folder to be backed up. Please choose a different "
+                        "backup path in Tools > Preferences.")
             ), nwAlert.ERROR)
             return False
 
-        archName = "Backup from %s" % formatTimeStamp(time(), fileSafe=True)
+        archName = self.tr("Backup from {0}").format(formatTimeStamp(time(), fileSafe=True))
         baseName = os.path.join(baseDir, archName)
 
         try:
@@ -827,18 +838,19 @@ class NWProject():
             logger.info("Backup written to: %s" % archName)
             if doNotify:
                 self.theParent.makeAlert(
-                    "Backup archive file written to: %s.zip" % os.path.join(cleanName, archName),
+                    self.tr("Backup archive file written to: {0}").format(
+                        f"{os.path.join(cleanName, archName)}.zip"),
                     nwAlert.INFO
                 )
 
         except Exception as e:
             self.theParent.makeAlert(
-                ["Could not write backup archive.", str(e)],
+                [self.tr("Could not write backup archive."), str(e)],
                 nwAlert.ERROR
             )
             return False
 
-        self.theParent.setStatus("Project backed up to '%s.zip'" % baseName)
+        self.theParent.setStatus(self.tr("Project backed up to '{0}'").format(f"{baseName}.zip"))
 
         return True
 
@@ -853,8 +865,9 @@ class NWProject():
             logger.error("No project path set for the example project")
             return False
 
-        srcSample = os.path.abspath(os.path.join(self.mainConf.appRoot, "sample"))
-        pkgSample = os.path.join(self.mainConf.assetPath, "sample.zip")
+        srcSample = os.path.abspath(os.path.join(self.mainConf.appRoot,
+                                                 self.tr("sample")))
+        pkgSample = os.path.join(self.mainConf.assetPath, "%s.zip" % self.tr("sample"))
 
         isSuccess = False
         if os.path.isfile(pkgSample):
@@ -865,7 +878,7 @@ class NWProject():
                 isSuccess = True
             except Exception as e:
                 self.makeAlert(
-                    ["Failed to create a new example project.", str(e)], nwAlert.ERROR
+                    [self.tr("Failed to create a new example project."), str(e)], nwAlert.ERROR
                 )
 
         elif os.path.isdir(srcSample):
@@ -876,8 +889,8 @@ class NWProject():
                 dstProj = os.path.join(projPath, nwFiles.PROJ_FILE)
                 shutil.copyfile(srcProj, dstProj)
 
-                srcContent = os.path.join(srcSample, "content")
-                dstContent = os.path.join(projPath, "content")
+                srcContent = os.path.join(srcSample, self.tr("content"))
+                dstContent = os.path.join(projPath, self.tr("content"))
                 for srcFile in os.listdir(srcContent):
                     srcDoc = os.path.join(srcContent, srcFile)
                     dstDoc = os.path.join(dstContent, srcFile)
@@ -887,13 +900,13 @@ class NWProject():
 
             except Exception as e:
                 self.makeAlert(
-                    ["Failed to create a new example project.", str(e)], nwAlert.ERROR
+                    [self.tr("Failed to create a new example project."), str(e)], nwAlert.ERROR
                 )
 
         else:
             self.makeAlert((
-                "Failed to create a new example project. Could not find the "
-                "necessary files. They seem to be missing from this installation."
+                self.tr("Failed to create a new example project. Could not find the "
+                        "necessary files. They seem to be missing from this installation.")
             ), nwAlert.ERROR)
 
         if isSuccess:
@@ -925,15 +938,15 @@ class NWProject():
                     logger.debug("Created folder %s" % projPath)
                 except Exception as e:
                     self.theParent.makeAlert((
-                        ["Could not create new project folder.", str(e)]
+                        [self.tr("Could not create new project folder."), str(e)]
                     ), nwAlert.ERROR)
                     return False
 
             if os.path.isdir(projPath):
                 if os.listdir(self.projPath):
                     self.theParent.makeAlert((
-                        "New project folder is not empty. "
-                        "Each project requires a dedicated project folder."
+                        self.tr("New project folder is not empty. "
+                                "Each project requires a dedicated project folder.")
                     ), nwAlert.ERROR)
                     return False
 
@@ -982,15 +995,15 @@ class NWProject():
         if doBackup:
             if not os.path.isdir(self.mainConf.backupPath):
                 self.theParent.makeAlert((
-                    "You must set a valid backup path in preferences to use "
-                    "the automatic project backup feature."
+                    self.tr("You must set a valid backup path in preferences to use "
+                            "the automatic project backup feature.")
                 ), nwAlert.WARN)
                 return False
 
             if self.projName == "":
                 self.theParent.makeAlert((
-                    "You must set a valid project name in project settings to "
-                    "use the automatic project backup feature."
+                    self.tr("You must set a valid project name in project settings to "
+                            "use the automatic project backup feature.")
                 ), nwAlert.WARN)
                 return False
 
@@ -1330,7 +1343,7 @@ class NWProject():
         # Report status
         if len(orphanFiles) > 0:
             self.makeAlert(
-                "Found %d orphaned file(s) in project folder." % len(orphanFiles),
+                self.tr("Found {0} orphaned file(s) in project folder.").format(len(orphanFiles)),
                 nwAlert.WARN
             )
         else:
@@ -1352,10 +1365,12 @@ class NWProject():
                 oName, oParent, oClass, oLayout = aDoc.getMeta()
 
             if oName:
-                oName = "Recovered: %s" % oName.lstrip("Recovered: ")
+                oName = self.tr("{0}: {1}").format(
+                    self.tr("Recovered"),
+                    oName.lstrip(self.tr("{0}: ").format(self.tr("Recovered"))))
             else:
                 nOrph += 1
-                oName = "Recovered File %d" % nOrph
+                oName = self.tr("Recovered File {0}").format(nOrph)
 
             # Recover file meta data
             if oClass is None:
@@ -1383,8 +1398,8 @@ class NWProject():
 
         if noWhere:
             self.makeAlert((
-                "One or more orphaned files could not be added back into the "
-                "project. Make sure at least a Novel root folder exists."
+                self.tr("One or more orphaned files could not be added back into the "
+                        "project. Make sure at least a Novel root folder exists.")
             ), nwAlert.WARN)
 
         return True
@@ -1403,9 +1418,13 @@ class NWProject():
                 if not isFile:
                     # It's a new file, so add a header
                     if self.lastWCount > 0:
-                        outFile.write("# Offset %d\n" % self.lastWCount)
+                        outFile.write("# %s\n" % self.tr("Offset {0}").format(self.lastWCount))
                     outFile.write("# %-17s  %-19s  %8s  %8s  %8s\n" % (
-                        "Start Time", "End Time", "Novel", "Notes", "Idle"
+                        self.tr("Start Time"),
+                        self.tr("End Time"),
+                        self.tr("Novel"),
+                        self.tr("Notes"),
+                        self.tr("Idle"),
                     ))
 
                 outFile.write("%-19s  %-19s  %8d  %8d  %8d\n" % (
@@ -1432,7 +1451,7 @@ class NWProject():
         """
         theData = os.path.join(self.projPath, theFolder)
         if not os.path.isdir(theData):
-            errList.append("Not a folder: %s" % theData)
+            errList.append(self.tr("Not a folder: {0}").format(theData))
             return errList
 
         logger.info("Old data folder %s found" % theFolder)
@@ -1452,10 +1471,10 @@ class NWProject():
                 newPath = os.path.join(self.projContent, tHandle+".nwd")
                 try:
                     os.rename(theFile, newPath)
-                    logger.info("Moved file: %s" % theFile)
-                    logger.info("New location: %s" % newPath)
+                    logger.info(self.tr("{0}: {1}").format(self.tr("Moved file"), theFile))
+                    logger.info(self.tr("{0}: {1}").format(self.tr("New location"), newPath))
                 except Exception:
-                    errList.append("Could not move: %s" % theFile)
+                    errList.append(self.tr("{0}: {1}").format(self.tr("Could not move"), theFile))
                     logger.error("Could not move: %s" % theFile)
                     nw.logException()
 
@@ -1464,7 +1483,8 @@ class NWProject():
                     os.unlink(theFile)
                     logger.info("Deleted file: %s" % theFile)
                 except Exception:
-                    errList.append("Could not delete: %s" % theFile)
+                    errList.append(self.tr("{0}: {1}").format(
+                        self.tr("Could not delete"), theFile))
                     logger.error("Could not delete: %s" % theFile)
                     nw.logException()
 
@@ -1479,7 +1499,7 @@ class NWProject():
             os.rmdir(theData)
             logger.info("Removed folder: %s" % theFolder)
         except Exception:
-            errList.append("Failed to remove: %s" % theFolder)
+            errList.append(self.tr("{0}: {1}").format(self.tr("Failed to remove"), theFolder))
             logger.error("Failed to remove: %s" % theFolder)
             nw.logException()
 
@@ -1489,9 +1509,9 @@ class NWProject():
         """Move an item that doesn't belong in the project folder to
         a junk folder.
         """
-        theJunk = os.path.join(self.projPath, "junk")
+        theJunk = os.path.join(self.projPath, self.tr("junk"))
         if not self._checkFolder(theJunk):
-            return "Could not make folder: %s" % theJunk
+            return self.tr("{0}: {1}").format(self.tr("Could not make folder"), theJunk)
 
         theSrc = os.path.join(theDir, theItem)
         theDst = os.path.join(theJunk, theItem)
@@ -1502,7 +1522,7 @@ class NWProject():
         except Exception:
             logger.error("Could not move item %s to junk." % theSrc)
             nw.logException()
-            return "Could not move item %s to junk." % theSrc
+            return self.tr("Could not move item {0} to junk.").format(theSrc)
 
         return ""
 

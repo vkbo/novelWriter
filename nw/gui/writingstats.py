@@ -72,7 +72,7 @@ class GuiWritingStats(QDialog):
         self.timeFilter = 0.0
         self.wordOffset = 0
 
-        self.setWindowTitle("Writing Statistics")
+        self.setWindowTitle(self.tr("Writing Statistics"))
         self.setMinimumWidth(self.mainConf.pxInt(420))
         self.setMinimumHeight(self.mainConf.pxInt(400))
         self.resize(
@@ -95,7 +95,13 @@ class GuiWritingStats(QDialog):
         )
 
         self.listBox = QTreeWidget()
-        self.listBox.setHeaderLabels(["Session Start", "Length", "Idle", "Words", "Histogram"])
+        self.listBox.setHeaderLabels([
+            self.tr("Session Start"),
+            self.tr("Length"),
+            self.tr("Idle"),
+            self.tr("Words"),
+            self.tr("Histogram"),
+        ])
         self.listBox.setIndentation(0)
         self.listBox.setColumnWidth(self.C_TIME, wCol0)
         self.listBox.setColumnWidth(self.C_LENGTH, wCol1)
@@ -125,7 +131,7 @@ class GuiWritingStats(QDialog):
         self.barImage.fill(self.palette().highlight().color())
 
         # Session Info
-        self.infoBox  = QGroupBox("Sum Totals", self)
+        self.infoBox  = QGroupBox(self.tr("Sum Totals"), self)
         self.infoForm = QGridLayout(self)
         self.infoBox.setLayout(self.infoForm)
 
@@ -153,12 +159,12 @@ class GuiWritingStats(QDialog):
         self.totalWords.setFont(self.theTheme.guiFontFixed)
         self.totalWords.setAlignment(Qt.AlignVCenter | Qt.AlignRight)
 
-        self.infoForm.addWidget(QLabel("Total Time:"),       0, 0)
-        self.infoForm.addWidget(QLabel("Idle Time:"),        1, 0)
-        self.infoForm.addWidget(QLabel("Filtered Time:"),    2, 0)
-        self.infoForm.addWidget(QLabel("Novel Word Count:"), 3, 0)
-        self.infoForm.addWidget(QLabel("Notes Word Count:"), 4, 0)
-        self.infoForm.addWidget(QLabel("Total Word Count:"), 5, 0)
+        self.infoForm.addWidget(QLabel(self.tr("{0}:").format(self.tr("Total Time"))),       0, 0)
+        self.infoForm.addWidget(QLabel(self.tr("{0}:").format(self.tr("Idle Time"))),        1, 0)
+        self.infoForm.addWidget(QLabel(self.tr("{0}:").format(self.tr("Filtered Time"))),    2, 0)
+        self.infoForm.addWidget(QLabel(self.tr("{0}:").format(self.tr("Novel Word Count"))), 3, 0)
+        self.infoForm.addWidget(QLabel(self.tr("{0}:").format(self.tr("Notes Word Count"))), 4, 0)
+        self.infoForm.addWidget(QLabel(self.tr("{0}:").format(self.tr("Total Word Count"))), 5, 0)
         self.infoForm.addWidget(self.labelTotal,  0, 1)
         self.infoForm.addWidget(self.labelIdleT,  1, 1)
         self.infoForm.addWidget(self.labelFilter, 2, 1)
@@ -170,7 +176,7 @@ class GuiWritingStats(QDialog):
         # Filter Options
         sPx = self.theTheme.baseIconSize
 
-        self.filterBox  = QGroupBox("Filters", self)
+        self.filterBox  = QGroupBox(self.tr("Filters"), self)
         self.filterForm = QGridLayout(self)
         self.filterBox.setLayout(self.filterForm)
 
@@ -210,12 +216,12 @@ class GuiWritingStats(QDialog):
         )
         self.showIdleTime.clicked.connect(self._updateListBox)
 
-        self.filterForm.addWidget(QLabel("Count novel files"),        0, 0)
-        self.filterForm.addWidget(QLabel("Count note files"),         1, 0)
-        self.filterForm.addWidget(QLabel("Hide zero word count"),     2, 0)
-        self.filterForm.addWidget(QLabel("Hide negative word count"), 3, 0)
-        self.filterForm.addWidget(QLabel("Group entries by day"),     4, 0)
-        self.filterForm.addWidget(QLabel("Show idle time"),           5, 0)
+        self.filterForm.addWidget(QLabel(self.tr("Count novel files")),        0, 0)
+        self.filterForm.addWidget(QLabel(self.tr("Count note files")),         1, 0)
+        self.filterForm.addWidget(QLabel(self.tr("Hide zero word count")),     2, 0)
+        self.filterForm.addWidget(QLabel(self.tr("Hide negative word count")), 3, 0)
+        self.filterForm.addWidget(QLabel(self.tr("Group entries by day")),     4, 0)
+        self.filterForm.addWidget(QLabel(self.tr("Show idle time")),           5, 0)
         self.filterForm.addWidget(self.incNovel,     0, 1)
         self.filterForm.addWidget(self.incNotes,     1, 1)
         self.filterForm.addWidget(self.hideZeros,    2, 1)
@@ -236,7 +242,7 @@ class GuiWritingStats(QDialog):
 
         self.optsBox = QHBoxLayout()
         self.optsBox.addStretch(1)
-        self.optsBox.addWidget(QLabel("Word count cap for the histogram"), 0)
+        self.optsBox.addWidget(QLabel(self.tr("Word count cap for the histogram")), 0)
         self.optsBox.addWidget(self.histMax, 0)
 
         # Buttons
@@ -244,19 +250,22 @@ class GuiWritingStats(QDialog):
         self.buttonBox.rejected.connect(self._doClose)
 
         self.btnClose = self.buttonBox.addButton(QDialogButtonBox.Close)
+        self.buttonBox.button(QDialogButtonBox.Close).setText(self.tr("Close"))
         self.btnClose.setAutoDefault(False)
 
-        self.btnSave = self.buttonBox.addButton("Save As", QDialogButtonBox.ActionRole)
+        self.btnSave = self.buttonBox.addButton(self.tr("Save As"), QDialogButtonBox.ActionRole)
         self.btnSave.setAutoDefault(False)
 
         self.saveMenu = QMenu(self)
         self.btnSave.setMenu(self.saveMenu)
 
-        self.saveJSON = QAction("JSON Data File (.json)", self)
+        self.saveJSON = QAction(self.tr("{0} ({1})").format(
+            self.tr("JSON Data File"), ".json"), self)
         self.saveJSON.triggered.connect(lambda: self._saveData(self.FMT_JSON))
         self.saveMenu.addAction(self.saveJSON)
 
-        self.saveCSV = QAction("CSV Data File (.csv)", self)
+        self.saveCSV = QAction(self.tr("{0} ({1})").format(
+            self.tr("CSV Data File"), ".csv"), self)
         self.saveCSV.triggered.connect(lambda: self._saveData(self.FMT_CSV))
         self.saveMenu.addAction(self.saveCSV)
 
@@ -338,10 +347,10 @@ class GuiWritingStats(QDialog):
 
         if dataFmt == self.FMT_JSON:
             fileExt = "json"
-            textFmt = "JSON Data File"
+            textFmt = self.tr("JSON Data File")
         elif dataFmt == self.FMT_CSV:
             fileExt = "csv"
-            textFmt = "CSV Data File"
+            textFmt = self.tr("CSV Data File")
         else:
             return False
 
@@ -356,7 +365,7 @@ class GuiWritingStats(QDialog):
         dlgOpt  = QFileDialog.Options()
         dlgOpt |= QFileDialog.DontUseNativeDialog
         savePath, _ = QFileDialog.getSaveFileName(
-            self, "Save Document As", savePath, options=dlgOpt
+            self, self.tr("Save Document As"), savePath, options=dlgOpt
         )
         if not savePath:
             return False
@@ -474,7 +483,7 @@ class GuiWritingStats(QDialog):
 
         except Exception as e:
             self.theParent.makeAlert(
-                ["Failed to read session log file.", str(e)], nwAlert.ERROR
+                [self.tr("Failed to read session log file."), str(e)], nwAlert.ERROR
             )
             return False
 

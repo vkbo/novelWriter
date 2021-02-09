@@ -28,7 +28,7 @@ import nw
 import logging
 import os
 
-from PyQt5.QtCore import Qt
+from PyQt5.QtCore import QCoreApplication, Qt
 from PyQt5.QtWidgets import (
     QWizard, QWizardPage, QLabel, QVBoxLayout, QLineEdit, QPlainTextEdit,
     QPushButton, QFileDialog, QHBoxLayout, QRadioButton, QFormLayout,
@@ -94,16 +94,19 @@ class ProjWizardIntroPage(QWizardPage):
         self.theWizard = theWizard
         self.theTheme  = theWizard.theTheme
 
-        self.setTitle("Create New Project")
+        self.setTitle(self.tr("Create New Project"))
         self.theText = QLabel(
-            "Provide at least a working title. The working title should not "
-            "be change beyond this point as it is used by the application for "
-            "generating file names for for instance backups. The other fields "
-            "are optional and can be changed at any time in Project Settings."
+            self.tr("Provide at least a working title. The working title should not "
+                    "be change beyond this point as it is used by the application for "
+                    "generating file names for for instance backups. The other fields "
+                    "are optional and can be changed at any time in Project Settings.")
         )
         self.theText.setWordWrap(True)
 
-        self.imgCredit = QLabel("Side image by Peter Mitterhofer, CC BY-SA 4.0")
+        self.imgCredit = QLabel(self.tr("Side image by {author:s}, {license:s}").format(
+            author = "Peter Mitterhofer",
+            license = "CC BY-SA 4.0"
+        ))
         lblFont = self.imgCredit.font()
         lblFont.setPointSizeF(0.6*self.theTheme.fontPointSize)
         self.imgCredit.setFont(lblFont)
@@ -117,22 +120,22 @@ class ProjWizardIntroPage(QWizardPage):
         self.projName = QLineEdit()
         self.projName.setMaxLength(200)
         self.projName.setFixedWidth(xW)
-        self.projName.setPlaceholderText("Required")
+        self.projName.setPlaceholderText(self.tr("Required"))
 
         self.projTitle = QLineEdit()
         self.projTitle.setMaxLength(200)
         self.projTitle.setFixedWidth(xW)
-        self.projTitle.setPlaceholderText("Optional")
+        self.projTitle.setPlaceholderText(self.tr("Optional"))
 
         self.projAuthors = QPlainTextEdit()
         self.projAuthors.setFixedHeight(xH)
         self.projAuthors.setFixedWidth(xW)
-        self.projAuthors.setPlaceholderText("Optional. One name per line.")
+        self.projAuthors.setPlaceholderText(self.tr("Optional. One name per line."))
 
         self.mainForm = QFormLayout()
-        self.mainForm.addRow("Working Title", self.projName)
-        self.mainForm.addRow("Novel Title", self.projTitle)
-        self.mainForm.addRow("Author(s)", self.projAuthors)
+        self.mainForm.addRow(self.tr("Working Title"), self.projName)
+        self.mainForm.addRow(self.tr("Novel Title"), self.projTitle)
+        self.mainForm.addRow(self.tr("Author(s)"), self.projAuthors)
         self.mainForm.setVerticalSpacing(fS)
 
         self.registerField("projName*", self.projName)
@@ -161,10 +164,10 @@ class ProjWizardFolderPage(QWizardPage):
         self.theWizard = theWizard
         self.theTheme  = theWizard.theTheme
 
-        self.setTitle("Select Project Folder")
+        self.setTitle(self.tr("Select Project Folder"))
         self.theText = QLabel(
-            "Select a location to store the project. A new project folder "
-            "will be created in the selected location."
+            self.tr("Select a location to store the project. A new project folder "
+                    "will be created in the selected location.")
         )
         self.theText.setWordWrap(True)
 
@@ -174,14 +177,14 @@ class ProjWizardFolderPage(QWizardPage):
 
         self.projPath = QLineEdit("")
         self.projPath.setFixedWidth(xW)
-        self.projPath.setPlaceholderText("Required")
+        self.projPath.setPlaceholderText(self.tr("Required"))
 
         self.browseButton = QPushButton("...")
         self.browseButton.setMaximumWidth(int(2.5*self.theTheme.getTextWidth("...")))
         self.browseButton.clicked.connect(self._doBrowse)
 
         self.mainForm = QHBoxLayout()
-        self.mainForm.addWidget(QLabel("Project Path"), 0)
+        self.mainForm.addWidget(QLabel(self.tr("Project Path")), 0)
         self.mainForm.addWidget(self.projPath, 1)
         self.mainForm.addWidget(self.browseButton, 0)
         self.mainForm.setSpacing(fS)
@@ -213,7 +216,7 @@ class ProjWizardFolderPage(QWizardPage):
         dlgOpt |= QFileDialog.ShowDirsOnly
         dlgOpt |= QFileDialog.DontUseNativeDialog
         projDir = QFileDialog.getExistingDirectory(
-            self, "Select Project Folder", lastPath, options=dlgOpt
+            self, self.tr("Select Project Folder"), lastPath, options=dlgOpt
         )
         if projDir:
             projName = self.field("projName")
@@ -235,20 +238,20 @@ class ProjWizardPopulatePage(QWizardPage):
         self.mainConf  = nw.CONFIG
         self.theWizard = theWizard
 
-        self.setTitle("Populate Project")
+        self.setTitle(self.tr("Populate Project"))
         self.theText = QLabel(
-            "Choose how to pre-fill the project. Either with a minimal set of "
-            "starter items, an example project explaining and showing many of "
-            "the features, or show further custom options on the next page."
+            self.tr("Choose how to pre-fill the project. Either with a minimal set of "
+                    "starter items, an example project explaining and showing many of "
+                    "the features, or show further custom options on the next page.")
         )
         self.theText.setWordWrap(True)
 
         vS = self.mainConf.pxInt(12)
         fS = self.mainConf.pxInt(4)
 
-        self.popMinimal = QRadioButton("Fill the project with a minimal set of items")
-        self.popSample = QRadioButton("Fill the project with example files")
-        self.popCustom = QRadioButton("Show detailed options for filling the project")
+        self.popMinimal = QRadioButton(self.tr("Fill the project with a minimal set of items"))
+        self.popSample = QRadioButton(self.tr("Fill the project with example files"))
+        self.popCustom = QRadioButton(self.tr("Show detailed options for filling the project"))
         self.popMinimal.setChecked(True)
 
         self.popBox = QVBoxLayout()
@@ -290,27 +293,33 @@ class ProjWizardCustomPage(QWizardPage):
         self.mainConf  = nw.CONFIG
         self.theWizard = theWizard
 
-        self.setTitle("Custom Project Options")
+        self.setTitle(self.tr("Custom Project Options"))
         self.theText = QLabel(
-            "Select which additional root folders to make, and how to populate "
-            "the Novel folder. If you don't want to add chapters or scenes, set "
-            "the values to 0. You can add scenes without chapters."
+            self.tr("Select which additional root folders to make, and how to populate "
+                    "the Novel folder. If you don't want to add chapters or scenes, set "
+                    "the values to 0. You can add scenes without chapters.")
         )
         self.theText.setWordWrap(True)
 
         vS = self.mainConf.pxInt(12)
 
         # Root Folders
-        self.rootGroup = QGroupBox("Additional Root Folders")
+        self.rootGroup = QGroupBox(self.tr("Additional Root Folders"))
         self.rootForm  = QGridLayout()
         self.rootGroup.setLayout(self.rootForm)
 
-        self.lblPlot   = QLabel("%s folder" % nwLabels.CLASS_NAME[nwItemClass.PLOT])
-        self.lblChar   = QLabel("%s folder" % nwLabels.CLASS_NAME[nwItemClass.CHARACTER])
-        self.lblWorld  = QLabel("%s folder" % nwLabels.CLASS_NAME[nwItemClass.WORLD])
-        self.lblTime   = QLabel("%s folder" % nwLabels.CLASS_NAME[nwItemClass.TIMELINE])
-        self.lblObject = QLabel("%s folder" % nwLabels.CLASS_NAME[nwItemClass.OBJECT])
-        self.lblEntity = QLabel("%s folder" % nwLabels.CLASS_NAME[nwItemClass.ENTITY])
+        self.lblPlot   = QLabel(self.tr("{0} folder").format(
+            QCoreApplication.translate("Constant", nwLabels.CLASS_NAME[nwItemClass.PLOT])))
+        self.lblChar   = QLabel(self.tr("{0} folder").format(
+            QCoreApplication.translate("Constant", nwLabels.CLASS_NAME[nwItemClass.CHARACTER])))
+        self.lblWorld  = QLabel(self.tr("{0} folder").format(
+            QCoreApplication.translate("Constant", nwLabels.CLASS_NAME[nwItemClass.WORLD])))
+        self.lblTime   = QLabel(self.tr("{0} folder").format(
+            QCoreApplication.translate("Constant", nwLabels.CLASS_NAME[nwItemClass.TIMELINE])))
+        self.lblObject = QLabel(self.tr("{0} folder").format(
+            QCoreApplication.translate("Constant", nwLabels.CLASS_NAME[nwItemClass.OBJECT])))
+        self.lblEntity = QLabel(self.tr("{0} folder").format(
+            QCoreApplication.translate("Constant", nwLabels.CLASS_NAME[nwItemClass.ENTITY])))
 
         self.addPlot   = QSwitch()
         self.addChar   = QSwitch()
@@ -338,7 +347,7 @@ class ProjWizardCustomPage(QWizardPage):
         self.rootForm.setRowStretch(6, 1)
 
         # Novel Options
-        self.novelGroup = QGroupBox("Populate Novel Folder")
+        self.novelGroup = QGroupBox(self.tr("Populate Novel Folder"))
         self.novelForm  = QGridLayout()
         self.novelGroup.setLayout(self.novelForm)
 
@@ -353,9 +362,9 @@ class ProjWizardCustomPage(QWizardPage):
         self.chFolders = QSwitch()
         self.chFolders.setChecked(True)
 
-        self.novelForm.addWidget(QLabel("Add chapters"),         0, 0)
-        self.novelForm.addWidget(QLabel("Scenes (per chapter)"), 1, 0)
-        self.novelForm.addWidget(QLabel("Add chapter folders"),  2, 0)
+        self.novelForm.addWidget(QLabel(self.tr("Add chapters")),         0, 0)
+        self.novelForm.addWidget(QLabel(self.tr("Scenes (per chapter)")), 1, 0)
+        self.novelForm.addWidget(QLabel(self.tr("Add chapter folders")),  2, 0)
         self.novelForm.addWidget(self.numChapters, 0, 1, 1, 1, Qt.AlignRight)
         self.novelForm.addWidget(self.numScenes,   1, 1, 1, 1, Qt.AlignRight)
         self.novelForm.addWidget(self.chFolders,   2, 1, 1, 1, Qt.AlignRight)
@@ -396,13 +405,12 @@ class ProjWizardFinalPage(QWizardPage):
         self.mainConf  = nw.CONFIG
         self.theWizard = theWizard
 
-        self.setTitle("Finished")
-        self.theText = QLabel((
-            "<p>All done.</p>"
-            "<p>Press '{finish}' to create the new project.</p>"
-        ).format(
-            finish = "Done" if self.mainConf.osDarwin else "Finish"
-        ))
+        self.setTitle(self.tr("Finished"))
+        self.theText = QLabel("".join([
+            ("<p>%s</p>" % self.tr("All done.")),
+            ("<p>%s</p>" % self.tr("Press '{0}' to create the new project.").format(
+                self.tr("Done") if self.mainConf.osDarwin else self.tr("Finish")))
+        ]))
         self.theText.setWordWrap(True)
 
         # Assemble

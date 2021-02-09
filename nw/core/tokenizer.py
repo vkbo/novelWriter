@@ -24,11 +24,12 @@ You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
 
+from functools import partial
 import logging
 import re
 
 from operator import itemgetter
-from PyQt5.QtCore import QRegularExpression
+from PyQt5.QtCore import QCoreApplication, QRegularExpression
 
 from nw.core.document import NWDoc
 from nw.core.tools import numberToWord, numberToRoman
@@ -141,6 +142,8 @@ class Tokenizer():
         # Error Handling
         self.errData = []
 
+        self.tr = partial(QCoreApplication.translate, self.__class__.__name__)
+
         return
 
     ##
@@ -249,7 +252,7 @@ class Tokenizer():
         if theItem.itemType != nwItemType.ROOT:
             return False
 
-        theTitle = "Notes: %s" % theItem.itemName
+        theTitle = self.tr("{0}: {1}").format(self.tr("Notes"), theItem.itemName)
         self.theTokens = []
         self.theTokens.append((
             self.T_TITLE, 0, theTitle, None, self.A_PBB | self.A_CENTRE
@@ -278,10 +281,11 @@ class Tokenizer():
 
         docSize = len(self.theText)
         if docSize > nwConst.MAX_DOCSIZE:
-            errVal = "Document '%s' is too big (%.2f MB). Skipping." % (
-                self.theItem.itemName, docSize/1.0e6
+            errVal = self.tr("Document '{doc_name}' is too big ({doc_size}). Skipping.").format(
+                doc_name = self.theItem.itemName,
+                doc_size = f"{docSize/1.0e6:.2f} MB"
             )
-            self.theText = "# ERROR\n\n%s\n\n" % errVal
+            self.theText = "# %s\n\n%s\n\n" % (self.tr("ERROR"), errVal)
             self.errData.append(errVal)
 
         self.isNone  = self.theItem.itemLayout == nwItemLayout.NO_LAYOUT

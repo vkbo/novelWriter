@@ -27,7 +27,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 import nw
 import logging
 
-from PyQt5.QtCore import pyqtSlot
+from PyQt5.QtCore import QCoreApplication, pyqtSlot
 from PyQt5.QtWidgets import (
     QDialog, QVBoxLayout, QGridLayout, QLineEdit, QComboBox, QLabel,
     QDialogButtonBox
@@ -58,7 +58,7 @@ class GuiItemEditor(QDialog):
         if self.theItem is None:
             self._doClose()
 
-        self.setWindowTitle("Item Settings")
+        self.setWindowTitle(self.tr("Item Settings"))
 
         mVd = self.mainConf.pxInt(220)
         mSp = self.mainConf.pxInt(16)
@@ -103,10 +103,11 @@ class GuiItemEditor(QDialog):
 
         for itemLayout in nwItemLayout:
             if itemLayout in validLayouts:
-                self.editLayout.addItem(nwLabels.LAYOUT_NAME[itemLayout], itemLayout)
+                self.editLayout.addItem(QCoreApplication.translate(
+                    "Constant", nwLabels.LAYOUT_NAME[itemLayout]), itemLayout)
 
         # Export Switch
-        self.textExport = QLabel("Include when building project")
+        self.textExport = QLabel(self.tr("Include when building project"))
         self.editExport = QSwitch()
         if self.theItem.itemType == nwItemType.FILE:
             self.editExport.setEnabled(True)
@@ -117,6 +118,8 @@ class GuiItemEditor(QDialog):
 
         # Buttons
         self.buttonBox = QDialogButtonBox(QDialogButtonBox.Ok | QDialogButtonBox.Cancel)
+        self.buttonBox.button(QDialogButtonBox.Ok).setText(self.tr("Ok"))
+        self.buttonBox.button(QDialogButtonBox.Cancel).setText(self.tr("Cancel"))
         self.buttonBox.accepted.connect(self._doSave)
         self.buttonBox.rejected.connect(self._doClose)
 
@@ -139,11 +142,11 @@ class GuiItemEditor(QDialog):
         self.mainForm = QGridLayout()
         self.mainForm.setVerticalSpacing(vSp)
         self.mainForm.setHorizontalSpacing(mSp)
-        self.mainForm.addWidget(QLabel("Label"),  0, 0, 1, 1)
+        self.mainForm.addWidget(QLabel(self.tr("Label")),  0, 0, 1, 1)
         self.mainForm.addWidget(self.editName,    0, 1, 1, 2)
-        self.mainForm.addWidget(QLabel("Status"), 1, 0, 1, 1)
+        self.mainForm.addWidget(QLabel(self.tr("Status")), 1, 0, 1, 1)
         self.mainForm.addWidget(self.editStatus,  1, 1, 1, 2)
-        self.mainForm.addWidget(QLabel("Layout"), 2, 0, 1, 1)
+        self.mainForm.addWidget(QLabel(self.tr("Layout")), 2, 0, 1, 1)
         self.mainForm.addWidget(self.editLayout,  2, 1, 1, 2)
         self.mainForm.addWidget(self.textExport,  3, 0, 1, 2)
         self.mainForm.addWidget(self.editExport,  3, 2, 1, 1)

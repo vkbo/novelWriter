@@ -186,6 +186,20 @@ def buildQtDocs():
 
     return
 
+def buildQtI18n():
+    try:
+        subprocess.call(["lrelease", "-verbose", "novelWriter.pro"])
+    except Exception as e:
+        print("QtI18n Release Error:")
+        print(str(e))
+
+def buildQtI18nTS():
+    try:
+        subprocess.call(["pylupdate5", "-verbose", "-noobsolete", "novelWriter.pro"])
+    except Exception as e:
+        print("QtI18n Release Error:")
+        print(str(e))
+
 ##
 #  Sample Project ZIP File Builder (sample)
 ##
@@ -897,6 +911,14 @@ if __name__ == "__main__":
     if "qthelp" in sys.argv:
         sys.argv.remove("qthelp")
         buildQtDocs()
+
+    if "qtlrelease" in sys.argv:
+        sys.argv.remove("qtlrelease")
+        buildQtI18n()
+
+    if "qtlupdate" in sys.argv:
+        sys.argv.remove("qtlupdate")
+        buildQtI18nTS()
 
     if "sample" in sys.argv:
         sys.argv.remove("sample")

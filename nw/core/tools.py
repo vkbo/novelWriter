@@ -127,7 +127,7 @@ def numberToWord(numVal, theLanguage):
     """Wrapper for converting numbers to words for chapter headings.
     """
     numWord = ""
-    if theLanguage == "en":
+    if theLanguage == "en": # TODO: I18N
         numWord = _numberToWordEN(numVal)
     else:
         numWord = _numberToWordEN(numVal)

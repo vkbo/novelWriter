@@ -122,8 +122,8 @@ class GuiMain(QMainWindow):
         self.projTabs = QTabWidget()
         self.projTabs.setTabPosition(QTabWidget.South)
         self.projTabs.setStyleSheet(r"QTabWidget::pane {border: 0;};")
-        self.projTabs.addTab(self.treeView, "Project")
-        self.projTabs.addTab(self.novelView, "Novel")
+        self.projTabs.addTab(self.treeView, self.tr("Project"))
+        self.projTabs.addTab(self.novelView, self.tr("Novel"))
         self.projTabs.currentChanged.connect(self._projTabsChanged)
 
         tabFont = self.projTabs.tabBar().font()
@@ -139,17 +139,17 @@ class GuiMain(QMainWindow):
         self.treeButtons.setStyleSheet(r"QToolBar {padding: 0;}")
         self.projTabs.setCornerWidget(self.treeButtons, Qt.BottomRightCorner)
 
-        self.projDetailsBtn = QAction("Project Details")
+        self.projDetailsBtn = QAction(self.tr("Project Details"))
         self.projDetailsBtn.setIcon(self.theTheme.getIcon("status_lines"))
         self.projDetailsBtn.triggered.connect(lambda: self.showProjectDetailsDialog())
         self.treeButtons.addAction(self.projDetailsBtn)
 
-        self.projStatsBtn = QAction("Writing Statistics")
+        self.projStatsBtn = QAction(self.tr("Writing Statistics"))
         self.projStatsBtn.setIcon(self.theTheme.getIcon("status_stats"))
         self.projStatsBtn.triggered.connect(lambda: self.showWritingStatsDialog())
         self.treeButtons.addAction(self.projStatsBtn)
 
-        self.projSettingsBtn = QAction("Project Settings")
+        self.projSettingsBtn = QAction(self.tr("Project Settings"))
         self.projSettingsBtn.setIcon(self.theTheme.getIcon("settings"))
         self.projSettingsBtn.triggered.connect(lambda: self.showProjectSettingsDialog())
         self.treeButtons.addAction(self.projSettingsBtn)
@@ -180,12 +180,12 @@ class GuiMain(QMainWindow):
         self.splitOutline.addWidget(self.projMeta)
         self.splitOutline.setSizes(self.mainConf.getOutlinePanePos())
 
-        # Main Tabs : Editor / Outline
+        # Main Tabs : Edirot / Outline
         self.mainTabs = QTabWidget()
         self.mainTabs.setTabPosition(QTabWidget.East)
         self.mainTabs.setStyleSheet(r"QTabWidget::pane {border: 0;}")
-        self.mainTabs.addTab(self.splitDocs, "Editor")
-        self.mainTabs.addTab(self.splitOutline, "Outline")
+        self.mainTabs.addTab(self.splitDocs, self.tr("Editor"))
+        self.mainTabs.addTab(self.splitOutline, self.tr("Outline"))
         self.mainTabs.currentChanged.connect(self._mainTabChanged)
 
         # Splitter : Project Tree / Main Tabs
@@ -339,7 +339,7 @@ class GuiMain(QMainWindow):
         if self.hasProject:
             if not self.closeProject():
                 self.makeAlert(
-                    "Cannot create new project when another project is open.",
+                    self.tr("Cannot create new project when another project is open."),
                     nwAlert.ERROR
                 )
                 return False
@@ -357,7 +357,8 @@ class GuiMain(QMainWindow):
 
         if os.path.isfile(os.path.join(projPath, self.theProject.projFile)):
             self.makeAlert(
-                "A project already exists in that location. Please choose another folder.",
+                self.tr("A project already exists in that location. "
+                        "Please choose another folder."),
                 nwAlert.ERROR
             )
             return False
@@ -372,7 +373,7 @@ class GuiMain(QMainWindow):
             self.statusBar.setRefTime(self.theProject.projOpened)
             self.statusBar.setProjectStatus(True)
             self.statusBar.setDocumentStatus(None)
-            self.statusBar.setStatus("New project created ...")
+            self.statusBar.setStatus(self.tr("New project created ..."))
             self._updateWindowTitle(self.theProject.projName)
         else:
             self.theProject.clearProject()
@@ -391,8 +392,9 @@ class GuiMain(QMainWindow):
 
         if not isYes:
             msgYes = self.askQuestion(
-                "Close Project",
-                "Close the current project?<br>Changes are saved automatically."
+                self.tr("Close Project"),
+                "%s<br>%s" % (self.tr("Close the current project?"),
+                              self.tr("Changes are saved automatically."))
             )
             if not msgYes:
                 return False
@@ -407,7 +409,8 @@ class GuiMain(QMainWindow):
                 doBackup = True
                 if self.mainConf.askBeforeBackup:
                     msgYes = self.askQuestion(
-                        "Backup Project", "Backup the current project?"
+                        self.tr("Backup Project"),
+                        self.tr("Backup the current project?")
                     )
                     if not msgYes:
                         doBackup = False
@@ -457,13 +460,14 @@ class GuiMain(QMainWindow):
 
             try:
                 lockDetails = (
-                    "<br><br>The project was locked by the computer "
-                    "'%s' (%s %s), last active on %s"
-                ) % (
-                    self.theProject.lockedBy[0],
-                    self.theProject.lockedBy[1],
-                    self.theProject.lockedBy[2],
-                    datetime.fromtimestamp(
+                    "<br>%s" % self.tr("The project was locked by the computer "
+                                       "'{computer_name}' ({os_name} {os_version}), "
+                                       "last active on {time}")
+                ).format(
+                    computer_name = self.theProject.lockedBy[0],
+                    os_name = self.theProject.lockedBy[1],
+                    os_version = self.theProject.lockedBy[2],
+                    time = datetime.fromtimestamp(
                         int(self.theProject.lockedBy[3])
                     ).strftime("%x %X")
                 )
@@ -472,14 +476,16 @@ class GuiMain(QMainWindow):
 
             msgBox = QMessageBox()
             msgRes = msgBox.warning(
-                self, "Project Locked", (
-                    "The project is already open by another instance of novelWriter, and "
-                    "is therefore locked. Override lock and continue anyway?<br><br>"
-                    "Note: If the program or the computer previously crashed, the lock "
-                    "can safely be overridden. If, however, another instance of "
-                    "novelWriter has the project open, overriding the lock may corrupt "
-                    "the project, and is not recommended.%s"
-                ) % lockDetails,
+                self, self.tr("Project Locked"),
+                "%s<br><br>%s<br>%s" % (
+                    self.tr("The project is already open by another instance of novelWriter, and "
+                            "is therefore locked. Override lock and continue anyway?"),
+                    self.tr("Note: If the program or the computer previously crashed, the lock "
+                            "can safely be overridden. If, however, another instance of "
+                            "novelWriter has the project open, overriding the lock may corrupt "
+                            "the project, and is not recommended."),
+                    lockDetails
+                ),
                 QMessageBox.Yes | QMessageBox.No, QMessageBox.No
             )
             if msgRes == QMessageBox.Yes:
@@ -685,15 +691,16 @@ class GuiMain(QMainWindow):
 
         lastPath = self.mainConf.lastPath
         extFilter = [
-            "Text files (*.txt)",
-            "Markdown files (*.md)",
-            "novelWriter files (*.nwd)",
-            "All files (*.*)",
+            self.tr("{0} ({1})").format(self.tr("Text files"), "*.txt"),
+            self.tr("{0} ({1})").format(self.tr("Markdown files")),
+            self.tr("{0} ({1})").format(self.tr("novelWriter files"), "*.nwd"),
+            self.tr("{0} ({1})").format(self.tr("All files")),
         ]
         dlgOpt  = QFileDialog.Options()
         dlgOpt |= QFileDialog.DontUseNativeDialog
         loadFile, _ = QFileDialog.getOpenFileName(
-            self, "Import File", lastPath, options=dlgOpt, filter=";;".join(extFilter)
+            self, self.tr("Import File"), lastPath,
+            options=dlgOpt, filter=";;".join(extFilter)
         )
         if not loadFile:
             return False
@@ -708,22 +715,25 @@ class GuiMain(QMainWindow):
             self.mainConf.setLastPath(loadFile)
         except Exception as e:
             self.makeAlert(
-                ["Could not read file. The file must be an existing text file.", str(e)],
+                [
+                    self.tr("Could not read file. The file must be an existing text file."),
+                    str(e)
+                ],
                 nwAlert.ERROR
             )
             return False
 
         if self.docEditor.theHandle is None:
             self.makeAlert(
-                "Please open a document to import the text file into.",
+                self.tr("Please open a document to import the text file into."),
                 nwAlert.ERROR
             )
             return False
 
         if not self.docEditor.isEmpty():
-            msgYes = self.askQuestion("Import Document", (
-                "Importing the file will overwrite the current content of the document. "
-                "Do you want to proceed?"
+            msgYes = self.askQuestion(self.tr("Import Document"), (
+                self.tr("Importing the file will overwrite the current content of the document. "
+                        "Do you want to proceed?")
             ))
             if not msgYes:
                 return False
@@ -861,9 +871,11 @@ class GuiMain(QMainWindow):
         for nDone, tItem in enumerate(self.theProject.projTree):
 
             if tItem is not None:
-                self.setStatus("Indexing: '%s'" % tItem.itemName)
+                self.setStatus(self.tr("{0}: '{1}'").format(self.tr("Indexing"), tItem.itemName))
             else:
-                self.setStatus("Indexing: Unknown item")
+                self.setStatus(self.tr("{0}: {1}").format(
+                    self.tr("Indexing"),
+                    self.tr("Unknown item")))
 
             if tItem is not None and tItem.itemType == nwItemType.FILE:
                 logger.verbose("Scanning: %s" % tItem.itemName)
@@ -881,12 +893,14 @@ class GuiMain(QMainWindow):
                 self.treeView.projectWordCount()
 
         tEnd = time()
-        self.setStatus("Indexing completed in %.1f ms" % ((tEnd - tStart)*1000.0))
+        self.setStatus(self.tr("Indexing completed in {0} ms").
+                       format(f"{(tEnd - tStart)*1000.0:.1f}"))
         self.docEditor.updateTagHighLighting()
         qApp.restoreOverrideCursor()
 
         if not beQuiet:
-            self.makeAlert("The project index has been successfully rebuilt.", nwAlert.INFO)
+            self.makeAlert(self.tr("The project index has been successfully rebuilt."),
+                           nwAlert.INFO)
 
         return True
 
@@ -914,7 +928,7 @@ class GuiMain(QMainWindow):
         dlgOpt |= QFileDialog.ShowDirsOnly
         dlgOpt |= QFileDialog.DontUseNativeDialog
         projPath = QFileDialog.getExistingDirectory(
-            self, "Save novelWriter Project", "", options=dlgOpt
+            self, self.tr("Save novelWriter Project"), "", options=dlgOpt
         )
         if projPath:
             return projPath
@@ -1100,14 +1114,14 @@ class GuiMain(QMainWindow):
         # Popup
         msgBox = QMessageBox()
         if theLevel == nwAlert.INFO:
-            msgBox.information(self, "Information", popMsg)
+            msgBox.information(self, self.tr("Information"), popMsg)
         elif theLevel == nwAlert.WARN:
-            msgBox.warning(self, "Warning", popMsg)
+            msgBox.warning(self, self.tr("Warning"), popMsg)
         elif theLevel == nwAlert.ERROR:
-            msgBox.critical(self, "Error", popMsg)
+            msgBox.critical(self, self.tr("Error"), popMsg)
         elif theLevel == nwAlert.BUG:
-            popMsg += "<br>This is a bug!"
-            msgBox.critical(self, "Internal Error", popMsg)
+            popMsg += "<br>%s" % self.tr("This is a bug!")
+            msgBox.critical(self, self.tr("Internal Error"), popMsg)
 
         return
 
@@ -1115,7 +1129,8 @@ class GuiMain(QMainWindow):
         """Ask the user a Yes/No question.
         """
         msgBox = QMessageBox()
-        msgRes = msgBox.question(self, theTitle, theQuestion)
+        print(msgBox.standardButtons())
+        msgRes = msgBox.question(self, theTitle, theQuestion, QMessageBox.Yes | QMessageBox.No)
         return msgRes == QMessageBox.Yes
 
     def reportConfErr(self):
@@ -1137,8 +1152,9 @@ class GuiMain(QMainWindow):
         """
         if self.hasProject:
             msgYes = self.askQuestion(
-                "Exit",
-                "Do you want to exit novelWriter?<br>Changes are saved automatically."
+                self.tr("Exit"),
+                "%s<br>%s" % (self.tr("Do you want to exit novelWriter?"),
+                              self.tr("Changes are saved automatically."))
             )
             if not msgYes:
                 return False

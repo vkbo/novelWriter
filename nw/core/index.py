@@ -24,12 +24,15 @@ You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
 
+from functools import partial
 import nw
 import logging
 import json
 import os
 
 from time import time
+
+from PyQt5.QtCore import QCoreApplication
 
 from nw.constants import (
     nwFiles, nwKeyWords, nwItemType, nwItemClass, nwItemLayout, nwAlert
@@ -62,8 +65,12 @@ class NWIndex():
 
         # TimeStamps
         self._timeNovel = 0
-        self._timeNotes = 0
+        self._timeNotes  = 0
         self._timeIndex = 0
+
+        self.tr = partial(QCoreApplication.translate, self.__class__.__name__)
+
+        self.clearIndex()
 
         return
 
@@ -229,7 +236,7 @@ class NWIndex():
         if self.indexBroken:
             self.clearIndex()
             self.theParent.makeAlert(
-                "The project index is outdated or broken. Rebuilding index.",
+                self.tr("The project index is outdated or broken. Rebuilding index."),
                 nwAlert.WARN
             )
 

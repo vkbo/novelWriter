@@ -74,7 +74,7 @@ class GuiProjectLoad(QDialog):
         self.outerBox.setSpacing(sPx)
         self.innerBox.setSpacing(sPx)
 
-        self.setWindowTitle("Open Project")
+        self.setWindowTitle(self.tr("Open Project"))
         self.setMinimumWidth(self.mainConf.pxInt(650))
         self.setMinimumHeight(self.mainConf.pxInt(400))
         self.setModal(True)
@@ -90,7 +90,11 @@ class GuiProjectLoad(QDialog):
         self.listBox.setSelectionMode(QAbstractItemView.SingleSelection)
         self.listBox.setDragDropMode(QAbstractItemView.NoDragDrop)
         self.listBox.setColumnCount(3)
-        self.listBox.setHeaderLabels(["Working Title", "Words", "Last Opened"])
+        self.listBox.setHeaderLabels([
+            self.tr("Working Title"),
+            self.tr("Words"),
+            self.tr("Last Opened"),
+        ])
         self.listBox.setRootIsDecorated(False)
         self.listBox.itemSelectionChanged.connect(self._doSelectRecent)
         self.listBox.itemDoubleClicked.connect(self._doOpenRecent)
@@ -100,8 +104,8 @@ class GuiProjectLoad(QDialog):
         treeHead.setTextAlignment(self.C_COUNT, Qt.AlignRight)
         treeHead.setTextAlignment(self.C_TIME, Qt.AlignRight)
 
-        self.lblRecent = QLabel("<b>Recently Opened Projects</b>")
-        self.lblPath   = QLabel("<b>Path</b>")
+        self.lblRecent = QLabel("<b>%s</b>" % self.tr("Recently Opened Projects"))
+        self.lblPath   = QLabel("<b>%s</b>" % self.tr("Path"))
         self.selPath   = QLineEdit("")
         self.selPath.setReadOnly(True)
 
@@ -123,13 +127,15 @@ class GuiProjectLoad(QDialog):
         self.innerBox.addLayout(self.projectForm)
 
         self.buttonBox = QDialogButtonBox(QDialogButtonBox.Open | QDialogButtonBox.Cancel)
+        self.buttonBox.button(QDialogButtonBox.Open).setText(self.tr("Open"))
+        self.buttonBox.button(QDialogButtonBox.Cancel).setText(self.tr("Cancel"))
         self.buttonBox.accepted.connect(self._doOpenRecent)
         self.buttonBox.rejected.connect(self._doCancel)
 
-        self.newButton = self.buttonBox.addButton("New", QDialogButtonBox.ActionRole)
+        self.newButton = self.buttonBox.addButton(self.tr("New"), QDialogButtonBox.ActionRole)
         self.newButton.clicked.connect(self._doNewProject)
 
-        self.delButton = self.buttonBox.addButton("Remove", QDialogButtonBox.ActionRole)
+        self.delButton = self.buttonBox.addButton(self.tr("Remove"), QDialogButtonBox.ActionRole)
         self.delButton.clicked.connect(self._doDeleteRecent)
 
         self.outerBox.addLayout(self.innerBox)
@@ -183,8 +189,12 @@ class GuiProjectLoad(QDialog):
         dlgOpt  = QFileDialog.Options()
         dlgOpt |= QFileDialog.DontUseNativeDialog
         projFile, _ = QFileDialog.getOpenFileName(
-            self, "Open novelWriter Project", "",
-            "novelWriter Project File (%s);;All Files (*)" % nwFiles.PROJ_FILE,
+            self, self.tr("Open novelWriter Project"), "",
+            ";;".join([
+                self.tr("{0} ({1})").format(
+                    self.tr("novelWriter Project File"), nwFiles.PROJ_FILE),
+                self.tr("{0} ({1})").format(self.tr("All Files"), "*")
+            ]),
             options=dlgOpt
         )
         if projFile:
@@ -221,10 +231,11 @@ class GuiProjectLoad(QDialog):
         selList = self.listBox.selectedItems()
         if selList:
             projName = selList[0].text(self.C_NAME)
-            msgYes = self.theParent.askQuestion("Remove Entry", (
-                "Remove '%s' from the recent projects list? "
-                "The project files will not be deleted."
-            ) % projName)
+            msgYes = self.theParent.askQuestion(
+                self.tr("Remove Entry"),
+                self.tr("Remove '{0}' from the recent projects list? "
+                        "The project files will not be deleted.").format(projName)
+            )
             if msgYes:
                 self.mainConf.removeFromRecentCache(
                     selList[0].data(self.C_NAME, Qt.UserRole)

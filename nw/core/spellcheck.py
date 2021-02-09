@@ -24,6 +24,7 @@ You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
 
+from PyQt5.QtCore import QCoreApplication
 import nw
 import logging
 import os
@@ -94,7 +95,7 @@ class NWSpellCheck():
         """Translate a language tag to something more user friendly.
         """
         spBits = spTag.split("_")
-        spLang = isoLanguage.ISO_639_1.get(spBits[0], spBits[0])
+        spLang = QCoreApplication.translate("ISO", isoLanguage.ISO_639_1.get(spBits[0], spBits[0]))
         if len(spBits) > 1:
             spLang += " (%s)" % spBits[1]
         return spLang
@@ -332,7 +333,9 @@ class NWSpellSimple(NWSpellCheck):
             if fExt != ".dict":
                 continue
 
-            spName = "%s [%s]" % (self.expandLanguage(fRoot), nwConst.SP_INTERNAL)
+            spName = "%s [%s]" % (
+                self.expandLanguage(fRoot),
+                QCoreApplication.translate("Constant", nwConst.SP_INTERNAL))
             retList.append((fRoot, spName))
 
         return retList
@@ -341,6 +344,6 @@ class NWSpellSimple(NWSpellCheck):
         """Return the tag and provider of the currently loaded
         dictionary.
         """
-        return self.theLang, nwConst.SP_INTERNAL
+        return self.theLang, QCoreApplication.translate("Constant", nwConst.SP_INTERNAL)
 
 # END Class NWSpellSimple

@@ -63,7 +63,7 @@ class GuiMainStatus(QStatusBar):
 
         ## The Spell Checker Language
         self.langIcon = QLabel("")
-        self.langText = QLabel("None")
+        self.langText = QLabel(self.tr("None"))
         self.langIcon.setPixmap(self.theTheme.getPixmap("status_lang", (iPx, iPx)))
         self.langIcon.setContentsMargins(0, 0, 0, 0)
         self.langText.setContentsMargins(0, 0, xM, 0)
@@ -72,7 +72,7 @@ class GuiMainStatus(QStatusBar):
 
         ## The Editor Status
         self.docIcon = StatusLED(colNone, colTrue, colFalse, iPx, iPx, self)
-        self.docText = QLabel("Editor")
+        self.docText = QLabel(self.tr("Editor"))
         self.docIcon.setContentsMargins(0, 0, 0, 0)
         self.docText.setContentsMargins(0, 0, xM, 0)
         self.addPermanentWidget(self.docIcon)
@@ -80,7 +80,7 @@ class GuiMainStatus(QStatusBar):
 
         ## The Project Status
         self.projIcon = StatusLED(colNone, colTrue, colFalse, iPx, iPx, self)
-        self.projText = QLabel("Project")
+        self.projText = QLabel(self.tr("Project"))
         self.projIcon.setContentsMargins(0, 0, 0, 0)
         self.projText.setContentsMargins(0, 0, xM, 0)
         self.addPermanentWidget(self.projIcon)
@@ -103,7 +103,7 @@ class GuiMainStatus(QStatusBar):
         self.timeIcon = QLabel()
         self.timeText = QLabel("")
         self.timeIcon.setPixmap(self.timePixmap)
-        self.timeText.setToolTip("Session Time")
+        self.timeText.setToolTip(self.tr("Session Time"))
         self.timeText.setMinimumWidth(self.theTheme.getTextWidth("00:00:00:"))
         self.timeIcon.setContentsMargins(0, 0, 0, 0)
         self.timeText.setContentsMargins(0, 0, 0, 0)
@@ -151,12 +151,14 @@ class GuiMainStatus(QStatusBar):
         """Set the language code for the spell checker.
         """
         if theLanguage is None:
-            self.langText.setText("None")
+            self.langText.setText(self.tr("None"))
             self.langText.setToolTip("")
         else:
             self.langText.setText(NWSpellCheck.expandLanguage(theLanguage))
             self.langText.setToolTip(
-                "Provider: %s" % (theProvider if theProvider else "unknown")
+                self.tr("{0}: {1}").format(
+                    self.tr("Provider"),
+                    theProvider if theProvider else self.tr("unknown"))
             )
         return
 
@@ -175,8 +177,8 @@ class GuiMainStatus(QStatusBar):
     def setStats(self, pWC, sWC):
         """Set the current project statistics.
         """
-        self.statsText.setText(f"Words: {pWC:n} ({sWC:+n})")
-        self.statsText.setToolTip("Project word count (session change)")
+        self.statsText.setText("%s: %s (%s)" % (self.tr("Words"), f"{pWC:n}", f"{sWC:+n}"))
+        self.statsText.setToolTip(self.tr("Project word count (session change)"))
         return
 
     def setUserIdle(self, userIdle):

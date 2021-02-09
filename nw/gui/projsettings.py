@@ -54,7 +54,7 @@ class GuiProjectSettings(PagedDialog):
         self.optState   = theProject.optState
 
         self.theProject.countStatus()
-        self.setWindowTitle("Project Settings")
+        self.setWindowTitle(self.tr("Project Settings"))
 
         wW = self.mainConf.pxInt(570)
         wH = self.mainConf.pxInt(375)
@@ -71,12 +71,14 @@ class GuiProjectSettings(PagedDialog):
         self.tabImport  = GuiProjectEditStatus(self.theParent, self.theProject, False)
         self.tabReplace = GuiProjectEditReplace(self.theParent, self.theProject)
 
-        self.addTab(self.tabMain,    "Settings")
-        self.addTab(self.tabStatus,  "Status")
-        self.addTab(self.tabImport,  "Importance")
-        self.addTab(self.tabReplace, "Auto-Replace")
+        self.addTab(self.tabMain,    self.tr("Settings"))
+        self.addTab(self.tabStatus,  self.tr("Status"))
+        self.addTab(self.tabImport,  self.tr("Importance"))
+        self.addTab(self.tabReplace, self.tr("Auto-Replace"))
 
         self.buttonBox = QDialogButtonBox(QDialogButtonBox.Ok | QDialogButtonBox.Cancel)
+        self.buttonBox.button(QDialogButtonBox.Ok).setText(self.tr("Ok"))
+        self.buttonBox.button(QDialogButtonBox.Cancel).setText(self.tr("Cancel"))
         self.buttonBox.accepted.connect(self._doSave)
         self.buttonBox.rejected.connect(self._doClose)
         self.addControls(self.buttonBox)
@@ -166,7 +168,7 @@ class GuiProjectEditMain(QWidget):
         self.mainForm.setHelpTextStyle(self.theParent.theTheme.helpText)
         self.setLayout(self.mainForm)
 
-        self.mainForm.addGroupLabel("Project Settings")
+        self.mainForm.addGroupLabel(self.tr("Project Settings"))
 
         xW = self.mainConf.pxInt(250)
         xH = self.mainConf.pxInt(100)
@@ -176,9 +178,9 @@ class GuiProjectEditMain(QWidget):
         self.editName.setFixedWidth(xW)
         self.editName.setText(self.theProject.projName)
         self.mainForm.addRow(
-            "Working title",
+            self.tr("Working title"),
             self.editName,
-            "Should be set only once."
+            self.tr("Should be set only once.")
         )
 
         self.editTitle = QLineEdit()
@@ -186,9 +188,9 @@ class GuiProjectEditMain(QWidget):
         self.editTitle.setFixedWidth(xW)
         self.editTitle.setText(self.theProject.bookTitle)
         self.mainForm.addRow(
-            "Novel title",
+            self.tr("Novel title"),
             self.editTitle,
-            "Change whenever you want!"
+            self.tr("Change whenever you want!")
         )
 
         self.editAuthors = QPlainTextEdit()
@@ -199,22 +201,22 @@ class GuiProjectEditMain(QWidget):
         self.editAuthors.setFixedHeight(xH)
         self.editAuthors.setFixedWidth(xW)
         self.mainForm.addRow(
-            "Author(s)",
+            self.tr("Author(s)"),
             self.editAuthors,
-            "One name per line."
+            self.tr("One name per line.")
         )
 
         self.spellLang = QComboBox(self)
         theDict = self.theParent.docEditor.theDict
-        self.spellLang.addItem("Default", "None")
+        self.spellLang.addItem(self.tr("Default"), "None")
         if theDict is not None:
             for spTag, spName in theDict.listDictionaries():
                 self.spellLang.addItem(spName, spTag)
 
         self.mainForm.addRow(
-            "Spell check language",
+            self.tr("Spell check language"),
             self.spellLang,
-            "Overrides main preferences."
+            self.tr("Overrides main preferences.")
         )
 
         spellIdx = 0
@@ -226,9 +228,9 @@ class GuiProjectEditMain(QWidget):
         self.doBackup = QSwitch(self)
         self.doBackup.setChecked(not self.theProject.doBackup)
         self.mainForm.addRow(
-            "No backup on close",
+            self.tr("No backup on close"),
             self.doBackup,
-            "Overrides main preferences."
+            self.tr("Overrides main preferences.")
         )
 
         return
@@ -271,12 +273,12 @@ class GuiProjectEditStatus(QWidget):
         self.editName = QLineEdit()
         self.editName.setMaxLength(40)
         self.editName.setEnabled(False)
-        self.newButton  = QPushButton("New")
-        self.delButton  = QPushButton("Delete")
-        self.saveButton = QPushButton("Save")
+        self.newButton  = QPushButton(self.tr("New"))
+        self.delButton  = QPushButton(self.tr("Delete"))
+        self.saveButton = QPushButton(self.tr("Save"))
         self.colPixmap  = QPixmap(self.iPx, self.iPx)
         self.colPixmap.fill(QColor(120, 120, 120))
-        self.colButton  = QPushButton(QIcon(self.colPixmap), "Colour")
+        self.colButton  = QPushButton(QIcon(self.colPixmap), self.tr("Colour"))
         self.colButton.setIconSize(self.colPixmap.rect().size())
 
         self.newButton.clicked.connect(self._newItem)
@@ -287,7 +289,7 @@ class GuiProjectEditStatus(QWidget):
         self.mainForm.addWidget(self.newButton)
         self.mainForm.addWidget(self.delButton)
         self.mainForm.addStretch(1)
-        self.mainForm.addWidget(QLabel("<b>Name</b>"))
+        self.mainForm.addWidget(QLabel("<b>%s</b>" % self.tr("Name")))
         self.mainForm.addWidget(self.editName)
         self.mainForm.addWidget(self.colButton)
         self.mainForm.addStretch(1)
@@ -297,9 +299,9 @@ class GuiProjectEditStatus(QWidget):
         self.mainBox.addLayout(self.mainForm)
 
         if isStatus:
-            self.outerBox.addWidget(QLabel("<b>Novel File Status Levels</b>"))
+            self.outerBox.addWidget(QLabel("<b>%s</b>" % self.tr("Novel File Status Levels")))
         else:
-            self.outerBox.addWidget(QLabel("<b>Note File Importance Levels</b>"))
+            self.outerBox.addWidget(QLabel("<b>%s</b>" % self.tr("Note File Importance Levels")))
         self.outerBox.addLayout(self.mainBox)
 
         self.setLayout(self.outerBox)
@@ -325,7 +327,10 @@ class GuiProjectEditStatus(QWidget):
         """
         if self.selColour is not None:
             newCol = QColorDialog.getColor(
-                self.selColour, self, "Select Colour", QColorDialog.DontUseNativeDialog
+                self.selColour,
+                self,
+                self.tr("Select Colour"),
+                QColorDialog.DontUseNativeDialog
             )
             if newCol.isValid():
                 self.selColour = newCol
@@ -338,7 +343,7 @@ class GuiProjectEditStatus(QWidget):
     def _newItem(self):
         """Create a new status item.
         """
-        newItem = self._addItem("New Item", (0, 0, 0), None, 0)
+        newItem = self._addItem(self.tr("New Item"), (0, 0, 0), None, 0)
         newItem.setBackground(QBrush(QColor(0, 255, 0, 80)))
         self.colChanged = True
         return
@@ -355,7 +360,7 @@ class GuiProjectEditStatus(QWidget):
                 self.colChanged = True
             else:
                 self.theParent.makeAlert(
-                    "Cannot delete status item that is in use.", nwAlert.ERROR
+                    self.tr("Cannot delete status item that is in use."), nwAlert.ERROR
                 )
         return
 
@@ -372,7 +377,8 @@ class GuiProjectEditStatus(QWidget):
                 self.selColour.blue(),
                 self.colData[selIdx][4]
             )
-            selItem.setText("%s [%d]" % (self.colData[selIdx][0], self.colCounts[selIdx]))
+            selItem.setText(self.tr("{0} [{1}]").format(
+                self.colData[selIdx][0], self.colCounts[selIdx]))
             selItem.setIcon(self.colButton.icon())
             self.editName.setEnabled(False)
             self.colChanged = True
@@ -384,7 +390,7 @@ class GuiProjectEditStatus(QWidget):
         newIcon = QPixmap(self.iPx, self.iPx)
         newIcon.fill(QColor(*iCol))
         newItem = QListWidgetItem()
-        newItem.setText("%s [%d]" % (iName, nUse))
+        newItem.setText(self.tr("{0} [{1}]").format(iName, nUse))
         newItem.setIcon(QIcon(newIcon))
         newItem.setData(Qt.UserRole, len(self.colData))
         self.listBox.addItem(newItem)
@@ -450,13 +456,16 @@ class GuiProjectEditReplace(QWidget):
             self.optState.getInt("GuiProjectSettings", "replaceColW", 100)
         )
         self.listBox = QTreeWidget()
-        self.listBox.setHeaderLabels(["Keyword", "Replace With"])
+        self.listBox.setHeaderLabels([
+            self.tr("Keyword"),
+            self.tr("Replace With"),
+        ])
         self.listBox.itemSelectionChanged.connect(self._selectedItem)
         self.listBox.setColumnWidth(0, wCol0)
         self.listBox.setIndentation(0)
 
         for aKey, aVal in self.theProject.autoReplace.items():
-            newItem = QTreeWidgetItem(["<%s>" % aKey, aVal])
+            newItem = QTreeWidgetItem([self.tr("<{0}>").format(aKey), aVal])
             self.listBox.addTopLevelItem(newItem)
 
         self.listBox.sortByColumn(0, Qt.AscendingOrder)
@@ -467,9 +476,9 @@ class GuiProjectEditReplace(QWidget):
         self.saveButton = QPushButton(self.theTheme.getIcon("done"), "")
         self.addButton  = QPushButton(self.theTheme.getIcon("add"), "")
         self.delButton  = QPushButton(self.theTheme.getIcon("remove"), "")
-        self.saveButton.setToolTip("Save entry")
-        self.addButton.setToolTip("Add new entry")
-        self.delButton.setToolTip("Delete selected entry")
+        self.saveButton.setToolTip(self.tr("Save entry"))
+        self.addButton.setToolTip(self.tr("Add new entry"))
+        self.delButton.setToolTip(self.tr("Delete selected entry"))
 
         self.editKey.setEnabled(False)
         self.editKey.setMaxLength(40)
@@ -486,7 +495,8 @@ class GuiProjectEditReplace(QWidget):
         self.bottomBox.addWidget(self.addButton)
         self.bottomBox.addWidget(self.delButton)
 
-        self.outerBox.addWidget(QLabel("<b>Text Replace List for Preview and Export</b>"))
+        self.outerBox.addWidget(
+            QLabel("<b>%s</b>" % self.tr("Text Replace List for Preview and Export")))
         self.outerBox.addWidget(self.listBox)
         self.outerBox.addLayout(self.bottomBox)
         self.setLayout(self.outerBox)
@@ -538,7 +548,7 @@ class GuiProjectEditReplace(QWidget):
         saveKey = self._stripNotAllowed(newKey)
 
         if len(saveKey) > 0 and len(newVal) > 0:
-            selItem.setText(0, "<%s>" % saveKey)
+            selItem.setText(0, self.tr("<{0}>").format(saveKey))
             selItem.setText(1, newVal)
             self.editKey.clear()
             self.editValue.clear()

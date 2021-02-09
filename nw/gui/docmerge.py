@@ -53,11 +53,11 @@ class GuiDocMerge(QDialog):
         self.sourceItem = None
 
         self.outerBox = QVBoxLayout()
-        self.setWindowTitle("Merge Documents")
+        self.setWindowTitle(self.tr("Merge Documents"))
 
-        self.headLabel = QLabel("<b>Documents to Merge</b>")
+        self.headLabel = QLabel("<b>%s</b>" % self.tr("Documents to Merge"))
         self.helpLabel = QHelpLabel(
-            "Drag and drop items to change the order.", self.theParent.theTheme.helpText
+            self.tr("Drag and drop items to change the order."), self.theParent.theTheme.helpText
         )
 
         self.listBox = QListWidget()
@@ -66,6 +66,8 @@ class GuiDocMerge(QDialog):
         self.listBox.setMinimumHeight(self.mainConf.pxInt(180))
 
         self.buttonBox = QDialogButtonBox(QDialogButtonBox.Ok | QDialogButtonBox.Cancel)
+        self.buttonBox.button(QDialogButtonBox.Ok).setText(self.tr("Ok"))
+        self.buttonBox.button(QDialogButtonBox.Cancel).setText(self.tr("Cancel"))
         self.buttonBox.accepted.connect(self._doMerge)
         self.buttonBox.rejected.connect(self._doClose)
 
@@ -103,7 +105,7 @@ class GuiDocMerge(QDialog):
 
         if len(finalOrder) == 0:
             self.theParent.makeAlert((
-                "No source documents found. Nothing to do."
+                self.tr("No source documents found. Nothing to do.")
             ), nwAlert.ERROR)
             return
 
@@ -115,14 +117,14 @@ class GuiDocMerge(QDialog):
 
         if self.sourceItem is None:
             self.theParent.makeAlert((
-                "No source document selected. Nothing to do."
+                self.tr("No source document selected. Nothing to do.")
             ), nwAlert.ERROR)
             return
 
         srcItem = self.theProject.projTree[self.sourceItem]
         if srcItem is None:
             self.theParent.makeAlert((
-                "Could not parse source document."
+                self.tr("Could not parse source document.")
             ), nwAlert.ERROR)
             return
 
@@ -165,7 +167,7 @@ class GuiDocMerge(QDialog):
             return
         if nwItem.itemType is not nwItemType.FOLDER:
             self.theParent.makeAlert((
-                "Element selected in the project tree must be a folder."
+                self.tr("Element selected in the project tree must be a folder.")
             ), nwAlert.ERROR)
             return
 
