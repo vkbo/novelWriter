@@ -1437,6 +1437,9 @@ class GuiMain(QMainWindow):
 
         if editIdle or userIdle:
             self.idleTime += currTime - self.idleRefTime
+            self.statusBar.setUserIdle(True)
+        else:
+            self.statusBar.setUserIdle(False)
 
         self.idleRefTime = currTime
         self.statusBar.updateTime(idleTime=self.idleTime)

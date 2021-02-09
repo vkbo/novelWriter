@@ -48,6 +48,7 @@ class GuiMainStatus(QStatusBar):
         self.theParent = theParent
         self.theTheme  = theParent.theTheme
         self.refTime   = None
+        self.userIdle  = False
 
         colNone  = QColor(*self.theTheme.statNone)
         colTrue  = QColor(*self.theTheme.statUnsaved)
@@ -96,9 +97,12 @@ class GuiMainStatus(QStatusBar):
 
         ## The Session Clock
         ### Set the mimimum width so the label doesn't rescale every second
+        self.timePixmap = self.theTheme.getPixmap("status_time", (iPx, iPx))
+        self.idlePixmap = self.theTheme.getPixmap("status_idle", (iPx, iPx))
+
         self.timeIcon = QLabel()
         self.timeText = QLabel("")
-        self.timeIcon.setPixmap(self.theTheme.getPixmap("status_time", (iPx, iPx)))
+        self.timeIcon.setPixmap(self.timePixmap)
         self.timeText.setToolTip("Session Time")
         self.timeText.setMinimumWidth(self.theTheme.getTextWidth("00:00:00:"))
         self.timeIcon.setContentsMargins(0, 0, 0, 0)
@@ -173,6 +177,19 @@ class GuiMainStatus(QStatusBar):
         """
         self.statsText.setText(f"Words: {pWC:n} ({sWC:+n})")
         self.statsText.setToolTip("Project word count (session change)")
+        return
+
+    def setUserIdle(self, userIdle):
+        """Change the idle status icon.
+        """
+        if self.userIdle != userIdle:
+            if userIdle:
+                self.timeIcon.setPixmap(self.idlePixmap)
+            else:
+                self.timeIcon.setPixmap(self.timePixmap)
+
+            self.userIdle = userIdle
+
         return
 
     def updateTime(self, idleTime=0.0):

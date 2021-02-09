@@ -539,6 +539,7 @@ class GuiIcons:
         "proj_nwx"        : (None, None),
         "status_lang"     : (None, None),
         "status_time"     : (None, None),
+        "status_idle"     : (None, None),
         "status_stats"    : (None, None),
         "status_lines"    : (None, None),
         "doc_h0"          : (QStyle.SP_FileIcon, "x-office-document"),
