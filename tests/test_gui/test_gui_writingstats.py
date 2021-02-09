@@ -100,12 +100,18 @@ def testGuiWritingStats_Dialog(qtbot, monkeypatch, nwGUI, fncDir, fncProj):
     # ==============
 
     writeFile(sessFile, (
-        "# Start Time         End Time                Novel     Notes      Idle\n"
-        "2020-01-01 21:00:00  2020-01-01 21:00:05         6         0        50\n"
-        "2020-01-03 21:00:00  2020-01-03 21:00:15       125         0\n"
-        "2020-01-03 21:30:00  2020-01-03 21:30:15       125         5\n"
-        "2020-01-06 21:00:00  2020-01-06 21:00:10       125         5\n"
-        "2020-01-08 21:00:00  2020-01-08 21:00:10       120         5\n"
+        "# Offset 1075\n"
+        "# Start Time         End Time                Novel     Notes\n"
+        "2021-01-31 19:00:00  2021-01-31 19:30:00       700       375\n"
+        "2021-02-01 19:00:00  2021-02-01 19:30:00       700       375\n"
+        "2021-02-01 20:00:00  2021-02-01 20:30:00       600       275\n"
+        "2021-02-02 19:00:00  2021-02-02 19:30:00       750       425\n"
+        "2021-02-02 20:00:00  2021-02-02 20:30:00       690       365\n"
+        "2021-02-03 19:00:00  2021-02-03 19:30:00       680       355\n"
+        "2021-02-04 19:00:00  2021-02-04 19:30:00       700       375\n"
+        "2021-02-05 19:00:00  2021-02-05 19:30:00       500       175\n"
+        "2021-02-06 19:00:00  2021-02-06 19:30:00       600       275\n"
+        "2021-02-07 19:00:00  2021-02-07 19:30:00       600       275\n"
     ))
     sessLog.populateGUI()
 
@@ -118,6 +124,21 @@ def testGuiWritingStats_Dialog(qtbot, monkeypatch, nwGUI, fncDir, fncProj):
     # Make the save succeed
     monkeypatch.setattr("os.path.expanduser", lambda *args: fncDir)
     monkeypatch.setattr(QFileDialog, "getSaveFileName", lambda ss, tt, pp, options: (pp, ""))
+
+    sessLog.listBox.sortByColumn(sessLog.C_TIME, 0)
+
+    assert sessLog.novelWords.text() == "{:n}".format(600)
+    assert sessLog.notesWords.text() == "{:n}".format(275)
+    assert sessLog.totalWords.text() == "{:n}".format(875)
+
+    assert sessLog.listBox.topLevelItem(0).text(sessLog.C_COUNT) == "{:n}".format(1)
+    assert sessLog.listBox.topLevelItem(1).text(sessLog.C_COUNT) == "{:n}".format(-200)
+    assert sessLog.listBox.topLevelItem(2).text(sessLog.C_COUNT) == "{:n}".format(300)
+    assert sessLog.listBox.topLevelItem(3).text(sessLog.C_COUNT) == "{:n}".format(-120)
+    assert sessLog.listBox.topLevelItem(4).text(sessLog.C_COUNT) == "{:n}".format(-20)
+    assert sessLog.listBox.topLevelItem(5).text(sessLog.C_COUNT) == "{:n}".format(40)
+    assert sessLog.listBox.topLevelItem(6).text(sessLog.C_COUNT) == "{:n}".format(-400)
+    assert sessLog.listBox.topLevelItem(7).text(sessLog.C_COUNT) == "{:n}".format(200)
 
     assert sessLog._saveData(sessLog.FMT_CSV)
     qtbot.wait(100)
@@ -132,18 +153,33 @@ def testGuiWritingStats_Dialog(qtbot, monkeypatch, nwGUI, fncDir, fncProj):
     with open(jsonStats, mode="r", encoding="utf-8") as inFile:
         jsonData = json.load(inFile)
 
-    assert len(jsonData) == 4
-    assert jsonData[0]["length"] >= 4.0
-    assert jsonData[0]["newWords"] == 6
-    assert jsonData[0]["novelWords"] == 6
-    assert jsonData[0]["noteWords"] == 0
-    assert jsonData[0]["idleTime"] == 50
-
-    assert jsonData[1]["length"] >= 14.0
-    assert jsonData[1]["newWords"] == 119
-    assert jsonData[1]["novelWords"] == 125
-    assert jsonData[1]["noteWords"] == 0
-    assert jsonData[1]["idleTime"] == 0
+    assert jsonData == [
+        {
+            "date": "2021-01-31 19:00:00", "length": 1800.0,
+            "newWords": 1, "novelWords": 700, "noteWords": 375
+        }, {
+            "date": "2021-02-01 20:00:00", "length": 1800.0,
+            "newWords": -200, "novelWords": 600, "noteWords": 275
+        }, {
+            "date": "2021-02-02 19:00:00", "length": 1800.0,
+            "newWords": 300, "novelWords": 750, "noteWords": 425
+        }, {
+            "date": "2021-02-02 20:00:00", "length": 1800.0,
+            "newWords": -120, "novelWords": 690, "noteWords": 365
+        }, {
+            "date": "2021-02-03 19:00:00", "length": 1800.0,
+            "newWords": -20, "novelWords": 680, "noteWords": 355
+        }, {
+            "date": "2021-02-04 19:00:00", "length": 1800.0,
+            "newWords": 40, "novelWords": 700, "noteWords": 375
+        }, {
+            "date": "2021-02-05 19:00:00", "length": 1800.0,
+            "newWords": -400, "novelWords": 500, "noteWords": 175
+        }, {
+            "date": "2021-02-06 19:00:00", "length": 1800.0,
+            "newWords": 200, "novelWords": 600, "noteWords": 275
+        }
+    ]
 
     # Test Filters
     # ============
@@ -154,20 +190,46 @@ def testGuiWritingStats_Dialog(qtbot, monkeypatch, nwGUI, fncDir, fncProj):
     assert sessLog._saveData(sessLog.FMT_JSON)
     qtbot.wait(stepDelay)
 
-    assert sessLog.novelWords.text() == "{:n}".format(120)
-    assert sessLog.notesWords.text() == "{:n}".format(5)
-    assert sessLog.totalWords.text() == "{:n}".format(125)
-
     jsonStats = os.path.join(fncDir, "sessionStats.json")
     with open(jsonStats, mode="r", encoding="utf-8") as inFile:
         jsonData = json.loads(inFile.read())
 
-    assert len(jsonData) == 1
-    assert jsonData[0]["length"] >= 14.0
-    assert jsonData[0]["newWords"] == 5
-    assert jsonData[0]["novelWords"] == 125
-    assert jsonData[0]["noteWords"] == 5
-    assert jsonData[0]["idleTime"] == 0
+    assert sessLog.listBox.topLevelItem(0).text(sessLog.C_COUNT) == "{:n}".format(1)
+    assert sessLog.listBox.topLevelItem(1).text(sessLog.C_COUNT) == "{:n}".format(-100)
+    assert sessLog.listBox.topLevelItem(2).text(sessLog.C_COUNT) == "{:n}".format(150)
+    assert sessLog.listBox.topLevelItem(3).text(sessLog.C_COUNT) == "{:n}".format(-60)
+    assert sessLog.listBox.topLevelItem(4).text(sessLog.C_COUNT) == "{:n}".format(-10)
+    assert sessLog.listBox.topLevelItem(5).text(sessLog.C_COUNT) == "{:n}".format(20)
+    assert sessLog.listBox.topLevelItem(6).text(sessLog.C_COUNT) == "{:n}".format(-200)
+    assert sessLog.listBox.topLevelItem(7).text(sessLog.C_COUNT) == "{:n}".format(100)
+
+    assert jsonData == [
+        {
+            "date": "2021-01-31 19:00:00", "length": 1800.0,
+            "newWords": 1, "novelWords": 700, "noteWords": 375
+        }, {
+            "date": "2021-02-01 20:00:00", "length": 1800.0,
+            "newWords": -100, "novelWords": 600, "noteWords": 275
+        }, {
+            "date": "2021-02-02 19:00:00", "length": 1800.0,
+            "newWords": 150, "novelWords": 750, "noteWords": 425
+        }, {
+            "date": "2021-02-02 20:00:00", "length": 1800.0,
+            "newWords": -60, "novelWords": 690, "noteWords": 365
+        }, {
+            "date": "2021-02-03 19:00:00", "length": 1800.0,
+            "newWords": -10, "novelWords": 680, "noteWords": 355
+        }, {
+            "date": "2021-02-04 19:00:00", "length": 1800.0,
+            "newWords": 20, "novelWords": 700, "noteWords": 375
+        }, {
+            "date": "2021-02-05 19:00:00", "length": 1800.0,
+            "newWords": -200, "novelWords": 500, "noteWords": 175
+        }, {
+            "date": "2021-02-06 19:00:00", "length": 1800.0,
+            "newWords": 100, "novelWords": 600, "noteWords": 275
+        }
+    ]
 
     # No Note Files
     qtbot.mouseClick(sessLog.incNovel, Qt.LeftButton)
@@ -180,12 +242,42 @@ def testGuiWritingStats_Dialog(qtbot, monkeypatch, nwGUI, fncDir, fncProj):
     with open(jsonStats, mode="r", encoding="utf-8") as inFile:
         jsonData = json.load(inFile)
 
-    assert len(jsonData) == 3
-    assert jsonData[1]["length"] >= 14.0
-    assert jsonData[1]["newWords"] == 119
-    assert jsonData[1]["novelWords"] == 125
-    assert jsonData[1]["noteWords"] == 0
-    assert jsonData[1]["idleTime"] == 0
+    assert sessLog.listBox.topLevelItem(0).text(sessLog.C_COUNT) == "{:n}".format(1)
+    assert sessLog.listBox.topLevelItem(1).text(sessLog.C_COUNT) == "{:n}".format(-100)
+    assert sessLog.listBox.topLevelItem(2).text(sessLog.C_COUNT) == "{:n}".format(150)
+    assert sessLog.listBox.topLevelItem(3).text(sessLog.C_COUNT) == "{:n}".format(-60)
+    assert sessLog.listBox.topLevelItem(4).text(sessLog.C_COUNT) == "{:n}".format(-10)
+    assert sessLog.listBox.topLevelItem(5).text(sessLog.C_COUNT) == "{:n}".format(20)
+    assert sessLog.listBox.topLevelItem(6).text(sessLog.C_COUNT) == "{:n}".format(-200)
+    assert sessLog.listBox.topLevelItem(7).text(sessLog.C_COUNT) == "{:n}".format(100)
+
+    assert jsonData == [
+        {
+            "date": "2021-01-31 19:00:00", "length": 1800.0,
+            "newWords": 1, "novelWords": 700, "noteWords": 375
+        }, {
+            "date": "2021-02-01 20:00:00", "length": 1800.0,
+            "newWords": -100, "novelWords": 600, "noteWords": 275
+        }, {
+            "date": "2021-02-02 19:00:00", "length": 1800.0,
+            "newWords": 150, "novelWords": 750, "noteWords": 425
+        }, {
+            "date": "2021-02-02 20:00:00", "length": 1800.0,
+            "newWords": -60, "novelWords": 690, "noteWords": 365
+        }, {
+            "date": "2021-02-03 19:00:00", "length": 1800.0,
+            "newWords": -10, "novelWords": 680, "noteWords": 355
+        }, {
+            "date": "2021-02-04 19:00:00", "length": 1800.0,
+            "newWords": 20, "novelWords": 700, "noteWords": 375
+        }, {
+            "date": "2021-02-05 19:00:00", "length": 1800.0,
+            "newWords": -200, "novelWords": 500, "noteWords": 175
+        }, {
+            "date": "2021-02-06 19:00:00", "length": 1800.0,
+            "newWords": 100, "novelWords": 600, "noteWords": 275
+        }
+    ]
 
     # No Negative Entries
     qtbot.mouseClick(sessLog.incNotes, Qt.LeftButton)
@@ -194,11 +286,32 @@ def testGuiWritingStats_Dialog(qtbot, monkeypatch, nwGUI, fncDir, fncProj):
     assert sessLog._saveData(sessLog.FMT_JSON)
     qtbot.wait(stepDelay)
 
+    # qtbot.stopForInteraction()
+
     jsonStats = os.path.join(fncDir, "sessionStats.json")
     with open(jsonStats, mode="r", encoding="utf-8") as inFile:
         jsonData = json.load(inFile)
 
-    assert len(jsonData) == 3
+    assert sessLog.listBox.topLevelItem(0).text(sessLog.C_COUNT) == "{:n}".format(1)
+    assert sessLog.listBox.topLevelItem(1).text(sessLog.C_COUNT) == "{:n}".format(300)
+    assert sessLog.listBox.topLevelItem(2).text(sessLog.C_COUNT) == "{:n}".format(40)
+    assert sessLog.listBox.topLevelItem(3).text(sessLog.C_COUNT) == "{:n}".format(200)
+
+    assert jsonData == [
+        {
+            "date": "2021-01-31 19:00:00", "length": 1800.0,
+            "newWords": 1, "novelWords": 700, "noteWords": 375
+        }, {
+            "date": "2021-02-02 19:00:00", "length": 1800.0,
+            "newWords": 300, "novelWords": 750, "noteWords": 425
+        }, {
+            "date": "2021-02-04 19:00:00", "length": 1800.0,
+            "newWords": 40, "novelWords": 700, "noteWords": 375
+        }, {
+            "date": "2021-02-06 19:00:00", "length": 1800.0,
+            "newWords": 200, "novelWords": 600, "noteWords": 275
+        }
+    ]
 
     # Un-hide Zero Entries
     qtbot.mouseClick(sessLog.hideNegative, Qt.LeftButton)
@@ -211,7 +324,50 @@ def testGuiWritingStats_Dialog(qtbot, monkeypatch, nwGUI, fncDir, fncProj):
     with open(jsonStats, mode="r", encoding="utf-8") as inFile:
         jsonData = json.load(inFile)
 
-    assert len(jsonData) == 5
+    assert sessLog.listBox.topLevelItem(0).text(sessLog.C_COUNT) == "{:n}".format(1)
+    assert sessLog.listBox.topLevelItem(1).text(sessLog.C_COUNT) == "{:n}".format(0)
+    assert sessLog.listBox.topLevelItem(2).text(sessLog.C_COUNT) == "{:n}".format(-200)
+    assert sessLog.listBox.topLevelItem(3).text(sessLog.C_COUNT) == "{:n}".format(300)
+    assert sessLog.listBox.topLevelItem(4).text(sessLog.C_COUNT) == "{:n}".format(-120)
+    assert sessLog.listBox.topLevelItem(5).text(sessLog.C_COUNT) == "{:n}".format(-20)
+    assert sessLog.listBox.topLevelItem(6).text(sessLog.C_COUNT) == "{:n}".format(40)
+    assert sessLog.listBox.topLevelItem(7).text(sessLog.C_COUNT) == "{:n}".format(-400)
+    assert sessLog.listBox.topLevelItem(8).text(sessLog.C_COUNT) == "{:n}".format(200)
+    assert sessLog.listBox.topLevelItem(9).text(sessLog.C_COUNT) == "{:n}".format(0)
+
+    assert jsonData == [
+        {
+            "date": "2021-01-31 19:00:00", "length": 1800.0,
+            "newWords": 1, "novelWords": 700, "noteWords": 375
+        }, {
+            "date": "2021-02-01 19:00:00", "length": 1800.0,
+            "newWords": 0, "novelWords": 700, "noteWords": 375
+        }, {
+            "date": "2021-02-01 20:00:00", "length": 1800.0,
+            "newWords": -200, "novelWords": 600, "noteWords": 275
+        }, {
+            "date": "2021-02-02 19:00:00", "length": 1800.0,
+            "newWords": 300, "novelWords": 750, "noteWords": 425
+        }, {
+            "date": "2021-02-02 20:00:00", "length": 1800.0,
+            "newWords": -120, "novelWords": 690, "noteWords": 365
+        }, {
+            "date": "2021-02-03 19:00:00", "length": 1800.0,
+            "newWords": -20, "novelWords": 680, "noteWords": 355
+        }, {
+            "date": "2021-02-04 19:00:00", "length": 1800.0,
+            "newWords": 40, "novelWords": 700, "noteWords": 375
+        }, {
+            "date": "2021-02-05 19:00:00", "length": 1800.0,
+            "newWords": -400, "novelWords": 500, "noteWords": 175
+        }, {
+            "date": "2021-02-06 19:00:00", "length": 1800.0,
+            "newWords": 200, "novelWords": 600, "noteWords": 275
+        }, {
+            "date": "2021-02-07 19:00:00", "length": 1800.0,
+            "newWords": 0, "novelWords": 600, "noteWords": 275
+        }
+    ]
 
     # Group by Day
     qtbot.mouseClick(sessLog.groupByDay, Qt.LeftButton)
@@ -223,9 +379,42 @@ def testGuiWritingStats_Dialog(qtbot, monkeypatch, nwGUI, fncDir, fncProj):
     with open(jsonStats, mode="r", encoding="utf-8") as inFile:
         jsonData = json.load(inFile)
 
-    # Check against both 1 and 2 as this can be 2 if test was started just before midnight.
-    # A failed test should in any case produce a 4
-    assert len(jsonData) == 4
+    assert sessLog.listBox.topLevelItem(0).text(sessLog.C_COUNT) == "{:n}".format(1)
+    assert sessLog.listBox.topLevelItem(1).text(sessLog.C_COUNT) == "{:n}".format(-200)
+    assert sessLog.listBox.topLevelItem(2).text(sessLog.C_COUNT) == "{:n}".format(180)
+    assert sessLog.listBox.topLevelItem(3).text(sessLog.C_COUNT) == "{:n}".format(-20)
+    assert sessLog.listBox.topLevelItem(4).text(sessLog.C_COUNT) == "{:n}".format(40)
+    assert sessLog.listBox.topLevelItem(5).text(sessLog.C_COUNT) == "{:n}".format(-400)
+    assert sessLog.listBox.topLevelItem(6).text(sessLog.C_COUNT) == "{:n}".format(200)
+    assert sessLog.listBox.topLevelItem(7).text(sessLog.C_COUNT) == "{:n}".format(0)
+
+    assert jsonData == [
+        {
+            "date": "2021-01-31", "length": 1800.0,
+            "newWords": 1, "novelWords": 700, "noteWords": 375
+        }, {
+            "date": "2021-02-01", "length": 3600.0,
+            "newWords": -200, "novelWords": 600, "noteWords": 275
+        }, {
+            "date": "2021-02-02", "length": 3600.0,
+            "newWords": 180, "novelWords": 690, "noteWords": 365
+        }, {
+            "date": "2021-02-03", "length": 1800.0,
+            "newWords": -20, "novelWords": 680, "noteWords": 355
+        }, {
+            "date": "2021-02-04", "length": 1800.0,
+            "newWords": 40, "novelWords": 700, "noteWords": 375
+        }, {
+            "date": "2021-02-05", "length": 1800.0,
+            "newWords": -400, "novelWords": 500, "noteWords": 175
+        }, {
+            "date": "2021-02-06", "length": 1800.0,
+            "newWords": 200, "novelWords": 600, "noteWords": 275
+        }, {
+            "date": "2021-02-07", "length": 1800.0,
+            "newWords": 0, "novelWords": 600, "noteWords": 275
+        }
+    ]
 
     # IOError
     # =======
