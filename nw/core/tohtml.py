@@ -25,10 +25,9 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
 
 import logging
-import re
 
 from nw.core.tokenizer import Tokenizer
-from nw.constants import nwUnicode, nwLabels, nwKeyWords
+from nw.constants import nwLabels, nwKeyWords, nwHtmlUnicode
 
 logger = logging.getLogger(__name__)
 
@@ -41,27 +40,13 @@ class ToHtml(Tokenizer):
     def __init__(self, theProject, theParent):
         Tokenizer.__init__(self, theProject, theParent)
 
-        self.genMode = self.M_EXPORT
+        self.genMode   = self.M_EXPORT
         self.cssStyles = True
+        self.fullHTML  = []
 
-        self.repDict = {
-            "<" : "&lt;",
-            ">" : "&gt;",
-            "&" : "&amp;",
-            nwUnicode.U_ENDASH : nwUnicode.H_ENDASH,
-            nwUnicode.U_EMDASH : nwUnicode.H_EMDASH,
-            nwUnicode.U_HELLIP : nwUnicode.H_HELLIP,
-            nwUnicode.U_NBSP   : nwUnicode.H_NBSP,
-            nwUnicode.U_THSP   : nwUnicode.H_THSP,
-            nwUnicode.U_THNBSP : nwUnicode.H_THNBSP,
-            nwUnicode.U_MAPOSS : nwUnicode.H_RSQUO,
-        }
-        self.revDict = {}
-        self.reReplace = []
-        self.reReverse = []
-        self._buildRegEx()
-
-        self.fullHTML = []
+        # Internals
+        self._trMap = {}
+        self.setReplaceUnicode(False)
 
         return
 
@@ -88,6 +73,23 @@ class ToHtml(Tokenizer):
         self.cssStyles = cssStyles
         return
 
+    def setReplaceUnicode(self, doReplace):
+        """Set the translation map to either minimal or full unicode to
+        html entities replacement.
+        """
+        # Control characters must always be replaced
+        self._trMap = str.maketrans({
+            "<" : "&lt;",
+            ">" : "&gt;",
+            "&" : "&amp;",
+        })
+
+        if doReplace:
+            # Extend to all relevant Unicode characters
+            self._trMap.update(str.maketrans(nwHtmlUnicode.U_TO_H))
+
+        return
+
     ##
     #  Class Methods
     ##
@@ -97,30 +99,12 @@ class ToHtml(Tokenizer):
         """
         return sum([len(x) for x in self.fullHTML])
 
-    def doAutoReplace(self):
+    def doPreProcessing(self):
         """Extend the auto-replace to also properly encode some unicode
         characters into their respective HTML entities.
         """
-        Tokenizer.doAutoReplace(self)
-        self.theText = self.reReplace.sub(
-            lambda x: self.repDict[x.group(0)], self.theText
-        )
-        return
-
-    def doPostProcessing(self):
-        """Reverse the html entities replacement on the markdown text.
-        Otherwise, all the &something; bits will also be in there.
-        """
-        Tokenizer.doPostProcessing(self)
-        if self.genMode == self.M_PREVIEW:
-            # Doesn't matter for preview as we don't use the markdown
-            return
-
-        if self.keepMarkdown:
-            self.theMarkdown[-1] = self.reReverse.sub(
-                lambda x: self.revDict[x.group(0)], self.theMarkdown[-1]
-            )
-
+        Tokenizer.doPreProcessing(self)
+        self.theText = self.theText.translate(self._trMap)
         return
 
     def doConvert(self):
@@ -465,17 +449,5 @@ class ToHtml(Tokenizer):
                         retText += ", ".join(refTags)
 
         return retText
-
-    def _buildRegEx(self):
-        """Build the regular expressions
-        """
-        self.revDict = dict(map(reversed, self.repDict.items()))
-        self.reReplace = re.compile(
-            "|".join([re.escape(k) for k in self.repDict.keys()]), flags=re.DOTALL
-        )
-        self.reReverse = re.compile(
-            "|".join([re.escape(k) for k in self.revDict.keys()]), flags=re.DOTALL
-        )
-        return
 
 # END Class ToHtml

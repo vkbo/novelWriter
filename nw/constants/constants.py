@@ -265,7 +265,7 @@ class nwUnicode:
     U_LCQUO  = "\u300c" # Left corner bracket
     U_RCQUO  = "\u300d" # Right corner bracket
     U_LWCQUO = "\u300e" # Left white corner bracket
-    U_RECQUO = "\u300f" # Right white corner bracket
+    U_RWCQUO = "\u300f" # Right white corner bracket
 
     ## Punctuation
     U_FGDASH = "\u2012" # Figure dash
@@ -331,7 +331,7 @@ class nwUnicode:
     H_LCQUO  = "&#12300;"
     H_RCQUO  = "&#12301;"
     H_LWCQUO = "&#12302;"
-    H_LWCQUO = "&#12302;"
+    H_RWCQUO = "&#12303;"
 
     ## Punctuation
     H_FGDASH = "&#8210;"
@@ -374,3 +374,60 @@ class nwUnicode:
     H_LTRIS  = "&#9666;"
 
 # END Class nwUnicode
+
+class nwHtmlUnicode():
+
+    U_TO_H = {
+        ## Quotes
+        nwUnicode.U_QUOT   : nwUnicode.H_QUOT,
+        nwUnicode.U_APOS   : nwUnicode.H_APOS,
+        nwUnicode.U_LAQUO  : nwUnicode.H_LAQUO,
+        nwUnicode.U_RAQUO  : nwUnicode.H_RAQUO,
+        nwUnicode.U_LSQUO  : nwUnicode.H_LSQUO,
+        nwUnicode.U_RSQUO  : nwUnicode.H_RSQUO,
+        nwUnicode.U_SBQUO  : nwUnicode.H_SBQUO,
+        nwUnicode.U_SUQUO  : nwUnicode.H_SUQUO,
+        nwUnicode.U_LDQUO  : nwUnicode.H_LDQUO,
+        nwUnicode.U_RDQUO  : nwUnicode.H_RDQUO,
+        nwUnicode.U_BDQUO  : nwUnicode.H_BDQUO,
+        nwUnicode.U_UDQUO  : nwUnicode.H_UDQUO,
+        nwUnicode.U_LSAQUO : nwUnicode.H_LSAQUO,
+        nwUnicode.U_RSAQUO : nwUnicode.H_RSAQUO,
+        nwUnicode.U_BDRQUO : nwUnicode.H_BDRQUO,
+        nwUnicode.U_LCQUO  : nwUnicode.H_LCQUO,
+        nwUnicode.U_RCQUO  : nwUnicode.H_RCQUO,
+        nwUnicode.U_LWCQUO : nwUnicode.H_LWCQUO,
+        nwUnicode.U_RWCQUO : nwUnicode.H_RWCQUO,
+
+        ## Punctuation
+        nwUnicode.U_FGDASH : nwUnicode.H_FGDASH,
+        nwUnicode.U_ENDASH : nwUnicode.H_ENDASH,
+        nwUnicode.U_EMDASH : nwUnicode.H_EMDASH,
+        nwUnicode.U_HBAR   : nwUnicode.H_HBAR,
+        nwUnicode.U_HELLIP : nwUnicode.H_HELLIP,
+        nwUnicode.U_MAPOSS : nwUnicode.H_MAPOSS,
+        nwUnicode.U_PRIME  : nwUnicode.H_PRIME,
+        nwUnicode.U_DPRIME : nwUnicode.H_DPRIME,
+
+        ## Spaces
+        nwUnicode.U_NBSP   : nwUnicode.H_NBSP,
+        nwUnicode.U_THSP   : nwUnicode.H_THSP,
+        nwUnicode.U_THNBSP : nwUnicode.H_THNBSP,
+        nwUnicode.U_ENSP   : nwUnicode.H_ENSP,
+        nwUnicode.U_EMSP   : nwUnicode.H_EMSP,
+
+        ## Symbols
+        nwUnicode.U_CHECK  : nwUnicode.H_CHECK,
+        nwUnicode.U_CROSS  : nwUnicode.H_CROSS,
+        nwUnicode.U_BULL   : nwUnicode.H_BULL,
+        nwUnicode.U_TRBULL : nwUnicode.H_TRBULL,
+        nwUnicode.U_HYBULL : nwUnicode.H_HYBULL,
+        nwUnicode.U_FLOWER : nwUnicode.H_FLOWER,
+        nwUnicode.U_PERMIL : nwUnicode.H_PERMIL,
+        nwUnicode.U_DEGREE : nwUnicode.H_DEGREE,
+        nwUnicode.U_MINUS  : nwUnicode.H_MINUS,
+        nwUnicode.U_TIMES  : nwUnicode.H_TIMES,
+        nwUnicode.U_DIVIDE : nwUnicode.H_DIVIDE,
+    }
+
+# END Class nwHtmlUnicode
