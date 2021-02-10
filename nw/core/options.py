@@ -80,6 +80,7 @@ class OptionState():
                 "incKeywords",
                 "incBodyText",
                 "replaceTabs",
+                "replaceUCode",
             },
             "GuiOutline": {
                 "headerOrder",

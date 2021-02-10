@@ -55,15 +55,17 @@ logger = logging.getLogger(__name__)
 
 class GuiBuildNovel(QDialog):
 
-    FMT_ODT    = 1
-    FMT_FODT   = 2
-    FMT_PDF    = 3
-    FMT_HTM    = 4
-    FMT_MD     = 5
-    FMT_GH     = 6
-    FMT_NWD    = 7
-    FMT_JSON_H = 8
-    FMT_JSON_M = 9
+    FMT_PDF    = 1 # Print to PDF
+
+    FMT_ODT    = 2 # Open Document file
+    FMT_FODT   = 3 # Flat Open Document file
+    FMT_HTM    = 4 # HTML5
+    FMT_NWD    = 5 # nW Markdown
+    FMT_MD     = 6 # Standard Markdown
+    FMT_GH     = 7 # GitHub Markdown
+
+    FMT_JSON_H = 8 # HTML5 wrapped in JSON
+    FMT_JSON_M = 9 # nW Markdown wrapped in JSON
 
     def __init__(self, theParent, theProject):
         QDialog.__init__(self, theParent)
@@ -379,10 +381,18 @@ class GuiBuildNovel(QDialog):
             self.optState.getBool("GuiBuildNovel", "replaceTabs", False)
         )
 
-        tabsLabel = QLabel("Replace tabs with spaces")
+        self.replaceUCode = QSwitch(width=wS, height=hS)
+        self.replaceUCode.setChecked(
+            self.optState.getBool("GuiBuildNovel", "replaceUCode", False)
+        )
 
-        self.exportForm.addWidget(tabsLabel,        0, 0, 1, 1, Qt.AlignLeft)
-        self.exportForm.addWidget(self.replaceTabs, 0, 1, 1, 1, Qt.AlignRight)
+        tabsLabel  = QLabel("Replace tabs with spaces")
+        uCodeLabel = QLabel("Replace Unicode in HTML")
+
+        self.exportForm.addWidget(tabsLabel,         0, 0, 1, 1, Qt.AlignLeft)
+        self.exportForm.addWidget(self.replaceTabs,  0, 1, 1, 1, Qt.AlignRight)
+        self.exportForm.addWidget(uCodeLabel,        1, 0, 1, 1, Qt.AlignLeft)
+        self.exportForm.addWidget(self.replaceUCode, 1, 1, 1, 1, Qt.AlignRight)
 
         self.exportForm.setColumnStretch(0, 1)
         self.exportForm.setColumnStretch(1, 0)
@@ -643,6 +653,7 @@ class GuiBuildNovel(QDialog):
         noteFiles     = self.noteFiles.isChecked()
         ignoreFlag    = self.ignoreFlag.isChecked()
         includeBody   = self.includeBody.isChecked()
+        replaceUCode  = self.replaceUCode.isChecked()
 
         # Get font information
         fontInfo = QFontInfo(QFont(textFont, textSize))
@@ -668,6 +679,7 @@ class GuiBuildNovel(QDialog):
 
         if isHtml:
             bldObj.setStyles(not noStyling)
+            bldObj.setReplaceUnicode(replaceUCode)
 
         if isOdt:
             bldObj.setColourHeaders(not noStyling)
@@ -696,7 +708,7 @@ class GuiBuildNovel(QDialog):
 
                 elif self._checkInclude(tItem, noteFiles, novelFiles, ignoreFlag):
                     bldObj.setText(tItem.itemHandle)
-                    bldObj.doAutoReplace()
+                    bldObj.doPreProcessing()
                     bldObj.tokenizeText()
                     bldObj.doHeaders()
                     if doConvert:
@@ -1107,48 +1119,47 @@ class GuiBuildNovel(QDialog):
             "section"    : self.fmtSection.text().strip(),
         })
 
-        winWidth    = self.mainConf.rpxInt(self.width())
-        winHeight   = self.mainConf.rpxInt(self.height())
-        justifyText = self.justifyText.isChecked()
-        noStyling   = self.noStyling.isChecked()
-        textFont    = self.textFont.text()
-        textSize    = self.textSize.value()
-        lineHeight  = self.lineHeight.value()
-        novelFiles  = self.novelFiles.isChecked()
-        noteFiles   = self.noteFiles.isChecked()
-        ignoreFlag  = self.ignoreFlag.isChecked()
-        incSynopsis = self.includeSynopsis.isChecked()
-        incComments = self.includeComments.isChecked()
-        incKeywords = self.includeKeywords.isChecked()
-        incBodyText = self.includeBody.isChecked()
-        replaceTabs = self.replaceTabs.isChecked()
+        winWidth     = self.mainConf.rpxInt(self.width())
+        winHeight    = self.mainConf.rpxInt(self.height())
+        justifyText  = self.justifyText.isChecked()
+        noStyling    = self.noStyling.isChecked()
+        textFont     = self.textFont.text()
+        textSize     = self.textSize.value()
+        lineHeight   = self.lineHeight.value()
+        novelFiles   = self.novelFiles.isChecked()
+        noteFiles    = self.noteFiles.isChecked()
+        ignoreFlag   = self.ignoreFlag.isChecked()
+        incSynopsis  = self.includeSynopsis.isChecked()
+        incComments  = self.includeComments.isChecked()
+        incKeywords  = self.includeKeywords.isChecked()
+        incBodyText  = self.includeBody.isChecked()
+        replaceTabs  = self.replaceTabs.isChecked()
+        replaceUCode = self.replaceUCode.isChecked()
 
         mainSplit = self.mainSplit.sizes()
-        if len(mainSplit) == 2:
-            boxWidth = self.mainConf.rpxInt(mainSplit[0])
-            docWidth = self.mainConf.rpxInt(mainSplit[1])
-        else:
-            boxWidth = 100
-            docWidth = 100
+        boxWidth  = self.mainConf.rpxInt(mainSplit[0])
+        docWidth  = self.mainConf.rpxInt(mainSplit[1])
 
         # GUI Settings
-        self.optState.setValue("GuiBuildNovel", "winWidth",    winWidth)
-        self.optState.setValue("GuiBuildNovel", "winHeight",   winHeight)
-        self.optState.setValue("GuiBuildNovel", "boxWidth",    boxWidth)
-        self.optState.setValue("GuiBuildNovel", "docWidth",    docWidth)
-        self.optState.setValue("GuiBuildNovel", "justifyText", justifyText)
-        self.optState.setValue("GuiBuildNovel", "noStyling",   noStyling)
-        self.optState.setValue("GuiBuildNovel", "textFont",    textFont)
-        self.optState.setValue("GuiBuildNovel", "textSize",    textSize)
-        self.optState.setValue("GuiBuildNovel", "lineHeight",  lineHeight)
-        self.optState.setValue("GuiBuildNovel", "addNovel",    novelFiles)
-        self.optState.setValue("GuiBuildNovel", "addNotes",    noteFiles)
-        self.optState.setValue("GuiBuildNovel", "ignoreFlag",  ignoreFlag)
-        self.optState.setValue("GuiBuildNovel", "incSynopsis", incSynopsis)
-        self.optState.setValue("GuiBuildNovel", "incComments", incComments)
-        self.optState.setValue("GuiBuildNovel", "incKeywords", incKeywords)
-        self.optState.setValue("GuiBuildNovel", "incBodyText", incBodyText)
-        self.optState.setValue("GuiBuildNovel", "replaceTabs", replaceTabs)
+        self.optState.setValue("GuiBuildNovel", "winWidth",     winWidth)
+        self.optState.setValue("GuiBuildNovel", "winHeight",    winHeight)
+        self.optState.setValue("GuiBuildNovel", "boxWidth",     boxWidth)
+        self.optState.setValue("GuiBuildNovel", "docWidth",     docWidth)
+        self.optState.setValue("GuiBuildNovel", "justifyText",  justifyText)
+        self.optState.setValue("GuiBuildNovel", "noStyling",    noStyling)
+        self.optState.setValue("GuiBuildNovel", "textFont",     textFont)
+        self.optState.setValue("GuiBuildNovel", "textSize",     textSize)
+        self.optState.setValue("GuiBuildNovel", "lineHeight",   lineHeight)
+        self.optState.setValue("GuiBuildNovel", "addNovel",     novelFiles)
+        self.optState.setValue("GuiBuildNovel", "addNotes",     noteFiles)
+        self.optState.setValue("GuiBuildNovel", "ignoreFlag",   ignoreFlag)
+        self.optState.setValue("GuiBuildNovel", "incSynopsis",  incSynopsis)
+        self.optState.setValue("GuiBuildNovel", "incComments",  incComments)
+        self.optState.setValue("GuiBuildNovel", "incKeywords",  incKeywords)
+        self.optState.setValue("GuiBuildNovel", "incBodyText",  incBodyText)
+        self.optState.setValue("GuiBuildNovel", "replaceTabs",  replaceTabs)
+        self.optState.setValue("GuiBuildNovel", "replaceUCode", replaceUCode)
+
         self.optState.saveSettings()
 
         return
