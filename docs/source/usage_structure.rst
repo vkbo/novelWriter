@@ -113,7 +113,7 @@ allow multiple values.
    :guilabel:`Character` type root folder. This should not include the point-of-view character.
 
 ``@plot``
-   The plot or subplot advanced in the current section. The target must be a note tag in thje
+   The plot or subplot advanced in the current section. The target must be a note tag in the
    :guilabel:`Plot` type root folder.
 
 ``@time``
