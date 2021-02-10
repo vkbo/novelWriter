@@ -1,6 +1,70 @@
 # novelWriter Changelog
 
-## Version 1.2 Dev (Alpha)
+## Version 1.2 Beta 1 [2021-02-11]
+
+### Release Notes
+
+### Detailed Changelog
+
+**New Features**
+
+* A full Open Document exporter has been written and added for the Build Novel project tool. This
+  replaces the previously used Qt save to ODT which just saved the content of the preview window to
+  an ODT file. The Qt path was very limited and didn't generate proper formatting classes. The new
+  export class can generate both full `.odt` and flat XML `.fodt` files. The formatting support of
+  this exporter is equivalent or better than the HTML5 exporter, which was previously the best
+  supported option. Solves issue #611, PRs #607, #652, #660, and #654.
+* A full Markdown exporter has been written and added for the Build Novel Project tool. This too
+  replaces a Qt feature that was used to save the content of the preview window into a markdown
+  file. The exporter allows for standard markdown and GitHub flavour. The only difference being
+  that the latter allows strikethrough text. Issue #617, PR #650.
+* The Build Novel Project tool now has a "Line height" property that is applied to the preview, and
+  to the HTML5 and Open Document export formats. Discussion #653. Issue #654. PR #660.
+* The Build Novel Project tool now has an option to convert Unicode characters to HTML entities on
+  export to HTML5. Previously, some symbols were converted while others weren't. This option
+  provides an all or nothing option. PR #660.
+* The last file or folder move in the project tree can now be undone from the Project menu or by
+  pressing `Ctrl+Shift+Z`. PR #632.
+* When a document header level is altered in a novel file of layout type Scene, Chapter,
+  Unnumbered, or Partition, and that document is saved, the document's layout setting as seen in
+  the project tree is updated to reflect the level of that heading. This helps reduce the
+  duplication of effort by the user to keep this information in sync. See discussion #613. This is
+  and acceptable solution to #614. Issue #618, PR #620.
+* The session timer now record the amount of time the user is idle. Idle is defined as being when
+  the application window does not have focus, and also when the user hasn't made any changes to the
+  document in the editor for a specified amount of time. The default is 5 minutes. The idle time is
+  recorded to the session log and can be shown in Writing Statistics. Optionally, the status bar
+  session timer can also be set to pause when the user is considered idle. Issues #606 and #651.
+  PRs #656 and #661.
+* It is now possible to tag a character as the focus character for a give section of text. This is
+  useful for cases where the point-of-view character differs from the main character of the story,
+  or the part of the story. Issue #605. PR #662.
+
+**User Interface**
+
+* A document's class and layout is now displayed next to its status or importance in the document
+  editor footer bar. PR #628.
+* When a new document is created, the header of the file is automatically generated based on the
+  document's tree label and the level determined by the selected layout. Issue #530, PR #628.
+* On the Build Novel Project GUI, the PDF option has been moved from the "Save As" button to the
+  "Print" button. This more accurately reflects what it actually does: print the content of the
+  preview to a PDF using the printer pathway. This also means that all remaining items on the "Save
+  As" dropdown list can be executed regardless of the content of the preview window. they all run
+  their own separate build process. Resolves #611, PR #650.
+* Export to plain text has been dropped. PR #617.
+
+**Code Improvements**
+
+* The index class now scans every element of the loaded index cache before accepting it. This means
+  that any non-standard content will trigger a full re-indexing. This is particularly useful when
+  opening an index that was saved by a later release. Every entry that requires a lookup is checked
+  to avoid potential key errors for instance. All values are also checked for correct data type.
+  The new check is extensive, but still fast enough that it only adds a few milliseconds to the
+  startup time. PR #619.
+
+**Code Maintenance**
+
+* Cleaned up some redundant code after PR #637. PR #638.
 
 ----
 
