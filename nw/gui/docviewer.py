@@ -176,7 +176,7 @@ class GuiDocViewer(QTextBrowser):
         # See issue #298
         try:
             aDoc.setText(tHandle)
-            aDoc.doAutoReplace()
+            aDoc.doPreProcessing()
             aDoc.tokenizeText()
             aDoc.doConvert()
             aDoc.doPostProcessing()

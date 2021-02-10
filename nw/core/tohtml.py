@@ -25,10 +25,9 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
 
 import logging
-import re
 
 from nw.core.tokenizer import Tokenizer
-from nw.constants import nwUnicode, nwLabels, nwKeyWords
+from nw.constants import nwLabels, nwKeyWords, nwHtmlUnicode
 
 logger = logging.getLogger(__name__)
 
@@ -41,27 +40,13 @@ class ToHtml(Tokenizer):
     def __init__(self, theProject, theParent):
         Tokenizer.__init__(self, theProject, theParent)
 
-        self.genMode = self.M_EXPORT
+        self.genMode   = self.M_EXPORT
         self.cssStyles = True
+        self.fullHTML  = []
 
-        self.repDict = {
-            "<" : "&lt;",
-            ">" : "&gt;",
-            "&" : "&amp;",
-            nwUnicode.U_ENDASH : nwUnicode.H_ENDASH,
-            nwUnicode.U_EMDASH : nwUnicode.H_EMDASH,
-            nwUnicode.U_HELLIP : nwUnicode.H_HELLIP,
-            nwUnicode.U_NBSP   : nwUnicode.H_NBSP,
-            nwUnicode.U_THSP   : nwUnicode.H_THSP,
-            nwUnicode.U_THNBSP : nwUnicode.H_THNBSP,
-            nwUnicode.U_MAPOSS : nwUnicode.H_RSQUO,
-        }
-        self.revDict = {}
-        self.reReplace = []
-        self.reReverse = []
-        self._buildRegEx()
-
-        self.fullHTML = []
+        # Internals
+        self._trMap = {}
+        self.setReplaceUnicode(False)
 
         return
 
@@ -88,6 +73,23 @@ class ToHtml(Tokenizer):
         self.cssStyles = cssStyles
         return
 
+    def setReplaceUnicode(self, doReplace):
+        """Set the translation map to either minimal or full unicode to
+        html entities replacement.
+        """
+        # Control characters must always be replaced
+        self._trMap = str.maketrans({
+            "<" : "&lt;",
+            ">" : "&gt;",
+            "&" : "&amp;",
+        })
+
+        if doReplace:
+            # Extend to all relevant Unicode characters
+            self._trMap.update(str.maketrans(nwHtmlUnicode.U_TO_H))
+
+        return
+
     ##
     #  Class Methods
     ##
@@ -97,30 +99,12 @@ class ToHtml(Tokenizer):
         """
         return sum([len(x) for x in self.fullHTML])
 
-    def doAutoReplace(self):
+    def doPreProcessing(self):
         """Extend the auto-replace to also properly encode some unicode
         characters into their respective HTML entities.
         """
-        Tokenizer.doAutoReplace(self)
-        self.theText = self.reReplace.sub(
-            lambda x: self.repDict[x.group(0)], self.theText
-        )
-        return
-
-    def doPostProcessing(self):
-        """Reverse the html entities replacement on the markdown text.
-        Otherwise, all the &something; bits will also be in there.
-        """
-        Tokenizer.doPostProcessing(self)
-        if self.genMode == self.M_PREVIEW:
-            # Doesn't matter for preview as we don't use the markdown
-            return
-
-        if self.keepMarkdown:
-            self.theMarkdown[-1] = self.reReverse.sub(
-                lambda x: self.revDict[x.group(0)], self.theMarkdown[-1]
-            )
-
+        Tokenizer.doPreProcessing(self)
+        self.theText = self.theText.translate(self._trMap)
         return
 
     def doConvert(self):
@@ -331,21 +315,84 @@ class ToHtml(Tokenizer):
         if not self.cssStyles:
             return theStyles
 
+        mScale = self.lineHeight/1.15
         textAlign = "justify" if self.doJustify else "left"
 
-        theStyles.append("body {font-family: '%s'; font-size: %dpt}" % (
-            self.textFont, self.textSize)
-        )
-        theStyles.append("p {text-align: %s;}" % textAlign)
-        theStyles.append("h1, h2 {color: rgb(66, 113, 174);}")
-        theStyles.append("h3, h4 {color: rgb(50, 50, 50);}")
-        theStyles.append("h1, h2, h3, h4 {page-break-after: avoid;}")
+        theStyles.append("body {font-family: '%s'; font-size: %dpt;}" % (
+            self.textFont, self.textSize
+        ))
+        theStyles.append((
+            "p {"
+            "text-align: %s; line-height: %d%%; "
+            "margin-top: %.2fem; margin-bottom: %.2fem;"
+            "}"
+        ) % (
+            textAlign,
+            round(100 * self.lineHeight),
+            mScale * self.marginText[0],
+            mScale * self.marginText[1],
+        ))
+        theStyles.append((
+            "h1 {"
+            "color: rgb(66, 113, 174); "
+            "page-break-after: avoid; "
+            "margin-top: %.2fem; "
+            "margin-bottom: %.2fem;"
+            "}"
+        ) % (
+            mScale * self.marginHead1[0], mScale * self.marginHead1[1]
+        ))
+        theStyles.append((
+            "h2 {"
+            "color: rgb(66, 113, 174); "
+            "page-break-after: avoid; "
+            "margin-top: %.2fem; "
+            "margin-bottom: %.2fem;"
+            "}"
+        ) % (
+            mScale * self.marginHead2[0], mScale * self.marginHead2[1]
+        ))
+        theStyles.append((
+            "h3 {"
+            "color: rgb(50, 50, 50); "
+            "page-break-after: avoid; "
+            "margin-top: %.2fem; "
+            "margin-bottom: %.2fem;"
+            "}"
+        ) % (
+            mScale * self.marginHead3[0], mScale * self.marginHead3[1]
+        ))
+        theStyles.append((
+            "h4 {"
+            "color: rgb(50, 50, 50); "
+            "page-break-after: avoid; "
+            "margin-top: %.2fem; "
+            "margin-bottom: %.2fem;"
+            "}"
+        ) % (
+            mScale * self.marginHead4[0], mScale * self.marginHead4[1]
+        ))
+        theStyles.append((
+            ".title {"
+            "font-size: 2.5em; "
+            "margin-top: %.2fem; "
+            "margin-bottom: %.2fem;"
+            "}"
+        ) % (
+            mScale * self.marginTitle[0], mScale * self.marginTitle[1]
+        ))
+        theStyles.append((
+            ".sep, .skip {"
+            "text-align: center; "
+            "margin-top: %.2fem; "
+            "margin-bottom: %.2fem;}"
+        ) % (
+            mScale, mScale
+        ))
+
         theStyles.append("a {color: rgb(66, 113, 174);}")
-        theStyles.append(".title {font-size: 2.5em;}")
         theStyles.append(".tags {color: rgb(245, 135, 31); font-weight: bold;}")
         theStyles.append(".break {text-align: left;}")
-        theStyles.append(".sep {text-align: center; margin-top: 1em; margin-bottom: 1em;}")
-        theStyles.append(".skip {margin-top: 1em; margin-bottom: 1em;}")
         theStyles.append(".synopsis {font-style: italic;}")
         theStyles.append(".comment {font-style: italic; color: rgb(100, 100, 100);}")
 
@@ -402,17 +449,5 @@ class ToHtml(Tokenizer):
                         retText += ", ".join(refTags)
 
         return retText
-
-    def _buildRegEx(self):
-        """Build the regular expressions
-        """
-        self.revDict = dict(map(reversed, self.repDict.items()))
-        self.reReplace = re.compile(
-            "|".join([re.escape(k) for k in self.repDict.keys()]), flags=re.DOTALL
-        )
-        self.reReverse = re.compile(
-            "|".join([re.escape(k) for k in self.revDict.keys()]), flags=re.DOTALL
-        )
-        return
 
 # END Class ToHtml

@@ -32,7 +32,7 @@ from PyQt5.QtCore import QRegularExpression
 
 from nw.core.document import NWDoc
 from nw.core.tools import numberToWord, numberToRoman
-from nw.constants import nwConst, nwItemLayout, nwItemType, nwRegEx
+from nw.constants import nwConst, nwUnicode, nwItemLayout, nwItemType, nwRegEx
 
 logger = logging.getLogger(__name__)
 
@@ -86,7 +86,7 @@ class Tokenizer():
         self.theResult   = ""   # The result of the last document
 
         self.keepMarkdown = False # Whether to keep the markdown text
-        self.theMarkdown  = []   # The result novelWriter markdown of all documents
+        self.theMarkdown  = []    # The result novelWriter markdown of all documents
 
         # User Settings
         self.textFont    = "Serif" # Output text font
@@ -297,15 +297,20 @@ class Tokenizer():
 
         return True
 
-    def doAutoReplace(self):
-        """Run through the user's auto-replace dictionary.
+    def doPreProcessing(self):
+        """Reun trough the various replace doctionaries.
         """
+        # Process the user's auto-replace dictionary
         if len(self.theProject.autoReplace) > 0:
             repDict = {}
             for aKey, aVal in self.theProject.autoReplace.items():
                 repDict["<%s>" % aKey] = aVal
             xRep = re.compile("|".join([re.escape(k) for k in repDict.keys()]), flags=re.DOTALL)
             self.theText = xRep.sub(lambda x: repDict[x.group(0)], self.theText)
+
+        # Process the character translation map
+        trDict = {nwUnicode.U_MAPOSS: nwUnicode.U_RSQUO}
+        self.theText = self.theText.translate(str.maketrans(trDict))
 
         return
 

@@ -374,7 +374,7 @@ def testCoreToHtml_Complex(dummyGUI, fncDir):
 
     for i in range(len(docText)):
         theHtml.theText = docText[i]
-        theHtml.doAutoReplace()
+        theHtml.doPreProcessing()
         theHtml.tokenizeText()
         theHtml.doConvert()
         assert theHtml.theResult == resText[i]
@@ -424,27 +424,32 @@ def testCoreToHtml_Methods(dummyGUI):
     theHtml = ToHtml(theProject, dummyGUI)
     theHtml.setKeepMarkdown(True)
 
-    # Auto-Replace
+    # Auto-Replace, keep Unicode
     docText = "Text with <brackets> & short–dash, long—dash …\n"
     theHtml.theText = docText
-    theHtml.doAutoReplace()
+    theHtml.setReplaceUnicode(False)
+    theHtml.doPreProcessing()
+    theHtml.tokenizeText()
+    theHtml.doConvert()
+    assert theHtml.theResult == (
+        "<p>Text with &lt;brackets&gt; &amp; short–dash, long—dash …</p>\n"
+    )
+
+    # Auto-Replace, replace Unicode
+    docText = "Text with <brackets> & short–dash, long—dash …\n"
+    theHtml.theText = docText
+    theHtml.setReplaceUnicode(True)
+    theHtml.doPreProcessing()
     theHtml.tokenizeText()
     theHtml.doConvert()
     assert theHtml.theResult == (
         "<p>Text with &lt;brackets&gt; &amp; short&ndash;dash, long&mdash;dash &hellip;</p>\n"
     )
 
-    # Revert on MD
-    assert theHtml.theMarkdown[-1] == (
-        "Text with &lt;brackets&gt; &amp; short&ndash;dash, long&mdash;dash &hellip;\n\n"
-    )
-    theHtml.doPostProcessing()
-    assert theHtml.theMarkdown[-1] == docText + "\n"
-
-    # With Preview, No Revert
+    # With Preview
     theHtml.setPreview(True, True)
     theHtml.theText = docText
-    theHtml.doAutoReplace()
+    theHtml.doPreProcessing()
     theHtml.tokenizeText()
     theHtml.doConvert()
     assert theHtml.theMarkdown[-1] == (
@@ -456,18 +461,18 @@ def testCoreToHtml_Methods(dummyGUI):
     )
 
     # Result Size
-    assert theHtml.getFullResultSize() == 83
+    assert theHtml.getFullResultSize() == 147
 
     # CSS
     # ===
 
     assert len(theHtml.getStyleSheet()) > 1
-    assert "p {text-align: left;}" in theHtml.getStyleSheet()
-    assert "p {text-align: justify;}" not in theHtml.getStyleSheet()
+    assert "p {text-align: left;" in " ".join(theHtml.getStyleSheet())
+    assert "p {text-align: justify;" not in " ".join(theHtml.getStyleSheet())
 
     theHtml.setJustify(True)
-    assert "p {text-align: left;}" not in theHtml.getStyleSheet()
-    assert "p {text-align: justify;}" in theHtml.getStyleSheet()
+    assert "p {text-align: left;" not in " ".join(theHtml.getStyleSheet())
+    assert "p {text-align: justify;" in " ".join(theHtml.getStyleSheet())
 
     theHtml.setStyles(False)
     assert theHtml.getStyleSheet() == []

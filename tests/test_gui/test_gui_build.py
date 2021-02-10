@@ -110,6 +110,8 @@ def testGuiBuild_Tool(qtbot, monkeypatch, nwGUI, nwLipsum, refDir, outDir):
     qtbot.wait(stepDelay)
     qtbot.mouseClick(nwBuild.includeKeywords, Qt.LeftButton)
     qtbot.wait(stepDelay)
+    qtbot.mouseClick(nwBuild.replaceUCode, Qt.LeftButton)
+    qtbot.wait(stepDelay)
 
     qtbot.mouseClick(nwBuild.noteFiles, Qt.LeftButton)
     qtbot.wait(stepDelay)
