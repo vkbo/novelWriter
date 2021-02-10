@@ -1052,14 +1052,14 @@ class GuiBuildNovel(QDialog):
                 nw.logException()
                 return False
 
-            if "htmlText" in theData.keys():
-                self.htmlText = theData["htmlText"]
-                dataCount += 1
+            if "buildTime" in theData.keys():
+                self.buildTime = theData["buildTime"]
             if "htmlStyle" in theData.keys():
                 self.htmlStyle = theData["htmlStyle"]
                 dataCount += 1
-            if "buildTime" in theData.keys():
-                self.buildTime = theData["buildTime"]
+            if "htmlText" in theData.keys():
+                self.htmlText = theData["htmlText"]
+                dataCount += 1
 
         return dataCount == 2
 
@@ -1072,9 +1072,9 @@ class GuiBuildNovel(QDialog):
         try:
             with open(buildCache, mode="w+", encoding="utf8") as outFile:
                 outFile.write(json.dumps({
-                    "htmlText"  : self.htmlText,
-                    "htmlStyle" : self.htmlStyle,
                     "buildTime" : self.buildTime,
+                    "htmlStyle" : self.htmlStyle,
+                    "htmlText"  : self.htmlText,
                 }, indent=2))
         except Exception:
             logger.error("Failed to save build cache")
