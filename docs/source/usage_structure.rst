@@ -103,28 +103,33 @@ allow multiple values.
    The point-of-view character for the current section. The target must be a note tag in the
    :guilabel:`Character` type root folder.
 
+``@focus``
+   The character that has the focus for the current section. This can be used in cases where the
+   focus is not a point-of-view character. The target must be a note tag in the
+   :guilabel:`Character` type root folder.
+
 ``@char``
-   Other characters in the current section. The target must be a note tag in a
+   Other characters in the current section. The target must be a note tag in the
    :guilabel:`Character` type root folder. This should not include the point-of-view character.
 
 ``@plot``
-   The plot or subplot advanced in the current section. The target must be a note tag in a
+   The plot or subplot advanced in the current section. The target must be a note tag in thje
    :guilabel:`Plot` type root folder.
 
 ``@time``
-   The timelines touched by the current section. The target must be a note tag in a
+   The timelines touched by the current section. The target must be a note tag in the
    :guilabel:`Timeline` type root folder.
 
 ``@location``
-   The location the current section takes place in. The target must be a note tag in a
+   The location the current section takes place in. The target must be a note tag in the
    :guilabel:`Locations` type root folder.
 
 ``@object``
-   Objects present in the current section. The target must be a note tag in an :guilabel:`Object`
+   Objects present in the current section. The target must be a note tag in the :guilabel:`Object`
    type root folder.
 
 ``@entity``
-   Entities present in the current section. The target must be a note tag in an
+   Entities present in the current section. The target must be a note tag in the
    :guilabel:`Entities` type root folder.
 
 ``@custom``
