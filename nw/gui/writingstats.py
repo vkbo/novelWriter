@@ -511,7 +511,7 @@ class GuiWritingStats(QDialog):
             tempData = []
             sessDate = None
             sessTime = 0
-            sIdle = 0
+            sessIdle = 0
             lstNovel = 0
             lstNotes = 0
 
@@ -519,20 +519,20 @@ class GuiWritingStats(QDialog):
                 if n == 0:
                     sessDate = dStart.date()
                 if sessDate != dStart.date():
-                    tempData.append((sessDate, sessTime, lstNovel, lstNotes, sIdle))
+                    tempData.append((sessDate, sessTime, lstNovel, lstNotes, sessIdle))
                     sessDate = dStart.date()
                     sessTime = sDiff
-                    sIdle = sIdle
+                    sessIdle = sIdle
                     lstNovel = wcNovel
                     lstNotes = wcNotes
                 else:
                     sessTime += sDiff
-                    sIdle += sIdle
+                    sessIdle += sIdle
                     lstNovel = wcNovel
                     lstNotes = wcNotes
 
             if sessDate is not None:
-                tempData.append((sessDate, sessTime, lstNovel, lstNotes, sIdle))
+                tempData.append((sessDate, sessTime, lstNovel, lstNotes, sessIdle))
 
         else:
             tempData = self.logData
