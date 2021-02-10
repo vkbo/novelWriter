@@ -176,8 +176,8 @@ def testCoreToken_TextOps(monkeypatch, nwMinimal, dummyGUI):
     assert theToken.isNote is False
     assert theToken.isNovel is True
 
-    # Auto replace
-    theToken.doAutoReplace()
+    # Pre Processing
+    theToken.doPreProcessing()
     assert theToken.theText == docTextR
 
     # Post Processing

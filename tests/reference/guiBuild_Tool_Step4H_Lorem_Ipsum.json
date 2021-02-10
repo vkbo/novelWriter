@@ -5,21 +5,21 @@
     "authors": [
       "lipsum.com"
     ],
-    "buildTime": 1611863279
+    "buildTime": 1612954696
   },
   "text": {
     "css": [
-      "body {font-family: 'DejaVu Sans'; font-size: 11pt}",
-      "p {text-align: justify;}",
-      "h1, h2 {color: rgb(66, 113, 174);}",
-      "h3, h4 {color: rgb(50, 50, 50);}",
-      "h1, h2, h3, h4 {page-break-after: avoid;}",
+      "body {font-family: 'DejaVu Sans'; font-size: 11pt;}",
+      "p {text-align: justify; line-height: 115%; margin-top: 0.00em; margin-bottom: 0.58em;}",
+      "h1 {color: rgb(66, 113, 174); page-break-after: avoid; margin-top: 1.00em; margin-bottom: 0.50em;}",
+      "h2 {color: rgb(66, 113, 174); page-break-after: avoid; margin-top: 0.83em; margin-bottom: 0.50em;}",
+      "h3 {color: rgb(50, 50, 50); page-break-after: avoid; margin-top: 0.58em; margin-bottom: 0.50em;}",
+      "h4 {color: rgb(50, 50, 50); page-break-after: avoid; margin-top: 0.58em; margin-bottom: 0.50em;}",
+      ".title {font-size: 2.5em; margin-top: 1.00em; margin-bottom: 0.50em;}",
+      ".sep, .skip {text-align: center; margin-top: 1.00em; margin-bottom: 1.00em;}",
       "a {color: rgb(66, 113, 174);}",
-      ".title {font-size: 2.5em;}",
       ".tags {color: rgb(245, 135, 31); font-weight: bold;}",
       ".break {text-align: left;}",
-      ".sep {text-align: center; margin-top: 1em; margin-bottom: 1em;}",
-      ".skip {margin-top: 1em; margin-bottom: 1em;}",
       ".synopsis {font-style: italic;}",
       ".comment {font-style: italic; color: rgb(100, 100, 100);}"
     ],
