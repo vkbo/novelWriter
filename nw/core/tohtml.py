@@ -333,10 +333,12 @@ class ToHtml(Tokenizer):
 
         textAlign = "justify" if self.doJustify else "left"
 
-        theStyles.append("body {font-family: '%s'; font-size: %dpt}" % (
-            self.textFont, self.textSize)
-        )
-        theStyles.append("p {text-align: %s;}" % textAlign)
+        theStyles.append("body {font-family: '%s'; font-size: %dpt;}" % (
+            self.textFont, self.textSize
+        ))
+        theStyles.append("p {text-align: %s; line-height: %d%%;}" % (
+            textAlign, round(100 * self.lineHeight)
+        ))
         theStyles.append("h1, h2 {color: rgb(66, 113, 174);}")
         theStyles.append("h3, h4 {color: rgb(50, 50, 50);}")
         theStyles.append("h1, h2, h3, h4 {page-break-after: avoid;}")

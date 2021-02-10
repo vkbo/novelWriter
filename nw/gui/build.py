@@ -93,6 +93,9 @@ class GuiBuildNovel(QDialog):
 
         self.docView = GuiBuildNovelDocView(self, self.theProject)
 
+        hS = self.theTheme.fontPixelSize
+        wS = 2*hS
+
         # Title Formats
         # =============
 
@@ -191,12 +194,12 @@ class GuiBuildNovel(QDialog):
         self.titleForm.setColumnStretch(0, 0)
         self.titleForm.setColumnStretch(1, 1)
 
-        # Text Options
-        # =============
+        # Font Options
+        # ============
 
-        self.formatGroup = QGroupBox("Formatting Options", self)
-        self.formatForm  = QGridLayout(self)
-        self.formatGroup.setLayout(self.formatForm)
+        self.fontGroup = QGroupBox("Font Options", self)
+        self.fontForm  = QGridLayout(self)
+        self.fontGroup.setLayout(self.fontForm)
 
         ## Font Family
         self.textFont = QLineEdit()
@@ -225,17 +228,7 @@ class GuiBuildNovel(QDialog):
         self.lineHeight.setSingleStep(0.05)
         self.lineHeight.setDecimals(2)
         self.lineHeight.setValue(
-            self.optState.getInt("GuiBuildNovel", "lineHeight", 1.15)
-        )
-
-        self.justifyText = QSwitch()
-        self.justifyText.setChecked(
-            self.optState.getBool("GuiBuildNovel", "justifyText", False)
-        )
-
-        self.noStyling = QSwitch()
-        self.noStyling.setChecked(
-            self.optState.getBool("GuiBuildNovel", "noStyling", False)
+            self.optState.getFloat("GuiBuildNovel", "lineHeight", 1.15)
         )
 
         # Dummy box due to QGridView and QLineEdit expand bug
@@ -248,45 +241,66 @@ class GuiBuildNovel(QDialog):
         justifyLabel    = QLabel("Justify text")
         stylingLabel    = QLabel("Disable styling")
 
-        self.formatForm.addWidget(fontFamilyLabel,  0, 0, 1, 1, Qt.AlignLeft)
-        self.formatForm.addLayout(self.boxFont,     0, 1, 1, 1, Qt.AlignRight)
-        self.formatForm.addWidget(self.fontButton,  0, 2, 1, 1, Qt.AlignRight)
-        self.formatForm.addWidget(fontSizeLabel,    1, 0, 1, 1, Qt.AlignLeft)
-        self.formatForm.addWidget(self.textSize,    1, 1, 1, 2, Qt.AlignRight)
-        self.formatForm.addWidget(lineHeightLabel,  2, 0, 1, 1, Qt.AlignLeft)
-        self.formatForm.addWidget(self.lineHeight,  2, 1, 1, 2, Qt.AlignRight)
-        self.formatForm.addWidget(justifyLabel,     3, 0, 1, 1, Qt.AlignLeft)
-        self.formatForm.addWidget(self.justifyText, 3, 1, 1, 2, Qt.AlignRight)
-        self.formatForm.addWidget(stylingLabel,     4, 0, 1, 1, Qt.AlignLeft)
-        self.formatForm.addWidget(self.noStyling,   4, 1, 1, 2, Qt.AlignRight)
+        self.fontForm.addWidget(fontFamilyLabel,  0, 0, 1, 1, Qt.AlignLeft)
+        self.fontForm.addLayout(self.boxFont,     0, 1, 1, 1, Qt.AlignRight)
+        self.fontForm.addWidget(self.fontButton,  0, 2, 1, 1, Qt.AlignRight)
+        self.fontForm.addWidget(fontSizeLabel,    1, 0, 1, 1, Qt.AlignLeft)
+        self.fontForm.addWidget(self.textSize,    1, 1, 1, 2, Qt.AlignRight)
+        self.fontForm.addWidget(lineHeightLabel,  2, 0, 1, 1, Qt.AlignLeft)
+        self.fontForm.addWidget(self.lineHeight,  2, 1, 1, 2, Qt.AlignRight)
 
-        self.formatForm.setColumnStretch(0, 0)
-        self.formatForm.setColumnStretch(1, 1)
-        self.formatForm.setColumnStretch(2, 0)
+        self.fontForm.setColumnStretch(0, 0)
+        self.fontForm.setColumnStretch(1, 1)
+        self.fontForm.setColumnStretch(2, 0)
 
-        # Include Switches
-        # ================
+        # Styling Options
+        # ===============
 
-        self.textGroup = QGroupBox("Text Options", self)
+        self.styleGroup = QGroupBox("Styling Options", self)
+        self.styleForm  = QGridLayout(self)
+        self.styleGroup.setLayout(self.styleForm)
+
+        self.justifyText = QSwitch(width=wS, height=hS)
+        self.justifyText.setChecked(
+            self.optState.getBool("GuiBuildNovel", "justifyText", False)
+        )
+
+        self.noStyling = QSwitch(width=wS, height=hS)
+        self.noStyling.setChecked(
+            self.optState.getBool("GuiBuildNovel", "noStyling", False)
+        )
+
+        self.styleForm.addWidget(justifyLabel,     1, 0, 1, 1, Qt.AlignLeft)
+        self.styleForm.addWidget(self.justifyText, 1, 1, 1, 2, Qt.AlignRight)
+        self.styleForm.addWidget(stylingLabel,     2, 0, 1, 1, Qt.AlignLeft)
+        self.styleForm.addWidget(self.noStyling,   2, 1, 1, 2, Qt.AlignRight)
+
+        self.styleForm.setColumnStretch(0, 0)
+        self.styleForm.setColumnStretch(1, 1)
+
+        # Include Options
+        # ===============
+
+        self.textGroup = QGroupBox("Include Options", self)
         self.textForm  = QGridLayout(self)
         self.textGroup.setLayout(self.textForm)
 
-        self.includeSynopsis = QSwitch()
+        self.includeSynopsis = QSwitch(width=wS, height=hS)
         self.includeSynopsis.setChecked(
             self.optState.getBool("GuiBuildNovel", "incSynopsis", False)
         )
 
-        self.includeComments = QSwitch()
+        self.includeComments = QSwitch(width=wS, height=hS)
         self.includeComments.setChecked(
             self.optState.getBool("GuiBuildNovel", "incComments", False)
         )
 
-        self.includeKeywords = QSwitch()
+        self.includeKeywords = QSwitch(width=wS, height=hS)
         self.includeKeywords.setChecked(
             self.optState.getBool("GuiBuildNovel", "incKeywords", False)
         )
 
-        self.includeBody = QSwitch()
+        self.includeBody = QSwitch(width=wS, height=hS)
         self.includeBody.setChecked(
             self.optState.getBool("GuiBuildNovel", "incBodyText", True)
         )
@@ -315,7 +329,7 @@ class GuiBuildNovel(QDialog):
         self.fileForm  = QGridLayout(self)
         self.fileGroup.setLayout(self.fileForm)
 
-        self.novelFiles = QSwitch()
+        self.novelFiles = QSwitch(width=wS, height=hS)
         self.novelFiles.setToolTip(
             "Include files with layouts 'Book', 'Page', 'Partition', "
             "'Chapter', 'Unnumbered', and 'Scene'."
@@ -324,13 +338,13 @@ class GuiBuildNovel(QDialog):
             self.optState.getBool("GuiBuildNovel", "addNovel", True)
         )
 
-        self.noteFiles = QSwitch()
+        self.noteFiles = QSwitch(width=wS, height=hS)
         self.noteFiles.setToolTip("Include files with layout 'Note'.")
         self.noteFiles.setChecked(
             self.optState.getBool("GuiBuildNovel", "addNotes", False)
         )
 
-        self.ignoreFlag = QSwitch()
+        self.ignoreFlag = QSwitch(width=wS, height=hS)
         self.ignoreFlag.setToolTip(
             "Ignore the 'Include when building project' setting and include "
             "all files in the output."
@@ -360,7 +374,7 @@ class GuiBuildNovel(QDialog):
         self.exportForm  = QGridLayout(self)
         self.exportGroup.setLayout(self.exportForm)
 
-        self.replaceTabs = QSwitch()
+        self.replaceTabs = QSwitch(width=wS, height=hS)
         self.replaceTabs.setChecked(
             self.optState.getBool("GuiBuildNovel", "replaceTabs", False)
         )
@@ -458,7 +472,8 @@ class GuiBuildNovel(QDialog):
         # The Tool Box
         self.toolsBox = QVBoxLayout()
         self.toolsBox.addWidget(self.titleGroup)
-        self.toolsBox.addWidget(self.formatGroup)
+        self.toolsBox.addWidget(self.fontGroup)
+        self.toolsBox.addWidget(self.styleGroup)
         self.toolsBox.addWidget(self.textGroup)
         self.toolsBox.addWidget(self.fileGroup)
         self.toolsBox.addWidget(self.exportGroup)

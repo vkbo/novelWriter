@@ -194,23 +194,25 @@ class ToOdt(Tokenizer):
         self._fSizeHead  = f"{round(1.15 * self.textSize):d}pt"
         self._fSizeText  = f"{self.textSize:d}pt"
 
-        self._mTopTitle = self._emToCm(self.marginTitle[0])
-        self._mTopHead1 = self._emToCm(self.marginHead1[0])
-        self._mTopHead2 = self._emToCm(self.marginHead2[0])
-        self._mTopHead3 = self._emToCm(self.marginHead3[0])
-        self._mTopHead4 = self._emToCm(self.marginHead4[0])
-        self._mTopHead  = self._emToCm(self.marginHead4[0])
-        self._mTopText  = self._emToCm(self.marginText[0])
-        self._mTopMeta  = self._emToCm(self.marginMeta[0])
+        mScale = self.lineHeight/1.15
 
-        self._mBotTitle = self._emToCm(self.marginTitle[1])
-        self._mBotHead1 = self._emToCm(self.marginHead1[1])
-        self._mBotHead2 = self._emToCm(self.marginHead2[1])
-        self._mBotHead3 = self._emToCm(self.marginHead3[1])
-        self._mBotHead4 = self._emToCm(self.marginHead4[1])
-        self._mBotHead  = self._emToCm(self.marginHead4[1])
-        self._mBotText  = self._emToCm(self.marginText[1])
-        self._mBotMeta  = self._emToCm(self.marginMeta[1])
+        self._mTopTitle = self._emToCm(mScale * self.marginTitle[0])
+        self._mTopHead1 = self._emToCm(mScale * self.marginHead1[0])
+        self._mTopHead2 = self._emToCm(mScale * self.marginHead2[0])
+        self._mTopHead3 = self._emToCm(mScale * self.marginHead3[0])
+        self._mTopHead4 = self._emToCm(mScale * self.marginHead4[0])
+        self._mTopHead  = self._emToCm(mScale * self.marginHead4[0])
+        self._mTopText  = self._emToCm(mScale * self.marginText[0])
+        self._mTopMeta  = self._emToCm(mScale * self.marginMeta[0])
+
+        self._mBotTitle = self._emToCm(mScale * self.marginTitle[1])
+        self._mBotHead1 = self._emToCm(mScale * self.marginHead1[1])
+        self._mBotHead2 = self._emToCm(mScale * self.marginHead2[1])
+        self._mBotHead3 = self._emToCm(mScale * self.marginHead3[1])
+        self._mBotHead4 = self._emToCm(mScale * self.marginHead4[1])
+        self._mBotHead  = self._emToCm(mScale * self.marginHead4[1])
+        self._mBotText  = self._emToCm(mScale * self.marginText[1])
+        self._mBotMeta  = self._emToCm(mScale * self.marginMeta[1])
 
         if self.colourHead:
             self._colHead12 = "#2a6099"
