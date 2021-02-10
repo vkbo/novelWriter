@@ -51,8 +51,9 @@ no restrictions are enforced by the application. You can use them however you wa
 :guilabel:`Characters`
    Character notes go in this root folder. These are especially important if one wants to use the
    Outline view to see which character appears where, and which part of the story is told from a
-   specific character's point-of-view. Tags in this folder can be references using the ``@pov``
-   keyword for point-of-view characters, or the ``@char`` keyword for other characters.
+   specific character's point-of-view or focusing on a particular character's storyline. Tags in
+   this folder can be referenced using the ``@pov`` keyword for point-of-view characters,
+   ``@focus`` for a focus character, or the ``@char`` keyword for any other characters.
 
 :guilabel:`Locations`
    The locations folder is for various scene locations that you want to track. Tags in this folder

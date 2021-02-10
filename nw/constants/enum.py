@@ -127,13 +127,14 @@ class nwOutline(Enum):
     WCOUNT = 5
     PCOUNT = 6
     POV    = 7
-    CHAR   = 8
-    PLOT   = 9
-    TIME   = 10
-    WORLD  = 11
-    OBJECT = 12
-    ENTITY = 13
-    CUSTOM = 14
-    SYNOP  = 15
+    FOCUS  = 8
+    CHAR   = 9
+    PLOT   = 10
+    TIME   = 11
+    WORLD  = 12
+    OBJECT = 13
+    ENTITY = 14
+    CUSTOM = 15
+    SYNOP  = 16
 
 # END Enum nwOutline

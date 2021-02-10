@@ -86,6 +86,7 @@ class nwKeyWords:
 
     TAG_KEY    = "@tag"
     POV_KEY    = "@pov"
+    FOCUS_KEY  = "@focus"
     CHAR_KEY   = "@char"
     PLOT_KEY   = "@plot"
     TIME_KEY   = "@time"
@@ -96,14 +97,15 @@ class nwKeyWords:
 
     # Set of Valid Keys
     VALID_KEYS = {
-        TAG_KEY, POV_KEY, CHAR_KEY, PLOT_KEY, TIME_KEY,
+        TAG_KEY, POV_KEY, FOCUS_KEY, CHAR_KEY, PLOT_KEY, TIME_KEY,
         WORLD_KEY, OBJECT_KEY, ENTITY_KEY, CUSTOM_KEY
     }
 
     # Map from Keys to Item Class
     KEY_CLASS = {
-        CHAR_KEY   : nwItemClass.CHARACTER,
         POV_KEY    : nwItemClass.CHARACTER,
+        FOCUS_KEY  : nwItemClass.CHARACTER,
+        CHAR_KEY   : nwItemClass.CHARACTER,
         PLOT_KEY   : nwItemClass.PLOT,
         TIME_KEY   : nwItemClass.TIMELINE,
         WORLD_KEY  : nwItemClass.WORLD,
@@ -180,6 +182,7 @@ class nwLabels():
     KEY_NAME = {
         nwKeyWords.TAG_KEY    : "Tag",
         nwKeyWords.POV_KEY    : "Point of View",
+        nwKeyWords.FOCUS_KEY  : "Focus",
         nwKeyWords.CHAR_KEY   : "Characters",
         nwKeyWords.PLOT_KEY   : "Plot",
         nwKeyWords.TIME_KEY   : "Timeline",
@@ -197,6 +200,7 @@ class nwLabels():
         nwOutline.WCOUNT : "Words",
         nwOutline.PCOUNT : "Pars",
         nwOutline.POV    : "POV",
+        nwOutline.FOCUS  : "Focus",
         nwOutline.CHAR   : KEY_NAME[nwKeyWords.CHAR_KEY],
         nwOutline.PLOT   : KEY_NAME[nwKeyWords.PLOT_KEY],
         nwOutline.TIME   : KEY_NAME[nwKeyWords.TIME_KEY],

@@ -501,6 +501,10 @@ def testGuiMenu_Insert(qtbot, monkeypatch, nwGUI, fncDir, fncProj):
     assert nwGUI.docEditor.getText() == "Stuff\n%s: " % nwKeyWords.POV_KEY
 
     nwGUI.docEditor.setText("Stuff")
+    nwGUI.mainMenu.mInsKWItems[nwKeyWords.FOCUS_KEY][0].activate(QAction.Trigger)
+    assert nwGUI.docEditor.getText() == "Stuff\n%s: " % nwKeyWords.FOCUS_KEY
+
+    nwGUI.docEditor.setText("Stuff")
     nwGUI.mainMenu.mInsKWItems[nwKeyWords.CHAR_KEY][0].activate(QAction.Trigger)
     assert nwGUI.docEditor.getText() == "Stuff\n%s: " % nwKeyWords.CHAR_KEY
 

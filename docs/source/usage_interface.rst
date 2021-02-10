@@ -453,6 +453,7 @@ a key or key combination for the inserted content.
    ":kbd:`Ctrl`:kbd:`K`, :kbd:`Ctrl`:kbd:`D`",      "Insert a division sign."
    ":kbd:`Ctrl`:kbd:`K`, :kbd:`G`",                 "Insert a ``@tag`` keyword."
    ":kbd:`Ctrl`:kbd:`K`, :kbd:`V`",                 "Insert a ``@pov`` keyword."
+   ":kbd:`Ctrl`:kbd:`K`, :kbd:`F`",                 "Insert a ``@focus`` keyword."
    ":kbd:`Ctrl`:kbd:`K`, :kbd:`C`",                 "Insert a ``@char`` keyword."
    ":kbd:`Ctrl`:kbd:`K`, :kbd:`P`",                 "Insert a ``@plot`` keyword."
    ":kbd:`Ctrl`:kbd:`K`, :kbd:`T`",                 "Insert a ``@time`` keyword."
