@@ -73,6 +73,7 @@ class OptionState():
                 "excludeBody",
                 "textFont",
                 "textSize",
+                "lineHeight",
                 "noStyling",
                 "incSynopsis",
                 "incComments",
