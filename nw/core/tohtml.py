@@ -331,23 +331,84 @@ class ToHtml(Tokenizer):
         if not self.cssStyles:
             return theStyles
 
+        mScale = self.lineHeight/1.15
         textAlign = "justify" if self.doJustify else "left"
 
         theStyles.append("body {font-family: '%s'; font-size: %dpt;}" % (
             self.textFont, self.textSize
         ))
-        theStyles.append("p {text-align: %s; line-height: %d%%;}" % (
-            textAlign, round(100 * self.lineHeight)
+        theStyles.append((
+            "p {"
+            "text-align: %s; line-height: %d%%; "
+            "margin-top: %.2fem; margin-bottom: %.2fem;"
+            "}"
+        ) % (
+            textAlign,
+            round(100 * self.lineHeight),
+            mScale * self.marginText[0],
+            mScale * self.marginText[1],
         ))
-        theStyles.append("h1, h2 {color: rgb(66, 113, 174);}")
-        theStyles.append("h3, h4 {color: rgb(50, 50, 50);}")
-        theStyles.append("h1, h2, h3, h4 {page-break-after: avoid;}")
+        theStyles.append((
+            "h1 {"
+            "color: rgb(66, 113, 174); "
+            "page-break-after: avoid; "
+            "margin-top: %.2fem; "
+            "margin-bottom: %.2fem;"
+            "}"
+        ) % (
+            mScale * self.marginHead1[0], mScale * self.marginHead1[1]
+        ))
+        theStyles.append((
+            "h2 {"
+            "color: rgb(66, 113, 174); "
+            "page-break-after: avoid; "
+            "margin-top: %.2fem; "
+            "margin-bottom: %.2fem;"
+            "}"
+        ) % (
+            mScale * self.marginHead2[0], mScale * self.marginHead2[1]
+        ))
+        theStyles.append((
+            "h3 {"
+            "color: rgb(50, 50, 50); "
+            "page-break-after: avoid; "
+            "margin-top: %.2fem; "
+            "margin-bottom: %.2fem;"
+            "}"
+        ) % (
+            mScale * self.marginHead3[0], mScale * self.marginHead3[1]
+        ))
+        theStyles.append((
+            "h4 {"
+            "color: rgb(50, 50, 50); "
+            "page-break-after: avoid; "
+            "margin-top: %.2fem; "
+            "margin-bottom: %.2fem;"
+            "}"
+        ) % (
+            mScale * self.marginHead4[0], mScale * self.marginHead4[1]
+        ))
+        theStyles.append((
+            ".title {"
+            "font-size: 2.5em; "
+            "margin-top: %.2fem; "
+            "margin-bottom: %.2fem;"
+            "}"
+        ) % (
+            mScale * self.marginTitle[0], mScale * self.marginTitle[1]
+        ))
+        theStyles.append((
+            ".sep, .skip {"
+            "text-align: center; "
+            "margin-top: %.2fem; "
+            "margin-bottom: %.2fem;}"
+        ) % (
+            mScale, mScale
+        ))
+
         theStyles.append("a {color: rgb(66, 113, 174);}")
-        theStyles.append(".title {font-size: 2.5em;}")
         theStyles.append(".tags {color: rgb(245, 135, 31); font-weight: bold;}")
         theStyles.append(".break {text-align: left;}")
-        theStyles.append(".sep {text-align: center; margin-top: 1em; margin-bottom: 1em;}")
-        theStyles.append(".skip {margin-top: 1em; margin-bottom: 1em;}")
         theStyles.append(".synopsis {font-style: italic;}")
         theStyles.append(".comment {font-style: italic; color: rgb(100, 100, 100);}")
 
