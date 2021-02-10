@@ -49,6 +49,7 @@ class GuiOutline(QTreeWidget):
         nwOutline.WCOUNT : 50,
         nwOutline.PCOUNT : 50,
         nwOutline.POV    : 100,
+        nwOutline.FOCUS  : 100,
         nwOutline.CHAR   : 100,
         nwOutline.PLOT   : 100,
         nwOutline.TIME   : 100,
@@ -68,6 +69,7 @@ class GuiOutline(QTreeWidget):
         nwOutline.WCOUNT : False,
         nwOutline.PCOUNT : False,
         nwOutline.POV    : False,
+        nwOutline.FOCUS  : True,
         nwOutline.CHAR   : False,
         nwOutline.PLOT   : False,
         nwOutline.TIME   : True,
@@ -451,6 +453,7 @@ class GuiOutline(QTreeWidget):
 
         theRefs = self.theIndex.getReferences(tHandle, sTitle)
         newItem.setText(self.colIndex[nwOutline.POV],    ", ".join(theRefs[nwKeyWords.POV_KEY]))
+        newItem.setText(self.colIndex[nwOutline.FOCUS],  ", ".join(theRefs[nwKeyWords.FOCUS_KEY]))
         newItem.setText(self.colIndex[nwOutline.CHAR],   ", ".join(theRefs[nwKeyWords.CHAR_KEY]))
         newItem.setText(self.colIndex[nwOutline.PLOT],   ", ".join(theRefs[nwKeyWords.PLOT_KEY]))
         newItem.setText(self.colIndex[nwOutline.TIME],   ", ".join(theRefs[nwKeyWords.TIME_KEY]))
