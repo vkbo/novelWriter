@@ -215,7 +215,7 @@ class GuiWritingStats(QDialog):
         self.filterForm.addWidget(QLabel("Hide zero word count"),     2, 0)
         self.filterForm.addWidget(QLabel("Hide negative word count"), 3, 0)
         self.filterForm.addWidget(QLabel("Group entries by day"),     4, 0)
-        self.filterForm.addWidget(QLabel("Show idle time column"),    5, 0)
+        self.filterForm.addWidget(QLabel("Show idle time"),           5, 0)
         self.filterForm.addWidget(self.incNovel,     0, 1)
         self.filterForm.addWidget(self.incNotes,     1, 1)
         self.filterForm.addWidget(self.hideZeros,    2, 1)
