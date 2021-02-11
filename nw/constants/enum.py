@@ -94,6 +94,7 @@ class nwDocAction(Enum):
     BLOCK_TXT = 23
     REPL_SNG  = 24
     REPL_DBL  = 25
+    DEL_WORD  = 26
 
 # END Enum nwDocAction
 
