@@ -37,11 +37,11 @@ from time import time
 
 from PyQt5.QtCore import (
     Qt, QSize, QTimer, pyqtSlot, pyqtSignal, QRegExp, QRegularExpression,
-    QPointF, QObject, QRunnable, QPropertyAnimation, QEvent
+    QPointF, QObject, QRunnable, QPropertyAnimation
 )
 from PyQt5.QtGui import (
     QTextCursor, QTextOption, QKeySequence, QFont, QColor, QPalette,
-    QTextDocument, QCursor, QPixmap, QKeyEvent
+    QTextDocument, QCursor, QPixmap
 )
 from PyQt5.QtWidgets import (
     qApp, QTextEdit, QAction, QMenu, QShortcut, QMessageBox, QWidget, QLabel,
@@ -719,8 +719,6 @@ class GuiDocEditor(QTextEdit):
             self._replaceQuotes("'", self.typSQOpen, self.typSQClose)
         elif theAction == nwDocAction.REPL_DBL:
             self._replaceQuotes("\"", self.typDQOpen, self.typDQClose)
-        elif theAction == nwDocAction.DEL_WORD:
-            self.keyPressEvent(QKeyEvent(QEvent.KeyPress, Qt.Key_Delete, Qt.ControlModifier))
         else:
             logger.debug("Unknown or unsupported document action %s" % str(theAction))
             self._allowAutoReplace(True)
@@ -845,7 +843,6 @@ class GuiDocEditor(QTextEdit):
           * The undo/redo/select all sequences bypasses the docAction
             pathway from the menu, so we redirect them back from here.
         """
-        print(keyEvent.type())
         self.lastActive = time()
         isReturn  = keyEvent.key() == Qt.Key_Return
         isReturn |= keyEvent.key() == Qt.Key_Enter

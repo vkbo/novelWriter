@@ -172,16 +172,6 @@ class GuiMainMenu(QMenuBar):
         QDesktopServices.openUrl(QUrl(theUrl))
         return True
 
-    def _handleCtrlDel(self):
-        """Direct the Ctrl+Del key press to the correct widget.
-        """
-        if self.theParent.treeView.hasFocus():
-            self.theParent.treeView.deleteItem(None)
-        elif self.theParent.docEditor.hasFocus():
-            self.theParent.docEditor.docAction(nwDocAction.DEL_WORD)
-
-        return
-
     ##
     #  Menu Builders
     ##
@@ -279,8 +269,8 @@ class GuiMainMenu(QMenuBar):
         # Project > Delete
         self.aDeleteItem = QAction("Delete Item", self)
         self.aDeleteItem.setStatusTip("Delete selected project item")
-        self.aDeleteItem.setShortcut("Ctrl+Del")
-        self.aDeleteItem.triggered.connect(self._handleCtrlDel)
+        self.aDeleteItem.setShortcut("Ctrl+Shift+Del")
+        self.aDeleteItem.triggered.connect(lambda: self.theParent.treeView.deleteItem(None))
         self.projMenu.addAction(self.aDeleteItem)
 
         # Project > Move Up
