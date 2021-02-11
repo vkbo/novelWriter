@@ -1,6 +1,140 @@
 # novelWriter Changelog
 
-## Version 1.2 Dev (Alpha)
+## Version 1.2 Beta 1 [2021-02-11]
+
+### Release Notes
+
+This release is a beta release of 1.2. The release is intended for testing of new features. There
+is a higher risk of encountering bugs in a beta release than a final release, so be extra careful
+with backups if used on active writing projects.
+
+#### The Build Novel Project Tool
+
+The main changes in this release are to the Build Novel Project tool. The Open Document export, as
+well as the Markdown export, is now handled entirely by code written for novelWriter. Previously,
+these export features depended on the underlying Qt library's save routines connected to the
+preview document shown in the build dialog. Using this method of export both meant that the content
+of the document was dependent on the preview being generated, and that the exported document had
+limited support for novelWriter-specific features and custom formatting. The new export tool should
+generate a much better result, especially for the Open Document formats. The Open Document standard
+is supported by Open Office, Libre Office, Google Docs, Microsoft Word, and probably a number of
+other applications too. The Markdown export hasn't changed a lot, but should be a slight
+improvement on the previous export feature.
+
+These changes to the build tool also imply that the saving process is now independent of the
+content of the preview window, meaning you don't have to rebuild the preview before saving, which
+was previously the case. To make this more consistent, the PDF export option has been moved to the
+print button as it is actually a print-to-file feature under the hood, not technically a proper PDF
+export format. It is exactly the same as printing to file from the print preview dialog.
+
+In addition to the changes to the export features, the Build Novel Project tool now also has
+controls for line height, which applies to all rich text export formats, and the option to replace
+unicode characters with appropriate html entities for html export.
+
+#### Document Layout Automation
+
+Among other changes in this release are a few improvements to the process of creating and changing
+documents. When a new document is first created, the header is generated from the assigned label
+and layout. For some document layouts, when the user changes the header level of the first header
+of the document, the document layout setting is updated accordingly. This should reduce the need
+for the user to maintain two ways of assigning the role of a given document. This automation only
+applies to combinations of header level and current document layouts where there is no ambiguity.
+For instance, changing the header level in a "Scene" document from level 3 to 2 changes the
+document layout automatically to "Chapter". But changing the first header of a "Book" layout
+document from 1 to 2 does not change the document's layout as the "Book" layout is a generic
+document layout.
+
+Keep in mind that novelWriter treats documents with layout "Book", "Chapter" and "Scene" exactly
+the same during exports. The distinction is only meant as a way to indicate the purpose of a
+document in the project tree. This new automation is meant to assist in keeping this information up
+to date. The other layouts do have an effect on formatting during export and are generally left
+alone.
+
+#### The Session Timer and Idle Time
+
+Another change that has been requested by a couple of users is to have the session timer in the
+status bar stop counting when the user is inactive. This feature is optional, and can be controlled
+from Preferences. The definition of idle here is either that the user is active in a different
+application than novelWriter (loss of focus) or that the user has not made any changes to the
+document open in the editor for a given amount of time. The time threshold is by default five
+minutes, but can be altered in Preferences.
+
+In addition, the idle time is also recorded in the session log, and can be viewed in the Writing
+Statistics dialog and exported with the rest of the information. The idle time is recorder in the
+logs regardless of whether the status bar clock displays this information or not.
+
+#### Other Changes
+
+A small additional feature added is also the ability to undo the last move of an item in the
+project tree. The keyboard shortcut for this is `Ctrl+Shift+Z`, or it can be accessed from the
+menu. The feature can only undo the last move, but it includes both documents moved to trash, moves
+by up/down keypress or menu entries, and drag and drop moves.
+
+Lastly, a new keyword has been added to mark characters in the story. The new keyword is intended
+to tag a character as the focus character for a chapter or scene. This is useful for stories where
+the point-of-view character and the focus character are different.
+
+### Detailed Changelog
+
+**New Features**
+
+* A full Open Document exporter has been written and added for the Build Novel Project tool. This
+  replaces the previously used Qt Save to ODT which just saved the content of the preview window to
+  an ODT file. The Qt pathway was very limited and didn't generate proper formatting classes. The
+  new export class can generate both full `.odt` and flat XML `.fodt` files. The formatting support
+  of this exporter is equivalent or better than the HTML5 exporter, which was previously the best
+  supported option. Solves issue #611. PRs #607, #652, #660, and #654.
+* A full Markdown exporter has been written and added for the Build Novel Project tool. This too
+  replaces a Qt feature that was used to save the content of the preview window into a markdown
+  file. The exporter allows for both standard markdown and GitHub flavour markdown. The only
+  relevant difference being that the latter allows strikethrough text. Issue #617. PR #650.
+* The Build Novel Project tool now has a "Line height" property that is applied to the preview, and
+  to the HTML5 and Open Document export formats. Discussion #653. Issue #654. PR #660.
+* The Build Novel Project tool now has an option to convert Unicode characters to HTML entities on
+  export to HTML5. Previously, some symbols were converted while others were not. This option
+  provides a more consistent "all or nothing" option. PR #660.
+* The last file or folder move in the project tree can now be undone from the Project menu or by
+  pressing `Ctrl+Shift+Z`. PR #632.
+* When a document header level is altered in a novel file of layout type Scene, Chapter,
+  Unnumbered, or Partition, and that document is saved, the document's layout setting as seen in
+  the project tree is updated to reflect the new level of that heading. This helps reduce the
+  duplication of effort by the user to keep this information in sync. See discussion #613. This is
+  an acceptable solution to #614. Issue #618. PR #620.
+* The session timer now records the amount of time the user is idle. Idle is defined to be when the
+  application window does not have focus, and when the user hasn't made any changes to the document
+  open in the editor for a specified amount of time. The default is 5 minutes. The idle time is
+  recorded to the session log and can be shown in Writing Statistics. Optionally, the status bar
+  session timer can also be set to pause when the user is considered idle. Issues #606 and #651.
+  PRs #656 and #661.
+* It is now possible to tag a character as the focus character for a give section of text. This is
+  useful for cases where the point-of-view character differs from the main character of the story,
+  or the part of the story. Issue #605. PR #662.
+
+**User Interface**
+
+* A document's class and layout is now displayed next to its status or importance in the document
+  editor footer bar. PR #628.
+* When a new document is created, the header of the file is automatically generated based on the
+  document's tree label, and the level determined by the selected layout. Issue #530. PR #628.
+* On the Build Novel Project GUI, the PDF option has been moved from the "Save As" button to the
+  "Print" button. This more accurately reflects what it actually does: print the content of the
+  preview to a PDF using the printer pathway. This also means that all remaining items on the "Save
+  As" dropdown list now can be executed regardless of the content of the preview window. They all
+  run their own separate build process. This resolves #611. PR #650.
+* Export to plain text has been dropped. PR #617.
+
+**Code Improvements**
+
+* The index class now scans every element of the loaded index cache before accepting it. This means
+  that any unrecognised content will trigger a full re-indexing. This is particularly useful when
+  opening an index that was saved by a later release. Every entry that requires a lookup is checked
+  to avoid potential key errors for instance. All values are also checked for correct data type.
+  The new check is extensive, but still fast enough that it only adds a few milliseconds to the
+  startup time. PR #619.
+
+**Code Maintenance**
+
+* Cleaned up some redundant code after PR #637. PR #638.
 
 ----
 
