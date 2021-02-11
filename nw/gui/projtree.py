@@ -451,7 +451,7 @@ class GuiProjectTree(QTreeWidget):
         for tHandle in self.getTreeFromHandle(trashHandle):
             if tHandle == trashHandle:
                 continue
-            self.deleteItem(tHandle, True)
+            self.deleteItem(tHandle, alreadyAsked=True)
 
         if nTrash > 0:
             self._setTreeChanged(True)

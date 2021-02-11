@@ -800,7 +800,11 @@ class GuiMain(QMainWindow):
             return False
 
         if tHandle is None:
-            tHandle = self.treeView.getSelectedHandle()
+            if self.treeView.hasFocus():
+                tHandle = self.treeView.getSelectedHandle()
+            elif self.docEditor.hasFocus():
+                tHandle = self.docEditor.theHandle
+
         if tHandle is None:
             logger.warning("No item selected")
             return
