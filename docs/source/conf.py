@@ -27,7 +27,7 @@ author = "Veronica Berglyd Olsen"
 # The short X.Y version
 version = "1.2"
 # The full version, including alpha/beta/rc tags
-release = "1.2-alpha0"
+release = "1.2-beta1"
 
 
 # -- General configuration ---------------------------------------------------
