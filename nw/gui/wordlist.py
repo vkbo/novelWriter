@@ -156,9 +156,9 @@ class GuiWordList(QDialog):
                 for i in range(self.listBox.count()):
                     outFile.write(self.listBox.item(i).text() + "\n")
 
-        except Exception as e:
+        except Exception:
             logger.error("Could not save new word list")
-            logger.error(str(e))
+            nw.logException()
             self.reject()
 
         if os.path.isfile(dctFile):
