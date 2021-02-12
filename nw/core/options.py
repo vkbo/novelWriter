@@ -104,6 +104,10 @@ class OptionState():
                 "countFrom",
                 "clearDouble",
             },
+            "GuiWordList": {
+                "winWidth",
+                "winHeight",
+            }
         }
 
         return
