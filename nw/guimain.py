@@ -1029,7 +1029,7 @@ class GuiMain(QMainWindow):
 
         if dlgWords.result() == QDialog.Accepted:
             logger.debug("Reloading word list")
-            # ToDo
+            self.docEditor.setDictionaries()
 
         return
 
