@@ -910,22 +910,27 @@ class GuiMainMenu(QMenuBar):
         # Tools
         self.toolsMenu = self.addMenu("&Tools")
 
-        # Tools > Toggle Spell Check
+        # Tools > Check Spelling
         self.aSpellCheck = QAction("Check Spelling", self)
         self.aSpellCheck.setStatusTip("Toggle check spelling")
         self.aSpellCheck.setCheckable(True)
         self.aSpellCheck.setChecked(self.theProject.spellCheck)
-        # Here we must used triggered, not toggled, to avoid recursion
-        self.aSpellCheck.triggered.connect(self._toggleSpellCheck)
+        self.aSpellCheck.triggered.connect(self._toggleSpellCheck) # triggered, not toggled!
         self.aSpellCheck.setShortcut("Ctrl+F7")
         self.toolsMenu.addAction(self.aSpellCheck)
 
-        # Tools > Update Spell Check
+        # Tools > Re-Run Spell Check
         self.aReRunSpell = QAction("Re-Run Spell Check", self)
         self.aReRunSpell.setStatusTip("Run the spell checker on current document")
         self.aReRunSpell.setShortcut("F7")
         self.aReRunSpell.triggered.connect(lambda: self.theParent.docEditor.spellCheckDocument())
         self.toolsMenu.addAction(self.aReRunSpell)
+
+        # Tools > Project Word List
+        self.aEditWordList = QAction("Project Word List", self)
+        self.aEditWordList.setStatusTip("Edit the project's word list")
+        self.aEditWordList.triggered.connect(lambda: self.theParent.showProjectWordListDialog())
+        self.toolsMenu.addAction(self.aEditWordList)
 
         # Tools > Separator
         self.toolsMenu.addSeparator()

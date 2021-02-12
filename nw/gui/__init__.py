@@ -20,6 +20,7 @@ from nw.gui.projtree import GuiProjectTree
 from nw.gui.projwizard import GuiProjectWizard
 from nw.gui.statusbar import GuiMainStatus
 from nw.gui.theme import GuiTheme
+from nw.gui.wordlist import GuiWordList
 from nw.gui.writingstats import GuiWritingStats
 
 __all__ = [
@@ -44,5 +45,6 @@ __all__ = [
     "GuiProjectTree",
     "GuiProjectWizard",
     "GuiTheme",
+    "GuiWordList",
     "GuiWritingStats",
 ]

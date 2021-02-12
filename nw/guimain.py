@@ -43,7 +43,7 @@ from nw.gui import (
     GuiDocViewDetails, GuiDocViewer, GuiItemDetails, GuiItemEditor,
     GuiMainMenu, GuiMainStatus, GuiNovelTree, GuiOutline, GuiOutlineDetails,
     GuiPreferences, GuiProjectDetails, GuiProjectLoad, GuiProjectSettings,
-    GuiProjectTree, GuiProjectWizard, GuiTheme, GuiWritingStats
+    GuiProjectTree, GuiProjectWizard, GuiTheme, GuiWordList, GuiWritingStats
 )
 from nw.core import NWProject, NWDoc, NWIndex
 from nw.constants import nwItemType, nwItemClass, nwAlert, nwLists
@@ -1014,6 +1014,22 @@ class GuiMain(QMainWindow):
         dlgBuild.show()
         qApp.processEvents()
         dlgBuild.viewCachedDoc()
+
+        return
+
+    def showProjectWordListDialog(self):
+        """Open the project word list dialog.
+        """
+        if not self.hasProject:
+            logger.error("No project open")
+            return
+
+        dlgWords = GuiWordList(self, self.theProject)
+        dlgWords.exec_()
+
+        if dlgWords.result() == QDialog.Accepted:
+            logger.debug("Reloading word list")
+            self.docEditor.setDictionaries()
 
         return
 
