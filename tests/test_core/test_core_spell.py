@@ -145,7 +145,7 @@ def testCoreSpell_Simple(monkeypatch, tmpDir, tmpConf):
     # Load dictionary properly
     spChk.setLanguage("en", wList)
     assert spChk.projDict == ["a_word", "b_word", "c_word"]
-    assert spChk.theWords == set(["e_word", "f_word", "g_word", "a_word", "b_word", "c_word"])
+    assert spChk.theWords == {"e_word", "f_word", "g_word", "a_word", "b_word", "c_word"}
 
     # Check words
     assert spChk.checkWord("a_word")
