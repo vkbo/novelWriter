@@ -123,6 +123,7 @@ class NWSpellCheck():
                         if len(theLine) > 0 and theLine not in self.projDict:
                             self.projDict.append(theLine)
                 logger.debug("Project word list contains %d words" % len(self.projDict))
+
             except Exception:
                 logger.error("Failed to load project word list")
                 nw.logException()
@@ -141,6 +142,7 @@ class NWSpellEnchant(NWSpellCheck):
     def __init__(self):
         NWSpellCheck.__init__(self)
         logger.debug("Enchant spell checking activated")
+        self.theBroker = None
         return
 
     def setLanguage(self, theLang, projectDict=None):
@@ -150,9 +152,15 @@ class NWSpellEnchant(NWSpellCheck):
         """
         try:
             import enchant
-            self.theDict = enchant.Dict(theLang)
+            if self.theBroker is not None:
+                logger.verbose("Deleting old pyenchant broker")
+                del self.theBroker
+
+            self.theBroker = enchant.Broker()
+            self.theDict = self.theBroker.request_dict(theLang)
             self.spellLanguage = theLang
             logger.debug("Enchant spell checking for language %s loaded" % theLang)
+
         except Exception:
             logger.error("Failed to load enchant spell checking for language %s" % theLang)
             self.theDict = NWSpellEnchantDummy()
@@ -238,7 +246,7 @@ class NWSpellSimple(NWSpellCheck):
     when no other is available. This method is fairly slow compared to
     other implementations.
     """
-    WORDS = []
+    theWords = set()
 
     def __init__(self):
         NWSpellCheck.__init__(self)
@@ -250,17 +258,19 @@ class NWSpellSimple(NWSpellCheck):
         """Load a dictionary as a list from the app assets folder.
         """
         self.theLang = theLang
-        self.WORDS = []
+        self.theWords = set()
         dictFile = os.path.join(self.mainConf.dictPath, theLang+".dict")
         try:
             with open(dictFile, mode="r", encoding="utf-8") as wordsFile:
                 for theLine in wordsFile:
                     if len(theLine) == 0 or theLine.startswith("#"):
                         continue
-                    self.WORDS.append(theLine.strip().lower())
-            logger.debug("Spell check word list for language %s loaded" % theLang)
-            logger.debug("Word list contains %d words" % len(self.WORDS))
+                    self.theWords.add(theLine.strip().lower())
+
+            logger.debug("Spell check dictionary for language %s loaded" % theLang)
+            logger.debug("Dictionary contains %d words" % len(self.theWords))
             self.spellLanguage = theLang
+
         except Exception:
             logger.error("Failed to load spell check word list for language %s" % theLang)
             nw.logException()
@@ -268,8 +278,7 @@ class NWSpellSimple(NWSpellCheck):
 
         self._readProjectDictionary(projectDict)
         for pWord in self.projDict:
-            if pWord not in self.WORDS:
-                self.WORDS.append(pWord)
+            self.theWords.add(pWord)
 
         return
 
@@ -279,7 +288,7 @@ class NWSpellSimple(NWSpellCheck):
         word by the syntax highlighter.
         """
         theWord = theWord.replace(self.mainConf.fmtApostrophe, "'").lower()
-        return theWord in self.WORDS
+        return theWord in self.theWords
 
     def suggestWords(self, theWord):
         """Get suggestions for correct word from difflib, and make sure
@@ -292,7 +301,7 @@ class NWSpellSimple(NWSpellCheck):
         if len(theWord) == 0:
             return []
 
-        theMatches = difflib.get_close_matches(theWord.lower(), self.WORDS, n=10, cutoff=0.75)
+        theMatches = difflib.get_close_matches(theWord.lower(), self.theWords, n=10, cutoff=0.75)
         theOptions = []
         for aWord in theMatches:
             if len(aWord) == 0:
@@ -308,8 +317,8 @@ class NWSpellSimple(NWSpellCheck):
         """Wrapper for the internal project dictionary feature.
         """
         newWord = newWord.strip().lower()
-        if newWord not in self.WORDS:
-            self.WORDS.append(newWord)
+        if newWord not in self.theWords:
+            self.theWords.add(newWord)
         NWSpellCheck.addWord(self, newWord)
         return
 
