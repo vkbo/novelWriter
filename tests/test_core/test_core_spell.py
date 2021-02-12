@@ -139,13 +139,13 @@ def testCoreSpell_Simple(monkeypatch, tmpDir, tmpConf):
     monkeypatch.setattr("builtins.open", causeOSError)
     spChk.setLanguage("en", wList)
     assert spChk.spellLanguage is None
-    assert spChk.WORDS == spChk.projDict
+    assert spChk.theWords == set(spChk.projDict)
     monkeypatch.undo()
 
     # Load dictionary properly
     spChk.setLanguage("en", wList)
     assert spChk.projDict == ["a_word", "b_word", "c_word"]
-    assert spChk.WORDS == ["e_word", "f_word", "g_word", "a_word", "b_word", "c_word"]
+    assert spChk.theWords == {"e_word", "f_word", "g_word", "a_word", "b_word", "c_word"}
 
     # Check words
     assert spChk.checkWord("a_word")
