@@ -160,13 +160,14 @@ class GuiWordList(QDialog):
             logger.error("Could not save new word list")
             nw.logException()
             self.reject()
+            return False
 
         if os.path.isfile(dctFile):
             os.unlink(dctFile)
         os.rename(tmpFile, dctFile)
         self.accept()
 
-        return
+        return True
 
     def _doClose(self):
         """Close without saving the word list.
