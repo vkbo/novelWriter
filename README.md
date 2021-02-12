@@ -121,8 +121,8 @@ to quickly navigate between the documents while editing.
 
 # Installing and Running
 
-For install instructions, please check the [documentation](https://novelwriter.readthedocs.io/) in
-the [Getting Started](https://novelwriter.readthedocs.io/en/latest/int_started.html) section.
+For install instructions, please check the [Getting Started](https://novelwriter.readthedocs.io/en/latest/int_started.html) section in
+the [documentation](https://novelwriter.readthedocs.io/).
 
 ## TLDR Instructions
 
