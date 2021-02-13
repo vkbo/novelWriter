@@ -1,5 +1,13 @@
 # novelWriter Changelog
 
+## Version 1.2 RC 1 [2021-02-28]
+
+### Release Notes
+
+### Detailed Changelog
+
+----
+
 ## Version 1.2 Beta 1 [2021-02-11]
 
 ### Release Notes
