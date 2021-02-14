@@ -24,13 +24,10 @@ You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
 
-import os
 import sys
 import getopt
 import logging
-import re
 
-from PyQt5.QtCore import QLibraryInfo, QLocale, QTranslator
 from PyQt5.QtGui import QIcon
 from PyQt5.QtWidgets import QApplication, QErrorMessage
 
@@ -112,21 +109,6 @@ logger = logging.getLogger(__name__)
 
 # Load the main config as a global object
 CONFIG = Config()
-nw_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "languages")
-qt_path = QLibraryInfo.location(QLibraryInfo.TranslationsPath)
-
-translators = {}
-def load_translation(app, path, prefix, lang, script = None, country = None):
-    filename = "_".join(filter(bool, [prefix,
-                                      lang and lang.lower(),
-                                      script and script.capitalize(),
-                                      country and country.upper()]))
-    if filename not in translators:
-        translator = QTranslator()
-        if translator.load(filename, path):
-            print(filename, path)
-            app.installTranslator(translator)
-            translators[filename] = translator
 
 def main(sysArgs=None):
     """Parses command line, sets up logging, and launches main GUI.
@@ -302,20 +284,8 @@ def main(sysArgs=None):
         # Connect the exception handler before making the main GUI
         sys.excepthook = exceptionHandler
 
-        # Load translations
-        lang, script, country = re.match(
-            r"^([a-z]{2,3})(?:_([a-z]{4}))?(?:_([a-z]{2,3}))?$",
-            QLocale.system().name(), re.IGNORECASE).groups()
-
-        for path, prefix in ((qt_path, "qt"),
-                             (qt_path, "qtbase"),
-                             (nw_path, "nw")):
-            load_translation(nwApp, path, prefix, lang)
-            load_translation(nwApp, path, prefix, lang, script=script)
-            load_translation(nwApp, path, prefix, lang, country=country)
-            load_translation(nwApp, path, prefix, lang, script, country)
-
         # Launch main GUI
+        CONFIG.initTranslations(nwApp)
         nwGUI = GuiMain()
         if not nwGUI.hasProject:
             nwGUI.showProjectLoadDialog()

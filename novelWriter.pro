@@ -33,4 +33,4 @@ SOURCES += nw/error.py \
            nw/gui/wordlist.py \
            nw/gui/writingstats.py
 
-TRANSLATIONS += nw/languages/nw_pt.ts
+TRANSLATIONS += i18n/nw_pt.ts

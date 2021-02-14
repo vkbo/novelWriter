@@ -30,11 +30,15 @@ import shutil
 import json
 import sys
 import os
+import re
 
 from time import time
 
 from PyQt5.Qt import PYQT_VERSION_STR
-from PyQt5.QtCore import QT_VERSION_STR, QStandardPaths, QSysInfo
+from PyQt5.QtCore import (
+    QT_VERSION_STR, QStandardPaths, QSysInfo, QLocale, QLibraryInfo,
+    QTranslator
+)
 
 from nw.constants import nwConst, nwFiles, nwUnicode
 from nw.common import splitVersionNumber, formatTimeStamp
@@ -75,6 +79,9 @@ class Config:
         self.iconPath  = None   # The full path to the nw/assets/icons folder
         self.helpPath  = None   # The full path to the novelwriter .qhc help file
 
+        # Internationalisation
+        self.qtTrans   = {}
+
         # Runtime Settings and Variables
         self.confChanged = False # True whenever the config has chenged, false after save
         self.hasHelp     = False # True if the Qt help files are present in the assets folder
@@ -84,11 +91,11 @@ class Config:
         self.guiSyntax   = "default_light"
         self.guiIcons    = "typicons_colour_light"
         self.guiDark     = False # Load icons for dark backgrounds, if available
-        self.guiLang     = "en"  # Hardcoded for now since the GUI is only in English
         self.guiFont     = ""    # Defaults to system default font
         self.guiFontSize = 11
         self.guiScale    = 1.0   # Set automatically by Theme class
         self.lastNotes   = "0x0" # The latest release notes that have been shown
+        self.guiLang     = QLocale.system().name()
 
         ## Sizes
         self.winGeometry   = [1200, 650]
@@ -354,6 +361,26 @@ class Config:
 
         return True
 
+    def initTranslations(self, nwApp):
+        """Initialise the internationalisation.
+        """
+        lnName, lnScript, lnCountry = re.match(
+            r"^([a-z]{2,3})(?:_([a-z]{4}))?(?:_([a-z]{2,3}))?$", self.guiLang, re.IGNORECASE
+        ).groups()
+
+        qtLang = QLibraryInfo.location(QLibraryInfo.TranslationsPath)
+        nwLang = os.path.join(self.appRoot, "i18n")
+        loadTrans = [
+            (qtLang, "qt"), (qtLang, "qtbase"), (nwLang, "nw")
+        ]
+        for lnPath, lnPref in loadTrans:
+            self._loadTranslation(nwApp, lnPath, lnPref, lnName)
+            self._loadTranslation(nwApp, lnPath, lnPref, lnName, lnScript=lnScript)
+            self._loadTranslation(nwApp, lnPath, lnPref, lnName, lnCountry=lnCountry)
+            self._loadTranslation(nwApp, lnPath, lnPref, lnName, lnScript, lnCountry)
+
+        return
+
     def loadConfig(self):
         """Load preferences from file and replace default settings.
         """
@@ -396,6 +423,9 @@ class Config:
         )
         self.lastNotes = self._parseLine(
             cnfParse, cnfSec, "lastnotes", self.CNF_STR, self.lastNotes
+        )
+        self.guiLang = self._parseLine(
+            cnfParse, cnfSec, "guilang", self.CNF_STR, self.guiLang
         )
 
         ## Sizes
@@ -626,6 +656,7 @@ class Config:
         cnfParse.set(cnfSec, "guifont",     str(self.guiFont))
         cnfParse.set(cnfSec, "guifontsize", str(self.guiFontSize))
         cnfParse.set(cnfSec, "lastnotes",   str(self.lastNotes))
+        cnfParse.set(cnfSec, "guilang",     str(self.guiLang))
 
         ## Sizes
         cnfSec = "Sizes"
@@ -950,6 +981,25 @@ class Config:
     ##
     #  Internal Functions
     ##
+
+    def _loadTranslation(self, nwApp, lnPath, lnPref, lnName, lnScript=None, lnCountry=None):
+        """Load a translator file and create the translation object.
+        """
+        lngFile = "_".join(filter(bool, [
+            lnPref,
+            lnName and lnName.lower(),
+            lnScript and lnScript.capitalize(),
+            lnCountry and lnCountry.upper()
+        ]))
+
+        if lngFile not in self.qtTrans:
+            qTranslator = QTranslator()
+            if qTranslator.load(lngFile, lnPath):
+                logger.debug("Loaded i18n: %s" % os.path.join(lnPath, lngFile))
+                nwApp.installTranslator(qTranslator)
+                self.qtTrans[lngFile] = qTranslator
+
+        return
 
     def _packList(self, inData):
         """Pack a list of items into a comma-separated string.

@@ -76,6 +76,7 @@ class GuiMain(QMainWindow):
         logger.info("Python Version: %s (0x%x)" % (
             self.mainConf.verPyString, self.mainConf.verPyHexVal)
         )
+        logger.info("GUI Language: %s" % self.mainConf.guiLang)
 
         # Core Classes
         # ============
