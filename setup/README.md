@@ -25,6 +25,10 @@ To target the command, add one of `--target-linux`, `--target-darwin` or
 `qthelp` – Build the help documentation for use with the Qt Assistant. Run
 before install to have local help enable in the the installed version
 
+`qtlupdate` – Update the translation files for internationalisation.
+
+`qtlrelease` – Build the language files for internationalisation.
+
 `sample` – Build the sample project as a zip file. Run before install to enable
 creating sample projects in the in-app New Project Wizard.
 

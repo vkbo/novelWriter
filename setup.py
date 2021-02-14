@@ -186,14 +186,26 @@ def buildQtDocs():
 
     return
 
+##
+#  Qt Linguist QM Builder (qtlrelease)
+##
+
 def buildQtI18n():
+    """Build the lang.qm files for Qt Linguist.
+    """
     try:
         subprocess.call(["lrelease", "-verbose", "novelWriter.pro"])
     except Exception as e:
         print("QtI18n Release Error:")
         print(str(e))
 
+##
+#  Qt Linguist TS Builder (qtlupdate)
+##
+
 def buildQtI18nTS():
+    """Build the lang.ts files for Qt Linguist.
+    """
     try:
         subprocess.call(["pylupdate5", "-verbose", "-noobsolete", "novelWriter.pro"])
     except Exception as e:
@@ -863,6 +875,8 @@ if __name__ == "__main__":
         "\n"
         "    qthelp       Build the help documentation for use with the Qt Assistant. Run before\n"
         "                 install to have local help enable in the the installed version.\n"
+        "    qtlupdate    Update the translation files for internationalisation.\n"
+        "    qtlrelease   Build the language files for internationalisation.\n"
         "    sample       Build the sample project as a zip file. Run before install to enable\n"
         "                 creating sample projects in the in-app New Project Wizard.\n"
         "\n"
