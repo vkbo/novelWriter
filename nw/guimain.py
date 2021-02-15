@@ -466,16 +466,13 @@ class GuiMain(QMainWindow):
                 lockDetails = (
                     "<br>%s" % self.tr(
                         "The project was locked by the computer "
-                        "'{computerName}' ({osName} {osVersion}), "
-                        "last active on {activeTime}"
+                        "'{0}' ({1} {2}), last active on {3}."
                     )
                 ).format(
-                    computerName = self.theProject.lockedBy[0],
-                    osName = self.theProject.lockedBy[1],
-                    osVersion = self.theProject.lockedBy[2],
-                    activeTime = datetime.fromtimestamp(
-                        int(self.theProject.lockedBy[3])
-                    ).strftime("%x %X")
+                    self.theProject.lockedBy[0],
+                    self.theProject.lockedBy[1],
+                    self.theProject.lockedBy[2],
+                    datetime.fromtimestamp(int(self.theProject.lockedBy[3])).strftime("%x %X")
                 )
             except Exception:
                 lockDetails = ""

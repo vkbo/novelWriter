@@ -1013,57 +1013,57 @@
         <translation>Novo projeto criado...</translation>
     </message>
     <message>
-        <location filename="../nw/guimain.py" line="484"/>
+        <location filename="../nw/guimain.py" line="481"/>
         <source>The project is already open by another instance of novelWriter, and is therefore locked. Override lock and continue anyway?</source>
         <translation>O projeto já está aberto em outra instância do novelWriter, e portanto foi bloqueado. Deseja sobrescrever o bloqueio e continuar mesmo assim?</translation>
     </message>
     <message>
-        <location filename="../nw/guimain.py" line="484"/>
+        <location filename="../nw/guimain.py" line="481"/>
         <source>Note: If the program or the computer previously crashed, the lock can safely be overridden. If, however, another instance of novelWriter has the project open, overriding the lock may corrupt the project, and is not recommended.</source>
         <translation>Nota: Se o programa ou o computador sofreu uma falha anteriormente, o bloqueio pode ser sobrescrito com segurança. Se, no entanto, outra instância do novelWriter esteja com o projeto aberto, sobrescrever o bloqueio pode corromper o projeto e não é recomendado.</translation>
     </message>
     <message>
-        <location filename="../nw/guimain.py" line="708"/>
+        <location filename="../nw/guimain.py" line="705"/>
         <source>Text files</source>
         <translation>Arquivos de texto</translation>
     </message>
     <message>
-        <location filename="../nw/guimain.py" line="710"/>
+        <location filename="../nw/guimain.py" line="707"/>
         <source>novelWriter files</source>
         <translation>Arquivos do novelWriter</translation>
     </message>
     <message>
-        <location filename="../nw/guimain.py" line="893"/>
+        <location filename="../nw/guimain.py" line="890"/>
         <source>Indexing</source>
         <translation>Indexando</translation>
     </message>
     <message>
-        <location filename="../nw/guimain.py" line="893"/>
+        <location filename="../nw/guimain.py" line="890"/>
         <source>Unknown item</source>
         <translation>Item desconhecido</translation>
     </message>
     <message>
-        <location filename="../nw/guimain.py" line="1139"/>
+        <location filename="../nw/guimain.py" line="1136"/>
         <source>Information</source>
         <translation>Informação</translation>
     </message>
     <message>
-        <location filename="../nw/guimain.py" line="1141"/>
+        <location filename="../nw/guimain.py" line="1138"/>
         <source>Warning</source>
         <translation>Alerta</translation>
     </message>
     <message>
-        <location filename="../nw/guimain.py" line="1143"/>
+        <location filename="../nw/guimain.py" line="1140"/>
         <source>Error</source>
         <translation>Erro</translation>
     </message>
     <message>
-        <location filename="../nw/guimain.py" line="1145"/>
+        <location filename="../nw/guimain.py" line="1142"/>
         <source>This is a bug!</source>
         <translation>Isto é um bug!</translation>
     </message>
     <message>
-        <location filename="../nw/guimain.py" line="1146"/>
+        <location filename="../nw/guimain.py" line="1143"/>
         <source>Internal Error</source>
         <translation>Erro Interno</translation>
     </message>
@@ -1098,7 +1098,7 @@
         <translation>Fechar o projeto atual?</translation>
     </message>
     <message>
-        <location filename="../nw/guimain.py" line="1175"/>
+        <location filename="../nw/guimain.py" line="1172"/>
         <source>Changes are saved automatically.</source>
         <translation>As alterações serão salvas automaticamente.</translation>
     </message>
@@ -1113,82 +1113,82 @@
         <translation>Criar cópia de segurança do projeto atual?</translation>
     </message>
     <message>
-        <location filename="../nw/guimain.py" line="484"/>
+        <location filename="../nw/guimain.py" line="481"/>
         <source>Project Locked</source>
         <translation>Projeto Bloqueado</translation>
     </message>
     <message>
-        <location filename="../nw/guimain.py" line="709"/>
+        <location filename="../nw/guimain.py" line="706"/>
         <source>Markdown files</source>
         <translation>Arquivos Markdown</translation>
     </message>
     <message>
-        <location filename="../nw/guimain.py" line="711"/>
+        <location filename="../nw/guimain.py" line="708"/>
         <source>All files</source>
         <translation>Todos os Arquivos</translation>
     </message>
     <message>
-        <location filename="../nw/guimain.py" line="715"/>
+        <location filename="../nw/guimain.py" line="712"/>
         <source>Import File</source>
         <translation>Importar Arquivo</translation>
     </message>
     <message>
-        <location filename="../nw/guimain.py" line="731"/>
+        <location filename="../nw/guimain.py" line="728"/>
         <source>Could not read file. The file must be an existing text file.</source>
         <translation>Não foi possível ler o arquivo. O arquivo deve ser um arquivo de texto existente.</translation>
     </message>
     <message>
-        <location filename="../nw/guimain.py" line="741"/>
+        <location filename="../nw/guimain.py" line="738"/>
         <source>Please open a document to import the text file into.</source>
         <translation>Por favor, abra um documento para importar o text nele.</translation>
     </message>
     <message>
-        <location filename="../nw/guimain.py" line="748"/>
+        <location filename="../nw/guimain.py" line="745"/>
         <source>Import Document</source>
         <translation>Importar Documento</translation>
     </message>
     <message>
-        <location filename="../nw/guimain.py" line="748"/>
+        <location filename="../nw/guimain.py" line="745"/>
         <source>Importing the file will overwrite the current content of the document. Do you want to proceed?</source>
         <translation>Importar o arquivo vai sobrescrever o conteúdo atual do documento. Você deseja continuar?</translation>
     </message>
     <message>
-        <location filename="../nw/guimain.py" line="923"/>
+        <location filename="../nw/guimain.py" line="920"/>
         <source>The project index has been successfully rebuilt.</source>
         <translation>O índice do projeto foi reconstruído com sucesso.</translation>
     </message>
     <message>
-        <location filename="../nw/guimain.py" line="952"/>
+        <location filename="../nw/guimain.py" line="949"/>
         <source>Save novelWriter Project</source>
         <translation>Salvar o Projeto do novelWriter</translation>
     </message>
     <message>
-        <location filename="../nw/guimain.py" line="1175"/>
+        <location filename="../nw/guimain.py" line="1172"/>
         <source>Exit</source>
         <translation>Sair</translation>
     </message>
     <message>
-        <location filename="../nw/guimain.py" line="1175"/>
+        <location filename="../nw/guimain.py" line="1172"/>
         <source>Do you want to exit novelWriter?</source>
         <translation>Você deseja realmente sair do novelWriter?</translation>
     </message>
     <message>
-        <location filename="../nw/guimain.py" line="711"/>
+        <location filename="../nw/guimain.py" line="708"/>
         <source>{0} ({1})</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../nw/guimain.py" line="891"/>
+        <location filename="../nw/guimain.py" line="888"/>
         <source>{0}: &apos;{1}&apos;</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../nw/guimain.py" line="893"/>
+        <location filename="../nw/guimain.py" line="890"/>
         <source>{0}: {1}</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../nw/guimain.py" line="916"/>
+        <location filename="../nw/guimain.py" line="913"/>
         <source>Indexing completed in {0} ms</source>
         <translation>Indexação completa em {0} ms</translation>
     </message>
@@ -1218,14 +1218,14 @@
         <translation>Configurações do Projeto</translation>
     </message>
     <message>
-        <location filename="../nw/guimain.py" line="466"/>
-        <source>The project was locked by the computer &apos;{computerName}&apos; ({osName} {osVersion}), last active on {activeTime}</source>
-        <translation>O projeto foi bloqueado pelo computador &apos;{computerName}&apos; ({osName} {osVersion}), ativo pela última vez em {activeTime}</translation>
-    </message>
-    <message>
-        <location filename="../nw/guimain.py" line="533"/>
+        <location filename="../nw/guimain.py" line="530"/>
         <source>The project index is outdated or broken. Rebuilding index.</source>
         <translation>O índice do projeto está desatualizado ou quebrado. Reconstruíndo o indice.</translation>
+    </message>
+    <message>
+        <location filename="../nw/guimain.py" line="466"/>
+        <source>The project was locked by the computer &apos;{0}&apos; ({1} {2}), last active on {3}.</source>
+        <translation>O projeto foi bloqueado pelo computador &apos;{0}&apos; ({1} {2}), ativo pela última vez em {3}.</translation>
     </message>
 </context>
 <context>
