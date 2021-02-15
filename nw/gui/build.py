@@ -331,16 +331,24 @@ class GuiBuildNovel(QDialog):
         self.fileGroup.setLayout(self.fileForm)
 
         self.novelFiles = QSwitch(width=wS, height=hS)
-        self.novelFiles.setToolTip(self.tr(
-            "Include files with layouts 'Book', 'Page', 'Partition', "
-            "'Chapter', 'Unnumbered', and 'Scene'."
+        self.novelFiles.setToolTip(self.tr("Include files with layouts {0}.").format(
+            self.locale().createSeparatedList([
+                self.locale().quoteString(self.tr('Book')),
+                self.locale().quoteString(self.tr('Page')),
+                self.locale().quoteString(self.tr('Partition')),
+                self.locale().quoteString(self.tr('Chapter')),
+                self.locale().quoteString(self.tr('Unnumbered')),
+                self.locale().quoteString(self.tr('Scene')),
+            ])
         ))
         self.novelFiles.setChecked(
             self.optState.getBool("GuiBuildNovel", "addNovel", True)
         )
 
         self.noteFiles = QSwitch(width=wS, height=hS)
-        self.noteFiles.setToolTip(self.tr("Include files with layout 'Note'."))
+        self.noteFiles.setToolTip(self.tr("Include files with layout {0}.").format(
+            self.locale().quoteString(self.tr("Note"))
+        ))
         self.noteFiles.setChecked(
             self.optState.getBool("GuiBuildNovel", "addNotes", False)
         )

@@ -222,7 +222,7 @@ class GuiAbout(QDialog):
                 "%s<br/>" % self.tr("<b>{0}:</b> {1}").format(
                     self.tr("Author"), theTheme.syntaxAuthor
                 ),
-                "%s<br/>" % self.tr("<b>{0}</b> {1}").format(
+                "%s<br/>" % self.tr("<b>{0}:</b> {1}").format(
                     self.tr("Credit"), theTheme.syntaxCredit
                 ),
                 self.tr("<b>{0}:</b> {1}").format(
