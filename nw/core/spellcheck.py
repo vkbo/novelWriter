@@ -82,6 +82,11 @@ class NWSpellCheck():
         """
         return []
 
+    def describeDict(self):
+        """Dummy function.
+        """
+        return "", ""
+
     ##
     #  Internal Functions
     ##
@@ -182,7 +187,23 @@ class NWSpellEnchant(NWSpellCheck):
                 retList.append((spTag, spProvider.name))
         except Exception:
             logger.error("Failed to list languages for enchant spell checking")
+
         return retList
+
+    def describeDict(self):
+        """Return the tag and provider of the currently loaded
+        dictionary.
+        """
+        try:
+            spTag = self.theDict.tag
+            spName = self.theDict.provider.name
+        except Exception:
+            logger.error("Failed to extract information about the dictionary")
+            nw.logException()
+            spTag = ""
+            spName = ""
+
+        return spTag, spName
 
 # END Class NWSpellEnchant
 
@@ -302,5 +323,11 @@ class NWSpellSimple(NWSpellCheck):
             retList.append((fRoot, "difflib"))
 
         return retList
+
+    def describeDict(self):
+        """Return the tag and provider of the currently loaded
+        dictionary.
+        """
+        return self.theLang, ""
 
 # END Class NWSpellSimple

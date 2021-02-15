@@ -62,7 +62,7 @@ class NWIndex():
 
         # TimeStamps
         self._timeNovel = 0
-        self._timeNotes  = 0
+        self._timeNotes = 0
         self._timeIndex = 0
 
         return

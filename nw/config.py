@@ -94,7 +94,7 @@ class Config:
 
         ## Localisation
         self.qLocal     = QLocale.system()
-        self.guiLang    = self.qLocal.bcp47Name()
+        self.guiLang    = self.qLocal.name()
         self.qtLangPath = QLibraryInfo.location(QLibraryInfo.TranslationsPath)
         self.nwLangPath = None
         self.qtTrans    = {}
@@ -374,9 +374,10 @@ class Config:
         self.qtTrans = {}
 
         langList = [
-            (self.qtLangPath, "qt"),
-            (self.qtLangPath, "qtbase"),
-            (self.nwLangPath, "nw"),
+            (self.qtLangPath, "qt"),     # Qt 4.x
+            (self.qtLangPath, "qtbase"), # Qt 5.x
+            (self.nwLangPath, "qtbase"), # Alternative Qt 5.x
+            (self.nwLangPath, "nw"),     # novelWriter
         ]
         for lngPath, lngBase in langList:
             for lngCode in self.qLocal.uiLanguages():
