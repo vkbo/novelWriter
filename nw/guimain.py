@@ -181,7 +181,7 @@ class GuiMain(QMainWindow):
         self.splitOutline.addWidget(self.projMeta)
         self.splitOutline.setSizes(self.mainConf.getOutlinePanePos())
 
-        # Main Tabs : Edirot / Outline
+        # Main Tabs : Editor / Outline
         self.mainTabs = QTabWidget()
         self.mainTabs.setTabPosition(QTabWidget.East)
         self.mainTabs.setStyleSheet(r"QTabWidget::pane {border: 0;}")
@@ -466,14 +466,14 @@ class GuiMain(QMainWindow):
                 lockDetails = (
                     "<br>%s" % self.tr(
                         "The project was locked by the computer "
-                        "'{computer_name}' ({os_name} {os_version}), "
-                        "last active on {time}"
+                        "'{computerName}' ({osName} {osVersion}), "
+                        "last active on {activeTime}"
                     )
                 ).format(
-                    computer_name = self.theProject.lockedBy[0],
-                    os_name = self.theProject.lockedBy[1],
-                    os_version = self.theProject.lockedBy[2],
-                    time = datetime.fromtimestamp(
+                    computerName = self.theProject.lockedBy[0],
+                    osName = self.theProject.lockedBy[1],
+                    osVersion = self.theProject.lockedBy[2],
+                    activeTime = datetime.fromtimestamp(
                         int(self.theProject.lockedBy[3])
                     ).strftime("%x %X")
                 )
@@ -530,6 +530,10 @@ class GuiMain(QMainWindow):
 
         # Check if we need to rebuild the index
         if self.theIndex.indexBroken:
+            self.makeAlert(
+                self.tr("The project index is outdated or broken. Rebuilding index."),
+                nwAlert.WARN
+            )
             self.rebuildIndex()
 
         # Make sure the changed status is set to false on all that was

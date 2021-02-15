@@ -30,9 +30,6 @@ import json
 import os
 
 from time import time
-from functools import partial
-
-from PyQt5.QtCore import QCoreApplication
 
 from nw.constants import (
     nwFiles, nwKeyWords, nwItemType, nwItemClass, nwItemLayout, nwAlert
@@ -67,11 +64,6 @@ class NWIndex():
         self._timeNovel = 0
         self._timeNotes  = 0
         self._timeIndex = 0
-
-        self.clearIndex()
-
-        # Internal Mappings
-        self.tr = partial(QCoreApplication.translate, "NWIndex")
 
         return
 
@@ -236,10 +228,6 @@ class NWIndex():
 
         if self.indexBroken:
             self.clearIndex()
-            self.theParent.makeAlert(
-                self.tr("The project index is outdated or broken. Rebuilding index."),
-                nwAlert.WARN
-            )
 
         return
 

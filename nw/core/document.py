@@ -131,8 +131,7 @@ class NWDoc():
         if showStatus and not isOrphan:
             self.theParent.setStatus(
                 self.tr("{0}: {1}").format(
-                    self.tr("Opened Document"),
-                    self._theItem.itemName
+                    self.tr("Opened Document"), self._theItem.itemName
                 )
             )
 
@@ -180,8 +179,7 @@ class NWDoc():
         if self._theItem is not None:
             self.theParent.setStatus(
                 self.tr("{0}: {1}").format(
-                    self.tr("Saved Document"),
-                    self._theItem.itemName
+                    self.tr("Saved Document"), self._theItem.itemName
                 )
             )
 

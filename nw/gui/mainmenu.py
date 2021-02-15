@@ -775,7 +775,7 @@ class GuiMainMenu(QMenuBar):
 
         # Search > Find Next
         self.aFindNext = QAction(self.tr("Find Next"), self)
-        self.aFindNext.setStatusTip(self.tr("Find next occurrence text in document"))
+        self.aFindNext.setStatusTip(self.tr("Find next occurrence of text in document"))
         if self.mainConf.osDarwin:
             self.aFindNext.setShortcuts(["Ctrl+G", "F3"])
         else:
@@ -785,7 +785,7 @@ class GuiMainMenu(QMenuBar):
 
         # Search > Find Prev
         self.aFindPrev = QAction(self.tr("Find Previous"), self)
-        self.aFindPrev.setStatusTip(self.tr("Find previous occurrence text in document"))
+        self.aFindPrev.setStatusTip(self.tr("Find previous occurrence of text in document"))
         if self.mainConf.osDarwin:
             self.aFindPrev.setShortcuts(["Ctrl+Shift+G", "Shift+F3"])
         else:
