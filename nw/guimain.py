@@ -702,9 +702,9 @@ class GuiMain(QMainWindow):
         lastPath = self.mainConf.lastPath
         extFilter = [
             self.tr("{0} ({1})").format(self.tr("Text files"), "*.txt"),
-            self.tr("{0} ({1})").format(self.tr("Markdown files")),
+            self.tr("{0} ({1})").format(self.tr("Markdown files"), "*.md"),
             self.tr("{0} ({1})").format(self.tr("novelWriter files"), "*.nwd"),
-            self.tr("{0} ({1})").format(self.tr("All files")),
+            self.tr("{0} ({1})").format(self.tr("All files"), "*.*"),
         ]
         dlgOpt  = QFileDialog.Options()
         dlgOpt |= QFileDialog.DontUseNativeDialog

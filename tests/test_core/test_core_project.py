@@ -962,7 +962,7 @@ def testCoreProject_OrphanedFiles(dummyGUI, nwLipsum):
     # First Item with Meta Data
     oItem = theProject.projTree["636b6aa9b697b"]
     assert oItem is not None
-    assert oItem.itemName == "Recovered: Mars"
+    assert oItem.itemName == "[Recovered] Mars"
     assert oItem.itemHandle == "636b6aa9b697b"
     assert oItem.itemParent == "60bdf227455cc"
     assert oItem.itemClass == nwItemClass.WORLD

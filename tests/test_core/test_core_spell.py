@@ -168,6 +168,6 @@ def testCoreSpell_Simple(monkeypatch, tmpDir, tmpConf):
     assert "D_word" in wSuggest
 
     # List dictionaries
-    assert spChk.listDictionaries() == [("en", "English [%s]" % nwConst.SP_INTERNAL)]
+    assert spChk.listDictionaries() == [("en", "difflib")]
 
 # END Test testCoreSpell_Simple
