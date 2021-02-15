@@ -285,7 +285,7 @@ def main(sysArgs=None):
         sys.excepthook = exceptionHandler
 
         # Launch main GUI
-        CONFIG.initTranslations(nwApp)
+        CONFIG.initLocalisation(nwApp)
         nwGUI = GuiMain()
         if not nwGUI.hasProject:
             nwGUI.showProjectLoadDialog()

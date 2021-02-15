@@ -30,7 +30,6 @@ import shutil
 import json
 import sys
 import os
-import re
 
 from time import time
 
@@ -92,10 +91,18 @@ class Config:
         self.guiIcons    = "typicons_colour_light"
         self.guiDark     = False # Load icons for dark backgrounds, if available
         self.guiFont     = ""    # Defaults to system default font
-        self.guiFontSize = 11
+        self.guiFontSize = 11    # Is overridden if system default is loaded
         self.guiScale    = 1.0   # Set automatically by Theme class
         self.lastNotes   = "0x0" # The latest release notes that have been shown
-        self.guiLang     = QLocale.system().name()
+
+        ## Localisation
+        self.qLocal     = QLocale.system()
+        self.guiLang    = self.qLocal.name()
+        self.qtLangPath = QLibraryInfo.location(QLibraryInfo.TranslationsPath)
+        self.nwLangPath = None
+        self.i18nQtMain = QTranslator()
+        self.i18nQtBase = QTranslator()
+        self.i18nNWBase = QTranslator()
 
         ## Sizes
         self.winGeometry   = [1200, 650]
@@ -297,6 +304,9 @@ class Config:
         self.iconPath  = os.path.join(self.assetPath, "icons")
         self.appIcon   = os.path.join(self.iconPath, "novelwriter.svg")
 
+        # Internationalisation
+        self.nwLangPath = os.path.join(self.appRoot, "i18n")
+
         logger.verbose("App path: %s" % self.appPath)
         logger.verbose("Last path: %s" % self.lastPath)
 
@@ -361,23 +371,23 @@ class Config:
 
         return True
 
-    def initTranslations(self, nwApp):
-        """Initialise the internationalisation.
+    def initLocalisation(self, nwApp):
+        """Initialise the localisation of the GUI.
         """
-        lnName, lnScript, lnCountry = re.match(
-            r"^([a-z]{2,3})(?:_([a-z]{4}))?(?:_([a-z]{2,3}))?$", self.guiLang, re.IGNORECASE
-        ).groups()
+        self.qLocal = QLocale(self.guiLang)
+        QLocale.setDefault(self.qLocal)
 
-        qtLang = QLibraryInfo.location(QLibraryInfo.TranslationsPath)
-        nwLang = os.path.join(self.appRoot, "i18n")
-        loadTrans = [
-            (qtLang, "qt"), (qtLang, "qtbase"), (nwLang, "nw")
-        ]
-        for lnPath, lnPref in loadTrans:
-            self._loadTranslation(nwApp, lnPath, lnPref, lnName)
-            self._loadTranslation(nwApp, lnPath, lnPref, lnName, lnScript=lnScript)
-            self._loadTranslation(nwApp, lnPath, lnPref, lnName, lnCountry=lnCountry)
-            self._loadTranslation(nwApp, lnPath, lnPref, lnName, lnScript, lnCountry)
+        if self.i18nQtMain.load(self.qLocal, "qt", "_", self.qtLangPath):
+            nwApp.installTranslator(self.i18nQtMain)
+            logger.debug("Loaded: %s" % self.i18nQtMain.filePath())
+
+        if self.i18nQtBase.load(self.qLocal, "qtbase", "_", self.qtLangPath):
+            nwApp.installTranslator(self.i18nQtBase)
+            logger.debug("Loaded: %s" % self.i18nQtBase.filePath())
+
+        if self.i18nNWBase.load(self.qLocal, "nw", "_", self.nwLangPath):
+            nwApp.installTranslator(self.i18nNWBase)
+            logger.debug("Loaded: %s" % self.i18nNWBase.filePath())
 
         return
 
@@ -981,25 +991,6 @@ class Config:
     ##
     #  Internal Functions
     ##
-
-    def _loadTranslation(self, nwApp, lnPath, lnPref, lnName, lnScript=None, lnCountry=None):
-        """Load a translator file and create the translation object.
-        """
-        lngFile = "_".join(filter(bool, [
-            lnPref,
-            lnName and lnName.lower(),
-            lnScript and lnScript.capitalize(),
-            lnCountry and lnCountry.upper()
-        ]))
-
-        if lngFile not in self.qtTrans:
-            qTranslator = QTranslator()
-            if qTranslator.load(lngFile, lnPath):
-                logger.debug("Loaded i18n: %s" % os.path.join(lnPath, lngFile))
-                nwApp.installTranslator(qTranslator)
-                self.qtTrans[lngFile] = qTranslator
-
-        return
 
     def _packList(self, inData):
         """Pack a list of items into a comma-separated string.
