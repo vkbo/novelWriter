@@ -302,8 +302,7 @@ class NWProject():
             nHandle = self.newRoot(self.tr("Novel"), nwItemClass.NOVEL)
             for newRoot in projData.get("addRoots", []):
                 if newRoot in nwItemClass:
-                    self.newRoot(trConst(nwLabels.CLASS_NAME[newRoot]), newRoot
-                )
+                    self.newRoot(trConst(nwLabels.CLASS_NAME[newRoot]), newRoot)
 
             # Create a title page
             tHandle = self.newFile(self.tr("Title Page"), nwItemClass.NOVEL, nHandle)
@@ -490,9 +489,10 @@ class NWProject():
                     self.tr(
                         "Note that after the upgrade, you cannot open the project with "
                         "an older version of novelWriter any more, so make sure you "
-                        "have a recent backup.")
+                        "have a recent backup."
                     )
                 )
+            )
             if not msgYes:
                 self.clearProject()
                 return False

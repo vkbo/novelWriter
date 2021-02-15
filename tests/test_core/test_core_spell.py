@@ -28,7 +28,6 @@ from dummy import causeOSError
 from tools import readFile, writeFile
 
 from nw.core.spellcheck import NWSpellCheck, NWSpellEnchant, NWSpellSimple
-from nw.constants import nwConst
 
 @pytest.mark.core
 def testCoreSpell_Super(monkeypatch, tmpDir, tmpConf):

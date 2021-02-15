@@ -974,8 +974,8 @@ class GuiProjectTree(QTreeWidget):
             else:
                 self.makeAlert(
                     self.tr(
-                        "There is nowhere to add item with name '{0}'").format(nwItem.itemName
-                    ), nwAlert.ERROR
+                        "There is nowhere to add item with name '{0}'"
+                    ).format(nwItem.itemName), nwAlert.ERROR
                 )
                 del self._treeMap[tHandle]
                 return None

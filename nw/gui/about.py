@@ -157,10 +157,11 @@ class GuiAbout(QDialog):
             "<p>%s</p>" % (
                 self.tr(
                     "See the License tab for the full license text, or visit the "
-                    "GNU website at {0} for more details.").format(
-                        "<a href=\"https://www.gnu.org/licenses/gpl-3.0.html\">GPL v3.0</a>"
-                    )
-                ),
+                    "GNU website at {0} for more details."
+                ).format(
+                    "<a href=\"https://www.gnu.org/licenses/gpl-3.0.html\">GPL v3.0</a>"
+                )
+            ),
             "<h3>%s</h3>" % self.tr("Credits"),
             "<p>{credits:s}</p>",
         ]).format(
