@@ -1130,7 +1130,6 @@ class GuiMain(QMainWindow):
         """Ask the user a Yes/No question.
         """
         msgBox = QMessageBox()
-        print(msgBox.standardButtons())
         msgRes = msgBox.question(self, theTitle, theQuestion, QMessageBox.Yes | QMessageBox.No)
         return msgRes == QMessageBox.Yes
 
