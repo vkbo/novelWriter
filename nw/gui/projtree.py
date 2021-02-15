@@ -30,7 +30,7 @@ import logging
 
 from time import time
 
-from PyQt5.QtCore import QCoreApplication, Qt, QSize, pyqtSignal
+from PyQt5.QtCore import Qt, QSize, pyqtSignal
 from PyQt5.QtGui import QIcon
 from PyQt5.QtWidgets import (
     QTreeWidget, QTreeWidgetItem, QAbstractItemView, QMenu, QAction
@@ -38,7 +38,8 @@ from PyQt5.QtWidgets import (
 
 from nw.core import NWDoc
 from nw.constants import (
-    nwLabels, nwItemType, nwItemClass, nwItemLayout, nwAlert, nwConst, nwLists
+    trConst, nwLabels, nwItemType, nwItemClass, nwItemLayout, nwAlert,
+    nwConst, nwLists
 )
 
 logger = logging.getLogger(__name__)
@@ -214,8 +215,7 @@ class GuiProjectTree(QTreeWidget):
         )
 
         if itemType == nwItemType.ROOT:
-            tHandle = self.theProject.newRoot(
-                QCoreApplication.translate("Constant", nwLabels.CLASS_NAME[itemClass]), itemClass)
+            tHandle = self.theProject.newRoot(trConst(nwLabels.CLASS_NAME[itemClass]), itemClass)
             if tHandle is None:
                 logger.error("No root item added")
                 return False
@@ -250,8 +250,7 @@ class GuiProjectTree(QTreeWidget):
             if self.theProject.projTree.isTrashRoot(pHandle):
                 self.makeAlert(
                     self.tr("Cannot add new files or folders to the {0} folder.").format(
-                        QCoreApplication.translate(
-                            "Constant", nwLabels.CLASS_NAME[nwItemClass.TRASH])
+                        trConst(nwLabels.CLASS_NAME[nwItemClass.TRASH])
                     ), nwAlert.ERROR
                 )
                 return False
@@ -573,10 +572,10 @@ class GuiProjectTree(QTreeWidget):
                 self._deleteTreeItem(tHandle)
                 self._setTreeChanged(True)
             else:
-                self.makeAlert((
-                    self.tr("Cannot delete folder. It is not empty."),
-                    self.tr("Recursive deletion is not supported."),
-                    self.tr("Please delete the content first."),
+                self.makeAlert(self.tr(
+                    "Cannot delete folder. It is not empty. "
+                    "Recursive deletion is not supported. "
+                    "Please delete the content first."
                 ), nwAlert.ERROR)
                 return False
 
@@ -589,10 +588,10 @@ class GuiProjectTree(QTreeWidget):
                 self.theParent.mainMenu.setAvailableRoot()
                 self._setTreeChanged(True)
             else:
-                self.makeAlert((
-                    self.tr("Cannot delete root folder. It is not empty."),
-                    self.tr("Recursive deletion is not supported."),
-                    self.tr("Please delete the content first."),
+                self.makeAlert(self.tr(
+                    "Cannot delete root folder. It is not empty. "
+                    "Recursive deletion is not supported. "
+                    "Please delete the content first."
                 ), nwAlert.ERROR)
                 return False
 
@@ -974,9 +973,9 @@ class GuiProjectTree(QTreeWidget):
                 self.addTopLevelItem(newItem)
             else:
                 self.makeAlert(
-                    self.tr("There is nowhere to add item with name '{0}'").format(
-                        nwItem.itemName),
-                    nwAlert.ERROR
+                    self.tr(
+                        "There is nowhere to add item with name '{0}'").format(nwItem.itemName
+                    ), nwAlert.ERROR
                 )
                 del self._treeMap[tHandle]
                 return None

@@ -27,12 +27,13 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 import nw
 import logging
 
-from PyQt5.QtCore import QCoreApplication, QT_TRANSLATE_NOOP, Qt
+from PyQt5.QtCore import Qt
+from PyQt5.QtCore import QT_TRANSLATE_NOOP as QT_TRN
 from PyQt5.QtWidgets import (
     QScrollArea, QWidget, QGridLayout, QHBoxLayout, QGroupBox, QLabel
 )
 
-from nw.constants import nwLabels, nwKeyWords
+from nw.constants import trConst, nwLabels, nwKeyWords
 from nw.common import checkInt
 
 logger = logging.getLogger(__name__)
@@ -40,10 +41,10 @@ logger = logging.getLogger(__name__)
 class GuiOutlineDetails(QScrollArea):
 
     LVL_MAP = {
-        "H1" : QT_TRANSLATE_NOOP("GuiOutlineDetails", "Title"),
-        "H2" : QT_TRANSLATE_NOOP("GuiOutlineDetails", "Chapter"),
-        "H3" : QT_TRANSLATE_NOOP("GuiOutlineDetails", "Scene"),
-        "H4" : QT_TRANSLATE_NOOP("GuiOutlineDetails", "Section"),
+        "H1" : QT_TRN("GuiOutlineDetails", "Title"),
+        "H2" : QT_TRN("GuiOutlineDetails", "Chapter"),
+        "H3" : QT_TRN("GuiOutlineDetails", "Scene"),
+        "H4" : QT_TRN("GuiOutlineDetails", "Section"),
     }
 
     def __init__(self, theParent):
@@ -104,24 +105,15 @@ class GuiOutlineDetails(QScrollArea):
         self.synopLWrap.addWidget(self.synopValue, 1)
 
         # Tags
-        self.povKeyLabel = QLabel("<b>%s</b>" % QCoreApplication.translate(
-            "Constant", nwLabels.KEY_NAME[nwKeyWords.POV_KEY]))
-        self.focKeyLabel = QLabel("<b>%s</b>" % QCoreApplication.translate(
-            "Constant", nwLabels.KEY_NAME[nwKeyWords.FOCUS_KEY]))
-        self.chrKeyLabel = QLabel("<b>%s</b>" % QCoreApplication.translate(
-            "Constant", nwLabels.KEY_NAME[nwKeyWords.CHAR_KEY]))
-        self.pltKeyLabel = QLabel("<b>%s</b>" % QCoreApplication.translate(
-            "Constant", nwLabels.KEY_NAME[nwKeyWords.PLOT_KEY]))
-        self.timKeyLabel = QLabel("<b>%s</b>" % QCoreApplication.translate(
-            "Constant", nwLabels.KEY_NAME[nwKeyWords.TIME_KEY]))
-        self.wldKeyLabel = QLabel("<b>%s</b>" % QCoreApplication.translate(
-            "Constant", nwLabels.KEY_NAME[nwKeyWords.WORLD_KEY]))
-        self.objKeyLabel = QLabel("<b>%s</b>" % QCoreApplication.translate(
-            "Constant", nwLabels.KEY_NAME[nwKeyWords.OBJECT_KEY]))
-        self.entKeyLabel = QLabel("<b>%s</b>" % QCoreApplication.translate(
-            "Constant", nwLabels.KEY_NAME[nwKeyWords.ENTITY_KEY]))
-        self.cstKeyLabel = QLabel("<b>%s</b>" % QCoreApplication.translate(
-            "Constant", nwLabels.KEY_NAME[nwKeyWords.CUSTOM_KEY]))
+        self.povKeyLabel = QLabel("<b>%s</b>" % trConst(nwLabels.KEY_NAME[nwKeyWords.POV_KEY]))
+        self.focKeyLabel = QLabel("<b>%s</b>" % trConst(nwLabels.KEY_NAME[nwKeyWords.FOCUS_KEY]))
+        self.chrKeyLabel = QLabel("<b>%s</b>" % trConst(nwLabels.KEY_NAME[nwKeyWords.CHAR_KEY]))
+        self.pltKeyLabel = QLabel("<b>%s</b>" % trConst(nwLabels.KEY_NAME[nwKeyWords.PLOT_KEY]))
+        self.timKeyLabel = QLabel("<b>%s</b>" % trConst(nwLabels.KEY_NAME[nwKeyWords.TIME_KEY]))
+        self.wldKeyLabel = QLabel("<b>%s</b>" % trConst(nwLabels.KEY_NAME[nwKeyWords.WORLD_KEY]))
+        self.objKeyLabel = QLabel("<b>%s</b>" % trConst(nwLabels.KEY_NAME[nwKeyWords.OBJECT_KEY]))
+        self.entKeyLabel = QLabel("<b>%s</b>" % trConst(nwLabels.KEY_NAME[nwKeyWords.ENTITY_KEY]))
+        self.cstKeyLabel = QLabel("<b>%s</b>" % trConst(nwLabels.KEY_NAME[nwKeyWords.CUSTOM_KEY]))
 
         self.povKeyLWrap = QHBoxLayout()
         self.focKeyLWrap = QHBoxLayout()

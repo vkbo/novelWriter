@@ -36,7 +36,7 @@ import logging
 from time import time
 
 from PyQt5.QtCore import (
-    QCoreApplication, Qt, QSize, QTimer, pyqtSlot, pyqtSignal, QRegExp, QRegularExpression,
+    Qt, QSize, QTimer, pyqtSlot, pyqtSignal, QRegExp, QRegularExpression,
     QPointF, QObject, QRunnable, QPropertyAnimation
 )
 from PyQt5.QtGui import (
@@ -53,8 +53,8 @@ from nw.core import NWDoc, NWSpellSimple, countWords
 from nw.gui.dochighlight import GuiDocHighlighter
 from nw.common import transferCase
 from nw.constants import (
-    nwConst, nwAlert, nwUnicode, nwDocAction, nwDocInsert, nwItemClass,
-    nwKeyWords, nwLabels
+    trConst, nwConst, nwAlert, nwUnicode, nwDocAction, nwDocInsert,
+    nwItemClass, nwKeyWords, nwLabels
 )
 
 logger = logging.getLogger(__name__)
@@ -293,15 +293,17 @@ class GuiDocEditor(QTextEdit):
 
         docSize = len(theDoc)
         if docSize > nwConst.MAX_DOCSIZE:
-            self.theParent.makeAlert((
-                self.tr("The document you are trying to open is too big. "
-                        "The document size is {doc_size}. "
-                        "The maximum size allowed is {max_size}.").
-                format(
+            self.theParent.makeAlert(
+                self.tr(
+                    "The document you are trying to open is too big. "
+                    "The document size is {doc_size}. "
+                    "The maximum size allowed is {max_size}."
+                ).format(
                     doc_size=self.tr("{0}\u202fMB").format(f"{docSize/1.0e6:.2f}"),
                     max_size=self.tr("{0}\u202fMB").format(f"{nwConst.MAX_DOCSIZE/1.0e6:.2f}")
-                )
-            ), nwAlert.ERROR)
+                ),
+                nwAlert.ERROR
+            )
             self.clearEditor()
             return False
 
@@ -384,15 +386,17 @@ class GuiDocEditor(QTextEdit):
         """
         docSize = len(theText)
         if docSize > nwConst.MAX_DOCSIZE:
-            self.theParent.makeAlert((
-                self.tr("The text you are trying to add is too big. "
-                        "The text size is {text_size}. "
-                        "The maximum size allowed is {max_size}.").
-                format(
+            self.theParent.makeAlert(
+                self.tr(
+                    "The text you are trying to add is too big. "
+                    "The text size is {text_size}. "
+                    "The maximum size allowed is {max_size}."
+                ).format(
                     text_size=self.tr("{0}\u202fMB").format(f"{docSize/1.0e6:.2f}"),
                     max_size=self.tr("{0}\u202fMB").format(f"{nwConst.MAX_DOCSIZE/1.0e6:.2f}")
-                )
-            ), nwAlert.ERROR)
+                ),
+                nwAlert.ERROR
+            )
             return False
 
         qApp.setOverrideCursor(QCursor(Qt.WaitCursor))
@@ -747,15 +751,14 @@ class GuiDocEditor(QTextEdit):
             return False
 
         msgBox = QMessageBox()
-        msgBox.information(self, self.tr("File Location"), "".join([
-            (self.tr("{0}<br>").format(self.tr("File details for the currently open file"))),
-            (self.tr("{0}<br>").format(
-                self.tr("{0}: {1}").format(self.tr("Handle"), "{handle:s}"))),
-            (self.tr("{0}: {1}").format(self.tr("Location"), "{fileLoc:s}"))
-        ]).format(
-            handle  = self.theHandle,
-            fileLoc = str(self.nwDocument.getFileLocation())
-        ))
+        msgBox.information(
+            self,
+            self.tr("File Location"),
+            "%s<br>%s" % (
+                self.tr("The currently open file is saved in:"),
+                self.nwDocument.getFileLocation()
+            ),
+        )
 
         return
 
@@ -938,11 +941,15 @@ class GuiDocEditor(QTextEdit):
         self.lastFind = None
 
         if self.qDocument.characterCount() > nwConst.MAX_DOCSIZE:
-            self.theParent.makeAlert((
-                self.tr("The document has grown too big and you cannot add more text to it. "
-                        "The maximum size of a single novelWriter document is {max_size}.").
-                format(max_size=self.tr("{0}\u202fMB").format(f"{nwConst.MAX_DOCSIZE/1.0e6:.2f}"))
-            ), nwAlert.ERROR)
+            self.theParent.makeAlert(
+                self.tr(
+                    "The document has grown too big and you cannot add more text to it. "
+                    "The maximum size of a single novelWriter document is {max_size}."
+                ).format(
+                    max_size=self.tr("{0}\u202fMB").format(f"{nwConst.MAX_DOCSIZE/1.0e6:.2f}")
+                ),
+                nwAlert.ERROR
+            )
             self.undo()
             return
 
@@ -1860,8 +1867,7 @@ class GuiDocEditSearch(QFrame):
         self.searchOpt.addAction(self.toggleWord)
 
         self.toggleRegEx = QAction(self.tr("RegEx Mode"), self)
-        self.toggleRegEx.setToolTip(self.tr("Use regular expressions (requires Qt {0})").format(
-                                    "5.3"))
+        self.toggleRegEx.setToolTip(self.tr("Search using regular expressions"))
         self.toggleRegEx.setIcon(self.theTheme.getIcon("search_regex"))
         self.toggleRegEx.setCheckable(True)
         self.toggleRegEx.setChecked(self.isRegEx)
@@ -2541,10 +2547,8 @@ class GuiDocEditFooter(QWidget):
                 theIcon = self.theParent.importIcons[iStatus]
 
             sIcon = theIcon.pixmap(self.sPx, self.sPx)
-            sClass = QCoreApplication.translate(
-                "Constant", nwLabels.CLASS_NAME[self.theItem.itemClass])
-            sLayout = QCoreApplication.translate(
-                "Constant", nwLabels.LAYOUT_NAME[self.theItem.itemLayout])
+            sClass = trConst(nwLabels.CLASS_NAME[self.theItem.itemClass])
+            sLayout = trConst(nwLabels.LAYOUT_NAME[self.theItem.itemLayout])
             sText = f"{self.theItem.itemStatus} / {sClass} / {sLayout}"
 
         self.statusIcon.setPixmap(sIcon)
@@ -2565,7 +2569,9 @@ class GuiDocEditFooter(QWidget):
 
         self.linesText.setText(
             self.tr("{0}: {1} ({2}\u202f%%)".format(
-                self.tr("Line"), f"{iLine:n}", f"{iDist:.0f}")))
+                self.tr("Line"), f"{iLine:n}", f"{iDist:.0f}")
+            )
+        )
 
         return
 
@@ -2581,11 +2587,14 @@ class GuiDocEditFooter(QWidget):
 
         self.wordsText.setText(
             self.tr("{0}: {1} ({2})".format(
-                self.tr("Words"), f"{wCount:n}", f"{wDiff:+n}")))
+                self.tr("Words"), f"{wCount:n}", f"{wDiff:+n}")
+            )
+        )
 
         byteSize = self.docEditor.qDocument.characterCount()
         self.wordsText.setToolTip(
-            (self.tr("Document size is {0} bytes").format(f"{byteSize:n}")))
+            self.tr("Document size is {0} bytes").format(f"{byteSize:n}")
+        )
 
         return
 

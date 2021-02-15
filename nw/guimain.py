@@ -358,9 +358,10 @@ class GuiMain(QMainWindow):
 
         if os.path.isfile(os.path.join(projPath, self.theProject.projFile)):
             self.makeAlert(
-                self.tr("A project already exists in that location. "
-                        "Please choose another folder."),
-                nwAlert.ERROR
+                self.tr(
+                    "A project already exists in that location. "
+                    "Please choose another folder."
+                ), nwAlert.ERROR
             )
             return False
 
@@ -394,8 +395,10 @@ class GuiMain(QMainWindow):
         if not isYes:
             msgYes = self.askQuestion(
                 self.tr("Close Project"),
-                "%s<br>%s" % (self.tr("Close the current project?"),
-                              self.tr("Changes are saved automatically."))
+                "%s<br>%s" % (
+                    self.tr("Close the current project?"),
+                    self.tr("Changes are saved automatically.")
+                )
             )
             if not msgYes:
                 return False
@@ -461,9 +464,11 @@ class GuiMain(QMainWindow):
 
             try:
                 lockDetails = (
-                    "<br>%s" % self.tr("The project was locked by the computer "
-                                       "'{computer_name}' ({os_name} {os_version}), "
-                                       "last active on {time}")
+                    "<br>%s" % self.tr(
+                        "The project was locked by the computer "
+                        "'{computer_name}' ({os_name} {os_version}), "
+                        "last active on {time}"
+                    )
                 ).format(
                     computer_name = self.theProject.lockedBy[0],
                     os_name = self.theProject.lockedBy[1],
@@ -479,12 +484,16 @@ class GuiMain(QMainWindow):
             msgRes = msgBox.warning(
                 self, self.tr("Project Locked"),
                 "%s<br><br>%s<br>%s" % (
-                    self.tr("The project is already open by another instance of novelWriter, and "
-                            "is therefore locked. Override lock and continue anyway?"),
-                    self.tr("Note: If the program or the computer previously crashed, the lock "
-                            "can safely be overridden. If, however, another instance of "
-                            "novelWriter has the project open, overriding the lock may corrupt "
-                            "the project, and is not recommended."),
+                    self.tr(
+                        "The project is already open by another instance of novelWriter, and "
+                        "is therefore locked. Override lock and continue anyway?"
+                    ),
+                    self.tr(
+                        "Note: If the program or the computer previously crashed, the lock "
+                        "can safely be overridden. If, however, another instance of "
+                        "novelWriter has the project open, overriding the lock may corrupt "
+                        "the project, and is not recommended."
+                    ),
                     lockDetails
                 ),
                 QMessageBox.Yes | QMessageBox.No, QMessageBox.No
@@ -732,10 +741,13 @@ class GuiMain(QMainWindow):
             return False
 
         if not self.docEditor.isEmpty():
-            msgYes = self.askQuestion(self.tr("Import Document"), (
-                self.tr("Importing the file will overwrite the current content of the document. "
-                        "Do you want to proceed?")
-            ))
+            msgYes = self.askQuestion(
+                self.tr("Import Document"),
+                self.tr(
+                    "Importing the file will overwrite the current content of the document. "
+                    "Do you want to proceed?"
+                )
+            )
             if not msgYes:
                 return False
 
@@ -874,9 +886,12 @@ class GuiMain(QMainWindow):
             if tItem is not None:
                 self.setStatus(self.tr("{0}: '{1}'").format(self.tr("Indexing"), tItem.itemName))
             else:
-                self.setStatus(self.tr("{0}: {1}").format(
-                    self.tr("Indexing"),
-                    self.tr("Unknown item")))
+                self.setStatus(
+                    self.tr("{0}: {1}").format(
+                        self.tr("Indexing"),
+                        self.tr("Unknown item")
+                    )
+                )
 
             if tItem is not None and tItem.itemType == nwItemType.FILE:
                 logger.verbose("Scanning: %s" % tItem.itemName)
@@ -894,14 +909,16 @@ class GuiMain(QMainWindow):
                 self.treeView.projectWordCount()
 
         tEnd = time()
-        self.setStatus(self.tr("Indexing completed in {0} ms").
-                       format(f"{(tEnd - tStart)*1000.0:.1f}"))
+        self.setStatus(
+            self.tr("Indexing completed in {0} ms").format(f"{(tEnd - tStart)*1000.0:.1f}")
+        )
         self.docEditor.updateTagHighLighting()
         qApp.restoreOverrideCursor()
 
         if not beQuiet:
-            self.makeAlert(self.tr("The project index has been successfully rebuilt."),
-                           nwAlert.INFO)
+            self.makeAlert(
+                self.tr("The project index has been successfully rebuilt."), nwAlert.INFO
+            )
 
         return True
 
@@ -1153,8 +1170,10 @@ class GuiMain(QMainWindow):
         if self.hasProject:
             msgYes = self.askQuestion(
                 self.tr("Exit"),
-                "%s<br>%s" % (self.tr("Do you want to exit novelWriter?"),
-                              self.tr("Changes are saved automatically."))
+                "%s<br>%s" % (
+                    self.tr("Do you want to exit novelWriter?"),
+                    self.tr("Changes are saved automatically.")
+                )
             )
             if not msgYes:
                 return False

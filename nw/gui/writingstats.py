@@ -159,18 +159,27 @@ class GuiWritingStats(QDialog):
         self.totalWords.setFont(self.theTheme.guiFontFixed)
         self.totalWords.setAlignment(Qt.AlignVCenter | Qt.AlignRight)
 
-        self.infoForm.addWidget(QLabel(self.tr("{0}:").format(self.tr("Total Time"))),       0, 0)
-        self.infoForm.addWidget(QLabel(self.tr("{0}:").format(self.tr("Idle Time"))),        1, 0)
-        self.infoForm.addWidget(QLabel(self.tr("{0}:").format(self.tr("Filtered Time"))),    2, 0)
-        self.infoForm.addWidget(QLabel(self.tr("{0}:").format(self.tr("Novel Word Count"))), 3, 0)
-        self.infoForm.addWidget(QLabel(self.tr("{0}:").format(self.tr("Notes Word Count"))), 4, 0)
-        self.infoForm.addWidget(QLabel(self.tr("{0}:").format(self.tr("Total Word Count"))), 5, 0)
+        lblTTime   = QLabel(self.tr("{0}:").format(self.tr("Total Time")))
+        lblITime   = QLabel(self.tr("{0}:").format(self.tr("Idle Time")))
+        lblFTime   = QLabel(self.tr("{0}:").format(self.tr("Filtered Time")))
+        lblNvCount = QLabel(self.tr("{0}:").format(self.tr("Novel Word Count")))
+        lblNtCount = QLabel(self.tr("{0}:").format(self.tr("Notes Word Count")))
+        lblTtCount = QLabel(self.tr("{0}:").format(self.tr("Total Word Count")))
+
+        self.infoForm.addWidget(lblTTime,   0, 0)
+        self.infoForm.addWidget(lblITime,   1, 0)
+        self.infoForm.addWidget(lblFTime,   2, 0)
+        self.infoForm.addWidget(lblNvCount, 3, 0)
+        self.infoForm.addWidget(lblNtCount, 4, 0)
+        self.infoForm.addWidget(lblTtCount, 5, 0)
+
         self.infoForm.addWidget(self.labelTotal,  0, 1)
         self.infoForm.addWidget(self.labelIdleT,  1, 1)
         self.infoForm.addWidget(self.labelFilter, 2, 1)
         self.infoForm.addWidget(self.novelWords,  3, 1)
         self.infoForm.addWidget(self.notesWords,  4, 1)
         self.infoForm.addWidget(self.totalWords,  5, 1)
+
         self.infoForm.setRowStretch(6, 1)
 
         # Filter Options

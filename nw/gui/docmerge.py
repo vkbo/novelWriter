@@ -104,9 +104,9 @@ class GuiDocMerge(QDialog):
             finalOrder.append(self.listBox.item(i).data(Qt.UserRole))
 
         if len(finalOrder) == 0:
-            self.theParent.makeAlert((
-                self.tr("No source documents found. Nothing to do.")
-            ), nwAlert.ERROR)
+            self.theParent.makeAlert(
+                self.tr("No source documents found. Nothing to do."), nwAlert.ERROR
+            )
             return
 
         theDoc = NWDoc(self.theProject, self.theParent)
@@ -116,16 +116,16 @@ class GuiDocMerge(QDialog):
             theText += "\n\n"
 
         if self.sourceItem is None:
-            self.theParent.makeAlert((
-                self.tr("No source document selected. Nothing to do.")
-            ), nwAlert.ERROR)
+            self.theParent.makeAlert(
+                self.tr("No source document selected. Nothing to do."), nwAlert.ERROR
+            )
             return
 
         srcItem = self.theProject.projTree[self.sourceItem]
         if srcItem is None:
-            self.theParent.makeAlert((
-                self.tr("Could not parse source document.")
-            ), nwAlert.ERROR)
+            self.theParent.makeAlert(
+                self.tr("Could not parse source document."), nwAlert.ERROR
+            )
             return
 
         nHandle = self.theProject.newFile(srcItem.itemName, srcItem.itemClass, srcItem.itemParent)
@@ -166,9 +166,9 @@ class GuiDocMerge(QDialog):
         if nwItem is None:
             return
         if nwItem.itemType is not nwItemType.FOLDER:
-            self.theParent.makeAlert((
-                self.tr("Element selected in the project tree must be a folder.")
-            ), nwAlert.ERROR)
+            self.theParent.makeAlert(
+                self.tr("Element selected in the project tree must be a folder."), nwAlert.ERROR
+            )
             return
 
         for sHandle in self.theParent.treeView.getTreeFromHandle(tHandle):

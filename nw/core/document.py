@@ -24,9 +24,10 @@ You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
 
-from functools import partial
 import logging
 import os
+
+from functools import partial
 
 from PyQt5.QtCore import QCoreApplication
 
@@ -51,7 +52,7 @@ class NWDoc():
 
         # Internal Mapping
         self.makeAlert = self.theParent.makeAlert
-        self.tr = partial(QCoreApplication.translate, self.__class__.__name__)
+        self.tr = partial(QCoreApplication.translate, "NWDoc")
 
         return
 
@@ -131,7 +132,9 @@ class NWDoc():
             self.theParent.setStatus(
                 self.tr("{0}: {1}").format(
                     self.tr("Opened Document"),
-                    self._theItem.itemName))
+                    self._theItem.itemName
+                )
+            )
 
         return theText
 
@@ -178,7 +181,9 @@ class NWDoc():
             self.theParent.setStatus(
                 self.tr("{0}: {1}").format(
                     self.tr("Saved Document"),
-                    self._theItem.itemName))
+                    self._theItem.itemName
+                )
+            )
 
         return True
 
@@ -201,8 +206,9 @@ class NWDoc():
                     os.unlink(chkFile)
                     logger.debug("Deleted: %s" % chkFile)
                 except Exception as e:
-                    self.makeAlert([self.tr("Could not delete document file."), str(e)],
-                                   nwAlert.ERROR)
+                    self.makeAlert(
+                        [self.tr("Could not delete document file."), str(e)], nwAlert.ERROR
+                    )
                     return False
 
         return True

@@ -378,7 +378,8 @@ class GuiProjectEditStatus(QWidget):
                 self.colData[selIdx][4]
             )
             selItem.setText(self.tr("{0} [{1}]").format(
-                self.colData[selIdx][0], self.colCounts[selIdx]))
+                self.colData[selIdx][0], self.colCounts[selIdx])
+            )
             selItem.setIcon(self.colButton.icon())
             self.editName.setEnabled(False)
             self.colChanged = True
@@ -496,7 +497,8 @@ class GuiProjectEditReplace(QWidget):
         self.bottomBox.addWidget(self.delButton)
 
         self.outerBox.addWidget(
-            QLabel("<b>%s</b>" % self.tr("Text Replace List for Preview and Export")))
+            QLabel("<b>%s</b>" % self.tr("Text Replace List for Preview and Export"))
+        )
         self.outerBox.addWidget(self.listBox)
         self.outerBox.addLayout(self.bottomBox)
         self.setLayout(self.outerBox)
@@ -548,7 +550,7 @@ class GuiProjectEditReplace(QWidget):
         saveKey = self._stripNotAllowed(newKey)
 
         if len(saveKey) > 0 and len(newVal) > 0:
-            selItem.setText(0, self.tr("<{0}>").format(saveKey))
+            selItem.setText(0, "<%s>" % saveKey)
             selItem.setText(1, newVal)
             self.editKey.clear()
             self.editValue.clear()

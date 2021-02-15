@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 from nw.constants.constants import (
-    nwConst, nwLists, nwRegEx, nwFiles, nwKeyWords, nwLabels, nwQuotes,
-    nwUnicode, nwHtmlUnicode
+    trConst, nwConst, nwLists, nwRegEx, nwFiles, nwKeyWords, nwLabels,
+    nwQuotes, nwUnicode, nwHtmlUnicode
 )
 from nw.constants.enum import (
     nwAlert, nwDocAction, nwItemClass, nwItemLayout, nwItemType, nwOutline,
@@ -9,6 +9,7 @@ from nw.constants.enum import (
 )
 
 __all__ = [
+    "trConst",
     "nwConst",
     "nwLists",
     "nwRegEx",

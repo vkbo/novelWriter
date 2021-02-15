@@ -407,13 +407,11 @@ class ToHtml(Tokenizer):
         """
         if self.genMode == self.M_PREVIEW:
             return "<p class='comment'><span class='synopsis'>%s:</span> %s</p>\n" % (
-                self.tr("Synopsis"),
-                tText
+                self._trSynopsis, tText
             )
         else:
             return "<p class='synopsis'><strong>%s:</strong> %s</p>\n" % (
-                self.tr("Synopsis"),
-                tText
+                self._trSynopsis, tText
             )
 
     def _formatComments(self, tText):
@@ -422,7 +420,9 @@ class ToHtml(Tokenizer):
         if self.genMode == self.M_PREVIEW:
             return "<p class='comment'>%s</p>\n" % tText
         else:
-            return "<p class='comment'><strong>%s:</strong> %s</p>\n" % (self.tr("Comment"), tText)
+            return "<p class='comment'><strong>%s:</strong> %s</p>\n" % (
+                self._trComment, tText
+            )
 
     def _formatKeywords(self, tText):
         """Apply HTML formatting to keywords.

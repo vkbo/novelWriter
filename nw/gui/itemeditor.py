@@ -27,14 +27,14 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 import nw
 import logging
 
-from PyQt5.QtCore import QCoreApplication, pyqtSlot
+from PyQt5.QtCore import pyqtSlot
 from PyQt5.QtWidgets import (
     QDialog, QVBoxLayout, QGridLayout, QLineEdit, QComboBox, QLabel,
     QDialogButtonBox
 )
 
 from nw.gui.custom import QSwitch
-from nw.constants import nwLabels, nwItemLayout, nwItemType, nwLists
+from nw.constants import trConst, nwLabels, nwItemLayout, nwItemType, nwLists
 
 logger = logging.getLogger(__name__)
 
@@ -103,8 +103,7 @@ class GuiItemEditor(QDialog):
 
         for itemLayout in nwItemLayout:
             if itemLayout in validLayouts:
-                self.editLayout.addItem(QCoreApplication.translate(
-                    "Constant", nwLabels.LAYOUT_NAME[itemLayout]), itemLayout)
+                self.editLayout.addItem(trConst(nwLabels.LAYOUT_NAME[itemLayout]), itemLayout)
 
         # Export Switch
         self.textExport = QLabel(self.tr("Include when building project"))
@@ -139,17 +138,21 @@ class GuiItemEditor(QDialog):
         #  Assemble
         ##
 
+        nameLabel   = QLabel(self.tr("Label"))
+        statusLabel = QLabel(self.tr("Status"))
+        layoutLabel = QLabel(self.tr("Layout"))
+
         self.mainForm = QGridLayout()
         self.mainForm.setVerticalSpacing(vSp)
         self.mainForm.setHorizontalSpacing(mSp)
-        self.mainForm.addWidget(QLabel(self.tr("Label")),  0, 0, 1, 1)
-        self.mainForm.addWidget(self.editName,    0, 1, 1, 2)
-        self.mainForm.addWidget(QLabel(self.tr("Status")), 1, 0, 1, 1)
-        self.mainForm.addWidget(self.editStatus,  1, 1, 1, 2)
-        self.mainForm.addWidget(QLabel(self.tr("Layout")), 2, 0, 1, 1)
-        self.mainForm.addWidget(self.editLayout,  2, 1, 1, 2)
-        self.mainForm.addWidget(self.textExport,  3, 0, 1, 2)
-        self.mainForm.addWidget(self.editExport,  3, 2, 1, 1)
+        self.mainForm.addWidget(nameLabel,       0, 0, 1, 1)
+        self.mainForm.addWidget(self.editName,   0, 1, 1, 2)
+        self.mainForm.addWidget(statusLabel,     1, 0, 1, 1)
+        self.mainForm.addWidget(self.editStatus, 1, 1, 1, 2)
+        self.mainForm.addWidget(layoutLabel,     2, 0, 1, 1)
+        self.mainForm.addWidget(self.editLayout, 2, 1, 1, 2)
+        self.mainForm.addWidget(self.textExport, 3, 0, 1, 2)
+        self.mainForm.addWidget(self.editExport, 3, 2, 1, 1)
         self.mainForm.setColumnStretch(0, 0)
         self.mainForm.setColumnStretch(1, 1)
         self.mainForm.setColumnStretch(2, 0)

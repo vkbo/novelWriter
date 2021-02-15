@@ -27,13 +27,13 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 import nw
 import logging
 
-from PyQt5.QtCore import QCoreApplication, QUrl, QProcess
+from PyQt5.QtCore import QUrl, QProcess
 from PyQt5.QtGui import QDesktopServices
 from PyQt5.QtWidgets import QMenuBar, QAction
 
 from nw.constants import (
-    nwItemType, nwItemClass, nwDocAction, nwDocInsert, nwKeyWords, nwLabels,
-    nwUnicode
+    trConst, nwItemType, nwItemClass, nwDocAction, nwDocInsert, nwKeyWords,
+    nwLabels, nwUnicode
 )
 
 logger = logging.getLogger(__name__)
@@ -566,7 +566,8 @@ class GuiMainMenu(QMenuBar):
         # Insert > Figure Dash
         self.aInsFigDash = QAction(self.tr("Figure Dash"), self)
         self.aInsFigDash.setStatusTip(
-            self.tr("Insert figure dash (same width as a number character)"))
+            self.tr("Insert figure dash (same width as a number character)")
+        )
         self.aInsFigDash.setShortcut("Ctrl+K, ~")
         self.aInsFigDash.triggered.connect(lambda: self._docInsert(nwUnicode.U_FGDASH))
         self.mInsDashes.addAction(self.aInsFigDash)
@@ -740,8 +741,7 @@ class GuiMainMenu(QMenuBar):
         self.mInsKWItems[nwKeyWords.ENTITY_KEY] = (QAction(self.mInsKeywords), "Ctrl+K, E")
         self.mInsKWItems[nwKeyWords.CUSTOM_KEY] = (QAction(self.mInsKeywords), "Ctrl+K, X")
         for n, keyWord in enumerate(self.mInsKWItems):
-            self.mInsKWItems[keyWord][0].setText(
-                QCoreApplication.translate("Constant", nwLabels.KEY_NAME[keyWord]))
+            self.mInsKWItems[keyWord][0].setText(trConst(nwLabels.KEY_NAME[keyWord]))
             self.mInsKWItems[keyWord][0].setShortcut(self.mInsKWItems[keyWord][1])
             self.mInsKWItems[keyWord][0].triggered.connect(
                 lambda n, keyWord=keyWord: self._insertKeyWord(keyWord)
@@ -796,7 +796,8 @@ class GuiMainMenu(QMenuBar):
         # Search > Replace Next
         self.aReplaceNext = QAction(self.tr("Replace Next"), self)
         self.aReplaceNext.setStatusTip(
-            self.tr("Find and replace next occurrence text in document"))
+            self.tr("Find and replace next occurrence text in document")
+        )
         self.aReplaceNext.setShortcut("Ctrl+Shift+1")
         self.aReplaceNext.triggered.connect(lambda: self._docAction(nwDocAction.REPL_NEXT))
         self.srcMenu.addAction(self.aReplaceNext)
@@ -898,14 +899,16 @@ class GuiMainMenu(QMenuBar):
         # Format > Replace Single Quotes
         self.aFmtReplSng = QAction(self.tr("Replace Single Quotes"), self)
         self.aFmtReplSng.setStatusTip(
-            self.tr("Replace all straight single quotes in selected text"))
+            self.tr("Replace all straight single quotes in selected text")
+        )
         self.aFmtReplSng.triggered.connect(lambda: self._docAction(nwDocAction.REPL_SNG))
         self.fmtMenu.addAction(self.aFmtReplSng)
 
         # Format > Replace Double Quotes
         self.aFmtReplDbl = QAction(self.tr("Replace Double Quotes"), self)
         self.aFmtReplDbl.setStatusTip(
-            self.tr("Replace all straight double quotes in selected text"))
+            self.tr("Replace all straight double quotes in selected text")
+        )
         self.aFmtReplDbl.triggered.connect(lambda: self._docAction(nwDocAction.REPL_DBL))
         self.fmtMenu.addAction(self.aFmtReplDbl)
 
@@ -1031,7 +1034,8 @@ class GuiMainMenu(QMenuBar):
 
         self.aHelpWeb = QAction(self.tr("Documentation (Online)"), self)
         self.aHelpWeb.setStatusTip(
-            self.tr("View online documentation at {0}").format(nw.__docurl__))
+            self.tr("View online documentation at {0}").format(nw.__docurl__)
+        )
         self.aHelpWeb.triggered.connect(lambda: self._openWebsite(nw.__docurl__))
         if self.mainConf.hasHelp and self.mainConf.hasAssistant:
             self.aHelpWeb.setShortcut("Shift+F1")
@@ -1045,28 +1049,32 @@ class GuiMainMenu(QMenuBar):
         # Document > Report an Issue
         self.aIssue = QAction(self.tr("Report an Issue (GitHub)"), self)
         self.aIssue.setStatusTip(
-            self.tr("Report a bug or issue on GitHub at {0}").format(nw.__issuesurl__))
+            self.tr("Report a bug or issue on GitHub at {0}").format(nw.__issuesurl__)
+        )
         self.aIssue.triggered.connect(lambda: self._openWebsite(nw.__issuesurl__))
         self.helpMenu.addAction(self.aIssue)
 
         # Document > Ask a Question
         self.aQuestion = QAction(self.tr("Ask a Question (GitHub)"), self)
         self.aQuestion.setStatusTip(
-            self.tr("Ask a question on GitHub at {0}").format(nw.__helpurl__))
+            self.tr("Ask a question on GitHub at {0}").format(nw.__helpurl__)
+        )
         self.aQuestion.triggered.connect(lambda: self._openWebsite(nw.__helpurl__))
         self.helpMenu.addAction(self.aQuestion)
 
         # Document > Latest Release
         self.aRelease = QAction(self.tr("Latest Release (GitHub)"), self)
         self.aRelease.setStatusTip(
-            self.tr("Open the Releases page on GitHub at {0}").format(nw.__releaseurl__))
+            self.tr("Open the Releases page on GitHub at {0}").format(nw.__releaseurl__)
+        )
         self.aRelease.triggered.connect(lambda: self._openWebsite(nw.__releaseurl__))
         self.helpMenu.addAction(self.aRelease)
 
         # Document > Main Website
         self.aWebsite = QAction(self.tr("The novelWriter Website"), self)
         self.aWebsite.setStatusTip(
-            self.tr("Open the novelWriter website at {0}").format(nw.__url__))
+            self.tr("Open the novelWriter website at {0}").format(nw.__url__)
+        )
         self.aWebsite.triggered.connect(lambda: self._openWebsite(nw.__url__))
         self.helpMenu.addAction(self.aWebsite)
 

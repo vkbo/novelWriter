@@ -244,10 +244,13 @@ class GuiDocViewer(QTextBrowser):
         tHandle, _, sTitle = self.theParent.theIndex.getTagSource(theTag)
         if tHandle is None:
             self.theParent.makeAlert(
-                self.tr("Could not find the reference for tag '{0}'. It either doesn't "
-                        "exist, or the index is out of date. The index can be updated "
-                        "from the Tools menu, or by pressing {1}.").
-                format(theTag, "F9"), nwAlert.ERROR)
+                self.tr(
+                    "Could not find the reference for tag '{0}'. It either doesn't "
+                    "exist, or the index is out of date. The index can be updated "
+                    "from the Tools menu, or by pressing {1}."
+                ).format(theTag, "F9"),
+                nwAlert.ERROR
+            )
             return False
         else:
             # Let the parent handle the opening as it also ensures that
@@ -956,8 +959,9 @@ class GuiDocViewFooter(QWidget):
         self.stickyRefs.setFixedSize(QSize(fPx, fPx))
         self.stickyRefs.toggled.connect(self._doToggleSticky)
         self.stickyRefs.setToolTip(
-            self.tr("Activate to freeze the content of the references panel when "
-                    "changing document")
+            self.tr(
+                "Activate to freeze the content of the references panel when changing document"
+            )
         )
 
         # Show Comments

@@ -24,13 +24,13 @@ You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
 
-from functools import partial
 import nw
 import logging
 import json
 import os
 
 from time import time
+from functools import partial
 
 from PyQt5.QtCore import QCoreApplication
 
@@ -68,9 +68,10 @@ class NWIndex():
         self._timeNotes  = 0
         self._timeIndex = 0
 
-        self.tr = partial(QCoreApplication.translate, self.__class__.__name__)
-
         self.clearIndex()
+
+        # Internal Mappings
+        self.tr = partial(QCoreApplication.translate, "NWIndex")
 
         return
 

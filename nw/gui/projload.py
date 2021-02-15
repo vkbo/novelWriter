@@ -192,7 +192,8 @@ class GuiProjectLoad(QDialog):
             self, self.tr("Open novelWriter Project"), "",
             ";;".join([
                 self.tr("{0} ({1})").format(
-                    self.tr("novelWriter Project File"), nwFiles.PROJ_FILE),
+                    self.tr("novelWriter Project File"), nwFiles.PROJ_FILE
+                ),
                 self.tr("{0} ({1})").format(self.tr("All Files"), "*")
             ]),
             options=dlgOpt
@@ -233,8 +234,10 @@ class GuiProjectLoad(QDialog):
             projName = selList[0].text(self.C_NAME)
             msgYes = self.theParent.askQuestion(
                 self.tr("Remove Entry"),
-                self.tr("Remove '{0}' from the recent projects list? "
-                        "The project files will not be deleted.").format(projName)
+                self.tr(
+                    "Remove '{0}' from the recent projects list? "
+                    "The project files will not be deleted."
+                ).format(projName)
             )
             if msgYes:
                 self.mainConf.removeFromRecentCache(

@@ -24,11 +24,12 @@ You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
 
-from functools import partial
 import logging
 import re
 
 from operator import itemgetter
+from functools import partial
+
 from PyQt5.QtCore import QCoreApplication, QRegularExpression
 
 from nw.core.document import NWDoc
@@ -142,7 +143,13 @@ class Tokenizer():
         # Error Handling
         self.errData = []
 
-        self.tr = partial(QCoreApplication.translate, self.__class__.__name__)
+        # Internal Mappings
+        self.tr = partial(QCoreApplication.translate, "Tokenizer")
+
+        # Localisation
+        self._trSynopsis = self.tr("Synopsis")
+        self._trComment = self.tr("Comment")
+        self._trNotes = self.tr("Notes")
 
         return
 
@@ -252,7 +259,7 @@ class Tokenizer():
         if theItem.itemType != nwItemType.ROOT:
             return False
 
-        theTitle = self.tr("{0}: {1}").format(self.tr("Notes"), theItem.itemName)
+        theTitle = self.tr("{0}: {1}").format(self._trNotes, theItem.itemName)
         self.theTokens = []
         self.theTokens.append((
             self.T_TITLE, 0, theTitle, None, self.A_PBB | self.A_CENTRE

@@ -118,16 +118,16 @@ class GuiDocSplit(QDialog):
         logger.verbose("GuiDocSplit split button clicked")
 
         if self.sourceItem is None:
-            self.theParent.makeAlert((
-                self.tr("No source document selected. Nothing to do.")
-            ), nwAlert.ERROR)
+            self.theParent.makeAlert(
+                self.tr("No source document selected. Nothing to do."), nwAlert.ERROR
+            )
             return
 
         srcItem = self.theProject.projTree[self.sourceItem]
         if srcItem is None:
-            self.theParent.makeAlert((
-                self.tr("Could not parse source document.")
-            ), nwAlert.ERROR)
+            self.theParent.makeAlert(
+                self.tr("Could not parse source document."), nwAlert.ERROR
+            )
             return
 
         theDoc   = NWDoc(self.theProject, self.theParent)
@@ -150,26 +150,34 @@ class GuiDocSplit(QDialog):
 
         nFiles = len(finalOrder)
         if nFiles == 0:
-            self.theParent.makeAlert((
-                self.tr("No headers found. Nothing to do.")
-            ), nwAlert.ERROR)
+            self.theParent.makeAlert(
+                self.tr("No headers found. Nothing to do."), nwAlert.ERROR
+            )
             return
 
         # Check that another folder can be created
         parTree = self.theProject.projTree.getItemPath(srcItem.itemParent)
         if len(parTree) >= nwConst.MAX_DEPTH - 1:
-            self.theParent.makeAlert((
-                self.tr("Cannot add new folder for the document split. "
-                        "Maximum folder depth has been reached. "
-                        "Please move the file to another level in the project tree.")
-            ), nwAlert.ERROR)
+            self.theParent.makeAlert(
+                self.tr(
+                    "Cannot add new folder for the document split. "
+                    "Maximum folder depth has been reached. "
+                    "Please move the file to another level in the project tree."
+                ), nwAlert.ERROR
+            )
             return
 
-        msgYes = self.theParent.askQuestion(self.tr("Split Document"), "%s<br><br>%s" % (
-            self.tr("The document will be split into {0} file(s) in a new folder. "
-                    "The original document will remain intact.", n=nFiles).format(nFiles),
-            self.tr("Continue with the splitting process?")
-        ))
+        msgYes = self.theParent.askQuestion(
+            self.tr("Split Document"),
+            "%s<br><br>%s" % (
+                self.tr(
+                    "The document will be split into {0} file(s) in a new folder. "
+                    "The original document will remain intact.").format(nFiles),
+                self.tr(
+                    "Continue with the splitting process?"
+                )
+            )
+        )
         if not msgYes:
             return
 
@@ -245,9 +253,9 @@ class GuiDocSplit(QDialog):
         if nwItem is None:
             return
         if nwItem.itemType is not nwItemType.FILE:
-            self.theParent.makeAlert((
-                self.tr("Element selected in the project tree must be a file.")
-            ), nwAlert.ERROR)
+            self.theParent.makeAlert(
+                self.tr("Element selected in the project tree must be a file."), nwAlert.ERROR
+            )
             return
 
         self.listBox.clear()

@@ -27,12 +27,12 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 import nw
 import logging
 
-from PyQt5.QtCore import QCoreApplication, Qt
+from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QFont, QPixmap
 from PyQt5.QtWidgets import QWidget, QGridLayout, QLabel
 
 from nw.constants import (
-    nwLabels, nwItemClass, nwItemType, nwItemLayout
+    trConst, nwLabels, nwItemClass, nwItemType, nwItemLayout
 )
 
 logger = logging.getLogger(__name__)
@@ -118,7 +118,7 @@ class GuiItemDetails(QWidget):
         self.layoutData.setAlignment(Qt.AlignLeft)
 
         # Character Count
-        self.cCountName = QLabel(self.tr("  Characters"))
+        self.cCountName = QLabel("  "+self.tr("Characters"))
         self.cCountName.setFont(self.fntLabel)
         self.cCountName.setAlignment(Qt.AlignRight)
 
@@ -127,7 +127,7 @@ class GuiItemDetails(QWidget):
         self.cCountData.setAlignment(Qt.AlignRight)
 
         # Word Count
-        self.wCountName = QLabel(self.tr("  Words"))
+        self.wCountName = QLabel("  "+self.tr("Words"))
         self.wCountName.setFont(self.fntLabel)
         self.wCountName.setAlignment(Qt.AlignRight)
 
@@ -136,7 +136,7 @@ class GuiItemDetails(QWidget):
         self.wCountData.setAlignment(Qt.AlignRight)
 
         # Paragraph Count
-        self.pCountName = QLabel(self.tr("  Paragraphs"))
+        self.pCountName = QLabel("  "+self.tr("Paragraphs"))
         self.pCountName.setFont(self.fntLabel)
         self.pCountName.setAlignment(Qt.AlignRight)
 
@@ -268,10 +268,8 @@ class GuiItemDetails(QWidget):
 
         self.labelData.setText(theLabel)
         self.statusData.setText(nwItem.itemStatus)
-        self.classData.setText(QCoreApplication.translate(
-            "Constant", nwLabels.CLASS_NAME[nwItem.itemClass]))
-        self.layoutData.setText(QCoreApplication.translate(
-            "Constant", nwLabels.LAYOUT_NAME[nwItem.itemLayout]))
+        self.classData.setText(trConst(nwLabels.CLASS_NAME[nwItem.itemClass]))
+        self.layoutData.setText(trConst(nwLabels.LAYOUT_NAME[nwItem.itemLayout]))
 
         if nwItem.itemType == nwItemType.FILE:
             self.cCountData.setText(f"{nwItem.charCount:n}")

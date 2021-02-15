@@ -28,7 +28,7 @@ import nw
 import logging
 import os
 
-from PyQt5.QtCore import QCoreApplication, Qt
+from PyQt5.QtCore import Qt
 from PyQt5.QtWidgets import (
     QWizard, QWizardPage, QLabel, QVBoxLayout, QLineEdit, QPlainTextEdit,
     QPushButton, QFileDialog, QHBoxLayout, QRadioButton, QFormLayout,
@@ -36,7 +36,7 @@ from PyQt5.QtWidgets import (
 )
 
 from nw.common import makeFileNameSafe
-from nw.constants import nwLabels, nwItemClass
+from nw.constants import trConst, nwLabels, nwItemClass
 from nw.gui.custom import QSwitch
 
 logger = logging.getLogger(__name__)
@@ -96,10 +96,12 @@ class ProjWizardIntroPage(QWizardPage):
 
         self.setTitle(self.tr("Create New Project"))
         self.theText = QLabel(
-            self.tr("Provide at least a working title. The working title should not "
-                    "be change beyond this point as it is used by the application for "
-                    "generating file names for for instance backups. The other fields "
-                    "are optional and can be changed at any time in Project Settings.")
+            self.tr(
+                "Provide at least a working title. The working title should not "
+                "be change beyond this point as it is used by the application for "
+                "generating file names for for instance backups. The other fields "
+                "are optional and can be changed at any time in Project Settings."
+            )
         )
         self.theText.setWordWrap(True)
 
@@ -166,8 +168,10 @@ class ProjWizardFolderPage(QWizardPage):
 
         self.setTitle(self.tr("Select Project Folder"))
         self.theText = QLabel(
-            self.tr("Select a location to store the project. A new project folder "
-                    "will be created in the selected location.")
+            self.tr(
+                "Select a location to store the project. A new project folder "
+                "will be created in the selected location."
+            )
         )
         self.theText.setWordWrap(True)
 
@@ -240,9 +244,11 @@ class ProjWizardPopulatePage(QWizardPage):
 
         self.setTitle(self.tr("Populate Project"))
         self.theText = QLabel(
-            self.tr("Choose how to pre-fill the project. Either with a minimal set of "
-                    "starter items, an example project explaining and showing many of "
-                    "the features, or show further custom options on the next page.")
+            self.tr(
+                "Choose how to pre-fill the project. Either with a minimal set of "
+                "starter items, an example project explaining and showing many of "
+                "the features, or show further custom options on the next page."
+            )
         )
         self.theText.setWordWrap(True)
 
@@ -295,9 +301,11 @@ class ProjWizardCustomPage(QWizardPage):
 
         self.setTitle(self.tr("Custom Project Options"))
         self.theText = QLabel(
-            self.tr("Select which additional root folders to make, and how to populate "
-                    "the Novel folder. If you don't want to add chapters or scenes, set "
-                    "the values to 0. You can add scenes without chapters.")
+            self.tr(
+                "Select which additional root folders to make, and how to populate "
+                "the Novel folder. If you don't want to add chapters or scenes, set "
+                "the values to 0. You can add scenes without chapters."
+            )
         )
         self.theText.setWordWrap(True)
 
@@ -308,18 +316,24 @@ class ProjWizardCustomPage(QWizardPage):
         self.rootForm  = QGridLayout()
         self.rootGroup.setLayout(self.rootForm)
 
-        self.lblPlot   = QLabel(self.tr("{0} folder").format(
-            QCoreApplication.translate("Constant", nwLabels.CLASS_NAME[nwItemClass.PLOT])))
-        self.lblChar   = QLabel(self.tr("{0} folder").format(
-            QCoreApplication.translate("Constant", nwLabels.CLASS_NAME[nwItemClass.CHARACTER])))
-        self.lblWorld  = QLabel(self.tr("{0} folder").format(
-            QCoreApplication.translate("Constant", nwLabels.CLASS_NAME[nwItemClass.WORLD])))
-        self.lblTime   = QLabel(self.tr("{0} folder").format(
-            QCoreApplication.translate("Constant", nwLabels.CLASS_NAME[nwItemClass.TIMELINE])))
+        self.lblPlot = QLabel(self.tr("{0} folder").format(
+            trConst(nwLabels.CLASS_NAME[nwItemClass.PLOT]))
+        )
+        self.lblChar = QLabel(self.tr("{0} folder").format(
+            trConst(nwLabels.CLASS_NAME[nwItemClass.CHARACTER]))
+        )
+        self.lblWorld = QLabel(self.tr("{0} folder").format(
+            trConst(nwLabels.CLASS_NAME[nwItemClass.WORLD]))
+        )
+        self.lblTime = QLabel(self.tr("{0} folder").format(
+            trConst(nwLabels.CLASS_NAME[nwItemClass.TIMELINE]))
+        )
         self.lblObject = QLabel(self.tr("{0} folder").format(
-            QCoreApplication.translate("Constant", nwLabels.CLASS_NAME[nwItemClass.OBJECT])))
+            trConst(nwLabels.CLASS_NAME[nwItemClass.OBJECT]))
+        )
         self.lblEntity = QLabel(self.tr("{0} folder").format(
-            QCoreApplication.translate("Constant", nwLabels.CLASS_NAME[nwItemClass.ENTITY])))
+            trConst(nwLabels.CLASS_NAME[nwItemClass.ENTITY]))
+        )
 
         self.addPlot   = QSwitch()
         self.addChar   = QSwitch()
@@ -407,9 +421,10 @@ class ProjWizardFinalPage(QWizardPage):
 
         self.setTitle(self.tr("Finished"))
         self.theText = QLabel("".join([
-            ("<p>%s</p>" % self.tr("All done.")),
-            ("<p>%s</p>" % self.tr("Press '{0}' to create the new project.").format(
-                self.tr("Done") if self.mainConf.osDarwin else self.tr("Finish")))
+            "<p>%s</p>" % self.tr("All done."),
+            "<p>%s</p>" % self.tr("Press '{0}' to create the new project.").format(
+                self.tr("Done") if self.mainConf.osDarwin else self.tr("Finish")
+            )
         ]))
         self.theText.setWordWrap(True)
 

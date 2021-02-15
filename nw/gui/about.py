@@ -62,7 +62,7 @@ class GuiAbout(QDialog):
         nPx = self.mainConf.pxInt(96)
         self.nwIcon = QLabel()
         self.nwIcon.setPixmap(self.theParent.theTheme.getPixmap("novelwriter", (nPx, nPx)))
-        self.lblName = QLabel("<b>%s</b>" % self.tr("novelWriter"))
+        self.lblName = QLabel("<b>novelWriter</b>")
         self.lblVers = QLabel("v%s" % nw.__version__)
         self.lblDate = QLabel(datetime.strptime(nw.__date__, "%Y-%m-%d").strftime("%x"))
 
@@ -136,24 +136,31 @@ class GuiAbout(QDialog):
         aboutMsg   = "".join([
             "<h2>%s</h2>" % self.tr("About novelWriter"),
             "<p>{copyright:s}.</p>",
-            "<p>%s</p>" % (self.tr("{0}: {1}").format(
-                self.tr("Website"),
-                "<a href=\"{website:s}\">{domain:s}</a>"
-            )),
-            "<p>%s</p>" % self.tr("novelWriter is a markdown-like text editor designed for "
-                                  "organising and writing novels. It is written in Python 3 with "
-                                  "a Qt5 GUI, using PyQt5."),
-            "<p>%s</p>" % self.tr("novelWriter is free software: you can redistribute it and/or "
-                                  "modify it under the terms of the GNU General Public License as "
-                                  "published by the Free Software Foundation, either version 3 of "
-                                  "the License, or (at your option) any later version."),
-            "<p>%s</p>" % self.tr("novelWriter is distributed in the hope that it will be "
-                                  "useful, but WITHOUT ANY WARRANTY; without even the implied "
-                                  "warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR "
-                                  "PURPOSE."),
-            "<p>%s</p>" % (self.tr("See the License tab for the full license text, or visit the "
-                                   "GNU website at {0} for more details.").format(
-                           "<a href=\"https://www.gnu.org/licenses/gpl-3.0.html\">GPL v3.0</a>")),
+            "<p>%s</p>" % self.tr("{0}: {1}").format(
+                self.tr("Website"), "<a href=\"{website:s}\">{domain:s}</a>"
+            ),
+            "<p>%s</p>" % self.tr(
+                "novelWriter is a markdown-like text editor designed for organising and "
+                "writing novels. It is written in Python 3 with a Qt5 GUI, using PyQt5."
+            ),
+            "<p>%s</p>" % self.tr(
+                "novelWriter is free software: you can redistribute it and/or modify it "
+                "under the terms of the GNU General Public License as published by the "
+                "Free Software Foundation, either version 3 of the License, or (at your "
+                "option) any later version."
+            ),
+            "<p>%s</p>" % self.tr(
+                "novelWriter is distributed in the hope that it will be useful, but "
+                "WITHOUT ANY WARRANTY; without even the implied warranty of "
+                "MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE."
+            ),
+            "<p>%s</p>" % (
+                self.tr(
+                    "See the License tab for the full license text, or visit the "
+                    "GNU website at {0} for more details.").format(
+                        "<a href=\"https://www.gnu.org/licenses/gpl-3.0.html\">GPL v3.0</a>"
+                    )
+                ),
             "<h3>%s</h3>" % self.tr("Credits"),
             "<p>{credits:s}</p>",
         ]).format(
@@ -167,49 +174,61 @@ class GuiAbout(QDialog):
         theIcons = self.theParent.theTheme.theIcons
         if theTheme.themeName:
             aboutMsg += "".join([
-                ("<h4>%s</h4>" % self.tr("{0}: {1}").format(self.tr("Theme"), theTheme.themeName)),
+                "<h4>%s</h4>" % self.tr("{0}: {1}").format(
+                    self.tr("Theme"), theTheme.themeName
+                ),
                 "<p>",
-                ("%s<br/>" % self.tr("<b>{0}:</b> {1}").format(
-                    self.tr("Author"), theTheme.themeAuthor)),
-                ("%s<br/>" % self.tr("<b>{0}:</b> {1}").format(
-                    self.tr("Credit"), theTheme.themeCredit)),
-                (self.tr("<b>{0}:</b> {1}").format(
-                    self.tr("License"),
-                    "<a href=\"{0}\">{1}</a>".format(
-                        theTheme.themeLicenseUrl, theTheme.themeLicense)
-                )),
+                "%s<br/>" % self.tr("<b>{0}:</b> {1}").format(
+                    self.tr("Author"), theTheme.themeAuthor
+                ),
+                "%s<br/>" % self.tr("<b>{0}:</b> {1}").format(
+                    self.tr("Credit"), theTheme.themeCredit
+                ),
+                self.tr("<b>{0}:</b> {1}").format(
+                    self.tr("License"), "<a href='{0}'>{1}</a>".format(
+                        theTheme.themeLicenseUrl, theTheme.themeLicense
+                    )
+                ),
                 "</p>"
             ])
+
         if theIcons.themeName:
             aboutMsg += "".join([
-                ("<h4>%s</h4>" % self.tr("{0}: {1}").format(self.tr("Icons"), theIcons.themeName)),
+                "<h4>%s</h4>" % self.tr("{0}: {1}").format(
+                    self.tr("Icons"), theIcons.themeName
+                ),
                 "<p>",
-                ("%s<br/>" % self.tr("<b>{0}:</b> {1}").format(
-                    self.tr("Author"), theIcons.themeAuthor)),
-                ("%s<br/>" % self.tr("<b>{0}:</b> {1}").format(
-                    self.tr("Credit"), theIcons.themeCredit)),
-                (self.tr("<b>{0}:</b> {1}").format(
-                    self.tr("License"),
-                    "<a href=\"{0}\">{1}</a>".format(
-                        theIcons.themeLicenseUrl, theIcons.themeLicense)
-                )),
+                "%s<br/>" % self.tr("<b>{0}:</b> {1}").format(
+                    self.tr("Author"), theIcons.themeAuthor
+                ),
+                "%s<br/>" % self.tr("<b>{0}:</b> {1}").format(
+                    self.tr("Credit"), theIcons.themeCredit
+                ),
+                self.tr("<b>{0}:</b> {1}").format(
+                    self.tr("License"), "<a href='{0}'>{1}</a>".format(
+                        theIcons.themeLicenseUrl, theIcons.themeLicense
+                    )
+                ),
                 "</p>"
             ])
+
         if theTheme.syntaxName:
             aboutMsg += "".join([
-                ("<h4>%s</h4>" % self.tr("{0}: {1}").format(
-                    self.tr("Syntax"),
-                    theTheme.syntaxName)),
+                "<h4>%s</h4>" % self.tr("{0}: {1}").format(
+                    self.tr("Syntax"), theTheme.syntaxName
+                ),
                 "<p>",
-                ("%s<br/>" % self.tr("<b>{0}:</b> {1}").format(
-                    self.tr("Author"), theTheme.syntaxAuthor)),
-                ("%s<br/>" % self.tr("<b>{0}</b> {1}").format(
-                    self.tr("Credit"), theTheme.syntaxCredit)),
-                (self.tr("<b>{0}:</b> {1}").format(
-                    self.tr("License"),
-                    "<a href=\"{0}\">{1}</a>".format(
-                        theTheme.syntaxLicenseUrl, theTheme.syntaxLicense)
-                )),
+                "%s<br/>" % self.tr("<b>{0}:</b> {1}").format(
+                    self.tr("Author"), theTheme.syntaxAuthor
+                ),
+                "%s<br/>" % self.tr("<b>{0}</b> {1}").format(
+                    self.tr("Credit"), theTheme.syntaxCredit
+                ),
+                self.tr("<b>{0}:</b> {1}").format(
+                    self.tr("License"), "<a href='{0}'>{1}</a>".format(
+                        theTheme.syntaxLicenseUrl, theTheme.syntaxLicense
+                    )
+                ),
                 "</p>"
             ])
 

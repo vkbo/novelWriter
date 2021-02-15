@@ -155,8 +155,11 @@ class GuiProjectDetailsMain(QWidget):
         self.bookTitle.setAlignment(Qt.AlignHCenter)
         self.bookTitle.setWordWrap(True)
 
-        self.projName = QLabel(self.tr("{0}: {1}").format(
-            self.tr("Working Title"), self.theProject.projName))
+        self.projName = QLabel(
+            self.tr("{0}: {1}").format(
+                self.tr("Working Title"), self.theProject.projName
+            )
+        )
         workFont = self.projName.font()
         workFont.setPointSizeF(0.8*fPt)
         workFont.setItalic(True)
@@ -273,13 +276,14 @@ class GuiProjectDetailsContents(QWidget):
         self.tocTree.setIndentation(0)
         self.tocTree.setColumnCount(6)
         self.tocTree.setSelectionMode(QAbstractItemView.NoSelection)
-        self.tocTree.setHeaderLabels(
-            [self.tr("Title"),
-             self.tr("Words"),
-             self.tr("Pages"),
-             self.tr("Page"),
-             self.tr("Progress"),
-             ""])
+        self.tocTree.setHeaderLabels([
+            self.tr("Title"),
+            self.tr("Words"),
+            self.tr("Pages"),
+            self.tr("Page"),
+            self.tr("Progress"),
+            ""
+        ])
 
         treeHeadItem = self.tocTree.headerItem()
         treeHeadItem.setTextAlignment(self.C_WORDS, Qt.AlignRight)
