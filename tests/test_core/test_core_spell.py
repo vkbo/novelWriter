@@ -46,11 +46,6 @@ def testCoreSpell_Super(monkeypatch, tmpDir, tmpConf):
     assert spChk.checkWord("")
     assert spChk.suggestWords("") == []
     assert spChk.listDictionaries() == []
-    assert spChk.describeDict() == ("", "")
-
-    # Check language info
-    assert NWSpellCheck.expandLanguage("en") == "English"
-    assert NWSpellCheck.expandLanguage("en_GB") == "English (GB)"
 
     # Add a word to the user's dictionary
     assert spChk._readProjectDictionary("dummy") is False
@@ -92,7 +87,6 @@ def testCoreSpell_Enchant(monkeypatch, tmpDir, tmpConf):
     assert spChk.checkWord("")
     assert spChk.suggestWords("") == []
     assert spChk.listDictionaries() == []
-    assert spChk.describeDict() == ("", "")
 
     monkeypatch.undo()
 
@@ -115,10 +109,6 @@ def testCoreSpell_Enchant(monkeypatch, tmpDir, tmpConf):
 
     dList = spChk.listDictionaries()
     assert len(dList) > 0
-
-    aTag, aName = spChk.describeDict()
-    assert aTag == "en"
-    assert aName != ""
 
 # END Test testCoreSpell_Enchant
 
@@ -179,10 +169,5 @@ def testCoreSpell_Simple(monkeypatch, tmpDir, tmpConf):
 
     # List dictionaries
     assert spChk.listDictionaries() == [("en", "English [%s]" % nwConst.SP_INTERNAL)]
-
-    # Description
-    aTag, aName = spChk.describeDict()
-    assert aTag == "en"
-    assert aName == nwConst.SP_INTERNAL
 
 # END Test testCoreSpell_Simple

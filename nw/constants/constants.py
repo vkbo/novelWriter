@@ -25,6 +25,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
 
 from PyQt5.QtCore import QT_TRANSLATE_NOOP
+
 from nw.constants.enum import (
     nwItemClass, nwItemLayout, nwItemType, nwOutline
 )
@@ -42,8 +43,8 @@ class nwConst():
     MAX_BUILDSIZE = 10000000 # Maxium size of a project build
 
     # Spell Check Providers
-    SP_INTERNAL = QT_TRANSLATE_NOOP("Constant", "internal")
-    SP_ENCHANT  = QT_TRANSLATE_NOOP("Constant", "enchant")
+    SP_INTERNAL = "internal"
+    SP_ENCHANT  = "enchant"
 
 # END Class nwConst
 

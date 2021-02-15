@@ -78,9 +78,6 @@ class Config:
         self.iconPath  = None   # The full path to the nw/assets/icons folder
         self.helpPath  = None   # The full path to the novelwriter .qhc help file
 
-        # Internationalisation
-        self.qtTrans   = {}
-
         # Runtime Settings and Variables
         self.confChanged = False # True whenever the config has chenged, false after save
         self.hasHelp     = False # True if the Qt help files are present in the assets folder
@@ -97,12 +94,10 @@ class Config:
 
         ## Localisation
         self.qLocal     = QLocale.system()
-        self.guiLang    = self.qLocal.name()
+        self.guiLang    = self.qLocal.bcp47Name()
         self.qtLangPath = QLibraryInfo.location(QLibraryInfo.TranslationsPath)
         self.nwLangPath = None
-        self.i18nQtMain = QTranslator()
-        self.i18nQtBase = QTranslator()
-        self.i18nNWBase = QTranslator()
+        self.qtTrans    = {}
 
         ## Sizes
         self.winGeometry   = [1200, 650]
@@ -376,18 +371,22 @@ class Config:
         """
         self.qLocal = QLocale(self.guiLang)
         QLocale.setDefault(self.qLocal)
+        self.qtTrans = {}
 
-        if self.i18nQtMain.load(self.qLocal, "qt", "_", self.qtLangPath):
-            nwApp.installTranslator(self.i18nQtMain)
-            logger.debug("Loaded: %s" % self.i18nQtMain.filePath())
-
-        if self.i18nQtBase.load(self.qLocal, "qtbase", "_", self.qtLangPath):
-            nwApp.installTranslator(self.i18nQtBase)
-            logger.debug("Loaded: %s" % self.i18nQtBase.filePath())
-
-        if self.i18nNWBase.load(self.qLocal, "nw", "_", self.nwLangPath):
-            nwApp.installTranslator(self.i18nNWBase)
-            logger.debug("Loaded: %s" % self.i18nNWBase.filePath())
+        langList = [
+            (self.qtLangPath, "qt"),
+            (self.qtLangPath, "qtbase"),
+            (self.nwLangPath, "nw"),
+        ]
+        for lngPath, lngBase in langList:
+            for lngCode in self.qLocal.uiLanguages():
+                qTrans = QTranslator()
+                lngFile = "%s_%s" % (lngBase, lngCode)
+                if lngFile not in self.qtTrans:
+                    if qTrans.load(lngFile, lngPath):
+                        logger.debug("Loaded: %s" % qTrans.filePath())
+                        nwApp.installTranslator(qTrans)
+                        self.qtTrans[lngFile] = qTrans
 
         return
 

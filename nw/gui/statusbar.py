@@ -29,10 +29,10 @@ import logging
 
 from time import time
 
+from PyQt5.QtCore import QLocale
 from PyQt5.QtGui import QColor, QPainter
 from PyQt5.QtWidgets import qApp, QStatusBar, QLabel, QAbstractButton
 
-from nw.core import NWSpellCheck
 from nw.common import formatTime
 
 logger = logging.getLogger(__name__)
@@ -147,19 +147,17 @@ class GuiMainStatus(QStatusBar):
         qApp.processEvents()
         return
 
-    def setLanguage(self, theLanguage, theProvider=""):
+    def setLanguage(self, theLang):
         """Set the language code for the spell checker.
         """
-        if theLanguage is None:
+        if theLang is None:
             self.langText.setText(self.tr("None"))
-            self.langText.setToolTip("")
         else:
-            self.langText.setText(NWSpellCheck.expandLanguage(theLanguage))
-            self.langText.setToolTip(
-                self.tr("{0}: {1}").format(
-                    self.tr("Provider"),
-                    theProvider if theProvider else self.tr("unknown"))
-            )
+            qLocal = QLocale(theLang)
+            spLang = qLocal.nativeLanguageName().title()
+            spName = qLocal.bcp47Name()
+            self.langText.setText("%s (%s)" % (spLang, spName))
+
         return
 
     def setProjectStatus(self, isChanged):

@@ -28,7 +28,7 @@ import nw
 import logging
 import os
 
-from PyQt5.QtCore import QCoreApplication, Qt
+from PyQt5.QtCore import Qt, QLocale
 from PyQt5.QtGui import QFont
 from PyQt5.QtWidgets import (
     QDialog, QWidget, QComboBox, QSpinBox, QPushButton, QDialogButtonBox,
@@ -627,19 +627,20 @@ class GuiPreferencesEditor(QWidget):
         self.mainForm.setHelpTextStyle(self.theTheme.helpText)
         self.setLayout(self.mainForm)
 
+        mW = self.mainConf.pxInt(250)
+
         # Spell Checking
         # ==============
         self.mainForm.addGroupLabel(self.tr("Spell Checking"))
 
         ## Spell Check Provider and Language
         self.spellLangList = QComboBox(self)
+        self.spellLangList.setMaximumWidth(mW)
+
         self.spellToolList = QComboBox(self)
-        self.spellToolList.addItem(
-            self.tr("{0} ({1})").format(self.tr("Internal"), "difflib"),
-            QCoreApplication.translate("Constant", nwConst.SP_INTERNAL))
-        self.spellToolList.addItem(
-            self.tr("{0} ({1})").format(self.tr("Spell Enchant"), "pyenchant"),
-            QCoreApplication.translate("Constant", nwConst.SP_ENCHANT))
+        self.spellToolList.setMaximumWidth(mW)
+        self.spellToolList.addItem("%s (difflib)" % self.tr("Internal"), nwConst.SP_INTERNAL)
+        self.spellToolList.addItem("Spell Enchant (pyenchant)", nwConst.SP_ENCHANT)
 
         theModel  = self.spellToolList.model()
         idEnchant = self.spellToolList.findData(nwConst.SP_ENCHANT)
@@ -799,8 +800,11 @@ class GuiPreferencesEditor(QWidget):
             theDict = NWSpellSimple()
 
         self.spellLangList.clear()
-        for spTag, spName in theDict.listDictionaries():
-            self.spellLangList.addItem(spName, spTag)
+        for spTag, spProv in theDict.listDictionaries():
+            qLocal = QLocale(spTag)
+            spLang = qLocal.nativeLanguageName().title()
+            spName = qLocal.bcp47Name()
+            self.spellLangList.addItem("%s (%s) [%s]" % (spLang, spName, spProv), spTag)
 
         spellIdx = self.spellLangList.findData(self.mainConf.spellLanguage)
         if spellIdx != -1:
