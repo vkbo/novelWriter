@@ -1397,7 +1397,7 @@ class NWProject():
 
             if oName:
                 oName = self.tr("[{0}] {1}").format(
-                    oPrefix, oName.strip("[%s]" % oPrefix).strip()
+                    oPrefix, oName.replace("[%s]" % oPrefix, "").strip()
                 )
             else:
                 nOrph += 1
