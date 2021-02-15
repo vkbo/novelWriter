@@ -145,7 +145,7 @@ def testBaseConfig_Init(monkeypatch, tmpDir, fncDir, outDir, refDir):
     assert os.path.isfile(confFile)
 
     copyfile(confFile, testFile)
-    assert cmpFiles(testFile, compFile, [2, 9])
+    assert cmpFiles(testFile, compFile, [2, 9, 10])
     monkeypatch.undo()
 
     # Load and save with OSError
@@ -193,7 +193,7 @@ def testBaseConfig_Init(monkeypatch, tmpDir, fncDir, outDir, refDir):
     assert tstConf.saveConfig()
 
     copyfile(confFile, testFile)
-    assert cmpFiles(testFile, compFile, [2, 9])
+    assert cmpFiles(testFile, compFile, [2, 9, 10])
 
 # END Test testBaseConfig_Init
 
@@ -458,7 +458,7 @@ def testBaseConfig_SettersGetters(tmpConf, tmpDir, outDir, refDir):
     assert not tmpConf.confChanged
 
     copyfile(confFile, testFile)
-    assert cmpFiles(testFile, compFile, [2, 9])
+    assert cmpFiles(testFile, compFile, [2, 9, 10])
 
 # END Test testBaseConfig_SettersGetters
 
