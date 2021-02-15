@@ -120,34 +120,39 @@ def numberToRoman(numVal, isLower=False):
     return romNum.lower() if isLower else romNum
 
 # =============================================================================================== #
-#  Convert an Integer to a Word Number
+#  Convert an Integer to a Number String
 # =============================================================================================== #
 
-def numberToWord(numVal, theLanguage):
+def numberToWord(numVal, theLang):
     """Wrapper for converting numbers to words for chapter headings.
     """
+    if not isinstance(numVal, int):
+        return "[NaN]"
+
+    if numVal < 0:
+        return "[<0]"
+
+    if numVal > 999:
+        return "[>999]"
+
     numWord = ""
-    if theLanguage == "en": # TODO: I18N
-        numWord = _numberToWordEN(numVal)
+    theCode = theLang.split("_")[0]
+    if theCode == "en":
+        numWord = _numberToWord_EN(numVal)
+    elif theCode in ("nb", "nn"):
+        numWord = _numberToWord_NO(numVal, theCode)
     else:
-        numWord = _numberToWordEN(numVal)
+        # Default to return the number as a string
+        numWord = str(numVal)
+
     return numWord
 
-def _numberToWordEN(numVal):
+def _numberToWord_EN(numVal):
     """Convert numbers to English words.
     """
     oneWord = ""
     tenWord = ""
     hunWord = ""
-
-    if not isinstance(numVal, int):
-        return "[NaN]"
-
-    if numVal < 0:
-        return "[Negative]"
-
-    if numVal > 999:
-        return "[Out of Range]"
 
     if numVal == 0:
         return "Zero"
@@ -156,38 +161,83 @@ def _numberToWordEN(numVal):
     tenVal = (numVal - oneVal) % 100
     hunVal = (numVal - tenVal - oneVal) % 1000
 
-    theHundreds = {
-        100: "One Hundred",   200: "Two Hundred",   300: "Three Hundred",
-        400: "Four Hundred",  500: "Five Hundred",  600: "Six Hundred",
-        700: "Seven Hundred", 800: "Eight Hundred", 900: "Nine Hundred",
-    }
-    theTens = {
-        20: "Twenty", 30: "Thirty",  40: "Forty",  50: "Fifty",
-        60: "Sixty",  70: "Seventy", 80: "Eighty", 90: "Ninety",
-    }
-    theTeens = {
-        0: "Ten",     1: "Eleven",  2: "Twelve",    3: "Thirteen", 4: "Fourteen",
-        5: "Fifteen", 6: "Sixteen", 7: "Seventeen", 8: "Eighteen", 9: "Nineteen",
-    }
-    theOnes = {
-        0: "",     1: "One", 2: "Two",   3: "Three", 4: "Four",
-        5: "Five", 6: "Six", 7: "Seven", 8: "Eight", 9: "Nine",
+    theWords = {
+        0: "", 1: "One", 2: "Two", 3: "Three", 4: "Four", 5: "Five",
+        6: "Six", 7: "Seven", 8: "Eight", 9: "Nine", 10: "Ten",
+        11: "Eleven", 12: "Twelve", 13: "Thirteen", 14: "Fourteen",
+        15: "Fifteen", 16: "Sixteen", 17: "Seventeen", 18: "Eighteen",
+        19: "Nineteen", 20: "Twenty", 30: "Thirty", 40: "Forty",
+        50: "Fifty", 60: "Sixty", 70: "Seventy", 80: "Eighty",
+        90: "Ninety", 100: "One Hundred", 200: "Two Hundred",
+        300: "Three Hundred", 400: "Four Hundred", 500: "Five Hundred",
+        600: "Six Hundred", 700: "Seven Hundred", 800: "Eight Hundred",
+        900: "Nine Hundred",
     }
 
-    retVale = ""
-    hunWord = theHundreds.get(hunVal, "")
+    retVal = ""
+    hunWord = theWords.get(hunVal, "")
     if tenVal == 10:
-        oneWord = theTeens.get(oneVal, "")
-        retVale = f"{hunWord} {oneWord}".strip()
+        oneWord = theWords.get(oneVal+10, "")
+        retVal = f"{hunWord} {oneWord}".strip()
     else:
-        oneWord = theOnes.get(oneVal, "")
+        oneWord = theWords.get(oneVal, "")
         if tenVal == 0:
-            retVale = f"{hunWord} {oneWord}".strip()
+            retVal = f"{hunWord} {oneWord}".strip()
         else:
-            tenWord = theTens.get(tenVal, "")
+            tenWord = theWords.get(tenVal, "")
             if oneVal == 0:
-                retVale = f"{hunWord} {tenWord}".strip()
+                retVal = f"{hunWord} {tenWord}".strip()
             else:
-                retVale = f"{hunWord} {tenWord}-{oneWord}".strip()
+                retVal = f"{hunWord} {tenWord}-{oneWord}".strip()
 
-    return retVale
+    return retVal
+
+def _numberToWord_NO(numVal, theCode):
+    """Convert numbers to Norwegian words.
+    """
+    oneWord = ""
+    tenWord = ""
+    hunWord = ""
+
+    if numVal == 0:
+        return "null"
+
+    oneVal = numVal % 10
+    tenVal = (numVal - oneVal) % 100
+    hunVal = (numVal - tenVal - oneVal) % 1000
+
+    theWords = {
+        0: "", 1: "én", 2: "to", 3: "tre", 4: "fire", 5: "fem", 6: "seks",
+        7: "sju", 8: "åtte", 9: "ni", 10: "ti", 11: "elleve", 12: "tolv",
+        13: "tretten", 14: "fjorten", 15: "femten", 16: "seksten", 17: "sytten",
+        18: "atten", 19: "nitten", 20: "tjue", 30: "tretti", 40: "førti",
+        50: "femti", 60: "seksti", 70: "sytti", 80: "åtti", 90: "nitti",
+        100: "ett hundre", 200: "to hundre", 300: "tre hundre", 400: "fire hundre",
+        500: "fem hundre", 600: "seks hundre", 700: "sju hundre",
+        800: "åtte hundre", 900: "ni hundre",
+    }
+
+    if theCode == "nn":
+        theWords[1] = "ein"
+        theWords[100] = "eitt hundre"
+
+    retVal = ""
+    hunWord = theWords.get(hunVal, "")
+    if tenVal == 10:
+        oneWord = theWords.get(oneVal+10, "")
+        sepVal = " og " if hunWord and oneWord else " "
+        retVal = f"{hunWord}{sepVal}{oneWord}"
+    else:
+        oneWord = theWords.get(oneVal, "")
+        if tenVal == 0:
+            sepVal = " og " if hunWord and oneWord else " "
+            retVal = f"{hunWord}{sepVal}{oneWord}".strip()
+        else:
+            tenWord = theWords.get(tenVal, "")
+            sepVal = " og " if hunWord and tenWord else " "
+            if oneVal == 0:
+                retVal = f"{hunWord}{sepVal}{tenWord}".strip()
+            else:
+                retVal = f"{hunWord}{sepVal}{tenWord}{oneWord}".strip()
+
+    return retVal.strip()

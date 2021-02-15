@@ -151,6 +151,10 @@ class Tokenizer():
         self._trComment = self.tr("Comment")
         self._trNotes = self.tr("Notes")
 
+        self._spellLang = self.theProject.projLang
+        if self._spellLang is None:
+            self._spellLang = self.theParent.mainConf.spellLanguage
+
         return
 
     ##
@@ -664,7 +668,7 @@ class Tokenizer():
         theTitle = theTitle.replace(r"%sc%", str(self.numChScene))
         theTitle = theTitle.replace(r"%sca%", str(self.numAbsScene))
         if r"%chw%" in theTitle:
-            theTitle = theTitle.replace(r"%chw%", numberToWord(self.numChapter, "en"))
+            theTitle = theTitle.replace(r"%chw%", numberToWord(self.numChapter, self._spellLang))
         if r"%chi%" in theTitle:
             theTitle = theTitle.replace(r"%chi%", numberToRoman(self.numChapter, True))
         if r"%chI%" in theTitle:

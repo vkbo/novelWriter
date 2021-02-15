@@ -147,20 +147,20 @@ class GuiMainStatus(QStatusBar):
         qApp.processEvents()
         return
 
-    def setLanguage(self, theLang, theProvider=""):
+    def setLanguage(self, theLanguage, theProvider=""):
         """Set the language code for the spell checker.
         """
-        if theLang is None:
+        if theLanguage is None:
             self.langText.setText(self.tr("None"))
             self.langText.setToolTip("")
         else:
-            qLocal = QLocale(theLang)
+            qLocal = QLocale(theLanguage)
             spLang = qLocal.nativeLanguageName().title()
             self.langText.setText(spLang)
             if theProvider:
-                self.langText.setToolTip("%s (%s)" % (theLang, theProvider))
+                self.langText.setToolTip("%s (%s)" % (theLanguage, theProvider))
             else:
-                self.langText.setToolTip(theLang)
+                self.langText.setToolTip(theLanguage)
 
         return
 
