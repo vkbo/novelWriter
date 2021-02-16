@@ -27,6 +27,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 import nw
 import logging
 import os
+import json
 import shutil
 
 from lxml import etree
@@ -58,6 +59,7 @@ class NWProject():
         # Core Elements
         self.optState = OptionState(self) # Project-specific GUI options
         self.projTree = NWTree(self)      # The project tree
+        self.langData = {}                # Localisation data
 
         # Project Status
         self.projOpened  = 0     # The time stamp of when the project file was opened
@@ -605,6 +607,10 @@ class NWProject():
         self.theParent.setStatus("Opened Project: %s" % self.projName)
 
         self._scanProjectFolder()
+        if self.projLang is None:
+            self._loadProjectLocalisation(self.mainConf.guiLang)
+        else:
+            self._loadProjectLocalisation(self.projLang)
 
         self.currWCount = self.lastWCount
         self.projOpened = time()
@@ -1200,6 +1206,30 @@ class NWProject():
     ##
     #  Internal Functions
     ##
+
+    def _loadProjectLocalisation(self, theLang):
+        """Load the language data for the current project language.
+        """
+        lngShort = theLang.split("_")[0]
+        loadFile = os.path.join(self.mainConf.langPath, "project_en.json")
+        chkFile1 = os.path.join(self.mainConf.langPath, "project_%s.json" % theLang)
+        chkFile2 = os.path.join(self.mainConf.langPath, "project_%s.json" % lngShort)
+        if os.path.isfile(chkFile1):
+            loadFile = chkFile1
+        elif os.path.isfile(chkFile2):
+            loadFile = chkFile2
+
+        try:
+            with open(loadFile, mode="r", encoding="utf8") as inFile:
+                self.langData = json.load(inFile)
+            logger.debug("Loaded project language file: %s" % os.path.basename(loadFile))
+
+        except Exception:
+            logger.error("Failed to load index file")
+            nw.logException()
+            return False
+
+        return True
 
     def _readLockFile(self):
         """Reads the lock file in the project folder.
