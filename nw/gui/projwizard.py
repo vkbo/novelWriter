@@ -95,14 +95,12 @@ class ProjWizardIntroPage(QWizardPage):
         self.theTheme  = theWizard.theTheme
 
         self.setTitle(self.tr("Create New Project"))
-        self.theText = QLabel(
-            self.tr(
-                "Provide at least a working title. The working title should not "
-                "be change beyond this point as it is used by the application for "
-                "generating file names for for instance backups. The other fields "
-                "are optional and can be changed at any time in Project Settings."
-            )
-        )
+        self.theText = QLabel(self.tr(
+            "Provide at least a working title. The working title should not "
+            "be change beyond this point as it is used by the application for "
+            "generating file names for for instance backups. The other fields "
+            "are optional and can be changed at any time in Project Settings."
+        ))
         self.theText.setWordWrap(True)
 
         self.imgCredit = QLabel(self.tr("Side image by {0}, {1}").format(
@@ -166,12 +164,10 @@ class ProjWizardFolderPage(QWizardPage):
         self.theTheme  = theWizard.theTheme
 
         self.setTitle(self.tr("Select Project Folder"))
-        self.theText = QLabel(
-            self.tr(
-                "Select a location to store the project. A new project folder "
-                "will be created in the selected location."
-            )
-        )
+        self.theText = QLabel(self.tr(
+            "Select a location to store the project. A new project folder "
+            "will be created in the selected location."
+        ))
         self.theText.setWordWrap(True)
 
         xW = self.mainConf.pxInt(300)
@@ -242,13 +238,11 @@ class ProjWizardPopulatePage(QWizardPage):
         self.theWizard = theWizard
 
         self.setTitle(self.tr("Populate Project"))
-        self.theText = QLabel(
-            self.tr(
-                "Choose how to pre-fill the project. Either with a minimal set of "
-                "starter items, an example project explaining and showing many of "
-                "the features, or show further custom options on the next page."
-            )
-        )
+        self.theText = QLabel(self.tr(
+            "Choose how to pre-fill the project. Either with a minimal set of "
+            "starter items, an example project explaining and showing many of "
+            "the features, or show further custom options on the next page."
+        ))
         self.theText.setWordWrap(True)
 
         vS = self.mainConf.pxInt(12)
@@ -299,13 +293,11 @@ class ProjWizardCustomPage(QWizardPage):
         self.theWizard = theWizard
 
         self.setTitle(self.tr("Custom Project Options"))
-        self.theText = QLabel(
-            self.tr(
-                "Select which additional root folders to make, and how to populate "
-                "the Novel folder. If you don't want to add chapters or scenes, set "
-                "the values to 0. You can add scenes without chapters."
-            )
-        )
+        self.theText = QLabel(self.tr(
+            "Select which additional root folders to make, and how to populate "
+            "the Novel folder. If you don't want to add chapters or scenes, set "
+            "the values to 0. You can add scenes without chapters."
+        ))
         self.theText.setWordWrap(True)
 
         vS = self.mainConf.pxInt(12)
@@ -419,12 +411,14 @@ class ProjWizardFinalPage(QWizardPage):
         self.theWizard = theWizard
 
         self.setTitle(self.tr("Finished"))
-        self.theText = QLabel("".join([
-            "<p>%s</p>" % self.tr("All done."),
-            "<p>%s</p>" % self.tr("Press '{0}' to create the new project.").format(
-                self.tr("Done") if self.mainConf.osDarwin else self.tr("Finish")
+        self.theText = QLabel(
+            "<p>{done}</p><p>{help}</p>".format(
+                done = self.tr("All done."),
+                help = self.tr("Press '{0}' to create the new project.").format(
+                    self.tr("Done") if self.mainConf.osDarwin else self.tr("Finish")
+                )
             )
-        ]))
+        )
         self.theText.setWordWrap(True)
 
         # Assemble

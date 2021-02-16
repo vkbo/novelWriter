@@ -986,7 +986,7 @@ class GuiBuildNovel(QDialog):
         # Report to user
         if wSuccess:
             self.theParent.makeAlert(
-                "%s<br> %s" % (
+                "%s<br>%s" % (
                     self.tr("{0} file successfully written to:").format(textFmt), savePath
                 ),
                 nwAlert.INFO
@@ -1189,13 +1189,11 @@ class GuiBuildNovelDocView(QTextBrowser):
 
         self.qDocument = self.document()
         self.qDocument.setDocumentMargin(self.mainConf.getTextMargin())
-        self.setPlaceholderText(
-            self.tr(
-                "This area will show the content of the document to be "
-                "exported or printed. Press the \"Build Preview\" button "
-                "to generate content."
-            )
-        )
+        self.setPlaceholderText(self.tr(
+            "This area will show the content of the document to be "
+            "exported or printed. Press the \"Build Preview\" button "
+            "to generate content."
+        ))
 
         theFont = QFont()
         if self.mainConf.textFont is None:
@@ -1225,7 +1223,7 @@ class GuiBuildNovelDocView(QTextBrowser):
 
         fPx = int(1.1*self.theTheme.fontPixelSize)
 
-        self.theTitle = QLabel("")
+        self.theTitle = QLabel("", self)
         self.theTitle.setIndent(0)
         self.theTitle.setAutoFillBackground(True)
         self.theTitle.setAlignment(Qt.AlignCenter)

@@ -327,9 +327,7 @@ class GuiProjectEditStatus(QWidget):
         """
         if self.selColour is not None:
             newCol = QColorDialog.getColor(
-                self.selColour,
-                self,
-                self.tr("Select Colour"),
+                self.selColour, self, self.tr("Select Colour"),
                 QColorDialog.DontUseNativeDialog
             )
             if newCol.isValid():

@@ -133,42 +133,44 @@ class GuiAbout(QDialog):
         """Generate the content for the About page.
         """
         listPrefix = "&nbsp;&nbsp;&bull;&nbsp;&nbsp;"
-        aboutMsg   = "".join([
-            "<h2>%s</h2>" % self.tr("About novelWriter"),
-            "<p>{copyright:s}.</p>",
-            "<p>%s</p>" % self.tr(
-                "Website: {0}".format("<a href='{website:s}'>{domain:s}</a>")
-            ),
-            "<p>%s</p>" % self.tr(
+        webLink = f"<a href='{nw.__url__:s}'>{nw.__domain__:s}</a>"
+        aboutMsg = (
+            "<h2>{title1}</h2>"
+            "<p>{copyright}.</p>"
+            "<p>{website}</p>"
+            "<p>{intro}</p>"
+            "<p>{license1}</p>"
+            "<p>{license2}</p>"
+            "<p>{license3}</p>"
+            "<h3>{title2}</h3>"
+            "<p>{credits}</p>"
+        ).format(
+            title1    = self.tr("About novelWriter"),
+            copyright = nw.__copyright__,
+            website   = self.tr("Website: {0}").format(webLink),
+            title2    = self.tr("Credits"),
+            credits   = "<br/>".join(["%s%s" % (listPrefix, x) for x in nw.__credits__]),
+            intro     = self.tr(
                 "novelWriter is a markdown-like text editor designed for organising and "
                 "writing novels. It is written in Python 3 with a Qt5 GUI, using PyQt5."
             ),
-            "<p>%s</p>" % self.tr(
+            license1  = self.tr(
                 "novelWriter is free software: you can redistribute it and/or modify it "
                 "under the terms of the GNU General Public License as published by the "
                 "Free Software Foundation, either version 3 of the License, or (at your "
                 "option) any later version."
             ),
-            "<p>%s</p>" % self.tr(
+            license2  = self.tr(
                 "novelWriter is distributed in the hope that it will be useful, but "
                 "WITHOUT ANY WARRANTY; without even the implied warranty of "
                 "MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE."
             ),
-            "<p>%s</p>" % (
-                self.tr(
-                    "See the License tab for the full license text, or visit the "
-                    "GNU website at {0} for more details."
-                ).format(
-                    "<a href=\"https://www.gnu.org/licenses/gpl-3.0.html\">GPL v3.0</a>"
-                )
+            license3  = self.tr(
+                "See the License tab for the full license text, or visit the "
+                "GNU website at {0} for more details."
+            ).format(
+                "<a href='https://www.gnu.org/licenses/gpl-3.0.html'>GPL v3.0</a>"
             ),
-            "<h3>%s</h3>" % self.tr("Credits"),
-            "<p>{credits:s}</p>",
-        ]).format(
-            copyright = nw.__copyright__,
-            website   = nw.__url__,
-            domain    = nw.__domain__,
-            credits   = "<br/>".join(["%s%s" % (listPrefix, x) for x in nw.__credits__]),
         )
 
         theTheme = self.theParent.theTheme

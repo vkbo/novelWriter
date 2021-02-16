@@ -28,9 +28,9 @@ import nw
 import logging
 import os
 
-from time import time
 from lxml import etree
 from hashlib import sha256
+from time import time
 
 from nw.core.item import NWItem
 from nw.common import checkHandle
@@ -199,7 +199,7 @@ class NWTree():
                 outFile.write("=================\n")
                 outFile.write("\n")
                 outFile.write("%-25s  %-9s  %-10s  %s\n" % (
-                    "File Name", "Class", "Layout", "Document Label",
+                    "File Name", "Class", "Layout", "Document Label"
                 ))
                 outFile.write("-"*tocLen + "\n")
                 outFile.write("\n".join(tocList))

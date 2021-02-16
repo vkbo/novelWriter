@@ -24,8 +24,7 @@ You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
 
-from PyQt5.QtCore import QCoreApplication
-from PyQt5.QtCore import QT_TRANSLATE_NOOP as QT_TRN
+from PyQt5.QtCore import QCoreApplication, QT_TRANSLATE_NOOP
 
 from nw.constants.enum import (
     nwItemClass, nwItemLayout, nwItemType, nwOutline
@@ -127,17 +126,17 @@ class nwKeyWords:
 class nwLabels():
 
     CLASS_NAME = {
-        nwItemClass.NO_CLASS  : QT_TRN("Constant", "None"),
-        nwItemClass.NOVEL     : QT_TRN("Constant", "Novel"),
-        nwItemClass.PLOT      : QT_TRN("Constant", "Plot"),
-        nwItemClass.CHARACTER : QT_TRN("Constant", "Characters"),
-        nwItemClass.WORLD     : QT_TRN("Constant", "Locations"),
-        nwItemClass.TIMELINE  : QT_TRN("Constant", "Timeline"),
-        nwItemClass.OBJECT    : QT_TRN("Constant", "Objects"),
-        nwItemClass.ENTITY    : QT_TRN("Constant", "Entity"),
-        nwItemClass.CUSTOM    : QT_TRN("Constant", "Custom"),
-        nwItemClass.ARCHIVE   : QT_TRN("Constant", "Outtakes"),
-        nwItemClass.TRASH     : QT_TRN("Constant", "Trash"),
+        nwItemClass.NO_CLASS  : QT_TRANSLATE_NOOP("Constant", "None"),
+        nwItemClass.NOVEL     : QT_TRANSLATE_NOOP("Constant", "Novel"),
+        nwItemClass.PLOT      : QT_TRANSLATE_NOOP("Constant", "Plot"),
+        nwItemClass.CHARACTER : QT_TRANSLATE_NOOP("Constant", "Characters"),
+        nwItemClass.WORLD     : QT_TRANSLATE_NOOP("Constant", "Locations"),
+        nwItemClass.TIMELINE  : QT_TRANSLATE_NOOP("Constant", "Timeline"),
+        nwItemClass.OBJECT    : QT_TRANSLATE_NOOP("Constant", "Objects"),
+        nwItemClass.ENTITY    : QT_TRANSLATE_NOOP("Constant", "Entity"),
+        nwItemClass.CUSTOM    : QT_TRANSLATE_NOOP("Constant", "Custom"),
+        nwItemClass.ARCHIVE   : QT_TRANSLATE_NOOP("Constant", "Outtakes"),
+        nwItemClass.TRASH     : QT_TRANSLATE_NOOP("Constant", "Trash"),
     }
     CLASS_FLAG = {
         nwItemClass.NO_CLASS  : "0",
@@ -166,15 +165,15 @@ class nwLabels():
         nwItemClass.TRASH     : "cls_trash",
     }
     LAYOUT_NAME = {
-        nwItemLayout.NO_LAYOUT  : QT_TRN("Constant", "None"),
-        nwItemLayout.TITLE      : QT_TRN("Constant", "Title Page"),
-        nwItemLayout.BOOK       : QT_TRN("Constant", "Book"),
-        nwItemLayout.PAGE       : QT_TRN("Constant", "Plain Page"),
-        nwItemLayout.PARTITION  : QT_TRN("Constant", "Partition"),
-        nwItemLayout.UNNUMBERED : QT_TRN("Constant", "Unnumbered"),
-        nwItemLayout.CHAPTER    : QT_TRN("Constant", "Chapter"),
-        nwItemLayout.SCENE      : QT_TRN("Constant", "Scene"),
-        nwItemLayout.NOTE       : QT_TRN("Constant", "Note"),
+        nwItemLayout.NO_LAYOUT  : QT_TRANSLATE_NOOP("Constant", "None"),
+        nwItemLayout.TITLE      : QT_TRANSLATE_NOOP("Constant", "Title Page"),
+        nwItemLayout.BOOK       : QT_TRANSLATE_NOOP("Constant", "Book"),
+        nwItemLayout.PAGE       : QT_TRANSLATE_NOOP("Constant", "Plain Page"),
+        nwItemLayout.PARTITION  : QT_TRANSLATE_NOOP("Constant", "Partition"),
+        nwItemLayout.UNNUMBERED : QT_TRANSLATE_NOOP("Constant", "Unnumbered"),
+        nwItemLayout.CHAPTER    : QT_TRANSLATE_NOOP("Constant", "Chapter"),
+        nwItemLayout.SCENE      : QT_TRANSLATE_NOOP("Constant", "Scene"),
+        nwItemLayout.NOTE       : QT_TRANSLATE_NOOP("Constant", "Note"),
     }
     LAYOUT_FLAG = {
         nwItemLayout.NO_LAYOUT  : "Xo",
@@ -188,27 +187,27 @@ class nwLabels():
         nwItemLayout.NOTE       : "Nt",
     }
     KEY_NAME = {
-        nwKeyWords.TAG_KEY    : QT_TRN("Constant", "Tag"),
-        nwKeyWords.POV_KEY    : QT_TRN("Constant", "Point of View"),
-        nwKeyWords.FOCUS_KEY  : QT_TRN("Constant", "Focus"),
-        nwKeyWords.CHAR_KEY   : QT_TRN("Constant", "Characters"),
-        nwKeyWords.PLOT_KEY   : QT_TRN("Constant", "Plot"),
-        nwKeyWords.TIME_KEY   : QT_TRN("Constant", "Timeline"),
-        nwKeyWords.WORLD_KEY  : QT_TRN("Constant", "Locations"),
-        nwKeyWords.OBJECT_KEY : QT_TRN("Constant", "Objects"),
-        nwKeyWords.ENTITY_KEY : QT_TRN("Constant", "Entities"),
-        nwKeyWords.CUSTOM_KEY : QT_TRN("Constant", "Custom"),
+        nwKeyWords.TAG_KEY    : QT_TRANSLATE_NOOP("Constant", "Tag"),
+        nwKeyWords.POV_KEY    : QT_TRANSLATE_NOOP("Constant", "Point of View"),
+        nwKeyWords.FOCUS_KEY  : QT_TRANSLATE_NOOP("Constant", "Focus"),
+        nwKeyWords.CHAR_KEY   : QT_TRANSLATE_NOOP("Constant", "Characters"),
+        nwKeyWords.PLOT_KEY   : QT_TRANSLATE_NOOP("Constant", "Plot"),
+        nwKeyWords.TIME_KEY   : QT_TRANSLATE_NOOP("Constant", "Timeline"),
+        nwKeyWords.WORLD_KEY  : QT_TRANSLATE_NOOP("Constant", "Locations"),
+        nwKeyWords.OBJECT_KEY : QT_TRANSLATE_NOOP("Constant", "Objects"),
+        nwKeyWords.ENTITY_KEY : QT_TRANSLATE_NOOP("Constant", "Entities"),
+        nwKeyWords.CUSTOM_KEY : QT_TRANSLATE_NOOP("Constant", "Custom"),
     }
     OUTLINE_COLS = {
-        nwOutline.TITLE  : QT_TRN("Constant", "Title"),
-        nwOutline.LEVEL  : QT_TRN("Constant", "Level"),
-        nwOutline.LABEL  : QT_TRN("Constant", "Document"),
-        nwOutline.LINE   : QT_TRN("Constant", "Line"),
-        nwOutline.CCOUNT : QT_TRN("Constant", "Chars"),
-        nwOutline.WCOUNT : QT_TRN("Constant", "Words"),
-        nwOutline.PCOUNT : QT_TRN("Constant", "Pars"),
-        nwOutline.POV    : QT_TRN("Constant", "POV"),
-        nwOutline.FOCUS  : QT_TRN("Constant", "Focus"),
+        nwOutline.TITLE  : QT_TRANSLATE_NOOP("Constant", "Title"),
+        nwOutline.LEVEL  : QT_TRANSLATE_NOOP("Constant", "Level"),
+        nwOutline.LABEL  : QT_TRANSLATE_NOOP("Constant", "Document"),
+        nwOutline.LINE   : QT_TRANSLATE_NOOP("Constant", "Line"),
+        nwOutline.CCOUNT : QT_TRANSLATE_NOOP("Constant", "Chars"),
+        nwOutline.WCOUNT : QT_TRANSLATE_NOOP("Constant", "Words"),
+        nwOutline.PCOUNT : QT_TRANSLATE_NOOP("Constant", "Pars"),
+        nwOutline.POV    : QT_TRANSLATE_NOOP("Constant", "POV"),
+        nwOutline.FOCUS  : QT_TRANSLATE_NOOP("Constant", "Focus"),
         nwOutline.CHAR   : KEY_NAME[nwKeyWords.CHAR_KEY],
         nwOutline.PLOT   : KEY_NAME[nwKeyWords.PLOT_KEY],
         nwOutline.TIME   : KEY_NAME[nwKeyWords.TIME_KEY],
@@ -216,7 +215,7 @@ class nwLabels():
         nwOutline.OBJECT : KEY_NAME[nwKeyWords.OBJECT_KEY],
         nwOutline.ENTITY : KEY_NAME[nwKeyWords.ENTITY_KEY],
         nwOutline.CUSTOM : KEY_NAME[nwKeyWords.CUSTOM_KEY],
-        nwOutline.SYNOP  : QT_TRN("Constant", "Synopsis"),
+        nwOutline.SYNOP  : QT_TRANSLATE_NOOP("Constant", "Synopsis"),
     }
 
 # END Class nwLabels
@@ -226,28 +225,28 @@ class nwQuotes():
     Source: https://en.wikipedia.org/wiki/Quotation_mark
     """
     SYMBOLS = {
-        "\u0027" : QT_TRN("Constant", "Straight single quotation mark"),
-        "\u0022" : QT_TRN("Constant", "Straight double quotation mark"),
+        "\u0027" : QT_TRANSLATE_NOOP("Constant", "Straight single quotation mark"),
+        "\u0022" : QT_TRANSLATE_NOOP("Constant", "Straight double quotation mark"),
 
-        "\u2018" : QT_TRN("Constant", "Left single quotation mark"),
-        "\u2019" : QT_TRN("Constant", "Right single quotation mark"),
-        "\u201a" : QT_TRN("Constant", "Single low-9 quotation mark"),
-        "\u201b" : QT_TRN("Constant", "Single high-reversed-9 quotation mark"),
-        "\u201c" : QT_TRN("Constant", "Left double quotation mark"),
-        "\u201d" : QT_TRN("Constant", "Right double quotation mark"),
-        "\u201e" : QT_TRN("Constant", "Double low-9 quotation mark"),
-        "\u201f" : QT_TRN("Constant", "Double high-reversed-9 quotation mark"),
-        "\u2e42" : QT_TRN("Constant", "Double low-reversed-9 quotation mark"),
+        "\u2018" : QT_TRANSLATE_NOOP("Constant", "Left single quotation mark"),
+        "\u2019" : QT_TRANSLATE_NOOP("Constant", "Right single quotation mark"),
+        "\u201a" : QT_TRANSLATE_NOOP("Constant", "Single low-9 quotation mark"),
+        "\u201b" : QT_TRANSLATE_NOOP("Constant", "Single high-reversed-9 quotation mark"),
+        "\u201c" : QT_TRANSLATE_NOOP("Constant", "Left double quotation mark"),
+        "\u201d" : QT_TRANSLATE_NOOP("Constant", "Right double quotation mark"),
+        "\u201e" : QT_TRANSLATE_NOOP("Constant", "Double low-9 quotation mark"),
+        "\u201f" : QT_TRANSLATE_NOOP("Constant", "Double high-reversed-9 quotation mark"),
+        "\u2e42" : QT_TRANSLATE_NOOP("Constant", "Double low-reversed-9 quotation mark"),
 
-        "\u2039" : QT_TRN("Constant", "Single left-pointing angle quotation mark"),
-        "\u203a" : QT_TRN("Constant", "Single right-pointing angle quotation mark"),
-        "\u00ab" : QT_TRN("Constant", "Left-pointing double angle quotation mark"),
-        "\u00bb" : QT_TRN("Constant", "Right-pointing double angle quotation mark"),
+        "\u2039" : QT_TRANSLATE_NOOP("Constant", "Single left-pointing angle quotation mark"),
+        "\u203a" : QT_TRANSLATE_NOOP("Constant", "Single right-pointing angle quotation mark"),
+        "\u00ab" : QT_TRANSLATE_NOOP("Constant", "Left-pointing double angle quotation mark"),
+        "\u00bb" : QT_TRANSLATE_NOOP("Constant", "Right-pointing double angle quotation mark"),
 
-        "\u300c" : QT_TRN("Constant", "Left corner bracket"),
-        "\u300d" : QT_TRN("Constant", "Right corner bracket"),
-        "\u300e" : QT_TRN("Constant", "Left white corner bracket"),
-        "\u300f" : QT_TRN("Constant", "Right white corner bracket"),
+        "\u300c" : QT_TRANSLATE_NOOP("Constant", "Left corner bracket"),
+        "\u300d" : QT_TRANSLATE_NOOP("Constant", "Right corner bracket"),
+        "\u300e" : QT_TRANSLATE_NOOP("Constant", "Left white corner bracket"),
+        "\u300f" : QT_TRANSLATE_NOOP("Constant", "Right white corner bracket"),
     }
 
 # END Class nwQuotes

@@ -200,7 +200,7 @@ class GuiPreferencesGeneral(QWidget):
             self.tr("Font size"),
             self.guiFontSize,
             self.tr("Changing this requires restarting novelWriter."),
-            theUnit = "pt"
+            theUnit = self.tr("pt")
         )
 
         # GUI Settings
@@ -429,7 +429,8 @@ class GuiPreferencesProjects(QWidget):
         if newDir:
             self.backupPath = newDir
             self.mainForm.setHelpText(
-                self.backupPathRow, self.tr("Path: {0}").format(self.backupPath))
+                self.backupPathRow, self.tr("Path: {0}").format(self.backupPath)
+            )
             return True
 
         return False
@@ -486,7 +487,7 @@ class GuiPreferencesDocuments(QWidget):
             self.tr("Font size"),
             self.textSize,
             self.tr("Font size for the document editor and viewer."),
-            theUnit = "pt"
+            theUnit = self.tr("pt")
         )
 
         # Text Flow

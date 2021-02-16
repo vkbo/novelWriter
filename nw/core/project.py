@@ -1156,8 +1156,8 @@ class NWProject():
         if nAuth == 1:
             authString = self.bookAuthors[0]
         elif nAuth > 1:
-            authString = "%s and %s" % (
-                ", ".join(self.bookAuthors[0:-1]), self.bookAuthors[-1]
+            authString = "%s %s %s" % (
+                ", ".join(self.bookAuthors[0:-1]), self.tr("and"), self.bookAuthors[-1]
             )
 
         return authString

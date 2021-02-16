@@ -27,8 +27,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 import nw
 import logging
 
-from PyQt5.QtCore import Qt
-from PyQt5.QtCore import QT_TRANSLATE_NOOP as QT_TRN
+from PyQt5.QtCore import Qt, QT_TRANSLATE_NOOP
 from PyQt5.QtWidgets import (
     QScrollArea, QWidget, QGridLayout, QHBoxLayout, QGroupBox, QLabel
 )
@@ -41,10 +40,10 @@ logger = logging.getLogger(__name__)
 class GuiOutlineDetails(QScrollArea):
 
     LVL_MAP = {
-        "H1" : QT_TRN("GuiOutlineDetails", "Title"),
-        "H2" : QT_TRN("GuiOutlineDetails", "Chapter"),
-        "H3" : QT_TRN("GuiOutlineDetails", "Scene"),
-        "H4" : QT_TRN("GuiOutlineDetails", "Section"),
+        "H1" : QT_TRANSLATE_NOOP("GuiOutlineDetails", "Title"),
+        "H2" : QT_TRANSLATE_NOOP("GuiOutlineDetails", "Chapter"),
+        "H3" : QT_TRANSLATE_NOOP("GuiOutlineDetails", "Scene"),
+        "H4" : QT_TRANSLATE_NOOP("GuiOutlineDetails", "Section"),
     }
 
     def __init__(self, theParent):

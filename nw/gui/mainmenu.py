@@ -798,7 +798,7 @@ class GuiMainMenu(QMenuBar):
         # Search > Replace Next
         self.aReplaceNext = QAction(self.tr("Replace Next"), self)
         self.aReplaceNext.setStatusTip(
-            self.tr("Find and replace next occurrence text in document")
+            self.tr("Find and replace next occurrence of text in document")
         )
         self.aReplaceNext.setShortcut("Ctrl+Shift+1")
         self.aReplaceNext.triggered.connect(lambda: self._docAction(nwDocAction.REPL_NEXT))
