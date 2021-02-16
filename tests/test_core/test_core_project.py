@@ -928,7 +928,7 @@ def testCoreProject_OrphanedFiles(dummyGUI, nwLipsum):
     # First Item with Meta Data
     orphPath = os.path.join(nwLipsum, "content", "636b6aa9b697b.nwd")
     with open(orphPath, mode="w", encoding="utf8") as outFile:
-        outFile.write("%%~name:Mars\n")
+        outFile.write("%%~name:[Recovered] Mars\n")
         outFile.write("%%~path:5eaea4e8cdee8/636b6aa9b697b\n")
         outFile.write("%%~kind:WORLD/NOTE\n")
         outFile.write("%%~invalid\n")
@@ -962,7 +962,7 @@ def testCoreProject_OrphanedFiles(dummyGUI, nwLipsum):
     # First Item with Meta Data
     oItem = theProject.projTree["636b6aa9b697b"]
     assert oItem is not None
-    assert oItem.itemName == "Recovered: Mars"
+    assert oItem.itemName == "[Recovered] Mars"
     assert oItem.itemHandle == "636b6aa9b697b"
     assert oItem.itemParent == "60bdf227455cc"
     assert oItem.itemClass == nwItemClass.WORLD

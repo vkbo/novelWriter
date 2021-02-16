@@ -52,7 +52,7 @@ class GuiWordList(QDialog):
         self.theProject = theProject
         self.optState   = theProject.optState
 
-        self.setWindowTitle("Project Word List")
+        self.setWindowTitle(self.tr("Project Word List"))
 
         mS = self.mainConf.pxInt(250)
         wW = self.mainConf.pxInt(320)
@@ -68,7 +68,7 @@ class GuiWordList(QDialog):
         # Main Widgets
         # ============
 
-        self.headLabel = QLabel("<b>Project Word List</b>")
+        self.headLabel = QLabel("<b>%s</b>" % self.tr("Project Word List"))
 
         self.listBox = QListWidget()
         self.listBox.setDragDropMode(QAbstractItemView.NoDragDrop)
@@ -77,11 +77,11 @@ class GuiWordList(QDialog):
         self.newEntry = QLineEdit()
 
         self.addButton = QPushButton(self.theTheme.getIcon("add"), "")
-        self.addButton.setToolTip("Add new entry")
+        self.addButton.setToolTip(self.tr("Add new entry"))
         self.addButton.clicked.connect(self._doAdd)
 
         self.delButton = QPushButton(self.theTheme.getIcon("remove"), "")
-        self.delButton.setToolTip("Delete selected entry")
+        self.delButton.setToolTip(self.tr("Delete selected entry"))
         self.delButton.clicked.connect(self._doDelete)
 
         self.editBox = QHBoxLayout()
@@ -90,6 +90,8 @@ class GuiWordList(QDialog):
         self.editBox.addWidget(self.delButton, 0)
 
         self.buttonBox = QDialogButtonBox(QDialogButtonBox.Save | QDialogButtonBox.Close)
+        self.buttonBox.button(QDialogButtonBox.Save).setText(self.tr("Save"))
+        self.buttonBox.button(QDialogButtonBox.Close).setText(self.tr("Close"))
         self.buttonBox.accepted.connect(self._doSave)
         self.buttonBox.rejected.connect(self._doClose)
 
@@ -121,12 +123,13 @@ class GuiWordList(QDialog):
         """
         newWord = self.newEntry.text().strip()
         if newWord == "":
-            self.theParent.makeAlert("Cannot add a blank word.", nwAlert.ERROR)
+            self.theParent.makeAlert(self.tr("Cannot add a blank word."), nwAlert.ERROR)
             return False
 
         if self.listBox.findItems(newWord, Qt.MatchExactly):
             self.theParent.makeAlert(
-                "The word '%s' is already in the word list." % newWord, nwAlert.ERROR
+                self.tr("The word '{0}' is already in the word list.").format(newWord),
+                nwAlert.ERROR
             )
             return False
 

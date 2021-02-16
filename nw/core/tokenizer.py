@@ -28,6 +28,7 @@ import logging
 import re
 
 from operator import itemgetter
+
 from PyQt5.QtCore import QRegularExpression
 
 from nw.core.document import NWDoc
@@ -281,10 +282,10 @@ class Tokenizer():
 
         docSize = len(self.theText)
         if docSize > nwConst.MAX_DOCSIZE:
-            errVal = "Document '%s' is too big (%.2f MB). Skipping." % (
-                self.theItem.itemName, docSize/1.0e6
+            errVal = self.tr("Document '{0}' is too big ({1} MB). Skipping.").format(
+                self.theItem.itemName, f"{docSize/1.0e6:.2f}"
             )
-            self.theText = "# ERROR\n\n%s\n\n" % errVal
+            self.theText = "# %s\n\n%s\n\n" % (self.tr("ERROR"), errVal)
             self.errData.append(errVal)
 
         self.isNone  = self.theItem.itemLayout == nwItemLayout.NO_LAYOUT

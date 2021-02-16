@@ -34,7 +34,10 @@ import os
 from time import time
 
 from PyQt5.Qt import PYQT_VERSION_STR
-from PyQt5.QtCore import QT_VERSION_STR, QStandardPaths, QSysInfo
+from PyQt5.QtCore import (
+    QT_VERSION_STR, QStandardPaths, QSysInfo, QLocale, QLibraryInfo,
+    QTranslator
+)
 
 from nw.constants import nwConst, nwFiles, nwUnicode
 from nw.common import splitVersionNumber, formatTimeStamp
@@ -85,11 +88,17 @@ class Config:
         self.guiSyntax   = "default_light"
         self.guiIcons    = "typicons_colour_light"
         self.guiDark     = False # Load icons for dark backgrounds, if available
-        self.guiLang     = "en"  # Hardcoded for now since the GUI is only in English
         self.guiFont     = ""    # Defaults to system default font
-        self.guiFontSize = 11
+        self.guiFontSize = 11    # Is overridden if system default is loaded
         self.guiScale    = 1.0   # Set automatically by Theme class
         self.lastNotes   = "0x0" # The latest release notes that have been shown
+
+        ## Localisation
+        self.qLocal     = QLocale.system()
+        self.guiLang    = self.qLocal.name()
+        self.qtLangPath = QLibraryInfo.location(QLibraryInfo.TranslationsPath)
+        self.nwLangPath = None
+        self.qtTrans    = {}
 
         ## Sizes
         self.winGeometry   = [1200, 650]
@@ -292,6 +301,9 @@ class Config:
         self.langPath  = os.path.join(self.assetPath, "lang")
         self.appIcon   = os.path.join(self.iconPath, "novelwriter.svg")
 
+        # Internationalisation
+        self.nwLangPath = os.path.join(self.appRoot, "i18n")
+
         logger.verbose("App path: %s" % self.appPath)
         logger.verbose("Last path: %s" % self.lastPath)
 
@@ -356,6 +368,31 @@ class Config:
 
         return True
 
+    def initLocalisation(self, nwApp):
+        """Initialise the localisation of the GUI.
+        """
+        self.qLocal = QLocale(self.guiLang)
+        QLocale.setDefault(self.qLocal)
+        self.qtTrans = {}
+
+        langList = [
+            (self.qtLangPath, "qt"),     # Qt 4.x
+            (self.qtLangPath, "qtbase"), # Qt 5.x
+            (self.nwLangPath, "qtbase"), # Alternative Qt 5.x
+            (self.nwLangPath, "nw"),     # novelWriter
+        ]
+        for lngPath, lngBase in langList:
+            for lngCode in self.qLocal.uiLanguages():
+                qTrans = QTranslator()
+                lngFile = "%s_%s" % (lngBase, lngCode)
+                if lngFile not in self.qtTrans:
+                    if qTrans.load(lngFile, lngPath):
+                        logger.debug("Loaded: %s" % qTrans.filePath())
+                        nwApp.installTranslator(qTrans)
+                        self.qtTrans[lngFile] = qTrans
+
+        return
+
     def loadConfig(self):
         """Load preferences from file and replace default settings.
         """
@@ -398,6 +435,9 @@ class Config:
         )
         self.lastNotes = self._parseLine(
             cnfParse, cnfSec, "lastnotes", self.CNF_STR, self.lastNotes
+        )
+        self.guiLang = self._parseLine(
+            cnfParse, cnfSec, "guilang", self.CNF_STR, self.guiLang
         )
 
         ## Sizes
@@ -628,6 +668,7 @@ class Config:
         cnfParse.set(cnfSec, "guifont",     str(self.guiFont))
         cnfParse.set(cnfSec, "guifontsize", str(self.guiFontSize))
         cnfParse.set(cnfSec, "lastnotes",   str(self.lastNotes))
+        cnfParse.set(cnfSec, "guilang",     str(self.guiLang))
 
         ## Sizes
         cnfSec = "Sizes"

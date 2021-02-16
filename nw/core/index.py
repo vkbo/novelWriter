@@ -228,10 +228,6 @@ class NWIndex():
 
         if self.indexBroken:
             self.clearIndex()
-            self.theParent.makeAlert(
-                "The project index is outdated or broken. Rebuilding index.",
-                nwAlert.WARN
-            )
 
         return
 

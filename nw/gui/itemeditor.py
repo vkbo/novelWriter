@@ -34,7 +34,7 @@ from PyQt5.QtWidgets import (
 )
 
 from nw.gui.custom import QSwitch
-from nw.constants import nwLabels, nwItemLayout, nwItemType, nwLists
+from nw.constants import trConst, nwLabels, nwItemLayout, nwItemType, nwLists
 
 logger = logging.getLogger(__name__)
 
@@ -58,7 +58,7 @@ class GuiItemEditor(QDialog):
         if self.theItem is None:
             self._doClose()
 
-        self.setWindowTitle("Item Settings")
+        self.setWindowTitle(self.tr("Item Settings"))
 
         mVd = self.mainConf.pxInt(220)
         mSp = self.mainConf.pxInt(16)
@@ -103,10 +103,10 @@ class GuiItemEditor(QDialog):
 
         for itemLayout in nwItemLayout:
             if itemLayout in validLayouts:
-                self.editLayout.addItem(nwLabels.LAYOUT_NAME[itemLayout], itemLayout)
+                self.editLayout.addItem(trConst(nwLabels.LAYOUT_NAME[itemLayout]), itemLayout)
 
         # Export Switch
-        self.textExport = QLabel("Include when building project")
+        self.textExport = QLabel(self.tr("Include when building project"))
         self.editExport = QSwitch()
         if self.theItem.itemType == nwItemType.FILE:
             self.editExport.setEnabled(True)
@@ -117,6 +117,8 @@ class GuiItemEditor(QDialog):
 
         # Buttons
         self.buttonBox = QDialogButtonBox(QDialogButtonBox.Ok | QDialogButtonBox.Cancel)
+        self.buttonBox.button(QDialogButtonBox.Ok).setText(self.tr("Ok"))
+        self.buttonBox.button(QDialogButtonBox.Cancel).setText(self.tr("Cancel"))
         self.buttonBox.accepted.connect(self._doSave)
         self.buttonBox.rejected.connect(self._doClose)
 
@@ -136,17 +138,21 @@ class GuiItemEditor(QDialog):
         #  Assemble
         ##
 
+        nameLabel   = QLabel(self.tr("Label"))
+        statusLabel = QLabel(self.tr("Status"))
+        layoutLabel = QLabel(self.tr("Layout"))
+
         self.mainForm = QGridLayout()
         self.mainForm.setVerticalSpacing(vSp)
         self.mainForm.setHorizontalSpacing(mSp)
-        self.mainForm.addWidget(QLabel("Label"),  0, 0, 1, 1)
-        self.mainForm.addWidget(self.editName,    0, 1, 1, 2)
-        self.mainForm.addWidget(QLabel("Status"), 1, 0, 1, 1)
-        self.mainForm.addWidget(self.editStatus,  1, 1, 1, 2)
-        self.mainForm.addWidget(QLabel("Layout"), 2, 0, 1, 1)
-        self.mainForm.addWidget(self.editLayout,  2, 1, 1, 2)
-        self.mainForm.addWidget(self.textExport,  3, 0, 1, 2)
-        self.mainForm.addWidget(self.editExport,  3, 2, 1, 1)
+        self.mainForm.addWidget(nameLabel,       0, 0, 1, 1)
+        self.mainForm.addWidget(self.editName,   0, 1, 1, 2)
+        self.mainForm.addWidget(statusLabel,     1, 0, 1, 1)
+        self.mainForm.addWidget(self.editStatus, 1, 1, 1, 2)
+        self.mainForm.addWidget(layoutLabel,     2, 0, 1, 1)
+        self.mainForm.addWidget(self.editLayout, 2, 1, 1, 2)
+        self.mainForm.addWidget(self.textExport, 3, 0, 1, 2)
+        self.mainForm.addWidget(self.editExport, 3, 2, 1, 1)
         self.mainForm.setColumnStretch(0, 0)
         self.mainForm.setColumnStretch(1, 1)
         self.mainForm.setColumnStretch(2, 0)

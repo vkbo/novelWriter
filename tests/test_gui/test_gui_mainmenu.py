@@ -595,10 +595,9 @@ def testGuiMenu_Insert(qtbot, monkeypatch, nwGUI, fncDir, fncProj):
     nwGUI.mainMenu.aFileDetails.activate(QAction.Trigger)
 
     theBits = theMessage.split("<br>")
-    assert len(theBits) == 3
-    assert theBits[0] == "File details for the currently open file"
-    assert theBits[1] == "Handle: 0e17daca5f3e1"
-    assert theBits[2] == "Location: %s" % os.path.join(fncProj, "content", "0e17daca5f3e1.nwd")
+    assert len(theBits) == 2
+    assert theBits[0] == "The currently open file is saved in:"
+    assert theBits[1] == os.path.join(fncProj, "content", "0e17daca5f3e1.nwd")
 
     # qtbot.stopForInteraction()
 
