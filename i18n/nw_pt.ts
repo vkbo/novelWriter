@@ -96,47 +96,47 @@
 <context>
     <name>GuiBuildNovel</name>
     <message>
-        <location filename="../nw/gui/build.py" line="592"/>
+        <location filename="../nw/gui/build.py" line="581"/>
         <source>Failed to generate preview. The result is too big.</source>
         <translation>A geração do rascunho falhou. O resultado é muito grande.</translation>
     </message>
     <message>
-        <location filename="../nw/gui/build.py" line="822"/>
+        <location filename="../nw/gui/build.py" line="811"/>
         <source>Open Document</source>
         <translation>Abrir Documento</translation>
     </message>
     <message>
-        <location filename="../nw/gui/build.py" line="854"/>
+        <location filename="../nw/gui/build.py" line="843"/>
         <source>PDF</source>
         <translation>PDF</translation>
     </message>
     <message>
-        <location filename="../nw/gui/build.py" line="830"/>
+        <location filename="../nw/gui/build.py" line="819"/>
         <source>Plain HTML</source>
         <translation>HTML Simples</translation>
     </message>
     <message>
-        <location filename="../nw/gui/build.py" line="1011"/>
+        <location filename="../nw/gui/build.py" line="1000"/>
         <source>Unknown format</source>
         <translation>Formato desconhecido</translation>
     </message>
     <message>
-        <location filename="../nw/gui/build.py" line="452"/>
+        <location filename="../nw/gui/build.py" line="441"/>
         <source>novelWriter HTML</source>
         <translation>HTML do novelWriter</translation>
     </message>
     <message>
-        <location filename="../nw/gui/build.py" line="834"/>
+        <location filename="../nw/gui/build.py" line="823"/>
         <source>novelWriter Markdown</source>
         <translation>Markdown do novelWriter</translation>
     </message>
     <message>
-        <location filename="../nw/gui/build.py" line="846"/>
+        <location filename="../nw/gui/build.py" line="835"/>
         <source>JSON + novelWriter HTML</source>
         <translation>JSON + HTML do novelWriter</translation>
     </message>
     <message>
-        <location filename="../nw/gui/build.py" line="482"/>
+        <location filename="../nw/gui/build.py" line="471"/>
         <source>JSON + novelWriters Markdown</source>
         <translation>JSON + Markdown do novelWriter</translation>
     </message>
@@ -156,12 +156,12 @@
         <translation>Título</translation>
     </message>
     <message>
-        <location filename="../nw/gui/build.py" line="334"/>
+        <location filename="../nw/gui/build.py" line="179"/>
         <source>Chapter</source>
         <translation>Capítulo</translation>
     </message>
     <message>
-        <location filename="../nw/gui/build.py" line="334"/>
+        <location filename="../nw/gui/build.py" line="180"/>
         <source>Unnumbered</source>
         <translation>Sem Numeração</translation>
     </message>
@@ -216,107 +216,107 @@
         <translation>Opções de Filtro de Arquivos</translation>
     </message>
     <message>
-        <location filename="../nw/gui/build.py" line="357"/>
+        <location filename="../nw/gui/build.py" line="346"/>
         <source>Ignore the &apos;Include when building project&apos; setting and include all files in the output.</source>
         <translation>Ignora a configuração &apos;Inclui quando estiver construindo o projeto&apos; e inclui todos os arquivos no resultado.</translation>
     </message>
     <message>
-        <location filename="../nw/gui/build.py" line="365"/>
+        <location filename="../nw/gui/build.py" line="354"/>
         <source>Include novel files</source>
         <translation>Inclui arquivos do livro</translation>
     </message>
     <message>
-        <location filename="../nw/gui/build.py" line="366"/>
+        <location filename="../nw/gui/build.py" line="355"/>
         <source>Include note files</source>
         <translation>Inclui arquivos de notas</translation>
     </message>
     <message>
-        <location filename="../nw/gui/build.py" line="367"/>
+        <location filename="../nw/gui/build.py" line="356"/>
         <source>Ignore export flag</source>
         <translation>Ignora opção de exportação</translation>
     </message>
     <message>
-        <location filename="../nw/gui/build.py" line="382"/>
+        <location filename="../nw/gui/build.py" line="371"/>
         <source>Export Options</source>
         <translation>Opções de Exportação</translation>
     </message>
     <message>
-        <location filename="../nw/gui/build.py" line="396"/>
+        <location filename="../nw/gui/build.py" line="385"/>
         <source>Replace tabs with spaces</source>
         <translation>Substitui tabulações com espaços</translation>
     </message>
     <message>
-        <location filename="../nw/gui/build.py" line="423"/>
+        <location filename="../nw/gui/build.py" line="412"/>
         <source>Print</source>
         <translation>Imprimir</translation>
     </message>
     <message>
-        <location filename="../nw/gui/build.py" line="488"/>
+        <location filename="../nw/gui/build.py" line="477"/>
         <source>Close</source>
         <translation>Fechar</translation>
     </message>
     <message>
-        <location filename="../nw/gui/build.py" line="873"/>
+        <location filename="../nw/gui/build.py" line="862"/>
         <source>Save Document As</source>
         <translation>Salvar Documento Como</translation>
     </message>
     <message>
-        <location filename="../nw/gui/build.py" line="482"/>
+        <location filename="../nw/gui/build.py" line="471"/>
         <source>{0} ({1})</source>
         <translation>Não traduzir</translation>
     </message>
     <message>
-        <location filename="../nw/gui/build.py" line="1015"/>
+        <location filename="../nw/gui/build.py" line="1004"/>
         <source>{0} file successfully written to:</source>
         <translation>Arquivo {0} escrito com sucesso para:</translation>
     </message>
     <message>
-        <location filename="../nw/gui/build.py" line="1022"/>
+        <location filename="../nw/gui/build.py" line="1011"/>
         <source>Failed to write {0} file. {1}</source>
         <translation>Falhou para escrever o arquivo {0}. {1}</translation>
     </message>
     <message>
-        <location filename="../nw/gui/build.py" line="412"/>
+        <location filename="../nw/gui/build.py" line="401"/>
         <source>Build Preview</source>
         <translation>Construir Prévia</translation>
     </message>
     <message>
-        <location filename="../nw/gui/build.py" line="426"/>
+        <location filename="../nw/gui/build.py" line="415"/>
         <source>Print Preview</source>
         <translation>Imprimir Prévia</translation>
     </message>
     <message>
-        <location filename="../nw/gui/build.py" line="430"/>
+        <location filename="../nw/gui/build.py" line="419"/>
         <source>Print to PDF</source>
         <translation>Imprimir para PDF</translation>
     </message>
     <message>
-        <location filename="../nw/gui/build.py" line="826"/>
+        <location filename="../nw/gui/build.py" line="815"/>
         <source>Flat Open Document</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../nw/gui/build.py" line="838"/>
+        <location filename="../nw/gui/build.py" line="827"/>
         <source>Standard Markdown</source>
         <translation>Markdown Padrão</translation>
     </message>
     <message>
-        <location filename="../nw/gui/build.py" line="842"/>
+        <location filename="../nw/gui/build.py" line="831"/>
         <source>GitHub Markdown</source>
         <translation>Markdown do GitHub</translation>
     </message>
     <message>
-        <location filename="../nw/gui/build.py" line="762"/>
+        <location filename="../nw/gui/build.py" line="751"/>
         <source>There were problems when building the project</source>
         <translation>Houveram problemas ao construir o projeto</translation>
     </message>
     <message>
-        <location filename="../nw/gui/build.py" line="850"/>
+        <location filename="../nw/gui/build.py" line="839"/>
         <source>JSON + novelWriter Markdown</source>
         <translation>JSON + Markdown do novelWriter</translation>
     </message>
     <message>
-        <location filename="../nw/gui/build.py" line="334"/>
+        <location filename="../nw/gui/build.py" line="181"/>
         <source>Scene</source>
         <translation>Cena</translation>
     </message>
@@ -336,7 +336,7 @@
         <translation>Opções de Inclusão</translation>
     </message>
     <message>
-        <location filename="../nw/gui/build.py" line="397"/>
+        <location filename="../nw/gui/build.py" line="386"/>
         <source>Replace Unicode in HTML</source>
         <translation>Substituir Unicode no HTML</translation>
     </message>
@@ -387,54 +387,34 @@
     </message>
     <message>
         <location filename="../nw/gui/build.py" line="334"/>
-        <source>Include files with layouts {0}.</source>
-        <translation>Inclui arquivos com os leiautes {0}.</translation>
+        <source>Include files with layouts other than &apos;Note&apos;.</source>
+        <translation>Inclui arquivos com leiautes diferentes de &apos;Nota&apos;.</translation>
     </message>
     <message>
-        <location filename="../nw/gui/build.py" line="334"/>
-        <source>Book</source>
-        <translation>Livro</translation>
-    </message>
-    <message>
-        <location filename="../nw/gui/build.py" line="334"/>
-        <source>Page</source>
-        <translation>Página</translation>
-    </message>
-    <message>
-        <location filename="../nw/gui/build.py" line="334"/>
-        <source>Partition</source>
-        <translation>Partição</translation>
-    </message>
-    <message>
-        <location filename="../nw/gui/build.py" line="349"/>
-        <source>Include files with layout {0}.</source>
-        <translation>Inclui arquivos com o leiaute {0}.</translation>
-    </message>
-    <message>
-        <location filename="../nw/gui/build.py" line="349"/>
-        <source>Note</source>
-        <translation>Nota</translation>
+        <location filename="../nw/gui/build.py" line="340"/>
+        <source>Include files with layout &apos;Note&apos;.</source>
+        <translation>Inclui arquivos com leiaute &apos;Nota&apos;.</translation>
     </message>
 </context>
 <context>
     <name>GuiBuildNovelDocView</name>
     <message>
-        <location filename="../nw/gui/build.py" line="1373"/>
+        <location filename="../nw/gui/build.py" line="1362"/>
         <source>Build Time</source>
         <translation>Tempo de Construção</translation>
     </message>
     <message>
-        <location filename="../nw/gui/build.py" line="1371"/>
+        <location filename="../nw/gui/build.py" line="1360"/>
         <source>Unknown</source>
         <translation>Desconhecido</translation>
     </message>
     <message>
-        <location filename="../nw/gui/build.py" line="1373"/>
+        <location filename="../nw/gui/build.py" line="1362"/>
         <source>&lt;b&gt;{0}:&lt;/b&gt; {1}</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../nw/gui/build.py" line="1219"/>
+        <location filename="../nw/gui/build.py" line="1208"/>
         <source>This area will show the content of the document to be exported or printed. Press the &quot;Build Preview&quot; button to generate content.</source>
         <translation>Esta área vai mostrar o conteúdo do documento a ser exportado ou impresso. Clique no botão &quot;Construir Prévia&quot; para gerar o conteúdo.</translation>
     </message>
@@ -442,37 +422,37 @@
 <context>
     <name>GuiDocEditFooter</name>
     <message>
-        <location filename="../nw/gui/doceditor.py" line="2570"/>
+        <location filename="../nw/gui/doceditor.py" line="2572"/>
         <source>Line</source>
         <translation>Linha</translation>
     </message>
     <message>
-        <location filename="../nw/gui/doceditor.py" line="2588"/>
+        <location filename="../nw/gui/doceditor.py" line="2590"/>
         <source>Words</source>
         <translation>Palavras</translation>
     </message>
     <message>
-        <location filename="../nw/gui/doceditor.py" line="2431"/>
+        <location filename="../nw/gui/doceditor.py" line="2433"/>
         <source>Status</source>
         <translation>Estado</translation>
     </message>
     <message>
-        <location filename="../nw/gui/doceditor.py" line="2463"/>
+        <location filename="../nw/gui/doceditor.py" line="2465"/>
         <source>{0}: {1}</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../nw/gui/doceditor.py" line="2570"/>
+        <location filename="../nw/gui/doceditor.py" line="2572"/>
         <source>{0}: {1} ({2}u202f%%)</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../nw/gui/doceditor.py" line="2588"/>
+        <location filename="../nw/gui/doceditor.py" line="2590"/>
         <source>{0}: {1} ({2})</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../nw/gui/doceditor.py" line="2595"/>
+        <location filename="../nw/gui/doceditor.py" line="2597"/>
         <source>Document size is {0} bytes</source>
         <translation>O tamanho do documento é {0} bytes</translation>
     </message>
@@ -480,22 +460,22 @@
 <context>
     <name>GuiDocEditHeader</name>
     <message>
-        <location filename="../nw/gui/doceditor.py" line="2222"/>
+        <location filename="../nw/gui/doceditor.py" line="2224"/>
         <source>Edit document meta</source>
         <translation>Editar os meta-dados do documento</translation>
     </message>
     <message>
-        <location filename="../nw/gui/doceditor.py" line="2233"/>
+        <location filename="../nw/gui/doceditor.py" line="2235"/>
         <source>Search document</source>
         <translation>Procurar no documento</translation>
     </message>
     <message>
-        <location filename="../nw/gui/doceditor.py" line="2244"/>
+        <location filename="../nw/gui/doceditor.py" line="2246"/>
         <source>Toggle Focus Mode</source>
         <translation>Alternar o &quot;Modo Foco&quot;</translation>
     </message>
     <message>
-        <location filename="../nw/gui/doceditor.py" line="2255"/>
+        <location filename="../nw/gui/doceditor.py" line="2257"/>
         <source>Close the document</source>
         <translation>Fechar o documento</translation>
     </message>
@@ -503,97 +483,97 @@
 <context>
     <name>GuiDocEditSearch</name>
     <message>
-        <location filename="../nw/gui/doceditor.py" line="1849"/>
+        <location filename="../nw/gui/doceditor.py" line="1851"/>
         <source>Search</source>
         <translation>Pesquisa</translation>
     </message>
     <message>
-        <location filename="../nw/gui/doceditor.py" line="1840"/>
+        <location filename="../nw/gui/doceditor.py" line="1842"/>
         <source>Replace</source>
         <translation>Substituir</translation>
     </message>
     <message>
-        <location filename="../nw/gui/doceditor.py" line="1853"/>
+        <location filename="../nw/gui/doceditor.py" line="1855"/>
         <source>Case Sensitive</source>
         <translation>Diferenciar Maiúsculas e Minúsculas</translation>
     </message>
     <message>
-        <location filename="../nw/gui/doceditor.py" line="1854"/>
+        <location filename="../nw/gui/doceditor.py" line="1856"/>
         <source>Match case</source>
         <translation>Diferencia Maiúsculas e Minúsculas</translation>
     </message>
     <message>
-        <location filename="../nw/gui/doceditor.py" line="1861"/>
+        <location filename="../nw/gui/doceditor.py" line="1863"/>
         <source>Whole Words Only</source>
         <translation>Apenas Palavras Inteiras</translation>
     </message>
     <message>
-        <location filename="../nw/gui/doceditor.py" line="1862"/>
+        <location filename="../nw/gui/doceditor.py" line="1864"/>
         <source>Match whole words</source>
         <translation>Encontra apenas palavras inteiras</translation>
     </message>
     <message>
-        <location filename="../nw/gui/doceditor.py" line="1869"/>
+        <location filename="../nw/gui/doceditor.py" line="1871"/>
         <source>RegEx Mode</source>
         <translation>Expressão Regular</translation>
     </message>
     <message>
-        <location filename="../nw/gui/doceditor.py" line="1877"/>
+        <location filename="../nw/gui/doceditor.py" line="1879"/>
         <source>Loop Search</source>
         <translation>Pesquisa do Início</translation>
     </message>
     <message>
-        <location filename="../nw/gui/doceditor.py" line="1878"/>
+        <location filename="../nw/gui/doceditor.py" line="1880"/>
         <source>Loop the search when reaching the end</source>
         <translation>Pesquisa do início quando chega no final do documento</translation>
     </message>
     <message>
-        <location filename="../nw/gui/doceditor.py" line="1885"/>
+        <location filename="../nw/gui/doceditor.py" line="1887"/>
         <source>Search Next File</source>
         <translation>Busca no Próximo Arquivo</translation>
     </message>
     <message>
-        <location filename="../nw/gui/doceditor.py" line="1886"/>
+        <location filename="../nw/gui/doceditor.py" line="1888"/>
         <source>Continue searching in the next file</source>
         <translation>Continua a busca no próximo arquivo</translation>
     </message>
     <message>
-        <location filename="../nw/gui/doceditor.py" line="1895"/>
+        <location filename="../nw/gui/doceditor.py" line="1897"/>
         <source>Preserve Case</source>
         <translation>Preserva Maiúsculas e Minúsculas</translation>
     </message>
     <message>
-        <location filename="../nw/gui/doceditor.py" line="1896"/>
+        <location filename="../nw/gui/doceditor.py" line="1898"/>
         <source>Preserve case on replace</source>
         <translation>Preserva maiúsculas e minúsculas ao substituir</translation>
     </message>
     <message>
-        <location filename="../nw/gui/doceditor.py" line="1905"/>
+        <location filename="../nw/gui/doceditor.py" line="1907"/>
         <source>Close Search</source>
         <translation>Fechar a Busca</translation>
     </message>
     <message>
-        <location filename="../nw/gui/doceditor.py" line="1918"/>
+        <location filename="../nw/gui/doceditor.py" line="1920"/>
         <source>Show/hide the replace text box</source>
         <translation>Mostrar/Ocultar a caixa substituição</translation>
     </message>
     <message>
-        <location filename="../nw/gui/doceditor.py" line="1924"/>
+        <location filename="../nw/gui/doceditor.py" line="1926"/>
         <source>Find in current document</source>
         <translation>Encontrar no documento atual</translation>
     </message>
     <message>
-        <location filename="../nw/gui/doceditor.py" line="1929"/>
+        <location filename="../nw/gui/doceditor.py" line="1931"/>
         <source>Find and replace in current document</source>
         <translation>Encontrar e substituir no documento atual</translation>
     </message>
     <message>
-        <location filename="../nw/gui/doceditor.py" line="1906"/>
+        <location filename="../nw/gui/doceditor.py" line="1908"/>
         <source>Close the search box [{0}]</source>
         <translation>Fechar a caixa de busca [{0}]</translation>
     </message>
     <message>
-        <location filename="../nw/gui/doceditor.py" line="1870"/>
+        <location filename="../nw/gui/doceditor.py" line="1872"/>
         <source>Search using regular expressions</source>
         <translation>Busca usando expressões regulares</translation>
     </message>
@@ -601,12 +581,12 @@
 <context>
     <name>GuiDocEditor</name>
     <message>
-        <location filename="../nw/gui/doceditor.py" line="655"/>
+        <location filename="../nw/gui/doceditor.py" line="657"/>
         <source>Spell check complete</source>
         <translation>Verificação ortográfica completa</translation>
     </message>
     <message>
-        <location filename="../nw/gui/doceditor.py" line="1053"/>
+        <location filename="../nw/gui/doceditor.py" line="1055"/>
         <source>No Suggestions</source>
         <translation>Sem Sugestões</translation>
     </message>
@@ -621,72 +601,72 @@
         <translation>O texto que você está tentando adicionar é muito grande. O tamanho do texto é {text_size}. O tamanho máximo permitido é {max_size}.</translation>
     </message>
     <message>
-        <location filename="../nw/gui/doceditor.py" line="754"/>
+        <location filename="../nw/gui/doceditor.py" line="756"/>
         <source>File Location</source>
         <translation>Localização do Arquivo</translation>
     </message>
     <message>
-        <location filename="../nw/gui/doceditor.py" line="944"/>
+        <location filename="../nw/gui/doceditor.py" line="946"/>
         <source>The document has grown too big and you cannot add more text to it. The maximum size of a single novelWriter document is {max_size}.</source>
         <translation>O tamanho do documento aumentou muito e você não pode adicionar mais texto nele. O tamanho máximo de um único documento do novelWriter é {max_size}.</translation>
     </message>
     <message>
-        <location filename="../nw/gui/doceditor.py" line="982"/>
+        <location filename="../nw/gui/doceditor.py" line="984"/>
         <source>Follow Tag</source>
         <translation>Seguir Etiqueta</translation>
     </message>
     <message>
-        <location filename="../nw/gui/doceditor.py" line="988"/>
+        <location filename="../nw/gui/doceditor.py" line="990"/>
         <source>Cut</source>
         <translation>Recortar</translation>
     </message>
     <message>
-        <location filename="../nw/gui/doceditor.py" line="992"/>
+        <location filename="../nw/gui/doceditor.py" line="994"/>
         <source>Copy</source>
         <translation>Copiar</translation>
     </message>
     <message>
-        <location filename="../nw/gui/doceditor.py" line="996"/>
+        <location filename="../nw/gui/doceditor.py" line="998"/>
         <source>Paste</source>
         <translation>Colar</translation>
     </message>
     <message>
-        <location filename="../nw/gui/doceditor.py" line="1005"/>
+        <location filename="../nw/gui/doceditor.py" line="1007"/>
         <source>Select All</source>
         <translation>Selecionar Tudo</translation>
     </message>
     <message>
-        <location filename="../nw/gui/doceditor.py" line="1009"/>
+        <location filename="../nw/gui/doceditor.py" line="1011"/>
         <source>Select Word</source>
         <translation>Selecionar Palavra</translation>
     </message>
     <message>
-        <location filename="../nw/gui/doceditor.py" line="1015"/>
+        <location filename="../nw/gui/doceditor.py" line="1017"/>
         <source>Select Paragraph</source>
         <translation>Selecionar Parágrafo</translation>
     </message>
     <message>
-        <location filename="../nw/gui/doceditor.py" line="1041"/>
+        <location filename="../nw/gui/doceditor.py" line="1043"/>
         <source>Spelling Suggestion(s)</source>
         <translation>Sugestão de Ortografia</translation>
     </message>
     <message>
-        <location filename="../nw/gui/doceditor.py" line="1058"/>
+        <location filename="../nw/gui/doceditor.py" line="1060"/>
         <source>Add Word to Dictionary</source>
         <translation>Adicionar Palavra ao Dicionário</translation>
     </message>
     <message>
-        <location filename="../nw/gui/doceditor.py" line="1333"/>
+        <location filename="../nw/gui/doceditor.py" line="1335"/>
         <source>Please selection some text before calling replace quotes.</source>
         <translation>Por favor, selecione algum texto antes de invocar a substituição de aspas.</translation>
     </message>
     <message>
-        <location filename="../nw/gui/doceditor.py" line="944"/>
+        <location filename="../nw/gui/doceditor.py" line="946"/>
         <source>{0}u202fMB</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../nw/gui/doceditor.py" line="754"/>
+        <location filename="../nw/gui/doceditor.py" line="756"/>
         <source>The currently open file is saved in:</source>
         <translation>O arquivo aberto atualmente está salvo em:</translation>
     </message>
@@ -2339,7 +2319,7 @@
         <translation>Nenhum</translation>
     </message>
     <message>
-        <location filename="../nw/gui/statusbar.py" line="178"/>
+        <location filename="../nw/gui/statusbar.py" line="182"/>
         <source>Words</source>
         <translation>Palavras</translation>
     </message>
@@ -2359,12 +2339,12 @@
         <translation>Tempo de Sessão</translation>
     </message>
     <message>
-        <location filename="../nw/gui/statusbar.py" line="181"/>
+        <location filename="../nw/gui/statusbar.py" line="185"/>
         <source>Project word count (session change)</source>
         <translation>Contagem de palavras do projeto (alteradas na sessão)</translation>
     </message>
     <message>
-        <location filename="../nw/gui/statusbar.py" line="178"/>
+        <location filename="../nw/gui/statusbar.py" line="182"/>
         <source>{0}: {1} ({2})</source>
         <translation></translation>
     </message>
@@ -4496,17 +4476,17 @@
         <translation>Notas</translation>
     </message>
     <message>
-        <location filename="../nw/core/tokenizer.py" line="291"/>
+        <location filename="../nw/core/tokenizer.py" line="295"/>
         <source>Document &apos;{doc_name}&apos; is too big ({doc_size}). Skipping.</source>
         <translation>O documento &apos;{doc_name}&apos; é muito grande ({doc_size}). Ignorando.</translation>
     </message>
     <message>
-        <location filename="../nw/core/tokenizer.py" line="295"/>
+        <location filename="../nw/core/tokenizer.py" line="299"/>
         <source>ERROR</source>
         <translation>ERRO</translation>
     </message>
     <message>
-        <location filename="../nw/core/tokenizer.py" line="262"/>
+        <location filename="../nw/core/tokenizer.py" line="266"/>
         <source>{0}: {1}</source>
         <translation></translation>
     </message>
