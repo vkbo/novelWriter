@@ -28,8 +28,9 @@ import logging
 import re
 
 from operator import itemgetter
+from functools import partial
 
-from PyQt5.QtCore import QRegularExpression
+from PyQt5.QtCore import QCoreApplication, QRegularExpression
 
 from nw.core.document import NWDoc
 from nw.core.tools import numberToRoman
@@ -144,6 +145,7 @@ class Tokenizer():
 
         # Function Mapping
         self._localLookup = self.theProject.localLookup
+        self.tr = partial(QCoreApplication.translate, "Tokenizer")
 
         return
 

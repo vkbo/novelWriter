@@ -1250,16 +1250,14 @@ class NWProject():
         """
         if theLang is None:
             theLang = self.mainConf.spellLanguage
+        if theLang is None:
+            theLang = "en"
 
         lngShort = theLang.split("_")[0]
         loadFile = os.path.join(self.mainConf.langPath, "project_en.json")
         chkFile1 = os.path.join(self.mainConf.langPath, "project_%s.json" % theLang)
         chkFile2 = os.path.join(self.mainConf.langPath, "project_%s.json" % lngShort)
-        print(theLang)
-        print(lngShort)
-        print(loadFile)
-        print(chkFile1)
-        print(chkFile2)
+
         if os.path.isfile(chkFile1):
             loadFile = chkFile1
         elif os.path.isfile(chkFile2):
