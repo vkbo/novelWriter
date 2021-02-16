@@ -29,8 +29,6 @@ import logging
 import os
 import difflib
 
-from nw.constants import nwConst, isoLanguage
-
 logger = logging.getLogger(__name__)
 
 # =============================================================================================== #
@@ -88,16 +86,6 @@ class NWSpellCheck():
         """Dummy function.
         """
         return "", ""
-
-    @staticmethod
-    def expandLanguage(spTag):
-        """Translate a language tag to something more user friendly.
-        """
-        spBits = spTag.split("_")
-        spLang = isoLanguage.ISO_639_1.get(spBits[0], spBits[0])
-        if len(spBits) > 1:
-            spLang += " (%s)" % spBits[1]
-        return spLang
 
     ##
     #  Internal Functions
@@ -196,10 +184,10 @@ class NWSpellEnchant(NWSpellCheck):
         try:
             import enchant
             for spTag, spProvider in enchant.list_dicts():
-                spName = "%s [%s]" % (self.expandLanguage(spTag), spProvider.name)
-                retList.append((spTag, spName))
+                retList.append((spTag, spProvider.name))
         except Exception:
             logger.error("Failed to list languages for enchant spell checking")
+
         return retList
 
     def describeDict(self):
@@ -332,8 +320,7 @@ class NWSpellSimple(NWSpellCheck):
             if fExt != ".dict":
                 continue
 
-            spName = "%s [%s]" % (self.expandLanguage(fRoot), nwConst.SP_INTERNAL)
-            retList.append((fRoot, spName))
+            retList.append((fRoot, "difflib"))
 
         return retList
 
@@ -341,6 +328,6 @@ class NWSpellSimple(NWSpellCheck):
         """Return the tag and provider of the currently loaded
         dictionary.
         """
-        return self.theLang, nwConst.SP_INTERNAL
+        return self.theLang, ""
 
 # END Class NWSpellSimple

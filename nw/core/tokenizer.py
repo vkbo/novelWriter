@@ -28,7 +28,9 @@ import logging
 import re
 
 from operator import itemgetter
-from PyQt5.QtCore import QRegularExpression
+from functools import partial
+
+from PyQt5.QtCore import QCoreApplication, QRegularExpression
 
 from nw.core.document import NWDoc
 from nw.core.tools import numberToWord, numberToRoman
@@ -141,6 +143,18 @@ class Tokenizer():
         # Error Handling
         self.errData = []
 
+        # Internal Mappings
+        self.tr = partial(QCoreApplication.translate, "Tokenizer")
+
+        # Localisation
+        self._trSynopsis = self.tr("Synopsis")
+        self._trComment = self.tr("Comment")
+        self._trNotes = self.tr("Notes")
+
+        self._spellLang = self.theProject.projLang
+        if self._spellLang is None:
+            self._spellLang = self.theParent.mainConf.spellLanguage
+
         return
 
     ##
@@ -249,7 +263,7 @@ class Tokenizer():
         if theItem.itemType != nwItemType.ROOT:
             return False
 
-        theTitle = "Notes: %s" % theItem.itemName
+        theTitle = self.tr("{0}: {1}").format(self._trNotes, theItem.itemName)
         self.theTokens = []
         self.theTokens.append((
             self.T_TITLE, 0, theTitle, None, self.A_PBB | self.A_CENTRE
@@ -278,10 +292,10 @@ class Tokenizer():
 
         docSize = len(self.theText)
         if docSize > nwConst.MAX_DOCSIZE:
-            errVal = "Document '%s' is too big (%.2f MB). Skipping." % (
-                self.theItem.itemName, docSize/1.0e6
+            errVal = self.tr("Document '{0}' is too big ({1} MB). Skipping.").format(
+                self.theItem.itemName, f"{docSize/1.0e6:.2f}"
             )
-            self.theText = "# ERROR\n\n%s\n\n" % errVal
+            self.theText = "# %s\n\n%s\n\n" % (self.tr("ERROR"), errVal)
             self.errData.append(errVal)
 
         self.isNone  = self.theItem.itemLayout == nwItemLayout.NO_LAYOUT
@@ -653,7 +667,7 @@ class Tokenizer():
         theTitle = theTitle.replace(r"%sc%", str(self.numChScene))
         theTitle = theTitle.replace(r"%sca%", str(self.numAbsScene))
         if r"%chw%" in theTitle:
-            theTitle = theTitle.replace(r"%chw%", numberToWord(self.numChapter, "en"))
+            theTitle = theTitle.replace(r"%chw%", numberToWord(self.numChapter, self._spellLang))
         if r"%chi%" in theTitle:
             theTitle = theTitle.replace(r"%chi%", numberToRoman(self.numChapter, True))
         if r"%chI%" in theTitle:

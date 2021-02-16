@@ -183,7 +183,7 @@ class GuiDocViewer(QTextBrowser):
         except Exception:
             logger.error("Failed to generate preview for document with handle '%s'" % tHandle)
             nw.logException()
-            self.setText("An error occurred while generating the preview.")
+            self.setText(self.tr("An error occurred while generating the preview."))
             return False
 
         # Refresh the tab stops
@@ -243,11 +243,14 @@ class GuiDocViewer(QTextBrowser):
         logger.debug("Loading document from tag '%s'" % theTag)
         tHandle, _, sTitle = self.theParent.theIndex.getTagSource(theTag)
         if tHandle is None:
-            self.theParent.makeAlert((
-                "Could not find the reference for tag '%s'. It either doesn't "
-                "exist, or the index is out of date. The index can be updated "
-                "from the Tools menu, or by pressing F9."
-            ) % theTag, nwAlert.ERROR)
+            self.theParent.makeAlert(
+                self.tr(
+                    "Could not find the reference for tag '{0}'. It either doesn't "
+                    "exist, or the index is out of date. The index can be updated "
+                    "from the Tools menu, or by pressing {1}."
+                ).format(theTag, "F9"),
+                nwAlert.ERROR
+            )
             return False
         else:
             # Let the parent handle the opening as it also ensures that
@@ -415,7 +418,7 @@ class GuiDocViewer(QTextBrowser):
         # ===================
 
         if userSelection:
-            mnuCopy = QAction("Copy", mnuContext)
+            mnuCopy = QAction(self.tr("Copy"), mnuContext)
             mnuCopy.triggered.connect(lambda: self.docAction(nwDocAction.COPY))
             mnuContext.addAction(mnuCopy)
 
@@ -424,17 +427,17 @@ class GuiDocViewer(QTextBrowser):
         # Selections
         # ==========
 
-        mnuSelAll = QAction("Select All", mnuContext)
+        mnuSelAll = QAction(self.tr("Select All"), mnuContext)
         mnuSelAll.triggered.connect(lambda: self.docAction(nwDocAction.SEL_ALL))
         mnuContext.addAction(mnuSelAll)
 
-        mnuSelWord = QAction("Select Word", mnuContext)
+        mnuSelWord = QAction(self.tr("Select Word"), mnuContext)
         mnuSelWord.triggered.connect(
             lambda: self._makePosSelection(QTextCursor.WordUnderCursor, thePos)
         )
         mnuContext.addAction(mnuSelWord)
 
-        mnuSelPara = QAction("Select Paragraph", mnuContext)
+        mnuSelPara = QAction(self.tr("Select Paragraph"), mnuContext)
         mnuSelPara.triggered.connect(
             lambda: self._makePosSelection(QTextCursor.BlockUnderCursor, thePos)
         )
@@ -740,7 +743,7 @@ class GuiDocViewHeader(QWidget):
         self.backButton.setStyleSheet(buttonStyle)
         self.backButton.setToolButtonStyle(Qt.ToolButtonIconOnly)
         self.backButton.setVisible(False)
-        self.backButton.setToolTip("Go backward")
+        self.backButton.setToolTip(self.tr("Go backward"))
         self.backButton.clicked.connect(self.docViewer.navBackward)
 
         self.forwardButton = QToolButton(self)
@@ -751,7 +754,7 @@ class GuiDocViewHeader(QWidget):
         self.forwardButton.setStyleSheet(buttonStyle)
         self.forwardButton.setToolButtonStyle(Qt.ToolButtonIconOnly)
         self.forwardButton.setVisible(False)
-        self.forwardButton.setToolTip("Go forward")
+        self.forwardButton.setToolTip(self.tr("Go forward"))
         self.forwardButton.clicked.connect(self.docViewer.navForward)
 
         self.refreshButton = QToolButton(self)
@@ -762,7 +765,7 @@ class GuiDocViewHeader(QWidget):
         self.refreshButton.setStyleSheet(buttonStyle)
         self.refreshButton.setToolButtonStyle(Qt.ToolButtonIconOnly)
         self.refreshButton.setVisible(False)
-        self.refreshButton.setToolTip("Reload the document")
+        self.refreshButton.setToolTip(self.tr("Reload the document"))
         self.refreshButton.clicked.connect(self._refreshDocument)
 
         self.closeButton = QToolButton(self)
@@ -773,7 +776,7 @@ class GuiDocViewHeader(QWidget):
         self.closeButton.setStyleSheet(buttonStyle)
         self.closeButton.setToolButtonStyle(Qt.ToolButtonIconOnly)
         self.closeButton.setVisible(False)
-        self.closeButton.setToolTip("Close the document")
+        self.closeButton.setToolTip(self.tr("Close the document"))
         self.closeButton.clicked.connect(self._closeDocument)
 
         # Assemble Layout
@@ -944,7 +947,7 @@ class GuiDocViewFooter(QWidget):
         self.showHide.setIconSize(QSize(fPx, fPx))
         self.showHide.setFixedSize(QSize(fPx, fPx))
         self.showHide.clicked.connect(self._doShowHide)
-        self.showHide.setToolTip("Show/hide the references panel")
+        self.showHide.setToolTip(self.tr("Show/hide the references panel"))
 
         # Sticky Button
         self.stickyRefs = QToolButton(self)
@@ -955,9 +958,9 @@ class GuiDocViewFooter(QWidget):
         self.stickyRefs.setIconSize(QSize(fPx, fPx))
         self.stickyRefs.setFixedSize(QSize(fPx, fPx))
         self.stickyRefs.toggled.connect(self._doToggleSticky)
-        self.stickyRefs.setToolTip(
+        self.stickyRefs.setToolTip(self.tr(
             "Activate to freeze the content of the references panel when changing document"
-        )
+        ))
 
         # Show Comments
         self.showComments = QToolButton(self)
@@ -969,7 +972,7 @@ class GuiDocViewFooter(QWidget):
         self.showComments.setIconSize(QSize(fPx, fPx))
         self.showComments.setFixedSize(QSize(fPx, fPx))
         self.showComments.toggled.connect(self._doToggleComments)
-        self.showComments.setToolTip("Show comments")
+        self.showComments.setToolTip(self.tr("Show comments"))
 
         # Show Synopsis
         self.showSynopsis = QToolButton(self)
@@ -981,10 +984,10 @@ class GuiDocViewFooter(QWidget):
         self.showSynopsis.setIconSize(QSize(fPx, fPx))
         self.showSynopsis.setFixedSize(QSize(fPx, fPx))
         self.showSynopsis.toggled.connect(self._doToggleSynopsis)
-        self.showSynopsis.setToolTip("Show synopsis comments")
+        self.showSynopsis.setToolTip(self.tr("Show synopsis comments"))
 
         # Labels
-        self.lblRefs = QLabel("References")
+        self.lblRefs = QLabel(self.tr("References"))
         self.lblRefs.setBuddy(self.showHide)
         self.lblRefs.setIndent(0)
         self.lblRefs.setMargin(0)
@@ -993,7 +996,7 @@ class GuiDocViewFooter(QWidget):
         self.lblRefs.setFixedHeight(fPx)
         self.lblRefs.setAlignment(Qt.AlignLeft | Qt.AlignTop)
 
-        self.lblSticky = QLabel("Sticky")
+        self.lblSticky = QLabel(self.tr("Sticky"))
         self.lblSticky.setBuddy(self.stickyRefs)
         self.lblSticky.setIndent(0)
         self.lblSticky.setMargin(0)
@@ -1002,7 +1005,7 @@ class GuiDocViewFooter(QWidget):
         self.lblSticky.setFixedHeight(fPx)
         self.lblSticky.setAlignment(Qt.AlignLeft | Qt.AlignTop)
 
-        self.lblComments = QLabel("Comments")
+        self.lblComments = QLabel(self.tr("Comments"))
         self.lblComments.setBuddy(self.showComments)
         self.lblComments.setIndent(0)
         self.lblComments.setMargin(0)
@@ -1011,7 +1014,7 @@ class GuiDocViewFooter(QWidget):
         self.lblComments.setFixedHeight(fPx)
         self.lblComments.setAlignment(Qt.AlignLeft | Qt.AlignTop)
 
-        self.lblSynopsis = QLabel("Synopsis")
+        self.lblSynopsis = QLabel(self.tr("Synopsis"))
         self.lblSynopsis.setBuddy(self.showSynopsis)
         self.lblSynopsis.setIndent(0)
         self.lblSynopsis.setMargin(0)

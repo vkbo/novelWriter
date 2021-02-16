@@ -31,8 +31,9 @@ import configparser
 import os
 
 from math import ceil
+from functools import partial
 
-from PyQt5.QtCore import Qt
+from PyQt5.QtCore import QCoreApplication, Qt
 from PyQt5.QtWidgets import QStyle, qApp
 from PyQt5.QtGui import (
     QPalette, QColor, QIcon, QFont, QFontMetrics, QFontDatabase, QPixmap
@@ -156,6 +157,10 @@ class GuiTheme:
         logger.verbose("GUI Base Icon Size: %d" % self.baseIconSize)
         logger.verbose("Text 'N' Height: %d" % self.textNHeight)
         logger.verbose("Text 'N' Width: %d" % self.textNWidth)
+
+        # Internal Mapping
+        self.makeAlert = self.theParent.makeAlert
+        self.tr = partial(QCoreApplication.translate, "GuiTheme")
 
         return
 
@@ -392,8 +397,8 @@ class GuiTheme:
                 with open(themeConf, mode="r", encoding="utf8") as inFile:
                     confParser.read_file(inFile)
             except Exception as e:
-                self.theParent.makeAlert(
-                    ["Could not load theme config file.", str(e)], nwAlert.ERROR
+                self.makeAlert(
+                    [self.tr("Could not load theme config file."), str(e)], nwAlert.ERROR
                 )
                 continue
             themeName = ""
@@ -425,8 +430,8 @@ class GuiTheme:
                 with open(syntaxPath, mode="r", encoding="utf8") as inFile:
                     confParser.read_file(inFile)
             except Exception as e:
-                self.theParent.makeAlert(
-                    ["Could not load syntax file.", str(e)], nwAlert.ERROR
+                self.makeAlert(
+                    [self.tr("Could not load syntax file."), str(e)], nwAlert.ERROR
                 )
                 return []
             syntaxName = ""
@@ -740,8 +745,8 @@ class GuiIcons:
                 with open(themeConf, mode="r", encoding="utf8") as inFile:
                     confParser.read_file(inFile)
             except Exception as e:
-                self.theParent.makeAlert(
-                    ["Could not load theme config file.", str(e)], nwAlert.ERROR
+                self.makeAlert(
+                    [self.tr("Could not load theme config file."), str(e)], nwAlert.ERROR
                 )
                 continue
             themeName = ""

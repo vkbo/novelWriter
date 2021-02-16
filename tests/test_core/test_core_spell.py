@@ -28,7 +28,6 @@ from dummy import causeOSError
 from tools import readFile, writeFile
 
 from nw.core.spellcheck import NWSpellCheck, NWSpellEnchant, NWSpellSimple
-from nw.constants import nwConst
 
 @pytest.mark.core
 def testCoreSpell_Super(monkeypatch, tmpDir, tmpConf):
@@ -47,10 +46,6 @@ def testCoreSpell_Super(monkeypatch, tmpDir, tmpConf):
     assert spChk.suggestWords("") == []
     assert spChk.listDictionaries() == []
     assert spChk.describeDict() == ("", "")
-
-    # Check language info
-    assert NWSpellCheck.expandLanguage("en") == "English"
-    assert NWSpellCheck.expandLanguage("en_GB") == "English (GB)"
 
     # Add a word to the user's dictionary
     assert spChk._readProjectDictionary("dummy") is False
@@ -178,11 +173,11 @@ def testCoreSpell_Simple(monkeypatch, tmpDir, tmpConf):
     assert "D_word" in wSuggest
 
     # List dictionaries
-    assert spChk.listDictionaries() == [("en", "English [%s]" % nwConst.SP_INTERNAL)]
+    assert spChk.listDictionaries() == [("en", "difflib")]
 
     # Description
     aTag, aName = spChk.describeDict()
     assert aTag == "en"
-    assert aName == nwConst.SP_INTERNAL
+    assert aName == ""
 
 # END Test testCoreSpell_Simple
