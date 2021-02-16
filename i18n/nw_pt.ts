@@ -4390,27 +4390,27 @@
         <translation>Deve ser definido um nome de projeto válido nas preferências do projeto para usar a funcionalidade de cópias de segurança automáticas.</translation>
     </message>
     <message>
-        <location filename="../nw/core/project.py" line="1424"/>
+        <location filename="../nw/core/project.py" line="1422"/>
         <source>Recovered</source>
         <translation>Recuperado</translation>
     </message>
     <message>
-        <location filename="../nw/core/project.py" line="1468"/>
+        <location filename="../nw/core/project.py" line="1466"/>
         <source>One or more orphaned files could not be added back into the project. Make sure at least a Novel root folder exists.</source>
         <translation>Um ou mais arquivos-órfãos não puderam ser readicionados ao projeto. Verifique que pelo menos um diretório-raiz de Livro exista.</translation>
     </message>
     <message>
-        <location filename="../nw/core/project.py" line="1543"/>
+        <location filename="../nw/core/project.py" line="1541"/>
         <source>Could not move: {0}</source>
         <translation>Não foi possível mover: {0}</translation>
     </message>
     <message>
-        <location filename="../nw/core/project.py" line="1567"/>
+        <location filename="../nw/core/project.py" line="1565"/>
         <source>Could not delete: {0}</source>
         <translation>Não foi possível remover: {0}</translation>
     </message>
     <message>
-        <location filename="../nw/core/project.py" line="1579"/>
+        <location filename="../nw/core/project.py" line="1577"/>
         <source>Could not make folder: {0}</source>
         <translation>Não foi possível criar o diretório: {0}</translation>
     </message>
@@ -4445,17 +4445,17 @@
         <translation>Cópia de segurança realizada para &apos;{0}&apos;</translation>
     </message>
     <message>
-        <location filename="../nw/core/project.py" line="1412"/>
+        <location filename="../nw/core/project.py" line="1410"/>
         <source>Found {0} orphaned file(s) in project folder.</source>
         <translation>Foram encontrados {0} arquivos-órfãos no diretório do projeto.</translation>
     </message>
     <message>
-        <location filename="../nw/core/project.py" line="1441"/>
+        <location filename="../nw/core/project.py" line="1439"/>
         <source>Recovered File {0}</source>
         <translation>Arquivo Recuperado {0}</translation>
     </message>
     <message>
-        <location filename="../nw/core/project.py" line="1520"/>
+        <location filename="../nw/core/project.py" line="1518"/>
         <source>Not a folder: {0}</source>
         <translation>Não é um diretório: {0}</translation>
     </message>
@@ -4465,12 +4465,12 @@
         <translation>Format de arquivo de projeto do novelWriter desconhecido ou não-suportado. O projeto não pode ser aberto por essa versão do novelWriter. O arquivo foi salvo com a versão {0} do novelWriter.</translation>
     </message>
     <message>
-        <location filename="../nw/core/project.py" line="1436"/>
+        <location filename="../nw/core/project.py" line="1434"/>
         <source>[{0}] {1}</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../nw/core/project.py" line="1590"/>
+        <location filename="../nw/core/project.py" line="1588"/>
         <source>Could not move item {0} to {1}.</source>
         <translation>Não foi possível mover o item {0} para {1}.</translation>
     </message>
@@ -4671,6 +4671,19 @@
         <location filename="../nw/gui/custom.py" line="504"/>
         <source>Cancel</source>
         <translation>Cancelar</translation>
+    </message>
+</context>
+<context>
+    <name>Tokenizer</name>
+    <message>
+        <location filename="../nw/core/tokenizer.py" line="290"/>
+        <source>ERROR</source>
+        <translation>ERRO</translation>
+    </message>
+    <message>
+        <location filename="../nw/core/tokenizer.py" line="287"/>
+        <source>Document &apos;{0}&apos; is too big ({1} MB). Skipping.</source>
+        <translation>O documento &apos;{0}&apos; é muito grande ({1} MB). Ignorando.</translation>
     </message>
 </context>
 </TS>
