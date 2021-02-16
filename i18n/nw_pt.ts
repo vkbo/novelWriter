@@ -1,12 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!DOCTYPE TS>
-<TS version="2.1" language="pt" sourcelanguage="en">
+<!DOCTYPE TS><TS version="2.0" language="pt" sourcelanguage="en">
 <context>
     <name>Constant</name>
     <message>
         <location filename="../nw/constants/constants.py" line="168"/>
         <source>None</source>
-        <translation type="unfinished">Nenhum</translation>
+        <translation>Nenhum</translation>
     </message>
     <message>
         <location filename="../nw/constants/constants.py" line="130"/>
@@ -21,137 +20,137 @@
     <message>
         <location filename="../nw/constants/constants.py" line="193"/>
         <source>Characters</source>
-        <translation type="unfinished"></translation>
+        <translation>Personagens</translation>
     </message>
     <message>
         <location filename="../nw/constants/constants.py" line="196"/>
         <source>Locations</source>
-        <translation type="unfinished"></translation>
+        <translation>Lugares</translation>
     </message>
     <message>
         <location filename="../nw/constants/constants.py" line="195"/>
         <source>Timeline</source>
-        <translation type="unfinished"></translation>
+        <translation>Linha do Tempo</translation>
     </message>
     <message>
         <location filename="../nw/constants/constants.py" line="197"/>
         <source>Objects</source>
-        <translation type="unfinished"></translation>
+        <translation>Objetos</translation>
     </message>
     <message>
         <location filename="../nw/constants/constants.py" line="136"/>
         <source>Entity</source>
-        <translation type="unfinished"></translation>
+        <translation>Entidade</translation>
     </message>
     <message>
         <location filename="../nw/constants/constants.py" line="199"/>
         <source>Custom</source>
-        <translation type="unfinished"></translation>
+        <translation>Outros</translation>
     </message>
     <message>
         <location filename="../nw/constants/constants.py" line="138"/>
         <source>Outtakes</source>
-        <translation type="unfinished"></translation>
+        <translation>Removidos</translation>
     </message>
     <message>
         <location filename="../nw/constants/constants.py" line="139"/>
         <source>Trash</source>
-        <translation type="unfinished">Lixeira</translation>
+        <translation>Lixeira</translation>
     </message>
     <message>
         <location filename="../nw/constants/constants.py" line="169"/>
         <source>Title Page</source>
-        <translation type="unfinished">Página de Título</translation>
+        <translation>Página de Título</translation>
     </message>
     <message>
         <location filename="../nw/constants/constants.py" line="170"/>
         <source>Book</source>
-        <translation type="unfinished"></translation>
+        <translation>Livro</translation>
     </message>
     <message>
         <location filename="../nw/constants/constants.py" line="171"/>
         <source>Plain Page</source>
-        <translation type="unfinished"></translation>
+        <translation>Página Simples</translation>
     </message>
     <message>
         <location filename="../nw/constants/constants.py" line="172"/>
         <source>Partition</source>
-        <translation type="unfinished"></translation>
+        <translation>Partição</translation>
     </message>
     <message>
         <location filename="../nw/constants/constants.py" line="173"/>
         <source>Unnumbered</source>
-        <translation type="unfinished">Sem Numeração</translation>
+        <translation>Sem Numeração</translation>
     </message>
     <message>
         <location filename="../nw/constants/constants.py" line="174"/>
         <source>Chapter</source>
-        <translation type="unfinished">Capítulo</translation>
+        <translation>Capítulo</translation>
     </message>
     <message>
         <location filename="../nw/constants/constants.py" line="175"/>
         <source>Scene</source>
-        <translation type="unfinished">Cena</translation>
+        <translation>Cena</translation>
     </message>
     <message>
         <location filename="../nw/constants/constants.py" line="176"/>
         <source>Note</source>
-        <translation type="unfinished">Nota</translation>
+        <translation>Nota</translation>
     </message>
     <message>
         <location filename="../nw/constants/constants.py" line="190"/>
         <source>Tag</source>
-        <translation type="unfinished"></translation>
+        <translation>Etiqueta</translation>
     </message>
     <message>
         <location filename="../nw/constants/constants.py" line="191"/>
         <source>Point of View</source>
-        <translation type="unfinished"></translation>
+        <translation>Ponto de Vista</translation>
     </message>
     <message>
         <location filename="../nw/constants/constants.py" line="210"/>
         <source>Focus</source>
-        <translation type="unfinished"></translation>
+        <translation>Foco</translation>
     </message>
     <message>
         <location filename="../nw/constants/constants.py" line="198"/>
         <source>Entities</source>
-        <translation type="unfinished"></translation>
+        <translation>Entidades</translation>
     </message>
     <message>
         <location filename="../nw/constants/constants.py" line="202"/>
         <source>Title</source>
-        <translation type="unfinished">Título</translation>
+        <translation>Título</translation>
     </message>
     <message>
         <location filename="../nw/constants/constants.py" line="203"/>
         <source>Level</source>
-        <translation type="unfinished"></translation>
+        <translation>Nível</translation>
     </message>
     <message>
         <location filename="../nw/constants/constants.py" line="204"/>
         <source>Document</source>
-        <translation type="unfinished">Documento</translation>
+        <translation>Documento</translation>
     </message>
     <message>
         <location filename="../nw/constants/constants.py" line="205"/>
         <source>Line</source>
-        <translation type="unfinished"></translation>
+        <translation>Linha</translation>
     </message>
     <message>
         <location filename="../nw/constants/constants.py" line="206"/>
         <source>Chars</source>
-        <translation type="unfinished"></translation>
+        <translation>Caracteres</translation>
     </message>
     <message>
         <location filename="../nw/constants/constants.py" line="207"/>
         <source>Words</source>
-        <translation type="unfinished">Palavras</translation>
+        <translation>Palavras</translation>
     </message>
     <message>
         <location filename="../nw/constants/constants.py" line="208"/>
         <source>Pars</source>
-        <translation type="unfinished"></translation>
+        <translation>Parágrafos</translation>
     </message>
     <message>
         <location filename="../nw/constants/constants.py" line="209"/>
@@ -161,102 +160,102 @@
     <message>
         <location filename="../nw/constants/constants.py" line="218"/>
         <source>Synopsis</source>
-        <translation type="unfinished">Sinopse</translation>
+        <translation>Sinopse</translation>
     </message>
     <message>
         <location filename="../nw/constants/constants.py" line="228"/>
         <source>Straight single quotation mark</source>
-        <translation type="unfinished"></translation>
+        <translation>Aspas simples retas</translation>
     </message>
     <message>
         <location filename="../nw/constants/constants.py" line="229"/>
         <source>Straight double quotation mark</source>
-        <translation type="unfinished"></translation>
+        <translation>Aspas duplas retas</translation>
     </message>
     <message>
         <location filename="../nw/constants/constants.py" line="231"/>
         <source>Left single quotation mark</source>
-        <translation type="unfinished"></translation>
+        <translation>Aspas simples à esquerda</translation>
     </message>
     <message>
         <location filename="../nw/constants/constants.py" line="232"/>
         <source>Right single quotation mark</source>
-        <translation type="unfinished"></translation>
+        <translation>Aspas simples à direita</translation>
     </message>
     <message>
         <location filename="../nw/constants/constants.py" line="233"/>
         <source>Single low-9 quotation mark</source>
-        <translation type="unfinished"></translation>
+        <translation>Aspas 9-baixo simples</translation>
     </message>
     <message>
         <location filename="../nw/constants/constants.py" line="234"/>
         <source>Single high-reversed-9 quotation mark</source>
-        <translation type="unfinished"></translation>
+        <translation>Aspas 9-alto-invertido simples</translation>
     </message>
     <message>
         <location filename="../nw/constants/constants.py" line="235"/>
         <source>Left double quotation mark</source>
-        <translation type="unfinished"></translation>
+        <translation>Aspas duplas à esquerda</translation>
     </message>
     <message>
         <location filename="../nw/constants/constants.py" line="236"/>
         <source>Right double quotation mark</source>
-        <translation type="unfinished"></translation>
+        <translation>Aspas duplas à direita</translation>
     </message>
     <message>
         <location filename="../nw/constants/constants.py" line="237"/>
         <source>Double low-9 quotation mark</source>
-        <translation type="unfinished"></translation>
+        <translation>Aspas 9-baixo duplas</translation>
     </message>
     <message>
         <location filename="../nw/constants/constants.py" line="238"/>
         <source>Double high-reversed-9 quotation mark</source>
-        <translation type="unfinished"></translation>
+        <translation>Aspas 9-alto-invertido duplas</translation>
     </message>
     <message>
         <location filename="../nw/constants/constants.py" line="239"/>
         <source>Double low-reversed-9 quotation mark</source>
-        <translation type="unfinished"></translation>
+        <translation>Aspas 9-baixo-invertido duplas</translation>
     </message>
     <message>
         <location filename="../nw/constants/constants.py" line="241"/>
         <source>Single left-pointing angle quotation mark</source>
-        <translation type="unfinished"></translation>
+        <translation>Aspas angulares simples à esquerda</translation>
     </message>
     <message>
         <location filename="../nw/constants/constants.py" line="242"/>
         <source>Single right-pointing angle quotation mark</source>
-        <translation type="unfinished"></translation>
+        <translation>Aspas angulares simples à direita</translation>
     </message>
     <message>
         <location filename="../nw/constants/constants.py" line="243"/>
         <source>Left-pointing double angle quotation mark</source>
-        <translation type="unfinished"></translation>
+        <translation>Aspas angulares duplas à esquerda</translation>
     </message>
     <message>
         <location filename="../nw/constants/constants.py" line="244"/>
         <source>Right-pointing double angle quotation mark</source>
-        <translation type="unfinished"></translation>
+        <translation>Right-pointing double angle quotation mark</translation>
     </message>
     <message>
         <location filename="../nw/constants/constants.py" line="246"/>
         <source>Left corner bracket</source>
-        <translation type="unfinished"></translation>
+        <translation>Colchete de canto à esquerda</translation>
     </message>
     <message>
         <location filename="../nw/constants/constants.py" line="247"/>
         <source>Right corner bracket</source>
-        <translation type="unfinished"></translation>
+        <translation>Right corner bracket</translation>
     </message>
     <message>
         <location filename="../nw/constants/constants.py" line="248"/>
         <source>Left white corner bracket</source>
-        <translation type="unfinished"></translation>
+        <translation>Colchete branco de canto à esquerda</translation>
     </message>
     <message>
         <location filename="../nw/constants/constants.py" line="249"/>
         <source>Right white corner bracket</source>
-        <translation type="unfinished"></translation>
+        <translation>Colchete branco de canto à direita</translation>
     </message>
 </context>
 <context>
@@ -637,7 +636,7 @@
     <message>
         <location filename="../nw/gui/build.py" line="108"/>
         <source>Formatting Codes:</source>
-        <translation type="unfinished"></translation>
+        <translation>Códigos de Formatação:</translation>
     </message>
     <message>
         <location filename="../nw/gui/build.py" line="426"/>
@@ -1434,22 +1433,22 @@
     <message>
         <location filename="../nw/guimain.py" line="705"/>
         <source>Text files ({0})</source>
-        <translation type="unfinished"></translation>
+        <translation>Arquivos de texto ({0})</translation>
     </message>
     <message>
         <location filename="../nw/guimain.py" line="706"/>
         <source>Markdown files ({0})</source>
-        <translation type="unfinished"></translation>
+        <translation>Arquivos Markdown ({0})</translation>
     </message>
     <message>
         <location filename="../nw/guimain.py" line="707"/>
         <source>novelWriter files ({0})</source>
-        <translation type="unfinished"></translation>
+        <translation>Arquivos do novelWriter ({0})</translation>
     </message>
     <message>
         <location filename="../nw/guimain.py" line="708"/>
         <source>All files ({0})</source>
-        <translation type="unfinished"></translation>
+        <translation>Todos os arquivos ({0})</translation>
     </message>
 </context>
 <context>
@@ -2968,7 +2967,7 @@
     <message>
         <location filename="../nw/gui/preferences.py" line="486"/>
         <source>pt</source>
-        <translation type="unfinished"></translation>
+        <translation>pt</translation>
     </message>
 </context>
 <context>
@@ -3174,7 +3173,7 @@
     <message>
         <location filename="../nw/gui/preferences.py" line="199"/>
         <source>pt</source>
-        <translation type="unfinished"></translation>
+        <translation>pt</translation>
     </message>
 </context>
 <context>
@@ -3711,7 +3710,7 @@
     <message>
         <location filename="../nw/gui/projload.py" line="191"/>
         <source>All files ({0})</source>
-        <translation type="unfinished"></translation>
+        <translation>Todos os arquivos ({0})</translation>
     </message>
 </context>
 <context>
@@ -4488,7 +4487,7 @@
     <message>
         <location filename="../nw/core/project.py" line="1159"/>
         <source>and</source>
-        <translation type="unfinished"></translation>
+        <translation>e</translation>
     </message>
 </context>
 <context>
