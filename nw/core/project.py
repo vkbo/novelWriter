@@ -1203,6 +1203,14 @@ class NWProject():
                 self.importItems.countEntry(nwItem.itemStatus)
         return
 
+    def localLookup(self, theWord):
+        """Look up a word in the translation map for the project and
+        return it. The variable is cast to a string before lookup. If
+        the word does not exist, it returns itself.
+        """
+        theValue = str(theWord)
+        return self.langData.get(theValue, theValue)
+
     ##
     #  Internal Functions
     ##

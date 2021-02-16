@@ -31,7 +31,7 @@ from operator import itemgetter
 from PyQt5.QtCore import QRegularExpression
 
 from nw.core.document import NWDoc
-from nw.core.tools import numberToWord, numberToRoman
+from nw.core.tools import numberToRoman
 from nw.constants import nwConst, nwUnicode, nwItemLayout, nwItemType, nwRegEx
 
 logger = logging.getLogger(__name__)
@@ -141,6 +141,9 @@ class Tokenizer():
         # Error Handling
         self.errData = []
 
+        # Function Mapping
+        self._localLookup = self.theProject.localLookup
+
         return
 
     ##
@@ -249,7 +252,7 @@ class Tokenizer():
         if theItem.itemType != nwItemType.ROOT:
             return False
 
-        theTitle = "Notes: %s" % theItem.itemName
+        theTitle = "%s: %s" % (self._localLookup("Notes"), theItem.itemName)
         self.theTokens = []
         self.theTokens.append((
             self.T_TITLE, 0, theTitle, None, self.A_PBB | self.A_CENTRE
@@ -653,11 +656,12 @@ class Tokenizer():
         theTitle = theTitle.replace(r"%sc%", str(self.numChScene))
         theTitle = theTitle.replace(r"%sca%", str(self.numAbsScene))
         if r"%chw%" in theTitle:
-            theTitle = theTitle.replace(r"%chw%", numberToWord(self.numChapter, "en"))
+            theTitle = theTitle.replace(r"%chw%", self._localLookup(self.numChapter))
         if r"%chi%" in theTitle:
             theTitle = theTitle.replace(r"%chi%", numberToRoman(self.numChapter, True))
         if r"%chI%" in theTitle:
             theTitle = theTitle.replace(r"%chI%", numberToRoman(self.numChapter, False))
-        return theTitle
+
+        return theTitle[:1].upper() + theTitle[1:]
 
 # END Class Tokenizer

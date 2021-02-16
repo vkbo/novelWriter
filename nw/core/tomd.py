@@ -134,10 +134,10 @@ class ToMarkdown(Tokenizer):
                     thisPar.append(tTemp.rstrip() + " ")
 
             elif tType == self.T_SYNOPSIS and self.doSynopsis:
-                tmpResult.append("**Synopsis:** %s\n\n" % tText)
+                tmpResult.append("**%s:** %s\n\n" % (self._localLookup("Synopsis"), tText))
 
             elif tType == self.T_COMMENT and self.doComments:
-                tmpResult.append("**Comment:** %s\n\n" % tText)
+                tmpResult.append("**%s:** %s\n\n" % (self._localLookup("Comment"), tText))
 
             elif tType == self.T_KEYWORD and self.doKeywords:
                 tmpResult.append(self._formatKeywords(tText, tStyle))
