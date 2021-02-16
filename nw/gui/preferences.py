@@ -336,7 +336,7 @@ class GuiPreferencesProjects(QWidget):
         self.backupPathRow = self.mainForm.addRow(
             self.tr("Backup storage location"),
             self.backupGetPath,
-            self.tr("{0}: {1}").format(self.tr("Path"), self.backupPath)
+            self.tr("Path: {0}").format(self.backupPath)
         )
 
         ## Run when closing
@@ -429,7 +429,7 @@ class GuiPreferencesProjects(QWidget):
         if newDir:
             self.backupPath = newDir
             self.mainForm.setHelpText(
-                self.backupPathRow, self.tr("{0}: {1}").format(self.tr("Path"), self.backupPath))
+                self.backupPathRow, self.tr("Path: {0}").format(self.backupPath))
             return True
 
         return False

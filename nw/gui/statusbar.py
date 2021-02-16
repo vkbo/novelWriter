@@ -179,9 +179,7 @@ class GuiMainStatus(QStatusBar):
     def setStats(self, pWC, sWC):
         """Set the current project statistics.
         """
-        self.statsText.setText(self.tr("{0}: {1} ({2})").format(
-            self.tr("Words"), f"{pWC:n}", f"{sWC:+n}")
-        )
+        self.statsText.setText(self.tr("Words: {0} ({1})").format(f"{pWC:n}", f"{sWC:+n}"))
         self.statsText.setToolTip(self.tr("Project word count (session change)"))
         return
 

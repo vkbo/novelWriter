@@ -725,13 +725,9 @@ class GuiMain(QMainWindow):
                 theText = inFile.read()
             self.mainConf.setLastPath(loadFile)
         except Exception as e:
-            self.makeAlert(
-                [
-                    self.tr("Could not read file. The file must be an existing text file."),
-                    str(e)
-                ],
-                nwAlert.ERROR
-            )
+            self.makeAlert([
+                self.tr("Could not read file. The file must be an existing text file."), str(e)
+            ], nwAlert.ERROR)
             return False
 
         if self.docEditor.theHandle is None:
@@ -885,14 +881,9 @@ class GuiMain(QMainWindow):
         for nDone, tItem in enumerate(self.theProject.projTree):
 
             if tItem is not None:
-                self.setStatus(self.tr("{0}: '{1}'").format(self.tr("Indexing"), tItem.itemName))
+                self.setStatus(self.tr("Indexing: '{0}'").format(tItem.itemName))
             else:
-                self.setStatus(
-                    self.tr("{0}: {1}").format(
-                        self.tr("Indexing"),
-                        self.tr("Unknown item")
-                    )
-                )
+                self.setStatus(self.tr("Indexing: '{0}'").format(self.tr("Unknown item")))
 
             if tItem is not None and tItem.itemType == nwItemType.FILE:
                 logger.verbose("Scanning: %s" % tItem.itemName)

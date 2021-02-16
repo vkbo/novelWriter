@@ -106,7 +106,7 @@ class GuiBuildNovel(QDialog):
         self.titleGroup.setLayout(self.titleForm)
 
         fmtHelp = "<br>".join([
-            "<b>%s</b>" % self.tr("{0}:").format("Formatting Codes"),
+            "<b>%s</b>" % self.tr("Formatting Codes:"),
             self.tr("{0} for the title as set in the document").format(r"%title%"),
             self.tr("{0} for chapter number (1, 2, 3)").format(r"%ch%"),
             self.tr("{0} for chapter number as a word (one, two)").format(r"%chw%"),
@@ -423,54 +423,38 @@ class GuiBuildNovel(QDialog):
         # Saving to File
 
         self.saveMenu = QMenu(self)
-        self.btnSave = QPushButton("Save As")
+        self.btnSave = QPushButton(self.tr("Save As"))
         self.btnSave.setMenu(self.saveMenu)
 
-        self.saveODT = QAction(
-            self.tr("{0} ({1})").format(self.tr("Open Document"), ".odt"), self
-        )
+        self.saveODT = QAction(self.tr("Open Document (.odt)"), self)
         self.saveODT.triggered.connect(lambda: self._saveDocument(self.FMT_ODT))
         self.saveMenu.addAction(self.saveODT)
 
-        self.saveFODT = QAction(
-            self.tr("{0} ({1})").format(self.tr("Flat Open Document"), ".fodt"), self
-        )
+        self.saveFODT = QAction(self.tr("Flat Open Document (.fodt)"), self)
         self.saveFODT.triggered.connect(lambda: self._saveDocument(self.FMT_FODT))
         self.saveMenu.addAction(self.saveFODT)
 
-        self.saveHTM = QAction(
-            self.tr("{0} ({1})").format(self.tr("novelWriter HTML"), ".htm"), self
-        )
+        self.saveHTM = QAction(self.tr("novelWriter HTML (.htm)"), self)
         self.saveHTM.triggered.connect(lambda: self._saveDocument(self.FMT_HTM))
         self.saveMenu.addAction(self.saveHTM)
 
-        self.saveNWD = QAction(
-            self.tr("{0} ({1})").format(self.tr("novelWriter Markdown"), ".nwd"), self
-        )
+        self.saveNWD = QAction(self.tr("novelWriter Markdown (.nwd)"), self)
         self.saveNWD.triggered.connect(lambda: self._saveDocument(self.FMT_NWD))
         self.saveMenu.addAction(self.saveNWD)
 
-        self.saveMD = QAction(
-            self.tr("{0} ({1})").format(self.tr("Standard Markdown"), ".md"), self
-        )
+        self.saveMD = QAction(self.tr("Standard Markdown (.md)"), self)
         self.saveMD.triggered.connect(lambda: self._saveDocument(self.FMT_MD))
         self.saveMenu.addAction(self.saveMD)
 
-        self.saveGH = QAction(
-            self.tr("{0} ({1})").format(self.tr("GitHub Markdown"), ".md"), self
-        )
+        self.saveGH = QAction(self.tr("GitHub Markdown (.md)"), self)
         self.saveGH.triggered.connect(lambda: self._saveDocument(self.FMT_GH))
         self.saveMenu.addAction(self.saveGH)
 
-        self.saveJsonH = QAction(
-            self.tr("{0} ({1})").format(self.tr("JSON + novelWriter HTML"), ".json"), self
-        )
+        self.saveJsonH = QAction(self.tr("JSON + novelWriter HTML (.json)"), self)
         self.saveJsonH.triggered.connect(lambda: self._saveDocument(self.FMT_JSON_H))
         self.saveMenu.addAction(self.saveJsonH)
 
-        self.saveJsonM = QAction(
-            self.tr("{0} ({1})").format(self.tr("JSON + novelWriters Markdown"), ".json"), self
-        )
+        self.saveJsonM = QAction(self.tr("JSON + novelWriters Markdown (.json)"), self)
         self.saveJsonM.triggered.connect(lambda: self._saveDocument(self.FMT_JSON_M))
         self.saveMenu.addAction(self.saveJsonM)
 
@@ -1241,9 +1225,7 @@ class GuiBuildNovelDocView(QTextBrowser):
 
         fPx = int(1.1*self.theTheme.fontPixelSize)
 
-        self.theTitle = QLabel(self.tr("<b>{0}:</b> {1}".format(
-            self.tr("Build Time"), self.tr("Unknown"))), self
-        )
+        self.theTitle = QLabel("")
         self.theTitle.setIndent(0)
         self.theTitle.setAutoFillBackground(True)
         self.theTitle.setAlignment(Qt.AlignCenter)
@@ -1252,6 +1234,7 @@ class GuiBuildNovelDocView(QTextBrowser):
         self.theTitle.setFont(lblFont)
 
         self._updateDocMargins()
+        self._updateBuildAge()
         self.setStyleSheet()
 
         # Age Timer
@@ -1359,9 +1342,7 @@ class GuiBuildNovelDocView(QTextBrowser):
         else:
             strBuildTime = self.tr("Unknown")
 
-        self.theTitle.setText(self.tr("<b>{0}:</b> {1}").format(
-            self.tr("Build Time"), strBuildTime)
-        )
+        self.theTitle.setText(self.tr("<b>Build Time:</b> {0}").format(strBuildTime))
 
         return
 

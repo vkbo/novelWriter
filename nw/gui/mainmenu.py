@@ -390,8 +390,9 @@ class GuiMainMenu(QMenuBar):
 
         # Document > Split Document
         self.aSplitDoc = QAction(self.tr("Split Document to Folder"), self)
-        self.aSplitDoc.setStatusTip(self.tr("Split a document into a folder of "
-                                            "multiple documents"))
+        self.aSplitDoc.setStatusTip(
+            self.tr("Split a document into a folder of multiple documents")
+        )
         self.aSplitDoc.triggered.connect(lambda: self.theParent.splitDocument())
         self.docuMenu.addAction(self.aSplitDoc)
 
@@ -516,8 +517,9 @@ class GuiMainMenu(QMenuBar):
 
         # View > Focus Mode
         self.aFocusMode = QAction(self.tr("Focus Mode"), self)
-        self.aFocusMode.setStatusTip(self.tr("Toggles a distraction free mode, "
-                                             "only showing text editor"))
+        self.aFocusMode.setStatusTip(
+            self.tr("Toggles a distraction free mode, only showing text editor")
+        )
         self.aFocusMode.setShortcut("F8")
         self.aFocusMode.setCheckable(True)
         self.aFocusMode.setChecked(self.theParent.isFocusMode)
@@ -961,8 +963,9 @@ class GuiMainMenu(QMenuBar):
 
         # Tools > Toggle Auto Build Outline
         self.aAutoOutline = QAction(self.tr("Auto-Update Outline"), self)
-        self.aAutoOutline.setStatusTip(self.tr(
-            "Update project outline when a novel file is changed"))
+        self.aAutoOutline.setStatusTip(
+            self.tr("Update project outline when a novel file is changed")
+        )
         self.aAutoOutline.setCheckable(True)
         self.aAutoOutline.toggled.connect(self._toggleAutoOutline)
         self.aAutoOutline.setShortcut("Ctrl+F10")

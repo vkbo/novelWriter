@@ -105,9 +105,8 @@ class ProjWizardIntroPage(QWizardPage):
         )
         self.theText.setWordWrap(True)
 
-        self.imgCredit = QLabel(self.tr("Side image by {author:s}, {license:s}").format(
-            author = "Peter Mitterhofer",
-            license = "CC BY-SA 4.0"
+        self.imgCredit = QLabel(self.tr("Side image by {0}, {1}").format(
+            "Peter Mitterhofer", "CC BY-SA 4.0"
         ))
         lblFont = self.imgCredit.font()
         lblFont.setPointSizeF(0.6*self.theTheme.fontPointSize)

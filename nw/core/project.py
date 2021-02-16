@@ -260,7 +260,7 @@ class NWProject():
 
         titlePage = "# %s\n\n" % (self.bookTitle if self.bookTitle else self.projName)
         if self.bookAuthors:
-            titlePage = "%s%s %s\n" % (titlePage, self.tr("By"), ", ".join(self.bookAuthors))
+            titlePage = "%s%s %s\n" % (titlePage, self.tr("By"), self.getAuthors())
 
         # Document object for writing files
         aDoc = NWDoc(self, self.theParent)
@@ -516,13 +516,10 @@ class NWProject():
                 self.tr("Version Conflict"),
                 self.tr(
                     "This project was saved by a newer version of novelWriter, version "
-                    "{new_version}. This is version {version}. If you continue to open the "
-                    "project, some attributes and settings may not be preserved, but the "
+                    "{0}. This is version {1}. If you continue to open the  project, "
+                    "some attributes and settings may not be preserved, but the "
                     "overall project should be fine. Continue opening the project?"
-                ).format(
-                    new_version = appVersion,
-                    version = nw.__version__
-                )
+                ).format(appVersion, nw.__version__)
             )
             if not msgYes:
                 self.clearProject()
@@ -622,9 +619,7 @@ class NWProject():
         self.mainConf.updateRecentCache(self.projPath, self.projName, self.lastWCount, time())
         self.mainConf.saveRecentCache()
 
-        self.theParent.setStatus(self.tr("{0}: {1}").format(
-            self.tr("Opened Project"), self.projName)
-        )
+        self.theParent.setStatus(self.tr("Opened Project: {0}").format(self.projName))
 
         self._scanProjectFolder()
 
@@ -743,9 +738,7 @@ class NWProject():
         self.mainConf.saveRecentCache()
 
         self._writeLockFile()
-        self.theParent.setStatus(self.tr("{0}: {1}").format(
-            self.tr("Saved Project"), self.projName)
-        )
+        self.theParent.setStatus(self.tr("Saved Project: {0}").format(self.projName))
         self.setProjectChanged(False)
 
         return True
@@ -1503,9 +1496,7 @@ class NWProject():
                     logger.info("Moved file: %s" % theFile)
                     logger.info("New location: %s" % newPath)
                 except Exception:
-                    errList.append(
-                        self.tr("{0}: {1}").format(self.tr("Could not move"), theFile)
-                    )
+                    errList.append(self.tr("Could not move: {0}").format(theFile))
                     logger.error("Could not move: %s" % theFile)
                     nw.logException()
 
@@ -1514,9 +1505,7 @@ class NWProject():
                     os.unlink(theFile)
                     logger.info("Deleted file: %s" % theFile)
                 except Exception:
-                    errList.append(
-                        self.tr("{0}: {1}").format(self.tr("Could not delete"), theFile)
-                    )
+                    errList.append(self.tr("Could not delete: {0}").format(theFile))
                     logger.error("Could not delete: %s" % theFile)
                     nw.logException()
 
@@ -1529,12 +1518,10 @@ class NWProject():
         # ==================
         try:
             os.rmdir(theData)
-            logger.info("Removed folder: %s" % theFolder)
+            logger.info("Deleted folder: %s" % theFolder)
         except Exception:
-            errList.append(
-                self.tr("{0}: {1}").format(self.tr("Failed to remove"), theFolder)
-            )
-            logger.error("Failed to remove: %s" % theFolder)
+            errList.append(self.tr("Could not delete: {0}").format(theFolder))
+            logger.error("Could not delete: %s" % theFolder)
             nw.logException()
 
         return errList
@@ -1545,7 +1532,7 @@ class NWProject():
         """
         theJunk = os.path.join(self.projPath, "junk")
         if not self._checkFolder(theJunk):
-            return self.tr("{0}: {1}").format(self.tr("Could not make folder"), theJunk)
+            return self.tr("Could not make folder: {0}").format(theJunk)
 
         theSrc = os.path.join(theDir, theItem)
         theDst = os.path.join(theJunk, theItem)

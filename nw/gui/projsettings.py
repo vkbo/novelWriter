@@ -466,7 +466,7 @@ class GuiProjectEditReplace(QWidget):
         self.listBox.setIndentation(0)
 
         for aKey, aVal in self.theProject.autoReplace.items():
-            newItem = QTreeWidgetItem([self.tr("<{0}>").format(aKey), aVal])
+            newItem = QTreeWidgetItem(["<%s>" % aKey, aVal])
             self.listBox.addTopLevelItem(newItem)
 
         self.listBox.sortByColumn(0, Qt.AscendingOrder)

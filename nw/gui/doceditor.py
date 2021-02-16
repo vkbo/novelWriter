@@ -296,11 +296,11 @@ class GuiDocEditor(QTextEdit):
             self.theParent.makeAlert(
                 self.tr(
                     "The document you are trying to open is too big. "
-                    "The document size is {doc_size}. "
-                    "The maximum size allowed is {max_size}."
+                    "The document size is {0} MB. "
+                    "The maximum size allowed is {1} MB."
                 ).format(
-                    doc_size=self.tr("{0}\u202fMB").format(f"{docSize/1.0e6:.2f}"),
-                    max_size=self.tr("{0}\u202fMB").format(f"{nwConst.MAX_DOCSIZE/1.0e6:.2f}")
+                    f"{docSize/1.0e6:.2f}",
+                    f"{nwConst.MAX_DOCSIZE/1.0e6:.2f}"
                 ),
                 nwAlert.ERROR
             )
@@ -389,11 +389,11 @@ class GuiDocEditor(QTextEdit):
             self.theParent.makeAlert(
                 self.tr(
                     "The text you are trying to add is too big. "
-                    "The text size is {text_size}. "
-                    "The maximum size allowed is {max_size}."
+                    "The text size is {0} MB. "
+                    "The maximum size allowed is {1} MB."
                 ).format(
-                    text_size=self.tr("{0}\u202fMB").format(f"{docSize/1.0e6:.2f}"),
-                    max_size=self.tr("{0}\u202fMB").format(f"{nwConst.MAX_DOCSIZE/1.0e6:.2f}")
+                    f"{docSize/1.0e6:.2f}",
+                    f"{nwConst.MAX_DOCSIZE/1.0e6:.2f}"
                 ),
                 nwAlert.ERROR
             )
@@ -580,12 +580,14 @@ class GuiDocEditor(QTextEdit):
         """
         if not isinstance(theLine, int):
             return False
+
         if theLine >= 0:
             theBlock = self.qDocument.findBlockByLineNumber(theLine)
             if theBlock:
                 self.setCursorPosition(theBlock.position())
                 self.docFooter.updateLineCount()
                 logger.verbose("Cursor moved to line %d" % theLine)
+
         return True
 
     ##
@@ -651,9 +653,7 @@ class GuiDocEditor(QTextEdit):
                 self.hLight.rehighlight()
             qApp.restoreOverrideCursor()
             afTime = time()
-            logger.debug(
-                "Document highlighted in %.3f ms" % (1000*(afTime-bfTime))
-            )
+            logger.debug("Document highlighted in %.3f ms" % (1000*(afTime-bfTime)))
             self.theParent.statusBar.showMessage(self.tr("Spell check complete"))
 
         return True
@@ -809,7 +809,7 @@ class GuiDocEditor(QTextEdit):
         theCursor = self.textCursor()
         theBlock = theCursor.block()
         if not theBlock.isValid():
-            logger.error("Filed to insert keyword '%s'" % keyWord)
+            logger.error("Failed to insert keyword '%s'" % keyWord)
             return False
 
         theCursor.beginEditBlock()
@@ -946,9 +946,9 @@ class GuiDocEditor(QTextEdit):
             self.theParent.makeAlert(
                 self.tr(
                     "The document has grown too big and you cannot add more text to it. "
-                    "The maximum size of a single novelWriter document is {max_size}."
+                    "The maximum size of a single novelWriter document is {0} MB."
                 ).format(
-                    max_size=self.tr("{0}\u202fMB").format(f"{nwConst.MAX_DOCSIZE/1.0e6:.2f}")
+                    f"{nwConst.MAX_DOCSIZE/1.0e6:.2f}"
                 ),
                 nwAlert.ERROR
             )
@@ -1052,8 +1052,9 @@ class GuiDocEditor(QTextEdit):
                     )
                     mnuContext.addAction(mnuWord)
             else:
-                mnuHead = QAction("%s %s" % (nwUnicode.U_ENDASH, self.tr("No Suggestions")),
-                                  mnuContext)
+                mnuHead = QAction(
+                    "%s %s" % (nwUnicode.U_ENDASH, self.tr("No Suggestions")), mnuContext
+                )
                 mnuContext.addAction(mnuHead)
 
             mnuContext.addSeparator()
@@ -1147,15 +1148,11 @@ class GuiDocEditor(QTextEdit):
                 QPointF(theSize.width(), theSize.height()), Qt.FuzzyHit
             )
             if self.queuePos <= thePos:
-                logger.verbose(
-                    "Allowed cursor move to %d <= %d" % (self.queuePos, thePos)
-                )
+                logger.verbose("Allowed cursor move to %d <= %d" % (self.queuePos, thePos))
                 self.setCursorPosition(self.queuePos)
                 self.queuePos = None
             else:
-                logger.verbose(
-                    "Denied cursor move to %d > %d" % (self.queuePos, thePos)
-                )
+                logger.verbose("Denied cursor move to %d > %d" % (self.queuePos, thePos))
         return
 
     ##
@@ -1547,9 +1544,7 @@ class GuiDocEditor(QTextEdit):
             theText = newText
             cOffset -= 0
         else:
-            logger.error(
-                "Unknown or unsupported block format requested: %s" % str(docAction)
-            )
+            logger.error("Unknown or unsupported block format requested: %s" % str(docAction))
             return False
 
         # Replace the block text
@@ -2446,7 +2441,7 @@ class GuiDocEditFooter(QWidget):
         self.linesIcon.setFixedHeight(self.sPx)
         self.linesIcon.setAlignment(Qt.AlignLeft | Qt.AlignTop)
 
-        self.linesText = QLabel(self.tr("{0}: {1}").format(self.tr("Line"), "0"))
+        self.linesText = QLabel("")
         self.linesText.setIndent(0)
         self.linesText.setMargin(0)
         self.linesText.setContentsMargins(0, 0, 0, 0)
@@ -2462,7 +2457,7 @@ class GuiDocEditFooter(QWidget):
         self.wordsIcon.setFixedHeight(self.sPx)
         self.wordsIcon.setAlignment(Qt.AlignLeft | Qt.AlignTop)
 
-        self.wordsText = QLabel(self.tr("{0}: {1}").format(self.tr("Words"), "0"))
+        self.wordsText = QLabel("")
         self.wordsText.setIndent(0)
         self.wordsText.setMargin(0)
         self.wordsText.setContentsMargins(0, 0, 0, 0)
@@ -2493,6 +2488,8 @@ class GuiDocEditFooter(QWidget):
 
         # Fix the Colours
         self.matchColours()
+        self.updateLineCount()
+        self.updateCounts()
 
         logger.debug("GuiDocEditFooter initialisation complete")
 
@@ -2570,9 +2567,7 @@ class GuiDocEditFooter(QWidget):
             iDist = 100*iLine/self.docEditor.qDocument.blockCount()
 
         self.linesText.setText(
-            self.tr("{0}: {1} ({2}\u202f%%)".format(
-                self.tr("Line"), f"{iLine:n}", f"{iDist:.0f}")
-            )
+            self.tr("Line: {0} ({1})").format(f"{iLine:n}", f"{iDist:.0f} %")
         )
 
         return
@@ -2588,9 +2583,7 @@ class GuiDocEditFooter(QWidget):
             wDiff  = wCount - self.theItem.initCount
 
         self.wordsText.setText(
-            self.tr("{0}: {1} ({2})".format(
-                self.tr("Words"), f"{wCount:n}", f"{wDiff:+n}")
-            )
+            self.tr("Words: {0} ({1})").format(f"{wCount:n}", f"{wDiff:+n}")
         )
 
         byteSize = self.docEditor.qDocument.characterCount()

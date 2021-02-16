@@ -292,9 +292,8 @@ class Tokenizer():
 
         docSize = len(self.theText)
         if docSize > nwConst.MAX_DOCSIZE:
-            errVal = self.tr("Document '{doc_name}' is too big ({doc_size}). Skipping.").format(
-                doc_name = self.theItem.itemName,
-                doc_size = f"{docSize/1.0e6:.2f} MB"
+            errVal = self.tr("Document '{0}' is too big ({1}). Skipping.").format(
+                self.theItem.itemName, f"{docSize/1.0e6:.2f} MB"
             )
             self.theText = "# %s\n\n%s\n\n" % (self.tr("ERROR"), errVal)
             self.errData.append(errVal)

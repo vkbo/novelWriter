@@ -191,10 +191,8 @@ class GuiProjectLoad(QDialog):
         projFile, _ = QFileDialog.getOpenFileName(
             self, self.tr("Open novelWriter Project"), "",
             ";;".join([
-                self.tr("{0} ({1})").format(
-                    self.tr("novelWriter Project File"), nwFiles.PROJ_FILE
-                ),
-                self.tr("{0} ({1})").format(self.tr("All Files"), "*")
+                self.tr("novelWriter Project File ({0})").format(nwFiles.PROJ_FILE),
+                self.tr("All Files (*.*)"),
             ]),
             options=dlgOpt
         )

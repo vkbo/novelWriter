@@ -958,11 +958,9 @@ class GuiDocViewFooter(QWidget):
         self.stickyRefs.setIconSize(QSize(fPx, fPx))
         self.stickyRefs.setFixedSize(QSize(fPx, fPx))
         self.stickyRefs.toggled.connect(self._doToggleSticky)
-        self.stickyRefs.setToolTip(
-            self.tr(
-                "Activate to freeze the content of the references panel when changing document"
-            )
-        )
+        self.stickyRefs.setToolTip(self.tr(
+            "Activate to freeze the content of the references panel when changing document"
+        ))
 
         # Show Comments
         self.showComments = QToolButton(self)

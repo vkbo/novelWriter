@@ -136,8 +136,8 @@ class GuiAbout(QDialog):
         aboutMsg   = "".join([
             "<h2>%s</h2>" % self.tr("About novelWriter"),
             "<p>{copyright:s}.</p>",
-            "<p>%s</p>" % self.tr("{0}: {1}").format(
-                self.tr("Website"), "<a href=\"{website:s}\">{domain:s}</a>"
+            "<p>%s</p>" % self.tr(
+                "Website: {0}".format("<a href='{website:s}'>{domain:s}</a>")
             ),
             "<p>%s</p>" % self.tr(
                 "novelWriter is a markdown-like text editor designed for organising and "
@@ -174,64 +174,34 @@ class GuiAbout(QDialog):
         theTheme = self.theParent.theTheme
         theIcons = self.theParent.theTheme.theIcons
         if theTheme.themeName:
-            aboutMsg += "".join([
-                "<h4>%s</h4>" % self.tr("{0}: {1}").format(
-                    self.tr("Theme"), theTheme.themeName
-                ),
-                "<p>",
-                "%s<br/>" % self.tr("<b>{0}:</b> {1}").format(
-                    self.tr("Author"), theTheme.themeAuthor
-                ),
-                "%s<br/>" % self.tr("<b>{0}:</b> {1}").format(
-                    self.tr("Credit"), theTheme.themeCredit
-                ),
-                self.tr("<b>{0}:</b> {1}").format(
-                    self.tr("License"), "<a href='{0}'>{1}</a>".format(
-                        theTheme.themeLicenseUrl, theTheme.themeLicense
-                    )
-                ),
-                "</p>"
-            ])
+            aboutMsg += "<h4>%s</h4><p>%s<br/>%s<br/>%s</p>" % (
+                self.tr("Theme: {0}").format(theTheme.themeName),
+                self.tr("Author: {0}").format(theTheme.themeAuthor),
+                self.tr("Credit: {0}").format(theTheme.themeCredit),
+                self.tr("License: {0}").format(
+                    f"<a href='{theTheme.themeLicenseUrl}'>{theTheme.themeLicense}</a>"
+                )
+            )
 
         if theIcons.themeName:
-            aboutMsg += "".join([
-                "<h4>%s</h4>" % self.tr("{0}: {1}").format(
-                    self.tr("Icons"), theIcons.themeName
-                ),
-                "<p>",
-                "%s<br/>" % self.tr("<b>{0}:</b> {1}").format(
-                    self.tr("Author"), theIcons.themeAuthor
-                ),
-                "%s<br/>" % self.tr("<b>{0}:</b> {1}").format(
-                    self.tr("Credit"), theIcons.themeCredit
-                ),
-                self.tr("<b>{0}:</b> {1}").format(
-                    self.tr("License"), "<a href='{0}'>{1}</a>".format(
-                        theIcons.themeLicenseUrl, theIcons.themeLicense
-                    )
-                ),
-                "</p>"
-            ])
+            aboutMsg += "<h4>%s</h4><p>%s<br/>%s<br/>%s</p>" % (
+                self.tr("Icons: {0}").format(theIcons.themeName),
+                self.tr("Author: {0}").format(theIcons.themeAuthor),
+                self.tr("Credit: {0}").format(theIcons.themeCredit),
+                self.tr("License: {0}").format(
+                    f"<a href='{theIcons.themeLicenseUrl}'>{theIcons.themeLicense}</a>"
+                )
+            )
 
         if theTheme.syntaxName:
-            aboutMsg += "".join([
-                "<h4>%s</h4>" % self.tr("{0}: {1}").format(
-                    self.tr("Syntax"), theTheme.syntaxName
-                ),
-                "<p>",
-                "%s<br/>" % self.tr("<b>{0}:</b> {1}").format(
-                    self.tr("Author"), theTheme.syntaxAuthor
-                ),
-                "%s<br/>" % self.tr("<b>{0}:</b> {1}").format(
-                    self.tr("Credit"), theTheme.syntaxCredit
-                ),
-                self.tr("<b>{0}:</b> {1}").format(
-                    self.tr("License"), "<a href='{0}'>{1}</a>".format(
-                        theTheme.syntaxLicenseUrl, theTheme.syntaxLicense
-                    )
-                ),
-                "</p>"
-            ])
+            aboutMsg += "<h4>%s</h4><p>%s<br/>%s<br/>%s</p>" % (
+                self.tr("Syntax: {0}").format(theTheme.syntaxName),
+                self.tr("Author: {0}").format(theTheme.syntaxAuthor),
+                self.tr("Credit: {0}").format(theTheme.syntaxCredit),
+                self.tr("License: {0}").format(
+                    f"<a href='{theTheme.syntaxLicenseUrl}'>{theTheme.syntaxLicense}</a>"
+                )
+            )
 
         self.pageAbout.setHtml(aboutMsg)
 

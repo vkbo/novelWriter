@@ -159,12 +159,12 @@ class GuiWritingStats(QDialog):
         self.totalWords.setFont(self.theTheme.guiFontFixed)
         self.totalWords.setAlignment(Qt.AlignVCenter | Qt.AlignRight)
 
-        lblTTime   = QLabel(self.tr("{0}:").format(self.tr("Total Time")))
-        lblITime   = QLabel(self.tr("{0}:").format(self.tr("Idle Time")))
-        lblFTime   = QLabel(self.tr("{0}:").format(self.tr("Filtered Time")))
-        lblNvCount = QLabel(self.tr("{0}:").format(self.tr("Novel Word Count")))
-        lblNtCount = QLabel(self.tr("{0}:").format(self.tr("Notes Word Count")))
-        lblTtCount = QLabel(self.tr("{0}:").format(self.tr("Total Word Count")))
+        lblTTime   = QLabel(self.tr("Total Time:"))
+        lblITime   = QLabel(self.tr("Idle Time:"))
+        lblFTime   = QLabel(self.tr("Filtered Time:"))
+        lblNvCount = QLabel(self.tr("Novel Word Count:"))
+        lblNtCount = QLabel(self.tr("Notes Word Count:"))
+        lblTtCount = QLabel(self.tr("Total Word Count:"))
 
         self.infoForm.addWidget(lblTTime,   0, 0)
         self.infoForm.addWidget(lblITime,   1, 0)
@@ -268,13 +268,11 @@ class GuiWritingStats(QDialog):
         self.saveMenu = QMenu(self)
         self.btnSave.setMenu(self.saveMenu)
 
-        self.saveJSON = QAction(self.tr("{0} ({1})").format(
-            self.tr("JSON Data File"), ".json"), self)
+        self.saveJSON = QAction(self.tr("JSON Data File (.json)"), self)
         self.saveJSON.triggered.connect(lambda: self._saveData(self.FMT_JSON))
         self.saveMenu.addAction(self.saveJSON)
 
-        self.saveCSV = QAction(self.tr("{0} ({1})").format(
-            self.tr("CSV Data File"), ".csv"), self)
+        self.saveCSV = QAction(self.tr("CSV Data File (.csv)"), self)
         self.saveCSV.triggered.connect(lambda: self._saveData(self.FMT_CSV))
         self.saveMenu.addAction(self.saveCSV)
 

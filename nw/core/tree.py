@@ -31,9 +31,6 @@ import os
 from time import time
 from lxml import etree
 from hashlib import sha256
-from functools import partial
-
-from PyQt5.QtCore import QCoreApplication
 
 from nw.core.item import NWItem
 from nw.common import checkHandle
@@ -81,9 +78,6 @@ class NWTree():
         self._treeChanged = False # True if tree structure has changed
 
         self._handleSeed  = None  # Used for generating handles for testing
-
-        # Internal Mappings
-        self.tr = partial(QCoreApplication.translate, "NWTree")
 
         return
 
@@ -201,14 +195,11 @@ class NWTree():
             tocText = os.path.join(self.theProject.projPath, nwFiles.TOC_TXT)
             with open(tocText, mode="w", encoding="utf8") as outFile:
                 outFile.write("\n")
-                outFile.write("%s\n" % self.tr("Table of Contents"))
+                outFile.write("Table of Contents\n")
                 outFile.write("=================\n")
                 outFile.write("\n")
                 outFile.write("%-25s  %-9s  %-10s  %s\n" % (
-                    self.tr("File Name"),
-                    self.tr("Class"),
-                    self.tr("Layout"),
-                    self.tr("Document Label"),
+                    "File Name", "Class", "Layout", "Document Label",
                 ))
                 outFile.write("-"*tocLen + "\n")
                 outFile.write("\n".join(tocList))
