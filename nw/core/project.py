@@ -607,10 +607,7 @@ class NWProject():
         self.theParent.setStatus("Opened Project: %s" % self.projName)
 
         self._scanProjectFolder()
-        if self.projLang is None:
-            self._loadProjectLocalisation(self.mainConf.guiLang)
-        else:
-            self._loadProjectLocalisation(self.projLang)
+        self.loadProjectLocalisation(self.projLang)
 
         self.currWCount = self.lastWCount
         self.projOpened = time()
@@ -1016,6 +1013,7 @@ class NWProject():
         theLang = checkString(theLang, None, True)
         if self.projLang != theLang:
             self.projLang = theLang
+            self.loadProjectLocalisation(theLang)
             self.setProjectChanged(True)
         return True
 
@@ -1211,17 +1209,21 @@ class NWProject():
         theValue = str(theWord)
         return self.langData.get(theValue, theValue)
 
-    ##
-    #  Internal Functions
-    ##
-
-    def _loadProjectLocalisation(self, theLang):
+    def loadProjectLocalisation(self, theLang):
         """Load the language data for the current project language.
         """
+        if theLang is None:
+            theLang = self.mainConf.spellLanguage
+
         lngShort = theLang.split("_")[0]
         loadFile = os.path.join(self.mainConf.langPath, "project_en.json")
         chkFile1 = os.path.join(self.mainConf.langPath, "project_%s.json" % theLang)
         chkFile2 = os.path.join(self.mainConf.langPath, "project_%s.json" % lngShort)
+        print(theLang)
+        print(lngShort)
+        print(loadFile)
+        print(chkFile1)
+        print(chkFile2)
         if os.path.isfile(chkFile1):
             loadFile = chkFile1
         elif os.path.isfile(chkFile2):
@@ -1238,6 +1240,10 @@ class NWProject():
             return False
 
         return True
+
+    ##
+    #  Internal Functions
+    ##
 
     def _readLockFile(self):
         """Reads the lock file in the project folder.
