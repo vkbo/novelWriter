@@ -2,7 +2,6 @@ SOURCES += \
     nw/constants/constants.py \
     nw/core/document.py \
     nw/core/project.py \
-    nw/core/tokenizer.py \
     nw/gui/about.py \
     nw/gui/build.py \
     nw/gui/custom.py \

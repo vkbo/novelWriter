@@ -22,7 +22,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 import pytest
 
-from nw.core.tools import countWords, numberToRoman, numberToWord
+from nw.core.tools import countWords, numberToRoman
 
 @pytest.mark.core
 def testCoreTools_CountWords():
@@ -81,80 +81,3 @@ def testCoreTools_RomanNumbers():
     assert numberToRoman(999, True) == "cmxcix"
 
 # END Test testCoreTools_RomanNumbers
-
-@pytest.mark.core
-def testCoreTools_NumberWords():
-    """Test the conversion of integer to English words.
-    """
-    # English
-    assert numberToWord(0, "en") == "Zero"
-    assert numberToWord(1, "en") == "One"
-    assert numberToWord(2, "en") == "Two"
-    assert numberToWord(3, "en") == "Three"
-    assert numberToWord(4, "en") == "Four"
-    assert numberToWord(5, "en") == "Five"
-    assert numberToWord(6, "en") == "Six"
-    assert numberToWord(7, "en") == "Seven"
-    assert numberToWord(8, "en") == "Eight"
-    assert numberToWord(9, "en") == "Nine"
-    assert numberToWord(10, "en") == "Ten"
-    assert numberToWord(11, "en") == "Eleven"
-    assert numberToWord(12, "en") == "Twelve"
-    assert numberToWord(13, "en") == "Thirteen"
-    assert numberToWord(14, "en") == "Fourteen"
-    assert numberToWord(15, "en") == "Fifteen"
-    assert numberToWord(16, "en") == "Sixteen"
-    assert numberToWord(17, "en") == "Seventeen"
-    assert numberToWord(18, "en") == "Eighteen"
-    assert numberToWord(19, "en") == "Nineteen"
-    assert numberToWord(20, "en") == "Twenty"
-    assert numberToWord(21, "en") == "Twenty-One"
-    assert numberToWord(29, "en") == "Twenty-Nine"
-    assert numberToWord(42, "en") == "Forty-Two"
-    assert numberToWord(114, "en") == "One Hundred Fourteen"
-    assert numberToWord(142, "en") == "One Hundred Forty-Two"
-    assert numberToWord(999, "en") == "Nine Hundred Ninety-Nine"
-
-    # Norwegian
-    assert numberToWord(0, "nb") == "null"
-    assert numberToWord(1, "nb") == "én"
-    assert numberToWord(10, "nb") == "ti"
-    assert numberToWord(20, "nb") == "tjue"
-    assert numberToWord(21, "nb") == "tjueén"
-    assert numberToWord(29, "nb") == "tjueni"
-    assert numberToWord(42, "nb") == "førtito"
-    assert numberToWord(60, "nb") == "seksti"
-    assert numberToWord(100, "nb") == "ett hundre"
-    assert numberToWord(114, "nb") == "ett hundre og fjorten"
-    assert numberToWord(142, "nb") == "ett hundre og førtito"
-    assert numberToWord(999, "nb") == "ni hundre og nittini"
-
-    assert numberToWord(0, "nn") == "null"
-    assert numberToWord(1, "nn") == "ein"
-    assert numberToWord(10, "nn") == "ti"
-    assert numberToWord(20, "nn") == "tjue"
-    assert numberToWord(21, "nn") == "tjueein"
-    assert numberToWord(29, "nn") == "tjueni"
-    assert numberToWord(42, "nn") == "førtito"
-    assert numberToWord(60, "nn") == "seksti"
-    assert numberToWord(100, "nn") == "eitt hundre"
-    assert numberToWord(114, "nn") == "eitt hundre og fjorten"
-    assert numberToWord(142, "nn") == "eitt hundre og førtito"
-    assert numberToWord(999, "nn") == "ni hundre og nittini"
-
-    # Check complex language setting
-    assert numberToWord(1, "en_GB") == "One"
-    assert numberToWord(2, "en_GB") == "Two"
-    assert numberToWord(3, "en_GB") == "Three"
-
-    # Check a few with a nonsense language setting
-    assert numberToWord(1, "foo") == "1"
-    assert numberToWord(2, "foo") == "2"
-    assert numberToWord(3, "foo") == "3"
-
-    # Test out of range values
-    assert numberToWord(12345, "en") == "[>999]"
-    assert numberToWord(-2345, "en") == "[<0]"
-    assert numberToWord("234", "en") == "[NaN]"
-
-# END Test testCoreTools_NumberWords
