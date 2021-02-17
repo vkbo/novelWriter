@@ -394,14 +394,23 @@ class Config:
         return
 
     def listLanguages(self):
-        langs = dict(map(lambda lang: (lang, QLocale(lang).nativeLanguageName().title()),
-                         map(lambda v: v[0][3:],
-                             filter(lambda v: v[0].startswith("nw_") and v[1] == ".qm",
-                                    map(os.path.splitext, os.listdir(self.nwLangPath))))))
-        if "en" not in langs:
-            langs["en"] = QLocale("en").nativeLanguageName().title()
+        """List localisation files in the i18n folder. The default GUI
+        language 'en_GB' is British English.
+        """
+        langList = {
+            "en_GB": QLocale("en_GB").nativeLanguageName().title()
+        }
+        for qmFile in os.listdir(self.nwLangPath):
+            if not os.path.isfile(os.path.join(self.nwLangPath, qmFile)):
+                continue
+            if not qmFile.startswith("nw_") or not qmFile.endswith(".qm"):
+                continue
+            qmLang = qmFile[3:-3]
+            qmName = QLocale(qmLang).nativeLanguageName().title()
+            if qmLang and qmName:
+                langList[qmLang] = qmName
 
-        return sorted(langs.items(), key=lambda x: x[0])
+        return sorted(langList.items(), key=lambda x: x[0])
 
     def loadConfig(self):
         """Load preferences from file and replace default settings.

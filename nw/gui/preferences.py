@@ -137,10 +137,11 @@ class GuiPreferencesGeneral(QWidget):
         # Look and Feel
         # =============
         self.mainForm.addGroupLabel(self.tr("Look and Feel"))
+        minWidth = self.mainConf.pxInt(200)
 
         ## Select Locale
         self.guiLang = QComboBox()
-        self.guiLang.setMinimumWidth(self.mainConf.pxInt(200))
+        self.guiLang.setMinimumWidth(minWidth)
         self.theLangs = self.mainConf.listLanguages()
         print(self.theLangs)
         for lang, langName in self.theLangs:
@@ -157,7 +158,7 @@ class GuiPreferencesGeneral(QWidget):
 
         ## Select Theme
         self.guiTheme = QComboBox()
-        self.guiTheme.setMinimumWidth(self.mainConf.pxInt(200))
+        self.guiTheme.setMinimumWidth(minWidth)
         self.theThemes = self.theTheme.listThemes()
         for themeDir, themeName in self.theThemes:
             self.guiTheme.addItem(themeName, themeDir)
@@ -173,7 +174,7 @@ class GuiPreferencesGeneral(QWidget):
 
         ## Select Icon Theme
         self.guiIcons = QComboBox()
-        self.guiIcons.setMinimumWidth(self.mainConf.pxInt(200))
+        self.guiIcons.setMinimumWidth(minWidth)
         self.theIcons = self.theTheme.theIcons.listThemes()
         for iconDir, iconName in self.theIcons:
             self.guiIcons.addItem(iconName, iconDir)
