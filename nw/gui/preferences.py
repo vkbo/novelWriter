@@ -137,10 +137,27 @@ class GuiPreferencesGeneral(QWidget):
         # Look and Feel
         # =============
         self.mainForm.addGroupLabel(self.tr("Look and Feel"))
+        minWidth = self.mainConf.pxInt(200)
+
+        ## Select Locale
+        self.guiLang = QComboBox()
+        self.guiLang.setMinimumWidth(minWidth)
+        self.theLangs = self.mainConf.listLanguages()
+        for lang, langName in self.theLangs:
+            self.guiLang.addItem(langName, lang)
+        langIdx = self.guiLang.findData(self.mainConf.guiLang)
+        if langIdx != -1:
+            self.guiLang.setCurrentIndex(langIdx)
+
+        self.mainForm.addRow(
+            self.tr("Main GUI language"),
+            self.guiLang,
+            self.tr("Changing this requires restarting novelWriter.")
+        )
 
         ## Select Theme
         self.guiTheme = QComboBox()
-        self.guiTheme.setMinimumWidth(self.mainConf.pxInt(200))
+        self.guiTheme.setMinimumWidth(minWidth)
         self.theThemes = self.theTheme.listThemes()
         for themeDir, themeName in self.theThemes:
             self.guiTheme.addItem(themeName, themeDir)
@@ -156,7 +173,7 @@ class GuiPreferencesGeneral(QWidget):
 
         ## Select Icon Theme
         self.guiIcons = QComboBox()
-        self.guiIcons.setMinimumWidth(self.mainConf.pxInt(200))
+        self.guiIcons.setMinimumWidth(minWidth)
         self.theIcons = self.theTheme.theIcons.listThemes()
         for iconDir, iconName in self.theIcons:
             self.guiIcons.addItem(iconName, iconDir)
@@ -240,6 +257,7 @@ class GuiPreferencesGeneral(QWidget):
     def saveValues(self):
         """Save the values set for this tab.
         """
+        guiLang      = self.guiLang.currentData()
         guiTheme     = self.guiTheme.currentData()
         guiIcons     = self.guiIcons.currentData()
         guiDark      = self.guiDark.isChecked()
@@ -248,12 +266,14 @@ class GuiPreferencesGeneral(QWidget):
 
         # Check if restart is needed
         needsRestart = False
+        needsRestart |= self.mainConf.guiLang != guiLang
         needsRestart |= self.mainConf.guiTheme != guiTheme
         needsRestart |= self.mainConf.guiIcons != guiIcons
         needsRestart |= self.mainConf.guiDark != guiDark
         needsRestart |= self.mainConf.guiFont != guiFont
         needsRestart |= self.mainConf.guiFontSize != guiFontSize
 
+        self.mainConf.guiLang      = guiLang
         self.mainConf.guiTheme     = guiTheme
         self.mainConf.guiIcons     = guiIcons
         self.mainConf.guiDark      = guiDark

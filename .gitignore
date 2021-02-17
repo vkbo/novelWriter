@@ -7,8 +7,8 @@
 *.egg-info
 setup.iss
 novelwriter.desktop
-*.qm
-*.qph
+i18n/*.qm
+i18n/*.qph
 
 # Documentation
 /docs/build/
