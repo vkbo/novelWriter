@@ -29,7 +29,7 @@ from shutil import copyfile
 from tools import cmpFiles
 
 from nw.core.project import NWProject
-from nw.core.index import NWIndex
+from nw.core.index import NWIndex, countWords
 from nw.constants import nwItemClass, nwItemLayout
 
 @pytest.mark.core
@@ -1161,3 +1161,34 @@ def testCoreIndex_CheckTextCounts(dummyGUI):
         theIndex._checkTextCounts()
 
 # END Test testCoreIndex_CheckTextCounts
+
+@pytest.mark.core
+def testCoreIndex_CountWords():
+    """Test the word counter and the exclusion filers.
+    """
+    testText = (
+        "# Heading One\n"
+        "## Heading Two\n"
+        "### Heading Three\n"
+        "#### Heading Four\n"
+        "\n"
+        "@tag: value\n"
+        "\n"
+        "% A comment that should n ot be counted.\n"
+        "\n"
+        "The first paragraph.\n"
+        "\n"
+        "The second paragraph.\n"
+        "\n"
+        "\n"
+        "The third paragraph.\n"
+        "\n"
+        "Dashes\u2013and even longer\u2014dashes."
+    )
+    cC, wC, pC = countWords(testText)
+
+    assert cC == 138
+    assert wC == 22
+    assert pC == 4
+
+# END Test testCoreIndex_CountWords

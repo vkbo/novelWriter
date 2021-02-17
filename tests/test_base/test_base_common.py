@@ -27,7 +27,7 @@ from nw.common import (
     checkString, checkBool, checkInt, colRange, formatInt, transferCase,
     fuzzyTime, checkHandle, formatTimeStamp, formatTime, hexToInt,
     makeFileNameSafe, isHandle, isTitleTag, isItemClass, isItemType,
-    isItemLayout
+    isItemLayout, numberToRoman
 )
 from tools import cmpList
 
@@ -325,3 +325,30 @@ def testBaseCommon_MakeFileNameSafe():
     assert makeFileNameSafe("aaaa bbbb") == "aaaa bbbb"
 
 # END Test testBaseCommon_MakeFileNameSafe
+
+@pytest.mark.core
+def testBaseCommon_RomanNumbers():
+    """Test conversion of integers to Roman numbers.
+    """
+    assert numberToRoman(None, False) == "NAN"
+    assert numberToRoman(0, False) == "OOR"
+    assert numberToRoman(1, False) == "I"
+    assert numberToRoman(2, False) == "II"
+    assert numberToRoman(3, False) == "III"
+    assert numberToRoman(4, False) == "IV"
+    assert numberToRoman(5, False) == "V"
+    assert numberToRoman(6, False) == "VI"
+    assert numberToRoman(7, False) == "VII"
+    assert numberToRoman(8, False) == "VIII"
+    assert numberToRoman(9, False) == "IX"
+    assert numberToRoman(10, False) == "X"
+    assert numberToRoman(14, False) == "XIV"
+    assert numberToRoman(42, False) == "XLII"
+    assert numberToRoman(99, False) == "XCIX"
+    assert numberToRoman(142, False) == "CXLII"
+    assert numberToRoman(542, False) == "DXLII"
+    assert numberToRoman(999, False) == "CMXCIX"
+    assert numberToRoman(2010, False) == "MMX"
+    assert numberToRoman(999, True) == "cmxcix"
+
+# END Test testBaseCommon_RomanNumbers

@@ -33,7 +33,7 @@ from functools import partial
 from PyQt5.QtCore import QCoreApplication, QRegularExpression
 
 from nw.core.document import NWDoc
-from nw.core.tools import numberToRoman
+from nw.common import numberToRoman
 from nw.constants import nwConst, nwUnicode, nwItemLayout, nwItemType, nwRegEx
 
 logger = logging.getLogger(__name__)

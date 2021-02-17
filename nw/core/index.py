@@ -5,7 +5,8 @@ novelWriter – Project Index
 Data class for the project index of tags, headers and references
 
 File History:
-Created: 2019-05-27 [0.1.4]
+Created: 2019-04-22 [0.0.1] countWords
+Created: 2019-05-27 [0.1.4] NWIndex
 
 This file is a part of novelWriter
 Copyright 2018–2021, Veronica Berglyd Olsen
@@ -32,10 +33,10 @@ import os
 from time import time
 
 from nw.constants import (
-    nwFiles, nwKeyWords, nwItemType, nwItemClass, nwItemLayout, nwAlert
+    nwFiles, nwKeyWords, nwItemType, nwItemClass, nwItemLayout, nwAlert,
+    nwUnicode
 )
 from nw.core.document import NWDoc
-from nw.core.tools import countWords
 from nw.common import isHandle, isTitleTag, isItemClass, isItemLayout
 
 logger = logging.getLogger(__name__)
@@ -906,3 +907,62 @@ class NWIndex():
         return
 
 # END Class NWIndex
+
+# =============================================================================================== #
+#  Simple Word Counter
+# =============================================================================================== #
+
+def countWords(theText):
+    """Count words in a piece of text, skipping special syntax and
+    comments.
+    """
+    charCount = 0
+    wordCount = 0
+    paraCount = 0
+    prevEmpty = True
+
+    # We need to treat dashes as word separators for counting words.
+    # The check+replace apprach is much faster that direct replace for
+    # large texts, and a bit slower for small texts, but in the latter
+    # case it doesn't matter.
+    if nwUnicode.U_ENDASH in theText:
+        theText = theText.replace(nwUnicode.U_ENDASH, " ")
+    if nwUnicode.U_EMDASH in theText:
+        theText = theText.replace(nwUnicode.U_EMDASH, " ")
+
+    for aLine in theText.splitlines():
+
+        countPara = True
+        theLen    = len(aLine)
+
+        if theLen == 0:
+            prevEmpty = True
+            continue
+        if aLine[0] == "@" or aLine[0] == "%":
+            continue
+
+        if aLine[0:5] == "#### ":
+            wordCount -= 1
+            charCount -= 5
+            countPara = False
+        elif aLine[0:4] == "### ":
+            wordCount -= 1
+            charCount -= 4
+            countPara = False
+        elif aLine[0:3] == "## ":
+            wordCount -= 1
+            charCount -= 3
+            countPara = False
+        elif aLine[0:2] == "# ":
+            wordCount -= 1
+            charCount -= 2
+            countPara = False
+
+        wordCount += len(aLine.split())
+        charCount += theLen
+        if countPara and prevEmpty:
+            paraCount += 1
+
+        prevEmpty = not countPara
+
+    return charCount, wordCount, paraCount
