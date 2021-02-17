@@ -62,6 +62,14 @@ def refDir():
     return theDir
 
 @pytest.fixture(scope="session")
+def filesDir():
+    """The folder where additional test files are stored.
+    """
+    testDir = os.path.dirname(__file__)
+    theDir = os.path.join(testDir, "files")
+    return theDir
+
+@pytest.fixture(scope="session")
 def outDir(tmpDir):
     """An output folder for test results
     """

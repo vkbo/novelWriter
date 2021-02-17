@@ -27,8 +27,8 @@ import configparser
 
 from shutil import copyfile
 
-from dummy import causeOSError
-from tools import cmpFiles
+from dummy import causeOSError, DummyApp
+from tools import cmpFiles, writeFile
 
 from nw.config import Config
 from nw.constants import nwConst, nwFiles
@@ -85,7 +85,7 @@ def testBaseConfig_Constructor(monkeypatch):
 # END Test testBaseConfig_Constructor
 
 @pytest.mark.base
-def testBaseConfig_Init(monkeypatch, tmpDir, fncDir, outDir, refDir):
+def testBaseConfig_Init(monkeypatch, tmpDir, fncDir, outDir, refDir, filesDir):
     """Test config intialisation.
     """
     tstConf = Config()
@@ -191,6 +191,20 @@ def testBaseConfig_Init(monkeypatch, tmpDir, fncDir, outDir, refDir):
     tstConf.doReplaceDQuote = orDoDbl
     tstConf.doReplaceSQuote = orDoSng
     assert tstConf.saveConfig()
+
+    # Localisation
+    i18nDir = os.path.join(fncDir, "i18n")
+    os.mkdir(i18nDir)
+    os.mkdir(os.path.join(i18nDir, "stuff"))
+    tstConf.nwLangPath = i18nDir
+
+    copyfile(os.path.join(filesDir, "nw_en_GB.qm"), os.path.join(fncDir, "nw_en_GB.qm"))
+    writeFile(os.path.join(i18nDir, "nw_en_GB.ts"), "")
+    writeFile(os.path.join(i18nDir, "nw_abcd.qm"), "")
+
+    tstConf.initLocalisation(DummyApp)
+    theList = tstConf.listLanguages()
+    assert theList == [("en_GB", "British English")]
 
     copyfile(confFile, testFile)
     assert cmpFiles(testFile, compFile, [2, 9, 10])

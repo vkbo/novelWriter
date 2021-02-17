@@ -143,7 +143,6 @@ class GuiPreferencesGeneral(QWidget):
         self.guiLang = QComboBox()
         self.guiLang.setMinimumWidth(minWidth)
         self.theLangs = self.mainConf.listLanguages()
-        print(self.theLangs)
         for lang, langName in self.theLangs:
             self.guiLang.addItem(langName, lang)
         langIdx = self.guiLang.findData(self.mainConf.guiLang)

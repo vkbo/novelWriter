@@ -91,6 +91,16 @@ class DummyStatusBar():
 
 # END Class DummyStatusBar
 
+class DummyApp:
+
+    def __init__(self):
+        return
+
+    def installTranslator(self, theLang):
+        return
+
+# END Class DummyApp
+
 # =========================================================================== #
 #  Error Functions
 #  Dummy functions that will raise errors instead.
