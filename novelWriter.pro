@@ -26,6 +26,7 @@ SOURCES += \
     nw/gui/theme.py \
     nw/gui/wordlist.py \
     nw/gui/writingstats.py \
+    nw/common.py \
     nw/error.py \
     nw/guimain.py
 

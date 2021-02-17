@@ -29,6 +29,7 @@ import logging
 from datetime import datetime
 
 from PyQt5.QtWidgets import qApp
+from PyQt5.QtCore import QCoreApplication
 
 from nw.constants import (
     nwConst, nwUnicode, nwItemClass, nwItemType, nwItemLayout
@@ -267,33 +268,61 @@ def fuzzyTime(secDiff):
     """Converts a time difference in seconds into a fuzzy time string.
     """
     if secDiff < 0:
-        return "in the future"
+        return QCoreApplication.translate(
+            "Common", "in the future"
+        )
     elif secDiff < 30:
-        return "just now"
+        return QCoreApplication.translate(
+            "Common", "just now"
+        )
     elif secDiff < 90:
-        return "a minute ago"
+        return QCoreApplication.translate(
+            "Common", "a minute ago"
+        )
     elif secDiff < 3300: # 55 minutes
-        return "%d minutes ago" % int(round(secDiff/60))
+        return QCoreApplication.translate(
+            "Common", "{0} minutes ago").format(int(round(secDiff/60))
+        )
     elif secDiff < 5400: # 90 minutes
-        return "an hour ago"
+        return QCoreApplication.translate(
+            "Common", "an hour ago"
+        )
     elif secDiff < 84600: # 23.5 hours
-        return "%d hours ago" % int(round(secDiff/3600))
+        return QCoreApplication.translate(
+            "Common", "{0} hours ago").format(int(round(secDiff/3600))
+        )
     elif secDiff < 129600: # 1.5 days
-        return "a day ago"
+        return QCoreApplication.translate(
+            "Common", "a day ago"
+        )
     elif secDiff < 561600: # 6.5 days
-        return "%d days ago" % int(round(secDiff/86400))
+        return QCoreApplication.translate(
+            "Common", "{0} days ago").format(int(round(secDiff/86400))
+        )
     elif secDiff < 907200: # 10.5 days
-        return "a week ago"
+        return QCoreApplication.translate(
+            "Common", "a week ago"
+        )
     elif secDiff < 2419200: # 28 days
-        return "%d weeks ago" % int(round(secDiff/604800))
+        return QCoreApplication.translate(
+            "Common", "{0} weeks ago").format(int(round(secDiff/604800))
+        )
     elif secDiff < 3888000: # 45 days
-        return "a month ago"
+        return QCoreApplication.translate(
+            "Common", "a month ago"
+        )
     elif secDiff < 29808000: # 345 days
-        return "%d months ago" % int(round(secDiff/2592000))
+        return QCoreApplication.translate(
+            "Common", "{0} months ago").format(int(round(secDiff/2592000))
+        )
     elif secDiff < 47336400: # 1.5 years
-        return "a year ago"
+        return QCoreApplication.translate(
+            "Common", "a year ago"
+        )
     else:
-        return "%d years ago" % int(round(secDiff/31557600))
+        return QCoreApplication.translate(
+            "Common", "{0} years ago").format(int(round(secDiff/31557600))
+        )
 
 def makeFileNameSafe(theText):
     """Returns a filename safe version of the text.

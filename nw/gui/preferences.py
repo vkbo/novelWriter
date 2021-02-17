@@ -828,8 +828,7 @@ class GuiPreferencesEditor(QWidget):
         for spTag, spProv in theDict.listDictionaries():
             qLocal = QLocale(spTag)
             spLang = qLocal.nativeLanguageName().title()
-            spName = qLocal.bcp47Name()
-            self.spellLangList.addItem("%s (%s) [%s]" % (spLang, spName, spProv), spTag)
+            self.spellLangList.addItem("%s [%s]" % (spLang, spProv), spTag)
 
         spellIdx = self.spellLangList.findData(self.mainConf.spellLanguage)
         if spellIdx != -1:

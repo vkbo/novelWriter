@@ -27,7 +27,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 import nw
 import logging
 
-from PyQt5.QtCore import Qt
+from PyQt5.QtCore import Qt, QLocale
 from PyQt5.QtGui import QIcon, QPixmap, QColor, QBrush
 from PyQt5.QtWidgets import (
     QHBoxLayout, QVBoxLayout, QLineEdit, QPlainTextEdit, QLabel, QWidget,
@@ -207,11 +207,14 @@ class GuiProjectEditMain(QWidget):
         )
 
         self.spellLang = QComboBox(self)
+        self.spellLang.setFixedWidth(xW)
         theDict = self.theParent.docEditor.theDict
         self.spellLang.addItem(self.tr("Default"), "None")
         if theDict is not None:
-            for spTag, spName in theDict.listDictionaries():
-                self.spellLang.addItem(spName, spTag)
+            for spTag, spProv in theDict.listDictionaries():
+                qLocal = QLocale(spTag)
+                spLang = qLocal.nativeLanguageName().title()
+                self.spellLang.addItem("%s [%s]" % (spLang, spProv), spTag)
 
         self.mainForm.addRow(
             self.tr("Spell check language"),
