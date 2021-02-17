@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!DOCTYPE TS>
-<TS version="2.1" language="nb_NO" sourcelanguage="en_GB">
+<!DOCTYPE TS><TS version="2.0" language="nb_NO" sourcelanguage="en_GB">
 <context>
     <name>Common</name>
     <message>
@@ -224,7 +223,7 @@
     <message>
         <location filename="../nw/constants/constants.py" line="208"/>
         <source>Pars</source>
-        <translation>Avsn.</translation>
+        <translation>Avsnitt</translation>
     </message>
     <message>
         <location filename="../nw/constants/constants.py" line="209"/>
@@ -259,12 +258,12 @@
     <message>
         <location filename="../nw/constants/constants.py" line="233"/>
         <source>Single low-9 quotation mark</source>
-        <translation>Enkelt, lavt 9 sitattegn</translation>
+        <translation>Enkelt, lavt-9 sitattegn</translation>
     </message>
     <message>
         <location filename="../nw/constants/constants.py" line="234"/>
         <source>Single high-reversed-9 quotation mark</source>
-        <translation>Enkelt, høyt, reversert 9 sitattegn</translation>
+        <translation>Enkelt, høyt, reversert-9 sitattegn</translation>
     </message>
     <message>
         <location filename="../nw/constants/constants.py" line="235"/>
@@ -279,17 +278,17 @@
     <message>
         <location filename="../nw/constants/constants.py" line="237"/>
         <source>Double low-9 quotation mark</source>
-        <translation>Dobbelt, lavt 9 sitattegn</translation>
+        <translation>Dobbelt, lavt-9 sitattegn</translation>
     </message>
     <message>
         <location filename="../nw/constants/constants.py" line="238"/>
         <source>Double high-reversed-9 quotation mark</source>
-        <translation>Dobbelt, høyt, reversert 9 sitattegn</translation>
+        <translation>Dobbelt, høyt, reversert-9 sitattegn</translation>
     </message>
     <message>
         <location filename="../nw/constants/constants.py" line="239"/>
         <source>Double low-reversed-9 quotation mark</source>
-        <translation>Dobbelt, lavt, reversert 9 sitattegn</translation>
+        <translation>Dobbelt, lavt, reversert-9 sitattegn</translation>
     </message>
     <message>
         <location filename="../nw/constants/constants.py" line="241"/>
@@ -300,16 +299,6 @@
         <location filename="../nw/constants/constants.py" line="242"/>
         <source>Single right-pointing angle quotation mark</source>
         <translation>Enkelt, høyre, angulært sitattegn</translation>
-    </message>
-    <message>
-        <location filename="../nw/constants/constants.py" line="243"/>
-        <source>Left-pointing double angle quotation mark</source>
-        <translation>Dobbelt, venstre, angulært sitattegn</translation>
-    </message>
-    <message>
-        <location filename="../nw/constants/constants.py" line="244"/>
-        <source>Right-pointing double angle quotation mark</source>
-        <translation>Dobbelt, høyre, angulært sitattegn</translation>
     </message>
     <message>
         <location filename="../nw/constants/constants.py" line="246"/>
@@ -330,6 +319,16 @@
         <location filename="../nw/constants/constants.py" line="249"/>
         <source>Right white corner bracket</source>
         <translation>Høyre, hvit hjørnevinkel</translation>
+    </message>
+    <message>
+        <location filename="../nw/constants/constants.py" line="243"/>
+        <source>Double left-pointing angle quotation mark</source>
+        <translation>Dobbelt, venstre, angulært sitattegn</translation>
+    </message>
+    <message>
+        <location filename="../nw/constants/constants.py" line="244"/>
+        <source>Double right-pointing angle quotation mark</source>
+        <translation>Dobbelt, høyre, angulært sitattegn</translation>
     </message>
 </context>
 <context>
@@ -362,7 +361,7 @@
     <message>
         <location filename="../nw/gui/about.py" line="147"/>
         <source>Website: {0}</source>
-        <translation>Webside: {0}</translation>
+        <translation>Nettside: {0}</translation>
     </message>
     <message>
         <location filename="../nw/gui/about.py" line="147"/>
@@ -387,7 +386,7 @@
     <message>
         <location filename="../nw/gui/about.py" line="147"/>
         <source>See the License tab for the full license text, or visit the GNU website at {0} for more details.</source>
-        <translation>Se lisens-fanen for full-tekst versjonen av lisensen (på engelsk), eller besøk GNY sin webside på {0} for mer informasjon.</translation>
+        <translation>Se lisens-fanen for fulltekst-versjonen av lisensen (på engelsk), eller besøk GNU sin nettside på {0} for mer informasjon.</translation>
     </message>
     <message>
         <location filename="../nw/gui/about.py" line="179"/>
@@ -555,12 +554,12 @@
     <message>
         <location filename="../nw/gui/build.py" line="312"/>
         <source>Include body text</source>
-        <translation>Includer tekst</translation>
+        <translation>Inkluder tekst</translation>
     </message>
     <message>
         <location filename="../nw/gui/build.py" line="329"/>
         <source>File Filter Options</source>
-        <translation>Fil-filtrering</translation>
+        <translation>Fil-filtre</translation>
     </message>
     <message>
         <location filename="../nw/gui/build.py" line="334"/>
@@ -580,7 +579,7 @@
     <message>
         <location filename="../nw/gui/build.py" line="354"/>
         <source>Include novel files</source>
-        <translation>Includer romanfiler</translation>
+        <translation>Inkluder romanfiler</translation>
     </message>
     <message>
         <location filename="../nw/gui/build.py" line="355"/>
@@ -600,7 +599,7 @@
     <message>
         <location filename="../nw/gui/build.py" line="385"/>
         <source>Replace tabs with spaces</source>
-        <translation>Erstatt tabulator-tegn</translation>
+        <translation>Erstatt tab med mellomrom</translation>
     </message>
     <message>
         <location filename="../nw/gui/build.py" line="386"/>
@@ -610,7 +609,7 @@
     <message>
         <location filename="../nw/gui/build.py" line="401"/>
         <source>Build Preview</source>
-        <translation>Forhåndsvisning</translation>
+        <translation>Lag forhåndsvisning</translation>
     </message>
     <message>
         <location filename="../nw/gui/build.py" line="412"/>
@@ -685,7 +684,7 @@
     <message>
         <location filename="../nw/gui/build.py" line="735"/>
         <source>There were problems when building the project</source>
-        <translation>Det har oppstått en feil under byggingen av prosjektet.</translation>
+        <translation>Det har oppstått en feil under byggingen av prosjektet</translation>
     </message>
     <message>
         <location filename="../nw/gui/build.py" line="795"/>
@@ -735,7 +734,7 @@
     <message>
         <location filename="../nw/gui/build.py" line="846"/>
         <source>Save Document As</source>
-        <translation>Lagre domunent som</translation>
+        <translation>Lagre dokumentet som</translation>
     </message>
     <message>
         <location filename="../nw/gui/build.py" line="984"/>
@@ -763,7 +762,7 @@
     <message>
         <location filename="../nw/gui/build.py" line="1192"/>
         <source>This area will show the content of the document to be exported or printed. Press the &quot;Build Preview&quot; button to generate content.</source>
-        <translation>Dette området vil vise innholdet av dokumentet som skal eksporteres. Trykk knappen merket med &quot;Forhåndsvisning&quot; for å oppdatere innholdet.</translation>
+        <translation>Dette området vil vise innholdet av dokumentet som skal eksporteres. Trykk på knappen merket med &quot;Lag forhåndsvisning&quot; for å oppdatere innholdet.</translation>
     </message>
     <message>
         <location filename="../nw/gui/build.py" line="1341"/>
@@ -814,7 +813,7 @@
     <message>
         <location filename="../nw/gui/doceditor.py" line="2241"/>
         <source>Toggle Focus Mode</source>
-        <translation>Slå av/på &quot;fokus modus&quot;</translation>
+        <translation>Slå av/på &quot;Fokus-modus&quot;</translation>
     </message>
     <message>
         <location filename="../nw/gui/doceditor.py" line="2252"/>
@@ -857,7 +856,7 @@
     <message>
         <location filename="../nw/gui/doceditor.py" line="1866"/>
         <source>RegEx Mode</source>
-        <translation>RegEx modus</translation>
+        <translation>RegEx-modus</translation>
     </message>
     <message>
         <location filename="../nw/gui/doceditor.py" line="1867"/>
@@ -877,7 +876,7 @@
     <message>
         <location filename="../nw/gui/doceditor.py" line="1882"/>
         <source>Search Next File</source>
-        <translation>Søk neste file</translation>
+        <translation>Søk i neste file</translation>
     </message>
     <message>
         <location filename="../nw/gui/doceditor.py" line="1883"/>
@@ -950,7 +949,7 @@
     <message>
         <location filename="../nw/gui/doceditor.py" line="946"/>
         <source>The document has grown too big and you cannot add more text to it. The maximum size of a single novelWriter document is {0} MB.</source>
-        <translation>Dokumentet har blitt for stort, og du kan ikke legge til mer tekst. Den maksimale tillatte størrelsen for et novelWriter-dokument er {0} MB.</translation>
+        <translation>Dokumentet har blitt for stort og du kan ikke legge til mer tekst. Den maksimale tillatte størrelsen for et novelWriter-dokument er {0} MB.</translation>
     </message>
     <message>
         <location filename="../nw/gui/doceditor.py" line="984"/>
@@ -975,22 +974,22 @@
     <message>
         <location filename="../nw/gui/doceditor.py" line="1007"/>
         <source>Select All</source>
-        <translation>Velg alt</translation>
+        <translation>Velg hele teksten</translation>
     </message>
     <message>
         <location filename="../nw/gui/doceditor.py" line="1011"/>
         <source>Select Word</source>
-        <translation>Velg ord</translation>
+        <translation>Velg hele ordet</translation>
     </message>
     <message>
         <location filename="../nw/gui/doceditor.py" line="1017"/>
         <source>Select Paragraph</source>
-        <translation>Velg avsnitt</translation>
+        <translation>Velg hele avsnittet</translation>
     </message>
     <message>
         <location filename="../nw/gui/doceditor.py" line="1043"/>
         <source>Spelling Suggestion(s)</source>
-        <translation>Forslag, stavekontroll</translation>
+        <translation>Forslag fra stavekontrollen</translation>
     </message>
     <message>
         <location filename="../nw/gui/doceditor.py" line="1055"/>
@@ -1116,7 +1115,7 @@
     <message>
         <location filename="../nw/gui/docsplit.py" line="161"/>
         <source>Cannot add new folder for the document split. Maximum folder depth has been reached. Please move the file to another level in the project tree.</source>
-        <translation>Kan ikke legge til ny mappe for å dele opp dokumentet. Dokumentet har allerede maksimal dybde i treet. Flytt dokumentet til et annet nivå i treet først.</translation>
+        <translation>Kan ikke legge til ny mappe for å dele opp dokumentet. Dokumentet har allerede maksimal dybde i prosjekttreet. Flytt dokumentet til et annet nivå først.</translation>
     </message>
     <message>
         <location filename="../nw/gui/docsplit.py" line="170"/>
@@ -1149,7 +1148,7 @@
     <message>
         <location filename="../nw/gui/docviewer.py" line="961"/>
         <source>Activate to freeze the content of the references panel when changing document</source>
-        <translation>Aktiver denne for å fryse innholdet i referanse-panelet ved endring av vist dokument</translation>
+        <translation>Aktiver for å fryse innholdet i referanse-panelet ved bytte av vist dokument</translation>
     </message>
     <message>
         <location filename="../nw/gui/docviewer.py" line="975"/>
@@ -1169,12 +1168,12 @@
     <message>
         <location filename="../nw/gui/docviewer.py" line="999"/>
         <source>Sticky</source>
-        <translation>Sett fast</translation>
+        <translation>Hold igjen</translation>
     </message>
     <message>
         <location filename="../nw/gui/docviewer.py" line="1008"/>
         <source>Comments</source>
-        <translation>Kommentar</translation>
+        <translation>Kommentarer</translation>
     </message>
     <message>
         <location filename="../nw/gui/docviewer.py" line="1017"/>
@@ -1225,17 +1224,17 @@
     <message>
         <location filename="../nw/gui/docviewer.py" line="430"/>
         <source>Select All</source>
-        <translation>Velg alt</translation>
+        <translation>Velg hele teksten</translation>
     </message>
     <message>
         <location filename="../nw/gui/docviewer.py" line="434"/>
         <source>Select Word</source>
-        <translation>Velg ord</translation>
+        <translation>Velg hele ordet</translation>
     </message>
     <message>
         <location filename="../nw/gui/docviewer.py" line="440"/>
         <source>Select Paragraph</source>
-        <translation>Velg avsnitt</translation>
+        <translation>Velg hele avsnittet</translation>
     </message>
 </context>
 <context>
@@ -1271,7 +1270,7 @@
     <message>
         <location filename="../nw/gui/itemdetails.py" line="121"/>
         <source>Characters</source>
-        <translation>Karakter</translation>
+        <translation>Tegn</translation>
     </message>
     <message>
         <location filename="../nw/gui/itemdetails.py" line="130"/>
@@ -1332,7 +1331,7 @@
     <message>
         <location filename="../nw/guimain.py" line="127"/>
         <source>Novel</source>
-        <translation>Roman</translation>
+        <translation>Innhold</translation>
     </message>
     <message>
         <location filename="../nw/guimain.py" line="143"/>
@@ -1347,7 +1346,7 @@
     <message>
         <location filename="../nw/guimain.py" line="153"/>
         <source>Project Settings</source>
-        <translation>Prosjektinstillinger</translation>
+        <translation>Prosjektinnstillinger</translation>
     </message>
     <message>
         <location filename="../nw/guimain.py" line="188"/>
@@ -1377,7 +1376,7 @@
     <message>
         <location filename="../nw/guimain.py" line="396"/>
         <source>Close Project</source>
-        <translation>Lukke prosjektet</translation>
+        <translation>Lukk prosjektet</translation>
     </message>
     <message>
         <location filename="../nw/guimain.py" line="396"/>
@@ -1392,17 +1391,17 @@
     <message>
         <location filename="../nw/guimain.py" line="415"/>
         <source>Backup Project</source>
-        <translation>Sikkerhetskopi</translation>
+        <translation>Sikkerhetskopiering</translation>
     </message>
     <message>
         <location filename="../nw/guimain.py" line="415"/>
         <source>Backup the current project?</source>
-        <translation>Ta sikkerhetskopi av dette prosjektet?</translation>
+        <translation>Ønsker du å ta sikkerhetskopi av dette prosjektet?</translation>
     </message>
     <message>
         <location filename="../nw/guimain.py" line="466"/>
         <source>The project was locked by the computer &apos;{0}&apos; ({1} {2}), last active on {3}.</source>
-        <translation>Prosjektet er låst av en annen datamaskin: &apos;{0}&apos; ({1} {2}), siste registrerte aktivitet var {3}.</translation>
+        <translation>Prosjektet er låst av datamaskinen &apos;{0}&apos; ({1} {2}), siste registrerte aktivitet var {3}.</translation>
     </message>
     <message>
         <location filename="../nw/guimain.py" line="481"/>
@@ -1417,7 +1416,7 @@
     <message>
         <location filename="../nw/guimain.py" line="481"/>
         <source>Note: If the program or the computer previously crashed, the lock can safely be overridden. If, however, another instance of novelWriter has the project open, overriding the lock may corrupt the project, and is not recommended.</source>
-        <translation>Merknad: Hvis programmet har krasjet og har lagt igjen låsen, kan man trygt overstyre denne. Men, hvis en annen instans av novelWriter har prosjektet åpent, kan det å overstyre låsen føre til tap av data, og dette er ikke anbefalt.</translation>
+        <translation>Merk at hvis programmet har krasjet og har lagt igjen låsen, kan man trygt overstyre denne. Men hvis en annen instans av novelWriter har prosjektet åpent, kan det å overstyre låsen føre til tap av data, og dette er ikke anbefalt.</translation>
     </message>
     <message>
         <location filename="../nw/guimain.py" line="530"/>
@@ -1482,7 +1481,7 @@
     <message>
         <location filename="../nw/guimain.py" line="904"/>
         <source>Indexing completed in {0} ms</source>
-        <translation>Indekseringen to {0} ms</translation>
+        <translation>Indekseringen tok {0} ms</translation>
     </message>
     <message>
         <location filename="../nw/guimain.py" line="911"/>
@@ -1532,7 +1531,7 @@
     <message>
         <location filename="../nw/guimain.py" line="293"/>
         <source>novelWriter is ready ...</source>
-        <translation>novelWriter er klar for dyst ...</translation>
+        <translation>novelWriter er klar ...</translation>
     </message>
 </context>
 <context>
@@ -1585,12 +1584,12 @@
     <message>
         <location filename="../nw/gui/mainmenu.py" line="216"/>
         <source>Project Settings</source>
-        <translation>Prosjektinstillinger</translation>
+        <translation>Prosjektinnstillinger</translation>
     </message>
     <message>
         <location filename="../nw/gui/mainmenu.py" line="217"/>
         <source>Project settings</source>
-        <translation>Endre prosjektinstillinger</translation>
+        <translation>Endre prosjektinnstillinger</translation>
     </message>
     <message>
         <location filename="../nw/gui/mainmenu.py" line="223"/>
@@ -1600,12 +1599,12 @@
     <message>
         <location filename="../nw/gui/mainmenu.py" line="224"/>
         <source>Project details</source>
-        <translation>Se prosjektdetaljer</translation>
+        <translation>Vis prosjektdetaljer</translation>
     </message>
     <message>
         <location filename="../nw/gui/mainmenu.py" line="233"/>
         <source>Create Root Folder</source>
-        <translation>Lag ny rotmappe</translation>
+        <translation>Lag ny hovedmappe</translation>
     </message>
     <message>
         <location filename="../nw/gui/mainmenu.py" line="235"/>
@@ -1670,7 +1669,7 @@
     <message>
         <location filename="../nw/gui/mainmenu.py" line="264"/>
         <source>Change project item settings</source>
-        <translation>Endre instillinger for enhet</translation>
+        <translation>Endre innstillinger for enhet</translation>
     </message>
     <message>
         <location filename="../nw/gui/mainmenu.py" line="270"/>
@@ -1715,7 +1714,7 @@
     <message>
         <location filename="../nw/gui/mainmenu.py" line="298"/>
         <source>Empty Trash</source>
-        <translation>Tøm søpla</translation>
+        <translation>Tøm søppel</translation>
     </message>
     <message>
         <location filename="../nw/gui/mainmenu.py" line="299"/>
@@ -1745,7 +1744,7 @@
     <message>
         <location filename="../nw/gui/mainmenu.py" line="324"/>
         <source>Create new document</source>
-        <translation>Lag et nytt dokument</translation>
+        <translation>Opprett et nytt dokument</translation>
     </message>
     <message>
         <location filename="../nw/gui/mainmenu.py" line="330"/>
@@ -1785,7 +1784,7 @@
     <message>
         <location filename="../nw/gui/mainmenu.py" line="355"/>
         <source>View document as HTML</source>
-        <translation>Vis dokumentet som HTML</translation>
+        <translation>Vis dokument som HTML</translation>
     </message>
     <message>
         <location filename="../nw/gui/mainmenu.py" line="361"/>
@@ -1800,7 +1799,7 @@
     <message>
         <location filename="../nw/gui/mainmenu.py" line="371"/>
         <source>Show File Details</source>
-        <translation>Vis filbane</translation>
+        <translation>Vis filinformasjon</translation>
     </message>
     <message>
         <location filename="../nw/gui/mainmenu.py" line="372"/>
@@ -1815,7 +1814,7 @@
     <message>
         <location filename="../nw/gui/mainmenu.py" line="380"/>
         <source>Import document from a text or markdown file</source>
-        <translation>Importer et dokument fra en text- eller markdown-fil</translation>
+        <translation>Importer et dokument fra en ekstern fil</translation>
     </message>
     <message>
         <location filename="../nw/gui/mainmenu.py" line="386"/>
@@ -1840,7 +1839,7 @@
     <message>
         <location filename="../nw/gui/mainmenu.py" line="405"/>
         <source>&amp;Edit</source>
-        <translation>R&amp;ediger</translation>
+        <translation>&amp;Rediger</translation>
     </message>
     <message>
         <location filename="../nw/gui/mainmenu.py" line="408"/>
@@ -1895,7 +1894,7 @@
     <message>
         <location filename="../nw/gui/mainmenu.py" line="449"/>
         <source>Select All</source>
-        <translation>Velg alt</translation>
+        <translation>Velg hele teksten</translation>
     </message>
     <message>
         <location filename="../nw/gui/mainmenu.py" line="450"/>
@@ -1905,7 +1904,7 @@
     <message>
         <location filename="../nw/gui/mainmenu.py" line="456"/>
         <source>Select Paragraph</source>
-        <translation>Velg avsnitt</translation>
+        <translation>Velg hele avsnittet</translation>
     </message>
     <message>
         <location filename="../nw/gui/mainmenu.py" line="457"/>
@@ -1925,7 +1924,7 @@
     <message>
         <location filename="../nw/gui/mainmenu.py" line="472"/>
         <source>Move focus to project tree</source>
-        <translation>Flutt fokus til prosjekttre</translation>
+        <translation>Flytt fokus til prosjekttre</translation>
     </message>
     <message>
         <location filename="../nw/gui/mainmenu.py" line="478"/>
@@ -1980,17 +1979,17 @@
     <message>
         <location filename="../nw/gui/mainmenu.py" line="519"/>
         <source>Focus Mode</source>
-        <translation>Focus modus</translation>
+        <translation>Focus-modus</translation>
     </message>
     <message>
         <location filename="../nw/gui/mainmenu.py" line="520"/>
         <source>Toggles a distraction free mode, only showing text editor</source>
-        <translation>Slå av eller på &quot;fokus modus&quot; hvor kun teksteditoren vises i vinduet</translation>
+        <translation>Slå av eller på &quot;Fokus-modus&quot; hvor kun teksteditoren vises i vinduet</translation>
     </message>
     <message>
         <location filename="../nw/gui/mainmenu.py" line="530"/>
         <source>Full Screen Mode</source>
-        <translation>Fullskjermmodus</translation>
+        <translation>Fullskjerm-modus</translation>
     </message>
     <message>
         <location filename="../nw/gui/mainmenu.py" line="531"/>
@@ -2360,7 +2359,7 @@
     <message>
         <location filename="../nw/gui/mainmenu.py" line="831"/>
         <source>Add strikethrough to selected text</source>
-        <translation>Sett en strek over valgt tekst</translation>
+        <translation>Sett en strek gjennom valgt tekst</translation>
     </message>
     <message>
         <location filename="../nw/gui/mainmenu.py" line="840"/>
@@ -2385,7 +2384,7 @@
     <message>
         <location filename="../nw/gui/mainmenu.py" line="857"/>
         <source>Header 1</source>
-        <translation>Overskrift 1</translation>
+        <translation>Overskrift nivå 1</translation>
     </message>
     <message>
         <location filename="../nw/gui/mainmenu.py" line="858"/>
@@ -2395,7 +2394,7 @@
     <message>
         <location filename="../nw/gui/mainmenu.py" line="864"/>
         <source>Header 2</source>
-        <translation>Overskrift 2</translation>
+        <translation>Overskrift nivå 2</translation>
     </message>
     <message>
         <location filename="../nw/gui/mainmenu.py" line="865"/>
@@ -2405,7 +2404,7 @@
     <message>
         <location filename="../nw/gui/mainmenu.py" line="871"/>
         <source>Header 3</source>
-        <translation>Overskrift 3</translation>
+        <translation>Overskrift nivå 3</translation>
     </message>
     <message>
         <location filename="../nw/gui/mainmenu.py" line="872"/>
@@ -2415,7 +2414,7 @@
     <message>
         <location filename="../nw/gui/mainmenu.py" line="878"/>
         <source>Header 4</source>
-        <translation>Overskrift 4</translation>
+        <translation>Overskrift nivå 4</translation>
     </message>
     <message>
         <location filename="../nw/gui/mainmenu.py" line="879"/>
@@ -2505,7 +2504,7 @@
     <message>
         <location filename="../nw/gui/mainmenu.py" line="952"/>
         <source>Rebuild the tag indices and word counts</source>
-        <translation>Bygg hele prosjekt-indeksen på nytt</translation>
+        <translation>Bygg hele prosjektets indeks på nytt</translation>
     </message>
     <message>
         <location filename="../nw/gui/mainmenu.py" line="958"/>
@@ -2530,12 +2529,12 @@
     <message>
         <location filename="../nw/gui/mainmenu.py" line="978"/>
         <source>Backup Project Folder</source>
-        <translation>Sikkerhetskopi</translation>
+        <translation>Lag sikkerhetskopi</translation>
     </message>
     <message>
         <location filename="../nw/gui/mainmenu.py" line="979"/>
         <source>Backup Project</source>
-        <translation>Ta sikkerhetskopi av prosjektets mappe</translation>
+        <translation>Lag sikkerhetskopi av prosjektets mappe</translation>
     </message>
     <message>
         <location filename="../nw/gui/mainmenu.py" line="984"/>
@@ -2545,7 +2544,7 @@
     <message>
         <location filename="../nw/gui/mainmenu.py" line="985"/>
         <source>Launch the Build novel project tool</source>
-        <translation>Åpne verktøyet for å bygge prosjektet</translation>
+        <translation>Åpne verktøy for å bygge prosjektet</translation>
     </message>
     <message>
         <location filename="../nw/gui/mainmenu.py" line="991"/>
@@ -2555,12 +2554,12 @@
     <message>
         <location filename="../nw/gui/mainmenu.py" line="992"/>
         <source>Show the writing statistics dialog</source>
-        <translation>Viser prosjektets statistikk i et vindu</translation>
+        <translation>Vis prosjektets statistikk i et vindu</translation>
     </message>
     <message>
         <location filename="../nw/gui/mainmenu.py" line="999"/>
         <source>Preferences</source>
-        <translation>Instillinger</translation>
+        <translation>Innstillinger</translation>
     </message>
     <message>
         <location filename="../nw/gui/mainmenu.py" line="1011"/>
@@ -2739,7 +2738,7 @@
     <message>
         <location filename="../nw/gui/outlinedetails.py" line="84"/>
         <source>Characters</source>
-        <translation>Karakter</translation>
+        <translation>Tegn</translation>
     </message>
     <message>
         <location filename="../nw/gui/outlinedetails.py" line="85"/>
@@ -2780,7 +2779,7 @@
     <message>
         <location filename="../nw/gui/preferences.py" line="56"/>
         <source>Preferences</source>
-        <translation>Instillinger</translation>
+        <translation>Innstillinger</translation>
     </message>
     <message>
         <location filename="../nw/gui/preferences.py" line="65"/>
@@ -2805,7 +2804,7 @@
     <message>
         <location filename="../nw/gui/preferences.py" line="69"/>
         <source>Highlighting</source>
-        <translation>Farger</translation>
+        <translation>Fremheving</translation>
     </message>
     <message>
         <location filename="../nw/gui/preferences.py" line="70"/>
@@ -2893,7 +2892,7 @@
     <message>
         <location filename="../nw/gui/preferences.py" line="1024"/>
         <source>Auto-replace dots</source>
-        <translation>Erstatt flere punktum</translation>
+        <translation>Erstatt tre punktum</translation>
     </message>
     <message>
         <location filename="../nw/gui/preferences.py" line="1024"/>
@@ -3011,7 +3010,7 @@
     <message>
         <location filename="../nw/gui/preferences.py" line="550"/>
         <source>Text width is defined by the margins only.</source>
-        <translation>Tekstbredde er kun definert av margene.</translation>
+        <translation>Tekstbredden er kun definert av margene.</translation>
     </message>
     <message>
         <location filename="../nw/gui/preferences.py" line="559"/>
@@ -3079,7 +3078,7 @@
     <message>
         <location filename="../nw/gui/preferences.py" line="685"/>
         <source>Spell check language</source>
-        <translation>Stavekontroll</translation>
+        <translation>Språk for stavekontroll</translation>
     </message>
     <message>
         <location filename="../nw/gui/preferences.py" line="685"/>
@@ -3094,7 +3093,7 @@
     <message>
         <location filename="../nw/gui/preferences.py" line="697"/>
         <source>Full spell checking is disabled above this limit.</source>
-        <translation>Automatisk stavekontroll slås av over denne.</translation>
+        <translation>Automatisk stavekontroll slås av over grensen.</translation>
     </message>
     <message>
         <location filename="../nw/gui/preferences.py" line="697"/>
@@ -3129,7 +3128,7 @@
     <message>
         <location filename="../nw/gui/preferences.py" line="729"/>
         <source>Show tabs and spaces</source>
-        <translation>Vis tabulator og mellomrom</translation>
+        <translation>Synlige tabulatorer og mellomrom</translation>
     </message>
     <message>
         <location filename="../nw/gui/preferences.py" line="729"/>
@@ -3139,7 +3138,7 @@
     <message>
         <location filename="../nw/gui/preferences.py" line="738"/>
         <source>Show line endings</source>
-        <translation>Vis linjeender</translation>
+        <translation>Synlige linjeender</translation>
     </message>
     <message>
         <location filename="../nw/gui/preferences.py" line="738"/>
@@ -3154,7 +3153,7 @@
     <message>
         <location filename="../nw/gui/preferences.py" line="751"/>
         <source>Scroll past end of the document</source>
-        <translation>Tillat å gå forbi slutten av dokumentet</translation>
+        <translation>Tillat å rulle forbi slutten av dokumentet</translation>
     </message>
     <message>
         <location filename="../nw/gui/preferences.py" line="751"/>
@@ -3164,7 +3163,7 @@
     <message>
         <location filename="../nw/gui/preferences.py" line="760"/>
         <source>Typewriter style scrolling when you type</source>
-        <translation>Skrivemaskin-rulling mens du skriver</translation>
+        <translation>Skrivemaskin-liknende rulling mens du skriver</translation>
     </message>
     <message>
         <location filename="../nw/gui/preferences.py" line="760"/>
@@ -3192,7 +3191,7 @@
     <message>
         <location filename="../nw/gui/preferences.py" line="168"/>
         <source>Main GUI theme</source>
-        <translation>GUI-tema</translation>
+        <translation>Fargetema</translation>
     </message>
     <message>
         <location filename="../nw/gui/preferences.py" line="220"/>
@@ -3232,12 +3231,12 @@
     <message>
         <location filename="../nw/gui/preferences.py" line="229"/>
         <source>GUI Settings</source>
-        <translation>GUI-instillinger</translation>
+        <translation>Brukergrensesnitt</translation>
     </message>
     <message>
         <location filename="../nw/gui/preferences.py" line="233"/>
         <source>Show full path in document header</source>
-        <translation>Vis full prosjektbane i dokumenthodet</translation>
+        <translation>Vis full prosjektbane i dokumenthoder</translation>
     </message>
     <message>
         <location filename="../nw/gui/preferences.py" line="233"/>
@@ -3247,7 +3246,7 @@
     <message>
         <location filename="../nw/gui/preferences.py" line="241"/>
         <source>Hide vertical scroll bars in main windows</source>
-        <translation>Skjul vertikale rullefelt i hovedvinduene</translation>
+        <translation>Skjul vertikale rullefelt i hovedvinduer</translation>
     </message>
     <message>
         <location filename="../nw/gui/preferences.py" line="249"/>
@@ -3257,7 +3256,7 @@
     <message>
         <location filename="../nw/gui/preferences.py" line="249"/>
         <source>Hide horizontal scroll bars in main windows</source>
-        <translation>Skjul horisontale rullefelt i hovedvinduene</translation>
+        <translation>Skjul horisontale rullefelt i hovedvinduer</translation>
     </message>
     <message>
         <location filename="../nw/gui/preferences.py" line="152"/>
@@ -3320,12 +3319,12 @@
     <message>
         <location filename="../nw/gui/preferences.py" line="370"/>
         <source>Run backup when the project is closed</source>
-        <translation>Ta sikkerhetskopi når prosjektet lukkes</translation>
+        <translation>Lag sikkerhetskopi når prosjektet lukkes</translation>
     </message>
     <message>
         <location filename="../nw/gui/preferences.py" line="370"/>
         <source>Can be overridden for individual projects in project settings.</source>
-        <translation>Kan overstyres fra individuelle prosjektinstillinger.</translation>
+        <translation>Kan overstyres fra individuelle prosjektinnstillinger.</translation>
     </message>
     <message>
         <location filename="../nw/gui/preferences.py" line="381"/>
@@ -3355,12 +3354,12 @@
     <message>
         <location filename="../nw/gui/preferences.py" line="407"/>
         <source>Editor inactive time before pausing timer</source>
-        <translation>Tid uten skriving før klokka stoppes</translation>
+        <translation>Tid uten skriving før klokka settes på pause</translation>
     </message>
     <message>
         <location filename="../nw/gui/preferences.py" line="407"/>
         <source>User activity includes typing and changing the content.</source>
-        <translation>Dette måler kun endringer i editoren.</translation>
+        <translation>Dette måler kun endringer i teksteditoren.</translation>
     </message>
     <message>
         <location filename="../nw/gui/preferences.py" line="407"/>
@@ -3393,7 +3392,7 @@
     <message>
         <location filename="../nw/gui/preferences.py" line="876"/>
         <source>Quotes &amp; Dialogue</source>
-        <translation>Sitater &amp; dialog</translation>
+        <translation>Sitattegn &amp; dialog</translation>
     </message>
     <message>
         <location filename="../nw/gui/preferences.py" line="881"/>
@@ -3438,7 +3437,7 @@
     <message>
         <location filename="../nw/gui/preferences.py" line="909"/>
         <source>Applies to emphasis (italic) and strong (bold).</source>
-        <translation>Gjelder kursiv og fet tekst</translation>
+        <translation>Gjelder kursiv og fet tekst.</translation>
     </message>
 </context>
 <context>
@@ -3489,12 +3488,12 @@
     <message>
         <location filename="../nw/gui/projdetails.py" line="277"/>
         <source>Progress</source>
-        <translation>Posisjon</translation>
+        <translation>Fremdrift</translation>
     </message>
     <message>
         <location filename="../nw/gui/projdetails.py" line="316"/>
         <source>Typical word count for a 5 by 8 inch book page with 11 pt font is 350.</source>
-        <translation>Typisk antall ord for en 5 x 8 tommers bokside med 11 pt text er 350.</translation>
+        <translation>Typisk antall ord for en 5 x 8 tommers bokside med 11 pt tekst er 350.</translation>
     </message>
     <message>
         <location filename="../nw/gui/projdetails.py" line="319"/>
@@ -3580,7 +3579,7 @@
     <message>
         <location filename="../nw/gui/projsettings.py" line="171"/>
         <source>Project Settings</source>
-        <translation>Prosjektinstillinger</translation>
+        <translation>Prosjektinnstillinger</translation>
     </message>
     <message>
         <location filename="../nw/gui/projsettings.py" line="180"/>
@@ -3615,17 +3614,17 @@
     <message>
         <location filename="../nw/gui/projsettings.py" line="212"/>
         <source>Default</source>
-        <translation>Standard</translation>
+        <translation>Ingen valg</translation>
     </message>
     <message>
         <location filename="../nw/gui/projsettings.py" line="219"/>
         <source>Spell check language</source>
-        <translation>Stavekontroll</translation>
+        <translation>Språk for stavekontroll</translation>
     </message>
     <message>
         <location filename="../nw/gui/projsettings.py" line="233"/>
         <source>Overrides main preferences.</source>
-        <translation>Overstyrer valg i instillinger.</translation>
+        <translation>Overstyrer valg i innstillinger.</translation>
     </message>
     <message>
         <location filename="../nw/gui/projsettings.py" line="233"/>
@@ -3648,7 +3647,7 @@
     <message>
         <location filename="../nw/gui/projsettings.py" line="481"/>
         <source>Save entry</source>
-        <translation>Lagre</translation>
+        <translation>Lagre tekst</translation>
     </message>
     <message>
         <location filename="../nw/gui/projsettings.py" line="482"/>
@@ -3807,12 +3806,12 @@
     <message>
         <location filename="../nw/gui/projsettings.py" line="57"/>
         <source>Project Settings</source>
-        <translation>Prosjektinstillinger</translation>
+        <translation>Prosjektinnstillinger</translation>
     </message>
     <message>
         <location filename="../nw/gui/projsettings.py" line="74"/>
         <source>Settings</source>
-        <translation>Instillinger</translation>
+        <translation>Innstillinger</translation>
     </message>
     <message>
         <location filename="../nw/gui/projsettings.py" line="75"/>
@@ -3920,7 +3919,7 @@
     <message>
         <location filename="../nw/gui/projtree.py" line="434"/>
         <source>There is currently no Trash folder in this project.</source>
-        <translation>Det er ingen Søppel-mappe i dette prosjektet.</translation>
+        <translation>Det er for øyeblikket ingen søppel-mappe i dette prosjektet.</translation>
     </message>
     <message>
         <location filename="../nw/gui/projtree.py" line="445"/>
@@ -3930,7 +3929,7 @@
     <message>
         <location filename="../nw/gui/projtree.py" line="448"/>
         <source>Empty Trash</source>
-        <translation>Tøm søpla</translation>
+        <translation>Tøm søppel</translation>
     </message>
     <message>
         <location filename="../nw/gui/projtree.py" line="448"/>
@@ -3960,7 +3959,7 @@
     <message>
         <location filename="../nw/gui/projtree.py" line="589"/>
         <source>Cannot delete root folder. It is not empty. Recursive deletion is not supported. Please delete the content first.</source>
-        <translation>Kan ikke slette mappen da den ikke er tom. Rekursiv sletting er ikke støttet. Du må slette innholdet først.</translation>
+        <translation>Kan ikke slette hovedmappen da den ikke er tom. Rekursiv sletting er ikke støttet. Du må slette innholdet først.</translation>
     </message>
     <message>
         <location filename="../nw/gui/projtree.py" line="876"/>
@@ -4018,7 +4017,7 @@
     <message>
         <location filename="../nw/gui/projtree.py" line="1123"/>
         <source>Empty Trash</source>
-        <translation>Tøm søpla</translation>
+        <translation>Tøm søppel</translation>
     </message>
     <message>
         <location filename="../nw/gui/projtree.py" line="1127"/>
@@ -4054,7 +4053,7 @@
     <message>
         <location filename="../nw/gui/wordlist.py" line="80"/>
         <source>Add new entry</source>
-        <translation>Legg til ny</translation>
+        <translation>Legg til nytt</translation>
     </message>
     <message>
         <location filename="../nw/gui/wordlist.py" line="84"/>
@@ -4117,7 +4116,7 @@
     <message>
         <location filename="../nw/gui/writingstats.py" line="134"/>
         <source>Sum Totals</source>
-        <translation>Totalsum</translation>
+        <translation>Totalsummer</translation>
     </message>
     <message>
         <location filename="../nw/gui/writingstats.py" line="162"/>
@@ -4172,12 +4171,12 @@
     <message>
         <location filename="../nw/gui/writingstats.py" line="231"/>
         <source>Hide negative word count</source>
-        <translation>Sjul negative verdier</translation>
+        <translation>Skjul negative verdier</translation>
     </message>
     <message>
         <location filename="../nw/gui/writingstats.py" line="232"/>
         <source>Group entries by day</source>
-        <translation>Samle linjer per dag</translation>
+        <translation>Samle rader per dag</translation>
     </message>
     <message>
         <location filename="../nw/gui/writingstats.py" line="233"/>
@@ -4220,14 +4219,14 @@
         <translation>CSV-format</translation>
     </message>
     <message>
-        <location filename="../nw/gui/writingstats.py" line="374"/>
-        <source>Save Document As</source>
-        <translation>Lagre domunent som</translation>
-    </message>
-    <message>
         <location filename="../nw/gui/writingstats.py" line="492"/>
         <source>Failed to read session log file.</source>
         <translation>Kunne ikke lese loggfil med skrive-statistikk.</translation>
+    </message>
+    <message>
+        <location filename="../nw/gui/writingstats.py" line="374"/>
+        <source>Save Data As</source>
+        <translation>Lagre data som</translation>
     </message>
 </context>
 <context>
@@ -4311,7 +4310,7 @@
     <message>
         <location filename="../nw/core/project.py" line="248"/>
         <source>New Project</source>
-        <translation>Nytt Prosjekt</translation>
+        <translation>Nytt prosjekt</translation>
     </message>
     <message>
         <location filename="../nw/core/project.py" line="265"/>
@@ -4346,12 +4345,12 @@
     <message>
         <location filename="../nw/core/project.py" line="291"/>
         <source>New Chapter</source>
-        <translation>Nytt Kapittel</translation>
+        <translation>Nytt kapittel</translation>
     </message>
     <message>
         <location filename="../nw/core/project.py" line="295"/>
         <source>New Scene</source>
-        <translation>Ny Scene</translation>
+        <translation>Ny scene</translation>
     </message>
     <message>
         <location filename="../nw/core/project.py" line="325"/>
@@ -4376,7 +4375,7 @@
     <message>
         <location filename="../nw/core/project.py" line="428"/>
         <source>Attempting to open backup project file instead.</source>
-        <translation>Forsøker å åpne prosjektets sekundære porsjektfil istedet.</translation>
+        <translation>Forsøker å åpne prosjektets sekundære prosjektfil istedet.</translation>
     </message>
     <message>
         <location filename="../nw/core/project.py" line="448"/>
@@ -4386,7 +4385,7 @@
     <message>
         <location filename="../nw/core/project.py" line="457"/>
         <source>Project file does not appear to be a novelWriterXML file.</source>
-        <translation>Porsjektfilen later ikke til å være en novelWriterXML-fil.</translation>
+        <translation>Prosjektfilen later ikke til å være en novelWriterXML-fil.</translation>
     </message>
     <message>
         <location filename="../nw/core/project.py" line="477"/>
@@ -4406,7 +4405,7 @@
     <message>
         <location filename="../nw/core/project.py" line="610"/>
         <source>Project path not set, cannot save project.</source>
-        <translation>Prosjektet mangler filbane, og kan ikke bli lagret.</translation>
+        <translation>Prosjektet mangler filbane, og kan ikke lagres.</translation>
     </message>
     <message>
         <location filename="../nw/core/project.py" line="690"/>
@@ -4426,7 +4425,7 @@
     <message>
         <location filename="../nw/core/project.py" line="764"/>
         <source>Cannot backup project because no backup path is set. Please set a valid backup location in Tools &gt; Preferences.</source>
-        <translation>Kan ikke ta sikkerhetskopi av prosjektet da ingen filbane er satt. Du må først sette en filbane i Verktøy &gt; Instillinger.</translation>
+        <translation>Kan ikke ta sikkerhetskopi av prosjektet da ingen filbane er satt. Du må først sette en filbane i Verktøy &gt; Innstillinger.</translation>
     </message>
     <message>
         <location filename="../nw/core/project.py" line="773"/>
@@ -4436,7 +4435,7 @@
     <message>
         <location filename="../nw/core/project.py" line="782"/>
         <source>Cannot backup project because the backup path does not exist. Please set a valid backup location in Tools &gt; Preferences.</source>
-        <translation>Kan ikke ta sikkerhetskopi av prosjektet da filbane ikke finnes. Du må sette en ny filbane i Verktøy &gt; Instillinger.</translation>
+        <translation>Kan ikke ta sikkerhetskopi av prosjektet da filbane ikke finnes. Du må sette en ny filbane i Verktøy &gt; Innstillinger.</translation>
     </message>
     <message>
         <location filename="../nw/core/project.py" line="797"/>
@@ -4446,7 +4445,7 @@
     <message>
         <location filename="../nw/core/project.py" line="804"/>
         <source>Cannot backup project because the backup path is within the project folder to be backed up. Please choose a different backup path in Tools &gt; Preferences.</source>
-        <translation>Kan ikke ta sikkerhetskopi av prosjektet da filbanen er inne i prosjektmappen. Du må sette en ny filbane i Verktøy &gt; Instillinger.</translation>
+        <translation>Kan ikke ta sikkerhetskopi av prosjektet da filbanen er inne i prosjektmappen. Du må sette en ny filbane i Verktøy &gt; Innstillinger.</translation>
     </message>
     <message>
         <location filename="../nw/core/project.py" line="813"/>
@@ -4589,7 +4588,7 @@
     <message>
         <location filename="../nw/gui/projwizard.py" line="355"/>
         <source>Populate Novel Folder</source>
-        <translation>Roman-mappen</translation>
+        <translation>Fyll roman-mappen</translation>
     </message>
     <message>
         <location filename="../nw/gui/projwizard.py" line="370"/>
@@ -4721,7 +4720,7 @@
     <message>
         <location filename="../nw/gui/projwizard.py" line="251"/>
         <source>Fill the project with a minimal set of items</source>
-        <translation>Fyll prosjektet med et minimalt sett innhold</translation>
+        <translation>Fyll prosjektet med et minimalt innhold</translation>
     </message>
     <message>
         <location filename="../nw/gui/projwizard.py" line="252"/>

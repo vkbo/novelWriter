@@ -372,7 +372,7 @@ class GuiWritingStats(QDialog):
         dlgOpt  = QFileDialog.Options()
         dlgOpt |= QFileDialog.DontUseNativeDialog
         savePath, _ = QFileDialog.getSaveFileName(
-            self, self.tr("Save Document As"), savePath, options=dlgOpt
+            self, self.tr("Save Data As"), savePath, options=dlgOpt
         )
         if not savePath:
             return False
