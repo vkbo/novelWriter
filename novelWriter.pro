@@ -31,4 +31,4 @@ SOURCES += \
 
 TRANSLATIONS += \
     i18n/nw_pt.ts \
-    i18n/nw_nb-NO.ts
+    i18n/nw_nb_NO.ts
