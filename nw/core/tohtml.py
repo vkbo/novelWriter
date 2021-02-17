@@ -405,24 +405,20 @@ class ToHtml(Tokenizer):
     def _formatSynopsis(self, tText):
         """Apply HTML formatting to synopsis.
         """
+        sSynop = self._localLookup("Synopsis")
         if self.genMode == self.M_PREVIEW:
-            return "<p class='comment'><span class='synopsis'>%s:</span> %s</p>\n" % (
-                self._trSynopsis, tText
-            )
+            return f"<p class='comment'><span class='synopsis'>{sSynop}:</span> {tText}</p>\n"
         else:
-            return "<p class='synopsis'><strong>%s:</strong> %s</p>\n" % (
-                self._trSynopsis, tText
-            )
+            return f"<p class='synopsis'><strong>{sSynop}:</strong> {tText}</p>\n"
 
     def _formatComments(self, tText):
         """Apply HTML formatting to comments.
         """
         if self.genMode == self.M_PREVIEW:
-            return "<p class='comment'>%s</p>\n" % tText
+            return f"<p class='comment'>{tText}</p>\n"
         else:
-            return "<p class='comment'><strong>%s:</strong> %s</p>\n" % (
-                self._trComment, tText
-            )
+            sComm = self._localLookup("Comment")
+            return f"<p class='comment'><strong>{sComm}:</strong> {tText}</p>\n"
 
     def _formatKeywords(self, tText):
         """Apply HTML formatting to keywords.

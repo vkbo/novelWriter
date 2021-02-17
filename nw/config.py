@@ -76,6 +76,7 @@ class Config:
         self.themeRoot = None   # The full path to the nw/assets/themes folder
         self.dictPath  = None   # The full path to the nw/assets/dict folder
         self.iconPath  = None   # The full path to the nw/assets/icons folder
+        self.langPath  = None   # The full path to the nw/assets/lang folder
         self.helpPath  = None   # The full path to the novelwriter .qhc help file
 
         # Runtime Settings and Variables
@@ -297,6 +298,7 @@ class Config:
         self.themeRoot = os.path.join(self.assetPath, "themes")
         self.dictPath  = os.path.join(self.assetPath, "dict")
         self.iconPath  = os.path.join(self.assetPath, "icons")
+        self.langPath  = os.path.join(self.assetPath, "lang")
         self.appIcon   = os.path.join(self.iconPath, "novelwriter.svg")
 
         # Internationalisation

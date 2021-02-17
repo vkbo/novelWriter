@@ -33,7 +33,7 @@ from functools import partial
 from PyQt5.QtCore import QCoreApplication, QRegularExpression
 
 from nw.core.document import NWDoc
-from nw.core.tools import numberToWord, numberToRoman
+from nw.core.tools import numberToRoman
 from nw.constants import nwConst, nwUnicode, nwItemLayout, nwItemType, nwRegEx
 
 logger = logging.getLogger(__name__)
@@ -143,17 +143,9 @@ class Tokenizer():
         # Error Handling
         self.errData = []
 
-        # Internal Mappings
+        # Function Mapping
+        self._localLookup = self.theProject.localLookup
         self.tr = partial(QCoreApplication.translate, "Tokenizer")
-
-        # Localisation
-        self._trSynopsis = self.tr("Synopsis")
-        self._trComment = self.tr("Comment")
-        self._trNotes = self.tr("Notes")
-
-        self._spellLang = self.theProject.projLang
-        if self._spellLang is None:
-            self._spellLang = self.theParent.mainConf.spellLanguage
 
         return
 
@@ -263,7 +255,7 @@ class Tokenizer():
         if theItem.itemType != nwItemType.ROOT:
             return False
 
-        theTitle = self.tr("{0}: {1}").format(self._trNotes, theItem.itemName)
+        theTitle = "%s: %s" % (self._localLookup("Notes"), theItem.itemName)
         self.theTokens = []
         self.theTokens.append((
             self.T_TITLE, 0, theTitle, None, self.A_PBB | self.A_CENTRE
@@ -667,11 +659,12 @@ class Tokenizer():
         theTitle = theTitle.replace(r"%sc%", str(self.numChScene))
         theTitle = theTitle.replace(r"%sca%", str(self.numAbsScene))
         if r"%chw%" in theTitle:
-            theTitle = theTitle.replace(r"%chw%", numberToWord(self.numChapter, self._spellLang))
+            theTitle = theTitle.replace(r"%chw%", self._localLookup(self.numChapter))
         if r"%chi%" in theTitle:
             theTitle = theTitle.replace(r"%chi%", numberToRoman(self.numChapter, True))
         if r"%chI%" in theTitle:
             theTitle = theTitle.replace(r"%chI%", numberToRoman(self.numChapter, False))
-        return theTitle
+
+        return theTitle[:1].upper() + theTitle[1:]
 
 # END Class Tokenizer

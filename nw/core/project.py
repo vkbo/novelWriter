@@ -27,6 +27,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 import nw
 import logging
 import os
+import json
 import shutil
 
 from lxml import etree
@@ -61,6 +62,7 @@ class NWProject():
         # Core Elements
         self.optState = OptionState(self) # Project-specific GUI options
         self.projTree = NWTree(self)      # The project tree
+        self.langData = {}                # Localisation data
 
         # Project Status
         self.projOpened  = 0     # The time stamp of when the project file was opened
@@ -622,6 +624,7 @@ class NWProject():
         self.theParent.setStatus(self.tr("Opened Project: {0}").format(self.projName))
 
         self._scanProjectFolder()
+        self.loadProjectLocalisation(self.projLang)
 
         self.currWCount = self.lastWCount
         self.projOpened = time()
@@ -1046,6 +1049,7 @@ class NWProject():
         theLang = checkString(theLang, None, True)
         if self.projLang != theLang:
             self.projLang = theLang
+            self.loadProjectLocalisation(theLang)
             self.setProjectChanged(True)
         return True
 
@@ -1232,6 +1236,44 @@ class NWProject():
             else:
                 self.importItems.countEntry(nwItem.itemStatus)
         return
+
+    def localLookup(self, theWord):
+        """Look up a word in the translation map for the project and
+        return it. The variable is cast to a string before lookup. If
+        the word does not exist, it returns itself.
+        """
+        theValue = str(theWord)
+        return self.langData.get(theValue, theValue)
+
+    def loadProjectLocalisation(self, theLang):
+        """Load the language data for the current project language.
+        """
+        if theLang is None:
+            theLang = self.mainConf.spellLanguage
+        if theLang is None:
+            theLang = "en"
+
+        lngShort = theLang.split("_")[0]
+        loadFile = os.path.join(self.mainConf.langPath, "project_en.json")
+        chkFile1 = os.path.join(self.mainConf.langPath, "project_%s.json" % theLang)
+        chkFile2 = os.path.join(self.mainConf.langPath, "project_%s.json" % lngShort)
+
+        if os.path.isfile(chkFile1):
+            loadFile = chkFile1
+        elif os.path.isfile(chkFile2):
+            loadFile = chkFile2
+
+        try:
+            with open(loadFile, mode="r", encoding="utf8") as inFile:
+                self.langData = json.load(inFile)
+            logger.debug("Loaded project language file: %s" % os.path.basename(loadFile))
+
+        except Exception:
+            logger.error("Failed to load index file")
+            nw.logException()
+            return False
+
+        return True
 
     ##
     #  Internal Functions
