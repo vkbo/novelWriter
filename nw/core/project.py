@@ -203,7 +203,7 @@ class NWProject():
         self.autoReplace = {}
         self.titleFormat = {
             "title"      : r"%title%",
-            "chapter"    : self.tr(r"Chapter %ch%: %title%"),
+            "chapter"    : self.tr("Chapter")+r" %ch%: %title%",
             "unnumbered" : r"%title%",
             "scene"      : r"* * *",
             "section"    : r"",

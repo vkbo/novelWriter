@@ -39,7 +39,7 @@ from PyQt5.QtWidgets import (
     QStylePainter, QStyleOptionTab, QListWidget, QListWidgetItem, QFrame
 )
 
-from nw.constants import nwUnicode, nwQuotes
+from nw.constants import trConst, nwUnicode, nwQuotes
 
 logger = logging.getLogger(__name__)
 
@@ -487,7 +487,7 @@ class QuotesDialog(QDialog):
 
         minSize = 100
         for sKey, sLabel in nwQuotes.SYMBOLS.items():
-            theText = "[ %s ] %s" % (sKey, sLabel)
+            theText = "[ %s ] %s" % (sKey, trConst(sLabel))
             minSize = max(minSize, qMetrics.boundingRect(theText).width())
             qtItem = QListWidgetItem(theText)
             qtItem.setData(Qt.UserRole, sKey)
@@ -500,7 +500,7 @@ class QuotesDialog(QDialog):
 
         # Buttons
         self.buttonBox = QDialogButtonBox(QDialogButtonBox.Ok | QDialogButtonBox.Cancel)
-        self.buttonBox.button(QDialogButtonBox.Ok).setText(self.tr("Ok"))
+        self.buttonBox.button(QDialogButtonBox.Ok).setText(self.tr("OK"))
         self.buttonBox.button(QDialogButtonBox.Cancel).setText(self.tr("Cancel"))
         self.buttonBox.accepted.connect(self._doAccept)
         self.buttonBox.rejected.connect(self._doReject)

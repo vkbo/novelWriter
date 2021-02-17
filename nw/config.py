@@ -1060,7 +1060,7 @@ class Config:
         try:
             import enchant # noqa: F401
             self.hasEnchant = True
-            logger.debug("Checking package 'pyenchant': Ok")
+            logger.debug("Checking package 'pyenchant': OK")
         except Exception:
             self.hasEnchant = False
             logger.debug("Checking package 'pyenchant': Missing")
@@ -1068,7 +1068,7 @@ class Config:
         assistPath = shutil.which("assistant")
         self.hasAssistant = assistPath is not None
         if self.hasAssistant:
-            logger.debug("Checking executable 'assistant': Ok")
+            logger.debug("Checking executable 'assistant': OK")
         else:
             logger.debug("Checking executable 'assistant': Missing")
 
