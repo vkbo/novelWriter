@@ -281,48 +281,48 @@ def fuzzyTime(secDiff):
         )
     elif secDiff < 3300: # 55 minutes
         return QCoreApplication.translate(
-            "Common", "{0} minutes ago").format(int(round(secDiff/60))
-        )
+            "Common", "{0} minutes ago"
+        ).format(int(round(secDiff/60)))
     elif secDiff < 5400: # 90 minutes
         return QCoreApplication.translate(
             "Common", "an hour ago"
         )
     elif secDiff < 84600: # 23.5 hours
         return QCoreApplication.translate(
-            "Common", "{0} hours ago").format(int(round(secDiff/3600))
-        )
+            "Common", "{0} hours ago"
+        ).format(int(round(secDiff/3600)))
     elif secDiff < 129600: # 1.5 days
         return QCoreApplication.translate(
             "Common", "a day ago"
         )
     elif secDiff < 561600: # 6.5 days
         return QCoreApplication.translate(
-            "Common", "{0} days ago").format(int(round(secDiff/86400))
-        )
+            "Common", "{0} days ago"
+        ).format(int(round(secDiff/86400)))
     elif secDiff < 907200: # 10.5 days
         return QCoreApplication.translate(
             "Common", "a week ago"
         )
     elif secDiff < 2419200: # 28 days
         return QCoreApplication.translate(
-            "Common", "{0} weeks ago").format(int(round(secDiff/604800))
-        )
+            "Common", "{0} weeks ago"
+        ).format(int(round(secDiff/604800)))
     elif secDiff < 3888000: # 45 days
         return QCoreApplication.translate(
             "Common", "a month ago"
         )
     elif secDiff < 29808000: # 345 days
         return QCoreApplication.translate(
-            "Common", "{0} months ago").format(int(round(secDiff/2592000))
-        )
+            "Common", "{0} months ago"
+        ).format(int(round(secDiff/2592000)))
     elif secDiff < 47336400: # 1.5 years
         return QCoreApplication.translate(
             "Common", "a year ago"
         )
     else:
         return QCoreApplication.translate(
-            "Common", "{0} years ago").format(int(round(secDiff/31557600))
-        )
+            "Common", "{0} years ago"
+        ).format(int(round(secDiff/31557600)))
 
 def makeFileNameSafe(theText):
     """Returns a filename safe version of the text.
