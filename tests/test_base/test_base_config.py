@@ -202,7 +202,8 @@ def testBaseConfig_Init(monkeypatch, tmpDir, fncDir, outDir, refDir, filesDir):
     writeFile(os.path.join(i18nDir, "nw_en_GB.ts"), "")
     writeFile(os.path.join(i18nDir, "nw_abcd.qm"), "")
 
-    tstConf.initLocalisation(DummyApp)
+    tstApp = DummyApp()
+    tstConf.initLocalisation(tstApp)
     theList = tstConf.listLanguages()
     assert theList == [("en_GB", "British English")]
 
