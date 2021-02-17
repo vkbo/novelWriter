@@ -393,6 +393,16 @@ class Config:
 
         return
 
+    def listLanguages(self):
+        langs = dict(map(lambda lang: (lang, QLocale(lang).nativeLanguageName().title()),
+                         map(lambda v: v[0][3:],
+                             filter(lambda v: v[0].startswith("nw_") and v[1] == ".qm",
+                                    map(os.path.splitext, os.listdir(self.nwLangPath))))))
+        if "en" not in langs:
+            langs["en"] = QLocale("en").nativeLanguageName().title()
+
+        return sorted(langs.items(), key=lambda x: x[0])
+
     def loadConfig(self):
         """Load preferences from file and replace default settings.
         """
