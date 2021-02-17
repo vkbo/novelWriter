@@ -1254,9 +1254,9 @@ class NWProject():
             theLang = "en"
 
         lngShort = theLang.split("_")[0]
-        loadFile = os.path.join(self.mainConf.langPath, "project_en.json")
-        chkFile1 = os.path.join(self.mainConf.langPath, "project_%s.json" % theLang)
-        chkFile2 = os.path.join(self.mainConf.langPath, "project_%s.json" % lngShort)
+        loadFile = os.path.join(self.mainConf.nwLangPath, "project_en.json")
+        chkFile1 = os.path.join(self.mainConf.nwLangPath, "project_%s.json" % theLang)
+        chkFile2 = os.path.join(self.mainConf.nwLangPath, "project_%s.json" % lngShort)
 
         if os.path.isfile(chkFile1):
             loadFile = chkFile1
