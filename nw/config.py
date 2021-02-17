@@ -76,7 +76,6 @@ class Config:
         self.themeRoot = None   # The full path to the nw/assets/themes folder
         self.dictPath  = None   # The full path to the nw/assets/dict folder
         self.iconPath  = None   # The full path to the nw/assets/icons folder
-        self.langPath  = None   # The full path to the nw/assets/lang folder
         self.helpPath  = None   # The full path to the novelwriter .qhc help file
 
         # Runtime Settings and Variables
@@ -298,7 +297,6 @@ class Config:
         self.themeRoot = os.path.join(self.assetPath, "themes")
         self.dictPath  = os.path.join(self.assetPath, "dict")
         self.iconPath  = os.path.join(self.assetPath, "icons")
-        self.langPath  = os.path.join(self.assetPath, "lang")
         self.appIcon   = os.path.join(self.iconPath, "novelwriter.svg")
 
         # Internationalisation
@@ -384,7 +382,7 @@ class Config:
         for lngPath, lngBase in langList:
             for lngCode in self.qLocal.uiLanguages():
                 qTrans = QTranslator()
-                lngFile = "%s_%s" % (lngBase, lngCode)
+                lngFile = "%s_%s" % (lngBase, lngCode.replace("-", "_"))
                 if lngFile not in self.qtTrans:
                     if qTrans.load(lngFile, lngPath):
                         logger.debug("Loaded: %s" % qTrans.filePath())
@@ -1079,7 +1077,7 @@ class Config:
         try:
             import enchant # noqa: F401
             self.hasEnchant = True
-            logger.debug("Checking package 'pyenchant': Ok")
+            logger.debug("Checking package 'pyenchant': OK")
         except Exception:
             self.hasEnchant = False
             logger.debug("Checking package 'pyenchant': Missing")
@@ -1087,7 +1085,7 @@ class Config:
         assistPath = shutil.which("assistant")
         self.hasAssistant = assistPath is not None
         if self.hasAssistant:
-            logger.debug("Checking executable 'assistant': Ok")
+            logger.debug("Checking executable 'assistant': OK")
         else:
             logger.debug("Checking executable 'assistant': Missing")
 

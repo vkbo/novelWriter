@@ -249,9 +249,7 @@ class GuiProjectTree(QTreeWidget):
 
             if self.theProject.projTree.isTrashRoot(pHandle):
                 self.makeAlert(
-                    self.tr("Cannot add new files or folders to the {0} folder.").format(
-                        trConst(nwLabels.CLASS_NAME[nwItemClass.TRASH])
-                    ), nwAlert.ERROR
+                    self.tr("Cannot add new files or folders to the Trash folder."), nwAlert.ERROR
                 )
                 return False
 
@@ -974,7 +972,7 @@ class GuiProjectTree(QTreeWidget):
             else:
                 self.makeAlert(
                     self.tr(
-                        "There is nowhere to add item with name '{0}'"
+                        "There is nowhere to add item with name '{0}'."
                     ).format(nwItem.itemName), nwAlert.ERROR
                 )
                 del self._treeMap[tHandle]

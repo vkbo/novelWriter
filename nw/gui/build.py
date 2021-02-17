@@ -257,7 +257,7 @@ class GuiBuildNovel(QDialog):
         # Styling Options
         # ===============
 
-        self.styleGroup = QGroupBox("Styling Options", self)
+        self.styleGroup = QGroupBox(self.tr("Styling Options"), self)
         self.styleForm  = QGridLayout(self)
         self.styleGroup.setLayout(self.styleForm)
 

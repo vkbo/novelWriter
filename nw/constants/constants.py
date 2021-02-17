@@ -240,8 +240,8 @@ class nwQuotes():
 
         "\u2039" : QT_TRANSLATE_NOOP("Constant", "Single left-pointing angle quotation mark"),
         "\u203a" : QT_TRANSLATE_NOOP("Constant", "Single right-pointing angle quotation mark"),
-        "\u00ab" : QT_TRANSLATE_NOOP("Constant", "Left-pointing double angle quotation mark"),
-        "\u00bb" : QT_TRANSLATE_NOOP("Constant", "Right-pointing double angle quotation mark"),
+        "\u00ab" : QT_TRANSLATE_NOOP("Constant", "Double left-pointing angle quotation mark"),
+        "\u00bb" : QT_TRANSLATE_NOOP("Constant", "Double right-pointing angle quotation mark"),
 
         "\u300c" : QT_TRANSLATE_NOOP("Constant", "Left corner bracket"),
         "\u300d" : QT_TRANSLATE_NOOP("Constant", "Right corner bracket"),

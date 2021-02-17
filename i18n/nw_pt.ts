@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!DOCTYPE TS><TS version="2.0" language="pt" sourcelanguage="en">
+<!DOCTYPE TS>
+<TS version="2.1" language="pt" sourcelanguage="en">
 <context>
     <name>Constant</name>
     <message>
@@ -678,6 +679,11 @@
         <source>JSON + novelWriter Markdown</source>
         <translation>JSON + Markdown do novelWriter</translation>
     </message>
+    <message>
+        <location filename="../nw/gui/build.py" line="260"/>
+        <source>Styling Options</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>GuiBuildNovelDocView</name>
@@ -967,14 +973,14 @@
         <translation>O elemento selecionado na árvore do projeto deve ser um diretório.</translation>
     </message>
     <message>
-        <location filename="../nw/gui/docmerge.py" line="69"/>
-        <source>Ok</source>
-        <translation>OK</translation>
-    </message>
-    <message>
         <location filename="../nw/gui/docmerge.py" line="70"/>
         <source>Cancel</source>
         <translation>Cancelar</translation>
+    </message>
+    <message>
+        <location filename="../nw/gui/docmerge.py" line="69"/>
+        <source>OK</source>
+        <translation>OK</translation>
     </message>
 </context>
 <context>
@@ -1050,14 +1056,14 @@
         <translation>O documento será dividio em {0} arquivo(s) em um novo diretório. O documento original será mantido intacto.</translation>
     </message>
     <message>
-        <location filename="../nw/gui/docsplit.py" line="85"/>
-        <source>Ok</source>
-        <translation>OK</translation>
-    </message>
-    <message>
         <location filename="../nw/gui/docsplit.py" line="86"/>
         <source>Cancel</source>
         <translation>Cancelar</translation>
+    </message>
+    <message>
+        <location filename="../nw/gui/docsplit.py" line="85"/>
+        <source>OK</source>
+        <translation>OK</translation>
     </message>
 </context>
 <context>
@@ -1233,14 +1239,14 @@
         <translation>Leiaute</translation>
     </message>
     <message>
-        <location filename="../nw/gui/itemeditor.py" line="120"/>
-        <source>Ok</source>
-        <translation>OK</translation>
-    </message>
-    <message>
         <location filename="../nw/gui/itemeditor.py" line="121"/>
         <source>Cancel</source>
         <translation>Cancelar</translation>
+    </message>
+    <message>
+        <location filename="../nw/gui/itemeditor.py" line="120"/>
+        <source>OK</source>
+        <translation>OK</translation>
     </message>
 </context>
 <context>
@@ -1449,6 +1455,11 @@
         <location filename="../nw/guimain.py" line="708"/>
         <source>All files ({0})</source>
         <translation>Todos os arquivos ({0})</translation>
+    </message>
+    <message>
+        <location filename="../nw/guimain.py" line="293"/>
+        <source>novelWriter is ready ...</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -2734,14 +2745,14 @@
         <translation>Automação</translation>
     </message>
     <message>
-        <location filename="../nw/gui/preferences.py" line="73"/>
-        <source>Ok</source>
-        <translation>OK</translation>
-    </message>
-    <message>
         <location filename="../nw/gui/preferences.py" line="74"/>
         <source>Cancel</source>
         <translation>Cancelar</translation>
+    </message>
+    <message>
+        <location filename="../nw/gui/preferences.py" line="73"/>
+        <source>OK</source>
+        <translation>OK</translation>
     </message>
 </context>
 <context>
@@ -3741,14 +3752,14 @@
         <translation>Substituição Automática</translation>
     </message>
     <message>
-        <location filename="../nw/gui/projsettings.py" line="80"/>
-        <source>Ok</source>
-        <translation>OK</translation>
-    </message>
-    <message>
         <location filename="../nw/gui/projsettings.py" line="81"/>
         <source>Cancel</source>
         <translation>Cancelar</translation>
+    </message>
+    <message>
+        <location filename="../nw/gui/projsettings.py" line="80"/>
+        <source>OK</source>
+        <translation>OK</translation>
     </message>
 </context>
 <context>
@@ -4185,11 +4196,6 @@
         <translation>Lixeira</translation>
     </message>
     <message>
-        <location filename="../nw/core/project.py" line="206"/>
-        <source>Chapter %ch%: %title%</source>
-        <translation>Capítulo %ch%: %title%</translation>
-    </message>
-    <message>
         <location filename="../nw/core/project.py" line="219"/>
         <source>New</source>
         <translation>Novo</translation>
@@ -4489,6 +4495,11 @@
         <source>and</source>
         <translation>e</translation>
     </message>
+    <message>
+        <location filename="../nw/core/project.py" line="206"/>
+        <source>Chapter</source>
+        <translation>Capítulo</translation>
+    </message>
 </context>
 <context>
     <name>ProjWizardCustomPage</name>
@@ -4663,14 +4674,14 @@
 <context>
     <name>QuotesDialog</name>
     <message>
-        <location filename="../nw/gui/custom.py" line="503"/>
-        <source>Ok</source>
-        <translation>OK</translation>
-    </message>
-    <message>
         <location filename="../nw/gui/custom.py" line="504"/>
         <source>Cancel</source>
         <translation>Cancelar</translation>
+    </message>
+    <message>
+        <location filename="../nw/gui/custom.py" line="503"/>
+        <source>OK</source>
+        <translation>OK</translation>
     </message>
 </context>
 <context>

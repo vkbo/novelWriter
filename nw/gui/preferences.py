@@ -70,7 +70,7 @@ class GuiPreferences(PagedDialog):
         self.addTab(self.tabAuto,     self.tr("Automation"))
 
         self.buttonBox = QDialogButtonBox(QDialogButtonBox.Ok | QDialogButtonBox.Cancel)
-        self.buttonBox.button(QDialogButtonBox.Ok).setText(self.tr("Ok"))
+        self.buttonBox.button(QDialogButtonBox.Ok).setText(self.tr("OK"))
         self.buttonBox.button(QDialogButtonBox.Cancel).setText(self.tr("Cancel"))
         self.buttonBox.accepted.connect(self._doSave)
         self.buttonBox.rejected.connect(self._doClose)
@@ -828,8 +828,7 @@ class GuiPreferencesEditor(QWidget):
         for spTag, spProv in theDict.listDictionaries():
             qLocal = QLocale(spTag)
             spLang = qLocal.nativeLanguageName().title()
-            spName = qLocal.bcp47Name()
-            self.spellLangList.addItem("%s (%s) [%s]" % (spLang, spName, spProv), spTag)
+            self.spellLangList.addItem("%s [%s]" % (spLang, spProv), spTag)
 
         spellIdx = self.spellLangList.findData(self.mainConf.spellLanguage)
         if spellIdx != -1:

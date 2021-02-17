@@ -37,7 +37,7 @@ from PyQt5.QtWidgets import (
 
 from nw.gui.custom import PagedDialog, QSwitch
 from nw.constants import nwUnicode
-from nw.core import numberToRoman
+from nw.common import numberToRoman
 
 logger = logging.getLogger(__name__)
 

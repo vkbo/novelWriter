@@ -290,7 +290,7 @@ class GuiMain(QMainWindow):
             self.openProject(self.mainConf.cmdOpen)
 
         logger.debug("novelWriter is ready ...")
-        self.setStatus("novelWriter is ready ...")
+        self.setStatus(self.tr("novelWriter is ready ..."))
 
         return
 
