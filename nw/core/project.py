@@ -443,15 +443,9 @@ class NWProject():
         xRoot = nwXML.getroot()
         nwxRoot = xRoot.tag
 
-        appVersion  = xRoot.attrib.get("appVersion",  self.tr("Unknown"))
-        hexVersion  = xRoot.attrib.get("hexVersion",  "0x0")
+        appVersion  = xRoot.attrib.get("appVersion", self.tr("Unknown"))
+        hexVersion  = xRoot.attrib.get("hexVersion", "0x0")
         fileVersion = xRoot.attrib.get("fileVersion", self.tr("Unknown"))
-
-        # The following are deprecated and will be removed
-        # The settings have been moved to the <project> tag
-        self.saveCount = checkInt(xRoot.attrib.get("saveCount", 0), 0, False)
-        self.autoCount = checkInt(xRoot.attrib.get("autoCount", 0), 0, False)
-        self.editTime  = checkInt(xRoot.attrib.get("editTime",  0), 0, False)
 
         logger.verbose("XML root is %s" % nwxRoot)
         logger.verbose("File version is %s" % fileVersion)
@@ -479,27 +473,7 @@ class NWProject():
         #       parser will lose the autoReplace settings if allowed to
         #       read the file. Introduced in version 0.10.
 
-        if fileVersion == "1.0":
-            msgYes = self.theParent.askQuestion(
-                self.tr("Old Project Version"),
-                "%s<br><br>%s" % (
-                    self.tr(
-                        "The project file and data is created by a novelWriter version "
-                        "lower than 0.7. Do you want to upgrade the project to the "
-                        "most recent format?"
-                    ),
-                    self.tr(
-                        "Note that after the upgrade, you cannot open the project with "
-                        "an older version of novelWriter any more, so make sure you "
-                        "have a recent backup."
-                    )
-                )
-            )
-            if not msgYes:
-                self.clearProject()
-                return False
-
-        elif fileVersion != "1.1" and fileVersion != "1.2":
+        if fileVersion not in ("1.0", "1.1", "1.2"):
             self.makeAlert((
                 self.tr(
                     "Unknown or unsupported novelWriter project file format. "
@@ -518,7 +492,7 @@ class NWProject():
                 self.tr("Version Conflict"),
                 self.tr(
                     "This project was saved by a newer version of novelWriter, version "
-                    "{0}. This is version {1}. If you continue to open the  project, "
+                    "{0}. This is version {1}. If you continue to open the project, "
                     "some attributes and settings may not be preserved, but the "
                     "overall project should be fine. Continue opening the project?"
                 ).format(appVersion, nw.__version__)
@@ -552,10 +526,6 @@ class NWProject():
                     elif xItem.tag == "editTime":
                         self.editTime = checkInt(xItem.text, 0)
 
-                    # The following is deprecated, and will be removed
-                    elif xItem.tag == "backup":
-                        self.doBackup = checkBool(xItem.text, False)
-
             elif xChild.tag == "settings":
                 logger.debug("Found project settings")
                 for xItem in xChild:
@@ -585,13 +555,8 @@ class NWProject():
                         self.importItems.unpackXML(xItem)
                     elif xItem.tag == "autoReplace":
                         for xEntry in xItem:
-                            if xEntry.tag == "entry":
-                                if "key" in xEntry.attrib:
-                                    self.autoReplace[xEntry.attrib["key"]] = checkString(
-                                        xEntry.text, None, False
-                                    )
-                            else: # Old format
-                                self.autoReplace[xEntry.tag] = checkString(
+                            if xEntry.tag == "entry" and "key" in xEntry.attrib:
+                                self.autoReplace[xEntry.attrib["key"]] = checkString(
                                     xEntry.text, None, False
                                 )
                     elif xItem.tag == "titleFormat":

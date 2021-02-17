@@ -368,7 +368,7 @@ def testCoreProject_Open(monkeypatch, nwMinimal, dummyGUI):
 
     # Wrong file version
     writeFile(rName, (
-        "<?xml version='1.0' encoding='utf-8'?>\n"
+        "<?xml version='0.0' encoding='utf-8'?>\n"
         "<novelWriterXML "
         "appVersion=\"1.0\" "
         "hexVersion=\"0x01000000\" "
@@ -419,25 +419,6 @@ def testCoreProject_Open(monkeypatch, nwMinimal, dummyGUI):
         "</novelWriterXML>\n"
     ))
     assert theProject.openProject(nwMinimal) is True
-    assert theProject.closeProject()
-
-    # Test deprecated XML entries
-    writeFile(rName, (
-        "<?xml version='1.0' encoding='utf-8'?>\n"
-        "<novelWriterXML "
-        "appVersion=\"1.0\" "
-        "hexVersion=\"0x01000000\" "
-        "fileVersion=\"1.2\" "
-        "timeStamp=\"2020-01-01 00:00:00\">\n"
-        "<settings>\n"
-        "<autoReplace>\n"
-        "<A>B</A>\n"
-        "</autoReplace>\n"
-        "</settings>\n"
-        "</novelWriterXML>\n"
-    ))
-    assert theProject.openProject(nwMinimal) is True
-    assert theProject.autoReplace == {"A": "B"}
     assert theProject.closeProject()
 
     # Clean up XML files
