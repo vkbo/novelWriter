@@ -41,7 +41,7 @@ from PyQt5.QtWidgets import (
     qApp, QDialog, QVBoxLayout, QHBoxLayout, QTextBrowser, QPushButton, QLabel,
     QLineEdit, QGroupBox, QGridLayout, QProgressBar, QMenu, QAction,
     QFileDialog, QFontDialog, QSpinBox, QScrollArea, QSplitter, QWidget,
-    QSizePolicy, QDoubleSpinBox
+    QSizePolicy, QDoubleSpinBox, QComboBox
 )
 
 from nw.common import fuzzyTime, makeFileNameSafe
@@ -163,6 +163,16 @@ class GuiBuildNovel(QDialog):
             self._reFmtCodes(self.theProject.titleFormat["section"])
         )
 
+        self.buildLang = QComboBox()
+        self.buildLang.setMinimumWidth(xFmt)
+        theLangs = self.mainConf.listLanguages(self.mainConf.LANG_PROJ)
+        for langID, langName in theLangs:
+            self.buildLang.addItem(langName, langID)
+
+        langIdx = self.buildLang.findData(self.theProject.projLang)
+        if langIdx != -1:
+            self.buildLang.setCurrentIndex(langIdx)
+
         # Dummy boxes due to QGridView and QLineEdit expand bug
         self.boxTitle = QHBoxLayout()
         self.boxTitle.addWidget(self.fmtTitle)
@@ -180,6 +190,7 @@ class GuiBuildNovel(QDialog):
         unnumbLabel  = QLabel(self.tr("Unnumbered"))
         sceneLabel   = QLabel(self.tr("Scene"))
         sectionLabel = QLabel(self.tr("Section"))
+        langLabel    = QLabel(self.tr("Language"))
 
         self.titleForm.addWidget(titleLabel,      0, 0, 1, 1, Qt.AlignLeft)
         self.titleForm.addLayout(self.boxTitle,   0, 1, 1, 1, Qt.AlignRight)
@@ -191,6 +202,8 @@ class GuiBuildNovel(QDialog):
         self.titleForm.addLayout(self.boxScene,   3, 1, 1, 1, Qt.AlignRight)
         self.titleForm.addWidget(sectionLabel,    4, 0, 1, 1, Qt.AlignLeft)
         self.titleForm.addLayout(self.boxSection, 4, 1, 1, 1, Qt.AlignRight)
+        self.titleForm.addWidget(langLabel,       5, 0, 1, 1, Qt.AlignLeft)
+        self.titleForm.addWidget(self.buildLang,  5, 1, 1, 1, Qt.AlignRight)
 
         self.titleForm.setColumnStretch(0, 0)
         self.titleForm.setColumnStretch(1, 1)
@@ -650,6 +663,9 @@ class GuiBuildNovel(QDialog):
         ignoreFlag    = self.ignoreFlag.isChecked()
         includeBody   = self.includeBody.isChecked()
         replaceUCode  = self.replaceUCode.isChecked()
+
+        # The language lookup dict is reloaded if needed
+        self.theProject.setProjectLang(self.buildLang.currentData())
 
         # Get font information
         fontInfo = QFontInfo(QFont(textFont, textSize))
@@ -1115,6 +1131,7 @@ class GuiBuildNovel(QDialog):
             "section"    : self.fmtSection.text().strip(),
         })
 
+        buildLang    = self.buildLang.currentData()
         winWidth     = self.mainConf.rpxInt(self.width())
         winHeight    = self.mainConf.rpxInt(self.height())
         justifyText  = self.justifyText.isChecked()
@@ -1135,6 +1152,8 @@ class GuiBuildNovel(QDialog):
         mainSplit = self.mainSplit.sizes()
         boxWidth  = self.mainConf.rpxInt(mainSplit[0])
         docWidth  = self.mainConf.rpxInt(mainSplit[1])
+
+        self.theProject.setProjectLang(buildLang)
 
         # GUI Settings
         self.optState.setValue("GuiBuildNovel", "winWidth",     winWidth)

@@ -197,7 +197,7 @@ class NWProject():
         self.projContent = None
         self.projDict    = None
         self.projSpell   = None
-        self.projLang    = None
+        self.projLang    = self.mainConf.guiLang
         self.projFile    = nwFiles.PROJ_FILE
         self.projName    = ""
         self.bookTitle   = ""
@@ -593,7 +593,7 @@ class NWProject():
         self.theParent.setStatus(self.tr("Opened Project: {0}").format(self.projName))
 
         self._scanProjectFolder()
-        self.loadProjectLocalisation(self.projLang)
+        self._loadProjectLocalisation()
 
         self.currWCount = self.lastWCount
         self.projOpened = time()
@@ -1019,7 +1019,16 @@ class NWProject():
         theLang = checkString(theLang, None, True)
         if self.projSpell != theLang:
             self.projSpell = theLang
-            # self.loadProjectLocalisation(theLang)
+            self.setProjectChanged(True)
+        return True
+
+    def setProjectLang(self, theLang):
+        """Set the project-specific language.
+        """
+        theLang = checkString(theLang, None, True)
+        if self.projLang != theLang:
+            self.projLang = theLang
+            self._loadProjectLocalisation()
             self.setProjectChanged(True)
         return True
 
@@ -1215,13 +1224,16 @@ class NWProject():
         theValue = str(theWord)
         return self.langData.get(theValue, theValue)
 
-    def loadProjectLocalisation(self, theLang):
+    ##
+    #  Internal Functions
+    ##
+
+    def _loadProjectLocalisation(self):
         """Load the language data for the current project language.
         """
+        theLang = self.projLang
         if theLang is None:
             theLang = self.mainConf.spellLanguage
-        if theLang is None:
-            theLang = "en"
 
         lngShort = theLang.split("_")[0]
         loadFile = os.path.join(self.mainConf.nwLangPath, "project_en.json")
@@ -1244,10 +1256,6 @@ class NWProject():
             return False
 
         return True
-
-    ##
-    #  Internal Functions
-    ##
 
     def _readLockFile(self):
         """Reads the lock file in the project folder.
