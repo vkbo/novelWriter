@@ -62,18 +62,17 @@ def testGuiProjectWizard_Main(qtbot, monkeypatch, nwGUI, nwMinimal):
 
     # Close project, but call with invalid path
     assert nwGUI.closeProject()
-    monkeypatch.setattr(nwGUI, "showNewProjectDialog", lambda *args: None)
-    assert not nwGUI.newProject()
+    with monkeypatch.context() as mp:
+        mp.setattr(nwGUI, "showNewProjectDialog", lambda *args: None)
+        assert not nwGUI.newProject()
 
-    # Now, with an empty dictionary
-    monkeypatch.setattr(nwGUI, "showNewProjectDialog", lambda *args: {})
-    assert not nwGUI.newProject()
+        # Now, with an empty dictionary
+        mp.setattr(nwGUI, "showNewProjectDialog", lambda *args: {})
+        assert not nwGUI.newProject()
 
-    # Now, with a non-empty folder
-    monkeypatch.setattr(nwGUI, "showNewProjectDialog", lambda *args: {"projPath": nwMinimal})
-    assert not nwGUI.newProject()
-
-    monkeypatch.undo()
+        # Now, with a non-empty folder
+        mp.setattr(nwGUI, "showNewProjectDialog", lambda *args: {"projPath": nwMinimal})
+        assert not nwGUI.newProject()
 
     ##
     #  Test the Wizard

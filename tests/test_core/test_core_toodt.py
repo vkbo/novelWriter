@@ -45,11 +45,9 @@ def xmlToText(xElem):
     return rTxt
 
 @pytest.mark.core
-def testCoreToOdt_Convert(tmpConf, dummyGUI):
+def testCoreToOdt_Convert(dummyGUI):
     """Test the converter of the ToHtml class.
     """
-    nw.CONFIG = tmpConf
-
     theProject = NWProject(dummyGUI)
     dummyGUI.theIndex = NWIndex(theProject, dummyGUI)
     theDoc = ToOdt(theProject, dummyGUI, isFlat=True)

@@ -121,17 +121,31 @@ def tmpConf(tmpDir):
     return theConf
 
 @pytest.fixture(scope="function")
-def dummyGUI(tmpConf):
+def fncConf(fncDir):
+    """Create a temporary novelWriter configuration object.
+    """
+    confFile = os.path.join(fncDir, "novelwriter.conf")
+    if os.path.isfile(confFile):
+        os.unlink(confFile)
+    theConf = Config()
+    theConf.initConfig(fncDir, fncDir)
+    theConf.setLastPath("")
+    return theConf
+
+@pytest.fixture(scope="function")
+def dummyGUI(monkeypatch, tmpConf):
     """Create a dummy instance of novelWriter's main GUI class.
     """
+    monkeypatch.setattr("nw.CONFIG", tmpConf)
     theDummy = DummyMain()
     theDummy.mainConf = tmpConf
     return theDummy
 
 @pytest.fixture(scope="function")
-def nwGUI(qtbot, fncDir):
+def nwGUI(qtbot, monkeypatch, fncDir, fncConf):
     """Create an instance of the novelWriter GUI.
     """
+    monkeypatch.setattr("nw.CONFIG", fncConf)
     nwGUI = nw.main(["--testmode", "--config=%s" % fncDir, "--data=%s" % fncDir])
     qtbot.addWidget(nwGUI)
     nwGUI.show()

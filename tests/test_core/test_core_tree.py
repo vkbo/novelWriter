@@ -410,8 +410,6 @@ def testCoreTree_MakeHandles(monkeypatch, dummyGUI):
     theTree._projTree[tHandle] = None
     assert tHandle == "a79acf4c634a7"
 
-    monkeypatch.undo()
-
 # END Test testCoreTree_MakeHandles
 
 @pytest.mark.core

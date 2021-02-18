@@ -48,22 +48,22 @@ def testBaseError_Dialog(qtbot, monkeypatch, fncDir, tmpDir):
     assert nwErr.msgBody.toPlainText() == "Failed to generate error report ..."
 
     # Valid Error Message
-    monkeypatch.setattr("PyQt5.QtCore.QSysInfo.kernelVersion", lambda: "1.2.3")
-    nwErr.setMessage(Exception, "Fine Error", None)
-    theMessage = nwErr.msgBody.toPlainText()
-    assert theMessage
-    assert "Fine Error" in theMessage
-    assert "Exception" in theMessage
-    assert "(1.2.3)" in theMessage
-    monkeypatch.undo()
+    with monkeypatch.context() as mp:
+        mp.setattr("PyQt5.QtCore.QSysInfo.kernelVersion", lambda: "1.2.3")
+        nwErr.setMessage(Exception, "Fine Error", None)
+        theMessage = nwErr.msgBody.toPlainText()
+        assert theMessage
+        assert "Fine Error" in theMessage
+        assert "Exception" in theMessage
+        assert "(1.2.3)" in theMessage
 
     # No kernel version retrieved
-    monkeypatch.setattr("PyQt5.QtCore.QSysInfo.kernelVersion", causeException)
-    nwErr.setMessage(Exception, "Almost Fine Error", None)
-    theMessage = nwErr.msgBody.toPlainText()
-    assert theMessage
-    assert "(Unknown)" in theMessage
-    monkeypatch.undo()
+    with monkeypatch.context() as mp:
+        mp.setattr("PyQt5.QtCore.QSysInfo.kernelVersion", causeException)
+        nwErr.setMessage(Exception, "Almost Fine Error", None)
+        theMessage = nwErr.msgBody.toPlainText()
+        assert theMessage
+        assert "(Unknown)" in theMessage
 
     nwErr._doClose()
     nwErr.close()
@@ -84,31 +84,31 @@ def testBaseError_Handler(qtbot, monkeypatch, fncDir, tmpDir):
     qtbot.waitForWindowShown(nwGUI)
 
     # Normal shutdown
-    monkeypatch.setattr(NWErrorMessage, "exec_", lambda *args: None)
-    monkeypatch.setattr("PyQt5.QtWidgets.qApp.exit", lambda *args: None)
-    exceptionHandler(Exception, "Error Message", None)
-    monkeypatch.undo()
+    with monkeypatch.context() as mp:
+        mp.setattr(NWErrorMessage, "exec_", lambda *args: None)
+        mp.setattr("PyQt5.QtWidgets.qApp.exit", lambda *args: None)
+        exceptionHandler(Exception, "Error Message", None)
 
     # Should not crash when no GUI is found
-    monkeypatch.setattr(NWErrorMessage, "exec_", lambda *args: None)
-    monkeypatch.setattr("PyQt5.QtWidgets.qApp.exit", lambda *args: None)
-    monkeypatch.setattr("PyQt5.QtWidgets.qApp.topLevelWidgets", lambda: [])
-    exceptionHandler(Exception, "Error Message", None)
-    monkeypatch.undo()
+    with monkeypatch.context() as mp:
+        mp.setattr(NWErrorMessage, "exec_", lambda *args: None)
+        mp.setattr("PyQt5.QtWidgets.qApp.exit", lambda *args: None)
+        mp.setattr("PyQt5.QtWidgets.qApp.topLevelWidgets", lambda: [])
+        exceptionHandler(Exception, "Error Message", None)
 
     # Should handle qApp failing
-    monkeypatch.setattr(NWErrorMessage, "exec_", lambda *args: None)
-    monkeypatch.setattr("PyQt5.QtWidgets.qApp.exit", lambda *args: None)
-    monkeypatch.setattr("PyQt5.QtWidgets.qApp.topLevelWidgets", causeException)
-    exceptionHandler(Exception, "Error Message", None)
-    monkeypatch.undo()
+    with monkeypatch.context() as mp:
+        mp.setattr(NWErrorMessage, "exec_", lambda *args: None)
+        mp.setattr("PyQt5.QtWidgets.qApp.exit", lambda *args: None)
+        mp.setattr("PyQt5.QtWidgets.qApp.topLevelWidgets", causeException)
+        exceptionHandler(Exception, "Error Message", None)
 
     # Should handle failing to close main GUI
-    monkeypatch.setattr(NWErrorMessage, "exec_", lambda *args: None)
-    monkeypatch.setattr("PyQt5.QtWidgets.qApp.exit", lambda *args: None)
-    monkeypatch.setattr(nwGUI, "closeMain", causeException)
-    exceptionHandler(Exception, "Error Message", None)
-    monkeypatch.undo()
+    with monkeypatch.context() as mp:
+        mp.setattr(NWErrorMessage, "exec_", lambda *args: None)
+        mp.setattr("PyQt5.QtWidgets.qApp.exit", lambda *args: None)
+        mp.setattr(nwGUI, "closeMain", causeException)
+        exceptionHandler(Exception, "Error Message", None)
 
     nwGUI.closeMain()
 

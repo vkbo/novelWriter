@@ -180,7 +180,6 @@ def testCoreProject_NewSampleA(fncDir, tmpConf, dummyGUI, tmpDir):
     }
     theProject = NWProject(dummyGUI)
     theProject.projTree.setSeed(42)
-    theProject.mainConf = tmpConf
 
     # Sample set, but no path
     assert not theProject.newProject({"popSample": True})
@@ -229,7 +228,6 @@ def testCoreProject_NewSampleB(monkeypatch, fncDir, tmpConf, dummyGUI, tmpDir):
     }
     theProject = NWProject(dummyGUI)
     theProject.projTree.setSeed(42)
-    theProject.mainConf = tmpConf
 
     # Make sure we do not pick up the nw/assets/sample.zip file
     tmpConf.assetPath = tmpDir
@@ -330,9 +328,9 @@ def testCoreProject_Open(monkeypatch, nwMinimal, dummyGUI):
     os.rename(wName, rName)
 
     # Fail on folder structure check
-    monkeypatch.setattr("os.mkdir", causeOSError)
-    assert theProject.openProject(nwMinimal) is False
-    monkeypatch.undo()
+    with monkeypatch.context() as mp:
+        mp.setattr("os.mkdir", causeOSError)
+        assert theProject.openProject(nwMinimal) is False
 
     # Fail on lock file
     theProject.setProjectPath(nwMinimal)
@@ -340,9 +338,9 @@ def testCoreProject_Open(monkeypatch, nwMinimal, dummyGUI):
     assert theProject.openProject(nwMinimal) is False
 
     # Fail to read lockfile (which still opens the project)
-    monkeypatch.setattr("builtins.open", causeOSError)
-    assert theProject.openProject(nwMinimal) is True
-    monkeypatch.undo()
+    with monkeypatch.context() as mp:
+        mp.setattr("builtins.open", causeOSError)
+        assert theProject.openProject(nwMinimal) is True
     assert theProject.closeProject()
 
     # Force open with lockfile
@@ -452,14 +450,14 @@ def testCoreProject_Save(monkeypatch, nwMinimal, dummyGUI, refDir):
     assert theProject.openProject(nwMinimal)
 
     # Fail on folder structure check
-    monkeypatch.setattr("os.path.isdir", lambda *args: False)
-    assert theProject.saveProject() is False
-    monkeypatch.undo()
+    with monkeypatch.context() as mp:
+        mp.setattr("os.path.isdir", lambda *args: False)
+        assert theProject.saveProject() is False
 
     # Fail on open file
-    monkeypatch.setattr("builtins.open", causeOSError)
-    assert theProject.saveProject() is False
-    monkeypatch.undo()
+    with monkeypatch.context() as mp:
+        mp.setattr("builtins.open", causeOSError)
+        assert theProject.saveProject() is False
 
     # Successful save
     saveCount = theProject.saveCount
@@ -501,30 +499,30 @@ def testCoreProject_LockFile(monkeypatch, fncDir, dummyGUI):
     theProject.mainConf.kernelVer = "1.0"
 
     # Block open
-    monkeypatch.setattr("builtins.open", causeOSError)
-    assert theProject._writeLockFile() is False
-    monkeypatch.undo()
+    with monkeypatch.context() as mp:
+        mp.setattr("builtins.open", causeOSError)
+        assert theProject._writeLockFile() is False
 
     # Write lock file
-    monkeypatch.setattr("nw.core.project.time", lambda: 123.4)
-    assert theProject._writeLockFile() is True
-    monkeypatch.undo()
+    with monkeypatch.context() as mp:
+        mp.setattr("nw.core.project.time", lambda: 123.4)
+        assert theProject._writeLockFile() is True
     assert readFile(lockFile) == "TestHost\nTestOS\n1.0\n123\n"
 
     # Block open
-    monkeypatch.setattr("builtins.open", causeOSError)
-    assert theProject._readLockFile() == ["ERROR"]
-    monkeypatch.undo()
+    with monkeypatch.context() as mp:
+        mp.setattr("builtins.open", causeOSError)
+        assert theProject._readLockFile() == ["ERROR"]
 
     # Read lock file
     assert theProject._readLockFile() == ["TestHost", "TestOS", "1.0", "123"]
 
     # Block unlink
-    monkeypatch.setattr("os.unlink", causeOSError)
-    assert os.path.isfile(lockFile)
-    assert theProject._clearLockFile() is False
-    assert os.path.isfile(lockFile)
-    monkeypatch.undo()
+    with monkeypatch.context() as mp:
+        mp.setattr("os.unlink", causeOSError)
+        assert os.path.isfile(lockFile)
+        assert theProject._clearLockFile() is False
+        assert os.path.isfile(lockFile)
 
     # Clear file
     assert os.path.isfile(lockFile)
@@ -554,9 +552,9 @@ def testCoreProject_Helpers(monkeypatch, fncDir, dummyGUI):
     theProject.projPath = fncDir
 
     # Block user's home folder
-    monkeypatch.setattr("os.path.expanduser", lambda *args, **kwargs: fncDir)
-    assert theProject.ensureFolderStructure() is False
-    monkeypatch.undo()
+    with monkeypatch.context() as mp:
+        mp.setattr("os.path.expanduser", lambda *args, **kwargs: fncDir)
+        assert theProject.ensureFolderStructure() is False
 
     # Create a file to block meta folder
     metaDir = os.path.join(fncDir, "meta")
@@ -702,9 +700,9 @@ def testCoreProject_Methods(monkeypatch, nwMinimal, dummyGUI, tmpDir):
     # Edit Time
     theProject.editTime = 1234
     theProject.projOpened = 1600000000
-    monkeypatch.setattr("nw.core.project.time", lambda: 1600005600)
-    assert theProject.getCurrentEditTime() == 6834
-    monkeypatch.undo()
+    with monkeypatch.context() as mp:
+        mp.setattr("nw.core.project.time", lambda: 1600005600)
+        assert theProject.getCurrentEditTime() == 6834
 
     # Trash folder
     # Should create on first call, and just returned on later calls
@@ -735,11 +733,11 @@ def testCoreProject_Methods(monkeypatch, nwMinimal, dummyGUI, tmpDir):
     # Spell language
     theProject.projChanged = False
     assert theProject.setSpellLang(None)
-    assert theProject.projLang is None
+    assert theProject.projSpell is None
     assert theProject.setSpellLang("None")
-    assert theProject.projLang is None
+    assert theProject.projSpell is None
     assert theProject.setSpellLang("en_GB")
-    assert theProject.projLang == "en_GB"
+    assert theProject.projSpell == "en_GB"
     assert theProject.projChanged
 
     # Automatic outline update
@@ -839,14 +837,14 @@ def testCoreProject_Methods(monkeypatch, nwMinimal, dummyGUI, tmpDir):
     assert theProject.getSessionWordCount() == 100
 
     # Session stats
-    monkeypatch.setattr("os.path.isdir", lambda *args, **kwargs: False)
-    assert not theProject._appendSessionStats(idleTime=0)
-    monkeypatch.undo()
+    with monkeypatch.context() as mp:
+        mp.setattr("os.path.isdir", lambda *args, **kwargs: False)
+        assert not theProject._appendSessionStats(idleTime=0)
 
     # Block open
-    monkeypatch.setattr("builtins.open", causeOSError)
-    assert not theProject._appendSessionStats(idleTime=0)
-    monkeypatch.undo()
+    with monkeypatch.context() as mp:
+        mp.setattr("builtins.open", causeOSError)
+        assert not theProject._appendSessionStats(idleTime=0)
 
     # Write entry
     assert theProject.projMeta == os.path.join(nwMinimal, "meta")
@@ -856,9 +854,9 @@ def testCoreProject_Methods(monkeypatch, nwMinimal, dummyGUI, tmpDir):
     theProject.novelWCount = 200
     theProject.notesWCount = 100
 
-    monkeypatch.setattr("nw.core.project.time", lambda: 1600005600)
-    assert theProject._appendSessionStats(idleTime=99)
-    monkeypatch.undo()
+    with monkeypatch.context() as mp:
+        mp.setattr("nw.core.project.time", lambda: 1600005600)
+        assert theProject._appendSessionStats(idleTime=99)
 
     assert readFile(statsFile) == (
         "# Offset 100\n"
@@ -1076,9 +1074,9 @@ def testCoreProject_LegacyData(monkeypatch, dummyGUI, fncDir):
     writeFile(tstFile, "dummy")
     assert os.path.isfile(tstFile)
 
-    monkeypatch.setattr("os.unlink", causeOSError)
-    assert not theProject._deprecatedFiles()
-    monkeypatch.undo()
+    with monkeypatch.context() as mp:
+        mp.setattr("os.unlink", causeOSError)
+        assert not theProject._deprecatedFiles()
 
     assert theProject._deprecatedFiles()
     assert not os.path.isfile(tstFile)
@@ -1101,18 +1099,18 @@ def testCoreProject_LegacyData(monkeypatch, dummyGUI, fncDir):
     assert os.path.isdir(errItem)
 
     # This causes a failure to create the 'junk' folder
-    monkeypatch.setattr("os.mkdir", causeOSError)
-    errList = []
-    errList = theProject._legacyDataFolder(tstData, errList)
-    assert len(errList) > 0
-    monkeypatch.undo()
+    with monkeypatch.context() as mp:
+        mp.setattr("os.mkdir", causeOSError)
+        errList = []
+        errList = theProject._legacyDataFolder(tstData, errList)
+        assert len(errList) > 0
 
     # This causes a failure to move 'stuff' to 'junk'
-    monkeypatch.setattr("os.rename", causeOSError)
-    errList = []
-    errList = theProject._legacyDataFolder(tstData, errList)
-    assert len(errList) > 0
-    monkeypatch.undo()
+    with monkeypatch.context() as mp:
+        mp.setattr("os.rename", causeOSError)
+        errList = []
+        errList = theProject._legacyDataFolder(tstData, errList)
+        assert len(errList) > 0
 
     # This should be successful
     errList = []
@@ -1138,18 +1136,18 @@ def testCoreProject_LegacyData(monkeypatch, dummyGUI, fncDir):
     writeFile(tstDoc3b, "dummy")
 
     # Make the above fail
-    monkeypatch.setattr("os.rename", causeOSError)
-    monkeypatch.setattr("os.unlink", causeOSError)
-    errList = []
-    errList = theProject._legacyDataFolder(tstData, errList)
-    assert len(errList) > 0
-    assert os.path.isfile(tstDoc1m)
-    assert os.path.isfile(tstDoc1b)
-    assert os.path.isfile(tstDoc2m)
-    assert os.path.isfile(tstDoc2b)
-    assert os.path.isfile(tstDoc3m)
-    assert os.path.isfile(tstDoc3b)
-    monkeypatch.undo()
+    with monkeypatch.context() as mp:
+        mp.setattr("os.rename", causeOSError)
+        mp.setattr("os.unlink", causeOSError)
+        errList = []
+        errList = theProject._legacyDataFolder(tstData, errList)
+        assert len(errList) > 0
+        assert os.path.isfile(tstDoc1m)
+        assert os.path.isfile(tstDoc1b)
+        assert os.path.isfile(tstDoc2m)
+        assert os.path.isfile(tstDoc2b)
+        assert os.path.isfile(tstDoc3m)
+        assert os.path.isfile(tstDoc3b)
 
     # And succeed ...
     errList = []
@@ -1203,14 +1201,14 @@ def testCoreProject_Backup(monkeypatch, dummyGUI, nwMinimal, tmpDir):
     theProject.mainConf.backupPath = tmpDir
 
     # Can't make folder
-    monkeypatch.setattr("os.mkdir", causeOSError)
-    assert not theProject.zipIt(doNotify=False)
-    monkeypatch.undo()
+    with monkeypatch.context() as mp:
+        mp.setattr("os.mkdir", causeOSError)
+        assert not theProject.zipIt(doNotify=False)
 
     # Can't write archive
-    monkeypatch.setattr("shutil.make_archive", causeOSError)
-    assert not theProject.zipIt(doNotify=False)
-    monkeypatch.undo()
+    with monkeypatch.context() as mp:
+        mp.setattr("shutil.make_archive", causeOSError)
+        assert not theProject.zipIt(doNotify=False)
 
     # Test correct settings
     assert theProject.zipIt(doNotify=True)

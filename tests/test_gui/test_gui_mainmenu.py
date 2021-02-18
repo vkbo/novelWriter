@@ -534,9 +534,9 @@ def testGuiMenu_Insert(qtbot, monkeypatch, nwGUI, fncDir, fncProj):
 
     # Faulty Keyword Inserts
     assert not nwGUI.docEditor.insertKeyWord("blabla")
-    monkeypatch.setattr(QTextBlock, "isValid", lambda *args, **kwards: False)
-    assert not nwGUI.docEditor.insertKeyWord(nwKeyWords.TAG_KEY)
-    monkeypatch.undo()
+    with monkeypatch.context() as mp:
+        mp.setattr(QTextBlock, "isValid", lambda *args, **kwards: False)
+        assert not nwGUI.docEditor.insertKeyWord(nwKeyWords.TAG_KEY)
 
     nwGUI.docEditor.clear()
 

@@ -30,14 +30,13 @@ from tools import readFile, writeFile
 from nw.core.spellcheck import NWSpellCheck, NWSpellEnchant, NWSpellSimple
 
 @pytest.mark.core
-def testCoreSpell_Super(monkeypatch, tmpDir, tmpConf):
+def testCoreSpell_Super(monkeypatch, tmpDir):
     """Test the spell checker super class
     """
     wList = os.path.join(tmpDir, "wordlist.txt")
     writeFile(wList, "a_word\nb_word\nc_word\n")
 
     spChk = NWSpellCheck()
-    spChk.mainConf = tmpConf
 
     # Check that dummy functions return results that reflects that spell
     # checking is effectively disabled
@@ -49,16 +48,16 @@ def testCoreSpell_Super(monkeypatch, tmpDir, tmpConf):
 
     # Add a word to the user's dictionary
     assert spChk._readProjectDictionary("dummy") is False
-    monkeypatch.setattr("builtins.open", causeOSError)
-    assert spChk._readProjectDictionary(wList) is False
-    monkeypatch.undo()
+    with monkeypatch.context() as mp:
+        mp.setattr("builtins.open", causeOSError)
+        assert spChk._readProjectDictionary(wList) is False
     assert spChk._readProjectDictionary(wList) is True
     assert spChk.projectDict == wList
 
     # Cannot write to file
-    monkeypatch.setattr("builtins.open", causeOSError)
-    assert spChk.addWord("d_word") is False
-    monkeypatch.undo()
+    with monkeypatch.context() as mp:
+        mp.setattr("builtins.open", causeOSError)
+        assert spChk.addWord("d_word") is False
     assert readFile(wList) == "a_word\nb_word\nc_word\n"
 
     # First time, OK
@@ -72,28 +71,26 @@ def testCoreSpell_Super(monkeypatch, tmpDir, tmpConf):
 # END Test testCoreSpell_Super
 
 @pytest.mark.core
-def testCoreSpell_Enchant(monkeypatch, tmpDir, tmpConf):
+def testCoreSpell_Enchant(monkeypatch, tmpDir):
     """Test the pyenchant spell checker
     """
     wList = os.path.join(tmpDir, "wordlist.txt")
     writeFile(wList, "a_word\nb_word\nc_word\n")
 
     # Block the enchant package (and trigger the dummy class)
-    monkeypatch.setitem(sys.modules, "enchant", None)
-    spChk = NWSpellEnchant()
+    with monkeypatch.context() as mp:
+        mp.setitem(sys.modules, "enchant", None)
+        spChk = NWSpellEnchant()
 
-    spChk.setLanguage("en", wList)
-    assert spChk.setLanguage("", "") is None
-    assert spChk.checkWord("")
-    assert spChk.suggestWords("") == []
-    assert spChk.listDictionaries() == []
-    assert spChk.describeDict() == ("", "")
-
-    monkeypatch.undo()
+        spChk.setLanguage("en", wList)
+        assert spChk.setLanguage("", "") is None
+        assert spChk.checkWord("")
+        assert spChk.suggestWords("") == []
+        assert spChk.listDictionaries() == []
+        assert spChk.describeDict() == ("", "")
 
     # Load the proper enchant package
     spChk = NWSpellEnchant()
-    spChk.mainConf = tmpConf
     spChk.setLanguage("en", wList)
 
     assert spChk.checkWord("a_word")
@@ -118,7 +115,7 @@ def testCoreSpell_Enchant(monkeypatch, tmpDir, tmpConf):
 # END Test testCoreSpell_Enchant
 
 @pytest.mark.core
-def testCoreSpell_Simple(monkeypatch, tmpDir, tmpConf):
+def testCoreSpell_Simple(monkeypatch, tmpDir):
     """Test the fallback simple spell checker
     """
     wList = os.path.join(tmpDir, "wordlist.txt")
@@ -127,15 +124,14 @@ def testCoreSpell_Simple(monkeypatch, tmpDir, tmpConf):
     writeFile(wDict, "# Comment\ne_word\nf_word\ng_word\n")
 
     spChk = NWSpellSimple()
-    spChk.mainConf = tmpConf
     spChk.mainConf.dictPath = tmpDir
 
     # Load dictionary, but fail
-    monkeypatch.setattr("builtins.open", causeOSError)
-    spChk.setLanguage("en", wList)
-    assert spChk.spellLanguage is None
-    assert spChk.theWords == set(spChk.projDict)
-    monkeypatch.undo()
+    with monkeypatch.context() as mp:
+        mp.setattr("builtins.open", causeOSError)
+        spChk.setLanguage("en", wList)
+        assert spChk.spellLanguage is None
+        assert spChk.theWords == set(spChk.projDict)
 
     # Load dictionary properly
     spChk.setLanguage("en", wList)
@@ -163,9 +159,9 @@ def testCoreSpell_Simple(monkeypatch, tmpDir, tmpConf):
     assert "d_word" in wSuggest
 
     # Break the matching
-    monkeypatch.setattr("difflib.get_close_matches", lambda *args, **kwargs: [""])
-    assert spChk.suggestWords("word") == []
-    monkeypatch.undo()
+    with monkeypatch.context() as mp:
+        mp.setattr("difflib.get_close_matches", lambda *args, **kwargs: [""])
+        assert spChk.suggestWords("word") == []
 
     # Capitalisation
     wSuggest = spChk.suggestWords("D_wrod")

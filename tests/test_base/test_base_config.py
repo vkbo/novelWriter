@@ -44,7 +44,6 @@ def testBaseConfig_Constructor(monkeypatch):
     assert tstConf.osDarwin is False
     assert tstConf.osWindows is False
     assert tstConf.osUnknown is False
-    monkeypatch.undo()
 
     # macOS
     monkeypatch.setattr("sys.platform", "darwin")
@@ -53,7 +52,6 @@ def testBaseConfig_Constructor(monkeypatch):
     assert tstConf.osDarwin is True
     assert tstConf.osWindows is False
     assert tstConf.osUnknown is False
-    monkeypatch.undo()
 
     # Windows
     monkeypatch.setattr("sys.platform", "win32")
@@ -62,7 +60,6 @@ def testBaseConfig_Constructor(monkeypatch):
     assert tstConf.osDarwin is False
     assert tstConf.osWindows is True
     assert tstConf.osUnknown is False
-    monkeypatch.undo()
 
     # Cygwin
     monkeypatch.setattr("sys.platform", "cygwin")
@@ -71,7 +68,6 @@ def testBaseConfig_Constructor(monkeypatch):
     assert tstConf.osDarwin is False
     assert tstConf.osWindows is True
     assert tstConf.osUnknown is False
-    monkeypatch.undo()
 
     # Other
     monkeypatch.setattr("sys.platform", "some_other_os")
@@ -80,7 +76,6 @@ def testBaseConfig_Constructor(monkeypatch):
     assert tstConf.osDarwin is False
     assert tstConf.osWindows is False
     assert tstConf.osUnknown is True
-    monkeypatch.undo()
 
 # END Test testBaseConfig_Constructor
 
@@ -99,36 +94,35 @@ def testBaseConfig_Init(monkeypatch, tmpDir, fncDir, outDir, refDir, filesDir):
         os.unlink(confFile)
 
     # Let the config class figure out the path
-    monkeypatch.setattr("PyQt5.QtCore.QStandardPaths.writableLocation", lambda *args: fncDir)
-    tstConf.verQtValue = 50600
-    tstConf.initConfig()
-    assert tstConf.confPath == os.path.join(fncDir, tstConf.appHandle)
-    assert tstConf.dataPath == os.path.join(fncDir, tstConf.appHandle)
-    assert not os.path.isfile(confFile)
-    tstConf.verQtValue = 50000
-    tstConf.initConfig()
-    assert tstConf.confPath == os.path.join(fncDir, tstConf.appHandle)
-    assert tstConf.dataPath == os.path.join(fncDir, tstConf.appHandle)
-    assert not os.path.isfile(confFile)
-    monkeypatch.undo()
+    with monkeypatch.context() as mp:
+        mp.setattr("PyQt5.QtCore.QStandardPaths.writableLocation", lambda *args: fncDir)
+        tstConf.verQtValue = 50600
+        tstConf.initConfig()
+        assert tstConf.confPath == os.path.join(fncDir, tstConf.appHandle)
+        assert tstConf.dataPath == os.path.join(fncDir, tstConf.appHandle)
+        assert not os.path.isfile(confFile)
+        tstConf.verQtValue = 50000
+        tstConf.initConfig()
+        assert tstConf.confPath == os.path.join(fncDir, tstConf.appHandle)
+        assert tstConf.dataPath == os.path.join(fncDir, tstConf.appHandle)
+        assert not os.path.isfile(confFile)
 
     # Fail to make folders
-    monkeypatch.setattr("os.mkdir", causeOSError)
+    with monkeypatch.context() as mp:
+        mp.setattr("os.mkdir", causeOSError)
 
-    tstConfDir = os.path.join(fncDir, "test_conf")
-    tstConf.initConfig(confPath=tstConfDir, dataPath=tmpDir)
-    assert tstConf.confPath is None
-    assert tstConf.dataPath == tmpDir
-    assert not os.path.isfile(confFile)
+        tstConfDir = os.path.join(fncDir, "test_conf")
+        tstConf.initConfig(confPath=tstConfDir, dataPath=tmpDir)
+        assert tstConf.confPath is None
+        assert tstConf.dataPath == tmpDir
+        assert not os.path.isfile(confFile)
 
-    tstDataDir = os.path.join(fncDir, "test_data")
-    tstConf.initConfig(confPath=tmpDir, dataPath=tstDataDir)
-    assert tstConf.confPath == tmpDir
-    assert tstConf.dataPath is None
-    assert os.path.isfile(confFile)
-    os.unlink(confFile)
-
-    monkeypatch.undo()
+        tstDataDir = os.path.join(fncDir, "test_data")
+        tstConf.initConfig(confPath=tmpDir, dataPath=tstDataDir)
+        assert tstConf.confPath == tmpDir
+        assert tstConf.dataPath is None
+        assert os.path.isfile(confFile)
+        os.unlink(confFile)
 
     # Test load/save with no path
     tstConf.confPath = None
@@ -137,35 +131,34 @@ def testBaseConfig_Init(monkeypatch, tmpDir, fncDir, outDir, refDir, filesDir):
 
     # Run again and set the paths directly and correctly
     # This should create a config file as well
-    monkeypatch.setattr("os.path.expanduser", lambda *args: "")
-    tstConf.spellTool = nwConst.SP_INTERNAL
-    tstConf.initConfig(confPath=tmpDir, dataPath=tmpDir)
-    assert tstConf.confPath == tmpDir
-    assert tstConf.dataPath == tmpDir
-    assert os.path.isfile(confFile)
+    with monkeypatch.context() as mp:
+        mp.setattr("os.path.expanduser", lambda *args: "")
+        tstConf.spellTool = nwConst.SP_INTERNAL
+        tstConf.initConfig(confPath=tmpDir, dataPath=tmpDir)
+        assert tstConf.confPath == tmpDir
+        assert tstConf.dataPath == tmpDir
+        assert os.path.isfile(confFile)
 
-    copyfile(confFile, testFile)
-    assert cmpFiles(testFile, compFile, [2, 9, 10])
-    monkeypatch.undo()
+        copyfile(confFile, testFile)
+        assert cmpFiles(testFile, compFile, [2, 9, 10])
 
     # Load and save with OSError
-    monkeypatch.setattr("builtins.open", causeOSError)
+    with monkeypatch.context() as mp:
+        mp.setattr("builtins.open", causeOSError)
 
-    assert not tstConf.loadConfig()
-    assert tstConf.hasError is True
-    assert tstConf.errData != []
-    assert tstConf.getErrData().startswith("Could not")
-    assert tstConf.hasError is False
-    assert tstConf.errData == []
+        assert not tstConf.loadConfig()
+        assert tstConf.hasError is True
+        assert tstConf.errData != []
+        assert tstConf.getErrData().startswith("Could not")
+        assert tstConf.hasError is False
+        assert tstConf.errData == []
 
-    assert not tstConf.saveConfig()
-    assert tstConf.hasError is True
-    assert tstConf.errData != []
-    assert tstConf.getErrData().startswith("Could not")
-    assert tstConf.hasError is False
-    assert tstConf.errData == []
-
-    monkeypatch.undo()
+        assert not tstConf.saveConfig()
+        assert tstConf.hasError is True
+        assert tstConf.errData != []
+        assert tstConf.getErrData().startswith("Could not")
+        assert tstConf.hasError is False
+        assert tstConf.errData == []
 
     assert tstConf.loadConfig()
     assert tstConf.saveConfig()
@@ -233,9 +226,9 @@ def testBaseConfig_RecentCache(monkeypatch, tmpConf, tmpDir, fncDir):
     }
 
     # Fail to Save
-    monkeypatch.setattr("builtins.open", causeOSError)
-    assert not tmpConf.saveRecentCache()
-    monkeypatch.undo()
+    with monkeypatch.context() as mp:
+        mp.setattr("builtins.open", causeOSError)
+        assert not tmpConf.saveRecentCache()
 
     # Save Proper
     cacheFile = os.path.join(tmpDir, nwFiles.RECENT_FILE)
@@ -244,11 +237,11 @@ def testBaseConfig_RecentCache(monkeypatch, tmpConf, tmpDir, fncDir):
     assert os.path.isfile(cacheFile)
 
     # Fail to Load
-    monkeypatch.setattr("builtins.open", causeOSError)
-    tmpConf.recentProj = {}
-    assert not tmpConf.loadRecentCache()
-    assert tmpConf.recentProj == {}
-    monkeypatch.undo()
+    with monkeypatch.context() as mp:
+        mp.setattr("builtins.open", causeOSError)
+        tmpConf.recentProj = {}
+        assert not tmpConf.loadRecentCache()
+        assert tmpConf.recentProj == {}
 
     # Load Proper
     tmpConf.recentProj = {}
@@ -555,19 +548,19 @@ def testBaseConfig_Internal(monkeypatch, tmpConf):
     tmpConf._checkOptionalPackages()
     assert tmpConf.hasEnchant is True
 
-    monkeypatch.setitem(sys.modules, "enchant", None)
-    tmpConf._checkOptionalPackages()
-    assert tmpConf.hasEnchant is False
-    monkeypatch.undo()
+    with monkeypatch.context() as mp:
+        mp.setitem(sys.modules, "enchant", None)
+        tmpConf._checkOptionalPackages()
+        assert tmpConf.hasEnchant is False
 
-    monkeypatch.setattr("shutil.which", lambda *args: "dummy")
-    tmpConf._checkOptionalPackages()
-    assert tmpConf.hasAssistant is True
-    monkeypatch.undo()
+    with monkeypatch.context() as mp:
+        mp.setattr("shutil.which", lambda *args: "dummy")
+        tmpConf._checkOptionalPackages()
+        assert tmpConf.hasAssistant is True
 
-    monkeypatch.setattr("shutil.which", lambda *args: None)
-    tmpConf._checkOptionalPackages()
-    assert tmpConf.hasAssistant is False
-    monkeypatch.undo()
+    with monkeypatch.context() as mp:
+        mp.setattr("shutil.which", lambda *args: None)
+        tmpConf._checkOptionalPackages()
+        assert tmpConf.hasAssistant is False
 
 # END Test testBaseConfig_Internal

@@ -62,8 +62,6 @@ def testBaseInit_Launch(caplog, monkeypatch, tmpDir):
 
     assert ex.value.code == 0
 
-    monkeypatch.undo()
-
 # END Test testBaseInit_Launch
 
 @pytest.mark.base
@@ -136,8 +134,6 @@ def testBaseInit_Options(monkeypatch, tmpDir):
     assert nw.CONFIG.cmdOpen == "sample/"
     assert nwGUI.closeMain() == "closeMain"
 
-    monkeypatch.undo()
-
 # END Test testBaseInit_Options
 
 @pytest.mark.base
@@ -169,7 +165,5 @@ def testBaseInit_Imports(caplog, monkeypatch, tmpDir):
     assert "At least Qt5" in caplog.messages[1]
     assert "At least PyQt5" in caplog.messages[2]
     assert "lxml" in caplog.messages[3]
-
-    monkeypatch.undo()
 
 # END Test testBaseInit_Imports

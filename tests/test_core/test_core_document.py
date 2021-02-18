@@ -50,9 +50,9 @@ def testCoreDocument_LoadSave(monkeypatch, dummyGUI, nwMinimal):
     def dummyOpen(*args, **kwargs):
         raise OSError
 
-    monkeypatch.setattr("builtins.open", dummyOpen)
-    assert theDoc.openDocument(sHandle) is None
-    monkeypatch.undo()
+    with monkeypatch.context() as mp:
+        mp.setattr("builtins.open", dummyOpen)
+        assert theDoc.openDocument(sHandle) is None
 
     # Load the text
     assert theDoc.openDocument(sHandle) == "### New Scene\n\n"
@@ -95,9 +95,9 @@ def testCoreDocument_LoadSave(monkeypatch, dummyGUI, nwMinimal):
         assert inFile.read() == theText
 
     # Cause open() to fail while saving
-    monkeypatch.setattr("builtins.open", causeOSError)
-    assert not theDoc.saveDocument(theText)
-    monkeypatch.undo()
+    with monkeypatch.context() as mp:
+        mp.setattr("builtins.open", causeOSError)
+        assert not theDoc.saveDocument(theText)
 
     # Saving with no handle
     theDoc.clearDocument()
@@ -108,9 +108,9 @@ def testCoreDocument_LoadSave(monkeypatch, dummyGUI, nwMinimal):
     assert os.path.isfile(docPath)
 
     # Cause the delete to fail
-    monkeypatch.setattr("os.unlink", causeOSError)
-    assert not theDoc.deleteDocument(xHandle)
-    monkeypatch.undo()
+    with monkeypatch.context() as mp:
+        mp.setattr("os.unlink", causeOSError)
+        assert not theDoc.deleteDocument(xHandle)
 
     # Make the delete pass
     assert theDoc.deleteDocument(xHandle)
