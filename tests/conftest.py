@@ -118,6 +118,7 @@ def tmpConf(tmpDir):
     theConf = Config()
     theConf.initConfig(tmpDir, tmpDir)
     theConf.setLastPath("")
+    theConf.guiLang = "en_GB"
     return theConf
 
 @pytest.fixture(scope="function")
@@ -130,6 +131,7 @@ def fncConf(fncDir):
     theConf = Config()
     theConf.initConfig(fncDir, fncDir)
     theConf.setLastPath("")
+    theConf.guiLang = "en_GB"
     return theConf
 
 @pytest.fixture(scope="function")

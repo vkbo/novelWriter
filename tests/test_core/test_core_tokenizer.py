@@ -117,7 +117,8 @@ def testCoreToken_TextOps(monkeypatch, nwMinimal, dummyGUI):
     """
     theProject = NWProject(dummyGUI)
     theProject.projTree.setSeed(42)
-    theProject.loadProjectLocalisation("en")
+    theProject.projLang = "en"
+    theProject._loadProjectLocalisation()
 
     theToken = Tokenizer(theProject, dummyGUI)
     theToken.setKeepMarkdown(True)
@@ -414,7 +415,8 @@ def testCoreToken_Headers(dummyGUI):
     """Test the header and page parser of the Tokenizer class.
     """
     theProject = NWProject(dummyGUI)
-    theProject.loadProjectLocalisation("en")
+    theProject.projLang = "en"
+    theProject._loadProjectLocalisation()
     theToken = Tokenizer(theProject, dummyGUI)
 
     # Nothing

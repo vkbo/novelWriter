@@ -197,7 +197,7 @@ def testBaseConfig_Init(monkeypatch, tmpDir, fncDir, outDir, refDir, filesDir):
 
     tstApp = DummyApp()
     tstConf.initLocalisation(tstApp)
-    theList = tstConf.listLanguages()
+    theList = tstConf.listLanguages(tstConf.LANG_NW)
     assert theList == [("en_GB", "British English")]
 
     copyfile(confFile, testFile)
