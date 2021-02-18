@@ -405,10 +405,11 @@ class ToHtml(Tokenizer):
     def _formatSynopsis(self, tText):
         """Apply HTML formatting to synopsis.
         """
-        sSynop = self._localLookup("Synopsis")
         if self.genMode == self.M_PREVIEW:
+            sSynop = self._trSynopsis
             return f"<p class='comment'><span class='synopsis'>{sSynop}:</span> {tText}</p>\n"
         else:
+            sSynop = self._localLookup("Synopsis")
             return f"<p class='synopsis'><strong>{sSynop}:</strong> {tText}</p>\n"
 
     def _formatComments(self, tText):

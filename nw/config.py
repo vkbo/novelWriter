@@ -53,6 +53,9 @@ class Config:
     CNF_S_LST = 3
     CNF_I_LST = 4
 
+    LANG_NW   = 1
+    LANG_PROJ = 2
+
     def __init__(self):
 
         # Set Application Variables
@@ -391,21 +394,29 @@ class Config:
 
         return
 
-    def listLanguages(self):
+    def listLanguages(self, lngSet):
         """List localisation files in the i18n folder. The default GUI
         language 'en_GB' is British English.
         """
-        langList = {
-            "en_GB": QLocale("en_GB").nativeLanguageName().title()
-        }
+        if lngSet == self.LANG_NW:
+            fPre = "nw_"
+            fExt = ".qm"
+            langList = {"en_GB": QLocale("en_GB").nativeLanguageName().title()}
+        elif lngSet == self.LANG_PROJ:
+            fPre = "project_"
+            fExt = ".json"
+            langList = {"en": "English"}
+        else:
+            return []
+
         for qmFile in os.listdir(self.nwLangPath):
             if not os.path.isfile(os.path.join(self.nwLangPath, qmFile)):
                 continue
-            if not qmFile.startswith("nw_") or not qmFile.endswith(".qm"):
+            if not qmFile.startswith(fPre) or not qmFile.endswith(fExt):
                 continue
-            qmLang = qmFile[3:-3]
+            qmLang = qmFile[len(fPre):-len(fExt)]
             qmName = QLocale(qmLang).nativeLanguageName().title()
-            if qmLang and qmName:
+            if qmLang and qmName and qmLang != "en":
                 langList[qmLang] = qmName
 
         return sorted(langList.items(), key=lambda x: x[0])

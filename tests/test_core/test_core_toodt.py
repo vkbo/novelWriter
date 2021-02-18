@@ -20,7 +20,6 @@ You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
 
-import nw
 import pytest
 
 from lxml import etree
@@ -45,11 +44,9 @@ def xmlToText(xElem):
     return rTxt
 
 @pytest.mark.core
-def testCoreToOdt_Convert(tmpConf, dummyGUI):
+def testCoreToOdt_Convert(dummyGUI):
     """Test the converter of the ToHtml class.
     """
-    nw.CONFIG = tmpConf
-
     theProject = NWProject(dummyGUI)
     dummyGUI.theIndex = NWIndex(theProject, dummyGUI)
     theDoc = ToOdt(theProject, dummyGUI, isFlat=True)

@@ -64,10 +64,10 @@ def testCoreOptions_LoadSave(monkeypatch, dummyGUI, tmpDir):
     assert theProject.projMeta == tmpDir
 
     # Cause open() to fail
-    monkeypatch.setattr("builtins.open", causeOSError)
-    assert not theOpts.loadSettings()
-    assert not theOpts.saveSettings()
-    monkeypatch.undo()
+    with monkeypatch.context() as mp:
+        mp.setattr("builtins.open", causeOSError)
+        assert not theOpts.loadSettings()
+        assert not theOpts.saveSettings()
 
     # Load proper
     assert theOpts.loadSettings()

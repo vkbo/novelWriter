@@ -428,6 +428,4 @@ def testGuiWritingStats_Dialog(qtbot, monkeypatch, nwGUI, fncDir, fncProj):
     assert nwGUI.closeProject()
     qtbot.wait(stepDelay)
 
-    monkeypatch.undo()
-
 # END Test testGuiWritingStats_Dialog

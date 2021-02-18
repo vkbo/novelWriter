@@ -9,6 +9,7 @@
   </project>
   <settings>
     <doBackup>True</doBackup>
+    <language>None</language>
     <spellCheck>False</spellCheck>
     <spellLang>None</spellLang>
     <autoOutline>True</autoOutline>

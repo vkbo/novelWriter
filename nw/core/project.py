@@ -79,7 +79,8 @@ class NWProject():
         self.projCache   = None # The full path to the project's cache folder
         self.projContent = None # The full path to the project's content folder
         self.projDict    = None # The spell check dictionary
-        self.projLang    = None # The spell check language, if different than default
+        self.projSpell   = None # The spell check language, if different than default
+        self.projLang    = None # The project language, used for builds
         self.projFile    = None # The file name of the project main XML file
 
         # Project Meta
@@ -195,6 +196,7 @@ class NWProject():
         self.projCache   = None
         self.projContent = None
         self.projDict    = None
+        self.projSpell   = None
         self.projLang    = None
         self.projFile    = nwFiles.PROJ_FILE
         self.projName    = ""
@@ -533,10 +535,12 @@ class NWProject():
                         continue
                     if xItem.tag == "doBackup":
                         self.doBackup = checkBool(xItem.text, False)
+                    elif xItem.tag == "language":
+                        self.projLang = checkString(xItem.text, None, True)
                     elif xItem.tag == "spellCheck":
                         self.spellCheck = checkBool(xItem.text, False)
                     elif xItem.tag == "spellLang":
-                        self.projLang = checkString(xItem.text, None, True)
+                        self.projSpell = checkString(xItem.text, None, True)
                     elif xItem.tag == "autoOutline":
                         self.autoOutline = checkBool(xItem.text, True)
                     elif xItem.tag == "lastEdited":
@@ -589,7 +593,7 @@ class NWProject():
         self.theParent.setStatus(self.tr("Opened Project: {0}").format(self.projName))
 
         self._scanProjectFolder()
-        self.loadProjectLocalisation(self.projLang)
+        self._loadProjectLocalisation()
 
         self.currWCount = self.lastWCount
         self.projOpened = time()
@@ -650,8 +654,9 @@ class NWProject():
         # Save Project Settings
         xSettings = etree.SubElement(nwXML, "settings")
         self._packProjectValue(xSettings, "doBackup", self.doBackup)
+        self._packProjectValue(xSettings, "language", self.projLang)
         self._packProjectValue(xSettings, "spellCheck", self.spellCheck)
-        self._packProjectValue(xSettings, "spellLang", self.projLang)
+        self._packProjectValue(xSettings, "spellLang", self.projSpell)
         self._packProjectValue(xSettings, "autoOutline", self.autoOutline)
         self._packProjectValue(xSettings, "lastEdited", self.lastEdited)
         self._packProjectValue(xSettings, "lastViewed", self.lastViewed)
@@ -1012,9 +1017,18 @@ class NWProject():
         """Set the project-specific spell check language.
         """
         theLang = checkString(theLang, None, True)
+        if self.projSpell != theLang:
+            self.projSpell = theLang
+            self.setProjectChanged(True)
+        return True
+
+    def setProjectLang(self, theLang):
+        """Set the project-specific language.
+        """
+        theLang = checkString(theLang, None, True)
         if self.projLang != theLang:
             self.projLang = theLang
-            self.loadProjectLocalisation(theLang)
+            self._loadProjectLocalisation()
             self.setProjectChanged(True)
         return True
 
@@ -1210,17 +1224,20 @@ class NWProject():
         theValue = str(theWord)
         return self.langData.get(theValue, theValue)
 
-    def loadProjectLocalisation(self, theLang):
+    ##
+    #  Internal Functions
+    ##
+
+    def _loadProjectLocalisation(self):
         """Load the language data for the current project language.
         """
-        if theLang is None:
-            theLang = self.mainConf.spellLanguage
-        if theLang is None:
-            theLang = "en"
+        if self.projLang is None:
+            self.langData = {}
+            return False
 
-        lngShort = theLang.split("_")[0]
+        lngShort = self.projLang.split("_")[0]
         loadFile = os.path.join(self.mainConf.nwLangPath, "project_en.json")
-        chkFile1 = os.path.join(self.mainConf.nwLangPath, "project_%s.json" % theLang)
+        chkFile1 = os.path.join(self.mainConf.nwLangPath, "project_%s.json" % self.projLang)
         chkFile2 = os.path.join(self.mainConf.nwLangPath, "project_%s.json" % lngShort)
 
         if os.path.isfile(chkFile1):
@@ -1234,15 +1251,11 @@ class NWProject():
             logger.debug("Loaded project language file: %s" % os.path.basename(loadFile))
 
         except Exception:
-            logger.error("Failed to load index file")
+            logger.error("Failed to project language file")
             nw.logException()
             return False
 
         return True
-
-    ##
-    #  Internal Functions
-    ##
 
     def _readLockFile(self):
         """Reads the lock file in the project folder.

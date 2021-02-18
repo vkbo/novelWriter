@@ -223,8 +223,8 @@ class GuiProjectEditMain(QWidget):
         )
 
         spellIdx = 0
-        if self.theProject.projLang is not None:
-            spellIdx = self.spellLang.findData(self.theProject.projLang)
+        if self.theProject.projSpell is not None:
+            spellIdx = self.spellLang.findData(self.theProject.projSpell)
         if spellIdx != -1:
             self.spellLang.setCurrentIndex(spellIdx)
 

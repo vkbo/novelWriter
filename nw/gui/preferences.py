@@ -91,16 +91,12 @@ class GuiPreferences(PagedDialog):
         logger.debug("Saving new preferences")
 
         needsRestart = self.tabGeneral.saveValues()
-        prevSpell = self.mainConf.spellLanguage
 
         self.tabProjects.saveValues()
         self.tabDocs.saveValues()
         self.tabEditor.saveValues()
         self.tabSyntax.saveValues()
         self.tabAuto.saveValues()
-
-        if prevSpell != self.mainConf.spellLanguage:
-            self.theProject.loadProjectLocalisation(self.mainConf.spellLanguage)
 
         if needsRestart:
             self.theParent.makeAlert(
@@ -142,8 +138,8 @@ class GuiPreferencesGeneral(QWidget):
         ## Select Locale
         self.guiLang = QComboBox()
         self.guiLang.setMinimumWidth(minWidth)
-        self.theLangs = self.mainConf.listLanguages()
-        for lang, langName in self.theLangs:
+        theLangs = self.mainConf.listLanguages(self.mainConf.LANG_NW)
+        for lang, langName in theLangs:
             self.guiLang.addItem(langName, lang)
         langIdx = self.guiLang.findData(self.mainConf.guiLang)
         if langIdx != -1:

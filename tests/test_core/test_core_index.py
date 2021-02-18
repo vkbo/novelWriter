@@ -26,6 +26,7 @@ import json
 
 from shutil import copyfile
 
+from dummy import causeException
 from tools import cmpFiles
 
 from nw.core.project import NWProject
@@ -61,16 +62,12 @@ def testCoreIndex_LoadSave(monkeypatch, nwLipsum, dummyGUI, outDir, refDir):
 
     assert not theIndex.reIndexHandle(None)
 
-    # Dummy exception function
-    def doPanic(*arg, **kwargs):
-        raise Exception
-
     # Make the save fail
-    monkeypatch.setattr(json, "dump", doPanic)
-    assert not theIndex.saveIndex()
+    with monkeypatch.context() as mp:
+        mp.setattr(json, "dump", causeException)
+        assert not theIndex.saveIndex()
 
     # Make the save pass
-    monkeypatch.undo()
     assert theIndex.saveIndex()
 
     # Take a copy of the index
@@ -100,11 +97,11 @@ def testCoreIndex_LoadSave(monkeypatch, nwLipsum, dummyGUI, outDir, refDir):
     assert not theIndex._textCounts
 
     # Make the load fail
-    monkeypatch.setattr(json, "load", doPanic)
-    assert not theIndex.loadIndex()
+    with monkeypatch.context() as mp:
+        mp.setattr(json, "load", causeException)
+        assert not theIndex.loadIndex()
 
     # Make the load pass
-    monkeypatch.undo()
     assert theIndex.loadIndex()
 
     assert str(theIndex._tagIndex) == tagIndex
