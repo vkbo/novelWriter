@@ -1234,6 +1234,8 @@ class NWProject():
         theLang = self.projLang
         if theLang is None:
             theLang = self.mainConf.spellLanguage
+        if theLang is None:
+            theLang = "en"
 
         lngShort = theLang.split("_")[0]
         loadFile = os.path.join(self.mainConf.nwLangPath, "project_en.json")
