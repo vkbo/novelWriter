@@ -477,300 +477,305 @@
         <translation>La feltet stå tomt for å hoppe over overskriften, eller sett til en statisk tekst, slik som for eksempel &apos;{0}&apos;, for å lage en separator. Separatoren vil bli sentrert automatisk, og bare satt inn mellom scener av samme type.</translation>
     </message>
     <message>
-        <location filename="../nw/gui/build.py" line="178"/>
+        <location filename="../nw/gui/build.py" line="188"/>
         <source>Title</source>
         <translation>Tittel</translation>
     </message>
     <message>
-        <location filename="../nw/gui/build.py" line="179"/>
+        <location filename="../nw/gui/build.py" line="189"/>
         <source>Chapter</source>
         <translation>Kapittel</translation>
     </message>
     <message>
-        <location filename="../nw/gui/build.py" line="180"/>
+        <location filename="../nw/gui/build.py" line="190"/>
         <source>Unnumbered</source>
         <translation>Unumrert</translation>
     </message>
     <message>
-        <location filename="../nw/gui/build.py" line="181"/>
+        <location filename="../nw/gui/build.py" line="191"/>
         <source>Scene</source>
         <translation>Scene</translation>
     </message>
     <message>
-        <location filename="../nw/gui/build.py" line="182"/>
+        <location filename="../nw/gui/build.py" line="192"/>
         <source>Section</source>
         <translation>Seksjon</translation>
     </message>
     <message>
-        <location filename="../nw/gui/build.py" line="201"/>
+        <location filename="../nw/gui/build.py" line="214"/>
         <source>Font Options</source>
         <translation>Skriftvalg</translation>
     </message>
     <message>
-        <location filename="../nw/gui/build.py" line="239"/>
+        <location filename="../nw/gui/build.py" line="252"/>
         <source>Font family</source>
         <translation>Skriftfamilie</translation>
     </message>
     <message>
-        <location filename="../nw/gui/build.py" line="240"/>
+        <location filename="../nw/gui/build.py" line="253"/>
         <source>Font size</source>
         <translation>Skriftstørrelse</translation>
     </message>
     <message>
-        <location filename="../nw/gui/build.py" line="241"/>
+        <location filename="../nw/gui/build.py" line="254"/>
         <source>Line height</source>
         <translation>Linjehøyde</translation>
     </message>
     <message>
-        <location filename="../nw/gui/build.py" line="242"/>
+        <location filename="../nw/gui/build.py" line="255"/>
         <source>Justify text</source>
         <translation>Rette marger</translation>
     </message>
     <message>
-        <location filename="../nw/gui/build.py" line="243"/>
+        <location filename="../nw/gui/build.py" line="256"/>
         <source>Disable styling</source>
         <translation>Slå av styling</translation>
     </message>
     <message>
-        <location filename="../nw/gui/build.py" line="285"/>
+        <location filename="../nw/gui/build.py" line="298"/>
         <source>Include Options</source>
         <translation>Inkluderinger</translation>
     </message>
     <message>
-        <location filename="../nw/gui/build.py" line="309"/>
+        <location filename="../nw/gui/build.py" line="322"/>
         <source>Include synopsis</source>
         <translation>Inkluder sammendrag</translation>
     </message>
     <message>
-        <location filename="../nw/gui/build.py" line="310"/>
+        <location filename="../nw/gui/build.py" line="323"/>
         <source>Include comments</source>
         <translation>Inkluder kommentarer</translation>
     </message>
     <message>
-        <location filename="../nw/gui/build.py" line="311"/>
+        <location filename="../nw/gui/build.py" line="324"/>
         <source>Include keywords</source>
         <translation>Inkluder kodeord</translation>
     </message>
     <message>
-        <location filename="../nw/gui/build.py" line="312"/>
+        <location filename="../nw/gui/build.py" line="325"/>
         <source>Include body text</source>
         <translation>Inkluder tekst</translation>
     </message>
     <message>
-        <location filename="../nw/gui/build.py" line="329"/>
+        <location filename="../nw/gui/build.py" line="342"/>
         <source>File Filter Options</source>
         <translation>Fil-filtre</translation>
     </message>
     <message>
-        <location filename="../nw/gui/build.py" line="334"/>
+        <location filename="../nw/gui/build.py" line="347"/>
         <source>Include files with layouts other than &apos;Note&apos;.</source>
         <translation>Inkluder filer som ikke er notater.</translation>
     </message>
     <message>
-        <location filename="../nw/gui/build.py" line="340"/>
+        <location filename="../nw/gui/build.py" line="353"/>
         <source>Include files with layout &apos;Note&apos;.</source>
         <translation>Inkluder filer som er notater.</translation>
     </message>
     <message>
-        <location filename="../nw/gui/build.py" line="346"/>
+        <location filename="../nw/gui/build.py" line="359"/>
         <source>Ignore the &apos;Include when building project&apos; setting and include all files in the output.</source>
         <translation>Ignorer &apos;ta med ved eksport&apos;-instilling og ta med alle filer i resultatet.</translation>
     </message>
     <message>
-        <location filename="../nw/gui/build.py" line="354"/>
+        <location filename="../nw/gui/build.py" line="367"/>
         <source>Include novel files</source>
         <translation>Inkluder romanfiler</translation>
     </message>
     <message>
-        <location filename="../nw/gui/build.py" line="355"/>
+        <location filename="../nw/gui/build.py" line="368"/>
         <source>Include note files</source>
         <translation>Inkluder notatfiler</translation>
     </message>
     <message>
-        <location filename="../nw/gui/build.py" line="356"/>
+        <location filename="../nw/gui/build.py" line="369"/>
         <source>Ignore export flag</source>
         <translation>Ignorer &apos;ta med&apos;-flagg</translation>
     </message>
     <message>
-        <location filename="../nw/gui/build.py" line="371"/>
+        <location filename="../nw/gui/build.py" line="384"/>
         <source>Export Options</source>
         <translation>Eksportvalg</translation>
     </message>
     <message>
-        <location filename="../nw/gui/build.py" line="385"/>
+        <location filename="../nw/gui/build.py" line="398"/>
         <source>Replace tabs with spaces</source>
         <translation>Erstatt tab med mellomrom</translation>
     </message>
     <message>
-        <location filename="../nw/gui/build.py" line="386"/>
+        <location filename="../nw/gui/build.py" line="399"/>
         <source>Replace Unicode in HTML</source>
         <translation>Erstatt Unicode med HTML</translation>
     </message>
     <message>
-        <location filename="../nw/gui/build.py" line="401"/>
+        <location filename="../nw/gui/build.py" line="414"/>
         <source>Build Preview</source>
         <translation>Lag forhåndsvisning</translation>
     </message>
     <message>
-        <location filename="../nw/gui/build.py" line="412"/>
+        <location filename="../nw/gui/build.py" line="425"/>
         <source>Print</source>
         <translation>Skriv ut</translation>
     </message>
     <message>
-        <location filename="../nw/gui/build.py" line="415"/>
+        <location filename="../nw/gui/build.py" line="428"/>
         <source>Print Preview</source>
         <translation>Forhåndsvisning av utskrift</translation>
     </message>
     <message>
-        <location filename="../nw/gui/build.py" line="419"/>
+        <location filename="../nw/gui/build.py" line="432"/>
         <source>Print to PDF</source>
         <translation>Skriv ut til PDF</translation>
     </message>
     <message>
-        <location filename="../nw/gui/build.py" line="426"/>
+        <location filename="../nw/gui/build.py" line="439"/>
         <source>Save As</source>
         <translation>Lagre som</translation>
     </message>
     <message>
-        <location filename="../nw/gui/build.py" line="429"/>
+        <location filename="../nw/gui/build.py" line="442"/>
         <source>Open Document (.odt)</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../nw/gui/build.py" line="433"/>
+        <location filename="../nw/gui/build.py" line="446"/>
         <source>Flat Open Document (.fodt)</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../nw/gui/build.py" line="437"/>
+        <location filename="../nw/gui/build.py" line="450"/>
         <source>novelWriter HTML (.htm)</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../nw/gui/build.py" line="441"/>
+        <location filename="../nw/gui/build.py" line="454"/>
         <source>novelWriter Markdown (.nwd)</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../nw/gui/build.py" line="445"/>
+        <location filename="../nw/gui/build.py" line="458"/>
         <source>Standard Markdown (.md)</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../nw/gui/build.py" line="449"/>
+        <location filename="../nw/gui/build.py" line="462"/>
         <source>GitHub Markdown (.md)</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../nw/gui/build.py" line="453"/>
+        <location filename="../nw/gui/build.py" line="466"/>
         <source>JSON + novelWriter HTML (.json)</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../nw/gui/build.py" line="457"/>
+        <location filename="../nw/gui/build.py" line="470"/>
         <source>JSON + novelWriters Markdown (.json)</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../nw/gui/build.py" line="461"/>
+        <location filename="../nw/gui/build.py" line="474"/>
         <source>Close</source>
         <translation>Lukk</translation>
     </message>
     <message>
-        <location filename="../nw/gui/build.py" line="565"/>
+        <location filename="../nw/gui/build.py" line="578"/>
         <source>Failed to generate preview. The result is too big.</source>
         <translation>Kunne ikke generere forhåndsvisning. Resultatet er for stort til å vise.</translation>
     </message>
     <message>
-        <location filename="../nw/gui/build.py" line="735"/>
+        <location filename="../nw/gui/build.py" line="751"/>
         <source>There were problems when building the project</source>
         <translation>Det har oppstått en feil under byggingen av prosjektet</translation>
     </message>
     <message>
-        <location filename="../nw/gui/build.py" line="795"/>
+        <location filename="../nw/gui/build.py" line="811"/>
         <source>Open Document</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../nw/gui/build.py" line="799"/>
+        <location filename="../nw/gui/build.py" line="815"/>
         <source>Flat Open Document</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../nw/gui/build.py" line="803"/>
+        <location filename="../nw/gui/build.py" line="819"/>
         <source>Plain HTML</source>
         <translation>Enkel HTML</translation>
     </message>
     <message>
-        <location filename="../nw/gui/build.py" line="807"/>
+        <location filename="../nw/gui/build.py" line="823"/>
         <source>novelWriter Markdown</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../nw/gui/build.py" line="811"/>
+        <location filename="../nw/gui/build.py" line="827"/>
         <source>Standard Markdown</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../nw/gui/build.py" line="815"/>
+        <location filename="../nw/gui/build.py" line="831"/>
         <source>GitHub Markdown</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../nw/gui/build.py" line="819"/>
+        <location filename="../nw/gui/build.py" line="835"/>
         <source>JSON + novelWriter HTML</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../nw/gui/build.py" line="823"/>
+        <location filename="../nw/gui/build.py" line="839"/>
         <source>JSON + novelWriter Markdown</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../nw/gui/build.py" line="827"/>
+        <location filename="../nw/gui/build.py" line="843"/>
         <source>PDF</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../nw/gui/build.py" line="846"/>
+        <location filename="../nw/gui/build.py" line="862"/>
         <source>Save Document As</source>
         <translation>Lagre dokumentet som</translation>
     </message>
     <message>
-        <location filename="../nw/gui/build.py" line="984"/>
+        <location filename="../nw/gui/build.py" line="1000"/>
         <source>Unknown format</source>
         <translation>Ukjent format</translation>
     </message>
     <message>
-        <location filename="../nw/gui/build.py" line="988"/>
+        <location filename="../nw/gui/build.py" line="1004"/>
         <source>{0} file successfully written to:</source>
         <translation>Lagring av {0} var vellykket, og filen ble skrevet til:</translation>
     </message>
     <message>
-        <location filename="../nw/gui/build.py" line="995"/>
+        <location filename="../nw/gui/build.py" line="1011"/>
         <source>Failed to write {0} file. {1}</source>
         <translation>Misslykkes i å skrive {0} til. {1}</translation>
     </message>
     <message>
-        <location filename="../nw/gui/build.py" line="260"/>
+        <location filename="../nw/gui/build.py" line="273"/>
         <source>Styling Options</source>
         <translation>Styling</translation>
+    </message>
+    <message>
+        <location filename="../nw/gui/build.py" line="193"/>
+        <source>Language</source>
+        <translation>Språk</translation>
     </message>
 </context>
 <context>
     <name>GuiBuildNovelDocView</name>
     <message>
-        <location filename="../nw/gui/build.py" line="1192"/>
+        <location filename="../nw/gui/build.py" line="1211"/>
         <source>This area will show the content of the document to be exported or printed. Press the &quot;Build Preview&quot; button to generate content.</source>
         <translation>Dette området vil vise innholdet av dokumentet som skal eksporteres. Trykk på knappen merket med &quot;Lag forhåndsvisning&quot; for å oppdatere innholdet.</translation>
     </message>
     <message>
-        <location filename="../nw/gui/build.py" line="1341"/>
+        <location filename="../nw/gui/build.py" line="1360"/>
         <source>Unknown</source>
         <translation>Ukjent</translation>
     </message>
     <message>
-        <location filename="../nw/gui/build.py" line="1343"/>
+        <location filename="../nw/gui/build.py" line="1362"/>
         <source>&lt;b&gt;Build Time:&lt;/b&gt; {0}</source>
         <translation>&lt;b&gt;Generert den:&lt;/b&gt; {0}</translation>
     </message>
@@ -2817,7 +2822,7 @@
         <translation>Avbryt</translation>
     </message>
     <message>
-        <location filename="../nw/gui/preferences.py" line="106"/>
+        <location filename="../nw/gui/preferences.py" line="102"/>
         <source>Some changes will not be applied until novelWriter has been restarted.</source>
         <translation>Noen endringer vil ikke tas i bruk før neste gang novelWriter startes.</translation>
     </message>
@@ -2830,117 +2835,117 @@
 <context>
     <name>GuiPreferencesAutomation</name>
     <message>
-        <location filename="../nw/gui/preferences.py" line="965"/>
+        <location filename="../nw/gui/preferences.py" line="961"/>
         <source>Automatic Features</source>
         <translation>Automatiske funksjoner</translation>
     </message>
     <message>
-        <location filename="../nw/gui/preferences.py" line="970"/>
+        <location filename="../nw/gui/preferences.py" line="966"/>
         <source>Auto-select word under cursor</source>
         <translation>Auto-velg ord under markør</translation>
     </message>
     <message>
-        <location filename="../nw/gui/preferences.py" line="970"/>
+        <location filename="../nw/gui/preferences.py" line="966"/>
         <source>Apply formatting to word under cursor if no selection is made.</source>
         <translation>Hvis ingen tekst er valgt, formatter ordet hvor markøren står.</translation>
     </message>
     <message>
-        <location filename="../nw/gui/preferences.py" line="980"/>
+        <location filename="../nw/gui/preferences.py" line="976"/>
         <source>Auto-replace text as you type</source>
         <translation>Erstatt mens du skriver</translation>
     </message>
     <message>
-        <location filename="../nw/gui/preferences.py" line="980"/>
+        <location filename="../nw/gui/preferences.py" line="976"/>
         <source>Allow the editor to replace symbols as you type.</source>
         <translation>La editoren erstatte symboler mens du skriver.</translation>
     </message>
     <message>
-        <location filename="../nw/gui/preferences.py" line="988"/>
+        <location filename="../nw/gui/preferences.py" line="984"/>
         <source>Replace as You Type</source>
         <translation>Erstatt mens du skriver</translation>
     </message>
     <message>
-        <location filename="../nw/gui/preferences.py" line="994"/>
+        <location filename="../nw/gui/preferences.py" line="990"/>
         <source>Auto-replace single quotes</source>
         <translation>Erstatt enkle sitattegn</translation>
     </message>
     <message>
-        <location filename="../nw/gui/preferences.py" line="994"/>
+        <location filename="../nw/gui/preferences.py" line="990"/>
         <source>Try to guess which is an opening or a closing single quote.</source>
         <translation>Forsøker å gjette hva som er venstre og høyre tegn.</translation>
     </message>
     <message>
-        <location filename="../nw/gui/preferences.py" line="1004"/>
+        <location filename="../nw/gui/preferences.py" line="1000"/>
         <source>Auto-replace double quotes</source>
         <translation>Erstatt doble sitattegn</translation>
     </message>
     <message>
-        <location filename="../nw/gui/preferences.py" line="1004"/>
+        <location filename="../nw/gui/preferences.py" line="1000"/>
         <source>Try to guess which is an opening or a closing double quote.</source>
         <translation>Forsøker å gjette hva som er venstre og høyre tegn.</translation>
     </message>
     <message>
-        <location filename="../nw/gui/preferences.py" line="1014"/>
+        <location filename="../nw/gui/preferences.py" line="1010"/>
         <source>Auto-replace dashes</source>
         <translation>Erstatt bindestreker</translation>
     </message>
     <message>
-        <location filename="../nw/gui/preferences.py" line="1014"/>
+        <location filename="../nw/gui/preferences.py" line="1010"/>
         <source>Double and triple hyphens become short and long dashes.</source>
         <translation>To og tre bindestreker erstattes med kort og lang bindestrek.</translation>
     </message>
     <message>
-        <location filename="../nw/gui/preferences.py" line="1024"/>
+        <location filename="../nw/gui/preferences.py" line="1020"/>
         <source>Auto-replace dots</source>
         <translation>Erstatt tre punktum</translation>
     </message>
     <message>
-        <location filename="../nw/gui/preferences.py" line="1024"/>
+        <location filename="../nw/gui/preferences.py" line="1020"/>
         <source>Three consecutive dots become ellipsis.</source>
         <translation>Tre punktum på rad erstattes med ellipsis.</translation>
     </message>
     <message>
-        <location filename="../nw/gui/preferences.py" line="1032"/>
+        <location filename="../nw/gui/preferences.py" line="1028"/>
         <source>Quotation Style</source>
         <translation>Sitattegn</translation>
     </message>
     <message>
-        <location filename="../nw/gui/preferences.py" line="1048"/>
+        <location filename="../nw/gui/preferences.py" line="1044"/>
         <source>Single quote open style</source>
         <translation>Enkelt sitat, venstre side</translation>
     </message>
     <message>
-        <location filename="../nw/gui/preferences.py" line="1048"/>
+        <location filename="../nw/gui/preferences.py" line="1044"/>
         <source>The symbol to use for a leading single quote.</source>
         <translation>Symbol for enkelt sitattegn før et sitat.</translation>
     </message>
     <message>
-        <location filename="../nw/gui/preferences.py" line="1064"/>
+        <location filename="../nw/gui/preferences.py" line="1060"/>
         <source>Single quote close style</source>
         <translation>Enkelt sitat, høyre side</translation>
     </message>
     <message>
-        <location filename="../nw/gui/preferences.py" line="1064"/>
+        <location filename="../nw/gui/preferences.py" line="1060"/>
         <source>The symbol to use for a trailing single quote.</source>
         <translation>Symbol for enkelt sitattegn etter et sitat.</translation>
     </message>
     <message>
-        <location filename="../nw/gui/preferences.py" line="1081"/>
+        <location filename="../nw/gui/preferences.py" line="1077"/>
         <source>Double quote open style</source>
         <translation>Dobbelt sitat, venstre side</translation>
     </message>
     <message>
-        <location filename="../nw/gui/preferences.py" line="1081"/>
+        <location filename="../nw/gui/preferences.py" line="1077"/>
         <source>The symbol to use for a leading double quote.</source>
         <translation>Symbol for dobbelt sitattegn før et sitat.</translation>
     </message>
     <message>
-        <location filename="../nw/gui/preferences.py" line="1097"/>
+        <location filename="../nw/gui/preferences.py" line="1093"/>
         <source>Double quote close style</source>
         <translation>Dobbelt sitat, høyre side</translation>
     </message>
     <message>
-        <location filename="../nw/gui/preferences.py" line="1097"/>
+        <location filename="../nw/gui/preferences.py" line="1093"/>
         <source>The symbol to use for a trailing double quote.</source>
         <translation>Symbol for dobbelt sitattegn etter et sitat.</translation>
     </message>
@@ -2948,107 +2953,107 @@
 <context>
     <name>GuiPreferencesDocuments</name>
     <message>
-        <location filename="../nw/gui/preferences.py" line="487"/>
+        <location filename="../nw/gui/preferences.py" line="483"/>
         <source>Text Style</source>
         <translation>Tekststil</translation>
     </message>
     <message>
-        <location filename="../nw/gui/preferences.py" line="497"/>
+        <location filename="../nw/gui/preferences.py" line="493"/>
         <source>Font family</source>
         <translation>Skriftfamilie</translation>
     </message>
     <message>
-        <location filename="../nw/gui/preferences.py" line="497"/>
+        <location filename="../nw/gui/preferences.py" line="493"/>
         <source>Font for the document editor and viewer.</source>
         <translation>Skrifttype til bruk for editor og visning.</translation>
     </message>
     <message>
-        <location filename="../nw/gui/preferences.py" line="510"/>
+        <location filename="../nw/gui/preferences.py" line="506"/>
         <source>Font size</source>
         <translation>Skriftstørrelse</translation>
     </message>
     <message>
-        <location filename="../nw/gui/preferences.py" line="510"/>
+        <location filename="../nw/gui/preferences.py" line="506"/>
         <source>Font size for the document editor and viewer.</source>
         <translation>Skriftstørrelse til bruk for editor og visning.</translation>
     </message>
     <message>
-        <location filename="../nw/gui/preferences.py" line="510"/>
+        <location filename="../nw/gui/preferences.py" line="506"/>
         <source>pt</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../nw/gui/preferences.py" line="519"/>
+        <location filename="../nw/gui/preferences.py" line="515"/>
         <source>Text Flow</source>
         <translation>Tekstflyt</translation>
     </message>
     <message>
-        <location filename="../nw/gui/preferences.py" line="527"/>
+        <location filename="../nw/gui/preferences.py" line="523"/>
         <source>Maximum text width in &quot;Normal Mode&quot;</source>
         <translation>Maks tekstbredde i &quot;Normal-modues&quot;</translation>
     </message>
     <message>
-        <location filename="../nw/gui/preferences.py" line="540"/>
+        <location filename="../nw/gui/preferences.py" line="536"/>
         <source>Horizontal margins are scaled automatically.</source>
         <translation>Horisontale marger skalerer da automatisk.</translation>
     </message>
     <message>
-        <location filename="../nw/gui/preferences.py" line="593"/>
+        <location filename="../nw/gui/preferences.py" line="589"/>
         <source>px</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../nw/gui/preferences.py" line="540"/>
+        <location filename="../nw/gui/preferences.py" line="536"/>
         <source>Maximum text width in &quot;Focus Mode&quot;</source>
         <translation>Maks tekstbredde i &quot;Fokus-modues&quot;</translation>
     </message>
     <message>
-        <location filename="../nw/gui/preferences.py" line="550"/>
+        <location filename="../nw/gui/preferences.py" line="546"/>
         <source>Disable maximum text width in &quot;Normal Mode&quot;</source>
         <translation>Slå av maks tekstbredde i &quot;Normal-modus&quot;</translation>
     </message>
     <message>
-        <location filename="../nw/gui/preferences.py" line="550"/>
+        <location filename="../nw/gui/preferences.py" line="546"/>
         <source>Text width is defined by the margins only.</source>
         <translation>Tekstbredden er kun definert av margene.</translation>
     </message>
     <message>
-        <location filename="../nw/gui/preferences.py" line="559"/>
+        <location filename="../nw/gui/preferences.py" line="555"/>
         <source>Hide document footer in &quot;Focus Mode&quot;</source>
         <translation>Gjem dokumentets bunnlinje i &quot;Fokus-modus&quot;</translation>
     </message>
     <message>
-        <location filename="../nw/gui/preferences.py" line="559"/>
+        <location filename="../nw/gui/preferences.py" line="555"/>
         <source>Hide the information bar at the bottom of the document.</source>
         <translation>Gjemmer informasjonslinja i bunnen av dokumentet.</translation>
     </message>
     <message>
-        <location filename="../nw/gui/preferences.py" line="568"/>
+        <location filename="../nw/gui/preferences.py" line="564"/>
         <source>Justify the text margins in editor and viewer</source>
         <translation>Bruk justerte marger i editor og visning</translation>
     </message>
     <message>
-        <location filename="../nw/gui/preferences.py" line="568"/>
+        <location filename="../nw/gui/preferences.py" line="564"/>
         <source>Lay out text with straight edges in the editor and viewer.</source>
         <translation>Justerte marger gir rette linjeender i avsnitt.</translation>
     </message>
     <message>
-        <location filename="../nw/gui/preferences.py" line="580"/>
+        <location filename="../nw/gui/preferences.py" line="576"/>
         <source>Text margin</source>
         <translation>Marger</translation>
     </message>
     <message>
-        <location filename="../nw/gui/preferences.py" line="580"/>
+        <location filename="../nw/gui/preferences.py" line="576"/>
         <source>If maximum width is set, this becomes the minimum margin.</source>
         <translation>Hvis tekstbredde er satt, så blir dette istedet minste marger.</translation>
     </message>
     <message>
-        <location filename="../nw/gui/preferences.py" line="593"/>
+        <location filename="../nw/gui/preferences.py" line="589"/>
         <source>Tab width</source>
         <translation>Tabulatorens bredde</translation>
     </message>
     <message>
-        <location filename="../nw/gui/preferences.py" line="593"/>
+        <location filename="../nw/gui/preferences.py" line="589"/>
         <source>The width of a tab key press in the editor and viewer.</source>
         <translation>Hvor langt tabulatoren hopper i editor og visning.</translation>
     </message>
@@ -3056,127 +3061,127 @@
 <context>
     <name>GuiPreferencesEditor</name>
     <message>
-        <location filename="../nw/gui/preferences.py" line="659"/>
+        <location filename="../nw/gui/preferences.py" line="655"/>
         <source>Spell Checking</source>
         <translation>Stavekontroll</translation>
     </message>
     <message>
-        <location filename="../nw/gui/preferences.py" line="667"/>
+        <location filename="../nw/gui/preferences.py" line="663"/>
         <source>Internal</source>
         <translation>Intern</translation>
     </message>
     <message>
-        <location filename="../nw/gui/preferences.py" line="680"/>
+        <location filename="../nw/gui/preferences.py" line="676"/>
         <source>Spell check provider</source>
         <translation>Verktøy for stavekontroll</translation>
     </message>
     <message>
-        <location filename="../nw/gui/preferences.py" line="680"/>
+        <location filename="../nw/gui/preferences.py" line="676"/>
         <source>Note that the internal spell check tool is quite slow.</source>
         <translation>Merk at den interne stavekontrollen er ganske treg.</translation>
     </message>
     <message>
-        <location filename="../nw/gui/preferences.py" line="685"/>
+        <location filename="../nw/gui/preferences.py" line="681"/>
         <source>Spell check language</source>
         <translation>Språk for stavekontroll</translation>
     </message>
     <message>
-        <location filename="../nw/gui/preferences.py" line="685"/>
+        <location filename="../nw/gui/preferences.py" line="681"/>
         <source>Available languages are determined by your system.</source>
         <translation>Tilgjengelige språk hentes fra operativystemet ditt.</translation>
     </message>
     <message>
-        <location filename="../nw/gui/preferences.py" line="697"/>
+        <location filename="../nw/gui/preferences.py" line="693"/>
         <source>Big document limit</source>
         <translation>Grense for store dokumenter</translation>
     </message>
     <message>
-        <location filename="../nw/gui/preferences.py" line="697"/>
+        <location filename="../nw/gui/preferences.py" line="693"/>
         <source>Full spell checking is disabled above this limit.</source>
         <translation>Automatisk stavekontroll slås av over grensen.</translation>
     </message>
     <message>
-        <location filename="../nw/gui/preferences.py" line="697"/>
+        <location filename="../nw/gui/preferences.py" line="693"/>
         <source>kB</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../nw/gui/preferences.py" line="706"/>
+        <location filename="../nw/gui/preferences.py" line="702"/>
         <source>Word Count</source>
         <translation>Telling av ord</translation>
     </message>
     <message>
-        <location filename="../nw/gui/preferences.py" line="715"/>
+        <location filename="../nw/gui/preferences.py" line="711"/>
         <source>Word count interval</source>
         <translation>Telle-intervall</translation>
     </message>
     <message>
-        <location filename="../nw/gui/preferences.py" line="715"/>
+        <location filename="../nw/gui/preferences.py" line="711"/>
         <source>How often the word count is updated.</source>
         <translation>Hvor ofte antall ord blir oppdatert.</translation>
     </message>
     <message>
-        <location filename="../nw/gui/preferences.py" line="715"/>
+        <location filename="../nw/gui/preferences.py" line="711"/>
         <source>seconds</source>
         <translation>sekunder</translation>
     </message>
     <message>
-        <location filename="../nw/gui/preferences.py" line="724"/>
+        <location filename="../nw/gui/preferences.py" line="720"/>
         <source>Writing Guides</source>
         <translation>Hjelpesymboler</translation>
     </message>
     <message>
-        <location filename="../nw/gui/preferences.py" line="729"/>
+        <location filename="../nw/gui/preferences.py" line="725"/>
         <source>Show tabs and spaces</source>
         <translation>Synlige tabulatorer og mellomrom</translation>
     </message>
     <message>
-        <location filename="../nw/gui/preferences.py" line="729"/>
+        <location filename="../nw/gui/preferences.py" line="725"/>
         <source>Add symbols to indicate tabs and spaces in the editor.</source>
         <translation>Viser symboler for å indikere disse i editoren.</translation>
     </message>
     <message>
-        <location filename="../nw/gui/preferences.py" line="738"/>
+        <location filename="../nw/gui/preferences.py" line="734"/>
         <source>Show line endings</source>
         <translation>Synlige linjeender</translation>
     </message>
     <message>
-        <location filename="../nw/gui/preferences.py" line="738"/>
+        <location filename="../nw/gui/preferences.py" line="734"/>
         <source>Add a symbol to indicate line endings in the editor.</source>
         <translation>Viser symbol for å indikere dette i editoren.</translation>
     </message>
     <message>
-        <location filename="../nw/gui/preferences.py" line="746"/>
+        <location filename="../nw/gui/preferences.py" line="742"/>
         <source>Scroll Behaviour</source>
         <translation>Rullefelt</translation>
     </message>
     <message>
-        <location filename="../nw/gui/preferences.py" line="751"/>
+        <location filename="../nw/gui/preferences.py" line="747"/>
         <source>Scroll past end of the document</source>
         <translation>Tillat å rulle forbi slutten av dokumentet</translation>
     </message>
     <message>
-        <location filename="../nw/gui/preferences.py" line="751"/>
+        <location filename="../nw/gui/preferences.py" line="747"/>
         <source>Also improves trypewriter scrolling for short documents.</source>
         <translation>Forbedrer funksjonen til skrivemaskin-rulling.</translation>
     </message>
     <message>
-        <location filename="../nw/gui/preferences.py" line="760"/>
+        <location filename="../nw/gui/preferences.py" line="756"/>
         <source>Typewriter style scrolling when you type</source>
         <translation>Skrivemaskin-liknende rulling mens du skriver</translation>
     </message>
     <message>
-        <location filename="../nw/gui/preferences.py" line="760"/>
+        <location filename="../nw/gui/preferences.py" line="756"/>
         <source>Try to keep the cursor at a fixed vertical position.</source>
         <translation>Prøver å holde markøren på samme sted vertikalt.</translation>
     </message>
     <message>
-        <location filename="../nw/gui/preferences.py" line="772"/>
+        <location filename="../nw/gui/preferences.py" line="768"/>
         <source>Minimum position for Typewriter scrolling</source>
         <translation>Minste avstand for skrivemaskin-rulling</translation>
     </message>
     <message>
-        <location filename="../nw/gui/preferences.py" line="772"/>
+        <location filename="../nw/gui/preferences.py" line="768"/>
         <source>Percentage of the editor height from the top.</source>
         <translation>I prosent fra toppen av editor-vinduet.</translation>
     </message>
@@ -3184,82 +3189,82 @@
 <context>
     <name>GuiPreferencesGeneral</name>
     <message>
-        <location filename="../nw/gui/preferences.py" line="139"/>
+        <location filename="../nw/gui/preferences.py" line="135"/>
         <source>Look and Feel</source>
         <translation>Utseende</translation>
     </message>
     <message>
-        <location filename="../nw/gui/preferences.py" line="168"/>
+        <location filename="../nw/gui/preferences.py" line="164"/>
         <source>Main GUI theme</source>
         <translation>Fargetema</translation>
     </message>
     <message>
-        <location filename="../nw/gui/preferences.py" line="220"/>
+        <location filename="../nw/gui/preferences.py" line="216"/>
         <source>Changing this requires restarting novelWriter.</source>
         <translation>Endring av dette krever omstart av novelWriter.</translation>
     </message>
     <message>
-        <location filename="../nw/gui/preferences.py" line="184"/>
+        <location filename="../nw/gui/preferences.py" line="180"/>
         <source>Main icon theme</source>
         <translation>Ikon-tema</translation>
     </message>
     <message>
-        <location filename="../nw/gui/preferences.py" line="193"/>
+        <location filename="../nw/gui/preferences.py" line="189"/>
         <source>Prefer icons for dark backgrounds</source>
         <translation>Foretrekk ikoner for mørk bakgrunn</translation>
     </message>
     <message>
-        <location filename="../nw/gui/preferences.py" line="193"/>
+        <location filename="../nw/gui/preferences.py" line="189"/>
         <source>May improve the look of icons on dark themes.</source>
         <translation>Kan forbedre utseende på mørke temaer.</translation>
     </message>
     <message>
-        <location filename="../nw/gui/preferences.py" line="207"/>
+        <location filename="../nw/gui/preferences.py" line="203"/>
         <source>Font family</source>
         <translation>Skriftfamilie</translation>
     </message>
     <message>
-        <location filename="../nw/gui/preferences.py" line="220"/>
+        <location filename="../nw/gui/preferences.py" line="216"/>
         <source>Font size</source>
         <translation>Skriftstørrelse</translation>
     </message>
     <message>
-        <location filename="../nw/gui/preferences.py" line="220"/>
+        <location filename="../nw/gui/preferences.py" line="216"/>
         <source>pt</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../nw/gui/preferences.py" line="229"/>
+        <location filename="../nw/gui/preferences.py" line="225"/>
         <source>GUI Settings</source>
         <translation>Brukergrensesnitt</translation>
     </message>
     <message>
-        <location filename="../nw/gui/preferences.py" line="233"/>
+        <location filename="../nw/gui/preferences.py" line="229"/>
         <source>Show full path in document header</source>
         <translation>Vis full prosjektbane i dokumenthoder</translation>
     </message>
     <message>
-        <location filename="../nw/gui/preferences.py" line="233"/>
+        <location filename="../nw/gui/preferences.py" line="229"/>
         <source>Add the parent folder names to the header.</source>
         <translation>Legger til mappene foran dokumentets navn.</translation>
     </message>
     <message>
-        <location filename="../nw/gui/preferences.py" line="241"/>
+        <location filename="../nw/gui/preferences.py" line="237"/>
         <source>Hide vertical scroll bars in main windows</source>
         <translation>Skjul vertikale rullefelt i hovedvinduer</translation>
     </message>
     <message>
-        <location filename="../nw/gui/preferences.py" line="249"/>
+        <location filename="../nw/gui/preferences.py" line="245"/>
         <source>Scrolling available with mouse wheel and keys only.</source>
         <translation>Rulling kan bare gjøres med mus og tastatur.</translation>
     </message>
     <message>
-        <location filename="../nw/gui/preferences.py" line="249"/>
+        <location filename="../nw/gui/preferences.py" line="245"/>
         <source>Hide horizontal scroll bars in main windows</source>
         <translation>Skjul horisontale rullefelt i hovedvinduer</translation>
     </message>
     <message>
-        <location filename="../nw/gui/preferences.py" line="152"/>
+        <location filename="../nw/gui/preferences.py" line="148"/>
         <source>Main GUI language</source>
         <translation>Programspråk</translation>
     </message>
@@ -3267,107 +3272,107 @@
 <context>
     <name>GuiPreferencesProjects</name>
     <message>
-        <location filename="../nw/gui/preferences.py" line="324"/>
+        <location filename="../nw/gui/preferences.py" line="320"/>
         <source>Automatic Save</source>
         <translation>Automatisk lagring</translation>
     </message>
     <message>
-        <location filename="../nw/gui/preferences.py" line="332"/>
+        <location filename="../nw/gui/preferences.py" line="328"/>
         <source>Save document interval</source>
         <translation>Interval for lagring av dokument</translation>
     </message>
     <message>
-        <location filename="../nw/gui/preferences.py" line="332"/>
+        <location filename="../nw/gui/preferences.py" line="328"/>
         <source>How often the open document is automatically saved.</source>
         <translation>Hvor ofte det åpne dokumentet lagres automatisk.</translation>
     </message>
     <message>
-        <location filename="../nw/gui/preferences.py" line="345"/>
+        <location filename="../nw/gui/preferences.py" line="341"/>
         <source>seconds</source>
         <translation>sekunder</translation>
     </message>
     <message>
-        <location filename="../nw/gui/preferences.py" line="345"/>
+        <location filename="../nw/gui/preferences.py" line="341"/>
         <source>Save project interval</source>
         <translation>Interval for lagring av prosjekt</translation>
     </message>
     <message>
-        <location filename="../nw/gui/preferences.py" line="345"/>
+        <location filename="../nw/gui/preferences.py" line="341"/>
         <source>How often the open project is automatically saved.</source>
         <translation>Hvor ofte det åpne prosjektet lagres automatisk.</translation>
     </message>
     <message>
-        <location filename="../nw/gui/preferences.py" line="354"/>
+        <location filename="../nw/gui/preferences.py" line="350"/>
         <source>Project Backup</source>
         <translation>Sikkerhetskopi</translation>
     </message>
     <message>
-        <location filename="../nw/gui/preferences.py" line="358"/>
+        <location filename="../nw/gui/preferences.py" line="354"/>
         <source>Browse</source>
         <translation>Bla</translation>
     </message>
     <message>
-        <location filename="../nw/gui/preferences.py" line="360"/>
+        <location filename="../nw/gui/preferences.py" line="356"/>
         <source>Backup storage location</source>
         <translation>Filbane for sikkerhetskopi</translation>
     </message>
     <message>
-        <location filename="../nw/gui/preferences.py" line="455"/>
+        <location filename="../nw/gui/preferences.py" line="451"/>
         <source>Path: {0}</source>
         <translation>Filbane: {0}</translation>
     </message>
     <message>
-        <location filename="../nw/gui/preferences.py" line="370"/>
+        <location filename="../nw/gui/preferences.py" line="366"/>
         <source>Run backup when the project is closed</source>
         <translation>Lag sikkerhetskopi når prosjektet lukkes</translation>
     </message>
     <message>
-        <location filename="../nw/gui/preferences.py" line="370"/>
+        <location filename="../nw/gui/preferences.py" line="366"/>
         <source>Can be overridden for individual projects in project settings.</source>
         <translation>Kan overstyres fra individuelle prosjektinnstillinger.</translation>
     </message>
     <message>
-        <location filename="../nw/gui/preferences.py" line="381"/>
+        <location filename="../nw/gui/preferences.py" line="377"/>
         <source>Ask before running backup</source>
         <translation>Spør før sikkerhetskopi tas</translation>
     </message>
     <message>
-        <location filename="../nw/gui/preferences.py" line="381"/>
+        <location filename="../nw/gui/preferences.py" line="377"/>
         <source>If off, backups will run in the background.</source>
         <translation>Hvis avslått, tas sikkerhetskopi automatisk.</translation>
     </message>
     <message>
-        <location filename="../nw/gui/preferences.py" line="389"/>
+        <location filename="../nw/gui/preferences.py" line="385"/>
         <source>Session Timer</source>
         <translation>Sesjons-klokke</translation>
     </message>
     <message>
-        <location filename="../nw/gui/preferences.py" line="394"/>
+        <location filename="../nw/gui/preferences.py" line="390"/>
         <source>Pause the session timer when not writing</source>
         <translation>Sett klokka på pause når du er inaktiv</translation>
     </message>
     <message>
-        <location filename="../nw/gui/preferences.py" line="394"/>
+        <location filename="../nw/gui/preferences.py" line="390"/>
         <source>Also pauses when the application window does not have focus.</source>
         <translation>Pauses også når du ikke jobber i applikasjonens vindu.</translation>
     </message>
     <message>
-        <location filename="../nw/gui/preferences.py" line="407"/>
+        <location filename="../nw/gui/preferences.py" line="403"/>
         <source>Editor inactive time before pausing timer</source>
         <translation>Tid uten skriving før klokka settes på pause</translation>
     </message>
     <message>
-        <location filename="../nw/gui/preferences.py" line="407"/>
+        <location filename="../nw/gui/preferences.py" line="403"/>
         <source>User activity includes typing and changing the content.</source>
         <translation>Dette måler kun endringer i teksteditoren.</translation>
     </message>
     <message>
-        <location filename="../nw/gui/preferences.py" line="407"/>
+        <location filename="../nw/gui/preferences.py" line="403"/>
         <source>minutes</source>
         <translation>minutter</translation>
     </message>
     <message>
-        <location filename="../nw/gui/preferences.py" line="450"/>
+        <location filename="../nw/gui/preferences.py" line="446"/>
         <source>Backup Directory</source>
         <translation>Mappe for sikkerhetskopi</translation>
     </message>
@@ -3375,67 +3380,67 @@
 <context>
     <name>GuiPreferencesSyntax</name>
     <message>
-        <location filename="../nw/gui/preferences.py" line="857"/>
+        <location filename="../nw/gui/preferences.py" line="853"/>
         <source>Highlighting Theme</source>
         <translation>Syntaksfremheving</translation>
     </message>
     <message>
-        <location filename="../nw/gui/preferences.py" line="868"/>
+        <location filename="../nw/gui/preferences.py" line="864"/>
         <source>Highlighting theme</source>
         <translation>Fremhevingstema</translation>
     </message>
     <message>
-        <location filename="../nw/gui/preferences.py" line="868"/>
+        <location filename="../nw/gui/preferences.py" line="864"/>
         <source>Colour theme to apply to the editor and viewer.</source>
         <translation>Fargetema for editor og visning.</translation>
     </message>
     <message>
-        <location filename="../nw/gui/preferences.py" line="876"/>
+        <location filename="../nw/gui/preferences.py" line="872"/>
         <source>Quotes &amp; Dialogue</source>
         <translation>Sitattegn &amp; dialog</translation>
     </message>
     <message>
-        <location filename="../nw/gui/preferences.py" line="881"/>
+        <location filename="../nw/gui/preferences.py" line="877"/>
         <source>Highlight text wrapped in quotes</source>
         <translation>Fremhev tekst mellom sitattegn</translation>
     </message>
     <message>
-        <location filename="../nw/gui/preferences.py" line="881"/>
+        <location filename="../nw/gui/preferences.py" line="877"/>
         <source>Applies to single, double and straight quotes.</source>
         <translation>Gjelder enkle, doble og rette sitattegn.</translation>
     </message>
     <message>
-        <location filename="../nw/gui/preferences.py" line="889"/>
+        <location filename="../nw/gui/preferences.py" line="885"/>
         <source>Allow open-ended single quotes</source>
         <translation>Tillat enkle sitattegn som ikke lukkes</translation>
     </message>
     <message>
-        <location filename="../nw/gui/preferences.py" line="889"/>
+        <location filename="../nw/gui/preferences.py" line="885"/>
         <source>Highlight single-quoted line with no closing quote.</source>
         <translation>Fremhev sitater som ikke er lukket i samme avsnitt.</translation>
     </message>
     <message>
-        <location filename="../nw/gui/preferences.py" line="897"/>
+        <location filename="../nw/gui/preferences.py" line="893"/>
         <source>Allow open-ended double quotes</source>
         <translation>Tillat doble sitattegn som ikke lukkes</translation>
     </message>
     <message>
-        <location filename="../nw/gui/preferences.py" line="897"/>
+        <location filename="../nw/gui/preferences.py" line="893"/>
         <source>Highlight double-quoted line with no closing quote.</source>
         <translation>Fremhev sitater som ikke er lukket i samme avsnitt.</translation>
     </message>
     <message>
-        <location filename="../nw/gui/preferences.py" line="905"/>
+        <location filename="../nw/gui/preferences.py" line="901"/>
         <source>Text Emphasis</source>
         <translation>Fremheving av tekst</translation>
     </message>
     <message>
-        <location filename="../nw/gui/preferences.py" line="909"/>
+        <location filename="../nw/gui/preferences.py" line="905"/>
         <source>Add highlight colour to emphasised text</source>
         <translation>Fremhev formattert tekst</translation>
     </message>
     <message>
-        <location filename="../nw/gui/preferences.py" line="909"/>
+        <location filename="../nw/gui/preferences.py" line="905"/>
         <source>Applies to emphasis (italic) and strong (bold).</source>
         <translation>Gjelder kursiv og fet tekst.</translation>
     </message>
@@ -4268,297 +4273,297 @@
 <context>
     <name>NWProject</name>
     <message>
-        <location filename="../nw/core/project.py" line="166"/>
+        <location filename="../nw/core/project.py" line="167"/>
         <source>Trash</source>
         <translation>Søppel</translation>
     </message>
     <message>
-        <location filename="../nw/core/project.py" line="219"/>
+        <location filename="../nw/core/project.py" line="221"/>
         <source>New</source>
         <translation>Ny</translation>
     </message>
     <message>
-        <location filename="../nw/core/project.py" line="215"/>
+        <location filename="../nw/core/project.py" line="217"/>
         <source>Note</source>
         <translation>Notat</translation>
     </message>
     <message>
-        <location filename="../nw/core/project.py" line="216"/>
+        <location filename="../nw/core/project.py" line="218"/>
         <source>Draft</source>
         <translation>Utkast</translation>
     </message>
     <message>
-        <location filename="../nw/core/project.py" line="217"/>
+        <location filename="../nw/core/project.py" line="219"/>
         <source>Finished</source>
         <translation>Ferdig</translation>
     </message>
     <message>
-        <location filename="../nw/core/project.py" line="220"/>
+        <location filename="../nw/core/project.py" line="222"/>
         <source>Minor</source>
         <translation>Mindre</translation>
     </message>
     <message>
-        <location filename="../nw/core/project.py" line="221"/>
+        <location filename="../nw/core/project.py" line="223"/>
         <source>Major</source>
         <translation>Større</translation>
     </message>
     <message>
-        <location filename="../nw/core/project.py" line="222"/>
+        <location filename="../nw/core/project.py" line="224"/>
         <source>Main</source>
         <translation>Hoved</translation>
     </message>
     <message>
-        <location filename="../nw/core/project.py" line="248"/>
+        <location filename="../nw/core/project.py" line="250"/>
         <source>New Project</source>
         <translation>Nytt prosjekt</translation>
     </message>
     <message>
-        <location filename="../nw/core/project.py" line="265"/>
+        <location filename="../nw/core/project.py" line="267"/>
         <source>By</source>
         <translation>Av</translation>
     </message>
     <message>
-        <location filename="../nw/core/project.py" line="304"/>
+        <location filename="../nw/core/project.py" line="306"/>
         <source>Novel</source>
         <translation>Roman</translation>
     </message>
     <message>
-        <location filename="../nw/core/project.py" line="275"/>
+        <location filename="../nw/core/project.py" line="277"/>
         <source>Plot</source>
         <translation>Plott</translation>
     </message>
     <message>
-        <location filename="../nw/core/project.py" line="276"/>
+        <location filename="../nw/core/project.py" line="278"/>
         <source>Characters</source>
         <translation>Karakterer</translation>
     </message>
     <message>
-        <location filename="../nw/core/project.py" line="277"/>
+        <location filename="../nw/core/project.py" line="279"/>
         <source>World</source>
         <translation>Verden</translation>
     </message>
     <message>
-        <location filename="../nw/core/project.py" line="310"/>
+        <location filename="../nw/core/project.py" line="312"/>
         <source>Title Page</source>
         <translation>Tittelside</translation>
     </message>
     <message>
-        <location filename="../nw/core/project.py" line="291"/>
+        <location filename="../nw/core/project.py" line="293"/>
         <source>New Chapter</source>
         <translation>Nytt kapittel</translation>
     </message>
     <message>
-        <location filename="../nw/core/project.py" line="295"/>
+        <location filename="../nw/core/project.py" line="297"/>
         <source>New Scene</source>
         <translation>Ny scene</translation>
     </message>
     <message>
-        <location filename="../nw/core/project.py" line="325"/>
+        <location filename="../nw/core/project.py" line="327"/>
         <source>Chapter {0}</source>
         <translation>Kapittel {0}</translation>
     </message>
     <message>
-        <location filename="../nw/core/project.py" line="350"/>
+        <location filename="../nw/core/project.py" line="352"/>
         <source>Scene {0}</source>
         <translation>Scene {0}</translation>
     </message>
     <message>
-        <location filename="../nw/core/project.py" line="374"/>
+        <location filename="../nw/core/project.py" line="376"/>
         <source>File not found: {0}</source>
         <translation>Fant ikke filen: {0}</translation>
     </message>
     <message>
-        <location filename="../nw/core/project.py" line="434"/>
+        <location filename="../nw/core/project.py" line="436"/>
         <source>Failed to parse project xml.</source>
         <translation>Kunne ikke lese prosjektets xml-data.</translation>
     </message>
     <message>
-        <location filename="../nw/core/project.py" line="428"/>
+        <location filename="../nw/core/project.py" line="430"/>
         <source>Attempting to open backup project file instead.</source>
         <translation>Forsøker å åpne prosjektets sekundære prosjektfil istedet.</translation>
     </message>
     <message>
-        <location filename="../nw/core/project.py" line="448"/>
+        <location filename="../nw/core/project.py" line="450"/>
         <source>Unknown</source>
         <translation>Ukjent</translation>
     </message>
     <message>
-        <location filename="../nw/core/project.py" line="457"/>
+        <location filename="../nw/core/project.py" line="459"/>
         <source>Project file does not appear to be a novelWriterXML file.</source>
         <translation>Prosjektfilen later ikke til å være en novelWriterXML-fil.</translation>
     </message>
     <message>
-        <location filename="../nw/core/project.py" line="477"/>
+        <location filename="../nw/core/project.py" line="479"/>
         <source>Unknown or unsupported novelWriter project file format. The project cannot be opened by this version of novelWriter. The file was saved with novelWriter version {0}.</source>
         <translation>Prosjektfilen har et ukjent eller ikke støttet format, og kan ikke åpnes med denne versjonen av novelWriter. Prosjektet ble lagret av novelWriter versjon {0}.</translation>
     </message>
     <message>
-        <location filename="../nw/core/project.py" line="491"/>
+        <location filename="../nw/core/project.py" line="493"/>
         <source>Version Conflict</source>
         <translation>Versjonskonflikt</translation>
     </message>
     <message>
-        <location filename="../nw/core/project.py" line="589"/>
+        <location filename="../nw/core/project.py" line="593"/>
         <source>Opened Project: {0}</source>
         <translation>Åpnet prosjekt: {0}</translation>
     </message>
     <message>
-        <location filename="../nw/core/project.py" line="610"/>
+        <location filename="../nw/core/project.py" line="614"/>
         <source>Project path not set, cannot save project.</source>
         <translation>Prosjektet mangler filbane, og kan ikke lagres.</translation>
     </message>
     <message>
-        <location filename="../nw/core/project.py" line="690"/>
+        <location filename="../nw/core/project.py" line="695"/>
         <source>Failed to save project.</source>
         <translation>Kunne ikke lagre prosjektet.</translation>
     </message>
     <message>
-        <location filename="../nw/core/project.py" line="709"/>
+        <location filename="../nw/core/project.py" line="714"/>
         <source>Saved Project: {0}</source>
         <translation>Lagret prosjekt: {0}</translation>
     </message>
     <message>
-        <location filename="../nw/core/project.py" line="761"/>
+        <location filename="../nw/core/project.py" line="766"/>
         <source>Backing up project ...</source>
         <translation>Lager sikkerhetskopi ...</translation>
     </message>
     <message>
-        <location filename="../nw/core/project.py" line="764"/>
+        <location filename="../nw/core/project.py" line="769"/>
         <source>Cannot backup project because no backup path is set. Please set a valid backup location in Tools &gt; Preferences.</source>
         <translation>Kan ikke ta sikkerhetskopi av prosjektet da ingen filbane er satt. Du må først sette en filbane i Verktøy &gt; Innstillinger.</translation>
     </message>
     <message>
-        <location filename="../nw/core/project.py" line="773"/>
+        <location filename="../nw/core/project.py" line="778"/>
         <source>Cannot backup project because no project name is set. Please set a Working Title in Project &gt; Project Settings.</source>
         <translation>Kan ikke ta sikkerhetskopi av prosjektet da ingen arbeidstittel er satt. Du må først sette en arbeidstittel i Prosjekt &gt; Prosjektinnstillinger.</translation>
     </message>
     <message>
-        <location filename="../nw/core/project.py" line="782"/>
+        <location filename="../nw/core/project.py" line="787"/>
         <source>Cannot backup project because the backup path does not exist. Please set a valid backup location in Tools &gt; Preferences.</source>
         <translation>Kan ikke ta sikkerhetskopi av prosjektet da filbane ikke finnes. Du må sette en ny filbane i Verktøy &gt; Innstillinger.</translation>
     </message>
     <message>
-        <location filename="../nw/core/project.py" line="797"/>
+        <location filename="../nw/core/project.py" line="802"/>
         <source>Could not create backup folder.</source>
         <translation>Kunne ikke lage mappe til sikkerhetskopi.</translation>
     </message>
     <message>
-        <location filename="../nw/core/project.py" line="804"/>
+        <location filename="../nw/core/project.py" line="809"/>
         <source>Cannot backup project because the backup path is within the project folder to be backed up. Please choose a different backup path in Tools &gt; Preferences.</source>
         <translation>Kan ikke ta sikkerhetskopi av prosjektet da filbanen er inne i prosjektmappen. Du må sette en ny filbane i Verktøy &gt; Innstillinger.</translation>
     </message>
     <message>
-        <location filename="../nw/core/project.py" line="813"/>
+        <location filename="../nw/core/project.py" line="818"/>
         <source>Backup from {0}</source>
         <translation>Sikkerhetskopi fra {0}</translation>
     </message>
     <message>
-        <location filename="../nw/core/project.py" line="822"/>
+        <location filename="../nw/core/project.py" line="827"/>
         <source>Backup archive file written to: {0}</source>
         <translation>Sikkerhetskopi skrevet til: {0}</translation>
     </message>
     <message>
-        <location filename="../nw/core/project.py" line="831"/>
+        <location filename="../nw/core/project.py" line="836"/>
         <source>Could not write backup archive.</source>
         <translation>Kunne ikke lage sikkerhetskopi.</translation>
     </message>
     <message>
-        <location filename="../nw/core/project.py" line="837"/>
+        <location filename="../nw/core/project.py" line="842"/>
         <source>Project backed up to &apos;{0}&apos;</source>
         <translation>Sikkerhetskopi skrevet til &apos;{0}&apos;</translation>
     </message>
     <message>
-        <location filename="../nw/core/project.py" line="885"/>
+        <location filename="../nw/core/project.py" line="890"/>
         <source>Failed to create a new example project.</source>
         <translation>Kunne ikke lage nytt eksempel-prosjekt.</translation>
     </message>
     <message>
-        <location filename="../nw/core/project.py" line="890"/>
+        <location filename="../nw/core/project.py" line="895"/>
         <source>Failed to create a new example project. Could not find the necessary files. They seem to be missing from this installation.</source>
         <translation>Kunne ikke lage nytt eksempel-prosjekt. Kunne ikke finne de nødvendige filene. De ser ut til å mangle i denne installasjonen.</translation>
     </message>
     <message>
-        <location filename="../nw/core/project.py" line="925"/>
+        <location filename="../nw/core/project.py" line="930"/>
         <source>Could not create new project folder.</source>
         <translation>Kunne ikke lage ny prosjekt-mappe.</translation>
     </message>
     <message>
-        <location filename="../nw/core/project.py" line="932"/>
+        <location filename="../nw/core/project.py" line="937"/>
         <source>New project folder is not empty. Each project requires a dedicated project folder.</source>
         <translation>Ny prosjektmappe er ikke tom. Hvert prosjekt trenger sin egen mappe.</translation>
     </message>
     <message>
-        <location filename="../nw/core/project.py" line="984"/>
+        <location filename="../nw/core/project.py" line="989"/>
         <source>You must set a valid backup path in preferences to use the automatic project backup feature.</source>
         <translation>Du må sette en gyldig filbane i innstillingene for å kunne bruke automatisk sikkerhetskopi.</translation>
     </message>
     <message>
-        <location filename="../nw/core/project.py" line="993"/>
+        <location filename="../nw/core/project.py" line="998"/>
         <source>You must set a valid project name in project settings to use the automatic project backup feature.</source>
         <translation>Du må sette en gyldig arbeidstittel i prosjektinnstillingene for å kunne bruke automatisk sikkerhetskopi.</translation>
     </message>
     <message>
-        <location filename="../nw/core/project.py" line="1128"/>
+        <location filename="../nw/core/project.py" line="1142"/>
         <source>and</source>
         <translation>og</translation>
     </message>
     <message>
-        <location filename="../nw/core/project.py" line="1375"/>
+        <location filename="../nw/core/project.py" line="1388"/>
         <source>Found {0} orphaned file(s) in project folder.</source>
         <translation>Fant {0} tapte filer i prosjektmappen.</translation>
     </message>
     <message>
-        <location filename="../nw/core/project.py" line="1387"/>
+        <location filename="../nw/core/project.py" line="1400"/>
         <source>Recovered</source>
         <translation>Gjennopprettet</translation>
     </message>
     <message>
-        <location filename="../nw/core/project.py" line="1399"/>
+        <location filename="../nw/core/project.py" line="1412"/>
         <source>[{0}] {1}</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../nw/core/project.py" line="1404"/>
+        <location filename="../nw/core/project.py" line="1417"/>
         <source>Recovered File {0}</source>
         <translation>Gjennopprettet fil {0}</translation>
     </message>
     <message>
-        <location filename="../nw/core/project.py" line="1431"/>
+        <location filename="../nw/core/project.py" line="1444"/>
         <source>One or more orphaned files could not be added back into the project. Make sure at least a Novel root folder exists.</source>
         <translation>Én eller flere gjennopprettede filer kunne ikke bli lagt til i posjektet. Pass på at &quot;Roman&quot;-mappen i det minste eksisterer.</translation>
     </message>
     <message>
-        <location filename="../nw/core/project.py" line="1483"/>
+        <location filename="../nw/core/project.py" line="1496"/>
         <source>Not a folder: {0}</source>
         <translation>Ikke en mappe: {0}</translation>
     </message>
     <message>
-        <location filename="../nw/core/project.py" line="1506"/>
+        <location filename="../nw/core/project.py" line="1519"/>
         <source>Could not move: {0}</source>
         <translation>Kunne ikke flytte: {0}</translation>
     </message>
     <message>
-        <location filename="../nw/core/project.py" line="1530"/>
+        <location filename="../nw/core/project.py" line="1543"/>
         <source>Could not delete: {0}</source>
         <translation>Kunne ikke slette: {0}</translation>
     </message>
     <message>
-        <location filename="../nw/core/project.py" line="1542"/>
+        <location filename="../nw/core/project.py" line="1555"/>
         <source>Could not make folder: {0}</source>
         <translation>Kunne ikke lage mappe: {0}</translation>
     </message>
     <message>
-        <location filename="../nw/core/project.py" line="1553"/>
+        <location filename="../nw/core/project.py" line="1566"/>
         <source>Could not move item {0} to {1}.</source>
         <translation>Kunne ikke flytte {0} til {1}.</translation>
     </message>
     <message>
-        <location filename="../nw/core/project.py" line="206"/>
+        <location filename="../nw/core/project.py" line="208"/>
         <source>Chapter</source>
         <translation>Kapittel</translation>
     </message>
     <message>
-        <location filename="../nw/core/project.py" line="491"/>
+        <location filename="../nw/core/project.py" line="493"/>
         <source>This project was saved by a newer version of novelWriter, version {0}. This is version {1}. If you continue to open the project, some attributes and settings may not be preserved, but the overall project should be fine. Continue opening the project?</source>
         <translation>Dette prosjektet ble lagret av en nyere versjon av novelWriter, versjon {0}. Dette er versjon {1}. Hvis du ønsker å fortsette med å åpne prosjektet, kan noen av innstillingene bli borte, men selve prosjektet vil være i orden. Vil du fortsatt åpne prosjektet?</translation>
     </message>
@@ -4749,14 +4754,19 @@
 <context>
     <name>Tokenizer</name>
     <message>
-        <location filename="../nw/core/tokenizer.py" line="287"/>
+        <location filename="../nw/core/tokenizer.py" line="290"/>
         <source>Document &apos;{0}&apos; is too big ({1} MB). Skipping.</source>
         <translation>Dokumentet &apos;{0}&apos; er for stort ({1} MB). Hopper over.</translation>
     </message>
     <message>
-        <location filename="../nw/core/tokenizer.py" line="290"/>
+        <location filename="../nw/core/tokenizer.py" line="293"/>
         <source>ERROR</source>
         <translation></translation>
+    </message>
+    <message>
+        <location filename="../nw/core/tokenizer.py" line="151"/>
+        <source>Synopsis</source>
+        <translation>Sammendrag</translation>
     </message>
 </context>
 </TS>

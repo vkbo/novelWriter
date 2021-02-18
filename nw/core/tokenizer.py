@@ -147,6 +147,9 @@ class Tokenizer():
         self._localLookup = self.theProject.localLookup
         self.tr = partial(QCoreApplication.translate, "Tokenizer")
 
+        # Cached Translations
+        self._trSynopsis = self.tr("Synopsis")
+
         return
 
     ##

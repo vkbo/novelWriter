@@ -422,47 +422,47 @@
 <context>
     <name>GuiBuildNovel</name>
     <message>
-        <location filename="../nw/gui/build.py" line="565"/>
+        <location filename="../nw/gui/build.py" line="578"/>
         <source>Failed to generate preview. The result is too big.</source>
         <translation>A geração do rascunho falhou. O resultado é muito grande.</translation>
     </message>
     <message>
-        <location filename="../nw/gui/build.py" line="429"/>
+        <location filename="../nw/gui/build.py" line="442"/>
         <source>Open Document (.odt)</source>
         <translation>Open Document (.odt)</translation>
     </message>
     <message>
-        <location filename="../nw/gui/build.py" line="827"/>
+        <location filename="../nw/gui/build.py" line="843"/>
         <source>PDF</source>
         <translation>PDF</translation>
     </message>
     <message>
-        <location filename="../nw/gui/build.py" line="803"/>
+        <location filename="../nw/gui/build.py" line="819"/>
         <source>Plain HTML</source>
         <translation>HTML Simples</translation>
     </message>
     <message>
-        <location filename="../nw/gui/build.py" line="984"/>
+        <location filename="../nw/gui/build.py" line="1000"/>
         <source>Unknown format</source>
         <translation>Formato desconhecido</translation>
     </message>
     <message>
-        <location filename="../nw/gui/build.py" line="437"/>
+        <location filename="../nw/gui/build.py" line="450"/>
         <source>novelWriter HTML (.htm)</source>
         <translation>HTML do novelWriter (.htm)</translation>
     </message>
     <message>
-        <location filename="../nw/gui/build.py" line="441"/>
+        <location filename="../nw/gui/build.py" line="454"/>
         <source>novelWriter Markdown (.nwd)</source>
         <translation>Markdown do novelWriter (.nwd)</translation>
     </message>
     <message>
-        <location filename="../nw/gui/build.py" line="819"/>
+        <location filename="../nw/gui/build.py" line="835"/>
         <source>JSON + novelWriter HTML</source>
         <translation>JSON + HTML do novelWriter</translation>
     </message>
     <message>
-        <location filename="../nw/gui/build.py" line="457"/>
+        <location filename="../nw/gui/build.py" line="470"/>
         <source>JSON + novelWriters Markdown (.json)</source>
         <translation>JSON + Markdown do novelWriter (.json)</translation>
     </message>
@@ -477,182 +477,182 @@
         <translation>Formatos de Título para Arquivos do Livro</translation>
     </message>
     <message>
-        <location filename="../nw/gui/build.py" line="178"/>
+        <location filename="../nw/gui/build.py" line="188"/>
         <source>Title</source>
         <translation>Título</translation>
     </message>
     <message>
-        <location filename="../nw/gui/build.py" line="179"/>
+        <location filename="../nw/gui/build.py" line="189"/>
         <source>Chapter</source>
         <translation>Capítulo</translation>
     </message>
     <message>
-        <location filename="../nw/gui/build.py" line="180"/>
+        <location filename="../nw/gui/build.py" line="190"/>
         <source>Unnumbered</source>
         <translation>Sem Numeração</translation>
     </message>
     <message>
-        <location filename="../nw/gui/build.py" line="182"/>
+        <location filename="../nw/gui/build.py" line="192"/>
         <source>Section</source>
         <translation>Seção</translation>
     </message>
     <message>
-        <location filename="../nw/gui/build.py" line="239"/>
+        <location filename="../nw/gui/build.py" line="252"/>
         <source>Font family</source>
         <translation>Família da fonte</translation>
     </message>
     <message>
-        <location filename="../nw/gui/build.py" line="240"/>
+        <location filename="../nw/gui/build.py" line="253"/>
         <source>Font size</source>
         <translation>Tamanho da fonte</translation>
     </message>
     <message>
-        <location filename="../nw/gui/build.py" line="242"/>
+        <location filename="../nw/gui/build.py" line="255"/>
         <source>Justify text</source>
         <translation>Texto justificado</translation>
     </message>
     <message>
-        <location filename="../nw/gui/build.py" line="243"/>
+        <location filename="../nw/gui/build.py" line="256"/>
         <source>Disable styling</source>
         <translation>Desabilita a estilização</translation>
     </message>
     <message>
-        <location filename="../nw/gui/build.py" line="309"/>
+        <location filename="../nw/gui/build.py" line="322"/>
         <source>Include synopsis</source>
         <translation>Inclui a sinopse</translation>
     </message>
     <message>
-        <location filename="../nw/gui/build.py" line="310"/>
+        <location filename="../nw/gui/build.py" line="323"/>
         <source>Include comments</source>
         <translation>Inclui comentários</translation>
     </message>
     <message>
-        <location filename="../nw/gui/build.py" line="311"/>
+        <location filename="../nw/gui/build.py" line="324"/>
         <source>Include keywords</source>
         <translation>Inclui palavras-chave</translation>
     </message>
     <message>
-        <location filename="../nw/gui/build.py" line="312"/>
+        <location filename="../nw/gui/build.py" line="325"/>
         <source>Include body text</source>
         <translation>Inclui o corpo do texto</translation>
     </message>
     <message>
-        <location filename="../nw/gui/build.py" line="329"/>
+        <location filename="../nw/gui/build.py" line="342"/>
         <source>File Filter Options</source>
         <translation>Opções de Filtro de Arquivos</translation>
     </message>
     <message>
-        <location filename="../nw/gui/build.py" line="346"/>
+        <location filename="../nw/gui/build.py" line="359"/>
         <source>Ignore the &apos;Include when building project&apos; setting and include all files in the output.</source>
         <translation>Ignora a configuração &apos;Inclui quando estiver construindo o projeto&apos; e inclui todos os arquivos no resultado.</translation>
     </message>
     <message>
-        <location filename="../nw/gui/build.py" line="354"/>
+        <location filename="../nw/gui/build.py" line="367"/>
         <source>Include novel files</source>
         <translation>Inclui arquivos do livro</translation>
     </message>
     <message>
-        <location filename="../nw/gui/build.py" line="355"/>
+        <location filename="../nw/gui/build.py" line="368"/>
         <source>Include note files</source>
         <translation>Inclui arquivos de notas</translation>
     </message>
     <message>
-        <location filename="../nw/gui/build.py" line="356"/>
+        <location filename="../nw/gui/build.py" line="369"/>
         <source>Ignore export flag</source>
         <translation>Ignora opção de exportação</translation>
     </message>
     <message>
-        <location filename="../nw/gui/build.py" line="371"/>
+        <location filename="../nw/gui/build.py" line="384"/>
         <source>Export Options</source>
         <translation>Opções de Exportação</translation>
     </message>
     <message>
-        <location filename="../nw/gui/build.py" line="385"/>
+        <location filename="../nw/gui/build.py" line="398"/>
         <source>Replace tabs with spaces</source>
         <translation>Substitui tabulações com espaços</translation>
     </message>
     <message>
-        <location filename="../nw/gui/build.py" line="412"/>
+        <location filename="../nw/gui/build.py" line="425"/>
         <source>Print</source>
         <translation>Imprimir</translation>
     </message>
     <message>
-        <location filename="../nw/gui/build.py" line="461"/>
+        <location filename="../nw/gui/build.py" line="474"/>
         <source>Close</source>
         <translation>Fechar</translation>
     </message>
     <message>
-        <location filename="../nw/gui/build.py" line="846"/>
+        <location filename="../nw/gui/build.py" line="862"/>
         <source>Save Document As</source>
         <translation>Salvar Documento Como</translation>
     </message>
     <message>
-        <location filename="../nw/gui/build.py" line="988"/>
+        <location filename="../nw/gui/build.py" line="1004"/>
         <source>{0} file successfully written to:</source>
         <translation>Arquivo {0} escrito com sucesso para:</translation>
     </message>
     <message>
-        <location filename="../nw/gui/build.py" line="995"/>
+        <location filename="../nw/gui/build.py" line="1011"/>
         <source>Failed to write {0} file. {1}</source>
         <translation>Falhou para escrever o arquivo {0}. {1}</translation>
     </message>
     <message>
-        <location filename="../nw/gui/build.py" line="401"/>
+        <location filename="../nw/gui/build.py" line="414"/>
         <source>Build Preview</source>
         <translation>Construir Prévia</translation>
     </message>
     <message>
-        <location filename="../nw/gui/build.py" line="415"/>
+        <location filename="../nw/gui/build.py" line="428"/>
         <source>Print Preview</source>
         <translation>Imprimir Prévia</translation>
     </message>
     <message>
-        <location filename="../nw/gui/build.py" line="419"/>
+        <location filename="../nw/gui/build.py" line="432"/>
         <source>Print to PDF</source>
         <translation>Imprimir para PDF</translation>
     </message>
     <message>
-        <location filename="../nw/gui/build.py" line="433"/>
+        <location filename="../nw/gui/build.py" line="446"/>
         <source>Flat Open Document (.fodt)</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../nw/gui/build.py" line="445"/>
+        <location filename="../nw/gui/build.py" line="458"/>
         <source>Standard Markdown (.md)</source>
         <translation>Markdown Padrão (.md)</translation>
     </message>
     <message>
-        <location filename="../nw/gui/build.py" line="449"/>
+        <location filename="../nw/gui/build.py" line="462"/>
         <source>GitHub Markdown (.md)</source>
         <translation>Markdown do GitHub (.md)</translation>
     </message>
     <message>
-        <location filename="../nw/gui/build.py" line="735"/>
+        <location filename="../nw/gui/build.py" line="751"/>
         <source>There were problems when building the project</source>
         <translation>Houveram problemas ao construir o projeto</translation>
     </message>
     <message>
-        <location filename="../nw/gui/build.py" line="181"/>
+        <location filename="../nw/gui/build.py" line="191"/>
         <source>Scene</source>
         <translation>Cena</translation>
     </message>
     <message>
-        <location filename="../nw/gui/build.py" line="201"/>
+        <location filename="../nw/gui/build.py" line="214"/>
         <source>Font Options</source>
         <translation>Opções de Fonte</translation>
     </message>
     <message>
-        <location filename="../nw/gui/build.py" line="241"/>
+        <location filename="../nw/gui/build.py" line="254"/>
         <source>Line height</source>
         <translation>Altura da linha</translation>
     </message>
     <message>
-        <location filename="../nw/gui/build.py" line="285"/>
+        <location filename="../nw/gui/build.py" line="298"/>
         <source>Include Options</source>
         <translation>Opções de Inclusão</translation>
     </message>
     <message>
-        <location filename="../nw/gui/build.py" line="386"/>
+        <location filename="../nw/gui/build.py" line="399"/>
         <source>Replace Unicode in HTML</source>
         <translation>Substituir Unicode no HTML</translation>
     </message>
@@ -697,12 +697,12 @@
         <translation>Deixe em branco para ignorar este cabeçalho ou defina um texto estático como {0}, por exemplo, para fazer um separador. O separador será centralizado automaticamente a aparecerá apenas entre seções do mesmo tipo.</translation>
     </message>
     <message>
-        <location filename="../nw/gui/build.py" line="334"/>
+        <location filename="../nw/gui/build.py" line="347"/>
         <source>Include files with layouts other than &apos;Note&apos;.</source>
         <translation>Inclui arquivos com leiautes diferentes de &apos;Nota&apos;.</translation>
     </message>
     <message>
-        <location filename="../nw/gui/build.py" line="340"/>
+        <location filename="../nw/gui/build.py" line="353"/>
         <source>Include files with layout &apos;Note&apos;.</source>
         <translation>Inclui arquivos com leiaute &apos;Nota&apos;.</translation>
     </message>
@@ -712,65 +712,70 @@
         <translation>Códigos de Formatação:</translation>
     </message>
     <message>
-        <location filename="../nw/gui/build.py" line="426"/>
+        <location filename="../nw/gui/build.py" line="439"/>
         <source>Save As</source>
         <translation>Salvar Como</translation>
     </message>
     <message>
-        <location filename="../nw/gui/build.py" line="795"/>
+        <location filename="../nw/gui/build.py" line="811"/>
         <source>Open Document</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../nw/gui/build.py" line="799"/>
+        <location filename="../nw/gui/build.py" line="815"/>
         <source>Flat Open Document</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../nw/gui/build.py" line="807"/>
+        <location filename="../nw/gui/build.py" line="823"/>
         <source>novelWriter Markdown</source>
         <translation>Markdown do novelWriter</translation>
     </message>
     <message>
-        <location filename="../nw/gui/build.py" line="811"/>
+        <location filename="../nw/gui/build.py" line="827"/>
         <source>Standard Markdown</source>
         <translation>Markdown Padrão</translation>
     </message>
     <message>
-        <location filename="../nw/gui/build.py" line="815"/>
+        <location filename="../nw/gui/build.py" line="831"/>
         <source>GitHub Markdown</source>
         <translation>Markdown do GitHub</translation>
     </message>
     <message>
-        <location filename="../nw/gui/build.py" line="453"/>
+        <location filename="../nw/gui/build.py" line="466"/>
         <source>JSON + novelWriter HTML (.json)</source>
         <translation>JSON + HTML do novelWriter (.json)</translation>
     </message>
     <message>
-        <location filename="../nw/gui/build.py" line="823"/>
+        <location filename="../nw/gui/build.py" line="839"/>
         <source>JSON + novelWriter Markdown</source>
         <translation>JSON + Markdown do novelWriter</translation>
     </message>
     <message>
-        <location filename="../nw/gui/build.py" line="260"/>
+        <location filename="../nw/gui/build.py" line="273"/>
         <source>Styling Options</source>
         <translation>Opções de Estilo</translation>
+    </message>
+    <message>
+        <location filename="../nw/gui/build.py" line="193"/>
+        <source>Language</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
     <name>GuiBuildNovelDocView</name>
     <message>
-        <location filename="../nw/gui/build.py" line="1341"/>
+        <location filename="../nw/gui/build.py" line="1360"/>
         <source>Unknown</source>
         <translation>Desconhecido</translation>
     </message>
     <message>
-        <location filename="../nw/gui/build.py" line="1192"/>
+        <location filename="../nw/gui/build.py" line="1211"/>
         <source>This area will show the content of the document to be exported or printed. Press the &quot;Build Preview&quot; button to generate content.</source>
         <translation>Esta área vai mostrar o conteúdo do documento a ser exportado ou impresso. Clique no botão &quot;Construir Prévia&quot; para gerar o conteúdo.</translation>
     </message>
     <message>
-        <location filename="../nw/gui/build.py" line="1343"/>
+        <location filename="../nw/gui/build.py" line="1362"/>
         <source>&lt;b&gt;Build Time:&lt;/b&gt; {0}</source>
         <translation>&lt;b&gt;Tempo de Construção:&lt;/b&gt; {0}</translation>
     </message>
@@ -2777,7 +2782,7 @@
 <context>
     <name>GuiPreferences</name>
     <message>
-        <location filename="../nw/gui/preferences.py" line="106"/>
+        <location filename="../nw/gui/preferences.py" line="102"/>
         <source>Some changes will not be applied until novelWriter has been restarted.</source>
         <translation>Algumas alterações não serão aplicadas enquanto a aplicação não for reiniciada.</translation>
     </message>
@@ -2830,117 +2835,117 @@
 <context>
     <name>GuiPreferencesAutomation</name>
     <message>
-        <location filename="../nw/gui/preferences.py" line="965"/>
+        <location filename="../nw/gui/preferences.py" line="961"/>
         <source>Automatic Features</source>
         <translation>Funcionalidades Automáticas</translation>
     </message>
     <message>
-        <location filename="../nw/gui/preferences.py" line="970"/>
+        <location filename="../nw/gui/preferences.py" line="966"/>
         <source>Auto-select word under cursor</source>
         <translation>Selecionar automaticamente a palavra sob o cursor</translation>
     </message>
     <message>
-        <location filename="../nw/gui/preferences.py" line="970"/>
+        <location filename="../nw/gui/preferences.py" line="966"/>
         <source>Apply formatting to word under cursor if no selection is made.</source>
         <translation>Aplicar a formatação à palavra sob o cursor se nenhuma seleção for feita.</translation>
     </message>
     <message>
-        <location filename="../nw/gui/preferences.py" line="980"/>
+        <location filename="../nw/gui/preferences.py" line="976"/>
         <source>Auto-replace text as you type</source>
         <translation>Substituir automaticamente o texto enquanto digita</translation>
     </message>
     <message>
-        <location filename="../nw/gui/preferences.py" line="980"/>
+        <location filename="../nw/gui/preferences.py" line="976"/>
         <source>Allow the editor to replace symbols as you type.</source>
         <translation>Permite que o editor substituia símbolos emquanto você digita.</translation>
     </message>
     <message>
-        <location filename="../nw/gui/preferences.py" line="988"/>
+        <location filename="../nw/gui/preferences.py" line="984"/>
         <source>Replace as You Type</source>
         <translation>Substituição Durante a Digitação</translation>
     </message>
     <message>
-        <location filename="../nw/gui/preferences.py" line="994"/>
+        <location filename="../nw/gui/preferences.py" line="990"/>
         <source>Auto-replace single quotes</source>
         <translation>Substituir automaticamente aspas simples</translation>
     </message>
     <message>
-        <location filename="../nw/gui/preferences.py" line="994"/>
+        <location filename="../nw/gui/preferences.py" line="990"/>
         <source>Try to guess which is an opening or a closing single quote.</source>
         <translation>Tenta adivinhar se a aspa simples é de abertura ou de fechamento.</translation>
     </message>
     <message>
-        <location filename="../nw/gui/preferences.py" line="1004"/>
+        <location filename="../nw/gui/preferences.py" line="1000"/>
         <source>Auto-replace double quotes</source>
         <translation>Subsitituir automaticamente aspas duplas</translation>
     </message>
     <message>
-        <location filename="../nw/gui/preferences.py" line="1004"/>
+        <location filename="../nw/gui/preferences.py" line="1000"/>
         <source>Try to guess which is an opening or a closing double quote.</source>
         <translation>Tenta adivinhar se a aspa dupla é de abertura ou de fechamento.</translation>
     </message>
     <message>
-        <location filename="../nw/gui/preferences.py" line="1014"/>
+        <location filename="../nw/gui/preferences.py" line="1010"/>
         <source>Auto-replace dashes</source>
         <translation>Substituir automaticamente os travessões</translation>
     </message>
     <message>
-        <location filename="../nw/gui/preferences.py" line="1014"/>
+        <location filename="../nw/gui/preferences.py" line="1010"/>
         <source>Double and triple hyphens become short and long dashes.</source>
         <translation>Hífens duplos ou triplos se tornam travessões curtos ou longos.</translation>
     </message>
     <message>
-        <location filename="../nw/gui/preferences.py" line="1024"/>
+        <location filename="../nw/gui/preferences.py" line="1020"/>
         <source>Auto-replace dots</source>
         <translation>Substituir automaticamente os pontos</translation>
     </message>
     <message>
-        <location filename="../nw/gui/preferences.py" line="1024"/>
+        <location filename="../nw/gui/preferences.py" line="1020"/>
         <source>Three consecutive dots become ellipsis.</source>
         <translation>Três pontos consecutivos se tornam uma reticência.</translation>
     </message>
     <message>
-        <location filename="../nw/gui/preferences.py" line="1032"/>
+        <location filename="../nw/gui/preferences.py" line="1028"/>
         <source>Quotation Style</source>
         <translation>Estilo de Aspas</translation>
     </message>
     <message>
-        <location filename="../nw/gui/preferences.py" line="1048"/>
+        <location filename="../nw/gui/preferences.py" line="1044"/>
         <source>Single quote open style</source>
         <translation>Estilo da aspa de abertura simples</translation>
     </message>
     <message>
-        <location filename="../nw/gui/preferences.py" line="1048"/>
+        <location filename="../nw/gui/preferences.py" line="1044"/>
         <source>The symbol to use for a leading single quote.</source>
         <translation>O símbolo usado para a aspa simples à esquerda.</translation>
     </message>
     <message>
-        <location filename="../nw/gui/preferences.py" line="1064"/>
+        <location filename="../nw/gui/preferences.py" line="1060"/>
         <source>Single quote close style</source>
         <translation>Estilo da aspa de fechamento simples</translation>
     </message>
     <message>
-        <location filename="../nw/gui/preferences.py" line="1064"/>
+        <location filename="../nw/gui/preferences.py" line="1060"/>
         <source>The symbol to use for a trailing single quote.</source>
         <translation>O símbolo usado para a aspa simples à esquerda.</translation>
     </message>
     <message>
-        <location filename="../nw/gui/preferences.py" line="1081"/>
+        <location filename="../nw/gui/preferences.py" line="1077"/>
         <source>Double quote open style</source>
         <translation>Estilo da aspa de abertura dupla</translation>
     </message>
     <message>
-        <location filename="../nw/gui/preferences.py" line="1081"/>
+        <location filename="../nw/gui/preferences.py" line="1077"/>
         <source>The symbol to use for a leading double quote.</source>
         <translation>O símbolo usado para a aspa dupla à esquerda.</translation>
     </message>
     <message>
-        <location filename="../nw/gui/preferences.py" line="1097"/>
+        <location filename="../nw/gui/preferences.py" line="1093"/>
         <source>Double quote close style</source>
         <translation>Estilo da aspa de fechamento dupla</translation>
     </message>
     <message>
-        <location filename="../nw/gui/preferences.py" line="1097"/>
+        <location filename="../nw/gui/preferences.py" line="1093"/>
         <source>The symbol to use for a trailing double quote.</source>
         <translation>O símbolo usado para a aspa dupla à direita.</translation>
     </message>
@@ -2948,107 +2953,107 @@
 <context>
     <name>GuiPreferencesDocuments</name>
     <message>
-        <location filename="../nw/gui/preferences.py" line="487"/>
+        <location filename="../nw/gui/preferences.py" line="483"/>
         <source>Text Style</source>
         <translation>Estilo do Texto</translation>
     </message>
     <message>
-        <location filename="../nw/gui/preferences.py" line="497"/>
+        <location filename="../nw/gui/preferences.py" line="493"/>
         <source>Font family</source>
         <translation>Família da fonte</translation>
     </message>
     <message>
-        <location filename="../nw/gui/preferences.py" line="497"/>
+        <location filename="../nw/gui/preferences.py" line="493"/>
         <source>Font for the document editor and viewer.</source>
         <translation>Fonte para o editor e visualizador de documentos.</translation>
     </message>
     <message>
-        <location filename="../nw/gui/preferences.py" line="510"/>
+        <location filename="../nw/gui/preferences.py" line="506"/>
         <source>Font size</source>
         <translation>Tamanho da fonte</translation>
     </message>
     <message>
-        <location filename="../nw/gui/preferences.py" line="510"/>
+        <location filename="../nw/gui/preferences.py" line="506"/>
         <source>Font size for the document editor and viewer.</source>
         <translation>Tamanho da fonte para o editor e visualizador de documentos.</translation>
     </message>
     <message>
-        <location filename="../nw/gui/preferences.py" line="519"/>
+        <location filename="../nw/gui/preferences.py" line="515"/>
         <source>Text Flow</source>
         <translation>Fluxo do Texto</translation>
     </message>
     <message>
-        <location filename="../nw/gui/preferences.py" line="527"/>
+        <location filename="../nw/gui/preferences.py" line="523"/>
         <source>Maximum text width in &quot;Normal Mode&quot;</source>
         <translation>Largura máxima do texto no &quot;Modo Normal&quot;</translation>
     </message>
     <message>
-        <location filename="../nw/gui/preferences.py" line="540"/>
+        <location filename="../nw/gui/preferences.py" line="536"/>
         <source>Horizontal margins are scaled automatically.</source>
         <translation>Margens horizontais são redimensionadas automaticamente.</translation>
     </message>
     <message>
-        <location filename="../nw/gui/preferences.py" line="540"/>
+        <location filename="../nw/gui/preferences.py" line="536"/>
         <source>Maximum text width in &quot;Focus Mode&quot;</source>
         <translation>Largura máxima do texto no &quot;Modo Foco&quot;</translation>
     </message>
     <message>
-        <location filename="../nw/gui/preferences.py" line="550"/>
+        <location filename="../nw/gui/preferences.py" line="546"/>
         <source>Disable maximum text width in &quot;Normal Mode&quot;</source>
         <translation>Desabilita a largura máxima do texto no &quot;Modo Normal&quot;</translation>
     </message>
     <message>
-        <location filename="../nw/gui/preferences.py" line="550"/>
+        <location filename="../nw/gui/preferences.py" line="546"/>
         <source>Text width is defined by the margins only.</source>
         <translation>A largura do texto é definida apenas pelas margens.</translation>
     </message>
     <message>
-        <location filename="../nw/gui/preferences.py" line="559"/>
+        <location filename="../nw/gui/preferences.py" line="555"/>
         <source>Hide document footer in &quot;Focus Mode&quot;</source>
         <translation>Oculta o rodapé do documento no &quot;Modo Foco&quot;</translation>
     </message>
     <message>
-        <location filename="../nw/gui/preferences.py" line="559"/>
+        <location filename="../nw/gui/preferences.py" line="555"/>
         <source>Hide the information bar at the bottom of the document.</source>
         <translation>Oculta a barra de informações na parte de baixo do documento.</translation>
     </message>
     <message>
-        <location filename="../nw/gui/preferences.py" line="568"/>
+        <location filename="../nw/gui/preferences.py" line="564"/>
         <source>Justify the text margins in editor and viewer</source>
         <translation>Justifica as margens do texto no editor e visualizador</translation>
     </message>
     <message>
-        <location filename="../nw/gui/preferences.py" line="568"/>
+        <location filename="../nw/gui/preferences.py" line="564"/>
         <source>Lay out text with straight edges in the editor and viewer.</source>
         <translation>Organiza o texto com cantos retos no editor e visualizador.</translation>
     </message>
     <message>
-        <location filename="../nw/gui/preferences.py" line="580"/>
+        <location filename="../nw/gui/preferences.py" line="576"/>
         <source>Text margin</source>
         <translation>Margem do texto</translation>
     </message>
     <message>
-        <location filename="../nw/gui/preferences.py" line="580"/>
+        <location filename="../nw/gui/preferences.py" line="576"/>
         <source>If maximum width is set, this becomes the minimum margin.</source>
         <translation>Se a largura máxima for definida, esta se torna a margem mínima.</translation>
     </message>
     <message>
-        <location filename="../nw/gui/preferences.py" line="593"/>
+        <location filename="../nw/gui/preferences.py" line="589"/>
         <source>Tab width</source>
         <translation>Largura da tabulação</translation>
     </message>
     <message>
-        <location filename="../nw/gui/preferences.py" line="593"/>
+        <location filename="../nw/gui/preferences.py" line="589"/>
         <source>The width of a tab key press in the editor and viewer.</source>
         <translation>A largura de uma tabulação no editor e visualizador.</translation>
     </message>
     <message>
-        <location filename="../nw/gui/preferences.py" line="593"/>
+        <location filename="../nw/gui/preferences.py" line="589"/>
         <source>px</source>
         <translation>px</translation>
     </message>
     <message>
-        <location filename="../nw/gui/preferences.py" line="510"/>
+        <location filename="../nw/gui/preferences.py" line="506"/>
         <source>pt</source>
         <translation>pt</translation>
     </message>
@@ -3056,127 +3061,127 @@
 <context>
     <name>GuiPreferencesEditor</name>
     <message>
-        <location filename="../nw/gui/preferences.py" line="659"/>
+        <location filename="../nw/gui/preferences.py" line="655"/>
         <source>Spell Checking</source>
         <translation>Correção Ortográfica</translation>
     </message>
     <message>
-        <location filename="../nw/gui/preferences.py" line="667"/>
+        <location filename="../nw/gui/preferences.py" line="663"/>
         <source>Internal</source>
         <translation>Interno</translation>
     </message>
     <message>
-        <location filename="../nw/gui/preferences.py" line="680"/>
+        <location filename="../nw/gui/preferences.py" line="676"/>
         <source>Spell check provider</source>
         <translation>Provedor de correção ortográfica</translation>
     </message>
     <message>
-        <location filename="../nw/gui/preferences.py" line="680"/>
+        <location filename="../nw/gui/preferences.py" line="676"/>
         <source>Note that the internal spell check tool is quite slow.</source>
         <translation>Note que o corretor ortográfico interno é significativamente lento.</translation>
     </message>
     <message>
-        <location filename="../nw/gui/preferences.py" line="685"/>
+        <location filename="../nw/gui/preferences.py" line="681"/>
         <source>Spell check language</source>
         <translation>Idioma do corretor ortográfico</translation>
     </message>
     <message>
-        <location filename="../nw/gui/preferences.py" line="685"/>
+        <location filename="../nw/gui/preferences.py" line="681"/>
         <source>Available languages are determined by your system.</source>
         <translation>Os idiomas disponíveis são determinados pelo seu sistema.</translation>
     </message>
     <message>
-        <location filename="../nw/gui/preferences.py" line="697"/>
+        <location filename="../nw/gui/preferences.py" line="693"/>
         <source>Big document limit</source>
         <translation>Limite de documento grande</translation>
     </message>
     <message>
-        <location filename="../nw/gui/preferences.py" line="697"/>
+        <location filename="../nw/gui/preferences.py" line="693"/>
         <source>Full spell checking is disabled above this limit.</source>
         <translation>A verificação ortográfica é desabilitada acima desse limite.</translation>
     </message>
     <message>
-        <location filename="../nw/gui/preferences.py" line="724"/>
+        <location filename="../nw/gui/preferences.py" line="720"/>
         <source>Writing Guides</source>
         <translation>Guias de Escrita</translation>
     </message>
     <message>
-        <location filename="../nw/gui/preferences.py" line="729"/>
+        <location filename="../nw/gui/preferences.py" line="725"/>
         <source>Show tabs and spaces</source>
         <translation>Mostrar tabulações e espaços</translation>
     </message>
     <message>
-        <location filename="../nw/gui/preferences.py" line="729"/>
+        <location filename="../nw/gui/preferences.py" line="725"/>
         <source>Add symbols to indicate tabs and spaces in the editor.</source>
         <translation>Adiciona símbolos para indicar tabulações e espaços no editor.</translation>
     </message>
     <message>
-        <location filename="../nw/gui/preferences.py" line="738"/>
+        <location filename="../nw/gui/preferences.py" line="734"/>
         <source>Show line endings</source>
         <translation>Mostrar terminações de linha</translation>
     </message>
     <message>
-        <location filename="../nw/gui/preferences.py" line="738"/>
+        <location filename="../nw/gui/preferences.py" line="734"/>
         <source>Add a symbol to indicate line endings in the editor.</source>
         <translation>Adiciona um símbolo para indicar a terminação de linha no editor.</translation>
     </message>
     <message>
-        <location filename="../nw/gui/preferences.py" line="746"/>
+        <location filename="../nw/gui/preferences.py" line="742"/>
         <source>Scroll Behaviour</source>
         <translation>Comportamento da Rolagem</translation>
     </message>
     <message>
-        <location filename="../nw/gui/preferences.py" line="751"/>
+        <location filename="../nw/gui/preferences.py" line="747"/>
         <source>Scroll past end of the document</source>
         <translation>Rolar após o final do documento</translation>
     </message>
     <message>
-        <location filename="../nw/gui/preferences.py" line="751"/>
+        <location filename="../nw/gui/preferences.py" line="747"/>
         <source>Also improves trypewriter scrolling for short documents.</source>
         <translation>Também melhora a rolagem de máquina de escrever em documentos curtos.</translation>
     </message>
     <message>
-        <location filename="../nw/gui/preferences.py" line="760"/>
+        <location filename="../nw/gui/preferences.py" line="756"/>
         <source>Typewriter style scrolling when you type</source>
         <translation>Rolagem no estilo de máquina de escrever quando digita</translation>
     </message>
     <message>
-        <location filename="../nw/gui/preferences.py" line="760"/>
+        <location filename="../nw/gui/preferences.py" line="756"/>
         <source>Try to keep the cursor at a fixed vertical position.</source>
         <translation>Tenta manter o cursor em uma posição vertical fixa.</translation>
     </message>
     <message>
-        <location filename="../nw/gui/preferences.py" line="772"/>
+        <location filename="../nw/gui/preferences.py" line="768"/>
         <source>Minimum position for Typewriter scrolling</source>
         <translation>Posição máxima da rolagem de máquina de escrever</translation>
     </message>
     <message>
-        <location filename="../nw/gui/preferences.py" line="772"/>
+        <location filename="../nw/gui/preferences.py" line="768"/>
         <source>Percentage of the editor height from the top.</source>
         <translation>Porcentagem da altura do editor desde o topo.</translation>
     </message>
     <message>
-        <location filename="../nw/gui/preferences.py" line="697"/>
+        <location filename="../nw/gui/preferences.py" line="693"/>
         <source>kB</source>
         <translation>kB</translation>
     </message>
     <message>
-        <location filename="../nw/gui/preferences.py" line="706"/>
+        <location filename="../nw/gui/preferences.py" line="702"/>
         <source>Word Count</source>
         <translation>Contagem de Palavras</translation>
     </message>
     <message>
-        <location filename="../nw/gui/preferences.py" line="715"/>
+        <location filename="../nw/gui/preferences.py" line="711"/>
         <source>Word count interval</source>
         <translation>Intervalo de contagem de palavras</translation>
     </message>
     <message>
-        <location filename="../nw/gui/preferences.py" line="715"/>
+        <location filename="../nw/gui/preferences.py" line="711"/>
         <source>How often the word count is updated.</source>
         <translation>Com qual frequência a contagem de palavras é atualizada.</translation>
     </message>
     <message>
-        <location filename="../nw/gui/preferences.py" line="715"/>
+        <location filename="../nw/gui/preferences.py" line="711"/>
         <source>seconds</source>
         <translation>segundos</translation>
     </message>
@@ -3184,82 +3189,82 @@
 <context>
     <name>GuiPreferencesGeneral</name>
     <message>
-        <location filename="../nw/gui/preferences.py" line="139"/>
+        <location filename="../nw/gui/preferences.py" line="135"/>
         <source>Look and Feel</source>
         <translation>Aparência</translation>
     </message>
     <message>
-        <location filename="../nw/gui/preferences.py" line="168"/>
+        <location filename="../nw/gui/preferences.py" line="164"/>
         <source>Main GUI theme</source>
         <translation>Tema da interface</translation>
     </message>
     <message>
-        <location filename="../nw/gui/preferences.py" line="220"/>
+        <location filename="../nw/gui/preferences.py" line="216"/>
         <source>Changing this requires restarting novelWriter.</source>
         <translation>Alterações nessa configuração exigem reinício da aplicação.</translation>
     </message>
     <message>
-        <location filename="../nw/gui/preferences.py" line="184"/>
+        <location filename="../nw/gui/preferences.py" line="180"/>
         <source>Main icon theme</source>
         <translation>Tema dos ícones</translation>
     </message>
     <message>
-        <location filename="../nw/gui/preferences.py" line="193"/>
+        <location filename="../nw/gui/preferences.py" line="189"/>
         <source>Prefer icons for dark backgrounds</source>
         <translation>Preferir ícones para fundos escuros</translation>
     </message>
     <message>
-        <location filename="../nw/gui/preferences.py" line="193"/>
+        <location filename="../nw/gui/preferences.py" line="189"/>
         <source>May improve the look of icons on dark themes.</source>
         <translation>Pode melhorar a aparência dos ícones em temas escuros.</translation>
     </message>
     <message>
-        <location filename="../nw/gui/preferences.py" line="207"/>
+        <location filename="../nw/gui/preferences.py" line="203"/>
         <source>Font family</source>
         <translation>Família da fonte</translation>
     </message>
     <message>
-        <location filename="../nw/gui/preferences.py" line="220"/>
+        <location filename="../nw/gui/preferences.py" line="216"/>
         <source>Font size</source>
         <translation>Tamanho da fonte</translation>
     </message>
     <message>
-        <location filename="../nw/gui/preferences.py" line="229"/>
+        <location filename="../nw/gui/preferences.py" line="225"/>
         <source>GUI Settings</source>
         <translation>Configurações da Interface</translation>
     </message>
     <message>
-        <location filename="../nw/gui/preferences.py" line="233"/>
+        <location filename="../nw/gui/preferences.py" line="229"/>
         <source>Show full path in document header</source>
         <translation>Mostrar o caminho completo do documento no cabeçalho</translation>
     </message>
     <message>
-        <location filename="../nw/gui/preferences.py" line="233"/>
+        <location filename="../nw/gui/preferences.py" line="229"/>
         <source>Add the parent folder names to the header.</source>
         <translation>Adiciona o nome dos diretórios-pai ao cabeçalho.</translation>
     </message>
     <message>
-        <location filename="../nw/gui/preferences.py" line="241"/>
+        <location filename="../nw/gui/preferences.py" line="237"/>
         <source>Hide vertical scroll bars in main windows</source>
         <translation>Ocultar a barra de rolagem vertical nas janelas principais</translation>
     </message>
     <message>
-        <location filename="../nw/gui/preferences.py" line="249"/>
+        <location filename="../nw/gui/preferences.py" line="245"/>
         <source>Scrolling available with mouse wheel and keys only.</source>
         <translation>A rolagem de tela estará diponível apenas com o mouse ou teclado.</translation>
     </message>
     <message>
-        <location filename="../nw/gui/preferences.py" line="249"/>
+        <location filename="../nw/gui/preferences.py" line="245"/>
         <source>Hide horizontal scroll bars in main windows</source>
         <translation>Ocultar a barra de rolagem horizontal nas janelas principais</translation>
     </message>
     <message>
-        <location filename="../nw/gui/preferences.py" line="220"/>
+        <location filename="../nw/gui/preferences.py" line="216"/>
         <source>pt</source>
         <translation>pt</translation>
     </message>
     <message>
-        <location filename="../nw/gui/preferences.py" line="152"/>
+        <location filename="../nw/gui/preferences.py" line="148"/>
         <source>Main GUI language</source>
         <translation>Idioma da Interface</translation>
     </message>
@@ -3267,107 +3272,107 @@
 <context>
     <name>GuiPreferencesProjects</name>
     <message>
-        <location filename="../nw/gui/preferences.py" line="324"/>
+        <location filename="../nw/gui/preferences.py" line="320"/>
         <source>Automatic Save</source>
         <translation>Salvamento Automático</translation>
     </message>
     <message>
-        <location filename="../nw/gui/preferences.py" line="332"/>
+        <location filename="../nw/gui/preferences.py" line="328"/>
         <source>Save document interval</source>
         <translation>Intervalo de salvamento do documento</translation>
     </message>
     <message>
-        <location filename="../nw/gui/preferences.py" line="332"/>
+        <location filename="../nw/gui/preferences.py" line="328"/>
         <source>How often the open document is automatically saved.</source>
         <translation>Com qual frequência o documento aberto é salvo automaticamente.</translation>
     </message>
     <message>
-        <location filename="../nw/gui/preferences.py" line="345"/>
+        <location filename="../nw/gui/preferences.py" line="341"/>
         <source>Save project interval</source>
         <translation>Intervalo de salvamento do projeto</translation>
     </message>
     <message>
-        <location filename="../nw/gui/preferences.py" line="345"/>
+        <location filename="../nw/gui/preferences.py" line="341"/>
         <source>How often the open project is automatically saved.</source>
         <translation>Com qual frequencia o projeto aberto é salvo automaticamente.</translation>
     </message>
     <message>
-        <location filename="../nw/gui/preferences.py" line="354"/>
+        <location filename="../nw/gui/preferences.py" line="350"/>
         <source>Project Backup</source>
         <translation>Cópia de Segurança</translation>
     </message>
     <message>
-        <location filename="../nw/gui/preferences.py" line="358"/>
+        <location filename="../nw/gui/preferences.py" line="354"/>
         <source>Browse</source>
         <translation>Procurar</translation>
     </message>
     <message>
-        <location filename="../nw/gui/preferences.py" line="360"/>
+        <location filename="../nw/gui/preferences.py" line="356"/>
         <source>Backup storage location</source>
         <translation>Localização da cópia de segurança</translation>
     </message>
     <message>
-        <location filename="../nw/gui/preferences.py" line="370"/>
+        <location filename="../nw/gui/preferences.py" line="366"/>
         <source>Run backup when the project is closed</source>
         <translation>Executar a cópia de segurança quando o projeto é fechado</translation>
     </message>
     <message>
-        <location filename="../nw/gui/preferences.py" line="370"/>
+        <location filename="../nw/gui/preferences.py" line="366"/>
         <source>Can be overridden for individual projects in project settings.</source>
         <translation>Pode ser sobrescrito para projetos individuais nas configurações do projeto.</translation>
     </message>
     <message>
-        <location filename="../nw/gui/preferences.py" line="381"/>
+        <location filename="../nw/gui/preferences.py" line="377"/>
         <source>Ask before running backup</source>
         <translation>Perguntar antes de executar a cópia de segurança</translation>
     </message>
     <message>
-        <location filename="../nw/gui/preferences.py" line="381"/>
+        <location filename="../nw/gui/preferences.py" line="377"/>
         <source>If off, backups will run in the background.</source>
         <translation>Se desativado, cópias de segurança serão executadas em segundo plano.</translation>
     </message>
     <message>
-        <location filename="../nw/gui/preferences.py" line="450"/>
+        <location filename="../nw/gui/preferences.py" line="446"/>
         <source>Backup Directory</source>
         <translation>Diretório das Cópias de Segurança</translation>
     </message>
     <message>
-        <location filename="../nw/gui/preferences.py" line="345"/>
+        <location filename="../nw/gui/preferences.py" line="341"/>
         <source>seconds</source>
         <translation>segundos</translation>
     </message>
     <message>
-        <location filename="../nw/gui/preferences.py" line="389"/>
+        <location filename="../nw/gui/preferences.py" line="385"/>
         <source>Session Timer</source>
         <translation>Temporizador da Sessão</translation>
     </message>
     <message>
-        <location filename="../nw/gui/preferences.py" line="394"/>
+        <location filename="../nw/gui/preferences.py" line="390"/>
         <source>Pause the session timer when not writing</source>
         <translation>Pausa o temporizador da sessão quando não estiver escrevendo</translation>
     </message>
     <message>
-        <location filename="../nw/gui/preferences.py" line="394"/>
+        <location filename="../nw/gui/preferences.py" line="390"/>
         <source>Also pauses when the application window does not have focus.</source>
         <translation>Também pausa quando a janela da aplicação não estiver em foco.</translation>
     </message>
     <message>
-        <location filename="../nw/gui/preferences.py" line="407"/>
+        <location filename="../nw/gui/preferences.py" line="403"/>
         <source>Editor inactive time before pausing timer</source>
         <translation>Tempo inativo do editor antes de pausar o temporizador</translation>
     </message>
     <message>
-        <location filename="../nw/gui/preferences.py" line="407"/>
+        <location filename="../nw/gui/preferences.py" line="403"/>
         <source>User activity includes typing and changing the content.</source>
         <translation>Atividades de usuário incluem escrever e alterar o conteúdo.</translation>
     </message>
     <message>
-        <location filename="../nw/gui/preferences.py" line="407"/>
+        <location filename="../nw/gui/preferences.py" line="403"/>
         <source>minutes</source>
         <translation>minutos</translation>
     </message>
     <message>
-        <location filename="../nw/gui/preferences.py" line="455"/>
+        <location filename="../nw/gui/preferences.py" line="451"/>
         <source>Path: {0}</source>
         <translation>Caminho: {0}</translation>
     </message>
@@ -3375,67 +3380,67 @@
 <context>
     <name>GuiPreferencesSyntax</name>
     <message>
-        <location filename="../nw/gui/preferences.py" line="857"/>
+        <location filename="../nw/gui/preferences.py" line="853"/>
         <source>Highlighting Theme</source>
         <translation>Tema do Destaque</translation>
     </message>
     <message>
-        <location filename="../nw/gui/preferences.py" line="868"/>
+        <location filename="../nw/gui/preferences.py" line="864"/>
         <source>Highlighting theme</source>
         <translation>Tema do destaque</translation>
     </message>
     <message>
-        <location filename="../nw/gui/preferences.py" line="868"/>
+        <location filename="../nw/gui/preferences.py" line="864"/>
         <source>Colour theme to apply to the editor and viewer.</source>
         <translation>Tema de cores para aplicar ao editor e visualizador.</translation>
     </message>
     <message>
-        <location filename="../nw/gui/preferences.py" line="876"/>
+        <location filename="../nw/gui/preferences.py" line="872"/>
         <source>Quotes &amp; Dialogue</source>
         <translation>Citações e Diálogos</translation>
     </message>
     <message>
-        <location filename="../nw/gui/preferences.py" line="881"/>
+        <location filename="../nw/gui/preferences.py" line="877"/>
         <source>Highlight text wrapped in quotes</source>
         <translation>Destaca o texto em citações</translation>
     </message>
     <message>
-        <location filename="../nw/gui/preferences.py" line="881"/>
+        <location filename="../nw/gui/preferences.py" line="877"/>
         <source>Applies to single, double and straight quotes.</source>
         <translation>Aplica-se a citações com aspas simples, duplas e retas.</translation>
     </message>
     <message>
-        <location filename="../nw/gui/preferences.py" line="889"/>
+        <location filename="../nw/gui/preferences.py" line="885"/>
         <source>Allow open-ended single quotes</source>
         <translation>Permite citações com aspas simples sem fechamento</translation>
     </message>
     <message>
-        <location filename="../nw/gui/preferences.py" line="889"/>
+        <location filename="../nw/gui/preferences.py" line="885"/>
         <source>Highlight single-quoted line with no closing quote.</source>
         <translation>Destaca a linha com citação de aspas simples sem aspas de fechamento.</translation>
     </message>
     <message>
-        <location filename="../nw/gui/preferences.py" line="897"/>
+        <location filename="../nw/gui/preferences.py" line="893"/>
         <source>Allow open-ended double quotes</source>
         <translation>Permite citações com aspas duplas sem fechamento</translation>
     </message>
     <message>
-        <location filename="../nw/gui/preferences.py" line="897"/>
+        <location filename="../nw/gui/preferences.py" line="893"/>
         <source>Highlight double-quoted line with no closing quote.</source>
         <translation>Destaca a linha com citação de aspas duplas sem aspas de fechamento.</translation>
     </message>
     <message>
-        <location filename="../nw/gui/preferences.py" line="905"/>
+        <location filename="../nw/gui/preferences.py" line="901"/>
         <source>Text Emphasis</source>
         <translation>Ênfase de Texto</translation>
     </message>
     <message>
-        <location filename="../nw/gui/preferences.py" line="909"/>
+        <location filename="../nw/gui/preferences.py" line="905"/>
         <source>Add highlight colour to emphasised text</source>
         <translation>Adiciona destaque de cor ao texto enfatizado</translation>
     </message>
     <message>
-        <location filename="../nw/gui/preferences.py" line="909"/>
+        <location filename="../nw/gui/preferences.py" line="905"/>
         <source>Applies to emphasis (italic) and strong (bold).</source>
         <translation>Aplica-se à ênfase (itálico) e ênfase forte (negrito).</translation>
     </message>
@@ -4268,297 +4273,297 @@
 <context>
     <name>NWProject</name>
     <message>
-        <location filename="../nw/core/project.py" line="166"/>
+        <location filename="../nw/core/project.py" line="167"/>
         <source>Trash</source>
         <translation>Lixeira</translation>
     </message>
     <message>
-        <location filename="../nw/core/project.py" line="219"/>
+        <location filename="../nw/core/project.py" line="221"/>
         <source>New</source>
         <translation>Novo</translation>
     </message>
     <message>
-        <location filename="../nw/core/project.py" line="215"/>
+        <location filename="../nw/core/project.py" line="217"/>
         <source>Note</source>
         <translation>Nota</translation>
     </message>
     <message>
-        <location filename="../nw/core/project.py" line="216"/>
+        <location filename="../nw/core/project.py" line="218"/>
         <source>Draft</source>
         <translation>Rascunho</translation>
     </message>
     <message>
-        <location filename="../nw/core/project.py" line="217"/>
+        <location filename="../nw/core/project.py" line="219"/>
         <source>Finished</source>
         <translation>Finalizado</translation>
     </message>
     <message>
-        <location filename="../nw/core/project.py" line="220"/>
+        <location filename="../nw/core/project.py" line="222"/>
         <source>Minor</source>
         <translation>Menor</translation>
     </message>
     <message>
-        <location filename="../nw/core/project.py" line="221"/>
+        <location filename="../nw/core/project.py" line="223"/>
         <source>Major</source>
         <translation>Maior</translation>
     </message>
     <message>
-        <location filename="../nw/core/project.py" line="222"/>
+        <location filename="../nw/core/project.py" line="224"/>
         <source>Main</source>
         <translation>Principal</translation>
     </message>
     <message>
-        <location filename="../nw/core/project.py" line="248"/>
+        <location filename="../nw/core/project.py" line="250"/>
         <source>New Project</source>
         <translation>Novo Projeto</translation>
     </message>
     <message>
-        <location filename="../nw/core/project.py" line="304"/>
+        <location filename="../nw/core/project.py" line="306"/>
         <source>Novel</source>
         <translation>Livro</translation>
     </message>
     <message>
-        <location filename="../nw/core/project.py" line="275"/>
+        <location filename="../nw/core/project.py" line="277"/>
         <source>Plot</source>
         <translation>Enredo</translation>
     </message>
     <message>
-        <location filename="../nw/core/project.py" line="276"/>
+        <location filename="../nw/core/project.py" line="278"/>
         <source>Characters</source>
         <translation>Personagens</translation>
     </message>
     <message>
-        <location filename="../nw/core/project.py" line="277"/>
+        <location filename="../nw/core/project.py" line="279"/>
         <source>World</source>
         <translation>Mundo</translation>
     </message>
     <message>
-        <location filename="../nw/core/project.py" line="310"/>
+        <location filename="../nw/core/project.py" line="312"/>
         <source>Title Page</source>
         <translation>Página de Título</translation>
     </message>
     <message>
-        <location filename="../nw/core/project.py" line="291"/>
+        <location filename="../nw/core/project.py" line="293"/>
         <source>New Chapter</source>
         <translation>Novo Capítulo</translation>
     </message>
     <message>
-        <location filename="../nw/core/project.py" line="295"/>
+        <location filename="../nw/core/project.py" line="297"/>
         <source>New Scene</source>
         <translation>Nova Cena</translation>
     </message>
     <message>
-        <location filename="../nw/core/project.py" line="434"/>
+        <location filename="../nw/core/project.py" line="436"/>
         <source>Failed to parse project xml.</source>
         <translation>Houve uma falha ao interpretar o conteúdo XML do projeto.</translation>
     </message>
     <message>
-        <location filename="../nw/core/project.py" line="428"/>
+        <location filename="../nw/core/project.py" line="430"/>
         <source>Attempting to open backup project file instead.</source>
         <translation>Tentando abrir a cópia de segurança do projeto.</translation>
     </message>
     <message>
-        <location filename="../nw/core/project.py" line="448"/>
+        <location filename="../nw/core/project.py" line="450"/>
         <source>Unknown</source>
         <translation>Desconhecido</translation>
     </message>
     <message>
-        <location filename="../nw/core/project.py" line="457"/>
+        <location filename="../nw/core/project.py" line="459"/>
         <source>Project file does not appear to be a novelWriterXML file.</source>
         <translation>O arquivo do projeto não parece ser um arquivo XML do novelWriter.</translation>
     </message>
     <message>
-        <location filename="../nw/core/project.py" line="491"/>
+        <location filename="../nw/core/project.py" line="493"/>
         <source>Version Conflict</source>
         <translation>Conflito de Versão</translation>
     </message>
     <message>
-        <location filename="../nw/core/project.py" line="589"/>
+        <location filename="../nw/core/project.py" line="593"/>
         <source>Opened Project: {0}</source>
         <translation>Projeto Aberto: {0}</translation>
     </message>
     <message>
-        <location filename="../nw/core/project.py" line="610"/>
+        <location filename="../nw/core/project.py" line="614"/>
         <source>Project path not set, cannot save project.</source>
         <translation>O caminho do projeto não foi definido, não é possível salvar o projeto.</translation>
     </message>
     <message>
-        <location filename="../nw/core/project.py" line="690"/>
+        <location filename="../nw/core/project.py" line="695"/>
         <source>Failed to save project.</source>
         <translation>Houve uma falha ao salvar o projeto.</translation>
     </message>
     <message>
-        <location filename="../nw/core/project.py" line="709"/>
+        <location filename="../nw/core/project.py" line="714"/>
         <source>Saved Project: {0}</source>
         <translation>Projeto Salvo: {0}</translation>
     </message>
     <message>
-        <location filename="../nw/core/project.py" line="761"/>
+        <location filename="../nw/core/project.py" line="766"/>
         <source>Backing up project ...</source>
         <translation>Realizando uma cópia de segurança do projeto...</translation>
     </message>
     <message>
-        <location filename="../nw/core/project.py" line="764"/>
+        <location filename="../nw/core/project.py" line="769"/>
         <source>Cannot backup project because no backup path is set. Please set a valid backup location in Tools &gt; Preferences.</source>
         <translation>Não foi possível realizar uma cópia de segurança do projeto porquê o caminho das cópias de segurança não foi definido. Por favor, defina um caminho válido para as cópias de segurança em Ferramentas &gt; Preferências.</translation>
     </message>
     <message>
-        <location filename="../nw/core/project.py" line="773"/>
+        <location filename="../nw/core/project.py" line="778"/>
         <source>Cannot backup project because no project name is set. Please set a Working Title in Project &gt; Project Settings.</source>
         <translation>Não foi possível realizar a cópia de segurança do projeto porque o nome do projeto não está definido. Por favor defina o Nome do Projeto em Projeto &gt; Configurações do Projeto.</translation>
     </message>
     <message>
-        <location filename="../nw/core/project.py" line="782"/>
+        <location filename="../nw/core/project.py" line="787"/>
         <source>Cannot backup project because the backup path does not exist. Please set a valid backup location in Tools &gt; Preferences.</source>
         <translation>Não foi possível realizar a cópia de segurança do projeto porque o caminho das cópias de segurança não exite. Por favor, defina um cainho válido para as cópias de segurança em Ferramentas &gt; Preferências.</translation>
     </message>
     <message>
-        <location filename="../nw/core/project.py" line="797"/>
+        <location filename="../nw/core/project.py" line="802"/>
         <source>Could not create backup folder.</source>
         <translation>Não foi possível ler o diretório de cópias de segurança.</translation>
     </message>
     <message>
-        <location filename="../nw/core/project.py" line="804"/>
+        <location filename="../nw/core/project.py" line="809"/>
         <source>Cannot backup project because the backup path is within the project folder to be backed up. Please choose a different backup path in Tools &gt; Preferences.</source>
         <translation>Não foi possível realizar a cópia de segurança do projeto porque o caminho das cópias de segurança está em um caminho dentro do diretório do projeto. Por favor, escolha um caminho diferente para as cópias de segurança em Ferramentas&gt; Preferências.</translation>
     </message>
     <message>
-        <location filename="../nw/core/project.py" line="831"/>
+        <location filename="../nw/core/project.py" line="836"/>
         <source>Could not write backup archive.</source>
         <translation>Não foi possível escrever o arquivo da cópia de segurança.</translation>
     </message>
     <message>
-        <location filename="../nw/core/project.py" line="885"/>
+        <location filename="../nw/core/project.py" line="890"/>
         <source>Failed to create a new example project.</source>
         <translation>Houve uma falha ao criar um novo projeto de exemplo.</translation>
     </message>
     <message>
-        <location filename="../nw/core/project.py" line="890"/>
+        <location filename="../nw/core/project.py" line="895"/>
         <source>Failed to create a new example project. Could not find the necessary files. They seem to be missing from this installation.</source>
         <translation>Houve uma falha ao criar um novo projeto de exemplo. Não foi possível encontrar os arquivos necessários. Eles parecem estar faltando nesta instalação.</translation>
     </message>
     <message>
-        <location filename="../nw/core/project.py" line="925"/>
+        <location filename="../nw/core/project.py" line="930"/>
         <source>Could not create new project folder.</source>
         <translation>Não foi possível criar o diretório do novo projeto.</translation>
     </message>
     <message>
-        <location filename="../nw/core/project.py" line="932"/>
+        <location filename="../nw/core/project.py" line="937"/>
         <source>New project folder is not empty. Each project requires a dedicated project folder.</source>
         <translation>O diretório do novo projeto não está vazio. Cada projeto requer um diretório dedicado.</translation>
     </message>
     <message>
-        <location filename="../nw/core/project.py" line="984"/>
+        <location filename="../nw/core/project.py" line="989"/>
         <source>You must set a valid backup path in preferences to use the automatic project backup feature.</source>
         <translation>Deve ser definido um caminho válido para as cópias de segurança nas preferências para usar a funcionalidade de cópias de segurança automáticas.</translation>
     </message>
     <message>
-        <location filename="../nw/core/project.py" line="993"/>
+        <location filename="../nw/core/project.py" line="998"/>
         <source>You must set a valid project name in project settings to use the automatic project backup feature.</source>
         <translation>Deve ser definido um nome de projeto válido nas preferências do projeto para usar a funcionalidade de cópias de segurança automáticas.</translation>
     </message>
     <message>
-        <location filename="../nw/core/project.py" line="1387"/>
+        <location filename="../nw/core/project.py" line="1400"/>
         <source>Recovered</source>
         <translation>Recuperado</translation>
     </message>
     <message>
-        <location filename="../nw/core/project.py" line="1431"/>
+        <location filename="../nw/core/project.py" line="1444"/>
         <source>One or more orphaned files could not be added back into the project. Make sure at least a Novel root folder exists.</source>
         <translation>Um ou mais arquivos-órfãos não puderam ser readicionados ao projeto. Verifique que pelo menos um diretório-raiz de Livro exista.</translation>
     </message>
     <message>
-        <location filename="../nw/core/project.py" line="1506"/>
+        <location filename="../nw/core/project.py" line="1519"/>
         <source>Could not move: {0}</source>
         <translation>Não foi possível mover: {0}</translation>
     </message>
     <message>
-        <location filename="../nw/core/project.py" line="1530"/>
+        <location filename="../nw/core/project.py" line="1543"/>
         <source>Could not delete: {0}</source>
         <translation>Não foi possível remover: {0}</translation>
     </message>
     <message>
-        <location filename="../nw/core/project.py" line="1542"/>
+        <location filename="../nw/core/project.py" line="1555"/>
         <source>Could not make folder: {0}</source>
         <translation>Não foi possível criar o diretório: {0}</translation>
     </message>
     <message>
-        <location filename="../nw/core/project.py" line="325"/>
+        <location filename="../nw/core/project.py" line="327"/>
         <source>Chapter {0}</source>
         <translation>Capítulo {0}</translation>
     </message>
     <message>
-        <location filename="../nw/core/project.py" line="350"/>
+        <location filename="../nw/core/project.py" line="352"/>
         <source>Scene {0}</source>
         <translation>Cena {0}</translation>
     </message>
     <message>
-        <location filename="../nw/core/project.py" line="374"/>
+        <location filename="../nw/core/project.py" line="376"/>
         <source>File not found: {0}</source>
         <translation>Arquivo não encontrado: {0}</translation>
     </message>
     <message>
-        <location filename="../nw/core/project.py" line="813"/>
+        <location filename="../nw/core/project.py" line="818"/>
         <source>Backup from {0}</source>
         <translation>Cópia de segurança de {0}</translation>
     </message>
     <message>
-        <location filename="../nw/core/project.py" line="822"/>
+        <location filename="../nw/core/project.py" line="827"/>
         <source>Backup archive file written to: {0}</source>
         <translation>Arquivo da cópia de segurança escrito em: {0}</translation>
     </message>
     <message>
-        <location filename="../nw/core/project.py" line="837"/>
+        <location filename="../nw/core/project.py" line="842"/>
         <source>Project backed up to &apos;{0}&apos;</source>
         <translation>Cópia de segurança realizada para &apos;{0}&apos;</translation>
     </message>
     <message>
-        <location filename="../nw/core/project.py" line="1375"/>
+        <location filename="../nw/core/project.py" line="1388"/>
         <source>Found {0} orphaned file(s) in project folder.</source>
         <translation>Foram encontrados {0} arquivos-órfãos no diretório do projeto.</translation>
     </message>
     <message>
-        <location filename="../nw/core/project.py" line="1404"/>
+        <location filename="../nw/core/project.py" line="1417"/>
         <source>Recovered File {0}</source>
         <translation>Arquivo Recuperado {0}</translation>
     </message>
     <message>
-        <location filename="../nw/core/project.py" line="1483"/>
+        <location filename="../nw/core/project.py" line="1496"/>
         <source>Not a folder: {0}</source>
         <translation>Não é um diretório: {0}</translation>
     </message>
     <message>
-        <location filename="../nw/core/project.py" line="477"/>
+        <location filename="../nw/core/project.py" line="479"/>
         <source>Unknown or unsupported novelWriter project file format. The project cannot be opened by this version of novelWriter. The file was saved with novelWriter version {0}.</source>
         <translation>Format de arquivo de projeto do novelWriter desconhecido ou não-suportado. O projeto não pode ser aberto por essa versão do novelWriter. O arquivo foi salvo com a versão {0} do novelWriter.</translation>
     </message>
     <message>
-        <location filename="../nw/core/project.py" line="1399"/>
+        <location filename="../nw/core/project.py" line="1412"/>
         <source>[{0}] {1}</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../nw/core/project.py" line="1553"/>
+        <location filename="../nw/core/project.py" line="1566"/>
         <source>Could not move item {0} to {1}.</source>
         <translation>Não foi possível mover o item {0} para {1}.</translation>
     </message>
     <message>
-        <location filename="../nw/core/project.py" line="265"/>
+        <location filename="../nw/core/project.py" line="267"/>
         <source>By</source>
         <translation>Por</translation>
     </message>
     <message>
-        <location filename="../nw/core/project.py" line="1128"/>
+        <location filename="../nw/core/project.py" line="1142"/>
         <source>and</source>
         <translation>e</translation>
     </message>
     <message>
-        <location filename="../nw/core/project.py" line="206"/>
+        <location filename="../nw/core/project.py" line="208"/>
         <source>Chapter</source>
         <translation>Capítulo</translation>
     </message>
     <message>
-        <location filename="../nw/core/project.py" line="491"/>
+        <location filename="../nw/core/project.py" line="493"/>
         <source>This project was saved by a newer version of novelWriter, version {0}. This is version {1}. If you continue to open the project, some attributes and settings may not be preserved, but the overall project should be fine. Continue opening the project?</source>
         <translation>O projeto foi salvo por uma versão mais nova do novelWriter, versão {0}. Esta é a versão {1}. Caso deseje continuar a abrir o projeto, alguns atributos e configurações podem não ser preservados, mas o projeto deve funcionar corretamente. Continuar a abrir o projeto?</translation>
     </message>
@@ -4749,14 +4754,19 @@
 <context>
     <name>Tokenizer</name>
     <message>
-        <location filename="../nw/core/tokenizer.py" line="290"/>
+        <location filename="../nw/core/tokenizer.py" line="293"/>
         <source>ERROR</source>
         <translation>ERRO</translation>
     </message>
     <message>
-        <location filename="../nw/core/tokenizer.py" line="287"/>
+        <location filename="../nw/core/tokenizer.py" line="290"/>
         <source>Document &apos;{0}&apos; is too big ({1} MB). Skipping.</source>
         <translation>O documento &apos;{0}&apos; é muito grande ({1} MB). Ignorando.</translation>
+    </message>
+    <message>
+        <location filename="../nw/core/tokenizer.py" line="151"/>
+        <source>Synopsis</source>
+        <translation>Sinopse</translation>
     </message>
 </context>
 </TS>
