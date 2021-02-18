@@ -79,7 +79,8 @@ class NWProject():
         self.projCache   = None # The full path to the project's cache folder
         self.projContent = None # The full path to the project's content folder
         self.projDict    = None # The spell check dictionary
-        self.projLang    = None # The spell check language, if different than default
+        self.projSpell   = None # The spell check language, if different than default
+        self.projLang    = None # The project language, if different than default
         self.projFile    = None # The file name of the project main XML file
 
         # Project Meta
@@ -195,6 +196,7 @@ class NWProject():
         self.projCache   = None
         self.projContent = None
         self.projDict    = None
+        self.projSpell   = None
         self.projLang    = None
         self.projFile    = nwFiles.PROJ_FILE
         self.projName    = ""
@@ -533,10 +535,12 @@ class NWProject():
                         continue
                     if xItem.tag == "doBackup":
                         self.doBackup = checkBool(xItem.text, False)
+                    elif xItem.tag == "language":
+                        self.projLang = checkString(xItem.text, None, True)
                     elif xItem.tag == "spellCheck":
                         self.spellCheck = checkBool(xItem.text, False)
                     elif xItem.tag == "spellLang":
-                        self.projLang = checkString(xItem.text, None, True)
+                        self.projSpell = checkString(xItem.text, None, True)
                     elif xItem.tag == "autoOutline":
                         self.autoOutline = checkBool(xItem.text, True)
                     elif xItem.tag == "lastEdited":
@@ -650,8 +654,9 @@ class NWProject():
         # Save Project Settings
         xSettings = etree.SubElement(nwXML, "settings")
         self._packProjectValue(xSettings, "doBackup", self.doBackup)
+        self._packProjectValue(xSettings, "language", self.projLang)
         self._packProjectValue(xSettings, "spellCheck", self.spellCheck)
-        self._packProjectValue(xSettings, "spellLang", self.projLang)
+        self._packProjectValue(xSettings, "spellLang", self.projSpell)
         self._packProjectValue(xSettings, "autoOutline", self.autoOutline)
         self._packProjectValue(xSettings, "lastEdited", self.lastEdited)
         self._packProjectValue(xSettings, "lastViewed", self.lastViewed)
@@ -1012,9 +1017,9 @@ class NWProject():
         """Set the project-specific spell check language.
         """
         theLang = checkString(theLang, None, True)
-        if self.projLang != theLang:
-            self.projLang = theLang
-            self.loadProjectLocalisation(theLang)
+        if self.projSpell != theLang:
+            self.projSpell = theLang
+            # self.loadProjectLocalisation(theLang)
             self.setProjectChanged(True)
         return True
 

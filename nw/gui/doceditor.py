@@ -599,10 +599,10 @@ class GuiDocEditor(QTextEdit):
         status bar to show the one actually loaded by the spell checker
         class.
         """
-        if self.theProject.projLang is None:
+        if self.theProject.projSpell is None:
             theLang = self.mainConf.spellLanguage
         else:
-            theLang = self.theProject.projLang
+            theLang = self.theProject.projSpell
 
         self.theDict.setLanguage(theLang, self.theProject.projDict)
         theTag, theProvider = self.theDict.describeDict()
