@@ -10,6 +10,7 @@
   </project>
   <settings>
     <doBackup>False</doBackup>
+    <language>en</language>
     <spellCheck>False</spellCheck>
     <spellLang>None</spellLang>
     <autoOutline>True</autoOutline>

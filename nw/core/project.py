@@ -80,7 +80,7 @@ class NWProject():
         self.projContent = None # The full path to the project's content folder
         self.projDict    = None # The spell check dictionary
         self.projSpell   = None # The spell check language, if different than default
-        self.projLang    = None # The project language, if different than default
+        self.projLang    = None # The project language, used for builds
         self.projFile    = None # The file name of the project main XML file
 
         # Project Meta
@@ -197,7 +197,7 @@ class NWProject():
         self.projContent = None
         self.projDict    = None
         self.projSpell   = None
-        self.projLang    = self.mainConf.guiLang
+        self.projLang    = None
         self.projFile    = nwFiles.PROJ_FILE
         self.projName    = ""
         self.bookTitle   = ""
@@ -1231,15 +1231,13 @@ class NWProject():
     def _loadProjectLocalisation(self):
         """Load the language data for the current project language.
         """
-        theLang = self.projLang
-        if theLang is None:
-            theLang = self.mainConf.spellLanguage
-        if theLang is None:
-            theLang = "en"
+        if self.projLang is None:
+            self.langData = {}
+            return False
 
-        lngShort = theLang.split("_")[0]
+        lngShort = self.projLang.split("_")[0]
         loadFile = os.path.join(self.mainConf.nwLangPath, "project_en.json")
-        chkFile1 = os.path.join(self.mainConf.nwLangPath, "project_%s.json" % theLang)
+        chkFile1 = os.path.join(self.mainConf.nwLangPath, "project_%s.json" % self.projLang)
         chkFile2 = os.path.join(self.mainConf.nwLangPath, "project_%s.json" % lngShort)
 
         if os.path.isfile(chkFile1):
@@ -1253,7 +1251,7 @@ class NWProject():
             logger.debug("Loaded project language file: %s" % os.path.basename(loadFile))
 
         except Exception:
-            logger.error("Failed to load index file")
+            logger.error("Failed to project language file")
             nw.logException()
             return False
 

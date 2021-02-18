@@ -422,47 +422,47 @@
 <context>
     <name>GuiBuildNovel</name>
     <message>
-        <location filename="../nw/gui/build.py" line="578"/>
+        <location filename="../nw/gui/build.py" line="579"/>
         <source>Failed to generate preview. The result is too big.</source>
         <translation>A geração do rascunho falhou. O resultado é muito grande.</translation>
     </message>
     <message>
-        <location filename="../nw/gui/build.py" line="442"/>
+        <location filename="../nw/gui/build.py" line="443"/>
         <source>Open Document (.odt)</source>
         <translation>Open Document (.odt)</translation>
     </message>
     <message>
-        <location filename="../nw/gui/build.py" line="843"/>
+        <location filename="../nw/gui/build.py" line="844"/>
         <source>PDF</source>
         <translation>PDF</translation>
     </message>
     <message>
-        <location filename="../nw/gui/build.py" line="819"/>
+        <location filename="../nw/gui/build.py" line="820"/>
         <source>Plain HTML</source>
         <translation>HTML Simples</translation>
     </message>
     <message>
-        <location filename="../nw/gui/build.py" line="1000"/>
+        <location filename="../nw/gui/build.py" line="1001"/>
         <source>Unknown format</source>
         <translation>Formato desconhecido</translation>
     </message>
     <message>
-        <location filename="../nw/gui/build.py" line="450"/>
+        <location filename="../nw/gui/build.py" line="451"/>
         <source>novelWriter HTML (.htm)</source>
         <translation>HTML do novelWriter (.htm)</translation>
     </message>
     <message>
-        <location filename="../nw/gui/build.py" line="454"/>
+        <location filename="../nw/gui/build.py" line="455"/>
         <source>novelWriter Markdown (.nwd)</source>
         <translation>Markdown do novelWriter (.nwd)</translation>
     </message>
     <message>
-        <location filename="../nw/gui/build.py" line="835"/>
+        <location filename="../nw/gui/build.py" line="836"/>
         <source>JSON + novelWriter HTML</source>
         <translation>JSON + HTML do novelWriter</translation>
     </message>
     <message>
-        <location filename="../nw/gui/build.py" line="470"/>
+        <location filename="../nw/gui/build.py" line="471"/>
         <source>JSON + novelWriters Markdown (.json)</source>
         <translation>JSON + Markdown do novelWriter (.json)</translation>
     </message>
@@ -477,182 +477,182 @@
         <translation>Formatos de Título para Arquivos do Livro</translation>
     </message>
     <message>
-        <location filename="../nw/gui/build.py" line="188"/>
+        <location filename="../nw/gui/build.py" line="189"/>
         <source>Title</source>
         <translation>Título</translation>
     </message>
     <message>
-        <location filename="../nw/gui/build.py" line="189"/>
+        <location filename="../nw/gui/build.py" line="190"/>
         <source>Chapter</source>
         <translation>Capítulo</translation>
     </message>
     <message>
-        <location filename="../nw/gui/build.py" line="190"/>
+        <location filename="../nw/gui/build.py" line="191"/>
         <source>Unnumbered</source>
         <translation>Sem Numeração</translation>
     </message>
     <message>
-        <location filename="../nw/gui/build.py" line="192"/>
+        <location filename="../nw/gui/build.py" line="193"/>
         <source>Section</source>
         <translation>Seção</translation>
     </message>
     <message>
-        <location filename="../nw/gui/build.py" line="252"/>
+        <location filename="../nw/gui/build.py" line="253"/>
         <source>Font family</source>
         <translation>Família da fonte</translation>
     </message>
     <message>
-        <location filename="../nw/gui/build.py" line="253"/>
+        <location filename="../nw/gui/build.py" line="254"/>
         <source>Font size</source>
         <translation>Tamanho da fonte</translation>
     </message>
     <message>
-        <location filename="../nw/gui/build.py" line="255"/>
+        <location filename="../nw/gui/build.py" line="256"/>
         <source>Justify text</source>
         <translation>Texto justificado</translation>
     </message>
     <message>
-        <location filename="../nw/gui/build.py" line="256"/>
+        <location filename="../nw/gui/build.py" line="257"/>
         <source>Disable styling</source>
         <translation>Desabilita a estilização</translation>
     </message>
     <message>
-        <location filename="../nw/gui/build.py" line="322"/>
+        <location filename="../nw/gui/build.py" line="323"/>
         <source>Include synopsis</source>
         <translation>Inclui a sinopse</translation>
     </message>
     <message>
-        <location filename="../nw/gui/build.py" line="323"/>
+        <location filename="../nw/gui/build.py" line="324"/>
         <source>Include comments</source>
         <translation>Inclui comentários</translation>
     </message>
     <message>
-        <location filename="../nw/gui/build.py" line="324"/>
+        <location filename="../nw/gui/build.py" line="325"/>
         <source>Include keywords</source>
         <translation>Inclui palavras-chave</translation>
     </message>
     <message>
-        <location filename="../nw/gui/build.py" line="325"/>
+        <location filename="../nw/gui/build.py" line="326"/>
         <source>Include body text</source>
         <translation>Inclui o corpo do texto</translation>
     </message>
     <message>
-        <location filename="../nw/gui/build.py" line="342"/>
+        <location filename="../nw/gui/build.py" line="343"/>
         <source>File Filter Options</source>
         <translation>Opções de Filtro de Arquivos</translation>
     </message>
     <message>
-        <location filename="../nw/gui/build.py" line="359"/>
+        <location filename="../nw/gui/build.py" line="360"/>
         <source>Ignore the &apos;Include when building project&apos; setting and include all files in the output.</source>
         <translation>Ignora a configuração &apos;Inclui quando estiver construindo o projeto&apos; e inclui todos os arquivos no resultado.</translation>
     </message>
     <message>
-        <location filename="../nw/gui/build.py" line="367"/>
+        <location filename="../nw/gui/build.py" line="368"/>
         <source>Include novel files</source>
         <translation>Inclui arquivos do livro</translation>
     </message>
     <message>
-        <location filename="../nw/gui/build.py" line="368"/>
+        <location filename="../nw/gui/build.py" line="369"/>
         <source>Include note files</source>
         <translation>Inclui arquivos de notas</translation>
     </message>
     <message>
-        <location filename="../nw/gui/build.py" line="369"/>
+        <location filename="../nw/gui/build.py" line="370"/>
         <source>Ignore export flag</source>
         <translation>Ignora opção de exportação</translation>
     </message>
     <message>
-        <location filename="../nw/gui/build.py" line="384"/>
+        <location filename="../nw/gui/build.py" line="385"/>
         <source>Export Options</source>
         <translation>Opções de Exportação</translation>
     </message>
     <message>
-        <location filename="../nw/gui/build.py" line="398"/>
+        <location filename="../nw/gui/build.py" line="399"/>
         <source>Replace tabs with spaces</source>
         <translation>Substitui tabulações com espaços</translation>
     </message>
     <message>
-        <location filename="../nw/gui/build.py" line="425"/>
+        <location filename="../nw/gui/build.py" line="426"/>
         <source>Print</source>
         <translation>Imprimir</translation>
     </message>
     <message>
-        <location filename="../nw/gui/build.py" line="474"/>
+        <location filename="../nw/gui/build.py" line="475"/>
         <source>Close</source>
         <translation>Fechar</translation>
     </message>
     <message>
-        <location filename="../nw/gui/build.py" line="862"/>
+        <location filename="../nw/gui/build.py" line="863"/>
         <source>Save Document As</source>
         <translation>Salvar Documento Como</translation>
     </message>
     <message>
-        <location filename="../nw/gui/build.py" line="1004"/>
+        <location filename="../nw/gui/build.py" line="1005"/>
         <source>{0} file successfully written to:</source>
         <translation>Arquivo {0} escrito com sucesso para:</translation>
     </message>
     <message>
-        <location filename="../nw/gui/build.py" line="1011"/>
+        <location filename="../nw/gui/build.py" line="1012"/>
         <source>Failed to write {0} file. {1}</source>
         <translation>Falhou para escrever o arquivo {0}. {1}</translation>
     </message>
     <message>
-        <location filename="../nw/gui/build.py" line="414"/>
+        <location filename="../nw/gui/build.py" line="415"/>
         <source>Build Preview</source>
         <translation>Construir Prévia</translation>
     </message>
     <message>
-        <location filename="../nw/gui/build.py" line="428"/>
+        <location filename="../nw/gui/build.py" line="429"/>
         <source>Print Preview</source>
         <translation>Imprimir Prévia</translation>
     </message>
     <message>
-        <location filename="../nw/gui/build.py" line="432"/>
+        <location filename="../nw/gui/build.py" line="433"/>
         <source>Print to PDF</source>
         <translation>Imprimir para PDF</translation>
     </message>
     <message>
-        <location filename="../nw/gui/build.py" line="446"/>
+        <location filename="../nw/gui/build.py" line="447"/>
         <source>Flat Open Document (.fodt)</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../nw/gui/build.py" line="458"/>
+        <location filename="../nw/gui/build.py" line="459"/>
         <source>Standard Markdown (.md)</source>
         <translation>Markdown Padrão (.md)</translation>
     </message>
     <message>
-        <location filename="../nw/gui/build.py" line="462"/>
+        <location filename="../nw/gui/build.py" line="463"/>
         <source>GitHub Markdown (.md)</source>
         <translation>Markdown do GitHub (.md)</translation>
     </message>
     <message>
-        <location filename="../nw/gui/build.py" line="751"/>
+        <location filename="../nw/gui/build.py" line="752"/>
         <source>There were problems when building the project</source>
         <translation>Houveram problemas ao construir o projeto</translation>
     </message>
     <message>
-        <location filename="../nw/gui/build.py" line="191"/>
+        <location filename="../nw/gui/build.py" line="192"/>
         <source>Scene</source>
         <translation>Cena</translation>
     </message>
     <message>
-        <location filename="../nw/gui/build.py" line="214"/>
+        <location filename="../nw/gui/build.py" line="215"/>
         <source>Font Options</source>
         <translation>Opções de Fonte</translation>
     </message>
     <message>
-        <location filename="../nw/gui/build.py" line="254"/>
+        <location filename="../nw/gui/build.py" line="255"/>
         <source>Line height</source>
         <translation>Altura da linha</translation>
     </message>
     <message>
-        <location filename="../nw/gui/build.py" line="298"/>
+        <location filename="../nw/gui/build.py" line="299"/>
         <source>Include Options</source>
         <translation>Opções de Inclusão</translation>
     </message>
     <message>
-        <location filename="../nw/gui/build.py" line="399"/>
+        <location filename="../nw/gui/build.py" line="400"/>
         <source>Replace Unicode in HTML</source>
         <translation>Substituir Unicode no HTML</translation>
     </message>
@@ -697,12 +697,12 @@
         <translation>Deixe em branco para ignorar este cabeçalho ou defina um texto estático como {0}, por exemplo, para fazer um separador. O separador será centralizado automaticamente a aparecerá apenas entre seções do mesmo tipo.</translation>
     </message>
     <message>
-        <location filename="../nw/gui/build.py" line="347"/>
+        <location filename="../nw/gui/build.py" line="348"/>
         <source>Include files with layouts other than &apos;Note&apos;.</source>
         <translation>Inclui arquivos com leiautes diferentes de &apos;Nota&apos;.</translation>
     </message>
     <message>
-        <location filename="../nw/gui/build.py" line="353"/>
+        <location filename="../nw/gui/build.py" line="354"/>
         <source>Include files with layout &apos;Note&apos;.</source>
         <translation>Inclui arquivos com leiaute &apos;Nota&apos;.</translation>
     </message>
@@ -712,70 +712,75 @@
         <translation>Códigos de Formatação:</translation>
     </message>
     <message>
-        <location filename="../nw/gui/build.py" line="439"/>
+        <location filename="../nw/gui/build.py" line="440"/>
         <source>Save As</source>
         <translation>Salvar Como</translation>
     </message>
     <message>
-        <location filename="../nw/gui/build.py" line="811"/>
+        <location filename="../nw/gui/build.py" line="812"/>
         <source>Open Document</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../nw/gui/build.py" line="815"/>
+        <location filename="../nw/gui/build.py" line="816"/>
         <source>Flat Open Document</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../nw/gui/build.py" line="823"/>
+        <location filename="../nw/gui/build.py" line="824"/>
         <source>novelWriter Markdown</source>
         <translation>Markdown do novelWriter</translation>
     </message>
     <message>
-        <location filename="../nw/gui/build.py" line="827"/>
+        <location filename="../nw/gui/build.py" line="828"/>
         <source>Standard Markdown</source>
         <translation>Markdown Padrão</translation>
     </message>
     <message>
-        <location filename="../nw/gui/build.py" line="831"/>
+        <location filename="../nw/gui/build.py" line="832"/>
         <source>GitHub Markdown</source>
         <translation>Markdown do GitHub</translation>
     </message>
     <message>
-        <location filename="../nw/gui/build.py" line="466"/>
+        <location filename="../nw/gui/build.py" line="467"/>
         <source>JSON + novelWriter HTML (.json)</source>
         <translation>JSON + HTML do novelWriter (.json)</translation>
     </message>
     <message>
-        <location filename="../nw/gui/build.py" line="839"/>
+        <location filename="../nw/gui/build.py" line="840"/>
         <source>JSON + novelWriter Markdown</source>
         <translation>JSON + Markdown do novelWriter</translation>
     </message>
     <message>
-        <location filename="../nw/gui/build.py" line="273"/>
+        <location filename="../nw/gui/build.py" line="274"/>
         <source>Styling Options</source>
         <translation>Opções de Estilo</translation>
     </message>
     <message>
-        <location filename="../nw/gui/build.py" line="193"/>
+        <location filename="../nw/gui/build.py" line="194"/>
         <source>Language</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../nw/gui/build.py" line="169"/>
+        <source>Not Set</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
     <name>GuiBuildNovelDocView</name>
     <message>
-        <location filename="../nw/gui/build.py" line="1360"/>
+        <location filename="../nw/gui/build.py" line="1361"/>
         <source>Unknown</source>
         <translation>Desconhecido</translation>
     </message>
     <message>
-        <location filename="../nw/gui/build.py" line="1211"/>
+        <location filename="../nw/gui/build.py" line="1212"/>
         <source>This area will show the content of the document to be exported or printed. Press the &quot;Build Preview&quot; button to generate content.</source>
         <translation>Esta área vai mostrar o conteúdo do documento a ser exportado ou impresso. Clique no botão &quot;Construir Prévia&quot; para gerar o conteúdo.</translation>
     </message>
     <message>
-        <location filename="../nw/gui/build.py" line="1362"/>
+        <location filename="../nw/gui/build.py" line="1363"/>
         <source>&lt;b&gt;Build Time:&lt;/b&gt; {0}</source>
         <translation>&lt;b&gt;Tempo de Construção:&lt;/b&gt; {0}</translation>
     </message>

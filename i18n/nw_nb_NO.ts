@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!DOCTYPE TS><TS version="2.0" language="nb_NO" sourcelanguage="en_GB">
+<!DOCTYPE TS>
+<TS version="2.1" language="nb_NO" sourcelanguage="en_GB">
 <context>
     <name>Common</name>
     <message>
@@ -477,305 +478,310 @@
         <translation>La feltet stå tomt for å hoppe over overskriften, eller sett til en statisk tekst, slik som for eksempel &apos;{0}&apos;, for å lage en separator. Separatoren vil bli sentrert automatisk, og bare satt inn mellom scener av samme type.</translation>
     </message>
     <message>
-        <location filename="../nw/gui/build.py" line="188"/>
+        <location filename="../nw/gui/build.py" line="189"/>
         <source>Title</source>
         <translation>Tittel</translation>
     </message>
     <message>
-        <location filename="../nw/gui/build.py" line="189"/>
+        <location filename="../nw/gui/build.py" line="190"/>
         <source>Chapter</source>
         <translation>Kapittel</translation>
     </message>
     <message>
-        <location filename="../nw/gui/build.py" line="190"/>
+        <location filename="../nw/gui/build.py" line="191"/>
         <source>Unnumbered</source>
         <translation>Unumrert</translation>
     </message>
     <message>
-        <location filename="../nw/gui/build.py" line="191"/>
+        <location filename="../nw/gui/build.py" line="192"/>
         <source>Scene</source>
         <translation>Scene</translation>
     </message>
     <message>
-        <location filename="../nw/gui/build.py" line="192"/>
+        <location filename="../nw/gui/build.py" line="193"/>
         <source>Section</source>
         <translation>Seksjon</translation>
     </message>
     <message>
-        <location filename="../nw/gui/build.py" line="214"/>
+        <location filename="../nw/gui/build.py" line="215"/>
         <source>Font Options</source>
         <translation>Skriftvalg</translation>
     </message>
     <message>
-        <location filename="../nw/gui/build.py" line="252"/>
+        <location filename="../nw/gui/build.py" line="253"/>
         <source>Font family</source>
         <translation>Skriftfamilie</translation>
     </message>
     <message>
-        <location filename="../nw/gui/build.py" line="253"/>
+        <location filename="../nw/gui/build.py" line="254"/>
         <source>Font size</source>
         <translation>Skriftstørrelse</translation>
     </message>
     <message>
-        <location filename="../nw/gui/build.py" line="254"/>
+        <location filename="../nw/gui/build.py" line="255"/>
         <source>Line height</source>
         <translation>Linjehøyde</translation>
     </message>
     <message>
-        <location filename="../nw/gui/build.py" line="255"/>
+        <location filename="../nw/gui/build.py" line="256"/>
         <source>Justify text</source>
         <translation>Rette marger</translation>
     </message>
     <message>
-        <location filename="../nw/gui/build.py" line="256"/>
+        <location filename="../nw/gui/build.py" line="257"/>
         <source>Disable styling</source>
         <translation>Slå av styling</translation>
     </message>
     <message>
-        <location filename="../nw/gui/build.py" line="298"/>
+        <location filename="../nw/gui/build.py" line="299"/>
         <source>Include Options</source>
         <translation>Inkluderinger</translation>
     </message>
     <message>
-        <location filename="../nw/gui/build.py" line="322"/>
+        <location filename="../nw/gui/build.py" line="323"/>
         <source>Include synopsis</source>
         <translation>Inkluder sammendrag</translation>
     </message>
     <message>
-        <location filename="../nw/gui/build.py" line="323"/>
+        <location filename="../nw/gui/build.py" line="324"/>
         <source>Include comments</source>
         <translation>Inkluder kommentarer</translation>
     </message>
     <message>
-        <location filename="../nw/gui/build.py" line="324"/>
+        <location filename="../nw/gui/build.py" line="325"/>
         <source>Include keywords</source>
         <translation>Inkluder kodeord</translation>
     </message>
     <message>
-        <location filename="../nw/gui/build.py" line="325"/>
+        <location filename="../nw/gui/build.py" line="326"/>
         <source>Include body text</source>
         <translation>Inkluder tekst</translation>
     </message>
     <message>
-        <location filename="../nw/gui/build.py" line="342"/>
+        <location filename="../nw/gui/build.py" line="343"/>
         <source>File Filter Options</source>
         <translation>Fil-filtre</translation>
     </message>
     <message>
-        <location filename="../nw/gui/build.py" line="347"/>
+        <location filename="../nw/gui/build.py" line="348"/>
         <source>Include files with layouts other than &apos;Note&apos;.</source>
         <translation>Inkluder filer som ikke er notater.</translation>
     </message>
     <message>
-        <location filename="../nw/gui/build.py" line="353"/>
+        <location filename="../nw/gui/build.py" line="354"/>
         <source>Include files with layout &apos;Note&apos;.</source>
         <translation>Inkluder filer som er notater.</translation>
     </message>
     <message>
-        <location filename="../nw/gui/build.py" line="359"/>
+        <location filename="../nw/gui/build.py" line="360"/>
         <source>Ignore the &apos;Include when building project&apos; setting and include all files in the output.</source>
         <translation>Ignorer &apos;ta med ved eksport&apos;-instilling og ta med alle filer i resultatet.</translation>
     </message>
     <message>
-        <location filename="../nw/gui/build.py" line="367"/>
+        <location filename="../nw/gui/build.py" line="368"/>
         <source>Include novel files</source>
         <translation>Inkluder romanfiler</translation>
     </message>
     <message>
-        <location filename="../nw/gui/build.py" line="368"/>
+        <location filename="../nw/gui/build.py" line="369"/>
         <source>Include note files</source>
         <translation>Inkluder notatfiler</translation>
     </message>
     <message>
-        <location filename="../nw/gui/build.py" line="369"/>
+        <location filename="../nw/gui/build.py" line="370"/>
         <source>Ignore export flag</source>
         <translation>Ignorer &apos;ta med&apos;-flagg</translation>
     </message>
     <message>
-        <location filename="../nw/gui/build.py" line="384"/>
+        <location filename="../nw/gui/build.py" line="385"/>
         <source>Export Options</source>
         <translation>Eksportvalg</translation>
     </message>
     <message>
-        <location filename="../nw/gui/build.py" line="398"/>
+        <location filename="../nw/gui/build.py" line="399"/>
         <source>Replace tabs with spaces</source>
         <translation>Erstatt tab med mellomrom</translation>
     </message>
     <message>
-        <location filename="../nw/gui/build.py" line="399"/>
+        <location filename="../nw/gui/build.py" line="400"/>
         <source>Replace Unicode in HTML</source>
         <translation>Erstatt Unicode med HTML</translation>
     </message>
     <message>
-        <location filename="../nw/gui/build.py" line="414"/>
+        <location filename="../nw/gui/build.py" line="415"/>
         <source>Build Preview</source>
         <translation>Lag forhåndsvisning</translation>
     </message>
     <message>
-        <location filename="../nw/gui/build.py" line="425"/>
+        <location filename="../nw/gui/build.py" line="426"/>
         <source>Print</source>
         <translation>Skriv ut</translation>
     </message>
     <message>
-        <location filename="../nw/gui/build.py" line="428"/>
+        <location filename="../nw/gui/build.py" line="429"/>
         <source>Print Preview</source>
         <translation>Forhåndsvisning av utskrift</translation>
     </message>
     <message>
-        <location filename="../nw/gui/build.py" line="432"/>
+        <location filename="../nw/gui/build.py" line="433"/>
         <source>Print to PDF</source>
         <translation>Skriv ut til PDF</translation>
     </message>
     <message>
-        <location filename="../nw/gui/build.py" line="439"/>
+        <location filename="../nw/gui/build.py" line="440"/>
         <source>Save As</source>
         <translation>Lagre som</translation>
     </message>
     <message>
-        <location filename="../nw/gui/build.py" line="442"/>
+        <location filename="../nw/gui/build.py" line="443"/>
         <source>Open Document (.odt)</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../nw/gui/build.py" line="446"/>
+        <location filename="../nw/gui/build.py" line="447"/>
         <source>Flat Open Document (.fodt)</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../nw/gui/build.py" line="450"/>
+        <location filename="../nw/gui/build.py" line="451"/>
         <source>novelWriter HTML (.htm)</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../nw/gui/build.py" line="454"/>
+        <location filename="../nw/gui/build.py" line="455"/>
         <source>novelWriter Markdown (.nwd)</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../nw/gui/build.py" line="458"/>
+        <location filename="../nw/gui/build.py" line="459"/>
         <source>Standard Markdown (.md)</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../nw/gui/build.py" line="462"/>
+        <location filename="../nw/gui/build.py" line="463"/>
         <source>GitHub Markdown (.md)</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../nw/gui/build.py" line="466"/>
+        <location filename="../nw/gui/build.py" line="467"/>
         <source>JSON + novelWriter HTML (.json)</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../nw/gui/build.py" line="470"/>
+        <location filename="../nw/gui/build.py" line="471"/>
         <source>JSON + novelWriters Markdown (.json)</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../nw/gui/build.py" line="474"/>
+        <location filename="../nw/gui/build.py" line="475"/>
         <source>Close</source>
         <translation>Lukk</translation>
     </message>
     <message>
-        <location filename="../nw/gui/build.py" line="578"/>
+        <location filename="../nw/gui/build.py" line="579"/>
         <source>Failed to generate preview. The result is too big.</source>
         <translation>Kunne ikke generere forhåndsvisning. Resultatet er for stort til å vise.</translation>
     </message>
     <message>
-        <location filename="../nw/gui/build.py" line="751"/>
+        <location filename="../nw/gui/build.py" line="752"/>
         <source>There were problems when building the project</source>
         <translation>Det har oppstått en feil under byggingen av prosjektet</translation>
     </message>
     <message>
-        <location filename="../nw/gui/build.py" line="811"/>
+        <location filename="../nw/gui/build.py" line="812"/>
         <source>Open Document</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../nw/gui/build.py" line="815"/>
+        <location filename="../nw/gui/build.py" line="816"/>
         <source>Flat Open Document</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../nw/gui/build.py" line="819"/>
+        <location filename="../nw/gui/build.py" line="820"/>
         <source>Plain HTML</source>
         <translation>Enkel HTML</translation>
     </message>
     <message>
-        <location filename="../nw/gui/build.py" line="823"/>
+        <location filename="../nw/gui/build.py" line="824"/>
         <source>novelWriter Markdown</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../nw/gui/build.py" line="827"/>
+        <location filename="../nw/gui/build.py" line="828"/>
         <source>Standard Markdown</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../nw/gui/build.py" line="831"/>
+        <location filename="../nw/gui/build.py" line="832"/>
         <source>GitHub Markdown</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../nw/gui/build.py" line="835"/>
+        <location filename="../nw/gui/build.py" line="836"/>
         <source>JSON + novelWriter HTML</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../nw/gui/build.py" line="839"/>
+        <location filename="../nw/gui/build.py" line="840"/>
         <source>JSON + novelWriter Markdown</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../nw/gui/build.py" line="843"/>
+        <location filename="../nw/gui/build.py" line="844"/>
         <source>PDF</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../nw/gui/build.py" line="862"/>
+        <location filename="../nw/gui/build.py" line="863"/>
         <source>Save Document As</source>
         <translation>Lagre dokumentet som</translation>
     </message>
     <message>
-        <location filename="../nw/gui/build.py" line="1000"/>
+        <location filename="../nw/gui/build.py" line="1001"/>
         <source>Unknown format</source>
         <translation>Ukjent format</translation>
     </message>
     <message>
-        <location filename="../nw/gui/build.py" line="1004"/>
+        <location filename="../nw/gui/build.py" line="1005"/>
         <source>{0} file successfully written to:</source>
         <translation>Lagring av {0} var vellykket, og filen ble skrevet til:</translation>
     </message>
     <message>
-        <location filename="../nw/gui/build.py" line="1011"/>
+        <location filename="../nw/gui/build.py" line="1012"/>
         <source>Failed to write {0} file. {1}</source>
         <translation>Misslykkes i å skrive {0} til. {1}</translation>
     </message>
     <message>
-        <location filename="../nw/gui/build.py" line="273"/>
+        <location filename="../nw/gui/build.py" line="274"/>
         <source>Styling Options</source>
         <translation>Styling</translation>
     </message>
     <message>
-        <location filename="../nw/gui/build.py" line="193"/>
+        <location filename="../nw/gui/build.py" line="194"/>
         <source>Language</source>
         <translation>Språk</translation>
+    </message>
+    <message>
+        <location filename="../nw/gui/build.py" line="169"/>
+        <source>Not Set</source>
+        <translation>Ikke satt</translation>
     </message>
 </context>
 <context>
     <name>GuiBuildNovelDocView</name>
     <message>
-        <location filename="../nw/gui/build.py" line="1211"/>
+        <location filename="../nw/gui/build.py" line="1212"/>
         <source>This area will show the content of the document to be exported or printed. Press the &quot;Build Preview&quot; button to generate content.</source>
         <translation>Dette området vil vise innholdet av dokumentet som skal eksporteres. Trykk på knappen merket med &quot;Lag forhåndsvisning&quot; for å oppdatere innholdet.</translation>
     </message>
     <message>
-        <location filename="../nw/gui/build.py" line="1360"/>
+        <location filename="../nw/gui/build.py" line="1361"/>
         <source>Unknown</source>
         <translation>Ukjent</translation>
     </message>
     <message>
-        <location filename="../nw/gui/build.py" line="1362"/>
+        <location filename="../nw/gui/build.py" line="1363"/>
         <source>&lt;b&gt;Build Time:&lt;/b&gt; {0}</source>
         <translation>&lt;b&gt;Generert den:&lt;/b&gt; {0}</translation>
     </message>

@@ -166,6 +166,7 @@ class GuiBuildNovel(QDialog):
         self.buildLang = QComboBox()
         self.buildLang.setMinimumWidth(xFmt)
         theLangs = self.mainConf.listLanguages(self.mainConf.LANG_PROJ)
+        self.buildLang.addItem("[%s]" % self.tr("Not Set"), "None")
         for langID, langName in theLangs:
             self.buildLang.addItem(langName, langID)
 
