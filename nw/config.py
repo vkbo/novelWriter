@@ -377,7 +377,6 @@ class Config:
         self.qtTrans = {}
 
         langList = [
-            (self.qtLangPath, "qt"),     # Qt 4.x
             (self.qtLangPath, "qtbase"), # Qt 5.x
             (self.nwLangPath, "qtbase"), # Alternative Qt 5.x
             (self.nwLangPath, "nw"),     # novelWriter
