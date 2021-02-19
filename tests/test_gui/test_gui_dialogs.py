@@ -23,7 +23,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 import pytest
 
 from PyQt5.QtCore import QItemSelectionModel
-from PyQt5.QtWidgets import QListWidgetItem, QDialog, QFileDialog, QMessageBox
+from PyQt5.QtWidgets import QListWidgetItem, QDialog, QMessageBox
 
 from nw.gui.custom import QuotesDialog
 
