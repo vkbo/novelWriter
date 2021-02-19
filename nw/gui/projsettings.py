@@ -77,8 +77,6 @@ class GuiProjectSettings(PagedDialog):
         self.addTab(self.tabReplace, self.tr("Auto-Replace"))
 
         self.buttonBox = QDialogButtonBox(QDialogButtonBox.Ok | QDialogButtonBox.Cancel)
-        self.buttonBox.button(QDialogButtonBox.Ok).setText(self.tr("OK"))
-        self.buttonBox.button(QDialogButtonBox.Cancel).setText(self.tr("Cancel"))
         self.buttonBox.accepted.connect(self._doSave)
         self.buttonBox.rejected.connect(self._doClose)
         self.addControls(self.buttonBox)
@@ -330,8 +328,7 @@ class GuiProjectEditStatus(QWidget):
         """
         if self.selColour is not None:
             newCol = QColorDialog.getColor(
-                self.selColour, self, self.tr("Select Colour"),
-                QColorDialog.DontUseNativeDialog
+                self.selColour, self, self.tr("Select Colour")
             )
             if newCol.isValid():
                 self.selColour = newCol

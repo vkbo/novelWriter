@@ -858,10 +858,8 @@ class GuiBuildNovel(QDialog):
             if not os.path.isdir(saveDir):
                 saveDir = self.mainConf.homePath
 
-            dlgOpt  = QFileDialog.Options()
-            dlgOpt |= QFileDialog.DontUseNativeDialog
             savePath, _ = QFileDialog.getSaveFileName(
-                self, self.tr("Save Document As"), savePath, options=dlgOpt
+                self, self.tr("Save Document As"), savePath
             )
             if not savePath:
                 return False

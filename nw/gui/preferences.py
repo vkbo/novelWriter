@@ -70,8 +70,6 @@ class GuiPreferences(PagedDialog):
         self.addTab(self.tabAuto,     self.tr("Automation"))
 
         self.buttonBox = QDialogButtonBox(QDialogButtonBox.Ok | QDialogButtonBox.Cancel)
-        self.buttonBox.button(QDialogButtonBox.Ok).setText(self.tr("OK"))
-        self.buttonBox.button(QDialogButtonBox.Cancel).setText(self.tr("Cancel"))
         self.buttonBox.accepted.connect(self._doSave)
         self.buttonBox.rejected.connect(self._doClose)
         self.addControls(self.buttonBox)
@@ -440,11 +438,8 @@ class GuiPreferencesProjects(QWidget):
         if not os.path.isdir(currDir):
             currDir = ""
 
-        dlgOpt  = QFileDialog.Options()
-        dlgOpt |= QFileDialog.ShowDirsOnly
-        dlgOpt |= QFileDialog.DontUseNativeDialog
-        newDir  = QFileDialog.getExistingDirectory(
-            self, self.tr("Backup Directory"), currDir, options=dlgOpt
+        newDir = QFileDialog.getExistingDirectory(
+            self, self.tr("Backup Directory"), currDir, options=QFileDialog.ShowDirsOnly
         )
         if newDir:
             self.backupPath = newDir
