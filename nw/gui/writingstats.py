@@ -369,7 +369,7 @@ class GuiWritingStats(QDialog):
         savePath = os.path.join(saveDir, fileName)
 
         savePath, _ = QFileDialog.getSaveFileName(
-            self, self.tr("Save Data As"), savePath
+            self, self.tr("Save Data As"), savePath, "%s (*.%s)" % (textFmt, fileExt)
         )
         if not savePath:
             return False
