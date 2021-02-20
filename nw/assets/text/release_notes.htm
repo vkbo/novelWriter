@@ -4,7 +4,17 @@
 
 <h2>Release Notes for 1.1.1</h2>
 <p><i>Released on 21 February 2021</i></p>
-<p>TBD</p>
+<p>This patch makes a couple of minor improvements to the GUI. The keyboard shortcut for deleting
+entries in the project tree has been changed from "Ctrl+Del" to "Ctrl+Shift+Del" to free up that
+shortcut for the document editor. It is now possible to use the shortcut for deleting the word in
+front of the cursor, a common and useful feature of many text editors.</p>
+<p>In addition, the way the negative word count filter option works on the Writing Statistics tool
+has been changed to be more intuitive. Enabling this filter now appears to remove all negative
+entries without altering the other entries. Previously, the removed negative counts would be
+included in the following entries to make it consistent with the total word count.</p>
+<p>Other changes include improving the speed of the internal spell checker, used when the Enchant
+spell check library isn't available. The internal spell checker is no longer significantly slower,
+but is still lacking in functionality compared to Enchant.</p>
 
 <p><i>See also the <a href="https://github.com/vkbo/novelWriter/releases">Releases</a> page.</i></p>
 
