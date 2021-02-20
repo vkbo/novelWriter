@@ -1398,6 +1398,15 @@ class NWProject():
         sessionFile = os.path.join(self.projMeta, nwFiles.SESS_STATS)
         isFile = os.path.isfile(sessionFile)
 
+        nowTime = time()
+        sessDiff = self.getSessionWordCount()
+        sessTime = nowTime - self.projOpened
+
+        logger.info("The session lasted %d sec and added %d words" % (int(sessTime), sessDiff))
+        if sessTime < 300 and sessDiff == 0:
+            logger.info("Session too short, skipping log entry")
+            return False
+
         try:
             with open(sessionFile, mode="a+", encoding="utf8") as outFile:
                 if not isFile:
@@ -1410,7 +1419,7 @@ class NWProject():
 
                 outFile.write("%-19s  %-19s  %8d  %8d  %8d\n" % (
                     formatTimeStamp(self.projOpened),
-                    formatTimeStamp(time()),
+                    formatTimeStamp(nowTime),
                     self.novelWCount,
                     self.notesWCount,
                     int(idleTime),
