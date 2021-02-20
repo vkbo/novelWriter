@@ -1052,7 +1052,6 @@ def testCoreProject_OldFormat(dummyGUI, nwOldProj):
 
     # Check that new files have been created
     assert os.path.isfile(os.path.join(nwOldProj, "meta", "guiOptions.json"))
-    assert os.path.isfile(os.path.join(nwOldProj, "meta", "sessionStats.log"))
     assert os.path.isfile(os.path.join(nwOldProj, "ToC.txt"))
 
 # END Test testCoreProject_OldFormat
