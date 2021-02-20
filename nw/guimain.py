@@ -550,12 +550,9 @@ class GuiMain(QMainWindow):
             logger.error("No project open")
             return False
 
-        if self.theProject.projPath is None:
-            return False
-
         self.treeView.saveTreeOrder()
-        self.theProject.saveProject(autoSave=autoSave)
-        self.theIndex.saveIndex()
+        if self.theProject.saveProject(autoSave=autoSave):
+            self.theIndex.saveIndex()
 
         return True
 
@@ -700,7 +697,7 @@ class GuiMain(QMainWindow):
             self.tr("Text files ({0})").format("*.txt"),
             self.tr("Markdown files ({0})").format("*.md"),
             self.tr("novelWriter files ({0})").format("*.nwd"),
-            self.tr("All files ({0})").format("*.*"),
+            self.tr("All files ({0})").format("*"),
         ]
         loadFile, _ = QFileDialog.getOpenFileName(
             self, self.tr("Import File"), lastPath, filter=";;".join(extFilter)
