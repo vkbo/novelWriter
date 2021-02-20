@@ -4,17 +4,8 @@
 
 ### Release Notes
 
-### Detailed Changelog
-
-----
-
-## Version 1.2 Beta 1 [2021-02-11]
-
-### Release Notes
-
-This release is a beta release of 1.2. The release is intended for testing of new features. There
-is a higher risk of encountering bugs in a beta release than a final release, so be extra careful
-with backups if used on active writing projects.
+This is the first release candidate of 1.2. The release is intended for testing of new features.
+Please take this into account when working on your live projects.
 
 #### The Build Novel Project Tool
 
@@ -73,6 +64,9 @@ logs regardless of whether the status bar clock displays this information or not
 
 #### Other Changes
 
+The user dictionary of the project, where words added to the dictionary from the document editor
+go, can now be viewed and edited with a new "Project Word List" tool in the "Tools" menu.
+
 A small additional feature added is also the ability to undo the last move of an item in the
 project tree. The keyboard shortcut for this is `Ctrl+Shift+Z`, or it can be accessed from the
 menu. The feature can only undo the last move, but it includes both documents moved to trash, moves
@@ -81,6 +75,27 @@ by up/down keypress or menu entries, and drag and drop moves.
 Lastly, a new keyword has been added to mark characters in the story. The new keyword is intended
 to tag a character as the focus character for a chapter or scene. This is useful for stories where
 the point-of-view character and the focus character are different.
+
+_These Release Notes also include the changes from 1.2 Beta 1._
+
+### Detailed Changelog
+
+**New Features**
+
+* Added a tool to edit the project's user dictionary. This is the dictionary where the "Add Word to
+  Dictionary" actions from the document editor go. The dialog tool allows for listing, removing and
+  adding words to this dictionary. Issue #665. PR #669.
+
+**User Interface**
+
+* Pressing the `F2` key when in the document editor will open the Item Editor for the open document
+  instead of the one selected in the project tree. PR #664.
+* The shortcut for deleting an item in the project tree has been changed from `Ctrl+Del` to
+  `Ctrl+Shift+Del`. This change was also backported to version 1.1.1. Resolves #629. PR #664.
+
+----
+
+## Version 1.2 Beta 1 [2021-02-11]
 
 ### Detailed Changelog
 
