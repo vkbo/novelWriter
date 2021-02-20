@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!DOCTYPE TS><TS version="2.0" language="pt" sourcelanguage="en_GB">
+<!DOCTYPE TS>
+<TS version="2.1" language="pt" sourcelanguage="en_GB">
 <context>
     <name>Common</name>
     <message>
@@ -1314,32 +1315,32 @@
         <translation>Nota: Se o programa ou o computador sofreu uma falha anteriormente, o bloqueio pode ser sobrescrito com segurança. Se, no entanto, outra instância do novelWriter esteja com o projeto aberto, sobrescrever o bloqueio pode corromper o projeto e não é recomendado.</translation>
     </message>
     <message>
-        <location filename="../nw/guimain.py" line="878"/>
+        <location filename="../nw/guimain.py" line="875"/>
         <source>Unknown item</source>
         <translation>Item desconhecido</translation>
     </message>
     <message>
-        <location filename="../nw/guimain.py" line="1106"/>
+        <location filename="../nw/guimain.py" line="1103"/>
         <source>Information</source>
         <translation>Informação</translation>
     </message>
     <message>
-        <location filename="../nw/guimain.py" line="1108"/>
+        <location filename="../nw/guimain.py" line="1105"/>
         <source>Warning</source>
         <translation>Alerta</translation>
     </message>
     <message>
-        <location filename="../nw/guimain.py" line="1110"/>
+        <location filename="../nw/guimain.py" line="1107"/>
         <source>Error</source>
         <translation>Erro</translation>
     </message>
     <message>
-        <location filename="../nw/guimain.py" line="1112"/>
+        <location filename="../nw/guimain.py" line="1109"/>
         <source>This is a bug!</source>
         <translation>Isto é um bug!</translation>
     </message>
     <message>
-        <location filename="../nw/guimain.py" line="1113"/>
+        <location filename="../nw/guimain.py" line="1110"/>
         <source>Internal Error</source>
         <translation>Erro Interno</translation>
     </message>
@@ -1374,7 +1375,7 @@
         <translation>Fechar o projeto atual?</translation>
     </message>
     <message>
-        <location filename="../nw/guimain.py" line="1142"/>
+        <location filename="../nw/guimain.py" line="1139"/>
         <source>Changes are saved automatically.</source>
         <translation>As alterações serão salvas automaticamente.</translation>
     </message>
@@ -1394,47 +1395,47 @@
         <translation>Projeto Bloqueado</translation>
     </message>
     <message>
-        <location filename="../nw/guimain.py" line="705"/>
+        <location filename="../nw/guimain.py" line="702"/>
         <source>Import File</source>
         <translation>Importar Arquivo</translation>
     </message>
     <message>
-        <location filename="../nw/guimain.py" line="720"/>
+        <location filename="../nw/guimain.py" line="717"/>
         <source>Could not read file. The file must be an existing text file.</source>
         <translation>Não foi possível ler o arquivo. O arquivo deve ser um arquivo de texto existente.</translation>
     </message>
     <message>
-        <location filename="../nw/guimain.py" line="726"/>
+        <location filename="../nw/guimain.py" line="723"/>
         <source>Please open a document to import the text file into.</source>
         <translation>Por favor, abra um documento para importar o text nele.</translation>
     </message>
     <message>
-        <location filename="../nw/guimain.py" line="733"/>
+        <location filename="../nw/guimain.py" line="730"/>
         <source>Import Document</source>
         <translation>Importar Documento</translation>
     </message>
     <message>
-        <location filename="../nw/guimain.py" line="733"/>
+        <location filename="../nw/guimain.py" line="730"/>
         <source>Importing the file will overwrite the current content of the document. Do you want to proceed?</source>
         <translation>Importar o arquivo vai sobrescrever o conteúdo atual do documento. Você deseja continuar?</translation>
     </message>
     <message>
-        <location filename="../nw/guimain.py" line="903"/>
+        <location filename="../nw/guimain.py" line="900"/>
         <source>The project index has been successfully rebuilt.</source>
         <translation>O índice do projeto foi reconstruído com sucesso.</translation>
     </message>
     <message>
-        <location filename="../nw/guimain.py" line="1142"/>
+        <location filename="../nw/guimain.py" line="1139"/>
         <source>Exit</source>
         <translation>Sair</translation>
     </message>
     <message>
-        <location filename="../nw/guimain.py" line="1142"/>
+        <location filename="../nw/guimain.py" line="1139"/>
         <source>Do you want to exit novelWriter?</source>
         <translation>Você deseja realmente sair do novelWriter?</translation>
     </message>
     <message>
-        <location filename="../nw/guimain.py" line="896"/>
+        <location filename="../nw/guimain.py" line="893"/>
         <source>Indexing completed in {0} ms</source>
         <translation>Indexação completa em {0} ms</translation>
     </message>
@@ -1474,27 +1475,27 @@
         <translation>O projeto foi bloqueado pelo computador &apos;{0}&apos; ({1} {2}), ativo pela última vez em {3}.</translation>
     </message>
     <message>
-        <location filename="../nw/guimain.py" line="878"/>
+        <location filename="../nw/guimain.py" line="875"/>
         <source>Indexing: &apos;{0}&apos;</source>
         <translation>Indexando: &apos;{0}&apos;</translation>
     </message>
     <message>
-        <location filename="../nw/guimain.py" line="700"/>
+        <location filename="../nw/guimain.py" line="697"/>
         <source>Text files ({0})</source>
         <translation>Arquivos de texto ({0})</translation>
     </message>
     <message>
-        <location filename="../nw/guimain.py" line="701"/>
+        <location filename="../nw/guimain.py" line="698"/>
         <source>Markdown files ({0})</source>
         <translation>Arquivos Markdown ({0})</translation>
     </message>
     <message>
-        <location filename="../nw/guimain.py" line="702"/>
+        <location filename="../nw/guimain.py" line="699"/>
         <source>novelWriter files ({0})</source>
         <translation>Arquivos do novelWriter ({0})</translation>
     </message>
     <message>
-        <location filename="../nw/guimain.py" line="703"/>
+        <location filename="../nw/guimain.py" line="700"/>
         <source>All files ({0})</source>
         <translation>Todos os arquivos ({0})</translation>
     </message>
@@ -3691,7 +3692,7 @@
         <translation>Arquivo de Projeto do novelWriter ({0})</translation>
     </message>
     <message>
-        <location filename="../nw/gui/projload.py" line="77"/>
+        <location filename="../nw/gui/projload.py" line="191"/>
         <source>Open Project</source>
         <translation>Abrir Projeto</translation>
     </message>
@@ -3724,11 +3725,6 @@
         <location filename="../nw/gui/projload.py" line="133"/>
         <source>New</source>
         <translation>Novo</translation>
-    </message>
-    <message>
-        <location filename="../nw/gui/projload.py" line="191"/>
-        <source>Open novelWriter Project</source>
-        <translation>Abrir um Projeto do novelWriter</translation>
     </message>
     <message>
         <location filename="../nw/gui/projload.py" line="228"/>
@@ -4655,7 +4651,7 @@
     <message>
         <location filename="dummy_qtbase.py" line="19"/>
         <source>OK</source>
-        <translation type="unfinished">OK</translation>
+        <translation>OK</translation>
     </message>
 </context>
 <context>
@@ -4691,12 +4687,12 @@
     <message>
         <location filename="dummy_qtbase.py" line="41"/>
         <source>OK</source>
-        <translation type="unfinished"></translation>
+        <translation>OK</translation>
     </message>
     <message>
         <location filename="dummy_qtbase.py" line="42"/>
         <source>Save</source>
-        <translation type="unfinished">Salvar</translation>
+        <translation>Salvar</translation>
     </message>
     <message>
         <location filename="dummy_qtbase.py" line="43"/>
@@ -4746,12 +4742,12 @@
     <message>
         <location filename="dummy_qtbase.py" line="52"/>
         <source>Close</source>
-        <translation type="unfinished">Fechar</translation>
+        <translation>Fechar</translation>
     </message>
     <message>
         <location filename="dummy_qtbase.py" line="53"/>
         <source>Cancel</source>
-        <translation type="unfinished"></translation>
+        <translation>Cancelar</translation>
     </message>
     <message>
         <location filename="dummy_qtbase.py" line="54"/>
@@ -4814,7 +4810,7 @@
     <message>
         <location filename="dummy_qtbase.py" line="69"/>
         <source>Done</source>
-        <translation type="unfinished">Pronto</translation>
+        <translation>Pronto</translation>
     </message>
     <message>
         <location filename="dummy_qtbase.py" line="70"/>
@@ -4824,7 +4820,7 @@
     <message>
         <location filename="dummy_qtbase.py" line="72"/>
         <source>Cancel</source>
-        <translation type="unfinished">Cancelar</translation>
+        <translation>Cancelar</translation>
     </message>
     <message>
         <location filename="dummy_qtbase.py" line="73"/>
@@ -4834,7 +4830,7 @@
     <message>
         <location filename="dummy_qtbase.py" line="74"/>
         <source>&amp;Help</source>
-        <translation type="unfinished">A&amp;juda</translation>
+        <translation>A&amp;juda</translation>
     </message>
 </context>
 <context>

@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!DOCTYPE TS><TS version="2.0" language="nb_NO" sourcelanguage="en_GB">
+<!DOCTYPE TS>
+<TS version="2.1" language="nb_NO" sourcelanguage="en_GB">
 <context>
     <name>Common</name>
     <message>
@@ -1359,7 +1360,7 @@
         <translation>Ønsker du å lukke dette prosjektet?</translation>
     </message>
     <message>
-        <location filename="../nw/guimain.py" line="1142"/>
+        <location filename="../nw/guimain.py" line="1139"/>
         <source>Changes are saved automatically.</source>
         <translation>Endringer lagres automatisk.</translation>
     </message>
@@ -1399,102 +1400,102 @@
         <translation>Prosjektets indeks er utdatert eller skadet. Bygger indeksen på nytt.</translation>
     </message>
     <message>
-        <location filename="../nw/guimain.py" line="700"/>
+        <location filename="../nw/guimain.py" line="697"/>
         <source>Text files ({0})</source>
         <translation>Tekstfiler ({0})</translation>
     </message>
     <message>
-        <location filename="../nw/guimain.py" line="701"/>
+        <location filename="../nw/guimain.py" line="698"/>
         <source>Markdown files ({0})</source>
         <translation>Markdown-filer ({0})</translation>
     </message>
     <message>
-        <location filename="../nw/guimain.py" line="702"/>
+        <location filename="../nw/guimain.py" line="699"/>
         <source>novelWriter files ({0})</source>
         <translation>novelWriter-filer ({0})</translation>
     </message>
     <message>
-        <location filename="../nw/guimain.py" line="703"/>
+        <location filename="../nw/guimain.py" line="700"/>
         <source>All files ({0})</source>
         <translation>Alle filer ({0})</translation>
     </message>
     <message>
-        <location filename="../nw/guimain.py" line="705"/>
+        <location filename="../nw/guimain.py" line="702"/>
         <source>Import File</source>
         <translation>Importer fil</translation>
     </message>
     <message>
-        <location filename="../nw/guimain.py" line="720"/>
+        <location filename="../nw/guimain.py" line="717"/>
         <source>Could not read file. The file must be an existing text file.</source>
         <translation>Kunne ikke lese filen. Filen må eksistere fra før av.</translation>
     </message>
     <message>
-        <location filename="../nw/guimain.py" line="726"/>
+        <location filename="../nw/guimain.py" line="723"/>
         <source>Please open a document to import the text file into.</source>
         <translation>Vennligst åpne et dokument hvor teksten i filen kan importeres.</translation>
     </message>
     <message>
-        <location filename="../nw/guimain.py" line="733"/>
+        <location filename="../nw/guimain.py" line="730"/>
         <source>Import Document</source>
         <translation>Importer dokument</translation>
     </message>
     <message>
-        <location filename="../nw/guimain.py" line="733"/>
+        <location filename="../nw/guimain.py" line="730"/>
         <source>Importing the file will overwrite the current content of the document. Do you want to proceed?</source>
         <translation>Å importere filen vil overskrive all eksisterende tekst i dokumentet. Ønsker du å fortsette?</translation>
     </message>
     <message>
-        <location filename="../nw/guimain.py" line="878"/>
+        <location filename="../nw/guimain.py" line="875"/>
         <source>Indexing: &apos;{0}&apos;</source>
         <translation>Indekserer: &apos;{0}&apos;</translation>
     </message>
     <message>
-        <location filename="../nw/guimain.py" line="878"/>
+        <location filename="../nw/guimain.py" line="875"/>
         <source>Unknown item</source>
         <translation>Ukjent enhet</translation>
     </message>
     <message>
-        <location filename="../nw/guimain.py" line="896"/>
+        <location filename="../nw/guimain.py" line="893"/>
         <source>Indexing completed in {0} ms</source>
         <translation>Indekseringen tok {0} ms</translation>
     </message>
     <message>
-        <location filename="../nw/guimain.py" line="903"/>
+        <location filename="../nw/guimain.py" line="900"/>
         <source>The project index has been successfully rebuilt.</source>
         <translation>Prosjektets indeks har blitt bygget på nytt.</translation>
     </message>
     <message>
-        <location filename="../nw/guimain.py" line="1106"/>
+        <location filename="../nw/guimain.py" line="1103"/>
         <source>Information</source>
         <translation>Informasjon</translation>
     </message>
     <message>
-        <location filename="../nw/guimain.py" line="1108"/>
+        <location filename="../nw/guimain.py" line="1105"/>
         <source>Warning</source>
         <translation>Advarsel</translation>
     </message>
     <message>
-        <location filename="../nw/guimain.py" line="1110"/>
+        <location filename="../nw/guimain.py" line="1107"/>
         <source>Error</source>
         <translation>Feil</translation>
     </message>
     <message>
-        <location filename="../nw/guimain.py" line="1112"/>
+        <location filename="../nw/guimain.py" line="1109"/>
         <source>This is a bug!</source>
         <translation>Dette er en systemfeil!</translation>
     </message>
     <message>
-        <location filename="../nw/guimain.py" line="1113"/>
+        <location filename="../nw/guimain.py" line="1110"/>
         <source>Internal Error</source>
         <translation>Intern feil</translation>
     </message>
     <message>
-        <location filename="../nw/guimain.py" line="1142"/>
+        <location filename="../nw/guimain.py" line="1139"/>
         <source>Exit</source>
         <translation>Avslutt</translation>
     </message>
     <message>
-        <location filename="../nw/guimain.py" line="1142"/>
+        <location filename="../nw/guimain.py" line="1139"/>
         <source>Do you want to exit novelWriter?</source>
         <translation>Ønsker du å avslutte novelWriter?</translation>
     </message>
@@ -3686,7 +3687,7 @@
 <context>
     <name>GuiProjectLoad</name>
     <message>
-        <location filename="../nw/gui/projload.py" line="77"/>
+        <location filename="../nw/gui/projload.py" line="191"/>
         <source>Open Project</source>
         <translation>Åpne prosjekt</translation>
     </message>
@@ -3734,11 +3735,6 @@
         <location filename="../nw/gui/projload.py" line="189"/>
         <source>All files ({0})</source>
         <translation>Alle filer ({0})</translation>
-    </message>
-    <message>
-        <location filename="../nw/gui/projload.py" line="191"/>
-        <source>Open novelWriter Project</source>
-        <translation>Åpne novelWriter-prosjekt</translation>
     </message>
     <message>
         <location filename="../nw/gui/projload.py" line="228"/>
