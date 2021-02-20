@@ -221,14 +221,14 @@ def main(sysArgs=None):
             "At least Python 3.6.0 is required, found %s." % CONFIG.verPyString
         )
         errorCode |= 4
-    if CONFIG.verQtValue < 50200:
+    if CONFIG.verQtValue < 50300:
         errorData.append(
-            "At least Qt5 version 5.2 is required, found %s." % CONFIG.verQtString
+            "At least Qt5 version 5.3 is required, found %s." % CONFIG.verQtString
         )
         errorCode |= 8
-    if CONFIG.verPyQtValue < 50200:
+    if CONFIG.verPyQtValue < 50300:
         errorData.append(
-            "At least PyQt5 version 5.2 is required, found %s." % CONFIG.verPyQtString
+            "At least PyQt5 version 5.3 is required, found %s." % CONFIG.verPyQtString
         )
         errorCode |= 16
 
