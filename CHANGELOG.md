@@ -12,7 +12,9 @@ front of the cursor, a common and useful feature of many text editors.
 In addition, the way the negative word count filter option works on the Writing Statistics tool has
 been changed to be more intuitive. Enabling this filter now appears to remove all negative entries
 without altering the other entries. Previously, the removed negative counts would be included in
-the following entries to make it consistent with the total word count.
+the following entries to make it consistent with the total word count. Writing sessions shorter
+than five minutes, and with no change in the word count, are also no longer recorded in the session
+log file.
 
 Other changes include improving the speed of the internal spell checker, used when the Enchant
 spell check library isn't available. The internal spell checker is no longer significantly slower,
@@ -41,6 +43,8 @@ but is still lacking in functionality compared to Enchant.
   given a significant speed improvement by caching the imported dictionary as a Python `set`
   instead of a `list`. The `set` has a hashed key lookup algorithm that is significantly faster.
   PR #668.
+* Sessions shortar than 5 minutes, and with no word count changes, are no longer recorded in the
+  session stats log file. PR #685.
 
 **Installation**
 
