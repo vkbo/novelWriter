@@ -77,7 +77,7 @@ class ToMarkdown(Tokenizer):
                 self.FMT_D_B : "",   self.FMT_D_E : "",
             }
         else:
-            # GitHub and novelWriter
+            # GitHub
             mdTags = {
                 self.FMT_B_B : "**", self.FMT_B_E : "**",
                 self.FMT_I_B : "_",  self.FMT_I_E : "_",

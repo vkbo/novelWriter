@@ -82,8 +82,6 @@ class GuiDocSplit(QDialog):
         self.splitLevel.currentIndexChanged.connect(self._populateList)
 
         self.buttonBox = QDialogButtonBox(QDialogButtonBox.Ok | QDialogButtonBox.Cancel)
-        self.buttonBox.button(QDialogButtonBox.Ok).setText(self.tr("OK"))
-        self.buttonBox.button(QDialogButtonBox.Cancel).setText(self.tr("Cancel"))
         self.buttonBox.accepted.connect(self._doSplit)
         self.buttonBox.rejected.connect(self._doClose)
 

@@ -211,11 +211,8 @@ class ProjWizardFolderPage(QWizardPage):
         if not os.path.isdir(lastPath):
             lastPath = ""
 
-        dlgOpt  = QFileDialog.Options()
-        dlgOpt |= QFileDialog.ShowDirsOnly
-        dlgOpt |= QFileDialog.DontUseNativeDialog
         projDir = QFileDialog.getExistingDirectory(
-            self, self.tr("Select Project Folder"), lastPath, options=dlgOpt
+            self, self.tr("Select Project Folder"), lastPath, options=QFileDialog.ShowDirsOnly
         )
         if projDir:
             projName = self.field("projName")
@@ -412,9 +409,9 @@ class ProjWizardFinalPage(QWizardPage):
 
         self.setTitle(self.tr("Finished"))
         self.theText = QLabel(
-            "<p>{done}</p><p>{help}</p>".format(
-                done = self.tr("All done."),
-                help = self.tr("Press '{0}' to create the new project.").format(
+            "<p>%s</p><p>%s</p>" % (
+                self.tr("All done."),
+                self.tr("Press '{0}' to create the new project.").format(
                     self.tr("Done") if self.mainConf.osDarwin else self.tr("Finish")
                 )
             )

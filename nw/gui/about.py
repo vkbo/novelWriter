@@ -97,7 +97,6 @@ class GuiAbout(QDialog):
 
         # OK Button
         self.buttonBox = QDialogButtonBox(QDialogButtonBox.Ok)
-        self.buttonBox.button(QDialogButtonBox.Ok).setText(self.tr("OK"))
         self.buttonBox.accepted.connect(self._doClose)
 
         self.outerBox.addLayout(self.innerBox)

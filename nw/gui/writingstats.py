@@ -259,7 +259,6 @@ class GuiWritingStats(QDialog):
         self.buttonBox.rejected.connect(self._doClose)
 
         self.btnClose = self.buttonBox.addButton(QDialogButtonBox.Close)
-        self.buttonBox.button(QDialogButtonBox.Close).setText(self.tr("Close"))
         self.btnClose.setAutoDefault(False)
 
         self.btnSave = self.buttonBox.addButton(self.tr("Save As"), QDialogButtonBox.ActionRole)
@@ -369,10 +368,8 @@ class GuiWritingStats(QDialog):
         fileName = "sessionStats.%s" % fileExt
         savePath = os.path.join(saveDir, fileName)
 
-        dlgOpt  = QFileDialog.Options()
-        dlgOpt |= QFileDialog.DontUseNativeDialog
         savePath, _ = QFileDialog.getSaveFileName(
-            self, self.tr("Save Data As"), savePath, options=dlgOpt
+            self, self.tr("Save Data As"), savePath, "%s (*.%s)" % (textFmt, fileExt)
         )
         if not savePath:
             return False

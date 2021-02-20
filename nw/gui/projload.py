@@ -127,8 +127,6 @@ class GuiProjectLoad(QDialog):
         self.innerBox.addLayout(self.projectForm)
 
         self.buttonBox = QDialogButtonBox(QDialogButtonBox.Open | QDialogButtonBox.Cancel)
-        self.buttonBox.button(QDialogButtonBox.Open).setText(self.tr("Open"))
-        self.buttonBox.button(QDialogButtonBox.Cancel).setText(self.tr("Cancel"))
         self.buttonBox.accepted.connect(self._doOpenRecent)
         self.buttonBox.rejected.connect(self._doCancel)
 
@@ -188,13 +186,10 @@ class GuiProjectLoad(QDialog):
         logger.verbose("GuiProjectLoad browse button clicked")
         extFilter = [
             self.tr("novelWriter Project File ({0})").format(nwFiles.PROJ_FILE),
-            self.tr("All files ({0})").format("*.*"),
+            self.tr("All files ({0})").format("*"),
         ]
-        dlgOpt  = QFileDialog.Options()
-        dlgOpt |= QFileDialog.DontUseNativeDialog
         projFile, _ = QFileDialog.getOpenFileName(
-            self, self.tr("Open novelWriter Project"), "",
-            filter=";;".join(extFilter), options=dlgOpt
+            self, self.tr("Open Project"), "", filter=";;".join(extFilter)
         )
         if projFile:
             thePath = os.path.abspath(os.path.dirname(projFile))

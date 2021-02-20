@@ -90,8 +90,6 @@ class GuiWordList(QDialog):
         self.editBox.addWidget(self.delButton, 0)
 
         self.buttonBox = QDialogButtonBox(QDialogButtonBox.Save | QDialogButtonBox.Close)
-        self.buttonBox.button(QDialogButtonBox.Save).setText(self.tr("Save"))
-        self.buttonBox.button(QDialogButtonBox.Close).setText(self.tr("Close"))
         self.buttonBox.accepted.connect(self._doSave)
         self.buttonBox.rejected.connect(self._doClose)
 

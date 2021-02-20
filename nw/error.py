@@ -68,7 +68,6 @@ class NWErrorMessage(QDialog):
         self.msgBody.setReadOnly(True)
 
         self.btnBox = QDialogButtonBox(QDialogButtonBox.Close)
-        self.btnBox.button(QDialogButtonBox.Close).setText(self.tr("Close"))
         self.btnBox.rejected.connect(self._doClose)
 
         # Assemble

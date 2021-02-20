@@ -583,7 +583,7 @@ class NWProject():
             if errList:
                 self.makeAlert(errList, nwAlert.ERROR)
 
-        # Clean up old files
+        # Clean up no longer used files
         self._deprecatedFiles()
 
         # Update recent projects

@@ -23,7 +23,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 import pytest
 
 from PyQt5.QtCore import QItemSelectionModel
-from PyQt5.QtWidgets import QListWidgetItem, QDialog, QFileDialog, QMessageBox
+from PyQt5.QtWidgets import QListWidgetItem, QDialog, QMessageBox
 
 from nw.gui.custom import QuotesDialog
 
@@ -59,14 +59,3 @@ def testGuiDialogs_Quotes(qtbot, monkeypatch, nwGUI, nwMinimal):
     nwQuot.close()
 
 # END Test testDialogs_Quotes
-
-@pytest.mark.gui
-def testGuiDialogs_Other(qtbot, monkeypatch, nwGUI, tmpDir):
-    """Various other dialog tests.
-    """
-    monkeypatch.setattr(QFileDialog, "getExistingDirectory", lambda *args, **kwargs: tmpDir)
-    assert nwGUI.selectProjectPath() == tmpDir
-
-    # qtbot.stopForInteraction()
-
-# END Test testGuiDialogs_Other

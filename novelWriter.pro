@@ -1,4 +1,5 @@
 SOURCES += \
+    i18n/dummy_qtbase.py \
     nw/constants/constants.py \
     nw/core/document.py \
     nw/core/project.py \

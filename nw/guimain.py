@@ -550,17 +550,9 @@ class GuiMain(QMainWindow):
             logger.error("No project open")
             return False
 
-        # If the project is new, it may not have a path, so we need one
-        if self.theProject.projPath is None:
-            projPath = self.selectProjectPath()
-            self.theProject.setProjectPath(projPath)
-
-        if self.theProject.projPath is None:
-            return False
-
         self.treeView.saveTreeOrder()
-        self.theProject.saveProject(autoSave=autoSave)
-        self.theIndex.saveIndex()
+        if self.theProject.saveProject(autoSave=autoSave):
+            self.theIndex.saveIndex()
 
         return True
 
@@ -705,13 +697,10 @@ class GuiMain(QMainWindow):
             self.tr("Text files ({0})").format("*.txt"),
             self.tr("Markdown files ({0})").format("*.md"),
             self.tr("novelWriter files ({0})").format("*.nwd"),
-            self.tr("All files ({0})").format("*.*"),
+            self.tr("All files ({0})").format("*"),
         ]
-        dlgOpt  = QFileDialog.Options()
-        dlgOpt |= QFileDialog.DontUseNativeDialog
         loadFile, _ = QFileDialog.getOpenFileName(
-            self, self.tr("Import File"), lastPath,
-            options=dlgOpt, filter=";;".join(extFilter)
+            self, self.tr("Import File"), lastPath, filter=";;".join(extFilter)
         )
         if not loadFile:
             return False
@@ -930,19 +919,6 @@ class GuiMain(QMainWindow):
     ##
     #  Main Dialogs
     ##
-
-    def selectProjectPath(self):
-        """Select where to save project.
-        """
-        dlgOpt  = QFileDialog.Options()
-        dlgOpt |= QFileDialog.ShowDirsOnly
-        dlgOpt |= QFileDialog.DontUseNativeDialog
-        projPath = QFileDialog.getExistingDirectory(
-            self, self.tr("Save novelWriter Project"), "", options=dlgOpt
-        )
-        if projPath:
-            return projPath
-        return None
 
     def showProjectLoadDialog(self):
         """Opens the projects dialog for selecting either existing
