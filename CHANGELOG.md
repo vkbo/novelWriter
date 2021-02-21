@@ -9,12 +9,12 @@ entries in the project tree has been changed from `Ctrl+Del` to `Ctrl+Shift+Del`
 shortcut for the document editor. It is now possible to use the shortcut for deleting the word in
 front of the cursor, a common and useful feature of many text editors.
 
-In addition, the way the negative word count filter option works on the Writing Statistics tool has
-been changed to be more intuitive. Enabling this filter now appears to remove all negative entries
-without altering the other entries. Previously, the removed negative counts would be included in
-the following entries to make it consistent with the total word count. Writing sessions shorter
-than five minutes, and with no change in the word count, are also no longer recorded in the session
-log file.
+The way the negative word count filter option works on the Writing Statistics tool has been changed
+to be more intuitive. Enabling this filter now appears to remove all negative entries without
+altering the other entries. Previously, the removed negative counts would be included in the
+following entries to make it consistent with the total word count. In addition, writing sessions
+shorter than five minutes, and with no change in the word count, are no longer recorded in the
+session log file.
 
 Other changes include improving the speed of the internal spell checker, used when the Enchant
 spell check library isn't available. The internal spell checker is no longer significantly slower,
