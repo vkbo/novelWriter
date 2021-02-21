@@ -1,5 +1,58 @@
 # novelWriter Changelog
 
+## Version 1.1.1 [2021-02-21]
+
+### Release Notes
+
+This patch makes a couple of minor improvements to the GUI. The keyboard shortcut for deleting
+entries in the project tree has been changed from `Ctrl+Del` to `Ctrl+Shift+Del` to free up that
+shortcut for the document editor. It is now possible to use the shortcut for deleting the word in
+front of the cursor, a common and useful feature of many text editors.
+
+The way the negative word count filter option works on the Writing Statistics tool has been changed
+to be more intuitive. Enabling this filter now appears to remove all negative entries without
+altering the other entries. Previously, the removed negative counts would be included in the
+following entries to make it consistent with the total word count. In addition, writing sessions
+shorter than five minutes, and with no change in the word count, are no longer recorded in the
+session log file.
+
+Other changes include improving the speed of the internal spell checker, used when the Enchant
+spell check library isn't available. The internal spell checker is no longer significantly slower,
+but is still lacking in functionality compared to Enchant.
+
+### Detailed Changelog
+
+**User Interface**
+
+* The default GUI font on Windows is now Arial. It works better with the Qt framework than the
+  default system font. If Arial is missing, it falls back to the bundled font Cantarell. PR #655.
+* The way word changes are calculated on the Writing Statistics tool has changed when the option to
+  exclude negative word counts is active. Previously, the entries with negative counts were
+  filtered out, but the change in count was still applied to the next line, altering the value.
+  Now, the GUI will instead just drop the lines that are negative and keep the other lines
+  unchanged. This is more intutitive, but it also means that the total count now longer matches the
+  sum of the lines. PR #659.
+* The keyboard shortcut for deleting entries in the project tree has been changed from `Ctrl+Del`
+  to `Ctrl+Shift+Del`. The `Ctrl+Del` shortcut is thus free to be used exclusively by the editor to
+  delete the word in front of the cursor. Having the same shortcut do different things depending on
+  which area of the GUI has focus is a bit confusing. Related to #529. PR #666.
+
+**Other Improvements**
+
+* The internal spell checker, which is used when the Enchant library isn't available, has been
+  given a significant speed improvement by caching the imported dictionary as a Python `set`
+  instead of a `list`. The `set` has a hashed key lookup algorithm that is significantly faster.
+  PR #668.
+* Sessions shortar than 5 minutes, and with no word count changes, are no longer recorded in the
+  session stats log file. PR #685.
+
+**Installation**
+
+* The PyPi packages now include the `setup.py` file, which makes it possible to install icon
+  launchers for novelWriter on both Linux and Windows after installing with `pip`. PR #655.
+
+----
+
 ## Version 1.1 [2021-02-07]
 
 ### Release Notes
