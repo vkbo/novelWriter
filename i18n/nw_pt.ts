@@ -755,12 +755,12 @@
     <message>
         <location filename="../nw/gui/build.py" line="194"/>
         <source>Language</source>
-        <translation type="unfinished"></translation>
+        <translation>Idioma</translation>
     </message>
     <message>
         <location filename="../nw/gui/build.py" line="169"/>
         <source>Not Set</source>
-        <translation type="unfinished"></translation>
+        <translation>Não definido</translation>
     </message>
 </context>
 <context>
@@ -4659,27 +4659,27 @@
     <message>
         <location filename="dummy_qtbase.py" line="24"/>
         <source>&amp;OK</source>
-        <translation type="unfinished"></translation>
+        <translation>&amp;OK</translation>
     </message>
     <message>
         <location filename="dummy_qtbase.py" line="25"/>
         <source>&amp;Save</source>
-        <translation type="unfinished"></translation>
+        <translation>&amp;Salvar</translation>
     </message>
     <message>
         <location filename="dummy_qtbase.py" line="26"/>
         <source>&amp;Cancel</source>
-        <translation type="unfinished"></translation>
+        <translation>&amp;Cancelar</translation>
     </message>
     <message>
         <location filename="dummy_qtbase.py" line="27"/>
         <source>&amp;Close</source>
-        <translation type="unfinished"></translation>
+        <translation>&amp;Fechar</translation>
     </message>
     <message>
         <location filename="dummy_qtbase.py" line="28"/>
         <source>Close without Saving</source>
-        <translation type="unfinished"></translation>
+        <translation>Fechar sem Salvar</translation>
     </message>
 </context>
 <context>
@@ -4697,47 +4697,47 @@
     <message>
         <location filename="dummy_qtbase.py" line="43"/>
         <source>Save All</source>
-        <translation type="unfinished"></translation>
+        <translation>Salvar Todos</translation>
     </message>
     <message>
         <location filename="dummy_qtbase.py" line="44"/>
         <source>Open</source>
-        <translation type="unfinished"></translation>
+        <translation>Abrir</translation>
     </message>
     <message>
         <location filename="dummy_qtbase.py" line="45"/>
         <source>&amp;Yes</source>
-        <translation type="unfinished"></translation>
+        <translation>&amp;Sim</translation>
     </message>
     <message>
         <location filename="dummy_qtbase.py" line="46"/>
         <source>Yes to &amp;All</source>
-        <translation type="unfinished"></translation>
+        <translation>Sim para &amp;Todos</translation>
     </message>
     <message>
         <location filename="dummy_qtbase.py" line="47"/>
         <source>&amp;No</source>
-        <translation type="unfinished"></translation>
+        <translation>&amp;Não</translation>
     </message>
     <message>
         <location filename="dummy_qtbase.py" line="48"/>
         <source>N&amp;o to All</source>
-        <translation type="unfinished"></translation>
+        <translation>Nã&amp;o para Todos</translation>
     </message>
     <message>
         <location filename="dummy_qtbase.py" line="49"/>
         <source>Abort</source>
-        <translation type="unfinished"></translation>
+        <translation>Abortar</translation>
     </message>
     <message>
         <location filename="dummy_qtbase.py" line="50"/>
         <source>Retry</source>
-        <translation type="unfinished"></translation>
+        <translation>Tentar Novamente</translation>
     </message>
     <message>
         <location filename="dummy_qtbase.py" line="51"/>
         <source>Ignore</source>
-        <translation type="unfinished"></translation>
+        <translation>Ignorar</translation>
     </message>
     <message>
         <location filename="dummy_qtbase.py" line="52"/>
@@ -4752,27 +4752,27 @@
     <message>
         <location filename="dummy_qtbase.py" line="54"/>
         <source>Discard</source>
-        <translation type="unfinished"></translation>
+        <translation>Descartar</translation>
     </message>
     <message>
         <location filename="dummy_qtbase.py" line="55"/>
         <source>Help</source>
-        <translation type="unfinished"></translation>
+        <translation>Ajuda</translation>
     </message>
     <message>
         <location filename="dummy_qtbase.py" line="56"/>
         <source>Apply</source>
-        <translation type="unfinished"></translation>
+        <translation>Aplicar</translation>
     </message>
     <message>
         <location filename="dummy_qtbase.py" line="57"/>
         <source>Reset</source>
-        <translation type="unfinished"></translation>
+        <translation>Redefinir</translation>
     </message>
     <message>
         <location filename="dummy_qtbase.py" line="58"/>
         <source>Restore Defaults</source>
-        <translation type="unfinished"></translation>
+        <translation>Redefinir para o Padrão</translation>
     </message>
 </context>
 <context>
@@ -4780,32 +4780,32 @@
     <message>
         <location filename="dummy_qtbase.py" line="67"/>
         <source>&amp;Next &gt;</source>
-        <translation type="unfinished"></translation>
+        <translation>&amp;Próximo &gt;</translation>
     </message>
     <message>
         <location filename="dummy_qtbase.py" line="63"/>
         <source>Go Back</source>
-        <translation type="unfinished"></translation>
+        <translation>Voltar</translation>
     </message>
     <message>
         <location filename="dummy_qtbase.py" line="64"/>
         <source>&lt; &amp;Back</source>
-        <translation type="unfinished"></translation>
+        <translation>&lt; &amp;Voltar</translation>
     </message>
     <message>
         <location filename="dummy_qtbase.py" line="65"/>
         <source>Continue</source>
-        <translation type="unfinished"></translation>
+        <translation>Continuar</translation>
     </message>
     <message>
         <location filename="dummy_qtbase.py" line="66"/>
         <source>&amp;Next</source>
-        <translation type="unfinished"></translation>
+        <translation>&amp;Próximo</translation>
     </message>
     <message>
         <location filename="dummy_qtbase.py" line="68"/>
         <source>Commit</source>
-        <translation type="unfinished"></translation>
+        <translation>Confirmar</translation>
     </message>
     <message>
         <location filename="dummy_qtbase.py" line="69"/>
@@ -4815,7 +4815,7 @@
     <message>
         <location filename="dummy_qtbase.py" line="70"/>
         <source>&amp;Finish</source>
-        <translation type="unfinished"></translation>
+        <translation>&amp;Finalizar</translation>
     </message>
     <message>
         <location filename="dummy_qtbase.py" line="72"/>
@@ -4825,7 +4825,7 @@
     <message>
         <location filename="dummy_qtbase.py" line="73"/>
         <source>Help</source>
-        <translation type="unfinished"></translation>
+        <translation>Ajuda</translation>
     </message>
     <message>
         <location filename="dummy_qtbase.py" line="74"/>
