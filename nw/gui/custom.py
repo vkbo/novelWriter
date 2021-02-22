@@ -36,7 +36,8 @@ from PyQt5.QtCore import (
 from PyQt5.QtWidgets import (
     QGridLayout, QLabel, QWidget, QVBoxLayout, QHBoxLayout, QSizePolicy,
     QAbstractButton, QDialog, QTabWidget, QTabBar, QStyle, QDialogButtonBox,
-    QStylePainter, QStyleOptionTab, QListWidget, QListWidgetItem, QFrame
+    QStylePainter, QStyleOptionTab, QListWidget, QListWidgetItem, QFrame,
+    QLineEdit
 )
 
 from nw.constants import trConst, nwUnicode, nwQuotes
@@ -61,6 +62,7 @@ class QConfigLayout(QGridLayout):
         wSp = nw.CONFIG.pxInt(8)
         self.setHorizontalSpacing(wSp)
         self.setVerticalSpacing(wSp)
+        self.setColumnStretch(0, 1)
 
         return
 
@@ -151,6 +153,7 @@ class QConfigLayout(QGridLayout):
             labelBox.addWidget(qLabel)
             labelBox.addWidget(qHelp)
             labelBox.setSpacing(0)
+            labelBox.addStretch(1)
 
             thisEntry["help"] = qHelp
             self.addLayout(labelBox, self._nextRow, 0, 1, 1, Qt.AlignLeft | Qt.AlignTop)
@@ -163,15 +166,22 @@ class QConfigLayout(QGridLayout):
             controlBox.addWidget(qWidget, 0, Qt.AlignVCenter)
             controlBox.addWidget(QLabel(theUnit), 0, Qt.AlignVCenter)
             controlBox.setSpacing(wSp)
-            self.addLayout(controlBox, self._nextRow, 1, 1, 1, Qt.AlignRight | Qt.AlignVCenter)
+            self.addLayout(controlBox, self._nextRow, 1, 1, 1, Qt.AlignRight | Qt.AlignTop)
+
         elif theButton is not None:
             controlBox = QHBoxLayout()
             controlBox.addWidget(qWidget, 0, Qt.AlignVCenter)
             controlBox.addWidget(theButton, 0, Qt.AlignVCenter)
             controlBox.setSpacing(wSp)
-            self.addLayout(controlBox, self._nextRow, 1, 1, 1, Qt.AlignRight | Qt.AlignVCenter)
+            self.addLayout(controlBox, self._nextRow, 1, 1, 1, Qt.AlignRight | Qt.AlignTop)
+
         else:
-            self.addWidget(qWidget, self._nextRow, 1, 1, 1, Qt.AlignRight | Qt.AlignVCenter)
+            if isinstance(theWidget, QLineEdit):
+                qLayout = QHBoxLayout()
+                qLayout.addWidget(theWidget)
+                self.addLayout(qLayout, self._nextRow, 1, 1, 1, Qt.AlignRight | Qt.AlignTop)
+            else:
+                self.addWidget(qWidget, self._nextRow, 1, 1, 1, Qt.AlignRight | Qt.AlignTop)
 
         qLabel.setBuddy(qWidget)
 
@@ -206,6 +216,9 @@ class QHelpLabel(QLabel):
         lblFont = self.font()
         lblFont.setPointSizeF(fontSize*lblFont.pointSizeF())
         self.setFont(lblFont)
+
+        self.setWordWrap(True)
+        self.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
 
         return
 
@@ -409,6 +422,7 @@ class VerticalTabBar(QTabBar):
 
     def __init__(self, theParent=None):
         QTabBar.__init__(self, parent=theParent)
+        self._mW = nw.CONFIG.pxInt(150)
         return
 
     def tabSizeHint(self, theIndex):
@@ -416,6 +430,7 @@ class VerticalTabBar(QTabBar):
         """
         tSize = QTabBar.tabSizeHint(self, theIndex)
         tSize.transpose()
+        tSize.setWidth(min(tSize.width(), self._mW))
         return tSize
 
     def paintEvent(self, theEvent):
