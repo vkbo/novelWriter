@@ -104,6 +104,7 @@ class Config:
 
         ## Sizes
         self.winGeometry   = [1200, 650]
+        self.prefGeometry  = [700, 615]
         self.treeColWidth  = [200, 50, 30]
         self.novelColWidth = [200, 50]
         self.projColWidth  = [200, 60, 140]
@@ -472,6 +473,9 @@ class Config:
         self.winGeometry = self._parseLine(
             cnfParse, cnfSec, "geometry", self.CNF_I_LST, self.winGeometry
         )
+        self.prefGeometry = self._parseLine(
+            cnfParse, cnfSec, "preferences", self.CNF_I_LST, self.prefGeometry
+        )
         self.treeColWidth = self._parseLine(
             cnfParse, cnfSec, "treecols", self.CNF_I_LST, self.treeColWidth
         )
@@ -701,6 +705,7 @@ class Config:
         cnfSec = "Sizes"
         cnfParse.add_section(cnfSec)
         cnfParse.set(cnfSec, "geometry",    self._packList(self.winGeometry))
+        cnfParse.set(cnfSec, "preferences", self._packList(self.prefGeometry))
         cnfParse.set(cnfSec, "treecols",    self._packList(self.treeColWidth))
         cnfParse.set(cnfSec, "novelcols",   self._packList(self.novelColWidth))
         cnfParse.set(cnfSec, "projcols",    self._packList(self.projColWidth))
@@ -921,6 +926,12 @@ class Config:
             self.confChanged = True
         return True
 
+    def setPreferencesSize(self, newWidth, newHeight):
+        self.prefGeometry[0] = int(newWidth/self.guiScale)
+        self.prefGeometry[1] = int(newHeight/self.guiScale)
+        self.confChanged = True
+        return True
+
     def setTreeColWidths(self, colWidths):
         self.treeColWidth = [int(x/self.guiScale) for x in colWidths]
         self.confChanged = True
@@ -983,6 +994,9 @@ class Config:
 
     def getWinSize(self):
         return [int(x*self.guiScale) for x in self.winGeometry]
+
+    def getPreferencesSize(self):
+        return [int(x*self.guiScale) for x in self.prefGeometry]
 
     def getTreeColWidths(self):
         return [int(x*self.guiScale) for x in self.treeColWidth]

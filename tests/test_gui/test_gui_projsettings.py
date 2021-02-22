@@ -79,7 +79,7 @@ def testGuiProjSettings_Dialog(qtbot, monkeypatch, nwGUI, fncDir, fncProj, outDi
 
     assert projEdit.tabMain.editName.text() == "New Project"
     assert projEdit.tabMain.editTitle.text() == ""
-    assert projEdit.tabMain.editAuthors.toPlainText() == "Jane Smith\nJohn Smith\n"
+    assert projEdit.tabMain.editAuthors.toPlainText() == "Jane Smith\nJohn Smith"
     assert projEdit.tabMain.spellLang.currentData() == "en"
     assert projEdit.tabMain.doBackup.isChecked() is False
 
