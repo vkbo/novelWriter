@@ -248,7 +248,7 @@ _These Release Notes also include the changes from 1.1 RC 1._
 **Bugfixes**
 
 * A `None` check in the details panel below the project tree was missing, resulting in an
-  occasional error message being printed to the logging output. The error was otherwise handles, so
+  occasional error message being printed to the logging output. The error was otherwise handled, so
   this is mainly a fix to prevent the error message. PR #639.
 
 **User Interface**
