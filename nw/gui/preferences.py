@@ -74,12 +74,14 @@ class GuiPreferences(PagedDialog):
         self.buttonBox.rejected.connect(self._doClose)
         self.addControls(self.buttonBox)
 
+        self.resize(*self.mainConf.getPreferencesSize())
+
         logger.debug("GuiPreferences initialisation complete")
 
         return
 
     ##
-    #  Buttons
+    #  Slots
     ##
 
     def _doSave(self):
@@ -102,6 +104,7 @@ class GuiPreferences(PagedDialog):
                 nwAlert.INFO
             )
 
+        self._saveWindowSize()
         self.accept()
 
         return
@@ -109,7 +112,20 @@ class GuiPreferences(PagedDialog):
     def _doClose(self):
         """Close the preferences without saving the changes.
         """
+        self._saveWindowSize()
         self.reject()
+        return
+
+    ##
+    #  Internal Functions
+    ##
+
+    def _saveWindowSize(self):
+        """Save the dialog window size.
+        """
+        winWidth  = self.mainConf.rpxInt(self.width())
+        winHeight = self.mainConf.rpxInt(self.height())
+        self.mainConf.setPreferencesSize(winWidth, winHeight)
         return
 
 # END Class GuiPreferences
