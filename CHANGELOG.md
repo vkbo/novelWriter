@@ -9,7 +9,7 @@ Please take this into account when working on your live projects.
 
 #### The Build Novel Project Tool
 
-The main changes in this release are to the Build Novel Project tool. The Open Document export, as
+The main changes for version 1.2 are to the Build Novel Project tool. The Open Document export, as
 well as the Markdown export, is now handled entirely by code written for novelWriter. Previously,
 these export features depended on the underlying Qt library's save routines connected to the
 preview document shown in the build dialog. Using this method of export both meant that the content
