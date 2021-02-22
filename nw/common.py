@@ -167,7 +167,7 @@ def colRange(rgbStart, rgbEnd, nStep):
         cA = rgbStart[c]
         cB = rgbEnd[c]
         dC[c] = (cB-cA)/(nStep-1)
-    print(dC)
+
     retCol = [rgbStart]
     for n in range(nStep):
         if n > 0 and n < nStep:
@@ -177,7 +177,6 @@ def colRange(rgbStart, rgbEnd, nStep):
                 int(retCol[n-1][2] + dC[2]),
             ])
     retCol[-1] = rgbEnd
-    print(retCol)
 
     return retCol
 
