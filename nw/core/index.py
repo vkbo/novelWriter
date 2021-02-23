@@ -477,9 +477,17 @@ class NWIndex():
             return False
 
         sTitle = "T%06d" % nTitle
-        if sTitle in self._refIndex[tHandle] and theBits[0] != nwKeyWords.TAG_KEY:
-            for aVal in theBits[1:]:
-                self._refIndex[tHandle][sTitle]["tags"].append([nLine, theBits[0], aVal])
+        if sTitle not in self._refIndex[tHandle]:
+            return False
+
+        if theBits[0] == nwKeyWords.TAG_KEY:
+            return False
+
+        if theBits[0] not in nwKeyWords.VALID_KEYS:
+            return False
+
+        for aVal in theBits[1:]:
+            self._refIndex[tHandle][sTitle]["tags"].append([nLine, theBits[0], aVal])
 
         return True
 
