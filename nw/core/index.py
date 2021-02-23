@@ -717,7 +717,7 @@ class NWIndex():
         for refTitle in self._refIndex[tHandle]:
             for aTag in self._refIndex[tHandle][refTitle].get("tags", []):
                 if len(aTag) == 3 and (sTitle is None or sTitle == refTitle):
-                    if aTag[1] in theRefs: # Future-compatible. Check can be removed in 1.2.
+                    if aTag[1] in theRefs:
                         theRefs[aTag[1]].append(aTag[2])
 
         return theRefs
