@@ -199,6 +199,8 @@ def testCoreIndex_CheckThese(nwMinimal, dummyGUI):
     assert theIndex.scanText(cHandle, (
         "# Jane Smith\n"
         "@tag: Jane\n"
+        "@tag:\n"
+        "@:\n"
     ))
     assert theIndex.scanText(nHandle, (
         "# Hello World!\n"

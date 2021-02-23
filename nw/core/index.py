@@ -321,8 +321,7 @@ class NWIndex():
                     nTitle = nLine
 
             elif aLine.startswith("@"):
-                self._indexNoteRef(tHandle, aLine, nLine, nTitle)
-                self._indexTag(tHandle, aLine, nLine, nTitle, itemClass)
+                self._indexKeyword(tHandle, aLine, nLine, nTitle, itemClass)
 
             elif aLine.startswith("%"):
                 if nTitle > 0:
@@ -463,41 +462,28 @@ class NWIndex():
                     self._noteIndex[tHandle][sTitle]["updated"] = round(time())
         return
 
-    def _indexNoteRef(self, tHandle, aLine, nLine, nTitle):
+    def _indexKeyword(self, tHandle, aLine, nLine, nTitle, itemClass):
         """Validate and save the information about a reference to a tag
         in another file.
         """
         isValid, theBits, _ = self.scanThis(aLine)
-        if not isValid or len(theBits) == 0:
-            return False
-
-        sTitle = "T%06d" % nTitle
-        if sTitle not in self._refIndex[tHandle]:
-            return False
-
-        if theBits[0] == nwKeyWords.TAG_KEY:
-            return False
+        if not isValid or len(theBits) < 2:
+            logger.warning("Skipping keyword with %d value(s) in %s" % (len(theBits), tHandle))
+            return
 
         if theBits[0] not in nwKeyWords.VALID_KEYS:
-            return False
+            logger.warning("Skipping invalid keyword '%s' in %s" % (theBits[0], tHandle))
+            return
 
-        for aVal in theBits[1:]:
-            self._refIndex[tHandle][sTitle]["tags"].append([nLine, theBits[0], aVal])
-
-        return True
-
-    def _indexTag(self, tHandle, aLine, nLine, nTitle, itemClass):
-        """Validate and save the information from a tag.
-        """
-        isValid, theBits, thePos = self.scanThis(aLine)
-        if not isValid or len(theBits) != 2:
-            return False
-
+        sTitle = "T%06d" % nTitle
         if theBits[0] == nwKeyWords.TAG_KEY:
-            sTitle = "T%06d" % nTitle
             self._tagIndex[theBits[1]] = [nLine, tHandle, itemClass.name, sTitle]
 
-        return True
+        elif sTitle in self._refIndex[tHandle]:
+            for aVal in theBits[1:]:
+                self._refIndex[tHandle][sTitle]["tags"].append([nLine, theBits[0], aVal])
+
+        return
 
     ##
     #  Check @ Lines
