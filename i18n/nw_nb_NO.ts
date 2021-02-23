@@ -3675,8 +3675,8 @@
     </message>
     <message>
         <location filename="../nw/gui/projsettings.py" line="360"/>
-        <source>Cannot delete status item that is in use.</source>
-        <translation>Kan ikke slette statusnivåer som er i bruk.</translation>
+        <source>Cannot delete a status item that is in use.</source>
+        <translation>Kan ikke slette et statusnivå som er i bruk.</translation>
     </message>
     <message>
         <location filename="../nw/gui/projsettings.py" line="392"/>

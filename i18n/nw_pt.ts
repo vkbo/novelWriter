@@ -3675,7 +3675,7 @@
     </message>
     <message>
         <location filename="../nw/gui/projsettings.py" line="360"/>
-        <source>Cannot delete status item that is in use.</source>
+        <source>Cannot delete a status item that is in use.</source>
         <translation>Não é possível remover um item de status que estja em uso.</translation>
     </message>
     <message>
