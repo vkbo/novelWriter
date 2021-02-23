@@ -169,11 +169,11 @@ class GuiProjectEditMain(QWidget):
         self.mainForm.addGroupLabel(self.tr("Project Settings"))
 
         xW = self.mainConf.pxInt(250)
-        xH = self.mainConf.pxInt(100)
+        xH = self.mainConf.pxInt(80)
 
         self.editName = QLineEdit()
         self.editName.setMaxLength(200)
-        self.editName.setFixedWidth(xW)
+        self.editName.setMaximumWidth(xW)
         self.editName.setText(self.theProject.projName)
         self.mainForm.addRow(
             self.tr("Working title"),
@@ -183,7 +183,7 @@ class GuiProjectEditMain(QWidget):
 
         self.editTitle = QLineEdit()
         self.editTitle.setMaxLength(200)
-        self.editTitle.setFixedWidth(xW)
+        self.editTitle.setMaximumWidth(xW)
         self.editTitle.setText(self.theProject.bookTitle)
         self.mainForm.addRow(
             self.tr("Novel title"),
@@ -192,12 +192,9 @@ class GuiProjectEditMain(QWidget):
         )
 
         self.editAuthors = QPlainTextEdit()
-        bookAuthors = ""
-        for bookAuthor in self.theProject.bookAuthors:
-            bookAuthors += bookAuthor+"\n"
-        self.editAuthors.setPlainText(bookAuthors)
-        self.editAuthors.setFixedHeight(xH)
-        self.editAuthors.setFixedWidth(xW)
+        self.editAuthors.setMinimumHeight(xH)
+        self.editAuthors.setMaximumWidth(xW)
+        self.editAuthors.setPlainText("\n".join(self.theProject.bookAuthors))
         self.mainForm.addRow(
             self.tr("Author(s)"),
             self.editAuthors,
@@ -205,7 +202,7 @@ class GuiProjectEditMain(QWidget):
         )
 
         self.spellLang = QComboBox(self)
-        self.spellLang.setFixedWidth(xW)
+        self.spellLang.setMaximumWidth(xW)
         theDict = self.theParent.docEditor.theDict
         self.spellLang.addItem(self.tr("Default"), "None")
         if theDict is not None:
