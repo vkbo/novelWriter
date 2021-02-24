@@ -80,6 +80,13 @@ _These Release Notes also include the changes from 1.2 Beta 1._
 
 ### Detailed Changelog
 
+**Bugfixes**
+
+* If a tag or reference keyword was mistyped, it would still be indexed and put into the index.
+  This caused the index to be deemed invalid on the next loading of the project, triggering a
+  rebuild. A check has been added to the code parsing the lines starting with `@` to ensure only
+  valid keywords are written into the index. Issue #688. PR #690.
+
 **New Features**
 
 * Added a tool to edit the project's user dictionary. This is the dictionary where the "Add Word to
