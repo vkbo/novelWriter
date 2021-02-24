@@ -1330,7 +1330,7 @@ class GuiDocEditor(QTextEdit):
 
         else:
             self.theParent.makeAlert(
-                self.tr("Please selection some text before calling replace quotes."),
+                self.tr("Please select some text before calling replace quotes."),
                 nwAlert.ERROR
             )
 

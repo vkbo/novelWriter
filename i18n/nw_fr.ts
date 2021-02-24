@@ -350,7 +350,7 @@
     </message>
     <message>
         <location filename="../nw/gui/about.py" line="95"/>
-        <source>License</source>
+        <source>Licence</source>
         <translation>Licence</translation>
     </message>
     <message>
@@ -380,7 +380,7 @@
     </message>
     <message>
         <location filename="../nw/gui/about.py" line="146"/>
-        <source>See the License tab for the full license text, or visit the GNU website at {0} for more details.</source>
+        <source>See the Licence tab for the full licence text, or visit the GNU website at {0} for more details.</source>
         <translation>Ouvrez l&apos;onglet Licence pour voir le texte complet de la licence (en anglais), ou visitez le site de GNU à l&apos;adresse {0} pour en lire une traduction ou pour obtenir plus de détails.</translation>
     </message>
     <message>
@@ -400,7 +400,7 @@
     </message>
     <message>
         <location filename="../nw/gui/about.py" line="198"/>
-        <source>License: {0}</source>
+        <source>Licence: {0}</source>
         <translation>Licence: {0}</translation>
     </message>
     <message>
@@ -678,7 +678,7 @@
     </message>
     <message>
         <location filename="../nw/gui/build.py" line="471"/>
-        <source>JSON + novelWriters Markdown (.json)</source>
+        <source>JSON + novelWriter Markdown (.json)</source>
         <translation>JSON + Markdown novelWriter (.json)</translation>
     </message>
     <message>
@@ -1008,7 +1008,7 @@
     </message>
     <message>
         <location filename="../nw/gui/doceditor.py" line="1332"/>
-        <source>Please selection some text before calling replace quotes.</source>
+        <source>Please select some text before calling replace quotes.</source>
         <translation>Veuillez sélectionner du texte avant de demander le remplacement des guillemets.</translation>
     </message>
 </context>
@@ -2522,11 +2522,6 @@
         <translation>Statistiques d&apos;écriture</translation>
     </message>
     <message>
-        <location filename="../nw/gui/mainmenu.py" line="992"/>
-        <source>Show the writing statistics dialog</source>
-        <translation>Afficher le dialogue des statistiques d&apos;écriture</translation>
-    </message>
-    <message>
         <location filename="../nw/gui/mainmenu.py" line="999"/>
         <source>Preferences</source>
         <translation>Préférences</translation>
@@ -2605,6 +2600,11 @@
         <location filename="../nw/gui/mainmenu.py" line="1078"/>
         <source>Open the novelWriter website at {0}</source>
         <translation>Ouvrir le site web de novelWriter à {0}</translation>
+    </message>
+    <message>
+        <location filename="../nw/gui/mainmenu.py" line="992"/>
+        <source>Show the writing statistics dialogue</source>
+        <translation>Afficher le dialogue des statistiques d&apos;écriture</translation>
     </message>
 </context>
 <context>
@@ -3283,7 +3283,7 @@
     </message>
     <message>
         <location filename="../nw/gui/preferences.py" line="380"/>
-        <source>Can be overridden for individual projects in project settings.</source>
+        <source>Can be overridden for individual projects in Project Settings.</source>
         <translation>Peut être invalidé pour des projets spécifiques dans leurs paramètres.</translation>
     </message>
     <message>
@@ -4411,12 +4411,12 @@
     </message>
     <message>
         <location filename="../nw/core/project.py" line="989"/>
-        <source>You must set a valid backup path in preferences to use the automatic project backup feature.</source>
+        <source>You must set a valid backup path in Preferences to use the automatic project backup feature.</source>
         <translation>Vous devez spécifier un répertoire de sauvegarde valide dans les préférences du projet avant d&apos;utiliser la fonction de sauvegarde automatique.</translation>
     </message>
     <message>
         <location filename="../nw/core/project.py" line="998"/>
-        <source>You must set a valid project name in project settings to use the automatic project backup feature.</source>
+        <source>You must set a valid project name in Project Settings to use the automatic project backup feature.</source>
         <translation>Vous devez spécifier un titre de travail valide dans les préférences du projet avant d&apos;utiliser la fonction de sauvegarde automatique.</translation>
     </message>
     <message>

@@ -989,7 +989,7 @@ class GuiMainMenu(QMenuBar):
 
         # Tools > Writing Stats
         self.aWritingStats = QAction(self.tr("Writing Statistics"), self)
-        self.aWritingStats.setStatusTip(self.tr("Show the writing statistics dialog"))
+        self.aWritingStats.setStatusTip(self.tr("Show the writing statistics dialogue"))
         self.aWritingStats.setShortcut("F6")
         self.aWritingStats.triggered.connect(lambda: self.theParent.showWritingStatsDialog())
         self.toolsMenu.addAction(self.aWritingStats)
