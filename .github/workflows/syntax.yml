@@ -11,7 +11,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Python Setup
-        uses: actions/setup-python@v1
+        uses: actions/setup-python@v2
         with:
           python-version: 3
           architecture: x64
