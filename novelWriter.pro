@@ -32,5 +32,6 @@ SOURCES += \
     nw/guimain.py
 
 TRANSLATIONS += \
-    i18n/nw_pt.ts \
-    i18n/nw_nb_NO.ts
+    i18n/nw_fr.ts \
+    i18n/nw_nb_NO.ts \
+    i18n/nw_pt.ts
