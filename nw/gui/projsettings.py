@@ -169,7 +169,7 @@ class GuiProjectEditMain(QWidget):
         self.mainForm.addGroupLabel(self.tr("Project Settings"))
 
         xW = self.mainConf.pxInt(250)
-        xH = self.mainConf.pxInt(80)
+        xH = round(4.8*self.theParent.theTheme.fontPixelSize)
 
         self.editName = QLineEdit()
         self.editName.setMaxLength(200)
@@ -192,7 +192,7 @@ class GuiProjectEditMain(QWidget):
         )
 
         self.editAuthors = QPlainTextEdit()
-        self.editAuthors.setMinimumHeight(xH)
+        self.editAuthors.setMaximumHeight(xH)
         self.editAuthors.setMaximumWidth(xW)
         self.editAuthors.setPlainText("\n".join(self.theProject.bookAuthors))
         self.mainForm.addRow(
