@@ -55,7 +55,7 @@ def testGuiAbout_Dialog(qtbot, monkeypatch, nwGUI):
     assert msgAbout.pageNotes.toPlainText() == "Error loading release notes text ..."
 
     msgAbout._fillLicensePage()
-    assert msgAbout.pageLicense.toPlainText() == "Error loading license text ..."
+    assert msgAbout.pageLicense.toPlainText() == "Error loading licence text ..."
 
     msgAbout.showReleaseNotes()
     assert msgAbout.tabBox.currentWidget() == msgAbout.pageNotes
