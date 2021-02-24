@@ -988,7 +988,7 @@ class NWProject():
             if not os.path.isdir(self.mainConf.backupPath):
                 self.theParent.makeAlert(
                     self.tr(
-                        "You must set a valid backup path in preferences to use "
+                        "You must set a valid backup path in Preferences to use "
                         "the automatic project backup feature."
                     ), nwAlert.WARN
                 )
@@ -997,7 +997,7 @@ class NWProject():
             if self.projName == "":
                 self.theParent.makeAlert(
                     self.tr(
-                        "You must set a valid project name in project settings to "
+                        "You must set a valid project name in Project Settings to "
                         "use the automatic project backup feature."
                     ), nwAlert.WARN
                 )
