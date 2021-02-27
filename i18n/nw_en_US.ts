@@ -1,74 +1,75 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!DOCTYPE TS><TS version="2.0" language="en_US" sourcelanguage="en_GB">
+<!DOCTYPE TS>
+<TS version="2.1" language="en_US" sourcelanguage="en_GB">
 <context>
     <name>Common</name>
     <message>
-        <location filename="../nw/common.py" line="270"/>
+        <location filename="../nw/common.py" line="240"/>
         <source>in the future</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../nw/common.py" line="274"/>
+        <location filename="../nw/common.py" line="244"/>
         <source>just now</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../nw/common.py" line="278"/>
+        <location filename="../nw/common.py" line="248"/>
         <source>a minute ago</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../nw/common.py" line="282"/>
+        <location filename="../nw/common.py" line="252"/>
         <source>{0} minutes ago</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../nw/common.py" line="286"/>
+        <location filename="../nw/common.py" line="256"/>
         <source>an hour ago</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../nw/common.py" line="290"/>
+        <location filename="../nw/common.py" line="260"/>
         <source>{0} hours ago</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../nw/common.py" line="294"/>
+        <location filename="../nw/common.py" line="264"/>
         <source>a day ago</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../nw/common.py" line="298"/>
+        <location filename="../nw/common.py" line="268"/>
         <source>{0} days ago</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../nw/common.py" line="302"/>
+        <location filename="../nw/common.py" line="272"/>
         <source>a week ago</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../nw/common.py" line="306"/>
+        <location filename="../nw/common.py" line="276"/>
         <source>{0} weeks ago</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../nw/common.py" line="310"/>
+        <location filename="../nw/common.py" line="280"/>
         <source>a month ago</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../nw/common.py" line="314"/>
+        <location filename="../nw/common.py" line="284"/>
         <source>{0} months ago</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../nw/common.py" line="318"/>
+        <location filename="../nw/common.py" line="288"/>
         <source>a year ago</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../nw/common.py" line="322"/>
+        <location filename="../nw/common.py" line="292"/>
         <source>{0} years ago</source>
         <translation></translation>
     </message>
@@ -3537,57 +3538,57 @@
 <context>
     <name>GuiProjectEditMain</name>
     <message>
-        <location filename="../nw/gui/projsettings.py" line="169"/>
+        <location filename="../nw/gui/projsettings.py" line="173"/>
         <source>Project Settings</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../nw/gui/projsettings.py" line="178"/>
+        <location filename="../nw/gui/projsettings.py" line="182"/>
         <source>Working title</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../nw/gui/projsettings.py" line="178"/>
+        <location filename="../nw/gui/projsettings.py" line="182"/>
         <source>Should be set only once.</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../nw/gui/projsettings.py" line="188"/>
+        <location filename="../nw/gui/projsettings.py" line="192"/>
         <source>Novel title</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../nw/gui/projsettings.py" line="188"/>
+        <location filename="../nw/gui/projsettings.py" line="192"/>
         <source>Change whenever you want!</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../nw/gui/projsettings.py" line="198"/>
+        <location filename="../nw/gui/projsettings.py" line="202"/>
         <source>Author(s)</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../nw/gui/projsettings.py" line="198"/>
+        <location filename="../nw/gui/projsettings.py" line="202"/>
         <source>One name per line.</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../nw/gui/projsettings.py" line="207"/>
+        <location filename="../nw/gui/projsettings.py" line="211"/>
         <source>Default</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../nw/gui/projsettings.py" line="214"/>
+        <location filename="../nw/gui/projsettings.py" line="218"/>
         <source>Spell check language</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../nw/gui/projsettings.py" line="228"/>
+        <location filename="../nw/gui/projsettings.py" line="232"/>
         <source>Overrides main preferences.</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../nw/gui/projsettings.py" line="228"/>
+        <location filename="../nw/gui/projsettings.py" line="232"/>
         <source>No backup on close</source>
         <translation></translation>
     </message>
@@ -3595,91 +3596,116 @@
 <context>
     <name>GuiProjectEditReplace</name>
     <message>
-        <location filename="../nw/gui/projsettings.py" line="455"/>
+        <location filename="../nw/gui/projsettings.py" line="508"/>
         <source>Keyword</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../nw/gui/projsettings.py" line="455"/>
+        <location filename="../nw/gui/projsettings.py" line="508"/>
         <source>Replace With</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../nw/gui/projsettings.py" line="475"/>
+        <location filename="../nw/gui/projsettings.py" line="547"/>
         <source>Save entry</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../nw/gui/projsettings.py" line="476"/>
+        <location filename="../nw/gui/projsettings.py" line="527"/>
         <source>Add new entry</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../nw/gui/projsettings.py" line="477"/>
+        <location filename="../nw/gui/projsettings.py" line="531"/>
         <source>Delete selected entry</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../nw/gui/projsettings.py" line="494"/>
+        <location filename="../nw/gui/projsettings.py" line="502"/>
         <source>Text Replace List for Preview and Export</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location filename="../nw/gui/projsettings.py" line="538"/>
+        <source>Select item to edit</source>
         <translation></translation>
     </message>
 </context>
 <context>
     <name>GuiProjectEditStatus</name>
     <message>
-        <location filename="../nw/gui/projsettings.py" line="274"/>
-        <source>New</source>
-        <translation></translation>
-    </message>
-    <message>
-        <location filename="../nw/gui/projsettings.py" line="275"/>
-        <source>Delete</source>
-        <translation></translation>
-    </message>
-    <message>
-        <location filename="../nw/gui/projsettings.py" line="276"/>
+        <location filename="../nw/gui/projsettings.py" line="313"/>
         <source>Save</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../nw/gui/projsettings.py" line="279"/>
+        <location filename="../nw/gui/projsettings.py" line="309"/>
         <source>Colour</source>
         <translation>Color</translation>
     </message>
     <message>
-        <location filename="../nw/gui/projsettings.py" line="290"/>
-        <source>Name</source>
-        <translation></translation>
-    </message>
-    <message>
-        <location filename="../nw/gui/projsettings.py" line="300"/>
+        <location filename="../nw/gui/projsettings.py" line="255"/>
         <source>Novel File Status Levels</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../nw/gui/projsettings.py" line="302"/>
+        <location filename="../nw/gui/projsettings.py" line="259"/>
         <source>Note File Importance Levels</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../nw/gui/projsettings.py" line="327"/>
+        <location filename="../nw/gui/projsettings.py" line="366"/>
         <source>Select Colour</source>
         <translation>Select Color</translation>
     </message>
     <message>
-        <location filename="../nw/gui/projsettings.py" line="341"/>
+        <location filename="../nw/gui/projsettings.py" line="380"/>
         <source>New Item</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../nw/gui/projsettings.py" line="357"/>
-        <source>Cannot delete status item that is in use.</source>
+        <location filename="../nw/gui/projsettings.py" line="277"/>
+        <source>Label</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../nw/gui/projsettings.py" line="389"/>
-        <source>{0} [{1}]</source>
+        <location filename="../nw/gui/projsettings.py" line="277"/>
+        <source>Usage</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location filename="../nw/gui/projsettings.py" line="292"/>
+        <source>Add new entry</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location filename="../nw/gui/projsettings.py" line="296"/>
+        <source>Delete selected entry</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location filename="../nw/gui/projsettings.py" line="305"/>
+        <source>Select item to edit</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location filename="../nw/gui/projsettings.py" line="397"/>
+        <source>Cannot delete a status item that is in use.</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location filename="../nw/gui/projsettings.py" line="479"/>
+        <source>Not in use</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location filename="../nw/gui/projsettings.py" line="481"/>
+        <source>Used once</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location filename="../nw/gui/projsettings.py" line="483"/>
+        <source>Used by {0} items</source>
         <translation></translation>
     </message>
 </context>

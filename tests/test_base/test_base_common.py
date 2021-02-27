@@ -24,12 +24,11 @@ import time
 import pytest
 
 from nw.common import (
-    checkString, checkBool, checkInt, colRange, formatInt, transferCase,
+    checkString, checkBool, checkInt, formatInt, transferCase,
     fuzzyTime, checkHandle, formatTimeStamp, formatTime, hexToInt,
     makeFileNameSafe, isHandle, isTitleTag, isItemClass, isItemType,
     isItemLayout, numberToRoman
 )
-from tools import cmpList
 
 @pytest.mark.base
 def testBaseCommon_CheckString():
@@ -190,34 +189,6 @@ def testBaseCommon_HexToInt():
     assert hexToInt("0xffffq", 12) == 12
 
 # END Test testBaseCommon_HexToInt
-
-@pytest.mark.base
-def testBaseCommon_ColRange():
-    """Test the colRange function.
-    """
-    assert colRange([0, 0], [0, 0], 0) is None
-    assert cmpList(
-        colRange([200, 50, 0], [50, 200, 0], 1),
-        [200, 50, 0]
-    )
-    assert cmpList(
-        colRange([200, 50, 0], [50, 200, 0], 2),
-        [[200, 50, 0], [50, 200, 0]]
-    )
-    assert cmpList(
-        colRange([200, 50, 0], [50, 200, 0], 3),
-        [[200, 50, 0], [125, 125, 0], [50, 200, 0]]
-    )
-    assert cmpList(
-        colRange([200, 50, 0], [50, 200, 0], 4),
-        [[200, 50, 0], [150, 100, 0], [100, 150, 0], [50, 200, 0]]
-    )
-    assert cmpList(
-        colRange([200, 50, 0], [50, 200, 0], 5),
-        [[200, 50, 0], [162, 87, 0], [124, 124, 0], [86, 161, 0], [50, 200, 0]]
-    )
-
-# END Test testBaseCommon_ColRange
 
 @pytest.mark.base
 def testBaseCommon_FormatTimeStamp():

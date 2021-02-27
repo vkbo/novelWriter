@@ -23,8 +23,6 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 import os
 import shutil
 
-from itertools import chain
-
 from PyQt5.QtWidgets import qApp
 
 def cmpFiles(fileOne, fileTwo, ignoreLines=None):
@@ -71,18 +69,6 @@ def cmpFiles(fileOne, fileTwo, ignoreLines=None):
     foTwo.close()
 
     return not diffFound
-
-def cmpList(listOne, listTwo):
-    """Compare two iterable objects.
-    """
-    flatOne = list(chain.from_iterable([listOne]))
-    flatTwo = list(chain.from_iterable([listTwo]))
-    if len(flatOne) != len(flatTwo):
-        return False
-    for i in range(len(flatOne)):
-        if flatOne[i] != flatTwo[i]:
-            return False
-    return True
 
 def getGuiItem(theName):
     """Returns a QtWidget based on its objectName.
