@@ -29,7 +29,7 @@ from tools import cmpFiles, getGuiItem
 from PyQt5.QtGui import QColor
 from PyQt5.QtCore import Qt
 from PyQt5.QtWidgets import (
-    QDialog, QAction, QMessageBox, QColorDialog, QListWidgetItem
+    QDialog, QAction, QMessageBox, QColorDialog, QTreeWidgetItem
 )
 
 from nw.gui import GuiProjectSettings
@@ -110,7 +110,7 @@ def testGuiProjSettings_Dialog(qtbot, monkeypatch, nwGUI, fncDir, fncProj, outDi
 
     assert projEdit.tabStatus.colChanged is False
     assert projEdit.tabStatus.getNewList() is None
-    assert projEdit.tabStatus.listBox.count() == 4
+    assert projEdit.tabStatus.listBox.topLevelItemCount() == 4
 
     # Fake drag'n'drop should change changed status
     projEdit.tabStatus._rowsMoved()
@@ -119,30 +119,32 @@ def testGuiProjSettings_Dialog(qtbot, monkeypatch, nwGUI, fncDir, fncProj, outDi
 
     projEdit.tabStatus.listBox.clearSelection()
     assert projEdit.tabStatus._getSelectedItem() is None
-    projEdit.tabStatus.listBox.item(0).setSelected(True)
-    assert isinstance(projEdit.tabStatus._getSelectedItem(), QListWidgetItem)
+    projEdit.tabStatus.listBox.topLevelItem(0).setSelected(True)
+    assert isinstance(projEdit.tabStatus._getSelectedItem(), QTreeWidgetItem)
 
     # Can't delete the first item (it's in use)
-    projEdit.tabStatus.listBox.item(0).setSelected(True)
+    projEdit.tabStatus.listBox.clearSelection()
+    projEdit.tabStatus.listBox.topLevelItem(0).setSelected(True)
     qtbot.mouseClick(projEdit.tabStatus.delButton, Qt.LeftButton)
-    assert projEdit.tabStatus.listBox.count() == 4
+    assert projEdit.tabStatus.listBox.topLevelItemCount() == 4
 
     # Can delete the third item
-    projEdit.tabStatus.listBox.item(2).setSelected(True)
+    projEdit.tabStatus.listBox.clearSelection()
+    projEdit.tabStatus.listBox.topLevelItem(2).setSelected(True)
     qtbot.mouseClick(projEdit.tabStatus.delButton, Qt.LeftButton)
-    assert projEdit.tabStatus.listBox.count() == 3
+    assert projEdit.tabStatus.listBox.topLevelItemCount() == 3
 
     # Add a new item
     monkeypatch.setattr(QColorDialog, "getColor", lambda *args: QColor(20, 30, 40))
-    qtbot.mouseClick(projEdit.tabStatus.newButton, Qt.LeftButton)
-    projEdit.tabStatus.listBox.item(3).setSelected(True)
+    qtbot.mouseClick(projEdit.tabStatus.addButton, Qt.LeftButton)
+    projEdit.tabStatus.listBox.topLevelItem(3).setSelected(True)
     for n in range(8):
         qtbot.keyClick(projEdit.tabStatus.editName, Qt.Key_Backspace, delay=typeDelay)
     for c in "Final":
         qtbot.keyClick(projEdit.tabStatus.editName, c, delay=typeDelay)
     qtbot.mouseClick(projEdit.tabStatus.colButton, Qt.LeftButton)
     qtbot.mouseClick(projEdit.tabStatus.saveButton, Qt.LeftButton)
-    assert projEdit.tabStatus.listBox.count() == 4
+    assert projEdit.tabStatus.listBox.topLevelItemCount() == 4
     qtbot.wait(stepDelay)
 
     assert projEdit.tabStatus.colChanged is True
@@ -157,10 +159,12 @@ def testGuiProjSettings_Dialog(qtbot, monkeypatch, nwGUI, fncDir, fncProj, outDi
     # ==============
 
     projEdit._tabBox.setCurrentWidget(projEdit.tabImport)
-    projEdit.tabImport.listBox.item(3).setSelected(True)
+    projEdit.tabStatus.listBox.clearSelection()
+    projEdit.tabImport.listBox.topLevelItem(3).setSelected(True)
     qtbot.mouseClick(projEdit.tabImport.delButton, Qt.LeftButton)
-    qtbot.mouseClick(projEdit.tabImport.newButton, Qt.LeftButton)
-    projEdit.tabImport.listBox.item(3).setSelected(True)
+    qtbot.mouseClick(projEdit.tabImport.addButton, Qt.LeftButton)
+    projEdit.tabStatus.listBox.clearSelection()
+    projEdit.tabImport.listBox.topLevelItem(3).setSelected(True)
     for n in range(8):
         qtbot.keyClick(projEdit.tabImport.editName, Qt.Key_Backspace, delay=typeDelay)
     for c in "Final":

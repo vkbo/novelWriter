@@ -388,10 +388,10 @@ class GuiProjectEditStatus(QWidget):
         """
         selItem = self._getSelectedItem()
         if selItem is not None:
-            iRow   = self.listBox.indexFromItem(selItem)
+            iRow   = self.listBox.indexOfTopLevelItem(selItem)
             selIdx = selItem.data(0, Qt.UserRole)
             if self.colCounts[selIdx] == 0:
-                self.listBox.takeItem(iRow)
+                self.listBox.takeTopLevelItem(iRow)
                 self.colChanged = True
             else:
                 self.theParent.makeAlert(
