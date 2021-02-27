@@ -392,7 +392,9 @@ class GuiProjectEditStatus(QWidget):
             )
             selItem.setIcon(self.colButton.icon())
             self.editName.setEnabled(False)
+            self.editName.setText("")
             self.colChanged = True
+
         return
 
     def _addItem(self, iName, iCol, oName, nUse):
@@ -496,7 +498,7 @@ class GuiProjectEditReplace(QWidget):
         self.editValue.setEnabled(False)
         self.editValue.setMaxLength(80)
 
-        self.saveButton = QPushButton(self.theTheme.getIcon("done"), "")
+        self.saveButton = QPushButton("Save")
         self.saveButton.setToolTip(self.tr("Save entry"))
         self.saveButton.clicked.connect(self._saveEntry)
 
@@ -511,17 +513,27 @@ class GuiProjectEditReplace(QWidget):
         # Assemble
         # ========
 
-        self.bottomBox = QHBoxLayout()
-        self.bottomBox.addWidget(self.editKey, 2)
-        self.bottomBox.addWidget(self.editValue, 3)
-        self.bottomBox.addWidget(self.saveButton)
-        self.bottomBox.addWidget(self.addButton)
-        self.bottomBox.addWidget(self.delButton)
+        self.listControls = QVBoxLayout()
+        self.listControls.addWidget(self.addButton)
+        self.listControls.addWidget(self.delButton)
+        self.listControls.addStretch(1)
+
+        self.editBox = QHBoxLayout()
+        self.editBox.addWidget(self.editKey, 4)
+        self.editBox.addWidget(self.editValue, 5)
+        self.editBox.addWidget(self.saveButton, 0)
+
+        self.mainBox = QVBoxLayout()
+        self.mainBox.addWidget(self.listBox)
+        self.mainBox.addLayout(self.editBox)
+
+        self.innerBox = QHBoxLayout()
+        self.innerBox.addLayout(self.mainBox)
+        self.innerBox.addLayout(self.listControls)
 
         self.outerBox = QVBoxLayout()
         self.outerBox.addWidget(QLabel("<b>%s</b>" % pageLabel))
-        self.outerBox.addWidget(self.listBox)
-        self.outerBox.addLayout(self.bottomBox)
+        self.outerBox.addLayout(self.innerBox)
 
         self.setLayout(self.outerBox)
 
