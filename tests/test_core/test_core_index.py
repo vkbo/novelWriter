@@ -195,14 +195,28 @@ def testCoreIndex_CheckThese(nwMinimal, dummyGUI):
 
     assert theIndex.scanText(cHandle, (
         "# Jane Smith\n"
-        "@tag: Jane"
+        "@tag: Jane\n"
+        "@tag:\n"
+        "@:\n"
     ))
     assert theIndex.scanText(nHandle, (
         "# Hello World!\n"
-        "@pov: Jane"
+        "@pov: Jane\n"
+        "@invalid: John\n" # Checks for issue #688
     ))
     assert theIndex._tagIndex == {"Jane": [2, cHandle, "CHARACTER", "T000001"]}
     assert theIndex.getNovelData(nHandle, "T000001")["title"] == "Hello World!"
+    assert theIndex.getReferences(nHandle, "T000001") == {
+        "@char": [],
+        "@custom": [],
+        "@entity": [],
+        "@focus": [],
+        "@location": [],
+        "@object": [],
+        "@plot": [],
+        "@pov": ["Jane"],
+        "@time": []
+    }
 
     assert theIndex.novelChangedSince(0)
     assert theIndex.notesChangedSince(0)
@@ -278,7 +292,7 @@ def testCoreIndex_ScanText(nwMinimal, dummyGUI):
         "This is a story about Jane Smith.\n\n"
         "Well, not really.\n"
     ))
-    assert str(theIndex._tagIndex) == "{'Jane': [2, '%s', 'CHARACTER', 'T000001']}" % cHandle
+    assert theIndex._tagIndex == {"Jane": [2, cHandle, "CHARACTER", "T000001"]}
     assert theIndex.getNovelData(nHandle, "T000001")["title"] == "Hello World!"
 
     # Check that title sections are indexed properly

@@ -380,7 +380,7 @@ class GuiPreferencesProjects(QWidget):
         self.mainForm.addRow(
             self.tr("Run backup when the project is closed"),
             self.backupOnClose,
-            self.tr("Can be overridden for individual projects in project settings.")
+            self.tr("Can be overridden for individual projects in Project Settings.")
         )
 
         ## Ask before backup

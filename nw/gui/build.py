@@ -468,7 +468,7 @@ class GuiBuildNovel(QDialog):
         self.saveJsonH.triggered.connect(lambda: self._saveDocument(self.FMT_JSON_H))
         self.saveMenu.addAction(self.saveJsonH)
 
-        self.saveJsonM = QAction(self.tr("JSON + novelWriters Markdown (.json)"), self)
+        self.saveJsonM = QAction(self.tr("JSON + novelWriter Markdown (.json)"), self)
         self.saveJsonM.triggered.connect(lambda: self._saveDocument(self.FMT_JSON_M))
         self.saveMenu.addAction(self.saveJsonM)
 

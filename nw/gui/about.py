@@ -92,7 +92,7 @@ class GuiAbout(QDialog):
         self.tabBox = QTabWidget()
         self.tabBox.addTab(self.pageAbout, self.tr("About"))
         self.tabBox.addTab(self.pageNotes, self.tr("Release"))
-        self.tabBox.addTab(self.pageLicense, self.tr("License"))
+        self.tabBox.addTab(self.pageLicense, self.tr("Licence"))
         self.innerBox.addWidget(self.tabBox)
 
         # OK Button
@@ -165,7 +165,7 @@ class GuiAbout(QDialog):
                 "MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE."
             ),
             license3  = self.tr(
-                "See the License tab for the full license text, or visit the "
+                "See the Licence tab for the full licence text, or visit the "
                 "GNU website at {0} for more details."
             ).format(
                 "<a href='https://www.gnu.org/licenses/gpl-3.0.html'>GPL v3.0</a>"
@@ -179,7 +179,7 @@ class GuiAbout(QDialog):
                 self.tr("Theme: {0}").format(theTheme.themeName),
                 self.tr("Author: {0}").format(theTheme.themeAuthor),
                 self.tr("Credit: {0}").format(theTheme.themeCredit),
-                self.tr("License: {0}").format(
+                self.tr("Licence: {0}").format(
                     f"<a href='{theTheme.themeLicenseUrl}'>{theTheme.themeLicense}</a>"
                 )
             )
@@ -189,7 +189,7 @@ class GuiAbout(QDialog):
                 self.tr("Icons: {0}").format(theIcons.themeName),
                 self.tr("Author: {0}").format(theIcons.themeAuthor),
                 self.tr("Credit: {0}").format(theIcons.themeCredit),
-                self.tr("License: {0}").format(
+                self.tr("Licence: {0}").format(
                     f"<a href='{theIcons.themeLicenseUrl}'>{theIcons.themeLicense}</a>"
                 )
             )
@@ -199,7 +199,7 @@ class GuiAbout(QDialog):
                 self.tr("Syntax: {0}").format(theTheme.syntaxName),
                 self.tr("Author: {0}").format(theTheme.syntaxAuthor),
                 self.tr("Credit: {0}").format(theTheme.syntaxCredit),
-                self.tr("License: {0}").format(
+                self.tr("Licence: {0}").format(
                     f"<a href='{theTheme.syntaxLicenseUrl}'>{theTheme.syntaxLicense}</a>"
                 )
             )
@@ -221,7 +221,7 @@ class GuiAbout(QDialog):
         return
 
     def _fillLicensePage(self):
-        """Load the content for the License page.
+        """Load the content for the Licence page.
         """
         docPath = os.path.join(self.mainConf.assetPath, "text", "gplv3_en.htm")
         if os.path.isfile(docPath):
@@ -229,7 +229,7 @@ class GuiAbout(QDialog):
                 helpText = inFile.read()
             self.pageLicense.setHtml(helpText)
         else:
-            self.pageLicense.setHtml("Error loading license text ...")
+            self.pageLicense.setHtml("Error loading licence text ...")
         return
 
     def _setStyleSheet(self):
