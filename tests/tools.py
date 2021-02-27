@@ -23,8 +23,6 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 import os
 import shutil
 
-from itertools import chain
-
 from PyQt5.QtWidgets import qApp
 
 def cmpFiles(fileOne, fileTwo, ignoreLines=None):
