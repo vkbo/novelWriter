@@ -29,7 +29,6 @@ from nw.common import (
     makeFileNameSafe, isHandle, isTitleTag, isItemClass, isItemType,
     isItemLayout, numberToRoman
 )
-from tools import cmpList
 
 @pytest.mark.base
 def testBaseCommon_CheckString():
