@@ -2,9 +2,9 @@ name: Linux (3.7)
 
 on:
   push:
-    branches: [ main, dev ]
+    branches: [ main, testing, dev ]
   pull_request:
-    branches: [ main, dev ]
+    branches: [ main, testing, dev ]
 
 jobs:
   testLinux37:

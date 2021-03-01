@@ -1,12 +1,28 @@
 #!/usr/bin/env python3
+# -*- coding: utf-8 -*-
 """
-The main setup script for novelWriter.
+novelWriter – Main Setup Script
+===============================
+The main setup and install script for all operating systems
 
-It runs the standard setuptool.setup() with all options taken from the
-setup.cfg file.
+File History:
+Created: 2019-05-16 [0.5.1]
 
-In addition, a few specialised commands are available. These are
-described in the help text in the main section.
+This file is a part of novelWriter
+Copyright 2018–2021, Veronica Berglyd Olsen
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful, but
+WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
 
 import os
@@ -33,12 +49,14 @@ def installPackages(hostOS):
     """
     print("")
     print("Installing Dependencies")
-    print("#######################")
+    print("=======================")
     print("")
 
     installQueue = ["pip", "-r requirements.txt"]
     if hostOS == OS_DARWIN:
         installQueue.append("pyobjc")
+    elif hostOS == OS_WIN:
+        installQueue.append("pywin32")
 
     pyCmd = [sys.executable, "-m"]
     pipCmd = ["pip", "install", "--user", "--upgrade"]
@@ -213,7 +231,88 @@ def buildSampleZip():
 # =============================================================================================== #
 
 ##
-#  Make Simple Package (winpack)
+#  Make Minimal Package (minimal-zip)
+##
+
+def makeMinimalPackage(targetOS):
+    """Pack the core source file in a single zip file.
+    """
+    from nw import __version__
+    from zipfile import ZipFile, ZIP_DEFLATED
+
+    # Make sample.zip first
+    try:
+        buildSampleZip()
+    except Exception as e:
+        print("Failed with error:")
+        print(str(e))
+        sys.exit(1)
+
+    print("")
+    print("Building Minimal ZIP File")
+    print("=========================")
+    print("")
+
+    if not os.path.isdir("dist"):
+        os.mkdir("dist")
+
+    if targetOS == OS_LINUX:
+        targName = "-linux"
+    elif targetOS == OS_DARWIN:
+        targName = "-darwin"
+    elif targetOS == OS_WIN:
+        targName = "-win"
+    else:
+        targName = ""
+
+    outFile = os.path.join("dist", f"novelWriter-{__version__}-minimal{targName}.zip")
+    if os.path.isfile(outFile):
+        os.unlink(outFile)
+
+    rootFiles = ["LICENSE.md", "README.md", "CHANGELOG.md", "requirements.txt", "setup.py"]
+
+    with ZipFile(outFile, "w", compression=ZIP_DEFLATED, compresslevel=9) as zipObj:
+
+        if targetOS != OS_WIN:
+            for nRoot, _, nFiles in os.walk("setup"):
+                print("Adding Folder: %s [%d files]" % (nRoot, len(nFiles)))
+                for aFile in nFiles:
+                    zipObj.write(os.path.join(nRoot, aFile))
+
+        for nRoot, _, nFiles in os.walk("nw"):
+            if nRoot.endswith("__pycache__"):
+                print("Skipping Folder: %s" % nRoot)
+                continue
+
+            print("Adding Folder: %s [%d files]" % (nRoot, len(nFiles)))
+            for aFile in nFiles:
+                if aFile.endswith(".pyc"):
+                    print("Skipping File: %s" % aFile)
+                    continue
+                zipObj.write(os.path.join(nRoot, aFile))
+
+        if targetOS == OS_WIN:
+            zipObj.write("novelWriter.py", "novelWriter.pyw")
+            print("Adding File: novelWriter.pyw")
+            zipObj.write("setup_windows.bat")
+            print("Adding File: setup_windows.bat")
+        else:
+            zipObj.write("novelWriter.py")
+            print("Adding File: novelWriter.py")
+
+        for aFile in rootFiles:
+            assert os.path.isfile(aFile)
+            print("Adding File: %s" % aFile)
+            zipObj.write(aFile)
+
+    print("")
+    print("Built file: %s" % outFile)
+    print("")
+
+    return
+
+##
+#  Make Simple Package (pack-pyz)
 ##
 
 def makeSimplePackage(embedPython):
@@ -303,7 +402,7 @@ def makeSimplePackage(embedPython):
     print("Writing: __main__.py")
     with open(os.path.join(zipDir, "__main__.py"), mode="w") as outFile:
         outFile.write(
-            "#!\"pythonw.exe\"\n"
+            "#!/usr/bin/env python3\n"
             "\n"
             "import os\n"
             "import sys\n"
@@ -320,7 +419,7 @@ def makeSimplePackage(embedPython):
     print("")
 
     pyzFile = os.path.join(outDir, "novelWriter.pyz")
-    zipapp.create_archive(zipDir, target=pyzFile, interpreter="python3")
+    zipapp.create_archive(zipDir, target=pyzFile, interpreter="/usr/bin/env python3")
 
     # Install Dependencies
     # ====================
@@ -390,130 +489,12 @@ def makeSimplePackage(embedPython):
 
     return
 
-##
-#  Run PyInstaller on Package (freeze, onefile)
-##
-
-def freezePackage(buildWindowed, oneFile, makeSetup, hostOS):
-    """Run PyInstaller to freeze the packages. This assumes all
-    dependencies are already in place.
-    """
-    try:
-        import PyInstaller.__main__ # noqa: E402
-    except Exception:
-        print("ERROR: Package 'pyinstaller' is missing on this system")
-        sys.exit(1)
-
-    print("")
-    print("Running PyInstaller")
-    print("###################")
-    print("")
-
-    if hostOS == OS_WIN:
-        dotDot = ";"
-    else:
-        dotDot = ":"
-
-    sys.modules["FixTk"] = None
-    instOpt = [
-        "--name=novelWriter",
-        "--clean",
-        "--add-data=%s%s%s" % (os.path.join("nw", "assets"), dotDot, "assets"),
-        "--icon=%s" % os.path.join("nw", "assets", "icons", "novelwriter.ico"),
-        "--exclude-module=PyQt5.QtQml",
-        "--exclude-module=PyQt5.QtBluetooth",
-        "--exclude-module=PyQt5.QtDBus",
-        "--exclude-module=PyQt5.QtMultimedia",
-        "--exclude-module=PyQt5.QtMultimediaWidgets",
-        "--exclude-module=PyQt5.QtNetwork",
-        "--exclude-module=PyQt5.QtNetworkAuth",
-        "--exclude-module=PyQt5.QtNfc",
-        "--exclude-module=PyQt5.QtQuick",
-        "--exclude-module=PyQt5.QtQuickWidgets",
-        "--exclude-module=PyQt5.QtRemoteObjects",
-        "--exclude-module=PyQt5.QtSensors",
-        "--exclude-module=PyQt5.QtSerialPort",
-        "--exclude-module=PyQt5.QtSql",
-        "--exclude-module=FixTk",
-        "--exclude-module=tcl",
-        "--exclude-module=tk",
-        "--exclude-module=_tkinter",
-        "--exclude-module=tkinter",
-        "--exclude-module=Tkinter",
-    ]
-
-    if buildWindowed:
-        instOpt.append("--windowed")
-
-    if oneFile and not makeSetup:
-        instOpt.append("--onefile")
-    else:
-        instOpt.append("--onedir")
-
-    instOpt.append("novelWriter.py")
-
-    # Make sample.zip first
-    try:
-        buildSampleZip()
-    except Exception as e:
-        print("Failed with error:")
-        print(str(e))
-        sys.exit(1)
-
-    PyInstaller.__main__.run(instOpt)
-
-    if not oneFile:
-        # These files are not needed, and take up a fair bit of space.
-        delFiles = []
-        if hostOS == OS_WIN:
-            delFiles = [
-                "Qt5DBus.dll",
-                "Qt5Network.dll",
-                "Qt5Qml.dll",
-                "Qt5QmlModels.dll",
-                "Qt5Quick.dll",
-                "Qt5Quick3D.dll",
-                "Qt5Quick3DAssetImport.dll",
-                "Qt5Quick3DRender.dll",
-                "Qt5Quick3DRuntimeRender.dll",
-                "Qt5Quick3DUtils.dll",
-                "Qt5Sql.dll"
-            ]
-        elif hostOS == OS_LINUX:
-            delFiles = [
-                "libQt5DBus.so.5",
-                "libQt5Network.so.5",
-                "libQt5Qml.so.5",
-                "libQt5QmlModels.so.5",
-                "libQt5Quick.so.5",
-                "libQt5Quick3D.so.5",
-                "libQt5Quick3DAssetImport.so.5",
-                "libQt5Quick3DRender.so.5",
-                "libQt5Quick3DRuntimeRender.so.5",
-                "libQt5Quick3DUtils.so.5",
-                "libQt5Sql.so.5"
-            ]
-        distDir = os.path.join(os.getcwd(), "dist", "novelWriter")
-        for delFile in delFiles:
-            delPath = os.path.join(distDir, delFile)
-            if os.path.isfile(delPath):
-                print("Deleting file: %s" % delPath)
-                os.unlink(delPath)
-
-    print("")
-    print("Build Finished")
-    print("")
-    print("The novelWriter executable should be in the folder named 'dist'")
-    print("")
-
-    return
-
 # =============================================================================================== #
 #  General Installers
 # =============================================================================================== #
 
 ##
-#  XDG Installation (xdg-install, launcher)
+#  XDG Installation (xdg-install)
 ##
 
 def xdgInstall():
@@ -657,6 +638,127 @@ def xdgInstall():
 
     return
 
+##
+#  WIN Installation (win-install, launcher)
+##
+
+def winInstall():
+    """Will attempt to install icons and make a launcher for Windows.
+    """
+    import winreg
+    from nw import __version__, __hexversion__
+    try:
+        import win32com.client
+    except ImportError:
+        print(
+            "ERROR: Package 'pywin32' is missing on this system.\n"
+            "       Please run 'setup.py pip' to automatically install\n"
+            "       dependecies, or run 'pip install --user pywin32'."
+        )
+        sys.exit(1)
+
+    print("")
+    print("Windows Install")
+    print("===============")
+    print("")
+
+    nwTesting = not __hexversion__[-2] == "f"
+    wShell = win32com.client.Dispatch("WScript.Shell")
+
+    if nwTesting:
+        linkName = "novelWriter Testing %s.lnk" % __version__
+    else:
+        linkName = "novelWriter %s.lnk" % __version__
+
+    desktopDir = wShell.SpecialFolders("Desktop")
+    desktopIcon = os.path.join(desktopDir, linkName)
+
+    startMenuDir = wShell.SpecialFolders("StartMenu")
+    startMenuProg = os.path.join(startMenuDir, "Programs", "novelWriter")
+    startMenuIcon = os.path.join(startMenuProg, linkName)
+
+    pythonDir = os.path.dirname(sys.executable)
+    pythonExe = os.path.join(pythonDir, "pythonw.exe")
+
+    targetDir = os.path.abspath(os.path.dirname(__file__))
+    targetPy = os.path.join(targetDir, "novelWriter.pyw")
+    targetIcon = os.path.join(targetDir, "nw", "assets", "icons", "novelwriter.ico")
+
+    print("Collecting Info ...")
+    print("Desktop Folder:    %s" % desktopDir)
+    print("Start Menu Folder: %s" % startMenuDir)
+    print("Python Executable: %s" % pythonExe)
+    print("Target Executable: %s" % targetPy)
+    print("Target Icon:       %s" % targetIcon)
+    print("")
+
+    print("Creating Links ...")
+    if os.path.isfile(desktopIcon):
+        os.unlink(desktopIcon)
+        print("Deleted: %s" % desktopIcon)
+
+    if os.path.isdir(startMenuProg):
+        for oldIcon in os.listdir(startMenuProg):
+            oldPath = os.path.join(startMenuProg, oldIcon)
+            if not oldIcon.startswith("novelWriter"):
+                continue
+
+            isTesting = oldIcon.startswith("novelWriter Testing")
+            if isTesting and nwTesting:
+                os.unlink(oldPath)
+                print("Deleted: %s" % oldPath)
+            if not isTesting and not nwTesting:
+                os.unlink(oldPath)
+                print("Deleted: %s" % oldPath)
+
+    else:
+        os.mkdir(startMenuProg)
+        print("Created: %s" % startMenuProg)
+
+    wShortcut = wShell.CreateShortCut(desktopIcon)
+    wShortcut.TargetPath = targetPy
+    wShortcut.WorkingDirectory = targetDir
+    wShortcut.IconLocation = targetIcon
+    wShortcut.WindowStyle = 1
+    wShortcut.save()
+    print("Created: %s" % desktopIcon)
+
+    wShortcut = wShell.CreateShortCut(startMenuIcon)
+    wShortcut.TargetPath = targetPy
+    wShortcut.WorkingDirectory = targetDir
+    wShortcut.IconLocation = targetIcon
+    wShortcut.WindowStyle = 1
+    wShortcut.save()
+    print("Created: %s" % startMenuIcon)
+
+    print("")
+    print("Creating registry keys ...")
+
+    def setKey(kPath, kName, kVal):
+        winreg.CreateKey(winreg.HKEY_CURRENT_USER, kPath)
+        regKey = winreg.OpenKey(winreg.HKEY_CURRENT_USER, kPath, 0, winreg.KEY_WRITE)
+        winreg.SetValueEx(regKey, kName, 0, winreg.REG_SZ, kVal)
+        winreg.CloseKey(regKey)
+
+    mimeIcon = os.path.join(targetDir, "nw", "assets", "icons", "x-novelwriter-project.ico")
+    mimeExec = '"%s" "%s" "%%1"' % (pythonExe, targetPy)
+
+    try:
+        setKey(r"Software\Classes\.nwx\OpenWithProgids", "novelWriterProject.nwx", "")
+        setKey(r"Software\Classes\novelWriterProject.nwx", "", "novelWriter Project File")
+        setKey(r"Software\Classes\novelWriterProject.nwx\DefaultIcon", "", mimeIcon)
+        setKey(r"Software\Classes\novelWriterProject.nwx\shell\open\command", "", mimeExec)
+        setKey(r"Software\Classes\Applications\novelWriter.pyw\SupportedTypes", ".nwx", "")
+    except WindowsError:
+        print("ERROR: Failed to set registry keys.")
+        print("")
+
+    print("")
+    print("Done!")
+    print("")
+
+    return
+
 # =============================================================================================== #
 #  Windows Installers
 # =============================================================================================== #
@@ -665,9 +767,8 @@ def xdgInstall():
 #  Inno Setup Builder (setup-exe, setup-pyz)
 ##
 
-def innoSetup(setupType):
-    """Run the Inno Setup tool to build a setup.exe file for Windows based on either a pyinstaller
-    freeze package (exe) or a zipapp package (pyz).
+def innoSetup():
+    """Run the Inno Setup tool to build a setup.exe file for Windows based on the pyz package.
     """
     print("")
     print("Running Inno Setup")
@@ -676,7 +777,7 @@ def innoSetup(setupType):
 
     # Read the iss template
     issData = ""
-    with open(os.path.join("setup", "win_setup_%s.iss" % setupType), mode="r") as inFile:
+    with open(os.path.join("setup", "win_setup_pyz.iss"), mode="r") as inFile:
         issData = inFile.read()
 
     import nw # noqa: E402
@@ -702,7 +803,6 @@ def innoSetup(setupType):
 if __name__ == "__main__":
     """Parse command line options and run the commands.
     """
-
     # Detect OS
     if sys.platform.startswith("linux"):
         hostOS = OS_LINUX
@@ -715,6 +815,19 @@ if __name__ == "__main__":
     else:
         hostOS = OS_NONE
 
+    # Set Target OS
+    if "--target-linux" in sys.argv:
+        sys.argv.remove("--target-linux")
+        targetOS = OS_LINUX
+    elif "--target-darwin" in sys.argv:
+        sys.argv.remove("--target-darwin")
+        targetOS = OS_DARWIN
+    elif "--target-win" in sys.argv:
+        sys.argv.remove("--target-win")
+        targetOS = OS_WIN
+    else:
+        targetOS = hostOS
+
     helpMsg = (
         "\n"
         "novelWriter Setup Tool\n"
@@ -722,6 +835,9 @@ if __name__ == "__main__":
         "\n"
         "This tool provides setup and build commands for installing or distibuting novelWriter\n"
         "as a package on Linux, Mac and Windows. The available options are as follows:\n"
+        "\n"
+        "Some of the commands can be targeted towards a different OS than the host OS. To target\n"
+        "the command, add one of '--target-linux', '--target-darwin' or '--target-win'.\n"
         "\n"
         "General:\n"
         "\n"
@@ -738,35 +854,24 @@ if __name__ == "__main__":
         "\n"
         "Python Packaging:\n"
         "\n"
+        "    minimal-zip  Creates a minimal zip file of the core application without all the\n"
+        "                 other source files. Accepts a target OS flag.\n"
         "    pack-pyz     Creates a pyz package in a folder with all dependencies using the\n"
         "                 zipapp tool. On Windows, python embeddable is added to the folder.\n"
-        "    freeze       Freeze the package and produces a folder with all dependencies using\n"
-        "                 the pyinstaller tool. This option is not designed for a specific OS.\n"
-        "    onefile      Build a standalone executable with all dependencies bundled using the\n"
-        "                 pyinstaller tool. Implies 'freeze', cannot be used with 'setup-exe'.\n"
-        "\n"
-        "General Installers:\n"
-        "\n"
-        "    install      Installs novelWriter to the system's Python install location.\n"
-        "                 Run as root or with sudo for system-wide install, or as\n"
-        "                 user for single user install.\n"
-        "    xdg-install  Install launcher and icons for freedesktop systems.\n"
-        "                 Run as root or with sudo for system-wide install, or as\n"
-        "                 user for single user install.\n"
-        "\n"
-        "Windows Installers:\n"
-        "\n"
-        "    setup-exe    Build a Windows installer from a pyinstaller freeze package using Inno\n"
-        "                 Setup. This option automatically disables 'onefile'.\n"
         "    setup-pyz    Build a Windows installer from a zipapp package using Inno Setup.\n"
+        "\n"
+        "System Install:\n"
+        "\n"
+        "    install      Installs novelWriter to the system's Python install location. Run as \n"
+        "                 root or with sudo for system-wide install, or as user for single user \n"
+        "                 install.\n"
+        "    xdg-install  Install launcher and icons for freedesktop systems. Run as root or \n"
+        "                 with sudo for system-wide install, or as user for single user install.\n"
+        "    win-install  Install desktop and start menu icons for Windows systems.\n"
     )
 
     # Flags and Variables
-    buildWindowed = True
-    oneFile = False
-    makeSetupExe = False
     makeSetupPyz = False
-    doFreeze = False
     simplePack = False
     embedPython = False
 
@@ -800,20 +905,15 @@ if __name__ == "__main__":
     # Python Packaging
     # ================
 
+    if "minimal-zip" in sys.argv:
+        sys.argv.remove("minimal-zip")
+        makeMinimalPackage(targetOS)
+
     if "pack-pyz" in sys.argv:
         sys.argv.remove("pack-pyz")
         simplePack = True
         if hostOS == OS_WIN:
             embedPython = True
-
-    if "freeze" in sys.argv:
-        sys.argv.remove("freeze")
-        doFreeze = True
-
-    if "onefile" in sys.argv:
-        sys.argv.remove("onefile")
-        doFreeze = True
-        oneFile = True
 
     # General Installers
     # ==================
@@ -831,23 +931,20 @@ if __name__ == "__main__":
         else:
             xdgInstall()
 
-    # Windows Installers
-    # ==================
-
-    if "setup-exe" in sys.argv:
-        sys.argv.remove("setup-exe")
+    if "win-install" in sys.argv:
+        sys.argv.remove("win-install")
         if hostOS == OS_WIN:
-            oneFile = False
-            makeSetupExe = True
-            makeSetupPyz = False
+            winInstall()
         else:
-            print("Error: Command 'setup-exe' for Inno Setup is Windows only.")
+            print("ERROR: Command 'win-install' can only be used on Windows")
             sys.exit(1)
+
+    # Windows Setup Installer
+    # =======================
 
     if "setup-pyz" in sys.argv:
         sys.argv.remove("setup-pyz")
         if hostOS == OS_WIN:
-            makeSetupExe = False
             makeSetupPyz = True
         else:
             print("Error: Command 'setup-pyz' for Inno Setup is Windows only.")
@@ -861,14 +958,8 @@ if __name__ == "__main__":
     if simplePack:
         makeSimplePackage(embedPython)
 
-    if doFreeze:
-        freezePackage(buildWindowed, oneFile, makeSetupExe, hostOS)
-
-    if makeSetupExe:
-        innoSetup("exe")
-
     if makeSetupPyz:
-        innoSetup("pyz")
+        innoSetup()
 
     if len(sys.argv) <= 1:
         # Nothing more to do

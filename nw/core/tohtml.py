@@ -1,28 +1,27 @@
 # -*- coding: utf-8 -*-
-"""novelWriter HTML Text Converter
+"""
+novelWriter – HTML Text Converter
+=================================
+Extends the Tokenizer class to generate HTML output
 
- novelWriter – HTML Text Converter
-===================================
- Extends the Tokenizer class to write HTML
+File History:
+Created: 2019-05-07 [0.0.1]
 
- File History:
- Created: 2019-05-07 [0.0.1]
+This file is a part of novelWriter
+Copyright 2018–2021, Veronica Berglyd Olsen
 
- This file is a part of novelWriter
- Copyright 2018–2021, Veronica Berglyd Olsen
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
 
- This program is free software: you can redistribute it and/or modify
- it under the terms of the GNU General Public License as published by
- the Free Software Foundation, either version 3 of the License, or
- (at your option) any later version.
+This program is distributed in the hope that it will be useful, but
+WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+General Public License for more details.
 
- This program is distributed in the hope that it will be useful, but
- WITHOUT ANY WARRANTY; without even the implied warranty of
- MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- General Public License for more details.
-
- You should have received a copy of the GNU General Public License
- along with this program. If not, see <https://www.gnu.org/licenses/>.
+You should have received a copy of the GNU General Public License
+along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
 
 import logging
@@ -53,7 +52,7 @@ class ToHtml(Tokenizer):
             nwUnicode.U_EMDASH : nwUnicode.H_EMDASH,
             nwUnicode.U_HELLIP : nwUnicode.H_HELLIP,
             nwUnicode.U_NBSP   : nwUnicode.H_NBSP,
-            nwUnicode.U_THNSP  : nwUnicode.H_THNSP,
+            nwUnicode.U_THSP   : nwUnicode.H_THSP,
             nwUnicode.U_THNBSP : nwUnicode.H_THNBSP,
             nwUnicode.U_MAPOSS : nwUnicode.H_RSQUO,
         }
@@ -296,9 +295,9 @@ class ToHtml(Tokenizer):
         """Apply HTML formatting to synopsis.
         """
         if self.genMode == self.M_PREVIEW:
-            return "<p class='comment'><span class='synopsis'>Synopsis: </span>%s</p>\n" % tText
+            return "<p class='comment'><span class='synopsis'>Synopsis:</span> %s</p>\n" % tText
         else:
-            return "<p class='synopsis'><strong>Synopsis: </strong>%s</p>\n" % tText
+            return "<p class='synopsis'><strong>Synopsis:</strong> %s</p>\n" % tText
 
     def _formatComments(self, tText):
         """Apply HTML formatting to comments.
@@ -306,7 +305,7 @@ class ToHtml(Tokenizer):
         if self.genMode == self.M_PREVIEW:
             return "<p class='comment'>%s</p>\n" % tText
         else:
-            return "<p class='comment'><strong>Comment: </strong>%s</p>\n" % tText
+            return "<p class='comment'><strong>Comment:</strong> %s</p>\n" % tText
 
     def _formatKeywords(self, tText):
         """Apply HTML formatting to keywords.
@@ -338,7 +337,7 @@ class ToHtml(Tokenizer):
                             ))
                         retText += ", ".join(refTags)
 
-        return "<div>%s</div>" % retText
+        return "<div>%s</div>\n" % retText
 
     def _buildRegEx(self):
         """Build the regular expressions

@@ -1,29 +1,28 @@
 # -*- coding: utf-8 -*-
-"""novelWriter Theme and Icons Classes
+"""
+novelWriter – Theme and Icons Classes
+=====================================
+Classes managing and caching themes and icons
 
- novelWriter – Theme and Icons Classs
-======================================
- Class managing and caching themes and icons
+File History:
+Created: 2019-05-18 [0.1.3] GuiTheme
+Created: 2019-11-08 [0.4.0] GuiIcons
 
- File History:
- Created: 2019-05-18 [0.1.3] GuiTheme
- Created: 2019-11-08 [0.4.0] GuiIcons
+This file is a part of novelWriter
+Copyright 2018–2021, Veronica Berglyd Olsen
 
- This file is a part of novelWriter
- Copyright 2018–2021, Veronica Berglyd Olsen
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
 
- This program is free software: you can redistribute it and/or modify
- it under the terms of the GNU General Public License as published by
- the Free Software Foundation, either version 3 of the License, or
- (at your option) any later version.
+This program is distributed in the hope that it will be useful, but
+WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+General Public License for more details.
 
- This program is distributed in the hope that it will be useful, but
- WITHOUT ANY WARRANTY; without even the implied warranty of
- MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- General Public License for more details.
-
- You should have received a copy of the GNU General Public License
- along with this program. If not, see <https://www.gnu.org/licenses/>.
+You should have received a copy of the GNU General Public License
+along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
 
 import nw
@@ -204,14 +203,17 @@ class GuiTheme:
         return
 
     def updateFont(self):
-        """Updated the GUI's font style from settings,
+        """Update the GUI's font style from settings.
         """
         theFont = QFont()
         if self.mainConf.guiFont not in self.guiFontDB.families():
             if self.mainConf.osWindows:
-                # On Windows, default to Cantarell provided by novelWriter
-                theFont.setFamily("Cantarell")
-                theFont.setPointSize(11)
+                if "Arial" in self.guiFontDB.families():
+                    theFont.setFamily("Arial")
+                else:
+                    # On Windows, fall back to Cantarell provided by novelWriter
+                    theFont.setFamily("Cantarell")
+                theFont.setPointSize(10)
             else:
                 theFont = self.guiFontDB.systemFont(QFontDatabase.GeneralFont)
             self.mainConf.guiFont = theFont.family()
@@ -479,6 +481,9 @@ class GuiTheme:
         return
 
     def _parseLine(self, confParser, cnfSec, cnfName, cnfDefault):
+        """Simple wrapper for the config parser to check that the entry
+        exists before attempting to load it.
+        """
         if confParser.has_section(cnfSec):
             if confParser.has_option(cnfSec, cnfName):
                 return confParser.get(cnfSec, cnfName)
@@ -506,12 +511,13 @@ class GuiIcons:
         the ICON_MAP data tuple[0]. This will let Qt pull the closest
         system icon.
       * Third action is to look up the freedesktop icon theme name using
-        the fromTheme Qt call. This generally produces the same results
+        the fromTheme Qt call. This generally produces the same result
         as the step above, but has more icons available in other cases.
       * Fourth, and finally, the icon is looked up in the fallback
         folder. Files in this folder must have the same file name as the
-        novelWriter internal icon key, with '-dark' appended to it for
-        the dark background version of the icon.
+        novelWriter internal icon key, with '-dark' appended to them for
+        the dark background version of the icon. If no dark icon exists,
+        the non-dark version will be returned.
     """
 
     ICON_MAP = {
@@ -535,6 +541,7 @@ class GuiIcons:
         "status_time"     : (None, None),
         "status_stats"    : (None, None),
         "status_lines"    : (None, None),
+        "doc_h0"          : (QStyle.SP_FileIcon, "x-office-document"),
         "doc_h1"          : (QStyle.SP_FileIcon, "x-office-document"),
         "doc_h2"          : (QStyle.SP_FileIcon, "x-office-document"),
         "doc_h3"          : (QStyle.SP_FileIcon, "x-office-document"),
@@ -568,6 +575,7 @@ class GuiIcons:
         "reference"      : (None, None),
         "backward"       : (None, None),
         "forward"        : (None, None),
+        "settings"       : (None, None),
 
         ## Switches
         "sticky-on"  : (None, None),
@@ -616,7 +624,6 @@ class GuiIcons:
         the GUI icons cannot really be replaced without writing specific
         update functions for the classes where they're used.
         """
-
         logger.debug("Loading icon theme files")
 
         self.themeMap = {}
@@ -753,7 +760,7 @@ class GuiIcons:
     ##
 
     def _loadIcon(self, iconKey):
-        """Load an icon from the assets or theme folder, with a
+        """Load an icon from the assets or themes folder, with a
         preference for dark/light icons depending on theme type, if such
         an icon exists. Prefer svg files over png files. Always returns
         a QIcon.
@@ -792,6 +799,7 @@ class GuiIcons:
             if os.path.isfile(fbackIcon):
                 logger.verbose("Loading icon '%s' from fallback theme (dark mode)" % iconKey)
                 return QIcon(fbackIcon)
+
         fbackIcon = os.path.join(self.mainConf.iconPath, self.fbackName, "%s.svg" % iconKey)
         if os.path.isfile(fbackIcon):
             logger.verbose("Loading icon '%s' from fallback theme (light mode)" % iconKey)
@@ -803,8 +811,8 @@ class GuiIcons:
         return QIcon()
 
     def _parseLine(self, confParser, cnfSec, cnfName, cnfDefault):
-        """Simple wrapper for the config parser check for entry existing
-        before arrempting to load.
+        """Simple wrapper for the config parser to check that the entry
+        exists before attempting to load it.
         """
         if confParser.has_section(cnfSec):
             if confParser.has_option(cnfSec, cnfName):

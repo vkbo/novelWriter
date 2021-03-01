@@ -1,28 +1,27 @@
 # -*- coding: utf-8 -*-
-"""novelWriter Config Class
+"""
+novelWriter – Config Class
+==========================
+Class holding the user preferences and handling the config file
 
- novelWriter – Config Class
-============================
- Class reading and holding the preferences of the application
+File History:
+Created: 2018-09-22 [0.0.1]
 
- File History:
- Created: 2018-09-22 [0.0.1]
+This file is a part of novelWriter
+Copyright 2018–2021, Veronica Berglyd Olsen
 
- This file is a part of novelWriter
- Copyright 2018–2021, Veronica Berglyd Olsen
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
 
- This program is free software: you can redistribute it and/or modify
- it under the terms of the GNU General Public License as published by
- the Free Software Foundation, either version 3 of the License, or
- (at your option) any later version.
+This program is distributed in the hope that it will be useful, but
+WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+General Public License for more details.
 
- This program is distributed in the hope that it will be useful, but
- WITHOUT ANY WARRANTY; without even the implied warranty of
- MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- General Public License for more details.
-
- You should have received a copy of the GNU General Public License
- along with this program. If not, see <https://www.gnu.org/licenses/>.
+You should have received a copy of the GNU General Public License
+along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
 
 import logging
@@ -55,10 +54,6 @@ class Config:
         # Set Application Variables
         self.appName   = "novelWriter"
         self.appHandle = self.appName.lower()
-
-        # Debug Settings
-        self.showGUI   = True   # Allow blocking the GUI (disabled for testing)
-        self.debugInfo = False  # True if log level is DEBUG or VERBOSE
 
         # Config Error Handling
         self.hasError  = False  # True if the config class encountered an error
@@ -95,14 +90,15 @@ class Config:
         self.lastNotes   = "0x0" # The latest release notes that have been shown
 
         ## Sizes
-        self.winGeometry  = [1200, 650]
-        self.treeColWidth = [200, 50, 30]
-        self.projColWidth = [200, 60, 140]
-        self.mainPanePos  = [300, 800]
-        self.docPanePos   = [400, 400]
-        self.viewPanePos  = [500, 150]
-        self.outlnPanePos = [500, 150]
-        self.isFullScreen = False
+        self.winGeometry   = [1200, 650]
+        self.treeColWidth  = [200, 50, 30]
+        self.novelColWidth = [200, 50]
+        self.projColWidth  = [200, 60, 140]
+        self.mainPanePos   = [300, 800]
+        self.docPanePos    = [400, 400]
+        self.viewPanePos   = [500, 150]
+        self.outlnPanePos  = [500, 150]
+        self.isFullScreen  = False
 
         ## Features
         self.hideVScroll = False # Hide vertical scroll bars on main widgets
@@ -143,6 +139,8 @@ class Config:
         self.bigDocLimit     = 800   # Size threshold for heavy editor features in kilobytes
 
         self.highlightQuotes = True  # Highlight text in quotes
+        self.allowOpenSQuote = False # Allow open-ended single quotes
+        self.allowOpenDQuote = True  # Allow open-ended double quotes
         self.highlightEmph   = True  # Add colour to text emphasis
 
         ## User-Selected Symbols
@@ -274,8 +272,11 @@ class Config:
         self.appPath = getattr(sys, "_MEIPASS", os.path.abspath(os.path.dirname(__file__)))
         self.appRoot = os.path.abspath(os.path.join(self.appPath, os.path.pardir))
 
-        if self.appRoot.endswith(".pyz"):
-            self.appRoot = os.path.abspath(os.path.join(self.appRoot, os.path.pardir))
+        if os.path.isfile(self.appRoot):
+            # novelWriter is packaged as a single file, so the app and
+            # root paths are the same, and equal to the folder that
+            # contains the single executable.
+            self.appRoot = os.path.dirname(self.appRoot)
             self.appPath = self.appRoot
 
         # Assets
@@ -401,6 +402,9 @@ class Config:
         self.treeColWidth = self._parseLine(
             cnfParse, cnfSec, "treecols", self.CNF_I_LST, self.treeColWidth
         )
+        self.novelColWidth = self._parseLine(
+            cnfParse, cnfSec, "novelcols", self.CNF_I_LST, self.novelColWidth
+        )
         self.projColWidth = self._parseLine(
             cnfParse, cnfSec, "projcols", self.CNF_I_LST, self.projColWidth
         )
@@ -518,6 +522,12 @@ class Config:
         self.highlightQuotes = self._parseLine(
             cnfParse, cnfSec, "highlightquotes", self.CNF_BOOL, self.highlightQuotes
         )
+        self.allowOpenSQuote = self._parseLine(
+            cnfParse, cnfSec, "allowopensquote", self.CNF_BOOL, self.allowOpenSQuote
+        )
+        self.allowOpenDQuote = self._parseLine(
+            cnfParse, cnfSec, "allowopendquote", self.CNF_BOOL, self.allowOpenDQuote
+        )
         self.highlightEmph = self._parseLine(
             cnfParse, cnfSec, "highlightemph", self.CNF_BOOL, self.highlightEmph
         )
@@ -573,6 +583,15 @@ class Config:
         # Check Certain Values for None
         self.spellLanguage = self._checkNone(self.spellLanguage)
 
+        # If we're using straight quotes, disable auto-replace
+        if self.fmtSingleQuotes == ["'", "'"] and self.doReplaceSQuote:
+            logger.info("Using straight single quotes, so disabling auto-replace")
+            self.doReplaceSQuote = False
+
+        if self.fmtDoubleQuotes == ["\"", "\""] and self.doReplaceDQuote:
+            logger.info("Using straight double quotes, so disabling auto-replace")
+            self.doReplaceDQuote = False
+
         return True
 
     def saveConfig(self):
@@ -603,6 +622,7 @@ class Config:
         cnfParse.add_section(cnfSec)
         cnfParse.set(cnfSec, "geometry",    self._packList(self.winGeometry))
         cnfParse.set(cnfSec, "treecols",    self._packList(self.treeColWidth))
+        cnfParse.set(cnfSec, "novelcols",   self._packList(self.novelColWidth))
         cnfParse.set(cnfSec, "projcols",    self._packList(self.projColWidth))
         cnfParse.set(cnfSec, "mainpane",    self._packList(self.mainPanePos))
         cnfParse.set(cnfSec, "docpane",     self._packList(self.docPanePos))
@@ -648,6 +668,8 @@ class Config:
         cnfParse.set(cnfSec, "bigdoclimit",     str(self.bigDocLimit))
         cnfParse.set(cnfSec, "showfullpath",    str(self.showFullPath))
         cnfParse.set(cnfSec, "highlightquotes", str(self.highlightQuotes))
+        cnfParse.set(cnfSec, "allowopensquote", str(self.allowOpenSQuote))
+        cnfParse.set(cnfSec, "allowopendquote", str(self.allowOpenDQuote))
         cnfParse.set(cnfSec, "highlightemph",   str(self.highlightEmph))
 
         ## Backup
@@ -822,6 +844,11 @@ class Config:
         self.confChanged = True
         return True
 
+    def setNovelColWidths(self, colWidths):
+        self.novelColWidth = [int(x/self.guiScale) for x in colWidths]
+        self.confChanged = True
+        return True
+
     def setProjColWidths(self, colWidths):
         self.projColWidth = [int(x/self.guiScale) for x in colWidths]
         self.confChanged = True
@@ -877,6 +904,9 @@ class Config:
 
     def getTreeColWidths(self):
         return [int(x*self.guiScale) for x in self.treeColWidth]
+
+    def getNovelColWidths(self):
+        return [int(x*self.guiScale) for x in self.novelColWidth]
 
     def getProjColWidths(self):
         return [int(x*self.guiScale) for x in self.projColWidth]

@@ -1,4 +1,284 @@
-# novelWriter Change Log
+# novelWriter Changelog
+
+## Version 1.1.1 [2021-02-21]
+
+### Release Notes
+
+This patch makes a couple of minor improvements to the GUI. The keyboard shortcut for deleting
+entries in the project tree has been changed from `Ctrl+Del` to `Ctrl+Shift+Del` to free up that
+shortcut for the document editor. It is now possible to use the shortcut for deleting the word in
+front of the cursor, a common and useful feature of many text editors.
+
+The way the negative word count filter option works on the Writing Statistics tool has been changed
+to be more intuitive. Enabling this filter now appears to remove all negative entries without
+altering the other entries. Previously, the removed negative counts would be included in the
+following entries to make it consistent with the total word count. In addition, writing sessions
+shorter than five minutes, and with no change in the word count, are no longer recorded in the
+session log file.
+
+Other changes include improving the speed of the internal spell checker, used when the Enchant
+spell check library isn't available. The internal spell checker is no longer significantly slower,
+but is still lacking in functionality compared to Enchant.
+
+### Detailed Changelog
+
+**User Interface**
+
+* The default GUI font on Windows is now Arial. It works better with the Qt framework than the
+  default system font. If Arial is missing, it falls back to the bundled font Cantarell. PR #655.
+* The way word changes are calculated on the Writing Statistics tool has changed when the option to
+  exclude negative word counts is active. Previously, the entries with negative counts were
+  filtered out, but the change in count was still applied to the next line, altering the value.
+  Now, the GUI will instead just drop the lines that are negative and keep the other lines
+  unchanged. This is more intutitive, but it also means that the total count now longer matches the
+  sum of the lines. PR #659.
+* The keyboard shortcut for deleting entries in the project tree has been changed from `Ctrl+Del`
+  to `Ctrl+Shift+Del`. The `Ctrl+Del` shortcut is thus free to be used exclusively by the editor to
+  delete the word in front of the cursor. Having the same shortcut do different things depending on
+  which area of the GUI has focus is a bit confusing. Related to #529. PR #666.
+
+**Other Improvements**
+
+* The internal spell checker, which is used when the Enchant library isn't available, has been
+  given a significant speed improvement by caching the imported dictionary as a Python `set`
+  instead of a `list`. The `set` has a hashed key lookup algorithm that is significantly faster.
+  PR #668.
+* Sessions shortar than 5 minutes, and with no word count changes, are no longer recorded in the
+  session stats log file. PR #685.
+
+**Installation**
+
+* The PyPi packages now include the `setup.py` file, which makes it possible to install icon
+  launchers for novelWriter on both Linux and Windows after installing with `pip`. PR #655.
+
+----
+
+## Version 1.1 [2021-02-07]
+
+### Release Notes
+
+The main change in this release is the addition of a new tab to the project tree on the left side
+of the main window. The regular project tree is now on a tab named "Project", while a new tab named
+"Novel" displays a simpler version of the information on the main "Outline" page. It lists all the
+headers of the novel part of the project, as well as the word count and point-of-view character of
+each section. This is an alternative way to navigate the novel part of the project. The various
+tree views are now also kept better in sync when the user selects various documents and headers.
+
+In addition, a new information dialog named "Project Details" has been added. It replaces the
+"Details" tab in "Project Settings", and adds more information about the novel part of the project.
+In particular, a "Table of Contents" in the "Contents" tab displays a summary of the main parts
+and chapters of the project, their total word counts, and an estimated page count. This was made in
+response to users asking for ways to estimate the total page count of the project. The page count
+is estimated based on a words per page setting, which can be changed on the dialog window.
+
+Since the tabs below the project tree now add some extra room on the GUI, some convenient buttons
+have been added in the same area, with direct access to "Project Details", "Writing Statistics" and
+"Project Setting".
+
+A few other minor changes have been made as well. The Preferences dialog has been improved with
+clearer categories and hopefully better help text. Some new options have been added too. They allow
+syntax highlighting of multi-paragraph quotes. The highlighter can now optionally accept quotes to
+be left "hanging", that is, no closing quote in the same paragraph.
+
+_These Release Notes also include the changes from 1.1 RC 1._
+
+### Detailed Changelog
+
+**Bugfixes**
+
+* A `None` check in the details panel below the project tree was missing, resulting in an
+  occasional error message being printed to the logging output. The error was otherwise handles, so
+  this is mainly a fix to prevent the error message. PR #639.
+
+**User Interface**
+
+* The word counts in the Novel tree are now updated each time a file is saved. Issue #636, PR #637.
+* A "Remove" button has been added to the "Open Project" dialog. Previously, recent project entries
+  could be removed by pressing the `Del` key, but no obvious other methods were present on the GUI.
+  PR #639.
+* When the search function is activated, the text in the search box is automatically selected.
+  Issue #645, PR #639.
+
+**Installation**
+
+* The minimal zip release package tool in `setup.py` has been improved to generate tailored
+  packages for each operating system. The old `pyinstaller` build command has been removed, but the
+  manual build path for a Windows setup.exe file has been kept. PRs #643 and #644.
+
+----
+
+## Version 1.0.4 [2021-02-03]
+
+### Release Notes
+
+This patch release fixes a couple of minor issues with the Preferences dialog and the behaviour of
+one of the keyboard shortcuts.
+
+Aside from these fixes, the main point of this patch is to add new setup features for novelWriter
+on Windows. A Windows installer will no longer be provided for the foreseeable future, and instead
+functionality has been added to the main setup script to create desktop and start menu icons.
+
+### Detailed Changelog
+
+**Bug Fixes**
+
+* Fixed an issue with the Preferences dialog where the setting for justified text was mixed with
+  the setting for fixed text width. This meant that the justified text setting could potentially
+  get overwritten when the Preferences were changed and saved. Issue #623, PR #625.
+* Fixed an issue with the Open Project dialog where the list of recent projects would contain
+  duplicate entries if the dialog was opened multiple times. PR #627.
+
+**User Interface**
+
+* The `Ctrl+Del` keyboard shortcut is now only active when the project tree has focus. Since this
+  is also a common shortcut in many applications for deleting the next word ahead of the cursor,
+  the activation of the delete file function when the editor has focus is unexpected to some users.
+  Issue #629, PR #631.
+
+**Installation**
+
+* A new command has been added to the `setup.py` script. The new command, `win-install`, will
+  create a desktop and start menu icon for novelWriter when run in the source folder. A windows
+  batch file, `setup_windows.bat`, has also been added. Running this file from the source folder,
+  either by command line or by double-click, will install dependencies from PyPi and set up the
+  icons and file association with novelWriter project files. This should make it easier to run
+  novelWriter from the source folder on Windows. PRs #634, #641 and #642.
+
+**Documentation**
+
+* The documentation on how to setup and install novelWriter has been extended and reorganised into
+  one file per operating system. Some of the other documentation files have also been moved to a
+  different section. PR #634.
+
+----
+
+## Version 1.1 RC 1 [2021-01-31]
+
+### Release Notes
+
+This is a preview and test release for version 1.1.
+
+A few new features have been added. The primary change is that the project tree on the left side of
+the main window now has two tabs. The regular project tree is now on a tab named "Project", while a
+new tab "Novel" displays a simpler version of the information on the main "Outline" page. It lists
+all the headers of the novel part of the project, as well as the word count and point-of-view
+character of each section. This is an alternative way to navigate the novel part of the project.
+The various tree views are now also kept better in sync when the user selects various documents and
+headers.
+
+In addition, a new information dialog named "Project Details" has been added. It replaces the
+"Details" tab in "Project Settings", and adds more information about the novel part of the project.
+In particular, a "Table of Contents" in the "Contents" tab displays a summary of the main parts
+and chapters of the project, their total word counts, and an estimated page count. This was made in
+response to users asking for ways to estimate the total page count of the project. The page count
+is estimated based on the word count, and can be changed on the dialog window.
+
+Since the tabs below the project tree now adds some extra room on the GUI, some convenient buttons
+have been added, with direct access to "Project Details", "Writing Statistics" and "Project
+Setting".
+
+A few other minor changes have been made as well. The Preferences dialog has been improved with
+clearer categories and hopefully better help text. Some new options have been added too. They allow
+syntax highlighting of multi-paragraph quotes. The highlighter can now optionally accept quotes to
+be left "hanging", that is, no closing quote in the same paragraph.
+
+### Detailed Changelog
+
+**User Interface**
+
+* Added a Novel tab under the project tree where the user can navigate the novel's layout of
+  chapters and scenes, similar to the Outline view, but next to the document editor. The Outline
+  view and Novel/Project trees now also behave more in cooperation. When files on one are selected
+  or moved, the other will follow and update. Issues #541 and #185, PR #538.
+* Added a Project Details dialog that lists project details (moved from Project Settings' Details
+  Tab) and a Table of Contents tab where details on chapter level is displayed. This table also
+  shows an estimated page count and estimated page location of each chapter. Issue #528, PRs #555,
+  #598 and #603.
+* Added three buttons below the project tree that connects to Project Details, Writing Statistics,
+  and Project Settings. PR #555.
+* The settings and tabs in the Preferences dialog have been re-arranged into more tabs with less
+  options on each tab. PRs #577 and #624.
+* Minor changes to margins and alignments of widgets on the main GUI. PR #565.
+* Added a keyboard shortcut to change focus to the Outline tab. The focus change now also ensures
+  that the main GUI also switches to the tab where the focus is shifted. Issues #609 and #612, PR
+  #615.
+* The cursor should now also be visible when opening a blank document and the editor has focus.
+  Issue #608, PR #621.
+
+**Text Editor**
+
+* Added support for multi-paragraph quote (dialogue) highlighting. This feature is optional, and
+  can be enabled/disabled in Preferences. Issue #546, PR #577.
+* Add several new symbols to the Insert menu/ Issue #602, PRs #603 and #604.
+
+**Other Changes**
+
+* Trigger a save document call before the Build Novel Project tool starts the build. This ensures
+  that unsaved changes in the editor are included in the build. Issue #610, PR #616.
+
+**Code Maintenance**
+
+* Reformatting of source file headers and adding license headers to all test source files. Test
+  source files are now also organised into subfolders. PR #563.
+
+----
+
+## Version 1.0.3 [2021-01-24]
+
+### Release Notes
+
+This patch release fixes a minor bug sometimes encountered when running novelWriter from command
+line on Windows. In addition, the Solarized Dark and Solarized Light themes have been added to the
+selection of GUI and syntax themes by a user contribution.
+
+The main change in this release is to the install scripts and the documentation related to
+installing and running novelWriter. The primary change is a different method of packaging the app
+for Windows. Instead of building an `.exe` file, the new setup instead builds a runnable zip file
+`.pyz`. The executable would often be mistakenly flagged by virus control software due to the
+packaging tools. This is a known problem with pyinstaller and similar tools, but such warnings are
+always concerning even if they are false positives.
+
+### Detailed Changelog
+
+**Bug Fixes**
+
+* Fix crash when starting novelWriter from command line on Windows from a different mounted drive
+  than where it is installed. This was caused by a relative path lookup that defaulted to the wrong
+  current directory. This works on Linux/macOS which have a common root path, but not on Windows.
+  Issue #581, PR #587.
+
+**User Interface**
+
+* Added Solarized Dark and Solarized Light GUI and syntax themes. PR #578 by @nullbasis.
+* The Typewriter Scroll Mode now works better in combination with the Scroll Past End feature. The
+  scroll mode still only works when there is actually any document to scroll into, but previously
+  it would also not work until the total length of the document reached 40% of the height of the
+  editor window. This was quite confusing. This limit is now reduced to 10%, which means that as
+  long as the Scroll Past End option is enabled, the Typewriter Scroll will always work according
+  to its settings. Issue #589, PR #593.
+
+**Installation**
+
+* Merged the `make.py` script into `setup.py`. PR #584.
+* Added a second way to build distributable packages of novelWriter for Windows. The new method
+  does not use any of the current package tools that produce a Windows executable of the app. These
+  packages tend to cause false virus warnings. This new method uses the Python tool `zipapp` to
+  bundle novelWriter as an executable `.pyz` file, and adds Python embeddable and library
+  dependencies into the same folder. The folder itself can be distributed as-is, or a Windows
+  installer executable can be generated with `setup.py setup-pyz`. Issue #580, PR #584.
+
+**Documentation**
+
+* Updated documentation, main README and Contribution Guide to make them more consistent and to
+  improve installation instructions. Based on issue #586 and input from @mgrhm. PR #592.
+
+**Other Changes**
+
+* The HTML generator now adds line breaks after `div` blocks used to wrap tag/reference lines. This
+  makes the output easier to process by scripts, but has no impact on browser rendering and import
+  into other applications. PR #597.
+
+----
 
 ## Version 1.0.2 [2021-01-19]
 
@@ -823,7 +1103,7 @@ planned by GitHub. See their [notes](https://github.com/github/renaming) for mor
 **Other Changes**
 
 * The install scripts now try to create folders before copying icons. PR #364.
-* The manifest file now lists the root assets folder, so that it is included in the pypi build. PR
+* The manifest file now lists the root assets folder, so that it is included in the PyPi build. PR
   #364.
 * The .desktop template file has the correct categories set according to the FreeDesktop standard.
   PR #364.

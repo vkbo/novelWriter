@@ -1,28 +1,27 @@
 # -*- coding: utf-8 -*-
-"""novelWriter GUI Project Outline Details
+"""
+novelWriter – GUI Project Outline Details
+=========================================
+GUI class for the project outline details panel
 
- novelWriter – GUI Project Outline Details
-===========================================
- Class holding the project outline details panel
+File History:
+Created: 2020-06-02 [0.7.0]
 
- File History:
- Created: 2020-06-02 [0.7.0]
+This file is a part of novelWriter
+Copyright 2018–2021, Veronica Berglyd Olsen
 
- This file is a part of novelWriter
- Copyright 2018–2021, Veronica Berglyd Olsen
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
 
- This program is free software: you can redistribute it and/or modify
- it under the terms of the GNU General Public License as published by
- the Free Software Foundation, either version 3 of the License, or
- (at your option) any later version.
+This program is distributed in the hope that it will be useful, but
+WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+General Public License for more details.
 
- This program is distributed in the hope that it will be useful, but
- WITHOUT ANY WARRANTY; without even the implied warranty of
- MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- General Public License for more details.
-
- You should have received a copy of the GNU General Public License
- along with this program. If not, see <https://www.gnu.org/licenses/>.
+You should have received a copy of the GNU General Public License
+along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
 
 import nw
@@ -271,11 +270,10 @@ class GuiOutlineDetails(QScrollArea):
         """Update the content of the tree with the given handle and line
         number pointing to a header.
         """
-        try:
-            nwItem  = self.theProject.projTree[tHandle]
-            novIdx  = self.theIndex.novelIndex[tHandle][sTitle]
-            theRefs = self.theIndex.getReferences(tHandle, sTitle)
-        except Exception:
+        nwItem  = self.theProject.projTree[tHandle]
+        novIdx  = self.theIndex.getNovelData(tHandle, sTitle)
+        theRefs = self.theIndex.getReferences(tHandle, sTitle)
+        if nwItem is None or novIdx is None:
             return False
 
         if novIdx["level"] in self.LVL_MAP:

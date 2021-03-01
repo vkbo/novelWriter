@@ -1,28 +1,27 @@
 # -*- coding: utf-8 -*-
-"""novelWriter Spell Check Classes
+"""
+novelWriter – Spell Check Classes
+=================================
+Wrapper classes for spell checking tools
 
- novelWriter – Spell Check Classes
-===================================
- Wrapper class for spell checking tools
+File History:
+Created: 2019-06-11 [0.1.5]
 
- File History:
- Created: 2019-06-11 [0.1.5]
+This file is a part of novelWriter
+Copyright 2018–2021, Veronica Berglyd Olsen
 
- This file is a part of novelWriter
- Copyright 2018–2021, Veronica Berglyd Olsen
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
 
- This program is free software: you can redistribute it and/or modify
- it under the terms of the GNU General Public License as published by
- the Free Software Foundation, either version 3 of the License, or
- (at your option) any later version.
+This program is distributed in the hope that it will be useful, but
+WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+General Public License for more details.
 
- This program is distributed in the hope that it will be useful, but
- WITHOUT ANY WARRANTY; without even the implied warranty of
- MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- General Public License for more details.
-
- You should have received a copy of the GNU General Public License
- along with this program. If not, see <https://www.gnu.org/licenses/>.
+You should have received a copy of the GNU General Public License
+along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
 
 import nw
@@ -239,7 +238,7 @@ class NWSpellSimple(NWSpellCheck):
     when no other is available. This method is fairly slow compared to
     other implementations.
     """
-    WORDS = []
+    theWords = set()
 
     def __init__(self):
         NWSpellCheck.__init__(self)
@@ -251,17 +250,19 @@ class NWSpellSimple(NWSpellCheck):
         """Load a dictionary as a list from the app assets folder.
         """
         self.theLang = theLang
-        self.WORDS = []
+        self.theWords = set()
         dictFile = os.path.join(self.mainConf.dictPath, theLang+".dict")
         try:
             with open(dictFile, mode="r", encoding="utf-8") as wordsFile:
                 for theLine in wordsFile:
                     if len(theLine) == 0 or theLine.startswith("#"):
                         continue
-                    self.WORDS.append(theLine.strip().lower())
-            logger.debug("Spell check word list for language %s loaded" % theLang)
-            logger.debug("Word list contains %d words" % len(self.WORDS))
+                    self.theWords.add(theLine.strip().lower())
+
+            logger.debug("Spell check dictionary for language %s loaded" % theLang)
+            logger.debug("Dictionary contains %d words" % len(self.theWords))
             self.spellLanguage = theLang
+
         except Exception as e:
             logger.error("Failed to load spell check word list for language %s" % theLang)
             logger.error(str(e))
@@ -269,8 +270,7 @@ class NWSpellSimple(NWSpellCheck):
 
         self._readProjectDictionary(projectDict)
         for pWord in self.projDict:
-            if pWord not in self.WORDS:
-                self.WORDS.append(pWord)
+            self.theWords.add(pWord)
 
         return
 
@@ -280,7 +280,7 @@ class NWSpellSimple(NWSpellCheck):
         word by the syntax highlighter.
         """
         theWord = theWord.replace(self.mainConf.fmtApostrophe, "'").lower()
-        return theWord in self.WORDS
+        return theWord in self.theWords
 
     def suggestWords(self, theWord):
         """Get suggestions for correct word from difflib, and make sure
@@ -293,7 +293,7 @@ class NWSpellSimple(NWSpellCheck):
         if len(theWord) == 0:
             return []
 
-        theMatches = difflib.get_close_matches(theWord.lower(), self.WORDS, n=10, cutoff=0.75)
+        theMatches = difflib.get_close_matches(theWord.lower(), self.theWords, n=10, cutoff=0.75)
         theOptions = []
         for aWord in theMatches:
             if len(aWord) == 0:
@@ -309,8 +309,8 @@ class NWSpellSimple(NWSpellCheck):
         """Wrapper for the internal project dictionary feature.
         """
         newWord = newWord.strip().lower()
-        if newWord not in self.WORDS:
-            self.WORDS.append(newWord)
+        if newWord not in self.theWords:
+            self.theWords.add(newWord)
         NWSpellCheck.addWord(self, newWord)
         return
 

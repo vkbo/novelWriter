@@ -4,8 +4,8 @@
 [![Linux (3.7)](https://github.com/vkbo/novelWriter/workflows/Linux%20(3.7)/badge.svg?branch=main)](https://github.com/vkbo/novelWriter/actions)
 [![Linux (3.8)](https://github.com/vkbo/novelWriter/workflows/Linux%20(3.8)/badge.svg?branch=main)](https://github.com/vkbo/novelWriter/actions)
 [![Linux (3.9)](https://github.com/vkbo/novelWriter/workflows/Linux%20(3.9)/badge.svg?branch=main)](https://github.com/vkbo/novelWriter/actions)
-[![Windows (3.8)](https://github.com/vkbo/novelWriter/workflows/Windows%20(3.8)/badge.svg?branch=main)](https://github.com/vkbo/novelWriter/actions)
-[![macOS (3.8)](https://github.com/vkbo/novelWriter/workflows/macOS%20(3.8)/badge.svg?branch=main)](https://github.com/vkbo/novelWriter/actions)
+[![Windows (3.9)](https://github.com/vkbo/novelWriter/workflows/Windows%20(3.9)/badge.svg?branch=main)](https://github.com/vkbo/novelWriter/actions)
+[![macOS (3.9)](https://github.com/vkbo/novelWriter/workflows/macOS%20(3.9)/badge.svg?branch=main)](https://github.com/vkbo/novelWriter/actions)
 [![flake8](https://github.com/vkbo/novelWriter/workflows/flake8/badge.svg)](https://github.com/vkbo/novelWriter/actions)
 [![codecov](https://codecov.io/gh/vkbo/novelWriter/branch/main/graph/badge.svg)](https://codecov.io/gh/vkbo/novelWriter)
 [![docs](https://readthedocs.org/projects/novelwriter/badge/?version=latest)](https://novelwriter.readthedocs.io/en/latest/?badge=latest)
@@ -39,7 +39,6 @@ unit tests are run on the latest versions of Ubuntu Linux, Windows Server and ma
 Contributions to this project are welcome. However, please read the
 [Contributing Guide](https://github.com/vkbo/novelWriter/blob/main/CONTRIBUTING.md) before
 submitting larger additions ot changes to this project.
-
 
 # Key Features
 
@@ -82,7 +81,6 @@ with limitations to formatting.
 
 The HTML format is well suited for file conversion tools and import into other text editors.
 
-
 ### Colour Themes
 
 The editor has syntax highlighting for the features it supports, and includes a set of different
@@ -107,7 +105,6 @@ project tree. These are mostly to help the user track what they contain, but the
 impact on the format of the exported document. See the
 [documentation](https://novelwriter.readthedocs.io) for further details.
 
-
 ### Project Notes
 
 Supporting note files can be added for the story plot, characters, locations, story timeline, etc.
@@ -122,12 +119,10 @@ connects to the plot, and which characters, etc. occur in them. In addition, the
 are clickable in the document view pane, and control-clickable in the editor. They make it possible
 to quickly navigate between the documents while editing.
 
-
 # Installing and Running
 
-For install instructions, please check the [documentation](https://novelwriter.readthedocs.io/) in
-the [Getting Started](https://novelwriter.readthedocs.io/en/latest/int_started.html) section.
-
+For install instructions, please check the [Getting Started](https://novelwriter.readthedocs.io/en/latest/int_started.html) section in
+the [documentation](https://novelwriter.readthedocs.io/).
 
 ## TLDR Instructions
 
@@ -137,7 +132,6 @@ file from command line. For installations on Linux, macOS or Windows, see below.
 **Note:** You may need to replace `python` with `python3` and `pip` with `pip3` in the instructions
 below on some systems. You may also want to add the `--user` flag for `pip` to install in your user
 space only.
-
 
 ### Install from PyPi
 
@@ -158,7 +152,6 @@ novelWriter
 Make sure the install location for pip is in your PATH variable. This is not always the case by
 default.
 
-
 ### Setup on Linux
 
 If you're installing from source, the following commands will set up novelWriter on Linux:
@@ -170,7 +163,6 @@ python setup.py xdg-install
 
 This should make novelWriter available as a regular application on your system, with a launceher
 icon, and file association with novelWriter project files.
-
 
 ### Setup on macOS
 
@@ -188,20 +180,23 @@ line with:
 novelWriter
 ```
 
-
 ### Setup on Windows
 
-For Windows, you can either install via PyPi, or use the Windows installer available from the
-[releases](https://github.com/vkbo/novelWriter/releases) page. This should add the necessary icons
-to your desktop and start menu.
+For Windows, first ensure that you have Python installed. If not, get it from
+[python.org/downloads](https://www.python.org/downloads/). Remember to select "Add Python to PATH"
+during the installation, otherwise novelWriter cannot find it.
 
+Then, download the `novelWriter-x.y.z-minimal.zip` file, where `x.y.z` is the version number, from
+the [releases](https://github.com/vkbo/novelWriter/releases) page. You can extract it to wherever
+you want to keep novelWriter on your PC, and run the `setup_windows.bat` file in it
+(double-clicking it should work). This will install the necessary dependencies from
+[pypi.org](https://pypi.org/) and create desktop and start menu icons.
 
 ## Debugging
 
 If you need to debug novelWriter, you must run it from command line. It takes a few parameters,
 which can be listed with the switch `--help`. The `--info`, `--debug` or `--verbose` flags are
 particularly useful for increasing logging output for debugging.
-
 
 # Licenses
 
@@ -211,7 +206,7 @@ details, or consult the [LICENSE](https://github.com/vkbo/novelWriter/blob/main/
 
 Bundled assets have the following licenses:
 
-* The Typicon-based icon themes by Stephen Hutchings are licensed under
+* The Typicons-based icon themes by Stephen Hutchings are licensed under
   [CC BY-SA 4.0](http://creativecommons.org/licenses/by-sa/4.0/). The icons have been altered in
   size and colour for use with novelWriter, and some additional icons added. The original icon set
   is available at
@@ -228,7 +223,6 @@ Bundled assets have the following licenses:
   with the [MIT License](https://github.com/sdras/night-owl-vscode-theme/blob/master/LICENSE), and
   the main repo is available at
   [sdras/night-owl-vscode-theme](https://github.com/sdras/night-owl-vscode-theme).
-
 
 # Screenshot
 

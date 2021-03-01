@@ -1,0 +1,137 @@
+<!DOCTYPE html public "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<body>
+
+<h2>Release Notes for 1.0.4</h2>
+<p><i>Released on 3 February 2021</i></p>
+<p>This patch release fixes a couple of minor issues with the Preferences dialog and the behaviour
+of one of the keyboard shortcuts.</p>
+<p>Aside from these fixes, the main point of this patch is to add new setup features for
+novelWriter on Windows. A Windows installer will no longer be provided for the foreseeable future,
+and instead functionality has been added to the main setup script to create desktop and start menu
+icons.</p>
+
+<p><i>The full changelog is available
+<a href="https://github.com/vkbo/novelWriter/blob/main/CHANGELOG.md">here</a>.</i></p>
+
+<hr/>
+
+<h2>Release Notes for 1.0.3</h2>
+<p><i>Released on 24 January 2021</i></p>
+<p>This patch release fixes a minor bug sometimes encountered when running novelWriter from command
+line on Windows. In addition, the Solarized Dark and Solarized Light themes have been added to the
+selection of GUI and syntax themes by a user contribution.</p>
+<p>The main change in this release is to the install scripts and the documentation related to
+installing and running novelWriter. The primary change is a different method of packaging the app
+for Windows. Instead of building an <i>.exe</i> file, the new setup instead builds a runnable zip
+file <i>.pyz</i>. The executable would often be mistakenly flagged by virus control software due to
+the packaging tools. This is a known problem with pyinstaller and similar tools, but such warnings
+are always concerning even if they are false positives.</p>
+
+<hr/>
+
+<h2>Release Notes for 1.0.2</h2>
+<p><i>Released on 19 January 2021</i></p>
+<p>This patch release fixes a few minor cosmetic issues, a minor issue with the indexer, and a bug
+when adding words to the user's own spell check dictionary. Additionally, the documentation has
+been updated based on user feedback, and some install issues resolved.</p>
+
+<hr/>
+
+<h2>Release Notes for 1.0.1</h2>
+<p><i>Released on 10 January 2021</i></p>
+<p>This release is mainly to bring the documentation up to date, as I forgot to update the install
+instructions in the original 1.0 release. I also forgot to change the various settings and help
+texts that describe novelWriter as under initial development (beta state).</p>
+<p>Some minor improvements have been made to the "Edit Project Item" dialog and some restrictions
+on the settings available for documents created in the "Outtakes" folder relaxed. A few minor
+issues with the document and project changed icons on the status bar have also been resolved. The
+indicators were previously set to changed status even if no actual change had been made to the
+project.</p>
+
+<hr/>
+
+<h2>Release Notes for 1.0</h2>
+<p><i>Released on 3 January 2021</i></p>
+<p>Based on my own testing and usage, and no serious bugs discovered in quite some time (aside from
+a few corner case issues), it appears that novelWriter is stable enough for a 1.0 release. Thanks
+to all the new users who keep providing feedback on bugs, cosmetic issues, or suggesting
+improvements and new features. I'm glad to hear that others find my application useful, and I will
+keep making improvements as I get new suggestions and have new ideas myself. At the same time, I
+will continue to keep novelWriter simple and clean and avoid feature-bloat.</p>
+<p>This release mainly fixes cosmetic and other minor issues to the user interface and makes a few
+minor improvements to some less used features. Aside from this, nothing major has changed since the
+last release candidate.</p>
+<p>This release concludes over two years of tinkering with this project. The project grew out of
+numerous lunch and coffee discussions with my colleague Marian Lückhof at my former job. We were
+both looking for a tool for writing novels on Linux that suited our needs. We started assembling a
+wish list of features that has become novelWriter. In addition, users on GitHub have continued to
+test new features, provide very helpful feedback, and make new suggestions for improvements.
+Especially the feedback from @johnblommers has been helpful during much of the initial development
+time. Over the last months more users have started posting ideas and feedback. Thanks to all of you
+for your contributions.</p>
+<p>The 1.0 release is intended as a first release of the core features of novelWriter. That does
+not mean that all planned features have been fully implemented. There is a long list of ideas and
+suggestions to consider and implement. New ideas and suggestions are welcome. Either as feature
+requests in the issue tracker, or if not fully formed, can be discussed on the
+<a href="https://github.com/vkbo/novelWriter/discussions">discussions page</a>.
+
+<hr/>
+
+<h2>Release Notes for 1.0 RC2</h2>
+<p><i>Released on 13 December 2020</i></p>
+<p>This second release candidate for 1.0 comes with only minor changes and improvements, and a
+handful of minor bugfixes.</p>
+<p>Among the improvements is the addition of all the possible @-keywords for tags and references to
+the "Insert" menu under the sub-menu "Tags and References". The "Help" menu has also received a few
+improvements and additional links to useful webpages. This release also adds a "Release" notes tab
+to the "About novelWriter" dialog. The release notes are displayed automatically the first time you
+launch novelWriter after updating to a new version.</p>
+<p>Among the fixes is better support for high resolution screens. A few elements on the GUI did not
+scale properly, among them the document editor and viewer header and footer. These were clipped on
+high res screens due to an underlying issue with the Qt widget underestimating how much space it
+required to accommodate the text. Unfortunately, dragging the novelWriter app between screens of
+different scaling factors is not currently supported. However, the GUI should scale properly to the
+scaling factor on the screen it is opened on.</p>
+<p>The work leading up to this release has mostly been focused on improving the test coverage of
+the source code of novelWriter. This helps to ensure that the code does what it is intended to do,
+and is able to handle corner cases and unexpected external errors and user actions that may occur.
+While writing these tests, a number of minor potential issues have been uncovered and handled. Most
+of these are corner cases that may not even be reachable by unexpected user actions.</p>
+<p>Hopefully, these changes have resulted in an even more stable version of novelWriter. If no more
+issues are discovered, the next release will be the final version 1.0 release.</p>
+
+<hr/>
+
+<h2>Release Notes for 1.0 RC1</h2>
+<p><i>Released on 16 November 2020</i></p>
+<p>This is the first release candidate for the upcoming release of novelWriter 1.0.</p>
+<p>Since the fifth beta release about four weeks ago, not much has been changed in novelWriter. A
+few minor tweaks have been made to the GUI.</p>
+<p>A number of features and tools are now automatically switched off when there is no project or
+document open for those features to act upon. Previously, this was a bit inconsistent, although no
+serious bugs have been reported or encountered.</p>
+<p>Most of the minor changes in this release should not be noticeable to most users. However, there
+are a couple of noticeable changes.</p>
+<h3>Typewriter Mode</h3>
+<p>The "Typewriter Mode" of the editor has been improved. Essentially, this feature is a sort of
+smart scroll. It tries to keep the cursor stationary in the vertical direction, and will try to
+scroll the document up when the cursor skips to a new line while typing (or down in case of
+backspaces). This is similar to the way a typewriter scrolls the paper when hitting the return key.
+It improves the writing experience as the current active line will stay at the same eye height
+level on the screen.</p>
+<p>Previously, the feature would lock the cursor to a given vertical position defined by the user.
+Now, instead, the cursor will remain stationary in the vertical direction at any position the user
+sets it to by mouse click or keyboard navigation. The user can define a minimum distance from the
+top where this feature is activated. These changes makes it more flexible in terms of where the
+focus is in the editor. The feature can be controlled from the main Preferences.</p>
+<h3>Switching Syntax Theme</h3>
+<p>It is now possible to switch syntax highlighting theme without restarting novelWriter.
+Previously, changing the theme would only half-way update the document, header and footer
+background and text colours. The new settings would not be fully applied until the application was
+shut down and started again, thus making it a bit tedious to look through syntax themes to find the
+one you want.</p>
+<p>Switching main GUI theme still requires a restart.</p>
+
+</body>
+</html>

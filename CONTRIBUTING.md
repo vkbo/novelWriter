@@ -5,6 +5,26 @@ issue tracker or the discussions page with the owner of this repository before m
 you just want to make a minor correction, like fix a typo or similar, feel free to just make a pull
 request directly.
 
+## Branching Structure
+
+There are three protected branches on this repository. They are used in the following way:
+
+* `main` – This is the Stable branch. It is used for releases and subsequent patches. No
+  development code should be merged into this branch starting from version 1.0.
+* `dev` – This is the Unstable (development) branch. It is where new features are merged, and where
+  pre-releases are taken from.
+* `testing` – This is the Testing branch. It is populated from the `dev` branch for pre-releases
+  that need a longer testing phase.
+
+Stable releases and patches will be tagged in the `main` branch, pre-releases may be tagged from
+either `testing` or `dev` branch.
+
+### What Branch to Use for Contributions
+
+* If your contribution is a fix for the latest stable release, branch from the `main` branch.
+* If your contribution is a fix for the latest testing release, branch from the `testing` branch.
+* If your contribution is a new feature, branch from the `dev` branch.
+
 ## Pull Request Process
 
 1. Make sure your code passes all tests and conforms to the style guide. You can check that the

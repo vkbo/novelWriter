@@ -1,28 +1,27 @@
 # -*- coding: utf-8 -*-
-"""novelWriter Project Tree Class
+"""
+novelWriter – Project Tree Class
+================================
+Data class for the project's tree of project items
 
- novelWriter – Project Tree Class
-==================================
- Class holding the project's tree of project items
+File History:
+Created: 2020-05-07 [0.4.5]
 
- File History:
- Created: 2020-05-07 [0.4.5]
+This file is a part of novelWriter
+Copyright 2018–2021, Veronica Berglyd Olsen
 
- This file is a part of novelWriter
- Copyright 2018–2021, Veronica Berglyd Olsen
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
 
- This program is free software: you can redistribute it and/or modify
- it under the terms of the GNU General Public License as published by
- the Free Software Foundation, either version 3 of the License, or
- (at your option) any later version.
+This program is distributed in the hope that it will be useful, but
+WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+General Public License for more details.
 
- This program is distributed in the hope that it will be useful, but
- WITHOUT ANY WARRANTY; without even the implied warranty of
- MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- General Public License for more details.
-
- You should have received a copy of the GNU General Public License
- along with this program. If not, see <https://www.gnu.org/licenses/>.
+You should have received a copy of the GNU General Public License
+along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
 
 import logging
@@ -294,11 +293,6 @@ class NWTree():
                         tTree.append(tHandle)
         return tTree
 
-    def handleExists(self, tHandle):
-        """Check if a handle exists in the project.
-        """
-        return tHandle in self._treeOrder
-
     ##
     #  Setters
     ##
@@ -463,8 +457,13 @@ class NWTree():
         return
 
     def _makeHandle(self, addSeed=""):
-        """Generate a unique item handle. In the unlikely event that the
-        key already exists, salt the seed and generate a new handle.
+        """Generate a unique item handle. In the event that the key
+        already exists, salt the seed and generate a new handle.
+        A key collision is very unlikely to be caused by the truncation
+        of the sha256 hash to 13 characters. Assuming it is near-random,
+        it will on average happen every 4.5^15 times. However, the clock
+        seed is likely to occasionally generate a collision if the
+        handle requests come faster than the clock resolution.
         """
         if self._handleSeed is None:
             newSeed = str(time()) + addSeed
@@ -472,11 +471,13 @@ class NWTree():
             # This is used for debugging
             newSeed = str(self._handleSeed)
             self._handleSeed += 1
+
         logger.verbose("Generating handle with seed '%s'" % newSeed)
         itemHandle = sha256(newSeed.encode()).hexdigest()[0:13]
         if itemHandle in self._projTree:
             logger.warning("Duplicate handle encountered! Retrying ...")
             itemHandle = self._makeHandle(addSeed+"!")
+
         return itemHandle
 
 # END Class NWTree

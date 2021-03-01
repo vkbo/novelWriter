@@ -1,28 +1,27 @@
 # -*- coding: utf-8 -*-
-"""novelWriter GUI Project Settings
+"""
+novelWriter – GUI Project Settings
+==================================
+GUI classes for the project settings dialog
 
- novelWriter – GUI Project Settings
-====================================
- Class holding the project settings dialog
+File History:
+Created: 2018-09-29 [0.0.1]
 
- File History:
- Created: 2018-09-29 [0.0.1]
+This file is a part of novelWriter
+Copyright 2018–2021, Veronica Berglyd Olsen
 
- This file is a part of novelWriter
- Copyright 2018–2021, Veronica Berglyd Olsen
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
 
- This program is free software: you can redistribute it and/or modify
- it under the terms of the GNU General Public License as published by
- the Free Software Foundation, either version 3 of the License, or
- (at your option) any later version.
+This program is distributed in the hope that it will be useful, but
+WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+General Public License for more details.
 
- This program is distributed in the hope that it will be useful, but
- WITHOUT ANY WARRANTY; without even the implied warranty of
- MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- General Public License for more details.
-
- You should have received a copy of the GNU General Public License
- along with this program. If not, see <https://www.gnu.org/licenses/>.
+You should have received a copy of the GNU General Public License
+along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
 
 import nw
@@ -31,9 +30,9 @@ import logging
 from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QIcon, QPixmap, QColor, QBrush
 from PyQt5.QtWidgets import (
-    QHBoxLayout, QVBoxLayout, QGridLayout, QLineEdit, QPlainTextEdit, QLabel,
-    QWidget, QDialogButtonBox, QListWidget, QPushButton, QListWidgetItem,
-    QColorDialog, QAbstractItemView, QTreeWidget, QTreeWidgetItem, QComboBox
+    QHBoxLayout, QVBoxLayout, QLineEdit, QPlainTextEdit, QLabel, QWidget,
+    QDialogButtonBox, QListWidget, QPushButton, QListWidgetItem, QColorDialog,
+    QAbstractItemView, QTreeWidget, QTreeWidgetItem, QComboBox
 )
 
 from nw.constants import nwAlert
@@ -68,13 +67,11 @@ class GuiProjectSettings(PagedDialog):
         )
 
         self.tabMain    = GuiProjectEditMain(self.theParent, self.theProject)
-        self.tabMeta    = GuiProjectEditMeta(self.theParent, self.theProject)
         self.tabStatus  = GuiProjectEditStatus(self.theParent, self.theProject, True)
         self.tabImport  = GuiProjectEditStatus(self.theParent, self.theProject, False)
         self.tabReplace = GuiProjectEditReplace(self.theParent, self.theProject)
 
         self.addTab(self.tabMain,    "Settings")
-        self.addTab(self.tabMeta,    "Details")
         self.addTab(self.tabStatus,  "Status")
         self.addTab(self.tabImport,  "Importance")
         self.addTab(self.tabReplace, "Auto-Replace")
@@ -118,7 +115,7 @@ class GuiProjectSettings(PagedDialog):
             self.theProject.setImportColours(importCol)
 
         if self.tabStatus.colChanged or self.tabImport.colChanged:
-            self.theParent.rebuildTree()
+            self.theParent.rebuildTrees()
 
         if self.tabReplace.arChanged:
             newList = self.tabReplace.getNewList()
@@ -238,94 +235,6 @@ class GuiProjectEditMain(QWidget):
 
 # END Class GuiProjectEditMain
 
-class GuiProjectEditMeta(QWidget):
-
-    def __init__(self, theParent, theProject):
-        QWidget.__init__(self, theParent)
-
-        self.mainConf   = nw.CONFIG
-        self.theParent  = theParent
-        self.theProject = theProject
-
-        xInd = self.mainConf.pxInt(8)
-
-        # The Form
-        self.mainForm = QGridLayout()
-        self.setLayout(self.mainForm)
-
-        self.headLabel = QLabel("<b>Project Details</b>")
-
-        self.nameLabel = QLabel("Working title:")
-        self.nameLabel.setIndent(xInd)
-        self.nameValue = QLabel(self.theProject.projName)
-        self.nameValue.setWordWrap(True)
-
-        self.pathLabel = QLabel("Project path:")
-        self.pathLabel.setIndent(xInd)
-        self.pathValue = QLabel(self.theProject.projPath)
-        self.pathValue.setWordWrap(True)
-        self.pathValue.setTextInteractionFlags(Qt.TextSelectableByMouse)
-        self.pathValue.setCursor(Qt.IBeamCursor)
-
-        self.revLabel = QLabel("Revision count:")
-        self.revLabel.setIndent(xInd)
-        self.revValue = QLabel(f"{self.theProject.saveCount:n}")
-
-        editHours = self.theProject.editTime/3600
-        self.editLabel = QLabel("Edit time:")
-        self.editLabel.setIndent(xInd)
-        self.editValue = QLabel(f"{editHours:.2f} hours")
-
-        self.statsLabel = QLabel("<b>Project Stats</b>")
-
-        nR, nD, nF = self.theProject.projTree.countTypes()
-
-        self.nRootLabel = QLabel("Root folders:")
-        self.nRootLabel.setIndent(xInd)
-        self.nRootValue = QLabel(f"{nR:n}")
-
-        self.nDirLabel = QLabel("Folders:")
-        self.nDirLabel.setIndent(xInd)
-        self.nDirValue = QLabel(f"{nD:n}")
-
-        self.nFileLabel = QLabel("Documents:")
-        self.nFileLabel.setIndent(xInd)
-        self.nFileValue = QLabel(f"{nF:n}")
-
-        self.wordsLabel = QLabel("Word count:")
-        self.wordsLabel.setIndent(xInd)
-        self.wordsValue = QLabel(f"{self.theProject.currWCount:n}")
-
-        self.mainForm.addWidget(self.headLabel,  0, 0, 1, 2, Qt.AlignTop)
-        self.mainForm.addWidget(self.nameLabel,  1, 0, 1, 1, Qt.AlignTop)
-        self.mainForm.addWidget(self.nameValue,  1, 1, 1, 1, Qt.AlignTop)
-        self.mainForm.addWidget(self.pathLabel,  2, 0, 1, 1, Qt.AlignTop)
-        self.mainForm.addWidget(self.pathValue,  2, 1, 1, 1, Qt.AlignTop)
-        self.mainForm.addWidget(self.revLabel,   3, 0, 1, 1, Qt.AlignTop)
-        self.mainForm.addWidget(self.revValue,   3, 1, 1, 1, Qt.AlignTop)
-        self.mainForm.addWidget(self.editLabel,  4, 0, 1, 1, Qt.AlignTop)
-        self.mainForm.addWidget(self.editValue,  4, 1, 1, 1, Qt.AlignTop)
-
-        self.mainForm.addWidget(self.statsLabel, 5, 0, 1, 2, Qt.AlignTop)
-        self.mainForm.addWidget(self.nRootLabel, 6, 0, 1, 1, Qt.AlignTop)
-        self.mainForm.addWidget(self.nRootValue, 6, 1, 1, 1, Qt.AlignTop)
-        self.mainForm.addWidget(self.nDirLabel,  7, 0, 1, 1, Qt.AlignTop)
-        self.mainForm.addWidget(self.nDirValue,  7, 1, 1, 1, Qt.AlignTop)
-        self.mainForm.addWidget(self.nFileLabel, 8, 0, 1, 1, Qt.AlignTop)
-        self.mainForm.addWidget(self.nFileValue, 8, 1, 1, 1, Qt.AlignTop)
-        self.mainForm.addWidget(self.wordsLabel, 9, 0, 1, 1, Qt.AlignTop)
-        self.mainForm.addWidget(self.wordsValue, 9, 1, 1, 1, Qt.AlignTop)
-
-        self.mainForm.setVerticalSpacing(self.mainConf.pxInt(6))
-        self.mainForm.setHorizontalSpacing(self.mainConf.pxInt(12))
-        self.mainForm.setColumnStretch(0, 0)
-        self.mainForm.setColumnStretch(1, 1)
-        self.mainForm.setRowStretch(10, 1)
-
-        return
-
-# END Class GuiProjectEditMeta
-
 class GuiProjectEditStatus(QWidget):
 
     def __init__(self, theParent, theProject, isStatus):
@@ -414,7 +323,6 @@ class GuiProjectEditStatus(QWidget):
     def _selectColour(self):
         """Open a dialog to select the status icon colour.
         """
-        logger.verbose("Item colour button clicked")
         if self.selColour is not None:
             newCol = QColorDialog.getColor(
                 self.selColour, self, "Select Colour", QColorDialog.DontUseNativeDialog
@@ -430,7 +338,6 @@ class GuiProjectEditStatus(QWidget):
     def _newItem(self):
         """Create a new status item.
         """
-        logger.verbose("New item button clicked")
         newItem = self._addItem("New Item", (0, 0, 0), None, 0)
         newItem.setBackground(QBrush(QColor(0, 255, 0, 80)))
         self.colChanged = True
@@ -439,7 +346,6 @@ class GuiProjectEditStatus(QWidget):
     def _delItem(self):
         """Delete a status item.
         """
-        logger.verbose("Delete item button clicked")
         selItem = self._getSelectedItem()
         if selItem is not None:
             iRow   = self.listBox.row(selItem)
@@ -456,7 +362,6 @@ class GuiProjectEditStatus(QWidget):
     def _saveItem(self):
         """Save changes made to a status item.
         """
-        logger.verbose("Save item button clicked")
         selItem = self._getSelectedItem()
         if selItem is not None:
             selIdx = selItem.data(Qt.UserRole)
@@ -491,7 +396,6 @@ class GuiProjectEditStatus(QWidget):
         """Extract the info of a selected item and populate the settings
         boxes and button.
         """
-        logger.verbose("Item selected")
         selItem = self._getSelectedItem()
         if selItem is not None:
             selIdx = selItem.data(Qt.UserRole)

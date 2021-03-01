@@ -2,16 +2,16 @@ name: flake8
 
 on:
   push:
-    branches: [ main, dev ]
+    branches: [ main, testing, dev ]
   pull_request:
-    branches: [ main, dev ]
+    branches: [ main, testing, dev ]
 
 jobs:
   checkSyntax:
     runs-on: ubuntu-latest
     steps:
       - name: Python Setup
-        uses: actions/setup-python@v1
+        uses: actions/setup-python@v2
         with:
           python-version: 3
           architecture: x64

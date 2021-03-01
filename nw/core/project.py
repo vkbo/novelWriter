@@ -1,28 +1,27 @@
 # -*- coding: utf-8 -*-
-"""novelWriter Project Wrapper
+"""
+novelWriter – Project Wrapper
+=============================
+Data class for novelWriter projects
 
- novelWriter – Project Wrapper
-===============================
- Class wrapping the data of a novelWriter project
+File History:
+Created: 2018-09-29 [0.0.1]
 
- File History:
- Created: 2018-09-29 [0.0.1]
+This file is a part of novelWriter
+Copyright 2018–2021, Veronica Berglyd Olsen
 
- This file is a part of novelWriter
- Copyright 2018–2021, Veronica Berglyd Olsen
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
 
- This program is free software: you can redistribute it and/or modify
- it under the terms of the GNU General Public License as published by
- the Free Software Foundation, either version 3 of the License, or
- (at your option) any later version.
+This program is distributed in the hope that it will be useful, but
+WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+General Public License for more details.
 
- This program is distributed in the hope that it will be useful, but
- WITHOUT ANY WARRANTY; without even the implied warranty of
- MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- General Public License for more details.
-
- You should have received a copy of the GNU General Public License
- along with this program. If not, see <https://www.gnu.org/licenses/>.
+You should have received a copy of the GNU General Public License
+along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
 
 import nw
@@ -1028,7 +1027,7 @@ class NWProject():
         by drag-and-drop. Forwarded to the NWTree class.
         """
         if len(self.projTree) != len(newOrder):
-            logger.warning("Size of new and old tree order do not match")
+            logger.warning("Sizes of new and old tree order do not match")
         self.projTree.setOrder(newOrder)
         self.setProjectChanged(True)
         return True
@@ -1112,10 +1111,31 @@ class NWProject():
     #  Getters
     ##
 
+    def getAuthors(self):
+        """Returns a formatted string of authors.
+        """
+        nAuth = len(self.bookAuthors)
+        authString = ""
+
+        if nAuth == 1:
+            authString = self.bookAuthors[0]
+        elif nAuth > 1:
+            authString = "%s and %s" % (
+                ", ".join(self.bookAuthors[0:-1]), self.bookAuthors[-1]
+            )
+
+        return authString
+
     def getSessionWordCount(self):
         """Returns the number of words added or removed this session.
         """
         return self.currWCount - self.lastWCount
+
+    def getCurrentEditTime(self):
+        """Get the total project edit time, including the time spent in
+        the current session.
+        """
+        return round(self.editTime + time() - self.projOpened)
 
     def getProjectItems(self):
         """This function ensures that the item tree loaded is sent to
@@ -1344,7 +1364,7 @@ class NWProject():
             if oLayout is None:
                 oLayout = nwItemLayout.NOTE
 
-            if oParent is None or not self.projTree.handleExists(oParent):
+            if oParent is None or oParent not in self.projTree:
                 oParent = self.projTree.findRoot(oClass)
                 if oParent is None:
                     oParent = self.projTree.findRoot(nwItemClass.NOVEL)
@@ -1378,6 +1398,15 @@ class NWProject():
         sessionFile = os.path.join(self.projMeta, nwFiles.SESS_STATS)
         isFile = os.path.isfile(sessionFile)
 
+        nowTime = time()
+        sessDiff = self.getSessionWordCount()
+        sessTime = nowTime - self.projOpened
+
+        logger.info("The session lasted %d sec and added %d words" % (int(sessTime), sessDiff))
+        if sessTime < 300 and sessDiff == 0:
+            logger.info("Session too short, skipping log entry")
+            return False
+
         try:
             with open(sessionFile, mode="a+", encoding="utf8") as outFile:
                 if not isFile:
@@ -1390,7 +1419,7 @@ class NWProject():
 
                 outFile.write("%-19s  %-19s  %8d  %8d\n" % (
                     formatTimeStamp(self.projOpened),
-                    formatTimeStamp(time()),
+                    formatTimeStamp(nowTime),
                     self.novelWCount,
                     self.notesWCount,
                 ))

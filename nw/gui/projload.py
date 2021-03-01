@@ -1,28 +1,27 @@
 # -*- coding: utf-8 -*-
-"""novelWriter GUI Open Project
+"""
+novelWriter – GUI Open Project
+==============================
+GUI class for the load/browse/new project dialog
 
- novelWriter – GUI Open Project
-================================
- Class holding the load/browse/new project dialog
+File History:
+Created: 2020-02-26 [0.4.5]
 
- File History:
- Created: 2020-02-26 [0.4.5]
+This file is a part of novelWriter
+Copyright 2018–2021, Veronica Berglyd Olsen
 
- This file is a part of novelWriter
- Copyright 2018–2021, Veronica Berglyd Olsen
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
 
- This program is free software: you can redistribute it and/or modify
- it under the terms of the GNU General Public License as published by
- the Free Software Foundation, either version 3 of the License, or
- (at your option) any later version.
+This program is distributed in the hope that it will be useful, but
+WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+General Public License for more details.
 
- This program is distributed in the hope that it will be useful, but
- WITHOUT ANY WARRANTY; without even the implied warranty of
- MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- General Public License for more details.
-
- You should have received a copy of the GNU General Public License
- along with this program. If not, see <https://www.gnu.org/licenses/>.
+You should have received a copy of the GNU General Public License
+along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
 
 import nw
@@ -130,6 +129,9 @@ class GuiProjectLoad(QDialog):
         self.newButton = self.buttonBox.addButton("New", QDialogButtonBox.ActionRole)
         self.newButton.clicked.connect(self._doNewProject)
 
+        self.delButton = self.buttonBox.addButton("Remove", QDialogButtonBox.ActionRole)
+        self.delButton.clicked.connect(self._doDeleteRecent)
+
         self.outerBox.addLayout(self.innerBox)
         self.outerBox.addWidget(self.buttonBox)
         self.setLayout(self.outerBox)
@@ -139,7 +141,7 @@ class GuiProjectLoad(QDialog):
 
         keyDelete = QShortcut(self.listBox)
         keyDelete.setKey(QKeySequence(Qt.Key_Delete))
-        keyDelete.activated.connect(self._keyPressDelete)
+        keyDelete.activated.connect(self._doDeleteRecent)
 
         logger.debug("GuiProjectLoad initialisation complete")
 
@@ -213,15 +215,16 @@ class GuiProjectLoad(QDialog):
         self.accept()
         return
 
-    def _keyPressDelete(self):
+    def _doDeleteRecent(self):
         """Remove an entry from the recent projects list.
         """
         selList = self.listBox.selectedItems()
         if selList:
-            msgYes = self.theParent.askQuestion(
-                "Remove Entry",
-                "Remove the selected entry from the recent projects list?"
-            )
+            projName = selList[0].text(self.C_NAME)
+            msgYes = self.theParent.askQuestion("Remove Entry", (
+                "Remove '%s' from the recent projects list? "
+                "The project files will not be deleted."
+            ) % projName)
             if msgYes:
                 self.mainConf.removeFromRecentCache(
                     selList[0].data(self.C_NAME, Qt.UserRole)
@@ -258,40 +261,31 @@ class GuiProjectLoad(QDialog):
     def _populateList(self):
         """Populate the list box with recent project data.
         """
-        listOrder = []
-        listData  = {}
-        for projPath in self.mainConf.recentProj.keys():
+        dataList = []
+        for projPath in self.mainConf.recentProj:
             theEntry = self.mainConf.recentProj[projPath]
-            theTitle = ""
-            theTime  = 0
-            theWords = 0
-            if "title" in theEntry.keys():
-                theTitle = theEntry["title"]
-            if "time" in theEntry.keys():
-                theTime = theEntry["time"]
-            if "words" in theEntry.keys():
-                theWords = theEntry["words"]
-            if theTime > 0:
-                listOrder.append(theTime)
-                listData[theTime] = [theTitle, theWords, projPath]
+            theTitle = theEntry.get("title", "")
+            theTime  = theEntry.get("time", 0)
+            theWords = theEntry.get("words", 0)
+            dataList.append([theTitle, theTime, theWords, projPath])
 
         self.listBox.clear()
-        hasSelection = False
-        for timeStamp in sorted(listOrder, reverse=True):
+        sortList = sorted(dataList, key=lambda x: x[1], reverse=True)
+        for theTitle, theTime, theWords, projPath in sortList:
             newItem = QTreeWidgetItem([""]*4)
             newItem.setIcon(self.C_NAME,  self.theParent.theTheme.getIcon("proj_nwx"))
-            newItem.setText(self.C_NAME,  listData[timeStamp][0])
-            newItem.setData(self.C_NAME,  Qt.UserRole, listData[timeStamp][2])
-            newItem.setText(self.C_COUNT, formatInt(listData[timeStamp][1]))
-            newItem.setText(self.C_TIME,  datetime.fromtimestamp(timeStamp).strftime("%x %X"))
+            newItem.setText(self.C_NAME,  theTitle)
+            newItem.setData(self.C_NAME,  Qt.UserRole, projPath)
+            newItem.setText(self.C_COUNT, formatInt(theWords))
+            newItem.setText(self.C_TIME,  datetime.fromtimestamp(theTime).strftime("%x %X"))
             newItem.setTextAlignment(self.C_NAME,  Qt.AlignLeft  | Qt.AlignVCenter)
             newItem.setTextAlignment(self.C_COUNT, Qt.AlignRight | Qt.AlignVCenter)
             newItem.setTextAlignment(self.C_TIME,  Qt.AlignRight | Qt.AlignVCenter)
             newItem.setFont(self.C_TIME, self.theTheme.guiFontFixed)
             self.listBox.addTopLevelItem(newItem)
-            if not hasSelection:
-                newItem.setSelected(True)
-                hasSelection = True
+
+        if self.listBox.topLevelItemCount() > 0:
+            self.listBox.topLevelItem(0).setSelected(True)
 
         projColWidth = self.mainConf.getProjColWidths()
         if len(projColWidth) == 3:

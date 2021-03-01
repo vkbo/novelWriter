@@ -1,28 +1,27 @@
 # -*- coding: utf-8 -*-
-"""novelWriter GUI Build Novel Project
+"""
+novelWriter – GUI Build Novel Project
+=====================================
+GUI classes for the build novel project dialog
 
- novelWriter – GUI Build Novel Project
-=======================================
- Class holding the build novel project dialog
+File History:
+Created: 2020-05-09 [0.5]
 
- File History:
- Created: 2020-05-09 [0.5]
+This file is a part of novelWriter
+Copyright 2018–2021, Veronica Berglyd Olsen
 
- This file is a part of novelWriter
- Copyright 2018–2021, Veronica Berglyd Olsen
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
 
- This program is free software: you can redistribute it and/or modify
- it under the terms of the GNU General Public License as published by
- the Free Software Foundation, either version 3 of the License, or
- (at your option) any later version.
+This program is distributed in the hope that it will be useful, but
+WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+General Public License for more details.
 
- This program is distributed in the hope that it will be useful, but
- WITHOUT ANY WARRANTY; without even the implied warranty of
- MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- General Public License for more details.
-
- You should have received a copy of the GNU General Public License
- along with this program. If not, see <https://www.gnu.org/licenses/>.
+You should have received a copy of the GNU General Public License
+along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
 
 import nw
@@ -572,8 +571,9 @@ class GuiBuildNovel(QDialog):
         makeHtml.setJustify(justifyText)
         makeHtml.setStyles(not noStyling)
 
-        # Make sure the tree order is correct
+        # Make sure the project and document is up to date
         self.theParent.treeView.flushTreeOrder()
+        self.theParent.saveDocument()
 
         self.buildProgress.setMaximum(len(self.theProject.projTree))
         self.buildProgress.setValue(0)
@@ -969,11 +969,6 @@ class GuiBuildNovel(QDialog):
         """
         buildCache = os.path.join(self.theProject.projCache, nwFiles.BUILD_CACHE)
 
-        if self.mainConf.debugInfo:
-            nIndent = 2
-        else:
-            nIndent = None
-
         logger.debug("Saving build cache")
         try:
             with open(buildCache, mode="w+", encoding="utf8") as outFile:
@@ -982,7 +977,7 @@ class GuiBuildNovel(QDialog):
                     "htmlStyle" : self.htmlStyle,
                     "nwdText"   : self.nwdText,
                     "buildTime" : self.buildTime,
-                }, indent=nIndent))
+                }, indent=2))
         except Exception as e:
             logger.error("Failed to save build cache")
             logger.error(str(e))

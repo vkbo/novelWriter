@@ -1,34 +1,33 @@
 # -*- coding: utf-8 -*-
-"""novelWriter GUI Document Editor
+"""
+novelWriter – GUI Document Editor
+=================================
+GUI classes for the main document editor
 
- novelWriter – GUI Document Editor
-===================================
- Class holding the main document editor
+File History:
+Created:   2018-09-29 [0.0.1]  GuiDocEditor
+Created:   2019-04-22 [0.0.1]  BackgroundWordCounter
+Created:   2019-09-29 [0.2.1]  GuiDocEditSearch
+Created:   2020-04-25 [0.4.5]  GuiDocEditHeader
+Rewritten: 2020-06-15 [0.9.0]  GuiDocEditSearch
+Created:   2020-06-27 [0.10.0] GuiDocEditFooter
+Rewritten: 2020-10-07 [1.0b3]  BackgroundWordCounter
 
- File History:
- Created:   2018-09-29 [0.0.1]  GuiDocEditor
- Created:   2019-04-22 [0.0.1]  BackgroundWordCounter
- Created:   2019-09-29 [0.2.1]  GuiDocEditSearch
- Created:   2020-04-25 [0.4.5]  GuiDocEditHeader
- Rewritten: 2020-06-15 [0.9.0]  GuiDocEditSearch
- Created:   2020-06-27 [0.10.0] GuiDocEditFooter
- Rewritten: 2020-10-07 [1.0b3]  BackgroundWordCounter
+This file is a part of novelWriter
+Copyright 2018–2021, Veronica Berglyd Olsen
 
- This file is a part of novelWriter
- Copyright 2018–2021, Veronica Berglyd Olsen
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
 
- This program is free software: you can redistribute it and/or modify
- it under the terms of the GNU General Public License as published by
- the Free Software Foundation, either version 3 of the License, or
- (at your option) any later version.
+This program is distributed in the hope that it will be useful, but
+WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+General Public License for more details.
 
- This program is distributed in the hope that it will be useful, but
- WITHOUT ANY WARRANTY; without even the implied warranty of
- MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- General Public License for more details.
-
- You should have received a copy of the GNU General Public License
- along with this program. If not, see <https://www.gnu.org/licenses/>.
+You should have received a copy of the GNU General Public License
+along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
 
 import nw
@@ -76,12 +75,14 @@ class GuiDocEditor(QTextEdit):
         self.mainConf   = nw.CONFIG
         self.theParent  = theParent
         self.theTheme   = theParent.theTheme
+        self.theIndex   = theParent.theIndex
         self.theProject = theParent.theProject
         self.nwDocument = NWDoc(self.theProject, self.theParent)
 
         self.docChanged = False # Flag for changed status of document
         self.spellCheck = False # Flag for spell checking enabled
         self.theHandle  = None  # The handle of the open file
+        self.theHeaders = []    # Record of headers in the file
         self.theDict    = None  # The current spell check dictionary
         self.nonWord    = "\"'" # Characters to not include in spell checking
 
@@ -144,14 +145,14 @@ class GuiDocEditor(QTextEdit):
         )
 
         # Set Up Word Counter
-        self.wcInterval = self.mainConf.wordCountTimer
         self.wcTimer = QTimer()
-        self.wcTimer.setInterval(int(self.wcInterval*1000))
         self.wcTimer.timeout.connect(self._runCounter)
 
         self.wCounter = BackgroundWordCounter(self)
         self.wCounter.setAutoDelete(False)
         self.wCounter.signals.countsReady.connect(self._updateCounts)
+
+        self.wcInterval = self.mainConf.wordCountTimer
 
         self.initEditor()
 
@@ -259,6 +260,10 @@ class GuiDocEditor(QTextEdit):
         # Initialise the syntax highlighter
         self.hLight.initHighlighter()
 
+        # Configure word count timer
+        self.wcInterval = self.mainConf.wordCountTimer
+        self.wcTimer.setInterval(int(self.wcInterval*1000))
+
         # If we have a document open, we should reload it in case the
         # font changed, otherwise we just clear the editor entirely,
         # which makes it read only.
@@ -339,11 +344,17 @@ class GuiDocEditor(QTextEdit):
 
         self.docFooter.updateLineCount()
         self.lengthLast = self.qDocument.characterCount()
+        self.theHeaders = self.theIndex.getHandleHeaders(self.theHandle)
 
         qApp.processEvents()
         self.setDocumentChanged(False)
-
         qApp.restoreOverrideCursor()
+
+        # This is a hack to fix invisble cursor on an empty document
+        if self.qDocument.characterCount() <= 1:
+            self.setPlainText("\n")
+            self.setPlainText("")
+            self.setCursorPosition(0)
 
         return True
 
@@ -390,6 +401,7 @@ class GuiDocEditor(QTextEdit):
             return False
 
         docText = self.getText()
+        tHandle = theItem.itemHandle
 
         cC, wC, pC = countWords(docText)
         self._updateCounts(cC, wC, pC)
@@ -402,7 +414,11 @@ class GuiDocEditor(QTextEdit):
         self.nwDocument.saveDocument(docText)
         self.setDocumentChanged(False)
 
-        self.theParent.theIndex.scanText(theItem.itemHandle, docText)
+        self.theIndex.scanText(tHandle, docText)
+        if self._updateHeaders(checkLevel=True):
+            self.theParent.requestNovelTreeRefresh()
+        else:
+            self.theParent.novelView.updateWordCounts(tHandle)
 
         return True
 
@@ -510,9 +526,10 @@ class GuiDocEditor(QTextEdit):
         if not isinstance(thePosition, int):
             return False
 
-        if thePosition >= 0:
+        nChars = self.qDocument.characterCount()
+        if nChars > 1:
             theCursor = self.textCursor()
-            theCursor.setPosition(thePosition)
+            theCursor.setPosition(min(max(thePosition, 0), nChars-1))
             self.setTextCursor(theCursor)
             self.docFooter.updateLineCount()
 
@@ -731,20 +748,6 @@ class GuiDocEditor(QTextEdit):
         elif isinstance(theInsert, nwDocInsert):
             if theInsert == nwDocInsert.HARD_BREAK:
                 theText = "  \n"
-            elif theInsert == nwDocInsert.NB_SPACE:
-                theText = nwUnicode.U_NBSP
-            elif theInsert == nwDocInsert.THIN_SPACE:
-                theText = nwUnicode.U_THNSP
-            elif theInsert == nwDocInsert.THIN_NB_SPACE:
-                theText = nwUnicode.U_THNBSP
-            elif theInsert == nwDocInsert.SHORT_DASH:
-                theText = nwUnicode.U_ENDASH
-            elif theInsert == nwDocInsert.LONG_DASH:
-                theText = nwUnicode.U_EMDASH
-            elif theInsert == nwDocInsert.ELLIPSIS:
-                theText = nwUnicode.U_HELLIP
-            elif theInsert == nwDocInsert.MODAPOS_S:
-                theText = nwUnicode.U_MAPOSS
             elif theInsert == nwDocInsert.QUOTE_LS:
                 theText = self.typSQOpen
             elif theInsert == nwDocInsert.QUOTE_RS:
@@ -1223,6 +1226,30 @@ class GuiDocEditor(QTextEdit):
             theCursor.insertText(nwUnicode.U_HELLIP)
 
         return
+
+    def _updateHeaders(self, checkPos=False, checkLevel=False):
+        """Update the headers record and return True if anything
+        changed, if a check flag was provided.
+        """
+        if self.theHandle is None:
+            return False
+
+        newHeaders = self.theIndex.getHandleHeaders(self.theHandle)
+        if checkPos:
+            newPos = [x[0] for x in newHeaders]
+            oldPos = [x[0] for x in self.theHeaders]
+        if checkLevel:
+            newLev = [x[1] for x in newHeaders]
+            oldLev = [x[1] for x in self.theHeaders]
+
+        self.theHeaders = newHeaders
+
+        if checkPos:
+            return newPos != oldPos
+        if checkLevel:
+            return newLev != oldLev
+
+        return False
 
     def _replaceQuotes(self, sQuote, oQuote, cQuote):
         """Replace all straight quotes in the selected text.
@@ -1722,7 +1749,9 @@ class BackgroundWordCounter(QRunnable):
 ## END Class BackgroundWordCounter
 
 class BackgroundWordCounterSignals(QObject):
-
+    """The QRunnable cannot emit a signal, so we need a simple QObject
+    to hold the word counter signal.
+    """
     countsReady = pyqtSignal(int, int, int)
 
 # END Class BackgroundWordCounterSignals
@@ -1959,6 +1988,7 @@ class GuiDocEditSearch(QFrame):
         if theText is not None:
             self.searchBox.setText(theText)
         self.searchBox.setFocus()
+        self.searchBox.selectAll()
         if self.isRegEx:
             self._alertSearchValid(True)
         logger.verbose("Setting search text to '%s'" % theText)

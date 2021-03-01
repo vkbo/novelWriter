@@ -1,28 +1,27 @@
 # -*- coding: utf-8 -*-
-"""novelWriter Common Functions
+"""
+novelWriter – Common Functions
+==============================
+Various common functions
 
- novelWriter – Common Functions
-================================
- Various functions used multiple places
+File History:
+Created: 2019-05-12 [0.1.0]
 
- File History:
- Created: 2019-05-12 [0.1.0]
+This file is a part of novelWriter
+Copyright 2018–2021, Veronica Berglyd Olsen
 
- This file is a part of novelWriter
- Copyright 2018–2021, Veronica Berglyd Olsen
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
 
- This program is free software: you can redistribute it and/or modify
- it under the terms of the GNU General Public License as published by
- the Free Software Foundation, either version 3 of the License, or
- (at your option) any later version.
+This program is distributed in the hope that it will be useful, but
+WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+General Public License for more details.
 
- This program is distributed in the hope that it will be useful, but
- WITHOUT ANY WARRANTY; without even the implied warranty of
- MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- General Public License for more details.
-
- You should have received a copy of the GNU General Public License
- along with this program. If not, see <https://www.gnu.org/licenses/>.
+You should have received a copy of the GNU General Public License
+along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
 
 import logging
@@ -162,11 +161,11 @@ def formatInt(theInt):
             theVal /= 1000.0
             if theVal < 1000.0:
                 if theVal < 10.0:
-                    return f"{theVal:4.2f}{nwUnicode.U_THNSP}{pF}"
+                    return f"{theVal:4.2f}{nwUnicode.U_THSP}{pF}"
                 elif theVal < 100.0:
-                    return f"{theVal:4.1f}{nwUnicode.U_THNSP}{pF}"
+                    return f"{theVal:4.1f}{nwUnicode.U_THSP}{pF}"
                 else:
-                    return f"{theVal:3.0f}{nwUnicode.U_THNSP}{pF}"
+                    return f"{theVal:3.0f}{nwUnicode.U_THSP}{pF}"
 
     return str(theInt)
 

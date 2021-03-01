@@ -1,28 +1,27 @@
 # -*- coding: utf-8 -*-
-"""novelWriter Text Tokenizer
+"""
+novelWriter – Text Tokenizer
+============================
+Splits a piece of novelWriter markdown text into its elements
 
- novelWriter – Text Tokenizer
-==============================
- Splits a piece of novelWriter markdown text into its elements
+File History:
+Created: 2019-05-05 [0.0.1]
 
- File History:
- Created: 2019-05-05 [0.0.1]
+This file is a part of novelWriter
+Copyright 2018–2021, Veronica Berglyd Olsen
 
- This file is a part of novelWriter
- Copyright 2018–2021, Veronica Berglyd Olsen
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
 
- This program is free software: you can redistribute it and/or modify
- it under the terms of the GNU General Public License as published by
- the Free Software Foundation, either version 3 of the License, or
- (at your option) any later version.
+This program is distributed in the hope that it will be useful, but
+WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+General Public License for more details.
 
- This program is distributed in the hope that it will be useful, but
- WITHOUT ANY WARRANTY; without even the implied warranty of
- MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- General Public License for more details.
-
- You should have received a copy of the GNU General Public License
- along with this program. If not, see <https://www.gnu.org/licenses/>.
+You should have received a copy of the GNU General Public License
+along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
 
 import logging
@@ -39,13 +38,15 @@ logger = logging.getLogger(__name__)
 
 class Tokenizer():
 
-    FMT_B_B    = 1 # Begin bold
-    FMT_B_E    = 2 # End bold
-    FMT_I_B    = 3 # Begin italics
-    FMT_I_E    = 4 # End italics
-    FMT_D_B    = 5 # Begin strikeout
-    FMT_D_E    = 6 # End strikeout
+    # In-Text Format
+    FMT_B_B    = 1  # Begin bold
+    FMT_B_E    = 2  # End bold
+    FMT_I_B    = 3  # Begin italics
+    FMT_I_E    = 4  # End italics
+    FMT_D_B    = 5  # Begin strikeout
+    FMT_D_E    = 6  # End strikeout
 
+    # Block Type
     T_EMPTY    = 1  # Empty line (new paragraph)
     T_SYNOPSIS = 2  # Synopsis comment
     T_COMMENT  = 3  # Comment line
@@ -59,17 +60,18 @@ class Tokenizer():
     T_SEP      = 11 # Scene separator
     T_SKIP     = 12 # Paragraph break
 
-    A_NONE     = 0   # No special style
-    A_LEFT     = 1   # Left aligned
-    A_RIGHT    = 2   # Right aligned
-    A_CENTRE   = 4   # Centred
-    A_JUSTIFY  = 8   # Justified
-    A_PBB      = 16  # Page break before always
-    A_PBB_AV   = 32  # Page break before avoid
-    A_PBB_NO   = 64  # Page break before never
-    A_PBA      = 128 # Page break after always
-    A_PBA_AV   = 256 # Page break after avoid
-    A_PBA_NO   = 512 # Page break after avoid
+    # Block Style
+    A_NONE     = 0x0000 # No special style
+    A_LEFT     = 0x0001 # Left aligned
+    A_RIGHT    = 0x0002 # Right aligned
+    A_CENTRE   = 0x0004 # Centred
+    A_JUSTIFY  = 0x0008 # Justified
+    A_PBB      = 0x0010 # Page break before always
+    A_PBB_AV   = 0x0020 # Page break before avoid
+    A_PBB_NO   = 0x0040 # Page break before never
+    A_PBA      = 0x0080 # Page break after always
+    A_PBA_AV   = 0x0100 # Page break after avoid
+    A_PBA_NO   = 0x0200 # Page break after avoid
 
     def __init__(self, theProject, theParent):
 

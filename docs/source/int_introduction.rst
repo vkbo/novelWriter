@@ -42,8 +42,8 @@ formatting features supported are available through convenient keyboard shortcut
 available in the main menu. A full list of shortcuts can be found in the :ref:`a_ui_shortcuts`
 section.
 
-In addition, novelWriter offers a :guilabel:`Distraction Free Mode` where all the user interface
-elements other than the document editor itself are hidden away.
+In addition, novelWriter offers a :guilabel:`Focus Mode` where all the user interface elements
+other than the document editor itself are hidden away.
 
 The colour scheme of the user interface defaults to that of the host operating system. In addition,
 a dark theme is provided, and can be enabled in :guilabel:`Preferences` from the :guilabel:`Tools`

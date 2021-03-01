@@ -1,28 +1,27 @@
 # -*- coding: utf-8 -*-
-"""novelWriter Constants
+"""
+novelWriter – Constants
+=======================
+Constants and maps for translating flags and enums to text
 
- novelWriter – Constants
-=========================
- Constants for translating flags and enums to text
+File History:
+Created: 2019-04-28 [0.0.1]
 
- File History:
- Created: 2019-04-28 [0.0.1]
+This file is a part of novelWriter
+Copyright 2018–2021, Veronica Berglyd Olsen
 
- This file is a part of novelWriter
- Copyright 2018–2021, Veronica Berglyd Olsen
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
 
- This program is free software: you can redistribute it and/or modify
- it under the terms of the GNU General Public License as published by
- the Free Software Foundation, either version 3 of the License, or
- (at your option) any later version.
+This program is distributed in the hope that it will be useful, but
+WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+General Public License for more details.
 
- This program is distributed in the hope that it will be useful, but
- WITHOUT ANY WARRANTY; without even the implied warranty of
- MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- General Public License for more details.
-
- You should have received a copy of the GNU General Public License
- along with this program. If not, see <https://www.gnu.org/licenses/>.
+You should have received a copy of the GNU General Public License
+along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
 
 from nw.constants.enum import (
@@ -50,7 +49,6 @@ class nwConst():
 class nwLists():
     """Lists used for grouping various other constants.
     """
-
     # Regular user-accessible item types
     REG_TYPES = {nwItemType.ROOT, nwItemType.FOLDER, nwItemType.FILE}
 
@@ -212,7 +210,6 @@ class nwQuotes():
     """Allowed quotation marks.
     Source: https://en.wikipedia.org/wiki/Quotation_mark
     """
-
     SYMBOLS = {
         "\u0027" : "Straight single quotation mark",
         "\u0022" : "Straight double quotation mark",
@@ -241,9 +238,8 @@ class nwQuotes():
 # END Class nwQuotes
 
 class nwUnicode:
-    """Supported unicode character constants and translation maps for HTML.
+    """Supported unicode character constants and their HTML equivalents.
     """
-
     # Unicode Constants
     # =================
 
@@ -269,22 +265,36 @@ class nwUnicode:
     U_RECQUO = "\u300f" # Right white corner bracket
 
     ## Punctuation
+    U_FGDASH = "\u2012" # Figure dash
     U_ENDASH = "\u2013" # Short dash
     U_EMDASH = "\u2014" # Long dash
+    U_HBAR   = "\u2015" # Horizontal bar
     U_HELLIP = "\u2026" # Ellipsis
     U_MAPOSS = "\u02bc" # Modifier letter single apostrophe
+    U_PRIME  = "\u2032" # Prime
+    U_DPRIME = "\u2033" # Double prime
 
     ## Spaces and Lines
     U_NBSP   = "\u00a0" # Non-breaking space
-    U_THNSP  = "\u2009" # Thin space
+    U_THSP   = "\u2009" # Thin space
     U_THNBSP = "\u202f" # Thin non-breaking space
+    U_ENSP   = "\u2002" # Short (en) space
+    U_EMSP   = "\u2003" # Long (em) space
     U_LSEP   = "\u2028" # Line separator
     U_PSEP   = "\u2029" # Paragraph separator
 
     ## Symbols
     U_CHECK  = "\u2714" # Heavy check mark
-    U_MULT   = "\u2715" # Multiplication x
+    U_CROSS  = "\u2715" # Heavy cross mark
     U_BULL   = "\u2022" # List bullet
+    U_TRBULL = "\u2023" # Triangle bullet
+    U_HYBULL = "\u2043" # Hyphen bullet
+    U_FLOWER = "\u2055" # Flower punctuation mark
+    U_PERMIL = "\u2030" # Per mille sign
+    U_DEGREE = "\u00b0" # Degree symbol
+    U_MINUS  = "\u2212" # Minus sign
+    U_TIMES  = "\u00d7" # Multiplaction sign
+    U_DIVIDE = "\u00f7" # Division sign
 
     ## Arrows
     U_UTRI   = "\u25b2" # Up-pointing triangle
@@ -321,20 +331,34 @@ class nwUnicode:
     H_LWCQUO = "&#12302;"
 
     ## Punctuation
+    H_FGDASH = "&#8210;"
     H_ENDASH = "&ndash;"
     H_EMDASH = "&mdash;"
+    H_HBAR   = "&#8213;"
     H_HELLIP = "&hellip;"
     H_MAPOSS = "&#700;"
+    H_PRIME  = "&prime;"
+    H_DPRIME = "&#8243;"
 
     ## Spaces
     H_NBSP   = "&nbsp;"
-    H_THNSP  = "&thinsp;"
+    H_THSP   = "&thinsp;"
     H_THNBSP = "&#8239;"
+    H_ENSP   = "&ensp;"
+    H_EMSP   = "&emsp;"
 
     ## Symbols
     H_CHECK  = "&#10004;"
-    H_MULT   = "&#10005;"
+    H_CROSS  = "&#10005;"
     H_BULL   = "&bull;"
+    H_TRBULL = "&#8227;"
+    H_HYBULL = "&hybull;"
+    H_FLOWER = "&#8277;"
+    H_PERMIL = "&#8240;"
+    H_DEGREE = "&deg;"
+    H_MINUS  = "&minus;"
+    H_TIMES  = "&times;"
+    H_DIVIDE = "&divide;"
 
     ## Arrows
     H_UTRI   = "&#9650;"

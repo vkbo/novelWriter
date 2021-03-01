@@ -1,28 +1,27 @@
 # -*- coding: utf-8 -*-
-"""novelWriter GUI Document Details
-
- novelWriter – GUI Document Details
+"""
+novelWriter – GUI Item Details Panel
 ====================================
- Class holding the project tree item details panel
+GUI class for the project tree item details panel
 
- File History:
- Created: 2019-04-24 [0.0.1]
+File History:
+Created: 2019-04-24 [0.0.1]
 
- This file is a part of novelWriter
- Copyright 2018–2021, Veronica Berglyd Olsen
+This file is a part of novelWriter
+Copyright 2018–2021, Veronica Berglyd Olsen
 
- This program is free software: you can redistribute it and/or modify
- it under the terms of the GNU General Public License as published by
- the Free Software Foundation, either version 3 of the License, or
- (at your option) any later version.
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
 
- This program is distributed in the hope that it will be useful, but
- WITHOUT ANY WARRANTY; without even the implied warranty of
- MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- General Public License for more details.
+This program is distributed in the hope that it will be useful, but
+WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+General Public License for more details.
 
- You should have received a copy of the GNU General Public License
- along with this program. If not, see <https://www.gnu.org/licenses/>.
+You should have received a copy of the GNU General Public License
+along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
 
 import nw
@@ -50,24 +49,22 @@ class GuiItemDetails(QWidget):
         self.theTheme   = theParent.theTheme
         self.theHandle  = None
 
-        self.mainBox = QGridLayout(self)
-        self.mainBox.setVerticalSpacing(1)
-        self.mainBox.setHorizontalSpacing(6)
-        self.setLayout(self.mainBox)
+        # Sizes
+        hSp = self.mainConf.pxInt(6)
+        vSp = self.mainConf.pxInt(1)
+        mPx = self.mainConf.pxInt(6)
+        iPx = self.theTheme.baseIconSize
+        fPt = self.theTheme.fontPointSize
 
-        self.pS = 0.9*self.theTheme.fontPointSize
-        self.iPx = self.theTheme.baseIconSize
-        self.sPx = int(round(0.8*self.theTheme.baseIconSize))
-
-        self.expCheck = self.theTheme.getPixmap("check", (self.iPx, self.iPx))
-        self.expCross = self.theTheme.getPixmap("cross", (self.iPx, self.iPx))
+        self.expCheck = self.theTheme.getPixmap("check", (iPx, iPx))
+        self.expCross = self.theTheme.getPixmap("cross", (iPx, iPx))
 
         self.fntLabel = QFont()
         self.fntLabel.setBold(True)
-        self.fntLabel.setPointSizeF(self.pS)
+        self.fntLabel.setPointSizeF(0.9*fPt)
 
         self.fntValue = QFont()
-        self.fntValue.setPointSizeF(self.pS)
+        self.fntValue.setPointSizeF(0.9*fPt)
 
         # Label
         self.labelName = QLabel("Label")
@@ -148,6 +145,7 @@ class GuiItemDetails(QWidget):
         self.pCountData.setAlignment(Qt.AlignRight)
 
         # Assemble
+        self.mainBox = QGridLayout(self)
         self.mainBox.addWidget(self.labelName,  0, 0, 1, 1)
         self.mainBox.addWidget(self.labelFlag,  0, 1, 1, 1)
         self.mainBox.addWidget(self.labelData,  0, 2, 1, 3)
@@ -176,6 +174,12 @@ class GuiItemDetails(QWidget):
         self.mainBox.setColumnStretch(3, 0)
         self.mainBox.setColumnStretch(4, 0)
 
+        self.mainBox.setHorizontalSpacing(hSp)
+        self.mainBox.setVerticalSpacing(vSp)
+        self.mainBox.setContentsMargins(mPx, mPx, mPx, mPx)
+
+        self.setLayout(self.mainBox)
+
         # Make sure the columns for flags and counts don't resize too often
         flagWidth  = self.theTheme.getTextWidth("Mm", self.fntValue)
         countWidth = self.theTheme.getTextWidth("99,999", self.fntValue)
@@ -194,77 +198,87 @@ class GuiItemDetails(QWidget):
         """Clear all the data values.
         """
         self.labelFlag.setPixmap(QPixmap(1, 1))
-        self.labelData.setText("")
         self.statusFlag.setPixmap(QPixmap(1, 1))
-        self.statusData.setText("")
         self.classFlag.setText("")
-        self.classData.setText("")
         self.layoutFlag.setText("")
-        self.layoutData.setText("")
+
+        self.labelData.setText("–")
+        self.statusData.setText("–")
+        self.classData.setText("–")
+        self.layoutData.setText("–")
+
         self.cCountData.setText("–")
         self.wCountData.setText("–")
         self.pCountData.setText("–")
+
         return
 
     def updateCounts(self, tHandle, cC, wC, pC):
-        """Just update the counts if the handle is the same as the one
-        we're already showing.
+        """Update the counts if the handle is the same as the one we're
+        already showing. Otherwise, do nothing.
         """
         if tHandle == self.theHandle:
             self.cCountData.setText(f"{cC:n}")
             self.wCountData.setText(f"{wC:n}")
             self.pCountData.setText(f"{pC:n}")
+
         return
 
     def updateViewBox(self, tHandle):
         """Populate the details box from a given handle.
         """
-        self.theHandle = tHandle
-        nwItem = self.theProject.projTree[tHandle]
+        if tHandle is None:
+            self.clearDetails()
+            return
 
+        nwItem = self.theProject.projTree[tHandle]
         if nwItem is None:
             self.clearDetails()
+            return
 
+        self.theHandle = tHandle
+        theLabel = nwItem.itemName
+        if len(theLabel) > 100:
+            theLabel = theLabel[:96].rstrip()+" ..."
+
+        itStatus = nwItem.itemStatus
+        if nwItem.itemClass == nwItemClass.NOVEL:
+            itStatus = self.theProject.statusItems.checkEntry(itStatus) # Make sure it's valid
+            flagIcon = self.theParent.statusIcons[itStatus]
         else:
-            theLabel = nwItem.itemName
-            if len(theLabel) > 100:
-                theLabel = theLabel[:96].rstrip()+" ..."
+            itStatus = self.theProject.importItems.checkEntry(itStatus) # Make sure it's valid
+            flagIcon = self.theParent.importIcons[itStatus]
 
-            iStatus = nwItem.itemStatus
-            if nwItem.itemClass == nwItemClass.NOVEL:
-                iStatus  = self.theProject.statusItems.checkEntry(iStatus) # Make sure it's valid
-                flagIcon = self.theParent.statusIcons[iStatus]
+        if nwItem.itemType == nwItemType.FILE:
+            if nwItem.isExported:
+                self.labelFlag.setPixmap(self.expCheck)
             else:
-                iStatus  = self.theProject.importItems.checkEntry(iStatus) # Make sure it's valid
-                flagIcon = self.theParent.importIcons[iStatus]
+                self.labelFlag.setPixmap(self.expCross)
+        else:
+            self.labelFlag.setPixmap(QPixmap(1, 1))
 
-            if nwItem.itemType == nwItemType.FILE:
-                if nwItem.isExported:
-                    self.labelFlag.setPixmap(self.expCheck)
-                else:
-                    self.labelFlag.setPixmap(self.expCross)
-            else:
-                self.labelFlag.setPixmap(QPixmap(1, 1))
-            self.statusFlag.setPixmap(flagIcon.pixmap(self.sPx, self.sPx))
-            self.classFlag.setText(nwLabels.CLASS_FLAG[nwItem.itemClass])
-            if nwItem.itemLayout == nwItemLayout.NO_LAYOUT:
-                self.layoutFlag.setText("-")
-            else:
-                self.layoutFlag.setText(nwLabels.LAYOUT_FLAG[nwItem.itemLayout])
+        iPx = int(round(0.8*self.theTheme.baseIconSize))
+        self.statusFlag.setPixmap(flagIcon.pixmap(iPx, iPx))
+        self.classFlag.setText(nwLabels.CLASS_FLAG[nwItem.itemClass])
 
-            self.labelData.setText(theLabel)
-            self.statusData.setText(nwItem.itemStatus)
-            self.classData.setText(nwLabels.CLASS_NAME[nwItem.itemClass])
-            self.layoutData.setText(nwLabels.LAYOUT_NAME[nwItem.itemLayout])
+        if nwItem.itemLayout == nwItemLayout.NO_LAYOUT:
+            self.layoutFlag.setText("-")
+        else:
+            self.layoutFlag.setText(nwLabels.LAYOUT_FLAG[nwItem.itemLayout])
 
-            if nwItem.itemType == nwItemType.FILE:
-                self.cCountData.setText(f"{nwItem.charCount:n}")
-                self.wCountData.setText(f"{nwItem.wordCount:n}")
-                self.pCountData.setText(f"{nwItem.paraCount:n}")
-            else:
-                self.cCountData.setText("–")
-                self.wCountData.setText("–")
-                self.pCountData.setText("–")
+        self.labelData.setText(theLabel)
+        self.statusData.setText(nwItem.itemStatus)
+        self.classData.setText(nwLabels.CLASS_NAME[nwItem.itemClass])
+        self.layoutData.setText(nwLabels.LAYOUT_NAME[nwItem.itemLayout])
+
+        if nwItem.itemType == nwItemType.FILE:
+            self.cCountData.setText(f"{nwItem.charCount:n}")
+            self.wCountData.setText(f"{nwItem.wordCount:n}")
+            self.pCountData.setText(f"{nwItem.paraCount:n}")
+        else:
+            self.cCountData.setText("–")
+            self.wCountData.setText("–")
+            self.pCountData.setText("–")
 
         return
 

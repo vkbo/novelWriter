@@ -1,28 +1,27 @@
 # -*- coding: utf-8 -*-
-"""novelWriter GUI Document Highlighter
+"""
+novelWriter – GUI Syntax Highlighter
+====================================
+Class for the main document editor syntax highlighter
 
- novelWriter – GUI Document Highlighter
-========================================
- Subclass for the main editor syntax highlighting
+File History:
+Created: 2019-04-06 [0.0.1]
 
- File History:
- Created: 2019-04-06 [0.0.1]
+This file is a part of novelWriter
+Copyright 2018–2021, Veronica Berglyd Olsen
 
- This file is a part of novelWriter
- Copyright 2018–2021, Veronica Berglyd Olsen
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
 
- This program is free software: you can redistribute it and/or modify
- it under the terms of the GNU General Public License as published by
- the Free Software Foundation, either version 3 of the License, or
- (at your option) any later version.
+This program is distributed in the hope that it will be useful, but
+WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+General Public License for more details.
 
- This program is distributed in the hope that it will be useful, but
- WITHOUT ANY WARRANTY; without even the implied warranty of
- MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- General Public License for more details.
-
- You should have received a copy of the GNU General Public License
- along with this program. If not, see <https://www.gnu.org/licenses/>.
+You should have received a copy of the GNU General Public License
+along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
 
 import nw
@@ -148,22 +147,29 @@ class GuiDocHighlighter(QSyntaxHighlighter):
 
         # Quoted Strings
         if self.mainConf.highlightQuotes:
-            fmtDO = self.mainConf.fmtDoubleQuotes[0]
-            fmtDC = self.mainConf.fmtDoubleQuotes[1]
-            fmtSO = self.mainConf.fmtSingleQuotes[0]
-            fmtSC = self.mainConf.fmtSingleQuotes[1]
+            fmtDbl = self.mainConf.fmtDoubleQuotes
+            fmtSng = self.mainConf.fmtSingleQuotes
+
+            # Straight Quotes
+            if fmtDbl != ["\"", "\""]:
+                self.hRules.append((
+                    "(\\B\")(.*?)(\"\\B)", {
+                        0 : self.hStyles["dialogue1"],
+                    }
+                ))
+
+            # Double Quotes
+            dblEnd = "|$" if self.mainConf.allowOpenDQuote else ""
             self.hRules.append((
-                "\\B\"(.*?)\"\\B", {
-                    0 : self.hStyles["dialogue1"],
-                }
-            ))
-            self.hRules.append((
-                f"\\B{fmtDO:s}(.*?){fmtDC:s}\\B", {
+                f"(\\B{fmtDbl[0]})(.*?)({fmtDbl[1]}\\B{dblEnd})", {
                     0 : self.hStyles["dialogue2"],
                 }
             ))
+
+            # Single Quotes
+            sngEnd = "|$" if self.mainConf.allowOpenSQuote else ""
             self.hRules.append((
-                f"\\B{fmtSO:s}(.*?){fmtSC:s}\\B", {
+                f"(\\B{fmtSng[0]})(.*?)({fmtSng[1]}\\B{sngEnd})", {
                     0 : self.hStyles["dialogue3"],
                 }
             ))
@@ -391,7 +397,7 @@ class GuiDocHighlighter(QSyntaxHighlighter):
                 theFormat.setBackground(QBrush(fmtCol, Qt.SolidPattern))
 
         if fmtSize is not None:
-            theFormat.setFontPointSize(round(fmtSize*self.mainConf.textSize))
+            theFormat.setFontPointSize(int(round(fmtSize*self.mainConf.textSize)))
 
         return theFormat
 
