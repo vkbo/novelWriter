@@ -43,7 +43,7 @@ from nw.gui import (
     GuiDocViewDetails, GuiDocViewer, GuiItemDetails, GuiItemEditor,
     GuiMainMenu, GuiMainStatus, GuiNovelTree, GuiOutline, GuiOutlineDetails,
     GuiPreferences, GuiProjectDetails, GuiProjectLoad, GuiProjectSettings,
-    GuiProjectTree, GuiProjectWizard, GuiTheme, GuiWritingStats
+    GuiProjectTree, GuiProjectWizard, GuiTheme, GuiWordList, GuiWritingStats
 )
 from nw.core import NWProject, NWDoc, NWIndex
 from nw.constants import nwItemType, nwItemClass, nwAlert, nwLists
@@ -86,6 +86,8 @@ class GuiMain(QMainWindow):
         self.theIndex    = NWIndex(self.theProject, self)
         self.hasProject  = False
         self.isFocusMode = False
+        self.idleRefTime = time()
+        self.idleTime    = 0.0
 
         # Prepare Main Window
         self.resize(*self.mainConf.getWinSize())
@@ -240,6 +242,12 @@ class GuiMain(QMainWindow):
         # Set Up Auto-Save Document Timer
         self.asDocTimer = QTimer()
         self.asDocTimer.timeout.connect(self._autoSaveDocument)
+
+        # Main Clock
+        self.mainTimer = QTimer()
+        self.mainTimer.setInterval(1000)
+        self.mainTimer.timeout.connect(self._timeTick)
+        self.mainTimer.start()
 
         # Shortcuts and Actions
         self._connectMenuActions()
@@ -412,7 +420,11 @@ class GuiMain(QMainWindow):
             self.closeDocument()
             self.docViewer.clearNavHistory()
             self.projView.closeOutline()
-            self.theProject.closeProject()
+
+            self.theProject.closeProject(self.idleTime)
+            self.idleRefTime = time()
+            self.idleTime    = 0.0
+
             self.theIndex.clearIndex()
             self.clearGUI()
             self.hasProject = False
@@ -477,7 +489,9 @@ class GuiMain(QMainWindow):
                 return False
 
         # Project is loaded
-        self.hasProject = True
+        self.hasProject  = True
+        self.idleRefTime = time()
+        self.idleTime    = 0.0
 
         # Load the tag index
         self.theIndex.loadIndex()
@@ -786,7 +800,11 @@ class GuiMain(QMainWindow):
             return False
 
         if tHandle is None:
-            tHandle = self.treeView.getSelectedHandle()
+            if self.treeView.hasFocus():
+                tHandle = self.treeView.getSelectedHandle()
+            elif self.docEditor.hasFocus():
+                tHandle = self.docEditor.theHandle
+
         if tHandle is None:
             logger.warning("No item selected")
             return
@@ -999,6 +1017,22 @@ class GuiMain(QMainWindow):
 
         return
 
+    def showProjectWordListDialog(self):
+        """Open the project word list dialog.
+        """
+        if not self.hasProject:
+            logger.error("No project open")
+            return
+
+        dlgWords = GuiWordList(self, self.theProject)
+        dlgWords.exec_()
+
+        if dlgWords.result() == QDialog.Accepted:
+            logger.debug("Reloading word list")
+            self.docEditor.setDictionaries()
+
+        return
+
     def showWritingStatsDialog(self):
         """Open the session log dialog.
         """
@@ -1175,11 +1209,11 @@ class GuiMain(QMainWindow):
         """
         if self.docEditor.theHandle is None:
             logger.error("No document open, so not activating Focus Mode")
-            self.mainMenu.aFocusMode.setChecked(self.isFocusMode)
+            self.mainMenu.setFocusMode(self.isFocusMode)
             return False
 
         self.isFocusMode = not self.isFocusMode
-        self.mainMenu.aFocusMode.setChecked(self.isFocusMode)
+        self.mainMenu.setFocusMode(self.isFocusMode)
         if self.isFocusMode:
             logger.debug("Activating Focus Mode")
             self.mainTabs.setCurrentWidget(self.splitDocs)
@@ -1413,6 +1447,28 @@ class GuiMain(QMainWindow):
     ##
     #  Slots
     ##
+
+    @pyqtSlot()
+    def _timeTick(self):
+        """Triggered on every tick of the timer.
+        """
+        if not self.hasProject:
+            return
+
+        currTime = time()
+        editIdle = currTime - self.docEditor.lastActive > self.mainConf.userIdleTime
+        userIdle = qApp.applicationState() != Qt.ApplicationActive
+
+        if editIdle or userIdle:
+            self.idleTime += currTime - self.idleRefTime
+            self.statusBar.setUserIdle(True)
+        else:
+            self.statusBar.setUserIdle(False)
+
+        self.idleRefTime = currTime
+        self.statusBar.updateTime(idleTime=self.idleTime)
+
+        return
 
     @pyqtSlot()
     def _treeSingleClick(self):

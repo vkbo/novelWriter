@@ -4,6 +4,7 @@
 ### Another Scene
 
 @pov: John
+@focus: Jane
 @location: Earth
 
 Adding more scenes to a chapter is as easy as adding more scene files, with a level three heading, or just adding another level three heading in the same file if that works for the way you want to structure your files.
@@ -13,6 +14,7 @@ In fact, if you wish, you can add all the scenes in the chapter file too. All no
 ### More Scenes
 
 @pov: Jane
+@focus: John
 @location: Earth
 
 This is a second scene in the same file as the previous scene. You can always split the files up later.

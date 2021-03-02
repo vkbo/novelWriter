@@ -48,6 +48,7 @@ def testGuiProjSettings_Dialog(qtbot, monkeypatch, nwGUI, fncDir, fncProj, outDi
 
     # Block message box
     monkeypatch.setattr(QMessageBox, "question", lambda *args: QMessageBox.Yes)
+    monkeypatch.setattr(QMessageBox, "critical", lambda *args: QMessageBox.Yes)
 
     # Check that we cannot open when there is no project
     nwGUI.mainMenu.aProjectSettings.activate(QAction.Trigger)

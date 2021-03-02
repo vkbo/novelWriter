@@ -31,7 +31,7 @@ import logging
 from PyQt5.QtGui import QIcon
 from PyQt5.QtWidgets import QApplication, QErrorMessage
 
-from nw.error import exceptionHandler
+from nw.error import exceptionHandler, logException
 from nw.config import Config
 
 ##
@@ -62,9 +62,9 @@ __license__    = "GPLv3"
 __author__     = "Veronica Berglyd Olsen"
 __maintainer__ = "Veronica Berglyd Olsen"
 __email__      = "code@vkbo.net"
-__version__    = "1.1.1"
-__hexversion__ = "0x010101f0"
-__date__       = "2021-02-21"
+__version__    = "1.2rc1"
+__hexversion__ = "0x010200c1"
+__date__       = "2021-03-02"
 __status__     = "Stable"
 __domain__     = "novelwriter.io"
 __url__        = "https://novelwriter.io"
@@ -264,9 +264,9 @@ def main(sysArgs=None):
             bundle = NSBundle.mainBundle()
             info = bundle.localizedInfoDictionary() or bundle.infoDictionary()
             info["CFBundleName"] = "novelWriter"
-        except ImportError as e:
+        except ImportError:
             logger.error("Failed to set application name")
-            logger.error(str(e))
+            logException()
 
     # Import GUI (after dependency checks), and launch
     from nw.guimain import GuiMain

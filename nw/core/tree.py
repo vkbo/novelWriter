@@ -24,6 +24,7 @@ You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
 
+import nw
 import logging
 import os
 
@@ -33,9 +34,34 @@ from time import time
 
 from nw.core.item import NWItem
 from nw.common import checkHandle
-from nw.constants import nwFiles, nwItemType, nwItemClass, nwItemLayout, nwConst
+from nw.constants import (
+    nwFiles, nwItemType, nwItemClass, nwItemLayout, nwConst, nwLists
+)
 
 logger = logging.getLogger(__name__)
+
+# Layout Translation Map
+LAYOUT_MAP = {
+    nwItemLayout.SCENE: {
+        "H1": nwItemLayout.BOOK,
+        "H2": nwItemLayout.CHAPTER,
+    },
+    nwItemLayout.CHAPTER: {
+        "H1": nwItemLayout.BOOK,
+        "H3": nwItemLayout.SCENE,
+        "H4": nwItemLayout.SCENE,
+    },
+    nwItemLayout.UNNUMBERED: {
+        "H1": nwItemLayout.BOOK,
+        "H3": nwItemLayout.SCENE,
+        "H4": nwItemLayout.SCENE,
+    },
+    nwItemLayout.PARTITION: {
+        "H2": nwItemLayout.CHAPTER,
+        "H3": nwItemLayout.SCENE,
+        "H4": nwItemLayout.SCENE,
+    },
+}
 
 class NWTree():
 
@@ -179,8 +205,9 @@ class NWTree():
                 outFile.write("\n".join(tocList))
                 outFile.write("\n")
 
-        except Exception as e:
-            logger.error(str(e))
+        except Exception:
+            logger.error("Could not write ToC file")
+            nw.logException()
             return False
 
         return True
@@ -201,6 +228,29 @@ class NWTree():
             else:
                 novelWords += tItem.wordCount
         return novelWords, noteWords
+
+    def updateItemLayout(self, tHandle, hLevel):
+        """Check if the item layout needs updating based on the header
+        given level.
+        """
+        tItem = self.__getitem__(tHandle)
+        if tItem is None:
+            return False
+        if tItem.itemClass not in nwLists.CLS_NOVEL:
+            return False
+        if hLevel not in ("H1", "H2", "H3", "H4"):
+            return False
+
+        iLayout = tItem.itemLayout
+        if iLayout in LAYOUT_MAP:
+            if hLevel in LAYOUT_MAP[iLayout]:
+                tItem.itemLayout = LAYOUT_MAP[iLayout][hLevel]
+                logger.debug("Changed layout for %s from %s to %s" % (
+                    tHandle, iLayout.name, tItem.itemLayout.name
+                ))
+                return True
+
+        return False
 
     ##
     #  Tree Structure Methods

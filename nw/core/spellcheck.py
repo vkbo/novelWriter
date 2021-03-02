@@ -72,9 +72,9 @@ class NWSpellCheck():
                 with open(self.projectDict, mode="a+", encoding="utf-8") as outFile:
                     outFile.write("%s\n" % newWord)
                 self.projDict.append(newWord)
-            except Exception as e:
+            except Exception:
                 logger.error("Failed to add word to project word list %s" % str(self.projectDict))
-                logger.error(str(e))
+                nw.logException()
                 return False
             return True
         return False
@@ -123,9 +123,10 @@ class NWSpellCheck():
                         if len(theLine) > 0 and theLine not in self.projDict:
                             self.projDict.append(theLine)
                 logger.debug("Project word list contains %d words" % len(self.projDict))
-            except Exception as e:
+
+            except Exception:
                 logger.error("Failed to load project word list")
-                logger.error(str(e))
+                nw.logException()
                 return False
 
         return True
@@ -141,6 +142,7 @@ class NWSpellEnchant(NWSpellCheck):
     def __init__(self):
         NWSpellCheck.__init__(self)
         logger.debug("Enchant spell checking activated")
+        self.theBroker = None
         return
 
     def setLanguage(self, theLang, projectDict=None):
@@ -150,9 +152,15 @@ class NWSpellEnchant(NWSpellCheck):
         """
         try:
             import enchant
-            self.theDict = enchant.Dict(theLang)
+            if self.theBroker is not None:
+                logger.verbose("Deleting old pyenchant broker")
+                del self.theBroker
+
+            self.theBroker = enchant.Broker()
+            self.theDict = self.theBroker.request_dict(theLang)
             self.spellLanguage = theLang
             logger.debug("Enchant spell checking for language %s loaded" % theLang)
+
         except Exception:
             logger.error("Failed to load enchant spell checking for language %s" % theLang)
             self.theDict = NWSpellEnchantDummy()
@@ -201,9 +209,9 @@ class NWSpellEnchant(NWSpellCheck):
         try:
             spTag = self.theDict.tag
             spName = self.theDict.provider.name
-        except Exception as e:
+        except Exception:
             logger.error("Failed to extract information about the dictionary")
-            logger.error(str(e))
+            nw.logException()
             spTag = ""
             spName = ""
 
@@ -263,9 +271,9 @@ class NWSpellSimple(NWSpellCheck):
             logger.debug("Dictionary contains %d words" % len(self.theWords))
             self.spellLanguage = theLang
 
-        except Exception as e:
+        except Exception:
             logger.error("Failed to load spell check word list for language %s" % theLang)
-            logger.error(str(e))
+            nw.logException()
             self.spellLanguage = None
 
         self._readProjectDictionary(projectDict)

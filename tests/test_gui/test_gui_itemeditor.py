@@ -28,7 +28,7 @@ from tools import cmpFiles, getGuiItem
 
 from PyQt5.QtWidgets import QAction, QMessageBox
 
-from nw.gui import GuiItemEditor
+from nw.gui import GuiItemEditor, GuiProjectTree
 from nw.constants import nwItemLayout
 
 keyDelay = 2
@@ -45,6 +45,7 @@ def testGuiItemEditor_Dialog(qtbot, monkeypatch, nwGUI, fncDir, fncProj, refDir,
 
     # Block message box
     monkeypatch.setattr(QMessageBox, "question", lambda *args: QMessageBox.Yes)
+    monkeypatch.setattr(GuiProjectTree, "hasFocus", lambda *args: True)
 
     # Create new, save, open project
     nwGUI.theProject.projTree.setSeed(42)

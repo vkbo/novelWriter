@@ -54,7 +54,7 @@ from nw.gui.dochighlight import GuiDocHighlighter
 from nw.common import transferCase
 from nw.constants import (
     nwConst, nwAlert, nwUnicode, nwDocAction, nwDocInsert, nwItemClass,
-    nwKeyWords
+    nwKeyWords, nwLabels
 )
 
 logger = logging.getLogger(__name__)
@@ -91,6 +91,7 @@ class GuiDocEditor(QTextEdit):
         self.wordCount  = 0     # Word count
         self.paraCount  = 0     # Paragraph count
         self.lastEdit   = 0     # Time stamp of last edit
+        self.lastActive = 0     # Time stamp of last activity
         self.lastFind   = None  # Position of the last found search word
         self.bigDoc     = False # Flag for very large document size
         self.doReplace  = False # Switch to temporarily disable auto-replace
@@ -169,15 +170,16 @@ class GuiDocEditor(QTextEdit):
         self.clear()
         self.wcTimer.stop()
 
-        self.theHandle = None
-        self.charCount = 0
-        self.wordCount = 0
-        self.paraCount = 0
-        self.lastEdit  = 0
-        self.lastFind  = None
-        self.bigDoc    = False
-        self.doReplace = False
-        self.queuePos  = None
+        self.theHandle  = None
+        self.charCount  = 0
+        self.wordCount  = 0
+        self.paraCount  = 0
+        self.lastEdit   = 0
+        self.lastActive = 0
+        self.lastFind   = None
+        self.bigDoc     = False
+        self.doReplace  = False
+        self.queuePos   = None
 
         self.setDocumentChanged(False)
         self.docHeader.setTitleFromHandle(self.theHandle)
@@ -319,6 +321,7 @@ class GuiDocEditor(QTextEdit):
         logger.debug("Document highlighted in %.3f ms" % (1000*(afTime-bfTime)))
 
         self.lastEdit = time()
+        self.lastActive = time()
         self._runCounter()
         self.wcTimer.start()
         self.theHandle = tHandle
@@ -415,10 +418,20 @@ class GuiDocEditor(QTextEdit):
         self.setDocumentChanged(False)
 
         self.theIndex.scanText(tHandle, docText)
+
         if self._updateHeaders(checkLevel=True):
             self.theParent.requestNovelTreeRefresh()
         else:
             self.theParent.novelView.updateWordCounts(tHandle)
+
+        hLevel = "H0"
+        if self.theHeaders:
+            hLevel = self.theHeaders[0][1]
+
+        if self.theProject.projTree.updateItemLayout(tHandle, hLevel):
+            self.theParent.treeView.setTreeItemValues(tHandle)
+            self.nwDocument.saveDocument(docText)
+            self.docFooter.updateInfo()
 
         return True
 
@@ -647,6 +660,10 @@ class GuiDocEditor(QTextEdit):
         this class when calling these actions from other classes.
         """
         logger.verbose("Requesting action: %s" % theAction.name)
+        if not self.hasFocus():
+            logger.verbose("Editor does not have focus")
+            return False
+
         if self.theHandle is None:
             logger.error("No document open")
             return False
@@ -708,6 +725,7 @@ class GuiDocEditor(QTextEdit):
             return False
 
         self._allowAutoReplace(True)
+        self.lastActive = time()
 
         return True
 
@@ -825,6 +843,7 @@ class GuiDocEditor(QTextEdit):
           * The undo/redo/select all sequences bypasses the docAction
             pathway from the menu, so we redirect them back from here.
         """
+        self.lastActive = time()
         isReturn  = keyEvent.key() == Qt.Key_Return
         isReturn |= keyEvent.key() == Qt.Key_Enter
         if isReturn and self.docSearch.anyFocus():
@@ -1069,7 +1088,7 @@ class GuiDocEditor(QTextEdit):
             logger.verbose("Word counter is busy")
             return
 
-        if time() - self.lastEdit < 5*self.wcInterval:
+        if time() - self.lastEdit < 5 * self.wcInterval:
             logger.verbose("Running word counter")
             self.theParent.threadPool.start(self.wCounter)
 
@@ -2511,8 +2530,11 @@ class GuiDocEditFooter(QWidget):
             else:
                 iStatus = self.theProject.importItems.checkEntry(iStatus)
                 theIcon = self.theParent.importIcons[iStatus]
+
             sIcon = theIcon.pixmap(self.sPx, self.sPx)
-            sText = self.theItem.itemStatus
+            sClass = nwLabels.CLASS_NAME[self.theItem.itemClass]
+            sLayout = nwLabels.LAYOUT_NAME[self.theItem.itemLayout]
+            sText = f"{self.theItem.itemStatus} / {sClass} / {sLayout}"
 
         self.statusIcon.setPixmap(sIcon)
         self.statusText.setText(sText)
