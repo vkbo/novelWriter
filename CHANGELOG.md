@@ -1,5 +1,112 @@
 # novelWriter Changelog
 
+## Version 1.2 RC 1 [2021-03-02]
+
+### Release Notes
+
+This is the release candidate of 1.2. The release is intended for testing of new features and to
+sort out potential bugs before the full release. Please take this into account when working on your
+live projects.
+
+#### The Build Novel Project Tool
+
+The main changes for version 1.2 are to the Build Novel Project tool. The Open Document export, as
+well as the Markdown export, is now handled entirely by code written for novelWriter. Previously,
+these export features depended on the underlying Qt library's save routines connected to the
+preview document shown in the build dialog. Using this method of export both meant that the content
+of the document was dependent on the preview being generated first, and it also meant that the
+exported document had limited support for novelWriter-specific features and custom formatting. The
+new export class should generate a much better result, especially for the Open Document formats.
+The Open Document standard is supported by Open Office, Libre Office, Google Docs, Microsoft Word,
+and probably a number of other applications too. The Markdown export hasn't changed a lot, but
+should be a slight improvement on the previous export feature.
+
+These changes to the build tool also imply that the saving process is now independent of the
+content of the preview window, meaning you don't have to rebuild the preview before saving, which
+was previously the case. To make this more consistent, the PDF export option has been moved to the
+print button as it is actually a print-to-file feature under the hood, not technically a proper PDF
+export format. It is exactly the same as printing to file from the print preview dialog.
+
+In addition to the changes to the export features, the Build Novel Project tool now also has
+controls for line height, which applies to all rich text export formats, and the option to replace
+unicode characters with appropriate html entities for html export.
+
+#### Document Layout Automation
+
+Among other changes in this release are a few improvements to the process of creating and changing
+documents. When a new document is first created, the header is generated from the assigned label
+and layout.
+
+In addition, for some document layouts, when the user changes the header level of the first header
+of the document, the document layout setting is updated accordingly. This should reduce the need
+for the user to maintain two ways of assigning the role of a given document. This automation only
+applies to combinations of header level and current document layouts where there is no ambiguity.
+For instance, changing the header level in a "Scene" document from level 3 to 2 changes the
+document layout automatically to "Chapter". But changing the first header of a "Book" layout
+document from 1 to 2 does not change the document's layout as the "Book" layout is a generic
+document layout and it's perfectly reasonable for its first header to be a chapter header.
+
+Keep in mind that novelWriter treats documents with layout "Book", "Chapter" and "Scene" exactly
+the same during exports. The distinction is only meant as a way to indicate the purpose of a
+document in the project tree. This new automation is meant to assist in keeping this information up
+to date. The other layouts do have an effect on formatting during export, and are generally left
+alone.
+
+#### The Session Timer and Idle Time
+
+Another change that has been requested by a couple of users is to have the session timer in the
+status bar stop counting when the user is inactive (idle). This feature is optional, and can be
+controlled from Preferences. The definition of "idle" in this context is either that the user is
+active in a different application than novelWriter (loss of focus) or that the user has not made
+any changes to the current document for a given amount of time. The time threshold is by default
+five minutes, but can be altered in Preferences.
+
+In addition, the idle time is also recorded in the session log, and can be viewed in the Writing
+Statistics dialog and exported with the rest of the information. The idle time is recorder in the
+logs regardless of whether the status bar clock takes idle time into consideration or not. So even
+if you turn off the idle time switch in Preferences, the other idle time setting still affects the
+writing stats log entries.
+
+#### Other Changes
+
+The user dictionary of the project, where words added to the dictionary from the document editor
+go, can now be viewed and edited with a new "Project Word List" tool in the "Tools" menu.
+
+A small additional feature added is also the ability to undo the last move of an item in the
+project tree. The keyboard shortcut for this is `Ctrl+Shift+Z`, or it can be accessed from the
+menu. The feature can only undo the last move, but it includes both documents moved to trash, moves
+by up/down keypress or menu entries, and drag and drop moves.
+
+Lastly, a new keyword has been added to mark characters in the story. The new keyword is intended
+to tag a character as the focus character for a chapter or scene. This is useful for stories where
+the point-of-view character and the focus character are different.
+
+_These Release Notes also include the changes from 1.2 Beta 1._
+
+### Detailed Changelog
+
+**Bugfixes**
+
+* If a tag or reference keyword was mistyped, it would still be indexed and put into the index.
+  This caused the index to be deemed invalid on the next loading of the project, triggering a
+  rebuild. A check has been added to the code parsing the lines starting with `@` to ensure only
+  valid keywords are written into the index. Issue #688. PR #690.
+
+**New Features**
+
+* Added a tool to edit the project's user dictionary. This is the dictionary where the "Add Word to
+  Dictionary" actions from the document editor go. The dialog tool allows for listing, removing and
+  adding words to this dictionary. Issue #665. PR #669.
+
+**User Interface**
+
+* Pressing the `F2` key when in the document editor will open the Item Editor for the open document
+  instead of the one selected in the project tree. PR #664.
+* The shortcut for deleting an item in the project tree has been changed from `Ctrl+Del` to
+  `Ctrl+Shift+Del`. This change was also backported to version 1.1.1. Resolves #629. PR #664.
+
+----
+
 ## Version 1.1.1 [2021-02-21]
 
 ### Release Notes
@@ -54,78 +161,6 @@ but is still lacking in functionality compared to Enchant.
 ----
 
 ## Version 1.2 Beta 1 [2021-02-11]
-
-### Release Notes
-
-This release is a beta release of 1.2. The release is intended for testing of new features. There
-is a higher risk of encountering bugs in a beta release than a final release, so be extra careful
-with backups if used on active writing projects.
-
-#### The Build Novel Project Tool
-
-The main changes in this release are to the Build Novel Project tool. The Open Document export, as
-well as the Markdown export, is now handled entirely by code written for novelWriter. Previously,
-these export features depended on the underlying Qt library's save routines connected to the
-preview document shown in the build dialog. Using this method of export both meant that the content
-of the document was dependent on the preview being generated, and that the exported document had
-limited support for novelWriter-specific features and custom formatting. The new export tool should
-generate a much better result, especially for the Open Document formats. The Open Document standard
-is supported by Open Office, Libre Office, Google Docs, Microsoft Word, and probably a number of
-other applications too. The Markdown export hasn't changed a lot, but should be a slight
-improvement on the previous export feature.
-
-These changes to the build tool also imply that the saving process is now independent of the
-content of the preview window, meaning you don't have to rebuild the preview before saving, which
-was previously the case. To make this more consistent, the PDF export option has been moved to the
-print button as it is actually a print-to-file feature under the hood, not technically a proper PDF
-export format. It is exactly the same as printing to file from the print preview dialog.
-
-In addition to the changes to the export features, the Build Novel Project tool now also has
-controls for line height, which applies to all rich text export formats, and the option to replace
-unicode characters with appropriate html entities for html export.
-
-#### Document Layout Automation
-
-Among other changes in this release are a few improvements to the process of creating and changing
-documents. When a new document is first created, the header is generated from the assigned label
-and layout. For some document layouts, when the user changes the header level of the first header
-of the document, the document layout setting is updated accordingly. This should reduce the need
-for the user to maintain two ways of assigning the role of a given document. This automation only
-applies to combinations of header level and current document layouts where there is no ambiguity.
-For instance, changing the header level in a "Scene" document from level 3 to 2 changes the
-document layout automatically to "Chapter". But changing the first header of a "Book" layout
-document from 1 to 2 does not change the document's layout as the "Book" layout is a generic
-document layout.
-
-Keep in mind that novelWriter treats documents with layout "Book", "Chapter" and "Scene" exactly
-the same during exports. The distinction is only meant as a way to indicate the purpose of a
-document in the project tree. This new automation is meant to assist in keeping this information up
-to date. The other layouts do have an effect on formatting during export and are generally left
-alone.
-
-#### The Session Timer and Idle Time
-
-Another change that has been requested by a couple of users is to have the session timer in the
-status bar stop counting when the user is inactive. This feature is optional, and can be controlled
-from Preferences. The definition of idle here is either that the user is active in a different
-application than novelWriter (loss of focus) or that the user has not made any changes to the
-document open in the editor for a given amount of time. The time threshold is by default five
-minutes, but can be altered in Preferences.
-
-In addition, the idle time is also recorded in the session log, and can be viewed in the Writing
-Statistics dialog and exported with the rest of the information. The idle time is recorder in the
-logs regardless of whether the status bar clock displays this information or not.
-
-#### Other Changes
-
-A small additional feature added is also the ability to undo the last move of an item in the
-project tree. The keyboard shortcut for this is `Ctrl+Shift+Z`, or it can be accessed from the
-menu. The feature can only undo the last move, but it includes both documents moved to trash, moves
-by up/down keypress or menu entries, and drag and drop moves.
-
-Lastly, a new keyword has been added to mark characters in the story. The new keyword is intended
-to tag a character as the focus character for a chapter or scene. This is useful for stories where
-the point-of-view character and the focus character are different.
 
 ### Detailed Changelog
 
