@@ -1,11 +1,12 @@
 # novelWriter Changelog
 
-## Version 1.2 RC 1 [2021-02-28]
+## Version 1.2 RC 1 [2021-03-02]
 
 ### Release Notes
 
-This is the first release candidate of 1.2. The release is intended for testing of new features.
-Please take this into account when working on your live projects.
+This is the release candidate of 1.2. The release is intended for testing of new features and to
+sort out potential bugs before the full release. Please take this into account when working on your
+live projects.
 
 #### The Build Novel Project Tool
 
@@ -13,12 +14,12 @@ The main changes for version 1.2 are to the Build Novel Project tool. The Open D
 well as the Markdown export, is now handled entirely by code written for novelWriter. Previously,
 these export features depended on the underlying Qt library's save routines connected to the
 preview document shown in the build dialog. Using this method of export both meant that the content
-of the document was dependent on the preview being generated, and that the exported document had
-limited support for novelWriter-specific features and custom formatting. The new export tool should
-generate a much better result, especially for the Open Document formats. The Open Document standard
-is supported by Open Office, Libre Office, Google Docs, Microsoft Word, and probably a number of
-other applications too. The Markdown export hasn't changed a lot, but should be a slight
-improvement on the previous export feature.
+of the document was dependent on the preview being generated first, and it also meant that the
+exported document had limited support for novelWriter-specific features and custom formatting. The
+new export class should generate a much better result, especially for the Open Document formats.
+The Open Document standard is supported by Open Office, Libre Office, Google Docs, Microsoft Word,
+and probably a number of other applications too. The Markdown export hasn't changed a lot, but
+should be a slight improvement on the previous export feature.
 
 These changes to the build tool also imply that the saving process is now independent of the
 content of the preview window, meaning you don't have to rebuild the preview before saving, which
@@ -34,33 +35,37 @@ unicode characters with appropriate html entities for html export.
 
 Among other changes in this release are a few improvements to the process of creating and changing
 documents. When a new document is first created, the header is generated from the assigned label
-and layout. For some document layouts, when the user changes the header level of the first header
+and layout.
+
+In addition, for some document layouts, when the user changes the header level of the first header
 of the document, the document layout setting is updated accordingly. This should reduce the need
 for the user to maintain two ways of assigning the role of a given document. This automation only
 applies to combinations of header level and current document layouts where there is no ambiguity.
 For instance, changing the header level in a "Scene" document from level 3 to 2 changes the
 document layout automatically to "Chapter". But changing the first header of a "Book" layout
 document from 1 to 2 does not change the document's layout as the "Book" layout is a generic
-document layout.
+document layout and it's perfectly reasonable for its first header to be a chapter header.
 
 Keep in mind that novelWriter treats documents with layout "Book", "Chapter" and "Scene" exactly
 the same during exports. The distinction is only meant as a way to indicate the purpose of a
 document in the project tree. This new automation is meant to assist in keeping this information up
-to date. The other layouts do have an effect on formatting during export and are generally left
+to date. The other layouts do have an effect on formatting during export, and are generally left
 alone.
 
 #### The Session Timer and Idle Time
 
 Another change that has been requested by a couple of users is to have the session timer in the
-status bar stop counting when the user is inactive. This feature is optional, and can be controlled
-from Preferences. The definition of idle here is either that the user is active in a different
-application than novelWriter (loss of focus) or that the user has not made any changes to the
-document open in the editor for a given amount of time. The time threshold is by default five
-minutes, but can be altered in Preferences.
+status bar stop counting when the user is inactive (idle). This feature is optional, and can be
+controlled from Preferences. The definition of "idle" in this context is either that the user is
+active in a different application than novelWriter (loss of focus) or that the user has not made
+any changes to the current document for a given amount of time. The time threshold is by default
+five minutes, but can be altered in Preferences.
 
 In addition, the idle time is also recorded in the session log, and can be viewed in the Writing
 Statistics dialog and exported with the rest of the information. The idle time is recorder in the
-logs regardless of whether the status bar clock displays this information or not.
+logs regardless of whether the status bar clock takes idle time into consideration or not. So even
+if you turn off the idle time switch in Preferences, the other idle time setting still affects the
+writing stats log entries.
 
 #### Other Changes
 

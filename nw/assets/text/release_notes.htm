@@ -2,23 +2,23 @@
 <html>
 <body>
 
-<h2>Release Notes for 1.2 Beta 1</h2>
-<p><i>Released on 11 February 2021</i></p>
-<p>This release is a beta release of 1.2. The release is intended for testing of new features.
-There is a higher risk of encountering bugs in a beta release than a final release, so be extra
-careful with backups if used on active writing projects.</p>
+<h2>Release Notes for 1.2 RC 1</h2>
+<p><i>Released on 2 March 2021</i></p>
+<p>This is the release candidate of 1.2. The release is intended for testing of new features and to
+sort out potential bugs before the full release. Please take this into account when working on your
+live projects.</p>
 
 <h3>The Build Novel Project Tool</h3>
-<p>The main changes in this release are to the Build Novel Project tool. The Open Document export,
+<p>The main changes for version 1.2 are to the Build Novel Project tool. The Open Document export,
 as well as the Markdown export, is now handled entirely by code written for novelWriter.
 Previously, these export features depended on the underlying Qt library's save routines connected
 to the preview document shown in the build dialog. Using this method of export both meant that the
-content of the document was dependent on the preview being generated, and that the exported
-document had limited support for novelWriter-specific features and custom formatting. The new
-export tool should generate a much better result, especially for the Open Document formats. The
-Open Document standard is supported by Open Office, Libre Office, Google Docs, Microsoft Word, and
-probably a number of other applications too. The Markdown export hasn't changed a lot, but should
-be a slight improvement on the previous export feature.</p>
+content of the document was dependent on the preview being generated first, and it also meant that
+the exported document had limited support for novelWriter-specific features and custom formatting.
+The new export class should generate a much better result, especially for the Open Document
+formats. The Open Document standard is supported by Open Office, Libre Office, Google Docs,
+Microsoft Word, and probably a number of other applications too. The Markdown export hasn't changed
+a lot, but should be a slight improvement on the previous export feature.</p>
 <p>These changes to the build tool also imply that the saving process is now independent of the
 content of the preview window, meaning you don't have to rebuild the preview before saving, which
 was previously the case. To make this more consistent, the PDF export option has been moved to the
@@ -31,34 +31,39 @@ unicode characters with appropriate html entities for html export.</p>
 <h3>Document Layout Automation</h3>
 <p>Among other changes in this release are a few improvements to the process of creating and
 changing documents. When a new document is first created, the header is generated from the assigned
-label and layout. For some document layouts, when the user changes the header level of the first
+label and layout.</p>
+<p>In addition, for some document layouts, when the user changes the header level of the first
 header of the document, the document layout setting is updated accordingly. This should reduce the
 need for the user to maintain two ways of assigning the role of a given document. This automation
 only applies to combinations of header level and current document layouts where there is no
 ambiguity. For instance, changing the header level in a "Scene" document from level 3 to 2 changes
 the document layout automatically to "Chapter". But changing the first header of a "Book" layout
 document from 1 to 2 does not change the document's layout as the "Book" layout is a generic
-document layout.</p>
+document layout and it's perfectly reasonable for its first header to be a chapter header.</p>
 <p>Keep in mind that novelWriter treats documents with layout "Book", "Chapter" and "Scene" exactly
 the same during exports. The distinction is only meant as a way to indicate the purpose of a
 document in the project tree. This new automation is meant to assist in keeping this information up
-to date. The other layouts do have an effect on formatting during export and are generally left
+to date. The other layouts do have an effect on formatting during export, and are generally left
 alone.</p>
 
 <h3>The Session Timer and Idle Time</h3>
 <p>Another change that has been requested by a couple of users is to have the session timer in the
-status bar stop counting when the user is inactive. This feature is optional, and can be controlled
-from Preferences. The definition of idle here is either that the user is active in a different
-application than novelWriter (loss of focus) or that the user has not made any changes to the
-document open in the editor for a given amount of time. The time threshold is by default five
-minutes, but can be altered in Preferences.</p>
+status bar stop counting when the user is inactive (idle). This feature is optional, and can be
+controlled from Preferences. The definition of "idle" in this context is either that the user is
+active in a different application than novelWriter (loss of focus) or that the user has not made
+any changes to the current document for a given amount of time. The time threshold is by default
+five minutes, but can be altered in Preferences.</p>
 <p>In addition, the idle time is also recorded in the session log, and can be viewed in the Writing
 Statistics dialog and exported with the rest of the information. The idle time is recorder in the
-logs regardless of whether the status bar clock displays this information or not.</p>
+logs regardless of whether the status bar clock takes idle time into consideration or not. So even
+if you turn off the idle time switch in Preferences, the other idle time setting still affects the
+writing stats log entries.</p>
 
 <h3>Other Changes</h3>
+<p>The user dictionary of the project, where words added to the dictionary from the document editor
+go, can now be viewed and edited with a new "Project Word List" tool in the "Tools" menu.</p>
 <p>A small additional feature added is also the ability to undo the last move of an item in the
-project tree. The keyboard shortcut for this is <b>Ctrl+Shift+Z</b>, or it can be accessed from the
+project tree. The keyboard shortcut for this is `Ctrl+Shift+Z`, or it can be accessed from the
 menu. The feature can only undo the last move, but it includes both documents moved to trash, moves
 by up/down keypress or menu entries, and drag and drop moves.</p>
 <p>Lastly, a new keyword has been added to mark characters in the story. The new keyword is
