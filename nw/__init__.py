@@ -73,10 +73,6 @@ __issuesurl__  = "https://github.com/vkbo/novelWriter/issues"
 __helpurl__    = "https://github.com/vkbo/novelWriter/discussions"
 __releaseurl__ = "https://github.com/vkbo/novelWriter/releases/latest"
 __docurl__     = "https://novelwriter.readthedocs.io"
-__credits__    = [
-    "Veronica Berglyd Olsen (author, maintainer)",
-    "Marian Lückhof (concept, testing)"
-]
 
 ##
 #  Logging
