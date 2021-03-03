@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!DOCTYPE TS>
-<TS version="2.1" language="nb_NO" sourcelanguage="en_GB">
+<!DOCTYPE TS><TS version="2.0" language="nb_NO" sourcelanguage="en_GB">
 <context>
     <name>Common</name>
     <message>
@@ -335,7 +334,7 @@
 <context>
     <name>GuiAbout</name>
     <message>
-        <location filename="../nw/gui/about.py" line="146"/>
+        <location filename="../nw/gui/about.py" line="144"/>
         <source>About novelWriter</source>
         <translation>Om novelWriter</translation>
     </message>
@@ -350,69 +349,84 @@
         <translation>Utgivelse</translation>
     </message>
     <message>
-        <location filename="../nw/gui/about.py" line="95"/>
+        <location filename="../nw/gui/about.py" line="213"/>
         <source>Licence</source>
         <translation>Lisens</translation>
     </message>
     <message>
-        <location filename="../nw/gui/about.py" line="146"/>
+        <location filename="../nw/gui/about.py" line="144"/>
         <source>Website: {0}</source>
         <translation>Nettside: {0}</translation>
     </message>
     <message>
-        <location filename="../nw/gui/about.py" line="146"/>
+        <location filename="../nw/gui/about.py" line="144"/>
         <source>Credits</source>
         <translation>Krediteringer</translation>
     </message>
     <message>
-        <location filename="../nw/gui/about.py" line="146"/>
+        <location filename="../nw/gui/about.py" line="144"/>
         <source>novelWriter is a markdown-like text editor designed for organising and writing novels. It is written in Python 3 with a Qt5 GUI, using PyQt5.</source>
         <translation>novelWriter er en markdown-liknende teksteditor laget for å kunne organisere og skrive romaner og noveller. Programmet er skrevet i Python 3 med et brukergrensesnitt i Qt 5 via PyQt5.</translation>
     </message>
     <message>
-        <location filename="../nw/gui/about.py" line="146"/>
+        <location filename="../nw/gui/about.py" line="144"/>
         <source>novelWriter is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.</source>
         <translation>novelWriter er gratis programvare: du kan videredistribuere det og/eller modifisere det under vilkårene i GNU General Public License som utgitt av Free Software Foundation, enten versjon 3 av Lisensen, eller (etter eget valg) enhver senere versjon.</translation>
     </message>
     <message>
-        <location filename="../nw/gui/about.py" line="146"/>
+        <location filename="../nw/gui/about.py" line="144"/>
         <source>novelWriter is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.</source>
         <translation>novelWriter er distribuert i håp om at det vil være nyttig, men UTEN NOEN GARANTI; uten selv en underforstått garanti vedrørende SALGBARHET eller EGNETHET TIL ET BESTEMT FORMÅL. Se GNU General Public Licence for flere detaljer.</translation>
     </message>
     <message>
-        <location filename="../nw/gui/about.py" line="146"/>
+        <location filename="../nw/gui/about.py" line="144"/>
         <source>See the Licence tab for the full licence text, or visit the GNU website at {0} for more details.</source>
         <translation>Se lisens-fanen for fulltekst-versjonen av lisensen (på engelsk), eller besøk GNU sin nettside på {0} for mer informasjon.</translation>
     </message>
     <message>
-        <location filename="../nw/gui/about.py" line="178"/>
+        <location filename="../nw/gui/about.py" line="191"/>
         <source>Theme: {0}</source>
         <translation>Tema: {0}</translation>
     </message>
     <message>
-        <location filename="../nw/gui/about.py" line="198"/>
-        <source>Author: {0}</source>
-        <translation>Ansvarlig: {0}</translation>
-    </message>
-    <message>
-        <location filename="../nw/gui/about.py" line="198"/>
-        <source>Credit: {0}</source>
-        <translation>Kreditert: {0}</translation>
-    </message>
-    <message>
-        <location filename="../nw/gui/about.py" line="198"/>
-        <source>Licence: {0}</source>
-        <translation>Lisens: {0}</translation>
-    </message>
-    <message>
-        <location filename="../nw/gui/about.py" line="188"/>
+        <location filename="../nw/gui/about.py" line="202"/>
         <source>Icons: {0}</source>
         <translation>Ikoner: {0}</translation>
     </message>
     <message>
-        <location filename="../nw/gui/about.py" line="198"/>
+        <location filename="../nw/gui/about.py" line="213"/>
         <source>Syntax: {0}</source>
         <translation>Syntaks: {0}</translation>
+    </message>
+    <message>
+        <location filename="../nw/gui/about.py" line="177"/>
+        <source>Translations</source>
+        <translation>Oversettelser</translation>
+    </message>
+    <message>
+        <location filename="../nw/gui/about.py" line="213"/>
+        <source>Author</source>
+        <translation>Ansvarlig</translation>
+    </message>
+    <message>
+        <location filename="../nw/gui/about.py" line="213"/>
+        <source>Credit</source>
+        <translation>Kreditert</translation>
+    </message>
+    <message>
+        <location filename="../nw/gui/about.py" line="144"/>
+        <source>Concept</source>
+        <translation>Konsept</translation>
+    </message>
+    <message>
+        <location filename="../nw/gui/about.py" line="144"/>
+        <source>i18n</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location filename="../nw/gui/about.py" line="144"/>
+        <source>Developer</source>
+        <translation>Utvikler</translation>
     </message>
 </context>
 <context>
@@ -3596,37 +3610,37 @@
 <context>
     <name>GuiProjectEditReplace</name>
     <message>
-        <location filename="../nw/gui/projsettings.py" line="508"/>
+        <location filename="../nw/gui/projsettings.py" line="514"/>
         <source>Keyword</source>
         <translation>Kodeord</translation>
     </message>
     <message>
-        <location filename="../nw/gui/projsettings.py" line="508"/>
+        <location filename="../nw/gui/projsettings.py" line="514"/>
         <source>Replace With</source>
         <translation>Erstatt med</translation>
     </message>
     <message>
-        <location filename="../nw/gui/projsettings.py" line="547"/>
+        <location filename="../nw/gui/projsettings.py" line="553"/>
         <source>Save entry</source>
         <translation>Lagre tekst</translation>
     </message>
     <message>
-        <location filename="../nw/gui/projsettings.py" line="527"/>
+        <location filename="../nw/gui/projsettings.py" line="533"/>
         <source>Add new entry</source>
         <translation>Legg til ny</translation>
     </message>
     <message>
-        <location filename="../nw/gui/projsettings.py" line="531"/>
+        <location filename="../nw/gui/projsettings.py" line="537"/>
         <source>Delete selected entry</source>
         <translation>Slett valgte element</translation>
     </message>
     <message>
-        <location filename="../nw/gui/projsettings.py" line="502"/>
+        <location filename="../nw/gui/projsettings.py" line="508"/>
         <source>Text Replace List for Preview and Export</source>
         <translation>Erstatningsliste for forhåndsvisning og eksport</translation>
     </message>
     <message>
-        <location filename="../nw/gui/projsettings.py" line="538"/>
+        <location filename="../nw/gui/projsettings.py" line="544"/>
         <source>Select item to edit</source>
         <translation>Velg enhet å redigere</translation>
     </message>
@@ -3634,77 +3648,77 @@
 <context>
     <name>GuiProjectEditStatus</name>
     <message>
-        <location filename="../nw/gui/projsettings.py" line="313"/>
+        <location filename="../nw/gui/projsettings.py" line="316"/>
         <source>Save</source>
         <translation>Lagre</translation>
     </message>
     <message>
-        <location filename="../nw/gui/projsettings.py" line="309"/>
+        <location filename="../nw/gui/projsettings.py" line="312"/>
         <source>Colour</source>
         <translation>Farge</translation>
     </message>
     <message>
-        <location filename="../nw/gui/projsettings.py" line="255"/>
+        <location filename="../nw/gui/projsettings.py" line="258"/>
         <source>Novel File Status Levels</source>
         <translation>Statusnivåer i roman-filer</translation>
     </message>
     <message>
-        <location filename="../nw/gui/projsettings.py" line="259"/>
+        <location filename="../nw/gui/projsettings.py" line="262"/>
         <source>Note File Importance Levels</source>
         <translation>Viktighetsnivåer i notatfiler</translation>
     </message>
     <message>
-        <location filename="../nw/gui/projsettings.py" line="366"/>
+        <location filename="../nw/gui/projsettings.py" line="369"/>
         <source>Select Colour</source>
         <translation>Velg farge</translation>
     </message>
     <message>
-        <location filename="../nw/gui/projsettings.py" line="380"/>
+        <location filename="../nw/gui/projsettings.py" line="383"/>
         <source>New Item</source>
         <translation>Legg til</translation>
     </message>
     <message>
-        <location filename="../nw/gui/projsettings.py" line="277"/>
+        <location filename="../nw/gui/projsettings.py" line="280"/>
         <source>Label</source>
         <translation>Navn</translation>
     </message>
     <message>
-        <location filename="../nw/gui/projsettings.py" line="277"/>
+        <location filename="../nw/gui/projsettings.py" line="280"/>
         <source>Usage</source>
         <translation>Bruk</translation>
     </message>
     <message>
-        <location filename="../nw/gui/projsettings.py" line="292"/>
+        <location filename="../nw/gui/projsettings.py" line="295"/>
         <source>Add new entry</source>
         <translation>Legg til ny</translation>
     </message>
     <message>
-        <location filename="../nw/gui/projsettings.py" line="296"/>
+        <location filename="../nw/gui/projsettings.py" line="299"/>
         <source>Delete selected entry</source>
         <translation>Slett valgte element</translation>
     </message>
     <message>
-        <location filename="../nw/gui/projsettings.py" line="305"/>
+        <location filename="../nw/gui/projsettings.py" line="308"/>
         <source>Select item to edit</source>
         <translation>Velg enhet å redigere</translation>
     </message>
     <message>
-        <location filename="../nw/gui/projsettings.py" line="397"/>
+        <location filename="../nw/gui/projsettings.py" line="400"/>
         <source>Cannot delete a status item that is in use.</source>
         <translation>Kan ikke slette status som er i bruk.</translation>
     </message>
     <message>
-        <location filename="../nw/gui/projsettings.py" line="479"/>
+        <location filename="../nw/gui/projsettings.py" line="482"/>
         <source>Not in use</source>
         <translation>Ikke i bruk</translation>
     </message>
     <message>
-        <location filename="../nw/gui/projsettings.py" line="481"/>
+        <location filename="../nw/gui/projsettings.py" line="484"/>
         <source>Used once</source>
         <translation>Brukt ett sted</translation>
     </message>
     <message>
-        <location filename="../nw/gui/projsettings.py" line="483"/>
+        <location filename="../nw/gui/projsettings.py" line="486"/>
         <source>Used by {0} items</source>
         <translation>Brukt {0} steder</translation>
     </message>

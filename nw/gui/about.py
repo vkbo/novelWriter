@@ -131,12 +131,10 @@ class GuiAbout(QDialog):
     def _fillAboutPage(self):
         """Generate the content for the About page.
         """
-        listPrefix = "&nbsp;&nbsp;&bull;&nbsp;&nbsp;"
-        webLink = f"<a href='{nw.__url__:s}'>{nw.__domain__:s}</a>"
         aboutMsg = (
             "<h2>{title1}</h2>"
-            "<p>{copyright}.</p>"
-            "<p>{website}</p>"
+            "<p>{copy}</p>"
+            "<p>{link}</p>"
             "<p>{intro}</p>"
             "<p>{license1}</p>"
             "<p>{license2}</p>"
@@ -144,27 +142,31 @@ class GuiAbout(QDialog):
             "<h3>{title2}</h3>"
             "<p>{credits}</p>"
         ).format(
-            title1    = self.tr("About novelWriter"),
-            copyright = nw.__copyright__,
-            website   = self.tr("Website: {0}").format(webLink),
-            title2    = self.tr("Credits"),
-            credits   = "<br/>".join(["%s%s" % (listPrefix, x) for x in nw.__credits__]),
-            intro     = self.tr(
+            title1 = self.tr("About novelWriter"),
+            copy = nw.__copyright__,
+            link = self.tr("Website: {0}").format(f"<a href='{nw.__url__}'>{nw.__domain__}</a>"),
+            title2 = self.tr("Credits"),
+            credits = self._wrapTable([
+                (self.tr("Developer"), "Veronica Berglyd Olsen"),
+                (self.tr("Concept"), "Veronica Berglyd Olsen, Marian Lückhof"),
+                (self.tr("i18n"), "Bruno Meneguello"),
+            ]),
+            intro = self.tr(
                 "novelWriter is a markdown-like text editor designed for organising and "
                 "writing novels. It is written in Python 3 with a Qt5 GUI, using PyQt5."
             ),
-            license1  = self.tr(
+            license1 = self.tr(
                 "novelWriter is free software: you can redistribute it and/or modify it "
                 "under the terms of the GNU General Public License as published by the "
                 "Free Software Foundation, either version 3 of the License, or (at your "
                 "option) any later version."
             ),
-            license2  = self.tr(
+            license2 = self.tr(
                 "novelWriter is distributed in the hope that it will be useful, but "
                 "WITHOUT ANY WARRANTY; without even the implied warranty of "
                 "MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE."
             ),
-            license3  = self.tr(
+            license3 = self.tr(
                 "See the Licence tab for the full licence text, or visit the "
                 "GNU website at {0} for more details."
             ).format(
@@ -172,36 +174,49 @@ class GuiAbout(QDialog):
             ),
         )
 
+        aboutMsg += "<h4>%s</h4><p>%s</p>" % (
+            self.tr("Translations"),
+            self._wrapTable([
+                ("English", "Veronica Berglyd Olsen"),
+                ("Français", "Jan Lüdke (jyhelle)"),
+                ("Norsk Bokmål", "Veronica Berglyd Olsen"),
+                ("Português", "Bruno Meneguello"),
+            ])
+        )
+
         theTheme = self.theParent.theTheme
         theIcons = self.theParent.theTheme.theIcons
-        if theTheme.themeName:
-            aboutMsg += "<h4>%s</h4><p>%s<br/>%s<br/>%s</p>" % (
+        if theTheme.themeName and theTheme.themeAuthor != "N/A":
+            licURL = f"<a href='{theTheme.themeLicenseUrl}'>{theTheme.themeLicense}</a>"
+            aboutMsg += "<h4>%s</h4><p>%s</p>" % (
                 self.tr("Theme: {0}").format(theTheme.themeName),
-                self.tr("Author: {0}").format(theTheme.themeAuthor),
-                self.tr("Credit: {0}").format(theTheme.themeCredit),
-                self.tr("Licence: {0}").format(
-                    f"<a href='{theTheme.themeLicenseUrl}'>{theTheme.themeLicense}</a>"
-                )
+                self._wrapTable([
+                    (self.tr("Author"), theTheme.themeAuthor),
+                    (self.tr("Credit"), theTheme.themeCredit),
+                    (self.tr("Licence"), licURL),
+                ])
             )
 
         if theIcons.themeName:
-            aboutMsg += "<h4>%s</h4><p>%s<br/>%s<br/>%s</p>" % (
+            licURL = f"<a href='{theIcons.themeLicenseUrl}'>{theIcons.themeLicense}</a>"
+            aboutMsg += "<h4>%s</h4><p>%s</p>" % (
                 self.tr("Icons: {0}").format(theIcons.themeName),
-                self.tr("Author: {0}").format(theIcons.themeAuthor),
-                self.tr("Credit: {0}").format(theIcons.themeCredit),
-                self.tr("Licence: {0}").format(
-                    f"<a href='{theIcons.themeLicenseUrl}'>{theIcons.themeLicense}</a>"
-                )
+                self._wrapTable([
+                    (self.tr("Author"), theIcons.themeAuthor),
+                    (self.tr("Credit"), theIcons.themeCredit),
+                    (self.tr("Licence"), licURL),
+                ])
             )
 
         if theTheme.syntaxName:
-            aboutMsg += "<h4>%s</h4><p>%s<br/>%s<br/>%s</p>" % (
+            licURL = f"<a href='{theTheme.syntaxLicenseUrl}'>{theTheme.syntaxLicense}</a>"
+            aboutMsg += "<h4>%s</h4><p>%s</p>" % (
                 self.tr("Syntax: {0}").format(theTheme.syntaxName),
-                self.tr("Author: {0}").format(theTheme.syntaxAuthor),
-                self.tr("Credit: {0}").format(theTheme.syntaxCredit),
-                self.tr("Licence: {0}").format(
-                    f"<a href='{theTheme.syntaxLicenseUrl}'>{theTheme.syntaxLicense}</a>"
-                )
+                self._wrapTable([
+                    (self.tr("Author"), theTheme.syntaxAuthor),
+                    (self.tr("Credit"), theTheme.syntaxCredit),
+                    (self.tr("Licence"), licURL),
+                ])
             )
 
         self.pageAbout.setHtml(aboutMsg)
@@ -232,6 +247,16 @@ class GuiAbout(QDialog):
             self.pageLicense.setHtml("Error loading licence text ...")
         return
 
+    def _wrapTable(self, theData):
+        """Wrap a list of label/value tuples in a html table.
+        """
+        theTable = []
+        for aLabel, aValue in theData:
+            theTable.append(
+                f"<tr><td><b>{aLabel}:</b></td><td>{aValue}</td></tr>"
+            )
+        return "<table>%s</table>" % "".join(theTable)
+
     def _setStyleSheet(self):
         """Set stylesheet for all browser tabs
         """
@@ -241,6 +266,9 @@ class GuiAbout(QDialog):
             "}}\n"
             "a {{"
             "  color: rgb({hColR},{hColG},{hColB});"
+            "}}\n"
+            "td {{"
+            "  padding-right: 0.8em;"
             "}}\n"
         ).format(
             hColR = self.theParent.theTheme.colHead[0],

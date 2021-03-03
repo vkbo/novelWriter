@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!DOCTYPE TS>
-<TS version="2.1" language="pt" sourcelanguage="en_GB">
+<!DOCTYPE TS><TS version="2.0" language="pt" sourcelanguage="en_GB">
 <context>
     <name>Common</name>
     <message>
@@ -335,47 +334,47 @@
 <context>
     <name>GuiAbout</name>
     <message>
-        <location filename="../nw/gui/about.py" line="146"/>
+        <location filename="../nw/gui/about.py" line="144"/>
         <source>About novelWriter</source>
         <translation>Sobre o novelWriter</translation>
     </message>
     <message>
-        <location filename="../nw/gui/about.py" line="146"/>
+        <location filename="../nw/gui/about.py" line="144"/>
         <source>novelWriter is a markdown-like text editor designed for organising and writing novels. It is written in Python 3 with a Qt5 GUI, using PyQt5.</source>
         <translation>novelWriter é um editor de texto som sintaxe semelhante ao markdown, projetado para a escrita e organização de livros. É escrito em Python 3 com interface de usuário em Qr5, usando PyQt5.</translation>
     </message>
     <message>
-        <location filename="../nw/gui/about.py" line="146"/>
+        <location filename="../nw/gui/about.py" line="144"/>
         <source>novelWriter is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.</source>
         <translation>novelWriter é distribuído na especativa de que seja útil, mas SEM NENHUMA GARANTIA, nem mesmo a garantia implícita de COMERCIALIZAÇÃO ou ADEQUAÇÃO PARA UM PROPÓSITO ESPECÍFICO.</translation>
     </message>
     <message>
-        <location filename="../nw/gui/about.py" line="146"/>
+        <location filename="../nw/gui/about.py" line="144"/>
         <source>Credits</source>
         <translation>Créditos</translation>
     </message>
     <message>
-        <location filename="../nw/gui/about.py" line="146"/>
+        <location filename="../nw/gui/about.py" line="144"/>
         <source>novelWriter is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.</source>
         <translation>novelWriter é um software livre: você pode redistribuí-lo e/ou modificá-lo sob os termos da GNU Licença Pública Geral, assim como publicada pela Free Software Foundation, tanto na versão 3 da licença, ou (à sua escolha) qualquer versão subsequente.</translation>
     </message>
     <message>
-        <location filename="../nw/gui/about.py" line="178"/>
+        <location filename="../nw/gui/about.py" line="191"/>
         <source>Theme: {0}</source>
         <translation>Tema: {0}</translation>
     </message>
     <message>
-        <location filename="../nw/gui/about.py" line="188"/>
+        <location filename="../nw/gui/about.py" line="202"/>
         <source>Icons: {0}</source>
         <translation>Ícones: {0}</translation>
     </message>
     <message>
-        <location filename="../nw/gui/about.py" line="198"/>
+        <location filename="../nw/gui/about.py" line="213"/>
         <source>Syntax: {0}</source>
         <translation>Sintaxe: {0}</translation>
     </message>
     <message>
-        <location filename="../nw/gui/about.py" line="146"/>
+        <location filename="../nw/gui/about.py" line="144"/>
         <source>Website: {0}</source>
         <translation>Website: {0}</translation>
     </message>
@@ -390,29 +389,44 @@
         <translation>Lançamento</translation>
     </message>
     <message>
-        <location filename="../nw/gui/about.py" line="146"/>
+        <location filename="../nw/gui/about.py" line="144"/>
         <source>See the Licence tab for the full licence text, or visit the GNU website at {0} for more details.</source>
         <translation>Veja a aba de Licença para o texto completo de licença, ou visite o website da GNU em {0} para mais detalhes.</translation>
     </message>
     <message>
-        <location filename="../nw/gui/about.py" line="95"/>
+        <location filename="../nw/gui/about.py" line="213"/>
         <source>Licence</source>
         <translation>Licença</translation>
     </message>
     <message>
-        <location filename="../nw/gui/about.py" line="198"/>
-        <source>Author: {0}</source>
-        <translation>Autor: {0}</translation>
+        <location filename="../nw/gui/about.py" line="177"/>
+        <source>Translations</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../nw/gui/about.py" line="198"/>
-        <source>Credit: {0}</source>
-        <translation>Créditos: {0}</translation>
+        <location filename="../nw/gui/about.py" line="213"/>
+        <source>Author</source>
+        <translation>Autor</translation>
     </message>
     <message>
-        <location filename="../nw/gui/about.py" line="198"/>
-        <source>Licence: {0}</source>
-        <translation>Licença: {0}</translation>
+        <location filename="../nw/gui/about.py" line="213"/>
+        <source>Credit</source>
+        <translation>Créditos</translation>
+    </message>
+    <message>
+        <location filename="../nw/gui/about.py" line="144"/>
+        <source>Concept</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../nw/gui/about.py" line="144"/>
+        <source>i18n</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location filename="../nw/gui/about.py" line="144"/>
+        <source>Developer</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -3628,7 +3642,7 @@
     <message>
         <location filename="../nw/gui/projsettings.py" line="544"/>
         <source>Select item to edit</source>
-        <translation>Selecione o item para editar</translation>
+        <translation>Selecione um item para editar</translation>
     </message>
 </context>
 <context>
