@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!DOCTYPE TS><TS version="2.0" language="pt" sourcelanguage="en_GB">
+<!DOCTYPE TS>
+<TS version="2.1" language="pt" sourcelanguage="en_GB">
 <context>
     <name>Common</name>
     <message>
@@ -3642,7 +3643,7 @@
     <message>
         <location filename="../nw/gui/projsettings.py" line="544"/>
         <source>Select item to edit</source>
-        <translation type="unfinished"></translation>
+        <translation>Selecione o item para editar</translation>
     </message>
 </context>
 <context>
@@ -3680,47 +3681,47 @@
     <message>
         <location filename="../nw/gui/projsettings.py" line="280"/>
         <source>Label</source>
-        <translation type="unfinished">Rótulo</translation>
+        <translation>Rótulo</translation>
     </message>
     <message>
         <location filename="../nw/gui/projsettings.py" line="280"/>
         <source>Usage</source>
-        <translation type="unfinished"></translation>
+        <translation>Uso</translation>
     </message>
     <message>
         <location filename="../nw/gui/projsettings.py" line="295"/>
         <source>Add new entry</source>
-        <translation type="unfinished">Adiciona uma nova entrada</translation>
+        <translation>Adiciona uma nova entrada</translation>
     </message>
     <message>
         <location filename="../nw/gui/projsettings.py" line="299"/>
         <source>Delete selected entry</source>
-        <translation type="unfinished">Remove a entrada selecionada</translation>
+        <translation>Remove a entrada selecionada</translation>
     </message>
     <message>
         <location filename="../nw/gui/projsettings.py" line="308"/>
         <source>Select item to edit</source>
-        <translation type="unfinished"></translation>
+        <translation>Selecione um item para editar</translation>
     </message>
     <message>
         <location filename="../nw/gui/projsettings.py" line="400"/>
         <source>Cannot delete a status item that is in use.</source>
-        <translation type="unfinished"></translation>
+        <translation>Não é possível remove um item de status em uso.</translation>
     </message>
     <message>
         <location filename="../nw/gui/projsettings.py" line="482"/>
         <source>Not in use</source>
-        <translation type="unfinished"></translation>
+        <translation>Não utilizado</translation>
     </message>
     <message>
         <location filename="../nw/gui/projsettings.py" line="484"/>
         <source>Used once</source>
-        <translation type="unfinished"></translation>
+        <translation>Utilizado uma vez</translation>
     </message>
     <message>
         <location filename="../nw/gui/projsettings.py" line="486"/>
         <source>Used by {0} items</source>
-        <translation type="unfinished"></translation>
+        <translation>Utilizado por {0} items</translation>
     </message>
 </context>
 <context>
