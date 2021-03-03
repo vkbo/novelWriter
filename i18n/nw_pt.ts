@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!DOCTYPE TS>
-<TS version="2.1" language="pt" sourcelanguage="en_GB">
+<!DOCTYPE TS><TS version="2.0" language="pt" sourcelanguage="en_GB">
 <context>
     <name>Common</name>
     <message>
@@ -3643,7 +3642,7 @@
     <message>
         <location filename="../nw/gui/projsettings.py" line="544"/>
         <source>Select item to edit</source>
-        <translation>Selecione o item para editar</translation>
+        <translation>Selecione um item para editar</translation>
     </message>
 </context>
 <context>
