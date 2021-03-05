@@ -58,9 +58,9 @@ Single and Double Prime
 Both single and double prime symbols are available in the :guilabel:`Insert` menu. These symbols
 are the correct symbols to use for unit symbols for feet, inches, minutes and seconds. The usage of
 these is described in more detail on the Wikipedia Prime_ page. They look very similar to single
-and double straight quotes, but may be renderred similarly by the font, but they have different
+and double straight quotes, and may be renderred similarly by the font, but they have different
 codes. Using these correctly will also prevent the auto-replace and dialogue highlighting features
-to understand their meaning in the text.
+misunderstanding their meaning in the text.
 
 .. _Prime: https://en.wikipedia.org/wiki/Prime_(symbol)
 

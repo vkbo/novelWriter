@@ -65,7 +65,7 @@ Folders cannot be moved at all outside their root tree. Neither can a folder con
 be deleted. You must first delete the containing documents.
 
 Root folders in the project tree cannot be dragged and dropped at all. If you want to reorder them,
-you can move them up or down with respect to eachother from the :guilabel:`Tools` menu, the
+you can move them up or down with respect to eachother from the :guilabel:`Project` menu, the
 right-click context menu, or by pressing :kbd:`Ctrl`:kbd:`Shift` and the :kbd:`Up` or :kbd:`Down`
 key.
 
@@ -177,7 +177,7 @@ level of the novel. See :ref:`a_struct_heads` for more details.
 
 ``#### Title``
    Heading level four. If the document is a novel file, the header level indicates the start of a
-   new section. Scene titles can be replaced by separators or removed when exporting the
+   new section. Section titles can be replaced by separators or removed when exporting the
    manuscript, so you can use the title field as a working title for your sections.
 
 .. note::
@@ -270,7 +270,7 @@ also be inserted at the cursor position in the editor via the :guilabel:`Insert`
 Additional Markdown and Non-Standard Features
 ---------------------------------------------
 
-The editor and viewer also support markdown standard hard line breaks, and preserves non-breaking
+The editor and viewer also support markdown standard hard line breaks, and preserve non-breaking
 spaces if running with Qt 5.9 or higher. For older versions, the non-breaking spaces are lost when
 the document is saved. This is unfortunately hard-coded in the Qt text editor.
 

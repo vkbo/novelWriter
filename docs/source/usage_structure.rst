@@ -73,8 +73,8 @@ an asterisk (``*``). Like so:
 ``## *Unnumbered Chapter Title``
 
 The leading asterisk is only considered by the :guilabel:`Build Novel Project` tool, and will be
-removed before inserted at the location of the ``%title%`` label. See the :ref:`a_export` page for
-more details.
+removed before the title is inserted at the location of the ``%title%`` label. See the
+:ref:`a_export` page for more details.
 
 .. note::
    If you need the first character of the title to be an actual asterisk, you must escape it:

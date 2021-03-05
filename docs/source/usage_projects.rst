@@ -98,7 +98,7 @@ referenced.
 
 Folders and root folders can only be deleted when they are empty. Recursive deletion is not
 supported. A document or a folder can be deleted from the :guilabel:`Project` menu, or by pressing
-:kbd:`Ctrl`:kbd:`Del`.
+:kbd:`Ctrl`:kbd:`Shift`:kbd:`Del`.
 
 
 .. _a_proj_roots_out:
