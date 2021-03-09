@@ -42,7 +42,6 @@ def testGuiProjTree_TreeItems(qtbot, caplog, monkeypatch, nwGUI, nwMinimal):
     monkeypatch.setattr(QMessageBox, "warning", lambda *args: QMessageBox.Yes)
     monkeypatch.setattr(QMessageBox, "information", lambda *args: QMessageBox.Yes)
     monkeypatch.setattr(GuiMain, "editItem", lambda *args: None)
-    monkeypatch.setattr(GuiProjectTree, "hasFocus", lambda *args: True)
 
     nwGUI.theProject.projTree.setSeed(42)
     nwTree = nwGUI.treeView

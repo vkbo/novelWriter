@@ -458,7 +458,7 @@ class GuiProjectTree(QTreeWidget):
 
         return True
 
-    def deleteItem(self, tHandle=None, alreadyAsked=False, askForTrash=False, bulkAction=False):
+    def deleteItem(self, tHandle=None, alreadyAsked=False, bulkAction=False):
         """Delete an item from the project tree. As a first step, files are
         moved to the Trash folder. Permanent deletion is a second step. This
         second step also deletes the item from the project object as well as
@@ -529,17 +529,10 @@ class GuiProjectTree(QTreeWidget):
             else:
                 # The file is not already in the trash folder, so we
                 # move it there.
-                doTrash = False
-                if askForTrash:
-                    msgYes = self.askQuestion(
-                        "Delete File", "Move file '%s' to Trash?" % nwItemS.itemName
-                    )
-                    if msgYes:
-                        doTrash = True
-                else:
-                    doTrash = True
-
-                if doTrash:
+                msgYes = self.askQuestion(
+                    "Delete File", "Move file '%s' to Trash?" % nwItemS.itemName
+                )
+                if msgYes:
                     if pHandle is None:
                         logger.warning("File has no parent item")
 
@@ -1210,7 +1203,7 @@ class GuiProjectTreeMenu(QMenu):
         """Forward the delete item call to the project tree.
         """
         if self.theItem is not None:
-            self.theTree.deleteItem(askForTrash=True)
+            self.theTree.deleteItem()
         return
 
     def _doEmptyTrash(self):
