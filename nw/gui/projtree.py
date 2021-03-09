@@ -451,14 +451,14 @@ class GuiProjectTree(QTreeWidget):
         for tHandle in self.getTreeFromHandle(trashHandle):
             if tHandle == trashHandle:
                 continue
-            self.deleteItem(tHandle, alreadyAsked=True)
+            self.deleteItem(tHandle, alreadyAsked=True, bulkAction=True)
 
         if nTrash > 0:
             self._setTreeChanged(True)
 
         return True
 
-    def deleteItem(self, tHandle=None, alreadyAsked=False, askForTrash=False):
+    def deleteItem(self, tHandle=None, alreadyAsked=False, askForTrash=False, bulkAction=False):
         """Delete an item from the project tree. As a first step, files are
         moved to the Trash folder. Permanent deletion is a second step. This
         second step also deletes the item from the project object as well as
@@ -469,24 +469,27 @@ class GuiProjectTree(QTreeWidget):
             logger.error("No project open")
             return False
 
-        if not self.hasFocus():
+        if not self.hasFocus() and not bulkAction:
+            logger.info("Delete action blocked due to no widget focus")
             return False
 
         if tHandle is None:
             tHandle = self.getSelectedHandle()
 
         if tHandle is None:
+            logger.error("There is no item to delete")
             return False
 
         trItemS = self._getTreeItem(tHandle)
         nwItemS = self.theProject.projTree[tHandle]
 
         if trItemS is None or nwItemS is None:
+            logger.error("Could not find tree item for deletion")
             return False
 
         wCount = int(trItemS.data(self.C_COUNT, Qt.UserRole))
         if nwItemS.itemType == nwItemType.FILE:
-            logger.debug("User requested file %s moved to trash" % tHandle)
+            logger.debug("User requested file %s deleted" % tHandle)
             trItemP = trItemS.parent()
             trItemT = self._addTrashRoot()
             if trItemP is None or trItemT is None:
@@ -539,6 +542,8 @@ class GuiProjectTree(QTreeWidget):
                 if doTrash:
                     if pHandle is None:
                         logger.warning("File has no parent item")
+
+                    logger.debug("Moving file %s to trash" % tHandle)
 
                     self.propagateCount(tHandle, 0)
                     tIndex  = trItemP.indexOfChild(trItemS)
