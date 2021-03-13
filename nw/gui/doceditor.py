@@ -98,10 +98,10 @@ class GuiDocEditor(QTextEdit):
         self.queuePos   = None  # Used for delayed change of cursor position
 
         # Typography
-        self.typDQOpen  = self.mainConf.fmtDoubleQuotes[0]
-        self.typDQClose = self.mainConf.fmtDoubleQuotes[1]
-        self.typSQOpen  = self.mainConf.fmtSingleQuotes[0]
-        self.typSQClose = self.mainConf.fmtSingleQuotes[1]
+        self.typDQOpen  = '"'
+        self.typDQClose = '"'
+        self.typSQOpen  = "'"
+        self.typSQClose = "'"
 
         # Core Elements and Signals
         self.qDocument = self.document()
@@ -197,6 +197,26 @@ class GuiDocEditor(QTextEdit):
         self.nonWord += "".join(self.mainConf.fmtDoubleQuotes)
         self.nonWord += "".join(self.mainConf.fmtSingleQuotes)
 
+        # Typography
+        if self.mainConf.fmtPadThin:
+            padChar = nwUnicode.U_THNBSP
+        else:
+            padChar = nwUnicode.U_NBSP
+
+        if self.mainConf.fmtPadSingle:
+            self.typSQOpen  = self.mainConf.fmtSingleQuotes[0] + padChar
+            self.typSQClose = padChar + self.mainConf.fmtSingleQuotes[1]
+        else:
+            self.typSQOpen  = self.mainConf.fmtSingleQuotes[0]
+            self.typSQClose = self.mainConf.fmtSingleQuotes[1]
+
+        if self.mainConf.fmtPadDouble:
+            self.typDQOpen  = self.mainConf.fmtDoubleQuotes[0] + padChar
+            self.typDQClose = padChar + self.mainConf.fmtDoubleQuotes[1]
+        else:
+            self.typDQOpen  = self.mainConf.fmtDoubleQuotes[0]
+            self.typDQClose = self.mainConf.fmtDoubleQuotes[1]
+
         # Reload spell check and dictionaries
         self._setupSpellChecking()
         self.setDictionaries()
@@ -206,6 +226,7 @@ class GuiDocEditor(QTextEdit):
         if self.mainConf.textFont is None:
             # If none is defined, set the default back to config
             self.mainConf.textFont = self.qDocument.defaultFont().family()
+
         theFont.setFamily(self.mainConf.textFont)
         theFont.setPointSize(self.mainConf.textSize)
         self.setFont(theFont)
