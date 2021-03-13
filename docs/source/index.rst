@@ -41,8 +41,8 @@ meta data is primarily saved as JSON files.
 Any operating system that can run Python 3 and has the Qt 5 libraries should be able to run
 novelWriter. It runs fine on Linux, Windows and macOS, and users have tested it on other platforms
 too. novelWriter can be run directly from the Python source, or installed from the pip tool or via
-the provided setup script. A setup.exe is provided for Windows. See :ref:`a_started` for further
-details.
+the provided setup script. See :ref:`a_started`, or one or the setup instructions for your
+operating system for further details.
 
 **Useful Links**
 

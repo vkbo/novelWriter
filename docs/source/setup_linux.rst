@@ -8,8 +8,9 @@ Setup on Linux
 .. _main website: https://novelwriter.io
 
 This is a brief guide to how you can get novelWriter running on a Linux computer. There are
-currently no packaged version of novelWriter for Linux, so it is recommended that you just extract
-the source to a practical location on your system and run the ``setup.py`` script.
+currently no install package of novelWriter for Linux, so it is recommended that you download
+either the full source or minimal package and extract it to a practical location on your system and
+run the ``setup.py`` script.
 
 
 Running from Source
@@ -52,17 +53,16 @@ system where Python packages are usually kept. This is not really the best suite
 GUI application like novelWriter, so you may instead copy the entire source to a suiteable location
 yourself.
 
-By default, this command installs novelWriter for the current user only. To install for all users,
-run the script with the ``sudo`` command.
-
 This should install novelWriter to either ``~/.local/bin/novelWriter`` if installed for local user
-only, or to ``/usr/local/bin/novelWriter`` if installed for all users.
+only, or to ``/usr/local/bin/novelWriter`` if installed for all users (with the ``sudo`` command).
 
 
 Step 3: Create Launcher Icons
 -----------------------------
 
-To set up the novelWriter desktop launcher, the icons, and the project file association, run:
+Regardless of where you extract or install the source files, you can easily set up a standard icon
+and launcher. To set up this desktop launcher, the needed icons, and the project file association,
+run:
 
 .. code-block:: console
 
