@@ -119,8 +119,8 @@ Export Formats
 
 Currently, six formats are supported for exporting.
 
-OpenDocument Format
-   The Build tool can produce either an ``.odt`` file, of a ``.fodt`` file. The latter is just a
+Open Document Format
+   The Build tool can produce either an ``.odt`` file, or an ``.fodt`` file. The latter is just a
    flat version of the document format as a single XML file.
 
 novelWriter HTML

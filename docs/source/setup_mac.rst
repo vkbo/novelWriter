@@ -9,8 +9,9 @@ Setup on macOS
 .. _brew docs: https://docs.brew.sh/Homebrew-and-Python
 
 This is a brief guide to how you can get novelWriter running on macOS. There are currently no
-packaged version of novelWriter for macOS, so it is recommended that you just extract the source to a
-practical location on your system and run it.
+install package of novelWriter for macOS, so it is recommended that you download either the full
+source or minimal package and extract it to a practical location on your system and
+run it.
 
 
 Running from Source

@@ -43,21 +43,20 @@ file is saved, and various meta data entries are incremented on each save.
 Project Documents
 -----------------
 
-The project documents are saved in a folder in the main project folder named ``content``. Each
+All the project documents are saved in a folder in the main project folder named ``content``. Each
 document has a file handle taken from the first 13 characters of a SHA256 hash of the system time
 when the document was first created. The documents are saved with a filename assembled from this
 hash and the file extension ``.nwd``.
 
-If you wish to find the physical location of a document in the project, you can either look it up
-in the project XML file, select :guilabel:`Show File Details` from the :guilabel:`Document` menu
+If you wish to find the file system location of a document in the project, you can either look it
+up in the project XML file, select :guilabel:`Show File Details` from the :guilabel:`Document` menu
 when having the document open, or look in the ``ToC.txt`` file in the root of the project folder.
-The ``ToC.txt`` file has a list of all documents in the project and where they are saved.
+The ``ToC.txt`` file has a list of all documents in the project, referenced by their label, and
+where they are saved.
 
 The reason for this cryptic file naming is to avoid issues with file naming conventions and
 restrictions on different operating systems, and also to have a file name that does not depend on
-what the user names the document within the project, or changes it to. The file meta data in the
-project tree is mainly saved in the project XML file, although some basic meta data is added to the
-header of each document file.
+what the user names the document within the project, or changes it to.
 
 Each document file contains a plain text version of the text from the editor. The file can in
 principle be edited in any text editor, and is suitable for diffing and version control if so
@@ -89,12 +88,13 @@ file instead.
 Project Meta Data
 =================
 
-The project folder contains a subfolder named ``meta``, containing  a number of files. The meta
+The project folder contains a subfolder named ``meta``, containing a number of files. The meta
 folder contains semi-important files. That is, they can be lost with only minor impact to the
 project.
 
 If you use version control software on your project, you can exclude this folder, although you may
-want to track the session log file. The JSON files within this folder can safely be ignored.
+want to track the session log file. The JSON files within this folder can safely be ignored as they
+will be automatically regenerated if lost.
 
 
 The Project Index
@@ -108,10 +108,11 @@ The index is maintained and updated whenever a document or note is saved in the 
 all references and tags in documents and notes, as well as the location of all headers in the
 project, and the word counts within each header section.
 
-While the integrity of the index is checked when the file is loaded, the check is not very deep and
-it is possible to corrupt the index if the file is manually edited and manipulated. If so,
-novelWriter may crash during launch. If this happens, you must delete the index file and rebuild
-the index.
+The integrity of the index is checked when the file is loaded. It is possible to corrupt the index
+if the file is manually edited and manipulated, so the check is important to avoid sudden crashes
+of novelWriter. if the file contains errors, novelWriter will automatically build it anew. If the
+check somehow fails and novelWriter keeps crashing, you can delete the file manually and rebuild
+the index. If this too fails, you have likely encountered a bug.
 
 
 Cached GUI Options
@@ -123,6 +124,7 @@ to the project. Global GUI settings are stored in the main config file.
 
 The file is not critical, but if it is lost, all such GUI options will revert back to their default
 settings.
+
 
 Session Stats
 -------------

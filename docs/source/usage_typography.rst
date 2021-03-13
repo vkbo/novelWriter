@@ -17,7 +17,7 @@ This chapter provides some additional information on how novelWriter handles the
 Special Notes on Symbols
 ========================
 
-Some additional notes on these symbols.
+Some additional notes on the available symbols.
 
 
 Dashes and Ellipsis
@@ -28,9 +28,9 @@ automatically to short and long dashes, and three dots to ellipsis. The last aut
 always be reverted with the undo command :kbd:`Ctrl`:kbd:`Z`, reverting the text to what you typed
 before the automatic replacement occurred.
 
-The symbols are available in the :guilabel:`Insert` menu. In addition, "Figure Dash" is also
-available. The Figure Dash is a dash that has the same width as the numbers of the same font, which
-tend to be the same width so that numbers align nicely in columns.
+In addition, "Figure Dash" is available. The Figure Dash is a dash that has the same width as the
+numbers of the same font, for most fonts. It helps to align numbers align nicely in columns when
+you need to use a dash in them.
 
 
 Single and Double Quotes
@@ -44,9 +44,9 @@ Ordinarily, text wrapped in quotes are highlighted by the editor. This is meant 
 for highlighting dialogue between characters. This feature can be disabled in
 :guilabel:`Preferences` if this feature isn't wanted.
 
-The editor distinguishes between text wrapped in straight quotes and with the user-selected double
-quote symbols. This is to help the writer recognise which parts of the text are not using the
-chosen quote symbols. Two convenience functions in the :guilabel:`Format` menu can be used to
+The editor distinguishes between text wrapped in regular straight quotes and with the user-selected
+double quote symbols. This is to help the writer recognise which parts of the text are not using
+the chosen quote symbols. Two convenience functions in the :guilabel:`Format` menu can be used to
 re-format a selected section of text with the correct quote symbols.
 
 .. _Quotation Mark: https://en.wikipedia.org/wiki/Quotation_mark
@@ -58,9 +58,9 @@ Single and Double Prime
 Both single and double prime symbols are available in the :guilabel:`Insert` menu. These symbols
 are the correct symbols to use for unit symbols for feet, inches, minutes and seconds. The usage of
 these is described in more detail on the Wikipedia Prime_ page. They look very similar to single
-and double straight quotes, but may be renderred similarly by the font, but they have different
+and double straight quotes, and may be renderred similarly by the font, but they have different
 codes. Using these correctly will also prevent the auto-replace and dialogue highlighting features
-to understand their meaning in the text.
+misunderstanding their meaning in the text.
 
 .. _Prime: https://en.wikipedia.org/wiki/Prime_(symbol)
 
@@ -69,8 +69,8 @@ Modifier Letter Apostrophe
 --------------------------
 
 The auto-replace feature will consider any right-facing single straight quote as a quote symbol,
-even if it's intended as an apostrophe. This also includes the syntax highlighter, which may assume
-the first following apostrophe is the closing symbol of a single quoted region of text.
+even if it is intended as an apostrophe. This also includes the syntax highlighter, which may
+assume the first following apostrophe is the closing symbol of a single quoted region of text.
 
 To get around this, an alternative apostrophe is available. It is a special Unicode character that
 is not categorised as punctuation, but as a modifier. It is usually renderred the same way as the
@@ -99,6 +99,6 @@ All non-breaking spaces are highlighted with a differently coloured background t
 spot them in the text. The colour will depend on the selected colour theme.
 
 The thin and non-breaking spaces are converted to their corresponding HTML codes on export to HTML
-format. For plain text, they are exported as regular spaces.
+format.
 
 .. _thin space: https://en.wikipedia.org/wiki/Thin_space
