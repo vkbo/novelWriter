@@ -4,13 +4,16 @@
 
 ### Release Notes
 
-This is the release candidate of 1.2. The release is intended for testing of new features and to
-sort out potential bugs before the full release. Please take this into account when working on your
-live projects.
+This release is mainly focused on the Build Novel Project tool. Completely new export classes have
+been written to support Open Document and Markdown exports. In addition, the way document layouts
+are handled have been automated a little to assist the user in keeping header levels and document
+layout flags in sync. The third new additoion is the ability to record and log idle time during a
+writing session to improve the writing statistics information as requested by several users.
+Finally, it is now possible to directly edit the project dictionary via a new, simple GUI dialog.
 
 #### The Build Novel Project Tool
 
-The main changes for version 1.2 are to the Build Novel Project tool. The Open Document export, as
+The main changes for this release are to the Build Novel Project tool. The Open Document export, as
 well as the Markdown export, is now handled entirely by code written for novelWriter. Previously,
 these export features depended on the underlying Qt library's save routines connected to the
 preview document shown in the build dialog. Using this method of export both meant that the content
@@ -104,7 +107,7 @@ _These Release Notes also include the changes from 1.2 Beta 1 and RC 1._
 **Documentation**
 
 * The documentation has been updated to reflect the changes in 1.2, and a few corrections pointed
-  out by @jyhelle fixed. PR #700.
+  out by @jyhelle applied. PR #700.
 
 ----
 
