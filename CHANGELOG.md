@@ -77,13 +77,34 @@ project tree. The keyboard shortcut for this is `Ctrl+Shift+Z`, or it can be acc
 menu. The feature can only undo the last move, but it includes both documents moved to trash, moves
 by up/down keypress or menu entries, and drag and drop moves.
 
-Lastly, a new keyword has been added to mark characters in the story. The new keyword is intended
-to tag a character as the focus character for a chapter or scene. This is useful for stories where
-the point-of-view character and the focus character are different.
+A new keyword has been added to mark characters in the story. The new keyword is intended to tag a
+character as the focus character for a chapter or scene. This is useful for stories where the
+point-of-view character and the focus character are different.
+
+Lastly, two bugfixes have been made as well. The Empty Trash feature was no longer working due to
+an earlier fix solving another issue. The feature has now been restored. In addition, the indexer
+now checks that a keyword (tag or reference) is valid before saving it to the index. Previously, an
+invalid keyword could be saved to the index and potentially crash the application.
 
 _These Release Notes also include the changes from 1.2 Beta 1 and RC 1._
 
 ### Detailed Changelog
+
+**Bugfixes**
+
+* Fixed an issue where a typo in a tag or reference using the `@` character would add an invalid
+  entry into the project index. The invalid keyword would be saved to the index cache, invalidating
+  the index on next load. For earlier versions of novelWriter before 1.1.1, it would also cause a
+  crash. Invalid keywords are now rejected during indexing. Issue #688. PR #689.
+* The "Empty Trash" option was no longer working due to an earlier fix that added a requirement
+  that the project tree has focus to allow the emptying to procede. Since the Empty Trash feature
+  opens a dialog, the tree loses focus, and the deletions are therefore ignored. The focus check is
+  no longer considered when emptying the trash. Issue #701. PR #702.
+
+**Documentation**
+
+* The documentation has been updated to reflect the changes in 1.2, and a few corrections pointed
+  out by @jyhelle fixed. PR #700.
 
 ----
 
