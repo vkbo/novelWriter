@@ -7,6 +7,7 @@ User Interface
 The user interface is kept as simple as possible to avoid distractions when writing. This page
 lists all the main GUI elements, and explains what they do.
 
+
 .. _a_ui_tree:
 
 The Project Tree
@@ -47,25 +48,59 @@ currently selected item. This panel also includes the latest paragraph and chara
 addition to the word count.
 
 
+.. _a_ui_tree_novel:
+
+The Novel Tree
+--------------
+
+An alternative way to view the project structure is the novel tree. You can switch to this view by
+selecting the :guilabel:`Novel` tab under the project tree. This view is a simplified version of
+the view in the :guilabel:`Outline`. It is convenient when you want to browse the structure of the
+story itself rather than the document files.
+
+.. note::
+   You cannot reorganise the entries in the novel tree as that would imply restructuring the
+   content of the document files.
+
+
+.. _a_ui_tree_status:
+
+Document Importance and Status
+------------------------------
+
+Each document or folder in your project can have either a "Status" or "Importance" flag set. These
+are flags that you control and define in their respective tabs in :guilabel:`Project Settings`. The
+"Status" flag is intended to tag a Novel document as for instance a draft or as completed, and the
+"Importance" flag is intended to tag character notes, or other notes, as for instance a main, major
+or minor character.
+
+Whether a document uses a "Status" or "Importance" flag depends on which root folder it lives in.
+If it's in the :guilabel:`Novel` folder, it uses the "Status" flag, otherwise it uses an
+"Importance" flag. Some folders, like :guilabel:`Trash` and :guilabel:`Outtakes` allow both.
+
+
 .. _a_ui_tree_dnd:
 
-Project Tree Drag and Drop
---------------------------
+Project Tree Drag & Drop
+------------------------
 
-The project tree allows drag and drop to a certain extent. This feature is primarily intended for
+The project tree allows drag & drop to a certain extent. This feature is primarily intended for
 rearranging the order of your documents within each root folder, and has only limited support for
 moving documents elsewhere in the project tree. In general, bulk actions are not allowed. This is
-deliberate to avoid accidentally messing up your project. The project tree has no undo function.
+deliberate to avoid accidentally messing up your project. If you make a mistake, the last move
+action can be undone by pressing :kbd:`Ctrl`:kbd:`Shift`:kbd:`Z`.
 
 Documents and their folders can be rearranged freely within their root folders. Novel documents
 cannot be moved out of the :guilabel:`Novel` folder, except to :guilabel:`Trash` and the
-:guilabel:`Outtakes` folders. Notes can be moved freely between all root folders.
+:guilabel:`Outtakes` folders. Notes can be moved freely between all root folders, but keep in mind
+that if you move a note into a :guilabel:`Novel`, its "Importance" setting will be reset to the
+default "Status" setting. See :ref:`a_ui_tree_status`.
 
 Folders cannot be moved at all outside their root tree. Neither can a folder containing documents
 be deleted. You must first delete the containing documents.
 
 Root folders in the project tree cannot be dragged and dropped at all. If you want to reorder them,
-you can move them up or down with respect to eachother from the :guilabel:`Tools` menu, the
+you can move them up or down with respect to eachother from the :guilabel:`Project` menu, the
 right-click context menu, or by pressing :kbd:`Ctrl`:kbd:`Shift` and the :kbd:`Up` or :kbd:`Down`
 key.
 
@@ -78,8 +113,8 @@ Editing and Viewing Documents
 To edit a document, double-click it in the project tree, or press the :kbd:`Return` key while
 having it selected. This will open the document in the document editor. The editor uses a
 simplified markdown format. The format is described in the :ref:`a_ui_md` section below. The editor
-has a maximise button (toggles the :guilabel:`Distraction Free Mode`) and a close button in the
-top-right corner.
+has a maximise button (toggles the :guilabel:`Focus Mode`) and a close button in the top-right
+corner.
 
 Any document in the project tree can also be viewed in parallel in a right hand side document
 viewer. To view a document, press :kbd:`Ctrl`:kbd:`R`, or select :guilabel:`View Document` in the
@@ -91,23 +126,24 @@ panel next to the close button to achieve the same thing.
 
 Both the document editor and viewer will show the label of the document in the header at the top of
 the edit or view panel. Optionally, the full project path to the document can be shown. This can be
-set in the :guilabel:`Preferences` dialog from the :guilabel:`Tools` menu. Clicking on the document
-title bar will select and reveal its location in the project tree, making it easier to locate in a
-large project.
+set in :guilabel:`Preferences` from the :guilabel:`Tools` menu. Clicking on the document title bar
+will select and reveal its location in the project tree, making it easier to locate in a large
+project.
 
 Any tag reference in the editor can be opened in the viewer by moving the cursor to the label and
 pressing :kbd:`Ctrl`:kbd:`Return`. You can also control-click them with your mouse. In the viewer,
 the references become clickable links. Clicking them will replace the content of the viewer with
 the content of the document the reference points to. The document viewer keeps a history of viewed
 documents, which you can navigate with the arrow buttons in the top-left corner of the viewer. If
-your mouse has back and forward navigation buttons, these can be used as well.
+your mouse has back and forward navigation buttons, these can be used as well. They work just like
+the backward and forward features in a browser.
 
 At the bottom of the view panel there is a :guilabel:`References` panel. (If it is hidden, click
-the icon to reveal it.) This panel will show links to all documents referring back to it, if any
-has been defined. The :guilabel:`Sticky` button will freeze the content of the panel to the current
-document, even if you navigate to another document. This is convenient if you want to quickly look
-through all documents in the list in the :guilabel:`References` panel without losing the list in
-the process.
+the icon to reveal it.) This panel will show links to all documents referring back to the one
+you're currently viewing, if any has been defined. The :guilabel:`Sticky` button will freeze the
+content of the panel to the current document, even if you navigate to another document. This is
+convenient if you want to quickly look through all documents in the list in the
+:guilabel:`References` panel without losing the list in the process.
 
 .. note::
    The :guilabel:`References` panel relies on an up-to-date index of the project. The index is
@@ -122,11 +158,15 @@ Auto-Replace as You Type
 ========================
 
 A few auto-replace features are supported by the editor. You can control every aspect of the
-auto-replace feature from :guilabel:`Preferences`. You can also disable it entirely.
+auto-replace feature from :guilabel:`Preferences`. You can also disable this feature entirely if
+you wish.
 
 .. tip::
    If you don't like auto-replacement, all symbols inserted by this feature are also available in
-   the :guilabel:`Insert` menu, and via convenient :ref:`a_ui_shortcuts_ins`.
+   the :guilabel:`Insert` menu, and via convenient :ref:`a_ui_shortcuts_ins`. You may also be using
+   a `Compose Key`_ setup, which means you may not need the auto-replace feature.
+
+.. _Compose Key: https://en.wikipedia.org/wiki/Compose_key
 
 The editor is able to replace two and three hyphens with short and long dashes, triple points with
 ellipsis, and replace straight single and double quotes with user-defined quote symbols. It will
@@ -173,16 +213,21 @@ level of the novel. See :ref:`a_struct_heads` for more details.
 ``### Title``
    Heading level three. If the document is a novel file, the header level indicates the start of a
    new scene. Scene numbers or scene separators can be inserted automatically when exporting the
-   manuscript, so you can use the title field as a working title for your scenes.
+   manuscript, so you can use the title field as a working title for your scenes if you wish.
 
 ``#### Title``
    Heading level four. If the document is a novel file, the header level indicates the start of a
-   new section. Scene titles can be replaced by separators or removed when exporting the
-   manuscript, so you can use the title field as a working title for your sections.
+   new section. Section titles can be replaced by separators or removed when exporting the
+   manuscript, so you can use the title field as a working title for your sections if you wish.
 
 .. note::
    The space after the ``#`` characters is mandatory. The syntax highlighter will change colour and
    font size when the heading is correctly formatted.
+
+.. tip::
+   If you do use the automatic numbering feature for exports, you can tell the export tool to skip
+   assigning a number to a specific chapter by adding a ``*`` as the first character of the title
+   itself. See :ref:`a_struct_heads_unnum` for more details.
 
 
 .. _a_ui_md_emph:
@@ -229,14 +274,14 @@ In addition to these standard markdown features, novelWriter also allows for com
 The text of a comment is ignored by the word counter. The text can also be filtered out when
 exporting or viewing the document.
 
-If the first word of a comment is ``Synopsis:`` (with the colon), the comment is treated specially
-and will show up in the :ref:`a_ui_outline` in a dedicated column. The word ``synopsis`` is not
-case sensitive. If it is correctly formatted, the syntax highlighter will indicate this by altering
-the colour of the word.
+If the first word of a comment is ``Synopsis:`` (with the colon included), the comment is treated
+specially and will show up in the :ref:`a_ui_outline` in a dedicated column. The word ``synopsis``
+is not case sensitive. If it is correctly formatted, the syntax highlighter will indicate this by
+altering the colour of the word.
 
 ``% text...``
    This is a comment. The text is not exported by default (this can be overridden), seen in the
-   Viewer, or counted towards word counts.
+   document viewer, or counted towards word counts.
 
 ``% Synopsis: text...``
    This is a synopsis comment. It is generally treated in the same way as a regular comment, except
@@ -270,13 +315,13 @@ also be inserted at the cursor position in the editor via the :guilabel:`Insert`
 Additional Markdown and Non-Standard Features
 ---------------------------------------------
 
-The editor and viewer also support markdown standard hard line breaks, and preserves non-breaking
+The editor and viewer also support markdown standard hard line breaks, and preserve non-breaking
 spaces if running with Qt 5.9 or higher. For older versions, the non-breaking spaces are lost when
-the document is saved. This is unfortunately hard-coded in the Qt text editor.
+the document is saved. This is unfortunately hard-coded into the Qt text editor.
 
 * A hard line break can be achieved by leaving two or more spaces at the end of the line. This is
   standard markdown syntax. Alternatively, the user can press :kbd:`Ctrl`:kbd:`K`, :kbd:`Return` to
-  insert this type of space.
+  insert this type of line break.
 * A non-breaking space can be inserted with :kbd:`Ctrl`:kbd:`K`, :kbd:`Space`.
 * Thin spaces are also supported, and can be inserted with :kbd:`Ctrl`:kbd:`K`,
   :kbd:`Shift`:kbd:`Space`.
@@ -287,6 +332,10 @@ in :ref:`a_ui_shortcuts_ins`.
 
 Both hard line breaks and non-breaking spaces are highlighted by the syntax highlighter as an
 alternate coloured background, depending on the selected theme.
+
+.. tip::
+   Non-breaking spaces are the correct type of space to separate a number from its unit. Generally,
+   it prevents the line wrapping algorithms from adding line breaks where it shouldn't.
 
 
 .. _a_ui_outline:
@@ -317,7 +366,7 @@ rearranged by dragging them to a different position.
    The :guilabel:`Title` column cannot be disabled or moved.
 
 The information viewed in the outline is based on the project's main index. While novelWriter does
-its best to keep the index up to date when content changes, you can always rebuild it manually by
+its best to keep the index up to date when contents change, you can always rebuild it manually by
 pressing :kbd:`F9` if something isn't right.
 
 The outline view itself can be regenerated by pressing :kbd:`F10`. You can also enable automatic

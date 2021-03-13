@@ -28,7 +28,6 @@ You can still create the installer yourself if you want to. It can be generated 
 Please use the "Running from Source" option below instead. It has been improved and a script has
 been added that does nearly the same thing.
 
-
 .. _installer issue: https://github.com/vkbo/novelWriter/issues/640
 
 

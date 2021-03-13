@@ -38,7 +38,7 @@ unit tests are run on the latest versions of Ubuntu Linux, Windows Server and ma
 
 Contributions to this project are welcome. However, please read the
 [Contributing Guide](https://github.com/vkbo/novelWriter/blob/main/CONTRIBUTING.md) before
-submitting larger additions ot changes to this project.
+submitting larger additions or changes to this project.
 
 # Key Features
 
@@ -48,7 +48,7 @@ Some features of novelWriter are listed below. Consult the
 ### Markdown Flavour
 
 novelWriter is _not_ a full-feature Markdown editor. It is a plain text editor that uses
-Markdown-like syntax for adding a minimal set of formatting that is useful for the specific task
+Markdown-like syntax to allow for a minimal set of formatting that is useful for the specific task
 of writing novels. The formatting is currently limited to:
 
 * Headings levels 1 to 4 using the `#` syntax only.
@@ -61,9 +61,10 @@ That is it. Features not supported in the editor are also not exported when usin
 In addition, novelWriter adds the following, which is otherwise not supported by Markdown:
 
 * A line starting with `%` is treated as a comment and not rendered on exports unless requested.
-  Comments do not count towards the word count. If the first word of the comment is `synopsis:`,
-  the comment is indexed and treated as the synopsis for the section of text under the same header.
-  These synopsis comments can be used to build an outline and exported to external documents.
+  Comments do not count towards the word count.
+* If the first word of the comment is `synopsis:`, the comment is indexed and treated as the
+  synopsis for the section of text under the same header. These synopsis comments can be used to
+  build an outline and exported to external documents.
 * A set of meta data keyword/values starting with the character `@`. This is used for tagging
   and inter-linking documents, and can also be included when generate a project outline.
 * A variety of thin and non-breaking spaces are supported. Some of them depend on the system
@@ -71,21 +72,21 @@ In addition, novelWriter adds the following, which is otherwise not supported by
 * Tabs can be used in the text, and should be properly aligned in both editor and viewer. This can
   be used to make simple tables and lists. Full Markdown tables and lists are not supported. Note
   that for HTML exports, most browsers will treat a tab as a space, so it may not show up like
-  expected. If you import the HTML file to Libre Office, for instance, they should appear as
-  expected.
+  expected. Open Document exports should produce the expected result.
 
-The core export format of novelWriter is HTML5. You can also export the entire project as a single
-novelWriter Markdown-flavour document. These can later be imported again into novelWriter. In
-addition, export to Open Document, PDF, and plain text is offered through the Qt library, although
-with limitations to formatting.
+The core export formats of novelWriter are Open Document and HTML5. Open Document is an open
+standard for office type documents that is supported by most office applications. See
+[Open Document > Application Support](https://en.wikipedia.org/wiki/OpenDocument#Application_support)
+for more details.
 
-The HTML format is well suited for file conversion tools and import into other text editors.
+You can also export the entire project as a single novelWriter Markdown-flavour document. These can
+later be imported again into novelWriter. In addition, printing and export to PDF is offered
+through the Qt library, although with limitations to formatting.
 
 ### Colour Themes
 
 The editor has syntax highlighting for the features it supports, and includes a set of different
 syntax highlighting themes. Optional GUI themes are also available, including dark themes.
-
 
 ### Easy Organising of Project Files
 
@@ -110,7 +111,6 @@ impact on the format of the exported document. See the
 Supporting note files can be added for the story plot, characters, locations, story timeline, etc.
 These have their separate root folders. These are optional files.
 
-
 ### Visualisation of Story Elements
 
 The different notes can be assigned tags, which other files can refer back to using the `@` meta
@@ -121,7 +121,8 @@ to quickly navigate between the documents while editing.
 
 # Installing and Running
 
-For install instructions, please check the [Getting Started](https://novelwriter.readthedocs.io/en/latest/int_started.html) section in
+For install instructions, please check the
+[Getting Started](https://novelwriter.readthedocs.io/en/latest/int_started.html) section in
 the [documentation](https://novelwriter.readthedocs.io/).
 
 ## TLDR Instructions
@@ -164,6 +165,10 @@ python setup.py xdg-install
 This should make novelWriter available as a regular application on your system, with a launceher
 icon, and file association with novelWriter project files.
 
+**Note:** If you don't want to install the dependencies from pip and instead use your distro's own
+packages, you must manually install `python3-pyqt5`, `python3-lxml` and `python3-enchant`
+(Debian/Ubuntu), or the corresponding packages for your distro.
+
 ### Setup on macOS
 
 If you're installing from source, the following commands will set up novelWriter on macOS:
@@ -180,15 +185,17 @@ line with:
 novelWriter
 ```
 
+If you want to help improve the setup process on macOS, it would be much appreciated.
+
 ### Setup on Windows
 
 For Windows, first ensure that you have Python installed. If not, get it from
 [python.org/downloads](https://www.python.org/downloads/). Remember to select "Add Python to PATH"
-during the installation, otherwise novelWriter cannot find it.
+during the installation, otherwise novelWriter will not start.
 
-Then, download the `novelWriter-x.y.z-minimal.zip` file, where `x.y.z` is the version number, from
-the [releases](https://github.com/vkbo/novelWriter/releases) page. You can extract it to wherever
-you want to keep novelWriter on your PC, and run the `setup_windows.bat` file in it
+Then, download the `novelWriter-x.y.z-minimal-win.zip` file, where `x.y.z` is the version number,
+from the [releases](https://github.com/vkbo/novelWriter/releases) page. You can extract it to
+wherever you want to keep novelWriter on your PC, and run the `setup_windows.bat` file in it
 (double-clicking it should work). This will install the necessary dependencies from
 [pypi.org](https://pypi.org/) and create desktop and start menu icons.
 
