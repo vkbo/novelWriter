@@ -166,7 +166,8 @@ class Config:
         self.fmtDoubleQuotes = [nwUnicode.U_LDQUO, nwUnicode.U_RDQUO]
         self.fmtPadSingle    = False
         self.fmtPadDouble    = False
-        self.fmtPadThin      = True
+        self.fmtPadThin      = False
+        self.fmtPadPunct     = False
 
         ## Spell Checking
         self.spellTool     = None
@@ -590,6 +591,9 @@ class Config:
         self.fmtPadThin = self._parseLine(
             cnfParse, cnfSec, "fmtpadthin", self.CNF_BOOL, self.fmtPadThin
         )
+        self.fmtPadPunct = self._parseLine(
+            cnfParse, cnfSec, "fmtpadpunct", self.CNF_BOOL, self.fmtPadPunct
+        )
         self.spellTool = self._parseLine(
             cnfParse, cnfSec, "spelltool", self.CNF_STR, self.spellTool
         )
@@ -761,6 +765,7 @@ class Config:
         cnfParse.set(cnfSec, "fmtpadsingle",    str(self.fmtPadSingle))
         cnfParse.set(cnfSec, "fmtpaddouble",    str(self.fmtPadDouble))
         cnfParse.set(cnfSec, "fmtpadthin",      str(self.fmtPadThin))
+        cnfParse.set(cnfSec, "fmtpadpunct",     str(self.fmtPadPunct))
         cnfParse.set(cnfSec, "spelltool",       str(self.spellTool))
         cnfParse.set(cnfSec, "spellcheck",      str(self.spellLanguage))
         cnfParse.set(cnfSec, "showtabsnspaces", str(self.showTabsNSpaces))
