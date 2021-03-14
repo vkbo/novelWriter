@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!DOCTYPE TS>
-<TS version="2.1" language="pt" sourcelanguage="en_GB">
+<!DOCTYPE TS><TS version="2.0" language="pt" sourcelanguage="en_GB">
 <context>
     <name>Common</name>
     <message>
@@ -2891,18 +2890,8 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../nw/gui/preferences.py" line="1047"/>
-        <source>Automatically add space before any of the symbols.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <location filename="../nw/gui/preferences.py" line="1057"/>
         <source>Insert non-breaking space after</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../nw/gui/preferences.py" line="1057"/>
-        <source>Automatically add space after any of the symbols.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -2911,8 +2900,18 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
+        <location filename="../nw/gui/preferences.py" line="1047"/>
+        <source>Automatically add space before any of these symbols.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../nw/gui/preferences.py" line="1057"/>
+        <source>Automatically add space after any of these symbols.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
         <location filename="../nw/gui/preferences.py" line="1067"/>
-        <source>Inserts a thinner space instead of regular space.</source>
+        <source>Inserts a thin space instead of a regular space.</source>
         <translation type="unfinished"></translation>
     </message>
 </context>

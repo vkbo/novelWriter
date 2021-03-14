@@ -1047,7 +1047,7 @@ class GuiPreferencesAutomation(QWidget):
         self.mainForm.addRow(
             self.tr("Insert non-breaking space before"),
             self.fmtPadBefore,
-            self.tr("Automatically add space before any of the symbols."),
+            self.tr("Automatically add space before any of these symbols."),
         )
 
         ## Pad After
@@ -1057,7 +1057,7 @@ class GuiPreferencesAutomation(QWidget):
         self.mainForm.addRow(
             self.tr("Insert non-breaking space after"),
             self.fmtPadAfter,
-            self.tr("Automatically add space after any of the symbols."),
+            self.tr("Automatically add space after any of these symbols."),
         )
 
         ## Use Thin Space
@@ -1067,7 +1067,7 @@ class GuiPreferencesAutomation(QWidget):
         self.mainForm.addRow(
             self.tr("Use thin space instead"),
             self.fmtPadThin,
-            self.tr("Inserts a thinner space instead of regular space.")
+            self.tr("Inserts a thin space instead of a regular space.")
         )
 
         return

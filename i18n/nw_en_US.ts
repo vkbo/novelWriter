@@ -2891,18 +2891,8 @@
         <translation></translation>
     </message>
     <message>
-        <location filename="../nw/gui/preferences.py" line="1047"/>
-        <source>Automatically add space before any of the symbols.</source>
-        <translation></translation>
-    </message>
-    <message>
         <location filename="../nw/gui/preferences.py" line="1057"/>
         <source>Insert non-breaking space after</source>
-        <translation></translation>
-    </message>
-    <message>
-        <location filename="../nw/gui/preferences.py" line="1057"/>
-        <source>Automatically add space after any of the symbols.</source>
         <translation></translation>
     </message>
     <message>
@@ -2911,8 +2901,18 @@
         <translation></translation>
     </message>
     <message>
+        <location filename="../nw/gui/preferences.py" line="1047"/>
+        <source>Automatically add space before any of these symbols.</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location filename="../nw/gui/preferences.py" line="1057"/>
+        <source>Automatically add space after any of these symbols.</source>
+        <translation></translation>
+    </message>
+    <message>
         <location filename="../nw/gui/preferences.py" line="1067"/>
-        <source>Inserts a thinner space instead of regular space.</source>
+        <source>Inserts a thin space instead of a regular space.</source>
         <translation></translation>
     </message>
 </context>

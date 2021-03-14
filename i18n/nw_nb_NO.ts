@@ -2891,19 +2891,9 @@
         <translation>Sett inn hardt mellomrom foran</translation>
     </message>
     <message>
-        <location filename="../nw/gui/preferences.py" line="1047"/>
-        <source>Automatically add space before any of the symbols.</source>
-        <translation>Legger til mellomrom foran disse tegnene.</translation>
-    </message>
-    <message>
         <location filename="../nw/gui/preferences.py" line="1057"/>
         <source>Insert non-breaking space after</source>
         <translation>Sett inn hardt mellomrom etter</translation>
-    </message>
-    <message>
-        <location filename="../nw/gui/preferences.py" line="1057"/>
-        <source>Automatically add space after any of the symbols.</source>
-        <translation>Legger til mellomrom etter disse tegnene.</translation>
     </message>
     <message>
         <location filename="../nw/gui/preferences.py" line="1067"/>
@@ -2911,9 +2901,19 @@
         <translation>Bruk tynt mellomrom istedet</translation>
     </message>
     <message>
+        <location filename="../nw/gui/preferences.py" line="1047"/>
+        <source>Automatically add space before any of these symbols.</source>
+        <translation>Legg til mellomrom automatisk foran disse tegnene.</translation>
+    </message>
+    <message>
+        <location filename="../nw/gui/preferences.py" line="1057"/>
+        <source>Automatically add space after any of these symbols.</source>
+        <translation>Legg til mellomrom automatisk etter disse tegnene.</translation>
+    </message>
+    <message>
         <location filename="../nw/gui/preferences.py" line="1067"/>
-        <source>Inserts a thinner space instead of regular space.</source>
-        <translation>Setter inn et tynnere mellomrom enn vanlig.</translation>
+        <source>Inserts a thin space instead of a regular space.</source>
+        <translation>Sett inn et tynt mellomrom istedenfor et vanlig et.</translation>
     </message>
 </context>
 <context>
