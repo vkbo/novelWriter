@@ -1,16 +1,19 @@
 # novelWriter Changelog
 
-## Version 1.2 RC 1 [2021-03-02]
+## Version 1.2 [2021-03-14]
 
 ### Release Notes
 
-This is the release candidate of 1.2. The release is intended for testing of new features and to
-sort out potential bugs before the full release. Please take this into account when working on your
-live projects.
+This release is mainly focused on the Build Novel Project tool. Completely new export classes have
+been written to support Open Document and Markdown exports. In addition, the way document layouts
+are handled have been automated a little to assist the user in keeping header levels and document
+layout flags in sync. The third new additoion is the ability to record and log idle time during a
+writing session to improve the writing statistics information as requested by several users.
+Finally, it is now possible to directly edit the project dictionary via a new, simple GUI dialog.
 
 #### The Build Novel Project Tool
 
-The main changes for version 1.2 are to the Build Novel Project tool. The Open Document export, as
+The main changes for this release are to the Build Novel Project tool. The Open Document export, as
 well as the Markdown export, is now handled entirely by code written for novelWriter. Previously,
 these export features depended on the underlying Qt library's save routines connected to the
 preview document shown in the build dialog. Using this method of export both meant that the content
@@ -77,11 +80,42 @@ project tree. The keyboard shortcut for this is `Ctrl+Shift+Z`, or it can be acc
 menu. The feature can only undo the last move, but it includes both documents moved to trash, moves
 by up/down keypress or menu entries, and drag and drop moves.
 
-Lastly, a new keyword has been added to mark characters in the story. The new keyword is intended
-to tag a character as the focus character for a chapter or scene. This is useful for stories where
-the point-of-view character and the focus character are different.
+A new keyword has been added to mark characters in the story. The new keyword is intended to tag a
+character as the focus character for a chapter or scene. This is useful for stories where the
+point-of-view character and the focus character are different.
 
-_These Release Notes also include the changes from 1.2 Beta 1._
+Lastly, two bugfixes have been made as well. The Empty Trash feature was no longer working due to
+an earlier fix solving another issue. The feature has now been restored. In addition, the indexer
+now checks that a keyword (tag or reference) is valid before saving it to the index. Previously, an
+invalid keyword could be saved to the index and potentially crash the application.
+
+_These Release Notes also include the changes from 1.2 Beta 1 and RC 1._
+
+### Detailed Changelog
+
+**Bugfixes**
+
+* Fixed an issue where a typo in a tag or reference using the `@` character would add an invalid
+  entry into the project index. The invalid keyword would be saved to the index cache, invalidating
+  the index on next load. For earlier versions of novelWriter before 1.1.1, it would also cause a
+  crash. Invalid keywords are now rejected during indexing. Issue #688. PR #689.
+* The "Empty Trash" option was no longer working due to an earlier fix that added a requirement
+  that the project tree has focus to allow the emptying to procede. Since the Empty Trash feature
+  opens a dialog, the tree loses focus, and the deletions are therefore ignored. The focus check is
+  no longer considered when emptying the trash. Issue #701. PR #702.
+
+**Documentation**
+
+* The documentation has been updated to reflect the changes in 1.2, and a few corrections pointed
+  out by @jyhelle applied. PR #700.
+
+----
+
+## Version 1.2 RC 1 [2021-03-02]
+
+### Release Notes
+
+_The Release Notes have been moved and merged into the 1.2 notes._
 
 ### Detailed Changelog
 
@@ -107,60 +141,11 @@ _These Release Notes also include the changes from 1.2 Beta 1._
 
 ----
 
-## Version 1.1.1 [2021-02-21]
+## Version 1.2 Beta 1 [2021-02-11]
 
 ### Release Notes
 
-This patch makes a couple of minor improvements to the GUI. The keyboard shortcut for deleting
-entries in the project tree has been changed from `Ctrl+Del` to `Ctrl+Shift+Del` to free up that
-shortcut for the document editor. It is now possible to use the shortcut for deleting the word in
-front of the cursor, a common and useful feature of many text editors.
-
-The way the negative word count filter option works on the Writing Statistics tool has been changed
-to be more intuitive. Enabling this filter now appears to remove all negative entries without
-altering the other entries. Previously, the removed negative counts would be included in the
-following entries to make it consistent with the total word count. In addition, writing sessions
-shorter than five minutes, and with no change in the word count, are no longer recorded in the
-session log file.
-
-Other changes include improving the speed of the internal spell checker, used when the Enchant
-spell check library isn't available. The internal spell checker is no longer significantly slower,
-but is still lacking in functionality compared to Enchant.
-
-### Detailed Changelog
-
-**User Interface**
-
-* The default GUI font on Windows is now Arial. It works better with the Qt framework than the
-  default system font. If Arial is missing, it falls back to the bundled font Cantarell. PR #655.
-* The way word changes are calculated on the Writing Statistics tool has changed when the option to
-  exclude negative word counts is active. Previously, the entries with negative counts were
-  filtered out, but the change in count was still applied to the next line, altering the value.
-  Now, the GUI will instead just drop the lines that are negative and keep the other lines
-  unchanged. This is more intutitive, but it also means that the total count now longer matches the
-  sum of the lines. PR #659.
-* The keyboard shortcut for deleting entries in the project tree has been changed from `Ctrl+Del`
-  to `Ctrl+Shift+Del`. The `Ctrl+Del` shortcut is thus free to be used exclusively by the editor to
-  delete the word in front of the cursor. Having the same shortcut do different things depending on
-  which area of the GUI has focus is a bit confusing. Related to #529. PR #666.
-
-**Other Improvements**
-
-* The internal spell checker, which is used when the Enchant library isn't available, has been
-  given a significant speed improvement by caching the imported dictionary as a Python `set`
-  instead of a `list`. The `set` has a hashed key lookup algorithm that is significantly faster.
-  PR #668.
-* Sessions shortar than 5 minutes, and with no word count changes, are no longer recorded in the
-  session stats log file. PR #685.
-
-**Installation**
-
-* The PyPi packages now include the `setup.py` file, which makes it possible to install icon
-  launchers for novelWriter on both Linux and Windows after installing with `pip`. PR #655.
-
-----
-
-## Version 1.2 Beta 1 [2021-02-11]
+_The Release Notes have been moved and merged into the 1.2 RC 1 notes._
 
 ### Detailed Changelog
 
@@ -223,6 +208,59 @@ but is still lacking in functionality compared to Enchant.
 **Code Maintenance**
 
 * Cleaned up some redundant code after PR #637. PR #638.
+
+----
+
+## Version 1.1.1 [2021-02-21]
+
+### Release Notes
+
+This patch makes a couple of minor improvements to the GUI. The keyboard shortcut for deleting
+entries in the project tree has been changed from `Ctrl+Del` to `Ctrl+Shift+Del` to free up that
+shortcut for the document editor. It is now possible to use the shortcut for deleting the word in
+front of the cursor, a common and useful feature of many text editors.
+
+The way the negative word count filter option works on the Writing Statistics tool has been changed
+to be more intuitive. Enabling this filter now appears to remove all negative entries without
+altering the other entries. Previously, the removed negative counts would be included in the
+following entries to make it consistent with the total word count. In addition, writing sessions
+shorter than five minutes, and with no change in the word count, are no longer recorded in the
+session log file.
+
+Other changes include improving the speed of the internal spell checker, used when the Enchant
+spell check library isn't available. The internal spell checker is no longer significantly slower,
+but is still lacking in functionality compared to Enchant.
+
+### Detailed Changelog
+
+**User Interface**
+
+* The default GUI font on Windows is now Arial. It works better with the Qt framework than the
+  default system font. If Arial is missing, it falls back to the bundled font Cantarell. PR #655.
+* The way word changes are calculated on the Writing Statistics tool has changed when the option to
+  exclude negative word counts is active. Previously, the entries with negative counts were
+  filtered out, but the change in count was still applied to the next line, altering the value.
+  Now, the GUI will instead just drop the lines that are negative and keep the other lines
+  unchanged. This is more intutitive, but it also means that the total count now longer matches the
+  sum of the lines. PR #659.
+* The keyboard shortcut for deleting entries in the project tree has been changed from `Ctrl+Del`
+  to `Ctrl+Shift+Del`. The `Ctrl+Del` shortcut is thus free to be used exclusively by the editor to
+  delete the word in front of the cursor. Having the same shortcut do different things depending on
+  which area of the GUI has focus is a bit confusing. Related to #529. PR #666.
+
+**Other Improvements**
+
+* The internal spell checker, which is used when the Enchant library isn't available, has been
+  given a significant speed improvement by caching the imported dictionary as a Python `set`
+  instead of a `list`. The `set` has a hashed key lookup algorithm that is significantly faster.
+  PR #668.
+* Sessions shortar than 5 minutes, and with no word count changes, are no longer recorded in the
+  session stats log file. PR #685.
+
+**Installation**
+
+* The PyPi packages now include the `setup.py` file, which makes it possible to install icon
+  launchers for novelWriter on both Linux and Windows after installing with `pip`. PR #655.
 
 ----
 
