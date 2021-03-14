@@ -2,14 +2,18 @@
 <html>
 <body>
 
-<h2>Release Notes for 1.2 RC 1</h2>
-<p><i>Released on 2 March 2021</i></p>
-<p>This is the release candidate of 1.2. The release is intended for testing of new features and to
-sort out potential bugs before the full release. Please take this into account when working on your
-live projects.</p>
+<h2>Release Notes for 1.2</h2>
+<p><i>Released on 14 March 2021</i></p>
+<p>This release is mainly focused on the Build Novel Project tool. Completely new export classes
+have been written to support Open Document and Markdown exports. In addition, the way document
+layouts are handled have been automated a little to assist the user in keeping header levels and
+document layout flags in sync. The third new additoion is the ability to record and log idle time
+during a writing session to improve the writing statistics information as requested by several
+users. Finally, it is now possible to directly edit the project dictionary via a new, simple GUI
+dialog.</p>
 
 <h3>The Build Novel Project Tool</h3>
-<p>The main changes for version 1.2 are to the Build Novel Project tool. The Open Document export,
+<p>The main changes for this release are to the Build Novel Project tool. The Open Document export,
 as well as the Markdown export, is now handled entirely by code written for novelWriter.
 Previously, these export features depended on the underlying Qt library's save routines connected
 to the preview document shown in the build dialog. Using this method of export both meant that the
@@ -66,9 +70,14 @@ go, can now be viewed and edited with a new "Project Word List" tool in the "Too
 project tree. The keyboard shortcut for this is `Ctrl+Shift+Z`, or it can be accessed from the
 menu. The feature can only undo the last move, but it includes both documents moved to trash, moves
 by up/down keypress or menu entries, and drag and drop moves.</p>
-<p>Lastly, a new keyword has been added to mark characters in the story. The new keyword is
-intended to tag a character as the focus character for a chapter or scene. This is useful for
-stories where the point-of-view character and the focus character are different.</p>
+<p>A new keyword has been added to mark characters in the story. The new keyword is intended to tag
+a character as the focus character for a chapter or scene. This is useful for stories where the
+point-of-view character and the focus character are different.</p>
+<p>Lastly, two bugfixes have been made as well. The Empty Trash feature was no longer working due
+to an earlier fix solving another issue. The feature has now been restored. In addition, the
+indexer now checks that a keyword (tag or reference) is valid before saving it to the index.
+Previously, an invalid keyword could be saved to the index and potentially crash the application.
+</p>
 
 <p><i>See also the <a href="https://github.com/vkbo/novelWriter/releases">Releases</a> page.</i></p>
 
