@@ -61,6 +61,7 @@ class GuiPreferences(PagedDialog):
         self.tabEditor   = GuiPreferencesEditor(self.theParent)
         self.tabSyntax   = GuiPreferencesSyntax(self.theParent)
         self.tabAuto     = GuiPreferencesAutomation(self.theParent)
+        self.tabQuote    = GuiPreferencesQuotes(self.theParent)
 
         self.addTab(self.tabGeneral,  self.tr("General"))
         self.addTab(self.tabProjects, self.tr("Projects"))
@@ -68,6 +69,7 @@ class GuiPreferences(PagedDialog):
         self.addTab(self.tabEditor,   self.tr("Editor"))
         self.addTab(self.tabSyntax,   self.tr("Highlighting"))
         self.addTab(self.tabAuto,     self.tr("Automation"))
+        self.addTab(self.tabQuote,    self.tr("Quotes"))
 
         self.buttonBox = QDialogButtonBox(QDialogButtonBox.Ok | QDialogButtonBox.Cancel)
         self.buttonBox.accepted.connect(self._doSave)
@@ -1034,6 +1036,95 @@ class GuiPreferencesAutomation(QWidget):
             self.tr("Three consecutive dots become ellipsis.")
         )
 
+        # Automatic Padding
+        # =================
+        self.mainForm.addGroupLabel(self.tr("Automatic Padding"))
+
+        ## Pad Before
+        self.fmtPadBefore = QLineEdit()
+        self.fmtPadBefore.setMaxLength(32)
+        self.fmtPadBefore.setText(self.mainConf.fmtPadBefore)
+        self.mainForm.addRow(
+            self.tr("Insert non-breaking space before"),
+            self.fmtPadBefore,
+            self.tr("Automatically add space before any of the symbols."),
+        )
+
+        ## Pad After
+        self.fmtPadAfter = QLineEdit()
+        self.fmtPadAfter.setMaxLength(32)
+        self.fmtPadAfter.setText(self.mainConf.fmtPadAfter)
+        self.mainForm.addRow(
+            self.tr("Insert non-breaking space after"),
+            self.fmtPadAfter,
+            self.tr("Automatically add space after any of the symbols."),
+        )
+
+        ## Use Thin Space
+        self.fmtPadThin = QSwitch()
+        self.fmtPadThin.setChecked(self.mainConf.fmtPadThin)
+        self.fmtPadThin.setEnabled(self.mainConf.doReplace)
+        self.mainForm.addRow(
+            self.tr("Use thin space instead"),
+            self.fmtPadThin,
+            self.tr("Inserts a thinner space instead of regular space.")
+        )
+
+        return
+
+    def saveValues(self):
+        """Save the values set for this tab.
+        """
+        # Automatic Features
+        self.mainConf.autoSelect = self.autoSelect.isChecked()
+        self.mainConf.doReplace  = self.doReplace.isChecked()
+
+        # Replace as You Type
+        self.mainConf.doReplaceSQuote = self.doReplaceSQuote.isChecked()
+        self.mainConf.doReplaceDQuote = self.doReplaceDQuote.isChecked()
+        self.mainConf.doReplaceDash   = self.doReplaceDash.isChecked()
+        self.mainConf.doReplaceDots   = self.doReplaceDots.isChecked()
+
+        # Automatic Padding
+        self.mainConf.fmtPadBefore = self.fmtPadBefore.text().strip()
+        self.mainConf.fmtPadAfter  = self.fmtPadAfter.text().strip()
+        self.mainConf.fmtPadThin   = self.fmtPadThin.isChecked()
+
+        self.mainConf.confChanged = True
+
+        return
+
+    ##
+    #  Slots
+    ##
+
+    def _toggleAutoReplaceMain(self, theState):
+        """Enables or disables switches controlled by the main auto
+        replace switch.
+        """
+        self.doReplaceSQuote.setEnabled(theState)
+        self.doReplaceDQuote.setEnabled(theState)
+        self.doReplaceDash.setEnabled(theState)
+        self.doReplaceDots.setEnabled(theState)
+        self.fmtPadThin.setEnabled(theState)
+        return
+
+# END Class GuiPreferencesAutomation
+
+class GuiPreferencesQuotes(QWidget):
+
+    def __init__(self, theParent):
+        QWidget.__init__(self, theParent)
+
+        self.mainConf  = nw.CONFIG
+        self.theParent = theParent
+        self.theTheme  = theParent.theTheme
+
+        # The Form
+        self.mainForm = QConfigLayout()
+        self.mainForm.setHelpTextStyle(self.theTheme.helpText)
+        self.setLayout(self.mainForm)
+
         # Quotation Style
         # ===============
         self.mainForm.addGroupLabel(self.tr("Quotation Style"))
@@ -1113,16 +1204,6 @@ class GuiPreferencesAutomation(QWidget):
     def saveValues(self):
         """Save the values set for this tab.
         """
-        # Automatic Features
-        self.mainConf.autoSelect = self.autoSelect.isChecked()
-        self.mainConf.doReplace  = self.doReplace.isChecked()
-
-        # Replace as You Type
-        self.mainConf.doReplaceSQuote = self.doReplaceSQuote.isChecked()
-        self.mainConf.doReplaceDQuote = self.doReplaceDQuote.isChecked()
-        self.mainConf.doReplaceDash   = self.doReplaceDash.isChecked()
-        self.mainConf.doReplaceDots   = self.doReplaceDots.isChecked()
-
         # Quotation Style
         self.mainConf.fmtSingleQuotes[0] = self.quoteSym["SO"].text()
         self.mainConf.fmtSingleQuotes[1] = self.quoteSym["SC"].text()
@@ -1137,16 +1218,6 @@ class GuiPreferencesAutomation(QWidget):
     #  Slots
     ##
 
-    def _toggleAutoReplaceMain(self, theState):
-        """Enables or disables switches controlled by the main auto
-        replace switch.
-        """
-        self.doReplaceSQuote.setEnabled(theState)
-        self.doReplaceDQuote.setEnabled(theState)
-        self.doReplaceDash.setEnabled(theState)
-        self.doReplaceDots.setEnabled(theState)
-        return
-
     def _getQuote(self, qType):
         """Dialog for single quote open.
         """
@@ -1156,4 +1227,4 @@ class GuiPreferencesAutomation(QWidget):
 
         return
 
-# END Class GuiPreferencesAutomation
+# END Class GuiPreferencesQuotes

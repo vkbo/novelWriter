@@ -164,6 +164,9 @@ class Config:
         self.fmtApostrophe   = nwUnicode.U_RSQUO
         self.fmtSingleQuotes = [nwUnicode.U_LSQUO, nwUnicode.U_RSQUO]
         self.fmtDoubleQuotes = [nwUnicode.U_LDQUO, nwUnicode.U_RDQUO]
+        self.fmtPadBefore    = ""
+        self.fmtPadAfter     = ""
+        self.fmtPadThin      = False
 
         ## Spell Checking
         self.spellTool     = None
@@ -578,6 +581,15 @@ class Config:
         self.fmtDoubleQuotes = self._parseLine(
             cnfParse, cnfSec, "fmtdoublequote", self.CNF_S_LST, self.fmtDoubleQuotes
         )
+        self.fmtPadBefore = self._parseLine(
+            cnfParse, cnfSec, "fmtpadbefore", self.CNF_STR, self.fmtPadBefore
+        )
+        self.fmtPadAfter = self._parseLine(
+            cnfParse, cnfSec, "fmtpadafter", self.CNF_STR, self.fmtPadAfter
+        )
+        self.fmtPadThin = self._parseLine(
+            cnfParse, cnfSec, "fmtpadthin", self.CNF_BOOL, self.fmtPadThin
+        )
         self.spellTool = self._parseLine(
             cnfParse, cnfSec, "spelltool", self.CNF_STR, self.spellTool
         )
@@ -746,6 +758,9 @@ class Config:
         cnfParse.set(cnfSec, "autoscrollpos",   str(self.autoScrollPos))
         cnfParse.set(cnfSec, "fmtsinglequote",  self._packList(self.fmtSingleQuotes))
         cnfParse.set(cnfSec, "fmtdoublequote",  self._packList(self.fmtDoubleQuotes))
+        cnfParse.set(cnfSec, "fmtpadbefore",    str(self.fmtPadBefore))
+        cnfParse.set(cnfSec, "fmtpadafter",     str(self.fmtPadAfter))
+        cnfParse.set(cnfSec, "fmtpadthin",      str(self.fmtPadThin))
         cnfParse.set(cnfSec, "spelltool",       str(self.spellTool))
         cnfParse.set(cnfSec, "spellcheck",      str(self.spellLanguage))
         cnfParse.set(cnfSec, "showtabsnspaces", str(self.showTabsNSpaces))

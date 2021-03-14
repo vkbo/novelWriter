@@ -98,10 +98,12 @@ class GuiDocEditor(QTextEdit):
         self.queuePos   = None  # Used for delayed change of cursor position
 
         # Typography
-        self.typDQOpen  = self.mainConf.fmtDoubleQuotes[0]
-        self.typDQClose = self.mainConf.fmtDoubleQuotes[1]
-        self.typSQOpen  = self.mainConf.fmtSingleQuotes[0]
-        self.typSQClose = self.mainConf.fmtSingleQuotes[1]
+        self.typDQOpen  = '"'
+        self.typDQClose = '"'
+        self.typSQOpen  = "'"
+        self.typSQClose = "'"
+        self.typPadChar = " "
+        self.addPadding = False
 
         # Core Elements and Signals
         self.qDocument = self.document()
@@ -197,6 +199,17 @@ class GuiDocEditor(QTextEdit):
         self.nonWord += "".join(self.mainConf.fmtDoubleQuotes)
         self.nonWord += "".join(self.mainConf.fmtSingleQuotes)
 
+        # Typography
+        if self.mainConf.fmtPadThin:
+            self.typPadChar = nwUnicode.U_THNBSP
+        else:
+            self.typPadChar = nwUnicode.U_NBSP
+
+        self.typSQOpen  = self.mainConf.fmtSingleQuotes[0]
+        self.typSQClose = self.mainConf.fmtSingleQuotes[1]
+        self.typDQOpen  = self.mainConf.fmtDoubleQuotes[0]
+        self.typDQClose = self.mainConf.fmtDoubleQuotes[1]
+
         # Reload spell check and dictionaries
         self._setupSpellChecking()
         self.setDictionaries()
@@ -206,6 +219,7 @@ class GuiDocEditor(QTextEdit):
         if self.mainConf.textFont is None:
             # If none is defined, set the default back to config
             self.mainConf.textFont = self.qDocument.defaultFont().family()
+
         theFont.setFamily(self.mainConf.textFont)
         theFont.setPointSize(self.mainConf.textSize)
         self.setFont(theFont)
@@ -1202,7 +1216,7 @@ class GuiDocEditor(QTextEdit):
         return
 
     def _docAutoReplace(self, theBlock):
-        """Autoreplace text elements based on main configuration.
+        """Auto-replace text elements based on main configuration.
         """
         if not theBlock.isValid():
             return
@@ -1219,43 +1233,62 @@ class GuiDocEditor(QTextEdit):
         theTwo   = theText[thePos-2:thePos]
         theThree = theText[thePos-3:thePos]
 
-        if self.mainConf.doReplaceDQuote and theTwo == " \"":
-            theCursor.movePosition(QTextCursor.Left, QTextCursor.KeepAnchor, 1)
-            theCursor.insertText(self.typDQOpen)
+        if not theOne: # Makes Neo sad
+            return
 
-        elif self.mainConf.doReplaceDQuote and theOne == "\"":
-            theCursor.movePosition(QTextCursor.Left, QTextCursor.KeepAnchor, 1)
+        nDelete = 0
+        tInsert = theOne
+
+        if self.mainConf.doReplaceDQuote and theTwo == ' "':
+            nDelete = 1
+            tInsert = self.typDQOpen
+
+        elif self.mainConf.doReplaceDQuote and theOne == '"':
+            nDelete = 1
             if thePos == 1:
-                theCursor.insertText(self.typDQOpen)
+                tInsert = self.typDQOpen
             else:
-                theCursor.insertText(self.typDQClose)
+                tInsert = self.typDQClose
 
         elif self.mainConf.doReplaceSQuote and theTwo == " '":
-            theCursor.movePosition(QTextCursor.Left, QTextCursor.KeepAnchor, 1)
-            theCursor.insertText(self.typSQOpen)
+            nDelete = 1
+            tInsert = self.typSQOpen
 
         elif self.mainConf.doReplaceSQuote and theOne == "'":
-            theCursor.movePosition(QTextCursor.Left, QTextCursor.KeepAnchor, 1)
+            nDelete = 1
             if thePos == 1:
-                theCursor.insertText(self.typSQOpen)
+                tInsert = self.typSQOpen
             else:
-                theCursor.insertText(self.typSQClose)
+                tInsert = self.typSQClose
 
         elif self.mainConf.doReplaceDash and theThree == "---":
-            theCursor.movePosition(QTextCursor.Left, QTextCursor.KeepAnchor, 3)
-            theCursor.insertText(nwUnicode.U_EMDASH)
+            nDelete = 3
+            tInsert = nwUnicode.U_EMDASH
 
         elif self.mainConf.doReplaceDash and theTwo == "--":
-            theCursor.movePosition(QTextCursor.Left, QTextCursor.KeepAnchor, 2)
-            theCursor.insertText(nwUnicode.U_ENDASH)
+            nDelete = 2
+            tInsert = nwUnicode.U_ENDASH
 
-        elif self.mainConf.doReplaceDash and theTwo == nwUnicode.U_ENDASH+"-":
-            theCursor.movePosition(QTextCursor.Left, QTextCursor.KeepAnchor, 2)
-            theCursor.insertText(nwUnicode.U_EMDASH)
+        elif self.mainConf.doReplaceDash and theTwo == nwUnicode.U_ENDASH + "-":
+            nDelete = 2
+            tInsert = nwUnicode.U_EMDASH
 
         elif self.mainConf.doReplaceDots and theThree == "...":
-            theCursor.movePosition(QTextCursor.Left, QTextCursor.KeepAnchor, 3)
-            theCursor.insertText(nwUnicode.U_HELLIP)
+            nDelete = 3
+            tInsert = nwUnicode.U_HELLIP
+
+        tCheck = tInsert
+        if tCheck in self.mainConf.fmtPadBefore:
+            nDelete = max(nDelete, 1)
+            tInsert = self.typPadChar + tInsert
+
+        if tCheck in self.mainConf.fmtPadAfter:
+            nDelete = max(nDelete, 1)
+            tInsert = tInsert + self.typPadChar
+
+        if nDelete > 0:
+            theCursor.movePosition(QTextCursor.Left, QTextCursor.KeepAnchor, nDelete)
+            theCursor.insertText(tInsert)
 
         return
 
