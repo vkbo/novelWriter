@@ -229,9 +229,14 @@ def testGuiPreferences_Main(qtbot, monkeypatch, fncDir, outDir, refDir):
     assert not tabAuto.doReplaceDash.isEnabled()
     assert not tabAuto.doReplaceDots.isEnabled()
 
+    # Quotation Style
+    qtbot.wait(keyDelay)
+    tabQuote = nwPrefs.tabQuote
+    nwPrefs._tabBox.setCurrentWidget(tabQuote)
+
     monkeypatch.setattr(QuotesDialog, "selectedQuote", "'")
     monkeypatch.setattr(QuotesDialog, "exec_", lambda *args: QDialog.Accepted)
-    qtbot.mouseClick(tabAuto.btnDoubleStyleC, Qt.LeftButton)
+    qtbot.mouseClick(tabQuote.btnDoubleStyleC, Qt.LeftButton)
 
     # Save and Check Config
     qtbot.mouseClick(nwPrefs.buttonBox.button(QDialogButtonBox.Ok), Qt.LeftButton)
