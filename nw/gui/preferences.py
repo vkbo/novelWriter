@@ -1036,6 +1036,40 @@ class GuiPreferencesAutomation(QWidget):
             self.tr("Three consecutive dots become ellipsis.")
         )
 
+        # Automatic Padding
+        # =================
+        self.mainForm.addGroupLabel(self.tr("Automatic Padding"))
+
+        ## Pad Before
+        self.fmtPadBefore = QLineEdit()
+        self.fmtPadBefore.setMaxLength(32)
+        self.fmtPadBefore.setText(self.mainConf.fmtPadBefore)
+        self.mainForm.addRow(
+            self.tr("Insert non-breaking space before"),
+            self.fmtPadBefore,
+            self.tr("Automatically add space before any of the symbols."),
+        )
+
+        ## Pad After
+        self.fmtPadAfter = QLineEdit()
+        self.fmtPadAfter.setMaxLength(32)
+        self.fmtPadAfter.setText(self.mainConf.fmtPadAfter)
+        self.mainForm.addRow(
+            self.tr("Insert non-breaking space after"),
+            self.fmtPadAfter,
+            self.tr("Automatically add space after any of the symbols."),
+        )
+
+        ## Use Thin Space
+        self.fmtPadThin = QSwitch()
+        self.fmtPadThin.setChecked(self.mainConf.fmtPadThin)
+        self.fmtPadThin.setEnabled(self.mainConf.doReplace)
+        self.mainForm.addRow(
+            self.tr("Use thin space instead"),
+            self.fmtPadThin,
+            self.tr("Inserts a thinner space instead of regular space.")
+        )
+
         return
 
     def saveValues(self):
@@ -1050,6 +1084,11 @@ class GuiPreferencesAutomation(QWidget):
         self.mainConf.doReplaceDQuote = self.doReplaceDQuote.isChecked()
         self.mainConf.doReplaceDash   = self.doReplaceDash.isChecked()
         self.mainConf.doReplaceDots   = self.doReplaceDots.isChecked()
+
+        # Automatic Padding
+        self.mainConf.fmtPadBefore = self.fmtPadBefore.text().strip()
+        self.mainConf.fmtPadAfter  = self.fmtPadAfter.text().strip()
+        self.mainConf.fmtPadThin   = self.fmtPadThin.isChecked()
 
         self.mainConf.confChanged = True
 
@@ -1067,6 +1106,7 @@ class GuiPreferencesAutomation(QWidget):
         self.doReplaceDQuote.setEnabled(theState)
         self.doReplaceDash.setEnabled(theState)
         self.doReplaceDots.setEnabled(theState)
+        self.fmtPadThin.setEnabled(theState)
         return
 
 # END Class GuiPreferencesAutomation
