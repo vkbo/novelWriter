@@ -726,12 +726,12 @@ class NWProject():
 
         return True
 
-    def closeProject(self):
+    def closeProject(self, idleTime=0):
         """Close the current project and clear all meta data.
         """
         self.optState.saveSettings()
         self.projTree.writeToCFile()
-        self._appendSessionStats()
+        self._appendSessionStats(idleTime)
         self._clearLockFile()
         self.clearProject()
         self.lockedBy = None
@@ -1219,9 +1219,9 @@ class NWProject():
                 if len(theLines) != 4:
                     return ["ERROR"]
 
-        except Exception as e:
+        except Exception:
             logger.error("Failed to read project lockfile")
-            logger.error(str(e))
+            nw.logException()
             return ["ERROR"]
 
         return theLines
@@ -1240,9 +1240,9 @@ class NWProject():
                 outFile.write("%s\n" % self.mainConf.kernelVer)
                 outFile.write("%d\n" % time())
 
-        except Exception as e:
+        except Exception:
             logger.error("Failed to write project lockfile")
-            logger.error(str(e))
+            nw.logException()
             return False
 
         return True
@@ -1257,9 +1257,9 @@ class NWProject():
         if os.path.isfile(lockFile):
             try:
                 os.unlink(lockFile)
-            except Exception as e:
+            except Exception:
                 logger.error("Failed to remove project lockfile")
-                logger.error(str(e))
+                nw.logException()
                 return False
 
         return True
@@ -1389,7 +1389,7 @@ class NWProject():
 
         return True
 
-    def _appendSessionStats(self):
+    def _appendSessionStats(self, idleTime):
         """Append session statistics to the sessions log file.
         """
         if not self.ensureFolderStructure():
@@ -1413,20 +1413,21 @@ class NWProject():
                     # It's a new file, so add a header
                     if self.lastWCount > 0:
                         outFile.write("# Offset %d\n" % self.lastWCount)
-                    outFile.write("# %-17s  %-19s  %8s  %8s\n" % (
-                        "Start Time", "End Time", "Novel", "Notes"
+                    outFile.write("# %-17s  %-19s  %8s  %8s  %8s\n" % (
+                        "Start Time", "End Time", "Novel", "Notes", "Idle"
                     ))
 
-                outFile.write("%-19s  %-19s  %8d  %8d\n" % (
+                outFile.write("%-19s  %-19s  %8d  %8d  %8d\n" % (
                     formatTimeStamp(self.projOpened),
                     formatTimeStamp(nowTime),
                     self.novelWCount,
                     self.notesWCount,
+                    int(idleTime),
                 ))
 
-        except Exception as e:
+        except Exception:
             logger.error("Failed to write session stats file")
-            logger.error(str(e))
+            nw.logException()
             return False
 
         return True
@@ -1462,17 +1463,19 @@ class NWProject():
                     os.rename(theFile, newPath)
                     logger.info("Moved file: %s" % theFile)
                     logger.info("New location: %s" % newPath)
-                except Exception as e:
-                    logger.error(str(e))
+                except Exception:
                     errList.append("Could not move: %s" % theFile)
+                    logger.error("Could not move: %s" % theFile)
+                    nw.logException()
 
             elif len(dataItem) == 21 and dataItem.endswith("_main.bak"):
                 try:
                     os.unlink(theFile)
                     logger.info("Deleted file: %s" % theFile)
-                except Exception as e:
-                    logger.error(str(e))
+                except Exception:
                     errList.append("Could not delete: %s" % theFile)
+                    logger.error("Could not delete: %s" % theFile)
+                    nw.logException()
 
             else:
                 theErr = self._moveUnknownItem(theData, dataItem)
@@ -1484,9 +1487,10 @@ class NWProject():
         try:
             os.rmdir(theData)
             logger.info("Removed folder: %s" % theFolder)
-        except Exception as e:
-            logger.error(str(e))
+        except Exception:
             errList.append("Failed to remove: %s" % theFolder)
+            logger.error("Failed to remove: %s" % theFolder)
+            nw.logException()
 
         return errList
 
@@ -1504,8 +1508,9 @@ class NWProject():
         try:
             os.rename(theSrc, theDst)
             logger.info("Moved to junk: %s" % theSrc)
-        except Exception as e:
-            logger.error(str(e))
+        except Exception:
+            logger.error("Could not move item %s to junk." % theSrc)
+            nw.logException()
             return "Could not move item %s to junk." % theSrc
 
         return ""
@@ -1538,8 +1543,9 @@ class NWProject():
                 logger.info("Deleting: %s" % rmFile)
                 try:
                     os.unlink(rmFile)
-                except Exception as e:
-                    logger.error(str(e))
+                except Exception:
+                    logger.error("Could not delete: %s" % rmFile)
+                    nw.logException()
                     return False
 
         return True

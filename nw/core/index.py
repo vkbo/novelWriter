@@ -36,11 +36,13 @@ from nw.constants import (
 )
 from nw.core.document import NWDoc
 from nw.core.tools import countWords
+from nw.common import isHandle, isTitleTag, isItemClass, isItemLayout
 
 logger = logging.getLogger(__name__)
 
 class NWIndex():
 
+    H_VALID = ("H0", "H1", "H2", "H3", "H4")
     H_LEVEL = {"H0": 0, "H1": 1, "H2": 2, "H3": 3, "H4": 4}
 
     def __init__(self, theProject, theParent):
@@ -152,9 +154,14 @@ class NWIndex():
             try:
                 with open(indexFile, mode="r", encoding="utf8") as inFile:
                     theData = json.load(inFile)
-            except Exception as e:
+            except Exception:
                 logger.error("Failed to load index file")
-                logger.error(str(e))
+                nw.logException()
+                self.indexBroken = True
+                self.theParent.makeAlert(
+                    "Could not load cached index file. Rebuilding index.",
+                    nwAlert.WARN
+                )
                 return False
 
             self._tagIndex   = theData.get("tagIndex", {})
@@ -188,9 +195,9 @@ class NWIndex():
                     "noteIndex"  : self._noteIndex,
                     "textCounts" : self._textCounts,
                 }, outFile, indent=2)
-        except Exception as e:
+        except Exception:
             logger.error("Failed to save index file")
-            logger.error(str(e))
+            nw.logException()
             return False
 
         return True
@@ -200,37 +207,25 @@ class NWIndex():
         elements it should.
         """
         logger.debug("Checking index")
-        self.indexBroken = False
+        tStart = time()
 
         try:
-            for tTag in self._tagIndex:
-                if len(self._tagIndex[tTag]) != 4:
-                    self.indexBroken = True
-
-            for tHandle in self._refIndex:
-                for sTitle in self._refIndex[tHandle]:
-                    for tEntry in self._refIndex[tHandle][sTitle]["tags"]:
-                        if len(tEntry) != 3:
-                            self.indexBroken = True
-
-            for tHandle in self._novelIndex:
-                for sLine in self._novelIndex[tHandle]:
-                    if len(self._novelIndex[tHandle][sLine].keys()) != 8:
-                        self.indexBroken = True
-
-            for tHandle in self._noteIndex:
-                for sLine in self._noteIndex[tHandle]:
-                    if len(self._noteIndex[tHandle][sLine].keys()) != 8:
-                        self.indexBroken = True
-
-            for tHandle in self._textCounts:
-                if len(self._textCounts[tHandle]) != 3:
-                    self.indexBroken = True
+            self._checkTagIndex()
+            self._checkRefIndex()
+            self._checkNovelNoteIndex("novelIndex")
+            self._checkNovelNoteIndex("noteIndex")
+            self._checkTextCounts()
+            self.indexBroken = False
 
         except Exception:
+            logger.error("Error while checking index")
+            nw.logException()
             self.indexBroken = True
 
+        tEnd = time()
+        logger.debug("Index check took %.3f ms" % ((tEnd - tStart)*1000))
         logger.debug("Index check complete")
+
         if self.indexBroken:
             self.clearIndex()
             self.theParent.makeAlert(
@@ -317,7 +312,7 @@ class NWIndex():
             if nChar == 0:
                 continue
 
-            if aLine.startswith(r"#"):
+            if aLine.startswith("#"):
                 isTitle = self._indexTitle(tHandle, isNovel, aLine, nLine, itemLayout)
                 if isTitle and nLine > 0:
                     if nTitle > 0:
@@ -325,11 +320,10 @@ class NWIndex():
                         self._indexWordCounts(tHandle, isNovel, lastText, nTitle)
                     nTitle = nLine
 
-            elif aLine.startswith(r"@"):
-                self._indexNoteRef(tHandle, aLine, nLine, nTitle)
-                self._indexTag(tHandle, aLine, nLine, nTitle, itemClass)
+            elif aLine.startswith("@"):
+                self._indexKeyword(tHandle, aLine, nLine, nTitle, itemClass)
 
-            elif aLine.startswith(r"%"):
+            elif aLine.startswith("%"):
                 if nTitle > 0:
                     toCheck = aLine[1:].lstrip()
                     synTag = toCheck[:9].lower()
@@ -468,41 +462,28 @@ class NWIndex():
                     self._noteIndex[tHandle][sTitle]["updated"] = round(time())
         return
 
-    def _indexNoteRef(self, tHandle, aLine, nLine, nTitle):
+    def _indexKeyword(self, tHandle, aLine, nLine, nTitle, itemClass):
         """Validate and save the information about a reference to a tag
         in another file.
         """
         isValid, theBits, _ = self.scanThis(aLine)
-        if not isValid or len(theBits) == 0:
-            return False
-
-        sTitle = "T%06d" % nTitle
-        if sTitle not in self._refIndex[tHandle]:
-            return False
-
-        if theBits[0] == nwKeyWords.TAG_KEY:
-            return False
+        if not isValid or len(theBits) < 2:
+            logger.warning("Skipping keyword with %d value(s) in %s" % (len(theBits), tHandle))
+            return
 
         if theBits[0] not in nwKeyWords.VALID_KEYS:
-            return False
+            logger.warning("Skipping invalid keyword '%s' in %s" % (theBits[0], tHandle))
+            return
 
-        for aVal in theBits[1:]:
-            self._refIndex[tHandle][sTitle]["tags"].append([nLine, theBits[0], aVal])
-
-        return True
-
-    def _indexTag(self, tHandle, aLine, nLine, nTitle, itemClass):
-        """Validate and save the information from a tag.
-        """
-        isValid, theBits, thePos = self.scanThis(aLine)
-        if not isValid or len(theBits) != 2:
-            return False
-
+        sTitle = "T%06d" % nTitle
         if theBits[0] == nwKeyWords.TAG_KEY:
-            sTitle = "T%06d" % nTitle
             self._tagIndex[theBits[1]] = [nLine, tHandle, itemClass.name, sTitle]
 
-        return True
+        elif sTitle in self._refIndex[tHandle]:
+            for aVal in theBits[1:]:
+                self._refIndex[tHandle][sTitle]["tags"].append([nLine, theBits[0], aVal])
+
+        return
 
     ##
     #  Check @ Lines
@@ -722,7 +703,7 @@ class NWIndex():
         for refTitle in self._refIndex[tHandle]:
             for aTag in self._refIndex[tHandle][refTitle].get("tags", []):
                 if len(aTag) == 3 and (sTitle is None or sTitle == refTitle):
-                    if aTag[1] in theRefs: # Future-compatible. Check can be removed in 1.2.
+                    if aTag[1] in theRefs:
                         theRefs[aTag[1]].append(aTag[2])
 
         return theRefs
@@ -783,5 +764,144 @@ class NWIndex():
                 theHandles.append(tItem.itemHandle)
 
         return theHandles
+
+    ##
+    #  Index Checkers
+    ##
+
+    def _checkTagIndex(self):
+        """Scan the tag index for errors.
+        Waring: This function raises exceptions.
+        """
+        for tTag in self._tagIndex:
+            if not isinstance(tTag, str):
+                raise KeyError("tagIndex key is not a string")
+
+            tEntry = self._tagIndex[tTag]
+            if len(tEntry) != 4:
+                raise IndexError("tagIndex[a] expected 4 values")
+            if not isinstance(tEntry[0], int):
+                raise ValueError("tagIndex[a][0] is not an integer")
+            if not isHandle(tEntry[1]):
+                raise ValueError("tagIndex[a][1] is not a handle")
+            if not isItemClass(tEntry[2]):
+                raise ValueError("tagIndex[a][2] is not an nwItemClass")
+            if not isTitleTag(tEntry[3]):
+                raise ValueError("tagIndex[a][3] is not a title tag")
+
+        return
+
+    def _checkRefIndex(self):
+        """Scan the reference index for errors.
+        Waring: This function raises exceptions.
+        """
+        for tHandle in self._refIndex:
+            if not isHandle(tHandle):
+                raise KeyError("refIndex key is not a handle")
+
+            hEntry = self._refIndex[tHandle]
+            for sTitle in hEntry:
+                if not isTitleTag(sTitle):
+                    raise KeyError("refIndex[a] key is not a title tag")
+
+                sEntry = hEntry[sTitle]
+                if "tags" not in sEntry:
+                    raise KeyError("refIndex[a][b] has no 'tag' key")
+                for tEntry in sEntry["tags"]:
+                    if len(tEntry) != 3:
+                        raise IndexError("refIndex[a][b][tags][i] expected 3 values")
+                    if not isinstance(tEntry[0], int):
+                        raise ValueError("refIndex[a][b][tags][i][0] is not an integer")
+                    if not tEntry[1] in nwKeyWords.VALID_KEYS:
+                        raise ValueError("refIndex[a][b][tags][i][1] is not a keyword")
+                    if not isinstance(tEntry[2], str):
+                        raise ValueError("refIndex[a][b][tags][i][2] is not a string")
+
+                if "updated" not in sEntry:
+                    raise KeyError("refIndex[a][b] has no 'updated' key")
+                if not isinstance(sEntry["updated"], int):
+                    raise ValueError("%refIndex[a][b][updated] is not an integer")
+
+        return
+
+    def _checkNovelNoteIndex(self, idxName):
+        """Scan the novel or note index for errors.
+        Waring: This function raises exceptions.
+        """
+        if idxName == "novelIndex":
+            theIndex = self._novelIndex
+        elif idxName == "noteIndex":
+            theIndex = self._noteIndex
+        else:
+            raise IndexError("Unknown index %s" % idxName)
+
+        for tHandle in theIndex:
+            if not isHandle(tHandle):
+                raise KeyError("%s key is not a handle" % idxName)
+
+            hEntry = theIndex[tHandle]
+            for sTitle in theIndex[tHandle]:
+                if not isTitleTag(sTitle):
+                    raise KeyError("%s[a] key is not a title tag" % idxName)
+
+                sEntry = hEntry[sTitle]
+                if len(sEntry) != 8:
+                    raise IndexError("%s[a][b] expected 8 values" % idxName)
+
+                if "level" not in sEntry:
+                    raise KeyError("%s[a][b] has no 'level' key" % idxName)
+                if "title" not in sEntry:
+                    raise KeyError("%s[a][b] has no 'title' key" % idxName)
+                if "layout" not in sEntry:
+                    raise KeyError("%s[a][b] has no 'layout' key" % idxName)
+                if "synopsis" not in sEntry:
+                    raise KeyError("%s[a][b] has no 'synopsis' key" % idxName)
+                if "cCount" not in sEntry:
+                    raise KeyError("%s[a][b] has no 'cCount' key" % idxName)
+                if "wCount" not in sEntry:
+                    raise KeyError("%s[a][b] has no 'wCount' key" % idxName)
+                if "pCount" not in sEntry:
+                    raise KeyError("%s[a][b] has no 'pCount' key" % idxName)
+                if "updated" not in sEntry:
+                    raise KeyError("%s[a][b] has no 'updated' key" % idxName)
+
+                if not sEntry["level"] in self.H_VALID:
+                    raise ValueError("%s[a][b][level] is not a header level" % idxName)
+                if not isinstance(sEntry["title"], str):
+                    raise ValueError("%s[a][b][title] is not a string" % idxName)
+                if not isItemLayout(sEntry["layout"]):
+                    raise ValueError("%s[a][b][layout] is not an nwItemLayout" % idxName)
+                if not isinstance(sEntry["synopsis"], str):
+                    raise ValueError("%s[a][b][synopsis] is not a string" % idxName)
+                if not isinstance(sEntry["cCount"], int):
+                    raise ValueError("%s[a][b][cCount] is not an integer" % idxName)
+                if not isinstance(sEntry["wCount"], int):
+                    raise ValueError("%s[a][b][wCount] is not an integer" % idxName)
+                if not isinstance(sEntry["pCount"], int):
+                    raise ValueError("%s[a][b][pCount] is not an integer" % idxName)
+                if not isinstance(sEntry["updated"], int):
+                    raise ValueError("%s[a][b][updated] is not an integer" % idxName)
+
+        return
+
+    def _checkTextCounts(self):
+        """Scan the text counts index for errors.
+        Waring: This function raises exceptions.
+        """
+        for tHandle in self._textCounts:
+            if not isHandle(tHandle):
+                raise KeyError("textCounts key is not a handle")
+
+            tEntry = self._textCounts[tHandle]
+            if len(tEntry) != 3:
+                raise IndexError("textCounts[a] expected 3 values")
+            if not isinstance(tEntry[0], int):
+                raise ValueError("textCounts[a][0] is not an integer")
+            if not isinstance(tEntry[1], int):
+                raise ValueError("textCounts[a][1] is not an integer")
+            if not isinstance(tEntry[2], int):
+                raise ValueError("textCounts[a][2] is not an integer")
+
+        return
 
 # END Class NWIndex

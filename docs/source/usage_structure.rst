@@ -23,8 +23,9 @@ title. See also the :ref:`a_ui_md` section for more details about the markdown s
 
 .. note::
    The header levels are not only important when generating the exported novel file, they are also
-   used by the indexer when building the outline tree in the :guilabel:`Outline` tab. Each heading
-   also starts a new region where new references and tags can be set.
+   used by the indexer when building the outline tree in the :guilabel:`Outline` tab as well as the
+   :guilabel:`Novel` tab of the project tree. Each heading also starts a new region where new
+   references and tags can be defined.
 
 The different header levels are interpreted as specific section types of the novel in the following
 way:
@@ -51,7 +52,7 @@ way:
    Header level four signifies a sub-scene level partition, usually called a "section" in the
    documentation and the user interface. These can be useful if you want to change tag references
    mid-scene, like if you change the point-of-view character. You are free to use sections as you
-   wish, and can filter the titles out of the final manuscript just like with scene titles.
+   wish, and can filter them out of the final manuscript just like with scene titles.
 
 .. tip::
    There are multiple options of how to process novel titles when exporting the manuscript. For
@@ -73,8 +74,8 @@ an asterisk (``*``). Like so:
 ``## *Unnumbered Chapter Title``
 
 The leading asterisk is only considered by the :guilabel:`Build Novel Project` tool, and will be
-removed before inserted at the location of the ``%title%`` label. See the :ref:`a_export` page for
-more details.
+removed before the title is inserted at the location of the ``%title%`` label. See the
+:ref:`a_export` page for more details.
 
 .. note::
    If you need the first character of the title to be an actual asterisk, you must escape it:
@@ -103,28 +104,33 @@ allow multiple values.
    The point-of-view character for the current section. The target must be a note tag in the
    :guilabel:`Character` type root folder.
 
+``@focus``
+   The character that has the focus for the current section. This can be used in cases where the
+   focus is not a point-of-view character. The target must be a note tag in the
+   :guilabel:`Character` type root folder.
+
 ``@char``
-   Other characters in the current section. The target must be a note tag in a
+   Other characters in the current section. The target must be a note tag in the
    :guilabel:`Character` type root folder. This should not include the point-of-view character.
 
 ``@plot``
-   The plot or subplot advanced in the current section. The target must be a note tag in a
+   The plot or subplot advanced in the current section. The target must be a note tag in the
    :guilabel:`Plot` type root folder.
 
 ``@time``
-   The timelines touched by the current section. The target must be a note tag in a
+   The timelines touched by the current section. The target must be a note tag in the
    :guilabel:`Timeline` type root folder.
 
 ``@location``
-   The location the current section takes place in. The target must be a note tag in a
+   The location the current section takes place in. The target must be a note tag in the
    :guilabel:`Locations` type root folder.
 
 ``@object``
-   Objects present in the current section. The target must be a note tag in an :guilabel:`Object`
+   Objects present in the current section. The target must be a note tag in the :guilabel:`Object`
    type root folder.
 
 ``@entity``
-   Entities present in the current section. The target must be a note tag in an
+   Entities present in the current section. The target must be a note tag in the
    :guilabel:`Entities` type root folder.
 
 ``@custom``
@@ -186,7 +192,7 @@ Below is an overview of all available layout formats.
    produce the same result as a collection of :guilabel:`Partition`, :guilabel:`Chapter` and
    :guilabel:`Scene` layout documents. However, it does not provide the functionality of the
    :guilabel:`Unnumbered` layout format by default, but this can still be achieved by prefixing the
-   chapter title with an asterisk (``*``).
+   chapter title with an asterisk (``*``). See :ref:`a_struct_heads_unnum` for more details.
 
 :guilabel:`Partition`
    A partition can be used to split the novel into parts. Partition titles are indicated with a
@@ -203,7 +209,7 @@ Below is an overview of all available layout formats.
 
 :guilabel:`Unnumbered`
    Same as :guilabel:`Chapter`, but when exporting the project, and automatic chapter numbering is
-   enabled, documents with this layout will not increment the chapter number. It also has a
+   enabled, documents with this layout will not increment and apply a chapter number. It also has a
    separate title formatting setting. This makes the layout suitable for Prologue and Epilogue type
    chapters.
 
@@ -221,9 +227,24 @@ Below is an overview of all available layout formats.
    The layout granularity is entirely optional. In principle, you can write the entire novel in a
    single document with layout :guilabel:`Book`. You can also have a single document per chapter if
    that suits you better. The :guilabel:`Outline` will show your structure of chapters and scenes
-   regardless of how your documents are organised.
+   regardless of how your documents are organised. So will the novel tree.
 
 .. tip::
    You can always start writing with a coarse layout with one or a few documents, and then later
    use the split tool to automatically split the documents into separate chapter and scene
-   documents.
+   documents. The split tool will try to select the correct layout for each of the new documents.
+
+
+.. _a_struct_layout_auto:
+
+Novel Layout Automation
+-----------------------
+
+When a document is saved from the document editor, novelWriter will check if the level of the first
+header of the document matches the selected document layout. If the header level is inconsistent
+with the layout, the layout will automatically be corrected if it can be unambiguously determined.
+
+This means that for instance saving a document with header level three, when the layout is set to
+:guilabel:`Chapter`, the layout will automatically be changed to :guilabel:`Scene`. If, however,
+the layout was set to :guilabel:`Book`, no change will be made because the :guilabel:`Book` layout
+is not associated with a specific header level.

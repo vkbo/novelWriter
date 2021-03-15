@@ -59,6 +59,9 @@ def testGuiBuild_Tool(qtbot, monkeypatch, nwGUI, nwLipsum, refDir, outDir):
     nwBuild = getGuiItem("GuiBuildNovel")
     assert isinstance(nwBuild, GuiBuildNovel)
 
+    nwBuild.textFont.setText("DejaVu Sans")
+    nwBuild.textSize.setValue(11)
+
     # Default Settings
     qtbot.mouseClick(nwBuild.buildNovel, Qt.LeftButton)
 
@@ -77,6 +80,20 @@ def testGuiBuild_Tool(qtbot, monkeypatch, nwGUI, nwLipsum, refDir, outDir):
     copyfile(projFile, testFile)
     assert cmpFiles(testFile, compFile)
 
+    assert nwBuild._saveDocument(nwBuild.FMT_MD)
+    projFile = os.path.join(nwLipsum, "Lorem Ipsum.md")
+    testFile = os.path.join(outDir, "guiBuild_Tool_Step1_Lorem_Ipsum.md")
+    compFile = os.path.join(refDir, "guiBuild_Tool_Step1_Lorem_Ipsum.md")
+    copyfile(projFile, testFile)
+    assert cmpFiles(testFile, compFile)
+
+    assert nwBuild._saveDocument(nwBuild.FMT_GH)
+    projFile = os.path.join(nwLipsum, "Lorem Ipsum.md")
+    testFile = os.path.join(outDir, "guiBuild_Tool_Step1G_Lorem_Ipsum.md")
+    compFile = os.path.join(refDir, "guiBuild_Tool_Step1G_Lorem_Ipsum.md")
+    copyfile(projFile, testFile)
+    assert cmpFiles(testFile, compFile)
+
     # Change Title Formats and Flip Switches
     nwBuild.fmtChapter.setText(r"Chapter %chw%: %title%")
     qtbot.wait(stepDelay)
@@ -92,6 +109,8 @@ def testGuiBuild_Tool(qtbot, monkeypatch, nwGUI, nwLipsum, refDir, outDir):
     qtbot.mouseClick(nwBuild.includeComments, Qt.LeftButton)
     qtbot.wait(stepDelay)
     qtbot.mouseClick(nwBuild.includeKeywords, Qt.LeftButton)
+    qtbot.wait(stepDelay)
+    qtbot.mouseClick(nwBuild.replaceUCode, Qt.LeftButton)
     qtbot.wait(stepDelay)
 
     qtbot.mouseClick(nwBuild.noteFiles, Qt.LeftButton)
@@ -116,6 +135,13 @@ def testGuiBuild_Tool(qtbot, monkeypatch, nwGUI, nwLipsum, refDir, outDir):
     copyfile(projFile, testFile)
     assert cmpFiles(testFile, compFile)
 
+    assert nwBuild._saveDocument(nwBuild.FMT_MD)
+    projFile = os.path.join(nwLipsum, "Lorem Ipsum.md")
+    testFile = os.path.join(outDir, "guiBuild_Tool_Step2_Lorem_Ipsum.md")
+    compFile = os.path.join(refDir, "guiBuild_Tool_Step2_Lorem_Ipsum.md")
+    copyfile(projFile, testFile)
+    assert cmpFiles(testFile, compFile)
+
     # Replace Tabs with Spaces
     qtbot.mouseClick(nwBuild.replaceTabs, Qt.LeftButton)
     qtbot.wait(stepDelay)
@@ -134,6 +160,13 @@ def testGuiBuild_Tool(qtbot, monkeypatch, nwGUI, nwLipsum, refDir, outDir):
     projFile = os.path.join(nwLipsum, "Lorem Ipsum.htm")
     testFile = os.path.join(outDir, "guiBuild_Tool_Step3_Lorem_Ipsum.htm")
     compFile = os.path.join(refDir, "guiBuild_Tool_Step3_Lorem_Ipsum.htm")
+    copyfile(projFile, testFile)
+    assert cmpFiles(testFile, compFile)
+
+    assert nwBuild._saveDocument(nwBuild.FMT_MD)
+    projFile = os.path.join(nwLipsum, "Lorem Ipsum.md")
+    testFile = os.path.join(outDir, "guiBuild_Tool_Step3_Lorem_Ipsum.md")
+    compFile = os.path.join(refDir, "guiBuild_Tool_Step3_Lorem_Ipsum.md")
     copyfile(projFile, testFile)
     assert cmpFiles(testFile, compFile)
 
@@ -196,16 +229,9 @@ def testGuiBuild_Tool(qtbot, monkeypatch, nwGUI, nwLipsum, refDir, outDir):
         assert nwBuild._saveDocument(nwBuild.FMT_PDF)
         assert os.path.isfile(os.path.join(nwLipsum, "Lorem Ipsum.pdf"))
 
-    assert nwBuild._saveDocument(nwBuild.FMT_MD)
-    assert os.path.isfile(os.path.join(nwLipsum, "Lorem Ipsum.md"))
-
-    assert nwBuild._saveDocument(nwBuild.FMT_TXT)
-    assert os.path.isfile(os.path.join(nwLipsum, "Lorem Ipsum.txt"))
-
     # Close the build tool
     htmlText  = nwBuild.htmlText
     htmlStyle = nwBuild.htmlStyle
-    nwdText   = nwBuild.nwdText
     buildTime = nwBuild.buildTime
     nwBuild._doClose()
 
@@ -219,7 +245,6 @@ def testGuiBuild_Tool(qtbot, monkeypatch, nwGUI, nwLipsum, refDir, outDir):
     assert nwBuild.viewCachedDoc()
     assert nwBuild.htmlText  == htmlText
     assert nwBuild.htmlStyle == htmlStyle
-    assert nwBuild.nwdText   == nwdText
     assert nwBuild.buildTime == buildTime
 
     nwBuild._doClose()

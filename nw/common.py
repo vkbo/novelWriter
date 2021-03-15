@@ -30,7 +30,9 @@ from datetime import datetime
 
 from PyQt5.QtWidgets import qApp
 
-from nw.constants import nwConst, nwUnicode
+from nw.constants import (
+    nwConst, nwUnicode, nwItemClass, nwItemType, nwItemLayout
+)
 
 logger = logging.getLogger(__name__)
 
@@ -103,11 +105,39 @@ def isHandle(theString):
         return False
     if len(theString) != 13:
         return False
-    invalidChar = False
     for c in theString:
         if c not in "0123456789abcdef":
-            invalidChar = True
-    return not invalidChar
+            return False
+    return True
+
+def isTitleTag(theString):
+    """Check if a string is a valid title string.
+    """
+    if not isinstance(theString, str):
+        return False
+    if len(theString) != 7:
+        return False
+    if not theString.startswith("T"):
+        return False
+    for c in theString[1:]:
+        if c not in "0123456789":
+            return False
+    return True
+
+def isItemClass(theString):
+    """Check if an item is a calid nwItemClass identifier.
+    """
+    return theString in nwItemClass.__members__
+
+def isItemType(theString):
+    """Check if an item is a calid nwItemType identifier.
+    """
+    return theString in nwItemType.__members__
+
+def isItemLayout(theString):
+    """Check if an item is a calid nwItemLayout identifier.
+    """
+    return theString in nwItemLayout.__members__
 
 def hexToInt(value, default=0):
     """Convert a hex string to an integer.

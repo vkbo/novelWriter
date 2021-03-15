@@ -28,8 +28,10 @@ from tools import cmpFiles
 
 from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QTextCursor
-from PyQt5.QtWidgets import QAction, QMessageBox
+from PyQt5.QtWidgets import QAction, QMessageBox, QDialog
 
+from nw.gui.itemeditor import GuiItemEditor
+from nw.gui.doceditor import GuiDocEditor
 from nw.gui.projtree import GuiProjectTree
 from nw.constants import nwItemType, nwDocAction
 
@@ -43,7 +45,11 @@ def testGuiEditor_Main(qtbot, monkeypatch, nwGUI, fncDir, fncProj, refDir, outDi
     """
     # Block message box
     monkeypatch.setattr(QMessageBox, "question", lambda *args: QMessageBox.Yes)
+    monkeypatch.setattr(QMessageBox, "information", lambda *args: QMessageBox.Yes)
+    monkeypatch.setattr(GuiItemEditor, "exec_", lambda *args: None)
+    monkeypatch.setattr(GuiItemEditor, "result", lambda *args: QDialog.Accepted)
     monkeypatch.setattr(GuiProjectTree, "hasFocus", lambda *args: True)
+    monkeypatch.setattr(GuiDocEditor, "hasFocus", lambda *args: True)
 
     # Create new, save, close project
     nwGUI.theProject.projTree.setSeed(42)
@@ -353,6 +359,7 @@ def testGuiEditor_Search(qtbot, monkeypatch, nwGUI, nwLipsum):
     """
     # Block message box
     monkeypatch.setattr(QMessageBox, "question", lambda *args: QMessageBox.Yes)
+    monkeypatch.setattr(GuiDocEditor, "hasFocus", lambda *args: True)
 
     nwGUI.theProject.projTree.setSeed(42)
     assert nwGUI.openProject(nwLipsum)

@@ -20,7 +20,10 @@ You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
 
+import os
 import pytest
+
+from tools import readFile
 
 from nw.core import NWProject, NWIndex, ToHtml
 
@@ -44,14 +47,12 @@ def testCoreToHtml_Format(dummyGUI):
 
     assert theHtml._formatKeywords("") == ""
     assert theHtml._formatKeywords("tag: Jane") == (
-        "<div><span class='tags'>Tag:</span> <a name='tag_Jane'>Jane</a></div>\n"
+        "<span class='tags'>Tag:</span> <a name='tag_Jane'>Jane</a>"
     )
     assert theHtml._formatKeywords("char: Bod, Jane") == (
-        "<div>"
         "<span class='tags'>Characters:</span> "
         "<a href='#tag_Bod'>Bod</a>, "
         "<a href='#tag_Jane'>Jane</a>"
-        "</div>\n"
     )
 
     # Preview Mode
@@ -68,14 +69,12 @@ def testCoreToHtml_Format(dummyGUI):
 
     assert theHtml._formatKeywords("") == ""
     assert theHtml._formatKeywords("tag: Jane") == (
-        "<div><span class='tags'>Tag:</span> <a name='tag_Jane'>Jane</a></div>\n"
+        "<span class='tags'>Tag:</span> <a name='tag_Jane'>Jane</a>"
     )
     assert theHtml._formatKeywords("char: Bod, Jane") == (
-        "<div>"
         "<span class='tags'>Characters:</span> "
         "<a href='#char=Bod'>Bod</a>, "
         "<a href='#char=Jane'>Jane</a>"
-        "</div>\n"
     )
 
 # END Test testCoreToHtml_Format
@@ -200,8 +199,27 @@ def testCoreToHtml_Convert(dummyGUI):
     theHtml.tokenizeText()
     theHtml.doConvert()
     assert theHtml.theResult == (
-        "<div><span class='tags'>Characters:</span> "
-        "<a href='#tag_Bod'>Bod</a>, <a href='#tag_Jane'>Jane</a></div>\n"
+        "<p><span class='tags'>Characters:</span> "
+        "<a href='#tag_Bod'>Bod</a>, <a href='#tag_Jane'>Jane</a></p>\n"
+    )
+
+    # Multiple Keywords
+    theHtml.setKeywords(True)
+    theHtml.theText = "## Chapter\n\n@pov: Bod\n@plot: Main\n@location: Europe\n\n"
+    theHtml.tokenizeText()
+    theHtml.doConvert()
+    assert theHtml.theResult == (
+        "<h2>"
+        "<a name='T000001'></a>Chapter</h2>\n"
+        "<p style='margin-bottom: 0;'>"
+        "<span class='tags'>Point of View:</span> <a href='#tag_Bod'>Bod</a>"
+        "</p>\n"
+        "<p style='margin-bottom: 0; margin-top: 0;'>"
+        "<span class='tags'>Plot:</span> <a href='#tag_Main'>Main</a>"
+        "</p>\n"
+        "<p style='margin-top: 0;'>"
+        "<span class='tags'>Locations:</span> <a href='#tag_Europe'>Europe</a>"
+        "</p>\n"
     )
 
     # Direct Tests
@@ -211,12 +229,12 @@ def testCoreToHtml_Convert(dummyGUI):
 
     # Title
     theHtml.theTokens = [
-        (theHtml.T_TITLE, 1, "A Title", None, theHtml.A_PBB_NO | theHtml.A_CENTRE),
+        (theHtml.T_TITLE, 1, "A Title", None, theHtml.A_PBB_AUT | theHtml.A_CENTRE),
         (theHtml.T_EMPTY, 1, "", None, theHtml.A_NONE),
     ]
     theHtml.doConvert()
     assert theHtml.theResult == (
-        "<h1 class='title' style='text-align: center; page-break-before: never;'>"
+        "<h1 class='title' style='text-align: center; page-break-before: auto;'>"
         "<a name='T000001'></a>A Title</h1>\n"
     )
 
@@ -299,24 +317,14 @@ def testCoreToHtml_Convert(dummyGUI):
         "style='page-break-before: always; page-break-after: always;'>A Title</h1>\n"
     )
 
-    # Page Break Avoid
+    # Page Break Auto
     theHtml.theTokens = [
-        (theHtml.T_HEAD1, 1, "A Title", None, theHtml.A_PBB_AV | theHtml.A_PBA_AV),
+        (theHtml.T_HEAD1, 1, "A Title", None, theHtml.A_PBB_AUT | theHtml.A_PBA_AUT),
     ]
     theHtml.doConvert()
     assert theHtml.theResult == (
         "<h1 class='title' "
-        "style='page-break-before: avoid; page-break-after: avoid;'>A Title</h1>\n"
-    )
-
-    # Page Break ANever
-    theHtml.theTokens = [
-        (theHtml.T_HEAD1, 1, "A Title", None, theHtml.A_PBB_NO | theHtml.A_PBA_NO),
-    ]
-    theHtml.doConvert()
-    assert theHtml.theResult == (
-        "<h1 class='title' "
-        "style='page-break-before: never; page-break-after: never;'>A Title</h1>\n"
+        "style='page-break-before: auto; page-break-after: auto;'>A Title</h1>\n"
     )
 
     # Preview Mode
@@ -336,54 +344,135 @@ def testCoreToHtml_Convert(dummyGUI):
 
 # END Test testCoreToHtml_Convert
 
+def testCoreToHtml_Complex(dummyGUI, fncDir):
+    """Test the ave method of the ToHtml class.
+    """
+    theProject = NWProject(dummyGUI)
+    theHtml = ToHtml(theProject, dummyGUI)
+
+    # Build Project
+    # =============
+
+    docText = [
+        "# My Novel\n**By Jane Doh**\n",
+        "## Chapter 1\n\nThe text of chapter one.\n",
+        "### Scene 1\n\nThe text of scene one.\n",
+        "#### A Section\n\nMore text in scene one.\n",
+        "## Chapter 2\n\nThe text of chapter two.\n",
+        "### Scene 2\n\nThe text of scene two.\n",
+        "#### A Section\n\n\tMore text in scene two.\n",
+    ]
+    resText = [
+        "<h1>My Novel</h1>\n<p><strong>By Jane Doh</strong></p>\n",
+        "<h2>Chapter 1</h2>\n<p>The text of chapter one.</p>\n",
+        "<h3>Scene 1</h3>\n<p>The text of scene one.</p>\n",
+        "<h4>A Section</h4>\n<p>More text in scene one.</p>\n",
+        "<h2>Chapter 2</h2>\n<p>The text of chapter two.</p>\n",
+        "<h3>Scene 2</h3>\n<p>The text of scene two.</p>\n",
+        "<h4>A Section</h4>\n<p>\tMore text in scene two.</p>\n",
+    ]
+
+    for i in range(len(docText)):
+        theHtml.theText = docText[i]
+        theHtml.doPreProcessing()
+        theHtml.tokenizeText()
+        theHtml.doConvert()
+        assert theHtml.theResult == resText[i]
+
+    assert theHtml.fullHTML == resText
+
+    theHtml.replaceTabs(nSpaces=2, spaceChar="&nbsp;")
+    resText[6] = "<h4>A Section</h4>\n<p>&nbsp;&nbsp;More text in scene two.</p>\n"
+
+    # Check File
+    # ==========
+
+    theStyle = theHtml.getStyleSheet()
+    theStyle.append("article {width: 800px; margin: 40px auto;}")
+    htmlDoc = (
+        "<!DOCTYPE html>\n"
+        "<html>\n"
+        "<head>\n"
+        "<meta charset='utf-8'>\n"
+        "<title></title>\n"
+        "</head>\n"
+        "<style>\n"
+        "{htmlStyle:s}\n"
+        "</style>\n"
+        "<body>\n"
+        "<article>\n"
+        "{bodyText:s}\n"
+        "</article>\n"
+        "</body>\n"
+        "</html>\n"
+    ).format(
+        htmlStyle = "\n".join(theStyle),
+        bodyText = "".join(resText).rstrip()
+    )
+
+    saveFile = os.path.join(fncDir, "outFile.htm")
+    theHtml.saveHTML5(saveFile)
+    assert readFile(saveFile) == htmlDoc
+
+# END Test testCoreToHtml_Save
+
 @pytest.mark.core
 def testCoreToHtml_Methods(dummyGUI):
     """Test all the other methods of the ToHtml class.
     """
     theProject = NWProject(dummyGUI)
     theHtml = ToHtml(theProject, dummyGUI)
+    theHtml.setKeepMarkdown(True)
 
-    # Auto-Replace
+    # Auto-Replace, keep Unicode
     docText = "Text with <brackets> & short–dash, long—dash …\n"
     theHtml.theText = docText
-    theHtml.doAutoReplace()
+    theHtml.setReplaceUnicode(False)
+    theHtml.doPreProcessing()
+    theHtml.tokenizeText()
+    theHtml.doConvert()
+    assert theHtml.theResult == (
+        "<p>Text with &lt;brackets&gt; &amp; short–dash, long—dash …</p>\n"
+    )
+
+    # Auto-Replace, replace Unicode
+    docText = "Text with <brackets> & short–dash, long—dash …\n"
+    theHtml.theText = docText
+    theHtml.setReplaceUnicode(True)
+    theHtml.doPreProcessing()
     theHtml.tokenizeText()
     theHtml.doConvert()
     assert theHtml.theResult == (
         "<p>Text with &lt;brackets&gt; &amp; short&ndash;dash, long&mdash;dash &hellip;</p>\n"
     )
 
-    # Revert on MD
-    assert theHtml.theMarkdown == (
-        "Text with &lt;brackets&gt; &amp; short&ndash;dash, long&mdash;dash &hellip;\n\n"
-    )
-    theHtml.doPostProcessing()
-    assert theHtml.theMarkdown == docText + "\n"
-
-    # With Preview, No Revert
+    # With Preview
     theHtml.setPreview(True, True)
     theHtml.theText = docText
-    theHtml.doAutoReplace()
+    theHtml.doPreProcessing()
     theHtml.tokenizeText()
     theHtml.doConvert()
-    assert theHtml.theMarkdown == (
+    assert theHtml.theMarkdown[-1] == (
         "Text with &lt;brackets&gt; &amp; short&ndash;dash, long&mdash;dash &hellip;\n\n"
     )
     theHtml.doPostProcessing()
-    assert theHtml.theMarkdown == (
+    assert theHtml.theMarkdown[-1] == (
         "Text with &lt;brackets&gt; &amp; short&ndash;dash, long&mdash;dash &hellip;\n\n"
     )
+
+    # Result Size
+    assert theHtml.getFullResultSize() == 147
 
     # CSS
     # ===
 
     assert len(theHtml.getStyleSheet()) > 1
-    assert "p {text-align: left;}" in theHtml.getStyleSheet()
-    assert "p {text-align: justify;}" not in theHtml.getStyleSheet()
+    assert "p {text-align: left;" in " ".join(theHtml.getStyleSheet())
+    assert "p {text-align: justify;" not in " ".join(theHtml.getStyleSheet())
 
     theHtml.setJustify(True)
-    assert "p {text-align: left;}" not in theHtml.getStyleSheet()
-    assert "p {text-align: justify;}" in theHtml.getStyleSheet()
+    assert "p {text-align: left;" not in " ".join(theHtml.getStyleSheet())
+    assert "p {text-align: justify;" in " ".join(theHtml.getStyleSheet())
 
     theHtml.setStyles(False)
     assert theHtml.getStyleSheet() == []

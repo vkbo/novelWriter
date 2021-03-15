@@ -6,9 +6,11 @@ Project Notes
 
 novelWriter doesn't have a database and complicated forms for filling in details about plot
 elements, characters, and all sorts of additional information that isn't a part of the novel text
-itself. Instead, all such information is saved in notes. The relation between all these additional
-elements is extracted from the documents and notes by the project indexer, based on the tags and
-references you set within them.
+itself. Instead, all such information is saved in notes that are written and maintained just like
+all other text in your project.
+
+The relation between all these additional elements is extracted from the documents and notes by the
+project indexer, based on the tags and references you set within them.
 
 Using notes is not required, but making at least minimal notes for each plot element, and adding a
 tag to them, makes it possible to use the :guilabel:`Outline` feature to see how each element

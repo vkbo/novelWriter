@@ -48,8 +48,9 @@ class GuiWritingStats(QDialog):
 
     C_TIME   = 0
     C_LENGTH = 1
-    C_COUNT  = 2
-    C_BAR    = 3
+    C_IDLE   = 2
+    C_COUNT  = 3
+    C_BAR    = 4
 
     FMT_JSON = 0
     FMT_CSV  = 1
@@ -89,16 +90,21 @@ class GuiWritingStats(QDialog):
         wCol2 = self.mainConf.pxInt(
             self.optState.getInt("GuiWritingStats", "widthCol2", 80)
         )
+        wCol3 = self.mainConf.pxInt(
+            self.optState.getInt("GuiWritingStats", "widthCol3", 80)
+        )
 
         self.listBox = QTreeWidget()
-        self.listBox.setHeaderLabels(["Session Start", "Length", "Words", "Histogram"])
+        self.listBox.setHeaderLabels(["Session Start", "Length", "Idle", "Words", "Histogram"])
         self.listBox.setIndentation(0)
         self.listBox.setColumnWidth(self.C_TIME, wCol0)
         self.listBox.setColumnWidth(self.C_LENGTH, wCol1)
-        self.listBox.setColumnWidth(self.C_COUNT, wCol2)
+        self.listBox.setColumnWidth(self.C_IDLE, wCol2)
+        self.listBox.setColumnWidth(self.C_COUNT, wCol3)
 
         hHeader = self.listBox.headerItem()
         hHeader.setTextAlignment(self.C_LENGTH, Qt.AlignRight)
+        hHeader.setTextAlignment(self.C_IDLE, Qt.AlignRight)
         hHeader.setTextAlignment(self.C_COUNT, Qt.AlignRight)
 
         sortValid = (Qt.AscendingOrder, Qt.DescendingOrder)
@@ -127,6 +133,10 @@ class GuiWritingStats(QDialog):
         self.labelTotal.setFont(self.theTheme.guiFontFixed)
         self.labelTotal.setAlignment(Qt.AlignVCenter | Qt.AlignRight)
 
+        self.labelIdleT = QLabel(formatTime(0))
+        self.labelIdleT.setFont(self.theTheme.guiFontFixed)
+        self.labelIdleT.setAlignment(Qt.AlignVCenter | Qt.AlignRight)
+
         self.labelFilter = QLabel(formatTime(0))
         self.labelFilter.setFont(self.theTheme.guiFontFixed)
         self.labelFilter.setAlignment(Qt.AlignVCenter | Qt.AlignRight)
@@ -144,16 +154,18 @@ class GuiWritingStats(QDialog):
         self.totalWords.setAlignment(Qt.AlignVCenter | Qt.AlignRight)
 
         self.infoForm.addWidget(QLabel("Total Time:"),       0, 0)
-        self.infoForm.addWidget(QLabel("Filtered Time:"),    1, 0)
-        self.infoForm.addWidget(QLabel("Novel Word Count:"), 2, 0)
-        self.infoForm.addWidget(QLabel("Notes Word Count:"), 3, 0)
-        self.infoForm.addWidget(QLabel("Total Word Count:"), 4, 0)
+        self.infoForm.addWidget(QLabel("Idle Time:"),        1, 0)
+        self.infoForm.addWidget(QLabel("Filtered Time:"),    2, 0)
+        self.infoForm.addWidget(QLabel("Novel Word Count:"), 3, 0)
+        self.infoForm.addWidget(QLabel("Notes Word Count:"), 4, 0)
+        self.infoForm.addWidget(QLabel("Total Word Count:"), 5, 0)
         self.infoForm.addWidget(self.labelTotal,  0, 1)
-        self.infoForm.addWidget(self.labelFilter, 1, 1)
-        self.infoForm.addWidget(self.novelWords,  2, 1)
-        self.infoForm.addWidget(self.notesWords,  3, 1)
-        self.infoForm.addWidget(self.totalWords,  4, 1)
-        self.infoForm.setRowStretch(5, 1)
+        self.infoForm.addWidget(self.labelIdleT,  1, 1)
+        self.infoForm.addWidget(self.labelFilter, 2, 1)
+        self.infoForm.addWidget(self.novelWords,  3, 1)
+        self.infoForm.addWidget(self.notesWords,  4, 1)
+        self.infoForm.addWidget(self.totalWords,  5, 1)
+        self.infoForm.setRowStretch(6, 1)
 
         # Filter Options
         sPx = self.theTheme.baseIconSize
@@ -192,17 +204,25 @@ class GuiWritingStats(QDialog):
         )
         self.groupByDay.clicked.connect(self._updateListBox)
 
+        self.showIdleTime = QSwitch(width=2*sPx, height=sPx)
+        self.showIdleTime.setChecked(
+            self.optState.getBool("GuiWritingStats", "showIdleTime", False)
+        )
+        self.showIdleTime.clicked.connect(self._updateListBox)
+
         self.filterForm.addWidget(QLabel("Count novel files"),        0, 0)
         self.filterForm.addWidget(QLabel("Count note files"),         1, 0)
         self.filterForm.addWidget(QLabel("Hide zero word count"),     2, 0)
         self.filterForm.addWidget(QLabel("Hide negative word count"), 3, 0)
         self.filterForm.addWidget(QLabel("Group entries by day"),     4, 0)
+        self.filterForm.addWidget(QLabel("Show idle time"),           5, 0)
         self.filterForm.addWidget(self.incNovel,     0, 1)
         self.filterForm.addWidget(self.incNotes,     1, 1)
         self.filterForm.addWidget(self.hideZeros,    2, 1)
         self.filterForm.addWidget(self.hideNegative, 3, 1)
         self.filterForm.addWidget(self.groupByDay,   4, 1)
-        self.filterForm.setRowStretch(5, 1)
+        self.filterForm.addWidget(self.showIdleTime, 5, 1)
+        self.filterForm.setRowStretch(6, 1)
 
         # Settings
         self.histMax = QSpinBox(self)
@@ -278,6 +298,7 @@ class GuiWritingStats(QDialog):
         widthCol0    = self.mainConf.rpxInt(self.listBox.columnWidth(0))
         widthCol1    = self.mainConf.rpxInt(self.listBox.columnWidth(1))
         widthCol2    = self.mainConf.rpxInt(self.listBox.columnWidth(2))
+        widthCol3    = self.mainConf.rpxInt(self.listBox.columnWidth(3))
         sortCol      = self.listBox.sortColumn()
         sortOrder    = self.listBox.header().sortIndicatorOrder()
         incNovel     = self.incNovel.isChecked()
@@ -285,6 +306,7 @@ class GuiWritingStats(QDialog):
         hideZeros    = self.hideZeros.isChecked()
         hideNegative = self.hideNegative.isChecked()
         groupByDay   = self.groupByDay.isChecked()
+        showIdleTime = self.showIdleTime.isChecked()
         histMax      = self.histMax.value()
 
         self.optState.setValue("GuiWritingStats", "winWidth",     winWidth)
@@ -292,6 +314,7 @@ class GuiWritingStats(QDialog):
         self.optState.setValue("GuiWritingStats", "widthCol0",    widthCol0)
         self.optState.setValue("GuiWritingStats", "widthCol1",    widthCol1)
         self.optState.setValue("GuiWritingStats", "widthCol2",    widthCol2)
+        self.optState.setValue("GuiWritingStats", "widthCol3",    widthCol3)
         self.optState.setValue("GuiWritingStats", "sortCol",      sortCol)
         self.optState.setValue("GuiWritingStats", "sortOrder",    sortOrder)
         self.optState.setValue("GuiWritingStats", "incNovel",     incNovel)
@@ -299,6 +322,7 @@ class GuiWritingStats(QDialog):
         self.optState.setValue("GuiWritingStats", "hideZeros",    hideZeros)
         self.optState.setValue("GuiWritingStats", "hideNegative", hideNegative)
         self.optState.setValue("GuiWritingStats", "groupByDay",   groupByDay)
+        self.optState.setValue("GuiWritingStats", "showIdleTime", showIdleTime)
         self.optState.setValue("GuiWritingStats", "histMax",      histMax)
 
         self.optState.saveSettings()
@@ -347,23 +371,25 @@ class GuiWritingStats(QDialog):
             with open(savePath, mode="w", encoding="utf8") as outFile:
                 if dataFmt == self.FMT_JSON:
                     jsonData = []
-                    for _, sD, tT, wD, wA, wB in self.filterData:
+                    for _, sD, tT, wD, wA, wB, tI in self.filterData:
                         jsonData.append({
                             "date": sD,
                             "length": tT,
                             "newWords": wD,
                             "novelWords": wA,
                             "noteWords": wB,
+                            "idleTime": tI,
                         })
                     json.dump(jsonData, outFile, indent=2)
                     wSuccess = True
 
                 if dataFmt == self.FMT_CSV:
                     outFile.write(
-                        '"Date","Length (sec)","Words Changed","Novel Words","Note Words"\n'
+                        '"Date","Length (sec)","Words Changed",'
+                        '"Novel Words","Note Words","Idle Time (sec)"\n'
                     )
-                    for _, sD, tT, wD, wA, wB in self.filterData:
-                        outFile.write(f'"{sD}",{tT:.0f},{wD},{wA},{wB}\n')
+                    for _, sD, tT, wD, wA, wB, tI in self.filterData:
+                        outFile.write(f'"{sD}",{tT:.0f},{wD},{wA},{wB},{tI}\n')
                     wSuccess = True
 
         except Exception as e:
@@ -401,6 +427,7 @@ class GuiWritingStats(QDialog):
         ttNovel = 0
         ttNotes = 0
         ttTime  = 0
+        ttIdle  = 0
 
         logFile = os.path.join(self.theProject.projMeta, nwFiles.SESS_STATS)
         if not os.path.isfile(logFile):
@@ -419,7 +446,7 @@ class GuiWritingStats(QDialog):
                         continue
 
                     inData = inLine.split()
-                    if len(inData) != 6:
+                    if len(inData) < 6:
                         continue
 
                     dStart = datetime.strptime(
@@ -429,16 +456,21 @@ class GuiWritingStats(QDialog):
                         "%s %s" % (inData[2], inData[3]), nwConst.FMT_TSTAMP
                     )
 
+                    sIdle = 0
+                    if len(inData) > 6:
+                        sIdle = checkInt(inData[6], 0)
+
                     tDiff = dEnd - dStart
                     sDiff = tDiff.total_seconds()
                     ttTime += sDiff
+                    ttIdle += sIdle
 
                     wcNovel = int(inData[4])
                     wcNotes = int(inData[5])
                     ttNovel = wcNovel
                     ttNotes = wcNotes
 
-                    self.logData.append((dStart, sDiff, wcNovel, wcNotes))
+                    self.logData.append((dStart, sDiff, wcNovel, wcNotes, sIdle))
 
         except Exception as e:
             self.theParent.makeAlert(
@@ -448,11 +480,16 @@ class GuiWritingStats(QDialog):
 
         ttWords = ttNovel + ttNotes
         self.labelTotal.setText(formatTime(round(ttTime)))
+        self.labelIdleT.setText(formatTime(round(ttIdle)))
         self.novelWords.setText(f"{ttNovel:n}")
         self.notesWords.setText(f"{ttNotes:n}")
         self.totalWords.setText(f"{ttWords:n}")
 
         return True
+
+    ##
+    #  Slots
+    ##
 
     def _updateListBox(self, dummyVar=None):
         """Load/reload the content of the list box. The dummyVar
@@ -474,25 +511,28 @@ class GuiWritingStats(QDialog):
             tempData = []
             sessDate = None
             sessTime = 0
+            sessIdle = 0
             lstNovel = 0
             lstNotes = 0
 
-            for n, (dStart, sDiff, wcNovel, wcNotes) in enumerate(self.logData):
+            for n, (dStart, sDiff, wcNovel, wcNotes, sIdle) in enumerate(self.logData):
                 if n == 0:
                     sessDate = dStart.date()
                 if sessDate != dStart.date():
-                    tempData.append((sessDate, sessTime, lstNovel, lstNotes))
+                    tempData.append((sessDate, sessTime, lstNovel, lstNotes, sessIdle))
                     sessDate = dStart.date()
                     sessTime = sDiff
+                    sessIdle = sIdle
                     lstNovel = wcNovel
                     lstNotes = wcNotes
                 else:
                     sessTime += sDiff
+                    sessIdle += sIdle
                     lstNovel = wcNovel
                     lstNotes = wcNotes
 
             if sessDate is not None:
-                tempData.append((sessDate, sessTime, lstNovel, lstNotes))
+                tempData.append((sessDate, sessTime, lstNovel, lstNotes, sessIdle))
 
         else:
             tempData = self.logData
@@ -502,7 +542,7 @@ class GuiWritingStats(QDialog):
         pcTotal = 0
         listMax = 0
         isFirst = True
-        for dStart, sDiff, wcNovel, wcNotes in tempData:
+        for dStart, sDiff, wcNovel, wcNotes, sIdle in tempData:
 
             wcTotal = 0
             if incNovel:
@@ -528,16 +568,24 @@ class GuiWritingStats(QDialog):
             else:
                 sStart = dStart.strftime(nwConst.FMT_TSTAMP)
 
-            self.filterData.append((dStart, sStart, sDiff, dwTotal, wcNovel, wcNotes))
+            self.filterData.append((dStart, sStart, sDiff, dwTotal, wcNovel, wcNotes, sIdle))
             listMax = min(max(listMax, dwTotal), histMax)
             pcTotal = wcTotal
 
         # Populate the list
-        for _, sStart, sDiff, nWords, _, _ in self.filterData:
+        showIdleTime = self.showIdleTime.isChecked()
+        for _, sStart, sDiff, nWords, _, _, sIdle in self.filterData:
+
+            if showIdleTime:
+                idleEntry = formatTime(sIdle)
+            else:
+                sRatio = sIdle/sDiff if sDiff > 0.0 else 0.0
+                idleEntry = "%d %%" % round(100.0 * sRatio)
 
             newItem = QTreeWidgetItem()
             newItem.setText(self.C_TIME, sStart)
             newItem.setText(self.C_LENGTH, formatTime(round(sDiff)))
+            newItem.setText(self.C_IDLE, idleEntry)
             newItem.setText(self.C_COUNT, f"{nWords:n}")
 
             if nWords > 0 and listMax > 0:
@@ -550,12 +598,17 @@ class GuiWritingStats(QDialog):
                 newItem.setData(self.C_BAR, Qt.DecorationRole, theBar)
 
             newItem.setTextAlignment(self.C_LENGTH, Qt.AlignRight)
+            newItem.setTextAlignment(self.C_IDLE, Qt.AlignRight)
             newItem.setTextAlignment(self.C_COUNT, Qt.AlignRight)
             newItem.setTextAlignment(self.C_BAR, Qt.AlignLeft | Qt.AlignVCenter)
 
             newItem.setFont(self.C_TIME, self.theTheme.guiFontFixed)
             newItem.setFont(self.C_LENGTH, self.theTheme.guiFontFixed)
             newItem.setFont(self.C_COUNT, self.theTheme.guiFontFixed)
+            if showIdleTime:
+                newItem.setFont(self.C_IDLE, self.theTheme.guiFontFixed)
+            else:
+                newItem.setFont(self.C_IDLE, self.theTheme.guiFont)
 
             self.listBox.addTopLevelItem(newItem)
             self.timeFilter += sDiff

@@ -61,7 +61,7 @@ def testGuiDialogs_Quotes(qtbot, monkeypatch, nwGUI, nwMinimal):
 # END Test testDialogs_Quotes
 
 @pytest.mark.gui
-def testGuiDialogs_Other(qtbot, monkeypatch, nwGUI, nwMinimal, tmpDir):
+def testGuiDialogs_Other(qtbot, monkeypatch, nwGUI, tmpDir):
     """Various other dialog tests.
     """
     monkeypatch.setattr(QFileDialog, "getExistingDirectory", lambda *args, **kwargs: tmpDir)

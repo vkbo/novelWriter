@@ -115,38 +115,7 @@ def testCoreIndex_LoadSave(monkeypatch, nwLipsum, dummyGUI, outDir, refDir):
 
     # Break the index and check that we notice
     assert not theIndex.indexBroken
-    theIndex._tagIndex["Bod"].append("Stuff") # No longer len() == 4
-    theIndex.checkIndex()
-    assert theIndex.indexBroken
-
-    assert theIndex.loadIndex()
-    assert not theIndex.indexBroken
-    theIndex._refIndex["fb609cd8319dc"]["T000001"]["tags"].append("Stuff") # No longer len() == 3
-    theIndex.checkIndex()
-    assert theIndex.indexBroken
-
-    assert theIndex.loadIndex()
-    assert not theIndex.indexBroken
-    theIndex._novelIndex["7a992350f3eb6"]["T000001"]["Stuff"] = "" # No longer len(keys()) == 8
-    theIndex.checkIndex()
-    assert theIndex.indexBroken
-
-    assert theIndex.loadIndex()
-    assert not theIndex.indexBroken
-    theIndex._noteIndex["4c4f28287af27"]["T000001"]["Stuff"] = "" # No longer len(keys()) == 8
-    theIndex.checkIndex()
-    assert theIndex.indexBroken
-
-    assert theIndex.loadIndex()
-    assert not theIndex.indexBroken
-    theIndex._textCounts["7a992350f3eb6"].append("Stuff") # No longer len() == 3
-    theIndex.checkIndex()
-    assert theIndex.indexBroken
-
-    # Make the try/except trigger as well
-    assert theIndex.loadIndex()
-    assert not theIndex.indexBroken
-    theIndex._refIndex["fb609cd8319dc"]["T000001"] = {"tagssss": []} # Wrong key name
+    theIndex._tagIndex["Bod"].append("Stuff")
     theIndex.checkIndex()
     assert theIndex.indexBroken
 
@@ -229,14 +198,28 @@ def testCoreIndex_CheckThese(nwMinimal, dummyGUI):
 
     assert theIndex.scanText(cHandle, (
         "# Jane Smith\n"
-        "@tag: Jane"
+        "@tag: Jane\n"
+        "@tag:\n"
+        "@:\n"
     ))
     assert theIndex.scanText(nHandle, (
         "# Hello World!\n"
-        "@pov: Jane"
+        "@pov: Jane\n"
+        "@invalid: John\n" # Checks for issue #688
     ))
     assert theIndex._tagIndex == {"Jane": [2, cHandle, "CHARACTER", "T000001"]}
     assert theIndex.getNovelData(nHandle, "T000001")["title"] == "Hello World!"
+    assert theIndex.getReferences(nHandle, "T000001") == {
+        "@char": [],
+        "@custom": [],
+        "@entity": [],
+        "@focus": [],
+        "@location": [],
+        "@object": [],
+        "@plot": [],
+        "@pov": ["Jane"],
+        "@time": []
+    }
 
     assert theIndex.novelChangedSince(0)
     assert theIndex.notesChangedSince(0)
@@ -312,7 +295,7 @@ def testCoreIndex_ScanText(nwMinimal, dummyGUI):
         "This is a story about Jane Smith.\n\n"
         "Well, not really.\n"
     ))
-    assert str(theIndex._tagIndex) == "{'Jane': [2, '%s', 'CHARACTER', 'T000001']}" % cHandle
+    assert theIndex._tagIndex == {"Jane": [2, cHandle, "CHARACTER", "T000001"]}
     assert theIndex.getNovelData(nHandle, "T000001")["title"] == "Hello World!"
 
     # Check that title sections are indexed properly
@@ -523,9 +506,8 @@ def testCoreIndex_ExtractData(nwMinimal, dummyGUI):
     assert wC == 12 # Words in text and title only
     assert pC == 2  # Paragraphs in text only
 
-    ##
-    #  getReferences
-    ##
+    # getReferences
+    # =============
 
     # Look up an ivalid handle
     theRefs = theIndex.getReferences("Not a handle")
@@ -537,9 +519,8 @@ def testCoreIndex_ExtractData(nwMinimal, dummyGUI):
     assert theRefs["@pov"] == ["Jane"]
     assert theRefs["@char"] == ["Jane"]
 
-    ##
-    #  getBackReferenceList
-    ##
+    # getBackReferenceList
+    # ====================
 
     # None handle should return an empty dict
     assert theIndex.getBackReferenceList(None) == {}
@@ -548,16 +529,15 @@ def testCoreIndex_ExtractData(nwMinimal, dummyGUI):
     theRefs = theIndex.getBackReferenceList(cHandle)
     assert theRefs == {nHandle: "T000001"}
 
-    ##
-    #  getTagSource
-    ##
+    # getTagSource
+    # ============
 
     assert theIndex.getTagSource("Jane") == (cHandle, 2, "T000001")
     assert theIndex.getTagSource("John") == (None, 0, "T000000")
 
-    ##
-    #  getCounts for whole text and sections
-    ##
+    # getCounts
+    # =========
+    # For whole text and sections
 
     # Get section counts for a novel file
     assert theIndex.scanText(nHandle, (
@@ -586,7 +566,7 @@ def testCoreIndex_ExtractData(nwMinimal, dummyGUI):
     assert wC == 12
     assert pC == 2
 
-    # First part
+    # Second part
     cC, wC, pC = theIndex.getCounts(nHandle, "T000011")
     assert cC == 90
     assert wC == 16
@@ -619,15 +599,14 @@ def testCoreIndex_ExtractData(nwMinimal, dummyGUI):
     assert wC == 12
     assert pC == 2
 
-    # First part
+    # Second part
     cC, wC, pC = theIndex.getCounts(cHandle, "T000011")
     assert cC == 90
     assert wC == 16
     assert pC == 2
 
-    ##
-    #  Novel Stats
-    ##
+    # Novel Stats
+    # ===========
 
     hHandle = theProject.newFile("Chapter", nwItemClass.NOVEL, "a508bb932959c")
     sHandle = theProject.newFile("Scene One", nwItemClass.NOVEL, "a508bb932959c")
@@ -696,3 +675,503 @@ def testCoreIndex_ExtractData(nwMinimal, dummyGUI):
     ]
 
 # END Test testCoreIndex_ExtractData
+
+@pytest.mark.core
+def testCoreIndex_CheckTagIndex(dummyGUI):
+    """Test the tag index checker.
+    """
+    theProject = NWProject(dummyGUI)
+    theIndex = NWIndex(theProject, dummyGUI)
+
+    # Valid Index
+    theIndex._tagIndex = {
+        "John": [3, "14298de4d9524", "CHARACTER", "T000001"],
+        "Jane": [3, "bb2c23b3c42cc", "CHARACTER", "T000001"],
+    }
+    assert theIndex._checkTagIndex() is None
+
+    # Wrong Key Type
+    theIndex._tagIndex = {
+        "John": [3, "14298de4d9524", "CHARACTER", "T000001"],
+        123456: [3, "bb2c23b3c42cc", "CHARACTER", "T000001"],
+    }
+    with pytest.raises(KeyError):
+        theIndex._checkTagIndex()
+
+    # Wrong Length
+    theIndex._tagIndex = {
+        "John": [3, "14298de4d9524", "CHARACTER", "T000001"],
+        "Jane": [3, "bb2c23b3c42cc", "CHARACTER", "T000001", "Stuff"],
+    }
+    with pytest.raises(IndexError):
+        theIndex._checkTagIndex()
+
+    # Wrong Type of Entry 0
+    theIndex._tagIndex = {
+        "John": [3, "14298de4d9524", "CHARACTER", "T000001"],
+        "Jane": ["3", "bb2c23b3c42cc", "CHARACTER", "T000001"],
+    }
+    with pytest.raises(ValueError):
+        theIndex._checkTagIndex()
+
+    # Wrong Type of Entry 1
+    theIndex._tagIndex = {
+        "John": [3, "14298de4d9524", "CHARACTER", "T000001"],
+        "Jane": [3, 0xbb2c23b3c42cc, "CHARACTER", "T000001"],
+    }
+    with pytest.raises(ValueError):
+        theIndex._checkTagIndex()
+
+    # Wrong Type of Entry 2
+    theIndex._tagIndex = {
+        "John": [3, "14298de4d9524", "CHARACTER", "T000001"],
+        "Jane": [3, "bb2c23b3c42cc", "INVALID_CLASS", "T000001"],
+    }
+    with pytest.raises(ValueError):
+        theIndex._checkTagIndex()
+
+    # Wrong Type of Entry 3
+    theIndex._tagIndex = {
+        "John": [3, "14298de4d9524", "CHARACTER", "T000001"],
+        "Jane": [3, "bb2c23b3c42cc", "CHARACTER", "INVALID"],
+    }
+    with pytest.raises(ValueError):
+        theIndex._checkTagIndex()
+
+# END Test testCoreIndex_CheckTagIndex
+
+@pytest.mark.core
+def testCoreIndex_CheckRefIndex(dummyGUI):
+    """Test the reference index checker.
+    """
+    theProject = NWProject(dummyGUI)
+    theIndex = NWIndex(theProject, dummyGUI)
+
+    # Valid Index
+    theIndex._refIndex = {
+        "6a2d6d5f4f401": {
+            "T000000": {"tags": [], "updated": 1611922868},
+            "T000001": {"tags": [
+                [3, "@pov", "Jane"], [4, "@location", "Earth"]
+            ], "updated": 1611922868}
+        }
+    }
+    assert theIndex._checkRefIndex() is None
+
+    # Invalid Handle
+    theIndex._refIndex = {
+        "Ha2d6d5f4f401": {
+            "T000000": {"tags": [], "updated": 1611922868},
+            "T000001": {"tags": [
+                [3, "@pov", "Jane"], [4, "@location", "Earth"]
+            ], "updated": 1611922868}
+        }
+    }
+    with pytest.raises(KeyError):
+        theIndex._checkRefIndex()
+
+    # Invalid Title
+    theIndex._refIndex = {
+        "6a2d6d5f4f401": {
+            "T000000": {"tags": [], "updated": 1611922868},
+            "INVALID": {"tags": [
+                [3, "@pov", "Jane"], [4, "@location", "Earth"]
+            ], "updated": 1611922868}
+        }
+    }
+    with pytest.raises(KeyError):
+        theIndex._checkRefIndex()
+
+    # Missing 'tags'
+    theIndex._refIndex = {
+        "6a2d6d5f4f401": {
+            "T000000": {"tags": [], "updated": 1611922868},
+            "T000001": {"updated": 1611922868}
+        }
+    }
+    with pytest.raises(KeyError):
+        theIndex._checkRefIndex()
+
+    # Wrong Length of 'tags'
+    theIndex._refIndex = {
+        "6a2d6d5f4f401": {
+            "T000000": {"tags": [], "updated": 1611922868},
+            "T000001": {"tags": [
+                [3, "@pov", "Jane"], [4, "@location", "Earth", "Stuff"]
+            ], "updated": 1611922868}
+        }
+    }
+    with pytest.raises(IndexError):
+        theIndex._checkRefIndex()
+
+    # Wrong Type of 'tags' Entry 0
+    theIndex._refIndex = {
+        "6a2d6d5f4f401": {
+            "T000000": {"tags": [], "updated": 1611922868},
+            "T000001": {"tags": [
+                [3, "@pov", "Jane"], ["4", "@location", "Earth"]
+            ], "updated": 1611922868}
+        }
+    }
+    with pytest.raises(ValueError):
+        theIndex._checkRefIndex()
+
+    # Wrong Type of 'tags' Entry 1
+    theIndex._refIndex = {
+        "6a2d6d5f4f401": {
+            "T000000": {"tags": [], "updated": 1611922868},
+            "T000001": {"tags": [
+                [3, "@pov", "Jane"], [4, "@stuff", "Earth"]
+            ], "updated": 1611922868}
+        }
+    }
+    with pytest.raises(ValueError):
+        theIndex._checkRefIndex()
+
+    # Wrong Type of 'tags' Entry 1
+    theIndex._refIndex = {
+        "6a2d6d5f4f401": {
+            "T000000": {"tags": [], "updated": 1611922868},
+            "T000001": {"tags": [
+                [3, "@pov", "Jane"], [4, "@location", 123456]
+            ], "updated": 1611922868}
+        }
+    }
+    with pytest.raises(ValueError):
+        theIndex._checkRefIndex()
+
+    # Missing 'updated'
+    theIndex._refIndex = {
+        "6a2d6d5f4f401": {
+            "T000000": {"tags": [], "updated": 1611922868},
+            "T000001": {"tags": []}
+        }
+    }
+    with pytest.raises(KeyError):
+        theIndex._checkRefIndex()
+
+    # Wrong Type of 'updated' Entry 1
+    theIndex._refIndex = {
+        "6a2d6d5f4f401": {
+            "T000000": {"tags": [], "updated": 1611922868},
+            "T000001": {"tags": [], "updated": "1611922868"}
+        }
+    }
+    with pytest.raises(ValueError):
+        theIndex._checkRefIndex()
+
+# END Test testCoreIndex_CheckRefIndex
+
+@pytest.mark.core
+def testCoreIndex_CheckNovelNoteIndex(dummyGUI):
+    """Test the novel and note index checkers.
+    """
+    theProject = NWProject(dummyGUI)
+    theIndex = NWIndex(theProject, dummyGUI)
+
+    # Valid Index
+    theIndex._novelIndex = {
+        "53b69b83cdafc": {
+            "T000001": {
+                "level": "H1", "title": "My Novel", "layout": "TITLE", "synopsis": "text",
+                "cCount": 72, "wCount": 15, "pCount": 2, "updated": 1611922868
+            }
+        }
+    }
+    theIndex._noteIndex = theIndex._novelIndex.copy()
+    assert theIndex._checkNovelNoteIndex("novelIndex") is None
+    assert theIndex._checkNovelNoteIndex("noteIndex") is None
+    with pytest.raises(IndexError):
+        theIndex._checkNovelNoteIndex("notAnIndex")
+
+    # Invalid Handle
+    theIndex._novelIndex = {
+        "H3b69b83cdafc": {
+            "T000001": {
+                "level": "H1", "title": "My Novel", "layout": "TITLE", "synopsis": "text",
+                "cCount": 72, "wCount": 15, "pCount": 2, "updated": 1611922868
+            }
+        }
+    }
+    with pytest.raises(KeyError):
+        theIndex._checkNovelNoteIndex("novelIndex")
+
+    # Invalid Title
+    theIndex._novelIndex = {
+        "53b69b83cdafc": {
+            "INVALID": {
+                "level": "H1", "title": "My Novel", "layout": "TITLE", "synopsis": "text",
+                "cCount": 72, "wCount": 15, "pCount": 2, "updated": 1611922868
+            }
+        }
+    }
+    with pytest.raises(KeyError):
+        theIndex._checkNovelNoteIndex("novelIndex")
+
+    # Wrong Length
+    theIndex._novelIndex = {
+        "53b69b83cdafc": {
+            "T000001": {
+                "level": "H1", "title": "My Novel", "layout": "TITLE", "synopsis": "text",
+                "cCount": 72, "wCount": 15, "pCount": 2, "updated": 1611922868, "stuff": None
+            }
+        }
+    }
+    with pytest.raises(IndexError):
+        theIndex._checkNovelNoteIndex("novelIndex")
+
+    # Missing Keys
+    # ============
+
+    # Missing 'level'
+    theIndex._novelIndex = {
+        "53b69b83cdafc": {
+            "T000001": {
+                "stuff": "H1", "title": "My Novel", "layout": "TITLE", "synopsis": "text",
+                "cCount": 72, "wCount": 15, "pCount": 2, "updated": 1611922868
+            }
+        }
+    }
+    with pytest.raises(KeyError):
+        theIndex._checkNovelNoteIndex("novelIndex")
+
+    # Missing 'title'
+    theIndex._novelIndex = {
+        "53b69b83cdafc": {
+            "T000001": {
+                "level": "H1", "stuff": "My Novel", "layout": "TITLE", "synopsis": "text",
+                "cCount": 72, "wCount": 15, "pCount": 2, "updated": 1611922868
+            }
+        }
+    }
+    with pytest.raises(KeyError):
+        theIndex._checkNovelNoteIndex("novelIndex")
+
+    # Missing 'layout'
+    theIndex._novelIndex = {
+        "53b69b83cdafc": {
+            "T000001": {
+                "level": "H1", "title": "My Novel", "stuff": "TITLE", "synopsis": "text",
+                "cCount": 72, "wCount": 15, "pCount": 2, "updated": 1611922868
+            }
+        }
+    }
+    with pytest.raises(KeyError):
+        theIndex._checkNovelNoteIndex("novelIndex")
+
+    # Missing 'synopsis'
+    theIndex._novelIndex = {
+        "53b69b83cdafc": {
+            "T000001": {
+                "level": "H1", "title": "My Novel", "layout": "TITLE", "stuff": "text",
+                "cCount": 72, "wCount": 15, "pCount": 2, "updated": 1611922868
+            }
+        }
+    }
+    with pytest.raises(KeyError):
+        theIndex._checkNovelNoteIndex("novelIndex")
+
+    # Missing 'cCount'
+    theIndex._novelIndex = {
+        "53b69b83cdafc": {
+            "T000001": {
+                "level": "H1", "title": "My Novel", "layout": "TITLE", "synopsis": "text",
+                "stuff": 72, "wCount": 15, "pCount": 2, "updated": 1611922868
+            }
+        }
+    }
+    with pytest.raises(KeyError):
+        theIndex._checkNovelNoteIndex("novelIndex")
+
+    # Missing 'wCount'
+    theIndex._novelIndex = {
+        "53b69b83cdafc": {
+            "T000001": {
+                "level": "H1", "title": "My Novel", "layout": "TITLE", "synopsis": "text",
+                "cCount": 72, "stuff": 15, "pCount": 2, "updated": 1611922868
+            }
+        }
+    }
+    with pytest.raises(KeyError):
+        theIndex._checkNovelNoteIndex("novelIndex")
+
+    # Missing 'pCount'
+    theIndex._novelIndex = {
+        "53b69b83cdafc": {
+            "T000001": {
+                "level": "H1", "title": "My Novel", "layout": "TITLE", "synopsis": "text",
+                "cCount": 72, "wCount": 15, "stuff": 2, "updated": 1611922868
+            }
+        }
+    }
+    with pytest.raises(KeyError):
+        theIndex._checkNovelNoteIndex("novelIndex")
+
+    # Missing 'updated'
+    theIndex._novelIndex = {
+        "53b69b83cdafc": {
+            "T000001": {
+                "level": "H1", "title": "My Novel", "layout": "TITLE", "synopsis": "text",
+                "cCount": 72, "wCount": 15, "pCount": 2, "stuff": 1611922868
+            }
+        }
+    }
+    with pytest.raises(KeyError):
+        theIndex._checkNovelNoteIndex("novelIndex")
+
+    # Wrong Types
+    # ===========
+
+    # Wrong Type for 'level'
+    theIndex._novelIndex = {
+        "53b69b83cdafc": {
+            "T000001": {
+                "level": "XX", "title": "My Novel", "layout": "TITLE", "synopsis": "text",
+                "cCount": 72, "wCount": 15, "pCount": 2, "updated": 1611922868
+            }
+        }
+    }
+    with pytest.raises(ValueError):
+        theIndex._checkNovelNoteIndex("novelIndex")
+
+    # Wrong Type for 'title'
+    theIndex._novelIndex = {
+        "53b69b83cdafc": {
+            "T000001": {
+                "level": "H1", "title": 12345678, "layout": "TITLE", "synopsis": "text",
+                "cCount": 72, "wCount": 15, "pCount": 2, "updated": 1611922868
+            }
+        }
+    }
+    with pytest.raises(ValueError):
+        theIndex._checkNovelNoteIndex("novelIndex")
+
+    # Wrong Type for 'layout'
+    theIndex._novelIndex = {
+        "53b69b83cdafc": {
+            "T000001": {
+                "level": "H1", "title": "My Novel", "layout": "INVALID", "synopsis": "text",
+                "cCount": 72, "wCount": 15, "pCount": 2, "updated": 1611922868
+            }
+        }
+    }
+    with pytest.raises(ValueError):
+        theIndex._checkNovelNoteIndex("novelIndex")
+
+    # Wrong Type for 'synopsis'
+    theIndex._novelIndex = {
+        "53b69b83cdafc": {
+            "T000001": {
+                "level": "H1", "title": "My Novel", "layout": "TITLE", "synopsis": 123456,
+                "cCount": 72, "wCount": 15, "pCount": 2, "updated": 1611922868
+            }
+        }
+    }
+    with pytest.raises(ValueError):
+        theIndex._checkNovelNoteIndex("novelIndex")
+
+    # Wrong Type for 'cCount'
+    theIndex._novelIndex = {
+        "53b69b83cdafc": {
+            "T000001": {
+                "level": "H1", "title": "My Novel", "layout": "TITLE", "synopsis": "text",
+                "cCount": "72", "wCount": 15, "pCount": 2, "updated": 1611922868
+            }
+        }
+    }
+    with pytest.raises(ValueError):
+        theIndex._checkNovelNoteIndex("novelIndex")
+
+    # Wrong Type for 'wCount'
+    theIndex._novelIndex = {
+        "53b69b83cdafc": {
+            "T000001": {
+                "level": "H1", "title": "My Novel", "layout": "TITLE", "synopsis": "text",
+                "cCount": 72, "wCount": "15", "pCount": 2, "updated": 1611922868
+            }
+        }
+    }
+    with pytest.raises(ValueError):
+        theIndex._checkNovelNoteIndex("novelIndex")
+
+    # Wrong Type for 'pCount'
+    theIndex._novelIndex = {
+        "53b69b83cdafc": {
+            "T000001": {
+                "level": "H1", "title": "My Novel", "layout": "TITLE", "synopsis": "text",
+                "cCount": 72, "wCount": 15, "pCount": "2", "updated": 1611922868
+            }
+        }
+    }
+    with pytest.raises(ValueError):
+        theIndex._checkNovelNoteIndex("novelIndex")
+
+    # Wrong Type for 'updated'
+    theIndex._novelIndex = {
+        "53b69b83cdafc": {
+            "T000001": {
+                "level": "H1", "title": "My Novel", "layout": "TITLE", "synopsis": "text",
+                "cCount": 72, "wCount": 15, "pCount": 2, "updated": "1611922868"
+            }
+        }
+    }
+    with pytest.raises(ValueError):
+        theIndex._checkNovelNoteIndex("novelIndex")
+
+# END Test testCoreIndex_CheckNovelNoteIndex
+
+@pytest.mark.core
+def testCoreIndex_CheckTextCounts(dummyGUI):
+    """Test the text counts checker.
+    """
+    theProject = NWProject(dummyGUI)
+    theIndex = NWIndex(theProject, dummyGUI)
+
+    # Valid Index
+    theIndex._textCounts = {
+        "53b69b83cdafc": [72, 15, 2],
+        "974e400180a99": [210, 40, 2],
+    }
+    assert theIndex._checkTextCounts() is None
+
+    # Invalid Handle
+    theIndex._textCounts = {
+        "53b69b83cdafc": [72, 15, 2],
+        "h74e400180a99": [210, 40, 2],
+    }
+    with pytest.raises(KeyError):
+        theIndex._checkTextCounts()
+
+    # Wrong Length
+    theIndex._textCounts = {
+        "53b69b83cdafc": [72, 15, 2],
+        "974e400180a99": [210, 40, 2, 8],
+    }
+    with pytest.raises(IndexError):
+        theIndex._checkTextCounts()
+
+    # Type of Entry 0
+    theIndex._textCounts = {
+        "53b69b83cdafc": [72, 15, 2],
+        "974e400180a99": ["210", 40, 2],
+    }
+    with pytest.raises(ValueError):
+        theIndex._checkTextCounts()
+
+    # Type of Entry 1
+    theIndex._textCounts = {
+        "53b69b83cdafc": [72, 15, 2],
+        "974e400180a99": [210, "40", 2],
+    }
+    with pytest.raises(ValueError):
+        theIndex._checkTextCounts()
+
+    # Type of Entry 2
+    theIndex._textCounts = {
+        "53b69b83cdafc": [72, 15, 2],
+        "974e400180a99": [210, 40, "2"],
+    }
+    with pytest.raises(ValueError):
+        theIndex._checkTextCounts()
+
+# END Test testCoreIndex_CheckTextCounts

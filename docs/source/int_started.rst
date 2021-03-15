@@ -10,8 +10,8 @@ Getting Started
 
 This section contains brief guides to how you can get novelWriter running on your computer. These
 are the methods currently supported by the developer. Packages may also be available in other
-package managers, but those are not managed by the developer. A Windows installer file is also
-provided on the GitHub_ releases page and linked from the `main website`_.
+package managers, but those are not managed by the developer. No installers are provided at this
+time, but it is fairly straightforward to set up novelWriter with the provided install scripts.
 
 As novelWriter matures, more options for how to install it and get it running will be added. For
 non-Windows users the install process is at the present time best suited for people used to working
@@ -22,10 +22,10 @@ run on. The instructions below are supplementary information, instructions for a
 and additional build options.
 
 .. note::
-   The text below assumes the command ``python`` corresponds to a Python 3 executable. For
-   operating systems with both Python 2 and 3, the command ``python3`` may be needed instead. On
-   Linux, the scripts can also be made executable and run without the ``python`` command. Likewise,
-   ``pip`` may need to be replaced with ``pip3``.
+   The text below assumes the command ``python`` corresponds to a Python 3 executable. Python 2 is
+   now deprecated, but many systems still have both Python 2 and 3. For such systems, the command
+   ``python3`` may be needed instead. On Linux, the scripts can also be made executable and run
+   without the ``python`` command. Likewise, ``pip`` may need to be replaced with ``pip3``.
 
 
 .. _a_started_depend:
@@ -43,18 +43,16 @@ The following Python packages are needed to run novelWriter:
 * ``lxml`` – needed for full XML support.
 * ``pyenchant`` – needed for efficient spell checking (optional).
 
-PyQt/Qt should be at least 5.2.1, but ideally 5.10 or higher for nearly all features to work.
-Exporting to standard Markdown, for instance, requires PyQt/Qt 5.14. Searching using regular
-expressions requires 5.3, and for full Unicode support, 5.13. There is no known minimum version
-requirement for package ``lxml``, but the code was originally written with 4.2, which is therefore
-set as the minimum. It may work on lower versions. You have to test it.
+PyQt/Qt should be at least 5.3, but ideally 5.10 or higher for nearly all features to work. For
+instance, searching using regular expressions with full Unicode support requires 5.13. There is no
+known minimum version requirement for package ``lxml``, but the code was originally written with
+4.2, which is therefore set as the minimum. It may work on lower versions. You have to test it.
 
 Optionally, a package can be installed to interface with the Enchant spell checking libaries, but
 this isn't strictly required. If no external spell checking library is available, novelWriter falls
-back to using the internal ``difflib`` of Python to check spelling. This is a much slower approach,
-and it is less sophisticated than full spell checking libaries, but if you only work with small
-files, the performance loss is not noticeable. The spell check library must be at least 3.0 to work
-with Windows. On Linux, 2.0 also works fine.
+back to using the internal ``difflib`` of Python to check spelling. This is a slower and less
+sophisticated spell checker than the full spell checking libaries. The spell check library must be
+at least 3.0 to work with Windows. On Linux, 2.0 also works fine.
 
 If you install from PyPi, these dependencies should be installed automatically. If you install from
 source, dependencies can still be installed from PyPi with:
@@ -78,7 +76,7 @@ and Python 3. It is regularly tested on Linux, Windows and macOS. The latest ver
 is |release|.
 
 To install from PyPi you must first have the ``python`` and ``pip`` commands available on your
-system. If you don't, see specific instructions for your operating system later in this document.
+system. If you don't, see specific instructions for your operating system in this documentation.
 To install novelWriter from PyPi, use the following command:
 
 .. code-block:: console
@@ -106,9 +104,9 @@ default.
 Building the Documentation
 ==========================
 
-If you installed novelWriter from a package, the documentation should be included. If you're
-running novelWriter from the source code, a local copy of this documentation can be generated. It
-requires the following Python packages on Debian and Ubuntu.
+If you installed novelWriter from a package, the documentation should be bre-built and included. If
+you're running novelWriter from the source code, a local copy of this documentation can be
+generated. It requires the following Python packages on Debian and Ubuntu.
 
 * ``python3-sphinx``
 * ``python3-sphinxcontrib.qthelp``

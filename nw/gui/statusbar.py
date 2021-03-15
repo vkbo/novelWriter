@@ -29,7 +29,6 @@ import logging
 
 from time import time
 
-from PyQt5.QtCore import QTimer
 from PyQt5.QtGui import QColor, QPainter
 from PyQt5.QtWidgets import qApp, QStatusBar, QLabel, QAbstractButton
 
@@ -49,6 +48,7 @@ class GuiMainStatus(QStatusBar):
         self.theParent = theParent
         self.theTheme  = theParent.theTheme
         self.refTime   = None
+        self.userIdle  = False
 
         colNone  = QColor(*self.theTheme.statNone)
         colTrue  = QColor(*self.theTheme.statUnsaved)
@@ -97,9 +97,12 @@ class GuiMainStatus(QStatusBar):
 
         ## The Session Clock
         ### Set the mimimum width so the label doesn't rescale every second
+        self.timePixmap = self.theTheme.getPixmap("status_time", (iPx, iPx))
+        self.idlePixmap = self.theTheme.getPixmap("status_idle", (iPx, iPx))
+
         self.timeIcon = QLabel()
         self.timeText = QLabel("")
-        self.timeIcon.setPixmap(self.theTheme.getPixmap("status_time", (iPx, iPx)))
+        self.timeIcon.setPixmap(self.timePixmap)
         self.timeText.setToolTip("Session Time")
         self.timeText.setMinimumWidth(self.theTheme.getTextWidth("00:00:00:"))
         self.timeIcon.setContentsMargins(0, 0, 0, 0)
@@ -109,12 +112,6 @@ class GuiMainStatus(QStatusBar):
 
         # Other Settings
         self.setSizeGripEnabled(True)
-
-        # Start the Clock
-        self.sessionTimer = QTimer()
-        self.sessionTimer.setInterval(1000)
-        self.sessionTimer.timeout.connect(self._updateTime)
-        self.sessionTimer.start()
 
         logger.debug("GuiMainStatus initialisation complete")
 
@@ -130,7 +127,7 @@ class GuiMainStatus(QStatusBar):
         self.setStats(0, 0)
         self.setProjectStatus(None)
         self.setDocumentStatus(None)
-        self._updateTime()
+        self.updateTime()
         return True
 
     ##
@@ -182,17 +179,33 @@ class GuiMainStatus(QStatusBar):
         self.statsText.setToolTip("Project word count (session change)")
         return
 
-    ##
-    #  Internal Functions
-    ##
+    def setUserIdle(self, userIdle):
+        """Change the idle status icon.
+        """
+        if not self.mainConf.stopWhenIdle:
+            userIdle = False
 
-    def _updateTime(self):
+        if self.userIdle != userIdle:
+            if userIdle:
+                self.timeIcon.setPixmap(self.idlePixmap)
+            else:
+                self.timeIcon.setPixmap(self.timePixmap)
+
+            self.userIdle = userIdle
+
+        return
+
+    def updateTime(self, idleTime=0.0):
         """Update the session clock.
         """
         if self.refTime is None:
             self.timeText.setText("00:00:00")
         else:
-            self.timeText.setText(formatTime(round(time() - self.refTime)))
+            if self.mainConf.stopWhenIdle:
+                sessTime = round(time() - self.refTime - idleTime)
+            else:
+                sessTime = round(time() - self.refTime)
+            self.timeText.setText(formatTime(sessTime))
         return
 
 # END Class GuiMainStatus

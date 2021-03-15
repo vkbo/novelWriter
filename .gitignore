@@ -7,6 +7,8 @@
 *.egg-info
 setup.iss
 novelwriter.desktop
+i18n/*.qm
+i18n/*.qph
 
 # Documentation
 /docs/build/
@@ -23,6 +25,7 @@ __pycache__
 /sample/meta
 *.bak
 *.lock
+ToC.txt
 
 # PyTest
 /prof/
