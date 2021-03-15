@@ -1,0 +1,14 @@
+[[source]]
+url = "https://pypi.org/simple"
+verify_ssl = true
+name = "pypi"
+
+[packages]
+pyqt5 = ">=5.2.1"
+lxml = ">=4.2.0"
+pyenchant = ">=3.0.0"
+
+[dev-packages]
+
+[requires]
+python_version = "3.9"

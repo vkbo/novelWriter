@@ -38,3 +38,4 @@ __pycache__
 
 # Coverage
 /.coverage
+/.idea
