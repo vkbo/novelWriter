@@ -99,6 +99,7 @@ class GuiPreferences(PagedDialog):
         self.tabEditor.saveValues()
         self.tabSyntax.saveValues()
         self.tabAuto.saveValues()
+        self.tabQuote.saveValues()
 
         if needsRestart:
             self.theParent.makeAlert(

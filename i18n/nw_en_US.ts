@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!DOCTYPE TS>
-<TS version="2.1" language="en_US" sourcelanguage="en_GB">
+<!DOCTYPE TS><TS version="2.0" language="en_US" sourcelanguage="en_GB">
 <context>
     <name>Common</name>
     <message>
@@ -799,22 +798,22 @@
 <context>
     <name>GuiDocEditFooter</name>
     <message>
-        <location filename="../nw/gui/doceditor.py" line="2461"/>
+        <location filename="../nw/gui/doceditor.py" line="2468"/>
         <source>Status</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../nw/gui/doceditor.py" line="2602"/>
+        <location filename="../nw/gui/doceditor.py" line="2609"/>
         <source>Line: {0} ({1})</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../nw/gui/doceditor.py" line="2618"/>
+        <location filename="../nw/gui/doceditor.py" line="2625"/>
         <source>Words: {0} ({1})</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../nw/gui/doceditor.py" line="2623"/>
+        <location filename="../nw/gui/doceditor.py" line="2630"/>
         <source>Document size is {0} bytes</source>
         <translation></translation>
     </message>
@@ -822,22 +821,22 @@
 <context>
     <name>GuiDocEditHeader</name>
     <message>
-        <location filename="../nw/gui/doceditor.py" line="2252"/>
+        <location filename="../nw/gui/doceditor.py" line="2259"/>
         <source>Edit document meta</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../nw/gui/doceditor.py" line="2263"/>
+        <location filename="../nw/gui/doceditor.py" line="2270"/>
         <source>Search document</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../nw/gui/doceditor.py" line="2274"/>
+        <location filename="../nw/gui/doceditor.py" line="2281"/>
         <source>Toggle Focus Mode</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../nw/gui/doceditor.py" line="2285"/>
+        <location filename="../nw/gui/doceditor.py" line="2292"/>
         <source>Close the document</source>
         <translation></translation>
     </message>
@@ -845,97 +844,97 @@
 <context>
     <name>GuiDocEditSearch</name>
     <message>
-        <location filename="../nw/gui/doceditor.py" line="1879"/>
+        <location filename="../nw/gui/doceditor.py" line="1886"/>
         <source>Search</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../nw/gui/doceditor.py" line="1870"/>
+        <location filename="../nw/gui/doceditor.py" line="1877"/>
         <source>Replace</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../nw/gui/doceditor.py" line="1883"/>
+        <location filename="../nw/gui/doceditor.py" line="1890"/>
         <source>Case Sensitive</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../nw/gui/doceditor.py" line="1884"/>
+        <location filename="../nw/gui/doceditor.py" line="1891"/>
         <source>Match case</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../nw/gui/doceditor.py" line="1891"/>
+        <location filename="../nw/gui/doceditor.py" line="1898"/>
         <source>Whole Words Only</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../nw/gui/doceditor.py" line="1892"/>
+        <location filename="../nw/gui/doceditor.py" line="1899"/>
         <source>Match whole words</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../nw/gui/doceditor.py" line="1899"/>
+        <location filename="../nw/gui/doceditor.py" line="1906"/>
         <source>RegEx Mode</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../nw/gui/doceditor.py" line="1900"/>
+        <location filename="../nw/gui/doceditor.py" line="1907"/>
         <source>Search using regular expressions</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../nw/gui/doceditor.py" line="1907"/>
+        <location filename="../nw/gui/doceditor.py" line="1914"/>
         <source>Loop Search</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../nw/gui/doceditor.py" line="1908"/>
+        <location filename="../nw/gui/doceditor.py" line="1915"/>
         <source>Loop the search when reaching the end</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../nw/gui/doceditor.py" line="1915"/>
+        <location filename="../nw/gui/doceditor.py" line="1922"/>
         <source>Search Next File</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../nw/gui/doceditor.py" line="1916"/>
+        <location filename="../nw/gui/doceditor.py" line="1923"/>
         <source>Continue searching in the next file</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../nw/gui/doceditor.py" line="1925"/>
+        <location filename="../nw/gui/doceditor.py" line="1932"/>
         <source>Preserve Case</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../nw/gui/doceditor.py" line="1926"/>
+        <location filename="../nw/gui/doceditor.py" line="1933"/>
         <source>Preserve case on replace</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../nw/gui/doceditor.py" line="1935"/>
+        <location filename="../nw/gui/doceditor.py" line="1942"/>
         <source>Close Search</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../nw/gui/doceditor.py" line="1936"/>
+        <location filename="../nw/gui/doceditor.py" line="1943"/>
         <source>Close the search box [{0}]</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../nw/gui/doceditor.py" line="1948"/>
+        <location filename="../nw/gui/doceditor.py" line="1955"/>
         <source>Show/hide the replace text box</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../nw/gui/doceditor.py" line="1954"/>
+        <location filename="../nw/gui/doceditor.py" line="1961"/>
         <source>Find in current document</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../nw/gui/doceditor.py" line="1959"/>
+        <location filename="../nw/gui/doceditor.py" line="1966"/>
         <source>Find and replace in current document</source>
         <translation></translation>
     </message>
@@ -958,72 +957,72 @@
         <translation></translation>
     </message>
     <message>
-        <location filename="../nw/gui/doceditor.py" line="770"/>
+        <location filename="../nw/gui/doceditor.py" line="765"/>
         <source>File Location</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../nw/gui/doceditor.py" line="770"/>
+        <location filename="../nw/gui/doceditor.py" line="765"/>
         <source>The currently open file is saved in:</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../nw/gui/doceditor.py" line="960"/>
+        <location filename="../nw/gui/doceditor.py" line="955"/>
         <source>The document has grown too big and you cannot add more text to it. The maximum size of a single novelWriter document is {0} MB.</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../nw/gui/doceditor.py" line="998"/>
+        <location filename="../nw/gui/doceditor.py" line="993"/>
         <source>Follow Tag</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../nw/gui/doceditor.py" line="1004"/>
+        <location filename="../nw/gui/doceditor.py" line="999"/>
         <source>Cut</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../nw/gui/doceditor.py" line="1008"/>
+        <location filename="../nw/gui/doceditor.py" line="1003"/>
         <source>Copy</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../nw/gui/doceditor.py" line="1012"/>
+        <location filename="../nw/gui/doceditor.py" line="1007"/>
         <source>Paste</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../nw/gui/doceditor.py" line="1021"/>
+        <location filename="../nw/gui/doceditor.py" line="1016"/>
         <source>Select All</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../nw/gui/doceditor.py" line="1025"/>
+        <location filename="../nw/gui/doceditor.py" line="1020"/>
         <source>Select Word</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../nw/gui/doceditor.py" line="1031"/>
+        <location filename="../nw/gui/doceditor.py" line="1026"/>
         <source>Select Paragraph</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../nw/gui/doceditor.py" line="1057"/>
+        <location filename="../nw/gui/doceditor.py" line="1052"/>
         <source>Spelling Suggestion(s)</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../nw/gui/doceditor.py" line="1069"/>
+        <location filename="../nw/gui/doceditor.py" line="1064"/>
         <source>No Suggestions</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../nw/gui/doceditor.py" line="1075"/>
+        <location filename="../nw/gui/doceditor.py" line="1070"/>
         <source>Add Word to Dictionary</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../nw/gui/doceditor.py" line="1365"/>
+        <location filename="../nw/gui/doceditor.py" line="1498"/>
         <source>Please select some text before calling replace quotes.</source>
         <translation></translation>
     </message>
@@ -1380,7 +1379,7 @@
         <translation></translation>
     </message>
     <message>
-        <location filename="../nw/guimain.py" line="1139"/>
+        <location filename="../nw/guimain.py" line="1143"/>
         <source>Changes are saved automatically.</source>
         <translation></translation>
     </message>
@@ -1465,57 +1464,57 @@
         <translation></translation>
     </message>
     <message>
-        <location filename="../nw/guimain.py" line="875"/>
+        <location filename="../nw/guimain.py" line="879"/>
         <source>Indexing: &apos;{0}&apos;</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../nw/guimain.py" line="875"/>
+        <location filename="../nw/guimain.py" line="879"/>
         <source>Unknown item</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../nw/guimain.py" line="893"/>
+        <location filename="../nw/guimain.py" line="897"/>
         <source>Indexing completed in {0} ms</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../nw/guimain.py" line="900"/>
+        <location filename="../nw/guimain.py" line="904"/>
         <source>The project index has been successfully rebuilt.</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../nw/guimain.py" line="1103"/>
+        <location filename="../nw/guimain.py" line="1107"/>
         <source>Information</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../nw/guimain.py" line="1105"/>
+        <location filename="../nw/guimain.py" line="1109"/>
         <source>Warning</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../nw/guimain.py" line="1107"/>
+        <location filename="../nw/guimain.py" line="1111"/>
         <source>Error</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../nw/guimain.py" line="1109"/>
+        <location filename="../nw/guimain.py" line="1113"/>
         <source>This is a bug!</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../nw/guimain.py" line="1110"/>
+        <location filename="../nw/guimain.py" line="1114"/>
         <source>Internal Error</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../nw/guimain.py" line="1139"/>
+        <location filename="../nw/guimain.py" line="1143"/>
         <source>Exit</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../nw/guimain.py" line="1139"/>
+        <location filename="../nw/guimain.py" line="1143"/>
         <source>Do you want to exit novelWriter?</source>
         <translation></translation>
     </message>
