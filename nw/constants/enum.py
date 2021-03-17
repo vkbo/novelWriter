@@ -81,19 +81,14 @@ class nwDocAction(Enum):
     D_QUOTE   = 10
     SEL_ALL   = 11
     SEL_PARA  = 12
-    FIND      = 13
-    REPLACE   = 14
-    GO_NEXT   = 15
-    GO_PREV   = 16
-    REPL_NEXT = 17
-    BLOCK_H1  = 18
-    BLOCK_H2  = 19
-    BLOCK_H3  = 20
-    BLOCK_H4  = 21
-    BLOCK_COM = 22
-    BLOCK_TXT = 23
-    REPL_SNG  = 24
-    REPL_DBL  = 25
+    BLOCK_H1  = 13
+    BLOCK_H2  = 14
+    BLOCK_H3  = 15
+    BLOCK_H4  = 16
+    BLOCK_COM = 17
+    BLOCK_TXT = 18
+    REPL_SNG  = 19
+    REPL_DBL  = 20
 
 # END Enum nwDocAction
 

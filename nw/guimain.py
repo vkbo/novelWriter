@@ -757,14 +757,18 @@ class GuiMain(QMainWindow):
         return True
 
     def passDocumentAction(self, theAction):
-        """Pass on document action theAction to the document viewer if
-        it has focus, otherwise pass it to the document editor.
+        """Pass on document action to the document viewer if it has
+        focus, or pass it to the document editor if it or any of
+        its clid widgets have focus. If neither has focus, ignore the
+        action.
         """
         if self.docViewer.hasFocus():
             self.docViewer.docAction(theAction)
-        else:
+        elif self.docEditor.hasFocus():
             self.docEditor.docAction(theAction)
-        return True
+        else:
+            logger.debug("Action cancelled as neither editor nor viewer has focus")
+        return
 
     ##
     #  Tree Item Actions

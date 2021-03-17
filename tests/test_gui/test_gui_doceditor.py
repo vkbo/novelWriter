@@ -510,7 +510,7 @@ def testGuiEditor_Search(qtbot, monkeypatch, nwGUI, nwLipsum):
     assert abs(nwGUI.docEditor.getCursorPosition() - 1127) < 3
 
     # Toggle Replace
-    nwGUI.docEditor._beginReplace()
+    nwGUI.docEditor.beginReplace()
 
     # MonkeyPatch the focus cycle. We can't really test this very well, other than
     # check that the tabs aren't captured when the main editor has focus

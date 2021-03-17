@@ -756,7 +756,7 @@ class GuiMainMenu(QMenuBar):
         self.aFind = QAction("Find", self)
         self.aFind.setStatusTip("Find text in document")
         self.aFind.setShortcut("Ctrl+F")
-        self.aFind.triggered.connect(lambda: self._docAction(nwDocAction.FIND))
+        self.aFind.triggered.connect(lambda: self.theParent.docEditor.beginSearch())
         self.srcMenu.addAction(self.aFind)
 
         # Search > Replace
@@ -766,7 +766,7 @@ class GuiMainMenu(QMenuBar):
             self.aReplace.setShortcut("Ctrl+=")
         else:
             self.aReplace.setShortcut("Ctrl+H")
-        self.aReplace.triggered.connect(lambda: self._docAction(nwDocAction.REPLACE))
+        self.aReplace.triggered.connect(lambda: self.theParent.docEditor.beginReplace())
         self.srcMenu.addAction(self.aReplace)
 
         # Search > Find Next
@@ -776,7 +776,7 @@ class GuiMainMenu(QMenuBar):
             self.aFindNext.setShortcuts(["Ctrl+G", "F3"])
         else:
             self.aFindNext.setShortcuts(["F3", "Ctrl+G"])
-        self.aFindNext.triggered.connect(lambda: self._docAction(nwDocAction.GO_NEXT))
+        self.aFindNext.triggered.connect(lambda: self.theParent.docEditor.findNext())
         self.srcMenu.addAction(self.aFindNext)
 
         # Search > Find Prev
@@ -786,14 +786,14 @@ class GuiMainMenu(QMenuBar):
             self.aFindPrev.setShortcuts(["Ctrl+Shift+G", "Shift+F3"])
         else:
             self.aFindPrev.setShortcuts(["Shift+F3", "Ctrl+Shift+G"])
-        self.aFindPrev.triggered.connect(lambda: self._docAction(nwDocAction.GO_PREV))
+        self.aFindPrev.triggered.connect(lambda: self.theParent.docEditor.findNext(goBack=True))
         self.srcMenu.addAction(self.aFindPrev)
 
         # Search > Replace Next
         self.aReplaceNext = QAction("Replace Next", self)
         self.aReplaceNext.setStatusTip("Find and replace next occurrence text in document")
         self.aReplaceNext.setShortcut("Ctrl+Shift+1")
-        self.aReplaceNext.triggered.connect(lambda: self._docAction(nwDocAction.REPL_NEXT))
+        self.aReplaceNext.triggered.connect(lambda: self.theParent.docEditor.replaceNext())
         self.srcMenu.addAction(self.aReplaceNext)
 
         return
