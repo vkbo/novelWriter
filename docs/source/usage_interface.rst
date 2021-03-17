@@ -152,6 +152,29 @@ convenient if you want to quickly look through all documents in the list in the
    pressing :kbd:`F9`.
 
 
+.. _a_ui_edit_search:
+
+Search & Replace
+----------------
+
+The document editor has a search and replace bar that can be activated with :kbd:`Ctrl`:kbd:`F` for
+search mode or :kbd:`Ctrl`:kbd:`H` for search/replace mode.
+
+Pressing :kbd:`Return` while in the search box will search for the next occurrence of the word, and
+:kbd:`Shift`:kbd:`Return` for the previous. Pressing :kbd:`Return` in the replace box, will replace
+the highlighted text and move to the next word.
+
+There are a number of settings for the search bar available as toggle switches above the search
+box. They allows you to search for, in order:,: matched case only, whole word results only, search
+using regular expressions, loop search when reaching the end of the document, and move to the next
+document when reaching the end. There is also a switch that will try to match the case of the word
+when the replacement is made. That is, it will try to keep the word upper, lower, or capitalised to
+match the word being replaced.
+
+The regular expression search is somewhat dependant on which version of Qt your system has. If you
+have Qt 5.13 or higher, there is better support for unicode symbols in the search.
+
+
 .. _a_ui_edit_auto:
 
 Auto-Replace as You Type
@@ -432,7 +455,7 @@ Most features are available as keyboard shortcuts. These are as follows:
    ":kbd:`Ctrl`:kbd:`Backspace`",        "Delete previous word in editor."
    ":kbd:`Ctrl`:kbd:`'`",                "Wrap selected text, or word under cursor, in single quotes."
    ":kbd:`Ctrl`:kbd:`""`",               "Wrap selected text, or word under cursor, in double quotes."
-   ":kbd:`Ctrl`:kbd:`Enter`",            "Open the tag or reference under the cursor in the Viewer."
+   ":kbd:`Ctrl`:kbd:`Retrun`",           "Open the tag or reference under the cursor in the Viewer."
    ":kbd:`Ctrl`:kbd:`Shift`:kbd:`,`",    "Open the :guilabel:`Project Settings` dialog."
    ":kbd:`Ctrl`:kbd:`Shift`:kbd:`/`",    "Remove block formatting for block under cursor."
    ":kbd:`Ctrl`:kbd:`Shift`:kbd:`1`",    "Replace occurrence of search word in current document, and search for next occurrence."
