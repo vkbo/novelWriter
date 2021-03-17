@@ -2797,7 +2797,7 @@
         <translation></translation>
     </message>
     <message>
-        <location filename="../nw/gui/preferences.py" line="104"/>
+        <location filename="../nw/gui/preferences.py" line="105"/>
         <source>Some changes will not be applied until novelWriter has been restarted.</source>
         <translation></translation>
     </message>
@@ -2810,107 +2810,107 @@
 <context>
     <name>GuiPreferencesAutomation</name>
     <message>
-        <location filename="../nw/gui/preferences.py" line="974"/>
+        <location filename="../nw/gui/preferences.py" line="975"/>
         <source>Automatic Features</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../nw/gui/preferences.py" line="979"/>
+        <location filename="../nw/gui/preferences.py" line="980"/>
         <source>Auto-select word under cursor</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../nw/gui/preferences.py" line="979"/>
+        <location filename="../nw/gui/preferences.py" line="980"/>
         <source>Apply formatting to word under cursor if no selection is made.</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../nw/gui/preferences.py" line="989"/>
+        <location filename="../nw/gui/preferences.py" line="990"/>
         <source>Auto-replace text as you type</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../nw/gui/preferences.py" line="989"/>
+        <location filename="../nw/gui/preferences.py" line="990"/>
         <source>Allow the editor to replace symbols as you type.</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../nw/gui/preferences.py" line="997"/>
+        <location filename="../nw/gui/preferences.py" line="998"/>
         <source>Replace as You Type</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../nw/gui/preferences.py" line="1003"/>
+        <location filename="../nw/gui/preferences.py" line="1004"/>
         <source>Auto-replace single quotes</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../nw/gui/preferences.py" line="1003"/>
+        <location filename="../nw/gui/preferences.py" line="1004"/>
         <source>Try to guess which is an opening or a closing single quote.</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../nw/gui/preferences.py" line="1013"/>
+        <location filename="../nw/gui/preferences.py" line="1014"/>
         <source>Auto-replace double quotes</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../nw/gui/preferences.py" line="1013"/>
+        <location filename="../nw/gui/preferences.py" line="1014"/>
         <source>Try to guess which is an opening or a closing double quote.</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../nw/gui/preferences.py" line="1023"/>
+        <location filename="../nw/gui/preferences.py" line="1024"/>
         <source>Auto-replace dashes</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../nw/gui/preferences.py" line="1023"/>
+        <location filename="../nw/gui/preferences.py" line="1024"/>
         <source>Double and triple hyphens become short and long dashes.</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../nw/gui/preferences.py" line="1033"/>
+        <location filename="../nw/gui/preferences.py" line="1034"/>
         <source>Auto-replace dots</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../nw/gui/preferences.py" line="1033"/>
+        <location filename="../nw/gui/preferences.py" line="1034"/>
         <source>Three consecutive dots become ellipsis.</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../nw/gui/preferences.py" line="1041"/>
+        <location filename="../nw/gui/preferences.py" line="1042"/>
         <source>Automatic Padding</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../nw/gui/preferences.py" line="1047"/>
+        <location filename="../nw/gui/preferences.py" line="1048"/>
         <source>Insert non-breaking space before</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../nw/gui/preferences.py" line="1057"/>
+        <location filename="../nw/gui/preferences.py" line="1058"/>
         <source>Insert non-breaking space after</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../nw/gui/preferences.py" line="1067"/>
+        <location filename="../nw/gui/preferences.py" line="1068"/>
         <source>Use thin space instead</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../nw/gui/preferences.py" line="1047"/>
+        <location filename="../nw/gui/preferences.py" line="1048"/>
         <source>Automatically add space before any of these symbols.</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../nw/gui/preferences.py" line="1057"/>
+        <location filename="../nw/gui/preferences.py" line="1058"/>
         <source>Automatically add space after any of these symbols.</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../nw/gui/preferences.py" line="1067"/>
+        <location filename="../nw/gui/preferences.py" line="1068"/>
         <source>Inserts a thin space instead of a regular space.</source>
         <translation></translation>
     </message>
@@ -2918,107 +2918,107 @@
 <context>
     <name>GuiPreferencesDocuments</name>
     <message>
-        <location filename="../nw/gui/preferences.py" line="496"/>
+        <location filename="../nw/gui/preferences.py" line="497"/>
         <source>Text Style</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../nw/gui/preferences.py" line="506"/>
+        <location filename="../nw/gui/preferences.py" line="507"/>
         <source>Font family</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../nw/gui/preferences.py" line="506"/>
+        <location filename="../nw/gui/preferences.py" line="507"/>
         <source>Font for the document editor and viewer.</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../nw/gui/preferences.py" line="519"/>
+        <location filename="../nw/gui/preferences.py" line="520"/>
         <source>Font size</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../nw/gui/preferences.py" line="519"/>
+        <location filename="../nw/gui/preferences.py" line="520"/>
         <source>Font size for the document editor and viewer.</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../nw/gui/preferences.py" line="519"/>
+        <location filename="../nw/gui/preferences.py" line="520"/>
         <source>pt</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../nw/gui/preferences.py" line="528"/>
+        <location filename="../nw/gui/preferences.py" line="529"/>
         <source>Text Flow</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../nw/gui/preferences.py" line="536"/>
+        <location filename="../nw/gui/preferences.py" line="537"/>
         <source>Maximum text width in &quot;Normal Mode&quot;</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../nw/gui/preferences.py" line="549"/>
+        <location filename="../nw/gui/preferences.py" line="550"/>
         <source>Horizontal margins are scaled automatically.</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../nw/gui/preferences.py" line="602"/>
+        <location filename="../nw/gui/preferences.py" line="603"/>
         <source>px</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../nw/gui/preferences.py" line="549"/>
+        <location filename="../nw/gui/preferences.py" line="550"/>
         <source>Maximum text width in &quot;Focus Mode&quot;</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../nw/gui/preferences.py" line="559"/>
+        <location filename="../nw/gui/preferences.py" line="560"/>
         <source>Disable maximum text width in &quot;Normal Mode&quot;</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../nw/gui/preferences.py" line="559"/>
+        <location filename="../nw/gui/preferences.py" line="560"/>
         <source>Text width is defined by the margins only.</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../nw/gui/preferences.py" line="568"/>
+        <location filename="../nw/gui/preferences.py" line="569"/>
         <source>Hide document footer in &quot;Focus Mode&quot;</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../nw/gui/preferences.py" line="568"/>
+        <location filename="../nw/gui/preferences.py" line="569"/>
         <source>Hide the information bar at the bottom of the document.</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../nw/gui/preferences.py" line="577"/>
+        <location filename="../nw/gui/preferences.py" line="578"/>
         <source>Justify the text margins in editor and viewer</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../nw/gui/preferences.py" line="577"/>
+        <location filename="../nw/gui/preferences.py" line="578"/>
         <source>Lay out text with straight edges in the editor and viewer.</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../nw/gui/preferences.py" line="589"/>
+        <location filename="../nw/gui/preferences.py" line="590"/>
         <source>Text margin</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../nw/gui/preferences.py" line="589"/>
+        <location filename="../nw/gui/preferences.py" line="590"/>
         <source>If maximum width is set, this becomes the minimum margin.</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../nw/gui/preferences.py" line="602"/>
+        <location filename="../nw/gui/preferences.py" line="603"/>
         <source>Tab width</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../nw/gui/preferences.py" line="602"/>
+        <location filename="../nw/gui/preferences.py" line="603"/>
         <source>The width of a tab key press in the editor and viewer.</source>
         <translation></translation>
     </message>
@@ -3026,127 +3026,127 @@
 <context>
     <name>GuiPreferencesEditor</name>
     <message>
-        <location filename="../nw/gui/preferences.py" line="668"/>
+        <location filename="../nw/gui/preferences.py" line="669"/>
         <source>Spell Checking</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../nw/gui/preferences.py" line="676"/>
+        <location filename="../nw/gui/preferences.py" line="677"/>
         <source>Internal</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../nw/gui/preferences.py" line="689"/>
+        <location filename="../nw/gui/preferences.py" line="690"/>
         <source>Spell check provider</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../nw/gui/preferences.py" line="689"/>
+        <location filename="../nw/gui/preferences.py" line="690"/>
         <source>Note that the internal spell check tool is quite slow.</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../nw/gui/preferences.py" line="694"/>
+        <location filename="../nw/gui/preferences.py" line="695"/>
         <source>Spell check language</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../nw/gui/preferences.py" line="694"/>
+        <location filename="../nw/gui/preferences.py" line="695"/>
         <source>Available languages are determined by your system.</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../nw/gui/preferences.py" line="706"/>
+        <location filename="../nw/gui/preferences.py" line="707"/>
         <source>Big document limit</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../nw/gui/preferences.py" line="706"/>
+        <location filename="../nw/gui/preferences.py" line="707"/>
         <source>Full spell checking is disabled above this limit.</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../nw/gui/preferences.py" line="706"/>
+        <location filename="../nw/gui/preferences.py" line="707"/>
         <source>kB</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../nw/gui/preferences.py" line="715"/>
+        <location filename="../nw/gui/preferences.py" line="716"/>
         <source>Word Count</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../nw/gui/preferences.py" line="724"/>
+        <location filename="../nw/gui/preferences.py" line="725"/>
         <source>Word count interval</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../nw/gui/preferences.py" line="724"/>
+        <location filename="../nw/gui/preferences.py" line="725"/>
         <source>How often the word count is updated.</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../nw/gui/preferences.py" line="724"/>
+        <location filename="../nw/gui/preferences.py" line="725"/>
         <source>seconds</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../nw/gui/preferences.py" line="733"/>
+        <location filename="../nw/gui/preferences.py" line="734"/>
         <source>Writing Guides</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../nw/gui/preferences.py" line="738"/>
+        <location filename="../nw/gui/preferences.py" line="739"/>
         <source>Show tabs and spaces</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../nw/gui/preferences.py" line="738"/>
+        <location filename="../nw/gui/preferences.py" line="739"/>
         <source>Add symbols to indicate tabs and spaces in the editor.</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../nw/gui/preferences.py" line="747"/>
+        <location filename="../nw/gui/preferences.py" line="748"/>
         <source>Show line endings</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../nw/gui/preferences.py" line="747"/>
+        <location filename="../nw/gui/preferences.py" line="748"/>
         <source>Add a symbol to indicate line endings in the editor.</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../nw/gui/preferences.py" line="755"/>
+        <location filename="../nw/gui/preferences.py" line="756"/>
         <source>Scroll Behaviour</source>
         <translation>Scroll Behavior</translation>
     </message>
     <message>
-        <location filename="../nw/gui/preferences.py" line="760"/>
+        <location filename="../nw/gui/preferences.py" line="761"/>
         <source>Scroll past end of the document</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../nw/gui/preferences.py" line="760"/>
+        <location filename="../nw/gui/preferences.py" line="761"/>
         <source>Also improves trypewriter scrolling for short documents.</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../nw/gui/preferences.py" line="769"/>
+        <location filename="../nw/gui/preferences.py" line="770"/>
         <source>Typewriter style scrolling when you type</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../nw/gui/preferences.py" line="769"/>
+        <location filename="../nw/gui/preferences.py" line="770"/>
         <source>Try to keep the cursor at a fixed vertical position.</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../nw/gui/preferences.py" line="781"/>
+        <location filename="../nw/gui/preferences.py" line="782"/>
         <source>Minimum position for Typewriter scrolling</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../nw/gui/preferences.py" line="781"/>
+        <location filename="../nw/gui/preferences.py" line="782"/>
         <source>Percentage of the editor height from the top.</source>
         <translation></translation>
     </message>
@@ -3154,82 +3154,82 @@
 <context>
     <name>GuiPreferencesGeneral</name>
     <message>
-        <location filename="../nw/gui/preferences.py" line="151"/>
+        <location filename="../nw/gui/preferences.py" line="152"/>
         <source>Look and Feel</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../nw/gui/preferences.py" line="164"/>
+        <location filename="../nw/gui/preferences.py" line="165"/>
         <source>Main GUI language</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../nw/gui/preferences.py" line="232"/>
+        <location filename="../nw/gui/preferences.py" line="233"/>
         <source>Changing this requires restarting novelWriter.</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../nw/gui/preferences.py" line="180"/>
+        <location filename="../nw/gui/preferences.py" line="181"/>
         <source>Main GUI theme</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../nw/gui/preferences.py" line="196"/>
+        <location filename="../nw/gui/preferences.py" line="197"/>
         <source>Main icon theme</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../nw/gui/preferences.py" line="205"/>
+        <location filename="../nw/gui/preferences.py" line="206"/>
         <source>Prefer icons for dark backgrounds</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../nw/gui/preferences.py" line="205"/>
+        <location filename="../nw/gui/preferences.py" line="206"/>
         <source>May improve the look of icons on dark themes.</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../nw/gui/preferences.py" line="219"/>
+        <location filename="../nw/gui/preferences.py" line="220"/>
         <source>Font family</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../nw/gui/preferences.py" line="232"/>
+        <location filename="../nw/gui/preferences.py" line="233"/>
         <source>Font size</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../nw/gui/preferences.py" line="232"/>
+        <location filename="../nw/gui/preferences.py" line="233"/>
         <source>pt</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../nw/gui/preferences.py" line="241"/>
+        <location filename="../nw/gui/preferences.py" line="242"/>
         <source>GUI Settings</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../nw/gui/preferences.py" line="245"/>
+        <location filename="../nw/gui/preferences.py" line="246"/>
         <source>Show full path in document header</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../nw/gui/preferences.py" line="245"/>
+        <location filename="../nw/gui/preferences.py" line="246"/>
         <source>Add the parent folder names to the header.</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../nw/gui/preferences.py" line="253"/>
+        <location filename="../nw/gui/preferences.py" line="254"/>
         <source>Hide vertical scroll bars in main windows</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../nw/gui/preferences.py" line="261"/>
+        <location filename="../nw/gui/preferences.py" line="262"/>
         <source>Scrolling available with mouse wheel and keys only.</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../nw/gui/preferences.py" line="261"/>
+        <location filename="../nw/gui/preferences.py" line="262"/>
         <source>Hide horizontal scroll bars in main windows</source>
         <translation></translation>
     </message>
@@ -3237,107 +3237,107 @@
 <context>
     <name>GuiPreferencesProjects</name>
     <message>
-        <location filename="../nw/gui/preferences.py" line="336"/>
+        <location filename="../nw/gui/preferences.py" line="337"/>
         <source>Automatic Save</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../nw/gui/preferences.py" line="344"/>
+        <location filename="../nw/gui/preferences.py" line="345"/>
         <source>Save document interval</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../nw/gui/preferences.py" line="344"/>
+        <location filename="../nw/gui/preferences.py" line="345"/>
         <source>How often the open document is automatically saved.</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../nw/gui/preferences.py" line="357"/>
+        <location filename="../nw/gui/preferences.py" line="358"/>
         <source>seconds</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../nw/gui/preferences.py" line="357"/>
+        <location filename="../nw/gui/preferences.py" line="358"/>
         <source>Save project interval</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../nw/gui/preferences.py" line="357"/>
+        <location filename="../nw/gui/preferences.py" line="358"/>
         <source>How often the open project is automatically saved.</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../nw/gui/preferences.py" line="366"/>
+        <location filename="../nw/gui/preferences.py" line="367"/>
         <source>Project Backup</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../nw/gui/preferences.py" line="370"/>
+        <location filename="../nw/gui/preferences.py" line="371"/>
         <source>Browse</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../nw/gui/preferences.py" line="372"/>
+        <location filename="../nw/gui/preferences.py" line="373"/>
         <source>Backup storage location</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../nw/gui/preferences.py" line="464"/>
+        <location filename="../nw/gui/preferences.py" line="465"/>
         <source>Path: {0}</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../nw/gui/preferences.py" line="382"/>
+        <location filename="../nw/gui/preferences.py" line="383"/>
         <source>Run backup when the project is closed</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../nw/gui/preferences.py" line="382"/>
+        <location filename="../nw/gui/preferences.py" line="383"/>
         <source>Can be overridden for individual projects in Project Settings.</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../nw/gui/preferences.py" line="393"/>
+        <location filename="../nw/gui/preferences.py" line="394"/>
         <source>Ask before running backup</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../nw/gui/preferences.py" line="393"/>
+        <location filename="../nw/gui/preferences.py" line="394"/>
         <source>If off, backups will run in the background.</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../nw/gui/preferences.py" line="401"/>
+        <location filename="../nw/gui/preferences.py" line="402"/>
         <source>Session Timer</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../nw/gui/preferences.py" line="406"/>
+        <location filename="../nw/gui/preferences.py" line="407"/>
         <source>Pause the session timer when not writing</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../nw/gui/preferences.py" line="406"/>
+        <location filename="../nw/gui/preferences.py" line="407"/>
         <source>Also pauses when the application window does not have focus.</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../nw/gui/preferences.py" line="419"/>
+        <location filename="../nw/gui/preferences.py" line="420"/>
         <source>Editor inactive time before pausing timer</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../nw/gui/preferences.py" line="419"/>
+        <location filename="../nw/gui/preferences.py" line="420"/>
         <source>User activity includes typing and changing the content.</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../nw/gui/preferences.py" line="419"/>
+        <location filename="../nw/gui/preferences.py" line="420"/>
         <source>minutes</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../nw/gui/preferences.py" line="459"/>
+        <location filename="../nw/gui/preferences.py" line="460"/>
         <source>Backup Directory</source>
         <translation></translation>
     </message>
@@ -3345,47 +3345,47 @@
 <context>
     <name>GuiPreferencesQuotes</name>
     <message>
-        <location filename="../nw/gui/preferences.py" line="1130"/>
+        <location filename="../nw/gui/preferences.py" line="1131"/>
         <source>Quotation Style</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../nw/gui/preferences.py" line="1146"/>
+        <location filename="../nw/gui/preferences.py" line="1147"/>
         <source>Single quote open style</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../nw/gui/preferences.py" line="1146"/>
+        <location filename="../nw/gui/preferences.py" line="1147"/>
         <source>The symbol to use for a leading single quote.</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../nw/gui/preferences.py" line="1162"/>
+        <location filename="../nw/gui/preferences.py" line="1163"/>
         <source>Single quote close style</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../nw/gui/preferences.py" line="1162"/>
+        <location filename="../nw/gui/preferences.py" line="1163"/>
         <source>The symbol to use for a trailing single quote.</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../nw/gui/preferences.py" line="1179"/>
+        <location filename="../nw/gui/preferences.py" line="1180"/>
         <source>Double quote open style</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../nw/gui/preferences.py" line="1179"/>
+        <location filename="../nw/gui/preferences.py" line="1180"/>
         <source>The symbol to use for a leading double quote.</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../nw/gui/preferences.py" line="1195"/>
+        <location filename="../nw/gui/preferences.py" line="1196"/>
         <source>Double quote close style</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../nw/gui/preferences.py" line="1195"/>
+        <location filename="../nw/gui/preferences.py" line="1196"/>
         <source>The symbol to use for a trailing double quote.</source>
         <translation></translation>
     </message>
@@ -3393,67 +3393,67 @@
 <context>
     <name>GuiPreferencesSyntax</name>
     <message>
-        <location filename="../nw/gui/preferences.py" line="866"/>
+        <location filename="../nw/gui/preferences.py" line="867"/>
         <source>Highlighting Theme</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../nw/gui/preferences.py" line="877"/>
+        <location filename="../nw/gui/preferences.py" line="878"/>
         <source>Highlighting theme</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../nw/gui/preferences.py" line="877"/>
+        <location filename="../nw/gui/preferences.py" line="878"/>
         <source>Colour theme to apply to the editor and viewer.</source>
         <translation>Color theme to apply to the editor and viewer.</translation>
     </message>
     <message>
-        <location filename="../nw/gui/preferences.py" line="885"/>
+        <location filename="../nw/gui/preferences.py" line="886"/>
         <source>Quotes &amp; Dialogue</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../nw/gui/preferences.py" line="890"/>
+        <location filename="../nw/gui/preferences.py" line="891"/>
         <source>Highlight text wrapped in quotes</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../nw/gui/preferences.py" line="890"/>
+        <location filename="../nw/gui/preferences.py" line="891"/>
         <source>Applies to single, double and straight quotes.</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../nw/gui/preferences.py" line="898"/>
+        <location filename="../nw/gui/preferences.py" line="899"/>
         <source>Allow open-ended single quotes</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../nw/gui/preferences.py" line="898"/>
+        <location filename="../nw/gui/preferences.py" line="899"/>
         <source>Highlight single-quoted line with no closing quote.</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../nw/gui/preferences.py" line="906"/>
+        <location filename="../nw/gui/preferences.py" line="907"/>
         <source>Allow open-ended double quotes</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../nw/gui/preferences.py" line="906"/>
+        <location filename="../nw/gui/preferences.py" line="907"/>
         <source>Highlight double-quoted line with no closing quote.</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../nw/gui/preferences.py" line="914"/>
+        <location filename="../nw/gui/preferences.py" line="915"/>
         <source>Text Emphasis</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../nw/gui/preferences.py" line="918"/>
+        <location filename="../nw/gui/preferences.py" line="919"/>
         <source>Add highlight colour to emphasised text</source>
         <translation>Add highlight color to emphasised text</translation>
     </message>
     <message>
-        <location filename="../nw/gui/preferences.py" line="918"/>
+        <location filename="../nw/gui/preferences.py" line="919"/>
         <source>Applies to emphasis (italic) and strong (bold).</source>
         <translation></translation>
     </message>
