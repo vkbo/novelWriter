@@ -1,5 +1,20 @@
 # novelWriter Changelog
 
+## Version 1.2.1 [2021-03-21]
+
+### Release Notes
+
+### Detailed Changelog
+
+**Bugfixes**
+
+* Fixed an issue with the search bar where the button and shortcut actions would be blocked unless
+  the document itself had focus. This focus check was added for all the text altering functions,
+  but should not affect search and replace. The search and replace actions now bypass the regular
+  action pipeline with the focus check. Issue #708. PR #709.
+
+----
+
 ## Version 1.2 [2021-03-14]
 
 ### Release Notes
