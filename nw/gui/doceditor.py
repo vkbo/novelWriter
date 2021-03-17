@@ -684,10 +684,6 @@ class GuiDocEditor(QTextEdit):
         this class when calling these actions from other classes.
         """
         logger.verbose("Requesting action: %s" % theAction.name)
-        if not self.hasFocus():
-            logger.verbose("Editor does not have focus")
-            return False
-
         if self.theHandle is None:
             logger.error("No document open")
             return False
@@ -717,16 +713,6 @@ class GuiDocEditor(QTextEdit):
             self._makeSelection(QTextCursor.Document)
         elif theAction == nwDocAction.SEL_PARA:
             self._makeSelection(QTextCursor.BlockUnderCursor)
-        elif theAction == nwDocAction.FIND:
-            self._beginSearch()
-        elif theAction == nwDocAction.REPLACE:
-            self._beginReplace()
-        elif theAction == nwDocAction.GO_NEXT:
-            self._findNext()
-        elif theAction == nwDocAction.GO_PREV:
-            self._findNext(isBackward=True)
-        elif theAction == nwDocAction.REPL_NEXT:
-            self._replaceNext()
         elif theAction == nwDocAction.BLOCK_H1:
             self._formatBlock(nwDocAction.BLOCK_H1)
         elif theAction == nwDocAction.BLOCK_H2:
@@ -757,6 +743,15 @@ class GuiDocEditor(QTextEdit):
         """Wrapper function to check if the current document is empty.
         """
         return self.qDocument.isEmpty()
+
+    def anyFocus(self):
+        """Check if any widget or child widget has focus.
+        """
+        if self.hasFocus():
+            return True
+        if self.isAncestorOf(qApp.focusWidget()):
+            return True
+        return False
 
     def revealLocation(self):
         """Tell the user where on the file system the file in the editor
@@ -851,7 +846,7 @@ class GuiDocEditor(QTextEdit):
         if self.docSearch.isVisible():
             self.docSearch.closeSearch()
         else:
-            self._beginSearch()
+            self.beginSearch()
         return
 
     ##
@@ -1167,6 +1162,144 @@ class GuiDocEditor(QTextEdit):
                 self.queuePos = None
             else:
                 logger.verbose("Denied cursor move to %d > %d" % (self.queuePos, thePos))
+        return
+
+    ##
+    #  Search & Replace
+    ##
+
+    def beginSearch(self):
+        """Sets the selected text as the search text for the search bar.
+        """
+        theCursor = self.textCursor()
+        if theCursor.hasSelection():
+            self.docSearch.setSearchText(theCursor.selectedText())
+        else:
+            self.docSearch.setSearchText(None)
+        self.updateDocMargins()
+        return
+
+    def beginReplace(self):
+        """Opens the replace line of the search bar and sets the find
+        text if a selection has been made, and resets the replace text.
+        """
+        theCursor = self.textCursor()
+        if theCursor.hasSelection():
+            self.docSearch.setSearchText(theCursor.selectedText())
+        else:
+            self.docSearch.setSearchText(None)
+        self.docSearch.setReplaceText("")
+        self.updateDocMargins()
+        return
+
+    def findNext(self, goBack=False):
+        """Searches for the next or previous occurrence of the search
+        bar text in the document. Wraps around if not found and loop is
+        enabled, or continues to next file if next file is enabled.
+        """
+        if not self.anyFocus():
+            logger.debug("Editor does not have focus")
+            return False
+
+        if not self.docSearch.isVisible():
+            self.beginSearch()
+            return
+
+        findOpt = QTextDocument.FindFlag(0)
+        if goBack:
+            findOpt |= QTextDocument.FindBackward
+        if self.docSearch.isCaseSense:
+            findOpt |= QTextDocument.FindCaseSensitively
+        if self.docSearch.isWholeWord:
+            findOpt |= QTextDocument.FindWholeWords
+
+        searchFor = self.docSearch.getSearchObject()
+        wasFound  = self.find(searchFor, findOpt)
+        if not wasFound:
+            if self.docSearch.doNextFile and not goBack:
+                self.theParent.openNextDocument(
+                    self.theHandle, wrapAround=self.docSearch.doLoop
+                )
+            elif self.docSearch.doLoop:
+                theCursor = self.textCursor()
+                theCursor.movePosition(
+                    QTextCursor.End if goBack else QTextCursor.Start
+                )
+                self.setTextCursor(theCursor)
+                wasFound = self.find(searchFor, findOpt)
+
+        if wasFound:
+            theCursor = self.textCursor()
+            self.lastFind = (theCursor.selectionStart(), theCursor.selectionEnd())
+
+        return
+
+    def replaceNext(self):
+        """Searches for the next occurrence of the search bar text in
+        the document and replaces it with the replace text. Calls search
+        next automatically when done.
+        """
+        if not self.anyFocus():
+            logger.debug("Editor does not have focus")
+            return False
+
+        if not self.docSearch.isVisible():
+            # The search tool is not active, so we activate it.
+            self.beginSearch()
+            return
+
+        theCursor = self.textCursor()
+        if not theCursor.hasSelection():
+            # We have no text selected at all, so just make this a
+            # regular find next call.
+            self.findNext()
+            return
+
+        if self.lastFind is None and theCursor.hasSelection():
+            # If we have a selection but no search, it may have been the
+            # text we triggered the search with, in which case we search
+            # again from the beginning of that selection to make sure we
+            # have a valid result.
+            sPos = theCursor.selectionStart()
+            theCursor.clearSelection()
+            theCursor.setPosition(sPos)
+            self.setTextCursor(theCursor)
+            self.findNext()
+            theCursor = self.textCursor()
+
+        if self.lastFind is None:
+            # In case the above didn't find a result, we give up here.
+            return
+
+        searchFor = self.docSearch.getSearchText()
+        replWith  = self.docSearch.getReplaceText()
+
+        if self.docSearch.doMatchCap:
+            replWith = transferCase(theCursor.selectedText(), replWith)
+
+        # Make sure the selected text was selected by an actual find
+        # call, and not the user.
+        try:
+            isFind  = self.lastFind[0] == theCursor.selectionStart()
+            isFind &= self.lastFind[1] == theCursor.selectionEnd()
+        except Exception:
+            isFind = False
+
+        if isFind:
+            theCursor.beginEditBlock()
+            theCursor.removeSelectedText()
+            theCursor.insertText(replWith)
+            theCursor.endEditBlock()
+            theCursor.setPosition(theCursor.selectionEnd())
+            self.setTextCursor(theCursor)
+            logger.verbose("Replaced occurrence of '%s' with '%s' on line %d" % (
+                searchFor, replWith, theCursor.blockNumber()
+            ))
+        else:
+            logger.error("The selected text is not a search result, skipping replace")
+
+        self.findNext()
+
         return
 
     ##
@@ -1630,132 +1763,6 @@ class GuiDocEditor(QTextEdit):
         self._makeSelection(selMode)
         return
 
-    def _beginSearch(self):
-        """Sets the selected text as the search text for the search bar.
-        """
-        theCursor = self.textCursor()
-        if theCursor.hasSelection():
-            self.docSearch.setSearchText(theCursor.selectedText())
-        else:
-            self.docSearch.setSearchText(None)
-        self.updateDocMargins()
-        return
-
-    def _beginReplace(self):
-        """Opens the replace line of the search bar and sets the find
-        text if a selection has been made, and resets the replace text.
-        """
-        theCursor = self.textCursor()
-        if theCursor.hasSelection():
-            self.docSearch.setSearchText(theCursor.selectedText())
-        else:
-            self.docSearch.setSearchText(None)
-        self.docSearch.setReplaceText("")
-        self.updateDocMargins()
-        return
-
-    def _findNext(self, isBackward=False):
-        """Searches for the next or previous occurrence of the search
-        bar text in the document. Wraps around if not found and loop is
-        enabled, or continues to next file if next file is enabled.
-        """
-        if not self.docSearch.isVisible():
-            self._beginSearch()
-            return
-
-        findOpt = QTextDocument.FindFlag(0)
-        if isBackward:
-            findOpt |= QTextDocument.FindBackward
-        if self.docSearch.isCaseSense:
-            findOpt |= QTextDocument.FindCaseSensitively
-        if self.docSearch.isWholeWord:
-            findOpt |= QTextDocument.FindWholeWords
-
-        searchFor = self.docSearch.getSearchObject()
-        wasFound  = self.find(searchFor, findOpt)
-        if not wasFound:
-            if self.docSearch.doNextFile and not isBackward:
-                self.theParent.openNextDocument(
-                    self.theHandle, wrapAround=self.docSearch.doLoop
-                )
-            elif self.docSearch.doLoop:
-                theCursor = self.textCursor()
-                theCursor.movePosition(
-                    QTextCursor.End if isBackward else QTextCursor.Start
-                )
-                self.setTextCursor(theCursor)
-                wasFound = self.find(searchFor, findOpt)
-
-        if wasFound:
-            theCursor = self.textCursor()
-            self.lastFind = (theCursor.selectionStart(), theCursor.selectionEnd())
-
-        return
-
-    def _replaceNext(self):
-        """Searches for the next occurrence of the search bar text in
-        the document and replaces it with the replace text. Calls search
-        next automatically when done.
-        """
-        if not self.docSearch.isVisible():
-            # The search tool is not active, so we activate it.
-            self._beginSearch()
-            return
-
-        theCursor = self.textCursor()
-        if not theCursor.hasSelection():
-            # We have no text selected at all, so just make this a
-            # regular find next call.
-            self._findNext()
-            return
-
-        if self.lastFind is None and theCursor.hasSelection():
-            # If we have a selection but no search, it may have been the
-            # text we triggered the search with, in which case we search
-            # again from the beginning of that selection to make sure we
-            # have a valid result.
-            sPos = theCursor.selectionStart()
-            theCursor.clearSelection()
-            theCursor.setPosition(sPos)
-            self.setTextCursor(theCursor)
-            self._findNext()
-            theCursor = self.textCursor()
-
-        if self.lastFind is None:
-            # In case the above didn't find a result, we give up here.
-            return
-
-        searchFor = self.docSearch.getSearchText()
-        replWith  = self.docSearch.getReplaceText()
-
-        if self.docSearch.doMatchCap:
-            replWith = transferCase(theCursor.selectedText(), replWith)
-
-        # Make sure the selected text was selected by an actual find
-        # call, and not the user.
-        try:
-            isFind  = self.lastFind[0] == theCursor.selectionStart()
-            isFind &= self.lastFind[1] == theCursor.selectionEnd()
-        except Exception:
-            isFind = False
-
-        if isFind:
-            theCursor.beginEditBlock()
-            theCursor.removeSelectedText()
-            theCursor.insertText(replWith)
-            theCursor.endEditBlock()
-            theCursor.setPosition(theCursor.selectionEnd())
-            self.setTextCursor(theCursor)
-            logger.verbose("Replaced occurrence of '%s' with '%s' on line %d" % (
-                searchFor, replWith, theCursor.blockNumber()
-            ))
-        else:
-            logger.error("The selected text is not a search result, skipping replace")
-
-        self._findNext()
-
-        return
-
     def _setupSpellChecking(self):
         """Create the spell checking object based on the spellTool
         setting in config.
@@ -2119,15 +2126,15 @@ class GuiDocEditSearch(QFrame):
         """
         modKey = qApp.keyboardModifiers()
         if modKey == Qt.ShiftModifier:
-            self.docEditor.docAction(nwDocAction.GO_PREV)
+            self.docEditor.findNext(goBack=True)
         else:
-            self.docEditor.docAction(nwDocAction.GO_NEXT)
+            self.docEditor.findNext()
         return
 
     def _doReplace(self):
         """Call the replace action function for the document editor.
         """
-        self.docEditor.docAction(nwDocAction.REPL_NEXT)
+        self.docEditor.replaceNext()
         return
 
     def _doToggleReplace(self, theState):
