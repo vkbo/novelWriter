@@ -42,34 +42,56 @@ can install them with:
 Step 2: Install Package (Optional)
 ----------------------------------
 
-You can install novelWriter to the correct location for Python packages with:
+You can install novelWriter to the default location for Python packages using setuptools. This step
+is optional as you can also just put the novelWriter program folder wherever you like. For instance
+to ``/opt/novelWriter`` and run Step 3 to set up icons and launcher.
+
+To install novelWriter to the default location, it requires that you have setuptools installed on
+your system. If you don't have setuptools, it can usually be installed from your distro's
+repository. For Debian and Ubuntu this is achieved with:
 
 .. code-block:: console
 
-   ./setup.py install
+   sudo apt install python3-setuptools
+
+The package is also available from PyPi:
+
+.. code-block:: console
+
+   pip3 install --user setuptools
+
+With setuptools in place, novelWriter can be installed to the user space with:
+
+.. code-block:: console
+
+   ./setup.py install --user
+
+This should install novelWriter as ``~/.local/bin/novelWriter``. If you instead want to install for
+all users, i.e. as ``/usr/local/bin/novelWriter``, run:
+
+.. code-block:: console
+
+   sudo ./setup.py install
 
 This is equivalent to what the ``pip`` installer does. It puts novelWriter in the location on your
 system where Python packages are usually kept. This is not really the best suited location for a
 GUI application like novelWriter, so you may instead copy the entire source to a suiteable location
 yourself.
 
-This should install novelWriter to either ``~/.local/bin/novelWriter`` if installed for local user
-only, or to ``/usr/local/bin/novelWriter`` if installed for all users (with the ``sudo`` command).
-
 
 Step 3: Create Launcher Icons
 -----------------------------
 
-Regardless of where you extract or install the source files, you can easily set up a standard icon
-and launcher. To set up this desktop launcher, the needed icons, and the project file association,
-run:
+Regardless of where you extract or install the source files, you can set up a standard icon and a
+launcher. To set up this desktop launcher, the needed icons, and the project file association,
+run the following from inside the novelWriter folder:
 
 .. code-block:: console
 
    ./setup.py xdg-install
 
-By default, these commands install novelWriter and its icons for the current user only. To install
-for all users, run the script with the ``sudo`` command.
+By default, this command installs the launcher and icons for the current user only. To install for
+all users, run the script with the ``sudo`` command.
 
 .. tip::
    All options of the setup script can be listed with: ``./setup.py help``.
