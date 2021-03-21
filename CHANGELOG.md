@@ -1,5 +1,32 @@
 # novelWriter Changelog
 
+## Version 1.2.1 [2021-03-21]
+
+### Release Notes
+
+This patch release is a bug fix release addressing issues with the document editor's search and
+replace tool. Due to some recently added restrictions on when various tools are active, depending
+on which part of the main window has the user's focus, the search tool keyboard shortcuts and
+buttons were blocked when they shouldn't. This release resolves these issues.
+
+### Detailed Changelog
+
+**Bugfixes**
+
+* Fixed an issue with the search bar where the button and shortcut actions would be blocked unless
+  the document itself had focus. This focus check was added for all the text altering functions,
+  but should not affect search and replace. The search and replace actions now bypass the regular
+  action pipeline with the focus check. Issue #708. PR #709.
+
+**Documentation**
+
+* Improve the instructions for setup on Linux when manually installing using the `setup.py` script.
+  Previously, the documentation wasn't very clear on the difference between a user space install
+  and a system wide install. Neither did it explain how to install `setuptools` if the package is
+  missing. Issue #714. PR #715.
+
+----
+
 ## Version 1.2 [2021-03-14]
 
 ### Release Notes
