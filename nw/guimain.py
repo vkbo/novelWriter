@@ -46,7 +46,7 @@ from nw.gui import (
     GuiProjectTree, GuiProjectWizard, GuiTheme, GuiWordList, GuiWritingStats
 )
 from nw.core import NWProject, NWDoc, NWIndex
-from nw.constants import nwItemType, nwItemClass, nwAlert, nwLists
+from nw.constants import nwItemType, nwItemClass, nwAlert, nwLists, nwWidget
 from nw.common import getGuiItem, hexToInt
 
 logger = logging.getLogger(__name__)
@@ -810,7 +810,7 @@ class GuiMain(QMainWindow):
         if tHandle is None:
             if self.docEditor.anyFocus() or self.isFocusMode:
                 tHandle = self.docEditor.theHandle
-            elif self.treeView.hasFocus():
+            else:
                 tHandle = self.treeView.getSelectedHandle()
 
         if tHandle is None:
@@ -1180,15 +1180,15 @@ class GuiMain(QMainWindow):
     def switchFocus(self, paneNo):
         """Switch focus between main GUI views.
         """
-        if paneNo == 1:
+        if paneNo == nwWidget.TREE:
             self.treeView.setFocus()
-        elif paneNo == 2:
+        elif paneNo == nwWidget.EDITOR:
             self.mainTabs.setCurrentWidget(self.splitDocs)
             self.docEditor.setFocus()
-        elif paneNo == 3:
+        elif paneNo == nwWidget.VIEWER:
             self.mainTabs.setCurrentWidget(self.splitDocs)
             self.docViewer.setFocus()
-        elif paneNo == 4:
+        elif paneNo == nwWidget.OUTLINE:
             self.mainTabs.setCurrentWidget(self.splitOutline)
             self.projView.setFocus()
         return
@@ -1225,7 +1225,7 @@ class GuiMain(QMainWindow):
         if self.isFocusMode:
             logger.debug("Activating Focus Mode")
             self.mainTabs.setCurrentWidget(self.splitDocs)
-            self.switchFocus(2)
+            self.switchFocus(nwWidget.EDITOR)
         else:
             logger.debug("Deactivating Focus Mode")
 
