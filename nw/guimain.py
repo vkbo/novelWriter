@@ -558,6 +558,10 @@ class GuiMain(QMainWindow):
             logger.error("No project open")
             return False
 
+        # Disable focus mode if it is active
+        if self.isFocusMode:
+            self.toggleFocusMode()
+
         self.docEditor.saveCursorPosition()
         if self.docEditor.docChanged:
             self.saveDocument()
@@ -804,10 +808,10 @@ class GuiMain(QMainWindow):
             return False
 
         if tHandle is None:
-            if self.treeView.hasFocus():
-                tHandle = self.treeView.getSelectedHandle()
-            elif self.docEditor.hasFocus():
+            if self.docEditor.anyFocus() or self.isFocusMode:
                 tHandle = self.docEditor.theHandle
+            elif self.treeView.hasFocus():
+                tHandle = self.treeView.getSelectedHandle()
 
         if tHandle is None:
             logger.warning("No item selected")
@@ -1221,6 +1225,7 @@ class GuiMain(QMainWindow):
         if self.isFocusMode:
             logger.debug("Activating Focus Mode")
             self.mainTabs.setCurrentWidget(self.splitDocs)
+            self.setFocus(2)
         else:
             logger.debug("Deactivating Focus Mode")
 
@@ -1232,6 +1237,7 @@ class GuiMain(QMainWindow):
 
         hideDocFooter = self.isFocusMode and self.mainConf.hideFocusFooter
         self.docEditor.docFooter.setVisible(not hideDocFooter)
+        self.docEditor.docHeader.updateFocusMode()
 
         if self.splitView.isVisible():
             self.splitView.setVisible(False)
@@ -1269,11 +1275,12 @@ class GuiMain(QMainWindow):
         """
         # Project
         self.addAction(self.mainMenu.aSaveProject)
+        self.addAction(self.mainMenu.aEditItem)
         self.addAction(self.mainMenu.aExitNW)
 
         # Document
         self.addAction(self.mainMenu.aSaveDoc)
-        self.addAction(self.mainMenu.aFileDetails)
+        self.addAction(self.mainMenu.aCloseDoc)
 
         # Edit
         self.addAction(self.mainMenu.aEditUndo)
@@ -1316,6 +1323,13 @@ class GuiMain(QMainWindow):
 
         for mAction, _ in self.mainMenu.mInsKWItems.values():
             self.addAction(mAction)
+
+        # Search
+        self.addAction(self.mainMenu.aFind)
+        self.addAction(self.mainMenu.aReplace)
+        self.addAction(self.mainMenu.aFindNext)
+        self.addAction(self.mainMenu.aFindPrev)
+        self.addAction(self.mainMenu.aReplaceNext)
 
         # Format
         self.addAction(self.mainMenu.aFmtEmph)

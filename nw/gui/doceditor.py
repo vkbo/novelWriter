@@ -2178,7 +2178,6 @@ class GuiDocEditHeader(QWidget):
 
         fPx = int(0.9*self.theTheme.fontPixelSize)
         hSp = self.mainConf.pxInt(6)
-        self.buttonSize = fPx + hSp
 
         # Main Widget Settings
         self.setAutoFillBackground(True)
@@ -2324,6 +2323,17 @@ class GuiDocEditHeader(QWidget):
 
         return True
 
+    def updateFocusMode(self):
+        """Update the minimise/maximise icon of the Focus Mode button.
+        This function is called by the GuiMain class via the
+        toggleFocusMode function and should not be activated directly.
+        """
+        if self.theParent.isFocusMode:
+            self.minmaxButton.setIcon(self.theTheme.getIcon("minimise"))
+        else:
+            self.minmaxButton.setIcon(self.theTheme.getIcon("maximise"))
+        return
+
     ##
     #  Slots
     ##
@@ -2354,18 +2364,6 @@ class GuiDocEditHeader(QWidget):
         """Switch on or off Focus Mode.
         """
         self.theParent.toggleFocusMode()
-        if self.theParent.isFocusMode:
-            self.minmaxButton.setIcon(self.theTheme.getIcon("minimise"))
-            self.setContentsMargins(self.buttonSize, 0, 0, 0)
-            self.editButton.setVisible(False)
-            self.searchButton.setVisible(False)
-            self.closeButton.setVisible(False)
-        else:
-            self.minmaxButton.setIcon(self.theTheme.getIcon("maximise"))
-            self.setContentsMargins(0, 0, 0, 0)
-            self.editButton.setVisible(True)
-            self.searchButton.setVisible(True)
-            self.closeButton.setVisible(True)
         return
 
     ##
