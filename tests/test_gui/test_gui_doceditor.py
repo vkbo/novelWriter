@@ -117,14 +117,14 @@ def testGuiEditor_Main(qtbot, monkeypatch, nwGUI, fncDir, fncProj, refDir, outDi
     nwGUI.mainConf.autoScroll = True
 
     # Add a Character File
-    nwGUI.setFocus(1)
+    nwGUI.switchFocus(1)
     nwGUI.treeView.clearSelection()
     nwGUI.treeView._getTreeItem("71ee45a3c0db9").setSelected(True)
     nwGUI.treeView.newTreeItem(nwItemType.FILE, None)
     assert nwGUI.openSelectedItem()
 
     # Type something into the document
-    nwGUI.setFocus(2)
+    nwGUI.switchFocus(2)
     qtbot.keyClick(nwGUI.docEditor, "a", modifier=Qt.ControlModifier, delay=keyDelay)
     for c in "# Jane Doe":
         qtbot.keyClick(nwGUI.docEditor, c, delay=typeDelay)
@@ -139,14 +139,14 @@ def testGuiEditor_Main(qtbot, monkeypatch, nwGUI, fncDir, fncProj, refDir, outDi
     qtbot.keyClick(nwGUI.docEditor, Qt.Key_Return, delay=keyDelay)
 
     # Add a Plot File
-    nwGUI.setFocus(1)
+    nwGUI.switchFocus(1)
     nwGUI.treeView.clearSelection()
     nwGUI.treeView._getTreeItem("44cb730c42048").setSelected(True)
     nwGUI.treeView.newTreeItem(nwItemType.FILE, None)
     assert nwGUI.openSelectedItem()
 
     # Type something into the document
-    nwGUI.setFocus(2)
+    nwGUI.switchFocus(2)
     qtbot.keyClick(nwGUI.docEditor, "a", modifier=Qt.ControlModifier, delay=keyDelay)
     for c in "# Main Plot":
         qtbot.keyClick(nwGUI.docEditor, c, delay=typeDelay)
@@ -161,7 +161,7 @@ def testGuiEditor_Main(qtbot, monkeypatch, nwGUI, fncDir, fncProj, refDir, outDi
     qtbot.keyClick(nwGUI.docEditor, Qt.Key_Return, delay=keyDelay)
 
     # Add a World File
-    nwGUI.setFocus(1)
+    nwGUI.switchFocus(1)
     nwGUI.treeView.clearSelection()
     nwGUI.treeView._getTreeItem("811786ad1ae74").setSelected(True)
     nwGUI.treeView.newTreeItem(nwItemType.FILE, None)
@@ -173,7 +173,7 @@ def testGuiEditor_Main(qtbot, monkeypatch, nwGUI, fncDir, fncProj, refDir, outDi
     nwGUI.docEditor.replaceText("")
 
     # Type something into the document
-    nwGUI.setFocus(2)
+    nwGUI.switchFocus(2)
     qtbot.keyClick(nwGUI.docEditor, "a", modifier=Qt.ControlModifier, delay=keyDelay)
     for c in "# Main Location":
         qtbot.keyClick(nwGUI.docEditor, c, delay=typeDelay)
@@ -192,7 +192,7 @@ def testGuiEditor_Main(qtbot, monkeypatch, nwGUI, fncDir, fncProj, refDir, outDi
     nwGUI._autoSaveProject()
 
     # Select the 'New Scene' file
-    nwGUI.setFocus(1)
+    nwGUI.switchFocus(1)
     nwGUI.treeView.clearSelection()
     nwGUI.treeView._getTreeItem("73475cb40a568").setExpanded(True)
     nwGUI.treeView._getTreeItem("31489056e0916").setExpanded(True)
@@ -200,7 +200,7 @@ def testGuiEditor_Main(qtbot, monkeypatch, nwGUI, fncDir, fncProj, refDir, outDi
     assert nwGUI.openSelectedItem()
 
     # Type something into the document
-    nwGUI.setFocus(2)
+    nwGUI.switchFocus(2)
     qtbot.keyClick(nwGUI.docEditor, "a", modifier=Qt.ControlModifier, delay=keyDelay)
     for c in "# Novel":
         qtbot.keyClick(nwGUI.docEditor, c, delay=typeDelay)
@@ -300,7 +300,7 @@ def testGuiEditor_Main(qtbot, monkeypatch, nwGUI, fncDir, fncProj, refDir, outDi
     qtbot.wait(stepDelay)
 
     # Open and view the edited document
-    nwGUI.setFocus(3)
+    nwGUI.switchFocus(3)
     assert nwGUI.openDocument("0e17daca5f3e1")
     assert nwGUI.viewDocument("0e17daca5f3e1")
     qtbot.wait(stepDelay)

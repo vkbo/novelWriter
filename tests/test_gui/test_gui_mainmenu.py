@@ -366,7 +366,7 @@ def testGuiMenu_Insert(qtbot, monkeypatch, nwGUI, fncDir, fncProj):
 
     assert nwGUI.treeView._getTreeItem("0e17daca5f3e1") is not None
 
-    nwGUI.setFocus(1)
+    nwGUI.switchFocus(1)
     nwGUI.treeView.clearSelection()
     nwGUI.treeView._getTreeItem("0e17daca5f3e1").setSelected(True)
     assert nwGUI.openSelectedItem()
