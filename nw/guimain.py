@@ -1177,7 +1177,7 @@ class GuiMain(QMainWindow):
 
         return True
 
-    def setFocus(self, paneNo):
+    def switchFocus(self, paneNo):
         """Switch focus between main GUI views.
         """
         if paneNo == 1:
@@ -1225,7 +1225,7 @@ class GuiMain(QMainWindow):
         if self.isFocusMode:
             logger.debug("Activating Focus Mode")
             self.mainTabs.setCurrentWidget(self.splitDocs)
-            self.setFocus(2)
+            self.switchFocus(2)
         else:
             logger.debug("Deactivating Focus Mode")
 
