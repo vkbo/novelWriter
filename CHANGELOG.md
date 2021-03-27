@@ -4,6 +4,11 @@
 
 ### Release Notes
 
+This patch release is a bug fix release addressing some inconsistencies and issues with the
+document header buttons when Focus Mode is active. The keyboard shortcuts for search and replace
+should now also work in Focus Mode. In addition, the setup script for novelWriter has been improved
+when installing on Windows.
+
 ### Detailed Changelog
 
 **Bugfixes**
@@ -22,8 +27,10 @@
 
 **Installation**
 
-* The setup script command do build minimal install archive files now also generate SHA 256 file
-  sum files. PR #724.
+* The setup script command do build minimal install archive files now also generate SHA 256 sum
+  files. PR #724.
+* The setup script will now copy the `novelWriter.py` file to `novelWriter.pyw` if it doesn't exist
+  when the `win-install` command is run. Issue #727. PR #728.
 
 ----
 
