@@ -695,6 +695,9 @@ def winInstall():
     targetPy = os.path.join(targetDir, "novelWriter.pyw")
     targetIcon = os.path.join(targetDir, "nw", "assets", "icons", "novelwriter.ico")
 
+    if not os.path.isfile(targetPy):
+        shutil.copy2(os.path.join(targetDir, "novelWriter.py"), targetPy)
+
     print("Collecting Info ...")
     print("Desktop Folder:    %s" % desktopDir)
     print("Start Menu Folder: %s" % startMenuDir)
