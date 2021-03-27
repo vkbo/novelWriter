@@ -265,7 +265,8 @@ def makeMinimalPackage(targetOS):
     else:
         targName = ""
 
-    outFile = os.path.join("dist", f"novelWriter-{__version__}-minimal{targName}.zip")
+    zipFile = f"novelWriter-{__version__}-minimal{targName}.zip"
+    outFile = os.path.join("dist", zipFile)
     if os.path.isfile(outFile):
         os.unlink(outFile)
 
@@ -306,7 +307,17 @@ def makeMinimalPackage(targetOS):
             zipObj.write(aFile)
 
     print("")
-    print("Built file: %s" % outFile)
+    print("Created File: %s" % outFile)
+
+    try:
+        shaFile = open(outFile+".sha256", mode="w")
+        subprocess.call(["sha256sum", zipFile], stdout=shaFile, cwd="dist")
+        shaFile.close()
+        print("SHA256 Sum:   %s" % (outFile+".sha256"))
+    except Exception as e:
+        print("Could not generate sha256 file")
+        print(str(e))
+
     print("")
 
     return
