@@ -35,9 +35,9 @@ from PyQt5.QtWidgets import (
     QLabel, QSpinBox, QGridLayout, QHBoxLayout, QLineEdit, QAbstractItemView
 )
 
-from nw.gui.custom import PagedDialog, QSwitch
-from nw.constants import nwUnicode
 from nw.common import numberToRoman
+from nw.constants import nwUnicode
+from nw.gui.custom import PagedDialog, QSwitch
 
 logger = logging.getLogger(__name__)
 

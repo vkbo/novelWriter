@@ -41,7 +41,8 @@ from PyQt5.QtWidgets import (
 )
 
 from nw.core import ToHtml
-from nw.constants import nwAlert, nwItemType, nwDocAction, nwUnicode
+from nw.enum import nwAlert, nwItemType, nwDocAction
+from nw.constants import nwUnicode
 
 logger = logging.getLogger(__name__)
 

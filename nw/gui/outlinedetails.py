@@ -32,8 +32,8 @@ from PyQt5.QtWidgets import (
     QScrollArea, QWidget, QGridLayout, QHBoxLayout, QGroupBox, QLabel
 )
 
-from nw.constants import trConst, nwLabels, nwKeyWords
 from nw.common import checkInt
+from nw.constants import trConst, nwKeyWords, nwLabels
 
 logger = logging.getLogger(__name__)
 

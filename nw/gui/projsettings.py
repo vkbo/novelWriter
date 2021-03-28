@@ -35,7 +35,7 @@ from PyQt5.QtWidgets import (
     QComboBox
 )
 
-from nw.constants import nwAlert
+from nw.enum import nwAlert
 from nw.gui.custom import QSwitch, PagedDialog, QConfigLayout
 
 logger = logging.getLogger(__name__)

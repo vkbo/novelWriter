@@ -28,10 +28,8 @@ import logging
 
 from lxml import etree
 
-from nw.constants import nwItemType, nwItemClass, nwItemLayout
-from nw.common import (
-    checkInt, isHandle, isItemClass, isItemLayout, isItemType
-)
+from nw.enum import nwItemType, nwItemClass, nwItemLayout
+from nw.common import checkInt, isHandle, isItemClass, isItemLayout, isItemType
 
 logger = logging.getLogger(__name__)
 

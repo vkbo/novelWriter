@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!DOCTYPE TS><TS version="2.0" language="nb_NO" sourcelanguage="en_GB">
+<!DOCTYPE TS>
+<TS version="2.1" language="nb_NO" sourcelanguage="en_GB">
 <context>
     <name>Common</name>
     <message>
@@ -798,22 +799,22 @@
 <context>
     <name>GuiDocEditFooter</name>
     <message>
-        <location filename="../nw/gui/doceditor.py" line="2468"/>
+        <location filename="../nw/gui/doceditor.py" line="2466"/>
         <source>Status</source>
         <translation>Status</translation>
     </message>
     <message>
-        <location filename="../nw/gui/doceditor.py" line="2609"/>
+        <location filename="../nw/gui/doceditor.py" line="2607"/>
         <source>Line: {0} ({1})</source>
         <translation>Linje: {0} ({1})</translation>
     </message>
     <message>
-        <location filename="../nw/gui/doceditor.py" line="2625"/>
+        <location filename="../nw/gui/doceditor.py" line="2623"/>
         <source>Words: {0} ({1})</source>
         <translation>Ord: {0} ({1})</translation>
     </message>
     <message>
-        <location filename="../nw/gui/doceditor.py" line="2630"/>
+        <location filename="../nw/gui/doceditor.py" line="2628"/>
         <source>Document size is {0} bytes</source>
         <translation>Dokumentet er {0} byte</translation>
     </message>
@@ -821,22 +822,22 @@
 <context>
     <name>GuiDocEditHeader</name>
     <message>
-        <location filename="../nw/gui/doceditor.py" line="2259"/>
+        <location filename="../nw/gui/doceditor.py" line="2258"/>
         <source>Edit document meta</source>
         <translation>Rediger dokumentinstillinger</translation>
     </message>
     <message>
-        <location filename="../nw/gui/doceditor.py" line="2270"/>
+        <location filename="../nw/gui/doceditor.py" line="2269"/>
         <source>Search document</source>
         <translation>Søk i dokumentet</translation>
     </message>
     <message>
-        <location filename="../nw/gui/doceditor.py" line="2281"/>
+        <location filename="../nw/gui/doceditor.py" line="2280"/>
         <source>Toggle Focus Mode</source>
         <translation>Slå av/på &quot;Fokus-modus&quot;</translation>
     </message>
     <message>
-        <location filename="../nw/gui/doceditor.py" line="2292"/>
+        <location filename="../nw/gui/doceditor.py" line="2291"/>
         <source>Close the document</source>
         <translation>Lukk dokumentet</translation>
     </message>
@@ -1321,7 +1322,7 @@
     <message>
         <location filename="../nw/guimain.py" line="127"/>
         <source>Novel</source>
-        <translation>Innhold</translation>
+        <translation>Roman</translation>
     </message>
     <message>
         <location filename="../nw/guimain.py" line="143"/>
@@ -1346,7 +1347,7 @@
     <message>
         <location filename="../nw/guimain.py" line="189"/>
         <source>Outline</source>
-        <translation>Disposisjon</translation>
+        <translation>Oversikt</translation>
     </message>
     <message>
         <location filename="../nw/guimain.py" line="342"/>
@@ -1374,7 +1375,7 @@
         <translation>Ønsker du å lukke dette prosjektet?</translation>
     </message>
     <message>
-        <location filename="../nw/guimain.py" line="1143"/>
+        <location filename="../nw/guimain.py" line="1147"/>
         <source>Changes are saved automatically.</source>
         <translation>Endringer lagres automatisk.</translation>
     </message>
@@ -1414,102 +1415,102 @@
         <translation>Prosjektets indeks er utdatert eller skadet. Bygger indeksen på nytt.</translation>
     </message>
     <message>
-        <location filename="../nw/guimain.py" line="697"/>
+        <location filename="../nw/guimain.py" line="701"/>
         <source>Text files ({0})</source>
         <translation>Tekstfiler ({0})</translation>
     </message>
     <message>
-        <location filename="../nw/guimain.py" line="698"/>
+        <location filename="../nw/guimain.py" line="702"/>
         <source>Markdown files ({0})</source>
         <translation>Markdown-filer ({0})</translation>
     </message>
     <message>
-        <location filename="../nw/guimain.py" line="699"/>
+        <location filename="../nw/guimain.py" line="703"/>
         <source>novelWriter files ({0})</source>
         <translation>novelWriter-filer ({0})</translation>
     </message>
     <message>
-        <location filename="../nw/guimain.py" line="700"/>
+        <location filename="../nw/guimain.py" line="704"/>
         <source>All files ({0})</source>
         <translation>Alle filer ({0})</translation>
     </message>
     <message>
-        <location filename="../nw/guimain.py" line="702"/>
+        <location filename="../nw/guimain.py" line="706"/>
         <source>Import File</source>
         <translation>Importer fil</translation>
     </message>
     <message>
-        <location filename="../nw/guimain.py" line="717"/>
+        <location filename="../nw/guimain.py" line="721"/>
         <source>Could not read file. The file must be an existing text file.</source>
         <translation>Kunne ikke lese filen. Filen må eksistere fra før av.</translation>
     </message>
     <message>
-        <location filename="../nw/guimain.py" line="723"/>
+        <location filename="../nw/guimain.py" line="727"/>
         <source>Please open a document to import the text file into.</source>
         <translation>Vennligst åpne et dokument hvor teksten i filen kan importeres.</translation>
     </message>
     <message>
-        <location filename="../nw/guimain.py" line="730"/>
+        <location filename="../nw/guimain.py" line="734"/>
         <source>Import Document</source>
         <translation>Importer dokument</translation>
     </message>
     <message>
-        <location filename="../nw/guimain.py" line="730"/>
+        <location filename="../nw/guimain.py" line="734"/>
         <source>Importing the file will overwrite the current content of the document. Do you want to proceed?</source>
         <translation>Å importere filen vil overskrive all eksisterende tekst i dokumentet. Ønsker du å fortsette?</translation>
     </message>
     <message>
-        <location filename="../nw/guimain.py" line="879"/>
+        <location filename="../nw/guimain.py" line="883"/>
         <source>Indexing: &apos;{0}&apos;</source>
         <translation>Indekserer: &apos;{0}&apos;</translation>
     </message>
     <message>
-        <location filename="../nw/guimain.py" line="879"/>
+        <location filename="../nw/guimain.py" line="883"/>
         <source>Unknown item</source>
         <translation>Ukjent enhet</translation>
     </message>
     <message>
-        <location filename="../nw/guimain.py" line="897"/>
+        <location filename="../nw/guimain.py" line="901"/>
         <source>Indexing completed in {0} ms</source>
         <translation>Indekseringen tok {0} ms</translation>
     </message>
     <message>
-        <location filename="../nw/guimain.py" line="904"/>
+        <location filename="../nw/guimain.py" line="908"/>
         <source>The project index has been successfully rebuilt.</source>
         <translation>Prosjektets indeks har blitt bygget på nytt.</translation>
     </message>
     <message>
-        <location filename="../nw/guimain.py" line="1107"/>
+        <location filename="../nw/guimain.py" line="1111"/>
         <source>Information</source>
         <translation>Informasjon</translation>
     </message>
     <message>
-        <location filename="../nw/guimain.py" line="1109"/>
+        <location filename="../nw/guimain.py" line="1113"/>
         <source>Warning</source>
         <translation>Advarsel</translation>
     </message>
     <message>
-        <location filename="../nw/guimain.py" line="1111"/>
+        <location filename="../nw/guimain.py" line="1115"/>
         <source>Error</source>
         <translation>Feil</translation>
     </message>
     <message>
-        <location filename="../nw/guimain.py" line="1113"/>
+        <location filename="../nw/guimain.py" line="1117"/>
         <source>This is a bug!</source>
         <translation>Dette er en systemfeil!</translation>
     </message>
     <message>
-        <location filename="../nw/guimain.py" line="1114"/>
+        <location filename="../nw/guimain.py" line="1118"/>
         <source>Internal Error</source>
         <translation>Intern feil</translation>
     </message>
     <message>
-        <location filename="../nw/guimain.py" line="1143"/>
+        <location filename="../nw/guimain.py" line="1147"/>
         <source>Exit</source>
         <translation>Avslutt</translation>
     </message>
     <message>
-        <location filename="../nw/guimain.py" line="1143"/>
+        <location filename="../nw/guimain.py" line="1147"/>
         <source>Do you want to exit novelWriter?</source>
         <translation>Ønsker du å avslutte novelWriter?</translation>
     </message>
@@ -1934,7 +1935,7 @@
     <message>
         <location filename="../nw/gui/mainmenu.py" line="492"/>
         <source>Focus Outline</source>
-        <translation>Gå til disposisjon</translation>
+        <translation>Gå til oversikt</translation>
     </message>
     <message>
         <location filename="../nw/gui/mainmenu.py" line="493"/>

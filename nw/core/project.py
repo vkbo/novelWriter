@@ -45,9 +45,8 @@ from nw.common import (
     checkString, checkBool, checkInt, isHandle, formatTimeStamp,
     makeFileNameSafe, hexToInt
 )
-from nw.constants import (
-    trConst, nwFiles, nwItemType, nwItemClass, nwItemLayout, nwLabels, nwAlert
-)
+from nw.enum import nwItemType, nwItemClass, nwItemLayout, nwAlert
+from nw.constants import trConst, nwFiles, nwLabels
 
 logger = logging.getLogger(__name__)
 

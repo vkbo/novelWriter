@@ -39,7 +39,7 @@ from PyQt5.QtGui import (
     QPalette, QColor, QIcon, QFont, QFontMetrics, QFontDatabase, QPixmap
 )
 
-from nw.constants import nwAlert
+from nw.enum import nwAlert
 
 logger = logging.getLogger(__name__)
 

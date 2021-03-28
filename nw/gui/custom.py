@@ -40,7 +40,7 @@ from PyQt5.QtWidgets import (
     QLineEdit
 )
 
-from nw.constants import trConst, nwUnicode, nwQuotes
+from nw.constants import trConst, nwQuotes, nwUnicode
 
 logger = logging.getLogger(__name__)
 

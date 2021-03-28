@@ -31,7 +31,7 @@ from tools import cmpFiles
 
 from nw.core.project import NWProject
 from nw.core.index import NWIndex, countWords
-from nw.constants import nwItemClass, nwItemLayout
+from nw.enum import nwItemClass, nwItemLayout
 
 @pytest.mark.core
 def testCoreIndex_LoadSave(monkeypatch, nwLipsum, dummyGUI, outDir, refDir):

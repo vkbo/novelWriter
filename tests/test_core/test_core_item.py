@@ -26,7 +26,7 @@ from lxml import etree
 
 from nw.core import NWProject
 from nw.core.item import NWItem
-from nw.constants import nwItemClass, nwItemType, nwItemLayout
+from nw.enum import nwItemClass, nwItemType, nwItemLayout
 
 @pytest.mark.core
 def testCoreItem_Setters(dummyGUI):

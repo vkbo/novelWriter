@@ -32,12 +32,10 @@ import os
 
 from time import time
 
-from nw.constants import (
-    nwFiles, nwKeyWords, nwItemType, nwItemClass, nwItemLayout, nwAlert,
-    nwUnicode
-)
-from nw.core.document import NWDoc
+from nw.enum import nwItemType, nwItemClass, nwItemLayout, nwAlert
 from nw.common import isHandle, isTitleTag, isItemClass, isItemLayout
+from nw.constants import nwFiles, nwKeyWords, nwUnicode
+from nw.core.document import NWDoc
 
 logger = logging.getLogger(__name__)
 

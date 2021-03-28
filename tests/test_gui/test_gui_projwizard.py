@@ -30,7 +30,7 @@ from PyQt5.QtCore import Qt
 from PyQt5.QtWidgets import QFileDialog, QWizard, QMessageBox
 
 from nw.gui import GuiProjectWizard
-from nw.constants import nwItemClass
+from nw.enum import nwItemClass
 from nw.gui.projwizard import (
     ProjWizardIntroPage, ProjWizardFolderPage, ProjWizardPopulatePage,
     ProjWizardCustomPage, ProjWizardFinalPage
