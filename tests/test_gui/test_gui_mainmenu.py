@@ -28,9 +28,8 @@ from PyQt5.QtGui import QTextCursor, QTextBlock
 from PyQt5.QtWidgets import QAction, QFileDialog, QMessageBox
 
 from nw.gui.doceditor import GuiDocEditor
-from nw.constants import (
-    nwUnicode, nwDocAction, nwDocInsert, nwKeyWords, nwWidget
-)
+from nw.enum import nwDocAction, nwDocInsert, nwWidget
+from nw.constants import nwKeyWords, nwUnicode
 
 keyDelay = 2
 typeDelay = 1

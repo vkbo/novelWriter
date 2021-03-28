@@ -27,7 +27,7 @@ from dummy import causeOSError
 
 from nw.core import NWProject, NWDoc
 from nw.core.item import NWItem
-from nw.constants import nwItemClass, nwItemLayout
+from nw.enum import nwItemClass, nwItemLayout
 
 @pytest.mark.core
 def testCoreDocument_LoadSave(monkeypatch, dummyGUI, nwMinimal):

@@ -30,7 +30,7 @@ from PyQt5.QtWidgets import QAction, QMessageBox
 
 from nw.guimain import GuiMain
 from nw.gui.projtree import GuiProjectTree
-from nw.constants import nwItemType, nwItemClass
+from nw.enum import nwItemType, nwItemClass
 
 @pytest.mark.gui
 def testGuiProjTree_TreeItems(qtbot, caplog, monkeypatch, nwGUI, nwMinimal):
