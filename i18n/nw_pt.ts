@@ -798,22 +798,22 @@
 <context>
     <name>GuiDocEditFooter</name>
     <message>
-        <location filename="../nw/gui/doceditor.py" line="2609"/>
+        <location filename="../nw/gui/doceditor.py" line="2607"/>
         <source>Line: {0} ({1})</source>
         <translation>Linha: {0} ({1})</translation>
     </message>
     <message>
-        <location filename="../nw/gui/doceditor.py" line="2625"/>
+        <location filename="../nw/gui/doceditor.py" line="2623"/>
         <source>Words: {0} ({1})</source>
         <translation>Palavras: {0} ({1})</translation>
     </message>
     <message>
-        <location filename="../nw/gui/doceditor.py" line="2468"/>
+        <location filename="../nw/gui/doceditor.py" line="2466"/>
         <source>Status</source>
         <translation>Estado</translation>
     </message>
     <message>
-        <location filename="../nw/gui/doceditor.py" line="2630"/>
+        <location filename="../nw/gui/doceditor.py" line="2628"/>
         <source>Document size is {0} bytes</source>
         <translation>O tamanho do documento é {0} bytes</translation>
     </message>
@@ -821,22 +821,22 @@
 <context>
     <name>GuiDocEditHeader</name>
     <message>
-        <location filename="../nw/gui/doceditor.py" line="2259"/>
+        <location filename="../nw/gui/doceditor.py" line="2258"/>
         <source>Edit document meta</source>
         <translation>Editar os meta-dados do documento</translation>
     </message>
     <message>
-        <location filename="../nw/gui/doceditor.py" line="2270"/>
+        <location filename="../nw/gui/doceditor.py" line="2269"/>
         <source>Search document</source>
         <translation>Procurar no documento</translation>
     </message>
     <message>
-        <location filename="../nw/gui/doceditor.py" line="2281"/>
+        <location filename="../nw/gui/doceditor.py" line="2280"/>
         <source>Toggle Focus Mode</source>
         <translation>Alternar o &quot;Modo Foco&quot;</translation>
     </message>
     <message>
-        <location filename="../nw/gui/doceditor.py" line="2292"/>
+        <location filename="../nw/gui/doceditor.py" line="2291"/>
         <source>Close the document</source>
         <translation>Fechar o documento</translation>
     </message>
@@ -1329,32 +1329,32 @@
         <translation>Nota: Se o programa ou o computador sofreu uma falha anteriormente, o bloqueio pode ser sobrescrito com segurança. Se, no entanto, outra instância do novelWriter esteja com o projeto aberto, sobrescrever o bloqueio pode corromper o projeto e não é recomendado.</translation>
     </message>
     <message>
-        <location filename="../nw/guimain.py" line="879"/>
+        <location filename="../nw/guimain.py" line="883"/>
         <source>Unknown item</source>
         <translation>Item desconhecido</translation>
     </message>
     <message>
-        <location filename="../nw/guimain.py" line="1107"/>
+        <location filename="../nw/guimain.py" line="1111"/>
         <source>Information</source>
         <translation>Informação</translation>
     </message>
     <message>
-        <location filename="../nw/guimain.py" line="1109"/>
+        <location filename="../nw/guimain.py" line="1113"/>
         <source>Warning</source>
         <translation>Alerta</translation>
     </message>
     <message>
-        <location filename="../nw/guimain.py" line="1111"/>
+        <location filename="../nw/guimain.py" line="1115"/>
         <source>Error</source>
         <translation>Erro</translation>
     </message>
     <message>
-        <location filename="../nw/guimain.py" line="1113"/>
+        <location filename="../nw/guimain.py" line="1117"/>
         <source>This is a bug!</source>
         <translation>Isto é um bug!</translation>
     </message>
     <message>
-        <location filename="../nw/guimain.py" line="1114"/>
+        <location filename="../nw/guimain.py" line="1118"/>
         <source>Internal Error</source>
         <translation>Erro Interno</translation>
     </message>
@@ -1389,7 +1389,7 @@
         <translation>Fechar o projeto atual?</translation>
     </message>
     <message>
-        <location filename="../nw/guimain.py" line="1143"/>
+        <location filename="../nw/guimain.py" line="1147"/>
         <source>Changes are saved automatically.</source>
         <translation>As alterações serão salvas automaticamente.</translation>
     </message>
@@ -1409,47 +1409,47 @@
         <translation>Projeto Bloqueado</translation>
     </message>
     <message>
-        <location filename="../nw/guimain.py" line="702"/>
+        <location filename="../nw/guimain.py" line="706"/>
         <source>Import File</source>
         <translation>Importar Arquivo</translation>
     </message>
     <message>
-        <location filename="../nw/guimain.py" line="717"/>
+        <location filename="../nw/guimain.py" line="721"/>
         <source>Could not read file. The file must be an existing text file.</source>
         <translation>Não foi possível ler o arquivo. O arquivo deve ser um arquivo de texto existente.</translation>
     </message>
     <message>
-        <location filename="../nw/guimain.py" line="723"/>
+        <location filename="../nw/guimain.py" line="727"/>
         <source>Please open a document to import the text file into.</source>
         <translation>Por favor, abra um documento para importar o text nele.</translation>
     </message>
     <message>
-        <location filename="../nw/guimain.py" line="730"/>
+        <location filename="../nw/guimain.py" line="734"/>
         <source>Import Document</source>
         <translation>Importar Documento</translation>
     </message>
     <message>
-        <location filename="../nw/guimain.py" line="730"/>
+        <location filename="../nw/guimain.py" line="734"/>
         <source>Importing the file will overwrite the current content of the document. Do you want to proceed?</source>
         <translation>Importar o arquivo vai sobrescrever o conteúdo atual do documento. Você deseja continuar?</translation>
     </message>
     <message>
-        <location filename="../nw/guimain.py" line="904"/>
+        <location filename="../nw/guimain.py" line="908"/>
         <source>The project index has been successfully rebuilt.</source>
         <translation>O índice do projeto foi reconstruído com sucesso.</translation>
     </message>
     <message>
-        <location filename="../nw/guimain.py" line="1143"/>
+        <location filename="../nw/guimain.py" line="1147"/>
         <source>Exit</source>
         <translation>Sair</translation>
     </message>
     <message>
-        <location filename="../nw/guimain.py" line="1143"/>
+        <location filename="../nw/guimain.py" line="1147"/>
         <source>Do you want to exit novelWriter?</source>
         <translation>Você deseja realmente sair do novelWriter?</translation>
     </message>
     <message>
-        <location filename="../nw/guimain.py" line="897"/>
+        <location filename="../nw/guimain.py" line="901"/>
         <source>Indexing completed in {0} ms</source>
         <translation>Indexação completa em {0} ms</translation>
     </message>
@@ -1489,27 +1489,27 @@
         <translation>O projeto foi bloqueado pelo computador &apos;{0}&apos; ({1} {2}), ativo pela última vez em {3}.</translation>
     </message>
     <message>
-        <location filename="../nw/guimain.py" line="879"/>
+        <location filename="../nw/guimain.py" line="883"/>
         <source>Indexing: &apos;{0}&apos;</source>
         <translation>Indexando: &apos;{0}&apos;</translation>
     </message>
     <message>
-        <location filename="../nw/guimain.py" line="697"/>
+        <location filename="../nw/guimain.py" line="701"/>
         <source>Text files ({0})</source>
         <translation>Arquivos de texto ({0})</translation>
     </message>
     <message>
-        <location filename="../nw/guimain.py" line="698"/>
+        <location filename="../nw/guimain.py" line="702"/>
         <source>Markdown files ({0})</source>
         <translation>Arquivos Markdown ({0})</translation>
     </message>
     <message>
-        <location filename="../nw/guimain.py" line="699"/>
+        <location filename="../nw/guimain.py" line="703"/>
         <source>novelWriter files ({0})</source>
         <translation>Arquivos do novelWriter ({0})</translation>
     </message>
     <message>
-        <location filename="../nw/guimain.py" line="700"/>
+        <location filename="../nw/guimain.py" line="704"/>
         <source>All files ({0})</source>
         <translation>Todos os arquivos ({0})</translation>
     </message>
