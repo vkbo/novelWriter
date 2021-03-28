@@ -15,7 +15,7 @@ This is a beta release. Use with caution on live project.
 **Internationalisation**
 
 * Added support to the source code for internationalisation of the GUI. Thanks to Bruno Meneguello
-  (@bkmeneguello) for doing most of the work. Issue #93. PRs #673, #680, and #684.
+  (@bkmeneguello) for doing most of the work. Issue #93. PRs #673, #680 and #684.
 * Build Novel Project localisation has been added as well. This is separate from the GUI
   localisation as the project may not be written in the same language as the GUI is set to. PRs
   #676 and #682.
@@ -33,17 +33,17 @@ This is a beta release. Use with caution on live project.
 
 **Translations**
 
-* Portuguese translation added by Bruno Meneguello (@bkmeneguello). PRs #673, #681, #686, and #697.
+* Portuguese translation added by Bruno Meneguello (@bkmeneguello). PRs #673, #681, #686 and #697.
 * Norwegian translation added by Veronica Olsen (@vkbo). PR #679.
 * German translation added (Build tool only) by Marian Lückhof (@Number042). PR #683.
-* French translation added by Jan Lüdke (@jyhelle). PRs #692, #711, and #713.
+* French translation added by Jan Lüdke (@jyhelle). PRs #692, #711 and #713.
 * American English added by Veronica Olsen (@vkbo). PR #693.
 
 **Installation**
 
 * Added i18n support to the setup script. PRs #673 and #729.
 
-**Code Maintainance**
+**Code Maintenance**
 
 * The ISO lookup dictionary for language codes has been removed and replaced with the lookup
   features available in Qt5 through QLocal. The remaining two source files in the constants folder
