@@ -112,6 +112,15 @@ class nwAlert(Enum):
 
 # END Enum nwAlert
 
+class nwWidget(Enum):
+
+    TREE    = 1
+    EDITOR  = 2
+    VIEWER  = 3
+    OUTLINE = 4
+
+# END Enum nwWidget
+
 class nwOutline(Enum):
 
     TITLE  = 0

@@ -33,7 +33,7 @@ from PyQt5.QtWidgets import QMenuBar, QAction
 
 from nw.constants import (
     trConst, nwItemType, nwItemClass, nwDocAction, nwDocInsert, nwKeyWords,
-    nwLabels, nwUnicode
+    nwLabels, nwUnicode, nwWidget
 )
 
 logger = logging.getLogger(__name__)
@@ -471,28 +471,28 @@ class GuiMainMenu(QMenuBar):
         self.aFocusTree = QAction(self.tr("Focus Project Tree"), self)
         self.aFocusTree.setStatusTip(self.tr("Move focus to project tree"))
         self.aFocusTree.setShortcut("Alt+1")
-        self.aFocusTree.triggered.connect(lambda: self.theParent.setFocus(1))
+        self.aFocusTree.triggered.connect(lambda: self.theParent.switchFocus(nwWidget.TREE))
         self.viewMenu.addAction(self.aFocusTree)
 
         # View > Document Pane 1
         self.aFocusEditor = QAction(self.tr("Focus Document Editor"), self)
         self.aFocusEditor.setStatusTip(self.tr("Move focus to left document pane"))
         self.aFocusEditor.setShortcut("Alt+2")
-        self.aFocusEditor.triggered.connect(lambda: self.theParent.setFocus(2))
+        self.aFocusEditor.triggered.connect(lambda: self.theParent.switchFocus(nwWidget.EDITOR))
         self.viewMenu.addAction(self.aFocusEditor)
 
         # View > Document Pane 2
         self.aFocusView = QAction(self.tr("Focus Document Viewer"), self)
         self.aFocusView.setStatusTip(self.tr("Move focus to right document pane"))
         self.aFocusView.setShortcut("Alt+3")
-        self.aFocusView.triggered.connect(lambda: self.theParent.setFocus(3))
+        self.aFocusView.triggered.connect(lambda: self.theParent.switchFocus(nwWidget.VIEWER))
         self.viewMenu.addAction(self.aFocusView)
 
         # View > Outline
         self.aFocusOutline = QAction(self.tr("Focus Outline"), self)
         self.aFocusOutline.setStatusTip(self.tr("Move focus to outline"))
         self.aFocusOutline.setShortcut("Alt+4")
-        self.aFocusOutline.triggered.connect(lambda: self.theParent.setFocus(4))
+        self.aFocusOutline.triggered.connect(lambda: self.theParent.switchFocus(nwWidget.OUTLINE))
         self.viewMenu.addAction(self.aFocusOutline)
 
         # View > Separator
