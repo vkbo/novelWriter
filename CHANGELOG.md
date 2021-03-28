@@ -1,5 +1,56 @@
 # novelWriter Changelog
 
+## Version 1.3 Beta 1 [2021-03-28]
+
+### Release Notes
+
+This is a pre-release of 1.3. The primary feature of release 1.3 is the addition of
+internationalisation (i18n) of novelWriter. The release introduces support for Portuguese, French,
+and Norwegian in addition to the default English.
+
+This is a beta release. Use with caution on live project.
+
+### Detailed Changelog
+
+**Internationalisation**
+
+* Added support to the source code for internationalisation of the GUI. Thanks to Bruno Meneguello
+  (@bkmeneguello) for doing most of the work. Issue #93. PRs #673, #680, and #684.
+* Build Novel Project localisation has been added as well. This is separate from the GUI
+  localisation as the project may not be written in the same language as the GUI is set to. PRs
+  #676 and #682.
+* The text editor's auto-replace features now support inserting spaces automatically when replacing
+  quotes, as well as in front of major punctuation. These features are common for writing tools
+  supporting French and Spanish for instance. Issue #703. PR #704.
+
+**User Interface**
+
+* The Preferences dialog has been updated to be more responsive to varying text label lengths due
+  to different needs for different languages. PRs #687 and #711.
+* The Project Settings dialog has been improved to be more consistent and user friendly across the
+  Status, Importance and Auto-Replace tabs. Issue #691. PR #695.
+* The About dialog has been updated to contain more information on contributions. PR #698.
+
+**Translations**
+
+* Portuguese translation added by Bruno Meneguello (@bkmeneguello). PRs #673, #681, #686, and #697.
+* Norwegian translation added by Veronica Olsen (@vkbo). PR #679.
+* German translation added (Build tool only) by Marian Lückhof (@Number042). PR #683.
+* French translation added by Jan Lüdke (@jyhelle). PRs #692, #711, and #713.
+* American English added by Veronica Olsen (@vkbo). PR #693.
+
+**Installation**
+
+* Added i18n support to the setup script. PRs #673 and #729.
+
+**Code Maintainance**
+
+* The ISO lookup dictionary for language codes has been removed and replaced with the lookup
+  features available in Qt5 through QLocal. The remaining two source files in the constants folder
+  have been moved up a level as well. PRs #673 and #730.
+
+----
+
 ## Version 1.2.2 [2021-03-28]
 
 ### Release Notes
