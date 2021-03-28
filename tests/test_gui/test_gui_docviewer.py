@@ -26,7 +26,7 @@ from PyQt5.QtCore import Qt, QUrl
 from PyQt5.QtGui import QTextCursor
 from PyQt5.QtWidgets import qApp, QAction, QMessageBox
 
-from nw.constants import nwDocAction
+from nw.enum import nwDocAction
 
 keyDelay = 2
 typeDelay = 1

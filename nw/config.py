@@ -39,9 +39,9 @@ from PyQt5.QtCore import (
     QTranslator
 )
 
-from nw.constants import nwConst, nwFiles, nwUnicode
-from nw.common import splitVersionNumber, formatTimeStamp
 from nw.error import logException
+from nw.common import splitVersionNumber, formatTimeStamp
+from nw.constants import nwConst, nwFiles, nwUnicode
 
 logger = logging.getLogger(__name__)
 

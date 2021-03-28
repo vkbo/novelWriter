@@ -31,9 +31,8 @@ from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QFont, QPixmap
 from PyQt5.QtWidgets import QWidget, QGridLayout, QLabel
 
-from nw.constants import (
-    trConst, nwLabels, nwItemClass, nwItemType, nwItemLayout
-)
+from nw.enum import nwItemClass, nwItemType, nwItemLayout
+from nw.constants import trConst, nwLabels
 
 logger = logging.getLogger(__name__)
 

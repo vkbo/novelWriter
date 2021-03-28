@@ -31,9 +31,8 @@ from datetime import datetime
 from PyQt5.QtWidgets import qApp
 from PyQt5.QtCore import QCoreApplication
 
-from nw.constants import (
-    nwConst, nwUnicode, nwItemClass, nwItemType, nwItemLayout
-)
+from nw.enum import nwItemClass, nwItemType, nwItemLayout
+from nw.constants import nwConst, nwUnicode
 
 logger = logging.getLogger(__name__)
 

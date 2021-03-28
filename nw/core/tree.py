@@ -29,14 +29,13 @@ import logging
 import os
 
 from lxml import etree
-from hashlib import sha256
 from time import time
+from hashlib import sha256
 
-from nw.core.item import NWItem
+from nw.enum import nwItemType, nwItemClass, nwItemLayout
 from nw.common import checkHandle
-from nw.constants import (
-    nwFiles, nwItemType, nwItemClass, nwItemLayout, nwConst, nwLists
-)
+from nw.constants import nwConst, nwLists, nwFiles
+from nw.core.item import NWItem
 
 logger = logging.getLogger(__name__)
 

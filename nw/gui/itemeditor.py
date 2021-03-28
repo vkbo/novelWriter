@@ -33,8 +33,9 @@ from PyQt5.QtWidgets import (
     QDialogButtonBox
 )
 
+from nw.enum import nwItemLayout, nwItemType
+from nw.constants import trConst, nwLists, nwLabels
 from nw.gui.custom import QSwitch
-from nw.constants import trConst, nwLabels, nwItemLayout, nwItemType, nwLists
 
 logger = logging.getLogger(__name__)
 

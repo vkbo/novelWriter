@@ -29,7 +29,7 @@ from tools import cmpFiles, getGuiItem
 from PyQt5.QtWidgets import QAction, QMessageBox
 
 from nw.gui import GuiItemEditor, GuiProjectTree
-from nw.constants import nwItemLayout
+from nw.enum import nwItemLayout
 
 keyDelay = 2
 typeDelay = 1

@@ -34,7 +34,8 @@ from PyQt5.QtWidgets import (
     QAbstractItemView, QPushButton, QLineEdit, QLabel
 )
 
-from nw.constants import nwFiles, nwAlert
+from nw.enum import nwAlert
+from nw.constants import nwFiles
 
 logger = logging.getLogger(__name__)
 

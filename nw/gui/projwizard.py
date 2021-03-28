@@ -35,8 +35,9 @@ from PyQt5.QtWidgets import (
     QGroupBox, QGridLayout, QSpinBox
 )
 
+from nw.enum import nwItemClass
 from nw.common import makeFileNameSafe
-from nw.constants import trConst, nwLabels, nwItemClass
+from nw.constants import trConst, nwLabels
 from nw.gui.custom import QSwitch
 
 logger = logging.getLogger(__name__)

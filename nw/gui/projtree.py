@@ -37,10 +37,8 @@ from PyQt5.QtWidgets import (
 )
 
 from nw.core import NWDoc
-from nw.constants import (
-    trConst, nwLabels, nwItemType, nwItemClass, nwItemLayout, nwAlert,
-    nwConst, nwLists
-)
+from nw.enum import nwItemType, nwItemClass, nwItemLayout, nwAlert
+from nw.constants import nwConst, trConst, nwLists, nwLabels
 
 logger = logging.getLogger(__name__)
 

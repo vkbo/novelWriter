@@ -31,8 +31,9 @@ from tools import cmpFiles, writeFile, readFile
 from dummy import causeOSError
 
 from nw.core.project import NWProject
-from nw.constants import nwItemClass, nwItemType, nwItemLayout, nwFiles
+from nw.enum import nwItemClass, nwItemType, nwItemLayout
 from nw.common import formatTimeStamp
+from nw.constants import nwFiles
 
 @pytest.mark.core
 def testCoreProject_NewMinimal(fncDir, outDir, refDir, tmpDir, dummyGUI):

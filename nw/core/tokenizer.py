@@ -32,9 +32,10 @@ from functools import partial
 
 from PyQt5.QtCore import QCoreApplication, QRegularExpression
 
-from nw.core.document import NWDoc
+from nw.enum import nwItemLayout, nwItemType
 from nw.common import numberToRoman
-from nw.constants import nwConst, nwUnicode, nwItemLayout, nwItemType, nwRegEx
+from nw.constants import nwConst, nwRegEx, nwUnicode
+from nw.core.document import NWDoc
 
 logger = logging.getLogger(__name__)
 

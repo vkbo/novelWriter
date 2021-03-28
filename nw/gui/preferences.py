@@ -35,9 +35,10 @@ from PyQt5.QtWidgets import (
     QLineEdit, QFileDialog, QFontDialog, QDoubleSpinBox
 )
 
-from nw.gui.custom import QSwitch, QConfigLayout, PagedDialog, QuotesDialog
 from nw.core import NWSpellSimple, NWSpellEnchant
-from nw.constants import nwConst, nwAlert
+from nw.enum import nwAlert
+from nw.constants import nwConst
+from nw.gui.custom import QSwitch, QConfigLayout, PagedDialog, QuotesDialog
 
 logger = logging.getLogger(__name__)
 

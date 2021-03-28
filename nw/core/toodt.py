@@ -29,11 +29,11 @@ import logging
 
 from lxml import etree
 from hashlib import sha256
-from datetime import datetime
 from zipfile import ZipFile
+from datetime import datetime
 
+from nw.constants import nwKeyWords, nwLabels
 from nw.core.tokenizer import Tokenizer
-from nw.constants import nwLabels, nwKeyWords
 
 logger = logging.getLogger(__name__)
 

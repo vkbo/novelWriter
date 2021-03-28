@@ -25,7 +25,7 @@ import pytest
 from PyQt5.QtCore import Qt, QPoint
 from PyQt5.QtWidgets import QAction, QTreeWidgetItem, QMessageBox
 
-from nw.constants import nwOutline
+from nw.enum import nwOutline
 
 keyDelay = 2
 typeDelay = 1

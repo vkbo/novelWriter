@@ -27,7 +27,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 import logging
 
 from nw.core.tokenizer import Tokenizer
-from nw.constants import nwLabels, nwKeyWords, nwHtmlUnicode
+from nw.constants import nwKeyWords, nwLabels, nwHtmlUnicode
 
 logger = logging.getLogger(__name__)
 
