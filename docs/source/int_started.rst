@@ -99,6 +99,30 @@ Make sure the install location for pip is in your PATH variable. This is not alw
 default.
 
 
+.. _a_started_i18n:
+
+Building the Translation Files
+==============================
+
+If you installed novelWriter from a package, the translation files should be pre-built and
+included. If you're running novelWriter from the source code, you will need to generate the files
+yourself. The files you need will be written to the ``i18n`` folder, and will have the ``.qm`` file
+extension.
+
+You can build the ``.qm`` files with:
+
+.. code-block:: console
+
+   python3 setup.py qtlrelease
+
+This requires that the Python package ``pylupdate5`` to be installed.
+
+.. note::
+   If you want to improve novelWriter with translation files for another language, or update an
+   existing translation, instructions for how to contribute can be found in the README file in the
+   ``i18n`` folder of the source code.
+
+
 .. _a_started_docs:
 
 Building the Documentation
