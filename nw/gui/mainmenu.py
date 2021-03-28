@@ -31,10 +31,8 @@ from PyQt5.QtCore import QUrl, QProcess
 from PyQt5.QtGui import QDesktopServices
 from PyQt5.QtWidgets import QMenuBar, QAction
 
-from nw.constants import (
-    trConst, nwItemType, nwItemClass, nwDocAction, nwDocInsert, nwKeyWords,
-    nwLabels, nwUnicode, nwWidget
-)
+from nw.enum import nwItemType, nwItemClass, nwDocAction, nwDocInsert, nwWidget
+from nw.constants import trConst, nwKeyWords, nwLabels, nwUnicode
 
 logger = logging.getLogger(__name__)
 

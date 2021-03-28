@@ -34,10 +34,9 @@ from PyQt5.QtWidgets import (
 )
 
 from nw.core import NWDoc
+from nw.enum import nwAlert, nwItemType, nwItemClass, nwItemLayout
+from nw.constants import nwConst
 from nw.gui.custom import QHelpLabel
-from nw.constants import (
-    nwAlert, nwItemType, nwItemClass, nwItemLayout, nwConst
-)
 
 logger = logging.getLogger(__name__)
 

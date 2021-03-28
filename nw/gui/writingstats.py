@@ -38,8 +38,9 @@ from PyQt5.QtWidgets import (
     QLabel, QGroupBox, QMenu, QAction, QFileDialog, QSpinBox, QHBoxLayout
 )
 
+from nw.enum import nwAlert
 from nw.common import formatTime, checkInt
-from nw.constants import nwConst, nwFiles, nwAlert
+from nw.constants import nwConst, nwFiles
 from nw.gui.custom import QSwitch
 
 logger = logging.getLogger(__name__)

@@ -44,12 +44,11 @@ from PyQt5.QtWidgets import (
     QSizePolicy, QDoubleSpinBox, QComboBox
 )
 
-from nw.common import fuzzyTime, makeFileNameSafe
-from nw.gui.custom import QSwitch
 from nw.core import ToHtml, ToOdt, ToMarkdown
-from nw.constants import (
-    nwConst, nwAlert, nwFiles, nwItemType, nwItemLayout, nwItemClass
-)
+from nw.enum import nwAlert, nwItemType, nwItemLayout, nwItemClass
+from nw.common import fuzzyTime, makeFileNameSafe
+from nw.constants import nwConst, nwFiles
+from nw.gui.custom import QSwitch
 
 logger = logging.getLogger(__name__)
 

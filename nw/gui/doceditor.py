@@ -50,12 +50,10 @@ from PyQt5.QtWidgets import (
 )
 
 from nw.core import NWDoc, NWSpellSimple, countWords
-from nw.gui.dochighlight import GuiDocHighlighter
+from nw.enum import nwAlert, nwDocAction, nwDocInsert, nwItemClass
 from nw.common import transferCase
-from nw.constants import (
-    trConst, nwConst, nwAlert, nwUnicode, nwDocAction, nwDocInsert,
-    nwItemClass, nwKeyWords, nwLabels
-)
+from nw.constants import nwConst, trConst, nwKeyWords, nwLabels, nwUnicode
+from nw.gui.dochighlight import GuiDocHighlighter
 
 logger = logging.getLogger(__name__)
 

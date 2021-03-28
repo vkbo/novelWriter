@@ -34,7 +34,8 @@ from PyQt5.QtWidgets import (
     QTreeWidget, QTreeWidgetItem, QMenu, QAction, QAbstractItemView
 )
 
-from nw.constants import trConst, nwKeyWords, nwLabels, nwOutline
+from nw.enum import nwOutline
+from nw.constants import trConst, nwKeyWords, nwLabels
 
 logger = logging.getLogger(__name__)
 

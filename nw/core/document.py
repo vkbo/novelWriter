@@ -31,9 +31,8 @@ from functools import partial
 
 from PyQt5.QtCore import QCoreApplication
 
-from nw.constants import nwAlert
+from nw.enum import nwAlert, nwItemLayout, nwItemClass
 from nw.common import isHandle
-from nw.constants import nwItemLayout, nwItemClass
 
 logger = logging.getLogger(__name__)
 

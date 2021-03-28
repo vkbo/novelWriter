@@ -46,8 +46,9 @@ from nw.gui import (
     GuiProjectTree, GuiProjectWizard, GuiTheme, GuiWordList, GuiWritingStats
 )
 from nw.core import NWProject, NWDoc, NWIndex
-from nw.constants import nwItemType, nwItemClass, nwAlert, nwLists, nwWidget
+from nw.enum import nwItemType, nwItemClass, nwAlert, nwWidget
 from nw.common import getGuiItem, hexToInt
+from nw.constants import nwLists
 
 logger = logging.getLogger(__name__)
 

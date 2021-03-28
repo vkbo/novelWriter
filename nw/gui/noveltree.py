@@ -32,8 +32,8 @@ from time import time
 from PyQt5.QtCore import Qt, QSize
 from PyQt5.QtWidgets import QTreeWidget, QTreeWidgetItem, QAbstractItemView
 
-from nw.constants import nwKeyWords
 from nw.common import checkInt
+from nw.constants import nwKeyWords
 
 logger = logging.getLogger(__name__)
 
