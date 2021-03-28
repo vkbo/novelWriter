@@ -274,6 +274,14 @@ def makeMinimalPackage(targetOS):
         print(str(e))
         sys.exit(1)
 
+    # Make translation files
+    try:
+        buildQtI18n()
+    except Exception as e:
+        print("Failed with error:")
+        print(str(e))
+        sys.exit(1)
+
     print("")
     print("Building Minimal ZIP File")
     print("=========================")
@@ -317,6 +325,15 @@ def makeMinimalPackage(targetOS):
                     print("Skipping File: %s" % aFile)
                     continue
                 zipObj.write(os.path.join(nRoot, aFile))
+
+        for aFile in os.listdir("i18n"):
+            i18File = os.path.join("i18n", aFile)
+            if not os.path.isfile(i18File):
+                continue
+
+            if i18File.endswith((".json", ".qm")):
+                zipObj.write(i18File)
+                print("Adding File: %s" % i18File)
 
         if targetOS == OS_WIN:
             zipObj.write("novelWriter.py", "novelWriter.pyw")
