@@ -1,5 +1,39 @@
 # novelWriter Changelog
 
+## Version 1.2.2 [2021-03-28]
+
+### Release Notes
+
+This patch release is a bug fix release addressing some inconsistencies and issues with the
+document header buttons when Focus Mode is active. The keyboard shortcuts for search and replace
+should now also work in Focus Mode. In addition, the setup script for novelWriter has been improved
+when installing on Windows.
+
+### Detailed Changelog
+
+**Bugfixes**
+
+* The way Focus Mode worked when activated through the menu and through the document header button
+  were inconsistent. The header button would deactivate the edit, search and close buttons, while
+  the menu entry would not. These two methods now call the same set of functions to ensure the
+  behaviour is consistent. PR #717.
+* Closing the document while in Focus Mode now ends Focus Mode. Previously, the editor would be
+  left stuck in Focus Mode with no way to exit. PR #717.
+
+**User Interface**
+
+* The keyboard shortcuts for the search and replace tool now also work in Focus Mode. Previously,
+  the menu entries and their shortcuts were deactivated in this mode. Issue #716. PR #717.
+
+**Installation**
+
+* The setup script command do build minimal install archive files now also generate SHA 256 sum
+  files. PR #724.
+* The setup script will now copy the `novelWriter.py` file to `novelWriter.pyw` if it doesn't exist
+  when the `win-install` command is run. Issue #727. PR #728.
+
+----
+
 ## Version 1.2.1 [2021-03-21]
 
 ### Release Notes

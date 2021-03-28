@@ -5,7 +5,7 @@ from nw.constants.constants import (
 )
 from nw.constants.enum import (
     nwAlert, nwDocAction, nwItemClass, nwItemLayout, nwItemType, nwOutline,
-    nwDocInsert
+    nwDocInsert, nwWidget
 )
 
 __all__ = [
@@ -26,4 +26,5 @@ __all__ = [
     "nwItemType",
     "nwOutline",
     "nwDocInsert",
+    "nwWidget",
 ]

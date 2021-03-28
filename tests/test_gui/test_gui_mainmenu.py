@@ -28,7 +28,9 @@ from PyQt5.QtGui import QTextCursor, QTextBlock
 from PyQt5.QtWidgets import QAction, QFileDialog, QMessageBox
 
 from nw.gui.doceditor import GuiDocEditor
-from nw.constants import nwUnicode, nwDocAction, nwDocInsert, nwKeyWords
+from nw.constants import (
+    nwUnicode, nwDocAction, nwDocInsert, nwKeyWords, nwWidget
+)
 
 keyDelay = 2
 typeDelay = 1
@@ -366,7 +368,7 @@ def testGuiMenu_Insert(qtbot, monkeypatch, nwGUI, fncDir, fncProj):
 
     assert nwGUI.treeView._getTreeItem("0e17daca5f3e1") is not None
 
-    nwGUI.setFocus(1)
+    nwGUI.switchFocus(nwWidget.TREE)
     nwGUI.treeView.clearSelection()
     nwGUI.treeView._getTreeItem("0e17daca5f3e1").setSelected(True)
     assert nwGUI.openSelectedItem()
