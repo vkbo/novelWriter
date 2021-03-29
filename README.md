@@ -140,7 +140,7 @@ space only.
 
 ### Dependencies
 
-Dependencies can be installed from PyPi with:
+Dependencies can generally be installed from PyPi with:
 ```bash
 pip install pyqt5 lxml pyenchant
 ```
@@ -174,6 +174,9 @@ pip3 install --user pyobjc
 Windows doesn't by default come with Python installed. If you haven't installed it already, get it
 from [python.org/downloads](https://www.python.org/downloads/). Remember to select "Add Python to
 PATH" during the installation.
+
+The script `setup_windows.bat` can be used to create desktop and start menu icons for novelWriter.
+The script will also install dependencies for you from PyPi.
 
 ## Internationalisation
 
@@ -214,7 +217,7 @@ Bundled assets have the following licenses:
   the main repo is available at
   [sdras/night-owl-vscode-theme](https://github.com/sdras/night-owl-vscode-theme).
 
-## Screenshot
+## Screenshots
 
 **novelWriter with default system theme:**
 ![Screenshot 1](https://raw.githubusercontent.com/vkbo/novelWriter/main/docs/source/images/screenshot_default.png)
