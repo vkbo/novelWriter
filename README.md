@@ -25,14 +25,13 @@ The plain text files are suitable for version control software, and also well su
 synchronisation tools. The core project structure is stored in a single project XML file. Other
 meta data is primarily saved in JSON files.
 
-The full documentation is available at
-[novelwriter.readthedocs.io](https://novelwriter.readthedocs.io).
+The full documentation is available on [readthedocs.io](https://novelwriter.readthedocs.io).
 
 ## Implementation
 
 The application is written in Python 3 using Qt5 via PyQt5. It is developed on Linux, but it should
-in principle work fine on other operating systems as well, as long as dependencies are met. The
-unit tests are run on the latest versions of Ubuntu Linux, Windows Server and macOS.
+in principle work fine on other operating systems as well, as long as dependencies are met. It is
+regularly tested on Ubuntu Linux, Windows, and macOS.
 
 ## Project Contributions
 
@@ -40,9 +39,9 @@ Contributions to this project are welcome. However, please read the
 [Contributing Guide](https://github.com/vkbo/novelWriter/blob/main/CONTRIBUTING.md) before
 submitting larger additions or changes to this project.
 
-# Key Features
+## Key Features
 
-Some features of novelWriter are listed below. Consult the
+Some key features of novelWriter are listed below. Consult the
 [documentation](https://novelwriter.readthedocs.io) for more information.
 
 ### Markdown Flavour
@@ -113,99 +112,76 @@ These have their separate root folders. These are optional files.
 
 ### Visualisation of Story Elements
 
-The different notes can be assigned tags, which other files can refer back to using the `@` meta
-keywords. This information can be used to display an outline of the story, showing where each scene
-connects to the plot, and which characters, etc. occur in them. In addition, the tags themselves
-are clickable in the document view pane, and control-clickable in the editor. They make it possible
-to quickly navigate between the documents while editing.
+The different notes can be assigned tags, which other files can refer back to using `@`-prefixed
+meta keywords. This information can be used to display an outline of the story, showing where each
+scene connects to the plot, and which characters, etc. occur in them. In addition, the tags
+themselves are clickable in the document view pane, and control-clickable in the editor. They make
+it possible to quickly navigate between the documents while editing.
 
-# Installing and Running
+## Standard Installation
 
-For install instructions, please check the
-[Getting Started](https://novelwriter.readthedocs.io/en/latest/int_started.html) section in
-the [documentation](https://novelwriter.readthedocs.io/).
+For a regular installation, it is recommended that you download one of the minimal zip files from
+the [Releases](https://github.com/vkbo/novelWriter/releases) page or the
+[novelwriter.io](https://novelwriter.io/) website.
+The [documentation](https://novelwriter.readthedocs.io/) has detailed install instructions for
+[Linux](https://novelwriter.readthedocs.io/en/latest/setup_linux.html),
+[Windows](https://novelwriter.readthedocs.io/en/latest/setup_windows.html), and
+[macOS](https://novelwriter.readthedocs.io/en/latest/setup_mac.html).
+They are pretty straightforward.
 
-## TLDR Instructions
+## Running from Source
 
 If you want to run novelWriter directly from the source code, you must run the `novelWriter.py`
-file from command line. For installations on Linux, macOS or Windows, see below.
+file from command line.
 
 **Note:** You may need to replace `python` with `python3` and `pip` with `pip3` in the instructions
 below on some systems. You may also want to add the `--user` flag for `pip` to install in your user
 space only.
 
-### Install from PyPi
+### Dependencies
 
-novelWriter is available on [pypi.org](https://pypi.org/project/novelWriter/), and can be installed
-with:
-```bash
-pip install novelwriter
-```
-Dependencies should be installed automatically, but can also be installed directly with:
+Dependencies can be installed from PyPi with:
 ```bash
 pip install pyqt5 lxml pyenchant
 ```
-When installing via pip, novelWriter can be launched from command line with:
+
+### Additional Steps for Linux
+
+On Linux, you can most likely find the dependencies in your distribution's repository. On Ubuntu
+and Debian, run:
 ```bash
-novelWriter
+sudo apt install python3-pyqt5 python3-lxml python3-enchant
 ```
 
-Make sure the install location for pip is in your PATH variable. This is not always the case by
-default.
-
-### Setup on Linux
-
-If you're installing from source, the following commands will set up novelWriter on Linux:
+If you want to set up a launcher on Linux, you can run:
 ```bash
-pip install -r requirements.txt
-python setup.py install
 python setup.py xdg-install
 ```
 
-This should make novelWriter available as a regular application on your system, with a launceher
-icon, and file association with novelWriter project files.
+### Additional Steps for macOS
 
-**Note:** If you don't want to install the dependencies from pip and instead use your distro's own
-packages, you must manually install `python3-pyqt5`, `python3-lxml` and `python3-enchant`
-(Debian/Ubuntu), or the corresponding packages for your distro.
-
-### Setup on macOS
-
-If you're installing from source, the following commands will set up novelWriter on macOS:
+First, make sure you have properly set up Python3 with Homebrew. If not, check their
+[documentation](https://docs.brew.sh/Homebrew-and-Python).
+In addition, the following steps are necessary to install all dependencies:
 ```bash
 brew install enchant
 pip3 install --user -r requirements.txt
 pip3 install --user pyobjc
-python3 setup.py install
 ```
 
-At present, novelWriter isn't further integrated into the OS, so you must launch it from command
-line with:
-```bash
-novelWriter
-```
+### Additional Steps for Windows
 
-If you want to help improve the setup process on macOS, it would be much appreciated.
-
-### Setup on Windows
-
-For Windows, first ensure that you have Python installed. If not, get it from
-[python.org/downloads](https://www.python.org/downloads/). Remember to select "Add Python to PATH"
-during the installation, otherwise novelWriter will not start.
-
-Then, download the `novelWriter-x.y.z-minimal-win.zip` file, where `x.y.z` is the version number,
-from the [releases](https://github.com/vkbo/novelWriter/releases) page. You can extract it to
-wherever you want to keep novelWriter on your PC, and run the `setup_windows.bat` file in it
-(double-clicking it should work). This will install the necessary dependencies from
-[pypi.org](https://pypi.org/) and create desktop and start menu icons.
+Windows doesn't by default come with Python installed. If you haven't installed it already, get it
+from [python.org/downloads](https://www.python.org/downloads/). Remember to select "Add Python to
+PATH" during the installation.
 
 ## Debugging
 
-If you need to debug novelWriter, you must run it from command line. It takes a few parameters,
+If you need to debug novelWriter, you must run it from the command line. It takes a few parameters,
 which can be listed with the switch `--help`. The `--info`, `--debug` or `--verbose` flags are
 particularly useful for increasing logging output for debugging.
 
-# Licenses
+## Licenses
 
 This is Open Source software, and novelWriter is licensed under GPLv3. See the
 [GNU General Public License website](https://www.gnu.org/licenses/gpl-3.0.en.html) for more
@@ -231,7 +207,7 @@ Bundled assets have the following licenses:
   the main repo is available at
   [sdras/night-owl-vscode-theme](https://github.com/sdras/night-owl-vscode-theme).
 
-# Screenshot
+## Screenshot
 
 **novelWriter with default system theme:**
 ![Screenshot 1](https://raw.githubusercontent.com/vkbo/novelWriter/main/docs/source/images/screenshot_default.png)
