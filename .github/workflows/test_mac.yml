@@ -7,7 +7,7 @@ on:
     branches: [ main, testing, dev ]
 
 jobs:
-  testMac38:
+  testMac39:
     runs-on: macos-latest
     steps:
       - name: Python Setup

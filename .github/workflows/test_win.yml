@@ -7,7 +7,7 @@ on:
     branches: [ main, testing, dev ]
 
 jobs:
-  testWin38:
+  testWin39:
     runs-on: windows-latest
     steps:
       - name: Python Setup
