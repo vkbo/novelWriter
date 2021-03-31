@@ -96,26 +96,27 @@ class NWSpellCheck():
         lookup lists.
         """
         self.projDict = []
-        if projectDict is not None:
-            if not os.path.isfile(projectDict):
-                self.projectDict = None
-                return False
-            else:
-                self.projectDict = projectDict
+        self.projectDict = projectDict
 
-            try:
-                logger.debug("Loading project word list")
-                with open(projectDict, mode="r", encoding="utf-8") as wordsFile:
-                    for theLine in wordsFile:
-                        theLine = theLine.strip()
-                        if len(theLine) > 0 and theLine not in self.projDict:
-                            self.projDict.append(theLine)
-                logger.debug("Project word list contains %d words" % len(self.projDict))
+        if projectDict is None:
+            return False
 
-            except Exception:
-                logger.error("Failed to load project word list")
-                nw.logException()
-                return False
+        if not os.path.isfile(projectDict):
+            return False
+
+        try:
+            logger.debug("Loading project word list")
+            with open(projectDict, mode="r", encoding="utf-8") as wordsFile:
+                for theLine in wordsFile:
+                    theLine = theLine.strip()
+                    if len(theLine) > 0 and theLine not in self.projDict:
+                        self.projDict.append(theLine)
+            logger.debug("Project word list contains %d words" % len(self.projDict))
+
+        except Exception:
+            logger.error("Failed to load project word list")
+            nw.logException()
+            return False
 
         return True
 
