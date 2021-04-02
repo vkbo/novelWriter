@@ -577,14 +577,6 @@ def xdgInstall():
     else:
         print(f"Error {exCode}: Could not install menu desktop file")
 
-    exCode = subprocess.call(
-        ["xdg-desktop-icon", "install", "--novendor", "./novelwriter.desktop"]
-    )
-    if exCode == 0:
-        print("Installed icon desktop file")
-    else:
-        print(f"Error {exCode}: Could not install icon desktop file")
-
     print("")
 
     # Install MimeType
@@ -931,11 +923,6 @@ if __name__ == "__main__":
 
     # General Installers
     # ==================
-
-    if "launcher" in sys.argv:
-        sys.argv.remove("launcher")
-        print("The 'launcher' command has been replaced by 'xdg-install'.")
-        sys.exit(1)
 
     if "xdg-install" in sys.argv:
         sys.argv.remove("xdg-install")
