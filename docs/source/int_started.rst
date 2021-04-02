@@ -109,13 +109,14 @@ you're running novelWriter from the source code, a local copy of this documentat
 generated. It requires the following Python packages on Debian and Ubuntu.
 
 * ``python3-sphinx``
+* ``python3-sphinx-rtd-theme``
 * ``python3-sphinxcontrib.qthelp``
 
 Or from PyPi:
 
 .. code-block:: console
 
-   pip install sphinx sphinxcontrib-qthelp
+   pip install sphinx sphinx-rtd-theme sphinxcontrib-qthelp
 
 The documentation can then be built from the ``docs`` folder in the source code by running:
 
