@@ -635,6 +635,10 @@ def xdgInstall():
     else:
         print(f"Error {exCode}: Could not update icon cache")
 
+    # Clean up
+    if os.path.isfile("./novelwriter.desktop"):
+        os.unlink("./novelwriter.desktop")
+
     print("")
     print("Done!")
     print("")
