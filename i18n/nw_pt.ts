@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!DOCTYPE TS><TS version="2.0" language="pt" sourcelanguage="en_GB">
+<!DOCTYPE TS>
+<TS version="2.1" language="pt" sourcelanguage="en_GB">
 <context>
     <name>Common</name>
     <message>
@@ -401,7 +402,7 @@
     <message>
         <location filename="../nw/gui/about.py" line="177"/>
         <source>Translations</source>
-        <translation type="unfinished"></translation>
+        <translation>Traduções</translation>
     </message>
     <message>
         <location filename="../nw/gui/about.py" line="213"/>
@@ -416,7 +417,7 @@
     <message>
         <location filename="../nw/gui/about.py" line="144"/>
         <source>Concept</source>
-        <translation type="unfinished"></translation>
+        <translation>Conceito</translation>
     </message>
     <message>
         <location filename="../nw/gui/about.py" line="144"/>
@@ -426,7 +427,7 @@
     <message>
         <location filename="../nw/gui/about.py" line="144"/>
         <source>Developer</source>
-        <translation type="unfinished"></translation>
+        <translation>Desenvolvimento</translation>
     </message>
 </context>
 <context>
@@ -2804,7 +2805,7 @@
     <message>
         <location filename="../nw/gui/preferences.py" line="72"/>
         <source>Quotes</source>
-        <translation type="unfinished"></translation>
+        <translation>Citações</translation>
     </message>
 </context>
 <context>
@@ -2882,37 +2883,37 @@
     <message>
         <location filename="../nw/gui/preferences.py" line="1042"/>
         <source>Automatic Padding</source>
-        <translation type="unfinished"></translation>
+        <translation>Espaçamento Automático</translation>
     </message>
     <message>
         <location filename="../nw/gui/preferences.py" line="1048"/>
         <source>Insert non-breaking space before</source>
-        <translation type="unfinished"></translation>
+        <translation>Insere um espaço não-separável antes</translation>
     </message>
     <message>
         <location filename="../nw/gui/preferences.py" line="1058"/>
         <source>Insert non-breaking space after</source>
-        <translation type="unfinished"></translation>
+        <translation>Insere um espaço não-separável após</translation>
     </message>
     <message>
         <location filename="../nw/gui/preferences.py" line="1068"/>
         <source>Use thin space instead</source>
-        <translation type="unfinished"></translation>
+        <translation>Usar um espaço estreito</translation>
     </message>
     <message>
         <location filename="../nw/gui/preferences.py" line="1048"/>
         <source>Automatically add space before any of these symbols.</source>
-        <translation type="unfinished"></translation>
+        <translation>Adicionar automaticamente um espaço antes de cada um desses símbolos.</translation>
     </message>
     <message>
         <location filename="../nw/gui/preferences.py" line="1058"/>
         <source>Automatically add space after any of these symbols.</source>
-        <translation type="unfinished"></translation>
+        <translation>Adicionar automaticamente um espaço após cada um desses símbolos.</translation>
     </message>
     <message>
         <location filename="../nw/gui/preferences.py" line="1068"/>
         <source>Inserts a thin space instead of a regular space.</source>
-        <translation type="unfinished"></translation>
+        <translation>Insere um espaço estreito ao invés de um espaço regular.</translation>
     </message>
 </context>
 <context>
