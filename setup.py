@@ -620,14 +620,6 @@ def xdgInstall():
     else:
         print(f"Error {exCode}: Could not install menu desktop file")
 
-    exCode = subprocess.call(
-        ["xdg-desktop-icon", "install", "--novendor", "./novelwriter.desktop"]
-    )
-    if exCode == 0:
-        print("Installed icon desktop file")
-    else:
-        print(f"Error {exCode}: Could not install icon desktop file")
-
     print("")
 
     # Install MimeType
@@ -678,6 +670,68 @@ def xdgInstall():
             print(f"Installed mime icon size {aSize}")
         else:
             print(f"Error {exCode}: Could not install mime icon size {aSize}")
+
+    # Update Cache
+    exCode = subprocess.call(["xdg-icon-resource", "forceupdate"])
+    if exCode == 0:
+        print("Updated icon cache")
+    else:
+        print(f"Error {exCode}: Could not update icon cache")
+
+    # Clean up
+    if os.path.isfile("./novelwriter.desktop"):
+        os.unlink("./novelwriter.desktop")
+
+    print("")
+    print("Done!")
+    print("")
+
+    return
+
+##
+#  XDG Uninstallation (xdg-uninstall)
+##
+
+def xdgUninstall():
+    """Will attempt to uninstall icons and make a launcher.
+    """
+    print("")
+    print("XDG Uninstall")
+    print("=============")
+    print("")
+
+    exCode = subprocess.call(
+        ["xdg-desktop-menu", "uninstall", "novelwriter.desktop"]
+    )
+    if exCode == 0:
+        print("Uninstalled menu desktop file")
+    else:
+        print(f"Error {exCode}: Could not uninstall menu desktop file")
+
+    sizeArr = ["16", "22", "24", "32", "48", "64", "96", "128", "256", "512"]
+
+    # App Icon
+    for aSize in sizeArr:
+        exCode = subprocess.call([
+            "xdg-icon-resource", "uninstall", "--noupdate",
+            "--context", "apps", "--size", aSize, "novelwriter"
+        ])
+        if exCode == 0:
+            print(f"Uninstalled app icon size {aSize}")
+        else:
+            print(f"Error {exCode}: Could not uninstall app icon size {aSize}")
+
+    # Mimetype
+    for aSize in sizeArr:
+        exCode = subprocess.call([
+            "xdg-icon-resource", "uninstall", "--noupdate",
+            "--context", "mimetypes", "--size", aSize,
+            "application-x-novelwriter-project"
+        ])
+        if exCode == 0:
+            print(f"Uninstalled mime icon size {aSize}")
+        else:
+            print(f"Error {exCode}: Could not uninstall mime icon size {aSize}")
 
     # Update Cache
     exCode = subprocess.call(["xdg-icon-resource", "forceupdate"])
@@ -926,6 +980,7 @@ if __name__ == "__main__":
         "                 install.\n"
         "    xdg-install  Install launcher and icons for freedesktop systems. Run as root or \n"
         "                 with sudo for system-wide install, or as user for single user install.\n"
+        "                 Running 'xdg-uninstall' will remove the icons.\n"
         "    win-install  Install desktop and start menu icons for Windows systems.\n"
     )
 
@@ -985,11 +1040,6 @@ if __name__ == "__main__":
     # General Installers
     # ==================
 
-    if "launcher" in sys.argv:
-        sys.argv.remove("launcher")
-        print("The 'launcher' command has been replaced by 'xdg-install'.")
-        sys.exit(1)
-
     if "xdg-install" in sys.argv:
         sys.argv.remove("xdg-install")
         if hostOS == OS_WIN:
@@ -997,6 +1047,14 @@ if __name__ == "__main__":
             sys.exit(1)
         else:
             xdgInstall()
+
+    if "xdg-uninstall" in sys.argv:
+        sys.argv.remove("xdg-uninstall")
+        if hostOS == OS_WIN:
+            print("ERROR: Command 'xdg-uninstall' cannot be used on Windows")
+            sys.exit(1)
+        else:
+            xdgUninstall()
 
     if "win-install" in sys.argv:
         sys.argv.remove("win-install")

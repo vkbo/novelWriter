@@ -95,3 +95,16 @@ all users, run the script with the ``sudo`` command.
 
 .. tip::
    All options of the setup script can be listed with: ``./setup.py help``.
+
+
+Uninstalling Icons
+==================
+
+The steps taken by the ``xdg-install`` step can be reversed by running:
+
+.. code-block:: console
+
+   ./setup.py xdg-uninstall
+
+This will remove the desktop launcher and icons from the system. As above, whether this is done on
+the current user, or system wide, depends on whether this command is called with ``sudo`` or not.
