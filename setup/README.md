@@ -50,5 +50,6 @@ install.
 
 `xdg-install` – Install launcher and icons for freedesktop systems. Run as root
 or with sudo for system-wide install, or as user for single user install.
+Running `xdg-uninstall` will remove the icons.
 
 `win-install` – Install desktop and start menu icons for Windows systems.
