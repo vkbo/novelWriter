@@ -1,6 +1,5 @@
 SOURCES += \
     i18n/dummy_qtbase.py \
-    nw/constants/constants.py \
     nw/core/document.py \
     nw/core/project.py \
     nw/core/tokenizer.py \
@@ -28,6 +27,7 @@ SOURCES += \
     nw/gui/wordlist.py \
     nw/gui/writingstats.py \
     nw/common.py \
+    nw/constants.py \
     nw/error.py \
     nw/guimain.py
 
