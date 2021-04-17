@@ -327,7 +327,7 @@ def makeMinimalPackage(targetOS):
             zipObj.write(os.path.join("setup", "setup_windows.bat"), "setup_windows.bat")
             print("Adding File: setup_windows.bat")
             zipObj.write(os.path.join("setup", "uninstall_windows.bat"), "uninstall_windows.bat")
-            print("Adding File: setup_windows.bat")
+            print("Adding File: uninstall_windows.bat")
         else:
             zipObj.write("novelWriter.py")
             print("Adding File: novelWriter.py")
