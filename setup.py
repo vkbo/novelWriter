@@ -704,7 +704,7 @@ def xdgUninstall():
     return
 
 ##
-#  WIN Installation (win-install, launcher)
+#  WIN Installation (win-install)
 ##
 
 def winInstall():
@@ -827,6 +827,92 @@ def winInstall():
 
     return
 
+##
+#  WIN Uninstallation (win-uninstall)
+##
+
+def winUninstall():
+    """Will attempt to uninstall icons previously installed.
+    """
+    import winreg
+    from nw import __version__, __hexversion__
+    try:
+        import win32com.client
+    except ImportError:
+        print(
+            "ERROR: Package 'pywin32' is missing on this system.\n"
+            "       Please run 'pip install --user pywin32' to install it."
+        )
+        sys.exit(1)
+
+    print("")
+    print("Windows Uninstall")
+    print("=================")
+    print("")
+
+    nwTesting = not __hexversion__[-2] == "f"
+    wShell = win32com.client.Dispatch("WScript.Shell")
+
+    if nwTesting:
+        linkName = "novelWriter Testing %s.lnk" % __version__
+    else:
+        linkName = "novelWriter %s.lnk" % __version__
+
+    desktopDir = wShell.SpecialFolders("Desktop")
+    desktopIcon = os.path.join(desktopDir, linkName)
+
+    startMenuDir = wShell.SpecialFolders("StartMenu")
+    startMenuProg = os.path.join(startMenuDir, "Programs", "novelWriter")
+    startMenuIcon = os.path.join(startMenuProg, linkName)
+
+    print("Deleting Links ...")
+    if os.path.isfile(desktopIcon):
+        os.unlink(desktopIcon)
+        print("Deleted: %s" % desktopIcon)
+    else:
+        print("Not Found: %s" % desktopIcon)
+
+    if os.path.isfile(startMenuIcon):
+        os.unlink(startMenuIcon)
+        print("Deleted: %s" % startMenuIcon)
+    else:
+        print("Not Found: %s" % startMenuIcon)
+
+    if os.path.isdir(startMenuProg):
+        if not os.listdir(startMenuProg):
+            os.rmdir(startMenuProg)
+            print("Deleted: %s" % startMenuProg)
+        else:
+            print("Not Empty: %s" % startMenuProg)
+
+    print("")
+    print("Removing registry keys ...")
+
+    theKeys = [
+        r"Software\Classes\novelWriterProject.nwx\shell\open\command",
+        r"Software\Classes\novelWriterProject.nwx\shell\open",
+        r"Software\Classes\novelWriterProject.nwx\shell",
+        r"Software\Classes\novelWriterProject.nwx\DefaultIcon",
+        r"Software\Classes\novelWriterProject.nwx",
+        r"Software\Classes\.nwx\OpenWithProgids",
+        r"Software\Classes\.nwx",
+        r"Software\Classes\Applications\novelWriter.pyw\SupportedTypes",
+        r"Software\Classes\Applications\novelWriter.pyw",
+    ]
+
+    for aKey in theKeys:
+        try:
+            winreg.DeleteKey(winreg.HKEY_CURRENT_USER, aKey)
+            print("Deleted: HKEY_CURRENT_USER\\%s" % aKey)
+        except WindowsError:
+            print("Not Found: HKEY_CURRENT_USER\\%s" % aKey)
+
+    print("")
+    print("Done!")
+    print("")
+
+    return
+
 # =============================================================================================== #
 #  Windows Installers
 # =============================================================================================== #
@@ -937,6 +1023,7 @@ if __name__ == "__main__":
         "                 with sudo for system-wide install, or as user for single user install.\n"
         "                 Running 'xdg-uninstall' will remove the icons.\n"
         "    win-install  Install desktop and start menu icons for Windows systems.\n"
+        "                 Running 'win-uninstall' will remove the icons.\n"
     )
 
     # Flags and Variables
@@ -1009,6 +1096,14 @@ if __name__ == "__main__":
             winInstall()
         else:
             print("ERROR: Command 'win-install' can only be used on Windows")
+            sys.exit(1)
+
+    if "win-uninstall" in sys.argv:
+        sys.argv.remove("win-uninstall")
+        if hostOS == OS_WIN:
+            winUninstall()
+        else:
+            print("ERROR: Command 'win-uninstall' can only be used on Windows")
             sys.exit(1)
 
     # Windows Setup Installer
