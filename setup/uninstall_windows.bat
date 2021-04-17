@@ -10,15 +10,20 @@ echo Python found. OK.
 if exist setup.py (
     echo setup.py found. OK.
 ) else (
-    goto errorNoSetup
+    cd ..
+    if exist setup.py (
+        echo setup.py found. OK.
+    ) else (
+        goto errorNoSetup
+    )
 )
 echo.
 
-:: Remove the PyQt5, lxml and pyenchant dependencies
-pip uninstall -r requirements.txt
-
 :: Remove the desktop and start menu icons
 python setup.py win-uninstall
+
+:: Remove the PyQt5, lxml and pyenchant dependencies
+pip uninstall -r requirements.txt
 
 pause
 goto:eof

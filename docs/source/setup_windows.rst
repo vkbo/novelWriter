@@ -79,6 +79,9 @@ Open the folder where you extracted the novelWriter source, and double-click the
 ``setup_windows.bat``. This should open a command line window and run the setup script to install
 dependencies, and add desktop and start menu icons.
 
+.. note::
+   If you downloaded the full source package, the file may be in the ``setup`` subfolder.
+
 The script will also check that it can find Python on your system and alert you if it cannot run
 it. If you are sure you have installed it, but the script cannot find it, you probably didn't
 install it with the "Add Python to PATH" option mentioned in Step 1.
@@ -108,3 +111,33 @@ and the second command will create a desktop icon and a start menu icon. That sh
 you need.
 
 .. _Python Package Index: https://pypi.org/
+
+
+Uninstalling
+============
+
+**Alternative A: By Script**
+
+Open the folder where you keep the novelWriter files, and double-click the file named
+``uninstall_windows.bat``. This should open a command line window and run the setup script to
+remove the main dependency packages and remove desktop and start menu icons.
+
+.. note::
+   If you downloaded the full source package, the file may be in the ``setup`` subfolder.
+
+If you plan to also remove Python from your system, you must run this command first, as it needs
+Python in order to run the commands.
+
+.. note::
+   Due to limitations with the ``pip`` installer, dependencies of the dependencies will not be
+   removed, only the ones the setup script directly installed.
+
+**Alternative B: Manual Uninstallation**
+
+Like for the install process, the script just runs two commands. You can of course run them
+yourself if you wish. They are:
+
+.. code-block:: console
+
+   python setup.py win-uninstall
+   pip uninstall -r requirements.txt

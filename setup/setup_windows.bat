@@ -6,13 +6,18 @@ echo Looking for Python
 python --version 2>NUL
 if errorlevel 1 goto errorNoPython
 echo Python found. OK.
-echo.
 
 if exist setup.py (
     echo setup.py found. OK.
 ) else (
-    goto errorNoSetup
+    cd ..
+    if exist setup.py (
+        echo setup.py found. OK.
+    ) else (
+        goto errorNoSetup
+    )
 )
+echo.
 
 :: Install the PyQt5, lxml and pyenchant dependencies
 python setup.py pip
