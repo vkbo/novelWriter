@@ -251,19 +251,22 @@ def makeMinimalPackage(targetOS):
     print("")
     print("Building Minimal ZIP File")
     print("=========================")
-    print("")
 
     if not os.path.isdir("dist"):
         os.mkdir("dist")
 
     if targetOS == OS_LINUX:
         targName = "-linux"
+        print("Target OS: Linux")
     elif targetOS == OS_DARWIN:
         targName = "-darwin"
+        print("Target OS: Darwin")
     elif targetOS == OS_WIN:
         targName = "-win"
+        print("Target OS: Windows")
     else:
         targName = ""
+    print("")
 
     zipFile = f"novelWriter-{__version__}-minimal{targName}.zip"
     outFile = os.path.join("dist", zipFile)
@@ -295,7 +298,7 @@ def makeMinimalPackage(targetOS):
         if targetOS == OS_WIN:
             zipObj.write("novelWriter.py", "novelWriter.pyw")
             print("Adding File: novelWriter.pyw")
-            zipObj.write("setup_windows.bat")
+            zipObj.write(os.path.join("setup", "setup_windows.bat"), "setup_windows.bat")
             print("Adding File: setup_windows.bat")
         else:
             zipObj.write("novelWriter.py")
