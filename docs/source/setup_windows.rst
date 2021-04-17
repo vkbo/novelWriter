@@ -75,7 +75,7 @@ Step 2: Dependencies and Icons
 
 **Alternative A: By Script**
 
-Open the folder where you extracted the novelWriter source, and double-click the file named
+Open the folder where you extracted novelWriter, and double-click the file named
 ``setup_windows.bat``. This should open a command line window and run the setup script to install
 dependencies, and add desktop and start menu icons.
 
@@ -103,7 +103,7 @@ and run the following commands:
 
 .. code-block:: console
 
-   python setup.py pip
+   pip install --user pywin32 -r requirements.txt
    python setup.py win-install
 
 The first command will install the dependencies on your system from the `Python Package Index`_,
@@ -125,11 +125,11 @@ remove the main dependency packages and remove desktop and start menu icons.
 .. note::
    If you downloaded the full source package, the file may be in the ``setup`` subfolder.
 
-If you plan to also remove Python from your system, you must run this command first, as it needs
-Python in order to run the commands.
+If you plan to also remove Python from your system, you must run the above script first as it needs
+Python in order to run.
 
 .. note::
-   Due to limitations with the ``pip`` installer, dependencies of the dependencies will not be
+   Due to limitations of the ``pip`` installer, dependencies of the dependencies will not be
    removed, only the ones the setup script directly installed.
 
 **Alternative B: Manual Uninstallation**
@@ -141,3 +141,9 @@ yourself if you wish. They are:
 
    python setup.py win-uninstall
    pip uninstall -r requirements.txt
+
+There may be other packages on your system installed by ``pip``. To list all packages, run:
+
+.. code-block:: console
+
+   pip freeze --user
