@@ -19,12 +19,22 @@ if exist setup.py (
 )
 echo.
 
+echo Ready to remove the novelWriter icons, registry keys, and package dependencies.
+set /P c=Are you sure you want to continue [y/n]? 
+if /I "%c%" EQU "y" goto doUninst
+goto afterUninst
+
+:doUninst
+
 :: Remove the desktop and start menu icons
 python setup.py win-uninstall
 
 :: Remove the PyQt5, lxml and pyenchant dependencies
-pip uninstall -r requirements.txt
+pip uninstall --yes -r requirements.txt
 
+:afterUninst
+
+echo.
 pause
 goto:eof
 
