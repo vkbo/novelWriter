@@ -36,6 +36,30 @@ OS_WIN    = 2
 OS_DARWIN = 3
 
 # =============================================================================================== #
+#  Utilities
+# =============================================================================================== #
+
+def extractVersion():
+    """Extract the novelWriter version number without having to import
+    anything else from the main package.
+    """
+    def getValue(theString):
+        theBits = theString.partition("=")
+        return theBits[2].strip().strip('"')
+
+    numVers = "Unknown"
+    hexVers = "Unknown"
+    initFile = os.path.join("nw", "__init__.py")
+    with open(initFile, mode="r") as inFile:
+        for aLine in inFile:
+            if aLine.startswith("__version__"):
+                numVers = getValue((aLine))
+            if aLine.startswith("__hexversion__"):
+                hexVers = getValue((aLine))
+
+    return numVers, hexVers
+
+# =============================================================================================== #
 #  General
 # =============================================================================================== #
 
@@ -237,8 +261,10 @@ def buildSampleZip():
 def makeMinimalPackage(targetOS):
     """Pack the core source file in a single zip file.
     """
-    from nw import __version__
     from zipfile import ZipFile, ZIP_DEFLATED
+
+    # Get the version
+    numVers, _ = extractVersion()
 
     # Make sample.zip first
     try:
@@ -251,21 +277,24 @@ def makeMinimalPackage(targetOS):
     print("")
     print("Building Minimal ZIP File")
     print("=========================")
-    print("")
 
     if not os.path.isdir("dist"):
         os.mkdir("dist")
 
     if targetOS == OS_LINUX:
         targName = "-linux"
+        print("Target OS: Linux")
     elif targetOS == OS_DARWIN:
         targName = "-darwin"
+        print("Target OS: Darwin")
     elif targetOS == OS_WIN:
         targName = "-win"
+        print("Target OS: Windows")
     else:
         targName = ""
+    print("")
 
-    zipFile = f"novelWriter-{__version__}-minimal{targName}.zip"
+    zipFile = f"novelWriter-{numVers}-minimal{targName}.zip"
     outFile = os.path.join("dist", zipFile)
     if os.path.isfile(outFile):
         os.unlink(outFile)
@@ -295,8 +324,10 @@ def makeMinimalPackage(targetOS):
         if targetOS == OS_WIN:
             zipObj.write("novelWriter.py", "novelWriter.pyw")
             print("Adding File: novelWriter.pyw")
-            zipObj.write("setup_windows.bat")
+            zipObj.write(os.path.join("setup", "setup_windows.bat"), "setup_windows.bat")
             print("Adding File: setup_windows.bat")
+            zipObj.write(os.path.join("setup", "uninstall_windows.bat"), "uninstall_windows.bat")
+            print("Adding File: uninstall_windows.bat")
         else:
             zipObj.write("novelWriter.py")
             print("Adding File: novelWriter.py")
@@ -704,14 +735,13 @@ def xdgUninstall():
     return
 
 ##
-#  WIN Installation (win-install, launcher)
+#  WIN Installation (win-install)
 ##
 
 def winInstall():
     """Will attempt to install icons and make a launcher for Windows.
     """
     import winreg
-    from nw import __version__, __hexversion__
     try:
         import win32com.client
     except ImportError:
@@ -727,13 +757,14 @@ def winInstall():
     print("===============")
     print("")
 
-    nwTesting = not __hexversion__[-2] == "f"
+    numVers, hexVers = extractVersion()
+    nwTesting = not hexVers[-2] == "f"
     wShell = win32com.client.Dispatch("WScript.Shell")
 
     if nwTesting:
-        linkName = "novelWriter Testing %s.lnk" % __version__
+        linkName = "novelWriter Testing %s.lnk" % numVers
     else:
-        linkName = "novelWriter %s.lnk" % __version__
+        linkName = "novelWriter %s.lnk" % numVers
 
     desktopDir = wShell.SpecialFolders("Desktop")
     desktopIcon = os.path.join(desktopDir, linkName)
@@ -827,6 +858,92 @@ def winInstall():
 
     return
 
+##
+#  WIN Uninstallation (win-uninstall)
+##
+
+def winUninstall():
+    """Will attempt to uninstall icons previously installed.
+    """
+    import winreg
+    try:
+        import win32com.client
+    except ImportError:
+        print(
+            "ERROR: Package 'pywin32' is missing on this system.\n"
+            "       Please run 'pip install --user pywin32' to install it."
+        )
+        sys.exit(1)
+
+    print("")
+    print("Windows Uninstall")
+    print("=================")
+    print("")
+
+    numVers, hexVers = extractVersion()
+    nwTesting = not hexVers[-2] == "f"
+    wShell = win32com.client.Dispatch("WScript.Shell")
+
+    if nwTesting:
+        linkName = "novelWriter Testing %s.lnk" % numVers
+    else:
+        linkName = "novelWriter %s.lnk" % numVers
+
+    desktopDir = wShell.SpecialFolders("Desktop")
+    desktopIcon = os.path.join(desktopDir, linkName)
+
+    startMenuDir = wShell.SpecialFolders("StartMenu")
+    startMenuProg = os.path.join(startMenuDir, "Programs", "novelWriter")
+    startMenuIcon = os.path.join(startMenuProg, linkName)
+
+    print("Deleting Links ...")
+    if os.path.isfile(desktopIcon):
+        os.unlink(desktopIcon)
+        print("Deleted: %s" % desktopIcon)
+    else:
+        print("Not Found: %s" % desktopIcon)
+
+    if os.path.isfile(startMenuIcon):
+        os.unlink(startMenuIcon)
+        print("Deleted: %s" % startMenuIcon)
+    else:
+        print("Not Found: %s" % startMenuIcon)
+
+    if os.path.isdir(startMenuProg):
+        if not os.listdir(startMenuProg):
+            os.rmdir(startMenuProg)
+            print("Deleted: %s" % startMenuProg)
+        else:
+            print("Not Empty: %s" % startMenuProg)
+
+    print("")
+    print("Removing registry keys ...")
+
+    theKeys = [
+        r"Software\Classes\novelWriterProject.nwx\shell\open\command",
+        r"Software\Classes\novelWriterProject.nwx\shell\open",
+        r"Software\Classes\novelWriterProject.nwx\shell",
+        r"Software\Classes\novelWriterProject.nwx\DefaultIcon",
+        r"Software\Classes\novelWriterProject.nwx",
+        r"Software\Classes\.nwx\OpenWithProgids",
+        r"Software\Classes\.nwx",
+        r"Software\Classes\Applications\novelWriter.pyw\SupportedTypes",
+        r"Software\Classes\Applications\novelWriter.pyw",
+    ]
+
+    for aKey in theKeys:
+        try:
+            winreg.DeleteKey(winreg.HKEY_CURRENT_USER, aKey)
+            print("Deleted: HKEY_CURRENT_USER\\%s" % aKey)
+        except WindowsError:
+            print("Not Found: HKEY_CURRENT_USER\\%s" % aKey)
+
+    print("")
+    print("Done!")
+    print("")
+
+    return
+
 # =============================================================================================== #
 #  Windows Installers
 # =============================================================================================== #
@@ -848,8 +965,8 @@ def innoSetup():
     with open(os.path.join("setup", "win_setup_pyz.iss"), mode="r") as inFile:
         issData = inFile.read()
 
-    import nw # noqa: E402
-    issData = issData.replace(r"%%version%%", nw.__version__)
+    numVers, _ = extractVersion()
+    issData = issData.replace(r"%%version%%", numVers)
     issData = issData.replace(r"%%dir%%", os.getcwd())
 
     with open("setup.iss", mode="w+") as outFile:
@@ -937,6 +1054,7 @@ if __name__ == "__main__":
         "                 with sudo for system-wide install, or as user for single user install.\n"
         "                 Running 'xdg-uninstall' will remove the icons.\n"
         "    win-install  Install desktop and start menu icons for Windows systems.\n"
+        "                 Running 'win-uninstall' will remove the icons.\n"
     )
 
     # Flags and Variables
@@ -950,6 +1068,13 @@ if __name__ == "__main__":
     if "help" in sys.argv:
         sys.argv.remove("help")
         print(helpMsg)
+        sys.exit(0)
+
+    if "version" in sys.argv:
+        sys.argv.remove("version")
+        numVers, hexVers = extractVersion()
+        print("Semantic Version: %s" % numVers)
+        print("Hexadecimal Version: %s" % hexVers)
         sys.exit(0)
 
     if "pip" in sys.argv:
@@ -1009,6 +1134,14 @@ if __name__ == "__main__":
             winInstall()
         else:
             print("ERROR: Command 'win-install' can only be used on Windows")
+            sys.exit(1)
+
+    if "win-uninstall" in sys.argv:
+        sys.argv.remove("win-uninstall")
+        if hostOS == OS_WIN:
+            winUninstall()
+        else:
+            print("ERROR: Command 'win-uninstall' can only be used on Windows")
             sys.exit(1)
 
     # Windows Setup Installer
