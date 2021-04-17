@@ -1,5 +1,40 @@
 # novelWriter Changelog
 
+## Version 1.2.3 [2021-04-18]
+
+### Release Notes
+
+This patch fixes a bug where the user's word list (personal dictionary) was not saved properly for
+new projects. The added words were thus "forgotten" the next time the project was opened.
+
+In addition, uninstall commands have been added to the main setup script to make it easier to clean
+up icons (Linux and Windows) and registry keys (Windows) if the user wishes to uninstall
+novelWriter.
+
+### Detailed Changelog
+
+**Bugfixes**
+
+* Fixed an issue where the initial file for the user dictionary for a new project would not be
+  created the first time a word was added to it. This caused the words the user added to the
+  dictionary to not be loaded the next time the project was opened. Issue #733. PR #734.
+* Some of the `setup.py` commands could not run if the PyQt5 packages were missing due to an import
+  command extracting the version number from the main `nw` package. This was not technically a bug
+  as the choice to do it this way was made deliberately, but a function has been added to the
+  `setup.py` script to allow reading the version number without having to import the `nw` package.
+  PR #749.
+
+**Installation**
+
+* An `xdg-uninstall` option has been added to `setup.py` to uninstall the icons installed into the
+  system by the `xdg-install` command. PR #736.
+* Likewise, a `win-uninstall` option has been added to `setup.py` to uninstall the icons installed
+  into the system by the `win-install` command. Issue #743 and discussion #739. PR #749.
+* Improvements have also been made to the `setup_windows.bat` script, and a complementary
+  `uninstall_windows.bat` has been added as well. PR #749.
+
+----
+
 ## Version 1.2.2 [2021-03-28]
 
 ### Release Notes
