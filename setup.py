@@ -36,6 +36,30 @@ OS_WIN    = 2
 OS_DARWIN = 3
 
 # =============================================================================================== #
+#  Utilities
+# =============================================================================================== #
+
+def extractVersion():
+    """Extract the novelWriter version number without having to import
+    anything else from the main package.
+    """
+    def getValue(theString):
+        theBits = theString.partition("=")
+        return theBits[2].strip().strip('"')
+
+    numVers = "Unknown"
+    hexVers = "Unknown"
+    initFile = os.path.join("nw", "__init__.py")
+    with open(initFile, mode="r") as inFile:
+        for aLine in inFile:
+            if aLine.startswith("__version__"):
+                numVers = getValue((aLine))
+            if aLine.startswith("__hexversion__"):
+                hexVers = getValue((aLine))
+
+    return numVers, hexVers
+
+# =============================================================================================== #
 #  General
 # =============================================================================================== #
 
@@ -237,8 +261,10 @@ def buildSampleZip():
 def makeMinimalPackage(targetOS):
     """Pack the core source file in a single zip file.
     """
-    from nw import __version__
     from zipfile import ZipFile, ZIP_DEFLATED
+
+    # Get the version
+    numVers, _ = extractVersion()
 
     # Make sample.zip first
     try:
@@ -268,7 +294,7 @@ def makeMinimalPackage(targetOS):
         targName = ""
     print("")
 
-    zipFile = f"novelWriter-{__version__}-minimal{targName}.zip"
+    zipFile = f"novelWriter-{numVers}-minimal{targName}.zip"
     outFile = os.path.join("dist", zipFile)
     if os.path.isfile(outFile):
         os.unlink(outFile)
@@ -299,6 +325,8 @@ def makeMinimalPackage(targetOS):
             zipObj.write("novelWriter.py", "novelWriter.pyw")
             print("Adding File: novelWriter.pyw")
             zipObj.write(os.path.join("setup", "setup_windows.bat"), "setup_windows.bat")
+            print("Adding File: setup_windows.bat")
+            zipObj.write(os.path.join("setup", "uninstall_windows.bat"), "uninstall_windows.bat")
             print("Adding File: setup_windows.bat")
         else:
             zipObj.write("novelWriter.py")
@@ -714,7 +742,6 @@ def winInstall():
     """Will attempt to install icons and make a launcher for Windows.
     """
     import winreg
-    from nw import __version__, __hexversion__
     try:
         import win32com.client
     except ImportError:
@@ -730,13 +757,14 @@ def winInstall():
     print("===============")
     print("")
 
-    nwTesting = not __hexversion__[-2] == "f"
+    numVers, hexVers = extractVersion()
+    nwTesting = not hexVers[-2] == "f"
     wShell = win32com.client.Dispatch("WScript.Shell")
 
     if nwTesting:
-        linkName = "novelWriter Testing %s.lnk" % __version__
+        linkName = "novelWriter Testing %s.lnk" % numVers
     else:
-        linkName = "novelWriter %s.lnk" % __version__
+        linkName = "novelWriter %s.lnk" % numVers
 
     desktopDir = wShell.SpecialFolders("Desktop")
     desktopIcon = os.path.join(desktopDir, linkName)
@@ -838,7 +866,6 @@ def winUninstall():
     """Will attempt to uninstall icons previously installed.
     """
     import winreg
-    from nw import __version__, __hexversion__
     try:
         import win32com.client
     except ImportError:
@@ -853,13 +880,14 @@ def winUninstall():
     print("=================")
     print("")
 
-    nwTesting = not __hexversion__[-2] == "f"
+    numVers, hexVers = extractVersion()
+    nwTesting = not hexVers[-2] == "f"
     wShell = win32com.client.Dispatch("WScript.Shell")
 
     if nwTesting:
-        linkName = "novelWriter Testing %s.lnk" % __version__
+        linkName = "novelWriter Testing %s.lnk" % numVers
     else:
-        linkName = "novelWriter %s.lnk" % __version__
+        linkName = "novelWriter %s.lnk" % numVers
 
     desktopDir = wShell.SpecialFolders("Desktop")
     desktopIcon = os.path.join(desktopDir, linkName)
@@ -937,8 +965,8 @@ def innoSetup():
     with open(os.path.join("setup", "win_setup_pyz.iss"), mode="r") as inFile:
         issData = inFile.read()
 
-    import nw # noqa: E402
-    issData = issData.replace(r"%%version%%", nw.__version__)
+    numVers, _ = extractVersion()
+    issData = issData.replace(r"%%version%%", numVers)
     issData = issData.replace(r"%%dir%%", os.getcwd())
 
     with open("setup.iss", mode="w+") as outFile:
@@ -1040,6 +1068,13 @@ if __name__ == "__main__":
     if "help" in sys.argv:
         sys.argv.remove("help")
         print(helpMsg)
+        sys.exit(0)
+
+    if "version" in sys.argv:
+        sys.argv.remove("version")
+        numVers, hexVers = extractVersion()
+        print("Semantic Version: %s" % numVers)
+        print("Hexadecimal Version: %s" % hexVers)
         sys.exit(0)
 
     if "pip" in sys.argv:
