@@ -1,5 +1,27 @@
 # novelWriter Changelog
 
+## Version 1.3 RC 1 [2021-04-18]
+
+### Release Notes
+
+This is a release candidate of 1.3. The primary feature of release 1.3 is the addition of
+internationalisation (i18n) of novelWriter. The release introduces support for Portuguese, French,
+and Norwegian in addition to the default English.
+
+There have been no major changes since the release of 1.3 Beta 1, but the bugfixes and improvements
+from version 1.2.3 have been included.
+
+### Detailed Changelog
+
+**Internationalisation**
+
+* The Portuguese translation has been updated and should now be complete. Thanks again to Bruno
+  Meneguello (@bkmeneguello). PR #742.
+
+*The changes since 1.3 Beta 1 also include the changes of release 1.2.3.*
+
+----
+
 ## Version 1.3 Beta 1 [2021-03-28]
 
 ### Release Notes
