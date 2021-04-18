@@ -75,9 +75,12 @@ Step 2: Dependencies and Icons
 
 **Alternative A: By Script**
 
-Open the folder where you extracted the novelWriter source, and double-click the file named
+Open the folder where you extracted novelWriter, and double-click the file named
 ``setup_windows.bat``. This should open a command line window and run the setup script to install
 dependencies, and add desktop and start menu icons.
+
+.. note::
+   If you downloaded the full source package, the file may be in the ``setup`` subfolder.
 
 The script will also check that it can find Python on your system and alert you if it cannot run
 it. If you are sure you have installed it, but the script cannot find it, you probably didn't
@@ -100,7 +103,7 @@ and run the following commands:
 
 .. code-block:: console
 
-   python setup.py pip
+   pip install --user pywin32 -r requirements.txt
    python setup.py win-install
 
 The first command will install the dependencies on your system from the `Python Package Index`_,
@@ -108,3 +111,39 @@ and the second command will create a desktop icon and a start menu icon. That sh
 you need.
 
 .. _Python Package Index: https://pypi.org/
+
+
+Uninstalling
+============
+
+**Alternative A: By Script**
+
+Open the folder where you keep the novelWriter files, and double-click the file named
+``uninstall_windows.bat``. This should open a command line window and run the setup script to
+remove the main dependency packages and remove desktop and start menu icons.
+
+.. note::
+   If you downloaded the full source package, the file may be in the ``setup`` subfolder.
+
+If you plan to also remove Python from your system, you must run the above script first as it needs
+Python in order to run.
+
+.. note::
+   Due to limitations of the ``pip`` installer, dependencies of the dependencies will not be
+   removed, only the ones the setup script directly installed.
+
+**Alternative B: Manual Uninstallation**
+
+Like for the install process, the script just runs two commands. You can of course run them
+yourself if you wish. They are:
+
+.. code-block:: console
+
+   python setup.py win-uninstall
+   pip uninstall -r requirements.txt
+
+There may be other packages on your system installed by ``pip``. To list all packages, run:
+
+.. code-block:: console
+
+   pip freeze --user
