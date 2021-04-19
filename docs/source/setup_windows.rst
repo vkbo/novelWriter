@@ -76,7 +76,7 @@ Step 2: Dependencies and Icons
 **Alternative A: By Script**
 
 Open the folder where you extracted novelWriter, and double-click the file named
-``setup_windows.bat``. This should open a command line window and run the setup script to install
+``windows_install.bat``. This should open a command line window and run the setup script to install
 dependencies, and add desktop and start menu icons.
 
 .. note::
@@ -119,7 +119,7 @@ Uninstalling
 **Alternative A: By Script**
 
 Open the folder where you keep the novelWriter files, and double-click the file named
-``uninstall_windows.bat``. This should open a command line window and run the setup script to
+``windows_uninstall.bat``. This should open a command line window and run the setup script to
 remove the main dependency packages and remove desktop and start menu icons.
 
 .. note::

@@ -175,8 +175,8 @@ Windows doesn't by default come with Python installed. If you haven't installed 
 from [python.org/downloads](https://www.python.org/downloads/). Remember to select "Add Python to
 PATH" during the installation.
 
-The script `setup_windows.bat` can be used to create desktop and start menu icons for novelWriter.
-The script will also install dependencies for you from PyPi.
+The script `setup\windows_install.bat` can be used to create desktop and start menu icons for
+novelWriter. The script will also install dependencies for you from PyPi.
 
 ## Internationalisation
 
