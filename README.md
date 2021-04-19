@@ -29,7 +29,7 @@ The full documentation is available on [readthedocs.io](https://novelwriter.read
 
 ## Implementation
 
-The application is written in Python 3 using Qt5 via PyQt5. It is developed on Linux, but it should
+The application is written in Python 3 using Qt5 and PyQt5. It is developed on Linux, but it should
 in principle work fine on other operating systems as well, as long as dependencies are met. It is
 regularly tested on Ubuntu Linux, Windows, and macOS.
 
@@ -142,7 +142,7 @@ space only.
 
 Dependencies can generally be installed from PyPi with:
 ```bash
-pip install pyqt5 lxml pyenchant
+pip install -r requirements.txt
 ```
 
 ### Additional Steps for Linux
@@ -153,7 +153,7 @@ and Debian, run:
 sudo apt install python3-pyqt5 python3-lxml python3-enchant
 ```
 
-If you want to set up a launcher on Linux, you can run:
+If you want to set up a launcher and icons on Linux, you can run:
 ```bash
 python setup.py xdg-install
 ```
@@ -171,12 +171,12 @@ pip3 install --user pyobjc
 
 ### Additional Steps for Windows
 
-Windows doesn't by default come with Python installed. If you haven't installed it already, get it
+Windows does not by default come with Python installed. If you haven't installed it already, get it
 from [python.org/downloads](https://www.python.org/downloads/). Remember to select "Add Python to
 PATH" during the installation.
 
-The script `setup_windows.bat` can be used to create desktop and start menu icons for novelWriter.
-The script will also install dependencies for you from PyPi.
+The script `windows_install.bat` in the `setup` folder can be used to create desktop and start menu
+icons for novelWriter. The script will also install dependencies for you from PyPi.
 
 ## Internationalisation
 
