@@ -32,7 +32,7 @@ typeDelay = 1
 stepDelay = 20
 
 @pytest.mark.gui
-def testDialogs_QuoteSelect(qtbot, monkeypatch, nwGUI, nwMinimal):
+def testDlgOther_QuoteSelect(qtbot, monkeypatch, nwGUI, nwMinimal):
     """Test the quote symbols dialog.
     """
     # Block message box
@@ -58,4 +58,4 @@ def testDialogs_QuoteSelect(qtbot, monkeypatch, nwGUI, nwMinimal):
     nwQuot._doReject()
     nwQuot.close()
 
-# END Test testDialogs_QuoteSelect
+# END Test testDlgOther_QuoteSelect
