@@ -31,14 +31,14 @@ from PyQt5.QtWidgets import (
     QMessageBox
 )
 
-from nw.gui import GuiProjectLoad
+from nw.dialogs import GuiProjectLoad
 
 keyDelay = 2
 typeDelay = 1
 stepDelay = 20
 
 @pytest.mark.gui
-def testGuiLoadProject_Main(qtbot, monkeypatch, nwGUI, nwMinimal):
+def testDlgLoadProject_Main(qtbot, monkeypatch, nwGUI, nwMinimal):
     """Test the load project wizard.
     """
     # Block message box
@@ -114,4 +114,4 @@ def testGuiLoadProject_Main(qtbot, monkeypatch, nwGUI, nwMinimal):
     nwLoad.close()
     # qtbot.stopForInteraction()
 
-# END Test testGuiLoadProject_Main
+# END Test testDlgLoadProject_Main

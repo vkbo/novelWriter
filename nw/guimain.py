@@ -39,12 +39,15 @@ from PyQt5.QtWidgets import (
 )
 
 from nw.gui import (
-    GuiAbout, GuiBuildNovel, GuiDocEditor, GuiDocMerge, GuiDocSplit,
-    GuiDocViewDetails, GuiDocViewer, GuiItemDetails, GuiItemEditor,
-    GuiMainMenu, GuiMainStatus, GuiNovelTree, GuiOutline, GuiOutlineDetails,
-    GuiPreferences, GuiProjectDetails, GuiProjectLoad, GuiProjectSettings,
-    GuiProjectTree, GuiProjectWizard, GuiTheme, GuiWordList, GuiWritingStats
+    GuiDocEditor, GuiDocViewDetails, GuiDocViewer, GuiItemDetails, GuiMainMenu,
+    GuiMainStatus, GuiNovelTree, GuiOutline, GuiOutlineDetails,
+    GuiProjectDetails, GuiProjectTree, GuiTheme
 )
+from nw.dialogs import (
+    GuiAbout, GuiDocMerge, GuiDocSplit, GuiItemEditor, GuiPreferences,
+    GuiProjectLoad, GuiProjectSettings, GuiWordList
+)
+from nw.tools import GuiBuildNovel, GuiProjectWizard, GuiWritingStats
 from nw.core import NWProject, NWDoc, NWIndex
 from nw.enum import nwItemType, nwItemClass, nwAlert, nwWidget
 from nw.common import getGuiItem, hexToInt

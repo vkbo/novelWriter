@@ -32,14 +32,14 @@ from PyQt5.QtWidgets import (
     QDialog, QAction, QMessageBox, QColorDialog, QTreeWidgetItem
 )
 
-from nw.gui import GuiProjectSettings
+from nw.dialogs import GuiProjectSettings
 
 keyDelay = 2
 typeDelay = 1
 stepDelay = 20
 
 @pytest.mark.gui
-def testGuiProjSettings_Dialog(qtbot, monkeypatch, nwGUI, fncDir, fncProj, outDir, refDir):
+def testDlgProjSettings_Dialog(qtbot, monkeypatch, nwGUI, fncDir, fncProj, outDir, refDir):
     """Test the full project settings dialog.
     """
     projFile = os.path.join(fncProj, "nwProject.nwx")
@@ -243,4 +243,4 @@ def testGuiProjSettings_Dialog(qtbot, monkeypatch, nwGUI, fncDir, fncProj, outDi
 
     # qtbot.stopForInteraction()
 
-# END Test testGuiProjSettings_Dialog
+# END Test testDlgProjSettings_Dialog

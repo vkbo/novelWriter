@@ -28,14 +28,14 @@ from tools import cmpFiles, getGuiItem
 
 from PyQt5.QtWidgets import QAction, QMessageBox
 
-from nw.gui import GuiDocMerge, GuiDocSplit
+from nw.dialogs import GuiDocMerge, GuiDocSplit
 
 keyDelay = 2
 typeDelay = 1
 stepDelay = 20
 
 @pytest.mark.gui
-def testGuiMergeSplit_Tools(qtbot, monkeypatch, nwGUI, nwLipsum, refDir, outDir):
+def testDlgMergeSplit_Tools(qtbot, monkeypatch, nwGUI, nwLipsum, refDir, outDir):
     """Test the full merge and split tools.
     """
     # Block message box
@@ -182,4 +182,4 @@ def testGuiMergeSplit_Tools(qtbot, monkeypatch, nwGUI, nwLipsum, refDir, outDir)
 
     # qtbot.stopForInteraction()
 
-# END Test testGuiMergeSplit_Tools
+# END Test testDlgMergeSplit_Tools

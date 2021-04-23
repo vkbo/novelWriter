@@ -30,7 +30,7 @@ from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QTextCursor
 from PyQt5.QtWidgets import QAction, QMessageBox, QDialog
 
-from nw.gui.itemeditor import GuiItemEditor
+from nw.dialogs.itemeditor import GuiItemEditor
 from nw.gui.doceditor import GuiDocEditor
 from nw.gui.projtree import GuiProjectTree
 from nw.enum import nwItemType, nwDocAction, nwWidget
