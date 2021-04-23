@@ -1,56 +1,28 @@
 # Build and Install novelWriter
 
-The root folder of the repository contains two scripts for setup and install:
+The root folder of the repository contains a standard `setup.py` script. The `setup` folder
+contains necessary files for the setup process, like icons and other files, and it also contains
+additional scripts that are included in the minimal zip packages.
 
+## Setup Script
 
-## Script `setup.py`
+The `setup.py` script in the root folder has all the necessary commands for generating packages,
+installing icons, launcher, and file associations on Linux and Windows (no macOS support yet).
 
-The `setup.py` is a standard Python setup script with a couple of additional
-options:
+In addition, it is a wrapper for `setuptools` and accept all commands associated with this tool.
 
-Some of the commands can be targeted towards a different OS than the host OS.
-To target the command, add one of `--target-linux`, `--target-darwin` or
-`--target-win`.
+To list all custom package and install options in this script, run:
+```
+./setup.py help
+```
+## Windows Scripts
 
-### General
+The `windows_install.bat` and `windows_uninstall.bat` are provided as convenience scripts for
+Windows users who aren't used to running commands from command line. They are both located in the
+`setup` folder in the source package, but in the minimal zip package for Windows, they can be
+found in the root folder.
 
-`help` – Print the help message.
-
-`pip` – Install all package dependencies for novelWriter using pip.
-
-`clean` – Will attempt to delete the `build` and `dist` folders.
-
-### Additional Builds
-
-`qthelp` – Build the help documentation for use with the Qt Assistant. Run
-before install to have local help enable in the the installed version
-
-`qtlupdate` – Update the translation files for internationalisation.
-
-`qtlrelease` – Build the language files for internationalisation.
-
-`sample` – Build the sample project as a zip file. Run before install to enable
-creating sample projects in the in-app New Project Wizard.
-
-### Python Packaging
-
-`minimal-zip` – Creates a minimal zip file of the core application without all
-the other source files.
-
-`pack-pyz` – Creates a pyz package in a folder with all dependencies using the
-zipapp tool. On Windows, python embeddable is added to the folder.
-
-`setup-pyz` – Build a Windows installer from a zipapp package using Inno Setup.
-
-### System Install
-
-`install` – Installs novelWriter to the system's Python install location. Run
-as root or with sudo for system-wide install, or as user for single user
-install.
-
-`xdg-install` – Install launcher and icons for freedesktop systems. Run as root
-or with sudo for system-wide install, or as user for single user install.
-Running `xdg-uninstall` will remove the icons.
-
-`win-install` – Install desktop and start menu icons for Windows systems.
-Running `win-uninstall` will remove the icons.
+These scripts are designed to be double-clicked by the user, but can also be run from the command
+line tool. In either case, they will check if Python is properly installed, and then run the
+commands to install or uninstall the core dependencies of novelWriter, and then setup or remove the
+desktop icon, start menu icon and registry entries.

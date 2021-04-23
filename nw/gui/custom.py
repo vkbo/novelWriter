@@ -29,18 +29,17 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 import nw
 import logging
 
-from PyQt5.QtGui import QColor, QPalette, QPainter, QFontMetrics
+from PyQt5.QtGui import QColor, QPalette, QPainter
 from PyQt5.QtCore import (
-    Qt, QRect, QPoint, QSize, QRectF, QPropertyAnimation, pyqtProperty
+    Qt, QRect, QPoint, QRectF, QPropertyAnimation, pyqtProperty
 )
 from PyQt5.QtWidgets import (
     QGridLayout, QLabel, QWidget, QVBoxLayout, QHBoxLayout, QSizePolicy,
-    QAbstractButton, QDialog, QTabWidget, QTabBar, QStyle, QDialogButtonBox,
-    QStylePainter, QStyleOptionTab, QListWidget, QListWidgetItem, QFrame,
-    QLineEdit
+    QAbstractButton, QDialog, QTabWidget, QTabBar, QStyle, QStylePainter,
+    QStyleOptionTab, QLineEdit
 )
 
-from nw.constants import trConst, nwQuotes, nwUnicode
+from nw.constants import nwUnicode
 
 logger = logging.getLogger(__name__)
 
@@ -461,101 +460,3 @@ class VerticalTabBar(QTabBar):
         return
 
 # END Class VerticalTabBar
-
-# =============================================================================================== #
-#  Quotes Dialog
-# =============================================================================================== #
-
-class QuotesDialog(QDialog):
-
-    selectedQuote = ""
-
-    def __init__(self, theParent=None, currentQuote="\""):
-        QDialog.__init__(self, parent=theParent)
-
-        self.mainConf = nw.CONFIG
-
-        self.outerBox = QVBoxLayout()
-        self.innerBox = QHBoxLayout()
-        self.labelBox = QVBoxLayout()
-
-        self.selectedQuote = currentQuote
-
-        qMetrics = QFontMetrics(self.font())
-        pxW = 7*qMetrics.boundingRectChar("M").width()
-        pxH = 7*qMetrics.boundingRectChar("M").height()
-        pxH = 7*qMetrics.boundingRectChar("M").height()
-
-        lblFont = self.font()
-        lblFont.setPointSizeF(4*lblFont.pointSizeF())
-
-        # Preview Label
-        self.previewLabel = QLabel(currentQuote)
-        self.previewLabel.setFont(lblFont)
-        self.previewLabel.setFixedSize(QSize(pxW, pxH))
-        self.previewLabel.setAlignment(Qt.AlignCenter)
-        self.previewLabel.setFrameStyle(QFrame.Box | QFrame.Plain)
-
-        # Quote Symbols
-        self.listBox = QListWidget()
-        self.listBox.itemSelectionChanged.connect(self._selectedSymbol)
-
-        minSize = 100
-        for sKey, sLabel in nwQuotes.SYMBOLS.items():
-            theText = "[ %s ] %s" % (sKey, trConst(sLabel))
-            minSize = max(minSize, qMetrics.boundingRect(theText).width())
-            qtItem = QListWidgetItem(theText)
-            qtItem.setData(Qt.UserRole, sKey)
-            self.listBox.addItem(qtItem)
-            if sKey == currentQuote:
-                self.listBox.setCurrentItem(qtItem)
-
-        self.listBox.setMinimumWidth(minSize + self.mainConf.pxInt(40))
-        self.listBox.setMinimumHeight(self.mainConf.pxInt(150))
-
-        # Buttons
-        self.buttonBox = QDialogButtonBox(QDialogButtonBox.Ok | QDialogButtonBox.Cancel)
-        self.buttonBox.accepted.connect(self._doAccept)
-        self.buttonBox.rejected.connect(self._doReject)
-
-        # Assemble
-        self.labelBox.addWidget(self.previewLabel, 0, Qt.AlignTop)
-        self.labelBox.addStretch(1)
-
-        self.innerBox.addLayout(self.labelBox)
-        self.innerBox.addWidget(self.listBox)
-
-        self.outerBox.addLayout(self.innerBox)
-        self.outerBox.addWidget(self.buttonBox)
-
-        self.setLayout(self.outerBox)
-
-        return
-
-    ##
-    #  Slots
-    ##
-
-    def _selectedSymbol(self):
-        """Update the preview label and the selected quote style.
-        """
-        selItems = self.listBox.selectedItems()
-        if selItems:
-            theSymbol = selItems[0].data(Qt.UserRole)
-            self.previewLabel.setText(theSymbol)
-            self.selectedQuote = theSymbol
-        return
-
-    def _doAccept(self):
-        """Ok button clicked.
-        """
-        self.accept()
-        return
-
-    def _doReject(self):
-        """Cancel button clicked.
-        """
-        self.reject()
-        return
-
-# END Class QuotesDialog

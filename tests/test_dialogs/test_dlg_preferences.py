@@ -32,9 +32,8 @@ from PyQt5.QtWidgets import (
     QDialogButtonBox, QDialog, QAction, QFileDialog, QFontDialog, QMessageBox
 )
 
-from nw.gui import GuiPreferences
 from nw.config import Config
-from nw.gui.custom import QuotesDialog
+from nw.dialogs import GuiPreferences, GuiQuoteSelect
 from nw.constants import nwConst
 
 keyDelay = 2
@@ -42,7 +41,7 @@ typeDelay = 1
 stepDelay = 20
 
 @pytest.mark.gui
-def testGuiPreferences_Main(qtbot, monkeypatch, fncDir, outDir, refDir):
+def testDlgPreferences_Main(qtbot, monkeypatch, fncDir, outDir, refDir):
     """Test the load project wizard.
     """
     # Block message box
@@ -234,8 +233,8 @@ def testGuiPreferences_Main(qtbot, monkeypatch, fncDir, outDir, refDir):
     tabQuote = nwPrefs.tabQuote
     nwPrefs._tabBox.setCurrentWidget(tabQuote)
 
-    monkeypatch.setattr(QuotesDialog, "selectedQuote", "'")
-    monkeypatch.setattr(QuotesDialog, "exec_", lambda *args: QDialog.Accepted)
+    monkeypatch.setattr(GuiQuoteSelect, "selectedQuote", "'")
+    monkeypatch.setattr(GuiQuoteSelect, "exec_", lambda *args: QDialog.Accepted)
     qtbot.mouseClick(tabQuote.btnDoubleStyleC, Qt.LeftButton)
 
     # Save and Check Config
@@ -259,4 +258,4 @@ def testGuiPreferences_Main(qtbot, monkeypatch, fncDir, outDir, refDir):
 
     # qtbot.stopForInteraction()
 
-# END Test testGuiPreferences_Main
+# END Test testDlgPreferences_Main

@@ -3,29 +3,29 @@ SOURCES += \
     nw/core/document.py \
     nw/core/project.py \
     nw/core/tokenizer.py \
-    nw/gui/about.py \
-    nw/gui/build.py \
+    nw/dialogs/about.py \
+    nw/dialogs/docmerge.py \
+    nw/dialogs/docsplit.py \
+    nw/dialogs/itemeditor.py \
+    nw/dialogs/preferences.py \
+    nw/dialogs/projload.py \
+    nw/dialogs/projsettings.py \
+    nw/dialogs/wordlist.py \
     nw/gui/custom.py \
     nw/gui/doceditor.py \
-    nw/gui/docmerge.py \
-    nw/gui/docsplit.py \
     nw/gui/docviewer.py \
     nw/gui/itemdetails.py \
-    nw/gui/itemeditor.py \
     nw/gui/mainmenu.py \
     nw/gui/noveltree.py \
     nw/gui/outline.py \
     nw/gui/outlinedetails.py \
-    nw/gui/preferences.py \
     nw/gui/projdetails.py \
-    nw/gui/projload.py \
-    nw/gui/projsettings.py \
     nw/gui/projtree.py \
-    nw/gui/projwizard.py \
     nw/gui/statusbar.py \
     nw/gui/theme.py \
-    nw/gui/wordlist.py \
-    nw/gui/writingstats.py \
+    nw/tools/build.py \
+    nw/tools/projwizard.py \
+    nw/tools/writingstats.py \
     nw/common.py \
     nw/constants.py \
     nw/error.py \

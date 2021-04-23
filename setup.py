@@ -367,10 +367,10 @@ def makeMinimalPackage(targetOS):
         if targetOS == OS_WIN:
             zipObj.write("novelWriter.py", "novelWriter.pyw")
             print("Adding File: novelWriter.pyw")
-            zipObj.write(os.path.join("setup", "setup_windows.bat"), "setup_windows.bat")
-            print("Adding File: setup_windows.bat")
-            zipObj.write(os.path.join("setup", "uninstall_windows.bat"), "uninstall_windows.bat")
-            print("Adding File: uninstall_windows.bat")
+            zipObj.write(os.path.join("setup", "windows_install.bat"), "windows_install.bat")
+            print("Adding File: windows_install.bat")
+            zipObj.write(os.path.join("setup", "windows_uninstall.bat"), "windows_uninstall.bat")
+            print("Adding File: windows_uninstall.bat")
         else:
             zipObj.write("novelWriter.py")
             print("Adding File: novelWriter.py")
@@ -1056,51 +1056,61 @@ if __name__ == "__main__":
     else:
         targetOS = hostOS
 
-    helpMsg = (
-        "\n"
-        "novelWriter Setup Tool\n"
-        "======================\n"
-        "\n"
-        "This tool provides setup and build commands for installing or distibuting novelWriter\n"
-        "as a package on Linux, Mac and Windows. The available options are as follows:\n"
-        "\n"
-        "Some of the commands can be targeted towards a different OS than the host OS. To target\n"
-        "the command, add one of '--target-linux', '--target-darwin' or '--target-win'.\n"
-        "\n"
-        "General:\n"
-        "\n"
-        "    help         Print the help message.\n"
-        "    pip          Install all package dependencies for novelWriter using pip.\n"
-        "    clean        Will attempt to delete the 'build' and 'dist' folders.\n"
-        "\n"
-        "Additional Builds:\n"
-        "\n"
-        "    qthelp       Build the help documentation for use with the Qt Assistant. Run before\n"
-        "                 install to have local help enable in the the installed version.\n"
-        "    qtlupdate    Update the translation files for internationalisation.\n"
-        "    qtlrelease   Build the language files for internationalisation.\n"
-        "    sample       Build the sample project as a zip file. Run before install to enable\n"
-        "                 creating sample projects in the in-app New Project Wizard.\n"
-        "\n"
-        "Python Packaging:\n"
-        "\n"
-        "    minimal-zip  Creates a minimal zip file of the core application without all the\n"
-        "                 other source files. Accepts a target OS flag.\n"
-        "    pack-pyz     Creates a pyz package in a folder with all dependencies using the\n"
-        "                 zipapp tool. On Windows, python embeddable is added to the folder.\n"
-        "    setup-pyz    Build a Windows installer from a zipapp package using Inno Setup.\n"
-        "\n"
-        "System Install:\n"
-        "\n"
-        "    install      Installs novelWriter to the system's Python install location. Run as \n"
-        "                 root or with sudo for system-wide install, or as user for single user \n"
-        "                 install.\n"
-        "    xdg-install  Install launcher and icons for freedesktop systems. Run as root or \n"
-        "                 with sudo for system-wide install, or as user for single user install.\n"
-        "                 Running 'xdg-uninstall' will remove the icons.\n"
-        "    win-install  Install desktop and start menu icons for Windows systems.\n"
-        "                 Running 'win-uninstall' will remove the icons.\n"
-    )
+    helpMsg = [
+        "",
+        "novelWriter Setup Tool",
+        "======================",
+        "",
+        "This tool provides setup and build commands for installing or distibuting",
+        "novelWriter as a package on Linux, Mac and Windows. The available options",
+        "are as follows:",
+        "",
+        "Some of the commands can be targeted towards a different OS than the host OS.",
+        "To target the command, add one of '--target-linux', '--target-darwin' or",
+        "'--target-win'.",
+        "",
+        "General:",
+        "",
+        "    help           Print the help message.",
+        "    pip            Install all package dependencies for novelWriter using pip.",
+        "    clean          Will attempt to delete the 'build' and 'dist' folders.",
+        "",
+        "Additional Builds:",
+        "",
+        "    qthelp         Build the help documentation for use with the Qt Assistant.",
+        "    qtlupdate      Update the translation files for internationalisation.",
+        "    qtlrelease     Build the language files for internationalisation.",
+        "    sample         Build the sample project zip file and add it to assets.",
+        "",
+        "Python Packaging:",
+        "",
+        "    minimal-zip    Creates a minimal zip file of the core application without",
+        "                   all the other source files. Defaults to tailor the zip file",
+        "                   for the current OS, but accepts a target OS flag to build",
+        "                   for another OS.",
+        "    pack-pyz       Creates a .pyz package in a folder with all dependencies",
+        "                   using the zipapp tool. On Windows, python embeddable is",
+        "                   added to the folder.",
+        "    setup-pyz      Build a Windows executable installer from a zipapp package",
+        "                   using Inno Setup. Must run 'pack-pyz' first.",
+        "",
+        "System Install:",
+        "",
+        "    install        Installs novelWriter to the system's Python install",
+        "                   location. Run as root or with sudo for system-wide install,",
+        "                   or as user for single user install.",
+        "    xdg-install    Install launcher and icons for freedesktop systems. Run as",
+        "                   root or with sudo for system-wide install, or as user for",
+        "                   single user install.",
+        "    xdg-uninstall  Remove the launcher and icons for the current system as",
+        "                   installed by the 'xdg-install' command.",
+        "    win-install    Install desktop icon, start menu icon, and registry entries",
+        "                   for file association with .nwx files for Windows systems.",
+        "    win-uninstall  Remove desktop icon, start menu icon, and registry keys,",
+        "                   for the current system. Note that it only removes icons for",
+        "                   the version number of the package the command is run from.",
+        "",
+    ]
 
     # Flags and Variables
     makeSetupPyz = False
@@ -1112,7 +1122,7 @@ if __name__ == "__main__":
 
     if "help" in sys.argv:
         sys.argv.remove("help")
-        print(helpMsg)
+        print("\n".join(helpMsg))
         sys.exit(0)
 
     if "version" in sys.argv:

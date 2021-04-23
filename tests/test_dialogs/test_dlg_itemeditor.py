@@ -28,15 +28,16 @@ from tools import cmpFiles, getGuiItem
 
 from PyQt5.QtWidgets import QAction, QMessageBox
 
-from nw.gui import GuiItemEditor, GuiProjectTree
+from nw.gui import GuiProjectTree
 from nw.enum import nwItemLayout
+from nw.dialogs import GuiItemEditor
 
 keyDelay = 2
 typeDelay = 1
 stepDelay = 20
 
 @pytest.mark.gui
-def testGuiItemEditor_Dialog(qtbot, monkeypatch, nwGUI, fncDir, fncProj, refDir, outDir):
+def testDlgItemEditor_Dialog(qtbot, monkeypatch, nwGUI, fncDir, fncProj, refDir, outDir):
     """Test the full item editor dialog.
     """
     projFile = os.path.join(fncProj, "nwProject.nwx")
@@ -108,4 +109,4 @@ def testGuiItemEditor_Dialog(qtbot, monkeypatch, nwGUI, fncDir, fncProj, refDir,
 
     # qtbot.stopForInteraction()
 
-# END Test testGuiItemEditor_Dialog
+# END Test testDlgItemEditor_Dialog

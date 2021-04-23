@@ -30,7 +30,7 @@ from dummy import causeOSError
 from PyQt5.QtCore import Qt
 from PyQt5.QtWidgets import QAction, QFileDialog, QMessageBox
 
-from nw.gui import GuiWritingStats
+from nw.tools import GuiWritingStats
 from nw.constants import nwFiles
 
 keyDelay = 2
@@ -38,7 +38,7 @@ typeDelay = 1
 stepDelay = 20
 
 @pytest.mark.gui
-def testGuiWritingStats_Dialog(qtbot, monkeypatch, nwGUI, fncDir, fncProj):
+def testToolWritingStats_Main(qtbot, monkeypatch, nwGUI, fncDir, fncProj):
     """Test the full writing stats tool.
     """
     # Block message box
@@ -428,4 +428,4 @@ def testGuiWritingStats_Dialog(qtbot, monkeypatch, nwGUI, fncDir, fncProj):
     assert nwGUI.closeProject()
     qtbot.wait(stepDelay)
 
-# END Test testGuiWritingStats_Dialog
+# END Test testToolWritingStats_Main
