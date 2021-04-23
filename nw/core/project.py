@@ -77,6 +77,7 @@ class NWProject():
         self.projMeta    = None # The full path to the project's meta data folder
         self.projCache   = None # The full path to the project's cache folder
         self.projContent = None # The full path to the project's content folder
+        self.projVers    = None # The full path to the project's versions folder
         self.projDict    = None # The spell check dictionary
         self.projSpell   = None # The spell check language, if different than default
         self.projLang    = None # The project language, used for builds
@@ -194,6 +195,7 @@ class NWProject():
         self.projMeta    = None
         self.projCache   = None
         self.projContent = None
+        self.projVers    = None
         self.projDict    = None
         self.projSpell   = None
         self.projLang    = None
@@ -740,12 +742,15 @@ class NWProject():
         self.projMeta    = os.path.join(self.projPath, "meta")
         self.projCache   = os.path.join(self.projPath, "cache")
         self.projContent = os.path.join(self.projPath, "content")
+        self.projVers    = os.path.join(self.projPath, "versions")
 
         if not self._checkFolder(self.projMeta):
             return False
         if not self._checkFolder(self.projCache):
             return False
         if not self._checkFolder(self.projContent):
+            return False
+        if not self._checkFolder(self.projVers):
             return False
 
         return True
